@@ -16,6 +16,8 @@ This is the current CloudBase Public Alpha deployment for public playtesting and
 
 > Full Save / Continue is not available yet. Refreshing the page starts a new world.
 
+![Wanguoji: autonomous wars, expansion and historical evolution across the world](docs/images/demo.gif)
+
 ## Screenshots
 
 ![A world map where multiple states wage autonomous wars, expand and evolve](docs/images/world-map.png)
@@ -73,6 +75,12 @@ Current limitations:
 - Electron continuous background still needs final user validation.
 - Long-run balance is still being adjusted.
 
+## Playtest feedback
+
+If you find a bug, a broken page, implausible faction or dynasty behavior, an odd long-run historical rhythm, or have a gameplay suggestion, please open an issue on [GitHub Issues](https://github.com/TimVan1596/wanguoji/issues).
+
+If possible, include the game version, scenario, world year, a screenshot, and what happened. No complex development information is required.
+
 ## Local development
 
 Recommended:
@@ -124,3 +132,5 @@ MIT License. See [LICENSE](./LICENSE).
 ## Contributing
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+See the [roadmap](./ROADMAP.md) for planned priorities.

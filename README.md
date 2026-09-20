@@ -8,15 +8,17 @@
 
 城市、政权、君主、王朝与时代，都会留下可以回看的历史。
 
-[English](README_EN.md) · [在线试玩](https://wanguoji-wanguoji-demo-d5ga9p1eee662b3c4.webapps.tcloudbase.com/)
+[English](README_EN.md)
 
-**Public Alpha Web Demo** · [立即体验《万国纪 · Wanguoji》](https://wanguoji-wanguoji-demo-d5ga9p1eee662b3c4.webapps.tcloudbase.com/)
+## 🎮 在线试玩
 
-这是当前 CloudBase Public Alpha deployment，适合公开试玩与反馈；它不是 production-ready、stable service 或 permanent hosting。
+**[打开《万国纪》在线试玩](https://wanguoji-wanguoji-demo-d5ga9p1eee662b3c4.webapps.tcloudbase.com/)**
+
+当前为公开 Alpha，打开即可试玩，无需注册。当前链接是 CloudBase Public Alpha deployment，不是正式生产服务；尚无完整保存 / 继续世界功能，刷新页面会重新开始。
 
 > 当前暂无完整 Save / Continue，刷新页面将重新开始当前世界。
 
-<!-- Demo GIF placeholder: docs/media/wanguoji-demo.gif -->
+![万国纪：诸国自主战争、扩张与历史演化演示](docs/images/demo.gif)
 
 ## 游戏截图
 
@@ -56,8 +58,20 @@
 - WorldEra：长期天下时代与格局章节。
 - HistoryScroll：可回看的历史卷轴。
 - faction archive：灭亡、流亡、复国政权档案。
-- Web Background Progression：浏览器 tab 切回前台后按真实离开时间补算历史。
-- Experimental Electron Desktop：桌面后台连续运行可行性实验。
+- 浏览器后台推进（Web Background Progression）：浏览器标签页切回前台后按真实离开时间补算历史。
+- Electron 桌面实验版：桌面后台连续运行可行性实验。
+
+## 试玩反馈
+
+如果你发现 Bug、页面异常、某个势力或王朝行为明显不合理，或者长局历史节奏有问题，也欢迎提出值得加入的玩法建议，欢迎通过 [GitHub Issues](https://github.com/TimVan1596/wanguoji/issues) 反馈。
+
+提交反馈时，尽量告诉我们：
+
+- 游戏版本
+- 使用的场景
+- 世界年份
+- 截图
+- 发生了什么
 
 ## 当前 Alpha 状态
 
@@ -67,8 +81,8 @@
 
 - Web 版核心玩法。
 - 城市、王朝、政权生命周期和历史卷轴。
-- Chrome Web Background Progression return-time catch-up。
-- Electron Desktop Experimental probe。
+- Chrome 浏览器后台推进（切回前台后补算历史）。
+- Electron 桌面实验版验证。
 
 不会在本 Alpha 中承诺：
 
@@ -98,7 +112,7 @@ pnpm dev
 http://localhost:5173/
 ```
 
-## Build
+## 构建
 
 ```bash
 pnpm test
@@ -107,7 +121,7 @@ pnpm build
 
 生产构建产物输出到 `dist/`。
 
-## Web Background Progression
+## 浏览器后台推进（Web Background Progression）
 
 普通浏览器模式使用 `WEB_CATCH_UP` 策略。
 
@@ -117,7 +131,7 @@ pnpm build
 
 关闭或刷新页面后不会继续当前世界，因为完整 Save / Continue World 尚未实现。
 
-## Electron Desktop Experimental
+## Electron 桌面实验版
 
 v0.9995 增加了一个独立 Electron probe，目录见 [desktop/](./desktop/)。
 
@@ -129,13 +143,13 @@ Electron renderer 直接加载当前 React + Phaser frontend，不复制 gamepla
 
 更多说明见 [desktop/README.md](./desktop/README.md)。
 
-## 当前 Known Issues
+## 当前已知问题
 
 - 尚无完整 Save / Continue World。
 - 刷新或关闭页面会失去当前完整世界。
 - 尚无完整 deterministic seed / replay。
-- Web Background Progression 是 return-time catch-up，不是 hidden tab 持续渲染。
-- Electron Desktop 仍为 Experimental。
+- 浏览器后台推进是切回前台后的时间补算，不是隐藏标签页持续渲染。
+- Electron 桌面实验版仍处于实验阶段。
 - Electron continuous background 尚未完成用户最终验证。
 - Electron 在中国大陆网络下下载 binary 可能需要镜像，例如 `ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/`。
 - long-run balance 仍持续调整。
@@ -165,8 +179,10 @@ MIT License。详见 [LICENSE](./LICENSE)。
 
 原始版权声明保留在 LICENSE 中。
 
-## Contributing
+## 参与贡献
 
 欢迎 issue、bug report、长局 balance feedback 和小型 PR。
 
 请先阅读 [CONTRIBUTING.md](./CONTRIBUTING.md)。
+
+路线图见 [ROADMAP.md](./ROADMAP.md)。
