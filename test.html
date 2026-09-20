@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>颜色编号名称对应表</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #f6f8fa;
+      color: #24292f;
+    }
+
+    .wrap {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #ffffff;
+      border: 1px solid #d0d7de;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(140, 149, 159, 0.12);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 22px;
+    }
+
+    .note {
+      margin: 0 0 16px;
+      font-size: 13px;
+      color: #57606a;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    input[type="search"] {
+      flex: 1;
+      min-width: 220px;
+      padding: 9px 12px;
+      font-size: 14px;
+      border: 1px solid #d0d7de;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    input[type="search"]:focus {
+      border-color: #0969da;
+      box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.15);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: middle;
+      border-bottom: 1px solid #d8dee4;
+    }
+
+    th {
+      font-weight: 600;
+      color: #57606a;
+      background: #f6f8fa;
+    }
+
+    tbody tr:hover {
+      background: #f6f8fa;
+    }
+
+    .num {
+      width: 72px;
+      color: #57606a;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .name {
+      min-width: 120px;
+    }
+
+    .hex {
+      width: 110px;
+      color: #57606a;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .swatch {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      vertical-align: middle;
+      border: 1px solid #d0d7de;
+      border-radius: 8px;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+    }
+
+    .empty {
+      display: none;
+      padding: 20px;
+      color: #57606a;
+      text-align: center;
+    }
+
+    @media (max-width: 560px) {
+      body {
+        padding: 12px;
+      }
+
+      .wrap {
+        padding: 14px;
+      }
+
+      th,
+      td {
+        padding: 8px;
+      }
+
+      .hex,
+      th:nth-child(4),
+      td:nth-child(4) {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>颜色编号 / 名称 / 色值对应表</h1>
+    <p class="note">色块与 HEX 为近似展示，实际颜色请以官方色卡为准。</p>
+
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="搜索编号、名称或 HEX，例如：801、白色、#FFFFFF">
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>编号</th>
+          <th>颜色</th>
+          <th>名称</th>
+          <th>近似 HEX</th>
+        </tr>
+      </thead>
+      <tbody id="colorRows">
+        <tr>
+          <td class="num">801</td>
+          <td><span class="swatch" style="background:#FFFFFF"></span></td>
+          <td class="name">白色</td>
+          <td class="hex">#FFFFFF</td>
+        </tr>
+        <tr>
+          <td class="num">802</td>
+          <td><span class="swatch" style="background:#FFF59D"></span></td>
+          <td class="name">浅黄/柠檬黄</td>
+          <td class="hex">#FFF59D</td>
+        </tr>
+        <tr>
+          <td class="num">803</td>
+          <td><span class="swatch" style="background:#F7E436"></span></td>
+          <td class="name">柠檬黄（稍深）</td>
+          <td class="hex">#F7E436</td>
+        </tr>
+        <tr>
+          <td class="num">804</td>
+          <td><span class="swatch" style="background:#FFB300"></span></td>
+          <td class="name">橙黄</td>
+          <td class="hex">#FFB300</td>
+        </tr>
+        <tr>
+          <td class="num">805</td>
+          <td><span class="swatch" style="background:#C8A951"></span></td>
+          <td class="name">土黄</td>
+          <td class="hex">#C8A951</td>
+        </tr>
+        <tr>
+          <td class="num">806</td>
+          <td><span class="swatch" style="background:#FF6F00"></span></td>
+          <td class="name">红橙</td>
+          <td class="hex">#FF6F00</td>
+        </tr>
+        <tr>
+          <td class="num">810</td>
+          <td><span class="swatch" style="background:#DC143C"></span></td>
+          <td class="name">猩红</td>
+          <td class="hex">#DC143C</td>
+        </tr>
+        <tr>
+          <td class="num">811</td>
+          <td><span class="swatch" style="background:#E34234"></span></td>
+          <td class="name">朱砂红</td>
+          <td class="hex">#E34234</td>
+        </tr>
+        <tr>
+          <td class="num">814</td>
+          <td><span class="swatch" style="background:#722F37"></span></td>
+          <td class="name">酒红色</td>
+          <td class="hex">#722F37</td>
+        </tr>
+        <tr>
+          <td class="num">817</td>
+          <td><span class="swatch" style="background:#8DB600"></span></td>
+          <td class="name">苹果绿</td>
+          <td class="hex">#8DB600</td>
+        </tr>
+        <tr>
+          <td class="num">822</td>
+          <td><span class="swatch" style="background:#00808C"></span></td>
+          <td class="name">孔雀蓝</td>
+          <td class="hex">#00808C</td>
+        </tr>
+        <tr>
+          <td class="num">824</td>
+          <td><span class="swatch" style="background:#0066CC"></span></td>
+          <td class="name">海蓝</td>
+          <td class="hex">#0066CC</td>
+        </tr>
+        <tr>
+          <td class="num">827</td>
+          <td><span class="swatch" style="background:#0047AB"></span></td>
+          <td class="name">钴蓝（深蓝）</td>
+          <td class="hex">#0047AB</td>
+        </tr>
+        <tr>
+          <td class="num">831</td>
+          <td><span class="swatch" style="background:#A67B5B"></span></td>
+          <td class="name">黄褐</td>
+          <td class="hex">#A67B5B</td>
+        </tr>
+        <tr>
+          <td class="num">838</td>
+          <td><span class="swatch" style="background:#8F00FF"></span></td>
+          <td class="name">紫罗兰</td>
+          <td class="hex">#8F00FF</td>
+        </tr>
+        <tr>
+          <td class="num">840</td>
+          <td><span class="swatch" style="background:#40E0D0"></span></td>
+          <td class="name">松石绿</td>
+          <td class="hex">#40E0D0</td>
+        </tr>
+        <tr>
+          <td class="num">842</td>
+          <td><span class="swatch" style="background:#C0C0C0"></span></td>
+          <td class="name">银色</td>
+          <td class="hex">#C0C0C0</td>
+        </tr>
+        <tr>
+          <td class="num">851</td>
+          <td><span class="swatch" style="background:#008B8B"></span></td>
+          <td class="name">蓝绿色</td>
+          <td class="hex">#008B8B</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div id="empty" class="empty">没有找到匹配项</div>
+  </div>
+
+  <script>
+    const search = document.getElementById('search');
+    const rows = Array.from(document.querySelectorAll('#colorRows tr'));
+    const empty = document.getElementById('empty');
+
+    search.addEventListener('input', function () {
+      const keyword = search.value.trim().toLowerCase();
+      let visibleCount = 0;
+
+      rows.forEach(function (row) {
+        const text = row.textContent.toLowerCase();
+        const matched = !keyword || text.includes(keyword);
+
+        row.style.display = matched ? '' : 'none';
+
+        if (matched) {
+          visibleCount++;
+        }
+      });
+
+      empty.style.display = visibleCount ? 'none' : 'block';
+    });
+  </script>
+</body>
+</html>

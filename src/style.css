@@ -1,0 +1,49 @@
+html,
+body {
+  --gg-background: #eef4e8;
+  --gg-panel: rgba(255, 255, 255, 0.72);
+  --gg-panel-strong: rgba(255, 255, 255, 0.9);
+  --gg-border: rgba(20, 24, 20, 0.14);
+  --gg-text: #172016;
+  --gg-text-muted: rgba(23, 32, 22, 0.68);
+  --gg-selected: #2f6fed;
+  --gg-radius: 6px;
+  --gg-spacing: 8px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100vh;
+  color: var(--gg-text);
+}
+
+.game-wapper {
+  box-sizing: border-box;
+  height: 100vh;
+}
+
+.war3 .game-wapper {
+  border: 19px solid #000;
+  box-shadow: 0 0 0 4px #6f6f6f inset;
+  position: relative;
+}
+
+.minecraft {
+  font-family: minecraftFont;
+}
+
+.minecraft .game-wapper {
+  padding: 10px;
+  border: 5px solid #000;
+  box-shadow: 5px 5px 5px rgb(255, 255, 255) inset,
+    -5px -5px 5px rgb(0, 0, 0) inset;
+  border-radius: 10px;
+}
+
+.minecraft .MuiTypography-root {
+  font-family: minecraftFont;
+}
+
+@font-face {
+  font-family: minecraftFont;
+  src: url(/theme/minecraft/font.ttf);
+}
