@@ -2,17 +2,11 @@
 
 万国纪 · Wanguoji Web 版是 Vite 静态应用。部署不需要 Node server。
 
-未来公开仓库名建议使用：
-
-```text
-wanguoji
-```
+当前公开试玩地址是 CloudBase Public Alpha deployment。该地址适合开发与 Public Alpha 测试，不应描述为 production-ready、stable service 或 permanent hosting。
 
 ## A. 本地 build 后上传 dist/
 
 ```bash
-pnpm install
-pnpm test
 pnpm build
 ```
 
@@ -22,9 +16,9 @@ pnpm build
 dist/
 ```
 
-可以把 `dist/` 上传到 CloudBase 静态托管或其它静态站点服务。
+将 `dist/` 构建产物作为静态站点上传到 CloudBase 静态托管即可。
 
-## B. CloudBase CLI
+## B. CloudBase CLI（可选）
 
 ```bash
 npm i -g @cloudbase/cli
@@ -35,7 +29,7 @@ pnpm build
 tcb hosting deploy dist/ -e <ENV_ID>
 ```
 
-不要把真实 `<ENV_ID>` 写入仓库。
+不要把真实 Environment ID、腾讯云账户信息、兑换码或任何私密信息写入仓库。
 
 ## 路由 / SPA fallback
 
@@ -58,3 +52,4 @@ CloudBase 静态托管如需支持直接打开子路由，请在控制台或部�
 - 不要上传本地 `.env`。
 - 不要把 Electron `desktop/dist/` 当作 Web 部署目录。
 - 当前没有 Save / Continue World；刷新页面会重新开始当前世界。
+- CloudBase 平台默认域名适合开发 / Public Alpha 测试；后续正式站点建议使用已备案的自定义域名。

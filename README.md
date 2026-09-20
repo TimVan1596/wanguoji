@@ -8,23 +8,23 @@
 
 城市、政权、君主、王朝与时代，都会留下可以回看的历史。
 
-[English](README_EN.md) · [🎮 在线试玩](https://wanguoji-wanguoji-demo-d5ga9p1eee662b3c4.webapps.tcloudbase.com/)
+[English](README_EN.md) · [在线试玩](https://wanguoji-wanguoji-demo-d5ga9p1eee662b3c4.webapps.tcloudbase.com/)
 
-## 🎮 在线试玩
+**Public Alpha Web Demo** · [立即体验《万国纪 · Wanguoji》](https://wanguoji-wanguoji-demo-d5ga9p1eee662b3c4.webapps.tcloudbase.com/)
 
-**[立即体验《万国纪 · Wanguoji》](https://wanguoji-wanguoji-demo-d5ga9p1eee662b3c4.webapps.tcloudbase.com/)**
+这是当前 CloudBase Public Alpha deployment，适合公开试玩与反馈；它不是 production-ready、stable service 或 permanent hosting。
 
-> 当前为 Public Alpha 在线试玩版。暂无完整 Save / Continue，刷新页面将重新开始当前世界。
+> 当前暂无完整 Save / Continue，刷新页面将重新开始当前世界。
 
 <!-- Demo GIF placeholder: docs/media/wanguoji-demo.gif -->
 
 ## 游戏截图
 
-![万国纪世界演化](docs/images/world-map.png)
+![多个国家在地图上自主战争、扩张与演化的世界地图](docs/images/world-map.png)
 
 <p align="center">
-  <img src="docs/images/faction-detail.png" width="49%" alt="万国纪势力与君主档案">
-  <img src="docs/images/history-scroll.png" width="49%" alt="万国纪世界历史卷轴">
+  <img src="docs/images/faction-detail.png" width="49%" alt="秦国势力详情与君主档案">
+  <img src="docs/images/history-scroll.png" width="49%" alt="记录战争、叛乱与建国事件的历史卷轴">
 </p>
 
 ## 30 秒怎么玩
@@ -78,12 +78,6 @@
 - 外交系统。
 - 科技树。
 - 完整桌面安装包、签名或自动更新。
-
-## 在线试玩
-
-在线试玩：即将开放
-
-当前 Web 应用是 Vite 静态应用，可以部署到任意静态托管服务。CloudBase 部署说明见 [docs/DEPLOY_CLOUDBASE.md](./docs/DEPLOY_CLOUDBASE.md)。
 
 ## 本地运行
 

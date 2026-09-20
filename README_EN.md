@@ -8,7 +8,22 @@ States expand, wage war, build cities, collapse and return. Rebels may found new
 
 Cities, rulers, dynasties and historical eras leave behind a readable chronicle of the world that emerged.
 
-[简体中文](README.md) · [🎮 Play Online](https://wanguoji-wanguoji-demo-d5ga9p1eee662b3c4.webapps.tcloudbase.com/)
+[简体中文](README.md) · [Play Online](https://wanguoji-wanguoji-demo-d5ga9p1eee662b3c4.webapps.tcloudbase.com/)
+
+**Public Alpha Web Demo** · [Launch the Wanguoji demo](https://wanguoji-wanguoji-demo-d5ga9p1eee662b3c4.webapps.tcloudbase.com/)
+
+This is the current CloudBase Public Alpha deployment for public playtesting and feedback. It is not production-ready, a stable service, or permanent hosting.
+
+> Full Save / Continue is not available yet. Refreshing the page starts a new world.
+
+## Screenshots
+
+![A world map where multiple states wage autonomous wars, expand and evolve](docs/images/world-map.png)
+
+<p align="center">
+  <img src="docs/images/faction-detail.png" width="49%" alt="Qin faction details and ruler chronicle">
+  <img src="docs/images/history-scroll.png" width="49%" alt="History scroll recording wars, rebellions and state formation">
+</p>
 
 <!-- Demo GIF placeholder: docs/media/wanguoji-demo.gif -->
 
@@ -46,7 +61,7 @@ For a first run, watch at least 50–100 years.
 
 ## Alpha status
 
-Wanguoji is preparing for its first public open-source alpha.
+Wanguoji is now in its first Public Alpha.
 
 Current limitations:
 
