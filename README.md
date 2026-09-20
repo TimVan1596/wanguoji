@@ -8,11 +8,24 @@
 
 城市、政权、君主、王朝与时代，都会留下可以回看的历史。
 
-[English](README_EN.md)
+[English](README_EN.md) · [🎮 在线试玩](https://wanguoji-wanguoji-demo-d5ga9p1eee662b3c4.webapps.tcloudbase.com/)
 
-在线试玩：即将开放
+## 🎮 在线试玩
+
+**[立即体验《万国纪 · Wanguoji》](https://wanguoji-wanguoji-demo-d5ga9p1eee662b3c4.webapps.tcloudbase.com/)**
+
+> 当前为 Public Alpha 在线试玩版。暂无完整 Save / Continue，刷新页面将重新开始当前世界。
 
 <!-- Demo GIF placeholder: docs/media/wanguoji-demo.gif -->
+
+## 游戏截图
+
+![万国纪世界演化](docs/images/world-map.png)
+
+<p align="center">
+  <img src="docs/images/faction-detail.png" width="49%" alt="万国纪势力与君主档案">
+  <img src="docs/images/history-scroll.png" width="49%" alt="万国纪世界历史卷轴">
+</p>
 
 ## 30 秒怎么玩
 

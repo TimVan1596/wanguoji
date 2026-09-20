@@ -8,9 +8,7 @@ States expand, wage war, build cities, collapse and return. Rebels may found new
 
 Cities, rulers, dynasties and historical eras leave behind a readable chronicle of the world that emerged.
 
-[简体中文](README.md)
-
-Online demo: coming soon
+[简体中文](README.md) · [🎮 Play Online](https://wanguoji-wanguoji-demo-d5ga9p1eee662b3c4.webapps.tcloudbase.com/)
 
 <!-- Demo GIF placeholder: docs/media/wanguoji-demo.gif -->
 
