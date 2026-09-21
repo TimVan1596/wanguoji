@@ -40,6 +40,24 @@ describe("world era", () => {
     expect(era?.name).toBe("群雄争衡");
   });
 
+  it("exposes an active era candidate and its confirmation duration", () => {
+    const teams = [faction("秦", 34, 3), faction("楚", 33, 3), faction("魏", 33, 2)];
+    WorldEra.observe(0, teams, 100, "CONTESTED");
+    WorldEra.observe(120, teams, 100, "CONTESTED");
+    const candidate = WorldEra.getCandidateDiagnostics(120);
+    expect(candidate?.type).toBe("MULTIPOLAR");
+    expect(candidate?.sustainedMonths).toBe(0);
+    expect(candidate?.requiredMonths).toBe(360);
+  });
+
+  it("clears the candidate when no era condition is currently met", () => {
+    const teams = [faction("秦", 34, 3), faction("楚", 33, 3), faction("魏", 33, 2)];
+    WorldEra.observe(0, teams, 100, "CONTESTED");
+    WorldEra.observe(120, teams, 100, "CONTESTED");
+    WorldEra.observe(121, [faction("秦", 20, 2), faction("楚", 10, 1)], 100, "CONTESTED");
+    expect(WorldEra.getCandidateDiagnostics(121)).toBeUndefined();
+  });
+
   it("establishes an initial multipolar era even before territory shares spread out", () => {
     const teams = [
       faction("秦", 0, 1),

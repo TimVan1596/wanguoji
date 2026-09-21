@@ -11,6 +11,7 @@ import GameCard from "./Components/GameCard";
 import LeftSlider from "./Components/LeftSlider";
 import { Result } from "./Components/Result";
 import RightSlider from "./Components/RightSlider";
+import WorldDiagnosticsPanel from "./Components/WorldDiagnosticsPanel";
 
 interface AppProps {
   initialPopulations: InitialPopulationMap;
@@ -57,6 +58,7 @@ export default function App({ initialPopulations, onReturnToMenu }: AppProps) {
           <RightSlider onReturnToMenu={onReturnToMenu}></RightSlider>
         </Box>
       </Box>
+      <WorldDiagnosticsPanel />
     </>
   );
 }

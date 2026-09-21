@@ -22,6 +22,11 @@ import {
   getFactionTerritoryMetric,
 } from "./TerritoryMetrics";
 
+const debugProfileEnabled =
+  import.meta.env.DEV ||
+  (typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).get("debug") === "1");
+
 export default class AutoSimulator {
   private clock = new WorldClock();
   private population = new PopulationSystem();
@@ -117,7 +122,7 @@ export default class AutoSimulator {
       FactionSnapshots.observe(this.clock.year, teams, totalCells);
       WorldHistory.observeWorld(this.clock.year, teams, totalCells);
       this.events.observeWorldGoal(this.clock.year, teams, totalCells);
-      if (import.meta.env.DEV) {
+      if (debugProfileEnabled) {
         const cycle = this.events.getCycleDiagnostics();
         const territoryMetrics = calculateTerritoryMetrics(teams, totalCells);
         const rankedTerritory = teams
@@ -164,6 +169,11 @@ export default class AutoSimulator {
               rankedTerritory[0]?.controlledTerritoryShare ?? 0,
             top2ControlledShare:
               rankedTerritory[1]?.controlledTerritoryShare ?? 0,
+            top3ControlledShare:
+              rankedTerritory[2]?.controlledTerritoryShare ?? 0,
+            eraType: WorldEra.getCurrentEra()?.type,
+            eraCandidateType: WorldEra.getCandidateDiagnostics(this.clock.year)?.type,
+            eraCandidateSinceMonth: WorldEra.getCandidateDiagnostics(this.clock.year)?.sinceMonth,
           }
         );
       }

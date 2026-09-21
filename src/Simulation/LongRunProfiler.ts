@@ -31,6 +31,10 @@ export interface LongRunProfileSnapshot {
   top1AbsoluteShare?: number;
   top1ControlledShare?: number;
   top2ControlledShare?: number;
+  top3ControlledShare?: number;
+  eraType?: string;
+  eraCandidateType?: string;
+  eraCandidateSinceMonth?: number;
   monthlyStepMs?: number;
 }
 
@@ -60,6 +64,10 @@ export interface LongRunProfileCounts {
   top1AbsoluteShare?: number;
   top1ControlledShare?: number;
   top2ControlledShare?: number;
+  top3ControlledShare?: number;
+  eraType?: string;
+  eraCandidateType?: string;
+  eraCandidateSinceMonth?: number;
 }
 
 class LongRunProfilerStore {
@@ -142,6 +150,10 @@ export function buildLongRunProfileSnapshot(
     top1AbsoluteShare: counts.top1AbsoluteShare,
     top1ControlledShare: counts.top1ControlledShare,
     top2ControlledShare: counts.top2ControlledShare,
+    top3ControlledShare: counts.top3ControlledShare,
+    eraType: counts.eraType,
+    eraCandidateType: counts.eraCandidateType,
+    eraCandidateSinceMonth: counts.eraCandidateSinceMonth,
     monthlyStepMs,
   };
 }
