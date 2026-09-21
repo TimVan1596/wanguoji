@@ -155,6 +155,6 @@ describe("ruler chronicle", () => {
       { id: "other", year: 20, monthIndex: 20, type: "city-captured", importance: "major", title: "楚攻城", factionIds: ["楚"], rulerId: "r2" },
     ] as any;
     const selected = getRulerHistoricalEvents(events, { id: "r1", accessionYear: 0, endYear: 40 }, "秦", 40, []);
-    expect(selected.map((event) => event.id)).toEqual(["early", "late"]);
+    expect(selected.map((event) => event.id)).toEqual(["early", "duplicate"]);
   });
 });

@@ -213,6 +213,21 @@ const RULER_EVENT_TYPES = new Set<WorldEvent["type"]>([
   "faction-exiled",
 ]);
 
+const RULER_EVENT_PRIORITIES: Partial<Record<WorldEvent["type"], number>> = {
+  "state-founded": 120,
+  "emperor-proclaimed": 120,
+  "world-unification": 120,
+  "faction-restored": 115,
+  "ruler-captured": 115,
+  "faction-exiled": 110,
+  "faction-extinct": 110,
+  "capital-fallen": 90,
+  "empire-split": 90,
+  "ruler-succession": 88,
+  "city-recovered": 75,
+  "city-captured": 65,
+};
+
 export function getRulerHistoricalEvents(
   events: WorldEvent[],
   ruler: { id: string; accessionYear: number; endYear?: number },
@@ -238,14 +253,24 @@ export function getRulerHistoricalEvents(
     }
     return event.importance === "major" && getFactionEventRelation(event, factionId) !== "NONE";
   });
-  const seenGroups = new Set<string>();
-  return candidates
-    .sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year))
-    .filter((event) => {
-      if (!event.historyGroupId) return true;
-      if (seenGroups.has(event.historyGroupId)) return false;
-      seenGroups.add(event.historyGroupId);
-      return true;
-    })
-    .slice(0, 6);
+  const score = (event: WorldEvent) => {
+    const direct =
+      event.rulerId === ruler.id ||
+      event.metadata?.rulerId === ruler.id ||
+      event.metadata?.previousRulerId === ruler.id ||
+      event.metadata?.nextRulerId === ruler.id;
+    return (
+      RULER_EVENT_PRIORITIES[event.type] ?? 40
+    ) + (direct ? 20 : 0) + (notable.has(event.id) ? 15 : 0) + (event.importance === "major" ? 5 : 0);
+  };
+  const grouped = new Map<string, WorldEvent>();
+  for (const event of candidates) {
+    const key = event.historyGroupId ?? event.id;
+    const existing = grouped.get(key);
+    if (!existing || score(event) > score(existing)) grouped.set(key, event);
+  }
+  return [...grouped.values()]
+    .sort((a, b) => score(b) - score(a) || (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year) || a.id.localeCompare(b.id))
+    .slice(0, 6)
+    .sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year) || a.id.localeCompare(b.id));
 }

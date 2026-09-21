@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.9999-alpha
+
+- Prioritized canonical political milestones in ruler chronicles.
+- Rendered ruler events using historical faction names at the event month.
+- Normalized extinct-faction terminal ruler snapshots to zero political power.
+
 ## v0.9998-alpha
 
 - Kept active factions alive when a ruling line ends but territory remains.

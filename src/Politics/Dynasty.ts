@@ -195,14 +195,16 @@ class DynastyRegistryStore {
   markExtinct(team: Team, year: number) {
     const dynasty = this.dynasties.get(team.name);
     const ruler = dynasty ? this.getCurrentRuler(team.name) : undefined;
-    if (ruler && ruler.status !== "dead" && ruler.chronicle) {
-      ruler.status = "dead";
-      ruler.endYear = year;
-      ruler.endReason = "彻底灭亡";
+    if (ruler?.chronicle) {
+      if (ruler.status !== "dead") {
+        ruler.status = "dead";
+        ruler.endYear = year;
+        ruler.endReason = "彻底灭亡";
+      }
       finishRulerChronicle(
         ruler.chronicle,
-        createRulerSnapshot(team, year),
-        ruler.endReason
+        createTerminalRulerSnapshot(year),
+        ruler.endReason ?? "彻底灭亡"
       );
       finalizeRulerPosthumousNames(ruler, dynasty?.rulers ?? [], team, year);
     }
@@ -786,4 +788,8 @@ function createRulerSnapshot(team: Team, month: number): RulerReignSnapshot {
     cityCount: team.cities.length,
     stability: getFactionStability(team) ?? 0,
   };
+}
+
+export function createTerminalRulerSnapshot(month: number): RulerReignSnapshot {
+  return { month, population: 0, territoryShare: 0, cityCount: 0, stability: 0 };
 }

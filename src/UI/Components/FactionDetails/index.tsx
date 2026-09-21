@@ -435,6 +435,7 @@ function FactionProfile({
           factionStatus={team.status}
           team={team}
           events={events}
+          factionById={factionById}
           selectedRulerId={rulerDetailId}
           onSelectedRulerIdChange={onRulerDetailIdChange}
         />
@@ -606,6 +607,7 @@ function DynastyTree({
   factionStatus,
   team,
   events,
+  factionById,
   selectedRulerId,
   onSelectedRulerIdChange,
 }: {
@@ -615,6 +617,7 @@ function DynastyTree({
   factionStatus: RootState["root"]["teams"][number]["status"];
   team: RootState["root"]["teams"][number];
   events: WorldEvent[];
+  factionById: Map<string, RootState["root"]["teams"][number]>;
   selectedRulerId?: string;
   onSelectedRulerIdChange: (id: string | undefined) => void;
 }) {
@@ -684,7 +687,7 @@ function DynastyTree({
               {expanded ? (
                 <Box sx={{ mt: 0.65 }}>
                   {isFormalRuler(ruler) ? (
-                    <RulerBiography ruler={ruler} worldMonth={worldMonth} team={team} events={events} />
+                    <RulerBiography ruler={ruler} worldMonth={worldMonth} team={team} events={events} factionById={factionById} />
                   ) : (
                     <HeirArchive
                       ruler={ruler}
@@ -707,11 +710,13 @@ function RulerBiography({
   worldMonth,
   team,
   events,
+  factionById,
 }: {
   ruler: FormalRuler;
   worldMonth: number;
   team: RootState["root"]["teams"][number];
   events: WorldEvent[];
+  factionById: Map<string, RootState["root"]["teams"][number]>;
 }) {
   const reignEnd = ruler.endYear ?? worldMonth;
   const reignMonths = Math.max(0, reignEnd - ruler.accessionYear);
@@ -826,7 +831,7 @@ function RulerBiography({
       </Typography>
       {historicalEvents.length > 0 ? historicalEvents.map((event) => (
         <Typography key={event.id} fontSize="0.82rem">
-          {formatWorldDate(event.monthIndex ?? event.year)} ◆ {event.title}
+          {formatWorldDate(event.monthIndex ?? event.year)} ◆ {formatHistoryEventTitle(event, factionById)}
         </Typography>
       )) : (
         <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
