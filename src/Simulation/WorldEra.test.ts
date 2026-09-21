@@ -47,7 +47,7 @@ describe("world era", () => {
     const candidate = WorldEra.getCandidateDiagnostics(360);
     expect(candidate?.type).toBe("MULTIPOLAR");
     expect(candidate?.sustainedMonths).toBe(0);
-    expect(candidate?.requiredMonths).toBe(360);
+    expect(candidate?.requiredMonths).toBe(120);
   });
 
   it("clears the candidate when no era condition is currently met", () => {
@@ -140,7 +140,7 @@ describe("world era", () => {
     expect(era?.type).not.toBe("DYNASTIC");
   });
 
-  it("confirms dynastic era only after thirty-year candidate persistence", () => {
+  it("confirms dynastic era only after fifteen-year candidate persistence", () => {
     const teams = [
       faction("阳", 65, 6, {
         sovereigntyRank: "EMPEROR",
@@ -149,11 +149,11 @@ describe("world era", () => {
       faction("魏", 20, 2),
       faction("梁", 5, 1),
     ];
-    for (let month = 120; month < 480; month++) {
+    for (let month = 120; month < 300; month++) {
       WorldEra.observe(month, teams, 100, "CONTESTED");
     }
     expect(WorldEra.getCurrentEra()).toBeUndefined();
-    WorldEra.observe(480, teams, 100, "CONTESTED");
+    WorldEra.observe(300, teams, 100, "CONTESTED");
     expect(WorldEra.getCurrentEra()?.type).toBe("DYNASTIC");
     expect(WorldEra.getCurrentEra()?.name).toBe("阳朝");
     expect(WorldEra.getCurrentEra()?.startMonth).toBe(120);
@@ -194,7 +194,8 @@ describe("world era", () => {
       WorldEra.observe(month, secondBalance, 100, "CONTESTED");
     }
     expect(WorldEra.getEras()).toHaveLength(1);
-    expect(WorldEra.getCurrentEra()?.name).toBe("群雄争衡");
+    expect(WorldEra.getCurrentEra()).toBeUndefined();
+    expect(WorldEra.getCandidateDiagnostics(180)?.name).toBe("群雄争衡");
   });
 
   it("does not renew multipolar chapter when the same cohort only changes order", () => {
@@ -234,10 +235,9 @@ describe("world era", () => {
     ];
     WorldEra.observe(80 * 12, newCohort, 100, "CONTESTED");
     const eras = WorldEra.getEras();
-    expect(eras).toHaveLength(2);
-    expect(eras.map((era) => era.name)).toEqual(["群雄争衡", "群雄争衡"]);
-    expect(eras[0].endMonth).toBe(80 * 12 - 1);
-    expect(eras[1].dominantFactionIds).toEqual(["燕", "赵", "魏"]);
+    expect(eras).toHaveLength(1);
+    expect(eras[0].endMonth).toBeUndefined();
+    expect(WorldEra.getCandidateDiagnostics(80 * 12)?.name).toBe("群雄争衡");
   });
 
   it("uses controlled territory share in multipolar explanations", () => {
@@ -306,7 +306,7 @@ describe("world era", () => {
       faction("楚", 30, 4),
       faction("燕", 10, 1),
     ];
-    for (let month = 370; month <= 730; month++) {
+    for (let month = 370; month <= 526; month++) {
       WorldEra.observe(month, qinChu, 100, "CONTESTED");
     }
     expect(WorldEra.getEras().map((era) => era.name)).toEqual([
@@ -327,7 +327,7 @@ describe("world era", () => {
     const event = WorldHistory.getEvents().find((item) => item.type === "world-era-started");
     expect(event?.title).toBe("秦楚争霸格局确立，追溯始于0年11月。");
     expect(event?.metadata?.eraStartMonth).toBe(10);
-    expect(event?.metadata?.confirmedMonth).toBe(370);
+    expect(event?.metadata?.confirmedMonth).toBe(130);
   });
 
   it("does not record short unified or fragmentation interludes as eras", () => {

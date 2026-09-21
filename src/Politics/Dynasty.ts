@@ -306,9 +306,15 @@ class DynastyRegistryStore {
     this.archiveNaturallyDeadHeirs(dynasty, year);
     let successor = this.consumeHeir(dynasty, year);
     if (!successor && team.status === "ACTIVE" && team.cities.length > 0) {
+      const newHouse =
+        team.identityStage === "PROVISIONAL"
+          ? dynasty.houseName
+          : dynasty.houseName === `${team.name}氏`
+          ? `${team.name}新氏`
+          : `${team.name}氏`;
       successor = this.createHeir(
         team,
-        dynasty.houseName,
+        newHouse,
         year,
         undefined,
         predecessor.id,
@@ -357,7 +363,13 @@ class DynastyRegistryStore {
       dynasty.rulers
         .filter((ruler) => ruler.id !== nextRuler.id && ruler.predecessorId)
         .map((ruler) => ruler.accessionYear)
-        .filter((accessionYear): accessionYear is number => accessionYear !== undefined),
+        .filter((accessionYear): accessionYear is number => accessionYear !== undefined)
+        .concat(
+          nextRuler.relationType === "NEW_HOUSE" ||
+            Math.floor(monthsToYears(year - nextRuler.bornYear)) < 16
+            ? [year, year]
+            : []
+        ),
       getSuccessionShockMultiplier(team.sovereigntyRank)
     );
     const effect = FactionEffects.addSuccessionEffect(team.name, year, rule);
@@ -376,6 +388,7 @@ class DynastyRegistryStore {
         ),
         previousRulerId: predecessor.id,
         nextRulerId: nextRuler.id,
+        relationType: nextRuler.relationType,
         reignMonths: reignYears,
         reignYears: Math.round(monthsToYears(reignYears)),
         age: Math.round(monthsToYears(year - predecessor.bornYear)),
@@ -584,7 +597,7 @@ class DynastyRegistryStore {
           .get(team.name)
           ?.rulers.find((ruler) => ruler.id === parentId)
       : undefined;
-    const bornYear = parent
+    const derivedBornYear = parent
       ? deriveHeirBirthMonth(
           parent.bornYear,
           politicalStartYear,
@@ -592,7 +605,8 @@ class DynastyRegistryStore {
           yearsToMonths(HEIR_PARENT_MIN_AGE_AT_BIRTH),
           yearsToMonths(HEIR_PARENT_MAX_AGE_AT_BIRTH)
         )
-      : politicalStartYear - yearsToMonths(
+      : undefined;
+    const bornYear = derivedBornYear ?? politicalStartYear - yearsToMonths(
           Phaser.Math.Between(RULER_MIN_AGE_AT_ACCESSION, RULER_MAX_AGE_AT_ACCESSION)
         );
     const naturalDeathYear = createNaturalDeathMonth(bornYear, (max) =>

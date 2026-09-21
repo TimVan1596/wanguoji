@@ -41,6 +41,15 @@ export function validateWorldState(core: Core) {
     if (team.status === "EXTINCT" && team.rulerUser) {
       issues.push(`EXTINCT faction still has ruler unit: ${team.name}`);
     }
+    if (team.status === "EXTINCT" && team.cities.length > 0) {
+      issues.push(`EXTINCT faction still owns active city: ${team.name}`);
+    }
+  });
+  core.allDynasties.forEach((dynasty) => {
+    const team = teams.find((item) => item.name === dynasty.factionId);
+    if (team?.status === "EXTINCT" && dynasty.currentRulerId) {
+      issues.push(`EXTINCT faction still has current ruler: ${team.name}`);
+    }
   });
   issues.push(...validateFactionIdentities(teams));
 

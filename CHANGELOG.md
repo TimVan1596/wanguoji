@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.9998-alpha
+
+- Kept active factions alive when a ruling line ends but territory remains.
+- Added minimal succession relation metadata and minor-ruler unit protection.
+- Added era transition grace and type-specific confirmation durations.
+
 ## v0.9997-alpha
 
 - Separated live power-balance eras from formal political identity requirements.

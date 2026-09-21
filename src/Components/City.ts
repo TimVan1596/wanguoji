@@ -508,6 +508,9 @@ export default class City {
     conqueror: Team,
     historyGroupId?: string
   ) {
+    if (oldOwner.status === "EXTINCT") {
+      return;
+    }
     if (oldOwner.cities.length === 0) {
       Game.Core.handleFactionExtinction(oldOwner, conqueror, this, year, historyGroupId);
       return;
@@ -684,12 +687,12 @@ export default class City {
     WorldHistory.addCityDestroyed(year, archived);
     this.zoneOutline?.destroy();
     this.zoneOutline = undefined;
-    if (owner && wasCapital) {
+    if (owner && wasCapital && owner.status === "ACTIVE") {
       const newCapital = owner.chooseCapitalCandidate();
       if (newCapital) {
         owner.setCapitalCity(newCapital, year);
         WorldHistory.addCapitalRelocated(year, owner.name, newCapital.name, newCapital.id);
-      } else {
+      } else if (owner.cities.length === 0) {
         owner.markExtinct(year);
         DynastyRegistry.markExtinct(owner, year);
         WorldHistory.addFactionExtinct(

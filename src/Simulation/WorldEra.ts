@@ -74,20 +74,20 @@ type Listener = (eras: WorldEra[]) => void;
 export const WORLD_ERA_REQUIRED_MONTHS = 360;
 export const WORLD_ERA_MIN_DURATION_MONTHS = 360;
 export const WORLD_ERA_REQUIRED_MONTHS_BY_TYPE: Record<WorldEraType, number> = {
-  MULTIPOLAR: 360,
-  DUAL_RIVALRY: 360,
-  HEGEMONY: 360,
-  DYNASTIC: 360,
-  UNIFIED: 360,
-  FRAGMENTATION: 360,
+  MULTIPOLAR: 120,
+  DUAL_RIVALRY: 120,
+  HEGEMONY: 120,
+  DYNASTIC: 180,
+  UNIFIED: 12,
+  FRAGMENTATION: 24,
 };
 export const WORLD_ERA_MIN_DURATION_MONTHS_BY_TYPE: Record<WorldEraType, number> = {
-  MULTIPOLAR: 360,
-  DUAL_RIVALRY: 360,
-  HEGEMONY: 360,
-  DYNASTIC: 360,
-  UNIFIED: 360,
-  FRAGMENTATION: 360,
+  MULTIPOLAR: 120,
+  DUAL_RIVALRY: 120,
+  HEGEMONY: 120,
+  DYNASTIC: 180,
+  UNIFIED: 12,
+  FRAGMENTATION: 24,
 };
 export const MULTIPOLAR_CHAPTER_RENEWAL_MIN_MONTHS = 72 * 12;
 export const MULTIPOLAR_CHAPTER_RENEWAL_REPLACED_COUNT = 2;
@@ -170,6 +170,7 @@ class WorldEraStore {
     }
     this.lastObservedMonth = month;
     const candidate = classifyEra(teams, totalCells, month, worldPhase, this.getCurrentEra());
+    const currentAtObservation = this.getCurrentEra();
     if (!candidate) {
       this.candidateState = undefined;
       const current = this.getCurrentEra();
@@ -183,7 +184,23 @@ class WorldEraStore {
       }
       return;
     }
-    this.staleSinceMonth = undefined;
+    const candidateMatchesCurrent =
+      currentAtObservation !== undefined &&
+      shouldContinueEra(currentAtObservation, candidate);
+    if (currentAtObservation && !candidateMatchesCurrent) {
+      this.staleSinceMonth ??= month;
+      if (month - this.staleSinceMonth < ERA_EXIT_GRACE_MONTHS) {
+        if (!this.candidateState || !isSameCandidate(this.candidateState.candidate, candidate)) {
+          this.candidateState = { candidate, sinceMonth: month };
+        }
+        return;
+      }
+      currentAtObservation.endMonth = Math.max(currentAtObservation.startMonth, month - 1);
+      this.staleSinceMonth = undefined;
+      this.candidateState = { candidate, sinceMonth: month };
+    } else {
+      this.staleSinceMonth = undefined;
+    }
     const current = this.getCurrentEra();
     const renewMultipolarChapter =
       current !== undefined && shouldRenewMultipolarChapter(current, candidate, month);

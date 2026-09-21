@@ -764,6 +764,9 @@ function RulerBiography({
         {finalAge} 岁
         {ruler.endReason ? ` · ${ruler.endReason}` : ""}
       </Typography>
+      <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
+        继承关系：{formatRulerRelation(ruler.relationType, team.identityStage)}
+      </Typography>
       {posthumousLines.length > 0 ? (
         <Box sx={{ mt: 0.5 }}>
           {posthumousLines.map((line) => (
@@ -956,6 +959,18 @@ function getRulerImportantLabels(ruler: Ruler) {
     labels.push("一统");
   }
   return labels;
+}
+
+function formatRulerRelation(
+  relation: Ruler["relationType"],
+  identityStage?: string
+) {
+  if (relation === "FOUNDER") return identityStage === "PROVISIONAL" ? "首任首领" : "开国君主";
+  if (relation === "DIRECT_CHILD") return "前君之子";
+  if (relation === "COLLATERAL_KIN") return "宗室旁支";
+  if (relation === "NEW_HOUSE") return "易姓 / 新家族继位";
+  if (relation === "LEADER_SUCCESSOR") return "首领继任";
+  return "继任关系未记录";
 }
 
 function FactionChronicle({

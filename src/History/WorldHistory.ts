@@ -1005,18 +1005,27 @@ class WorldHistoryStore {
         : metadata.rulerPoliticalTitle === "首领"
         ? "去世"
         : "薨";
+    const relationType = metadata.relationType;
+    const successionTitle =
+      relationType === "NEW_HOUSE"
+        ? `${previousRulerTitle}王统断绝，${nextRulerName}新家族继位`
+        : relationType === "LEADER_SUCCESSOR"
+        ? `${previousRulerTitle}退场，${nextRulerName}首领更替`
+        : relationType === "COLLATERAL_KIN"
+        ? `${previousRulerTitle}之后，${nextRulerName}宗室旁支继位`
+        : undefined;
     this.addEvent({
       id: `ruler-succession-${year}-${factionId}-${previousRulerName}-${nextRulerName}-${this.sequence++}`,
       year,
       category: "politics",
       type: "ruler-succession",
-      title: exiled
+      title: successionTitle ?? (exiled
         ? `流亡${previousRulerTitle}去世，${nextRulerName}继承${factionId}王室`
         : captured
         ? `${nextRulerName}继承${factionId}王室`
         : combatDeath
         ? `${previousRulerTitle}战死，${nextRulerName}${nextSuccessionVerb}`
-        : `${previousRulerTitle}${naturalDeathVerb}，${nextRulerName}${nextSuccessionVerb}`,
+        : `${previousRulerTitle}${naturalDeathVerb}，${nextRulerName}${nextSuccessionVerb}`),
       description: exiled
         ? `${nextRulerName}继承流亡中的${factionId}国王室。`
         : `${previousRulerName}在位${
