@@ -38,6 +38,7 @@ export interface WorldCycleDiagnostics {
   hegemonicSiegeMultiplier: number;
   consolidationLeaderId?: string;
   consolidationLeaderMomentum: number;
+  dynasticOrderFactionId?: string;
 }
 
 export interface WorldCycleTeamMetric {
@@ -169,6 +170,7 @@ export function getWorldCycleDiagnostics(
       state.consolidationLeaderFactionId ??
       state.consolidationLeaderCandidateFactionId,
     consolidationLeaderMomentum,
+    dynasticOrderFactionId: state.dynasticOrderFactionId,
   };
 }
 

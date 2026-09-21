@@ -61,6 +61,14 @@ interface CandidateState {
   sinceMonth: number;
 }
 
+export interface WorldEraCandidateDiagnostics {
+  type: WorldEraType;
+  name: string;
+  sinceMonth: number;
+  sustainedMonths: number;
+  requiredMonths: number;
+}
+
 type Listener = (eras: WorldEra[]) => void;
 
 export const WORLD_ERA_REQUIRED_MONTHS = 360;
@@ -127,6 +135,19 @@ class WorldEraStore {
 
   getCurrentEra() {
     return this.eras.find((era) => era.endMonth === undefined);
+  }
+
+  getCandidateDiagnostics(month = this.lastObservedMonth): WorldEraCandidateDiagnostics | undefined {
+    if (!this.candidateState) {
+      return undefined;
+    }
+    return {
+      type: this.candidateState.candidate.type,
+      name: this.candidateState.candidate.name,
+      sinceMonth: this.candidateState.sinceMonth,
+      sustainedMonths: Math.max(0, month - this.candidateState.sinceMonth),
+      requiredMonths: getEraRequiredMonths(this.candidateState.candidate.type),
+    };
   }
 
   observe(month: number, teams: Team[], totalCells: number, worldPhase: WorldPhase) {

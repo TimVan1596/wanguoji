@@ -174,6 +174,10 @@ export default class AutoSimulator {
     return this.clock.year;
   }
 
+  getWorldCycleDiagnostics() {
+    return this.events.getCycleDiagnostics();
+  }
+
   restoreFactionByGod(city: City) {
     return this.events.restoreByGod(city, this.clock.year);
   }
