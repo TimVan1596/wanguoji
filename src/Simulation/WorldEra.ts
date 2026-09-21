@@ -91,6 +91,7 @@ export const WORLD_ERA_MIN_DURATION_MONTHS_BY_TYPE: Record<WorldEraType, number>
 };
 export const MULTIPOLAR_CHAPTER_RENEWAL_MIN_MONTHS = 72 * 12;
 export const MULTIPOLAR_CHAPTER_RENEWAL_REPLACED_COUNT = 2;
+export const ERA_EXIT_GRACE_MONTHS = 36;
 
 class WorldEraStore {
   private eras: WorldEra[] = [];
@@ -100,12 +101,14 @@ class WorldEraStore {
   private batchDirty = false;
   private sequence = 0;
   private lastObservedMonth = -1;
+  private staleSinceMonth: number | undefined;
 
   reset() {
     this.eras = [];
     this.candidateState = undefined;
     this.sequence = 0;
     this.lastObservedMonth = -1;
+    this.staleSinceMonth = undefined;
     this.notify();
   }
 
@@ -150,6 +153,17 @@ class WorldEraStore {
     };
   }
 
+  getCurrentEraValidityDiagnostics(month = this.lastObservedMonth) {
+    return {
+      staleSinceMonth: this.staleSinceMonth,
+      staleMonths: this.staleSinceMonth === undefined
+        ? 0
+        : Math.max(0, month - this.staleSinceMonth),
+      graceMonths: ERA_EXIT_GRACE_MONTHS,
+      isStale: this.staleSinceMonth !== undefined,
+    };
+  }
+
   observe(month: number, teams: Team[], totalCells: number, worldPhase: WorldPhase) {
     if (month === this.lastObservedMonth) {
       return;
@@ -158,8 +172,18 @@ class WorldEraStore {
     const candidate = classifyEra(teams, totalCells, month, worldPhase, this.getCurrentEra());
     if (!candidate) {
       this.candidateState = undefined;
+      const current = this.getCurrentEra();
+      if (current) {
+        this.staleSinceMonth ??= month;
+        if (month - this.staleSinceMonth >= ERA_EXIT_GRACE_MONTHS) {
+          current.endMonth = Math.max(current.startMonth, month - 1);
+          this.staleSinceMonth = undefined;
+          this.notify();
+        }
+      }
       return;
     }
+    this.staleSinceMonth = undefined;
     const current = this.getCurrentEra();
     const renewMultipolarChapter =
       current !== undefined && shouldRenewMultipolarChapter(current, candidate, month);
@@ -227,6 +251,7 @@ class WorldEraStore {
     };
     this.eras.push(era);
     this.candidateState = undefined;
+    this.staleSinceMonth = undefined;
     WorldHistory.addWorldEraStarted(confirmationMonth, era);
     this.notify();
   }
@@ -250,18 +275,20 @@ export function classifyEra(
 ): EraCandidate | undefined {
   const active = teams.filter((team) => team.status === "ACTIVE");
   const territoryMetrics = calculateTerritoryMetrics(teams, totalCells);
-  const formal = active
-    .filter((team) => team.identityStage === "STATE")
+  const power = active
     .map((team) => toEraMetric(team, territoryMetrics, active))
     .sort((a, b) => b.territoryShare - a.territoryShare);
-  const top1 = formal[0];
-  const top2 = formal[1];
-  const top3 = formal[2];
+  const top1 = power[0];
+  const top2 = power[1];
+  const top3 = power[2];
+  const formal = power.filter((metric) => metric.team.identityStage === "STATE");
+  const formalTop1 = formal[0];
+  const formalTop2 = formal[1];
 
   if (active.length <= 1 && top1) {
     return buildCandidate("UNIFIED", `${top1.displayName}一统`, [top1], [
       "world-unified",
-    ], `${top1.displayName}成为天下唯一存续的正式政权。`);
+    ], `${top1.displayName}成为天下唯一存续的主要势力。`);
   }
 
   if (
@@ -274,16 +301,16 @@ export function classifyEra(
   }
 
   if (
-    top1 &&
-    top1.team.sovereigntyRank === "EMPEROR" &&
-    top1.territoryShare >= 60 &&
-    top1.cityShare >= 55 &&
-    hasClearLead(top1.territoryShare, top2?.territoryShare ?? 0)
+    formalTop1 &&
+    formalTop1.team.sovereigntyRank === "EMPEROR" &&
+    formalTop1.territoryShare >= 60 &&
+    formalTop1.cityShare >= 55 &&
+    hasClearLead(formalTop1.territoryShare, formalTop2?.territoryShare ?? 0)
   ) {
-    const styleName = getRegimeStyleNameAtMonth(top1.team, month);
-    return buildCandidate("DYNASTIC", styleName, [top1], [
+    const styleName = getRegimeStyleNameAtMonth(formalTop1.team, month);
+    return buildCandidate("DYNASTIC", styleName, [formalTop1], [
       "emperor-dominance",
-    ], `${styleName}长期控制当前诸国领土的${formatPercent(top1.territoryShare)}与${formatPercent(top1.cityShare)}的城市，明显领先诸国。`);
+    ], `${styleName}长期控制当前诸国领土的${formatPercent(formalTop1.territoryShare)}与${formatPercent(formalTop1.cityShare)}的城市，明显领先诸国。`);
   }
 
   if (
@@ -298,13 +325,13 @@ export function classifyEra(
   }
 
   if (
-    formal.length >= 3 &&
+    power.length >= 3 &&
     top1 &&
     top3 &&
     top3.territoryShare >= 20 &&
     top1.territoryShare / Math.max(top3.territoryShare, 1) <= 1.25
   ) {
-    return buildMultipolarCandidate(formal.slice(0, 3));
+    return buildMultipolarCandidate(power.slice(0, 3));
   }
 
   if (
@@ -325,17 +352,17 @@ export function classifyEra(
   }
 
   if (
-    formal.length >= 3 &&
+    power.length >= 3 &&
     top1 &&
     top3 &&
     top1.territoryShare < 35 &&
     top3.territoryShare >= 10
   ) {
-    return buildMultipolarCandidate(formal.slice(0, 3));
+    return buildMultipolarCandidate(power.slice(0, 3));
   }
 
-  if (month === 0 && formal.length >= 3) {
-    return buildMultipolarCandidate(formal.slice(0, 3));
+  if (month === 0 && power.length >= 3) {
+    return buildMultipolarCandidate(power.slice(0, 3));
   }
 
   return undefined;

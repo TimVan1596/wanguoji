@@ -454,7 +454,7 @@ class WorldHistoryStore {
     rulerId?: string,
     historyGroupId?: string
   ) {
-    this.addEvent({
+    return this.addEvent({
       id: `city-captured-${year}-${attackerName}-${cityName}-${this.sequence++}`,
       year,
       category: "war",
@@ -477,6 +477,7 @@ class WorldHistoryStore {
       founderFactionId,
       cityId,
       cityName,
+      rulerId,
       metadata: {
         rulerId,
         previousOwner: previousOwnerName,
@@ -497,9 +498,11 @@ class WorldHistoryStore {
     cityName: string,
     cityId?: string,
     founderCapital = false,
-    cityDefenseBefore?: number
+    cityDefenseBefore?: number,
+    rulerId?: string,
+    historyGroupId?: string
   ) {
-    this.addEvent({
+    return this.addEvent({
       id: `city-recovered-${year}-${teamName}-${cityName}-${this.sequence++}`,
       year,
       category: "war",
@@ -514,11 +517,14 @@ class WorldHistoryStore {
       founderFactionId,
       cityId,
       cityName,
+      rulerId,
       metadata: {
+        rulerId,
         previousOwner: previousOwnerName,
         founder: founderFactionId,
         cityDefenseBefore,
       },
+      historyGroupId,
       importance: "major",
     });
   }

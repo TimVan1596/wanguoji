@@ -231,7 +231,7 @@ export default class City {
         wasCapital,
         rulerId,
       });
-      WorldHistory.addCityRecovered(
+      const eventId = WorldHistory.addCityRecovered(
         year,
         newOwner.name,
         previousOwnerName,
@@ -239,8 +239,11 @@ export default class City {
         this.name,
         this.id,
         founderCapital,
-        cityDefenseBefore
+        cityDefenseBefore,
+        rulerId,
+        collapseGroupId
       );
+      DynastyRegistry.recordCityCaptured(rulerId, this.id, eventId);
     } else {
       const title = buildCityCaptureTitle({
         attackerName: newOwner.name,
@@ -258,7 +261,7 @@ export default class City {
         rulerId,
       });
       if (!wasCapital) {
-        WorldHistory.addCityCaptured(
+        const eventId = WorldHistory.addCityCaptured(
           year,
           newOwner.name,
           previousOwnerName,
@@ -272,10 +275,10 @@ export default class City {
           rulerId,
           collapseGroupId
         );
+        DynastyRegistry.recordCityCaptured(rulerId, this.id, eventId);
       }
     }
 
-    DynastyRegistry.recordCityCaptured(rulerId, this.id);
     DynastyRegistry.recordCityLost(previousOwnerName);
 
     if (wasCapital) {
