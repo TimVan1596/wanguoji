@@ -7,7 +7,6 @@ import { formatWorldDate, formatWorldDuration } from "../../../Simulation/WorldT
 import { formatWorldPhase } from "../../../Simulation/WorldPhase";
 import WorldEra, { WorldEra as WorldEraRecord } from "../../../Simulation/WorldEra";
 import { classifyEra } from "../../../Simulation/WorldEra";
-import Game from "../../../Game/Game";
 import { RootState } from "../../../store";
 
 export default function Title() {
@@ -20,7 +19,7 @@ export default function Title() {
   const currentEra = eras.find((era) => era.endMonth === undefined);
   const liveClassification = classifyEra(
     teams,
-    Game.Core?.totalCells ?? 1,
+    Math.max(1, teams.reduce((sum, team) => sum + team.blocks.children.size, 0)),
     worldMonth,
     worldPhase,
     currentEra

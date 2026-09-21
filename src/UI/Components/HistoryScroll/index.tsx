@@ -19,7 +19,6 @@ import {
 import { isLandmarkHistoryEvent } from "../../../History/HistorySignificanceRules";
 import { colorToString } from "../../../paid/theme";
 import WorldEra, { classifyEra, WorldEra as WorldEraRecord } from "../../../Simulation/WorldEra";
-import Game from "../../../Game/Game";
 import { formatWorldDate, formatWorldDuration } from "../../../Simulation/WorldTime";
 import { RootState } from "../../../store";
 
@@ -88,7 +87,7 @@ export default function HistoryScroll() {
   );
   const liveClassification = classifyEra(
     teams,
-    Game.Core?.totalCells ?? 1,
+    Math.max(1, teams.reduce((sum, team) => sum + team.blocks.children.size, 0)),
     worldMonth,
     worldPhase,
     currentEra

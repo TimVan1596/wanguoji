@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.9997-alpha
+
+- Separated live power-balance eras from formal political identity requirements.
+- Added stale-era exit grace and clearer formation-vs-current era presentation.
+- Added canonical ruler event highlights and expanded ruler assessments.
+
 ## v0.9996-alpha
 
 - Fixed linked heir birth dates so parent-child ages remain chronologically consistent.

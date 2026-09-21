@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeEach } from "vitest";
 import type Team from "../Components/Team";
 import WorldHistory from "../History/WorldHistory";
-import WorldEra, { classifyEra } from "./WorldEra";
+import WorldEra, { classifyEra, ERA_EXIT_GRACE_MONTHS } from "./WorldEra";
 
 function faction(
   name: string,
@@ -54,10 +54,7 @@ describe("world era", () => {
     const teams = [faction("秦", 34, 3), faction("楚", 33, 3), faction("魏", 33, 2)];
     WorldEra.observe(0, teams, 100, "CONTESTED");
     WorldEra.observe(360, [faction("秦", 34, 3), faction("燕", 33, 3), faction("魏", 33, 2)], 100, "CONTESTED");
-    WorldEra.observe(361, [
-      faction("秦", 20, 2, { identityStage: "PROVISIONAL" }),
-      faction("楚", 10, 1, { identityStage: "PROVISIONAL" }),
-    ], 100, "CONTESTED");
+    WorldEra.observe(361, [], 100, "CONTESTED");
     expect(WorldEra.getCandidateDiagnostics(361)).toBeUndefined();
   });
 
@@ -82,6 +79,40 @@ describe("world era", () => {
     );
     expect(era?.type).toBe("DUAL_RIVALRY");
     expect(era?.name).toBe("秦楚争霸");
+  });
+
+  it("includes strong provisional factions in power-balance eras", () => {
+    const era = classifyEra(
+      [
+        faction("陈留西义军", 32, 3, { identityStage: "PROVISIONAL" }),
+        faction("秦", 25, 3),
+        faction("云中东义军", 12, 2, { identityStage: "PROVISIONAL" }),
+      ],
+      100,
+      0,
+      "CONTESTED"
+    );
+    expect(era?.type).toBe("DUAL_RIVALRY");
+    expect(era?.dominantFactionIds).toContain("陈留西义军");
+  });
+
+  it("does not grant a provisional faction a formal political identity", () => {
+    const provisional = faction("义军", 32, 3, { identityStage: "PROVISIONAL" });
+    const era = classifyEra([provisional, faction("秦", 25, 3), faction("魏", 12, 1)], 100, 0, "CONTESTED");
+    expect(provisional.identityStage).toBe("PROVISIONAL");
+    expect(provisional.sovereigntyRank).toBe("KING");
+    expect(era?.dominantFactionIds).toContain("义军");
+  });
+
+  it("ends a stale confirmed era only after the exit grace", () => {
+    const teams = [faction("秦", 34, 3), faction("楚", 33, 3), faction("魏", 33, 2)];
+    WorldEra.observe(0, teams, 100, "CONTESTED");
+    WorldEra.observe(1, [], 100, "CONTESTED");
+    expect(WorldEra.getCurrentEra()?.name).toBe("群雄争衡");
+    WorldEra.observe(ERA_EXIT_GRACE_MONTHS - 1, [], 100, "CONTESTED");
+    expect(WorldEra.getCurrentEra()?.name).toBe("群雄争衡");
+    WorldEra.observe(ERA_EXIT_GRACE_MONTHS + 1, [], 100, "CONTESTED");
+    expect(WorldEra.getCurrentEra()).toBeUndefined();
   });
 
   it("detects hegemony before dynastic conditions are met", () => {

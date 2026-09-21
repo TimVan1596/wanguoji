@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import Game from "../../Game/Game";
 import { getFactionStability } from "../../Components/City";
-import WorldEra from "../../Simulation/WorldEra";
+import WorldEra, { classifyEra } from "../../Simulation/WorldEra";
 import { calculateTerritoryMetrics, getFactionTerritoryMetric } from "../../Simulation/TerritoryMetrics";
 import { formatWorldDate, formatWorldDuration } from "../../Simulation/WorldTime";
 import { RootState } from "../../store";
@@ -24,6 +24,7 @@ function debugEnabled() {
 export default function WorldDiagnosticsPanel() {
   const teams = useSelector((state: RootState) => state.root.teams);
   const worldMonth = useSelector((state: RootState) => state.root.worldMonth);
+  const worldPhase = useSelector((state: RootState) => state.root.worldPhase);
   const [, setTick] = useState(0);
   useEffect(() => {
     const timer = window.setInterval(() => setTick((value) => value + 1), 500);
@@ -44,9 +45,17 @@ export default function WorldDiagnosticsPanel() {
       .slice(0, 3);
     const currentEra = WorldEra.getCurrentEra();
     const candidate = WorldEra.getCandidateDiagnostics(worldMonth);
+    const validity = WorldEra.getCurrentEraValidityDiagnostics(worldMonth);
+    const liveClassification = classifyEra(
+      teams,
+      totalCells,
+      worldMonth,
+      worldPhase,
+      currentEra
+    );
     const cycle = Game.Core?.simulator?.getWorldCycleDiagnostics();
-    return { ranked, currentEra, candidate, cycle };
-  }, [teams, worldMonth]);
+    return { ranked, currentEra, candidate, validity, liveClassification, cycle };
+  }, [teams, worldMonth, worldPhase]);
 
   if (!debugEnabled()) {
     return null;
@@ -55,6 +64,8 @@ export default function WorldDiagnosticsPanel() {
   const summary = [
     `世界年月：${formatWorldDate(worldMonth)}（${worldMonth}月）`,
     `当前时代：${diagnostics.currentEra ? `${diagnostics.currentEra.type} · ${diagnostics.currentEra.name} · ${formatWorldDate(diagnostics.currentEra.startMonth)}起` : "暂无已确认时代"}`,
+    `当前格局：${diagnostics.liveClassification?.type ?? "—"} · ${diagnostics.liveClassification?.name ?? (diagnostics.validity.isStale ? "格局转换中" : "天下未定")}`,
+    `旧时代退出：${diagnostics.validity.isStale ? `已失效${formatWorldDuration(diagnostics.validity.staleMonths)} / ${formatWorldDuration(diagnostics.validity.graceMonths)}` : "当前仍有效"}`,
     `时代候选：${diagnostics.candidate ? `${diagnostics.candidate.type} · ${diagnostics.candidate.name} · ${formatWorldDate(diagnostics.candidate.sinceMonth)}起 · 已持续${formatWorldDuration(diagnostics.candidate.sustainedMonths)} / ${formatWorldDuration(diagnostics.candidate.requiredMonths)}` : "当前无新时代候选，现时代保持中"}`,
     ...diagnostics.ranked.map(({ team, metric, stability }, index) => `${index + 1}. ${team.displayName}｜${team.status}｜${team.identityStage}｜${team.sovereigntyRank}｜诸国领土${metric.controlledTerritoryShare.toFixed(1)}%｜世界绝对领土${metric.absoluteWorldShare.toFixed(1)}%｜城市${team.cities.length}｜稳定${stability}`),
     `周期：${diagnostics.cycle?.stage ?? "—"}｜分裂年龄${diagnostics.cycle?.fragmentationAge ?? 0}月｜统一年龄${diagnostics.cycle?.unifiedAge ?? 0}月｜整合修正${(diagnostics.cycle?.consolidationModifier ?? 0).toFixed(2)}`,
