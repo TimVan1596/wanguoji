@@ -5,6 +5,7 @@ import {
   createRulerChronicle,
   finishRulerChronicle,
   getRulerTerritoryDelta,
+  getRulerHistoricalEvents,
 } from "./RulerChronicle";
 import { yearsToMonths } from "../Simulation/WorldTime";
 
@@ -144,5 +145,16 @@ describe("ruler chronicle", () => {
     expect(tags).not.toContain("国势衰退");
     expect(assessment).toContain("增至21.1%");
     expect(assessment).not.toContain("降至");
+  });
+
+  it("selects direct canonical ruler events in reign order without duplicate groups", () => {
+    const events = [
+      { id: "late", year: 30, monthIndex: 30, type: "city-captured", importance: "major", title: "秦攻陷安邑", factionIds: ["秦"], rulerId: "r1", historyGroupId: "g1" },
+      { id: "duplicate", year: 30, monthIndex: 30, type: "capital-fallen", importance: "major", title: "安邑陷落", factionIds: ["秦"], rulerId: "r1", historyGroupId: "g1" },
+      { id: "early", year: 10, monthIndex: 10, type: "state-founded", importance: "major", title: "秦正式建国", factionIds: ["秦"], rulerId: "r1" },
+      { id: "other", year: 20, monthIndex: 20, type: "city-captured", importance: "major", title: "楚攻城", factionIds: ["楚"], rulerId: "r2" },
+    ] as any;
+    const selected = getRulerHistoricalEvents(events, { id: "r1", accessionYear: 0, endYear: 40 }, "秦", 40, []);
+    expect(selected.map((event) => event.id)).toEqual(["early", "late"]);
   });
 });

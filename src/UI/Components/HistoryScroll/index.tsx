@@ -92,6 +92,7 @@ export default function HistoryScroll() {
     worldPhase,
     currentEra
   );
+  const eraCandidate = WorldEra.getCandidateDiagnostics(worldMonth);
   const eraFilteredEvents = useMemo(
     () =>
       selectedEra
@@ -169,6 +170,7 @@ export default function HistoryScroll() {
           历史时代已持续 {formatWorldDuration(Math.max(0, worldMonth - currentEra.startMonth))}
           {currentEra.explanation ? ` · 确立时：${currentEra.explanation}` : ""}
           <br />当前格局：{liveClassification?.name ?? "格局转换中 / 天下未定"}
+          {eraCandidate ? ` · 候选：${eraCandidate.name}（已持续${formatWorldDuration(eraCandidate.sustainedMonths)} / ${formatWorldDuration(eraCandidate.requiredMonths)}）` : ""}
         </Typography>
       ) : null}
       {eras.length > 0 ? (
