@@ -157,4 +157,37 @@ describe("ruler chronicle", () => {
     const selected = getRulerHistoricalEvents(events, { id: "r1", accessionYear: 0, endYear: 40 }, "秦", 40, []);
     expect(selected.map((event) => event.id)).toEqual(["early", "duplicate"]);
   });
+
+  it("keeps a founding milestone when earlier wars would otherwise fill the six slots", () => {
+    const wars = Array.from({ length: 6 }, (_, index) => ({
+      id: `war-${index}`,
+      year: index + 1,
+      monthIndex: index + 1,
+      type: "city-captured",
+      importance: "major",
+      title: `攻陷${index}`,
+      factionIds: ["秦"],
+      rulerId: "r1",
+    }));
+    const selected = getRulerHistoricalEvents(
+      [...wars, {
+        id: "founding",
+        year: 20,
+        monthIndex: 20,
+        type: "state-founded",
+        importance: "major",
+        title: "秦正式建国",
+        factionIds: ["秦"],
+        rulerId: "r1",
+      }] as any,
+      { id: "r1", accessionYear: 0, endYear: 40 },
+      "秦",
+      40,
+      ["founding"]
+    );
+    expect(selected.map((event) => event.id)).toContain("founding");
+    expect(selected.map((event) => event.monthIndex)).toEqual(
+      [...selected].sort((a, b) => a.monthIndex - b.monthIndex).map((event) => event.monthIndex)
+    );
+  });
 });
