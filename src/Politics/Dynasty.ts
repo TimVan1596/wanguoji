@@ -27,6 +27,7 @@ import {
   RulerReignSnapshot,
 } from "./RulerChronicle";
 import { shouldRulerBattleDeathOccur } from "./RulerBattleRules";
+import { createTerminalRulerSnapshot } from "./RulerTerminalSnapshot";
 import { getNextRulerReignOrdinal } from "./RulerOrdinalRules";
 import {
   formatRulerTitleAtMonth,
@@ -788,8 +789,4 @@ function createRulerSnapshot(team: Team, month: number): RulerReignSnapshot {
     cityCount: team.cities.length,
     stability: getFactionStability(team) ?? 0,
   };
-}
-
-export function createTerminalRulerSnapshot(month: number): RulerReignSnapshot {
-  return { month, population: 0, territoryShare: 0, cityCount: 0, stability: 0 };
 }

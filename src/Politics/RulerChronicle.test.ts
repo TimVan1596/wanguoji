@@ -187,7 +187,7 @@ describe("ruler chronicle", () => {
     );
     expect(selected.map((event) => event.id)).toContain("founding");
     expect(selected.map((event) => event.monthIndex)).toEqual(
-      [...selected].sort((a, b) => a.monthIndex - b.monthIndex).map((event) => event.monthIndex)
+      [...selected].sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year)).map((event) => event.monthIndex)
     );
   });
 });

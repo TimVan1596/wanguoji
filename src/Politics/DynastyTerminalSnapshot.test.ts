@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createTerminalRulerSnapshot } from "./Dynasty";
+import { createTerminalRulerSnapshot } from "./RulerTerminalSnapshot";
 
 describe("terminal ruler snapshots", () => {
   it("normalizes extinct political state even when runtime references remain", () => {
