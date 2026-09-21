@@ -30,6 +30,22 @@ export function getAgeAtMonth(birthMonth: number, month: number) {
   return Math.max(0, Math.floor((month - birthMonth) / 12));
 }
 
+export function deriveHeirBirthMonth(
+  parentBirthMonth: number,
+  currentMonth: number,
+  roll: (maxExclusive: number) => number,
+  minParentAgeMonths = 18 * 12,
+  maxParentAgeMonths = 40 * 12
+) {
+  const parentAgeMonths = currentMonth - parentBirthMonth;
+  if (parentAgeMonths < minParentAgeMonths) {
+    return undefined;
+  }
+  const earliest = parentBirthMonth + minParentAgeMonths;
+  const latest = Math.min(currentMonth, parentBirthMonth + maxParentAgeMonths);
+  return earliest + roll(Math.max(1, latest - earliest + 1));
+}
+
 export function isNaturallyDeadByMonth(
   naturalDeathMonth: number | undefined,
   month: number

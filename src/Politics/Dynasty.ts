@@ -4,6 +4,8 @@ import Game from "../Game/Game";
 import { getPopulationCapacity } from "../Simulation/PopulationSystem";
 import FactionEffects from "../Simulation/FactionEffects";
 import {
+  HEIR_PARENT_MAX_AGE_AT_BIRTH,
+  HEIR_PARENT_MIN_AGE_AT_BIRTH,
   RULER_MAX_AGE_AT_ACCESSION,
   RULER_MIN_AGE_AT_ACCESSION,
 } from "../config/simulation";
@@ -35,6 +37,7 @@ import { getSuccessionShockMultiplier } from "../Simulation/SovereigntyModifiers
 import { finalizeRulerPosthumousNames } from "./PosthumousRules";
 import {
   createNaturalDeathMonth,
+  deriveHeirBirthMonth,
   isNaturallyDeadByMonth,
 } from "./RulerLifespanRules";
 
@@ -554,11 +557,24 @@ class DynastyRegistryStore {
     predecessorId?: string
   ): Ruler {
     this.sequence += 1;
-    const accessionAge = Phaser.Math.Between(
-      RULER_MIN_AGE_AT_ACCESSION,
-      RULER_MAX_AGE_AT_ACCESSION
-    );
-    const bornYear = politicalStartYear - yearsToMonths(accessionAge);
+    const parent = parentId
+      ? this.dynasties
+          .get(team.name)
+          ?.rulers.find((ruler) => ruler.id === parentId)
+      : undefined;
+    const bornYear = parent
+      ? deriveHeirBirthMonth(
+          parent.bornYear,
+          politicalStartYear,
+          (max) => Phaser.Math.Between(0, max - 1),
+          yearsToMonths(HEIR_PARENT_MIN_AGE_AT_BIRTH),
+          yearsToMonths(HEIR_PARENT_MAX_AGE_AT_BIRTH)
+        )
+      : undefined;
+    if (bornYear === undefined) {
+      this.sequence -= 1;
+      throw new Error("Cannot create an heir before the parent reaches adulthood");
+    }
     const naturalDeathYear = createNaturalDeathMonth(bornYear, (max) =>
       Phaser.Math.Between(0, max - 1)
     );
@@ -598,6 +614,13 @@ class DynastyRegistryStore {
       return;
     }
     const current = this.getCurrentRuler(team.name);
+    if (
+      !current ||
+      Math.floor(monthsToYears(Math.max(0, year - current.bornYear))) <
+        HEIR_PARENT_MIN_AGE_AT_BIRTH
+    ) {
+      return;
+    }
     const heir = this.createHeir(
       team,
       dynasty.houseName,
