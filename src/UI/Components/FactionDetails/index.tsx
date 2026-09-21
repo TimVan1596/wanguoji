@@ -47,6 +47,7 @@ import {
 import {
   buildRulerAssessment,
   buildRulerTags,
+  getRulerHistoricalEvents,
   getRulerTerritoryDelta,
 } from "../../../Politics/RulerChronicle";
 import {
@@ -433,6 +434,7 @@ function FactionProfile({
           worldMonth={worldMonth}
           factionStatus={team.status}
           team={team}
+          events={events}
           selectedRulerId={rulerDetailId}
           onSelectedRulerIdChange={onRulerDetailIdChange}
         />
@@ -603,6 +605,7 @@ function DynastyTree({
   worldMonth,
   factionStatus,
   team,
+  events,
   selectedRulerId,
   onSelectedRulerIdChange,
 }: {
@@ -611,6 +614,7 @@ function DynastyTree({
   worldMonth: number;
   factionStatus: RootState["root"]["teams"][number]["status"];
   team: RootState["root"]["teams"][number];
+  events: WorldEvent[];
   selectedRulerId?: string;
   onSelectedRulerIdChange: (id: string | undefined) => void;
 }) {
@@ -680,7 +684,7 @@ function DynastyTree({
               {expanded ? (
                 <Box sx={{ mt: 0.65 }}>
                   {isFormalRuler(ruler) ? (
-                    <RulerBiography ruler={ruler} worldMonth={worldMonth} team={team} />
+                    <RulerBiography ruler={ruler} worldMonth={worldMonth} team={team} events={events} />
                   ) : (
                     <HeirArchive
                       ruler={ruler}
@@ -702,10 +706,12 @@ function RulerBiography({
   ruler,
   worldMonth,
   team,
+  events,
 }: {
   ruler: FormalRuler;
   worldMonth: number;
   team: RootState["root"]["teams"][number];
+  events: WorldEvent[];
 }) {
   const reignEnd = ruler.endYear ?? worldMonth;
   const reignMonths = Math.max(0, reignEnd - ruler.accessionYear);
@@ -715,7 +721,15 @@ function RulerBiography({
   const assessment = buildRulerAssessment(
     formatRulerName(ruler),
     ruler.chronicle,
-    reignMonths
+    reignMonths,
+    accessionAge
+  );
+  const historicalEvents = getRulerHistoricalEvents(
+    events,
+    ruler,
+    team.name,
+    worldMonth,
+    ruler.chronicle.notableEventIds
   );
   const start = ruler.chronicle.accessionSnapshot;
   const end = ruler.chronicle.endSnapshot ?? start;
@@ -796,7 +810,7 @@ function RulerBiography({
         稳定：{start.stability} → {end.stability}
       </Typography>
       <Typography fontWeight="bold" fontSize="0.86rem" sx={{ mt: 0.75 }}>
-        大事记
+        在位统计
       </Typography>
       <Typography fontSize="0.82rem">
         亲征夺城：{ruler.chronicle.citiesCapturedPersonally} · 失城：
@@ -804,6 +818,18 @@ function RulerBiography({
         {ruler.chronicle.rebellionsDuringReign} · 复国：
         {ruler.chronicle.restorationsDuringReign}
       </Typography>
+      <Typography fontWeight="bold" fontSize="0.86rem" sx={{ mt: 0.75 }}>
+        大事记
+      </Typography>
+      {historicalEvents.length > 0 ? historicalEvents.map((event) => (
+        <Typography key={event.id} fontSize="0.82rem">
+          {formatWorldDate(event.monthIndex ?? event.year)} ◆ {event.title}
+        </Typography>
+      )) : (
+        <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
+          暂无已关联的重大历史事件。
+        </Typography>
+      )}
       <Typography fontWeight="bold" fontSize="0.86rem" sx={{ mt: 0.75 }}>
         史评
       </Typography>

@@ -123,7 +123,7 @@ class DynastyRegistryStore {
     };
     this.dynasties.set(team.name, dynasty);
     this.ensureActiveHeir(team, dynasty, year);
-    WorldHistory.addRulerAcceded(year, team.name, this.getRulerTitle(team, ruler, year));
+    WorldHistory.addRulerAcceded(year, team.name, this.getRulerTitle(team, ruler, year), ruler.id);
     this.ensureRulerUnit(team);
     return dynasty;
   }
@@ -397,13 +397,17 @@ class DynastyRegistryStore {
     if (!dynasty || !ruler || ruler.status === "dead") {
       return false;
     }
-    WorldHistory.addRulerCaptured(
+    const eventId = WorldHistory.addRulerCaptured(
       year,
       team.name,
       this.getRulerTitle(team, ruler, year),
       conqueror.name,
-      this.getRulerTitleDisplay(conqueror.name, year)
+      this.getRulerTitleDisplay(conqueror.name, year),
+      ruler.id
     );
+    if (ruler.chronicle) {
+      ruler.chronicle.notableEventIds.push(eventId);
+    }
     this.succeedRuler(team, dynasty, ruler, year, "captured");
     return this.hasClaimant(team.name);
   }

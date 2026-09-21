@@ -18,7 +18,8 @@ import {
 } from "../../../History/HistoryRenderRules";
 import { isLandmarkHistoryEvent } from "../../../History/HistorySignificanceRules";
 import { colorToString } from "../../../paid/theme";
-import WorldEra, { WorldEra as WorldEraRecord } from "../../../Simulation/WorldEra";
+import WorldEra, { classifyEra, WorldEra as WorldEraRecord } from "../../../Simulation/WorldEra";
+import Game from "../../../Game/Game";
 import { formatWorldDate, formatWorldDuration } from "../../../Simulation/WorldTime";
 import { RootState } from "../../../store";
 
@@ -40,6 +41,7 @@ export default function HistoryScroll() {
   const [eraTimelineOpen, setEraTimelineOpen] = useState(false);
   const teams = useSelector((state: RootState) => state.root.teams);
   const worldMonth = useSelector((state: RootState) => state.root.worldMonth);
+  const worldPhase = useSelector((state: RootState) => state.root.worldPhase);
   const selectedFactionName = useSelector(
     (state: RootState) => state.root.selectedFactionName
   );
@@ -83,6 +85,13 @@ export default function HistoryScroll() {
   const currentEra = useMemo(
     () => eras.find((era) => era.endMonth === undefined),
     [eras]
+  );
+  const liveClassification = classifyEra(
+    teams,
+    Game.Core?.totalCells ?? 1,
+    worldMonth,
+    worldPhase,
+    currentEra
   );
   const eraFilteredEvents = useMemo(
     () =>
@@ -158,8 +167,9 @@ export default function HistoryScroll() {
       />
       {currentEra ? (
         <Typography fontSize="0.74rem" color="var(--gg-text-muted)" sx={{ mb: 0.35 }}>
-          当前时代已持续 {formatWorldDuration(Math.max(0, worldMonth - currentEra.startMonth))}
-          {currentEra.explanation ? ` · ${currentEra.explanation}` : ""}
+          历史时代已持续 {formatWorldDuration(Math.max(0, worldMonth - currentEra.startMonth))}
+          {currentEra.explanation ? ` · 确立时：${currentEra.explanation}` : ""}
+          <br />当前格局：{liveClassification?.name ?? "格局转换中 / 天下未定"}
         </Typography>
       ) : null}
       {eras.length > 0 ? (

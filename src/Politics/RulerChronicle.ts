@@ -6,6 +6,8 @@ import {
   RULER_TAG_STEWARD_MIN_REIGN_MONTHS,
 } from "../config/simulation";
 import { formatWorldDuration } from "../Simulation/WorldTime";
+import type { WorldEvent } from "../History/WorldHistory";
+import { getFactionEventRelation } from "../History/FactionEventRelation";
 import {
   evaluateReignOutcome,
   formatTerritoryTransition,
@@ -140,7 +142,8 @@ export function buildRulerTags(
 export function buildRulerAssessment(
   rulerName: string,
   chronicle: RulerChronicle,
-  reignMonths: number
+  reignMonths: number,
+  accessionAge?: number
 ) {
   const tags = buildRulerTags(chronicle, reignMonths);
   const end = chronicle.endSnapshot ?? chronicle.accessionSnapshot;
@@ -149,6 +152,10 @@ export function buildRulerAssessment(
   const territoryDelta = outcome.territoryDelta;
   const cityDelta = outcome.cityDelta;
   const parts: string[] = [];
+
+  if (accessionAge !== undefined) {
+    parts.push(accessionAge < 16 ? `${accessionAge}岁幼年即位。` : `${accessionAge}岁即位。`);
+  }
 
   if (tags.includes("一统")) {
     parts.push(`${rulerName}在位期间完成天下统一。`);
@@ -188,5 +195,57 @@ export function buildRulerAssessment(
   if (parts.length === 1 && Math.abs(territoryDelta) >= 0.01) {
     parts.push(`领土变化${territoryDelta > 0 ? "+" : ""}${(territoryDelta * 100).toFixed(1)}%。`);
   }
-  return parts.slice(0, 2);
+  return parts.slice(0, 4);
+}
+
+const RULER_EVENT_TYPES = new Set<WorldEvent["type"]>([
+  "city-captured",
+  "city-recovered",
+  "capital-fallen",
+  "faction-restored",
+  "state-founded",
+  "emperor-proclaimed",
+  "world-unification",
+  "empire-split",
+  "ruler-captured",
+  "ruler-succession",
+  "faction-extinct",
+  "faction-exiled",
+]);
+
+export function getRulerHistoricalEvents(
+  events: WorldEvent[],
+  ruler: { id: string; accessionYear: number; endYear?: number },
+  factionId: string,
+  worldMonth: number,
+  notableEventIds: string[]
+) {
+  const endMonth = ruler.endYear ?? worldMonth;
+  const notable = new Set(notableEventIds);
+  const candidates = events.filter((event) => {
+    const month = event.monthIndex ?? event.year;
+    if (month < ruler.accessionYear || month > endMonth || !RULER_EVENT_TYPES.has(event.type)) {
+      return false;
+    }
+    const direct =
+      event.rulerId === ruler.id ||
+      event.metadata?.rulerId === ruler.id ||
+      event.metadata?.previousRulerId === ruler.id ||
+      event.metadata?.nextRulerId === ruler.id ||
+      notable.has(event.id);
+    if (direct) {
+      return true;
+    }
+    return event.importance === "major" && getFactionEventRelation(event, factionId) !== "NONE";
+  });
+  const seenGroups = new Set<string>();
+  return candidates
+    .sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year))
+    .filter((event) => {
+      if (!event.historyGroupId) return true;
+      if (seenGroups.has(event.historyGroupId)) return false;
+      seenGroups.add(event.historyGroupId);
+      return true;
+    })
+    .slice(0, 6);
 }

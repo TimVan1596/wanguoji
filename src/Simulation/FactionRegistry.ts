@@ -69,7 +69,7 @@ class FactionRegistryStore {
         "Restoration",
         year
       );
-      WorldHistory.addFactionRestored(
+      const eventId = WorldHistory.addFactionRestored(
         year,
         team.name,
         city.name,
@@ -77,7 +77,7 @@ class FactionRegistryStore {
         city.id,
         historyGroupId
       );
-      DynastyRegistry.recordRestoration(team.name);
+      DynastyRegistry.recordRestoration(team.name, eventId);
       return true;
     }
     return false;

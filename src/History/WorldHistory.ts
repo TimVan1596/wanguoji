@@ -756,7 +756,7 @@ class WorldHistoryStore {
     historyGroupId?: string
   ) {
     this.extinctFactions.delete(teamName);
-    this.addEvent({
+    return this.addEvent({
       id: `faction-restored-${year}-${teamName}-${cityName}-${this.sequence++}`,
       year,
       category: "politics",
@@ -965,8 +965,8 @@ class WorldHistoryStore {
     });
   }
 
-  addRulerAcceded(year: number, factionId: string, rulerTitle: string) {
-    this.addEvent({
+  addRulerAcceded(year: number, factionId: string, rulerTitle: string, rulerId?: string) {
+    return this.addEvent({
       id: `ruler-acceded-${year}-${factionId}-${rulerTitle}-${this.sequence++}`,
       year,
       category: "politics",
@@ -974,6 +974,7 @@ class WorldHistoryStore {
       title: `${rulerTitle}继位`,
       factionIds: [factionId],
       actorFactionId: factionId,
+      rulerId,
       importance: "normal",
     });
   }
@@ -1040,7 +1041,8 @@ class WorldHistoryStore {
     factionId: string,
     rulerTitle: string,
     captorFactionId: string,
-    captorRulerTitle?: string
+    captorRulerTitle?: string,
+    rulerId?: string
   ) {
     const capturedRulerTitle = isFullRulerTitle(rulerTitle)
       ? rulerTitle
@@ -1048,7 +1050,7 @@ class WorldHistoryStore {
     const executor = captorRulerTitle
       ? `${captorRulerTitle}下令处死`
       : `${captorFactionId}处死`;
-    this.addEvent({
+    return this.addEvent({
       id: `ruler-captured-${year}-${factionId}-${rulerTitle}-${this.sequence++}`,
       year,
       category: "politics",
@@ -1058,6 +1060,7 @@ class WorldHistoryStore {
       factionIds: [factionId, captorFactionId],
       actorFactionId: captorFactionId,
       targetFactionId: factionId,
+      rulerId,
       metadata: {
         rulerName: rulerTitle,
         capturedRulerTitle,
