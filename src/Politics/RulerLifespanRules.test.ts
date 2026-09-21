@@ -29,8 +29,8 @@ describe("ruler lifespan rules", () => {
   it("derives an heir birth month from the parent timeline", () => {
     const birthMonth = deriveHeirBirthMonth(0, 33 * 12, () => 0);
     expect(birthMonth).toBe(18 * 12);
-    expect(birthMonth).toBeGreaterThan(0);
-    expect(33 * 12 - birthMonth).toBe(15 * 12);
+    expect(birthMonth ?? 0).toBeGreaterThan(0);
+    expect(33 * 12 - (birthMonth ?? 0)).toBe(15 * 12);
   });
 
   it("allows a minor heir and refuses a child before adulthood", () => {

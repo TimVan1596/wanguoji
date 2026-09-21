@@ -296,7 +296,12 @@ class DynastyRegistryStore {
     }
     this.archiveNaturallyDeadHeirs(dynasty, year);
     let successor = this.consumeHeir(dynasty, year);
-    if (!successor && canCreateFallbackSuccessor(team.status)) {
+    if (
+      !successor &&
+      canCreateFallbackSuccessor(team.status) &&
+      Math.floor(monthsToYears(Math.max(0, year - predecessor.bornYear))) >=
+        HEIR_PARENT_MIN_AGE_AT_BIRTH
+    ) {
       successor = this.createHeir(
         team,
         dynasty.houseName,
