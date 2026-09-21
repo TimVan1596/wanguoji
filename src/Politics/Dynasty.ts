@@ -6,6 +6,7 @@ import FactionEffects from "../Simulation/FactionEffects";
 import {
   HEIR_PARENT_MAX_AGE_AT_BIRTH,
   HEIR_PARENT_MIN_AGE_AT_BIRTH,
+  RULER_COMBAT_MIN_AGE,
   RULER_MAX_AGE_AT_ACCESSION,
   RULER_MIN_AGE_AT_ACCESSION,
 } from "../config/simulation";
@@ -17,7 +18,7 @@ import {
 import { shouldDynastyContinue } from "../Simulation/FactionLifecycle";
 import { monthsToYears, yearsToMonths } from "../Simulation/WorldTime";
 import WorldRemnants from "../Simulation/WorldRemnants";
-import { canCreateFallbackSuccessor, shouldCreateActiveHeir } from "./ExileRules";
+import { shouldCreateActiveHeir } from "./ExileRules";
 import {
   createRulerChronicle,
   finishRulerChronicle,
@@ -42,6 +43,12 @@ import {
 } from "./RulerLifespanRules";
 
 export type RulerStatus = "ruling" | "exiled" | "heir" | "dead";
+export type RulerRelationType =
+  | "FOUNDER"
+  | "DIRECT_CHILD"
+  | "COLLATERAL_KIN"
+  | "NEW_HOUSE"
+  | "LEADER_SUCCESSOR";
 
 export interface Ruler {
   id: string;
@@ -56,6 +63,7 @@ export interface Ruler {
   politicalEndYear?: number;
   parentId?: string;
   predecessorId?: string;
+  relationType?: RulerRelationType;
   reignOrdinal?: number;
   endReason?: string;
   status: RulerStatus;
@@ -114,6 +122,7 @@ class DynastyRegistryStore {
     const houseName = team.houseName ?? `${team.name}氏`;
     const ruler = this.createFormalRuler(team, houseName, year);
     ruler.reignOrdinal = 1;
+    ruler.relationType = "FOUNDER";
     const dynasty: Dynasty = {
       factionId: team.name,
       houseName,
@@ -296,18 +305,14 @@ class DynastyRegistryStore {
     }
     this.archiveNaturallyDeadHeirs(dynasty, year);
     let successor = this.consumeHeir(dynasty, year);
-    if (
-      !successor &&
-      canCreateFallbackSuccessor(team.status) &&
-      Math.floor(monthsToYears(Math.max(0, year - predecessor.bornYear))) >=
-        HEIR_PARENT_MIN_AGE_AT_BIRTH
-    ) {
+    if (!successor && team.status === "ACTIVE" && team.cities.length > 0) {
       successor = this.createHeir(
         team,
         dynasty.houseName,
         year,
+        undefined,
         predecessor.id,
-        predecessor.id
+        team.identityStage === "PROVISIONAL" ? "LEADER_SUCCESSOR" : "NEW_HOUSE"
       );
       dynasty.rulers.push(successor);
     }
@@ -318,7 +323,10 @@ class DynastyRegistryStore {
         team.name,
         this.getRulerPersonalName(predecessor)
       );
-      if ((WorldRemnants.get(team.name)?.population ?? 0) <= 0) {
+      if (
+        team.status !== "ACTIVE" &&
+        (WorldRemnants.get(team.name)?.population ?? 0) <= 0
+      ) {
         team.markExtinct(year);
         this.markExtinct(team, year);
         WorldHistory.addFactionExtinct(
@@ -421,11 +429,15 @@ class DynastyRegistryStore {
     if (!ruler || ruler.status === "dead") {
       return;
     }
+    const month = Game.Core?.simulator?.year ?? ruler.accessionYear ?? 0;
+    if (Math.floor(monthsToYears(Math.max(0, month - ruler.bornYear))) < RULER_COMBAT_MIN_AGE) {
+      team.removeRulerUnit(true);
+      return;
+    }
     if (team.rulerUser?.rulerId === ruler.id && team.users.has(team.rulerUser)) {
       return;
     }
     team.removeRulerUnit(true);
-    const month = Game.Core?.simulator?.year ?? ruler.accessionYear ?? 0;
     const name = this.getRulerTitle(team, ruler, month);
     team.makeUser(
       getRulerUserId(ruler.id),
@@ -563,7 +575,8 @@ class DynastyRegistryStore {
     houseName: string,
     politicalStartYear: number,
     parentId?: string,
-    predecessorId?: string
+    predecessorId?: string,
+    relationType: RulerRelationType = "DIRECT_CHILD"
   ): Ruler {
     this.sequence += 1;
     const parent = parentId
@@ -579,11 +592,9 @@ class DynastyRegistryStore {
           yearsToMonths(HEIR_PARENT_MIN_AGE_AT_BIRTH),
           yearsToMonths(HEIR_PARENT_MAX_AGE_AT_BIRTH)
         )
-      : undefined;
-    if (bornYear === undefined) {
-      this.sequence -= 1;
-      throw new Error("Cannot create an heir before the parent reaches adulthood");
-    }
+      : politicalStartYear - yearsToMonths(
+          Phaser.Math.Between(RULER_MIN_AGE_AT_ACCESSION, RULER_MAX_AGE_AT_ACCESSION)
+        );
     const naturalDeathYear = createNaturalDeathMonth(bornYear, (max) =>
       Phaser.Math.Between(0, max - 1)
     );
@@ -604,6 +615,7 @@ class DynastyRegistryStore {
       politicalStartYear,
       parentId,
       predecessorId,
+      relationType,
       status: "heir",
     };
   }

@@ -92,6 +92,7 @@ export const RULER_MIN_REIGN_YEARS = 20;
 export const RULER_MAX_REIGN_YEARS = 45;
 export const RULER_MIN_AGE_AT_ACCESSION = 18;
 export const RULER_MAX_AGE_AT_ACCESSION = 42;
+export const RULER_COMBAT_MIN_AGE = 16;
 // Age of a linked parent when an heir is born; distinct from accession age.
 export const HEIR_PARENT_MIN_AGE_AT_BIRTH = 18;
 export const HEIR_PARENT_MAX_AGE_AT_BIRTH = 40;
