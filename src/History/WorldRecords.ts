@@ -10,21 +10,26 @@ export interface WorldRecord {
   value: string;
 }
 
+type RecordFaction = Pick<Team, "name" | "displayName" | "nameHistory" | "firstFoundedYear"> & {
+  getCumulativeActiveYears: (worldMonth: number) => number;
+};
+
 export function deriveWorldRecords(
   dynasties: Dynasty[],
-  teams: Pick<Team, "name" | "displayName" | "nameHistory" | "firstFoundedYear" | "cumulativeActiveYears">[],
+  teams: RecordFaction[],
   events: WorldEvent[],
   eras: WorldEra[],
   worldMonth = 0
 ): WorldRecord[] {
   const factions = new Map(teams.map((team) => [team.name, team]));
   const rulers = dynasties.flatMap((dynasty) => dynasty.rulers
-    .filter((ruler) => ruler.endYear !== undefined)
+    .filter((ruler) => ruler.accessionYear !== undefined && ruler.reignOrdinal !== undefined && ruler.chronicle !== undefined)
     .map((ruler) => ({ dynasty, ruler, factionId: dynasty.factionId })));
-  const longest = maxBy(rulers, (entry) => (entry.ruler.endYear ?? 0) - (entry.ruler.accessionYear ?? 0));
-  const youngest = minBy(rulers, (entry) => (entry.ruler.accessionYear ?? 0) - entry.ruler.bornYear);
-  const captures = maxBy(rulers, (entry) => entry.ruler.chronicle?.citiesCapturedPersonally ?? 0);
-  const longestFaction = maxBy(teams, (team) => team.cumulativeActiveYears);
+  const valid = rulers.filter((entry) => (entry.ruler.accessionYear ?? 0) >= entry.ruler.bornYear);
+  const longest = maxBy(valid, (entry) => (entry.ruler.endYear ?? worldMonth) - entry.ruler.accessionYear!);
+  const youngest = minBy(valid, (entry) => entry.ruler.accessionYear! - entry.ruler.bornYear);
+  const captures = maxBy(valid, (entry) => entry.ruler.chronicle?.citiesCapturedPersonally ?? 0);
+  const longestFaction = maxBy(teams, (team) => team.getCumulativeActiveYears(worldMonth));
   const emperor = events.find((event) => event.type === "emperor-proclaimed");
   const unification = events.find((event) => event.type === "world-unification");
   const longestEra = maxBy(eras, (era) => (era.endMonth ?? worldMonth) - era.startMonth);
@@ -37,10 +42,10 @@ export function deriveWorldRecords(
     return `${name} · ${rulerName(entry.ruler)}`;
   };
   return [
-    longest && { label: "最长在位", value: `${rulerLabel(longest)} · ${duration((longest.ruler.endYear ?? 0) - (longest.ruler.accessionYear ?? 0))}` },
-    youngest && { label: "最年幼即位", value: `${rulerLabel(youngest)} · ${age((youngest.ruler.accessionYear ?? 0) - youngest.ruler.bornYear)}` },
+    longest && { label: "最长在位", value: `${rulerLabel(longest)} · ${duration((longest.ruler.endYear ?? worldMonth) - longest.ruler.accessionYear!)}` },
+    youngest && { label: "最年幼即位", value: `${rulerLabel(youngest)} · ${age(youngest.ruler.accessionYear! - youngest.ruler.bornYear)}` },
     captures && (captures.ruler.chronicle?.citiesCapturedPersonally ?? 0) > 0 && { label: "亲征夺城最多", value: `${rulerLabel(captures)} · ${captures.ruler.chronicle?.citiesCapturedPersonally}座` },
-    longestFaction && { label: "最长国祚", value: `${longestFaction.displayName ?? longestFaction.name} · ${longestFaction.cumulativeActiveYears}年` },
+    longestFaction && { label: "最长国祚", value: `${longestFaction.displayName ?? longestFaction.name} · ${duration(longestFaction.getCumulativeActiveYears(worldMonth))}` },
     emperor && { label: "最早称帝", value: `${formatWorldDate(emperor.monthIndex ?? emperor.year)} · ${emperor.title}` },
     unification && { label: "首次统一天下", value: `${formatWorldDate(unification.monthIndex ?? unification.year)} · ${unification.title}` },
     longestEra && { label: "最长时代", value: `${longestEra.name} · ${duration((longestEra.endMonth ?? worldMonth) - longestEra.startMonth)}` },

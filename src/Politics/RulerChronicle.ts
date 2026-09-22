@@ -23,6 +23,7 @@ export interface RulerReignSnapshot {
 
 export interface RulerChronicle {
   accessionSnapshot: RulerReignSnapshot;
+  latestSnapshot?: RulerReignSnapshot;
   endSnapshot?: RulerReignSnapshot;
   notableEventIds: string[];
   citiesCapturedPersonally: number;
@@ -42,6 +43,7 @@ export interface RulerChronicle {
 export function createRulerChronicle(snapshot: RulerReignSnapshot): RulerChronicle {
   return {
     accessionSnapshot: snapshot,
+    latestSnapshot: snapshot,
     notableEventIds: [],
     citiesCapturedPersonally: 0,
     citiesLostDuringReign: 0,
@@ -57,6 +59,7 @@ export function observeRulerPeak(
   chronicle: RulerChronicle,
   snapshot: RulerReignSnapshot
 ) {
+  chronicle.latestSnapshot = snapshot;
   chronicle.peakPopulation = Math.max(chronicle.peakPopulation, snapshot.population);
   chronicle.peakTerritoryShare = Math.max(
     chronicle.peakTerritoryShare,
@@ -258,7 +261,7 @@ export function getRulerHistoricalEvents(
     if (direct) {
       return true;
     }
-    return event.importance === "major" && getFactionEventRelation(event, factionId) !== "NONE";
+    return event.importance === "major" && isRulerBiographyRelevantEvent(event, factionId);
   });
   const score = (event: WorldEvent) => {
     const direct =
@@ -280,4 +283,13 @@ export function getRulerHistoricalEvents(
     .sort((a, b) => score(b) - score(a) || (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year) || a.id.localeCompare(b.id))
     .slice(0, 6)
     .sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year) || a.id.localeCompare(b.id));
+}
+
+export function isRulerBiographyRelevantEvent(event: WorldEvent, factionId: string) {
+  const relation = getFactionEventRelation(event, factionId);
+  if (relation === "NONE") return false;
+  if (event.type === "city-captured" || event.type === "city-recovered" || event.type === "capital-fallen") {
+    return relation === "ACTOR" || relation === "TARGET" || relation === "CONQUEROR" || relation === "CONQUERED";
+  }
+  return true;
 }

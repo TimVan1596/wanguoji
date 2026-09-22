@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99913-alpha
+
+- Bounded ruler chronicles to political faction participation after exile.
+- Added current ruler snapshots and formal-ruler filtering to world records.
+- Corrected active-lifetime units and relation-aware succession context.
+
 ## v0.99912-alpha
 
 - Reused grouped collapse narratives in ruler chronicles with faction context.

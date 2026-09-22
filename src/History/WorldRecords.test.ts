@@ -4,7 +4,7 @@ import { deriveWorldRecords } from "./WorldRecords";
 describe("world records", () => {
   it("derives objective records from canonical events and eras", () => {
     const records = deriveWorldRecords([], [
-      { name: "秦", displayName: "秦", firstFoundedYear: 0, cumulativeActiveYears: 80 },
+      { name: "秦", displayName: "秦", firstFoundedYear: 0, cumulativeActiveYears: 80, getCumulativeActiveYears: () => 80 },
     ] as any, [
       { id: "e1", year: 12, type: "emperor-proclaimed", title: "秦称帝" },
       { id: "e2", year: 30, type: "world-unification", title: "秦统一天下" },

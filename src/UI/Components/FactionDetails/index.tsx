@@ -739,7 +739,7 @@ function RulerBiography({
     ruler.chronicle.notableEventIds
   );
   const start = ruler.chronicle.accessionSnapshot;
-  const end = ruler.chronicle.endSnapshot ?? start;
+  const end = ruler.chronicle.endSnapshot ?? ruler.chronicle.latestSnapshot ?? start;
   const territoryDelta = getRulerTerritoryDelta(ruler.chronicle);
   const posthumousLines = getPosthumousLabelLines(ruler, team, ruler.endYear ?? worldMonth);
   return (
