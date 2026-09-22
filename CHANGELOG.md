@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99912-alpha
+
+- Reused grouped collapse narratives in ruler chronicles with faction context.
+- Corrected ruler and world-record faction naming and ongoing-era duration.
+- Added factual heir context without inventing birth-order labels.
+
 ## v0.99911-alpha
 
 - Added faction-context wording for ruler chronicle conquest and collapse events.

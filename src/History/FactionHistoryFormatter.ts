@@ -61,6 +61,18 @@ export function formatFactionHistoryEvent(
       ? `${selectedName}王${rulerName}称帝，${styleName}建立。`
       : `${styleName}建立帝号。`;
   }
+  if (event.metadata?.groupedEventCount) {
+    return formatCollapse(event, relation, factionId, factionById);
+  }
+  if (event.type === "ruler-captured") {
+    const captured = stringMeta(event, "capturedRulerTitle") || stringMeta(event, "rulerName") || "君主";
+    const captor = name(event.actorFactionId) || stringMeta(event, "captorFactionId");
+    return relation === "CONQUEROR"
+      ? `${selectedName}俘获${captured}并处死。`
+      : captor
+      ? `${captured}被${captor}俘获并处死。`
+      : `${captured}被俘并处死。`;
+  }
   if (event.type === "faction-dissolved") {
     return relation === "CONQUEROR"
       ? `${selectedName}平定${formatProvisionalFactionLabel(name(event.targetFactionId))}。`

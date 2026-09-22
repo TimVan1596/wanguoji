@@ -239,6 +239,10 @@ export function getRulerHistoricalEvents(
 ) {
   const endMonth = ruler.endYear ?? worldMonth;
   const notable = new Set(notableEventIds);
+  const sourceIds = (event: WorldEvent) =>
+    typeof event.metadata?.sourceEventIds === "string"
+      ? event.metadata.sourceEventIds.split(",")
+      : [];
   const candidates = events.filter((event) => {
     const month = event.monthIndex ?? event.year;
     if (month < ruler.accessionYear || month > endMonth || !RULER_EVENT_TYPES.has(event.type)) {
@@ -249,7 +253,8 @@ export function getRulerHistoricalEvents(
       event.metadata?.rulerId === ruler.id ||
       event.metadata?.previousRulerId === ruler.id ||
       event.metadata?.nextRulerId === ruler.id ||
-      notable.has(event.id);
+      notable.has(event.id) ||
+      sourceIds(event).some((id) => notable.has(id));
     if (direct) {
       return true;
     }

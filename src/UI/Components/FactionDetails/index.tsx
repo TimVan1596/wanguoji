@@ -435,7 +435,7 @@ function FactionProfile({
           worldMonth={worldMonth}
           factionStatus={team.status}
           team={team}
-          events={events}
+          events={groupedEvents}
           factionById={factionById}
           selectedRulerId={rulerDetailId}
           onSelectedRulerIdChange={onRulerDetailIdChange}
@@ -692,6 +692,7 @@ function DynastyTree({
                   ) : (
                     <HeirArchive
                       ruler={ruler}
+                      rulers={rulers}
                       worldMonth={worldMonth}
                       factionStatus={factionStatus}
                     />
@@ -867,16 +868,21 @@ function isFormalRuler(ruler: Ruler): ruler is FormalRuler {
 
 function HeirArchive({
   ruler,
+  rulers,
   worldMonth,
   factionStatus,
 }: {
   ruler: Ruler;
+  rulers: Ruler[];
   worldMonth: number;
   factionStatus: RootState["root"]["teams"][number]["status"];
 }) {
   const start = ruler.politicalStartYear;
   const end = ruler.politicalEndYear;
   const ageEnd = end ?? worldMonth;
+  const parent = ruler.parentId ? rulers.find((candidate) => candidate.id === ruler.parentId) : undefined;
+  const parentEnd = parent?.endYear ?? worldMonth;
+  const predeceasedParent = end !== undefined && parent && end < parentEnd;
   return (
     <Box
       sx={{
@@ -896,6 +902,18 @@ function HeirArchive({
       <Typography fontSize="0.85rem">
         年龄：{Math.floor(monthsToYears(ageEnd - ruler.bornYear))} 岁
       </Typography>
+      <Typography fontSize="0.82rem">
+        父：{parent ? formatRulerName(parent) : "未记录"}
+      </Typography>
+      <Typography fontSize="0.82rem">
+        继承关系：{formatRulerRelation(ruler.relationType, factionStatus === "EXILED" ? "PROVISIONAL" : "STATE")}
+      </Typography>
+      <Typography fontSize="0.82rem">
+        立为继承人：{start !== undefined ? formatWorldDate(start) : "未记录"} · 作为继承人：{formatWorldDuration(Math.max(0, ageEnd - (start ?? ageEnd)))}
+      </Typography>
+      {predeceasedParent ? (
+        <Typography fontSize="0.82rem">结局：先于父君去世</Typography>
+      ) : null}
       <Typography fontSize="0.82rem" color="var(--gg-text-muted)" sx={{ mt: 0.75 }}>
         未正式即位，未形成君主在位纪年、国势变化或史评。
       </Typography>

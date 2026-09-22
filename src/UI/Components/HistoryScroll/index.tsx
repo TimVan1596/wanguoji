@@ -106,8 +106,8 @@ export default function HistoryScroll() {
   );
   const eraCandidate = WorldEra.getCandidateDiagnostics(worldMonth);
   const records = useMemo(
-    () => deriveWorldRecords(dynasties, teams, events, eras),
-    [dynasties, teams, events, eras]
+    () => deriveWorldRecords(dynasties, teams, events, eras, worldMonth),
+    [dynasties, teams, events, eras, worldMonth]
   );
   const eraFilteredEvents = useMemo(
     () =>
