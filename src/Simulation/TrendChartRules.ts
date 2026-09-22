@@ -3,6 +3,10 @@ import type { FactionSnapshot } from "./FactionSnapshots";
 
 export const TERRITORY_TICKS = [0, 25, 50, 75, 100];
 
+export function getEventMarkerLaneY(index: number) {
+  return index % 2 === 0 ? 13 : 20;
+}
+
 export function createTimeTicks(snapshots: FactionSnapshot[], maxTicks = 5) {
   if (snapshots.length === 0) {
     return [];

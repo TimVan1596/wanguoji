@@ -211,6 +211,7 @@ const RULER_EVENT_TYPES = new Set<WorldEvent["type"]>([
   "ruler-succession",
   "faction-extinct",
   "faction-exiled",
+  "faction-dissolved",
 ]);
 
 const RULER_EVENT_PRIORITIES: Partial<Record<WorldEvent["type"], number>> = {
@@ -221,6 +222,7 @@ const RULER_EVENT_PRIORITIES: Partial<Record<WorldEvent["type"], number>> = {
   "ruler-captured": 115,
   "faction-exiled": 110,
   "faction-extinct": 110,
+  "faction-dissolved": 100,
   "capital-fallen": 90,
   "empire-split": 90,
   "ruler-succession": 88,

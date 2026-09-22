@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  getEventMarkerLaneY,
   createPopulationTicks,
   createTimeTicks,
   normalizeMarkerEvents,
@@ -33,6 +34,10 @@ function event(year: number): WorldEvent {
 }
 
 describe("trend chart rules", () => {
+  it("keeps event markers in a separate top lane", () => {
+    expect(getEventMarkerLaneY(0)).toBeLessThan(25);
+    expect(getEventMarkerLaneY(1)).toBeLessThan(25);
+  });
   it("creates readable time ticks across the snapshot range", () => {
     expect(createTimeTicks([snapshot(120), snapshot(240), snapshot(360)])).toEqual([
       120,

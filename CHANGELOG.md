@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99910-alpha
+
+- Added conquest and rebel-suppression milestones to ruler chronicles.
+- Tightened posthumous epithet evidence so minor losses alone do not imply disorder.
+- Separated trend event markers from data coordinates and added objective world records.
+
 ## v0.9999-alpha
 
 - Prioritized canonical political milestones in ruler chronicles.

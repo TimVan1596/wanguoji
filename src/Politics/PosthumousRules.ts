@@ -222,16 +222,16 @@ function chooseEpithet(
       reasons: ["短祚并遭遇严重国难"],
     });
   }
-  if (stabilityDelta <= -30 && (territoryDelta <= -0.12 || cityDelta <= -2)) {
-    candidates.push({
-      name: "厉",
-      reasons: ["统治末期稳定严重下降并显著失地"],
-    });
-  }
-  if (reignMonths >= LONG_REIGN_MONTHS && stabilityDelta <= -25 && territoryDelta < 0) {
+  const hasDisorderEvidence =
+    territoryDelta <= -0.12 ||
+    cityDelta <= -2 ||
+    chronicle.rebellionsDuringReign > 0 ||
+    end.population <= chronicle.accessionSnapshot.population * 0.6 ||
+    ruler.endReason === "彻底灭亡";
+  if (reignMonths >= LONG_REIGN_MONTHS && stabilityDelta <= -25 && hasDisorderEvidence) {
     candidates.push({
       name: "灵",
-      reasons: ["长期国势衰败且稳定恶化"],
+      reasons: ["长期稳定恶化，并有明显失序证据"],
     });
   }
   if (chronicle.proclaimedEmperorMonth !== undefined || chronicle.completedUnification) {
@@ -256,6 +256,13 @@ function chooseEpithet(
   }
   if (chronicle.deathCause === "战死" && (territoryDelta >= 0.08 || cityDelta >= 1)) {
     addCandidates(candidates, ["烈", "武", "襄", "威"], "亲历战事并以身殉国");
+  }
+  if (
+    chronicle.deathCause === "战死" &&
+    chronicle.citiesCapturedPersonally >= 2 &&
+    (territoryDelta >= 0.03 || cityDelta >= 1)
+  ) {
+    addCandidates(candidates, ["庄"], "亲征有战果并战死");
   }
   if (chronicle.restorationsDuringReign > 0) {
     addCandidates(

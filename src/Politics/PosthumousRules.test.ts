@@ -55,6 +55,33 @@ function ruler(overrides: Partial<Ruler> = {}): Ruler {
 }
 
 describe("posthumous rules", () => {
+  it("does not call minor territory loss plus stability decline alone disorder", () => {
+    const candidate = ruler({
+      accessionYear: 0,
+      endYear: 21 * 12 + 8,
+      chronicle: (() => {
+        const chronicle = createRulerChronicle({
+          month: 0,
+          population: 1,
+          territoryShare: 0.107,
+          cityCount: 2,
+          stability: 95,
+        });
+        finishRulerChronicle(chronicle, {
+          month: 21 * 12 + 8,
+          population: 2,
+          territoryShare: 0.104,
+          cityCount: 2,
+          stability: 64,
+        });
+        chronicle.citiesCapturedPersonally = 3;
+        chronicle.citiesLostDuringReign = 4;
+        chronicle.deathCause = "战死";
+        return chronicle;
+      })(),
+    });
+    expect(evaluatePosthumousNames(candidate, [], faction(), candidate.endYear!).posthumousEpithet).not.toBe("灵");
+  });
   it("does not evaluate active or provisional leaders", () => {
     expect(evaluatePosthumousNames(ruler({ endYear: undefined }), [], faction(), 140).posthumousEpithet).toBeUndefined();
     expect(

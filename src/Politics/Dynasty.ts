@@ -323,6 +323,7 @@ class DynastyRegistryStore {
         predecessor.id,
         team.identityStage === "PROVISIONAL" ? "LEADER_SUCCESSOR" : "NEW_HOUSE"
       );
+      dynasty.houseName = newHouse;
       dynasty.rulers.push(successor);
     }
     if (!successor) {

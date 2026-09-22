@@ -239,7 +239,12 @@ export function formatHistoryEventTitle(
       : `${factionName}王统断绝，残部消散，${styleName}彻底灭亡`;
   }
   if (event.type === "faction-dissolved") {
-    return `${name(event.targetFactionId ?? event.factionIds?.[0])}覆灭`;
+    const fallenName = name(event.targetFactionId ?? event.factionIds?.[0]);
+    const conquerorName = name(event.conquerorFactionId);
+    const rank = getHistoricalRank(factionById, event.targetFactionId ?? event.factionIds?.[0], month);
+    return rank === "LEADER"
+      ? `${conquerorName}平定${fallenName}义军`
+      : `${conquerorName}灭${fallenName}`;
   }
   if (event.type === "faction-restored") {
     return `${name(event.actorFactionId)}国在${event.cityName ?? ""}复国`;

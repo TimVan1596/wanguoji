@@ -21,6 +21,7 @@ import { colorToString } from "../../../paid/theme";
 import WorldEra, { classifyEra, WorldEra as WorldEraRecord } from "../../../Simulation/WorldEra";
 import { formatWorldDate, formatWorldDuration } from "../../../Simulation/WorldTime";
 import { RootState } from "../../../store";
+import { deriveWorldRecords } from "../../../History/WorldRecords";
 
 const filters: { value: HistoryFilter; label: string }[] = [
   { value: "featured", label: "精选" },
@@ -38,6 +39,7 @@ export default function HistoryScroll() {
   const [eras, setEras] = useState<WorldEraRecord[]>([]);
   const [selectedEraId, setSelectedEraId] = useState<string>("all");
   const [eraTimelineOpen, setEraTimelineOpen] = useState(false);
+  const [dynasties, setDynasties] = useState<import("../../../Politics/Dynasty").Dynasty[]>([]);
   const teams = useSelector((state: RootState) => state.root.teams);
   const worldMonth = useSelector((state: RootState) => state.root.worldMonth);
   const worldPhase = useSelector((state: RootState) => state.root.worldPhase);
@@ -48,6 +50,15 @@ export default function HistoryScroll() {
 
   useEffect(() => WorldHistory.subscribe(setEvents), []);
   useEffect(() => WorldEra.subscribe(setEras), []);
+  useEffect(() => {
+    let active = true;
+    import("../../../Politics/Dynasty").then(({ default: registry }) => {
+      if (active) setDynasties(registry.getAll());
+    });
+    return () => {
+      active = false;
+    };
+  }, [events.length, worldMonth]);
   useEffect(() => {
     if (
       selectedEraId !== "all" &&
@@ -93,6 +104,10 @@ export default function HistoryScroll() {
     currentEra
   );
   const eraCandidate = WorldEra.getCandidateDiagnostics(worldMonth);
+  const records = useMemo(
+    () => deriveWorldRecords(dynasties, teams, events, eras),
+    [dynasties, teams, events, eras]
+  );
   const eraFilteredEvents = useMemo(
     () =>
       selectedEra
@@ -172,6 +187,16 @@ export default function HistoryScroll() {
           <br />当前格局：{liveClassification?.name ?? "格局转换中 / 天下未定"}
           {eraCandidate ? ` · 候选：${eraCandidate.name}（已持续${formatWorldDuration(eraCandidate.sustainedMonths)} / ${formatWorldDuration(eraCandidate.requiredMonths)}）` : ""}
         </Typography>
+      ) : null}
+      {records.length > 0 ? (
+        <Box sx={{ mb: 0.8, border: "1px solid var(--gg-border)", p: 0.65 }}>
+          <Typography fontWeight="bold" fontSize="0.82rem">天下纪录</Typography>
+          {records.map((record) => (
+            <Typography key={record.label} fontSize="0.72rem" color="var(--gg-text-muted)">
+              {record.label}：{record.value}
+            </Typography>
+          ))}
+        </Box>
       ) : null}
       {eras.length > 0 ? (
         <Box sx={{ mb: 0.8 }}>

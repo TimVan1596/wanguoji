@@ -60,6 +60,7 @@ import {
   createTimeTicks,
   normalizeMarkerEvents,
   TERRITORY_TICKS,
+  getEventMarkerLaneY,
 } from "../../../Simulation/TrendChartRules";
 import { RootState } from "../../../store";
 import {
@@ -1124,14 +1125,14 @@ function TrendChart({
           return (
             <g
               key={event.id}
-              onMouseEnter={() => setHover(`${formatWorldDate(event.monthIndex ?? event.year)} ${markerTitle}`)}
+              onMouseEnter={() => setHover(`事件：${formatWorldDate(event.monthIndex ?? event.year)} ${markerTitle}`)}
               onMouseLeave={() => setHover(undefined)}
               onClick={() => onEventSelect?.(event.id)}
               style={{ cursor: onEventSelect ? "pointer" : "default" }}
             >
               <text
                 x={x}
-                y={index % 2 === 0 ? 12 : 22}
+                y={getEventMarkerLaneY(index)}
                 textAnchor="middle"
                 fontSize={selected ? "13" : "10"}
                 fontWeight={selected ? "700" : "400"}
@@ -1150,7 +1151,7 @@ function TrendChart({
             r="3"
             fill={colorToString(color)}
             onMouseEnter={() =>
-              setHover(`${formatWorldDate(point.month)} ${title}：${valueLabel(point.value)}`)
+              setHover(`数据：${formatWorldDate(point.month)} ${title}：${valueLabel(point.value)}`)
             }
             onMouseLeave={() => setHover(undefined)}
           />
@@ -1191,5 +1192,5 @@ function monthToChartX(month: number, snapshots: FactionSnapshot[]) {
 function yToChart(value: number, ticks: number[]) {
   const min = ticks[0] ?? 0;
   const max = ticks[ticks.length - 1] ?? 1;
-  return 94 - ((value - min) / Math.max(1, max - min)) * 80;
+  return 94 - ((value - min) / Math.max(1, max - min)) * 64;
 }
