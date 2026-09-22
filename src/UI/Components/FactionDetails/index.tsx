@@ -832,7 +832,7 @@ function RulerBiography({
       </Typography>
       {historicalEvents.length > 0 ? historicalEvents.map((event) => (
         <Typography key={event.id} fontSize="0.82rem">
-          {formatWorldDate(event.monthIndex ?? event.year)} ◆ {formatHistoryEventTitle(event, factionById)}
+          {formatWorldDate(event.monthIndex ?? event.year)} ◆ {formatFactionHistoryEvent(event, team.name, factionById) ?? formatHistoryEventTitle(event, factionById)}
         </Typography>
       )) : (
         <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
@@ -1087,7 +1087,27 @@ function TrendChart({
       <Typography fontWeight="bold" fontSize="0.9rem">
         {title} · {valueLabel(lastValue)}
       </Typography>
-      <svg width="100%" height="128" viewBox="0 0 260 120" role="img">
+      <Box sx={{ height: 24, mt: 0.25, borderBottom: "1px solid var(--gg-border)" }}>
+        <svg width="100%" height="24" viewBox="0 0 260 24" role="img" aria-label="历史事件轨道">
+          {markers.map((event, index) => {
+            const x = monthToChartX(event.monthIndex ?? event.year, snapshots);
+            const markerTitle = formatHistoryEventTitle(event, factionById);
+            const selected = selectedEventId === event.id;
+            return (
+              <g
+                key={event.id}
+                onMouseEnter={() => setHover(`事件：${formatWorldDate(event.monthIndex ?? event.year)} ${markerTitle}`)}
+                onMouseLeave={() => setHover(undefined)}
+                onClick={() => onEventSelect?.(event.id)}
+                style={{ cursor: onEventSelect ? "pointer" : "default" }}
+              >
+                <text x={x} y={getEventMarkerLaneY(index) - 1} textAnchor="middle" fontSize={selected ? "13" : "10"} fill={colorToString(color)}>◆</text>
+              </g>
+            );
+          })}
+        </svg>
+      </Box>
+      <svg width="100%" height="128" viewBox="0 0 260 120" role="img" aria-label={`${title}数据图`}>
         {yTicks.map((tick) => {
           const y = yToChart(tick, yTicks);
           return (
@@ -1118,31 +1138,6 @@ function TrendChart({
           strokeLinejoin="round"
           strokeLinecap="round"
         />
-        {markers.map((event, index) => {
-          const x = monthToChartX(event.monthIndex ?? event.year, snapshots);
-          const markerTitle = formatHistoryEventTitle(event, factionById);
-          const selected = selectedEventId === event.id;
-          return (
-            <g
-              key={event.id}
-              onMouseEnter={() => setHover(`事件：${formatWorldDate(event.monthIndex ?? event.year)} ${markerTitle}`)}
-              onMouseLeave={() => setHover(undefined)}
-              onClick={() => onEventSelect?.(event.id)}
-              style={{ cursor: onEventSelect ? "pointer" : "default" }}
-            >
-              <text
-                x={x}
-                y={getEventMarkerLaneY(index)}
-                textAnchor="middle"
-                fontSize={selected ? "13" : "10"}
-                fontWeight={selected ? "700" : "400"}
-                fill={colorToString(color)}
-              >
-                ◆
-              </text>
-            </g>
-          );
-        })}
         {points.map((point) => (
           <circle
             key={`${point.month}-${point.value}`}

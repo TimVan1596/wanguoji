@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99911-alpha
+
+- Added faction-context wording for ruler chronicle conquest and collapse events.
+- Moved trend history markers into a separate event lane.
+- Made the objective world-records panel collapsed by default.
+
 ## v0.99910-alpha
 
 - Added conquest and rebel-suppression milestones to ruler chronicles.

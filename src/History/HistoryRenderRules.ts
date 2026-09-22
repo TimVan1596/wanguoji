@@ -243,7 +243,7 @@ export function formatHistoryEventTitle(
     const conquerorName = name(event.conquerorFactionId);
     const rank = getHistoricalRank(factionById, event.targetFactionId ?? event.factionIds?.[0], month);
     return rank === "LEADER"
-      ? `${conquerorName}平定${fallenName}义军`
+      ? `${conquerorName}平定${formatProvisionalFactionLabel(fallenName)}`
       : `${conquerorName}灭${fallenName}`;
   }
   if (event.type === "faction-restored") {
@@ -262,12 +262,22 @@ export function formatHistoryEventTitle(
     return event.title;
   }
   if (event.type === "empire-split") {
-    return `${name(event.targetFactionId)}帝国发生大规模分裂`;
+    const parentName = name(event.targetFactionId);
+    const cities = stringMeta(event, "foundingCityNames");
+    const childName = name(event.actorFactionId);
+    return cities
+      ? `${cities}脱离${parentName}，${childName}势力建立`
+      : `${parentName}发生大规模分裂，${childName}势力建立`;
   }
   if (event.type === "rebel-faction-founded" || event.type === "frontier-faction-founded") {
     return `${name(event.actorFactionId)}兴起`;
   }
   return event.title;
+}
+
+export function formatProvisionalFactionLabel(name: string | undefined) {
+  if (!name) return "临时势力";
+  return /(?:义军|军)$/.test(name) ? name : `${name}义军`;
 }
 
 function getHistoricalRank(

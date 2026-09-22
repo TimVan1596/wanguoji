@@ -39,6 +39,7 @@ export default function HistoryScroll() {
   const [eras, setEras] = useState<WorldEraRecord[]>([]);
   const [selectedEraId, setSelectedEraId] = useState<string>("all");
   const [eraTimelineOpen, setEraTimelineOpen] = useState(false);
+  const [worldRecordsOpen, setWorldRecordsOpen] = useState(false);
   const [dynasties, setDynasties] = useState<import("../../../Politics/Dynasty").Dynasty[]>([]);
   const teams = useSelector((state: RootState) => state.root.teams);
   const worldMonth = useSelector((state: RootState) => state.root.worldMonth);
@@ -188,16 +189,6 @@ export default function HistoryScroll() {
           {eraCandidate ? ` · 候选：${eraCandidate.name}（已持续${formatWorldDuration(eraCandidate.sustainedMonths)} / ${formatWorldDuration(eraCandidate.requiredMonths)}）` : ""}
         </Typography>
       ) : null}
-      {records.length > 0 ? (
-        <Box sx={{ mb: 0.8, border: "1px solid var(--gg-border)", p: 0.65 }}>
-          <Typography fontWeight="bold" fontSize="0.82rem">天下纪录</Typography>
-          {records.map((record) => (
-            <Typography key={record.label} fontSize="0.72rem" color="var(--gg-text-muted)">
-              {record.label}：{record.value}
-            </Typography>
-          ))}
-        </Box>
-      ) : null}
       {eras.length > 0 ? (
         <Box sx={{ mb: 0.8 }}>
           <Button
@@ -260,6 +251,27 @@ export default function HistoryScroll() {
                     ) : null}
                   </Button>
                 </Box>
+              ))}
+            </Box>
+          ) : null}
+        </Box>
+      ) : null}
+      {records.length > 0 ? (
+        <Box sx={{ mb: 0.8 }}>
+          <Button
+            size="small"
+            variant="text"
+            onClick={() => setWorldRecordsOpen((open) => !open)}
+            sx={{ px: 0, minWidth: 0, fontSize: "0.76rem" }}
+          >
+            天下纪录 {worldRecordsOpen ? "⌃" : "›"}
+          </Button>
+          {worldRecordsOpen ? (
+            <Box sx={{ border: "1px solid var(--gg-border)", p: 0.65 }}>
+              {records.map((record) => (
+                <Typography key={record.label} fontSize="0.72rem" color="var(--gg-text-muted)">
+                  {record.label}：{record.value}
+                </Typography>
               ))}
             </Box>
           ) : null}

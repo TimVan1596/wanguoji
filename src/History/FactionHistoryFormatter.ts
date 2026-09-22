@@ -5,6 +5,7 @@ import {
 import {
   formatHistoryEventTitle,
   resolveFactionHistoricalName,
+  formatProvisionalFactionLabel,
   type HistoryFactionLike,
 } from "./HistoryRenderRules";
 import type { WorldEvent } from "./WorldHistory";
@@ -62,7 +63,7 @@ export function formatFactionHistoryEvent(
   }
   if (event.type === "faction-dissolved") {
     return relation === "CONQUEROR"
-      ? `${selectedName}平定${name(event.targetFactionId) ?? "临时势力"}。`
+      ? `${selectedName}平定${formatProvisionalFactionLabel(name(event.targetFactionId))}。`
       : `${selectedName}覆灭。`;
   }
   if (event.metadata?.groupedEventCount) {
