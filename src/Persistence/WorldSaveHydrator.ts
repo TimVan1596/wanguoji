@@ -23,6 +23,7 @@ import { setWorldPhase } from "../store/rootSlice";
 import { store } from "../store";
 import { CURRENT_SAVE_SCHEMA_VERSION, WorldSaveV1 } from "./WorldSaveSchema";
 import { validateWorldSave } from "./WorldSaveValidator";
+import { canonicalizeSavedSnapshotBoundary } from "./SnapshotBoundary";
 
 export interface HydrationReport {
   worldMonth: number;
@@ -42,7 +43,13 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
   }
   if (Game.Core !== core) throw new Error("Hydration target is not the active Phaser Core.");
   if (!save.world.started) throw new Error("Cannot hydrate a save that has not started a world.");
-  if (save.world.clock.elapsedMs !== 0 || save.world.simulationDriver.accumulatorMs !== 0) {
+  const snapshotBoundary = canonicalizeSavedSnapshotBoundary({
+    worldRunning: save.world.running,
+    clockRunning: save.world.clock.running,
+    clockElapsedMs: save.world.clock.elapsedMs,
+    simulationAccumulatorMs: save.world.simulationDriver.accumulatorMs,
+  });
+  if (!snapshotBoundary) {
     throw new Error("WorldSaveV1 hydration requires the saved complete-month/fixed-step boundary.");
   }
   validateRequiredImportState(save);
@@ -127,11 +134,11 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
     };
   });
   core.logicalUnitRegistry.importState(logicalSequence, logicalEntries);
-  core.simulationDriver.importState({ accumulatorMs: 0 });
+  core.simulationDriver.importState({ accumulatorMs: snapshotBoundary.simulationAccumulatorMs });
   core.simulator!.importState({
     started: true,
     selectedSpeed: save.world.selectedSpeed,
-    clock: { worldMonth: save.world.clock.worldMonth, elapsedMs: 0, running: false },
+    clock: { worldMonth: save.world.clock.worldMonth, elapsedMs: snapshotBoundary.clockElapsedMs, running: false },
     populationSystem: save.populationSystem as ReturnType<PopulationSystem["exportState"]>,
     worldEventSystem: save.worldEventSystem as ReturnType<NonNullable<Core["simulator"]>["exportState"]>["worldEventSystem"],
   });

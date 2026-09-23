@@ -4,7 +4,16 @@ export interface SnapshotBoundaryState {
   simulationAccumulatorMs: number;
 }
 
-const BOUNDARY_EPSILON_MS = 1e-6;
+export const SNAPSHOT_BOUNDARY_EPSILON_MS = 1e-6;
+
+export interface CanonicalSnapshotBoundaryState extends SnapshotBoundaryState {}
+
+export interface SavedSnapshotBoundaryState {
+  worldRunning: boolean;
+  clockRunning: boolean;
+  clockElapsedMs: number;
+  simulationAccumulatorMs: number;
+}
 
 export interface SnapshotRequestState extends SnapshotBoundaryState {
   worldStarted: boolean;
@@ -59,7 +68,7 @@ export class SnapshotBoundaryRequest {
 
   /** Called after each complete fixed step. Returns true only at the requested next month boundary. */
   reachBoundary(worldMonth: number, clockElapsedMs: number) {
-    if (!this.pending || worldMonth <= this.pending.requestedMonth || Math.abs(clockElapsedMs) > BOUNDARY_EPSILON_MS) {
+    if (!this.pending || worldMonth <= this.pending.requestedMonth || !isEffectivelyZeroSnapshotMs(clockElapsedMs)) {
       return false;
     }
     this.diagnostics = {
@@ -105,7 +114,38 @@ export function isSafeSnapshotBoundary(state: SnapshotBoundaryState) {
     state.paused &&
     Number.isFinite(state.clockElapsedMs) &&
     Number.isFinite(state.simulationAccumulatorMs) &&
-    Math.abs(state.clockElapsedMs) <= BOUNDARY_EPSILON_MS &&
-    Math.abs(state.simulationAccumulatorMs) <= BOUNDARY_EPSILON_MS
+    isEffectivelyZeroSnapshotMs(state.clockElapsedMs) &&
+    isEffectivelyZeroSnapshotMs(state.simulationAccumulatorMs)
   );
+}
+
+export function isEffectivelyZeroSnapshotMs(value: number) {
+  return Number.isFinite(value) && Math.abs(value) <= SNAPSHOT_BOUNDARY_EPSILON_MS;
+}
+
+export function normalizeSnapshotBoundaryMs(value: number) {
+  return isEffectivelyZeroSnapshotMs(value) ? 0 : value;
+}
+
+/** Returns canonical zero time fields only when the complete boundary is safe. */
+export function canonicalizeSafeSnapshotBoundary(
+  state: SnapshotBoundaryState
+): CanonicalSnapshotBoundaryState | undefined {
+  if (!isSafeSnapshotBoundary(state)) return undefined;
+  return {
+    ...state,
+    clockElapsedMs: normalizeSnapshotBoundaryMs(state.clockElapsedMs),
+    simulationAccumulatorMs: normalizeSnapshotBoundaryMs(state.simulationAccumulatorMs),
+  };
+}
+
+/** Applies the shared boundary rule to the saved runtime flags and time fields. */
+export function canonicalizeSavedSnapshotBoundary(
+  state: SavedSnapshotBoundaryState
+): CanonicalSnapshotBoundaryState | undefined {
+  return canonicalizeSafeSnapshotBoundary({
+    paused: !state.worldRunning && !state.clockRunning,
+    clockElapsedMs: state.clockElapsedMs,
+    simulationAccumulatorMs: state.simulationAccumulatorMs,
+  });
 }

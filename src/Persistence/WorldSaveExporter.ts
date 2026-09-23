@@ -13,7 +13,7 @@ import WorldRemnants from "../Simulation/WorldRemnants";
 import WorldHistory from "../History/WorldHistory";
 import DynastyRegistry from "../Politics/Dynasty";
 import { CURRENT_SAVE_SCHEMA_VERSION, UnitSaveV1, UserSaveV1, WorldSaveV1 } from "./WorldSaveSchema";
-import { isSafeSnapshotBoundary } from "./SnapshotBoundary";
+import { canonicalizeSafeSnapshotBoundary } from "./SnapshotBoundary";
 import { validateWorldSave } from "./WorldSaveValidator";
 import { APP_VERSION } from "../config/version";
 
@@ -28,11 +28,16 @@ export class UnsafeSaveSnapshotError extends Error {
 export function exportWorldSave(core: Core, options: { createdAt?: string; scenarioId?: string } = {}): WorldSaveV1 {
   const sim = core.simulator?.exportState();
   const driver = core.simulationDriver.exportState();
-  if (!sim || core.backgroundProgression.isCatchingUp() || !isSafeSnapshotBoundary({
+  const snapshotBoundary = sim ? canonicalizeSafeSnapshotBoundary({
     paused: !sim.running,
     clockElapsedMs: sim.clock.elapsedMs,
     simulationAccumulatorMs: driver.accumulatorMs,
-  })) throw new UnsafeSaveSnapshotError();
+  }) : undefined;
+  if (!sim || core.backgroundProgression.isCatchingUp() || !snapshotBoundary) throw new UnsafeSaveSnapshotError();
+  const canonicalDriver = {
+    ...driver,
+    accumulatorMs: snapshotBoundary.simulationAccumulatorMs,
+  };
 
   const teams = core.teams;
   const factions = teams.map((team) => team.exportState());
@@ -146,8 +151,8 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
       started: autoState.started,
       running: autoState.running,
       selectedSpeed: autoState.selectedSpeed,
-      clock: { worldMonth: autoState.clock.worldMonth, elapsedMs: autoState.clock.elapsedMs, running: autoState.clock.running },
-      simulationDriver: driver,
+      clock: { worldMonth: autoState.clock.worldMonth, elapsedMs: snapshotBoundary.clockElapsedMs, running: autoState.clock.running },
+      simulationDriver: canonicalDriver,
       map: {
         widthCells: core.map?.getMaxX() ?? 0,
         heightCells: core.map?.getMaxY() ?? 0,

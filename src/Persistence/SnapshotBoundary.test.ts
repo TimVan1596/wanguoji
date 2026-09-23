@@ -5,7 +5,12 @@ import SimulationDriver, {
 } from "../Simulation/SimulationDriver";
 import WorldClock from "../Simulation/WorldClock";
 import {
+  canonicalizeSafeSnapshotBoundary,
+  canonicalizeSavedSnapshotBoundary,
+  isEffectivelyZeroSnapshotMs,
   isSafeSnapshotBoundary,
+  normalizeSnapshotBoundaryMs,
+  SNAPSHOT_BOUNDARY_EPSILON_MS,
   SnapshotBoundaryRequest,
 } from "./SnapshotBoundary";
 
@@ -65,6 +70,48 @@ async function runToNextMonth(speed: number, frameDeltas = jitteredFrames) {
 }
 
 describe("snapshot month-boundary requests", () => {
+  it("treats IEEE-754 boundary residue as semantic zero and canonicalizes it", () => {
+    const elapsedMs = 1.5006662579253316e-11;
+    expect(isEffectivelyZeroSnapshotMs(elapsedMs)).toBe(true);
+    expect(isEffectivelyZeroSnapshotMs(-2e-12)).toBe(true);
+    expect(isEffectivelyZeroSnapshotMs(0)).toBe(true);
+    expect(normalizeSnapshotBoundaryMs(elapsedMs)).toBe(0);
+    expect(normalizeSnapshotBoundaryMs(-2e-12)).toBe(0);
+
+    const canonical = canonicalizeSafeSnapshotBoundary({
+      paused: true,
+      clockElapsedMs: elapsedMs,
+      simulationAccumulatorMs: -2e-12,
+    });
+    expect(canonical).toMatchObject({ clockElapsedMs: 0, simulationAccumulatorMs: 0 });
+  });
+
+  it("uses the shared epsilon for saved hydration boundaries and rejects real elapsed time", () => {
+    const hydratedBoundary = canonicalizeSavedSnapshotBoundary({
+      worldRunning: false,
+      clockRunning: false,
+      clockElapsedMs: 1.5006662579253316e-11,
+      simulationAccumulatorMs: 0,
+    });
+    expect(hydratedBoundary).toMatchObject({ clockElapsedMs: 0, simulationAccumulatorMs: 0 });
+
+    for (const elapsedMs of [SNAPSHOT_BOUNDARY_EPSILON_MS * 1.01, 0.1, 5, 20]) {
+      expect(canonicalizeSavedSnapshotBoundary({
+        worldRunning: false,
+        clockRunning: false,
+        clockElapsedMs: elapsedMs,
+        simulationAccumulatorMs: 0,
+      })).toBeUndefined();
+    }
+    expect(canonicalizeSavedSnapshotBoundary({
+      worldRunning: true,
+      clockRunning: false,
+      clockElapsedMs: 0,
+      simulationAccumulatorMs: 0,
+    })).toBeUndefined();
+    expect(isEffectivelyZeroSnapshotMs(1.5006662579253316e-1)).toBe(false);
+  });
+
   it.each([1, 2, 4])("reaches the next month with jittered frame deltas at %sx", async (speed) => {
     const result = await runToNextMonth(speed);
     const clock = result.clock.exportState();
