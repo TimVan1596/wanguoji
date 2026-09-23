@@ -29,12 +29,17 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   const userIds = uniqueIds(users, "userId", "users", errors);
   const unitIds = uniqueIds(units, "unitId", "units", errors);
   const rulerIds = new Set<string>();
+  const duplicateRulerIds = new Set<string>();
   dynasties.forEach((dynasty) => {
     const rulers = Array.isArray(dynasty.rulers) ? dynasty.rulers : [];
     rulers.forEach((ruler: unknown) => {
-      if (isPlainRecord(ruler) && typeof ruler.rulerId === "string") rulerIds.add(ruler.rulerId);
+      if (isPlainRecord(ruler) && typeof ruler.rulerId === "string") {
+        if (rulerIds.has(ruler.rulerId)) duplicateRulerIds.add(ruler.rulerId);
+        rulerIds.add(ruler.rulerId);
+      }
     });
   });
+  duplicateRulerIds.forEach((id) => errors.push(`duplicate rulerId: ${id}`));
   const archivedCityIds = new Set<string>();
   if (isPlainRecord(save.registries) && Array.isArray(save.registries.archivedCities)) {
     save.registries.archivedCities.forEach((city: unknown) => {
@@ -47,7 +52,12 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
     requireRef(city.founderFactionId, factionIds, "city.founderFactionId", errors);
     if (city.capitalFactionId !== undefined) requireRef(city.capitalFactionId, factionIds, "city.capitalFactionId", errors);
   });
-  users.forEach((user) => requireRef(user.factionId, factionIds, "user.factionId", errors));
+  users.forEach((user) => {
+    requireRef(user.factionId, factionIds, "user.factionId", errors);
+    if (user.sourceFactionId !== undefined) requireRef(user.sourceFactionId, factionIds, "user.sourceFactionId", errors);
+    if (user.rulerId !== undefined) requireRef(user.rulerId, rulerIds, "user.rulerId", errors);
+    if (user.playerUnitId !== undefined) requireRef(user.playerUnitId, unitIds, "user.playerUnitId", errors);
+  });
   units.forEach((unit) => {
     if (unit.factionId !== undefined) requireRef(unit.factionId, factionIds, "unit.factionId", errors);
     if (unit.userId !== undefined && !userIds.has(String(unit.userId))) errors.push(`unknown unit.userId: ${unit.userId}`);
@@ -55,11 +65,23 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
     if (unit.parentUnitId !== undefined) requireRef(unit.parentUnitId, unitIds, "unit.parentUnitId", errors);
     if (Array.isArray(unit.children)) unit.children.forEach((id: unknown) => requireRef(id, unitIds, "unit.children", errors));
   });
-  (Array.isArray(save.blocks) ? save.blocks : []).forEach((block) => {
-    if (block.ownerFactionId !== undefined) requireRef(block.ownerFactionId, factionIds, "block.ownerFactionId", errors);
-    if (block.cityId !== undefined) requireRef(block.cityId, cityIds, "block.cityId", errors);
-  });
   const allCityIds = new Set([...cityIds, ...archivedCityIds]);
+  (Array.isArray(save.blocks) ? save.blocks : []).forEach((block) => {
+    if (!finite(block.gridX) || !finite(block.gridY)) errors.push("block grid coordinates must be finite");
+    if (block.ownerFactionId !== undefined) requireRef(block.ownerFactionId, factionIds, "block.ownerFactionId", errors);
+    if (block.cityId !== undefined && !allCityIds.has(String(block.cityId))) errors.push(`unknown block.cityId: ${String(block.cityId)}`);
+  });
+  dynasties.forEach((dynasty) => {
+    if (dynasty.factionId !== undefined) requireRef(dynasty.factionId, factionIds, "dynasty.factionId", errors);
+    if (typeof dynasty.currentRulerId === "string") requireRef(dynasty.currentRulerId, rulerIds, "dynasty.currentRulerId", errors);
+    if (Array.isArray(dynasty.heirIds)) dynasty.heirIds.forEach((id: unknown) => requireRef(id, rulerIds, "dynasty.heirIds", errors));
+    const rulers = Array.isArray(dynasty.rulers) ? dynasty.rulers : [];
+    rulers.forEach((ruler: unknown) => {
+      if (!isPlainRecord(ruler)) return;
+      if (ruler.parentId !== undefined) requireRef(ruler.parentId, rulerIds, "ruler.parentId", errors);
+      if (ruler.predecessorId !== undefined) requireRef(ruler.predecessorId, rulerIds, "ruler.predecessorId", errors);
+    });
+  });
   factions.forEach((faction) => {
     if (faction.capitalCityId !== undefined) {
       requireRef(faction.capitalCityId, cityIds, "faction.capitalCityId", errors);
@@ -69,8 +91,17 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
       }
     }
   });
-  if (isPlainRecord(save.worldHistory) && Array.isArray(save.worldHistory.events)) {
-    save.worldHistory.events.forEach((event: unknown) => {
+  const worldEvents = isPlainRecord(save.worldHistory) && Array.isArray(save.worldHistory.events)
+    ? save.worldHistory.events.filter(isPlainRecord)
+    : [];
+  const eventIds = new Set<string>();
+  worldEvents.forEach((event: Record<string, any>) => {
+    if (typeof event.id !== "string") errors.push("worldHistory event id is required");
+    else if (eventIds.has(event.id)) errors.push(`duplicate worldHistory event id: ${event.id}`);
+    else eventIds.add(event.id);
+  });
+  if (worldEvents.length) {
+    worldEvents.forEach((event: Record<string, any>) => {
       if (!isPlainRecord(event)) return;
       const factionRefs = [event.actorFactionId, event.targetFactionId, event.conquerorFactionId,
         event.previousOwnerFactionId, event.founderFactionId, ...(Array.isArray(event.factionIds) ? event.factionIds : []),
@@ -81,6 +112,16 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
       if (event.monthIndex !== undefined && !finite(event.monthIndex)) errors.push("worldHistory event monthIndex must be finite");
     });
   }
+  dynasties.forEach((dynasty) => {
+    const rulers = Array.isArray(dynasty.rulers) ? dynasty.rulers : [];
+    rulers.forEach((ruler: unknown) => {
+      if (!isPlainRecord(ruler) || !isPlainRecord(ruler.chronicle)) return;
+      const ids = ruler.chronicle.notableEventIds;
+      if (Array.isArray(ids)) ids.forEach((id: unknown) => {
+        if (typeof id !== "string" || !eventIds.has(id)) errors.push(`unknown notable world event id: ${String(id)}`);
+      });
+    });
+  });
   if (!jsonSafe(value)) errors.push("save contains non-JSON-safe values or class instances");
   return { valid: errors.length === 0, errors };
 }

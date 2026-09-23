@@ -44,12 +44,17 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
   });
   const users: UserSaveV1[] = [];
   const units: UnitSaveV1[] = [];
-  const seenUnits = new Set<Player>();
+  const seenUnits = new Map<Player, string>();
   let generatedUnitSequence = 1;
-  const stableUnitId = (player: Player) => player.logicalUnitId ?? `runtime-unit-${generatedUnitSequence++}`;
+  const stableUnitId = (player: Player) => {
+    const existing = seenUnits.get(player);
+    if (existing) return existing;
+    const unitId = player.logicalUnitId ?? `runtime-unit-${generatedUnitSequence++}`;
+    seenUnits.set(player, unitId);
+    return unitId;
+  };
   const addUnitTree = (player: Player, parentUnitId?: string, kind: string = "player", npcKey?: string) => {
     if (seenUnits.has(player)) return stableUnitId(player);
-    seenUnits.add(player);
     const unitId = stableUnitId(player);
     const state: Record<string, unknown> = player.exportMovementState(unitId);
     if (core.logicalGameplayAuthority && player.logicalUnitId) {
@@ -161,7 +166,12 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
       cityNameRegistry: CityNameRegistry.exportState(),
       logicalUnitRegistry: core.logicalUnitRegistry.exportState(),
       dynastyRegistrySequence: dynastyState.sequence,
-      archivedCities: ArchivedCities.list().map((city) => ({ ...city, destroyedMonth: city.destroyedMonth, foundedMonth: city.foundedMonth })),
+      archivedCities: ArchivedCities.list().map(({ destroyedMonth, foundedMonth, history, ...city }) => ({
+        ...city,
+        destroyedMonth,
+        foundedMonth,
+        history: history.map(({ year, ...event }) => ({ ...event, monthIndex: year })),
+      })),
       knownFactionIds: [...factionIds],
     },
     worldEventSystem: autoState.worldEventSystem,
@@ -172,14 +182,27 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
   return jsonSafe;
 }
 
-function omitUndefined<T>(value: T): T {
-  if (Array.isArray(value)) return value.map((entry) => omitUndefined(entry)) as T;
-  if (value && typeof value === "object") {
-    const result: Record<string, unknown> = {};
-    Object.entries(value as Record<string, unknown>).forEach(([key, entry]) => {
-      if (entry !== undefined) result[key] = omitUndefined(entry);
-    });
-    return result as T;
+function omitUndefined<T>(value: T, ancestors = new Set<object>()): T {
+  if (value === undefined) return value;
+  if (value === null || typeof value === "string" || typeof value === "boolean") return value;
+  if (typeof value === "number") {
+    if (!Number.isFinite(value)) throw new Error("WorldSaveV1 cannot contain a non-finite number.");
+    return value;
   }
-  return value;
+  if (typeof value !== "object") throw new Error(`WorldSaveV1 cannot contain ${typeof value} values.`);
+  if (ancestors.has(value)) throw new Error("WorldSaveV1 cannot contain circular references.");
+  if (!Array.isArray(value)) {
+    const prototype = Object.getPrototypeOf(value);
+    if (prototype !== Object.prototype && prototype !== null) {
+      throw new Error("WorldSaveV1 cannot contain class instances, Maps, Sets, or Phaser objects.");
+    }
+  }
+  ancestors.add(value);
+  const result = Array.isArray(value)
+    ? value.map((entry) => omitUndefined(entry, ancestors))
+    : Object.fromEntries(Object.entries(value as Record<string, unknown>)
+        .filter(([, entry]) => entry !== undefined)
+        .map(([key, entry]) => [key, omitUndefined(entry, ancestors)]));
+  ancestors.delete(value);
+  return result as T;
 }
