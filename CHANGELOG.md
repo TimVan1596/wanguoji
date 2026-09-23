@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99917-alpha
+
+- Added a dedicated, paused WorldSaveV1 runtime hydration path with preflight validation and exact map geometry checks.
+- Rebuilt faction, block, city, political/history stores, users, units, and physics state without replaying world events.
+- Added a debug-only in-memory snapshot/reload probe and canonical export comparison; formal save UI and IndexedDB remain out of scope.
+
 ## v0.99916-alpha
 
 - Added a versioned JSON-safe WorldSaveV1 export foundation and referential validator.

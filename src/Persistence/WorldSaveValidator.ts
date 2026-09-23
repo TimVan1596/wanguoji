@@ -15,7 +15,8 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   else {
     if (!finite(save.world.worldMonth) || save.world.worldMonth < 0) errors.push("world.worldMonth must be a non-negative finite month index");
     if (!finite(save.world.selectedSpeed)) errors.push("world.selectedSpeed must be finite");
-    if (!isPlainRecord(save.world.clock) || !finite(save.world.clock.elapsedMs)) errors.push("world.clock.elapsedMs must be finite");
+    if (!isPlainRecord(save.world.clock) || !finite(save.world.clock.elapsedMs) || !finite(save.world.clock.worldMonth)) errors.push("world.clock requires finite worldMonth and elapsedMs");
+    else if (save.world.clock.worldMonth !== save.world.worldMonth) errors.push("world.clock.worldMonth must match world.worldMonth");
     if (!isPlainRecord(save.world.simulationDriver) || !finite(save.world.simulationDriver.accumulatorMs)) errors.push("world.simulationDriver.accumulatorMs must be finite");
   }
 

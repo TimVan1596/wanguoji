@@ -45,6 +45,7 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
   if (save.world.clock.elapsedMs !== 0 || save.world.simulationDriver.accumulatorMs !== 0) {
     throw new Error("WorldSaveV1 hydration requires the saved complete-month/fixed-step boundary.");
   }
+  validateRequiredImportState(save);
   validateGeometryAndOwnership(save, core);
 
   // All preflight checks happen before teardown; malformed/incompatible saves leave the live world untouched.
@@ -55,15 +56,6 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
 
   const blocksByGrid = new Map<string, Block>();
   core.map!.blocks.forEach((column, x) => column.forEach((block, y) => blocksByGrid.set(`${x},${y}`, block)));
-  save.blocks.forEach((state) => {
-    const block = blocksByGrid.get(`${state.gridX},${state.gridY}`)!;
-    block.restoreCanonicalState({
-      owner: state.ownerFactionId ? teamsById.get(state.ownerFactionId) : undefined,
-      isHome: state.isHome,
-      hp: Number(state.homeHitPoints ?? 0),
-      isCityCenter: Boolean(state.isCityCenter),
-    });
-  });
 
   const citiesById = new Map<string, City>();
   save.cities.forEach((state) => {
@@ -129,7 +121,7 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
   core.simulator!.importState({
     started: true,
     selectedSpeed: save.world.selectedSpeed,
-    clock: { worldMonth: save.world.worldMonth, elapsedMs: 0, running: false },
+    clock: { worldMonth: save.world.clock.worldMonth, elapsedMs: 0, running: false },
     populationSystem: save.populationSystem as ReturnType<PopulationSystem["exportState"]>,
     worldEventSystem: save.worldEventSystem as ReturnType<NonNullable<Core["simulator"]>["exportState"]>["worldEventSystem"],
   });
@@ -314,4 +306,52 @@ function validateGeometryAndOwnership(save: WorldSaveV1, core: Core) {
   if (core.scene.renderer.width / blockSize !== widthCells || core.scene.renderer.height / blockSize !== heightCells || blockSize !== Game.BlockSize) {
     throw new Error("Save map geometry is incompatible with this runtime; hydration does not scale coordinates.");
   }
+}
+
+function validateRequiredImportState(save: WorldSaveV1) {
+  const records: Array<[string, Record<string, unknown>, string[], string[]]> = [
+    ["worldHistory", save.worldHistory, ["events", "emittedKeys", "extinctFactionIds"], ["sequence", "unificationCount"]],
+    ["worldEra", save.worldEra, ["eras"], ["sequence", "lastObservedMonth"]],
+    ["factionSnapshots", save.factionSnapshots, ["snapshots"], ["lastSnapshotMonth"]],
+    ["factionEffects", save.factionEffects, ["effects", "strategicModifiers"], ["sequence"]],
+    ["populationSystem", save.populationSystem, ["counters"], ["lastGrowthMonth"]],
+    ["worldEventSystem", save.worldEventSystem, ["activeEffects", "cityFoundedMonths", "cityRebellionMonths", "cycleState"], ["nextEventMonth", "sequence", "fractureUntilMonth", "lastRebellionCheckMonth", "lastEmpireSplitCheckMonth", "lastCityFoundCheckMonth", "lastProvisionalPressureMonth"]],
+  ];
+  records.forEach(([label, record, arrays, numbers]) => {
+    if (!record || typeof record !== "object" || Array.isArray(record)) throw new Error(`Save is missing ${label} import state.`);
+    arrays.forEach((key) => { if (!Array.isArray(record[key])) throw new Error(`Save ${label}.${key} is missing or malformed.`); });
+    numbers.forEach((key) => { if (typeof record[key] !== "number" || !Number.isFinite(record[key])) throw new Error(`Save ${label}.${key} must be finite.`); });
+  });
+  const registries = save.registries as Record<string, unknown>;
+  [["factionRegistry", ["sequence"]], ["cityNameRegistry", ["reserved", "recentDynamicNames"]], ["logicalUnitRegistry", ["nextUnitSequence"]]]
+    .forEach(([name, keys]) => {
+      const registry = registries[name as string];
+      if (!registry || typeof registry !== "object" || Array.isArray(registry)) throw new Error(`Save is missing registry ${String(name)}.`);
+      (keys as string[]).forEach((key) => {
+        const field = (registry as Record<string, unknown>)[key];
+        const valid = key === "sequence" || key === "nextUnitSequence"
+          ? typeof field === "number" && Number.isFinite(field) && field >= 0
+          : Array.isArray(field);
+        if (!valid) throw new Error(`Save registry ${String(name)}.${key} is malformed.`);
+      });
+    });
+  if (!Array.isArray(registries.archivedCities)) throw new Error("Save registries.archivedCities is missing or malformed.");
+  if (typeof registries.dynastyRegistrySequence !== "number" || !Number.isFinite(registries.dynastyRegistrySequence)) throw new Error("Save dynasty registry sequence must be finite.");
+  save.factions.forEach((faction) => {
+    [faction.firstFoundedMonth, faction.currentActiveSinceMonth, faction.cumulativeActiveMonths, faction.homeGridX, faction.homeGridY]
+      .forEach((value) => { if (!Number.isFinite(value)) throw new Error(`Faction ${faction.factionId} has a non-finite canonical number.`); });
+    if (!faction.origin || typeof faction.origin !== "object") throw new Error(`Faction ${faction.factionId} is missing origin state.`);
+  });
+  save.cities.forEach((city) => {
+    [city.centerGridX, city.centerGridY, city.foundedMonth, city.defense, city.maxDefense, city.loyalty, city.devastation, city.captureCount]
+      .forEach((value) => { if (!Number.isFinite(value)) throw new Error(`City ${city.cityId} has a non-finite canonical number.`); });
+  });
+  save.units.forEach((unit) => {
+    [unit.x, unit.y, unit.vx, unit.vy, unit.speed, unit.radius, unit.scale, unit.speedCoefficient, unit.sizeCoefficient]
+      .forEach((value) => { if (!Number.isFinite(value)) throw new Error(`Unit ${unit.unitId} has a non-finite movement value.`); });
+  });
+  save.users.forEach((user) => {
+    if (typeof user.userId !== "number" || !Number.isFinite(user.userId)) throw new Error(`User id ${String(user.userId)} is not supported by the current runtime.`);
+    if (!Number.isFinite(user.loyalty) || !Number.isFinite(user.score)) throw new Error(`User ${user.userId} has invalid canonical values.`);
+  });
 }

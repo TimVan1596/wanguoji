@@ -88,7 +88,7 @@ export interface WorldSaveV1 {
     started: boolean;
     running: boolean;
     selectedSpeed: number;
-    clock: { elapsedMs: number; running: boolean };
+      clock: { worldMonth: number; elapsedMs: number; running: boolean };
     simulationDriver: { accumulatorMs: number };
     map: { widthCells: number; heightCells: number; blockSize: number };
   };
@@ -118,7 +118,7 @@ export function createEmptyWorldSaveV1(): WorldSaveV1 {
       started: false,
       running: false,
       selectedSpeed: 1,
-      clock: { elapsedMs: 0, running: false },
+      clock: { worldMonth: 0, elapsedMs: 0, running: false },
       simulationDriver: { accumulatorMs: 0 },
       map: { widthCells: 0, heightCells: 0, blockSize: 0 },
     },

@@ -216,6 +216,19 @@ export default class Block extends Phaser.GameObjects.Rectangle {
     if (state.city) this.setCity(state.city, state.isCityCenter);
     else this.city = undefined;
     this.isCityCenter = state.isCityCenter;
+    if (state.owner?.tile && this.scene.textures.exists(state.owner.tile)) this.setTile(state.owner.tile);
+    if (state.isHome && !state.city) {
+      this._setIsHome();
+      this.hp = state.hp;
+      this.hpText?.setText(`${this.hp}`);
+      if (state.owner?.hall && this.scene.textures.exists(state.owner.hall) && !this.hall) {
+        this.hall = this.scene.add.image(0, 0, state.owner.hall)
+          .setSize(Game.BlockSize * 2, Game.BlockSize * 2)
+          .setDisplaySize(Game.BlockSize * 2, Game.BlockSize * 2)
+          .setDepth(this.depth + 2);
+        Phaser.Display.Align.In.Center(this.hall, this);
+      }
+    }
     this.updateCityDisplay();
   }
 

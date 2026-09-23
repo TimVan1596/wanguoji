@@ -140,7 +140,7 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
       started: autoState.started,
       running: autoState.running,
       selectedSpeed: autoState.selectedSpeed,
-      clock: { elapsedMs: autoState.clock.elapsedMs, running: autoState.clock.running },
+      clock: { worldMonth: autoState.clock.worldMonth, elapsedMs: autoState.clock.elapsedMs, running: autoState.clock.running },
       simulationDriver: driver,
       map: {
         widthCells: core.map?.getMaxX() ?? 0,
