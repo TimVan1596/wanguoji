@@ -51,6 +51,7 @@ async function runToNextMonth(speed: number, frameDeltas = jitteredFrames) {
           clock.setRunning(false);
           return "stop-and-discard";
         }
+        return;
       },
     });
     if (result.stopped) {
@@ -124,6 +125,7 @@ describe("snapshot month-boundary requests", () => {
             clock.setRunning(false);
             return "stop-and-discard";
           }
+          return;
         },
       });
       if (clock.exportState().worldMonth === 1) driver.reset();

@@ -539,6 +539,9 @@ export default class Core {
   }
 
   prepareForHydration(expected: { widthCells: number; heightCells: number; blockSize: number }) {
+    this.snapshotBoundaryRequest.cancel(
+      new Error("Safe snapshot request was canceled because hydration teardown began.")
+    );
     if (this.backgroundProgression.isCatchingUp()) throw new Error("Cannot hydrate during background catch-up.");
     if (this.simulator?.isRunning()) throw new Error("Hydration requires a paused world.");
     if (expected.blockSize !== Game.BlockSize || expected.widthCells !== this.scene.renderer.width / Game.BlockSize || expected.heightCells !== this.scene.renderer.height / Game.BlockSize) {
