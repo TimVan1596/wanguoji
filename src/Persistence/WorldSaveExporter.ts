@@ -12,7 +12,7 @@ import WorldExiles from "../Simulation/WorldExiles";
 import WorldRemnants from "../Simulation/WorldRemnants";
 import WorldHistory from "../History/WorldHistory";
 import DynastyRegistry from "../Politics/Dynasty";
-import { CURRENT_SAVE_SCHEMA_VERSION, WorldSaveV1 } from "./WorldSaveSchema";
+import { CURRENT_SAVE_SCHEMA_VERSION, UnitSaveV1, UserSaveV1, WorldSaveV1 } from "./WorldSaveSchema";
 import { isSafeSnapshotBoundary } from "./SnapshotBoundary";
 import { validateWorldSave } from "./WorldSaveValidator";
 import { APP_VERSION } from "../config/version";
@@ -42,8 +42,8 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
     const gridY = Math.round(city.block.y / Game.BlockSize);
     return city.exportState(gridX, gridY);
   });
-  const users: Record<string, unknown>[] = [];
-  const units: Record<string, unknown>[] = [];
+  const users: UserSaveV1[] = [];
+  const units: UnitSaveV1[] = [];
   const seenUnits = new Set<Player>();
   let generatedUnitSequence = 1;
   const stableUnitId = (player: Player) => player.logicalUnitId ?? `runtime-unit-${generatedUnitSequence++}`;
@@ -52,6 +52,18 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
     seenUnits.add(player);
     const unitId = stableUnitId(player);
     const state: Record<string, unknown> = player.exportMovementState(unitId);
+    if (core.logicalGameplayAuthority && player.logicalUnitId) {
+      const logical = core.logicalUnitRegistry.get(player.logicalUnitId);
+      if (!logical) throw new Error(`Missing authoritative logical unit state: ${player.logicalUnitId}`);
+      state.x = logical.logicalX;
+      state.y = logical.logicalY;
+      state.vx = logical.logicalVX;
+      state.vy = logical.logicalVY;
+      state.speed = logical.speed;
+      state.factionId = logical.factionId;
+      state.role = logical.role;
+      state.rulerId = logical.rulerId;
+    }
     state.parentUnitId = parentUnitId;
     state.kind = kind;
     if (npcKey) state.npcKey = npcKey;
@@ -59,7 +71,7 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
       state.npcFaceKey = player.face?.texture?.key;
       state.npcLevelColor = player.faceBg?.fillColor;
     }
-    units.push(state);
+    units.push(state as UnitSaveV1);
     state.children = player.children.map((child) => addUnitTree(child, unitId, kind));
     return unitId;
   };
@@ -79,7 +91,7 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
         face: user.face,
         playerUnitId: rootUnitId,
         slaveUnits: [...user.slaveGroup.npcs.entries()].map(([npcKey, npc]) => addUnitTree(npc, undefined, "slave", npcKey)),
-      });
+      } as UserSaveV1);
     });
     team.farms.npcs.forEach((npc, key) => addUnitTree(npc, undefined, "farm-npc", key));
   });

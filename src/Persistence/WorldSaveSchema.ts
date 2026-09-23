@@ -2,6 +2,82 @@ import { APP_VERSION } from "../config/version";
 
 export const CURRENT_SAVE_SCHEMA_VERSION = 1 as const;
 
+export interface FactionSaveV1 {
+  factionId: string;
+  displayName: string;
+  color: number;
+  factionType: string;
+  status: string;
+  firstFoundedMonth: number;
+  currentActiveSinceMonth: number;
+  lastExiledMonth?: number;
+  restorationMonths: number[];
+  extinctionMonth?: number;
+  cumulativeActiveMonths: number;
+  identityStage: string;
+  sovereigntyRank: string;
+  sovereigntyHistory: Record<string, unknown>[];
+  stateFoundedMonth?: number;
+  emperorEligibleSinceMonth?: number;
+  proclaimedEmperorMonth?: number;
+  nameHistory: Record<string, unknown>[];
+  origin: Record<string, unknown>;
+  houseName?: string;
+  capitalCityId?: string;
+  homeGridX: number;
+  homeGridY: number;
+  [additionalCanonicalState: string]: unknown;
+}
+
+export interface CitySaveV1 {
+  cityId: string;
+  name: string;
+  founderFactionId: string;
+  ownerFactionId: string;
+  centerGridX: number;
+  centerGridY: number;
+  foundedMonth: number;
+  isCapital: boolean;
+  defense: number;
+  maxDefense: number;
+  loyalty: number;
+  devastation: number;
+  captureCount: number;
+  [additionalCanonicalState: string]: unknown;
+}
+
+export interface UserSaveV1 {
+  userId: string | number;
+  name: string;
+  factionId: string;
+  sourceFactionId: string;
+  loyalty: number;
+  role: string;
+  score: number;
+  playerUnitId: string;
+  [additionalCanonicalState: string]: unknown;
+}
+
+export interface UnitSaveV1 {
+  unitId: string;
+  factionId: string;
+  userId?: string | number;
+  parentUnitId?: string;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  speed: number;
+  radius: number;
+  scale: number;
+  speedCoefficient: number;
+  sizeCoefficient: number;
+  alive: boolean;
+  role: string;
+  rulerId?: string;
+  [additionalCanonicalState: string]: unknown;
+}
+
 export interface WorldSaveV1 {
   saveSchemaVersion: typeof CURRENT_SAVE_SCHEMA_VERSION;
   appVersion: string;
@@ -16,11 +92,11 @@ export interface WorldSaveV1 {
     simulationDriver: { accumulatorMs: number };
     map: { widthCells: number; heightCells: number; blockSize: number };
   };
-  factions: Record<string, unknown>[];
-  blocks: { gridX: number; gridY: number; ownerFactionId?: string; isHome: boolean; cityId?: string }[];
-  cities: Record<string, unknown>[];
-  users: Record<string, unknown>[];
-  units: Record<string, unknown>[];
+  factions: FactionSaveV1[];
+  blocks: { gridX: number; gridY: number; ownerFactionId?: string; isHome: boolean; cityId?: string; [additionalCanonicalState: string]: unknown }[];
+  cities: CitySaveV1[];
+  users: UserSaveV1[];
+  units: UnitSaveV1[];
   dynasties: Record<string, unknown>[];
   worldHistory: Record<string, unknown>;
   worldEra: Record<string, unknown>;
