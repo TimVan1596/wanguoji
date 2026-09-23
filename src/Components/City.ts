@@ -90,6 +90,40 @@ export default class City {
   private lastDevastationRecoveryYear: number;
   private lastSiegeDevastationYear = -1;
 
+  exportState(centerGridX: number, centerGridY: number) {
+    return {
+      cityId: this.id,
+      name: this.name,
+      founderFactionId: this.founderFactionId,
+      ownerFactionId: this.ownerFactionId,
+      centerGridX,
+      centerGridY,
+      foundedMonth: this.foundedYear,
+      isCapital: this.isCapital,
+      isHistoricCity: this.isHistoricCity,
+      isIndestructible: this.isIndestructible,
+      defense: this.defense,
+      maxDefense: this.maxDefense,
+      loyalty: this.loyalty,
+      devastation: this.devastation,
+      captureCount: this.captureCount,
+      lastCapturedMonth: this.lastCapturedYear,
+      lastRepairMonth: this.lastRepairYear,
+      lastLoyaltyMonth: this.lastLoyaltyYear,
+      lastSiegeDamageMonth: this.lastSiegeDamageYear,
+      siegeDamageRemainder: this.siegeDamageRemainder,
+      siegeContacts: [...this.siegeContacts.entries()].map(([factionId, contact]) => ({
+        factionId, count: contact.count, month: contact.year, rulerId: contact.rulerId,
+      })),
+      underSiege: this.underSiege,
+      attackingFactionId: this.attackingFactionId,
+      lastDevastationRecoveryMonth: this.lastDevastationRecoveryYear,
+      lastSiegeDevastationMonth: this.lastSiegeDevastationYear,
+      destroyed: this.destroyed,
+      history: this.history.map((event) => ({ ...event, monthIndex: event.year })),
+    };
+  }
+
   constructor(
     public id: string,
     public name: string,

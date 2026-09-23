@@ -67,6 +67,16 @@ class FactionSnapshotStore {
       0
     );
   }
+
+  exportState() {
+    return {
+      snapshots: [...this.snapshots.entries()].map(([factionId, snapshots]) => ({
+        factionId,
+        snapshots: snapshots.map((snapshot) => ({ ...snapshot, monthIndex: snapshot.year })),
+      })),
+      lastSnapshotMonth: this.lastSnapshotYear,
+    };
+  }
 }
 
 const FactionSnapshots = new FactionSnapshotStore();

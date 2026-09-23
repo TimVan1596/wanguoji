@@ -24,6 +24,10 @@ export default class PopulationSystem {
   private counters: Record<string, number> = {};
   private lastGrowthMonth = 0;
 
+  exportState() {
+    return { counters: { ...this.counters }, lastGrowthMonth: this.lastGrowthMonth };
+  }
+
   reset() {
     this.counters = {};
     this.lastGrowthMonth = 0;

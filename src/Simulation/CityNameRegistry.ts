@@ -58,6 +58,13 @@ class CityNameRegistryStore {
   entries() {
     return [...this.reserved.values()];
   }
+
+  exportState() {
+    return {
+      reserved: this.entries().map((entry) => ({ ...entry, createdMonth: entry.createdMonth })),
+      recentDynamicNames: [...this.recentDynamicNames],
+    };
+  }
 }
 
 const CityNameRegistry = new CityNameRegistryStore();

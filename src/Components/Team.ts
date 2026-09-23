@@ -307,4 +307,41 @@ export default class Team {
       return a.id.localeCompare(b.id);
     })[0];
   }
+
+  exportState() {
+    return {
+      factionId: this.name,
+      displayName: this.displayName,
+      color: this.color,
+      factionType: this.factionType,
+      status: this.status,
+      firstFoundedMonth: this.firstFoundedYear,
+      currentActiveSinceMonth: this.currentActiveSinceYear,
+      lastExiledMonth: this.lastExiledYear,
+      restorationMonths: [...this.restorationYears],
+      extinctionMonth: this.extinctionYear,
+      cumulativeActiveMonths: this.cumulativeActiveYears,
+      identityStage: this.identityStage,
+      sovereigntyRank: this.sovereigntyRank,
+      sovereigntyHistory: this.sovereigntyHistory.map((entry) => ({ ...entry, month: entry.year })),
+      stateFormationEligibleSinceMonth: this.stateFormationEligibleSinceMonth,
+      stateFoundedMonth: this.stateFoundedMonth,
+      emperorEligibleSinceMonth: this.emperorEligibleSinceMonth,
+      proclaimedEmperorMonth: this.proclaimedEmperorMonth,
+      nameHistory: this.nameHistory.map((entry) => ({ ...entry, month: entry.year })),
+      origin: { ...this.origin, foundedMonth: this.origin.foundedMonth },
+      houseName: this.houseName,
+      homeGridX: this.homeBlock ? Math.round(this.homeBlock.x / this.homeBlock.width) : this.homeX,
+      homeGridY: this.homeBlock ? Math.round(this.homeBlock.y / this.homeBlock.height) : this.homeY,
+      capitalCityId: this.capitalCity?.id,
+      capitalName: this.capital,
+      shortName: this.shortName,
+      icon: this.icon,
+      hall: this.hall,
+      tile: this.tile,
+      farmsConfig: this.npcsConfig?.map((entry) => ({ ...entry })),
+      capitalIndestructible: this.capitalIndestructible,
+      joinCommand: [...this.joinCommand],
+    };
+  }
 }

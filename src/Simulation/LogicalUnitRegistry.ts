@@ -140,6 +140,10 @@ export default class LogicalUnitRegistry {
     return [...this.units.values()];
   }
 
+  exportState() {
+    return { nextUnitSequence: this.nextUnitId };
+  }
+
   syncVisuals() {
     this.units.forEach((entry) => {
       if (entry.player?.active && entry.state.alive) {

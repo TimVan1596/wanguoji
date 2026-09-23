@@ -192,6 +192,20 @@ class WorldHistoryStore {
     return this.events.length;
   }
 
+  exportState() {
+    return {
+      events: this.events.map((event) => ({ ...event, metadata: event.metadata ? { ...event.metadata } : undefined, monthIndex: event.monthIndex ?? event.year })),
+      emittedKeys: [...this.emitted],
+      populationLeader: this.populationLeader,
+      territoryLeader: this.territoryLeader,
+      populationCandidate: this.populationCandidate ? { ...this.populationCandidate } : undefined,
+      territoryCandidate: this.territoryCandidate ? { ...this.territoryCandidate } : undefined,
+      extinctFactionIds: [...this.extinctFactions],
+      sequence: this.sequence,
+      unificationCount: this.unificationCount,
+    };
+  }
+
   getEventsForFaction(factionId: string) {
     return [...(this.eventsByFactionId.get(factionId) ?? [])].sort(compareEventsDesc);
   }

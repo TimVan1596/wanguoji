@@ -34,6 +34,10 @@ class FactionRegistryStore {
     this.sequence = 0;
   }
 
+  exportState() {
+    return { sequence: this.sequence };
+  }
+
   canRestoreFaction(team: Team) {
     if (!hasFormalStateIdentity(team)) {
       return false;

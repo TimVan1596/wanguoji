@@ -171,6 +171,27 @@ export default class WorldEventSystem {
     FactionEffects.clearStrategicModifiers();
   }
 
+  exportState() {
+    return {
+      activeEffects: this.activeEffects.map((effect) => ({ ...effect })),
+      nextEventMonth: this.nextEventYear,
+      sequence: this.sequence,
+      hegemonyCandidate: this.hegemonyCandidate ? { ...this.hegemonyCandidate } : undefined,
+      hegemonyEmitted: this.hegemonyEmitted,
+      unificationEmitted: this.unificationEmitted,
+      unifyingFactionId: this.unifyingFactionId,
+      unificationMonth: this.unificationMonth,
+      fractureUntilMonth: this.fractureUntilMonth,
+      lastRebellionCheckMonth: this.lastRebellionCheckYear,
+      lastEmpireSplitCheckMonth: this.lastEmpireSplitCheckYear,
+      lastCityFoundCheckMonth: this.lastCityFoundCheckYear,
+      lastProvisionalPressureMonth: this.lastProvisionalPressureYear,
+      cityFoundedMonths: { ...this.cityFoundedYears },
+      cityRebellionMonths: { ...this.cityRebellionYears },
+      cycleState: { ...this.cycleState },
+    };
+  }
+
   update(year: number, teams: Team[], totalCells: number) {
     this.activeEffects = this.activeEffects.filter(
       (effect) => year < effect.endYear

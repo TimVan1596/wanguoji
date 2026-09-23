@@ -83,6 +83,17 @@ export default class AutoSimulator {
     return this.speed;
   }
 
+  exportState() {
+    return {
+      started: this.started,
+      running: this.running,
+      selectedSpeed: this.speed,
+      clock: this.clock.exportState(),
+      populationSystem: this.population.exportState(),
+      worldEventSystem: this.events.exportState(),
+    };
+  }
+
   isRunning() {
     return this.started && this.running;
   }

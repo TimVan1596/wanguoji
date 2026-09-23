@@ -62,6 +62,10 @@ class WorldExileStore {
     return this.exiles.get(factionId);
   }
 
+  exportState() {
+    return [...this.exiles.values()].map((entry) => ({ ...entry, startedMonth: entry.startedMonth }));
+  }
+
   update(worldMonth: number, teams: Team[]) {
     teams
       .filter((team) => team.status === "EXILED")

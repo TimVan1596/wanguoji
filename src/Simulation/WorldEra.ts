@@ -136,6 +136,19 @@ class WorldEraStore {
     return [...this.eras];
   }
 
+  exportState() {
+    return {
+      eras: this.eras.map((era) => ({ ...era, startMonth: era.startMonth, endMonth: era.endMonth })),
+      candidateState: this.candidateState ? {
+        candidate: { ...this.candidateState.candidate },
+        sinceMonth: this.candidateState.sinceMonth,
+      } : undefined,
+      sequence: this.sequence,
+      lastObservedMonth: this.lastObservedMonth,
+      staleSinceMonth: this.staleSinceMonth,
+    };
+  }
+
   getCurrentEra() {
     return this.eras.find((era) => era.endMonth === undefined);
   }

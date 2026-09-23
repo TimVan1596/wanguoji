@@ -38,6 +38,10 @@ export default class WorldClock {
     return this.worldMonth;
   }
 
+  exportState() {
+    return { worldMonth: this.worldMonth, elapsedMs: this.elapsed, running: this.running };
+  }
+
   private publish() {
     store.dispatch(
       setWorldMonth({

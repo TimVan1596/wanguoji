@@ -232,6 +232,29 @@ export default class Player extends Phaser.GameObjects.Container {
     return this.body as Phaser.Physics.Arcade.Body;
   }
 
+  exportMovementState(unitId: string) {
+    const body = this.Body;
+    return {
+      unitId,
+      factionId: this.team.name,
+      userId: this.user?.id,
+      parentUnitId: this.parent instanceof Player ? this.parent.logicalUnitId : undefined,
+      x: this.x,
+      y: this.y,
+      vx: body?.velocity?.x ?? 0,
+      vy: body?.velocity?.y ?? 0,
+      speed: this.speed,
+      scale: this.scale,
+      radius: body?.radius ?? 0,
+      speedCoefficient: this.speedCoefficient,
+      sizeCoefficient: this.sizeCoefficient,
+      role: this.role,
+      rulerId: this.rulerId,
+      alive: this.active,
+      children: this.children.map((child) => child.logicalUnitId).filter(Boolean),
+    };
+  }
+
   update(): void {
     this.createOrUpdateLine();
   }

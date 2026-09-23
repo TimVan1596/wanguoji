@@ -63,6 +63,14 @@ class FactionEffectStore {
     return this.effects.filter((effect) => !factionId || effect.factionId === factionId);
   }
 
+  exportState() {
+    return {
+      effects: this.effects.map((effect) => ({ ...effect, startMonth: effect.startYear, endMonth: effect.endYear })),
+      strategicModifiers: [...this.strategicModifiers.entries()].map(([factionId, modifier]) => ({ factionId, ...modifier })),
+      sequence: this.sequence,
+    };
+  }
+
   getLoyaltyRecoveryMultiplier(factionId: string) {
     return this.effects
       .filter((effect) => effect.factionId === factionId)

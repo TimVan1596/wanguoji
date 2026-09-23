@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99916-alpha
+
+- Added a versioned JSON-safe WorldSaveV1 export foundation and referential validator.
+- Defined a paused, complete-month/fixed-step snapshot boundary; runtime hydration and save UI remain out of scope.
+- Exposed canonical export state from simulation/history registries without serializing Phaser objects.
+
 ## v0.99915-alpha
 
 - Constrained Empire Split city selection to the shared regional radius.
