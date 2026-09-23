@@ -18,12 +18,13 @@ export default class User {
     public face?: string,
     public loyalty = 70,
     public role: PlayerRole = "NORMAL",
-    public rulerId?: string
+    public rulerId?: string,
+    options: { deferRuntime?: boolean } = {}
   ) {
     this.sourceTeam = team;
     this.player.role = role;
     this.player.rulerId = rulerId;
-    this.load();
+    if (!options.deferRuntime) this.load();
     this.slaveGroup = new Slaves(Game.Core.scene, this);
   }
 

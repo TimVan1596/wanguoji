@@ -195,6 +195,30 @@ export default class WorldEventSystem {
     };
   }
 
+  importState(state: ReturnType<WorldEventSystem["exportState"]>) {
+    this.activeEffects = state.activeEffects.map(({ startMonth, endMonth, ...effect }) => ({
+      ...effect,
+      startYear: startMonth,
+      endYear: endMonth,
+    }));
+    this.nextEventYear = state.nextEventMonth;
+    this.sequence = state.sequence;
+    this.hegemonyCandidate = state.hegemonyCandidate ? { ...state.hegemonyCandidate } : undefined;
+    this.hegemonyEmitted = state.hegemonyEmitted;
+    this.unificationEmitted = state.unificationEmitted;
+    this.unifyingFactionId = state.unifyingFactionId;
+    this.unificationMonth = state.unificationMonth;
+    this.fractureUntilMonth = state.fractureUntilMonth;
+    this.lastRebellionCheckYear = state.lastRebellionCheckMonth;
+    this.lastEmpireSplitCheckYear = state.lastEmpireSplitCheckMonth;
+    this.lastCityFoundCheckYear = state.lastCityFoundCheckMonth;
+    this.lastProvisionalPressureYear = state.lastProvisionalPressureMonth;
+    this.cityFoundedYears = { ...state.cityFoundedMonths };
+    this.cityRebellionYears = { ...state.cityRebellionMonths };
+    this.cycleState = { ...state.cycleState };
+    this.cycleDiagnostics = getWorldCycleDiagnostics(this.cycleState, state.cycleState.lastObservedMonth);
+  }
+
   update(year: number, teams: Team[], totalCells: number) {
     this.activeEffects = this.activeEffects.filter(
       (effect) => year < effect.endYear

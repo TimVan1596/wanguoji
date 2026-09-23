@@ -15,11 +15,11 @@ export default class Slaves extends Phaser.GameObjects.Group {
   npcs: Map<string, Npc> = new Map();
   collider!: Phaser.Physics.Arcade.Collider;
 
-  constructor(public scene: Phaser.Scene, public user: User) {
+  constructor(public scene: Phaser.Scene, public user: User, deferCollider = false) {
     super(scene);
     this.runChildUpdate = true;
     this.scene.add.existing(this);
-    this.addCollider();
+    if (!deferCollider) this.addCollider();
   }
 
   addCollider() {

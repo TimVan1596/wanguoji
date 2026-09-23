@@ -90,6 +90,49 @@ export default class City {
   private lastDevastationRecoveryYear: number;
   private lastSiegeDevastationYear = -1;
 
+  static hydrate(state: Record<string, any>, block: Block, teams: Map<string, Team>) {
+    const city = Object.create(City.prototype) as City;
+    Object.assign(city, {
+      id: state.cityId,
+      name: state.name,
+      founderFactionId: state.founderFactionId,
+      block,
+      foundedYear: state.foundedMonth,
+      isCapital: state.isCapital,
+      isHistoricCity: Boolean(state.isHistoricCity),
+      isIndestructible: Boolean(state.isIndestructible),
+      ownerFactionId: state.ownerFactionId,
+      defense: state.defense,
+      maxDefense: state.maxDefense,
+      loyalty: state.loyalty,
+      fortifiedCells: [],
+      captureCount: state.captureCount,
+      lastCapturedYear: state.lastCapturedMonth,
+      history: (state.history ?? []).map(({ monthIndex, ...event }: Record<string, any>) => ({ ...event, year: monthIndex })),
+      lastRepairYear: state.lastRepairMonth,
+      lastLoyaltyYear: state.lastLoyaltyMonth,
+      lastSiegeDamageYear: state.lastSiegeDamageMonth,
+      siegeDamageRemainder: state.siegeDamageRemainder,
+      siegeContacts: new Map((state.siegeContacts ?? []).map((contact: Record<string, any>) => [contact.factionId, {
+        team: teams.get(contact.factionId), count: contact.count, year: contact.month, rulerId: contact.rulerId,
+      }])),
+      underSiege: state.underSiege,
+      attackingFactionId: state.attackingFactionId,
+      zoneHighlighted: false,
+      zoneOutline: undefined,
+      devastation: state.devastation,
+      destroyed: state.destroyed,
+      lastDevastationRecoveryYear: state.lastDevastationRecoveryMonth,
+      lastSiegeDevastationYear: state.lastSiegeDevastationMonth,
+    });
+    return city;
+  }
+
+  rebuildRuntimeVisuals() {
+    this.refreshZoneVisual();
+    this.fortifiedCells.forEach((cell) => cell.updateCityDisplay());
+  }
+
   exportState(centerGridX: number, centerGridY: number) {
     return {
       cityId: this.id,

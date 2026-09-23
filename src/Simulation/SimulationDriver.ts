@@ -86,6 +86,10 @@ export default class SimulationDriver {
     return { accumulatorMs: this.accumulatorMs };
   }
 
+  importState(state: { accumulatorMs: number }) {
+    this.accumulatorMs = state.accumulatorMs;
+  }
+
   private consumeAccumulator(
     context: SimulationStepContext,
     maxSteps: number

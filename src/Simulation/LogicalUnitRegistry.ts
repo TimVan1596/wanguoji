@@ -144,6 +144,16 @@ export default class LogicalUnitRegistry {
     return { nextUnitSequence: this.nextUnitId };
   }
 
+  importState(nextUnitSequence: number, entries: Array<{ state: LogicalUnitState; player: Player; user?: User }>) {
+    this.units.clear();
+    entries.forEach(({ state, player, user }) => {
+      this.units.set(state.unitId, { state: { ...state }, player });
+      player.logicalUnitId = state.unitId;
+      if (user) player.user = user;
+    });
+    this.nextUnitId = nextUnitSequence;
+  }
+
   syncVisuals() {
     this.units.forEach((entry) => {
       if (entry.player?.active && entry.state.alive) {

@@ -193,6 +193,43 @@ export default class Block extends Phaser.GameObjects.Rectangle {
     this.updateCityDisplay();
   }
 
+  restoreCanonicalState(state: {
+    owner?: Team;
+    isHome: boolean;
+    hp: number;
+    city?: City;
+    isCityCenter: boolean;
+  }) {
+    this.team?.blocks.remove(this);
+    this.team = state.owner;
+    if (state.owner) {
+      Game.Core?.map?.blocksGroup.remove(this);
+      state.owner.blocks.add(this);
+      this.setFillStyle(state.owner.color);
+    } else {
+      Game.Core?.map?.blocksGroup.add(this);
+      const blockColor = store.getState().config.styleTheme.blockColor;
+      this.setFillStyle(blockColor !== undefined ? blockColor : 0xebffe2);
+    }
+    this.isHome = state.isHome;
+    this.hp = state.hp;
+    if (state.city) this.setCity(state.city, state.isCityCenter);
+    else this.city = undefined;
+    this.isCityCenter = state.isCityCenter;
+    this.updateCityDisplay();
+  }
+
+  destroyRuntimeObjects() {
+    this.tween?.stop();
+    this.hall?.destroy();
+    this.tile?.destroy();
+    this.hpText?.destroy();
+    this.teamName?.destroy();
+    this.defenseBarBack?.destroy();
+    this.defenseBarFill?.destroy();
+    this.destroy(true);
+  }
+
   clearCity(city: City) {
     if (this.city !== city) {
       return;

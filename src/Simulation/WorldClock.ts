@@ -42,6 +42,13 @@ export default class WorldClock {
     return { worldMonth: this.worldMonth, elapsedMs: this.elapsed, running: this.running };
   }
 
+  importState(state: { worldMonth: number; elapsedMs: number; running: boolean }) {
+    this.worldMonth = state.worldMonth;
+    this.elapsed = state.elapsedMs;
+    this.running = state.running;
+    this.publish();
+  }
+
   private publish() {
     store.dispatch(
       setWorldMonth({

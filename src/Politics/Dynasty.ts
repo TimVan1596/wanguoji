@@ -127,6 +127,15 @@ class DynastyRegistryStore {
     };
   }
 
+  importState(state: ReturnType<DynastyRegistryStore["exportState"]>) {
+    this.dynasties = new Map(state.dynasties.map((dynasty) => [dynasty.factionId, {
+      ...dynasty,
+      rulers: dynasty.rulers.map((ruler) => ({ ...ruler, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
+      heirIds: [...dynasty.heirIds],
+    }]));
+    this.sequence = state.sequence;
+  }
+
   initializeFaction(team: Team, year: number) {
     if (this.dynasties.has(team.name)) {
       return this.dynasties.get(team.name);

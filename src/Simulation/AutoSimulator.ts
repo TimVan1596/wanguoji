@@ -94,6 +94,28 @@ export default class AutoSimulator {
     };
   }
 
+  importState(state: {
+    started: boolean;
+    selectedSpeed: number;
+    clock: { worldMonth: number; elapsedMs: number; running: boolean };
+    populationSystem: ReturnType<PopulationSystem["exportState"]>;
+    worldEventSystem: ReturnType<WorldEventSystem["exportState"]>;
+  }) {
+    this.started = state.started;
+    this.running = false;
+    this.speed = state.selectedSpeed;
+    this.clock.importState({ ...state.clock, running: false });
+    this.population.importState(state.populationSystem);
+    this.events.importState(state.worldEventSystem);
+    store.dispatch(setWorldStarted(this.started));
+    store.dispatch(setWorldRunning(false));
+    store.dispatch(setSimulationSpeed(this.speed));
+  }
+
+  getCurrentPhase(teams: Team[]) {
+    return this.events.getCurrentPhase(this.clock.worldMonth, teams);
+  }
+
   isRunning() {
     return this.started && this.running;
   }
