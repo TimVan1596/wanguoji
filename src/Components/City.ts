@@ -146,6 +146,10 @@ export default class City {
       ownerFactionId: this.ownerFactionId,
       centerGridX,
       centerGridY,
+      fortifiedCells: this.fortifiedCells.map((cell) => ({
+        gridX: Math.round(cell.x / cell.width),
+        gridY: Math.round(cell.y / cell.height),
+      })),
       foundedMonth: this.foundedYear,
       isCapital: this.isCapital,
       isHistoricCity: this.isHistoricCity,

@@ -15,9 +15,11 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   else {
     if (!finite(save.world.worldMonth) || save.world.worldMonth < 0) errors.push("world.worldMonth must be a non-negative finite month index");
     if (!finite(save.world.selectedSpeed)) errors.push("world.selectedSpeed must be finite");
+    if (typeof save.world.started !== "boolean" || typeof save.world.running !== "boolean") errors.push("world started/running flags must be boolean");
     if (!isPlainRecord(save.world.clock) || !finite(save.world.clock.elapsedMs) || !finite(save.world.clock.worldMonth)) errors.push("world.clock requires finite worldMonth and elapsedMs");
     else if (save.world.clock.worldMonth !== save.world.worldMonth) errors.push("world.clock.worldMonth must match world.worldMonth");
     if (!isPlainRecord(save.world.simulationDriver) || !finite(save.world.simulationDriver.accumulatorMs)) errors.push("world.simulationDriver.accumulatorMs must be finite");
+    if (!isPlainRecord(save.world.map) || !Number.isInteger(save.world.map.widthCells) || !Number.isInteger(save.world.map.heightCells) || !finite(save.world.map.blockSize)) errors.push("world.map geometry must contain integer cell dimensions and a finite blockSize");
   }
 
   const factions = array(save.factions, "factions", errors);
@@ -29,6 +31,18 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   const cityIds = uniqueIds(cities, "cityId", "cities", errors);
   const userIds = uniqueIds(users, "userId", "users", errors);
   const unitIds = uniqueIds(units, "unitId", "units", errors);
+  factions.forEach((faction) => ["color", "firstFoundedMonth", "currentActiveSinceMonth", "cumulativeActiveMonths", "homeGridX", "homeGridY"].forEach((key) => {
+    if (!finite(faction[key])) errors.push(`factions.${key} must be finite`);
+  }));
+  cities.forEach((city) => ["centerGridX", "centerGridY", "foundedMonth", "defense", "maxDefense", "loyalty", "devastation", "captureCount"].forEach((key) => {
+    if (!finite(city[key])) errors.push(`cities.${key} must be finite`);
+  }));
+  users.forEach((user) => ["loyalty", "score"].forEach((key) => {
+    if (!finite(user[key])) errors.push(`users.${key} must be finite`);
+  }));
+  units.forEach((unit) => ["x", "y", "vx", "vy", "speed", "radius", "scale", "speedCoefficient", "sizeCoefficient"].forEach((key) => {
+    if (!finite(unit[key])) errors.push(`units.${key} must be finite`);
+  }));
   const rulerIds = new Set<string>();
   const duplicateRulerIds = new Set<string>();
   dynasties.forEach((dynasty) => {

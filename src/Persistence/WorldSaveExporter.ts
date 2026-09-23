@@ -45,11 +45,17 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
   const users: UserSaveV1[] = [];
   const units: UnitSaveV1[] = [];
   const seenUnits = new Map<Player, string>();
+  const usedUnitIds = new Set<string>();
   let generatedUnitSequence = 1;
   const stableUnitId = (player: Player) => {
     const existing = seenUnits.get(player);
     if (existing) return existing;
-    const unitId = player.logicalUnitId ?? `runtime-unit-${generatedUnitSequence++}`;
+    let unitId = player.logicalUnitId;
+    if (unitId && usedUnitIds.has(unitId)) throw new Error(`Duplicate runtime logical unit id: ${unitId}`);
+    if (!unitId) {
+      do { unitId = `runtime-unit-${generatedUnitSequence++}`; } while (usedUnitIds.has(unitId));
+    }
+    usedUnitIds.add(unitId);
     seenUnits.set(player, unitId);
     return unitId;
   };

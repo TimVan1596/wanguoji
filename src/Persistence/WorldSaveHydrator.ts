@@ -76,7 +76,17 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
       city,
       isCityCenter: Boolean(state.isCityCenter),
     });
-    if (city) city.fortifiedCells.push(block);
+  });
+  save.cities.forEach((state) => {
+    const city = citiesById.get(state.cityId)!;
+    const orderedCells = Array.isArray(state.fortifiedCells)
+      ? state.fortifiedCells as Array<{ gridX: number; gridY: number }>
+      : save.blocks.filter((block) => block.cityId === state.cityId).map(({ gridX, gridY }) => ({ gridX, gridY }));
+    city.fortifiedCells = orderedCells.map(({ gridX, gridY }) => {
+      const block = blocksByGrid.get(`${gridX},${gridY}`);
+      if (!block || block.city !== city) throw new Error(`City ${city.id} fortified block sequence conflicts with saved ownership.`);
+      return block;
+    });
   });
   save.factions.forEach((state) => {
     const team = teamsById.get(state.factionId)!;
@@ -300,6 +310,12 @@ function validateGeometryAndOwnership(save: WorldSaveV1, core: Core) {
     const zone = save.blocks.filter((block) => block.cityId === city.cityId);
     if (!zone.some((block) => block.isCityCenter && block.gridX === city.centerGridX && block.gridY === city.centerGridY)) throw new Error(`City ${city.cityId} has no saved center-cell relationship.`);
     if (zone.some((block) => block.ownerFactionId !== city.ownerFactionId)) throw new Error(`City ${city.cityId} fortified zone ownership conflicts with its owner.`);
+    if (Array.isArray(city.fortifiedCells)) {
+      const savedZone = city.fortifiedCells as Array<{ gridX: number; gridY: number }>;
+      if (savedZone.length !== zone.length || savedZone.some(({ gridX, gridY }) => !zone.some((block) => block.gridX === gridX && block.gridY === gridY))) {
+        throw new Error(`City ${city.cityId} fortified zone sequence does not match authoritative block references.`);
+      }
+    }
     const contacts = Array.isArray(city.siegeContacts) ? city.siegeContacts as Array<{ factionId: string }> : [];
     if (contacts.some((contact) => !factionIds.has(contact.factionId))) throw new Error(`City ${city.cityId} has an unknown siege faction reference.`);
   });

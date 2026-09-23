@@ -268,6 +268,16 @@ export default class Player extends Phaser.GameObjects.Container {
     this.sizeCoefficient = state.sizeCoefficient;
     this.role = state.role;
     this.rulerId = state.rulerId;
+    if (state.role === "RULER" && !this.crownMarker) {
+      this.crownMarker = this.scene.add
+        .text(Game.BlockSize / 2, -3, "♛", {
+          fontSize: "10px", color: "#f6c945", stroke: "#000000", strokeThickness: 2,
+        })
+        .setOrigin(0.5)
+        .setDepth(this.depth + 3);
+      this.add(this.crownMarker);
+    }
+    this.crownMarker?.setVisible(state.role === "RULER").setActive(state.role === "RULER");
     this.Body.setCircle(state.radius);
     this.Body.setVelocity(state.vx, state.vy);
     this.Body.moves = true;
