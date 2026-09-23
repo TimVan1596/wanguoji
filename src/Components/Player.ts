@@ -250,6 +250,7 @@ export default class Player extends Phaser.GameObjects.Container {
       sizeCoefficient: this.sizeCoefficient,
       role: this.role,
       rulerId: this.rulerId,
+      faceKey: this.face?.texture?.key,
       alive: this.active,
       children: this.children.map((child) => child.logicalUnitId).filter(Boolean),
     };

@@ -7,6 +7,12 @@ import WorldEra, { classifyEra } from "../../Simulation/WorldEra";
 import { calculateTerritoryMetrics, getFactionTerritoryMetric } from "../../Simulation/TerritoryMetrics";
 import { formatWorldDate, formatWorldDuration } from "../../Simulation/WorldTime";
 import { RootState } from "../../store";
+import { exportWorldSave } from "../../Persistence/WorldSaveExporter";
+import { hydrateWorldSave, HydrationReport } from "../../Persistence/WorldSaveHydrator";
+import { validateWorldSave } from "../../Persistence/WorldSaveValidator";
+import { isCanonicalWorldSaveEquivalent, type WorldSaveV1 } from "../../Persistence/WorldSaveSchema";
+
+let debugMemorySnapshot: WorldSaveV1 | undefined;
 
 const thresholds = [
   ["整合领袖", "22% 领土，稳定度 60，领先 3 或 1.1 倍"],
@@ -26,6 +32,8 @@ export default function WorldDiagnosticsPanel() {
   const worldMonth = useSelector((state: RootState) => state.root.worldMonth);
   const worldPhase = useSelector((state: RootState) => state.root.worldPhase);
   const [, setTick] = useState(0);
+  const [hydrationBusy, setHydrationBusy] = useState(false);
+  const [hydrationStatus, setHydrationStatus] = useState("");
   useEffect(() => {
     const timer = window.setInterval(() => setTick((value) => value + 1), 500);
     return () => window.clearInterval(timer);
@@ -73,6 +81,38 @@ export default function WorldDiagnosticsPanel() {
     `王朝秩序：${diagnostics.cycle?.dynasticOrderFactionId ?? "—"}`,
   ].join("\n");
 
+  const snapshotAndReload = async () => {
+    const core = Game.Core;
+    if (!core || hydrationBusy) return;
+    setHydrationBusy(true);
+    setHydrationStatus("等待下一个完整月份与固定步长边界…");
+    try {
+      await core.pauseAtNextSafeSnapshotBoundary();
+      const exported = exportWorldSave(core);
+      debugMemorySnapshot = JSON.parse(JSON.stringify(exported)) as WorldSaveV1;
+      const validation = validateWorldSave(debugMemorySnapshot);
+      if (!validation.valid) throw new Error(validation.errors.join("; "));
+      const report: HydrationReport = hydrateWorldSave(core, debugMemorySnapshot);
+      const afterHydration = exportWorldSave(core);
+      const equivalent = isCanonicalWorldSaveEquivalent(debugMemorySnapshot, afterHydration);
+      setHydrationStatus([
+        "Hydration OK",
+        `saved month: ${debugMemorySnapshot.world.worldMonth}`,
+        `hydrated month: ${report.worldMonth}`,
+        `factions: ${report.factionCount}`,
+        `cities: ${report.cityCount}`,
+        `units: ${report.unitCount}`,
+        `history events: ${report.historyEventCount}`,
+        `validator: ${report.validatorResult}`,
+        `canonical round-trip: ${equivalent ? "matched" : "DIFF"}`,
+      ].join("｜"));
+    } catch (error) {
+      setHydrationStatus(`Hydration failed: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      setHydrationBusy(false);
+    }
+  };
+
   return (
     <Box sx={{ position: "fixed", zIndex: 5000, right: 350, bottom: 8, width: 360, maxHeight: "48vh", overflowY: "auto", p: 1, bgcolor: "rgba(20,24,28,.95)", color: "#fff", border: "1px solid #90caf9", fontSize: 11 }}>
       <Typography variant="subtitle2" sx={{ color: "#90caf9" }}>世界格局诊断（debug=1）</Typography>
@@ -80,6 +120,10 @@ export default function WorldDiagnosticsPanel() {
       <Typography variant="caption">关键门槛（仅解释真实规则，不改变规则）</Typography>
       {thresholds.map(([label, text]) => <Typography key={label} variant="caption" component="div">{label}：{text}</Typography>)}
       <Button size="small" variant="outlined" sx={{ mt: 0.75, color: "#90caf9", borderColor: "#90caf9" }} onClick={() => navigator.clipboard?.writeText(summary)}>复制诊断摘要</Button>
+      <Button size="small" variant="outlined" disabled={hydrationBusy} sx={{ mt: 0.75, ml: 0.5, color: "#a5d6a7", borderColor: "#a5d6a7" }} onClick={snapshotAndReload}>
+        {hydrationBusy ? "正在重载…" : "内存快照并重载"}
+      </Button>
+      {hydrationStatus && <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9, my: 0.5 }}>{hydrationStatus}</Typography>}
     </Box>
   );
 }

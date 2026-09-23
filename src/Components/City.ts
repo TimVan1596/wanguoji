@@ -133,6 +133,11 @@ export default class City {
     this.fortifiedCells.forEach((cell) => cell.updateCityDisplay());
   }
 
+  destroyRuntimeVisuals() {
+    this.zoneOutline?.destroy();
+    this.zoneOutline = undefined;
+  }
+
   exportState(centerGridX: number, centerGridY: number) {
     return {
       cityId: this.id,

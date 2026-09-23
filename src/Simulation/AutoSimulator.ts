@@ -106,7 +106,7 @@ export default class AutoSimulator {
     this.speed = state.selectedSpeed;
     this.clock.importState({ ...state.clock, running: false });
     this.population.importState(state.populationSystem);
-    this.events.importState(state.worldEventSystem);
+    this.events.importState(state.worldEventSystem, state.clock.worldMonth);
     store.dispatch(setWorldStarted(this.started));
     store.dispatch(setWorldRunning(false));
     store.dispatch(setSimulationSpeed(this.speed));

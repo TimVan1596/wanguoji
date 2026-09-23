@@ -195,7 +195,7 @@ export default class WorldEventSystem {
     };
   }
 
-  importState(state: ReturnType<WorldEventSystem["exportState"]>) {
+  importState(state: ReturnType<WorldEventSystem["exportState"]>, worldMonth = 0) {
     this.activeEffects = state.activeEffects.map(({ startMonth, endMonth, ...effect }) => ({
       ...effect,
       startYear: startMonth,
@@ -216,7 +216,7 @@ export default class WorldEventSystem {
     this.cityFoundedYears = { ...state.cityFoundedMonths };
     this.cityRebellionYears = { ...state.cityRebellionMonths };
     this.cycleState = { ...state.cycleState };
-    this.cycleDiagnostics = getWorldCycleDiagnostics(this.cycleState, state.cycleState.lastObservedMonth);
+    this.cycleDiagnostics = getWorldCycleDiagnostics(this.cycleState, worldMonth);
   }
 
   update(year: number, teams: Team[], totalCells: number) {

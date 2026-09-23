@@ -66,6 +66,7 @@ import {
   setBackgroundCatchUpState,
 } from "../store/rootSlice";
 import { setTodayMvpUsers } from "../store/topSlice";
+import { isSafeSnapshotBoundary } from "../Persistence/SnapshotBoundary";
 import User from "../Components/User";
 import {
   getGridGodRuntimeMode,
@@ -122,6 +123,7 @@ export default class Core {
   private pointerDownScreen: { x: number; y: number } | undefined;
   private worldInstanceId = 0;
   private visibilityListenerBound = false;
+  private pendingSafePause: { resolve: () => void; reject: (error: Error) => void } | undefined;
   private runtimeMode: GridGodRuntimeMode = getGridGodRuntimeMode();
   private lastDesktopHeartbeatAt = 0;
   private catchUpDiagnostics = {
@@ -517,6 +519,92 @@ export default class Core {
     }
   }
 
+  pauseAtNextSafeSnapshotBoundary() {
+    if (!this.simulator || !store.getState().root.worldStarted) {
+      return Promise.reject(new Error("Cannot request a snapshot before the world has started."));
+    }
+    if (this.backgroundProgression.isCatchingUp()) {
+      return Promise.reject(new Error("Wait for background catch-up to finish before requesting a snapshot."));
+    }
+    const snapshotState = () => ({
+      paused: !this.simulator?.isRunning(),
+      clockElapsedMs: this.simulator?.exportState().clock.elapsedMs ?? Number.NaN,
+      simulationAccumulatorMs: this.simulationDriver.getAccumulatorMs(),
+    });
+    if (isSafeSnapshotBoundary(snapshotState())) return Promise.resolve();
+    if (this.pendingSafePause) return Promise.reject(new Error("A safe snapshot request is already pending."));
+    return new Promise<void>((resolve, reject) => {
+      this.pendingSafePause = { resolve, reject };
+      if (!this.simulator?.isRunning()) this.setWorldRunning(true);
+    });
+  }
+
+  private resolvePendingSafePause() {
+    if (!this.pendingSafePause || this.backgroundProgression.isCatchingUp()) return;
+    const state = {
+      paused: false,
+      clockElapsedMs: this.simulator?.exportState().clock.elapsedMs ?? Number.NaN,
+      simulationAccumulatorMs: this.simulationDriver.getAccumulatorMs(),
+    };
+    if (Math.abs(state.clockElapsedMs) > 1e-6 || Math.abs(state.simulationAccumulatorMs) > 1e-6) return;
+    const pending = this.pendingSafePause;
+    this.pendingSafePause = undefined;
+    this.setWorldRunning(false);
+    pending.resolve();
+  }
+
+  prepareForHydration(expected: { widthCells: number; heightCells: number; blockSize: number }) {
+    if (this.backgroundProgression.isCatchingUp()) throw new Error("Cannot hydrate during background catch-up.");
+    if (this.simulator?.isRunning()) throw new Error("Hydration requires a paused world.");
+    if (expected.blockSize !== Game.BlockSize || expected.widthCells !== this.scene.renderer.width / Game.BlockSize || expected.heightCells !== this.scene.renderer.height / Game.BlockSize) {
+      throw new Error("Save map geometry is incompatible with the current runtime; no coordinates were scaled.");
+    }
+    this.scene.physics.world.pause();
+    this.scene.time.paused = true;
+    this.scene.tweens.pauseAll();
+    this.scene.physics.world.colliders.getActive().forEach((collider) => collider.destroy());
+    this.teams.forEach((team) => {
+      team.farms.setDie();
+      team.users.forEach((user) => {
+        user.slaveGroup.collider?.destroy();
+        [...user.slaveGroup.npcs.values()].forEach((npc) => npc.destroyPlayerTree());
+        user.slaveGroup.destroy(true);
+      });
+      [...team.players.getChildren()].forEach((player) => (player as Player).destroyPlayerTree());
+      team.players.destroy(true);
+      team.blocks.destroy(false);
+      team.farms.destroy(true);
+      team.cities.forEach((city) => city.destroyRuntimeVisuals());
+    });
+    this.map?.blocks.flat().forEach((block) => block.destroyRuntimeObjects());
+    this.map?.blocksGroup.destroy(false);
+    this.factionLabels.forEach((label) => label.destroy());
+    this.mapTooltip?.destroy();
+    this.clearUp();
+    this.runtimeFactions.reset();
+    this.map = new Map(this.scene);
+    this.bindMapPointerResolver();
+    this.simulator = new AutoSimulator();
+    this.scene.physics.world.pause();
+    this.scene.time.paused = true;
+    this.scene.tweens.pauseAll();
+  }
+
+  installHydratedTeams(teams: Team[]) {
+    this.runtimeFactions.reset(teams);
+    teams.forEach((team) => this.registerTeamColliders(team));
+    teams.flatMap((team) => [...team.users]).forEach((user) => user.slaveGroup.addCollider());
+    this.rebuildCityInteractionIndex();
+    store.dispatch(setTeams(teams));
+    store.dispatch(setSelectedFactionName(undefined));
+    store.dispatch(setSelectedCityId(undefined));
+    store.dispatch(setRightPanelTab("history"));
+  }
+
+  setHydratedFactionShells(teams: Team[]) {
+    this.runtimeFactions.reset(teams);
+  }
+
   setSimulationSpeed(speed: number) {
     if (this.backgroundProgression.isCatchingUp()) {
       return;
@@ -799,6 +887,7 @@ export default class Core {
           step: (fixedDeltaMs) => this.advanceLogicalStep(fixedDeltaMs),
         });
       }
+      this.resolvePendingSafePause();
       if (this.logicalGameplayAuthority) {
         this.logicalUnitRegistry.syncVisuals();
       }

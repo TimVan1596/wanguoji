@@ -70,7 +70,11 @@ export default class Farms extends Phaser.GameObjects.Group {
           })
         );
         const saved = timerStates?.find((timer) => timer.name === config.name);
-        if (saved?.paused) this.farms.get(config.name)?.pause();
+        const timer = this.farms.get(config.name);
+        if (saved && timer) {
+          timer.repeatCount = saved.repeatCount;
+          timer.paused = saved.paused;
+        }
       });
     }
   }

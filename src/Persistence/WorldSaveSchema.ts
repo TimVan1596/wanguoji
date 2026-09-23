@@ -128,3 +128,12 @@ export function createEmptyWorldSaveV1(): WorldSaveV1 {
     worldEventSystem: {},
   };
 }
+
+export function canonicalWorldSaveProjection(save: WorldSaveV1) {
+  const { createdAt: _createdAt, ...canonical } = save;
+  return canonical;
+}
+
+export function isCanonicalWorldSaveEquivalent(a: WorldSaveV1, b: WorldSaveV1) {
+  return JSON.stringify(canonicalWorldSaveProjection(a)) === JSON.stringify(canonicalWorldSaveProjection(b));
+}
