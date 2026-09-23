@@ -99,11 +99,11 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
   citiesById.forEach((city) => city.rebuildRuntimeVisuals());
 
   importPoliticalAndHistoryState(save);
-  const unitCount = hydrateUsersAndUnits(save, core, teamsById);
+  const hydrated = hydrateUsersAndUnits(save, core, teamsById);
   const logicalSequence = (save.registries.logicalUnitRegistry as { nextUnitSequence: number }).nextUnitSequence;
   const logicalEntries = save.units.map((unit) => {
-    const player = hydratedPlayers.get(unit.unitId)!;
-    const user = unit.userId === undefined ? undefined : hydratedUsers.get(String(unit.userId));
+    const player = hydrated.playersByUnitId.get(unit.unitId)!;
+    const user = unit.userId === undefined ? undefined : hydrated.usersById.get(String(unit.userId));
     return {
       player,
       user,
@@ -155,18 +155,15 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
     worldMonth: save.world.worldMonth,
     factionCount: teams.length,
     cityCount: save.cities.length,
-    unitCount,
+    unitCount: hydrated.unitCount,
     historyEventCount: WorldHistory.getEventCount(),
     validatorResult: "valid",
   };
 }
 
-const hydratedPlayers = new Map<string, Player>();
-const hydratedUsers = new Map<string, User>();
-
 function hydrateUsersAndUnits(save: WorldSaveV1, core: Core, teams: Map<string, Team>) {
-  hydratedPlayers.clear();
-  hydratedUsers.clear();
+  const playersByUnitId = new Map<string, Player>();
+  const usersById = new Map<string, User>();
   const unitById = new Map(save.units.map((unit) => [unit.unitId, unit]));
   const childIds = new Set(save.units.flatMap((unit) => Array.isArray(unit.children) ? unit.children as string[] : []));
   const userSaves = save.users;
@@ -185,18 +182,18 @@ function hydrateUsersAndUnits(save: WorldSaveV1, core: Core, teams: Map<string, 
     player.user = user;
     team.users.add(user);
     if (user.role === "RULER") team.rulerUser = user;
-    hydratedUsers.set(String(state.userId), user);
-    hydratedPlayers.set(unit.unitId, player);
+    usersById.set(String(state.userId), user);
+    playersByUnitId.set(unit.unitId, player);
     applyUnitState(player, unit);
   });
 
   const createTree = (unitId: string, inheritedKind?: string, parent?: Player, user?: User, group?: Phaser.GameObjects.Group) => {
     const unit = unitById.get(unitId);
     if (!unit) throw new Error(`Missing unit ${unitId}`);
-    let player = hydratedPlayers.get(unitId);
+    let player = playersByUnitId.get(unitId);
     const kind = String(unit.kind ?? inheritedKind ?? "player");
     const team = teams.get(unit.factionId)!;
-    const resolvedUser = user ?? (unit.userId === undefined ? undefined : hydratedUsers.get(String(unit.userId)));
+    const resolvedUser = user ?? (unit.userId === undefined ? undefined : usersById.get(String(unit.userId)));
     if (!player) {
       const parentGroup = group ?? (kind === "slave" ? resolvedUser?.slaveGroup : kind === "farm-npc" ? team.farms : undefined);
       if (kind === "slave" || kind === "farm-npc") {
@@ -209,7 +206,7 @@ function hydrateUsersAndUnits(save: WorldSaveV1, core: Core, teams: Map<string, 
       player.logicalUnitId = unit.unitId;
       player.user = resolvedUser;
       if (parent) parent.children.push(player);
-      hydratedPlayers.set(unitId, player);
+      playersByUnitId.set(unitId, player);
       applyUnitState(player, unit);
       if (player instanceof Npc) {
         const color = unit.npcLevelColor;
@@ -229,16 +226,16 @@ function hydrateUsersAndUnits(save: WorldSaveV1, core: Core, teams: Map<string, 
   };
 
   userSaves.forEach((state) => {
-    const user = hydratedUsers.get(String(state.userId))!;
+    const user = usersById.get(String(state.userId))!;
     createTree(state.playerUnitId, "user", undefined, user);
   });
 
   userSaves.forEach((state) => {
-    const user = hydratedUsers.get(String(state.userId))!;
+    const user = usersById.get(String(state.userId))!;
     (Array.isArray(state.slaveUnits) ? state.slaveUnits as string[] : []).forEach((unitId) => createTree(unitId, "slave", undefined, user, user.slaveGroup));
   });
-  save.units.filter((unit) => !childIds.has(unit.unitId) && !hydratedPlayers.has(unit.unitId)).forEach((unit) => {
-    const user = unit.userId === undefined ? undefined : hydratedUsers.get(String(unit.userId));
+  save.units.filter((unit) => !childIds.has(unit.unitId) && !playersByUnitId.has(unit.unitId)).forEach((unit) => {
+    const user = unit.userId === undefined ? undefined : usersById.get(String(unit.userId));
     createTree(unit.unitId, String(unit.kind ?? "player"), undefined, user);
   });
   save.factions.forEach((state) => {
@@ -248,13 +245,13 @@ function hydrateUsersAndUnits(save: WorldSaveV1, core: Core, teams: Map<string, 
   });
   save.units.forEach((unit) => {
     const faceKey = unit.faceKey;
-    const player = hydratedPlayers.get(unit.unitId);
+    const player = playersByUnitId.get(unit.unitId);
     if (player && typeof faceKey === "string" && core.scene.textures.exists(faceKey)) {
       player.setFace(faceKey);
       applyUnitState(player, unit);
     }
   });
-  return hydratedPlayers.size;
+  return { unitCount: playersByUnitId.size, playersByUnitId, usersById };
 }
 
 function applyUnitState(player: Player, unit: WorldSaveV1["units"][number]) {
@@ -365,6 +362,8 @@ function validateRequiredImportState(save: WorldSaveV1) {
   save.units.forEach((unit) => {
     [unit.x, unit.y, unit.vx, unit.vy, unit.speed, unit.radius, unit.scale, unit.speedCoefficient, unit.sizeCoefficient]
       .forEach((value) => { if (!Number.isFinite(value)) throw new Error(`Unit ${unit.unitId} has a non-finite movement value.`); });
+    if (unit.radius <= 0 || unit.scale <= 0 || unit.speed < 0) throw new Error(`Unit ${unit.unitId} has invalid physical dimensions or speed.`);
+    if (unit.role !== "NORMAL" && unit.role !== "RULER") throw new Error(`Unit ${unit.unitId} has an unsupported role.`);
   });
   save.users.forEach((user) => {
     if (typeof user.userId !== "number" || !Number.isFinite(user.userId)) throw new Error(`User id ${String(user.userId)} is not supported by the current runtime.`);

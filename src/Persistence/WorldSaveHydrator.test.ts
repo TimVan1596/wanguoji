@@ -2,6 +2,10 @@ import { describe, expect, it } from "vitest";
 import { createEmptyWorldSaveV1, isCanonicalWorldSaveEquivalent } from "./WorldSaveSchema";
 import { validateWorldSave } from "./WorldSaveValidator";
 import WorldHistory from "../History/WorldHistory";
+import WorldEra from "../Simulation/WorldEra";
+import FactionSnapshots from "../Simulation/FactionSnapshots";
+import FactionEffects from "../Simulation/FactionEffects";
+import WorldRemnants from "../Simulation/WorldRemnants";
 
 describe("runtime hydration foundation", () => {
   it("keeps canonical JSON projections equal when only creation metadata differs", () => {
@@ -30,6 +34,28 @@ describe("runtime hydration foundation", () => {
     expect(WorldHistory.exportState().sequence).toBe(7);
     expect(WorldHistory.exportState().events[0].id).toBe("evt-restore-check");
     WorldHistory.importState(original as never);
+  });
+
+  it("round-trips era, snapshot, effect, and remnant import state without creating facts", () => {
+    const eraBefore = WorldEra.exportState();
+    const snapshotsBefore = FactionSnapshots.exportState();
+    const effectsBefore = FactionEffects.exportState();
+    const remnantsBefore = WorldRemnants.exportState();
+    const eraFixture = { ...eraBefore, sequence: eraBefore.sequence + 2, lastObservedMonth: 240 };
+    WorldEra.importState(eraFixture);
+    expect(WorldEra.exportState()).toEqual(eraFixture);
+    const snapshotFixture = { ...snapshotsBefore, lastSnapshotMonth: 144 };
+    FactionSnapshots.importState(snapshotFixture);
+    expect(FactionSnapshots.exportState()).toEqual(snapshotFixture);
+    const effectFixture = { ...effectsBefore, sequence: effectsBefore.sequence + 3 };
+    FactionEffects.importState(effectFixture);
+    expect(FactionEffects.exportState()).toEqual(effectFixture);
+    WorldRemnants.importState([{ factionId: "qin", population: 2, extinctMonth: 120 }]);
+    expect(WorldRemnants.exportState()).toEqual([{ factionId: "qin", population: 2, extinctMonth: 120 }]);
+    WorldEra.importState(eraBefore);
+    FactionSnapshots.importState(snapshotsBefore);
+    FactionEffects.importState(effectsBefore);
+    WorldRemnants.importState(remnantsBefore);
   });
 
 });

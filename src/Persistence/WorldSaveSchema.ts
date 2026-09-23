@@ -135,5 +135,15 @@ export function canonicalWorldSaveProjection(save: WorldSaveV1) {
 }
 
 export function isCanonicalWorldSaveEquivalent(a: WorldSaveV1, b: WorldSaveV1) {
-  return JSON.stringify(canonicalWorldSaveProjection(a)) === JSON.stringify(canonicalWorldSaveProjection(b));
+  return JSON.stringify(sortKeys(canonicalWorldSaveProjection(a))) === JSON.stringify(sortKeys(canonicalWorldSaveProjection(b)));
+}
+
+function sortKeys(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(sortKeys);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value as Record<string, unknown>)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, entry]) => [key, sortKeys(entry)]));
+  }
+  return value;
 }

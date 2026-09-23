@@ -268,6 +268,7 @@ export default class Player extends Phaser.GameObjects.Container {
     this.sizeCoefficient = state.sizeCoefficient;
     this.role = state.role;
     this.rulerId = state.rulerId;
+    this.Body.updateFromGameObject();
     if (state.role === "RULER" && !this.crownMarker) {
       this.crownMarker = this.scene.add
         .text(Game.BlockSize / 2, -3, "♛", {

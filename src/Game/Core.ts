@@ -563,17 +563,34 @@ export default class Core {
     this.scene.time.paused = true;
     this.scene.tweens.pauseAll();
     this.scene.physics.world.colliders.getActive().forEach((collider) => collider.destroy());
+    const destroyedPlayers = new Set<Player>();
+    const destroyPlayer = (player: Player) => {
+      if (destroyedPlayers.has(player)) return;
+      destroyedPlayers.add(player);
+      [...player.children].forEach(destroyPlayer);
+      player.children = [];
+      player.line?.destroy();
+      player.team.players.remove(player);
+      player.destroy(true);
+    };
     this.teams.forEach((team) => {
       team.farms.setDie();
       team.users.forEach((user) => {
         user.slaveGroup.collider?.destroy();
-        [...user.slaveGroup.npcs.values()].forEach((npc) => npc.destroyPlayerTree());
-        user.slaveGroup.destroy(true);
+        [...user.slaveGroup.npcs.values()].forEach(destroyPlayer);
+        user.slaveGroup.npcs.clear();
+        user.slaveGroup.clear(false, false);
+        user.slaveGroup.destroy(true, false);
       });
-      [...team.players.getChildren()].forEach((player) => (player as Player).destroyPlayerTree());
-      team.players.destroy(true);
-      team.blocks.destroy(false);
-      team.farms.destroy(true);
+      [...team.farms.npcs.values()].forEach(destroyPlayer);
+      team.farms.npcs.clear();
+      [...team.players.getChildren()].forEach((player) => destroyPlayer(player as Player));
+      team.players.clear(false, false);
+      team.players.destroy(true, false);
+      team.blocks.clear(false, false);
+      team.blocks.destroy(true, false);
+      team.farms.clear(false, false);
+      team.farms.destroy(true, false);
       team.cities.forEach((city) => city.destroyRuntimeVisuals());
     });
     this.map?.blocks.flat().forEach((block) => block.destroyRuntimeObjects());
