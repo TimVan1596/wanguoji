@@ -808,14 +808,16 @@ export default class WorldEventSystem {
         team.cities,
         EMPIRE_SPLIT_MAX_CITIES
       ) as City[];
-      const rebel = FactionRegistry.createSplitFaction(team, splitCities, year);
-      if (rebel) {
+      const split = FactionRegistry.createSplitFaction(team, splitCities, year);
+      if (split) {
+        const rebel = split.team;
+        const transferredCities = split.transferredCities;
         WorldHistory.addEmpireSplit(
           year,
           team.name,
           rebel.name,
-          splitCities.map((city) => city.name),
-          splitCities.map((city) => city.id),
+          transferredCities.map((city) => city.name),
+          transferredCities.map((city) => city.id),
           DynastyRegistry.getRulerDisplay(rebel.name),
           DynastyRegistry.getCurrentRuler(rebel.name)?.id,
           `founding-${rebel.name}-${year}`

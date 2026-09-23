@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99914-alpha
+
+- Unified ruler current/terminal snapshot derivation.
+- Added historical faction context to chapter banners.
+- Recorded only cities that actually transferred during an empire split.
+
 ## v0.99913-alpha
 
 - Bounded ruler chronicles to political faction participation after exile.

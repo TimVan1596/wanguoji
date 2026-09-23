@@ -80,8 +80,12 @@ export function finishRulerChronicle(
 }
 
 export function getRulerTerritoryDelta(chronicle: RulerChronicle) {
-  const end = chronicle.endSnapshot ?? chronicle.accessionSnapshot;
+  const end = getRulerEffectiveSnapshot(chronicle);
   return end.territoryShare - chronicle.accessionSnapshot.territoryShare;
+}
+
+export function getRulerEffectiveSnapshot(chronicle: RulerChronicle) {
+  return chronicle.endSnapshot ?? chronicle.latestSnapshot ?? chronicle.accessionSnapshot;
 }
 
 export function buildRulerTags(
@@ -89,7 +93,7 @@ export function buildRulerTags(
   reignMonths: number
 ) {
   const tags: string[] = [];
-  const end = chronicle.endSnapshot ?? chronicle.accessionSnapshot;
+  const end = getRulerEffectiveSnapshot(chronicle);
   const outcome = evaluateReignOutcome(chronicle.accessionSnapshot, end);
 
   if (chronicle.foundedStateName) {
@@ -149,7 +153,7 @@ export function buildRulerAssessment(
   accessionAge?: number
 ) {
   const tags = buildRulerTags(chronicle, reignMonths);
-  const end = chronicle.endSnapshot ?? chronicle.accessionSnapshot;
+  const end = getRulerEffectiveSnapshot(chronicle);
   const start = chronicle.accessionSnapshot;
   const outcome = evaluateReignOutcome(start, end);
   const territoryDelta = outcome.territoryDelta;

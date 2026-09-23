@@ -1,4 +1,5 @@
 import type { WorldEvent } from "./WorldHistory";
+import { formatHistoryEventTitle, type HistoryFactionLike } from "./HistoryRenderRules";
 
 export interface ChapterBannerItem {
   id: string;
@@ -9,19 +10,20 @@ export interface ChapterBannerItem {
 const MAX_BANNER_TEXT_LENGTH = 28;
 
 export function createChapterBannerForEvent(
-  event: WorldEvent
+  event: WorldEvent,
+  factionById?: Map<string, HistoryFactionLike>
 ): ChapterBannerItem | undefined {
   if (event.type === "world-unification") {
     return {
       id: event.id,
-      text: trimBannerText(event.title),
+      text: trimBannerText(factionById ? formatHistoryEventTitle(event, factionById) : event.title),
       priority: 100,
     };
   }
   if (event.type === "empire-split" || event.type === "world-fractured") {
     return {
       id: event.id,
-      text: trimBannerText(event.type === "empire-split" ? event.title : "天下再裂"),
+      text: trimBannerText(event.type === "empire-split" && factionById ? formatHistoryEventTitle(event, factionById) : event.type === "empire-split" ? event.title : "天下再裂"),
       priority: 95,
     };
   }
@@ -45,7 +47,7 @@ export function createChapterBannerForEvent(
     if (!displayName || !rulerName) {
       return {
         id: event.id,
-        text: trimBannerText(event.title),
+        text: trimBannerText(factionById ? formatHistoryEventTitle(event, factionById) : event.title),
         priority: 85,
       };
     }

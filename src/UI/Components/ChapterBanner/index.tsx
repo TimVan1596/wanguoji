@@ -23,6 +23,7 @@ export default function ChapterBanner() {
   const initializedRef = useRef(false);
   const [current, setCurrent] = useState<ChapterBannerItem>();
   const [pending, setPending] = useState<ChapterBannerItem[]>([]);
+  const teams = useSelector((state: RootState) => state.root.teams);
   const [fading, setFading] = useState(false);
 
   useEffect(() => {
@@ -60,7 +61,8 @@ export default function ChapterBanner() {
           .sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year));
         unseen.forEach((event) => {
           seenIds.current.add(event.id);
-          const banner = createChapterBannerForEvent(event);
+          const factionById = new Map(teams.map((team) => [team.name, team]));
+          const banner = createChapterBannerForEvent(event, factionById);
           if (!banner) {
             return;
           }

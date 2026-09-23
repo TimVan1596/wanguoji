@@ -231,13 +231,16 @@ class FactionRegistryStore {
       .slice(0, Phaser.Math.Between(REBEL_INITIAL_POPULATION_MIN, REBEL_INITIAL_POPULATION_MAX));
     lowLoyaltyUsers.forEach((user) => user.obedience(team));
 
-    cities.forEach((city) => city.revoltTo(team, year));
+    const transferredCities = cities.filter((city) => city.revoltTo(team, year));
+    if (transferredCities.length === 0) {
+      return undefined;
+    }
     this.transferNearbyTerritory(previousOwner, team, coreCity);
 
     const targetPopulation = Phaser.Math.Between(3, 8);
     const needed = Math.max(1, Math.min(2, targetPopulation - lowLoyaltyUsers.length));
     this.spawnMembers(team, needed, "Split", year);
-    return team;
+    return { team, transferredCities };
   }
 
   foundCity(team: Team, block: Block, cityName: string, year: number) {
