@@ -29,7 +29,7 @@ export default class Farms extends Phaser.GameObjects.Group {
     };
   }
 
-  init() {
+  init(timerStates?: Array<{ name: string; elapsedMs: number; remainingMs: number; repeatCount: number; paused: boolean }>) {
     if (this.configs) {
       this.configs.forEach((config) => {
         this.farms.set(
@@ -66,9 +66,11 @@ export default class Farms extends Phaser.GameObjects.Group {
             },
             callbackScope: this,
             loop: config.loop,
-            startAt: config.startAt,
+            startAt: timerStates?.find((timer) => timer.name === config.name)?.elapsedMs ?? config.startAt,
           })
         );
+        const saved = timerStates?.find((timer) => timer.name === config.name);
+        if (saved?.paused) this.farms.get(config.name)?.pause();
       });
     }
   }

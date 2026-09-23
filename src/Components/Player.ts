@@ -255,6 +255,26 @@ export default class Player extends Phaser.GameObjects.Container {
     };
   }
 
+  applyHydratedMovementState(state: {
+    x: number; y: number; vx: number; vy: number; speed: number;
+    radius: number; scale: number; speedCoefficient: number; sizeCoefficient: number;
+    role: PlayerRole; rulerId?: string; alive: boolean;
+  }) {
+    this.setPosition(state.x, state.y);
+    this.setScale(state.scale);
+    this.speed = state.speed;
+    this.speedCoefficient = state.speedCoefficient;
+    this.sizeCoefficient = state.sizeCoefficient;
+    this.role = state.role;
+    this.rulerId = state.rulerId;
+    this.Body.setCircle(state.radius);
+    this.Body.setVelocity(state.vx, state.vy);
+    this.Body.moves = true;
+    this.setActive(state.alive);
+    this.setVisible(state.alive);
+    if (!state.alive) this.Body.enable = false;
+  }
+
   update(): void {
     this.createOrUpdateLine();
   }

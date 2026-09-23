@@ -93,6 +93,47 @@ export default class Team {
     this.initializeIdentity(0);
   }
 
+  static hydrate(scene: Phaser.Scene, state: Record<string, any>) {
+    const team = new Team(
+      scene,
+      state.factionId,
+      state.color,
+      state.homeGridX,
+      state.homeGridY,
+      state.joinCommand ?? [],
+      state.shortName,
+      state.capitalName,
+      state.houseName,
+      state.icon,
+      state.hall,
+      state.tile,
+      state.farmsConfig,
+      false,
+      Boolean(state.capitalIndestructible)
+    );
+    team.displayName = state.displayName;
+    team.factionType = state.factionType;
+    team.status = state.status;
+    team.identityStage = state.identityStage;
+    team.sovereigntyRank = state.sovereigntyRank;
+    team.sovereigntyHistory = (state.sovereigntyHistory ?? []).map((entry: object) => ({ ...entry }));
+    team.nameHistory = (state.nameHistory ?? []).map((entry: object) => ({ ...entry }));
+    team.origin = { ...state.origin, foundingCityIds: state.origin?.foundingCityIds ? [...state.origin.foundingCityIds] : undefined };
+    team.stateFormationEligibleSinceMonth = state.stateFormationEligibleSinceMonth;
+    team.stateFoundedMonth = state.stateFoundedMonth;
+    team.emperorEligibleSinceMonth = state.emperorEligibleSinceMonth;
+    team.proclaimedEmperorMonth = state.proclaimedEmperorMonth;
+    team.firstFoundedYear = state.firstFoundedMonth;
+    team.currentActiveSinceYear = state.currentActiveSinceMonth;
+    team.lastExiledYear = state.lastExiledMonth;
+    team.restorationYears = [...(state.restorationMonths ?? [])];
+    team.extinctionYear = state.extinctionMonth;
+    team.cumulativeActiveYears = state.cumulativeActiveMonths;
+    team.homeBlock = Game.Core.map?.getBlock(state.homeGridX, state.homeGridY);
+    team.joinCommand = [...(state.joinCommand ?? [])];
+    return team;
+  }
+
   loadTile() {
     if (!this.tile) {
       this.initHomeBlock();
