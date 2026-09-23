@@ -66,7 +66,7 @@ import {
   setBackgroundCatchUpState,
 } from "../store/rootSlice";
 import { setTodayMvpUsers } from "../store/topSlice";
-import { isSafeSnapshotBoundary } from "../Persistence/SnapshotBoundary";
+import { SnapshotBoundaryRequest } from "../Persistence/SnapshotBoundary";
 import User from "../Components/User";
 import {
   getGridGodRuntimeMode,
@@ -123,7 +123,7 @@ export default class Core {
   private pointerDownScreen: { x: number; y: number } | undefined;
   private worldInstanceId = 0;
   private visibilityListenerBound = false;
-  private pendingSafePause: { resolve: () => void; reject: (error: Error) => void } | undefined;
+  private snapshotBoundaryRequest = new SnapshotBoundaryRequest();
   private runtimeMode: GridGodRuntimeMode = getGridGodRuntimeMode();
   private lastDesktopHeartbeatAt = 0;
   private catchUpDiagnostics = {
@@ -153,10 +153,7 @@ export default class Core {
   }
 
   clearUp() {
-    if (this.pendingSafePause) {
-      this.pendingSafePause.reject(new Error("Safe snapshot request was canceled because the world was reset."));
-      this.pendingSafePause = undefined;
-    }
+    this.snapshotBoundaryRequest.cancel(new Error("Safe snapshot request was canceled because the world was reset."));
     this.worldInstanceId += 1;
     this.isGameOver = false;
     WorldRemnants.reset();
@@ -524,37 +521,21 @@ export default class Core {
   }
 
   pauseAtNextSafeSnapshotBoundary() {
-    if (!this.simulator || !store.getState().root.worldStarted) {
-      return Promise.reject(new Error("Cannot request a snapshot before the world has started."));
-    }
-    if (this.backgroundProgression.isCatchingUp()) {
-      return Promise.reject(new Error("Wait for background catch-up to finish before requesting a snapshot."));
-    }
-    const snapshotState = () => ({
+    const simulation = this.simulator?.exportState();
+    const request = this.snapshotBoundaryRequest.request({
+      worldStarted: Boolean(this.simulator && store.getState().root.worldStarted),
+      catchingUp: this.backgroundProgression.isCatchingUp(),
+      worldMonth: simulation?.clock.worldMonth ?? 0,
       paused: !this.simulator?.isRunning(),
-      clockElapsedMs: this.simulator?.exportState().clock.elapsedMs ?? Number.NaN,
+      clockElapsedMs: simulation?.clock.elapsedMs ?? Number.NaN,
       simulationAccumulatorMs: this.simulationDriver.getAccumulatorMs(),
     });
-    if (isSafeSnapshotBoundary(snapshotState())) return Promise.resolve();
-    if (this.pendingSafePause) return Promise.reject(new Error("A safe snapshot request is already pending."));
-    return new Promise<void>((resolve, reject) => {
-      this.pendingSafePause = { resolve, reject };
-      if (!this.simulator?.isRunning()) this.setWorldRunning(true);
-    });
+    if (request.pending && !this.simulator?.isRunning()) this.setWorldRunning(true);
+    return request.promise;
   }
 
-  private resolvePendingSafePause() {
-    if (!this.pendingSafePause || this.backgroundProgression.isCatchingUp()) return;
-    const state = {
-      paused: false,
-      clockElapsedMs: this.simulator?.exportState().clock.elapsedMs ?? Number.NaN,
-      simulationAccumulatorMs: this.simulationDriver.getAccumulatorMs(),
-    };
-    if (Math.abs(state.clockElapsedMs) > 1e-6 || Math.abs(state.simulationAccumulatorMs) > 1e-6) return;
-    const pending = this.pendingSafePause;
-    this.pendingSafePause = undefined;
-    this.setWorldRunning(false);
-    pending.resolve();
+  getSnapshotRequestDiagnostics() {
+    return this.snapshotBoundaryRequest.getDiagnostics();
   }
 
   prepareForHydration(expected: { widthCells: number; heightCells: number; blockSize: number }) {
@@ -901,14 +882,20 @@ export default class Core {
       if (this.backgroundProgression.isCatchingUp()) {
         this.runBackgroundCatchUpFrame();
       } else {
-        this.simulationDriver.updateForeground(delta, {
+        const result = this.simulationDriver.updateForeground(delta, {
           isRunning: () => Boolean(this.simulator?.isRunning()),
           getSpeed: () => this.simulator?.getSpeed() ?? 1,
           getBasePlayRate: () => BASE_PLAY_RATE,
           step: (fixedDeltaMs) => this.advanceLogicalStep(fixedDeltaMs),
         });
+        if (result.stopped) {
+          const clock = this.simulator?.exportState().clock;
+          this.snapshotBoundaryRequest.recordPreExportState(
+            clock?.elapsedMs ?? Number.NaN,
+            this.simulationDriver.getAccumulatorMs()
+          );
+        }
       }
-      this.resolvePendingSafePause();
       if (this.logicalGameplayAuthority) {
         this.logicalUnitRegistry.syncVisuals();
       }
@@ -968,7 +955,7 @@ export default class Core {
     store.dispatch(updateTeams());
   }
 
-  private advanceLogicalStep(fixedDeltaMs: number) {
+  private advanceLogicalStep(fixedDeltaMs: number): void | "stop-and-discard" {
     this.simulationDiagnostics.fixedSimulationSteps += 1;
     this.desktopRuntimeDiagnostics.lastSimulationStepRealAt =
       typeof performance === "undefined" ? Date.now() : performance.now();
@@ -978,6 +965,11 @@ export default class Core {
       this.advanceArcadePhysicsStep(fixedDeltaMs);
     }
     this.simulator?.advance(fixedDeltaMs, this.teams, this.totalCells);
+    const clock = this.simulator?.exportState().clock;
+    if (clock && this.snapshotBoundaryRequest.reachBoundary(clock.worldMonth, clock.elapsedMs)) {
+      this.setWorldRunning(false);
+      return "stop-and-discard";
+    }
   }
 
   private advanceArcadePhysicsStep(fixedDeltaMs: number) {

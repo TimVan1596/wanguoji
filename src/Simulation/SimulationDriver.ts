@@ -15,13 +15,15 @@ export interface SimulationStepContext {
   isRunning: () => boolean;
   getSpeed: () => number;
   getBasePlayRate?: () => number;
-  step: (fixedDeltaMs: number) => void;
+  /** Return stop-and-discard to end this frame at a committed simulation boundary. */
+  step: (fixedDeltaMs: number) => void | "stop-and-discard";
 }
 
 export interface ForegroundStepResult {
   steps: number;
   accumulatorMs: number;
   capped: boolean;
+  stopped: boolean;
 }
 
 export interface CatchUpStepResult {
@@ -47,6 +49,7 @@ export default class SimulationDriver {
         steps: 0,
         accumulatorMs: this.accumulatorMs,
         capped: false,
+        stopped: false,
       };
     }
     this.accumulatorMs +=
@@ -95,21 +98,29 @@ export default class SimulationDriver {
     maxSteps: number
   ): ForegroundStepResult {
     let steps = 0;
+    let stopped = false;
     while (
       this.accumulatorMs + STEP_EPSILON_MS >= SIMULATION_FIXED_STEP_MS &&
       steps < maxSteps
     ) {
-      context.step(SIMULATION_FIXED_STEP_MS);
+      const stepResult = context.step(SIMULATION_FIXED_STEP_MS);
       this.accumulatorMs = Math.max(
         0,
         this.accumulatorMs - SIMULATION_FIXED_STEP_MS
       );
       steps += 1;
+      if (stepResult === "stop-and-discard") {
+        // Remaining accumulator is frame debt that has not entered canonical simulation state.
+        this.accumulatorMs = 0;
+        stopped = true;
+        break;
+      }
     }
     return {
       steps,
       accumulatorMs: this.accumulatorMs,
       capped: this.accumulatorMs >= SIMULATION_FIXED_STEP_MS,
+      stopped,
     };
   }
 }

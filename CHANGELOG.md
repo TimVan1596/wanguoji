@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.99917a
+
+- Stop debug snapshot requests at the next complete WorldClock month boundary and discard only unconsumed foreground frame debt.
+- Added jittered 1× / 2× / 4× snapshot-boundary coverage and request diagnostics; formal save UI and IndexedDB remain out of scope.
+
 ## v0.99917-alpha
 
 - Added a dedicated, paused WorldSaveV1 runtime hydration path with preflight validation and exact map geometry checks.

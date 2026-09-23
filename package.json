@@ -3,7 +3,7 @@
   "description": "An autonomous alternate-history sandbox where nations, dynasties and empires rise, fall and write their own history.",
   "packageManager": "pnpm@8.5.1",
   "private": true,
-  "version": "0.99.26",
+  "version": "0.99.27",
   "scripts": {
     "dev": "vite",
     "desktop:compile": "tsc -p desktop/tsconfig.json",

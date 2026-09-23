@@ -80,6 +80,7 @@ export default function WorldDiagnosticsPanel() {
     `整合领袖：${diagnostics.cycle?.consolidationLeaderId ?? "—"} 动量${(diagnostics.cycle?.consolidationLeaderMomentum ?? 0).toFixed(2)}｜霸权候选：${diagnostics.cycle?.hegemonicCandidateId ?? "—"} 动量${(diagnostics.cycle?.hegemonicMomentum ?? 0).toFixed(2)}｜围城倍率${(diagnostics.cycle?.hegemonicSiegeMultiplier ?? 1).toFixed(3)}`,
     `王朝秩序：${diagnostics.cycle?.dynasticOrderFactionId ?? "—"}`,
   ].join("\n");
+  const snapshotRequest = Game.Core?.getSnapshotRequestDiagnostics();
 
   const snapshotAndReload = async () => {
     const core = Game.Core;
@@ -123,6 +124,9 @@ export default function WorldDiagnosticsPanel() {
       <Button size="small" variant="outlined" disabled={hydrationBusy} sx={{ mt: 0.75, ml: 0.5, color: "#a5d6a7", borderColor: "#a5d6a7" }} onClick={snapshotAndReload}>
         {hydrationBusy ? "正在重载…" : "内存快照并重载"}
       </Button>
+      {snapshotRequest && snapshotRequest.status !== "idle" && <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9, my: 0.5 }}>
+        {`快照边界：${snapshotRequest.status}｜请求月 ${snapshotRequest.requestMonth ?? "—"}｜到达月 ${snapshotRequest.boundaryReachedMonth ?? "等待中"}\n导出前 clock.elapsedMs=${snapshotRequest.preExportElapsedMs ?? "等待中"}｜accumulatorMs=${snapshotRequest.preExportAccumulatorMs ?? "等待中"}${snapshotRequest.error ? `\n${snapshotRequest.error}` : ""}`}
+      </Typography>}
       {hydrationStatus && <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9, my: 0.5 }}>{hydrationStatus}</Typography>}
     </Box>
   );
