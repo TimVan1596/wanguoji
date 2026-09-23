@@ -153,6 +153,10 @@ export default class Core {
   }
 
   clearUp() {
+    if (this.pendingSafePause) {
+      this.pendingSafePause.reject(new Error("Safe snapshot request was canceled because the world was reset."));
+      this.pendingSafePause = undefined;
+    }
     this.worldInstanceId += 1;
     this.isGameOver = false;
     WorldRemnants.reset();
