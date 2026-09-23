@@ -120,7 +120,7 @@ export default class City {
       lastDevastationRecoveryMonth: this.lastDevastationRecoveryYear,
       lastSiegeDevastationMonth: this.lastSiegeDevastationYear,
       destroyed: this.destroyed,
-      history: this.history.map((event) => ({ ...event, monthIndex: event.year })),
+      history: this.history.map(({ year, ...event }) => ({ ...event, monthIndex: year })),
     };
   }
 

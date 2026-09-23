@@ -65,7 +65,7 @@ class FactionEffectStore {
 
   exportState() {
     return {
-      effects: this.effects.map((effect) => ({ ...effect, startMonth: effect.startYear, endMonth: effect.endYear })),
+      effects: this.effects.map(({ startYear, endYear, ...effect }) => ({ ...effect, startMonth: startYear, endMonth: endYear })),
       strategicModifiers: [...this.strategicModifiers.entries()].map(([factionId, modifier]) => ({ factionId, ...modifier })),
       sequence: this.sequence,
     };

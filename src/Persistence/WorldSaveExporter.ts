@@ -51,16 +51,16 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
     if (seenUnits.has(player)) return stableUnitId(player);
     seenUnits.add(player);
     const unitId = stableUnitId(player);
-    const state = player.exportMovementState(unitId);
+    const state: Record<string, unknown> = player.exportMovementState(unitId);
     state.parentUnitId = parentUnitId;
     state.kind = kind;
     if (npcKey) state.npcKey = npcKey;
     if (player instanceof Npc) {
       state.npcFaceKey = player.face?.texture?.key;
-      state.npcLevel = player.faceBg?.fillColor;
+      state.npcLevelColor = player.faceBg?.fillColor;
     }
     units.push(state);
-    player.children.forEach((child) => addUnitTree(child, unitId, kind));
+    state.children = player.children.map((child) => addUnitTree(child, unitId, kind));
     return unitId;
   };
 
@@ -111,7 +111,8 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
       };
     }),
   }));
-  const autoState = core.simulator.exportState();
+  const autoState = core.simulator?.exportState();
+  if (!autoState) throw new UnsafeSaveSnapshotError();
   const raw: WorldSaveV1 = {
     saveSchemaVersion: CURRENT_SAVE_SCHEMA_VERSION,
     appVersion: APP_VERSION,

@@ -194,7 +194,7 @@ class WorldHistoryStore {
 
   exportState() {
     return {
-      events: this.events.map((event) => ({ ...event, metadata: event.metadata ? { ...event.metadata } : undefined, monthIndex: event.monthIndex ?? event.year })),
+      events: this.events.map(({ year, ...event }) => ({ ...event, metadata: event.metadata ? { ...event.metadata } : undefined, monthIndex: event.monthIndex ?? year })),
       emittedKeys: [...this.emitted],
       populationLeader: this.populationLeader,
       territoryLeader: this.territoryLeader,

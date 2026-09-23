@@ -16,6 +16,19 @@ export default class Farms extends Phaser.GameObjects.Group {
     this.scene.add.existing(this);
   }
 
+  exportState() {
+    return {
+      configs: this.configs?.map((config) => ({ ...config })) ?? [],
+      timers: [...this.farms.entries()].map(([name, timer]) => ({
+        name,
+        elapsedMs: timer.getElapsed(),
+        remainingMs: timer.getRemaining(),
+        repeatCount: timer.getRepeatCount(),
+        paused: timer.paused,
+      })),
+    };
+  }
+
   init() {
     if (this.configs) {
       this.configs.forEach((config) => {

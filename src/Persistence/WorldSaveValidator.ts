@@ -35,6 +35,12 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
       if (isPlainRecord(ruler) && typeof ruler.rulerId === "string") rulerIds.add(ruler.rulerId);
     });
   });
+  const archivedCityIds = new Set<string>();
+  if (isPlainRecord(save.registries) && Array.isArray(save.registries.archivedCities)) {
+    save.registries.archivedCities.forEach((city: unknown) => {
+      if (isPlainRecord(city) && typeof city.id === "string") archivedCityIds.add(city.id);
+    });
+  }
 
   cities.forEach((city) => {
     requireRef(city.ownerFactionId, factionIds, "city.ownerFactionId", errors);
@@ -46,11 +52,35 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
     if (unit.factionId !== undefined) requireRef(unit.factionId, factionIds, "unit.factionId", errors);
     if (unit.userId !== undefined && !userIds.has(String(unit.userId))) errors.push(`unknown unit.userId: ${unit.userId}`);
     if (unit.rulerId !== undefined) requireRef(unit.rulerId, rulerIds, "unit.rulerId", errors);
+    if (unit.parentUnitId !== undefined) requireRef(unit.parentUnitId, unitIds, "unit.parentUnitId", errors);
+    if (Array.isArray(unit.children)) unit.children.forEach((id: unknown) => requireRef(id, unitIds, "unit.children", errors));
   });
   (Array.isArray(save.blocks) ? save.blocks : []).forEach((block) => {
     if (block.ownerFactionId !== undefined) requireRef(block.ownerFactionId, factionIds, "block.ownerFactionId", errors);
     if (block.cityId !== undefined) requireRef(block.cityId, cityIds, "block.cityId", errors);
   });
+  const allCityIds = new Set([...cityIds, ...archivedCityIds]);
+  factions.forEach((faction) => {
+    if (faction.capitalCityId !== undefined) {
+      requireRef(faction.capitalCityId, cityIds, "faction.capitalCityId", errors);
+      const capital = cities.find((city) => city.cityId === faction.capitalCityId);
+      if (capital && (capital.ownerFactionId !== faction.factionId || capital.isCapital !== true)) {
+        errors.push(`invalid capital relationship for faction ${String(faction.factionId)}`);
+      }
+    }
+  });
+  if (isPlainRecord(save.worldHistory) && Array.isArray(save.worldHistory.events)) {
+    save.worldHistory.events.forEach((event: unknown) => {
+      if (!isPlainRecord(event)) return;
+      const factionRefs = [event.actorFactionId, event.targetFactionId, event.conquerorFactionId,
+        event.previousOwnerFactionId, event.founderFactionId, ...(Array.isArray(event.factionIds) ? event.factionIds : []),
+        ...(Array.isArray(event.relatedFactionIds) ? event.relatedFactionIds : [])];
+      factionRefs.filter((id) => id !== undefined).forEach((id) => requireRef(id, factionIds, "worldHistory faction reference", errors));
+      if (event.cityId !== undefined && !allCityIds.has(String(event.cityId))) errors.push(`unknown worldHistory cityId: ${String(event.cityId)}`);
+      if (event.rulerId !== undefined) requireRef(event.rulerId, rulerIds, "worldHistory rulerId", errors);
+      if (event.monthIndex !== undefined && !finite(event.monthIndex)) errors.push("worldHistory event monthIndex must be finite");
+    });
+  }
   if (!jsonSafe(value)) errors.push("save contains non-JSON-safe values or class instances");
   return { valid: errors.length === 0, errors };
 }

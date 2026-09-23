@@ -173,7 +173,10 @@ export default class WorldEventSystem {
 
   exportState() {
     return {
-      activeEffects: this.activeEffects.map((effect) => ({ ...effect })),
+      activeEffects: this.activeEffects.map((effect) => {
+        const { startYear, endYear, ...rest } = effect;
+        return { ...rest, startMonth: startYear, endMonth: endYear };
+      }),
       nextEventMonth: this.nextEventYear,
       sequence: this.sequence,
       hegemonyCandidate: this.hegemonyCandidate ? { ...this.hegemonyCandidate } : undefined,

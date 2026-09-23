@@ -63,7 +63,7 @@ class WorldRemnantStore {
   }
 
   exportState() {
-    return this.list().map((entry) => ({ ...entry, extinctMonth: entry.extinctYear }));
+    return this.list().map(({ extinctYear, ...entry }) => ({ ...entry, extinctMonth: extinctYear }));
   }
 }
 

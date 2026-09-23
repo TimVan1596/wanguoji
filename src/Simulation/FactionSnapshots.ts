@@ -72,7 +72,7 @@ class FactionSnapshotStore {
     return {
       snapshots: [...this.snapshots.entries()].map(([factionId, snapshots]) => ({
         factionId,
-        snapshots: snapshots.map((snapshot) => ({ ...snapshot, monthIndex: snapshot.year })),
+        snapshots: snapshots.map(({ year, ...snapshot }) => ({ ...snapshot, monthIndex: year })),
       })),
       lastSnapshotMonth: this.lastSnapshotYear,
     };
