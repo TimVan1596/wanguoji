@@ -28,6 +28,11 @@ export default class PopulationSystem {
     return { counters: { ...this.counters }, lastGrowthMonth: this.lastGrowthMonth };
   }
 
+  importState(state: { counters: Record<string, number>; lastGrowthMonth: number }) {
+    this.counters = { ...state.counters };
+    this.lastGrowthMonth = state.lastGrowthMonth;
+  }
+
   reset() {
     this.counters = {};
     this.lastGrowthMonth = 0;

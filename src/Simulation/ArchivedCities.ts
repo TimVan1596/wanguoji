@@ -47,6 +47,10 @@ class ArchivedCityStore {
     return [...this.cities];
   }
 
+  importState(cities: ArchivedCity[]) {
+    this.cities = cities.map((city) => ({ ...city, historicalOwners: [...city.historicalOwners], history: city.history.map((event) => ({ ...event })) }));
+  }
+
   get(id: string) {
     return this.cities.find((city) => city.id === id);
   }

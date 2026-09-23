@@ -71,6 +71,16 @@ class FactionEffectStore {
     };
   }
 
+  importState(state: {
+    effects: Array<Omit<ActiveFactionEffect, "startYear" | "endYear"> & { startMonth: number; endMonth: number }>;
+    strategicModifiers: Array<{ factionId: string; siegeMultiplier: number; captureLoyaltyBonus: number }>;
+    sequence: number;
+  }) {
+    this.effects = state.effects.map(({ startMonth, endMonth, ...effect }) => ({ ...effect, startYear: startMonth, endYear: endMonth }));
+    this.strategicModifiers = new Map(state.strategicModifiers.map(({ factionId, ...modifier }) => [factionId, modifier]));
+    this.sequence = state.sequence;
+  }
+
   getLoyaltyRecoveryMultiplier(factionId: string) {
     return this.effects
       .filter((effect) => effect.factionId === factionId)

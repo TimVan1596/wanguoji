@@ -77,6 +77,14 @@ class FactionSnapshotStore {
       lastSnapshotMonth: this.lastSnapshotYear,
     };
   }
+
+  importState(state: { snapshots: Array<{ factionId: string; snapshots: Array<Omit<FactionSnapshot, "year"> & { monthIndex: number }> }>; lastSnapshotMonth: number }) {
+    this.snapshots = new Map(state.snapshots.map(({ factionId, snapshots }) => [
+      factionId,
+      snapshots.map(({ monthIndex, ...snapshot }) => ({ ...snapshot, year: monthIndex })),
+    ]));
+    this.lastSnapshotYear = state.lastSnapshotMonth;
+  }
 }
 
 const FactionSnapshots = new FactionSnapshotStore();

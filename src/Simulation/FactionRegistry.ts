@@ -38,6 +38,10 @@ class FactionRegistryStore {
     return { sequence: this.sequence };
   }
 
+  importState(state: { sequence: number }) {
+    this.sequence = state.sequence;
+  }
+
   canRestoreFaction(team: Team) {
     if (!hasFormalStateIdentity(team)) {
       return false;

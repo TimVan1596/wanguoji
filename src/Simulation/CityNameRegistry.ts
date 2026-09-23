@@ -65,6 +65,11 @@ class CityNameRegistryStore {
       recentDynamicNames: [...this.recentDynamicNames],
     };
   }
+
+  importState(state: { reserved: ReservedCityName[]; recentDynamicNames: string[] }) {
+    this.reserved = new Map(state.reserved.map((entry) => [entry.normalizedName, { ...entry }]));
+    this.recentDynamicNames = [...state.recentDynamicNames].slice(0, this.recentLimit);
+  }
 }
 
 const CityNameRegistry = new CityNameRegistryStore();

@@ -149,6 +149,24 @@ class WorldEraStore {
     };
   }
 
+  importState(state: {
+    eras: WorldEra[];
+    candidateState?: CandidateState;
+    sequence: number;
+    lastObservedMonth: number;
+    staleSinceMonth?: number;
+  }) {
+    this.eras = state.eras.map((era) => ({ ...era, dominantFactionIds: [...era.dominantFactionIds], triggerReasonCodes: [...era.triggerReasonCodes] }));
+    this.candidateState = state.candidateState ? {
+      candidate: { ...state.candidateState.candidate },
+      sinceMonth: state.candidateState.sinceMonth,
+    } : undefined;
+    this.sequence = state.sequence;
+    this.lastObservedMonth = state.lastObservedMonth;
+    this.staleSinceMonth = state.staleSinceMonth;
+    this.notify();
+  }
+
   getCurrentEra() {
     return this.eras.find((era) => era.endMonth === undefined);
   }

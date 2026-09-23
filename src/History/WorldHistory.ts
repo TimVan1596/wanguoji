@@ -206,6 +206,37 @@ class WorldHistoryStore {
     };
   }
 
+  importState(state: {
+    events: Array<Omit<WorldEvent, "year"> & { monthIndex: number }>;
+    emittedKeys: string[];
+    populationLeader?: string;
+    territoryLeader?: string;
+    populationCandidate?: LeaderCandidate;
+    territoryCandidate?: LeaderCandidate;
+    extinctFactionIds: string[];
+    sequence: number;
+    unificationCount: number;
+  }) {
+    this.events = state.events.map(({ monthIndex, ...event }) => ({
+      ...event,
+      year: monthIndex,
+      monthIndex,
+      metadata: event.metadata ? { ...event.metadata } : undefined,
+    }));
+    this.sortedEventsCache = undefined;
+    this.eventsByFactionId.clear();
+    this.events.forEach((event) => this.indexEvent(event));
+    this.emitted = new Set(state.emittedKeys);
+    this.populationLeader = state.populationLeader;
+    this.territoryLeader = state.territoryLeader;
+    this.populationCandidate = state.populationCandidate ? { ...state.populationCandidate } : undefined;
+    this.territoryCandidate = state.territoryCandidate ? { ...state.territoryCandidate } : undefined;
+    this.extinctFactions = new Set(state.extinctFactionIds);
+    this.sequence = state.sequence;
+    this.unificationCount = state.unificationCount;
+    this.notify();
+  }
+
   getEventsForFaction(factionId: string) {
     return [...(this.eventsByFactionId.get(factionId) ?? [])].sort(compareEventsDesc);
   }

@@ -65,6 +65,13 @@ class WorldRemnantStore {
   exportState() {
     return this.list().map(({ extinctYear, ...entry }) => ({ ...entry, extinctMonth: extinctYear }));
   }
+
+  importState(states: Array<Omit<RemnantState, "extinctYear"> & { extinctMonth: number }>) {
+    this.remnants = new Map(states.map(({ extinctMonth, ...entry }) => [
+      entry.factionId,
+      { ...entry, extinctYear: extinctMonth },
+    ]));
+  }
 }
 
 const WorldRemnants = new WorldRemnantStore();
