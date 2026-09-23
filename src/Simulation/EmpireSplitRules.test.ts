@@ -19,8 +19,13 @@ describe("empire split rules", () => {
     expect(selectSplitCities(low, [capital, low, far, near], 3).map((city) => city.name)).toEqual([
       "低忠城",
       "近城",
-      "远城",
     ]);
+  });
+
+  it("keeps the core, excludes distant cities, and respects the city limit", () => {
+    expect(selectSplitCities(low, [capital, low, near, far], 1).map((city) => city.name)).toEqual(["低忠城"]);
+    expect(selectSplitCities(low, [capital, low, near, far], 3).some((city) => city.name === "都城")).toBe(false);
+    expect(selectSplitCities(low, [capital, low, near, far], 3).some((city) => city.name === "远城")).toBe(false);
   });
 
   it("prioritizes restoration over a new rebel faction", () => {

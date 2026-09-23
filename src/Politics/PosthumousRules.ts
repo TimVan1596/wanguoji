@@ -3,6 +3,7 @@ import { getFactionDisplayNameAtMonth, getSovereigntyRankAtMonth } from "../Simu
 import { formatWorldDate } from "../Simulation/WorldTime";
 import type { Ruler } from "./Dynasty";
 import { evaluateReignOutcome } from "./ReignOutcomeRules";
+import { getRulerEffectiveSnapshot } from "./RulerChronicle";
 
 export interface PosthumousEvaluation {
   posthumousEpithet?: string;
@@ -48,7 +49,7 @@ export function evaluatePosthumousNames(
   }
 
   const chronicle = ruler.chronicle;
-  const end = chronicle.endSnapshot ?? chronicle.accessionSnapshot;
+  const end = getRulerEffectiveSnapshot(chronicle);
   const reignMonths = Math.max(0, ruler.endYear - ruler.accessionYear);
   const territoryDelta = end.territoryShare - chronicle.accessionSnapshot.territoryShare;
   const cityDelta = end.cityCount - chronicle.accessionSnapshot.cityCount;
@@ -187,6 +188,7 @@ export function getNotablePosthumousRulers(
 interface NameCandidate {
   name: string;
   reasons: string[];
+  score?: number;
 }
 
 function chooseEpithet(
@@ -201,7 +203,7 @@ function chooseEpithet(
     return undefined;
   }
   const candidates: NameCandidate[] = [];
-  const end = chronicle.endSnapshot ?? chronicle.accessionSnapshot;
+  const end = getRulerEffectiveSnapshot(chronicle);
   const stabilityDelta = end.stability - chronicle.accessionSnapshot.stability;
   const tragicEnd =
     ruler.endReason === "被俘处死" ||
@@ -301,7 +303,22 @@ function chooseEpithet(
   ) {
     addCandidates(candidates, ["穆", "惠", "康", "简", "定"], "长期稳定守成");
   }
-  return pickSoftUniqueEpithet(uniqueCandidates(candidates), dynastyRulers, ruler.id);
+  const strongExpansion = territoryDelta >= 0.16 || cityDelta >= 3 || chronicle.completedUnification;
+  const severeDecline =
+    territoryDelta <= -0.12 ||
+    cityDelta <= -2 ||
+    end.population <= chronicle.accessionSnapshot.population * 0.6 ||
+    ruler.endReason === "彻底灭亡";
+  const scored = uniqueCandidates(candidates).map((candidate) => ({
+    ...candidate,
+    score:
+      candidate.name === "灵"
+        ? (stabilityDelta <= -25 ? 30 : 0) + (severeDecline ? 45 : 0) - (strongExpansion && !severeDecline ? 50 : 0)
+        : strongExpansion && ["武", "烈", "庄", "襄", "威", "昭"].includes(candidate.name)
+        ? 70
+        : 40,
+  }));
+  return pickSoftUniqueEpithet(scored, dynastyRulers, ruler.id);
 }
 
 function chooseTempleName(
@@ -354,7 +371,9 @@ function pickSoftUniqueEpithet(
     .slice(-RECENT_EPITHET_LOOKBACK)
     .map((item) => item.posthumousEpithet);
   const recentSet = new Set(recent);
-  return candidates.find((candidate) => !recentSet.has(candidate.name)) ?? candidates[0];
+  return [...candidates]
+    .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
+    .find((candidate) => !recentSet.has(candidate.name)) ?? candidates[0];
 }
 
 function addCandidates(candidates: NameCandidate[], names: string[], reason: string) {

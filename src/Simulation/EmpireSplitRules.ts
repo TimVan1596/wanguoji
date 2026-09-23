@@ -8,6 +8,8 @@ export interface SplitCityLike {
   };
 }
 
+export const EMPIRE_SPLIT_REGION_RADIUS_CELLS = 8;
+
 export function selectSplitCore(cities: SplitCityLike[]) {
   const nonCapital = cities
     .filter((city) => !city.isCapital)
@@ -18,9 +20,10 @@ export function selectSplitCore(cities: SplitCityLike[]) {
 export function selectSplitCities(
   coreCity: SplitCityLike,
   cities: SplitCityLike[],
-  maxCities: number
+  maxCities: number,
+  cellSize = 1
 ) {
-  return [coreCity, ...getNearestCities(coreCity, cities)]
+  return [coreCity, ...getNearestCities(coreCity, cities, cellSize)]
     .filter((city, index, array) => array.indexOf(city) === index)
     .slice(0, maxCities);
 }
@@ -32,9 +35,10 @@ export function shouldRestoreBeforeNewRebel(
   return founderStatus === "EXILED" && founderCanRestore;
 }
 
-function getNearestCities(coreCity: SplitCityLike, cities: SplitCityLike[]) {
+function getNearestCities(coreCity: SplitCityLike, cities: SplitCityLike[], cellSize: number) {
   return cities
     .filter((city) => city !== coreCity && !city.isCapital)
+    .filter((city) => getCityDistance(coreCity, city) <= EMPIRE_SPLIT_REGION_RADIUS_CELLS * cellSize)
     .sort((a, b) => getCityDistance(coreCity, a) - getCityDistance(coreCity, b));
 }
 

@@ -18,6 +18,7 @@ import {
 } from "../config/simulation";
 import { createRebelFactionName, createRebelHouseName } from "./RebelNameGenerator";
 import { hasFormalStateIdentity } from "./FactionIdentity";
+import { EMPIRE_SPLIT_REGION_RADIUS_CELLS } from "./EmpireSplitRules";
 
 interface RebelFactionOptions {
   city: City;
@@ -294,7 +295,7 @@ class FactionRegistryStore {
       }
       const distance =
         Math.abs(block.x - coreCity.block.x) + Math.abs(block.y - coreCity.block.y);
-      if (distance <= Game.BlockSize * 8) {
+      if (distance <= Game.BlockSize * EMPIRE_SPLIT_REGION_RADIUS_CELLS) {
         block.claimForTeam(nextOwner);
       }
     });

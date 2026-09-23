@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99915-alpha
+
+- Constrained Empire Split city selection to the shared regional radius.
+- Unified current ruler snapshot derivation.
+- Added evidence-aware epithet competition without changing simulation balance.
+
 ## v0.99914-alpha
 
 - Unified ruler current/terminal snapshot derivation.

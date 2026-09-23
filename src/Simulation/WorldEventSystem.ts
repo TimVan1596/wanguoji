@@ -806,7 +806,8 @@ export default class WorldEventSystem {
       const splitCities = selectSplitCities(
         coreCity,
         team.cities,
-        EMPIRE_SPLIT_MAX_CITIES
+        EMPIRE_SPLIT_MAX_CITIES,
+        Game.BlockSize
       ) as City[];
       const split = FactionRegistry.createSplitFaction(team, splitCities, year);
       if (split) {
@@ -820,7 +821,9 @@ export default class WorldEventSystem {
           transferredCities.map((city) => city.id),
           DynastyRegistry.getRulerDisplay(rebel.name),
           DynastyRegistry.getCurrentRuler(rebel.name)?.id,
-          `founding-${rebel.name}-${year}`
+          `founding-${rebel.name}-${year}`,
+          transferredCities[0]?.id,
+          transferredCities[0]?.name
         );
         DynastyRegistry.recordRebellion(team.name);
         this.fractureUntilMonth = year + 60;

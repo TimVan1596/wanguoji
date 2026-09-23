@@ -403,7 +403,9 @@ class WorldHistoryStore {
     cityIds: string[] = [],
     foundingRulerName?: string,
     foundingRulerId?: string,
-    historyGroupId?: string
+    historyGroupId?: string,
+    splitCoreCityId?: string,
+    splitCoreCityName?: string
   ) {
     this.addEvent({
       id: `empire-split-${year}-${empireName}-${rebelName}-${this.sequence++}`,
@@ -422,6 +424,8 @@ class WorldHistoryStore {
         foundingCityIds: cityIds.join(","),
         foundingRulerName,
         foundingRulerId,
+        splitCoreCityId,
+        splitCoreCityName,
       },
       historyGroupId,
       importance: "major",
