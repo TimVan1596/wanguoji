@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.99917c
+
+- Corrected WorldSaveV1 population persistence validation to match the authoritative `PopulationSystem` counter-map DTO.
+- Added population export/import and malformed-counter regression coverage.
+
+## v0.99917b
+
+- Canonicalized exported snapshot clock state to a paused exact-zero boundary so hydration accepts the same safe boundary that export validates.
+- Added regression coverage for IEEE-754 residuals, negative tiny residuals, and stale running flags.
+
 ## v0.99917a
 
 - Stop debug snapshot requests at the next complete WorldClock month boundary and discard only unconsumed foreground frame debt.

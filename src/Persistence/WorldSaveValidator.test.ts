@@ -13,6 +13,7 @@ function fixture() {
   save.units = [{ unitId: "unit-1", factionId: "qin", userId: 7, x: 10, y: 20, vx: 1, vy: -1, speed: 100, radius: 10, scale: 1, speedCoefficient: 0, sizeCoefficient: 0, alive: true, role: "RULER" }];
   save.dynasties = [{ factionId: "qin", rulers: [{ rulerId: "qin-ruler-1" }] }];
   save.blocks = [{ gridX: 0, gridY: 0, ownerFactionId: "qin", isHome: true, cityId: "xianyang" }];
+  save.populationSystem = { counters: { qin: 3 }, lastGrowthMonth: 12 };
   return save;
 }
 
@@ -53,6 +54,15 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     const circular: any = fixture();
     circular.registries = { self: circular };
     expect(validateWorldSave(circular).valid).toBe(false);
+  });
+
+  it("requires authoritative population sequence counters", () => {
+    const save = fixture();
+    save.populationSystem.counters = [] as never;
+    expect(validateWorldSave(save).errors).toContain("populationSystem.counters must be an object");
+
+    save.populationSystem = { counters: { qin: 1.5 }, lastGrowthMonth: 12 };
+    expect(validateWorldSave(save).errors).toContain("populationSystem.counters.qin must be a non-negative integer");
   });
 
   it("requires a paused complete simulation boundary", () => {

@@ -334,7 +334,7 @@ function validateRequiredImportState(save: WorldSaveV1) {
     ["worldEra", save.worldEra, ["eras"], ["sequence", "lastObservedMonth"]],
     ["factionSnapshots", save.factionSnapshots, ["snapshots"], ["lastSnapshotMonth"]],
     ["factionEffects", save.factionEffects, ["effects", "strategicModifiers"], ["sequence"]],
-    ["populationSystem", save.populationSystem, ["counters"], ["lastGrowthMonth"]],
+    ["populationSystem", save.populationSystem as unknown as Record<string, unknown>, [], ["lastGrowthMonth"]],
     ["worldEventSystem", save.worldEventSystem, ["activeEffects", "cityFoundedMonths", "cityRebellionMonths", "cycleState"], ["nextEventMonth", "sequence", "fractureUntilMonth", "lastRebellionCheckMonth", "lastEmpireSplitCheckMonth", "lastCityFoundCheckMonth", "lastProvisionalPressureMonth"]],
   ];
   records.forEach(([label, record, arrays, numbers]) => {

@@ -109,7 +109,26 @@ describe("snapshot month-boundary requests", () => {
       clockElapsedMs: 0,
       simulationAccumulatorMs: 0,
     })).toBeUndefined();
+    expect(canonicalizeSavedSnapshotBoundary({
+      worldRunning: false,
+      clockRunning: true,
+      clockElapsedMs: 0,
+      simulationAccumulatorMs: 0,
+    })).toBeUndefined();
     expect(isEffectivelyZeroSnapshotMs(1.5006662579253316e-1)).toBe(false);
+  });
+
+  it("canonicalizes the observed floating-point residual and negative tiny residual", () => {
+    expect(canonicalizeSavedSnapshotBoundary({
+      worldRunning: false,
+      clockRunning: false,
+      clockElapsedMs: 1.5006662579253316e-11,
+      simulationAccumulatorMs: -1e-10,
+    })).toEqual({
+      paused: true,
+      clockElapsedMs: 0,
+      simulationAccumulatorMs: 0,
+    });
   });
 
   it.each([1, 2, 4])("reaches the next month with jittered frame deltas at %sx", async (speed) => {

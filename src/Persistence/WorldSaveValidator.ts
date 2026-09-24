@@ -138,7 +138,27 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
     });
   });
   if (!jsonSafe(value)) errors.push("save contains non-JSON-safe values or class instances");
+  validatePopulationSystem(save.populationSystem, errors);
   return { valid: errors.length === 0, errors };
+}
+
+function validatePopulationSystem(value: unknown, errors: string[]) {
+  if (!isPlainRecord(value)) {
+    errors.push("populationSystem must be an object");
+    return;
+  }
+  if (!isPlainRecord(value.counters)) {
+    errors.push("populationSystem.counters must be an object");
+  } else {
+    Object.entries(value.counters).forEach(([factionId, counter]) => {
+      if (!factionId || !Number.isInteger(counter) || counter < 0) {
+        errors.push(`populationSystem.counters.${factionId} must be a non-negative integer`);
+      }
+    });
+  }
+  if (!Number.isInteger(value.lastGrowthMonth) || value.lastGrowthMonth < 0) {
+    errors.push("populationSystem.lastGrowthMonth must be a non-negative integer");
+  }
 }
 
 function array(value: unknown, label: string, errors: string[]): Record<string, any>[] {

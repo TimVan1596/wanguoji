@@ -78,6 +78,11 @@ export interface UnitSaveV1 {
   [additionalCanonicalState: string]: unknown;
 }
 
+export interface PopulationSystemSaveV1 {
+  counters: Record<string, number>;
+  lastGrowthMonth: number;
+}
+
 export interface WorldSaveV1 {
   saveSchemaVersion: typeof CURRENT_SAVE_SCHEMA_VERSION;
   appVersion: string;
@@ -104,7 +109,7 @@ export interface WorldSaveV1 {
   worldRemnants: Record<string, unknown>[];
   worldExiles: Record<string, unknown>[];
   factionEffects: Record<string, unknown>;
-  populationSystem: Record<string, unknown>;
+  populationSystem: PopulationSystemSaveV1;
   registries: Record<string, unknown>;
   worldEventSystem: Record<string, unknown>;
 }
@@ -124,7 +129,7 @@ export function createEmptyWorldSaveV1(): WorldSaveV1 {
     },
     factions: [], blocks: [], cities: [], users: [], units: [], dynasties: [],
     worldHistory: {}, worldEra: {}, factionSnapshots: {}, worldRemnants: [],
-    worldExiles: [], factionEffects: {}, populationSystem: {}, registries: {},
+    worldExiles: [], factionEffects: {}, populationSystem: { counters: {}, lastGrowthMonth: 0 }, registries: {},
     worldEventSystem: {},
   };
 }

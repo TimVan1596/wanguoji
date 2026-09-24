@@ -151,7 +151,9 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
       started: autoState.started,
       running: autoState.running,
       selectedSpeed: autoState.selectedSpeed,
-      clock: { worldMonth: autoState.clock.worldMonth, elapsedMs: snapshotBoundary.clockElapsedMs, running: autoState.clock.running },
+      // A canonical snapshot boundary is paused even if the runtime clock flag
+      // was left stale while the simulation driver stopped at the boundary.
+      clock: { worldMonth: autoState.clock.worldMonth, elapsedMs: snapshotBoundary.clockElapsedMs, running: false },
       simulationDriver: canonicalDriver,
       map: {
         widthCells: core.map?.getMaxX() ?? 0,
