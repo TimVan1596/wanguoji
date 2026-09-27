@@ -70,6 +70,7 @@ export interface LongRunSummary {
   shortestUnifiedDuration?: number;
   completedFragmentedEpisodes: number;
   averageFragmentedDuration?: number;
+  medianFragmentedDuration?: number;
   longestFragmentedDuration?: number;
   currentCycleStage?: string;
   currentUnifiedAge?: number;
@@ -174,13 +175,19 @@ export function deriveLongRunSummary(
   const unifiedEpisodes = episodes("WORLD_UNIFIED", "WORLD_FRAGMENTED");
   const fragmentedEpisodes = episodes("WORLD_FRAGMENTED", "WORLD_UNIFIED");
   const completed = (kind: LongRunTransitionKind) => starts.filter((item) => item.kind === kind).length;
-  const stats = (values: number[]) => values.length ? { average: values.reduce((sum, value) => sum + value, 0) / values.length, median: [...values].sort((a, b) => a - b)[Math.floor(values.length / 2)], shortest: Math.min(...values), longest: Math.max(...values) } : undefined;
+  const stats = (values: number[]) => {
+    if (!values.length) return undefined;
+    const sorted = [...values].sort((a, b) => a - b);
+    const middle = Math.floor(sorted.length / 2);
+    const median = sorted.length % 2 === 0 ? (sorted[middle - 1] + sorted[middle]) / 2 : sorted[middle];
+    return { average: values.reduce((sum, value) => sum + value, 0) / values.length, median, shortest: Math.min(...values), longest: Math.max(...values) };
+  };
   const eraStats = stats(durations); const competitiveStats = stats(competitive);
   const gaps = eras.slice(1).reduce((sum, era, index) => sum + Math.max(0, era.startMonth - (eras[index].endMonth ?? worldMonth) - 1), 0);
   const overlaps = eras.slice(1).reduce((sum, era, index) => sum + Math.max(0, (eras[index].endMonth ?? worldMonth) - era.startMonth + 1), 0);
   const unifiedStats = stats(unifiedEpisodes); const fragmentedStats = stats(fragmentedEpisodes);
   const last = starts.at(-1);
-  return { worldAge: worldMonth, eraCount: eras.length, averageEraDuration: eraStats?.average, medianEraDuration: eraStats?.median, shortestEraDuration: eraStats?.shortest, longestEraDuration: eraStats?.longest, competitiveEraCount: competitive.length, competitiveEraAverageDuration: competitiveStats?.average, eraGapMonths: gaps, eraOverlapMonths: overlaps, eraTransitionsPerCentury: worldMonth > 0 ? (Math.max(0, eras.length - 1) * 1200) / worldMonth : undefined, unificationCount: completed("WORLD_UNIFIED"), fragmentationCount: completed("WORLD_FRAGMENTED"), completedUnifiedEpisodes: unifiedEpisodes.length, averageUnifiedDuration: unifiedStats?.average, medianUnifiedDuration: unifiedStats?.median, shortestUnifiedDuration: unifiedStats?.shortest, longestUnifiedDuration: unifiedStats?.longest, completedFragmentedEpisodes: fragmentedEpisodes.length, averageFragmentedDuration: fragmentedStats?.average, longestFragmentedDuration: fragmentedStats?.longest, currentUnifiedAge: last?.kind === "WORLD_UNIFIED" ? Math.max(0, worldMonth - last.month) : undefined, currentFragmentedAge: last?.kind === "WORLD_FRAGMENTED" ? Math.max(0, worldMonth - last.month) : undefined, currentCycleStage };
+  return { worldAge: worldMonth, eraCount: eras.length, averageEraDuration: eraStats?.average, medianEraDuration: eraStats?.median, shortestEraDuration: eraStats?.shortest, longestEraDuration: eraStats?.longest, competitiveEraCount: competitive.length, competitiveEraAverageDuration: competitiveStats?.average, eraGapMonths: gaps, eraOverlapMonths: overlaps, eraTransitionsPerCentury: worldMonth > 0 ? (Math.max(0, eras.length - 1) * 1200) / worldMonth : undefined, unificationCount: completed("WORLD_UNIFIED"), fragmentationCount: completed("WORLD_FRAGMENTED"), completedUnifiedEpisodes: unifiedEpisodes.length, averageUnifiedDuration: unifiedStats?.average, medianUnifiedDuration: unifiedStats?.median, shortestUnifiedDuration: unifiedStats?.shortest, longestUnifiedDuration: unifiedStats?.longest, completedFragmentedEpisodes: fragmentedEpisodes.length, averageFragmentedDuration: fragmentedStats?.average, medianFragmentedDuration: fragmentedStats?.median, longestFragmentedDuration: fragmentedStats?.longest, currentUnifiedAge: last?.kind === "WORLD_UNIFIED" ? Math.max(0, worldMonth - last.month) : undefined, currentFragmentedAge: last?.kind === "WORLD_FRAGMENTED" ? Math.max(0, worldMonth - last.month) : undefined, currentCycleStage };
 }
 
 export function buildLongRunProfileSnapshot(

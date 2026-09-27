@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildLongRunProfileSnapshot } from "./LongRunProfiler";
+import { buildLongRunProfileSnapshot, deriveLongRunSummary } from "./LongRunProfiler";
 
 describe("long run profiler", () => {
   it("summarizes live and archived world counts without mutating simulation data", () => {
@@ -75,5 +75,36 @@ describe("long run profiler", () => {
     expect(snapshot.top1ControlledShare).toBe(39.1);
     expect(snapshot.top2ControlledShare).toBe(21.7);
     expect(snapshot.monthlyStepMs).toBe(1.25);
+  });
+
+  it("pairs unified and fragmented transitions into completed episodes", () => {
+    const summary = deriveLongRunSummary(700, [], [
+      { kind: "WORLD_FRAGMENTED", month: 0 },
+      { kind: "WORLD_UNIFIED", month: 100 },
+      { kind: "WORLD_FRAGMENTED", month: 300 },
+      { kind: "WORLD_UNIFIED", month: 400 },
+      { kind: "WORLD_FRAGMENTED", month: 700 },
+    ]);
+    expect(summary.completedUnifiedEpisodes).toBe(2);
+    expect(summary.averageUnifiedDuration).toBe(250);
+    expect(summary.medianUnifiedDuration).toBe(250);
+    expect(summary.shortestUnifiedDuration).toBe(200);
+    expect(summary.longestUnifiedDuration).toBe(300);
+    expect(summary.completedFragmentedEpisodes).toBe(2);
+    expect(summary.averageFragmentedDuration).toBe(100);
+    expect(summary.medianFragmentedDuration).toBe(100);
+  });
+
+  it("does not count a current incomplete episode in completed statistics", () => {
+    const summary = deriveLongRunSummary(500, [], [
+      { kind: "WORLD_FRAGMENTED", month: 0 },
+      { kind: "WORLD_UNIFIED", month: 120 },
+      { kind: "CYCLE_STAGE_CHANGED", month: 240, from: "UNIFIED_EARLY", to: "UNIFIED_MATURE" },
+    ]);
+    expect(summary.completedUnifiedEpisodes).toBe(0);
+    expect(summary.averageUnifiedDuration).toBeUndefined();
+    expect(summary.currentUnifiedAge).toBe(380);
+    expect(summary.completedFragmentedEpisodes).toBe(1);
+    expect(summary.averageFragmentedDuration).toBe(120);
   });
 });

@@ -1,6 +1,6 @@
 import type { WorldEvent } from "./WorldHistory";
 import type { WorldEra } from "../Simulation/WorldEra";
-import type { Dynasty, Ruler } from "../Politics/Dynasty";
+import type { Dynasty } from "../Politics/Dynasty";
 import type Team from "../Components/Team";
 import { getFactionDisplayNameAtMonth } from "../Simulation/FactionIdentity";
 import { formatWorldDate } from "../Simulation/WorldTime";
@@ -65,10 +65,6 @@ function isFormalFaction(faction: RecordFaction | undefined, month: number) {
 function formalFactionMonths(faction: RecordFaction, worldMonth: number) {
   const start = faction.stateFoundedMonth ?? faction.firstFoundedYear;
   return Math.max(0, faction.getCumulativeActiveYears(worldMonth) - Math.max(0, start - faction.firstFoundedYear));
-}
-
-function rulerName(ruler: Ruler) {
-  return `${ruler.houseName.replace(/氏$/, "")}${ruler.givenName}`;
 }
 
 function duration(months: number) {
