@@ -8,7 +8,7 @@ import { WorldLaunchRequest } from "../Persistence/WorldSaveWorkflow";
 import { StoredWorldSaveRecord } from "../Persistence/WorldSaveRepository";
 import { colorToString } from "../paid/theme";
 import { RootState } from "../store";
-import { applyScenario } from "../store/configSlice";
+import { applyScenario, clearScenario } from "../store/configSlice";
 import { resetWorldState } from "../store/rootSlice";
 import App from "./App";
 import StartMenu from "./Components/StartMenu";
@@ -27,6 +27,7 @@ export default function WorldLaunchPage() {
   };
 
   const continueSave = (record: StoredWorldSaveRecord) => {
+    dispatch(clearScenario());
     dispatch(resetWorldState());
     WorldHistory.reset();
     WorldEra.reset();

@@ -151,10 +151,14 @@ export const configSlice = createSlice({
       state.autoJoin = false;
       state.liveType = "local";
     },
+    clearScenario(state) {
+      state.gameName = "";
+      state.teams = [];
+    },
   },
 });
 
-export const { setLiveId, setTheme, applyLocalConfig, applyScenario } =
+export const { setLiveId, setTheme, applyLocalConfig, applyScenario, clearScenario } =
   configSlice.actions;
 
 export default configSlice.reducer;

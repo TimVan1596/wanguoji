@@ -100,9 +100,17 @@ export default function WorldControlBar({
           {saving ? <CircularProgress size={16} sx={{ mr: 1 }} /> : null}
           {saving ? "正在保存…" : "保存世界"}
         </MenuItem>
-        {saveMessage ? <Typography sx={{ px: 2, py: 0.5 }} variant="caption">{saveMessage}</Typography> : null}
         <MenuItem disabled={saving} onClick={handleReturnToMenu}>新世界 / 返回主菜单</MenuItem>
       </Menu>
+      {saveMessage ? (
+        <Typography
+          variant="caption"
+          color={saveMessage.startsWith("保存失败") ? "error" : "success.main"}
+          sx={{ gridColumn: "1 / -1", px: 0.5 }}
+        >
+          {saveMessage}
+        </Typography>
+      ) : null}
     </Box>
   );
 }
