@@ -79,6 +79,26 @@ export interface LongRunSummary {
   currentCycleStage?: string;
   currentUnifiedAge?: number;
   currentFragmentedAge?: number;
+  bottleneck: ConsolidationBottleneckSummary;
+}
+
+export interface ConsolidationBottleneckSummary {
+  maxFormalTop1TerritoryShare: number;
+  maxFormalTop1CityShare: number;
+  monthsFormalTop1Above32: number;
+  monthsFormalTop1Above40: number;
+  monthsFormalTop1Above50: number;
+  hegemonicCandidateEpisodes: number;
+  hegemonicOwnerChanges: number;
+  maxHegemonicMomentum: number;
+  maxConsolidationLeaderMomentum: number;
+  dynasticOrderBlockerMonths: Record<string, number>;
+  top1ProvisionalMonths: number;
+  top3ContainsProvisionalMonths: number;
+  maxProvisionalTerritoryShare: number;
+  maxProvisionalCityCount: number;
+  _lastCandidate?: string;
+  _lastOwner?: string;
 }
 
 export interface LongRunProfileCounts {
@@ -109,9 +129,35 @@ export interface LongRunProfileCounts {
   top1ControlledShare?: number;
   top2ControlledShare?: number;
   top3ControlledShare?: number;
+  formalTop1TerritoryShare?: number;
+  formalTop1CityShare?: number;
+  top1Provisional?: boolean;
+  top3ContainsProvisional?: boolean;
+  maxProvisionalTerritoryShare?: number;
+  maxProvisionalCityCount?: number;
+  dynasticOrderBlockers?: Record<string, boolean>;
   eraType?: string;
   eraCandidateType?: string;
   eraCandidateSinceMonth?: number;
+}
+
+function emptyBottleneck(): ConsolidationBottleneckSummary {
+  return {
+    maxFormalTop1TerritoryShare: 0,
+    maxFormalTop1CityShare: 0,
+    monthsFormalTop1Above32: 0,
+    monthsFormalTop1Above40: 0,
+    monthsFormalTop1Above50: 0,
+    hegemonicCandidateEpisodes: 0,
+    hegemonicOwnerChanges: 0,
+    maxHegemonicMomentum: 0,
+    maxConsolidationLeaderMomentum: 0,
+    dynasticOrderBlockerMonths: {},
+    top1ProvisionalMonths: 0,
+    top3ContainsProvisionalMonths: 0,
+    maxProvisionalTerritoryShare: 0,
+    maxProvisionalCityCount: 0,
+  };
 }
 
 class LongRunProfilerStore {
@@ -120,6 +166,7 @@ class LongRunProfilerStore {
   private lastObservedMonth = -1;
   private profileStartMonth = 0;
   private baselineCycleFamily: "UNIFIED" | "FRAGMENTED" = "FRAGMENTED";
+  private bottleneck: ConsolidationBottleneckSummary = emptyBottleneck();
 
   reset(profileStartMonth = 0, baselineCycleFamily: "UNIFIED" | "FRAGMENTED" = "FRAGMENTED") {
     this.snapshots = [];
@@ -127,6 +174,7 @@ class LongRunProfilerStore {
     this.transitions = [];
     this.profileStartMonth = profileStartMonth;
     this.baselineCycleFamily = baselineCycleFamily;
+    this.bottleneck = emptyBottleneck();
   }
 
   observe(
@@ -135,6 +183,7 @@ class LongRunProfilerStore {
     monthlyStepMs?: number,
     counts: LongRunProfileCounts = {}
   ): LongRunProfileSnapshot | undefined {
+    this.observeBottleneck(counts);
     if (
       this.lastObservedMonth >= 0 &&
       worldMonth - this.lastObservedMonth < LONG_RUN_PROFILE_INTERVAL_MONTHS
@@ -152,6 +201,28 @@ class LongRunProfilerStore {
     return snapshot;
   }
 
+  private observeBottleneck(counts: LongRunProfileCounts) {
+    const b = this.bottleneck;
+    const top1Territory = counts.formalTop1TerritoryShare ?? 0;
+    const top1City = counts.formalTop1CityShare ?? 0;
+    b.maxFormalTop1TerritoryShare = Math.max(b.maxFormalTop1TerritoryShare, top1Territory);
+    b.maxFormalTop1CityShare = Math.max(b.maxFormalTop1CityShare, top1City);
+    if (top1Territory > 32) b.monthsFormalTop1Above32 += 1;
+    if (top1Territory > 40) b.monthsFormalTop1Above40 += 1;
+    if (top1Territory > 50) b.monthsFormalTop1Above50 += 1;
+    if (counts.hegemonicCandidateId && counts.hegemonicCandidateId !== b._lastCandidate) b.hegemonicCandidateEpisodes += 1;
+    if (counts.hegemonicOwnerId && b._lastOwner && counts.hegemonicOwnerId !== b._lastOwner) b.hegemonicOwnerChanges += 1;
+    b._lastCandidate = counts.hegemonicCandidateId;
+    b._lastOwner = counts.hegemonicOwnerId;
+    b.maxHegemonicMomentum = Math.max(b.maxHegemonicMomentum, counts.hegemonicMomentum ?? 0);
+    b.maxConsolidationLeaderMomentum = Math.max(b.maxConsolidationLeaderMomentum, counts.consolidationLeaderMomentum ?? 0);
+    if (counts.top1Provisional) b.top1ProvisionalMonths += 1;
+    if (counts.top3ContainsProvisional) b.top3ContainsProvisionalMonths += 1;
+    b.maxProvisionalTerritoryShare = Math.max(b.maxProvisionalTerritoryShare, counts.maxProvisionalTerritoryShare ?? 0);
+    b.maxProvisionalCityCount = Math.max(b.maxProvisionalCityCount, counts.maxProvisionalCityCount ?? 0);
+    Object.entries(counts.dynasticOrderBlockers ?? {}).forEach(([key, value]) => { b.dynasticOrderBlockerMonths[key] = (b.dynasticOrderBlockerMonths[key] ?? 0) + (value ? 1 : 0); });
+  }
+
   getSnapshots() {
     return [...this.snapshots];
   }
@@ -165,7 +236,7 @@ class LongRunProfilerStore {
   getTransitions() { return [...this.transitions]; }
 
   getSummary(worldMonth: number, eras: Array<{ startMonth: number; endMonth?: number; type: string }>, currentCycleStage?: string) {
-    return deriveLongRunSummary(worldMonth, eras, this.transitions, currentCycleStage, this.profileStartMonth, this.baselineCycleFamily);
+    return { ...deriveLongRunSummary(worldMonth, eras, this.transitions, currentCycleStage, this.profileStartMonth, this.baselineCycleFamily), bottleneck: { ...this.bottleneck, dynasticOrderBlockerMonths: { ...this.bottleneck.dynasticOrderBlockerMonths } } };
   }
 }
 
@@ -202,7 +273,7 @@ export function deriveLongRunSummary(
   const last = starts.at(-1);
   const currentFamily = last ? last.kind === "WORLD_UNIFIED" ? "UNIFIED" : "FRAGMENTED" : baselineCycleFamily;
   const currentStart = last?.month ?? profileStartMonth;
-  return { profileStartMonth, worldAge: worldMonth, eraCount: eras.length, averageEraDuration: eraStats?.average, medianEraDuration: eraStats?.median, shortestEraDuration: eraStats?.shortest, longestEraDuration: eraStats?.longest, competitiveEraCount: competitive.length, competitiveEraAverageDuration: competitiveStats?.average, eraGapMonths: gaps, eraOverlapMonths: overlaps, eraTransitionsPerCentury: worldMonth > 0 ? (Math.max(0, eras.length - 1) * 1200) / worldMonth : undefined, unificationCount: completed("WORLD_UNIFIED"), fragmentationCount: completed("WORLD_FRAGMENTED"), completedUnifiedEpisodes: unifiedEpisodes.length, averageUnifiedDuration: unifiedStats?.average, medianUnifiedDuration: unifiedStats?.median, shortestUnifiedDuration: unifiedStats?.shortest, longestUnifiedDuration: unifiedStats?.longest, completedFragmentedEpisodes: fragmentedEpisodes.length, averageFragmentedDuration: fragmentedStats?.average, medianFragmentedDuration: fragmentedStats?.median, longestFragmentedDuration: fragmentedStats?.longest, currentUnifiedAge: currentFamily === "UNIFIED" ? Math.max(0, worldMonth - currentStart) : undefined, currentFragmentedAge: currentFamily === "FRAGMENTED" ? Math.max(0, worldMonth - currentStart) : undefined, currentCycleStage };
+  return { profileStartMonth, worldAge: worldMonth, eraCount: eras.length, averageEraDuration: eraStats?.average, medianEraDuration: eraStats?.median, shortestEraDuration: eraStats?.shortest, longestEraDuration: eraStats?.longest, competitiveEraCount: competitive.length, competitiveEraAverageDuration: competitiveStats?.average, eraGapMonths: gaps, eraOverlapMonths: overlaps, eraTransitionsPerCentury: worldMonth > 0 ? (Math.max(0, eras.length - 1) * 1200) / worldMonth : undefined, unificationCount: completed("WORLD_UNIFIED"), fragmentationCount: completed("WORLD_FRAGMENTED"), completedUnifiedEpisodes: unifiedEpisodes.length, averageUnifiedDuration: unifiedStats?.average, medianUnifiedDuration: unifiedStats?.median, shortestUnifiedDuration: unifiedStats?.shortest, longestUnifiedDuration: unifiedStats?.longest, completedFragmentedEpisodes: fragmentedEpisodes.length, averageFragmentedDuration: fragmentedStats?.average, medianFragmentedDuration: fragmentedStats?.median, longestFragmentedDuration: fragmentedStats?.longest, currentUnifiedAge: currentFamily === "UNIFIED" ? Math.max(0, worldMonth - currentStart) : undefined, currentFragmentedAge: currentFamily === "FRAGMENTED" ? Math.max(0, worldMonth - currentStart) : undefined, currentCycleStage, bottleneck: emptyBottleneck() };
 }
 
 export function buildLongRunProfileSnapshot(

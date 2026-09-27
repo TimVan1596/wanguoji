@@ -152,6 +152,9 @@ export function formatHistoryEventTitle(
       ? `${factionName}国威震天下，${factionName}王${rulerName}称帝。`
       : `${factionName}正式建立帝号。`;
   }
+  if (event.type === "capital-relocated") {
+    return `${name(event.actorFactionId)}迁都${event.cityName ?? ""}`;
+  }
   if (event.type === "city-captured" || event.type === "capital-fallen") {
     return buildHistoryCityCaptureTitle(
       name(event.actorFactionId),

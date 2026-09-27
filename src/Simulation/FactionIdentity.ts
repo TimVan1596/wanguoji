@@ -47,6 +47,12 @@ export const STATE_FORMATION_MIN_ACTIVE_MONTHS = 60;
 export const STATE_FORMATION_MIN_CITIES = 2;
 export const STATE_FORMATION_MIN_STABILITY = 55;
 export const STATE_FORMATION_REQUIRED_MONTHS = 12;
+export const DE_FACTO_STATE_MIN_FRAGMENTATION_MONTHS = 100 * 12;
+export const DE_FACTO_STATE_MIN_ACTIVE_MONTHS = 10 * 12;
+export const DE_FACTO_STATE_MIN_TERRITORY_SHARE = 18;
+export const DE_FACTO_STATE_MIN_CITIES = 3;
+export const DE_FACTO_STATE_MIN_STABILITY = 50;
+export const DE_FACTO_STATE_REQUIRED_MONTHS = 24;
 export const PROVISIONAL_DISSOLUTION_MIN_MONTHS = 50 * 12;
 export const PROVISIONAL_DISSOLUTION_MAX_TERRITORY_SHARE = 8;
 export const EMPEROR_MIN_KING_MONTHS = 240;
@@ -166,6 +172,22 @@ export function observeStateFormationEligibility(
     monthIndex - faction.stateFormationEligibleSinceMonth >=
     STATE_FORMATION_REQUIRED_MONTHS
   );
+}
+
+export function isDeFactoStateFormationEligible(
+  faction: Pick<FactionIdentityState, "status" | "currentActiveSinceYear" | "cities" | "identityStage">,
+  monthIndex: number,
+  fragmentationAge: number,
+  territoryShare: number,
+  stability: number,
+  hasFormalRuler: boolean
+) {
+  return faction.status === "ACTIVE" && faction.identityStage === "PROVISIONAL" &&
+    fragmentationAge >= DE_FACTO_STATE_MIN_FRAGMENTATION_MONTHS &&
+    monthIndex - faction.currentActiveSinceYear >= DE_FACTO_STATE_MIN_ACTIVE_MONTHS &&
+    territoryShare >= DE_FACTO_STATE_MIN_TERRITORY_SHARE &&
+    faction.cities.length >= DE_FACTO_STATE_MIN_CITIES &&
+    stability >= DE_FACTO_STATE_MIN_STABILITY && hasFormalRuler;
 }
 
 export type StateFormationBlocker =

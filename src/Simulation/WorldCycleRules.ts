@@ -31,6 +31,8 @@ export interface WorldCycleDiagnostics {
   fragmentationAge: number;
   unifiedAge: number;
   consolidationModifier: number;
+  lateFragmentationPressure: number;
+  consolidationMemoryFloor: number;
   dynasticGraceMultiplier: number;
   dynasticFatigueMultiplier: number;
   hegemonicCandidateId?: string;
@@ -84,6 +86,18 @@ export const CONSOLIDATION_LEADER_REQUIRED_MONTHS = 60;
 export const CONSOLIDATION_LEADER_CAP_MONTHS = 120;
 export const CONSOLIDATION_LEADER_SIEGE_MULTIPLIER_CAP = 1.1;
 export const CONSOLIDATION_LEADER_DECAY_PER_MONTH = 1 / 48;
+export const LATE_FRAGMENTATION_PRESSURE_START_MONTH = 120 * 12;
+export const LATE_FRAGMENTATION_PRESSURE_CAP_MONTH = 300 * 12;
+export const LATE_HEGEMONIC_SIEGE_CAP = 1.22;
+export const LATE_CAPTURE_LOYALTY_BONUS_CAP = 14;
+
+export function getLateFragmentationPressure(fragmentationAgeMonths: number) {
+  return smoothStep(fragmentationAgeMonths, LATE_FRAGMENTATION_PRESSURE_START_MONTH, LATE_FRAGMENTATION_PRESSURE_CAP_MONTH);
+}
+
+export function getConsolidationMemoryFloor(fragmentationAgeMonths: number) {
+  return getLateFragmentationPressure(fragmentationAgeMonths) * 0.22;
+}
 
 export function createInitialWorldCycleState(startMonth = 0): WorldCycleState {
   return {
@@ -134,6 +148,7 @@ export function getWorldCycleDiagnostics(
       ? Math.max(0, month - state.fragmentationStartMonth)
       : 0;
   const consolidationModifier = getConsolidationPressure(fragmentationAge);
+  const lateFragmentationPressure = getLateFragmentationPressure(fragmentationAge);
   const dynasticGraceMultiplier = getDynasticGraceMultiplier(unifiedAge);
   const dynasticFatigueMultiplier = getDynasticFatigueMultiplier(unifiedAge);
   const hegemonicMomentum = state.hegemonicMomentum ?? 0;
@@ -142,6 +157,11 @@ export function getWorldCycleDiagnostics(
     hegemonicMomentum,
     consolidationLeaderMomentum
   );
+  const memoryEligible = state.hegemonicCandidateSinceMonth !== undefined &&
+    month - state.hegemonicCandidateSinceMonth >= 12;
+  const effectiveExpansionMomentum = memoryEligible
+    ? Math.max(expansionMomentum, getConsolidationMemoryFloor(fragmentationAge))
+    : expansionMomentum;
   return {
     stage:
       getOrderStartMonth(state) !== undefined
@@ -156,15 +176,18 @@ export function getWorldCycleDiagnostics(
     fragmentationAge,
     unifiedAge,
     consolidationModifier,
+    lateFragmentationPressure,
+    consolidationMemoryFloor: getConsolidationMemoryFloor(fragmentationAge),
     dynasticGraceMultiplier,
     dynasticFatigueMultiplier,
     hegemonicCandidateId: state.hegemonicCandidateFactionId,
     hegemonicOwnerId: state.hegemonicFactionId,
     hegemonicMomentum,
     hegemonicSiegeMultiplier: getHegemonicSiegeMultiplier(
-      expansionMomentum,
+      effectiveExpansionMomentum,
       consolidationModifier,
-      getOrderStartMonth(state) !== undefined
+      getOrderStartMonth(state) !== undefined,
+      lateFragmentationPressure
     ),
     consolidationLeaderId: state.consolidationLeaderFactionId,
     consolidationLeaderCandidateId: state.consolidationLeaderCandidateFactionId,
@@ -374,12 +397,15 @@ function getExpansionMomentum(hegemonicMomentum: number, leaderMomentum: number)
 export function getHegemonicSiegeMultiplier(
   momentum: number,
   fragmentationPressure: number,
-  dynasticOrderActive: boolean
+  dynasticOrderActive: boolean,
+  lateFragmentationPressure = 0
 ) {
   const macro = 1 + fragmentationPressure * 0.35;
   const effectiveMomentum = dynasticOrderActive ? momentum * 0.25 : momentum;
+  const cap = HEGEMONIC_SIEGE_MULTIPLIER_CAP +
+    (LATE_HEGEMONIC_SIEGE_CAP - HEGEMONIC_SIEGE_MULTIPLIER_CAP) * lateFragmentationPressure;
   return Math.min(
-    HEGEMONIC_SIEGE_MULTIPLIER_CAP,
+    cap,
     1 + (HEGEMONIC_SIEGE_MULTIPLIER_CAP - 1) * effectiveMomentum * macro
   );
 }
@@ -387,12 +413,14 @@ export function getHegemonicSiegeMultiplier(
 export function getHegemonicCaptureLoyaltyBonus(
   momentum: number,
   fragmentationPressure: number,
-  dynasticOrderActive: boolean
+  dynasticOrderActive: boolean,
+  lateFragmentationPressure = 0
 ) {
   const multiplier = getHegemonicSiegeMultiplier(
     momentum,
     fragmentationPressure,
-    dynasticOrderActive
+    dynasticOrderActive,
+    lateFragmentationPressure
   );
   return getHegemonicCaptureLoyaltyBonusFromSiegeMultiplier(multiplier);
 }
@@ -402,7 +430,9 @@ export function getHegemonicCaptureLoyaltyBonusFromSiegeMultiplier(
 ) {
   const ratio =
     (multiplier - 1) / Math.max(0.01, HEGEMONIC_SIEGE_MULTIPLIER_CAP - 1);
-  return Math.round(HEGEMONIC_CAPTURE_LOYALTY_BONUS_CAP * ratio);
+  const cap = HEGEMONIC_CAPTURE_LOYALTY_BONUS_CAP +
+    (LATE_CAPTURE_LOYALTY_BONUS_CAP - HEGEMONIC_CAPTURE_LOYALTY_BONUS_CAP) * ratio;
+  return Math.round(Math.min(LATE_CAPTURE_LOYALTY_BONUS_CAP, cap) * Math.min(1, ratio));
 }
 
 export function getLeadingConsolidationFaction(
