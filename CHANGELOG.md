@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99917g
+
+- Fixed hydration collider teardown against Phaser Arcade ProcessQueue deferred removals.
+- Drained the public collider queue before and after Core-owned world collider destruction and verified the active queue is empty.
+- Added regression coverage for already-destroyed colliders still present in the active queue.
+
 ## v0.99917f
 
 - Added bounded path-level canonical WorldSave diffs with per-subsystem counts while preserving array order.

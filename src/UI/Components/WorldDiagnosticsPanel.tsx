@@ -135,6 +135,7 @@ export default function WorldDiagnosticsPanel() {
     `snapshot request: ${JSON.stringify(snapshotRequest ?? null)}`,
     `last hydration: ${hydrationStatus || "none"}`,
     `last hydration stage: ${hydration?.lastStage ?? "unknown"}`,
+    `collider teardown: ${JSON.stringify(core?.getColliderTeardownDiagnostics() ?? null)}`,
     `canonical diff summary:\n${subsystemSummary}`,
     `canonical path differences:\n${pathDiffSummary}`,
     `runtime liveness: ${JSON.stringify(runtime ?? null)}`,
@@ -162,6 +163,7 @@ export default function WorldDiagnosticsPanel() {
           {`snapshot: ${snapshotRequest.status}｜request month ${snapshotRequest.requestMonth ?? "—"}｜reached ${snapshotRequest.boundaryReachedMonth ?? "waiting"}\nstarted while: simulator=${snapshotState?.simulatorRunning ?? "—"}, clock=${snapshotState?.clockRunning ?? "—"}, redux=${snapshotState?.reduxWorldRunning ?? "—"}, scenePaused=${snapshotState?.sceneTimePaused ?? "—"}, physicsPaused=${snapshotState?.physicsPaused ?? "—"}, accumulator=${snapshotState?.simulationAccumulatorMs ?? "—"}, elapsed=${snapshotState?.clockElapsedMs ?? "—"}\nwaiting reason: ${snapshotRequest.waitingReasons?.join(", ") || "none"}\npre-export elapsed=${snapshotRequest.preExportElapsedMs ?? "—"}, accumulator=${snapshotRequest.preExportAccumulatorMs ?? "—"}${snapshotRequest.error ? `\n${snapshotRequest.error}` : ""}`}
         </Typography>}
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{`last hydration stage: ${hydration?.lastStage ?? "—"}\n${hydrationStatus}\n${subsystemSummary}\n${pathDiffSummary}`}</Typography>
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{`Collider teardown: ${JSON.stringify(core?.getColliderTeardownDiagnostics() ?? null)}`}</Typography>
       </details>
       <details>
         <summary>Runtime Liveness</summary>

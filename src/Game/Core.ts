@@ -39,6 +39,7 @@ import BackgroundProgressionController, {
   MAX_CATCH_UP_STEPS_PER_FRAME,
 } from "../Simulation/BackgroundProgressionController";
 import LogicalSimulationCore from "../Simulation/LogicalSimulationCore";
+import { ArcadeColliderTeardownDiagnostics, teardownArcadeColliders } from "../Simulation/ArcadeColliderTeardown";
 import LogicalUnitRegistry from "../Simulation/LogicalUnitRegistry";
 import WorldEra from "../Simulation/WorldEra";
 import {
@@ -125,6 +126,12 @@ export default class Core {
   private visibilityListenerBound = false;
   private snapshotBoundaryRequest = new SnapshotBoundaryRequest();
   private lastHydrationStage = "IDLE";
+  private colliderTeardownDiagnostics: ArcadeColliderTeardownDiagnostics = {
+    activeBeforeDrain: 0,
+    activeAfterPreDrain: 0,
+    destroyedByCore: 0,
+    activeAfterPostDrain: 0,
+  };
   private coreUpdateDiagnostics = {
     frames: 0,
     lastUpdateRealAt: 0,
@@ -576,6 +583,10 @@ export default class Core {
     this.lastHydrationStage = stage;
   }
 
+  getColliderTeardownDiagnostics() {
+    return { ...this.colliderTeardownDiagnostics };
+  }
+
   getRuntimeLivenessDiagnostics() {
     const simulatorState = this.simulator?.exportState();
     const reduxWorldRunning = store.getState().root.worldRunning;
@@ -646,8 +657,10 @@ export default class Core {
       this.scene.tweens.pauseAll();
     });
     this.runHydrationTeardownStage("TEARDOWN_COLLIDERS", () => {
-      const worldColliders = [...this.scene.physics.world.colliders.getActive()];
-      worldColliders.forEach((collider) => collider.destroy());
+      this.colliderTeardownDiagnostics = teardownArcadeColliders(this.scene.physics.world.colliders);
+      if (this.colliderTeardownDiagnostics.activeAfterPostDrain !== 0) {
+        throw new Error(`Collider ProcessQueue did not drain; active count=${this.colliderTeardownDiagnostics.activeAfterPostDrain}.`);
+      }
       this.teams.flatMap((team) => [...team.users]).forEach((user) => {
         user.slaveGroup.detachColliderAfterWorldTeardown();
       });
