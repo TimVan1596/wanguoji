@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.99921e
+
+- Added cumulative consolidation bottleneck telemetry for long-run measurement.
+- Added bounded late-fragmentation pressure and consolidation memory floor without changing post-unification fatigue balance.
+- Added a constrained de facto state-formation path for durable large provisional powers.
+- Fixed capital-relocated history rendering to resolve the faction name at event month.
+
 ## v0.99921d
 
 - Rebased session-only profiler latches after hydration so snapshot/restore does not duplicate cycle or era transitions.

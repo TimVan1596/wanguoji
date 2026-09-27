@@ -206,6 +206,13 @@ export default class AutoSimulator {
           .filter((team) => team.status === "ACTIVE")
           .map((team) => getFactionTerritoryMetric(territoryMetrics, team.name))
           .sort((a, b) => b.controlledTerritoryShare - a.controlledTerritoryShare);
+        const formalRanked = teams
+          .filter((team) => team.status === "ACTIVE" && team.identityStage === "STATE")
+          .map((team) => ({ team, territory: getFactionTerritoryMetric(territoryMetrics, team.name).controlledTerritoryShare, cities: team.cities.length, stability: team.cities.length ? team.cities.reduce((sum, city) => sum + (city.loyalty ?? 0), 0) / team.cities.length : 0 }))
+          .sort((a, b) => b.territory - a.territory);
+        const formalCityTotal = Math.max(1, formalRanked.reduce((sum, item) => sum + item.cities, 0));
+        const formalTop1 = formalRanked[0];
+        const provisionalRanked = teams.filter((team) => team.status === "ACTIVE").map((team) => ({ team, territory: getFactionTerritoryMetric(territoryMetrics, team.name).controlledTerritoryShare })).sort((a, b) => b.territory - a.territory);
         const stateFormationBlockers = this.events.getProvisionalBlockerSummary(
           this.clock.year,
           teams,
@@ -251,6 +258,19 @@ export default class AutoSimulator {
               rankedTerritory[1]?.controlledTerritoryShare ?? 0,
             top3ControlledShare:
               rankedTerritory[2]?.controlledTerritoryShare ?? 0,
+            formalTop1TerritoryShare: formalTop1?.territory ?? 0,
+            formalTop1CityShare: formalTop1 ? formalTop1.cities / formalCityTotal * 100 : 0,
+            top1Provisional: provisionalRanked[0]?.team.identityStage === "PROVISIONAL",
+            top3ContainsProvisional: provisionalRanked.slice(0, 3).some((item) => item.team.identityStage === "PROVISIONAL"),
+            maxProvisionalTerritoryShare: Math.max(0, ...provisionalRanked.filter((item) => item.team.identityStage === "PROVISIONAL").map((item) => item.territory)),
+            maxProvisionalCityCount: Math.max(0, ...teams.filter((team) => team.identityStage === "PROVISIONAL").map((team) => team.cities.length)),
+            dynasticOrderBlockers: {
+              TERRITORY: !formalTop1 || formalTop1.territory < 60,
+              CITY_SHARE: !formalTop1 || formalTop1.cities / formalCityTotal * 100 < 55,
+              STABILITY: !formalTop1 || formalTop1.stability < 65,
+              TOP2_SHARE: (formalRanked[1]?.territory ?? 0) > 20,
+              NO_FORMAL_STATE: !formalTop1,
+            },
             eraType: WorldEra.getCurrentEra()?.type,
             eraCandidateType: WorldEra.getCandidateDiagnostics(this.clock.year)?.type,
             eraCandidateSinceMonth: WorldEra.getCandidateDiagnostics(this.clock.year)?.sinceMonth,
