@@ -1,7 +1,6 @@
 import City, { getFactionStability } from "../Components/City";
 import Team from "../Components/Team";
 import Game from "../Game/Game";
-import WorldHistory from "../History/WorldHistory";
 import DynastyRegistry from "../Politics/Dynasty";
 import { CITY_MAX_STABLE_LOYALTY, MAX_ACTIVE_FACTIONS, REBEL_LOYALTY_THRESHOLD_V095 } from "../config/simulation";
 import { store } from "../store";
@@ -62,6 +61,23 @@ export default class GodActionService {
     return { success: affectedCount > 0, message: `稳定度 ${beforeStability} → ${afterStability}（请求 ${delta >= 0 ? "+" : ""}${delta}）`, before: { requestedDelta: delta, stability: beforeStability }, after: { requestedDelta: delta, stability: afterStability }, affectedCount };
   }
 
+  static setStabilityTarget(team: Team | undefined, target: number): GodActionResult {
+    if (!team || team.isDie) return fail("未选择有效的存活势力");
+    const cities = team.cities.filter((city) => !city.destroyed && city.ownerFactionId === team.name);
+    if (!cities.length) return fail("该势力没有可调整忠诚度的有效城市");
+    const beforeStability = getFactionStability(team) ?? 0;
+    const requestedTarget = clamp(Math.round(target), 0, CITY_MAX_STABLE_LOYALTY);
+    let affectedCount = 0;
+    cities.forEach((city) => {
+      if (city.loyalty !== requestedTarget) affectedCount += 1;
+      city.loyalty = requestedTarget;
+      city.block.updateCityDisplay();
+    });
+    const afterStability = getFactionStability(team) ?? 0;
+    store.dispatch(updateTeams());
+    return { success: affectedCount > 0, message: `稳定度 ${beforeStability} → ${afterStability}（目标 ${requestedTarget}）`, before: { requestedTarget, stability: beforeStability }, after: { requestedTarget, stability: afterStability }, affectedCount };
+  }
+
   static changeCity(city: City | undefined, field: "loyalty" | "defense" | "devastation", operation: "delta" | "set" | "full", value: number): GodActionResult {
     if (!city || city.destroyed) return fail("未选择有效城市");
     const before = { [field]: city[field] };
@@ -96,8 +112,4 @@ export function describePoliticalAvailability(city: City | undefined, currentMon
   const remnants = founder ? WorldRemnants.get(founder.name) : undefined;
   const restoration = !founder?.isDie ? "founder 未灭亡" : founder.cities.length > 0 ? "势力尚存" : !remnants || remnants.population <= 0 ? "无 remnants" : !DynastyRegistry.hasClaimant(founder.name) ? "无 claimant" : !FactionRegistry.canRestoreFaction(founder) ? "复国资格未满足" : "可尝试";
   return { rebellion, restoration };
-}
-
-export function recordGodHistoryEvent(month: number, factionName: string, count: number) {
-  WorldHistory.addGodIntervention(month, factionName, count);
 }

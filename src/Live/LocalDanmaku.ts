@@ -1,8 +1,6 @@
 import Game from "../Game/Game";
 import WorldHistory from "../History/WorldHistory";
 import {
-  USER_GOD_LOYALTY_MAX,
-  USER_GOD_LOYALTY_MIN,
   USER_PLAYER_LOYALTY,
 } from "../config/simulation";
 import { store } from "../store";
@@ -17,7 +15,6 @@ const COLOR_ALIASES: Record<string, string> = {
   绿色: "绿",
   紫色: "紫",
 };
-let godReinforcementSequence = 0;
 
 export function getLocalUserId(name: string) {
   let hash = 0;
@@ -66,39 +63,4 @@ export function sendLocalDanmu(name: string, text: string) {
     );
   }
   return true;
-}
-
-export function sendGodReinforcements(teamName: string, count: number) {
-  if (!Game.Core || count <= 0) {
-    return 0;
-  }
-
-  let spawned = 0;
-  for (let i = 0; i < count; i++) {
-    godReinforcementSequence += 1;
-    const name = `God-${teamName}-${String(godReinforcementSequence).padStart(
-      4,
-      "0"
-    )}`;
-    const joinedTeam = Danmu.Apply(
-      createLocalDanmu(
-        name,
-        teamName,
-        Phaser.Math.Between(USER_GOD_LOYALTY_MIN, USER_GOD_LOYALTY_MAX)
-      )
-    );
-    if (joinedTeam) {
-      spawned += 1;
-    }
-  }
-
-  if (spawned > 0) {
-    WorldHistory.addGodIntervention(
-      store.getState().root.worldMonth,
-      teamName,
-      spawned
-    );
-  }
-
-  return spawned;
 }

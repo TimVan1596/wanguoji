@@ -18,6 +18,7 @@ export default function GodConsole({ saving }: { saving: boolean }) {
   const [log, setLog] = useState<LogEntry[]>([]);
   const [customPopulation, setCustomPopulation] = useState("1");
   const [customStability, setCustomStability] = useState("0");
+  const [stabilityTarget, setStabilityTarget] = useState("75");
   const bootstrapBusy = !Game.Core?.simulator;
   const busy = !canRunGodMutation({ worldStarted: state.worldStarted, saving, backgroundCatchUpActive: state.backgroundCatchUpActive, bootstrapBusy });
   const selectedTeam = resolveGodFactionTarget(teams, state.selectedFactionName);
@@ -39,6 +40,10 @@ export default function GodConsole({ saving }: { saving: boolean }) {
   const adjustStability = (delta: number) => {
     if (busy || !selectedTeam) return;
     record(GodActionService.changeStability(selectedTeam, delta), selectedTeam.displayName);
+  };
+  const setStability = (target: number) => {
+    if (busy || !selectedTeam) return;
+    record(GodActionService.setStabilityTarget(selectedTeam, target), selectedTeam.displayName);
   };
   const cityAction = (field: "loyalty" | "defense" | "devastation", operation: "delta" | "set" | "full", value: number) => {
     if (busy || !selectedCity) return;
@@ -85,6 +90,7 @@ export default function GodConsole({ saving }: { saving: boolean }) {
       <Typography variant="caption">当前：{stability ?? "—"}{!activeCities.length && selectedTeam ? "（无有效城市）" : ""}</Typography>
       <Box sx={grid}>{[-20, -10, -5, 5, 10, 20].map((delta) => <Button key={delta} size="small" variant="outlined" disabled={factionMutationLocked || !activeCities.length} onClick={() => adjustStability(delta)}>{delta > 0 ? "+" : ""}{delta}</Button>)}</Box>
       <Box sx={{ display: "flex", gap: 0.5, mt: 0.5 }}><TextField size="small" type="number" label="调整 delta" value={customStability} onChange={(event) => setCustomStability(event.target.value)} sx={{ minWidth: 0, flex: 1 }} /><Button size="small" disabled={factionMutationLocked || !activeCities.length || !Number(customStability)} onClick={() => adjustStability(Number(customStability))}>执行</Button></Box>
+      <Box sx={{ display: "flex", gap: 0.5, mt: 0.5 }}><TextField size="small" type="number" label="设定目标稳定度" value={stabilityTarget} onChange={(event) => setStabilityTarget(event.target.value)} sx={{ minWidth: 0, flex: 1 }} /><Button size="small" disabled={factionMutationLocked || !activeCities.length || stabilityTarget === ""} onClick={() => setStability(Number(stabilityTarget))}>设定</Button></Box>
     </Box>
 
     <Box sx={{ borderTop: "1px solid var(--gg-border)", pt: 0.5 }}>

@@ -60,6 +60,7 @@ describe("GodActionService canonical interventions", () => {
     expect(result.after.stability).toBe(95);
     expect(result.after.requestedDelta).toBe(20);
     expect(team).not.toHaveProperty("stability");
+    expect(GodActionService.setStabilityTarget(team, 75).after.stability).toBe(75);
     expect(GodActionService.changeStability({ ...team, cities: [] }, 5).success).toBe(false);
   });
 
