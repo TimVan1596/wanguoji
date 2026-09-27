@@ -1,4 +1,4 @@
-import { Box, Button, Menu, MenuItem } from "@mui/material";
+import { Box, Button, CircularProgress, Menu, MenuItem, Typography } from "@mui/material";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { SIMULATION_SPEEDS } from "../../../config/simulation";
@@ -7,8 +7,12 @@ import { RootState } from "../../../store";
 
 export default function WorldControlBar({
   onReturnToMenu,
+  onSave,
+  saving,
 }: {
   onReturnToMenu: () => void;
+  onSave: () => Promise<string>;
+  saving: boolean;
 }) {
   const worldRunning = useSelector(
     (state: RootState) => state.root.worldRunning
@@ -20,6 +24,16 @@ export default function WorldControlBar({
     (state: RootState) => state.root.backgroundCatchUpActive
   );
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+  const [saveMessage, setSaveMessage] = useState("");
+
+  const handleSave = async () => {
+    setSaveMessage("正在保存…");
+    try {
+      setSaveMessage(await onSave());
+    } catch (error) {
+      setSaveMessage(`保存失败：${error instanceof Error ? error.message : String(error)}`);
+    }
+  };
 
   const handleReturnToMenu = () => {
     if (catchUpActive) {
@@ -82,6 +96,11 @@ export default function WorldControlBar({
         open={Boolean(menuAnchor)}
         onClose={() => setMenuAnchor(null)}
       >
+        <MenuItem disabled={saving || catchUpActive} onClick={() => void handleSave()}>
+          {saving ? <CircularProgress size={16} sx={{ mr: 1 }} /> : null}
+          {saving ? "正在保存…" : "保存世界"}
+        </MenuItem>
+        {saveMessage ? <Typography sx={{ px: 2, py: 0.5 }} variant="caption">{saveMessage}</Typography> : null}
         <MenuItem onClick={handleReturnToMenu}>新世界 / 返回主菜单</MenuItem>
       </Menu>
     </Box>

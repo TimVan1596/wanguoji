@@ -11,8 +11,12 @@ import WorldControlBar from "../WorldControlBar";
 
 export default function RightSlider({
   onReturnToMenu,
+  onSave,
+  saving,
 }: {
   onReturnToMenu: () => void;
+  onSave: () => Promise<string>;
+  saving: boolean;
 }) {
   const dispatch = useDispatch();
   const rightPanelTab = useSelector(
@@ -28,7 +32,7 @@ export default function RightSlider({
         flexDirection: "column",
       }}
     >
-      <WorldControlBar onReturnToMenu={onReturnToMenu}></WorldControlBar>
+      <WorldControlBar onReturnToMenu={onReturnToMenu} onSave={onSave} saving={saving}></WorldControlBar>
       <MuiBox
         role="tablist"
         sx={{
