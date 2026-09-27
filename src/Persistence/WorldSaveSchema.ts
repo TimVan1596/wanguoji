@@ -223,7 +223,7 @@ export interface CanonicalWorldSaveDiff {
 const CANONICAL_SUBSYSTEMS = [
   "world", "factions", "blocks", "cities", "users", "units", "dynasties",
   "worldHistory", "worldEra", "factionSnapshots", "worldRemnants", "worldExiles",
-  "factionEffects", "populationSystem", "registries", "worldEventSystem",
+  "factionEffects", "populationSystem", "registries", "worldEventSystem", "metadata",
 ] as const;
 
 /** Debug-oriented structural comparison. Object key order is ignored; array order remains canonical. */
@@ -236,7 +236,7 @@ export function diffCanonicalWorldSave(a: WorldSaveV1, b: WorldSaveV1, limit = 2
   const record = (path: string, left: unknown, right: unknown) => {
     differenceCount += 1;
     const subsystem = path.split(/[.[]/, 1)[0];
-    if (subsystem in subsystemCounts) subsystemCounts[subsystem] += 1;
+    subsystemCounts[subsystem in subsystemCounts ? subsystem : "metadata"] += 1;
     if (differences.length < Math.max(0, limit)) {
       differences.push({ path, before: simplifyDiffValue(left), after: simplifyDiffValue(right) });
     }

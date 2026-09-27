@@ -22,9 +22,9 @@ export function exportFarmTimerState(name: string, timer: {
 }
 
 /** Phaser TimerEvent.startAt initializes elapsed; remaining is derived from delay - elapsed. */
-export function getFarmTimerRestoreOptions(saved: FarmTimerSaveState | undefined, fallbackStartAt: number) {
+export function getFarmTimerRestoreOptions(saved: FarmTimerSaveState | undefined, fallbackStartAt: number | undefined) {
   return {
-    startAt: saved?.elapsedMs ?? fallbackStartAt,
+    startAt: saved?.elapsedMs ?? fallbackStartAt ?? 0,
     repeatCount: saved?.repeatCount,
     paused: saved?.paused,
   };

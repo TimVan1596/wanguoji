@@ -27,7 +27,7 @@ export interface SnapshotRequestState extends SnapshotBoundaryState {
 }
 
 export interface SnapshotRequestDiagnostics {
-  status: "idle" | "waiting" | "boundary-reached" | "cancelled";
+  status: "idle" | "waiting" | "boundary-reached" | "cancelled" | "rejected";
   requestMonth?: number;
   boundaryReachedMonth?: number;
   preExportElapsedMs?: number;
@@ -48,9 +48,11 @@ export class SnapshotBoundaryRequest {
 
   request(state: SnapshotRequestState) {
     if (!state.worldStarted) {
+      this.diagnostics = { status: "rejected", requestMonth: state.worldMonth, requestState: requestStateWithoutPaused(state), waitingReasons: ["WORLD_NOT_STARTED"], error: "Cannot request a snapshot before the world has started." };
       return { promise: Promise.reject(new Error("Cannot request a snapshot before the world has started.")), pending: false };
     }
     if (state.catchingUp) {
+      this.diagnostics = { status: "rejected", requestMonth: state.worldMonth, requestState: requestStateWithoutPaused(state), waitingReasons: ["BACKGROUND_CATCHUP"], error: "Wait for background catch-up to finish before requesting a snapshot." };
       return { promise: Promise.reject(new Error("Wait for background catch-up to finish before requesting a snapshot.")), pending: false };
     }
     if (isSafeSnapshotBoundary(state)) {
@@ -132,6 +134,12 @@ export function getSnapshotWaitingReasons(state: SnapshotRequestState) {
   const reasons: string[] = [];
   if (state.catchingUp) reasons.push("BACKGROUND_CATCHUP");
   if (state.simulatorRunning ?? !state.paused) reasons.push("SIMULATOR_RUNNING");
+  if ((state.reduxWorldRunning !== undefined && state.simulatorRunning !== undefined && state.reduxWorldRunning !== state.simulatorRunning)
+    || (state.clockRunning !== undefined && state.simulatorRunning !== undefined && state.clockRunning !== state.simulatorRunning)) {
+    reasons.push("RUNNING_STATE_DIVERGENCE");
+  }
+  if (state.sceneTimePaused && state.simulatorRunning) reasons.push("SCENE_TIME_PAUSED");
+  if (state.physicsPaused && state.simulatorRunning) reasons.push("PHYSICS_WORLD_PAUSED");
   if (!isEffectivelyZeroSnapshotMs(state.clockElapsedMs)) reasons.push("CLOCK_NOT_AT_BOUNDARY");
   if (!isEffectivelyZeroSnapshotMs(state.simulationAccumulatorMs)) reasons.push("ACCUMULATOR_NOT_ZERO");
   return reasons;

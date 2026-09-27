@@ -212,7 +212,7 @@ describe("snapshot month-boundary requests", () => {
     expect(request.getDiagnostics().status).toBe("cancelled");
   });
 
-  it("explains every reason a request is not currently at a safe boundary", () => {
+  it("explains every reason a request is not currently at a safe boundary", async () => {
     expect(getSnapshotWaitingReasons({
       worldStarted: true,
       catchingUp: true,
@@ -222,5 +222,10 @@ describe("snapshot month-boundary requests", () => {
       clockElapsedMs: 0.25,
       simulationAccumulatorMs: 3,
     })).toEqual(["BACKGROUND_CATCHUP", "SIMULATOR_RUNNING", "CLOCK_NOT_AT_BOUNDARY", "ACCUMULATOR_NOT_ZERO"]);
+    const request = new SnapshotBoundaryRequest();
+    const rejected = request.request({ worldStarted: true, catchingUp: true, worldMonth: 12, paused: false, clockElapsedMs: 0, simulationAccumulatorMs: 0 });
+    expect(rejected.pending).toBe(false);
+    expect(request.getDiagnostics().waitingReasons).toEqual(["BACKGROUND_CATCHUP"]);
+    await expect(rejected.promise).rejects.toThrow("background catch-up");
   });
 });
