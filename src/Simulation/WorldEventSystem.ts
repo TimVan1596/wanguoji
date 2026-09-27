@@ -480,7 +480,7 @@ export default class WorldEventSystem {
         if (year - team.stateFormationEligibleSinceMonth >= 24) {
           const oldDisplayName = team.displayName;
           const stateName = createStateName({ capitalName: team.capitalCity?.name ?? team.capital, founderCityName: team.cities[0]?.name, houseName: team.houseName }, activeStateNames, historicalStateNames, (max) => Phaser.Math.Between(0, max - 1));
-          if (team.formState(stateName)) {
+          if (team.formState(stateName, year)) {
             activeStateNames.push(stateName);
             historicalStateNames.push(stateName);
             const eventId = WorldHistory.addStateFounded(year, team.name, oldDisplayName, stateName, currentRuler ? DynastyRegistry.getRulerDisplay(team.name) : undefined, currentRuler?.id, team.capitalCity?.id, team.capitalCity?.name);

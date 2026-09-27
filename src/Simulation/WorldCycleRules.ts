@@ -157,8 +157,8 @@ export function getWorldCycleDiagnostics(
     hegemonicMomentum,
     consolidationLeaderMomentum
   );
-  const memoryEligible = state.hegemonicCandidateSinceMonth !== undefined &&
-    month - state.hegemonicCandidateSinceMonth >= 12;
+  const memoryEligible = [state.hegemonicCandidateSinceMonth, state.consolidationLeaderCandidateSinceMonth]
+    .some((since) => since !== undefined && month - since >= 12);
   const effectiveExpansionMomentum = memoryEligible
     ? Math.max(expansionMomentum, getConsolidationMemoryFloor(fragmentationAge))
     : expansionMomentum;
