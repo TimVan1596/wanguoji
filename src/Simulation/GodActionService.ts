@@ -17,6 +17,14 @@ export interface GodActionResult<T = Record<string, number>> {
   affectedCount?: number;
 }
 
+export function resolveGodFactionTarget<T extends { name: string }>(teams: T[], selectedFactionName?: string) {
+  return selectedFactionName ? teams.find((team) => team.name === selectedFactionName) : undefined;
+}
+
+export function canRunGodMutation(state: { worldStarted: boolean; saving: boolean; backgroundCatchUpActive: boolean; bootstrapBusy?: boolean }) {
+  return state.worldStarted && !state.saving && !state.backgroundCatchUpActive && !state.bootstrapBusy;
+}
+
 const fail = (message: string): GodActionResult => ({ success: false, message, before: {}, after: {} });
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 

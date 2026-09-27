@@ -6,7 +6,6 @@ import { setRightPanelTab } from "../../../store/rootSlice";
 import CityDetails from "../CityDetails";
 import FactionDetails from "../FactionDetails";
 import HistoryScroll from "../HistoryScroll";
-import LocalDanmaku from "../LocalDanmaku";
 import GodConsole from "../GodConsole";
 import WorldControlBar from "../WorldControlBar";
 

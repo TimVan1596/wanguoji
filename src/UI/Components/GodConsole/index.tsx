@@ -1,14 +1,12 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, MenuItem, TextField, Typography } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import City, { getFactionStability } from "../../../Components/City";
-import Team from "../../../Components/Team";
+import { getFactionStability } from "../../../Components/City";
 import Game from "../../../Game/Game";
 import { formatWorldDate } from "../../../Simulation/WorldTime";
-import GodActionService, { describePoliticalAvailability } from "../../../Simulation/GodActionService";
+import GodActionService, { canRunGodMutation, describePoliticalAvailability, resolveGodFactionTarget } from "../../../Simulation/GodActionService";
 import { RootState } from "../../../store";
-import { setSelectedCityId, setSelectedFactionName, updateTeams } from "../../../store/rootSlice";
+import { setSelectedCityId, setSelectedFactionName } from "../../../store/rootSlice";
 import LocalDanmaku from "../LocalDanmaku";
 
 type LogEntry = { date: string; text: string };
@@ -20,8 +18,9 @@ export default function GodConsole({ saving }: { saving: boolean }) {
   const [log, setLog] = useState<LogEntry[]>([]);
   const [customPopulation, setCustomPopulation] = useState("1");
   const [customStability, setCustomStability] = useState("0");
-  const busy = !state.worldStarted || saving || state.backgroundCatchUpActive || !Game.Core?.simulator;
-  const selectedTeam = teams.find((team) => team.name === state.selectedFactionName);
+  const bootstrapBusy = !Game.Core?.simulator;
+  const busy = !canRunGodMutation({ worldStarted: state.worldStarted, saving, backgroundCatchUpActive: state.backgroundCatchUpActive, bootstrapBusy });
+  const selectedTeam = resolveGodFactionTarget(teams, state.selectedFactionName);
   const cities = useMemo(() => teams.flatMap((team) => team.cities), [teams]);
   const selectedCity = cities.find((city) => city.id === state.selectedCityId);
   const activeCities = selectedTeam?.cities.filter((city) => !city.destroyed && city.ownerFactionId === selectedTeam.name) ?? [];
@@ -109,6 +108,6 @@ export default function GodConsole({ saving }: { saving: boolean }) {
     </Box>
 
     <Box sx={{ borderTop: "1px solid var(--gg-border)", pt: 0.5 }}>{summary("最近操作")}{log.length ? log.map((entry, index) => <Typography key={`${entry.date}-${index}`} variant="caption" display="block">{entry.date}　{entry.text}</Typography>) : <Typography variant="caption">本次会话暂无操作</Typography>}</Box>
-    <Accordion disableGutters><AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ minHeight: 36, "& .MuiAccordionSummary-content": { my: 0.5 } }}><Typography variant="caption">本地角色 / 旧指令（高级）</Typography></AccordionSummary><AccordionDetails sx={{ p: 0, minWidth: 0 }}><LocalDanmaku /></AccordionDetails></Accordion>
+    <Accordion disableGutters><AccordionSummary expandIcon={<span>⌄</span>} sx={{ minHeight: 36, "& .MuiAccordionSummary-content": { my: 0.5 } }}><Typography variant="caption">本地角色 / 旧指令（高级）</Typography></AccordionSummary><AccordionDetails sx={{ p: 0, minWidth: 0 }}><LocalDanmaku /></AccordionDetails></Accordion>
   </Box>;
 }

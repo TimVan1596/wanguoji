@@ -38,8 +38,7 @@ export default function LocalDanmaku() {
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
 
-  const selectedTeam =
-    teams.find((team) => team.name === selectedFactionName) ?? teams[0];
+  const selectedTeam = teams.find((team) => team.name === selectedFactionName);
   const selectedCity = teams
     .flatMap((team) => team.cities)
     .find((city) => city.id === selectedCityId);

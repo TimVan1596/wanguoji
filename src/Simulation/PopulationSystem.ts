@@ -12,6 +12,13 @@ import {
 
 export type InitialPopulationMap = Record<string, number>;
 
+export function selectNormalUsersForGodRemoval<T extends { id: number; name: string; role: string }>(users: Iterable<T>, requested: number) {
+  return [...users]
+    .filter((user) => user.role === "NORMAL")
+    .sort((a, b) => a.id - b.id || a.name.localeCompare(b.name))
+    .slice(0, Math.max(0, Math.floor(requested)));
+}
+
 export function getPopulationCapacity(team: Team) {
   const territory = team.blocks.children.size;
   return (
@@ -96,11 +103,9 @@ export default class PopulationSystem {
   }
 
   godRemove(team: Team, requested: number) {
-    const users = [...team.users]
-      .filter((user) => user.role === "NORMAL")
-      .sort((a, b) => a.id - b.id || a.name.localeCompare(b.name));
+    const users = selectNormalUsersForGodRemoval(team.users, requested);
     let affectedCount = 0;
-    for (const user of users.slice(0, Math.max(0, Math.floor(requested)))) {
+    for (const user of users) {
       if (user.destroyUser()) affectedCount += 1;
     }
     return affectedCount;
