@@ -226,14 +226,13 @@ class WorldEraStore {
       // A confirmed chapter remains the historical truth while a replacement
       // candidate is absent. Closing it here would create unexplained gaps.
       this.candidateState = undefined;
-      this.staleSinceMonth = undefined;
       return;
     }
     const candidateMatchesCurrent =
       currentAtObservation !== undefined &&
       shouldContinueEra(currentAtObservation, candidate);
-    if (currentAtObservation && !candidateMatchesCurrent) this.staleSinceMonth = month;
-    else this.staleSinceMonth = undefined;
+    if (currentAtObservation && !candidateMatchesCurrent) this.staleSinceMonth ??= month;
+    else if (candidateMatchesCurrent) this.staleSinceMonth = undefined;
     const current = this.getCurrentEra();
     const renewMultipolarChapter =
       current !== undefined && shouldRenewMultipolarChapter(current, candidate, month);

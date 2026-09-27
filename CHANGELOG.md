@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99921c
+
+- Fixed Phaser ProcessQueue teardown for colliders destroyed while still pending, with explicit stale-collider diagnostics.
+- Preserved Era stale diagnostics start time across consecutive mismatched observations.
+- Added regression coverage for hydration teardown lifecycle edge cases.
+
 ## v0.99921b
 
 - Removed duplicate historical ruler names from World Records and strengthened empty-era title fallbacks.

@@ -130,6 +130,7 @@ export default class Core {
     activeBeforeDrain: 0,
     activeAfterPreDrain: 0,
     destroyedByCore: 0,
+    staleAlreadyDestroyed: 0,
     activeAfterPostDrain: 0,
   };
   private coreUpdateDiagnostics = {

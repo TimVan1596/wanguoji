@@ -13,6 +13,7 @@ const PhaserProcessQueue = require("phaser/src/structs/ProcessQueue") as new () 
 interface Collider {
   destroy(): void;
   update(): void;
+  world?: InstanceType<typeof PhaserProcessQueue> | null;
 }
 
 function createCollider(queue: InstanceType<typeof PhaserProcessQueue>) {
@@ -23,7 +24,8 @@ function createCollider(queue: InstanceType<typeof PhaserProcessQueue>) {
     world = null;
   });
   const update = vi.fn();
-  const collider = { destroy, update };
+  const collider = { destroy, update } as Collider;
+  Object.defineProperty(collider, "world", { get: () => world });
   return { collider, getWorld: () => world };
 }
 
@@ -48,6 +50,7 @@ describe("Arcade collider ProcessQueue teardown", () => {
       activeBeforeDrain: 3,
       activeAfterPreDrain: 2,
       destroyedByCore: 2,
+      staleAlreadyDestroyed: 0,
       activeAfterPostDrain: 0,
     });
     expect(a.collider.destroy).toHaveBeenCalledTimes(1);
@@ -72,10 +75,30 @@ describe("Arcade collider ProcessQueue teardown", () => {
     expect(diagnostics.activeBeforeDrain).toBe(1);
     expect(diagnostics.activeAfterPreDrain).toBe(2);
     expect(diagnostics.destroyedByCore).toBe(2);
+    expect(diagnostics.staleAlreadyDestroyed).toBe(0);
     expect(diagnostics.activeAfterPostDrain).toBe(0);
     expect(active.destroy).toHaveBeenCalledTimes(1);
     expect(pending.destroy).toHaveBeenCalledTimes(1);
     expect(active.update).not.toHaveBeenCalled();
     expect(pending.update).not.toHaveBeenCalled();
+  });
+
+  it("removes a pending collider already destroyed before its first queue update", () => {
+    const queue = new PhaserProcessQueue();
+    const pendingRef = createCollider(queue);
+    queue.add(pendingRef.collider);
+    pendingRef.collider.destroy();
+
+    expect(pendingRef.getWorld()).toBeNull();
+    const diagnostics = teardownArcadeColliders(queue);
+
+    expect(diagnostics).toEqual({
+      activeBeforeDrain: 0,
+      activeAfterPreDrain: 1,
+      destroyedByCore: 0,
+      staleAlreadyDestroyed: 1,
+      activeAfterPostDrain: 0,
+    });
+    expect(pendingRef.collider.destroy).toHaveBeenCalledTimes(1);
   });
 });
