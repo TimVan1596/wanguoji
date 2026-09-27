@@ -2,6 +2,7 @@ import Game from "../Game/Game";
 import Npc from "./Npc";
 import Team from "./Team";
 import User from "./User";
+import ColliderReference from "./ColliderReference";
 
 export interface Slave {
   name: string;
@@ -13,7 +14,11 @@ export interface Slave {
 
 export default class Slaves extends Phaser.GameObjects.Group {
   npcs: Map<string, Npc> = new Map();
-  collider!: Phaser.Physics.Arcade.Collider;
+  private colliderReference = new ColliderReference<Phaser.Physics.Arcade.Collider>();
+
+  get collider() {
+    return this.colliderReference.current;
+  }
 
   constructor(public scene: Phaser.Scene, public user: User, deferCollider = false) {
     super(scene);
@@ -23,17 +28,23 @@ export default class Slaves extends Phaser.GameObjects.Group {
   }
 
   addCollider() {
+    const map = Game.Core.map;
+    if (!map) return;
     const otherTeamsBlock = Team.GetOtherTeams(this.user.team).map(
       (team) => team.blocks
     );
-    if (Game.Core.map) {
-      this.collider = this.scene.physics.add.collider(
+    this.colliderReference.getOrCreate(() =>
+      this.scene.physics.add.collider(
         this,
-        [Game.Core.map.blocksGroup, ...otherTeamsBlock],
+        [map.blocksGroup, ...otherTeamsBlock],
         //@ts-ignore
         Game.Core.onPlayerOverlapBlock.bind(Game.Core)
-      );
-    }
+      )
+    );
+  }
+
+  detachColliderAfterWorldTeardown() {
+    this.colliderReference.detachAfterWorldTeardown();
   }
 
   makeSlave(slave: Slave) {
@@ -79,7 +90,7 @@ export default class Slaves extends Phaser.GameObjects.Group {
     });
     this.clear(true, true);
     this.npcs.clear();
-    this.collider.destroy();
+    this.colliderReference.destroyOwned();
     this.addCollider();
   }
 }

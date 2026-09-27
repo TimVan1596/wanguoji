@@ -547,10 +547,18 @@ export default class Core {
     if (expected.blockSize !== Game.BlockSize || expected.widthCells !== this.scene.renderer.width / Game.BlockSize || expected.heightCells !== this.scene.renderer.height / Game.BlockSize) {
       throw new Error("Save map geometry is incompatible with the current runtime; no coordinates were scaled.");
     }
-    this.scene.physics.world.pause();
-    this.scene.time.paused = true;
-    this.scene.tweens.pauseAll();
-    this.scene.physics.world.colliders.getActive().forEach((collider) => collider.destroy());
+    this.runHydrationTeardownStage("PAUSE_SIMULATION", () => {
+      this.scene.physics.world.pause();
+      this.scene.time.paused = true;
+      this.scene.tweens.pauseAll();
+    });
+    this.runHydrationTeardownStage("TEARDOWN_COLLIDERS", () => {
+      const worldColliders = [...this.scene.physics.world.colliders.getActive()];
+      worldColliders.forEach((collider) => collider.destroy());
+      this.teams.flatMap((team) => [...team.users]).forEach((user) => {
+        user.slaveGroup.detachColliderAfterWorldTeardown();
+      });
+    });
     const destroyedPlayers = new Set<Player>();
     const destroyPlayer = (player: Player) => {
       if (destroyedPlayers.has(player)) return;
@@ -561,38 +569,55 @@ export default class Core {
       player.team.players.remove(player);
       player.destroy(true);
     };
-    this.teams.forEach((team) => {
-      team.farms.setDie();
-      team.users.forEach((user) => {
-        user.slaveGroup.collider?.destroy();
-        [...user.slaveGroup.npcs.values()].forEach(destroyPlayer);
-        user.slaveGroup.npcs.clear();
-        user.slaveGroup.clear(false, false);
-        user.slaveGroup.destroy(true, false);
+    this.runHydrationTeardownStage("TEARDOWN_UNITS", () => {
+      this.teams.forEach((team) => {
+        team.users.forEach((user) => {
+          [...user.slaveGroup.npcs.values()].forEach(destroyPlayer);
+          user.slaveGroup.npcs.clear();
+          user.slaveGroup.clear(false, false);
+        });
+        [...team.farms.npcs.values()].forEach((npc) => npc.setDie());
+        [...team.farms.npcs.values()].forEach(destroyPlayer);
+        team.farms.npcs.clear();
+        [...team.players.getChildren()].forEach((player) => destroyPlayer(player as Player));
       });
-      [...team.farms.npcs.values()].forEach(destroyPlayer);
-      team.farms.npcs.clear();
-      [...team.players.getChildren()].forEach((player) => destroyPlayer(player as Player));
-      team.players.clear(false, false);
-      team.players.destroy(true, false);
-      team.blocks.clear(false, false);
-      team.blocks.destroy(true, false);
-      team.farms.clear(false, false);
-      team.farms.destroy(true, false);
-      team.cities.forEach((city) => city.destroyRuntimeVisuals());
     });
-    this.map?.blocks.flat().forEach((block) => block.destroyRuntimeObjects());
-    this.map?.blocksGroup.destroy(false);
-    this.factionLabels.forEach((label) => label.destroy());
-    this.mapTooltip?.destroy();
-    this.clearUp();
-    this.runtimeFactions.reset();
-    this.map = new Map(this.scene);
-    this.bindMapPointerResolver();
-    this.simulator = new AutoSimulator();
+    this.runHydrationTeardownStage("TEARDOWN_GROUPS", () => {
+      this.teams.forEach((team) => {
+        team.users.forEach((user) => user.slaveGroup.destroy(true, false));
+        team.players.clear(false, false);
+        team.players.destroy(true, false);
+        team.blocks.clear(false, false);
+        team.blocks.destroy(true, false);
+        team.farms.setDie();
+        team.farms.clear(false, false);
+        team.farms.destroy(true, false);
+        team.cities.forEach((city) => city.destroyRuntimeVisuals());
+      });
+      this.map?.blocks.flat().forEach((block) => block.destroyRuntimeObjects());
+      this.map?.blocksGroup.destroy(false);
+      this.factionLabels.forEach((label) => label.destroy());
+      this.mapTooltip?.destroy();
+    });
+    this.runHydrationTeardownStage("REBUILD_MAP", () => {
+      this.clearUp();
+      this.runtimeFactions.reset();
+      this.map = new Map(this.scene);
+      this.bindMapPointerResolver();
+      this.simulator = new AutoSimulator();
+    });
     this.scene.physics.world.pause();
     this.scene.time.paused = true;
     this.scene.tweens.pauseAll();
+  }
+
+  private runHydrationTeardownStage(stage: string, action: () => void) {
+    try {
+      action();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error(`Hydration failed at ${stage}: ${message}`);
+    }
   }
 
   installHydratedTeams(teams: Team[]) {

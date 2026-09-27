@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99917e
+
+- Fixed hydration teardown double-destroy of Arcade Physics colliders by assigning world teardown a single collider owner.
+- Separated world collider teardown from retained slave-group references and added repeated teardown / slave collider lifecycle regression coverage.
+- Added hydration teardown stage context to runtime errors.
+
 ## v0.99917d
 
 - Defined the WorldEventSystem V1 persistence contract and corrected hydration preflight shape validation for month maps and WorldCycle state.

@@ -25,7 +25,7 @@ export default class User {
     this.player.role = role;
     this.player.rulerId = rulerId;
     if (!options.deferRuntime) this.load();
-    this.slaveGroup = new Slaves(Game.Core.scene, this);
+    this.slaveGroup = new Slaves(Game.Core.scene, this, Boolean(options.deferRuntime));
   }
 
   load() {
