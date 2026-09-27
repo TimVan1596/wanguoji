@@ -1,6 +1,6 @@
 import Team from "../Components/Team";
 import Danmu from "../Live/Danmu";
-import { createLocalDanmu } from "../Live/LocalDanmaku";
+import { createLocalDanmu, getLocalUserId } from "../Live/LocalDanmaku";
 import {
   BASE_GROWTH_CHANCE,
   BASE_POPULATION_CAPACITY,
@@ -85,17 +85,54 @@ export default class PopulationSystem {
     return getPopulationCapacity(team);
   }
 
-  private spawn(team: Team) {
+  godAdd(team: Team, requested: number) {
+    let affectedCount = 0;
+    for (let index = 0; index < Math.max(0, Math.floor(requested)); index += 1) {
+      const name = this.nextGodName(team);
+      const user = this.spawn(team, name, true);
+      if (user) affectedCount += 1;
+    }
+    return affectedCount;
+  }
+
+  godRemove(team: Team, requested: number) {
+    const users = [...team.users]
+      .filter((user) => user.role === "NORMAL")
+      .sort((a, b) => a.id - b.id || a.name.localeCompare(b.name));
+    let affectedCount = 0;
+    for (const user of users.slice(0, Math.max(0, Math.floor(requested)))) {
+      if (user.destroyUser()) affectedCount += 1;
+    }
+    return affectedCount;
+  }
+
+  private nextGodName(team: Team) {
+    const key = `god:${team.name}`;
+    const count = (this.counters[key] ?? 0) + 1;
+    this.counters[key] = count;
+    return `God-${team.name}-${String(count).padStart(6, "0")}`;
+  }
+
+  private spawn(team: Team, forcedName?: string, bypassCapacity = false) {
+    if (team.isDie || (!bypassCapacity && this.getPopulation(team) >= this.getCapacity(team))) return undefined;
     const teamKey = team.shortName ?? team.name;
-    const count = (this.counters[team.name] ?? 0) + 1;
-    this.counters[team.name] = count;
-    const name = `${teamKey}-${String(count).padStart(3, "0")}`;
-    Danmu.Apply(
-      createLocalDanmu(
-        name,
-        team.name,
-        Phaser.Math.Between(USER_NATURAL_LOYALTY_MIN, USER_NATURAL_LOYALTY_MAX)
-      )
+    let name = forcedName;
+    if (!name) {
+      const count = (this.counters[team.name] ?? 0) + 1;
+      this.counters[team.name] = count;
+      name = `${teamKey}-${String(count).padStart(3, "0")}`;
+    }
+    let id = getLocalUserId(name);
+    while (Team.GetUserById(id)) id = id >= 1999999999 ? 1000000000 : id + 1;
+    const user = team.makeUser(
+      id,
+      name,
+      "/img/no-face.svg",
+      Phaser.Math.Between(USER_NATURAL_LOYALTY_MIN, USER_NATURAL_LOYALTY_MAX)
     );
+    if (user) return user;
+    // Legacy join-command routing remains the fallback for natural population.
+    return Danmu.Apply(createLocalDanmu(name, team.name,
+      Phaser.Math.Between(USER_NATURAL_LOYALTY_MIN, USER_NATURAL_LOYALTY_MAX)));
   }
 }

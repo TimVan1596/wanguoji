@@ -8,6 +8,7 @@ import {
   setWorldStarted,
 } from "../store/rootSlice";
 import PopulationSystem, { InitialPopulationMap } from "./PopulationSystem";
+import { getPopulationCapacity } from "./PopulationSystem";
 import FactionSnapshots from "./FactionSnapshots";
 import WorldEventSystem from "./WorldEventSystem";
 import WorldClock from "./WorldClock";
@@ -81,6 +82,18 @@ export default class AutoSimulator {
 
   getSpeed() {
     return this.speed;
+  }
+
+  godAddPopulation(team: Team, count: number) {
+    return this.population.godAdd(team, count);
+  }
+
+  godRemovePopulation(team: Team, count: number) {
+    return this.population.godRemove(team, count);
+  }
+
+  getPopulationCapacity(team: Team) {
+    return getPopulationCapacity(team);
   }
 
   exportState() {

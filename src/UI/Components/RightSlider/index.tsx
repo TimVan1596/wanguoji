@@ -7,6 +7,7 @@ import CityDetails from "../CityDetails";
 import FactionDetails from "../FactionDetails";
 import HistoryScroll from "../HistoryScroll";
 import LocalDanmaku from "../LocalDanmaku";
+import GodConsole from "../GodConsole";
 import WorldControlBar from "../WorldControlBar";
 
 export default function RightSlider({
@@ -74,7 +75,7 @@ export default function RightSlider({
         {rightPanelTab === "history" ? <HistoryScroll></HistoryScroll> : null}
         {rightPanelTab === "faction" ? <FactionDetails></FactionDetails> : null}
         {rightPanelTab === "city" ? <CityDetails></CityDetails> : null}
-        {rightPanelTab === "god" ? <LocalDanmaku></LocalDanmaku> : null}
+        {rightPanelTab === "god" ? <GodConsole saving={saving} /> : null}
       </Box>
     </Box>
   );

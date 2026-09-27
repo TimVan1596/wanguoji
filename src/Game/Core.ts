@@ -762,6 +762,8 @@ export default class Core {
 
   selectCity(cityId: string) {
     store.dispatch(setSelectedCityId(cityId));
+    const city = this.allCities.find((item) => item.id === cityId);
+    if (city) store.dispatch(setSelectedFactionName(city.ownerFactionId));
     store.dispatch(setRightPanelTab("city"));
     this.refreshCityVisuals();
   }
