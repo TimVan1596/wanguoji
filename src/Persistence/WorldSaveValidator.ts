@@ -139,6 +139,8 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   });
   if (!jsonSafe(value)) errors.push("save contains non-JSON-safe values or class instances");
   validatePopulationSystem(save.populationSystem, errors);
+  validateWorldEventSystem(save.worldEventSystem, factionIds, new Set([...cityIds, ...archivedCityIds]), errors);
+  validateHydrationImportShapes(save, errors);
   return { valid: errors.length === 0, errors };
 }
 
@@ -161,6 +163,173 @@ function validatePopulationSystem(value: unknown, errors: string[]) {
   }
 }
 
+function validateWorldEventSystem(
+  value: unknown,
+  factionIds: Set<string>,
+  knownCityIds: Set<string>,
+  errors: string[]
+) {
+  if (!isPlainRecord(value)) {
+    errors.push("worldEventSystem must be an object");
+    return;
+  }
+  const monthFields = ["nextEventMonth", "lastRebellionCheckMonth", "lastEmpireSplitCheckMonth", "lastCityFoundCheckMonth", "lastProvisionalPressureMonth"];
+  monthFields.forEach((key) => {
+    if (!integer(value[key])) errors.push(`worldEventSystem.${key} must be an integer month`);
+  });
+  if (!integer(value.fractureUntilMonth)) errors.push("worldEventSystem.fractureUntilMonth must be an integer month");
+  if (!integer(value.sequence) || value.sequence < 0) errors.push("worldEventSystem.sequence must be a non-negative integer");
+  ["hegemonyEmitted", "unificationEmitted"].forEach((key) => {
+    if (typeof value[key] !== "boolean") errors.push(`worldEventSystem.${key} must be boolean`);
+  });
+  for (const key of ["unifyingFactionId"] as const) {
+    if (value[key] !== undefined) requireRef(value[key], factionIds, `worldEventSystem.${key}`, errors);
+  }
+  if (value.unificationMonth !== undefined && !integer(value.unificationMonth)) {
+    errors.push("worldEventSystem.unificationMonth must be an integer month when present");
+  }
+
+  if (!Array.isArray(value.activeEffects)) {
+    errors.push("worldEventSystem.activeEffects must be an array");
+  } else {
+    value.activeEffects.forEach((entry: unknown, index: number) => {
+      const label = `worldEventSystem.activeEffects[${index}]`;
+      if (!isPlainRecord(entry)) {
+        errors.push(`${label} must be an object`);
+        return;
+      }
+      if (typeof entry.id !== "string" || !entry.id) errors.push(`${label}.id must be a non-empty string`);
+      requireRef(entry.factionId, factionIds, `${label}.factionId`, errors);
+      if (entry.type !== "harvest" && entry.type !== "famine") errors.push(`${label}.type is unsupported`);
+      if (!integer(entry.startMonth) || !integer(entry.endMonth)) errors.push(`${label} startMonth/endMonth must be integer months`);
+      if (!isPlainRecord(entry.modifiers) || !finite(entry.modifiers.populationGrowthMultiplier)) {
+        errors.push(`${label}.modifiers.populationGrowthMultiplier must be finite`);
+      }
+    });
+  }
+
+  if (value.hegemonyCandidate !== undefined) {
+    if (!isPlainRecord(value.hegemonyCandidate)) {
+      errors.push("worldEventSystem.hegemonyCandidate must be an object when present");
+    } else {
+      requireRef(value.hegemonyCandidate.teamName, factionIds, "worldEventSystem.hegemonyCandidate.teamName", errors);
+      if (!integer(value.hegemonyCandidate.since)) errors.push("worldEventSystem.hegemonyCandidate.since must be an integer month");
+    }
+  }
+
+  validateMonthRecord(value.cityFoundedMonths, "worldEventSystem.cityFoundedMonths", factionIds, errors);
+  validateMonthRecord(value.cityRebellionMonths, "worldEventSystem.cityRebellionMonths", knownCityIds, errors);
+  validateWorldCycleState(value.cycleState, factionIds, errors);
+}
+
+function validateMonthRecord(value: unknown, label: string, validKeys: Set<string>, errors: string[]) {
+  if (!isPlainRecord(value)) {
+    errors.push(`${label} must be an object`);
+    return;
+  }
+  Object.entries(value).forEach(([key, month]) => {
+    if (!validKeys.has(key)) errors.push(`${label} references unknown id: ${key}`);
+    if (!integer(month)) errors.push(`${label}.${key} must be an integer month`);
+  });
+}
+
+function validateWorldCycleState(value: unknown, factionIds: Set<string>, errors: string[]) {
+  if (!isPlainRecord(value)) {
+    errors.push("worldEventSystem.cycleState must be an object");
+    return;
+  }
+  if (!integer(value.fragmentationStartMonth)) errors.push("worldEventSystem.cycleState.fragmentationStartMonth must be an integer month");
+  const factionFields = [
+    "dynasticOrderFactionId", "dynasticOrderCandidateFactionId", "hegemonicCandidateFactionId",
+    "hegemonicFactionId", "consolidationLeaderCandidateFactionId", "consolidationLeaderFactionId",
+  ];
+  factionFields.forEach((key) => {
+    if (value[key] !== undefined) requireRef(value[key], factionIds, `worldEventSystem.cycleState.${key}`, errors);
+  });
+  const monthFields = [
+    "lastUnificationMonth", "currentUnificationStartMonth", "dynasticOrderStartMonth",
+    "dynasticOrderCandidateSinceMonth", "dynasticOrderExitSinceMonth", "hegemonicCandidateSinceMonth",
+    "consolidationLeaderCandidateSinceMonth",
+  ];
+  monthFields.forEach((key) => {
+    if (value[key] !== undefined && !integer(value[key])) errors.push(`worldEventSystem.cycleState.${key} must be an integer month when present`);
+  });
+  ["hegemonicMomentum", "consolidationLeaderMomentum"].forEach((key) => {
+    if (value[key] !== undefined && !finite(value[key])) errors.push(`worldEventSystem.cycleState.${key} must be finite when present`);
+  });
+}
+
+/** Validates nested structures that importState methods map, spread, or clone after teardown. */
+function validateHydrationImportShapes(save: Partial<WorldSaveV1>, errors: string[]) {
+  const record = (value: unknown, label: string): Record<string, any> | undefined => {
+    if (isPlainRecord(value)) return value;
+    errors.push(`${label} must be an object`);
+    return false;
+  };
+  const records = (value: unknown, label: string): Record<string, any>[] | undefined => {
+    if (!Array.isArray(value)) {
+      errors.push(`${label} must be an array`);
+      return undefined;
+    }
+    if (value.some((entry) => !isPlainRecord(entry))) errors.push(`${label} entries must be objects`);
+    return value.filter(isPlainRecord);
+  };
+
+  if (record(save.worldHistory, "worldHistory")) {
+    records(save.worldHistory.events, "worldHistory.events");
+    if (Array.isArray(save.worldHistory.emittedKeys) && save.worldHistory.emittedKeys.some((key: unknown) => typeof key !== "string")) errors.push("worldHistory.emittedKeys entries must be strings");
+    if (Array.isArray(save.worldHistory.extinctFactionIds) && save.worldHistory.extinctFactionIds.some((id: unknown) => typeof id !== "string")) errors.push("worldHistory.extinctFactionIds entries must be strings");
+    ["populationCandidate", "territoryCandidate"].forEach((key) => {
+      const candidate = save.worldHistory![key];
+      if (candidate !== undefined && (!isPlainRecord(candidate) || typeof candidate.name !== "string" || !finite(candidate.since))) errors.push(`worldHistory.${key} is malformed`);
+    });
+  }
+  if (record(save.worldEra, "worldEra")) {
+    const eras = records(save.worldEra.eras, "worldEra.eras");
+    eras?.forEach((era, index) => {
+      if (!Array.isArray(era.dominantFactionIds) || !Array.isArray(era.triggerReasonCodes)) errors.push(`worldEra.eras[${index}] faction/reason fields must be arrays`);
+      if (era.formationMetrics !== undefined && !isPlainRecord(era.formationMetrics)) errors.push(`worldEra.eras[${index}].formationMetrics must be an object`);
+    });
+    const candidateState = save.worldEra.candidateState;
+    if (candidateState !== undefined && (!isPlainRecord(candidateState) || !isPlainRecord(candidateState.candidate) || !Array.isArray(candidateState.candidate.dominantFactionIds) || !Array.isArray(candidateState.candidate.triggerReasonCodes) || !finite(candidateState.sinceMonth))) errors.push("worldEra.candidateState is malformed");
+  }
+  if (record(save.factionSnapshots, "factionSnapshots")) {
+    records(save.factionSnapshots.snapshots, "factionSnapshots.snapshots")?.forEach((entry, index) => {
+      if (!Array.isArray(entry.snapshots) || entry.snapshots.some((snapshot: unknown) => !isPlainRecord(snapshot))) errors.push(`factionSnapshots.snapshots[${index}].snapshots must contain objects`);
+    });
+  }
+  records(save.worldRemnants, "worldRemnants");
+  records(save.worldExiles, "worldExiles")?.forEach((exile, index) => {
+    if (!Array.isArray(exile.heirIds) || exile.heirIds.some((id: unknown) => typeof id !== "string")) errors.push(`worldExiles[${index}].heirIds must be an array of strings`);
+  });
+  if (record(save.factionEffects, "factionEffects")) {
+    records(save.factionEffects.effects, "factionEffects.effects");
+    records(save.factionEffects.strategicModifiers, "factionEffects.strategicModifiers");
+  }
+  save.factions?.forEach((faction, index) => {
+    if (!Array.isArray(faction.sovereigntyHistory) || !Array.isArray(faction.nameHistory)) errors.push(`factions[${index}] history fields must be arrays`);
+    if (faction.origin && faction.origin.foundingCityIds !== undefined && (!Array.isArray(faction.origin.foundingCityIds) || faction.origin.foundingCityIds.some((id: unknown) => typeof id !== "string"))) errors.push(`factions[${index}].origin.foundingCityIds must be an array of strings`);
+  });
+  save.dynasties?.forEach((dynasty, index) => {
+    if (!Array.isArray(dynasty.rulers) || dynasty.rulers.some((ruler: unknown) => !isPlainRecord(ruler))) errors.push(`dynasties[${index}].rulers must be an array of objects`);
+    if (!Array.isArray(dynasty.heirIds) || dynasty.heirIds.some((id: unknown) => typeof id !== "string")) errors.push(`dynasties[${index}].heirIds must be an array of strings`);
+  });
+  if (record(save.registries, "registries")) {
+    const cityNames = record(save.registries.cityNameRegistry, "registries.cityNameRegistry");
+    if (cityNames) {
+      records(cityNames.reserved, "registries.cityNameRegistry.reserved");
+      if (!Array.isArray(cityNames.recentDynamicNames) || cityNames.recentDynamicNames.some((name: unknown) => typeof name !== "string")) errors.push("registries.cityNameRegistry.recentDynamicNames must be an array of strings");
+    }
+    records(save.registries.archivedCities, "registries.archivedCities")?.forEach((city, index) => {
+      if (!Array.isArray(city.historicalOwners) || city.historicalOwners.some((id: unknown) => typeof id !== "string")) errors.push(`registries.archivedCities[${index}].historicalOwners must be an array of strings`);
+      if (!Array.isArray(city.history) || city.history.some((event: unknown) => !isPlainRecord(event))) errors.push(`registries.archivedCities[${index}].history must be an array of objects`);
+    });
+  }
+  if (Array.isArray(save.users)) save.users.forEach((user, index) => {
+    if (user.slaveUnits !== undefined && (!Array.isArray(user.slaveUnits) || user.slaveUnits.some((id: unknown) => typeof id !== "string"))) errors.push(`users[${index}].slaveUnits must be an array of unit ids`);
+  });
+}
+
 function array(value: unknown, label: string, errors: string[]): Record<string, any>[] {
   if (!Array.isArray(value)) { errors.push(`${label} must be an array`); return []; }
   if (value.some((entry) => !isPlainRecord(entry))) errors.push(`${label} entries must be plain objects`);
@@ -180,6 +349,7 @@ function requireRef(value: unknown, refs: Set<string>, label: string, errors: st
   if (typeof value !== "string" || !refs.has(value)) errors.push(`unknown ${label}: ${String(value)}`);
 }
 function finite(value: unknown): value is number { return typeof value === "number" && Number.isFinite(value); }
+function integer(value: unknown): value is number { return finite(value) && Number.isInteger(value); }
 function isPlainRecord(value: unknown): value is Record<string, any> {
   if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
   const prototype = Object.getPrototypeOf(value);

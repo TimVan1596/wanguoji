@@ -83,6 +83,53 @@ export interface PopulationSystemSaveV1 {
   lastGrowthMonth: number;
 }
 
+export interface WorldCycleStateSaveV1 {
+  fragmentationStartMonth: number;
+  lastUnificationMonth?: number;
+  currentUnificationStartMonth?: number;
+  dynasticOrderFactionId?: string;
+  dynasticOrderStartMonth?: number;
+  dynasticOrderCandidateFactionId?: string;
+  dynasticOrderCandidateSinceMonth?: number;
+  dynasticOrderExitSinceMonth?: number;
+  hegemonicCandidateFactionId?: string;
+  hegemonicCandidateSinceMonth?: number;
+  hegemonicFactionId?: string;
+  hegemonicMomentum?: number;
+  consolidationLeaderCandidateFactionId?: string;
+  consolidationLeaderCandidateSinceMonth?: number;
+  consolidationLeaderFactionId?: string;
+  consolidationLeaderMomentum?: number;
+}
+
+export interface WorldEventEffectSaveV1 {
+  id: string;
+  factionId: string;
+  type: "harvest" | "famine";
+  startMonth: number;
+  endMonth: number;
+  modifiers: { populationGrowthMultiplier: number };
+}
+
+export interface WorldEventSystemSaveV1 {
+  activeEffects: WorldEventEffectSaveV1[];
+  nextEventMonth: number;
+  sequence: number;
+  hegemonyCandidate?: { teamName: string; since: number };
+  hegemonyEmitted: boolean;
+  unificationEmitted: boolean;
+  unifyingFactionId?: string;
+  unificationMonth?: number;
+  fractureUntilMonth: number;
+  lastRebellionCheckMonth: number;
+  lastEmpireSplitCheckMonth: number;
+  lastCityFoundCheckMonth: number;
+  lastProvisionalPressureMonth: number;
+  cityFoundedMonths: Record<string, number>;
+  cityRebellionMonths: Record<string, number>;
+  cycleState: WorldCycleStateSaveV1;
+}
+
 export interface WorldSaveV1 {
   saveSchemaVersion: typeof CURRENT_SAVE_SCHEMA_VERSION;
   appVersion: string;
@@ -93,7 +140,7 @@ export interface WorldSaveV1 {
     started: boolean;
     running: boolean;
     selectedSpeed: number;
-      clock: { worldMonth: number; elapsedMs: number; running: boolean };
+    clock: { worldMonth: number; elapsedMs: number; running: boolean };
     simulationDriver: { accumulatorMs: number };
     map: { widthCells: number; heightCells: number; blockSize: number };
   };
@@ -111,7 +158,7 @@ export interface WorldSaveV1 {
   factionEffects: Record<string, unknown>;
   populationSystem: PopulationSystemSaveV1;
   registries: Record<string, unknown>;
-  worldEventSystem: Record<string, unknown>;
+  worldEventSystem: WorldEventSystemSaveV1;
 }
 
 export function createEmptyWorldSaveV1(): WorldSaveV1 {
@@ -128,9 +175,26 @@ export function createEmptyWorldSaveV1(): WorldSaveV1 {
       map: { widthCells: 0, heightCells: 0, blockSize: 0 },
     },
     factions: [], blocks: [], cities: [], users: [], units: [], dynasties: [],
-    worldHistory: {}, worldEra: {}, factionSnapshots: {}, worldRemnants: [],
-    worldExiles: [], factionEffects: {}, populationSystem: { counters: {}, lastGrowthMonth: 0 }, registries: {},
-    worldEventSystem: {},
+    worldHistory: { events: [], emittedKeys: [], extinctFactionIds: [], sequence: 0, unificationCount: 0 },
+    worldEra: { eras: [], sequence: 0, lastObservedMonth: -1 },
+    factionSnapshots: { snapshots: [], lastSnapshotMonth: -1 }, worldRemnants: [],
+    worldExiles: [], factionEffects: { effects: [], strategicModifiers: [], sequence: 0 },
+    populationSystem: { counters: {}, lastGrowthMonth: 0 },
+    registries: {
+      factionRegistry: { sequence: 0 },
+      cityNameRegistry: { reserved: [], recentDynamicNames: [] },
+      logicalUnitRegistry: { nextUnitSequence: 1 },
+      dynastyRegistrySequence: 0,
+      archivedCities: [],
+      knownFactionIds: [],
+    },
+    worldEventSystem: {
+      activeEffects: [], nextEventMonth: 0, sequence: 0, hegemonyEmitted: false,
+      unificationEmitted: false, fractureUntilMonth: -1, lastRebellionCheckMonth: 0,
+      lastEmpireSplitCheckMonth: 0, lastCityFoundCheckMonth: 0,
+      lastProvisionalPressureMonth: 0, cityFoundedMonths: {}, cityRebellionMonths: {},
+      cycleState: { fragmentationStartMonth: 0 },
+    },
   };
 }
 

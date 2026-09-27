@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.99917d
+
+- Defined the WorldEventSystem V1 persistence contract and corrected hydration preflight shape validation for month maps and WorldCycle state.
+- Added real WorldEventSystem JSON export/import round-trip and preflight regressions for malformed imported state.
+
 ## v0.99917c
 
 - Corrected WorldSaveV1 population persistence validation to match the authoritative `PopulationSystem` counter-map DTO.

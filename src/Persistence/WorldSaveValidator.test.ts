@@ -11,7 +11,7 @@ function fixture() {
   save.cities = [{ cityId: "xianyang", name: "咸阳", ownerFactionId: "qin", founderFactionId: "qin", foundedMonth: 0, centerGridX: 0, centerGridY: 0, isCapital: true, defense: 10, maxDefense: 10, loyalty: 80, devastation: 0, captureCount: 0 }];
   save.users = [{ userId: 7, factionId: "qin", sourceFactionId: "qin", name: "嬴平", loyalty: 70, role: "RULER", score: 0, playerUnitId: "unit-1" }];
   save.units = [{ unitId: "unit-1", factionId: "qin", userId: 7, x: 10, y: 20, vx: 1, vy: -1, speed: 100, radius: 10, scale: 1, speedCoefficient: 0, sizeCoefficient: 0, alive: true, role: "RULER" }];
-  save.dynasties = [{ factionId: "qin", rulers: [{ rulerId: "qin-ruler-1" }] }];
+  save.dynasties = [{ factionId: "qin", rulers: [{ rulerId: "qin-ruler-1" }], heirIds: [] }];
   save.blocks = [{ gridX: 0, gridY: 0, ownerFactionId: "qin", isHome: true, cityId: "xianyang" }];
   save.populationSystem = { counters: { qin: 3 }, lastGrowthMonth: 12 };
   return save;
@@ -63,6 +63,38 @@ describe("WorldSaveV1 validation and JSON contract", () => {
 
     save.populationSystem = { counters: { qin: 1.5 }, lastGrowthMonth: 12 };
     expect(validateWorldSave(save).errors).toContain("populationSystem.counters.qin must be a non-negative integer");
+  });
+
+  it("validates WorldEventSystem Record maps and cycle state by their runtime shapes", () => {
+    const save = fixture();
+    save.worldEventSystem.cityFoundedMonths = { qin: 12 };
+    save.worldEventSystem.cityRebellionMonths = { xianyang: 24 };
+    save.worldEventSystem.cycleState = { fragmentationStartMonth: 0, hegemonicMomentum: 4 };
+    expect(validateWorldSave(save).valid).toBe(true);
+
+    save.worldEventSystem.cityFoundedMonths = [] as never;
+    expect(validateWorldSave(save).errors).toContain("worldEventSystem.cityFoundedMonths must be an object");
+
+    save.worldEventSystem.cityFoundedMonths = { qin: Number.POSITIVE_INFINITY };
+    expect(validateWorldSave(save).errors).toContain("worldEventSystem.cityFoundedMonths.qin must be an integer month");
+
+    save.worldEventSystem.cityFoundedMonths = {};
+    save.worldEventSystem.cityRebellionMonths = [] as never;
+    expect(validateWorldSave(save).errors).toContain("worldEventSystem.cityRebellionMonths must be an object");
+
+    save.worldEventSystem.cityRebellionMonths = {};
+    save.worldEventSystem.cycleState = [] as never;
+    expect(validateWorldSave(save).errors).toContain("worldEventSystem.cycleState must be an object");
+  });
+
+  it("rejects malformed imported nested arrays before hydration teardown", () => {
+    const save = fixture();
+    save.worldExiles = [{ factionId: "qin", heirIds: null } as never];
+    expect(validateWorldSave(save).errors).toContain("worldExiles[0].heirIds must be an array of strings");
+
+    save.worldExiles = [];
+    save.registries.archivedCities = [{ id: "old-city", historicalOwners: [], history: [null] }];
+    expect(validateWorldSave(save).errors).toContain("registries.archivedCities[0].history must be an array of objects");
   });
 
   it("requires a paused complete simulation boundary", () => {

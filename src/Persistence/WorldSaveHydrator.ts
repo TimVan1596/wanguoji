@@ -335,7 +335,6 @@ function validateRequiredImportState(save: WorldSaveV1) {
     ["factionSnapshots", save.factionSnapshots, ["snapshots"], ["lastSnapshotMonth"]],
     ["factionEffects", save.factionEffects, ["effects", "strategicModifiers"], ["sequence"]],
     ["populationSystem", save.populationSystem as unknown as Record<string, unknown>, [], ["lastGrowthMonth"]],
-    ["worldEventSystem", save.worldEventSystem, ["activeEffects", "cityFoundedMonths", "cityRebellionMonths", "cycleState"], ["nextEventMonth", "sequence", "fractureUntilMonth", "lastRebellionCheckMonth", "lastEmpireSplitCheckMonth", "lastCityFoundCheckMonth", "lastProvisionalPressureMonth"]],
   ];
   records.forEach(([label, record, arrays, numbers]) => {
     if (!record || typeof record !== "object" || Array.isArray(record)) throw new Error(`Save is missing ${label} import state.`);
