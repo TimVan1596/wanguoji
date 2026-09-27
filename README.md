@@ -14,9 +14,7 @@
 
 **[打开《万国纪》在线试玩](https://wanguoji-wanguoji-demo-d5ga9p1eee662b3c4.webapps.tcloudbase.com/)**
 
-当前为公开 Alpha，打开即可试玩，无需注册。当前链接是 CloudBase Public Alpha deployment，不是正式生产服务；尚无完整保存 / 继续世界功能，刷新页面会重新开始。
-
-> 当前暂无完整 Save / Continue，刷新页面将重新开始当前世界。
+当前为公开 Alpha，打开即可试玩，无需注册。当前链接是 CloudBase Public Alpha deployment，不是正式生产服务。当前应用版本已支持浏览器本地单槽手动保存与继续；部署站点需更新到对应版本后才可使用。
 
 ![万国纪：诸国自主战争、扩张与历史演化演示](docs/images/demo.gif)
 
@@ -84,9 +82,9 @@
 - Chrome 浏览器后台推进（切回前台后补算历史）。
 - Electron 桌面实验版验证。
 
-不会在本 Alpha 中承诺：
+当前尚未包含：
 
-- 完整 Save / Continue World。
+- 自动保存、多存档槽、云端存档或存档文件导入导出。
 - deterministic seed / replay。
 - 经济系统。
 - 外交系统。
@@ -129,7 +127,7 @@ pnpm build
 
 这不是只快进 `worldMonth`。城市围攻、领土变化、死亡、继承、建国、称帝、WorldEra 和 HistoryScroll 都通过真实模拟路径推进。
 
-关闭或刷新页面后不会继续当前世界，因为完整 Save / Continue World 尚未实现。
+手动保存后，可在刷新页面进入主菜单时选择“继续上次世界”。未手动保存的推进不会自动保留；本版本不包含 autosave。
 
 ## Electron 桌面实验版
 
@@ -145,8 +143,8 @@ Electron renderer 直接加载当前 React + Phaser frontend，不复制 gamepla
 
 ## 当前已知问题
 
-- 尚无完整 Save / Continue World。
-- 刷新或关闭页面会失去当前完整世界。
+- 仅支持浏览器 IndexedDB 中的单槽手动存档；没有 autosave、云存档或跨浏览器同步。
+- 未手动保存的推进在刷新或关闭页面后不会保留。
 - 尚无完整 deterministic seed / replay。
 - 浏览器后台推进是切回前台后的时间补算，不是隐藏标签页持续渲染。
 - Electron 桌面实验版仍处于实验阶段。

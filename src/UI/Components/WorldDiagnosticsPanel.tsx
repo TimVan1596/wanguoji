@@ -12,6 +12,11 @@ import { hydrateWorldSave, HydrationReport } from "../../Persistence/WorldSaveHy
 import { validateWorldSave } from "../../Persistence/WorldSaveValidator";
 import { diffCanonicalWorldSave, type CanonicalWorldSaveDiff, type WorldSaveV1 } from "../../Persistence/WorldSaveSchema";
 import { APP_VERSION } from "../../config/version";
+import {
+  getWorldSaveStorageDiagnostics,
+  subscribeWorldSaveStorageDiagnostics,
+  WorldSaveStorageDiagnostics,
+} from "../../Persistence/WorldSaveDiagnostics";
 
 let debugMemorySnapshot: WorldSaveV1 | undefined;
 
@@ -36,10 +41,12 @@ export default function WorldDiagnosticsPanel() {
   const [hydrationBusy, setHydrationBusy] = useState(false);
   const [hydrationStatus, setHydrationStatus] = useState("");
   const [canonicalDiff, setCanonicalDiff] = useState<CanonicalWorldSaveDiff>();
+  const [storageDiagnostics, setStorageDiagnostics] = useState<WorldSaveStorageDiagnostics>(getWorldSaveStorageDiagnostics);
   useEffect(() => {
     const timer = window.setInterval(() => setTick((value) => value + 1), 500);
     return () => window.clearInterval(timer);
   }, []);
+  useEffect(() => subscribeWorldSaveStorageDiagnostics(setStorageDiagnostics), []);
 
   const diagnostics = useMemo(() => {
     const totalCells = Game.Core?.totalCells ?? 1;
@@ -140,6 +147,7 @@ export default function WorldDiagnosticsPanel() {
     `canonical path differences:\n${pathDiffSummary}`,
     `runtime liveness: ${JSON.stringify(runtime ?? null)}`,
     `simulation counters: ${JSON.stringify(core?.getSimulationDiagnostics() ?? null)}`,
+    `stored save diagnostics: ${JSON.stringify(storageDiagnostics)}`,
   ].join("\n\n");
   const statusSummary = `Hydration: ${hydrationStatus.startsWith("Hydration OK") ? "OK" : hydrationStatus.startsWith("Hydration failed") ? "FAILED" : "—"}｜Canonical: ${canonicalDiff ? canonicalDiff.matched ? "matched" : `DIFF (${canonicalDiff.differenceCount})` : "—"}｜Runtime: ${runtime?.simulatorRunning ? "RUNNING" : "PAUSED"}`;
 
@@ -159,6 +167,7 @@ export default function WorldDiagnosticsPanel() {
       </details>
       <details>
         <summary>Persistence / Hydration</summary>
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{`Stored save: ${storageDiagnostics.status}\nsavedAt=${storageDiagnostics.savedAt ?? "—"}｜month=${storageDiagnostics.worldMonth ?? "—"}｜schema=${storageDiagnostics.schemaVersion ?? "—"}\nlast action=${storageDiagnostics.lastAction ?? "—"}${storageDiagnostics.serializedBytes === undefined ? "" : `｜JSON bytes=${storageDiagnostics.serializedBytes}｜IDB write=${storageDiagnostics.writeDurationMs?.toFixed(2)}ms`}${storageDiagnostics.error ? `\n${storageDiagnostics.error}` : ""}`}</Typography>
         {snapshotRequest && <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>
           {`snapshot: ${snapshotRequest.status}｜request month ${snapshotRequest.requestMonth ?? "—"}｜reached ${snapshotRequest.boundaryReachedMonth ?? "waiting"}\nstarted while: simulator=${snapshotState?.simulatorRunning ?? "—"}, clock=${snapshotState?.clockRunning ?? "—"}, redux=${snapshotState?.reduxWorldRunning ?? "—"}, scenePaused=${snapshotState?.sceneTimePaused ?? "—"}, physicsPaused=${snapshotState?.physicsPaused ?? "—"}, accumulator=${snapshotState?.simulationAccumulatorMs ?? "—"}, elapsed=${snapshotState?.clockElapsedMs ?? "—"}\nwaiting reason: ${snapshotRequest.waitingReasons?.join(", ") || "none"}\npre-export elapsed=${snapshotRequest.preExportElapsedMs ?? "—"}, accumulator=${snapshotRequest.preExportAccumulatorMs ?? "—"}${snapshotRequest.error ? `\n${snapshotRequest.error}` : ""}`}
         </Typography>}
