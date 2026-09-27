@@ -51,7 +51,9 @@ export function resolveEraDisplayLabel(
     const historical = faction?.nameHistory?.find((entry) => entry.startMonth <= month && (entry.endMonth === undefined || month <= entry.endMonth));
     return historical?.name ?? faction?.displayName ?? faction?.name ?? id;
   });
-  return names.length ? names.join(" · ") : era.name;
+  if (names.length) return names.join(" · ");
+  if (era.name) return era.name;
+  return { UNIFIED: "大一统时代", FRAGMENTATION: "天下再裂", MULTIPOLAR: "群雄争衡", DUAL_RIVALRY: "双雄争霸", HEGEMONY: "霸权时代", DYNASTIC: "王朝时代" }[era.type] ?? "历史时代";
 }
 
 interface EraCandidate {

@@ -45,7 +45,7 @@ export function deriveWorldRecords(
     const name = faction
       ? getFactionDisplayNameAtMonth(faction, start)
       : entry.factionId;
-    return `${resolveHistoricalRulerDisplay(entry.ruler, name, "compact")} · ${rulerName(entry.ruler)}`;
+    return resolveHistoricalRulerDisplay(entry.ruler, name, "compact");
   };
   return [
     longest && { label: "最长正式在位", value: `${rulerLabel(longest)} · ${duration((longest.ruler.endYear ?? worldMonth) - formalStart(longest))}` },

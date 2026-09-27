@@ -758,12 +758,7 @@ function RulerBiography({
         background: "var(--gg-panel)",
       }}
     >
-      <Typography fontWeight="bold">{formatRulerName(ruler)}</Typography>
-      {ruler.endYear !== undefined && (ruler.templeName || ruler.posthumousEpithet) ? (
-        <Typography fontSize="0.86rem">
-          {formatPosthumousRulerName(ruler, team, ruler.endYear)}
-        </Typography>
-      ) : null}
+      <Typography fontWeight="bold">{ruler.endYear !== undefined && (ruler.templeName || ruler.posthumousEpithet) ? formatPosthumousRulerName(ruler, team, ruler.endYear) : formatRulerName(ruler)}</Typography>
       <Typography fontSize="0.85rem" color="var(--gg-text-muted)">
         {ruler.houseName} ·{" "}
         {ruler.reignOrdinal ? `第${ruler.reignOrdinal}代君主 · ` : ""}
@@ -783,11 +778,8 @@ function RulerBiography({
       </Typography>
       {posthumousLines.length > 0 ? (
         <Box sx={{ mt: 0.5 }}>
-          {posthumousLines.map((line) => (
-            <Typography key={line} fontSize="0.82rem">
-              {line}
-            </Typography>
-          ))}
+          <Typography fontWeight="bold" fontSize="0.82rem">身后称号</Typography>
+          {posthumousLines.filter((line) => !line.startsWith("史称：")).map((line) => <Typography key={line} fontSize="0.82rem">{line}</Typography>)}
         </Box>
       ) : null}
       <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap", my: 0.75 }}>

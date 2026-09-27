@@ -166,6 +166,12 @@ export function buildRulerAssessment(
     parts.push(accessionAge < 16 ? `${accessionAge}岁幼年即位。` : `${accessionAge}岁即位。`);
   }
 
+  if (chronicle.foundedStateName) {
+    parts.push(`开国之君，正式奠定${chronicle.foundedStateName}的王统。`);
+  }
+  if (chronicle.restorationsDuringReign > 0) {
+    parts.push("复国之君，重建了延续中的政权。" );
+  }
   if (tags.includes("一统")) {
     parts.push(`${rulerName}在位期间完成天下统一。`);
   } else if (tags.includes("开疆")) {
@@ -213,7 +219,7 @@ export function buildRulerAssessment(
     ].filter(Boolean) as string[];
     parts.push(...clauses);
   }
-  return parts.slice(0, 5);
+  return parts.slice(0, 6);
 }
 
 const RULER_EVENT_TYPES = new Set<WorldEvent["type"]>([

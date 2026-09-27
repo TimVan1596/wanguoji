@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99921b
+
+- Removed duplicate historical ruler names from World Records and strengthened empty-era title fallbacks.
+- Improved evidence-based ruler assessment and compact biography title/legacy presentation.
+- Reworked faction ranking rows into a denser two-line layout while preserving canonical ordering and WorldCycle balance.
+
 ## v0.99921a
 
 - Corrected WorldCycle family telemetry and paired completed unified/fragmented episodes for long-run summaries.

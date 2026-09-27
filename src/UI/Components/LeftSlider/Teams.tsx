@@ -140,10 +140,10 @@ export default function Teams() {
                 minHeight: 44,
                 px: 0.75,
                 py: 0.55,
-                display: "grid",
-                gridTemplateColumns: RANKING_GRID_TEMPLATE,
+                display: "flex",
+                flexDirection: "column",
                 alignItems: "center",
-                gap: 0.5,
+                gap: 0.15,
                 border: selected
                   ? "1px solid var(--gg-selected)"
                   : "1px solid var(--gg-border)",
@@ -184,7 +184,7 @@ export default function Teams() {
                         minWidth: 0,
                         overflow: "hidden",
                         textOverflow: "ellipsis",
-                        maxWidth: "7.5em",
+                        flex: 1,
                       }}
                     >
                       {identity.displayName}
@@ -235,14 +235,15 @@ export default function Teams() {
                   </Box>
                 </Box>
               </Box>
-              <Typography fontSize="0.78rem" noWrap sx={numericColumnSx}>
+              <Box sx={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", width: "100%", gap: 0.5 }}>
+              <Typography fontSize="0.72rem" noWrap sx={numericColumnSx}>
                 {formatNumber(population)}/{formatNumber(capacity)}
               </Typography>
-              <Typography fontSize="0.78rem" noWrap sx={numericColumnSx}>
+              <Typography fontSize="0.72rem" noWrap sx={numericColumnSx}>
                 {territoryPercent.toFixed(1)}%
               </Typography>
-              <Typography fontSize="0.78rem" sx={numericColumnSx}>{team.cities.length}</Typography>
-              <Typography fontSize="0.78rem" sx={numericColumnSx}>{stability ?? "—"}</Typography>
+              <Typography fontSize="0.72rem" sx={numericColumnSx}>城{team.cities.length} · 稳{stability ?? "—"}</Typography>
+              </Box>
             </Box>
           );
         })}
