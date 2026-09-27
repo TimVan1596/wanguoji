@@ -7,6 +7,7 @@ import { store } from "../store";
 import type City from "./City";
 import Player from "./Player";
 import Team from "./Team";
+import { canonicalBlockHitPoints } from "./BlockHitPoints";
 
 export default class Block extends Phaser.GameObjects.Rectangle {
   hp = 0;
@@ -212,7 +213,7 @@ export default class Block extends Phaser.GameObjects.Rectangle {
       this.setFillStyle(blockColor !== undefined ? blockColor : 0xebffe2);
     }
     this.isHome = state.isHome;
-    this.hp = state.hp;
+    this.hp = canonicalBlockHitPoints(state.hp, state.city?.defense);
     if (state.city) this.setCity(state.city, state.isCityCenter);
     else this.city = undefined;
     this.isCityCenter = state.isCityCenter;
@@ -267,7 +268,7 @@ export default class Block extends Phaser.GameObjects.Rectangle {
     if (!this.city) {
       return;
     }
-    this.hp = this.city.defense;
+    this.hp = canonicalBlockHitPoints(this.hp, this.city.defense);
     this.isHome = this.city.isCapital;
     const owner = this.city.ownerTeam;
     if (owner) {

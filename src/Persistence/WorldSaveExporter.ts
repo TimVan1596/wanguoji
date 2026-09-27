@@ -16,6 +16,7 @@ import { CURRENT_SAVE_SCHEMA_VERSION, UnitSaveV1, UserSaveV1, WorldSaveV1 } from
 import { canonicalizeSafeSnapshotBoundary } from "./SnapshotBoundary";
 import { validateWorldSave } from "./WorldSaveValidator";
 import { APP_VERSION } from "../config/version";
+import { createBlockSaveProjection } from "./BlockSaveProjection";
 
 export class UnsafeSaveSnapshotError extends Error {
   constructor() {
@@ -112,15 +113,9 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
     team.farms.npcs.forEach((npc, key) => addUnitTree(npc, undefined, "farm-npc", key));
   });
 
-  const blocks = core.map?.blocks.flatMap((column, gridX) => column.map((block, gridY) => ({
-    gridX,
-    gridY,
-    ownerFactionId: block.team?.name,
-    isHome: block.isHome,
-    homeHitPoints: block.hp,
-    cityId: block.city?.id,
-    isCityCenter: block.isCityCenter,
-  }))) ?? [];
+  const blocks = core.map?.blocks.flatMap((column, gridX) => column.map((block, gridY) =>
+    createBlockSaveProjection(block, gridX, gridY)
+  )) ?? [];
   const dynastyState = DynastyRegistry.exportState();
   const dynasties = dynastyState.dynasties.map((dynasty) => ({
     ...dynasty,

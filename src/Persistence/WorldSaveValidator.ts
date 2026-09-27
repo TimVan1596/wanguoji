@@ -81,10 +81,21 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
     if (Array.isArray(unit.children)) unit.children.forEach((id: unknown) => requireRef(id, unitIds, "unit.children", errors));
   });
   const allCityIds = new Set([...cityIds, ...archivedCityIds]);
+  const activeCitiesById = new Map(cities
+    .filter((city) => typeof city.cityId === "string")
+    .map((city) => [String(city.cityId), city]));
   (Array.isArray(save.blocks) ? save.blocks : []).forEach((block) => {
     if (!finite(block.gridX) || !finite(block.gridY)) errors.push("block grid coordinates must be finite");
+    if (!finite(block.homeHitPoints)) errors.push("block.homeHitPoints must be finite");
     if (block.ownerFactionId !== undefined) requireRef(block.ownerFactionId, factionIds, "block.ownerFactionId", errors);
-    if (block.cityId !== undefined && !allCityIds.has(String(block.cityId))) errors.push(`unknown block.cityId: ${String(block.cityId)}`);
+    if (block.cityId !== undefined) {
+      const cityId = String(block.cityId);
+      if (!allCityIds.has(cityId)) errors.push(`unknown block.cityId: ${cityId}`);
+      const city = activeCitiesById.get(cityId);
+      if (city && finite(city.defense) && finite(block.homeHitPoints) && block.homeHitPoints !== city.defense) {
+        errors.push(`block.homeHitPoints must match city.defense for active city ${cityId}`);
+      }
+    }
   });
   dynasties.forEach((dynasty) => {
     if (dynasty.factionId !== undefined) requireRef(dynasty.factionId, factionIds, "dynasty.factionId", errors);

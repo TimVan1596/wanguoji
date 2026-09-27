@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.99917h
+
+- Defined canonical HP authority for active city blocks.
+- Exported city-associated block HP from authoritative City.defense rather than a potentially stale Block.hp projection.
+- Preserved independent Block.hp for non-city/home blocks.
+- Added canonical block/city persistence consistency regression tests.
+
 ## v0.99917g
 
 - Fixed hydration collider teardown against Phaser Arcade ProcessQueue deferred removals.

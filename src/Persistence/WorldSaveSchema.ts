@@ -145,7 +145,8 @@ export interface WorldSaveV1 {
     map: { widthCells: number; heightCells: number; blockSize: number };
   };
   factions: FactionSaveV1[];
-  blocks: { gridX: number; gridY: number; ownerFactionId?: string; isHome: boolean; cityId?: string; [additionalCanonicalState: string]: unknown }[];
+  // V1: city cells store the canonical projection of City.defense; standalone/home cells preserve Block.hp.
+  blocks: { gridX: number; gridY: number; ownerFactionId?: string; isHome: boolean; homeHitPoints: number; cityId?: string; isCityCenter?: boolean; [additionalCanonicalState: string]: unknown }[];
   cities: CitySaveV1[];
   users: UserSaveV1[];
   units: UnitSaveV1[];

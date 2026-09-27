@@ -12,7 +12,7 @@ function fixture() {
   save.users = [{ userId: 7, factionId: "qin", sourceFactionId: "qin", name: "嬴平", loyalty: 70, role: "RULER", score: 0, playerUnitId: "unit-1" }];
   save.units = [{ unitId: "unit-1", factionId: "qin", userId: 7, x: 10, y: 20, vx: 1, vy: -1, speed: 100, radius: 10, scale: 1, speedCoefficient: 0, sizeCoefficient: 0, alive: true, role: "RULER" }];
   save.dynasties = [{ factionId: "qin", rulers: [{ rulerId: "qin-ruler-1" }], heirIds: [] }];
-  save.blocks = [{ gridX: 0, gridY: 0, ownerFactionId: "qin", isHome: true, cityId: "xianyang" }];
+  save.blocks = [{ gridX: 0, gridY: 0, ownerFactionId: "qin", isHome: true, cityId: "xianyang", homeHitPoints: 10, isCityCenter: true }];
   save.populationSystem = { counters: { qin: 3 }, lastGrowthMonth: 12 };
   return save;
 }
@@ -85,6 +85,16 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     save.worldEventSystem.cityRebellionMonths = {};
     save.worldEventSystem.cycleState = [] as never;
     expect(validateWorldSave(save).errors).toContain("worldEventSystem.cycleState must be an object");
+  });
+
+  it("requires active city-cell HP to match authoritative City.defense", () => {
+    const save = fixture();
+    save.blocks[0].homeHitPoints = 10;
+    save.blocks.push({ gridX: 1, gridY: 0, ownerFactionId: "qin", isHome: true, homeHitPoints: 3 });
+    expect(validateWorldSave(save).valid).toBe(true);
+
+    save.blocks[0].homeHitPoints = 9;
+    expect(validateWorldSave(save).errors).toContain("block.homeHitPoints must match city.defense for active city xianyang");
   });
 
   it("rejects malformed imported nested arrays before hydration teardown", () => {

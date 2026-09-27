@@ -1,50 +1,38 @@
+import { createRequire } from "node:module";
 import { describe, expect, it, vi } from "vitest";
 import { teardownArcadeColliders } from "./ArcadeColliderTeardown";
 
-interface QueueCollider {
-  destroyed: ReturnType<typeof vi.fn>;
+const require = createRequire(import.meta.url);
+const PhaserProcessQueue = require("phaser/src/structs/ProcessQueue") as new () => {
+  add(item: Collider): unknown;
+  remove(item: Collider): unknown;
+  getActive(): Collider[];
+  update(): Collider[];
+};
+
+interface Collider {
   destroy(): void;
+  update(): void;
 }
 
-function createDeferredProcessQueue() {
-  const active: QueueCollider[] = [];
-  const pending: QueueCollider[] = [];
-  const destroyQueue: QueueCollider[] = [];
-  const listeners: Array<() => void> = [];
-  const queue = {
-    add(item: QueueCollider) { pending.push(item); },
-    remove(item: QueueCollider) { destroyQueue.push(item); },
-    getActive() { return active; },
-    update() {
-      while (destroyQueue.length) {
-        const item = destroyQueue.shift()!;
-        const index = active.indexOf(item);
-        if (index >= 0) active.splice(index, 1);
-      }
-      while (pending.length) active.push(pending.shift()!);
-      return active;
-    },
-    listeners,
-  };
-  return queue;
+function createCollider(queue: InstanceType<typeof PhaserProcessQueue>) {
+  let world: InstanceType<typeof PhaserProcessQueue> | null = queue;
+  const destroy = vi.fn(() => {
+    if (!world) throw new Error("removeCollider read world=null");
+    world.remove(collider);
+    world = null;
+  });
+  const update = vi.fn();
+  const collider = { destroy, update };
+  return { collider, getWorld: () => world };
 }
 
 describe("Arcade collider ProcessQueue teardown", () => {
   it("drains deferred destroys before snapshot, then destroys remaining active colliders and drains again", () => {
-    const queue = createDeferredProcessQueue();
-    const makeCollider = () => {
-      let world: typeof queue | null = queue;
-      const destroyed = vi.fn(() => {
-        if (!world) throw new Error("removeCollider read world=null");
-        world.remove(collider);
-        world = null;
-      });
-      const collider: QueueCollider = { destroyed, destroy: destroyed };
-      return { collider, getWorld: () => world };
-    };
-    const a = makeCollider();
-    const b = makeCollider();
-    const c = makeCollider();
+    const queue = new PhaserProcessQueue();
+    const a = createCollider(queue);
+    const b = createCollider(queue);
+    const c = createCollider(queue);
     queue.add(a.collider);
     queue.add(b.collider);
     queue.add(c.collider);
@@ -62,25 +50,20 @@ describe("Arcade collider ProcessQueue teardown", () => {
       destroyedByCore: 2,
       activeAfterPostDrain: 0,
     });
-    expect(a.collider.destroyed).toHaveBeenCalledTimes(1);
-    expect(b.collider.destroyed).toHaveBeenCalledTimes(1);
-    expect(c.collider.destroyed).toHaveBeenCalledTimes(1);
+    expect(a.collider.destroy).toHaveBeenCalledTimes(1);
+    expect(b.collider.destroy).toHaveBeenCalledTimes(1);
+    expect(c.collider.destroy).toHaveBeenCalledTimes(1);
+    expect(a.collider.update).not.toHaveBeenCalled();
+    expect(b.collider.update).not.toHaveBeenCalled();
+    expect(c.collider.update).not.toHaveBeenCalled();
   });
 
   it("activates pending additions during pre-drain, destroys them, and does not invoke collision callbacks", () => {
-    const queue = createDeferredProcessQueue();
-    const makeCollider = () => {
-      let world: typeof queue | null = queue;
-      const destroyed = vi.fn(() => {
-        if (!world) throw new Error("collider destroyed twice");
-        world.remove(collider);
-        world = null;
-      });
-      const collider: QueueCollider = { destroyed, destroy: destroyed };
-      return collider;
-    };
-    const active = makeCollider();
-    const pending = makeCollider();
+    const queue = new PhaserProcessQueue();
+    const activeRef = createCollider(queue);
+    const pendingRef = createCollider(queue);
+    const active = activeRef.collider;
+    const pending = pendingRef.collider;
     queue.add(active);
     queue.update();
     queue.add(pending);
@@ -90,8 +73,9 @@ describe("Arcade collider ProcessQueue teardown", () => {
     expect(diagnostics.activeAfterPreDrain).toBe(2);
     expect(diagnostics.destroyedByCore).toBe(2);
     expect(diagnostics.activeAfterPostDrain).toBe(0);
-    expect(active.destroyed).toHaveBeenCalledTimes(1);
-    expect(pending.destroyed).toHaveBeenCalledTimes(1);
-    expect(queue.listeners).toHaveLength(0);
+    expect(active.destroy).toHaveBeenCalledTimes(1);
+    expect(pending.destroy).toHaveBeenCalledTimes(1);
+    expect(active.update).not.toHaveBeenCalled();
+    expect(pending.update).not.toHaveBeenCalled();
   });
 });
