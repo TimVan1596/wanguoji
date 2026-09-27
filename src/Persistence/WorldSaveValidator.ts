@@ -264,7 +264,7 @@ function validateHydrationImportShapes(save: Partial<WorldSaveV1>, errors: strin
   const record = (value: unknown, label: string): Record<string, any> | undefined => {
     if (isPlainRecord(value)) return value;
     errors.push(`${label} must be an object`);
-    return false;
+    return undefined;
   };
   const records = (value: unknown, label: string): Record<string, any>[] | undefined => {
     if (!Array.isArray(value)) {
@@ -275,26 +275,29 @@ function validateHydrationImportShapes(save: Partial<WorldSaveV1>, errors: strin
     return value.filter(isPlainRecord);
   };
 
-  if (record(save.worldHistory, "worldHistory")) {
-    records(save.worldHistory.events, "worldHistory.events");
-    if (Array.isArray(save.worldHistory.emittedKeys) && save.worldHistory.emittedKeys.some((key: unknown) => typeof key !== "string")) errors.push("worldHistory.emittedKeys entries must be strings");
-    if (Array.isArray(save.worldHistory.extinctFactionIds) && save.worldHistory.extinctFactionIds.some((id: unknown) => typeof id !== "string")) errors.push("worldHistory.extinctFactionIds entries must be strings");
+  const worldHistory = record(save.worldHistory, "worldHistory");
+  if (worldHistory) {
+    records(worldHistory.events, "worldHistory.events");
+    if (Array.isArray(worldHistory.emittedKeys) && worldHistory.emittedKeys.some((key: unknown) => typeof key !== "string")) errors.push("worldHistory.emittedKeys entries must be strings");
+    if (Array.isArray(worldHistory.extinctFactionIds) && worldHistory.extinctFactionIds.some((id: unknown) => typeof id !== "string")) errors.push("worldHistory.extinctFactionIds entries must be strings");
     ["populationCandidate", "territoryCandidate"].forEach((key) => {
-      const candidate = save.worldHistory![key];
+      const candidate = worldHistory[key];
       if (candidate !== undefined && (!isPlainRecord(candidate) || typeof candidate.name !== "string" || !finite(candidate.since))) errors.push(`worldHistory.${key} is malformed`);
     });
   }
-  if (record(save.worldEra, "worldEra")) {
-    const eras = records(save.worldEra.eras, "worldEra.eras");
+  const worldEra = record(save.worldEra, "worldEra");
+  if (worldEra) {
+    const eras = records(worldEra.eras, "worldEra.eras");
     eras?.forEach((era, index) => {
       if (!Array.isArray(era.dominantFactionIds) || !Array.isArray(era.triggerReasonCodes)) errors.push(`worldEra.eras[${index}] faction/reason fields must be arrays`);
       if (era.formationMetrics !== undefined && !isPlainRecord(era.formationMetrics)) errors.push(`worldEra.eras[${index}].formationMetrics must be an object`);
     });
-    const candidateState = save.worldEra.candidateState;
+    const candidateState = worldEra.candidateState;
     if (candidateState !== undefined && (!isPlainRecord(candidateState) || !isPlainRecord(candidateState.candidate) || !Array.isArray(candidateState.candidate.dominantFactionIds) || !Array.isArray(candidateState.candidate.triggerReasonCodes) || !finite(candidateState.sinceMonth))) errors.push("worldEra.candidateState is malformed");
   }
-  if (record(save.factionSnapshots, "factionSnapshots")) {
-    records(save.factionSnapshots.snapshots, "factionSnapshots.snapshots")?.forEach((entry, index) => {
+  const factionSnapshots = record(save.factionSnapshots, "factionSnapshots");
+  if (factionSnapshots) {
+    records(factionSnapshots.snapshots, "factionSnapshots.snapshots")?.forEach((entry, index) => {
       if (!Array.isArray(entry.snapshots) || entry.snapshots.some((snapshot: unknown) => !isPlainRecord(snapshot))) errors.push(`factionSnapshots.snapshots[${index}].snapshots must contain objects`);
     });
   }
@@ -302,9 +305,10 @@ function validateHydrationImportShapes(save: Partial<WorldSaveV1>, errors: strin
   records(save.worldExiles, "worldExiles")?.forEach((exile, index) => {
     if (!Array.isArray(exile.heirIds) || exile.heirIds.some((id: unknown) => typeof id !== "string")) errors.push(`worldExiles[${index}].heirIds must be an array of strings`);
   });
-  if (record(save.factionEffects, "factionEffects")) {
-    records(save.factionEffects.effects, "factionEffects.effects");
-    records(save.factionEffects.strategicModifiers, "factionEffects.strategicModifiers");
+  const factionEffects = record(save.factionEffects, "factionEffects");
+  if (factionEffects) {
+    records(factionEffects.effects, "factionEffects.effects");
+    records(factionEffects.strategicModifiers, "factionEffects.strategicModifiers");
   }
   save.factions?.forEach((faction, index) => {
     if (!Array.isArray(faction.sovereigntyHistory) || !Array.isArray(faction.nameHistory)) errors.push(`factions[${index}] history fields must be arrays`);
@@ -314,13 +318,14 @@ function validateHydrationImportShapes(save: Partial<WorldSaveV1>, errors: strin
     if (!Array.isArray(dynasty.rulers) || dynasty.rulers.some((ruler: unknown) => !isPlainRecord(ruler))) errors.push(`dynasties[${index}].rulers must be an array of objects`);
     if (!Array.isArray(dynasty.heirIds) || dynasty.heirIds.some((id: unknown) => typeof id !== "string")) errors.push(`dynasties[${index}].heirIds must be an array of strings`);
   });
-  if (record(save.registries, "registries")) {
-    const cityNames = record(save.registries.cityNameRegistry, "registries.cityNameRegistry");
+  const registries = record(save.registries, "registries");
+  if (registries) {
+    const cityNames = record(registries.cityNameRegistry, "registries.cityNameRegistry");
     if (cityNames) {
       records(cityNames.reserved, "registries.cityNameRegistry.reserved");
       if (!Array.isArray(cityNames.recentDynamicNames) || cityNames.recentDynamicNames.some((name: unknown) => typeof name !== "string")) errors.push("registries.cityNameRegistry.recentDynamicNames must be an array of strings");
     }
-    records(save.registries.archivedCities, "registries.archivedCities")?.forEach((city, index) => {
+    records(registries.archivedCities, "registries.archivedCities")?.forEach((city, index) => {
       if (!Array.isArray(city.historicalOwners) || city.historicalOwners.some((id: unknown) => typeof id !== "string")) errors.push(`registries.archivedCities[${index}].historicalOwners must be an array of strings`);
       if (!Array.isArray(city.history) || city.history.some((event: unknown) => !isPlainRecord(event))) errors.push(`registries.archivedCities[${index}].history must be an array of objects`);
     });
