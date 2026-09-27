@@ -4,14 +4,15 @@ import Game from "../Game/Game";
 import { InitialPopulationMap } from "../Simulation/PopulationSystem";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
-import { hydrateWorldSave } from "../Persistence/WorldSaveHydrator";
 import {
   createWorldLaunchRunner,
+  continueStoredWorldSave,
   WorldLaunchRequest,
 } from "../Persistence/WorldSaveWorkflow";
 import { saveCurrentWorld } from "../Persistence/WorldSaveWorkflow";
 import { IndexedDbWorldSaveRepository } from "../Persistence/WorldSaveRepository";
 import { setWorldSaveStorageDiagnostics } from "../Persistence/WorldSaveDiagnostics";
+import { formatWorldDate } from "../Simulation/WorldTime";
 import Config from "./Components/Config";
 import ChapterBanner from "./Components/ChapterBanner";
 import BackgroundCatchUpOverlay from "./Components/BackgroundCatchUpOverlay";
@@ -28,18 +29,22 @@ interface AppProps {
 
 export default function App({ launchRequest, onReturnToMenu }: AppProps) {
   const [saving, setSaving] = useState(false);
+  const saveInFlight = useRef(false);
   const handleSave = async () => {
-    if (!Game.Core || saving) throw new Error("当前无法保存世界");
+    if (!Game.Core || saveInFlight.current) throw new Error("当前无法保存世界");
+    saveInFlight.current = true;
     setSaving(true);
     setWorldSaveStorageDiagnostics({ status: "unknown", lastAction: "正在保存" });
     try {
       const scenario = launchRequest.mode === "NEW_WORLD" ? launchRequest.scenario : undefined;
+      const scenarioId = launchRequest.mode === "CONTINUE_SAVE" ? launchRequest.record.save.scenarioId : scenario?.id;
+      const scenarioName = launchRequest.mode === "CONTINUE_SAVE" ? launchRequest.record.summary.scenarioName : scenario?.name;
       const result = await saveCurrentWorld(
         Game.Core,
         new IndexedDbWorldSaveRepository(),
         {
-          scenarioId: scenario?.id ?? launchRequest.record.save.scenarioId,
-          scenarioName: scenario?.name ?? launchRequest.record.summary.scenarioName,
+          scenarioId,
+          scenarioName,
         }
       );
       setWorldSaveStorageDiagnostics({
@@ -51,13 +56,15 @@ export default function App({ launchRequest, onReturnToMenu }: AppProps) {
         serializedBytes: result.serializedBytes,
         writeDurationMs: result.writeDurationMs,
       });
-      Game.Core.toast?.showMessage(`已保存 · ${result.record.summary.worldMonth}月`);
-      return `已保存 · ${result.record.summary.worldMonth}月`;
+      const date = formatWorldDate(result.record.summary.worldMonth);
+      Game.Core.toast?.showMessage(`已保存 · ${date}`);
+      return `已保存 · ${date}`;
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       setWorldSaveStorageDiagnostics({ status: "error", lastAction: "保存失败", error: message });
       throw error;
     } finally {
+      saveInFlight.current = false;
       setSaving(false);
     }
   };
@@ -123,12 +130,10 @@ function WorldStarter({ launchRequest }: { launchRequest: WorldLaunchRequest }) 
         Game.Core.startWorld(populations);
       },
       hydrate: (record) => {
-        try {
-          hydrateWorldSave(Game.Core, record.save);
-        } catch (error) {
+        void continueStoredWorldSave(Game.Core, record).catch((error) => {
           console.error("[Wanguoji] Continue hydration failed", error);
           window.alert(`读取世界失败：${error instanceof Error ? error.message : String(error)}`);
-        }
+        });
       },
     });
   }
@@ -137,6 +142,8 @@ function WorldStarter({ launchRequest }: { launchRequest: WorldLaunchRequest }) 
     if (
       worldStarted ||
       !Game.Core ||
+      !Game.Core.simulator ||
+      !Game.Core.map ||
       (launchRequest.mode === "NEW_WORLD" && teams.length === 0)
     ) {
       return;

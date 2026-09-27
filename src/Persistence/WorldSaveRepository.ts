@@ -28,16 +28,19 @@ export function validateStoredWorldSaveRecord(value: unknown): {
 } {
   if (!isPlainRecord(value)) return { valid: false, errors: ["存档记录格式错误"] };
   const record = value as Partial<StoredWorldSaveRecord>;
+  const saveValue = record.save;
   const errors: string[] = [];
   if (record.slotId !== CURRENT_SAVE_SLOT) errors.push("存档槽位不受支持");
   if (typeof record.savedAt !== "string" || !Number.isFinite(Date.parse(record.savedAt))) errors.push("保存时间无效");
   if (typeof record.appVersion !== "string" || !record.appVersion) errors.push("存档应用版本缺失");
   if (record.saveSchemaVersion !== CURRENT_SAVE_SCHEMA_VERSION) errors.push("该存档版本暂不支持");
-  if (!isPlainRecord(record.summary) || !Number.isFinite(record.summary.worldMonth)) errors.push("存档摘要格式错误");
-  const saveValidation = validateWorldSave(record.save);
+  if (!isPlainRecord(record.summary) || !Number.isInteger(record.summary.worldMonth) || record.summary.worldMonth < 0) errors.push("存档摘要格式错误");
+  else if (record.summary.scenarioName !== undefined && typeof record.summary.scenarioName !== "string") errors.push("存档摘要情景名称无效");
+  const saveValidation = validateWorldSave(saveValue);
   if (!saveValidation.valid) errors.push(...saveValidation.errors);
-  else if (record.save.saveSchemaVersion !== record.saveSchemaVersion) errors.push("存档记录与数据的 schema 版本不一致");
-  else if (record.summary?.worldMonth !== record.save.world.worldMonth) errors.push("存档摘要月份与世界数据不一致");
+  else if (!(saveValue as WorldSaveV1).world.started) errors.push("存档尚未开始，不能继续");
+  else if ((saveValue as WorldSaveV1).saveSchemaVersion !== record.saveSchemaVersion) errors.push("存档记录与数据的 schema 版本不一致");
+  else if ((record.summary as StoredWorldSaveRecord["summary"])?.worldMonth !== (saveValue as WorldSaveV1).world.worldMonth) errors.push("存档摘要月份与世界数据不一致");
   return errors.length
     ? { valid: false, errors }
     : { valid: true, errors: [], record: value as StoredWorldSaveRecord };
@@ -59,7 +62,7 @@ export function createStoredWorldSaveRecord(
 }
 
 export class IndexedDbWorldSaveRepository implements WorldSaveRepository {
-  constructor(private readonly factory: IDBFactory = indexedDB) {}
+  constructor(private readonly factory?: IDBFactory) {}
 
   async getCurrent(): Promise<unknown | undefined> {
     const db = await this.open();
@@ -108,7 +111,12 @@ export class IndexedDbWorldSaveRepository implements WorldSaveRepository {
 
   private open(): Promise<IDBDatabase> {
     return new Promise((resolve, reject) => {
-      const request = this.factory.open(WORLD_SAVE_DATABASE, 1);
+      const factory = this.factory ?? globalThis.indexedDB;
+      if (!factory) {
+        reject(new Error("当前浏览器不支持 IndexedDB"));
+        return;
+      }
+      const request = factory.open(WORLD_SAVE_DATABASE, 1);
       request.onupgradeneeded = () => {
         if (!request.result.objectStoreNames.contains(WORLD_SAVE_STORE)) {
           request.result.createObjectStore(WORLD_SAVE_STORE);

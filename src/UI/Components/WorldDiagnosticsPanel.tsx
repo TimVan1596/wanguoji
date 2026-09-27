@@ -46,7 +46,10 @@ export default function WorldDiagnosticsPanel() {
     const timer = window.setInterval(() => setTick((value) => value + 1), 500);
     return () => window.clearInterval(timer);
   }, []);
-  useEffect(() => subscribeWorldSaveStorageDiagnostics(setStorageDiagnostics), []);
+  useEffect(() => {
+    const unsubscribe = subscribeWorldSaveStorageDiagnostics(setStorageDiagnostics);
+    return () => { unsubscribe(); };
+  }, []);
 
   const diagnostics = useMemo(() => {
     const totalCells = Game.Core?.totalCells ?? 1;

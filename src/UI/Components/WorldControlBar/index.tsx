@@ -61,7 +61,7 @@ export default function WorldControlBar({
         size="small"
         type="button"
         variant={worldRunning ? "outlined" : "contained"}
-        disabled={catchUpActive}
+        disabled={catchUpActive || saving}
         onClick={() => Game.Core?.setWorldRunning(!worldRunning)}
         title={worldRunning ? "暂停" : "继续"}
         aria-label={worldRunning ? "暂停" : "继续"}
@@ -74,7 +74,7 @@ export default function WorldControlBar({
           size="small"
           type="button"
           variant={simulationSpeed === speed ? "contained" : "outlined"}
-          disabled={catchUpActive}
+          disabled={catchUpActive || saving}
           onClick={() => Game.Core?.setSimulationSpeed(speed)}
         >
           {speed}×
@@ -84,7 +84,7 @@ export default function WorldControlBar({
         size="small"
         type="button"
         color="inherit"
-        disabled={catchUpActive}
+        disabled={catchUpActive || saving}
         onClick={(event) => setMenuAnchor(event.currentTarget)}
         title="更多"
         aria-label="更多"
@@ -101,7 +101,7 @@ export default function WorldControlBar({
           {saving ? "正在保存…" : "保存世界"}
         </MenuItem>
         {saveMessage ? <Typography sx={{ px: 2, py: 0.5 }} variant="caption">{saveMessage}</Typography> : null}
-        <MenuItem onClick={handleReturnToMenu}>新世界 / 返回主菜单</MenuItem>
+        <MenuItem disabled={saving} onClick={handleReturnToMenu}>新世界 / 返回主菜单</MenuItem>
       </Menu>
     </Box>
   );

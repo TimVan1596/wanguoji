@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { createEmptyWorldSaveV1 } from "./WorldSaveSchema";
-import { runManualSaveWorkflow, createWorldLaunchRunner, WorldLaunchRequest } from "./WorldSaveWorkflow";
+import { runManualSaveWorkflow, createWorldLaunchRunner, continueStoredWorldSave, WorldLaunchRequest } from "./WorldSaveWorkflow";
 import { WorldSaveRepository, StoredWorldSaveRecord } from "./WorldSaveRepository";
 
 function memoryRepository(): WorldSaveRepository & { current?: StoredWorldSaveRecord } {
@@ -72,5 +72,11 @@ describe("WorldSave workflow", () => {
     )).rejects.toThrow("后台追赶期间");
     expect(pause).not.toHaveBeenCalled();
     expect(repository.current).toBeUndefined();
+  });
+
+  it("rejects invalid or unsupported stored records before hydration", async () => {
+    const invalidRecord = { slotId: "current", saveSchemaVersion: 999, save: createEmptyWorldSaveV1() };
+    const untouchedCore = new Proxy({}, { get() { throw new Error("core must not be touched before record validation"); } });
+    await expect(continueStoredWorldSave(untouchedCore as never, invalidRecord)).rejects.toThrow("该存档版本暂不支持");
   });
 });

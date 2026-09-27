@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.99918
+
+- Added persistent single-slot world saves using IndexedDB.
+- Added Continue from the start menu.
+- Added manual in-world saving at a safe simulation boundary.
+- Added explicit NEW_WORLD / CONTINUE_SAVE bootstrap separation.
+- Existing canonical WorldSaveV1 hydration remains the persistence authority.
+
 ## v0.99917h
 
 - Defined canonical HP authority for active city blocks.
@@ -129,9 +137,3 @@
 - WorldEra.
 - Web background progression via return-time catch-up.
 - Experimental Electron Desktop Background Probe.
-- v0.99918
-  - Added persistent single-slot world saves using IndexedDB.
-  - Added Continue from the start menu.
-  - Added manual in-world saving at a safe simulation boundary.
-  - Added explicit NEW_WORLD / CONTINUE_SAVE bootstrap separation.
-  - Existing canonical WorldSaveV1 hydration remains the persistence authority.
