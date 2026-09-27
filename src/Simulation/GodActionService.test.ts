@@ -64,6 +64,27 @@ describe("GodActionService canonical interventions", () => {
     expect(GodActionService.changeStability({ ...team, cities: [] }, 5).success).toBe(false);
   });
 
+  it("moves faction loyalty toward a target without flattening city differences", () => {
+    const cityA = fakeCity({ loyalty: 90 });
+    const cityB = fakeCity({ id: "city-2", loyalty: 70 });
+    const cityC = fakeCity({ id: "city-3", loyalty: 50 });
+    const team: any = { name: "燕", isDie: false, cities: [cityA, cityB, cityC] };
+    const result = GodActionService.setStabilityTarget(team, 80);
+    expect(result.before.stability).toBe(70);
+    expect(result.after.stability).toBe(80);
+    expect([cityA.loyalty, cityB.loyalty, cityC.loyalty]).toEqual([95, 83, 62]);
+  });
+
+  it("clamps stability targets while getting as close as the city bounds allow", () => {
+    const cityA = fakeCity({ loyalty: 90 });
+    const cityB = fakeCity({ id: "city-2", loyalty: 95 });
+    const team: any = { name: "燕", isDie: false, cities: [cityA, cityB] };
+    const result = GodActionService.setStabilityTarget(team, 120);
+    expect(result.before.stability).toBe(93);
+    expect(result.after.stability).toBe(95);
+    expect([cityA.loyalty, cityB.loyalty]).toEqual([95, 95]);
+  });
+
   it("clamps city actions and refreshes City defense projection without changing block HP", () => {
     const block = { hp: 8, updateCityDisplay: vi.fn() };
     const fortress = { updateCityDisplay: vi.fn() };

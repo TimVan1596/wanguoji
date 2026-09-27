@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.99919a
+
+- Refined God Console V2 target selection, panel navigation, compact sections, and faction/city summaries.
+- Preserved God-tab navigation when selecting cities on the map and made faction stability targets preserve city loyalty differences.
+
 ## v0.99919
 
 - Added a canonical GodActionService and a dedicated GodConsole with explicit faction/city targets, paused-world actions, population and city interventions, derived stability controls, political action reuse, and a session-only action log.

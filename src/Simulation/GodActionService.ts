@@ -67,12 +67,25 @@ export default class GodActionService {
     if (!cities.length) return fail("该势力没有可调整忠诚度的有效城市");
     const beforeStability = getFactionStability(team) ?? 0;
     const requestedTarget = clamp(Math.round(target), 0, CITY_MAX_STABLE_LOYALTY);
-    let affectedCount = 0;
-    cities.forEach((city) => {
-      if (city.loyalty !== requestedTarget) affectedCount += 1;
-      city.loyalty = requestedTarget;
-      city.block.updateCityDisplay();
-    });
+    const beforeLoyalty = new Map(cities.map((city) => [city.id, city.loyalty]));
+    const desiredSum = requestedTarget * cities.length;
+    let remaining = desiredSum - cities.reduce((sum, city) => sum + city.loyalty, 0);
+    const direction = remaining >= 0 ? 1 : -1;
+    while (remaining !== 0) {
+      let moved = false;
+      for (const city of cities) {
+        if (remaining === 0) break;
+        const next = clamp(city.loyalty + direction, 0, CITY_MAX_STABLE_LOYALTY);
+        if (next !== city.loyalty) {
+          city.loyalty = next;
+          remaining -= direction;
+          moved = true;
+        }
+      }
+      if (!moved) break;
+    }
+    const affectedCount = cities.filter((city) => beforeLoyalty.get(city.id) !== city.loyalty).length;
+    cities.forEach((city) => city.block.updateCityDisplay());
     const afterStability = getFactionStability(team) ?? 0;
     store.dispatch(updateTeams());
     return { success: affectedCount > 0, message: `稳定度 ${beforeStability} → ${afterStability}（目标 ${requestedTarget}）`, before: { requestedTarget, stability: beforeStability }, after: { requestedTarget, stability: afterStability }, affectedCount };

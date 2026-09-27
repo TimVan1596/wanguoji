@@ -760,11 +760,11 @@ export default class Core {
     }
   }
 
-  selectCity(cityId: string) {
+  selectCity(cityId: string, options: { openDetails?: boolean } = {}) {
     store.dispatch(setSelectedCityId(cityId));
     const city = this.allCities.find((item) => item.id === cityId);
     if (city) store.dispatch(setSelectedFactionName(city.ownerFactionId));
-    store.dispatch(setRightPanelTab("city"));
+    if (options.openDetails !== false) store.dispatch(setRightPanelTab("city"));
     this.refreshCityVisuals();
   }
 
@@ -898,7 +898,7 @@ export default class Core {
       ? this.allCities.find((item) => item.id === interactionCityId)
       : undefined;
     if (city) {
-      this.selectCity(city.id);
+      this.selectCity(city.id, { openDetails: store.getState().root.rightPanelTab !== "god" });
       logCityClickProbe({
         ...position,
         cameraScrollX: this.scene.cameras.main.scrollX,
