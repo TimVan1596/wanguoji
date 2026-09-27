@@ -111,6 +111,7 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
 
   core.setHydrationStage("HYDRATE_HISTORY");
   importPoliticalAndHistoryState(save);
+  core.simulator!.rebaseProfilerLatches();
   core.setHydrationStage("HYDRATE_USERS_UNITS");
   const hydrated = hydrateUsersAndUnits(save, core, teamsById);
   core.setHydrationStage("INSTALL_LOGICAL_UNITS");
@@ -293,7 +294,6 @@ function importPoliticalAndHistoryState(save: WorldSaveV1) {
   DynastyRegistry.importState({ dynasties, sequence: Number(save.registries.dynastyRegistrySequence) } as ReturnType<typeof DynastyRegistry.exportState>);
   WorldHistory.importState(save.worldHistory as Parameters<typeof WorldHistory.importState>[0]);
   WorldEra.importState(save.worldEra as Parameters<typeof WorldEra.importState>[0]);
-  core.simulator!.rebaseProfilerLatches();
   FactionSnapshots.importState(save.factionSnapshots as Parameters<typeof FactionSnapshots.importState>[0]);
   WorldRemnants.importState(save.worldRemnants as Parameters<typeof WorldRemnants.importState>[0]);
   WorldExiles.importState(save.worldExiles as unknown as Parameters<typeof WorldExiles.importState>[0]);

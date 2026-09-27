@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99921d
+
+- Rebased session-only profiler latches after hydration so snapshot/restore does not duplicate cycle or era transitions.
+- Corrected initial fragmented baseline and same-type MULTIPOLAR stale diagnostics semantics.
+- Separated momentum candidates from owners and restricted strategic modifiers to the actual momentum owner.
+
 ## v0.99921c
 
 - Fixed Phaser ProcessQueue teardown for colliders destroyed while still pending, with explicit stale-collider diagnostics.
