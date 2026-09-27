@@ -2,9 +2,12 @@ import City, { getFactionStability } from "../Components/City";
 import Team from "../Components/Team";
 import Game from "../Game/Game";
 import WorldHistory from "../History/WorldHistory";
-import { CITY_MAX_STABLE_LOYALTY } from "../config/simulation";
+import DynastyRegistry from "../Politics/Dynasty";
+import { CITY_MAX_STABLE_LOYALTY, MAX_ACTIVE_FACTIONS, REBEL_LOYALTY_THRESHOLD_V095 } from "../config/simulation";
 import { store } from "../store";
 import { updateTeams } from "../store/rootSlice";
+import WorldRemnants from "./WorldRemnants";
+import FactionRegistry from "./FactionRegistry";
 
 export interface GodActionResult<T = Record<string, number>> {
   success: boolean;
@@ -56,7 +59,7 @@ export default class GodActionService {
     const before = { [field]: city[field] };
     if (field === "loyalty") city.loyalty = clamp(operation === "set" ? value : city.loyalty + value, 0, CITY_MAX_STABLE_LOYALTY);
     if (field === "defense") city.defense = operation === "full" ? city.maxDefense : clamp(operation === "set" ? value : city.defense + value, 1, city.maxDefense);
-    if (field === "devastation") city.devastation = clamp(operation === "set" ? value : city.devastation + value, 0, 89);
+    if (field === "devastation") city.devastation = clamp(operation === "set" ? value : city.devastation + value, 0, 99);
     if (field === "defense") city.fortifiedCells.forEach((cell) => cell.updateCityDisplay());
     else city.block.updateCityDisplay();
     const after = { [field]: city[field] };
@@ -79,9 +82,11 @@ export default class GodActionService {
 
 export function describePoliticalAvailability(city: City | undefined, currentMonth: number) {
   if (!city) return { rebellion: "未选择城市", restoration: "未选择城市" };
-  const rebellion = city.loyalty > 30 ? "忠诚过高" : city.isInCaptureGrace(currentMonth) ? "capture grace" : "可尝试";
+  const activeCount = Game.Core?.teams.filter((team) => !team.isDie).length ?? 0;
+  const rebellion = city.isInCaptureGrace(currentMonth) ? "capture grace" : city.loyalty > REBEL_LOYALTY_THRESHOLD_V095 ? "忠诚过高" : activeCount >= MAX_ACTIVE_FACTIONS ? "达到 active faction limit" : "可尝试";
   const founder = city.founderTeam;
-  const restoration = !founder?.isDie ? "founder 未灭亡" : !founder || founder.cities.length > 0 ? "势力尚存" : "无可用复国条件";
+  const remnants = founder ? WorldRemnants.get(founder.name) : undefined;
+  const restoration = !founder?.isDie ? "founder 未灭亡" : founder.cities.length > 0 ? "势力尚存" : !remnants || remnants.population <= 0 ? "无 remnants" : !DynastyRegistry.hasClaimant(founder.name) ? "无 claimant" : !FactionRegistry.canRestoreFaction(founder) ? "复国资格未满足" : "可尝试";
   return { rebellion, restoration };
 }
 
