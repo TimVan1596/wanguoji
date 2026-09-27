@@ -104,7 +104,7 @@ describe("world era", () => {
     expect(era?.dominantFactionIds).toContain("义军");
   });
 
-  it("ends a stale confirmed era only after the exit grace", () => {
+  it("keeps a confirmed era open while no replacement candidate exists", () => {
     const teams = [faction("秦", 34, 3), faction("楚", 33, 3), faction("魏", 33, 2)];
     WorldEra.observe(0, teams, 100, "CONTESTED");
     WorldEra.observe(1, [], 100, "CONTESTED");
@@ -112,7 +112,7 @@ describe("world era", () => {
     WorldEra.observe(ERA_EXIT_GRACE_MONTHS - 1, [], 100, "CONTESTED");
     expect(WorldEra.getCurrentEra()?.name).toBe("群雄争衡");
     WorldEra.observe(ERA_EXIT_GRACE_MONTHS + 1, [], 100, "CONTESTED");
-    expect(WorldEra.getCurrentEra()).toBeUndefined();
+    expect(WorldEra.getCurrentEra()?.name).toBe("群雄争衡");
   });
 
   it("detects hegemony before dynastic conditions are met", () => {
@@ -194,8 +194,8 @@ describe("world era", () => {
       WorldEra.observe(month, secondBalance, 100, "CONTESTED");
     }
     expect(WorldEra.getEras()).toHaveLength(1);
-    expect(WorldEra.getCurrentEra()).toBeUndefined();
-    expect(WorldEra.getCandidateDiagnostics(180)?.name).toBe("群雄争衡");
+    expect(WorldEra.getCurrentEra()?.name).toBe("群雄争衡");
+    expect(WorldEra.getCandidateDiagnostics(180)).toBeUndefined();
   });
 
   it("does not renew multipolar chapter when the same cohort only changes order", () => {

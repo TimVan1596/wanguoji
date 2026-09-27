@@ -35,6 +35,8 @@ export default class AutoSimulator {
   private started = false;
   private running = false;
   private speed = 1;
+  private lastProfilerEraId?: string;
+  private lastProfilerCycleStage?: string;
 
   startWorld(
     teams: Team[],
@@ -50,6 +52,8 @@ export default class AutoSimulator {
     FactionSnapshots.reset();
     WorldEra.reset();
     LongRunProfiler.reset();
+    this.lastProfilerEraId = undefined;
+    this.lastProfilerCycleStage = undefined;
     WorldHistory.reset();
     WorldHistory.addWorldBorn(0, teams);
     DynastyRegistry.reset();
@@ -170,6 +174,17 @@ export default class AutoSimulator {
       this.events.observeWorldGoal(this.clock.year, teams, totalCells);
       if (debugProfileEnabled) {
         const cycle = this.events.getCycleDiagnostics();
+        const currentEra = WorldEra.getCurrentEra();
+        if (cycle.stage !== this.lastProfilerCycleStage) {
+          LongRunProfiler.recordTransition({ kind: "CYCLE_STAGE_CHANGED", month: this.clock.year, from: this.lastProfilerCycleStage, to: cycle.stage });
+          if (cycle.stage === "UNIFIED_EARLY" || cycle.stage === "UNIFIED_MATURE") LongRunProfiler.recordTransition({ kind: "WORLD_UNIFIED", month: this.clock.year, to: cycle.stage });
+          if (cycle.stage === "FRAGMENTED") LongRunProfiler.recordTransition({ kind: "WORLD_FRAGMENTED", month: this.clock.year, to: cycle.stage });
+          this.lastProfilerCycleStage = cycle.stage;
+        }
+        if (currentEra && currentEra.id !== this.lastProfilerEraId) {
+          LongRunProfiler.recordTransition({ kind: this.lastProfilerEraId ? "ERA_REPLACED" : "ERA_CONFIRMED", month: currentEra.confirmedMonth, from: this.lastProfilerEraId, to: currentEra.id, factionId: currentEra.dominantFactionIds[0] });
+          this.lastProfilerEraId = currentEra.id;
+        }
         const territoryMetrics = calculateTerritoryMetrics(teams, totalCells);
         const rankedTerritory = teams
           .filter((team) => team.status === "ACTIVE")

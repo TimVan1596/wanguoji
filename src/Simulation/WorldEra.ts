@@ -109,6 +109,7 @@ export const WORLD_ERA_MIN_DURATION_MONTHS_BY_TYPE: Record<WorldEraType, number>
 export const MULTIPOLAR_CHAPTER_RENEWAL_MIN_MONTHS = 72 * 12;
 export const MULTIPOLAR_CHAPTER_RENEWAL_REPLACED_COUNT = 2;
 export const ERA_EXIT_GRACE_MONTHS = 36;
+export const COMPETITIVE_ERA_MIN_AGE_MONTHS = 360;
 
 class WorldEraStore {
   private eras: WorldEra[] = [];
@@ -220,35 +221,17 @@ class WorldEraStore {
     const candidate = classifyEra(teams, totalCells, month, worldPhase, this.getCurrentEra());
     const currentAtObservation = this.getCurrentEra();
     if (!candidate) {
+      // A confirmed chapter remains the historical truth while a replacement
+      // candidate is absent. Closing it here would create unexplained gaps.
       this.candidateState = undefined;
-      const current = this.getCurrentEra();
-      if (current) {
-        this.staleSinceMonth ??= month;
-        if (month - this.staleSinceMonth >= ERA_EXIT_GRACE_MONTHS) {
-          current.endMonth = Math.max(current.startMonth, month - 1);
-          this.staleSinceMonth = undefined;
-          this.notify();
-        }
-      }
+      this.staleSinceMonth = undefined;
       return;
     }
     const candidateMatchesCurrent =
       currentAtObservation !== undefined &&
       shouldContinueEra(currentAtObservation, candidate);
-    if (currentAtObservation && !candidateMatchesCurrent) {
-      this.staleSinceMonth ??= month;
-      if (month - this.staleSinceMonth < ERA_EXIT_GRACE_MONTHS) {
-        if (!this.candidateState || !isSameCandidate(this.candidateState.candidate, candidate)) {
-          this.candidateState = { candidate, sinceMonth: month };
-        }
-        return;
-      }
-      currentAtObservation.endMonth = Math.max(currentAtObservation.startMonth, month - 1);
-      this.staleSinceMonth = undefined;
-      this.candidateState = { candidate, sinceMonth: month };
-    } else {
-      this.staleSinceMonth = undefined;
-    }
+    if (currentAtObservation && !candidateMatchesCurrent) this.staleSinceMonth = month;
+    else this.staleSinceMonth = undefined;
     const current = this.getCurrentEra();
     const renewMultipolarChapter =
       current !== undefined && shouldRenewMultipolarChapter(current, candidate, month);
@@ -256,18 +239,15 @@ class WorldEraStore {
       this.candidateState = undefined;
       return;
     }
-    if (renewMultipolarChapter) {
+    if (renewMultipolarChapter && current) {
+      // Cohort turnover starts a replacement candidate; it does not rewrite
+      // the confirmed chapter until the new cohort is durable.
       this.candidateState = { candidate, sinceMonth: month };
-      this.confirmCandidate(month, month);
-      return;
     }
     const initialEra = !current && this.eras.length === 0 && month === 0;
     const override = false;
-    if (
-      !override &&
-      current &&
-      month - current.startMonth < getEraMinimumDuration(current.type)
-    ) {
+    const hardTransition = isHardEraType(candidate.type);
+    if (!override && current && !hardTransition && month - current.startMonth < COMPETITIVE_ERA_MIN_AGE_MONTHS) {
       return;
     }
     if (
@@ -549,8 +529,8 @@ function getEraRequiredMonths(type: WorldEraType) {
   return WORLD_ERA_REQUIRED_MONTHS_BY_TYPE[type] ?? WORLD_ERA_REQUIRED_MONTHS;
 }
 
-function getEraMinimumDuration(type: WorldEraType) {
-  return WORLD_ERA_MIN_DURATION_MONTHS_BY_TYPE[type] ?? WORLD_ERA_MIN_DURATION_MONTHS;
+function isHardEraType(type: WorldEraType) {
+  return type === "UNIFIED" || type === "DYNASTIC" || type === "FRAGMENTATION";
 }
 
 function formatPercent(value: number) {

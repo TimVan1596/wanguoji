@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99921
+
+- Kept confirmed WorldEra chapters authoritative while replacement candidates mature, preventing unexplained historical gaps.
+- Added competitive chapter minimum-age handling, hard-transition precedence, profiler transition telemetry, and debug-only long-run summary metrics.
+- Preserved WorldCycle as the causal simulation layer without changing its balance parameters.
+
 ## v0.99920b
 
 - Corrected provisional leader succession to create an unrelated dynasty house when no usable heir exists.

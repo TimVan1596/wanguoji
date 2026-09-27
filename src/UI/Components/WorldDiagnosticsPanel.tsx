@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import Game from "../../Game/Game";
 import { getFactionStability } from "../../Components/City";
 import WorldEra, { classifyEra } from "../../Simulation/WorldEra";
+import LongRunProfiler from "../../Simulation/LongRunProfiler";
 import { calculateTerritoryMetrics, getFactionTerritoryMetric } from "../../Simulation/TerritoryMetrics";
 import { formatWorldDate, formatWorldDuration } from "../../Simulation/WorldTime";
 import { RootState } from "../../store";
@@ -74,7 +75,8 @@ export default function WorldDiagnosticsPanel() {
       currentEra
     );
     const cycle = Game.Core?.simulator?.getWorldCycleDiagnostics();
-    return { ranked, currentEra, candidate, validity, liveClassification, cycle };
+    const longRun = LongRunProfiler.getSummary(worldMonth, WorldEra.getEras(), cycle?.stage);
+    return { ranked, currentEra, candidate, validity, liveClassification, cycle, longRun };
   }, [teams, worldMonth, worldPhase]);
 
   if (!debugEnabled()) {
@@ -91,6 +93,7 @@ export default function WorldDiagnosticsPanel() {
     `周期：${diagnostics.cycle?.stage ?? "—"}｜分裂年龄${diagnostics.cycle?.fragmentationAge ?? 0}月｜统一年龄${diagnostics.cycle?.unifiedAge ?? 0}月｜整合修正${(diagnostics.cycle?.consolidationModifier ?? 0).toFixed(2)}`,
     `整合领袖：${diagnostics.cycle?.consolidationLeaderId ?? "—"} 动量${(diagnostics.cycle?.consolidationLeaderMomentum ?? 0).toFixed(2)}｜霸权候选：${diagnostics.cycle?.hegemonicCandidateId ?? "—"} 动量${(diagnostics.cycle?.hegemonicMomentum ?? 0).toFixed(2)}｜围城倍率${(diagnostics.cycle?.hegemonicSiegeMultiplier ?? 1).toFixed(3)}`,
     `王朝秩序：${diagnostics.cycle?.dynasticOrderFactionId ?? "—"}`,
+    `World Cycle Summary：统一${diagnostics.longRun.unificationCount}次｜分裂${diagnostics.longRun.fragmentationCount}次｜历史章节${diagnostics.longRun.eraCount}｜时代平均${diagnostics.longRun.averageEraDuration === undefined ? "—" : formatWorldDuration(diagnostics.longRun.averageEraDuration)}｜最短${diagnostics.longRun.shortestEraDuration === undefined ? "—" : formatWorldDuration(diagnostics.longRun.shortestEraDuration)}｜最长${diagnostics.longRun.longestEraDuration === undefined ? "—" : formatWorldDuration(diagnostics.longRun.longestEraDuration)}｜空档${diagnostics.longRun.eraGapMonths}月｜每百年换代${diagnostics.longRun.eraTransitionsPerCentury?.toFixed(1) ?? "—"}`,
   ].join("\n");
   const snapshotRequest = Game.Core?.getSnapshotRequestDiagnostics();
 
