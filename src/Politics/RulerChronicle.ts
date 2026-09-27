@@ -8,6 +8,7 @@ import {
 import { formatWorldDuration } from "../Simulation/WorldTime";
 import type { WorldEvent } from "../History/WorldHistory";
 import { getFactionEventRelation } from "../History/FactionEventRelation";
+import { getHistorySignificance } from "../History/HistorySignificanceRules";
 import {
   evaluateReignOutcome,
   formatTerritoryTransition,
@@ -219,6 +220,11 @@ const RULER_EVENT_TYPES = new Set<WorldEvent["type"]>([
   "faction-extinct",
   "faction-exiled",
   "faction-dissolved",
+  "city-revolt",
+  "rebel-faction-founded",
+  "frontier-faction-founded",
+  "capital-relocated",
+  "dynasty-restored",
 ]);
 
 const RULER_EVENT_PRIORITIES: Partial<Record<WorldEvent["type"], number>> = {
@@ -242,7 +248,8 @@ export function getRulerHistoricalEvents(
   ruler: { id: string; accessionYear: number; endYear?: number },
   factionId: string,
   worldMonth: number,
-  notableEventIds: string[]
+  notableEventIds: string[],
+  limit = 6
 ) {
   const endMonth = ruler.endYear ?? worldMonth;
   const notable = new Set(notableEventIds);
@@ -283,9 +290,11 @@ export function getRulerHistoricalEvents(
     const existing = grouped.get(key);
     if (!existing || score(event) > score(existing)) grouped.set(key, event);
   }
-  return [...grouped.values()]
+  const ranked = [...grouped.values()]
     .sort((a, b) => score(b) - score(a) || (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year) || a.id.localeCompare(b.id))
-    .slice(0, 6)
+  const mandatory = ranked.filter((event) => getHistorySignificance(event) === "LANDMARK" || ["capital-relocated", "dynasty-restored", "city-revolt", "rebel-faction-founded", "frontier-faction-founded"].includes(event.type));
+  const selected = [...mandatory, ...ranked.filter((event) => !mandatory.includes(event))].slice(0, Math.max(limit, mandatory.length));
+  return selected
     .sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year) || a.id.localeCompare(b.id));
 }
 

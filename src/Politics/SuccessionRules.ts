@@ -166,6 +166,8 @@ function pickFromNamePool(
 ) {
   const historical = new Set(recentNames);
   const recent = new Set(recentNames.slice(-8));
+  const recentTokens = new Set([...recentNames.slice(-6)].flatMap((name) => [...name]));
+  const tokenPenalty = (name: string) => [...name].filter((token) => recentTokens.has(token)).length;
   const candidates = primaryPool.filter((name) => !historical.has(name));
   const fallbackCandidates = fallbackPool.filter((name) => !historical.has(name));
   const recentSafeCandidates = primaryPool.filter((name) => !recent.has(name));
@@ -181,5 +183,7 @@ function pickFromNamePool(
       ? recentSafeFallbackCandidates
       : primaryPool.filter((name) => name !== recentNames[recentNames.length - 1]);
   const finalPool = pool.length > 0 ? pool : [...primaryPool, ...fallbackPool];
-  return finalPool[roll(finalPool.length)];
+  const leastRepeated = Math.min(...finalPool.map(tokenPenalty));
+  const tokenSafePool = finalPool.filter((name) => tokenPenalty(name) === leastRepeated);
+  return tokenSafePool[roll(tokenSafePool.length)];
 }

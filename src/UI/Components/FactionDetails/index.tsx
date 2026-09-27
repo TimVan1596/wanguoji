@@ -720,6 +720,7 @@ function RulerBiography({
   events: WorldEvent[];
   factionById: Map<string, RootState["root"]["teams"][number]>;
 }) {
+  const [showAllEvents, setShowAllEvents] = useState(false);
   const reignEnd = ruler.endYear ?? worldMonth;
   const reignMonths = Math.max(0, reignEnd - ruler.accessionYear);
   const accessionAge = Math.floor(monthsToYears(ruler.accessionYear - ruler.bornYear));
@@ -736,7 +737,8 @@ function RulerBiography({
     ruler,
     team.name,
     worldMonth,
-    ruler.chronicle.notableEventIds
+    ruler.chronicle.notableEventIds,
+    showAllEvents ? 1000 : 6
   );
   const start = ruler.chronicle.accessionSnapshot;
   const end = ruler.chronicle.endSnapshot ?? ruler.chronicle.latestSnapshot ?? start;
@@ -840,6 +842,7 @@ function RulerBiography({
           暂无已关联的重大历史事件。
         </Typography>
       )}
+      {historicalEvents.length >= 6 ? <Button size="small" onClick={() => setShowAllEvents((value) => !value)} sx={{ px: 0, minWidth: 0 }}>{showAllEvents ? "收起" : "查看全部"}</Button> : null}
       <Typography fontWeight="bold" fontSize="0.86rem" sx={{ mt: 0.75 }}>
         史评
       </Typography>

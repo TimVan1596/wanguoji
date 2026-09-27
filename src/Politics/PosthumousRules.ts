@@ -381,14 +381,16 @@ function addCandidates(candidates: NameCandidate[], names: string[], reason: str
 }
 
 function uniqueCandidates(values: NameCandidate[]) {
-  const seen = new Set<string>();
-  return values.filter((value) => {
-    if (seen.has(value.name)) {
-      return false;
+  const merged = new Map<string, NameCandidate>();
+  values.forEach((value) => {
+    const existing = merged.get(value.name);
+    if (existing) {
+      existing.reasons.push(...value.reasons);
+    } else {
+      merged.set(value.name, { ...value, reasons: [...value.reasons] });
     }
-    seen.add(value.name);
-    return true;
   });
+  return [...merged.values()].map((value) => ({ ...value, reasons: [...new Set(value.reasons)] }));
 }
 
 function formatReasonSuffix(reasons?: string[]) {

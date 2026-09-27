@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.99920
+
+- Added shared ruler legacy evidence and score classification for ruler identity, significance, and historical presentation.
+- Expanded given-name material with soft recent-token avoidance while preserving injected deterministic rolls and existing saved names.
+- Preserved mandatory ruler landmarks in chronicle selection, added optional full-event viewing, and merged repeated posthumous evidence reasons.
+- Updated notable-ruler ranking to use effective latest snapshots and legacy evidence.
+
 ## v0.99919a
 
 - Refined God Console V2 target selection, panel navigation, compact sections, and faction/city summaries.

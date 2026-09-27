@@ -1,4 +1,5 @@
 import type { Ruler } from "./Dynasty";
+import { buildRulerLegacyEvidence, getRulerLegacyClasses, getRulerLegacyScore } from "./RulerLegacyEvidence";
 
 export interface ImportantRuler {
   ruler: Ruler;
@@ -13,19 +14,21 @@ export function getRulerSignificanceLabels(ruler: Ruler, worldMonth: number) {
     return [];
   }
   const labels: string[] = [];
-  if (chronicle.foundedStateName) {
+  const evidence = buildRulerLegacyEvidence(chronicle, ruler.accessionYear, ruler.endYear, ruler.endReason);
+  const classes = getRulerLegacyClasses(evidence);
+  if (classes.includes("FOUNDING")) {
     labels.push("开国之君");
   }
   if (chronicle.proclaimedEmperorMonth !== undefined) {
     labels.push("称帝之君");
   }
-  if (chronicle.restorationsDuringReign > 0) {
+  if (classes.includes("RESTORATION")) {
     labels.push("复国之君");
   }
-  if (chronicle.completedUnification) {
+  if (classes.includes("UNIFICATION")) {
     labels.push("一统之君");
   }
-  const end = chronicle.endSnapshot ?? chronicle.accessionSnapshot;
+  const end = evidence.endSnapshot ?? evidence.latestSnapshot ?? evidence.accessionSnapshot;
   const reignMonths = Math.max(0, (ruler.endYear ?? worldMonth) - ruler.accessionYear);
   const territoryDelta = end.territoryShare - chronicle.accessionSnapshot.territoryShare;
   const cityDelta = end.cityCount - chronicle.accessionSnapshot.cityCount;
@@ -46,6 +49,6 @@ export function getImportantRulers(
       labels: getRulerSignificanceLabels(ruler, worldMonth),
     }))
     .filter((item) => item.labels.length > 0)
-    .slice(-limit)
-    .reverse();
+    .sort((a, b) => getRulerLegacyScore(buildRulerLegacyEvidence(b.ruler.chronicle!, b.ruler.accessionYear!, b.ruler.endYear, b.ruler.endReason)) - getRulerLegacyScore(buildRulerLegacyEvidence(a.ruler.chronicle!, a.ruler.accessionYear!, a.ruler.endYear, a.ruler.endReason)))
+    .slice(0, limit);
 }
