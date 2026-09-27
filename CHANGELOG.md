@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99920b
+
+- Corrected provisional leader succession to create an unrelated dynasty house when no usable heir exists.
+- Grouped capital loss and relocation under a shared transition history group when relocation actually succeeds.
+- Added an injectable low-frequency classical prestige branch to future state naming while preserving organic naming and existing names.
+
 ## v0.99920a
 
 - Unified WorldEra rendering around authoritative era records and confirmed-month faction naming.

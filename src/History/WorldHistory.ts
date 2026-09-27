@@ -625,7 +625,7 @@ class WorldHistoryStore {
     });
   }
 
-  addCapitalRelocated(year: number, teamName: string, cityName: string, cityId?: string) {
+  addCapitalRelocated(year: number, teamName: string, cityName: string, cityId?: string, historyGroupId?: string) {
     this.addEvent({
       id: `capital-relocated-${year}-${teamName}-${cityName}-${this.sequence++}`,
       year,
@@ -636,6 +636,7 @@ class WorldHistoryStore {
       actorFactionId: teamName,
       cityId,
       cityName,
+      historyGroupId,
       importance: "major",
     });
   }

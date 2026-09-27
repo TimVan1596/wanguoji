@@ -37,6 +37,7 @@ import {
 } from "./RulerTitleRules";
 import { getSuccessionShockMultiplier } from "../Simulation/SovereigntyModifiers";
 import { finalizeRulerPosthumousNames } from "./PosthumousRules";
+import { createRuntimeDynastyHouseName } from "./DynastySurnameGenerator";
 import {
   createNaturalDeathMonth,
   deriveHeirBirthMonth,
@@ -318,7 +319,11 @@ class DynastyRegistryStore {
     if (!successor && team.status === "ACTIVE" && team.cities.length > 0) {
       const newHouse =
         team.identityStage === "PROVISIONAL"
-          ? dynasty.houseName
+          ? createRuntimeDynastyHouseName({
+              factionType: team.factionType,
+              existingHouseNames: this.getAll().flatMap((item) => item.rulers.map((ruler) => ruler.houseName)),
+              recentHouseNames: dynasty.rulers.filter((item) => item.relationType === "LEADER_SUCCESSOR").slice(-6).map((item) => item.houseName),
+            })
           : dynasty.houseName === `${team.name}氏`
           ? `${team.name}新氏`
           : `${team.name}氏`;

@@ -490,7 +490,8 @@ export default class WorldEventSystem {
           houseName: team.houseName,
         },
         activeStateNames,
-        historicalStateNames
+        historicalStateNames,
+        (max) => Phaser.Math.Between(0, max - 1)
       );
       if (!team.formState(stateName, year)) {
         return;

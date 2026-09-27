@@ -4,7 +4,7 @@ interface StateNameSource {
   houseName?: string;
 }
 
-const classicalStateNames = [
+export const classicalStateNames = [
   "周",
   "晋",
   "宋",
@@ -63,10 +63,16 @@ const directionalPrefixes = ["东", "西", "南", "北", "中", "后", "新"];
 export function createStateName(
   source: StateNameSource,
   activeStateNames: Iterable<string> = [],
-  historicallyUsedStateNames: Iterable<string> = []
+  historicallyUsedStateNames: Iterable<string> = [],
+  roll: (maxExclusive: number) => number = () => 99
 ) {
   const active = new Set(activeStateNames);
   const historical = new Set(historicallyUsedStateNames);
+  const prestigeNames = ["汉", "晋", "隋", "唐", "宋", "元", "明", "清", "吴", "周", "夏", "商"];
+  if (roll(100) < 12) {
+    const prestige = prestigeNames.find((name) => !active.has(name) && !historical.has(name));
+    if (prestige) return prestige;
+  }
   const candidates = createStateNameCandidates(source);
   const firstNeverUsed = candidates.find(
     (name) => !active.has(name) && !historical.has(name)

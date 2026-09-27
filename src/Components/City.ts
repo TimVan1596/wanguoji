@@ -253,6 +253,10 @@ export default class City {
       oldOwner.cities.length === 0
         ? getCollapseHistoryGroupId(previousOwnerName, year, this.id)
         : undefined;
+    const capitalTransitionGroupId =
+      wasCapital && oldOwner.cities.length > 0 && oldOwner.chooseCapitalCandidate()
+        ? `capital-transition-${previousOwnerName}-${year}-${this.id}`
+        : collapseGroupId;
     newOwner.addCity(this);
     newOwner.markActive(year);
     this.ownerFactionId = newOwner.name;
@@ -303,7 +307,7 @@ export default class City {
         cityDefenseBefore,
         rulerId ? DynastyRegistry.getRulerTitleDisplay(newOwner.name, year) : undefined,
         rulerId,
-        collapseGroupId
+        capitalTransitionGroupId
       );
     }
 
@@ -368,7 +372,7 @@ export default class City {
     DynastyRegistry.recordCityLost(previousOwnerName);
 
     if (wasCapital) {
-      this.handleCapitalLoss(oldOwner, year, newOwner, collapseGroupId);
+      this.handleCapitalLoss(oldOwner, year, newOwner, capitalTransitionGroupId);
     } else if (oldOwner.cities.length === 0) {
       Game.Core.handleFactionExtinction(oldOwner, newOwner, this, year, collapseGroupId);
     }
@@ -611,7 +615,8 @@ export default class City {
       year,
       oldOwner.name,
       newCapital.name,
-      newCapital.id
+      newCapital.id,
+      historyGroupId
     );
   }
 
