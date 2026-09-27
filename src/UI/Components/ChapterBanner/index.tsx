@@ -7,9 +7,10 @@ import {
   enqueueChapterBanner,
 } from "../../../History/ChapterBannerRules";
 import WorldHistory from "../../../History/WorldHistory";
+import WorldEra, { WorldEra as WorldEraRecord } from "../../../Simulation/WorldEra";
 import { RootState } from "../../../store";
 
-const BANNER_VISIBLE_MS = 3200;
+const BANNER_VISIBLE_MS = 5600;
 const BANNER_FADE_MS = 500;
 
 export default function ChapterBanner() {
@@ -24,6 +25,8 @@ export default function ChapterBanner() {
   const [current, setCurrent] = useState<ChapterBannerItem>();
   const [pending, setPending] = useState<ChapterBannerItem[]>([]);
   const teams = useSelector((state: RootState) => state.root.teams);
+  const [eras, setEras] = useState<WorldEraRecord[]>([]);
+  useEffect(() => WorldEra.subscribe(setEras), []);
   const [fading, setFading] = useState(false);
 
   useEffect(() => {
@@ -62,7 +65,7 @@ export default function ChapterBanner() {
         unseen.forEach((event) => {
           seenIds.current.add(event.id);
           const factionById = new Map(teams.map((team) => [team.name, team]));
-          const banner = createChapterBannerForEvent(event, factionById);
+          const banner = createChapterBannerForEvent(event, factionById, eras);
           if (!banner) {
             return;
           }
@@ -80,7 +83,7 @@ export default function ChapterBanner() {
           );
         });
       }),
-    []
+    [eras, teams]
   );
 
   useEffect(() => {

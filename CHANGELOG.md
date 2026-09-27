@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99920a
+
+- Unified WorldEra rendering around authoritative era records and confirmed-month faction naming.
+- Made faction chronology city captures self-explanatory from the viewed faction perspective.
+- Added historical ruler display resolution, formal-record eligibility, posthumous assessment context, longer ChapterBanners, and more readable city tooltips.
+
 ## v0.99920
 
 - Added shared ruler legacy evidence and score classification for ruler identity, significance, and historical presentation.

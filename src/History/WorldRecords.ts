@@ -12,6 +12,8 @@ export interface WorldRecord {
 
 type RecordFaction = Pick<Team, "name" | "displayName" | "nameHistory" | "firstFoundedYear"> & {
   getCumulativeActiveYears: (worldMonth: number) => number;
+  identityStage?: string;
+  stateFoundedMonth?: number;
 };
 
 export function deriveWorldRecords(
@@ -25,11 +27,12 @@ export function deriveWorldRecords(
   const rulers = dynasties.flatMap((dynasty) => dynasty.rulers
     .filter((ruler) => ruler.accessionYear !== undefined && ruler.reignOrdinal !== undefined && ruler.chronicle !== undefined)
     .map((ruler) => ({ dynasty, ruler, factionId: dynasty.factionId })));
-  const valid = rulers.filter((entry) => (entry.ruler.accessionYear ?? 0) >= entry.ruler.bornYear);
-  const longest = maxBy(valid, (entry) => (entry.ruler.endYear ?? worldMonth) - entry.ruler.accessionYear!);
-  const youngest = minBy(valid, (entry) => entry.ruler.accessionYear! - entry.ruler.bornYear);
+  const valid = rulers.filter((entry) => (entry.ruler.accessionYear ?? 0) >= entry.ruler.bornYear && isFormalFaction(factions.get(entry.factionId), entry.ruler.accessionYear!));
+  const formalStart = (entry: typeof valid[number]) => Math.max(entry.ruler.accessionYear!, factions.get(entry.factionId)?.stateFoundedMonth ?? entry.ruler.accessionYear!);
+  const longest = maxBy(valid, (entry) => (entry.ruler.endYear ?? worldMonth) - formalStart(entry));
+  const youngest = minBy(valid, (entry) => formalStart(entry) - entry.ruler.bornYear);
   const captures = maxBy(valid, (entry) => entry.ruler.chronicle?.citiesCapturedPersonally ?? 0);
-  const longestFaction = maxBy(teams, (team) => team.getCumulativeActiveYears(worldMonth));
+  const longestFaction = maxBy(teams.filter((team) => isFormalFaction(team, team.stateFoundedMonth ?? 0)), (team) => formalFactionMonths(team, worldMonth));
   const emperor = events.find((event) => event.type === "emperor-proclaimed");
   const unification = events.find((event) => event.type === "world-unification");
   const longestEra = maxBy(eras, (era) => (era.endMonth ?? worldMonth) - era.startMonth);
@@ -39,17 +42,27 @@ export function deriveWorldRecords(
     const name = faction && entry.ruler.accessionYear !== undefined
       ? getFactionDisplayNameAtMonth(faction, entry.ruler.accessionYear)
       : entry.factionId;
-    return `${name} · ${rulerName(entry.ruler)}`;
+    const historical = entry.ruler.templeName ? `${name}${entry.ruler.templeName}` : entry.ruler.posthumousEpithet ? `${name}${entry.ruler.posthumousEpithet}` : name;
+    return `${historical} · ${rulerName(entry.ruler)}`;
   };
   return [
-    longest && { label: "最长在位", value: `${rulerLabel(longest)} · ${duration((longest.ruler.endYear ?? worldMonth) - longest.ruler.accessionYear!)}` },
-    youngest && { label: "最年幼即位", value: `${rulerLabel(youngest)} · ${age(youngest.ruler.accessionYear! - youngest.ruler.bornYear)}` },
+    longest && { label: "最长正式在位", value: `${rulerLabel(longest)} · ${duration((longest.ruler.endYear ?? worldMonth) - formalStart(longest))}` },
+    youngest && { label: "最年幼正式即位", value: `${rulerLabel(youngest)} · ${age(formalStart(youngest) - youngest.ruler.bornYear)}` },
     captures && (captures.ruler.chronicle?.citiesCapturedPersonally ?? 0) > 0 && { label: "亲征夺城最多", value: `${rulerLabel(captures)} · ${captures.ruler.chronicle?.citiesCapturedPersonally}座` },
-    longestFaction && { label: "最长国祚", value: `${longestFaction.displayName ?? longestFaction.name} · ${duration(longestFaction.getCumulativeActiveYears(worldMonth))}` },
+    longestFaction && { label: "最长国祚", value: `${longestFaction.displayName ?? longestFaction.name} · ${duration(formalFactionMonths(longestFaction, worldMonth))}` },
     emperor && { label: "最早称帝", value: `${formatWorldDate(emperor.monthIndex ?? emperor.year)} · ${emperor.title}` },
     unification && { label: "首次统一天下", value: `${formatWorldDate(unification.monthIndex ?? unification.year)} · ${unification.title}` },
     longestEra && { label: "最长时代", value: `${longestEra.name} · ${duration((longestEra.endMonth ?? worldMonth) - longestEra.startMonth)}` },
   ].filter(Boolean) as WorldRecord[];
+}
+
+function isFormalFaction(faction: RecordFaction | undefined, month: number) {
+  return Boolean(faction && (faction.identityStage !== "PROVISIONAL" || faction.stateFoundedMonth !== undefined && faction.stateFoundedMonth <= month));
+}
+
+function formalFactionMonths(faction: RecordFaction, worldMonth: number) {
+  const start = faction.stateFoundedMonth ?? faction.firstFoundedYear;
+  return Math.max(0, faction.getCumulativeActiveYears(worldMonth) - Math.max(0, start - faction.firstFoundedYear));
 }
 
 function rulerName(ruler: Ruler) {

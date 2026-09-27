@@ -151,7 +151,8 @@ export function buildRulerAssessment(
   rulerName: string,
   chronicle: RulerChronicle,
   reignMonths: number,
-  accessionAge?: number
+  accessionAge?: number,
+  legacyNames?: { posthumousEpithet?: string; posthumousEpithetReasons?: string[]; templeName?: string; templeNameReasons?: string[] }
 ) {
   const tags = buildRulerTags(chronicle, reignMonths);
   const end = getRulerEffectiveSnapshot(chronicle);
@@ -203,7 +204,16 @@ export function buildRulerAssessment(
   if (parts.length === 1 && Math.abs(territoryDelta) >= 0.01) {
     parts.push(`领土变化${territoryDelta > 0 ? "+" : ""}${(territoryDelta * 100).toFixed(1)}%。`);
   }
-  return parts.slice(0, 4);
+  if (legacyNames && (legacyNames.posthumousEpithet || legacyNames.templeName)) {
+    const epithetReason = legacyNames.posthumousEpithetReasons?.[0];
+    const templeReason = legacyNames.templeNameReasons?.[0];
+    const clauses = [
+      legacyNames.posthumousEpithet && epithetReason ? `后谥“${legacyNames.posthumousEpithet}”，取其${epithetReason}。` : undefined,
+      legacyNames.templeName && templeReason ? `庙号“${legacyNames.templeName}”，取其${templeReason}。` : undefined,
+    ].filter(Boolean) as string[];
+    parts.push(...clauses);
+  }
+  return parts.slice(0, 5);
 }
 
 const RULER_EVENT_TYPES = new Set<WorldEvent["type"]>([

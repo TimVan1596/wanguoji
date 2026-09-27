@@ -822,10 +822,10 @@ export default class Core {
     if (!this.mapTooltip) {
       this.mapTooltip = this.scene.add
         .text(0, 0, text, {
-          fontSize: "13px",
+          fontSize: "15px",
           color: "#ffffff",
           backgroundColor: "#111111dd",
-          padding: { x: 6, y: 4 },
+          padding: { x: 9, y: 7 },
         })
         .setDepth(Core.TOAST_DEPTH + 1);
     }

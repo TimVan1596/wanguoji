@@ -1,4 +1,6 @@
 import type { WorldEvent } from "./WorldHistory";
+import type { WorldEra } from "../Simulation/WorldEra";
+import { resolveAuthoritativeEra, resolveEraDisplayLabel } from "../Simulation/WorldEra";
 import { formatHistoryEventTitle, type HistoryFactionLike } from "./HistoryRenderRules";
 
 export interface ChapterBannerItem {
@@ -11,7 +13,8 @@ const MAX_BANNER_TEXT_LENGTH = 28;
 
 export function createChapterBannerForEvent(
   event: WorldEvent,
-  factionById?: Map<string, HistoryFactionLike>
+  factionById?: Map<string, HistoryFactionLike>,
+  eras?: WorldEra[]
 ): ChapterBannerItem | undefined {
   if (event.type === "world-unification") {
     return {
@@ -28,7 +31,8 @@ export function createChapterBannerForEvent(
     };
   }
   if (event.type === "world-era-started") {
-    const eraName = String(event.metadata?.eraName ?? "");
+    const era = resolveAuthoritativeEra(eras ?? [], String(event.metadata?.eraId ?? ""));
+    const eraName = era && factionById ? resolveEraDisplayLabel(era, factionById) : String(event.metadata?.eraName ?? "");
     if (!eraName) {
       return undefined;
     }

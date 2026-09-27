@@ -37,6 +37,23 @@ export interface WorldEra {
   formationMetrics?: WorldEraMetrics;
 }
 
+export function resolveAuthoritativeEra(eras: WorldEra[], eraId: string | undefined) {
+  return eraId ? eras.find((era) => era.id === eraId) : undefined;
+}
+
+export function resolveEraDisplayLabel(
+  era: WorldEra,
+  factionById: Map<string, { name: string; displayName?: string; nameHistory?: Array<{ name: string; startMonth: number; endMonth?: number }> }>
+) {
+  const month = era.confirmedMonth;
+  const names = era.dominantFactionIds.map((id) => {
+    const faction = factionById.get(id);
+    const historical = faction?.nameHistory?.find((entry) => entry.startMonth <= month && (entry.endMonth === undefined || month <= entry.endMonth));
+    return historical?.name ?? faction?.displayName ?? faction?.name ?? id;
+  });
+  return names.join(" · ");
+}
+
 interface EraCandidate {
   type: WorldEraType;
   name: string;

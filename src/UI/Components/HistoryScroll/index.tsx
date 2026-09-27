@@ -18,7 +18,7 @@ import {
 } from "../../../History/HistoryRenderRules";
 import { isLandmarkHistoryEvent } from "../../../History/HistorySignificanceRules";
 import { colorToString } from "../../../paid/theme";
-import WorldEra, { classifyEra, WorldEra as WorldEraRecord } from "../../../Simulation/WorldEra";
+import WorldEra, { classifyEra, resolveEraDisplayLabel, WorldEra as WorldEraRecord } from "../../../Simulation/WorldEra";
 import { formatWorldDate, formatWorldDuration } from "../../../Simulation/WorldTime";
 import { RootState } from "../../../store";
 import { deriveWorldRecords } from "../../../History/WorldRecords";
@@ -246,7 +246,7 @@ export default function HistoryScroll() {
                     </Typography>
                     {era.cohortLabelSnapshot ? (
                       <Typography component="span" fontSize="0.68rem" color="var(--gg-text-muted)" sx={{ display: "block" }}>
-                        {era.cohortLabelSnapshot}主导
+                        {resolveEraDisplayLabel(era, teamByName)}主导
                       </Typography>
                     ) : null}
                   </Button>

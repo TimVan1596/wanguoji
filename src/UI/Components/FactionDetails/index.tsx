@@ -730,7 +730,8 @@ function RulerBiography({
     formatRulerName(ruler),
     ruler.chronicle,
     reignMonths,
-    accessionAge
+    accessionAge,
+    ruler.endYear !== undefined ? ruler : undefined
   );
   const historicalEvents = getRulerHistoricalEvents(
     events,

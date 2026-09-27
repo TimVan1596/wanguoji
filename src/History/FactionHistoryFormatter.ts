@@ -73,6 +73,17 @@ export function formatFactionHistoryEvent(
       ? `${captured}被${captor}俘获并处死。`
       : `${captured}被俘并处死。`;
   }
+  if (event.type === "city-captured" || event.type === "city-recovered" || event.type === "capital-fallen") {
+    const city = event.cityName ?? stringMeta(event, "capturedCityName") ?? "该城";
+    const actor = name(event.actorFactionId) || name(event.conquerorFactionId) || "他军";
+    const previousOwner = name(event.previousOwnerFactionId ?? event.targetFactionId);
+    if (relation === "CONQUEROR" || relation === "ACTOR") {
+      return event.type === "city-recovered" ? `${selectedName}从${previousOwner}手中收复${city}。` : `${selectedName}攻陷${previousOwner ? `${previousOwner}的` : ""}${city}。`;
+    }
+    if (relation === "TARGET" || relation === "CONQUERED") {
+      return event.type === "capital-fallen" ? `${actor}攻陷${selectedName}都${city}，${selectedName}失都。` : `${selectedName}失${city}于${actor}。`;
+    }
+  }
   if (event.type === "faction-dissolved") {
     return relation === "CONQUEROR"
       ? `${selectedName}平定${formatProvisionalFactionLabel(name(event.targetFactionId))}。`
