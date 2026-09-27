@@ -7,6 +7,7 @@ import WorldClock from "../Simulation/WorldClock";
 import {
   canonicalizeSafeSnapshotBoundary,
   canonicalizeSavedSnapshotBoundary,
+  getSnapshotWaitingReasons,
   isEffectivelyZeroSnapshotMs,
   isSafeSnapshotBoundary,
   normalizeSnapshotBoundaryMs,
@@ -209,5 +210,17 @@ describe("snapshot month-boundary requests", () => {
     expect(request.cancel(new Error("Safe snapshot request was canceled because the world was reset."))).toBe(true);
     await expect(result.promise).rejects.toThrow("world was reset");
     expect(request.getDiagnostics().status).toBe("cancelled");
+  });
+
+  it("explains every reason a request is not currently at a safe boundary", () => {
+    expect(getSnapshotWaitingReasons({
+      worldStarted: true,
+      catchingUp: true,
+      worldMonth: 12,
+      paused: false,
+      simulatorRunning: true,
+      clockElapsedMs: 0.25,
+      simulationAccumulatorMs: 3,
+    })).toEqual(["BACKGROUND_CATCHUP", "SIMULATOR_RUNNING", "CLOCK_NOT_AT_BOUNDARY", "ACCUMULATOR_NOT_ZERO"]);
   });
 });

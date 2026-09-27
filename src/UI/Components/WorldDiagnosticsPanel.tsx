@@ -10,7 +10,8 @@ import { RootState } from "../../store";
 import { exportWorldSave } from "../../Persistence/WorldSaveExporter";
 import { hydrateWorldSave, HydrationReport } from "../../Persistence/WorldSaveHydrator";
 import { validateWorldSave } from "../../Persistence/WorldSaveValidator";
-import { isCanonicalWorldSaveEquivalent, type WorldSaveV1 } from "../../Persistence/WorldSaveSchema";
+import { diffCanonicalWorldSave, type CanonicalWorldSaveDiff, type WorldSaveV1 } from "../../Persistence/WorldSaveSchema";
+import { APP_VERSION } from "../../config/version";
 
 let debugMemorySnapshot: WorldSaveV1 | undefined;
 
@@ -34,6 +35,7 @@ export default function WorldDiagnosticsPanel() {
   const [, setTick] = useState(0);
   const [hydrationBusy, setHydrationBusy] = useState(false);
   const [hydrationStatus, setHydrationStatus] = useState("");
+  const [canonicalDiff, setCanonicalDiff] = useState<CanonicalWorldSaveDiff>();
   useEffect(() => {
     const timer = window.setInterval(() => setTick((value) => value + 1), 500);
     return () => window.clearInterval(timer);
@@ -95,7 +97,8 @@ export default function WorldDiagnosticsPanel() {
       if (!validation.valid) throw new Error(validation.errors.join("; "));
       const report: HydrationReport = hydrateWorldSave(core, debugMemorySnapshot);
       const afterHydration = exportWorldSave(core);
-      const equivalent = isCanonicalWorldSaveEquivalent(debugMemorySnapshot, afterHydration);
+      const diff = diffCanonicalWorldSave(debugMemorySnapshot, afterHydration);
+      setCanonicalDiff(diff);
       setHydrationStatus([
         "Hydration OK",
         `saved month: ${debugMemorySnapshot.world.worldMonth}`,
@@ -105,7 +108,7 @@ export default function WorldDiagnosticsPanel() {
         `units: ${report.unitCount}`,
         `history events: ${report.historyEventCount}`,
         `validator: ${report.validatorResult}`,
-        `canonical round-trip: ${equivalent ? "matched" : "DIFF"}`,
+        `canonical round-trip: ${diff.matched ? "matched" : `DIFF (${diff.differenceCount})`}`,
       ].join("｜"));
     } catch (error) {
       setHydrationStatus(`Hydration failed: ${error instanceof Error ? error.message : String(error)}`);
@@ -114,20 +117,72 @@ export default function WorldDiagnosticsPanel() {
     }
   };
 
+  const core = Game.Core;
+  const runtime = core?.getRuntimeLivenessDiagnostics();
+  const hydration = core?.getHydrationDiagnostics();
+  const snapshotState = snapshotRequest?.requestState;
+  const subsystemSummary = canonicalDiff
+    ? Object.entries(canonicalDiff.subsystemCounts).map(([key, count]) => `${key}: ${count}`).join("\n")
+    : "暂无 canonical comparison";
+  const pathDiffSummary = canonicalDiff?.differences.length
+    ? canonicalDiff.differences.map((entry) => `${entry.path}\n  before: ${JSON.stringify(entry.before)}\n  after: ${JSON.stringify(entry.after)}`).join("\n")
+    : "无 path-level 差异";
+  const hydrationReport = [
+    `Wanguoji ${APP_VERSION}`,
+    `world month: ${runtime?.worldMonth ?? worldMonth}`,
+    `Era: ${diagnostics.currentEra ? `${diagnostics.currentEra.type} ${diagnostics.currentEra.name} (${diagnostics.currentEra.startMonth})` : "none"}`,
+    `WorldCycle: ${JSON.stringify(diagnostics.cycle ?? null)}`,
+    `snapshot request: ${JSON.stringify(snapshotRequest ?? null)}`,
+    `last hydration: ${hydrationStatus || "none"}`,
+    `last hydration stage: ${hydration?.lastStage ?? "unknown"}`,
+    `canonical diff summary:\n${subsystemSummary}`,
+    `canonical path differences:\n${pathDiffSummary}`,
+    `runtime liveness: ${JSON.stringify(runtime ?? null)}`,
+    `simulation counters: ${JSON.stringify(core?.getSimulationDiagnostics() ?? null)}`,
+  ].join("\n\n");
+  const statusSummary = `Hydration: ${hydrationStatus.startsWith("Hydration OK") ? "OK" : hydrationStatus.startsWith("Hydration failed") ? "FAILED" : "—"}｜Canonical: ${canonicalDiff ? canonicalDiff.matched ? "matched" : `DIFF (${canonicalDiff.differenceCount})` : "—"}｜Runtime: ${runtime?.simulatorRunning ? "RUNNING" : "PAUSED"}`;
+
   return (
     <Box sx={{ position: "fixed", zIndex: 5000, right: 350, bottom: 8, width: 360, maxHeight: "48vh", overflowY: "auto", p: 1, bgcolor: "rgba(20,24,28,.95)", color: "#fff", border: "1px solid #90caf9", fontSize: 11 }}>
-      <Typography variant="subtitle2" sx={{ color: "#90caf9" }}>世界格局诊断（debug=1）</Typography>
-      <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 10, my: 0.5 }}>{summary}</Typography>
-      <Typography variant="caption">关键门槛（仅解释真实规则，不改变规则）</Typography>
-      {thresholds.map(([label, text]) => <Typography key={label} variant="caption" component="div">{label}：{text}</Typography>)}
-      <Button size="small" variant="outlined" sx={{ mt: 0.75, color: "#90caf9", borderColor: "#90caf9" }} onClick={() => navigator.clipboard?.writeText(summary)}>复制诊断摘要</Button>
-      <Button size="small" variant="outlined" disabled={hydrationBusy} sx={{ mt: 0.75, ml: 0.5, color: "#a5d6a7", borderColor: "#a5d6a7" }} onClick={snapshotAndReload}>
+      <Typography variant="subtitle2" sx={{ color: "#90caf9" }}>世界诊断（debug=1）</Typography>
+      <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9, my: 0.5 }}>{statusSummary}</Typography>
+      <Button size="small" variant="outlined" sx={{ color: "#90caf9", borderColor: "#90caf9" }} onClick={() => navigator.clipboard?.writeText(hydrationReport)}>复制 Hydration 调试报告</Button>
+      <Button size="small" variant="outlined" disabled={hydrationBusy} sx={{ ml: 0.5, color: "#a5d6a7", borderColor: "#a5d6a7" }} onClick={snapshotAndReload}>
         {hydrationBusy ? "正在重载…" : "内存快照并重载"}
       </Button>
-      {snapshotRequest && snapshotRequest.status !== "idle" && <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9, my: 0.5 }}>
-        {`快照边界：${snapshotRequest.status}｜请求月 ${snapshotRequest.requestMonth ?? "—"}｜到达月 ${snapshotRequest.boundaryReachedMonth ?? "等待中"}\n导出前 clock.elapsedMs=${snapshotRequest.preExportElapsedMs ?? "等待中"}｜accumulatorMs=${snapshotRequest.preExportAccumulatorMs ?? "等待中"}${snapshotRequest.error ? `\n${snapshotRequest.error}` : ""}`}
-      </Typography>}
-      {hydrationStatus && <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9, my: 0.5 }}>{hydrationStatus}</Typography>}
+      <details>
+        <summary>世界格局</summary>
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{summary}</Typography>
+        <Typography variant="caption">关键门槛（仅解释真实规则，不改变规则）</Typography>
+        {thresholds.map(([label, text]) => <Typography key={label} variant="caption" component="div">{label}：{text}</Typography>)}
+      </details>
+      <details>
+        <summary>Persistence / Hydration</summary>
+        {snapshotRequest && <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>
+          {`snapshot: ${snapshotRequest.status}｜request month ${snapshotRequest.requestMonth ?? "—"}｜reached ${snapshotRequest.boundaryReachedMonth ?? "waiting"}\nstarted while: simulator=${snapshotState?.simulatorRunning ?? "—"}, clock=${snapshotState?.clockRunning ?? "—"}, redux=${snapshotState?.reduxWorldRunning ?? "—"}, scenePaused=${snapshotState?.sceneTimePaused ?? "—"}, physicsPaused=${snapshotState?.physicsPaused ?? "—"}, accumulator=${snapshotState?.simulationAccumulatorMs ?? "—"}, elapsed=${snapshotState?.clockElapsedMs ?? "—"}\nwaiting reason: ${snapshotRequest.waitingReasons?.join(", ") || "none"}\npre-export elapsed=${snapshotRequest.preExportElapsedMs ?? "—"}, accumulator=${snapshotRequest.preExportAccumulatorMs ?? "—"}${snapshotRequest.error ? `\n${snapshotRequest.error}` : ""}`}
+        </Typography>}
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{`last hydration stage: ${hydration?.lastStage ?? "—"}\n${hydrationStatus}\n${subsystemSummary}\n${pathDiffSummary}`}</Typography>
+      </details>
+      <details>
+        <summary>Runtime Liveness</summary>
+        {runtime && <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{[
+          `Redux worldRunning: ${runtime.reduxWorldRunning}`,
+          `Simulator running: ${runtime.simulatorRunning}`,
+          `WorldClock running: ${runtime.clockRunning}`,
+          `RUNNING STATE DIVERGENCE: ${runtime.runningStateDivergence}`,
+          `WorldClock month / elapsed: ${runtime.worldMonth} / ${runtime.clockElapsedMs}`,
+          `Scene time paused / physics paused / tweens all paused: ${runtime.sceneTimePaused} / ${runtime.physicsPaused} / ${runtime.tweensPaused ?? "no active tweens"}`,
+          `active / paused tween count: ${runtime.activeTweenCount} / ${runtime.pausedTweenCount}`,
+          `SimulationDriver accumulator: ${runtime.accumulatorMs}`,
+          `coreUpdateFrames / lastCoreUpdateRealAt: ${runtime.coreUpdateFrames} / ${runtime.lastCoreUpdateRealAt}`,
+          `lastForegroundDeltaMs / consumedSteps: ${runtime.lastForegroundDeltaMs} / ${runtime.lastForegroundConsumedSteps}`,
+          `fixedSimulationSteps / physicsSteps: ${runtime.fixedSimulationSteps} / ${runtime.physicsSteps}`,
+          `lastSimulationStepRealAt: ${runtime.lastSimulationStepRealAt}`,
+          `background mode / catch-up / debt: ${runtime.backgroundMode} / ${runtime.backgroundCatchUpActive} / ${runtime.catchUpDebtSteps}`,
+          `worldInstanceId / runtimeMode: ${runtime.worldInstanceId} / ${runtime.runtimeMode}`,
+          `Resume probe: ${JSON.stringify(runtime.resumeProbe ?? null)}`,
+        ].join("\n")}</Typography>}
+      </details>
     </Box>
   );
 }

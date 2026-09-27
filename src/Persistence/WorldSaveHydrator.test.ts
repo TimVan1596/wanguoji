@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createEmptyWorldSaveV1, isCanonicalWorldSaveEquivalent } from "./WorldSaveSchema";
+import { createEmptyWorldSaveV1, diffCanonicalWorldSave, isCanonicalWorldSaveEquivalent } from "./WorldSaveSchema";
 import { validateWorldSave } from "./WorldSaveValidator";
 import WorldHistory from "../History/WorldHistory";
 import WorldEra from "../Simulation/WorldEra";
@@ -13,6 +13,34 @@ describe("runtime hydration foundation", () => {
     before.createdAt = "2026-01-01T00:00:00.000Z";
     const after = { ...before, createdAt: "2026-02-01T00:00:00.000Z" };
     expect(isCanonicalWorldSaveEquivalent(before, after)).toBe(true);
+  });
+
+  it("reports nested, indexed, missing-key, and scalar canonical differences", () => {
+    const before = createEmptyWorldSaveV1();
+    const after = createEmptyWorldSaveV1();
+    (before.factions as unknown[]).push({ factionId: "qin", stats: { score: 1 }, labels: ["a", "b"] });
+    (after.factions as unknown[]).push({ factionId: "qin", stats: { score: 2, rank: 1 }, labels: ["b", "a"] });
+    const diff = diffCanonicalWorldSave(before, after);
+    expect(diff.matched).toBe(false);
+    expect(diff.differenceCount).toBe(4);
+    expect(diff.differences.map(({ path }) => path)).toEqual([
+      "factions[0].labels[0]", "factions[0].labels[1]", "factions[0].stats.rank", "factions[0].stats.score",
+    ]);
+    expect(diff.subsystemCounts.factions).toBe(4);
+  });
+
+  it("ignores object insertion order but preserves array order and caps displayed leaf diffs", () => {
+    const before = createEmptyWorldSaveV1();
+    const after = createEmptyWorldSaveV1();
+    before.worldHistory = { events: [], metadata: { a: 1, b: 2 } };
+    after.worldHistory = { metadata: { b: 2, a: 1 }, events: [] };
+    expect(diffCanonicalWorldSave(before, after).matched).toBe(true);
+    before.worldHistory.events = [1, 2] as never;
+    after.worldHistory.events = [2, 1] as never;
+    const diff = diffCanonicalWorldSave(before, after, 1);
+    expect(diff.differenceCount).toBe(2);
+    expect(diff.differences).toHaveLength(1);
+    expect(diff.differences[0].path).toBe("worldHistory.events[0]");
   });
 
   it("rejects malformed references before touching a hydration target", () => {

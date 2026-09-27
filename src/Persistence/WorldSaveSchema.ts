@@ -204,15 +204,79 @@ export function canonicalWorldSaveProjection(save: WorldSaveV1) {
 }
 
 export function isCanonicalWorldSaveEquivalent(a: WorldSaveV1, b: WorldSaveV1) {
-  return JSON.stringify(sortKeys(canonicalWorldSaveProjection(a))) === JSON.stringify(sortKeys(canonicalWorldSaveProjection(b)));
+  return diffCanonicalWorldSave(a, b).matched;
 }
 
-function sortKeys(value: unknown): unknown {
-  if (Array.isArray(value)) return value.map(sortKeys);
-  if (value && typeof value === "object") {
-    return Object.fromEntries(Object.entries(value as Record<string, unknown>)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([key, entry]) => [key, sortKeys(entry)]));
-  }
-  return value;
+export interface CanonicalWorldSaveDifference {
+  path: string;
+  before: unknown;
+  after: unknown;
+}
+
+export interface CanonicalWorldSaveDiff {
+  matched: boolean;
+  differenceCount: number;
+  differences: CanonicalWorldSaveDifference[];
+  subsystemCounts: Record<string, number>;
+}
+
+const CANONICAL_SUBSYSTEMS = [
+  "world", "factions", "blocks", "cities", "users", "units", "dynasties",
+  "worldHistory", "worldEra", "factionSnapshots", "worldRemnants", "worldExiles",
+  "factionEffects", "populationSystem", "registries", "worldEventSystem",
+] as const;
+
+/** Debug-oriented structural comparison. Object key order is ignored; array order remains canonical. */
+export function diffCanonicalWorldSave(a: WorldSaveV1, b: WorldSaveV1, limit = 25): CanonicalWorldSaveDiff {
+  const before = canonicalWorldSaveProjection(a) as unknown as Record<string, unknown>;
+  const after = canonicalWorldSaveProjection(b) as unknown as Record<string, unknown>;
+  const subsystemCounts = Object.fromEntries(CANONICAL_SUBSYSTEMS.map((key) => [key, 0]));
+  const differences: CanonicalWorldSaveDifference[] = [];
+  let differenceCount = 0;
+  const record = (path: string, left: unknown, right: unknown) => {
+    differenceCount += 1;
+    const subsystem = path.split(/[.[]/, 1)[0];
+    if (subsystem in subsystemCounts) subsystemCounts[subsystem] += 1;
+    if (differences.length < Math.max(0, limit)) {
+      differences.push({ path, before: simplifyDiffValue(left), after: simplifyDiffValue(right) });
+    }
+  };
+  const visit = (left: unknown, right: unknown, path: string): void => {
+    if (Object.is(left, right)) return;
+    const leftArray = Array.isArray(left);
+    const rightArray = Array.isArray(right);
+    if (leftArray || rightArray) {
+      if (!leftArray || !rightArray) return record(path, left, right);
+      for (let index = 0; index < Math.max(left.length, right.length); index += 1) {
+        visit(left[index], right[index], `${path}[${index}]`);
+      }
+      return;
+    }
+    const leftObject = isPlainRecord(left);
+    const rightObject = isPlainRecord(right);
+    if (leftObject || rightObject) {
+      if (!leftObject || !rightObject) return record(path, left, right);
+      [...new Set([...Object.keys(left), ...Object.keys(right)])].sort().forEach((key) => {
+        visit(left[key], right[key], path ? `${path}.${key}` : key);
+      });
+      return;
+    }
+    record(path, left, right);
+  };
+  visit(before, after, "");
+  return { matched: differenceCount === 0, differenceCount, differences, subsystemCounts };
+}
+
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  if (!value || typeof value !== "object") return false;
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+}
+
+function simplifyDiffValue(value: unknown): unknown {
+  if (value === undefined) return "<missing>";
+  if (value === null || typeof value === "string" || typeof value === "number" || typeof value === "boolean") return value;
+  if (Array.isArray(value)) return `[Array(${value.length})]`;
+  if (isPlainRecord(value)) return `{Object(${Object.keys(value).length} keys)}`;
+  return String(value);
 }

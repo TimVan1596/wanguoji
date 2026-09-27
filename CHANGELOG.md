@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99917f
+
+- Added bounded path-level canonical WorldSave diffs with per-subsystem counts while preserving array order.
+- Added debug runtime liveness, resume/snapshot probes, hydration-stage reporting, and a one-click copyable hydration report.
+- Clarified Farms TimerEvent persistence through elapsed/startAt; added timer contract and repeated controller lifecycle regressions without changing timer cadence.
+
 ## v0.99917e
 
 - Fixed hydration teardown double-destroy of Arcade Physics colliders by assigning world teardown a single collider owner.

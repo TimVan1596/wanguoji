@@ -19,6 +19,11 @@ export interface SnapshotRequestState extends SnapshotBoundaryState {
   worldStarted: boolean;
   catchingUp: boolean;
   worldMonth: number;
+  simulatorRunning?: boolean;
+  clockRunning?: boolean;
+  reduxWorldRunning?: boolean;
+  sceneTimePaused?: boolean;
+  physicsPaused?: boolean;
 }
 
 export interface SnapshotRequestDiagnostics {
@@ -27,6 +32,8 @@ export interface SnapshotRequestDiagnostics {
   boundaryReachedMonth?: number;
   preExportElapsedMs?: number;
   preExportAccumulatorMs?: number;
+  requestState?: Omit<SnapshotRequestState, "paused">;
+  waitingReasons?: string[];
   error?: string;
 }
 
@@ -53,6 +60,8 @@ export class SnapshotBoundaryRequest {
         boundaryReachedMonth: state.worldMonth,
         preExportElapsedMs: state.clockElapsedMs,
         preExportAccumulatorMs: state.simulationAccumulatorMs,
+        requestState: requestStateWithoutPaused(state),
+        waitingReasons: [],
       };
       return { promise: Promise.resolve(), pending: false };
     }
@@ -62,7 +71,12 @@ export class SnapshotBoundaryRequest {
     const promise = new Promise<void>((resolve, reject) => {
       this.pending = { requestedMonth: state.worldMonth, resolve, reject };
     });
-    this.diagnostics = { status: "waiting", requestMonth: state.worldMonth };
+    this.diagnostics = {
+      status: "waiting",
+      requestMonth: state.worldMonth,
+      requestState: requestStateWithoutPaused(state),
+      waitingReasons: getSnapshotWaitingReasons(state),
+    };
     return { promise, pending: true };
   }
 
@@ -107,6 +121,20 @@ export class SnapshotBoundaryRequest {
   getDiagnostics() {
     return { ...this.diagnostics };
   }
+}
+
+function requestStateWithoutPaused(state: SnapshotRequestState): Omit<SnapshotRequestState, "paused"> {
+  const { paused: _paused, ...diagnostics } = state;
+  return diagnostics;
+}
+
+export function getSnapshotWaitingReasons(state: SnapshotRequestState) {
+  const reasons: string[] = [];
+  if (state.catchingUp) reasons.push("BACKGROUND_CATCHUP");
+  if (state.simulatorRunning ?? !state.paused) reasons.push("SIMULATOR_RUNNING");
+  if (!isEffectivelyZeroSnapshotMs(state.clockElapsedMs)) reasons.push("CLOCK_NOT_AT_BOUNDARY");
+  if (!isEffectivelyZeroSnapshotMs(state.simulationAccumulatorMs)) reasons.push("ACCUMULATOR_NOT_ZERO");
+  return reasons;
 }
 
 export function isSafeSnapshotBoundary(state: SnapshotBoundaryState) {

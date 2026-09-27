@@ -2,6 +2,7 @@ import Game from "../Game/Game";
 import { FarmConfig } from "../store/configSlice";
 import Npc from "./Npc";
 import Team from "./Team";
+import { exportFarmTimerState, FarmTimerSaveState, getFarmTimerRestoreOptions } from "./FarmTimerPersistence";
 
 export default class Farms extends Phaser.GameObjects.Group {
   farms: Map<string, Phaser.Time.TimerEvent> = new Map();
@@ -19,19 +20,15 @@ export default class Farms extends Phaser.GameObjects.Group {
   exportState() {
     return {
       configs: this.configs?.map((config) => ({ ...config })) ?? [],
-      timers: [...this.farms.entries()].map(([name, timer]) => ({
-        name,
-        elapsedMs: timer.getElapsed(),
-        remainingMs: timer.getRemaining(),
-        repeatCount: timer.getRepeatCount(),
-        paused: timer.paused,
-      })),
+      timers: [...this.farms.entries()].map(([name, timer]) => exportFarmTimerState(name, timer)),
     };
   }
 
-  init(timerStates?: Array<{ name: string; elapsedMs: number; remainingMs: number; repeatCount: number; paused: boolean }>) {
+  init(timerStates?: FarmTimerSaveState[]) {
     if (this.configs) {
       this.configs.forEach((config) => {
+        const saved = timerStates?.find((timer) => timer.name === config.name);
+        const restore = getFarmTimerRestoreOptions(saved, config.startAt);
         this.farms.set(
           config.name,
           this.scene.time.addEvent({
@@ -66,14 +63,13 @@ export default class Farms extends Phaser.GameObjects.Group {
             },
             callbackScope: this,
             loop: config.loop,
-            startAt: timerStates?.find((timer) => timer.name === config.name)?.elapsedMs ?? config.startAt,
+            startAt: restore.startAt,
           })
         );
-        const saved = timerStates?.find((timer) => timer.name === config.name);
         const timer = this.farms.get(config.name);
         if (saved && timer) {
-          timer.repeatCount = saved.repeatCount;
-          timer.paused = saved.paused;
+          timer.repeatCount = restore.repeatCount!;
+          timer.paused = restore.paused!;
         }
       });
     }

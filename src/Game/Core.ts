@@ -124,6 +124,19 @@ export default class Core {
   private worldInstanceId = 0;
   private visibilityListenerBound = false;
   private snapshotBoundaryRequest = new SnapshotBoundaryRequest();
+  private lastHydrationStage = "IDLE";
+  private coreUpdateDiagnostics = {
+    frames: 0,
+    lastUpdateRealAt: 0,
+    lastForegroundDeltaMs: 0,
+    lastForegroundConsumedSteps: 0,
+  };
+  private resumeProbe?: {
+    requestedAt: number;
+    fixedStepsBefore: number;
+    worldMonthBefore: number;
+    clockElapsedBefore: number;
+  };
   private runtimeMode: GridGodRuntimeMode = getGridGodRuntimeMode();
   private lastDesktopHeartbeatAt = 0;
   private catchUpDiagnostics = {
@@ -508,6 +521,15 @@ export default class Core {
     if (this.backgroundProgression.isCatchingUp()) {
       return;
     }
+    if (running) {
+      const clock = this.simulator.exportState().clock;
+      this.resumeProbe = {
+        requestedAt: this.getRealNow(),
+        fixedStepsBefore: this.simulationDiagnostics.fixedSimulationSteps,
+        worldMonthBefore: clock.worldMonth,
+        clockElapsedBefore: clock.elapsedMs,
+      };
+    }
     this.simulator.setRunning(running);
     if (running) {
       this.scene.time.paused = false;
@@ -529,13 +551,84 @@ export default class Core {
       paused: !this.simulator?.isRunning(),
       clockElapsedMs: simulation?.clock.elapsedMs ?? Number.NaN,
       simulationAccumulatorMs: this.simulationDriver.getAccumulatorMs(),
+      simulatorRunning: Boolean(this.simulator?.isRunning()),
+      clockRunning: Boolean(simulation?.clock.running),
+      reduxWorldRunning: store.getState().root.worldRunning,
+      sceneTimePaused: this.scene.time.paused,
+      physicsPaused: this.scene.physics.world.isPaused,
     });
     if (request.pending && !this.simulator?.isRunning()) this.setWorldRunning(true);
     return request.promise;
   }
 
   getSnapshotRequestDiagnostics() {
-    return this.snapshotBoundaryRequest.getDiagnostics();
+    return {
+      ...this.snapshotBoundaryRequest.getDiagnostics(),
+      requestState: this.snapshotBoundaryRequest.getDiagnostics().requestState,
+    };
+  }
+
+  getHydrationDiagnostics() {
+    return { lastStage: this.lastHydrationStage };
+  }
+
+  setHydrationStage(stage: string) {
+    this.lastHydrationStage = stage;
+  }
+
+  getRuntimeLivenessDiagnostics() {
+    const simulatorState = this.simulator?.exportState();
+    const reduxWorldRunning = store.getState().root.worldRunning;
+    const simulatorRunning = Boolean(this.simulator?.isRunning());
+    const clockRunning = Boolean(simulatorState?.clock.running);
+    const activeTweens = ((this.scene.tweens as unknown as { _active?: Array<{ isPaused?: () => boolean }> })._active ?? []);
+    const probe = this.resumeProbe;
+    const elapsedSinceResumeMs = probe ? Math.max(0, this.getRealNow() - probe.requestedAt) : undefined;
+    const fixedStepsNow = this.simulationDiagnostics.fixedSimulationSteps;
+    const resumeStatus = !probe ? "NOT_REQUESTED"
+      : !simulatorRunning ? "PAUSED"
+      : fixedStepsNow > probe.fixedStepsBefore ? "RUNNING"
+      : (elapsedSinceResumeMs ?? 0) >= 1500 ? "RUNNING_FLAG_BUT_NO_STEPS" : "WAITING";
+    return {
+      reduxWorldRunning,
+      simulatorRunning,
+      clockRunning,
+      sceneTimePaused: this.scene.time.paused,
+      physicsPaused: this.scene.physics.world.isPaused,
+      tweensPaused: activeTweens.length === 0 ? undefined : activeTweens.every((tween) => tween.isPaused?.() ?? false),
+      activeTweenCount: activeTweens.length,
+      pausedTweenCount: activeTweens.filter((tween) => tween.isPaused?.() ?? false).length,
+      worldMonth: simulatorState?.clock.worldMonth ?? 0,
+      clockElapsedMs: simulatorState?.clock.elapsedMs ?? 0,
+      accumulatorMs: this.simulationDriver.getAccumulatorMs(),
+      coreUpdateFrames: this.coreUpdateDiagnostics.frames,
+      lastCoreUpdateRealAt: this.coreUpdateDiagnostics.lastUpdateRealAt,
+      lastForegroundDeltaMs: this.coreUpdateDiagnostics.lastForegroundDeltaMs,
+      lastForegroundConsumedSteps: this.coreUpdateDiagnostics.lastForegroundConsumedSteps,
+      fixedSimulationSteps: this.simulationDiagnostics.fixedSimulationSteps,
+      physicsSteps: this.simulationDiagnostics.physicsSteps,
+      lastSimulationStepRealAt: this.desktopRuntimeDiagnostics.lastSimulationStepRealAt,
+      backgroundMode: this.backgroundProgression.getSnapshot().mode,
+      backgroundCatchUpActive: this.backgroundProgression.isCatchingUp(),
+      catchUpDebtSteps: this.backgroundProgression.getSnapshot().catchUpDebtSteps,
+      worldInstanceId: this.worldInstanceId,
+      runtimeMode: this.runtimeMode,
+      runningStateDivergence: reduxWorldRunning !== simulatorRunning || simulatorRunning !== clockRunning,
+      resumeProbe: probe ? {
+        requestedAt: probe.requestedAt,
+        elapsedSinceResumeMs,
+        simulatorRunning,
+        sceneTimePaused: this.scene.time.paused,
+        physicsPaused: this.scene.physics.world.isPaused,
+        fixedStepsBefore: probe.fixedStepsBefore,
+        fixedStepsNow,
+        worldMonthBefore: probe.worldMonthBefore,
+        worldMonthNow: simulatorState?.clock.worldMonth ?? 0,
+        clockElapsedBefore: probe.clockElapsedBefore,
+        clockElapsedNow: simulatorState?.clock.elapsedMs ?? 0,
+        status: resumeStatus,
+      } : undefined,
+    };
   }
 
   prepareForHydration(expected: { widthCells: number; heightCells: number; blockSize: number }) {
@@ -612,6 +705,7 @@ export default class Core {
   }
 
   private runHydrationTeardownStage(stage: string, action: () => void) {
+    this.setHydrationStage(stage);
     try {
       action();
     } catch (error) {
@@ -901,6 +995,9 @@ export default class Core {
   }
 
   update(delta: number) {
+    this.coreUpdateDiagnostics.frames += 1;
+    this.coreUpdateDiagnostics.lastUpdateRealAt = this.getRealNow();
+    this.coreUpdateDiagnostics.lastForegroundDeltaMs = delta;
     if (this.simulator) {
       this.manualPhysicsStepper.beginFrame();
       if (this.backgroundProgression.consumeSuppressNextForegroundDelta()) {
@@ -916,6 +1013,7 @@ export default class Core {
           getBasePlayRate: () => BASE_PLAY_RATE,
           step: (fixedDeltaMs) => this.advanceLogicalStep(fixedDeltaMs),
         });
+        this.coreUpdateDiagnostics.lastForegroundConsumedSteps = result.steps;
         if (result.stopped) {
           const clock = this.simulator?.exportState().clock;
           this.snapshotBoundaryRequest.recordPreExportState(
@@ -934,6 +1032,10 @@ export default class Core {
     }
     this.updateDesktopRuntimeDiagnostics();
     this.sendDesktopHeartbeatIfNeeded();
+  }
+
+  private getRealNow() {
+    return typeof performance === "undefined" ? Date.now() : performance.now();
   }
 
   private refreshPresentationFrame() {

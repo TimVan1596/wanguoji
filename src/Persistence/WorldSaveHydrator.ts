@@ -35,6 +35,7 @@ export interface HydrationReport {
 }
 
 export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
+  core.setHydrationStage("PRECHECK");
   const validation = validateWorldSave(value);
   if (!validation.valid) throw new Error(`WorldSaveV1 rejected: ${validation.errors.join("; ")}`);
   const save = value as WorldSaveV1;
@@ -57,14 +58,17 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
 
   // All preflight checks happen before teardown; malformed/incompatible saves leave the live world untouched.
   core.prepareForHydration(save.world.map);
+  core.setHydrationStage("HYDRATE_FACTIONS");
   const teams = save.factions.map((state) => Team.hydrate(core.scene, state));
   const teamsById = new Map(teams.map((team) => [team.name, team]));
   core.setHydratedFactionShells(teams);
 
   const blocksByGrid = new Map<string, Block>();
+  core.setHydrationStage("HYDRATE_BLOCKS");
   core.map!.blocks.forEach((column, x) => column.forEach((block, y) => blocksByGrid.set(`${x},${y}`, block)));
 
   const citiesById = new Map<string, City>();
+  core.setHydrationStage("HYDRATE_CITIES");
   save.cities.forEach((state) => {
     const block = blocksByGrid.get(`${state.centerGridX},${state.centerGridY}`);
     if (!block) throw new Error(`Missing center block for city ${state.cityId}`);
@@ -105,8 +109,11 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
   });
   citiesById.forEach((city) => city.rebuildRuntimeVisuals());
 
+  core.setHydrationStage("HYDRATE_HISTORY");
   importPoliticalAndHistoryState(save);
+  core.setHydrationStage("HYDRATE_USERS_UNITS");
   const hydrated = hydrateUsersAndUnits(save, core, teamsById);
+  core.setHydrationStage("INSTALL_LOGICAL_UNITS");
   const logicalSequence = (save.registries.logicalUnitRegistry as { nextUnitSequence: number }).nextUnitSequence;
   const logicalEntries = save.units.map((unit) => {
     const player = hydrated.playersByUnitId.get(unit.unitId)!;
@@ -135,6 +142,7 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
   });
   core.logicalUnitRegistry.importState(logicalSequence, logicalEntries);
   core.simulationDriver.importState({ accumulatorMs: snapshotBoundary.simulationAccumulatorMs });
+  core.setHydrationStage("RESTORE_SIMULATOR");
   core.simulator!.importState({
     started: true,
     selectedSpeed: save.world.selectedSpeed,
@@ -143,6 +151,7 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
     worldEventSystem: save.worldEventSystem as ReturnType<NonNullable<Core["simulator"]>["exportState"]>["worldEventSystem"],
   });
   core.simulator!.setRunning(false);
+  core.setHydrationStage("INSTALL_COLLIDERS");
   core.installHydratedTeams(teams);
   core.setSimulationSpeed(save.world.selectedSpeed);
   store.dispatch(setWorldPhase(core.simulator!.getCurrentPhase(teams)));
@@ -150,6 +159,7 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
   core.scene.time.paused = true;
   core.scene.tweens.pauseAll();
 
+  core.setHydrationStage("FINAL_INVARIANTS");
   const invariantIssues = validateWorldState(core);
   if (invariantIssues.length) throw new Error(`Hydrated world invariant failure: ${invariantIssues.join("; ")}`);
   if (WorldHistory.getEventCount() !== (save.worldHistory.events as unknown[]).length) {
@@ -158,6 +168,7 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
   if (core.logicalUnitRegistry.getAliveUnits().length !== save.units.filter((unit) => unit.alive).length) {
     throw new Error("Hydrated active logical unit count does not match the save.");
   }
+  core.setHydrationStage("COMPLETE");
   return {
     worldMonth: save.world.worldMonth,
     factionCount: teams.length,
