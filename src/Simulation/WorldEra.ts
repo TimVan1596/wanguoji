@@ -45,13 +45,13 @@ export function resolveEraDisplayLabel(
   era: WorldEra,
   factionById: Map<string, { name: string; displayName?: string; nameHistory?: Array<{ name: string; startMonth: number; endMonth?: number }> }>
 ) {
-  const month = era.confirmedMonth;
-  const names = era.dominantFactionIds.map((id) => {
+  const month = era.confirmedMonth ?? era.startMonth;
+  const names = (era.dominantFactionIds ?? []).map((id) => {
     const faction = factionById.get(id);
     const historical = faction?.nameHistory?.find((entry) => entry.startMonth <= month && (entry.endMonth === undefined || month <= entry.endMonth));
     return historical?.name ?? faction?.displayName ?? faction?.name ?? id;
   });
-  return names.join(" · ");
+  return names.length ? names.join(" · ") : era.name;
 }
 
 interface EraCandidate {

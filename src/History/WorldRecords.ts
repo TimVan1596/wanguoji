@@ -4,6 +4,8 @@ import type { Dynasty, Ruler } from "../Politics/Dynasty";
 import type Team from "../Components/Team";
 import { getFactionDisplayNameAtMonth } from "../Simulation/FactionIdentity";
 import { formatWorldDate } from "../Simulation/WorldTime";
+import { resolveHistoricalRulerDisplay } from "../Politics/HistoricalRulerDisplay";
+import { resolveEraDisplayLabel } from "../Simulation/WorldEra";
 
 export interface WorldRecord {
   label: string;
@@ -39,11 +41,11 @@ export function deriveWorldRecords(
   const rulerLabel = (entry: typeof longest) => {
     if (!entry) return "";
     const faction = factions.get(entry.factionId);
-    const name = faction && entry.ruler.accessionYear !== undefined
-      ? getFactionDisplayNameAtMonth(faction, entry.ruler.accessionYear)
+    const start = formalStart(entry);
+    const name = faction
+      ? getFactionDisplayNameAtMonth(faction, start)
       : entry.factionId;
-    const historical = entry.ruler.templeName ? `${name}${entry.ruler.templeName}` : entry.ruler.posthumousEpithet ? `${name}${entry.ruler.posthumousEpithet}` : name;
-    return `${historical} · ${rulerName(entry.ruler)}`;
+    return `${resolveHistoricalRulerDisplay(entry.ruler, name, "compact")} · ${rulerName(entry.ruler)}`;
   };
   return [
     longest && { label: "最长正式在位", value: `${rulerLabel(longest)} · ${duration((longest.ruler.endYear ?? worldMonth) - formalStart(longest))}` },
@@ -52,7 +54,7 @@ export function deriveWorldRecords(
     longestFaction && { label: "最长国祚", value: `${longestFaction.displayName ?? longestFaction.name} · ${duration(formalFactionMonths(longestFaction, worldMonth))}` },
     emperor && { label: "最早称帝", value: `${formatWorldDate(emperor.monthIndex ?? emperor.year)} · ${emperor.title}` },
     unification && { label: "首次统一天下", value: `${formatWorldDate(unification.monthIndex ?? unification.year)} · ${unification.title}` },
-    longestEra && { label: "最长时代", value: `${longestEra.name} · ${duration((longestEra.endMonth ?? worldMonth) - longestEra.startMonth)}` },
+    longestEra && { label: "最长时代", value: `${resolveEraDisplayLabel(longestEra, factions)} · ${duration((longestEra.endMonth ?? worldMonth) - longestEra.startMonth)}` },
   ].filter(Boolean) as WorldRecord[];
 }
 

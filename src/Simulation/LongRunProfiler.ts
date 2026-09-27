@@ -72,6 +72,8 @@ export interface LongRunSummary {
   averageFragmentedDuration?: number;
   longestFragmentedDuration?: number;
   currentCycleStage?: string;
+  currentUnifiedAge?: number;
+  currentFragmentedAge?: number;
 }
 
 export interface LongRunProfileCounts {
@@ -163,12 +165,22 @@ export function deriveLongRunSummary(
 ): LongRunSummary {
   const durations = eras.map((era) => Math.max(0, (era.endMonth ?? worldMonth) - era.startMonth));
   const competitive = eras.filter((era) => ["MULTIPOLAR", "DUAL_RIVALRY", "HEGEMONY"].includes(era.type)).map((era) => Math.max(0, (era.endMonth ?? worldMonth) - era.startMonth));
-  const completed = (kind: LongRunTransitionKind) => transitions.filter((item) => item.kind === kind).length;
+  const starts = transitions.filter((item) => item.kind === "WORLD_UNIFIED" || item.kind === "WORLD_FRAGMENTED").sort((a, b) => a.month - b.month);
+  const episodes = (startKind: LongRunTransitionKind, endKind: LongRunTransitionKind) => starts.flatMap((start, index) => {
+    if (start.kind !== startKind) return [];
+    const end = starts.slice(index + 1).find((item) => item.kind === endKind);
+    return end ? [Math.max(0, end.month - start.month)] : [];
+  });
+  const unifiedEpisodes = episodes("WORLD_UNIFIED", "WORLD_FRAGMENTED");
+  const fragmentedEpisodes = episodes("WORLD_FRAGMENTED", "WORLD_UNIFIED");
+  const completed = (kind: LongRunTransitionKind) => starts.filter((item) => item.kind === kind).length;
   const stats = (values: number[]) => values.length ? { average: values.reduce((sum, value) => sum + value, 0) / values.length, median: [...values].sort((a, b) => a - b)[Math.floor(values.length / 2)], shortest: Math.min(...values), longest: Math.max(...values) } : undefined;
   const eraStats = stats(durations); const competitiveStats = stats(competitive);
   const gaps = eras.slice(1).reduce((sum, era, index) => sum + Math.max(0, era.startMonth - (eras[index].endMonth ?? worldMonth) - 1), 0);
   const overlaps = eras.slice(1).reduce((sum, era, index) => sum + Math.max(0, (eras[index].endMonth ?? worldMonth) - era.startMonth + 1), 0);
-  return { worldAge: worldMonth, eraCount: eras.length, averageEraDuration: eraStats?.average, medianEraDuration: eraStats?.median, shortestEraDuration: eraStats?.shortest, longestEraDuration: eraStats?.longest, competitiveEraCount: competitive.length, competitiveEraAverageDuration: competitiveStats?.average, eraGapMonths: gaps, eraOverlapMonths: overlaps, eraTransitionsPerCentury: worldMonth > 0 ? (Math.max(0, eras.length - 1) * 1200) / worldMonth : undefined, unificationCount: completed("WORLD_UNIFIED"), fragmentationCount: completed("WORLD_FRAGMENTED"), completedUnifiedEpisodes: completed("WORLD_UNIFIED"), completedFragmentedEpisodes: completed("WORLD_FRAGMENTED"), currentCycleStage };
+  const unifiedStats = stats(unifiedEpisodes); const fragmentedStats = stats(fragmentedEpisodes);
+  const last = starts.at(-1);
+  return { worldAge: worldMonth, eraCount: eras.length, averageEraDuration: eraStats?.average, medianEraDuration: eraStats?.median, shortestEraDuration: eraStats?.shortest, longestEraDuration: eraStats?.longest, competitiveEraCount: competitive.length, competitiveEraAverageDuration: competitiveStats?.average, eraGapMonths: gaps, eraOverlapMonths: overlaps, eraTransitionsPerCentury: worldMonth > 0 ? (Math.max(0, eras.length - 1) * 1200) / worldMonth : undefined, unificationCount: completed("WORLD_UNIFIED"), fragmentationCount: completed("WORLD_FRAGMENTED"), completedUnifiedEpisodes: unifiedEpisodes.length, averageUnifiedDuration: unifiedStats?.average, medianUnifiedDuration: unifiedStats?.median, shortestUnifiedDuration: unifiedStats?.shortest, longestUnifiedDuration: unifiedStats?.longest, completedFragmentedEpisodes: fragmentedEpisodes.length, averageFragmentedDuration: fragmentedStats?.average, longestFragmentedDuration: fragmentedStats?.longest, currentUnifiedAge: last?.kind === "WORLD_UNIFIED" ? Math.max(0, worldMonth - last.month) : undefined, currentFragmentedAge: last?.kind === "WORLD_FRAGMENTED" ? Math.max(0, worldMonth - last.month) : undefined, currentCycleStage };
 }
 
 export function buildLongRunProfileSnapshot(

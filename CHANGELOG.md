@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99921a
+
+- Corrected WorldCycle family telemetry and paired completed unified/fragmented episodes for long-run summaries.
+- Fixed World Records historical ruler and era naming, added lazy record derivation, and reversed era presentation order.
+- Polished dynasty presentation ordering and compact faction-ranking identity layout without changing canonical order or cycle balance.
+
 ## v0.99921
 
 - Kept confirmed WorldEra chapters authoritative while replacement candidates mature, preventing unexplained historical gaps.

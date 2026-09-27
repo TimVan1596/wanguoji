@@ -26,7 +26,7 @@ import {
 } from "../../../store/rootSlice";
 import formatNumber from "../../../utils/formatNumber";
 
-const RANKING_GRID_TEMPLATE = "minmax(0, 1fr) 64px 58px 30px 36px";
+const RANKING_GRID_TEMPLATE = "minmax(0, 1fr) 56px 52px 28px 32px";
 const numericColumnSx = {
   textAlign: "right",
   fontVariantNumeric: "tabular-nums",
@@ -181,10 +181,9 @@ export default function Teams() {
                       fontWeight={identity.prestigeWeight === 2 ? 800 : "bold"}
                       fontSize="0.9rem"
                       sx={{
-                        whiteSpace: "nowrap",
+                        minWidth: 0,
                         overflow: "hidden",
                         textOverflow: "ellipsis",
-                        minWidth: "4.5em",
                         maxWidth: "7.5em",
                       }}
                     >

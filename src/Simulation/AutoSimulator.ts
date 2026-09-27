@@ -37,6 +37,7 @@ export default class AutoSimulator {
   private speed = 1;
   private lastProfilerEraId?: string;
   private lastProfilerCycleStage?: string;
+  private lastProfilerCycleFamily?: "UNIFIED" | "FRAGMENTED";
 
   startWorld(
     teams: Team[],
@@ -54,6 +55,7 @@ export default class AutoSimulator {
     LongRunProfiler.reset();
     this.lastProfilerEraId = undefined;
     this.lastProfilerCycleStage = undefined;
+    this.lastProfilerCycleFamily = undefined;
     WorldHistory.reset();
     WorldHistory.addWorldBorn(0, teams);
     DynastyRegistry.reset();
@@ -177,8 +179,11 @@ export default class AutoSimulator {
         const currentEra = WorldEra.getCurrentEra();
         if (cycle.stage !== this.lastProfilerCycleStage) {
           LongRunProfiler.recordTransition({ kind: "CYCLE_STAGE_CHANGED", month: this.clock.year, from: this.lastProfilerCycleStage, to: cycle.stage });
-          if (cycle.stage === "UNIFIED_EARLY" || cycle.stage === "UNIFIED_MATURE") LongRunProfiler.recordTransition({ kind: "WORLD_UNIFIED", month: this.clock.year, to: cycle.stage });
-          if (cycle.stage === "FRAGMENTED") LongRunProfiler.recordTransition({ kind: "WORLD_FRAGMENTED", month: this.clock.year, to: cycle.stage });
+          const family = cycle.stage === "UNIFIED_EARLY" || cycle.stage === "UNIFIED_MATURE" || cycle.stage === "DYNASTIC_FATIGUE" ? "UNIFIED" : "FRAGMENTED";
+          if (family !== this.lastProfilerCycleFamily) {
+            LongRunProfiler.recordTransition({ kind: family === "UNIFIED" ? "WORLD_UNIFIED" : "WORLD_FRAGMENTED", month: this.clock.year, from: this.lastProfilerCycleFamily, to: family });
+            this.lastProfilerCycleFamily = family;
+          }
           this.lastProfilerCycleStage = cycle.stage;
         }
         if (currentEra && currentEra.id !== this.lastProfilerEraId) {

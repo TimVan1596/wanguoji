@@ -106,8 +106,8 @@ export default function HistoryScroll() {
   );
   const eraCandidate = WorldEra.getCandidateDiagnostics(worldMonth);
   const records = useMemo(
-    () => deriveWorldRecords(dynasties, teams, events, eras, worldMonth),
-    [dynasties, teams, events, eras, worldMonth]
+    () => worldRecordsOpen ? deriveWorldRecords(dynasties, teams, events, eras, worldMonth) : [],
+    [worldRecordsOpen, dynasties, teams, events, eras, worldMonth]
   );
   const eraFilteredEvents = useMemo(
     () =>
@@ -209,7 +209,7 @@ export default function HistoryScroll() {
                 pr: 0.25,
               }}
             >
-              {eras.map((era) => (
+              {eras.slice().reverse().map((era) => (
                 <Box
                   key={era.id}
                   sx={{
@@ -256,7 +256,7 @@ export default function HistoryScroll() {
           ) : null}
         </Box>
       ) : null}
-      {records.length > 0 ? (
+      {(worldRecordsOpen || dynasties.length > 0 || events.length > 0) ? (
         <Box sx={{ mb: 0.8 }}>
           <Button
             size="small"

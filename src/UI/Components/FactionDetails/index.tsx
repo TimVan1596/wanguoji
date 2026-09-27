@@ -629,10 +629,14 @@ function DynastyTree({
       </Typography>
     );
   }
+  const orderedRulers = [...rulers].sort((a, b) => {
+    const rank = (ruler: Ruler) => ruler.id === currentRulerId ? 0 : ruler.status === "heir" ? 1 : ruler.endYear !== undefined ? 2 : 3;
+    return rank(a) - rank(b) || (b.accessionYear ?? -1) - (a.accessionYear ?? -1);
+  });
   return (
     <Box sx={{ display: "grid", gap: 1 }}>
       <Box sx={{ display: "grid", gap: 0.5 }}>
-        {rulers.map((ruler, index) => {
+        {orderedRulers.map((ruler, index) => {
           const current = ruler.id === currentRulerId;
           const expanded = ruler.id === selectedRulerId;
           return (
