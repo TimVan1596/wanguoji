@@ -52,14 +52,16 @@ export default function WorldControlBar({
       sx={{
         p: 1,
         display: "grid",
-        gridTemplateColumns: "1fr repeat(3, 0.72fr) 0.56fr",
+        gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
         gap: 0.5,
+        minWidth: 0,
         borderBottom: "1px solid rgba(0, 0, 0, 0.2)",
       }}
     >
       <Button
         size="small"
         type="button"
+        sx={{ minWidth: 0, px: 0.5 }}
         variant={worldRunning ? "outlined" : "contained"}
         disabled={catchUpActive || saving}
         onClick={() => Game.Core?.setWorldRunning(!worldRunning)}
@@ -76,6 +78,7 @@ export default function WorldControlBar({
           variant={simulationSpeed === speed ? "contained" : "outlined"}
           disabled={catchUpActive || saving}
           onClick={() => Game.Core?.setSimulationSpeed(speed)}
+          sx={{ minWidth: 0, px: 0.5 }}
         >
           {speed}×
         </Button>
@@ -84,6 +87,7 @@ export default function WorldControlBar({
         size="small"
         type="button"
         color="inherit"
+        sx={{ minWidth: 0, px: 0.5 }}
         disabled={catchUpActive || saving}
         onClick={(event) => setMenuAnchor(event.currentTarget)}
         title="更多"
@@ -95,6 +99,8 @@ export default function WorldControlBar({
         anchorEl={menuAnchor}
         open={Boolean(menuAnchor)}
         onClose={() => setMenuAnchor(null)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
         <MenuItem disabled={saving || catchUpActive} onClick={() => void handleSave()}>
           {saving ? <CircularProgress size={16} sx={{ mr: 1 }} /> : null}

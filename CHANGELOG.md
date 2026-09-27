@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99918a
+
+- Made the five WorldControlBar controls shrink evenly within the existing right panel and reduced button horizontal padding without hiding speed controls.
+- Anchored the more menu at the button's bottom-right and aligned its top-right to open inward near the viewport edge.
+- Preserved v0.99918 Save/Continue diagnostics; God Console V2 should give its content `height: 100%`, `minHeight: 0`, and `overflowY: auto` to avoid clipping by the current parent overflow contract.
+
 ## v0.99918
 
 - Added persistent single-slot world saves using IndexedDB.
