@@ -20,9 +20,12 @@ export interface LongRunProfileSnapshot {
   dynasticGraceMultiplier?: number;
   dynasticFatigueMultiplier?: number;
   hegemonicCandidateId?: string;
+  hegemonicOwnerId?: string;
   hegemonicMomentum?: number;
   hegemonicSiegeMultiplier?: number;
   consolidationLeaderId?: string;
+  consolidationLeaderCandidateId?: string;
+  consolidationLeaderOwnerId?: string;
   consolidationLeaderMomentum?: number;
   stateFormationBlockers?: Record<string, number>;
   provisionalOverageCount?: number;
@@ -50,6 +53,7 @@ export interface LongRunTransition {
 }
 
 export interface LongRunSummary {
+  profileStartMonth: number;
   worldAge: number;
   eraCount: number;
   averageEraDuration?: number;
@@ -90,9 +94,12 @@ export interface LongRunProfileCounts {
   dynasticGraceMultiplier?: number;
   dynasticFatigueMultiplier?: number;
   hegemonicCandidateId?: string;
+  hegemonicOwnerId?: string;
   hegemonicMomentum?: number;
   hegemonicSiegeMultiplier?: number;
   consolidationLeaderId?: string;
+  consolidationLeaderCandidateId?: string;
+  consolidationLeaderOwnerId?: string;
   consolidationLeaderMomentum?: number;
   stateFormationBlockers?: Record<string, number>;
   provisionalOverageCount?: number;
@@ -111,11 +118,15 @@ class LongRunProfilerStore {
   private snapshots: LongRunProfileSnapshot[] = [];
   private transitions: LongRunTransition[] = [];
   private lastObservedMonth = -1;
+  private profileStartMonth = 0;
+  private baselineCycleFamily: "UNIFIED" | "FRAGMENTED" = "FRAGMENTED";
 
-  reset() {
+  reset(profileStartMonth = 0, baselineCycleFamily: "UNIFIED" | "FRAGMENTED" = "FRAGMENTED") {
     this.snapshots = [];
     this.lastObservedMonth = -1;
     this.transitions = [];
+    this.profileStartMonth = profileStartMonth;
+    this.baselineCycleFamily = baselineCycleFamily;
   }
 
   observe(
@@ -154,7 +165,7 @@ class LongRunProfilerStore {
   getTransitions() { return [...this.transitions]; }
 
   getSummary(worldMonth: number, eras: Array<{ startMonth: number; endMonth?: number; type: string }>, currentCycleStage?: string) {
-    return deriveLongRunSummary(worldMonth, eras, this.transitions, currentCycleStage);
+    return deriveLongRunSummary(worldMonth, eras, this.transitions, currentCycleStage, this.profileStartMonth, this.baselineCycleFamily);
   }
 }
 
@@ -162,7 +173,9 @@ export function deriveLongRunSummary(
   worldMonth: number,
   eras: Array<{ startMonth: number; endMonth?: number; type: string }>,
   transitions: LongRunTransition[],
-  currentCycleStage?: string
+  currentCycleStage?: string,
+  profileStartMonth = 0,
+  baselineCycleFamily: "UNIFIED" | "FRAGMENTED" = "FRAGMENTED"
 ): LongRunSummary {
   const durations = eras.map((era) => Math.max(0, (era.endMonth ?? worldMonth) - era.startMonth));
   const competitive = eras.filter((era) => ["MULTIPOLAR", "DUAL_RIVALRY", "HEGEMONY"].includes(era.type)).map((era) => Math.max(0, (era.endMonth ?? worldMonth) - era.startMonth));
@@ -187,7 +200,9 @@ export function deriveLongRunSummary(
   const overlaps = eras.slice(1).reduce((sum, era, index) => sum + Math.max(0, (eras[index].endMonth ?? worldMonth) - era.startMonth + 1), 0);
   const unifiedStats = stats(unifiedEpisodes); const fragmentedStats = stats(fragmentedEpisodes);
   const last = starts.at(-1);
-  return { worldAge: worldMonth, eraCount: eras.length, averageEraDuration: eraStats?.average, medianEraDuration: eraStats?.median, shortestEraDuration: eraStats?.shortest, longestEraDuration: eraStats?.longest, competitiveEraCount: competitive.length, competitiveEraAverageDuration: competitiveStats?.average, eraGapMonths: gaps, eraOverlapMonths: overlaps, eraTransitionsPerCentury: worldMonth > 0 ? (Math.max(0, eras.length - 1) * 1200) / worldMonth : undefined, unificationCount: completed("WORLD_UNIFIED"), fragmentationCount: completed("WORLD_FRAGMENTED"), completedUnifiedEpisodes: unifiedEpisodes.length, averageUnifiedDuration: unifiedStats?.average, medianUnifiedDuration: unifiedStats?.median, shortestUnifiedDuration: unifiedStats?.shortest, longestUnifiedDuration: unifiedStats?.longest, completedFragmentedEpisodes: fragmentedEpisodes.length, averageFragmentedDuration: fragmentedStats?.average, medianFragmentedDuration: fragmentedStats?.median, longestFragmentedDuration: fragmentedStats?.longest, currentUnifiedAge: last?.kind === "WORLD_UNIFIED" ? Math.max(0, worldMonth - last.month) : undefined, currentFragmentedAge: last?.kind === "WORLD_FRAGMENTED" ? Math.max(0, worldMonth - last.month) : undefined, currentCycleStage };
+  const currentFamily = last ? last.kind === "WORLD_UNIFIED" ? "UNIFIED" : "FRAGMENTED" : baselineCycleFamily;
+  const currentStart = last?.month ?? profileStartMonth;
+  return { profileStartMonth, worldAge: worldMonth, eraCount: eras.length, averageEraDuration: eraStats?.average, medianEraDuration: eraStats?.median, shortestEraDuration: eraStats?.shortest, longestEraDuration: eraStats?.longest, competitiveEraCount: competitive.length, competitiveEraAverageDuration: competitiveStats?.average, eraGapMonths: gaps, eraOverlapMonths: overlaps, eraTransitionsPerCentury: worldMonth > 0 ? (Math.max(0, eras.length - 1) * 1200) / worldMonth : undefined, unificationCount: completed("WORLD_UNIFIED"), fragmentationCount: completed("WORLD_FRAGMENTED"), completedUnifiedEpisodes: unifiedEpisodes.length, averageUnifiedDuration: unifiedStats?.average, medianUnifiedDuration: unifiedStats?.median, shortestUnifiedDuration: unifiedStats?.shortest, longestUnifiedDuration: unifiedStats?.longest, completedFragmentedEpisodes: fragmentedEpisodes.length, averageFragmentedDuration: fragmentedStats?.average, medianFragmentedDuration: fragmentedStats?.median, longestFragmentedDuration: fragmentedStats?.longest, currentUnifiedAge: currentFamily === "UNIFIED" ? Math.max(0, worldMonth - currentStart) : undefined, currentFragmentedAge: currentFamily === "FRAGMENTED" ? Math.max(0, worldMonth - currentStart) : undefined, currentCycleStage };
 }
 
 export function buildLongRunProfileSnapshot(
@@ -222,9 +237,12 @@ export function buildLongRunProfileSnapshot(
     dynasticGraceMultiplier: counts.dynasticGraceMultiplier,
     dynasticFatigueMultiplier: counts.dynasticFatigueMultiplier,
     hegemonicCandidateId: counts.hegemonicCandidateId,
+    hegemonicOwnerId: counts.hegemonicOwnerId,
     hegemonicMomentum: counts.hegemonicMomentum,
     hegemonicSiegeMultiplier: counts.hegemonicSiegeMultiplier,
     consolidationLeaderId: counts.consolidationLeaderId,
+    consolidationLeaderCandidateId: counts.consolidationLeaderCandidateId,
+    consolidationLeaderOwnerId: counts.consolidationLeaderOwnerId,
     consolidationLeaderMomentum: counts.consolidationLeaderMomentum,
     stateFormationBlockers: counts.stateFormationBlockers,
     provisionalOverageCount: counts.provisionalOverageCount,

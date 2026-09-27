@@ -1082,7 +1082,7 @@ export default class WorldEventSystem {
 
   private publishStrategicCycleModifiers() {
     FactionEffects.clearStrategicModifiers();
-    const factionId = this.cycleDiagnostics.hegemonicCandidateId;
+    const factionId = this.cycleDiagnostics.hegemonicOwnerId ?? this.cycleDiagnostics.consolidationLeaderOwnerId;
     if (!factionId || this.cycleDiagnostics.hegemonicSiegeMultiplier <= 1) {
       return;
     }

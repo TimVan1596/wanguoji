@@ -231,8 +231,9 @@ class WorldEraStore {
     const candidateMatchesCurrent =
       currentAtObservation !== undefined &&
       shouldContinueEra(currentAtObservation, candidate);
-    if (currentAtObservation && !candidateMatchesCurrent) this.staleSinceMonth ??= month;
-    else if (candidateMatchesCurrent) this.staleSinceMonth = undefined;
+    const sameMultipolarType = currentAtObservation?.type === "MULTIPOLAR" && candidate.type === "MULTIPOLAR";
+    if (currentAtObservation && !candidateMatchesCurrent && !sameMultipolarType) this.staleSinceMonth ??= month;
+    else if (candidateMatchesCurrent || sameMultipolarType) this.staleSinceMonth = undefined;
     const current = this.getCurrentEra();
     const renewMultipolarChapter =
       current !== undefined && shouldRenewMultipolarChapter(current, candidate, month);

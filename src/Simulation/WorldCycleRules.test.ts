@@ -251,7 +251,8 @@ describe("world cycle rules", () => {
       { team: team({ name: "chu" }), territoryShare: 28, stability: 80 },
     ], HEGEMONIC_MOMENTUM_CAP_MONTHS + 2);
     const diagnostics = getWorldCycleDiagnostics(state, HEGEMONIC_MOMENTUM_CAP_MONTHS + 2);
-    expect(diagnostics.hegemonicCandidateId).toBe("chu");
+    expect(diagnostics.hegemonicCandidateId).toBe("qin");
+    expect(diagnostics.hegemonicOwnerId).toBe("chu");
     expect(diagnostics.hegemonicMomentum).toBeLessThan(1);
     expect(diagnostics.hegemonicMomentum).toBeGreaterThan(0);
   });

@@ -34,9 +34,12 @@ export interface WorldCycleDiagnostics {
   dynasticGraceMultiplier: number;
   dynasticFatigueMultiplier: number;
   hegemonicCandidateId?: string;
+  hegemonicOwnerId?: string;
   hegemonicMomentum: number;
   hegemonicSiegeMultiplier: number;
   consolidationLeaderId?: string;
+  consolidationLeaderCandidateId?: string;
+  consolidationLeaderOwnerId?: string;
   consolidationLeaderMomentum: number;
   dynasticOrderFactionId?: string;
 }
@@ -155,20 +158,17 @@ export function getWorldCycleDiagnostics(
     consolidationModifier,
     dynasticGraceMultiplier,
     dynasticFatigueMultiplier,
-    hegemonicCandidateId:
-      state.hegemonicFactionId ??
-      state.hegemonicCandidateFactionId ??
-      state.consolidationLeaderFactionId ??
-      state.consolidationLeaderCandidateFactionId,
+    hegemonicCandidateId: state.hegemonicCandidateFactionId,
+    hegemonicOwnerId: state.hegemonicFactionId,
     hegemonicMomentum,
     hegemonicSiegeMultiplier: getHegemonicSiegeMultiplier(
       expansionMomentum,
       consolidationModifier,
       getOrderStartMonth(state) !== undefined
     ),
-    consolidationLeaderId:
-      state.consolidationLeaderFactionId ??
-      state.consolidationLeaderCandidateFactionId,
+    consolidationLeaderId: state.consolidationLeaderFactionId,
+    consolidationLeaderCandidateId: state.consolidationLeaderCandidateFactionId,
+    consolidationLeaderOwnerId: state.consolidationLeaderFactionId,
     consolidationLeaderMomentum,
     dynasticOrderFactionId: state.dynasticOrderFactionId,
   };
@@ -281,10 +281,15 @@ export function observeHegemonicMomentum(
     HEGEMONIC_MOMENTUM_START_MONTHS,
     HEGEMONIC_MOMENTUM_CAP_MONTHS
   );
+  const decayedMomentum = Math.max(
+    0,
+    (nextState.hegemonicMomentum ?? 0) - HEGEMONIC_MOMENTUM_DECAY_PER_MONTH
+  );
+  const ownsMomentum = rawMomentum > decayedMomentum;
   return {
     ...nextState,
-    hegemonicFactionId: rawMomentum > 0 ? top1.team.name : nextState.hegemonicFactionId,
-    hegemonicMomentum: Math.max(nextState.hegemonicMomentum ?? 0, rawMomentum),
+    hegemonicFactionId: ownsMomentum ? top1.team.name : decayedMomentum > 0 ? nextState.hegemonicFactionId : undefined,
+    hegemonicMomentum: ownsMomentum ? rawMomentum : decayedMomentum,
   };
 }
 
@@ -345,14 +350,15 @@ function observeConsolidationLeaderMomentum(
     CONSOLIDATION_LEADER_REQUIRED_MONTHS,
     CONSOLIDATION_LEADER_CAP_MONTHS
   );
+  const decayedMomentum = Math.max(
+    0,
+    (state.consolidationLeaderMomentum ?? 0) - CONSOLIDATION_LEADER_DECAY_PER_MONTH
+  );
+  const ownsMomentum = rawMomentum > decayedMomentum;
   return {
     ...state,
-    consolidationLeaderFactionId:
-      rawMomentum > 0 ? top1.team.name : state.consolidationLeaderFactionId,
-    consolidationLeaderMomentum: Math.max(
-      state.consolidationLeaderMomentum ?? 0,
-      rawMomentum
-    ),
+    consolidationLeaderFactionId: ownsMomentum ? top1.team.name : decayedMomentum > 0 ? state.consolidationLeaderFactionId : undefined,
+    consolidationLeaderMomentum: ownsMomentum ? rawMomentum : decayedMomentum,
   };
 }
 

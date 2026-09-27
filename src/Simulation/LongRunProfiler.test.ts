@@ -107,4 +107,11 @@ describe("long run profiler", () => {
     expect(summary.completedFragmentedEpisodes).toBe(1);
     expect(summary.averageFragmentedDuration).toBe(120);
   });
+
+  it("treats the initial fragmented baseline as an age, not a fragmentation event", () => {
+    const summary = deriveLongRunSummary(720, [], [], "CONSOLIDATING", 0, "FRAGMENTED");
+    expect(summary.fragmentationCount).toBe(0);
+    expect(summary.completedFragmentedEpisodes).toBe(0);
+    expect(summary.currentFragmentedAge).toBe(720);
+  });
 });

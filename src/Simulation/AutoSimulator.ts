@@ -52,7 +52,7 @@ export default class AutoSimulator {
     this.events.reset(0);
     FactionSnapshots.reset();
     WorldEra.reset();
-    LongRunProfiler.reset();
+    LongRunProfiler.reset(0, "FRAGMENTED");
     this.lastProfilerEraId = undefined;
     this.lastProfilerCycleStage = undefined;
     this.lastProfilerCycleFamily = undefined;
@@ -67,6 +67,7 @@ export default class AutoSimulator {
     WorldHistory.observeWorld(0, teams, totalCells);
     this.events.observeWorldGoal(0, teams, totalCells);
     WorldEra.observe(0, teams, totalCells, this.events.getCurrentPhase(0, teams));
+    this.rebaseProfilerLatches();
     store.dispatch(setWorldStarted(true));
     store.dispatch(setWorldRunning(true));
     store.dispatch(setSimulationSpeed(this.speed));
@@ -126,6 +127,7 @@ export default class AutoSimulator {
     this.clock.importState({ ...state.clock, running: false });
     this.population.importState(state.populationSystem);
     this.events.importState(state.worldEventSystem, state.clock.worldMonth);
+    this.rebaseProfilerLatches();
     store.dispatch(setWorldStarted(this.started));
     store.dispatch(setWorldRunning(false));
     store.dispatch(setSimulationSpeed(this.speed));
@@ -137,6 +139,15 @@ export default class AutoSimulator {
 
   isRunning() {
     return this.started && this.running;
+  }
+
+  rebaseProfilerLatches() {
+    const cycle = this.events.getCycleDiagnostics();
+    this.lastProfilerCycleStage = cycle.stage;
+    this.lastProfilerCycleFamily = cycle.stage === "UNIFIED_EARLY" || cycle.stage === "UNIFIED_MATURE" || cycle.stage === "DYNASTIC_FATIGUE"
+      ? "UNIFIED"
+      : "FRAGMENTED";
+    this.lastProfilerEraId = WorldEra.getCurrentEra()?.id;
   }
 
   observeWorld(teams: Team[], totalCells: number) {
@@ -222,9 +233,12 @@ export default class AutoSimulator {
             dynasticGraceMultiplier: cycle.dynasticGraceMultiplier,
             dynasticFatigueMultiplier: cycle.dynasticFatigueMultiplier,
             hegemonicCandidateId: cycle.hegemonicCandidateId,
+            hegemonicOwnerId: cycle.hegemonicOwnerId,
             hegemonicMomentum: cycle.hegemonicMomentum,
             hegemonicSiegeMultiplier: cycle.hegemonicSiegeMultiplier,
             consolidationLeaderId: cycle.consolidationLeaderId,
+            consolidationLeaderCandidateId: cycle.consolidationLeaderCandidateId,
+            consolidationLeaderOwnerId: cycle.consolidationLeaderOwnerId,
             consolidationLeaderMomentum: cycle.consolidationLeaderMomentum,
             stateFormationBlockers,
             provisionalOverageCount: stateFormationBlockers.PROVISIONAL_OVERAGE ?? 0,
