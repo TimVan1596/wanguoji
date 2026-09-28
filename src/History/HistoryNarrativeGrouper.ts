@@ -152,6 +152,7 @@ function createCapitalTransitionNarrativeEvent(group: CapitalTransitionGroup): W
       ...group.fallen.metadata,
       ...group.relocated.metadata,
       capitalTransitionGroupedEventCount: 2,
+      historyNarrativeKind: "CAPITAL_TRANSITION",
       sourceEventIds: `${group.fallen.id},${group.relocated.id}`,
     },
   };
@@ -249,6 +250,10 @@ function createNarrativeEvent(group: CollapseGroup): WorldEvent {
       surrenderedPopulation: surrender?.metadata?.surrenderedPopulation,
       exiled: exiled ? 1 : 0,
       dissolved: group.collapseEvent.type === "faction-dissolved" ? 1 : 0,
+      historyNarrativeKind: "FACTION_COLLAPSE",
+      finalCityId: isFinalCityCapture(group.collapseEvent) ? getMetadataString(group.collapseEvent, "cityId") : undefined,
+      finalCityName: isFinalCityCapture(group.collapseEvent) ? getMetadataString(group.collapseEvent, "cityName") : undefined,
+      isFinalCityCapture: isFinalCityCapture(group.collapseEvent) ? 1 : undefined,
     },
   };
 }
@@ -442,13 +447,40 @@ function belongsToCollapseGroup(
   factionId: string
 ) {
   if (collapseEvent.historyGroupId && event.historyGroupId === collapseEvent.historyGroupId) {
-    return COLLAPSIBLE_TYPES.has(event.type);
+    return COLLAPSIBLE_TYPES.has(event.type) && belongsToCollapseFaction(event, factionId);
   }
   return (
     getEventMonth(event) === month &&
     COLLAPSIBLE_TYPES.has(event.type) &&
     getFallenFactionId(event) === factionId
   );
+}
+
+function belongsToCollapseFaction(event: WorldEvent, factionId: string) {
+  switch (event.type) {
+    case "capital-fallen":
+    case "city-captured":
+    case "ruler-captured":
+      return event.targetFactionId === factionId;
+    case "ruler-succession":
+    case "dynasty-exiled":
+    case "dynasty-line-ended":
+      return event.actorFactionId === factionId || event.factionIds?.includes(factionId) === true;
+    case "population-surrendered":
+      return event.actorFactionId === factionId;
+    case "faction-extinct":
+    case "faction-exiled":
+    case "faction-dissolved":
+      return event.targetFactionId === factionId;
+    default:
+      return false;
+  }
+}
+
+function isFinalCityCapture(event: WorldEvent) {
+  return event.metadata?.isFinalCityCapture === 1 &&
+    typeof event.metadata?.cityName === "string" &&
+    typeof event.metadata?.cityId === "string";
 }
 
 function belongsToFoundingGroup(

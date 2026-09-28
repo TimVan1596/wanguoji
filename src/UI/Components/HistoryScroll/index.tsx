@@ -476,44 +476,59 @@ function EventDetails({
   cityNames: string[];
 }) {
   const lines: string[] = [];
-  if (event.conquerorFactionId && event.targetFactionId && event.cityName) {
-    const conquerorName =
-      teamByName.get(event.conquerorFactionId)?.displayName ?? event.conquerorFactionId;
-    const targetName =
-      teamByName.get(event.targetFactionId)?.displayName ?? event.targetFactionId;
-    lines.push(
-      `${conquerorName}攻陷${targetName}最后城市${event.cityName}。`
-    );
-  }
-  if (event.metadata) {
-    addMetadataLine(lines, event.metadata.populationBefore, "灭亡前人口");
-    addMetadataLine(lines, event.metadata.surrenderedPopulation, "投降人口");
-    addMetadataLine(lines, event.metadata.disbandedPopulation, "解散人口");
-    addMetadataLine(lines, event.metadata.remnantPopulation, "残部人口");
-    addMetadataLine(lines, event.metadata.population, "事件时人口");
-    addMetadataLine(lines, event.metadata.populationCapacity, "事件时承载");
-    addMetadataPercentLine(lines, event.metadata.territoryPercent, "事件时领土");
-    addMetadataLine(lines, event.metadata.cityCount, "事件时城市");
-    addMetadataLine(lines, event.metadata.stability, "事件时稳定");
-    addMetadataLine(lines, event.metadata.duration, "持续年数");
-    addMetadataLine(lines, event.metadata.effectDuration, "继承影响年数");
+  const metadata = event.metadata;
+  const kind = metadata?.historyNarrativeKind;
+  const isCapitalTransition = kind === "CAPITAL_TRANSITION" ||
+    (event.type === "capital-relocated" && typeof metadata?.previousCapitalName === "string");
+  const isCollapse = kind === "FACTION_COLLAPSE" || Boolean(metadata?.groupedEventCount) ||
+    event.type === "faction-extinct" || event.type === "faction-exiled" || event.type === "faction-dissolved";
+  if (isCapitalTransition && metadata) {
+    addMetadataTextLine(lines, metadata.previousCapitalName, "旧都");
+    addMetadataTextLine(lines, metadata.newCapitalName ?? event.cityName, "新都");
+    const cause = metadata.cause === "CAPITAL_DESTROYED" ? "旧都毁于长期战乱" :
+      metadata.cause === "CAPITAL_FALL" ? "旧都失陷" : undefined;
+    addMetadataTextLine(lines, cause, "原因");
+    addFactionLine(lines, teamByName, metadata.conquerorFactionId, "攻陷者");
+    addMetadataTextLine(lines, metadata.rulerName, "君主");
+  } else if (isCollapse && metadata) {
+    const finalCityName = metadata.finalCityName ?? (metadata.isFinalCityCapture === 1 ? metadata.cityName : undefined);
+    if (metadata.isFinalCityCapture === 1 && typeof finalCityName === "string") {
+      addMetadataTextLine(lines, finalCityName, "最后据点");
+      addFactionLine(lines, teamByName, metadata.conquerorFactionId, "攻灭者");
+    }
+    addMetadataLine(lines, metadata.populationBefore, "灭亡前人口");
+    addMetadataLine(lines, metadata.surrenderedPopulation, "投降人口");
+    addMetadataLine(lines, metadata.disbandedPopulation, "解散人口");
+    addMetadataLine(lines, metadata.remnantPopulation, "残部人口");
+    addMetadataLine(lines, metadata.population, "事件时人口");
+    addMetadataLine(lines, metadata.populationCapacity, "事件时承载");
+    addMetadataPercentLine(lines, metadata.territoryPercent, "事件时领土");
+    addMetadataLine(lines, metadata.cityCount, "事件时城市");
+    addMetadataLine(lines, metadata.stability, "事件时稳定");
+    addMetadataLine(lines, metadata.duration, "持续年数");
+    addMetadataLine(lines, metadata.effectDuration, "继承影响年数");
     addMetadataMultiplierLine(
       lines,
-      event.metadata.populationGrowthMultiplier,
+      metadata.populationGrowthMultiplier,
       "人口自然增长"
     );
     addMetadataMultiplierLine(
       lines,
-      event.metadata.loyaltyRecoveryMultiplier,
+      metadata.loyaltyRecoveryMultiplier,
       "忠诚恢复"
     );
     addMetadataMultiplierLine(
       lines,
-      event.metadata.rebellionRiskMultiplier,
+      metadata.rebellionRiskMultiplier,
       "叛乱风险"
     );
-    addMetadataLine(lines, event.metadata.cityLoyaltyDelta, "城市忠诚变化");
-    addMetadataLine(lines, event.metadata.immediatePopulation, "立即人口变化");
+    addMetadataLine(lines, metadata.cityLoyaltyDelta, "城市忠诚变化");
+    addMetadataLine(lines, metadata.immediatePopulation, "立即人口变化");
+  } else if (metadata) {
+    addMetadataLine(lines, metadata.populationBefore, "灭亡前人口");
+    addMetadataLine(lines, metadata.surrenderedPopulation, "投降人口");
+    addMetadataLine(lines, metadata.disbandedPopulation, "解散人口");
+    addMetadataLine(lines, metadata.remnantPopulation, "残部人口");
   }
   return (
     <>
@@ -529,6 +544,22 @@ function EventDetails({
       ))}
     </>
   );
+}
+
+function addMetadataTextLine(lines: string[], value: unknown, label: string) {
+  if (typeof value === "string" && value.length > 0) {
+    lines.push(`${label}：${value}`);
+  }
+}
+
+function addFactionLine(
+  lines: string[],
+  teamByName: Map<string, RootState["root"]["teams"][number]>,
+  factionId: unknown,
+  label: string
+) {
+  if (typeof factionId !== "string") return;
+  lines.push(`${label}：${teamByName.get(factionId)?.displayName ?? factionId}`);
 }
 
 export function formatStableEraOption(era: Pick<WorldEraRecord, "name" | "startMonth" | "endMonth">) {

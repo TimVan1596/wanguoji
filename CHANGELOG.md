@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99922b1
+
+- Removed inferred “last city” details from capital-transition narratives.
+- Restricted collapse-group membership to the collapsing faction and preserved explicit final-city evidence only.
+- Made grouped HistoryScroll details aware of capital-transition versus faction-collapse semantics.
+
 ## v0.99922b
 
 - Added capital relocation context with old/new capital, cause, conqueror, and ruler evidence.

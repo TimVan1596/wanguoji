@@ -159,6 +159,50 @@ describe("history narrative grouper", () => {
     expect(grouped[0].metadata?.capitalTransitionGroupedEventCount).toBe(2);
   });
 
+  it("does not mix a same-group capture belonging to another faction", () => {
+    const grouped = groupHistoryNarratives([
+      event({
+        id: "collapse-a",
+        type: "faction-extinct",
+        targetFactionId: "中",
+        factionIds: ["中"],
+        historyGroupId: "shared-chain",
+        metadata: { isFinalCityCapture: 1, cityId: "linzi", cityName: "临淄", conquerorFactionId: "临淄东义军" },
+      }),
+      event({
+        id: "capture-a",
+        type: "capital-fallen",
+        actorFactionId: "临淄东义军",
+        targetFactionId: "中",
+        factionIds: ["临淄东义军", "中"],
+        historyGroupId: "shared-chain",
+        cityName: "临淄",
+      }),
+      event({
+        id: "capture-b",
+        type: "city-captured",
+        actorFactionId: "云中东义军",
+        targetFactionId: "云中",
+        factionIds: ["云中东义军", "云中"],
+        historyGroupId: "shared-chain",
+        cityName: "临淄",
+      }),
+    ]);
+    expect(grouped).toHaveLength(2);
+    const collapse = grouped.find((item) => item.metadata?.historyNarrativeKind === "FACTION_COLLAPSE");
+    expect(collapse?.description).not.toContain("云中东义军");
+    expect(collapse?.metadata?.finalCityName).toBe("临淄");
+  });
+
+  it("does not invent a final city without explicit extinction metadata", () => {
+    const grouped = groupHistoryNarratives([
+      event({ id: "extinct", type: "faction-extinct", targetFactionId: "韩", factionIds: ["韩"] }),
+      event({ id: "succession", type: "ruler-succession", actorFactionId: "韩", factionIds: ["韩"], metadata: { nextRulerName: "韩恺" } }),
+    ]);
+    expect(grouped[0].metadata?.isFinalCityCapture).toBeUndefined();
+    expect(grouped[0].metadata?.finalCityName).toBeUndefined();
+  });
+
   it("groups same-month royal line end and final extinction", () => {
     const grouped = groupHistoryNarratives([
       event({

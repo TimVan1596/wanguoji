@@ -433,6 +433,7 @@ export default class Core {
       previousOwner: fallenTeam.name,
       founder: finalCity.founderFactionId,
       wasCapital: finalCity.isCapital ? 1 : 0,
+      isFinalCityCapture: 1,
     };
 
     if (!hasFormalStateIdentity(fallenTeam)) {
