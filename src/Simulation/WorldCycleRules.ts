@@ -44,6 +44,7 @@ export interface WorldCycleDiagnostics {
   consolidationLeaderOwnerId?: string;
   consolidationLeaderMomentum: number;
   dynasticOrderFactionId?: string;
+  dynasticOrderCandidateFactionId?: string;
 }
 
 export interface WorldCycleTeamMetric {
@@ -199,6 +200,7 @@ export function getWorldCycleDiagnostics(
     consolidationLeaderOwnerId: state.consolidationLeaderFactionId,
     consolidationLeaderMomentum,
     dynasticOrderFactionId: state.dynasticOrderFactionId,
+    dynasticOrderCandidateFactionId: state.dynasticOrderCandidateFactionId,
   };
 }
 

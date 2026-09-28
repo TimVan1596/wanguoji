@@ -113,14 +113,31 @@ export interface ConsolidationBottleneckSummary {
   minimumStabilityWhileAbove40?: number;
   minimumStabilityWhileAbove50?: number;
   averageStabilityWhileAbove50?: number;
+  sumStabilityWhileAbove50: number;
+  samplesAbove50: number;
   rawImperialStrain?: number;
   effectiveImperialStrain?: number;
   lowLoyaltyCityCount?: number;
   minimumCityLoyalty?: number;
   averageCapitalDistance?: number;
   monthsAbove50ButStabilityBelow65: number;
+  monthsTerritoryQualified60: number;
+  monthsCityQualified55: number;
+  monthsStabilityQualified65: number;
+  monthsTop2Qualified20: number;
+  monthsAllDynasticConditionsQualified: number;
+  maxConsecutiveTerritory60: number;
+  maxConsecutiveAllQualified: number;
+  dynasticCandidateEpisodeCount: number;
+  longestDynasticCandidateEpisode: number;
+  soleBlockerMonths: Record<string, number>;
   _lastCandidate?: string;
   _lastOwner?: string;
+  _lastNonEmptyHegemonicOwner?: string;
+  _territory60Run?: number;
+  _allQualifiedRun?: number;
+  _candidateId?: string;
+  _candidateSince?: number;
 }
 
 export interface LongRunProfileCounts {
@@ -164,6 +181,14 @@ export interface LongRunProfileCounts {
   lowLoyaltyCityCount?: number;
   minimumCityLoyalty?: number;
   averageCapitalDistance?: number;
+  dynasticTerritoryQualified?: boolean;
+  dynasticCityQualified?: boolean;
+  dynasticStabilityQualified?: boolean;
+  dynasticTop2Qualified?: boolean;
+  dynasticAllQualified?: boolean;
+  dynasticCandidateFactionId?: string;
+  dynasticCandidateResetReason?: string;
+  soleDynasticBlocker?: string;
   eraType?: string;
   eraCandidateType?: string;
   eraCandidateSinceMonth?: number;
@@ -185,7 +210,11 @@ function emptyBottleneck(): ConsolidationBottleneckSummary {
     top3ContainsProvisionalMonths: 0,
     maxProvisionalTerritoryShare: 0,
     maxProvisionalCityCount: 0,
+    sumStabilityWhileAbove50: 0,
+    samplesAbove50: 0,
     monthsAbove50ButStabilityBelow65: 0,
+    monthsTerritoryQualified60: 0, monthsCityQualified55: 0, monthsStabilityQualified65: 0, monthsTop2Qualified20: 0, monthsAllDynasticConditionsQualified: 0,
+    maxConsecutiveTerritory60: 0, maxConsecutiveAllQualified: 0, dynasticCandidateEpisodeCount: 0, longestDynasticCandidateEpisode: 0, soleBlockerMonths: {},
   };
 }
 
@@ -240,9 +269,10 @@ class LongRunProfilerStore {
     if (top1Territory > 40) b.monthsFormalTop1Above40 += 1;
     if (top1Territory > 50) b.monthsFormalTop1Above50 += 1;
     if (counts.hegemonicCandidateId && counts.hegemonicCandidateId !== b._lastCandidate) b.hegemonicCandidateEpisodes += 1;
-    if (counts.hegemonicOwnerId && b._lastOwner && counts.hegemonicOwnerId !== b._lastOwner) b.hegemonicOwnerChanges += 1;
+    if (counts.hegemonicOwnerId && b._lastNonEmptyHegemonicOwner && counts.hegemonicOwnerId !== b._lastNonEmptyHegemonicOwner) b.hegemonicOwnerChanges += 1;
     b._lastCandidate = counts.hegemonicCandidateId;
     b._lastOwner = counts.hegemonicOwnerId;
+    if (counts.hegemonicOwnerId) b._lastNonEmptyHegemonicOwner = counts.hegemonicOwnerId;
     b.maxHegemonicMomentum = Math.max(b.maxHegemonicMomentum, counts.hegemonicMomentum ?? 0);
     b.maxConsolidationLeaderMomentum = Math.max(b.maxConsolidationLeaderMomentum, counts.consolidationLeaderMomentum ?? 0);
     if (counts.top1Provisional) b.top1ProvisionalMonths += 1;
@@ -253,7 +283,9 @@ class LongRunProfilerStore {
     if (top1Territory > 40) b.minimumStabilityWhileAbove40 = Math.min(b.minimumStabilityWhileAbove40 ?? Infinity, counts.top1Stability ?? 100);
     if (top1Territory > 50) {
       b.minimumStabilityWhileAbove50 = Math.min(b.minimumStabilityWhileAbove50 ?? Infinity, counts.top1Stability ?? 100);
-      b.averageStabilityWhileAbove50 = ((b.averageStabilityWhileAbove50 ?? 0) + (counts.top1Stability ?? 0)) / 2;
+      b.sumStabilityWhileAbove50 += counts.top1Stability ?? 0;
+      b.samplesAbove50 += 1;
+      b.averageStabilityWhileAbove50 = b.sumStabilityWhileAbove50 / b.samplesAbove50;
       if ((counts.top1Stability ?? 100) < 65) b.monthsAbove50ButStabilityBelow65 += 1;
     }
     b.rawImperialStrain = counts.rawImperialStrain;
@@ -262,6 +294,14 @@ class LongRunProfilerStore {
     b.minimumCityLoyalty = counts.minimumCityLoyalty;
     b.averageCapitalDistance = counts.averageCapitalDistance;
     Object.entries(counts.dynasticOrderBlockers ?? {}).forEach(([key, value]) => { b.dynasticOrderBlockerMonths[key] = (b.dynasticOrderBlockerMonths[key] ?? 0) + (value ? 1 : 0); });
+    if (counts.dynasticTerritoryQualified) { b.monthsTerritoryQualified60 += 1; b._territory60Run = (b._territory60Run ?? 0) + 1; b.maxConsecutiveTerritory60 = Math.max(b.maxConsecutiveTerritory60, b._territory60Run); } else b._territory60Run = 0;
+    if (counts.dynasticCityQualified) b.monthsCityQualified55 += 1;
+    if (counts.dynasticStabilityQualified) b.monthsStabilityQualified65 += 1;
+    if (counts.dynasticTop2Qualified) b.monthsTop2Qualified20 += 1;
+    if (counts.dynasticAllQualified) { b.monthsAllDynasticConditionsQualified += 1; b._allQualifiedRun = (b._allQualifiedRun ?? 0) + 1; b.maxConsecutiveAllQualified = Math.max(b.maxConsecutiveAllQualified, b._allQualifiedRun); } else b._allQualifiedRun = 0;
+    if (counts.dynasticCandidateFactionId && counts.dynasticCandidateFactionId !== b._candidateId) { b.dynasticCandidateEpisodeCount += 1; b._candidateId = counts.dynasticCandidateFactionId; b._candidateSince = 0; }
+    if (counts.dynasticCandidateFactionId && b._candidateId === counts.dynasticCandidateFactionId) { b._candidateSince = (b._candidateSince ?? 0) + 1; b.longestDynasticCandidateEpisode = Math.max(b.longestDynasticCandidateEpisode, b._candidateSince); }
+    if (counts.soleDynasticBlocker) b.soleBlockerMonths[counts.soleDynasticBlocker] = (b.soleBlockerMonths[counts.soleDynasticBlocker] ?? 0) + 1;
   }
 
   getSnapshots() {

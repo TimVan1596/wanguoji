@@ -229,6 +229,13 @@ export default class AutoSimulator {
         const formalCityTotal = Math.max(1, formalRanked.reduce((sum, item) => sum + item.cities, 0));
         const formalTop1 = formalRanked[0];
         const provisionalRanked = teams.filter((team) => team.status === "ACTIVE").map((team) => ({ team, territory: getFactionTerritoryMetric(territoryMetrics, team.name).controlledTerritoryShare })).sort((a, b) => b.territory - a.territory);
+        const dynasticBlockerFlags = [
+          ["SOLE_TERRITORY", (formalTop1?.territory ?? 0) < 60],
+          ["SOLE_CITY_SHARE", (formalTop1 ? formalTop1.cities / formalCityTotal * 100 : 0) < 55],
+          ["SOLE_STABILITY", (formalTop1?.stability ?? 0) < 65],
+          ["SOLE_TOP2", (formalRanked[1]?.territory ?? 0) > 20],
+        ] as Array<[string, boolean]>;
+        const soleDynasticBlocker = dynasticBlockerFlags.filter(([, failed]) => failed);
         const stateFormationBlockers = this.events.getProvisionalBlockerSummary(
           this.clock.year,
           teams,
@@ -287,6 +294,13 @@ export default class AutoSimulator {
               TOP2_SHARE: (formalRanked[1]?.territory ?? 0) > 20,
               NO_FORMAL_STATE: !formalTop1,
             },
+            dynasticTerritoryQualified: (formalTop1?.territory ?? 0) >= 60,
+            dynasticCityQualified: (formalTop1 ? formalTop1.cities / formalCityTotal * 100 : 0) >= 55,
+            dynasticStabilityQualified: (formalTop1?.stability ?? 0) >= 65,
+            dynasticTop2Qualified: (formalRanked[1]?.territory ?? 0) <= 20,
+            dynasticAllQualified: Boolean(formalTop1 && formalTop1.territory >= 60 && formalTop1.cities / formalCityTotal * 100 >= 55 && formalTop1.stability >= 65 && (formalRanked[1]?.territory ?? 0) <= 20),
+            dynasticCandidateFactionId: cycle.dynasticOrderCandidateFactionId,
+            soleDynasticBlocker: soleDynasticBlocker.length === 1 ? soleDynasticBlocker[0][0] : undefined,
             top1Stability: formalTop1?.stability,
             rawImperialStrain: formalTop1 ? calculateImperialStrain(formalTop1.team, totalCells, 0) : undefined,
             effectiveImperialStrain: formalTop1 ? calculateImperialStrain(formalTop1.team, totalCells, 0) * FactionEffects.getAdministrativeStrainMultiplier(formalTop1.team.name) : undefined,

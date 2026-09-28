@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99921h
+
+- Unified ordinary and de facto state formation under one continuous eligibility timer.
+- Applied unified administrative strain protection consistently to Empire Split and city loyalty paths.
+- Added Dynastic Order continuity, sole-blocker, provisional, and top-empire stability telemetry.
+
 ## v0.99921g
 
 - Added cumulative Dynastic Order blocker and top-empire stability/strain diagnostics.

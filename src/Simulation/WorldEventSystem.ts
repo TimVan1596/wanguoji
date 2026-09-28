@@ -81,8 +81,8 @@ import DynastyRegistry from "../Politics/Dynasty";
 import {
   getStateFormationBlockers,
   isDeFactoStateFormationEligible,
+  isStateFormationEligible,
   observeEmperorProclamationEligibility,
-  observeStateFormationEligibility,
   shouldApplyProvisionalDissolutionPressure,
 } from "./FactionIdentity";
 import {
@@ -484,9 +484,14 @@ export default class WorldEventSystem {
       );
       const territoryShare = getFactionTerritoryMetric(calculateTerritoryMetrics(teams, totalCells), team.name).controlledTerritoryShare;
       const deFacto = isDeFactoStateFormationEligible(team, year, this.cycleDiagnostics.fragmentationAge, territoryShare, stability, hasFormalRuler);
-      if (deFacto) {
-        team.stateFormationEligibleSinceMonth ??= year;
-        if (year - team.stateFormationEligibleSinceMonth >= 24) {
+      const ordinary = isStateFormationEligible(team, year, stability, hasFormalRuler);
+      if (!ordinary && !deFacto) {
+        team.stateFormationEligibleSinceMonth = undefined;
+        return;
+      }
+      team.stateFormationEligibleSinceMonth ??= year;
+      const requiredMonths = ordinary ? 12 : 24;
+      if (year - team.stateFormationEligibleSinceMonth >= requiredMonths) {
           const oldDisplayName = team.displayName;
           const stateName = createStateName({ capitalName: team.capitalCity?.name ?? team.capital, founderCityName: team.cities[0]?.name, houseName: team.houseName }, activeStateNames, historicalStateNames, (max) => Phaser.Math.Between(0, max - 1));
           if (team.formState(stateName, year)) {
@@ -495,17 +500,6 @@ export default class WorldEventSystem {
             const eventId = WorldHistory.addStateFounded(year, team.name, oldDisplayName, stateName, currentRuler ? DynastyRegistry.getRulerDisplay(team.name) : undefined, currentRuler?.id, team.capitalCity?.id, team.capitalCity?.name);
             DynastyRegistry.recordStateFounded(team.name, stateName, year, eventId);
           }
-          return;
-        }
-      }
-      if (
-        !observeStateFormationEligibility(
-          team,
-          year,
-          stability,
-          hasFormalRuler
-        )
-      ) {
         return;
       }
       const oldDisplayName = team.displayName;
@@ -1107,6 +1101,15 @@ export default class WorldEventSystem {
   private publishStrategicCycleModifiers() {
     FactionEffects.clearStrategicModifiers();
     FactionEffects.clearAdministrativeStrainMultipliers();
+    const unifiedFactionId = this.cycleState.currentUnificationStartMonth !== undefined
+      ? this.unifyingFactionId
+      : this.cycleState.dynasticOrderFactionId;
+    if (unifiedFactionId) {
+      FactionEffects.setAdministrativeStrainMultiplier(
+        unifiedFactionId,
+        getUnifiedImperialStrainMultiplier(this.cycleDiagnostics.unifiedAge)
+      );
+    }
     const factionId = this.cycleDiagnostics.hegemonicOwnerId ?? this.cycleDiagnostics.consolidationLeaderOwnerId;
     if (!factionId || this.cycleDiagnostics.hegemonicSiegeMultiplier <= 1) {
       return;
@@ -1114,7 +1117,9 @@ export default class WorldEventSystem {
     const base = getConsolidationImperialStrainMultiplier(this.cycleDiagnostics.consolidationModifier);
     const momentum = Math.max(this.cycleDiagnostics.hegemonicMomentum, this.cycleDiagnostics.consolidationLeaderMomentum);
     const reduction = Math.min(0.06, this.cycleDiagnostics.lateFragmentationPressure * 0.06 * momentum);
-    FactionEffects.setAdministrativeStrainMultiplier(factionId, Math.max(0.72, base - reduction));
+    if (!unifiedFactionId) {
+      FactionEffects.setAdministrativeStrainMultiplier(factionId, Math.max(0.72, base - reduction));
+    }
     const captureLoyaltyBonus = getHegemonicCaptureLoyaltyBonusFromSiegeMultiplier(
       this.cycleDiagnostics.hegemonicSiegeMultiplier
     );
