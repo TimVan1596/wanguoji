@@ -47,6 +47,17 @@ describe("state name generator", () => {
     const name = createStateName({ capitalName: "大梁" }, [], used);
     expect(name).toBe("梁");
   });
+
+  it("weights an echo affinity without making it deterministic", () => {
+    expect(createStateName({ houseName: "李氏" }, [], [], (max) => max - 1)).not.toBe("唐");
+    let calls = 0;
+    expect(createStateName({ houseName: "李氏" }, [], [], () => calls++ === 0 ? 0 : 3)).toBe("唐");
+  });
+
+  it("supports non-Han culture echo affinity", () => {
+    let calls = 0;
+    expect(createStateName({ houseName: "耶律氏" }, [], [], () => calls++ === 0 ? 0 : 12)).toBe("辽");
+  });
 });
 
 function directionalTestPrefixes() {

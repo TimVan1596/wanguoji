@@ -1,4 +1,5 @@
 import type { FactionType } from "../Components/Team";
+import { NameCulture } from "./NameCulture";
 
 const singleSurnames = [
   "刘", "陈", "杨", "李", "王", "孙", "吴", "郑", "宋", "卫",
@@ -26,14 +27,21 @@ export interface DynastySurnameOptions {
   recentHouseNames?: Iterable<string | undefined>;
   pickIndex?: (max: number) => number;
   compoundRoll?: () => number;
+  cultureRoll?: () => number;
+  culture?: NameCulture;
 }
 
 export function createRuntimeDynastyHouseName(options: DynastySurnameOptions) {
   const pickIndex = options.pickIndex ?? ((max) => Phaser.Math.Between(0, max - 1));
   const compoundRoll = options.compoundRoll ?? (() => Phaser.Math.Between(1, 100));
+  const cultureRoll = options.cultureRoll ?? compoundRoll;
   const existing = countHouseNames(options.existingHouseNames ?? []);
   const recent = new Set(normalizeHouseNames(options.recentHouseNames ?? []));
-  const preferredPool = compoundRoll() <= 14 ? compoundSurnames : singleSurnames;
+  const minorityPool = ["耶律", "完颜", "孛儿只斤", "爱新觉罗"];
+  const culturePool = options.culture && options.culture !== "HAN"
+    ? [options.culture === "KHITAN" ? "耶律" : options.culture === "JURCHEN" ? "完颜" : options.culture === "MONGOL" ? "孛儿只斤" : "爱新觉罗"]
+    : cultureRoll() <= 4 ? minorityPool : [];
+  const preferredPool = culturePool.length > 0 ? culturePool : compoundRoll() <= 14 ? compoundSurnames : singleSurnames;
   const allCandidates = [...preferredPool, ...singleSurnames, ...compoundSurnames];
   const fresh = allCandidates.filter(
     (surname) => !existing.has(`${surname}氏`) && !recent.has(`${surname}氏`)

@@ -3,6 +3,7 @@ interface StateNameSource {
   founderCityName?: string;
   houseName?: string;
 }
+import { deriveNameCulture, hanEchoAffinity, historicalEchoAffinity, NameCulture } from "../Politics/NameCulture";
 
 export const classicalStateNames = [
   "周",
@@ -65,12 +66,18 @@ export function createStateName(
   activeStateNames: Iterable<string> = [],
   historicallyUsedStateNames: Iterable<string> = [],
   roll: (maxExclusive: number) => number = () => 99
+  , culture?: NameCulture
 ) {
   const active = new Set(activeStateNames);
   const historical = new Set(historicallyUsedStateNames);
-  const prestigeNames = ["汉", "晋", "隋", "唐", "宋", "元", "明", "清", "吴", "周", "夏", "商"];
+  const prestigeNames = ["汉", "晋", "隋", "唐", "宋", "元", "明", "清", "吴", "周", "夏", "商", "辽", "金"];
   if (roll(100) < 12) {
-    const prestige = prestigeNames.find((name) => !active.has(name) && !historical.has(name));
+    const resolvedCulture = culture ?? deriveNameCulture(source.houseName);
+    const affinity = resolvedCulture === "HAN" ? hanEchoAffinity[source.houseName?.replace(/氏$/, "") ?? ""] : historicalEchoAffinity[resolvedCulture];
+    const weighted = prestigeNames.map((name) => ({ name, weight: name === affinity ? 8 : 1 })).filter(({ name }) => !active.has(name) && !historical.has(name));
+    const total = weighted.reduce((sum, item) => sum + item.weight, 0);
+    let choice = total > 0 ? roll(total) : 0;
+    const prestige = weighted.find((item) => (choice -= item.weight) < 0)?.name;
     if (prestige) return prestige;
   }
   const candidates = createStateNameCandidates(source);

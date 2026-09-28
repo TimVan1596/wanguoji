@@ -38,6 +38,7 @@ import {
 import { getSuccessionShockMultiplier } from "../Simulation/SovereigntyModifiers";
 import { finalizeRulerPosthumousNames } from "./PosthumousRules";
 import { createRuntimeDynastyHouseName } from "./DynastySurnameGenerator";
+import { cultureGivenNamePools, deriveNameCulture } from "./NameCulture";
 import {
   createNaturalDeathMonth,
   deriveHeirBirthMonth,
@@ -94,6 +95,11 @@ const rulerGivenNamePool = {
   doubleNameSuffixes: ["安", "衡", "宣", "平", "宁", "成", "怀", "昭", "远", "和", "恭", "允", "珩", "澄", "绍", "宸"],
   doubleNameChancePercent: 24,
 };
+
+function getRulerGivenNamePool(houseName: string) {
+  const culture = deriveNameCulture(houseName);
+  return culture === "HAN" ? rulerGivenNamePool : cultureGivenNamePools[culture];
+}
 
 class DynastyRegistryStore {
   private dynasties = new Map<string, Dynasty>();
@@ -584,7 +590,7 @@ class DynastyRegistryStore {
     return {
       id: `${team.name}-ruler-${this.sequence}`,
       houseName,
-      givenName: pickRulerGivenName(rulerGivenNamePool, recentNames, (max) =>
+      givenName: pickRulerGivenName(getRulerGivenNamePool(houseName), recentNames, (max) =>
         Phaser.Math.Between(0, max - 1)
       ),
       bornYear,
@@ -636,7 +642,7 @@ class DynastyRegistryStore {
     return {
       id: `${team.name}-ruler-${this.sequence}`,
       houseName,
-      givenName: pickRulerGivenName(rulerGivenNamePool, recentNames, (max) =>
+      givenName: pickRulerGivenName(getRulerGivenNamePool(houseName), recentNames, (max) =>
         Phaser.Math.Between(0, max - 1)
       ),
       bornYear,

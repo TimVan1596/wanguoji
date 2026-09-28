@@ -46,4 +46,8 @@ describe("dynasty surname generator", () => {
     }
     expect(new Set(used).size).toBeGreaterThanOrEqual(32);
   });
+
+  it("can inject a rare minority culture clan", () => {
+    expect(createRuntimeDynastyHouseName({ factionType: "REBEL", cultureRoll: () => 1, pickIndex: () => 0 })).toBe("耶律氏");
+  });
 });
