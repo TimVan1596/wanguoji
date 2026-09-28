@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99922a
+
+- Corrected non-HAN ruler names to use curated atomic given-name pools without clan-prefix duplication.
+- Reworked runtime surname generation into explicit culture/category selection with weighted HAN reuse penalties and rare minority/compound rates.
+- Added session-only name culture, surname, and Historical Echo diagnostics without changing save schema or existing identities.
+
 ## v0.99922
 
 - Added low-frequency Historical Echo state naming with weighted cultural affinities.

@@ -17,6 +17,7 @@ import FactionEffects from "./FactionEffects";
 import WorldExiles from "./WorldExiles";
 import WorldEra from "./WorldEra";
 import LongRunProfiler from "./LongRunProfiler";
+import { resetNameGenerationTelemetry } from "../Politics/NameGenerationTelemetry";
 import ArchivedCities from "./ArchivedCities";
 import { calculateImperialStrain, getCityDistanceFromCapital } from "./ImperialStrain";
 import {
@@ -56,6 +57,7 @@ export default class AutoSimulator {
     FactionSnapshots.reset();
     WorldEra.reset();
     LongRunProfiler.reset(0, "FRAGMENTED");
+    resetNameGenerationTelemetry();
     this.lastProfilerEraId = undefined;
     this.lastProfilerCycleStage = undefined;
     this.lastProfilerCycleFamily = undefined;

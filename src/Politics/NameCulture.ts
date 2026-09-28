@@ -9,11 +9,15 @@ export function deriveNameCulture(houseName?: string): NameCulture {
   return "HAN";
 }
 
-export const cultureGivenNamePools: Record<Exclude<NameCulture, "HAN">, { singleNames: string[]; doubleNamePrefixes: string[]; doubleNameSuffixes: string[] }> = {
-  KHITAN: { singleNames: ["阿保机", "德光", "隆绪", "洪基", "延禧"], doubleNamePrefixes: ["耶律", "阿保"], doubleNameSuffixes: ["德光", "隆绪", "洪基"] },
-  JURCHEN: { singleNames: ["阿骨打", "吴乞买", "宗望", "宗弼", "亮"], doubleNamePrefixes: ["完颜", "宗", "乌"], doubleNameSuffixes: ["阿骨打", "宗望", "宗弼"] },
-  MONGOL: { singleNames: ["铁木真", "窝阔台", "贵由", "蒙哥", "忽必烈"], doubleNamePrefixes: ["帖木", "孛儿", "忽"], doubleNameSuffixes: ["真", "台", "必烈"] },
-  MANCHU: { singleNames: ["努尔哈赤", "皇太极", "福临", "玄烨", "胤禛"], doubleNamePrefixes: ["努尔", "皇太", "爱新"], doubleNameSuffixes: ["哈赤", "极", "觉罗"] },
+export interface AtomicGivenNamePool {
+  atomicNames: string[];
+}
+
+export const cultureGivenNamePools: Record<Exclude<NameCulture, "HAN">, AtomicGivenNamePool> = {
+  KHITAN: { atomicNames: ["乙辛", "只没", "延禧", "罨撒葛", "涅鲁古", "敌烈", "喜隐", "药师奴", "撒剌", "重元", "阿琏", "阿思"] },
+  JURCHEN: { atomicNames: ["乌雅束", "讹里朵", "宗干", "宗贤", "希尹", "阿鲁补", "蒲鲁虎", "斡带", "阿懒", "勗", "胡沙虎", "阿离合懑"] },
+  MONGOL: { atomicNames: ["察合台", "术赤", "拖雷", "旭烈兀", "阿里不哥", "海都", "脱脱", "月即别", "也速该", "合赞", "答失蛮", "不花"] },
+  MANCHU: { atomicNames: ["代善", "多尔衮", "多铎", "阿济格", "莽古尔泰", "济尔哈朗", "岳托", "豪格", "福全", "常宁", "胤祥", "胤禩"] },
 };
 
 export const historicalEchoAffinity: Partial<Record<NameCulture, string>> = {

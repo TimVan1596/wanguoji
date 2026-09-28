@@ -29,6 +29,11 @@ export interface RulerGivenNamePool {
   doubleNamePrefixes: string[];
   doubleNameSuffixes: string[];
   doubleNameChancePercent?: number;
+  atomicNames?: string[];
+}
+
+export interface AtomicRulerGivenNamePool {
+  atomicNames: string[];
 }
 
 export function calculateSuccessionEffect(
@@ -104,7 +109,7 @@ function softenMultiplier(multiplier: number, shockMultiplier: number) {
 }
 
 export function pickRulerGivenName(
-  names: string[] | RulerGivenNamePool,
+  names: string[] | RulerGivenNamePool | AtomicRulerGivenNamePool,
   recentNames: string[],
   roll: (maxExclusive: number) => number
 ) {
@@ -126,18 +131,22 @@ export function pickRulerGivenName(
 }
 
 function pickRulerGivenNameFromPool(
-  pool: RulerGivenNamePool,
+  pool: RulerGivenNamePool | AtomicRulerGivenNamePool,
   recentNames: string[],
   roll: (maxExclusive: number) => number
 ) {
-  const doubleChance = pool.doubleNameChancePercent ?? 24;
+  if (pool.atomicNames?.length) {
+    return pickFromNamePool(pool.atomicNames, pool.atomicNames, recentNames, roll);
+  }
+  const rulerPool = pool as RulerGivenNamePool;
+  const doubleChance = rulerPool.doubleNameChancePercent ?? 24;
   const preferDouble = roll(100) < doubleChance;
   const primaryPool = preferDouble
-    ? createDoubleGivenNames(pool)
-    : pool.singleNames;
+    ? createDoubleGivenNames(rulerPool)
+    : rulerPool.singleNames;
   const fallbackPool = preferDouble
-    ? pool.singleNames
-    : createDoubleGivenNames(pool);
+    ? rulerPool.singleNames
+    : createDoubleGivenNames(rulerPool);
   return pickFromNamePool(
     primaryPool.length > 0 ? primaryPool : fallbackPool,
     fallbackPool,

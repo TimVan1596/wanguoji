@@ -4,6 +4,7 @@ interface StateNameSource {
   houseName?: string;
 }
 import { deriveNameCulture, hanEchoAffinity, historicalEchoAffinity, NameCulture } from "../Politics/NameCulture";
+import { recordHistoricalEcho } from "../Politics/NameGenerationTelemetry";
 
 export const classicalStateNames = [
   "周",
@@ -78,7 +79,10 @@ export function createStateName(
     const total = weighted.reduce((sum, item) => sum + item.weight, 0);
     let choice = total > 0 ? roll(total) : 0;
     const prestige = weighted.find((item) => (choice -= item.weight) < 0)?.name;
-    if (prestige) return prestige;
+    if (prestige) {
+      if (prestige === affinity) recordHistoricalEcho();
+      return prestige;
+    }
   }
   const candidates = createStateNameCandidates(source);
   const firstNeverUsed = candidates.find(

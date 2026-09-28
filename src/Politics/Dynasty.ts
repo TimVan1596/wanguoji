@@ -98,7 +98,7 @@ const rulerGivenNamePool = {
 
 function getRulerGivenNamePool(houseName: string) {
   const culture = deriveNameCulture(houseName);
-  return culture === "HAN" ? rulerGivenNamePool : cultureGivenNamePools[culture];
+  return culture === "HAN" ? rulerGivenNamePool : { ...cultureGivenNamePools[culture], singleNames: [], doubleNamePrefixes: [], doubleNameSuffixes: [], doubleNameChancePercent: 0 };
 }
 
 class DynastyRegistryStore {

@@ -13,6 +13,7 @@ import { hydrateWorldSave, HydrationReport } from "../../Persistence/WorldSaveHy
 import { validateWorldSave } from "../../Persistence/WorldSaveValidator";
 import { diffCanonicalWorldSave, type CanonicalWorldSaveDiff, type WorldSaveV1 } from "../../Persistence/WorldSaveSchema";
 import { APP_VERSION } from "../../config/version";
+import { getNameGenerationSummary } from "../../Politics/NameGenerationTelemetry";
 import {
   getWorldSaveStorageDiagnostics,
   subscribeWorldSaveStorageDiagnostics,
@@ -76,7 +77,8 @@ export default function WorldDiagnosticsPanel() {
     );
     const cycle = Game.Core?.simulator?.getWorldCycleDiagnostics();
     const longRun = LongRunProfiler.getSummary(worldMonth, WorldEra.getEras(), cycle?.stage);
-    return { ranked, currentEra, candidate, validity, liveClassification, cycle, longRun };
+    const naming = getNameGenerationSummary();
+    return { ranked, currentEra, candidate, validity, liveClassification, cycle, longRun, naming };
   }, [teams, worldMonth, worldPhase]);
 
   if (!debugEnabled()) {
@@ -179,6 +181,14 @@ export default function WorldDiagnosticsPanel() {
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{summary}</Typography>
         <Typography variant="caption">关键门槛（仅解释真实规则，不改变规则）</Typography>
         {thresholds.map(([label, text]) => <Typography key={label} variant="caption" component="div">{label}：{text}</Typography>)}
+      </details>
+      <details>
+        <summary>姓名文化统计（会话）</summary>
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{[
+          ...Object.entries(diagnostics.naming.houses).map(([label, count]) => `${label}: ${count}`),
+          `Historical Echo: ${diagnostics.naming.historicalEchoCount}`,
+          `Top surnames: ${diagnostics.naming.topSurnames.map(([name, count]) => `${name}(${count})`).join("、") || "—"}`,
+        ].join("\n")}</Typography>
       </details>
       <details>
         <summary>Persistence / Hydration</summary>
