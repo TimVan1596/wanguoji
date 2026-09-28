@@ -34,7 +34,7 @@ export interface DynastySurnameOptions {
 export function createRuntimeDynastyHouseName(options: DynastySurnameOptions) {
   const pickIndex = options.pickIndex ?? ((max) => Phaser.Math.Between(0, max - 1));
   const compoundRoll = options.compoundRoll ?? (() => Phaser.Math.Between(1, 100));
-  const cultureRoll = options.cultureRoll ?? compoundRoll;
+  const cultureRoll = options.cultureRoll ?? (options.compoundRoll ? () => 100 : () => Phaser.Math.Between(1, 100));
   const existing = countHouseNames(options.existingHouseNames ?? []);
   const recent = new Set(normalizeHouseNames(options.recentHouseNames ?? []));
   const minorityPool = ["耶律", "完颜", "孛儿只斤", "爱新觉罗"];

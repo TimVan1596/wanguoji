@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99922
+
+- Added low-frequency Historical Echo state naming with weighted cultural affinities.
+- Added lightweight name-culture derivation and distinct minority-culture ruler name pools.
+- Preserved existing faction, dynasty, ruler, and WorldCycle persistence semantics.
+
 ## v0.99921h
 
 - Unified ordinary and de facto state formation under one continuous eligibility timer.
