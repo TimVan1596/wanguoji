@@ -616,7 +616,19 @@ export default class City {
       oldOwner.name,
       newCapital.name,
       newCapital.id,
-      historyGroupId
+      historyGroupId,
+      {
+        previousCapitalId: this.id,
+        previousCapitalName: this.name,
+        newCapitalId: newCapital.id,
+        newCapitalName: newCapital.name,
+        cause: "CAPITAL_FALL",
+        conquerorFactionId: conqueror.name,
+        rulerId: DynastyRegistry.getCurrentRuler(oldOwner.name)?.id,
+        rulerName: DynastyRegistry.getCurrentRuler(oldOwner.name)
+          ? DynastyRegistry.getRulerTitleDisplay(oldOwner.name, year)
+          : undefined,
+      }
     );
   }
 
@@ -783,7 +795,16 @@ export default class City {
       const newCapital = owner.chooseCapitalCandidate();
       if (newCapital) {
         owner.setCapitalCity(newCapital, year);
-        WorldHistory.addCapitalRelocated(year, owner.name, newCapital.name, newCapital.id);
+        const ruler = DynastyRegistry.getCurrentRuler(owner.name);
+        WorldHistory.addCapitalRelocated(year, owner.name, newCapital.name, newCapital.id, undefined, {
+          previousCapitalId: this.id,
+          previousCapitalName: this.name,
+          newCapitalId: newCapital.id,
+          newCapitalName: newCapital.name,
+          cause: "CAPITAL_DESTROYED",
+          rulerId: ruler?.id,
+          rulerName: ruler ? DynastyRegistry.getRulerTitleDisplay(owner.name, year) : undefined,
+        });
       } else if (owner.cities.length === 0) {
         owner.markExtinct(year);
         DynastyRegistry.markExtinct(owner, year);

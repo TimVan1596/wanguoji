@@ -2,7 +2,7 @@ import type { WorldEvent } from "./WorldHistory";
 import type { WorldEra } from "../Simulation/WorldEra";
 import type { Dynasty } from "../Politics/Dynasty";
 import type Team from "../Components/Team";
-import { getFactionDisplayNameAtMonth } from "../Simulation/FactionIdentity";
+import { getFactionDisplayNameAtMonth, getSovereigntyRankAtMonth } from "../Simulation/FactionIdentity";
 import { formatWorldDate } from "../Simulation/WorldTime";
 import { resolveHistoricalRulerDisplay } from "../Politics/HistoricalRulerDisplay";
 import { resolveEraDisplayLabel } from "../Simulation/WorldEra";
@@ -12,7 +12,7 @@ export interface WorldRecord {
   value: string;
 }
 
-type RecordFaction = Pick<Team, "name" | "displayName" | "nameHistory" | "firstFoundedYear"> & {
+type RecordFaction = Pick<Team, "name" | "displayName" | "nameHistory" | "firstFoundedYear" | "sovereigntyRank" | "sovereigntyHistory"> & {
   getCumulativeActiveYears: (worldMonth: number) => number;
   identityStage?: string;
   stateFoundedMonth?: number;
@@ -45,7 +45,8 @@ export function deriveWorldRecords(
     const name = faction
       ? getFactionDisplayNameAtMonth(faction, start)
       : entry.factionId;
-    return resolveHistoricalRulerDisplay(entry.ruler, name, "compact");
+    const historicalRank = faction ? getSovereigntyRankAtMonth(faction, start) : undefined;
+    return resolveHistoricalRulerDisplay(entry.ruler, name, "compact", { historicalRank });
   };
   return [
     longest && { label: "最长正式在位", value: `${rulerLabel(longest)} · ${duration((longest.ruler.endYear ?? worldMonth) - formalStart(longest))}` },

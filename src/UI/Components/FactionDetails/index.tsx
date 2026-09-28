@@ -692,7 +692,7 @@ function DynastyTree({
               {expanded ? (
                 <Box sx={{ mt: 0.65 }}>
                   {isFormalRuler(ruler) ? (
-                    <RulerBiography ruler={ruler} worldMonth={worldMonth} team={team} events={events} factionById={factionById} />
+                    <RulerBiography ruler={ruler} rulers={rulers} worldMonth={worldMonth} team={team} events={events} factionById={factionById} />
                   ) : (
                     <HeirArchive
                       ruler={ruler}
@@ -713,12 +713,14 @@ function DynastyTree({
 
 function RulerBiography({
   ruler,
+  rulers,
   worldMonth,
   team,
   events,
   factionById,
 }: {
   ruler: FormalRuler;
+  rulers: Ruler[];
   worldMonth: number;
   team: RootState["root"]["teams"][number];
   events: WorldEvent[];
@@ -749,6 +751,8 @@ function RulerBiography({
   const end = ruler.chronicle.endSnapshot ?? ruler.chronicle.latestSnapshot ?? start;
   const territoryDelta = getRulerTerritoryDelta(ruler.chronicle);
   const posthumousLines = getPosthumousLabelLines(ruler, team, ruler.endYear ?? worldMonth);
+  const parent = ruler.parentId ? rulers.find((candidate) => candidate.id === ruler.parentId) : undefined;
+  const grandparent = parent?.parentId ? rulers.find((candidate) => candidate.id === parent.parentId) : undefined;
   return (
     <Box
       sx={{
@@ -774,7 +778,11 @@ function RulerBiography({
         {ruler.endReason ? ` · ${ruler.endReason}` : ""}
       </Typography>
       <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
-        继承关系：{formatRulerRelation(ruler.relationType, team.identityStage)}
+        继承关系：{formatRulerRelation(ruler.relationType, team.identityStage, Boolean(parent))}
+      </Typography>
+      <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
+        世系：{parent ? `父：${formatRulerRowName(parent, team)}` : formatRulerRelation(ruler.relationType, team.identityStage, false)}
+        {grandparent ? `；祖父：${formatRulerRowName(grandparent, team)}` : ""}
       </Typography>
       {posthumousLines.length > 0 ? (
         <Box sx={{ mt: 0.5 }}>
@@ -906,7 +914,7 @@ function HeirArchive({
         父：{parent ? formatRulerName(parent) : "未记录"}
       </Typography>
       <Typography fontSize="0.82rem">
-        继承关系：{formatRulerRelation(ruler.relationType, factionStatus === "EXILED" ? "PROVISIONAL" : "STATE")}
+        继承关系：{formatRulerRelation(ruler.relationType, factionStatus === "EXILED" ? "PROVISIONAL" : "STATE", Boolean(parent))}
       </Typography>
       <Typography fontSize="0.82rem">
         立为继承人：{start !== undefined ? formatWorldDate(start) : "未记录"} · 作为继承人：{formatWorldDuration(Math.max(0, ageEnd - (start ?? ageEnd)))}
@@ -987,10 +995,11 @@ function getRulerImportantLabels(ruler: Ruler) {
 
 function formatRulerRelation(
   relation: Ruler["relationType"],
-  identityStage?: string
+  identityStage?: string,
+  parentRecorded = true
 ) {
   if (relation === "FOUNDER") return identityStage === "PROVISIONAL" ? "首任首领" : "开国君主";
-  if (relation === "DIRECT_CHILD") return "前君之子";
+  if (relation === "DIRECT_CHILD") return parentRecorded ? "前君之子" : "直系继承（父名未记录）";
   if (relation === "COLLATERAL_KIN") return "宗室旁支";
   if (relation === "NEW_HOUSE") return "易姓 / 新家族继位";
   if (relation === "LEADER_SUCCESSOR") return "首领继任";

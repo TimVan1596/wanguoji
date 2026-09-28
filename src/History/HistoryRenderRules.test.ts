@@ -194,6 +194,39 @@ describe("history render rules", () => {
     expect(formatHistoryEventTitle(after, factions)).toContain("梁王魏安亲征");
   });
 
+  it("renders capital relocation context and keeps old events as fallback", () => {
+    const factions = new Map([
+      ["燕", { name: "燕", color: 1, displayName: "燕" }],
+      ["秦", { name: "秦", color: 2, displayName: "秦" }],
+    ]);
+    const relocation = event(29, "politics");
+    relocation.type = "capital-relocated";
+    relocation.actorFactionId = "燕";
+    relocation.cityName = "邯郸";
+    relocation.metadata = {
+      previousCapitalName: "蓟",
+      newCapitalName: "邯郸",
+      cause: "CAPITAL_FALL",
+      conquerorFactionId: "秦",
+      rulerName: "燕王姬某",
+    };
+    expect(formatHistoryEventTitle(relocation, factions)).toContain("秦攻陷燕都蓟");
+    expect(formatHistoryEventTitle(relocation, factions)).toContain("迁都邯郸");
+
+    const oldEvent = { ...relocation, metadata: undefined };
+    expect(formatHistoryEventTitle(oldEvent, factions)).toBe("燕迁都邯郸");
+  });
+
+  it("uses destruction wording when a capital was destroyed", () => {
+    const factions = new Map([["燕", { name: "燕", color: 1, displayName: "燕" }]]);
+    const relocation = event(40, "politics");
+    relocation.type = "capital-relocated";
+    relocation.actorFactionId = "燕";
+    relocation.cityName = "邯郸";
+    relocation.metadata = { previousCapitalName: "蓟", newCapitalName: "邯郸", cause: "CAPITAL_DESTROYED" };
+    expect(formatHistoryEventTitle(relocation, factions)).toBe("蓟毁于长期战乱，燕遂自蓟迁都邯郸。");
+  });
+
   it("formats grouped collapse with capital fall and exile", () => {
     const factions = new Map([
       ["赵", { name: "赵", color: 0x00aa00, displayName: "赵" }],

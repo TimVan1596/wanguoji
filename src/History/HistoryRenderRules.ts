@@ -12,6 +12,8 @@ import {
   type SovereigntyHistoryEntry,
 } from "../Simulation/FactionIdentity";
 import { getRegimeStyleNameAtMonth } from "../Simulation/RegimeStyle";
+import type { Ruler } from "../Politics/Dynasty";
+import { resolveHistoricalRulerDisplay } from "../Politics/HistoricalRulerDisplay";
 
 export const HISTORY_RENDER_BATCH = 200;
 
@@ -132,7 +134,8 @@ export function resolveFactionHistoricalName(
 
 export function formatHistoryEventTitle(
   event: WorldEvent,
-  factionById: Map<string, HistoryFactionLike>
+  factionById: Map<string, HistoryFactionLike>,
+  rulersById?: Map<string, Ruler>
 ) {
   const month = event.monthIndex ?? event.year;
   const name = (factionId?: string) =>
@@ -140,20 +143,20 @@ export function formatHistoryEventTitle(
   if (event.type === "state-founded") {
     const oldName = stringMeta(event, "oldDisplayName") || name(event.actorFactionId);
     const newName = stringMeta(event, "newDisplayName") || oldName;
-    const rulerName = stringMeta(event, "rulerName");
+    const rulerName = historicalRulerName(event, name, factionById, rulersById);
     return rulerName
       ? `${oldName}正式建国，定国号“${newName}”，首领${rulerName}称王。`
       : `${oldName}正式建国，定国号“${newName}”。`;
   }
   if (event.type === "emperor-proclaimed") {
     const factionName = name(event.actorFactionId);
-    const rulerName = stringMeta(event, "rulerName");
+    const rulerName = historicalRulerName(event, name, factionById, rulersById);
     return rulerName
       ? `${factionName}国威震天下，${factionName}王${rulerName}称帝。`
       : `${factionName}正式建立帝号。`;
   }
   if (event.type === "capital-relocated") {
-    return `${name(event.actorFactionId)}迁都${event.cityName ?? ""}`;
+    return formatCapitalRelocationTitle(event, name);
   }
   if (event.type === "city-captured" || event.type === "capital-fallen") {
     return buildHistoryCityCaptureTitle(
@@ -163,7 +166,7 @@ export function formatHistoryEventTitle(
       event.cityName ?? "",
       Number(event.metadata?.wasCapital ?? 0) === 1,
       event.founderFactionId === event.targetFactionId,
-      stringMeta(event, "rulerName")
+      historicalRulerName(event, name, factionById, rulersById)
     );
   }
   if (event.type === "city-recovered") {
@@ -382,6 +385,48 @@ export function formatHistoryEventDescription(
 function stringMeta(event: WorldEvent, key: string) {
   const value = event.metadata?.[key];
   return typeof value === "string" ? value : undefined;
+}
+
+function historicalRulerName(
+  event: WorldEvent,
+  name: (factionId?: string) => string,
+  factionById: Map<string, HistoryFactionLike>,
+  rulersById?: Map<string, Ruler>
+) {
+  const rulerId = event.rulerId ?? stringMeta(event, "rulerId");
+  const ruler = rulerId ? rulersById?.get(rulerId) : undefined;
+  if (ruler && ruler.endYear !== undefined && (ruler.templeName || ruler.posthumousEpithet)) {
+    const faction = factionById.get(event.actorFactionId ?? event.targetFactionId ?? "");
+    const month = event.monthIndex ?? event.year;
+    const rank = faction?.sovereigntyHistory?.find((entry) =>
+      month >= entry.startMonth && (entry.endMonth === undefined || month <= entry.endMonth)
+    )?.rank;
+    return resolveHistoricalRulerDisplay(ruler, name(event.actorFactionId), "compact", { historicalRank: rank });
+  }
+  return stringMeta(event, "rulerName");
+}
+
+function formatCapitalRelocationTitle(
+  event: WorldEvent,
+  name: (factionId?: string) => string
+) {
+  const factionName = name(event.actorFactionId);
+  const oldCapital = stringMeta(event, "previousCapitalName");
+  const newCapital = stringMeta(event, "newCapitalName") ?? event.cityName ?? "";
+  if (!oldCapital) {
+    return `${factionName}迁都${newCapital}`;
+  }
+  const cause = stringMeta(event, "cause");
+  if (cause === "CAPITAL_DESTROYED") {
+    return `${oldCapital}毁于长期战乱，${factionName}遂自${oldCapital}迁都${newCapital}。`;
+  }
+  const conquerorId = stringMeta(event, "conquerorFactionId");
+  const conqueror = conquerorId ? name(conquerorId) : "";
+  const rulerName = stringMeta(event, "rulerName");
+  const rulerClause = rulerName ? `${rulerName}遂` : `${factionName}遂`;
+  return conqueror
+    ? `${conqueror}攻陷${factionName}都${oldCapital}，${rulerClause}自${oldCapital}迁都${newCapital}。`
+    : `${factionName}自${oldCapital}迁都${newCapital}。`;
 }
 
 function buildHistoryCityCaptureTitle(

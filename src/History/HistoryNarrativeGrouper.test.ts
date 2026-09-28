@@ -113,6 +113,52 @@ describe("history narrative grouper", () => {
     expect(grouped[0].title).toBe("秦灭赵。赵王赵平被俘处死，赵国王统断绝。");
   });
 
+  it("does not keep an ephemeral successor in a final extinction narrative", () => {
+    const grouped = groupHistoryNarratives([
+      event({
+        id: "succession",
+        type: "ruler-succession",
+        actorFactionId: "韩",
+        factionIds: ["韩"],
+        metadata: { nextRulerName: "韩恺" },
+      }),
+      event({
+        id: "extinct",
+        type: "faction-extinct",
+        targetFactionId: "韩",
+        factionIds: ["韩"],
+      }),
+    ]);
+    expect(grouped[0].title).not.toContain("韩恺继位");
+    expect(grouped[0].title).toContain("王统断绝");
+  });
+
+  it("combines capital fall and relocation into one contextual event", () => {
+    const grouped = groupHistoryNarratives([
+      event({
+        id: "fall",
+        type: "capital-fallen",
+        actorFactionId: "秦",
+        targetFactionId: "燕",
+        conquerorFactionId: "秦",
+        factionIds: ["秦", "燕"],
+        cityName: "蓟",
+        historyGroupId: "capital-燕-29",
+      }),
+      event({
+        id: "move",
+        type: "capital-relocated",
+        actorFactionId: "燕",
+        factionIds: ["燕"],
+        cityName: "邯郸",
+        historyGroupId: "capital-燕-29",
+        metadata: { previousCapitalName: "蓟", newCapitalName: "邯郸", cause: "CAPITAL_FALL" },
+      }),
+    ]);
+    expect(grouped).toHaveLength(1);
+    expect(grouped[0].metadata?.capitalTransitionGroupedEventCount).toBe(2);
+  });
+
   it("groups same-month royal line end and final extinction", () => {
     const grouped = groupHistoryNarratives([
       event({

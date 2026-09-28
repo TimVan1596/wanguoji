@@ -253,6 +253,7 @@ const RULER_EVENT_PRIORITIES: Partial<Record<WorldEvent["type"], number>> = {
   "faction-extinct": 110,
   "faction-dissolved": 100,
   "capital-fallen": 90,
+  "capital-relocated": 100,
   "empire-split": 90,
   "ruler-succession": 88,
   "city-recovered": 75,

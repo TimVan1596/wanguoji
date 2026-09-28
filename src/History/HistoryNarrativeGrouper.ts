@@ -60,11 +60,22 @@ interface RestorationGroup {
   events: WorldEvent[];
 }
 
+interface CapitalTransitionGroup {
+  key: string;
+  fallen: WorldEvent;
+  relocated: WorldEvent;
+}
+
 export function groupHistoryNarratives(events: WorldEvent[]) {
   const groups = buildCollapseGroups(events);
   const foundingGroups = buildFoundingGroups(events);
   const restorationGroups = buildRestorationGroups(events);
-  const eventToGroup = new Map<string, CollapseGroup | FoundingGroup | RestorationGroup>();
+  const capitalGroups = buildCapitalTransitionGroups(events);
+  const eventToGroup = new Map<string, CollapseGroup | FoundingGroup | RestorationGroup | CapitalTransitionGroup>();
+  capitalGroups.forEach((group) => {
+    eventToGroup.set(group.fallen.id, group);
+    eventToGroup.set(group.relocated.id, group);
+  });
   groups.forEach((group) => {
     if (group.events.length < 2) {
       return;
@@ -97,7 +108,9 @@ export function groupHistoryNarratives(events: WorldEvent[]) {
     }
     emittedGroups.add(group.key);
     displayEvents.push(
-      isFoundingGroup(group)
+      isCapitalTransitionGroup(group)
+        ? createCapitalTransitionNarrativeEvent(group)
+        : isFoundingGroup(group)
         ? createFoundingNarrativeEvent(group)
         : isRestorationGroup(group)
         ? createRestorationNarrativeEvent(group)
@@ -105,6 +118,43 @@ export function groupHistoryNarratives(events: WorldEvent[]) {
     );
   });
   return displayEvents;
+}
+
+function buildCapitalTransitionGroups(events: WorldEvent[]) {
+  const groups: CapitalTransitionGroup[] = [];
+  events
+    .filter((event) => event.type === "capital-relocated" && event.historyGroupId)
+    .forEach((relocated) => {
+      const fallen = events.find((event) =>
+        event.type === "capital-fallen" &&
+        event.historyGroupId === relocated.historyGroupId &&
+        event.targetFactionId === relocated.actorFactionId
+      );
+      if (fallen) {
+        groups.push({ key: `capital:${relocated.historyGroupId}`, fallen, relocated });
+      }
+    });
+  return groups;
+}
+
+function createCapitalTransitionNarrativeEvent(group: CapitalTransitionGroup): WorldEvent {
+  return {
+    ...group.relocated,
+    id: `history-capital-transition-${group.key}`,
+    description: `${group.fallen.title} / ${group.relocated.title}`,
+    targetFactionId: group.fallen.targetFactionId,
+    conquerorFactionId: group.fallen.conquerorFactionId,
+    factionIds: unique([
+      ...(group.fallen.factionIds ?? []),
+      ...(group.relocated.factionIds ?? []),
+    ]),
+    metadata: {
+      ...group.fallen.metadata,
+      ...group.relocated.metadata,
+      capitalTransitionGroupedEventCount: 2,
+      sourceEventIds: `${group.fallen.id},${group.relocated.id}`,
+    },
+  };
 }
 
 function buildCollapseGroups(events: WorldEvent[]) {
@@ -149,6 +199,9 @@ function createNarrativeEvent(group: CollapseGroup): WorldEvent {
     captured?.actorFactionId;
 
   const clauses: string[] = [];
+  const terminal = group.collapseEvent.type === "faction-extinct" ||
+    group.collapseEvent.type === "faction-dissolved" ||
+    group.events.some((event) => event.type === "faction-extinct" || event.type === "faction-dissolved");
   const capturedRulerName = getMetadataString(captured, "rulerName");
   const capturedRulerTitle = getMetadataString(captured, "capturedRulerTitle");
   if (capturedRulerTitle || capturedRulerName) {
@@ -156,7 +209,7 @@ function createNarrativeEvent(group: CollapseGroup): WorldEvent {
   }
   const nextRulerName = getMetadataString(succession, "nextRulerName");
   const nextSuccessionVerb = getMetadataString(succession, "nextSuccessionVerb") ?? "继位";
-  if (nextRulerName) {
+  if (nextRulerName && !terminal) {
     clauses.push(`${nextRulerName}${nextSuccessionVerb}`);
   }
   if (group.collapseEvent.type === "faction-dissolved") {
@@ -358,15 +411,21 @@ function unique(values: Array<string | undefined>) {
 }
 
 function isFoundingGroup(
-  group: CollapseGroup | FoundingGroup | RestorationGroup
+  group: CollapseGroup | FoundingGroup | RestorationGroup | CapitalTransitionGroup
 ): group is FoundingGroup {
   return "foundingEvent" in group;
 }
 
 function isRestorationGroup(
-  group: CollapseGroup | FoundingGroup | RestorationGroup
+  group: CollapseGroup | FoundingGroup | RestorationGroup | CapitalTransitionGroup
 ): group is RestorationGroup {
   return "restorationEvent" in group;
+}
+
+function isCapitalTransitionGroup(
+  group: CollapseGroup | FoundingGroup | RestorationGroup | CapitalTransitionGroup
+): group is CapitalTransitionGroup {
+  return "fallen" in group && "relocated" in group;
 }
 
 function stripAccessionTitle(title: string | undefined) {

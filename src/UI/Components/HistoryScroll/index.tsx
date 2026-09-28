@@ -84,6 +84,10 @@ export default function HistoryScroll() {
     () => new Map(teams.map((team) => [team.name, team])),
     [teams]
   );
+  const rulerById = useMemo(
+    () => new Map(dynasties.flatMap((dynasty) => dynasty.rulers.map((ruler) => [ruler.id, ruler] as const))),
+    [dynasties]
+  );
   const factionColorById = useMemo(
     () => new Map(teams.map((team) => [team.name, team.color])),
     [teams]
@@ -323,7 +327,7 @@ export default function HistoryScroll() {
               );
             }
           });
-          const eventTitle = formatHistoryEventTitle(event, teamByName);
+          const eventTitle = formatHistoryEventTitle(event, teamByName, rulerById);
           const eventDescription = formatHistoryEventDescription(event, teamByName);
           const landmark = isLandmarkHistoryEvent(event);
           const canExpand =

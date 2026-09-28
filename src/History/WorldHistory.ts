@@ -76,6 +76,17 @@ export interface WorldEvent {
   importance: "normal" | "major";
 }
 
+export interface CapitalRelocationContext {
+  previousCapitalId?: string;
+  previousCapitalName?: string;
+  newCapitalId?: string;
+  newCapitalName?: string;
+  cause?: "CAPITAL_FALL" | "CAPITAL_DESTROYED" | "UNKNOWN";
+  conquerorFactionId?: string;
+  rulerId?: string;
+  rulerName?: string;
+}
+
 type Listener = (events: WorldEvent[]) => void;
 
 interface LeaderCandidate {
@@ -625,7 +636,14 @@ class WorldHistoryStore {
     });
   }
 
-  addCapitalRelocated(year: number, teamName: string, cityName: string, cityId?: string, historyGroupId?: string) {
+  addCapitalRelocated(
+    year: number,
+    teamName: string,
+    cityName: string,
+    cityId?: string,
+    historyGroupId?: string,
+    context: CapitalRelocationContext = {}
+  ) {
     this.addEvent({
       id: `capital-relocated-${year}-${teamName}-${cityName}-${this.sequence++}`,
       year,
@@ -636,6 +654,16 @@ class WorldHistoryStore {
       actorFactionId: teamName,
       cityId,
       cityName,
+      metadata: {
+        previousCapitalId: context.previousCapitalId,
+        previousCapitalName: context.previousCapitalName,
+        newCapitalId: context.newCapitalId ?? cityId,
+        newCapitalName: context.newCapitalName ?? cityName,
+        cause: context.cause ?? "UNKNOWN",
+        conquerorFactionId: context.conquerorFactionId,
+        rulerId: context.rulerId,
+        rulerName: context.rulerName,
+      },
       historyGroupId,
       importance: "major",
     });
