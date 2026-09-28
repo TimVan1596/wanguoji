@@ -68,6 +68,7 @@ import {
   observeHegemonicMomentum,
   observeDynasticOrder,
   recordWorldFragmented,
+  recordLiteralUnificationBroken,
   recordWorldUnified,
   WorldCycleDiagnostics,
   WorldCycleState,
@@ -245,6 +246,7 @@ export default class WorldEventSystem {
 
   observeWorldGoal(year: number, teams: Team[], totalCells: number) {
     const aliveTeams = teams.filter((team) => !team.isDie);
+    const hadDynasticOrder = this.cycleState.dynasticOrderFactionId !== undefined;
     const metrics = this.buildWorldCycleMetrics(teams, totalCells);
     this.cycleState = observeDynasticOrder(
       this.cycleState,
@@ -258,13 +260,16 @@ export default class WorldEventSystem {
       setWorldPhase(getWorldPhase(aliveTeams.length, this.fractureUntilMonth, year))
     );
     if (aliveTeams.length > 1 && this.unificationEmitted) {
+      const structuralOrderLoss = hadDynasticOrder && this.cycleState.dynasticOrderFactionId === undefined;
       if (this.unifyingFactionId) {
-        WorldHistory.addWorldFractured(year, this.unifyingFactionId);
+        if (structuralOrderLoss) WorldHistory.addWorldFractured(year, this.unifyingFactionId);
       }
       this.unificationEmitted = false;
       this.unifyingFactionId = undefined;
       this.unificationMonth = undefined;
-      this.cycleState = recordWorldFragmented(this.cycleState, year);
+      this.cycleState = structuralOrderLoss
+        ? recordWorldFragmented(this.cycleState, year)
+        : recordLiteralUnificationBroken(this.cycleState);
       this.cycleDiagnostics = getWorldCycleDiagnostics(this.cycleState, year);
       if (store.getState().root.worldResult?.type === "unification") {
         store.dispatch(setWorldResult(undefined));
@@ -338,6 +343,10 @@ export default class WorldEventSystem {
 
   getCycleDiagnostics() {
     return this.cycleDiagnostics;
+  }
+
+  isLiteralMonopolyActive() {
+    return this.unificationEmitted;
   }
 
   getProvisionalBlockerSummary(year: number, teams: Team[], totalCells: number) {

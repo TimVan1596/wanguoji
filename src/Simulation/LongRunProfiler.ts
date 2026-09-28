@@ -43,7 +43,7 @@ export interface LongRunProfileSnapshot {
 
 export const LONG_RUN_PROFILE_INTERVAL_MONTHS = 1200;
 
-export type LongRunTransitionKind = "ERA_CONFIRMED" | "ERA_REPLACED" | "CYCLE_STAGE_CHANGED" | "WORLD_UNIFIED" | "WORLD_FRAGMENTED" | "DYNASTIC_ORDER_ESTABLISHED" | "DYNASTIC_ORDER_LOST";
+export type LongRunTransitionKind = "ERA_CONFIRMED" | "ERA_REPLACED" | "CYCLE_STAGE_CHANGED" | "WORLD_UNIFIED" | "WORLD_FRAGMENTED" | "LITERAL_MONOPOLY_STARTED" | "LITERAL_MONOPOLY_ENDED" | "DYNASTIC_ORDER_ESTABLISHED" | "DYNASTIC_ORDER_LOST";
 export interface LongRunTransition {
   kind: LongRunTransitionKind;
   month: number;
@@ -80,6 +80,18 @@ export interface LongRunSummary {
   currentUnifiedAge?: number;
   currentFragmentedAge?: number;
   bottleneck: ConsolidationBottleneckSummary;
+  literalUnificationCount: number;
+  literalMonopolyEpisodes: number;
+  averageLiteralMonopolyDuration?: number;
+  currentLiteralMonopolyAge?: number;
+  dynasticOrderEstablishedCount: number;
+  dynasticOrderLostCount: number;
+  completedDynasticOrderEpisodes: number;
+  averageDynasticOrderDuration?: number;
+  medianDynasticOrderDuration?: number;
+  shortestDynasticOrderDuration?: number;
+  longestDynasticOrderDuration?: number;
+  currentDynasticOrderAge?: number;
 }
 
 export interface ConsolidationBottleneckSummary {
@@ -236,7 +248,7 @@ class LongRunProfilerStore {
   getTransitions() { return [...this.transitions]; }
 
   getSummary(worldMonth: number, eras: Array<{ startMonth: number; endMonth?: number; type: string }>, currentCycleStage?: string) {
-    return { ...deriveLongRunSummary(worldMonth, eras, this.transitions, currentCycleStage, this.profileStartMonth, this.baselineCycleFamily), bottleneck: { ...this.bottleneck, dynasticOrderBlockerMonths: { ...this.bottleneck.dynasticOrderBlockerMonths } } };
+    return deriveLongRunSummary(worldMonth, eras, this.transitions, currentCycleStage, this.profileStartMonth, this.baselineCycleFamily, this.bottleneck);
   }
 }
 
@@ -247,6 +259,7 @@ export function deriveLongRunSummary(
   currentCycleStage?: string,
   profileStartMonth = 0,
   baselineCycleFamily: "UNIFIED" | "FRAGMENTED" = "FRAGMENTED"
+  , bottleneck = emptyBottleneck()
 ): LongRunSummary {
   const durations = eras.map((era) => Math.max(0, (era.endMonth ?? worldMonth) - era.startMonth));
   const competitive = eras.filter((era) => ["MULTIPOLAR", "DUAL_RIVALRY", "HEGEMONY"].includes(era.type)).map((era) => Math.max(0, (era.endMonth ?? worldMonth) - era.startMonth));
@@ -271,9 +284,17 @@ export function deriveLongRunSummary(
   const overlaps = eras.slice(1).reduce((sum, era, index) => sum + Math.max(0, (eras[index].endMonth ?? worldMonth) - era.startMonth + 1), 0);
   const unifiedStats = stats(unifiedEpisodes); const fragmentedStats = stats(fragmentedEpisodes);
   const last = starts.at(-1);
+  const literal = transitions.filter((item) => item.kind === "LITERAL_MONOPOLY_STARTED" || item.kind === "LITERAL_MONOPOLY_ENDED").sort((a, b) => a.month - b.month);
+  const literalEpisodes = literal.flatMap((start, index) => start.kind === "LITERAL_MONOPOLY_STARTED" ? literal.slice(index + 1).find((item) => item.kind === "LITERAL_MONOPOLY_ENDED") ? [literal.slice(index + 1).find((item) => item.kind === "LITERAL_MONOPOLY_ENDED")!.month - start.month] : [] : []);
+  const orders = transitions.filter((item) => item.kind === "DYNASTIC_ORDER_ESTABLISHED" || item.kind === "DYNASTIC_ORDER_LOST").sort((a, b) => a.month - b.month);
+  const orderEpisodes = orders.flatMap((start, index) => start.kind === "DYNASTIC_ORDER_ESTABLISHED" ? orders.slice(index + 1).find((item) => item.kind === "DYNASTIC_ORDER_LOST") ? [orders.slice(index + 1).find((item) => item.kind === "DYNASTIC_ORDER_LOST")!.month - start.month] : [] : []);
+  const stat = (values: number[]) => values.length ? { average: values.reduce((a, b) => a + b, 0) / values.length, median: [...values].sort((a, b) => a - b)[Math.floor(values.length / 2)], min: Math.min(...values), max: Math.max(...values) } : undefined;
+  const literalStats = stat(literalEpisodes); const orderStats = stat(orderEpisodes);
   const currentFamily = last ? last.kind === "WORLD_UNIFIED" ? "UNIFIED" : "FRAGMENTED" : baselineCycleFamily;
   const currentStart = last?.month ?? profileStartMonth;
-  return { profileStartMonth, worldAge: worldMonth, eraCount: eras.length, averageEraDuration: eraStats?.average, medianEraDuration: eraStats?.median, shortestEraDuration: eraStats?.shortest, longestEraDuration: eraStats?.longest, competitiveEraCount: competitive.length, competitiveEraAverageDuration: competitiveStats?.average, eraGapMonths: gaps, eraOverlapMonths: overlaps, eraTransitionsPerCentury: worldMonth > 0 ? (Math.max(0, eras.length - 1) * 1200) / worldMonth : undefined, unificationCount: completed("WORLD_UNIFIED"), fragmentationCount: completed("WORLD_FRAGMENTED"), completedUnifiedEpisodes: unifiedEpisodes.length, averageUnifiedDuration: unifiedStats?.average, medianUnifiedDuration: unifiedStats?.median, shortestUnifiedDuration: unifiedStats?.shortest, longestUnifiedDuration: unifiedStats?.longest, completedFragmentedEpisodes: fragmentedEpisodes.length, averageFragmentedDuration: fragmentedStats?.average, medianFragmentedDuration: fragmentedStats?.median, longestFragmentedDuration: fragmentedStats?.longest, currentUnifiedAge: currentFamily === "UNIFIED" ? Math.max(0, worldMonth - currentStart) : undefined, currentFragmentedAge: currentFamily === "FRAGMENTED" ? Math.max(0, worldMonth - currentStart) : undefined, currentCycleStage, bottleneck: emptyBottleneck() };
+  const currentLiteral = literal.at(-1)?.kind === "LITERAL_MONOPOLY_STARTED" ? Math.max(0, worldMonth - literal.at(-1)!.month) : undefined;
+  const currentOrder = orders.at(-1)?.kind === "DYNASTIC_ORDER_ESTABLISHED" ? Math.max(0, worldMonth - orders.at(-1)!.month) : undefined;
+  return { profileStartMonth, worldAge: worldMonth, eraCount: eras.length, averageEraDuration: eraStats?.average, medianEraDuration: eraStats?.median, shortestEraDuration: eraStats?.shortest, longestEraDuration: eraStats?.longest, competitiveEraCount: competitive.length, competitiveEraAverageDuration: competitiveStats?.average, eraGapMonths: gaps, eraOverlapMonths: overlaps, eraTransitionsPerCentury: worldMonth > 0 ? (Math.max(0, eras.length - 1) * 1200) / worldMonth : undefined, unificationCount: completed("WORLD_UNIFIED"), fragmentationCount: completed("WORLD_FRAGMENTED"), completedUnifiedEpisodes: unifiedEpisodes.length, averageUnifiedDuration: unifiedStats?.average, medianUnifiedDuration: unifiedStats?.median, shortestUnifiedDuration: unifiedStats?.shortest, longestUnifiedDuration: unifiedStats?.longest, completedFragmentedEpisodes: fragmentedEpisodes.length, averageFragmentedDuration: fragmentedStats?.average, medianFragmentedDuration: fragmentedStats?.median, longestFragmentedDuration: fragmentedStats?.longest, currentUnifiedAge: currentFamily === "UNIFIED" ? Math.max(0, worldMonth - currentStart) : undefined, currentFragmentedAge: currentFamily === "FRAGMENTED" ? Math.max(0, worldMonth - currentStart) : undefined, currentCycleStage, bottleneck, literalUnificationCount: literal.filter((x) => x.kind === "LITERAL_MONOPOLY_STARTED").length, literalMonopolyEpisodes: literalEpisodes.length, averageLiteralMonopolyDuration: literalStats?.average, currentLiteralMonopolyAge: currentLiteral, dynasticOrderEstablishedCount: orders.filter((x) => x.kind === "DYNASTIC_ORDER_ESTABLISHED").length, dynasticOrderLostCount: orders.filter((x) => x.kind === "DYNASTIC_ORDER_LOST").length, completedDynasticOrderEpisodes: orderEpisodes.length, averageDynasticOrderDuration: orderStats?.average, medianDynasticOrderDuration: orderStats?.median, shortestDynasticOrderDuration: orderStats?.min, longestDynasticOrderDuration: orderStats?.max, currentDynasticOrderAge: currentOrder };
 }
 
 export function buildLongRunProfileSnapshot(

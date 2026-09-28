@@ -119,6 +119,11 @@ export function recordWorldUnified(
   };
 }
 
+/** Ends the one-polity monopoly without declaring the dynastic order lost. */
+export function recordLiteralUnificationBroken(state: WorldCycleState): WorldCycleState {
+  return { ...state, currentUnificationStartMonth: undefined };
+}
+
 export function recordWorldFragmented(
   state: WorldCycleState,
   month: number

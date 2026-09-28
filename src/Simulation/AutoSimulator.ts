@@ -38,6 +38,8 @@ export default class AutoSimulator {
   private lastProfilerEraId?: string;
   private lastProfilerCycleStage?: string;
   private lastProfilerCycleFamily?: "UNIFIED" | "FRAGMENTED";
+  private lastProfilerLiteralMonopoly = false;
+  private lastProfilerDynasticOrderId?: string;
 
   startWorld(
     teams: Team[],
@@ -56,6 +58,8 @@ export default class AutoSimulator {
     this.lastProfilerEraId = undefined;
     this.lastProfilerCycleStage = undefined;
     this.lastProfilerCycleFamily = undefined;
+    this.lastProfilerLiteralMonopoly = false;
+    this.lastProfilerDynasticOrderId = undefined;
     WorldHistory.reset();
     WorldHistory.addWorldBorn(0, teams);
     DynastyRegistry.reset();
@@ -148,6 +152,8 @@ export default class AutoSimulator {
       ? "UNIFIED"
       : "FRAGMENTED";
     this.lastProfilerEraId = WorldEra.getCurrentEra()?.id;
+    this.lastProfilerLiteralMonopoly = this.events.isLiteralMonopolyActive();
+    this.lastProfilerDynasticOrderId = cycle.dynasticOrderFactionId;
   }
 
   observeWorld(teams: Team[], totalCells: number) {
@@ -200,6 +206,15 @@ export default class AutoSimulator {
         if (currentEra && currentEra.id !== this.lastProfilerEraId) {
           LongRunProfiler.recordTransition({ kind: this.lastProfilerEraId ? "ERA_REPLACED" : "ERA_CONFIRMED", month: currentEra.confirmedMonth, from: this.lastProfilerEraId, to: currentEra.id, factionId: currentEra.dominantFactionIds[0] });
           this.lastProfilerEraId = currentEra.id;
+        }
+        const literalMonopoly = this.events.isLiteralMonopolyActive();
+        if (literalMonopoly !== this.lastProfilerLiteralMonopoly) {
+          LongRunProfiler.recordTransition({ kind: literalMonopoly ? "LITERAL_MONOPOLY_STARTED" : "LITERAL_MONOPOLY_ENDED", month: this.clock.year, factionId: cycle.hegemonicOwnerId });
+          this.lastProfilerLiteralMonopoly = literalMonopoly;
+        }
+        if (cycle.dynasticOrderFactionId !== this.lastProfilerDynasticOrderId) {
+          LongRunProfiler.recordTransition({ kind: cycle.dynasticOrderFactionId ? "DYNASTIC_ORDER_ESTABLISHED" : "DYNASTIC_ORDER_LOST", month: this.clock.year, factionId: cycle.dynasticOrderFactionId });
+          this.lastProfilerDynasticOrderId = cycle.dynasticOrderFactionId;
         }
         const territoryMetrics = calculateTerritoryMetrics(teams, totalCells);
         const rankedTerritory = teams

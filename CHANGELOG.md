@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.99921f
+
+- Separated literal one-polity monopoly from persistent Dynastic Order semantics.
+- Added independent literal-monopoly and Dynastic Order profiler episodes and diagnostics.
+- Added dynastic internal-pressure telemetry without changing fatigue parameters.
+- Fixed historical naming for capital-relocated rendering.
+
 ## v0.99921e
 
 - Added cumulative consolidation bottleneck telemetry for long-run measurement.
