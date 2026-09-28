@@ -14,7 +14,7 @@ export interface WorldRecord {
 
 type RecordFaction = Pick<Team, "name" | "displayName" | "nameHistory" | "firstFoundedYear" | "sovereigntyRank" | "sovereigntyHistory"> & {
   getCumulativeActiveYears: (worldMonth: number) => number;
-  identityStage?: string;
+  identityStage: "PROVISIONAL" | "STATE";
   stateFoundedMonth?: number;
 };
 

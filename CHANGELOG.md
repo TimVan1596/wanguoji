@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.99922b
+
+- Added capital relocation context with old/new capital, cause, conqueror, and ruler evidence.
+- Grouped capital fall and relocation into one retrospective history narrative while preserving raw events.
+- Added parentId-based royal lineage display and retrospective ruler title resolution for HistoryScroll.
+- Suppressed ephemeral succession clauses when a collapse reaches final extinction.
+
 ## v0.99922a
 
 - Corrected non-HAN ruler names to use curated atomic given-name pools without clan-prefix duplication.
