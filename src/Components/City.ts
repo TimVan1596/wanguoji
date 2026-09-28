@@ -643,9 +643,10 @@ export default class City {
       return;
     }
     const owner = this.ownerTeam;
-    const strain = owner
+    const rawStrain = owner
       ? calculateImperialStrain(owner, Game.Core?.totalCells ?? 1, 0)
       : 0;
+    const strain = Math.round(rawStrain * FactionEffects.getAdministrativeStrainMultiplier(this.ownerFactionId ?? ""));
     const distance = owner ? getCityDistanceFromCapital(owner, this) : 0;
     if (
       owner &&

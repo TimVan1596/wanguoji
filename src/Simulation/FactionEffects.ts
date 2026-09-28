@@ -25,11 +25,13 @@ class FactionEffectStore {
     string,
     { siegeMultiplier: number; captureLoyaltyBonus: number }
   >();
+  private administrativeStrainMultipliers = new Map<string, number>();
   private sequence = 0;
 
   reset() {
     this.effects = [];
     this.strategicModifiers.clear();
+    this.administrativeStrainMultipliers.clear();
     this.sequence = 0;
   }
 
@@ -106,6 +108,19 @@ class FactionEffectStore {
 
   clearStrategicModifiers() {
     this.strategicModifiers.clear();
+  }
+
+  setAdministrativeStrainMultiplier(factionId: string, multiplier: number) {
+    if (multiplier >= 1) this.administrativeStrainMultipliers.delete(factionId);
+    else this.administrativeStrainMultipliers.set(factionId, Math.max(0.72, multiplier));
+  }
+
+  clearAdministrativeStrainMultipliers() {
+    this.administrativeStrainMultipliers.clear();
+  }
+
+  getAdministrativeStrainMultiplier(factionId: string) {
+    return this.administrativeStrainMultipliers.get(factionId) ?? 1;
   }
 
   getSiegeMultiplier(factionId: string) {

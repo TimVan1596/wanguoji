@@ -109,6 +109,16 @@ export interface ConsolidationBottleneckSummary {
   top3ContainsProvisionalMonths: number;
   maxProvisionalTerritoryShare: number;
   maxProvisionalCityCount: number;
+  currentTop1Stability?: number;
+  minimumStabilityWhileAbove40?: number;
+  minimumStabilityWhileAbove50?: number;
+  averageStabilityWhileAbove50?: number;
+  rawImperialStrain?: number;
+  effectiveImperialStrain?: number;
+  lowLoyaltyCityCount?: number;
+  minimumCityLoyalty?: number;
+  averageCapitalDistance?: number;
+  monthsAbove50ButStabilityBelow65: number;
   _lastCandidate?: string;
   _lastOwner?: string;
 }
@@ -148,6 +158,12 @@ export interface LongRunProfileCounts {
   maxProvisionalTerritoryShare?: number;
   maxProvisionalCityCount?: number;
   dynasticOrderBlockers?: Record<string, boolean>;
+  top1Stability?: number;
+  rawImperialStrain?: number;
+  effectiveImperialStrain?: number;
+  lowLoyaltyCityCount?: number;
+  minimumCityLoyalty?: number;
+  averageCapitalDistance?: number;
   eraType?: string;
   eraCandidateType?: string;
   eraCandidateSinceMonth?: number;
@@ -169,6 +185,7 @@ function emptyBottleneck(): ConsolidationBottleneckSummary {
     top3ContainsProvisionalMonths: 0,
     maxProvisionalTerritoryShare: 0,
     maxProvisionalCityCount: 0,
+    monthsAbove50ButStabilityBelow65: 0,
   };
 }
 
@@ -232,6 +249,18 @@ class LongRunProfilerStore {
     if (counts.top3ContainsProvisional) b.top3ContainsProvisionalMonths += 1;
     b.maxProvisionalTerritoryShare = Math.max(b.maxProvisionalTerritoryShare, counts.maxProvisionalTerritoryShare ?? 0);
     b.maxProvisionalCityCount = Math.max(b.maxProvisionalCityCount, counts.maxProvisionalCityCount ?? 0);
+    b.currentTop1Stability = counts.top1Stability;
+    if (top1Territory > 40) b.minimumStabilityWhileAbove40 = Math.min(b.minimumStabilityWhileAbove40 ?? Infinity, counts.top1Stability ?? 100);
+    if (top1Territory > 50) {
+      b.minimumStabilityWhileAbove50 = Math.min(b.minimumStabilityWhileAbove50 ?? Infinity, counts.top1Stability ?? 100);
+      b.averageStabilityWhileAbove50 = ((b.averageStabilityWhileAbove50 ?? 0) + (counts.top1Stability ?? 0)) / 2;
+      if ((counts.top1Stability ?? 100) < 65) b.monthsAbove50ButStabilityBelow65 += 1;
+    }
+    b.rawImperialStrain = counts.rawImperialStrain;
+    b.effectiveImperialStrain = counts.effectiveImperialStrain;
+    b.lowLoyaltyCityCount = counts.lowLoyaltyCityCount;
+    b.minimumCityLoyalty = counts.minimumCityLoyalty;
+    b.averageCapitalDistance = counts.averageCapitalDistance;
     Object.entries(counts.dynasticOrderBlockers ?? {}).forEach(([key, value]) => { b.dynasticOrderBlockerMonths[key] = (b.dynasticOrderBlockerMonths[key] ?? 0) + (value ? 1 : 0); });
   }
 

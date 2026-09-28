@@ -1060,9 +1060,7 @@ export default class WorldEventSystem {
     if (leaderId !== team.name) {
       return 1;
     }
-    return getConsolidationImperialStrainMultiplier(
-      this.cycleDiagnostics.consolidationModifier
-    );
+    return FactionEffects.getAdministrativeStrainMultiplier(team.name);
   }
 
   private getLeadingConsolidationFactionId(
@@ -1108,10 +1106,15 @@ export default class WorldEventSystem {
 
   private publishStrategicCycleModifiers() {
     FactionEffects.clearStrategicModifiers();
+    FactionEffects.clearAdministrativeStrainMultipliers();
     const factionId = this.cycleDiagnostics.hegemonicOwnerId ?? this.cycleDiagnostics.consolidationLeaderOwnerId;
     if (!factionId || this.cycleDiagnostics.hegemonicSiegeMultiplier <= 1) {
       return;
     }
+    const base = getConsolidationImperialStrainMultiplier(this.cycleDiagnostics.consolidationModifier);
+    const momentum = Math.max(this.cycleDiagnostics.hegemonicMomentum, this.cycleDiagnostics.consolidationLeaderMomentum);
+    const reduction = Math.min(0.06, this.cycleDiagnostics.lateFragmentationPressure * 0.06 * momentum);
+    FactionEffects.setAdministrativeStrainMultiplier(factionId, Math.max(0.72, base - reduction));
     const captureLoyaltyBonus = getHegemonicCaptureLoyaltyBonusFromSiegeMultiplier(
       this.cycleDiagnostics.hegemonicSiegeMultiplier
     );

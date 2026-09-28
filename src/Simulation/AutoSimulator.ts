@@ -18,6 +18,7 @@ import WorldExiles from "./WorldExiles";
 import WorldEra from "./WorldEra";
 import LongRunProfiler from "./LongRunProfiler";
 import ArchivedCities from "./ArchivedCities";
+import { calculateImperialStrain, getCityDistanceFromCapital } from "./ImperialStrain";
 import {
   calculateTerritoryMetrics,
   getFactionTerritoryMetric,
@@ -286,6 +287,12 @@ export default class AutoSimulator {
               TOP2_SHARE: (formalRanked[1]?.territory ?? 0) > 20,
               NO_FORMAL_STATE: !formalTop1,
             },
+            top1Stability: formalTop1?.stability,
+            rawImperialStrain: formalTop1 ? calculateImperialStrain(formalTop1.team, totalCells, 0) : undefined,
+            effectiveImperialStrain: formalTop1 ? calculateImperialStrain(formalTop1.team, totalCells, 0) * FactionEffects.getAdministrativeStrainMultiplier(formalTop1.team.name) : undefined,
+            lowLoyaltyCityCount: formalTop1?.team.cities.filter((city) => city.loyalty < 65).length,
+            minimumCityLoyalty: formalTop1 ? Math.min(...formalTop1.team.cities.map((city) => city.loyalty)) : undefined,
+            averageCapitalDistance: formalTop1 && formalTop1.team.cities.length ? formalTop1.team.cities.reduce((sum, city) => sum + getCityDistanceFromCapital(formalTop1.team, city), 0) / formalTop1.team.cities.length : undefined,
             eraType: WorldEra.getCurrentEra()?.type,
             eraCandidateType: WorldEra.getCandidateDiagnostics(this.clock.year)?.type,
             eraCandidateSinceMonth: WorldEra.getCandidateDiagnostics(this.clock.year)?.sinceMonth,

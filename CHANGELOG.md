@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99921g
+
+- Added cumulative Dynastic Order blocker and top-empire stability/strain diagnostics.
+- Unified consolidation administrative strain semantics across Empire Split and city loyalty recovery/decay.
+- Added bounded runtime-only administrative protection for the actual consolidation momentum owner.
+
 ## v0.99921f
 
 - Separated literal one-polity monopoly from persistent Dynastic Order semantics.
