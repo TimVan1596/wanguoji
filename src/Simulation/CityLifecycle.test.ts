@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   canDestroyCity,
   canPermanentlyDestroyCity,
+  getNewCityInitialDefense,
   getCaptureDevastationIncrease,
   isCityTooNearExisting,
   recoverDevastation,
@@ -9,6 +10,12 @@ import {
 import { MIN_ACTIVE_CITIES } from "../config/simulation";
 
 describe("city lifecycle rules", () => {
+  it("keeps newly founded cities at the e1 60% initial-defense level", () => {
+    expect(getNewCityInitialDefense(6)).toBe(3);
+    expect(getNewCityInitialDefense(10)).toBe(6);
+    expect(getNewCityInitialDefense(1)).toBe(1);
+  });
+
   it("increases devastation on capture", () => {
     expect(getCaptureDevastationIncrease()).toBeGreaterThan(0);
   });

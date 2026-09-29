@@ -21,6 +21,10 @@ export function recoverDevastation(devastation: number) {
   return Math.max(0, devastation - CITY_DEVASTATION_RECOVERY);
 }
 
+export function getNewCityInitialDefense(maxDefense: number) {
+  return Math.max(1, Math.floor(maxDefense * 0.6));
+}
+
 export function canDestroyCity(activeCityCount: number, devastation: number) {
   return (
     activeCityCount > MIN_ACTIVE_CITIES &&

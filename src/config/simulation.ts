@@ -33,7 +33,7 @@ export const WEAK_FACTION_POSITIVE_EVENT_BIAS = 1.5;
 export const HEGEMONY_TERRITORY_PERCENT = 75;
 export const HEGEMONY_STABLE_MONTHS = 20 * 12;
 
-export const CITY_BASE_MAX_DEFENSE = 3;
+export const CITY_BASE_MAX_DEFENSE = 5;
 export const CITY_CAPITAL_DEFENSE_BONUS = 2;
 export const CITY_DEVELOPMENT_TERRITORY_STEP = 12;
 export const CITY_DEVELOPMENT_SCORE_THRESHOLDS = [0, 18, 35, 65, 100];
@@ -76,10 +76,10 @@ export const CITY_LABEL_FONT_SIZE = 13;
 export const CITY_CAPITAL_LABEL_FONT_SIZE = 14;
 
 export const FORTIFIED_ZONE_TIERS = [
-  { minDefense: 1, maxDefense: 4, shape: "single", maxCells: 1 },
-  { minDefense: 5, maxDefense: 6, shape: "cross", maxCells: 5 },
-  { minDefense: 7, maxDefense: 8, shape: "square", maxCells: 9 },
-  { minDefense: 9, maxDefense: 99, shape: "diamond", maxCells: 13 },
+  { minDefense: 1, maxDefense: 6, shape: "single", maxCells: 1 },
+  { minDefense: 7, maxDefense: 8, shape: "cross", maxCells: 5 },
+  { minDefense: 9, maxDefense: 10, shape: "square", maxCells: 9 },
+  { minDefense: 11, maxDefense: 99, shape: "diamond", maxCells: 13 },
 ] as const;
 
 export const CITY_SIEGE_DAMAGE_INTERVAL_MONTHS = 2;

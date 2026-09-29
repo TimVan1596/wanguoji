@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.99922e2
+
+- Based on v0.99922e1, increased only the base city defense value from 3 to 5.
+- Shifted fortified-zone thresholds to preserve the previous map geometry at the correspondingly increased defense values; siege, capture, new-city defense initialization, and save-schema behavior remain unchanged.
+
 ## v0.99922e1
 
 - Replaced flat temple-name score competition with historical role precedence for founders, first emperors, early imperial consolidators, restorers, renewal rulers, and mature/stable reigns.
