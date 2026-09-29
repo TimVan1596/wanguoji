@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99922c
+
+- Expanded and categorized historical city-name candidates, with weighted category and candidate selection instead of fixed array order.
+- Added soft diversity penalties for recent suffixes, similar forms, and known historical aliases while preserving world-wide reserved-name uniqueness.
+- Added session-only city-name generation diagnostics without changing save data.
+
 ## v0.99922b1
 
 - Removed inferred “last city” details from capital-transition narratives.

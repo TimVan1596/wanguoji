@@ -24,6 +24,17 @@ describe("city name registry", () => {
     expect(generated).not.toBe("武陵");
   });
 
+  it("keeps the reserved/recent registry export contract through import", () => {
+    CityNameRegistry.reserve("安邑", "archived-city", 12);
+    CityNameRegistry.allocateCityName(undefined, "dynamic-city", 24);
+    const exported = CityNameRegistry.exportState();
+    expect(Object.keys(exported).sort()).toEqual(["recentDynamicNames", "reserved"]);
+    CityNameRegistry.reset();
+    CityNameRegistry.importState(exported);
+    expect(CityNameRegistry.isAvailable("安邑")).toBe(false);
+    expect(CityNameRegistry.exportState()).toEqual(exported);
+  });
+
   it("clears reserved names on new world reset", () => {
     CityNameRegistry.reserve("安邑", "city-a", 0);
     CityNameRegistry.reset();

@@ -14,6 +14,7 @@ import { validateWorldSave } from "../../Persistence/WorldSaveValidator";
 import { diffCanonicalWorldSave, type CanonicalWorldSaveDiff, type WorldSaveV1 } from "../../Persistence/WorldSaveSchema";
 import { APP_VERSION } from "../../config/version";
 import { getNameGenerationSummary } from "../../Politics/NameGenerationTelemetry";
+import { getCityNamingSummary } from "../../Simulation/CityNamingTelemetry";
 import {
   getWorldSaveStorageDiagnostics,
   subscribeWorldSaveStorageDiagnostics,
@@ -78,7 +79,8 @@ export default function WorldDiagnosticsPanel() {
     const cycle = Game.Core?.simulator?.getWorldCycleDiagnostics();
     const longRun = LongRunProfiler.getSummary(worldMonth, WorldEra.getEras(), cycle?.stage);
     const naming = getNameGenerationSummary();
-    return { ranked, currentEra, candidate, validity, liveClassification, cycle, longRun, naming };
+    const cityNaming = getCityNamingSummary();
+    return { ranked, currentEra, candidate, validity, liveClassification, cycle, longRun, naming, cityNaming };
   }, [teams, worldMonth, worldPhase]);
 
   if (!debugEnabled()) {
@@ -188,6 +190,15 @@ export default function WorldDiagnosticsPanel() {
           ...Object.entries(diagnostics.naming.houses).map(([label, count]) => `${label}: ${count}`),
           `Historical Echo: ${diagnostics.naming.historicalEchoCount}`,
           `Top surnames: ${diagnostics.naming.topSurnames.map(([name, count]) => `${name}(${count})`).join("、") || "—"}`,
+        ].join("\n")}</Typography>
+      </details>
+      <details>
+        <summary>城市命名统计（会话）</summary>
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{[
+          `Generated total: ${diagnostics.cityNaming.generatedTotal}`,
+          ...Object.entries(diagnostics.cityNaming.categories).map(([category, count]) => `${category}: ${count}`),
+          `Top suffixes: ${diagnostics.cityNaming.topSuffixes.map(([suffix, count]) => `${suffix}(${count})`).join("、") || "—"}`,
+          `Recent names: ${diagnostics.cityNaming.recentNames.join("、") || "—"}`,
         ].join("\n")}</Typography>
       </details>
       <details>

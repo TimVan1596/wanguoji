@@ -1,4 +1,5 @@
 import { createCityName } from "./CityNameGenerator";
+import { resetCityNamingTelemetry } from "./CityNamingTelemetry";
 
 export interface ReservedCityName {
   name: string;
@@ -15,6 +16,7 @@ class CityNameRegistryStore {
   reset() {
     this.reserved.clear();
     this.recentDynamicNames = [];
+    resetCityNamingTelemetry();
   }
 
   normalize(name: string) {
