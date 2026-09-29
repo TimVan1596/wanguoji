@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.99922d
+
+- Separated posthumous-name evidence into expansion, military, governance, disorder, and terminal-outcome dimensions; demographic collapse alone no longer qualifies a ruler for 灵.
+- Replaced the global temple-name score cutoff with role-based eligibility and dynasty-unique role candidates, including strict 成祖 conditions.
+- Added objective accession-age wording, mixed expansion/governance-cost assessment, and session-only Historical Echo denominators.
+- Enforced CityNameRegistry reservations at City construction and added active-city registry consistency diagnostics without changing save schema.
+
 ## v0.99922c
 
 - Expanded and categorized historical city-name candidates, with weighted category and candidate selection instead of fixed array order.

@@ -19,6 +19,7 @@ import {
 import { createRebelFactionName, createRebelHouseName } from "./RebelNameGenerator";
 import { hasFormalStateIdentity } from "./FactionIdentity";
 import { EMPIRE_SPLIT_REGION_RADIUS_CELLS } from "./EmpireSplitRules";
+import CityNameRegistry from "./CityNameRegistry";
 
 interface RebelFactionOptions {
   city: City;
@@ -252,9 +253,10 @@ class FactionRegistryStore {
     return { team, transferredCities };
   }
 
-  foundCity(team: Team, block: Block, cityName: string, year: number) {
+  foundCity(team: Team, block: Block, cityName: string | undefined, year: number) {
     const id = `${team.name}-city-${year}-${this.sequence++}`;
-    const city = new City(id, cityName, team.name, block, year, false);
+    const resolvedCityName = cityName ?? CityNameRegistry.allocateCityName(undefined, id, year);
+    const city = new City(id, resolvedCityName, team.name, block, year, false);
     city.defense = Math.max(1, Math.floor(city.maxDefense * 0.6));
     city.loyalty = Phaser.Math.Between(80, 90);
     city.claimFortifiedZone(team);

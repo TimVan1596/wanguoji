@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   validateCityNameUniqueness,
+  validateCityNameReservations,
   validateCityInteractionIndex,
   validateCityZoneMappings,
 } from "./WorldInvariant";
@@ -124,5 +125,15 @@ describe("world invariant city zone mapping", () => {
     expect(
       issues.some((issue) => issue.includes("duplicate city name with archive"))
     ).toBe(true);
+  });
+
+  it("requires every active city name to be reserved to that exact city id", () => {
+    expect(validateCityNameReservations([{ id: "city-a", name: "安邑" }], [
+      { name: "安邑", normalizedName: "安邑", cityId: "city-a" },
+    ])).toEqual([]);
+    expect(validateCityNameReservations([{ id: "city-a", name: "安邑" }], [
+      { name: "安邑", normalizedName: "安邑", cityId: "city-b" },
+    ])[0]).toContain("registry mismatch");
+    expect(validateCityNameReservations([{ id: "city-a", name: "安邑" }], [])[0]).toContain("missing registry reservation");
   });
 });

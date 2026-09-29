@@ -163,7 +163,7 @@ export function buildRulerAssessment(
   const parts: string[] = [];
 
   if (accessionAge !== undefined) {
-    parts.push(accessionAge < 16 ? `${accessionAge}岁幼年即位。` : `${accessionAge}岁即位。`);
+    parts.push(formatAccessionAge(accessionAge));
   }
 
   if (chronicle.foundedStateName) {
@@ -196,6 +196,16 @@ export function buildRulerAssessment(
     parts.push(`${rulerName}在位${formatWorldDuration(reignMonths)}。`);
   }
 
+  const demographicCollapse = start.population > 0 && end.population <= start.population * 0.6;
+  const stabilityDecline = end.stability - start.stability <= -20;
+  const hasMajorAchievement = territoryDelta >= 0.12 || cityDelta >= 3 || chronicle.completedUnification;
+  if (hasMajorAchievement && (demographicCollapse || stabilityDecline)) {
+    const costs = [demographicCollapse ? "人口锐减" : undefined, stabilityDecline ? "稳定度明显下滑" : undefined].filter(Boolean).join("、");
+    parts.push(`开疆有功，但${costs}，扩张伴随较高统治代价。`);
+  } else if (demographicCollapse || stabilityDecline) {
+    parts.push([demographicCollapse ? "人口大幅减少" : undefined, stabilityDecline ? "稳定度明显下滑" : undefined].filter(Boolean).join("，") + "。");
+  }
+
   if (chronicle.citiesCapturedPersonally > 0) {
     parts.push(`亲征攻陷${chronicle.citiesCapturedPersonally}座城市。`);
   } else if (cityDelta !== 0) {
@@ -219,7 +229,15 @@ export function buildRulerAssessment(
     ].filter(Boolean) as string[];
     parts.push(...clauses);
   }
-  return parts.slice(0, 6);
+  return parts.slice(0, 8);
+}
+
+export function formatAccessionAge(age: number) {
+  if (age < 0) return "即位年龄未记录。";
+  if (age <= 11) return `${age}岁幼年即位。`;
+  if (age <= 15) return `${age}岁少年即位。`;
+  if (age >= 60) return `${age}岁晚年即位。`;
+  return `${age}岁即位。`;
 }
 
 const RULER_EVENT_TYPES = new Set<WorldEvent["type"]>([

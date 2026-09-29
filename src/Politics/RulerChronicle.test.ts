@@ -6,10 +6,26 @@ import {
   finishRulerChronicle,
   getRulerTerritoryDelta,
   getRulerHistoricalEvents,
+  formatAccessionAge,
 } from "./RulerChronicle";
 import { yearsToMonths } from "../Simulation/WorldTime";
 
 describe("ruler chronicle", () => {
+  it("uses objective accession-age context bands", () => {
+    expect(formatAccessionAge(7)).toContain("幼年即位");
+    expect(formatAccessionAge(14)).toContain("少年即位");
+    expect(formatAccessionAge(52)).toBe("52岁即位。");
+    expect(formatAccessionAge(68)).toContain("晚年即位");
+  });
+
+  it("mentions governance cost in an expansion assessment", () => {
+    const chronicle = createRulerChronicle({ month: 0, population: 15, territoryShare: 0.169, cityCount: 1, stability: 100 });
+    finishRulerChronicle(chronicle, { month: yearsToMonths(18), population: 4, territoryShare: 0.296, cityCount: 6, stability: 72 });
+    const assessment = buildRulerAssessment("嬴承宁", chronicle, yearsToMonths(18), 52).join("");
+    expect(assessment).toContain("开疆有功");
+    expect(assessment).toContain("人口锐减");
+    expect(assessment).toContain("稳定度明显下滑");
+  });
   it("keeps accession and end snapshots", () => {
     const chronicle = createRulerChronicle({
       month: 0,

@@ -73,7 +73,6 @@ import {
   WorldCycleDiagnostics,
   WorldCycleState,
 } from "./WorldCycleRules";
-import CityNameRegistry from "./CityNameRegistry";
 import { createStateName } from "./StateNameGenerator";
 import Block from "../Components/Block";
 import City from "../Components/City";
@@ -928,12 +927,7 @@ export default class WorldEventSystem {
         if (!block) {
           return;
         }
-        const name = CityNameRegistry.allocateCityName(
-          undefined,
-          `${team.name}-city-${year}`,
-          year
-        );
-        FactionRegistry.foundCity(team, block, name, year);
+        FactionRegistry.foundCity(team, block, undefined, year);
         this.cityFoundedYears[team.name] = year;
       });
   }

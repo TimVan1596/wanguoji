@@ -186,7 +186,7 @@ export default class City {
     public isHistoricCity = false,
     public isIndestructible = false
   ) {
-    CityNameRegistry.reserve(name, id, foundedYear);
+    CityNameRegistry.reserveForCity(name, id, foundedYear);
     this.ownerFactionId = founderFactionId;
     this.maxDefense = this.calculateMaxDefense();
     this.defense = this.maxDefense;

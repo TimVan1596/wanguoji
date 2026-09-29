@@ -1,7 +1,23 @@
 import { describe, expect, it } from "vitest";
 import { createStateName, createStateNameCandidates } from "./StateNameGenerator";
+import { getNameGenerationSummary, resetNameGenerationTelemetry } from "../Politics/NameGenerationTelemetry";
 
 describe("state name generator", () => {
+  it("tracks state-name and echo eligibility denominators without changing the 12% branch", () => {
+    resetNameGenerationTelemetry();
+    let calls = 0;
+    createStateName({ houseName: "李氏" }, [], [], () => calls++ === 0 ? 0 : 3);
+    createStateName({ houseName: "王氏" }, [], [], (max) => max - 1);
+    createStateName({ houseName: "李氏" }, [], ["唐"], (max) => max - 1);
+    expect(getNameGenerationSummary()).toMatchObject({
+      stateNameGenerationCount: 3,
+      echoEligibleCount: 2,
+      prestigeBranchCount: 1,
+      historicalEchoCount: 1,
+      echoBlockedByHistoricalUseCount: 1,
+    });
+  });
+
   it("prefers a natural single-character name from the capital", () => {
     expect(createStateName({ capitalName: "大梁" })).toBe("梁");
   });

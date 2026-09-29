@@ -187,8 +187,11 @@ export default function WorldDiagnosticsPanel() {
       <details>
         <summary>姓名文化统计（会话）</summary>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{[
+          `Formal state names: ${diagnostics.naming.stateNameGenerationCount}`,
+          `Historical Echo: ${diagnostics.naming.historicalEchoCount} / eligible ${diagnostics.naming.echoEligibleCount}`,
+          `Prestige branch: ${diagnostics.naming.prestigeBranchCount}`,
+          `Echo blocked by historical use: ${diagnostics.naming.echoBlockedByHistoricalUseCount}`,
           ...Object.entries(diagnostics.naming.houses).map(([label, count]) => `${label}: ${count}`),
-          `Historical Echo: ${diagnostics.naming.historicalEchoCount}`,
           `Top surnames: ${diagnostics.naming.topSurnames.map(([name, count]) => `${name}(${count})`).join("、") || "—"}`,
         ].join("\n")}</Typography>
       </details>

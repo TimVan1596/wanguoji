@@ -3,6 +3,7 @@ import { validateDynastyInvariants } from "../Politics/DynastyInvariant";
 import ArchivedCities from "./ArchivedCities";
 import { getCityInteractionGridKey } from "./CityInteractionIndex";
 import { validateFactionIdentities } from "./FactionIdentity";
+import CityNameRegistry from "./CityNameRegistry";
 
 interface CityZoneLike {
   id?: string;
@@ -62,6 +63,7 @@ export function validateWorldState(core: Core) {
     }
   });
   issues.push(...validateCityNameUniqueness(core.allCities, ArchivedCities.list()));
+  issues.push(...validateCityNameReservations(core.allCities, CityNameRegistry.entries()));
   issues.push(...validateCityZoneMappings(core.allCities));
   issues.push(
     ...validateCityInteractionIndex(
@@ -120,6 +122,20 @@ export function validateCityNameUniqueness(
     }
   });
   return issues;
+}
+
+export function validateCityNameReservations(
+  activeCities: Array<{ id?: string; name: string }>,
+  reservations: Array<{ name: string; normalizedName?: string; cityId?: string }>
+) {
+  const byName = new Map(reservations.map((entry) => [entry.normalizedName ?? CityNameRegistry.normalize(entry.name), entry]));
+  return activeCities.flatMap((city) => {
+    const normalizedName = CityNameRegistry.normalize(city.name);
+    const reservation = byName.get(normalizedName);
+    if (!reservation) return [`active city name missing registry reservation: ${city.name} city=${city.id ?? "unknown"}`];
+    if (reservation.cityId !== city.id) return [`active city name registry mismatch: ${city.name} city=${city.id ?? "unknown"} registry=${reservation.cityId ?? "unknown"}`];
+    return [];
+  });
 }
 
 export function validateCityInteractionIndex(

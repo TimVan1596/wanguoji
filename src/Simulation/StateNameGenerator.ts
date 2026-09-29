@@ -4,7 +4,7 @@ interface StateNameSource {
   houseName?: string;
 }
 import { deriveNameCulture, hanEchoAffinity, historicalEchoAffinity, NameCulture } from "../Politics/NameCulture";
-import { recordHistoricalEcho } from "../Politics/NameGenerationTelemetry";
+import { recordStateNameGeneration } from "../Politics/NameGenerationTelemetry";
 
 export const classicalStateNames = [
   "周",
@@ -72,35 +72,47 @@ export function createStateName(
   const active = new Set(activeStateNames);
   const historical = new Set(historicallyUsedStateNames);
   const prestigeNames = ["汉", "晋", "隋", "唐", "宋", "元", "明", "清", "吴", "周", "夏", "商", "辽", "金"];
-  if (roll(100) < 12) {
-    const resolvedCulture = culture ?? deriveNameCulture(source.houseName);
-    const affinity = resolvedCulture === "HAN" ? hanEchoAffinity[source.houseName?.replace(/氏$/, "") ?? ""] : historicalEchoAffinity[resolvedCulture];
+  const resolvedCulture = culture ?? deriveNameCulture(source.houseName);
+  const affinity = resolvedCulture === "HAN" ? hanEchoAffinity[source.houseName?.replace(/氏$/, "") ?? ""] : historicalEchoAffinity[resolvedCulture];
+  const prestigeBranch = roll(100) < 12;
+  const echoBlockedByHistoricalUse = Boolean(affinity && historical.has(affinity));
+  let selected: string | undefined;
+  let historicalEcho = false;
+  if (prestigeBranch) {
     const weighted = prestigeNames.map((name) => ({ name, weight: name === affinity ? 8 : 1 })).filter(({ name }) => !active.has(name) && !historical.has(name));
     const total = weighted.reduce((sum, item) => sum + item.weight, 0);
     let choice = total > 0 ? roll(total) : 0;
     const prestige = weighted.find((item) => (choice -= item.weight) < 0)?.name;
     if (prestige) {
-      if (prestige === affinity) recordHistoricalEcho();
-      return prestige;
+      selected = prestige;
+      historicalEcho = prestige === affinity;
     }
+  }
+  if (selected) {
+    recordStateNameGeneration({ echoEligible: Boolean(affinity), prestigeBranch, historicalEcho, echoBlockedByHistoricalUse });
+    return selected;
   }
   const candidates = createStateNameCandidates(source);
   const firstNeverUsed = candidates.find(
     (name) => !active.has(name) && !historical.has(name)
   );
   if (firstNeverUsed) {
+    recordStateNameGeneration({ echoEligible: Boolean(affinity), prestigeBranch, historicalEcho, echoBlockedByHistoricalUse });
     return firstNeverUsed;
   }
   const expandedNeverUsed = findExpandedName(candidates, active, historical);
   if (expandedNeverUsed) {
+    recordStateNameGeneration({ echoEligible: Boolean(affinity), prestigeBranch, historicalEcho, echoBlockedByHistoricalUse });
     return expandedNeverUsed;
   }
   const firstNonActive = candidates.find((name) => !active.has(name));
   if (firstNonActive) {
+    recordStateNameGeneration({ echoEligible: Boolean(affinity), prestigeBranch, historicalEcho, echoBlockedByHistoricalUse });
     return firstNonActive;
   }
   const expandedNonActive = findExpandedName(candidates, active);
   if (expandedNonActive) {
+    recordStateNameGeneration({ echoEligible: Boolean(affinity), prestigeBranch, historicalEcho, echoBlockedByHistoricalUse });
     return expandedNonActive;
   }
   throw new Error("StateNameGenerator exhausted: no non-numeric state name available");

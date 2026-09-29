@@ -38,6 +38,17 @@ class CityNameRegistryStore {
     return true;
   }
 
+  reserveForCity(name: string, cityId: string, createdMonth?: number) {
+    if (this.reserve(name, cityId, createdMonth)) return;
+    const existing = this.reserved.get(this.normalize(name));
+    throw new Error(`City name uniqueness invariant violated: "${this.normalize(name)}" is already reserved by ${existing?.cityId ?? "unknown city"}; cannot assign to ${cityId}`);
+  }
+
+  getReservation(name: string) {
+    const reservation = this.reserved.get(this.normalize(name));
+    return reservation ? { ...reservation } : undefined;
+  }
+
   isAvailable(name: string) {
     return !this.reserved.has(this.normalize(name));
   }

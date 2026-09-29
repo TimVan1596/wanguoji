@@ -25,6 +25,19 @@ export interface RulerLegacyEvidence {
   endReason?: string;
   deathCause?: string;
   exileOrExtinction: boolean;
+  majorExpansion: boolean;
+  militaryAchievement: boolean;
+  institutionalAchievement: boolean;
+  stableGovernance: boolean;
+  longStableReign: boolean;
+  stabilityDeterioration: boolean;
+  demographicCollapse: boolean;
+  territorialCollapse: boolean;
+  cityCollapse: boolean;
+  majorDisorder: boolean;
+  terminalCollapse: boolean;
+  tragicEnd: boolean;
+  governanceCost: boolean;
   strongExpansion: boolean;
   severeDecline: boolean;
   steadyRule: boolean;
@@ -66,8 +79,21 @@ export function buildRulerLegacyEvidence(
     endReason,
     deathCause: chronicle.deathCause,
     exileOrExtinction: endReason === "流亡" || endReason === "彻底灭亡",
+    majorExpansion: territoryDelta >= 0.12 || cityDelta >= 3 || chronicle.completedUnification,
+    militaryAchievement: chronicle.citiesCapturedPersonally >= 2 || chronicle.completedUnification,
+    institutionalAchievement: Boolean(chronicle.foundedStateName) || chronicle.proclaimedEmperorMonth !== undefined || chronicle.completedUnification || chronicle.restorationsDuringReign > 0,
+    stableGovernance: end.stability >= 75 && stabilityDelta >= 0,
+    longStableReign: reignMonths >= 18 * 12 && end.stability >= 75 && stabilityDelta >= 0,
+    stabilityDeterioration: stabilityDelta <= -25,
+    demographicCollapse: start.population > 0 && end.population <= start.population * 0.6,
+    territorialCollapse: territoryDelta <= -0.12,
+    cityCollapse: cityDelta <= -2,
+    majorDisorder: chronicle.rebellionsDuringReign > 0,
+    terminalCollapse: endReason === "彻底灭亡" || endReason === "流亡",
+    tragicEnd: endReason === "被俘处死" || chronicle.deathCause === "被俘处死" || chronicle.deathCause === "战死" || endReason === "彻底灭亡",
+    governanceCost: (start.population > 0 && end.population <= start.population * 0.6) || stabilityDelta <= -20,
     strongExpansion: territoryDelta >= 0.16 || cityDelta >= 3 || chronicle.completedUnification,
-    severeDecline: territoryDelta <= -0.12 || cityDelta <= -2 || end.population <= start.population * 0.6 || endReason === "彻底灭亡",
+    severeDecline: territoryDelta <= -0.12 || cityDelta <= -2 || (start.population > 0 && end.population <= start.population * 0.6) || endReason === "彻底灭亡",
     steadyRule: reignMonths >= 18 * 12 && end.stability >= 72 && Math.abs(territoryDelta) < 0.04 && cityDelta === 0,
   };
 }

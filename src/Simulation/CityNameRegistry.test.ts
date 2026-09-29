@@ -18,6 +18,20 @@ describe("city name registry", () => {
     expect(CityNameRegistry.reserve("安邑", "city-b", 12)).toBe(false);
   });
 
+  it("throws when a different city id attempts to reserve an existing name", () => {
+    CityNameRegistry.reserveForCity("郢", "city-first", 0);
+    expect(() => CityNameRegistry.reserveForCity("郢", "city-second", 12))
+      .toThrow('"郢" is already reserved by city-first');
+  });
+
+  it("keeps generated active city names unique and bound to their actual city ids", () => {
+    const names = Array.from({ length: 30 }, (_, index) =>
+      CityNameRegistry.allocateCityName(undefined, `new-city-${index}`, index)
+    );
+    expect(new Set(names).size).toBe(names.length);
+    expect(CityNameRegistry.entries().every((entry) => entry.cityId?.startsWith("new-city-"))).toBe(true);
+  });
+
   it("does not reuse archived city names in the same world session", () => {
     CityNameRegistry.reserve("武陵", "archived-city", 12);
     const generated = CityNameRegistry.allocateCityName("武陵", "new-city", 120);
