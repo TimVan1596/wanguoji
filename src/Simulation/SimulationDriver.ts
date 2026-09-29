@@ -1,7 +1,7 @@
 import { WORLD_MONTH_MS } from "../config/simulation";
 
 export const SIMULATION_FIXED_STEP_MS = 1000 / 30;
-export const BASE_PLAY_RATE = 1.5;
+export const BASE_PLAY_RATE = 2.0;
 export const MAX_FOREGROUND_STEPS_PER_FRAME = 16;
 export const MAX_BACKGROUND_REAL_MS = 2 * 60 * 60 * 1000;
 export const MAX_CATCH_UP_WORLD_MONTHS = 1000 * 12;

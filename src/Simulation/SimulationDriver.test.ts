@@ -7,7 +7,7 @@ import SimulationDriver, {
   calculateBackgroundSimulationDebtMs,
 } from "./SimulationDriver";
 
-function context(speed = 1, running = true, basePlayRate = 1) {
+function context(speed = 1, running = true, basePlayRate = BASE_PLAY_RATE) {
   const deltas: number[] = [];
   return {
     deltas,
@@ -25,22 +25,26 @@ function context(speed = 1, running = true, basePlayRate = 1) {
 describe("SimulationDriver", () => {
   it("uses a fixed-step accumulator for foreground frames", () => {
     const driver = new SimulationDriver();
-    const { ctx, deltas } = context(1);
+    const { ctx, deltas } = context(1, true, 1);
     driver.updateForeground(SIMULATION_FIXED_STEP_MS / 2, ctx);
     expect(deltas).toHaveLength(0);
     driver.updateForeground(SIMULATION_FIXED_STEP_MS / 2, ctx);
     expect(deltas).toEqual([SIMULATION_FIXED_STEP_MS]);
   });
 
-  it("maps the new base play rate onto fixed-step accumulation", () => {
-    const driver = new SimulationDriver();
-    const { ctx, deltas } = context(1, true, BASE_PLAY_RATE);
-    driver.updateForeground(SIMULATION_FIXED_STEP_MS, ctx);
-    expect(deltas).toHaveLength(1);
-    expect(driver.getAccumulatorMs()).toBeCloseTo(SIMULATION_FIXED_STEP_MS * 0.5);
+  it("uses base rate 2 while keeping 60Hz foreground frames below the step cap", () => {
+    expect(BASE_PLAY_RATE).toBe(2);
+    [1, 2, 4].forEach((speed) => {
+      const driver = new SimulationDriver();
+      const { ctx, deltas } = context(speed);
+      const result = driver.updateForeground(1000 / 60, ctx);
+      expect(result.steps).toBe(speed);
+      expect(result.capped).toBe(false);
+      expect(deltas).toEqual(Array(speed).fill(SIMULATION_FIXED_STEP_MS));
+    });
   });
 
-  it("maps selected 1x/2x/4x to 1.5x/3x/6x old-rate debt", () => {
+  it("maps selected 1x/2x/4x to effective 2x/4x/8x background debt", () => {
     const one = calculateBackgroundSimulationDebtMs({
       hiddenAtRealMs: 0,
       visibleAtRealMs: 10_000,
@@ -59,16 +63,16 @@ describe("SimulationDriver", () => {
       speed: 4,
       wasPaused: false,
     });
-    expect(one.simulationDebtMs).toBe(15_000);
-    expect(two.simulationDebtMs).toBe(30_000);
-    expect(four.simulationDebtMs).toBe(60_000);
+    expect(one.simulationDebtMs).toBe(20_000);
+    expect(two.simulationDebtMs).toBe(40_000);
+    expect(four.simulationDebtMs).toBe(80_000);
   });
 
   it("makes varying frame deltas yield the same logical step count", () => {
     const a = new SimulationDriver();
     const b = new SimulationDriver();
-    const ca = context(1);
-    const cb = context(1);
+    const ca = context(1, true, 1);
+    const cb = context(1, true, 1);
     a.updateForeground(SIMULATION_FIXED_STEP_MS * 3, ca.ctx);
     b.updateForeground(SIMULATION_FIXED_STEP_MS, cb.ctx);
     b.updateForeground(SIMULATION_FIXED_STEP_MS, cb.ctx);
@@ -78,7 +82,7 @@ describe("SimulationDriver", () => {
 
   it("caps foreground steps per frame and keeps remaining accumulator", () => {
     const driver = new SimulationDriver();
-    const { ctx, deltas } = context(1);
+    const { ctx, deltas } = context(1, true, 1);
     const result = driver.updateForeground(SIMULATION_FIXED_STEP_MS * 10, ctx, 3);
     expect(deltas).toHaveLength(3);
     expect(result.capped).toBe(true);
@@ -161,7 +165,7 @@ describe("SimulationDriver", () => {
 
   it("can use the same driver step path for catch-up chunks in tests", () => {
     const driver = new SimulationDriver();
-    const { ctx, deltas } = context(1);
+    const { ctx, deltas } = context(1, true, 1);
     driver.runCatchUpChunk(SIMULATION_FIXED_STEP_MS * 4, ctx, 2);
     expect(deltas).toHaveLength(2);
   });

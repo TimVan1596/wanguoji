@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.99922e
+
+- Increased the shared foreground/background base playback rate from 1.5 to 2.0 while preserving 1×/2×/4× controls, the 30 Hz fixed-step authority, and the foreground step cap.
+- Added runtime debug playback-rate diagnostics; selected speed and save schema remain unchanged.
+
 ## v0.99922d
 
 - Separated posthumous-name evidence into expansion, military, governance, disorder, and terminal-outcome dimensions; demographic collapse alone no longer qualifies a ruler for 灵.

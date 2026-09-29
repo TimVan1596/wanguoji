@@ -15,6 +15,7 @@ import { diffCanonicalWorldSave, type CanonicalWorldSaveDiff, type WorldSaveV1 }
 import { APP_VERSION } from "../../config/version";
 import { getNameGenerationSummary } from "../../Politics/NameGenerationTelemetry";
 import { getCityNamingSummary } from "../../Simulation/CityNamingTelemetry";
+import { BASE_PLAY_RATE } from "../../Simulation/SimulationDriver";
 import {
   getWorldSaveStorageDiagnostics,
   subscribeWorldSaveStorageDiagnostics,
@@ -40,6 +41,7 @@ export default function WorldDiagnosticsPanel() {
   const teams = useSelector((state: RootState) => state.root.teams);
   const worldMonth = useSelector((state: RootState) => state.root.worldMonth);
   const worldPhase = useSelector((state: RootState) => state.root.worldPhase);
+  const simulationSpeed = useSelector((state: RootState) => state.root.simulationSpeed);
   const [, setTick] = useState(0);
   const [hydrationBusy, setHydrationBusy] = useState(false);
   const [hydrationStatus, setHydrationStatus] = useState("");
@@ -89,6 +91,7 @@ export default function WorldDiagnosticsPanel() {
 
   const summary = [
     `世界年月：${formatWorldDate(worldMonth)}（${worldMonth}月）`,
+    `Playback：base ${BASE_PLAY_RATE.toFixed(1)}｜selected ${simulationSpeed}×｜effective ${(BASE_PLAY_RATE * simulationSpeed).toFixed(1)}×`,
     `当前时代：${diagnostics.currentEra ? `${diagnostics.currentEra.type} · ${diagnostics.currentEra.name} · ${formatWorldDate(diagnostics.currentEra.startMonth)}起` : "暂无已确认时代"}`,
     `当前格局：${diagnostics.liveClassification?.type ?? "—"} · ${diagnostics.liveClassification?.name ?? (diagnostics.validity.isStale ? "格局转换中" : "天下未定")}`,
     `旧时代退出：${diagnostics.validity.isStale ? `已失效${formatWorldDuration(diagnostics.validity.staleMonths)} / ${formatWorldDuration(diagnostics.validity.graceMonths)}` : "当前仍有效"}`,
