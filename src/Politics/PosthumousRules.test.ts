@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type Team from "../Components/Team";
 import type { Ruler } from "./Dynasty";
 import {
+  deriveImperialOrdinal,
   evaluatePosthumousNames,
   finalizeRulerPosthumousNames,
   formatPosthumousRulerName,
@@ -53,6 +54,19 @@ function ruler(overrides: Partial<Ruler> = {}): Ruler {
     chronicle,
     ...overrides,
   };
+}
+
+function rulerWithReign(
+  id: string,
+  accessionYear: number,
+  endYear: number,
+  start: { territoryShare: number; cityCount: number; stability: number },
+  end: { territoryShare: number; cityCount: number; stability: number },
+  overrides: Partial<Ruler> = {}
+): Ruler {
+  const chronicle = createRulerChronicle({ month: accessionYear, population: 40, ...start });
+  finishRulerChronicle(chronicle, { month: endYear, population: 50, ...end });
+  return ruler({ id, accessionYear, endYear, chronicle, ...overrides });
 }
 
 describe("posthumous rules", () => {
@@ -237,7 +251,7 @@ describe("posthumous rules", () => {
     });
     finalizeRulerPosthumousNames(quiet, [quiet], faction(), 32 * 12);
     expect(quiet.posthumousEpithet).toBeUndefined();
-    expect(["高宗", "成宗", "世宗"]).toContain(quiet.templeName);
+    expect(["世祖", "高宗", "成宗", "世宗"]).toContain(quiet.templeName);
   });
 
   it("grants temple eligibility to the first emperor even below the old score cutoff", () => {
@@ -285,5 +299,92 @@ describe("posthumous rules", () => {
     finalizeRulerPosthumousNames(second, [first, second], faction(), 280);
     expect(second.templeName).toBe("高祖");
     expect(second.templeName).not.toBe("成祖");
+  });
+
+  it("prefers Taizu/Gaozu for a state founder who also establishes imperial rule", () => {
+    const founder = ruler();
+    founder.chronicle!.foundedStateName = "阳";
+    founder.chronicle!.proclaimedEmperorMonth = 100;
+    const result = evaluatePosthumousNames(founder, [founder], faction(), founder.endYear!);
+    expect(["太祖", "高祖"]).toContain(result.templeName);
+    expect(result.templeName).not.toBe("世祖");
+  });
+
+  it("gives the first emperor of a multi-generation kingdom a founding role, not Gaozong", () => {
+    const kings = [
+      rulerWithReign("king-1", 0, 40, { territoryShare: 0.2, cityCount: 2, stability: 70 }, { territoryShare: 0.2, cityCount: 2, stability: 70 }, { reignOrdinal: 1 }),
+      rulerWithReign("king-2", 41, 99, { territoryShare: 0.2, cityCount: 2, stability: 70 }, { territoryShare: 0.2, cityCount: 2, stability: 70 }, { reignOrdinal: 2 }),
+    ];
+    const firstEmperor = rulerWithReign(
+      "first-emperor-generation-3", 100, 100 + 35 * 12,
+      { territoryShare: 0.2, cityCount: 2, stability: 70 },
+      { territoryShare: 0.38, cityCount: 7, stability: 82 },
+      { reignOrdinal: 3 }
+    );
+    firstEmperor.chronicle!.proclaimedEmperorMonth = 120;
+    const empire = faction({ sovereigntyHistory: [
+      { rank: "KING", startMonth: 0, endMonth: 99 },
+      { rank: "EMPEROR", startMonth: 100 },
+    ] });
+    expect(deriveImperialOrdinal(firstEmperor, [...kings, firstEmperor], empire)).toBe(1);
+    expect(evaluatePosthumousNames(firstEmperor, [...kings, firstEmperor], empire, firstEmperor.endYear!).templeName).toBe("世祖");
+  });
+
+  it("uses imperial ordinal rather than reign ordinal for a meritorious second emperor", () => {
+    const firstEmperor = rulerWithReign(
+      "emperor-1", 0, 100,
+      { territoryShare: 0.2, cityCount: 3, stability: 75 },
+      { territoryShare: 0.25, cityCount: 4, stability: 78 },
+      { reignOrdinal: 3 }
+    );
+    firstEmperor.chronicle!.proclaimedEmperorMonth = 10;
+    const secondEmperor = rulerWithReign(
+      "emperor-2", 101, 101 + 20 * 12,
+      { territoryShare: 0.25, cityCount: 4, stability: 75 },
+      { territoryShare: 0.4, cityCount: 8, stability: 83 },
+      { reignOrdinal: 4 }
+    );
+    const empire = faction({ sovereigntyHistory: [{ rank: "EMPEROR", startMonth: 0 }] });
+    expect(deriveImperialOrdinal(secondEmperor, [firstEmperor, secondEmperor], empire)).toBe(2);
+    expect(evaluatePosthumousNames(secondEmperor, [firstEmperor, secondEmperor], empire, secondEmperor.endYear!).templeName).toBe("太宗");
+  });
+
+  it("does not mechanically call a short, declining second emperor Taizong", () => {
+    const firstEmperor = rulerWithReign("emperor-1", 0, 100,
+      { territoryShare: 0.3, cityCount: 5, stability: 75 }, { territoryShare: 0.32, cityCount: 5, stability: 78 });
+    firstEmperor.chronicle!.proclaimedEmperorMonth = 10;
+    const shortSuccessor = rulerWithReign("emperor-2", 101, 101 + 5 * 12,
+      { territoryShare: 0.32, cityCount: 5, stability: 70 }, { territoryShare: 0.2, cityCount: 3, stability: 45 });
+    const empire = faction({ sovereigntyHistory: [{ rank: "EMPEROR", startMonth: 0 }] });
+    expect(deriveImperialOrdinal(shortSuccessor, [firstEmperor, shortSuccessor], empire)).toBe(2);
+    expect(evaluatePosthumousNames(shortSuccessor, [firstEmperor, shortSuccessor], empire, shortSuccessor.endYear!).templeName).not.toBe("太宗");
+  });
+
+  it("reserves Gaozong for mature imperial expansion and gives mid-dynasty renewal Shizong", () => {
+    const first = rulerWithReign("emperor-1", 0, 100,
+      { territoryShare: 0.2, cityCount: 3, stability: 70 }, { territoryShare: 0.22, cityCount: 3, stability: 72 });
+    first.chronicle!.proclaimedEmperorMonth = 10;
+    const second = rulerWithReign("emperor-2", 101, 200,
+      { territoryShare: 0.22, cityCount: 3, stability: 72 }, { territoryShare: 0.24, cityCount: 4, stability: 74 });
+    const empire = faction({ sovereigntyHistory: [{ rank: "EMPEROR", startMonth: 0 }] });
+    const mature = rulerWithReign("emperor-3", 201, 201 + 35 * 12,
+      { territoryShare: 0.24, cityCount: 4, stability: 75 }, { territoryShare: 0.4, cityCount: 9, stability: 84 });
+    expect(evaluatePosthumousNames(mature, [first, second, mature], empire, mature.endYear!).templeName).toBe("高宗");
+
+    const midRenewal = rulerWithReign("emperor-3b", 201, 201 + 20 * 12,
+      { territoryShare: 0.24, cityCount: 4, stability: 60 }, { territoryShare: 0.38, cityCount: 8, stability: 80 });
+    expect(evaluatePosthumousNames(midRenewal, [first, second, midRenewal], empire, midRenewal.endYear!).templeName).toBe("世宗");
+  });
+
+  it("uses Chengzong for long stable consolidation without major expansion", () => {
+    const first = rulerWithReign("emperor-1", 0, 100,
+      { territoryShare: 0.2, cityCount: 3, stability: 70 }, { territoryShare: 0.22, cityCount: 3, stability: 74 });
+    first.chronicle!.proclaimedEmperorMonth = 10;
+    const second = rulerWithReign("emperor-2", 101, 200,
+      { territoryShare: 0.22, cityCount: 3, stability: 74 }, { territoryShare: 0.23, cityCount: 3, stability: 77 });
+    const stable = rulerWithReign("emperor-3", 201, 201 + 35 * 12,
+      { territoryShare: 0.23, cityCount: 3, stability: 78 }, { territoryShare: 0.23, cityCount: 3, stability: 82 });
+    const empire = faction({ sovereigntyHistory: [{ rank: "EMPEROR", startMonth: 0 }] });
+    expect(evaluatePosthumousNames(stable, [first, second, stable], empire, stable.endYear!).templeName).toBe("成宗");
   });
 });

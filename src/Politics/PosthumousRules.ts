@@ -118,7 +118,7 @@ export function evaluatePosthumousNames(
       ? chooseEpithet(ruler, dynastyRulers, evidence)
       : undefined;
   const templeEvaluation = isTempleNameEligible(evidence, rank)
-    ? chooseTempleName(ruler, dynastyRulers, evidence, rank)
+    ? chooseTempleName(ruler, dynastyRulers, evidence, rank, faction)
     : undefined;
 
   return {
@@ -251,64 +251,130 @@ function chooseTempleName(
   ruler: Ruler,
   dynastyRulers: Ruler[],
   evidence: RulerLegacyEvidence,
-  historicalRank: "LEADER" | "KING" | "EMPEROR"
+  historicalRank: "LEADER" | "KING" | "EMPEROR",
+  faction: Pick<Team, "sovereigntyHistory">
 ) {
   const chronicle = ruler.chronicle;
   if (!chronicle) {
     return undefined;
   }
-  const candidates: NameCandidate[] = [];
-  const add = (name: string, score: number, reason: string) => addScoredCandidate(candidates, name, score, reason);
+  const imperialOrdinal = deriveImperialOrdinal(ruler, dynastyRulers, faction);
+  const roles: NameCandidate[][] = [];
+  const role = (...candidates: NameCandidate[]) => roles.push(candidates);
+  const candidate = (name: string, reason: string): NameCandidate => ({ name, reasons: [reason] });
+
+  // Role precedence is intentional: state/imperial foundations outrank later
+  // achievements accumulated by the same ruler.
   if (evidence.foundedState) {
-    add("太祖", 100, chronicle.proclaimedEmperorMonth !== undefined ? "开国并建立帝号，奠定王朝基业" : "开国建制，奠定王朝基业");
-    add("高祖", 92, "开创国家并建立统治根基");
+    role(
+      candidate("太祖", chronicle.proclaimedEmperorMonth !== undefined ? "开国并建立帝号，奠定王朝基业" : "开国建制，奠定王朝基业"),
+      candidate("高祖", "开创国家并建立统治根基")
+    );
+  } else if (
+    evidence.restoration && evidence.proclaimedEmperor &&
+    evidence.territoryDelta >= 0.3 && evidence.cityDelta >= 5 &&
+    evidence.reignMonths >= VERY_LONG_REIGN_MONTHS
+  ) {
+    role(
+      candidate("成祖", "复国后完成第二次创业级的帝制重建与扩张"),
+      candidate("世祖", "复国并重新奠定王朝秩序"),
+      candidate("中宗", "王朝中断后恢复政权延续")
+    );
+  } else if (historicalRank === "EMPEROR" && imperialOrdinal === 1) {
+    role(
+      candidate("世祖", "在既有政权基础上首次建立帝制"),
+      candidate("高祖", "首次建立帝号并奠定帝统")
+    );
+  } else if (
+    historicalRank === "EMPEROR" && imperialOrdinal === 2 &&
+    (evidence.majorExpansion || evidence.completedUnification || evidence.longStableReign)
+  ) {
+    role(
+      candidate("太宗", "承继帝制创立者并有显著巩固、扩张或长治功业"),
+      candidate("世宗", "帝制早期承继并推动恢复与扩张"),
+      candidate("高宗", "承继帝统并取得持续功业")
+    );
+  } else if (evidence.restoration) {
+    role(
+      candidate("世祖", "复国并重新奠定王朝秩序"),
+      candidate("中宗", "王朝中断后恢复政权延续"),
+      candidate("世宗", "复国后推动恢复与扩张")
+    );
+  } else if (
+    historicalRank === "EMPEROR" && imperialOrdinal !== 1 &&
+    evidence.reignMonths >= VERY_LONG_REIGN_MONTHS &&
+    evidence.majorExpansion
+  ) {
+    role(
+      candidate("高宗", "成熟帝国长期强盛并有持续功业"),
+      candidate("成宗", "长期巩固秩序并维持稳定治理"),
+      candidate("世宗", "推动王朝中期恢复与扩张")
+    );
+  } else if (
+    historicalRank === "EMPEROR" && imperialOrdinal !== 1 &&
+    evidence.stableGovernance && evidence.majorExpansion
+  ) {
+    role(
+      candidate("世宗", "王朝中期国势恢复或扩张并维持稳定治理"),
+      candidate("宣宗", "治理恢复并延续国家秩序"),
+      candidate("景宗", "兼有国势改善与稳定治理")
+    );
+  } else if (historicalRank === "EMPEROR" && evidence.longStableReign) {
+    role(
+      candidate("成宗", "长期巩固秩序并维持稳定治理"),
+      candidate("高宗", "长期执政且治理稳定")
+    );
+  } else if (evidence.completedUnification) {
+    role(
+      candidate("世宗", "完成天下一统并巩固国家秩序"),
+      candidate("太宗", "承继基业并完成天下一统")
+    );
+  } else if (historicalRank === "EMPEROR" && evidence.militaryAchievement && chronicle.citiesCapturedPersonally >= 4) {
+    role(candidate("武宗", "个人亲征与军事征服特征突出"));
+  } else if (historicalRank === "KING" && evidence.territoryDelta >= 0.28 && evidence.cityDelta >= 5) {
+    role(
+      candidate("太宗", "以显著扩张与秩序巩固建立重要王朝角色"),
+      candidate("世宗", "长期拓展并巩固国家秩序")
+    );
   }
-  if (evidence.proclaimedEmperor && !evidence.foundedState) {
-    add("世祖", 92, "建立帝号，开创新的帝制格局");
-    add("高祖", 78, "首次建立帝号并奠定帝统");
-  }
-  if (evidence.restoration) {
-    add("世祖", 100, "复国并重新奠定王朝秩序");
-    add("中宗", 88, "王朝中断后恢复政权延续");
-    add("世宗", 72, "复国后推动恢复与扩张");
-    if (evidence.proclaimedEmperor && evidence.territoryDelta >= 0.3 && evidence.cityDelta >= 5 && ruler.reignOrdinal !== undefined && ruler.reignOrdinal > 1) {
-      add("成祖", 220, "复国后完成第二次创业级的帝制重建与扩张");
-    }
-  }
-  if (evidence.completedUnification) {
-    add(ruler.reignOrdinal === 2 ? "太宗" : "世宗", 96, "承继基业并完成天下一统");
-    add("高宗", 74, "完成统一并巩固帝国秩序");
-  }
-  if (historicalRank === "EMPEROR" && ruler.reignOrdinal === 2 && (evidence.majorExpansion || evidence.completedUnification)) {
-    add("太宗", 96, "承继开创者并大幅巩固扩张");
-    add("高宗", 72, "承继基业并取得显著功业");
-    add("世宗", 68, "早期王朝扩张与巩固");
-  }
-  if (historicalRank === "EMPEROR" && evidence.reignMonths >= VERY_LONG_REIGN_MONTHS && (evidence.majorExpansion || evidence.longStableReign)) {
-    add("高宗", 94, "成熟王朝长期强盛并有持续功业");
-    add("成宗", 84, "长期巩固秩序并维持稳定治理");
-    add("世宗", 78, "推动王朝中期恢复与扩张");
-  }
-  if (historicalRank === "EMPEROR" && evidence.militaryAchievement && ruler.reignOrdinal !== 1 && chronicle.citiesCapturedPersonally >= 4) {
-    add("武宗", 86, "个人亲征与军事征服特征突出");
-  }
-  if (historicalRank === "EMPEROR" && evidence.stableGovernance && evidence.majorExpansion) {
-    add("景宗", 70, "兼有国势改善与稳定治理");
-    add("宣宗", 68, "治理恢复并延续国家秩序");
-  }
-  if (historicalRank === "KING" && evidence.territoryDelta >= 0.28 && evidence.cityDelta >= 5) {
-    add("太宗", 62, "以显著扩张与秩序巩固建立重要王朝角色");
-    add("世宗", 54, "长期拓展并巩固国家秩序");
-  }
+
   const used = new Set(
     dynastyRulers
       .filter((item) => item.id !== ruler.id)
       .map((item) => item.templeName)
       .filter(Boolean) as string[]
   );
-  return uniqueCandidates(candidates)
-    .filter((candidate) => !used.has(candidate.name))
-    .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))[0];
+  for (const roleCandidates of roles) {
+    const available = roleCandidates.find((item) => !used.has(item.name));
+    if (available) return available;
+  }
+  return undefined;
+}
+
+export function deriveImperialOrdinal(
+  ruler: Ruler,
+  dynastyRulers: Ruler[],
+  faction: Pick<Team, "sovereigntyHistory">
+): number | undefined {
+  if (ruler.accessionYear === undefined || ruler.endYear === undefined) return undefined;
+  const emperorPeriods = (faction.sovereigntyHistory ?? [])
+    .filter((entry) => entry.rank === "EMPEROR")
+    .map((entry) => ({ start: entry.startMonth, end: entry.endMonth ?? Number.POSITIVE_INFINITY }));
+  const imperialRulers = dynastyRulers.filter((item) => {
+    if (item.accessionYear === undefined || item.endYear === undefined) return false;
+    if (item.chronicle?.proclaimedEmperorMonth !== undefined) return true;
+    return emperorPeriods.some((period) => item.accessionYear! <= period.end && item.endYear! >= period.start);
+  });
+  if (!imperialRulers.some((item) => item.id === ruler.id)) {
+    if (ruler.chronicle?.proclaimedEmperorMonth === undefined) return undefined;
+    imperialRulers.push(ruler);
+  }
+  imperialRulers.sort((a, b) =>
+    (a.accessionYear ?? Number.POSITIVE_INFINITY) - (b.accessionYear ?? Number.POSITIVE_INFINITY) ||
+    (a.chronicle?.proclaimedEmperorMonth ?? a.accessionYear ?? 0) - (b.chronicle?.proclaimedEmperorMonth ?? b.accessionYear ?? 0)
+  );
+  const index = imperialRulers.findIndex((item) => item.id === ruler.id);
+  return index < 0 ? undefined : index + 1;
 }
 
 function pickSoftUniqueEpithet(
