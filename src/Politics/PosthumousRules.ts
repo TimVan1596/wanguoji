@@ -69,6 +69,11 @@ export function evaluatePosthumousNames(
       event.metadata?.cause === "CAPITAL_FALL" &&
       eventMonth >= ruler.accessionYear! && eventMonth <= ruler.endYear!;
   }).length;
+  const peacefulLongReign = evidence.reignMonths >= 20 * 12 &&
+    end.stability >= 75 && stabilityDelta >= 0 &&
+    chronicle.rebellionsDuringReign === 0 &&
+    !evidence.territorialCollapse && !evidence.cityCollapse && !evidence.terminalCollapse &&
+    !evidence.majorExpansion && !evidence.militaryAchievement && capitalFallCount <= 1;
   const reasons: string[] = [];
   let score = 0;
 
@@ -96,7 +101,7 @@ export function evaluatePosthumousNames(
     reasons.push("扩张");
   }
   if (evidence.personallyCapturedCities > 0) {
-    score += Math.min(28, evidence.personallyCapturedCities * 7);
+    score += Math.min(28, evidence.personallyCapturedCities * 11);
     reasons.push("亲征战功");
   }
   if (
@@ -122,11 +127,15 @@ export function evaluatePosthumousNames(
     score += 24;
     reasons.push("国难");
   }
+  if (peacefulLongReign) {
+    score += 26;
+    reasons.push("长期守成，政局和顺");
+  }
 
   const hasSubstantiveFact = reasons.some((reason) => reason !== "长治" && reason !== "稳定");
   const epithetEvaluation =
     score >= 22 && hasSubstantiveFact
-      ? chooseEpithet(ruler, dynastyRulers, evidence)
+      ? chooseEpithet(ruler, dynastyRulers, evidence, accessionAge, capitalFallCount)
       : undefined;
   const templeEvaluation = isTempleNameEligible(evidence, rank)
     ? chooseTempleName(ruler, dynastyRulers, evidence, rank, faction)
@@ -214,12 +223,15 @@ export function isTempleNameEligible(evidence: RulerLegacyEvidence, historicalRa
 function chooseEpithet(
   ruler: Ruler,
   dynastyRulers: Ruler[],
-  evidence: RulerLegacyEvidence
+  evidence: RulerLegacyEvidence,
+  accessionAge: number,
+  capitalFallCount: number
 ) {
   const chronicle = ruler.chronicle;
   if (!chronicle) {
     return undefined;
   }
+  const end = getRulerEffectiveSnapshot(chronicle);
   const candidates: NameCandidate[] = [];
   const add = (name: string, score: number, reason: string) => addScoredCandidate(candidates, name, score, reason);
   const terminalCrisis = evidence.terminalCollapse || ruler.endReason === "被俘处死";
@@ -267,7 +279,7 @@ function chooseEpithet(
   if (chronicle.rebellionsDuringReign > 0 && evidence.stableGovernance) add("定", 30, "任内有内乱记录，末期稳定度仍保持高位");
   if (
     evidence.reignMonths >= 20 * 12 &&
-    end.stability >= 75 && stabilityDelta >= 0 &&
+    end.stability >= 75 && evidence.stabilityDelta >= 0 &&
     chronicle.rebellionsDuringReign === 0 &&
     !evidence.territorialCollapse && !evidence.cityCollapse && !evidence.terminalCollapse &&
     !evidence.majorExpansion && !evidence.militaryAchievement && capitalFallCount <= 1

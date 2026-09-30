@@ -248,7 +248,7 @@ describe("posthumous rules", () => {
 
   it("does not introduce unsupported 献 and records evidence-based new epithet reasons", () => {
     const expansion = rulerWithReign("huan", 0, 15 * 12, { territoryShare: 0.1, cityCount: 2, stability: 70 }, { territoryShare: 0.28, cityCount: 5, stability: 75 });
-    const candidates = evaluatePosthumousNames(expansion, [expansion], faction());
+    const candidates = evaluatePosthumousNames(expansion, [expansion], faction(), expansion.endYear!);
     expect(candidates.posthumousEpithet).not.toBe("献");
     expect(["襄", "桓"]).toContain(candidates.posthumousEpithet);
     expect(candidates.epithetReasons.length).toBeGreaterThan(0);
@@ -314,7 +314,7 @@ describe("posthumous rules", () => {
       chronicle,
     });
     finalizeRulerPosthumousNames(quiet, [quiet], faction(), 32 * 12);
-    expect(quiet.posthumousEpithet).toBeUndefined();
+    expect(quiet.posthumousEpithet).toBe("顺");
     expect(["世祖", "高宗", "成宗", "世宗"]).toContain(quiet.templeName);
   });
 

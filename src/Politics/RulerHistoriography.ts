@@ -319,7 +319,7 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
   } else if (evidence.roles.includes("SHORT_REIGN") && !hasMajorLegacy(evidence)) {
     lines.push(`${livingPrefix}在位不足五年，现有史实尚不足以形成明确的治绩判断。`);
   } else if (evidence.roles.includes("EXPANDER")) {
-    lines.push(`${livingPrefix}${agePrefix}其治下国势显著开拓，留下以拓境进取为主的政治遗产。`);
+    lines.push(`${livingPrefix}${agePrefix}其治下国势显著开拓，可称一代进取之主；其政治遗产以拓境为重。`);
   } else if (evidence.roles.includes("LAST_RULER")) {
     lines.push(`${agePrefix}其世国祚终结，结局为亡国之君。`);
   } else {
@@ -349,16 +349,16 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
     evidence.populationPeakRetreat >= Math.max(8, evidence.peakPopulation * 0.35)
   ) {
     lines.push(`人口一度达到${evidence.peakPopulation}，至${evidence.isFinalized ? "身后" : "目前"}明显回落，盛势未能转化为稳定基础。`);
+  } else if (hasGovernanceCost(evidence) && evidence.roles.includes("EXPANDER")) {
+    lines.push(evidence.startPopulation > 0 && evidence.endPopulation <= evidence.startPopulation * 0.6
+      ? "开拓伴随明显代价，可谓得地而失民；人口与稳定的承受能力未能同步。"
+      : "其功在开拓，但稳定度明显下滑，扩张成果伴随沉重的治理代价。");
   } else if (
     evidence.startPopulation > 0 &&
     evidence.populationPeakGain < Math.max(3, evidence.startPopulation * 0.25) &&
     evidence.startPopulation - evidence.endPopulation >= Math.max(5, evidence.startPopulation * 0.35)
   ) {
     lines.push(`承统时人口已有${evidence.startPopulation}，至${evidence.isFinalized ? "身后" : "目前"}降至${evidence.endPopulation}。`);
-  } else if (hasGovernanceCost(evidence) && evidence.roles.includes("EXPANDER")) {
-    lines.push(evidence.startPopulation > 0 && evidence.endPopulation <= evidence.startPopulation * 0.6
-      ? "开拓伴随明显代价，可谓得地而失民；人口与稳定的承受能力未能同步。"
-      : "其功在开拓，但稳定度明显下滑，扩张成果伴随沉重的治理代价。");
   } else if (evidence.forcedCapitalRelocationsDuringReign >= 2) {
     lines.push(`在位期间两度失都，王室被迫迁徙${evidence.rebellions > 0 ? "，又屡经内乱" : ""}；` +
       (evidence.terminalCollapse ? "最终未能保全国祚。" : "政权仍得以延续。"));

@@ -39,6 +39,7 @@ import {
 import { getSuccessionShockMultiplier } from "../Simulation/SovereigntyModifiers";
 import { finalizeRulerPosthumousNames } from "./PosthumousRules";
 import { createSuccessorDynastyHouseName } from "./DynastySurnameGenerator";
+import { getUnrelatedSuccessorRelation } from "./DynastySuccessionIdentity";
 import { cultureGivenNamePools, deriveNameCulture } from "./NameCulture";
 import {
   createNaturalDeathMonth,
@@ -53,10 +54,6 @@ export type RulerRelationType =
   | "COLLATERAL_KIN"
   | "NEW_HOUSE"
   | "LEADER_SUCCESSOR";
-
-export function getUnrelatedSuccessorRelation(identityStage: Team["identityStage"]): "NEW_HOUSE" | "LEADER_SUCCESSOR" {
-  return identityStage === "PROVISIONAL" ? "LEADER_SUCCESSOR" : "NEW_HOUSE";
-}
 
 export interface Ruler {
   id: string;

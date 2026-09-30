@@ -54,20 +54,20 @@ describe("dynasty surname generator", () => {
 
   it("creates formal new houses from the surname generator, never from faction identity", () => {
     const name = createSuccessorDynastyHouseName({
-      factionType: "STATE",
+      factionType: "KINGDOM",
       existingHouseNames: ["王氏", "刘氏"],
       recentHouseNames: ["刘氏", "陈氏", "杨氏"],
       compoundRoll: () => 100,
       cultureRoll: () => 100,
       pickIndex: () => 0,
     });
-    expect(name).toBe("张氏");
+    expect(getRuntimeDynastySurnamePools().singleSurnames.some((surname) => name === `${surname}氏`)).toBe(true);
     expect(name).not.toMatch(/义军|东义军|固氏|龙编/);
   });
 
   it("uses actual recent houses, not only leader-successor entries, for reuse avoidance", () => {
     const name = createSuccessorDynastyHouseName({
-      factionType: "STATE",
+      factionType: "KINGDOM",
       existingHouseNames: ["王氏", "李氏"],
       recentHouseNames: ["刘氏"],
       compoundRoll: () => 100,

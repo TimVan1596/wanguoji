@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getUnrelatedSuccessorRelation } from "./Dynasty";
+import { getUnrelatedSuccessorRelation } from "./DynastySuccessionIdentity";
 
 describe("unrelated successor political relationship", () => {
   it("keeps provisional leader turnover distinct from a formal-state new house", () => {
