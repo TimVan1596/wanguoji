@@ -23,6 +23,7 @@ import {
   createRulerChronicle,
   finishRulerChronicle,
   observeRulerPeak,
+  recordPersonalCityCapture,
   RulerChronicle,
   RulerReignSnapshot,
 } from "./RulerChronicle";
@@ -484,7 +485,7 @@ class DynastyRegistryStore {
     );
   }
 
-  recordCityCaptured(rulerId: string | undefined, cityId: string, eventId?: string) {
+  recordCityCaptured(rulerId: string | undefined, _cityId: string, eventId?: string) {
     if (!rulerId) {
       return;
     }
@@ -492,11 +493,7 @@ class DynastyRegistryStore {
     if (!ruler?.chronicle) {
       return;
     }
-    ruler.chronicle.citiesCapturedPersonally += 1;
-    ruler.chronicle.deathCityId = ruler.chronicle.deathCityId ?? cityId;
-    if (eventId) {
-      ruler.chronicle.notableEventIds.push(eventId);
-    }
+    recordPersonalCityCapture(ruler.chronicle, eventId);
   }
 
   recordCityLost(factionId: string, eventId?: string) {

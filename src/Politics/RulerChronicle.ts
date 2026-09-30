@@ -5,14 +5,10 @@ import {
   RULER_TAG_SHORT_REIGN_MONTHS,
   RULER_TAG_STEWARD_MIN_REIGN_MONTHS,
 } from "../config/simulation";
-import { formatWorldDuration } from "../Simulation/WorldTime";
 import type { WorldEvent } from "../History/WorldHistory";
 import { getFactionEventRelation } from "../History/FactionEventRelation";
 import { getHistorySignificance } from "../History/HistorySignificanceRules";
-import {
-  evaluateReignOutcome,
-  formatTerritoryTransition,
-} from "./ReignOutcomeRules";
+import { evaluateReignOutcome } from "./ReignOutcomeRules";
 
 export interface RulerReignSnapshot {
   month: number;
@@ -66,6 +62,11 @@ export function observeRulerPeak(
     chronicle.peakTerritoryShare,
     snapshot.territoryShare
   );
+}
+
+export function recordPersonalCityCapture(chronicle: RulerChronicle, eventId?: string) {
+  chronicle.citiesCapturedPersonally += 1;
+  if (eventId) chronicle.notableEventIds.push(eventId);
 }
 
 export function finishRulerChronicle(
@@ -145,99 +146,6 @@ export function buildRulerTags(
     tags.push("守成");
   }
   return tags.slice(0, 3);
-}
-
-export function buildRulerAssessment(
-  rulerName: string,
-  chronicle: RulerChronicle,
-  reignMonths: number,
-  accessionAge?: number,
-  legacyNames?: { posthumousEpithet?: string; posthumousEpithetReasons?: string[]; templeName?: string; templeNameReasons?: string[] }
-) {
-  const tags = buildRulerTags(chronicle, reignMonths);
-  const end = getRulerEffectiveSnapshot(chronicle);
-  const start = chronicle.accessionSnapshot;
-  const outcome = evaluateReignOutcome(start, end);
-  const territoryDelta = outcome.territoryDelta;
-  const cityDelta = outcome.cityDelta;
-  const parts: string[] = [];
-
-  if (accessionAge !== undefined) {
-    parts.push(formatAccessionAge(accessionAge));
-  }
-
-  if (chronicle.foundedStateName) {
-    parts.push(`开国之君，正式奠定${chronicle.foundedStateName}的王统。`);
-  }
-  if (chronicle.restorationsDuringReign > 0) {
-    parts.push("复国之君，重建了延续中的政权。" );
-  }
-  if (tags.includes("一统")) {
-    parts.push(`${rulerName}在位期间完成天下统一。`);
-  } else if (tags.includes("开疆")) {
-    parts.push(
-      `开疆之君，在位期间${formatTerritoryTransition(start.territoryShare, end.territoryShare)}。`
-    );
-  } else if (tags.includes("国势衰退")) {
-    parts.push(
-      `国势衰退，在位期间${formatTerritoryTransition(start.territoryShare, end.territoryShare)}。`
-    );
-  } else if (outcome.outcome === "EXPANSION") {
-    parts.push(
-      `国势扩张，在位期间${formatTerritoryTransition(start.territoryShare, end.territoryShare)}。`
-    );
-  } else if (outcome.outcome === "IMPROVEMENT") {
-    parts.push(`国势渐进，在位期间人口与稳定有所改善。`);
-  } else if (outcome.outcome === "MIXED") {
-    parts.push(`功过相参，在位期间国势有升有降。`);
-  } else if (tags.includes("守成")) {
-    parts.push(`守成之君，在位${formatWorldDuration(reignMonths)}，国家版图基本稳定。`);
-  } else {
-    parts.push(`${rulerName}在位${formatWorldDuration(reignMonths)}。`);
-  }
-
-  const demographicCollapse = start.population > 0 && end.population <= start.population * 0.6;
-  const stabilityDecline = end.stability - start.stability <= -20;
-  const hasMajorAchievement = territoryDelta >= 0.12 || cityDelta >= 3 || chronicle.completedUnification;
-  if (hasMajorAchievement && (demographicCollapse || stabilityDecline)) {
-    const costs = [demographicCollapse ? "人口锐减" : undefined, stabilityDecline ? "稳定度明显下滑" : undefined].filter(Boolean).join("、");
-    parts.push(`开疆有功，但${costs}，扩张伴随较高统治代价。`);
-  } else if (demographicCollapse || stabilityDecline) {
-    parts.push([demographicCollapse ? "人口大幅减少" : undefined, stabilityDecline ? "稳定度明显下滑" : undefined].filter(Boolean).join("，") + "。");
-  }
-
-  if (chronicle.citiesCapturedPersonally > 0) {
-    parts.push(`亲征攻陷${chronicle.citiesCapturedPersonally}座城市。`);
-  } else if (cityDelta !== 0) {
-    parts.push(`治下城市${cityDelta > 0 ? "增加" : "减少"}${Math.abs(cityDelta)}座。`);
-  }
-  if (chronicle.rebellionsDuringReign > 0) {
-    parts.push(`统治期间发生${chronicle.rebellionsDuringReign}次重大内乱。`);
-  }
-  if (chronicle.deathCause) {
-    parts.push(`结局：${chronicle.deathCause}。`);
-  }
-  if (parts.length === 1 && Math.abs(territoryDelta) >= 0.01) {
-    parts.push(`领土变化${territoryDelta > 0 ? "+" : ""}${(territoryDelta * 100).toFixed(1)}%。`);
-  }
-  if (legacyNames && (legacyNames.posthumousEpithet || legacyNames.templeName)) {
-    const epithetReason = legacyNames.posthumousEpithetReasons?.[0];
-    const templeReason = legacyNames.templeNameReasons?.[0];
-    const clauses = [
-      legacyNames.posthumousEpithet && epithetReason ? `后谥“${legacyNames.posthumousEpithet}”，取其${epithetReason}。` : undefined,
-      legacyNames.templeName && templeReason ? `庙号“${legacyNames.templeName}”，取其${templeReason}。` : undefined,
-    ].filter(Boolean) as string[];
-    parts.push(...clauses);
-  }
-  return parts.slice(0, 8);
-}
-
-export function formatAccessionAge(age: number) {
-  if (age < 0) return "即位年龄未记录。";
-  if (age <= 11) return `${age}岁幼年即位。`;
-  if (age <= 15) return `${age}岁少年即位。`;
-  if (age >= 60) return `${age}岁晚年即位。`;
-  return `${age}岁即位。`;
 }
 
 const RULER_EVENT_TYPES = new Set<WorldEvent["type"]>([

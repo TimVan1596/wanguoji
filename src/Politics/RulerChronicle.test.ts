@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
-  buildRulerAssessment,
   buildRulerTags,
   createRulerChronicle,
   finishRulerChronicle,
   getRulerTerritoryDelta,
   getRulerHistoricalEvents,
-  formatAccessionAge,
+  recordPersonalCityCapture,
 } from "./RulerChronicle";
+import { formatAccessionAge } from "./RulerHistoriography";
 import { yearsToMonths } from "../Simulation/WorldTime";
 
 describe("ruler chronicle", () => {
@@ -18,13 +18,12 @@ describe("ruler chronicle", () => {
     expect(formatAccessionAge(68)).toContain("晚年即位");
   });
 
-  it("mentions governance cost in an expansion assessment", () => {
-    const chronicle = createRulerChronicle({ month: 0, population: 15, territoryShare: 0.169, cityCount: 1, stability: 100 });
-    finishRulerChronicle(chronicle, { month: yearsToMonths(18), population: 4, territoryShare: 0.296, cityCount: 6, stability: 72 });
-    const assessment = buildRulerAssessment("嬴承宁", chronicle, yearsToMonths(18), 52).join("");
-    expect(assessment).toContain("开疆有功");
-    expect(assessment).toContain("人口锐减");
-    expect(assessment).toContain("稳定度明显下滑");
+  it("records personal captures without inventing a death location", () => {
+    const chronicle = createRulerChronicle({ month: 0, population: 10, territoryShare: 0.2, cityCount: 2, stability: 70 });
+    recordPersonalCityCapture(chronicle, "capture-event");
+    expect(chronicle.citiesCapturedPersonally).toBe(1);
+    expect(chronicle.notableEventIds).toEqual(["capture-event"]);
+    expect(chronicle.deathCityId).toBeUndefined();
   });
   it("keeps accession and end snapshots", () => {
     const chronicle = createRulerChronicle({
@@ -113,7 +112,7 @@ describe("ruler chronicle", () => {
     expect(buildRulerTags(chronicle, 300)).not.toContain("太祖");
   });
 
-  it("writes assessments from stored facts", () => {
+  it("builds decline tags from stored facts", () => {
     const chronicle = createRulerChronicle({
       month: 0,
       population: 10,
@@ -135,12 +134,9 @@ describe("ruler chronicle", () => {
     );
 
     expect(buildRulerTags(chronicle, yearsToMonths(12))).toContain("国势衰退");
-    expect(buildRulerAssessment("田安", chronicle, yearsToMonths(12)).join("")).toContain(
-      "国势衰退"
-    );
   });
 
-  it("does not describe positive territory delta as decline", () => {
+  it("does not tag positive territory delta as decline", () => {
     const chronicle = createRulerChronicle({
       month: 0,
       population: 9,
@@ -157,10 +153,7 @@ describe("ruler chronicle", () => {
     });
 
     const tags = buildRulerTags(chronicle, yearsToMonths(8));
-    const assessment = buildRulerAssessment("魏昭", chronicle, yearsToMonths(8)).join("");
     expect(tags).not.toContain("国势衰退");
-    expect(assessment).toContain("增至21.1%");
-    expect(assessment).not.toContain("降至");
   });
 
   it("selects direct canonical ruler events in reign order without duplicate groups", () => {

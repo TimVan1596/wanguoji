@@ -45,11 +45,11 @@ import {
   getFactionRegimeWeight,
 } from "../../../Simulation/FactionDisplayRules";
 import {
-  buildRulerAssessment,
   buildRulerTags,
   getRulerHistoricalEvents,
   getRulerTerritoryDelta,
 } from "../../../Politics/RulerChronicle";
+import { deriveRulerAssessment } from "../../../Politics/RulerHistoriography";
 import {
   formatPosthumousRulerName,
   getNotablePosthumousRulers,
@@ -732,13 +732,13 @@ function RulerBiography({
   const accessionAge = Math.floor(monthsToYears(ruler.accessionYear - ruler.bornYear));
   const finalAge = Math.floor(monthsToYears(reignEnd - ruler.bornYear));
   const tags = buildRulerTags(ruler.chronicle, reignMonths);
-  const assessment = buildRulerAssessment(
-    formatRulerName(ruler),
-    ruler.chronicle,
-    reignMonths,
-    accessionAge,
-    ruler.endYear !== undefined ? ruler : undefined
-  );
+  const assessment = deriveRulerAssessment({
+    ruler,
+    dynasty: { rulers },
+    faction: team,
+    events,
+    worldMonth,
+  });
   const historicalEvents = getRulerHistoricalEvents(
     events,
     ruler,
@@ -849,9 +849,9 @@ function RulerBiography({
       )}
       {historicalEvents.length >= 6 ? <Button size="small" onClick={() => setShowAllEvents((value) => !value)} sx={{ px: 0, minWidth: 0 }}>{showAllEvents ? "收起" : "查看全部"}</Button> : null}
       <Typography fontWeight="bold" fontSize="0.86rem" sx={{ mt: 0.75 }}>
-        史评
+        {assessment.heading}
       </Typography>
-      {assessment.map((line) => (
+      {assessment.lines.map((line) => (
         <Typography key={line} fontSize="0.82rem">
           {line}
         </Typography>

@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99923
+
+- Replaced ruler fact-list assessments with deterministic, evidence-derived historiography covering political role, peak-and-retreat, forced capital loss, state collapse, succession shocks, and inherited crisis.
+- Added a shared render-time ruler evidence API and living-ruler “在位评议”; no persistence schema or simulation balance changes.
+- Stopped personal city captures from being recorded as a ruler’s death location.
+
 ## v0.99922e2
 
 - Based on v0.99922e1, increased only the base city defense value from 3 to 5.
