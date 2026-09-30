@@ -13,6 +13,8 @@ export type HistoricalRole =
   | "STEWARD"
   | "CRISIS_SURVIVOR"
   | "PEAK_AND_RETREAT"
+  | "INHERITED_HIGH_DECLINE"
+  | "MODERATE_RECOVERY"
   | "DECLINER"
   | "LAST_RULER"
   | "SHORT_REIGN"
@@ -52,7 +54,9 @@ export interface RulerHistoricalEvidence {
   factionsDestroyedDirectlyAttributedToRuler: number;
   predeceasedHeirCount: number;
   territorialPeakRetreat: number;
+  territorialPeakGain: number;
   populationPeakRetreat: number;
+  populationPeakGain: number;
   accessionCrisis: boolean;
   terminalCollapse: boolean;
   roles: HistoricalRole[];
@@ -194,7 +198,9 @@ export function deriveRulerHistoricalEvidence(
   const peakTerritory = chronicle?.peakTerritoryShare ?? finalSnapshot.territoryShare;
   const reignMonths = Math.max(0, endMonth - accessionMonth);
   const territorialPeakRetreat = Math.max(0, peakTerritory - finalSnapshot.territoryShare);
+  const territorialPeakGain = peakTerritory - accessionSnapshot.territoryShare;
   const populationPeakRetreat = Math.max(0, peakPopulation - finalSnapshot.population);
+  const populationPeakGain = peakPopulation - accessionSnapshot.population;
   const accessionCrisis =
     accessionSnapshot.cityCount <= 1 ||
     accessionSnapshot.territoryShare <= 0.12 ||
@@ -207,6 +213,11 @@ export function deriveRulerHistoricalEvidence(
     finalSnapshot.territoryShare - accessionSnapshot.territoryShare <= -0.12 ||
     finalSnapshot.cityCount - accessionSnapshot.cityCount <= -2 ||
     finalSnapshot.stability - accessionSnapshot.stability <= -25;
+  const moderateRecovery =
+    !expansion && !majorDecline && !ownTerminalCollapse &&
+    finalSnapshot.territoryShare - accessionSnapshot.territoryShare >= 0.05 &&
+    finalSnapshot.population - accessionSnapshot.population >= Math.max(3, accessionSnapshot.population * 0.5) &&
+    finalSnapshot.stability - accessionSnapshot.stability >= 10;
   const roles: HistoricalRole[] = [];
   if (foundedFaction || foundedState) roles.push("FOUNDER");
   if (proclaimedEmperor) roles.push("IMPERIAL_FOUNDER");
@@ -216,7 +227,11 @@ export function deriveRulerHistoricalEvidence(
   if ((chronicle?.citiesCapturedPersonally ?? 0) >= 2 || collapseGroups.size > 0) roles.push("CONQUEROR");
   if (reignMonths >= 18 * 12 && finalSnapshot.stability >= 72 && !majorDecline) roles.push("STEWARD");
   if (accessionCrisis && !ownTerminalCollapse) roles.push("CRISIS_SURVIVOR");
-  if (territorialPeakRetreat >= 0.15) roles.push("PEAK_AND_RETREAT");
+  if (territorialPeakRetreat >= 0.15) {
+    if (territorialPeakGain >= 0.08 && peakTerritory >= 0.3) roles.push("PEAK_AND_RETREAT");
+    else if (accessionSnapshot.territoryShare >= 0.3) roles.push("INHERITED_HIGH_DECLINE");
+  }
+  if (moderateRecovery) roles.push("MODERATE_RECOVERY");
   if (majorDecline) roles.push("DECLINER");
   if (ownTerminalCollapse) roles.push("LAST_RULER");
   if (reignMonths <= 5 * 12) roles.push("SHORT_REIGN");
@@ -263,7 +278,9 @@ export function deriveRulerHistoricalEvidence(
     factionsDestroyedDirectlyAttributedToRuler: directlyAttributedDestroyedGroups,
     predeceasedHeirCount,
     territorialPeakRetreat,
+    territorialPeakGain,
     populationPeakRetreat,
+    populationPeakGain,
     accessionCrisis,
     terminalCollapse: ownTerminalCollapse,
     roles,
@@ -291,14 +308,18 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
     lines.push(`${agePrefix}承统之时国势已陷危局${evidence.startCityCount <= 1 ? "，仅据孤城" : ""}，并非由盛转衰的始作俑者。`);
   } else if (evidence.roles.includes("CRISIS_SURVIVOR")) {
     lines.push(`${livingPrefix}${agePrefix}临危承统，其主要考验在于维系既有政权，而非开拓疆土。`);
+  } else if (evidence.roles.includes("INHERITED_HIGH_DECLINE")) {
+    lines.push(`${livingPrefix}承统时国势已居高位，其后疆域显著回落，未能维持前期盛势。`);
+  } else if (evidence.roles.includes("MODERATE_RECOVERY")) {
+    lines.push(`${livingPrefix}其在位未形成决定性扩张，但人口、疆域与稳定均有所恢复，治绩更近恢复而非开创。`);
   } else if (evidence.roles.includes("STEWARD")) {
     lines.push(`${livingPrefix}其治下少有显著拓境，长久维持政权与秩序，守成为其主要遗产。`);
   } else if (evidence.roles.includes("PEAK_AND_RETREAT")) {
-    lines.push(`${livingPrefix}其治下国势曾盛极一时，鼎盛之后如何维系疆土成为其政治遗产的关键。`);
+    lines.push(`${livingPrefix}其治下疆域由${formatPercent(evidence.startTerritory)}拓展至${formatPercent(evidence.peakTerritory)}，一度达到鼎盛；如何维系盛势成为其政治遗产的关键。`);
   } else if (evidence.roles.includes("SHORT_REIGN") && !hasMajorLegacy(evidence)) {
     lines.push(`${livingPrefix}在位不足五年，现有史实尚不足以形成明确的治绩判断。`);
   } else if (evidence.roles.includes("EXPANDER")) {
-    lines.push(`${livingPrefix}${agePrefix}其治下国势显著开拓，成为一代进取之主。`);
+    lines.push(`${livingPrefix}${agePrefix}其治下国势显著开拓，留下以拓境进取为主的政治遗产。`);
   } else if (evidence.roles.includes("LAST_RULER")) {
     lines.push(`${agePrefix}其世国祚终结，结局为亡国之君。`);
   } else {
@@ -312,16 +333,28 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
   } else if (evidence.factionsDestroyedByFactionDuringReign > 0) {
     lines.push(`其治下先后覆灭${evidence.factionsDestroyedByFactionDuringReign}个政权，扩张不止于城邑得失。`);
   } else if (evidence.roles.includes("EXPANDER") && !evidence.foundedState && !evidence.completedUnification) {
-    lines.push(`其疆域一度达到${formatPercent(evidence.peakTerritory)}，开拓使国家跻身强权之列。`);
+    lines.push(`其疆域一度达到${formatPercent(evidence.peakTerritory)}，开拓使国家${getTerritorialScaleJudgement(evidence.peakTerritory)}。`);
   }
 
   if (evidence.territorialPeakRetreat >= 0.15) {
-    lines.push(`疆域一度达到${formatPercent(evidence.peakTerritory)}，至${evidence.isFinalized ? "身后" : "目前"}已明显回落，盛势未能维持。`);
+    if (evidence.territorialPeakGain >= 0.08) {
+      lines.push(`其治下疆域一度达到${formatPercent(evidence.peakTerritory)}${evidence.peakTerritory >= 0.3 ? "，一度跻身天下强权" : ""}，至${evidence.isFinalized ? "身后" : "目前"}已明显回落，盛势未能维持。`);
+    } else if (evidence.startTerritory >= 0.3) {
+      lines.push(`承统时疆域已有${formatPercent(evidence.startTerritory)}，至${evidence.isFinalized ? "身后" : "目前"}回落至${formatPercent(evidence.endTerritory)}，未能维持前期高位。`);
+    } else {
+      lines.push(`疆域一度达到${formatPercent(evidence.peakTerritory)}，至${evidence.isFinalized ? "身后" : "目前"}已明显回落。`);
+    }
   } else if (
-    evidence.peakPopulation >= 10 &&
+    evidence.populationPeakGain >= Math.max(3, evidence.startPopulation * 0.25) &&
     evidence.populationPeakRetreat >= Math.max(8, evidence.peakPopulation * 0.35)
   ) {
     lines.push(`人口一度达到${evidence.peakPopulation}，至${evidence.isFinalized ? "身后" : "目前"}明显回落，盛势未能转化为稳定基础。`);
+  } else if (
+    evidence.startPopulation > 0 &&
+    evidence.populationPeakGain < Math.max(3, evidence.startPopulation * 0.25) &&
+    evidence.startPopulation - evidence.endPopulation >= Math.max(5, evidence.startPopulation * 0.35)
+  ) {
+    lines.push(`承统时人口已有${evidence.startPopulation}，至${evidence.isFinalized ? "身后" : "目前"}降至${evidence.endPopulation}。`);
   } else if (hasGovernanceCost(evidence) && evidence.roles.includes("EXPANDER")) {
     lines.push(evidence.startPopulation > 0 && evidence.endPopulation <= evidence.startPopulation * 0.6
       ? "开拓伴随明显代价，可谓得地而失民；人口与稳定的承受能力未能同步。"
@@ -380,6 +413,13 @@ function hasGovernanceCost(evidence: RulerHistoricalEvidence) {
 
 function formatPercent(value: number) {
   return `${(value * 100).toFixed(0)}%`;
+}
+
+function getTerritorialScaleJudgement(share: number) {
+  if (share >= 0.3) return "跻身天下强权之列";
+  if (share >= 0.18) return "成为重要割据力量";
+  if (share >= 0.1) return "形成相当规模";
+  return "开拓取得一定成果";
 }
 
 function uniqueLines(lines: string[]) {

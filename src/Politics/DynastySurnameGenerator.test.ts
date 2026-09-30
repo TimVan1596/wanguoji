@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   createRuntimeDynastyHouseName,
+  createSuccessorDynastyHouseName,
   getRuntimeDynastySurnamePools,
 } from "./DynastySurnameGenerator";
 
@@ -49,5 +50,30 @@ describe("dynasty surname generator", () => {
 
   it("can inject a rare minority culture clan", () => {
     expect(createRuntimeDynastyHouseName({ factionType: "REBEL", cultureRoll: () => 1, pickIndex: () => 0 })).toBe("耶律氏");
+  });
+
+  it("creates formal new houses from the surname generator, never from faction identity", () => {
+    const name = createSuccessorDynastyHouseName({
+      factionType: "STATE",
+      existingHouseNames: ["王氏", "刘氏"],
+      recentHouseNames: ["刘氏", "陈氏", "杨氏"],
+      compoundRoll: () => 100,
+      cultureRoll: () => 100,
+      pickIndex: () => 0,
+    });
+    expect(name).toBe("张氏");
+    expect(name).not.toMatch(/义军|东义军|固氏|龙编/);
+  });
+
+  it("uses actual recent houses, not only leader-successor entries, for reuse avoidance", () => {
+    const name = createSuccessorDynastyHouseName({
+      factionType: "STATE",
+      existingHouseNames: ["王氏", "李氏"],
+      recentHouseNames: ["刘氏"],
+      compoundRoll: () => 100,
+      cultureRoll: () => 100,
+      pickIndex: () => 0,
+    });
+    expect(name).not.toBe("刘氏");
   });
 });

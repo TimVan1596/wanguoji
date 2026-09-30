@@ -5,6 +5,8 @@ import type { Ruler } from "./Dynasty";
 import { evaluateReignOutcome } from "./ReignOutcomeRules";
 import { getRulerEffectiveSnapshot } from "./RulerChronicle";
 import { buildRulerLegacyEvidence, type RulerLegacyEvidence } from "./RulerLegacyEvidence";
+import WorldHistory from "../History/WorldHistory";
+import { monthsToYears } from "../Simulation/WorldTime";
 
 export interface PosthumousEvaluation {
   posthumousEpithet?: string;
@@ -18,6 +20,7 @@ export interface PosthumousEvaluation {
 const LONG_REIGN_MONTHS = 18 * 12;
 const VERY_LONG_REIGN_MONTHS = 28 * 12;
 const RECENT_EPITHET_LOOKBACK = 8;
+const EPITHET_RECENCY_PENALTIES = [18, 7, 7, 3, 3, 3, 3, 3] as const;
 
 export function finalizeRulerPosthumousNames(
   ruler: Ruler,
@@ -58,6 +61,14 @@ export function evaluatePosthumousNames(
   const evidence = buildRulerLegacyEvidence(chronicle, ruler.accessionYear, ruler.endYear, ruler.endReason);
   const outcome = evaluateReignOutcome(chronicle.accessionSnapshot, end);
   const tragicEnd = evidence.terminalCollapse || ruler.endReason === "被俘处死";
+  const accessionAge = Math.max(0, Math.floor(monthsToYears(ruler.accessionYear - ruler.bornYear)));
+  const capitalFallCount = WorldHistory.getEvents().filter((event) => {
+    const eventMonth = event.monthIndex ?? event.year;
+    return event.type === "capital-relocated" &&
+      event.actorFactionId === faction.name &&
+      event.metadata?.cause === "CAPITAL_FALL" &&
+      eventMonth >= ruler.accessionYear! && eventMonth <= ruler.endYear!;
+  }).length;
   const reasons: string[] = [];
   let score = 0;
 
@@ -213,15 +224,26 @@ function chooseEpithet(
   const add = (name: string, score: number, reason: string) => addScoredCandidate(candidates, name, score, reason);
   const terminalCrisis = evidence.terminalCollapse || ruler.endReason === "被俘处死";
   if (terminalCrisis) add("愍", 92, evidence.exileOrExtinction ? "国祚终结或王室流亡" : "遭遇被俘处死的国难");
-  if (evidence.reignMonths <= 4 * 12 && terminalCrisis) add("哀", 78, "短祚并遭遇严重国难");
+  if (accessionAge <= 15 && evidence.reignMonths <= 5 * 12 && terminalCrisis) {
+    add("哀", 116, "幼少即位、短祚并遭遇亡国国难");
+  } else if (evidence.reignMonths <= 12 && evidence.tragicEnd) {
+    add("哀", 100, "极短祚而遭遇战死或国难");
+  }
 
   if (evidence.majorExpansion) {
-    add("襄", 58, evidence.territoryDelta >= 0.12 ? "疆域显著拓展" : "治下城市显著增加");
+    const strongExpansion = evidence.territoryDelta >= 0.2 || evidence.cityDelta >= 5;
+    add("襄", strongExpansion ? (evidence.territoryDelta >= 0.3 ? 108 : 86) : 58, evidence.territoryDelta >= 0.12 ? "疆域显著拓展" : "治下城市显著增加");
+    if (evidence.territoryDelta >= 0.12 || evidence.cityDelta >= 3) {
+      add("桓", 54, "拓境服远，疆域明显扩大");
+    }
     if (evidence.militaryAchievement) add("武", 34, "有亲征夺城或统一战功");
   } else if (evidence.territoryDelta >= 0.08 || evidence.cityDelta >= 2) {
     add("襄", 36, "国势有所扩张");
   }
-  if (chronicle.citiesCapturedPersonally >= 2) add("武", 38 + Math.min(18, chronicle.citiesCapturedPersonally * 4), "亲征夺城有据");
+  if (chronicle.citiesCapturedPersonally >= 2) {
+    add("武", 38 + Math.min(18, chronicle.citiesCapturedPersonally * 4), "亲征夺城有据");
+    add("威", 46 + Math.min(12, chronicle.citiesCapturedPersonally * 2), "军事威势与亲征战果突出");
+  }
   if (chronicle.citiesCapturedPersonally >= 4) add("烈", 38, "亲征战功显著");
   if (chronicle.deathCause === "战死" && evidence.militaryAchievement) add("烈", 48, "有战功而战死");
   if (evidence.institutionalAchievement) add("昭", 36, chronicle.completedUnification ? "完成一统并改变天下格局" : "建立或提升国家制度格局");
@@ -243,6 +265,15 @@ function chooseEpithet(
   if (evidence.territorialCollapse && evidence.cityCollapse && evidence.stabilityDeterioration) add("哀", 42, "疆土、城市与稳定均显著衰退");
   if (evidence.reignMonths >= VERY_LONG_REIGN_MONTHS && evidence.stableGovernance && evidence.majorExpansion) add("景", 42, "长期统治兼有扩张与稳定治理");
   if (chronicle.rebellionsDuringReign > 0 && evidence.stableGovernance) add("定", 30, "任内有内乱记录，末期稳定度仍保持高位");
+  if (
+    evidence.reignMonths >= 20 * 12 &&
+    end.stability >= 75 && stabilityDelta >= 0 &&
+    chronicle.rebellionsDuringReign === 0 &&
+    !evidence.territorialCollapse && !evidence.cityCollapse && !evidence.terminalCollapse &&
+    !evidence.majorExpansion && !evidence.militaryAchievement && capitalFallCount <= 1
+  ) {
+    add("顺", 52, "长期守成，政局和顺");
+  }
 
   return pickSoftUniqueEpithet(uniqueCandidates(candidates), dynastyRulers, ruler.id);
 }
@@ -389,10 +420,14 @@ function pickSoftUniqueEpithet(
     .filter((item) => item.id !== rulerId && item.posthumousEpithet)
     .slice(-RECENT_EPITHET_LOOKBACK)
     .map((item) => item.posthumousEpithet);
-  const recentSet = new Set(recent);
+  const penalties = new Map<string, number>();
+  [...recent].reverse().forEach((name, index) => {
+    if (!name) return;
+    penalties.set(name, (penalties.get(name) ?? 0) + (EPITHET_RECENCY_PENALTIES[index] ?? 0));
+  });
   return [...candidates].sort((a, b) => {
-    const scoreA = (a.score ?? 0) - (recentSet.has(a.name) ? 6 : 0);
-    const scoreB = (b.score ?? 0) - (recentSet.has(b.name) ? 6 : 0);
+    const scoreA = (a.score ?? 0) - (penalties.get(a.name) ?? 0);
+    const scoreB = (b.score ?? 0) - (penalties.get(b.name) ?? 0);
     return scoreB - scoreA;
   })[0];
 }

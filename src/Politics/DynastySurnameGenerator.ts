@@ -33,6 +33,10 @@ export interface DynastySurnameOptions {
   culture?: NameCulture;
 }
 
+export function createSuccessorDynastyHouseName(options: DynastySurnameOptions) {
+  return createRuntimeDynastyHouseName(options);
+}
+
 export function createRuntimeDynastyHouseName(options: DynastySurnameOptions) {
   const pickIndex = options.pickIndex ?? ((max: number) => Phaser.Math.Between(0, max - 1));
   const categoryRoll = options.compoundRoll ?? (() => Phaser.Math.Between(1, 100));

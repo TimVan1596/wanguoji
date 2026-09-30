@@ -133,6 +133,66 @@ describe("evidence-grounded ruler historiography", () => {
     expect(result.evidence.territorialPeakRetreat).toBeCloseTo(0.25);
     expect(result.lines.join("")).toContain("一度达到56%");
     expect(result.lines.join("")).toContain("明显回落");
+    expect(result.lines.join("")).toContain("一度达到鼎盛");
+  });
+
+  it("describes inherited high-position decline without claiming the ruler created the peak", () => {
+    const result = deriveRulerAssessment(makeContext({
+      start: { territoryShare: 0.407 },
+      end: { territoryShare: 0.226 },
+      peakTerritory: 0.41,
+    }));
+    expect(result.evidence.territorialPeakGain).toBeCloseTo(0.003);
+    expect(result.evidence.roles).toContain("INHERITED_HIGH_DECLINE");
+    expect(result.lines.join("")).toContain("承统时国势已居高位");
+    expect(result.lines.join("")).not.toContain("一度达到鼎盛");
+    expect(result.lines.join("")).not.toContain("疆域一度达到41%");
+  });
+
+  it("only describes population as a reign peak when it actually rose above accession", () => {
+    const inherited = deriveRulerAssessment(makeContext({
+      start: { population: 15 },
+      end: { population: 5 },
+      peakPopulation: 15,
+    })).lines.join("");
+    expect(inherited).toContain("承统时人口已有15");
+    expect(inherited).not.toContain("人口一度达到15");
+
+    const created = deriveRulerAssessment(makeContext({
+      start: { population: 5 },
+      end: { population: 8 },
+      peakPopulation: 20,
+    })).lines.join("");
+    expect(created).toContain("人口一度达到20");
+  });
+
+  it("recognizes moderate recovery without overstating it as major expansion", () => {
+    const result = deriveRulerAssessment(makeContext({
+      start: { population: 5, territoryShare: 0.144, cityCount: 3, stability: 52 },
+      end: { population: 15, territoryShare: 0.229, cityCount: 2, stability: 66 },
+      peakTerritory: 0.229,
+      peakPopulation: 15,
+    }));
+    expect(result.evidence.roles).toContain("MODERATE_RECOVERY");
+    expect(result.lines.join("")).toContain("治绩更近恢复而非开创");
+    expect(result.lines.join("")).not.toContain("未见足以改写政权格局");
+  });
+
+  it("scales expansion language to absolute peak territory", () => {
+    const regional = deriveRulerAssessment(makeContext({
+      start: { territoryShare: 0.01, cityCount: 1 },
+      end: { territoryShare: 0.15, cityCount: 4 },
+      peakTerritory: 0.15,
+    })).lines.join("");
+    expect(regional).toContain("形成相当规模");
+    expect(regional).not.toContain("天下强权");
+
+    const hegemon = deriveRulerAssessment(makeContext({
+      start: { territoryShare: 0.1, cityCount: 2 },
+      end: { territoryShare: 0.32, cityCount: 6 },
+      peakTerritory: 0.32,
+    })).lines.join("");
+    expect(hegemon).toContain("天下强权");
   });
 
   it("counts forced capital falls separately and reports repeated displacement", () => {

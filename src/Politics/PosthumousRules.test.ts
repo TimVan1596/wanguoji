@@ -1,5 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import type Team from "../Components/Team";
+import WorldHistory from "../History/WorldHistory";
 import type { Ruler } from "./Dynasty";
 import {
   deriveImperialOrdinal,
@@ -70,6 +71,8 @@ function rulerWithReign(
 }
 
 describe("posthumous rules", () => {
+  afterEach(() => WorldHistory.reset());
+
   it("treats demographic collapse and stability loss as governance cost, not structural disorder", () => {
     const chronicle = createRulerChronicle({ month: 0, population: 15, territoryShare: 0.169, cityCount: 1, stability: 100 });
     finishRulerChronicle(chronicle, { month: 18 * 12 + 6, population: 4, territoryShare: 0.296, cityCount: 6, stability: 72 }, "自然死亡");
@@ -188,6 +191,67 @@ describe("posthumous rules", () => {
     finalizeRulerPosthumousNames(current, [...previous, current], faction(), 140);
     expect(current.posthumousEpithet).toBeDefined();
     expect(current.posthumousEpithet).not.toBe("烈");
+  });
+
+  it("lets 哀 lead for a child ruler with a short, terminal reign, while adults receive 愍", () => {
+    const childChronicle = createRulerChronicle({ month: 0, population: 20, territoryShare: 0.2, cityCount: 3, stability: 70 });
+    finishRulerChronicle(childChronicle, { month: 24, population: 1, territoryShare: 0.01, cityCount: 0, stability: 10 }, "彻底灭亡");
+    const child = ruler({ id: "child", bornYear: -6 * 12, accessionYear: 0, endYear: 24, endReason: "彻底灭亡", chronicle: childChronicle });
+    expect(evaluatePosthumousNames(child, [child], faction(), 24).posthumousEpithet).toBe("哀");
+
+    const adult = ruler({ id: "adult-crisis", bornYear: -30 * 12, accessionYear: 0, endYear: 24, endReason: "彻底灭亡", chronicle: childChronicle });
+    expect(evaluatePosthumousNames(adult, [adult], faction(), 24).posthumousEpithet).toBe("愍");
+  });
+
+  it("does not assign 哀 to an ordinary short peaceful reign", () => {
+    const short = rulerWithReign("short-quiet", 0, 18, { territoryShare: 0.2, cityCount: 3, stability: 75 }, { territoryShare: 0.2, cityCount: 3, stability: 75 }, { endReason: "去世" });
+    expect(evaluatePosthumousNames(short, [short], faction(), short.endYear!).posthumousEpithet).not.toBe("哀");
+  });
+
+  it("offers 顺 for long peaceful stewardship without expansion or repeated capital loss", () => {
+    const calm = rulerWithReign("calm", 0, 25 * 12, { territoryShare: 0.22, cityCount: 4, stability: 78 }, { territoryShare: 0.22, cityCount: 4, stability: 82 });
+    const result = evaluatePosthumousNames(calm, [calm], faction(), calm.endYear!);
+    expect(result.posthumousEpithet).toBe("顺");
+    expect(result.epithetReasons).toContain("长期守成，政局和顺");
+  });
+
+  it("does not call a repeatedly displaced reign 顺", () => {
+    const calm = rulerWithReign("displaced", 0, 25 * 12, { territoryShare: 0.22, cityCount: 4, stability: 78 }, { territoryShare: 0.22, cityCount: 4, stability: 82 });
+    WorldHistory.addCapitalRelocated(24, "阳", "新都甲", "city-a", "fall-a", { cause: "CAPITAL_FALL" });
+    WorldHistory.addCapitalRelocated(48, "阳", "新都乙", "city-b", "fall-b", { cause: "CAPITAL_FALL" });
+    expect(evaluatePosthumousNames(calm, [calm], faction(), calm.endYear!).posthumousEpithet).not.toBe("顺");
+  });
+
+  it("allows 桓 to compete with 襄 for territorial expansion without personal captures", () => {
+    const expanding = rulerWithReign("expanding", 0, 15 * 12, { territoryShare: 0.1, cityCount: 2, stability: 72 }, { territoryShare: 0.28, cityCount: 5, stability: 75 });
+    const recentXiang = [0, 1, 2].map((index) => ruler({ id: `xiang-${index}`, posthumousEpithet: "襄" }));
+    expect(evaluatePosthumousNames(expanding, [...recentXiang, expanding], faction(), expanding.endYear!).posthumousEpithet).toBe("桓");
+  });
+
+  it("allows 威 to compete when personal military evidence is present", () => {
+    const military = rulerWithReign("military", 0, 12 * 12, { territoryShare: 0.2, cityCount: 3, stability: 70 }, { territoryShare: 0.24, cityCount: 4, stability: 72 });
+    military.chronicle!.citiesCapturedPersonally = 2;
+    expect(evaluatePosthumousNames(military, [military], faction(), military.endYear!).posthumousEpithet).toBe("威");
+  });
+
+  it("uses graduated frequency and recency penalties, but permits an exceptional fit", () => {
+    const ordinaryExpansion = rulerWithReign("ordinary-expansion", 0, 15 * 12,
+      { territoryShare: 0.1, cityCount: 2, stability: 70 }, { territoryShare: 0.25, cityCount: 5, stability: 72 });
+    const threeRecentXiang = [0, 1, 2].map((index) => ruler({ id: `recent-${index}`, posthumousEpithet: "襄" }));
+    expect(evaluatePosthumousNames(ordinaryExpansion, [...threeRecentXiang, ordinaryExpansion], faction(), ordinaryExpansion.endYear!).posthumousEpithet).not.toBe("襄");
+
+    const exceptional = rulerWithReign("exceptional", 0, 20 * 12,
+      { territoryShare: 0.1, cityCount: 2, stability: 70 }, { territoryShare: 0.42, cityCount: 7, stability: 75 });
+    const longRecentRun = Array.from({ length: 8 }, (_, index) => ruler({ id: `repeat-${index}`, posthumousEpithet: "襄" }));
+    expect(evaluatePosthumousNames(exceptional, [...longRecentRun, exceptional], faction(), exceptional.endYear!).posthumousEpithet).toBe("襄");
+  });
+
+  it("does not introduce unsupported 献 and records evidence-based new epithet reasons", () => {
+    const expansion = rulerWithReign("huan", 0, 15 * 12, { territoryShare: 0.1, cityCount: 2, stability: 70 }, { territoryShare: 0.28, cityCount: 5, stability: 75 });
+    const candidates = evaluatePosthumousNames(expansion, [expansion], faction());
+    expect(candidates.posthumousEpithet).not.toBe("献");
+    expect(["襄", "桓"]).toContain(candidates.posthumousEpithet);
+    expect(candidates.epithetReasons.length).toBeGreaterThan(0);
   });
 
   it("explains posthumous names with reasons from the selected rule", () => {

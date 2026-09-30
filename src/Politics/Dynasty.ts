@@ -38,7 +38,7 @@ import {
 } from "./RulerTitleRules";
 import { getSuccessionShockMultiplier } from "../Simulation/SovereigntyModifiers";
 import { finalizeRulerPosthumousNames } from "./PosthumousRules";
-import { createRuntimeDynastyHouseName } from "./DynastySurnameGenerator";
+import { createSuccessorDynastyHouseName } from "./DynastySurnameGenerator";
 import { cultureGivenNamePools, deriveNameCulture } from "./NameCulture";
 import {
   createNaturalDeathMonth,
@@ -53,6 +53,10 @@ export type RulerRelationType =
   | "COLLATERAL_KIN"
   | "NEW_HOUSE"
   | "LEADER_SUCCESSOR";
+
+export function getUnrelatedSuccessorRelation(identityStage: Team["identityStage"]): "NEW_HOUSE" | "LEADER_SUCCESSOR" {
+  return identityStage === "PROVISIONAL" ? "LEADER_SUCCESSOR" : "NEW_HOUSE";
+}
 
 export interface Ruler {
   id: string;
@@ -324,23 +328,19 @@ class DynastyRegistryStore {
     this.archiveNaturallyDeadHeirs(dynasty, year);
     let successor = this.consumeHeir(dynasty, year);
     if (!successor && team.status === "ACTIVE" && team.cities.length > 0) {
-      const newHouse =
-        team.identityStage === "PROVISIONAL"
-          ? createRuntimeDynastyHouseName({
-              factionType: team.factionType,
-              existingHouseNames: this.getAll().flatMap((item) => item.rulers.map((ruler) => ruler.houseName)),
-              recentHouseNames: dynasty.rulers.filter((item) => item.relationType === "LEADER_SUCCESSOR").slice(-6).map((item) => item.houseName),
-            })
-          : dynasty.houseName === `${team.name}氏`
-          ? `${team.name}新氏`
-          : `${team.name}氏`;
+      const knownDynasties = this.getAll();
+      const newHouse = createSuccessorDynastyHouseName({
+        factionType: team.factionType,
+        existingHouseNames: knownDynasties.flatMap((item) => item.rulers.map((ruler) => ruler.houseName)),
+        recentHouseNames: dynasty.rulers.slice(-8).map((item) => item.houseName),
+      });
       successor = this.createHeir(
         team,
         newHouse,
         year,
         undefined,
         predecessor.id,
-        team.identityStage === "PROVISIONAL" ? "LEADER_SUCCESSOR" : "NEW_HOUSE"
+        getUnrelatedSuccessorRelation(team.identityStage)
       );
       dynasty.houseName = newHouse;
       dynasty.rulers.push(successor);
