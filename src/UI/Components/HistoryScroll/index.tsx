@@ -40,6 +40,7 @@ export default function HistoryScroll() {
   const [selectedEraId, setSelectedEraId] = useState<string>("all");
   const [eraTimelineOpen, setEraTimelineOpen] = useState(false);
   const [worldRecordsOpen, setWorldRecordsOpen] = useState(false);
+  const [expandedRecordSections, setExpandedRecordSections] = useState<string[]>([]);
   const [dynasties, setDynasties] = useState<import("../../../Politics/Dynasty").Dynasty[]>([]);
   const teams = useSelector((state: RootState) => state.root.teams);
   const worldMonth = useSelector((state: RootState) => state.root.worldMonth);
@@ -272,11 +273,32 @@ export default function HistoryScroll() {
           </Button>
           {worldRecordsOpen ? (
             <Box sx={{ border: "1px solid var(--gg-border)", p: 0.65 }}>
-              {records.map((record) => (
-                <Typography key={record.label} fontSize="0.72rem" color="var(--gg-text-muted)">
-                  {record.label}：{record.value}
-                </Typography>
-              ))}
+              {([
+                ["CORE", "核心纪录", 6],
+                ["RULER", "君主奇闻", 5],
+                ["POLITY", "政权与城市", 5],
+                ["ERA", "时代纪录", 3],
+              ] as const).map(([section, title, limit]) => {
+                const sectionRecords = records.filter((record) => record.section === section);
+                if (!sectionRecords.length) return null;
+                const expanded = expandedRecordSections.includes(section);
+                const shown = expanded ? sectionRecords : sectionRecords.slice(0, limit);
+                return (
+                  <Box key={section} sx={{ mb: 0.55 }}>
+                    <Typography fontSize="0.73rem" fontWeight={700} color="var(--gg-text)">{title}</Typography>
+                    {shown.map((record) => (
+                      <Typography key={record.id} fontSize="0.72rem" color="var(--gg-text-muted)" sx={{ overflowWrap: "anywhere" }}>
+                        {record.label}：{record.value}{record.detail ? `（${record.detail}）` : ""}
+                      </Typography>
+                    ))}
+                    {sectionRecords.length > limit ? (
+                      <Button size="small" onClick={() => setExpandedRecordSections((current) => expanded ? current.filter((item) => item !== section) : [...current, section])} sx={{ px: 0, minHeight: 20, fontSize: "0.68rem" }}>
+                        {expanded ? "收起" : `查看全部 ${sectionRecords.length} 项`}
+                      </Button>
+                    ) : null}
+                  </Box>
+                );
+              })}
             </Box>
           ) : null}
         </Box>
