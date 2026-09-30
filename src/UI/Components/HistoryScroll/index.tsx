@@ -275,9 +275,9 @@ export default function HistoryScroll() {
             <Box sx={{ border: "1px solid var(--gg-border)", p: 0.65 }}>
               {([
                 ["CORE", "核心纪录", 6],
-                ["RULER", "君主奇闻", 5],
-                ["POLITY", "政权与城市", 5],
-                ["ERA", "时代纪录", 3],
+                ["RULER", "君主奇闻", 4],
+                ["POLITY", "政权与城市", 4],
+                ["ERA", "时代纪录", 2],
               ] as const).map(([section, title, limit]) => {
                 const sectionRecords = records.filter((record) => record.section === section);
                 if (!sectionRecords.length) return null;

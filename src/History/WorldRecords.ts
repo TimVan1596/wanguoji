@@ -37,6 +37,13 @@ interface RulerEntry {
 const CITY_TRANSITION_TYPES = new Set<WorldEvent["type"]>([
   "city-captured", "city-recovered", "city-revolt", "capital-fallen",
 ]);
+const RECORD_IMPORTANCE: Record<string, number> = {
+  "peak-expansion": 120, "territory-loss": 115, "peak-retreat": 110,
+  "capital-losses": 100, rebellions: 95, "cities-lost": 90,
+  "heir-troubles": 85, "shortest-reign": 80, "most-relocations": 120,
+  "most-restorations": 115, "most-city-turnover": 110, "most-capital-falls": 105,
+  "most-generations": 90, "densest-era": 110, "longest-era": 80,
+};
 
 export function getMaxRecordHolders<T>(items: T[], score: (item: T) => number, stableKey: (item: T) => string = String) {
   return getRecordHolders(items, score, stableKey, "max");
@@ -53,10 +60,10 @@ function getRecordHolders<T>(items: T[], score: (item: T) => number, stableKey: 
   return eligible.filter((item) => score(item) === best).sort((a, b) => stableKey(a).localeCompare(stableKey(b), "zh-CN"));
 }
 
-export function formatRecordHolders<T>(holders: T[], format: (holder: T) => string, metric: string, unit = "") {
+export function formatRecordHolders<T>(holders: T[], format: (holder: T) => string, metric: string, unit = "", groupNoun = "人") {
   if (!holders.length) return "";
   const names = holders.slice(0, 3).map(format).join("、");
-  const suffix = holders.length > 3 ? `等${holders.length}人` : names;
+  const suffix = holders.length > 3 ? `${names}等${holders.length}${groupNoun}` : names;
   return `${suffix} · ${holders.length > 1 ? "各" : ""}${metric}${unit}`;
 }
 
@@ -97,15 +104,15 @@ export function deriveWorldRecords(
       : getMaxRecordHolders(eligible, score, (entry) => `${entry.formalStart}:${entry.ruler.id}`);
     if (!holders.length) return;
     const metric = value(holders[0]);
-    records.push({ id, section: "RULER", label, value: formatRecordHolders(holders, rulerLabel, metric, ""), detail: detail?.(holders[0]) });
+    records.push({ id, section: "RULER", label, value: formatRecordHolders(holders, rulerLabel, metric, ""), detail: detail?.(holders[0]), importance: RECORD_IMPORTANCE[id] ?? 0 });
   };
 
   addRulerMax("longest-reign", "最长正式在位", entries, (e) => e.reignMonths, (e) => duration(e.reignMonths));
-  addRulerMax("youngest-accession", "最年幼正式即位", entries, (e) => e.ruler.accessionYear! - e.ruler.bornYear, (e) => age(e.ruler.accessionYear! - e.ruler.bornYear), undefined, true);
+  addRulerMax("youngest-accession", "最年幼正式即位", entries, (e) => e.formalStart - e.ruler.bornYear, (e) => age(e.formalStart - e.ruler.bornYear), undefined, true);
   addRulerMax("personal-captures", "亲征夺城最多", entries, (e) => e.evidence.personalCityCaptures, (e) => `${e.evidence.personalCityCaptures}座`);
 
   addRulerMax("longest-life", "最长寿君主", entries.filter((e) => e.ruler.endYear !== undefined && e.evidence.finalAge !== undefined), (e) => e.evidence.finalAge ?? 0, (e) => `${e.evidence.finalAge}岁`);
-  addRulerMax("oldest-accession", "最高龄即位", entries, (e) => e.evidence.accessionAge ?? 0, (e) => `${e.evidence.accessionAge}岁`);
+  addRulerMax("oldest-accession", "最高龄即位", entries, (e) => e.formalStart - e.ruler.bornYear, (e) => `${Math.floor((e.formalStart - e.ruler.bornYear) / 12)}岁`);
   addRulerMax("shortest-reign", "最短正式在位", entries.filter((e) => e.ruler.endYear !== undefined && e.reignMonths >= 1), (e) => e.reignMonths, (e) => duration(e.reignMonths), undefined, true);
   addRulerMax("peak-expansion", "最大峰值扩张", entries, (e) => e.evidence.territorialPeakGain, (e) => `+${pp(e.evidence.territorialPeakGain)}`, (e) => `即位${percent(e.evidence.startTerritory)} → 峰值${percent(e.evidence.peakTerritory)}`);
   addRulerMax("territory-loss", "最大失土", entries, (e) => e.evidence.startTerritory - e.evidence.endTerritory, (e) => `-${pp(e.evidence.startTerritory - e.evidence.endTerritory)}`);
@@ -120,9 +127,9 @@ export function deriveWorldRecords(
   addFactionRecord(records, "longest-state", "最长国祚", longestFaction, factions, worldMonth, (team) => duration(formalFactionMonths(team, worldMonth)));
 
   const emperorEvents = events.filter((event) => event.type === "emperor-proclaimed");
-  addEarliestEventRecord(records, "earliest-emperor", "最早称帝", emperorEvents, rulerById, factionLabel, factions, worldMonth);
+  addEarliestEventRecord(records, "earliest-emperor", "最早称帝", emperorEvents, rulerById, factionLabel, factions);
   const unificationEvents = events.filter((event) => event.type === "world-unification");
-  addEarliestEventRecord(records, "first-unification", "首次统一天下", unificationEvents, rulerById, factionLabel, factions, worldMonth);
+  addEarliestEventRecord(records, "first-unification", "首次统一天下", unificationEvents, rulerById, factionLabel, factions);
 
   const relocations = dedupeGroupedFactionEvents(events.filter((e) => e.type === "capital-relocated" && e.actorFactionId));
   addFactionEventMax(records, "most-relocations", "迁都最多", tallyByFaction(relocations, (event) => event.actorFactionId!), factions, worldMonth, "次");
@@ -144,8 +151,10 @@ export function deriveWorldRecords(
   const eraDurations = eras.map((era) => ({ era, months: Math.max(0, (era.endMonth ?? worldMonth) - era.startMonth) }));
   const longestEra = getMaxRecordHolders(eraDurations, (item) => item.months, (item) => `${item.era.startMonth}:${item.era.id}`);
   if (longestEra.length) {
-    const era = longestEra[0].era;
-    records.push({ id: "longest-era", section: "ERA", label: "最长时代", value: `${safeEraLabel(era, factions)} · ${duration(longestEra[0].months)}` });
+    records.push({
+      id: "longest-era", section: "ERA", label: "最长时代",
+      value: formatRecordHolders(longestEra, (item) => safeEraLabel(item.era, factions), duration(longestEra[0].months), "", "时代"),
+    });
   }
   const denseEras = eraDurations.filter((item) => item.months >= 120).map(({ era, months }) => {
     const inEra = events.filter((event) => {
@@ -158,17 +167,18 @@ export function deriveWorldRecords(
   const densest = getMaxRecordHolders(denseEras.filter((item) => item.count > 0), (item) => item.density, (item) => `${item.era.startMonth}:${item.era.id}`);
   if (densest.length) records.push({
     id: "densest-era", section: "ERA", label: "重大事件最密集时代",
-    value: `${safeEraLabel(densest[0].era, factions)} · 每百年${formatDecimal(densest[0].density)}件重大事件`,
+    value: formatRecordHolders(densest, (item) => safeEraLabel(item.era, factions), `每百年${formatDecimal(densest[0].density)}件重大事件`, "", "时代"),
     detail: `按时代持续${duration(densest[0].months)}归一化；同一历史分组只计一次。`,
   });
 
   // Keep the original seven core records visible while preserving the richer records by subject.
-  const originalCore = records.filter((record) => ["longest-reign", "youngest-accession", "personal-captures", "longest-state", "earliest-emperor", "first-unification", "longest-era"].includes(record.id));
+  const originalCore = records.filter((record) => ["longest-reign", "youngest-accession", "personal-captures", "longest-state", "earliest-emperor", "first-unification"].includes(record.id));
   originalCore.forEach((record) => { record.section = "CORE"; });
+  records.forEach((record) => { record.importance ??= RECORD_IMPORTANCE[record.id] ?? 0; });
   return records.sort((a, b) => sectionOrder(a.section) - sectionOrder(b.section) || (b.importance ?? 0) - (a.importance ?? 0) || a.id.localeCompare(b.id));
 }
 
-function addEarliestEventRecord(records: WorldRecord[], id: string, label: string, events: WorldEvent[], rulers: Map<string, Ruler>, factionLabel: (id: string, month?: number) => string, factions: Map<string, RecordFaction>, worldMonth: number) {
+function addEarliestEventRecord(records: WorldRecord[], id: string, label: string, events: WorldEvent[], rulers: Map<string, Ruler>, factionLabel: (id: string, month?: number) => string, factions: Map<string, RecordFaction>) {
   if (!events.length) return;
   const earliest = Math.min(...events.map((event) => event.monthIndex ?? event.year));
   const holders = events.filter((event) => (event.monthIndex ?? event.year) === earliest).sort((a, b) => a.id.localeCompare(b.id));
@@ -186,7 +196,7 @@ function addEarliestEventRecord(records: WorldRecord[], id: string, label: strin
 
 function addFactionRecord(records: WorldRecord[], id: string, label: string, holders: RecordFaction[], factions: Map<string, RecordFaction>, month: number, metric: (team: RecordFaction) => string) {
   if (!holders.length) return;
-  records.push({ id, section: "POLITY", label, value: formatRecordHolders(holders, (team) => factions.has(team.name) ? getFactionDisplayNameAtMonth(team, month) : team.displayName ?? team.name, metric(holders[0])) });
+  records.push({ id, section: "POLITY", label, value: formatRecordHolders(holders, (team) => factions.has(team.name) ? getFactionDisplayNameAtMonth(team, month) : team.displayName ?? team.name, metric(holders[0]), "", "势力") });
 }
 
 function addFactionEventMax(records: WorldRecord[], id: string, label: string, counts: Map<string, number>, factions: Map<string, RecordFaction>, month: number, unit: string) {

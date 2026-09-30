@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { deriveWorldRecords, getMaxRecordHolders } from "./WorldRecords";
+import { deriveWorldRecords, formatRecordHolders, getMaxRecordHolders } from "./WorldRecords";
 
 const faction = (name: string, extra: Record<string, unknown> = {}) => ({
   name, displayName: name, firstFoundedYear: 0, identityStage: "STATE", stateFoundedMonth: 0,
@@ -88,6 +88,44 @@ describe("world records and curiosities", () => {
   it("shows deterministic tied holders instead of silently selecting one", () => {
     const values = [{ id: "b", value: 5 }, { id: "a", value: 5 }, { id: "c", value: 5 }, { id: "d", value: 5 }];
     expect(getMaxRecordHolders(values, (item) => item.value, (item) => item.id).map((item) => item.id)).toEqual(["a", "b", "c", "d"]);
+    const sorted = getMaxRecordHolders(values, (item) => item.value, (item) => item.id);
+    expect(formatRecordHolders(sorted, (item) => item.id, "5次", "", "势力")).toBe("a、b、c等4势力 · 各5次");
+    expect(formatRecordHolders(sorted.slice(0, 2), (item) => item.id, "5次")).toBe("a、b · 各5次");
+  });
+
+  it("uses formal accession timing, historical ruler names, and excludes provisional leaders", () => {
+    const f = faction("stable-id", {
+      displayName: "燕", stateFoundedMonth: 120, identityStage: "STATE",
+      nameHistory: [{ name: "燕义军", startMonth: 0, endMonth: 119 }, { name: "燕", startMonth: 120 }],
+    });
+    const young = ruler("young", { bornYear: 100, accessionYear: 100, endYear: 240, templeName: "太祖", posthumousEpithet: "武" });
+    const provisional = faction("provisional", { identityStage: "PROVISIONAL", stateFoundedMonth: undefined, displayName: "临淄义军" });
+    const result = records([
+      { factionId: "stable-id", rulers: [young] },
+      { factionId: "provisional", rulers: [ruler("leader")] },
+    ], [], [], [f, provisional] as any);
+    expect(result.find((record) => record.id === "youngest-accession")?.value).toContain("燕太祖嬴平 · 1岁8个月");
+    expect(result.some((record) => record.value.includes("临淄义军"))).toBe(false);
+  });
+
+  it("reports greatest land loss, longest life, and shortest completed formal reign only when meaningful", () => {
+    const lost = ruler("lost", {
+      endYear: 240,
+      bornYear: -720,
+      chronicle: {
+        ...ruler("tmp").chronicle,
+        accessionSnapshot: { month: 120, population: 20, territoryShare: .55, cityCount: 8, stability: 75 },
+        endSnapshot: { month: 240, population: 5, territoryShare: .12, cityCount: 2, stability: 40 },
+        latestSnapshot: { month: 240, population: 5, territoryShare: .12, cityCount: 2, stability: 40 },
+        peakTerritoryShare: .58,
+      },
+    });
+    const quick = ruler("quick", { accessionYear: 300, endYear: 301, bornYear: 0 });
+    const sameMonth = ruler("same", { accessionYear: 400, endYear: 400, bornYear: 0 });
+    const result = records([{ factionId: "秦", rulers: [lost, quick, sameMonth] }]);
+    expect(result.find((record) => record.id === "territory-loss")?.value).toContain("-43pp");
+    expect(result.find((record) => record.id === "longest-life")?.value).toContain("80岁");
+    expect(result.find((record) => record.id === "shortest-reign")?.value).toContain("1个月");
   });
 
   it("excludes provisional factions from formal state records and keeps output deterministic", () => {
