@@ -147,6 +147,26 @@ async function createWindow() {
       }, 300);
     }
   });
+  mainWindow.webContents.on("did-fail-load", (_event, errorCode, errorDescription, validatedURL, isMainFrame) => {
+    console.error("[Wanguoji Desktop] did-fail-load", {
+      errorCode,
+      errorDescription,
+      validatedURL,
+      isMainFrame,
+    });
+  });
+  mainWindow.webContents.on("console-message", (_event, level, message, lineNumber, sourceId) => {
+    if (level >= 3) {
+      console.error("[Wanguoji Desktop] renderer console error", {
+        message,
+        sourceId,
+        lineNumber,
+      });
+    }
+  });
+  mainWindow.webContents.on("did-finish-load", () => {
+    console.info("[Wanguoji Desktop] renderer loaded:", mainWindow?.webContents.getURL());
+  });
   mainWindow.on("closed", () => { mainWindow = undefined; });
 
   if (devServerUrl) {

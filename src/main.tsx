@@ -6,7 +6,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { store } from "./store";
-import { BrowserRouter as Router, useRoutes } from "react-router-dom";
+import { BrowserRouter, HashRouter, useRoutes } from "react-router-dom";
+import { getGridGodRouterMode } from "./Runtime/DesktopRuntime";
 import routes from "~react-pages";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
@@ -14,6 +15,10 @@ const persistor = persistStore(store);
 
 import { Buffer } from 'buffer'
 globalThis.Buffer = Buffer
+
+const AppRouter = getGridGodRouterMode(window.gridGodDesktop?.isDesktop === true) === "hash"
+  ? HashRouter
+  : BrowserRouter;
 
 const App = () => {
   return <Suspense fallback={<p>Loading...</p>}>{useRoutes(routes)}</Suspense>;
@@ -23,9 +28,9 @@ ReactDOM.createRoot(document.getElementById("app")!).render(
   <React.StrictMode>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <Router>
+        <AppRouter>
           <App />
-        </Router>
+        </AppRouter>
       </PersistGate>
     </Provider>
   </React.StrictMode>

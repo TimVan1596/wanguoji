@@ -1,4 +1,9 @@
 export type GridGodRuntimeMode = "WEB_CATCH_UP" | "DESKTOP_CONTINUOUS";
+export type GridGodRouterMode = "browser" | "hash";
+
+export function getGridGodRouterMode(isDesktop: boolean): GridGodRouterMode {
+  return isDesktop ? "hash" : "browser";
+}
 
 export interface GridGodDesktopHeartbeat {
   worldMonth: number;
