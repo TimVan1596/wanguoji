@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import BackgroundProgressionController from "./BackgroundProgressionController";
 import {
   BASE_PLAY_RATE,
+  MAX_CATCH_UP_STEPS,
   SIMULATION_FIXED_STEP_MS,
 } from "./SimulationDriver";
 
@@ -206,6 +207,43 @@ describe("BackgroundProgressionController", () => {
     expect(snapshot.catchUpDebtSteps).toBe(0);
     expect(snapshot.mode).toBe("FOREGROUND");
     expect(controller.consumeSuppressNextForegroundDelta()).toBe(true);
+  });
+
+  it("explicitly schedules capped OS-resume catch-up only for the same running world", () => {
+    const controller = new BackgroundProgressionController();
+    const snapshot = controller.scheduleResumeCatchUp({
+      elapsedRealMs: 8 * 60 * 60 * 1000,
+      selectedSpeed: 4,
+      wasRunning: true,
+      worldInstanceId: 5,
+      currentWorldInstanceId: 5,
+    });
+    expect(snapshot.catchUpDebtSteps).toBe(Math.min(
+      debtSteps(2 * 60 * 60 * 1000, 4),
+      MAX_CATCH_UP_STEPS
+    ));
+    expect(snapshot.catchUpTruncated).toBe(true);
+    expect(snapshot.suppressNextForegroundDelta).toBe(true);
+  });
+
+  it("does not catch up a paused world or apply suspend time to a different world", () => {
+    const paused = new BackgroundProgressionController();
+    expect(paused.scheduleResumeCatchUp({
+      elapsedRealMs: 60_000,
+      selectedSpeed: 4,
+      wasRunning: false,
+      worldInstanceId: 1,
+      currentWorldInstanceId: 1,
+    }).catchUpDebtSteps).toBe(0);
+
+    const replaced = new BackgroundProgressionController();
+    expect(replaced.scheduleResumeCatchUp({
+      elapsedRealMs: 60_000,
+      selectedSpeed: 4,
+      wasRunning: true,
+      worldInstanceId: 1,
+      currentWorldInstanceId: 2,
+    }).catchUpDebtSteps).toBe(0);
   });
 
   it("still creates catch-up debt for normal web hidden time", () => {

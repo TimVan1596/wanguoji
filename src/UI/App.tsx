@@ -7,9 +7,9 @@ import { RootState } from "../store";
 import {
   createWorldLaunchRunner,
   continueStoredWorldSave,
+  saveCurrentWorldExclusive,
   WorldLaunchRequest,
 } from "../Persistence/WorldSaveWorkflow";
-import { saveCurrentWorld } from "../Persistence/WorldSaveWorkflow";
 import { IndexedDbWorldSaveRepository } from "../Persistence/WorldSaveRepository";
 import { setWorldSaveStorageDiagnostics } from "../Persistence/WorldSaveDiagnostics";
 import { formatWorldDate } from "../Simulation/WorldTime";
@@ -39,7 +39,7 @@ export default function App({ launchRequest, onReturnToMenu }: AppProps) {
       const scenario = launchRequest.mode === "NEW_WORLD" ? launchRequest.scenario : undefined;
       const scenarioId = launchRequest.mode === "CONTINUE_SAVE" ? launchRequest.record.save.scenarioId : scenario?.id;
       const scenarioName = launchRequest.mode === "CONTINUE_SAVE" ? launchRequest.record.summary.scenarioName : scenario?.name;
-      const result = await saveCurrentWorld(
+      const result = await saveCurrentWorldExclusive(
         Game.Core,
         new IndexedDbWorldSaveRepository(),
         {

@@ -57,7 +57,7 @@
 - HistoryScroll：可回看的历史卷轴。
 - faction archive：灭亡、流亡、复国政权档案。
 - 浏览器后台推进（Web Background Progression）：浏览器标签页切回前台后按真实离开时间补算历史。
-- Electron 桌面实验版：桌面后台连续运行可行性实验。
+- Electron 桌面版：awake 状态下持续运行，提供自动保存、安全关闭与系统休眠恢复补算。
 
 ## 试玩反馈
 
@@ -80,11 +80,11 @@
 - Web 版核心玩法。
 - 城市、王朝、政权生命周期和历史卷轴。
 - Chrome 浏览器后台推进（切回前台后补算历史）。
-- Electron 桌面实验版验证。
+- Electron 桌面运行时基础（尚待长时间人工验收）。
 
-当前尚未包含：
+浏览器版本当前尚未包含：
 
-- 自动保存、多存档槽、云端存档或存档文件导入导出。
+- 自动保存、多存档槽、云端存档或存档文件导入导出（Electron 桌面版另有单槽自动保存）。
 - deterministic seed / replay。
 - 经济系统。
 - 外交系统。
@@ -127,28 +127,27 @@ pnpm build
 
 这不是只快进 `worldMonth`。城市围攻、领土变化、死亡、继承、建国、称帝、WorldEra 和 HistoryScroll 都通过真实模拟路径推进。
 
-手动保存后，可在刷新页面进入主菜单时选择“继续上次世界”。未手动保存的推进不会自动保留；本版本不包含 autosave。
+手动保存后，可在刷新页面进入主菜单时选择“继续上次世界”。Web 中未手动保存的推进不会自动保留；Electron 桌面版另有定时自动保存。
 
-## Electron 桌面实验版
+## Electron 桌面运行时
 
-v0.9995 增加了一个独立 Electron probe，目录见 [desktop/](./desktop/)。
+Electron 运行时直接承载当前 React + Phaser frontend，不复制 gameplay 源码。使用 [desktop/](./desktop/) 中的入口：
 
 ```bash
-pnpm desktop:dev
+pnpm desktop:start
 ```
 
-Electron renderer 直接加载当前 React + Phaser frontend，不复制 gameplay 源码。Desktop 模式使用 `DESKTOP_CONTINUOUS` 策略，并禁用 Web return-time catch-up debt，用来验证窗口最小化 / 失焦后是否能真正持续运行 simulation。
+Desktop 模式使用 `DESKTOP_CONTINUOUS`：窗口最小化、失焦或被遮挡时仍持续运行；OS suspend 时则通过受限 catch-up 恢复。每 5 分钟自动保存，关闭窗口前也会保存。`pnpm desktop:dev` 可用于开发，但不用于长时间性能验收。
 
 更多说明见 [desktop/README.md](./desktop/README.md)。
 
 ## 当前已知问题
 
-- 仅支持浏览器 IndexedDB 中的单槽手动存档；没有 autosave、云存档或跨浏览器同步。
-- 未手动保存的推进在刷新或关闭页面后不会保留。
+- Web 仅支持 IndexedDB 单槽手动存档；无云存档或跨浏览器同步。Electron 单槽自动保存仍使用同一套存档格式与仓库。
+- Web 中未手动保存的推进在刷新或关闭页面后不会保留；Electron 会定时自动保存并在关闭前再保存。
 - 尚无完整 deterministic seed / replay。
 - 浏览器后台推进是切回前台后的时间补算，不是隐藏标签页持续渲染。
-- Electron 桌面实验版仍处于实验阶段。
-- Electron continuous background 尚未完成用户最终验证。
+- Electron 运行时尚未完成用户在 macOS / Windows 的长时间人工验收。
 - Electron 在中国大陆网络下下载 binary 可能需要镜像，例如 `ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/`。
 - long-run balance 仍持续调整。
 - Vite build 目前会出现 large chunk warning，但不是构建失败。
@@ -161,7 +160,7 @@ Electron renderer 直接加载当前 React + Phaser frontend，不复制 gamepla
 - Vite
 - TypeScript
 - Vitest
-- Electron（experimental desktop probe）
+- Electron desktop runtime（unpackaged）
 
 ## 项目来源 / Credits
 

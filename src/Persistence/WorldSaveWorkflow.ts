@@ -15,6 +15,37 @@ export interface ManualSaveResult {
   writeDurationMs: number;
 }
 
+let worldSaveInFlight = false;
+
+export class WorldSaveBusyError extends Error {
+  constructor() {
+    super("已有保存任务正在进行");
+    this.name = "WorldSaveBusyError";
+  }
+}
+
+export async function saveCurrentWorldExclusive(
+  core: Core,
+  repository: WorldSaveRepository,
+  options: { scenarioId?: string; scenarioName?: string } = {}
+) {
+  return runExclusiveWorldSave(() => saveCurrentWorld(core, repository, options));
+}
+
+export async function runExclusiveWorldSave<T>(operation: () => Promise<T>) {
+  if (worldSaveInFlight) throw new WorldSaveBusyError();
+  worldSaveInFlight = true;
+  try {
+    return await operation();
+  } finally {
+    worldSaveInFlight = false;
+  }
+}
+
+export function isWorldSaveInFlight() {
+  return worldSaveInFlight;
+}
+
 export async function saveCurrentWorld(
   core: Core,
   repository: WorldSaveRepository,

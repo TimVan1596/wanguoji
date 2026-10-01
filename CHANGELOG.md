@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.99924
+
+- Promoted Electron from a background probe to a continuous runtime foundation with single-instance activation, product window title, 5-minute IndexedDB autosave, and save-before-close protection.
+- Added main-process heartbeat/autosave/suspend diagnostics and explicit OS suspend catch-up using the existing bounded Web catch-up debt calculation; ordinary Desktop visibility changes still create no debt.
+- Kept the existing renderer simulation driver, save validator/hydrator, WorldSave schema, and all game rules unchanged.
+- Electron remains unpackaged and requires manual macOS/Windows runtime verification.
+
 ## v0.99923d2
 
 - Provisional `LEADER_SUCCESSOR` history now preserves combat death, natural death, or execution after capture, and uses “继任首领” rather than dynastic succession wording.

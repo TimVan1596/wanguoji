@@ -137,6 +137,56 @@ export default class BackgroundProgressionController {
     return this.getSnapshot();
   }
 
+  scheduleResumeCatchUp({
+    elapsedRealMs,
+    selectedSpeed,
+    wasRunning,
+    worldInstanceId,
+    currentWorldInstanceId,
+    basePlayRate = BASE_PLAY_RATE,
+    maxRealMs = MAX_BACKGROUND_REAL_MS,
+    maxCatchUpSteps = MAX_CATCH_UP_STEPS,
+  }: {
+    elapsedRealMs: number;
+    selectedSpeed: number;
+    wasRunning: boolean;
+    worldInstanceId: number;
+    currentWorldInstanceId: number;
+    basePlayRate?: number;
+    maxRealMs?: number;
+    maxCatchUpSteps?: number;
+  }) {
+    this.suppressNextForegroundDelta = true;
+    if (this.catchUpDebtSteps === 0) {
+      this.catchUpTotalSteps = 0;
+      this.catchUpCompletedSteps = 0;
+      this.catchUpTruncated = false;
+      this.catchUpShowOverlay = false;
+      this.catchUpHiddenElapsedRealMs = 0;
+    }
+    if (!wasRunning || worldInstanceId !== currentWorldInstanceId) {
+      return this.getSnapshot();
+    }
+    const elapsed = Math.max(0, Number.isFinite(elapsedRealMs) ? elapsedRealMs : 0);
+    const debt = calculateBackgroundSimulationDebtMs({
+      hiddenAtRealMs: 0,
+      visibleAtRealMs: elapsed,
+      speed: selectedSpeed,
+      basePlayRate,
+      wasPaused: false,
+      maxRealMs,
+      maxCatchUpSteps,
+    });
+    const steps = Math.floor(debt.simulationDebtMs / SIMULATION_FIXED_STEP_MS);
+    this.catchUpHiddenElapsedRealMs += debt.realElapsedMs;
+    this.catchUpTruncated = this.catchUpTruncated || debt.cappedByRealTime || debt.cappedBySteps;
+    this.catchUpDebtSteps += steps;
+    this.catchUpTotalSteps += steps;
+    this.catchUpShowOverlay = this.catchUpShowOverlay || steps > 0;
+    this.mode = this.catchUpDebtSteps > 0 ? "CATCH_UP" : "FOREGROUND";
+    return this.getSnapshot();
+  }
+
   consumeSuppressNextForegroundDelta() {
     const value = this.suppressNextForegroundDelta;
     this.suppressNextForegroundDelta = false;

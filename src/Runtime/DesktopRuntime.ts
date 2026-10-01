@@ -8,6 +8,44 @@ export interface GridGodDesktopHeartbeat {
   documentVisibilityState: DocumentVisibilityState | "unknown";
   focused: boolean;
   timestamp: number;
+  running: boolean;
+  worldStarted: boolean;
+  selectedSpeed: number;
+  worldInstanceId: number;
+  catchUpTotalSteps: number;
+  catchUpCompletedSteps: number;
+  catchUpTruncated: boolean;
+}
+
+export interface DesktopAutosaveResult {
+  requestId: string;
+  status: "SAVED" | "SKIPPED" | "FAILED";
+  reason?: string;
+  worldMonth?: number;
+  serializedBytes?: number;
+  writeDurationMs?: number;
+  savedAt?: string;
+  error?: string;
+}
+
+export interface DesktopResumeAfterSuspend {
+  elapsedRealMs: number;
+  wasRunning: boolean;
+  selectedSpeed: number;
+  worldInstanceId?: number;
+}
+
+export interface DesktopDiagnostics {
+  platform: string;
+  focused: boolean;
+  visibility: string;
+  heartbeatAgeSeconds?: number;
+  latestHeartbeat?: Partial<GridGodDesktopHeartbeat>;
+  lastAutosaveResult?: DesktopAutosaveResult;
+  suspendCount: number;
+  lastSuspendDurationMs?: number;
+  resumeCatchUp?: { steps: number; truncated: boolean; complete: boolean };
+  rendererCrash?: { reason: string; exitCode: number; at: string };
 }
 
 export interface GridGodDesktopBridge {
@@ -15,6 +53,13 @@ export interface GridGodDesktopBridge {
   platform: string;
   electronVersion?: string;
   sendHeartbeat?: (payload: GridGodDesktopHeartbeat) => void;
+  onAutosaveRequested?: (callback: (payload: { requestId: string }) => void) => () => void;
+  reportAutosaveResult?: (payload: DesktopAutosaveResult) => void;
+  onBeforeClose?: (callback: () => void) => () => void;
+  reportCloseSaveResult?: (payload: { status: "SAVED" | "FAILED" | "SKIPPED"; worldStarted?: boolean; error?: string }) => void;
+  onResumeAfterSuspend?: (callback: (payload: DesktopResumeAfterSuspend) => void) => () => void;
+  reportResumeCatchUpResult?: (payload: { status: "SCHEDULED" | "SKIPPED"; steps?: number; truncated?: boolean }) => void;
+  getDiagnostics?: () => Promise<DesktopDiagnostics>;
 }
 
 declare global {

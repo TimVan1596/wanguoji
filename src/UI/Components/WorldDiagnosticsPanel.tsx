@@ -13,6 +13,7 @@ import { hydrateWorldSave, HydrationReport } from "../../Persistence/WorldSaveHy
 import { validateWorldSave } from "../../Persistence/WorldSaveValidator";
 import { diffCanonicalWorldSave, type CanonicalWorldSaveDiff, type WorldSaveV1 } from "../../Persistence/WorldSaveSchema";
 import { APP_VERSION } from "../../config/version";
+import { DesktopDiagnostics, isDesktopContinuousRuntime } from "../../Runtime/DesktopRuntime";
 import { getNameGenerationSummary } from "../../Politics/NameGenerationTelemetry";
 import { getCityNamingSummary } from "../../Simulation/CityNamingTelemetry";
 import { getEraAtlasDiagnostics } from "../../Simulation/EraMapSnapshot";
@@ -48,6 +49,7 @@ export default function WorldDiagnosticsPanel() {
   const [hydrationStatus, setHydrationStatus] = useState("");
   const [canonicalDiff, setCanonicalDiff] = useState<CanonicalWorldSaveDiff>();
   const [storageDiagnostics, setStorageDiagnostics] = useState<WorldSaveStorageDiagnostics>(getWorldSaveStorageDiagnostics);
+  const [desktopDiagnostics, setDesktopDiagnostics] = useState<DesktopDiagnostics>();
   useEffect(() => {
     const timer = window.setInterval(() => setTick((value) => value + 1), 500);
     return () => window.clearInterval(timer);
@@ -55,6 +57,17 @@ export default function WorldDiagnosticsPanel() {
   useEffect(() => {
     const unsubscribe = subscribeWorldSaveStorageDiagnostics(setStorageDiagnostics);
     return () => { unsubscribe(); };
+  }, []);
+  useEffect(() => {
+    const bridge = window.gridGodDesktop;
+    if (!bridge?.getDiagnostics) return;
+    let active = true;
+    const refresh = () => {
+      void bridge.getDiagnostics?.().then((value) => { if (active) setDesktopDiagnostics(value); });
+    };
+    refresh();
+    const timer = window.setInterval(refresh, 1000);
+    return () => { active = false; window.clearInterval(timer); };
   }, []);
 
   const diagnostics = useMemo(() => {
@@ -114,7 +127,10 @@ export default function WorldDiagnosticsPanel() {
     `Literal Monopoly：${diagnostics.longRun.literalUnificationCount}次｜已完成${diagnostics.longRun.literalMonopolyEpisodes}段｜平均${diagnostics.longRun.averageLiteralMonopolyDuration === undefined ? "—" : formatWorldDuration(diagnostics.longRun.averageLiteralMonopolyDuration)}｜当前${diagnostics.longRun.currentLiteralMonopolyAge === undefined ? "—" : formatWorldDuration(diagnostics.longRun.currentLiteralMonopolyAge)}`,
     `Dynastic Order：建立${diagnostics.longRun.dynasticOrderEstablishedCount}次｜瓦解${diagnostics.longRun.dynasticOrderLostCount}次｜完成${diagnostics.longRun.completedDynasticOrderEpisodes}段｜平均${diagnostics.longRun.averageDynasticOrderDuration === undefined ? "—" : formatWorldDuration(diagnostics.longRun.averageDynasticOrderDuration)}｜当前${diagnostics.longRun.currentDynasticOrderAge === undefined ? "—" : formatWorldDuration(diagnostics.longRun.currentDynasticOrderAge)}`,
   ].join("\n");
-  const snapshotRequest = Game.Core?.getSnapshotRequestDiagnostics();
+  const core = Game.Core;
+  const snapshotRequest = core?.getSnapshotRequestDiagnostics();
+  const desktopRuntime = core?.getRuntimeLivenessDiagnostics();
+  const desktopAutosave = desktopDiagnostics?.lastAutosaveResult;
 
   const snapshotAndReload = async () => {
     const core = Game.Core;
@@ -149,7 +165,6 @@ export default function WorldDiagnosticsPanel() {
     }
   };
 
-  const core = Game.Core;
   const runtime = core?.getRuntimeLivenessDiagnostics();
   const hydration = core?.getHydrationDiagnostics();
   const snapshotState = snapshotRequest?.requestState;
@@ -239,6 +254,25 @@ export default function WorldDiagnosticsPanel() {
           `Resume probe: ${JSON.stringify(runtime.resumeProbe ?? null)}`,
         ].join("\n")}</Typography>}
       </details>
+      {isDesktopContinuousRuntime() && <details open>
+        <summary>Desktop Runtime</summary>
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{[
+          "Mode: DESKTOP_CONTINUOUS",
+          `Platform: ${desktopDiagnostics?.platform ?? window.gridGodDesktop?.platform ?? "unknown"}`,
+          `Focused: ${desktopDiagnostics?.focused ? "yes" : "no"}`,
+          `Visibility: ${desktopDiagnostics?.visibility ?? document.visibilityState}`,
+          `World month: ${desktopRuntime?.worldMonth ?? worldMonth}`,
+          `Running: ${desktopDiagnostics?.latestHeartbeat?.running ? "yes" : "no"} · Selected speed: ${desktopDiagnostics?.latestHeartbeat?.selectedSpeed ?? simulationSpeed}× · World instance: ${desktopDiagnostics?.latestHeartbeat?.worldInstanceId ?? "—"}`,
+          `Fixed steps: ${desktopRuntime?.fixedSimulationSteps ?? 0}`,
+          `Physics steps: ${desktopRuntime?.physicsSteps ?? 0}`,
+          `Catch-up debt: ${desktopRuntime?.catchUpDebtSteps ?? 0}`,
+          `Heartbeat age: ${desktopDiagnostics?.heartbeatAgeSeconds?.toFixed(1) ?? "—"}s`,
+          `Last autosave: ${desktopAutosave?.savedAt ? new Date(desktopAutosave.savedAt).toLocaleTimeString() : "—"} · ${desktopAutosave?.status ?? "—"}${desktopAutosave?.reason ? ` (${desktopAutosave.reason})` : ""}${desktopAutosave?.error ? ` (${desktopAutosave.error})` : ""}`,
+          `Suspend count: ${desktopDiagnostics?.suspendCount ?? 0}`,
+          `Last suspend duration: ${desktopDiagnostics?.lastSuspendDurationMs === undefined ? "—" : `${(desktopDiagnostics.lastSuspendDurationMs / 1000).toFixed(1)} sec`}`,
+          `Resume catch-up: ${desktopDiagnostics?.resumeCatchUp ? `${desktopDiagnostics.resumeCatchUp.steps} steps / ${desktopDiagnostics.resumeCatchUp.complete ? "complete" : "pending"}${desktopDiagnostics.resumeCatchUp.truncated ? " / truncated" : ""}` : "—"}`,
+        ].join("\n")}</Typography>
+      </details>}
     </Box>
   );
 }

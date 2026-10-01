@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { createEmptyWorldSaveV1 } from "./WorldSaveSchema";
-import { runManualSaveWorkflow, createWorldLaunchRunner, continueStoredWorldSave, WorldLaunchRequest } from "./WorldSaveWorkflow";
+import { runManualSaveWorkflow, createWorldLaunchRunner, continueStoredWorldSave, WorldLaunchRequest, runExclusiveWorldSave, WorldSaveBusyError } from "./WorldSaveWorkflow";
 import { WorldSaveRepository, StoredWorldSaveRecord } from "./WorldSaveRepository";
 
 function memoryRepository(): WorldSaveRepository & { current?: StoredWorldSaveRecord } {
@@ -13,6 +13,15 @@ function memoryRepository(): WorldSaveRepository & { current?: StoredWorldSaveRe
 }
 
 describe("WorldSave workflow", () => {
+  it("shares one save lock between manual, autosave, and close-save callers", async () => {
+    let release!: () => void;
+    const first = runExclusiveWorldSave(() => new Promise<void>((resolve) => { release = resolve; }));
+    await expect(runExclusiveWorldSave(async () => undefined)).rejects.toBeInstanceOf(WorldSaveBusyError);
+    release();
+    await first;
+    await expect(runExclusiveWorldSave(async () => "saved")).resolves.toBe("saved");
+  });
+
   it("runs NEW_WORLD once and never hydrates", () => {
     const scenario = { id: "custom", name: "Custom", description: "", factions: [] };
     const startWorld = vi.fn();

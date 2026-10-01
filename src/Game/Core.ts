@@ -73,6 +73,7 @@ import User from "../Components/User";
 import {
   getGridGodRuntimeMode,
   GridGodRuntimeMode,
+  DesktopResumeAfterSuspend,
 } from "../Runtime/DesktopRuntime";
 
 type DesktopRuntimeDiagnostics = {
@@ -211,6 +212,7 @@ export default class Core {
     this.manualPhysicsStepper.reset();
     this.resetSimulationDiagnostics();
     this.unbindMapPointerResolver();
+    this.notifyDesktopHeartbeat();
   }
 
   async init(scene: Phaser.Scene) {
@@ -522,6 +524,7 @@ export default class Core {
     this.manualPhysicsStepper.reset();
     this.resetSimulationDiagnostics();
     this.simulator.startWorld(this.teams, this.totalCells, populations, (capturedMonth) => this.captureEraMapSnapshot(capturedMonth));
+    this.notifyDesktopHeartbeat();
   }
 
   setWorldRunning(running: boolean) {
@@ -552,6 +555,13 @@ export default class Core {
     }
   }
 
+  notifyDesktopHeartbeat() {
+    if (this.runtimeMode !== "DESKTOP_CONTINUOUS") return;
+    this.updateDesktopRuntimeDiagnostics();
+    this.lastDesktopHeartbeatAt = 0;
+    this.sendDesktopHeartbeatIfNeeded();
+  }
+
   pauseAtNextSafeSnapshotBoundary() {
     const simulation = this.simulator?.exportState();
     const request = this.snapshotBoundaryRequest.request({
@@ -575,6 +585,54 @@ export default class Core {
     return {
       ...this.snapshotBoundaryRequest.getDiagnostics(),
       requestState: this.snapshotBoundaryRequest.getDiagnostics().requestState,
+    };
+  }
+
+  getDesktopSaveBlockReason() {
+    if (!this.simulator?.exportState().started || !store.getState().root.worldStarted) return "NO_WORLD" as const;
+    if (this.lastHydrationStage !== "IDLE" && this.lastHydrationStage !== "COMPLETE") return "HYDRATION" as const;
+    if (this.backgroundProgression.isCatchingUp()) return "CATCH_UP" as const;
+    if (this.snapshotBoundaryRequest.getDiagnostics().status === "waiting") return "SNAPSHOT" as const;
+    return undefined;
+  }
+
+  scheduleDesktopResumeCatchUp(payload: DesktopResumeAfterSuspend) {
+    const simulator = this.simulator;
+    if (
+      this.runtimeMode !== "DESKTOP_CONTINUOUS" ||
+      !simulator?.exportState().started ||
+      !store.getState().root.worldStarted ||
+      !payload.wasRunning ||
+      payload.worldInstanceId !== this.worldInstanceId
+    ) {
+      this.backgroundProgression.scheduleResumeCatchUp({
+        elapsedRealMs: payload.elapsedRealMs,
+        selectedSpeed: payload.selectedSpeed,
+        wasRunning: false,
+        worldInstanceId: payload.worldInstanceId ?? -1,
+        currentWorldInstanceId: this.worldInstanceId,
+      });
+      return { scheduled: false, steps: 0, truncated: false };
+    }
+    const snapshot = this.backgroundProgression.scheduleResumeCatchUp({
+      elapsedRealMs: payload.elapsedRealMs,
+      selectedSpeed: payload.selectedSpeed,
+      wasRunning: simulator.isRunning(),
+      worldInstanceId: payload.worldInstanceId,
+      currentWorldInstanceId: this.worldInstanceId,
+    });
+    if (snapshot.catchUpDebtSteps > 0) this.simulationDriver.reset();
+    this.catchUpDiagnostics.hiddenElapsedRealMs = snapshot.catchUpHiddenElapsedRealMs;
+    this.catchUpDiagnostics.requestedCatchUpSteps = snapshot.catchUpTotalSteps;
+    this.catchUpDiagnostics.executedCatchUpSteps = snapshot.catchUpCompletedSteps;
+    this.catchUpDiagnostics.remainingSteps = snapshot.catchUpDebtSteps;
+    this.catchUpDiagnostics.truncated = snapshot.catchUpTruncated;
+    this.syncBackgroundCatchUpStore();
+    this.updateDesktopRuntimeDiagnostics();
+    return {
+      scheduled: snapshot.catchUpDebtSteps > 0,
+      steps: snapshot.catchUpTotalSteps,
+      truncated: snapshot.catchUpTruncated,
     };
   }
 
@@ -1296,6 +1354,13 @@ export default class Core {
         this.desktopRuntimeDiagnostics.documentVisibilityState,
       focused: this.desktopRuntimeDiagnostics.focused,
       timestamp: Date.now(),
+      running: Boolean(this.simulator?.isRunning()),
+      worldStarted: Boolean(this.simulator?.exportState().started && store.getState().root.worldStarted),
+      selectedSpeed: this.simulator?.getSpeed() ?? 1,
+      worldInstanceId: this.worldInstanceId,
+      catchUpTotalSteps: this.backgroundProgression.getSnapshot().catchUpTotalSteps,
+      catchUpCompletedSteps: this.backgroundProgression.getSnapshot().catchUpCompletedSteps,
+      catchUpTruncated: this.backgroundProgression.getSnapshot().catchUpTruncated,
     });
   }
 

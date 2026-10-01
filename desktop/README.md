@@ -1,6 +1,6 @@
-# 万国纪桌面实验版
+# 万国纪桌面运行时
 
-这是《万国纪 · Wanguoji》的 Electron 桌面后台运行可行性实验。
+这是《万国纪 · Wanguoji》的 Electron continuous runtime。系统处于 awake 状态时，最小化、失焦或被遮挡不切换到 Web catch-up；操作系统真正 suspend 的时间则在恢复时通过独立、有上限的 catch-up 补算。
 
 它不会复制 `src/`，也不会维护第二份 gameplay。Electron renderer 直接加载当前 Vite / React / Phaser 前端。
 
@@ -23,7 +23,6 @@ pnpm desktop:dev
 本地 production 运行：
 
 ```bash
-pnpm desktop:build
 pnpm desktop:start
 ```
 
@@ -46,7 +45,10 @@ ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/ pnpm install
 - Electron desktop mode：`DESKTOP_CONTINUOUS`
   - preload 暴露 `window.gridGodDesktop`。
   - renderer 在该模式下禁用 return-time catch-up debt。
-  - `BrowserWindow.webPreferences.backgroundThrottling = false`，目标是在最小化 / 失焦时继续 timers、animation loop、SimulationDriver 和 Phaser Arcade Physics。
+  - `BrowserWindow.webPreferences.backgroundThrottling = false`，awake 状态下继续 timers、animation loop、SimulationDriver 和 Phaser Arcade Physics。
+  - OS suspend / resume 使用显式 suspend catch-up，最多按现有 2 小时 real-time cap 补算。
+  - 每 5 分钟由 main process 请求 renderer 复用 IndexedDB 手动保存 workflow 自动保存；关闭窗口时先保存，失败或超时则取消关闭。
+  - 应用使用 single-instance lock，第二实例会将已有窗口恢复并置前。
 
 ## 什么才算真正成功
 
@@ -64,10 +66,10 @@ Continuous Electron background 必须同时满足：
 
 ## Minimize / hide / close / sleep
 
-- Minimize / unfocus：本实验的 P0 验证目标，期望 continuous simulation。
+- Minimize / unfocus / occlusion：Desktop continuous runtime 的预期行为。
 - `BrowserWindow.hide()`：不是本实验 P0；如果测试，请单独记录。
-- Close：关闭窗口即退出 app。本实验不实现 close-to-tray。
-- System sleep / hibernate：不能保证持续 CPU 执行。未来可以考虑 sleep wake 后 catch-up，本实验不阻止系统睡眠。
+- Close：关闭前等待一次安全保存；失败或 10 秒超时会取消退出。本版不实现 close-to-tray。
+- System sleep / hibernate：不阻止系统睡眠；恢复后按挂起前运行/暂停状态补算，并显示是否触及 2 小时上限。
 
 ## Security defaults
 
@@ -79,4 +81,4 @@ BrowserWindow 使用：
 - `backgroundThrottling: false`
 - `sandbox: false`
 
-`sandbox` 在本实验中保持关闭，以便当前 TypeScript preload 稳定使用 Electron IPC。Renderer 只得到只读 desktop marker 和低频 heartbeat sender，不获得 `require` 或文件系统访问。
+`sandbox` 在本版保持关闭，以便当前 TypeScript preload 稳定使用 Electron IPC。Renderer 只得到受限的 heartbeat、autosave、close、resume 与 diagnostics IPC 方法；listener 返回 unsubscribe。Renderer 不获得 `require`、原始 `ipcRenderer` 或文件系统访问。

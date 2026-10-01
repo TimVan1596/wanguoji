@@ -170,6 +170,7 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
     throw new Error("Hydrated active logical unit count does not match the save.");
   }
   core.setHydrationStage("COMPLETE");
+  core.notifyDesktopHeartbeat();
   return {
     worldMonth: save.world.worldMonth,
     factionCount: teams.length,
