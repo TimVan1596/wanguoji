@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.99923d
+
+- Added one immutable logical ownership map snapshot when a WorldEra is confirmed, timestamped at `confirmedMonth` and encoded as deterministic row-major palette-index RLE with frozen historical faction names/colors and city markers.
+- Added snapshot-only Canvas thumbnail/full-map rendering in HistoryScroll, an explicit pre-Atlas fallback for old eras, and debug size/run diagnostics; no screenshots are stored.
+- Extended optional WorldEra save data and validation without changing WorldSave schema version; old eras without snapshots remain valid.
+- No Era classification, WorldCycle, combat, defense, playback, or World Records rule changes.
+
 ## v0.99923c
 
 - Added derived ruler tenure evidence separating total succession tenure, active rule, and exile; lifecycle counting uses faction exile/restoration events only and deduplicates grouped events.
