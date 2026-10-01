@@ -9,13 +9,20 @@ import {
   TextField,
   Button,
   Box,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import { ConfigState } from "../../../store/configSlice";
+import { DesktopSuspendPolicy, readDesktopSuspendPolicy, writeDesktopSuspendPolicy } from "../../../Runtime/DesktopSuspendPolicy";
 
 const Config: FC = () => {
   const [open, setOpen] = useState(false);
+  const [suspendPolicy, setSuspendPolicy] = useState<DesktopSuspendPolicy>(readDesktopSuspendPolicy);
   const config = useSelector((state: RootState) => state.config);
   const localConfigString =
     localStorage.getItem(`${config.liveId}_${config.theme}`) ?? "{}";
@@ -71,7 +78,7 @@ const Config: FC = () => {
             mb: 2,
           }}
         >
-          修改后自动保存，刷新后生效
+          修改后自动保存；显示设置可能需刷新，桌面休眠策略对下次唤醒生效。
         </DialogContentText>
         <Box
           sx={{
@@ -84,6 +91,20 @@ const Config: FC = () => {
             label="游戏名称"
             defaultValue={localConfig.gameName ?? config.gameName}
           />
+          {window.gridGodDesktop?.isDesktop && <FormControl sx={{ mt: 2, width: "100%" }}>
+            <FormLabel>系统休眠期间</FormLabel>
+            <RadioGroup
+              value={suspendPolicy}
+              onChange={(event) => {
+                const policy = event.target.value === "CATCH_UP" ? "CATCH_UP" : "PAUSE";
+                setSuspendPolicy(policy);
+                writeDesktopSuspendPolicy(policy);
+              }}
+            >
+              <FormControlLabel value="PAUSE" control={<Radio />} label="暂停世界（推荐）" />
+              <FormControlLabel value="CATCH_UP" control={<Radio />} label="唤醒后补算离线时间" />
+            </RadioGroup>
+          </FormControl>}
           <TextField
             disabled
             fullWidth

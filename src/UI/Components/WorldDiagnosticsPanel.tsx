@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Alert, Box, Button, Snackbar, Typography } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import Game from "../../Game/Game";
@@ -13,12 +13,15 @@ import { hydrateWorldSave, HydrationReport } from "../../Persistence/WorldSaveHy
 import { validateWorldSave } from "../../Persistence/WorldSaveValidator";
 import { diffCanonicalWorldSave, type CanonicalWorldSaveDiff, type WorldSaveV1 } from "../../Persistence/WorldSaveSchema";
 import { APP_VERSION } from "../../config/version";
+import packageJson from "../../../package.json";
 import { DesktopDiagnostics, isDesktopContinuousRuntime } from "../../Runtime/DesktopRuntime";
 import { getNameGenerationSummary } from "../../Politics/NameGenerationTelemetry";
 import { getCityNamingSummary } from "../../Simulation/CityNamingTelemetry";
 import { getEraAtlasDiagnostics } from "../../Simulation/EraMapSnapshot";
 import { BASE_PLAY_RATE } from "../../Simulation/SimulationDriver";
 import { getAvatarRendererMode } from "../../Runtime/AvatarRendererMode";
+import { formatCoreDiagnostics, formatFullDiagnostics } from "../../Runtime/DiagnosticsReport";
+import { readDesktopSuspendPolicy } from "../../Runtime/DesktopSuspendPolicy";
 import {
   getWorldSaveStorageDiagnostics,
   subscribeWorldSaveStorageDiagnostics,
@@ -51,6 +54,7 @@ export default function WorldDiagnosticsPanel() {
   const [canonicalDiff, setCanonicalDiff] = useState<CanonicalWorldSaveDiff>();
   const [storageDiagnostics, setStorageDiagnostics] = useState<WorldSaveStorageDiagnostics>(getWorldSaveStorageDiagnostics);
   const [desktopDiagnostics, setDesktopDiagnostics] = useState<DesktopDiagnostics>();
+  const [copyFeedback, setCopyFeedback] = useState("");
   useEffect(() => {
     const timer = window.setInterval(() => setTick((value) => value + 1), 500);
     return () => window.clearInterval(timer);
@@ -176,31 +180,140 @@ export default function WorldDiagnosticsPanel() {
   const pathDiffSummary = canonicalDiff?.differences.length
     ? canonicalDiff.differences.map((entry) => `${entry.path}\n  before: ${JSON.stringify(entry.before)}\n  after: ${JSON.stringify(entry.after)}`).join("\n")
     : "无 path-level 差异";
-  const hydrationReport = [
-    `Wanguoji ${APP_VERSION}`,
-    `world month: ${runtime?.worldMonth ?? worldMonth}`,
-    `Era: ${diagnostics.currentEra ? `${diagnostics.currentEra.type} ${diagnostics.currentEra.name} (${diagnostics.currentEra.startMonth})` : "none"}`,
-    `WorldCycle: ${JSON.stringify(diagnostics.cycle ?? null)}`,
-    `snapshot request: ${JSON.stringify(snapshotRequest ?? null)}`,
-    `last hydration: ${hydrationStatus || "none"}`,
-    `last hydration stage: ${hydration?.lastStage ?? "unknown"}`,
-    `collider teardown: ${JSON.stringify(core?.getColliderTeardownDiagnostics() ?? null)}`,
-    `canonical diff summary:\n${subsystemSummary}`,
-    `canonical path differences:\n${pathDiffSummary}`,
-    `runtime liveness: ${JSON.stringify(runtime ?? null)}`,
-    `simulation counters: ${JSON.stringify(core?.getSimulationDiagnostics() ?? null)}`,
-    `stored save diagnostics: ${JSON.stringify(storageDiagnostics)}`,
-  ].join("\n\n");
+  const desktopHeartbeat = desktopDiagnostics?.latestHeartbeat;
+  const colliderDiagnostics = core?.getColliderTeardownDiagnostics();
+  const coreReportData = {
+    appVersion: APP_VERSION,
+    packageVersion: packageJson.version,
+    timestamp: new Date().toISOString(),
+    runtime: {
+      mode: runtime?.runtimeMode ?? (isDesktopContinuousRuntime() ? "DESKTOP_CONTINUOUS" : "WEB_CATCH_UP"),
+      platform: desktopDiagnostics?.platform ?? window.gridGodDesktop?.platform,
+      electronVersion: window.gridGodDesktop?.electronVersion,
+      worldMonth: runtime?.worldMonth ?? worldMonth,
+      running: runtime?.simulatorRunning ?? desktopHeartbeat?.running,
+      speed: desktopHeartbeat?.selectedSpeed ?? simulationSpeed,
+      worldInstanceId: runtime?.worldInstanceId ?? desktopHeartbeat?.worldInstanceId,
+      fixedSteps: runtime?.fixedSimulationSteps ?? desktopHeartbeat?.fixedSteps,
+      physicsSteps: runtime?.physicsSteps ?? desktopHeartbeat?.physicsSteps,
+      backgroundMode: runtime?.backgroundMode ?? desktopHeartbeat?.backgroundMode,
+      catchUpDebt: runtime?.catchUpDebtSteps ?? desktopHeartbeat?.catchUpDebtSteps,
+      activeCatchUpSource: runtime?.catchUpSource ?? desktopHeartbeat?.catchUpSource,
+      lastCatchUpSource: runtime?.lastCatchUpSource ?? desktopHeartbeat?.lastCatchUpSource,
+      focused: desktopDiagnostics?.focused ?? desktopHeartbeat?.focused,
+      visibility: desktopDiagnostics?.visibility ?? desktopHeartbeat?.documentVisibilityState,
+      windowMinimized: desktopDiagnostics?.windowMinimized,
+      minimizeCount: desktopDiagnostics?.minimizeCount,
+      suspendCount: desktopDiagnostics?.suspendCount,
+      lastSuspendDuration: desktopDiagnostics?.lastSuspendDurationMs,
+      resumeCatchUp: desktopDiagnostics?.resumeCatchUp,
+      suspendPolicy: isDesktopContinuousRuntime() ? readDesktopSuspendPolicy() : undefined,
+    },
+    units: runtimeUnits ? {
+      ...runtimeUnits,
+      avatarRenderer: getAvatarRendererMode(),
+    } : undefined,
+    persistence: {
+      saveStatus: storageDiagnostics.status,
+      savedAt: storageDiagnostics.savedAt,
+      saveMonth: storageDiagnostics.worldMonth,
+      storage: storageDiagnostics,
+      desktopAutosave: desktopDiagnostics?.lastAutosaveResult,
+    },
+    hydration: {
+      stage: hydration?.lastStage,
+      status: hydrationStatus || undefined,
+      canonicalMatched: canonicalDiff?.matched,
+      canonicalDiff,
+      snapshotRequest,
+    },
+    collider: { postDrain: colliderDiagnostics?.activeAfterPostDrain, diagnostics: colliderDiagnostics },
+  };
+  const coreReport = formatCoreDiagnostics(coreReportData);
+  const hydrationReport = formatFullDiagnostics([[
+    "Hydration diagnostics",
+    {
+      savedWorldMonth: storageDiagnostics.worldMonth,
+      currentWorldMonth: runtime?.worldMonth ?? worldMonth,
+      lastHydrationStatus: hydrationStatus || undefined,
+      lastHydrationStage: hydration?.lastStage,
+      snapshotRequest,
+      canonicalDiff,
+      colliderTeardown: colliderDiagnostics,
+      storage: storageDiagnostics,
+    },
+  ]]);
+  const currentEraReport = diagnostics.currentEra ? {
+    id: diagnostics.currentEra.id,
+    type: diagnostics.currentEra.type,
+    name: diagnostics.currentEra.name,
+    startMonth: diagnostics.currentEra.startMonth,
+    confirmedMonth: diagnostics.currentEra.confirmedMonth,
+    endMonth: diagnostics.currentEra.endMonth,
+    dominantFactionIds: diagnostics.currentEra.dominantFactionIds,
+    mapSnapshot: diagnostics.currentEra.mapSnapshot ? {
+      capturedMonth: diagnostics.currentEra.mapSnapshot.capturedMonth,
+      ownerRunCount: diagnostics.currentEra.mapSnapshot.ownerRuns.length,
+      cityCount: diagnostics.currentEra.mapSnapshot.cities.length,
+    } : undefined,
+  } : undefined;
+  const fullReport = formatFullDiagnostics([
+    ["World posture", {
+      worldMonth, worldPhase,
+      ranked: diagnostics.ranked.map(({ team, metric, stability }) => ({
+        factionId: team.name, displayName: team.displayName, status: team.status,
+        identityStage: team.identityStage, sovereigntyRank: team.sovereigntyRank,
+        territoryShare: metric.controlledTerritoryShare, absoluteWorldShare: metric.absoluteWorldShare,
+        cityCount: team.cities.length, stability,
+      })),
+      currentEra: currentEraReport,
+      candidate: diagnostics.candidate,
+      validity: diagnostics.validity, liveClassification: diagnostics.liveClassification,
+    }],
+    ["Name generation", diagnostics.naming],
+    ["City naming", diagnostics.cityNaming],
+    ["Persistence", coreReportData.persistence],
+    ["Hydration", { ...coreReportData.hydration, lastStage: hydration?.lastStage, collider: colliderDiagnostics }],
+    ["Runtime Liveness", { runtime, simulationCounters: core?.getSimulationDiagnostics() }],
+    ["Runtime Units", coreReportData.units],
+    ["Desktop Runtime", { diagnostics: desktopDiagnostics, runtime: desktopRuntime }],
+    ["Era diagnostics", {
+      currentEra: currentEraReport,
+      candidate: diagnostics.candidate, validity: diagnostics.validity, atlas: diagnostics.eraAtlas,
+    }],
+    ["WorldCycle diagnostics", { cycle: diagnostics.cycle, longRun: diagnostics.longRun }],
+  ]);
+  const copyReport = async (text: string, label: string) => {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        const copied = document.execCommand("copy");
+        textarea.remove();
+        if (!copied) throw new Error("clipboard unavailable");
+      }
+      setCopyFeedback(`${label}已复制`);
+    } catch {
+      setCopyFeedback("复制失败，请检查剪贴板权限");
+    }
+  };
   const statusSummary = `Hydration: ${hydrationStatus.startsWith("Hydration OK") ? "OK" : hydrationStatus.startsWith("Hydration failed") ? "FAILED" : "—"}｜Canonical: ${canonicalDiff ? canonicalDiff.matched ? "matched" : `DIFF (${canonicalDiff.differenceCount})` : "—"}｜Runtime: ${runtime?.simulatorRunning ? "RUNNING" : "PAUSED"}`;
 
   return (
     <Box sx={{ position: "fixed", zIndex: 5000, right: 350, bottom: 8, width: 360, maxHeight: "48vh", overflowY: "auto", p: 1, bgcolor: "rgba(20,24,28,.95)", color: "#fff", border: "1px solid #90caf9", fontSize: 11 }}>
       <Typography variant="subtitle2" sx={{ color: "#90caf9" }}>世界诊断（debug=1）</Typography>
       <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9, my: 0.5 }}>{statusSummary}</Typography>
-      <Button size="small" variant="outlined" sx={{ color: "#90caf9", borderColor: "#90caf9" }} onClick={() => navigator.clipboard?.writeText(hydrationReport)}>复制 Hydration 调试报告</Button>
-      <Button size="small" variant="outlined" disabled={hydrationBusy} sx={{ ml: 0.5, color: "#a5d6a7", borderColor: "#a5d6a7" }} onClick={snapshotAndReload}>
-        {hydrationBusy ? "正在重载…" : "内存快照并重载"}
-      </Button>
+      <Button size="small" variant="outlined" sx={{ color: "#90caf9", borderColor: "#90caf9" }} onClick={() => void copyReport(coreReport, "核心诊断")}>复制核心诊断</Button>
+      <Button size="small" variant="outlined" sx={{ ml: 0.5, color: "#a5d6a7", borderColor: "#a5d6a7" }} onClick={() => void copyReport(fullReport, "完整诊断")}>复制全部诊断</Button>
+      <Snackbar open={Boolean(copyFeedback)} autoHideDuration={2200} onClose={() => setCopyFeedback("")}>
+        <Alert severity={copyFeedback.includes("失败") ? "error" : "success"} onClose={() => setCopyFeedback("")}>{copyFeedback}</Alert>
+      </Snackbar>
       <details>
         <summary>世界格局</summary>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{summary}</Typography>
@@ -229,6 +342,10 @@ export default function WorldDiagnosticsPanel() {
       </details>
       <details>
         <summary>Persistence / Hydration</summary>
+        <Button size="small" variant="outlined" sx={{ color: "#90caf9", borderColor: "#90caf9" }} onClick={() => void copyReport(hydrationReport, "Hydration 调试报告")}>复制 Hydration 调试报告</Button>
+        <Button size="small" variant="outlined" disabled={hydrationBusy} sx={{ ml: 0.5, color: "#a5d6a7", borderColor: "#a5d6a7" }} onClick={snapshotAndReload}>
+          {hydrationBusy ? "正在重载…" : "内存快照并重载"}
+        </Button>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{`Stored save: ${storageDiagnostics.status}\nsavedAt=${storageDiagnostics.savedAt ?? "—"}｜month=${storageDiagnostics.worldMonth ?? "—"}｜schema=${storageDiagnostics.schemaVersion ?? "—"}\nlast action=${storageDiagnostics.lastAction ?? "—"}${storageDiagnostics.serializedBytes === undefined ? "" : `｜JSON bytes=${storageDiagnostics.serializedBytes}｜IDB write=${storageDiagnostics.writeDurationMs?.toFixed(2)}ms`}${storageDiagnostics.error ? `\n${storageDiagnostics.error}` : ""}`}</Typography>
         {snapshotRequest && <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>
           {`snapshot: ${snapshotRequest.status}｜request month ${snapshotRequest.requestMonth ?? "—"}｜reached ${snapshotRequest.boundaryReachedMonth ?? "waiting"}\nstarted while: simulator=${snapshotState?.simulatorRunning ?? "—"}, clock=${snapshotState?.clockRunning ?? "—"}, redux=${snapshotState?.reduxWorldRunning ?? "—"}, scenePaused=${snapshotState?.sceneTimePaused ?? "—"}, physicsPaused=${snapshotState?.physicsPaused ?? "—"}, accumulator=${snapshotState?.simulationAccumulatorMs ?? "—"}, elapsed=${snapshotState?.clockElapsedMs ?? "—"}\nwaiting reason: ${snapshotRequest.waitingReasons?.join(", ") || "none"}\npre-export elapsed=${snapshotRequest.preExportElapsedMs ?? "—"}, accumulator=${snapshotRequest.preExportAccumulatorMs ?? "—"}${snapshotRequest.error ? `\n${snapshotRequest.error}` : ""}`}
@@ -288,6 +405,7 @@ export default function WorldDiagnosticsPanel() {
           `Heartbeat age: ${desktopDiagnostics?.heartbeatAgeSeconds?.toFixed(1) ?? "—"}s`,
           `Last autosave: ${desktopAutosave?.savedAt ? new Date(desktopAutosave.savedAt).toLocaleTimeString() : "—"} · ${desktopAutosave?.status ?? "—"}${desktopAutosave?.reason ? ` (${desktopAutosave.reason})` : ""}${desktopAutosave?.error ? ` (${desktopAutosave.error})` : ""}`,
           `Suspend count: ${desktopDiagnostics?.suspendCount ?? 0}`,
+          `Suspend policy: ${readDesktopSuspendPolicy()}`,
           `Last suspend duration: ${desktopDiagnostics?.lastSuspendDurationMs === undefined ? "—" : `${(desktopDiagnostics.lastSuspendDurationMs / 1000).toFixed(1)} sec`}`,
           `Window minimized: ${desktopDiagnostics?.windowMinimized ? "yes" : "no"}`,
           `Minimize count: ${desktopDiagnostics?.minimizeCount ?? 0}`,

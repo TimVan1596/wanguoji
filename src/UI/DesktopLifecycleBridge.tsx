@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import Game from "../Game/Game";
 import { saveActiveWorld } from "../Persistence/ActiveWorldPersistence";
 import { DesktopAutosaveResult, DesktopResumeAfterSuspend } from "../Runtime/DesktopRuntime";
+import { getResumeCatchUpRequest, readDesktopSuspendPolicy } from "../Runtime/DesktopSuspendPolicy";
 
 export default function DesktopLifecycleBridge() {
   useEffect(() => {
@@ -43,7 +44,11 @@ export default function DesktopLifecycleBridge() {
       });
     });
     const unsubscribeResume = bridge.onResumeAfterSuspend?.((payload) => {
-      const result = Game.Core?.scheduleDesktopResumeCatchUp(payload as DesktopResumeAfterSuspend);
+      const request = getResumeCatchUpRequest(
+        payload as DesktopResumeAfterSuspend,
+        readDesktopSuspendPolicy()
+      );
+      const result = Game.Core?.scheduleDesktopResumeCatchUp(request);
       bridge.reportResumeCatchUpResult?.({
         status: result?.scheduled ? "SCHEDULED" : "SKIPPED",
         steps: result?.steps ?? 0,
