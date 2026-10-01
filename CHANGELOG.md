@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99923d1
+
+- Added an explicit Era detail collapse action that clears Era selection and restores unfiltered HistoryScroll events.
+- Toggling the selected timeline Era now deselects it; switching/closing Era selection also closes any open map dialog, while collapsing the timeline list preserves the selected Era.
+- No Era map data, classification, simulation, World Records, or save-schema changes.
+
 ## v0.99923d
 
 - Added one immutable logical ownership map snapshot when a WorldEra is confirmed, timestamped at `confirmedMonth` and encoded as deterministic row-major palette-index RLE with frozen historical faction names/colors and city markers.

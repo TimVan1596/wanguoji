@@ -1,5 +1,5 @@
 import { Box, Button, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useReducer, useState } from "react";
 import { useSelector } from "react-redux";
 import WorldHistory, {
   formatEventDate,
@@ -23,6 +23,12 @@ import { formatWorldDate, formatWorldDuration } from "../../../Simulation/WorldT
 import { RootState } from "../../../store";
 import { deriveWorldRecords } from "../../../History/WorldRecords";
 import EraAtlasMap from "./EraAtlasMap";
+import {
+  eraSelectionUIReducer,
+  getEventsForEraSelection,
+  getSelectedEra,
+  initialEraSelectionUIState,
+} from "./eraSelection";
 
 const filters: { value: HistoryFilter; label: string }[] = [
   { value: "featured", label: "精选" },
@@ -38,9 +44,7 @@ export default function HistoryScroll() {
   const [expandedId, setExpandedId] = useState<string>();
   const [visibleCount, setVisibleCount] = useState(HISTORY_RENDER_BATCH);
   const [eras, setEras] = useState<WorldEraRecord[]>([]);
-  const [selectedEraId, setSelectedEraId] = useState<string>("all");
-  const [eraTimelineOpen, setEraTimelineOpen] = useState(false);
-  const [eraMapOpen, setEraMapOpen] = useState(false);
+  const [eraSelectionUI, dispatchEraSelectionUI] = useReducer(eraSelectionUIReducer, initialEraSelectionUIState);
   const [worldRecordsOpen, setWorldRecordsOpen] = useState(false);
   const [expandedRecordSections, setExpandedRecordSections] = useState<string[]>([]);
   const [dynasties, setDynasties] = useState<import("../../../Politics/Dynasty").Dynasty[]>([]);
@@ -65,19 +69,19 @@ export default function HistoryScroll() {
   }, [events.length, worldMonth]);
   useEffect(() => {
     if (
-      selectedEraId !== "all" &&
-      !eras.some((era) => era.id === selectedEraId)
+      eraSelectionUI.selectedEraId !== "all" &&
+      !eras.some((era) => era.id === eraSelectionUI.selectedEraId)
     ) {
-      setSelectedEraId("all");
+      dispatchEraSelectionUI({ type: "RESET_IF_MISSING", validEraIds: eras.map((era) => era.id) });
     }
-  }, [eras, selectedEraId]);
+  }, [eras, eraSelectionUI.selectedEraId]);
   useEffect(() => {
     setManualFactionFilter(selectedFactionName);
   }, [selectedFactionName]);
   useEffect(() => {
     setVisibleCount(HISTORY_RENDER_BATCH);
     setExpandedId(undefined);
-  }, [filter, manualFactionFilter, selectedEraId]);
+  }, [filter, manualFactionFilter, eraSelectionUI.selectedEraId]);
 
   const cityNames = useMemo(
     () => teams.flatMap((team) => team.cities.map((city) => city.name)),
@@ -97,9 +101,11 @@ export default function HistoryScroll() {
   );
   const factionFilter = manualFactionFilter;
   const selectedEra = useMemo(
-    () => selectedEraId === "all" ? undefined : eras.find((era) => era.id === selectedEraId),
-    [eras, selectedEraId]
+    () => getSelectedEra(eras, eraSelectionUI.selectedEraId),
+    [eras, eraSelectionUI.selectedEraId]
   );
+  const selectEra = (eraId: string) => dispatchEraSelectionUI({ type: "SELECT", eraId });
+  const toggleEra = (eraId: string) => dispatchEraSelectionUI({ type: "TOGGLE", eraId });
   const currentEra = useMemo(
     () => eras.find((era) => era.endMonth === undefined),
     [eras]
@@ -117,10 +123,7 @@ export default function HistoryScroll() {
     [worldRecordsOpen, dynasties, teams, events, eras, worldMonth]
   );
   const eraFilteredEvents = useMemo(
-    () =>
-      selectedEra
-        ? WorldHistory.getEventsBetween(selectedEra.startMonth, selectedEra.endMonth)
-        : events,
+    () => getEventsForEraSelection(selectedEra, events, (startMonth, endMonth) => WorldHistory.getEventsBetween(startMonth, endMonth)),
     [events, selectedEra]
   );
   const factionFilterDisplay = factionFilter
@@ -185,8 +188,8 @@ export default function HistoryScroll() {
       </Box>
       <EraPicker
         eras={eras}
-        selectedEraId={selectedEraId}
-        onSelectedEraIdChange={setSelectedEraId}
+        selectedEraId={eraSelectionUI.selectedEraId}
+        onSelectedEraIdChange={selectEra}
       />
       {currentEra ? (
         <Typography fontSize="0.74rem" color="var(--gg-text-muted)" sx={{ mb: 0.35 }}>
@@ -201,12 +204,12 @@ export default function HistoryScroll() {
           <Button
             size="small"
             variant="text"
-            onClick={() => setEraTimelineOpen((open) => !open)}
+            onClick={() => dispatchEraSelectionUI({ type: "TOGGLE_TIMELINE" })}
             sx={{ px: 0, minWidth: 0, fontSize: "0.76rem" }}
           >
-            时代脉络 {eraTimelineOpen ? "⌃" : "›"}
+            时代脉络 {eraSelectionUI.eraTimelineOpen ? "⌃" : "›"}
           </Button>
-          {eraTimelineOpen ? (
+          {eraSelectionUI.eraTimelineOpen ? (
             <Box
               sx={{
                 display: "grid",
@@ -227,7 +230,7 @@ export default function HistoryScroll() {
                     pl: 0.65,
                     py: 0.25,
                     background:
-                      selectedEraId === era.id
+                      eraSelectionUI.selectedEraId === era.id
                         ? "rgba(47,111,237,0.08)"
                         : "transparent",
                   }}
@@ -235,7 +238,7 @@ export default function HistoryScroll() {
                   <Button
                     size="small"
                     variant="text"
-                    onClick={() => setSelectedEraId(era.id)}
+                    onClick={() => toggleEra(era.id)}
                     sx={{
                       minWidth: 0,
                       px: 0,
@@ -265,7 +268,15 @@ export default function HistoryScroll() {
       ) : null}
       {selectedEra ? (
         <Box sx={{ mb: 0.8, border: "1px solid var(--gg-border)", p: 0.65 }}>
-          <Typography fontSize="0.8rem" fontWeight={700}>{resolveEraDisplayLabel(selectedEra, teamByName)}</Typography>
+          <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 0.5 }}>
+            <Typography fontSize="0.8rem" fontWeight={700}>{resolveEraDisplayLabel(selectedEra, teamByName)}</Typography>
+            <Button
+              size="small"
+              aria-label="收起时代详情并显示全部时代事件"
+              onClick={() => dispatchEraSelectionUI({ type: "CLOSE_DETAIL" })}
+              sx={{ minWidth: 0, p: "0 4px", lineHeight: 1.2, flexShrink: 0 }}
+            >收起 ×</Button>
+          </Box>
           <Typography fontSize="0.7rem" color="var(--gg-text-muted)">
             时代范围：{formatEraTimelineRange(selectedEra)}<br />
             {selectedEra.mapSnapshot
@@ -278,8 +289,8 @@ export default function HistoryScroll() {
               <Typography fontSize="0.68rem" color="var(--gg-text-muted)" sx={{ mt: 0.35 }}>
                 主导势力：{selectedEra.dominantFactionIds.map((id) => selectedEra.mapSnapshot?.factionPalette.find((entry) => entry.factionId === id)?.displayName ?? id).join(" · ") || "未记录"}
               </Typography>
-              <Button size="small" onClick={() => setEraMapOpen(true)} sx={{ px: 0, minWidth: 0 }}>查看大图</Button>
-              <Dialog open={eraMapOpen} onClose={() => setEraMapOpen(false)} fullWidth maxWidth="lg">
+              <Button size="small" onClick={() => dispatchEraSelectionUI({ type: "OPEN_MAP" })} sx={{ px: 0, minWidth: 0 }}>查看大图</Button>
+              <Dialog open={eraSelectionUI.eraMapOpen} onClose={() => dispatchEraSelectionUI({ type: "CLOSE_MAP" })} fullWidth maxWidth="lg">
                 <DialogTitle sx={{ pb: 0.5 }}>
                   {resolveEraDisplayLabel(selectedEra, teamByName)} · 确立时地图 · {formatWorldDate(selectedEra.mapSnapshot.capturedMonth)}
                 </DialogTitle>
