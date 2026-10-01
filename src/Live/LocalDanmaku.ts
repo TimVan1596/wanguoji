@@ -6,8 +6,9 @@ import {
 import { store } from "../store";
 import Danmu from "./Danmu";
 import { IParseDanmuData } from "./type";
+import { resolvePublicAssetUrl } from "../Runtime/PublicAssetUrl";
 
-const LOCAL_FACE = "/img/no-face.svg";
+const LOCAL_FACE = resolvePublicAssetUrl("img/no-face.svg");
 const COLOR_ALIASES: Record<string, string> = {
   红色: "红",
   蓝色: "蓝",

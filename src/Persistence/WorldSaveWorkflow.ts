@@ -16,6 +16,7 @@ export interface ManualSaveResult {
 }
 
 let worldSaveInFlight = false;
+const saveIdleWaiters = new Set<() => void>();
 
 export class WorldSaveBusyError extends Error {
   constructor() {
@@ -39,11 +40,30 @@ export async function runExclusiveWorldSave<T>(operation: () => Promise<T>) {
     return await operation();
   } finally {
     worldSaveInFlight = false;
+    [...saveIdleWaiters].forEach((resolve) => resolve());
+    saveIdleWaiters.clear();
   }
 }
 
 export function isWorldSaveInFlight() {
   return worldSaveInFlight;
+}
+
+export function waitForWorldSaveIdle(timeoutMs = 10_000) {
+  if (!worldSaveInFlight) return Promise.resolve(true);
+  return new Promise<boolean>((resolve) => {
+    let settled = false;
+    const finish = (idle: boolean) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      saveIdleWaiters.delete(onIdle);
+      resolve(idle);
+    };
+    const onIdle = () => finish(true);
+    const timeout = setTimeout(() => finish(!worldSaveInFlight), timeoutMs);
+    saveIdleWaiters.add(onIdle);
+  });
 }
 
 export async function saveCurrentWorld(

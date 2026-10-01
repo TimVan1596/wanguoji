@@ -13,6 +13,8 @@ import {
 import { IndexedDbWorldSaveRepository } from "../Persistence/WorldSaveRepository";
 import { setWorldSaveStorageDiagnostics } from "../Persistence/WorldSaveDiagnostics";
 import { formatWorldDate } from "../Simulation/WorldTime";
+import { registerActiveWorldPersistence, saveActiveWorld } from "../Persistence/ActiveWorldPersistence";
+import { store } from "../store";
 import Config from "./Components/Config";
 import ChapterBanner from "./Components/ChapterBanner";
 import BackgroundCatchUpOverlay from "./Components/BackgroundCatchUpOverlay";
@@ -29,24 +31,24 @@ interface AppProps {
 
 export default function App({ launchRequest, onReturnToMenu }: AppProps) {
   const [saving, setSaving] = useState(false);
-  const saveInFlight = useRef(false);
-  const handleSave = async () => {
-    if (!Game.Core || saveInFlight.current) throw new Error("当前无法保存世界");
-    saveInFlight.current = true;
-    setSaving(true);
-    setWorldSaveStorageDiagnostics({ status: "unknown", lastAction: "正在保存" });
-    try {
+  useEffect(() => registerActiveWorldPersistence({
+    isWorldStarted: () => store.getState().root.worldStarted,
+    getCore: () => Game.Core,
+    save: (core) => {
       const scenario = launchRequest.mode === "NEW_WORLD" ? launchRequest.scenario : undefined;
       const scenarioId = launchRequest.mode === "CONTINUE_SAVE" ? launchRequest.record.save.scenarioId : scenario?.id;
       const scenarioName = launchRequest.mode === "CONTINUE_SAVE" ? launchRequest.record.summary.scenarioName : scenario?.name;
-      const result = await saveCurrentWorldExclusive(
-        Game.Core,
-        new IndexedDbWorldSaveRepository(),
-        {
-          scenarioId,
-          scenarioName,
-        }
-      );
+      return saveCurrentWorldExclusive(core, new IndexedDbWorldSaveRepository(), { scenarioId, scenarioName });
+    },
+  }), [launchRequest]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    setWorldSaveStorageDiagnostics({ status: "unknown", lastAction: "正在保存" });
+    try {
+      const saved = await saveActiveWorld();
+      if (saved.status !== "SAVED") throw new Error(("error" in saved ? saved.error : undefined) ?? `无法保存：${saved.reason}`);
+      const result = saved.result;
       setWorldSaveStorageDiagnostics({
         status: "present",
         savedAt: result.record.savedAt,
@@ -64,7 +66,6 @@ export default function App({ launchRequest, onReturnToMenu }: AppProps) {
       setWorldSaveStorageDiagnostics({ status: "error", lastAction: "保存失败", error: message });
       throw error;
     } finally {
-      saveInFlight.current = false;
       setSaving(false);
     }
   };

@@ -2,6 +2,7 @@ import Game from "../Game/Game";
 import Player from "./Player";
 import Slaves from "./Slaves";
 import Team from "./Team";
+import { resolvePublicAssetUrl } from "../Runtime/PublicAssetUrl";
 
 export type PlayerRole = "NORMAL" | "RULER";
 
@@ -34,7 +35,7 @@ export default class User {
       return;
     }
     if (this.face) {
-      Game.Core.scene.load.image(this.FaceKey, this.face);
+      Game.Core.scene.load.image(this.FaceKey, resolvePublicAssetUrl(this.face));
       Game.Core.scene.load.once(Phaser.Loader.Events.COMPLETE, () => {
         this.isFaceLoadDone = true;
         this.player.setFace(this.FaceKey);

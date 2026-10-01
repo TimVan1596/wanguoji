@@ -46,7 +46,7 @@ export default function WorldLaunchPage() {
 
   return (
     <>
-      <DesktopLifecycleBridge launchRequest={request} />
+      <DesktopLifecycleBridge />
       <Box
         className={theme}
         sx={{

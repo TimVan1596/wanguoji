@@ -130,6 +130,7 @@ export default function WorldDiagnosticsPanel() {
   const core = Game.Core;
   const snapshotRequest = core?.getSnapshotRequestDiagnostics();
   const desktopRuntime = core?.getRuntimeLivenessDiagnostics();
+  const runtimeUnits = core?.getRuntimeUnitDiagnostics();
   const desktopAutosave = desktopDiagnostics?.lastAutosaveResult;
 
   const snapshotAndReload = async () => {
@@ -254,6 +255,16 @@ export default function WorldDiagnosticsPanel() {
           `Resume probe: ${JSON.stringify(runtime.resumeProbe ?? null)}`,
         ].join("\n")}</Typography>}
       </details>
+      {runtimeUnits && <details>
+        <summary>Runtime Units</summary>
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{[
+          `logical users: ${runtimeUnits.logicalUsers}`,
+          `root players: ${runtimeUnits.rootPlayers}`,
+          `player children: ${runtimeUnits.playerChildren}`,
+          `active Phaser player objects: ${runtimeUnits.activePhaserPlayers}`,
+          `missing texture keys: ${runtimeUnits.missingTextureKeys.join(", ") || "none"}`,
+        ].join("\n")}</Typography>
+      </details>}
       {isDesktopContinuousRuntime() && <details open>
         <summary>Desktop Runtime</summary>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{[

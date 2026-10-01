@@ -3,6 +3,7 @@ import Npc from "./Npc";
 import Team from "./Team";
 import User from "./User";
 import ColliderReference from "./ColliderReference";
+import { resolvePublicAssetUrl } from "../Runtime/PublicAssetUrl";
 
 export interface Slave {
   name: string;
@@ -64,7 +65,7 @@ export default class Slaves extends Phaser.GameObjects.Group {
       npc.user = this.user;
       npc.setBodySize(slave.scale);
       npc.setSpeed(slave.speed);
-      this.scene.load.image(slave.name, slave.face);
+      this.scene.load.image(slave.name, resolvePublicAssetUrl(slave.face));
       this.scene.load.once("complete", () => {
         npc.setFace(slave.name);
       });

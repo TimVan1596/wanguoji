@@ -1,37 +1,20 @@
 import { useEffect } from "react";
 import Game from "../Game/Game";
-import { IndexedDbWorldSaveRepository } from "../Persistence/WorldSaveRepository";
-import {
-  saveCurrentWorldExclusive,
-  WorldSaveBusyError,
-  WorldLaunchRequest,
-} from "../Persistence/WorldSaveWorkflow";
+import { saveActiveWorld } from "../Persistence/ActiveWorldPersistence";
 import { DesktopAutosaveResult, DesktopResumeAfterSuspend } from "../Runtime/DesktopRuntime";
 
-const repository = new IndexedDbWorldSaveRepository();
-
-export default function DesktopLifecycleBridge({ launchRequest }: { launchRequest?: WorldLaunchRequest }) {
+export default function DesktopLifecycleBridge() {
   useEffect(() => {
     const bridge = window.gridGodDesktop;
     if (!bridge) return;
-
-    const options = launchRequest?.mode === "NEW_WORLD"
-      ? { scenarioId: launchRequest.scenario.id, scenarioName: launchRequest.scenario.name }
-      : launchRequest?.mode === "CONTINUE_SAVE"
-      ? {
-          scenarioId: launchRequest.record.save.scenarioId,
-          scenarioName: launchRequest.record.summary.scenarioName,
-        }
-      : { scenarioName: "桌面世界" };
-
     const save = async (requestId?: string): Promise<DesktopAutosaveResult> => {
-      const core = Game.Core;
-      if (!core) return { requestId: requestId ?? "close", status: "SKIPPED", reason: "NO_RUNTIME" };
-      const blocked = core.getDesktopSaveBlockReason();
-      if (blocked === "NO_WORLD") return { requestId: requestId ?? "close", status: "SKIPPED", reason: "NO_WORLD" };
-      if (blocked) return { requestId: requestId ?? "close", status: "SKIPPED", reason: blocked };
-      try {
-        const result = await saveCurrentWorldExclusive(core, repository, options);
+      const active = await saveActiveWorld({ waitForBusy: requestId === undefined, timeoutMs: 9_000 }).catch((error) => ({
+        status: "FAILED" as const,
+        reason: "SAVE_FAILED" as const,
+        error: error instanceof Error ? error.message : String(error),
+      }));
+      if (active.status === "SAVED") {
+        const result = active.result;
         return {
           requestId: requestId ?? "close",
           status: "SAVED",
@@ -40,16 +23,11 @@ export default function DesktopLifecycleBridge({ launchRequest }: { launchReques
           writeDurationMs: result.writeDurationMs,
           savedAt: result.record.savedAt,
         };
-      } catch (error) {
-        if (error instanceof WorldSaveBusyError) {
-          return { requestId: requestId ?? "close", status: "SKIPPED", reason: "SAVE_BUSY" };
-        }
-        return {
-          requestId: requestId ?? "close",
-          status: "FAILED",
-          error: error instanceof Error ? error.message : String(error),
-        };
       }
+      if (active.status === "SKIPPED") {
+        return { requestId: requestId ?? "close", status: "SKIPPED", reason: active.reason };
+      }
+      return { requestId: requestId ?? "close", status: "FAILED", reason: active.reason, error: active.error };
     };
 
     const unsubscribeAutosave = bridge.onAutosaveRequested?.(({ requestId }) => {
@@ -58,9 +36,9 @@ export default function DesktopLifecycleBridge({ launchRequest }: { launchReques
     const unsubscribeClose = bridge.onBeforeClose?.(() => {
       void save().then((result) => {
         bridge.reportCloseSaveResult?.({
-          status: result.status === "SAVED" ? "SAVED" : result.reason === "NO_WORLD" ? "SKIPPED" : "FAILED",
+          status: result.status,
           worldStarted: result.reason === "NO_WORLD" ? false : true,
-          error: result.error ?? (result.status === "SKIPPED" ? result.reason : undefined),
+          error: result.error ?? result.reason,
         });
       });
     });
@@ -77,7 +55,7 @@ export default function DesktopLifecycleBridge({ launchRequest }: { launchReques
       unsubscribeClose?.();
       unsubscribeResume?.();
     };
-  }, [launchRequest]);
+  }, []);
 
   return null;
 }

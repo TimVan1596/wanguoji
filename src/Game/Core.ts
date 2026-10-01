@@ -41,6 +41,7 @@ import BackgroundProgressionController, {
 import LogicalSimulationCore from "../Simulation/LogicalSimulationCore";
 import { ArcadeColliderTeardownDiagnostics, teardownArcadeColliders } from "../Simulation/ArcadeColliderTeardown";
 import LogicalUnitRegistry from "../Simulation/LogicalUnitRegistry";
+import { createRuntimeUnitDiagnostics } from "../Simulation/RuntimeUnitDiagnostics";
 import WorldEra from "../Simulation/WorldEra";
 import { captureEraMapSnapshot } from "../Simulation/EraMapSnapshot";
 import {
@@ -594,6 +595,25 @@ export default class Core {
     if (this.backgroundProgression.isCatchingUp()) return "CATCH_UP" as const;
     if (this.snapshotBoundaryRequest.getDiagnostics().status === "waiting") return "SNAPSHOT" as const;
     return undefined;
+  }
+
+  getRuntimeUnitDiagnostics() {
+    const roots = this.teams.flatMap((team) => team.players.getChildren() as Player[]);
+    const allPlayers = new Set<Player>();
+    const visit = (player: Player) => {
+      if (allPlayers.has(player)) return;
+      allPlayers.add(player);
+      player.children.forEach(visit);
+    };
+    roots.forEach(visit);
+    const missingTextureKeys = ["noFace", "star"].filter((key) => !this.scene.textures.exists(key));
+    return createRuntimeUnitDiagnostics({
+      logicalUsers: this.teams.reduce((total, team) => total + team.users.size, 0),
+      rootPlayers: roots.length,
+      playerChildren: Math.max(0, allPlayers.size - roots.length),
+      activePhaserPlayers: [...allPlayers].filter((player) => player.active).length,
+      missingTextureKeys,
+    });
   }
 
   scheduleDesktopResumeCatchUp(payload: DesktopResumeAfterSuspend) {

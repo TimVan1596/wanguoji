@@ -125,7 +125,6 @@ async function createWindow() {
   mainWindow.on("blur", () => { diagnostics.focused = false; });
   mainWindow.on("close", (event) => {
     if (closeAllowed) return;
-    if (!latestHeartbeat?.worldStarted) return;
     event.preventDefault();
     requestCloseSave();
   });
@@ -155,12 +154,14 @@ async function createWindow() {
       isMainFrame,
     });
   });
-  mainWindow.webContents.on("console-message", (_event, level, message, lineNumber, sourceId) => {
-    if (level >= 3) {
-      console.error("[Wanguoji Desktop] renderer console error", {
-        message,
-        sourceId,
-        lineNumber,
+  mainWindow.webContents.on("console-message", (details) => {
+    if (details.level === "error" || details.level === "warning") {
+      const log = details.level === "error" ? console.error : console.warn;
+      log("[Wanguoji Desktop] renderer console message", {
+        level: details.level,
+        message: details.message,
+        sourceId: details.sourceId,
+        lineNumber: details.lineNumber,
       });
     }
   });
@@ -275,7 +276,7 @@ if (decideSingleInstance(instanceLock) === "QUIT") {
 } else {
   app.on("second-instance", () => focusMainWindow());
   app.on("before-quit", (event) => {
-    if (closeAllowed || !latestHeartbeat?.worldStarted) return;
+    if (closeAllowed) return;
     event.preventDefault();
     appQuitPending = true;
     requestCloseSave();

@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import Core from "../Game/Core";
 import Game from "../Game/Game";
 import MainScene from "./MainScene";
+import { resolvePublicAssetUrl } from "../Runtime/PublicAssetUrl";
 
 export default class PreloadScene extends Phaser.Scene {
   constructor() {
@@ -9,11 +10,11 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.svg("noFace", "/img/no-face.svg", {
+    this.load.svg("noFace", resolvePublicAssetUrl("img/no-face.svg"), {
       width: 64,
       height: 64,
     });
-    this.load.image("star", "/img/star.png");
+    this.load.image("star", resolvePublicAssetUrl("img/star.png"));
   }
 
   create() {

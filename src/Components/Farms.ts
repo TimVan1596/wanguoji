@@ -3,6 +3,7 @@ import { FarmConfig } from "../store/configSlice";
 import Npc from "./Npc";
 import Team from "./Team";
 import { exportFarmTimerState, FarmTimerSaveState, getFarmTimerRestoreOptions } from "./FarmTimerPersistence";
+import { resolvePublicAssetUrl } from "../Runtime/PublicAssetUrl";
 
 export default class Farms extends Phaser.GameObjects.Group {
   farms: Map<string, Phaser.Time.TimerEvent> = new Map();
@@ -52,7 +53,7 @@ export default class Farms extends Phaser.GameObjects.Group {
                 );
                 npc.setScale(config.scale);
                 npc.setSpeed(config.speed);
-                this.scene.load.image(config.name, config.face);
+                this.scene.load.image(config.name, resolvePublicAssetUrl(config.face));
                 this.scene.load.once("complete", () => {
                   npc.setFace(config.name);
                 });

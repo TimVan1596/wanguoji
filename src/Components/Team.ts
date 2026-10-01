@@ -5,6 +5,7 @@ import City from "./City";
 import Farms from "./Farms";
 import Player from "./Player";
 import User, { PlayerRole } from "./User";
+import { resolvePublicAssetUrl } from "../Runtime/PublicAssetUrl";
 import {
   FactionStatus,
   getCumulativeActiveYears,
@@ -139,7 +140,7 @@ export default class Team {
       this.initHomeBlock();
       return;
     }
-    this.scene.load.image(this.tile, this.tile);
+    this.scene.load.image(this.tile, resolvePublicAssetUrl(this.tile));
     this.scene.load.once("complete", () => {
       this.initHomeBlock();
       this.initFarms();

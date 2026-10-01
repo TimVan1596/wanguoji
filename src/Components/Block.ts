@@ -8,6 +8,7 @@ import type City from "./City";
 import Player from "./Player";
 import Team from "./Team";
 import { canonicalBlockHitPoints } from "./BlockHitPoints";
+import { resolvePublicAssetUrl } from "../Runtime/PublicAssetUrl";
 
 export default class Block extends Phaser.GameObjects.Rectangle {
   hp = 0;
@@ -53,7 +54,7 @@ export default class Block extends Phaser.GameObjects.Rectangle {
 
   setIsHome(hall?: string) {
     if (hall) {
-      this.scene.load.image(hall, hall);
+      this.scene.load.image(hall, resolvePublicAssetUrl(hall));
       this.scene.load.once("complete", () => {
         this.hall = this.scene.add
           .image(0, 0, hall)

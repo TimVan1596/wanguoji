@@ -9,6 +9,7 @@ import {
   USER_NATURAL_LOYALTY_MAX,
   USER_NATURAL_LOYALTY_MIN,
 } from "../config/simulation";
+import { resolvePublicAssetUrl } from "../Runtime/PublicAssetUrl";
 
 export type InitialPopulationMap = Record<string, number>;
 
@@ -132,7 +133,7 @@ export default class PopulationSystem {
     const user = team.makeUser(
       id,
       name,
-      "/img/no-face.svg",
+      resolvePublicAssetUrl("img/no-face.svg"),
       Phaser.Math.Between(USER_NATURAL_LOYALTY_MIN, USER_NATURAL_LOYALTY_MAX)
     );
     if (user) return user;
