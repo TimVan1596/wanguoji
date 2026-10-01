@@ -38,8 +38,7 @@ export default class Npc extends Player {
       for (let i = 0; i < count; i++) {
         const npc = new Npc(this.scene, x, y, this.team, this.group, this);
         npc.user = this.user;
-        // @ts-ignore
-        const textureKey = this.face._textureKey;
+        const textureKey = this.getFaceSourceTextureKey();
         npc.user = this.user;
         npc.setFace(textureKey);
         npc.setSpeed(this.speed);

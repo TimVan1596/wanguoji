@@ -18,6 +18,7 @@ import { getNameGenerationSummary } from "../../Politics/NameGenerationTelemetry
 import { getCityNamingSummary } from "../../Simulation/CityNamingTelemetry";
 import { getEraAtlasDiagnostics } from "../../Simulation/EraMapSnapshot";
 import { BASE_PLAY_RATE } from "../../Simulation/SimulationDriver";
+import { getAvatarRendererMode } from "../../Runtime/AvatarRendererMode";
 import {
   getWorldSaveStorageDiagnostics,
   subscribeWorldSaveStorageDiagnostics,
@@ -262,6 +263,7 @@ export default function WorldDiagnosticsPanel() {
           `root players: ${runtimeUnits.rootPlayers}`,
           `player children: ${runtimeUnits.playerChildren}`,
           `active Phaser player objects: ${runtimeUnits.activePhaserPlayers}`,
+          `avatar renderer: ${getAvatarRendererMode()}`,
           `missing texture keys: ${runtimeUnits.missingTextureKeys.join(", ") || "none"}`,
         ].join("\n")}</Typography>
       </details>}

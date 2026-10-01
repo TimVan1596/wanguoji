@@ -2,6 +2,7 @@ import { app, BrowserWindow, dialog, ipcMain, powerMonitor } from "electron";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { randomUUID } from "node:crypto";
+import { getDesktopRendererUrl } from "./DesktopRendererUrl";
 import {
   decideSingleInstance,
   DesktopAutosaveGate,
@@ -80,6 +81,12 @@ function getPreloadPath() {
 
 function getProductionIndexUrl() {
   return pathToFileURL(path.join(getAppRoot(), "dist", "index.html")).toString();
+}
+
+function getRendererUrl(baseUrl: string) {
+  const debug = process.argv.includes("--debug");
+  const avatarRenderer = process.argv.includes("--avatar-renderer=plain") ? "plain" : undefined;
+  return getDesktopRendererUrl(baseUrl, { debug, avatarRenderer });
 }
 
 function focusMainWindow() {
@@ -171,10 +178,10 @@ async function createWindow() {
   mainWindow.on("closed", () => { mainWindow = undefined; });
 
   if (devServerUrl) {
-    await mainWindow.loadURL(devServerUrl);
+    await mainWindow.loadURL(getRendererUrl(devServerUrl));
     mainWindow.webContents.openDevTools({ mode: "detach" });
   } else {
-    await mainWindow.loadURL(getProductionIndexUrl());
+    await mainWindow.loadURL(getRendererUrl(getProductionIndexUrl()));
   }
 }
 

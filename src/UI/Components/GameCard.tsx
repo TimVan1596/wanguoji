@@ -4,6 +4,7 @@ import Game from "../../Game/Game";
 import GoldKey from "../../Game/GoldKey";
 import MainScene from "../../Scenes/MainScene";
 import PreloadScene from "../../Scenes/PreloadScene";
+import { PHASER_AUDIO_CONFIG } from "../../Runtime/GameRuntimeConfig";
 
 let game: Game;
 
@@ -12,6 +13,7 @@ const GameCard = () => {
     if (!game) {
       game = new Game({
         type: Phaser.AUTO,
+        audio: PHASER_AUDIO_CONFIG,
         scale: {
           width: 1120,
           height: 1120,

@@ -9,9 +9,11 @@ import {
 import Team from "./Team";
 import User from "./User";
 import type { PlayerRole } from "./User";
+import { getAvatarRendererMode } from "../Runtime/AvatarRendererMode";
 
 export default class Player extends Phaser.GameObjects.Container {
-  face: CircleMaskImage;
+  face: CircleMaskImage | Phaser.GameObjects.Image;
+  readonly avatarRendererMode = getAvatarRendererMode();
   factionRing: Phaser.GameObjects.Arc;
   crownMarker: Phaser.GameObjects.Text | undefined;
   static MinSpeed: number = 150;
@@ -39,7 +41,9 @@ export default class Player extends Phaser.GameObjects.Container {
       .circle(Game.BlockSize / 2, Game.BlockSize / 2, Game.BlockSize / 2 + 1)
       .setStrokeStyle(2, team.color, 0.85)
       .setDepth(this.depth + 1);
-    this.face = new CircleMaskImage(scene, 0, 0, "noFace").setOrigin(0);
+    this.face = this.avatarRendererMode === "plain"
+      ? new Phaser.GameObjects.Image(scene, 0, 0, "noFace").setOrigin(0)
+      : new CircleMaskImage(scene, 0, 0, "noFace").setOrigin(0);
 
     this.add(this.factionRing);
     this.add(this.face);
@@ -116,8 +120,7 @@ export default class Player extends Phaser.GameObjects.Container {
       const { x, y } = this.team.homeBlock;
       for (let i = 0; i < count; i++) {
         const player = new Player(this.scene, x, y, this.team, this);
-        // @ts-ignore
-        const textureKey = this.face._textureKey;
+        const textureKey = this.getFaceSourceTextureKey();
         player.user = this.user;
         player.setFace(textureKey);
         player.setSpeed(this.speed);
@@ -184,6 +187,12 @@ export default class Player extends Phaser.GameObjects.Container {
     this.Body.setCircle(Game.BlockSize / 2);
     this.setScale(1.2);
     this.children.forEach((v) => v.setFace(faceKey));
+  }
+
+  getFaceSourceTextureKey() {
+    return this.avatarRendererMode === "plain"
+      ? this.face.texture.key
+      : (this.face as CircleMaskImage & { _textureKey: string })._textureKey;
   }
 
   setUser(user: User) {

@@ -6,10 +6,30 @@
 
 ## 运行方式
 
+推荐长期运行与世界演化验收：
+
+```bash
+pnpm desktop:start
+```
+
+诊断运行（打开 `debug=1` 面板）：
+
+```bash
+pnpm desktop:start:debug
+```
+
+若需对比普通头像与 rex `CircleMaskImage`，使用 `pnpm desktop:start:debug:plain` 启动 plain-avatar 诊断模式。
+
 开发模式：
 
 ```bash
 pnpm desktop:dev
+```
+
+诊断开发模式：
+
+```bash
+pnpm desktop:dev:debug
 ```
 
 该命令会：
@@ -26,7 +46,19 @@ pnpm desktop:dev
 pnpm desktop:start
 ```
 
-`desktop:build` 只做 Web build + Electron main/preload 编译；本实验不包含安装包、签名、notarization 或 auto update。
+`desktop:build` 构建 Desktop renderer 并编译 Electron main/preload；本实验不包含安装包、签名、notarization 或 auto update。
+
+## Development Target Policy
+
+1. Gameplay source 保持单一 React + Phaser codebase。
+2. Desktop 是 long-run、background execution 与 persistence 的 primary runtime / 主要长期人工验收环境。
+3. Web production build 必须持续通过 `pnpm build`；Web 继续服务 public demo 与兼容性目标。
+4. 不维护 Desktop gameplay fork，也不让 Desktop 引入第二套 simulation authority。
+
+## 已知诊断项 / 后续安全工作
+
+- Electron 当前仍可能显示 Insecure Content-Security-Policy warning。记录为 `v0.99924a Packaging & Security` P0；本轮不添加宽松 CSP，也不以 `unsafe-eval` / `*` 掩盖问题。
+- Canvas `willReadFrequently` 提示目前仅作为性能诊断信息，不在本轮改动 renderer。
 
 ## 中国大陆 Electron binary 下载
 
