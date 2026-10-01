@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99923d2
+
+- Provisional `LEADER_SUCCESSOR` history now preserves combat death, natural death, or execution after capture, and uses “继任首领” rather than dynastic succession wording.
+- Reworked provisional succession descriptions and ruler-detail labels to distinguish non-hereditary leadership from direct lineage; formal direct-child and new-house wording remains unchanged.
+- No succession mechanics, history schema, simulation, Era Atlas, World Records, or Historiography changes.
+
 ## v0.99923d1
 
 - Added an explicit Era detail collapse action that clears Era selection and restores unfiltered HistoryScroll events.

@@ -33,19 +33,61 @@ describe("world history", () => {
     expect(WorldHistory.getEvents()[0].title).toContain("战死");
   });
 
-  it("uses provisional succession wording when the ruler was a leader", () => {
+  it.each([
+    ["combat", "战死"],
+    ["natural", "去世"],
+    ["captured", "被俘处死"],
+  ])("preserves %s death reason for provisional leader succession", (reason, wording) => {
     WorldHistory.reset();
     WorldHistory.addRulerSuccession(41, "rebel_1", "魏安", "魏武", {
-      reason: "combat",
+      reason,
       previousRulerTitle: "大梁义军首领魏安",
       rulerPoliticalTitle: "首领",
       nextSuccessionVerb: "继任",
+      relationType: "LEADER_SUCCESSOR",
       reignYears: 2,
       age: 43,
     });
     const event = WorldHistory.getEvents()[0];
-    expect(event.title).toBe("大梁义军首领魏安战死，魏武继任");
+    expect(event.title).toBe(`大梁义军首领魏安${wording}，魏武继任首领`);
     expect(event.title).not.toContain("义军王");
+    expect(event.title).not.toContain("退场");
+    expect(event.title).not.toContain("首领更替");
+    expect(event.title).not.toContain("继位");
+    expect(event.description).toContain("魏武继任首领");
+    expect(event.metadata?.reason).toBe(reason);
+    expect(event.metadata?.relationType).toBe("LEADER_SUCCESSOR");
+  });
+
+  it("uses a non-dynastic provisional fallback when leader succession reason is unknown", () => {
+    WorldHistory.reset();
+    WorldHistory.addRulerSuccession(41, "东亭义军", "杜恺", "刘子平", {
+      relationType: "LEADER_SUCCESSOR",
+      previousRulerTitle: "东亭义军首领杜恺",
+    });
+    expect(WorldHistory.getEvents()[0].title).toBe(
+      "东亭义军首领杜恺卸任后，刘子平继任首领"
+    );
+  });
+
+  it("keeps formal direct-child and new-house succession wording", () => {
+    WorldHistory.reset();
+    WorldHistory.addRulerSuccession(41, "齐", "田惠", "田康", {
+      reason: "natural",
+      relationType: "DIRECT_CHILD",
+      previousRulerTitle: "齐王田惠",
+      nextSuccessionVerb: "继位",
+    });
+    expect(WorldHistory.getEvents()[0].title).toContain("田康继位");
+    WorldHistory.addRulerSuccession(42, "齐", "田康", "王烈", {
+      reason: "natural",
+      relationType: "NEW_HOUSE",
+      previousRulerTitle: "齐王田康",
+      nextSuccessionVerb: "继位",
+    });
+    expect(WorldHistory.getEvents().find((event) => event.title.includes("王统断绝"))?.title).toBe(
+      "齐王田康王统断绝，王烈新家族继位"
+    );
   });
 
   it("records state formation as state name plus claiming kingship", () => {

@@ -1085,12 +1085,18 @@ class WorldHistoryStore {
         : "薨";
     const relationType = metadata.relationType;
     const successionTitle =
-      relationType === "DIRECT_CHILD" && exiled
+      relationType === "LEADER_SUCCESSOR"
+        ? combatDeath
+          ? `${previousRulerTitle}战死，${nextRulerName}继任首领`
+          : captured
+          ? `${previousRulerTitle}被俘处死，${nextRulerName}继任首领`
+          : metadata.reason === "natural"
+          ? `${previousRulerTitle}去世，${nextRulerName}继任首领`
+          : `${previousRulerTitle}卸任后，${nextRulerName}继任首领`
+        : relationType === "DIRECT_CHILD" && exiled
         ? `流亡${previousRulerTitle}去世，其子${nextRulerName}继承${factionId}王室`
         : relationType === "NEW_HOUSE"
         ? `${previousRulerTitle}王统断绝，${nextRulerName}新家族继位`
-        : relationType === "LEADER_SUCCESSOR"
-        ? `${previousRulerTitle}退场，${nextRulerName}首领更替`
         : relationType === "COLLATERAL_KIN"
         ? `${previousRulerTitle}之后，${nextRulerName}宗室旁支继位`
         : undefined;
@@ -1106,7 +1112,13 @@ class WorldHistoryStore {
         : combatDeath
         ? `${previousRulerTitle}战死，${nextRulerName}${nextSuccessionVerb}`
         : `${previousRulerTitle}${naturalDeathVerb}，${nextRulerName}${nextSuccessionVerb}`),
-      description: exiled
+      description: relationType === "LEADER_SUCCESSOR"
+        ? `${previousRulerName}${metadata.reignMonths !== undefined
+            ? `在位${formatWorldDuration(Number(metadata.reignMonths))}`
+            : metadata.reignYears !== undefined
+            ? `在位${formatWorldDuration(Number(metadata.reignYears) * 12)}`
+            : ""}${metadata.age !== undefined ? `，享年${metadata.age}岁` : ""}。${nextRulerName}继任首领。`
+        : exiled
         ? `${relationType === "DIRECT_CHILD" ? "其子" : relationType === "COLLATERAL_KIN" ? "宗室" : relationType === "NEW_HOUSE" ? "新家族" : relationType === "LEADER_SUCCESSOR" ? "新首领" : "继承人"}${nextRulerName}继承流亡中的${factionId}国王室。`
         : `${previousRulerName}在位${
             metadata.reignMonths !== undefined

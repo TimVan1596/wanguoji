@@ -76,6 +76,10 @@ import {
   getCumulativeActiveMonthsSafe,
 } from "./model";
 import { buildNotableRulerIndexEntry } from "./notableRulerIndex";
+import {
+  formatRulerLineage,
+  formatRulerRelation,
+} from "./RulerRelationPresentation";
 
 export default function FactionDetails() {
   const tab = useSelector((state: RootState) => state.root.factionDetailTab);
@@ -786,8 +790,14 @@ function RulerBiography({
         继承关系：{formatRulerRelation(ruler.relationType, team.identityStage, Boolean(parent))}
       </Typography>
       <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
-        世系：{parent ? `父：${formatRulerRowName(parent, team)}` : formatRulerRelation(ruler.relationType, team.identityStage, false)}
-        {grandparent ? `；祖父：${formatRulerRowName(grandparent, team)}` : ""}
+        世系：{formatRulerLineage(
+          ruler.relationType,
+          parent ? formatRulerRowName(parent, team) : undefined,
+          team.identityStage
+        )}
+        {ruler.relationType !== "LEADER_SUCCESSOR" && grandparent
+          ? `；祖父：${formatRulerRowName(grandparent, team)}`
+          : ""}
       </Typography>
       {posthumousLines.length > 0 ? (
         <Box sx={{ mt: 0.5 }}>
@@ -1002,19 +1012,6 @@ function getRulerImportantLabels(ruler: Ruler) {
     labels.push("一统");
   }
   return labels;
-}
-
-function formatRulerRelation(
-  relation: Ruler["relationType"],
-  identityStage?: string,
-  parentRecorded = true
-) {
-  if (relation === "FOUNDER") return identityStage === "PROVISIONAL" ? "首任首领" : "开国君主";
-  if (relation === "DIRECT_CHILD") return parentRecorded ? "前君之子" : "直系继承（父名未记录）";
-  if (relation === "COLLATERAL_KIN") return "宗室旁支";
-  if (relation === "NEW_HOUSE") return "易姓 / 新家族继位";
-  if (relation === "LEADER_SUCCESSOR") return "首领继任";
-  return "继任关系未记录";
 }
 
 function FactionChronicle({
