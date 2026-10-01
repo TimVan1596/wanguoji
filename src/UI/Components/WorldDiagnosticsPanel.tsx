@@ -252,6 +252,8 @@ export default function WorldDiagnosticsPanel() {
           `fixedSimulationSteps / physicsSteps: ${runtime.fixedSimulationSteps} / ${runtime.physicsSteps}`,
           `lastSimulationStepRealAt: ${runtime.lastSimulationStepRealAt}`,
           `background mode / catch-up / debt: ${runtime.backgroundMode} / ${runtime.backgroundCatchUpActive} / ${runtime.catchUpDebtSteps}`,
+          `catch-up source: ${runtime.catchUpSource} · last: ${runtime.lastCatchUpSource}`,
+          `DESKTOP VISIBILITY CATCH-UP ERROR: ${runtime.desktopVisibilityCatchUpInvariantViolation}`,
           `worldInstanceId / runtimeMode: ${runtime.worldInstanceId} / ${runtime.runtimeMode}`,
           `Resume probe: ${JSON.stringify(runtime.resumeProbe ?? null)}`,
         ].join("\n")}</Typography>}
@@ -279,10 +281,18 @@ export default function WorldDiagnosticsPanel() {
           `Fixed steps: ${desktopRuntime?.fixedSimulationSteps ?? 0}`,
           `Physics steps: ${desktopRuntime?.physicsSteps ?? 0}`,
           `Catch-up debt: ${desktopRuntime?.catchUpDebtSteps ?? 0}`,
+          `Runtime mode: ${desktopRuntime?.runtimeMode ?? "DESKTOP_CONTINUOUS"}`,
+          `Catch-up source: ${desktopRuntime?.catchUpSource ?? desktopDiagnostics?.latestHeartbeat?.catchUpSource ?? "NONE"} · last: ${desktopRuntime?.lastCatchUpSource ?? desktopDiagnostics?.latestHeartbeat?.lastCatchUpSource ?? "NONE"}`,
+          `Background mode: ${desktopRuntime?.backgroundMode ?? desktopDiagnostics?.latestHeartbeat?.backgroundMode ?? "FOREGROUND"}`,
+          `DESKTOP VISIBILITY CATCH-UP ERROR: ${desktopRuntime?.desktopVisibilityCatchUpInvariantViolation ?? desktopDiagnostics?.latestHeartbeat?.desktopVisibilityCatchUpInvariantViolation ?? false}`,
           `Heartbeat age: ${desktopDiagnostics?.heartbeatAgeSeconds?.toFixed(1) ?? "—"}s`,
           `Last autosave: ${desktopAutosave?.savedAt ? new Date(desktopAutosave.savedAt).toLocaleTimeString() : "—"} · ${desktopAutosave?.status ?? "—"}${desktopAutosave?.reason ? ` (${desktopAutosave.reason})` : ""}${desktopAutosave?.error ? ` (${desktopAutosave.error})` : ""}`,
           `Suspend count: ${desktopDiagnostics?.suspendCount ?? 0}`,
           `Last suspend duration: ${desktopDiagnostics?.lastSuspendDurationMs === undefined ? "—" : `${(desktopDiagnostics.lastSuspendDurationMs / 1000).toFixed(1)} sec`}`,
+          `Window minimized: ${desktopDiagnostics?.windowMinimized ? "yes" : "no"}`,
+          `Minimize count: ${desktopDiagnostics?.minimizeCount ?? 0}`,
+          `Last minimized: ${desktopDiagnostics?.lastMinimizedAt ?? "—"}`,
+          `Last restored: ${desktopDiagnostics?.lastRestoredAt ?? "—"}`,
           `Resume catch-up: ${desktopDiagnostics?.resumeCatchUp ? `${desktopDiagnostics.resumeCatchUp.steps} steps / ${desktopDiagnostics.resumeCatchUp.complete ? "complete" : "pending"}${desktopDiagnostics.resumeCatchUp.truncated ? " / truncated" : ""}` : "—"}`,
         ].join("\n")}</Typography>
       </details>}

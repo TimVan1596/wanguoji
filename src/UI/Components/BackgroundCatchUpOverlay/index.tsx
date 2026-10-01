@@ -18,6 +18,7 @@ export default function BackgroundCatchUpOverlay() {
   const truncated = useSelector(
     (state: RootState) => state.root.backgroundCatchUpTruncated
   );
+  const source = useSelector((state: RootState) => state.root.backgroundCatchUpSource);
 
   if (!active || !overlayVisible) {
     return null;
@@ -42,7 +43,7 @@ export default function BackgroundCatchUpOverlay() {
       }}
     >
       <Typography fontWeight="bold" fontSize="0.95rem">
-        世界正在追赶历史… {percent}%
+        {source === "DESKTOP_OS_RESUME" ? "系统休眠后正在补算历史…" : "世界正在追赶历史…"} {percent}%
       </Typography>
       {message && (
         <Typography sx={{ mt: 0.25 }} fontSize="0.78rem">
@@ -51,7 +52,9 @@ export default function BackgroundCatchUpOverlay() {
       )}
       {truncated && (
         <Typography sx={{ mt: 0.25 }} fontSize="0.74rem" color="warning.main">
-          离开时间较长，本次最多补算约1000年历史。
+          {source === "DESKTOP_OS_RESUME"
+            ? "系统休眠时间较长，本次补算已达到安全上限。"
+            : "离开时间较长，本次最多补算约1000年历史。"}
         </Typography>
       )}
       <LinearProgress

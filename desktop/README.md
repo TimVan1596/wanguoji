@@ -18,7 +18,7 @@ pnpm desktop:start
 pnpm desktop:start:debug
 ```
 
-若需对比普通头像与 rex `CircleMaskImage`，使用 `pnpm desktop:start:debug:plain` 启动 plain-avatar 诊断模式。
+若需对比普通头像与 rex `CircleMaskImage`，使用 `pnpm desktop:start:debug:plain` 启动 plain-avatar 诊断模式。该启动方式使用 app-private 参数，不占用 Node/Electron 的 `--debug` 参数。
 
 开发模式：
 
@@ -32,11 +32,19 @@ pnpm desktop:dev
 pnpm desktop:dev:debug
 ```
 
+plain avatar 开发诊断：
+
+```bash
+pnpm desktop:dev:debug:plain
+```
+
 该命令会：
 
 1. 编译 `desktop/main.ts` 和 `desktop/preload.ts`。
 2. 以固定端口启动 Vite：`--port 5173 --strictPort`。
 3. 等待 `http://localhost:5173` 可用后启动 Electron。
+
+这些脚本通过 Electron app 参数传递 Vite 地址，可直接用于 macOS 与 Windows shell。
 
 如果 5173 已被占用，Vite 会直接失败，避免 Electron 误连到旧服务或其它端口。
 
@@ -78,6 +86,7 @@ ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/ pnpm install
   - preload 暴露 `window.gridGodDesktop`。
   - renderer 在该模式下禁用 return-time catch-up debt。
   - `BrowserWindow.webPreferences.backgroundThrottling = false`，awake 状态下继续 timers、animation loop、SimulationDriver 和 Phaser Arcade Physics。
+  - 普通最小化/失焦不是 OS suspend；debug diagnostics 分别显示窗口最小化计数、OS suspend 计数，以及 catch-up source。只有真实 OS suspend 的恢复才使用 `DESKTOP_OS_RESUME` 补算来源。
   - OS suspend / resume 使用显式 suspend catch-up，最多按现有 2 小时 real-time cap 补算。
   - 每 5 分钟由 main process 请求 renderer 复用 IndexedDB 手动保存 workflow 自动保存；关闭窗口时先保存，失败或超时则取消关闭。
   - 应用使用 single-instance lock，第二实例会将已有窗口恢复并置前。

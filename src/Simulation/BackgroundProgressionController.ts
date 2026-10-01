@@ -5,7 +5,7 @@ import {
   SIMULATION_FIXED_STEP_MS,
   calculateBackgroundSimulationDebtMs,
 } from "./SimulationDriver";
-import type { GridGodRuntimeMode } from "../Runtime/DesktopRuntime";
+import type { BackgroundCatchUpSource, GridGodRuntimeMode } from "../Runtime/DesktopRuntime";
 
 export type BackgroundProgressionMode = "FOREGROUND" | "CATCH_UP";
 
@@ -29,6 +29,8 @@ export interface BackgroundProgressionSnapshot {
   catchUpTruncated: boolean;
   catchUpShowOverlay: boolean;
   catchUpHiddenElapsedRealMs: number;
+  catchUpSource: BackgroundCatchUpSource;
+  lastCatchUpSource: BackgroundCatchUpSource;
   suppressNextForegroundDelta: boolean;
 }
 
@@ -48,6 +50,8 @@ export default class BackgroundProgressionController {
   private catchUpTruncated = false;
   private catchUpShowOverlay = false;
   private catchUpHiddenElapsedRealMs = 0;
+  private catchUpSource: BackgroundCatchUpSource = "NONE";
+  private lastCatchUpSource: BackgroundCatchUpSource = "NONE";
   private suppressNextForegroundDelta = false;
 
   handleHidden({
@@ -125,6 +129,10 @@ export default class BackgroundProgressionController {
       this.catchUpTruncated || debt.cappedByRealTime || debt.cappedBySteps;
     this.catchUpDebtSteps += newDebtSteps;
     this.catchUpTotalSteps += newDebtSteps;
+    if (newDebtSteps > 0) {
+      this.catchUpSource = this.catchUpSource === "NONE" ? "WEB_VISIBILITY" : this.catchUpSource;
+      this.lastCatchUpSource = "WEB_VISIBILITY";
+    }
     this.catchUpShowOverlay =
       this.catchUpShowOverlay || (debt.shouldShowOverlay && this.catchUpDebtSteps > 0);
 
@@ -182,6 +190,10 @@ export default class BackgroundProgressionController {
     this.catchUpTruncated = this.catchUpTruncated || debt.cappedByRealTime || debt.cappedBySteps;
     this.catchUpDebtSteps += steps;
     this.catchUpTotalSteps += steps;
+    if (steps > 0) {
+      this.catchUpSource = this.catchUpSource === "NONE" ? "DESKTOP_OS_RESUME" : this.catchUpSource;
+      this.lastCatchUpSource = "DESKTOP_OS_RESUME";
+    }
     this.catchUpShowOverlay = this.catchUpShowOverlay || steps > 0;
     this.mode = this.catchUpDebtSteps > 0 ? "CATCH_UP" : "FOREGROUND";
     return this.getSnapshot();
@@ -231,6 +243,7 @@ export default class BackgroundProgressionController {
 
     if (this.catchUpDebtSteps <= 0) {
       this.mode = "FOREGROUND";
+      this.catchUpSource = "NONE";
     }
 
     return {
@@ -261,6 +274,8 @@ export default class BackgroundProgressionController {
       catchUpTruncated: this.catchUpTruncated,
       catchUpShowOverlay: this.catchUpShowOverlay,
       catchUpHiddenElapsedRealMs: this.catchUpHiddenElapsedRealMs,
+      catchUpSource: this.catchUpSource,
+      lastCatchUpSource: this.lastCatchUpSource,
       suppressNextForegroundDelta: this.suppressNextForegroundDelta,
     };
   }
@@ -273,5 +288,7 @@ export default class BackgroundProgressionController {
     this.catchUpTruncated = false;
     this.catchUpShowOverlay = false;
     this.catchUpHiddenElapsedRealMs = 0;
+    this.catchUpSource = "NONE";
+    this.lastCatchUpSource = "NONE";
   }
 }

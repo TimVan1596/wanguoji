@@ -1,5 +1,7 @@
 export type GridGodRuntimeMode = "WEB_CATCH_UP" | "DESKTOP_CONTINUOUS";
 export type GridGodRouterMode = "browser" | "hash";
+export type BackgroundCatchUpSource = "NONE" | "WEB_VISIBILITY" | "DESKTOP_OS_RESUME";
+export type BackgroundMode = "FOREGROUND" | "CATCH_UP";
 
 export function getGridGodRouterMode(isDesktop: boolean): GridGodRouterMode {
   return isDesktop ? "hash" : "browser";
@@ -20,6 +22,10 @@ export interface GridGodDesktopHeartbeat {
   catchUpTotalSteps: number;
   catchUpCompletedSteps: number;
   catchUpTruncated: boolean;
+  catchUpSource: BackgroundCatchUpSource;
+  lastCatchUpSource: BackgroundCatchUpSource;
+  backgroundMode: BackgroundMode;
+  desktopVisibilityCatchUpInvariantViolation: boolean;
 }
 
 export interface DesktopAutosaveResult {
@@ -51,6 +57,10 @@ export interface DesktopDiagnostics {
   lastSuspendDurationMs?: number;
   resumeCatchUp?: { steps: number; truncated: boolean; complete: boolean };
   rendererCrash?: { reason: string; exitCode: number; at: string };
+  windowMinimized?: boolean;
+  minimizeCount?: number;
+  lastMinimizedAt?: string;
+  lastRestoredAt?: string;
 }
 
 export interface GridGodDesktopBridge {

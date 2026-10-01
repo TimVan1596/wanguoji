@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import Team from "../Components/Team";
 import { WorldPhase } from "../Simulation/WorldPhase";
+import type { BackgroundCatchUpSource } from "../Runtime/DesktopRuntime";
 
 export interface WorldResult {
   type: "unification" | "hegemony";
@@ -34,6 +35,7 @@ export interface RootDataState {
   backgroundCatchUpTotalSteps: number;
   backgroundCatchUpTruncated: boolean;
   backgroundCatchUpMessage: string | undefined;
+  backgroundCatchUpSource: BackgroundCatchUpSource;
 }
 const initialState: RootDataState = {
   teams: [],
@@ -56,6 +58,7 @@ const initialState: RootDataState = {
   backgroundCatchUpTotalSteps: 0,
   backgroundCatchUpTruncated: false,
   backgroundCatchUpMessage: undefined,
+  backgroundCatchUpSource: "NONE",
 };
 
 export const rootSlice = createSlice({
@@ -123,6 +126,7 @@ export const rootSlice = createSlice({
       state.backgroundCatchUpTotalSteps = action.payload.totalSteps;
       state.backgroundCatchUpTruncated = action.payload.truncated;
       state.backgroundCatchUpMessage = action.payload.message;
+      state.backgroundCatchUpSource = action.payload.source;
     },
     resetWorldState() {
       return initialState;

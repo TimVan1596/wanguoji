@@ -2,7 +2,7 @@ import { app, BrowserWindow, dialog, ipcMain, powerMonitor } from "electron";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { randomUUID } from "node:crypto";
-import { getDesktopRendererUrl } from "./DesktopRendererUrl";
+import { getDesktopDebugLaunchOptions, getDesktopRendererUrl } from "./DesktopRendererUrl";
 import {
   decideSingleInstance,
   DesktopAutosaveGate,
@@ -23,6 +23,10 @@ interface RendererHeartbeat {
   catchUpTotalSteps?: number;
   catchUpCompletedSteps?: number;
   catchUpTruncated?: boolean;
+  catchUpSource?: "NONE" | "WEB_VISIBILITY" | "DESKTOP_OS_RESUME";
+  lastCatchUpSource?: "NONE" | "WEB_VISIBILITY" | "DESKTOP_OS_RESUME";
+  backgroundMode?: "FOREGROUND" | "CATCH_UP";
+  desktopVisibilityCatchUpInvariantViolation?: boolean;
   timestamp?: number;
 }
 
@@ -48,6 +52,10 @@ interface DesktopDiagnostics {
   lastSuspendDurationMs?: number;
   resumeCatchUp?: { steps: number; truncated: boolean; complete: boolean };
   rendererCrash?: { reason: string; exitCode: number; at: string };
+  windowMinimized: boolean;
+  minimizeCount: number;
+  lastMinimizedAt?: string;
+  lastRestoredAt?: string;
 }
 
 const instanceLock = app.requestSingleInstanceLock();
@@ -58,6 +66,8 @@ const diagnostics: DesktopDiagnostics = {
   focused: true,
   visibility: "unknown",
   suspendCount: 0,
+  windowMinimized: false,
+  minimizeCount: 0,
 };
 
 let mainWindow: BrowserWindow | undefined;
@@ -84,8 +94,7 @@ function getProductionIndexUrl() {
 }
 
 function getRendererUrl(baseUrl: string) {
-  const debug = process.argv.includes("--debug");
-  const avatarRenderer = process.argv.includes("--avatar-renderer=plain") ? "plain" : undefined;
+  const { debug, avatarRenderer } = getDesktopDebugLaunchOptions(process.argv);
   return getDesktopRendererUrl(baseUrl, { debug, avatarRenderer });
 }
 
@@ -110,7 +119,8 @@ function requestCloseSave() {
 }
 
 async function createWindow() {
-  const devServerUrl = process.env.GRIDGOD_DESKTOP_DEV_SERVER_URL;
+  const devServerUrl = getDesktopDebugLaunchOptions(process.argv).devServerUrl
+    ?? process.env.GRIDGOD_DESKTOP_DEV_SERVER_URL;
   mainWindow = new BrowserWindow({
     width: 1440,
     height: 900,
@@ -130,6 +140,15 @@ async function createWindow() {
 
   mainWindow.on("focus", () => { diagnostics.focused = true; });
   mainWindow.on("blur", () => { diagnostics.focused = false; });
+  mainWindow.on("minimize", () => {
+    diagnostics.windowMinimized = true;
+    diagnostics.minimizeCount += 1;
+    diagnostics.lastMinimizedAt = new Date().toISOString();
+  });
+  mainWindow.on("restore", () => {
+    diagnostics.windowMinimized = false;
+    diagnostics.lastRestoredAt = new Date().toISOString();
+  });
   mainWindow.on("close", (event) => {
     if (closeAllowed) return;
     event.preventDefault();

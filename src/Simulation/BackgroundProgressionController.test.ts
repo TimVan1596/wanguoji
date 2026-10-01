@@ -38,6 +38,7 @@ describe("BackgroundProgressionController", () => {
     const snapshot = controller.handleVisible({ nowMs: 60_000, worldInstanceId: 1 });
     expect(snapshot.catchUpDebtSteps).toBe(0);
     expect(snapshot.mode).toBe("FOREGROUND");
+    expect(snapshot.catchUpSource).toBe("NONE");
   });
 
   it("maps 1x/2x/4x debt through the shared base play rate", () => {
@@ -81,6 +82,7 @@ describe("BackgroundProgressionController", () => {
     const snapshot = controller.handleVisible({ nowMs: 60_000, worldInstanceId: 2 });
     expect(snapshot.catchUpDebtSteps).toBe(0);
     expect(snapshot.mode).toBe("FOREGROUND");
+    expect(snapshot.catchUpSource).toBe("NONE");
   });
 
   it("does not show overlay for tiny hidden intervals", () => {
@@ -143,6 +145,8 @@ describe("BackgroundProgressionController", () => {
     });
     expect(deltas).toHaveLength(4);
     expect(controller.getSnapshot().mode).toBe("FOREGROUND");
+    expect(controller.getSnapshot().catchUpSource).toBe("NONE");
+    expect(controller.getSnapshot().lastCatchUpSource).toBe("WEB_VISIBILITY");
   });
 
   it("preserves remaining debt when hidden again during catch-up", () => {
@@ -188,6 +192,7 @@ describe("BackgroundProgressionController", () => {
     expect(snapshot.hidden).toBeUndefined();
     expect(snapshot.catchUpDebtSteps).toBe(0);
     expect(snapshot.mode).toBe("FOREGROUND");
+    expect(snapshot.catchUpSource).toBe("NONE");
   });
 
   it("keeps Electron desktop hidden time out of return-time catch-up debt", () => {
@@ -206,6 +211,7 @@ describe("BackgroundProgressionController", () => {
     });
     expect(snapshot.catchUpDebtSteps).toBe(0);
     expect(snapshot.mode).toBe("FOREGROUND");
+    expect(snapshot.catchUpSource).toBe("NONE");
     expect(controller.consumeSuppressNextForegroundDelta()).toBe(true);
   });
 
@@ -224,26 +230,42 @@ describe("BackgroundProgressionController", () => {
     ));
     expect(snapshot.catchUpTruncated).toBe(true);
     expect(snapshot.suppressNextForegroundDelta).toBe(true);
+    expect(snapshot.catchUpSource).toBe("DESKTOP_OS_RESUME");
+    expect(snapshot.lastCatchUpSource).toBe("DESKTOP_OS_RESUME");
   });
 
   it("does not catch up a paused world or apply suspend time to a different world", () => {
     const paused = new BackgroundProgressionController();
-    expect(paused.scheduleResumeCatchUp({
+    const pausedSnapshot = paused.scheduleResumeCatchUp({
       elapsedRealMs: 60_000,
       selectedSpeed: 4,
       wasRunning: false,
       worldInstanceId: 1,
       currentWorldInstanceId: 1,
-    }).catchUpDebtSteps).toBe(0);
+    });
+    expect(pausedSnapshot.catchUpDebtSteps).toBe(0);
+    expect(pausedSnapshot.catchUpSource).toBe("NONE");
 
     const replaced = new BackgroundProgressionController();
-    expect(replaced.scheduleResumeCatchUp({
+    const replacedSnapshot = replaced.scheduleResumeCatchUp({
       elapsedRealMs: 60_000,
       selectedSpeed: 4,
       wasRunning: true,
       worldInstanceId: 1,
       currentWorldInstanceId: 2,
-    }).catchUpDebtSteps).toBe(0);
+    });
+    expect(replacedSnapshot.catchUpDebtSteps).toBe(0);
+    expect(replacedSnapshot.catchUpSource).toBe("NONE");
+
+    const zeroElapsed = new BackgroundProgressionController().scheduleResumeCatchUp({
+      elapsedRealMs: 0,
+      selectedSpeed: 4,
+      wasRunning: true,
+      worldInstanceId: 1,
+      currentWorldInstanceId: 1,
+    });
+    expect(zeroElapsed.catchUpDebtSteps).toBe(0);
+    expect(zeroElapsed.catchUpSource).toBe("NONE");
   });
 
   it("still creates catch-up debt for normal web hidden time", () => {
@@ -261,5 +283,15 @@ describe("BackgroundProgressionController", () => {
       runtimeMode: "WEB_CATCH_UP",
     });
     expect(snapshot.catchUpDebtSteps).toBe(debtSteps(10_000, 1));
+    expect(snapshot.catchUpSource).toBe("WEB_VISIBILITY");
+  });
+
+  it("does not create WEB visibility source in desktop continuous mode", () => {
+    const controller = new BackgroundProgressionController();
+    controller.handleHidden({ nowMs: 0, selectedSpeed: 2, paused: false, worldInstanceId: 1, runtimeMode: "DESKTOP_CONTINUOUS" });
+    const snapshot = controller.handleVisible({ nowMs: 60_000, worldInstanceId: 1, runtimeMode: "DESKTOP_CONTINUOUS" });
+    expect(snapshot.catchUpDebtSteps).toBe(0);
+    expect(snapshot.catchUpSource).toBe("NONE");
+    expect(snapshot.lastCatchUpSource).toBe("NONE");
   });
 });

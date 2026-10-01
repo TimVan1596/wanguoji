@@ -1,3 +1,13 @@
+export function getDesktopDebugLaunchOptions(argv: string[]) {
+  const avatarRenderer = argv.includes("--wanguoji-avatar-renderer=plain") ? "plain" as const : undefined;
+  return {
+    debug: argv.includes("--wanguoji-debug") || avatarRenderer === "plain",
+    avatarRenderer,
+    devServerUrl: argv.find((argument) => argument.startsWith("--wanguoji-dev-server="))
+      ?.slice("--wanguoji-dev-server=".length),
+  };
+}
+
 export function getDesktopRendererUrl(
   baseUrl: string,
   options: { debug?: boolean; avatarRenderer?: "plain" } = {}

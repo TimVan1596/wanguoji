@@ -73,6 +73,7 @@ import { SnapshotBoundaryRequest } from "../Persistence/SnapshotBoundary";
 import User from "../Components/User";
 import {
   getGridGodRuntimeMode,
+  BackgroundCatchUpSource,
   GridGodRuntimeMode,
   DesktopResumeAfterSuspend,
 } from "../Runtime/DesktopRuntime";
@@ -86,6 +87,10 @@ type DesktopRuntimeDiagnostics = {
   physicsSteps: number;
   lastSimulationStepRealAt: number;
   catchUpDebtSteps: number;
+  runtimeMode: GridGodRuntimeMode;
+  catchUpSource: BackgroundCatchUpSource;
+  lastCatchUpSource: BackgroundCatchUpSource;
+  desktopVisibilityCatchUpInvariantViolation: boolean;
 };
 
 export default class Core {
@@ -168,6 +173,10 @@ export default class Core {
     physicsSteps: 0,
     lastSimulationStepRealAt: 0,
     catchUpDebtSteps: 0,
+    runtimeMode: this.runtimeMode,
+    catchUpSource: "NONE",
+    lastCatchUpSource: "NONE",
+    desktopVisibilityCatchUpInvariantViolation: false,
   };
 
   constructor(public game: Phaser.Game, public scene: Phaser.Scene) {}
@@ -632,6 +641,8 @@ export default class Core {
         worldInstanceId: payload.worldInstanceId ?? -1,
         currentWorldInstanceId: this.worldInstanceId,
       });
+      this.syncBackgroundCatchUpStore();
+      this.updateDesktopRuntimeDiagnostics();
       return { scheduled: false, steps: 0, truncated: false };
     }
     const snapshot = this.backgroundProgression.scheduleResumeCatchUp({
@@ -674,6 +685,7 @@ export default class Core {
     const simulatorRunning = Boolean(this.simulator?.isRunning());
     const clockRunning = Boolean(simulatorState?.clock.running);
     const activeTweens = ((this.scene.tweens as unknown as { _active?: Array<{ isPaused?: () => boolean }> })._active ?? []);
+    const catchUpSnapshot = this.backgroundProgression.getSnapshot();
     const probe = this.resumeProbe;
     const elapsedSinceResumeMs = probe ? Math.max(0, this.getRealNow() - probe.requestedAt) : undefined;
     const fixedStepsNow = this.simulationDiagnostics.fixedSimulationSteps;
@@ -700,9 +712,13 @@ export default class Core {
       fixedSimulationSteps: this.simulationDiagnostics.fixedSimulationSteps,
       physicsSteps: this.simulationDiagnostics.physicsSteps,
       lastSimulationStepRealAt: this.desktopRuntimeDiagnostics.lastSimulationStepRealAt,
-      backgroundMode: this.backgroundProgression.getSnapshot().mode,
+      backgroundMode: catchUpSnapshot.mode,
       backgroundCatchUpActive: this.backgroundProgression.isCatchingUp(),
-      catchUpDebtSteps: this.backgroundProgression.getSnapshot().catchUpDebtSteps,
+      catchUpDebtSteps: catchUpSnapshot.catchUpDebtSteps,
+      catchUpSource: catchUpSnapshot.catchUpSource,
+      lastCatchUpSource: catchUpSnapshot.lastCatchUpSource,
+      desktopVisibilityCatchUpInvariantViolation:
+        this.runtimeMode === "DESKTOP_CONTINUOUS" && catchUpSnapshot.catchUpSource === "WEB_VISIBILITY",
       worldInstanceId: this.worldInstanceId,
       runtimeMode: this.runtimeMode,
       runningStateDivergence: reduxWorldRunning !== simulatorRunning || simulatorRunning !== clockRunning,
@@ -1263,6 +1279,10 @@ export default class Core {
       physicsSteps: 0,
       lastSimulationStepRealAt: 0,
       catchUpDebtSteps: 0,
+      runtimeMode: this.runtimeMode,
+      catchUpSource: "NONE",
+      lastCatchUpSource: "NONE",
+      desktopVisibilityCatchUpInvariantViolation: false,
     };
     this.lastDesktopHeartbeatAt = 0;
   }
@@ -1328,6 +1348,7 @@ export default class Core {
         completedSteps: snapshot.catchUpCompletedSteps,
         totalSteps: snapshot.catchUpTotalSteps,
         truncated: snapshot.catchUpTruncated,
+        source: snapshot.catchUpSource,
         message:
           completedYears > 0
             ? `已补算约 ${completedYears} 年`
@@ -1349,6 +1370,11 @@ export default class Core {
       lastSimulationStepRealAt:
         this.desktopRuntimeDiagnostics.lastSimulationStepRealAt,
       catchUpDebtSteps: snapshot.catchUpDebtSteps,
+      runtimeMode: this.runtimeMode,
+      catchUpSource: snapshot.catchUpSource,
+      lastCatchUpSource: snapshot.lastCatchUpSource,
+      desktopVisibilityCatchUpInvariantViolation:
+        this.runtimeMode === "DESKTOP_CONTINUOUS" && snapshot.catchUpSource === "WEB_VISIBILITY",
     };
   }
 
@@ -1381,6 +1407,11 @@ export default class Core {
       catchUpTotalSteps: this.backgroundProgression.getSnapshot().catchUpTotalSteps,
       catchUpCompletedSteps: this.backgroundProgression.getSnapshot().catchUpCompletedSteps,
       catchUpTruncated: this.backgroundProgression.getSnapshot().catchUpTruncated,
+      catchUpSource: this.backgroundProgression.getSnapshot().catchUpSource,
+      lastCatchUpSource: this.backgroundProgression.getSnapshot().lastCatchUpSource,
+      backgroundMode: this.backgroundProgression.getSnapshot().mode,
+      desktopVisibilityCatchUpInvariantViolation:
+        this.runtimeMode === "DESKTOP_CONTINUOUS" && this.backgroundProgression.getSnapshot().catchUpSource === "WEB_VISIBILITY",
     });
   }
 
