@@ -94,6 +94,19 @@ describe("posthumous rules", () => {
     expect(evaluatePosthumousNames(candidate, [], faction(), candidate.endYear!).posthumousEpithet).toBe("灵");
   });
 
+  it("does not treat a brief reign followed by decades in exile as long governance for 灵", () => {
+    const accession = 0;
+    const endMonth = 50 * 12;
+    const chronicle = createRulerChronicle({ month: accession, population: 20, territoryShare: 0.2, cityCount: 3, stability: 72 });
+    finishRulerChronicle(chronicle, { month: endMonth, population: 0, territoryShare: 0, cityCount: 0, stability: 0 }, "自然死亡");
+    const candidate = ruler({ accessionYear: accession, endYear: endMonth, bornYear: -60, endReason: "自然去世", chronicle });
+    const events = [{ id: "exile", year: 6, monthIndex: 6, type: "faction-exiled", targetFactionId: "阳", category: "politics", title: "阳亡国", importance: "major" }] as any;
+    const result = evaluatePosthumousNames(candidate, [candidate], faction(), endMonth, events);
+    expect(result.posthumousEpithet).not.toBe("灵");
+    expect(result.epithetReasons.join(" ")).not.toContain("长期稳定恶化");
+    expect(["愍", "哀"]).toContain(result.posthumousEpithet);
+  });
+
   it("favors military epithet for personal conquest and Xiang for expansion without personal capture", () => {
     const militaryChronicle = createRulerChronicle({ month: 0, population: 20, territoryShare: 0.2, cityCount: 3, stability: 70 });
     finishRulerChronicle(militaryChronicle, { month: 12 * 12, population: 30, territoryShare: 0.25, cityCount: 6, stability: 74 });

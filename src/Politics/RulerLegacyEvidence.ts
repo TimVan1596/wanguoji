@@ -9,6 +9,7 @@ export interface RulerLegacyEvidence {
   accessionMonth: number;
   endMonth?: number;
   reignMonths: number;
+  activeRuleMonths: number;
   accessionSnapshot: RulerChronicle["accessionSnapshot"];
   latestSnapshot: RulerChronicle["latestSnapshot"];
   endSnapshot: RulerChronicle["endSnapshot"];
@@ -47,7 +48,8 @@ export function buildRulerLegacyEvidence(
   chronicle: RulerChronicle,
   accessionMonth: number,
   endMonth?: number,
-  endReason?: string
+  endReason?: string,
+  activeRuleMonths = Math.max(0, (endMonth ?? getRulerEffectiveSnapshot(chronicle).month) - accessionMonth)
 ): RulerLegacyEvidence {
   const start = chronicle.accessionSnapshot;
   const end = getRulerEffectiveSnapshot(chronicle);
@@ -55,6 +57,7 @@ export function buildRulerLegacyEvidence(
   const cityDelta = end.cityCount - start.cityCount;
   const stabilityDelta = end.stability - start.stability;
   const reignMonths = Math.max(0, (endMonth ?? end.month) - accessionMonth);
+  const governedMonths = Math.min(reignMonths, Math.max(0, activeRuleMonths));
   return {
     foundedState: Boolean(chronicle.foundedStateName),
     proclaimedEmperor: chronicle.proclaimedEmperorMonth !== undefined,
@@ -63,6 +66,7 @@ export function buildRulerLegacyEvidence(
     accessionMonth,
     endMonth,
     reignMonths,
+    activeRuleMonths: governedMonths,
     accessionSnapshot: start,
     latestSnapshot: chronicle.latestSnapshot,
     endSnapshot: chronicle.endSnapshot,
@@ -83,7 +87,7 @@ export function buildRulerLegacyEvidence(
     militaryAchievement: chronicle.citiesCapturedPersonally >= 2 || chronicle.completedUnification,
     institutionalAchievement: Boolean(chronicle.foundedStateName) || chronicle.proclaimedEmperorMonth !== undefined || chronicle.completedUnification || chronicle.restorationsDuringReign > 0,
     stableGovernance: end.stability >= 75 && stabilityDelta >= 0,
-    longStableReign: reignMonths >= 18 * 12 && end.stability >= 75 && stabilityDelta >= 0,
+    longStableReign: governedMonths >= 18 * 12 && end.stability >= 75 && stabilityDelta >= 0,
     stabilityDeterioration: stabilityDelta <= -25,
     demographicCollapse: start.population > 0 && end.population <= start.population * 0.6,
     territorialCollapse: territoryDelta <= -0.12,
@@ -94,7 +98,7 @@ export function buildRulerLegacyEvidence(
     governanceCost: (start.population > 0 && end.population <= start.population * 0.6) || stabilityDelta <= -20,
     strongExpansion: territoryDelta >= 0.16 || cityDelta >= 3 || chronicle.completedUnification,
     severeDecline: territoryDelta <= -0.12 || cityDelta <= -2 || (start.population > 0 && end.population <= start.population * 0.6) || endReason === "彻底灭亡",
-    steadyRule: reignMonths >= 18 * 12 && end.stability >= 72 && Math.abs(territoryDelta) < 0.04 && cityDelta === 0,
+    steadyRule: governedMonths >= 18 * 12 && end.stability >= 72 && Math.abs(territoryDelta) < 0.04 && cityDelta === 0,
   };
 }
 

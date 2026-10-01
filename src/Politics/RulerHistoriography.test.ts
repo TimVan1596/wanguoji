@@ -264,6 +264,52 @@ describe("evidence-grounded ruler historiography", () => {
     expect(text).toContain("现有史实尚不足以形成明确的治绩判断");
   });
 
+  it("describes a child who inherited a long exile without treating it as governance", () => {
+    const context = makeContext({
+      accession: 240, endMonth: 840, age: 3,
+      start: { population: 0, territoryShare: 0, cityCount: 0, stability: 0 },
+      end: { population: 0, territoryShare: 0, cityCount: 0, stability: 0 },
+      events: [{ id: "exile", year: 120, monthIndex: 120, type: "faction-exiled", targetFactionId: "秦", importance: "major" }],
+    });
+    const result = deriveRulerAssessment(context);
+    expect(result.evidence.tenure).toMatchObject({ exiledAtAccession: true, totalTenureMonths: 600, activeRuleMonths: 0, exileMonths: 600 });
+    expect(result.evidence.roles).toContain("LONG_EXILE");
+    expect(result.lines.join(" ")).toContain("幼年承接流亡王统");
+    expect(result.lines.join(" ")).not.toContain("长期维持政权");
+    expect(result.lines.join(" ")).not.toContain("幼年承统，临危承统");
+  });
+
+  it("makes restoration after exile the primary life turning point", () => {
+    const context = makeContext({
+      accession: 0, endMonth: 180,
+      events: [
+        { id: "exile", year: 12, monthIndex: 12, type: "faction-exiled", targetFactionId: "秦", importance: "major" },
+        { id: "restore", year: 132, monthIndex: 132, type: "faction-restored", actorFactionId: "秦", importance: "major" },
+      ],
+    });
+    const result = deriveRulerAssessment(context);
+    expect(result.evidence.roles).toContain("RESTORED_FROM_EXILE");
+    expect(result.evidence.tenure.restoredExileMonths).toBe(120);
+    expect(result.lines.join(" ")).toContain("流亡10年后恢复国家");
+  });
+
+  it("does not award STEWARD for years spent in exile and keeps founder battle-death wording grounded", () => {
+    const exiled = deriveRulerAssessment(makeContext({
+      endMonth: 240,
+      events: [{ id: "fall", year: 1, monthIndex: 1, type: "faction-exiled", targetFactionId: "秦", importance: "major" }],
+    }));
+    expect(exiled.evidence.roles).not.toContain("STEWARD");
+
+    const founder = makeContext({
+      endMonth: 60, endReason: "战死", deathCause: "战死", factionOrigin: { foundingRulerId: "r1" },
+      start: { territoryShare: 0.3, cityCount: 4 },
+      end: { territoryShare: 0.28, cityCount: 4 },
+    });
+    const text = deriveRulerAssessment(founder).lines.join(" ");
+    expect(text).toContain("开国未久而身死军中");
+    expect(text).not.toContain("扩张与秩序仍有未竟");
+  });
+
   it("labels a living ruler's assessment as provisional and avoids final verdict language", () => {
     const context = makeContext({ endMonth: 120 });
     context.ruler.endYear = undefined;

@@ -7,7 +7,7 @@ import {
   getRulerHistoricalEvents,
   recordPersonalCityCapture,
 } from "./RulerChronicle";
-import { formatAccessionAge } from "./RulerHistoriography";
+import { deriveRulerHistoricalEvidence, formatAccessionAge } from "./RulerHistoriography";
 import { yearsToMonths } from "../Simulation/WorldTime";
 
 describe("ruler chronicle", () => {
@@ -77,83 +77,56 @@ describe("ruler chronicle", () => {
   });
 
   it("creates fact-based tags for conquerors", () => {
-    const chronicle = createRulerChronicle({
-      month: 0,
-      population: 10,
-      territoryShare: 0.12,
-      cityCount: 1,
-      stability: 72,
+    const evidence = createTagEvidence({
+      start: { territoryShare: 0.12, cityCount: 1, stability: 72 },
+      end: { territoryShare: 0.31, cityCount: 4, stability: 64 },
+      captures: 2,
+      months: yearsToMonths(18),
     });
-    chronicle.citiesCapturedPersonally = 2;
-    finishRulerChronicle(chronicle, {
-      month: yearsToMonths(18),
-      population: 30,
-      territoryShare: 0.31,
-      cityCount: 4,
-      stability: 64,
-    });
-
-    expect(buildRulerTags(chronicle, yearsToMonths(18))).toEqual([
+    expect(buildRulerTags(evidence)).toEqual([
       "开疆",
       "征服者",
     ]);
   });
 
   it("records emperor proclamation as a fact tag without temple names", () => {
-    const chronicle = createRulerChronicle({
-      month: 0,
-      population: 10,
-      territoryShare: 0.2,
-      cityCount: 2,
-      stability: 80,
-    });
-    chronicle.proclaimedEmperorMonth = 240;
-    expect(buildRulerTags(chronicle, 300)).toContain("称帝");
-    expect(buildRulerTags(chronicle, 300)).not.toContain("太祖");
+    const evidence = createTagEvidence({ months: 300, proclaimedEmperorMonth: 240 });
+    expect(buildRulerTags(evidence)).toContain("称帝");
+    expect(buildRulerTags(evidence)).not.toContain("太祖");
   });
 
   it("builds decline tags from stored facts", () => {
-    const chronicle = createRulerChronicle({
-      month: 0,
-      population: 10,
-      territoryShare: 0.18,
-      cityCount: 3,
-      stability: 80,
+    const evidence = createTagEvidence({
+      start: { territoryShare: 0.18, cityCount: 3, stability: 80 },
+      end: { territoryShare: 0.08, cityCount: 1, stability: 42 },
+      months: yearsToMonths(12), rebellions: 1, endReason: "流亡",
     });
-    chronicle.rebellionsDuringReign = 1;
-    finishRulerChronicle(
-      chronicle,
-      {
-        month: yearsToMonths(12),
-        population: 8,
-        territoryShare: 0.08,
-        cityCount: 1,
-        stability: 42,
-      },
-      "流亡"
-    );
-
-    expect(buildRulerTags(chronicle, yearsToMonths(12))).toContain("国势衰退");
+    expect(buildRulerTags(evidence)).toContain("国势衰退");
   });
 
   it("does not tag positive territory delta as decline", () => {
-    const chronicle = createRulerChronicle({
-      month: 0,
-      population: 9,
-      territoryShare: 0.157,
-      cityCount: 1,
-      stability: 60,
+    const evidence = createTagEvidence({
+      start: { territoryShare: 0.157, cityCount: 1, stability: 60 },
+      end: { territoryShare: 0.211, cityCount: 1, stability: 62 },
+      months: yearsToMonths(8),
     });
-    finishRulerChronicle(chronicle, {
-      month: yearsToMonths(8),
-      population: 17,
-      territoryShare: 0.211,
-      cityCount: 1,
-      stability: 62,
-    });
-
-    const tags = buildRulerTags(chronicle, yearsToMonths(8));
+    const tags = buildRulerTags(evidence);
     expect(tags).not.toContain("国势衰退");
+  });
+
+  it("keeps EXPANDER, DECLINER, and STEWARD tags aligned with historiography roles", () => {
+    const smallGain = createTagEvidence({
+      start: { territoryShare: 0.082, cityCount: 2 },
+      end: { territoryShare: 0.117, cityCount: 2 },
+    });
+    expect(smallGain.roles).not.toContain("EXPANDER");
+    expect(buildRulerTags(smallGain)).not.toContain("开疆");
+
+    const expander = createTagEvidence({ start: { territoryShare: 0.2 }, end: { territoryShare: 0.34, cityCount: 5 } });
+    expect(buildRulerTags(expander)).toContain("开疆");
+    const steward = createTagEvidence({ months: yearsToMonths(20), start: { stability: 78 }, end: { stability: 80 } });
+    expect(steward.roles).toContain("STEWARD");
+    expect(buildRulerTags(steward)).toContain("守成");
   });
 
   it("selects direct canonical ruler events in reign order without duplicate groups", () => {
@@ -200,3 +173,42 @@ describe("ruler chronicle", () => {
     );
   });
 });
+
+function createTagEvidence(options: {
+  start?: Partial<{ population: number; territoryShare: number; cityCount: number; stability: number }>;
+  end?: Partial<{ population: number; territoryShare: number; cityCount: number; stability: number }>;
+  months?: number;
+  captures?: number;
+  rebellions?: number;
+  foundedStateName?: string;
+  proclaimedEmperorMonth?: number;
+  completedUnification?: boolean;
+  endReason?: string;
+  events?: any[];
+} = {}) {
+  const months = options.months ?? 120;
+  const start = {
+    month: 0, population: 10, territoryShare: 0.2, cityCount: 2, stability: 75,
+    ...options.start,
+  };
+  const end = {
+    month: months, population: start.population, territoryShare: start.territoryShare,
+    cityCount: start.cityCount, stability: start.stability, ...options.end,
+  };
+  const chronicle = createRulerChronicle(start);
+  chronicle.citiesCapturedPersonally = options.captures ?? 0;
+  chronicle.rebellionsDuringReign = options.rebellions ?? 0;
+  chronicle.foundedStateName = options.foundedStateName;
+  chronicle.proclaimedEmperorMonth = options.proclaimedEmperorMonth;
+  chronicle.completedUnification = options.completedUnification ?? false;
+  finishRulerChronicle(chronicle, end, options.endReason === "战死" ? "战死" : undefined);
+  const ruler: any = {
+    id: "tag-ruler", houseName: "嬴氏", givenName: "平", bornYear: -360,
+    accessionYear: 0, endYear: months, endReason: options.endReason,
+    status: "dead", chronicle,
+  };
+  return deriveRulerHistoricalEvidence({
+    ruler, dynasty: { rulers: [ruler] }, faction: { name: "秦" },
+    events: options.events ?? [], worldMonth: months,
+  });
+}

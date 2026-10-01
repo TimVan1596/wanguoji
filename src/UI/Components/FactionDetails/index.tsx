@@ -50,6 +50,7 @@ import {
   getRulerTerritoryDelta,
 } from "../../../Politics/RulerChronicle";
 import { deriveRulerAssessment } from "../../../Politics/RulerHistoriography";
+import { deriveRulerTenureEvidence } from "../../../Politics/RulerTenureEvidence";
 import {
   formatPosthumousRulerName,
   getNotablePosthumousRulers,
@@ -153,6 +154,9 @@ function FactionProfile({
   const snapshots = FactionSnapshots.get(team.name);
   const dynasty = DynastyRegistry.get(team.name);
   const currentRuler = DynastyRegistry.getCurrentRuler(team.name);
+  const currentRulerTenure = currentRuler?.accessionYear !== undefined
+    ? deriveRulerTenureEvidence(currentRuler, team.name, events, worldMonth)
+    : undefined;
   const stability = getFactionStability(team);
   const effectiveStability =
     stability !== undefined ? getEffectiveStability(stability, team.sovereigntyRank) : undefined;
@@ -303,11 +307,9 @@ function FactionProfile({
             title="当前国势"
             lines={[
               `当前国君：${currentRuler ? formatRulerName(currentRuler) : "无"}`,
-              `在位：${
-                currentRuler?.accessionYear !== undefined
-                  ? formatWorldDuration(worldMonth - currentRuler.accessionYear)
-                  : "—"
-              }`,
+              currentRulerTenure && (currentRulerTenure.exileMonths > 0 || currentRulerTenure.exiledAtAccession || currentRulerTenure.lostStateDuringTenure)
+                ? `承统：${formatWorldDuration(currentRulerTenure.totalTenureMonths)} · 在国：${formatWorldDuration(currentRulerTenure.activeRuleMonths)} · 流亡：${formatWorldDuration(currentRulerTenure.exileMonths)}`
+                : `在位：${currentRuler?.accessionYear !== undefined ? formatWorldDuration(currentRulerTenure?.totalTenureMonths ?? 0) : "—"}`,
               `年龄：${
                 currentRuler
                   ? `${Math.floor(monthsToYears(worldMonth - currentRuler.bornYear))} 岁`
@@ -663,7 +665,7 @@ function DynastyTree({
                   {formatRulerRowName(ruler, team)}
                 </Typography>
                 <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
-                  {formatRulerListSubtitle(ruler, worldMonth, factionStatus)}
+                  {formatRulerListSubtitle(ruler, worldMonth, factionStatus, events, team.name)}
                 </Typography>
                 {isFormalRuler(ruler) ? (
                   <Box sx={{ display: "flex", gap: 0.35, flexWrap: "wrap", mt: 0.25 }}>
@@ -731,7 +733,6 @@ function RulerBiography({
   const reignMonths = Math.max(0, reignEnd - ruler.accessionYear);
   const accessionAge = Math.floor(monthsToYears(ruler.accessionYear - ruler.bornYear));
   const finalAge = Math.floor(monthsToYears(reignEnd - ruler.bornYear));
-  const tags = buildRulerTags(ruler.chronicle, reignMonths);
   const assessment = deriveRulerAssessment({
     ruler,
     dynasty: { rulers },
@@ -739,6 +740,8 @@ function RulerBiography({
     events,
     worldMonth,
   });
+  const tags = buildRulerTags(assessment.evidence);
+  const tenure = assessment.evidence.tenure;
   const historicalEvents = getRulerHistoricalEvents(
     events,
     ruler,
@@ -770,7 +773,9 @@ function RulerBiography({
         {ruler.endYear !== undefined ? formatWorldDate(ruler.endYear) : "今"}
       </Typography>
       <Typography fontSize="0.85rem">
-        在位：{formatWorldDuration(reignMonths)}
+        {tenure.exileMonths > 0 || tenure.exiledAtAccession || tenure.lostStateDuringTenure
+          ? `承统：${formatWorldDuration(tenure.totalTenureMonths)} · 在国：${formatWorldDuration(tenure.activeRuleMonths)} · 流亡：${formatWorldDuration(tenure.exileMonths)}`
+          : `在位：${formatWorldDuration(reignMonths)}`}
       </Typography>
       <Typography fontSize="0.85rem">
         即位年龄：{accessionAge} 岁 · {ruler.endYear !== undefined ? "享年" : "当前年龄"}：
@@ -958,11 +963,17 @@ function formatRulerRowName(
 function formatRulerListSubtitle(
   ruler: Ruler,
   worldMonth: number,
-  factionStatus?: RootState["root"]["teams"][number]["status"]
+  factionStatus?: RootState["root"]["teams"][number]["status"],
+  events: WorldEvent[] = [],
+  factionId = ""
 ) {
   if (isFormalRuler(ruler)) {
     const reignEnd = ruler.endYear ?? worldMonth;
     const reignMonths = Math.max(0, reignEnd - ruler.accessionYear);
+    const tenure = deriveRulerTenureEvidence(ruler, factionId, events, worldMonth);
+    if (tenure.exileMonths > 0 || tenure.exiledAtAccession || tenure.lostStateDuringTenure) {
+      return `第${ruler.reignOrdinal}代 · 承统${formatWorldDuration(tenure.totalTenureMonths)} · 在国${formatWorldDuration(tenure.activeRuleMonths)} · 流亡${formatWorldDuration(tenure.exileMonths)}`;
+    }
     return `第${ruler.reignOrdinal}代 · 在位${formatWorldDuration(reignMonths)} · ${
       ruler.endReason ?? (ruler.endYear === undefined ? "在位" : formatRulerStatus(ruler.status, factionStatus))
     }`;

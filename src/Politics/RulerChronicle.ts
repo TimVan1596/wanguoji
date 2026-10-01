@@ -1,14 +1,7 @@
-import {
-  RULER_TAG_CONQUEROR_CAPTURE_COUNT,
-  RULER_TAG_DECLINE_TERRITORY_DELTA,
-  RULER_TAG_EXPANSION_TERRITORY_DELTA,
-  RULER_TAG_SHORT_REIGN_MONTHS,
-  RULER_TAG_STEWARD_MIN_REIGN_MONTHS,
-} from "../config/simulation";
 import type { WorldEvent } from "../History/WorldHistory";
 import { getFactionEventRelation } from "../History/FactionEventRelation";
 import { getHistorySignificance } from "../History/HistorySignificanceRules";
-import { evaluateReignOutcome } from "./ReignOutcomeRules";
+import type { RulerHistoricalEvidence } from "./RulerHistoriography";
 
 export interface RulerReignSnapshot {
   month: number;
@@ -90,61 +83,20 @@ export function getRulerEffectiveSnapshot(chronicle: RulerChronicle) {
   return chronicle.endSnapshot ?? chronicle.latestSnapshot ?? chronicle.accessionSnapshot;
 }
 
-export function buildRulerTags(
-  chronicle: RulerChronicle,
-  reignMonths: number
-) {
+export function buildRulerTags(evidence: RulerHistoricalEvidence) {
   const tags: string[] = [];
-  const end = getRulerEffectiveSnapshot(chronicle);
-  const outcome = evaluateReignOutcome(chronicle.accessionSnapshot, end);
-
-  if (chronicle.foundedStateName) {
-    tags.push("开国之君");
-  }
-  if (chronicle.proclaimedEmperorMonth !== undefined) {
-    tags.push("称帝");
-  }
-  if (
-    outcome.outcome === "EXPANSION" ||
-    outcome.territoryDelta >= RULER_TAG_EXPANSION_TERRITORY_DELTA ||
-    outcome.cityDelta >= 2
-  ) {
-    tags.push("开疆");
-  }
-  if (chronicle.citiesCapturedPersonally >= RULER_TAG_CONQUEROR_CAPTURE_COUNT) {
-    tags.push("征服者");
-  }
-  if (chronicle.completedUnification) {
-    tags.push("一统");
-  }
-  if (reignMonths <= RULER_TAG_SHORT_REIGN_MONTHS) {
-    tags.push("短祚");
-  }
-  if (
-    outcome.outcome === "DECLINE" &&
-    (outcome.territoryDelta <= RULER_TAG_DECLINE_TERRITORY_DELTA ||
-      outcome.cityDelta <= -2 ||
-      outcome.stabilityDelta <= -18)
-  ) {
-    tags.push("国势衰退");
-  }
-  if (chronicle.rebellionsDuringReign > 0) {
-    tags.push("内忧");
-  }
-  if (chronicle.deathCause === "战死") {
-    tags.push("战死");
-  }
-  if (chronicle.deathCause === "流亡") {
-    tags.push("流亡");
-  }
-  if (
-    tags.length === 0 &&
-    reignMonths >= RULER_TAG_STEWARD_MIN_REIGN_MONTHS &&
-    Math.abs(outcome.territoryDelta) < 0.04 &&
-    end.stability >= 65
-  ) {
-    tags.push("守成");
-  }
+  if (evidence.foundedState) tags.push("开国之君");
+  if (evidence.proclaimedEmperor) tags.push("称帝");
+  if (evidence.completedUnification || evidence.roles.includes("UNIFIER")) tags.push("一统");
+  if (evidence.restorationCount > 0 || evidence.roles.includes("RESTORER")) tags.push("复国");
+  if (evidence.roles.includes("EXPANDER")) tags.push("开疆");
+  if (evidence.roles.includes("DECLINER")) tags.push("国势衰退");
+  if (evidence.roles.includes("STEWARD")) tags.push("守成");
+  if (evidence.roles.includes("EXILED_RULER")) tags.push("流亡");
+  if (evidence.roles.includes("CONQUEROR")) tags.push("征服者");
+  if (evidence.rebellions > 0) tags.push("内忧");
+  if (evidence.roles.includes("SHORT_REIGN")) tags.push("短祚");
+  if (evidence.deathCause === "战死") tags.push("战死");
   return tags.slice(0, 3);
 }
 

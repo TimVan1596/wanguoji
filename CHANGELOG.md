@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.99923c
+
+- Added derived ruler tenure evidence separating total succession tenure, active rule, and exile; lifecycle counting uses faction exile/restoration events only and deduplicates grouped events.
+- Updated ruler biographies, current-ruler summaries, posthumous evaluation, and tags to use shared exile-aware historiography evidence; tags no longer maintain separate expansion/decline/steward thresholds.
+- Refined exile, restoration, inherited-crisis, and founder battle-death assessments without changing canonical history or save schema.
+- No WorldCycle, combat, defense, playback, naming, World Records, or era-rule changes.
+
 ## v0.99923b
 
 - Expanded live-derived World Records with ruler, polity, city, and era curiosities, reusing Historiography evidence and historical identity resolvers.
