@@ -1,4 +1,5 @@
 import { CURRENT_SAVE_SCHEMA_VERSION, WorldSaveV1 } from "./WorldSaveSchema";
+import { isEraMapSnapshotV1 } from "../Simulation/EraMapSnapshot";
 
 export interface SaveValidationResult {
   valid: boolean;
@@ -302,6 +303,7 @@ function validateHydrationImportShapes(save: Partial<WorldSaveV1>, errors: strin
     eras?.forEach((era, index) => {
       if (!Array.isArray(era.dominantFactionIds) || !Array.isArray(era.triggerReasonCodes)) errors.push(`worldEra.eras[${index}] faction/reason fields must be arrays`);
       if (era.formationMetrics !== undefined && !isPlainRecord(era.formationMetrics)) errors.push(`worldEra.eras[${index}].formationMetrics must be an object`);
+      if (era.mapSnapshot !== undefined && !isEraMapSnapshotV1(era.mapSnapshot)) errors.push(`worldEra.eras[${index}].mapSnapshot is malformed`);
     });
     const candidateState = worldEra.candidateState;
     if (candidateState !== undefined && (!isPlainRecord(candidateState) || !isPlainRecord(candidateState.candidate) || !Array.isArray(candidateState.candidate.dominantFactionIds) || !Array.isArray(candidateState.candidate.triggerReasonCodes) || !finite(candidateState.sinceMonth))) errors.push("worldEra.candidateState is malformed");

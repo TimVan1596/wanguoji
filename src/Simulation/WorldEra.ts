@@ -6,6 +6,7 @@ import {
   getFactionTerritoryMetric,
 } from "./TerritoryMetrics";
 import type { WorldPhase } from "./WorldPhase";
+import type { EraMapSnapshotV1 } from "./EraMapSnapshot";
 
 export type WorldEraType =
   | "MULTIPOLAR"
@@ -35,6 +36,7 @@ export interface WorldEra {
   triggerReasonCodes: string[];
   explanation: string;
   formationMetrics?: WorldEraMetrics;
+  mapSnapshot?: EraMapSnapshotV1;
 }
 
 export function resolveAuthoritativeEra(eras: WorldEra[], eraId: string | undefined) {
@@ -158,7 +160,17 @@ class WorldEraStore {
 
   exportState() {
     return {
-      eras: this.eras.map((era) => ({ ...era, startMonth: era.startMonth, endMonth: era.endMonth })),
+      eras: this.eras.map((era) => ({
+        ...era,
+        startMonth: era.startMonth,
+        endMonth: era.endMonth,
+        mapSnapshot: era.mapSnapshot ? {
+          ...era.mapSnapshot,
+          factionPalette: era.mapSnapshot.factionPalette.map((entry) => ({ ...entry })),
+          ownerRuns: era.mapSnapshot.ownerRuns.map((run) => ({ ...run })),
+          cities: era.mapSnapshot.cities.map((city) => ({ ...city })),
+        } : undefined,
+      })),
       candidateState: this.candidateState ? {
         candidate: { ...this.candidateState.candidate },
         sinceMonth: this.candidateState.sinceMonth,
@@ -176,7 +188,17 @@ class WorldEraStore {
     lastObservedMonth: number;
     staleSinceMonth?: number;
   }) {
-    this.eras = state.eras.map((era) => ({ ...era, dominantFactionIds: [...era.dominantFactionIds], triggerReasonCodes: [...era.triggerReasonCodes] }));
+    this.eras = state.eras.map((era) => ({
+      ...era,
+      dominantFactionIds: [...era.dominantFactionIds],
+      triggerReasonCodes: [...era.triggerReasonCodes],
+      mapSnapshot: era.mapSnapshot ? {
+        ...era.mapSnapshot,
+        factionPalette: era.mapSnapshot.factionPalette.map((entry) => ({ ...entry })),
+        ownerRuns: era.mapSnapshot.ownerRuns.map((run) => ({ ...run })),
+        cities: era.mapSnapshot.cities.map((city) => ({ ...city })),
+      } : undefined,
+    }));
     this.candidateState = state.candidateState ? {
       candidate: { ...state.candidateState.candidate },
       sinceMonth: state.candidateState.sinceMonth,
@@ -215,7 +237,13 @@ class WorldEraStore {
     };
   }
 
-  observe(month: number, teams: Team[], totalCells: number, worldPhase: WorldPhase) {
+  observe(
+    month: number,
+    teams: Team[],
+    totalCells: number,
+    worldPhase: WorldPhase,
+    captureMapSnapshot?: (capturedMonth: number) => EraMapSnapshotV1
+  ) {
     if (month === this.lastObservedMonth) {
       return;
     }
@@ -258,7 +286,7 @@ class WorldEraStore {
     ) {
       this.candidateState = { candidate, sinceMonth: month };
       if (initialEra) {
-        this.confirmCandidate(month, month);
+        this.confirmCandidate(month, month, captureMapSnapshot);
       }
       return;
     }
@@ -266,11 +294,15 @@ class WorldEraStore {
       month - this.candidateState.sinceMonth >=
       getEraRequiredMonths(this.candidateState.candidate.type)
     ) {
-      this.confirmCandidate(this.candidateState.sinceMonth, month);
+      this.confirmCandidate(this.candidateState.sinceMonth, month, captureMapSnapshot);
     }
   }
 
-  private confirmCandidate(startMonth: number, confirmationMonth: number) {
+  private confirmCandidate(
+    startMonth: number,
+    confirmationMonth: number,
+    captureMapSnapshot?: (capturedMonth: number) => EraMapSnapshotV1
+  ) {
     if (!this.candidateState) {
       return;
     }
@@ -295,6 +327,7 @@ class WorldEraStore {
       triggerReasonCodes: candidate.triggerReasonCodes,
       explanation: candidate.explanation,
       formationMetrics: candidate.formationMetrics,
+      mapSnapshot: captureMapSnapshot?.(confirmationMonth),
     };
     this.eras.push(era);
     this.candidateState = undefined;

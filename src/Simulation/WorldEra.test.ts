@@ -1,4 +1,4 @@
-import { describe, expect, it, beforeEach } from "vitest";
+import { describe, expect, it, beforeEach, vi } from "vitest";
 import type Team from "../Components/Team";
 import WorldHistory from "../History/WorldHistory";
 import WorldEra, { classifyEra, ERA_EXIT_GRACE_MONTHS } from "./WorldEra";
@@ -68,6 +68,44 @@ describe("world era", () => {
     WorldEra.observe(0, teams, 100, "CONTESTED");
     expect(WorldEra.getCurrentEra()?.name).toBe("群雄争衡");
     expect(WorldEra.getEras()).toHaveLength(1);
+  });
+
+  it("captures one map only when a sustained candidate is confirmed, at confirmation month", () => {
+    const teams = [faction("秦", 34, 3), faction("楚", 33, 3), faction("魏", 33, 2)];
+    const capture = vi.fn((capturedMonth: number) => ({ version: 1 as const, capturedMonth } as any));
+    WorldEra.observe(1, teams, 100, "CONTESTED", capture);
+    expect(capture).not.toHaveBeenCalled();
+    WorldEra.observe(121, teams, 100, "CONTESTED", capture);
+    expect(capture).toHaveBeenCalledTimes(1);
+    expect(capture).toHaveBeenCalledWith(121);
+    expect(WorldEra.getCurrentEra()?.mapSnapshot?.capturedMonth).toBe(121);
+  });
+
+  it("does not capture a map for a candidate that disappears before confirmation", () => {
+    const capture = vi.fn(() => ({ version: 1 as const } as any));
+    WorldEra.observe(1, [faction("秦", 34, 3), faction("楚", 33, 3), faction("魏", 33, 2)], 100, "CONTESTED", capture);
+    WorldEra.observe(2, [], 100, "CONTESTED", capture);
+    expect(capture).not.toHaveBeenCalled();
+    expect(WorldEra.getEras()).toHaveLength(0);
+  });
+
+  it("round-trips map snapshots while accepting older eras without them", () => {
+    const teams = [faction("秦", 34, 3), faction("楚", 33, 3), faction("魏", 33, 2)];
+    WorldEra.observe(0, teams, 100, "CONTESTED", (capturedMonth) => ({
+      version: 1,
+      capturedMonth,
+      widthCells: 1,
+      heightCells: 1,
+      factionPalette: [],
+      ownerRuns: [{ paletteIndex: 0, length: 1 }],
+      cities: [],
+    }));
+    const exported = WorldEra.exportState();
+    WorldEra.importState(exported as any);
+    expect(WorldEra.exportState().eras).toEqual(exported.eras);
+    const oldEraState = { ...exported, eras: exported.eras.map(({ mapSnapshot: _snapshot, ...era }) => era) };
+    WorldEra.importState(oldEraState as any);
+    expect(WorldEra.getEras()[0].mapSnapshot).toBeUndefined();
   });
 
   it("detects dual rivalry between two formal powers", () => {

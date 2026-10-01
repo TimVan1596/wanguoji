@@ -16,6 +16,7 @@ import DynastyRegistry from "../Politics/Dynasty";
 import FactionEffects from "./FactionEffects";
 import WorldExiles from "./WorldExiles";
 import WorldEra from "./WorldEra";
+import type { EraMapSnapshotV1 } from "./EraMapSnapshot";
 import LongRunProfiler from "./LongRunProfiler";
 import { resetNameGenerationTelemetry } from "../Politics/NameGenerationTelemetry";
 import ArchivedCities from "./ArchivedCities";
@@ -46,7 +47,8 @@ export default class AutoSimulator {
   startWorld(
     teams: Team[],
     totalCells: number,
-    populations: InitialPopulationMap
+    populations: InitialPopulationMap,
+    captureMapSnapshot?: (capturedMonth: number) => EraMapSnapshotV1
   ) {
     this.started = true;
     this.running = true;
@@ -73,7 +75,7 @@ export default class AutoSimulator {
     FactionSnapshots.observe(0, teams, totalCells);
     WorldHistory.observeWorld(0, teams, totalCells);
     this.events.observeWorldGoal(0, teams, totalCells);
-    WorldEra.observe(0, teams, totalCells, this.events.getCurrentPhase(0, teams));
+    WorldEra.observe(0, teams, totalCells, this.events.getCurrentPhase(0, teams), captureMapSnapshot);
     this.rebaseProfilerLatches();
     store.dispatch(setWorldStarted(true));
     store.dispatch(setWorldRunning(true));
@@ -159,17 +161,22 @@ export default class AutoSimulator {
     this.lastProfilerDynasticOrderId = cycle.dynasticOrderFactionId;
   }
 
-  observeWorld(teams: Team[], totalCells: number) {
+  observeWorld(teams: Team[], totalCells: number, captureMapSnapshot?: (capturedMonth: number) => EraMapSnapshotV1) {
     WorldHistory.observeWorld(this.clock.year, teams, totalCells);
     this.events.observeWorldGoal(this.clock.year, teams, totalCells);
-    WorldEra.observe(this.clock.year, teams, totalCells, this.events.getCurrentPhase(this.clock.year, teams));
+    WorldEra.observe(this.clock.year, teams, totalCells, this.events.getCurrentPhase(this.clock.year, teams), captureMapSnapshot);
   }
 
   update(delta: number, teams: Team[], totalCells: number) {
     this.advance(delta * this.speed, teams, totalCells);
   }
 
-  advance(simulationDeltaMs: number, teams: Team[], totalCells: number) {
+  advance(
+    simulationDeltaMs: number,
+    teams: Team[],
+    totalCells: number,
+    captureMapSnapshot?: (capturedMonth: number) => EraMapSnapshotV1
+  ) {
     if (!this.started || !this.running) {
       return;
     }
@@ -181,7 +188,7 @@ export default class AutoSimulator {
           ? globalThis.performance.now()
           : undefined;
       this.events.update(this.clock.year, teams, totalCells);
-      WorldEra.observe(this.clock.year, teams, totalCells, this.events.getCurrentPhase(this.clock.year, teams));
+      WorldEra.observe(this.clock.year, teams, totalCells, this.events.getCurrentPhase(this.clock.year, teams), captureMapSnapshot);
       this.population.update(this.clock.year, teams, (team) =>
         this.events.getPopulationGrowthMultiplier(team)
       );

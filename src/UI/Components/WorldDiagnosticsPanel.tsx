@@ -15,6 +15,7 @@ import { diffCanonicalWorldSave, type CanonicalWorldSaveDiff, type WorldSaveV1 }
 import { APP_VERSION } from "../../config/version";
 import { getNameGenerationSummary } from "../../Politics/NameGenerationTelemetry";
 import { getCityNamingSummary } from "../../Simulation/CityNamingTelemetry";
+import { getEraAtlasDiagnostics } from "../../Simulation/EraMapSnapshot";
 import { BASE_PLAY_RATE } from "../../Simulation/SimulationDriver";
 import {
   getWorldSaveStorageDiagnostics,
@@ -82,7 +83,8 @@ export default function WorldDiagnosticsPanel() {
     const longRun = LongRunProfiler.getSummary(worldMonth, WorldEra.getEras(), cycle?.stage);
     const naming = getNameGenerationSummary();
     const cityNaming = getCityNamingSummary();
-    return { ranked, currentEra, candidate, validity, liveClassification, cycle, longRun, naming, cityNaming };
+    const eraAtlas = getEraAtlasDiagnostics(WorldEra.getEras());
+    return { ranked, currentEra, candidate, validity, liveClassification, cycle, longRun, naming, cityNaming, eraAtlas };
   }, [teams, worldMonth, worldPhase]);
 
   if (!debugEnabled()) {
@@ -93,6 +95,7 @@ export default function WorldDiagnosticsPanel() {
     `世界年月：${formatWorldDate(worldMonth)}（${worldMonth}月）`,
     `Playback：base ${BASE_PLAY_RATE.toFixed(1)}｜selected ${simulationSpeed}×｜effective ${(BASE_PLAY_RATE * simulationSpeed).toFixed(1)}×`,
     `当前时代：${diagnostics.currentEra ? `${diagnostics.currentEra.type} · ${diagnostics.currentEra.name} · ${formatWorldDate(diagnostics.currentEra.startMonth)}起` : "暂无已确认时代"}`,
+    `Era Atlas：snapshots ${diagnostics.eraAtlas.snapshotCount}｜raw cells ${diagnostics.eraAtlas.rawCells}｜RLE runs ${diagnostics.eraAtlas.rleRuns}｜estimated JSON bytes ${diagnostics.eraAtlas.estimatedJsonBytes}`,
     `当前格局：${diagnostics.liveClassification?.type ?? "—"} · ${diagnostics.liveClassification?.name ?? (diagnostics.validity.isStale ? "格局转换中" : "天下未定")}`,
     `旧时代退出：${diagnostics.validity.isStale ? `已失效${formatWorldDuration(diagnostics.validity.staleMonths)} / ${formatWorldDuration(diagnostics.validity.graceMonths)}` : "当前仍有效"}`,
     `时代候选：${diagnostics.candidate ? `${diagnostics.candidate.type} · ${diagnostics.candidate.name} · ${formatWorldDate(diagnostics.candidate.sinceMonth)}起 · 已持续${formatWorldDuration(diagnostics.candidate.sustainedMonths)} / ${formatWorldDuration(diagnostics.candidate.requiredMonths)}` : "当前无新时代候选，现时代保持中"}`,

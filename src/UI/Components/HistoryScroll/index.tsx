@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import WorldHistory, {
@@ -22,6 +22,7 @@ import WorldEra, { classifyEra, resolveEraDisplayLabel, WorldEra as WorldEraReco
 import { formatWorldDate, formatWorldDuration } from "../../../Simulation/WorldTime";
 import { RootState } from "../../../store";
 import { deriveWorldRecords } from "../../../History/WorldRecords";
+import EraAtlasMap from "./EraAtlasMap";
 
 const filters: { value: HistoryFilter; label: string }[] = [
   { value: "featured", label: "精选" },
@@ -39,6 +40,7 @@ export default function HistoryScroll() {
   const [eras, setEras] = useState<WorldEraRecord[]>([]);
   const [selectedEraId, setSelectedEraId] = useState<string>("all");
   const [eraTimelineOpen, setEraTimelineOpen] = useState(false);
+  const [eraMapOpen, setEraMapOpen] = useState(false);
   const [worldRecordsOpen, setWorldRecordsOpen] = useState(false);
   const [expandedRecordSections, setExpandedRecordSections] = useState<string[]>([]);
   const [dynasties, setDynasties] = useState<import("../../../Politics/Dynasty").Dynasty[]>([]);
@@ -261,6 +263,45 @@ export default function HistoryScroll() {
           ) : null}
         </Box>
       ) : null}
+      {selectedEra ? (
+        <Box sx={{ mb: 0.8, border: "1px solid var(--gg-border)", p: 0.65 }}>
+          <Typography fontSize="0.8rem" fontWeight={700}>{resolveEraDisplayLabel(selectedEra, teamByName)}</Typography>
+          <Typography fontSize="0.7rem" color="var(--gg-text-muted)">
+            时代范围：{formatEraTimelineRange(selectedEra)}<br />
+            {selectedEra.mapSnapshot
+              ? `确立时地图 · ${formatWorldDate(selectedEra.mapSnapshot.capturedMonth)}`
+              : "该时代创建于 Era Atlas 之前，无历史地图快照。"}
+          </Typography>
+          {selectedEra.mapSnapshot ? (
+            <>
+              <EraAtlasMap snapshot={selectedEra.mapSnapshot} />
+              <Typography fontSize="0.68rem" color="var(--gg-text-muted)" sx={{ mt: 0.35 }}>
+                主导势力：{selectedEra.dominantFactionIds.map((id) => selectedEra.mapSnapshot?.factionPalette.find((entry) => entry.factionId === id)?.displayName ?? id).join(" · ") || "未记录"}
+              </Typography>
+              <Button size="small" onClick={() => setEraMapOpen(true)} sx={{ px: 0, minWidth: 0 }}>查看大图</Button>
+              <Dialog open={eraMapOpen} onClose={() => setEraMapOpen(false)} fullWidth maxWidth="lg">
+                <DialogTitle sx={{ pb: 0.5 }}>
+                  {resolveEraDisplayLabel(selectedEra, teamByName)} · 确立时地图 · {formatWorldDate(selectedEra.mapSnapshot.capturedMonth)}
+                </DialogTitle>
+                <DialogContent>
+                  <EraAtlasMap snapshot={selectedEra.mapSnapshot} full />
+                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
+                    {selectedEra.mapSnapshot.factionPalette.map((faction) => (
+                      <Typography key={faction.factionId} fontSize="0.78rem" sx={{ display: "inline-flex", alignItems: "center", gap: 0.5 }}>
+                        <Box component="span" sx={{ width: 12, height: 12, bgcolor: `#${(faction.color >>> 0).toString(16).slice(-6).padStart(6, "0")}`, border: "1px solid #555" }} />
+                        {faction.displayName}
+                      </Typography>
+                    ))}
+                  </Box>
+                  <Typography fontSize="0.72rem" color="var(--gg-text-muted)" sx={{ mt: 0.5 }}>
+                    城市点；金色环为首都。{selectedEra.mapSnapshot.cities.map((city) => city.isCapital ? city.name : undefined).filter(Boolean).join("、")}
+                  </Typography>
+                </DialogContent>
+              </Dialog>
+            </>
+          ) : null}
+        </Box>
+      ) : null}
       {(worldRecordsOpen || dynasties.length > 0 || events.length > 0) ? (
         <Box sx={{ mb: 0.8 }}>
           <Button
@@ -476,7 +517,7 @@ function EraPicker({
         }}
       >
         <option value="all">全部时代</option>
-        {eras.map((era) => (
+        {eras.slice().reverse().map((era) => (
           <option key={era.id} value={era.id}>
             {formatStableEraOption(era)}
           </option>

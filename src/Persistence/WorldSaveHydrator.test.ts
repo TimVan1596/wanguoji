@@ -69,9 +69,29 @@ describe("runtime hydration foundation", () => {
     const snapshotsBefore = FactionSnapshots.exportState();
     const effectsBefore = FactionEffects.exportState();
     const remnantsBefore = WorldRemnants.exportState();
-    const eraFixture = { ...eraBefore, sequence: eraBefore.sequence + 2, lastObservedMonth: 240 };
-    WorldEra.importState(eraFixture);
+    const mapSnapshot = {
+      version: 1 as const, capturedMonth: 120, widthCells: 2, heightCells: 1,
+      factionPalette: [{ factionId: "qin", displayName: "秦", color: 0xaa0000 }],
+      ownerRuns: [{ paletteIndex: 1, length: 1 }, { paletteIndex: 0, length: 1 }],
+      cities: [{ cityId: "xianyang", name: "咸阳", gridX: 0, gridY: 0, ownerFactionId: "qin", founderFactionId: "qin", isCapital: true }],
+    };
+    const eraFixture = {
+      ...eraBefore,
+      eras: [{
+        id: "era-atlas-fixture", type: "MULTIPOLAR", name: "群雄争衡", identityKey: "fixture",
+        startMonth: 0, confirmedMonth: 120, dominantFactionIds: ["qin"], triggerReasonCodes: [],
+        explanation: "fixture", mapSnapshot,
+      }],
+      sequence: eraBefore.sequence + 2,
+      lastObservedMonth: 240,
+    };
+    WorldEra.importState(eraFixture as Parameters<typeof WorldEra.importState>[0]);
     expect(WorldEra.exportState()).toEqual(eraFixture);
+    const beforeSave = createEmptyWorldSaveV1();
+    const afterSave = createEmptyWorldSaveV1();
+    beforeSave.worldEra = eraFixture;
+    afterSave.worldEra = WorldEra.exportState();
+    expect(diffCanonicalWorldSave(beforeSave, afterSave).matched).toBe(true);
     const snapshotFixture = { ...snapshotsBefore, lastSnapshotMonth: 144 };
     FactionSnapshots.importState(snapshotFixture);
     expect(FactionSnapshots.exportState()).toEqual(snapshotFixture);

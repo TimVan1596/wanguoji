@@ -42,6 +42,7 @@ import LogicalSimulationCore from "../Simulation/LogicalSimulationCore";
 import { ArcadeColliderTeardownDiagnostics, teardownArcadeColliders } from "../Simulation/ArcadeColliderTeardown";
 import LogicalUnitRegistry from "../Simulation/LogicalUnitRegistry";
 import WorldEra from "../Simulation/WorldEra";
+import { captureEraMapSnapshot } from "../Simulation/EraMapSnapshot";
 import {
   FACTION_LABEL_REFRESH_MONTHS,
   FOCUSED_FACTION_OTHER_OPACITY,
@@ -520,7 +521,7 @@ export default class Core {
     this.worldInstanceId += 1;
     this.manualPhysicsStepper.reset();
     this.resetSimulationDiagnostics();
-    this.simulator.startWorld(this.teams, this.totalCells, populations);
+    this.simulator.startWorld(this.teams, this.totalCells, populations, (capturedMonth) => this.captureEraMapSnapshot(capturedMonth));
   }
 
   setWorldRunning(running: boolean) {
@@ -1055,6 +1056,17 @@ export default class Core {
     return typeof performance === "undefined" ? Date.now() : performance.now();
   }
 
+  private captureEraMapSnapshot(capturedMonth: number) {
+    if (!this.map) throw new Error("Cannot capture Era Atlas snapshot without an initialized map.");
+    return captureEraMapSnapshot({
+      capturedMonth,
+      widthCells: this.map.getMaxX(),
+      heightCells: this.map.getMaxY(),
+      factions: this.teams,
+      ownerAt: (gridX, gridY) => this.map?.getBlock(gridX, gridY)?.team?.name,
+    });
+  }
+
   private refreshPresentationFrame() {
     this.updateFactionLabels();
     this.updateFactionFocus();
@@ -1111,7 +1123,7 @@ export default class Core {
     } else if (this.manualPhysicsStepping) {
       this.advanceArcadePhysicsStep(fixedDeltaMs);
     }
-    this.simulator?.advance(fixedDeltaMs, this.teams, this.totalCells);
+    this.simulator?.advance(fixedDeltaMs, this.teams, this.totalCells, (capturedMonth) => this.captureEraMapSnapshot(capturedMonth));
     const clock = this.simulator?.exportState().clock;
     if (clock && this.snapshotBoundaryRequest.reachBoundary(clock.worldMonth, clock.elapsedMs)) {
       this.setWorldRunning(false);
