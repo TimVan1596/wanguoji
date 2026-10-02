@@ -7,8 +7,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useMemo, useState } from "react";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   createCustomFaction,
   createCustomScenario,
@@ -23,10 +22,11 @@ import {
   MIN_INITIAL_POPULATION,
 } from "../../../config/simulation";
 import { APP_VERSION } from "../../../config/version";
-import { IndexedDbWorldSaveRepository, StoredWorldSaveRecord } from "../../../Persistence/WorldSaveRepository";
-import { inspectStoredWorldSave } from "../../../Persistence/WorldSaveWorkflow";
+import { IndexedDbWorldSaveRepository, SaveSlotMetadata, StoredWorldSaveRecord } from "../../../Persistence/WorldSaveRepository";
+import { findLatestValidSave } from "../../../Persistence/SaveSlotRules";
 import { setWorldSaveStorageDiagnostics } from "../../../Persistence/WorldSaveDiagnostics";
 import { formatWorldDate } from "../../../Simulation/WorldTime";
+import SaveManagerDialog from "../SaveManagerDialog";
 
 interface StartMenuProps {
   onStartNewWorld: (scenario: GameScenario) => void;
@@ -40,44 +40,23 @@ export default function StartMenu({ onStartNewWorld, onContinue }: StartMenuProp
   const [customFactions, setCustomFactions] = useState<ScenarioFaction[]>(() =>
     Array.from({ length: 4 }, (_, index) => createCustomFaction(index))
   );
-  const [storedRecord, setStoredRecord] = useState<StoredWorldSaveRecord>();
+  const [saveSlots, setSaveSlots] = useState<SaveSlotMetadata[]>([]);
   const [storedError, setStoredError] = useState("");
   const [storageStatus, setStorageStatus] = useState("正在检查本地存档…");
   const [loadingSave, setLoadingSave] = useState(false);
+  const [saveManagerOpen, setSaveManagerOpen] = useState(false);
   const repository = useMemo(() => new IndexedDbWorldSaveRepository(), []);
 
   const refreshStoredSave = async () => {
     setLoadingSave(true);
     try {
-      const value = await repository.getCurrent();
-      if (value === undefined) {
-        setStoredRecord(undefined);
-        setStoredError("");
-        setStorageStatus("没有本地存档");
-        setWorldSaveStorageDiagnostics({ status: "absent", lastAction: "读取存档" });
-      } else {
-        const result = inspectStoredWorldSave(value);
-        if (!result.valid || !result.record) {
-          setStoredRecord(undefined);
-          setStoredError(result.errors.join("；"));
-          setStorageStatus("检测到存档，但无法读取");
-          setWorldSaveStorageDiagnostics({ status: "invalid", lastAction: "读取存档", error: result.errors.join("；") });
-        } else {
-          setStoredRecord(result.record);
-          setStoredError("");
-          setStorageStatus("");
-          setWorldSaveStorageDiagnostics({
-            status: "present",
-            savedAt: result.record.savedAt,
-            worldMonth: result.record.summary.worldMonth,
-            schemaVersion: result.record.saveSchemaVersion,
-            lastAction: "读取存档",
-          });
-        }
-      }
+      const metadata = await repository.listMetadata();
+      setSaveSlots(metadata);
+      setStoredError("");
+      setStorageStatus(metadata.length ? "" : "没有本地存档");
+      setWorldSaveStorageDiagnostics({ status: metadata.length ? "present" : "absent", lastAction: "读取存档目录" });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      setStoredRecord(undefined);
       setStoredError(message);
       setStorageStatus("本地存档读取失败");
       setWorldSaveStorageDiagnostics({ status: "error", lastAction: "读取存档", error: message });
@@ -90,17 +69,27 @@ export default function StartMenu({ onStartNewWorld, onContinue }: StartMenuProp
     void refreshStoredSave();
   }, [repository]);
 
-  const deleteStoredSave = async () => {
-    if (!window.confirm("确定删除本地当前存档？此操作不可撤销。")) return;
+  const continueLatest = async () => {
+    setLoadingSave(true);
     try {
-      await repository.deleteCurrent();
-      setWorldSaveStorageDiagnostics({ status: "absent", lastAction: "删除存档" });
-      await refreshStoredSave();
+      const result = await findLatestValidSave(repository);
+      if (result.invalidSlots.length) {
+        console.warn("[Wanguoji] Invalid save slots skipped during Continue", result.invalidSlots);
+      }
+      if (!result.record) {
+        const details = result.invalidSlots.map((slot) => `${slot.slotId}: ${slot.errors.join("，")}`).join("；");
+        setStoredError(details || "没有可读取的存档");
+        setWorldSaveStorageDiagnostics({ status: result.invalidSlots.length ? "invalid" : "absent", lastAction: "继续游戏检查", error: details });
+        return;
+      }
+      onContinue(result.record);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       setStoredError(message);
-      setStorageStatus("删除本地存档失败");
-      setWorldSaveStorageDiagnostics({ status: "error", lastAction: "删除存档", error: message });
+      setStorageStatus("读取存档失败");
+      setWorldSaveStorageDiagnostics({ status: "error", lastAction: "继续游戏检查", error: message });
+    } finally {
+      setLoadingSave(false);
     }
   };
 
@@ -170,18 +159,17 @@ export default function StartMenu({ onStartNewWorld, onContinue }: StartMenuProp
           世界演化模拟器
         </Typography>
 
-        {storedRecord ? (
+        {saveSlots.length ? (
           <Box sx={{ my: 2, p: 2, border: "1px solid #00000033", borderRadius: 1 }}>
-            <Button fullWidth variant="contained" onClick={() => onContinue(storedRecord)}>
-              继续上次世界
+            <Button fullWidth variant="contained" disabled={loadingSave} onClick={() => void continueLatest()}>
+              {loadingSave ? "正在检查存档…" : "继续游戏"}
             </Button>
             <Typography sx={{ mt: 1 }} align="center">
-              {formatWorldDate(storedRecord.summary.worldMonth)} · {storedRecord.summary.scenarioName ?? storedRecord.save.scenarioId ?? "世界"}
+              {formatWorldDate(saveSlots[0].worldMonth)} · {saveSlots[0].scenarioName ?? "世界"}
             </Typography>
             <Typography align="center" color="text.secondary">
-              上次保存：{new Date(storedRecord.savedAt).toLocaleString()}
+              最近存档：{new Date(saveSlots[0].savedAt).toLocaleString()}
             </Typography>
-            <Button size="small" color="inherit" onClick={deleteStoredSave}>删除本地存档</Button>
           </Box>
         ) : (
           <Box sx={{ my: 2 }}>
@@ -191,10 +179,10 @@ export default function StartMenu({ onStartNewWorld, onContinue }: StartMenuProp
             {storedError ? <Typography align="center" color="error">{storedError}</Typography> : null}
             <Box sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
               <Button size="small" disabled={loadingSave} onClick={() => void refreshStoredSave()}>重新检查</Button>
-              {storedError ? <Button size="small" color="error" onClick={deleteStoredSave}>删除本地存档</Button> : null}
             </Box>
           </Box>
         )}
+        <Button fullWidth variant="outlined" onClick={() => setSaveManagerOpen(true)}>读取游戏</Button>
 
         <Typography sx={{ mt: 2 }} variant="h6" fontWeight="bold">
           选择世界
@@ -259,6 +247,11 @@ export default function StartMenu({ onStartNewWorld, onContinue }: StartMenuProp
           开始世界
         </Button>
       </Box>
+      <SaveManagerDialog
+        open={saveManagerOpen}
+        onClose={() => { setSaveManagerOpen(false); void refreshStoredSave(); }}
+        onLoad={onContinue}
+      />
     </Box>
   );
 }

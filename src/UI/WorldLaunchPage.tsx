@@ -56,6 +56,7 @@ export default function WorldLaunchPage() {
       >
         <App
           launchRequest={request}
+          onLoadRecord={continueSave}
           onReturnToMenu={() => {
             dispatch(resetWorldState());
             WorldHistory.reset();

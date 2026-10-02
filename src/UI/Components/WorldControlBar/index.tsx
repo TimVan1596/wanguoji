@@ -8,10 +8,14 @@ import { RootState } from "../../../store";
 export default function WorldControlBar({
   onReturnToMenu,
   onSave,
+  onSaveGame,
+  onManageSaves,
   saving,
 }: {
   onReturnToMenu: () => void;
   onSave: () => Promise<string>;
+  onSaveGame: () => void;
+  onManageSaves: () => void;
   saving: boolean;
 }) {
   const worldRunning = useSelector(
@@ -104,8 +108,10 @@ export default function WorldControlBar({
       >
         <MenuItem disabled={saving || catchUpActive} onClick={() => void handleSave()}>
           {saving ? <CircularProgress size={16} sx={{ mr: 1 }} /> : null}
-          {saving ? "正在保存…" : "保存世界"}
+          {saving ? "正在保存恢复档…" : "快速保存恢复档"}
         </MenuItem>
+        <MenuItem disabled={saving || catchUpActive} onClick={onSaveGame}>保存游戏…</MenuItem>
+        <MenuItem disabled={saving} onClick={onManageSaves}>存档管理</MenuItem>
         <MenuItem disabled={saving} onClick={handleReturnToMenu}>新世界 / 返回主菜单</MenuItem>
       </Menu>
       {saveMessage ? (

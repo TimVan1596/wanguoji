@@ -14,7 +14,7 @@
 
 **[打开《万国纪》在线试玩](https://wanguoji-wanguoji-demo-d5ga9p1eee662b3c4.webapps.tcloudbase.com/)**
 
-当前为公开 Alpha，打开即可试玩，无需注册。当前链接是 CloudBase Public Alpha deployment，不是正式生产服务。当前应用版本已支持浏览器本地单槽手动保存与继续；部署站点需更新到对应版本后才可使用。
+当前为公开 Alpha，打开即可试玩，无需注册。当前链接是 CloudBase Public Alpha deployment，不是正式生产服务。游戏存档保存在本机 IndexedDB；部署站点需更新到对应版本后才可使用。
 
 ![万国纪：诸国自主战争、扩张与历史演化演示](docs/images/demo.gif)
 
@@ -84,7 +84,7 @@
 
 浏览器版本当前尚未包含：
 
-- 自动保存、多存档槽、云端存档或存档文件导入导出（Electron 桌面版另有单槽自动保存）。
+- 云端存档、跨设备同步或存档文件导入导出。
 - deterministic seed / replay。
 - 经济系统。
 - 外交系统。
@@ -141,14 +141,14 @@ Desktop-first、Web-compatible：Desktop 是 long-run、background 与 persisten
 
 Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 `pnpm desktop:dist:mac` 生成 arm64 `.app/.dmg/.zip`；Windows x64 `.exe` 必须由 Windows runner 构建。无签名凭据时产物为 unsigned，macOS Gatekeeper 可能提示阻止打开。安装版 IndexedDB 跨重启/同 appId 更新的持久性尚待人工验收。
 
-Desktop 模式使用 `DESKTOP_CONTINUOUS`：窗口最小化、失焦或被遮挡时仍持续运行。系统休眠策略默认为 PAUSE（睡眠时间不计入世界时间；唤醒后若休眠前正在运行，则自动暂停并提示用户手动继续，原选中速度保留），也可选择受限 catch-up。Desktop 每 5 个现实分钟自动保存当前存档槽，关闭窗口前也会安全保存。Desktop 与 Web 共用同一份 React + Phaser gameplay，不维护桌面玩法分支。
+存档管理支持 UUID 手动档、两个按每 200 游戏年轮换的自动档，以及兼容旧 `current` key 的恢复档。Continue 会从最近保存的有效槽位继续。Electron 仍每 5 个现实分钟更新恢复档，并在关闭窗口前安全保存；Web 使用本机 IndexedDB，不提供云端同步。Desktop 模式使用 `DESKTOP_CONTINUOUS`：窗口最小化、失焦或被遮挡时仍持续运行。系统休眠策略默认为 PAUSE（睡眠时间不计入世界时间；唤醒后若休眠前正在运行，则自动暂停并提示用户手动继续，原选中速度保留），也可选择受限 catch-up。Desktop 与 Web 共用同一份 React + Phaser gameplay，不维护桌面玩法分支。
 
 更多说明见 [desktop/README.md](./desktop/README.md)。
 
 ## 当前已知问题
 
-- Web 仅支持 IndexedDB 单槽手动存档；无云存档或跨浏览器同步。Electron 单槽自动保存仍使用同一套存档格式与仓库。
-- Web 中未手动保存的推进在刷新或关闭页面后不会保留；Electron 会定时自动保存并在关闭前再保存。
+- Web 存档仅保存在当前浏览器 IndexedDB；无云存档或跨设备同步。手动档、200 游戏年轮换自动档与 `current` 恢复档共用 WorldSave V1。
+- Web 中未触发存档的推进在刷新或关闭页面后不会保留；Electron 另有每 5 现实分钟恢复档和关闭前保存。
 - 尚无完整 deterministic seed / replay。
 - 浏览器后台推进是切回前台后的时间补算，不是隐藏标签页持续渲染。
 - Electron 运行时尚未完成用户在 macOS / Windows 的长时间人工验收。

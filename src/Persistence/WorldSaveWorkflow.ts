@@ -3,6 +3,7 @@ import type { HydrationReport } from "./WorldSaveHydrator";
 import { validateWorldSave } from "./WorldSaveValidator";
 import {
   createStoredWorldSaveRecord,
+  SaveSlotType,
   StoredWorldSaveRecord,
   validateStoredWorldSaveRecord,
   WorldSaveRepository,
@@ -17,6 +18,12 @@ export interface ManualSaveResult {
   exportSerializeMs: number;
   indexedDbWriteMs: number;
   totalSaveDurationMs: number;
+}
+
+export interface SaveTarget {
+  slotId?: string;
+  slotType?: SaveSlotType;
+  displayName?: string;
 }
 
 function nowMs() {
@@ -36,7 +43,7 @@ export class WorldSaveBusyError extends Error {
 export async function saveCurrentWorldExclusive(
   core: Core,
   repository: WorldSaveRepository,
-  options: { scenarioId?: string; scenarioName?: string } = {}
+  options: { scenarioId?: string; scenarioName?: string } & SaveTarget = {}
 ) {
   return runExclusiveWorldSave(() => saveCurrentWorld(core, repository, options));
 }
@@ -77,7 +84,7 @@ export function waitForWorldSaveIdle(timeoutMs = 10_000) {
 export async function saveCurrentWorld(
   core: Core,
   repository: WorldSaveRepository,
-  options: { scenarioId?: string; scenarioName?: string } = {}
+  options: { scenarioId?: string; scenarioName?: string } & SaveTarget = {}
 ): Promise<ManualSaveResult> {
   const simulator = core.simulator;
   if (!simulator) throw new Error("当前没有可保存的已开始世界");
@@ -98,7 +105,8 @@ export async function saveCurrentWorld(
       const { exportWorldSave } = await import("./WorldSaveExporter");
       return exportWorldSave(core, { scenarioId: options.scenarioId });
     },
-    options.scenarioName
+    options.scenarioName,
+    options
   );
 }
 
@@ -113,7 +121,8 @@ export async function runManualSaveWorkflow(
   },
   repository: WorldSaveRepository,
     exportSave: () => WorldSaveV1 | Promise<WorldSaveV1>,
-  scenarioName?: string
+  scenarioName?: string,
+  target: SaveTarget = {}
 ): Promise<ManualSaveResult> {
   if (!runtime.started) throw new Error("当前没有可保存的已开始世界");
   if (runtime.catchingUp()) throw new Error("后台追赶期间不能保存世界");
@@ -130,11 +139,11 @@ export async function runManualSaveWorkflow(
     const save = await exportSave();
     const validation = validateWorldSave(save);
     if (!validation.valid) throw new Error(`存档校验失败：${validation.errors.join("；")}`);
-    const record = createStoredWorldSaveRecord(save, scenarioName);
+    const record = createStoredWorldSaveRecord(save, scenarioName, new Date().toISOString(), target);
     const serializedBytes = new TextEncoder().encode(JSON.stringify(record)).length;
     exportSerializeMs = nowMs() - exportStartedAt;
     const startedAt = nowMs();
-    await repository.putCurrent(record);
+    await repository.put(record.slotId, record);
     const indexedDbWriteMs = nowMs() - startedAt;
     return {
       record,
@@ -150,8 +159,8 @@ export async function runManualSaveWorkflow(
   }
 }
 
-export function inspectStoredWorldSave(value: unknown) {
-  return validateStoredWorldSaveRecord(value);
+export function inspectStoredWorldSave(value: unknown, expectedSlotId?: string) {
+  return validateStoredWorldSaveRecord(value, expectedSlotId);
 }
 
 export async function continueStoredWorldSave(core: Core, value: unknown): Promise<HydrationReport> {

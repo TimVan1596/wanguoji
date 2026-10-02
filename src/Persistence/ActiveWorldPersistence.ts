@@ -1,5 +1,6 @@
 import type Core from "../Game/Core";
 import type { ManualSaveResult } from "./WorldSaveWorkflow";
+import type { SaveTarget } from "./WorldSaveWorkflow";
 import { isWorldSaveInFlight, waitForWorldSaveIdle, WorldSaveBusyError } from "./WorldSaveWorkflow";
 import { store } from "../store";
 
@@ -21,7 +22,7 @@ export type ActiveWorldSaveResult =
 export interface ActiveWorldPersistenceAuthority {
   isWorldStarted(): boolean;
   getCore(): Core | undefined;
-  save(core: Core): Promise<ManualSaveResult>;
+  save(core: Core, target?: SaveTarget): Promise<ManualSaveResult>;
 }
 
 let authority: ActiveWorldPersistenceAuthority | undefined;
@@ -53,7 +54,7 @@ export function getActiveWorldPersistenceState() {
   return "READY" as const;
 }
 
-export async function saveActiveWorld(options: { waitForBusy?: boolean; timeoutMs?: number } = {}): Promise<ActiveWorldSaveResult> {
+export async function saveActiveWorld(options: { waitForBusy?: boolean; timeoutMs?: number } & SaveTarget = {}): Promise<ActiveWorldSaveResult> {
   const deadline = Date.now() + (options.timeoutMs ?? 10_000);
   while (true) {
     const state = getActiveWorldPersistenceState();
@@ -80,7 +81,8 @@ export async function saveActiveWorld(options: { waitForBusy?: boolean; timeoutM
     }
     if (!core) return { status: "FAILED", reason: "RUNTIME_UNAVAILABLE" };
     try {
-      return { status: "SAVED", result: await current.save(core) };
+      const { waitForBusy: _waitForBusy, timeoutMs: _timeoutMs, ...target } = options;
+      return { status: "SAVED", result: await current.save(core, target) };
     } catch (error) {
       if (error instanceof WorldSaveBusyError && options.waitForBusy && Date.now() < deadline) continue;
       const reason = error instanceof WorldSaveBusyError ? "SAVE_BUSY" : "SAVE_FAILED";

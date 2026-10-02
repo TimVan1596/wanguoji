@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Game from "../Game/Game";
 import { InitialPopulationMap } from "../Simulation/PopulationSystem";
 import { useSelector } from "react-redux";
@@ -14,6 +14,7 @@ import { IndexedDbWorldSaveRepository } from "../Persistence/WorldSaveRepository
 import { setWorldSaveStorageDiagnostics } from "../Persistence/WorldSaveDiagnostics";
 import { formatWorldDate } from "../Simulation/WorldTime";
 import { registerActiveWorldPersistence, saveActiveWorld } from "../Persistence/ActiveWorldPersistence";
+import { chooseAutosaveSlot, GameYearAutosaveSchedule } from "../Persistence/SaveSlotRules";
 import { store } from "../store";
 import Config from "./Components/Config";
 import ChapterBanner from "./Components/ChapterBanner";
@@ -23,30 +24,81 @@ import LeftSlider from "./Components/LeftSlider";
 import { Result } from "./Components/Result";
 import RightSlider from "./Components/RightSlider";
 import WorldDiagnosticsPanel from "./Components/WorldDiagnosticsPanel";
+import SaveManagerDialog from "./Components/SaveManagerDialog";
+import { StoredWorldSaveRecord } from "../Persistence/WorldSaveRepository";
 
 interface AppProps {
   launchRequest: WorldLaunchRequest;
   onReturnToMenu: () => void;
+  onLoadRecord: (record: StoredWorldSaveRecord) => void;
 }
 
-export default function App({ launchRequest, onReturnToMenu }: AppProps) {
+export default function App({ launchRequest, onReturnToMenu, onLoadRecord }: AppProps) {
   const [saving, setSaving] = useState(false);
+  const [saveManagerOpen, setSaveManagerOpen] = useState(false);
+  const worldMonth = useSelector((state: RootState) => state.root.worldMonth);
+  const worldStarted = useSelector((state: RootState) => state.root.worldStarted);
+  const catchUpActive = useSelector((state: RootState) => state.root.backgroundCatchUpActive);
+  const saveSchedule = useMemo(() => new GameYearAutosaveSchedule(
+    launchRequest.mode === "CONTINUE_SAVE" ? launchRequest.record.summary.worldMonth : 0
+  ), [launchRequest]);
+  const autosaveInFlight = useRef(false);
+  const pendingAutosaveBoundary = useRef<number>();
   useEffect(() => registerActiveWorldPersistence({
     isWorldStarted: () => store.getState().root.worldStarted,
     getCore: () => Game.Core,
-    save: (core) => {
+    save: (core, target) => {
       const scenario = launchRequest.mode === "NEW_WORLD" ? launchRequest.scenario : undefined;
       const scenarioId = launchRequest.mode === "CONTINUE_SAVE" ? launchRequest.record.save.scenarioId : scenario?.id;
       const scenarioName = launchRequest.mode === "CONTINUE_SAVE" ? launchRequest.record.summary.scenarioName : scenario?.name;
-      return saveCurrentWorldExclusive(core, new IndexedDbWorldSaveRepository(), { scenarioId, scenarioName });
+      return saveCurrentWorldExclusive(core, new IndexedDbWorldSaveRepository(), { scenarioId, scenarioName, ...target });
     },
   }), [launchRequest]);
+
+  useEffect(() => {
+    if (!worldStarted) return;
+    const crossedBoundary = saveSchedule.observe(worldMonth);
+    if (crossedBoundary !== undefined && pendingAutosaveBoundary.current === undefined) {
+      pendingAutosaveBoundary.current = crossedBoundary;
+    }
+    if (pendingAutosaveBoundary.current === undefined || catchUpActive || autosaveInFlight.current) return;
+    const boundaryMonth = pendingAutosaveBoundary.current;
+    autosaveInFlight.current = true;
+    const saveAutoslot = async () => {
+      try {
+        const slotId = await chooseAutosaveSlot(new IndexedDbWorldSaveRepository());
+        const result = await saveActiveWorld({
+          slotId,
+          slotType: "AUTOSAVE",
+          displayName: `自动存档 · ${formatWorldDate(boundaryMonth)}`,
+          waitForBusy: true,
+          timeoutMs: 30_000,
+        });
+        if (result.status === "SAVED") {
+          pendingAutosaveBoundary.current = undefined;
+          Game.Core?.toast?.showMessage(`自动存档已保存 · ${formatWorldDate(boundaryMonth)}`);
+        } else if (result.status === "FAILED") {
+          console.error("[Wanguoji] game-year autosave failed", result);
+          const retryable = ["SAVE_BUSY", "CATCHING_UP", "HYDRATION", "SNAPSHOT", "RUNTIME_INITIALIZING"].includes(result.reason);
+          if (!retryable) pendingAutosaveBoundary.current = undefined;
+          Game.Core?.toast?.showMessage(retryable ? "自动存档将在安全状态下重试" : `自动存档失败：${result.reason}`);
+        }
+      } catch (error) {
+        console.error("[Wanguoji] game-year autosave failed", error);
+        pendingAutosaveBoundary.current = undefined;
+        Game.Core?.toast?.showMessage("自动存档失败");
+      } finally {
+        autosaveInFlight.current = false;
+      }
+    };
+    void saveAutoslot();
+  }, [worldMonth, worldStarted, catchUpActive, saveSchedule]);
 
   const handleSave = async () => {
     setSaving(true);
     setWorldSaveStorageDiagnostics({ status: "unknown", lastAction: "正在保存" });
     try {
-      const saved = await saveActiveWorld();
+      const saved = await saveActiveWorld({ slotId: "current", slotType: "RECOVERY" });
       if (saved.status !== "SAVED") throw new Error(("error" in saved ? saved.error : undefined) ?? `无法保存：${saved.reason}`);
       const result = saved.result;
       setWorldSaveStorageDiagnostics({
@@ -69,6 +121,19 @@ export default function App({ launchRequest, onReturnToMenu }: AppProps) {
       const message = error instanceof Error ? error.message : String(error);
       setWorldSaveStorageDiagnostics({ status: "error", lastAction: "保存失败", error: message });
       throw error;
+    } finally {
+      setSaving(false);
+    }
+  };
+  const handleManualSave = async (displayName: string) => {
+    const trimmedName = displayName.trim();
+    if (!trimmedName) throw new Error("存档名称不能为空");
+    setSaving(true);
+    try {
+      const result = await saveActiveWorld({ slotType: "MANUAL", displayName: trimmedName, waitForBusy: true });
+      if (result.status !== "SAVED") throw new Error(("error" in result ? result.error : undefined) ?? `无法保存：${result.reason}`);
+      const date = formatWorldDate(result.result.record.summary.worldMonth);
+      Game.Core?.toast?.showMessage(`手动存档已保存 · ${date}`);
     } finally {
       setSaving(false);
     }
@@ -109,10 +174,24 @@ export default function App({ launchRequest, onReturnToMenu }: AppProps) {
             background: "var(--gg-panel)",
           }}
         >
-          <RightSlider onReturnToMenu={onReturnToMenu} onSave={handleSave} saving={saving}></RightSlider>
+          <RightSlider
+            onReturnToMenu={onReturnToMenu}
+            onSave={handleSave}
+            onSaveGame={() => setSaveManagerOpen(true)}
+            onManageSaves={() => setSaveManagerOpen(true)}
+            saving={saving}
+          />
         </Box>
       </Box>
       <WorldDiagnosticsPanel />
+      <SaveManagerDialog
+        open={saveManagerOpen}
+        onClose={() => setSaveManagerOpen(false)}
+        onLoad={onLoadRecord}
+        onCreateManual={handleManualSave}
+        defaultName={`${launchRequest.mode === "NEW_WORLD" ? launchRequest.scenario.name : launchRequest.record.summary.scenarioName ?? "万国纪"} · ${formatWorldDate(worldMonth)}`}
+        title="保存游戏 / 存档管理"
+      />
     </>
   );
 }

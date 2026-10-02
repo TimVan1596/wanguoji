@@ -131,7 +131,7 @@ ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/ pnpm install
   - `BrowserWindow.webPreferences.backgroundThrottling = false`，awake 状态下继续 timers、animation loop、SimulationDriver 和 Phaser Arcade Physics。
   - 普通最小化/失焦不是 OS suspend；debug diagnostics 分别显示窗口最小化计数、OS suspend 计数，以及 catch-up source。只有真实 OS suspend 的恢复才使用 `DESKTOP_OS_RESUME` 补算来源。
   - Desktop 设置中的“系统休眠期间”默认是“暂停，并在唤醒后等待继续（推荐）”：睡眠时间不进入模拟时间；若休眠前正在运行，唤醒后自动暂停并提示手动继续，原选中速度保留；原本已暂停则继续保持暂停。可选“唤醒后补算离线时间”，仍受 catch-up 安全上限约束。两种策略都不改变普通最小化行为。
-  - Electron 每 5 个现实分钟自动保存当前存档槽；关闭窗口前会再执行安全保存。
+  - Electron 每 5 个现实分钟更新 `current` Recovery 恢复档，关闭窗口前也只保存该槽。游戏时间每跨越 200 年边界时，另写入 `autosave-1/2` 双槽轮换自动档；手动档使用独立 UUID 槽位。
   - OS suspend / resume 的 CATCH_UP 策略使用显式恢复补算，最多按现有 2 小时 real-time cap 补算。
   - 每 5 分钟由 main process 请求 renderer 复用 IndexedDB 手动保存 workflow 自动保存；关闭窗口时先保存，失败或超时则取消关闭。
   - 应用使用 single-instance lock，第二实例会将已有窗口恢复并置前。
