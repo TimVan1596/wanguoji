@@ -1,10 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Alert, Snackbar } from "@mui/material";
 import Game from "../Game/Game";
 import { saveActiveWorld } from "../Persistence/ActiveWorldPersistence";
 import { DesktopAutosaveResult, DesktopResumeAfterSuspend } from "../Runtime/DesktopRuntime";
-import { getResumeCatchUpRequest, readDesktopSuspendPolicy } from "../Runtime/DesktopSuspendPolicy";
+import { getDesktopResumePolicyDecision, readDesktopSuspendPolicy } from "../Runtime/DesktopSuspendPolicy";
 
 export default function DesktopLifecycleBridge() {
+  const [resumeNotice, setResumeNotice] = useState<{ title: string; detail: string }>();
   useEffect(() => {
     const bridge = window.gridGodDesktop;
     if (!bridge) return;
@@ -44,11 +46,19 @@ export default function DesktopLifecycleBridge() {
       });
     });
     const unsubscribeResume = bridge.onResumeAfterSuspend?.((payload) => {
-      const request = getResumeCatchUpRequest(
-        payload as DesktopResumeAfterSuspend,
+      const core = Game.Core;
+      const runtimeWorldInstanceId = core?.getRuntimeLivenessDiagnostics().worldInstanceId;
+      const sameWorld = payload.worldInstanceId !== undefined && payload.worldInstanceId === runtimeWorldInstanceId;
+      const currentWorldRunning = sameWorld ? core?.simulator?.isRunning() ?? payload.wasRunning : false;
+      const decision = getDesktopResumePolicyDecision(
+        { ...payload as DesktopResumeAfterSuspend, wasRunning: currentWorldRunning },
         readDesktopSuspendPolicy()
       );
-      const result = Game.Core?.scheduleDesktopResumeCatchUp(request);
+      const result = core?.scheduleDesktopResumeCatchUp(decision.catchUpRequest);
+      if (sameWorld && decision.pauseWorldAfterResume) core?.setWorldRunning(false);
+      if (sameWorld && decision.notice && core?.simulator?.exportState().started) {
+        setResumeNotice(decision.notice);
+      }
       bridge.reportResumeCatchUpResult?.({
         status: result?.scheduled ? "SCHEDULED" : "SKIPPED",
         steps: result?.steps ?? 0,
@@ -62,5 +72,14 @@ export default function DesktopLifecycleBridge() {
     };
   }, []);
 
-  return null;
+  return (
+    <Snackbar open={Boolean(resumeNotice)} autoHideDuration={9000} onClose={() => setResumeNotice(undefined)}>
+      {resumeNotice ? (
+        <Alert severity="info" variant="filled" onClose={() => setResumeNotice(undefined)}>
+          <strong>{resumeNotice.title}</strong>
+          <div>{resumeNotice.detail}</div>
+        </Alert>
+      ) : undefined}
+    </Snackbar>
+  );
 }

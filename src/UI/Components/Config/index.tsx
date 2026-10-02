@@ -18,7 +18,7 @@ import {
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import { ConfigState } from "../../../store/configSlice";
-import { DesktopSuspendPolicy, readDesktopSuspendPolicy, writeDesktopSuspendPolicy } from "../../../Runtime/DesktopSuspendPolicy";
+import { DesktopSuspendPolicy, DESKTOP_SUSPEND_POLICY_LABELS, readDesktopSuspendPolicy, writeDesktopSuspendPolicy } from "../../../Runtime/DesktopSuspendPolicy";
 
 const Config: FC = () => {
   const [open, setOpen] = useState(false);
@@ -101,8 +101,8 @@ const Config: FC = () => {
                 writeDesktopSuspendPolicy(policy);
               }}
             >
-              <FormControlLabel value="PAUSE" control={<Radio />} label="暂停世界（推荐）" />
-              <FormControlLabel value="CATCH_UP" control={<Radio />} label="唤醒后补算离线时间" />
+              <FormControlLabel value="PAUSE" control={<Radio />} label={DESKTOP_SUSPEND_POLICY_LABELS.PAUSE} />
+              <FormControlLabel value="CATCH_UP" control={<Radio />} label={DESKTOP_SUSPEND_POLICY_LABELS.CATCH_UP} />
             </RadioGroup>
           </FormControl>}
           <TextField

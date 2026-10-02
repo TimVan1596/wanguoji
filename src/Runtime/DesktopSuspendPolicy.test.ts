@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   DEFAULT_DESKTOP_SUSPEND_POLICY,
+  DESKTOP_SUSPEND_POLICY_LABELS,
   DESKTOP_SUSPEND_POLICY_STORAGE_KEY,
+  getDesktopResumePolicyDecision,
   getResumeCatchUpRequest,
   parseDesktopSuspendPolicy,
   readDesktopSuspendPolicy,
@@ -18,6 +20,8 @@ describe("Desktop suspend policy", () => {
       setItem: (key: string, value: string) => values.set(key, value),
     };
     expect(DEFAULT_DESKTOP_SUSPEND_POLICY).toBe("PAUSE");
+    expect(DESKTOP_SUSPEND_POLICY_LABELS.PAUSE).toBe("暂停，并在唤醒后等待继续（推荐）");
+    expect(DESKTOP_SUSPEND_POLICY_LABELS.CATCH_UP).toBe("唤醒后补算离线时间");
     expect(readDesktopSuspendPolicy(storage)).toBe("PAUSE");
     writeDesktopSuspendPolicy("CATCH_UP", storage);
     expect(readDesktopSuspendPolicy(storage)).toBe("CATCH_UP");
@@ -41,6 +45,11 @@ describe("Desktop suspend policy", () => {
     });
     expect(snapshot.catchUpDebtSteps).toBe(0);
     expect(snapshot.catchUpSource).toBe("NONE");
+    const decision = getDesktopResumePolicyDecision(before, "PAUSE");
+    expect(decision.pauseWorldAfterResume).toBe(true);
+    expect(decision.catchUpRequest).toMatchObject({ wasRunning: false, selectedSpeed: 4 });
+    expect(decision.notice?.title).toContain("世界已暂停");
+    expect(decision.notice?.detail).toContain("休眠期间未推进世界时间");
   });
 
   it("CATCH_UP preserves the real resume request and paused worlds stay paused", () => {
@@ -60,6 +69,12 @@ describe("Desktop suspend policy", () => {
     });
     expect(scheduled.catchUpDebtSteps).toBeGreaterThan(0);
     expect(scheduled.catchUpSource).toBe("DESKTOP_OS_RESUME");
+    const catchUpDecision = getDesktopResumePolicyDecision(running, "CATCH_UP");
+    expect(catchUpDecision).toMatchObject({
+      pauseWorldAfterResume: false,
+      catchUpRequest: running,
+    });
+    expect(catchUpDecision.notice).toBeUndefined();
 
     for (const policy of ["PAUSE", "CATCH_UP"] as const) {
       const pausedController = new BackgroundProgressionController();
@@ -73,6 +88,7 @@ describe("Desktop suspend policy", () => {
       });
       expect(pausedResult.catchUpDebtSteps).toBe(0);
       expect(pausedResult.catchUpSource).toBe("NONE");
+      expect(getDesktopResumePolicyDecision(paused, policy).pauseWorldAfterResume).toBe(false);
     }
   });
 
