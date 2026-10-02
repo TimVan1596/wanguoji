@@ -1,7 +1,8 @@
-import { app, BrowserWindow, dialog, ipcMain, powerMonitor } from "electron";
+import { app, BrowserWindow, dialog, ipcMain, Menu, powerMonitor } from "electron";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { randomUUID } from "node:crypto";
+import { getStableUserDataPath, isAllowedDesktopNavigation } from "./DesktopSecurity";
 import { getDesktopDebugLaunchOptions, getDesktopRendererUrl } from "./DesktopRendererUrl";
 import {
   decideSingleInstance,
@@ -62,6 +63,8 @@ interface DesktopDiagnostics {
   lastRestoredAt?: string;
 }
 
+app.setName("Wanguoji");
+app.setPath("userData", getStableUserDataPath(app.getPath("appData")));
 const instanceLock = app.requestSingleInstanceLock();
 const autosaveGate = new DesktopAutosaveGate();
 const closeHandshake = new DesktopCloseHandshake();
@@ -123,8 +126,10 @@ function requestCloseSave() {
 }
 
 async function createWindow() {
-  const devServerUrl = getDesktopDebugLaunchOptions(process.argv).devServerUrl
+  const launchOptions = getDesktopDebugLaunchOptions(process.argv);
+  const devServerUrl = launchOptions.devServerUrl
     ?? process.env.GRIDGOD_DESKTOP_DEV_SERVER_URL;
+  const appUrl = devServerUrl ? getRendererUrl(devServerUrl) : getProductionIndexUrl();
   mainWindow = new BrowserWindow({
     width: 1440,
     height: 900,
@@ -136,10 +141,18 @@ async function createWindow() {
       preload: getPreloadPath(),
       nodeIntegration: false,
       contextIsolation: true,
-      sandbox: false,
+      sandbox: true,
       webSecurity: true,
       backgroundThrottling: false,
     },
+  });
+
+  mainWindow.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+  mainWindow.webContents.on("will-navigate", (event, destination) => {
+    if (!isAllowedDesktopNavigation(destination, appUrl, devServerUrl)) {
+      event.preventDefault();
+      console.warn("[Wanguoji Desktop] blocked renderer navigation", destination);
+    }
   });
 
   mainWindow.on("focus", () => { diagnostics.focused = true; });
@@ -201,11 +214,49 @@ async function createWindow() {
   mainWindow.on("closed", () => { mainWindow = undefined; });
 
   if (devServerUrl) {
-    await mainWindow.loadURL(getRendererUrl(devServerUrl));
+    await mainWindow.loadURL(appUrl);
     mainWindow.webContents.openDevTools({ mode: "detach" });
   } else {
-    await mainWindow.loadURL(getRendererUrl(getProductionIndexUrl()));
+    await mainWindow.loadURL(getRendererUrl(appUrl));
   }
+}
+
+function installApplicationMenu() {
+  const isMac = process.platform === "darwin";
+  const isDevelopment = Boolean(
+    getDesktopDebugLaunchOptions(process.argv).devServerUrl || process.env.GRIDGOD_DESKTOP_DEV_SERVER_URL
+  );
+  const allowDevTools = isDevelopment || getDesktopDebugLaunchOptions(process.argv).debug;
+  const viewMenu: Electron.MenuItemConstructorOptions[] = [
+    { role: "reload" },
+    { role: "forceReload" },
+    { type: "separator" },
+    { role: "resetZoom" },
+    { role: "zoomIn" },
+    { role: "zoomOut" },
+    { type: "separator" },
+    { role: "togglefullscreen" },
+  ];
+  if (allowDevTools) viewMenu.splice(2, 0, { role: "toggleDevTools" });
+  const template: Electron.MenuItemConstructorOptions[] = [
+    ...(isMac ? [{
+      label: "万国纪 Wanguoji",
+      submenu: [
+        { role: "about" as const },
+        { type: "separator" as const },
+        { role: "hide" as const },
+        { role: "hideOthers" as const },
+        { role: "unhide" as const },
+        { type: "separator" as const },
+        { role: "quit" as const },
+      ],
+    }] : []),
+    { label: "Edit", submenu: [{ role: "undo" }, { role: "redo" }, { type: "separator" }, { role: "cut" }, { role: "copy" }, { role: "paste" }, { role: "selectAll" }] },
+    { label: "View", submenu: viewMenu },
+    { label: "Window", submenu: [{ role: "minimize" }, { role: "zoom" }, { type: "separator" }, { role: "front" }] },
+    { label: "Help", submenu: [{ label: "About Wanguoji", role: "about" }] },
+  ];
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
 
 async function showCloseFailure(message: string) {
@@ -313,6 +364,7 @@ if (decideSingleInstance(instanceLock) === "QUIT") {
   });
 
   app.whenReady().then(async () => {
+    installApplicationMenu();
     await createWindow();
     setInterval(sendAutosaveRequest, 5 * 60 * 1000);
 

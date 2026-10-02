@@ -69,7 +69,35 @@ pnpm desktop:dev:debug:png
 pnpm desktop:start
 ```
 
-`desktop:build` 构建 Desktop renderer 并编译 Electron main/preload；本实验不包含安装包、签名、notarization 或 auto update。
+## Packaging
+
+生成当前平台的目录包（用于检查 asar 内容和直接启动）：
+
+```bash
+pnpm desktop:pack
+```
+
+在 Apple Silicon Mac 构建 arm64 `.app`、`.dmg` 与 `.zip`：
+
+```bash
+pnpm desktop:dist:mac
+```
+
+Windows x64 NSIS `.exe` 必须在 Windows runner/机器构建，不会在 macOS 上通过 Wine 交叉打包：
+
+```powershell
+pnpm desktop:dist:win
+```
+
+GitHub Actions 的 `Desktop packaging artifacts` workflow 仅手动触发，上传 macOS arm64 与 Windows x64 构建产物，不创建或覆盖 GitHub Release。macOS job 会核验 runner 实际架构。
+
+appId 固定为 `io.github.timvan1596.wanguoji`，userData 固定在系统 appData 下的 `Wanguoji` 目录；安装版 IndexedDB 因而跨重启和同 appId 更新使用稳定 Electron profile。开发环境旧 IndexedDB 不迁移。
+
+当前图标是临时打包图标，源文件为 `build/icon.svg`，后续待正式品牌图标替换。无证书时允许 unsigned 本地产物；macOS Gatekeeper 可能阻止首次打开，需要用户在系统设置中确认。可通过 `CSC_LINK` / `CSC_KEY_PASSWORD` 配置签名；Apple notarization 可选用 Apple API key 或 Apple ID 凭据。Windows Authenticode 同样读取 electron-builder 环境变量。证书与密码只能放在本机安全环境或 GitHub Secrets，禁止提交到仓库。
+
+本版未配置自动发布或自动更新。CSP 仅注入 Desktop production build，Web build 与 Vite development/HMR 不受影响；生产脚本策略不含 `unsafe-eval`，Emotion inline style 仅使用必要的 `style-src 'unsafe-inline'`。BrowserWindow 开启 sandbox，拒绝新窗口和非应用导航。
+
+打包后的 userData 持久性、替换升级和 endurance 仍需人工验收；Windows artifact 生成不等于 Windows 实机验证。
 
 ## Development Target Policy
 
@@ -80,7 +108,7 @@ pnpm desktop:start
 
 ## 已知诊断项 / 后续安全工作
 
-- Electron 当前仍可能显示 Insecure Content-Security-Policy warning。记录为 `v0.99924a Packaging & Security` P0；本轮不添加宽松 CSP，也不以 `unsafe-eval` / `*` 掩盖问题。
+- Packaged Electron production 使用受限 CSP；若 Console 仍出现 CSP 警告或资源阻止，应作为打包验收 blocker 回传，不要通过 `unsafe-eval` / wildcard 放宽策略。
 - Canvas `willReadFrequently` 提示目前仅作为性能诊断信息，不在本轮改动 renderer。
 
 ## 中国大陆 Electron binary 下载
@@ -141,6 +169,6 @@ BrowserWindow 使用：
 - `contextIsolation: true`
 - `webSecurity: true`
 - `backgroundThrottling: false`
-- `sandbox: false`
+- `sandbox: true`
 
-`sandbox` 在本版保持关闭，以便当前 TypeScript preload 稳定使用 Electron IPC。Renderer 只得到受限的 heartbeat、autosave、close、resume 与 diagnostics IPC 方法；listener 返回 unsubscribe。Renderer 不获得 `require`、原始 `ipcRenderer` 或文件系统访问。
+Preload 在 sandbox 下只通过 `contextBridge` 暴露受限的 heartbeat、autosave、close、resume 与 diagnostics IPC 方法；listener 返回 unsubscribe。Renderer 不获得 `require`、原始 `ipcRenderer` 或文件系统访问。

@@ -89,7 +89,7 @@
 - 经济系统。
 - 外交系统。
 - 科技树。
-- 完整桌面安装包、签名或自动更新。
+- Desktop installer packaging foundation；签名/notarized public distribution 与自动更新尚未配置。
 
 ## 本地运行
 
@@ -138,6 +138,8 @@ pnpm desktop:start
 ```
 
 Desktop-first、Web-compatible：Desktop 是 long-run、background 与 persistence 的主要人工验收环境。推荐长局使用 `pnpm desktop:start`；诊断使用 `pnpm desktop:start:debug`，plain avatar A/B 使用 `pnpm desktop:start:debug:plain`，noFace PNG texture probe 使用 `pnpm desktop:start:debug:png`。开发使用 `pnpm desktop:dev`，诊断开发使用 `pnpm desktop:dev:debug`（plain A/B：`pnpm desktop:dev:debug:plain`；PNG probe：`pnpm desktop:dev:debug:png`）。Web 继续作为 online demo 与兼容性目标，并未废弃。
+
+Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 `pnpm desktop:dist:mac` 生成 arm64 `.app/.dmg/.zip`；Windows x64 `.exe` 必须由 Windows runner 构建。无签名凭据时产物为 unsigned，macOS Gatekeeper 可能提示阻止打开。安装版 IndexedDB 跨重启/同 appId 更新的持久性尚待人工验收。
 
 Desktop 模式使用 `DESKTOP_CONTINUOUS`：窗口最小化、失焦或被遮挡时仍持续运行。系统休眠策略默认为 PAUSE（睡眠时间不计入世界时间；唤醒后若休眠前正在运行，则自动暂停并提示用户手动继续，原选中速度保留），也可选择受限 catch-up。Desktop 每 5 个现实分钟自动保存当前存档槽，关闭窗口前也会安全保存。Desktop 与 Web 共用同一份 React + Phaser gameplay，不维护桌面玩法分支。
 

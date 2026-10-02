@@ -1,9 +1,10 @@
 {
   "name": "wanguoji",
+  "version": "0.99.68",
+  "main": "desktop/dist/main.js",
   "description": "An autonomous alternate-history sandbox where nations, dynasties and empires rise, fall and write their own history.",
   "packageManager": "pnpm@8.5.1",
   "private": true,
-  "version": "0.99.67",
   "scripts": {
     "dev": "vite",
     "desktop:compile": "tsc -p desktop/tsconfig.json",
@@ -17,6 +18,10 @@
     "desktop:start:debug": "pnpm desktop:build && electron desktop/dist/main.js --wanguoji-debug",
     "desktop:start:debug:plain": "pnpm desktop:build && electron desktop/dist/main.js --wanguoji-debug --wanguoji-avatar-renderer=plain",
     "desktop:start:debug:png": "pnpm desktop:build && electron desktop/dist/main.js --wanguoji-texture-probe=png",
+    "desktop:package": "pnpm desktop:build && electron-builder --dir",
+    "desktop:pack": "pnpm desktop:package",
+    "desktop:dist:mac": "node scripts/assert-packaging-platform.mjs darwin && pnpm desktop:build && electron-builder --mac dmg zip --arm64",
+    "desktop:dist:win": "node scripts/assert-packaging-platform.mjs win32 && pnpm desktop:build && electron-builder --win nsis --x64",
     "test": "vitest run",
     "build": "tsc && vite build",
     "preview": "vite preview",
@@ -39,6 +44,7 @@
     "@vitejs/plugin-react": "^3.0.0",
     "concurrently": "^10.0.5",
     "electron": "^44.4.3",
+    "electron-builder": "^26.0.12",
     "fast-text-encoding": "^1.0.6",
     "react-router": "^6.6.1",
     "react-router-dom": "^6.6.1",
@@ -74,5 +80,55 @@
     "react-redux": "^8.0.5",
     "redux-persist": "^6.0.0",
     "swiper": "^8.4.5"
+  },
+  "build": {
+    "appId": "io.github.timvan1596.wanguoji",
+    "productName": "万国纪 Wanguoji",
+    "executableName": "Wanguoji",
+    "asar": true,
+    "directories": {
+      "buildResources": "build",
+      "output": "desktop/release"
+    },
+    "files": [
+      "dist/**",
+      "desktop/dist/**",
+      "package.json",
+      "!**/*.map",
+      "!**/*.d.ts",
+      "!**/*.test.*",
+      "!src/**",
+      "!tests/**",
+      "!docs/**",
+      "!.git/**"
+    ],
+    "mac": {
+      "icon": "build/icon.icns",
+      "category": "public.app-category.games",
+      "target": ["dmg", "zip"],
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist"
+    },
+    "dmg": {
+      "title": "万国纪 Wanguoji",
+      "contents": [
+        { "x": 130, "y": 220, "type": "file" },
+        { "x": 410, "y": 220, "type": "link", "path": "/Applications" }
+      ]
+    },
+    "win": {
+      "icon": "build/icon.ico",
+      "target": ["nsis"]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "artifactName": "Wanguoji-${version}-${os}-${arch}.${ext}"
   }
 }

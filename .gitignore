@@ -13,6 +13,9 @@ dist
 dist/
 desktop/dist
 desktop/dist/
+desktop/release/
+/build/icon-*.png
+/build/icon.iconset/
 desktop/release
 desktop/release/
 build
@@ -21,6 +24,12 @@ dist-ssr
 .env
 .env.*
 !.env.example
+!/build/
+/build/*
+!/build/icon.svg
+!/build/icon.icns
+!/build/icon.ico
+!/build/entitlements.mac.plist
 
 # Editor directories and files
 .vscode/*

@@ -11,6 +11,11 @@ if (!existsSync(htmlPath)) {
 }
 
 const html = readFileSync(htmlPath, "utf8");
+const cspMatch = html.match(/<meta\s+http-equiv="Content-Security-Policy"\s+content="([^"]+)"\s*\/?\s*>/i);
+if (!cspMatch) throw new Error("Desktop renderer is missing its production Content-Security-Policy.");
+const csp = cspMatch[1];
+if (/\bunsafe-eval\b/i.test(csp)) throw new Error("Desktop production CSP must not allow unsafe-eval.");
+if (/default-src\s+[^;]*\*/i.test(csp)) throw new Error("Desktop production CSP must not use a wildcard default-src.");
 const assetUrls = [...html.matchAll(/<(?:script|link)\b[^>]*?\b(?:src|href)=["']([^"']+)["'][^>]*>/gi)]
   .map((match) => match[1]);
 const localUrls = assetUrls.filter((url) => !/^(?:[a-z]+:|\/\/|#)/i.test(url));
@@ -32,7 +37,7 @@ for (const url of localUrls) {
   }
 }
 
-for (const requiredAsset of ["img/no-face.svg", "img/no-face.png", "img/star.png"]) {
+for (const requiredAsset of ["img/no-face.svg", "img/no-face.png", "img/star.png", "theme/minecraft/font.ttf"]) {
   if (!existsSync(path.join(distDirectory, requiredAsset))) {
     throw new Error(`Required Phaser public asset is missing from Desktop build: ${requiredAsset}`);
   }
