@@ -37,6 +37,10 @@ interface AutosaveResult {
   worldMonth?: number;
   serializedBytes?: number;
   writeDurationMs?: number;
+  waitSafeBoundaryMs?: number;
+  exportSerializeMs?: number;
+  indexedDbWriteMs?: number;
+  totalSaveDurationMs?: number;
   savedAt?: string;
   error?: string;
 }
@@ -94,8 +98,8 @@ function getProductionIndexUrl() {
 }
 
 function getRendererUrl(baseUrl: string) {
-  const { debug, avatarRenderer } = getDesktopDebugLaunchOptions(process.argv);
-  return getDesktopRendererUrl(baseUrl, { debug, avatarRenderer });
+  const { debug, avatarRenderer, textureProbe } = getDesktopDebugLaunchOptions(process.argv);
+  return getDesktopRendererUrl(baseUrl, { debug, avatarRenderer, textureProbe });
 }
 
 function focusMainWindow() {

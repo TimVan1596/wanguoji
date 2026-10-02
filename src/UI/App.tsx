@@ -57,6 +57,10 @@ export default function App({ launchRequest, onReturnToMenu }: AppProps) {
         lastAction: "保存成功",
         serializedBytes: result.serializedBytes,
         writeDurationMs: result.writeDurationMs,
+        waitSafeBoundaryMs: result.waitSafeBoundaryMs,
+        exportSerializeMs: result.exportSerializeMs,
+        indexedDbWriteMs: result.indexedDbWriteMs,
+        totalSaveDurationMs: result.totalSaveDurationMs,
       });
       const date = formatWorldDate(result.record.summary.worldMonth);
       Game.Core.toast?.showMessage(`已保存 · ${date}`);

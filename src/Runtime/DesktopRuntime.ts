@@ -35,6 +35,10 @@ export interface DesktopAutosaveResult {
   worldMonth?: number;
   serializedBytes?: number;
   writeDurationMs?: number;
+  waitSafeBoundaryMs?: number;
+  exportSerializeMs?: number;
+  indexedDbWriteMs?: number;
+  totalSaveDurationMs?: number;
   savedAt?: string;
   error?: string;
 }

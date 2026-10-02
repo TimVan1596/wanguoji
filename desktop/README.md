@@ -20,6 +20,15 @@ pnpm desktop:start:debug
 
 若需对比普通头像与 rex `CircleMaskImage`，使用 `pnpm desktop:start:debug:plain` 启动 plain-avatar 诊断模式。该启动方式使用 app-private 参数，不占用 Node/Electron 的 `--debug` 参数。
 
+noFace 纹理来源诊断（默认 SVG 对比 PNG）：
+
+```bash
+pnpm desktop:start:debug
+pnpm desktop:start:debug:png
+```
+
+PNG 探针只改变 noFace 纹理加载来源，其他单位和模拟逻辑不变；普通启动仍使用 SVG。
+
 开发模式：
 
 ```bash
@@ -36,6 +45,12 @@ plain avatar 开发诊断：
 
 ```bash
 pnpm desktop:dev:debug:plain
+```
+
+PNG 纹理探针开发运行：
+
+```bash
+pnpm desktop:dev:debug:png
 ```
 
 该命令会：

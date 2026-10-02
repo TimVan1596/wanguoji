@@ -32,7 +32,7 @@ for (const url of localUrls) {
   }
 }
 
-for (const requiredAsset of ["img/no-face.svg", "img/star.png"]) {
+for (const requiredAsset of ["img/no-face.svg", "img/no-face.png", "img/star.png"]) {
   if (!existsSync(path.join(distDirectory, requiredAsset))) {
     throw new Error(`Required Phaser public asset is missing from Desktop build: ${requiredAsset}`);
   }

@@ -41,6 +41,8 @@ import BackgroundProgressionController, {
 import LogicalSimulationCore from "../Simulation/LogicalSimulationCore";
 import { ArcadeColliderTeardownDiagnostics, teardownArcadeColliders } from "../Simulation/ArcadeColliderTeardown";
 import LogicalUnitRegistry from "../Simulation/LogicalUnitRegistry";
+import { RuntimePerformanceMetrics } from "../Simulation/RuntimePerformanceMetrics";
+import { getTextureProbeSource } from "../Runtime/TextureProbe";
 import { createRuntimeUnitDiagnostics } from "../Simulation/RuntimeUnitDiagnostics";
 import WorldEra from "../Simulation/WorldEra";
 import { captureEraMapSnapshot } from "../Simulation/EraMapSnapshot";
@@ -114,6 +116,8 @@ export default class Core {
   logicalGameplayAuthority = false;
   manualPhysicsStepping = true;
   private manualPhysicsStepper = new ManualArcadePhysicsStepper();
+  private runtimePerformance = new RuntimePerformanceMetrics();
+  private frameFixedStepCpuMs = 0;
   private simulationDiagnostics = {
     fixedSimulationSteps: 0,
     physicsSteps: 0,
@@ -616,13 +620,45 @@ export default class Core {
     };
     roots.forEach(visit);
     const missingTextureKeys = ["noFace", "star"].filter((key) => !this.scene.textures.exists(key));
-    return createRuntimeUnitDiagnostics({
-      logicalUsers: this.teams.reduce((total, team) => total + team.users.size, 0),
-      rootPlayers: roots.length,
-      playerChildren: Math.max(0, allPlayers.size - roots.length),
-      activePhaserPlayers: [...allPlayers].filter((player) => player.active).length,
-      missingTextureKeys,
-    });
+    return {
+      ...createRuntimeUnitDiagnostics({
+        logicalUsers: this.teams.reduce((total, team) => total + team.users.size, 0),
+        rootPlayers: roots.length,
+        playerChildren: Math.max(0, allPlayers.size - roots.length),
+        activePhaserPlayers: [...allPlayers].filter((player) => player.active).length,
+        missingTextureKeys,
+      }),
+      ...this.getRuntimeTextureDiagnostics(),
+    };
+  }
+
+  getRuntimeTextureDiagnostics() {
+    const rendererType = this.game.renderer.type === Phaser.WEBGL
+      ? "WebGL" as const
+      : this.game.renderer.type === Phaser.CANVAS ? "Canvas" as const : "Unknown" as const;
+    return {
+      noFaceSource: getTextureProbeSource(),
+      noFaceTextureExists: this.scene.textures.exists("noFace"),
+      starTextureExists: this.scene.textures.exists("star"),
+      rendererType,
+    };
+  }
+
+  getWorldScaleDiagnostics() {
+    return {
+      worldHistoryEventCount: WorldHistory.getEventCount(),
+      eraCount: WorldEra.getEras().length,
+      activeFactionCount: this.teams.filter((team) => team.status === "ACTIVE").length,
+      activeCityCount: this.teams.filter((team) => team.status === "ACTIVE")
+        .flatMap((team) => team.cities).filter((city) => !city.destroyed).length,
+      archivedCityCount: ArchivedCities.list().length,
+      activePlayerCount: this.getRuntimeUnitDiagnostics().activePhaserPlayers,
+      rulerCount: this.allDynasties.reduce((count, dynasty) => count + dynasty.rulers.length, 0),
+      rulerChronicleCount: this.allDynasties.reduce(
+        (count, dynasty) => count + dynasty.rulers.filter((ruler) => Boolean(ruler.chronicle)).length,
+        0
+      ),
+    };
   }
 
   scheduleDesktopResumeCatchUp(payload: DesktopResumeAfterSuspend) {
@@ -722,6 +758,8 @@ export default class Core {
       worldInstanceId: this.worldInstanceId,
       runtimeMode: this.runtimeMode,
       runningStateDivergence: reduxWorldRunning !== simulatorRunning || simulatorRunning !== clockRunning,
+      framePerformance: this.runtimePerformance.snapshot(),
+      worldScale: this.getWorldScaleDiagnostics(),
       resumeProbe: probe ? {
         requestedAt: probe.requestedAt,
         elapsedSinceResumeMs,
@@ -1107,6 +1145,10 @@ export default class Core {
   }
 
   update(delta: number) {
+    const rawFrameDelta = delta;
+    const frameStartedAt = this.getRealNow();
+    const initialFixedSteps = this.simulationDiagnostics.fixedSimulationSteps;
+    this.frameFixedStepCpuMs = 0;
     this.coreUpdateDiagnostics.frames += 1;
     this.coreUpdateDiagnostics.lastUpdateRealAt = this.getRealNow();
     this.coreUpdateDiagnostics.lastForegroundDeltaMs = delta;
@@ -1144,6 +1186,14 @@ export default class Core {
     }
     this.updateDesktopRuntimeDiagnostics();
     this.sendDesktopHeartbeatIfNeeded();
+    const frameFinishedAt = this.getRealNow();
+    const fixedStepCpuMs = this.frameFixedStepCpuMs;
+    this.runtimePerformance.record(
+      rawFrameDelta,
+      this.simulationDiagnostics.fixedSimulationSteps - initialFixedSteps,
+      fixedStepCpuMs,
+      Math.max(0, frameFinishedAt - frameStartedAt - fixedStepCpuMs)
+    );
   }
 
   private getRealNow() {
@@ -1209,6 +1259,7 @@ export default class Core {
   }
 
   private advanceLogicalStep(fixedDeltaMs: number): void | "stop-and-discard" {
+    const stepStartedAt = this.getRealNow();
     this.simulationDiagnostics.fixedSimulationSteps += 1;
     this.desktopRuntimeDiagnostics.lastSimulationStepRealAt =
       typeof performance === "undefined" ? Date.now() : performance.now();
@@ -1221,8 +1272,10 @@ export default class Core {
     const clock = this.simulator?.exportState().clock;
     if (clock && this.snapshotBoundaryRequest.reachBoundary(clock.worldMonth, clock.elapsedMs)) {
       this.setWorldRunning(false);
+      this.frameFixedStepCpuMs += this.getRealNow() - stepStartedAt;
       return "stop-and-discard";
     }
+    this.frameFixedStepCpuMs += this.getRealNow() - stepStartedAt;
   }
 
   private advanceArcadePhysicsStep(fixedDeltaMs: number) {
@@ -1253,6 +1306,8 @@ export default class Core {
   }
 
   private resetSimulationDiagnostics() {
+    this.runtimePerformance.reset();
+    this.frameFixedStepCpuMs = 0;
     this.simulationDiagnostics = {
       fixedSimulationSteps: 0,
       physicsSteps: 0,

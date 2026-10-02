@@ -13,6 +13,14 @@ export interface ManualSaveResult {
   record: StoredWorldSaveRecord;
   serializedBytes: number;
   writeDurationMs: number;
+  waitSafeBoundaryMs: number;
+  exportSerializeMs: number;
+  indexedDbWriteMs: number;
+  totalSaveDurationMs: number;
+}
+
+function nowMs() {
+  return typeof performance === "undefined" ? Date.now() : performance.now();
 }
 
 let worldSaveInFlight = false;
@@ -111,19 +119,31 @@ export async function runManualSaveWorkflow(
   if (runtime.catchingUp()) throw new Error("后台追赶期间不能保存世界");
   const wasRunning = runtime.running;
   const selectedSpeed = runtime.speed;
+  const totalStartedAt = nowMs();
+  let waitSafeBoundaryMs = 0;
+  let exportSerializeMs = 0;
   try {
+    const waitStartedAt = nowMs();
     await runtime.pauseAtBoundary();
+    waitSafeBoundaryMs = nowMs() - waitStartedAt;
+    const exportStartedAt = nowMs();
     const save = await exportSave();
     const validation = validateWorldSave(save);
     if (!validation.valid) throw new Error(`存档校验失败：${validation.errors.join("；")}`);
     const record = createStoredWorldSaveRecord(save, scenarioName);
     const serializedBytes = new TextEncoder().encode(JSON.stringify(record)).length;
-    const startedAt = performance.now();
+    exportSerializeMs = nowMs() - exportStartedAt;
+    const startedAt = nowMs();
     await repository.putCurrent(record);
+    const indexedDbWriteMs = nowMs() - startedAt;
     return {
       record,
       serializedBytes,
-      writeDurationMs: performance.now() - startedAt,
+      writeDurationMs: indexedDbWriteMs,
+      waitSafeBoundaryMs,
+      exportSerializeMs,
+      indexedDbWriteMs,
+      totalSaveDurationMs: nowMs() - totalStartedAt,
     };
   } finally {
     runtime.restore(selectedSpeed, wasRunning);

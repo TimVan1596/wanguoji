@@ -20,6 +20,15 @@ describe("desktop renderer launch URL", () => {
       .toBe("http://localhost:5173/?debug=1");
   });
 
+  it("selects the PNG texture probe only through the app-private flag", () => {
+    const options = getDesktopDebugLaunchOptions(["--wanguoji-texture-probe=png"]);
+    expect(options).toMatchObject({ debug: true, textureProbe: "png" });
+    expect(getDesktopRendererUrl("file:///app/index.html", options))
+      .toBe("file:///app/index.html?debug=1&textureProbe=png#/");
+    expect(getDesktopRendererUrl("http://localhost:5173/", options))
+      .toBe("http://localhost:5173/?debug=1&textureProbe=png");
+  });
+
   it("parses only app-private debug and avatar arguments", () => {
     expect(getDesktopDebugLaunchOptions(["--wanguoji-debug"])).toMatchObject({ debug: true });
     expect(getDesktopDebugLaunchOptions(["--debug"])).toMatchObject({ debug: false });
@@ -46,5 +55,8 @@ describe("desktop renderer launch URL", () => {
     }
     expect(packageJson.scripts["desktop:start:debug:plain"]).toContain("--wanguoji-avatar-renderer=plain");
     expect(packageJson.scripts["desktop:dev:debug:plain"]).toContain("--wanguoji-avatar-renderer=plain");
+    expect(packageJson.scripts["desktop:start:debug:png"]).toContain("--wanguoji-texture-probe=png");
+    expect(packageJson.scripts["desktop:start:debug"]).not.toContain("texture-probe");
+    expect(packageJson.scripts["desktop:start"]).not.toContain("texture-probe");
   });
 });

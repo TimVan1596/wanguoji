@@ -6,6 +6,10 @@ export interface WorldSaveStorageDiagnostics {
   lastAction?: string;
   serializedBytes?: number;
   writeDurationMs?: number;
+  waitSafeBoundaryMs?: number;
+  exportSerializeMs?: number;
+  indexedDbWriteMs?: number;
+  totalSaveDurationMs?: number;
   error?: string;
 }
 

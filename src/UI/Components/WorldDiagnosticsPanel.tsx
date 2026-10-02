@@ -136,6 +136,7 @@ export default function WorldDiagnosticsPanel() {
   const snapshotRequest = core?.getSnapshotRequestDiagnostics();
   const desktopRuntime = core?.getRuntimeLivenessDiagnostics();
   const runtimeUnits = core?.getRuntimeUnitDiagnostics();
+  const worldScale = core?.getWorldScaleDiagnostics();
   const desktopAutosave = desktopDiagnostics?.lastAutosaveResult;
 
   const snapshotAndReload = async () => {
@@ -172,6 +173,7 @@ export default function WorldDiagnosticsPanel() {
   };
 
   const runtime = core?.getRuntimeLivenessDiagnostics();
+  const framePerformance = runtime?.framePerformance;
   const hydration = core?.getHydrationDiagnostics();
   const snapshotState = snapshotRequest?.requestState;
   const subsystemSummary = canonicalDiff
@@ -208,17 +210,37 @@ export default function WorldDiagnosticsPanel() {
       lastSuspendDuration: desktopDiagnostics?.lastSuspendDurationMs,
       resumeCatchUp: desktopDiagnostics?.resumeCatchUp,
       suspendPolicy: isDesktopContinuousRuntime() ? readDesktopSuspendPolicy() : undefined,
+      coreFrameCount: framePerformance?.renderFrameCount,
     },
     units: runtimeUnits ? {
       ...runtimeUnits,
       avatarRenderer: getAvatarRendererMode(),
     } : undefined,
+    performance: framePerformance ? {
+      fps: framePerformance.frameDeltaMs.average && framePerformance.frameDeltaMs.average > 0 ? 1000 / framePerformance.frameDeltaMs.average : undefined,
+      averageFrameMs: framePerformance.frameDeltaMs.average,
+      p95FrameMs: framePerformance.frameDeltaMs.p95,
+      maxFrameMs: framePerformance.frameDeltaMs.max,
+      longFrames: framePerformance.longFrames,
+      stepsPerFrame: framePerformance.simulationStepsPerFrame,
+      fixedStepCpuMs: framePerformance.fixedStepCpuMs,
+      presentationCpuMs: framePerformance.presentationCpuMs,
+      renderFrameCount: framePerformance.renderFrameCount,
+      sampleCount: framePerformance.sampleCount,
+    } : undefined,
+    worldScale,
     persistence: {
       saveStatus: storageDiagnostics.status,
       savedAt: storageDiagnostics.savedAt,
       saveMonth: storageDiagnostics.worldMonth,
+      serializedBytes: storageDiagnostics.serializedBytes ?? desktopDiagnostics?.lastAutosaveResult?.serializedBytes,
+      writeDurationMs: storageDiagnostics.writeDurationMs ?? desktopDiagnostics?.lastAutosaveResult?.writeDurationMs,
       storage: storageDiagnostics,
       desktopAutosave: desktopDiagnostics?.lastAutosaveResult,
+      totalSaveDurationMs: storageDiagnostics.totalSaveDurationMs ?? desktopDiagnostics?.lastAutosaveResult?.totalSaveDurationMs,
+      waitSafeBoundaryMs: storageDiagnostics.waitSafeBoundaryMs ?? desktopDiagnostics?.lastAutosaveResult?.waitSafeBoundaryMs,
+      exportSerializeMs: storageDiagnostics.exportSerializeMs ?? desktopDiagnostics?.lastAutosaveResult?.exportSerializeMs,
+      indexedDbWriteMs: storageDiagnostics.indexedDbWriteMs ?? desktopDiagnostics?.lastAutosaveResult?.indexedDbWriteMs,
     },
     hydration: {
       stage: hydration?.lastStage,
@@ -276,6 +298,8 @@ export default function WorldDiagnosticsPanel() {
     ["Hydration", { ...coreReportData.hydration, lastStage: hydration?.lastStage, collider: colliderDiagnostics }],
     ["Runtime Liveness", { runtime, simulationCounters: core?.getSimulationDiagnostics() }],
     ["Runtime Units", coreReportData.units],
+    ["Frame Performance", coreReportData.performance],
+    ["World Scale", coreReportData.worldScale],
     ["Desktop Runtime", { diagnostics: desktopDiagnostics, runtime: desktopRuntime }],
     ["Era diagnostics", {
       currentEra: currentEraReport,
@@ -346,7 +370,7 @@ export default function WorldDiagnosticsPanel() {
         <Button size="small" variant="outlined" disabled={hydrationBusy} sx={{ ml: 0.5, color: "#a5d6a7", borderColor: "#a5d6a7" }} onClick={snapshotAndReload}>
           {hydrationBusy ? "正在重载…" : "内存快照并重载"}
         </Button>
-        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{`Stored save: ${storageDiagnostics.status}\nsavedAt=${storageDiagnostics.savedAt ?? "—"}｜month=${storageDiagnostics.worldMonth ?? "—"}｜schema=${storageDiagnostics.schemaVersion ?? "—"}\nlast action=${storageDiagnostics.lastAction ?? "—"}${storageDiagnostics.serializedBytes === undefined ? "" : `｜JSON bytes=${storageDiagnostics.serializedBytes}｜IDB write=${storageDiagnostics.writeDurationMs?.toFixed(2)}ms`}${storageDiagnostics.error ? `\n${storageDiagnostics.error}` : ""}`}</Typography>
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{`Stored save: ${storageDiagnostics.status}\nsavedAt=${storageDiagnostics.savedAt ?? "—"}｜month=${storageDiagnostics.worldMonth ?? "—"}｜schema=${storageDiagnostics.schemaVersion ?? "—"}\nlast action=${storageDiagnostics.lastAction ?? "—"}${storageDiagnostics.serializedBytes === undefined ? "" : `｜JSON bytes=${storageDiagnostics.serializedBytes}｜IDB write=${storageDiagnostics.indexedDbWriteMs?.toFixed(2) ?? storageDiagnostics.writeDurationMs?.toFixed(2)}ms｜safe wait=${storageDiagnostics.waitSafeBoundaryMs?.toFixed(2)}ms｜export/serialize=${storageDiagnostics.exportSerializeMs?.toFixed(2)}ms｜total=${storageDiagnostics.totalSaveDurationMs?.toFixed(2)}ms`}${storageDiagnostics.error ? `\n${storageDiagnostics.error}` : ""}`}</Typography>
         {snapshotRequest && <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>
           {`snapshot: ${snapshotRequest.status}｜request month ${snapshotRequest.requestMonth ?? "—"}｜reached ${snapshotRequest.boundaryReachedMonth ?? "waiting"}\nstarted while: simulator=${snapshotState?.simulatorRunning ?? "—"}, clock=${snapshotState?.clockRunning ?? "—"}, redux=${snapshotState?.reduxWorldRunning ?? "—"}, scenePaused=${snapshotState?.sceneTimePaused ?? "—"}, physicsPaused=${snapshotState?.physicsPaused ?? "—"}, accumulator=${snapshotState?.simulationAccumulatorMs ?? "—"}, elapsed=${snapshotState?.clockElapsedMs ?? "—"}\nwaiting reason: ${snapshotRequest.waitingReasons?.join(", ") || "none"}\npre-export elapsed=${snapshotRequest.preExportElapsedMs ?? "—"}, accumulator=${snapshotRequest.preExportAccumulatorMs ?? "—"}${snapshotRequest.error ? `\n${snapshotRequest.error}` : ""}`}
         </Typography>}
@@ -373,6 +397,8 @@ export default function WorldDiagnosticsPanel() {
           `DESKTOP VISIBILITY CATCH-UP ERROR: ${runtime.desktopVisibilityCatchUpInvariantViolation}`,
           `worldInstanceId / runtimeMode: ${runtime.worldInstanceId} / ${runtime.runtimeMode}`,
           `Resume probe: ${JSON.stringify(runtime.resumeProbe ?? null)}`,
+          `Frame performance: ${JSON.stringify(runtime.framePerformance)}`,
+          `World scale: ${JSON.stringify(runtime.worldScale)}`,
         ].join("\n")}</Typography>}
       </details>
       {runtimeUnits && <details>
@@ -384,6 +410,9 @@ export default function WorldDiagnosticsPanel() {
           `active Phaser player objects: ${runtimeUnits.activePhaserPlayers}`,
           `avatar renderer: ${getAvatarRendererMode()}`,
           `missing texture keys: ${runtimeUnits.missingTextureKeys.join(", ") || "none"}`,
+          `noFace source / exists: ${runtimeUnits.noFaceSource} / ${runtimeUnits.noFaceTextureExists}`,
+          `star texture exists: ${runtimeUnits.starTextureExists}`,
+          `renderer type: ${runtimeUnits.rendererType}`,
         ].join("\n")}</Typography>
       </details>}
       {isDesktopContinuousRuntime() && <details open>

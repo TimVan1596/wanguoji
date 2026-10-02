@@ -66,7 +66,13 @@ describe("WorldSave workflow", () => {
       "Test",
     );
     if (fail) await expect(work).rejects.toThrow("quota");
-    else await expect(work).resolves.toMatchObject({ record: { summary: { scenarioName: "Test" } } });
+    else await expect(work).resolves.toMatchObject({
+      record: { summary: { scenarioName: "Test" } },
+      waitSafeBoundaryMs: expect.any(Number),
+      exportSerializeMs: expect.any(Number),
+      indexedDbWriteMs: expect.any(Number),
+      totalSaveDurationMs: expect.any(Number),
+    });
     expect(pauseAtBoundary).toHaveBeenCalledOnce();
     expect(restore).toHaveBeenCalledWith(speed, expectedRunning);
   });

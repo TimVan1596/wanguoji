@@ -24,6 +24,10 @@ export default function DesktopLifecycleBridge() {
           worldMonth: result.record.summary.worldMonth,
           serializedBytes: result.serializedBytes,
           writeDurationMs: result.writeDurationMs,
+          waitSafeBoundaryMs: result.waitSafeBoundaryMs,
+          exportSerializeMs: result.exportSerializeMs,
+          indexedDbWriteMs: result.indexedDbWriteMs,
+          totalSaveDurationMs: result.totalSaveDurationMs,
           savedAt: result.record.savedAt,
         };
       }

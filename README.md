@@ -137,7 +137,7 @@ Electron 运行时直接承载当前 React + Phaser frontend，不复制 gamepla
 pnpm desktop:start
 ```
 
-Desktop-first、Web-compatible：Desktop 是 long-run、background 与 persistence 的主要人工验收环境。推荐长局使用 `pnpm desktop:start`；诊断使用 `pnpm desktop:start:debug`，plain avatar A/B 使用 `pnpm desktop:start:debug:plain`。开发使用 `pnpm desktop:dev`，诊断开发使用 `pnpm desktop:dev:debug`（plain A/B：`pnpm desktop:dev:debug:plain`）。Web 继续作为 online demo 与兼容性目标，并未废弃。
+Desktop-first、Web-compatible：Desktop 是 long-run、background 与 persistence 的主要人工验收环境。推荐长局使用 `pnpm desktop:start`；诊断使用 `pnpm desktop:start:debug`，plain avatar A/B 使用 `pnpm desktop:start:debug:plain`，noFace PNG texture probe 使用 `pnpm desktop:start:debug:png`。开发使用 `pnpm desktop:dev`，诊断开发使用 `pnpm desktop:dev:debug`（plain A/B：`pnpm desktop:dev:debug:plain`；PNG probe：`pnpm desktop:dev:debug:png`）。Web 继续作为 online demo 与兼容性目标，并未废弃。
 
 Desktop 模式使用 `DESKTOP_CONTINUOUS`：窗口最小化、失焦或被遮挡时仍持续运行。系统休眠策略默认为 PAUSE（睡眠时间不计入世界时间；唤醒后若休眠前正在运行，则自动暂停并提示用户手动继续，原选中速度保留），也可选择受限 catch-up。Desktop 每 5 个现实分钟自动保存当前存档槽，关闭窗口前也会安全保存。Desktop 与 Web 共用同一份 React + Phaser gameplay，不维护桌面玩法分支。
 
