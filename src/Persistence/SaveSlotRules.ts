@@ -1,6 +1,7 @@
 import { AUTOSAVE_SLOT_IDS, SaveSlotMetadata, StoredWorldSaveRecord, WorldSaveRepository } from "./WorldSaveRepository";
 
 export const AUTOSAVE_INTERVAL_MONTHS = 200 * 12;
+export const MAX_MANUAL_SAVE_NAME_LENGTH = 64;
 
 export function getNextAutosaveBoundary(worldMonth: number) {
   return (Math.floor(Math.max(0, worldMonth) / AUTOSAVE_INTERVAL_MONTHS) + 1) * AUTOSAVE_INTERVAL_MONTHS;
@@ -50,5 +51,6 @@ export function renameManualSave(record: StoredWorldSaveRecord, displayName: str
   if (record.slotType !== "MANUAL") throw new Error("只有手动存档可以重命名");
   const normalizedName = displayName.trim();
   if (!normalizedName) throw new Error("存档名称不能为空");
+  if (normalizedName.length > MAX_MANUAL_SAVE_NAME_LENGTH) throw new Error("存档名称不能超过64个字符");
   return { ...record, displayName: normalizedName };
 }

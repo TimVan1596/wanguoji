@@ -58,6 +58,27 @@ describe("WorldSave workflow", () => {
     expect(startWorld).not.toHaveBeenCalled();
   });
 
+  it("creates a fresh runner for each in-app load request, including A to B to A", () => {
+    const makeRecord = (slotId: string): StoredWorldSaveRecord => {
+      const save = createEmptyWorldSaveV1();
+      return {
+        slotId, savedAt: new Date().toISOString(), appVersion: save.appVersion,
+        saveSchemaVersion: save.saveSchemaVersion, summary: { worldMonth: 0 }, save,
+      };
+    };
+    const hydrated: string[] = [];
+    const actions = { startWorld: vi.fn(), hydrate: (record: StoredWorldSaveRecord) => hydrated.push(record.slotId) };
+    const load = (slotId: string) => createWorldLaunchRunner(
+      { mode: "CONTINUE_SAVE", record: makeRecord(slotId) }, actions
+    );
+
+    expect(load("A")()).toBe(true);
+    expect(load("B")()).toBe(true);
+    expect(load("A")()).toBe(true);
+    expect(hydrated).toEqual(["A", "B", "A"]);
+    expect(actions.startWorld).not.toHaveBeenCalled();
+  });
+
   it("writes a manual slot without overwriting the Recovery current slot", async () => {
     const slots = new Map<string, StoredWorldSaveRecord>();
     const repository: WorldSaveRepository = {

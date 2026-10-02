@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Game from "../Game/Game";
 import { InitialPopulationMap } from "../Simulation/PopulationSystem";
 import { useSelector } from "react-redux";
@@ -26,6 +26,12 @@ import RightSlider from "./Components/RightSlider";
 import WorldDiagnosticsPanel from "./Components/WorldDiagnosticsPanel";
 import SaveManagerDialog from "./Components/SaveManagerDialog";
 import { StoredWorldSaveRecord } from "../Persistence/WorldSaveRepository";
+import {
+  closeSaveManagerSession,
+  pauseForSaveManager,
+  restoreAfterFailedSaveLoad,
+  SaveManagerRuntimeSession,
+} from "../Persistence/SaveManagerRuntimeSession";
 
 interface AppProps {
   launchRequest: WorldLaunchRequest;
@@ -36,24 +42,56 @@ interface AppProps {
 export default function App({ launchRequest, onReturnToMenu, onLoadRecord }: AppProps) {
   const [saving, setSaving] = useState(false);
   const [saveManagerOpen, setSaveManagerOpen] = useState(false);
+  const [activeLaunchRequest, setActiveLaunchRequest] = useState(launchRequest);
+  const saveManagerSession = useRef<SaveManagerRuntimeSession>();
   const worldMonth = useSelector((state: RootState) => state.root.worldMonth);
   const worldStarted = useSelector((state: RootState) => state.root.worldStarted);
   const catchUpActive = useSelector((state: RootState) => state.root.backgroundCatchUpActive);
   const saveSchedule = useMemo(() => new GameYearAutosaveSchedule(
-    launchRequest.mode === "CONTINUE_SAVE" ? launchRequest.record.summary.worldMonth : 0
-  ), [launchRequest]);
+    activeLaunchRequest.mode === "CONTINUE_SAVE" ? activeLaunchRequest.record.summary.worldMonth : 0
+  ), [activeLaunchRequest]);
   const autosaveInFlight = useRef(false);
   const pendingAutosaveBoundary = useRef<number>();
+
+  const openSaveManager = () => {
+    const state = store.getState().root;
+    saveManagerSession.current = state.worldStarted ? pauseForSaveManager(Game.Core) : undefined;
+    setSaveManagerOpen(true);
+  };
+
+  const closeSaveManager = () => {
+    setSaveManagerOpen(false);
+    const session = saveManagerSession.current;
+    if (session?.closeReason === "LOAD") return;
+    saveManagerSession.current = undefined;
+    closeSaveManagerSession(Game.Core, session);
+  };
+
+  const loadSaveFromManager = (record: StoredWorldSaveRecord) => {
+    if (saveManagerSession.current) saveManagerSession.current.closeReason = "LOAD";
+    onLoadRecord(record);
+  };
+
+  const handleLoadFailure = useCallback((safeToResume: boolean) => {
+    if (safeToResume) restoreAfterFailedSaveLoad(Game.Core, saveManagerSession.current);
+    saveManagerSession.current = undefined;
+  }, []);
+
+  const handleLoadSuccess = useCallback((loadedRequest: WorldLaunchRequest) => {
+    setActiveLaunchRequest(loadedRequest);
+    if (saveManagerSession.current?.closeReason === "LOAD") saveManagerSession.current = undefined;
+  }, []);
+
   useEffect(() => registerActiveWorldPersistence({
     isWorldStarted: () => store.getState().root.worldStarted,
     getCore: () => Game.Core,
     save: (core, target) => {
-      const scenario = launchRequest.mode === "NEW_WORLD" ? launchRequest.scenario : undefined;
-      const scenarioId = launchRequest.mode === "CONTINUE_SAVE" ? launchRequest.record.save.scenarioId : scenario?.id;
-      const scenarioName = launchRequest.mode === "CONTINUE_SAVE" ? launchRequest.record.summary.scenarioName : scenario?.name;
+      const scenario = activeLaunchRequest.mode === "NEW_WORLD" ? activeLaunchRequest.scenario : undefined;
+      const scenarioId = activeLaunchRequest.mode === "CONTINUE_SAVE" ? activeLaunchRequest.record.save.scenarioId : scenario?.id;
+      const scenarioName = activeLaunchRequest.mode === "CONTINUE_SAVE" ? activeLaunchRequest.record.summary.scenarioName : scenario?.name;
       return saveCurrentWorldExclusive(core, new IndexedDbWorldSaveRepository(), { scenarioId, scenarioName, ...target });
     },
-  }), [launchRequest]);
+  }), [activeLaunchRequest]);
 
   useEffect(() => {
     if (!worldStarted) return;
@@ -159,7 +197,7 @@ export default function App({ launchRequest, onReturnToMenu, onLoadRecord }: App
   };
   return (
     <>
-      <WorldStarter launchRequest={launchRequest} />
+      <WorldStarter launchRequest={launchRequest} onLoadFailure={handleLoadFailure} onLoadSuccess={handleLoadSuccess} />
       <Result onReturnToMenu={onReturnToMenu}></Result>
       <Config></Config>
       <Box
@@ -196,8 +234,8 @@ export default function App({ launchRequest, onReturnToMenu, onLoadRecord }: App
           <RightSlider
             onReturnToMenu={onReturnToMenu}
             onSave={handleSave}
-            onSaveGame={() => setSaveManagerOpen(true)}
-            onManageSaves={() => setSaveManagerOpen(true)}
+            onSaveGame={openSaveManager}
+            onManageSaves={openSaveManager}
             saving={saving}
           />
         </Box>
@@ -205,24 +243,26 @@ export default function App({ launchRequest, onReturnToMenu, onLoadRecord }: App
       <WorldDiagnosticsPanel />
       <SaveManagerDialog
         open={saveManagerOpen}
-        onClose={() => setSaveManagerOpen(false)}
-        onLoad={onLoadRecord}
+        onClose={closeSaveManager}
+        onLoad={loadSaveFromManager}
         onCreateManual={handleManualSave}
-        defaultName={`${launchRequest.mode === "NEW_WORLD" ? launchRequest.scenario.name : launchRequest.record.summary.scenarioName ?? "万国纪"} · ${formatWorldDate(worldMonth)}`}
+        defaultName={`${activeLaunchRequest.mode === "NEW_WORLD" ? activeLaunchRequest.scenario.name : activeLaunchRequest.record.summary.scenarioName ?? "万国纪"} · ${formatWorldDate(worldMonth)}`}
         title="保存游戏 / 存档管理"
       />
     </>
   );
 }
 
-function WorldStarter({ launchRequest }: { launchRequest: WorldLaunchRequest }) {
+function WorldStarter({ launchRequest, onLoadFailure, onLoadSuccess }: {
+  launchRequest: WorldLaunchRequest;
+  onLoadFailure: (safeToResume: boolean) => void;
+  onLoadSuccess: (request: WorldLaunchRequest) => void;
+}) {
   const teams = useSelector((state: RootState) => state.root.teams);
   const worldStarted = useSelector(
     (state: RootState) => state.root.worldStarted
   );
-  const launchRef = useRef<(() => boolean) | undefined>(undefined);
-  if (!launchRef.current) {
-    launchRef.current = createWorldLaunchRunner(launchRequest, {
+  const launchRunner = useMemo(() => createWorldLaunchRunner(launchRequest, {
       startWorld: (scenario) => {
         const populations: InitialPopulationMap = Object.fromEntries(
           scenario.factions.map((faction) => [
@@ -233,17 +273,19 @@ function WorldStarter({ launchRequest }: { launchRequest: WorldLaunchRequest }) 
         Game.Core.startWorld(populations);
       },
       hydrate: (record) => {
-        void continueStoredWorldSave(Game.Core, record).catch((error) => {
-          console.error("[Wanguoji] Continue hydration failed", error);
-          window.alert(`读取世界失败：${error instanceof Error ? error.message : String(error)}`);
-        });
+        void continueStoredWorldSave(Game.Core, record)
+          .then(() => onLoadSuccess(launchRequest))
+          .catch((error) => {
+            console.error("[Wanguoji] Continue hydration failed", error);
+            const stage = Game.Core.getHydrationStage();
+            onLoadFailure(stage === "IDLE" || stage === "COMPLETE" || stage === "PRECHECK");
+            window.alert(`读取世界失败：${error instanceof Error ? error.message : String(error)}`);
+          });
       },
-    });
-  }
+    }), [launchRequest, onLoadFailure, onLoadSuccess]);
 
   useEffect(() => {
     if (
-      worldStarted ||
       !Game.Core ||
       !Game.Core.simulator ||
       !Game.Core.map ||
@@ -251,8 +293,8 @@ function WorldStarter({ launchRequest }: { launchRequest: WorldLaunchRequest }) 
     ) {
       return;
     }
-    launchRef.current?.();
-  }, [launchRequest, teams, worldStarted]);
+    launchRunner();
+  }, [launchRunner, launchRequest, teams, worldStarted]);
 
   return null;
 }

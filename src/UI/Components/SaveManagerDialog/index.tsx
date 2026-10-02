@@ -53,6 +53,8 @@ export default function SaveManagerDialog({
   const [name, setName] = useState(defaultName);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [editingSlotId, setEditingSlotId] = useState<string>();
+  const [editingName, setEditingName] = useState("");
 
   const refresh = async () => {
     setLoading(true);
@@ -70,6 +72,8 @@ export default function SaveManagerDialog({
     if (open) {
       setName(defaultName);
       setMessage("");
+      setEditingSlotId(undefined);
+      setEditingName("");
       void refresh();
     }
   }, [open, defaultName]);
@@ -109,15 +113,29 @@ export default function SaveManagerDialog({
     }
   };
 
+  const beginRename = (slot: SaveSlotMetadata) => {
+    setEditingSlotId(slot.slotId);
+    setEditingName(slot.displayName ?? "手动存档");
+    setError("");
+  };
+
+  const cancelRename = () => {
+    setEditingSlotId(undefined);
+    setEditingName("");
+  };
+
   const rename = async (slot: SaveSlotMetadata) => {
-    const nextName = window.prompt("重命名手动存档", slot.displayName ?? "手动存档");
-    if (nextName === null) return;
+    if (!editingName.trim()) {
+      setError("存档名称不能为空");
+      return;
+    }
     setBusySlot(slot.slotId);
     try {
       const checked = inspectStoredWorldSave(await repository.get(slot.slotId), slot.slotId);
       if (!checked.valid || !checked.record) throw new Error(checked.errors.join("；") || "存档无效");
-      await repository.put(slot.slotId, renameManualSave(checked.record, nextName));
+      await repository.put(slot.slotId, renameManualSave(checked.record, editingName));
       setMessage("存档名称已更新");
+      cancelRename();
       await refresh();
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : String(reason));
@@ -183,18 +201,34 @@ export default function SaveManagerDialog({
                       <Button size="small" disabled={Boolean(busySlot)} onClick={() => void load(slot.slotId)}>
                         {busySlot === slot.slotId ? "检查中…" : "读取"}
                       </Button>
-                      {slot.slotType === "MANUAL" ? (
-                        <Button size="small" disabled={Boolean(busySlot)} onClick={() => void rename(slot)}>重命名</Button>
+                      {slot.slotType === "MANUAL" && editingSlotId !== slot.slotId ? (
+                        <Button size="small" disabled={Boolean(busySlot)} onClick={() => beginRename(slot)}>重命名</Button>
                       ) : null}
                       <Button size="small" color="error" disabled={Boolean(busySlot)} onClick={() => void remove(slot)}>删除</Button>
                     </Box>
                   )}
                 >
-                  <ListItemText
-                    primary={slot.displayName ?? (slot.slotType === "RECOVERY" ? "最近恢复点" : slot.slotId)}
-                    secondary={`${slot.worldYearLabel ?? formatWorldDate(slot.worldMonth)}${slot.currentEraName ? ` · ${slot.currentEraName}` : ""} · ${slot.scenarioName ?? "世界"} · ${new Date(slot.savedAt).toLocaleString()} · ${slot.appVersion}`}
-                    secondaryTypographyProps={{ sx: { pr: 20 } }}
-                  />
+                  {editingSlotId === slot.slotId ? (
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, pr: 20, width: "100%" }}>
+                      <TextField
+                        autoFocus
+                        fullWidth
+                        size="small"
+                        label="存档名称"
+                        value={editingName}
+                        onChange={(event) => setEditingName(event.target.value)}
+                        inputProps={{ maxLength: 64, "aria-label": `重命名 ${slot.displayName ?? slot.slotId}` }}
+                      />
+                      <Button size="small" disabled={!editingName.trim() || Boolean(busySlot)} onClick={() => void rename(slot)}>保存</Button>
+                      <Button size="small" disabled={Boolean(busySlot)} onClick={cancelRename}>取消</Button>
+                    </Box>
+                  ) : (
+                    <ListItemText
+                      primary={slot.displayName ?? (slot.slotType === "RECOVERY" ? "最近恢复点" : slot.slotId)}
+                      secondary={`${slot.worldYearLabel ?? formatWorldDate(slot.worldMonth)}${slot.currentEraName ? ` · ${slot.currentEraName}` : ""} · ${slot.scenarioName ?? "世界"} · ${new Date(slot.savedAt).toLocaleString()} · ${slot.appVersion}`}
+                      secondaryTypographyProps={{ sx: { pr: 20 } }}
+                    />
+                  )}
                 </ListItem>
               ))}
             </List>

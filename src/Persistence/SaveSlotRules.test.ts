@@ -56,5 +56,7 @@ describe("save slot rules", () => {
     expect(renamed.displayName).toBe("B");
     expect(renamed.save).toBe(manual.save);
     expect(() => renameManualSave({ ...manual, slotType: "AUTOSAVE", slotId: "autosave-1" } as StoredWorldSaveRecord, "x")).toThrow();
+    expect(() => renameManualSave(manual, " ")).toThrow("存档名称不能为空");
+    expect(() => renameManualSave(manual, "x".repeat(65))).toThrow("64个字符");
   });
 });

@@ -711,6 +711,10 @@ export default class Core {
     this.lastHydrationStage = stage;
   }
 
+  getHydrationStage() {
+    return this.lastHydrationStage;
+  }
+
   getColliderTeardownDiagnostics() {
     return { ...this.colliderTeardownDiagnostics };
   }

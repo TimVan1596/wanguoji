@@ -29,9 +29,9 @@ export default function WorldLaunchPage() {
 
   const continueSave = (record: StoredWorldSaveRecord) => {
     dispatch(clearScenario());
-    dispatch(resetWorldState());
-    WorldHistory.reset();
-    WorldEra.reset();
+    // Hydration performs its own full preflight before tearing down the live world.
+    // Do not clear Redux/history first: an incompatible save must leave the current
+    // simulation intact.
     setRequest({ mode: "CONTINUE_SAVE", record });
   };
 
