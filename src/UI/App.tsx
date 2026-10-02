@@ -115,8 +115,8 @@ export default function App({ launchRequest, onReturnToMenu, onLoadRecord }: App
         totalSaveDurationMs: result.totalSaveDurationMs,
       });
       const date = formatWorldDate(result.record.summary.worldMonth);
-      Game.Core.toast?.showMessage(`已保存 · ${date}`);
-      return `已保存 · ${date}`;
+      Game.Core.toast?.showMessage(`恢复档已更新 · ${date}`);
+      return `恢复档已更新 · ${date}`;
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       setWorldSaveStorageDiagnostics({ status: "error", lastAction: "保存失败", error: message });
@@ -129,11 +129,30 @@ export default function App({ launchRequest, onReturnToMenu, onLoadRecord }: App
     const trimmedName = displayName.trim();
     if (!trimmedName) throw new Error("存档名称不能为空");
     setSaving(true);
+    setWorldSaveStorageDiagnostics({ status: "unknown", lastAction: "正在创建手动存档" });
     try {
       const result = await saveActiveWorld({ slotType: "MANUAL", displayName: trimmedName, waitForBusy: true });
       if (result.status !== "SAVED") throw new Error(("error" in result ? result.error : undefined) ?? `无法保存：${result.reason}`);
-      const date = formatWorldDate(result.result.record.summary.worldMonth);
+      const saved = result.result;
+      const date = formatWorldDate(saved.record.summary.worldMonth);
+      setWorldSaveStorageDiagnostics({
+        status: "present",
+        savedAt: saved.record.savedAt,
+        worldMonth: saved.record.summary.worldMonth,
+        schemaVersion: saved.record.saveSchemaVersion,
+        lastAction: `手动存档：${trimmedName}`,
+        serializedBytes: saved.serializedBytes,
+        writeDurationMs: saved.writeDurationMs,
+        waitSafeBoundaryMs: saved.waitSafeBoundaryMs,
+        exportSerializeMs: saved.exportSerializeMs,
+        indexedDbWriteMs: saved.indexedDbWriteMs,
+        totalSaveDurationMs: saved.totalSaveDurationMs,
+      });
       Game.Core?.toast?.showMessage(`手动存档已保存 · ${date}`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      setWorldSaveStorageDiagnostics({ status: "error", lastAction: "手动存档失败", error: message });
+      throw error;
     } finally {
       setSaving(false);
     }

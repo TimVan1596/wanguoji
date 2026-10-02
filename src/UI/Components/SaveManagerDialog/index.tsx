@@ -192,7 +192,7 @@ export default function SaveManagerDialog({
                 >
                   <ListItemText
                     primary={slot.displayName ?? (slot.slotType === "RECOVERY" ? "最近恢复点" : slot.slotId)}
-                    secondary={`${formatWorldDate(slot.worldMonth)} · ${slot.scenarioName ?? "世界"} · ${new Date(slot.savedAt).toLocaleString()} · ${slot.appVersion}`}
+                    secondary={`${slot.worldYearLabel ?? formatWorldDate(slot.worldMonth)}${slot.currentEraName ? ` · ${slot.currentEraName}` : ""} · ${slot.scenarioName ?? "世界"} · ${new Date(slot.savedAt).toLocaleString()} · ${slot.appVersion}`}
                     secondaryTypographyProps={{ sx: { pr: 20 } }}
                   />
                 </ListItem>

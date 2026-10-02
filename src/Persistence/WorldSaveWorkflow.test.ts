@@ -4,15 +4,20 @@ import { runManualSaveWorkflow, createWorldLaunchRunner, continueStoredWorldSave
 import { createStoredWorldSaveRecord, WorldSaveRepository, StoredWorldSaveRecord } from "./WorldSaveRepository";
 
 function memoryRepository(): WorldSaveRepository & { current?: StoredWorldSaveRecord } {
+  const slots = new Map<string, StoredWorldSaveRecord>();
   return {
-    current: undefined,
-    async get(slotId: string) { return slotId === "current" ? this.current : undefined; },
-    async put(slotId: string, record: StoredWorldSaveRecord) { if (slotId === "current") this.current = record; },
-    async delete(slotId: string) { if (slotId === "current") this.current = undefined; },
-    async listMetadata() { return this.current ? [{ slotId: "current", slotType: "RECOVERY" as const, savedAt: this.current.savedAt, worldMonth: this.current.summary.worldMonth, appVersion: this.current.appVersion, saveSchemaVersion: this.current.saveSchemaVersion }] : []; },
-    async getCurrent() { return this.current; },
-    async putCurrent(record) { this.current = record; },
-    async deleteCurrent() { this.current = undefined; },
+    get current() { return slots.get("current"); },
+    set current(value: StoredWorldSaveRecord | undefined) { if (value) slots.set("current", value); else slots.delete("current"); },
+    async get(slotId: string) { return slots.get(slotId); },
+    async put(slotId: string, record: StoredWorldSaveRecord) { slots.set(slotId, record); },
+    async delete(slotId: string) { slots.delete(slotId); },
+    async listMetadata() { return [...slots.values()].map((record) => ({
+      slotId: record.slotId, slotType: record.slotType ?? "RECOVERY" as const, savedAt: record.savedAt,
+      worldMonth: record.summary.worldMonth, appVersion: record.appVersion, saveSchemaVersion: record.saveSchemaVersion,
+    })); },
+    async getCurrent() { return slots.get("current"); },
+    async putCurrent(record) { slots.set("current", record); },
+    async deleteCurrent() { slots.delete("current"); },
   };
 }
 
@@ -79,6 +84,29 @@ describe("WorldSave workflow", () => {
     expect(slots.get(manual.record.slotId)).toEqual(manual.record);
   });
 
+  it("writes an autosave slot without replacing manual or Recovery saves", async () => {
+    const repository = memoryRepository();
+    const recovery = createStoredWorldSaveRecord(createEmptyWorldSaveV1(), "Recovery");
+    const manual = createStoredWorldSaveRecord(createEmptyWorldSaveV1(), "Manual", undefined, {
+      slotId: "manual-uuid", slotType: "MANUAL", displayName: "Keep this",
+    });
+    await repository.putCurrent(recovery);
+    await repository.put(manual.slotId, manual);
+    const save = createEmptyWorldSaveV1();
+    save.world.started = true;
+    const result = await runManualSaveWorkflow(
+      { started: true, running: false, speed: 1, catchingUp: () => false, pauseAtBoundary: async () => undefined, restore: () => undefined },
+      repository,
+      () => save,
+      "Scenario",
+      { slotId: "autosave-1", slotType: "AUTOSAVE", displayName: "自动存档 · 200年" },
+    );
+    expect(result.record.slotType).toBe("AUTOSAVE");
+    expect(await repository.get("current")).toEqual(recovery);
+    expect(await repository.get("manual-uuid")).toEqual(manual);
+    expect(await repository.get("autosave-1")).toEqual(result.record);
+  });
+
   it.each([
     { running: true, speed: 4, fail: false, expectedRunning: true },
     { running: false, speed: 2, fail: false, expectedRunning: false },
@@ -103,6 +131,7 @@ describe("WorldSave workflow", () => {
       indexedDbWriteMs: expect.any(Number),
       totalSaveDurationMs: expect.any(Number),
     });
+    if (!fail) expect(repository.current).toMatchObject({ slotId: "current", slotType: "RECOVERY" });
     expect(pauseAtBoundary).toHaveBeenCalledOnce();
     expect(restore).toHaveBeenCalledWith(speed, expectedRunning);
   });

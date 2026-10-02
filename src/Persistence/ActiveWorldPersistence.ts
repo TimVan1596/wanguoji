@@ -82,7 +82,10 @@ export async function saveActiveWorld(options: { waitForBusy?: boolean; timeoutM
     if (!core) return { status: "FAILED", reason: "RUNTIME_UNAVAILABLE" };
     try {
       const { waitForBusy: _waitForBusy, timeoutMs: _timeoutMs, ...target } = options;
-      return { status: "SAVED", result: await current.save(core, target) };
+      const save = Object.values(target).some((value) => value !== undefined)
+        ? current.save(core, target)
+        : current.save(core);
+      return { status: "SAVED", result: await save };
     } catch (error) {
       if (error instanceof WorldSaveBusyError && options.waitForBusy && Date.now() < deadline) continue;
       const reason = error instanceof WorldSaveBusyError ? "SAVE_BUSY" : "SAVE_FAILED";

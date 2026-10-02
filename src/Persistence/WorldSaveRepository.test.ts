@@ -182,4 +182,19 @@ describe("multi-slot save repository", () => {
     expect(validateStoredWorldSaveRecord(legacy).record?.slotType).toBe("RECOVERY");
     expect(validateStoredWorldSaveRecord({ ...legacy, slotId: "manual-x", slotType: "RECOVERY" }).valid).toBe(false);
   });
+
+  it("supports manual create, rename, delete, and metadata-only listing", async () => {
+    const repository = new MemoryRepository();
+    const record = createStoredWorldSaveRecord(startedSave(), "Scenario", "2026-01-01T00:00:00.000Z", {
+      slotId: "manual-uuid-a", slotType: "MANUAL", displayName: "档案A",
+    });
+    await repository.put(record.slotId, record);
+    expect(await repository.listMetadata()).toEqual([expect.objectContaining({ slotId: record.slotId, displayName: "档案A", slotType: "MANUAL" })]);
+    const renamed = { ...record, displayName: "档案B" };
+    await repository.put(record.slotId, renamed);
+    expect(await repository.get(record.slotId)).toEqual(renamed);
+    await repository.delete(record.slotId);
+    expect(await repository.get(record.slotId)).toBeUndefined();
+    expect(await repository.listMetadata()).toEqual([]);
+  });
 });
