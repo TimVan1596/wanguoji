@@ -20,27 +20,21 @@ import { RootState } from "../../../store";
 import { ConfigState } from "../../../store/configSlice";
 import { DesktopSuspendPolicy, DESKTOP_SUSPEND_POLICY_LABELS, readDesktopSuspendPolicy, writeDesktopSuspendPolicy } from "../../../Runtime/DesktopSuspendPolicy";
 
-const Config: FC = () => {
-  const [open, setOpen] = useState(false);
+interface ConfigProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+const Config: FC<ConfigProps> = ({ open, onClose }) => {
   const [suspendPolicy, setSuspendPolicy] = useState<DesktopSuspendPolicy>(readDesktopSuspendPolicy);
   const config = useSelector((state: RootState) => state.config);
   const localConfigString =
     localStorage.getItem(`${config.liveId}_${config.theme}`) ?? "{}";
   const localConfig: Partial<ConfigState> = JSON.parse(localConfigString);
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === " ") {
-      setOpen(true);
-    }
-  };
-
   useEffect(() => {
-    // 按下空格键打开设置
-    //@ts-ignore
-    document.removeEventListener("keydown", handleKeyDown);
-    //@ts-ignore
-    document.addEventListener("keydown", handleKeyDown);
-  }, []);
+    if (open) setSuspendPolicy(readDesktopSuspendPolicy());
+  }, [open]);
 
   const save = () => {
     localStorage.setItem(
@@ -59,9 +53,6 @@ const Config: FC = () => {
     localStorage.removeItem(`${config.liveId}_${config.theme}`);
   };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
   return (
     <Dialog
       sx={{
@@ -69,7 +60,7 @@ const Config: FC = () => {
       }}
       open={open}
       fullWidth
-      onClose={handleClose}
+      onClose={onClose}
     >
       <DialogTitle>设置</DialogTitle>
       <DialogContent>
@@ -118,7 +109,7 @@ const Config: FC = () => {
           清除本地配置
         </Button>
         <Button onClick={resetConfig}>重置</Button>
-        <Button onClick={handleClose}>关闭</Button>
+        <Button onClick={onClose}>关闭</Button>
       </DialogActions>
     </Dialog>
   );

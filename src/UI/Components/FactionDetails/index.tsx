@@ -51,6 +51,7 @@ import {
 } from "../../../Politics/RulerChronicle";
 import { deriveRulerAssessment } from "../../../Politics/RulerHistoriography";
 import { deriveRulerTenureEvidence } from "../../../Politics/RulerTenureEvidence";
+import { getLivingHeirs } from "../../../Politics/RulerPresentationRules";
 import {
   formatPosthumousRulerName,
   getNotablePosthumousRulers,
@@ -628,19 +629,35 @@ function DynastyTree({
   selectedRulerId?: string;
   onSelectedRulerIdChange: (id: string | undefined) => void;
 }) {
-  if (rulers.length === 0) {
+  const livingHeirs = getLivingHeirs(rulers);
+  const formalRulers = rulers.filter(isFormalRuler);
+  if (formalRulers.length === 0 && livingHeirs.length === 0) {
     return (
       <Typography fontSize="0.9rem" color="var(--gg-text-muted)">
         暂无王室记录。
       </Typography>
     );
   }
-  const orderedRulers = [...rulers].sort((a, b) => {
-    const rank = (ruler: Ruler) => ruler.id === currentRulerId ? 0 : ruler.status === "heir" ? 1 : ruler.endYear !== undefined ? 2 : 3;
+  const orderedRulers = [...formalRulers].sort((a, b) => {
+    const rank = (ruler: Ruler) => ruler.id === currentRulerId ? 0 : 1;
     return rank(a) - rank(b) || (b.accessionYear ?? -1) - (a.accessionYear ?? -1);
   });
   return (
     <Box sx={{ display: "grid", gap: 1 }}>
+      {livingHeirs.length ? (
+        <Box sx={{ p: 0.8, border: "1px solid var(--gg-border)", borderRadius: "var(--gg-radius)", background: "var(--gg-panel)" }}>
+          <Typography fontWeight="bold" fontSize="0.86rem">储嗣</Typography>
+          {livingHeirs.map((heir) => (
+            <Typography key={heir.id} fontSize="0.84rem">
+              {formatRulerName(heir)} · {Math.floor(monthsToYears(worldMonth - heir.bornYear))}岁
+              {heir.politicalStartYear !== undefined
+                ? ` · 立储${formatWorldDuration(Math.max(0, worldMonth - heir.politicalStartYear))}`
+                : ""}
+            </Typography>
+          ))}
+        </Box>
+      ) : null}
+      <Typography fontWeight="bold" fontSize="0.9rem">历代君主</Typography>
       <Box sx={{ display: "grid", gap: 0.5 }}>
         {orderedRulers.map((ruler, index) => {
           const current = ruler.id === currentRulerId;
@@ -671,7 +688,7 @@ function DynastyTree({
                 <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
                   {formatRulerListSubtitle(ruler, worldMonth, factionStatus, events, team.name)}
                 </Typography>
-                {isFormalRuler(ruler) ? (
+                <>
                   <Box sx={{ display: "flex", gap: 0.35, flexWrap: "wrap", mt: 0.25 }}>
                     {getRulerImportantLabels(ruler).slice(0, 2).map((label) => (
                       <Box
@@ -693,20 +710,11 @@ function DynastyTree({
                       </Box>
                     ))}
                   </Box>
-                ) : null}
+                </>
               </Box>
               {expanded ? (
                 <Box sx={{ mt: 0.65 }}>
-                  {isFormalRuler(ruler) ? (
-                    <RulerBiography ruler={ruler} rulers={rulers} worldMonth={worldMonth} team={team} events={events} factionById={factionById} />
-                  ) : (
-                    <HeirArchive
-                      ruler={ruler}
-                      rulers={rulers}
-                      worldMonth={worldMonth}
-                      factionStatus={factionStatus}
-                    />
-                  )}
+                  <RulerBiography ruler={ruler as FormalRuler} rulers={rulers} worldMonth={worldMonth} team={team} events={events} factionById={factionById} />
                 </Box>
               ) : null}
             </Box>
@@ -754,6 +762,11 @@ function RulerBiography({
     ruler.chronicle.notableEventIds,
     showAllEvents ? 1000 : 6
   );
+  const heirDeathEvents = events.filter((event) =>
+    event.type === "heir-died" && event.metadata?.parentRulerId === ruler.id
+  ).sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year));
+  const heirDeathIds = new Set(heirDeathEvents.map((event) => event.id));
+  const rulerEvents = historicalEvents.filter((event) => !heirDeathIds.has(event.id));
   const start = ruler.chronicle.accessionSnapshot;
   const end = ruler.chronicle.endSnapshot ?? ruler.chronicle.latestSnapshot ?? start;
   const territoryDelta = getRulerTerritoryDelta(ruler.chronicle);
@@ -789,6 +802,16 @@ function RulerBiography({
       <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
         继承关系：{formatRulerRelation(ruler.relationType, team.identityStage, Boolean(parent))}
       </Typography>
+      {heirDeathEvents.length ? (
+        <Box sx={{ mt: 0.55 }}>
+          <Typography fontWeight="bold" fontSize="0.82rem">储嗣</Typography>
+          {heirDeathEvents.map((event) => (
+            <Typography key={event.id} fontSize="0.82rem">
+              {stringMetadata(event.metadata?.heirName)} · {event.metadata?.age ?? "—"}岁 · {formatWorldDate(event.monthIndex ?? event.year)}先于父君{event.metadata?.reason === "combat" ? "战死" : event.metadata?.reason === "captured" ? "被俘处死" : "去世"}
+            </Typography>
+          ))}
+        </Box>
+      ) : null}
       <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
         世系：{formatRulerLineage(
           ruler.relationType,
@@ -853,7 +876,7 @@ function RulerBiography({
       <Typography fontWeight="bold" fontSize="0.86rem" sx={{ mt: 0.75 }}>
         大事记
       </Typography>
-      {historicalEvents.length > 0 ? historicalEvents.map((event) => (
+      {rulerEvents.length > 0 ? rulerEvents.map((event) => (
         <Typography key={event.id} fontSize="0.82rem">
           {formatWorldDate(event.monthIndex ?? event.year)} ◆ {formatFactionHistoryEvent(event, team.name, factionById) ?? formatHistoryEventTitle(event, factionById)}
         </Typography>
@@ -862,7 +885,7 @@ function RulerBiography({
           暂无已关联的重大历史事件。
         </Typography>
       )}
-      {historicalEvents.length >= 6 ? <Button size="small" onClick={() => setShowAllEvents((value) => !value)} sx={{ px: 0, minWidth: 0 }}>{showAllEvents ? "收起" : "查看全部"}</Button> : null}
+      {rulerEvents.length >= 6 ? <Button size="small" onClick={() => setShowAllEvents((value) => !value)} sx={{ px: 0, minWidth: 0 }}>{showAllEvents ? "收起" : "查看全部"}</Button> : null}
       <Typography fontWeight="bold" fontSize="0.86rem" sx={{ mt: 0.75 }}>
         {assessment.heading}
       </Typography>
@@ -889,59 +912,8 @@ function isFormalRuler(ruler: Ruler): ruler is FormalRuler {
   );
 }
 
-function HeirArchive({
-  ruler,
-  rulers,
-  worldMonth,
-  factionStatus,
-}: {
-  ruler: Ruler;
-  rulers: Ruler[];
-  worldMonth: number;
-  factionStatus: RootState["root"]["teams"][number]["status"];
-}) {
-  const start = ruler.politicalStartYear;
-  const end = ruler.politicalEndYear;
-  const ageEnd = end ?? worldMonth;
-  const parent = ruler.parentId ? rulers.find((candidate) => candidate.id === ruler.parentId) : undefined;
-  const parentEnd = parent?.endYear ?? worldMonth;
-  const predeceasedParent = end !== undefined && parent && end < parentEnd;
-  return (
-    <Box
-      sx={{
-        border: "1px solid var(--gg-border)",
-        borderRadius: "var(--gg-radius)",
-        p: 1,
-        background: "var(--gg-panel)",
-      }}
-    >
-      <Typography fontWeight="bold">{formatRulerName(ruler)}</Typography>
-      <Typography fontSize="0.85rem" color="var(--gg-text-muted)">
-        {ruler.houseName} ·{" "}
-        {start !== undefined ? formatWorldDate(start) : "—"}～
-        {end !== undefined ? formatWorldDate(end) : "今"} ·{" "}
-        {ruler.endReason ?? formatRulerStatus(ruler.status, factionStatus)}
-      </Typography>
-      <Typography fontSize="0.85rem">
-        年龄：{Math.floor(monthsToYears(ageEnd - ruler.bornYear))} 岁
-      </Typography>
-      <Typography fontSize="0.82rem">
-        父：{parent ? formatRulerName(parent) : "未记录"}
-      </Typography>
-      <Typography fontSize="0.82rem">
-        继承关系：{formatRulerRelation(ruler.relationType, factionStatus === "EXILED" ? "PROVISIONAL" : "STATE", Boolean(parent))}
-      </Typography>
-      <Typography fontSize="0.82rem">
-        立为继承人：{start !== undefined ? formatWorldDate(start) : "未记录"} · 作为继承人：{formatWorldDuration(Math.max(0, ageEnd - (start ?? ageEnd)))}
-      </Typography>
-      {predeceasedParent ? (
-        <Typography fontSize="0.82rem">结局：先于父君去世</Typography>
-      ) : null}
-      <Typography fontSize="0.82rem" color="var(--gg-text-muted)" sx={{ mt: 0.75 }}>
-        未正式即位，未形成君主在位纪年、国势变化或史评。
-      </Typography>
-    </Box>
-  );
+function stringMetadata(value: string | number | undefined) {
+  return typeof value === "string" ? value : "储君";
 }
 
 function formatRulerStatus(

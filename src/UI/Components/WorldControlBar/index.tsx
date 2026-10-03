@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Menu, MenuItem, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Divider, Menu, MenuItem, Typography } from "@mui/material";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { SIMULATION_SPEEDS } from "../../../config/simulation";
@@ -10,12 +10,14 @@ export default function WorldControlBar({
   onSave,
   onSaveGame,
   onManageSaves,
+  onSettings,
   saving,
 }: {
   onReturnToMenu: () => void;
   onSave: () => Promise<string>;
   onSaveGame: () => void;
   onManageSaves: () => void;
+  onSettings: () => void;
   saving: boolean;
 }) {
   const worldRunning = useSelector(
@@ -112,6 +114,9 @@ export default function WorldControlBar({
         </MenuItem>
         <MenuItem disabled={saving || catchUpActive} onClick={onSaveGame}>保存游戏…</MenuItem>
         <MenuItem disabled={saving} onClick={onManageSaves}>存档管理</MenuItem>
+        <Divider />
+        <MenuItem disabled={saving} onClick={() => { setMenuAnchor(null); onSettings(); }}>设置</MenuItem>
+        <Divider />
         <MenuItem disabled={saving} onClick={handleReturnToMenu}>新世界 / 返回主菜单</MenuItem>
       </Menu>
       {saveMessage ? (

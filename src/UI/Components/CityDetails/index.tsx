@@ -11,6 +11,8 @@ import {
   getVisibleCities,
 } from "../../../Simulation/CityListRules";
 import { formatWorldDate } from "../../../Simulation/WorldTime";
+import DynastyRegistry from "../../../Politics/Dynasty";
+import { formatCityHistoryEvent, getCityHistoricalFactionName } from "../../../History/CityHistoryFormatter";
 import { RootState } from "../../../store";
 import { setSelectedCityId } from "../../../store/rootSlice";
 
@@ -60,6 +62,8 @@ export default function CityDetails() {
   const owner = city.ownerTeam;
   const founder = city.founderTeam;
   const attacker = teams.find((team) => team.name === city.attackingFactionId);
+  const factionById = new Map(teams.map((team) => [team.name, team]));
+  const founderAtFounding = getCityHistoricalFactionName(factionById, city.founderFactionId, city.foundedYear);
 
   return (
     <Box sx={{ p: 1, borderTop: "1px solid #00000022" }}>
@@ -76,7 +80,8 @@ export default function CityDetails() {
       </Typography>
       <Typography fontSize="0.9rem">
         原始归属：
-        <FactionName name={founder?.displayName ?? city.founderFactionId} color={founder?.color} />
+        <FactionName name={founderAtFounding || city.founderFactionId} color={founder?.color} />
+        {founder && founderAtFounding !== founder.displayName ? `（后为${founder.displayName}）` : ""}
       </Typography>
       <Typography fontSize="0.9rem">
         城市身份：{city.isCapital ? "首都" : "普通城市"}
@@ -120,7 +125,14 @@ export default function CityDetails() {
           .sort((a, b) => b.year - a.year)
           .map((event, index) => (
             <Typography key={`${event.year}-${event.type}-${index}`} fontSize="0.85rem">
-              {formatWorldDate(event.year)} {event.title}
+              {formatWorldDate(event.year)} {formatCityHistoryEvent(
+                event,
+                { name: city.name, founderFactionId: city.founderFactionId, foundedMonth: city.foundedYear },
+                factionById,
+                event.rulerId && event.newOwnerFactionId
+                  ? DynastyRegistry.getRulerHistoricalTitle(event.rulerId, event.newOwnerFactionId, event.year)
+                  : undefined
+              )}
             </Typography>
           ))}
       </Box>

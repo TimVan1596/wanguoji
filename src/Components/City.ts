@@ -193,12 +193,15 @@ export default class City {
     this.lastRepairYear = foundedYear;
     this.lastLoyaltyYear = foundedYear;
     this.lastDevastationRecoveryYear = foundedYear;
-    this.addHistory(foundedYear, "founded", `${founderFactionId}建立${name}`);
+    this.addHistory(foundedYear, "founded", `${founderFactionId}建立${name}`, {
+      newOwnerFactionId: founderFactionId,
+    });
     if (isCapital) {
       this.addHistory(
         foundedYear,
         "capital-started",
-        `${founderFactionId}定都${name}`
+        `${founderFactionId}定都${name}`,
+        { newOwnerFactionId: founderFactionId, wasCapital: true }
       );
     }
     this.ownerTeam?.addCity(this);
@@ -421,7 +424,11 @@ export default class City {
     this.rebuildFortifiedZone();
     this.claimFortifiedZone(newOwner);
     this.refreshZoneVisual();
-    this.addHistory(year, "recovered", `${this.name}起义并归附${newOwner.name}`);
+    this.addHistory(year, "recovered", `${this.name}起义并归附${newOwner.name}`, {
+      previousOwnerFactionId: oldOwner.name,
+      newOwnerFactionId: newOwner.name,
+      wasCapital,
+    });
     WorldHistory.addCityRevolt(
       year,
       this.name,
@@ -485,10 +492,16 @@ export default class City {
     this.maxDefense = this.calculateMaxDefense();
     if (!isCapital && this.defense > this.maxDefense) {
       this.defense = this.maxDefense;
-      this.addHistory(year, "capital-lost", `${this.name}失去首都身份`);
+      this.addHistory(year, "capital-lost", `${this.name}失去首都身份`, {
+        previousOwnerFactionId: this.ownerFactionId,
+        wasCapital: true,
+      });
     }
     if (isCapital) {
-      this.addHistory(year, "capital-relocated", `${this.ownerFactionId}迁都${this.name}`);
+      this.addHistory(year, "capital-relocated", `${this.ownerFactionId}迁都${this.name}`, {
+        newOwnerFactionId: this.ownerFactionId,
+        wasCapital: true,
+      });
     }
     this.block.updateCityDisplay();
     this.refreshZoneVisual();

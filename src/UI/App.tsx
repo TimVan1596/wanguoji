@@ -41,6 +41,7 @@ interface AppProps {
 
 export default function App({ launchRequest, onReturnToMenu, onLoadRecord }: AppProps) {
   const [saving, setSaving] = useState(false);
+  const [configOpen, setConfigOpen] = useState(false);
   const [saveManagerOpen, setSaveManagerOpen] = useState(false);
   const [activeLaunchRequest, setActiveLaunchRequest] = useState(launchRequest);
   const saveManagerSession = useRef<SaveManagerRuntimeSession>();
@@ -199,7 +200,7 @@ export default function App({ launchRequest, onReturnToMenu, onLoadRecord }: App
     <>
       <WorldStarter launchRequest={launchRequest} onLoadFailure={handleLoadFailure} onLoadSuccess={handleLoadSuccess} />
       <Result onReturnToMenu={onReturnToMenu}></Result>
-      <Config></Config>
+      <Config open={configOpen} onClose={() => setConfigOpen(false)} />
       <Box
         sx={{
           boxSizing: "border-box",
@@ -236,6 +237,7 @@ export default function App({ launchRequest, onReturnToMenu, onLoadRecord }: App
             onSave={handleSave}
             onSaveGame={openSaveManager}
             onManageSaves={openSaveManager}
+            onSettings={() => setConfigOpen(true)}
             saving={saving}
           />
         </Box>

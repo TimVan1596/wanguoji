@@ -8,6 +8,7 @@ function faction(name: string, status: string, territory: number) {
   return {
     name,
     status,
+    stateFoundedMonth: name === "秦" ? 0 : undefined,
     blocks: {
       children: {
         size: territory,
@@ -27,7 +28,7 @@ describe("faction ranking rules", () => {
     expect(ranked.map((item) => item.name)).toEqual(["楚", "秦"]);
   });
 
-  it("counts active, exiled, and extinct factions for the summary", () => {
+  it("counts only founded states as nations and active unfounded factions as provisional", () => {
     expect(
       getFactionStatusSummary([
         faction("秦", "ACTIVE", 5),
@@ -35,6 +36,16 @@ describe("faction ranking rules", () => {
         faction("韩", "EXTINCT", 0),
         faction("楚", "ACTIVE", 12),
       ])
-    ).toEqual({ active: 2, exiled: 1, extinct: 1 });
+    ).toEqual({ active: 1, exiled: 0, extinct: 0, provisionalActive: 1 });
+  });
+
+  it("counts founded rebel factions as states and omits extinct provisional factions", () => {
+    expect(getFactionStatusSummary([
+      { status: "ACTIVE", stateFoundedMonth: 10 },
+      { status: "EXILED", stateFoundedMonth: 20 },
+      { status: "EXTINCT", stateFoundedMonth: 30 },
+      { status: "ACTIVE" },
+      { status: "EXTINCT" },
+    ])).toEqual({ active: 1, exiled: 1, extinct: 1, provisionalActive: 1 });
   });
 });

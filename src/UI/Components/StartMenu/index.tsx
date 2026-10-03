@@ -27,6 +27,7 @@ import { findLatestValidSave } from "../../../Persistence/SaveSlotRules";
 import { setWorldSaveStorageDiagnostics } from "../../../Persistence/WorldSaveDiagnostics";
 import { formatWorldDate } from "../../../Simulation/WorldTime";
 import SaveManagerDialog from "../SaveManagerDialog";
+import Config from "../Config";
 
 interface StartMenuProps {
   onStartNewWorld: (scenario: GameScenario) => void;
@@ -45,6 +46,7 @@ export default function StartMenu({ onStartNewWorld, onContinue }: StartMenuProp
   const [storageStatus, setStorageStatus] = useState("正在检查本地存档…");
   const [loadingSave, setLoadingSave] = useState(false);
   const [saveManagerOpen, setSaveManagerOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const repository = useMemo(() => new IndexedDbWorldSaveRepository(), []);
 
   const refreshStoredSave = async () => {
@@ -183,6 +185,7 @@ export default function StartMenu({ onStartNewWorld, onContinue }: StartMenuProp
           </Box>
         )}
         <Button fullWidth variant="outlined" onClick={() => setSaveManagerOpen(true)}>读取游戏</Button>
+        <Button sx={{ mt: 1 }} fullWidth variant="outlined" onClick={() => setSettingsOpen(true)}>设置</Button>
 
         <Typography sx={{ mt: 2 }} variant="h6" fontWeight="bold">
           选择世界
@@ -252,6 +255,7 @@ export default function StartMenu({ onStartNewWorld, onContinue }: StartMenuProp
         onClose={() => { setSaveManagerOpen(false); void refreshStoredSave(); }}
         onLoad={onContinue}
       />
+      <Config open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </Box>
   );
 }

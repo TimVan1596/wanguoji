@@ -74,8 +74,10 @@ export default function Teams() {
     >
       <Box sx={{ mb: 1, p: 1, backgroundColor: "var(--gg-panel)" }}>
         <Typography fontSize="0.86rem">
-          在国 {statusSummary.active} · 流亡 {statusSummary.exiled} · 已灭亡{" "}
-          {statusSummary.extinct}
+          国家：在国 {statusSummary.active} · 流亡 {statusSummary.exiled} · 已亡 {statusSummary.extinct}
+        </Typography>
+        <Typography fontSize="0.86rem">
+          临时势力：存续 {statusSummary.provisionalActive}
         </Typography>
         <Typography fontSize="0.86rem">
           总人口 {formatNumber(totalPopulation)}

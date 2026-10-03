@@ -14,12 +14,14 @@ export default function RightSlider({
   onSave,
   onSaveGame,
   onManageSaves,
+  onSettings,
   saving,
 }: {
   onReturnToMenu: () => void;
   onSave: () => Promise<string>;
   onSaveGame: () => void;
   onManageSaves: () => void;
+  onSettings: () => void;
   saving: boolean;
 }) {
   const dispatch = useDispatch();
@@ -36,7 +38,7 @@ export default function RightSlider({
         flexDirection: "column",
       }}
     >
-      <WorldControlBar onReturnToMenu={onReturnToMenu} onSave={onSave} onSaveGame={onSaveGame} onManageSaves={onManageSaves} saving={saving}></WorldControlBar>
+      <WorldControlBar onReturnToMenu={onReturnToMenu} onSave={onSave} onSaveGame={onSaveGame} onManageSaves={onManageSaves} onSettings={onSettings} saving={saving}></WorldControlBar>
       <MuiBox
         role="tablist"
         sx={{

@@ -32,6 +32,7 @@ export type WorldEventType =
   | "rebel-faction-founded"
   | "population-surrendered"
   | "ruler-died"
+  | "heir-died"
   | "ruler-acceded"
   | "ruler-succession"
   | "ruler-captured"
@@ -1039,6 +1040,31 @@ class WorldHistoryStore {
       factionIds: [factionId],
       actorFactionId: factionId,
       metadata,
+      importance: "normal",
+    });
+  }
+
+  addHeirDied(
+    month: number,
+    factionId: string,
+    heirId: string,
+    parentRulerId: string,
+    heirName: string,
+    age: number,
+    reason: "natural" | "combat" | "captured",
+    parentRulerTitle: string
+  ) {
+    return this.addEvent({
+      id: `heir-died-${month}-${heirId}-${this.sequence++}`,
+      year: month,
+      category: "politics",
+      type: "heir-died",
+      title: `储君${heirName}${reason === "combat" ? "战死" : reason === "captured" ? "被俘处死" : "去世"}`,
+      description: `储君${heirName}${reason === "combat" ? "战死" : reason === "captured" ? "被俘处死" : "去世"}，先于${parentRulerTitle}而卒。`,
+      factionIds: [factionId],
+      actorFactionId: factionId,
+      rulerId: parentRulerId,
+      metadata: { heirId, parentRulerId, heirName, age, reason, parentRulerTitle },
       importance: "normal",
     });
   }

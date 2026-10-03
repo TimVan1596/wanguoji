@@ -18,6 +18,7 @@ import {
   type SovereigntyHistoryEntry,
 } from "../Simulation/FactionIdentity";
 import { getRegimeStyleNameAtMonth } from "../Simulation/RegimeStyle";
+import { formatHeirDeathText } from "../Politics/RulerPresentationRules";
 
 export interface FactionHistoryFactionLike extends HistoryFactionLike {
   identityStage?: "PROVISIONAL" | "STATE" | string;
@@ -42,6 +43,16 @@ export function formatFactionHistoryEvent(
   const month = event.monthIndex ?? event.year;
   const name = (id?: string) => resolveFactionHistoricalName(factionById, id, month);
   const selectedName = name(factionId);
+
+  if (event.type === "heir-died") {
+    const heirName = stringMeta(event, "heirName");
+    const parentTitle = stringMeta(event, "parentRulerTitle");
+    const reason = stringMeta(event, "reason");
+    if (heirName && parentTitle && (reason === "natural" || reason === "combat" || reason === "captured")) {
+      return formatHeirDeathText(heirName, reason, parentTitle);
+    }
+    return event.description ?? event.title;
+  }
 
   if (event.metadata?.groupedFoundingEventCount || event.type === "empire-split") {
     return formatFounding(event, relation, factionId, factionById);

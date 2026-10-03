@@ -711,6 +711,24 @@ class DynastyRegistryStore {
       heir.politicalEndYear = year;
       heir.endYear = year;
       heir.endReason = "自然去世";
+      const parent = heir.parentId
+        ? dynasty.rulers.find((ruler) => ruler.id === heir.parentId)
+        : undefined;
+      if (parent?.chronicle) {
+        const team = Game.Core?.teams.find((item) => item.name === dynasty.factionId);
+        const parentTitle = team ? formatRulerTitleAtMonth(team, "", year) : "父君";
+        const event = WorldHistory.addHeirDied(
+          year,
+          dynasty.factionId,
+          heir.id,
+          parent.id,
+          this.getRulerPersonalName(heir),
+          Math.floor(monthsToYears(year - heir.bornYear)),
+          "natural",
+          parentTitle
+        );
+        parent.chronicle.notableEventIds.push(event.id);
+      }
     });
     dynasty.heirIds = dynasty.heirIds.filter((heirId) => {
       const heir = dynasty.rulers.find((ruler) => ruler.id === heirId);
@@ -746,6 +764,12 @@ class DynastyRegistryStore {
       return this.getRulerDisplay(factionId);
     }
     return this.getRulerTitle(team, ruler, monthIndex);
+  }
+
+  getRulerHistoricalTitle(rulerId: string, factionId: string, monthIndex: number) {
+    const ruler = this.findRulerById(rulerId);
+    const team = Game.Core?.teams.find((item) => item.name === factionId);
+    return ruler && team ? this.getRulerTitle(team, ruler, monthIndex) : undefined;
   }
 
   private getRulerTitle(team: Team, ruler: Ruler, monthIndex: number) {
