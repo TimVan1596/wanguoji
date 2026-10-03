@@ -49,7 +49,7 @@ import {
   getRulerHistoricalEvents,
   getRulerTerritoryDelta,
 } from "../../../Politics/RulerChronicle";
-import { deriveRulerAssessment } from "../../../Politics/RulerHistoriography";
+import { composeHistorianVoice, deriveRulerAssessment } from "../../../Politics/RulerHistoriography";
 import { deriveRulerTenureEvidence } from "../../../Politics/RulerTenureEvidence";
 import { getFormalRulers, getLivingHeirs, isFormalRulerRecord } from "../../../Politics/RulerPresentationRules";
 import {
@@ -752,6 +752,7 @@ function RulerBiography({
     events,
     worldMonth,
   });
+  const historianVoice = composeHistorianVoice(assessment.evidence);
   const tags = buildRulerTags(assessment.evidence);
   const tenure = assessment.evidence.tenure;
   const historicalEvents = getRulerHistoricalEvents(
@@ -894,6 +895,12 @@ function RulerBiography({
           {line}
         </Typography>
       ))}
+      {historianVoice ? (
+        <Box sx={{ mt: 0.55 }}>
+          <Typography fontWeight="bold" fontSize="0.82rem">史家曰</Typography>
+          <Typography fontSize="0.82rem">{historianVoice}</Typography>
+        </Box>
+      ) : null}
     </Box>
   );
 }

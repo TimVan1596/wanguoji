@@ -3,6 +3,7 @@ import type { Dynasty, Ruler } from "./Dynasty";
 import { getRulerEffectiveSnapshot } from "./RulerChronicle";
 import { monthsToYears } from "../Simulation/WorldTime";
 import { deriveRulerTenureEvidence, type RulerTenureEvidence } from "./RulerTenureEvidence";
+import { buildRulerLegacyEvidence } from "./RulerLegacyEvidence";
 
 export type HistoricalRole =
   | "FOUNDER"
@@ -62,6 +63,13 @@ export interface RulerHistoricalEvidence {
   territorialPeakGain: number;
   populationPeakRetreat: number;
   populationPeakGain: number;
+  territoryDelta: number;
+  populationDelta: number;
+  cityDelta: number;
+  stabilityDelta: number;
+  stableGovernanceEligible: boolean;
+  longStableReign: boolean;
+  governanceCost: boolean;
   accessionCrisis: boolean;
   terminalCollapse: boolean;
   roles: HistoricalRole[];
@@ -99,6 +107,15 @@ export function deriveRulerHistoricalEvidence(
   const endMonth = ruler.endYear ?? worldMonth;
   const isFinalized = ruler.endYear !== undefined;
   const tenure = deriveRulerTenureEvidence(ruler, faction.name, events, worldMonth);
+  const legacyEvidence = chronicle
+    ? buildRulerLegacyEvidence(
+        chronicle,
+        accessionMonth,
+        ruler.endYear,
+        tenure.diedInExile ? "流亡" : ruler.endReason,
+        tenure.activeRuleMonths
+      )
+    : undefined;
   const inReign = (event: WorldEvent) => {
     const month = event.monthIndex ?? event.year;
     return month >= accessionMonth && month <= endMonth;
@@ -207,10 +224,13 @@ export function deriveRulerHistoricalEvidence(
   const territorialPeakGain = peakTerritory - accessionSnapshot.territoryShare;
   const populationPeakRetreat = Math.max(0, peakPopulation - finalSnapshot.population);
   const populationPeakGain = peakPopulation - accessionSnapshot.population;
+  const territoryDelta = finalSnapshot.territoryShare - accessionSnapshot.territoryShare;
+  const populationDelta = finalSnapshot.population - accessionSnapshot.population;
+  const cityDelta = finalSnapshot.cityCount - accessionSnapshot.cityCount;
+  const stabilityDelta = finalSnapshot.stability - accessionSnapshot.stability;
   const accessionCrisis =
-    accessionSnapshot.cityCount <= 1 ||
-    accessionSnapshot.territoryShare <= 0.12 ||
-    accessionSnapshot.stability <= 45;
+    accessionSnapshot.stability <= 45 ||
+    (accessionSnapshot.cityCount <= 1 && accessionSnapshot.territoryShare <= 0.12);
   const ownTerminalCollapse = ruler.endReason === "彻底灭亡" || ruler.endReason === "流亡" || tenure.diedInExile || tenure.extinctInExile;
   const expansion =
     finalSnapshot.territoryShare - accessionSnapshot.territoryShare >= 0.12 ||
@@ -231,7 +251,7 @@ export function deriveRulerHistoricalEvidence(
   if (completedUnification) roles.push("UNIFIER");
   if (expansion) roles.push("EXPANDER");
   if ((chronicle?.citiesCapturedPersonally ?? 0) >= 2 || collapseGroups.size > 0) roles.push("CONQUEROR");
-  if (tenure.activeRuleMonths >= 18 * 12 && finalSnapshot.stability >= 72 && !majorDecline && !tenure.lostStateDuringTenure) roles.push("STEWARD");
+  if (tenure.activeRuleMonths >= 18 * 12 && legacyEvidence?.stableGovernanceEligible && !majorDecline && !tenure.lostStateDuringTenure) roles.push("STEWARD");
   if (accessionCrisis && !ownTerminalCollapse) roles.push("CRISIS_SURVIVOR");
   if (territorialPeakRetreat >= 0.15) {
     if (territorialPeakGain >= 0.08 && peakTerritory >= 0.3) roles.push("PEAK_AND_RETREAT");
@@ -291,6 +311,13 @@ export function deriveRulerHistoricalEvidence(
     territorialPeakGain,
     populationPeakRetreat,
     populationPeakGain,
+    territoryDelta,
+    populationDelta,
+    cityDelta,
+    stabilityDelta,
+    stableGovernanceEligible: legacyEvidence?.stableGovernanceEligible ?? false,
+    longStableReign: legacyEvidence?.longStableReign ?? false,
+    governanceCost: legacyEvidence?.governanceCost ?? false,
     accessionCrisis,
     terminalCollapse: ownTerminalCollapse,
     roles,
@@ -339,9 +366,11 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
     lines.push(`${livingPrefix}${agePrefix}复国与重建王统，是其最突出的历史功业。`);
   } else if (evidence.completedUnification) {
     lines.push(`${livingPrefix}${agePrefix}完成天下统一，使其历史地位超出一国兴替。`);
+  } else if (evidence.accessionCrisis && evidence.roles.includes("EXPANDER")) {
+    lines.push(`${livingPrefix}${agePrefix}承统之初国势未固，其后疆域显著扩展，由危局转入进取。`);
   } else if (evidence.terminalCollapse && evidence.accessionCrisis) {
     lines.push(`${agePrefix}其时国势已陷危局${evidence.startCityCount <= 1 ? "，仅据孤城" : ""}，并非由盛转衰的始作俑者。`);
-  } else if (evidence.roles.includes("CRISIS_SURVIVOR")) {
+  } else if (evidence.roles.includes("CRISIS_SURVIVOR") && !evidence.roles.includes("EXPANDER")) {
     lines.push(`${livingPrefix}${agePrefix}临危承统，其主要考验在于维系既有政权，而非开拓疆土。`);
   } else if (evidence.roles.includes("INHERITED_HIGH_DECLINE")) {
     lines.push(`${livingPrefix}承统时国势已居高位，其后疆域显著回落，未能维持前期盛势。`);
@@ -384,7 +413,7 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
     evidence.populationPeakRetreat >= Math.max(8, evidence.peakPopulation * 0.35)
   ) {
     lines.push(`人口一度达到${evidence.peakPopulation}，至${evidence.isFinalized ? "身后" : "目前"}明显回落，盛势未能转化为稳定基础。`);
-  } else if (hasGovernanceCost(evidence) && evidence.roles.includes("EXPANDER")) {
+  } else if ((evidence.governanceCost || hasGovernanceCost(evidence)) && evidence.roles.includes("EXPANDER")) {
     lines.push(evidence.startPopulation > 0 && evidence.endPopulation <= evidence.startPopulation * 0.6
       ? "开拓伴随明显代价，可谓得地而失民；人口与稳定的承受能力未能同步。"
       : "其功在开拓，但稳定度明显下滑，扩张成果伴随沉重的治理代价。");
@@ -432,6 +461,96 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
 
 export function deriveRulerAssessment(context: RulerHistoriographyContext) {
   return composeRulerAssessment(deriveRulerHistoricalEvidence(context));
+}
+
+/** A compact, deterministic final judgement, derived only from recorded outcomes. */
+export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string | undefined {
+  if (!evidence.isFinalized) return undefined;
+  const variant = stableHash(evidence.rulerId) % 3;
+  const pick = (lines: string[]) => lines[variant];
+  const roles = evidence.roles;
+
+  if (roles.includes("FOUNDER") && roles.includes("EXPANDER")) return pick([
+    "开国与拓境并见，所成不止一时之势；然扩张所伴的代价，亦留在国势之中。",
+    "其功在开创，亦在拓土；新邦由此壮大，如何收束扩张则成为后世之课。",
+    "创业之初即见开拓之绩，国家规模因之而变；功业与治理代价俱不可略。",
+  ]);
+  if (roles.includes("EXPANDER") && evidence.governanceCost) return pick([
+    "疆域拓展有实绩，人口或稳定亦承受代价；得地与失衡并见，功过不宜偏举。",
+    "其功在进取，其患亦随扩张而生；所拓之土虽可考，维系之难同样见于史实。",
+    "开拓改变了国家版图，却未能使治理代价消隐；其历史分量正在功与患并存。",
+  ]);
+  if (roles.includes("EXPANDER") && roles.includes("TRAGIC_RULER")) return pick([
+    "拓境之功尚在，而其身已止于兵事；事业未竟，结局亦成为其历史的一部分。",
+    "其在进取中留下可见战果，终局却来得过早，未竟之业遂与开拓之功并存。",
+    "功业见于疆土与战事，遗憾亦见于骤然的结局；后世所论，当兼看两端。",
+  ]);
+  if (roles.includes("UNIFIER")) return pick([
+    "一统使天下格局为之一变，其功业足以成为时代分界。",
+    "天下归一是其最具决定性的历史作为，后世纪年亦由此改观。",
+    "其功不止于一国得失：完成统一，遂重定天下秩序。",
+  ]);
+  if (roles.includes("RESTORER")) return pick([
+    "国祚中绝而复续，重建国家是其最清楚的历史功业。",
+    "复国使断裂的政权重新延续，此事重于一般的疆土增损。",
+    "其历史转折在于恢复故国；王统得续，已足见其功所在。",
+  ]);
+  if (roles.includes("INHERITED_HIGH_DECLINE")) return pick([
+    "承统时国势已居高位，其后明显回落；所承之盛与未能维持之势，皆应并论。",
+    "其并非创造前期高峰之人，却在任内见证疆域退缩，盛势终未守全。",
+    "承接高位而未能维系，国势回落构成其统治最显著的历史落差。",
+  ]);
+  if (roles.includes("PEAK_AND_RETREAT")) return pick([
+    "国势由其手推至高峰，终又显著回落；开拓与未能守成，是同一段历史的两面。",
+    "其曾创在位期间的疆域高点，却未能把峰值留到身后。",
+    "拓展所至可称一时之盛，身后回落亦不可掩；其功与其失正在此处相接。",
+  ]);
+  if (roles.includes("LONG_EXILE")) return pick([
+    `其承统岁月多在流亡中度过，历史位置主要系于王统延续，而非持续治理在国政权。`,
+    `流亡占据其承统生涯的大部，王统未绝是其身后最重要的遗留。`,
+    `其一生受国土沦失所限，所能维系者是流亡中的王统，而非疆域治理。`,
+  ]);
+  if (roles.includes("LAST_RULER")) return pick([
+    "国亡于其世，但即位时的国势与此前危局亦须一并考量，不可把结局本身当作全部因果。",
+    "其以末主身份承受国祚终结；判断其责任，还须分辨危局始于何时。",
+    "王朝终于其世是确切结局，至于衰亡由来，则不能只凭末日一事定论。",
+  ]);
+  if (roles.includes("SHORT_REIGN") && roles.includes("TRAGIC_RULER")) return pick([
+    "在位短促而结局惨烈，现有事迹不足以铺陈完整治绩，国难与骤逝已是其史中重笔。",
+    "短暂统治未及展开，战死或国难却已定下其结局；论其功过，当以谨慎为先。",
+    "其治期甚短，无法据此作宽泛评断；可确言者，是功业未展而终局骤至。",
+  ]);
+  if (roles.includes("STEWARD")) return pick([
+    "疆域无大起落而政权得以长久维持，守成之功在于使秩序不失。",
+    "其治绩不以骤然拓境见长，而以长期维系政权与相对稳定为要。",
+    "平稳延续本身即是其可考之绩；其功在维持，而非开创新的疆域高峰。",
+  ]);
+  if (roles.includes("DECLINER")) return pick([
+    "国势在其任内显著下行，这一结果构成其统治难以回避的历史部分。",
+    "其世所见主要是政权收缩与衰退；至于危局源流，仍须结合承统背景判断。",
+    "国势未能维持，退缩成为其最突出的遗产；评价不应越出这些可见事实。",
+  ]);
+  if (roles.includes("FOUNDER")) return pick([
+    "其功在奠定政权起点，使后来王统有制可循。",
+    "新政权由其手开其端绪，创业之功是其最清楚的历史位置。",
+    "其留下的首要遗产是国家之始；其后成败，已非一人所能尽括。",
+  ]);
+  if (roles.includes("EXPANDER")) return pick([
+    "疆域扩展是其最显著的作为，国家规模由此发生实质变化。",
+    "其历史分量主要来自开拓，所达峰值与最终留存仍须分别看待。",
+    "开疆有据，拓展构成其主要功业；得地之后能否维持，则另有后话。",
+  ]);
+  if (roles.includes("STEWARD") || evidence.stableGovernanceEligible) return "其治下未见显著收缩，长期维持秩序与政权，是可据史实称道之处。";
+  if (roles.includes("SHORT_REIGN")) return "在位短暂，现存记录不足以支持更重的功过判断。";
+  return "其可见历史评价应以现存事迹为限，不宜作超出证据的推断。";
+}
+
+function stableHash(value: string) {
+  let hash = 2166136261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash = Math.imul(hash ^ value.charCodeAt(index), 16777619);
+  }
+  return hash >>> 0;
 }
 
 export function formatAccessionAge(age: number) {

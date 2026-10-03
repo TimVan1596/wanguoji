@@ -13,6 +13,7 @@ import {
 import {
   deriveRulerAssessment,
   deriveRulerHistoricalEvidence,
+  composeHistorianVoice,
   formatAccessionAge,
   RulerHistoriographyContext,
 } from "./RulerHistoriography";
@@ -251,6 +252,37 @@ describe("evidence-grounded ruler historiography", () => {
     expect(text).toContain("这一结局始于承统前的危局");
   });
 
+  it("does not mistake a one-city but broad and stable accession for a crisis", () => {
+    const result = deriveRulerAssessment(makeContext({
+      start: { cityCount: 1, territoryShare: 0.15, stability: 94 },
+      end: { cityCount: 1, territoryShare: 0.15, stability: 94 },
+    }));
+    expect(result.evidence.accessionCrisis).toBe(false);
+    expect(result.evidence.roles).not.toContain("CRISIS_SURVIVOR");
+  });
+
+  it("keeps crisis and expansion together instead of denying the expansion", () => {
+    const text = deriveRulerAssessment(makeContext({
+      start: { cityCount: 1, territoryShare: 0.004, stability: 50 },
+      end: { cityCount: 4, territoryShare: 0.152, stability: 65 },
+    })).lines.join(" ");
+    expect(text).toContain("由危局转入进取");
+    expect(text).not.toContain("而非开拓疆土");
+    expect(text).toContain("开拓");
+  });
+
+  it("rejects stable-governance merit when territory and cities sharply contract", () => {
+    const result = deriveRulerAssessment(makeContext({
+      start: { cityCount: 3, territoryShare: 0.295, stability: 70 },
+      end: { cityCount: 1, territoryShare: 0.127, stability: 100 },
+      endMonth: 25 * 12,
+    }));
+    expect(result.evidence.stabilityDelta).toBe(30);
+    expect(result.evidence.stableGovernanceEligible).toBe(false);
+    expect(result.evidence.roles).not.toContain("STEWARD");
+    expect(result.lines.join(" ")).not.toContain("长期维持政权与秩序");
+  });
+
   it("can describe severe decline when the ruler inherited a stable state", () => {
     const text = deriveRulerAssessment(makeContext({
       start: { cityCount: 5, territoryShare: 0.4, stability: 85 },
@@ -325,6 +357,29 @@ describe("evidence-grounded ruler historiography", () => {
     const second = deriveRulerAssessment(makeContext({ end: { territoryShare: 0.35 }, posthumousEpithet: "愍" }));
     expect(first.lines).toEqual(deriveRulerAssessment(makeContext({ end: { territoryShare: 0.35 }, posthumousEpithet: "武" })).lines);
     expect(first.evidence.roles).toEqual(second.evidence.roles);
+  });
+
+  it("adds a deterministic, evidence-grounded historian voice only for finalized rulers", () => {
+    const evidence = deriveRulerHistoricalEvidence(makeContext({
+      start: { territoryShare: 0.2 }, end: { territoryShare: 0.4, cityCount: 7 }, peakTerritory: 0.42,
+    }));
+    const voice = composeHistorianVoice(evidence);
+    expect(voice).toBeTruthy();
+    expect(composeHistorianVoice(evidence)).toBe(voice);
+    expect(voice).not.toMatch(/贤明|昏庸|刚愎|好大喜功|仁慈|残暴|民心尽失|聪慧/);
+
+    const livingContext = makeContext({ end: { territoryShare: 0.4, cityCount: 7 } });
+    livingContext.ruler.endYear = undefined;
+    expect(composeHistorianVoice(deriveRulerHistoricalEvidence(livingContext))).toBeUndefined();
+  });
+
+  it("allows deterministic wording variants for rulers with the same role", () => {
+    const makeVoice = (id: string) => {
+      const context = makeContext({ end: { territoryShare: 0.4, cityCount: 7 }, start: { territoryShare: 0.2 } });
+      context.ruler.id = id;
+      return composeHistorianVoice(deriveRulerHistoricalEvidence(context));
+    };
+    expect(new Set(["a", "b", "c", "d", "e"].map(makeVoice)).size).toBeGreaterThan(1);
   });
 
   it("uses only objective accession-age bands", () => {

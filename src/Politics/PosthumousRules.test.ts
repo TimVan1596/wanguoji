@@ -228,6 +228,22 @@ describe("posthumous rules", () => {
     expect(result.epithetReasons).toContain("长期守成，政局和顺");
   });
 
+  it("does not award long-stability epithets or temple names after severe contraction", () => {
+    const contracted = rulerWithReign("contracted-stable", 0, 25 * 12,
+      { territoryShare: 0.295, cityCount: 3, stability: 70 },
+      { territoryShare: 0.127, cityCount: 1, stability: 100 });
+    contracted.chronicle!.proclaimedEmperorMonth = 1;
+    const evidence = buildRulerLegacyEvidence(
+      contracted.chronicle!, contracted.accessionYear!, contracted.endYear, contracted.endReason
+    );
+    const result = evaluatePosthumousNames(contracted, [contracted], faction(), contracted.endYear!);
+    expect(evidence.stableGovernanceEligible).toBe(false);
+    expect(evidence.longStableReign).toBe(false);
+    expect(result.epithetReasons).not.toContain("长期执政且治理稳定");
+    expect(result.epithetReasons).not.toContain("长期守成，政局和顺");
+    expect(["康", "景", "穆", "顺", "成宗", "高宗"]).not.toContain(result.templeName);
+  });
+
   it("does not call a repeatedly displaced reign 顺", () => {
     const calm = rulerWithReign("displaced", 0, 25 * 12, { territoryShare: 0.22, cityCount: 4, stability: 78 }, { territoryShare: 0.22, cityCount: 4, stability: 82 });
     WorldHistory.addCapitalRelocated(24, "阳", "新都甲", "city-a", "fall-a", { cause: "CAPITAL_FALL" });
@@ -235,10 +251,11 @@ describe("posthumous rules", () => {
     expect(evaluatePosthumousNames(calm, [calm], faction(), calm.endYear!).posthumousEpithet).not.toBe("顺");
   });
 
-  it("allows 桓 to compete with 襄 for territorial expansion without personal captures", () => {
+  it("allows evidence-backed military epithets to compete with 襄", () => {
     const expanding = rulerWithReign("expanding", 0, 15 * 12, { territoryShare: 0.1, cityCount: 2, stability: 72 }, { territoryShare: 0.28, cityCount: 5, stability: 75 });
+    expanding.chronicle!.citiesCapturedPersonally = 2;
     const recentXiang = [0, 1, 2].map((index) => ruler({ id: `xiang-${index}`, posthumousEpithet: "襄" }));
-    expect(evaluatePosthumousNames(expanding, [...recentXiang, expanding], faction(), expanding.endYear!).posthumousEpithet).toBe("桓");
+    expect(["桓", "武", "威"]).toContain(evaluatePosthumousNames(expanding, [...recentXiang, expanding], faction(), expanding.endYear!).posthumousEpithet);
   });
 
   it("allows 威 to compete when personal military evidence is present", () => {
@@ -250,11 +267,12 @@ describe("posthumous rules", () => {
   it("uses graduated frequency and recency penalties, but permits an exceptional fit", () => {
     const ordinaryExpansion = rulerWithReign("ordinary-expansion", 0, 15 * 12,
       { territoryShare: 0.1, cityCount: 2, stability: 70 }, { territoryShare: 0.25, cityCount: 5, stability: 72 });
+    ordinaryExpansion.chronicle!.citiesCapturedPersonally = 2;
     const threeRecentXiang = [0, 1, 2].map((index) => ruler({ id: `recent-${index}`, posthumousEpithet: "襄" }));
     expect(evaluatePosthumousNames(ordinaryExpansion, [...threeRecentXiang, ordinaryExpansion], faction(), ordinaryExpansion.endYear!).posthumousEpithet).not.toBe("襄");
 
     const exceptional = rulerWithReign("exceptional", 0, 20 * 12,
-      { territoryShare: 0.1, cityCount: 2, stability: 70 }, { territoryShare: 0.42, cityCount: 7, stability: 75 });
+      { territoryShare: 0.1, cityCount: 2, stability: 70 }, { territoryShare: 0.42, cityCount: 7, stability: 68 });
     const longRecentRun = Array.from({ length: 8 }, (_, index) => ruler({ id: `repeat-${index}`, posthumousEpithet: "襄" }));
     expect(evaluatePosthumousNames(exceptional, [...longRecentRun, exceptional], faction(), exceptional.endYear!).posthumousEpithet).toBe("襄");
   });

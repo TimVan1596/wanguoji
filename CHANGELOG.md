@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.99924d
+
+- Gated stable-governance credit, long-stability posthumous candidates, and stewardship roles on contraction-adjusted evidence; raw stability values remain unchanged for display/gameplay.
+- Refined accession-crisis classification and made crisis-plus-expansion assessments acknowledge both the inherited weakness and subsequent expansion.
+- Strengthened dynasty-local soft epithet diversity while retaining evidence-based repeats; military epithets now require corresponding personal/conquest evidence.
+- Added deterministic, finalized-ruler-only “史家曰” commentary from derived historical evidence, without personality claims or persisted data.
+- No gameplay balance, WorldSave schema, dynasty mechanics, or era-rule changes.
+
 ## v0.99924c
 
 - Split left-panel status counts into founded states (active/exiled/extinct) and currently active provisional factions; the faction ranking still includes all active factions.
