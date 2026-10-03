@@ -29,6 +29,7 @@ export interface RulerLegacyEvidence {
   majorExpansion: boolean;
   militaryAchievement: boolean;
   institutionalAchievement: boolean;
+  stableGovernanceEligible: boolean;
   stableGovernance: boolean;
   longStableReign: boolean;
   stabilityDeterioration: boolean;
@@ -58,6 +59,18 @@ export function buildRulerLegacyEvidence(
   const stabilityDelta = end.stability - start.stability;
   const reignMonths = Math.max(0, (endMonth ?? end.month) - accessionMonth);
   const governedMonths = Math.min(reignMonths, Math.max(0, activeRuleMonths));
+  const territorialCollapse = territoryDelta <= -0.12;
+  const cityCollapse = cityDelta <= -2;
+  const terminalCollapse = endReason === "彻底灭亡" || endReason === "流亡";
+  const stableGovernanceEligible =
+    end.stability >= 75 &&
+    stabilityDelta >= 0 &&
+    !territorialCollapse &&
+    !cityCollapse &&
+    !terminalCollapse &&
+    territoryDelta > -0.06 &&
+    cityDelta >= -1 &&
+    !(start.cityCount >= 3 && end.cityCount <= 1);
   return {
     foundedState: Boolean(chronicle.foundedStateName),
     proclaimedEmperor: chronicle.proclaimedEmperorMonth !== undefined,
@@ -86,19 +99,20 @@ export function buildRulerLegacyEvidence(
     majorExpansion: territoryDelta >= 0.12 || cityDelta >= 3 || chronicle.completedUnification,
     militaryAchievement: chronicle.citiesCapturedPersonally >= 2 || chronicle.completedUnification,
     institutionalAchievement: Boolean(chronicle.foundedStateName) || chronicle.proclaimedEmperorMonth !== undefined || chronicle.completedUnification || chronicle.restorationsDuringReign > 0,
-    stableGovernance: end.stability >= 75 && stabilityDelta >= 0,
-    longStableReign: governedMonths >= 18 * 12 && end.stability >= 75 && stabilityDelta >= 0,
+    stableGovernanceEligible,
+    stableGovernance: stableGovernanceEligible,
+    longStableReign: governedMonths >= 18 * 12 && stableGovernanceEligible,
     stabilityDeterioration: stabilityDelta <= -25,
     demographicCollapse: start.population > 0 && end.population <= start.population * 0.6,
-    territorialCollapse: territoryDelta <= -0.12,
-    cityCollapse: cityDelta <= -2,
+    territorialCollapse,
+    cityCollapse,
     majorDisorder: chronicle.rebellionsDuringReign > 0,
-    terminalCollapse: endReason === "彻底灭亡" || endReason === "流亡",
+    terminalCollapse,
     tragicEnd: endReason === "被俘处死" || chronicle.deathCause === "被俘处死" || chronicle.deathCause === "战死" || endReason === "彻底灭亡",
     governanceCost: (start.population > 0 && end.population <= start.population * 0.6) || stabilityDelta <= -20,
     strongExpansion: territoryDelta >= 0.16 || cityDelta >= 3 || chronicle.completedUnification,
     severeDecline: territoryDelta <= -0.12 || cityDelta <= -2 || (start.population > 0 && end.population <= start.population * 0.6) || endReason === "彻底灭亡",
-    steadyRule: governedMonths >= 18 * 12 && end.stability >= 72 && Math.abs(territoryDelta) < 0.04 && cityDelta === 0,
+    steadyRule: governedMonths >= 18 * 12 && stableGovernanceEligible && Math.abs(territoryDelta) < 0.04 && cityDelta === 0,
   };
 }
 

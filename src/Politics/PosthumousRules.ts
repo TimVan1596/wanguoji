@@ -22,7 +22,8 @@ export interface PosthumousEvaluation {
 const LONG_REIGN_MONTHS = 18 * 12;
 const VERY_LONG_REIGN_MONTHS = 28 * 12;
 const RECENT_EPITHET_LOOKBACK = 8;
-const EPITHET_RECENCY_PENALTIES = [18, 7, 7, 3, 3, 3, 3, 3] as const;
+const EPITHET_RECENCY_PENALTIES = [70, 50, 30, 15, 15, 8, 5, 3] as const;
+const DISASTER_EPITHETS = new Set(["哀", "愍"]);
 
 export function finalizeRulerPosthumousNames(
   ruler: Ruler,
@@ -75,9 +76,9 @@ export function evaluatePosthumousNames(
       eventMonth >= ruler.accessionYear! && eventMonth <= ruler.endYear!;
   }).length;
   const peacefulLongReign = activeRuleMonths >= 20 * 12 &&
-    end.stability >= 75 && stabilityDelta >= 0 &&
+    evidence.stableGovernanceEligible &&
     chronicle.rebellionsDuringReign === 0 &&
-    !evidence.territorialCollapse && !evidence.cityCollapse && !evidence.terminalCollapse &&
+    Math.abs(territoryDelta) < 0.08 && Math.abs(cityDelta) <= 1 &&
     !evidence.majorExpansion && !evidence.militaryAchievement && capitalFallCount <= 1;
   const reasons: string[] = [];
   let score = 0;
@@ -110,14 +111,14 @@ export function evaluatePosthumousNames(
     reasons.push("亲征战功");
   }
   if (
-    activeRuleMonths >= VERY_LONG_REIGN_MONTHS &&
+    evidence.longStableReign && activeRuleMonths >= VERY_LONG_REIGN_MONTHS &&
     end.stability >= 72 &&
     (outcome.outcome === "IMPROVEMENT" || outcome.outcome === "EXPANSION")
   ) {
     score += 16;
     reasons.push("长治");
   } else if (
-    activeRuleMonths >= LONG_REIGN_MONTHS &&
+    evidence.stableGovernanceEligible && activeRuleMonths >= LONG_REIGN_MONTHS &&
     end.stability >= 76 &&
     stabilityDelta >= 8
   ) {
@@ -250,8 +251,8 @@ function chooseEpithet(
   if (evidence.majorExpansion) {
     const strongExpansion = evidence.territoryDelta >= 0.2 || evidence.cityDelta >= 5;
     add("襄", strongExpansion ? (evidence.territoryDelta >= 0.3 ? 108 : 86) : 58, evidence.territoryDelta >= 0.12 ? "疆域显著拓展" : "治下城市显著增加");
-    if (evidence.territoryDelta >= 0.12 || evidence.cityDelta >= 3) {
-      add("桓", 54, "拓境服远，疆域明显扩大");
+    if (evidence.militaryAchievement && (evidence.territoryDelta >= 0.12 || evidence.cityDelta >= 3)) {
+      add("桓", 60, "拓境并有明确军事战果");
     }
     if (evidence.militaryAchievement) add("武", 34, "有亲征夺城或统一战功");
   } else if (evidence.territoryDelta >= 0.08 || evidence.cityDelta >= 2) {
@@ -270,10 +271,13 @@ function chooseEpithet(
     add("成", 38, "完成复国，重建王朝");
   }
   if (evidence.completedUnification) add("武", 34, "完成大规模征服并一统天下");
-  if (evidence.stableGovernance) add("景", 38, "稳定度提升且在位末仍维持高位");
+  if (
+    evidence.stableGovernanceEligible &&
+    (evidence.territoryDelta >= 0.04 || evidence.cityDelta >= 1 || evidence.stabilityDelta >= 10 || evidence.populationDelta >= 10)
+  ) add("景", 38, "国势有所改善且未伴随显著收缩");
   if (evidence.longStableReign) {
     add("康", 40, "长期执政且治理稳定");
-    add("穆", 34, "长期平稳守成");
+    if (evidence.steadyRule && chronicle.rebellionsDuringReign === 0) add("穆", 38, "长期守成，国势变化有限");
   }
   if (evidence.stabilityDeterioration && evidence.activeRuleMonths >= LONG_REIGN_MONTHS && (evidence.territorialCollapse || evidence.cityCollapse || evidence.majorDisorder || evidence.terminalCollapse)) {
     add("灵", 66 + (evidence.majorDisorder ? 8 : 0) + (evidence.demographicCollapse ? 6 : 0), "长期稳定恶化，并有疆土、城市、内乱或终局失序证据");
@@ -281,7 +285,7 @@ function chooseEpithet(
   if (evidence.territorialCollapse || evidence.cityCollapse) add("愍", 32, "任内疆土或城市严重丧失");
   if (evidence.territorialCollapse && evidence.cityCollapse && evidence.stabilityDeterioration) add("哀", 42, "疆土、城市与稳定均显著衰退");
   if (evidence.activeRuleMonths >= VERY_LONG_REIGN_MONTHS && evidence.stableGovernance && evidence.majorExpansion) add("景", 42, "长期统治兼有扩张与稳定治理");
-  if (chronicle.rebellionsDuringReign > 0 && evidence.stableGovernance) add("定", 30, "任内有内乱记录，末期稳定度仍保持高位");
+  if (chronicle.rebellionsDuringReign > 0 && evidence.stableGovernanceEligible) add("定", 34, "经历内乱后恢复秩序，末期治理稳定");
   if (
     evidence.activeRuleMonths >= 20 * 12 &&
     end.stability >= 75 && evidence.stabilityDelta >= 0 &&
@@ -440,7 +444,10 @@ function pickSoftUniqueEpithet(
   const penalties = new Map<string, number>();
   [...recent].reverse().forEach((name, index) => {
     if (!name) return;
-    penalties.set(name, (penalties.get(name) ?? 0) + (EPITHET_RECENCY_PENALTIES[index] ?? 0));
+    const penalty = DISASTER_EPITHETS.has(name)
+      ? Math.round((EPITHET_RECENCY_PENALTIES[index] ?? 0) * 0.25)
+      : EPITHET_RECENCY_PENALTIES[index] ?? 0;
+    penalties.set(name, (penalties.get(name) ?? 0) + penalty);
   });
   return [...candidates].sort((a, b) => {
     const scoreA = (a.score ?? 0) - (penalties.get(a.name) ?? 0);
