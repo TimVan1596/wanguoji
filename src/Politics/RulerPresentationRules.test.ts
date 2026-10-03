@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Ruler } from "./Dynasty";
-import { formatHeirDeathText, getFormalRulers, getLivingHeirs } from "./RulerPresentationRules";
+import { formatHeirDeathText, getFormalRulers, getLivingHeirs, predeceasedParentByMonth } from "./RulerPresentationRules";
 
 const formal = { id: "r1", houseName: "姬氏", givenName: "安", bornYear: 0, status: "dead" as const, accessionYear: 20, reignOrdinal: 1, chronicle: {} as NonNullable<Ruler["chronicle"]> };
 const heir = { id: "h1", houseName: "姬氏", givenName: "衡", bornYear: 30, status: "heir" as const };
@@ -17,5 +17,11 @@ describe("ruler presentation rules", () => {
   it("formats heir death with the recorded cause", () => {
     expect(formatHeirDeathText("姬衡", "natural", "燕王")).toBe("储君姬衡去世，先于燕王而卒。");
     expect(formatHeirDeathText("姬衡", "combat", "燕王")).toContain("战死");
+  });
+
+  it("does not call a same-month death prior to the parent", () => {
+    expect(predeceasedParentByMonth(50, 50)).toBe(false);
+    expect(predeceasedParentByMonth(49, 50)).toBe(true);
+    expect(predeceasedParentByMonth(50)).toBe(true);
   });
 });

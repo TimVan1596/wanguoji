@@ -101,6 +101,7 @@ export function buildRulerTags(evidence: RulerHistoricalEvidence) {
 }
 
 const RULER_EVENT_TYPES = new Set<WorldEvent["type"]>([
+  "heir-died",
   "city-captured",
   "city-recovered",
   "capital-fallen",
@@ -122,6 +123,7 @@ const RULER_EVENT_TYPES = new Set<WorldEvent["type"]>([
 ]);
 
 const RULER_EVENT_PRIORITIES: Partial<Record<WorldEvent["type"], number>> = {
+  "heir-died": 82,
   "state-founded": 120,
   "emperor-proclaimed": 120,
   "world-unification": 120,

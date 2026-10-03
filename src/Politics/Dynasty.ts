@@ -46,6 +46,7 @@ import {
   deriveHeirBirthMonth,
   isNaturallyDeadByMonth,
 } from "./RulerLifespanRules";
+import { predeceasedParentByMonth } from "./RulerPresentationRules";
 
 export type RulerStatus = "ruling" | "exiled" | "heir" | "dead";
 export type RulerRelationType =
@@ -714,10 +715,15 @@ class DynastyRegistryStore {
       const parent = heir.parentId
         ? dynasty.rulers.find((ruler) => ruler.id === heir.parentId)
         : undefined;
-      if (parent?.chronicle) {
+      const heirDeathMonth = heir.naturalDeathYear ?? heir.plannedEndYear;
+      if (
+        parent?.chronicle &&
+        heirDeathMonth !== undefined &&
+        predeceasedParentByMonth(heirDeathMonth, parent.endYear)
+      ) {
         const team = Game.Core?.teams.find((item) => item.name === dynasty.factionId);
         const parentTitle = team ? formatRulerTitleAtMonth(team, "", year) : "父君";
-        const event = WorldHistory.addHeirDied(
+        const eventId = WorldHistory.addHeirDied(
           year,
           dynasty.factionId,
           heir.id,
@@ -727,7 +733,7 @@ class DynastyRegistryStore {
           "natural",
           parentTitle
         );
-        parent.chronicle.notableEventIds.push(event.id);
+        parent.chronicle.notableEventIds.push(eventId);
       }
     });
     dynasty.heirIds = dynasty.heirIds.filter((heirId) => {

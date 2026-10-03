@@ -2,6 +2,20 @@ import { describe, expect, it } from "vitest";
 import WorldHistory, { formatEventDate } from "./WorldHistory";
 
 describe("world history", () => {
+  it("stores structured heir-death facts and links the event to the parent ruler", () => {
+    WorldHistory.reset();
+    const id = WorldHistory.addHeirDied(880, "燕", "heir-1", "ruler-1", "姬衡", 23, "natural", "燕王");
+    const event = WorldHistory.getEvents().find((item) => item.id === id);
+    expect(event).toMatchObject({
+      type: "heir-died",
+      monthIndex: 880,
+      actorFactionId: "燕",
+      rulerId: "ruler-1",
+      metadata: { heirId: "heir-1", parentRulerId: "ruler-1", heirName: "姬衡", age: 23, reason: "natural" },
+    });
+    expect(event?.description).toBe("储君姬衡去世，先于燕王而卒。");
+  });
+
   it("normal succession creates a single ruler-succession event", () => {
     WorldHistory.reset();
     WorldHistory.addRulerSuccession(31, "齐", "田惠", "田康", {

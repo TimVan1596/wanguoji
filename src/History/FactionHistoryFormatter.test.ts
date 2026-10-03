@@ -105,6 +105,18 @@ const factions = new Map([
 ]);
 
 describe("faction history formatter", () => {
+  it("renders structured heir death in the father's faction chronicle", () => {
+    const heirDeath = event({
+      type: "heir-died",
+      actorFactionId: "魏",
+      rulerId: "father-ruler",
+      factionIds: ["魏"],
+      metadata: { parentRulerId: "father-ruler", heirId: "heir", heirName: "姬衡", age: 23, reason: "natural", parentRulerTitle: "魏王" },
+    });
+    expect(formatFactionHistoryEvent(heirDeath, "魏", factions)).toBe("储君姬衡去世，先于魏王而卒。");
+    expect(formatFactionHistoryEvent(heirDeath, "楚", factions)).toBeUndefined();
+  });
+
   it("does not relate world start to every faction chronicle", () => {
     expect(getFactionEventRelation(event({ type: "world-born", factionIds: ["秦"] }), "秦")).toBe("NONE");
   });

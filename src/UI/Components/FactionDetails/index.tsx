@@ -51,7 +51,7 @@ import {
 } from "../../../Politics/RulerChronicle";
 import { deriveRulerAssessment } from "../../../Politics/RulerHistoriography";
 import { deriveRulerTenureEvidence } from "../../../Politics/RulerTenureEvidence";
-import { getLivingHeirs } from "../../../Politics/RulerPresentationRules";
+import { getFormalRulers, getLivingHeirs, isFormalRulerRecord } from "../../../Politics/RulerPresentationRules";
 import {
   formatPosthumousRulerName,
   getNotablePosthumousRulers,
@@ -630,7 +630,7 @@ function DynastyTree({
   onSelectedRulerIdChange: (id: string | undefined) => void;
 }) {
   const livingHeirs = getLivingHeirs(rulers);
-  const formalRulers = rulers.filter(isFormalRuler);
+  const formalRulers = getFormalRulers(rulers);
   if (formalRulers.length === 0 && livingHeirs.length === 0) {
     return (
       <Typography fontSize="0.9rem" color="var(--gg-text-muted)">
@@ -905,11 +905,7 @@ type FormalRuler = Ruler & {
 };
 
 function isFormalRuler(ruler: Ruler): ruler is FormalRuler {
-  return (
-    ruler.reignOrdinal !== undefined &&
-    ruler.accessionYear !== undefined &&
-    ruler.chronicle !== undefined
-  );
+  return isFormalRulerRecord(ruler);
 }
 
 function stringMetadata(value: string | number | undefined) {

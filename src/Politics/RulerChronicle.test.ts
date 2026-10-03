@@ -11,6 +11,23 @@ import { deriveRulerHistoricalEvidence, formatAccessionAge } from "./RulerHistor
 import { yearsToMonths } from "../Simulation/WorldTime";
 
 describe("ruler chronicle", () => {
+  it("includes a structured heir-death event in the parent's notable history", () => {
+    const event = {
+      id: "heir-death",
+      year: 50,
+      monthIndex: 50,
+      category: "politics" as const,
+      type: "heir-died" as const,
+      title: "储君姬衡去世",
+      actorFactionId: "燕",
+      rulerId: "parent",
+      metadata: { parentRulerId: "parent", heirName: "姬衡", age: 23, reason: "natural" },
+      importance: "normal" as const,
+    };
+    expect(getRulerHistoricalEvents([event], { id: "parent", accessionYear: 10 }, "燕", 100, [event.id]))
+      .toEqual([event]);
+  });
+
   it("uses objective accession-age context bands", () => {
     expect(formatAccessionAge(7)).toContain("幼年即位");
     expect(formatAccessionAge(14)).toContain("少年即位");

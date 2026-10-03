@@ -26,3 +26,7 @@ export function formatHeirDeathText(
   const cause = reason === "combat" ? "战死" : reason === "captured" ? "被俘处死" : "去世";
   return `储君${heirName}${cause}，先于${parentTitle}而卒。`;
 }
+
+export function predeceasedParentByMonth(heirDeathMonth: number, parentEndMonth?: number) {
+  return parentEndMonth === undefined || heirDeathMonth < parentEndMonth;
+}
