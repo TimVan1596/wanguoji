@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99924h4
+
+- Kept the genealogy preview toolbar fixed within the faction-details column and placed the tree in its own horizontal scroll viewport.
+- Replaced the full-screen genealogy view with a large centered dialog featuring bounded zoom, fit-to-window sizing, current-ruler location, and centered layout for smaller trees.
+- No succession rules, WorldSave schema, gameplay, or ruler historiography changes.
+
 ## v0.99924h3
 
 - Added a single age-eligible dynastic bootstrap candidate for initial rulers even in one-city/crisis starts; later crisis periods still do not expand candidate pools.
