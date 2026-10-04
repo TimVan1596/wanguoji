@@ -28,6 +28,10 @@ import {
   subscribeWorldSaveStorageDiagnostics,
   WorldSaveStorageDiagnostics,
 } from "../../Persistence/WorldSaveDiagnostics";
+import {
+  getGenealogyViewerDiagnostics,
+  subscribeGenealogyViewerDiagnostics,
+} from "./FactionDetails/GenealogyViewerDiagnostics";
 
 let debugMemorySnapshot: WorldSaveV1 | undefined;
 
@@ -54,6 +58,7 @@ export default function WorldDiagnosticsPanel() {
   const [hydrationStatus, setHydrationStatus] = useState("");
   const [canonicalDiff, setCanonicalDiff] = useState<CanonicalWorldSaveDiff>();
   const [storageDiagnostics, setStorageDiagnostics] = useState<WorldSaveStorageDiagnostics>(getWorldSaveStorageDiagnostics);
+  const [genealogyViewer, setGenealogyViewer] = useState(getGenealogyViewerDiagnostics);
   const [desktopDiagnostics, setDesktopDiagnostics] = useState<DesktopDiagnostics>();
   const [copyFeedback, setCopyFeedback] = useState("");
   useEffect(() => {
@@ -64,6 +69,7 @@ export default function WorldDiagnosticsPanel() {
     const unsubscribe = subscribeWorldSaveStorageDiagnostics(setStorageDiagnostics);
     return () => { unsubscribe(); };
   }, []);
+  useEffect(() => subscribeGenealogyViewerDiagnostics(setGenealogyViewer), []);
   useEffect(() => {
     const bridge = window.gridGodDesktop;
     if (!bridge?.getDiagnostics) return;
@@ -197,6 +203,7 @@ export default function WorldDiagnosticsPanel() {
       worldRngAlgorithm: WORLD_RNG_ALGORITHM,
       worldRngPosition: worldRandom.exportState().position,
       determinismCheckpoints: determinism?.checkpoints,
+      genealogyViewer,
       mode: runtime?.runtimeMode ?? (isDesktopContinuousRuntime() ? "DESKTOP_CONTINUOUS" : "WEB_CATCH_UP"),
       platform: desktopDiagnostics?.platform ?? window.gridGodDesktop?.platform,
       electronVersion: window.gridGodDesktop?.electronVersion,
@@ -306,6 +313,7 @@ export default function WorldDiagnosticsPanel() {
     ["Persistence", coreReportData.persistence],
     ["Hydration", { ...coreReportData.hydration, lastStage: hydration?.lastStage, collider: colliderDiagnostics }],
     ["Runtime Liveness", { runtime, simulationCounters: core?.getSimulationDiagnostics() }],
+    ["Genealogy Viewer", genealogyViewer],
     ["Runtime Units", coreReportData.units],
     ["Population Transition Audit", populationTransitions],
     ["Frame Performance", coreReportData.performance],
@@ -343,6 +351,7 @@ export default function WorldDiagnosticsPanel() {
     <Box sx={{ position: "fixed", zIndex: 5000, right: 350, bottom: 8, width: 360, maxHeight: "48vh", overflowY: "auto", p: 1, bgcolor: "rgba(20,24,28,.95)", color: "#fff", border: "1px solid #90caf9", fontSize: 11 }}>
       <Typography variant="subtitle2" sx={{ color: "#90caf9" }}>世界诊断（debug=1）</Typography>
       <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9, my: 0.5 }}>{statusSummary}</Typography>
+      <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{`Genealogy viewer: open=${genealogyViewer.open} lastCloseSource=${genealogyViewer.lastCloseSource ?? "—"} MUI reason=${genealogyViewer.lastMuiReason ?? "—"}`}</Typography>
       <Button size="small" variant="outlined" sx={{ color: "#90caf9", borderColor: "#90caf9" }} onClick={() => void copyReport(coreReport, "核心诊断")}>复制核心诊断</Button>
       <Button size="small" variant="outlined" sx={{ ml: 0.5, color: "#a5d6a7", borderColor: "#a5d6a7" }} onClick={() => void copyReport(fullReport, "完整诊断")}>复制全部诊断</Button>
       <Snackbar open={Boolean(copyFeedback)} autoHideDuration={2200} onClose={() => setCopyFeedback("")}>

@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99924h4c
+
+- Rebuilt the full genealogy viewer with the same standard MUI Dialog, DialogTitle, and DialogContent pattern used by the manually verified Era Atlas viewer; the dialog host and open state now live in FactionProfile outside the keyed dynasty tree.
+- Added debug-only genealogy viewer lifecycle diagnostics, including the actual MUI close reason and explicit, Escape, backdrop, faction-change, or host-unmount source.
+- No succession, genealogy data, WorldSave schema, or gameplay changes.
+
 ## v0.99924h4b
 
 - Replaced the genealogy Dialog with MUI Modal + ClickAwayListener + Paper: all Paper interactions remain open, while outside clicks, Escape, and the explicit close button close it.

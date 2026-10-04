@@ -45,6 +45,7 @@ const CORE_FIELDS: Array<[string, string]> = [
   ["suspend count", "runtime.suspendCount"],
   ["last suspend duration", "runtime.lastSuspendDuration"],
   ["resume catch-up", "runtime.resumeCatchUp"],
+  ["genealogy viewer", "runtime.genealogyViewer"],
   ["suspend policy", "runtime.suspendPolicy"],
   ["logical users", "units.logicalUsers"],
   ["root players", "units.rootPlayers"],

@@ -1,6 +1,5 @@
 import { Box, Button, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import type { ReactNode } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getFactionStability } from "../../../Components/City";
 import Game from "../../../Game/Game";
@@ -813,6 +812,141 @@ function DynastyTree({
         })}
       </Box>
       </>}
+    </Box>
+  );
+}
+
+function GenealogyDialog({
+  open,
+  onClose,
+  dynasty,
+  rulers,
+  currentRulerId,
+  team,
+}: {
+  open: boolean;
+  onClose: (source: GenealogyViewerCloseSource, muiReason?: string) => void;
+  dynasty?: Dynasty;
+  rulers: Ruler[];
+  currentRulerId?: string | null;
+  team: RootState["root"]["teams"][number];
+}) {
+  const [scale, setScale] = useState(1);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const treeRef = useRef<HTMLDivElement>(null);
+  const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
+  const genealogy = buildPoliticalGenealogy(
+    rulers,
+    currentRulerId,
+    dynasty?.designatedHeirId,
+    dynasty?.heirIds ?? []
+  );
+  useLayoutEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const update = () => setViewportSize({ width: viewport.clientWidth, height: viewport.clientHeight });
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(viewport);
+    if (treeRef.current) observer.observe(treeRef.current);
+    return () => observer.disconnect();
+  }, [open]);
+  const treeWidth = treeRef.current?.scrollWidth ?? 0;
+  const treeHeight = treeRef.current?.scrollHeight ?? 0;
+  const genealogyCanvas = getGenealogyCanvasLayout(
+    treeWidth,
+    treeHeight,
+    viewportSize.width,
+    viewportSize.height,
+    scale
+  );
+  const fitGenealogyToWindow = () => {
+    setScale(getGenealogyFitScale(
+      treeRef.current?.scrollWidth ?? 0,
+      treeRef.current?.scrollHeight ?? 0,
+      viewportRef.current?.clientWidth ?? 0,
+      viewportRef.current?.clientHeight ?? 0
+    ));
+    if (viewportRef.current) {
+      viewportRef.current.scrollTo({ left: 0, top: 0, behavior: "smooth" });
+    }
+  };
+  const locateCurrentRuler = () => {
+    const currentNode = treeRef.current?.querySelector<HTMLElement>(`[data-ruler-id="${currentRulerId}"]`);
+    currentNode?.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" });
+  };
+  return (
+    <Dialog
+      open={open}
+      onClose={(_, reason) => {
+        onClose(reason === "escapeKeyDown" ? "ESCAPE" : "BACKDROP", reason);
+      }}
+      fullWidth
+      maxWidth="xl"
+      PaperProps={{ sx: { width: "90vw", height: "84vh", maxWidth: 1500, display: "flex", flexDirection: "column" } }}
+    >
+      <DialogTitle sx={{ pb: 0.5, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1 }}>
+        <Typography variant="h6">政治宗谱</Typography>
+        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", justifyContent: "flex-end" }}>
+          <Button size="small" onClick={() => setScale((value) => clampGenealogyScale(value - GENEALOGY_SCALE_STEP))} disabled={scale <= 0.5}>－</Button>
+          <Button size="small" onClick={() => setScale(1)} sx={{ minWidth: 48 }}>{Math.round(scale * 100)}%</Button>
+          <Button size="small" onClick={() => setScale((value) => clampGenealogyScale(value + GENEALOGY_SCALE_STEP))} disabled={scale >= 1.6}>＋</Button>
+          <Button size="small" onClick={fitGenealogyToWindow}>适应窗口</Button>
+          <Button size="small" onClick={locateCurrentRuler} disabled={!currentRulerId}>定位当今君主</Button>
+          <Button size="small" onClick={() => onClose("EXPLICIT")}>关闭</Button>
+        </Box>
+      </DialogTitle>
+      <DialogContent ref={viewportRef} sx={{ display: "flex", flexDirection: "column", minHeight: 0, overflow: "auto" }}>
+        {genealogy.length ? (
+          <Box sx={{ position: "relative", width: genealogyCanvas.width, height: genealogyCanvas.height, minWidth: "100%", minHeight: "100%" }}>
+            <Box ref={treeRef} sx={{ position: "absolute", left: genealogyCanvas.left, top: genealogyCanvas.top, width: "max-content", transform: `scale(${scale})`, transformOrigin: "top left", display: "flex", alignItems: "flex-start", gap: 3, py: 2 }}>
+              {genealogy.map((root) => <GenealogyTreeNode key={root.ruler.id} node={root} dynasty={dynasty} currentRulerId={currentRulerId} team={team} />)}
+            </Box>
+          </Box>
+        ) : <Typography color="var(--gg-text-muted)">暂无可展示的宗谱关系。</Typography>}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function GenealogyTreeNode({
+  node,
+  dynasty,
+  currentRulerId,
+  team,
+}: {
+  node: ReturnType<typeof buildPoliticalGenealogy>[number];
+  dynasty?: Dynasty;
+  currentRulerId?: string | null;
+  team: RootState["root"]["teams"][number];
+}) {
+  const ruler = node.ruler;
+  const badges = [
+    ruler.id === currentRulerId ? "当前" : undefined,
+    ruler.id === dynasty?.designatedHeirId ? "储君" : undefined,
+    dynasty?.heirIds.includes(ruler.id) && ruler.id !== dynasty.designatedHeirId ? "宗室候选" : undefined,
+    ruler.chronicle?.foundedStateName ? "开国" : undefined,
+    ruler.chronicle?.proclaimedEmperorMonth !== undefined ? "称帝" : undefined,
+    ruler.endReason === "彻底灭亡" ? "亡国" : undefined,
+    ruler.chronicle && ruler.chronicle.restorationsDuringReign > 0 ? "复国" : undefined,
+    ruler.reignOrdinal !== undefined ? `第${ruler.reignOrdinal}代` : ruler.status === "kin" ? "在世宗亲" : undefined,
+  ].filter(Boolean);
+  return (
+    <Box data-ruler-id={ruler.id} sx={{ display: "flex", flexDirection: "column", alignItems: "center", flex: "0 0 auto", position: "relative", px: 0.5 }}>
+      <Box sx={{ border: "1px solid var(--gg-border)", borderRadius: "var(--gg-radius)", px: 0.8, py: 0.45, background: ruler.id === currentRulerId ? "var(--gg-panel)" : "transparent", whiteSpace: "nowrap" }}>
+        <Typography fontSize="0.83rem" fontWeight={ruler.id === currentRulerId || ruler.id === dynasty?.designatedHeirId ? 700 : 400}>
+          {formatRulerRowName(ruler, team)} <Box component="span" color="var(--gg-text-muted)">· {badges.join(" · ") || "宗室成员"}</Box>
+        </Typography>
+      </Box>
+      {node.children.length ? (
+        <Box sx={{ display: "flex", position: "relative", pt: 1.5, mt: 0.15, gap: 0.5, alignItems: "flex-start", "&::before": { content: '""', position: "absolute", top: 0, left: "50%", height: 12, borderLeft: "1px solid var(--gg-border)" } }}>
+          {node.children.map((child, index) => (
+            <Box key={child.ruler.id} sx={{ position: "relative", pt: 1.5, "&::before": { content: '""', position: "absolute", top: 0, left: "50%", height: 12, borderLeft: "1px solid var(--gg-border)" }, ...(node.children.length > 1 && index === 0 ? { "&::after": { content: '""', position: "absolute", top: 0, left: "50%", right: "-50%", borderTop: "1px solid var(--gg-border)" } } : {}), ...(node.children.length > 1 && index === node.children.length - 1 ? { "&::after": { content: '""', position: "absolute", top: 0, left: "-50%", right: "50%", borderTop: "1px solid var(--gg-border)" } } : {}), ...(node.children.length > 2 && index > 0 && index < node.children.length - 1 ? { "&::after": { content: '""', position: "absolute", top: 0, left: "-50%", right: "-50%", borderTop: "1px solid var(--gg-border)" } } : {}) }}>
+              <GenealogyTreeNode node={child} dynasty={dynasty} currentRulerId={currentRulerId} team={team} />
+            </Box>
+          ))}
+        </Box>
+      ) : null}
     </Box>
   );
 }

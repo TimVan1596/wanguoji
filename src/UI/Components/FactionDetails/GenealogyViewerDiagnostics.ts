@@ -25,7 +25,9 @@ export function getGenealogyViewerDiagnostics() {
 
 export function subscribeGenealogyViewerDiagnostics(listener: (value: GenealogyViewerDiagnostics) => void) {
   listeners.add(listener);
-  return () => listeners.delete(listener);
+  return () => {
+    listeners.delete(listener);
+  };
 }
 
 export function recordGenealogyViewerOpen() {
