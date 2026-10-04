@@ -50,7 +50,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     const save = fixture();
     save.factions.push({ ...save.factions[0], factionId: "wei", displayName: "魏" });
     save.diplomacy.relations = [{
-      factionAId: "qin", factionBId: "wei", status: "ALLIANCE", startedMonth: 12, expiresMonth: 132,
+      factionAId: "qin", factionBId: "threat", status: "ALLIANCE", startedMonth: 12, expiresMonth: 132,
       reason: "COMMON_THREAT_ALLIANCE", commonThreatFactionId: "threat",
       preconditionStatus: "NON_AGGRESSION", preconditionStartedMonth: 0, preconditionDurationMonths: 24,
     }];

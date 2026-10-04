@@ -17,6 +17,8 @@ import packageJson from "../../../package.json";
 import { DesktopDiagnostics, isDesktopContinuousRuntime } from "../../Runtime/DesktopRuntime";
 import { getNameGenerationSummary } from "../../Politics/NameGenerationTelemetry";
 import { getCityNamingSummary } from "../../Simulation/CityNamingTelemetry";
+import DynastyRegistry from "../../Politics/Dynasty";
+import { summarizeProvisionalRulers } from "../../Politics/ProvisionalRulerDiagnostics";
 import { getEraAtlasDiagnostics } from "../../Simulation/EraMapSnapshot";
 import { BASE_PLAY_RATE } from "../../Simulation/SimulationDriver";
 import worldRandom, { WORLD_RNG_ALGORITHM } from "../../Simulation/WorldRandom";
@@ -109,7 +111,16 @@ export default function WorldDiagnosticsPanel() {
     const naming = getNameGenerationSummary();
     const cityNaming = getCityNamingSummary();
     const eraAtlas = getEraAtlasDiagnostics(WorldEra.getEras());
-    return { ranked, currentEra, candidate, validity, liveClassification, cycle, longRun, naming, cityNaming, eraAtlas };
+    const dynasties = DynastyRegistry.exportState().dynasties;
+    const provisionalRulers = summarizeProvisionalRulers(
+      dynasties,
+      new Map(teams.map((team) => [team.name, {
+        identityStage: team.identityStage,
+        status: team.status,
+        sovereigntyHistory: team.sovereigntyHistory,
+      }]))
+    );
+    return { ranked, currentEra, candidate, validity, liveClassification, cycle, longRun, naming, cityNaming, eraAtlas, provisionalRulers };
   }, [teams, worldMonth, worldPhase]);
 
   if (!debugEnabled()) {
@@ -233,6 +244,7 @@ export default function WorldDiagnosticsPanel() {
       avatarRenderer: getAvatarRendererMode(),
     } : undefined,
     populationTransitions,
+    provisionalRulers: diagnostics.provisionalRulers,
     performance: framePerformance ? {
       fps: framePerformance.frameDeltaMs.average && framePerformance.frameDeltaMs.average > 0 ? 1000 / framePerformance.frameDeltaMs.average : undefined,
       averageFrameMs: framePerformance.frameDeltaMs.average,
@@ -318,6 +330,7 @@ export default function WorldDiagnosticsPanel() {
     ["Runtime Units", coreReportData.units],
     ["Population Transition Audit", populationTransitions],
     ["Diplomacy", core?.getDiplomacyDiagnostics()],
+    ["Provisional ruler diagnostics", diagnostics.provisionalRulers],
     ["Frame Performance", coreReportData.performance],
     ["World Scale", coreReportData.worldScale],
     ["Desktop Runtime", { diagnostics: desktopDiagnostics, runtime: desktopRuntime }],
@@ -364,6 +377,15 @@ export default function WorldDiagnosticsPanel() {
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{summary}</Typography>
         <Typography variant="caption">关键门槛（仅解释真实规则，不改变规则）</Typography>
         {thresholds.map(([label, text]) => <Typography key={label} variant="caption" component="div">{label}：{text}</Typography>)}
+      </details>
+      <details>
+        <summary>临时势力首领诊断</summary>
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{[
+          `当前临时势力首领：${diagnostics.provisionalRulers.currentProvisionalRulerCount}`,
+          `历史首领战死：${diagnostics.provisionalRulers.provisionalCombatDeathCount}`,
+          `已结束任期数：${diagnostics.provisionalRulers.completedProvisionalRulerCount}`,
+          `已结束任期中位数：${diagnostics.provisionalRulers.medianCompletedTenureMonths === undefined ? "—" : formatWorldDuration(diagnostics.provisionalRulers.medianCompletedTenureMonths)}`,
+        ].join("\n")}</Typography>
       </details>
       <details>
         <summary>姓名文化统计（会话）</summary>

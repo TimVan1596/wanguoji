@@ -1,12 +1,23 @@
 import { afterEach, describe, expect, it } from "vitest";
 import Diplomacy, { DiplomacyRegistry, DiplomacySystem, diplomaticPairKey, isHostileActionAllowed } from "./Diplomacy";
 import { DIPLOMACY_NON_AGGRESSION_DURATION_MONTHS, DIPLOMACY_TRUCE_DURATION_MONTHS } from "./Diplomacy";
+import { ALLIANCE_DURATION_MONTHS } from "./StrategicUnionRules";
+import { areFactionsTerritoriallyAdjacent } from "./StrategicUnionRules";
 
 function faction(name: string, blocks: number, loyalty = 50, status = "ACTIVE") {
   return {
     name, status, isDie: status !== "ACTIVE",
     blocks: { children: new Set(Array.from({ length: blocks }, (_, i) => `${name}-${i}`)) },
     cities: blocks ? [{ loyalty }] : [],
+  } as never;
+}
+
+function territoryFaction(name: string, coordinates: Array<{ x: number; y: number }>, parentFactionId: string) {
+  return {
+    name, displayName: name, status: "ACTIVE", isDie: false, identityStage: "STATE",
+    origin: { type: "SPLIT", parentFactionId },
+    blocks: { children: { size: coordinates.length, entries: coordinates } },
+    cities: [{ loyalty: 60 }],
   } as never;
 }
 
@@ -30,6 +41,43 @@ describe("Diplomacy", () => {
     Diplomacy.setRelation({ factionAId: "a", factionBId: "b", status: "NON_AGGRESSION", startedMonth: 0, expiresMonth: 60, reason: "COMMON_THREAT_NON_AGGRESSION" });
     expect(Diplomacy.canAttack("a", "b", 1)).toBe(false);
     expect(Diplomacy.canAttack("b", "a", 1)).toBe(false);
+  });
+
+  it("requires an aged non-aggression pact and real common-threat contact before alliance, without requiring A/B adjacency", () => {
+    const events: Array<{ type: string; triggerContext?: unknown }> = [];
+    const system = new DiplomacySystem(Diplomacy, () => [], (event) => events.push(event), 1);
+    const a = territoryFaction("a", [{ x: 0, y: 0 }], "house");
+    const b = territoryFaction("b", [{ x: 4, y: 0 }], "house");
+    const threat = territoryFaction("threat", [
+      { x: 1, y: 0 }, { x: 3, y: 0 },
+      ...Array.from({ length: 38 }, (_, index) => ({ x: 10 + index, y: 5 })),
+    ], "other");
+    const teams = [a, b, threat];
+    system.update(12, teams, 80, []);
+    expect(Diplomacy.get("a", "b")?.status).not.toBe("ALLIANCE");
+    Diplomacy.setRelation({ factionAId: "a", factionBId: "b", status: "NON_AGGRESSION", startedMonth: 0, expiresMonth: 120, reason: "COMMON_THREAT_NON_AGGRESSION", commonThreatFactionId: "threat" });
+    system.update(12, teams, 80, []);
+    expect(Diplomacy.get("a", "b")?.status).toBe("NON_AGGRESSION");
+    system.update(24, teams, 80, []);
+    expect(Diplomacy.get("a", "b")).toMatchObject({
+      status: "ALLIANCE", startedMonth: 24, expiresMonth: 24 + ALLIANCE_DURATION_MONTHS,
+      commonThreatFactionId: "threat", preconditionStatus: "NON_AGGRESSION", preconditionDurationMonths: 24,
+    });
+    expect(Diplomacy.canAttack("a", "b", 24)).toBe(false);
+    expect(Diplomacy.canAttack("b", "a", 24)).toBe(false);
+    expect(areFactionsTerritoriallyAdjacent(a, b, 1)).toBe(false);
+    expect(events.some(({ type }) => type === "alliance-signed")).toBe(true);
+  });
+
+  it("limits a faction to one strategic alliance and expires alliance terms", () => {
+    const events: string[] = [];
+    const system = new DiplomacySystem(Diplomacy, () => [], ({ type }) => events.push(type));
+    Diplomacy.setRelation({ factionAId: "a", factionBId: "b", status: "ALLIANCE", startedMonth: 0, expiresMonth: 120, reason: "COMMON_THREAT_ALLIANCE" });
+    Diplomacy.setRelation({ factionAId: "a", factionBId: "c", status: "NON_AGGRESSION", startedMonth: 0, expiresMonth: 200, reason: "COMMON_THREAT_NON_AGGRESSION" });
+    const staleTeam = (name: string) => ({ ...faction(name, 1), blocks: { children: { size: 1, entries: [{ x: 0, y: 0 }] } }, origin: { type: "REBEL", parentFactionId: "p" } });
+    system.update(120, [staleTeam("a"), staleTeam("b"), staleTeam("c"), faction("power", 80)], 100, []);
+    expect(events).toContain("alliance-expired");
+    expect(Diplomacy.get("a", "b")).toBeUndefined();
   });
 
   it("routes hostile occupation and siege attempts through the shared permission check", () => {
