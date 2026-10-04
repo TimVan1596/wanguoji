@@ -38,6 +38,7 @@ import {
 } from "./RulerTitleRules";
 import { getSuccessionShockMultiplier } from "../Simulation/SovereigntyModifiers";
 import { finalizeRulerPosthumousNames } from "./PosthumousRules";
+import worldRandom from "../Simulation/WorldRandom";
 import { createSuccessorDynastyHouseName } from "./DynastySurnameGenerator";
 import { getUnrelatedSuccessorRelation } from "./DynastySuccessionIdentity";
 import { cultureGivenNamePools, deriveNameCulture } from "./NameCulture";
@@ -570,13 +571,13 @@ class DynastyRegistryStore {
     predecessorId?: string
   ): Ruler {
     this.sequence += 1;
-    const accessionAge = Phaser.Math.Between(
+    const accessionAge = worldRandom.int(
       RULER_MIN_AGE_AT_ACCESSION,
       RULER_MAX_AGE_AT_ACCESSION
     );
     const bornYear = accessionYear - yearsToMonths(accessionAge);
     const naturalDeathYear = createNaturalDeathMonth(bornYear, (max) =>
-      Phaser.Math.Between(0, max - 1)
+      worldRandom.pickIndex(max)
     );
     const recentNames =
       this.dynasties
@@ -587,7 +588,7 @@ class DynastyRegistryStore {
       id: `${team.name}-ruler-${this.sequence}`,
       houseName,
       givenName: pickRulerGivenName(getRulerGivenNamePool(houseName), recentNames, (max) =>
-        Phaser.Math.Between(0, max - 1)
+        worldRandom.pickIndex(max)
       ),
       bornYear,
       naturalDeathYear,
@@ -619,16 +620,16 @@ class DynastyRegistryStore {
       ? deriveHeirBirthMonth(
           parent.bornYear,
           politicalStartYear,
-          (max) => Phaser.Math.Between(0, max - 1),
+          (max) => worldRandom.pickIndex(max),
           yearsToMonths(HEIR_PARENT_MIN_AGE_AT_BIRTH),
           yearsToMonths(HEIR_PARENT_MAX_AGE_AT_BIRTH)
         )
       : undefined;
     const bornYear = derivedBornYear ?? politicalStartYear - yearsToMonths(
-          Phaser.Math.Between(RULER_MIN_AGE_AT_ACCESSION, RULER_MAX_AGE_AT_ACCESSION)
+          worldRandom.int(RULER_MIN_AGE_AT_ACCESSION, RULER_MAX_AGE_AT_ACCESSION)
         );
     const naturalDeathYear = createNaturalDeathMonth(bornYear, (max) =>
-      Phaser.Math.Between(0, max - 1)
+      worldRandom.pickIndex(max)
     );
     const recentNames =
       this.dynasties
@@ -639,7 +640,7 @@ class DynastyRegistryStore {
       id: `${team.name}-ruler-${this.sequence}`,
       houseName,
       givenName: pickRulerGivenName(getRulerGivenNamePool(houseName), recentNames, (max) =>
-        Phaser.Math.Between(0, max - 1)
+        worldRandom.pickIndex(max)
       ),
       bornYear,
       naturalDeathYear,

@@ -1,4 +1,5 @@
 import { recordCityNameGenerated } from "./CityNamingTelemetry";
+import worldRandom from "./WorldRandom";
 
 export type CityNameCategory = "HISTORICAL_CITY" | "HISTORICAL_REGIONAL" | "STYLIZED" | "GENERATED" | "SINGLE";
 export interface CityNameCandidate { name: string; category: CityNameCategory; family?: string; aliasFamily?: string; baseWeight: number }
@@ -73,7 +74,7 @@ const aliasFamilies: Record<string, string> = {
 };
 const forbiddenPatterns = [/^新城\d+$/, /^City-?\d+$/i, /^城市\d+$/];
 
-export function createCityName(existingNames: Iterable<string>, recentNames: Iterable<string> = [], rng: CityNameRng = (max) => Math.floor(Math.random() * max)) {
+export function createCityName(existingNames: Iterable<string>, recentNames: Iterable<string> = [], rng: CityNameRng = (max) => worldRandom.pickIndex(max)) {
   const used = new Set([...existingNames].map(normalizeCityName));
   const recent = [...recentNames].map(normalizeCityName);
   const available = createCityNameCandidates().filter((candidate) => !used.has(candidate.name) && !isForbiddenCityName(candidate.name));

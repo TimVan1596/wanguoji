@@ -1,6 +1,7 @@
 import type { FactionType } from "../Components/Team";
 import { NameCulture } from "./NameCulture";
 import { recordRuntimeHouse } from "./NameGenerationTelemetry";
+import worldRandom from "../Simulation/WorldRandom";
 
 export const HAN_SURNAME_WEIGHTS: Record<string, number> = {
   刘: 9, 王: 10, 李: 10, 张: 9, 陈: 9, 杨: 8, 黄: 8, 赵: 8, 吴: 8, 周: 8,
@@ -38,9 +39,9 @@ export function createSuccessorDynastyHouseName(options: DynastySurnameOptions) 
 }
 
 export function createRuntimeDynastyHouseName(options: DynastySurnameOptions) {
-  const pickIndex = options.pickIndex ?? ((max: number) => Phaser.Math.Between(0, max - 1));
-  const categoryRoll = options.compoundRoll ?? (() => Phaser.Math.Between(1, 100));
-  const cultureRoll = options.cultureRoll ?? (options.compoundRoll ? () => 100 : () => Phaser.Math.Between(1, 100));
+  const pickIndex = options.pickIndex ?? ((max: number) => worldRandom.pickIndex(max));
+  const categoryRoll = options.compoundRoll ?? (() => worldRandom.int(1, 100));
+  const cultureRoll = options.cultureRoll ?? (options.compoundRoll ? () => 100 : () => worldRandom.int(1, 100));
   const existing = countHouseNames(options.existingHouseNames ?? []);
   const recent = new Set(normalizeHouseNames(options.recentHouseNames ?? []));
 

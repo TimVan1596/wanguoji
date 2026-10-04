@@ -75,6 +75,7 @@ import {
   WorldCycleState,
 } from "./WorldCycleRules";
 import { createStateName } from "./StateNameGenerator";
+import worldRandom from "./WorldRandom";
 import Block from "../Components/Block";
 import City from "../Components/City";
 import DynastyRegistry from "../Politics/Dynasty";
@@ -428,7 +429,7 @@ export default class WorldEventSystem {
     }
 
     if (eventType === "population-boom") {
-      const count = Phaser.Math.Between(POPULATION_BOOM_MIN, POPULATION_BOOM_MAX);
+      const count = worldRandom.int(POPULATION_BOOM_MIN, POPULATION_BOOM_MAX);
       const spawned = this.spawnMembers(
         year,
         team,
@@ -495,7 +496,7 @@ export default class WorldEventSystem {
       const requiredMonths = ordinary ? 12 : 24;
       if (year - team.stateFormationEligibleSinceMonth >= requiredMonths) {
           const oldDisplayName = team.displayName;
-          const stateName = createStateName({ capitalName: team.capitalCity?.name ?? team.capital, founderCityName: team.cities[0]?.name, houseName: team.houseName }, activeStateNames, historicalStateNames, (max) => Phaser.Math.Between(0, max - 1));
+          const stateName = createStateName({ capitalName: team.capitalCity?.name ?? team.capital, founderCityName: team.cities[0]?.name, houseName: team.houseName }, activeStateNames, historicalStateNames, (max) => worldRandom.pickIndex(max));
           if (team.formState(stateName, year)) {
             activeStateNames.push(stateName);
             historicalStateNames.push(stateName);
@@ -513,7 +514,7 @@ export default class WorldEventSystem {
         },
         activeStateNames,
         historicalStateNames,
-        (max) => Phaser.Math.Between(0, max - 1)
+        (max) => worldRandom.pickIndex(max)
       );
       if (!team.formState(stateName, year)) {
         return;
@@ -706,7 +707,7 @@ export default class WorldEventSystem {
           createLocalDanmu(
             name,
             team.name,
-            Phaser.Math.Between(minLoyalty, maxLoyalty)
+            worldRandom.int(minLoyalty, maxLoyalty)
           ),
           populationMutation
         )
@@ -772,7 +773,7 @@ export default class WorldEventSystem {
         restorationWeight *
         FactionEffects.getRebellionRiskMultiplier(owner.name) *
         cycleMultiplier;
-      if (Math.random() > chance) {
+      if (worldRandom.next() > chance) {
         continue;
       }
 
@@ -804,7 +805,7 @@ export default class WorldEventSystem {
         ownerStability <= REBEL_OWNER_STABILITY_THRESHOLD_V095 &&
         city.loyalty <= REBEL_LOYALTY_THRESHOLD_V095
       ) {
-        const frontier = isFrontierCity(city) && Math.random() <= FRONTIER_REBELLION_CHANCE;
+        const frontier = isFrontierCity(city) && worldRandom.next() <= FRONTIER_REBELLION_CHANCE;
         if (
           FactionRegistry.createRebelFaction({
             city,
@@ -1001,7 +1002,7 @@ export default class WorldEventSystem {
       "population-boom",
       "heavenly-reinforcements",
     ];
-    return events[Phaser.Math.Between(0, events.length - 1)];
+    return events[worldRandom.pickIndex(events.length)];
   }
 
   private getCycleRebellionChanceMultiplier(
@@ -1143,7 +1144,7 @@ export default class WorldEventSystem {
       return { team, weight };
     });
     const totalWeight = weighted.reduce((sum, item) => sum + item.weight, 0);
-    let roll = Math.random() * totalWeight;
+    let roll = worldRandom.next() * totalWeight;
     for (const item of weighted) {
       roll -= item.weight;
       if (roll <= 0) {
@@ -1156,7 +1157,7 @@ export default class WorldEventSystem {
   private rollNextEventYear(year: number) {
     return (
       year +
-      Phaser.Math.Between(
+      worldRandom.int(
         RANDOM_EVENT_MIN_INTERVAL_MONTHS,
         RANDOM_EVENT_MAX_INTERVAL_MONTHS
       )

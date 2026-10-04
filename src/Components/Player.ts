@@ -10,6 +10,7 @@ import Team from "./Team";
 import User from "./User";
 import type { PlayerRole } from "./User";
 import { getAvatarRendererMode } from "../Runtime/AvatarRendererMode";
+import worldRandom from "../Simulation/WorldRandom";
 
 export default class Player extends Phaser.GameObjects.Container {
   face: CircleMaskImage | Phaser.GameObjects.Image;
@@ -56,7 +57,7 @@ export default class Player extends Phaser.GameObjects.Container {
       this.createOrUpdateLine();
     }
     const vec = this.scene.physics.velocityFromAngle(
-      Math.random() * 360,
+      worldRandom.next() * 360,
       this.speed
     );
     this.Body.setVelocity(vec.x, vec.y);

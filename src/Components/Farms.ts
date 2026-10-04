@@ -4,6 +4,7 @@ import Npc from "./Npc";
 import Team from "./Team";
 import { exportFarmTimerState, FarmTimerSaveState, getFarmTimerRestoreOptions } from "./FarmTimerPersistence";
 import { resolvePublicAssetUrl } from "../Runtime/PublicAssetUrl";
+import worldRandom from "../Simulation/WorldRandom";
 
 export default class Farms extends Phaser.GameObjects.Group {
   farms: Map<string, Phaser.Time.TimerEvent> = new Map();
@@ -36,7 +37,7 @@ export default class Farms extends Phaser.GameObjects.Group {
             delay: config.delay,
             callback: () => {
               if (this.npcs.has(config.name)) {
-                const rand = Phaser.Math.Between(0, 100);
+                const rand = worldRandom.int(0, 100);
                 if (config.rate >= rand) {
                   this.npcs.get(config.name)?.makeChild();
                   Game.Core.toast?.showMessage(

@@ -16,6 +16,7 @@ import {
 } from "../Politics/ExileRules";
 import WorldRemnants from "./WorldRemnants";
 import { getExileLegitimacyDecayMultiplier } from "./SovereigntyModifiers";
+import worldRandom from "./WorldRandom";
 
 export interface ExileState {
   factionId: string;
@@ -46,7 +47,7 @@ class WorldExileStore {
       remnantPopulation,
       legitimacy:
         existing?.legitimacy ??
-        Phaser.Math.Between(EXILE_INITIAL_LEGITIMACY_MIN, EXILE_INITIAL_LEGITIMACY_MAX),
+        worldRandom.int(EXILE_INITIAL_LEGITIMACY_MIN, EXILE_INITIAL_LEGITIMACY_MAX),
       lastLegitimacyMonth: worldMonth,
       lastRemnantDecayMonth: worldMonth,
     };
@@ -99,7 +100,7 @@ class WorldExileStore {
             EXILE_REMNANT_DECAY_INTERVAL_MONTHS
         ) {
           state.lastRemnantDecayMonth = worldMonth;
-          if (Math.random() <= EXILE_REMNANT_DECAY_CHANCE) {
+          if (worldRandom.next() <= EXILE_REMNANT_DECAY_CHANCE) {
             const nextPopulation = decayRemnantPopulation(remnant.population);
             WorldRemnants.setPopulation(team.name, nextPopulation, remnant.extinctYear);
             state.remnantPopulation = nextPopulation;

@@ -1,6 +1,7 @@
 import City from "../Components/City";
 import { FactionType } from "../Components/Team";
 import { createRuntimeDynastyHouseName } from "../Politics/DynastySurnameGenerator";
+import worldRandom from "./WorldRandom";
 
 interface RebelNameCityLike {
   name: string;
@@ -74,8 +75,8 @@ export function createRebelFactionName(
 export function createRebelHouseName(
   city: City | RebelNameCityLike,
   factionType: FactionType,
-  pickIndex = (max: number) => Phaser.Math.Between(0, max - 1),
-  compoundRoll = () => Phaser.Math.Between(1, 100),
+  pickIndex = (max: number) => worldRandom.pickIndex(max),
+  compoundRoll = () => worldRandom.int(1, 100),
   existingHouseNames: Iterable<string | undefined> = []
 ) {
   return createRuntimeDynastyHouseName({

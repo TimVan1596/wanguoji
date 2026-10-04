@@ -11,6 +11,7 @@ import {
 } from "../config/simulation";
 import { resolvePublicAssetUrl } from "../Runtime/PublicAssetUrl";
 import type { PopulationMutationContext } from "./PopulationTransitionAudit";
+import worldRandom from "./WorldRandom";
 
 export type InitialPopulationMap = Record<string, number>;
 
@@ -80,7 +81,7 @@ export default class PopulationSystem {
         roomRatio *
         recoveryRatio *
         getGrowthMultiplier(team);
-      if (Math.random() <= chance) {
+      if (worldRandom.next() <= chance) {
         this.spawn(team, undefined, false, { cause: "NATURAL_GROWTH", month: worldMonth });
       }
     });
@@ -140,7 +141,7 @@ export default class PopulationSystem {
       id,
       name,
       resolvePublicAssetUrl("img/no-face.svg"),
-      Phaser.Math.Between(USER_NATURAL_LOYALTY_MIN, USER_NATURAL_LOYALTY_MAX),
+      worldRandom.int(USER_NATURAL_LOYALTY_MIN, USER_NATURAL_LOYALTY_MAX),
       "NORMAL",
       undefined,
       populationMutation
@@ -148,6 +149,6 @@ export default class PopulationSystem {
     if (user) return user;
     // Legacy join-command routing remains the fallback for natural population.
     return Danmu.Apply(createLocalDanmu(name, team.name,
-      Phaser.Math.Between(USER_NATURAL_LOYALTY_MIN, USER_NATURAL_LOYALTY_MAX)), populationMutation);
+      worldRandom.int(USER_NATURAL_LOYALTY_MIN, USER_NATURAL_LOYALTY_MAX)), populationMutation);
   }
 }

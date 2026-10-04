@@ -46,6 +46,7 @@ import { getTextureProbeSource } from "../Runtime/TextureProbe";
 import { createRuntimeUnitDiagnostics } from "../Simulation/RuntimeUnitDiagnostics";
 import WorldEra from "../Simulation/WorldEra";
 import { captureEraMapSnapshot } from "../Simulation/EraMapSnapshot";
+import worldRandom from "../Simulation/WorldRandom";
 import {
   FACTION_LABEL_REFRESH_MONTHS,
   FOCUSED_FACTION_OTHER_OPACITY,
@@ -429,7 +430,7 @@ export default class Core {
         user.loyalty < 40
           ? EXTINCTION_LOW_SURRENDER_CHANCE
           : EXTINCTION_MID_SURRENDER_CHANCE;
-      if (Math.random() <= surrenderChance) {
+      if (worldRandom.next() <= surrenderChance) {
         surrenderedPopulation += 1;
         user.obedience(conqueror, {
           cause: "SURRENDER_TRANSFER",
@@ -490,7 +491,7 @@ export default class Core {
 
     WorldRemnants.add(fallenTeam.name, remnantPopulation, year);
     const rulerEscaped =
-      remnantPopulation > 0 && Math.random() <= getRulerEscapeChance(remnantPopulation);
+      remnantPopulation > 0 && worldRandom.next() <= getRulerEscapeChance(remnantPopulation);
     const heirContinues =
       remnantPopulation > 0 &&
       (rulerEscaped || DynastyRegistry.resolveCapturedRuler(fallenTeam, conqueror, year));

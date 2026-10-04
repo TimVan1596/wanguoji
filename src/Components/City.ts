@@ -38,6 +38,7 @@ import {
 } from "../Simulation/CityZoneVisual";
 import { calculateImperialStrain, getCityDistanceFromCapital } from "../Simulation/ImperialStrain";
 import { shouldApplySiegeDamage } from "../Simulation/SiegeRules";
+import worldRandom from "../Simulation/WorldRandom";
 import { store } from "../store";
 import Block from "./Block";
 import Team from "./Team";
@@ -662,7 +663,7 @@ export default class City {
     this.lastLoyaltyYear = year;
     if (
       this.ownerFactionId &&
-      Math.random() >
+      worldRandom.next() >
         FactionEffects.getLoyaltyRecoveryMultiplier(this.ownerFactionId)
     ) {
       return;
@@ -682,7 +683,7 @@ export default class City {
       this.loyalty = Math.max(0, this.loyalty - 1);
       return;
     }
-    if (!this.isCapital && strain >= 50 && distance >= 6 && Math.random() < 0.5) {
+    if (!this.isCapital && strain >= 50 && distance >= 6 && worldRandom.next() < 0.5) {
       return;
     }
     if (this.loyalty < CITY_MAX_STABLE_LOYALTY) {

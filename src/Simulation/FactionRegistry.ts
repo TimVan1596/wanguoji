@@ -22,6 +22,7 @@ import { EMPIRE_SPLIT_REGION_RADIUS_CELLS } from "./EmpireSplitRules";
 import CityNameRegistry from "./CityNameRegistry";
 import { getNewCityInitialDefense } from "./CityLifecycle";
 import type { PopulationMutationContext } from "./PopulationTransitionAudit";
+import worldRandom from "./WorldRandom";
 
 interface RebelFactionOptions {
   city: City;
@@ -157,7 +158,7 @@ class FactionRegistryStore {
 
     const lowLoyaltyUsers = [...previousOwner.users]
       .filter((user) => user.loyalty < REBEL_LOW_LOYALTY_USER_THRESHOLD)
-      .slice(0, Phaser.Math.Between(REBEL_INITIAL_POPULATION_MIN, REBEL_INITIAL_POPULATION_MAX));
+      .slice(0, worldRandom.int(REBEL_INITIAL_POPULATION_MIN, REBEL_INITIAL_POPULATION_MAX));
 
     const populationCause = options.godDriven ? "GOD_ACTION" : "REBELLION_TRANSFER";
     lowLoyaltyUsers.forEach((user) => user.obedience(team, {
@@ -168,7 +169,7 @@ class FactionRegistryStore {
     }));
     city.revoltTo(team, year);
 
-    const targetPopulation = Phaser.Math.Between(
+    const targetPopulation = worldRandom.int(
       REBEL_INITIAL_POPULATION_MIN,
       REBEL_INITIAL_POPULATION_MAX
     );
@@ -258,7 +259,7 @@ class FactionRegistryStore {
 
     const lowLoyaltyUsers = [...previousOwner.users]
       .filter((user) => user.loyalty < REBEL_LOW_LOYALTY_USER_THRESHOLD)
-      .slice(0, Phaser.Math.Between(REBEL_INITIAL_POPULATION_MIN, REBEL_INITIAL_POPULATION_MAX));
+      .slice(0, worldRandom.int(REBEL_INITIAL_POPULATION_MIN, REBEL_INITIAL_POPULATION_MAX));
     lowLoyaltyUsers.forEach((user) => user.obedience(team, {
       cause: "EMPIRE_SPLIT_TRANSFER",
       month: year,
@@ -272,7 +273,7 @@ class FactionRegistryStore {
     }
     this.transferNearbyTerritory(previousOwner, team, coreCity);
 
-    const targetPopulation = Phaser.Math.Between(3, 8);
+    const targetPopulation = worldRandom.int(3, 8);
     const needed = Math.max(1, Math.min(2, targetPopulation - lowLoyaltyUsers.length));
     this.spawnMembers(team, needed, "Split", year, {
       cause: "EMPIRE_SPLIT_TRANSFER",
@@ -288,7 +289,7 @@ class FactionRegistryStore {
     const resolvedCityName = cityName ?? CityNameRegistry.allocateCityName(undefined, id, year);
     const city = new City(id, resolvedCityName, team.name, block, year, false);
     city.defense = getNewCityInitialDefense(city.maxDefense);
-    city.loyalty = Phaser.Math.Between(80, 90);
+    city.loyalty = worldRandom.int(80, 90);
     city.claimFortifiedZone(team);
     WorldHistory.addCityFounded(year, team.name, city.name, city.id);
     return city;
@@ -303,7 +304,7 @@ class FactionRegistryStore {
         createLocalDanmu(
           name,
           team.name,
-          Phaser.Math.Between(USER_RESTORED_LOYALTY_MIN, USER_RESTORED_LOYALTY_MAX)
+          worldRandom.int(USER_RESTORED_LOYALTY_MIN, USER_RESTORED_LOYALTY_MAX)
         ),
         populationMutation
       );
@@ -315,7 +316,7 @@ class FactionRegistryStore {
   }
 
   private createRebelColor() {
-    const hue = Phaser.Math.Between(0, 360);
+    const hue = worldRandom.int(0, 360);
     const color = Phaser.Display.Color.HSLToColor(hue / 360, 0.65, 0.48);
     return color.color;
   }

@@ -1,4 +1,5 @@
 import type { SovereigntyRank } from "../Simulation/FactionIdentity";
+import worldRandom from "../Simulation/WorldRandom";
 
 export interface RulerBattleDeathContext {
   reignMonths: number;
@@ -35,7 +36,7 @@ export function shouldRulerBattleDeathOccur(context: RulerBattleDeathContext) {
     return true;
   }
   const risk = getRulerBattleDeathRisk(context.sovereigntyRank);
-  return (context.randomRoll ?? Math.random()) <= risk;
+  return (context.randomRoll ?? worldRandom.next()) <= risk;
 }
 
 export function getRulerBattleDeathRisk(rank: SovereigntyRank = "LEADER") {
