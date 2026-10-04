@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.99925a
+
+- Extended truces to 36 months and non-aggression agreements to 96 months; agreement terms and dates are rendered from their recorded month ranges.
+- Diplomacy signing history now records the actual trigger evidence and both signatory rulers' historical titles; signing events appear in signatory biographies with moderate priority.
+- Added compact active treaty badges to faction ranking and full signing/expiry terms to faction overview; ordinary truces remain normal significance while common-threat non-aggression events are major but not landmarks.
+- No alliance, union, gameplay balance, or WorldSave schema changes.
+
 ## v0.99925
 
 - Added canonical, symmetric bilateral diplomacy with finite truces and non-aggression pacts, periodic fact-based formation rules, expiry, and WorldHistory records.

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { describeDiplomacySigning, formatDiplomacyRelationLines, getFactionDiplomacyBadges } from "./DiplomacyPresentation";
+import { createDiplomacyEventMetadata, describeDiplomacySigning, formatDiplomacyRelationLines, getFactionDiplomacyBadges } from "./DiplomacyPresentation";
 import type { DiplomaticRelation } from "./Diplomacy";
 
 const truce: DiplomaticRelation = {
@@ -43,5 +43,24 @@ describe("diplomacy presentation", () => {
       { relation: relations[1], counterpartId: "han" },
     ]);
     expect(getFactionDiplomacyBadges(relations, "missing")).toEqual([]);
+  });
+
+  it("freezes both rulers and the selected rule evidence in signing metadata", () => {
+    const metadata = createDiplomacyEventMetadata(truce, {
+      reason: "WAR_EXHAUSTION_TRUCE", recentBilateralCaptureCount: 2, stabilityA: 51, stabilityB: 47,
+    }, [
+      { factionId: "qi", rulerId: "r-qi", title: "齐王姬某", role: "君主" },
+      { factionId: "wei", rulerId: "r-wei", title: "魏王姬某", role: "君主" },
+    ]);
+    expect(metadata).toMatchObject({
+      reason: "WAR_EXHAUSTION_TRUCE", recentBilateralCaptureCount: 2,
+      stabilityA: 51, stabilityB: 47,
+      signatoryAFactionId: "qi", signatoryARulerId: "r-qi", signatoryATitle: "齐王姬某",
+      signatoryBFactionId: "wei", signatoryBRulerId: "r-wei", signatoryBTitle: "魏王姬某",
+    });
+    expect(createDiplomacyEventMetadata({ ...truce, reason: "COMMON_THREAT_NON_AGGRESSION" }, {
+      reason: "COMMON_THREAT_NON_AGGRESSION", commonThreatFactionId: "yan",
+      territoryShareA: 4, territoryShareB: 6, threatTerritoryShare: 55,
+    })).toMatchObject({ commonThreatFactionId: "yan", territoryShareA: 4, territoryShareB: 6, threatTerritoryShare: 55 });
   });
 });

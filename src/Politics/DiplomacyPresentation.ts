@@ -41,6 +41,48 @@ export interface DiplomacyBadgeItem {
   counterpartId: string;
 }
 
+export interface DiplomacySignerSnapshot {
+  factionId: string;
+  rulerId: string;
+  title: string;
+  role: "君主" | "首领";
+}
+
+export function createDiplomacyEventMetadata(
+  relation: DiplomaticRelation,
+  triggerContext?: DiplomacyTriggerContext,
+  signers: [DiplomacySignerSnapshot?, DiplomacySignerSnapshot?] = [undefined, undefined],
+): Record<string, string | number | undefined> {
+  const metadata: Record<string, string | number | undefined> = {
+    reason: triggerContext?.reason ?? relation.reason,
+    expiresMonth: relation.expiresMonth,
+  };
+  if (triggerContext?.reason === "WAR_EXHAUSTION_TRUCE") {
+    metadata.recentBilateralCaptureCount = triggerContext.recentBilateralCaptureCount;
+    metadata.stabilityA = triggerContext.stabilityA;
+    metadata.stabilityB = triggerContext.stabilityB;
+  } else if (triggerContext?.reason === "COMMON_THREAT_NON_AGGRESSION") {
+    metadata.commonThreatFactionId = triggerContext.commonThreatFactionId;
+    metadata.territoryShareA = triggerContext.territoryShareA;
+    metadata.territoryShareB = triggerContext.territoryShareB;
+    metadata.threatTerritoryShare = triggerContext.threatTerritoryShare;
+  }
+  const [a, b] = signers;
+  if (a) {
+    metadata.signatoryAFactionId = a.factionId;
+    metadata.signatoryARulerId = a.rulerId;
+    metadata.signatoryATitle = a.title;
+    metadata.signatoryARole = a.role;
+  }
+  if (b) {
+    metadata.signatoryBFactionId = b.factionId;
+    metadata.signatoryBRulerId = b.rulerId;
+    metadata.signatoryBTitle = b.title;
+    metadata.signatoryBRole = b.role;
+  }
+  return metadata;
+}
+
 export function getFactionDiplomacyBadges(
   relations: DiplomaticRelation[],
   factionId: string,

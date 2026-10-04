@@ -61,7 +61,7 @@ describe("Diplomacy", () => {
     expect(Diplomacy.get("small-a", "small-b")?.expiresMonth).toBe(108);
     expect(events[0]).toMatchObject({ triggerContext: {
       reason: "COMMON_THREAT_NON_AGGRESSION", commonThreatFactionId: "power",
-      territoryShareA: 5, territoryShareB: 5, threatTerritoryShare: 70,
+      territoryShareA: 6.25, territoryShareB: 6.25, threatTerritoryShare: 87.5,
     } });
     expect(Diplomacy.list()).toHaveLength(1);
     expect(events[0].type).toBe("non-aggression-signed");

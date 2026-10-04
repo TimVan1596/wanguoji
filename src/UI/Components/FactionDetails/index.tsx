@@ -225,7 +225,6 @@ function FactionProfile({
     [teams]
   );
   const archiveLabelById = useMemo(() => createFactionArchiveLabelMap(teams), [teams]);
-  const activeRelations = Diplomacy.list(worldMonth);
   const groupedEvents = useMemo(() => groupHistoryNarratives(events), [events]);
   const majorEvents = useMemo(
     () => getMajorPoliticalEventsForFaction(groupedEvents, team.name),
@@ -568,6 +567,7 @@ function FactionList({
     filter
   );
   const archiveLabelById = useMemo(() => createFactionArchiveLabelMap(teams), [teams]);
+  const activeRelations = Diplomacy.list(worldMonth);
   return (
     <Box sx={{ p: 1.25, height: "100%", boxSizing: "border-box", overflowY: "auto" }}>
       <Typography fontWeight="bold" variant="h6">

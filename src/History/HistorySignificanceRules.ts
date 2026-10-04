@@ -51,6 +51,7 @@ const ROUTINE_POLITICAL_TYPES = new Set<WorldEvent["type"]>([
 ]);
 
 export function isMajorPoliticalEvent(event: WorldEvent) {
+  if (event.type === "treaty-expired" || event.type === "truce-signed") return false;
   if (getHistorySignificance(event) === "LANDMARK") {
     return true;
   }

@@ -27,8 +27,7 @@ import {
 } from "./TerritoryMetrics";
 import { PopulationMutationContext, PopulationTransitionAudit } from "./PopulationTransitionAudit";
 import Diplomacy, { DiplomacySystem } from "../Politics/Diplomacy";
-import { formatWorldDate } from "./WorldTime";
-import { describeDiplomacySigning } from "../Politics/DiplomacyPresentation";
+import { createDiplomacyEventMetadata, describeDiplomacySigning } from "../Politics/DiplomacyPresentation";
 
 const debugProfileEnabled =
   import.meta.env.DEV ||
@@ -57,10 +56,11 @@ export default class AutoSimulator {
       const ruler = DynastyRegistry.getCurrentRuler(factionId);
       if (!ruler) return undefined;
       const team = this.lastKnownTeams.find((item) => item.name === factionId);
+      const role: "君主" | "首领" = team?.sovereigntyRank === "LEADER" ? "首领" : "君主";
       return {
         rulerId: ruler.id,
-        title: DynastyRegistry.getRulerHistoricalTitle(ruler.id, factionId, month) ?? `${factionName(factionId)}${team?.sovereigntyRank === "PROVISIONAL" ? "首领" : "君主"}${ruler.givenName}`,
-        role: team?.sovereigntyRank === "PROVISIONAL" ? "首领" : "君主",
+        title: DynastyRegistry.getRulerHistoricalTitle(ruler.id, factionId, month) ?? `${factionName(factionId)}${role}${ruler.houseName.replace(/氏$/, "")}${ruler.givenName}`,
+        role,
       };
     };
     const signerA = type === "treaty-expired" ? undefined : signer(relation.factionAId);
@@ -69,19 +69,6 @@ export default class AutoSimulator {
     const title = type === "treaty-expired"
       ? `${names.join("、")}协议到期`
       : type === "truce-signed" ? `${names.join("、")}议定停战` : `${names.join("、")}订立互不侵犯`;
-    const triggerMetadata = triggerContext ? {
-      reason: triggerContext.reason,
-      ...(triggerContext.reason === "WAR_EXHAUSTION_TRUCE" ? {
-        recentBilateralCaptureCount: triggerContext.recentBilateralCaptureCount,
-        stabilityA: triggerContext.stabilityA,
-        stabilityB: triggerContext.stabilityB,
-      } : {
-        commonThreatFactionId: triggerContext.commonThreatFactionId,
-        territoryShareA: triggerContext.territoryShareA,
-        territoryShareB: triggerContext.territoryShareB,
-        threatTerritoryShare: triggerContext.threatTerritoryShare,
-      }),
-    } : { reason: relation.reason };
     WorldHistory.addEvent({
       id: `diplomacy-${type}-${relation.factionAId}-${relation.factionBId}-${month}`,
       year: month, monthIndex: month, category: "politics", type, title,
@@ -92,12 +79,10 @@ export default class AutoSimulator {
           commonThreatName: commonThreatId ? factionName(commonThreatId) : undefined,
         }),
       factionIds: [relation.factionAId, relation.factionBId], relatedFactionIds: [relation.factionAId, relation.factionBId],
-      metadata: {
-        ...triggerMetadata,
-        expiresMonth: relation.expiresMonth,
-        ...(signerA ? { signatoryAFactionId: relation.factionAId, signatoryARulerId: signerA.rulerId, signatoryATitle: signerA.title, signatoryARole: signerA.role } : {}),
-        ...(signerB ? { signatoryBFactionId: relation.factionBId, signatoryBRulerId: signerB.rulerId, signatoryBTitle: signerB.title, signatoryBRole: signerB.role } : {}),
-      },
+      metadata: createDiplomacyEventMetadata(relation, triggerContext, [
+        signerA ? { factionId: relation.factionAId, ...signerA } : undefined,
+        signerB ? { factionId: relation.factionBId, ...signerB } : undefined,
+      ]),
       importance: type === "non-aggression-signed" ? "major" : "normal",
     });
   });
