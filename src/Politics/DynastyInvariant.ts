@@ -18,6 +18,16 @@ export function validateDynastyInvariants(
     if (new Set(dynasty.heirIds).size !== dynasty.heirIds.length) {
       issues.push(`duplicate dynastic candidate id: ${dynasty.factionId}`);
     }
+    if (dynasty.designatedHeirId !== undefined) {
+      if (!dynasty.heirIds.includes(dynasty.designatedHeirId)) {
+        issues.push(`designated heir is not a candidate: ${dynasty.factionId}/${dynasty.designatedHeirId}`);
+      }
+      if (dynasty.designatedSinceMonth === undefined || !Number.isFinite(dynasty.designatedSinceMonth) || dynasty.designatedSinceMonth < 0) {
+        issues.push(`designated heir has invalid appointment month: ${dynasty.factionId}`);
+      }
+    } else if (dynasty.designatedSinceMonth !== undefined) {
+      issues.push(`designated appointment month without heir: ${dynasty.factionId}`);
+    }
     dynasty.heirIds.forEach((id) => {
       const candidate = dynasty.rulers.find((ruler) => ruler.id === id);
       if (!candidate || candidate.status !== "heir") {

@@ -107,7 +107,7 @@ export function getSuccessionBackground(ruler: Ruler, rulers: Ruler[]) {
     ? rulers.find((candidate) => candidate.id === ruler.predecessorId)
     : undefined;
   if (!predecessor) return ruler.relationType === "FOUNDER" ? "开国君主" : "继位背景未记录";
-  if (ruler.relationType === "DIRECT_CHILD") return "前君之子嗣承统";
+  if (ruler.relationType === "DIRECT_CHILD") return "前君之子承统";
   if (ruler.relationType === "GRANDCHILD") {
     const directChildren = rulers.filter((candidate) => candidate.parentId === predecessor.id);
     const predeceasedChild = directChildren.some((candidate) =>

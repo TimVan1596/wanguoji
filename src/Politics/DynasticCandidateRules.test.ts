@@ -3,6 +3,9 @@ import { WorldRandom } from "../Simulation/WorldRandom";
 import type { Ruler } from "./Dynasty";
 import {
   getCandidateParentsToReplenish,
+  buildPoliticalGenealogy,
+  formatRecordedKinship,
+  getSuccessionBackground,
   MAX_DYNASTIC_SUCCESSION_CANDIDATES,
   selectRecordedDynasticSuccessor,
 } from "./DynasticCandidateRules";
@@ -52,6 +55,46 @@ describe("recorded dynastic succession candidates", () => {
       ruler: sibling,
       relationType: "SIBLING",
     });
+  });
+
+  it("keeps exactly one designated heir choice and replaces it when that candidate is no longer eligible", () => {
+    const father = ruler("father", undefined, "dead");
+    const predecessor = ruler("r", "father", "ruling");
+    const brother = ruler("brother", "father");
+    const otherBrother = ruler("other-brother", "father");
+    const rulers = [father, predecessor, brother, otherBrother];
+    const chooseWithPreference = (candidateIds: string[], preferredCandidateId?: string) =>
+      selectRecordedDynasticSuccessor({
+        predecessor,
+        candidates: candidateIds.map((id) => rulers.find((item) => item.id === id)!),
+        rulers,
+        houseName: "姬氏",
+        month: 1200,
+        isAlive: (candidate) => candidate.status !== "dead",
+        preferredCandidateId,
+        pickIndex: () => 0,
+      });
+    expect(chooseWithPreference([brother.id, otherBrother.id], otherBrother.id)?.ruler.id).toBe(otherBrother.id);
+    otherBrother.status = "dead";
+    expect(chooseWithPreference([brother.id, otherBrother.id], otherBrother.id)?.ruler.id).toBe(brother.id);
+  });
+
+  it("derives candidate labels, succession background, and political genealogy from parent links", () => {
+    const father = ruler("father", undefined, "dead");
+    const rulerNow = { ...ruler("r", "father", "ruling"), reignOrdinal: 2 };
+    const brother = ruler("brother", "father");
+    const nephew = ruler("nephew", "brother");
+    const unrelated = { ...ruler("unrelated", undefined), reignOrdinal: 1 };
+    const rulers = [father, rulerNow, brother, nephew, unrelated];
+    expect(formatRecordedKinship(brother, rulerNow, rulers)).toBe("当今君主之兄弟");
+    expect(formatRecordedKinship(nephew, rulerNow, rulers)).toBe("宗室旁支");
+    expect(getSuccessionBackground({ ...rulerNow, relationType: "SIBLING", predecessorId: "father" }, rulers))
+      .toBe("前君无可继的直系候选，由其兄弟承统");
+    const tree = buildPoliticalGenealogy(rulers, rulerNow.id, brother.id, [brother.id, nephew.id]);
+    expect(tree.map((root) => root.ruler.id)).toContain(unrelated.id);
+    const root = tree.find((node) => node.ruler.id === father.id)!;
+    expect(root.children.map((node) => node.ruler.id)).toEqual(["r", "brother"]);
+    expect(root.children.find((node) => node.ruler.id === "brother")?.children[0].ruler.id).toBe("nephew");
   });
 
   it("uses recorded collateral kin and leaves the existing fallback when no valid kin remains", () => {

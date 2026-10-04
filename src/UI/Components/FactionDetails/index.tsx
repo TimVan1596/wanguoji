@@ -1,5 +1,6 @@
 import { Box, Button, Typography } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
+import type { ReactNode } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getFactionStability } from "../../../Components/City";
 import Game from "../../../Game/Game";
@@ -661,7 +662,7 @@ function DynastyTree({
     dynasty?.designatedHeirId,
     dynasty?.heirIds ?? []
   );
-  const renderGenealogyNode = (node: ReturnType<typeof buildPoliticalGenealogy>[number], depth = 0): React.ReactNode => {
+  const renderGenealogyNode = (node: ReturnType<typeof buildPoliticalGenealogy>[number], depth = 0): ReactNode => {
     const ruler = node.ruler;
     const badges = [
       ruler.id === currentRulerId ? "当今君主" : undefined,
