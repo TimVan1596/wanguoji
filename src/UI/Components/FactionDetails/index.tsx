@@ -12,6 +12,7 @@ import FactionSnapshots, {
 } from "../../../Simulation/FactionSnapshots";
 import WorldHistory, { WorldEvent } from "../../../History/WorldHistory";
 import { formatHistoryEventTitle } from "../../../History/HistoryRenderRules";
+import { formatRulerDiplomacyEvent } from "../../../History/RulerDiplomacyFormatter";
 import { formatFactionHistoryEvent } from "../../../History/FactionHistoryFormatter";
 import { groupHistoryNarratives } from "../../../History/HistoryNarrativeGrouper";
 import {
@@ -647,9 +648,9 @@ function FactionList({
               <Box component="span" sx={{ display: "inline-flex", gap: 0.25, ml: 0.45, verticalAlign: "middle" }}>
                 {getFactionDiplomacyBadges(activeRelations, team.name).map(({ relation, counterpartId }) => {
                   const counterpart = teams.find((candidate) => candidate.name === counterpartId);
-                  const short = relation.status === "TRUCE" ? "停" : "约";
+                  const short = relation.status === "TRUCE" ? "停" : relation.status === "ALLIANCE" ? "盟" : "约";
                   const counterpartName = counterpart?.displayName ?? counterpartId;
-                  const full = relation.status === "TRUCE" ? "停战" : "互不侵犯";
+                  const full = relation.status === "TRUCE" ? "停战" : relation.status === "ALLIANCE" ? "战略同盟" : "互不侵犯";
                   return (
                     <Box
                       component="span"
@@ -1023,6 +1024,7 @@ function RulerBiography({
     ruler.chronicle.notableEventIds,
     showAllEvents ? 1000 : 6
   );
+  const diplomacyFactionNames = new Map([...factionById].map(([id, faction]) => [id, faction.displayName]));
   const heirDeathEvents = events.filter((event) =>
     event.type === "heir-died" && event.metadata?.parentRulerId === ruler.id
   ).sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year));
@@ -1148,7 +1150,7 @@ function RulerBiography({
       </Typography>
       {rulerEvents.length > 0 ? rulerEvents.map((event) => (
         <Typography key={event.id} fontSize="0.82rem">
-          {formatWorldDate(event.monthIndex ?? event.year)} ◆ {formatFactionHistoryEvent(event, team.name, factionById) ?? formatHistoryEventTitle(event, factionById)}
+          {formatWorldDate(event.monthIndex ?? event.year)} ◆ {formatRulerDiplomacyEvent(event, diplomacyFactionNames) ?? formatFactionHistoryEvent(event, team.name, factionById) ?? formatHistoryEventTitle(event, factionById)}
         </Typography>
       )) : (
         <Typography fontSize="0.82rem" color="var(--gg-text-muted)">

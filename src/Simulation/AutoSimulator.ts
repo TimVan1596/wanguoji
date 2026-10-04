@@ -1,5 +1,6 @@
 import Team from "../Components/Team";
 import City from "../Components/City";
+import Game from "../Game/Game";
 import WorldHistory from "../History/WorldHistory";
 import { store } from "../store";
 import {
@@ -28,6 +29,7 @@ import {
 import { PopulationMutationContext, PopulationTransitionAudit } from "./PopulationTransitionAudit";
 import Diplomacy, { DiplomacySystem } from "../Politics/Diplomacy";
 import { createDiplomacyEventMetadata, describeDiplomacySigning } from "../Politics/DiplomacyPresentation";
+import { findStrategicUnionCandidate, StrategicUnionCandidate } from "./StrategicUnionSystem";
 
 const debugProfileEnabled =
   import.meta.env.DEV ||
@@ -63,16 +65,19 @@ export default class AutoSimulator {
         role,
       };
     };
-    const signerA = type === "treaty-expired" ? undefined : signer(relation.factionAId);
-    const signerB = type === "treaty-expired" ? undefined : signer(relation.factionBId);
-    const commonThreatId = triggerContext?.reason === "COMMON_THREAT_NON_AGGRESSION" ? triggerContext.commonThreatFactionId : undefined;
-    const title = type === "treaty-expired"
+    const isExpiry = type === "treaty-expired" || type === "alliance-expired";
+    const signerA = isExpiry ? undefined : signer(relation.factionAId);
+    const signerB = isExpiry ? undefined : signer(relation.factionBId);
+    const commonThreatId = triggerContext && "commonThreatFactionId" in triggerContext ? triggerContext.commonThreatFactionId : relation.commonThreatFactionId;
+    const title = isExpiry
       ? `${names.join("、")}协议到期`
-      : type === "truce-signed" ? `${names.join("、")}议定停战` : `${names.join("、")}订立互不侵犯`;
+      : type === "truce-signed" ? `${names.join("、")}议定停战`
+      : type === "alliance-signed" ? `${names.join("、")}结成战略同盟`
+      : `${names.join("、")}订立互不侵犯`;
     WorldHistory.addEvent({
       id: `diplomacy-${type}-${relation.factionAId}-${relation.factionBId}-${month}`,
       year: month, monthIndex: month, category: "politics", type, title,
-      description: type === "treaty-expired"
+      description: isExpiry
         ? "双方恢复原有外交状态。"
         : describeDiplomacySigning(relation, triggerContext!, {
           factionAName: names[0], factionBName: names[1],
@@ -83,7 +88,7 @@ export default class AutoSimulator {
         signerA ? { factionId: relation.factionAId, ...signerA } : undefined,
         signerB ? { factionId: relation.factionBId, ...signerB } : undefined,
       ]),
-      importance: type === "non-aggression-signed" ? "major" : "normal",
+      importance: type === "non-aggression-signed" || type === "alliance-signed" ? "major" : "normal",
     });
   });
 
@@ -252,6 +257,17 @@ export default class AutoSimulator {
       this.lastKnownTeams = teams;
       this.lastKnownCities = teams.flatMap((team) => team.cities);
       this.diplomacy.update(this.clock.year, teams, totalCells);
+      if (this.clock.year % 12 === 0) {
+        const unionCandidate = findStrategicUnionCandidate({
+          teams,
+          relations: Diplomacy.list(this.clock.year),
+          totalCells,
+          worldMonth: this.clock.year,
+          recentEvents: WorldHistory.getEventsBetween(Math.max(0, this.clock.year - 60), this.clock.year),
+          blockSize: Game.BlockSize,
+        });
+        if (unionCandidate) this.mergeFaction(unionCandidate, this.clock.year);
+      }
       WorldEra.observe(this.clock.year, teams, totalCells, this.events.getCurrentPhase(this.clock.year, teams), captureMapSnapshot);
       this.population.update(this.clock.year, teams, (team) =>
         this.events.getPopulationGrowthMultiplier(team)
@@ -400,6 +416,54 @@ export default class AutoSimulator {
 
   getDiplomacyDiagnostics() {
     return Diplomacy.getDiagnostics(this.clock.year);
+  }
+
+  private mergeFaction(candidate: StrategicUnionCandidate, month: number) {
+    const absorbed = candidate.absorbedFaction;
+    const absorbing = candidate.absorbingFaction;
+    const transferredCityCount = absorbed.cities.length;
+    if (absorbed.status !== "ACTIVE" || absorbing.status !== "ACTIVE") return;
+    DynastyRegistry.markMerged(absorbed, month);
+    [...absorbed.users].forEach((user) => {
+      if (user.role === "RULER") {
+        user.role = "NORMAL";
+        user.rulerId = undefined;
+        user.player.setRole("NORMAL");
+      }
+      user.setTeam(absorbing, {
+        cause: "FACTION_MERGER",
+        month,
+        relatedFactionId: absorbed.name,
+        context: "same-origin administrative union",
+      });
+    });
+    [...absorbed.cities].forEach((city) => city.administrativeMergeTransferTo(absorbing, month));
+    ([...absorbed.blocks.children.entries] as Block[]).forEach((block) => block.claimForTeam(absorbing));
+    absorbed.markMerged(month, absorbing.name);
+    Diplomacy.removeFaction(absorbed.name);
+    WorldHistory.addEvent({
+      id: `faction-merged-${absorbed.name}-${absorbing.name}-${month}`,
+      year: month,
+      monthIndex: month,
+      category: "politics",
+      type: "faction-merged",
+      title: `${absorbed.displayName}归并${absorbing.displayName}`,
+      description: `${absorbed.displayName}归并${absorbing.displayName}，结束独立建制。`,
+      factionIds: [absorbed.name, absorbing.name],
+      relatedFactionIds: [absorbed.name, absorbing.name],
+      metadata: {
+        absorbedFactionId: absorbed.name,
+        absorbingFactionId: absorbing.name,
+        mergedIntoFactionId: absorbing.name,
+        mergedMonth: month,
+        commonThreatFactionId: candidate.commonThreatFactionId,
+        absorbingTerritoryShare: candidate.absorbingTerritoryShare,
+        absorbedTerritoryShare: candidate.absorbedTerritoryShare,
+        bilateralWarFreeMonths: candidate.bilateralWarFreeMonths,
+        transferredCityCount,
+      },
+      importance: "major",
+    });
   }
 
   importDiplomacyState(state: Parameters<typeof Diplomacy.importState>[0]) {

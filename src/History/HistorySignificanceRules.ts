@@ -19,6 +19,8 @@ const MAJOR_POLITICAL_TYPES = new Set<WorldEvent["type"]>([
   "frontier-faction-founded",
   "capital-relocated",
   "dynasty-restored",
+  "alliance-signed",
+  "faction-merged",
   "dynasty-line-ended",
   "god-restoration",
   "god-rebellion",
@@ -51,7 +53,7 @@ const ROUTINE_POLITICAL_TYPES = new Set<WorldEvent["type"]>([
 ]);
 
 export function isMajorPoliticalEvent(event: WorldEvent) {
-  if (event.type === "treaty-expired" || event.type === "truce-signed") return false;
+  if (event.type === "treaty-expired" || event.type === "alliance-expired" || event.type === "truce-signed") return false;
   if (getHistorySignificance(event) === "LANDMARK") {
     return true;
   }
@@ -79,6 +81,8 @@ export function getHistorySignificance(event: WorldEvent): HistorySignificance {
   }
   if (event.type === "truce-signed") return "NORMAL";
   if (event.type === "non-aggression-signed") return "MAJOR";
+  if (event.type === "alliance-signed" || event.type === "faction-merged") return "MAJOR";
+  if (event.type === "alliance-expired") return "NORMAL";
   if (event.type === "treaty-expired") return "NORMAL";
   if (event.type === "capital-fallen") {
     return "MAJOR";

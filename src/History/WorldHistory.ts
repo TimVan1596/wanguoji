@@ -53,7 +53,10 @@ export type WorldEventType =
   | "city-destroyed"
   | "truce-signed"
   | "non-aggression-signed"
-  | "treaty-expired";
+  | "treaty-expired"
+  | "alliance-signed"
+  | "alliance-expired"
+  | "faction-merged";
 
 export type WorldEventCategory = "war" | "politics" | "disaster" | "god";
 

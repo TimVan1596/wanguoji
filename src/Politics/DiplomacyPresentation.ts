@@ -2,11 +2,14 @@ import type { DiplomaticRelation, DiplomacyTriggerContext } from "./Diplomacy";
 import { formatWorldDate, formatWorldDuration } from "../Simulation/WorldTime";
 
 export function diplomacyStatusLabel(status: DiplomaticRelation["status"]) {
-  return status === "TRUCE" ? "停战" : "互不侵犯";
+  if (status === "TRUCE") return "停战";
+  if (status === "ALLIANCE") return "战略同盟";
+  return "互不侵犯";
 }
 
 export function diplomacyReasonLabel(reason: DiplomaticRelation["reason"]) {
-  return reason === "WAR_EXHAUSTION_TRUCE" ? "战后休兵" : "共同强敌";
+  if (reason === "WAR_EXHAUSTION_TRUCE") return "战后休兵";
+  return reason === "COMMON_THREAT_ALLIANCE" ? "共同威胁" : "共同强敌";
 }
 
 export function formatDiplomacyRelationLines(
@@ -32,6 +35,10 @@ export function describeDiplomacySigning(
   const duration = formatWorldDuration(relation.expiresMonth - relation.startedMonth);
   if (relation.reason === "WAR_EXHAUSTION_TRUCE") {
     return `近三年两国有${triggerContext.reason === "WAR_EXHAUSTION_TRUCE" ? triggerContext.recentBilateralCaptureCount : 0}次城邑易手，遂议定停战${duration}。`;
+  }
+  if (relation.status === "ALLIANCE") {
+    const priorDuration = relation.preconditionDurationMonths ?? (triggerContext.reason === "COMMON_THREAT_ALLIANCE" ? triggerContext.priorDurationMonths : undefined);
+    return `${context.commonThreatName ?? "共同强敌"}势日强，两国在互不侵犯${priorDuration === undefined ? "" : formatWorldDuration(priorDuration)}后结成战略同盟，约期${duration}。`;
   }
   return `${context.commonThreatName ?? "共同强敌"}势明显强于${context.factionAName}、${context.factionBName}，两国因共同压力订立互不侵犯之约，约期${duration}。`;
 }
@@ -66,6 +73,15 @@ export function createDiplomacyEventMetadata(
     metadata.territoryShareA = triggerContext.territoryShareA;
     metadata.territoryShareB = triggerContext.territoryShareB;
     metadata.threatTerritoryShare = triggerContext.threatTerritoryShare;
+    if (triggerContext.priorStatus) metadata.priorStatus = triggerContext.priorStatus;
+    if (triggerContext.priorDurationMonths !== undefined) metadata.preconditionDurationMonths = triggerContext.priorDurationMonths;
+  } else if (triggerContext?.reason === "COMMON_THREAT_ALLIANCE") {
+    metadata.commonThreatFactionId = triggerContext.commonThreatFactionId;
+    metadata.territoryShareA = triggerContext.territoryShareA;
+    metadata.territoryShareB = triggerContext.territoryShareB;
+    metadata.threatTerritoryShare = triggerContext.threatTerritoryShare;
+    metadata.preconditionStatus = triggerContext.priorStatus;
+    metadata.preconditionDurationMonths = triggerContext.priorDurationMonths;
   }
   const [a, b] = signers;
   if (a) {

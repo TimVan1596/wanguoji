@@ -55,7 +55,7 @@ import {
   selectRecordedDynasticSuccessor,
 } from "./DynasticCandidateRules";
 
-export type RulerStatus = "ruling" | "exiled" | "heir" | "kin" | "dead";
+export type RulerStatus = "ruling" | "exiled" | "heir" | "kin" | "dead" | "abdicated";
 export type RulerRelationType =
   | "FOUNDER"
   | "DIRECT_CHILD"
@@ -247,6 +247,26 @@ class DynastyRegistryStore {
     team.removeRulerUnit(true);
   }
 
+  markMerged(team: Team, monthIndex: number) {
+    const dynasty = this.dynasties.get(team.name);
+    if (!dynasty) return;
+    const ruler = this.getCurrentRuler(team.name);
+    if (ruler) {
+      ruler.status = "abdicated";
+      ruler.endYear = monthIndex;
+      ruler.politicalEndYear = monthIndex;
+      ruler.endReason = "合邦退位";
+      if (ruler.chronicle) finishRulerChronicle(ruler.chronicle, createRulerSnapshot(team, monthIndex));
+    }
+    dynasty.rulers.forEach((recordedRuler) => {
+      if (recordedRuler.status === "heir" || recordedRuler.status === "exiled") recordedRuler.status = "kin";
+    });
+    dynasty.heirIds = [];
+    dynasty.designatedHeirId = undefined;
+    dynasty.designatedSinceMonth = undefined;
+    dynasty.currentRulerId = null;
+  }
+
   get(factionId: string) {
     return this.dynasties.get(factionId);
   }
@@ -265,7 +285,7 @@ class DynastyRegistryStore {
       return false;
     }
     const current = this.getCurrentRuler(factionId);
-    if (current && current.status !== "dead") {
+    if (current && current.status !== "dead" && current.status !== "abdicated") {
       return true;
     }
     return dynasty.heirIds.some((id) => {

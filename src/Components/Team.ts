@@ -56,6 +56,9 @@ export default class Team {
   lastExiledYear: number | undefined;
   restorationYears: number[] = [];
   extinctionYear: number | undefined;
+  terminationReason: "EXTINCT" | "MERGED" | undefined;
+  mergedIntoFactionId: string | undefined;
+  mergedMonth: number | undefined;
   cumulativeActiveYears = 0;
   farms: Farms;
   constructor(
@@ -130,6 +133,9 @@ export default class Team {
     team.lastExiledYear = state.lastExiledMonth;
     team.restorationYears = [...(state.restorationMonths ?? [])];
     team.extinctionYear = state.extinctionMonth;
+    team.terminationReason = state.terminationReason;
+    team.mergedIntoFactionId = state.mergedIntoFactionId;
+    team.mergedMonth = state.mergedMonth;
     team.cumulativeActiveYears = state.cumulativeActiveMonths;
     team.homeBlock = Game.Core.map?.getBlock(state.homeGridX, state.homeGridY);
     team.joinCommand = [...(state.joinCommand ?? [])];
@@ -300,10 +306,16 @@ export default class Team {
 
   initializeLifecycle(year: number) {
     initializeFactionLifecycle(this, year);
+    this.terminationReason = undefined;
+    this.mergedIntoFactionId = undefined;
+    this.mergedMonth = undefined;
   }
 
   markActive(year: number) {
     markLifecycleActive(this, year);
+    this.terminationReason = undefined;
+    this.mergedIntoFactionId = undefined;
+    this.mergedMonth = undefined;
   }
 
   markExiled(year: number) {
@@ -313,7 +325,18 @@ export default class Team {
 
   markExtinct(year: number) {
     markLifecycleExtinct(this, year);
+    this.terminationReason = "EXTINCT";
     this.removeRulerUnit(true);
+  }
+
+  markMerged(year: number, absorbingFactionId: string) {
+    markLifecycleExtinct(this, year);
+    this.terminationReason = "MERGED";
+    this.mergedIntoFactionId = absorbingFactionId;
+    this.mergedMonth = year;
+    // The ruler's person transfers with the population; detach the political
+    // office reference without destroying the person or recording a death.
+    this.rulerUser = undefined;
   }
 
   getCumulativeActiveYears(year: number) {
@@ -373,6 +396,9 @@ export default class Team {
       lastExiledMonth: this.lastExiledYear,
       restorationMonths: [...this.restorationYears],
       extinctionMonth: this.extinctionYear,
+      terminationReason: this.terminationReason,
+      mergedIntoFactionId: this.mergedIntoFactionId,
+      mergedMonth: this.mergedMonth,
       cumulativeActiveMonths: this.cumulativeActiveYears,
       identityStage: this.identityStage,
       sovereigntyRank: this.sovereigntyRank,
