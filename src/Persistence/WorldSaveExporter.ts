@@ -18,6 +18,7 @@ import { validateWorldSave } from "./WorldSaveValidator";
 import { APP_VERSION } from "../config/version";
 import { createBlockSaveProjection } from "./BlockSaveProjection";
 import worldRandom from "../Simulation/WorldRandom";
+import Diplomacy from "../Politics/Diplomacy";
 
 export class UnsafeSaveSnapshotError extends Error {
   constructor() {
@@ -185,6 +186,7 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
     },
     worldEventSystem: autoState.worldEventSystem,
     worldRandom: worldRandom.exportState(),
+    diplomacy: Diplomacy.exportState(),
   };
   const jsonSafe = omitUndefined(raw) as WorldSaveV1;
   const validation = validateWorldSave(jsonSafe);

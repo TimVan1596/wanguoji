@@ -26,6 +26,7 @@ import {
   getFactionTerritoryMetric,
 } from "./TerritoryMetrics";
 import { PopulationMutationContext, PopulationTransitionAudit } from "./PopulationTransitionAudit";
+import Diplomacy, { DiplomacySystem } from "../Politics/Diplomacy";
 
 const debugProfileEnabled =
   import.meta.env.DEV ||
@@ -45,6 +46,25 @@ export default class AutoSimulator {
   private lastProfilerLiteralMonopoly = false;
   private lastProfilerDynasticOrderId?: string;
   readonly populationTransitionAudit = new PopulationTransitionAudit();
+  private lastKnownCities: City[] = [];
+  private diplomacy = new DiplomacySystem(Diplomacy, () => this.lastKnownCities, ({ type, month, relation }) => {
+    const names = [relation.factionAId, relation.factionBId];
+    const title = type === "treaty-expired"
+      ? `${names.join("、")}协议到期`
+      : type === "truce-signed" ? `${names.join("、")}议定停战` : `${names.join("、")}订立互不侵犯`;
+    WorldHistory.addEvent({
+      id: `diplomacy-${type}-${relation.factionAId}-${relation.factionBId}-${month}`,
+      year: month, monthIndex: month, category: "politics", type, title,
+      description: type === "treaty-expired"
+        ? "双方恢复原有外交状态。"
+        : type === "truce-signed"
+          ? `约期${Math.round((relation.expiresMonth - month) / 12)}年。`
+          : `协议有效至第${relation.expiresMonth}月。`,
+      factionIds: names, relatedFactionIds: names,
+      metadata: { reason: relation.reason, expiresMonth: relation.expiresMonth },
+      importance: "normal",
+    });
+  });
 
   startWorld(
     teams: Team[],
@@ -52,6 +72,8 @@ export default class AutoSimulator {
     populations: InitialPopulationMap,
     captureMapSnapshot?: (capturedMonth: number) => EraMapSnapshotV1
   ) {
+    Diplomacy.reset();
+    this.lastKnownCities = teams.flatMap((team) => team.cities);
     this.started = true;
     this.running = true;
     this.clock.reset();
@@ -151,6 +173,7 @@ export default class AutoSimulator {
     this.population.importState(state.populationSystem);
     this.events.importState(state.worldEventSystem, state.clock.worldMonth);
     if (teams) this.populationTransitionAudit.reset(state.clock.worldMonth, teams);
+    this.lastKnownCities = teams?.flatMap((team) => team.cities) ?? [];
     this.rebaseProfilerLatches();
     store.dispatch(setWorldStarted(this.started));
     store.dispatch(setWorldRunning(false));
@@ -203,6 +226,8 @@ export default class AutoSimulator {
           ? globalThis.performance.now()
           : undefined;
       this.events.update(this.clock.year, teams, totalCells);
+      this.lastKnownCities = teams.flatMap((team) => team.cities);
+      this.diplomacy.update(this.clock.year, teams, totalCells);
       WorldEra.observe(this.clock.year, teams, totalCells, this.events.getCurrentPhase(this.clock.year, teams), captureMapSnapshot);
       this.population.update(this.clock.year, teams, (team) =>
         this.events.getPopulationGrowthMultiplier(team)
@@ -347,6 +372,14 @@ export default class AutoSimulator {
 
   getWorldCycleDiagnostics() {
     return this.events.getCycleDiagnostics();
+  }
+
+  getDiplomacyDiagnostics() {
+    return Diplomacy.getDiagnostics(this.clock.year);
+  }
+
+  importDiplomacyState(state: Parameters<typeof Diplomacy.importState>[0]) {
+    Diplomacy.importState(state);
   }
 
   restoreFactionByGod(city: City) {

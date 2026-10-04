@@ -317,6 +317,7 @@ export default function WorldDiagnosticsPanel() {
     ["Genealogy Viewer", genealogyViewer],
     ["Runtime Units", coreReportData.units],
     ["Population Transition Audit", populationTransitions],
+    ["Diplomacy", core?.getDiplomacyDiagnostics()],
     ["Frame Performance", coreReportData.performance],
     ["World Scale", coreReportData.worldScale],
     ["Desktop Runtime", { diagnostics: desktopDiagnostics, runtime: desktopRuntime }],
@@ -438,6 +439,10 @@ export default function WorldDiagnosticsPanel() {
           `star texture exists: ${runtimeUnits.starTextureExists}`,
           `renderer type: ${runtimeUnits.rendererType}`,
         ].join("\n")}</Typography>
+      </details>}
+      {core && <details>
+        <summary>Diplomacy</summary>
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{JSON.stringify(core.getDiplomacyDiagnostics(), null, 2)}</Typography>
       </details>}
       <details>
         <summary>Population Transition Audit（最近显著变化）</summary>

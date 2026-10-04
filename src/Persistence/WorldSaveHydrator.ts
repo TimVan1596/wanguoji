@@ -25,6 +25,7 @@ import { CURRENT_SAVE_SCHEMA_VERSION, WorldSaveV1 } from "./WorldSaveSchema";
 import { validateWorldSave } from "./WorldSaveValidator";
 import { canonicalizeSavedSnapshotBoundary } from "./SnapshotBoundary";
 import worldRandom from "../Simulation/WorldRandom";
+import Diplomacy from "../Politics/Diplomacy";
 
 export interface HydrationReport {
   worldMonth: number;
@@ -112,6 +113,7 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
 
   core.setHydrationStage("HYDRATE_HISTORY");
   importPoliticalAndHistoryState(save);
+  Diplomacy.importState(save.diplomacy);
   core.simulator!.rebaseProfilerLatches();
   core.setHydrationStage("HYDRATE_USERS_UNITS");
   const hydrated = hydrateUsersAndUnits(save, core, teamsById);

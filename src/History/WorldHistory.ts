@@ -50,7 +50,10 @@ export type WorldEventType =
   | "world-era-started"
   | "empire-split"
   | "city-founded"
-  | "city-destroyed";
+  | "city-destroyed"
+  | "truce-signed"
+  | "non-aggression-signed"
+  | "treaty-expired";
 
 export type WorldEventCategory = "war" | "politics" | "disaster" | "god";
 

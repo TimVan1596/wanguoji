@@ -14,6 +14,25 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   if (save.saveSchemaVersion !== CURRENT_SAVE_SCHEMA_VERSION) errors.push("unsupported saveSchemaVersion");
   if (typeof save.appVersion !== "string" || !save.appVersion.trim()) errors.push("appVersion is required");
   if (!isPlainRecord(save.worldRandom) || save.worldRandom.algorithm !== "mulberry32-v1" || typeof save.worldRandom.seed !== "string" || !save.worldRandom.seed.trim() || !Number.isInteger(save.worldRandom.state) || Number(save.worldRandom.state) < 0 || Number(save.worldRandom.state) > 0xffffffff || !Number.isSafeInteger(save.worldRandom.position) || Number(save.worldRandom.position) < 0) errors.push("worldRandom must contain a supported algorithm, seed, uint32 state, and non-negative draw position");
+  if (!isPlainRecord(save.diplomacy) || !Array.isArray(save.diplomacy.relations) || !Number.isSafeInteger(save.diplomacy.lastEvaluationMonth)) errors.push("diplomacy requires relations and lastEvaluationMonth");
+  else {
+    const diplomacyPairs = new Set<string>();
+    save.diplomacy.relations.forEach((relation: unknown) => {
+      if (!isPlainRecord(relation)) { errors.push("diplomacy relation must be an object"); return; }
+      const { factionAId, factionBId, status, startedMonth, expiresMonth, reason } = relation;
+      if (typeof factionAId !== "string" || typeof factionBId !== "string" || factionAId >= factionBId) errors.push("diplomacy pair must be canonical and distinct");
+      if (status !== "TRUCE" && status !== "NON_AGGRESSION") errors.push("diplomacy status is invalid");
+      if (!finite(startedMonth) || !finite(expiresMonth) || Number(expiresMonth) <= Number(startedMonth)) errors.push("diplomacy dates are invalid");
+      if (reason !== "WAR_EXHAUSTION_TRUCE" && reason !== "COMMON_THREAT_NON_AGGRESSION") errors.push("diplomacy reason is invalid");
+      if (typeof factionAId === "string" && typeof factionBId === "string") {
+        const pair = `${factionAId}\u0000${factionBId}`;
+        if (diplomacyPairs.has(pair)) errors.push("duplicate diplomacy pair");
+        diplomacyPairs.add(pair);
+        requireRef(factionAId, factionIds, "diplomacy.factionAId", errors);
+        requireRef(factionBId, factionIds, "diplomacy.factionBId", errors);
+      }
+    });
+  }
   if (!isPlainRecord(save.world)) errors.push("world must be an object");
   else {
     if (!finite(save.world.worldMonth) || save.world.worldMonth < 0) errors.push("world.worldMonth must be a non-negative finite month index");

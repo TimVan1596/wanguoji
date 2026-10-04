@@ -23,6 +23,7 @@ import {
 import Game from "../Game/Game";
 import WorldHistory from "../History/WorldHistory";
 import DynastyRegistry from "../Politics/Dynasty";
+import Diplomacy from "../Politics/Diplomacy";
 import FactionEffects from "../Simulation/FactionEffects";
 import ArchivedCities from "../Simulation/ArchivedCities";
 import CityNameRegistry from "../Simulation/CityNameRegistry";
@@ -221,6 +222,10 @@ export default class City {
     if (!owner || owner === attacker || attacker.isDie) {
       return;
     }
+    if (!Diplomacy.canAttack(attacker.name, owner.name, year)) {
+      Diplomacy.noteBlocked("SIEGE_CONTACT");
+      return;
+    }
     if (
       this.lastCapturedYear !== undefined &&
       year - this.lastCapturedYear < CITY_CAPTURE_GRACE_MONTHS
@@ -235,6 +240,18 @@ export default class City {
       year,
       rulerId: contact?.rulerId ?? rulerId,
     });
+  }
+
+  clearSiegeContactBetween(factionAId: string, factionBId: string) {
+    const removedA = this.siegeContacts.delete(factionAId);
+    const removedB = this.siegeContacts.delete(factionBId);
+    const removed = removedA || removedB;
+    if (removed) {
+      const remaining = [...this.siegeContacts.values()].sort((a, b) => b.count - a.count)[0];
+      this.underSiege = Boolean(remaining);
+      this.attackingFactionId = remaining?.team.name;
+      this.refreshZoneVisual();
+    }
   }
 
   capture(newOwner: Team, year: number, rulerId?: string) {
@@ -693,7 +710,7 @@ export default class City {
 
   private updateSiege(year: number) {
     const contacts = [...this.siegeContacts.values()].filter(
-      (contact) => year - contact.year <= 1
+      (contact) => year - contact.year <= 1 && Boolean(this.ownerTeam) && Diplomacy.canAttack(contact.team.name, this.ownerTeam!.name, year)
     );
     const mainAttacker = contacts.sort((a, b) => b.count - a.count)[0];
     this.underSiege = Boolean(mainAttacker);

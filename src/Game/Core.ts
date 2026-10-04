@@ -54,6 +54,7 @@ import { DeterminismCheckpointHistory } from "../Simulation/DeterminismFingerpri
 import WorldEra from "../Simulation/WorldEra";
 import { captureEraMapSnapshot } from "../Simulation/EraMapSnapshot";
 import worldRandom from "../Simulation/WorldRandom";
+import Diplomacy from "../Politics/Diplomacy";
 import {
   FACTION_LABEL_REFRESH_MONTHS,
   FOCUSED_FACTION_OTHER_OPACITY,
@@ -222,6 +223,7 @@ export default class Core {
     ArchivedCities.reset();
     CityNameRegistry.reset();
     DynastyRegistry.reset();
+    Diplomacy.reset();
     FactionRegistry.reset();
     FactionEffects.reset();
     store.dispatch(setWorldStarted(false));
@@ -397,7 +399,7 @@ export default class Core {
     if (block.city && block.city.ownerTeam !== player.team) {
       this.simulationDiagnostics.siegeContactSubmissions += 1;
     }
-    block.setTeam(player.team, player);
+    block.attemptHostileOccupation(player.team, player, this.simulator?.year ?? 0);
     if (player.user) {
       player.user.score += 1;
     }
@@ -675,6 +677,10 @@ export default class Core {
 
   getPopulationTransitionAudit() {
     return this.simulator?.getPopulationTransitionDiagnostics() ?? [];
+  }
+
+  getDiplomacyDiagnostics() {
+    return this.simulator?.getDiplomacyDiagnostics() ?? Diplomacy.getDiagnostics(0);
   }
 
   getRuntimeTextureDiagnostics() {

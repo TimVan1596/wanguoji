@@ -5,6 +5,7 @@ import { getFactionStability } from "../../../Components/City";
 import Game from "../../../Game/Game";
 import { colorToString } from "../../../paid/theme";
 import DynastyRegistry, { Dynasty, Ruler } from "../../../Politics/Dynasty";
+import Diplomacy from "../../../Politics/Diplomacy";
 import FactionSnapshots, {
   FactionSnapshot,
 } from "../../../Simulation/FactionSnapshots";
@@ -205,6 +206,14 @@ function FactionProfile({
     ? deriveRulerTenureEvidence(currentRuler, team.name, events, worldMonth)
     : undefined;
   const stability = getFactionStability(team);
+  const diplomacyLines = Diplomacy.list(worldMonth)
+    .filter((relation) => relation.factionAId === team.name || relation.factionBId === team.name)
+    .map((relation) => {
+      const otherId = relation.factionAId === team.name ? relation.factionBId : relation.factionAId;
+      const other = teams.find((candidate) => candidate.name === otherId);
+      const label = relation.status === "TRUCE" ? "停战" : "互不侵犯";
+      return `${other?.displayName ?? otherId} · ${label} · 至 ${formatWorldDate(relation.expiresMonth)}`;
+    });
   const effectiveStability =
     stability !== undefined ? getEffectiveStability(stability, team.sovereigntyRank) : undefined;
   const hasFormalRuler = Boolean(
@@ -382,6 +391,7 @@ function FactionProfile({
             <OverviewSection title="帝号资格" lines={emperorQualificationLines} muted />
           ) : null}
           <OverviewSection title="王朝记忆" lines={overviewSections.legacyLines} />
+          {diplomacyLines.length > 0 ? <OverviewSection title="外交关系" lines={diplomacyLines} /> : null}
           {notableRulers.length > 0 ? (
             <Box sx={{ mt: 1 }}>
               <Typography fontWeight="bold" fontSize="0.9rem">
