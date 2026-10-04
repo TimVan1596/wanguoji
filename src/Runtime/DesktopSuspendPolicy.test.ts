@@ -26,7 +26,7 @@ describe("Desktop suspend policy", () => {
     writeDesktopSuspendPolicy("CATCH_UP", storage);
     expect(readDesktopSuspendPolicy(storage)).toBe("CATCH_UP");
     expect([...values.keys()]).toEqual([DESKTOP_SUSPEND_POLICY_STORAGE_KEY]);
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(2);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(3);
     expect(parseDesktopSuspendPolicy("invalid")).toBe("PAUSE");
   });
 

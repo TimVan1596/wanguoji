@@ -94,6 +94,8 @@ export interface Dynasty {
   rulers: Ruler[];
   currentRulerId: string | null;
   heirIds: string[];
+  designatedHeirId?: string;
+  designatedSinceMonth?: number;
   lastRulerBattleDeathYear?: number;
 }
 
@@ -665,22 +667,50 @@ class DynastyRegistryStore {
   }
 
   private ensureActiveHeir(team: Team, dynasty: Dynasty, year: number) {
-    if (!shouldCreateActiveHeir(team.status)) {
+    const current = this.getCurrentRuler(team.name);
+    if (shouldCreateActiveHeir(team.status)) {
+      const parents = getCandidateParentsToReplenish({
+        currentRuler: current,
+        rulers: dynasty.rulers,
+        candidateIds: dynasty.heirIds,
+        month: year,
+        minimumParentAgeMonths: yearsToMonths(HEIR_PARENT_MIN_AGE_AT_BIRTH),
+      });
+      for (const parent of parents) {
+        if (dynasty.heirIds.length >= MAX_DYNASTIC_SUCCESSION_CANDIDATES) break;
+        const heir = this.createHeir(team, dynasty.houseName, year, parent.id);
+        dynasty.rulers.push(heir);
+        dynasty.heirIds.push(heir.id);
+      }
+    }
+    this.refreshDesignatedHeir(dynasty, current, year);
+  }
+
+  private refreshDesignatedHeir(dynasty: Dynasty, current: Ruler | undefined, month: number) {
+    const selection = current
+      ? selectRecordedDynasticSuccessor({
+          predecessor: current,
+          candidates: dynasty.heirIds
+            .map((id) => dynasty.rulers.find((ruler) => ruler.id === id))
+            .filter((ruler): ruler is Ruler => Boolean(ruler)),
+          rulers: dynasty.rulers,
+          houseName: dynasty.houseName,
+          month,
+          isAlive: (candidate, atMonth) =>
+            candidate.status !== "dead" &&
+            !isNaturallyDeadByMonth(candidate.naturalDeathYear ?? candidate.plannedEndYear, atMonth),
+          preferredCandidateId: dynasty.designatedHeirId,
+          pickIndex: (length) => length === 1 ? 0 : worldRandom.pickIndex(length),
+        })
+      : undefined;
+    if (!selection) {
+      dynasty.designatedHeirId = undefined;
+      dynasty.designatedSinceMonth = undefined;
       return;
     }
-    const current = this.getCurrentRuler(team.name);
-    const parents = getCandidateParentsToReplenish({
-      currentRuler: current,
-      rulers: dynasty.rulers,
-      candidateIds: dynasty.heirIds,
-      month: year,
-      minimumParentAgeMonths: yearsToMonths(HEIR_PARENT_MIN_AGE_AT_BIRTH),
-    });
-    for (const parent of parents) {
-      if (dynasty.heirIds.length >= MAX_DYNASTIC_SUCCESSION_CANDIDATES) break;
-      const heir = this.createHeir(team, dynasty.houseName, year, parent.id);
-      dynasty.rulers.push(heir);
-      dynasty.heirIds.push(heir.id);
+    if (selection.ruler.id !== dynasty.designatedHeirId || dynasty.designatedSinceMonth === undefined) {
+      dynasty.designatedHeirId = selection.ruler.id;
+      dynasty.designatedSinceMonth = month;
     }
   }
 
@@ -695,6 +725,8 @@ class DynastyRegistryStore {
       heir.endReason = reason;
     });
     dynasty.heirIds = [];
+    dynasty.designatedHeirId = undefined;
+    dynasty.designatedSinceMonth = undefined;
   }
 
   private archiveNaturallyDeadHeirs(dynasty: Dynasty, year: number) {
@@ -755,11 +787,14 @@ class DynastyRegistryStore {
       isAlive: (candidate, month) =>
         candidate.status !== "dead" &&
         !isNaturallyDeadByMonth(candidate.naturalDeathYear ?? candidate.plannedEndYear, month),
+      preferredCandidateId: dynasty.designatedHeirId,
       pickIndex: (length) => length === 1 ? 0 : worldRandom.pickIndex(length),
     });
     const selectedId = selected?.ruler.id;
     if (selected) selected.ruler.relationType = selected.relationType;
     dynasty.heirIds = dynasty.heirIds.filter((id) => id !== selectedId);
+    dynasty.designatedHeirId = undefined;
+    dynasty.designatedSinceMonth = undefined;
     return selected?.ruler;
   }
 

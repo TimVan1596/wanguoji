@@ -104,6 +104,17 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
     if (dynasty.factionId !== undefined) requireRef(dynasty.factionId, factionIds, "dynasty.factionId", errors);
     if (typeof dynasty.currentRulerId === "string") requireRef(dynasty.currentRulerId, rulerIds, "dynasty.currentRulerId", errors);
     if (Array.isArray(dynasty.heirIds)) dynasty.heirIds.forEach((id: unknown) => requireRef(id, rulerIds, "dynasty.heirIds", errors));
+    if (dynasty.designatedHeirId !== undefined) {
+      requireRef(dynasty.designatedHeirId, rulerIds, "dynasty.designatedHeirId", errors);
+      if (!Array.isArray(dynasty.heirIds) || !dynasty.heirIds.includes(dynasty.designatedHeirId)) {
+        errors.push("dynasty.designatedHeirId must belong to dynasty.heirIds");
+      }
+      if (!Number.isFinite(dynasty.designatedSinceMonth) || Number(dynasty.designatedSinceMonth) < 0) {
+        errors.push("dynasty.designatedSinceMonth must be a non-negative month");
+      }
+    } else if (dynasty.designatedSinceMonth !== undefined) {
+      errors.push("dynasty.designatedSinceMonth requires designatedHeirId");
+    }
     const rulers = Array.isArray(dynasty.rulers) ? dynasty.rulers : [];
     rulers.forEach((ruler: unknown) => {
       if (!isPlainRecord(ruler)) return;

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getFactionStability } from "../../../Components/City";
 import Game from "../../../Game/Game";
 import { colorToString } from "../../../paid/theme";
-import DynastyRegistry, { Ruler } from "../../../Politics/Dynasty";
+import DynastyRegistry, { Dynasty, Ruler } from "../../../Politics/Dynasty";
 import FactionSnapshots, {
   FactionSnapshot,
 } from "../../../Simulation/FactionSnapshots";
@@ -51,7 +51,12 @@ import {
 } from "../../../Politics/RulerChronicle";
 import { composeHistorianVoice, deriveRulerAssessment } from "../../../Politics/RulerHistoriography";
 import { deriveRulerTenureEvidence } from "../../../Politics/RulerTenureEvidence";
-import { getFormalRulers, getLivingHeirs, isFormalRulerRecord } from "../../../Politics/RulerPresentationRules";
+import { getFormalRulers, isFormalRulerRecord } from "../../../Politics/RulerPresentationRules";
+import {
+  buildPoliticalGenealogy,
+  formatRecordedKinship,
+  getSuccessionBackground,
+} from "../../../Politics/DynasticCandidateRules";
 import {
   formatPosthumousRulerName,
   getNotablePosthumousRulers,
@@ -437,6 +442,7 @@ function FactionProfile({
       ) : null}
       {activeTab === "house" ? (
         <DynastyTree
+          dynasty={dynasty}
           rulers={dynasty?.rulers ?? []}
           currentRulerId={dynasty?.currentRulerId}
           worldMonth={worldMonth}
@@ -609,6 +615,7 @@ function FactionList({
 }
 
 function DynastyTree({
+  dynasty,
   rulers,
   currentRulerId,
   worldMonth,
@@ -619,6 +626,7 @@ function DynastyTree({
   selectedRulerId,
   onSelectedRulerIdChange,
 }: {
+  dynasty?: Dynasty;
   rulers: Ruler[];
   currentRulerId?: string | null;
   worldMonth: number;
@@ -629,9 +637,14 @@ function DynastyTree({
   selectedRulerId?: string;
   onSelectedRulerIdChange: (id: string | undefined) => void;
 }) {
-  const livingHeirs = getLivingHeirs(rulers);
+  const [view, setView] = useState<"lineage" | "genealogy">("lineage");
+  const livingCandidates = (dynasty?.heirIds ?? [])
+    .map((id) => rulers.find((ruler) => ruler.id === id))
+    .filter((ruler): ruler is Ruler => Boolean(ruler && ruler.status === "heir"));
+  const designatedHeir = livingCandidates.find((candidate) => candidate.id === dynasty?.designatedHeirId);
+  const otherCandidates = livingCandidates.filter((candidate) => candidate.id !== dynasty?.designatedHeirId);
   const formalRulers = getFormalRulers(rulers);
-  if (formalRulers.length === 0 && livingHeirs.length === 0) {
+  if (formalRulers.length === 0 && livingCandidates.length === 0) {
     return (
       <Typography fontSize="0.9rem" color="var(--gg-text-muted)">
         暂无王室记录。
@@ -642,19 +655,60 @@ function DynastyTree({
     const rank = (ruler: Ruler) => ruler.id === currentRulerId ? 0 : 1;
     return rank(a) - rank(b) || (b.accessionYear ?? -1) - (a.accessionYear ?? -1);
   });
+  const genealogy = buildPoliticalGenealogy(
+    rulers,
+    currentRulerId,
+    dynasty?.designatedHeirId,
+    dynasty?.heirIds ?? []
+  );
+  const renderGenealogyNode = (node: ReturnType<typeof buildPoliticalGenealogy>[number], depth = 0): React.ReactNode => {
+    const ruler = node.ruler;
+    const badges = [
+      ruler.id === currentRulerId ? "当今君主" : undefined,
+      ruler.id === dynasty?.designatedHeirId ? "储君" : undefined,
+      dynasty?.heirIds.includes(ruler.id) && ruler.id !== dynasty.designatedHeirId ? "宗室候选" : undefined,
+      ruler.reignOrdinal !== undefined ? `第${ruler.reignOrdinal}代` : undefined,
+      ruler.reignOrdinal === undefined && ruler.status !== "heir" ? "宗谱记录" : undefined,
+    ].filter(Boolean);
+    return (
+      <Box key={ruler.id} sx={{ ml: depth ? 1.25 : 0, pl: depth ? 1 : 0, borderLeft: depth ? "1px solid var(--gg-border)" : "none", my: 0.35 }}>
+        <Typography fontSize="0.83rem">
+          {formatRulerName(ruler)} <Box component="span" color="var(--gg-text-muted)">· {badges.join(" · ") || "宗室成员"} · {ruler.houseName}</Box>
+        </Typography>
+        {node.children.map((child) => renderGenealogyNode(child, depth + 1))}
+      </Box>
+    );
+  };
   return (
     <Box sx={{ display: "grid", gap: 1 }}>
-      {livingHeirs.length ? (
+      <Box sx={{ display: "flex", gap: 0.5 }}>
+        <Button size="small" variant={view === "lineage" ? "contained" : "outlined"} onClick={() => setView("lineage")}>王统</Button>
+        <Button size="small" variant={view === "genealogy" ? "contained" : "outlined"} onClick={() => setView("genealogy")}>宗谱</Button>
+      </Box>
+      {view === "genealogy" ? (
+        <Box sx={{ display: "grid", gap: 0.5 }}>
+          <Typography fontWeight="bold" fontSize="0.9rem">政治宗谱</Typography>
+          {genealogy.length ? genealogy.map((root) => renderGenealogyNode(root)) : <Typography fontSize="0.82rem" color="var(--gg-text-muted)">暂无可展示的宗谱关系。</Typography>}
+        </Box>
+      ) : <>
+      {designatedHeir ? (
         <Box sx={{ p: 0.8, border: "1px solid var(--gg-border)", borderRadius: "var(--gg-radius)", background: "var(--gg-panel)" }}>
-          <Typography fontWeight="bold" fontSize="0.86rem">储嗣</Typography>
-          {livingHeirs.map((heir) => (
-            <Typography key={heir.id} fontSize="0.84rem">
-              {formatRulerName(heir)} · {Math.floor(monthsToYears(worldMonth - heir.bornYear))}岁
-              {heir.politicalStartYear !== undefined
-                ? ` · 立储${formatWorldDuration(Math.max(0, worldMonth - heir.politicalStartYear))}`
-                : ""}
-            </Typography>
-          ))}
+          <Typography fontWeight="bold" fontSize="0.86rem">储君</Typography>
+          <Typography fontSize="0.84rem">
+            {formatRulerName(designatedHeir)} · {Math.floor(monthsToYears(worldMonth - designatedHeir.bornYear))}岁 · {currentRulerId ? formatRecordedKinship(designatedHeir, rulers.find((ruler) => ruler.id === currentRulerId) ?? designatedHeir, rulers) : "关系未记录"}
+            {dynasty?.designatedSinceMonth !== undefined ? ` · 立储${formatWorldDuration(Math.max(0, worldMonth - dynasty.designatedSinceMonth))}` : ""}
+          </Typography>
+        </Box>
+      ) : null}
+      {otherCandidates.length ? (
+        <Box sx={{ p: 0.8, border: "1px solid var(--gg-border)", borderRadius: "var(--gg-radius)", background: "var(--gg-panel)" }}>
+          <Typography fontWeight="bold" fontSize="0.86rem">宗室候选</Typography>
+          {otherCandidates.map((candidate) => {
+            const current = rulers.find((ruler) => ruler.id === currentRulerId);
+            return <Typography key={candidate.id} fontSize="0.84rem">
+              {formatRulerName(candidate)} · {Math.floor(monthsToYears(worldMonth - candidate.bornYear))}岁 · {current ? formatRecordedKinship(candidate, current, rulers) : "关系未记录"}
+            </Typography>;
+          })}
         </Box>
       ) : null}
       <Typography fontWeight="bold" fontSize="0.9rem">历代君主</Typography>
@@ -721,6 +775,7 @@ function DynastyTree({
           );
         })}
       </Box>
+      </>}
     </Box>
   );
 }
@@ -803,6 +858,11 @@ function RulerBiography({
       <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
         继承关系：{formatRulerRelation(ruler.relationType, team.identityStage, Boolean(parent), Boolean(ruler.chronicle?.foundedStateName))}
       </Typography>
+      {ruler.predecessorId ? (
+        <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
+          继位背景：{getSuccessionBackground(ruler, rulers)}
+        </Typography>
+      ) : null}
       {heirDeathEvents.length ? (
         <Box sx={{ mt: 0.55 }}>
           <Typography fontWeight="bold" fontSize="0.82rem">储嗣</Typography>

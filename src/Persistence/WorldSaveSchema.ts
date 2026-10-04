@@ -1,7 +1,7 @@
 import { APP_VERSION } from "../config/version";
 import { WORLD_RNG_ALGORITHM, WorldRandomState } from "../Simulation/WorldRandom";
 
-export const CURRENT_SAVE_SCHEMA_VERSION = 2 as const;
+export const CURRENT_SAVE_SCHEMA_VERSION = 3 as const;
 
 export interface FactionSaveV1 {
   factionId: string;
