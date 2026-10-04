@@ -644,10 +644,11 @@ function DynastyTree({
   const livingCandidates = (dynasty?.heirIds ?? [])
     .map((id) => rulers.find((ruler) => ruler.id === id))
     .filter((ruler): ruler is Ruler => Boolean(ruler && ruler.status === "heir"));
+  const livingKin = rulers.some((ruler) => ruler.status === "kin");
   const designatedHeir = livingCandidates.find((candidate) => candidate.id === dynasty?.designatedHeirId);
   const otherCandidates = livingCandidates.filter((candidate) => candidate.id !== dynasty?.designatedHeirId);
   const formalRulers = getFormalRulers(rulers);
-  if (formalRulers.length === 0 && livingCandidates.length === 0) {
+  if (formalRulers.length === 0 && livingCandidates.length === 0 && !livingKin) {
     return (
       <Typography fontSize="0.9rem" color="var(--gg-text-muted)">
         暂无王室记录。

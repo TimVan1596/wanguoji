@@ -10,7 +10,7 @@ export type RecordedKinRelation = Extract<
   "DIRECT_CHILD" | "GRANDCHILD" | "SIBLING" | "NEPHEW" | "UNCLE" | "COUSIN" | "COLLATERAL_KIN"
 >;
 
-export function getDynasticCandidateCap(identityStage: "PROVISIONAL" | "STATE", sovereigntyRank: "LEADER" | "KING" | "EMPEROR") {
+export function getDynasticCandidateCap(identityStage: string, sovereigntyRank: string) {
   if (identityStage === "PROVISIONAL") return 2;
   return sovereigntyRank === "EMPEROR" ? 6 : 4;
 }
@@ -87,6 +87,7 @@ export function selectActiveDynasticCandidateIds({
   cap,
   isAlive,
   pickIndex,
+  preferredIds = [],
 }: {
   currentRuler: Ruler | undefined;
   rulers: Ruler[];
@@ -94,6 +95,7 @@ export function selectActiveDynasticCandidateIds({
   cap: number;
   isAlive: (ruler: Ruler, month: number) => boolean;
   pickIndex: (length: number) => number;
+  preferredIds?: string[];
 }): string[] {
   if (!currentRuler || cap <= 0) return [];
   const ranked = rulers.flatMap((ruler) => {
@@ -109,7 +111,8 @@ export function selectActiveDynasticCandidateIds({
     const tieIds = new Set(tied.map(({ ruler }) => ruler.id));
     const tiePool = ranked.filter(({ ruler }) => tieIds.has(ruler.id));
     while (tiePool.length && selected.length < cap) {
-      const index = tiePool.length === 1 ? 0 : pickIndex(tiePool.length);
+      const preferredIndex = tiePool.findIndex(({ ruler }) => preferredIds.includes(ruler.id));
+      const index = preferredIndex >= 0 ? preferredIndex : tiePool.length === 1 ? 0 : pickIndex(tiePool.length);
       selected.push(tiePool.splice(index, 1)[0].ruler.id);
     }
     cursor = ranked.findIndex((candidate, index) => index >= cursor && !tieIds.has(candidate.ruler.id));

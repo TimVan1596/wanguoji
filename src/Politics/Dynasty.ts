@@ -683,6 +683,7 @@ class DynastyRegistryStore {
       cap: candidateCap,
       isAlive,
       pickIndex: (length) => length === 1 ? 0 : worldRandom.pickIndex(length),
+      preferredIds: dynasty.heirIds,
     });
     const selectedIds = new Set(existingCandidates);
     dynasty.rulers.forEach((ruler) => {

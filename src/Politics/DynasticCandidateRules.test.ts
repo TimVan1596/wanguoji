@@ -74,6 +74,7 @@ describe("recorded dynastic succession candidates", () => {
 
   it("caps active candidates by political stage and rank", () => {
     expect(getDynasticCandidateCap("PROVISIONAL", "LEADER")).toBe(2);
+    expect(getDynasticCandidateCap("PROVISIONAL", "EMPEROR")).toBe(2);
     expect(getDynasticCandidateCap("STATE", "KING")).toBe(4);
     expect(getDynasticCandidateCap("STATE", "EMPEROR")).toBe(6);
   });
@@ -91,6 +92,19 @@ describe("recorded dynastic succession candidates", () => {
     const tree = buildPoliticalGenealogy(rulers, newRuler.id, newRulerChild.id, active);
     const flatten = (nodes: ReturnType<typeof buildPoliticalGenealogy>): string[] => nodes.flatMap((node) => [node.ruler.id, ...flatten(node.children)]);
     expect(flatten(tree)).toContain(distant.id);
+  });
+
+  it("preserves an eligible same-age shortlist tie instead of consuming RNG every month", () => {
+    const parent = ruler("parent", undefined, "dead");
+    const current = ruler("current", "parent", "ruling");
+    const a = { ...ruler("a", "parent"), bornYear: 20 };
+    const b = { ...ruler("b", "parent"), bornYear: 20 };
+    const selected = selectActiveDynasticCandidateIds({
+      currentRuler: current, rulers: [parent, current, a, b], month: 100,
+      cap: 1, isAlive: () => true, preferredIds: [b.id],
+      pickIndex: () => { throw new Error("existing eligible shortlist should be stable"); },
+    });
+    expect(selected).toEqual([b.id]);
   });
 
   it("keeps exactly one designated heir choice and replaces it when that candidate is no longer eligible", () => {
