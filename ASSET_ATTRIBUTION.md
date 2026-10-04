@@ -29,13 +29,13 @@ This is a provenance warning, not a claim of infringement. Before wider promotio
 
 The following five local files were found in `public/music/` and matched to their OpenGameArt source pages, page-listed authors, filenames, and CC0/Public Domain labels. These are bundled Alpha soundtrack candidates, subject to manual audition; they are not a final OST and have not been accepted on subjective fit or loop quality.
 
-| Track | Author | Source | License shown on source page | Bundled file | Notes |
+| Track | Author | Source | License shown on source page | Bundled file | Provisional context | Notes |
 | --- | --- | --- | --- | --- | --- |
-| Menu Music | wipics | https://opengameart.org/content/menu-music-2 | CC0; page copyright notice says Public Domain | `public/music/menu.mp3` | Page tags include erhu, traditional, ancient, and loop. User supplied the local file; manually audition before final selection. |
-| Shangri River | Tozan | https://opengameart.org/content/shangri-river | CC0 | `public/music/Shangririver.ogg` | Source page describes it as a short oriental-style track. User supplied the local file; manually audition before final selection. |
-| Asianoriental1 | Tozan | https://opengameart.org/content/asianoriental1 | CC0 | `public/music/asianoriental1.ogg` | Source page describes koto, shakuhachi, and ensemble strings. User supplied the local file; manually audition before final selection. |
-| Asianoriental2 | Tozan | https://opengameart.org/content/asianoriental2 | CC0 | `public/music/asianoriental2.ogg` | Source page describes a Chinese-style koto/strings piece. User supplied the local file; manually audition before final selection. |
-| Tyhosiasian | Tozan | https://opengameart.org/content/tyhosiasian | CC0 | `public/music/tyhosiasian.ogg` | Source page describes a Japanese-style plucked tune. User supplied the local file; manually audition before final selection. |
+| Menu Music | wipics | https://opengameart.org/content/menu-music-2 | CC0; page copyright notice says Public Domain | `public/music/menu.mp3` | MENU | Page tags include erhu, traditional, ancient, and loop. User supplied the local file; manually audition before final selection. |
+| Shangri River | Tozan | https://opengameart.org/content/shangri-river | CC0 | `public/music/Shangririver.ogg` | TENSION | Source page describes it as a short oriental-style track. User supplied the local file; manually audition before final selection. |
+| Asianoriental1 | Tozan | https://opengameart.org/content/asianoriental1 | CC0 | `public/music/asianoriental1.ogg` | ORDER | Source page describes koto, shakuhachi, and ensemble strings. User supplied the local file; manually audition before final selection. |
+| Asianoriental2 | Tozan | https://opengameart.org/content/asianoriental2 | CC0 | `public/music/asianoriental2.ogg` | PEACE | Source page describes a Chinese-style koto/strings piece. User supplied the local file; manually audition before final selection. |
+| Tyhosiasian | Tozan | https://opengameart.org/content/tyhosiasian | CC0 | `public/music/tyhosiasian.ogg` | ORDER | Source page describes a Japanese-style plucked tune. User supplied the local file; manually audition before final selection. |
 
 Retrieval/source note (2026-10-04): local filenames were checked against the file links on the corresponding OpenGameArt pages. The user supplied the audio files in `public/music/`; no audio was synthesized or downloaded by this change. Source pages identify the licenses listed above. Runtime mood assignment is provisional and awaits manual listening feedback.
 

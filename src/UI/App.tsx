@@ -26,7 +26,6 @@ import RightSlider from "./Components/RightSlider";
 import WorldDiagnosticsPanel from "./Components/WorldDiagnosticsPanel";
 import SaveManagerDialog from "./Components/SaveManagerDialog";
 import { StoredWorldSaveRecord } from "../Persistence/WorldSaveRepository";
-import AmbientMusicRuntime from "./Components/AmbientMusicRuntime";
 import {
   closeSaveManagerSession,
   pauseForSaveManager,
@@ -199,7 +198,6 @@ export default function App({ launchRequest, onReturnToMenu, onLoadRecord }: App
   };
   return (
     <>
-      <AmbientMusicRuntime />
       <WorldStarter launchRequest={launchRequest} onLoadFailure={handleLoadFailure} onLoadSuccess={handleLoadSuccess} />
       <Result onReturnToMenu={onReturnToMenu}></Result>
       <Config open={configOpen} onClose={() => setConfigOpen(false)} />

@@ -2,6 +2,7 @@ import type { WorldEraType } from "../Simulation/WorldEra";
 import type { MusicPreferences } from "./MusicPreferences";
 
 export type AmbientMusicMood = "TENSION" | "ORDER" | "PEACE";
+export type AmbientMusicContext = "MENU" | AmbientMusicMood;
 
 export const WORLD_ERA_MUSIC_MOOD: Record<WorldEraType, AmbientMusicMood> = {
   MULTIPOLAR: "TENSION",
@@ -16,6 +17,10 @@ export function getMusicMoodForEra(type: WorldEraType | undefined): AmbientMusic
   return type ? WORLD_ERA_MUSIC_MOOD[type] : undefined;
 }
 
+export function getAmbientMusicContext(worldStarted: boolean, eraType: WorldEraType | undefined): AmbientMusicContext | undefined {
+  return worldStarted ? getMusicMoodForEra(eraType) : "MENU";
+}
+
 export function resolveAmbientMusicAssetUrl(path: string, baseUrl: string): string {
   if (/^(?:https?:|data:|blob:)/i.test(path)) return path;
   return `${baseUrl}${path.replace(/^\/+/, "")}`;
@@ -24,19 +29,19 @@ export function resolveAmbientMusicAssetUrl(path: string, baseUrl: string): stri
 export interface AmbientMusicTrack {
   id: string;
   src: string;
+  /** Static attenuation only; values above 1 are intentionally unsupported. */
+  gain?: number;
 }
 
-export type AmbientMusicTrackCatalog = Record<AmbientMusicMood, AmbientMusicTrack[]>;
+export type AmbientMusicTrackCatalog = Record<AmbientMusicContext, AmbientMusicTrack[]>;
 
 const bundledMusicAsset = (fileName: string) =>
   resolveAmbientMusicAssetUrl(`music/${fileName}`, import.meta.env.BASE_URL);
 
 // Alpha soundtrack candidates supplied locally; attribution and source details live in ASSET_ATTRIBUTION.md.
 export const AMBIENT_MUSIC_TRACKS: AmbientMusicTrackCatalog = {
-  TENSION: [
-    { id: "menu-music", src: bundledMusicAsset("menu.mp3") },
-    { id: "shangri-river", src: bundledMusicAsset("Shangririver.ogg") },
-  ],
+  MENU: [{ id: "menu-music", src: bundledMusicAsset("menu.mp3") }],
+  TENSION: [{ id: "shangri-river", src: bundledMusicAsset("Shangririver.ogg") }],
   ORDER: [
     { id: "asianoriental1", src: bundledMusicAsset("asianoriental1.ogg") },
     { id: "tyhosiasian", src: bundledMusicAsset("tyhosiasian.ogg") },
@@ -60,12 +65,18 @@ export interface MusicAudioChannel {
 export interface AmbientMusicSnapshot {
   active: boolean;
   enabled: boolean;
+  context?: AmbientMusicContext;
   mood?: AmbientMusicMood;
   trackId?: string;
   volume: number;
+  trackGain: number;
 }
 
-export const AMBIENT_MUSIC_CROSSFADE_MS = 12_000;
+export const AMBIENT_MUSIC_INITIAL_FADE_IN_MS = 2_000;
+export const AMBIENT_MUSIC_PLAYLIST_FADE_IN_MS = 2_500;
+export const AMBIENT_MUSIC_CONTEXT_CROSSFADE_MS = 12_000;
+// Backward-compatible name for existing consumers/tests; Era transitions use this duration.
+export const AMBIENT_MUSIC_CROSSFADE_MS = AMBIENT_MUSIC_CONTEXT_CROSSFADE_MS;
 const FADE_TICK_MS = 100;
 
 interface ChannelState {
@@ -81,9 +92,9 @@ export class AmbientMusicManager {
   private desiredTrack?: AmbientMusicTrack;
   private unlocked = false;
   private active = false;
-  private mood?: AmbientMusicMood;
+  private context?: AmbientMusicContext;
   private preferences: MusicPreferences;
-  private rotationIndex: Record<AmbientMusicMood, number> = { TENSION: 0, ORDER: 0, PEACE: 0 };
+  private rotationIndex: Record<AmbientMusicContext, number> = { MENU: 0, TENSION: 0, ORDER: 0, PEACE: 0 };
   private listeners = new Set<(snapshot: AmbientMusicSnapshot) => void>();
 
   constructor(
@@ -109,19 +120,23 @@ export class AmbientMusicManager {
     return {
       active: this.active,
       enabled: this.preferences.enabled,
-      mood: this.mood,
+      context: this.context,
+      mood: this.context && this.context !== "MENU" ? this.context : undefined,
       trackId: this.desiredTrack?.id,
       volume: this.preferences.volume,
+      trackGain: clampTrackGain(this.desiredTrack?.gain),
     };
   }
 
-  update(options: { active: boolean; mood?: AmbientMusicMood; preferences: MusicPreferences }) {
+  update(options: { active: boolean; context?: AmbientMusicContext; preferences: MusicPreferences }) {
     const wasEnabled = this.preferences.enabled;
     const previousVolume = this.preferences.volume;
-    const moodChanged = options.mood !== this.mood;
+    const contextChanged = options.context !== this.context;
     this.active = options.active;
-    this.mood = options.mood;
+    this.context = options.context;
     this.preferences = { enabled: options.preferences.enabled, volume: clampVolume(options.preferences.volume) };
+
+    if (contextChanged) this.selectTrackForContext();
 
     if (!this.active || !this.preferences.enabled) {
       if (wasEnabled && !this.preferences.enabled) this.fadeToSilence();
@@ -130,11 +145,18 @@ export class AmbientMusicManager {
       return;
     }
 
-    if (this.activeIndex !== undefined && previousVolume !== this.preferences.volume && !moodChanged) {
-      this.channels[this.activeIndex].audio.volume = this.preferences.volume / 100;
+    if (this.activeIndex !== undefined && previousVolume !== this.preferences.volume && !contextChanged) {
+      const activeTrack = this.channels[this.activeIndex].track;
+      this.channels[this.activeIndex].audio.volume = calculateAmbientTrackVolume(
+        this.preferences.volume,
+        activeTrack?.gain,
+        1
+      );
     }
-    if (moodChanged || !wasEnabled || !this.desiredTrack) this.selectTrackForMood();
-    if (this.unlocked) this.playDesiredTrack();
+    if (!wasEnabled || !this.desiredTrack) this.selectTrackForContext();
+    if (this.unlocked && (contextChanged || !wasEnabled || !this.desiredTrack)) {
+      void this.playDesiredTrack(contextChanged ? AMBIENT_MUSIC_CONTEXT_CROSSFADE_MS : undefined);
+    }
     this.publish();
   }
 
@@ -169,21 +191,21 @@ export class AmbientMusicManager {
     return state;
   }
 
-  private selectTrackForMood() {
-    const pool = this.mood ? this.tracks[this.mood] : [];
+  private selectTrackForContext() {
+    const pool = this.context ? this.tracks[this.context] : [];
     if (!pool?.length) {
       this.desiredTrack = undefined;
       return;
     }
-    const cursor = this.rotationIndex[this.mood!] % pool.length;
+    const cursor = this.rotationIndex[this.context!] % pool.length;
     const activeTrack = this.activeIndex === undefined ? undefined : this.channels[this.activeIndex].track;
     const offset = pool.length > 1 && pool[cursor].id === activeTrack?.id ? 1 : 0;
     const selected = pool[(cursor + offset) % pool.length];
-    this.rotationIndex[this.mood!] = (cursor + offset + 1) % pool.length;
+    this.rotationIndex[this.context!] = (cursor + offset + 1) % pool.length;
     this.desiredTrack = selected;
   }
 
-  private async playDesiredTrack() {
+  private async playDesiredTrack(transitionMs?: number) {
     if (!this.desiredTrack || !this.active || !this.preferences.enabled) return;
     if (this.activeIndex !== undefined && this.channels[this.activeIndex].track?.id === this.desiredTrack.id) return;
     const nextIndex = this.activeIndex === 0 ? 1 : 0;
@@ -191,7 +213,7 @@ export class AmbientMusicManager {
     next.audio.pause();
     next.audio.currentTime = 0;
     next.audio.src = this.desiredTrack.src;
-    next.audio.loop = (this.mood ? this.tracks[this.mood].length : 0) <= 1;
+    next.audio.loop = (this.context ? this.tracks[this.context].length : 0) <= 1;
     next.audio.volume = 0;
     next.track = this.desiredTrack;
     try {
@@ -202,19 +224,22 @@ export class AmbientMusicManager {
     }
     const oldIndex = this.activeIndex;
     this.activeIndex = nextIndex;
-    this.crossfade(oldIndex, nextIndex);
+    const duration = transitionMs ?? (oldIndex === undefined
+      ? AMBIENT_MUSIC_INITIAL_FADE_IN_MS
+      : this.crossfadeMs);
+    this.crossfade(oldIndex, nextIndex, duration);
     this.publish();
   }
 
-  private crossfade(oldIndex: number | undefined, nextIndex: number) {
+  private crossfade(oldIndex: number | undefined, nextIndex: number, durationMs: number) {
     this.clearFadeTimer();
     const start = this.now();
     const oldChannel = oldIndex === undefined ? undefined : this.channels[oldIndex].audio;
     const oldStartVolume = oldChannel?.volume ?? 0;
     const nextChannel = this.channels[nextIndex].audio;
     const tick = () => {
-      const progress = Math.min(1, Math.max(0, (this.now() - start) / this.crossfadeMs));
-      nextChannel.volume = (this.preferences.volume / 100) * progress;
+      const progress = Math.min(1, Math.max(0, (this.now() - start) / durationMs));
+      nextChannel.volume = calculateAmbientTrackVolume(this.preferences.volume, this.channels[nextIndex].track?.gain, progress);
       if (oldChannel) oldChannel.volume = Math.max(0, oldStartVolume * (1 - progress));
       if (progress >= 1) {
         this.clearFadeTimer();
@@ -226,8 +251,8 @@ export class AmbientMusicManager {
         this.publish();
       }
     };
-    if (this.crossfadeMs <= 0) {
-      nextChannel.volume = this.preferences.volume / 100;
+    if (durationMs <= 0) {
+      nextChannel.volume = calculateAmbientTrackVolume(this.preferences.volume, this.channels[nextIndex].track?.gain, 1);
       if (oldChannel) oldChannel.pause();
       return;
     }
@@ -267,10 +292,10 @@ export class AmbientMusicManager {
 
   private handleEnded(channel: ChannelState) {
     if (channel !== (this.activeIndex === undefined ? undefined : this.channels[this.activeIndex])) return;
-    const pool = this.mood ? this.tracks[this.mood] : [];
+    const pool = this.context ? this.tracks[this.context] : [];
     if (pool.length <= 1) return;
-    this.selectTrackForMood();
-    void this.playDesiredTrack();
+    this.selectTrackForContext();
+    void this.playDesiredTrack(AMBIENT_MUSIC_PLAYLIST_FADE_IN_MS);
   }
 
   private clearFadeTimer() {
@@ -286,4 +311,15 @@ export class AmbientMusicManager {
 
 function clampVolume(volume: number) {
   return Math.min(100, Math.max(0, Number.isFinite(volume) ? Math.round(volume) : 30));
+}
+
+export function clampTrackGain(gain: unknown): number {
+  if (gain === undefined) return 1;
+  return typeof gain === "number" && Number.isFinite(gain) ? Math.min(1, Math.max(0, gain)) : 1;
+}
+
+export function calculateAmbientTrackVolume(masterVolume: number, trackGain?: number, fadeProgress = 1): number {
+  const master = Math.min(100, Math.max(0, Number.isFinite(masterVolume) ? masterVolume : 0)) / 100;
+  const fade = Math.min(1, Math.max(0, Number.isFinite(fadeProgress) ? fadeProgress : 0));
+  return Math.min(1, master * clampTrackGain(trackGain) * fade);
 }

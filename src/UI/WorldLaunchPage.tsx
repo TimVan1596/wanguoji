@@ -13,6 +13,7 @@ import { resetWorldState } from "../store/rootSlice";
 import App from "./App";
 import StartMenu from "./Components/StartMenu";
 import DesktopLifecycleBridge from "./DesktopLifecycleBridge";
+import AmbientMusicRuntime from "./Components/AmbientMusicRuntime";
 
 export default function WorldLaunchPage() {
   const dispatch = useDispatch();
@@ -35,36 +36,32 @@ export default function WorldLaunchPage() {
     setRequest({ mode: "CONTINUE_SAVE", record });
   };
 
-  if (!request) {
-    return (
-      <>
-        <DesktopLifecycleBridge />
-        <StartMenu onStartNewWorld={startNewWorld} onContinue={continueSave} />
-      </>
-    );
-  }
-
   return (
     <>
       <DesktopLifecycleBridge />
-      <Box
-        className={theme}
-        sx={{
-          backgroundColor: colorToString(styleTheme.backgroundColor, "#ebffe2"),
-          color: colorToString(styleTheme.textColor, "#000000"),
-        }}
-      >
-        <App
-          launchRequest={request}
-          onLoadRecord={continueSave}
-          onReturnToMenu={() => {
-            dispatch(resetWorldState());
-            WorldHistory.reset();
-            WorldEra.reset();
-            setRequest(undefined);
+      <AmbientMusicRuntime />
+      {!request ? (
+        <StartMenu onStartNewWorld={startNewWorld} onContinue={continueSave} />
+      ) : (
+        <Box
+          className={theme}
+          sx={{
+            backgroundColor: colorToString(styleTheme.backgroundColor, "#ebffe2"),
+            color: colorToString(styleTheme.textColor, "#000000"),
           }}
-        />
-      </Box>
+        >
+          <App
+            launchRequest={request}
+            onLoadRecord={continueSave}
+            onReturnToMenu={() => {
+              dispatch(resetWorldState());
+              WorldHistory.reset();
+              WorldEra.reset();
+              setRequest(undefined);
+            }}
+          />
+        </Box>
+      )}
     </>
   );
 }
