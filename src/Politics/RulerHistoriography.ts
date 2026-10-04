@@ -91,6 +91,12 @@ export interface RulerHistoriographyContext {
   worldMonth: number;
 }
 
+export function formatPredeceasedHeirAssessment(count: number) {
+  if (count <= 0) return undefined;
+  if (count === 1) return "有1名继承候选先于其去世，继承秩序因此受到冲击。";
+  return `先后有${count}名继承候选先于其去世，晚年继统屡有变数，继承秩序因此受到冲击。`;
+}
+
 export interface RulerAssessment {
   heading: "史评" | "在位评议";
   evidence: RulerHistoricalEvidence;
@@ -478,10 +484,9 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
       (evidence.terminalCollapse ? "最终未能保全国祚。" : "政权仍得以延续。"));
   } else if (evidence.rebellions > 0) {
     lines.push(`${evidence.rebellions >= 2 ? "其治下内乱频仍" : "其治下发生重大内乱"}，政权承受了持续的内部压力${evidence.terminalCollapse ? "，终亡于其世" : "，但国统仍得延续"}。`);
-  } else if (evidence.predeceasedHeirCount >= 2) {
-    lines.push("两度折嗣，晚年继统屡有变数，继承秩序因此受到冲击。");
-  } else if (evidence.predeceasedHeirCount === 1) {
-    lines.push("储嗣先于其父君去世，继承秩序因此受到冲击。");
+  } else if (evidence.predeceasedHeirCount > 0) {
+    const successionLoss = formatPredeceasedHeirAssessment(evidence.predeceasedHeirCount);
+    if (successionLoss) lines.push(successionLoss);
   }
 
   if (evidence.terminalCollapse && !evidence.accessionCrisis) {

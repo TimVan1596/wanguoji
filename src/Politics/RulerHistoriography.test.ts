@@ -15,6 +15,7 @@ import {
   deriveRulerHistoricalEvidence,
   composeRulerAssessment,
   composeHistorianVoice,
+  formatPredeceasedHeirAssessment,
   formatAccessionAge,
   RulerHistoriographyContext,
 } from "./RulerHistoriography";
@@ -458,7 +459,17 @@ describe("evidence-grounded ruler historiography", () => {
     const archived = { id: "archived", parentId: "r1", bornYear: -240, politicalEndYear: 90, endReason: "王统断绝", status: "dead" };
     parent.dynasty.rulers.push(heir as any, archived as any);
     expect(deriveRulerHistoricalEvidence(parent).predeceasedHeirCount).toBe(1);
-    expect(deriveRulerAssessment(parent).lines.join("")).toContain("储嗣先于其父君去世");
+    expect(deriveRulerAssessment(parent).lines.join("")).toContain("有1名继承候选先于其去世");
+  });
+
+  it.each([
+    [1, "有1名继承候选"],
+    [2, "先后有2名继承候选"],
+    [3, "先后有3名继承候选"],
+  ])("formats the exact predeceased candidate count: %i", (count, expected) => {
+    const text = formatPredeceasedHeirAssessment(count);
+    expect(text).toContain(expected);
+    expect(text).not.toContain("折嗣");
   });
 
   it("distinguishes an accession crisis from decline caused during a reign", () => {

@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99924h4b
+
+- Replaced the genealogy Dialog with MUI Modal + ClickAwayListener + Paper: all Paper interactions remain open, while outside clicks, Escape, and the explicit close button close it.
+- Predeceased succession-candidate commentary now reports the actual count instead of a fixed “two” phrase; it does not imply formal designation.
+- No succession rules, genealogy data, WorldSave schema, or gameplay changes.
+
 ## v0.99924h4a
 
 - Restricted genealogy dialog close behavior to explicit close, Escape, or a backdrop click whose event target is the backdrop itself; dialog content, canvas, nodes, and controls do not close it.

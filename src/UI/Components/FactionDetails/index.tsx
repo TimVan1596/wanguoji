@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
+import { Box, Button, ClickAwayListener, Modal, Paper, Typography } from "@mui/material";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -90,7 +90,6 @@ import {
   getGenealogyCanvasLayout,
   getGenealogyFitScale,
 } from "./genealogyViewport";
-import { shouldCloseGenealogyDialog } from "./genealogyDialogClose";
 import {
   formatRulerLineage,
   formatRulerRelation,
@@ -847,50 +846,39 @@ function DynastyTree({
         })}
       </Box>
       </>}
-      <Dialog
+      <Modal
         open={genealogyDialogOpen}
         onClose={(_, reason) => {
-          if (reason === "escapeKeyDown" && shouldCloseGenealogyDialog("escapeKeyDown")) {
-            setGenealogyDialogOpen(false);
-          }
+          if (reason === "escapeKeyDown") setGenealogyDialogOpen(false);
         }}
-        BackdropProps={{
-          onClick: (event) => {
-            if (
-              shouldCloseGenealogyDialog(
-                "backdropClick",
-                event.target === event.currentTarget
-              )
-            ) setGenealogyDialogOpen(false);
-          },
-        }}
-        fullWidth
-        maxWidth="xl"
-        PaperProps={{ sx: { width: "90vw", height: "84vh", maxWidth: 1500, display: "flex" } }}
       >
-        <DialogTitle sx={{ flex: "0 0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1 }}>
-          <span>政治宗谱</span>
-          <Box sx={{ display: "flex", gap: 1 }}>
-            <Button size="small" onClick={() => setGenealogyScale((scale) => clampGenealogyScale(scale - GENEALOGY_SCALE_STEP))} disabled={genealogyScale <= 0.5}>－</Button>
-            <Button size="small" onClick={() => setGenealogyScale(1)} sx={{ minWidth: 48 }}>{Math.round(genealogyScale * 100)}%</Button>
-            <Button size="small" onClick={() => setGenealogyScale((scale) => clampGenealogyScale(scale + GENEALOGY_SCALE_STEP))} disabled={genealogyScale >= 1.6}>＋</Button>
-            <Button size="small" onClick={fitGenealogyToWindow}>适应窗口</Button>
-            <Button size="small" onClick={locateCurrentRuler} disabled={!currentRulerId}>定位当今君主</Button>
-            <Button size="small" onClick={() => {
-              if (shouldCloseGenealogyDialog("explicit")) setGenealogyDialogOpen(false);
-            }}>关闭</Button>
-          </Box>
-        </DialogTitle>
-        <DialogContent ref={genealogyViewportRef} dividers sx={{ flex: "1 1 auto", minHeight: 0, p: 0, overflow: "auto" }}>
-          {genealogy.length ? (
-            <Box sx={{ position: "relative", width: genealogyCanvas.width, height: genealogyCanvas.height, minWidth: "100%", minHeight: "100%" }}>
-              <Box ref={genealogyTreeRef} sx={{ position: "absolute", left: genealogyCanvas.left, top: genealogyCanvas.top, width: "max-content", transform: `scale(${genealogyScale})`, transformOrigin: "top left", display: "flex", alignItems: "flex-start", gap: 3, py: 2 }}>
-                {genealogy.map((root) => renderGenealogyNode(root))}
+        <Box sx={{ position: "absolute", inset: 0, overflow: "auto", display: "flex", alignItems: "center", justifyContent: "center", p: 2 }}>
+          <ClickAwayListener onClickAway={() => setGenealogyDialogOpen(false)}>
+            <Paper elevation={24} sx={{ width: "90vw", height: "84vh", maxWidth: 1500, display: "flex", flexDirection: "column", overflow: "hidden", outline: 0 }}>
+              <Box sx={{ flex: "0 0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1, p: 2 }}>
+                <Typography variant="h6">政治宗谱</Typography>
+                <Box sx={{ display: "flex", gap: 1 }}>
+                  <Button size="small" onClick={() => setGenealogyScale((scale) => clampGenealogyScale(scale - GENEALOGY_SCALE_STEP))} disabled={genealogyScale <= 0.5}>－</Button>
+                  <Button size="small" onClick={() => setGenealogyScale(1)} sx={{ minWidth: 48 }}>{Math.round(genealogyScale * 100)}%</Button>
+                  <Button size="small" onClick={() => setGenealogyScale((scale) => clampGenealogyScale(scale + GENEALOGY_SCALE_STEP))} disabled={genealogyScale >= 1.6}>＋</Button>
+                  <Button size="small" onClick={fitGenealogyToWindow}>适应窗口</Button>
+                  <Button size="small" onClick={locateCurrentRuler} disabled={!currentRulerId}>定位当今君主</Button>
+                  <Button size="small" onClick={() => setGenealogyDialogOpen(false)}>关闭</Button>
+                </Box>
               </Box>
-            </Box>
-          ) : <Typography color="var(--gg-text-muted)">暂无可展示的宗谱关系。</Typography>}
-        </DialogContent>
-      </Dialog>
+              <Box ref={genealogyViewportRef} sx={{ flex: "1 1 auto", minHeight: 0, overflow: "auto" }}>
+                {genealogy.length ? (
+                  <Box sx={{ position: "relative", width: genealogyCanvas.width, height: genealogyCanvas.height, minWidth: "100%", minHeight: "100%" }}>
+                    <Box ref={genealogyTreeRef} sx={{ position: "absolute", left: genealogyCanvas.left, top: genealogyCanvas.top, width: "max-content", transform: `scale(${genealogyScale})`, transformOrigin: "top left", display: "flex", alignItems: "flex-start", gap: 3, py: 2 }}>
+                      {genealogy.map((root) => renderGenealogyNode(root))}
+                    </Box>
+                  </Box>
+                ) : <Typography color="var(--gg-text-muted)">暂无可展示的宗谱关系。</Typography>}
+              </Box>
+            </Paper>
+          </ClickAwayListener>
+        </Box>
+      </Modal>
     </Box>
   );
 }
