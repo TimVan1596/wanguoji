@@ -464,7 +464,10 @@ function pickSoftUniqueEpithet(
     );
     if (alternatives.length) {
       eligibleCandidates = alternatives;
-    } else if ((repeatedCandidate.score ?? 0) < IMMEDIATE_REPEAT_SEMANTIC_OVERRIDE_SCORE) {
+    } else if (semanticDominates) {
+      // Recent-use penalties must not make a clearly evidence-dominant epithet lose to a weak candidate.
+      eligibleCandidates = [repeatedCandidate];
+    } else {
       return undefined;
     }
   }
