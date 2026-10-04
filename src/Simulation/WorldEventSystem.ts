@@ -53,6 +53,7 @@ import FactionRegistry from "./FactionRegistry";
 import WorldRemnants from "./WorldRemnants";
 import FactionEffects from "./FactionEffects";
 import WorldExiles from "./WorldExiles";
+import type { PopulationMutationContext } from "./PopulationTransitionAudit";
 import { calculateImperialStrain } from "./ImperialStrain";
 import { getWorldPhase } from "./WorldPhase";
 import {
@@ -434,7 +435,8 @@ export default class WorldEventSystem {
         count,
         "Prosperity",
         USER_NATURAL_LOYALTY_MIN,
-        USER_NATURAL_LOYALTY_MAX
+        USER_NATURAL_LOYALTY_MAX,
+        { cause: "RANDOM_EVENT", month: year, context: "population-boom" }
       );
       WorldHistory.addRandomEvent(
         year,
@@ -455,7 +457,8 @@ export default class WorldEventSystem {
       HEAVENLY_REINFORCEMENT_COUNT,
       "Heaven",
       USER_GOD_LOYALTY_MIN,
-      USER_GOD_LOYALTY_MAX
+      USER_GOD_LOYALTY_MAX,
+      { cause: "RANDOM_EVENT", month: year, context: "heavenly-reinforcements" }
     );
     WorldHistory.addRandomEvent(
       year,
@@ -688,7 +691,8 @@ export default class WorldEventSystem {
     count: number,
     prefix: string,
     minLoyalty: number,
-    maxLoyalty: number
+    maxLoyalty: number,
+    populationMutation: PopulationMutationContext
   ) {
     let spawned = 0;
     for (let i = 0; i < count; i++) {
@@ -703,7 +707,8 @@ export default class WorldEventSystem {
             name,
             team.name,
             Phaser.Math.Between(minLoyalty, maxLoyalty)
-          )
+          ),
+          populationMutation
         )
       ) {
         spawned += 1;
@@ -978,7 +983,8 @@ export default class WorldEventSystem {
       founder,
       city,
       year,
-      restoredPopulation
+      restoredPopulation,
+      "GOD_ACTION"
     );
     if (restored) {
       WorldHistory.addGodSupportedRestoration(year, founder.name, city.name, city.id);

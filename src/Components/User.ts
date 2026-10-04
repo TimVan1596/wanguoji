@@ -3,6 +3,7 @@ import Player from "./Player";
 import Slaves from "./Slaves";
 import Team from "./Team";
 import { resolvePublicAssetUrl } from "../Runtime/PublicAssetUrl";
+import type { PopulationMutationContext } from "../Simulation/PopulationTransitionAudit";
 
 export type PlayerRole = "NORMAL" | "RULER";
 
@@ -47,10 +48,25 @@ export default class User {
     }
   }
 
-  setTeam(team: Team) {
+  setTeam(team: Team, populationMutation: PopulationMutationContext = { cause: "UNATTRIBUTED" }) {
+    if (this.team === team) {
+      if (!team.users.has(this)) team.users.add(this);
+      return;
+    }
+    const previousTeam = this.team;
+    const previousCount = previousTeam.users.size;
+    const nextCount = team.users.size;
     this.team.users.delete(this);
     this.team = team;
     this.team.users.add(this);
+    Game.Core?.simulator?.recordPopulationMutation(previousTeam, previousCount, previousTeam.users.size, {
+      ...populationMutation,
+      relatedFactionId: team.name,
+    });
+    Game.Core?.simulator?.recordPopulationMutation(team, nextCount, team.users.size, {
+      ...populationMutation,
+      relatedFactionId: previousTeam.name,
+    });
     Game.Core?.logicalUnitRegistry.updateFaction(this.player?.logicalUnitId, team);
     if (this.player?.team !== team) {
       this.player?.setTeam(team);
@@ -58,10 +74,10 @@ export default class User {
   }
 
   // 投靠
-  obedience(team: Team) {
+  obedience(team: Team, populationMutation: PopulationMutationContext = { cause: "LIVE_TRANSFER" }) {
     if (this.team === team) return;
     if (team.isDie) return;
-    this.setTeam(team);
+    this.setTeam(team, populationMutation);
     this.slaveGroup.reset();
     this.sourceTeam = team;
     this.score = 0;
@@ -80,7 +96,7 @@ export default class User {
     return `${this.id}-${this.name}`;
   }
 
-  destroyUser(silentRulerDeath = false) {
+  destroyUser(silentRulerDeath = false, populationMutation: PopulationMutationContext = { cause: "UNATTRIBUTED" }) {
     if (this.role === "RULER" && !silentRulerDeath) {
       const shouldDestroy = Game.Core?.handleRulerCombatDeath(this) ?? true;
       if (!shouldDestroy) {
@@ -88,9 +104,12 @@ export default class User {
         return false;
       }
     }
-    this.team.users.delete(this);
-    if (this.team.rulerUser === this) {
-      this.team.rulerUser = undefined;
+    const team = this.team;
+    const before = team.users.size;
+    team.users.delete(this);
+    Game.Core?.simulator?.recordPopulationMutation(team, before, team.users.size, populationMutation);
+    if (team.rulerUser === this) {
+      team.rulerUser = undefined;
     }
     Game.Core?.recordUserDeathForDiagnostics();
     Game.Core?.logicalUnitRegistry.unregisterUser(this);

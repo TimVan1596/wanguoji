@@ -173,6 +173,7 @@ export default function WorldDiagnosticsPanel() {
   };
 
   const runtime = core?.getRuntimeLivenessDiagnostics();
+  const populationTransitions = core?.getPopulationTransitionAudit() ?? [];
   const framePerformance = runtime?.framePerformance;
   const hydration = core?.getHydrationDiagnostics();
   const snapshotState = snapshotRequest?.requestState;
@@ -216,6 +217,7 @@ export default function WorldDiagnosticsPanel() {
       ...runtimeUnits,
       avatarRenderer: getAvatarRendererMode(),
     } : undefined,
+    populationTransitions,
     performance: framePerformance ? {
       fps: framePerformance.frameDeltaMs.average && framePerformance.frameDeltaMs.average > 0 ? 1000 / framePerformance.frameDeltaMs.average : undefined,
       averageFrameMs: framePerformance.frameDeltaMs.average,
@@ -298,6 +300,7 @@ export default function WorldDiagnosticsPanel() {
     ["Hydration", { ...coreReportData.hydration, lastStage: hydration?.lastStage, collider: colliderDiagnostics }],
     ["Runtime Liveness", { runtime, simulationCounters: core?.getSimulationDiagnostics() }],
     ["Runtime Units", coreReportData.units],
+    ["Population Transition Audit", populationTransitions],
     ["Frame Performance", coreReportData.performance],
     ["World Scale", coreReportData.worldScale],
     ["Desktop Runtime", { diagnostics: desktopDiagnostics, runtime: desktopRuntime }],
@@ -415,6 +418,18 @@ export default function WorldDiagnosticsPanel() {
           `renderer type: ${runtimeUnits.rendererType}`,
         ].join("\n")}</Typography>
       </details>}
+      <details>
+        <summary>Population Transition Audit（最近显著变化）</summary>
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{populationTransitions.length
+          ? populationTransitions.map((entry) => {
+            const related = entry.relatedFactionId
+              ? core?.teams.find((team) => team.name === entry.relatedFactionId)?.displayName ?? entry.relatedFactionId
+              : undefined;
+            const relation = related ? ` | ${entry.delta < 0 ? "→" : "←"} ${related}` : "";
+            return `${formatWorldDate(entry.month)} | ${entry.factionName} ${entry.before}→${entry.after} (${entry.delta > 0 ? "+" : ""}${entry.delta}) | ${entry.cause}${relation}${entry.context ? ` | ${entry.context}` : ""}`;
+          }).join("\n")
+          : "暂无达到阈值的人口变化"}</Typography>
+      </details>
       {isDesktopContinuousRuntime() && <details open>
         <summary>Desktop Runtime</summary>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{[

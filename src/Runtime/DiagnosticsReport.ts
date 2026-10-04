@@ -50,6 +50,7 @@ const CORE_FIELDS: Array<[string, string]> = [
   ["root players", "units.rootPlayers"],
   ["player children", "units.playerChildren"],
   ["active Phaser players", "units.activePhaserPlayers"],
+  ["recent significant population transitions", "populationTransitions"],
   ["avatar renderer", "units.avatarRenderer"],
   ["missing texture keys", "units.missingTextureKeys"],
   ["noFace source", "units.noFaceSource"],

@@ -479,7 +479,8 @@ class DynastyRegistryStore {
       undefined,
       100,
       "RULER",
-      ruler.id
+      ruler.id,
+      { cause: "RULER_LIFECYCLE", month, context: "ruler unit established" }
     );
   }
 

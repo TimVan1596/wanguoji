@@ -2,6 +2,7 @@ import Team from "../Components/Team";
 import User from "../Components/User";
 import Game from "../Game/Game";
 import { store } from "../store";
+import type { PopulationMutationContext } from "../Simulation/PopulationTransitionAudit";
 import { IParseDanmuData } from "./type";
 
 function stopRunCode(msg = "stopRunCode") {
@@ -9,7 +10,7 @@ function stopRunCode(msg = "stopRunCode") {
 }
 
 export default class Danmu {
-  static Apply(danmu: IParseDanmuData) {
+  static Apply(danmu: IParseDanmuData, populationMutation: PopulationMutationContext = { cause: "LIVE_JOIN" }) {
     if (Game.Core.isGameOver) return undefined;
     const user = Team.GetUserById(danmu.id);
     if (user) {
@@ -26,7 +27,7 @@ export default class Danmu {
         team.hasJoinKeyword(danmu.text)
       );
       if (team) {
-        return team.makeUser(danmu.id, danmu.name, danmu.face, danmu.loyalty)
+        return team.makeUser(danmu.id, danmu.name, danmu.face, danmu.loyalty, "NORMAL", undefined, populationMutation)
           ? team
           : undefined;
       }

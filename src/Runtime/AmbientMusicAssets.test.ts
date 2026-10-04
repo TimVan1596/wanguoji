@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { AMBIENT_MUSIC_TRACKS } from "./AmbientMusic";
@@ -27,5 +27,15 @@ describe("Ambient Music bundled asset manifest", () => {
       const relativeAssetPath = track.src.replace(/^(?:\.\/|\/)/, "");
       expect(existsSync(resolve(process.cwd(), "public", relativeAssetPath)), track.src).toBe(true);
     }
+  });
+
+  it("keeps rejected and reserve candidates out of the public bundle source", () => {
+    expect(readdirSync(resolve(process.cwd(), "public/music")).sort()).toEqual([
+      "asianoriental1.ogg",
+      "asianoriental2.ogg",
+      "ninja theme.ogg",
+      "treasure_hunter.mp3",
+    ]);
+    expect(existsSync(resolve(process.cwd(), "dev-assets/music-candidates/nightshift.mp3"))).toBe(true);
   });
 });

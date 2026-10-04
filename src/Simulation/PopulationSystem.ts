@@ -10,6 +10,7 @@ import {
   USER_NATURAL_LOYALTY_MIN,
 } from "../config/simulation";
 import { resolvePublicAssetUrl } from "../Runtime/PublicAssetUrl";
+import type { PopulationMutationContext } from "./PopulationTransitionAudit";
 
 export type InitialPopulationMap = Record<string, number>;
 
@@ -50,7 +51,7 @@ export default class PopulationSystem {
     teams.forEach((team) => {
       const count = populations[team.name] ?? 0;
       for (let i = 0; i < count; i++) {
-        this.spawn(team);
+        this.spawn(team, undefined, false, { cause: "INITIALIZATION" });
       }
     });
   }
@@ -80,7 +81,7 @@ export default class PopulationSystem {
         recoveryRatio *
         getGrowthMultiplier(team);
       if (Math.random() <= chance) {
-        this.spawn(team);
+        this.spawn(team, undefined, false, { cause: "NATURAL_GROWTH", month: worldMonth });
       }
     });
   }
@@ -97,7 +98,7 @@ export default class PopulationSystem {
     let affectedCount = 0;
     for (let index = 0; index < Math.max(0, Math.floor(requested)); index += 1) {
       const name = this.nextGodName(team);
-      const user = this.spawn(team, name, true);
+      const user = this.spawn(team, name, true, { cause: "GOD_ACTION" });
       if (user) affectedCount += 1;
     }
     return affectedCount;
@@ -107,7 +108,7 @@ export default class PopulationSystem {
     const users = selectNormalUsersForGodRemoval(team.users, requested);
     let affectedCount = 0;
     for (const user of users) {
-      if (user.destroyUser()) affectedCount += 1;
+      if (user.destroyUser(false, { cause: "GOD_ACTION" })) affectedCount += 1;
     }
     return affectedCount;
   }
@@ -119,7 +120,12 @@ export default class PopulationSystem {
     return `God-${team.name}-${String(count).padStart(6, "0")}`;
   }
 
-  private spawn(team: Team, forcedName?: string, bypassCapacity = false) {
+  private spawn(
+    team: Team,
+    forcedName?: string,
+    bypassCapacity = false,
+    populationMutation: PopulationMutationContext = { cause: "NATURAL_GROWTH" }
+  ) {
     if (team.isDie || (!bypassCapacity && this.getPopulation(team) >= this.getCapacity(team))) return undefined;
     const teamKey = team.shortName ?? team.name;
     let name = forcedName;
@@ -134,11 +140,14 @@ export default class PopulationSystem {
       id,
       name,
       resolvePublicAssetUrl("img/no-face.svg"),
-      Phaser.Math.Between(USER_NATURAL_LOYALTY_MIN, USER_NATURAL_LOYALTY_MAX)
+      Phaser.Math.Between(USER_NATURAL_LOYALTY_MIN, USER_NATURAL_LOYALTY_MAX),
+      "NORMAL",
+      undefined,
+      populationMutation
     );
     if (user) return user;
     // Legacy join-command routing remains the fallback for natural population.
     return Danmu.Apply(createLocalDanmu(name, team.name,
-      Phaser.Math.Between(USER_NATURAL_LOYALTY_MIN, USER_NATURAL_LOYALTY_MAX)));
+      Phaser.Math.Between(USER_NATURAL_LOYALTY_MIN, USER_NATURAL_LOYALTY_MAX)), populationMutation);
   }
 }

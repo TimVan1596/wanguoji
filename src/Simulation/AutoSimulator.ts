@@ -25,6 +25,7 @@ import {
   calculateTerritoryMetrics,
   getFactionTerritoryMetric,
 } from "./TerritoryMetrics";
+import { PopulationMutationContext, PopulationTransitionAudit } from "./PopulationTransitionAudit";
 
 const debugProfileEnabled =
   import.meta.env.DEV ||
@@ -43,6 +44,7 @@ export default class AutoSimulator {
   private lastProfilerCycleFamily?: "UNIFIED" | "FRAGMENTED";
   private lastProfilerLiteralMonopoly = false;
   private lastProfilerDynasticOrderId?: string;
+  readonly populationTransitionAudit = new PopulationTransitionAudit();
 
   startWorld(
     teams: Team[],
@@ -72,6 +74,7 @@ export default class AutoSimulator {
     WorldExiles.reset();
     teams.forEach((team) => DynastyRegistry.initializeFaction(team, 0));
     this.population.initialize(teams, populations);
+    this.populationTransitionAudit.reset(0, teams);
     FactionSnapshots.observe(0, teams, totalCells);
     WorldHistory.observeWorld(0, teams, totalCells);
     this.events.observeWorldGoal(0, teams, totalCells);
@@ -98,6 +101,17 @@ export default class AutoSimulator {
 
   getSpeed() {
     return this.speed;
+  }
+
+  recordPopulationMutation(team: Team, before: number, after: number, metadata: PopulationMutationContext) {
+    this.populationTransitionAudit.record(team, before, after, {
+      ...metadata,
+      month: metadata.month ?? this.clock.year,
+    });
+  }
+
+  getPopulationTransitionDiagnostics() {
+    return this.populationTransitionAudit.getRecentSignificant();
   }
 
   godAddPopulation(team: Team, count: number) {
@@ -129,13 +143,14 @@ export default class AutoSimulator {
     clock: { worldMonth: number; elapsedMs: number; running: boolean };
     populationSystem: ReturnType<PopulationSystem["exportState"]>;
     worldEventSystem: ReturnType<WorldEventSystem["exportState"]>;
-  }) {
+  }, teams?: Team[]) {
     this.started = state.started;
     this.running = false;
     this.speed = state.selectedSpeed;
     this.clock.importState({ ...state.clock, running: false });
     this.population.importState(state.populationSystem);
     this.events.importState(state.worldEventSystem, state.clock.worldMonth);
+    if (teams) this.populationTransitionAudit.reset(state.clock.worldMonth, teams);
     this.rebaseProfilerLatches();
     store.dispatch(setWorldStarted(this.started));
     store.dispatch(setWorldRunning(false));
@@ -198,6 +213,7 @@ export default class AutoSimulator {
       FactionEffects.update(this.clock.year);
       DynastyRegistry.update(this.clock.year, teams);
       WorldExiles.update(this.clock.year, teams);
+      this.populationTransitionAudit.reconcile(this.clock.year, teams);
       FactionSnapshots.observe(this.clock.year, teams, totalCells);
       WorldHistory.observeWorld(this.clock.year, teams, totalCells);
       this.events.observeWorldGoal(this.clock.year, teams, totalCells);

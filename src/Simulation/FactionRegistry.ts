@@ -21,6 +21,7 @@ import { hasFormalStateIdentity } from "./FactionIdentity";
 import { EMPIRE_SPLIT_REGION_RADIUS_CELLS } from "./EmpireSplitRules";
 import CityNameRegistry from "./CityNameRegistry";
 import { getNewCityInitialDefense } from "./CityLifecycle";
+import type { PopulationMutationContext } from "./PopulationTransitionAudit";
 
 interface RebelFactionOptions {
   city: City;
@@ -56,7 +57,13 @@ class FactionRegistryStore {
     );
   }
 
-  restoreFaction(team: Team, city: City, year: number, remnantPopulation: number) {
+  restoreFaction(
+    team: Team,
+    city: City,
+    year: number,
+    remnantPopulation: number,
+    populationCause: "RESTORATION" | "GOD_ACTION" = "RESTORATION"
+  ) {
     if (!hasFormalStateIdentity(team)) {
       return false;
     }
@@ -78,7 +85,8 @@ class FactionRegistryStore {
         team,
         Math.max(1, remnantPopulation),
         "Restoration",
-        year
+        year,
+        { cause: populationCause, month: year, context: populationCause === "GOD_ACTION" ? "god-supported restoration" : "exile restoration" }
       );
       const eventId = WorldHistory.addFactionRestored(
         year,
@@ -151,7 +159,13 @@ class FactionRegistryStore {
       .filter((user) => user.loyalty < REBEL_LOW_LOYALTY_USER_THRESHOLD)
       .slice(0, Phaser.Math.Between(REBEL_INITIAL_POPULATION_MIN, REBEL_INITIAL_POPULATION_MAX));
 
-    lowLoyaltyUsers.forEach((user) => user.obedience(team));
+    const populationCause = options.godDriven ? "GOD_ACTION" : "REBELLION_TRANSFER";
+    lowLoyaltyUsers.forEach((user) => user.obedience(team, {
+      cause: populationCause,
+      month: year,
+      relatedFactionId: previousOwner.name,
+      context: options.godDriven ? "god-created rebel faction" : "rebel faction founding",
+    }));
     city.revoltTo(team, year);
 
     const targetPopulation = Phaser.Math.Between(
@@ -159,7 +173,12 @@ class FactionRegistryStore {
       REBEL_INITIAL_POPULATION_MAX
     );
     const needed = Math.max(1, targetPopulation - lowLoyaltyUsers.length);
-    this.spawnMembers(team, needed, "Rebel", year);
+    this.spawnMembers(team, needed, "Rebel", year, {
+      cause: populationCause,
+      month: year,
+      relatedFactionId: previousOwner.name,
+      context: "rebel faction founding population",
+    });
     const historyGroupId = getFoundingHistoryGroupId(team.name, year);
 
     if (factionType === "FRONTIER") {
@@ -240,7 +259,12 @@ class FactionRegistryStore {
     const lowLoyaltyUsers = [...previousOwner.users]
       .filter((user) => user.loyalty < REBEL_LOW_LOYALTY_USER_THRESHOLD)
       .slice(0, Phaser.Math.Between(REBEL_INITIAL_POPULATION_MIN, REBEL_INITIAL_POPULATION_MAX));
-    lowLoyaltyUsers.forEach((user) => user.obedience(team));
+    lowLoyaltyUsers.forEach((user) => user.obedience(team, {
+      cause: "EMPIRE_SPLIT_TRANSFER",
+      month: year,
+      relatedFactionId: previousOwner.name,
+      context: "empire split founding",
+    }));
 
     const transferredCities = cities.filter((city) => city.revoltTo(team, year));
     if (transferredCities.length === 0) {
@@ -250,7 +274,12 @@ class FactionRegistryStore {
 
     const targetPopulation = Phaser.Math.Between(3, 8);
     const needed = Math.max(1, Math.min(2, targetPopulation - lowLoyaltyUsers.length));
-    this.spawnMembers(team, needed, "Split", year);
+    this.spawnMembers(team, needed, "Split", year, {
+      cause: "EMPIRE_SPLIT_TRANSFER",
+      month: year,
+      relatedFactionId: previousOwner.name,
+      context: "empire split founding population",
+    });
     return { team, transferredCities };
   }
 
@@ -265,7 +294,7 @@ class FactionRegistryStore {
     return city;
   }
 
-  private spawnMembers(team: Team, count: number, prefix: string, year: number) {
+  private spawnMembers(team: Team, count: number, prefix: string, year: number, populationMutation: PopulationMutationContext) {
     let spawned = 0;
     for (let i = 0; i < count; i++) {
       this.sequence += 1;
@@ -275,7 +304,8 @@ class FactionRegistryStore {
           name,
           team.name,
           Phaser.Math.Between(USER_RESTORED_LOYALTY_MIN, USER_RESTORED_LOYALTY_MAX)
-        )
+        ),
+        populationMutation
       );
       if (joinedTeam) {
         spawned += 1;

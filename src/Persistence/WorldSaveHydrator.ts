@@ -150,7 +150,7 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
     clock: { worldMonth: save.world.clock.worldMonth, elapsedMs: snapshotBoundary.clockElapsedMs, running: false },
     populationSystem: save.populationSystem as ReturnType<PopulationSystem["exportState"]>,
     worldEventSystem: save.worldEventSystem as ReturnType<NonNullable<Core["simulator"]>["exportState"]>["worldEventSystem"],
-  });
+  }, teams);
   core.simulator!.setRunning(false);
   core.setHydrationStage("INSTALL_COLLIDERS");
   core.installHydratedTeams(teams);

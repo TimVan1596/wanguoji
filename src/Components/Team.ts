@@ -6,6 +6,7 @@ import Farms from "./Farms";
 import Player from "./Player";
 import User, { PlayerRole } from "./User";
 import { resolvePublicAssetUrl } from "../Runtime/PublicAssetUrl";
+import type { PopulationMutationContext } from "../Simulation/PopulationTransitionAudit";
 import {
   FactionStatus,
   getCumulativeActiveYears,
@@ -166,13 +167,15 @@ export default class Team {
     face?: string,
     loyalty = 70,
     role: PlayerRole = "NORMAL",
-    rulerId?: string
+    rulerId?: string,
+    populationMutation: PopulationMutationContext = { cause: "LIVE_JOIN" }
   ) {
     const spawnBlock = this.spawnBlock;
     if (!spawnBlock) return false;
     if (this.isDie) return false;
     if (Team.GetUserById(id)) return false;
     const { x, y } = spawnBlock;
+    const populationBefore = this.users.size;
     const player = new Player(this.scene, x, y, this);
     player.setTeam(this);
     const user = new User(id, name, this, player, face, loyalty, role, rulerId);
@@ -183,6 +186,7 @@ export default class Team {
     if (role === "RULER") {
       this.rulerUser = user;
     }
+    Game.Core?.simulator?.recordPopulationMutation(this, populationBefore, this.users.size, populationMutation);
     return user;
   }
 
@@ -190,9 +194,9 @@ export default class Team {
     return [...this.users].find((user) => user.id === id);
   }
 
-  removeOneUser() {
+  removeOneUser(cause: "SIEGE_LOSS" | "BATTLE_DEATH" = "SIEGE_LOSS") {
     for (const user of this.users) {
-      if (user.destroyUser()) {
+      if (user.destroyUser(false, { cause, month: Game.Core?.simulator?.year })) {
         return;
       }
     }
@@ -256,10 +260,14 @@ export default class Team {
     return getFactionDisplayNameAtMonth(this, monthIndex);
   }
 
-  obedience(team: Team) {
+  obedience(team: Team, populationMutation: PopulationMutationContext = {
+    cause: "CONQUEST_TRANSFER",
+    month: Game.Core?.simulator?.year,
+    relatedFactionId: team.name,
+  }) {
     if (this.isDie) {
       [...this.users].forEach((user) => {
-        user.setTeam(team);
+        user.setTeam(team, populationMutation);
         user.slaveGroup.reset();
       });
       this.farms?.setDie();
@@ -320,7 +328,10 @@ export default class Team {
   }
 
   removeRulerUnit(silentRulerDeath = true) {
-    this.rulerUser?.destroyUser(silentRulerDeath);
+    this.rulerUser?.destroyUser(silentRulerDeath, {
+      cause: "RULER_LIFECYCLE",
+      month: Game.Core?.simulator?.year,
+    });
     this.rulerUser = undefined;
   }
 

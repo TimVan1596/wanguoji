@@ -416,7 +416,12 @@ export default class Core {
     users.forEach((user) => {
       if (user.loyalty >= EXTINCTION_REMNANT_LOYALTY) {
         remnantPopulation += 1;
-        user.destroyUser(true);
+        user.destroyUser(true, {
+          cause: "EXTINCTION_REMNANT",
+          month: year,
+          relatedFactionId: conqueror.name,
+          context: "high-loyalty population became exiled remnant",
+        });
         return;
       }
 
@@ -426,10 +431,20 @@ export default class Core {
           : EXTINCTION_MID_SURRENDER_CHANCE;
       if (Math.random() <= surrenderChance) {
         surrenderedPopulation += 1;
-        user.obedience(conqueror);
+        user.obedience(conqueror, {
+          cause: "SURRENDER_TRANSFER",
+          month: year,
+          relatedFactionId: fallenTeam.name,
+          context: "faction extinction surrender",
+        });
       } else {
         disbandedPopulation += 1;
-        user.destroyUser(true);
+        user.destroyUser(true, {
+          cause: "EXTINCTION_DISBAND",
+          month: year,
+          relatedFactionId: conqueror.name,
+          context: "faction extinction disband",
+        });
       }
     });
 
@@ -630,6 +645,10 @@ export default class Core {
       }),
       ...this.getRuntimeTextureDiagnostics(),
     };
+  }
+
+  getPopulationTransitionAudit() {
+    return this.simulator?.getPopulationTransitionDiagnostics() ?? [];
   }
 
   getRuntimeTextureDiagnostics() {
