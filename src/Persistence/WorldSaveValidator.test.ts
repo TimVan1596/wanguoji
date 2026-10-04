@@ -54,6 +54,18 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     expect(loaded.dynasties[0].rulers[2]).toMatchObject({ parentId: "qin-ruler-2", relationType: "DIRECT_CHILD" });
   });
 
+  it("rejects a dynasty candidate list above the runtime bound", () => {
+    const save = fixture();
+    const rulerIds = Array.from({ length: 8 }, (_, index) => `qin-ruler-${index + 1}`);
+    save.dynasties = [{
+      factionId: "qin",
+      currentRulerId: rulerIds[0],
+      heirIds: rulerIds.slice(1),
+      rulers: rulerIds.map((rulerId) => ({ rulerId, status: rulerId === rulerIds[0] ? "ruling" : "heir" })),
+    }];
+    expect(validateWorldSave(save).errors).toContain("dynasties[0].heirIds exceeds candidate limit");
+  });
+
   it("rejects unsupported schema versions and dangling references", () => {
     const save = fixture();
     save.saveSchemaVersion = 1 as never;
