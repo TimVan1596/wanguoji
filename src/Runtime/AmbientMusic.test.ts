@@ -7,6 +7,7 @@ import {
   AmbientMusicTrackCatalog,
   getMusicMoodForEra,
   MusicAudioChannel,
+  resolveAmbientMusicAssetUrl,
 } from "./AmbientMusic";
 import {
   clampMusicVolume,
@@ -29,6 +30,7 @@ class FakeAudio implements MusicAudioChannel {
   pause() { this.pauseCount += 1; }
   addEventListener(_type: "ended", listener: () => void) { this.ended.add(listener); }
   removeEventListener(_type: "ended", listener: () => void) { this.ended.delete(listener); }
+  finish() { this.ended.forEach((listener) => listener()); }
 }
 
 const catalog: AmbientMusicTrackCatalog = {
@@ -54,6 +56,7 @@ describe("Ambient Music I", () => {
       const audio = new FakeAudio(); channels.push(audio); return audio;
     }, Date.now, () => 0 as unknown as ReturnType<typeof setInterval>, () => undefined, 0);
     manager.update({ active: true, mood: getMusicMoodForEra("HEGEMONY"), preferences: { enabled: true, volume: 30 } });
+    expect(channels.reduce((sum, channel) => sum + channel.playCount, 0)).toBe(0);
     await manager.unlockFromUserGesture();
     expect(channels.reduce((sum, channel) => sum + channel.playCount, 0)).toBe(1);
     manager.update({ active: true, mood: getMusicMoodForEra("DYNASTIC"), preferences: { enabled: true, volume: 30 } });
@@ -80,6 +83,58 @@ describe("Ambient Music I", () => {
     manager.dispose();
   });
 
+  it("crossfades channels and rotates a completed playlist without reusing world RNG", async () => {
+    const channels: FakeAudio[] = [];
+    let now = 0;
+    let nextTimerId = 1;
+    const timers = new Map<number, () => void>();
+    const manager = new AmbientMusicManager({
+      ...catalog,
+      TENSION: [
+        { id: "tension-1", src: "./music/tension-1.ogg" },
+        { id: "tension-2", src: "./music/tension-2.ogg" },
+      ],
+    }, () => {
+      const audio = new FakeAudio(); channels.push(audio); return audio;
+    }, () => now, (callback) => {
+      const id = nextTimerId++;
+      timers.set(id, callback);
+      return id as unknown as ReturnType<typeof setInterval>;
+    }, (id) => { timers.delete(id as unknown as number); }, 1000);
+    manager.update({ active: true, mood: "ORDER", preferences: { enabled: true, volume: 30 } });
+    await manager.unlockFromUserGesture();
+    now = 1000;
+    [...timers.values()].forEach((tick) => tick());
+    manager.update({ active: true, mood: "PEACE", preferences: { enabled: true, volume: 30 } });
+    await Promise.resolve();
+    now = 1500;
+    [...timers.values()].forEach((tick) => tick());
+    expect(channels[0].volume).toBeCloseTo(0.15);
+    expect(channels[1].volume).toBeCloseTo(0.15);
+    now = 2000;
+    [...timers.values()].forEach((tick) => tick());
+    expect(channels[0].pauseCount).toBeGreaterThan(0);
+    expect(channels[1].volume).toBeCloseTo(0.3);
+    manager.dispose();
+
+    const playlistChannels: FakeAudio[] = [];
+    const playlist = new AmbientMusicManager({
+      ...catalog,
+      TENSION: [
+        { id: "tension-1", src: "./music/tension-1.ogg" },
+        { id: "tension-2", src: "./music/tension-2.ogg" },
+      ],
+    }, () => { const audio = new FakeAudio(); playlistChannels.push(audio); return audio; }, Date.now,
+    () => 1 as unknown as ReturnType<typeof setInterval>, () => undefined, 0);
+    playlist.update({ active: true, mood: "TENSION", preferences: { enabled: true, volume: 30 } });
+    await playlist.unlockFromUserGesture();
+    playlistChannels[0].finish();
+    await Promise.resolve();
+    expect(playlist.getSnapshot().trackId).toBe("tension-2");
+    expect(playlistChannels.reduce((sum, channel) => sum + channel.playCount, 0)).toBe(2);
+    playlist.dispose();
+  });
+
   it("uses default preferences for missing or invalid storage and round-trips valid preferences", () => {
     const values = new Map<string, string>();
     const storage = {
@@ -99,5 +154,11 @@ describe("Ambient Music I", () => {
   it("shows the imported runtime version and keeps music preferences outside WorldSave", () => {
     expect(getSettingsVersionLabel()).toBe(`当前版本：${APP_VERSION}`);
     expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(1);
+  });
+
+  it("resolves bundled music under the current Web/Desktop asset base", () => {
+    expect(resolveAmbientMusicAssetUrl("music/track.ogg", "/")).toBe("/music/track.ogg");
+    expect(resolveAmbientMusicAssetUrl("music/track.ogg", "./")).toBe("./music/track.ogg");
+    expect(resolveAmbientMusicAssetUrl("https://example.com/track.ogg", "./")).toBe("https://example.com/track.ogg");
   });
 });

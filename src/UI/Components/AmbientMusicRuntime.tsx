@@ -9,7 +9,6 @@ import {
 import {
   readMusicPreferences,
   subscribeMusicPreferences,
-  MUSIC_PREFERENCES_CHANGED_EVENT,
 } from "../../Runtime/MusicPreferences";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
@@ -26,11 +25,6 @@ export default function AmbientMusicRuntime() {
   useEffect(() => WorldEra.subscribe(setEras), []);
   useEffect(() => manager.subscribe(setSnapshot), [manager]);
   useEffect(() => subscribeMusicPreferences(setPreferences), []);
-  useEffect(() => {
-    const refresh = () => setPreferences(readMusicPreferences());
-    window.addEventListener(MUSIC_PREFERENCES_CHANGED_EVENT, refresh);
-    return () => window.removeEventListener(MUSIC_PREFERENCES_CHANGED_EVENT, refresh);
-  }, []);
   useEffect(() => {
     manager.update({ active: worldStarted, mood, preferences });
   }, [manager, worldStarted, mood, preferences]);

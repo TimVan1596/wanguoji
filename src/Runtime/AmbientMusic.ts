@@ -16,6 +16,11 @@ export function getMusicMoodForEra(type: WorldEraType | undefined): AmbientMusic
   return type ? WORLD_ERA_MUSIC_MOOD[type] : undefined;
 }
 
+export function resolveAmbientMusicAssetUrl(path: string, baseUrl: string): string {
+  if (/^(?:https?:|data:|blob:)/i.test(path)) return path;
+  return `${baseUrl}${path.replace(/^\/+/, "")}`;
+}
+
 export interface AmbientMusicTrack {
   id: string;
   src: string;
@@ -86,7 +91,7 @@ export class AmbientMusicManager {
   subscribe(listener: (snapshot: AmbientMusicSnapshot) => void) {
     this.listeners.add(listener);
     listener(this.getSnapshot());
-    return () => this.listeners.delete(listener);
+    return () => { this.listeners.delete(listener); };
   }
 
   getSnapshot(): AmbientMusicSnapshot {
@@ -142,7 +147,11 @@ export class AmbientMusicManager {
   }
 
   private createChannel(): ChannelState {
-    const state = { audio: this.createAudio(), endedListener: () => undefined, track: undefined as AmbientMusicTrack | undefined };
+    const state: ChannelState = {
+      audio: this.createAudio(),
+      endedListener: () => undefined,
+      track: undefined,
+    };
     state.endedListener = () => this.handleEnded(state);
     state.audio.addEventListener("ended", state.endedListener);
     state.audio.volume = 0;
@@ -190,12 +199,12 @@ export class AmbientMusicManager {
     this.clearFadeTimer();
     const start = this.now();
     const oldChannel = oldIndex === undefined ? undefined : this.channels[oldIndex].audio;
+    const oldStartVolume = oldChannel?.volume ?? 0;
     const nextChannel = this.channels[nextIndex].audio;
-    const targetVolume = this.preferences.volume / 100;
     const tick = () => {
       const progress = Math.min(1, Math.max(0, (this.now() - start) / this.crossfadeMs));
-      nextChannel.volume = targetVolume * progress;
-      if (oldChannel) oldChannel.volume = Math.max(0, oldChannel.volume * (1 - progress));
+      nextChannel.volume = (this.preferences.volume / 100) * progress;
+      if (oldChannel) oldChannel.volume = Math.max(0, oldStartVolume * (1 - progress));
       if (progress >= 1) {
         this.clearFadeTimer();
         if (oldIndex !== undefined) {
@@ -207,7 +216,7 @@ export class AmbientMusicManager {
       }
     };
     if (this.crossfadeMs <= 0) {
-      nextChannel.volume = targetVolume;
+      nextChannel.volume = this.preferences.volume / 100;
       if (oldChannel) oldChannel.pause();
       return;
     }

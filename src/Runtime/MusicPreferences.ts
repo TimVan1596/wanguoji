@@ -4,7 +4,6 @@ export interface MusicPreferences {
 }
 
 export const MUSIC_PREFERENCES_STORAGE_KEY = "wanguoji.music.preferences.v1";
-export const MUSIC_PREFERENCES_CHANGED_EVENT = "wanguoji-music-preferences-changed";
 export const DEFAULT_MUSIC_PREFERENCES: Readonly<MusicPreferences> = {
   enabled: true,
   volume: 30,
@@ -57,15 +56,10 @@ export function writeMusicPreferences(
     // A local preference failure must never affect world state.
   }
   listeners.forEach((listener) => listener({ ...preferences }));
-  try {
-    if (typeof window !== "undefined") window.dispatchEvent(new Event(MUSIC_PREFERENCES_CHANGED_EVENT));
-  } catch {
-    // Storage preferences remain usable in restricted browser contexts.
-  }
   return preferences;
 }
 
 export function subscribeMusicPreferences(listener: (preferences: MusicPreferences) => void) {
   listeners.add(listener);
-  return () => listeners.delete(listener);
+  return () => { listeners.delete(listener); };
 }
