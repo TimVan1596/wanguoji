@@ -48,11 +48,18 @@ import {
   isNaturallyDeadByMonth,
 } from "./RulerLifespanRules";
 import { predeceasedParentByMonth } from "./RulerPresentationRules";
+import {
+  getCandidateParentsToReplenish,
+  MAX_DYNASTIC_SUCCESSION_CANDIDATES,
+  selectRecordedDynasticSuccessor,
+} from "./DynasticCandidateRules";
 
 export type RulerStatus = "ruling" | "exiled" | "heir" | "dead";
 export type RulerRelationType =
   | "FOUNDER"
   | "DIRECT_CHILD"
+  | "GRANDCHILD"
+  | "SIBLING"
   | "COLLATERAL_KIN"
   | "NEW_HOUSE"
   | "LEADER_SUCCESSOR";
@@ -325,7 +332,7 @@ class DynastyRegistryStore {
       finalizeRulerPosthumousNames(predecessor, dynasty.rulers, team, year);
     }
     this.archiveNaturallyDeadHeirs(dynasty, year);
-    let successor = this.consumeHeir(dynasty, year);
+    let successor = this.consumeHeir(dynasty, predecessor, year);
     if (!successor && team.status === "ACTIVE" && team.cities.length > 0) {
       const knownDynasties = this.getAll();
       const newHouse = createSuccessorDynastyHouseName({
@@ -661,29 +668,20 @@ class DynastyRegistryStore {
     if (!shouldCreateActiveHeir(team.status)) {
       return;
     }
-    const livingHeir = dynasty.heirIds
-      .map((id) => dynasty.rulers.find((ruler) => ruler.id === id))
-      .find((ruler) => ruler && ruler.status !== "dead");
-    if (livingHeir) {
-      return;
-    }
     const current = this.getCurrentRuler(team.name);
-    if (
-      !current ||
-      Math.floor(monthsToYears(Math.max(0, year - current.bornYear))) <
-        HEIR_PARENT_MIN_AGE_AT_BIRTH
-    ) {
-      return;
+    const parents = getCandidateParentsToReplenish({
+      currentRuler: current,
+      rulers: dynasty.rulers,
+      candidateIds: dynasty.heirIds,
+      month: year,
+      minimumParentAgeMonths: yearsToMonths(HEIR_PARENT_MIN_AGE_AT_BIRTH),
+    });
+    for (const parent of parents) {
+      if (dynasty.heirIds.length >= MAX_DYNASTIC_SUCCESSION_CANDIDATES) break;
+      const heir = this.createHeir(team, dynasty.houseName, year, parent.id);
+      dynasty.rulers.push(heir);
+      dynasty.heirIds.push(heir.id);
     }
-    const heir = this.createHeir(
-      team,
-      dynasty.houseName,
-      year,
-      current?.id,
-      undefined
-    );
-    dynasty.rulers.push(heir);
-    dynasty.heirIds = [heir.id];
   }
 
   private archiveHeirs(dynasty: Dynasty, year: number, reason: string) {
@@ -744,25 +742,25 @@ class DynastyRegistryStore {
     });
   }
 
-  private consumeHeir(dynasty: Dynasty, year: number) {
-    while (dynasty.heirIds.length > 0) {
-      const heirId = dynasty.heirIds.shift();
-      const heir = dynasty.rulers.find((ruler) => ruler.id === heirId);
-      if (
-        heir &&
-        heir.status !== "dead" &&
-        !isNaturallyDeadByMonth(heir.naturalDeathYear ?? heir.plannedEndYear, year)
-      ) {
-        return heir;
-      }
-      if (heir && heir.status !== "dead") {
-        heir.status = "dead";
-        heir.politicalEndYear = year;
-        heir.endYear = year;
-        heir.endReason = "自然去世";
-      }
-    }
-    return undefined;
+  private consumeHeir(dynasty: Dynasty, predecessor: Ruler, year: number) {
+    const candidates = dynasty.heirIds
+      .map((id) => dynasty.rulers.find((ruler) => ruler.id === id))
+      .filter((ruler): ruler is Ruler => Boolean(ruler));
+    const selected = selectRecordedDynasticSuccessor({
+      predecessor,
+      candidates,
+      rulers: dynasty.rulers,
+      houseName: dynasty.houseName,
+      month: year,
+      isAlive: (candidate, month) =>
+        candidate.status !== "dead" &&
+        !isNaturallyDeadByMonth(candidate.naturalDeathYear ?? candidate.plannedEndYear, month),
+      pickIndex: (length) => length === 1 ? 0 : worldRandom.pickIndex(length),
+    });
+    const selectedId = selected?.ruler.id;
+    if (selected) selected.ruler.relationType = selected.relationType;
+    dynasty.heirIds = dynasty.heirIds.filter((id) => id !== selectedId);
+    return selected?.ruler;
   }
 
   getRulerTitleDisplay(factionId: string, monthIndex: number) {

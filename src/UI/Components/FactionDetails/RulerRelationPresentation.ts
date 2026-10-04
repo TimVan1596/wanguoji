@@ -10,6 +10,8 @@ export function formatRulerRelation(
     ? identityStage === "PROVISIONAL" ? "首任首领" : "开国君主"
     : foundedStateEvidence ? "开国君主" : "首任首领 / 势力创始人";
   if (relation === "DIRECT_CHILD") return parentRecorded ? "前君之子" : "直系继承（父名未记录）";
+  if (relation === "GRANDCHILD") return "前君之孙";
+  if (relation === "SIBLING") return "前君之兄弟";
   if (relation === "COLLATERAL_KIN") return "宗室旁支";
   if (relation === "NEW_HOUSE") return "易姓 / 新家族继位";
   if (relation === "LEADER_SUCCESSOR") return "非世袭首领继任";

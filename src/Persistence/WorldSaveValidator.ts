@@ -1,5 +1,6 @@
 import { CURRENT_SAVE_SCHEMA_VERSION, WorldSaveV1 } from "./WorldSaveSchema";
 import { isEraMapSnapshotV1 } from "../Simulation/EraMapSnapshot";
+import { MAX_DYNASTIC_SUCCESSION_CANDIDATES } from "../Politics/DynasticCandidateRules";
 
 export interface SaveValidationResult {
   valid: boolean;
@@ -331,6 +332,10 @@ function validateHydrationImportShapes(save: Partial<WorldSaveV1>, errors: strin
   save.dynasties?.forEach((dynasty, index) => {
     if (!Array.isArray(dynasty.rulers) || dynasty.rulers.some((ruler: unknown) => !isPlainRecord(ruler))) errors.push(`dynasties[${index}].rulers must be an array of objects`);
     if (!Array.isArray(dynasty.heirIds) || dynasty.heirIds.some((id: unknown) => typeof id !== "string")) errors.push(`dynasties[${index}].heirIds must be an array of strings`);
+    else {
+      if (dynasty.heirIds.length > MAX_DYNASTIC_SUCCESSION_CANDIDATES) errors.push(`dynasties[${index}].heirIds exceeds candidate limit`);
+      if (new Set(dynasty.heirIds).size !== dynasty.heirIds.length) errors.push(`dynasties[${index}].heirIds must be unique`);
+    }
   });
   const registries = record(save.registries, "registries");
   if (registries) {

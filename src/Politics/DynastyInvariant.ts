@@ -1,4 +1,5 @@
 import type { Dynasty, Ruler } from "./Dynasty";
+import { MAX_DYNASTIC_SUCCESSION_CANDIDATES } from "./DynasticCandidateRules";
 
 export type FactionStatusLookup = (factionId: string) => string | undefined;
 
@@ -11,6 +12,18 @@ export function validateDynastyInvariants(
     if (getFactionStatus(dynasty.factionId) === "EXTINCT" && dynasty.currentRulerId) {
       issues.push(`EXTINCT faction has current ruler: ${dynasty.factionId}`);
     }
+    if (dynasty.heirIds.length > MAX_DYNASTIC_SUCCESSION_CANDIDATES) {
+      issues.push(`dynastic candidate cap exceeded: ${dynasty.factionId}`);
+    }
+    if (new Set(dynasty.heirIds).size !== dynasty.heirIds.length) {
+      issues.push(`duplicate dynastic candidate id: ${dynasty.factionId}`);
+    }
+    dynasty.heirIds.forEach((id) => {
+      const candidate = dynasty.rulers.find((ruler) => ruler.id === id);
+      if (!candidate || candidate.status !== "heir") {
+        issues.push(`invalid dynastic candidate: ${dynasty.factionId}/${id}`);
+      }
+    });
     dynasty.rulers.forEach((ruler) => {
       issues.push(...validateRulerInvariant(dynasty.factionId, ruler));
     });
