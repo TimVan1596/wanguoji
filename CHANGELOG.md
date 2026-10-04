@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99926
+
+- Added finite strategic alliances after a sustained non-aggression pact and a shared, territorially or historically relevant strategic threat; alliance signing/expiry is recorded in WorldHistory and signatory ruler chronicles.
+- Added conservative same-origin administrative absorption after a long alliance, current border adjacency, a prolonged bilateral-war-free period, clear territorial/city asymmetry, and continuing common pressure or an exceptionally weak faction. City, territory, and population transfers are administrative; absorbed factions and dynastic archives remain recorded with an explicit MERGED terminal outcome, not an extinction/death narrative.
+- Added provisional-leader combat-death and completed-tenure debug metrics. WorldSave schema is V6 for alliance and merger state; V5 and older schemas are rejected without migration. No gameplay tuning, ruler historiography, or Dynastic Revolution changes.
+
 ## v0.99925a
 
 - Extended truces to 36 months and non-aggression agreements to 96 months; agreement terms and dates are rendered from their recorded month ranges.

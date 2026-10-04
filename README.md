@@ -50,6 +50,7 @@
 - `REBEL -> STATE` 的政权形成。
 - 亡国、流亡、残部与复国。
 - `KING` / `EMPEROR` 王权与帝权。
+- 有期限的停战、互不侵犯与战略同盟；满足严格同源条件时可发生行政合邦。
 - Dynasty、王室继承与复辟。
 - ruler chronicle 君主传记与统治摘要。
 - temple / posthumous names：庙号与谥号。
@@ -87,7 +88,6 @@
 - 云端存档、跨设备同步或存档文件导入导出。
 - 可指定世界种子以复现相同配置下的随机序列；完整 replay 工具尚未提供。
 - 经济系统。
-- 外交系统。
 - 科技树。
 - Desktop installer packaging foundation；签名/notarized public distribution 与自动更新尚未配置。
 
@@ -147,7 +147,7 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
-- Web 存档仅保存在当前浏览器 IndexedDB；无云存档或跨设备同步。手动档、200 游戏年轮换自动档与 `current` 恢复档共用 WorldSave V1。
+- Web 存档仅保存在当前浏览器 IndexedDB；无云存档或跨设备同步。手动档、200 游戏年轮换自动档与 `current` 恢复档共用当前版本化 WorldSave schema。
 - Web 中未触发存档的推进在刷新或关闭页面后不会保留；Electron 另有每 5 现实分钟恢复档和关闭前保存。
 - 尚无完整 deterministic seed / replay。
 - 浏览器后台推进是切回前台后的时间补算，不是隐藏标签页持续渲染。

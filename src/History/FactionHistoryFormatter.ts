@@ -121,6 +121,12 @@ export function formatFactionHistoryEvent(
       ? `${selectedName}亡国，${rulerTitle}率王室流亡。`
       : `${selectedName}亡国，王室流亡。`;
   }
+  if (event.type === "faction-merged") {
+    const absorbed = stringMeta(event, "absorbedFactionId");
+    const absorbing = stringMeta(event, "absorbingFactionId");
+    if (factionId === absorbed || relation === "TARGET") return `${selectedName}归并${name(absorbing)}，结束独立建制。`;
+    if (factionId === absorbing || relation === "ACTOR") return `${selectedName}接纳${name(absorbed)}，完成同源合邦。`;
+  }
   if (event.type === "faction-extinct") {
     if (relation === "CONQUEROR") {
       const fallenName = name(event.targetFactionId);

@@ -31,6 +31,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   const units = array(save.units, "units", errors);
   const dynasties = array(save.dynasties, "dynasties", errors);
   const factionIds = uniqueIds(factions, "factionId", "factions", errors);
+  const factionById = new Map(factions.map((faction) => [String(faction.factionId), faction]));
   const cityIds = uniqueIds(cities, "cityId", "cities", errors);
   const userIds = uniqueIds(users, "userId", "users", errors);
   const unitIds = uniqueIds(units, "unitId", "units", errors);
@@ -47,6 +48,8 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
       if (reason !== "WAR_EXHAUSTION_TRUCE" && reason !== "COMMON_THREAT_NON_AGGRESSION" && reason !== "COMMON_THREAT_ALLIANCE") errors.push("diplomacy reason is invalid");
       if (status === "ALLIANCE" && reason !== "COMMON_THREAT_ALLIANCE") errors.push("alliance must have a common-threat reason");
       if (status !== "ALLIANCE" && reason === "COMMON_THREAT_ALLIANCE") errors.push("alliance reason requires alliance status");
+      if (status === "ALLIANCE" && (!Number.isFinite(relation.preconditionDurationMonths) || relation.preconditionStatus !== "NON_AGGRESSION" || relation.preconditionDurationMonths < 24)) errors.push("alliance requires a sustained non-aggression precondition");
+      if (status === "ALLIANCE" && (typeof relation.commonThreatFactionId !== "string" || !factionIds.has(relation.commonThreatFactionId))) errors.push("alliance requires a recorded common threat faction");
       if (status === "ALLIANCE" && typeof factionAId === "string" && typeof factionBId === "string") {
         if (allianceFactionIds.has(factionAId) || allianceFactionIds.has(factionBId)) errors.push("a faction may have at most one active alliance");
         allianceFactionIds.add(factionAId);
@@ -58,6 +61,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
         diplomacyPairs.add(pair);
         requireRef(factionAId, factionIds, "diplomacy.factionAId", errors);
         requireRef(factionBId, factionIds, "diplomacy.factionBId", errors);
+        if (factionById.get(factionAId)?.terminationReason === "MERGED" || factionById.get(factionBId)?.terminationReason === "MERGED") errors.push("merged factions cannot retain diplomacy relations");
       }
     });
   }
