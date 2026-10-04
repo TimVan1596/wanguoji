@@ -24,8 +24,8 @@ describe("Desktop packaging and renderer security", () => {
     expect(packageJson.scripts["desktop:pack"]).toBe("pnpm desktop:package");
     expect(packageJson.scripts["desktop:dist:mac"]).toContain("--arm64");
     expect(packageJson.scripts["desktop:dist:win"]).toContain("--win nsis --x64");
-    expect(packageJson.version).toBe("0.99.79");
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(1);
+    expect(packageJson.version).toBe("0.99.80");
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(2);
   });
 
   it("restricts Desktop production CSP without weakening Web or script policy", () => {

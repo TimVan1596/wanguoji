@@ -39,6 +39,7 @@ describe("WorldSave workflow", () => {
     expect(launch()).toBe(true);
     expect(launch()).toBe(false);
     expect(startWorld).toHaveBeenCalledTimes(1);
+    expect(startWorld).toHaveBeenCalledWith(scenario, "workflow-test");
     expect(hydrate).not.toHaveBeenCalled();
   });
 

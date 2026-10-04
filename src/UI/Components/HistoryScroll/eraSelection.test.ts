@@ -52,7 +52,7 @@ describe("HistoryScroll Era selection UI state", () => {
     expect(eraSelectionUIReducer(initialEraSelectionUIState, { type: "OPEN_MAP" }).eraMapOpen).toBe(false);
   });
 
-  it("keeps the save schema version unchanged", () => {
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(1);
+  it("uses the current WorldSave schema version without coupling Era selection to it", () => {
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(2);
   });
 });
