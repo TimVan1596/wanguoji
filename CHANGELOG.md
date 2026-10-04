@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99924h4d
+
+- Isolated Phaser map pointer handling to native events whose down/up/move target is the current game canvas and require a valid canvas down/up sequence before map selection.
+- Added debug-only last map-pointer target, acceptance reason, selected-faction, and right-panel before/after diagnostics.
+- No genealogy dialog, succession, WorldSave schema, or gameplay changes.
+
 ## v0.99924h4c
 
 - Rebuilt the full genealogy viewer with the same standard MUI Dialog, DialogTitle, and DialogContent pattern used by the manually verified Era Atlas viewer; the dialog host and open state now live in FactionProfile outside the keyed dynasty tree.

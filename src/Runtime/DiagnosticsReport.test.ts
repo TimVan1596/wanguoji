@@ -10,6 +10,15 @@ describe("diagnostic reports", () => {
         activeCatchUpSource: "NONE",
         worldMonth: 120,
         genealogyViewer: { open: true, lastCloseSource: "BACKDROP", lastMuiReason: "backdropClick" },
+        mapPointer: {
+          lastTarget: "BUTTON",
+          accepted: false,
+          reason: "NON_CANVAS_TARGET",
+          selectedFactionNameBefore: "wei",
+          selectedFactionNameAfter: "wei",
+          rightPanelTabBefore: "faction",
+          rightPanelTabAfter: "faction",
+        },
       },
       units: { logicalUsers: 7, missingTextureKeys: [], noFaceSource: "SVG" },
       performance: { fps: 60, renderFrameCount: 987, averageFrameMs: 16.7, p95FrameMs: 20, maxFrameMs: 40 },
@@ -21,6 +30,9 @@ describe("diagnostic reports", () => {
     expect(report).toContain("activeCatchUpSource: NONE");
     expect(report).toContain("worldMonth: 120");
     expect(report).toContain('genealogy viewer: {"lastCloseSource": "BACKDROP", "lastMuiReason": "backdropClick", "open": true}');
+    expect(report).toContain("map pointer last target: BUTTON");
+    expect(report).toContain("map pointer reason: NON_CANVAS_TARGET");
+    expect(report).toContain("map pointer faction after: wei");
     expect(report).toContain("FPS: 60");
     expect(report).toContain("render frame count: 987");
     expect(report).toContain("p95 frame ms: 20");

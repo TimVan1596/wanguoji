@@ -22,6 +22,12 @@ import { validateWorldState } from "../Simulation/WorldInvariant";
 import { getCityCameraFocusTarget } from "../Simulation/MapInteraction";
 import { CityInteractionIndex } from "../Simulation/CityInteractionIndex";
 import {
+  beginMapPointerSequence,
+  finishMapPointerSequence,
+  inspectMapPointerTarget,
+  MapPointerSequence,
+} from "../Simulation/MapPointerInput";
+import {
   CityPointerResolution,
   getPointerDragDistance,
   logCityClickProbe,
@@ -142,7 +148,16 @@ export default class Core {
   private lastInvariantYear = -1;
   private hoveredCityId: string | undefined;
   readonly cityInteractionIndex = new CityInteractionIndex();
-  private pointerDownScreen: { x: number; y: number } | undefined;
+  private pointerDownSequence: MapPointerSequence | undefined;
+  private mapPointerDiagnostics = {
+    lastTarget: "—",
+    accepted: false,
+    reason: "NOT_YET",
+    selectedFactionNameBefore: undefined as string | undefined,
+    selectedFactionNameAfter: undefined as string | undefined,
+    rightPanelTabBefore: "—",
+    rightPanelTabAfter: "—",
+  };
   private worldInstanceId = 0;
   private visibilityListenerBound = false;
   private snapshotBoundaryRequest = new SnapshotBoundaryRequest();
@@ -225,7 +240,7 @@ export default class Core {
     this.lastFocusSyncYear = -1;
     this.lastInvariantYear = -1;
     this.hoveredCityId = undefined;
-    this.pointerDownScreen = undefined;
+    this.pointerDownSequence = undefined;
     this.cityInteractionIndex.reset();
     this.simulationDriver.reset();
     this.backgroundProgression.reset();
@@ -790,6 +805,7 @@ export default class Core {
       desktopVisibilityCatchUpInvariantViolation:
         this.runtimeMode === "DESKTOP_CONTINUOUS" && catchUpSnapshot.catchUpSource === "WEB_VISIBILITY",
       worldInstanceId: this.worldInstanceId,
+      mapPointer: { ...this.mapPointerDiagnostics },
       runtimeMode: this.runtimeMode,
       runningStateDivergence: reduxWorldRunning !== simulatorRunning || simulatorRunning !== clockRunning,
       framePerformance: this.runtimePerformance.snapshot(),
@@ -1028,17 +1044,52 @@ export default class Core {
   }
 
   private handleMapPointerDown(pointer: Phaser.Input.Pointer) {
+    const target = inspectMapPointerTarget(pointer, this.game.canvas, "down");
+    const rootBefore = store.getState().root;
     const position = this.resolvePointerPosition(pointer);
-    this.pointerDownScreen = { x: position.canvasX, y: position.canvasY };
-  }
-
-  private handleMapPointerUp(pointer: Phaser.Input.Pointer) {
-    const position = this.resolvePointerPosition(pointer);
-    const dragDistance = getPointerDragDistance(this.pointerDownScreen, {
+    this.pointerDownSequence = beginMapPointerSequence(target.accepted, pointer.id, {
       x: position.canvasX,
       y: position.canvasY,
     });
-    const selectedCityBefore = store.getState().root.selectedCityId;
+    this.recordMapPointerDiagnostic(
+      target.target,
+      target.accepted,
+      target.reason,
+      rootBefore.selectedFactionName,
+      rootBefore.selectedFactionName,
+      rootBefore.rightPanelTab,
+      rootBefore.rightPanelTab
+    );
+  }
+
+  private handleMapPointerUp(pointer: Phaser.Input.Pointer) {
+    const target = inspectMapPointerTarget(pointer, this.game.canvas, "up");
+    const pointerDownSequence = this.pointerDownSequence;
+    const sequence = finishMapPointerSequence(
+      pointerDownSequence,
+      target.accepted,
+      pointer.id
+    );
+    this.pointerDownSequence = undefined;
+    const rootBefore = store.getState().root;
+    if (!sequence.accepted) {
+      this.recordMapPointerDiagnostic(
+        target.target,
+        false,
+        sequence.reason,
+        rootBefore.selectedFactionName,
+        rootBefore.selectedFactionName,
+        rootBefore.rightPanelTab,
+        rootBefore.rightPanelTab
+      );
+      return;
+    }
+    const position = this.resolvePointerPosition(pointer);
+    const dragDistance = getPointerDragDistance(pointerDownSequence, {
+      x: position.canvasX,
+      y: position.canvasY,
+    });
+    const selectedCityBefore = rootBefore.selectedCityId;
     const interactionCityId = this.cityInteractionIndex.resolveGrid(
       position.gridX,
       position.gridY
@@ -1047,7 +1098,15 @@ export default class Core {
       ?.getBlock(position.gridX, position.gridY)
       ?.city?.id;
     if (!this.isPointerClick(dragDistance)) {
-      this.pointerDownScreen = undefined;
+      this.recordMapPointerDiagnostic(
+        target.target,
+        true,
+        sequence.reason,
+        rootBefore.selectedFactionName,
+        store.getState().root.selectedFactionName,
+        rootBefore.rightPanelTab,
+        store.getState().root.rightPanelTab
+      );
       logCityClickProbe({
         ...position,
         cameraScrollX: this.scene.cameras.main.scrollX,
@@ -1062,12 +1121,21 @@ export default class Core {
       });
       return;
     }
-    this.pointerDownScreen = undefined;
     const city = interactionCityId
       ? this.allCities.find((item) => item.id === interactionCityId)
       : undefined;
     if (city) {
       this.selectCity(city.id, { openDetails: store.getState().root.rightPanelTab !== "god" });
+      const rootAfter = store.getState().root;
+      this.recordMapPointerDiagnostic(
+        target.target,
+        true,
+        sequence.reason,
+        rootBefore.selectedFactionName,
+        rootAfter.selectedFactionName,
+        rootBefore.rightPanelTab,
+        rootAfter.rightPanelTab
+      );
       logCityClickProbe({
         ...position,
         cameraScrollX: this.scene.cameras.main.scrollX,
@@ -1083,6 +1151,16 @@ export default class Core {
       return;
     }
     this.selectFaction(undefined);
+    const rootAfter = store.getState().root;
+    this.recordMapPointerDiagnostic(
+      target.target,
+      true,
+      sequence.reason,
+      rootBefore.selectedFactionName,
+      rootAfter.selectedFactionName,
+      rootBefore.rightPanelTab,
+      rootAfter.rightPanelTab
+    );
     logCityClickProbe({
       ...position,
       cameraScrollX: this.scene.cameras.main.scrollX,
@@ -1098,6 +1176,30 @@ export default class Core {
   }
 
   private handleMapPointerMove(pointer: Phaser.Input.Pointer) {
+    const target = inspectMapPointerTarget(pointer, this.game.canvas, "move");
+    const rootBefore = store.getState().root;
+    if (!target.accepted) {
+      this.recordMapPointerDiagnostic(
+        target.target,
+        false,
+        target.reason,
+        rootBefore.selectedFactionName,
+        rootBefore.selectedFactionName,
+        rootBefore.rightPanelTab,
+        rootBefore.rightPanelTab
+      );
+      this.clearHoveredCity();
+      return;
+    }
+    this.recordMapPointerDiagnostic(
+      target.target,
+      true,
+      target.reason,
+      rootBefore.selectedFactionName,
+      rootBefore.selectedFactionName,
+      rootBefore.rightPanelTab,
+      rootBefore.rightPanelTab
+    );
     const city = this.resolveCityFromPointer(pointer);
     if (city?.id === this.hoveredCityId) {
       return;
@@ -1109,6 +1211,26 @@ export default class Core {
     this.hoveredCityId = city.id;
     city.setZoneHighlight(true);
     this.showCityTooltip(city, city.block);
+  }
+
+  private recordMapPointerDiagnostic(
+    target: string,
+    accepted: boolean,
+    reason: string,
+    selectedFactionNameBefore: string | undefined,
+    selectedFactionNameAfter: string | undefined,
+    rightPanelTabBefore: string,
+    rightPanelTabAfter: string
+  ) {
+    this.mapPointerDiagnostics = {
+      lastTarget: target,
+      accepted,
+      reason,
+      selectedFactionNameBefore,
+      selectedFactionNameAfter,
+      rightPanelTabBefore,
+      rightPanelTabAfter,
+    };
   }
 
   private resolveCityFromPointer(pointer: Phaser.Input.Pointer) {
