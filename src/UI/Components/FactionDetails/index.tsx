@@ -801,7 +801,7 @@ function RulerBiography({
         {ruler.endReason ? ` · ${ruler.endReason}` : ""}
       </Typography>
       <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
-        继承关系：{formatRulerRelation(ruler.relationType, team.identityStage, Boolean(parent))}
+        继承关系：{formatRulerRelation(ruler.relationType, team.identityStage, Boolean(parent), Boolean(ruler.chronicle?.foundedStateName))}
       </Typography>
       {heirDeathEvents.length ? (
         <Box sx={{ mt: 0.55 }}>
@@ -817,7 +817,8 @@ function RulerBiography({
         世系：{formatRulerLineage(
           ruler.relationType,
           parent ? formatRulerRowName(parent, team) : undefined,
-          team.identityStage
+          team.identityStage,
+          Boolean(ruler.chronicle?.foundedStateName)
         )}
         {ruler.relationType !== "LEADER_SUCCESSOR" && grandparent
           ? `；祖父：${formatRulerRowName(grandparent, team)}`

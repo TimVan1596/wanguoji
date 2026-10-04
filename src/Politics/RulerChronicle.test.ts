@@ -141,7 +141,11 @@ describe("ruler chronicle", () => {
 
     const expander = createTagEvidence({ start: { territoryShare: 0.2 }, end: { territoryShare: 0.34, cityCount: 5 } });
     expect(buildRulerTags(expander)).toContain("开疆");
-    const steward = createTagEvidence({ months: yearsToMonths(20), start: { stability: 78 }, end: { stability: 80 } });
+    const steward = createTagEvidence({
+      months: yearsToMonths(20),
+      start: { stability: 78, territoryShare: 0.2 },
+      end: { stability: 80, territoryShare: 0.22 },
+    });
     expect(steward.roles).toContain("STEWARD");
     expect(buildRulerTags(steward)).toContain("守成");
   });

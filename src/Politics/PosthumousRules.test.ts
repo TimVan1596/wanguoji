@@ -9,6 +9,7 @@ import {
   formatPosthumousRulerName,
   getPosthumousLabelLines,
   GENERIC_EPITHET_ALTERNATE_MIN_SCORE,
+  EPITHET_SEMANTIC_DOMINANCE_MARGIN,
   IMMEDIATE_REPEAT_SEMANTIC_OVERRIDE_SCORE,
 } from "./PosthumousRules";
 import { buildRulerLegacyEvidence } from "./RulerLegacyEvidence";
@@ -307,6 +308,7 @@ describe("posthumous rules", () => {
       { territoryShare: 0.42, cityCount: 7, stability: 68 },
       { reignOrdinal: 2 });
     expect(IMMEDIATE_REPEAT_SEMANTIC_OVERRIDE_SCORE).toBe(100);
+    expect(EPITHET_SEMANTIC_DOMINANCE_MARGIN).toBe(30);
     expect(evaluatePosthumousNames(current, [previous, current], faction(), current.endYear!).posthumousEpithet).toBe("襄");
   });
 

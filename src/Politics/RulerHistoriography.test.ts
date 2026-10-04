@@ -13,6 +13,7 @@ import {
 import {
   deriveRulerAssessment,
   deriveRulerHistoricalEvidence,
+  composeRulerAssessment,
   composeHistorianVoice,
   formatAccessionAge,
   RulerHistoriographyContext,
@@ -38,6 +39,7 @@ function makeContext(options: {
   captures?: number;
   rebellions?: number;
   factionOrigin?: { foundingRulerId?: string };
+  stateFoundedMonth?: number;
   posthumousEpithet?: string;
 } = {}): RulerHistoriographyContext {
   const accession = options.accession ?? 0;
@@ -84,7 +86,7 @@ function makeContext(options: {
   return {
     ruler,
     dynasty: { rulers } as any,
-    faction: { name: "秦", origin: options.factionOrigin },
+    faction: { name: "秦", origin: options.factionOrigin, stateFoundedMonth: options.stateFoundedMonth },
     events: options.events ?? [],
     worldMonth: Math.max(endMonth, 120),
   };
@@ -117,6 +119,46 @@ describe("evidence-grounded ruler historiography", () => {
     const result = deriveRulerAssessment(makeContext({ foundedStateName: "秦", foundedStateMonth: 48 }));
     expect(result.lines.join(" ")).toContain("正式建国");
     expect(buildRulerTags(result.evidence)).toContain("开国之君");
+  });
+
+  it("prioritizes major expansion over stewardship and names a provisional polity accurately", () => {
+    const context = makeContext({
+      endMonth: 31 * 12 + 3,
+      start: { population: 5, territoryShare: 0.137, cityCount: 4, stability: 81 },
+      end: { population: 166, territoryShare: 0.922, cityCount: 14, stability: 95 },
+      captures: 2,
+    });
+    const result = deriveRulerAssessment(context);
+    expect(result.evidence.roles).toContain("EXPANDER");
+    expect(result.evidence.roles).not.toContain("STEWARD");
+    expect(buildRulerTags(result.evidence)).toContain("开疆");
+    expect(buildRulerTags(result.evidence)).not.toContain("守成");
+    expect(result.lines.join(" ")).not.toMatch(/少有显著拓境|守成为其主要遗产/);
+    const voice = composeHistorianVoice(result.evidence)!;
+    expect(voice).toContain("13.7%扩至92.2%");
+    expect(voice).toContain("大规模拓境");
+    expect(voice).not.toContain("功在维持");
+
+    // Defend the presentation ordering if an unexpected upstream combination appears.
+    result.evidence.roles.push("STEWARD");
+    expect(composeRulerAssessment(result.evidence).lines.join(" ")).not.toMatch(/少有显著拓境|守成为其主要遗产/);
+    expect(buildRulerTags(result.evidence)).not.toContain("守成");
+  });
+
+  it("uses 势力 rather than 国家 for expansion before formal state formation", () => {
+    const context = makeContext({
+      factionOrigin: { foundingRulerId: "r1" },
+      start: { territoryShare: 0.05 }, end: { territoryShare: 0.2, cityCount: 5 },
+    });
+    const lines = deriveRulerAssessment(context).lines.join(" ");
+    expect(lines).toContain("开拓使势力");
+    expect(lines).not.toContain("开拓使国家");
+
+    const foundedState = makeContext({
+      stateFoundedMonth: 0,
+      start: { territoryShare: 0.05 }, end: { territoryShare: 0.2, cityCount: 5 },
+    });
+    expect(deriveRulerAssessment(foundedState).lines.join(" ")).toContain("开拓使国家");
   });
 
   it("composes young accession and crisis without repeating 承统", () => {

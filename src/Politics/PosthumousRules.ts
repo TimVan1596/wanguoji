@@ -27,6 +27,7 @@ const DISASTER_EPITHETS = new Set(["哀", "愍"]);
 const GENERIC_EPITHETS = new Set(["襄", "康", "景", "顺", "桓", "威"]);
 export const GENERIC_EPITHET_ALTERNATE_MIN_SCORE = 35;
 export const IMMEDIATE_REPEAT_SEMANTIC_OVERRIDE_SCORE = 100;
+export const EPITHET_SEMANTIC_DOMINANCE_MARGIN = 30;
 
 export function finalizeRulerPosthumousNames(
   ruler: Ruler,
@@ -455,9 +456,11 @@ function pickSoftUniqueEpithet(
     : undefined;
   let eligibleCandidates = candidates;
   if (repeatedCandidate && GENERIC_EPITHETS.has(repeatedCandidate.name)) {
+    const semanticDominates = (repeatedCandidate.score ?? 0) >= IMMEDIATE_REPEAT_SEMANTIC_OVERRIDE_SCORE;
     const alternatives = candidates.filter((candidate) =>
       candidate.name !== repeatedCandidate.name &&
-      (candidate.score ?? 0) >= GENERIC_EPITHET_ALTERNATE_MIN_SCORE
+      (candidate.score ?? 0) >= GENERIC_EPITHET_ALTERNATE_MIN_SCORE &&
+      (!semanticDominates || (repeatedCandidate.score ?? 0) - (candidate.score ?? 0) <= EPITHET_SEMANTIC_DOMINANCE_MARGIN)
     );
     if (alternatives.length) {
       eligibleCandidates = alternatives;

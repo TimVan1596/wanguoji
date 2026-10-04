@@ -91,7 +91,7 @@ export function buildRulerTags(evidence: RulerHistoricalEvidence) {
   if (evidence.restorationCount > 0 || evidence.roles.includes("RESTORER")) tags.push("复国");
   if (evidence.roles.includes("EXPANDER")) tags.push("开疆");
   if (evidence.roles.includes("DECLINER")) tags.push("国势衰退");
-  if (evidence.roles.includes("STEWARD")) tags.push("守成");
+  if (evidence.roles.includes("STEWARD") && !evidence.roles.includes("EXPANDER")) tags.push("守成");
   if (evidence.roles.includes("EXILED_RULER")) tags.push("流亡");
   if (evidence.roles.includes("CONQUEROR")) tags.push("征服者");
   if (evidence.rebellions > 0) tags.push("内忧");

@@ -36,6 +36,7 @@ export interface RulerHistoricalEvidence {
   isFinalized: boolean;
   foundedFaction: boolean;
   foundedState: boolean;
+  formalStateAtReignEnd: boolean;
   foundedStateName?: string;
   proclaimedEmperor: boolean;
   completedUnification: boolean;
@@ -79,7 +80,11 @@ export interface RulerHistoricalEvidence {
 export interface RulerHistoriographyContext {
   ruler: Ruler;
   dynasty: Pick<Dynasty, "rulers">;
-  faction: { name: string; origin?: { foundingRulerId?: string } };
+  faction: {
+    name: string;
+    origin?: { foundingRulerId?: string };
+    stateFoundedMonth?: number;
+  };
   events: WorldEvent[];
   worldMonth: number;
 }
@@ -151,6 +156,9 @@ export function deriveRulerHistoricalEvidence(
         ? stateFoundingEvent.metadata.newDisplayName
         : undefined)
     : undefined;
+  const formalStateAtReignEnd = foundedState || (
+    faction.stateFoundedMonth !== undefined && faction.stateFoundedMonth <= endMonth
+  );
   const proclaimedEmperor = Boolean(
     chronicle?.proclaimedEmperorMonth !== undefined &&
       chronicle.proclaimedEmperorMonth >= accessionMonth &&
@@ -252,7 +260,11 @@ export function deriveRulerHistoricalEvidence(
   if (completedUnification) roles.push("UNIFIER");
   if (expansion) roles.push("EXPANDER");
   if ((chronicle?.citiesCapturedPersonally ?? 0) >= 2 || collapseGroups.size > 0) roles.push("CONQUEROR");
-  if (tenure.activeRuleMonths >= 18 * 12 && legacyEvidence?.stableGovernanceEligible && !majorDecline && !tenure.lostStateDuringTenure) roles.push("STEWARD");
+  if (
+    tenure.activeRuleMonths >= 18 * 12 && legacyEvidence?.stableGovernanceEligible &&
+    !majorDecline && !tenure.lostStateDuringTenure && !expansion &&
+    Math.abs(territoryDelta) < 0.12 && cityDelta <= 2
+  ) roles.push("STEWARD");
   if (accessionCrisis && !ownTerminalCollapse) roles.push("CRISIS_SURVIVOR");
   if (territorialPeakRetreat >= 0.15) {
     if (territorialPeakGain >= 0.08 && peakTerritory >= 0.3) roles.push("PEAK_AND_RETREAT");
@@ -292,6 +304,7 @@ export function deriveRulerHistoricalEvidence(
     isFinalized,
     foundedFaction,
     foundedState,
+    formalStateAtReignEnd,
     foundedStateName,
     proclaimedEmperor,
     completedUnification,
@@ -393,14 +406,14 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
     lines.push(`${livingPrefix}承统时国势已居高位，其后疆域显著回落，未能维持前期盛势。`);
   } else if (evidence.roles.includes("MODERATE_RECOVERY")) {
     lines.push(`${livingPrefix}其在位未形成决定性扩张，但人口、疆域与稳定均有所恢复，治绩更近恢复而非开创。`);
-  } else if (evidence.roles.includes("STEWARD")) {
-    lines.push(`${livingPrefix}其治下少有显著拓境，长久维持政权与秩序，守成为其主要遗产。`);
   } else if (evidence.roles.includes("PEAK_AND_RETREAT")) {
     lines.push(`${livingPrefix}其治下疆域由${formatPercent(evidence.startTerritory)}拓展至${formatPercent(evidence.peakTerritory)}，一度达到鼎盛；如何维系盛势成为其政治遗产的关键。`);
-  } else if (evidence.roles.includes("SHORT_REIGN") && !hasMajorLegacy(evidence)) {
-    lines.push(`${livingPrefix}在位不足五年，现有史实尚不足以形成明确的治绩判断。`);
   } else if (evidence.roles.includes("EXPANDER")) {
     lines.push(`${livingPrefix}${agePrefix}其治下国势显著开拓，可称一代进取之主；其政治遗产以拓境为重。`);
+  } else if (evidence.roles.includes("STEWARD")) {
+    lines.push(`${livingPrefix}其治下少有显著拓境，长久维持政权与秩序，守成为其主要遗产。`);
+  } else if (evidence.roles.includes("SHORT_REIGN") && !hasMajorLegacy(evidence)) {
+    lines.push(`${livingPrefix}在位不足五年，现有史实尚不足以形成明确的治绩判断。`);
   } else if (evidence.roles.includes("LAST_RULER")) {
     lines.push(`${agePrefix}其世国祚终结，结局为亡国之君。`);
   } else {
@@ -414,7 +427,8 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
   } else if (evidence.factionsDestroyedByFactionDuringReign > 0) {
     lines.push(`其治下先后覆灭${evidence.factionsDestroyedByFactionDuringReign}个政权，扩张不止于城邑得失。`);
   } else if (evidence.roles.includes("EXPANDER") && !evidence.foundedState && !evidence.completedUnification) {
-    lines.push(`其疆域一度达到${formatPercent(evidence.peakTerritory)}，开拓使国家${getTerritorialScaleJudgement(evidence.peakTerritory)}。`);
+    const polity = evidence.formalStateAtReignEnd ? "国家" : "势力";
+    lines.push(`其疆域一度达到${formatPercent(evidence.peakTerritory)}，开拓使${polity}${getTerritorialScaleJudgement(evidence.peakTerritory)}。`);
   }
 
   if (evidence.territorialPeakRetreat >= 0.15) {
@@ -536,6 +550,17 @@ export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string
     "疆域拓展已有实证，然而统治因战死骤然终止，未竟之处亦须记入其史。",
     "开拓的结果留在版图中，过早的战死则截断了其后的政治进程。",
   ]);
+  if (roles.includes("EXPANDER") && evidence.territoryDelta >= 0.3) {
+    const start = formatPrecisePercent(evidence.startTerritory);
+    const end = formatPrecisePercent(evidence.endTerritory);
+    return pick([
+      `其在位疆域由${start}扩至${end}，大规模拓境改变天下格局，开疆成为核心功业。`,
+      `版图从${start}增至${end}，显著扩张重塑了当时的天下力量对比。`,
+      `由${start}至${end}的疆域跃升，足见其拓境之举已深刻改变天下局势。`,
+      `其世版图大幅外展：疆域${start}起而至${end}，国家规模与天下格局俱为之一变。`,
+      `疆域由${start}扩展至${end}，如此幅度的开拓构成其最重要的历史遗产。`,
+    ]);
+  }
   if (roles.includes("CONTESTED_REIGN")) {
     const duration = formatWorldDuration(evidence.tenure.activeRuleMonths);
     const territory = `${formatPrecisePercent(evidence.startTerritory)}至${formatPrecisePercent(evidence.endTerritory)}`;
@@ -598,6 +623,13 @@ export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string
     "疆土或城邑在其任内显著减少，衰退是这段统治最清楚的结果之一。",
     "其世未能阻止国势下滑；此结局确凿，成因仍需结合此前局势审视。",
   ]);
+  if (roles.includes("EXPANDER")) return pick([
+    "疆域扩展是其最显著的作为，国家规模由此发生实质变化。",
+    "其历史分量主要来自开拓，所达峰值与最终留存仍须分别看待。",
+    "开疆有据，拓展构成其主要功业；得地之后能否维持，则另有后话。",
+    "疆域在其任内明显扩大，开拓构成其最突出的可考功绩。",
+    "其推动国家版图外展，历史分量主要落在这一拓境成果上。",
+  ]);
   if (roles.includes("FOUNDER") && evidence.foundedState) return pick([
     "其功在奠定政权起点，使后来王统有制可循。",
     "新政权由其手开其端绪，创业之功是其最清楚的历史位置。",
@@ -611,13 +643,6 @@ export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string
     "其举事并创建势力，后来的国家沿此政治起点发展。",
     "创立势力是其可考之功；其后国家如何成形，还要看继任者的作为。",
     "其留下草创政权的起点，但这不等同于正式建国。",
-  ]);
-  if (roles.includes("EXPANDER")) return pick([
-    "疆域扩展是其最显著的作为，国家规模由此发生实质变化。",
-    "其历史分量主要来自开拓，所达峰值与最终留存仍须分别看待。",
-    "开疆有据，拓展构成其主要功业；得地之后能否维持，则另有后话。",
-    "疆域在其任内明显扩大，开拓构成其最突出的可考功绩。",
-    "其推动国家版图外展，历史分量主要落在这一拓境成果上。",
   ]);
   if (roles.includes("STEWARD")) return "其治下未见显著收缩，长期维持秩序与政权，是可据史实称道之处。";
   if (roles.includes("SHORT_REIGN")) return pick([

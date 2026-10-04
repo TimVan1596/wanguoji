@@ -3,9 +3,12 @@ import { RulerRelationType } from "../../../Politics/Dynasty";
 export function formatRulerRelation(
   relation: RulerRelationType | undefined,
   identityStage?: string,
-  parentRecorded = true
+  parentRecorded = true,
+  foundedStateEvidence?: boolean
 ) {
-  if (relation === "FOUNDER") return identityStage === "PROVISIONAL" ? "首任首领" : "开国君主";
+  if (relation === "FOUNDER") return foundedStateEvidence === undefined
+    ? identityStage === "PROVISIONAL" ? "首任首领" : "开国君主"
+    : foundedStateEvidence ? "开国君主" : "首任首领 / 势力创始人";
   if (relation === "DIRECT_CHILD") return parentRecorded ? "前君之子" : "直系继承（父名未记录）";
   if (relation === "COLLATERAL_KIN") return "宗室旁支";
   if (relation === "NEW_HOUSE") return "易姓 / 新家族继位";
@@ -16,9 +19,13 @@ export function formatRulerRelation(
 export function formatRulerLineage(
   relation: RulerRelationType | undefined,
   parentName?: string,
-  identityStage?: string
+  identityStage?: string,
+  foundedStateEvidence?: boolean
 ) {
   if (relation === "LEADER_SUCCESSOR") return "无直系世系记录";
   if (parentName) return `父：${parentName}`;
-  return formatRulerRelation(relation, identityStage, false);
+  if (relation === "FOUNDER" && (foundedStateEvidence === false || foundedStateEvidence === undefined && identityStage === "PROVISIONAL")) {
+    return "首任首领";
+  }
+  return formatRulerRelation(relation, identityStage, false, foundedStateEvidence);
 }

@@ -22,4 +22,10 @@ describe("ruler relation presentation", () => {
       "易姓 / 新家族继位"
     );
   });
+
+  it("does not retroactively call a provisional founder an 开国君主 after the faction becomes a state", () => {
+    expect(formatRulerRelation("FOUNDER", "STATE", false, false)).toBe("首任首领 / 势力创始人");
+    expect(formatRulerLineage("FOUNDER", undefined, "STATE", false)).toBe("首任首领");
+    expect(formatRulerRelation("FOUNDER", "PROVISIONAL", false, true)).toBe("开国君主");
+  });
 });
