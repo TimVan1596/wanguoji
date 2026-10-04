@@ -341,11 +341,25 @@ function validateHydrationImportShapes(save: Partial<WorldSaveV1>, errors: strin
     if (faction.origin && faction.origin.foundingCityIds !== undefined && (!Array.isArray(faction.origin.foundingCityIds) || faction.origin.foundingCityIds.some((id: unknown) => typeof id !== "string"))) errors.push(`factions[${index}].origin.foundingCityIds must be an array of strings`);
   });
   save.dynasties?.forEach((dynasty, index) => {
+    const rulers = Array.isArray(dynasty.rulers) ? dynasty.rulers : [];
     if (!Array.isArray(dynasty.rulers) || dynasty.rulers.some((ruler: unknown) => !isPlainRecord(ruler))) errors.push(`dynasties[${index}].rulers must be an array of objects`);
     if (!Array.isArray(dynasty.heirIds) || dynasty.heirIds.some((id: unknown) => typeof id !== "string")) errors.push(`dynasties[${index}].heirIds must be an array of strings`);
     else {
       if (dynasty.heirIds.length > MAX_DYNASTIC_SUCCESSION_CANDIDATES) errors.push(`dynasties[${index}].heirIds exceeds candidate limit`);
       if (new Set(dynasty.heirIds).size !== dynasty.heirIds.length) errors.push(`dynasties[${index}].heirIds must be unique`);
+      dynasty.heirIds.forEach((id) => {
+        const candidate = rulers.find((ruler: unknown) => isPlainRecord(ruler) && ruler.rulerId === id);
+        if (!isPlainRecord(candidate) || candidate.status !== "heir") errors.push(`dynasties[${index}].heirIds must reference heir records`);
+      });
+    }
+    if (dynasty.designatedHeirId !== undefined) {
+      if (typeof dynasty.designatedHeirId !== "string") errors.push(`dynasties[${index}].designatedHeirId must be a string`);
+      if (!Array.isArray(dynasty.heirIds) || !dynasty.heirIds.includes(dynasty.designatedHeirId)) errors.push(`dynasties[${index}].designatedHeirId must belong to heirIds`);
+      if (!finite(dynasty.designatedSinceMonth) || dynasty.designatedSinceMonth < 0) errors.push(`dynasties[${index}].designatedSinceMonth must be a non-negative month`);
+      const designated = rulers.find((ruler: unknown) => isPlainRecord(ruler) && ruler.rulerId === dynasty.designatedHeirId);
+      if (!isPlainRecord(designated) || designated.status !== "heir") errors.push(`dynasties[${index}].designatedHeirId must reference an heir record`);
+    } else if (dynasty.designatedSinceMonth !== undefined) {
+      errors.push(`dynasties[${index}].designatedSinceMonth requires designatedHeirId`);
     }
   });
   const registries = record(save.registries, "registries");

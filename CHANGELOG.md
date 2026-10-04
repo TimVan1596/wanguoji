@@ -10,7 +10,7 @@
 
 - Retained a bounded set of living, relationship-grounded same-house succession candidates and prioritized direct children, grandchildren, siblings, then recorded collateral kin before the existing new-house fallback.
 - Added explicit succession relation labels and history wording for grandchildren and siblings; candidate selection ties use the seeded world RNG.
-- Reused the existing WorldSave V2 dynasty candidate and parent-reference fields; no save schema migration, gameplay balance, diplomacy, or frozen historiography changes.
+- Bumped WorldSave to V3 to persist the designated heir and appointment month alongside the existing candidate and parent-reference graph; V2 is rejected without migration. No gameplay balance, diplomacy, or frozen historiography changes.
 
 ## v0.99924g1
 

@@ -131,7 +131,7 @@ export interface WorldEventSystemSaveV1 {
   cycleState: WorldCycleStateSaveV1;
 }
 
-export interface WorldSaveV2 {
+export interface WorldSaveV3 {
   saveSchemaVersion: typeof CURRENT_SAVE_SCHEMA_VERSION;
   appVersion: string;
   createdAt?: string;
@@ -164,7 +164,7 @@ export interface WorldSaveV2 {
   worldRandom: WorldRandomState;
 }
 
-export function createEmptyWorldSaveV2(): WorldSaveV2 {
+export function createEmptyWorldSaveV3(): WorldSaveV3 {
   return {
     saveSchemaVersion: CURRENT_SAVE_SCHEMA_VERSION,
     appVersion: APP_VERSION,
@@ -202,9 +202,11 @@ export function createEmptyWorldSaveV2(): WorldSaveV2 {
   };
 }
 
-/** Compatibility type/function names for existing internal call sites; payload schema is V2. */
-export type WorldSaveV1 = WorldSaveV2;
-export const createEmptyWorldSaveV1 = createEmptyWorldSaveV2;
+/** Compatibility aliases for existing internal call sites; payload schema is V3. */
+export type WorldSaveV2 = WorldSaveV3;
+export type WorldSaveV1 = WorldSaveV3;
+export const createEmptyWorldSaveV2 = createEmptyWorldSaveV3;
+export const createEmptyWorldSaveV1 = createEmptyWorldSaveV3;
 
 export function canonicalWorldSaveProjection(save: WorldSaveV1) {
   const { createdAt: _createdAt, ...canonical } = save;

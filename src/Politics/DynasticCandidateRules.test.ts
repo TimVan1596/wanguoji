@@ -79,6 +79,25 @@ describe("recorded dynastic succession candidates", () => {
     expect(chooseWithPreference([brother.id, otherBrother.id], otherBrother.id)?.ruler.id).toBe(brother.id);
   });
 
+  it("chooses one designated person from a full six-candidate pool", () => {
+    const father = ruler("father", undefined, "dead");
+    const predecessor = ruler("r", "father", "ruling");
+    const candidates = Array.from({ length: MAX_DYNASTIC_SUCCESSION_CANDIDATES }, (_, index) =>
+      ruler(`candidate-${index}`, "father")
+    );
+    const designated = selectRecordedDynasticSuccessor({
+      predecessor,
+      candidates,
+      rulers: [father, predecessor, ...candidates],
+      houseName: "姬氏",
+      month: 1200,
+      isAlive: () => true,
+      pickIndex: () => 4,
+    });
+    expect(candidates).toHaveLength(6);
+    expect(designated?.ruler.id).toBe("candidate-4");
+  });
+
   it("derives candidate labels, succession background, and political genealogy from parent links", () => {
     const father = ruler("father", undefined, "dead");
     const rulerNow = { ...ruler("r", "father", "ruling"), reignOrdinal: 2 };
@@ -90,10 +109,12 @@ describe("recorded dynastic succession candidates", () => {
     expect(formatRecordedKinship(nephew, rulerNow, rulers)).toBe("宗室旁支");
     expect(getSuccessionBackground({ ...rulerNow, relationType: "SIBLING", predecessorId: "father" }, rulers))
       .toBe("前君无可继的直系候选，由其兄弟承统");
+    expect(getSuccessionBackground({ ...rulerNow, relationType: "NEW_HOUSE", predecessorId: "father" }, rulers))
+      .toBe("记录中的宗室候选已无可继者，遂易姓续统");
     const tree = buildPoliticalGenealogy(rulers, rulerNow.id, brother.id, [brother.id, nephew.id]);
     expect(tree.map((root) => root.ruler.id)).toContain(unrelated.id);
     const root = tree.find((node) => node.ruler.id === father.id)!;
-    expect(root.children.map((node) => node.ruler.id)).toEqual(["r", "brother"]);
+    expect(root.children.map((node) => node.ruler.id)).toEqual(["brother", "r"]);
     expect(root.children.find((node) => node.ruler.id === "brother")?.children[0].ruler.id).toBe("nephew");
   });
 

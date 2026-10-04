@@ -443,6 +443,7 @@ function FactionProfile({
       ) : null}
       {activeTab === "house" ? (
         <DynastyTree
+          key={team.name}
           dynasty={dynasty}
           rulers={dynasty?.rulers ?? []}
           currentRulerId={dynasty?.currentRulerId}
