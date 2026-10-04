@@ -36,7 +36,8 @@ export function shouldRulerBattleDeathOccur(context: RulerBattleDeathContext) {
     return true;
   }
   const risk = getRulerBattleDeathRisk(context.sovereigntyRank);
-  return (context.randomRoll ?? worldRandom.next()) <= risk;
+  const roll = context.randomRoll === undefined ? worldRandom.next() : context.randomRoll;
+  return roll <= risk;
 }
 
 export function getRulerBattleDeathRisk(rank: SovereigntyRank = "LEADER") {

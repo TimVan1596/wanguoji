@@ -4,7 +4,7 @@ import { chooseAutosaveSlot, findLatestValidSave, GameYearAutosaveSchedule, getN
 import { createStoredWorldSaveRecord, StoredWorldSaveRecord, WorldSaveRepository } from "./WorldSaveRepository";
 
 function metadata(slotId: string, savedAt: string) {
-  return { slotId, slotType: "AUTOSAVE" as const, savedAt, worldMonth: 0, appVersion: "test", saveSchemaVersion: 1 };
+  return { slotId, slotType: "AUTOSAVE" as const, savedAt, worldMonth: 0, appVersion: "test", saveSchemaVersion: 2 };
 }
 
 describe("save slot rules", () => {
@@ -38,8 +38,8 @@ describe("save slot rules", () => {
     const records = new Map<string, unknown>([["manual-new", { ...newer, save: [] }], ["current", older]]);
     const repo = {
       async listMetadata() { return [
-        { slotId: "manual-new", slotType: "MANUAL" as const, savedAt: newer.savedAt, worldMonth: 0, appVersion: newer.appVersion, saveSchemaVersion: 1 },
-        { slotId: "current", slotType: "RECOVERY" as const, savedAt: older.savedAt, worldMonth: 0, appVersion: older.appVersion, saveSchemaVersion: 1 },
+        { slotId: "manual-new", slotType: "MANUAL" as const, savedAt: newer.savedAt, worldMonth: 0, appVersion: newer.appVersion, saveSchemaVersion: 2 },
+        { slotId: "current", slotType: "RECOVERY" as const, savedAt: older.savedAt, worldMonth: 0, appVersion: older.appVersion, saveSchemaVersion: 2 },
       ]; },
       async get(slotId: string) { return records.get(slotId); },
     } as unknown as WorldSaveRepository;

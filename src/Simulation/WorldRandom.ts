@@ -1,5 +1,6 @@
 /** World-scoped deterministic random stream. Algorithm changes require a new algorithm id. */
 export const WORLD_RNG_ALGORITHM = "mulberry32-v1" as const;
+let generatedSeedSequence = 0;
 
 export interface WorldRandomState {
   algorithm: typeof WORLD_RNG_ALGORITHM;
@@ -20,7 +21,10 @@ function hashSeed(seed: string) {
 export function generateWorldSeed() {
   const bytes = new Uint8Array(16);
   if (globalThis.crypto?.getRandomValues) globalThis.crypto.getRandomValues(bytes);
-  else for (let index = 0; index < bytes.length; index += 1) bytes[index] = Math.floor(Math.random() * 256);
+  else {
+    const fallback = `${Date.now().toString(36)}-${(++generatedSeedSequence).toString(36)}`;
+    return fallback;
+  }
   return [...bytes].map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 

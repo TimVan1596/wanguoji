@@ -173,7 +173,7 @@ export async function continueStoredWorldSave(core: Core, value: unknown): Promi
 }
 
 export type WorldLaunchRequest =
-  | { mode: "NEW_WORLD"; scenario: import("../Scenarios").GameScenario }
+  | { mode: "NEW_WORLD"; scenario: import("../Scenarios").GameScenario; seed: string }
   | { mode: "CONTINUE_SAVE"; record: StoredWorldSaveRecord };
 
 export function createWorldLaunchRunner(

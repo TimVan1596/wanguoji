@@ -1,6 +1,7 @@
 import { APP_VERSION } from "../config/version";
+import { WORLD_RNG_ALGORITHM, WorldRandomState } from "../Simulation/WorldRandom";
 
-export const CURRENT_SAVE_SCHEMA_VERSION = 1 as const;
+export const CURRENT_SAVE_SCHEMA_VERSION = 2 as const;
 
 export interface FactionSaveV1 {
   factionId: string;
@@ -130,7 +131,7 @@ export interface WorldEventSystemSaveV1 {
   cycleState: WorldCycleStateSaveV1;
 }
 
-export interface WorldSaveV1 {
+export interface WorldSaveV2 {
   saveSchemaVersion: typeof CURRENT_SAVE_SCHEMA_VERSION;
   appVersion: string;
   createdAt?: string;
@@ -160,9 +161,10 @@ export interface WorldSaveV1 {
   populationSystem: PopulationSystemSaveV1;
   registries: Record<string, unknown>;
   worldEventSystem: WorldEventSystemSaveV1;
+  worldRandom: WorldRandomState;
 }
 
-export function createEmptyWorldSaveV1(): WorldSaveV1 {
+export function createEmptyWorldSaveV2(): WorldSaveV2 {
   return {
     saveSchemaVersion: CURRENT_SAVE_SCHEMA_VERSION,
     appVersion: APP_VERSION,
@@ -196,8 +198,13 @@ export function createEmptyWorldSaveV1(): WorldSaveV1 {
       lastProvisionalPressureMonth: 0, cityFoundedMonths: {}, cityRebellionMonths: {},
       cycleState: { fragmentationStartMonth: 0 },
     },
+    worldRandom: { algorithm: WORLD_RNG_ALGORITHM, seed: "test-seed", state: 0, position: 0 },
   };
 }
+
+/** Compatibility type/function names for existing internal call sites; payload schema is V2. */
+export type WorldSaveV1 = WorldSaveV2;
+export const createEmptyWorldSaveV1 = createEmptyWorldSaveV2;
 
 export function canonicalWorldSaveProjection(save: WorldSaveV1) {
   const { createdAt: _createdAt, ...canonical } = save;

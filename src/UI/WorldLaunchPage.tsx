@@ -14,18 +14,21 @@ import App from "./App";
 import StartMenu from "./Components/StartMenu";
 import DesktopLifecycleBridge from "./DesktopLifecycleBridge";
 import AmbientMusicRuntime from "./Components/AmbientMusicRuntime";
+import worldRandom, { generateWorldSeed } from "../Simulation/WorldRandom";
 
 export default function WorldLaunchPage() {
   const dispatch = useDispatch();
   const [request, setRequest] = useState<WorldLaunchRequest>();
   const { styleTheme, theme } = useSelector((state: RootState) => state.config);
 
-  const startNewWorld = (scenario: GameScenario) => {
+  const startNewWorld = (scenario: GameScenario, requestedSeed?: string) => {
+    const seed = requestedSeed || generateWorldSeed();
+    worldRandom.initialize(seed);
     dispatch(applyScenario({ name: scenario.name, teams: scenarioToTeams(scenario) }));
     dispatch(resetWorldState());
     WorldHistory.reset();
     WorldEra.reset();
-    setRequest({ mode: "NEW_WORLD", scenario });
+    setRequest({ mode: "NEW_WORLD", scenario, seed });
   };
 
   const continueSave = (record: StoredWorldSaveRecord) => {

@@ -35,7 +35,7 @@ describe("WorldSave workflow", () => {
     const scenario = { id: "custom", name: "Custom", description: "", factions: [] };
     const startWorld = vi.fn();
     const hydrate = vi.fn();
-    const launch = createWorldLaunchRunner({ mode: "NEW_WORLD", scenario }, { startWorld, hydrate });
+    const launch = createWorldLaunchRunner({ mode: "NEW_WORLD", scenario, seed: "workflow-test" }, { startWorld, hydrate });
     expect(launch()).toBe(true);
     expect(launch()).toBe(false);
     expect(startWorld).toHaveBeenCalledTimes(1);

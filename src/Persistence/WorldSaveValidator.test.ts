@@ -31,7 +31,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
 
   it("rejects unsupported schema versions and dangling references", () => {
     const save = fixture();
-    save.saveSchemaVersion = 2 as never;
+    save.saveSchemaVersion = 1 as never;
     save.cities[0].ownerFactionId = "missing";
     const result = validateWorldSave(save);
     expect(result.valid).toBe(false);

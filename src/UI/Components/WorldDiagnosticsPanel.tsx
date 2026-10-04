@@ -19,6 +19,7 @@ import { getNameGenerationSummary } from "../../Politics/NameGenerationTelemetry
 import { getCityNamingSummary } from "../../Simulation/CityNamingTelemetry";
 import { getEraAtlasDiagnostics } from "../../Simulation/EraMapSnapshot";
 import { BASE_PLAY_RATE } from "../../Simulation/SimulationDriver";
+import worldRandom, { WORLD_RNG_ALGORITHM } from "../../Simulation/WorldRandom";
 import { getAvatarRendererMode } from "../../Runtime/AvatarRendererMode";
 import { formatCoreDiagnostics, formatFullDiagnostics } from "../../Runtime/DiagnosticsReport";
 import { readDesktopSuspendPolicy } from "../../Runtime/DesktopSuspendPolicy";
@@ -190,6 +191,9 @@ export default function WorldDiagnosticsPanel() {
     packageVersion: packageJson.version,
     timestamp: new Date().toISOString(),
     runtime: {
+      worldSeed: worldRandom.exportState().seed,
+      worldRngAlgorithm: WORLD_RNG_ALGORITHM,
+      worldRngPosition: worldRandom.exportState().position,
       mode: runtime?.runtimeMode ?? (isDesktopContinuousRuntime() ? "DESKTOP_CONTINUOUS" : "WEB_CATCH_UP"),
       platform: desktopDiagnostics?.platform ?? window.gridGodDesktop?.platform,
       electronVersion: window.gridGodDesktop?.electronVersion,
@@ -383,6 +387,8 @@ export default function WorldDiagnosticsPanel() {
       <details>
         <summary>Runtime Liveness</summary>
         {runtime && <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{[
+          `World seed: ${worldRandom.exportState().seed}`,
+          `RNG algorithm/version: ${WORLD_RNG_ALGORITHM} · draws=${worldRandom.exportState().position}`,
           `Redux worldRunning: ${runtime.reduxWorldRunning}`,
           `Simulator running: ${runtime.simulatorRunning}`,
           `WorldClock running: ${runtime.clockRunning}`,

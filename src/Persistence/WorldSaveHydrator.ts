@@ -24,6 +24,7 @@ import { store } from "../store";
 import { CURRENT_SAVE_SCHEMA_VERSION, WorldSaveV1 } from "./WorldSaveSchema";
 import { validateWorldSave } from "./WorldSaveValidator";
 import { canonicalizeSavedSnapshotBoundary } from "./SnapshotBoundary";
+import worldRandom from "../Simulation/WorldRandom";
 
 export interface HydrationReport {
   worldMonth: number;
@@ -151,6 +152,7 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
     populationSystem: save.populationSystem as ReturnType<PopulationSystem["exportState"]>,
     worldEventSystem: save.worldEventSystem as ReturnType<NonNullable<Core["simulator"]>["exportState"]>["worldEventSystem"],
   }, teams);
+  worldRandom.restore(save.worldRandom);
   core.simulator!.setRunning(false);
   core.setHydrationStage("INSTALL_COLLIDERS");
   core.installHydratedTeams(teams);

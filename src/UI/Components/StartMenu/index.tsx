@@ -30,7 +30,7 @@ import SaveManagerDialog from "../SaveManagerDialog";
 import Config from "../Config";
 
 interface StartMenuProps {
-  onStartNewWorld: (scenario: GameScenario) => void;
+  onStartNewWorld: (scenario: GameScenario, seed?: string) => void;
   onContinue: (record: StoredWorldSaveRecord) => void;
 }
 
@@ -47,6 +47,7 @@ export default function StartMenu({ onStartNewWorld, onContinue }: StartMenuProp
   const [loadingSave, setLoadingSave] = useState(false);
   const [saveManagerOpen, setSaveManagerOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [worldSeed, setWorldSeed] = useState("");
   const repository = useMemo(() => new IndexedDbWorldSaveRepository(), []);
 
   const refreshStoredSave = async () => {
@@ -241,11 +242,21 @@ export default function StartMenu({ onStartNewWorld, onContinue }: StartMenuProp
           </Box>
         )}
 
+        <TextField
+          fullWidth
+          sx={{ mt: 2 }}
+          label="世界种子（可选）"
+          value={worldSeed}
+          onChange={(event) => setWorldSeed(event.target.value)}
+          inputProps={{ maxLength: 128 }}
+          helperText="留空将自动生成；相同初始配置与种子可复现随机序列。"
+        />
+
         <Button
           sx={{ mt: 2 }}
           fullWidth
           variant="contained"
-          onClick={() => onStartNewWorld(selectedScenario)}
+          onClick={() => onStartNewWorld(selectedScenario, worldSeed.trim() || undefined)}
         >
           开始世界
         </Button>
