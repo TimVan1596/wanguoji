@@ -281,6 +281,8 @@ describe("evidence-grounded ruler historiography", () => {
     expect(result.evidence.stableGovernanceEligible).toBe(false);
     expect(result.evidence.roles).not.toContain("STEWARD");
     expect(result.lines.join(" ")).not.toContain("长期维持政权与秩序");
+    expect(result.lines.join(" ")).toContain("残余核心虽稳");
+    expect(result.lines.join(" ")).not.toContain("疆域一度达到30%");
   });
 
   it("can describe severe decline when the ruler inherited a stable state", () => {

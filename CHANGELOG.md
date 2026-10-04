@@ -2,8 +2,8 @@
 
 ## v0.99924d
 
-- Gated stable-governance credit, long-stability posthumous candidates, and stewardship roles on contraction-adjusted evidence; raw stability values remain unchanged for display/gameplay.
-- Refined accession-crisis classification and made crisis-plus-expansion assessments acknowledge both the inherited weakness and subsequent expansion.
+- Gated stable-governance credit, long-stability posthumous candidates (including 顺), and stewardship roles on contraction-adjusted evidence; raw stability values remain unchanged for display/gameplay.
+- Refined accession-crisis classification and made crisis-plus-expansion assessments acknowledge both inherited weakness and subsequent expansion; inherited-high retreat with a stable residual core is not described as a ruler-created peak.
 - Strengthened dynasty-local soft epithet diversity while retaining evidence-based repeats; military epithets now require corresponding personal/conquest evidence.
 - Added deterministic, finalized-ruler-only “史家曰” commentary from derived historical evidence, without personality claims or persisted data.
 - No gameplay balance, WorldSave schema, dynasty mechanics, or era-rule changes.

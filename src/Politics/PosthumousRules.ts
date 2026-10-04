@@ -288,6 +288,7 @@ function chooseEpithet(
   if (chronicle.rebellionsDuringReign > 0 && evidence.stableGovernanceEligible) add("定", 34, "经历内乱后恢复秩序，末期治理稳定");
   if (
     evidence.activeRuleMonths >= 20 * 12 &&
+    evidence.stableGovernanceEligible &&
     end.stability >= 75 && evidence.stabilityDelta >= 0 &&
     chronicle.rebellionsDuringReign === 0 &&
     !evidence.territorialCollapse && !evidence.cityCollapse && !evidence.terminalCollapse &&

@@ -372,6 +372,12 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
     lines.push(`${agePrefix}其时国势已陷危局${evidence.startCityCount <= 1 ? "，仅据孤城" : ""}，并非由盛转衰的始作俑者。`);
   } else if (evidence.roles.includes("CRISIS_SURVIVOR") && !evidence.roles.includes("EXPANDER")) {
     lines.push(`${livingPrefix}${agePrefix}临危承统，其主要考验在于维系既有政权，而非开拓疆土。`);
+  } else if (
+    evidence.roles.includes("DECLINER") &&
+    evidence.endStability >= 75 && evidence.stabilityDelta > 0 &&
+    (evidence.territoryDelta <= -0.12 || evidence.cityDelta <= -2)
+  ) {
+    lines.push("国日蹙而城仅存，末期残余核心虽稳，终未能复其旧势。");
   } else if (evidence.roles.includes("INHERITED_HIGH_DECLINE")) {
     lines.push(`${livingPrefix}承统时国势已居高位，其后疆域显著回落，未能维持前期盛势。`);
   } else if (evidence.roles.includes("MODERATE_RECOVERY")) {
@@ -403,8 +409,9 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
   if (evidence.territorialPeakRetreat >= 0.15) {
     if (evidence.territorialPeakGain >= 0.08) {
       lines.push(`其治下疆域一度达到${formatPercent(evidence.peakTerritory)}${evidence.peakTerritory >= 0.3 ? "，一度跻身天下强权" : ""}，至${evidence.isFinalized ? "身后" : "目前"}已明显回落，盛势未能维持。`);
-    } else if (evidence.startTerritory >= 0.3) {
-      lines.push(`承统时疆域已有${formatPercent(evidence.startTerritory)}，至${evidence.isFinalized ? "身后" : "目前"}回落至${formatPercent(evidence.endTerritory)}，未能维持前期高位。`);
+    } else if (evidence.startTerritory >= 0.3 || evidence.territoryDelta <= -0.12) {
+      const residualCoreStable = evidence.endStability >= 75 && evidence.stabilityDelta > 0;
+      lines.push(`承统时疆域已有${formatPercent(evidence.startTerritory)}，其后明显收缩${residualCoreStable ? "；末期残存核心虽稳，终未能复其旧势" : `，至${evidence.isFinalized ? "身后" : "目前"}回落至${formatPercent(evidence.endTerritory)}`}。`);
     } else {
       lines.push(`疆域一度达到${formatPercent(evidence.peakTerritory)}，至${evidence.isFinalized ? "身后" : "目前"}已明显回落。`);
     }
@@ -444,7 +451,10 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
     lines.push("开国与开拓之业尚未竟全，终身死军中。");
   } else if (evidence.deathCause === "战死" && hasMajorLegacy(evidence)) {
     lines.push("功业未竟而身死军中，留下的事业仍有未竟之处。");
-  } else if (evidence.roles.includes("DECLINER") && !evidence.roles.includes("PEAK_AND_RETREAT")) {
+  } else if (
+    evidence.roles.includes("DECLINER") && !evidence.roles.includes("PEAK_AND_RETREAT") &&
+    !lines.some((line) => line.includes("终未能复其旧势"))
+  ) {
     lines.push("国势在其任内显著衰退，主要遗产因而蒙上阴影。");
   }
 
