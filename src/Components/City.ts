@@ -23,7 +23,7 @@ import {
 import Game from "../Game/Game";
 import WorldHistory from "../History/WorldHistory";
 import DynastyRegistry from "../Politics/Dynasty";
-import Diplomacy from "../Politics/Diplomacy";
+import Diplomacy, { isHostileActionAllowed } from "../Politics/Diplomacy";
 import FactionEffects from "../Simulation/FactionEffects";
 import ArchivedCities from "../Simulation/ArchivedCities";
 import CityNameRegistry from "../Simulation/CityNameRegistry";
@@ -222,8 +222,7 @@ export default class City {
     if (!owner || owner === attacker || attacker.isDie) {
       return;
     }
-    if (!Diplomacy.canAttack(attacker.name, owner.name, year)) {
-      Diplomacy.noteBlocked("SIEGE_CONTACT");
+    if (!isHostileActionAllowed(Diplomacy, attacker.name, owner.name, year, "SIEGE_CONTACT")) {
       return;
     }
     if (

@@ -4,6 +4,7 @@ import {
   createLogicalOccupationContactState,
 } from "./LogicalOccupationSystem";
 import type { LogicalUnitState } from "./LogicalUnitState";
+import Diplomacy from "../Politics/Diplomacy";
 
 function unit(overrides: Partial<LogicalUnitState> = {}): LogicalUnitState {
   return {
@@ -23,6 +24,21 @@ function unit(overrides: Partial<LogicalUnitState> = {}): LogicalUnitState {
 }
 
 describe("LogicalOccupationSystem", () => {
+  it("blocks enemy city siege contact under a treaty", () => {
+    Diplomacy.reset();
+    Diplomacy.setRelation({ factionAId: "chu", factionBId: "qin", status: "NON_AGGRESSION", startedMonth: 0, expiresMonth: 90, reason: "COMMON_THREAT_NON_AGGRESSION" });
+    let contacts = 0;
+    const qin = { name: "qin", isDie: false };
+    const city = { ownerTeam: { name: "chu" }, registerSiegeContact: () => { contacts += 1; } };
+    const result = applyLogicalOccupation({
+      units: [unit()], movementResults: [],
+      context: { getTeam: () => qin as never, getBlock: () => ({ city }) as never, getWorldMonth: () => 12 },
+    });
+    expect(result.siegeContacts).toBe(0);
+    expect(contacts).toBe(0);
+    expect(Diplomacy.getDiagnostics(12).blockedSiegeContactCount).toBe(1);
+    Diplomacy.reset();
+  });
   it("occupies an enemy non-city block without Phaser collision", () => {
     const qin = { name: "qin", isDie: false };
     const old = { name: "chu" };
@@ -30,6 +46,7 @@ describe("LogicalOccupationSystem", () => {
       team: old,
       attemptHostileOccupation: (team: typeof qin) => {
         block.team = team;
+        return true;
       },
     };
     const result = applyLogicalOccupation({
@@ -62,6 +79,7 @@ describe("LogicalOccupationSystem", () => {
       attemptHostileOccupation: (team: typeof qin) => {
         transitions += 1;
         block.team = team;
+        return true;
       },
     };
     const context = {

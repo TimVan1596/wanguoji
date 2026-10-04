@@ -2,7 +2,7 @@ import type Block from "../Components/Block";
 import type Team from "../Components/Team";
 import type { LogicalUnitState } from "./LogicalUnitState";
 import type { LogicalMovementResult } from "./LogicalMovementSystem";
-import Diplomacy from "../Politics/Diplomacy";
+import Diplomacy, { isHostileActionAllowed } from "../Politics/Diplomacy";
 
 export interface LogicalOccupationContext {
   getTeam: (factionId: string) => Team | undefined;
@@ -53,8 +53,7 @@ export function applyLogicalOccupation({
     }
     if (block.city && block.city.ownerTeam !== team) {
       const worldMonth = context.getWorldMonth();
-      if (!Diplomacy.canAttack(team.name, block.city.ownerTeam?.name ?? "", worldMonth)) {
-        Diplomacy.noteBlocked("SIEGE_CONTACT");
+      if (!isHostileActionAllowed(Diplomacy, team.name, block.city.ownerTeam?.name ?? "", worldMonth, "SIEGE_CONTACT")) {
         return;
       }
       const contactKey = `${unit.unitId}:${block.city.id}`;

@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.99925
+
+- Added canonical, symmetric bilateral diplomacy with finite truces and non-aggression pacts, periodic fact-based formation rules, expiry, and WorldHistory records.
+- Routed hostile occupation and siege contact/damage through diplomacy permission while leaving administrative ownership, revolt, restoration, and hydration paths outside the gate.
+- Persisted active agreements and evaluation month in WorldSave V5; V4 and older schemas are rejected without migration. Added faction overview and debug diplomacy diagnostics.
+- No alliance, shared war obligations, merger, gameplay balance, or frozen ruler historiography changes.
+
 ## v0.99924h4d
 
 - Isolated Phaser map pointer handling to native events whose down/up/move target is the current game canvas and require a valid canvas down/up sequence before map selection.

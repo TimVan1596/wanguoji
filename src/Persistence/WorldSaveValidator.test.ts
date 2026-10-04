@@ -37,6 +37,15 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     expect(parsed.units[0]).toMatchObject({ x: 10, y: 20, vx: 1, vy: -1 });
   });
 
+  it("validates symmetric V5 treaty data and rejects the previous save schema", () => {
+    const save = fixture();
+    save.factions.push({ ...save.factions[0], factionId: "wei", displayName: "魏" });
+    save.diplomacy.relations = [{ factionAId: "qin", factionBId: "wei", status: "TRUCE", startedMonth: 12, expiresMonth: 36, reason: "WAR_EXHAUSTION_TRUCE" }];
+    expect(validateWorldSave(save).valid).toBe(true);
+    expect(validateWorldSave({ ...save, saveSchemaVersion: 4 }).valid).toBe(false);
+    expect(validateWorldSave({ ...save, diplomacy: { ...save.diplomacy, relations: [{ ...save.diplomacy.relations[0], factionAId: "wei", factionBId: "qin" }] } }).valid).toBe(false);
+  });
+
   it("preserves active candidates, living kin, designation, and parent relationships in schema V5", () => {
     const save = fixture();
     save.dynasties = [{

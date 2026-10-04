@@ -10,7 +10,7 @@ import Team from "./Team";
 import { canonicalBlockHitPoints } from "./BlockHitPoints";
 import { resolvePublicAssetUrl } from "../Runtime/PublicAssetUrl";
 import { inspectMapPointerTarget } from "../Simulation/MapPointerInput";
-import Diplomacy from "../Politics/Diplomacy";
+import Diplomacy, { isHostileActionAllowed } from "../Politics/Diplomacy";
 
 export default class Block extends Phaser.GameObjects.Rectangle {
   hp = 0;
@@ -151,8 +151,7 @@ export default class Block extends Phaser.GameObjects.Rectangle {
   attemptHostileOccupation(team: Team, player?: Player, worldMonth = Game.Core?.simulator?.year ?? 0) {
     if (this.team === team) return false;
     const defenderId = this.city?.ownerTeam?.name ?? this.team?.name;
-    if (defenderId && !Diplomacy.canAttack(team.name, defenderId, worldMonth)) {
-      Diplomacy.noteBlocked(this.city ? "SIEGE_CONTACT" : "HOSTILE_OCCUPATION");
+    if (defenderId && !isHostileActionAllowed(Diplomacy, team.name, defenderId, worldMonth, this.city ? "SIEGE_CONTACT" : "HOSTILE_OCCUPATION")) {
       return false;
     }
     this.setTeam(team, player);

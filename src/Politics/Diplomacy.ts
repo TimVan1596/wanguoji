@@ -30,6 +30,18 @@ export function diplomaticPairKey(a: string, b: string) {
   return normalizeFactionPair(a, b).join("\u0000");
 }
 
+export function isHostileActionAllowed(
+  registry: DiplomacyRegistry,
+  attackerFactionId: string,
+  defenderFactionId: string,
+  worldMonth: number,
+  kind: "HOSTILE_OCCUPATION" | "SIEGE_CONTACT"
+) {
+  const allowed = registry.canAttack(attackerFactionId, defenderFactionId, worldMonth);
+  if (!allowed) registry.noteBlocked(kind);
+  return allowed;
+}
+
 export class DiplomacyRegistry {
   private relations = new Map<string, DiplomaticRelation>();
   private blockedHostileOccupationCount = 0;
