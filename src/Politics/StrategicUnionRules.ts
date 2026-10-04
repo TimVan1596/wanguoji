@@ -23,13 +23,15 @@ export function areSameOriginFactions(a: FactionOriginIdentity, b: FactionOrigin
 export interface GridCoordinate { x: number; y: number }
 
 export function areFactionsTerritoriallyAdjacent(
-  a: { blocks: { children: { entries: Array<{ x: number; y: number }> } } },
-  b: { blocks: { children: { entries: Array<{ x: number; y: number }> } } },
+  a: { blocks: { children: { entries: unknown[] } } },
+  b: { blocks: { children: { entries: unknown[] } } },
   blockSize: number,
 ) {
   if (!Number.isFinite(blockSize) || blockSize <= 0) return false;
-  const coords = (team: { blocks: { children: { entries: Array<{ x: number; y: number }> } } }) =>
-    team.blocks.children.entries.map((block) => ({ x: Math.round(block.x / blockSize), y: Math.round(block.y / blockSize) }));
+  const coords = (team: { blocks: { children: { entries: unknown[] } } }) =>
+    (Array.isArray(team.blocks.children.entries) ? team.blocks.children.entries as Array<{ x: number; y: number }> : [])
+      .filter((block) => Number.isFinite(block?.x) && Number.isFinite(block?.y))
+      .map((block) => ({ x: Math.round(block.x / blockSize), y: Math.round(block.y / blockSize) }));
   return haveOrthogonalTerritoryAdjacency(coords(a), coords(b));
 }
 

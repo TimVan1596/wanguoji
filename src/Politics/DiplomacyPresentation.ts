@@ -82,6 +82,7 @@ export function createDiplomacyEventMetadata(
     metadata.threatTerritoryShare = triggerContext.threatTerritoryShare;
     metadata.preconditionStatus = triggerContext.priorStatus;
     metadata.preconditionDurationMonths = triggerContext.priorDurationMonths;
+    if (relation.preconditionStartedMonth !== undefined) metadata.preconditionStartedMonth = relation.preconditionStartedMonth;
   }
   const [a, b] = signers;
   if (a) {

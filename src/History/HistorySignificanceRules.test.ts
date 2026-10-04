@@ -89,5 +89,12 @@ describe("history significance rules", () => {
     expect(isLandmarkHistoryEvent(pact)).toBe(false);
     expect(getHistorySignificance(expiry)).toBe("NORMAL");
     expect(isMajorPoliticalEvent(expiry)).toBe(false);
+    const alliance = event({ type: "alliance-signed", importance: "major" });
+    const allianceExpiry = event({ type: "alliance-expired", importance: "major" });
+    expect(getHistorySignificance(alliance)).toBe("MAJOR");
+    expect(isLandmarkHistoryEvent(alliance)).toBe(false);
+    expect(getHistorySignificance(allianceExpiry)).toBe("NORMAL");
+    expect(isMajorPoliticalEvent(allianceExpiry)).toBe(false);
+    expect(getHistorySignificance(event({ type: "faction-merged", importance: "major" }))).toBe("MAJOR");
   });
 });

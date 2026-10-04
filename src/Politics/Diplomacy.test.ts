@@ -74,7 +74,7 @@ describe("Diplomacy", () => {
     const system = new DiplomacySystem(Diplomacy, () => [], ({ type }) => events.push(type));
     Diplomacy.setRelation({ factionAId: "a", factionBId: "b", status: "ALLIANCE", startedMonth: 0, expiresMonth: 120, reason: "COMMON_THREAT_ALLIANCE" });
     Diplomacy.setRelation({ factionAId: "a", factionBId: "c", status: "NON_AGGRESSION", startedMonth: 0, expiresMonth: 200, reason: "COMMON_THREAT_NON_AGGRESSION" });
-    const staleTeam = (name: string) => ({ ...faction(name, 1), blocks: { children: { size: 1, entries: [{ x: 0, y: 0 }] } }, origin: { type: "REBEL", parentFactionId: "p" } });
+    const staleTeam = (name: string) => ({ name, status: "ACTIVE", isDie: false, blocks: { children: { size: 1, entries: [{ x: 0, y: 0 }] } }, cities: [], origin: { type: "REBEL", parentFactionId: "p" } });
     system.update(120, [staleTeam("a"), staleTeam("b"), staleTeam("c"), faction("power", 80)], 100, []);
     expect(events).toContain("alliance-expired");
     expect(Diplomacy.get("a", "b")).toBeUndefined();

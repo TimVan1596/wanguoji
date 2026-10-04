@@ -94,6 +94,16 @@ describe("faction details model", () => {
     ).toContain("累计国祚：2年");
   });
 
+  it("renders absorbed factions as merged rather than extinct", () => {
+    const lines = buildFactionLifecycleLines({
+      name: "梁西", status: "EXTINCT", terminationReason: "MERGED",
+      mergedIntoFactionId: "梁东", mergedMonth: 36, firstFoundedYear: 0,
+    }, 60, 0);
+    expect(lines).toContain("并入：梁东 · 3年1月");
+    expect(lines).toContain("状态：已合并");
+    expect(lines.some((line) => line.includes("彻底灭亡"))).toBe(false);
+  });
+
   it("keeps selected archived factions sortable without Team methods", () => {
     expect(
       getCumulativeActiveMonthsSafe(

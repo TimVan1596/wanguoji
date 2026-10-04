@@ -14,7 +14,8 @@ export function formatRulerDiplomacyEvent(
     : undefined;
   if (event.type === "truce-signed") {
     const captures = typeof metadata.recentBilateralCaptureCount === "number" ? metadata.recentBilateralCaptureCount : undefined;
-    return `${names.join("、")}${captures === undefined ? "议定停战" : `近期${captures}次城邑易手后议定停战`}${duration ? `，约期${duration}`}${duration ? "。" : "。"}`;
+    const evidence = captures === undefined ? "议定停战" : `近期${captures}次城邑易手后议定停战`;
+    return `${names.join("、")}${evidence}${duration ? `，约期${duration}` : ""}。`;
   }
   const threatId = metadata.commonThreatFactionId;
   const threatName = typeof threatId === "string" ? factionNameById.get(threatId) ?? threatId : "共同强敌";

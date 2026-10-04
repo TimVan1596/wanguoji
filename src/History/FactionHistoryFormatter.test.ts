@@ -105,6 +105,21 @@ const factions = new Map([
 ]);
 
 describe("faction history formatter", () => {
+  it("renders same-origin absorption as a union rather than extinction", () => {
+    const merge = event({
+      type: "faction-merged", factionIds: ["west", "east"],
+      title: "西梁归并东梁", description: "西梁归并东梁，结束独立建制。",
+      metadata: { absorbedFactionId: "west", absorbingFactionId: "east" },
+    });
+    const byId = new Map([
+      ["west", { name: "west", displayName: "梁西", color: 1 }],
+      ["east", { name: "east", displayName: "梁东", color: 2 }],
+    ]);
+    expect(formatFactionHistoryEvent(merge, "west", byId)).toContain("归并");
+    expect(formatFactionHistoryEvent(merge, "east", byId)).toContain("接纳");
+    expect(formatFactionHistoryEvent(merge, "west", byId)).not.toContain("彻底灭亡");
+  });
+
   it("renders structured heir death in the father's faction chronicle", () => {
     const heirDeath = event({
       type: "heir-died",

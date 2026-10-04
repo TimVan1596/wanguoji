@@ -62,5 +62,16 @@ describe("diplomacy presentation", () => {
       reason: "COMMON_THREAT_NON_AGGRESSION", commonThreatFactionId: "yan",
       territoryShareA: 4, territoryShareB: 6, threatTerritoryShare: 55,
     })).toMatchObject({ commonThreatFactionId: "yan", territoryShareA: 4, territoryShareB: 6, threatTerritoryShare: 55 });
+    const alliance = createDiplomacyEventMetadata({
+      ...truce, status: "ALLIANCE", reason: "COMMON_THREAT_ALLIANCE", preconditionStatus: "NON_AGGRESSION",
+      preconditionStartedMonth: 24, preconditionDurationMonths: 24, commonThreatFactionId: "yan",
+    }, {
+      reason: "COMMON_THREAT_ALLIANCE", commonThreatFactionId: "yan", territoryShareA: 4,
+      territoryShareB: 6, threatTerritoryShare: 55, priorStatus: "NON_AGGRESSION", priorDurationMonths: 24,
+    });
+    expect(alliance).toMatchObject({
+      commonThreatFactionId: "yan", preconditionStatus: "NON_AGGRESSION",
+      preconditionDurationMonths: 24, preconditionStartedMonth: 24,
+    });
   });
 });

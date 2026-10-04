@@ -3,7 +3,10 @@ import { findStrategicUnionCandidate } from "./StrategicUnionSystem";
 import type Team from "../Components/Team";
 
 function team(name: string, count: number, startX: number, parentFactionId: string, cities: number): Team {
-  const entries = Array.from({ length: count }, (_, index) => ({ x: (startX + index) * 32, y: 0 }));
+  const entries = Array.from({ length: count }, (_, index) => ({
+    x: (name === "threat" && index < 2 ? index === 0 ? -1 : 2 : index === 0 ? startX : 100 + index * 7) * 32,
+    y: 0,
+  }));
   return {
     name, status: "ACTIVE", isDie: false,
     origin: { type: "SPLIT", parentFactionId },
@@ -20,7 +23,7 @@ describe("strategic union candidate selection", () => {
   };
   const threat = team("threat", 70, 100, "elsewhere", 4);
   const strong = team("strong", 15, 0, "same-house", 3);
-  const weak = team("weak", 5, 20, "same-house", 1);
+  const weak = team("weak", 5, 1, "same-house", 1);
   const input = {
     teams: [strong, weak, threat], relations: [alliance], totalCells: 90, worldMonth: 72,
     recentEvents: [] as never[], blockSize: 32,

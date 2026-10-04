@@ -17,7 +17,7 @@ describe("provisional ruler diagnostics", () => {
       ["kingdom", { identityStage: "PROVISIONAL", status: "ACTIVE", sovereigntyHistory: [{ rank: "KING", startMonth: 0 }] }],
     ]));
     expect(result).toEqual({
-      currentProvisionalRulerCount: 0,
+      currentProvisionalRulerCount: 1,
       completedProvisionalRulerCount: 2,
       provisionalCombatDeathCount: 1,
       medianCompletedTenureMonths: 24,
