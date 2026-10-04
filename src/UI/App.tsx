@@ -32,6 +32,7 @@ import {
   restoreAfterFailedSaveLoad,
   SaveManagerRuntimeSession,
 } from "../Persistence/SaveManagerRuntimeSession";
+import worldRandom from "../Simulation/WorldRandom";
 
 interface AppProps {
   launchRequest: WorldLaunchRequest;
@@ -265,7 +266,8 @@ function WorldStarter({ launchRequest, onLoadFailure, onLoadSuccess }: {
     (state: RootState) => state.root.worldStarted
   );
   const launchRunner = useMemo(() => createWorldLaunchRunner(launchRequest, {
-      startWorld: (scenario) => {
+      startWorld: (scenario, seed) => {
+        if (worldRandom.exportState().seed !== seed) throw new Error("World seed changed between setup and launch");
         const populations: InitialPopulationMap = Object.fromEntries(
           scenario.factions.map((faction) => [
             faction.name,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createEmptyWorldSaveV1 } from "./WorldSaveSchema";
+import { createEmptyWorldSaveV1, CURRENT_SAVE_SCHEMA_VERSION } from "./WorldSaveSchema";
 import { isSafeSnapshotBoundary } from "./SnapshotBoundary";
 import { validateWorldSave } from "./WorldSaveValidator";
 
@@ -18,6 +18,13 @@ function fixture() {
 }
 
 describe("WorldSaveV1 validation and JSON contract", () => {
+  it("uses schema V2 and persists the deterministic random stream", () => {
+    const save = fixture();
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(2);
+    expect(save.saveSchemaVersion).toBe(2);
+    expect(save.worldRandom).toMatchObject({ algorithm: "mulberry32-v1", seed: expect.any(String), state: expect.any(Number), position: 0 });
+  });
+
   it("survives JSON stringify/parse with canonical month-index fields", () => {
     const save = fixture();
     const parsed = JSON.parse(JSON.stringify(save));

@@ -27,7 +27,7 @@ This is a provenance warning, not a claim of infringement. Before wider promotio
 
 ## Ambient Music I — Alpha soundtrack candidates
 
-All listed audio remains physically in `public/music/`. Catalog status reflects the user's audition: active tracks are provisional Alpha candidates, not a final OST; reserve tracks are not currently played; rejected tracks are retained for provenance and are not in the runtime catalog.
+Only entries explicitly marked bundled remain in `public/music/`. Rejected files have been removed from the runtime asset directory; Night Shift is retained under `dev-assets/music-candidates/` and is not bundled. Catalog status reflects the user's audition: active tracks are provisional Alpha candidates, not a final OST; reserve tracks are not currently played; rejected tracks are retained in this provenance record but are not bundled or referenced by the runtime catalog.
 
 | Track | Author | Source | License shown on source page | Current file / bundle status | Catalog status | Notes |
 | --- | --- | --- | --- | --- | --- |

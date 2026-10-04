@@ -2,6 +2,7 @@ import Team from "../Components/Team";
 import User from "../Components/User";
 import Game from "../Game/Game";
 import { IParseGiftData } from "./type";
+import worldRandom from "../Simulation/WorldRandom";
 
 export default class Gift {
   static Apply(gift: IParseGiftData) {
@@ -47,7 +48,7 @@ export default class Gift {
     }
     if (gift.coinType === "gold") {
       const totalPrice = Math.floor((gift.price * gift.num) / 100);
-      const rand = Phaser.Math.Between(0, totalPrice);
+      const rand = worldRandom.int(0, totalPrice);
       const other = totalPrice - rand;
       const speedNum = rand > other ? rand : other;
       const makeChildNum = totalPrice - speedNum;
@@ -73,7 +74,7 @@ export default class Gift {
       min: 1,
       max: 3,
     };
-    const rand = num * Phaser.Math.Between(callConfig.min, callConfig.max);
+    const rand = num * worldRandom.int(callConfig.min, callConfig.max);
     user?.player.makeChild(rand);
     Game.Core.toast?.showMessage(`${user?.name} 投喂打call*${num}幻像+${rand}`);
   }

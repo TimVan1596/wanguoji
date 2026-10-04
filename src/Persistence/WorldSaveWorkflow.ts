@@ -179,7 +179,7 @@ export type WorldLaunchRequest =
 export function createWorldLaunchRunner(
   request: WorldLaunchRequest,
   actions: {
-    startWorld: (scenario: import("../Scenarios").GameScenario) => void;
+    startWorld: (scenario: import("../Scenarios").GameScenario, seed: string) => void;
     hydrate: (record: StoredWorldSaveRecord) => void;
   }
 ) {
@@ -187,7 +187,7 @@ export function createWorldLaunchRunner(
   return () => {
     if (launched) return false;
     launched = true;
-    if (request.mode === "NEW_WORLD") actions.startWorld(request.scenario);
+    if (request.mode === "NEW_WORLD") actions.startWorld(request.scenario, request.seed);
     else actions.hydrate(request.record);
     return true;
   };

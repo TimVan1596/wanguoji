@@ -4,6 +4,7 @@ import Game from "../Game/Game";
 import { store } from "../store";
 import type { PopulationMutationContext } from "../Simulation/PopulationTransitionAudit";
 import { IParseDanmuData } from "./type";
+import worldRandom from "../Simulation/WorldRandom";
 
 function stopRunCode(msg = "stopRunCode") {
   throw new Error(msg);
@@ -58,11 +59,11 @@ export default class Danmu {
   }
 
   static ApplyPowerUp(danmu: IParseDanmuData, user: User) {
-    let rand = Phaser.Math.Between(0, 100);
+    let rand = worldRandom.int(0, 100);
     const { fansCard, liveId } = store.getState().config;
     if (fansCard.enable && danmu.card) {
       if (fansCard.level < danmu.card.level && danmu.card.liveId === liveId) {
-        rand = Phaser.Math.Between(
+        rand = worldRandom.int(
           0,
           Math.floor(Math.max(50, 100 - fansCard.level / 2 ** 2))
         );

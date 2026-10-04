@@ -3,6 +3,7 @@ import User from "../Components/User";
 import Core from "../Game/Core";
 import { CardConfig, LevelType } from "../store/configSlice";
 import { levelN, levelR, levelSR, levelSSR } from "./LevelType";
+import worldRandom from "../Simulation/WorldRandom";
 
 export default class CardController {
   public configs: CardConfig[] = [];
@@ -53,7 +54,7 @@ export default class CardController {
   }
 
   getRandomCard(configs: CardConfig[]) {
-    return configs[Math.floor(Math.random() * configs.length)];
+    return configs[worldRandom.pickIndex(configs.length)];
   }
 
   getCardsByLevel(configs: CardConfig[], level: LevelType) {
@@ -72,7 +73,7 @@ export default class CardController {
         totalRank += isGold ? item.goldRate : item.rate;
         return item;
       });
-    const random = Math.random();
+    const random = worldRandom.next();
     let start = 0;
     let result: LevelType | null = null;
     while (levels.length) {
