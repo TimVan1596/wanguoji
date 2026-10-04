@@ -348,7 +348,7 @@ export function buildFactionLifecycleLines(
       ? [`并入：${team.mergedIntoFactionId ?? "—"} · ${team.mergedMonth !== undefined ? formatWorldDate(team.mergedMonth) : "—"}`]
       : [`彻底灭亡：${team.extinctionYear !== undefined ? formatWorldDate(team.extinctionYear) : "—"}`]),
     `累计国祚：${formatWorldDuration(cumulativeActiveMonths)}`,
-    team.terminationReason === "MERGED" ? "状态：已合并" : "状态：已灭亡",
+    team.terminationReason === "MERGED" ? "状态：已合邦" : "状态：已灭亡",
   ];
 }
 

@@ -100,7 +100,7 @@ describe("faction details model", () => {
       mergedIntoFactionId: "梁东", mergedMonth: 36, firstFoundedYear: 0,
     }, 60, 0);
     expect(lines).toContain("并入：梁东 · 3年1月");
-    expect(lines).toContain("状态：已合并");
+    expect(lines).toContain("状态：已合邦");
     expect(lines.some((line) => line.includes("彻底灭亡"))).toBe(false);
   });
 

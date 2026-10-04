@@ -1324,7 +1324,7 @@ function formatStatus(status: string, terminationReason?: string) {
   if (status === "EXILED") {
     return "流亡";
   }
-  return terminationReason === "MERGED" ? "合并" : "灭绝";
+  return terminationReason === "MERGED" ? "已合邦" : "灭绝";
 }
 
 function TrendChart({
