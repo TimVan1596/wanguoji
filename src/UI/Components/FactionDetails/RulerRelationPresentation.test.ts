@@ -23,6 +23,12 @@ describe("ruler relation presentation", () => {
     );
   });
 
+  it("labels recorded grandchildren and siblings without inventing a more exact kin branch", () => {
+    expect(formatRulerRelation("GRANDCHILD", "STATE", true)).toBe("前君之孙");
+    expect(formatRulerRelation("SIBLING", "STATE", true)).toBe("前君之兄弟");
+    expect(formatRulerRelation("COLLATERAL_KIN", "STATE", true)).toBe("宗室旁支");
+  });
+
   it("does not retroactively call a provisional founder an 开国君主 after the faction becomes a state", () => {
     expect(formatRulerRelation("FOUNDER", "STATE", false, false)).toBe("首任首领 / 势力创始人");
     expect(formatRulerLineage("FOUNDER", undefined, "STATE", false)).toBe("首任首领");

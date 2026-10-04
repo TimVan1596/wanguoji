@@ -36,6 +36,24 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     expect(parsed.units[0]).toMatchObject({ x: 10, y: 20, vx: 1, vy: -1 });
   });
 
+  it("preserves bounded kin candidate ids and parent relationships in schema V2", () => {
+    const save = fixture();
+    save.dynasties = [{
+      factionId: "qin",
+      currentRulerId: "qin-ruler-1",
+      heirIds: ["qin-ruler-2", "qin-ruler-3"],
+      rulers: [
+        { rulerId: "qin-ruler-1", status: "dead" },
+        { rulerId: "qin-ruler-2", status: "heir", parentId: "qin-ruler-1", relationType: "DIRECT_CHILD" },
+        { rulerId: "qin-ruler-3", status: "heir", parentId: "qin-ruler-2", relationType: "DIRECT_CHILD" },
+      ],
+    }];
+    const loaded = JSON.parse(JSON.stringify(save));
+    expect(validateWorldSave(loaded).valid).toBe(true);
+    expect(loaded.dynasties[0].heirIds).toEqual(["qin-ruler-2", "qin-ruler-3"]);
+    expect(loaded.dynasties[0].rulers[2]).toMatchObject({ parentId: "qin-ruler-2", relationType: "DIRECT_CHILD" });
+  });
+
   it("rejects unsupported schema versions and dangling references", () => {
     const save = fixture();
     save.saveSchemaVersion = 1 as never;

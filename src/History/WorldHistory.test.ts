@@ -104,6 +104,21 @@ describe("world history", () => {
     );
   });
 
+  it.each([
+    ["GRANDCHILD", "其孙姬孙继位"],
+    ["SIBLING", "其兄弟姬弟继位"],
+    ["COLLATERAL_KIN", "姬旁支宗室旁支继位"],
+  ])("records relationship-grounded %s succession", (relationType, expected) => {
+    WorldHistory.reset();
+    WorldHistory.addRulerSuccession(50, "燕", "姬前", relationType === "GRANDCHILD" ? "姬孙" : relationType === "SIBLING" ? "姬弟" : "姬旁支", {
+      reason: "natural",
+      relationType,
+      previousRulerTitle: "燕王姬前",
+      nextSuccessionVerb: "继位",
+    });
+    expect(WorldHistory.getEvents()[0].title).toContain(expected);
+  });
+
   it("records state formation as state name plus claiming kingship", () => {
     WorldHistory.reset();
     WorldHistory.addStateFounded(63, "rebel_1", "大梁义军", "梁", "魏安");
