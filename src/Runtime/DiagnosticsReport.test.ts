@@ -5,7 +5,12 @@ describe("diagnostic reports", () => {
   it("formats core fields and renders missing values as dashes", () => {
     const report = formatCoreDiagnostics({
       appVersion: "v0.99924",
-      runtime: { mode: "DESKTOP_CONTINUOUS", activeCatchUpSource: "NONE", worldMonth: 120 },
+      runtime: {
+        mode: "DESKTOP_CONTINUOUS",
+        activeCatchUpSource: "NONE",
+        worldMonth: 120,
+        genealogyViewer: { open: true, lastCloseSource: "BACKDROP", lastMuiReason: "backdropClick" },
+      },
       units: { logicalUsers: 7, missingTextureKeys: [], noFaceSource: "SVG" },
       performance: { fps: 60, renderFrameCount: 987, averageFrameMs: 16.7, p95FrameMs: 20, maxFrameMs: 40 },
       worldScale: { worldHistoryEventCount: 123, eraCount: 5, activeFactionCount: 4, activeCityCount: 9, activePlayerCount: 7 },
@@ -15,6 +20,7 @@ describe("diagnostic reports", () => {
     expect(report).toContain("runtime mode: DESKTOP_CONTINUOUS");
     expect(report).toContain("activeCatchUpSource: NONE");
     expect(report).toContain("worldMonth: 120");
+    expect(report).toContain('genealogy viewer: {"lastCloseSource": "BACKDROP", "lastMuiReason": "backdropClick", "open": true}');
     expect(report).toContain("FPS: 60");
     expect(report).toContain("render frame count: 987");
     expect(report).toContain("p95 frame ms: 20");
@@ -26,6 +32,7 @@ describe("diagnostic reports", () => {
       "package version:", "timestamp:", "platform:", "Electron version:", "running:",
       "speed:", "worldInstanceId:", "fixedSteps:", "physicsSteps:", "background mode:",
       "catchUpDebt:", "lastCatchUpSource:", "focused:", "visibility:", "window minimized:",
+      "genealogy viewer:",
       "minimize count:", "suspend count:", "last suspend duration:", "resume catch-up:",
       "logical users:", "root players:", "player children:", "active Phaser players:",
       "avatar renderer:", "missing texture keys:", "noFace source:", "renderer type:", "save status:", "savedAt:", "save month:",
