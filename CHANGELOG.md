@@ -4,8 +4,8 @@
 
 - Added an application-layer ambient music runtime that maps confirmed WorldEra types to three moods, rotates same-mood tracks, and crossfades on mood changes after a user gesture.
 - Added persistent application-only BGM enable/volume preferences and a Settings runtime-version display sourced from `APP_VERSION`.
-- Added one application-level MENU context and five CC0/Public Domain Alpha soundtrack candidates; menu/world transitions share one manager, with shorter initial/playlist fades and per-track attenuation support.
-- Kept all candidates subject to manual audition; they are not a final OST. No gameplay, WorldEra thresholds, or WorldSave schema changes.
+- Revised the Alpha soundtrack catalog after user audition: MENU is intentionally silent, Ninja Theme is the TENSION candidate, Treasure Hunter and Asianoriental1 are ORDER candidates, and Asianoriental2 remains provisional for PEACE.
+- Marked rejected and reserve audio in asset attribution without deleting files; no playback-engine, gameplay, WorldEra-threshold, or WorldSave-schema changes.
 
 ## v0.99924d5
 

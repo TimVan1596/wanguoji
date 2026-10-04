@@ -40,16 +40,23 @@ const bundledMusicAsset = (fileName: string) =>
 
 // Alpha soundtrack candidates supplied locally; attribution and source details live in ASSET_ATTRIBUTION.md.
 export const AMBIENT_MUSIC_TRACKS: AmbientMusicTrackCatalog = {
-  MENU: [{ id: "menu-music", src: bundledMusicAsset("menu.mp3") }],
-  TENSION: [{ id: "shangri-river", src: bundledMusicAsset("Shangririver.ogg") }],
+  MENU: [],
+  TENSION: [{ id: "ninja-theme", src: bundledMusicAsset("ninja theme.ogg") }],
   ORDER: [
+    { id: "treasure-hunter", src: bundledMusicAsset("treasure_hunter.mp3") },
     { id: "asianoriental1", src: bundledMusicAsset("asianoriental1.ogg") },
-    { id: "tyhosiasian", src: bundledMusicAsset("tyhosiasian.ogg") },
   ],
   PEACE: [
     { id: "asianoriental2", src: bundledMusicAsset("asianoriental2.ogg") },
   ],
 };
+
+export function hasAmbientMusicTracks(
+  context: AmbientMusicContext | undefined,
+  catalog: AmbientMusicTrackCatalog = AMBIENT_MUSIC_TRACKS
+): boolean {
+  return context !== undefined && catalog[context].length > 0;
+}
 
 export interface MusicAudioChannel {
   src: string;

@@ -12,6 +12,10 @@ describe("Ambient Music bundled asset manifest", () => {
     }
   });
 
+  it("allows the intentionally silent MENU scene", () => {
+    expect(AMBIENT_MUSIC_TRACKS.MENU).toEqual([]);
+  });
+
   it("uses unique track IDs", () => {
     const ids = tracks.map(({ id }) => id);
     expect(new Set(ids).size).toBe(ids.length);
@@ -19,7 +23,7 @@ describe("Ambient Music bundled asset manifest", () => {
 
   it("uses local public paths and references only files present in public/music", () => {
     for (const track of tracks) {
-      expect(track.src).toMatch(/^(?:\.\/|\/)music\/[\w.-]+\.(?:mp3|ogg)$/i);
+      expect(track.src).toMatch(/^(?:\.\/|\/)music\/[\w .-]+\.(?:mp3|ogg)$/i);
       const relativeAssetPath = track.src.replace(/^(?:\.\/|\/)/, "");
       expect(existsSync(resolve(process.cwd(), "public", relativeAssetPath)), track.src).toBe(true);
     }

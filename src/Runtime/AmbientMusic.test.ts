@@ -8,6 +8,7 @@ import {
   calculateAmbientTrackVolume,
   clampTrackGain,
   getAmbientMusicContext,
+  hasAmbientMusicTracks,
   getMusicMoodForEra,
   MusicAudioChannel,
   resolveAmbientMusicAssetUrl,
@@ -64,11 +65,28 @@ describe("Ambient Music I", () => {
     expect(getAmbientMusicContext(true, "MULTIPOLAR")).toBe("TENSION");
     expect(getAmbientMusicContext(true, undefined)).toBeUndefined();
     expect(Object.keys(AMBIENT_MUSIC_TRACKS)).toEqual(["MENU", "TENSION", "ORDER", "PEACE"]);
-    expect(AMBIENT_MUSIC_TRACKS.MENU.map(({ id }) => id)).toEqual(["menu-music"]);
-    expect(AMBIENT_MUSIC_TRACKS.TENSION.map(({ id }) => id)).toEqual(["shangri-river"]);
-    expect(AMBIENT_MUSIC_TRACKS.ORDER.map(({ id }) => id)).toEqual(["asianoriental1", "tyhosiasian"]);
+    expect(AMBIENT_MUSIC_TRACKS.MENU).toEqual([]);
+    expect(AMBIENT_MUSIC_TRACKS.TENSION.map(({ id }) => id)).toEqual(["ninja-theme"]);
+    expect(AMBIENT_MUSIC_TRACKS.ORDER.map(({ id }) => id)).toEqual(["treasure-hunter", "asianoriental1"]);
     expect(AMBIENT_MUSIC_TRACKS.PEACE.map(({ id }) => id)).toEqual(["asianoriental2"]);
-    expect(AMBIENT_MUSIC_TRACKS.TENSION.some(({ id }) => id === "menu-music")).toBe(false);
+    const activeIds = Object.values(AMBIENT_MUSIC_TRACKS).flat().map(({ id }) => id);
+    expect(activeIds).not.toEqual(expect.arrayContaining([
+      "menu-music", "shangri-river", "tyhosiasian", "hot-spring-town", "nightshift",
+    ]));
+    expect(hasAmbientMusicTracks("MENU")).toBe(false);
+    expect(hasAmbientMusicTracks("TENSION")).toBe(true);
+  });
+
+  it("keeps the empty MENU context safely silent", async () => {
+    const channels: FakeAudio[] = [];
+    const manager = new AmbientMusicManager(AMBIENT_MUSIC_TRACKS, () => {
+      const audio = new FakeAudio(); channels.push(audio); return audio;
+    });
+    manager.update({ active: hasAmbientMusicTracks("MENU"), context: "MENU", preferences: { enabled: true, volume: 30 } });
+    await manager.unlockFromUserGesture();
+    expect(channels.reduce((sum, channel) => sum + channel.playCount, 0)).toBe(0);
+    expect(manager.getSnapshot().active).toBe(false);
+    manager.dispose();
   });
 
   it("does not select a new track for a same-mood Era change, but transitions from ORDER to PEACE", async () => {

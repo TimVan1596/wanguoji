@@ -5,6 +5,7 @@ import {
   AmbientMusicManager,
   AmbientMusicSnapshot,
   getAmbientMusicContext,
+  hasAmbientMusicTracks,
 } from "../../Runtime/AmbientMusic";
 import {
   readMusicPreferences,
@@ -30,7 +31,7 @@ export default function AmbientMusicRuntime() {
   useEffect(() => manager.subscribe(setSnapshot), [manager]);
   useEffect(() => subscribeMusicPreferences(setPreferences), []);
   useEffect(() => {
-    manager.update({ active: true, context, preferences });
+    manager.update({ active: hasAmbientMusicTracks(context), context, preferences });
   }, [manager, context, preferences]);
   useEffect(() => {
     const unlock = () => { void manager.unlockFromUserGesture(); };
