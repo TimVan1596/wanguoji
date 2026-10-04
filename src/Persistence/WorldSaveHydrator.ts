@@ -266,7 +266,7 @@ function hydrateUsersAndUnits(save: WorldSaveV1, core: Core, teams: Map<string, 
   save.factions.forEach((state) => {
     const team = teams.get(state.factionId)!;
     const farmsRuntime = state.farmsRuntime as { timers?: Array<{ name: string; elapsedMs: number; remainingMs: number; repeatCount: number; paused: boolean }> } | undefined;
-    team.farms.init(farmsRuntime?.timers ?? []);
+    if (team.terminationReason !== "MERGED") team.farms.init(farmsRuntime?.timers ?? []);
   });
   save.units.forEach((unit) => {
     const faceKey = unit.faceKey;

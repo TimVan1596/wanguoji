@@ -138,6 +138,10 @@ class DynastyRegistryStore {
     };
   }
 
+  listForDiagnostics() {
+    return [...this.dynasties.values()];
+  }
+
   importState(state: ReturnType<DynastyRegistryStore["exportState"]>) {
     this.dynasties = new Map(state.dynasties.map((dynasty) => [dynasty.factionId, {
       ...dynasty,

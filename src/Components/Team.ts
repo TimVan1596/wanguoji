@@ -331,6 +331,7 @@ export default class Team {
 
   markMerged(year: number, absorbingFactionId: string) {
     markLifecycleExtinct(this, year);
+    this.farms.setDie();
     this.terminationReason = "MERGED";
     this.mergedIntoFactionId = absorbingFactionId;
     this.mergedMonth = year;

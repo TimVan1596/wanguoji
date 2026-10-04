@@ -39,7 +39,7 @@ describe("strategic union candidate selection", () => {
   it("rejects nonadjacent allies, unrelated origins, and parity", () => {
     expect(findStrategicUnionCandidate({ ...input, teams: [strong, team("weak", 5, 40, "same-house", 1), threat] })).toBeUndefined();
     expect(findStrategicUnionCandidate({ ...input, teams: [strong, team("weak", 5, 20, "different-house", 1), threat] })).toBeUndefined();
-    expect(findStrategicUnionCandidate({ ...input, teams: [team("strong", 10, 0, "same-house", 2), team("weak", 10, 20, "same-house", 2), threat] })).toBeUndefined();
+    expect(findStrategicUnionCandidate({ ...input, teams: [team("strong", 10, 0, "same-house", 2), team("weak", 10, 1, "same-house", 2), threat] })).toBeUndefined();
     expect(findStrategicUnionCandidate({ ...input, relations: [{ ...alliance, startedMonth: 13 }] })).toBeUndefined();
   });
 });

@@ -111,7 +111,7 @@ export default function WorldDiagnosticsPanel() {
     const naming = getNameGenerationSummary();
     const cityNaming = getCityNamingSummary();
     const eraAtlas = getEraAtlasDiagnostics(WorldEra.getEras());
-    const dynasties = DynastyRegistry.exportState().dynasties;
+    const dynasties = DynastyRegistry.listForDiagnostics();
     const provisionalRulers = summarizeProvisionalRulers(
       dynasties,
       new Map(teams.map((team) => [team.name, {

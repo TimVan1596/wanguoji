@@ -62,6 +62,20 @@ describe("PopulationTransitionAudit", () => {
     expect(audit.getRecent().some((row) => row.month === 2 && row.cause === "UNATTRIBUTED")).toBe(false);
   });
 
+  it("records same-origin merger as administrative transfer without net population loss", () => {
+    const audit = new PopulationTransitionAudit();
+    const absorbed = { name: "梁西", displayName: "梁西", users: new Set(Array.from({ length: 7 }, (_, index) => `a${index}`)) };
+    const absorbing = { name: "梁东", displayName: "梁东", users: new Set(Array.from({ length: 9 }, (_, index) => `b${index}`)) };
+    audit.reset(0, [absorbed, absorbing]);
+    for (const user of [...absorbed.users]) absorbing.users.add(user);
+    absorbed.users.clear();
+    audit.record(absorbed, 7, 0, { cause: "FACTION_MERGER", month: 1, relatedFactionId: absorbing.name });
+    audit.record(absorbing, 9, 16, { cause: "FACTION_MERGER", month: 1, relatedFactionId: absorbed.name });
+    audit.reconcile(1, [absorbed, absorbing]);
+    expect(audit.getRecent().filter((row) => row.month === 1).map((row) => row.cause)).toEqual(["FACTION_MERGER", "FACTION_MERGER"]);
+    expect(absorbed.users.size + absorbing.users.size).toBe(16);
+  });
+
   it("emits UNATTRIBUTED for an unrecorded change and flags threshold-sized deltas", () => {
     const audit = new PopulationTransitionAudit();
     const state = faction("燕", 12);
