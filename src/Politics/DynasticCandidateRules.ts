@@ -9,6 +9,15 @@ export type RecordedKinRelation = Extract<
   RulerRelationType,
   "DIRECT_CHILD" | "GRANDCHILD" | "SIBLING" | "NEPHEW" | "UNCLE" | "COUSIN" | "COLLATERAL_KIN"
 >;
+export type EligibleDynasticKinRelation = Exclude<RecordedKinRelation, "COLLATERAL_KIN">;
+const eligibleRelationPriority: Record<EligibleDynasticKinRelation, number> = {
+  DIRECT_CHILD: 0,
+  GRANDCHILD: 1,
+  SIBLING: 2,
+  NEPHEW: 3,
+  UNCLE: 4,
+  COUSIN: 5,
+};
 
 export function getDynasticCandidateCap(identityStage: string, sovereigntyRank: string) {
   if (identityStage === "PROVISIONAL") return 2;
@@ -70,16 +79,6 @@ export function getRecordedKinRelation(
   return sharesRecordedAncestor && !isDirectLine ? "COLLATERAL_KIN" : undefined;
 }
 
-const relationPriority: Record<RecordedKinRelation, number> = {
-  DIRECT_CHILD: 0,
-  GRANDCHILD: 1,
-  SIBLING: 2,
-  NEPHEW: 3,
-  UNCLE: 4,
-  COUSIN: 5,
-  COLLATERAL_KIN: 6,
-};
-
 export function selectActiveDynasticCandidateIds({
   currentRuler,
   rulers,
@@ -101,7 +100,9 @@ export function selectActiveDynasticCandidateIds({
   const ranked = rulers.flatMap((ruler) => {
     if (ruler.id === currentRuler.id || (ruler.status !== "heir" && ruler.status !== "kin") || ruler.houseName !== currentRuler.houseName || !isAlive(ruler, month)) return [];
     const relation = getRecordedKinRelation(ruler, currentRuler, rulers);
-    return relation ? [{ ruler, priority: relationPriority[relation] }] : [];
+    return relation && relation !== "COLLATERAL_KIN"
+      ? [{ ruler, priority: eligibleRelationPriority[relation] }]
+      : [];
   }).sort((a, b) => a.priority - b.priority || a.ruler.bornYear - b.ruler.bornYear || a.ruler.id.localeCompare(b.ruler.id));
   const selected: string[] = [];
   let cursor = 0;
@@ -147,13 +148,14 @@ export function selectRecordedDynasticSuccessor({
       !isAlive(candidate, month)
     ) return [];
     const relationType = getRecordedKinRelation(candidate, predecessor, rulers);
-    return relationType ? [{ ruler: candidate, relationType }] : [];
+    return relationType && relationType !== "COLLATERAL_KIN"
+      ? [{ ruler: candidate, relationType }] : [];
   });
   if (!eligible.length) return undefined;
 
-  const priority = Math.min(...eligible.map(({ relationType }) => relationPriority[relationType]));
+  const priority = Math.min(...eligible.map(({ relationType }) => eligibleRelationPriority[relationType]));
   const closestKin = eligible
-    .filter(({ relationType }) => relationPriority[relationType] === priority)
+    .filter(({ relationType }) => eligibleRelationPriority[relationType] === priority)
     .sort((a, b) => a.ruler.bornYear - b.ruler.bornYear);
   const oldestBornMonth = closestKin[0].ruler.bornYear;
   const sameAge = closestKin.filter(({ ruler }) => ruler.bornYear === oldestBornMonth);
@@ -250,7 +252,7 @@ export function buildPoliticalGenealogy(
 ): PoliticalGenealogyNode[] {
   const byId = new Map(rulers.map((ruler) => [ruler.id, ruler]));
   const included = new Set(rulers
-    .filter((ruler) => ruler.reignOrdinal !== undefined || ruler.id === currentRulerId || ruler.id === designatedHeirId || candidateIds.includes(ruler.id) || ruler.status === "kin")
+    .filter((ruler) => ruler.reignOrdinal !== undefined || ruler.id === currentRulerId || ruler.id === designatedHeirId || candidateIds.includes(ruler.id))
     .map((ruler) => ruler.id));
   for (const id of [...included]) {
     let parentId = byId.get(id)?.parentId;

@@ -163,7 +163,7 @@ class DynastyRegistryStore {
       heirIds: [],
     };
     this.dynasties.set(team.name, dynasty);
-    this.ensureActiveHeir(team, dynasty, year);
+    this.ensureActiveHeir(team, dynasty, year, true);
     WorldHistory.addRulerAcceded(year, team.name, this.getRulerTitle(team, ruler, year), ruler.id);
     this.ensureRulerUnit(team);
     return dynasty;
@@ -670,7 +670,7 @@ class DynastyRegistryStore {
     return getNextRulerReignOrdinal(dynasty.rulers);
   }
 
-  private ensureActiveHeir(team: Team, dynasty: Dynasty, year: number) {
+  private ensureActiveHeir(team: Team, dynasty: Dynasty, year: number, allowInitialBootstrap = false) {
     const current = this.getCurrentRuler(team.name);
     const candidateCap = getDynasticCandidateCap(team.identityStage, team.sovereigntyRank);
     const isAlive = (candidate: Ruler, atMonth: number) =>
@@ -701,8 +701,11 @@ class DynastyRegistryStore {
         candidateCap,
       });
       const inSuccessionCrisis = team.cities.length <= 1 || (getFactionStability(team) ?? 100) <= 45;
+      // A founding ruler gets one age-valid baseline dynastic link even in a
+      // one-city/crisis start. Later crisis months may not expand the pool.
+      const bootstrapOnly = inSuccessionCrisis && allowInitialBootstrap && dynasty.heirIds.length === 0;
       for (const parent of parents) {
-        if (inSuccessionCrisis || dynasty.heirIds.length >= candidateCap) break;
+        if ((inSuccessionCrisis && (!bootstrapOnly || parent.id !== current?.id)) || dynasty.heirIds.length >= (bootstrapOnly ? 1 : candidateCap)) break;
         const heir = this.createHeir(team, dynasty.houseName, year, parent.id);
         dynasty.rulers.push(heir);
         dynasty.heirIds.push(heir.id);

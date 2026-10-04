@@ -1,5 +1,5 @@
-import { Box, Button, Typography } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { Box, Button, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getFactionStability } from "../../../Components/City";
@@ -55,7 +55,6 @@ import { deriveRulerTenureEvidence } from "../../../Politics/RulerTenureEvidence
 import { getFormalRulers, isFormalRulerRecord } from "../../../Politics/RulerPresentationRules";
 import {
   buildPoliticalGenealogy,
-  buildPoliticalGenealogyEdges,
   formatRecordedKinship,
   formatRecordedSuccessionKinship,
   getSuccessionBackground,
@@ -642,14 +641,15 @@ function DynastyTree({
   onSelectedRulerIdChange: (id: string | undefined) => void;
 }) {
   const [view, setView] = useState<"lineage" | "genealogy">("lineage");
+  const [genealogyDialogOpen, setGenealogyDialogOpen] = useState(false);
+  const genealogyViewportRef = useRef<HTMLDivElement>(null);
   const livingCandidates = (dynasty?.heirIds ?? [])
     .map((id) => rulers.find((ruler) => ruler.id === id))
     .filter((ruler): ruler is Ruler => Boolean(ruler && ruler.status === "heir"));
-  const livingKin = rulers.some((ruler) => ruler.status === "kin");
   const designatedHeir = livingCandidates.find((candidate) => candidate.id === dynasty?.designatedHeirId);
   const otherCandidates = livingCandidates.filter((candidate) => candidate.id !== dynasty?.designatedHeirId);
   const formalRulers = getFormalRulers(rulers);
-  if (formalRulers.length === 0 && livingCandidates.length === 0 && !livingKin) {
+  if (formalRulers.length === 0 && livingCandidates.length === 0) {
     return (
       <Typography fontSize="0.9rem" color="var(--gg-text-muted)">
         暂无王室记录。
@@ -666,8 +666,12 @@ function DynastyTree({
     dynasty?.designatedHeirId,
     dynasty?.heirIds ?? []
   );
-  const genealogyEdges = buildPoliticalGenealogyEdges(rulers);
-  const genealogyRulers = new Map(rulers.map((ruler) => [ruler.id, ruler]));
+  const locateCurrentRuler = () => {
+    if (!currentRulerId) return;
+    const node = Array.from(genealogyViewportRef.current?.querySelectorAll<HTMLElement>("[data-ruler-id]") ?? [])
+      .find((element) => element.dataset.rulerId === currentRulerId);
+    node?.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+  };
   const renderGenealogyNode = (node: ReturnType<typeof buildPoliticalGenealogy>[number]): ReactNode => {
     const ruler = node.ruler;
     const badges = [
@@ -681,7 +685,7 @@ function DynastyTree({
       ruler.reignOrdinal !== undefined ? `第${ruler.reignOrdinal}代` : ruler.status === "kin" ? "在世宗亲" : undefined,
     ].filter(Boolean);
     return (
-      <Box key={ruler.id} sx={{ display: "flex", flexDirection: "column", alignItems: "center", flex: "0 0 auto", position: "relative", px: 0.5 }}>
+      <Box key={ruler.id} data-ruler-id={ruler.id} sx={{ display: "flex", flexDirection: "column", alignItems: "center", flex: "0 0 auto", position: "relative", px: 0.5 }}>
         <Box sx={{ border: "1px solid var(--gg-border)", borderRadius: "var(--gg-radius)", px: 0.8, py: 0.45, background: ruler.id === currentRulerId ? "var(--gg-panel)" : "transparent", whiteSpace: "nowrap" }}>
           <Typography fontSize="0.83rem" fontWeight={ruler.id === currentRulerId || ruler.id === dynasty?.designatedHeirId ? 700 : 400}>
             {formatRulerRowName(ruler, team)} <Box component="span" color="var(--gg-text-muted)">· {badges.join(" · ") || "宗室成员"}</Box>
@@ -707,19 +711,11 @@ function DynastyTree({
       </Box>
       {view === "genealogy" ? (
         <Box sx={{ display: "grid", gap: 0.5, minWidth: 0, overflowX: "auto", pb: 0.5 }}>
-          <Typography fontWeight="bold" fontSize="0.9rem">政治宗谱</Typography>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1 }}>
+            <Typography fontWeight="bold" fontSize="0.9rem">政治宗谱</Typography>
+            <Button size="small" onClick={() => setGenealogyDialogOpen(true)}>查看完整宗谱</Button>
+          </Box>
           {genealogy.length ? <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5, width: "max-content", minWidth: "100%", pt: 0.5 }}>{genealogy.map((root) => renderGenealogyNode(root))}</Box> : <Typography fontSize="0.82rem" color="var(--gg-text-muted)">暂无可展示的宗谱关系。</Typography>}
-          {genealogyEdges.some((edge) => edge.type === "SUCCESSION") ? (
-            <Box sx={{ display: "grid", gap: 0.25, mt: 0.5 }}>
-              <Typography fontSize="0.76rem" color="var(--gg-selected)">王位承继线</Typography>
-              {genealogyEdges.filter((edge) => edge.type === "SUCCESSION").map((edge) => {
-                const from = genealogyRulers.get(edge.fromId);
-                const to = genealogyRulers.get(edge.toId);
-                if (!from || !to) return null;
-                return <Typography key={`${edge.fromId}-${edge.toId}`} fontSize="0.76rem" color="var(--gg-selected)">{formatRulerRowName(from, team)} → {formatRulerRowName(to, team)}{edge.crossBranch ? " · 跨支承统" : ""}</Typography>;
-              })}
-            </Box>
-          ) : null}
         </Box>
       ) : <>
       {designatedHeir ? (
@@ -807,6 +803,20 @@ function DynastyTree({
         })}
       </Box>
       </>}
+      <Dialog fullScreen open={genealogyDialogOpen} onClose={() => setGenealogyDialogOpen(false)}>
+        <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1 }}>
+          <span>政治宗谱</span>
+          <Box sx={{ display: "flex", gap: 1 }}>
+            <Button size="small" onClick={locateCurrentRuler} disabled={!currentRulerId}>定位当今君主</Button>
+            <Button size="small" onClick={() => setGenealogyDialogOpen(false)}>关闭</Button>
+          </Box>
+        </DialogTitle>
+        <DialogContent ref={genealogyViewportRef} dividers sx={{ overflow: "auto" }}>
+          {genealogy.length
+            ? <Box sx={{ display: "flex", alignItems: "flex-start", gap: 3, width: "max-content", minWidth: "100%", minHeight: "100%", py: 2 }}>{genealogy.map((root) => renderGenealogyNode(root))}</Box>
+            : <Typography color="var(--gg-text-muted)">暂无可展示的宗谱关系。</Typography>}
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 }
