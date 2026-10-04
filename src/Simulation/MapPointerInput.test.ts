@@ -14,6 +14,7 @@ describe("map pointer DOM isolation", () => {
 
   it("accepts only the current Phaser canvas as the native target", () => {
     expect(inspectMapPointerTarget({ event: { target: canvas }, downElement: canvas }, canvas, "down").accepted).toBe(true);
+    expect(inspectMapPointerTarget({ event: { target: dialogPaper }, downElement: canvas }, canvas, "down")).toMatchObject({ accepted: false, target: "DIV", reason: "NON_CANVAS_TARGET" });
     expect(inspectMapPointerTarget({ event: { target: button }, downElement: button }, canvas, "down")).toMatchObject({ accepted: false, target: "BUTTON", reason: "NON_CANVAS_TARGET" });
     expect(inspectMapPointerTarget({ event: { target: dialogPaper }, upElement: dialogPaper }, canvas, "up")).toMatchObject({ accepted: false, target: "DIV", reason: "NON_CANVAS_TARGET" });
     expect(inspectMapPointerTarget({ event: { target: body }, upElement: body }, canvas, "up")).toMatchObject({ accepted: false, target: "BODY", reason: "NON_CANVAS_TARGET" });

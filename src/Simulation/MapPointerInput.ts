@@ -34,8 +34,8 @@ export function inspectMapPointerTarget(
     : phase === "up"
       ? pointer.upElement
       : eventTarget;
-  const actualTarget = phaseTarget ?? eventTarget;
-  const accepted = actualTarget === canvas && eventTarget === canvas;
+  const actualTarget = eventTarget ?? phaseTarget;
+  const accepted = phaseTarget === canvas && eventTarget === canvas;
   return {
     accepted,
     target: describeDomTarget(actualTarget),

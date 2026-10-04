@@ -32,7 +32,7 @@ describe("diagnostic reports", () => {
     expect(report).toContain('genealogy viewer: {"lastCloseSource": "BACKDROP", "lastMuiReason": "backdropClick", "open": true}');
     expect(report).toContain("map pointer last target: BUTTON");
     expect(report).toContain("map pointer reason: NON_CANVAS_TARGET");
-    expect(report).toContain("map pointer faction after: wei");
+    expect(report).toContain("map pointer selected faction after: wei");
     expect(report).toContain("FPS: 60");
     expect(report).toContain("render frame count: 987");
     expect(report).toContain("p95 frame ms: 20");

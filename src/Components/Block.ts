@@ -9,6 +9,7 @@ import Player from "./Player";
 import Team from "./Team";
 import { canonicalBlockHitPoints } from "./BlockHitPoints";
 import { resolvePublicAssetUrl } from "../Runtime/PublicAssetUrl";
+import { inspectMapPointerTarget } from "../Simulation/MapPointerInput";
 
 export default class Block extends Phaser.GameObjects.Rectangle {
   hp = 0;
@@ -32,8 +33,8 @@ export default class Block extends Phaser.GameObjects.Rectangle {
     this.scene.add.existing(this);
     this.scene.physics.add.existing(this, true);
     this.setInteractive({ useHandCursor: false });
-    this.on("pointerdown", () => {
-      if (!this.city) {
+    this.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+      if (!this.city && inspectMapPointerTarget(pointer, this.scene.game.canvas, "down").accepted) {
         Game.Core?.selectFaction(undefined);
       }
     });
@@ -254,8 +255,10 @@ export default class Block extends Phaser.GameObjects.Rectangle {
     this.isHome = false;
     this.setInteractive({ useHandCursor: false });
     this.removeAllListeners("pointerdown");
-    this.on("pointerdown", () => {
-      Game.Core?.selectFaction(undefined);
+    this.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+      if (inspectMapPointerTarget(pointer, this.scene.game.canvas, "down").accepted) {
+        Game.Core?.selectFaction(undefined);
+      }
     });
     this.removeAllListeners("pointerover");
     this.removeAllListeners("pointerout");
