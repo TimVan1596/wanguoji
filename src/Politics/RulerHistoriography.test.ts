@@ -38,7 +38,7 @@ function makeContext(options: {
   restorations?: number;
   captures?: number;
   rebellions?: number;
-  factionOrigin?: { foundingRulerId?: string };
+  factionOrigin?: { foundingRulerId?: string; foundedMonth?: number };
   stateFoundedMonth?: number;
   posthumousEpithet?: string;
 } = {}): RulerHistoriographyContext {
@@ -103,7 +103,7 @@ describe("evidence-grounded ruler historiography", () => {
 
   it("does not call a provisional faction founder a state founder", () => {
     const context = makeContext({
-      factionOrigin: { foundingRulerId: "r1" },
+      factionOrigin: { foundingRulerId: "r1", foundedMonth: 60 },
       endReason: "战死", deathCause: "战死",
     });
     const result = deriveRulerAssessment(context);
@@ -111,7 +111,9 @@ describe("evidence-grounded ruler historiography", () => {
     expect(result.evidence.foundedState).toBe(false);
     expect(result.lines.join(" ")).toContain("创立势力");
     expect(result.lines.join(" ")).not.toMatch(/开国|正式建国|新建国家/);
-    expect(result.lines.join(" ")).toContain("创立势力未久而身死军中");
+    expect(result.evidence.monthsSinceFactionFoundationAtEnd).toBe(60);
+    expect(result.lines.join(" ")).toContain("创立势力未久即身死军中");
+    expect(result.lines.join(" ")).not.toContain("整合尚未完成");
     expect(buildRulerTags(result.evidence)).not.toContain("开国之君");
   });
 
@@ -119,6 +121,80 @@ describe("evidence-grounded ruler historiography", () => {
     const result = deriveRulerAssessment(makeContext({ foundedStateName: "秦", foundedStateMonth: 48 }));
     expect(result.lines.join(" ")).toContain("正式建国");
     expect(buildRulerTags(result.evidence)).toContain("开国之君");
+  });
+
+  it("does not call a state founded decades before a founder's death newly founded or unintegrated", () => {
+    const result = deriveRulerAssessment(makeContext({
+      age: 13,
+      endMonth: 51 * 12 + 10,
+      endReason: "战死",
+      deathCause: "战死",
+      foundedStateName: "县",
+      foundedStateMonth: 30 * 12,
+      start: { territoryShare: 0.255, cityCount: 3, stability: 47 },
+      end: { territoryShare: 0.135, cityCount: 1, stability: 90 },
+    }));
+    const text = result.lines.join(" ");
+    expect(result.evidence.monthsSinceStateFoundationAtEnd).toBe(51 * 12 + 10 - 30 * 12);
+    expect(text).toContain("正式建国");
+    expect(text).toContain("最终身死军中");
+    expect(text).not.toMatch(/开国未久|正式建国未久|整合尚未完成/);
+  });
+
+  it("allows early formal founding wording within the explicit five-year window, without claiming unfinished integration", () => {
+    const result = deriveRulerAssessment(makeContext({
+      endMonth: 120,
+      endReason: "战死",
+      deathCause: "战死",
+      foundedStateName: "秦",
+      foundedStateMonth: 96,
+    }));
+    expect(result.evidence.monthsSinceStateFoundationAtEnd).toBe(24);
+    expect(result.lines.join(" ")).toContain("正式建国未久即身死军中");
+    expect(result.lines.join(" ")).not.toContain("整合尚未完成");
+  });
+
+  it("only calls provisional faction creation recent when its canonical founding month supports it", () => {
+    const short = deriveRulerAssessment(makeContext({
+      endMonth: 120,
+      endReason: "战死",
+      deathCause: "战死",
+      factionOrigin: { foundingRulerId: "r1", foundedMonth: 60 },
+    }));
+    expect(short.evidence.monthsSinceFactionFoundationAtEnd).toBe(60);
+    expect(short.lines.join(" ")).toContain("创立势力未久即身死军中");
+    expect(short.lines.join(" ")).not.toContain("整合尚未完成");
+
+    const long = deriveRulerAssessment(makeContext({
+      endMonth: 120,
+      endReason: "战死",
+      deathCause: "战死",
+      factionOrigin: { foundingRulerId: "r1", foundedMonth: 0 },
+    }));
+    expect(long.evidence.monthsSinceFactionFoundationAtEnd).toBe(120);
+    expect(long.lines.join(" ")).not.toContain("创立势力未久");
+    expect(long.lines.join(" ")).toContain("最终身死军中");
+    expect(long.lines.join(" ")).not.toContain("整合尚未完成");
+  });
+
+  it("uses the attributed canonical founding event when provisional origin month is unavailable", () => {
+    const context = makeContext({
+      endMonth: 120,
+      endReason: "战死",
+      deathCause: "战死",
+      factionOrigin: { foundingRulerId: "r1" },
+      events: [{
+        id: "founded",
+        type: "rebel-faction-founded",
+        year: 96,
+        monthIndex: 96,
+        actorFactionId: "秦",
+        metadata: { foundingRulerId: "r1" },
+      }],
+    });
+    const evidence = deriveRulerHistoricalEvidence(context);
+    expect(evidence.monthsSinceFactionFoundationAtEnd).toBe(24);
+    expect(composeRulerAssessment(evidence).lines.join(" ")).toContain("创立势力未久即身死军中");
   });
 
   it("prioritizes major expansion over stewardship and names a provisional polity accurately", () => {
@@ -478,13 +554,13 @@ describe("evidence-grounded ruler historiography", () => {
     expect(exiled.evidence.roles).not.toContain("STEWARD");
 
     const founder = makeContext({
-      endMonth: 60, endReason: "战死", deathCause: "战死", factionOrigin: { foundingRulerId: "r1" },
+      endMonth: 60, endReason: "战死", deathCause: "战死", factionOrigin: { foundingRulerId: "r1", foundedMonth: 0 },
       start: { territoryShare: 0.3, cityCount: 4 },
       end: { territoryShare: 0.28, cityCount: 4 },
     });
     const text = deriveRulerAssessment(founder).lines.join(" ");
-    expect(text).toContain("创立势力未久而身死军中");
-    expect(text).not.toContain("开国未久而身死军中");
+    expect(text).toContain("创立势力未久即身死军中");
+    expect(text).not.toMatch(/开国未久|整合尚未完成/);
     expect(text).not.toContain("扩张与秩序仍有未竟");
   });
 

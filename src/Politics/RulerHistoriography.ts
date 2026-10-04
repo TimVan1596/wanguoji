@@ -38,6 +38,8 @@ export interface RulerHistoricalEvidence {
   foundedState: boolean;
   formalStateAtReignEnd: boolean;
   foundedStateName?: string;
+  monthsSinceStateFoundationAtEnd?: number;
+  monthsSinceFactionFoundationAtEnd?: number;
   proclaimedEmperor: boolean;
   completedUnification: boolean;
   restorationCount: number;
@@ -82,7 +84,7 @@ export interface RulerHistoriographyContext {
   dynasty: Pick<Dynasty, "rulers">;
   faction: {
     name: string;
-    origin?: { foundingRulerId?: string };
+    origin?: { foundingRulerId?: string; foundedMonth?: number };
     stateFoundedMonth?: number;
   };
   events: WorldEvent[];
@@ -94,6 +96,8 @@ export interface RulerAssessment {
   evidence: RulerHistoricalEvidence;
   lines: string[];
 }
+
+const FOUNDING_EARLY_DEATH_MAX_MONTHS = 60;
 
 const COLLAPSE_TYPES = new Set<WorldEvent["type"]>([
   "faction-exiled",
@@ -130,13 +134,13 @@ export function deriveRulerHistoricalEvidence(
     event.rulerId === ruler.id || event.metadata?.rulerId === ruler.id;
   const rulerEvents = events.filter(inReign);
 
-  const foundingFactionEvent = rulerEvents.some(
+  const foundingFactionEvent = rulerEvents.find(
     (event) =>
       (event.type === "rebel-faction-founded" || event.type === "frontier-faction-founded") &&
       event.actorFactionId === faction.name &&
       event.metadata?.foundingRulerId === ruler.id
   );
-  const foundedFaction = faction.origin?.foundingRulerId === ruler.id || foundingFactionEvent;
+  const foundedFaction = faction.origin?.foundingRulerId === ruler.id || Boolean(foundingFactionEvent);
   const stateFoundingEvent = rulerEvents.find(
     (event) =>
       event.type === "state-founded" &&
@@ -155,6 +159,18 @@ export function deriveRulerHistoricalEvidence(
       (typeof stateFoundingEvent?.metadata?.newDisplayName === "string"
         ? stateFoundingEvent.metadata.newDisplayName
         : undefined)
+    : undefined;
+  const stateFoundationMonth = chronicle?.foundedStateMonth ?? (
+    stateFoundingEvent ? stateFoundingEvent.monthIndex ?? stateFoundingEvent.year : undefined
+  );
+  const factionFoundationMonth = (faction.origin?.foundingRulerId === ruler.id
+    ? faction.origin.foundedMonth
+    : undefined) ?? (foundingFactionEvent ? foundingFactionEvent.monthIndex ?? foundingFactionEvent.year : undefined);
+  const monthsSinceStateFoundationAtEnd = foundedState && stateFoundationMonth !== undefined
+    ? Math.max(0, endMonth - stateFoundationMonth)
+    : undefined;
+  const monthsSinceFactionFoundationAtEnd = foundedFaction && factionFoundationMonth !== undefined
+    ? Math.max(0, endMonth - factionFoundationMonth)
     : undefined;
   const formalStateAtReignEnd = foundedState || (
     faction.stateFoundedMonth !== undefined && faction.stateFoundedMonth <= endMonth
@@ -306,6 +322,8 @@ export function deriveRulerHistoricalEvidence(
     foundedState,
     formalStateAtReignEnd,
     foundedStateName,
+    monthsSinceStateFoundationAtEnd,
+    monthsSinceFactionFoundationAtEnd,
     proclaimedEmperor,
     completedUnification,
     restorationCount: chronicle?.restorationsDuringReign ?? 0,
@@ -470,14 +488,14 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
     lines.push("国势在其任内进一步恶化，最终亡于其世。");
   } else if (evidence.terminalCollapse && evidence.accessionCrisis) {
     lines.push("其后仍未能扭转颓势，国家终亡于其世；这一结局始于承统前的危局。");
-  } else if (evidence.deathCause === "战死" && evidence.foundedState && !evidence.roles.includes("EXPANDER")) {
-    lines.push("开国未久而身死军中，新建国家的整合尚未完成。");
-  } else if (evidence.deathCause === "战死" && evidence.foundedState && evidence.roles.includes("EXPANDER")) {
-    lines.push("开国与开拓之业尚未竟全，终身死军中。");
-  } else if (evidence.deathCause === "战死" && evidence.foundedFaction && !evidence.roles.includes("EXPANDER")) {
-    lines.push("创立势力未久而身死军中，草创政权的整合尚未完成。");
-  } else if (evidence.deathCause === "战死" && evidence.foundedFaction && evidence.roles.includes("EXPANDER")) {
-    lines.push("草创势力与开拓之业尚未竟全，终身死军中。");
+  } else if (evidence.deathCause === "战死" && evidence.foundedState) {
+    lines.push(evidence.monthsSinceStateFoundationAtEnd !== undefined && evidence.monthsSinceStateFoundationAtEnd <= FOUNDING_EARLY_DEATH_MAX_MONTHS
+      ? "正式建国未久即身死军中。"
+      : "最终身死军中。");
+  } else if (evidence.deathCause === "战死" && evidence.foundedFaction) {
+    lines.push(evidence.monthsSinceFactionFoundationAtEnd !== undefined && evidence.monthsSinceFactionFoundationAtEnd <= FOUNDING_EARLY_DEATH_MAX_MONTHS
+      ? "创立势力未久即身死军中。"
+      : "最终身死军中。");
   } else if (evidence.deathCause === "战死" && hasMajorLegacy(evidence)) {
     lines.push("功业未竟而身死军中，留下的事业仍有未竟之处。");
   } else if (

@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99924d5
+
+- Founder battle-death wording now uses the recorded time from formal state/faction founding to death before describing a founding as recent.
+- Removed unsupported claims that a newly founded state or provisional faction had unfinished political integration; later founder deaths receive neutral, evidence-grounded wording.
+- Kept provisional faction founders distinct from formal state founders; no gameplay, posthumous-rule, or WorldSave schema changes.
+
 ## v0.99924d4
 
 - Prioritized very large territorial expansion over generic tragic-death commentary, with expansion as the main judgment and battle death only as a closing outcome.
