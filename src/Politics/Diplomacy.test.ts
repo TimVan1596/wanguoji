@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import Diplomacy, { DiplomacyRegistry, DiplomacySystem, diplomaticPairKey, isHostileActionAllowed } from "./Diplomacy";
+import { DIPLOMACY_NON_AGGRESSION_DURATION_MONTHS, DIPLOMACY_TRUCE_DURATION_MONTHS } from "./Diplomacy";
 
 function faction(name: string, blocks: number, loyalty = 50, status = "ACTIVE") {
   return {
@@ -12,6 +13,10 @@ function faction(name: string, blocks: number, loyalty = 50, status = "ACTIVE") 
 afterEach(() => Diplomacy.reset());
 
 describe("Diplomacy", () => {
+  it("uses the longer canonical truce and non-aggression durations", () => {
+    expect(DIPLOMACY_TRUCE_DURATION_MONTHS).toBe(36);
+    expect(DIPLOMACY_NON_AGGRESSION_DURATION_MONTHS).toBe(96);
+  });
   it("normalizes unordered pair keys and blocks both sides until expiry", () => {
     expect(diplomaticPairKey("wei", "qi")).toBe(diplomaticPairKey("qi", "wei"));
     Diplomacy.setRelation({ factionAId: "wei", factionBId: "qi", status: "TRUCE", startedMonth: 4, expiresMonth: 20, reason: "WAR_EXHAUSTION_TRUCE" });
@@ -37,27 +42,33 @@ describe("Diplomacy", () => {
 
   it("signs bounded war-exhaustion truces and clears existing siege contacts", () => {
     const cleared: string[][] = [];
-    const events: Array<{ type: string }> = [];
+    const events: Array<{ type: string; triggerContext?: unknown }> = [];
     const system = new DiplomacySystem(Diplomacy, () => [{ clearSiegeContactBetween: (a: string, b: string) => cleared.push([a, b]) } as never], (event) => events.push(event));
     const teams = [faction("a", 10, 40), faction("b", 9, 55)];
     system.update(12, teams, 100, [{ type: "city-captured", actorFactionId: "a", targetFactionId: "b" } as never]);
-    expect(Diplomacy.get("b", "a")).toMatchObject({ status: "TRUCE", reason: "WAR_EXHAUSTION_TRUCE", expiresMonth: 36 });
+    expect(Diplomacy.get("b", "a")).toMatchObject({ status: "TRUCE", reason: "WAR_EXHAUSTION_TRUCE", startedMonth: 12, expiresMonth: 48 });
     expect(Diplomacy.canAttack("b", "a", 12)).toBe(false);
     expect(cleared).toEqual([["a", "b"]]);
     expect(events[0].type).toBe("truce-signed");
+    expect(events[0]).toMatchObject({ triggerContext: { reason: "WAR_EXHAUSTION_TRUCE", recentBilateralCaptureCount: 1, stabilityA: 40, stabilityB: 55 } });
   });
 
   it("forms a common-threat non-aggression pact only among active weaker factions", () => {
-    const events: Array<{ type: string }> = [];
+    const events: Array<{ type: string; triggerContext?: unknown }> = [];
     const system = new DiplomacySystem(Diplomacy, () => [], (event) => events.push(event));
     system.update(12, [faction("small-a", 5), faction("small-b", 5), faction("power", 70), faction("exiled", 4, 50, "EXILED")], 100);
     expect(Diplomacy.get("small-a", "small-b")?.status).toBe("NON_AGGRESSION");
+    expect(Diplomacy.get("small-a", "small-b")?.expiresMonth).toBe(108);
+    expect(events[0]).toMatchObject({ triggerContext: {
+      reason: "COMMON_THREAT_NON_AGGRESSION", commonThreatFactionId: "power",
+      territoryShareA: 5, territoryShareB: 5, threatTerritoryShare: 70,
+    } });
     expect(Diplomacy.list()).toHaveLength(1);
     expect(events[0].type).toBe("non-aggression-signed");
   });
 
   it("expires treaties and emits expiry once", () => {
-    const events: Array<{ type: string }> = [];
+    const events: Array<{ type: string; triggerContext?: unknown }> = [];
     const system = new DiplomacySystem(Diplomacy, () => [], (event) => events.push(event));
     Diplomacy.setRelation({ factionAId: "a", factionBId: "b", status: "TRUCE", startedMonth: 1, expiresMonth: 12, reason: "WAR_EXHAUSTION_TRUCE" });
     system.update(12, [], 100, []);

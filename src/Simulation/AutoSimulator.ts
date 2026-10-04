@@ -28,6 +28,7 @@ import {
 import { PopulationMutationContext, PopulationTransitionAudit } from "./PopulationTransitionAudit";
 import Diplomacy, { DiplomacySystem } from "../Politics/Diplomacy";
 import { formatWorldDate } from "./WorldTime";
+import { describeDiplomacySigning } from "../Politics/DiplomacyPresentation";
 
 const debugProfileEnabled =
   import.meta.env.DEV ||
@@ -49,23 +50,55 @@ export default class AutoSimulator {
   readonly populationTransitionAudit = new PopulationTransitionAudit();
   private lastKnownCities: City[] = [];
   private lastKnownTeams: Team[] = [];
-  private diplomacy = new DiplomacySystem(Diplomacy, () => this.lastKnownCities, ({ type, month, relation }) => {
+  private diplomacy = new DiplomacySystem(Diplomacy, () => this.lastKnownCities, ({ type, month, relation, triggerContext }) => {
     const factionName = (id: string) => this.lastKnownTeams.find((team) => team.name === id)?.displayName ?? id;
     const names = [factionName(relation.factionAId), factionName(relation.factionBId)];
+    const signer = (factionId: string) => {
+      const ruler = DynastyRegistry.getCurrentRuler(factionId);
+      if (!ruler) return undefined;
+      const team = this.lastKnownTeams.find((item) => item.name === factionId);
+      return {
+        rulerId: ruler.id,
+        title: DynastyRegistry.getRulerHistoricalTitle(ruler.id, factionId, month) ?? `${factionName(factionId)}${team?.sovereigntyRank === "PROVISIONAL" ? "首领" : "君主"}${ruler.givenName}`,
+        role: team?.sovereigntyRank === "PROVISIONAL" ? "首领" : "君主",
+      };
+    };
+    const signerA = type === "treaty-expired" ? undefined : signer(relation.factionAId);
+    const signerB = type === "treaty-expired" ? undefined : signer(relation.factionBId);
+    const commonThreatId = triggerContext?.reason === "COMMON_THREAT_NON_AGGRESSION" ? triggerContext.commonThreatFactionId : undefined;
     const title = type === "treaty-expired"
       ? `${names.join("、")}协议到期`
       : type === "truce-signed" ? `${names.join("、")}议定停战` : `${names.join("、")}订立互不侵犯`;
+    const triggerMetadata = triggerContext ? {
+      reason: triggerContext.reason,
+      ...(triggerContext.reason === "WAR_EXHAUSTION_TRUCE" ? {
+        recentBilateralCaptureCount: triggerContext.recentBilateralCaptureCount,
+        stabilityA: triggerContext.stabilityA,
+        stabilityB: triggerContext.stabilityB,
+      } : {
+        commonThreatFactionId: triggerContext.commonThreatFactionId,
+        territoryShareA: triggerContext.territoryShareA,
+        territoryShareB: triggerContext.territoryShareB,
+        threatTerritoryShare: triggerContext.threatTerritoryShare,
+      }),
+    } : { reason: relation.reason };
     WorldHistory.addEvent({
       id: `diplomacy-${type}-${relation.factionAId}-${relation.factionBId}-${month}`,
       year: month, monthIndex: month, category: "politics", type, title,
       description: type === "treaty-expired"
         ? "双方恢复原有外交状态。"
-        : type === "truce-signed"
-          ? `约期${Math.round((relation.expiresMonth - month) / 12)}年，至${formatWorldDate(relation.expiresMonth)}。`
-          : `约期五年，至${formatWorldDate(relation.expiresMonth)}。`,
+        : describeDiplomacySigning(relation, triggerContext!, {
+          factionAName: names[0], factionBName: names[1],
+          commonThreatName: commonThreatId ? factionName(commonThreatId) : undefined,
+        }),
       factionIds: [relation.factionAId, relation.factionBId], relatedFactionIds: [relation.factionAId, relation.factionBId],
-      metadata: { reason: relation.reason, expiresMonth: relation.expiresMonth },
-      importance: "normal",
+      metadata: {
+        ...triggerMetadata,
+        expiresMonth: relation.expiresMonth,
+        ...(signerA ? { signatoryAFactionId: relation.factionAId, signatoryARulerId: signerA.rulerId, signatoryATitle: signerA.title, signatoryARole: signerA.role } : {}),
+        ...(signerB ? { signatoryBFactionId: relation.factionBId, signatoryBRulerId: signerB.rulerId, signatoryBTitle: signerB.title, signatoryBRole: signerB.role } : {}),
+      },
+      importance: type === "non-aggression-signed" ? "major" : "normal",
     });
   });
 

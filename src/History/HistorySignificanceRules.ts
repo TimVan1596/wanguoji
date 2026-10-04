@@ -76,6 +76,9 @@ export function getHistorySignificance(event: WorldEvent): HistorySignificance {
   ) {
     return "LANDMARK";
   }
+  if (event.type === "truce-signed") return "NORMAL";
+  if (event.type === "non-aggression-signed") return "MAJOR";
+  if (event.type === "treaty-expired") return "NORMAL";
   if (event.type === "capital-fallen") {
     return "MAJOR";
   }

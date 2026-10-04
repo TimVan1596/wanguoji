@@ -556,7 +556,27 @@ function EventDetails({
     (event.type === "capital-relocated" && typeof metadata?.previousCapitalName === "string");
   const isCollapse = kind === "FACTION_COLLAPSE" || Boolean(metadata?.groupedEventCount) ||
     event.type === "faction-extinct" || event.type === "faction-exiled" || event.type === "faction-dissolved";
-  if (isCapitalTransition && metadata) {
+  const isDiplomacySigning = event.type === "truce-signed" || event.type === "non-aggression-signed";
+  if (isDiplomacySigning && metadata) {
+    const signatories = [
+      [metadata.signatoryARole, metadata.signatoryATitle],
+      [metadata.signatoryBRole, metadata.signatoryBTitle],
+    ].filter((entry): entry is [string, string] => typeof entry[0] === "string" && typeof entry[1] === "string");
+    if (signatories.length) {
+      const roles = [...new Set(signatories.map(([role]) => role))].join("/");
+      lines.push(`签约时${roles}：${signatories.map(([, title]) => title).join("、")}`);
+    }
+    if (metadata.reason === "WAR_EXHAUSTION_TRUCE") {
+      addMetadataLine(lines, metadata.recentBilateralCaptureCount, "近三年双边城邑易手");
+      addMetadataLine(lines, metadata.stabilityA, "签约时一方稳定度");
+      addMetadataLine(lines, metadata.stabilityB, "签约时另一方稳定度");
+    } else if (metadata.reason === "COMMON_THREAT_NON_AGGRESSION") {
+      addFactionLine(lines, teamByName, metadata.commonThreatFactionId, "共同强敌");
+      addMetadataPercentLine(lines, metadata.territoryShareA, "签约时一方领土占比");
+      addMetadataPercentLine(lines, metadata.territoryShareB, "签约时另一方领土占比");
+      addMetadataPercentLine(lines, metadata.threatTerritoryShare, "共同强敌领土占比");
+    }
+  } else if (isCapitalTransition && metadata) {
     addMetadataTextLine(lines, metadata.previousCapitalName, "旧都");
     addMetadataTextLine(lines, metadata.newCapitalName ?? event.cityName, "新都");
     const cause = metadata.cause === "CAPITAL_DESTROYED" ? "旧都毁于长期战乱" :

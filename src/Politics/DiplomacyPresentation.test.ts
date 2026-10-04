@@ -1,0 +1,47 @@
+import { describe, expect, it } from "vitest";
+import { describeDiplomacySigning, formatDiplomacyRelationLines, getFactionDiplomacyBadges } from "./DiplomacyPresentation";
+import type { DiplomaticRelation } from "./Diplomacy";
+
+const truce: DiplomaticRelation = {
+  factionAId: "qi", factionBId: "wei", status: "TRUCE", startedMonth: 133, expiresMonth: 169,
+  reason: "WAR_EXHAUSTION_TRUCE",
+};
+
+describe("diplomacy presentation", () => {
+  it("formats agreement dates and actual term from month difference", () => {
+    expect(formatDiplomacyRelationLines(truce, "魏")).toEqual([
+      "魏 · 停战 · 战后休兵", "11年2月订立 · 约期3年 · 至14年2月",
+    ]);
+    const text = describeDiplomacySigning(truce, {
+      reason: "WAR_EXHAUSTION_TRUCE", recentBilateralCaptureCount: 4, stabilityA: 44, stabilityB: 53,
+    }, { factionAName: "齐", factionBName: "魏" });
+    expect(text).toContain("4次城邑易手");
+    expect(text).toContain("停战3年");
+    expect(text).not.toContain("五年");
+  });
+
+  it("uses common-threat identity and the actual non-aggression term", () => {
+    const relation: DiplomaticRelation = {
+      ...truce, status: "NON_AGGRESSION", startedMonth: 12, expiresMonth: 108,
+      reason: "COMMON_THREAT_NON_AGGRESSION",
+    };
+    expect(describeDiplomacySigning(relation, {
+      reason: "COMMON_THREAT_NON_AGGRESSION", commonThreatFactionId: "yan",
+      territoryShareA: 5, territoryShareB: 7, threatTerritoryShare: 60,
+    }, { factionAName: "赵", factionBName: "韩", commonThreatName: "燕" })).toContain("燕势明显强于赵、韩");
+    expect(formatDiplomacyRelationLines(relation, "韩")[1]).toContain("约期8年");
+  });
+
+  it("shows at most two counterpart-specific badges with the correct relation", () => {
+    const relations: DiplomaticRelation[] = [
+      truce,
+      { ...truce, factionBId: "han", status: "NON_AGGRESSION", reason: "COMMON_THREAT_NON_AGGRESSION" },
+      { ...truce, factionBId: "yan" },
+    ];
+    expect(getFactionDiplomacyBadges(relations, "qi")).toEqual([
+      { relation: truce, counterpartId: "wei" },
+      { relation: relations[1], counterpartId: "han" },
+    ]);
+    expect(getFactionDiplomacyBadges(relations, "missing")).toEqual([]);
+  });
+});

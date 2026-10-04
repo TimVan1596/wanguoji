@@ -120,6 +120,8 @@ const RULER_EVENT_TYPES = new Set<WorldEvent["type"]>([
   "frontier-faction-founded",
   "capital-relocated",
   "dynasty-restored",
+  "truce-signed",
+  "non-aggression-signed",
 ]);
 
 const RULER_EVENT_PRIORITIES: Partial<Record<WorldEvent["type"], number>> = {
@@ -138,6 +140,8 @@ const RULER_EVENT_PRIORITIES: Partial<Record<WorldEvent["type"], number>> = {
   "ruler-succession": 88,
   "city-recovered": 75,
   "city-captured": 65,
+  "truce-signed": 48,
+  "non-aggression-signed": 48,
 };
 
 export function getRulerHistoricalEvents(
@@ -164,10 +168,15 @@ export function getRulerHistoricalEvents(
       event.metadata?.rulerId === ruler.id ||
       event.metadata?.previousRulerId === ruler.id ||
       event.metadata?.nextRulerId === ruler.id ||
+      event.metadata?.signatoryARulerId === ruler.id ||
+      event.metadata?.signatoryBRulerId === ruler.id ||
       notable.has(event.id) ||
       sourceIds(event).some((id) => notable.has(id));
     if (direct) {
       return true;
+    }
+    if (event.type === "truce-signed" || event.type === "non-aggression-signed") {
+      return false;
     }
     return event.importance === "major" && isRulerBiographyRelevantEvent(event, factionId);
   });
@@ -177,9 +186,10 @@ export function getRulerHistoricalEvents(
       event.metadata?.rulerId === ruler.id ||
       event.metadata?.previousRulerId === ruler.id ||
       event.metadata?.nextRulerId === ruler.id;
+    const isSignatory = event.metadata?.signatoryARulerId === ruler.id || event.metadata?.signatoryBRulerId === ruler.id;
     return (
       RULER_EVENT_PRIORITIES[event.type] ?? 40
-    ) + (direct ? 20 : 0) + (notable.has(event.id) ? 15 : 0) + (event.importance === "major" ? 5 : 0);
+    ) + (direct || isSignatory ? 20 : 0) + (notable.has(event.id) ? 15 : 0) + (event.importance === "major" ? 5 : 0);
   };
   const grouped = new Map<string, WorldEvent>();
   for (const event of candidates) {

@@ -3,6 +3,7 @@ import {
   getHistorySignificance,
   getMajorPoliticalEventsForFaction,
   isFeaturedHistoryEvent,
+  isLandmarkHistoryEvent,
   isMajorPoliticalEvent,
   selectMajorTimelineMarkers,
 } from "./HistorySignificanceRules";
@@ -76,5 +77,17 @@ describe("history significance rules", () => {
         })
       )
     ).toBe(true);
+  });
+
+  it("keeps ordinary truces normal, common-threat pacts major, and expiry non-major", () => {
+    const truce = event({ type: "truce-signed", importance: "major" });
+    const pact = event({ type: "non-aggression-signed", importance: "major" });
+    const expiry = event({ type: "treaty-expired", importance: "major" });
+    expect(getHistorySignificance(truce)).toBe("NORMAL");
+    expect(isLandmarkHistoryEvent(truce)).toBe(false);
+    expect(getHistorySignificance(pact)).toBe("MAJOR");
+    expect(isLandmarkHistoryEvent(pact)).toBe(false);
+    expect(getHistorySignificance(expiry)).toBe("NORMAL");
+    expect(isMajorPoliticalEvent(expiry)).toBe(false);
   });
 });

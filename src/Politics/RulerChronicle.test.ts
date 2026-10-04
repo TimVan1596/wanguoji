@@ -193,6 +193,23 @@ describe("ruler chronicle", () => {
       [...selected].sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year)).map((event) => event.monthIndex)
     );
   });
+
+  it("includes treaty signing only in the two recorded signatories' biographies, never expiry", () => {
+    const signed = {
+      id: "treaty", year: 12, monthIndex: 12, category: "politics", type: "truce-signed",
+      title: "齐魏议定停战", factionIds: ["齐", "魏"], importance: "normal",
+      metadata: { signatoryARulerId: "qi-ruler", signatoryBRulerId: "wei-ruler" },
+    };
+    const expiry = {
+      id: "expiry", year: 20, monthIndex: 20, category: "politics", type: "treaty-expired",
+      title: "齐魏协议到期", factionIds: ["齐", "魏"], importance: "normal",
+      metadata: { signatoryARulerId: "qi-ruler", signatoryBRulerId: "wei-ruler" },
+    };
+    const events = [signed, expiry] as any;
+    expect(getRulerHistoricalEvents(events, { id: "qi-ruler", accessionYear: 0, endYear: 30 }, "齐", 30, []).map((event) => event.id)).toEqual(["treaty"]);
+    expect(getRulerHistoricalEvents(events, { id: "wei-ruler", accessionYear: 0, endYear: 30 }, "魏", 30, []).map((event) => event.id)).toEqual(["treaty"]);
+    expect(getRulerHistoricalEvents(events, { id: "other", accessionYear: 0, endYear: 30 }, "齐", 30, [])).toEqual([]);
+  });
 });
 
 function createTagEvidence(options: {

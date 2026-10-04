@@ -6,6 +6,7 @@ import Game from "../../../Game/Game";
 import { colorToString } from "../../../paid/theme";
 import DynastyRegistry, { Dynasty, Ruler } from "../../../Politics/Dynasty";
 import Diplomacy from "../../../Politics/Diplomacy";
+import { formatDiplomacyRelationLines, getFactionDiplomacyBadges } from "../../../Politics/DiplomacyPresentation";
 import FactionSnapshots, {
   FactionSnapshot,
 } from "../../../Simulation/FactionSnapshots";
@@ -208,11 +209,10 @@ function FactionProfile({
   const stability = getFactionStability(team);
   const diplomacyLines = Diplomacy.list(worldMonth)
     .filter((relation) => relation.factionAId === team.name || relation.factionBId === team.name)
-    .map((relation) => {
+    .flatMap((relation) => {
       const otherId = relation.factionAId === team.name ? relation.factionBId : relation.factionAId;
       const other = teams.find((candidate) => candidate.name === otherId);
-      const label = relation.status === "TRUCE" ? "停战" : "互不侵犯";
-      return `${other?.displayName ?? otherId} · ${label} · 至 ${formatWorldDate(relation.expiresMonth)}`;
+      return formatDiplomacyRelationLines(relation, other?.displayName ?? otherId);
     });
   const effectiveStability =
     stability !== undefined ? getEffectiveStability(stability, team.sovereigntyRank) : undefined;
@@ -225,6 +225,7 @@ function FactionProfile({
     [teams]
   );
   const archiveLabelById = useMemo(() => createFactionArchiveLabelMap(teams), [teams]);
+  const activeRelations = Diplomacy.list(worldMonth);
   const groupedEvents = useMemo(() => groupHistoryNarratives(events), [events]);
   const majorEvents = useMemo(
     () => getMajorPoliticalEventsForFaction(groupedEvents, team.name),
@@ -642,6 +643,29 @@ function FactionList({
               />
               <Box component="span" sx={{ fontWeight: getFactionRegimeWeight(team) === 2 ? 800 : 600 }}>
                 {archiveLabelById.get(team.name) ?? getFactionListDisplayName(team, worldMonth)}
+              </Box>
+              <Box component="span" sx={{ display: "inline-flex", gap: 0.25, ml: 0.45, verticalAlign: "middle" }}>
+                {getFactionDiplomacyBadges(activeRelations, team.name).map(({ relation, counterpartId }) => {
+                  const counterpart = teams.find((candidate) => candidate.name === counterpartId);
+                  const short = relation.status === "TRUCE" ? "停" : "约";
+                  const counterpartName = counterpart?.displayName ?? counterpartId;
+                  const full = relation.status === "TRUCE" ? "停战" : "互不侵犯";
+                  return (
+                    <Box
+                      component="span"
+                      key={`${relation.factionAId}:${relation.factionBId}`}
+                      title={`${counterpartName} · ${full} · ${formatWorldDate(relation.startedMonth)}订立 · 约期${formatWorldDuration(relation.expiresMonth - relation.startedMonth)} · 至${formatWorldDate(relation.expiresMonth)}`}
+                      sx={{
+                        display: "inline-flex", alignItems: "center", gap: 0.2,
+                        px: 0.3, border: `1px solid ${counterpart ? colorToString(counterpart.color) : "var(--gg-border)"}`,
+                        borderRadius: "999px", fontSize: "0.61rem", lineHeight: 1.4, whiteSpace: "nowrap",
+                      }}
+                    >
+                      <Box component="span" sx={{ width: 5, height: 5, borderRadius: "50%", bgcolor: counterpart ? colorToString(counterpart.color) : "var(--gg-border)" }} />
+                      {short}·{counterpartName}
+                    </Box>
+                  );
+                })}
               </Box>
               <Box
                 component="span"
