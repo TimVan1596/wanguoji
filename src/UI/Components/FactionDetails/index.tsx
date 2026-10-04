@@ -90,6 +90,7 @@ import {
   getGenealogyCanvasLayout,
   getGenealogyFitScale,
 } from "./genealogyViewport";
+import { shouldCloseGenealogyDialog } from "./genealogyDialogClose";
 import {
   formatRulerLineage,
   formatRulerRelation,
@@ -846,7 +847,27 @@ function DynastyTree({
         })}
       </Box>
       </>}
-      <Dialog open={genealogyDialogOpen} onClose={() => setGenealogyDialogOpen(false)} fullWidth maxWidth="xl" PaperProps={{ sx: { width: "90vw", height: "84vh", maxWidth: 1500, display: "flex" } }}>
+      <Dialog
+        open={genealogyDialogOpen}
+        onClose={(_, reason) => {
+          if (reason === "escapeKeyDown" && shouldCloseGenealogyDialog("escapeKeyDown")) {
+            setGenealogyDialogOpen(false);
+          }
+        }}
+        BackdropProps={{
+          onClick: (event) => {
+            if (
+              shouldCloseGenealogyDialog(
+                "backdropClick",
+                event.target === event.currentTarget
+              )
+            ) setGenealogyDialogOpen(false);
+          },
+        }}
+        fullWidth
+        maxWidth="xl"
+        PaperProps={{ sx: { width: "90vw", height: "84vh", maxWidth: 1500, display: "flex" } }}
+      >
         <DialogTitle sx={{ flex: "0 0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1 }}>
           <span>政治宗谱</span>
           <Box sx={{ display: "flex", gap: 1 }}>
@@ -855,7 +876,9 @@ function DynastyTree({
             <Button size="small" onClick={() => setGenealogyScale((scale) => clampGenealogyScale(scale + GENEALOGY_SCALE_STEP))} disabled={genealogyScale >= 1.6}>＋</Button>
             <Button size="small" onClick={fitGenealogyToWindow}>适应窗口</Button>
             <Button size="small" onClick={locateCurrentRuler} disabled={!currentRulerId}>定位当今君主</Button>
-            <Button size="small" onClick={() => setGenealogyDialogOpen(false)}>关闭</Button>
+            <Button size="small" onClick={() => {
+              if (shouldCloseGenealogyDialog("explicit")) setGenealogyDialogOpen(false);
+            }}>关闭</Button>
           </Box>
         </DialogTitle>
         <DialogContent ref={genealogyViewportRef} dividers sx={{ flex: "1 1 auto", minHeight: 0, p: 0, overflow: "auto" }}>

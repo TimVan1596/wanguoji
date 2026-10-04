@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.99924h4a
+
+- Restricted genealogy dialog close behavior to explicit close, Escape, or a backdrop click whose event target is the backdrop itself; dialog content, canvas, nodes, and controls do not close it.
+- No succession, genealogy data, WorldSave schema, or gameplay changes.
+
 ## v0.99924h4
 
 - Kept the genealogy preview toolbar fixed within the faction-details column and placed the tree in its own horizontal scroll viewport.
