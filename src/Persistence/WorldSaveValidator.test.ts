@@ -18,10 +18,11 @@ function fixture() {
 }
 
 describe("WorldSaveV1 validation and JSON contract", () => {
-  it("uses schema V4 and persists the deterministic random stream", () => {
+  it("uses schema V5 and persists diplomacy plus the deterministic random stream", () => {
     const save = fixture();
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(4);
-    expect(save.saveSchemaVersion).toBe(4);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(5);
+    expect(save.saveSchemaVersion).toBe(5);
+    expect(save.diplomacy).toEqual({ relations: [], lastEvaluationMonth: -1 });
     expect(save.worldRandom).toMatchObject({ algorithm: "mulberry32-v1", seed: expect.any(String), state: expect.any(Number), position: 0 });
   });
 
@@ -36,7 +37,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     expect(parsed.units[0]).toMatchObject({ x: 10, y: 20, vx: 1, vy: -1 });
   });
 
-  it("preserves active candidates, living kin, designation, and parent relationships in schema V4", () => {
+  it("preserves active candidates, living kin, designation, and parent relationships in schema V5", () => {
     const save = fixture();
     save.dynasties = [{
       factionId: "qin",
@@ -57,7 +58,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     expect(loaded.dynasties[0]).toMatchObject({ designatedHeirId: "qin-ruler-2", designatedSinceMonth: 36 });
     expect(loaded.dynasties[0].rulers[2]).toMatchObject({ parentId: "qin-ruler-2", relationType: "DIRECT_CHILD" });
     expect(loaded.dynasties[0].rulers[3]).toMatchObject({ rulerId: "qin-ruler-4", status: "kin", parentId: "qin-ruler-1" });
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(4);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(5);
   });
 
   it("rejects a dynasty candidate list above the runtime bound", () => {

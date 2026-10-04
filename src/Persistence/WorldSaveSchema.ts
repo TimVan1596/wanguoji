@@ -1,8 +1,8 @@
 import { APP_VERSION } from "../config/version";
 import { WORLD_RNG_ALGORITHM, WorldRandomState } from "../Simulation/WorldRandom";
+import type { DiplomaticRelation } from "../Politics/Diplomacy";
 
 export const CURRENT_SAVE_SCHEMA_VERSION = 5 as const;
-import type { DiplomaticRelation } from "../Politics/Diplomacy";
 
 export interface FactionSaveV1 {
   factionId: string;
@@ -240,7 +240,7 @@ export interface CanonicalWorldSaveDiff {
 const CANONICAL_SUBSYSTEMS = [
   "world", "factions", "blocks", "cities", "users", "units", "dynasties",
   "worldHistory", "worldEra", "factionSnapshots", "worldRemnants", "worldExiles",
-  "factionEffects", "populationSystem", "registries", "worldEventSystem", "metadata",
+  "factionEffects", "populationSystem", "registries", "worldEventSystem", "diplomacy", "metadata",
 ] as const;
 
 /** Debug-oriented structural comparison. Object key order is ignored; array order remains canonical. */

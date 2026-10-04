@@ -28,7 +28,7 @@ describe("LogicalOccupationSystem", () => {
     const old = { name: "chu" };
     const block = {
       team: old,
-      setTeam: (team: typeof qin) => {
+      attemptHostileOccupation: (team: typeof qin) => {
         block.team = team;
       },
     };
@@ -59,7 +59,7 @@ describe("LogicalOccupationSystem", () => {
     let transitions = 0;
     const block = {
       team: { name: "chu" },
-      setTeam: (team: typeof qin) => {
+      attemptHostileOccupation: (team: typeof qin) => {
         transitions += 1;
         block.team = team;
       },
@@ -105,7 +105,7 @@ describe("LogicalOccupationSystem", () => {
     let transitions = 0;
     const block = {
       team: qin,
-      setTeam: () => {
+      attemptHostileOccupation: () => {
         transitions += 1;
       },
     };

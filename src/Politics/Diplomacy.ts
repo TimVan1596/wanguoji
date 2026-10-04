@@ -20,6 +20,8 @@ export const DIPLOMACY_NON_AGGRESSION_DURATION_MONTHS = 60;
 export const DIPLOMACY_WAR_PRESSURE_STABILITY = 58;
 export const DIPLOMACY_WEAK_TERRITORY_SHARE = 18;
 export const DIPLOMACY_COMMON_THREAT_RATIO = 2.5;
+export const DIPLOMACY_MAX_ACTIVE_RELATIONS_PER_FACTION = 2;
+export const DIPLOMACY_MAX_NEW_RELATIONS_PER_EVALUATION = 2;
 
 export function normalizeFactionPair(a: string, b: string): [string, string] {
   return a < b ? [a, b] : [b, a];
@@ -91,6 +93,7 @@ export class DiplomacySystem {
     }
     if (worldMonth % DIPLOMACY_EVALUATION_INTERVAL_MONTHS !== 0 || this.registry.lastEvaluationMonth === worldMonth) return;
     this.registry.lastEvaluationMonth = worldMonth;
+    if (worldMonth === 0) return;
     const active = teams.filter((team) => team.status === "ACTIVE" && !team.isDie).sort((a, b) => a.name.localeCompare(b.name));
     const metrics = calculateTerritoryMetrics(active, totalCells);
     const recentCaptures = recentEvents.filter((event) => event.type === "city-captured" && event.actorFactionId && event.targetFactionId);
@@ -98,16 +101,21 @@ export class DiplomacySystem {
       ? team.cities.reduce((sum, city) => sum + city.loyalty, 0) / team.cities.length
       : 0;
 
-    for (let i = 0; i < active.length; i += 1) {
-      for (let j = i + 1; j < active.length; j += 1) {
+    let formed = 0;
+    for (let i = 0; i < active.length && formed < DIPLOMACY_MAX_NEW_RELATIONS_PER_EVALUATION; i += 1) {
+      for (let j = i + 1; j < active.length && formed < DIPLOMACY_MAX_NEW_RELATIONS_PER_EVALUATION; j += 1) {
         const a = active[i];
         const b = active[j];
-        if (this.registry.get(a.name, b.name)?.expiresMonth! > worldMonth) continue;
+        const existing = this.registry.get(a.name, b.name);
+        if (existing && existing.expiresMonth > worldMonth) continue;
+        const activeRelations = this.registry.list(worldMonth);
+        if ([a.name, b.name].some((id) => activeRelations.filter((relation) => relation.factionAId === id || relation.factionBId === id).length >= DIPLOMACY_MAX_ACTIVE_RELATIONS_PER_FACTION)) continue;
         const bilateralWar = recentCaptures.some((event) =>
           (event.actorFactionId === a.name && event.targetFactionId === b.name) ||
           (event.actorFactionId === b.name && event.targetFactionId === a.name));
         if (bilateralWar && (stability(a) <= DIPLOMACY_WAR_PRESSURE_STABILITY || stability(b) <= DIPLOMACY_WAR_PRESSURE_STABILITY)) {
           this.form(a, b, "TRUCE", "WAR_EXHAUSTION_TRUCE", worldMonth, DIPLOMACY_TRUCE_DURATION_MONTHS);
+          formed += 1;
           continue;
         }
         const aShare = getFactionTerritoryMetric(metrics, a.name).controlledTerritoryShare;
@@ -115,7 +123,10 @@ export class DiplomacySystem {
         if (aShare > DIPLOMACY_WEAK_TERRITORY_SHARE || bShare > DIPLOMACY_WEAK_TERRITORY_SHARE) continue;
         const threat = active.find((candidate) => candidate !== a && candidate !== b &&
           getFactionTerritoryMetric(metrics, candidate.name).controlledTerritoryShare >= Math.max(aShare, bShare, 1) * DIPLOMACY_COMMON_THREAT_RATIO);
-        if (threat) this.form(a, b, "NON_AGGRESSION", "COMMON_THREAT_NON_AGGRESSION", worldMonth, DIPLOMACY_NON_AGGRESSION_DURATION_MONTHS);
+        if (threat) {
+          this.form(a, b, "NON_AGGRESSION", "COMMON_THREAT_NON_AGGRESSION", worldMonth, DIPLOMACY_NON_AGGRESSION_DURATION_MONTHS);
+          formed += 1;
+        }
       }
     }
   }

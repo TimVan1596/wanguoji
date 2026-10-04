@@ -7,7 +7,7 @@ const random = { algorithm: WORLD_RNG_ALGORITHM, seed: "123", state: 456, positi
 
 describe("determinism checkpoints", () => {
   it("does not require a WorldSave schema change", () => {
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(4);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(5);
   });
 
   it("hashes the canonical state projection independent of collection insertion order", () => {
