@@ -851,7 +851,7 @@ function DynastyTree({
           <span>政治宗谱</span>
           <Box sx={{ display: "flex", gap: 1 }}>
             <Button size="small" onClick={() => setGenealogyScale((scale) => clampGenealogyScale(scale - GENEALOGY_SCALE_STEP))} disabled={genealogyScale <= 0.5}>－</Button>
-            <Typography sx={{ minWidth: 48, textAlign: "center", alignSelf: "center" }}>{Math.round(genealogyScale * 100)}%</Typography>
+            <Button size="small" onClick={() => setGenealogyScale(1)} sx={{ minWidth: 48 }}>{Math.round(genealogyScale * 100)}%</Button>
             <Button size="small" onClick={() => setGenealogyScale((scale) => clampGenealogyScale(scale + GENEALOGY_SCALE_STEP))} disabled={genealogyScale >= 1.6}>＋</Button>
             <Button size="small" onClick={fitGenealogyToWindow}>适应窗口</Button>
             <Button size="small" onClick={locateCurrentRuler} disabled={!currentRulerId}>定位当今君主</Button>
