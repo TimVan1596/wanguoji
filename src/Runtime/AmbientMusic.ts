@@ -28,11 +28,22 @@ export interface AmbientMusicTrack {
 
 export type AmbientMusicTrackCatalog = Record<AmbientMusicMood, AmbientMusicTrack[]>;
 
-// Tracks are added only after their exact files and licensing have been verified.
+const bundledMusicAsset = (fileName: string) =>
+  resolveAmbientMusicAssetUrl(`music/${fileName}`, import.meta.env.BASE_URL);
+
+// Alpha soundtrack candidates supplied locally; attribution and source details live in ASSET_ATTRIBUTION.md.
 export const AMBIENT_MUSIC_TRACKS: AmbientMusicTrackCatalog = {
-  TENSION: [],
-  ORDER: [],
-  PEACE: [],
+  TENSION: [
+    { id: "menu-music", src: bundledMusicAsset("menu.mp3") },
+    { id: "shangri-river", src: bundledMusicAsset("Shangririver.ogg") },
+  ],
+  ORDER: [
+    { id: "asianoriental1", src: bundledMusicAsset("asianoriental1.ogg") },
+    { id: "tyhosiasian", src: bundledMusicAsset("tyhosiasian.ogg") },
+  ],
+  PEACE: [
+    { id: "asianoriental2", src: bundledMusicAsset("asianoriental2.ogg") },
+  ],
 };
 
 export interface MusicAudioChannel {

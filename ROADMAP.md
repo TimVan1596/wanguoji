@@ -9,7 +9,7 @@
 - [x] IndexedDB 多槽存档、手动存档管理与双槽游戏时间自动存档。
 - [x] Desktop Recovery 恢复档定时保存与关闭前保存。
 - 核实或替换来源不明确的资产。
-- Ambient Music I runtime / preferences 已就绪；CC0 曲目文件仍待人工获取与试听确认，不视为音乐内容完成。
+- Ambient Music I runtime / preferences 与首批 CC0 曲目候选已加入；仍待人工试听确认，不视为最终 OST 或音乐体验验收完成。
 
 ### P1
 

@@ -25,16 +25,18 @@ The following directories were also checked. The repository does not contain eno
 
 This is a provenance warning, not a claim of infringement. Before wider promotion, verify or replace the `public/theme/war3/` and `public/theme/minecraft/` resource sets, the bundled font, and the files listed above.
 
-## Ambient Music I candidates (not bundled)
+## Ambient Music I — Alpha soundtrack candidates
 
-These OpenGameArt pages were inspected for the page-listed author, track title, and CC0 designation. Audio binaries could not be retrieved in the current restricted-network environment, and the candidates have not been auditioned or assigned to an in-game mood. No candidate is currently referenced by the runtime track catalog.
+The following five local files were found in `public/music/` and matched to their OpenGameArt source pages, page-listed authors, filenames, and CC0/Public Domain labels. These are bundled Alpha soundtrack candidates, subject to manual audition; they are not a final OST and have not been accepted on subjective fit or loop quality.
 
 | Track | Author | Source | License shown on source page | Bundled file | Notes |
 | --- | --- | --- | --- | --- | --- |
-| Asianoriental1 | Tozan | https://opengameart.org/content/asianoriental1 | CC0 | None | Page describes koto, shakuhachi, and ensemble strings; pending retrieval and audition. |
-| Asianoriental2 | Tozan | https://opengameart.org/content/asianoriental2 | CC0 | None | Page describes a Chinese-style koto/strings piece; pending retrieval and audition. |
-| Menu Music | wipics | https://opengameart.org/content/menu-music-2 | CC0; page copyright notice says Public Domain | None | Page tags include erhu, traditional, ancient, and loop; pending retrieval and audition. |
+| Menu Music | wipics | https://opengameart.org/content/menu-music-2 | CC0; page copyright notice says Public Domain | `public/music/menu.mp3` | Page tags include erhu, traditional, ancient, and loop. User supplied the local file; manually audition before final selection. |
+| Shangri River | Tozan | https://opengameart.org/content/shangri-river | CC0 | `public/music/Shangririver.ogg` | Source page describes it as a short oriental-style track. User supplied the local file; manually audition before final selection. |
+| Asianoriental1 | Tozan | https://opengameart.org/content/asianoriental1 | CC0 | `public/music/asianoriental1.ogg` | Source page describes koto, shakuhachi, and ensemble strings. User supplied the local file; manually audition before final selection. |
+| Asianoriental2 | Tozan | https://opengameart.org/content/asianoriental2 | CC0 | `public/music/asianoriental2.ogg` | Source page describes a Chinese-style koto/strings piece. User supplied the local file; manually audition before final selection. |
+| Tyhosiasian | Tozan | https://opengameart.org/content/tyhosiasian | CC0 | `public/music/tyhosiasian.ogg` | Source page describes a Japanese-style plucked tune. User supplied the local file; manually audition before final selection. |
 
-Retrieval/source note (2026-10-04): the OpenGameArt pages exposed their audio file links and license labels, but the web reader rejected audio MIME responses and direct repository-network access could not resolve `opengameart.org`. No placeholder or synthetic audio has been created.
+Retrieval/source note (2026-10-04): local filenames were checked against the file links on the corresponding OpenGameArt pages. The user supplied the audio files in `public/music/`; no audio was synthesized or downloaded by this change. Source pages identify the licenses listed above. Runtime mood assignment is provisional and awaits manual listening feedback.
 
 The repository currently includes an MIT `LICENSE` copyright notice for KeJun (2023). The codebase and NOTICE identify Wanguoji as derived from `KeJunMao/open-block-war`, originally MIT licensed. Asset-level provenance still needs manual verification before Public Alpha promotion.
