@@ -92,6 +92,7 @@ export class AmbientMusicManager {
   private desiredTrack?: AmbientMusicTrack;
   private unlocked = false;
   private active = false;
+  private disposed = false;
   private context?: AmbientMusicContext;
   private preferences: MusicPreferences;
   private rotationIndex: Record<AmbientMusicContext, number> = { MENU: 0, TENSION: 0, ORDER: 0, PEACE: 0 };
@@ -114,6 +115,18 @@ export class AmbientMusicManager {
     this.listeners.add(listener);
     listener(this.getSnapshot());
     return () => { this.listeners.delete(listener); };
+  }
+
+  /** Recreate audio channels after React StrictMode's development effect remount. */
+  activate() {
+    if (!this.disposed) return;
+    this.channels = [this.createChannel(), this.createChannel()];
+    this.disposed = false;
+    this.unlocked = false;
+    this.active = false;
+    this.context = undefined;
+    this.activeIndex = undefined;
+    this.desiredTrack = undefined;
   }
 
   getSnapshot(): AmbientMusicSnapshot {
@@ -155,7 +168,7 @@ export class AmbientMusicManager {
     }
     if (!wasEnabled || !this.desiredTrack) this.selectTrackForContext();
     if (this.unlocked && (contextChanged || !wasEnabled || !this.desiredTrack)) {
-      void this.playDesiredTrack(contextChanged ? AMBIENT_MUSIC_CONTEXT_CROSSFADE_MS : undefined);
+      void this.playDesiredTrack(contextChanged ? this.crossfadeMs : undefined);
     }
     this.publish();
   }
@@ -168,6 +181,7 @@ export class AmbientMusicManager {
   }
 
   dispose() {
+    if (this.disposed) return;
     this.clearFadeTimer();
     this.channels.forEach(({ audio, endedListener }) => {
       audio.removeEventListener("ended", endedListener);
@@ -177,6 +191,10 @@ export class AmbientMusicManager {
     this.listeners.clear();
     this.activeIndex = undefined;
     this.desiredTrack = undefined;
+    this.context = undefined;
+    this.active = false;
+    this.unlocked = false;
+    this.disposed = true;
   }
 
   private createChannel(): ChannelState {

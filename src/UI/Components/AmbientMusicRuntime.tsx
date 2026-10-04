@@ -22,6 +22,10 @@ export default function AmbientMusicRuntime() {
   const currentEra = eras.find((era) => era.endMonth === undefined);
   const context = getAmbientMusicContext(worldStarted, currentEra?.type);
 
+  useEffect(() => {
+    manager.activate();
+    return () => manager.dispose();
+  }, [manager]);
   useEffect(() => WorldEra.subscribe(setEras), []);
   useEffect(() => manager.subscribe(setSnapshot), [manager]);
   useEffect(() => subscribeMusicPreferences(setPreferences), []);
@@ -37,8 +41,6 @@ export default function AmbientMusicRuntime() {
       window.removeEventListener("keydown", unlock);
     };
   }, [manager]);
-  useEffect(() => () => manager.dispose(), [manager]);
-
   const debug = new URLSearchParams(window.location.search).get("debug") === "1";
   if (!debug || !snapshot) return null;
   const scene = snapshot.context === "MENU" ? "MENU" : snapshot.context ? "WORLD" : "WORLD_PENDING_ERA";

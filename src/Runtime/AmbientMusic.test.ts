@@ -4,7 +4,6 @@ import { APP_VERSION } from "../config/version";
 import { getSettingsVersionLabel } from "./SettingsVersion";
 import {
   AmbientMusicManager,
-  AmbientMusicContext,
   AmbientMusicTrackCatalog,
   calculateAmbientTrackVolume,
   clampTrackGain,
@@ -66,6 +65,9 @@ describe("Ambient Music I", () => {
     expect(getAmbientMusicContext(true, undefined)).toBeUndefined();
     expect(Object.keys(AMBIENT_MUSIC_TRACKS)).toEqual(["MENU", "TENSION", "ORDER", "PEACE"]);
     expect(AMBIENT_MUSIC_TRACKS.MENU.map(({ id }) => id)).toEqual(["menu-music"]);
+    expect(AMBIENT_MUSIC_TRACKS.TENSION.map(({ id }) => id)).toEqual(["shangri-river"]);
+    expect(AMBIENT_MUSIC_TRACKS.ORDER.map(({ id }) => id)).toEqual(["asianoriental1", "tyhosiasian"]);
+    expect(AMBIENT_MUSIC_TRACKS.PEACE.map(({ id }) => id)).toEqual(["asianoriental2"]);
     expect(AMBIENT_MUSIC_TRACKS.TENSION.some(({ id }) => id === "menu-music")).toBe(false);
   });
 
@@ -128,7 +130,7 @@ describe("Ambient Music I", () => {
     await Promise.resolve();
     now = 1500;
     [...timers.values()].forEach((tick) => tick());
-    expect(channels[0].volume).toBeCloseTo(0.15);
+    expect(channels[0].volume).toBeCloseTo(0.075);
     expect(channels[1].volume).toBeCloseTo(0.15);
     now = 2000;
     [...timers.values()].forEach((tick) => tick());
@@ -227,6 +229,20 @@ describe("Ambient Music I", () => {
     [...timers].forEach((tick) => tick());
     expect(channels[0].volume).toBeCloseTo(0.15);
     expect(AMBIENT_MUSIC_CONTEXT_CROSSFADE_MS).toBe(12_000);
+    manager.dispose();
+  });
+
+  it("recreates audio channels when the same runtime manager is remounted", async () => {
+    const channels: FakeAudio[] = [];
+    const manager = new AmbientMusicManager(catalog, () => {
+      const audio = new FakeAudio(); channels.push(audio); return audio;
+    });
+    manager.dispose();
+    manager.activate();
+    expect(channels).toHaveLength(4);
+    manager.update({ active: true, context: "MENU", preferences: { enabled: true, volume: 30 } });
+    await manager.unlockFromUserGesture();
+    expect(channels.slice(2).reduce((sum, channel) => sum + channel.playCount, 0)).toBe(1);
     manager.dispose();
   });
 });
