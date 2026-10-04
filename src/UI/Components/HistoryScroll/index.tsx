@@ -558,6 +558,8 @@ function EventDetails({
     event.type === "faction-extinct" || event.type === "faction-exiled" || event.type === "faction-dissolved";
   const isDiplomacySigning = event.type === "truce-signed" || event.type === "non-aggression-signed";
   if (isDiplomacySigning && metadata) {
+    const factionAName = event.factionIds?.[0] ? teamByName.get(event.factionIds[0])?.displayName ?? event.factionIds[0] : "一方";
+    const factionBName = event.factionIds?.[1] ? teamByName.get(event.factionIds[1])?.displayName ?? event.factionIds[1] : "另一方";
     const signatories = [
       [metadata.signatoryARole, metadata.signatoryATitle],
       [metadata.signatoryBRole, metadata.signatoryBTitle],
@@ -568,12 +570,12 @@ function EventDetails({
     }
     if (metadata.reason === "WAR_EXHAUSTION_TRUCE") {
       addMetadataLine(lines, metadata.recentBilateralCaptureCount, "近三年双边城邑易手");
-      addMetadataLine(lines, metadata.stabilityA, "签约时一方稳定度");
-      addMetadataLine(lines, metadata.stabilityB, "签约时另一方稳定度");
+      addMetadataLine(lines, metadata.stabilityA, `${factionAName}签约时稳定度`);
+      addMetadataLine(lines, metadata.stabilityB, `${factionBName}签约时稳定度`);
     } else if (metadata.reason === "COMMON_THREAT_NON_AGGRESSION") {
       addFactionLine(lines, teamByName, metadata.commonThreatFactionId, "共同强敌");
-      addMetadataPercentLine(lines, metadata.territoryShareA, "签约时一方领土占比");
-      addMetadataPercentLine(lines, metadata.territoryShareB, "签约时另一方领土占比");
+      addMetadataPercentLine(lines, metadata.territoryShareA, `${factionAName}签约时领土占比`);
+      addMetadataPercentLine(lines, metadata.territoryShareB, `${factionBName}签约时领土占比`);
       addMetadataPercentLine(lines, metadata.threatTerritoryShare, "共同强敌领土占比");
     }
   } else if (isCapitalTransition && metadata) {

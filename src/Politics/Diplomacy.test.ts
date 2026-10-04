@@ -78,7 +78,7 @@ describe("Diplomacy", () => {
   });
 
   it("round-trips canonical relations and produces a stable same-input diplomacy projection", () => {
-    const relation = { factionAId: "a", factionBId: "b", status: "NON_AGGRESSION" as const, startedMonth: 12, expiresMonth: 72, reason: "COMMON_THREAT_NON_AGGRESSION" as const };
+    const relation = { factionAId: "a", factionBId: "b", status: "NON_AGGRESSION" as const, startedMonth: 12, expiresMonth: 108, reason: "COMMON_THREAT_NON_AGGRESSION" as const };
     Diplomacy.setRelation(relation);
     Diplomacy.lastEvaluationMonth = 12;
     const snapshot = JSON.parse(JSON.stringify(Diplomacy.exportState()));
