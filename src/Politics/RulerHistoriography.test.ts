@@ -375,6 +375,34 @@ describe("evidence-grounded ruler historiography", () => {
     expect(composeHistorianVoice(deriveRulerHistoricalEvidence(livingContext))).toBeUndefined();
   });
 
+  it("does not attribute expansion costs to a founder-expander without cost evidence", () => {
+    const context = makeContext({
+      start: { population: 40, territoryShare: 0.2, cityCount: 3, stability: 75 },
+      end: { population: 42, territoryShare: 0.4, cityCount: 7, stability: 78 },
+      peakTerritory: 0.4,
+      factionOrigin: { foundingRulerId: "r1" },
+    });
+    const evidence = deriveRulerHistoricalEvidence(context);
+    const voice = composeHistorianVoice(evidence)!;
+    expect(evidence.roles).toContain("FOUNDER");
+    expect(evidence.roles).toContain("EXPANDER");
+    expect(evidence.governanceCost).toBe(false);
+    expect(voice).not.toMatch(/代价|患|失衡|收束困难/);
+    expect(composeHistorianVoice(evidence)).toBe(voice);
+  });
+
+  it("permits founder-expansion cost language only when governanceCost is evidenced", () => {
+    const context = makeContext({
+      start: { population: 40, territoryShare: 0.2, cityCount: 3, stability: 80 },
+      end: { population: 20, territoryShare: 0.4, cityCount: 7, stability: 55 },
+      peakTerritory: 0.4,
+      factionOrigin: { foundingRulerId: "r1" },
+    });
+    const evidence = deriveRulerHistoricalEvidence(context);
+    expect(evidence.governanceCost).toBe(true);
+    expect(composeHistorianVoice(evidence)).toMatch(/代价|患/);
+  });
+
   it("allows deterministic wording variants for rulers with the same role", () => {
     const makeVoice = (id: string) => {
       const context = makeContext({ end: { territoryShare: 0.4, cityCount: 7 }, start: { territoryShare: 0.2 } });

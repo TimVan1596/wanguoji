@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.99924d1
+
+- Split founder-expander “史家曰” into evidence-gated variants: governance-cost wording appears only when `governanceCost` is true; otherwise the commentary stays with founding and expansion achievements.
+- No gameplay, epithet, save-schema, diplomacy, or simulation changes.
+
 ## v0.99924d
 
 - Gated stable-governance credit, long-stability posthumous candidates (including 顺), and stewardship roles on contraction-adjusted evidence; raw stability values remain unchanged for display/gameplay.

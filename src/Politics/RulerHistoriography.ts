@@ -480,10 +480,15 @@ export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string
   const pick = (lines: string[]) => lines[variant];
   const roles = evidence.roles;
 
+  if (roles.includes("FOUNDER") && roles.includes("EXPANDER") && evidence.governanceCost) return pick([
+    "开国与拓境并见，国家规模由此扩大；人口或稳定所见的治理代价，亦不可略。",
+    "其功在开创，亦在拓土；然而人口与稳定的变化显示，功业之外尚有治理代价。",
+    "创业与开拓皆有实绩，国家规模因之而变；功业与可见代价并存。",
+  ]);
   if (roles.includes("FOUNDER") && roles.includes("EXPANDER")) return pick([
-    "开国与拓境并见，所成不止一时之势；然扩张所伴的代价，亦留在国势之中。",
-    "其功在开创，亦在拓土；新邦由此壮大，如何收束扩张则成为后世之课。",
-    "创业之初即见开拓之绩，国家规模因之而变；功业与治理代价俱不可略。",
+    "创业而兼拓土，新邦由此迅速壮大；其功在奠基，亦在开疆。",
+    "开国之后即见拓境之绩，国家规模由此形成。",
+    "其先奠政权之基，继而拓展疆土，开创与开疆皆有实绩。",
   ]);
   if (roles.includes("EXPANDER") && evidence.governanceCost) return pick([
     "疆域拓展有实绩，人口或稳定亦承受代价；得地与失衡并见，功过不宜偏举。",
@@ -550,7 +555,7 @@ export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string
     "其历史分量主要来自开拓，所达峰值与最终留存仍须分别看待。",
     "开疆有据，拓展构成其主要功业；得地之后能否维持，则另有后话。",
   ]);
-  if (roles.includes("STEWARD") || evidence.stableGovernanceEligible) return "其治下未见显著收缩，长期维持秩序与政权，是可据史实称道之处。";
+  if (roles.includes("STEWARD")) return "其治下未见显著收缩，长期维持秩序与政权，是可据史实称道之处。";
   if (roles.includes("SHORT_REIGN")) return "在位短暂，现存记录不足以支持更重的功过判断。";
   return "其可见历史评价应以现存事迹为限，不宜作超出证据的推断。";
 }
