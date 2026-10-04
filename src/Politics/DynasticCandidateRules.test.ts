@@ -6,6 +6,7 @@ import {
   buildPoliticalGenealogy,
   buildPoliticalGenealogyEdges,
   formatRecordedKinship,
+  formatRecordedSuccessionKinship,
   getDynasticCandidateCap,
   getSuccessionBackground,
   MAX_DYNASTIC_SUCCESSION_CANDIDATES,
@@ -150,21 +151,22 @@ describe("recorded dynastic succession candidates", () => {
 
   it("derives candidate labels, succession background, and political genealogy from parent links", () => {
     const father = ruler("father", undefined, "dead");
-    const rulerNow = { ...ruler("r", "father", "ruling"), reignOrdinal: 2 };
+    const previous = { ...ruler("previous", "father", "dead"), reignOrdinal: 1 };
+    const rulerNow = { ...ruler("r", "father", "ruling"), reignOrdinal: 2, predecessorId: previous.id, relationType: "SIBLING" as const };
     const brother = ruler("brother", "father");
     const nephew = ruler("nephew", "brother");
     const unrelated = { ...ruler("unrelated", undefined), reignOrdinal: 1 };
-    const rulers = [father, rulerNow, brother, nephew, unrelated];
+    const rulers = [father, previous, rulerNow, brother, nephew, unrelated];
     expect(formatRecordedKinship(brother, rulerNow, rulers)).toBe("当今君主之兄弟");
     expect(formatRecordedKinship(nephew, rulerNow, rulers)).toBe("当今君主之侄");
-    expect(getSuccessionBackground({ ...rulerNow, relationType: "SIBLING", predecessorId: "father" }, rulers))
-      .toBe("前君无可继的直系候选，由其兄弟承统");
+    expect(getSuccessionBackground(rulerNow, rulers))
+      .toBe("前君无可继的直系候选，由前君之兄弟承统");
     expect(getSuccessionBackground({ ...rulerNow, relationType: "NEW_HOUSE", predecessorId: "father" }, rulers))
       .toBe("记录中的宗室候选已无可继者，遂易姓续统");
     const tree = buildPoliticalGenealogy(rulers, rulerNow.id, brother.id, [brother.id, nephew.id]);
     expect(tree.map((root) => root.ruler.id)).toContain(unrelated.id);
     const root = tree.find((node) => node.ruler.id === father.id)!;
-    expect(root.children.map((node) => node.ruler.id)).toEqual(["brother", "r"]);
+    expect(root.children.map((node) => node.ruler.id)).toEqual(["brother", "previous", "r"]);
     expect(root.children.find((node) => node.ruler.id === "brother")?.children[0].ruler.id).toBe("nephew");
   });
 
@@ -180,6 +182,7 @@ describe("recorded dynastic succession candidates", () => {
     expect(formatRecordedKinship(nephew, predecessor, rulers)).toBe("当今君主之侄");
     expect(formatRecordedKinship(uncle, predecessor, rulers)).toBe("当今君主之伯父");
     expect(formatRecordedKinship(cousin, predecessor, rulers)).toBe("当今君主之堂弟");
+    expect(formatRecordedSuccessionKinship(cousin, predecessor, rulers)).toBe("前君之堂弟");
   });
 
   it("builds distinct bloodline and succession edges, including cross-branch succession", () => {

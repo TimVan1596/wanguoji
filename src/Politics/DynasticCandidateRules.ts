@@ -189,7 +189,8 @@ export function getSuccessionBackground(ruler: Ruler, rulers: Ruler[]) {
     ? rulers.find((candidate) => candidate.id === ruler.predecessorId)
     : undefined;
   if (!predecessor) return ruler.relationType === "FOUNDER" ? "开国君主" : "继位背景未记录";
-  if (ruler.relationType === "DIRECT_CHILD") return "前君之子承统";
+  const kinship = formatRecordedSuccessionKinship(ruler, predecessor, rulers);
+  if (ruler.relationType === "DIRECT_CHILD") return `${kinship}承统`;
   if (ruler.relationType === "GRANDCHILD") {
     const directChildren = rulers.filter((candidate) => candidate.parentId === predecessor.id);
     const predeceasedChild = directChildren.some((candidate) =>
@@ -197,14 +198,22 @@ export function getSuccessionBackground(ruler: Ruler, rulers: Ruler[]) {
     );
     return predeceasedChild ? "直系子嗣早逝，由孙辈承统" : "前君之孙承统";
   }
-  if (ruler.relationType === "SIBLING") return "前君无可继的直系候选，由其兄弟承统";
-  if (ruler.relationType === "NEPHEW") return "前君直系与同辈候选无可继者，由其侄辈承统";
-  if (ruler.relationType === "UNCLE") return "前君直系候选无可继者，由其伯叔承统";
-  if (ruler.relationType === "COUSIN") return "前君近支无可继者，由堂支承统";
+  if (ruler.relationType === "SIBLING") return `前君无可继的直系候选，由${kinship}承统`;
+  if (ruler.relationType === "NEPHEW") return `前君直系与同辈候选无可继者，由${kinship}承统`;
+  if (ruler.relationType === "UNCLE") return `前君直系候选无可继者，由${kinship}承统`;
+  if (ruler.relationType === "COUSIN") return `前君近支无可继者，由${kinship}承统`;
   if (ruler.relationType === "COLLATERAL_KIN") return "近支候选无可继者，由宗室旁支承统";
   if (ruler.relationType === "NEW_HOUSE") return "记录中的宗室候选已无可继者，遂易姓续统";
   if (ruler.relationType === "LEADER_SUCCESSOR") return "非世袭首领继任";
   return "继位背景未记录";
+}
+
+export function formatRecordedSuccessionKinship(ruler: Ruler, predecessor: Ruler, rulers: Ruler[]) {
+  const relation = getRecordedKinRelation(ruler, predecessor, rulers);
+  if (relation) return formatRecordedKinship(ruler, predecessor, rulers).replace("当今君主", "前君");
+  if (ruler.relationType === "COLLATERAL_KIN") return "宗室旁支";
+  if (ruler.relationType === "NEW_HOUSE") return "新家族";
+  return "继承人";
 }
 
 export interface PoliticalGenealogyNode {

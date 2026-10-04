@@ -1,7 +1,7 @@
 import { APP_VERSION } from "../config/version";
 import { WORLD_RNG_ALGORITHM, WorldRandomState } from "../Simulation/WorldRandom";
 
-export const CURRENT_SAVE_SCHEMA_VERSION = 3 as const;
+export const CURRENT_SAVE_SCHEMA_VERSION = 4 as const;
 
 export interface FactionSaveV1 {
   factionId: string;
@@ -131,7 +131,7 @@ export interface WorldEventSystemSaveV1 {
   cycleState: WorldCycleStateSaveV1;
 }
 
-export interface WorldSaveV3 {
+export interface WorldSaveV4 {
   saveSchemaVersion: typeof CURRENT_SAVE_SCHEMA_VERSION;
   appVersion: string;
   createdAt?: string;
@@ -164,7 +164,7 @@ export interface WorldSaveV3 {
   worldRandom: WorldRandomState;
 }
 
-export function createEmptyWorldSaveV3(): WorldSaveV3 {
+export function createEmptyWorldSaveV4(): WorldSaveV4 {
   return {
     saveSchemaVersion: CURRENT_SAVE_SCHEMA_VERSION,
     appVersion: APP_VERSION,
@@ -202,11 +202,13 @@ export function createEmptyWorldSaveV3(): WorldSaveV3 {
   };
 }
 
-/** Compatibility aliases for existing internal call sites; payload schema is V3. */
-export type WorldSaveV2 = WorldSaveV3;
-export type WorldSaveV1 = WorldSaveV3;
-export const createEmptyWorldSaveV2 = createEmptyWorldSaveV3;
-export const createEmptyWorldSaveV1 = createEmptyWorldSaveV3;
+/** Internal call-site aliases; persisted saves still identify their exact schema number. */
+export type WorldSaveV3 = WorldSaveV4;
+export type WorldSaveV2 = WorldSaveV4;
+export type WorldSaveV1 = WorldSaveV4;
+export const createEmptyWorldSaveV3 = createEmptyWorldSaveV4;
+export const createEmptyWorldSaveV2 = createEmptyWorldSaveV4;
+export const createEmptyWorldSaveV1 = createEmptyWorldSaveV4;
 
 export function canonicalWorldSaveProjection(save: WorldSaveV1) {
   const { createdAt: _createdAt, ...canonical } = save;

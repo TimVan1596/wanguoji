@@ -345,8 +345,7 @@ function validateHydrationImportShapes(save: Partial<WorldSaveV1>, errors: strin
     if (!Array.isArray(dynasty.rulers) || dynasty.rulers.some((ruler: unknown) => !isPlainRecord(ruler))) errors.push(`dynasties[${index}].rulers must be an array of objects`);
     if (!Array.isArray(dynasty.heirIds) || dynasty.heirIds.some((id: unknown) => typeof id !== "string")) errors.push(`dynasties[${index}].heirIds must be an array of strings`);
     else {
-      // Keep accepting any schema-V3 pool up to the legacy global bound; the
-      // live runtime reconciles it to the current identity/rank-specific cap.
+      // The runtime reconciles this upper bound to the identity/rank-specific cap.
       if (dynasty.heirIds.length > MAX_DYNASTIC_SUCCESSION_CANDIDATES) errors.push(`dynasties[${index}].heirIds exceeds candidate limit`);
       if (new Set(dynasty.heirIds).size !== dynasty.heirIds.length) errors.push(`dynasties[${index}].heirIds must be unique`);
       dynasty.heirIds.forEach((id) => {

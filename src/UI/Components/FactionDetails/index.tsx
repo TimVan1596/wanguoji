@@ -57,6 +57,7 @@ import {
   buildPoliticalGenealogy,
   buildPoliticalGenealogyEdges,
   formatRecordedKinship,
+  formatRecordedSuccessionKinship,
   getSuccessionBackground,
 } from "../../../Politics/DynasticCandidateRules";
 import {
@@ -858,6 +859,7 @@ function RulerBiography({
   const territoryDelta = getRulerTerritoryDelta(ruler.chronicle);
   const posthumousLines = getPosthumousLabelLines(ruler, team, ruler.endYear ?? worldMonth);
   const parent = ruler.parentId ? rulers.find((candidate) => candidate.id === ruler.parentId) : undefined;
+  const predecessor = ruler.predecessorId ? rulers.find((candidate) => candidate.id === ruler.predecessorId) : undefined;
   const grandparent = parent?.parentId ? rulers.find((candidate) => candidate.id === parent.parentId) : undefined;
   return (
     <Box
@@ -886,7 +888,9 @@ function RulerBiography({
         {ruler.endReason ? ` · ${ruler.endReason}` : ""}
       </Typography>
       <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
-        继承关系：{formatRulerRelation(ruler.relationType, team.identityStage, Boolean(parent), Boolean(ruler.chronicle?.foundedStateName))}
+        继承关系：{predecessor && ["DIRECT_CHILD", "GRANDCHILD", "SIBLING", "NEPHEW", "UNCLE", "COUSIN", "COLLATERAL_KIN"].includes(ruler.relationType ?? "")
+          ? formatRecordedSuccessionKinship(ruler, predecessor, rulers)
+          : formatRulerRelation(ruler.relationType, team.identityStage, Boolean(parent), Boolean(ruler.chronicle?.foundedStateName))}
       </Typography>
       {ruler.predecessorId ? (
         <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
