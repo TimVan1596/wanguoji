@@ -2,39 +2,40 @@ export interface ManualArcadePhysicsWorld {
   isPaused: boolean;
   timeScale: number;
   update: (time: number, delta: number) => void;
-  step: (delta: number) => void;
+  postUpdate: () => void;
 }
 
 export interface ManualPhysicsStepDiagnostics {
   physicsWorldUpdates: number;
-  physicsWorldSteps: number;
+  physicsWorldPostUpdates: number;
 }
 
 export default class ManualArcadePhysicsStepper {
-  private frameSteps = 0;
   private diagnostics: ManualPhysicsStepDiagnostics = {
     physicsWorldUpdates: 0,
-    physicsWorldSteps: 0,
+    physicsWorldPostUpdates: 0,
   };
+  private simulationTimeMs = 0;
 
-  beginFrame() {
-    this.frameSteps = 0;
-  }
-
-  step(world: ManualArcadePhysicsWorld | undefined, time: number, fixedDeltaMs: number) {
+  step(world: ManualArcadePhysicsWorld | undefined, fixedDeltaMs: number) {
     if (!world || world.isPaused) {
       return false;
     }
     world.timeScale = 1;
-    if (this.frameSteps === 0) {
-      world.update(time, fixedDeltaMs);
-      this.diagnostics.physicsWorldUpdates += 1;
-    } else {
-      world.step(fixedDeltaMs / 1000);
-      this.diagnostics.physicsWorldSteps += 1;
-    }
-    this.frameSteps += 1;
+    this.simulationTimeMs += fixedDeltaMs;
+    world.update(this.simulationTimeMs, fixedDeltaMs);
+    this.diagnostics.physicsWorldUpdates += 1;
+    // Phaser normally synchronizes bodies to Game Objects once at the end of a
+    // render frame. Manual fixed stepping must do so per simulation step;
+    // otherwise the next update's Body.preUpdate can read a stale Game Object
+    // transform, making results depend on render-frame batching.
+    world.postUpdate();
+    this.diagnostics.physicsWorldPostUpdates += 1;
     return true;
+  }
+
+  getSimulationTimeMs() {
+    return this.simulationTimeMs;
   }
 
   getDiagnostics() {
@@ -42,10 +43,14 @@ export default class ManualArcadePhysicsStepper {
   }
 
   reset() {
-    this.frameSteps = 0;
+    this.resetAt(0);
+  }
+
+  resetAt(simulationTimeMs: number) {
+    this.simulationTimeMs = Math.max(0, Number.isFinite(simulationTimeMs) ? simulationTimeMs : 0);
     this.diagnostics = {
       physicsWorldUpdates: 0,
-      physicsWorldSteps: 0,
+      physicsWorldPostUpdates: 0,
     };
   }
 }

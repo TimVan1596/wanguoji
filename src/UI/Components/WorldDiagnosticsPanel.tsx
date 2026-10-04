@@ -110,8 +110,17 @@ export default function WorldDiagnosticsPanel() {
     return null;
   }
 
+  const core = Game.Core;
+  const determinism = core?.getDeterminismDiagnostics();
+  const snapshotRequest = core?.getSnapshotRequestDiagnostics();
+  const desktopRuntime = core?.getRuntimeLivenessDiagnostics();
+  const runtimeUnits = core?.getRuntimeUnitDiagnostics();
+  const worldScale = core?.getWorldScaleDiagnostics();
+  const desktopAutosave = desktopDiagnostics?.lastAutosaveResult;
   const summary = [
     `世界年月：${formatWorldDate(worldMonth)}（${worldMonth}月）`,
+    `Determinism：seed=${determinism?.seed ?? worldRandom.exportState().seed}｜RNG=${determinism?.rngAlgorithm ?? WORLD_RNG_ALGORITHM}｜draws=${determinism?.rngPosition ?? worldRandom.exportState().position}`,
+    `Determinism checkpoints：${determinism?.checkpoints.map((entry) => `${formatWorldDate(entry.worldMonth)} | digest=${entry.digest} | rng draws=${entry.rngPosition}`).join("；") || "尚无10年检查点"}`,
     `Playback：base ${BASE_PLAY_RATE.toFixed(1)}｜selected ${simulationSpeed}×｜effective ${(BASE_PLAY_RATE * simulationSpeed).toFixed(1)}×`,
     `当前时代：${diagnostics.currentEra ? `${diagnostics.currentEra.type} · ${diagnostics.currentEra.name} · ${formatWorldDate(diagnostics.currentEra.startMonth)}起` : "暂无已确认时代"}`,
     `Era Atlas：snapshots ${diagnostics.eraAtlas.snapshotCount}｜raw cells ${diagnostics.eraAtlas.rawCells}｜RLE runs ${diagnostics.eraAtlas.rleRuns}｜estimated JSON bytes ${diagnostics.eraAtlas.estimatedJsonBytes}`,
@@ -133,13 +142,6 @@ export default function WorldDiagnosticsPanel() {
     `Literal Monopoly：${diagnostics.longRun.literalUnificationCount}次｜已完成${diagnostics.longRun.literalMonopolyEpisodes}段｜平均${diagnostics.longRun.averageLiteralMonopolyDuration === undefined ? "—" : formatWorldDuration(diagnostics.longRun.averageLiteralMonopolyDuration)}｜当前${diagnostics.longRun.currentLiteralMonopolyAge === undefined ? "—" : formatWorldDuration(diagnostics.longRun.currentLiteralMonopolyAge)}`,
     `Dynastic Order：建立${diagnostics.longRun.dynasticOrderEstablishedCount}次｜瓦解${diagnostics.longRun.dynasticOrderLostCount}次｜完成${diagnostics.longRun.completedDynasticOrderEpisodes}段｜平均${diagnostics.longRun.averageDynasticOrderDuration === undefined ? "—" : formatWorldDuration(diagnostics.longRun.averageDynasticOrderDuration)}｜当前${diagnostics.longRun.currentDynasticOrderAge === undefined ? "—" : formatWorldDuration(diagnostics.longRun.currentDynasticOrderAge)}`,
   ].join("\n");
-  const core = Game.Core;
-  const snapshotRequest = core?.getSnapshotRequestDiagnostics();
-  const desktopRuntime = core?.getRuntimeLivenessDiagnostics();
-  const runtimeUnits = core?.getRuntimeUnitDiagnostics();
-  const worldScale = core?.getWorldScaleDiagnostics();
-  const desktopAutosave = desktopDiagnostics?.lastAutosaveResult;
-
   const snapshotAndReload = async () => {
     const core = Game.Core;
     if (!core || hydrationBusy) return;
@@ -194,6 +196,7 @@ export default function WorldDiagnosticsPanel() {
       worldSeed: worldRandom.exportState().seed,
       worldRngAlgorithm: WORLD_RNG_ALGORITHM,
       worldRngPosition: worldRandom.exportState().position,
+      determinismCheckpoints: determinism?.checkpoints,
       mode: runtime?.runtimeMode ?? (isDesktopContinuousRuntime() ? "DESKTOP_CONTINUOUS" : "WEB_CATCH_UP"),
       platform: desktopDiagnostics?.platform ?? window.gridGodDesktop?.platform,
       electronVersion: window.gridGodDesktop?.electronVersion,

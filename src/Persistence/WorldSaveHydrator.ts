@@ -152,6 +152,7 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
     populationSystem: save.populationSystem as ReturnType<PopulationSystem["exportState"]>,
     worldEventSystem: save.worldEventSystem as ReturnType<NonNullable<Core["simulator"]>["exportState"]>["worldEventSystem"],
   }, teams);
+  core.resetDeterminismDiagnostics(save.world.clock.worldMonth, snapshotBoundary.clockElapsedMs);
   worldRandom.restore(save.worldRandom);
   core.simulator!.setRunning(false);
   core.setHydrationStage("INSTALL_COLLIDERS");

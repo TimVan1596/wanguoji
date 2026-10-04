@@ -44,6 +44,7 @@ import LogicalUnitRegistry from "../Simulation/LogicalUnitRegistry";
 import { RuntimePerformanceMetrics } from "../Simulation/RuntimePerformanceMetrics";
 import { getTextureProbeSource } from "../Runtime/TextureProbe";
 import { createRuntimeUnitDiagnostics } from "../Simulation/RuntimeUnitDiagnostics";
+import { DeterminismCheckpointHistory } from "../Simulation/DeterminismFingerprint";
 import WorldEra from "../Simulation/WorldEra";
 import { captureEraMapSnapshot } from "../Simulation/EraMapSnapshot";
 import worldRandom from "../Simulation/WorldRandom";
@@ -54,6 +55,7 @@ import {
   EXTINCTION_MID_SURRENDER_CHANCE,
   EXTINCTION_REMNANT_LOYALTY,
   RULER_ESCAPE_BASE_CHANCE,
+  WORLD_MONTH_MS,
 } from "../config/simulation";
 import { store } from "../store";
 import { ConfigState } from "../store/configSlice";
@@ -96,6 +98,11 @@ type DesktopRuntimeDiagnostics = {
   desktopVisibilityCatchUpInvariantViolation: boolean;
 };
 
+const determinismDiagnosticsEnabled = import.meta.env.DEV || (
+  typeof window !== "undefined" &&
+  new URLSearchParams(window.location.search).get("debug") === "1"
+);
+
 export default class Core {
   map: Map | undefined;
   config: ConfigState | undefined;
@@ -117,6 +124,7 @@ export default class Core {
   logicalGameplayAuthority = false;
   manualPhysicsStepping = true;
   private manualPhysicsStepper = new ManualArcadePhysicsStepper();
+  private determinismCheckpoints = new DeterminismCheckpointHistory();
   private runtimePerformance = new RuntimePerformanceMetrics();
   private frameFixedStepCpuMs = 0;
   private simulationDiagnostics = {
@@ -225,6 +233,7 @@ export default class Core {
     this.logicalUnitRegistry.reset();
     this.logicalSimulationCore.reset();
     this.manualPhysicsStepper.reset();
+    this.determinismCheckpoints.resetAt(0);
     this.resetSimulationDiagnostics();
     this.unbindMapPointerResolver();
     this.notifyDesktopHeartbeat();
@@ -552,6 +561,7 @@ export default class Core {
     this.syncBackgroundCatchUpStore();
     this.worldInstanceId += 1;
     this.manualPhysicsStepper.reset();
+    this.determinismCheckpoints.resetAt(0);
     this.resetSimulationDiagnostics();
     this.simulator.startWorld(this.teams, this.totalCells, populations, (capturedMonth) => this.captureEraMapSnapshot(capturedMonth));
     this.notifyDesktopHeartbeat();
@@ -1177,7 +1187,6 @@ export default class Core {
     this.coreUpdateDiagnostics.lastUpdateRealAt = this.getRealNow();
     this.coreUpdateDiagnostics.lastForegroundDeltaMs = delta;
     if (this.simulator) {
-      this.manualPhysicsStepper.beginFrame();
       if (this.backgroundProgression.consumeSuppressNextForegroundDelta()) {
         delta = 0;
         this.simulationDriver.reset();
@@ -1294,12 +1303,46 @@ export default class Core {
     }
     this.simulator?.advance(fixedDeltaMs, this.teams, this.totalCells, (capturedMonth) => this.captureEraMapSnapshot(capturedMonth));
     const clock = this.simulator?.exportState().clock;
+    if (
+      clock &&
+      this.isDeterminismDiagnosticsEnabled() &&
+      this.determinismCheckpoints.isDue(clock.worldMonth)
+    ) {
+      this.recordDeterminismCheckpoint(clock.worldMonth);
+    }
     if (clock && this.snapshotBoundaryRequest.reachBoundary(clock.worldMonth, clock.elapsedMs)) {
       this.setWorldRunning(false);
       this.frameFixedStepCpuMs += this.getRealNow() - stepStartedAt;
       return "stop-and-discard";
     }
     this.frameFixedStepCpuMs += this.getRealNow() - stepStartedAt;
+  }
+
+  private isDeterminismDiagnosticsEnabled() {
+    return determinismDiagnosticsEnabled;
+  }
+
+  private recordDeterminismCheckpoint(worldMonth: number) {
+    const territoryCounts = new globalThis.Map<string, number>();
+    this.map?.blocks.flat().forEach((block) => {
+      const ownerId = block.team?.name ?? "";
+      territoryCounts.set(ownerId, (territoryCounts.get(ownerId) ?? 0) + 1);
+    });
+    this.determinismCheckpoints.recordIfDue({
+      worldMonth,
+      random: worldRandom.exportState(),
+      factions: this.teams.map((team) => ({
+        factionId: team.name,
+        status: team.status,
+        population: team.users.size,
+        rulerId: DynastyRegistry.getCurrentRuler(team.name)?.id,
+      })),
+      cities: this.allCities.map((city) => ({
+        cityId: city.id,
+        ownerFactionId: city.ownerTeam?.name ?? city.ownerFactionId,
+      })),
+      territory: [...territoryCounts].map(([factionId, cells]) => ({ factionId, cells })),
+    });
   }
 
   private advanceArcadePhysicsStep(fixedDeltaMs: number) {
@@ -1311,7 +1354,7 @@ export default class Core {
       return;
     }
     world.timeScale = 1;
-    if (this.manualPhysicsStepper.step(world, this.scene.game.loop.now, fixedDeltaMs)) {
+    if (this.manualPhysicsStepper.step(world, fixedDeltaMs)) {
       this.simulationDiagnostics.physicsSteps += 1;
     }
   }
@@ -1326,6 +1369,21 @@ export default class Core {
       ...this.manualPhysicsStepper.getDiagnostics(),
       backgroundCatchUp: { ...this.catchUpDiagnostics },
       desktopRuntime: { ...this.desktopRuntimeDiagnostics },
+    };
+  }
+
+  resetDeterminismDiagnostics(worldMonth: number, elapsedMs = 0) {
+    this.determinismCheckpoints.resetAt(worldMonth);
+    this.manualPhysicsStepper.resetAt(worldMonth * WORLD_MONTH_MS + elapsedMs);
+  }
+
+  getDeterminismDiagnostics() {
+    const random = worldRandom.exportState();
+    return {
+      seed: random.seed,
+      rngAlgorithm: random.algorithm,
+      rngPosition: random.position,
+      checkpoints: this.determinismCheckpoints.getRecent(),
     };
   }
 

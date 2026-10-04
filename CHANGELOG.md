@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99924g1
+
+- Unified each manual Arcade physics fixed tick on Phaser's `World.update()` lifecycle, followed by `World.postUpdate()` body synchronization; physics time is now synthetic and derived only from fixed simulation steps, including after hydration.
+- Added bounded debug-only decade fingerprints of faction status/population, city and territory ownership, current rulers, and world RNG state/position; fingerprints are not saved and do not affect simulation.
+- No logical gameplay authority switch, gameplay tuning, or WorldSave schema change (schema remains V2).
+
 ## v0.99924g
 
 - Added a world-scoped `mulberry32-v1` random stream and optional user-specified world seed; debug diagnostics expose the seed, algorithm, and draw position.
