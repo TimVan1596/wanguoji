@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.99924e
+
+- Added an application-layer ambient music runtime that maps confirmed WorldEra types to three moods, rotates same-mood tracks, and crossfades on mood changes after a user gesture.
+- Added persistent application-only BGM enable/volume preferences and a Settings runtime-version display sourced from `APP_VERSION`.
+- Added music asset provenance candidates; no audio files are bundled yet because source binaries could not be retrieved in this environment, so playback remains safely silent until verified tracks are supplied.
+- No gameplay, WorldEra thresholds, or WorldSave schema changes.
+
 ## v0.99924d5
 
 - Founder battle-death wording now uses the recorded time from formal state/faction founding to death before describing a founding as recent.

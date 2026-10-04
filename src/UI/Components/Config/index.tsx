@@ -14,11 +14,16 @@ import {
   FormLabel,
   Radio,
   RadioGroup,
+  Switch,
+  Slider,
+  Typography,
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import { ConfigState } from "../../../store/configSlice";
 import { DesktopSuspendPolicy, DESKTOP_SUSPEND_POLICY_LABELS, readDesktopSuspendPolicy, writeDesktopSuspendPolicy } from "../../../Runtime/DesktopSuspendPolicy";
+import { readMusicPreferences, writeMusicPreferences, MusicPreferences } from "../../../Runtime/MusicPreferences";
+import { getSettingsVersionLabel } from "../../../Runtime/SettingsVersion";
 
 interface ConfigProps {
   open: boolean;
@@ -27,13 +32,17 @@ interface ConfigProps {
 
 const Config: FC<ConfigProps> = ({ open, onClose }) => {
   const [suspendPolicy, setSuspendPolicy] = useState<DesktopSuspendPolicy>(readDesktopSuspendPolicy);
+  const [musicPreferences, setMusicPreferences] = useState<MusicPreferences>(readMusicPreferences);
   const config = useSelector((state: RootState) => state.config);
   const localConfigString =
     localStorage.getItem(`${config.liveId}_${config.theme}`) ?? "{}";
   const localConfig: Partial<ConfigState> = JSON.parse(localConfigString);
 
   useEffect(() => {
-    if (open) setSuspendPolicy(readDesktopSuspendPolicy());
+    if (open) {
+      setSuspendPolicy(readDesktopSuspendPolicy());
+      setMusicPreferences(readMusicPreferences());
+    }
   }, [open]);
 
   const save = () => {
@@ -96,6 +105,25 @@ const Config: FC<ConfigProps> = ({ open, onClose }) => {
               <FormControlLabel value="CATCH_UP" control={<Radio />} label={DESKTOP_SUSPEND_POLICY_LABELS.CATCH_UP} />
             </RadioGroup>
           </FormControl>}
+          <FormControl sx={{ mt: 2, width: "100%" }}>
+            <FormLabel>音频</FormLabel>
+            <FormControlLabel
+              control={<Switch
+                checked={musicPreferences.enabled}
+                onChange={(_, enabled) => setMusicPreferences(writeMusicPreferences({ enabled }))}
+              />}
+              label="背景音乐"
+            />
+            <FormLabel id="music-volume-label">背景音乐音量：{musicPreferences.volume}%</FormLabel>
+            <Slider
+              aria-labelledby="music-volume-label"
+              min={0}
+              max={100}
+              value={musicPreferences.volume}
+              onChange={(_, volume) => setMusicPreferences(writeMusicPreferences({ volume: volume as number }))}
+            />
+          </FormControl>
+          <Typography variant="body2" sx={{ mt: 1 }}>{getSettingsVersionLabel()}</Typography>
           <TextField
             disabled
             fullWidth

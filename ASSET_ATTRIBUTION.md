@@ -25,4 +25,16 @@ The following directories were also checked. The repository does not contain eno
 
 This is a provenance warning, not a claim of infringement. Before wider promotion, verify or replace the `public/theme/war3/` and `public/theme/minecraft/` resource sets, the bundled font, and the files listed above.
 
+## Ambient Music I candidates (not bundled)
+
+These OpenGameArt pages were inspected for the page-listed author, track title, and CC0 designation. Audio binaries could not be retrieved in the current restricted-network environment, and the candidates have not been auditioned or assigned to an in-game mood. No candidate is currently referenced by the runtime track catalog.
+
+| Track | Author | Source | License shown on source page | Bundled file | Notes |
+| --- | --- | --- | --- | --- | --- |
+| Asianoriental1 | Tozan | https://opengameart.org/content/asianoriental1 | CC0 | None | Page describes koto, shakuhachi, and ensemble strings; pending retrieval and audition. |
+| Asianoriental2 | Tozan | https://opengameart.org/content/asianoriental2 | CC0 | None | Page describes a Chinese-style koto/strings piece; pending retrieval and audition. |
+| Menu Music | wipics | https://opengameart.org/content/menu-music-2 | CC0; page copyright notice says Public Domain | None | Page tags include erhu, traditional, ancient, and loop; pending retrieval and audition. |
+
+Retrieval/source note (2026-10-04): the OpenGameArt pages exposed their audio file links and license labels, but the web reader rejected audio MIME responses and direct repository-network access could not resolve `opengameart.org`. No placeholder or synthetic audio has been created.
+
 The repository currently includes an MIT `LICENSE` copyright notice for KeJun (2023). The codebase and NOTICE identify Wanguoji as derived from `KeJunMao/open-block-war`, originally MIT licensed. Asset-level provenance still needs manual verification before Public Alpha promotion.
