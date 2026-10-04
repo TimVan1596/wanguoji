@@ -1028,7 +1028,9 @@ export default class Core {
     this.scene.input.enabled = true;
     this.scene.input.topOnly = false;
     this.scene.input.on("pointerdown", this.handleMapPointerDown, this);
+    this.scene.input.on("pointerdownoutside", this.handleMapPointerDown, this);
     this.scene.input.on("pointerup", this.handleMapPointerUp, this);
+    this.scene.input.on("pointerupoutside", this.handleMapPointerUp, this);
     this.scene.input.on("pointermove", this.handleMapPointerMove, this);
     this.scene.input.on("gameout", this.clearHoveredCity, this);
   }
@@ -1038,7 +1040,9 @@ export default class Core {
       return;
     }
     this.scene.input.off("pointerdown", this.handleMapPointerDown, this);
+    this.scene.input.off("pointerdownoutside", this.handleMapPointerDown, this);
     this.scene.input.off("pointerup", this.handleMapPointerUp, this);
+    this.scene.input.off("pointerupoutside", this.handleMapPointerUp, this);
     this.scene.input.off("pointermove", this.handleMapPointerMove, this);
     this.scene.input.off("gameout", this.clearHoveredCity, this);
   }
