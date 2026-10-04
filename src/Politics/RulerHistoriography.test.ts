@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createRulerChronicle, finishRulerChronicle } from "./RulerChronicle";
+import { buildRulerTags, createRulerChronicle, finishRulerChronicle } from "./RulerChronicle";
 import { CURRENT_SAVE_SCHEMA_VERSION } from "../Persistence/WorldSaveSchema";
 import { BASE_PLAY_RATE } from "../Simulation/SimulationDriver";
 import {
@@ -97,6 +97,55 @@ describe("evidence-grounded ruler historiography", () => {
     expect(result.evidence.foundedState).toBe(true);
     expect(result.lines.join("")).toContain("开创之功");
     expect(result.lines.join("")).not.toContain("人口");
+  });
+
+  it("does not call a provisional faction founder a state founder", () => {
+    const context = makeContext({
+      factionOrigin: { foundingRulerId: "r1" },
+      endReason: "战死", deathCause: "战死",
+    });
+    const result = deriveRulerAssessment(context);
+    expect(result.evidence.foundedFaction).toBe(true);
+    expect(result.evidence.foundedState).toBe(false);
+    expect(result.lines.join(" ")).toContain("创立势力");
+    expect(result.lines.join(" ")).not.toMatch(/开国|正式建国|新建国家/);
+    expect(result.lines.join(" ")).toContain("创立势力未久而身死军中");
+    expect(buildRulerTags(result.evidence)).not.toContain("开国之君");
+  });
+
+  it("retains formal state-founder wording and the founding tag", () => {
+    const result = deriveRulerAssessment(makeContext({ foundedStateName: "秦", foundedStateMonth: 48 }));
+    expect(result.lines.join(" ")).toContain("正式建国");
+    expect(buildRulerTags(result.evidence)).toContain("开国之君");
+  });
+
+  it("composes young accession and crisis without repeating 承统", () => {
+    const text = deriveRulerAssessment(makeContext({
+      age: 7,
+      start: { cityCount: 1, territoryShare: 0.08, stability: 35 },
+      end: { cityCount: 1, territoryShare: 0.08, stability: 35 },
+    })).lines.join(" ");
+    expect(text).toContain("幼年继任，其时政权尚处危局");
+    expect(text).not.toContain("幼年承统，临危承统");
+    expect(text.match(/承统/g)?.length ?? 0).toBeLessThanOrEqual(1);
+  });
+
+  it("recognizes a long contested reign from losses, personal captures, and a non-collapsing territory", () => {
+    const context = makeContext({
+      endMonth: 55 * 12 + 7,
+      start: { territoryShare: 0.229, cityCount: 3, stability: 76 },
+      end: { territoryShare: 0.29, cityCount: 4, stability: 59 },
+    });
+    context.ruler.chronicle!.citiesLostDuringReign = 10;
+    context.ruler.chronicle!.citiesCapturedPersonally = 2;
+    const evidence = deriveRulerHistoricalEvidence(context);
+    expect(evidence.roles).toContain("CONTESTED_REIGN");
+    const voice = composeHistorianVoice(evidence)!;
+    expect(voice).toContain("55年7个月");
+    expect(voice).toContain("失城10座");
+    expect(voice).toContain("亲征夺城2座");
+    expect(voice).toContain("22.9%至29.0%");
+    expect(voice).not.toMatch(/勇猛|无能|穷兵黩武|好战/);
   });
 
   it("recognizes the first emperor's institutional turning point", () => {
@@ -340,7 +389,8 @@ describe("evidence-grounded ruler historiography", () => {
       end: { territoryShare: 0.28, cityCount: 4 },
     });
     const text = deriveRulerAssessment(founder).lines.join(" ");
-    expect(text).toContain("开国未久而身死军中");
+    expect(text).toContain("创立势力未久而身死军中");
+    expect(text).not.toContain("开国未久而身死军中");
     expect(text).not.toContain("扩张与秩序仍有未竟");
   });
 
@@ -410,6 +460,19 @@ describe("evidence-grounded ruler historiography", () => {
       return composeHistorianVoice(deriveRulerHistoricalEvidence(context));
     };
     expect(new Set(["a", "b", "c", "d", "e"].map(makeVoice)).size).toBeGreaterThan(1);
+  });
+
+  it("provides five stable deterministic variants for common voice roles", () => {
+    const voices = Array.from({ length: 40 }, (_, index) => {
+      const context = makeContext({
+        start: { territoryShare: 0.1, cityCount: 2, stability: 70 },
+        end: { territoryShare: 0.25, cityCount: 5, stability: 72 },
+      });
+      context.ruler.id = `expander-variant-${index}`;
+      return composeHistorianVoice(deriveRulerHistoricalEvidence(context));
+    });
+    expect(new Set(voices).size).toBe(5);
+    expect(new Set(voices)).toEqual(new Set(voices));
   });
 
   it("uses only objective accession-age bands", () => {

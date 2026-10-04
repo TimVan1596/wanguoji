@@ -18,7 +18,16 @@ describe("historical ruler display", () => {
     expect(resolveHistoricalRulerDisplay(ruler, "秦", "compact", { historicalRank: "EMPEROR" })).toBe("秦武帝嬴平");
   });
 
-  it("does not show retrospective titles for a living ruler", () => {
-    expect(resolveHistoricalRulerDisplay({ ...ruler, endYear: undefined }, "秦", "compact", { historicalRank: "EMPEROR" })).toBe("嬴平");
+  it("shows the current formal ruler's polity and rank without inventing a posthumous title", () => {
+    expect(resolveHistoricalRulerDisplay({ ...ruler, endYear: undefined, posthumousEpithet: undefined }, "党", "compact", { historicalRank: "KING" })).toBe("党王嬴平");
+    expect(resolveHistoricalRulerDisplay({ ...ruler, endYear: undefined, posthumousEpithet: undefined }, "燕", "compact", { historicalRank: "EMPEROR" })).toBe("燕帝嬴平");
+  });
+
+  it("uses the historical provisional faction and leader role", () => {
+    expect(resolveHistoricalRulerDisplay({ ...ruler, endYear: undefined }, "新郑义军", "compact", { historicalRank: "LEADER" })).toBe("新郑义军首领嬴平");
+  });
+
+  it("adds the polity and rank when a deceased ruler has no posthumous epithet", () => {
+    expect(resolveHistoricalRulerDisplay({ ...ruler, posthumousEpithet: undefined }, "党", "compact", { historicalRank: "KING" })).toBe("党王嬴平");
   });
 });

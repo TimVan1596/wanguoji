@@ -24,6 +24,9 @@ const VERY_LONG_REIGN_MONTHS = 28 * 12;
 const RECENT_EPITHET_LOOKBACK = 8;
 const EPITHET_RECENCY_PENALTIES = [70, 50, 30, 15, 15, 8, 5, 3] as const;
 const DISASTER_EPITHETS = new Set(["哀", "愍"]);
+const GENERIC_EPITHETS = new Set(["襄", "康", "景", "顺", "桓", "威"]);
+export const GENERIC_EPITHET_ALTERNATE_MIN_SCORE = 35;
+export const IMMEDIATE_REPEAT_SEMANTIC_OVERRIDE_SCORE = 100;
 
 export function finalizeRulerPosthumousNames(
   ruler: Ruler,
@@ -442,6 +445,26 @@ function pickSoftUniqueEpithet(
     .filter((item) => item.id !== rulerId && item.posthumousEpithet)
     .slice(-RECENT_EPITHET_LOOKBACK)
     .map((item) => item.posthumousEpithet);
+  const formalRulers = dynastyRulers
+    .filter((item) => item.reignOrdinal !== undefined && item.accessionYear !== undefined && item.chronicle !== undefined)
+    .sort((a, b) => a.reignOrdinal! - b.reignOrdinal! || a.accessionYear! - b.accessionYear!);
+  const currentIndex = formalRulers.findIndex((item) => item.id === rulerId);
+  const immediatePredecessor = currentIndex > 0 ? formalRulers[currentIndex - 1] : undefined;
+  const repeatedCandidate = immediatePredecessor?.posthumousEpithet
+    ? candidates.find((candidate) => candidate.name === immediatePredecessor.posthumousEpithet)
+    : undefined;
+  let eligibleCandidates = candidates;
+  if (repeatedCandidate && GENERIC_EPITHETS.has(repeatedCandidate.name)) {
+    const alternatives = candidates.filter((candidate) =>
+      candidate.name !== repeatedCandidate.name &&
+      (candidate.score ?? 0) >= GENERIC_EPITHET_ALTERNATE_MIN_SCORE
+    );
+    if (alternatives.length) {
+      eligibleCandidates = alternatives;
+    } else if ((repeatedCandidate.score ?? 0) < IMMEDIATE_REPEAT_SEMANTIC_OVERRIDE_SCORE) {
+      return undefined;
+    }
+  }
   const penalties = new Map<string, number>();
   [...recent].reverse().forEach((name, index) => {
     if (!name) return;
@@ -450,7 +473,7 @@ function pickSoftUniqueEpithet(
       : EPITHET_RECENCY_PENALTIES[index] ?? 0;
     penalties.set(name, (penalties.get(name) ?? 0) + penalty);
   });
-  return [...candidates].sort((a, b) => {
+  return [...eligibleCandidates].sort((a, b) => {
     const scoreA = (a.score ?? 0) - (penalties.get(a.name) ?? 0);
     const scoreB = (b.score ?? 0) - (penalties.get(b.name) ?? 0);
     return scoreB - scoreA;

@@ -8,6 +8,8 @@ import {
   finalizeRulerPosthumousNames,
   formatPosthumousRulerName,
   getPosthumousLabelLines,
+  GENERIC_EPITHET_ALTERNATE_MIN_SCORE,
+  IMMEDIATE_REPEAT_SEMANTIC_OVERRIDE_SCORE,
 } from "./PosthumousRules";
 import { buildRulerLegacyEvidence } from "./RulerLegacyEvidence";
 import { createRulerChronicle, finishRulerChronicle } from "./RulerChronicle";
@@ -275,6 +277,45 @@ describe("posthumous rules", () => {
       { territoryShare: 0.1, cityCount: 2, stability: 70 }, { territoryShare: 0.42, cityCount: 7, stability: 68 });
     const longRecentRun = Array.from({ length: 8 }, (_, index) => ruler({ id: `repeat-${index}`, posthumousEpithet: "襄" }));
     expect(evaluatePosthumousNames(exceptional, [...longRecentRun, exceptional], faction(), exceptional.endYear!).posthumousEpithet).toBe("襄");
+  });
+
+  it("avoids an immediate generic epithet repeat when a valid alternate exists", () => {
+    const previous = ruler({ id: "previous-xiang", accessionYear: 0, endYear: 199, reignOrdinal: 1, posthumousEpithet: "襄" });
+    const current = rulerWithReign("next-xiang", 200, 380,
+      { territoryShare: 0.1, cityCount: 2, stability: 72 },
+      { territoryShare: 0.28, cityCount: 5, stability: 75 },
+      { reignOrdinal: 2 });
+    const result = evaluatePosthumousNames(current, [previous, current], faction(), current.endYear!);
+    expect(result.posthumousEpithet).toBe("景");
+    expect(result.posthumousEpithet).not.toBe(previous.posthumousEpithet);
+  });
+
+  it("withholds a repeated generic epithet if no qualified alternate exists", () => {
+    const previous = ruler({ id: "previous-xiang", accessionYear: 0, endYear: 199, reignOrdinal: 1, posthumousEpithet: "襄" });
+    const current = rulerWithReign("next-xiang-no-alt", 200, 380,
+      { territoryShare: 0.1, cityCount: 2, stability: 72 },
+      { territoryShare: 0.28, cityCount: 5, stability: 72 },
+      { reignOrdinal: 2 });
+    expect(GENERIC_EPITHET_ALTERNATE_MIN_SCORE).toBe(35);
+    expect(evaluatePosthumousNames(current, [previous, current], faction(), current.endYear!).posthumousEpithet).toBeUndefined();
+  });
+
+  it("allows an immediate generic repeat only above the explicit semantic override threshold", () => {
+    const previous = ruler({ id: "previous-xiang", accessionYear: 0, endYear: 199, reignOrdinal: 1, posthumousEpithet: "襄" });
+    const current = rulerWithReign("next-xiang-exception", 200, 380,
+      { territoryShare: 0.1, cityCount: 2, stability: 70 },
+      { territoryShare: 0.42, cityCount: 7, stability: 68 },
+      { reignOrdinal: 2 });
+    expect(IMMEDIATE_REPEAT_SEMANTIC_OVERRIDE_SCORE).toBe(100);
+    expect(evaluatePosthumousNames(current, [previous, current], faction(), current.endYear!).posthumousEpithet).toBe("襄");
+  });
+
+  it("does not apply the generic repeat gate to consecutive disaster-driven 愍", () => {
+    const previous = ruler({ id: "previous-min", accessionYear: 0, endYear: 24, reignOrdinal: 1, posthumousEpithet: "愍" });
+    const crisis = createRulerChronicle({ month: 25, population: 20, territoryShare: 0.2, cityCount: 3, stability: 70 });
+    finishRulerChronicle(crisis, { month: 49, population: 1, territoryShare: 0.01, cityCount: 0, stability: 10 }, "彻底灭亡");
+    const current = ruler({ id: "next-min", accessionYear: 25, endYear: 49, bornYear: -30 * 12, reignOrdinal: 2, endReason: "彻底灭亡", chronicle: crisis });
+    expect(evaluatePosthumousNames(current, [previous, current], faction(), current.endYear!).posthumousEpithet).toBe("愍");
   });
 
   it("does not introduce unsupported 献 and records evidence-based new epithet reasons", () => {

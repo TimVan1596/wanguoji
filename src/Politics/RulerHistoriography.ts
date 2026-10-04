@@ -21,6 +21,7 @@ export type HistoricalRole =
   | "LAST_RULER"
   | "SHORT_REIGN"
   | "TRAGIC_RULER"
+  | "CONTESTED_REIGN"
   | "EXILED_RULER"
   | "LONG_EXILE"
   | "RESTORED_FROM_EXILE";
@@ -258,6 +259,14 @@ export function deriveRulerHistoricalEvidence(
     else if (accessionSnapshot.territoryShare >= 0.3) roles.push("INHERITED_HIGH_DECLINE");
   }
   if (moderateRecovery) roles.push("MODERATE_RECOVERY");
+  if (
+    tenure.activeRuleMonths >= 30 * 12 &&
+    (chronicle?.citiesLostDuringReign ?? 0) >= 6 &&
+    (chronicle?.citiesCapturedPersonally ?? 0) >= 2 &&
+    territoryDelta > -0.12 &&
+    !majorDecline &&
+    !ownTerminalCollapse
+  ) roles.push("CONTESTED_REIGN");
   if (majorDecline) roles.push("DECLINER");
   if (ownTerminalCollapse) roles.push("LAST_RULER");
   if (tenure.activeRuleMonths <= 5 * 12) roles.push("SHORT_REIGN");
@@ -359,7 +368,7 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
   if (evidence.foundedState) {
     lines.push(`${livingPrefix}${agePrefix}其开创之功在于正式建国${evidence.foundedStateName ? `、奠定${evidence.foundedStateName}国统` : "，使政权成为正式国家"}。`);
   } else if (evidence.foundedFaction) {
-    lines.push(`${livingPrefix}${agePrefix}其以创建政权开其端绪，留下了可辨认的政治起点。`);
+    lines.push(`${livingPrefix}${agePrefix}其创立势力、开其端绪，为后来政权留下政治前身。`);
   } else if (evidence.proclaimedEmperor) {
     lines.push(`${livingPrefix}${agePrefix}其称帝完成了本朝由王权到帝制的关键转折。`);
   } else if (evidence.restorationCount > 0) {
@@ -367,11 +376,13 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
   } else if (evidence.completedUnification) {
     lines.push(`${livingPrefix}${agePrefix}完成天下统一，使其历史地位超出一国兴替。`);
   } else if (evidence.accessionCrisis && evidence.roles.includes("EXPANDER")) {
-    lines.push(`${livingPrefix}${agePrefix}承统之初国势未固，其后疆域显著扩展，由危局转入进取。`);
+    const accessionPhrase = childAccession ? "幼年继任时" : youthAccession ? "少年继位时" : "承统之初";
+    lines.push(`${livingPrefix}${accessionPhrase}国势未固，其后疆域显著扩展，由危局转入进取。`);
   } else if (evidence.terminalCollapse && evidence.accessionCrisis) {
     lines.push(`${agePrefix}其时国势已陷危局${evidence.startCityCount <= 1 ? "，仅据孤城" : ""}，并非由盛转衰的始作俑者。`);
   } else if (evidence.roles.includes("CRISIS_SURVIVOR") && !evidence.roles.includes("EXPANDER")) {
-    lines.push(`${livingPrefix}${agePrefix}临危承统，其主要考验在于维系既有政权，而非开拓疆土。`);
+    const accessionPhrase = childAccession ? "幼年继任" : youthAccession ? "少年继位" : "临危承统";
+    lines.push(`${livingPrefix}${accessionPhrase}，其时政权尚处危局；主要考验在于维系既有政权。`);
   } else if (
     evidence.roles.includes("DECLINER") &&
     evidence.endStability >= 75 && evidence.stabilityDelta > 0 &&
@@ -445,10 +456,14 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
     lines.push("国势在其任内进一步恶化，最终亡于其世。");
   } else if (evidence.terminalCollapse && evidence.accessionCrisis) {
     lines.push("其后仍未能扭转颓势，国家终亡于其世；这一结局始于承统前的危局。");
-  } else if (evidence.deathCause === "战死" && evidence.roles.includes("FOUNDER") && !evidence.roles.includes("EXPANDER")) {
-    lines.push("开国未久而身死军中，新建政权的整合尚未完成。");
-  } else if (evidence.deathCause === "战死" && evidence.roles.includes("FOUNDER") && evidence.roles.includes("EXPANDER")) {
+  } else if (evidence.deathCause === "战死" && evidence.foundedState && !evidence.roles.includes("EXPANDER")) {
+    lines.push("开国未久而身死军中，新建国家的整合尚未完成。");
+  } else if (evidence.deathCause === "战死" && evidence.foundedState && evidence.roles.includes("EXPANDER")) {
     lines.push("开国与开拓之业尚未竟全，终身死军中。");
+  } else if (evidence.deathCause === "战死" && evidence.foundedFaction && !evidence.roles.includes("EXPANDER")) {
+    lines.push("创立势力未久而身死军中，草创政权的整合尚未完成。");
+  } else if (evidence.deathCause === "战死" && evidence.foundedFaction && evidence.roles.includes("EXPANDER")) {
+    lines.push("草创势力与开拓之业尚未竟全，终身死军中。");
   } else if (evidence.deathCause === "战死" && hasMajorLegacy(evidence)) {
     lines.push("功业未竟而身死军中，留下的事业仍有未竟之处。");
   } else if (
@@ -476,30 +491,62 @@ export function deriveRulerAssessment(context: RulerHistoriographyContext) {
 /** A compact, deterministic final judgement, derived only from recorded outcomes. */
 export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string | undefined {
   if (!evidence.isFinalized) return undefined;
-  const variant = stableHash(evidence.rulerId) % 3;
-  const pick = (lines: string[]) => lines[variant];
+  const pick = (lines: string[]) => lines[stableHash(evidence.rulerId) % lines.length];
   const roles = evidence.roles;
 
-  if (roles.includes("FOUNDER") && roles.includes("EXPANDER") && evidence.governanceCost) return pick([
+  if (roles.includes("FOUNDER") && roles.includes("EXPANDER") && evidence.governanceCost && evidence.foundedState) return pick([
     "开国与拓境并见，国家规模由此扩大；人口或稳定所见的治理代价，亦不可略。",
     "其功在开创，亦在拓土；然而人口与稳定的变化显示，功业之外尚有治理代价。",
     "创业与开拓皆有实绩，国家规模因之而变；功业与可见代价并存。",
+    "正式建国并持续拓境，留下开创之功；人口或稳定的变化也记录了治理代价。",
+    "其奠国与拓土之绩可考，同时期人口或稳定承压，功与代价皆应记取。",
   ]);
-  if (roles.includes("FOUNDER") && roles.includes("EXPANDER")) return pick([
+  if (roles.includes("FOUNDER") && roles.includes("EXPANDER") && evidence.governanceCost) return pick([
+    "其创立势力并有所拓境；人口或稳定的变化亦显示草创时期的治理代价。",
+    "草创势力与开拓之绩并见，人口或稳定所见的代价也不应略去。",
+    "创立本政权前身并推动拓境，所见功业与可考治理代价并存。",
+    "其举事开其端绪，继而拓境；人口或稳定变化留下了治理承压的证据。",
+    "势力由其创立且疆域有所拓展，同时也可见人口或稳定方面的代价。",
+  ]);
+  if (roles.includes("FOUNDER") && roles.includes("EXPANDER") && evidence.foundedState) return pick([
     "创业而兼拓土，新邦由此迅速壮大；其功在奠基，亦在开疆。",
     "开国之后即见拓境之绩，国家规模由此形成。",
     "其先奠政权之基，继而拓展疆土，开创与开疆皆有实绩。",
+    "国家由其开创，疆域亦在其任内扩大，创业与拓展相互映照。",
+    "建国确立政权起点，拓土则扩大其规模，两项功业皆有事实可据。",
+  ]);
+  if (roles.includes("FOUNDER") && roles.includes("EXPANDER")) return pick([
+    "创立势力而兼有拓境之绩，草创的政治基础由此扩大。",
+    "其创建本政权前身，任内又见疆域拓展，势力规模因而增长。",
+    "举事开其端绪，随后拓土；势力创始与疆域扩展皆可见于史实。",
+    "其创立势力并推动拓境，为后来国家留下政治起点与版图基础。",
+    "草创势力之后又有所开拓，所见是一个政权前身逐步扩大的过程。",
   ]);
   if (roles.includes("EXPANDER") && evidence.governanceCost) return pick([
     "疆域拓展有实绩，人口或稳定亦承受代价；得地与失衡并见，功过不宜偏举。",
     "其功在进取，其患亦随扩张而生；所拓之土虽可考，维系之难同样见于史实。",
     "开拓改变了国家版图，却未能使治理代价消隐；其历史分量正在功与患并存。",
+    "疆域有所拓展，人口或稳定却出现明确损耗；开拓成果与治理代价并存。",
+    "其拓境之功可见，人口或稳定的下行也有记录；两面皆是其统治遗产。",
   ]);
   if (roles.includes("EXPANDER") && roles.includes("TRAGIC_RULER")) return pick([
     "拓境之功尚在，而其身已止于兵事；事业未竟，结局亦成为其历史的一部分。",
     "其在进取中留下可见战果，终局却来得过早，未竟之业遂与开拓之功并存。",
     "功业见于疆土与战事，遗憾亦见于骤然的结局；后世所论，当兼看两端。",
+    "疆域拓展已有实证，然而统治因战死骤然终止，未竟之处亦须记入其史。",
+    "开拓的结果留在版图中，过早的战死则截断了其后的政治进程。",
   ]);
+  if (roles.includes("CONTESTED_REIGN")) {
+    const duration = formatWorldDuration(evidence.tenure.activeRuleMonths);
+    const territory = `${formatPrecisePercent(evidence.startTerritory)}至${formatPrecisePercent(evidence.endTerritory)}`;
+    return pick([
+      `${duration}间失城${evidence.citiesLost}座，亦曾亲征夺城${evidence.personalCityCaptures}座；疆域${territory}，其世更见长期争衡，而非单向崩解。`,
+      `在位${duration}，失城${evidence.citiesLost}座而亲征夺城${evidence.personalCityCaptures}座；国土仍由${territory}，胜负反复，难以一言概括。`,
+      `${duration}的统治中，失城与亲征所得并存（${evidence.citiesLost}失、${evidence.personalCityCaptures}得）；疆域${territory}，呈现持续争夺之势。`,
+      `其长期处于攻守交替之中：在位${duration}，失城${evidence.citiesLost}座、亲征夺城${evidence.personalCityCaptures}座，疆域${territory}。`,
+      `${duration}间城邑屡有得失，失城${evidence.citiesLost}座、亲征夺城${evidence.personalCityCaptures}座；疆域${territory}，其重在长期争衡而非一时胜负。`,
+    ]);
+  }
   if (roles.includes("UNIFIER")) return pick([
     "一统使天下格局为之一变，其功业足以成为时代分界。",
     "天下归一是其最具决定性的历史作为，后世纪年亦由此改观。",
@@ -514,6 +561,8 @@ export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string
     "承统时国势已居高位，其后明显回落；所承之盛与未能维持之势，皆应并论。",
     "其并非创造前期高峰之人，却在任内见证疆域退缩，盛势终未守全。",
     "承接高位而未能维系，国势回落构成其统治最显著的历史落差。",
+    "即位时已有较大疆域，后来却见明显收缩；承接的高位与身后的落差同样重要。",
+    "前期高位并非由其一手创成，而其任内疆土回落，历史评价当分清承与失。",
   ]);
   if (roles.includes("PEAK_AND_RETREAT")) return pick([
     "国势由其手推至高峰，终又显著回落；开拓与未能守成，是同一段历史的两面。",
@@ -534,6 +583,8 @@ export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string
     "在位短促而结局惨烈，现有事迹不足以铺陈完整治绩，国难与骤逝已是其史中重笔。",
     "短暂统治未及展开，战死或国难却已定下其结局；论其功过，当以谨慎为先。",
     "其治期甚短，无法据此作宽泛评断；可确言者，是功业未展而终局骤至。",
+    "短祚之中遭遇战死或国难，现存事实足以说明结局，却不足以概括一生治绩。",
+    "其位不久而终局骤至；应记下所见国难，不宜据此补写未有的治绩。",
   ]);
   if (roles.includes("STEWARD")) return pick([
     "疆域无大起落而政权得以长久维持，守成之功在于使秩序不失。",
@@ -544,19 +595,38 @@ export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string
     "国势在其任内显著下行，这一结果构成其统治难以回避的历史部分。",
     "其世所见主要是政权收缩与衰退；至于危局源流，仍须结合承统背景判断。",
     "国势未能维持，退缩成为其最突出的遗产；评价不应越出这些可见事实。",
+    "疆土或城邑在其任内显著减少，衰退是这段统治最清楚的结果之一。",
+    "其世未能阻止国势下滑；此结局确凿，成因仍需结合此前局势审视。",
   ]);
-  if (roles.includes("FOUNDER")) return pick([
+  if (roles.includes("FOUNDER") && evidence.foundedState) return pick([
     "其功在奠定政权起点，使后来王统有制可循。",
     "新政权由其手开其端绪，创业之功是其最清楚的历史位置。",
     "其留下的首要遗产是国家之始；其后成败，已非一人所能尽括。",
+    "正式建国为后续政权确立起点，其创业之功有制度与国号可证。",
+    "国家自其任内建立，后世王统由此获得明确的政治起源。",
+  ]);
+  if (roles.includes("FOUNDER")) return pick([
+    "其创立势力，为后来政权留下可辨认的政治起点。",
+    "本政权前身由其开其端绪，势力创始是其最明确的历史位置。",
+    "其举事并创建势力，后来的国家沿此政治起点发展。",
+    "创立势力是其可考之功；其后国家如何成形，还要看继任者的作为。",
+    "其留下草创政权的起点，但这不等同于正式建国。",
   ]);
   if (roles.includes("EXPANDER")) return pick([
     "疆域扩展是其最显著的作为，国家规模由此发生实质变化。",
     "其历史分量主要来自开拓，所达峰值与最终留存仍须分别看待。",
     "开疆有据，拓展构成其主要功业；得地之后能否维持，则另有后话。",
+    "疆域在其任内明显扩大，开拓构成其最突出的可考功绩。",
+    "其推动国家版图外展，历史分量主要落在这一拓境成果上。",
   ]);
   if (roles.includes("STEWARD")) return "其治下未见显著收缩，长期维持秩序与政权，是可据史实称道之处。";
-  if (roles.includes("SHORT_REIGN")) return "在位短暂，现存记录不足以支持更重的功过判断。";
+  if (roles.includes("SHORT_REIGN")) return pick([
+    "在位短暂，现存记录不足以支持更重的功过判断。",
+    "其统治时间有限，尚难据此形成完整的功过结论。",
+    "短暂在位留下的材料有限，对其治绩宜持审慎判断。",
+    "其治期不长，现有事实还不足以支持更广泛的评价。",
+    "在位未久，除已见的具体事件外，不宜作过多推断。",
+  ]);
   return "其可见历史评价应以现存事迹为限，不宜作超出证据的推断。";
 }
 
@@ -596,6 +666,10 @@ function hasGovernanceCost(evidence: RulerHistoricalEvidence) {
 
 function formatPercent(value: number) {
   return `${(value * 100).toFixed(0)}%`;
+}
+
+function formatPrecisePercent(value: number) {
+  return `${(value * 100).toFixed(1)}%`;
 }
 
 function getTerritorialScaleJudgement(share: number) {

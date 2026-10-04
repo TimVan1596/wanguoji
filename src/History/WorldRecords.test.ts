@@ -108,6 +108,55 @@ describe("world records and curiosities", () => {
     expect(result.some((record) => record.value.includes("临淄义军"))).toBe(false);
   });
 
+  it("shows active World Record holders with their current polity and sovereign title", () => {
+    const active = ruler("active", { endYear: undefined, status: "ruling", posthumousEpithet: undefined, templeName: undefined });
+    const kingdom = faction("stable-king", {
+      displayName: "党", nameHistory: [{ name: "党", startMonth: 0 }],
+      sovereigntyRank: "KING", sovereigntyHistory: [{ rank: "KING", startMonth: 0 }],
+    });
+    const kingRecord = records([{ factionId: "stable-king", rulers: [active] }], [], [], [kingdom] as any)
+      .find((record) => record.id === "longest-reign");
+    expect(kingRecord?.value).toContain("党王嬴平");
+
+    const empire = faction("stable-emperor", {
+      displayName: "燕", nameHistory: [{ name: "燕", startMonth: 0 }],
+      sovereigntyRank: "EMPEROR", sovereigntyHistory: [{ rank: "EMPEROR", startMonth: 0 }],
+    });
+    const emperorRecord = records([{ factionId: "stable-emperor", rulers: [active] }], [], [], [empire] as any)
+      .find((record) => record.id === "longest-reign");
+    expect(emperorRecord?.value).toContain("燕帝嬴平");
+  });
+
+  it("uses the pre-state faction name and leader title for a ruler event before formal founding", () => {
+    const preStateFaction = faction("stable-id", {
+      displayName: "党", identityStage: "STATE", stateFoundedMonth: 100,
+      nameHistory: [
+        { name: "新郑义军", startMonth: 0, endMonth: 99 },
+        { name: "党", startMonth: 100 },
+      ],
+      sovereigntyRank: "KING",
+      sovereigntyHistory: [
+        { rank: "LEADER", startMonth: 0, endMonth: 99 },
+        { rank: "KING", startMonth: 100 },
+      ],
+    });
+    const activeRuler = ruler("leader", {
+      accessionYear: 20, endYear: undefined, status: "ruling",
+      posthumousEpithet: undefined, templeName: undefined,
+    });
+    const eventAtMonth = event("unification", "world-unification", {
+      monthIndex: 80, year: 80, actorFactionId: "stable-id", rulerId: "leader",
+    });
+
+    const record = records(
+      [{ factionId: "stable-id", rulers: [activeRuler] }],
+      [eventAtMonth], [], [preStateFaction] as any,
+    ).find((item) => item.id === "first-unification");
+
+    expect(record?.value).toContain("新郑义军首领嬴平");
+    expect(record?.value).not.toContain("党王嬴平");
+  });
+
   it("reports greatest land loss, longest life, and shortest completed formal reign only when meaningful", () => {
     const lost = ruler("lost", {
       endYear: 240,
