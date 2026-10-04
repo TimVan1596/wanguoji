@@ -1328,7 +1328,7 @@ class WorldHistoryStore {
 
   private observeFactionFalls(year: number, teams: Team[]) {
     teams.forEach((team) => {
-      if (team.status === "EXTINCT") {
+      if (team.status === "EXTINCT" && team.terminationReason !== "MERGED") {
         this.addFactionExtinct(
           year,
           team.name,

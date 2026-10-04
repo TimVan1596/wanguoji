@@ -3,7 +3,6 @@ import type City from "../Components/City";
 import WorldHistory from "../History/WorldHistory";
 import { calculateTerritoryMetrics, getFactionTerritoryMetric } from "../Simulation/TerritoryMetrics";
 import { areFactionsTerritoriallyAdjacent, ALLIANCE_DURATION_MONTHS, ALLIANCE_MIN_NON_AGGRESSION_MONTHS, ALLIANCE_MIN_TRUCE_MONTHS_BEFORE_NON_AGGRESSION } from "./StrategicUnionRules";
-import Game from "../Game/Game";
 
 export type DiplomaticStatus = "NEUTRAL" | "TRUCE" | "NON_AGGRESSION" | "ALLIANCE";
 export type DiplomaticReason = "WAR_EXHAUSTION_TRUCE" | "COMMON_THREAT_NON_AGGRESSION" | "COMMON_THREAT_ALLIANCE";
@@ -111,7 +110,12 @@ export class DiplomacyRegistry {
 }
 
 export class DiplomacySystem {
-  constructor(private readonly registry: DiplomacyRegistry, private readonly cities: () => City[], private readonly emit: (event: {type: "truce-signed" | "non-aggression-signed" | "alliance-signed" | "treaty-expired" | "alliance-expired"; month: number; relation: DiplomaticRelation; triggerContext?: DiplomacyTriggerContext}) => void) {}
+  constructor(
+    private readonly registry: DiplomacyRegistry,
+    private readonly cities: () => City[],
+    private readonly emit: (event: {type: "truce-signed" | "non-aggression-signed" | "alliance-signed" | "treaty-expired" | "alliance-expired"; month: number; relation: DiplomaticRelation; triggerContext?: DiplomacyTriggerContext}) => void,
+    private readonly blockSize = 0,
+  ) {}
 
   update(worldMonth: number, teams: Team[], totalCells: number, recentEvents = WorldHistory.getEventsBetween(Math.max(0, worldMonth - DIPLOMACY_RECENT_WAR_MONTHS), worldMonth)) {
     const expiredThisMonth = new Set<string>();
@@ -138,9 +142,7 @@ export class DiplomacySystem {
       const involved = new Set([...(event.factionIds ?? []), event.actorFactionId, event.targetFactionId].filter((id): id is string => Boolean(id)));
       return involved.has(aId) && involved.has(bId);
     });
-    const adjacent = (a: Team, b: Team) => {
-      return areFactionsTerritoriallyAdjacent(a, b, Game.BlockSize);
-    };
+    const adjacent = (a: Team, b: Team) => areFactionsTerritoriallyAdjacent(a, b, this.blockSize);
     const sharedThreat = (a: Team, b: Team, requireStrategicContact: boolean) => active
       .filter((candidate) => candidate !== a && candidate !== b)
       .map((threat) => ({ threat, share: shares(threat) }))

@@ -2,7 +2,7 @@ import { APP_VERSION } from "../config/version";
 import { WORLD_RNG_ALGORITHM, WorldRandomState } from "../Simulation/WorldRandom";
 import type { DiplomaticRelation } from "../Politics/Diplomacy";
 
-export const CURRENT_SAVE_SCHEMA_VERSION = 5 as const;
+export const CURRENT_SAVE_SCHEMA_VERSION = 6 as const;
 
 export interface FactionSaveV1 {
   factionId: string;
@@ -15,6 +15,9 @@ export interface FactionSaveV1 {
   lastExiledMonth?: number;
   restorationMonths: number[];
   extinctionMonth?: number;
+  terminationReason?: "EXTINCT" | "MERGED";
+  mergedIntoFactionId?: string;
+  mergedMonth?: number;
   cumulativeActiveMonths: number;
   identityStage: string;
   sovereigntyRank: string;
@@ -132,7 +135,7 @@ export interface WorldEventSystemSaveV1 {
   cycleState: WorldCycleStateSaveV1;
 }
 
-export interface WorldSaveV5 {
+export interface WorldSaveV6 {
   saveSchemaVersion: typeof CURRENT_SAVE_SCHEMA_VERSION;
   appVersion: string;
   createdAt?: string;
@@ -166,7 +169,7 @@ export interface WorldSaveV5 {
   diplomacy: { relations: DiplomaticRelation[]; lastEvaluationMonth: number };
 }
 
-export function createEmptyWorldSaveV5(): WorldSaveV5 {
+export function createEmptyWorldSaveV6(): WorldSaveV6 {
   return {
     saveSchemaVersion: CURRENT_SAVE_SCHEMA_VERSION,
     appVersion: APP_VERSION,
@@ -206,14 +209,16 @@ export function createEmptyWorldSaveV5(): WorldSaveV5 {
 }
 
 /** Internal call-site aliases; persisted saves still identify their exact schema number. */
-export type WorldSaveV4 = WorldSaveV5;
-export type WorldSaveV3 = WorldSaveV5;
-export type WorldSaveV2 = WorldSaveV5;
-export type WorldSaveV1 = WorldSaveV5;
-export const createEmptyWorldSaveV4 = createEmptyWorldSaveV5;
-export const createEmptyWorldSaveV3 = createEmptyWorldSaveV5;
-export const createEmptyWorldSaveV2 = createEmptyWorldSaveV5;
-export const createEmptyWorldSaveV1 = createEmptyWorldSaveV5;
+export type WorldSaveV5 = WorldSaveV6;
+export type WorldSaveV4 = WorldSaveV6;
+export type WorldSaveV3 = WorldSaveV6;
+export type WorldSaveV2 = WorldSaveV6;
+export type WorldSaveV1 = WorldSaveV6;
+export const createEmptyWorldSaveV5 = createEmptyWorldSaveV6;
+export const createEmptyWorldSaveV4 = createEmptyWorldSaveV6;
+export const createEmptyWorldSaveV3 = createEmptyWorldSaveV6;
+export const createEmptyWorldSaveV2 = createEmptyWorldSaveV6;
+export const createEmptyWorldSaveV1 = createEmptyWorldSaveV6;
 
 export function canonicalWorldSaveProjection(save: WorldSaveV1) {
   const { createdAt: _createdAt, ...canonical } = save;

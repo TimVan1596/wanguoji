@@ -334,7 +334,7 @@ function FactionProfile({
         </Typography>
       </Box>
       <Typography fontSize="0.84rem" color="var(--gg-text-muted)" sx={{ mt: 0.25 }}>
-        {regimeLevel} · {formatStatus(team.status)} · 天下第{rankIndex}
+        {regimeLevel} · {formatStatus(team.status, team.terminationReason)} · 天下第{rankIndex}
       </Typography>
       <Box sx={{ display: "flex", gap: 0.5, my: 1 }}>
         {[
@@ -684,7 +684,7 @@ function FactionList({
                 {getFactionRegimeBadge(team)}
               </Box>
             </span>
-            <span>{formatStatus(team.status)}</span>
+            <span>{formatStatus(team.status, team.terminationReason)}</span>
             <span>{formatWorldDate(team.firstFoundedYear)}</span>
             <span>{formatWorldDuration(getCumulativeActiveMonthsSafe(team, worldMonth))}</span>
             <span>{team.cities.length}</span>
@@ -1204,6 +1204,7 @@ function formatRulerStatus(
   if (status === "dead") {
     return "已故";
   }
+  if (status === "abdicated") return "合邦退位";
   return "君主";
 }
 
@@ -1316,14 +1317,14 @@ function formatRulerName(ruler: Ruler) {
   return `${ruler.houseName.replace(/氏$/, "")}${ruler.givenName}`;
 }
 
-function formatStatus(status: string) {
+function formatStatus(status: string, terminationReason?: string) {
   if (status === "ACTIVE") {
     return "存续";
   }
   if (status === "EXILED") {
     return "流亡";
   }
-  return "灭绝";
+  return terminationReason === "MERGED" ? "合并" : "灭绝";
 }
 
 function TrendChart({

@@ -53,6 +53,6 @@ describe("HistoryScroll Era selection UI state", () => {
   });
 
   it("uses the current WorldSave schema version without coupling Era selection to it", () => {
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(5);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(6);
   });
 });

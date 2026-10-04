@@ -90,7 +90,7 @@ export default class AutoSimulator {
       ]),
       importance: type === "non-aggression-signed" || type === "alliance-signed" ? "major" : "normal",
     });
-  });
+  }, Game.BlockSize);
 
   startWorld(
     teams: Team[],
