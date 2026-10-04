@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99924d4
+
+- Prioritized very large territorial expansion over generic tragic-death commentary, with expansion as the main judgment and battle death only as a closing outcome.
+- Removed unsupported “premature”/“sudden” age implications from ordinary expansion-and-tragedy wording; short-reign tragic phrasing remains gated by short-reign evidence.
+- No gameplay or WorldSave schema changes.
+
 ## v0.99924d3
 
 - Prevented STEWARD from overlapping with meaningful expansion; assessment, tags, and historian voice now prioritize EXPANDER, including explicit large-scale territorial gains.

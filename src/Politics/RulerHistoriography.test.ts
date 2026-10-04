@@ -190,6 +190,58 @@ describe("evidence-grounded ruler historiography", () => {
     expect(voice).not.toMatch(/勇猛|无能|穷兵黩武|好战/);
   });
 
+  it("keeps a +60pp expansion primary when the ruler dies in battle", () => {
+    const context = makeContext({
+      age: 8, endMonth: 34 * 12 + 1, endReason: "战死", deathCause: "战死",
+      start: { population: 5, territoryShare: 0.103, cityCount: 3, stability: 73 },
+      end: { population: 166, territoryShare: 0.704, cityCount: 11, stability: 95 },
+    });
+    const evidence = deriveRulerHistoricalEvidence(context);
+    expect(evidence.roles).toContain("EXPANDER");
+    expect(evidence.roles).not.toContain("STEWARD");
+    expect(buildRulerTags(evidence)).toContain("开疆");
+    expect(buildRulerTags(evidence)).not.toContain("守成");
+    const voice = composeHistorianVoice(evidence)!;
+    expect(voice).toMatch(/大规模拓境|改变天下格局|重塑.*力量对比|版图大幅外展/);
+    expect(voice).toContain("战死");
+    expect(voice).not.toMatch(/事业未竟|止于兵事$/);
+  });
+
+  it("does not describe a 79-year-old long-reigning battlefield death as premature", () => {
+    const context = makeContext({
+      age: 47, endMonth: 32 * 12 + 2, endReason: "战死", deathCause: "战死",
+      start: { territoryShare: 0.18, cityCount: 3, stability: 70 },
+      end: { territoryShare: 0.818, cityCount: 12, stability: 84 },
+    });
+    const evidence = deriveRulerHistoricalEvidence(context);
+    expect(evidence.finalAge).toBe(79);
+    expect(evidence.roles).toContain("EXPANDER");
+    expect(evidence.roles).toContain("TRAGIC_RULER");
+    const voice = composeHistorianVoice(evidence)!;
+    expect(voice).toContain("大规模拓境");
+    expect(voice).toContain("战死");
+    expect(voice).not.toMatch(/过早|骤逝|未及展开|英年/);
+  });
+
+  it("keeps neutral tragic wording for ordinary expansion and short-reign wording evidence-gated", () => {
+    const ordinary = deriveRulerHistoricalEvidence(makeContext({
+      age: 30, endMonth: 15 * 12, endReason: "战死", deathCause: "战死",
+      start: { territoryShare: 0.1 }, end: { territoryShare: 0.29 },
+    }));
+    expect(ordinary.roles).toContain("EXPANDER");
+    const ordinaryVoice = composeHistorianVoice(ordinary)!;
+    expect(ordinaryVoice).toMatch(/最终|止于军中|因战死而终/);
+    expect(ordinaryVoice).not.toMatch(/过早|骤逝|未及展开|英年/);
+
+    const shortYoung = deriveRulerHistoricalEvidence(makeContext({
+      age: 15, endMonth: 24, endReason: "战死", deathCause: "战死",
+      start: { territoryShare: 0.1 }, end: { territoryShare: 0.25 },
+    }));
+    expect(shortYoung.roles).toContain("SHORT_REIGN");
+    expect(shortYoung.roles).toContain("TRAGIC_RULER");
+    expect(composeHistorianVoice(shortYoung)).toMatch(/短祚|短暂|短促|有限|年少/);
+  });
+
   it("recognizes the first emperor's institutional turning point", () => {
     const context = makeContext({ proclaimedEmperorMonth: 60 });
     const result = deriveRulerAssessment(context);

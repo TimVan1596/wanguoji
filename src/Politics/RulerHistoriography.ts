@@ -543,24 +543,6 @@ export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string
     "疆域有所拓展，人口或稳定却出现明确损耗；开拓成果与治理代价并存。",
     "其拓境之功可见，人口或稳定的下行也有记录；两面皆是其统治遗产。",
   ]);
-  if (roles.includes("EXPANDER") && roles.includes("TRAGIC_RULER")) return pick([
-    "拓境之功尚在，而其身已止于兵事；事业未竟，结局亦成为其历史的一部分。",
-    "其在进取中留下可见战果，终局却来得过早，未竟之业遂与开拓之功并存。",
-    "功业见于疆土与战事，遗憾亦见于骤然的结局；后世所论，当兼看两端。",
-    "疆域拓展已有实证，然而统治因战死骤然终止，未竟之处亦须记入其史。",
-    "开拓的结果留在版图中，过早的战死则截断了其后的政治进程。",
-  ]);
-  if (roles.includes("EXPANDER") && evidence.territoryDelta >= 0.3) {
-    const start = formatPrecisePercent(evidence.startTerritory);
-    const end = formatPrecisePercent(evidence.endTerritory);
-    return pick([
-      `其在位疆域由${start}扩至${end}，大规模拓境改变天下格局，开疆成为核心功业。`,
-      `版图从${start}增至${end}，显著扩张重塑了当时的天下力量对比。`,
-      `由${start}至${end}的疆域跃升，足见其拓境之举已深刻改变天下局势。`,
-      `其世版图大幅外展：疆域${start}起而至${end}，国家规模与天下格局俱为之一变。`,
-      `疆域由${start}扩展至${end}，如此幅度的开拓构成其最重要的历史遗产。`,
-    ]);
-  }
   if (roles.includes("CONTESTED_REIGN")) {
     const duration = formatWorldDuration(evidence.tenure.activeRuleMonths);
     const territory = `${formatPrecisePercent(evidence.startTerritory)}至${formatPrecisePercent(evidence.endTerritory)}`;
@@ -594,6 +576,46 @@ export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string
     "其曾创在位期间的疆域高点，却未能把峰值留到身后。",
     "拓展所至可称一时之盛，身后回落亦不可掩；其功与其失正在此处相接。",
   ]);
+  if (roles.includes("EXPANDER") && evidence.territoryDelta >= 0.3) {
+    const start = formatPrecisePercent(evidence.startTerritory);
+    const end = formatPrecisePercent(evidence.endTerritory);
+    const polity = evidence.formalStateAtReignEnd ? "国家" : "势力";
+    const ending = roles.includes("TRAGIC_RULER")
+      ? evidence.deathCause === "战死" ? "统治最终以战死告终。" : "统治最终以暴力结局告终。"
+      : "";
+    return pick([
+      `其在位疆域由${start}扩至${end}，大规模拓境改变天下格局，开疆成为核心功业。${ending}`,
+      `版图从${start}增至${end}，显著扩张重塑了当时的天下力量对比。${ending}`,
+      `由${start}至${end}的疆域跃升，足见其拓境之举已深刻改变天下局势。${ending}`,
+      `其世版图大幅外展：疆域${start}起而至${end}，${polity}规模与天下格局俱为之一变。${ending}`,
+      `疆域由${start}扩展至${end}，如此幅度的开拓构成其最重要的历史遗产。${ending}`,
+    ]);
+  }
+  if (roles.includes("SHORT_REIGN") && roles.includes("TRAGIC_RULER")) return pick([
+    "在位短促而结局惨烈，现有事迹不足以铺陈完整治绩，国难与骤逝已是其史中重笔。",
+    "短暂统治未及展开，战死或国难却已定下其结局；论其功过，当以谨慎为先。",
+    "其治期甚短，无法据此作宽泛评断；可确言者，是功业未展而终局骤至。",
+    "短祚之中遭遇战死或国难，现存事实足以说明结局，却不足以概括一生治绩。",
+    "其位不久而终局骤至；应记下所见国难，不宜据此补写未有的治绩。",
+  ]);
+  if (roles.includes("EXPANDER") && roles.includes("TRAGIC_RULER")) {
+    if (evidence.roles.includes("SHORT_REIGN") || (evidence.finalAge !== undefined && evidence.finalAge <= 25)) {
+      return pick([
+        "疆域拓展已有实绩，但统治年限有限，战死使其事业未及充分展开。",
+        "短祚中仍留下拓境记录，最终战死；可见功业有限，结局明确。",
+        "其在有限在位时间内有所开拓，终局以战死告终，未竟之处由此可见。",
+        "年少或短暂的统治留下拓境实绩，随后战死，未能继续其政治进程。",
+        "开拓已经见于疆土变化，短暂统治却止于战事，后续发展无从验证。",
+      ]);
+    }
+    return pick([
+      "拓境之功尚在，其统治最终止于兵事；结局亦是其历史的一部分。",
+      "其在进取中留下可见战果，最终战死，功业与结局并存。",
+      "功业见于疆土与战事，最终结局亦应与拓境之绩一并记载。",
+      "疆域拓展已有实证，其统治最终因战死而终。",
+      "开拓的结果留在版图中，其一生最终止于军中。",
+    ]);
+  }
   if (roles.includes("LONG_EXILE")) return pick([
     `其承统岁月多在流亡中度过，历史位置主要系于王统延续，而非持续治理在国政权。`,
     `流亡占据其承统生涯的大部，王统未绝是其身后最重要的遗留。`,
@@ -603,13 +625,6 @@ export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string
     "国亡于其世，但即位时的国势与此前危局亦须一并考量，不可把结局本身当作全部因果。",
     "其以末主身份承受国祚终结；判断其责任，还须分辨危局始于何时。",
     "王朝终于其世是确切结局，至于衰亡由来，则不能只凭末日一事定论。",
-  ]);
-  if (roles.includes("SHORT_REIGN") && roles.includes("TRAGIC_RULER")) return pick([
-    "在位短促而结局惨烈，现有事迹不足以铺陈完整治绩，国难与骤逝已是其史中重笔。",
-    "短暂统治未及展开，战死或国难却已定下其结局；论其功过，当以谨慎为先。",
-    "其治期甚短，无法据此作宽泛评断；可确言者，是功业未展而终局骤至。",
-    "短祚之中遭遇战死或国难，现存事实足以说明结局，却不足以概括一生治绩。",
-    "其位不久而终局骤至；应记下所见国难，不宜据此补写未有的治绩。",
   ]);
   if (roles.includes("STEWARD")) return pick([
     "疆域无大起落而政权得以长久维持，守成之功在于使秩序不失。",
