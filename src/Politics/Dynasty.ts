@@ -50,16 +50,20 @@ import {
 import { predeceasedParentByMonth } from "./RulerPresentationRules";
 import {
   getCandidateParentsToReplenish,
-  MAX_DYNASTIC_SUCCESSION_CANDIDATES,
+  getDynasticCandidateCap,
+  selectActiveDynasticCandidateIds,
   selectRecordedDynasticSuccessor,
 } from "./DynasticCandidateRules";
 
-export type RulerStatus = "ruling" | "exiled" | "heir" | "dead";
+export type RulerStatus = "ruling" | "exiled" | "heir" | "kin" | "dead";
 export type RulerRelationType =
   | "FOUNDER"
   | "DIRECT_CHILD"
   | "GRANDCHILD"
   | "SIBLING"
+  | "NEPHEW"
+  | "UNCLE"
+  | "COUSIN"
   | "COLLATERAL_KIN"
   | "NEW_HOUSE"
   | "LEADER_SUCCESSOR";
@@ -237,7 +241,7 @@ class DynastyRegistryStore {
       finalizeRulerPosthumousNames(ruler, dynasty?.rulers ?? [], team, year);
     }
     if (dynasty) {
-      this.archiveHeirs(dynasty, year, "王统断绝");
+      this.archiveHeirs(dynasty);
       dynasty.currentRulerId = null;
     }
     team.removeRulerUnit(true);
@@ -668,6 +672,24 @@ class DynastyRegistryStore {
 
   private ensureActiveHeir(team: Team, dynasty: Dynasty, year: number) {
     const current = this.getCurrentRuler(team.name);
+    const candidateCap = getDynasticCandidateCap(team.identityStage, team.sovereigntyRank);
+    const isAlive = (candidate: Ruler, atMonth: number) =>
+      candidate.status !== "dead" &&
+      !isNaturallyDeadByMonth(candidate.naturalDeathYear ?? candidate.plannedEndYear, atMonth);
+    const existingCandidates = selectActiveDynasticCandidateIds({
+      currentRuler: current,
+      rulers: dynasty.rulers,
+      month: year,
+      cap: candidateCap,
+      isAlive,
+      pickIndex: (length) => length === 1 ? 0 : worldRandom.pickIndex(length),
+    });
+    const selectedIds = new Set(existingCandidates);
+    dynasty.rulers.forEach((ruler) => {
+      if (ruler.id === current?.id || ruler.status === "dead" || ruler.status === "exiled") return;
+      ruler.status = selectedIds.has(ruler.id) ? "heir" : "kin";
+    });
+    dynasty.heirIds = existingCandidates;
     if (shouldCreateActiveHeir(team.status)) {
       const parents = getCandidateParentsToReplenish({
         currentRuler: current,
@@ -675,9 +697,11 @@ class DynastyRegistryStore {
         candidateIds: dynasty.heirIds,
         month: year,
         minimumParentAgeMonths: yearsToMonths(HEIR_PARENT_MIN_AGE_AT_BIRTH),
+        candidateCap,
       });
+      const inSuccessionCrisis = team.cities.length <= 1 || (getFactionStability(team) ?? 100) <= 45;
       for (const parent of parents) {
-        if (dynasty.heirIds.length >= MAX_DYNASTIC_SUCCESSION_CANDIDATES) break;
+        if (inSuccessionCrisis || dynasty.heirIds.length >= candidateCap) break;
         const heir = this.createHeir(team, dynasty.houseName, year, parent.id);
         dynasty.rulers.push(heir);
         dynasty.heirIds.push(heir.id);
@@ -714,15 +738,14 @@ class DynastyRegistryStore {
     }
   }
 
-  private archiveHeirs(dynasty: Dynasty, year: number, reason: string) {
+  private archiveHeirs(dynasty: Dynasty) {
     dynasty.heirIds.forEach((heirId) => {
       const heir = dynasty.rulers.find((ruler) => ruler.id === heirId);
       if (!heir || heir.reignOrdinal !== undefined || heir.status === "dead") {
         return;
       }
-      heir.status = "dead";
-      heir.politicalEndYear = year;
-      heir.endReason = reason;
+      // Extinction ends succession eligibility, not the person's life.
+      heir.status = "kin";
     });
     dynasty.heirIds = [];
     dynasty.designatedHeirId = undefined;
@@ -730,16 +753,16 @@ class DynastyRegistryStore {
   }
 
   private archiveNaturallyDeadHeirs(dynasty: Dynasty, year: number) {
-    dynasty.heirIds.forEach((heirId) => {
-      const heir = dynasty.rulers.find((ruler) => ruler.id === heirId);
+    dynasty.rulers.forEach((heir) => {
       if (
-        !heir ||
         heir.status === "dead" ||
+        heir.status !== "heir" && heir.status !== "kin" ||
         heir.reignOrdinal !== undefined ||
         !isNaturallyDeadByMonth(heir.naturalDeathYear ?? heir.plannedEndYear, year)
       ) {
         return;
       }
+      const wasActiveCandidate = heir.status === "heir";
       heir.status = "dead";
       heir.politicalEndYear = year;
       heir.endYear = year;
@@ -749,6 +772,7 @@ class DynastyRegistryStore {
         : undefined;
       const heirDeathMonth = heir.naturalDeathYear ?? heir.plannedEndYear;
       if (
+        wasActiveCandidate &&
         parent?.chronicle &&
         heirDeathMonth !== undefined &&
         predeceasedParentByMonth(heirDeathMonth, parent.endYear)
@@ -768,10 +792,7 @@ class DynastyRegistryStore {
         parent.chronicle.notableEventIds.push(eventId);
       }
     });
-    dynasty.heirIds = dynasty.heirIds.filter((heirId) => {
-      const heir = dynasty.rulers.find((ruler) => ruler.id === heirId);
-      return Boolean(heir && heir.status !== "dead");
-    });
+    dynasty.heirIds = dynasty.heirIds.filter((heirId) => dynasty.rulers.some((ruler) => ruler.id === heirId && ruler.status === "heir"));
   }
 
   private consumeHeir(dynasty: Dynasty, predecessor: Ruler, year: number) {

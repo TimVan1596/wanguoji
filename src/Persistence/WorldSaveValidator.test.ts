@@ -48,6 +48,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
         { rulerId: "qin-ruler-1", status: "dead" },
         { rulerId: "qin-ruler-2", status: "heir", parentId: "qin-ruler-1", relationType: "DIRECT_CHILD" },
         { rulerId: "qin-ruler-3", status: "heir", parentId: "qin-ruler-2", relationType: "DIRECT_CHILD" },
+        { rulerId: "qin-ruler-4", status: "kin", parentId: "qin-ruler-1" },
       ],
     }];
     const loaded = JSON.parse(JSON.stringify(save));
@@ -55,6 +56,8 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     expect(loaded.dynasties[0].heirIds).toEqual(["qin-ruler-2", "qin-ruler-3"]);
     expect(loaded.dynasties[0]).toMatchObject({ designatedHeirId: "qin-ruler-2", designatedSinceMonth: 36 });
     expect(loaded.dynasties[0].rulers[2]).toMatchObject({ parentId: "qin-ruler-2", relationType: "DIRECT_CHILD" });
+    expect(loaded.dynasties[0].rulers[3]).toMatchObject({ rulerId: "qin-ruler-4", status: "kin", parentId: "qin-ruler-1" });
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(3);
   });
 
   it("rejects a dynasty candidate list above the runtime bound", () => {

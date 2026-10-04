@@ -7,8 +7,13 @@ export const MAX_KIN_ANCESTOR_DEPTH = 4;
 
 export type RecordedKinRelation = Extract<
   RulerRelationType,
-  "DIRECT_CHILD" | "GRANDCHILD" | "SIBLING" | "COLLATERAL_KIN"
+  "DIRECT_CHILD" | "GRANDCHILD" | "SIBLING" | "NEPHEW" | "UNCLE" | "COUSIN" | "COLLATERAL_KIN"
 >;
+
+export function getDynasticCandidateCap(identityStage: "PROVISIONAL" | "STATE", sovereigntyRank: "LEADER" | "KING" | "EMPEROR") {
+  if (identityStage === "PROVISIONAL") return 2;
+  return sovereigntyRank === "EMPEROR" ? 6 : 4;
+}
 
 function getAncestorDepths(ruler: Ruler, rulersById: Map<string, Ruler>) {
   const depths = new Map<string, number>();
@@ -36,6 +41,25 @@ export function getRecordedKinRelation(
 
   if (predecessor.parentId && candidate.parentId === predecessor.parentId) return "SIBLING";
 
+  const predecessorParent = predecessor.parentId ? rulersById.get(predecessor.parentId) : undefined;
+  if (
+    candidateParent && predecessorParent &&
+    candidateParent.id !== predecessor.id &&
+    candidateParent.parentId !== undefined &&
+    candidateParent.parentId === predecessor.parentId
+  ) return "NEPHEW";
+  if (
+    predecessorParent && candidateParent &&
+    predecessorParent.id !== candidateParent.id &&
+    predecessorParent.parentId !== undefined &&
+    predecessorParent.parentId === candidateParent.parentId
+  ) return "COUSIN";
+  if (
+    predecessorParent?.parentId &&
+    candidate.parentId === predecessorParent.parentId &&
+    candidate.id !== predecessorParent.id
+  ) return "UNCLE";
+
   const predecessorAncestors = getAncestorDepths(predecessor, rulersById);
   const candidateAncestors = getAncestorDepths(candidate, rulersById);
   const sharesRecordedAncestor = [...candidateAncestors.keys()].some((ancestorId) =>
@@ -50,8 +74,49 @@ const relationPriority: Record<RecordedKinRelation, number> = {
   DIRECT_CHILD: 0,
   GRANDCHILD: 1,
   SIBLING: 2,
-  COLLATERAL_KIN: 3,
+  NEPHEW: 3,
+  UNCLE: 4,
+  COUSIN: 5,
+  COLLATERAL_KIN: 6,
 };
+
+export function selectActiveDynasticCandidateIds({
+  currentRuler,
+  rulers,
+  month,
+  cap,
+  isAlive,
+  pickIndex,
+}: {
+  currentRuler: Ruler | undefined;
+  rulers: Ruler[];
+  month: number;
+  cap: number;
+  isAlive: (ruler: Ruler, month: number) => boolean;
+  pickIndex: (length: number) => number;
+}): string[] {
+  if (!currentRuler || cap <= 0) return [];
+  const ranked = rulers.flatMap((ruler) => {
+    if (ruler.id === currentRuler.id || (ruler.status !== "heir" && ruler.status !== "kin") || ruler.houseName !== currentRuler.houseName || !isAlive(ruler, month)) return [];
+    const relation = getRecordedKinRelation(ruler, currentRuler, rulers);
+    return relation ? [{ ruler, priority: relationPriority[relation] }] : [];
+  }).sort((a, b) => a.priority - b.priority || a.ruler.bornYear - b.ruler.bornYear || a.ruler.id.localeCompare(b.ruler.id));
+  const selected: string[] = [];
+  let cursor = 0;
+  while (cursor < ranked.length && selected.length < cap) {
+    const item = ranked[cursor];
+    const tied = ranked.slice(cursor).filter((candidate) => candidate.priority === item.priority && candidate.ruler.bornYear === item.ruler.bornYear);
+    const tieIds = new Set(tied.map(({ ruler }) => ruler.id));
+    const tiePool = ranked.filter(({ ruler }) => tieIds.has(ruler.id));
+    while (tiePool.length && selected.length < cap) {
+      const index = tiePool.length === 1 ? 0 : pickIndex(tiePool.length);
+      selected.push(tiePool.splice(index, 1)[0].ruler.id);
+    }
+    cursor = ranked.findIndex((candidate, index) => index >= cursor && !tieIds.has(candidate.ruler.id));
+    if (cursor < 0) break;
+  }
+  return selected;
+}
 
 export function selectRecordedDynasticSuccessor({
   predecessor,
@@ -84,10 +149,14 @@ export function selectRecordedDynasticSuccessor({
   if (!eligible.length) return undefined;
 
   const priority = Math.min(...eligible.map(({ relationType }) => relationPriority[relationType]));
-  const closestKin = eligible.filter(({ relationType }) => relationPriority[relationType] === priority);
-  const preferred = closestKin.find(({ ruler }) => ruler.id === preferredCandidateId);
+  const closestKin = eligible
+    .filter(({ relationType }) => relationPriority[relationType] === priority)
+    .sort((a, b) => a.ruler.bornYear - b.ruler.bornYear);
+  const oldestBornMonth = closestKin[0].ruler.bornYear;
+  const sameAge = closestKin.filter(({ ruler }) => ruler.bornYear === oldestBornMonth);
+  const preferred = sameAge.find(({ ruler }) => ruler.id === preferredCandidateId);
   if (preferred) return preferred;
-  return closestKin[pickIndex(closestKin.length)];
+  return sameAge[pickIndex(sameAge.length)];
 }
 
 export function formatRecordedKinship(candidate: Ruler, currentRuler: Ruler, rulers: Ruler[]) {
@@ -98,6 +167,16 @@ export function formatRecordedKinship(candidate: Ruler, currentRuler: Ruler, rul
     if (candidate.bornYear < currentRuler.bornYear) return "当今君主之兄";
     if (candidate.bornYear > currentRuler.bornYear) return "当今君主之弟";
     return "当今君主之兄弟";
+  }
+  if (relation === "NEPHEW") return "当今君主之侄";
+  if (relation === "UNCLE") {
+    const parent = currentRuler.parentId ? rulers.find((ruler) => ruler.id === currentRuler.parentId) : undefined;
+    if (parent && candidate.bornYear < parent.bornYear) return "当今君主之伯父";
+    if (parent && candidate.bornYear > parent.bornYear) return "当今君主之叔父";
+    return "当今君主之伯叔";
+  }
+  if (relation === "COUSIN") {
+    return candidate.bornYear < currentRuler.bornYear ? "当今君主之堂兄" : candidate.bornYear > currentRuler.bornYear ? "当今君主之堂弟" : "当今君主之堂兄弟";
   }
   return relation === "COLLATERAL_KIN" ? "宗室旁支" : "关系未记录";
 }
@@ -116,6 +195,9 @@ export function getSuccessionBackground(ruler: Ruler, rulers: Ruler[]) {
     return predeceasedChild ? "直系子嗣早逝，由孙辈承统" : "前君之孙承统";
   }
   if (ruler.relationType === "SIBLING") return "前君无可继的直系候选，由其兄弟承统";
+  if (ruler.relationType === "NEPHEW") return "前君直系与同辈候选无可继者，由其侄辈承统";
+  if (ruler.relationType === "UNCLE") return "前君直系候选无可继者，由其伯叔承统";
+  if (ruler.relationType === "COUSIN") return "前君近支无可继者，由堂支承统";
   if (ruler.relationType === "COLLATERAL_KIN") return "近支候选无可继者，由宗室旁支承统";
   if (ruler.relationType === "NEW_HOUSE") return "记录中的宗室候选已无可继者，遂易姓续统";
   if (ruler.relationType === "LEADER_SUCCESSOR") return "非世袭首领继任";
@@ -127,6 +209,26 @@ export interface PoliticalGenealogyNode {
   children: PoliticalGenealogyNode[];
 }
 
+export interface PoliticalGenealogyEdge {
+  fromId: string;
+  toId: string;
+  type: "KINSHIP" | "SUCCESSION";
+  crossBranch?: boolean;
+}
+
+export function buildPoliticalGenealogyEdges(rulers: Ruler[], includedIds?: Set<string>): PoliticalGenealogyEdge[] {
+  const included = includedIds ?? new Set(rulers.map((ruler) => ruler.id));
+  const edges: PoliticalGenealogyEdge[] = [];
+  for (const ruler of rulers) {
+    if (!included.has(ruler.id)) continue;
+    if (ruler.parentId && included.has(ruler.parentId)) edges.push({ fromId: ruler.parentId, toId: ruler.id, type: "KINSHIP" });
+    if (ruler.predecessorId && included.has(ruler.predecessorId)) {
+      edges.push({ fromId: ruler.predecessorId, toId: ruler.id, type: "SUCCESSION", crossBranch: ruler.parentId !== ruler.predecessorId });
+    }
+  }
+  return edges;
+}
+
 /** Build only the political dynasty graph, adding ancestors solely as links for recorded descendants. */
 export function buildPoliticalGenealogy(
   rulers: Ruler[],
@@ -136,7 +238,7 @@ export function buildPoliticalGenealogy(
 ): PoliticalGenealogyNode[] {
   const byId = new Map(rulers.map((ruler) => [ruler.id, ruler]));
   const included = new Set(rulers
-    .filter((ruler) => ruler.reignOrdinal !== undefined || ruler.id === currentRulerId || ruler.id === designatedHeirId || candidateIds.includes(ruler.id))
+    .filter((ruler) => ruler.reignOrdinal !== undefined || ruler.id === currentRulerId || ruler.id === designatedHeirId || candidateIds.includes(ruler.id) || ruler.status === "kin")
     .map((ruler) => ruler.id));
   for (const id of [...included]) {
     let parentId = byId.get(id)?.parentId;
@@ -190,14 +292,16 @@ export function getCandidateParentsToReplenish({
   candidateIds,
   month,
   minimumParentAgeMonths,
+  candidateCap = MAX_DYNASTIC_SUCCESSION_CANDIDATES,
 }: {
   currentRuler: Ruler | undefined;
   rulers: Ruler[];
   candidateIds: string[];
   month: number;
   minimumParentAgeMonths: number;
+  candidateCap?: number;
 }): Ruler[] {
-  const openSlots = MAX_DYNASTIC_SUCCESSION_CANDIDATES - candidateIds.length;
+  const openSlots = candidateCap - candidateIds.length;
   if (openSlots <= 0) return [];
 
   const rulersById = new Map(rulers.map((ruler) => [ruler.id, ruler]));

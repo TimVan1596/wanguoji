@@ -4,10 +4,13 @@ import type { Ruler } from "./Dynasty";
 import {
   getCandidateParentsToReplenish,
   buildPoliticalGenealogy,
+  buildPoliticalGenealogyEdges,
   formatRecordedKinship,
+  getDynasticCandidateCap,
   getSuccessionBackground,
   MAX_DYNASTIC_SUCCESSION_CANDIDATES,
   selectRecordedDynasticSuccessor,
+  selectActiveDynasticCandidateIds,
 } from "./DynasticCandidateRules";
 
 function ruler(id: string, parentId: string | undefined, status: Ruler["status"] = "heir"): Ruler {
@@ -55,6 +58,38 @@ describe("recorded dynastic succession candidates", () => {
       ruler: sibling,
       relationType: "SIBLING",
     });
+  });
+
+  it("uses age before randomness among same-tier kin", () => {
+    const father = ruler("father", undefined, "dead");
+    const predecessor = ruler("r", "father", "ruling");
+    const younger = { ...ruler("younger", "father"), bornYear: 40 };
+    const older = { ...ruler("older", "father"), bornYear: 20 };
+    const pickIndex = () => { throw new Error("age resolves this choice; RNG must not be used"); };
+    expect(selectRecordedDynasticSuccessor({
+      predecessor, candidates: [younger, older], rulers: [father, predecessor, younger, older],
+      houseName: "姬氏", month: 1200, isAlive: () => true, pickIndex,
+    })?.ruler.id).toBe("older");
+  });
+
+  it("caps active candidates by political stage and rank", () => {
+    expect(getDynasticCandidateCap("PROVISIONAL", "LEADER")).toBe(2);
+    expect(getDynasticCandidateCap("STATE", "KING")).toBe(4);
+    expect(getDynasticCandidateCap("STATE", "EMPEROR")).toBe(6);
+  });
+
+  it("re-evaluates active kin shortlist for a new ruler without removing living kin from genealogy", () => {
+    const grandfather = ruler("grandfather", undefined, "dead");
+    const oldRuler = { ...ruler("old", "grandfather", "dead"), bornYear: 100 };
+    const newRuler = { ...ruler("new", "grandfather", "ruling"), bornYear: 80 };
+    const newRulerChild = { ...ruler("child", "new", "kin"), bornYear: 300 };
+    const distant = { ...ruler("distant", "old", "kin"), bornYear: 150 };
+    const rulers = [grandfather, oldRuler, newRuler, newRulerChild, distant];
+    const active = selectActiveDynasticCandidateIds({ currentRuler: newRuler, rulers, month: 500, cap: 1, isAlive: (candidate) => candidate.status !== "dead", pickIndex: () => 0 });
+    expect(active).toEqual([newRulerChild.id]);
+    expect(distant.status).toBe("kin");
+    const tree = buildPoliticalGenealogy(rulers, newRuler.id, newRulerChild.id, active);
+    expect(tree.flatMap((root) => [root.ruler.id, ...root.children.map((child) => child.ruler.id)])).toContain(distant.id);
   });
 
   it("keeps exactly one designated heir choice and replaces it when that candidate is no longer eligible", () => {
@@ -116,6 +151,30 @@ describe("recorded dynastic succession candidates", () => {
     const root = tree.find((node) => node.ruler.id === father.id)!;
     expect(root.children.map((node) => node.ruler.id)).toEqual(["brother", "r"]);
     expect(root.children.find((node) => node.ruler.id === "brother")?.children[0].ruler.id).toBe("nephew");
+  });
+
+  it("distinguishes nephew, uncle, and paternal cousin only from recorded parent links", () => {
+    const grandfather = ruler("grandfather", undefined, "dead");
+    const father = { ...ruler("father", "grandfather", "dead"), bornYear: 20 };
+    const uncle = { ...ruler("uncle", "grandfather"), bornYear: 10 };
+    const predecessor = { ...ruler("r", "father", "ruling"), bornYear: 30 };
+    const sibling = ruler("sibling", "father");
+    const nephew = ruler("nephew", "sibling");
+    const cousin = { ...ruler("cousin", "uncle"), bornYear: 40 };
+    const rulers = [grandfather, father, uncle, predecessor, sibling, nephew, cousin];
+    expect(formatRecordedKinship(nephew, predecessor, rulers)).toBe("当今君主之侄");
+    expect(formatRecordedKinship(uncle, predecessor, rulers)).toBe("当今君主之伯父");
+    expect(formatRecordedKinship(cousin, predecessor, rulers)).toBe("当今君主之堂弟");
+  });
+
+  it("builds distinct bloodline and succession edges, including cross-branch succession", () => {
+    const father = ruler("father", undefined, "dead");
+    const predecessor = { ...ruler("predecessor", "father", "dead"), reignOrdinal: 1 };
+    const uncle = ruler("uncle", "father", "dead");
+    const successor = { ...ruler("successor", "uncle", "ruling"), predecessorId: predecessor.id, reignOrdinal: 2 };
+    const edges = buildPoliticalGenealogyEdges([father, predecessor, uncle, successor]);
+    expect(edges).toContainEqual({ fromId: "uncle", toId: "successor", type: "KINSHIP" });
+    expect(edges).toContainEqual({ fromId: "predecessor", toId: "successor", type: "SUCCESSION", crossBranch: true });
   });
 
   it("uses recorded collateral kin and leaves the existing fallback when no valid kin remains", () => {

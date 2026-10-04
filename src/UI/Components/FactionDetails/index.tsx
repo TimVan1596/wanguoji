@@ -55,6 +55,7 @@ import { deriveRulerTenureEvidence } from "../../../Politics/RulerTenureEvidence
 import { getFormalRulers, isFormalRulerRecord } from "../../../Politics/RulerPresentationRules";
 import {
   buildPoliticalGenealogy,
+  buildPoliticalGenealogyEdges,
   formatRecordedKinship,
   getSuccessionBackground,
 } from "../../../Politics/DynasticCandidateRules";
@@ -663,21 +664,36 @@ function DynastyTree({
     dynasty?.designatedHeirId,
     dynasty?.heirIds ?? []
   );
-  const renderGenealogyNode = (node: ReturnType<typeof buildPoliticalGenealogy>[number], depth = 0): ReactNode => {
+  const genealogyEdges = buildPoliticalGenealogyEdges(rulers);
+  const genealogyRulers = new Map(rulers.map((ruler) => [ruler.id, ruler]));
+  const renderGenealogyNode = (node: ReturnType<typeof buildPoliticalGenealogy>[number]): ReactNode => {
     const ruler = node.ruler;
     const badges = [
-      ruler.id === currentRulerId ? "当今君主" : undefined,
+      ruler.id === currentRulerId ? "当前" : undefined,
       ruler.id === dynasty?.designatedHeirId ? "储君" : undefined,
       dynasty?.heirIds.includes(ruler.id) && ruler.id !== dynasty.designatedHeirId ? "宗室候选" : undefined,
-      ruler.reignOrdinal !== undefined ? `第${ruler.reignOrdinal}代` : undefined,
-      ruler.reignOrdinal === undefined && ruler.status !== "heir" ? "宗谱记录" : undefined,
+      ruler.chronicle?.foundedStateName ? "开国" : undefined,
+      ruler.chronicle?.proclaimedEmperorMonth !== undefined ? "称帝" : undefined,
+      ruler.endReason === "彻底灭亡" ? "亡国" : undefined,
+      ruler.chronicle && ruler.chronicle.restorationsDuringReign > 0 ? "复国" : undefined,
+      ruler.reignOrdinal !== undefined ? `第${ruler.reignOrdinal}代` : ruler.status === "kin" ? "在世宗亲" : undefined,
     ].filter(Boolean);
     return (
-      <Box key={ruler.id} sx={{ ml: depth ? 1.25 : 0, pl: depth ? 1 : 0, borderLeft: depth ? "1px solid var(--gg-border)" : "none", my: 0.35 }}>
-        <Typography fontSize="0.83rem">
-          {formatRulerName(ruler)} <Box component="span" color="var(--gg-text-muted)">· {badges.join(" · ") || "宗室成员"} · {ruler.houseName}</Box>
-        </Typography>
-        {node.children.map((child) => renderGenealogyNode(child, depth + 1))}
+      <Box key={ruler.id} sx={{ display: "flex", flexDirection: "column", alignItems: "center", flex: "0 0 auto", position: "relative", px: 0.5 }}>
+        <Box sx={{ border: "1px solid var(--gg-border)", borderRadius: "var(--gg-radius)", px: 0.8, py: 0.45, background: ruler.id === currentRulerId ? "var(--gg-panel)" : "transparent", whiteSpace: "nowrap" }}>
+          <Typography fontSize="0.83rem" fontWeight={ruler.id === currentRulerId || ruler.id === dynasty?.designatedHeirId ? 700 : 400}>
+            {formatRulerRowName(ruler, team)} <Box component="span" color="var(--gg-text-muted)">· {badges.join(" · ") || "宗室成员"}</Box>
+          </Typography>
+        </Box>
+        {node.children.length ? (
+          <Box sx={{ display: "flex", position: "relative", pt: 1.5, mt: 0.15, gap: 0.5, alignItems: "flex-start", "&::before": { content: '""', position: "absolute", top: 0, left: "50%", height: 12, borderLeft: "1px solid var(--gg-border)" } }}>
+            {node.children.map((child, index) => (
+              <Box key={child.ruler.id} sx={{ position: "relative", pt: 1.5, "&::before": { content: '""', position: "absolute", top: 0, left: "50%", height: 12, borderLeft: "1px solid var(--gg-border)" }, ...(node.children.length > 1 && index === 0 ? { "&::after": { content: '""', position: "absolute", top: 0, left: "50%", right: "-50%", borderTop: "1px solid var(--gg-border)" } } : {}), ...(node.children.length > 1 && index === node.children.length - 1 ? { "&::after": { content: '""', position: "absolute", top: 0, left: "-50%", right: "50%", borderTop: "1px solid var(--gg-border)" } } : {}), ...(node.children.length > 2 && index > 0 && index < node.children.length - 1 ? { "&::after": { content: '""', position: "absolute", top: 0, left: "-50%", right: "-50%", borderTop: "1px solid var(--gg-border)" } } : {}) }}>
+                {renderGenealogyNode(child)}
+              </Box>
+            ))}
+          </Box>
+        ) : null}
       </Box>
     );
   };
@@ -688,9 +704,20 @@ function DynastyTree({
         <Button size="small" variant={view === "genealogy" ? "contained" : "outlined"} onClick={() => setView("genealogy")}>宗谱</Button>
       </Box>
       {view === "genealogy" ? (
-        <Box sx={{ display: "grid", gap: 0.5 }}>
+        <Box sx={{ display: "grid", gap: 0.5, minWidth: 0, overflowX: "auto", pb: 0.5 }}>
           <Typography fontWeight="bold" fontSize="0.9rem">政治宗谱</Typography>
-          {genealogy.length ? genealogy.map((root) => renderGenealogyNode(root)) : <Typography fontSize="0.82rem" color="var(--gg-text-muted)">暂无可展示的宗谱关系。</Typography>}
+          {genealogy.length ? <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5, width: "max-content", minWidth: "100%", pt: 0.5 }}>{genealogy.map((root) => renderGenealogyNode(root))}</Box> : <Typography fontSize="0.82rem" color="var(--gg-text-muted)">暂无可展示的宗谱关系。</Typography>}
+          {genealogyEdges.some((edge) => edge.type === "SUCCESSION") ? (
+            <Box sx={{ display: "grid", gap: 0.25, mt: 0.5 }}>
+              <Typography fontSize="0.76rem" color="var(--gg-selected)">王位承继线</Typography>
+              {genealogyEdges.filter((edge) => edge.type === "SUCCESSION").map((edge) => {
+                const from = genealogyRulers.get(edge.fromId);
+                const to = genealogyRulers.get(edge.toId);
+                if (!from || !to) return null;
+                return <Typography key={`${edge.fromId}-${edge.toId}`} fontSize="0.76rem" color="var(--gg-selected)">{formatRulerRowName(from, team)} → {formatRulerRowName(to, team)}{edge.crossBranch ? " · 跨支承统" : ""}</Typography>;
+              })}
+            </Box>
+          ) : null}
         </Box>
       ) : <>
       {designatedHeir ? (
@@ -992,6 +1019,7 @@ function formatRulerStatus(
   if (status === "heir") {
     return factionStatus === "EXILED" ? "流亡王室继承人" : "继承人";
   }
+  if (status === "kin") return "在世宗亲";
   if (status === "dead") {
     return "已故";
   }

@@ -12,6 +12,9 @@ export function formatRulerRelation(
   if (relation === "DIRECT_CHILD") return parentRecorded ? "前君之子" : "直系继承（父名未记录）";
   if (relation === "GRANDCHILD") return "前君之孙";
   if (relation === "SIBLING") return "前君之兄弟";
+  if (relation === "NEPHEW") return "前君之侄";
+  if (relation === "UNCLE") return "前君之伯叔";
+  if (relation === "COUSIN") return "前君之堂兄弟";
   if (relation === "COLLATERAL_KIN") return "宗室旁支";
   if (relation === "NEW_HOUSE") return "易姓 / 新家族继位";
   if (relation === "LEADER_SUCCESSOR") return "非世袭首领继任";

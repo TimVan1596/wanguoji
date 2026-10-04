@@ -29,6 +29,12 @@ describe("ruler relation presentation", () => {
     expect(formatRulerRelation("COLLATERAL_KIN", "STATE", true)).toBe("宗室旁支");
   });
 
+  it("formats recorded nephew, uncle, and cousin succession relations", () => {
+    expect(formatRulerRelation("NEPHEW", "STATE", true)).toBe("前君之侄");
+    expect(formatRulerRelation("UNCLE", "STATE", true)).toBe("前君之伯叔");
+    expect(formatRulerRelation("COUSIN", "STATE", true)).toBe("前君之堂兄弟");
+  });
+
   it("does not retroactively call a provisional founder an 开国君主 after the faction becomes a state", () => {
     expect(formatRulerRelation("FOUNDER", "STATE", false, false)).toBe("首任首领 / 势力创始人");
     expect(formatRulerLineage("FOUNDER", undefined, "STATE", false)).toBe("首任首领");
