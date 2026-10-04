@@ -97,9 +97,11 @@ export class DiplomacySystem {
   constructor(private readonly registry: DiplomacyRegistry, private readonly cities: () => City[], private readonly emit: (event: {type: "truce-signed" | "non-aggression-signed" | "treaty-expired"; month: number; relation: DiplomaticRelation}) => void) {}
 
   update(worldMonth: number, teams: Team[], totalCells: number, recentEvents = WorldHistory.getEventsBetween(Math.max(0, worldMonth - DIPLOMACY_RECENT_WAR_MONTHS), worldMonth)) {
+    const expiredThisMonth = new Set<string>();
     for (const relation of this.registry.list()) {
       if (relation.expiresMonth <= worldMonth) {
         this.registry.delete(relation.factionAId, relation.factionBId);
+        expiredThisMonth.add(diplomaticPairKey(relation.factionAId, relation.factionBId));
         this.emit({ type: "treaty-expired", month: worldMonth, relation });
       }
     }
@@ -118,6 +120,7 @@ export class DiplomacySystem {
       for (let j = i + 1; j < active.length && formed < DIPLOMACY_MAX_NEW_RELATIONS_PER_EVALUATION; j += 1) {
         const a = active[i];
         const b = active[j];
+        if (expiredThisMonth.has(diplomaticPairKey(a.name, b.name))) continue;
         const existing = this.registry.get(a.name, b.name);
         if (existing && existing.expiresMonth > worldMonth) continue;
         const activeRelations = this.registry.list(worldMonth);

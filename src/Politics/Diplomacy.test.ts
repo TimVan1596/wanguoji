@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import Diplomacy, { DiplomacySystem, diplomaticPairKey, isHostileActionAllowed } from "./Diplomacy";
+import Diplomacy, { DiplomacyRegistry, DiplomacySystem, diplomaticPairKey, isHostileActionAllowed } from "./Diplomacy";
 
 function faction(name: string, blocks: number, loyalty = 50, status = "ACTIVE") {
   return {
@@ -66,7 +66,7 @@ describe("Diplomacy", () => {
     expect(events.filter((event) => event.type === "treaty-expired")).toHaveLength(1);
   });
 
-  it("round-trips canonical relations with save state and deterministic evaluation ordering", () => {
+  it("round-trips canonical relations and produces a stable same-input diplomacy projection", () => {
     const relation = { factionAId: "a", factionBId: "b", status: "NON_AGGRESSION" as const, startedMonth: 12, expiresMonth: 72, reason: "COMMON_THREAT_NON_AGGRESSION" as const };
     Diplomacy.setRelation(relation);
     Diplomacy.lastEvaluationMonth = 12;
@@ -75,5 +75,13 @@ describe("Diplomacy", () => {
     Diplomacy.importState(snapshot);
     expect(Diplomacy.exportState()).toEqual(snapshot);
     expect(Diplomacy.canAttack("b", "a", 13)).toBe(false);
+
+    const project = () => {
+      const registry = new DiplomacyRegistry();
+      const system = new DiplomacySystem(registry, () => [], () => undefined);
+      system.update(12, [faction("small-a", 5), faction("small-b", 5), faction("power", 70)], 100, []);
+      return registry.exportState();
+    };
+    expect(project()).toEqual(project());
   });
 });
