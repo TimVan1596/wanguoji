@@ -156,7 +156,7 @@ export function selectRecordedDynasticSuccessor({
   const sameAge = closestKin.filter(({ ruler }) => ruler.bornYear === oldestBornMonth);
   const preferred = sameAge.find(({ ruler }) => ruler.id === preferredCandidateId);
   if (preferred) return preferred;
-  return sameAge[pickIndex(sameAge.length)];
+  return sameAge[sameAge.length === 1 ? 0 : pickIndex(sameAge.length)];
 }
 
 export function formatRecordedKinship(candidate: Ruler, currentRuler: Ruler, rulers: Ruler[]) {

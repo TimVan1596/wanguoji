@@ -89,7 +89,8 @@ describe("recorded dynastic succession candidates", () => {
     expect(active).toEqual([newRulerChild.id]);
     expect(distant.status).toBe("kin");
     const tree = buildPoliticalGenealogy(rulers, newRuler.id, newRulerChild.id, active);
-    expect(tree.flatMap((root) => [root.ruler.id, ...root.children.map((child) => child.ruler.id)])).toContain(distant.id);
+    const flatten = (nodes: ReturnType<typeof buildPoliticalGenealogy>): string[] => nodes.flatMap((node) => [node.ruler.id, ...flatten(node.children)]);
+    expect(flatten(tree)).toContain(distant.id);
   });
 
   it("keeps exactly one designated heir choice and replaces it when that candidate is no longer eligible", () => {
@@ -141,7 +142,7 @@ describe("recorded dynastic succession candidates", () => {
     const unrelated = { ...ruler("unrelated", undefined), reignOrdinal: 1 };
     const rulers = [father, rulerNow, brother, nephew, unrelated];
     expect(formatRecordedKinship(brother, rulerNow, rulers)).toBe("当今君主之兄弟");
-    expect(formatRecordedKinship(nephew, rulerNow, rulers)).toBe("宗室旁支");
+    expect(formatRecordedKinship(nephew, rulerNow, rulers)).toBe("当今君主之侄");
     expect(getSuccessionBackground({ ...rulerNow, relationType: "SIBLING", predecessorId: "father" }, rulers))
       .toBe("前君无可继的直系候选，由其兄弟承统");
     expect(getSuccessionBackground({ ...rulerNow, relationType: "NEW_HOUSE", predecessorId: "father" }, rulers))
@@ -184,7 +185,7 @@ describe("recorded dynastic succession candidates", () => {
     const predecessor = ruler("r", "p1", "ruling");
     const collateral = ruler("cousin", "p2");
     expect(choose(predecessor, [collateral], [grandparent, predecessorParent, collateralParent, predecessor, collateral]))
-      .toMatchObject({ ruler: collateral, relationType: "COLLATERAL_KIN" });
+      .toMatchObject({ ruler: collateral, relationType: "COUSIN" });
     expect(choose(predecessor, [ruler("unrelated", undefined)], [predecessor])).toBeUndefined();
     expect(choose(predecessor, [ruler("dead", "p1", "dead")], [predecessor])).toBeUndefined();
   });
