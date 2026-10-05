@@ -53,6 +53,8 @@ describe("ruler battle rules", () => {
         checkRulerBattleHazard(ruler, 100, context);
         expect(next.mock.calls.length - before).toBe(1);
         checkRulerBattleHazard(ruler, 101, context);
+        expect(next.mock.calls.length - before).toBe(1);
+        checkRulerBattleHazard(ruler, 112, context);
         expect(next.mock.calls.length - before).toBe(2);
       }
     } finally { next.mockRestore(); }

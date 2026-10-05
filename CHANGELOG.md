@@ -3,7 +3,7 @@
 ## v0.99926b
 
 - LEADER ordinary collisions no longer imply battlefield fatality context. Eligible siege/capital-siege hazards use a 0.35 risk instead of guaranteed death, remaining above KING 0.25 and EMPEROR 0.08.
-- Added per-ruler canonical hazard check months: LEADER checks at most once per 12 game months, formal rulers at most once per game month. Ineligible contacts spend no draw or hazard window. Existing severe capital-collapse and captured-ruler terminal paths remain intact, as do accession/chain protection and non-hereditary LEADER_SUCCESSOR rules.
+- Added per-ruler canonical hazard check months: All ranks check at most once per 12 game months, preserving the higher cumulative hazard of LEADER under comparable exposure. Ineligible contacts spend no draw or hazard window. Existing severe capital-collapse and captured-ruler terminal paths remain intact, as do accession/chain protection and non-hereditary LEADER_SUCCESSOR rules.
 - WorldSave is V7 to preserve hazard cooldown deterministically across hydration; V6 and older saves are rejected without migration. IndexedDB remains version 2.
 - Added session-only completion baselines (reset on new world/load) and recent 100-year provisional-ruler completion summaries, including combat ratios, tenure range/median, and up to five anomalous factions; cumulative history remains available.
 - No diplomacy, combat/population tuning, Dynastic Revolution, rendering pipeline, history retention, or unrelated UI changes. Required Electron survival gate remains pending.

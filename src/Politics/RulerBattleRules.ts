@@ -84,9 +84,8 @@ export interface RulerBattleHazardState {
   lastBattleHazardCheckMonth?: number;
 }
 
-export function getRulerBattleHazardIntervalMonths(rank: SovereigntyRank = "LEADER") {
-  return rank === "LEADER" ? 12 : 1;
-}
+// Equal exposure windows preserve LEADER > KING > EMPEROR cumulative risk.
+export const RULER_BATTLE_HAZARD_INTERVAL_MONTHS = 12;
 
 /** Called by the real collision path. Only eligible checks consume a draw/window. */
 export function checkRulerBattleHazard(
@@ -98,7 +97,7 @@ export function checkRulerBattleHazard(
   if (context.severeCrisis) return shouldRulerBattleDeathOccur(context);
   if (shouldPreventRulerBattleDeath(context) || !hasBattlefieldFatalityContext(context)) return false;
   if (ruler.lastBattleHazardCheckMonth !== undefined &&
-    worldMonth - ruler.lastBattleHazardCheckMonth < getRulerBattleHazardIntervalMonths(context.sovereigntyRank)) return false;
+    worldMonth - ruler.lastBattleHazardCheckMonth < RULER_BATTLE_HAZARD_INTERVAL_MONTHS) return false;
   ruler.lastBattleHazardCheckMonth = worldMonth;
   return shouldRulerBattleDeathOccur(context);
 }
