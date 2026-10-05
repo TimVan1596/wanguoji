@@ -271,7 +271,7 @@ export function getPoliticalGenealogyDiagnostics(
       path.push(cursor);
       cursor = byId.get(cursor)?.parentId;
     }
-    let depth = cursor && depthById.has(cursor) ? depthById.get(cursor)! : 0;
+    let depth = cursor && depthById.has(cursor) ? depthById.get(cursor)! : -1;
     const cycleStart = cursor ? pathIndex.get(cursor) : undefined;
     if (cycleStart !== undefined) {
       for (let index = cycleStart; index < path.length; index += 1) depthById.set(path[index], 0);

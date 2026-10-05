@@ -4,6 +4,7 @@ import type { Ruler } from "./Dynasty";
 import {
   getCandidateParentsToReplenish,
   buildPoliticalGenealogy,
+  getPoliticalGenealogyDiagnostics,
   getRecordedKinRelation,
   formatRecordedKinship,
   formatRecordedSuccessionKinship,
@@ -122,6 +123,8 @@ describe("recorded dynastic succession candidates", () => {
     }
     expect(tree).toHaveLength(1);
     expect(count).toBe(20_000);
+    expect(getPoliticalGenealogyDiagnostics(deep, deep[deep.length - 1].id, undefined, []))
+      .toEqual({ includedNodeCount: 20_000, maxParentDepth: 19_999 });
   });
 
   it("preserves an eligible same-age shortlist tie instead of consuming RNG every month", () => {
