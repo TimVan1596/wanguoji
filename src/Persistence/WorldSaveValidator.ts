@@ -162,7 +162,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
       const hazardMonth = ruler.lastBattleHazardCheckMonth;
       if (hazardMonth !== undefined && (!Number.isSafeInteger(hazardMonth) || Number(hazardMonth) < 0 ||
         Number(hazardMonth) > Number(save.world?.worldMonth) ||
-        (typeof ruler.accessionYear === "number" && Number(hazardMonth) < ruler.accessionYear))) {
+        (typeof ruler.accessionMonth === "number" && Number(hazardMonth) < ruler.accessionMonth))) {
         errors.push("ruler.lastBattleHazardCheckMonth must be a valid past reign month");
       }
       if (ruler.parentId !== undefined) requireRef(ruler.parentId, rulerIds, "ruler.parentId", errors);

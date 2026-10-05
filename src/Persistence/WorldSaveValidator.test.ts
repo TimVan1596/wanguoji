@@ -18,6 +18,19 @@ function fixture() {
 }
 
 describe("WorldSaveV1 validation and JSON contract", () => {
+  it("retains hazard checks in V7 JSON and rejects V6 and invalid hazard months", () => {
+    const save = fixture();
+    (save.dynasties[0].rulers as Record<string, unknown>[])[0].lastBattleHazardCheckMonth = 40;
+    (save.dynasties[0].rulers as Record<string, unknown>[])[0].accessionMonth = 30;
+    const loaded = JSON.parse(JSON.stringify(save));
+    expect(validateWorldSave(loaded).valid).toBe(true);
+    expect(loaded.dynasties[0].rulers[0].lastBattleHazardCheckMonth).toBe(40);
+    expect(validateWorldSave({ ...save, saveSchemaVersion: 6 }).valid).toBe(false);
+    for (const invalid of [-1, 0.5, 43, "40", 29]) {
+      loaded.dynasties[0].rulers[0].lastBattleHazardCheckMonth = invalid;
+      expect(validateWorldSave(loaded).errors).toContain("ruler.lastBattleHazardCheckMonth must be a valid past reign month");
+    }
+  });
   it("uses schema V7 and persists alliance/merge fields plus the deterministic random stream", () => {
     const save = fixture();
     expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(7);
