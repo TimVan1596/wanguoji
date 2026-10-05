@@ -466,6 +466,7 @@ export default function WorldDiagnosticsPanel() {
           `lastForegroundDeltaMs / consumedSteps: ${runtime.lastForegroundDeltaMs} / ${runtime.lastForegroundConsumedSteps}`,
           `fixedSimulationSteps / physicsSteps: ${runtime.fixedSimulationSteps} / ${runtime.physicsSteps}`,
           `lastSimulationStepRealAt: ${runtime.lastSimulationStepRealAt}`,
+          `last simulation subsystem: ${runtime.lastSimulationSubsystem ?? "—"}`,
           `background mode / catch-up / debt: ${runtime.backgroundMode} / ${runtime.backgroundCatchUpActive} / ${runtime.catchUpDebtSteps}`,
           `catch-up source: ${runtime.catchUpSource} · last: ${runtime.lastCatchUpSource}`,
           `DESKTOP VISIBILITY CATCH-UP ERROR: ${runtime.desktopVisibilityCatchUpInvariantViolation}`,
@@ -475,6 +476,7 @@ export default function WorldDiagnosticsPanel() {
           `Resume probe: ${JSON.stringify(runtime.resumeProbe ?? null)}`,
           `Frame performance: ${JSON.stringify(runtime.framePerformance)}`,
           `World scale: ${JSON.stringify(runtime.worldScale)}`,
+          `Renderer warnings: Canvas2D=${desktopDiagnostics?.canvasWarningCount ?? "browser n/a"} · texImage2D bad image=${desktopDiagnostics?.texImage2DBadImageWarningCount ?? "browser n/a"}`,
         ].join("\n")}</Typography>}
       </details>
       {runtimeUnits && <details>
@@ -483,8 +485,9 @@ export default function WorldDiagnosticsPanel() {
           `logical users: ${runtimeUnits.logicalUsers}`,
           `root players: ${runtimeUnits.rootPlayers}`,
           `player children: ${runtimeUnits.playerChildren}`,
+          `Player tree roots / reachable / edges / maxDepth / revisits: ${JSON.stringify(runtimeUnits.playerTree ?? null)}`,
           `active Phaser player objects: ${runtimeUnits.activePhaserPlayers}`,
-          `avatar renderer: ${getAvatarRendererMode()}`,
+          `avatar renderer: ${runtimeUnits.avatarRendererMode ?? getAvatarRendererMode()}`,
           `missing texture keys: ${runtimeUnits.missingTextureKeys.join(", ") || "none"}`,
           `noFace source / exists: ${runtimeUnits.noFaceSource} / ${runtimeUnits.noFaceTextureExists}`,
           `star texture exists: ${runtimeUnits.starTextureExists}`,

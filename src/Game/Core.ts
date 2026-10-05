@@ -50,6 +50,7 @@ import LogicalUnitRegistry from "../Simulation/LogicalUnitRegistry";
 import { RuntimePerformanceMetrics } from "../Simulation/RuntimePerformanceMetrics";
 import { getTextureProbeSource } from "../Runtime/TextureProbe";
 import { createRuntimeUnitDiagnostics } from "../Simulation/RuntimeUnitDiagnostics";
+import { traverseTree } from "../Simulation/IterativeTreeTraversal";
 import { DeterminismCheckpointHistory } from "../Simulation/DeterminismFingerprint";
 import WorldEra from "../Simulation/WorldEra";
 import FactionSnapshots from "../Simulation/FactionSnapshots";
@@ -674,23 +675,27 @@ export default class Core {
   }
 
   private createRuntimeUnitDiagnosticsSnapshot() {
-    const roots = this.teams.flatMap((team) => team.players.getChildren() as Player[]);
-    const allPlayers = new Set<Player>();
-    const visit = (player: Player) => {
-      if (allPlayers.has(player)) return;
-      allPlayers.add(player);
-      player.children.forEach(visit);
-    };
-    roots.forEach(visit);
+    const groupPlayers = this.teams.flatMap((team) => team.players.getChildren() as Player[]);
+    const roots = groupPlayers.filter((player) => !player.parent);
+    const tree = traverseTree(roots, (player) => player.children);
+    const allPlayers = tree.nodes.map(({ node }) => node);
     const missingTextureKeys = ["noFace", "star"].filter((key) => !this.scene.textures.exists(key));
     return {
       ...createRuntimeUnitDiagnostics({
         logicalUsers: this.teams.reduce((total, team) => total + team.users.size, 0),
         rootPlayers: roots.length,
-        playerChildren: Math.max(0, allPlayers.size - roots.length),
-        activePhaserPlayers: [...allPlayers].filter((player) => player.active).length,
+        playerChildren: Math.max(0, allPlayers.length - roots.length),
+        activePhaserPlayers: allPlayers.filter((player) => player.active).length,
         missingTextureKeys,
       }),
+      playerTree: {
+        rootCount: roots.length,
+        reachablePlayerCount: allPlayers.length,
+        childEdgeCount: tree.childEdgeCount,
+        maxDepth: tree.maxDepth,
+        revisitCount: tree.revisitCount,
+      },
+      avatarRendererMode: allPlayers[0]?.avatarRendererMode ?? "unknown",
       ...this.getRuntimeTextureDiagnostics(),
     };
   }
@@ -713,6 +718,10 @@ export default class Core {
       starTextureExists: this.scene.textures.exists("star"),
       rendererType,
     };
+  }
+
+  getLastSimulationSubsystem() {
+    return this.simulator?.getLastSimulationSubsystem() ?? "—";
   }
 
   getWorldScaleDiagnostics() {
@@ -848,6 +857,7 @@ export default class Core {
       desktopVisibilityCatchUpInvariantViolation:
         this.runtimeMode === "DESKTOP_CONTINUOUS" && catchUpSnapshot.catchUpSource === "WEB_VISIBILITY",
       worldInstanceId: this.worldInstanceId,
+      lastSimulationSubsystem: this.getLastSimulationSubsystem(),
       mapPointer: { ...this.mapPointerDiagnostics },
       runtimeMode: this.runtimeMode,
       runningStateDivergence: reduxWorldRunning !== simulatorRunning || simulatorRunning !== clockRunning,

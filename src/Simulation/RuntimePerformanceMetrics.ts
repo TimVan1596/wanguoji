@@ -58,7 +58,7 @@ export class RuntimePerformanceMetrics {
 
   snapshot(): RuntimePerformanceSnapshot {
     const average = (values: number[]) => values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : undefined;
-    const max = (values: number[]) => values.length ? Math.max(...values) : undefined;
+    const max = (values: number[]) => values.length ? values.reduce((current, value) => Math.max(current, value), -Infinity) : undefined;
     const frames = this.ordered(this.frameDeltas);
     const steps = this.ordered(this.stepsPerFrame);
     const fixedCpu = this.ordered(this.fixedStepCpu);

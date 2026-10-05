@@ -125,7 +125,9 @@ export class PopulationTransitionAudit {
         });
       }
     }
-    this.recent.push(...pendingRecords.filter((entry) => entry.month <= month && entry.delta !== 0));
+    pendingRecords.forEach((entry) => {
+      if (entry.month <= month && entry.delta !== 0) this.recent.push(entry);
+    });
     this.recent = this.recent.slice(-MAX_RECENT_TRANSITIONS);
     this.pending = new Map([...this.pending.entries()].filter(([, entry]) => entry.month > month));
     this.previousCounts = current;

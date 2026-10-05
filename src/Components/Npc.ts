@@ -1,6 +1,7 @@
 import Game from "../Game/Game";
 import Player from "./Player";
 import Team from "./Team";
+import { traverseTree } from "../Simulation/IterativeTreeTraversal";
 
 export default class Npc extends Player {
   public children: Npc[];
@@ -51,18 +52,20 @@ export default class Npc extends Player {
   }
 
   setTeam(team: Team): void {
-    this.team = team;
-    this.group.add(this);
-    this.children.forEach((v) => v.setTeam(team));
+    traverseTree([this], (npc) => npc.children).nodes.forEach(({ node }) => {
+      node.team = team;
+      node.group.add(node);
+    });
   }
 
   setDie() {
-    this.setActive(false);
-    this.setVisible(false);
-    this.line?.setActive(false);
-    this.line?.setVisible(false);
-    this.group.remove(this);
-    this.children.forEach((v) => v.setDie());
+    traverseTree([this], (npc) => npc.children).nodes.forEach(({ node }) => {
+      node.setActive(false);
+      node.setVisible(false);
+      node.line?.setActive(false);
+      node.line?.setVisible(false);
+      node.group.remove(node);
+    });
   }
 
   setColorByLevel(level: string) {

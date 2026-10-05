@@ -180,7 +180,7 @@ export function deriveWorldRecords(
 
 function addEarliestEventRecord(records: WorldRecord[], id: string, label: string, events: WorldEvent[], rulers: Map<string, Ruler>, factionLabel: (id: string, month?: number) => string, factions: Map<string, RecordFaction>) {
   if (!events.length) return;
-  const earliest = Math.min(...events.map((event) => event.monthIndex ?? event.year));
+  const earliest = events.reduce((minimum, event) => Math.min(minimum, event.monthIndex ?? event.year), Infinity);
   const holders = events.filter((event) => (event.monthIndex ?? event.year) === earliest).sort((a, b) => a.id.localeCompare(b.id));
   const names = holders.slice(0, 3).map((event) => {
     const month = event.monthIndex ?? event.year;

@@ -143,7 +143,7 @@ export function validateStoredWorldSaveRecord(value: unknown, expectedSlotId?: s
   }
   if (record.displayName !== undefined && typeof record.displayName !== "string") errors.push("存档名称无效");
   const saveValidation = validateWorldSave(saveValue);
-  if (!saveValidation.valid) errors.push(...saveValidation.errors);
+  if (!saveValidation.valid) saveValidation.errors.forEach((error) => errors.push(error));
   else if (!(saveValue as WorldSaveV1).world.started) errors.push("存档尚未开始，不能继续");
   else if ((saveValue as WorldSaveV1).saveSchemaVersion !== record.saveSchemaVersion) errors.push("存档记录与数据的 schema 版本不一致");
   else if ((record.summary as StoredWorldSaveRecord["summary"])?.worldMonth !== (saveValue as WorldSaveV1).world.worldMonth) errors.push("存档摘要月份与世界数据不一致");

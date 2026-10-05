@@ -54,6 +54,7 @@ export default class AutoSimulator {
   readonly populationTransitionAudit = new PopulationTransitionAudit();
   private stepPerformance = new RollingStepPerformance();
   private strategicUnionDiagnostics: StrategicUnionCandidateDiagnostic[] = [];
+  private lastSimulationSubsystem = "—";
   private lastKnownCities: City[] = [];
   private lastKnownTeams: Team[] = [];
   private diplomacy = new DiplomacySystem(Diplomacy, () => this.lastKnownCities, ({ type, month, relation, triggerContext }) => {
@@ -364,8 +365,8 @@ export default class AutoSimulator {
           formalTop1CityShare: formalTop1 ? formalTop1.cities / formalCityTotal * 100 : 0,
           top1Provisional: provisionalRanked[0]?.team.identityStage === "PROVISIONAL",
           top3ContainsProvisional: provisionalRanked.slice(0, 3).some((item) => item.team.identityStage === "PROVISIONAL"),
-          maxProvisionalTerritoryShare: Math.max(0, ...provisionalRanked.filter((item) => item.team.identityStage === "PROVISIONAL").map((item) => item.territory)),
-          maxProvisionalCityCount: Math.max(0, ...teams.filter((team) => team.identityStage === "PROVISIONAL").map((team) => team.cities.length)),
+          maxProvisionalTerritoryShare: provisionalRanked.reduce((maximum, item) => item.team.identityStage === "PROVISIONAL" ? Math.max(maximum, item.territory) : maximum, 0),
+          maxProvisionalCityCount: teams.reduce((maximum, team) => team.identityStage === "PROVISIONAL" ? Math.max(maximum, team.cities.length) : maximum, 0),
           dynasticOrderBlockers: {
             TERRITORY: !formalTop1 || formalTop1.territory < 60,
             CITY_SHARE: !formalTop1 || formalTop1.cities / formalCityTotal * 100 < 55,
@@ -432,11 +433,16 @@ export default class AutoSimulator {
     return { ...this.stepPerformance.snapshot(), ...getTerritoryMetricsPerformanceDiagnostics() };
   }
 
+  getLastSimulationSubsystem() {
+    return this.lastSimulationSubsystem;
+  }
+
   getStrategicUnionCandidateDiagnostics() {
     return this.strategicUnionDiagnostics;
   }
 
   private measure<T>(name: string, work: () => T): T {
+    if (debugProfileEnabled) this.lastSimulationSubsystem = name;
     const startedAt = debugProfileEnabled ? this.readPerformanceNow() : undefined;
     try {
       return work();

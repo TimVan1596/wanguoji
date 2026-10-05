@@ -24,7 +24,11 @@ describe("Desktop packaging and renderer security", () => {
     expect(packageJson.scripts["desktop:pack"]).toBe("pnpm desktop:package");
     expect(packageJson.scripts["desktop:dist:mac"]).toContain("--arm64");
     expect(packageJson.scripts["desktop:dist:win"]).toContain("--win nsis --x64");
-    expect(packageJson.version).toBe("0.99.94");
+    expect(packageJson.scripts["desktop:start:debug"]).toContain("desktop:renderer-debug-build");
+    expect(packageJson.scripts["desktop:renderer-debug-build"]).toContain("--mode desktop-debug --sourcemap");
+    expect(packageJson.scripts["desktop:renderer-build"]).toContain("--mode desktop");
+    expect(packageJson.build.files).toContain("!**/*.map");
+    expect(packageJson.version).toBe("0.99.95");
     expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(6);
   });
 
@@ -35,7 +39,7 @@ describe("Desktop packaging and renderer security", () => {
     expect(injected).toContain('http-equiv="Content-Security-Policy"');
     expect(injectDesktopCsp(injected)).toBe(injected);
     expect(readFileSync(new URL("../vite.config.ts", import.meta.url), "utf8"))
-      .toContain('mode === "desktop"');
+      .toContain("isDesktopBuildMode(mode)");
   });
 
   it("allows only the app document (or configured dev root) and denies external navigation", () => {

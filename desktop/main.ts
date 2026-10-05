@@ -58,6 +58,8 @@ interface DesktopDiagnostics {
   lastSuspendDurationMs?: number;
   resumeCatchUp?: { steps: number; truncated: boolean; complete: boolean };
   rendererCrash?: { reason: string; exitCode: number; at: string };
+  canvasWarningCount: number;
+  texImage2DBadImageWarningCount: number;
   windowMinimized: boolean;
   minimizeCount: number;
   lastMinimizedAt?: string;
@@ -77,6 +79,8 @@ const diagnostics: DesktopDiagnostics = {
   suspendCount: 0,
   windowMinimized: false,
   minimizeCount: 0,
+  canvasWarningCount: 0,
+  texImage2DBadImageWarningCount: 0,
 };
 
 let mainWindow: BrowserWindow | undefined;
@@ -209,6 +213,8 @@ async function createWindow() {
     if (details.level === "error") {
       console.error("[Wanguoji Desktop] renderer console message", payload);
     } else if (details.level === "warning") {
+      if (details.message.includes("Canvas2D: Multiple readback operations using getImageData")) diagnostics.canvasWarningCount += 1;
+      if (details.message.includes("texImage2D: bad image data")) diagnostics.texImage2DBadImageWarningCount += 1;
       const key = `${details.message}\u0000${details.sourceId}\u0000${details.lineNumber}`;
       const decision = rendererWarningThrottle.accept(key, Date.now());
       if (decision.kind === "LOG") {
@@ -332,6 +338,11 @@ ipcMain.handle("gridgod:get-desktop-diagnostics", () => ({
     ? undefined
     : Math.max(0, (Date.now() - latestHeartbeat.timestamp) / 1000),
 }));
+
+ipcMain.on("gridgod:fatal-renderer-error", (event, report: unknown) => {
+  if (event.sender !== mainWindow?.webContents || typeof report !== "string") return;
+  console.error("[Wanguoji Desktop] fatal renderer diagnostics\\n", report.slice(0, 100_000));
+});
 
 ipcMain.on("gridgod:autosave-result", (_event, result: AutosaveResult) => {
   if (!result || typeof result.requestId !== "string" || !autosaveGate.complete(result.requestId)) return;

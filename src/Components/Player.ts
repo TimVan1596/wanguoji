@@ -11,6 +11,7 @@ import User from "./User";
 import type { PlayerRole } from "./User";
 import { getAvatarRendererMode } from "../Runtime/AvatarRendererMode";
 import worldRandom from "../Simulation/WorldRandom";
+import { traverseTree } from "../Simulation/IterativeTreeTraversal";
 
 export default class Player extends Phaser.GameObjects.Container {
   face: CircleMaskImage | Phaser.GameObjects.Image;
@@ -98,9 +99,7 @@ export default class Player extends Phaser.GameObjects.Container {
     let speed = 220 * Math.log(this.speedCoefficient + 1) + Player.MinSpeed;
     // const speed = this.speed + 50 * count;
     this.setSpeed(speed);
-    this.children.forEach((v) => {
-      v.setSpeed(speed);
-    });
+    traverseTree(this.children, (player) => player.children).nodes.forEach(({ node }) => node.setSpeed(speed));
     Game.Core?.logicalUnitRegistry.updateSpeed(this.logicalUnitId, speed);
   }
 
@@ -112,8 +111,7 @@ export default class Player extends Phaser.GameObjects.Container {
   }
 
   setBodySize(size: number) {
-    this.setScale(size);
-    this.children.forEach((v) => v.setBodySize(size));
+    traverseTree([this], (player) => player.children).nodes.forEach(({ node }) => node.setScale(size));
   }
 
   makeChild(count = 1) {
@@ -137,7 +135,7 @@ export default class Player extends Phaser.GameObjects.Container {
       const { x, y } = this.team.homeBlock;
       this.setPosition(x, y);
       Game.Core?.logicalUnitRegistry.teleportPlayer(this, x, y);
-      this.children.forEach((p) => p.setPosition(x, y));
+      traverseTree(this.children, (player) => player.children).nodes.forEach(({ node }) => node.setPosition(x, y));
     }
   }
 
@@ -169,7 +167,12 @@ export default class Player extends Phaser.GameObjects.Container {
       this.flash.loop = 0;
     }
     this.flash.restart();
-    this.children.forEach((v) => v.showFlash(count));
+    traverseTree(this.children, (player) => player.children).nodes.forEach(({ node }) => {
+      if (node.parent) node.flash.loop = node.parent.flash.loop;
+      else node.flash.loop = Math.min(node.flash.loopCounter + count, 5);
+      if (node.flash.loop < 0) node.flash.loop = 0;
+      node.flash.restart();
+    });
   }
 
   setSpeed(speed: number) {
@@ -179,15 +182,16 @@ export default class Player extends Phaser.GameObjects.Container {
   }
 
   setFace(faceKey: string) {
-    try {
-      this.face.setTexture(faceKey);
-    } catch (error) {
-      return;
-    }
-    this.face.setDisplaySize(Game.BlockSize, Game.BlockSize);
-    this.Body.setCircle(Game.BlockSize / 2);
-    this.setScale(1.2);
-    this.children.forEach((v) => v.setFace(faceKey));
+    traverseTree([this], (player) => player.children).nodes.forEach(({ node }) => {
+      try {
+        node.face.setTexture(faceKey);
+      } catch {
+        return;
+      }
+      node.face.setDisplaySize(Game.BlockSize, Game.BlockSize);
+      node.Body.setCircle(Game.BlockSize / 2);
+      node.setScale(1.2);
+    });
   }
 
   getFaceSourceTextureKey() {
@@ -225,12 +229,13 @@ export default class Player extends Phaser.GameObjects.Container {
   }
 
   setTeam(team: Team) {
-    this.team.players.remove(this);
-    this.team = team;
-    Game.Core?.logicalUnitRegistry.updateFaction(this.logicalUnitId, team);
-    this.factionRing.setStrokeStyle(2, team.color, 0.85);
-    this.team.players.add(this);
-    this.children.forEach((v) => v.setTeam(team));
+    traverseTree([this], (player) => player.children).nodes.forEach(({ node }) => {
+      node.team.players.remove(node);
+      node.team = team;
+      Game.Core?.logicalUnitRegistry.updateFaction(node.logicalUnitId, team);
+      node.factionRing.setStrokeStyle(2, team.color, 0.85);
+      node.team.players.add(node);
+    });
     if (!this.parent) {
       if (this.user?.team !== team) {
         this.user?.setTeam(team);
@@ -302,11 +307,14 @@ export default class Player extends Phaser.GameObjects.Container {
   }
 
   destroyPlayerTree() {
-    this.children.forEach((player) => player.destroyPlayerTree());
-    this.children = [];
-    this.line?.destroy();
-    Game.Core?.logicalUnitRegistry.unregisterPlayer(this);
-    this.team.players.remove(this);
-    this.destroy(true);
+    const { nodes } = traverseTree([this], (player) => player.children);
+    for (let index = nodes.length - 1; index >= 0; index -= 1) {
+      const player = nodes[index].node;
+      player.children = [];
+      player.line?.destroy();
+      Game.Core?.logicalUnitRegistry.unregisterPlayer(player);
+      player.team.players.remove(player);
+      player.destroy(true);
+    }
   }
 }

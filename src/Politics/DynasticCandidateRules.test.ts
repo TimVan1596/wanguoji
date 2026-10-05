@@ -96,6 +96,16 @@ describe("recorded dynastic succession candidates", () => {
     expect(distant.status).toBe("kin");
   });
 
+  it("keeps malformed parent cycles finite and visible", () => {
+    const a = ruler("cycle-a", "cycle-b", "ruling");
+    const b = ruler("cycle-b", "cycle-a", "dead");
+    const roots = buildPoliticalGenealogy([a, b], a.id, undefined, []);
+    expect(roots).toHaveLength(1);
+    expect(roots[0].ruler.id).toBe("cycle-a");
+    expect(roots[0].children[0].ruler.id).toBe("cycle-b");
+    expect(roots[0].children[0].children).toHaveLength(0);
+  });
+
   it("preserves an eligible same-age shortlist tie instead of consuming RNG every month", () => {
     const parent = ruler("parent", undefined, "dead");
     const current = ruler("current", "parent", "ruling");

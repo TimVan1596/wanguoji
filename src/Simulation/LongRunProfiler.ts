@@ -359,7 +359,10 @@ export function deriveLongRunSummary(
     const sorted = [...values].sort((a, b) => a - b);
     const middle = Math.floor(sorted.length / 2);
     const median = sorted.length % 2 === 0 ? (sorted[middle - 1] + sorted[middle]) / 2 : sorted[middle];
-    return { average: values.reduce((sum, value) => sum + value, 0) / values.length, median, shortest: Math.min(...values), longest: Math.max(...values) };
+    let min = Infinity;
+    let max = -Infinity;
+    values.forEach((value) => { min = Math.min(min, value); max = Math.max(max, value); });
+    return { average: values.reduce((sum, value) => sum + value, 0) / values.length, median, shortest: min, longest: max };
   };
   const eraStats = stats(durations); const competitiveStats = stats(competitive);
   const gaps = eras.slice(1).reduce((sum, era, index) => sum + Math.max(0, era.startMonth - (eras[index].endMonth ?? worldMonth) - 1), 0);
@@ -370,7 +373,14 @@ export function deriveLongRunSummary(
   const literalEpisodes = literal.flatMap((start, index) => start.kind === "LITERAL_MONOPOLY_STARTED" ? literal.slice(index + 1).find((item) => item.kind === "LITERAL_MONOPOLY_ENDED") ? [literal.slice(index + 1).find((item) => item.kind === "LITERAL_MONOPOLY_ENDED")!.month - start.month] : [] : []);
   const orders = transitions.filter((item) => item.kind === "DYNASTIC_ORDER_ESTABLISHED" || item.kind === "DYNASTIC_ORDER_LOST").sort((a, b) => a.month - b.month);
   const orderEpisodes = orders.flatMap((start, index) => start.kind === "DYNASTIC_ORDER_ESTABLISHED" ? orders.slice(index + 1).find((item) => item.kind === "DYNASTIC_ORDER_LOST") ? [orders.slice(index + 1).find((item) => item.kind === "DYNASTIC_ORDER_LOST")!.month - start.month] : [] : []);
-  const stat = (values: number[]) => values.length ? { average: values.reduce((a, b) => a + b, 0) / values.length, median: [...values].sort((a, b) => a - b)[Math.floor(values.length / 2)], min: Math.min(...values), max: Math.max(...values) } : undefined;
+  const stat = (values: number[]) => {
+    if (!values.length) return undefined;
+    const sorted = [...values].sort((a, b) => a - b);
+    let min = Infinity;
+    let max = -Infinity;
+    values.forEach((value) => { min = Math.min(min, value); max = Math.max(max, value); });
+    return { average: values.reduce((a, b) => a + b, 0) / values.length, median: sorted[Math.floor(values.length / 2)], min, max };
+  };
   const literalStats = stat(literalEpisodes); const orderStats = stat(orderEpisodes);
   const currentFamily = last ? last.kind === "WORLD_UNIFIED" ? "UNIFIED" : "FRAGMENTED" : baselineCycleFamily;
   const currentStart = last?.month ?? profileStartMonth;

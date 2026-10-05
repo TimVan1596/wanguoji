@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.99926a1
+
+- Added source maps to the dedicated Electron debug renderer build only; regular Desktop and release/package builds remain without renderer maps.
+- Added fatal renderer/window/rejected-promise and React ErrorBoundary diagnostics with full stack, paused-world crash screen, and Electron terminal reporting.
+- Replaced recursive Player/Npc tree propagation, destruction, and diagnostics traversal with iterative traversal, including cycle/revisit and depth metrics.
+- Replaced large-array spread extrema in long-run/history diagnostics with iterative reductions; genealogy builder already guards malformed parent cycles and now has explicit cycle coverage.
+- Added debug runtime subsystem marker and Electron Canvas2D / bad-image warning counters. No gameplay, WorldSave V6, diplomacy thresholds, or history retention changes.
+
 ## v0.99926a
 
 - Added bounded debug-only rolling timings for monthly simulation subsystems and reduced profile-only scale scans to LongRunProfiler snapshot months while preserving monthly bottleneck accumulation.

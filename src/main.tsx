@@ -11,7 +11,10 @@ import { getGridGodRouterMode } from "./Runtime/DesktopRuntime";
 import routes from "~react-pages";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
+import RendererCrashBoundary from "./UI/RendererCrashBoundary";
+import { installRendererCrashListeners } from "./Runtime/RendererCrashDiagnostics";
 const persistor = persistStore(store);
+installRendererCrashListeners();
 
 import { Buffer } from 'buffer'
 globalThis.Buffer = Buffer
@@ -28,9 +31,9 @@ ReactDOM.createRoot(document.getElementById("app")!).render(
   <React.StrictMode>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <AppRouter>
-          <App />
-        </AppRouter>
+        <RendererCrashBoundary>
+          <AppRouter><App /></AppRouter>
+        </RendererCrashBoundary>
       </PersistGate>
     </Provider>
   </React.StrictMode>

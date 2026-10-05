@@ -61,6 +61,8 @@ export interface DesktopDiagnostics {
   lastSuspendDurationMs?: number;
   resumeCatchUp?: { steps: number; truncated: boolean; complete: boolean };
   rendererCrash?: { reason: string; exitCode: number; at: string };
+  canvasWarningCount?: number;
+  texImage2DBadImageWarningCount?: number;
   windowMinimized?: boolean;
   minimizeCount?: number;
   lastMinimizedAt?: string;
@@ -79,6 +81,7 @@ export interface GridGodDesktopBridge {
   onResumeAfterSuspend?: (callback: (payload: DesktopResumeAfterSuspend) => void) => () => void;
   reportResumeCatchUpResult?: (payload: { status: "SCHEDULED" | "SKIPPED"; steps?: number; truncated?: boolean }) => void;
   getDiagnostics?: () => Promise<DesktopDiagnostics>;
+  reportFatalRendererError?: (report: string) => void;
 }
 
 declare global {

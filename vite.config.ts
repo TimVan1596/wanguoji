@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import React from "@vitejs/plugin-react";
 import Pages from "vite-plugin-pages";
-import { getViteBase } from "./src/Runtime/ViteBuildMode";
+import { getViteBase, isDesktopBuildMode } from "./src/Runtime/ViteBuildMode";
 import { injectDesktopCsp } from "./desktop/DesktopSecurity";
 
 export default defineConfig(({ mode }) => ({
@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => ({
     hmr: false,
   },
   plugins: [
-    ...(mode === "desktop" ? [{
+    ...(isDesktopBuildMode(mode) ? [{
       name: "wanguoji-desktop-production-csp",
       transformIndexHtml: {
         order: "post" as const,

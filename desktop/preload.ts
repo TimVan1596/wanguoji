@@ -21,4 +21,5 @@ contextBridge.exposeInMainWorld("gridGodDesktop", {
     subscribe("gridgod:resume-after-suspend", callback),
   reportResumeCatchUpResult: (payload: unknown) => ipcRenderer.send("gridgod:resume-catch-up-result", payload),
   getDiagnostics: () => ipcRenderer.invoke("gridgod:get-desktop-diagnostics"),
+  reportFatalRendererError: (report: string) => ipcRenderer.send("gridgod:fatal-renderer-error", report),
 });
