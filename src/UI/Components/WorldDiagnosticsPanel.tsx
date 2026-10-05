@@ -94,16 +94,19 @@ function WorldDiagnosticsPanelContent() {
     return () => { active = false; window.clearInterval(timer); };
   }, [diagnosticsEnabled]);
 
-  const provisionalRulers = useMemo(() => diagnosticsEnabled ? summarizeProvisionalRulers(
-      DynastyRegistry.listForDiagnostics(),
-      new Map(teams.map((team) => [team.name, {
-        displayName: team.displayName,
-        identityStage: team.identityStage,
-        status: team.status,
-        sovereigntyHistory: team.sovereigntyHistory,
-      }]))
-    ) : undefined,
-  [diagnosticsEnabled, Math.floor(worldMonth / 60)]);
+  const provisionalRulers = useMemo(() => {
+    if (!diagnosticsEnabled) return undefined;
+    const factions = new Map(teams.map((team) => [team.name, {
+      displayName: team.displayName, identityStage: team.identityStage,
+      status: team.status, sovereigntyHistory: team.sovereigntyHistory,
+    }]));
+    const dynasties = DynastyRegistry.listForDiagnostics();
+    return {
+      ...summarizeProvisionalRulers(dynasties, factions),
+      session: DynastyRegistry.getProvisionalSessionDiagnostics(factions),
+      recent: summarizeProvisionalRulers(dynasties, factions, { completedSinceMonth: Math.max(0, worldMonth - 1200) }),
+    };
+  }, [diagnosticsEnabled, teams, worldMonth]);
 
   const diagnostics = useMemo(() => {
     if (!diagnosticsEnabled) return undefined;
@@ -409,6 +412,20 @@ function WorldDiagnosticsPanelContent() {
           `最异常势力（最多5）：${provisionalRulers.topAbnormalFactions.map((faction) => `${faction.factionName}: ${faction.combatDeathCount}/${faction.completedRulerCount}战死 (${(faction.combatDeathRatio * 100).toFixed(0)}%), tenure median ${formatWorldDuration(faction.medianCompletedTenureMonths)}, min/max ${formatWorldDuration(faction.shortestCompletedTenureMonths)}/${formatWorldDuration(faction.longestCompletedTenureMonths ?? 0)}`).join("；") || "—"}`,
         ].join("\n")}</Typography>
       </details>
+      {[ ["本会话首领诊断（新世界/读档后完成；读档重置）", provisionalRulers.session],
+         ["最近100年首领诊断（按任期结束月筛选）", provisionalRulers.recent] ].map(([label, value]) => {
+        const stats = value as typeof provisionalRulers.session;
+        return <details key={String(label)} open>
+          <summary>{String(label)}</summary>
+          <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{[
+            `completed count: ${stats.completedProvisionalRulerCount}`,
+            `combat death count / ratio: ${stats.provisionalCombatDeathCount} / ${stats.combatDeathRatio === undefined ? "—" : `${(stats.combatDeathRatio * 100).toFixed(1)}%`}`,
+            `median tenure: ${stats.medianCompletedTenureMonths === undefined ? "—" : formatWorldDuration(stats.medianCompletedTenureMonths)}`,
+            `min/max tenure: ${stats.shortestCompletedTenureMonths === undefined ? "—" : formatWorldDuration(stats.shortestCompletedTenureMonths)} / ${stats.longestCompletedTenureMonths === undefined ? "—" : formatWorldDuration(stats.longestCompletedTenureMonths)}`,
+            ...stats.topAbnormalFactions.map((faction) => `${faction.factionName}: completed=${faction.completedRulerCount}, combat=${faction.combatDeathCount} (${(faction.combatDeathRatio * 100).toFixed(1)}%), median=${formatWorldDuration(faction.medianCompletedTenureMonths)}, min/max=${formatWorldDuration(faction.shortestCompletedTenureMonths)}/${formatWorldDuration(faction.longestCompletedTenureMonths ?? 0)}`),
+          ].join("\n")}</Typography>
+        </details>;
+      })}
       <details>
         <summary>Simulation Step Performance（rolling）</summary>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{Object.entries(stepPerformance).map(([name, metric]) =>

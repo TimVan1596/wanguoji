@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { summarizeProvisionalRulers } from "./ProvisionalRulerDiagnostics";
+import { ProvisionalRulerDiagnosticsSession, summarizeProvisionalRulers } from "./ProvisionalRulerDiagnostics";
 
 describe("provisional ruler diagnostics", () => {
   it("counts current provisional rulers, combat deaths, and median completed tenure from recorded rank history", () => {
@@ -20,7 +20,10 @@ describe("provisional ruler diagnostics", () => {
       currentProvisionalRulerCount: 1,
       completedProvisionalRulerCount: 2,
       provisionalCombatDeathCount: 1,
+      combatDeathRatio: 0.5,
       medianCompletedTenureMonths: 24,
+      shortestCompletedTenureMonths: 24,
+      longestCompletedTenureMonths: 24,
       topAbnormalFactions: [{
         factionId: "rebel",
         factionName: "rebel",

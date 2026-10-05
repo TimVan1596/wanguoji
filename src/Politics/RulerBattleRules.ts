@@ -47,7 +47,7 @@ export function getRulerBattleDeathRisk(rank: SovereigntyRank = "LEADER") {
   if (rank === "KING") {
     return 0.25;
   }
-  return 1;
+  return 0.35;
 }
 
 export function getRulerBattleProtection(rank: SovereigntyRank = "LEADER") {
@@ -71,9 +71,6 @@ export function getRulerBattleProtection(rank: SovereigntyRank = "LEADER") {
 
 export function hasBattlefieldFatalityContext(context: RulerBattleDeathContext) {
   const rank = context.sovereigntyRank ?? "LEADER";
-  if (rank === "LEADER") {
-    return true;
-  }
   if (context.rulerInSiege) {
     return true;
   }
@@ -81,4 +78,27 @@ export function hasBattlefieldFatalityContext(context: RulerBattleDeathContext) 
     return Boolean(context.severeCrisis);
   }
   return Boolean(context.severeCrisis || context.capitalUnderSiege);
+}
+
+export interface RulerBattleHazardState {
+  lastBattleHazardCheckMonth?: number;
+}
+
+export function getRulerBattleHazardIntervalMonths(rank: SovereigntyRank = "LEADER") {
+  return rank === "LEADER" ? 12 : 1;
+}
+
+/** Called by the real collision path. Only eligible checks consume a draw/window. */
+export function checkRulerBattleHazard(
+  ruler: RulerBattleHazardState,
+  worldMonth: number,
+  context: RulerBattleDeathContext,
+) {
+  // Existing terminal capital-collapse semantics bypass ordinary protection and rolls.
+  if (context.severeCrisis) return shouldRulerBattleDeathOccur(context);
+  if (shouldPreventRulerBattleDeath(context) || !hasBattlefieldFatalityContext(context)) return false;
+  if (ruler.lastBattleHazardCheckMonth !== undefined &&
+    worldMonth - ruler.lastBattleHazardCheckMonth < getRulerBattleHazardIntervalMonths(context.sovereigntyRank)) return false;
+  ruler.lastBattleHazardCheckMonth = worldMonth;
+  return shouldRulerBattleDeathOccur(context);
 }

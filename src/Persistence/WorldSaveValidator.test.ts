@@ -18,10 +18,10 @@ function fixture() {
 }
 
 describe("WorldSaveV1 validation and JSON contract", () => {
-  it("uses schema V6 and persists alliance/merge fields plus the deterministic random stream", () => {
+  it("uses schema V7 and persists alliance/merge fields plus the deterministic random stream", () => {
     const save = fixture();
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(6);
-    expect(save.saveSchemaVersion).toBe(6);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(7);
+    expect(save.saveSchemaVersion).toBe(7);
     expect(save.diplomacy).toEqual({ relations: [], lastEvaluationMonth: -1 });
     expect(save.worldRandom).toMatchObject({ algorithm: "mulberry32-v1", seed: expect.any(String), state: expect.any(Number), position: 0 });
   });
@@ -37,7 +37,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     expect(parsed.units[0]).toMatchObject({ x: 10, y: 20, vx: 1, vy: -1 });
   });
 
-  it("validates symmetric V6 treaty data and rejects the previous save schema", () => {
+  it("validates symmetric V7 treaty data and rejects the previous save schema", () => {
     const save = fixture();
     save.factions.push({ ...save.factions[0], factionId: "wei", displayName: "魏" });
     save.diplomacy.relations = [{ factionAId: "qin", factionBId: "wei", status: "TRUCE", startedMonth: 12, expiresMonth: 36, reason: "WAR_EXHAUSTION_TRUCE" }];
@@ -76,7 +76,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     expect(validateWorldSave(save).errors).toContain("a faction may have at most one active alliance");
   });
 
-  it("preserves active candidates, living kin, designation, and parent relationships in schema V6", () => {
+  it("preserves active candidates, living kin, designation, and parent relationships in schema V7", () => {
     const save = fixture();
     save.dynasties = [{
       factionId: "qin",
@@ -97,7 +97,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     expect(loaded.dynasties[0]).toMatchObject({ designatedHeirId: "qin-ruler-2", designatedSinceMonth: 36 });
     expect(loaded.dynasties[0].rulers[2]).toMatchObject({ parentId: "qin-ruler-2", relationType: "DIRECT_CHILD" });
     expect(loaded.dynasties[0].rulers[3]).toMatchObject({ rulerId: "qin-ruler-4", status: "kin", parentId: "qin-ruler-1" });
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(6);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(7);
   });
 
   it("rejects a dynasty candidate list above the runtime bound", () => {

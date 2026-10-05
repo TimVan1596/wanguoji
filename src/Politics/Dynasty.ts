@@ -27,7 +27,8 @@ import {
   RulerChronicle,
   RulerReignSnapshot,
 } from "./RulerChronicle";
-import { shouldRulerBattleDeathOccur } from "./RulerBattleRules";
+import { ProvisionalRulerDiagnosticsSession, type ProvisionalFactionRecord } from "./ProvisionalRulerDiagnostics";
+import { checkRulerBattleHazard } from "./RulerBattleRules";
 import { createTerminalRulerSnapshot } from "./RulerTerminalSnapshot";
 import { getNextRulerReignOrdinal } from "./RulerOrdinalRules";
 import {
@@ -74,6 +75,7 @@ export interface Ruler {
   givenName: string;
   bornYear: number;
   naturalDeathYear?: number;
+  lastBattleHazardCheckMonth?: number;
   accessionYear?: number;
   plannedEndYear?: number;
   endYear?: number;
@@ -121,10 +123,12 @@ function getRulerGivenNamePool(houseName: string) {
 class DynastyRegistryStore {
   private dynasties = new Map<string, Dynasty>();
   private sequence = 0;
+  private provisionalDiagnosticsSession = new ProvisionalRulerDiagnosticsSession();
 
   reset() {
     this.dynasties.clear();
     this.sequence = 0;
+    this.provisionalDiagnosticsSession.reset([]);
   }
 
   exportState() {
@@ -142,6 +146,10 @@ class DynastyRegistryStore {
     return [...this.dynasties.values()];
   }
 
+  getProvisionalSessionDiagnostics(factions: Map<string, ProvisionalFactionRecord>) {
+    return this.provisionalDiagnosticsSession.summarize(this.listForDiagnostics(), factions);
+  }
+
   importState(state: ReturnType<DynastyRegistryStore["exportState"]>) {
     this.dynasties = new Map(state.dynasties.map((dynasty) => [dynasty.factionId, {
       ...dynasty,
@@ -149,6 +157,7 @@ class DynastyRegistryStore {
       heirIds: [...dynasty.heirIds],
     }]));
     this.sequence = state.sequence;
+    this.provisionalDiagnosticsSession.reset(this.listForDiagnostics());
   }
 
   initializeFaction(team: Team, year: number) {
@@ -326,7 +335,7 @@ class DynastyRegistryStore {
       dynasty.lastRulerBattleDeathYear === undefined
         ? undefined
         : year - dynasty.lastRulerBattleDeathYear;
-    if (!shouldRulerBattleDeathOccur({
+    if (!checkRulerBattleHazard(ruler, year, {
       reignMonths: year - (ruler.accessionYear ?? year),
       monthsSinceLastBattleDeath,
       severeCrisis,

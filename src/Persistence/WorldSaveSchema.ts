@@ -2,7 +2,7 @@ import { APP_VERSION } from "../config/version";
 import { WORLD_RNG_ALGORITHM, WorldRandomState } from "../Simulation/WorldRandom";
 import type { DiplomaticRelation } from "../Politics/Diplomacy";
 
-export const CURRENT_SAVE_SCHEMA_VERSION = 6 as const;
+export const CURRENT_SAVE_SCHEMA_VERSION = 7 as const;
 
 export interface FactionSaveV1 {
   factionId: string;

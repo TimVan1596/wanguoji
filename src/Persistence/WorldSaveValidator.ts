@@ -159,6 +159,12 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
     const rulers = Array.isArray(dynasty.rulers) ? dynasty.rulers : [];
     rulers.forEach((ruler: unknown) => {
       if (!isPlainRecord(ruler)) return;
+      const hazardMonth = ruler.lastBattleHazardCheckMonth;
+      if (hazardMonth !== undefined && (!Number.isSafeInteger(hazardMonth) || Number(hazardMonth) < 0 ||
+        Number(hazardMonth) > Number(save.world?.worldMonth) ||
+        (typeof ruler.accessionYear === "number" && Number(hazardMonth) < ruler.accessionYear))) {
+        errors.push("ruler.lastBattleHazardCheckMonth must be a valid past reign month");
+      }
       if (ruler.parentId !== undefined) requireRef(ruler.parentId, rulerIds, "ruler.parentId", errors);
       if (ruler.predecessorId !== undefined) requireRef(ruler.predecessorId, rulerIds, "ruler.predecessorId", errors);
     });

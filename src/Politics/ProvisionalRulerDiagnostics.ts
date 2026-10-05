@@ -1,6 +1,6 @@
 import type { Dynasty } from "./Dynasty";
 
-interface ProvisionalFactionRecord {
+export interface ProvisionalFactionRecord {
   displayName?: string;
   identityStage: string;
   status: string;
@@ -10,7 +10,11 @@ interface ProvisionalFactionRecord {
 export function summarizeProvisionalRulers(
   dynasties: Dynasty[],
   factions: Map<string, ProvisionalFactionRecord>,
+  window: { completedSinceMonth?: number; excludedCompletedIds?: ReadonlySet<string> } = {},
 ) {
+  const includedCompletion = (ruler: Dynasty["rulers"][number]) => ruler.endYear !== undefined &&
+    (window.completedSinceMonth === undefined || ruler.endYear >= window.completedSinceMonth) &&
+    !window.excludedCompletedIds?.has(ruler.id);
   const provisionalRulers = dynasties.flatMap((dynasty) => {
     const faction = factions.get(dynasty.factionId);
     if (!faction) return [];
@@ -22,7 +26,7 @@ export function summarizeProvisionalRulers(
     }).map((ruler) => ({ ruler, current: ruler.id === dynasty.currentRulerId }));
   });
   const completedTenures = provisionalRulers
-    .filter(({ ruler }) => ruler.endYear !== undefined && ruler.accessionYear !== undefined)
+    .filter(({ ruler }) => includedCompletion(ruler) && ruler.accessionYear !== undefined)
     .map(({ ruler }) => Math.max(0, ruler.endYear! - ruler.accessionYear!))
     .sort((a, b) => a - b);
   const middle = Math.floor(completedTenures.length / 2);
@@ -36,7 +40,7 @@ export function summarizeProvisionalRulers(
       if (ruler.accessionYear === undefined) return false;
       return faction.sovereigntyHistory.some((entry) => entry.rank === "LEADER" && entry.startMonth <= ruler.accessionYear! && (entry.endMonth === undefined || entry.endMonth >= ruler.accessionYear!));
     });
-    const completed = rulers.filter((ruler) => ruler.endYear !== undefined && ruler.accessionYear !== undefined);
+    const completed = rulers.filter((ruler) => includedCompletion(ruler) && ruler.accessionYear !== undefined);
     if (completed.length === 0) return [];
     const tenures = completed.map((ruler) => Math.max(0, ruler.endYear! - ruler.accessionYear!)).sort((a, b) => a - b);
     const middleIndex = Math.floor(tenures.length / 2);
@@ -59,8 +63,26 @@ export function summarizeProvisionalRulers(
       return Boolean(dynasty.currentRulerId && faction?.identityStage === "PROVISIONAL" && faction.status === "ACTIVE");
     }).length,
     completedProvisionalRulerCount: completedTenures.length,
-    provisionalCombatDeathCount: provisionalRulers.filter(({ ruler }) => ruler.chronicle?.deathCause === "战死" || ruler.endReason === "战死").length,
+    provisionalCombatDeathCount: provisionalRulers.filter(({ ruler }) => includedCompletion(ruler) && (ruler.chronicle?.deathCause === "战死" || ruler.endReason === "战死")).length,
+    combatDeathRatio: completedTenures.length === 0 ? undefined : provisionalRulers.filter(({ ruler }) => includedCompletion(ruler) &&
+      (ruler.chronicle?.deathCause === "战死" || ruler.endReason === "战死")).length / completedTenures.length,
     medianCompletedTenureMonths,
+    shortestCompletedTenureMonths: completedTenures[0],
+    longestCompletedTenureMonths: completedTenures.at(-1),
     topAbnormalFactions: byFaction,
   };
+}
+
+/** Observational only. A load/new-world starts a new session; not stored in WorldSave. */
+export class ProvisionalRulerDiagnosticsSession {
+  private excludedCompletedIds = new Set<string>();
+
+  reset(dynasties: Dynasty[]) {
+    this.excludedCompletedIds = new Set(dynasties.flatMap((dynasty) => dynasty.rulers
+      .filter((ruler) => ruler.endYear !== undefined).map((ruler) => ruler.id)));
+  }
+
+  summarize(dynasties: Dynasty[], factions: Map<string, ProvisionalFactionRecord>) {
+    return summarizeProvisionalRulers(dynasties, factions, { excludedCompletedIds: this.excludedCompletedIds });
+  }
 }
