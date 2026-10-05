@@ -9,10 +9,13 @@ describe("renderer fatal diagnostics formatter", () => {
       rightPanelTab: "faction", factionTab: "house", selectedFactionName: "wei", worldRunning: true,
       simulationSpeed: 4, lastSimulationSubsystem: "DynastyRegistry.update", runtimeUnits: { reachablePlayerCount: 9 },
       worldScale: { worldHistoryEventCount: 80 },
+      genealogy: { currentDynastyRulerCount: 12, includedNodeCount: 10, maxParentDepth: 8 },
     });
     expect(report).toContain("worldMonth=24");
     expect(report).toContain("RangeError: Maximum call stack size exceeded");
-    expect(report).toContain("running=true speed=4x lastSubsystem=DynastyRegistry.update");
+    expect(report).toContain("lastCompletedSimulationSubsystem=DynastyRegistry.update");
+    expect(report).toContain("not a React crash-source attribution");
+    expect(report).toContain('genealogy={"currentDynastyRulerCount":12,"includedNodeCount":10,"maxParentDepth":8}');
     expect(report).toContain("at app.ts:12");
   });
 });

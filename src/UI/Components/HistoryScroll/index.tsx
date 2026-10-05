@@ -22,6 +22,7 @@ import WorldEra, { classifyEra, resolveEraDisplayLabel, WorldEra as WorldEraReco
 import { formatWorldDate, formatWorldDuration } from "../../../Simulation/WorldTime";
 import { RootState } from "../../../store";
 import { deriveWorldRecords } from "../../../History/WorldRecords";
+import { areHistoryEventListInputsEqual } from "./historyEventListMemo";
 import EraAtlasMap from "./EraAtlasMap";
 import {
   eraSelectionUIReducer,
@@ -462,12 +463,7 @@ function HistoryEventListContent({
   );
 }
 
-const HistoryEventList = memo(HistoryEventListContent, (previous, next) => previous.events === next.events &&
-  previous.hasMore === next.hasMore && previous.expandedId === next.expandedId &&
-  previous.teamByName === next.teamByName && previous.rulerById === next.rulerById &&
-  previous.factionColorById === next.factionColorById && previous.cityNames === next.cityNames &&
-  previous.onToggleExpanded === next.onToggleExpanded && previous.onLoadMore === next.onLoadMore &&
-  previous.sxHeight === next.sxHeight);
+const HistoryEventList = memo(HistoryEventListContent, areHistoryEventListInputsEqual);
 
 function EraPicker({
   eras,

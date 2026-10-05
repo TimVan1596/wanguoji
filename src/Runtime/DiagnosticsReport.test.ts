@@ -4,7 +4,7 @@ import { formatCoreDiagnostics, formatFullDiagnostics } from "./DiagnosticsRepor
 describe("diagnostic reports", () => {
   it("formats core fields and renders missing values as dashes", () => {
     const report = formatCoreDiagnostics({
-      appVersion: "v0.99926a1",
+      appVersion: "v0.99926a2",
       runtime: {
         mode: "DESKTOP_CONTINUOUS",
         activeCatchUpSource: "NONE",
@@ -27,7 +27,7 @@ describe("diagnostic reports", () => {
       worldScale: { worldHistoryEventCount: 123, eraCount: 5, totalFactionCount: 9, activeFactionCount: 4, exiledFactionCount: 1, extinctFactionCount: 3, mergedFactionCount: 1, activeCityCount: 9, runtimeUnitCount: 7, archivedCityCount: 5, factionSnapshotCount: 18, totalRulerCount: 42, rulerChronicleCount: 40 },
       persistence: { totalSaveDurationMs: 200, indexedDbWriteMs: 80 },
     });
-    expect(report).toContain("APP_VERSION: v0.99926a1");
+    expect(report).toContain("APP_VERSION: v0.99926a2");
     expect(report).toContain("runtime mode: DESKTOP_CONTINUOUS");
     expect(report).toContain("activeCatchUpSource: NONE");
     expect(report).toContain("worldMonth: 120");

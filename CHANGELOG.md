@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.99926a2
+
+- Source-map analysis traced the reported recursive stack pattern to diagnostic serialization; full diagnostics now serialize deep and cyclic values iteratively.
+- Political genealogy construction now uses iterative, cycle-safe traversal and runs only when the full genealogy dialog is opened; the Royal view no longer builds or embeds a second genealogy tree.
+- History Scroll dynasty refresh now follows history changes rather than every world month, and the 200-event presentation subtree is memoized independently from live era/month headers.
+- Fatal crash reports include current dynasty ruler count and included genealogy node/depth diagnostics; the last simulation subsystem is explicitly labeled as context, not crash-source attribution.
+- No gameplay, diplomacy thresholds, history retention, or WorldSave V6 changes.
+
 ## v0.99926a1
 
 - Added source maps to the dedicated Electron debug renderer build only; regular Desktop and release/package builds remain without renderer maps.
