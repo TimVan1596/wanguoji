@@ -1,5 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
+  buildGenealogyOnDemand,
   clampGenealogyScale,
   getGenealogyCanvasLayout,
   getGenealogyFitScale,
@@ -7,6 +8,13 @@ import {
 } from "./genealogyViewport";
 
 describe("genealogy viewport controls", () => {
+  it("does not build the tree while the full genealogy dialog is closed", () => {
+    const build = vi.fn(() => ["tree"]);
+    expect(buildGenealogyOnDemand(false, build)).toBeUndefined();
+    expect(build).not.toHaveBeenCalled();
+    expect(buildGenealogyOnDemand(true, build)).toEqual(["tree"]);
+    expect(build).toHaveBeenCalledTimes(1);
+  });
   it("clamps zoom to the supported 50%-160% range", () => {
     expect(clampGenealogyScale(0.1)).toBe(0.5);
     expect(clampGenealogyScale(1.234)).toBe(1.23);

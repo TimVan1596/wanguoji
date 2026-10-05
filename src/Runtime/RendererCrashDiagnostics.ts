@@ -1,6 +1,8 @@
 import { APP_VERSION } from "../config/version";
 import Game from "../Game/Game";
 import { store } from "../store";
+import DynastyRegistry from "../Politics/Dynasty";
+import { getPoliticalGenealogyDiagnostics } from "../Politics/DynasticCandidateRules";
 import { formatRendererCrashReport } from "./RendererCrashReport";
 export { formatRendererCrashReport } from "./RendererCrashReport";
 
@@ -14,6 +16,17 @@ export function createRendererCrashReport(error: unknown, source = "renderer") {
   const core = Game.Core;
   const runtimeUnits = safeRead(() => core?.getRuntimeUnitDiagnostics(), undefined);
   const worldScale = safeRead(() => core?.getWorldScaleDiagnostics(), undefined);
+  const genealogy = safeRead(() => {
+    const selectedId = state?.selectedFactionName;
+    const dynasty = selectedId ? DynastyRegistry.get(selectedId) : undefined;
+    if (!dynasty) return { currentDynastyRulerCount: 0, includedNodeCount: 0, maxParentDepth: 0 };
+    return {
+      currentDynastyRulerCount: dynasty.rulers.length,
+      ...getPoliticalGenealogyDiagnostics(
+        dynasty.rulers, dynasty.currentRulerId, dynasty.designatedHeirId, dynasty.heirIds
+      ),
+    };
+  }, { currentDynastyRulerCount: 0, includedNodeCount: 0, maxParentDepth: 0 });
   return formatRendererCrashReport({
     source,
     appVersion: APP_VERSION,
@@ -29,6 +42,7 @@ export function createRendererCrashReport(error: unknown, source = "renderer") {
     lastSimulationSubsystem: safeRead(() => core?.getLastSimulationSubsystem(), "unknown") ?? "unknown",
     runtimeUnits,
     worldScale,
+    genealogy,
   });
 }
 

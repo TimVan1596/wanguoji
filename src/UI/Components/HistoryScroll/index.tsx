@@ -1,5 +1,5 @@
 import { Box, Button, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
-import { useEffect, useMemo, useReducer, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import { useSelector } from "react-redux";
 import WorldHistory, {
   formatEventDate,
@@ -66,7 +66,7 @@ export default function HistoryScroll() {
     return () => {
       active = false;
     };
-  }, [events.length, worldMonth]);
+  }, [events]);
   useEffect(() => {
     if (
       eraSelectionUI.selectedEraId !== "all" &&
@@ -83,21 +83,19 @@ export default function HistoryScroll() {
     setExpandedId(undefined);
   }, [filter, manualFactionFilter, eraSelectionUI.selectedEraId]);
 
-  const cityNames = useMemo(
-    () => teams.flatMap((team) => team.cities.map((city) => city.name)),
-    [teams]
-  );
-  const teamByName = useMemo(
-    () => new Map(teams.map((team) => [team.name, team])),
-    [teams]
-  );
+  const historyLookupSignature = JSON.stringify(teams.map((team) => [
+    team.name, team.displayName, team.color,
+    team.nameHistory?.map((entry) => [entry.startMonth, entry.endMonth, entry.name]),
+    team.cities.map((city) => [city.id, city.name]),
+  ]));
+  const { cityNames, teamByName, factionColorById } = useMemo(() => ({
+    cityNames: teams.flatMap((team) => team.cities.map((city) => city.name)),
+    teamByName: new Map(teams.map((team) => [team.name, team])),
+    factionColorById: new Map(teams.map((team) => [team.name, team.color])),
+  }), [historyLookupSignature]);
   const rulerById = useMemo(
     () => new Map(dynasties.flatMap((dynasty) => dynasty.rulers.map((ruler) => [ruler.id, ruler] as const))),
     [dynasties]
-  );
-  const factionColorById = useMemo(
-    () => new Map(teams.map((team) => [team.name, team.color])),
-    [teams]
   );
   const factionFilter = manualFactionFilter;
   const selectedEra = useMemo(
@@ -153,6 +151,12 @@ export default function HistoryScroll() {
     () => displayEvents.slice(0, visibleCount),
     [displayEvents, visibleCount]
   );
+  const toggleExpandedEvent = useCallback((eventId: string, canExpand: boolean) => {
+    if (canExpand) setExpandedId((current) => current === eventId ? undefined : eventId);
+  }, []);
+  const loadMoreEvents = useCallback(() => {
+    setVisibleCount((count) => count + HISTORY_RENDER_BATCH);
+  }, []);
 
   return (
     <Box
@@ -375,120 +379,95 @@ export default function HistoryScroll() {
           </Button>
         </Box>
       ) : null}
-      <Box
-        sx={{
-          height: factionFilter ? "calc(100% - 13rem)" : "calc(100% - 10.4rem)",
-          overflowY: "auto",
-        }}
-      >
-        {visibleEvents.map((event) => {
-          const expanded = expandedId === event.id;
-          const actorColor = resolveEventFactionColor(event, factionColorById);
-          const eventMonth = event.monthIndex ?? event.year;
-          const eventFactionIds = getEventFactionIds(event).filter((name) =>
-            teamByName.has(name)
-          );
-          const eventFactionNames = eventFactionIds.map((factionId) =>
-            resolveFactionHistoricalName(teamByName, factionId, eventMonth)
-          );
-          const eventTeamByDisplayName = new Map(teamByName);
-          eventFactionIds.forEach((factionId) => {
-            const team = teamByName.get(factionId);
-            if (team) {
-              eventTeamByDisplayName.set(
-                resolveFactionHistoricalName(teamByName, factionId, eventMonth),
-                team
-              );
-            }
-          });
-          const eventTitle = formatHistoryEventTitle(event, teamByName, rulerById);
-          const eventDescription = formatHistoryEventDescription(event, teamByName);
-          const landmark = isLandmarkHistoryEvent(event);
-          const canExpand =
-            event.importance === "major" ||
-            Boolean(eventDescription) ||
-            Boolean(event.metadata);
-          return (
-            <Box
-              key={event.id}
-              onClick={() =>
-                canExpand
-                  ? setExpandedId(expanded ? undefined : event.id)
-                  : undefined
-              }
-              sx={{
-                py: 0.5,
-                px: 1,
-                mb: 0.5,
-                borderLeft:
-                  actorColor !== undefined
-                    ? `4px solid ${colorToString(actorColor)}`
-                    : landmark
-                    ? "4px solid #8a5a00"
-                    : event.importance === "major"
-                    ? "4px solid #d32f2f"
-                    : "4px solid rgba(0, 0, 0, 0.2)",
-                borderTop: landmark ? "1px solid rgba(138, 90, 0, 0.22)" : "none",
-                borderBottom: landmark ? "1px solid rgba(138, 90, 0, 0.22)" : "none",
-                backgroundColor:
-                  landmark
-                    ? "rgba(138, 90, 0, 0.08)"
-                    : event.importance === "major"
-                    ? "rgba(211, 47, 47, 0.08)"
-                    : "transparent",
-                cursor: canExpand ? "pointer" : "default",
-              }}
-            >
-              <Typography
-                fontSize="1rem"
-                fontWeight={landmark || event.importance === "major" ? "bold" : "normal"}
-              >
-                {formatEventDate(event)} {landmark ? "◆ " : ""}
-                  <EventText
-                    text={eventTitle}
-                    teamByName={eventTeamByDisplayName}
-                    factionNames={eventFactionNames}
-                    cityNames={cityNames}
-                  />
-              </Typography>
-              {expanded ? (
-                <Box sx={{ mt: 0.5 }}>
-                  {eventDescription ? (
-                    <Typography fontSize="0.85rem" sx={{ opacity: 0.85 }}>
-                      <EventText
-                        text={eventDescription}
-                        teamByName={eventTeamByDisplayName}
-                        factionNames={eventFactionNames}
-                        cityNames={cityNames}
-                      />
-                    </Typography>
-                  ) : null}
-                  <EventDetails
-                    event={event}
-                    teamByName={eventTeamByDisplayName}
-                    factionNames={eventFactionNames}
-                    cityNames={cityNames}
-                  />
-                </Box>
-              ) : null}
-            </Box>
-          );
-        })}
-        {visibleEvents.length < displayEvents.length ? (
-          <Button
-            fullWidth
-            size="small"
-            variant="outlined"
-            onClick={() => setVisibleCount((count) => count + HISTORY_RENDER_BATCH)}
-            sx={{ my: 1 }}
-          >
-            加载更早历史
-          </Button>
-        ) : null}
-      </Box>
+      <HistoryEventList
+        events={visibleEvents}
+        hasMore={visibleEvents.length < displayEvents.length}
+        expandedId={expandedId}
+        teamByName={teamByName}
+        rulerById={rulerById}
+        factionColorById={factionColorById}
+        cityNames={cityNames}
+        onToggleExpanded={toggleExpandedEvent}
+        onLoadMore={loadMoreEvents}
+        sxHeight={factionFilter ? "calc(100% - 13rem)" : "calc(100% - 10.4rem)"}
+      />
     </Box>
   );
 }
+
+type HistoryEventListProps = {
+  events: WorldEvent[];
+  hasMore: boolean;
+  expandedId?: string;
+  teamByName: Map<string, RootState["root"]["teams"][number]>;
+  rulerById: Map<string, import("../../../Politics/Dynasty").Ruler>;
+  factionColorById: Map<string, number>;
+  cityNames: string[];
+  onToggleExpanded: (eventId: string, canExpand: boolean) => void;
+  onLoadMore: () => void;
+  sxHeight: string;
+};
+
+function HistoryEventListContent({
+  events,
+  hasMore,
+  expandedId,
+  teamByName,
+  rulerById,
+  factionColorById,
+  cityNames,
+  onToggleExpanded,
+  onLoadMore,
+  sxHeight,
+}: HistoryEventListProps) {
+  return (
+    <Box sx={{ height: sxHeight, overflowY: "auto" }}>
+      {events.map((event) => {
+        const expanded = expandedId === event.id;
+        const actorColor = resolveEventFactionColor(event, factionColorById);
+        const eventMonth = event.monthIndex ?? event.year;
+        const eventFactionIds = getEventFactionIds(event).filter((name) => teamByName.has(name));
+        const eventFactionNames = eventFactionIds.map((id) => resolveFactionHistoricalName(teamByName, id, eventMonth));
+        const eventTeamByDisplayName = new Map(teamByName);
+        eventFactionIds.forEach((factionId) => {
+          const team = teamByName.get(factionId);
+          if (team) eventTeamByDisplayName.set(resolveFactionHistoricalName(teamByName, factionId, eventMonth), team);
+        });
+        const eventTitle = formatHistoryEventTitle(event, teamByName, rulerById);
+        const eventDescription = formatHistoryEventDescription(event, teamByName);
+        const landmark = isLandmarkHistoryEvent(event);
+        const canExpand = event.importance === "major" || Boolean(eventDescription) || Boolean(event.metadata);
+        return (
+          <Box key={event.id} onClick={() => onToggleExpanded(event.id, canExpand)} sx={{
+            py: 0.5, px: 1, mb: 0.5,
+            borderLeft: actorColor !== undefined ? `4px solid ${colorToString(actorColor)}` : landmark ? "4px solid #8a5a00" : event.importance === "major" ? "4px solid #d32f2f" : "4px solid rgba(0, 0, 0, 0.2)",
+            borderTop: landmark ? "1px solid rgba(138, 90, 0, 0.22)" : "none",
+            borderBottom: landmark ? "1px solid rgba(138, 90, 0, 0.22)" : "none",
+            backgroundColor: landmark ? "rgba(138, 90, 0, 0.08)" : event.importance === "major" ? "rgba(211, 47, 47, 0.08)" : "transparent",
+            cursor: canExpand ? "pointer" : "default",
+          }}>
+            <Typography fontSize="1rem" fontWeight={landmark || event.importance === "major" ? "bold" : "normal"}>
+              {formatEventDate(event)} {landmark ? "◆ " : ""}
+              <EventText text={eventTitle} teamByName={eventTeamByDisplayName} factionNames={eventFactionNames} cityNames={cityNames} />
+            </Typography>
+            {expanded ? <Box sx={{ mt: 0.5 }}>
+              {eventDescription ? <Typography fontSize="0.85rem" sx={{ opacity: 0.85 }}><EventText text={eventDescription} teamByName={eventTeamByDisplayName} factionNames={eventFactionNames} cityNames={cityNames} /></Typography> : null}
+              <EventDetails event={event} teamByName={eventTeamByDisplayName} factionNames={eventFactionNames} cityNames={cityNames} />
+            </Box> : null}
+          </Box>
+        );
+      })}
+      {hasMore ? <Button fullWidth size="small" variant="outlined" onClick={onLoadMore} sx={{ my: 1 }}>加载更早历史</Button> : null}
+    </Box>
+  );
+}
+
+const HistoryEventList = memo(HistoryEventListContent, (previous, next) => previous.events === next.events &&
+  previous.hasMore === next.hasMore && previous.expandedId === next.expandedId &&
+  previous.teamByName === next.teamByName && previous.rulerById === next.rulerById &&
+  previous.factionColorById === next.factionColorById && previous.cityNames === next.cityNames &&
+  previous.onToggleExpanded === next.onToggleExpanded && previous.onLoadMore === next.onLoadMore &&
+  previous.sxHeight === next.sxHeight);
 
 function EraPicker({
   eras,

@@ -106,6 +106,24 @@ describe("recorded dynastic succession candidates", () => {
     expect(roots[0].children[0].children).toHaveLength(0);
   });
 
+  it("builds a 20,000-generation lineage without recursive traversal", () => {
+    const deep = Array.from({ length: 20_000 }, (_, index) => ({
+      ...ruler(`deep-${index}`, index === 0 ? undefined : `deep-${index - 1}`, "ruling"),
+      reignOrdinal: index + 1,
+      bornYear: index,
+    }));
+    const tree = buildPoliticalGenealogy(deep, deep[deep.length - 1].id, undefined, []);
+    let count = 0;
+    const stack = [...tree];
+    while (stack.length) {
+      const node = stack.pop()!;
+      count += 1;
+      stack.push(...node.children);
+    }
+    expect(tree).toHaveLength(1);
+    expect(count).toBe(20_000);
+  });
+
   it("preserves an eligible same-age shortlist tie instead of consuming RNG every month", () => {
     const parent = ruler("parent", undefined, "dead");
     const current = ruler("current", "parent", "ruling");

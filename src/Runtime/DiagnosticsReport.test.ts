@@ -68,4 +68,18 @@ describe("diagnostic reports", () => {
     expect(a).toContain('"a": {"b": 3, "y": 2}');
     expect(a).toContain("Era\n—");
   });
+
+  it("formats deeply nested and cyclic diagnostic values without recursion", () => {
+    const root: { next?: unknown } = {};
+    let cursor = root;
+    for (let index = 0; index < 20_000; index += 1) {
+      const next: { next?: unknown } = {};
+      cursor.next = next;
+      cursor = next;
+    }
+    cursor.next = root;
+    const report = formatFullDiagnostics([["Deep", root]]);
+    expect(report).toContain('"[Circular]"');
+    expect(report.startsWith("Deep\n{" )).toBe(true);
+  });
 });
