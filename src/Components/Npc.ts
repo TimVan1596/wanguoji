@@ -52,14 +52,14 @@ export default class Npc extends Player {
   }
 
   setTeam(team: Team): void {
-    traverseTree([this], (npc) => npc.children).nodes.forEach(({ node }) => {
+    traverseTree<Npc>([this], (npc) => npc.children).nodes.forEach(({ node }) => {
       node.team = team;
       node.group.add(node);
     });
   }
 
   setDie() {
-    traverseTree([this], (npc) => npc.children).nodes.forEach(({ node }) => {
+    traverseTree<Npc>([this], (npc) => npc.children).nodes.forEach(({ node }) => {
       node.setActive(false);
       node.setVisible(false);
       node.line?.setActive(false);

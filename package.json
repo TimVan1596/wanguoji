@@ -13,7 +13,7 @@
     "desktop:dev:debug:plain": "pnpm desktop:compile && concurrently -k -s first \"vite --host 0.0.0.0 --port 5173 --strictPort\" \"wait-on http://localhost:5173 && electron desktop/dist/main.js --wanguoji-dev-server=http://localhost:5173 --wanguoji-debug --wanguoji-avatar-renderer=plain\"",
     "desktop:dev:debug:png": "pnpm desktop:compile && concurrently -k -s first \"vite --host 0.0.0.0 --port 5173 --strictPort\" \"wait-on http://localhost:5173 && electron desktop/dist/main.js --wanguoji-dev-server=http://localhost:5173 --wanguoji-texture-probe=png\"",
     "desktop:renderer-build": "tsc && vite build --mode desktop && node scripts/verify-desktop-build.mjs && node scripts/verify-public-music-build.mjs",
-    "desktop:renderer-debug-build": "tsc && vite build --mode desktop-debug --sourcemap && node scripts/verify-desktop-build.mjs && node scripts/verify-desktop-debug-build.mjs && node scripts/verify-public-music-build.mjs",
+    "desktop:renderer-debug-build": "tsc && node --max-old-space-size=4096 ./node_modules/vite/bin/vite.js build --mode desktop-debug --sourcemap && node scripts/verify-desktop-build.mjs && node scripts/verify-desktop-debug-build.mjs && node scripts/verify-public-music-build.mjs",
     "desktop:build": "pnpm desktop:renderer-build && pnpm desktop:compile",
     "desktop:start": "pnpm desktop:build && electron desktop/dist/main.js",
     "desktop:start:debug": "pnpm desktop:renderer-debug-build && pnpm desktop:compile && electron desktop/dist/main.js --wanguoji-debug",

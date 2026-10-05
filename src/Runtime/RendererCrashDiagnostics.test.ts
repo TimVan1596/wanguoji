@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatRendererCrashReport } from "./RendererCrashDiagnostics";
+import { formatRendererCrashReport } from "./RendererCrashReport";
 
 describe("renderer fatal diagnostics formatter", () => {
   it("includes readable runtime context and the complete source-mapped stack", () => {

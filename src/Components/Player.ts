@@ -99,7 +99,12 @@ export default class Player extends Phaser.GameObjects.Container {
     let speed = 220 * Math.log(this.speedCoefficient + 1) + Player.MinSpeed;
     // const speed = this.speed + 50 * count;
     this.setSpeed(speed);
-    traverseTree(this.children, (player) => player.children).nodes.forEach(({ node }) => node.setSpeed(speed));
+    traverseTree(this.children, (player) => player.children).nodes.forEach(({ node }) => {
+      node.speedCoefficient += count;
+      const childSpeed = 220 * Math.log(node.speedCoefficient + 1) + Player.MinSpeed;
+      node.setSpeed(childSpeed);
+      Game.Core?.logicalUnitRegistry.updateSpeed(node.logicalUnitId, childSpeed);
+    });
     Game.Core?.logicalUnitRegistry.updateSpeed(this.logicalUnitId, speed);
   }
 
@@ -111,7 +116,7 @@ export default class Player extends Phaser.GameObjects.Container {
   }
 
   setBodySize(size: number) {
-    traverseTree([this], (player) => player.children).nodes.forEach(({ node }) => node.setScale(size));
+    traverseTree<Player>([this], (player) => player.children).nodes.forEach(({ node }) => node.setScale(size));
   }
 
   makeChild(count = 1) {
@@ -135,7 +140,7 @@ export default class Player extends Phaser.GameObjects.Container {
       const { x, y } = this.team.homeBlock;
       this.setPosition(x, y);
       Game.Core?.logicalUnitRegistry.teleportPlayer(this, x, y);
-      traverseTree(this.children, (player) => player.children).nodes.forEach(({ node }) => node.setPosition(x, y));
+      this.children.forEach((player) => player.setPosition(x, y));
     }
   }
 
@@ -182,7 +187,7 @@ export default class Player extends Phaser.GameObjects.Container {
   }
 
   setFace(faceKey: string) {
-    traverseTree([this], (player) => player.children).nodes.forEach(({ node }) => {
+    traverseTree<Player>([this], (player) => player.children).nodes.forEach(({ node }) => {
       try {
         node.face.setTexture(faceKey);
       } catch {
@@ -229,7 +234,7 @@ export default class Player extends Phaser.GameObjects.Container {
   }
 
   setTeam(team: Team) {
-    traverseTree([this], (player) => player.children).nodes.forEach(({ node }) => {
+    traverseTree<Player>([this], (player) => player.children).nodes.forEach(({ node }) => {
       node.team.players.remove(node);
       node.team = team;
       Game.Core?.logicalUnitRegistry.updateFaction(node.logicalUnitId, team);
@@ -307,7 +312,7 @@ export default class Player extends Phaser.GameObjects.Container {
   }
 
   destroyPlayerTree() {
-    const { nodes } = traverseTree([this], (player) => player.children);
+    const { nodes } = traverseTree<Player>([this], (player) => player.children);
     for (let index = nodes.length - 1; index >= 0; index -= 1) {
       const player = nodes[index].node;
       player.children = [];

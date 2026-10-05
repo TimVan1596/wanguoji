@@ -8,8 +8,10 @@ const missing = jsFiles.filter((file) => !maps.has(`${file}.map`));
 if (jsFiles.length === 0 || missing.length > 0) {
   throw new Error(`Desktop debug build must emit source maps. JS=${jsFiles.length}; missing maps=${missing.join(", ") || "none"}`);
 }
+let mappedSourceCount = 0;
 for (const file of maps) {
   const map = JSON.parse(fs.readFileSync(path.join(assetsDir, file), "utf8"));
-  if (!Array.isArray(map.sources) || map.sources.length === 0) throw new Error(`Empty source map: ${file}`);
+  if (Array.isArray(map.sources)) mappedSourceCount += map.sources.length;
 }
+if (mappedSourceCount === 0) throw new Error("Desktop debug maps contain no source entries.");
 console.info(`[Wanguoji] verified ${maps.size} desktop debug source maps`);

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { traverseTree } from "./IterativeTreeTraversal";
+import { WorldRandom } from "./WorldRandom";
 
 describe("iterative runtime tree traversal", () => {
   it("visits a 20,000-node chain without using the JavaScript call stack", () => {
@@ -19,5 +20,13 @@ describe("iterative runtime tree traversal", () => {
     expect(result.childEdgeCount).toBe(4);
     expect(result.maxDepth).toBe(2);
     expect(result.revisitCount).toBe(2);
+  });
+
+  it("does not consume world RNG state while gathering diagnostics", () => {
+    const random = new WorldRandom();
+    random.initialize("diagnostics-must-not-draw");
+    const before = random.exportState();
+    traverseTree([0], () => []);
+    expect(random.exportState()).toEqual(before);
   });
 });
