@@ -175,6 +175,8 @@ const CORE_FIELDS: Array<[string, string]> = [
   ["renderer type", "units.rendererType"],
   ["simulation fixed/month step subsystem timings", "simulationStepPerformance"],
   ["strategic union candidate blockers", "strategicUnionCandidates"],
+  ["provisional rulers (session completions)", "provisionalRulers.session"],
+  ["provisional rulers (recent 100 years)", "provisionalRulers.recent"],
   ["render frame count", "performance.renderFrameCount"],
   ["FPS", "performance.fps"],
   ["average frame ms", "performance.averageFrameMs"],

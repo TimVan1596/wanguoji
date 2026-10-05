@@ -106,7 +106,7 @@ function WorldDiagnosticsPanelContent() {
       session: DynastyRegistry.getProvisionalSessionDiagnostics(factions),
       recent: summarizeProvisionalRulers(dynasties, factions, { completedSinceMonth: Math.max(0, worldMonth - 1200) }),
     };
-  }, [diagnosticsEnabled, teams, worldMonth]);
+  }, [diagnosticsEnabled, teams, Math.floor(worldMonth / 12)]);
 
   const diagnostics = useMemo(() => {
     if (!diagnosticsEnabled) return undefined;

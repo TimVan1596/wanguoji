@@ -135,7 +135,7 @@ export interface WorldEventSystemSaveV1 {
   cycleState: WorldCycleStateSaveV1;
 }
 
-export interface WorldSaveV6 {
+export interface WorldSaveV7 {
   saveSchemaVersion: typeof CURRENT_SAVE_SCHEMA_VERSION;
   appVersion: string;
   createdAt?: string;
@@ -169,7 +169,7 @@ export interface WorldSaveV6 {
   diplomacy: { relations: DiplomaticRelation[]; lastEvaluationMonth: number };
 }
 
-export function createEmptyWorldSaveV6(): WorldSaveV6 {
+export function createEmptyWorldSaveV7(): WorldSaveV7 {
   return {
     saveSchemaVersion: CURRENT_SAVE_SCHEMA_VERSION,
     appVersion: APP_VERSION,
@@ -209,16 +209,18 @@ export function createEmptyWorldSaveV6(): WorldSaveV6 {
 }
 
 /** Internal call-site aliases; persisted saves still identify their exact schema number. */
-export type WorldSaveV5 = WorldSaveV6;
-export type WorldSaveV4 = WorldSaveV6;
-export type WorldSaveV3 = WorldSaveV6;
-export type WorldSaveV2 = WorldSaveV6;
-export type WorldSaveV1 = WorldSaveV6;
-export const createEmptyWorldSaveV5 = createEmptyWorldSaveV6;
-export const createEmptyWorldSaveV4 = createEmptyWorldSaveV6;
-export const createEmptyWorldSaveV3 = createEmptyWorldSaveV6;
-export const createEmptyWorldSaveV2 = createEmptyWorldSaveV6;
-export const createEmptyWorldSaveV1 = createEmptyWorldSaveV6;
+export type WorldSaveV6 = WorldSaveV7;
+export type WorldSaveV5 = WorldSaveV7;
+export type WorldSaveV4 = WorldSaveV7;
+export type WorldSaveV3 = WorldSaveV7;
+export type WorldSaveV2 = WorldSaveV7;
+export type WorldSaveV1 = WorldSaveV7;
+export const createEmptyWorldSaveV6 = createEmptyWorldSaveV7;
+export const createEmptyWorldSaveV5 = createEmptyWorldSaveV7;
+export const createEmptyWorldSaveV4 = createEmptyWorldSaveV7;
+export const createEmptyWorldSaveV3 = createEmptyWorldSaveV7;
+export const createEmptyWorldSaveV2 = createEmptyWorldSaveV7;
+export const createEmptyWorldSaveV1 = createEmptyWorldSaveV7;
 
 export function canonicalWorldSaveProjection(save: WorldSaveV1) {
   const { createdAt: _createdAt, ...canonical } = save;

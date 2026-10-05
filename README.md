@@ -147,6 +147,8 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
+- v0.99926b 使用 WorldSave V7；V6 及更旧存档不提供迁移，无法继续。IndexedDB 数据库版本仍为 2。首领诊断的本会话样本在新世界／读档时重置，最近 100 年窗口按任期结束月份筛选。
+
 - Web 存档仅保存在当前浏览器 IndexedDB；无云存档或跨设备同步。手动档、200 游戏年轮换自动档与 `current` 恢复档共用当前版本化 WorldSave schema。
 - Web 中未触发存档的推进在刷新或关闭页面后不会保留；Electron 另有每 5 现实分钟恢复档和关闭前保存。
 - 尚无完整 deterministic seed / replay。
