@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.99926b1
+
+- Personal battlefield exposure now comes only from accepted City siege contacts carrying the current ruler's actual RULER id. A canonical lastPersonalSiegeContactMonth survives monthly contact clearing and is valid only in the contact month and following month; faction-wide or unrelated sieges no longer imply personal participation.
+- Ordinary capital siege alone no longer enables battlefield death checks for any rank. Existing severe capital-crisis and captured/final-collapse paths remain intact. Risks (LEADER 0.35 / KING 0.25 / EMPEROR 0.08), 12-month hazard interval, accession grace and chain cooldown are unchanged.
+- Added completed-ruler diagnostics grouped by recorded sovereignty rank at accession, with combat ratios and tenure median/range; current faction titles never rewrite historical rank. Shared transition months use the latest recorded rank, missing evidence remains unclassified, and provisional session/recent-100-year summaries remain available.
+- WorldSave is V8 for personal exposure state; V7 and older saves are rejected without migration. IndexedDB remains version 2. No other gameplay, rendering, historiography, or UI features changed.
+- Required new-world Electron 400–600-year Battlefield Exposure Gate remains pending.
+
 ## v0.99926b
 
 - LEADER ordinary collisions no longer imply battlefield fatality context. Eligible siege/capital-siege hazards use a 0.35 risk instead of guaranteed death, remaining above KING 0.25 and EMPEROR 0.08.

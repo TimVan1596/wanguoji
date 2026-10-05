@@ -64,7 +64,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     expect(parsed.units[0]).toMatchObject({ x: 10, y: 20, vx: 1, vy: -1 });
   });
 
-  it("validates symmetric V7 treaty data and rejects the previous save schema", () => {
+  it("validates symmetric V8 treaty data and rejects the previous save schema", () => {
     const save = fixture();
     save.factions.push({ ...save.factions[0], factionId: "wei", displayName: "魏" });
     save.diplomacy.relations = [{ factionAId: "qin", factionBId: "wei", status: "TRUCE", startedMonth: 12, expiresMonth: 36, reason: "WAR_EXHAUSTION_TRUCE" }];
