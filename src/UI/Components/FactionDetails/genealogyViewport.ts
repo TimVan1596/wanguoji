@@ -2,6 +2,10 @@ export const MIN_GENEALOGY_SCALE = 0.5;
 export const MAX_GENEALOGY_SCALE = 1.6;
 export const GENEALOGY_SCALE_STEP = 0.1;
 
+export function buildGenealogyOnDemand<T>(open: boolean, build: () => T): T | undefined {
+  return open ? build() : undefined;
+}
+
 export function clampGenealogyScale(scale: number) {
   const bounded = Math.min(MAX_GENEALOGY_SCALE, Math.max(MIN_GENEALOGY_SCALE, scale));
   return Math.round(bounded * 100) / 100;

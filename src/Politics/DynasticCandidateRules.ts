@@ -230,6 +230,59 @@ export interface PoliticalGenealogyEdge {
   crossBranch?: boolean;
 }
 
+export interface PoliticalGenealogyDiagnostics {
+  includedNodeCount: number;
+  maxParentDepth: number;
+}
+
+function collectPoliticalGenealogyRulers(
+  rulers: Ruler[], currentRulerId: string | null | undefined,
+  designatedHeirId: string | undefined, candidateIds: string[]
+) {
+  const byId = new Map(rulers.map((ruler) => [ruler.id, ruler]));
+  const included = new Set(rulers
+    .filter((ruler) => ruler.reignOrdinal !== undefined || ruler.id === currentRulerId || ruler.id === designatedHeirId || candidateIds.includes(ruler.id))
+    .map((ruler) => ruler.id));
+  const pending = [...included];
+  while (pending.length) {
+    const ruler = byId.get(pending.pop()!);
+    const parentId = ruler?.parentId;
+    if (parentId && byId.has(parentId) && !included.has(parentId)) {
+      included.add(parentId);
+      pending.push(parentId);
+    }
+  }
+  return { byId, included, includedRulers: rulers.filter((ruler) => included.has(ruler.id)) };
+}
+
+export function getPoliticalGenealogyDiagnostics(
+  rulers: Ruler[], currentRulerId: string | null | undefined,
+  designatedHeirId: string | undefined, candidateIds: string[]
+): PoliticalGenealogyDiagnostics {
+  const { byId, included, includedRulers } = collectPoliticalGenealogyRulers(rulers, currentRulerId, designatedHeirId, candidateIds);
+  const depthById = new Map<string, number>();
+  for (const ruler of includedRulers) {
+    if (depthById.has(ruler.id)) continue;
+    const path: string[] = [];
+    const pathIndex = new Map<string, number>();
+    let cursor: string | undefined = ruler.id;
+    while (cursor && included.has(cursor) && !depthById.has(cursor) && !pathIndex.has(cursor)) {
+      pathIndex.set(cursor, path.length);
+      path.push(cursor);
+      cursor = byId.get(cursor)?.parentId;
+    }
+    let depth = cursor && depthById.has(cursor) ? depthById.get(cursor)! : 0;
+    const cycleStart = cursor ? pathIndex.get(cursor) : undefined;
+    if (cycleStart !== undefined) {
+      for (let index = cycleStart; index < path.length; index += 1) depthById.set(path[index], 0);
+      path.length = cycleStart;
+    }
+    for (let index = path.length - 1; index >= 0; index -= 1) depthById.set(path[index], ++depth);
+  }
+  const maxParentDepth = [...depthById.values()].reduce((max, depth) => Math.max(max, depth), 0);
+  return { includedNodeCount: includedRulers.length, maxParentDepth };
+}
+
 export function buildPoliticalGenealogyEdges(rulers: Ruler[], includedIds?: Set<string>): PoliticalGenealogyEdge[] {
   const included = includedIds ?? new Set(rulers.map((ruler) => ruler.id));
   const edges: PoliticalGenealogyEdge[] = [];
@@ -250,21 +303,7 @@ export function buildPoliticalGenealogy(
   designatedHeirId: string | undefined,
   candidateIds: string[]
 ): PoliticalGenealogyNode[] {
-  const byId = new Map(rulers.map((ruler) => [ruler.id, ruler]));
-  const included = new Set(rulers
-    .filter((ruler) => ruler.reignOrdinal !== undefined || ruler.id === currentRulerId || ruler.id === designatedHeirId || candidateIds.includes(ruler.id))
-    .map((ruler) => ruler.id));
-  for (const id of [...included]) {
-    let parentId = byId.get(id)?.parentId;
-    const seen = new Set<string>([id]);
-    while (parentId && byId.has(parentId) && !seen.has(parentId)) {
-      included.add(parentId);
-      seen.add(parentId);
-      parentId = byId.get(parentId)?.parentId;
-    }
-  }
-
-  const includedRulers = rulers.filter((ruler) => included.has(ruler.id));
+  const { included, includedRulers } = collectPoliticalGenealogyRulers(rulers, currentRulerId, designatedHeirId, candidateIds);
   const childrenByParent = new Map<string, Ruler[]>();
   includedRulers.forEach((ruler) => {
     if (ruler.parentId && included.has(ruler.parentId) && ruler.parentId !== ruler.id) {
@@ -275,22 +314,36 @@ export function buildPoliticalGenealogy(
   });
   const sortChronologically = (a: Ruler, b: Ruler) => a.bornYear - b.bornYear || a.id.localeCompare(b.id);
   childrenByParent.forEach((children) => children.sort(sortChronologically));
-  const visited = new Set<string>();
-  const build = (ruler: Ruler, path: Set<string>): PoliticalGenealogyNode => {
-    visited.add(ruler.id);
-    const nextPath = new Set(path).add(ruler.id);
-    const children = (childrenByParent.get(ruler.id) ?? [])
-      .filter((child) => !nextPath.has(child.id))
-      .map((child) => build(child, nextPath));
-    return { ruler, children };
-  };
-  const roots = includedRulers
+  const nodeById = new Map(includedRulers.map((ruler) => [ruler.id, { ruler, children: [] as PoliticalGenealogyNode[] }]));
+  const chronological = includedRulers.slice().sort(sortChronologically);
+  const roots = chronological
     .filter((ruler) => !ruler.parentId || !included.has(ruler.parentId) || ruler.parentId === ruler.id)
-    .sort(sortChronologically)
-    .map((ruler) => build(ruler, new Set()));
+    .map((ruler) => nodeById.get(ruler.id)!);
+  const visited = new Set<string>();
+  const attachComponent = (root: PoliticalGenealogyNode) => {
+    const stack: PoliticalGenealogyNode[] = [root];
+    visited.add(root.ruler.id);
+    while (stack.length) {
+      const parent = stack.pop()!;
+      const children = childrenByParent.get(parent.ruler.id) ?? [];
+      const pendingChildren: PoliticalGenealogyNode[] = [];
+      for (const child of children) {
+        if (visited.has(child.id)) continue;
+        visited.add(child.id);
+        const childNode = nodeById.get(child.id)!;
+        parent.children.push(childNode);
+        pendingChildren.push(childNode);
+      }
+      for (let index = pendingChildren.length - 1; index >= 0; index -= 1) stack.push(pendingChildren[index]);
+    }
+  };
+  roots.forEach(attachComponent);
   // Malformed cyclic components should remain visible instead of disappearing.
-  includedRulers.sort(sortChronologically).forEach((ruler) => {
-    if (!visited.has(ruler.id)) roots.push(build(ruler, new Set()));
+  chronological.forEach((ruler) => {
+    if (visited.has(ruler.id)) return;
+    const root = nodeById.get(ruler.id)!;
+    roots.push(root);
+    attachComponent(root);
   });
   return roots;
 }

@@ -88,6 +88,7 @@ import {
 import { buildNotableRulerIndexEntry } from "./notableRulerIndex";
 import {
   clampGenealogyScale,
+  buildGenealogyOnDemand,
   GENEALOGY_SCALE_STEP,
   getGenealogyCanvasLayout,
   getGenealogyFitScale,
@@ -721,7 +722,6 @@ function DynastyTree({
   onSelectedRulerIdChange: (id: string | undefined) => void;
   onOpenFullGenealogy: () => void;
 }) {
-  const [view, setView] = useState<"lineage" | "genealogy">("lineage");
   const livingCandidates = (dynasty?.heirIds ?? [])
     .map((id) => rulers.find((ruler) => ruler.id === id))
     .filter((ruler): ruler is Ruler => Boolean(ruler && ruler.status === "heir"));
@@ -739,29 +739,11 @@ function DynastyTree({
     const rank = (ruler: Ruler) => ruler.id === currentRulerId ? 0 : 1;
     return rank(a) - rank(b) || (b.accessionYear ?? -1) - (a.accessionYear ?? -1);
   });
-  const genealogy = buildPoliticalGenealogy(
-    rulers,
-    currentRulerId,
-    dynasty?.designatedHeirId,
-    dynasty?.heirIds ?? []
-  );
   return (
     <Box sx={{ display: "grid", gap: 1 }}>
-      <Box sx={{ display: "flex", gap: 0.5 }}>
-        <Button size="small" variant={view === "lineage" ? "contained" : "outlined"} onClick={() => setView("lineage")}>王统</Button>
-        <Button size="small" variant={view === "genealogy" ? "contained" : "outlined"} onClick={() => setView("genealogy")}>宗谱</Button>
+      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+        <Button size="small" onClick={onOpenFullGenealogy}>查看完整宗谱</Button>
       </Box>
-      {view === "genealogy" ? (
-        <Box sx={{ display: "grid", gap: 0.5, minWidth: 0, pb: 0.5 }}>
-          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1 }}>
-            <Typography fontWeight="bold" fontSize="0.9rem">政治宗谱</Typography>
-            <Button size="small" onClick={onOpenFullGenealogy}>查看完整宗谱</Button>
-          </Box>
-          <Box sx={{ minWidth: 0, width: "100%", overflowX: "auto", overflowY: "hidden" }}>
-            {genealogy.length ? <Box sx={{ display: "flex", justifyContent: "center", alignItems: "flex-start", gap: 1.5, width: "max-content", minWidth: "100%", pt: 0.5 }}>{genealogy.map((root) => <GenealogyTreeNode key={root.ruler.id} node={root} dynasty={dynasty} currentRulerId={currentRulerId} team={team} />)}</Box> : <Typography fontSize="0.82rem" color="var(--gg-text-muted)">暂无可展示的宗谱关系。</Typography>}
-          </Box>
-        </Box>
-      ) : <>
       {designatedHeir ? (
         <Box sx={{ p: 0.8, border: "1px solid var(--gg-border)", borderRadius: "var(--gg-radius)", background: "var(--gg-panel)" }}>
           <Typography fontWeight="bold" fontSize="0.86rem">储君</Typography>
@@ -846,7 +828,6 @@ function DynastyTree({
           );
         })}
       </Box>
-      </>}
     </Box>
   );
 }
@@ -870,12 +851,12 @@ function GenealogyDialog({
   const viewportRef = useRef<HTMLDivElement>(null);
   const treeRef = useRef<HTMLDivElement>(null);
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
-  const genealogy = buildPoliticalGenealogy(
+  const genealogy = buildGenealogyOnDemand(open, () => buildPoliticalGenealogy(
     rulers,
     currentRulerId,
     dynasty?.designatedHeirId,
     dynasty?.heirIds ?? []
-  );
+  )) ?? [];
   useLayoutEffect(() => {
     const viewport = viewportRef.current;
     if (!viewport) return;

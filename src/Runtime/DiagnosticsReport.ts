@@ -7,11 +7,40 @@ function displayValue(value: unknown): string {
 }
 
 function stableStringify(value: unknown): string {
-  if (value === undefined) return "—";
-  if (value === null || typeof value !== "object") return JSON.stringify(value) ?? "—";
-  if (Array.isArray(value)) return `[${value.map(stableStringify).join(", ")}]`;
-  const record = value as Record<string, unknown>;
-  return `{${Object.keys(record).sort().map((key) => `${JSON.stringify(key)}: ${stableStringify(record[key])}`).join(", ")}}`;
+  type Work = { kind: "value"; value: unknown } | { kind: "text"; text: string } | { kind: "leave"; value: object };
+  const output: string[] = [];
+  const active = new WeakSet<object>();
+  const stack: Work[] = [{ kind: "value", value }];
+  while (stack.length) {
+    const work = stack.pop()!;
+    if (work.kind === "text") { output.push(work.text); continue; }
+    if (work.kind === "leave") { active.delete(work.value); continue; }
+    const current = work.value;
+    if (current === undefined) { output.push("—"); continue; }
+    if (current === null || typeof current !== "object") { output.push(JSON.stringify(current) ?? "—"); continue; }
+    if (active.has(current)) { output.push('"[Circular]"'); continue; }
+    active.add(current);
+    stack.push({ kind: "leave", value: current });
+    if (Array.isArray(current)) {
+      output.push("[");
+      stack.push({ kind: "text", text: "]" });
+      for (let index = current.length - 1; index >= 0; index -= 1) {
+        stack.push({ kind: "value", value: current[index] });
+        if (index > 0) stack.push({ kind: "text", text: ", " });
+      }
+      continue;
+    }
+    const entries = Object.keys(current).sort().map((key) => [key, (current as Record<string, unknown>)[key]] as const);
+    output.push("{");
+    stack.push({ kind: "text", text: "}" });
+    for (let index = entries.length - 1; index >= 0; index -= 1) {
+      const [key, entryValue] = entries[index];
+      stack.push({ kind: "value", value: entryValue });
+      stack.push({ kind: "text", text: `${JSON.stringify(key)}: ` });
+      if (index > 0) stack.push({ kind: "text", text: ", " });
+    }
+  }
+  return output.join("");
 }
 
 function readPath(root: DiagnosticRecord, path: string) {
