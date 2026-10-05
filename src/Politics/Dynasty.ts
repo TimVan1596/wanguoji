@@ -1,3 +1,6 @@
+import { beginHouseEpoch, evaluateDynasticRevolution, getRevolutionEligibility, type DynastyHouseEpoch, type RevolutionContext } from "./DynasticRevolution";
+import { createStateName } from "../Simulation/StateNameGenerator";
+import { renameFactionDisplayName } from "../Simulation/FactionIdentity";
 import Team from "../Components/Team";
 import { getFactionStability } from "../Components/City";
 import Game from "../Game/Game";
@@ -66,6 +69,7 @@ export type RulerRelationType =
   | "UNCLE"
   | "COUSIN"
   | "COLLATERAL_KIN"
+  | "USURPER"
   | "NEW_HOUSE"
   | "LEADER_SUCCESSOR";
 
@@ -77,6 +81,7 @@ export interface Ruler {
   naturalDeathYear?: number;
   lastBattleHazardCheckMonth?: number;
   lastPersonalSiegeContactMonth?: number;
+  displacedByUsurpationMonth?: number;
   accessionYear?: number;
   plannedEndYear?: number;
   endYear?: number;
@@ -96,6 +101,7 @@ export interface Ruler {
 }
 
 export interface Dynasty {
+  houseEpochs?: DynastyHouseEpoch[];
   factionId: string;
   houseName: string;
   rulers: Ruler[];
@@ -124,11 +130,13 @@ function getRulerGivenNamePool(houseName: string) {
 class DynastyRegistryStore {
   private dynasties = new Map<string, Dynasty>();
   private sequence = 0;
+  private revolutionChecks: Array<{ factionId: string; worldMonth: number; blockers: string[] }> = [];
   private provisionalDiagnosticsSession = new ProvisionalRulerDiagnosticsSession();
 
   reset() {
     this.dynasties.clear();
     this.sequence = 0;
+    this.revolutionChecks = [];
     this.provisionalDiagnosticsSession.reset([]);
   }
 
@@ -136,6 +144,7 @@ class DynastyRegistryStore {
     return {
       dynasties: [...this.dynasties.values()].map((dynasty) => ({
         ...dynasty,
+        houseEpochs: dynasty.houseEpochs?.map((epoch) => ({ ...epoch })),
         rulers: dynasty.rulers.map((ruler) => ({ ...ruler, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
         heirIds: [...dynasty.heirIds],
       })),
@@ -154,10 +163,12 @@ class DynastyRegistryStore {
   importState(state: ReturnType<DynastyRegistryStore["exportState"]>) {
     this.dynasties = new Map(state.dynasties.map((dynasty) => [dynasty.factionId, {
       ...dynasty,
+      houseEpochs: dynasty.houseEpochs?.map((epoch) => ({ ...epoch })),
       rulers: dynasty.rulers.map((ruler) => ({ ...ruler, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
       heirIds: [...dynasty.heirIds],
     }]));
     this.sequence = state.sequence;
+    this.revolutionChecks = [];
     this.provisionalDiagnosticsSession.reset(this.listForDiagnostics());
   }
 
@@ -172,6 +183,7 @@ class DynastyRegistryStore {
     const dynasty: Dynasty = {
       factionId: team.name,
       houseName,
+      houseEpochs: [{ houseName, startMonth: year, foundingRulerId: ruler.id, startReason: "FOUNDING" }],
       rulers: [ruler],
       currentRulerId: ruler.id,
       heirIds: [],
@@ -373,7 +385,26 @@ class DynastyRegistryStore {
       finalizeRulerPosthumousNames(predecessor, dynasty.rulers, team, year);
     }
     this.archiveNaturallyDeadHeirs(dynasty, year);
+    const displacedDesignatedHeirId = dynasty.designatedHeirId;
+    const oldHouseName = dynasty.houseName;
+    const oldStateName = team.displayName;
+    const oldColor = team.color;
+    const previousRulerTitle = this.getRulerTitle(team, predecessor, year);
     let successor = this.consumeHeir(dynasty, predecessor, year);
+    const legitimateSuccessor = successor;
+    const revolution = evaluateDynasticRevolution(this.revolutionContext(team, dynasty, predecessor, successor, year, reason));
+    this.revolutionChecks = [{ factionId: team.name, worldMonth: year, blockers: revolution.blockers },
+      ...this.revolutionChecks.filter((item) => item.factionId !== team.name)].slice(0, 5);
+    if (revolution.usurpation) {
+      dynasty.rulers.forEach((ruler) => {
+        if (ruler.houseName === oldHouseName && (ruler.status === "heir" || ruler.status === "kin")) {
+          ruler.status = "kin";
+          ruler.displacedByUsurpationMonth = year;
+        }
+      });
+      dynasty.heirIds = [];
+      successor = undefined;
+    }
     if (!successor && team.status === "ACTIVE" && team.cities.length > 0) {
       const knownDynasties = this.getAll();
       const newHouse = createSuccessorDynastyHouseName({
@@ -387,10 +418,28 @@ class DynastyRegistryStore {
         year,
         undefined,
         predecessor.id,
-        getUnrelatedSuccessorRelation(team.identityStage)
+        revolution.usurpation ? "USURPER" : getUnrelatedSuccessorRelation(team.identityStage)
       );
       dynasty.houseName = newHouse;
       dynasty.rulers.push(successor);
+      team.houseName = newHouse;
+      const epochs = dynasty.houseEpochs ?? (dynasty.houseEpochs = [{ houseName: oldHouseName,
+        startMonth: predecessor.accessionYear ?? year, foundingRulerId: predecessor.id, startReason: "FOUNDING" }]);
+      beginHouseEpoch(epochs, { houseName: newHouse, startMonth: year, foundingRulerId: successor.id,
+        startReason: revolution.usurpation ? "USURPATION" : "NATURAL_HOUSE_SUCCESSION",
+        displacedHouseName: oldHouseName,
+        displacedSuccessorId: revolution.usurpation ? legitimateSuccessor?.id : undefined,
+        displacedDesignatedHeirId: revolution.usurpation ? displacedDesignatedHeirId : undefined });
+      if (revolution.usurpation) {
+        const factions = Game.Core?.teams ?? [team];
+        const newName = createStateName({ capitalName: team.capitalCity?.name },
+          [...factions.map((faction) => faction.displayName), newHouse.replace(/氏$/, "")],
+          factions.flatMap((faction) => faction.nameHistory.map((entry) => entry.name)), (max) => worldRandom.pickIndex(max));
+        renameFactionDisplayName(team, newName, year, "dynastic-revolution");
+        const palette = [0xb45309, 0x4f46e5, 0x0d9488, 0xbe123c, 0x7c3aed, 0x15803d, 0x0284c7, 0xa16207]
+          .filter((color) => !factions.some((faction) => faction.status === "ACTIVE" && faction.color === color));
+        team.setRegimeColor(palette.length ? palette[worldRandom.pickIndex(palette.length)] : oldColor ^ 0x606060, year);
+      }
     }
     if (!successor) {
       dynasty.currentRulerId = null;
@@ -435,13 +484,24 @@ class DynastyRegistryStore {
         .map((ruler) => ruler.accessionYear)
         .filter((accessionYear): accessionYear is number => accessionYear !== undefined)
         .concat(
-          nextRuler.relationType === "NEW_HOUSE" ||
+          nextRuler.relationType === "NEW_HOUSE" || nextRuler.relationType === "USURPER" ||
             Math.floor(monthsToYears(year - nextRuler.bornYear)) < 16
             ? [year, year]
             : []
         ),
       getSuccessionShockMultiplier(team.sovereigntyRank)
     );
+    if (revolution.usurpation && legitimateSuccessor) {
+      const eventId = WorldHistory.addDynasticRevolution(year, team.name, nextRuler.id, {
+        oldHouseName, newHouseName: dynasty.houseName, predecessorRulerId: predecessor.id,
+        predecessorRulerName: this.getRulerPersonalName(predecessor), previousRulerTitle,
+        displacedSuccessorId: legitimateSuccessor.id, displacedSuccessorName: this.getRulerPersonalName(legitimateSuccessor),
+        vulnerabilityEvidence: revolution.evidence.join(","), stability: getFactionStability(team) ?? 100,
+        oldStateName, newStateName: team.displayName, oldColor, newColor: team.color,
+        successionReason: reason, month: year, actorFactionColor: team.color,
+      });
+      nextRuler.chronicle.notableEventIds.push(eventId);
+    }
     const effect = FactionEffects.addSuccessionEffect(team.name, year, rule);
     WorldHistory.addRulerSuccession(
       year,
@@ -450,7 +510,7 @@ class DynastyRegistryStore {
       this.getRulerPersonalName(nextRuler),
       {
         reason,
-        previousRulerTitle: this.getRulerTitle(team, predecessor, year),
+        previousRulerTitle,
         rulerPoliticalTitle: getRulerTitleAtMonth(team, year),
         naturalDeathVerb: getNaturalDeathVerbForTitle(getRulerTitleAtMonth(team, year)),
         nextSuccessionVerb: getSuccessionVerbForTitle(
@@ -832,6 +892,34 @@ class DynastyRegistryStore {
       }
     });
     dynasty.heirIds = dynasty.heirIds.filter((heirId) => dynasty.rulers.some((ruler) => ruler.id === heirId && ruler.status === "heir"));
+  }
+
+  private revolutionContext(team: Team, dynasty: Dynasty, predecessor: Ruler, successor: Ruler | undefined,
+    year: number, reason: "natural" | "combat" | "captured"): RevolutionContext {
+    return { worldMonth: year, identityStage: team.identityStage, status: team.status,
+      stability: getFactionStability(team) ?? 100, cityCount: team.cities.length,
+      predecessor, successor, successionReason: reason,
+      previousSuccessionMonths: dynasty.rulers.filter((ruler) => ruler.predecessorId && ruler.accessionYear !== undefined)
+        .map((ruler) => ruler.accessionYear!).concat(successor && year - successor.bornYear < 16 * 12 ? [year, year] : []) };
+  }
+
+  getRevolutionDiagnostics(teams: Team[], worldMonth: number) {
+    const epochs = this.listForDiagnostics().flatMap((dynasty) => (dynasty.houseEpochs ?? []).map((epoch) => ({ ...epoch, factionId: dynasty.factionId })));
+    return { naturalHouseSuccessionCount: epochs.filter((epoch) => epoch.startReason === "NATURAL_HOUSE_SUCCESSION").length,
+      usurpationCount: epochs.filter((epoch) => epoch.startReason === "USURPATION").length,
+      activeHouseEpochCount: epochs.filter((epoch) => epoch.endMonth === undefined && teams.some((team) => team.name === epoch.factionId && team.status === "ACTIVE")).length,
+      lastRevolution: epochs.filter((epoch) => epoch.startReason === "USURPATION").sort((a, b) => b.startMonth - a.startMonth)[0],
+      lastBoundaryChecks: this.revolutionChecks,
+      candidateBlockers: teams.filter((team) => team.status === "ACTIVE").slice(0, 5).map((team) => {
+        const dynasty = this.get(team.name);
+        const predecessor = this.getCurrentRuler(team.name);
+        if (!dynasty || !predecessor) return { factionId: team.name, blockers: ["NO_ELIGIBLE_LEGITIMATE_SUCCESSOR"] };
+        const selected = selectRecordedDynasticSuccessor({ predecessor, candidates: dynasty.rulers.filter((ruler) => dynasty.heirIds.includes(ruler.id)),
+          rulers: dynasty.rulers, houseName: dynasty.houseName, month: worldMonth,
+          isAlive: (ruler, month) => ruler.status !== "dead" && !isNaturallyDeadByMonth(ruler.naturalDeathYear, month),
+          preferredCandidateId: dynasty.designatedHeirId, pickIndex: () => 0 });
+        return { factionId: team.name, ...getRevolutionEligibility(this.revolutionContext(team, dynasty, predecessor, selected?.ruler, worldMonth, "natural")) };
+      }) };
   }
 
   private consumeHeir(dynasty: Dynasty, predecessor: Ruler, year: number) {

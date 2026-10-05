@@ -1,3 +1,4 @@
+import { changeFactionColor, type FactionColorHistoryEntry } from "../Simulation/FactionColorHistory";
 import Game from "../Game/Game";
 import { FarmConfig } from "../store/configSlice";
 import Block from "./Block";
@@ -45,6 +46,7 @@ export default class Team {
   public identityStage: FactionIdentityStage = "STATE";
   public sovereigntyRank: SovereigntyRank = "KING";
   public sovereigntyHistory: SovereigntyHistoryEntry[] = [];
+  public colorHistory: FactionColorHistoryEntry[] = [];
   public nameHistory: FactionNameHistoryEntry[] = [];
   public origin: FactionOrigin;
   public stateFormationEligibleSinceMonth: number | undefined;
@@ -81,6 +83,7 @@ export default class Team {
     this.players = new Phaser.GameObjects.Group(scene);
     this.blocks = new Phaser.GameObjects.Group(scene);
     this.displayName = name;
+    this.colorHistory = [{ color, startMonth: 0, reason: "FOUNDING" }];
     this.origin = {
       type: "INITIAL",
       foundedMonth: 0,
@@ -117,6 +120,7 @@ export default class Team {
       Boolean(state.capitalIndestructible)
     );
     team.displayName = state.displayName;
+    team.colorHistory = (state.colorHistory ?? []).map((entry: object) => ({ ...entry }));
     team.factionType = state.factionType;
     team.status = state.status;
     team.identityStage = state.identityStage;
@@ -385,11 +389,19 @@ export default class Team {
     })[0];
   }
 
+  setRegimeColor(color: number, worldMonth: number) {
+    changeFactionColor(this, color, worldMonth);
+    (this.blocks.getChildren() as Block[]).forEach((block) => { block.setFillStyle(color); block.updateCityDisplay(); });
+    (this.players.getChildren() as Player[]).forEach((player) => player.factionRing.setStrokeStyle(2, color, 0.85));
+    this.cities.forEach((city) => city.refreshZoneVisual());
+  }
+
   exportState() {
     return {
       factionId: this.name,
       displayName: this.displayName,
       color: this.color,
+      colorHistory: this.colorHistory.map((entry) => ({ ...entry })),
       factionType: this.factionType,
       status: this.status,
       firstFoundedMonth: this.firstFoundedYear,
