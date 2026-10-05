@@ -210,7 +210,7 @@ function WorldDiagnosticsPanelContent() {
     }
   };
 
-  const runtime = core?.getRuntimeLivenessDiagnostics();
+  const runtime = desktopRuntime;
   const populationTransitions = core?.getPopulationTransitionAudit() ?? [];
   const framePerformance = runtime?.framePerformance;
   const hydration = core?.getHydrationDiagnostics();
@@ -315,70 +315,70 @@ function WorldDiagnosticsPanelContent() {
     },
   ]]);
   const buildFullReport = () => {
-  const coreReportData = buildCoreReportData();
-  const currentEraReport = diagnostics.currentEra ? {
-    id: diagnostics.currentEra.id,
-    type: diagnostics.currentEra.type,
-    name: diagnostics.currentEra.name,
-    startMonth: diagnostics.currentEra.startMonth,
-    confirmedMonth: diagnostics.currentEra.confirmedMonth,
-    endMonth: diagnostics.currentEra.endMonth,
-    dominantFactionIds: diagnostics.currentEra.dominantFactionIds,
-    mapSnapshot: diagnostics.currentEra.mapSnapshot ? {
-      capturedMonth: diagnostics.currentEra.mapSnapshot.capturedMonth,
-      ownerRunCount: diagnostics.currentEra.mapSnapshot.ownerRuns.length,
-      cityCount: diagnostics.currentEra.mapSnapshot.cities.length,
-    } : undefined,
-  } : undefined;
-  return formatFullDiagnostics([
-    ["World posture", {
-      worldMonth, worldPhase,
-      ranked: diagnostics.ranked.map(({ team, metric, stability }) => ({
-        factionId: team.name, displayName: team.displayName, status: team.status,
-        identityStage: team.identityStage, sovereigntyRank: team.sovereigntyRank,
-        territoryShare: metric.controlledTerritoryShare, absoluteWorldShare: metric.absoluteWorldShare,
-        cityCount: team.cities.length, stability,
-      })),
-      currentEra: currentEraReport,
-      candidate: diagnostics.candidate,
-      validity: diagnostics.validity, liveClassification: diagnostics.liveClassification,
-    }],
-    ["Name generation", diagnostics.naming],
-    ["City naming", diagnostics.cityNaming],
-    ["Persistence", coreReportData.persistence],
-    ["Hydration", { ...coreReportData.hydration, lastStage: hydration?.lastStage, collider: colliderDiagnostics }],
-    ["Runtime Liveness", { runtime, simulationCounters: core?.getSimulationDiagnostics() }],
-    ["Genealogy Viewer", genealogyViewer],
-    ["Runtime Units", coreReportData.units],
-    ["Population Transition Audit", populationTransitions],
-    ["Diplomacy", core?.getDiplomacyDiagnostics()],
-    ["Provisional ruler diagnostics", provisionalRulers],
-    ["Frame Performance", coreReportData.performance],
-    ["Simulation Step Performance", stepPerformance],
-    ["Strategic Union Candidate Diagnostics", unionCandidateDiagnostics],
-    ["World Scale", coreReportData.worldScale],
-    ["Desktop Runtime", { diagnostics: desktopDiagnostics, runtime: desktopRuntime }],
-    ["Era diagnostics", {
-      currentEra: currentEraReport,
-      candidate: diagnostics.candidate, validity: diagnostics.validity, atlas: diagnostics.eraAtlas,
-    }],
-    ["WorldCycle diagnostics", { cycle: diagnostics.cycle, longRun: diagnostics.longRun }],
-  ]);
+    const coreReportData = buildCoreReportData();
+    const currentEraReport = diagnostics.currentEra ? {
+      id: diagnostics.currentEra.id,
+      type: diagnostics.currentEra.type,
+      name: diagnostics.currentEra.name,
+      startMonth: diagnostics.currentEra.startMonth,
+      confirmedMonth: diagnostics.currentEra.confirmedMonth,
+      endMonth: diagnostics.currentEra.endMonth,
+      dominantFactionIds: diagnostics.currentEra.dominantFactionIds,
+      mapSnapshot: diagnostics.currentEra.mapSnapshot ? {
+        capturedMonth: diagnostics.currentEra.mapSnapshot.capturedMonth,
+        ownerRunCount: diagnostics.currentEra.mapSnapshot.ownerRuns.length,
+        cityCount: diagnostics.currentEra.mapSnapshot.cities.length,
+      } : undefined,
+    } : undefined;
+    return formatFullDiagnostics([
+      ["World posture", {
+        worldMonth, worldPhase,
+        ranked: diagnostics.ranked.map(({ team, metric, stability }) => ({
+          factionId: team.name, displayName: team.displayName, status: team.status,
+          identityStage: team.identityStage, sovereigntyRank: team.sovereigntyRank,
+          territoryShare: metric.controlledTerritoryShare, absoluteWorldShare: metric.absoluteWorldShare,
+          cityCount: team.cities.length, stability,
+        })),
+        currentEra: currentEraReport,
+        candidate: diagnostics.candidate,
+        validity: diagnostics.validity, liveClassification: diagnostics.liveClassification,
+      }],
+      ["Name generation", diagnostics.naming],
+      ["City naming", diagnostics.cityNaming],
+      ["Persistence", coreReportData.persistence],
+      ["Hydration", { ...coreReportData.hydration, lastStage: hydration?.lastStage, collider: colliderDiagnostics }],
+      ["Runtime Liveness", { runtime, simulationCounters: core?.getSimulationDiagnostics() }],
+      ["Genealogy Viewer", genealogyViewer],
+      ["Runtime Units", coreReportData.units],
+      ["Population Transition Audit", populationTransitions],
+      ["Diplomacy", core?.getDiplomacyDiagnostics()],
+      ["Provisional ruler diagnostics", provisionalRulers],
+      ["Frame Performance", coreReportData.performance],
+      ["Simulation Step Performance", stepPerformance],
+      ["Strategic Union Candidate Diagnostics", unionCandidateDiagnostics],
+      ["World Scale", coreReportData.worldScale],
+      ["Desktop Runtime", { diagnostics: desktopDiagnostics, runtime: desktopRuntime }],
+      ["Era diagnostics", {
+        currentEra: currentEraReport,
+        candidate: diagnostics.candidate, validity: diagnostics.validity, atlas: diagnostics.eraAtlas,
+      }],
+      ["WorldCycle diagnostics", { cycle: diagnostics.cycle, longRun: diagnostics.longRun }],
+    ]);
   };
   const writeClipboard = async (text: string) => {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(text);
-      } else {
-        const textarea = document.createElement("textarea");
-        textarea.value = text;
-        textarea.style.position = "fixed";
-        textarea.style.opacity = "0";
-        document.body.appendChild(textarea);
-        textarea.select();
-        const copied = document.execCommand("copy");
-        textarea.remove();
-        if (!copied) throw new Error("clipboard unavailable");
-      }
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      const copied = document.execCommand("copy");
+      textarea.remove();
+      if (!copied) throw new Error("clipboard unavailable");
+    }
   };
   const copyReport = (build: () => string, label: string) => createDiagnosticCopyAction(build, writeClipboard, setCopyFeedback, label)();
   const statusSummary = `Hydration: ${hydrationStatus.startsWith("Hydration OK") ? "OK" : hydrationStatus.startsWith("Hydration failed") ? "FAILED" : "—"}｜Canonical: ${canonicalDiff ? canonicalDiff.matched ? "matched" : `DIFF (${canonicalDiff.differenceCount})` : "—"}｜Runtime: ${runtime?.simulatorRunning ? "RUNNING" : "PAUSED"}`;
