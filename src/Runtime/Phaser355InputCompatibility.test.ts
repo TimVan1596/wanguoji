@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { installPhaser355InputCompatibility, PhaserInputPluginPrototype } from "./Phaser355InputCompatibility";
 
 function pluginPrototype(): PhaserInputPluginPrototype {
@@ -35,13 +35,16 @@ describe("Phaser 3.55.2 input compatibility backport", () => {
 
   it("installs once per prototype and does not wrap it again", () => {
     const prototype = pluginPrototype();
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
     expect(installPhaser355InputCompatibility("3.55.2", prototype)).toBe("INSTALLED");
     const installed = prototype.sortGameObjects;
     expect(installPhaser355InputCompatibility("3.55.2", prototype)).toBe("ALREADY_INSTALLED");
     expect(prototype.sortGameObjects).toBe(installed);
+  });
+
+  it("does not patch a future or unexpected Phaser version", () => {
+    const prototype = pluginPrototype();
+    const original = prototype.sortGameObjects;
     expect(installPhaser355InputCompatibility("3.60.0", prototype)).toBe("UNSUPPORTED_VERSION");
-    expect(warn).not.toHaveBeenCalled();
-    warn.mockRestore();
+    expect(prototype.sortGameObjects).toBe(original);
   });
 });

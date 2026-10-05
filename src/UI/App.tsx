@@ -102,7 +102,6 @@ export default function App({ launchRequest, onReturnToMenu, onLoadRecord }: App
       pendingAutosaveBoundary.current = crossedBoundary;
     }
     if (pendingAutosaveBoundary.current === undefined || catchUpActive || autosaveInFlight.current) return;
-    const boundaryMonth = pendingAutosaveBoundary.current;
     autosaveInFlight.current = true;
     const saveAutoslot = async () => {
       try {

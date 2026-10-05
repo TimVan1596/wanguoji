@@ -1,5 +1,5 @@
 export type PhaserInputPluginPrototype = {
-  sortGameObjects: (gameObjects: any[], pointer: { camera?: { renderList: any[] } }) => any[];
+  sortGameObjects: (gameObjects: any[], pointer: any) => any[];
 };
 
 const patchedPrototypes = new WeakSet<object>();
