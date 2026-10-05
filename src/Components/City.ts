@@ -233,6 +233,7 @@ export default class City {
       return;
     }
 
+    if (rulerId) DynastyRegistry.recordPersonalSiegeContact(attacker.name, rulerId, year);
     const contact = this.siegeContacts.get(attacker.name);
     this.siegeContacts.set(attacker.name, {
       team: attacker,

@@ -70,14 +70,7 @@ export function getRulerBattleProtection(rank: SovereigntyRank = "LEADER") {
 }
 
 export function hasBattlefieldFatalityContext(context: RulerBattleDeathContext) {
-  const rank = context.sovereigntyRank ?? "LEADER";
-  if (context.rulerInSiege) {
-    return true;
-  }
-  if (rank === "EMPEROR") {
-    return Boolean(context.severeCrisis);
-  }
-  return Boolean(context.severeCrisis || context.capitalUnderSiege);
+  return Boolean(context.rulerInSiege || context.severeCrisis);
 }
 
 export interface RulerBattleHazardState {
@@ -100,4 +93,10 @@ export function checkRulerBattleHazard(
     worldMonth - ruler.lastBattleHazardCheckMonth < RULER_BATTLE_HAZARD_INTERVAL_MONTHS) return false;
   ruler.lastBattleHazardCheckMonth = worldMonth;
   return shouldRulerBattleDeathOccur(context);
+}
+
+/** Matches City's current/previous-month contact evidence, not the annual hazard interval. */
+export function hasRecentPersonalSiegeContact(ruler: { lastPersonalSiegeContactMonth?: number }, worldMonth: number) {
+  const month = ruler.lastPersonalSiegeContactMonth;
+  return month !== undefined && worldMonth >= month && worldMonth - month <= 1;
 }

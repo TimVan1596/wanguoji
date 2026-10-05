@@ -165,6 +165,12 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
         (typeof ruler.accessionMonth === "number" && Number(hazardMonth) < ruler.accessionMonth))) {
         errors.push("ruler.lastBattleHazardCheckMonth must be a valid past reign month");
       }
+      const contactMonth = ruler.lastPersonalSiegeContactMonth;
+      if (contactMonth !== undefined && (!Number.isSafeInteger(contactMonth) || Number(contactMonth) < 0 ||
+        Number(contactMonth) > Number(save.world?.worldMonth) ||
+        (typeof ruler.accessionMonth === "number" && Number(contactMonth) < ruler.accessionMonth))) {
+        errors.push("ruler.lastPersonalSiegeContactMonth must be a valid past reign month");
+      }
       if (ruler.parentId !== undefined) requireRef(ruler.parentId, rulerIds, "ruler.parentId", errors);
       if (ruler.predecessorId !== undefined) requireRef(ruler.predecessorId, rulerIds, "ruler.predecessorId", errors);
     });

@@ -28,7 +28,7 @@ import {
   RulerReignSnapshot,
 } from "./RulerChronicle";
 import { ProvisionalRulerDiagnosticsSession, type ProvisionalFactionRecord } from "./ProvisionalRulerDiagnostics";
-import { checkRulerBattleHazard } from "./RulerBattleRules";
+import { checkRulerBattleHazard, hasRecentPersonalSiegeContact } from "./RulerBattleRules";
 import { createTerminalRulerSnapshot } from "./RulerTerminalSnapshot";
 import { getNextRulerReignOrdinal } from "./RulerOrdinalRules";
 import {
@@ -76,6 +76,7 @@ export interface Ruler {
   bornYear: number;
   naturalDeathYear?: number;
   lastBattleHazardCheckMonth?: number;
+  lastPersonalSiegeContactMonth?: number;
   accessionYear?: number;
   plannedEndYear?: number;
   endYear?: number;
@@ -315,6 +316,13 @@ class DynastyRegistryStore {
     return `${ruler.houseName.replace(/氏$/, "")}${ruler.givenName}`;
   }
 
+  /** Called only after City accepts a siege contact with a real RULER id. */
+  recordPersonalSiegeContact(factionId: string, rulerId: string, worldMonth: number) {
+    const ruler = this.getCurrentRuler(factionId);
+    if (!ruler || ruler.id !== rulerId || ruler.status !== "ruling") return;
+    ruler.lastPersonalSiegeContactMonth = worldMonth;
+  }
+
   handleRulerCombatDeath(team: Team, rulerId: string, year: number) {
     const dynasty = this.dynasties.get(team.name);
     const ruler = dynasty?.rulers.find((item) => item.id === rulerId);
@@ -323,13 +331,7 @@ class DynastyRegistryStore {
     }
     const stability = getFactionStability(team) ?? 100;
     const capitalUnderSiege = Boolean(team.capitalCity?.underSiege);
-    const rulerInSiege = Boolean(
-      Game.Core?.teams.some((candidate) =>
-        candidate.cities.some(
-          (city) => city.ownerTeam !== team && city.underSiege && city.attackingFactionId === team.name
-        )
-      )
-    );
+    const rulerInSiege = hasRecentPersonalSiegeContact(ruler, year);
     const severeCrisis = Boolean(capitalUnderSiege && stability <= 25);
     const monthsSinceLastBattleDeath =
       dynasty.lastRulerBattleDeathYear === undefined
