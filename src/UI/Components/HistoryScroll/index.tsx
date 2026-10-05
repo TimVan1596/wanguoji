@@ -1,3 +1,5 @@
+import type Team from "../../../Components/Team";
+import { getFactionColorAtMonth } from "../../../Simulation/FactionColorHistory";
 import { Box, Button, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { memo, useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import { useSelector } from "react-redux";
@@ -85,7 +87,7 @@ export default function HistoryScroll() {
   }, [filter, manualFactionFilter, eraSelectionUI.selectedEraId]);
 
   const historyLookupSignature = JSON.stringify(teams.map((team) => [
-    team.name, team.displayName, team.color,
+    team.name, team.displayName, team.color, JSON.stringify(team.colorHistory),
     team.nameHistory?.map((entry) => [entry.startMonth, entry.endMonth, entry.name]),
     team.cities.map((city) => [city.id, city.name]),
   ]));
@@ -425,14 +427,14 @@ function HistoryEventListContent({
     <Box sx={{ height: sxHeight, overflowY: "auto" }}>
       {events.map((event) => {
         const expanded = expandedId === event.id;
-        const actorColor = resolveEventFactionColor(event, factionColorById);
+        const actorColor = resolveEventFactionColor(event, factionColorById, teamByName);
         const eventMonth = event.monthIndex ?? event.year;
         const eventFactionIds = getEventFactionIds(event).filter((name) => teamByName.has(name));
         const eventFactionNames = eventFactionIds.map((id) => resolveFactionHistoricalName(teamByName, id, eventMonth));
-        const eventTeamByDisplayName = new Map(teamByName);
+        const eventTeamByDisplayName = new Map([...teamByName].map(([id, team]) => [id, { ...team, color: getFactionColorAtMonth(team, eventMonth) } as Team]));
         eventFactionIds.forEach((factionId) => {
           const team = teamByName.get(factionId);
-          if (team) eventTeamByDisplayName.set(resolveFactionHistoricalName(teamByName, factionId, eventMonth), team);
+          if (team) eventTeamByDisplayName.set(resolveFactionHistoricalName(teamByName, factionId, eventMonth), eventTeamByDisplayName.get(factionId)!);
         });
         const eventTitle = formatHistoryEventTitle(event, teamByName, rulerById);
         const eventDescription = formatHistoryEventDescription(event, teamByName);

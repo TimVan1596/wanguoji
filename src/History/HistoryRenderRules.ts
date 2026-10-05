@@ -1,3 +1,4 @@
+import { getFactionColorAtMonth, type FactionColorHistoryEntry } from "../Simulation/FactionColorHistory";
 import type { WorldEvent, WorldEventCategory } from "./WorldHistory";
 import {
   isFeaturedHistoryEvent,
@@ -22,6 +23,7 @@ export type HistoryFilter = "featured" | "all" | WorldEventCategory;
 export interface HistoryFactionLike {
   name: string;
   color: number;
+  colorHistory?: FactionColorHistoryEntry[];
   displayName?: string;
   identityStage?: string;
   stateFoundedMonth?: number;
@@ -99,8 +101,13 @@ export function createFactionColorMap(factions: HistoryFactionLike[]) {
 
 export function resolveEventFactionColor(
   event: WorldEvent,
-  factionColorById: Map<string, number>
+  factionColorById: Map<string, number>,
+  factions?: Map<string, HistoryFactionLike>
 ) {
+  const faction = event.actorFactionId ? factions?.get(event.actorFactionId) : undefined;
+  if (faction?.colorHistory?.length) return getFactionColorAtMonth(faction, event.monthIndex ?? event.year);
+  const storedColor = event.metadata?.actorFactionColor;
+  if (typeof storedColor === "number") return storedColor;
   const actorColor =
     event.actorFactionId !== undefined
       ? factionColorById.get(event.actorFactionId)

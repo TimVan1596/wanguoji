@@ -13,7 +13,7 @@ import Diplomacy from "./Diplomacy";
 
 function setup() {
   DynastyRegistry.importState({ sequence: 1, dynasties: [{
-    factionId: "rebel", houseName: "张氏", currentRulerId: "r1", heirIds: [],
+    factionId: "rebel", houseName: "张氏", currentRulerId: "r1", heirIds: [], houseEpochs: [],
     rulers: [{ id: "r1", houseName: "张氏", givenName: "平", bornYear: 0, accessionYear: 0, status: "ruling", chronicle: undefined }],
   }] });
   return { name: "rebel", sovereigntyRank: "LEADER", stability: 80,

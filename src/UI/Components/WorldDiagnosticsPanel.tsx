@@ -104,6 +104,7 @@ function WorldDiagnosticsPanelContent() {
     const dynasties = DynastyRegistry.listForDiagnostics();
     return {
       ...summarizeProvisionalRulers(dynasties, factions),
+      revolution: DynastyRegistry.getRevolutionDiagnostics(teams, worldMonth),
       byAccessionRank: summarizeRulersByAccessionRank(dynasties, factions),
       session: DynastyRegistry.getProvisionalSessionDiagnostics(factions),
       recent: summarizeProvisionalRulers(dynasties, factions, { completedSinceMonth: Math.max(0, worldMonth - 1200) }),
@@ -403,6 +404,10 @@ function WorldDiagnosticsPanelContent() {
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{summary}</Typography>
         <Typography variant="caption">关键门槛（仅解释真实规则，不改变规则）</Typography>
         {thresholds.map(([label, text]) => <Typography key={label} variant="caption" component="div">{label}：{text}</Typography>)}
+      </details>
+      <details open>
+        <summary>Dynastic Revolution diagnostics</summary>
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(provisionalRulers.revolution)}</Typography>
       </details>
       <details open>
         <summary>君主任期诊断（即位当月历史 rank；累计完成任期）</summary>

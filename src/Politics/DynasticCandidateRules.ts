@@ -205,6 +205,7 @@ export function getSuccessionBackground(ruler: Ruler, rulers: Ruler[]) {
   if (ruler.relationType === "UNCLE") return `前君直系候选无可继者，由${kinship}承统`;
   if (ruler.relationType === "COUSIN") return `前君近支无可继者，由${kinship}承统`;
   if (ruler.relationType === "COLLATERAL_KIN") return "近支候选无可继者，由宗室旁支承统";
+  if (ruler.relationType === "USURPER") return "旧朝仍有合法继承人，在继统危机中夺取王统";
   if (ruler.relationType === "NEW_HOUSE") return "记录中的宗室候选已无可继者，遂易姓续统";
   if (ruler.relationType === "LEADER_SUCCESSOR") return "非世袭首领继任";
   return "继位背景未记录";
@@ -214,6 +215,7 @@ export function formatRecordedSuccessionKinship(ruler: Ruler, predecessor: Ruler
   const relation = getRecordedKinRelation(ruler, predecessor, rulers);
   if (relation) return formatRecordedKinship(ruler, predecessor, rulers).replace("当今君主", "前君");
   if (ruler.relationType === "COLLATERAL_KIN") return "宗室旁支";
+  if (ruler.relationType === "USURPER") return "篡朝";
   if (ruler.relationType === "NEW_HOUSE") return "新家族";
   return "继承人";
 }
@@ -241,7 +243,7 @@ function collectPoliticalGenealogyRulers(
 ) {
   const byId = new Map(rulers.map((ruler) => [ruler.id, ruler]));
   const included = new Set(rulers
-    .filter((ruler) => ruler.reignOrdinal !== undefined || ruler.id === currentRulerId || ruler.id === designatedHeirId || candidateIds.includes(ruler.id))
+    .filter((ruler) => ruler.displacedByUsurpationMonth !== undefined || ruler.reignOrdinal !== undefined || ruler.id === currentRulerId || ruler.id === designatedHeirId || candidateIds.includes(ruler.id))
     .map((ruler) => ruler.id));
   const pending = [...included];
   while (pending.length) {

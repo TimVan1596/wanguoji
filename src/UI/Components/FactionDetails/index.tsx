@@ -764,6 +764,12 @@ function DynastyTree({
           })}
         </Box>
       ) : null}
+      <Box sx={{ display: "grid", gap: 0.5 }}>
+        {(dynasty?.houseEpochs ?? []).slice().reverse().map((epoch, index) => <Box key={`${epoch.startMonth}-${index}`} sx={{ borderTop: "1px solid var(--gg-border)", pt: 0.5 }}>
+          <Typography fontWeight="bold" fontSize="0.85rem">{epoch.houseName} · {formatWorldDate(epoch.startMonth)} · {{ FOUNDING: "开创", NATURAL_HOUSE_SUCCESSION: "易姓续统", USURPATION: "篡朝", RESTORATION: "复国" }[epoch.startReason]}</Typography>
+          <Typography fontSize="0.8rem" color="var(--gg-text-muted)">{epoch.endMonth === undefined ? "当前王统" : `至${formatWorldDate(epoch.endMonth)}`}</Typography>
+        </Box>)}
+      </Box>
       <Typography fontWeight="bold" fontSize="0.9rem">历代君主</Typography>
       <Box sx={{ display: "grid", gap: 0.5 }}>
         {orderedRulers.map((ruler, index) => {
@@ -790,7 +796,7 @@ function DynastyTree({
                   fontSize="0.92rem"
                 >
                   {current ? "● " : ""}
-                  {formatRulerRowName(ruler, team)}
+                  {formatRulerRowName(ruler, team)}{ruler.relationType === "USURPER" ? "【篡朝】" : ""}
                 </Typography>
                 <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
                   {formatRulerListSubtitle(ruler, worldMonth, factionStatus, events, team.name)}
@@ -938,6 +944,8 @@ function GenealogyTreeNode({
 }) {
   const ruler = node.ruler;
   const badges = [
+    ruler.relationType === "USURPER" ? "篡朝" : undefined,
+    ruler.displacedByUsurpationMonth !== undefined ? "旧朝宗亲" : undefined,
     ruler.id === currentRulerId ? "当前" : undefined,
     ruler.id === dynasty?.designatedHeirId ? "储君" : undefined,
     dynasty?.heirIds.includes(ruler.id) && ruler.id !== dynasty.designatedHeirId ? "宗室候选" : undefined,

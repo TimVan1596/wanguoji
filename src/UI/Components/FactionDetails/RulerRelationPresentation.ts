@@ -6,6 +6,7 @@ export function formatRulerRelation(
   parentRecorded = true,
   foundedStateEvidence?: boolean
 ) {
+  if (relation === "USURPER") return "篡朝 / 王统易代";
   if (relation === "FOUNDER") return foundedStateEvidence === undefined
     ? identityStage === "PROVISIONAL" ? "首任首领" : "开国君主"
     : foundedStateEvidence ? "开国君主" : "首任首领 / 势力创始人";

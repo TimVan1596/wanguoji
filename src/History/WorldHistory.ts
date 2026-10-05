@@ -1,3 +1,4 @@
+import { formatRevolutionEvidence } from "../Politics/DynasticRevolution";
 import Team from "../Components/Team";
 import { ArchivedCity } from "../Simulation/ArchivedCities";
 import type { WorldEra } from "../Simulation/WorldEra";
@@ -34,6 +35,7 @@ export type WorldEventType =
   | "ruler-died"
   | "heir-died"
   | "ruler-acceded"
+  | "dynasty-usurped"
   | "ruler-succession"
   | "ruler-captured"
   | "dynasty-exiled"
@@ -1089,6 +1091,15 @@ class WorldHistoryStore {
     });
   }
 
+  addDynasticRevolution(year: number, factionId: string, rulerId: string, metadata: Record<string, string | number | undefined>) {
+    const evidence = formatRevolutionEvidence(String(metadata.vulnerabilityEvidence ?? "").split(","));
+    return this.addEvent({ id: `dynasty-usurped-${factionId}-${year}-${this.sequence++}`, year,
+      type: "dynasty-usurped", category: "politics", actorFactionId: factionId, factionIds: [factionId], rulerId,
+      title: `${metadata.oldStateName}王统易代：${metadata.newHouseName}夺取王统`,
+      description: `${metadata.previousRulerTitle}${metadata.successionReason === "combat" ? "战死" : metadata.successionReason === "captured" ? "被俘处死" : "去世"}。稳定度${metadata.stability}，${evidence}；${metadata.newHouseName}在继统危机中取代${metadata.oldHouseName}。合法继承人${metadata.displacedSuccessorName}被排除于继统序列，未记为死亡。${metadata.oldStateName !== metadata.newStateName ? `国号改为${metadata.newStateName}。` : ""}${metadata.oldColor !== metadata.newColor ? "易帜。" : ""}`,
+      metadata, importance: "major" });
+  }
+
   addRulerSuccession(
     year: number,
     factionId: string,
@@ -1124,6 +1135,8 @@ class WorldHistoryStore {
       ? "其兄弟"
       : relationType === "COLLATERAL_KIN"
       ? "宗室旁支"
+      : relationType === "USURPER"
+      ? "篡朝者"
       : relationType === "NEW_HOUSE"
       ? "新家族"
       : relationType === "LEADER_SUCCESSOR"
@@ -1144,6 +1157,8 @@ class WorldHistoryStore {
         ? `${previousRulerTitle}之后，其孙${nextRulerName}继位`
         : relationType === "SIBLING"
         ? `${previousRulerTitle}之后，其兄弟${nextRulerName}继位`
+        : relationType === "USURPER"
+        ? `${previousRulerTitle}之后，${nextRulerName}夺取王统`
         : relationType === "NEW_HOUSE"
         ? `${previousRulerTitle}王统断绝，${nextRulerName}新家族继位`
         : relationType === "COLLATERAL_KIN"
