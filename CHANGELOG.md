@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.99927
+
+- Added succession-boundary Dynastic Revolution for ACTIVE states with a living recorded legitimate successor, stability at most 25, and an existing succession crisis. Eligible boundaries draw once at 4% using WorldRandom; ineligible boundaries spend no revolution draw. Minor succession reuses existing crisis weighting, while historical chain evidence counts only real transitions.
+- Authoritative house epochs distinguish founding, natural heirless house succession, and usurpation. Displaced legitimate heirs remain living archive/genealogy records, leave the current candidate pool, and never become fabricated parents of the usurper. Natural NEW_HOUSE keeps the existing regime name and banner.
+- True usurpation reuses the formal state-name generator and historical deduplication, preserves faction IDs/diplomacy, and records name/color history. Current blocks, ruler/unit rings and city zones refresh; historical event tokens/charts resolve month-specific colors and captured Era palettes remain intact.
+- Added factual, featured dynasty-usurped events, ruler chronicle inclusion, royal house epoch dividers, usurper/displaced-kin badges, and observational revolution counts/latest event/candidate and last-boundary blockers without RNG consumption.
+- WorldSave is V9 for epochs, displaced lineage and banner history. V8 and older are rejected without migration; IndexedDB remains version 2. Battlefield exposure, ruler death risks/cooldowns, combat/population balance, diplomacy mechanics and posthumous/temple-name rules are unchanged.
+- v0.99926b1 manual Battlefield Exposure Gate passed in the user's approximately 520-year new-world run. v0.99927 requires a new-world Electron 4× 600–1000-year Dynastic Revolution Gate; automated checks do not replace it. If no usurpation occurs, return blocker diagnostics without lowering thresholds.
+
 ## v0.99926b1
 
 - Personal battlefield exposure now comes only from accepted City siege contacts carrying the current ruler's actual RULER id. A canonical lastPersonalSiegeContactMonth survives monthly contact clearing and is valid only in the contact month and following month; faction-wide or unrelated sieges no longer imply personal participation.

@@ -431,7 +431,7 @@ class DynastyRegistryStore {
         displacedSuccessorId: revolution.usurpation ? legitimateSuccessor?.id : undefined,
         displacedDesignatedHeirId: revolution.usurpation ? displacedDesignatedHeirId : undefined });
       if (revolution.usurpation) {
-        const factions = Game.Core?.teams ?? [team];
+        const factions = [...new Set([...(Game.Core?.teams ?? []), team])];
         const newName = createStateName({ capitalName: team.capitalCity?.name },
           [...factions.map((faction) => faction.displayName), newHouse.replace(/氏$/, "")],
           factions.flatMap((faction) => faction.nameHistory.map((entry) => entry.name)), (max) => worldRandom.pickIndex(max));
@@ -900,12 +900,12 @@ class DynastyRegistryStore {
       stability: getFactionStability(team) ?? 100, cityCount: team.cities.length,
       predecessor, successor, successionReason: reason,
       previousSuccessionMonths: dynasty.rulers.filter((ruler) => ruler.predecessorId && ruler.accessionYear !== undefined)
-        .map((ruler) => ruler.accessionYear!).concat(successor && year - successor.bornYear < 16 * 12 ? [year, year] : []) };
+        .map((ruler) => ruler.accessionYear!) };
   }
 
   getRevolutionDiagnostics(teams: Team[], worldMonth: number) {
-    const epochs = this.listForDiagnostics().flatMap((dynasty) => (dynasty.houseEpochs ?? []).map((epoch) => ({ ...epoch, factionId: dynasty.factionId })));
-    return { naturalHouseSuccessionCount: epochs.filter((epoch) => epoch.startReason === "NATURAL_HOUSE_SUCCESSION").length,
+    const epochs = this.listForDiagnostics().flatMap((dynasty) => (dynasty.houseEpochs ?? []).map((epoch) => ({ ...epoch, factionId: dynasty.factionId, foundingRelation: dynasty.rulers.find(ruler => ruler.id === epoch.foundingRulerId)?.relationType })));
+    return { naturalHouseSuccessionCount: epochs.filter((epoch) => epoch.startReason === "NATURAL_HOUSE_SUCCESSION" && epoch.foundingRelation === "NEW_HOUSE").length,
       usurpationCount: epochs.filter((epoch) => epoch.startReason === "USURPATION").length,
       activeHouseEpochCount: epochs.filter((epoch) => epoch.endMonth === undefined && teams.some((team) => team.name === epoch.factionId && team.status === "ACTIVE")).length,
       lastRevolution: epochs.filter((epoch) => epoch.startReason === "USURPATION").sort((a, b) => b.startMonth - a.startMonth)[0],

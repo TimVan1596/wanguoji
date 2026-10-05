@@ -1,6 +1,7 @@
 import { APP_VERSION } from "../config/version";
 import { WORLD_RNG_ALGORITHM, WorldRandomState } from "../Simulation/WorldRandom";
 import type { DiplomaticRelation } from "../Politics/Diplomacy";
+import type { FactionColorHistoryEntry } from "../Simulation/FactionColorHistory";
 
 export const CURRENT_SAVE_SCHEMA_VERSION = 9 as const;
 
@@ -8,6 +9,7 @@ export interface FactionSaveV1 {
   factionId: string;
   displayName: string;
   color: number;
+  colorHistory: FactionColorHistoryEntry[];
   factionType: string;
   status: string;
   firstFoundedMonth: number;

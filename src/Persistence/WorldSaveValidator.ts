@@ -69,7 +69,6 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
     if (!finite(faction[key])) errors.push(`factions.${key} must be finite`);
   }));
   factions.forEach((faction) => {
-    if (faction.colorHistory === undefined) return;
     if (!Array.isArray(faction.colorHistory) || !faction.colorHistory.length) { errors.push("faction.colorHistory must be non-empty"); return; }
     faction.colorHistory.forEach((entry: unknown, index: number) => {
       const previous = faction.colorHistory[index - 1];
@@ -103,7 +102,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   const duplicateRulerIds = new Set<string>();
   dynasties.forEach((dynasty) => {
     const rulers = Array.isArray(dynasty.rulers) ? dynasty.rulers : [];
-    if (dynasty.houseEpochs !== undefined) {
+    {
       if (!Array.isArray(dynasty.houseEpochs) || !dynasty.houseEpochs.length) errors.push("dynasty.houseEpochs must be non-empty");
       else dynasty.houseEpochs.forEach((epoch: unknown, index: number) => {
         if (!isPlainRecord(epoch)) { errors.push("invalid dynasty house epoch"); return; }

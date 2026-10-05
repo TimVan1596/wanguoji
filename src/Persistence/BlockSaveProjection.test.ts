@@ -47,7 +47,7 @@ describe("canonical Block HP authority", () => {
   it("round-trips city and non-city HP inside a WorldSaveV1 DTO canonically", () => {
     const save = createEmptyWorldSaveV1();
     save.factions = [{
-      factionId: "qin", displayName: "秦", color: 1, factionType: "KINGDOM", status: "ACTIVE",
+      factionId: "qin", displayName: "秦", color: 1, colorHistory: [{ color: 1, startMonth: 0, reason: "FOUNDING" }], factionType: "KINGDOM", status: "ACTIVE",
       firstFoundedMonth: 0, currentActiveSinceMonth: 0, restorationMonths: [], cumulativeActiveMonths: 0,
       identityStage: "STATE", sovereigntyRank: "KING", sovereigntyHistory: [], nameHistory: [],
       origin: {}, homeGridX: 0, homeGridY: 0,

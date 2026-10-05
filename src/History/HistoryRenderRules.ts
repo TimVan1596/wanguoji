@@ -131,12 +131,12 @@ export function resolveFactionHistoricalName(
   if (!faction) {
     return factionId;
   }
-  const entry = faction.nameHistory?.find(
-    (item) =>
-      monthIndex >= item.startMonth &&
-      (item.endMonth === undefined || monthIndex <= item.endMonth)
-  );
-  return entry?.name ?? faction.displayName ?? faction.name;
+  const entries = faction.nameHistory ?? [];
+  for (let index = entries.length - 1; index >= 0; index -= 1) {
+    const entry = entries[index];
+    if (monthIndex >= entry.startMonth && (entry.endMonth === undefined || monthIndex <= entry.endMonth)) return entry.name;
+  }
+  return faction.displayName ?? faction.name;
 }
 
 export function formatHistoryEventTitle(

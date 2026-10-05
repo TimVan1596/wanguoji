@@ -20,11 +20,15 @@ export interface RevolutionContext {
 }
 
 export function getRevolutionEligibility(context: RevolutionContext) {
-  const crisis = calculateSuccessionEffect(context.worldMonth,
+  const minorSuccessor = Boolean(context.successor && context.worldMonth - context.successor.bornYear < 16 * 12);
+  const recordedTransitions = calculateSuccessionEffect(context.worldMonth,
     context.worldMonth - (context.predecessor.accessionYear ?? context.worldMonth), context.previousSuccessionMonths);
+  const crisis = calculateSuccessionEffect(context.worldMonth,
+    context.worldMonth - (context.predecessor.accessionYear ?? context.worldMonth),
+    context.previousSuccessionMonths.concat(minorSuccessor ? [context.worldMonth, context.worldMonth] : []));
   const evidence: string[] = [];
-  if (context.successor && context.worldMonth - context.successor.bornYear < 16 * 12) evidence.push("MINOR_SUCCESSOR");
-  if (crisis.recentSuccessionCount >= 3) evidence.push("RECENT_SUCCESSION_CHAIN");
+  if (minorSuccessor) evidence.push("MINOR_SUCCESSOR");
+  if (recordedTransitions.recentSuccessionCount >= 3) evidence.push("RECENT_SUCCESSION_CHAIN");
   if (context.successionReason !== "natural") evidence.push(context.successionReason === "combat" ? "PREDECESSOR_COMBAT_DEATH" : "PREDECESSOR_CAPTURED");
   if (context.cityCount <= 1) evidence.push("ONE_CITY_REMAINING");
   const blockers: string[] = [];

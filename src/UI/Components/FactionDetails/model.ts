@@ -81,7 +81,7 @@ export function resolveFactionNameAtMonthSafe(
   if (typeof faction.getDisplayNameAtMonth === "function") {
     return faction.getDisplayNameAtMonth(month);
   }
-  const matched = faction.nameHistory?.find(
+  const matched = faction.nameHistory?.slice().reverse().find(
     (entry) =>
       month >= entry.startMonth &&
       (entry.endMonth === undefined || month <= entry.endMonth)

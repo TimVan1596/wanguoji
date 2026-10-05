@@ -7,17 +7,46 @@ function fixture() {
   const save = createEmptyWorldSaveV1();
   save.world.worldMonth = 42;
   save.world.clock.worldMonth = 42;
-  save.factions = [{ factionId: "qin", displayName: "秦", color: 1, factionType: "KINGDOM", status: "ACTIVE", firstFoundedMonth: 0, currentActiveSinceMonth: 0, restorationMonths: [], cumulativeActiveMonths: 0, identityStage: "STATE", sovereigntyRank: "KING", sovereigntyHistory: [], nameHistory: [], origin: {}, homeGridX: 0, homeGridY: 0 }];
+  save.factions = [{ factionId: "qin", displayName: "秦", color: 1, colorHistory: [{ color: 1, startMonth: 0, reason: "FOUNDING" }], factionType: "KINGDOM", status: "ACTIVE", firstFoundedMonth: 0, currentActiveSinceMonth: 0, restorationMonths: [], cumulativeActiveMonths: 0, identityStage: "STATE", sovereigntyRank: "KING", sovereigntyHistory: [], nameHistory: [], origin: {}, homeGridX: 0, homeGridY: 0 }];
   save.cities = [{ cityId: "xianyang", name: "咸阳", ownerFactionId: "qin", founderFactionId: "qin", foundedMonth: 0, centerGridX: 0, centerGridY: 0, isCapital: true, defense: 10, maxDefense: 10, loyalty: 80, devastation: 0, captureCount: 0 }];
   save.users = [{ userId: 7, factionId: "qin", sourceFactionId: "qin", name: "嬴平", loyalty: 70, role: "RULER", score: 0, playerUnitId: "unit-1" }];
   save.units = [{ unitId: "unit-1", factionId: "qin", userId: 7, x: 10, y: 20, vx: 1, vy: -1, speed: 100, radius: 10, scale: 1, speedCoefficient: 0, sizeCoefficient: 0, alive: true, role: "RULER" }];
-  save.dynasties = [{ factionId: "qin", rulers: [{ rulerId: "qin-ruler-1" }], heirIds: [] }];
+  save.dynasties = [{ factionId: "qin", houseName: "田氏", houseEpochs: [{ houseName: "田氏", startMonth: 0, foundingRulerId: "qin-ruler-1", startReason: "FOUNDING" }], rulers: [{ rulerId: "qin-ruler-1", houseName: "田氏" }], heirIds: [] }];
   save.blocks = [{ gridX: 0, gridY: 0, ownerFactionId: "qin", isHome: true, cityId: "xianyang", homeHitPoints: 10, isCityCenter: true }];
   save.populationSystem = { counters: { qin: 3 }, lastGrowthMonth: 12 };
   return save;
 }
 
 describe("WorldSaveV1 validation and JSON contract", () => {
+  it("round-trips V9 house epochs, displaced living kin, names, colors and RNG; rejects V8", () => {
+    const save = fixture();
+    save.factions[0] = { ...save.factions[0], houseName: "侯氏", displayName: "梁", color: 2,
+      nameHistory: [{ name: "秦", startMonth: 0, endMonth: 35, reason: "FOUNDING" }, { name: "梁", startMonth: 36, reason: "dynastic-revolution" }],
+      colorHistory: [{ color: 1, startMonth: 0, endMonth: 35, reason: "FOUNDING" }, { color: 2, startMonth: 36, reason: "USURPATION" }] };
+    save.dynasties = [{ factionId: "qin", houseName: "侯氏", currentRulerId: "new", heirIds: [],
+      houseEpochs: [{ houseName: "田氏", startMonth: 0, endMonth: 35, foundingRulerId: "old", startReason: "FOUNDING" },
+        { houseName: "侯氏", startMonth: 36, foundingRulerId: "new", startReason: "USURPATION", displacedHouseName: "田氏", displacedSuccessorId: "heir", displacedDesignatedHeirId: "heir" }],
+      rulers: [{ rulerId: "old", houseName: "田氏", accessionMonth: 0, endMonth: 36, status: "dead" },
+        { rulerId: "heir", houseName: "田氏", parentId: "old", status: "kin", displacedByUsurpationMonth: 36 },
+        { rulerId: "new", houseName: "侯氏", accessionMonth: 36, predecessorId: "old", status: "ruling", relationType: "USURPER" }] }];
+    const parsed = JSON.parse(JSON.stringify(save));
+    expect(validateWorldSave(parsed)).toEqual({ valid: true, errors: [] });
+    expect(parsed).toEqual(save);
+    const missing = JSON.parse(JSON.stringify(save));
+    delete missing.factions[0].colorHistory;
+    delete missing.dynasties[0].houseEpochs;
+    expect(validateWorldSave(missing).errors).toContain("faction.colorHistory must be non-empty");
+    expect(validateWorldSave(missing).errors).toContain("dynasty.houseEpochs must be non-empty");
+    for (const old of [8, 7, 6, 1]) expect(validateWorldSave({ ...parsed, saveSchemaVersion: old }).errors).toContain("unsupported saveSchemaVersion");
+    parsed.dynasties[0].houseEpochs[1].displacedSuccessorId = "missing";
+    expect(validateWorldSave(parsed).valid).toBe(false);
+    parsed.dynasties[0].houseEpochs[1].displacedSuccessorId = "heir";
+    parsed.dynasties[0].rulers[2].parentId = "old";
+    expect(validateWorldSave(parsed).errors).toContain("usurper cannot have fabricated parent relationship");
+    delete parsed.dynasties[0].rulers[2].parentId;
+    parsed.factions[0].colorHistory[0].endMonth = 40;
+    expect(validateWorldSave(parsed).errors).toContain("invalid faction color history");
+  });
   it("preserves V8 personal exposure and rejects malformed or future evidence", () => {
     const save = fixture();
     const ruler = (save.dynasties[0].rulers as Record<string, unknown>[])[0];
@@ -106,13 +135,14 @@ describe("WorldSaveV1 validation and JSON contract", () => {
   it("preserves active candidates, living kin, designation, and parent relationships in schema V8", () => {
     const save = fixture();
     save.dynasties = [{
-      factionId: "qin",
+      factionId: "qin", houseName: "田氏",
+      houseEpochs: [{ houseName: "田氏", startMonth: 0, foundingRulerId: "qin-ruler-1", startReason: "FOUNDING" }],
       currentRulerId: "qin-ruler-1",
       heirIds: ["qin-ruler-2", "qin-ruler-3"],
       designatedHeirId: "qin-ruler-2",
       designatedSinceMonth: 36,
       rulers: [
-        { rulerId: "qin-ruler-1", status: "dead" },
+        { rulerId: "qin-ruler-1", houseName: "田氏", status: "dead" },
         { rulerId: "qin-ruler-2", status: "heir", parentId: "qin-ruler-1", relationType: "DIRECT_CHILD" },
         { rulerId: "qin-ruler-3", status: "heir", parentId: "qin-ruler-2", relationType: "DIRECT_CHILD" },
         { rulerId: "qin-ruler-4", status: "kin", parentId: "qin-ruler-1" },
@@ -131,10 +161,11 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     const save = fixture();
     const rulerIds = Array.from({ length: 8 }, (_, index) => `qin-ruler-${index + 1}`);
     save.dynasties = [{
-      factionId: "qin",
+      factionId: "qin", houseName: "田氏",
+      houseEpochs: [{ houseName: "田氏", startMonth: 0, foundingRulerId: "qin-ruler-1", startReason: "FOUNDING" }],
       currentRulerId: rulerIds[0],
       heirIds: rulerIds.slice(1),
-      rulers: rulerIds.map((rulerId) => ({ rulerId, status: rulerId === rulerIds[0] ? "ruling" : "heir" })),
+      rulers: rulerIds.map((rulerId) => ({ rulerId, houseName: "田氏", status: rulerId === rulerIds[0] ? "ruling" : "heir" })),
     }];
     expect(validateWorldSave(save).errors).toContain("dynasties[0].heirIds exceeds candidate limit");
   });

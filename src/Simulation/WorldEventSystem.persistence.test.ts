@@ -64,7 +64,7 @@ describe("WorldEventSystem persistence contract", () => {
 
     const save = createEmptyWorldSaveV1();
     save.factions = [{
-      factionId: "Qin", displayName: "秦", color: 1, factionType: "KINGDOM", status: "ACTIVE",
+      factionId: "Qin", displayName: "秦", color: 1, colorHistory: [{ color: 1, startMonth: 0, reason: "FOUNDING" }], factionType: "KINGDOM", status: "ACTIVE",
       firstFoundedMonth: 0, currentActiveSinceMonth: 0, restorationMonths: [], cumulativeActiveMonths: 0,
       identityStage: "STATE", sovereigntyRank: "KING", sovereigntyHistory: [], nameHistory: [],
       origin: {}, homeGridX: 0, homeGridY: 0,

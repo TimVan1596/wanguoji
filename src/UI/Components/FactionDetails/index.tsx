@@ -1,5 +1,6 @@
+import { getFactionColorAtMonth, type FactionColorHistoryEntry } from "../../../Simulation/FactionColorHistory";
 import { Box, Button, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getFactionStability } from "../../../Components/City";
 import Game from "../../../Game/Game";
@@ -453,6 +454,7 @@ function FactionProfile({
           <TrendChart
             title="人口变化"
             color={team.color}
+            colorHistory={team.colorHistory}
             snapshots={snapshots}
             getValue={(snapshot) => snapshot.population}
             valueLabel={(value) => `${Math.round(value)}人`}
@@ -465,6 +467,7 @@ function FactionProfile({
           <TrendChart
             title="领土占比"
             color={team.color}
+            colorHistory={team.colorHistory}
             snapshots={snapshots}
             getValue={(snapshot) => snapshot.territoryShare * 100}
             valueLabel={(value) => `${value.toFixed(1)}%`}
@@ -775,6 +778,7 @@ function DynastyTree({
         {orderedRulers.map((ruler, index) => {
           const current = ruler.id === currentRulerId;
           const expanded = ruler.id === selectedRulerId;
+          const epoch = dynasty?.houseEpochs?.find(item => item.foundingRulerId === ruler.id);
           return (
             <Box
               key={ruler.id}
@@ -787,6 +791,7 @@ function DynastyTree({
                 borderRadius: "var(--gg-radius)",
               }}
             >
+              {epoch ? <Typography sx={{ borderTop: "1px solid var(--gg-border)", pt: 0.5 }} fontSize="0.84rem" fontWeight="bold">{epoch.houseName} · {formatWorldDate(epoch.startMonth)} · {{ FOUNDING: "开创", NATURAL_HOUSE_SUCCESSION: "易姓续统", USURPATION: "篡朝", RESTORATION: "复国" }[epoch.startReason]}</Typography> : null}
               <Box
                 onClick={() => onSelectedRulerIdChange(expanded ? undefined : ruler.id)}
                 sx={{ cursor: "pointer" }}
@@ -1319,6 +1324,7 @@ function formatStatus(status: string, terminationReason?: string) {
 function TrendChart({
   title,
   color,
+  colorHistory,
   snapshots,
   getValue,
   valueLabel,
@@ -1330,6 +1336,7 @@ function TrendChart({
 }: {
   title: string;
   color: number;
+  colorHistory?: FactionColorHistoryEntry[];
   snapshots: FactionSnapshot[];
   getValue: (snapshot: FactionSnapshot) => number;
   valueLabel: (value: number) => string;
@@ -1340,6 +1347,8 @@ function TrendChart({
   onEventSelect?: (id: string) => void;
 }) {
   const [hover, setHover] = useState<string | undefined>();
+  const chartId = useId().replace(/:/g, "");
+  const historicalColor = (month: number) => getFactionColorAtMonth({ color, colorHistory }, month);
   const values = snapshots.map(getValue);
   const lastValue = values[values.length - 1] ?? 0;
   const timeTicks = createTimeTicks(snapshots);
@@ -1373,7 +1382,7 @@ function TrendChart({
                 onClick={() => onEventSelect?.(event.id)}
                 style={{ cursor: onEventSelect ? "pointer" : "default" }}
               >
-                <text x={x} y={getEventMarkerLaneY(index) - 1} textAnchor="middle" fontSize={selected ? "13" : "10"} fill={colorToString(color)}>◆</text>
+                <text x={x} y={getEventMarkerLaneY(index) - 1} textAnchor="middle" fontSize={selected ? "13" : "10"} fill={colorToString(historicalColor(event.monthIndex ?? event.year))}>◆</text>
               </g>
             );
           })}
@@ -1402,21 +1411,22 @@ function TrendChart({
             </g>
           );
         })}
-        <polyline
-          points={path}
-          fill="none"
-          stroke={colorToString(color)}
-          strokeWidth="3"
-          strokeLinejoin="round"
-          strokeLinecap="round"
-        />
+        {(colorHistory?.length ? colorHistory : [{ color, startMonth: 0, endMonth: undefined, reason: "FOUNDING" }]).map((epoch, index) => {
+          const left = Math.max(32, Math.min(246, monthToChartX(epoch.startMonth, snapshots)));
+          const right = epoch.endMonth === undefined ? 246 : Math.max(32, Math.min(246, monthToChartX(epoch.endMonth + 1, snapshots)));
+          const clipId = `${chartId}-epoch-${index}`;
+          return <g key={clipId}>
+            <defs><clipPath id={clipId}><rect x={left} y="0" width={Math.max(0, right - left)} height="120" /></clipPath></defs>
+            <polyline points={path} clipPath={`url(#${clipId})`} fill="none" stroke={colorToString(epoch.color)} strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" />
+          </g>;
+        })}
         {points.map((point) => (
           <circle
             key={`${point.month}-${point.value}`}
             cx={point.x}
             cy={point.y}
             r="3"
-            fill={colorToString(color)}
+            fill={colorToString(historicalColor(point.month))}
             onMouseEnter={() =>
               setHover(`数据：${formatWorldDate(point.month)} ${title}：${valueLabel(point.value)}`)
             }

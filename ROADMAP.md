@@ -18,6 +18,10 @@
 - 在线试玩自动部署。
 - [x] 外交基础、战略同盟与严格条件下的同源行政合邦；长局人工验收仍待完成。
 
+## 当前人工验收
+
+- v0.99927 Dynastic Revolution 已实现，等待新世界 Electron 4× 600～1000 年人工 Gate；通过前不开始纳土归降、Era Atlas II 或 Faction Historiography。
+
 ## 玩法后续
 
 - 帝国整合期。

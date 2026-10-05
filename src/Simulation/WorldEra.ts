@@ -50,7 +50,7 @@ export function resolveEraDisplayLabel(
   const month = era.confirmedMonth ?? era.startMonth;
   const names = (era.dominantFactionIds ?? []).map((id) => {
     const faction = factionById.get(id);
-    const historical = faction?.nameHistory?.find((entry) => entry.startMonth <= month && (entry.endMonth === undefined || month <= entry.endMonth));
+    const historical = faction?.nameHistory?.slice().reverse().find((entry) => entry.startMonth <= month && (entry.endMonth === undefined || month <= entry.endMonth));
     return historical?.name ?? faction?.displayName ?? faction?.name ?? id;
   });
   if (names.length) return names.join(" · ");

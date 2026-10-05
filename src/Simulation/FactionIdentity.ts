@@ -100,12 +100,12 @@ export function getFactionDisplayNameAtMonth(
   faction: Pick<FactionIdentityState, "displayName" | "name" | "nameHistory">,
   monthIndex: number
 ) {
-  const matched = faction.nameHistory.find(
-    (entry) =>
-      monthIndex >= entry.startMonth &&
-      (entry.endMonth === undefined || monthIndex <= entry.endMonth)
-  );
-  return matched?.name ?? getFactionDisplayName(faction);
+  // Multiple canonical transitions can occur in one month; the last one wins.
+  for (let index = faction.nameHistory.length - 1; index >= 0; index -= 1) {
+    const entry = faction.nameHistory[index];
+    if (monthIndex >= entry.startMonth && (entry.endMonth === undefined || monthIndex <= entry.endMonth)) return entry.name;
+  }
+  return getFactionDisplayName(faction);
 }
 
 export function renameFactionDisplayName(
