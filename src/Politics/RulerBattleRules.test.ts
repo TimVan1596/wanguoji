@@ -6,15 +6,32 @@ import {
   shouldPreventRulerBattleDeath,
   shouldRulerBattleDeathOccur,
   checkRulerBattleHazard,
+  hasRecentPersonalSiegeContact,
 } from "./RulerBattleRules";
 
 describe("ruler battle rules", () => {
+  it("does not equate ordinary capital siege with personal exposure for any rank", () => {
+    for (const sovereigntyRank of ["LEADER", "KING", "EMPEROR"] as const) {
+      expect(shouldRulerBattleDeathOccur({ reignMonths: 100, sovereigntyRank, capitalUnderSiege: true, randomRoll: 0 })).toBe(false);
+      expect(shouldRulerBattleDeathOccur({ reignMonths: 100, sovereigntyRank, rulerInSiege: true, randomRoll: 0 })).toBe(true);
+      expect(shouldRulerBattleDeathOccur({ reignMonths: 1, sovereigntyRank, severeCrisis: true, randomRoll: 1 })).toBe(true);
+    }
+  });
+
+  it("limits personal contact evidence to the contact month and next month", () => {
+    const ruler = { lastPersonalSiegeContactMonth: 100 };
+    expect(hasRecentPersonalSiegeContact({}, 100)).toBe(false);
+    expect(hasRecentPersonalSiegeContact(ruler, 99)).toBe(false);
+    expect(hasRecentPersonalSiegeContact(ruler, 100)).toBe(true);
+    expect(hasRecentPersonalSiegeContact(ruler, 101)).toBe(true);
+    expect(hasRecentPersonalSiegeContact(ruler, 102)).toBe(false);
+  });
   it("requires political context for leaders and keeps their non-guaranteed risk above kings", () => {
     expect(hasBattlefieldFatalityContext({ reignMonths: 100, sovereigntyRank: "LEADER" })).toBe(false);
     expect(shouldRulerBattleDeathOccur({ reignMonths: 100, randomRoll: 0 })).toBe(false);
     expect(getRulerBattleDeathRisk("LEADER")).toBeGreaterThan(getRulerBattleDeathRisk("KING"));
     expect(getRulerBattleDeathRisk("LEADER")).toBeLessThan(1);
-    for (const context of [{ rulerInSiege: true }, { capitalUnderSiege: true }]) {
+    for (const context of [{ rulerInSiege: true }]) {
       expect(shouldRulerBattleDeathOccur({ reignMonths: 100, ...context, randomRoll: 0 })).toBe(true);
       expect(shouldRulerBattleDeathOccur({ reignMonths: 100, ...context, randomRoll: 0.99 })).toBe(false);
     }
@@ -26,7 +43,7 @@ describe("ruler battle rules", () => {
     try {
       expect(checkRulerBattleHazard(ruler, 100, { reignMonths: 100 })).toBe(false);
       expect(next).not.toHaveBeenCalled();
-      const context = { reignMonths: 100, capitalUnderSiege: true };
+      const context = { reignMonths: 100, rulerInSiege: true };
       expect(checkRulerBattleHazard(ruler, 100, context)).toBe(false);
       for (let index = 0; index < 100; index += 1) checkRulerBattleHazard(ruler, 100, context);
       checkRulerBattleHazard(ruler, 111, context);

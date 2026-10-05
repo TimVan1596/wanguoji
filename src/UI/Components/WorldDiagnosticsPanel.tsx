@@ -18,6 +18,7 @@ import { DesktopDiagnostics, isDesktopContinuousRuntime } from "../../Runtime/De
 import { getNameGenerationSummary } from "../../Politics/NameGenerationTelemetry";
 import { getCityNamingSummary } from "../../Simulation/CityNamingTelemetry";
 import DynastyRegistry from "../../Politics/Dynasty";
+import { DIAGNOSTIC_RULER_RANKS, summarizeRulersByAccessionRank } from "../../Politics/RulerRankDiagnostics";
 import { summarizeProvisionalRulers } from "../../Politics/ProvisionalRulerDiagnostics";
 import { getEraAtlasDiagnostics } from "../../Simulation/EraMapSnapshot";
 import { BASE_PLAY_RATE } from "../../Simulation/SimulationDriver";
@@ -103,6 +104,7 @@ function WorldDiagnosticsPanelContent() {
     const dynasties = DynastyRegistry.listForDiagnostics();
     return {
       ...summarizeProvisionalRulers(dynasties, factions),
+      byAccessionRank: summarizeRulersByAccessionRank(dynasties, factions),
       session: DynastyRegistry.getProvisionalSessionDiagnostics(factions),
       recent: summarizeProvisionalRulers(dynasties, factions, { completedSinceMonth: Math.max(0, worldMonth - 1200) }),
     };
@@ -401,6 +403,16 @@ function WorldDiagnosticsPanelContent() {
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{summary}</Typography>
         <Typography variant="caption">关键门槛（仅解释真实规则，不改变规则）</Typography>
         {thresholds.map(([label, text]) => <Typography key={label} variant="caption" component="div">{label}：{text}</Typography>)}
+      </details>
+      <details open>
+        <summary>君主任期诊断（即位当月历史 rank；累计完成任期）</summary>
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{[
+          ...DIAGNOSTIC_RULER_RANKS.map((rank) => {
+            const stats = provisionalRulers.byAccessionRank[rank];
+            return `${rank}: completed=${stats.completedCount}, combat=${stats.combatDeathCount} / ${stats.combatDeathRatio === undefined ? "—" : `${(stats.combatDeathRatio * 100).toFixed(1)}%`}\nmedian=${stats.medianTenureMonths === undefined ? "—" : formatWorldDuration(stats.medianTenureMonths)}, min/max=${stats.minTenureMonths === undefined ? "—" : formatWorldDuration(stats.minTenureMonths)}/${stats.maxTenureMonths === undefined ? "—" : formatWorldDuration(stats.maxTenureMonths)}`;
+          }),
+          `缺少历史 rank 证据的完成任期：${provisionalRulers.byAccessionRank.unknownCompletedCount}`,
+        ].join("\n")}</Typography>
       </details>
       <details>
         <summary>临时势力首领诊断</summary>

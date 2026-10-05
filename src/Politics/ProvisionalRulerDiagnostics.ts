@@ -1,4 +1,5 @@
 import type { Dynasty } from "./Dynasty";
+import { getRecordedAccessionRank } from "./RulerRankDiagnostics";
 
 export interface ProvisionalFactionRecord {
   displayName?: string;
@@ -21,7 +22,7 @@ export function summarizeProvisionalRulers(
     return dynasty.rulers.filter((ruler) => {
       const month = ruler.accessionYear;
       if (month === undefined) return false;
-      const rank = faction.sovereigntyHistory.find((entry) => entry.startMonth <= month && (entry.endMonth === undefined || entry.endMonth >= month))?.rank;
+      const rank = getRecordedAccessionRank(month, faction.sovereigntyHistory);
       return rank === "LEADER";
     }).map((ruler) => ({ ruler, current: ruler.id === dynasty.currentRulerId }));
   });
@@ -38,7 +39,7 @@ export function summarizeProvisionalRulers(
     if (!faction) return [];
     const rulers = dynasty.rulers.filter((ruler) => {
       if (ruler.accessionYear === undefined) return false;
-      return faction.sovereigntyHistory.some((entry) => entry.rank === "LEADER" && entry.startMonth <= ruler.accessionYear! && (entry.endMonth === undefined || entry.endMonth >= ruler.accessionYear!));
+      return getRecordedAccessionRank(ruler.accessionYear, faction.sovereigntyHistory) === "LEADER";
     });
     const completed = rulers.filter((ruler) => includedCompletion(ruler) && ruler.accessionYear !== undefined);
     if (completed.length === 0) return [];

@@ -18,6 +18,20 @@ function fixture() {
 }
 
 describe("WorldSaveV1 validation and JSON contract", () => {
+  it("preserves V8 personal exposure and rejects malformed or future evidence", () => {
+    const save = fixture();
+    const ruler = (save.dynasties[0].rulers as Record<string, unknown>[])[0];
+    ruler.accessionMonth = 30;
+    ruler.lastPersonalSiegeContactMonth = 40;
+    const loaded = JSON.parse(JSON.stringify(save));
+    expect(validateWorldSave(loaded).valid).toBe(true);
+    expect(loaded.dynasties[0].rulers[0].lastPersonalSiegeContactMonth).toBe(40);
+    expect(validateWorldSave({ ...save, saveSchemaVersion: 7 }).valid).toBe(false);
+    for (const invalid of [-1, 0.5, 43, "40", 29]) {
+      loaded.dynasties[0].rulers[0].lastPersonalSiegeContactMonth = invalid;
+      expect(validateWorldSave(loaded).errors).toContain("ruler.lastPersonalSiegeContactMonth must be a valid past reign month");
+    }
+  });
   it("retains hazard checks in V8 JSON and rejects V7 and invalid hazard months", () => {
     const save = fixture();
     (save.dynasties[0].rulers as Record<string, unknown>[])[0].lastBattleHazardCheckMonth = 40;
