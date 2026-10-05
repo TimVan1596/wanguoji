@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.99927a
+
+- Fixed ruler-biography diplomacy summaries that resolved old participants and common threats through current displayName. Biographies, faction chronicles and HistoryScroll diplomacy narratives now resolve the event month through shared historical identity presentation; colored history uses month-specific color history, including common-threat tokens.
+- Added debug-only cumulative, independent succession gate counts and blocker frequencies, plus the ten latest fully eligible boundaries with faction/month/stability/evidence/reason/successor age in months. Observations consume no additional RNG, do not enter save DTOs, and reset on new world/load. Counts are independent gates, not a sequential funnel; full eligibility requires all gates.
+- Royal house epochs now have one current/history presentation, full historical month ranges and no redundant epoch headers in the ruler list. Rare reign statistics show only positive counts, with a neutral empty message; assessment evidence is untouched.
+- APP_VERSION v0.99927a / package 0.99.102. WorldSave remains V9, IndexedDB remains 2, stability <=25 and the 4% usurpation draw remain unchanged. No battlefield risk, diplomacy gameplay, population or posthumous/temple-name rule changes.
+- The user's approximately 980-year v0.99927 run verified natural house succession (姬氏→廖氏, 439年11月) but observed zero true usurpations; the full Dynastic Revolution Gate is still pending. v0.99927a requires a real new-world Electron 4× 800–1200-year Gate with cumulative diagnostics. Do not tune gates or odds without user review.
+
 ## v0.99927
 
 - Added succession-boundary Dynastic Revolution for ACTIVE states with a living recorded legitimate successor, stability at most 25, and an existing succession crisis. Eligible boundaries draw once at 4% using WorldRandom; ineligible boundaries spend no revolution draw. Minor succession reuses existing crisis weighting, while historical chain evidence counts only real transitions.

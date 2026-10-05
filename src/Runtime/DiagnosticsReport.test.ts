@@ -3,6 +3,16 @@ import worldRandom from "../Simulation/WorldRandom";
 import { DIAGNOSTIC_PREVIEW_BUDGET, stableStringify, formatCoreDiagnostics, formatFullDiagnostics } from "./DiagnosticsReport";
 
 describe("diagnostic reports", () => {
+  it("includes complete session Gate counters and all ten eligible samples in the core clipboard report", () => {
+    const cumulativeGate = { successionBoundaryCheckCount: 120, fullyEligibleBeforeRollCount: 10,
+      rollFailedCount: 10, usurpationCount: 0, blockerCounts: { STABILITY_TOO_HIGH: 80, ROLL_FAILED: 10 },
+      recentFullyEligibleBoundaries: Array.from({ length: 10 }, (_, index) => ({ factionId: `faction-${index}`,
+        month: 1000 + index, stability: 20, evidence: ["MINOR_SUCCESSOR"], successionReason: "natural", successorAgeMonths: 120 })) };
+    const report = formatCoreDiagnostics({ provisionalRulers: { revolution: { cumulativeGate } } });
+    expect(report).toContain("Dynastic Revolution cumulative Gate diagnostics (session only)");
+    for (const [key, value] of [["successionBoundaryCheckCount", 120], ["fullyEligibleBeforeRollCount", 10], ["rollFailedCount", 10], ["usurpationCount", 0]]) expect(report).toContain(`"${key}": ${value}`);
+    for (let index = 0; index < 10; index++) expect(report).toContain(`"factionId": "faction-${index}"`);
+  });
   it("formats core fields and renders missing values as dashes", () => {
     const report = formatCoreDiagnostics({
       appVersion: "v0.99926a3",

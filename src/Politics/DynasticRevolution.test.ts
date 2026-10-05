@@ -54,9 +54,27 @@ beforeEach(() => {
   vi.spyOn(DynastyRegistry, "ensureRulerUnit").mockImplementation(() => undefined);
   vi.spyOn(DynastyRegistry as unknown as { ensureActiveHeir(): void }, "ensureActiveHeir").mockImplementation(() => undefined);
 });
-afterEach(() => { vi.restoreAllMocks(); DynastyRegistry.reset(); WorldHistory.reset(); FactionEffects.reset(); });
+afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks(); DynastyRegistry.reset(); WorldHistory.reset(); FactionEffects.reset(); });
 
 describe("authoritative succession-boundary dynastic revolution", () => {
+  it("keeps live succession/RNG/export identical with debug on or off and resets session counters on load", () => {
+    const run = (debug: boolean) => {
+      vi.stubGlobal("window", { location: { search: debug ? "?debug=1" : "" } });
+      WorldHistory.reset(); FactionEffects.reset();
+      const { team, dynasty } = setup();
+      worldRandom.initialize("revolution-debug-canonical");
+      transition(team, dynasty);
+      const canonical = JSON.parse(JSON.stringify({ dynasty: DynastyRegistry.exportState(), rng: worldRandom.exportState(),
+        history: WorldHistory.exportState(), effects: FactionEffects.exportState(), nameHistory: team.nameHistory, colorHistory: team.colorHistory }));
+      const diagnostics = DynastyRegistry.getRevolutionDiagnostics([team], month).cumulativeGate;
+      expect(diagnostics.successionBoundaryCheckCount).toBe(debug ? 1 : 0);
+      expect(canonical.dynasty).not.toHaveProperty("revolutionGateDiagnostics");
+      DynastyRegistry.importState(DynastyRegistry.exportState());
+      expect(DynastyRegistry.getRevolutionDiagnostics([team], month).cumulativeGate.successionBoundaryCheckCount).toBe(0);
+      return canonical;
+    };
+    expect(run(true)).toEqual(run(false));
+  });
   it("keeps heirless NEW_HOUSE natural, preserving the state name and banner", () => {
     const { team, dynasty } = setup(false);
     const successor = transition(team, dynasty);

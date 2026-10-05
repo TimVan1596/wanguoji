@@ -20,7 +20,7 @@
 
 ## 当前人工验收
 
-- v0.99927 Dynastic Revolution 已实现，等待新世界 Electron 4× 600～1000 年人工 Gate；通过前不开始纳土归降、Era Atlas II 或 Faction Historiography。
+- v0.99927a Dynastic Revolution Gate Closure 已实现，等待新世界 Electron 4× 800～1200 年人工 Gate；v0.99927 的自然易姓已人工通过，true USURPATION 仍未实机验证；通过前不开始纳土归降、Era Atlas II 或 Faction Historiography。
 
 ## 玩法后续
 
