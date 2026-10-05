@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.99926a4
+
+- Bounded diagnostic previews now use incremental container frames and global reference deduplication, with depth/node/item/key/output budgets and guarded property/enumeration access. Core fields fail independently.
+- Core, full, and hydration clipboard reports are generated only on copy clicks; diagnostic panel rendering no longer eagerly builds them.
+- Added a local diagnostics panel error boundary with reset and console logging; panel failures do not invoke the global renderer fatal pause.
+- Preserved Phaser input compatibility, snapshot-month autosave titles, iterative/on-demand genealogy, HistoryScroll memoization, debug source maps, and DOM/map input isolation. No gameplay, RNG, WorldSave V6, balance, or history-retention changes.
+- Automated validation does not replace the required 2004-year-save Electron long-run manual gate.
+
 ## v0.99926a3
 
 - Backported Phaser 3.60's null-camera and missing-render-list input sorting guards to the pinned Phaser 3.55.2 InputPlugin, installed idempotently before game creation and guarded by the exact engine version.

@@ -1,5 +1,6 @@
-import { describe, expect, it } from "vitest";
-import { formatCoreDiagnostics, formatFullDiagnostics } from "./DiagnosticsReport";
+import { describe, expect, it, vi } from "vitest";
+import worldRandom from "../Simulation/WorldRandom";
+import { DIAGNOSTIC_PREVIEW_BUDGET, stableStringify, formatCoreDiagnostics, formatFullDiagnostics } from "./DiagnosticsReport";
 
 describe("diagnostic reports", () => {
   it("formats core fields and renders missing values as dashes", () => {
@@ -79,7 +80,112 @@ describe("diagnostic reports", () => {
     }
     cursor.next = root;
     const report = formatFullDiagnostics([["Deep", root]]);
-    expect(report).toContain('"[Circular]"');
+    // The default preview stops at the depth budget before reaching the cycle.
+    expect(report).toContain("[Truncated]");
+    expect(report.length).toBeLessThanOrEqual(DIAGNOSTIC_PREVIEW_BUDGET.maxOutputChars + 5);
     expect(report.startsWith("Deep\n{" )).toBe(true);
+    // Explicit bounded high-depth coverage retains the original cycle regression.
+    expect(stableStringify(root, { maxDepth: 25_000, maxNodes: 25_000, maxOutputChars: 1_000_000 }))
+      .toContain('"[Circular]"');
+  });
+
+  it("deduplicates circular graphs and shared DAG nodes globally", () => {
+    const shared = { value: 7 };
+    const graph: Record<string, unknown> = { a: shared, b: shared };
+    graph.self = graph;
+    expect(stableStringify(graph)).toBe('{"a": {"value": 7}, "b": "[Circular]", "self": "[Circular]"}');
+    let reads = 0;
+    let dag: object = shared;
+    for (let index = 0; index < 40; index += 1) {
+      const child = dag;
+      dag = { get a() { reads += 1; return child; }, get b() { reads += 1; return child; } };
+    }
+    const report = stableStringify(dag);
+    expect(report).toContain("[Circular]");
+    expect(reads).toBe(80); // Would be exponential with path-local cycle detection.
+    expect(report).not.toContain("[Truncated]");
+  });
+
+  it("bounds wide arrays without accessing omitted entries", () => {
+    let reads = 0;
+    const wide = new Proxy(new Array(1_000_000), {
+      get(target, key, receiver) {
+        if (key !== "length") reads += 1;
+        return Reflect.get(target, key, receiver);
+      },
+    });
+    expect(stableStringify(wide)).toContain("[Truncated]");
+    expect(reads).toBe(DIAGNOSTIC_PREVIEW_BUDGET.maxArrayItems);
+  });
+
+  it("bounds wide objects without evaluating omitted properties", () => {
+    let reads = 0;
+    const wide: Record<string, unknown> = {};
+    for (let index = 0; index < 10_000; index += 1) {
+      Object.defineProperty(wide, `key${index}`, { enumerable: true, get() { reads += 1; return index; } });
+    }
+    expect(stableStringify(wide)).toContain("[Truncated]");
+    expect(reads).toBe(DIAGNOSTIC_PREVIEW_BUDGET.maxObjectKeys);
+  });
+
+  it("isolates throwing getters and proxy enumeration/access errors", () => {
+    const bad = { get bad() { throw new Error("getter failed"); }, good: 42 };
+    expect(stableStringify(bad)).toContain("[Unserializable: getter failed]");
+    expect(stableStringify(bad)).toContain('"good": 42');
+    expect(stableStringify(new Proxy({}, { ownKeys() { throw new Error("keys failed"); } })))
+      .toContain("[Unserializable: keys failed]");
+    expect(stableStringify(new Proxy({ a: 1 }, { get() { throw new Error("access failed"); } })))
+      .toContain("[Unserializable: access failed]");
+    const revoked = Proxy.revocable({}, {});
+    revoked.revoke();
+    expect(stableStringify(revoked.proxy)).toContain("[Unserializable:");
+    expect(stableStringify({ get bad() { throw new Proxy({}, { get() { throw 0; } }); } }))
+      .toContain("[Unserializable: unknown error]");
+  });
+
+  it("enforces depth, node, item, key and output budgets", () => {
+    expect(stableStringify({ a: { b: 1 } }, { maxDepth: 1 })).toContain("[Truncated]");
+    expect(stableStringify([1, 2, 3], { maxNodes: 2 })).toBe('[1, "[Truncated]"]');
+    expect(stableStringify([1, 2], { maxArrayItems: 1 })).toBe('[1, "[Truncated]"]');
+    expect(stableStringify({ a: 1, b: 2 }, { maxObjectKeys: 1 })).toContain("[Truncated]");
+    for (const value of ["x".repeat(100_000), { ["k".repeat(10_000)]: 1 }, [1, 2, 3]]) {
+      const report = stableStringify(value, { maxOutputChars: 32 });
+      expect(report.length).toBeLessThanOrEqual(32);
+    }
+    expect(stableStringify("x".repeat(1000), { maxOutputChars: 32 })).toContain("[Truncated]");
+    expect(stableStringify(1n)).toBe('"[BigInt]"');
+    const toJSON = vi.fn(() => { throw new Error("should not run"); });
+    stableStringify({ toJSON });
+    expect(toJSON).not.toHaveBeenCalled();
+  });
+
+  it("continues after one CORE_FIELD path getter fails", () => {
+    const report = formatCoreDiagnostics({
+      get appVersion() { throw new Error("version failed"); },
+      packageVersion: "0.99.98", runtime: { worldMonth: 24192 },
+    });
+    expect(report).toContain("APP_VERSION: [diagnostic serialization failed: version failed]");
+    expect(report).toContain("package version: 0.99.98");
+    expect(report).toContain("worldMonth: 24192");
+    expect(report).toContain("collider teardown post-drain: —");
+  });
+
+  it("does not consume the world RNG", () => {
+    const before = worldRandom.exportState();
+    const next = vi.spyOn(worldRandom, "next");
+    try {
+      stableStringify({ shared: worldRandom.exportState() });
+      formatCoreDiagnostics({ runtime: { worldMonth: 24192 } });
+      formatFullDiagnostics([["RNG", before]]);
+      expect(worldRandom.exportState()).toEqual(before);
+      expect(next).not.toHaveBeenCalled();
+    } finally { next.mockRestore(); }
+  });
+
+  it("bounds full reports across sections", () => {
+    const sections: Array<[string, unknown]> = Array.from({ length: 100 }, () => ["Large", "x".repeat(100_000)]);
+    const report = formatFullDiagnostics(sections);
+    expect(report).toContain("[Truncated]");
+    expect(report.length).toBeLessThanOrEqual(262_144);
   });
 });

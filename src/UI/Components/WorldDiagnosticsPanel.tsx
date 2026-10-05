@@ -23,7 +23,9 @@ import { getEraAtlasDiagnostics } from "../../Simulation/EraMapSnapshot";
 import { BASE_PLAY_RATE } from "../../Simulation/SimulationDriver";
 import worldRandom, { WORLD_RNG_ALGORITHM } from "../../Simulation/WorldRandom";
 import { getAvatarRendererMode } from "../../Runtime/AvatarRendererMode";
-import { formatCoreDiagnostics, formatFullDiagnostics } from "../../Runtime/DiagnosticsReport";
+import { formatCoreDiagnostics, formatFullDiagnostics, stableStringify } from "../../Runtime/DiagnosticsReport";
+import DiagnosticsPanelBoundary from "./DiagnosticsPanelBoundary";
+import { createDiagnosticCopyAction } from "../../Runtime/DiagnosticCopyAction";
 import { readDesktopSuspendPolicy } from "../../Runtime/DesktopSuspendPolicy";
 import {
   getWorldSaveStorageDiagnostics,
@@ -51,6 +53,10 @@ function debugEnabled() {
 }
 
 export default function WorldDiagnosticsPanel() {
+  return <DiagnosticsPanelBoundary><WorldDiagnosticsPanelContent /></DiagnosticsPanelBoundary>;
+}
+
+function WorldDiagnosticsPanelContent() {
   const teams = useSelector((state: RootState) => state.root.teams);
   const worldMonth = useSelector((state: RootState) => state.root.worldMonth);
   const worldPhase = useSelector((state: RootState) => state.root.worldPhase);
@@ -81,7 +87,7 @@ export default function WorldDiagnosticsPanel() {
     if (!bridge?.getDiagnostics) return;
     let active = true;
     const refresh = () => {
-      void bridge.getDiagnostics?.().then((value) => { if (active) setDesktopDiagnostics(value); });
+      void bridge.getDiagnostics?.().then((value) => { if (active) setDesktopDiagnostics(value); }).catch((error) => { console.error("Diagnostics refresh failed", error); });
     };
     refresh();
     const timer = window.setInterval(refresh, 1000);
@@ -167,7 +173,7 @@ export default function WorldDiagnosticsPanel() {
     `Top Empire Stability：当前${diagnostics.longRun.bottleneck.currentTop1Stability?.toFixed(1) ?? "—"}｜>40%最低${diagnostics.longRun.bottleneck.minimumStabilityWhileAbove40?.toFixed(1) ?? "—"}｜>50%最低${diagnostics.longRun.bottleneck.minimumStabilityWhileAbove50?.toFixed(1) ?? "—"}｜>50%且<65 ${diagnostics.longRun.bottleneck.monthsAbove50ButStabilityBelow65}月｜raw/effective strain ${diagnostics.longRun.bottleneck.rawImperialStrain?.toFixed(1) ?? "—"}/${diagnostics.longRun.bottleneck.effectiveImperialStrain?.toFixed(1) ?? "—"}`,
     `Literal Monopoly：${diagnostics.longRun.literalUnificationCount}次｜已完成${diagnostics.longRun.literalMonopolyEpisodes}段｜平均${diagnostics.longRun.averageLiteralMonopolyDuration === undefined ? "—" : formatWorldDuration(diagnostics.longRun.averageLiteralMonopolyDuration)}｜当前${diagnostics.longRun.currentLiteralMonopolyAge === undefined ? "—" : formatWorldDuration(diagnostics.longRun.currentLiteralMonopolyAge)}`,
     `Dynastic Order：建立${diagnostics.longRun.dynasticOrderEstablishedCount}次｜瓦解${diagnostics.longRun.dynasticOrderLostCount}次｜完成${diagnostics.longRun.completedDynasticOrderEpisodes}段｜平均${diagnostics.longRun.averageDynasticOrderDuration === undefined ? "—" : formatWorldDuration(diagnostics.longRun.averageDynasticOrderDuration)}｜当前${diagnostics.longRun.currentDynasticOrderAge === undefined ? "—" : formatWorldDuration(diagnostics.longRun.currentDynasticOrderAge)}`,
-    `World scale（60月采样）：${JSON.stringify(worldScale ?? {})}`,
+    `World scale（60月采样）：${stableStringify(worldScale ?? {})}`,
     `Monthly step timing（debug rolling）：${Object.entries(stepPerformance).map(([name, metric]) => `${name} avg ${metric.averageMs.toFixed(3)}ms / p95 ${metric.p95Ms.toFixed(3)}ms / max ${metric.maxMs.toFixed(3)}ms (n=${metric.sampleCount})`).join("；") || "等待样本"}`,
     `Strategic Union candidates（最多5组）：${unionCandidateDiagnostics.map((entry) => `${entry.factionAId}/${entry.factionBId}: sameOrigin=${entry.sameOrigin}, alliance=${entry.allianceMonths}m, adjacent=${entry.adjacent}, warFree=${entry.bilateralWarFreeMonths}m, territoryRatio=${entry.territoryRatio.toFixed(2)}, cityRatio=${entry.cityRatio.toFixed(2)}, weakerStability=${entry.weakerStability.toFixed(1)}, commonThreat=${entry.commonThreatStillRelevant}, blockers=${entry.blockers.join("+") || "ELIGIBLE"}`).join(" | ") || "暂无 active alliance candidates"}`,
   ].join("\n");
@@ -213,11 +219,11 @@ export default function WorldDiagnosticsPanel() {
     ? Object.entries(canonicalDiff.subsystemCounts).map(([key, count]) => `${key}: ${count}`).join("\n")
     : "暂无 canonical comparison";
   const pathDiffSummary = canonicalDiff?.differences.length
-    ? canonicalDiff.differences.map((entry) => `${entry.path}\n  before: ${JSON.stringify(entry.before)}\n  after: ${JSON.stringify(entry.after)}`).join("\n")
+    ? canonicalDiff.differences.map((entry) => `${entry.path}\n  before: ${stableStringify(entry.before)}\n  after: ${stableStringify(entry.after)}`).join("\n")
     : "无 path-level 差异";
   const desktopHeartbeat = desktopDiagnostics?.latestHeartbeat;
   const colliderDiagnostics = core?.getColliderTeardownDiagnostics();
-  const coreReportData = {
+  const buildCoreReportData = () => ({
     appVersion: APP_VERSION,
     packageVersion: packageJson.version,
     timestamp: new Date().toISOString(),
@@ -293,9 +299,9 @@ export default function WorldDiagnosticsPanel() {
       snapshotRequest,
     },
     collider: { postDrain: colliderDiagnostics?.activeAfterPostDrain, diagnostics: colliderDiagnostics },
-  };
-  const coreReport = formatCoreDiagnostics(coreReportData);
-  const hydrationReport = formatFullDiagnostics([[
+  });
+  const buildCoreReport = () => formatCoreDiagnostics(buildCoreReportData());
+  const buildHydrationReport = () => formatFullDiagnostics([[
     "Hydration diagnostics",
     {
       savedWorldMonth: storageDiagnostics.worldMonth,
@@ -308,6 +314,8 @@ export default function WorldDiagnosticsPanel() {
       storage: storageDiagnostics,
     },
   ]]);
+  const buildFullReport = () => {
+  const coreReportData = buildCoreReportData();
   const currentEraReport = diagnostics.currentEra ? {
     id: diagnostics.currentEra.id,
     type: diagnostics.currentEra.type,
@@ -322,7 +330,7 @@ export default function WorldDiagnosticsPanel() {
       cityCount: diagnostics.currentEra.mapSnapshot.cities.length,
     } : undefined,
   } : undefined;
-  const fullReport = formatFullDiagnostics([
+  return formatFullDiagnostics([
     ["World posture", {
       worldMonth, worldPhase,
       ranked: diagnostics.ranked.map(({ team, metric, stability }) => ({
@@ -356,8 +364,8 @@ export default function WorldDiagnosticsPanel() {
     }],
     ["WorldCycle diagnostics", { cycle: diagnostics.cycle, longRun: diagnostics.longRun }],
   ]);
-  const copyReport = async (text: string, label: string) => {
-    try {
+  };
+  const writeClipboard = async (text: string) => {
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(text);
       } else {
@@ -371,11 +379,8 @@ export default function WorldDiagnosticsPanel() {
         textarea.remove();
         if (!copied) throw new Error("clipboard unavailable");
       }
-      setCopyFeedback(`${label}已复制`);
-    } catch {
-      setCopyFeedback("复制失败，请检查剪贴板权限");
-    }
   };
+  const copyReport = (build: () => string, label: string) => createDiagnosticCopyAction(build, writeClipboard, setCopyFeedback, label)();
   const statusSummary = `Hydration: ${hydrationStatus.startsWith("Hydration OK") ? "OK" : hydrationStatus.startsWith("Hydration failed") ? "FAILED" : "—"}｜Canonical: ${canonicalDiff ? canonicalDiff.matched ? "matched" : `DIFF (${canonicalDiff.differenceCount})` : "—"}｜Runtime: ${runtime?.simulatorRunning ? "RUNNING" : "PAUSED"}`;
 
   return (
@@ -383,8 +388,8 @@ export default function WorldDiagnosticsPanel() {
       <Typography variant="subtitle2" sx={{ color: "#90caf9" }}>世界诊断（debug=1）</Typography>
       <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9, my: 0.5 }}>{statusSummary}</Typography>
       <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{`Genealogy viewer: open=${genealogyViewer.open} lastCloseSource=${genealogyViewer.lastCloseSource ?? "—"} MUI reason=${genealogyViewer.lastMuiReason ?? "—"}`}</Typography>
-      <Button size="small" variant="outlined" sx={{ color: "#90caf9", borderColor: "#90caf9" }} onClick={() => void copyReport(coreReport, "核心诊断")}>复制核心诊断</Button>
-      <Button size="small" variant="outlined" sx={{ ml: 0.5, color: "#a5d6a7", borderColor: "#a5d6a7" }} onClick={() => void copyReport(fullReport, "完整诊断")}>复制全部诊断</Button>
+      <Button size="small" variant="outlined" sx={{ color: "#90caf9", borderColor: "#90caf9" }} onClick={() => void copyReport(buildCoreReport, "核心诊断")}>复制核心诊断</Button>
+      <Button size="small" variant="outlined" sx={{ ml: 0.5, color: "#a5d6a7", borderColor: "#a5d6a7" }} onClick={() => void copyReport(buildFullReport, "完整诊断")}>复制全部诊断</Button>
       <Snackbar open={Boolean(copyFeedback)} autoHideDuration={2200} onClose={() => setCopyFeedback("")}>
         <Alert severity={copyFeedback.includes("失败") ? "error" : "success"} onClose={() => setCopyFeedback("")}>{copyFeedback}</Alert>
       </Snackbar>
@@ -438,7 +443,7 @@ export default function WorldDiagnosticsPanel() {
       </details>
       <details>
         <summary>Persistence / Hydration</summary>
-        <Button size="small" variant="outlined" sx={{ color: "#90caf9", borderColor: "#90caf9" }} onClick={() => void copyReport(hydrationReport, "Hydration 调试报告")}>复制 Hydration 调试报告</Button>
+        <Button size="small" variant="outlined" sx={{ color: "#90caf9", borderColor: "#90caf9" }} onClick={() => void copyReport(buildHydrationReport, "Hydration 调试报告")}>复制 Hydration 调试报告</Button>
         <Button size="small" variant="outlined" disabled={hydrationBusy} sx={{ ml: 0.5, color: "#a5d6a7", borderColor: "#a5d6a7" }} onClick={snapshotAndReload}>
           {hydrationBusy ? "正在重载…" : "内存快照并重载"}
         </Button>
@@ -447,7 +452,7 @@ export default function WorldDiagnosticsPanel() {
           {`snapshot: ${snapshotRequest.status}｜request month ${snapshotRequest.requestMonth ?? "—"}｜reached ${snapshotRequest.boundaryReachedMonth ?? "waiting"}\nstarted while: simulator=${snapshotState?.simulatorRunning ?? "—"}, clock=${snapshotState?.clockRunning ?? "—"}, redux=${snapshotState?.reduxWorldRunning ?? "—"}, scenePaused=${snapshotState?.sceneTimePaused ?? "—"}, physicsPaused=${snapshotState?.physicsPaused ?? "—"}, accumulator=${snapshotState?.simulationAccumulatorMs ?? "—"}, elapsed=${snapshotState?.clockElapsedMs ?? "—"}\nwaiting reason: ${snapshotRequest.waitingReasons?.join(", ") || "none"}\npre-export elapsed=${snapshotRequest.preExportElapsedMs ?? "—"}, accumulator=${snapshotRequest.preExportAccumulatorMs ?? "—"}${snapshotRequest.error ? `\n${snapshotRequest.error}` : ""}`}
         </Typography>}
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{`last hydration stage: ${hydration?.lastStage ?? "—"}\n${hydrationStatus}\n${subsystemSummary}\n${pathDiffSummary}`}</Typography>
-        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{`Collider teardown: ${JSON.stringify(core?.getColliderTeardownDiagnostics() ?? null)}`}</Typography>
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{`Collider teardown: ${stableStringify(core?.getColliderTeardownDiagnostics() ?? null)}`}</Typography>
       </details>
       <details>
         <summary>Runtime Liveness</summary>
@@ -473,9 +478,9 @@ export default function WorldDiagnosticsPanel() {
           `worldInstanceId / runtimeMode: ${runtime.worldInstanceId} / ${runtime.runtimeMode}`,
           `Map pointer: lastTarget=${runtime.mapPointer?.lastTarget ?? "—"} accepted=${runtime.mapPointer?.accepted ?? "—"} reason=${runtime.mapPointer?.reason ?? "—"}`,
           `Map pointer selection: faction ${runtime.mapPointer?.selectedFactionNameBefore ?? "—"} → ${runtime.mapPointer?.selectedFactionNameAfter ?? "—"} · panel ${runtime.mapPointer?.rightPanelTabBefore ?? "—"} → ${runtime.mapPointer?.rightPanelTabAfter ?? "—"}`,
-          `Resume probe: ${JSON.stringify(runtime.resumeProbe ?? null)}`,
-          `Frame performance: ${JSON.stringify(runtime.framePerformance)}`,
-          `World scale: ${JSON.stringify(runtime.worldScale)}`,
+          `Resume probe: ${stableStringify(runtime.resumeProbe ?? null)}`,
+          `Frame performance: ${stableStringify(runtime.framePerformance)}`,
+          `World scale: ${stableStringify(runtime.worldScale)}`,
           `Renderer warnings: Canvas2D=${desktopDiagnostics?.canvasWarningCount ?? "browser n/a"} · texImage2D bad image=${desktopDiagnostics?.texImage2DBadImageWarningCount ?? "browser n/a"}`,
         ].join("\n")}</Typography>}
       </details>
@@ -485,7 +490,7 @@ export default function WorldDiagnosticsPanel() {
           `logical users: ${runtimeUnits.logicalUsers}`,
           `root players: ${runtimeUnits.rootPlayers}`,
           `player children: ${runtimeUnits.playerChildren}`,
-          `Player tree roots / reachable / edges / maxDepth / revisits: ${JSON.stringify(runtimeUnits.playerTree ?? null)}`,
+          `Player tree roots / reachable / edges / maxDepth / revisits: ${stableStringify(runtimeUnits.playerTree ?? null)}`,
           `active Phaser player objects: ${runtimeUnits.activePhaserPlayers}`,
           `avatar renderer: ${runtimeUnits.avatarRendererMode ?? getAvatarRendererMode()}`,
           `missing texture keys: ${runtimeUnits.missingTextureKeys.join(", ") || "none"}`,
@@ -496,7 +501,7 @@ export default function WorldDiagnosticsPanel() {
       </details>}
       {core && <details>
         <summary>Diplomacy</summary>
-        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{JSON.stringify(core.getDiplomacyDiagnostics(), null, 2)}</Typography>
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(core.getDiplomacyDiagnostics())}</Typography>
       </details>}
       <details>
         <summary>Population Transition Audit（最近显著变化）</summary>
