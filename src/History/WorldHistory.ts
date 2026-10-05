@@ -1160,7 +1160,7 @@ class WorldHistoryStore {
         : relationType === "USURPER"
         ? `${previousRulerTitle}之后，${nextRulerName}夺取王统`
         : relationType === "NEW_HOUSE"
-        ? `${previousRulerTitle}王统断绝，${nextRulerName}新家族继位`
+        ? `${previousRulerTitle}之后，${nextRulerName}新家族易姓续统`
         : relationType === "COLLATERAL_KIN"
         ? `${previousRulerTitle}之后，${nextRulerName}宗室旁支继位`
         : undefined;
@@ -1184,6 +1184,8 @@ class WorldHistoryStore {
             : ""}${metadata.age !== undefined ? `，享年${metadata.age}岁` : ""}。${nextRulerName}继任首领。`
         : exiled
         ? `${relationDescription}${nextRulerName}继承流亡中的${factionId}国王室。`
+        : relationType === "NEW_HOUSE"
+        ? `记录中的合法宗室候选已无可继者，${nextRulerName}新家族承统，延续原国号与旗色。`
         : `${previousRulerName}在位${
             metadata.reignMonths !== undefined
               ? formatWorldDuration(Number(metadata.reignMonths))

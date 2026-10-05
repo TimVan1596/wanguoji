@@ -436,6 +436,16 @@ function HistoryEventListContent({
           const team = teamByName.get(factionId);
           if (team) eventTeamByDisplayName.set(resolveFactionHistoricalName(teamByName, factionId, eventMonth), eventTeamByDisplayName.get(factionId)!);
         });
+        if (event.type === "dynasty-usurped") {
+          const actor = event.actorFactionId ? teamByName.get(event.actorFactionId) : undefined;
+          for (const [nameKey, colorKey] of [["oldStateName", "oldColor"], ["newStateName", "newColor"]]) {
+            const name = event.metadata?.[nameKey], color = event.metadata?.[colorKey];
+            if (actor && typeof name === "string" && typeof color === "number") {
+              eventFactionNames.push(name);
+              eventTeamByDisplayName.set(name, { ...actor, color } as Team);
+            }
+          }
+        }
         const eventTitle = formatHistoryEventTitle(event, teamByName, rulerById);
         const eventDescription = formatHistoryEventDescription(event, teamByName);
         const landmark = isLandmarkHistoryEvent(event);

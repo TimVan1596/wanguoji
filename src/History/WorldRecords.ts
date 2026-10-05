@@ -87,7 +87,7 @@ export function deriveWorldRecords(
   const rulerLabel = (entry: RulerEntry) => {
     const faction = factions.get(entry.factionId);
     const month = entry.ruler.endYear ?? worldMonth;
-    const stateName = faction ? getFactionDisplayNameAtMonth(faction, month) : entry.factionId;
+    const stateName = entry.ruler.regimeNameAtEnd ?? (faction ? getFactionDisplayNameAtMonth(faction, month) : entry.factionId);
     return resolveHistoricalRulerDisplay(entry.ruler, stateName, "compact", {
       historicalRank: faction ? getSovereigntyRankAtMonth(faction, month) : undefined,
     });

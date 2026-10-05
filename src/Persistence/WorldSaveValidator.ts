@@ -106,7 +106,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
       if (!Array.isArray(dynasty.houseEpochs) || !dynasty.houseEpochs.length) errors.push("dynasty.houseEpochs must be non-empty");
       else dynasty.houseEpochs.forEach((epoch: unknown, index: number) => {
         if (!isPlainRecord(epoch)) { errors.push("invalid dynasty house epoch"); return; }
-        const founder = rulers.find((ruler: Record<string, unknown>) => ruler.rulerId === epoch.foundingRulerId);
+        const founder = rulers.find((ruler: unknown) => isPlainRecord(ruler) && ruler.rulerId === epoch.foundingRulerId);
         const previous = dynasty.houseEpochs[index - 1];
         if (typeof epoch.houseName !== "string" || !epoch.houseName || !Number.isSafeInteger(epoch.startMonth) ||
           Number(epoch.startMonth) < 0 || Number(epoch.startMonth) > Number(save.world?.worldMonth) ||
@@ -116,7 +116,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
           (index > 0 && (!isPlainRecord(previous) || previous.endMonth === undefined || Number(previous.endMonth) > Number(epoch.startMonth))) ||
           (index === dynasty.houseEpochs.length - 1 && epoch.houseName !== dynasty.houseName)) errors.push("invalid dynasty house epoch");
         for (const key of ["displacedSuccessorId", "displacedDesignatedHeirId"]) {
-          if (epoch[key] !== undefined) requireRef(epoch[key], new Set(rulers.map((ruler: Record<string, unknown>) => String(ruler.rulerId))), `houseEpoch.${key}`, errors);
+          if (epoch[key] !== undefined) requireRef(epoch[key], new Set(rulers.filter(isPlainRecord).map((ruler: Record<string, unknown>) => String(ruler.rulerId))), `houseEpoch.${key}`, errors);
         }
         if (epoch.startReason === "USURPATION" && (epoch.displacedSuccessorId === undefined || typeof epoch.displacedHouseName !== "string")) errors.push("usurpation epoch requires displaced successor and house");
       });

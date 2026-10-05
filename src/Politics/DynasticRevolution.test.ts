@@ -20,6 +20,7 @@ import { isFeaturedHistoryEvent } from "../History/HistorySignificanceRules";
 import { getFactionDisplayNameAtMonth, renameFactionDisplayName } from "../Simulation/FactionIdentity";
 import Diplomacy from "./Diplomacy";
 import { captureEraMapSnapshot } from "../Simulation/EraMapSnapshot";
+import { formatPosthumousRulerName } from "./PosthumousRules";
 
 const month = 600;
 function setup(hasHeir = true, minor = true) {
@@ -96,12 +97,15 @@ describe("authoritative succession-boundary dynastic revolution", () => {
     expect(getFactionColorAtMonth(team, month - 1)).toBe(0x123456);
     expect(getFactionColorAtMonth(team, month)).toBe(team.color);
     expect(team.color).not.toBe(0x123456);
+    expect(dynasty.rulers[0].regimeNameAtEnd).toBe("郑");
+    expect(formatPosthumousRulerName({ ...dynasty.rulers[0], templeName: "世宗" }, team, month)).toContain("郑世宗");
     const event = WorldHistory.getEvents().find(event => event.type === "dynasty-usurped")!;
     expect(isFeaturedHistoryEvent(event)).toBe(true);
     expect(event.metadata).toMatchObject({ predecessorRulerId: "old", displacedSuccessorId: "heir", successionReason: reason, stability: 20 });
     expect(event.description).toContain("合法继承人未成年");
     expect(event.description).not.toMatch(/近期连续换君|权倾朝野|群臣拥戴|弑君/);
-    expect(resolveEventFactionColor({ ...event, year: month - 1, monthIndex: month - 1 }, new Map([[team.name, team.color]]), new Map([[team.name, team]]))).toBe(0x123456);
+    expect(resolveEventFactionColor({ ...event, year: month - 1, monthIndex: month - 1, metadata: {} }, new Map([[team.name, team.color]]), new Map([[team.name, team]]))).toBe(0x123456);
+    expect(resolveEventFactionColor({ ...event, metadata: { actorFactionColor: 0x123456 } }, new Map([[team.name, team.color]]), new Map([[team.name, team]]))).toBe(0x123456);
     const rng = worldRandom.exportState();
     expect(DynastyRegistry.getRevolutionDiagnostics([team], month)).toMatchObject({ usurpationCount: 1, activeHouseEpochCount: 1 });
     expect(worldRandom.exportState()).toEqual(rng);

@@ -167,7 +167,7 @@ export function formatPosthumousRulerName(
   monthIndex: number
 ) {
   const personalName = `${ruler.houseName.replace(/氏$/, "")}${ruler.givenName}`;
-  const polityName = getFactionDisplayNameAtMonth(faction, monthIndex);
+  const polityName = ruler.regimeNameAtEnd ?? getFactionDisplayNameAtMonth(faction, monthIndex);
   const rank = getSovereigntyRankAtMonth(faction, monthIndex);
   const epithetSuffix = rank === "EMPEROR" ? "帝" : "王";
   const parts: string[] = [];

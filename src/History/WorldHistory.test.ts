@@ -99,8 +99,8 @@ describe("world history", () => {
       previousRulerTitle: "齐王田康",
       nextSuccessionVerb: "继位",
     });
-    expect(WorldHistory.getEvents().find((event) => event.title.includes("王统断绝"))?.title).toBe(
-      "齐王田康王统断绝，王烈新家族继位"
+    expect(WorldHistory.getEvents().find((event) => event.title.includes("易姓续统"))?.title).toBe(
+      "齐王田康之后，王烈新家族易姓续统"
     );
   });
 

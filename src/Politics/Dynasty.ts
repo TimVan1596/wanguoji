@@ -74,6 +74,7 @@ export type RulerRelationType =
   | "LEADER_SUCCESSOR";
 
 export interface Ruler {
+  regimeNameAtEnd?: string;
   id: string;
   houseName: string;
   givenName: string;
@@ -373,6 +374,7 @@ class DynastyRegistryStore {
     reason: "natural" | "combat" | "captured"
   ) {
     predecessor.status = "dead";
+    predecessor.regimeNameAtEnd = team.displayName;
     predecessor.endYear = year;
     predecessor.endReason =
       reason === "combat" ? "战死" : reason === "captured" ? "被俘处死" : "去世";

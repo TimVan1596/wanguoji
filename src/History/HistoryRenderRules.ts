@@ -104,10 +104,10 @@ export function resolveEventFactionColor(
   factionColorById: Map<string, number>,
   factions?: Map<string, HistoryFactionLike>
 ) {
-  const faction = event.actorFactionId ? factions?.get(event.actorFactionId) : undefined;
-  if (faction?.colorHistory?.length) return getFactionColorAtMonth(faction, event.monthIndex ?? event.year);
   const storedColor = event.metadata?.actorFactionColor;
   if (typeof storedColor === "number") return storedColor;
+  const faction = event.actorFactionId ? factions?.get(event.actorFactionId) : undefined;
+  if (faction?.colorHistory?.length) return getFactionColorAtMonth(faction, event.monthIndex ?? event.year);
   const actorColor =
     event.actorFactionId !== undefined
       ? factionColorById.get(event.actorFactionId)
