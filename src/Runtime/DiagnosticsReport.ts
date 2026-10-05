@@ -175,6 +175,7 @@ const CORE_FIELDS: Array<[string, string]> = [
   ["renderer type", "units.rendererType"],
   ["simulation fixed/month step subsystem timings", "simulationStepPerformance"],
   ["strategic union candidate blockers", "strategicUnionCandidates"],
+  ["Dynastic Revolution cumulative Gate diagnostics (session only)", "provisionalRulers.revolution.cumulativeGate"],
   ["Dynastic Revolution diagnostics", "provisionalRulers.revolution"],
   ["rulers by historical accession rank", "provisionalRulers.byAccessionRank"],
   ["provisional rulers (session completions)", "provisionalRulers.session"],

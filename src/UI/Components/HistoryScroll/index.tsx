@@ -1,5 +1,5 @@
 import type Team from "../../../Components/Team";
-import { getFactionColorAtMonth } from "../../../Simulation/FactionColorHistory";
+import { getHistoricalFactionIdentity } from "../../../History/HistoricalFactionIdentity";
 import { Box, Button, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { memo, useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import { useSelector } from "react-redux";
@@ -429,9 +429,11 @@ function HistoryEventListContent({
         const expanded = expandedId === event.id;
         const actorColor = resolveEventFactionColor(event, factionColorById, teamByName);
         const eventMonth = event.monthIndex ?? event.year;
-        const eventFactionIds = getEventFactionIds(event).filter((name) => teamByName.has(name));
+        const eventFactionIds = [...getEventFactionIds(event),
+          ...(typeof event.metadata?.commonThreatFactionId === "string" ? [event.metadata.commonThreatFactionId] : []),
+        ].filter((name) => teamByName.has(name));
         const eventFactionNames = eventFactionIds.map((id) => resolveFactionHistoricalName(teamByName, id, eventMonth));
-        const eventTeamByDisplayName = new Map([...teamByName].map(([id, team]) => [id, { ...team, color: getFactionColorAtMonth(team, eventMonth) } as Team]));
+        const eventTeamByDisplayName = new Map([...teamByName].map(([id, team]) => [id, { ...team, color: getHistoricalFactionIdentity(team, eventMonth).color } as Team]));
         eventFactionIds.forEach((factionId) => {
           const team = teamByName.get(factionId);
           if (team) eventTeamByDisplayName.set(resolveFactionHistoricalName(teamByName, factionId, eventMonth), eventTeamByDisplayName.get(factionId)!);
