@@ -5,12 +5,21 @@ import GoldKey from "../../Game/GoldKey";
 import MainScene from "../../Scenes/MainScene";
 import PreloadScene from "../../Scenes/PreloadScene";
 import { PHASER_AUDIO_CONFIG } from "../../Runtime/GameRuntimeConfig";
+import Phaser from "phaser";
+import { installPhaser355InputCompatibility } from "../../Runtime/Phaser355InputCompatibility";
 
 let game: Game;
 
 const GameCard = () => {
   useEffect(() => {
     if (!game) {
+      const compatibility = installPhaser355InputCompatibility(
+        Phaser.VERSION,
+        Phaser.Input.InputPlugin.prototype
+      );
+      if (compatibility === "UNSUPPORTED_VERSION" && import.meta.env.DEV) {
+        console.warn(`[Wanguoji] Phaser input compatibility was not installed for Phaser ${Phaser.VERSION}; expected 3.55.2.`);
+      }
       game = new Game({
         type: Phaser.AUTO,
         audio: PHASER_AUDIO_CONFIG,

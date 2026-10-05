@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.99926a3
+
+- Backported Phaser 3.60's null-camera and missing-render-list input sorting guards to the pinned Phaser 3.55.2 InputPlugin, installed idempotently before game creation and guarded by the exact engine version.
+- Autosave titles now derive from the stored snapshot world month rather than the scheduled boundary; newly created autosaves no longer persist the boundary as a user-facing label.
+- No gameplay, physics, WorldSave schema, Canvas/WebGL renderer, diplomacy, or ruler-survival changes.
+
 ## v0.99926a2
 
 - Source-map analysis traced the reported recursive stack pattern to diagnostic serialization; full diagnostics now serialize deep and cyclic values iteratively.

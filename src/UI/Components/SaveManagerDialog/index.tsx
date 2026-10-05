@@ -22,6 +22,7 @@ import {
 import { inspectStoredWorldSave } from "../../../Persistence/WorldSaveWorkflow";
 import { renameManualSave } from "../../../Persistence/SaveSlotRules";
 import { formatWorldDate } from "../../../Simulation/WorldTime";
+import { getSaveSlotPrimaryLabel } from "../../../Persistence/SaveSlotPresentation";
 
 export interface SaveManagerDialogProps {
   open: boolean;
@@ -224,7 +225,7 @@ export default function SaveManagerDialog({
                     </Box>
                   ) : (
                     <ListItemText
-                      primary={slot.displayName ?? (slot.slotType === "RECOVERY" ? "最近恢复点" : slot.slotId)}
+                      primary={getSaveSlotPrimaryLabel(slot)}
                       secondary={`${slot.worldYearLabel ?? formatWorldDate(slot.worldMonth)}${slot.currentEraName ? ` · ${slot.currentEraName}` : ""} · ${slot.scenarioName ?? "世界"} · ${new Date(slot.savedAt).toLocaleString()} · ${slot.appVersion}`}
                       secondaryTypographyProps={{ sx: { pr: 20 } }}
                     />

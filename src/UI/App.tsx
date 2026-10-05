@@ -110,13 +110,12 @@ export default function App({ launchRequest, onReturnToMenu, onLoadRecord }: App
         const result = await saveActiveWorld({
           slotId,
           slotType: "AUTOSAVE",
-          displayName: `自动存档 · ${formatWorldDate(boundaryMonth)}`,
           waitForBusy: true,
           timeoutMs: 30_000,
         });
         if (result.status === "SAVED") {
           pendingAutosaveBoundary.current = undefined;
-          Game.Core?.toast?.showMessage(`自动存档已保存 · ${formatWorldDate(boundaryMonth)}`);
+          Game.Core?.toast?.showMessage(`自动存档已保存 · ${formatWorldDate(result.result.record.summary.worldMonth)}`);
         } else if (result.status === "FAILED") {
           console.error("[Wanguoji] game-year autosave failed", result);
           const retryable = ["SAVE_BUSY", "CATCHING_UP", "HYDRATION", "SNAPSHOT", "RUNTIME_INITIALIZING"].includes(result.reason);
