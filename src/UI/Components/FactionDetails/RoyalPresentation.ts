@@ -1,0 +1,20 @@
+import type { DynastyHouseEpoch } from "../../../Politics/DynasticRevolution";
+import type { RulerChronicle } from "../../../Politics/RulerChronicle";
+import { formatWorldDate } from "../../../Simulation/WorldTime";
+
+const reasonLabels: Record<DynastyHouseEpoch["startReason"], string> = {
+  FOUNDING: "开创", NATURAL_HOUSE_SUCCESSION: "易姓续统", USURPATION: "篡朝", RESTORATION: "复国",
+};
+export function getHouseEpochPresentation(epochs: readonly DynastyHouseEpoch[]) {
+  const latest = epochs.at(-1);
+  return { current: latest ? { key: latest.foundingRulerId,
+    text: `${latest.houseName} · ${formatWorldDate(latest.startMonth)}起 · ${reasonLabels[latest.startReason]}` } : undefined,
+    historical: epochs.slice(0, -1).reverse().map(epoch => ({ key: epoch.foundingRulerId,
+      text: `${epoch.houseName} · ${formatWorldDate(epoch.startMonth)}～${epoch.endMonth === undefined ? "今" : formatWorldDate(epoch.endMonth)} · ${reasonLabels[epoch.startReason]}` })) };
+}
+export function getSignificantReignStats(chronicle: Pick<RulerChronicle,
+  "citiesCapturedPersonally" | "citiesLostDuringReign" | "rebellionsDuringReign" | "restorationsDuringReign">) {
+  const stats: Array<[string, number]> = [["亲征夺城", chronicle.citiesCapturedPersonally],
+    ["失城", chronicle.citiesLostDuringReign], ["内乱", chronicle.rebellionsDuringReign], ["复国", chronicle.restorationsDuringReign]];
+  return stats.filter(([, value]) => value > 0).map(([label, value]) => `${label}：${value}`).join(" · ") || "暂无显著在位统计";
+}

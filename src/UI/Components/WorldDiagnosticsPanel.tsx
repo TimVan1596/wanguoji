@@ -1,3 +1,4 @@
+import { isRuntimeDebugEnabled } from "../../Runtime/DebugMode";
 import { Alert, Box, Button, Snackbar, Typography } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
@@ -49,9 +50,6 @@ const thresholds = [
   ["一统", "只剩一个正式政权"],
 ];
 
-function debugEnabled() {
-  return typeof window !== "undefined" && new URLSearchParams(window.location.search).get("debug") === "1";
-}
 
 export default function WorldDiagnosticsPanel() {
   return <DiagnosticsPanelBoundary><WorldDiagnosticsPanelContent /></DiagnosticsPanelBoundary>;
@@ -62,7 +60,7 @@ function WorldDiagnosticsPanelContent() {
   const worldMonth = useSelector((state: RootState) => state.root.worldMonth);
   const worldPhase = useSelector((state: RootState) => state.root.worldPhase);
   const simulationSpeed = useSelector((state: RootState) => state.root.simulationSpeed);
-  const diagnosticsEnabled = debugEnabled();
+  const diagnosticsEnabled = isRuntimeDebugEnabled();
   const diagnosticsMonth = Math.floor(worldMonth / 12) * 12;
   const [, setTick] = useState(0);
   const [hydrationBusy, setHydrationBusy] = useState(false);

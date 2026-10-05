@@ -1,4 +1,6 @@
 import { getFactionColorAtMonth, type FactionColorHistoryEntry } from "../Simulation/FactionColorHistory";
+import { getHistoricalFactionIdentity } from "./HistoricalFactionIdentity";
+import { formatRulerDiplomacyEvent } from "./RulerDiplomacyFormatter";
 import type { WorldEvent, WorldEventCategory } from "./WorldHistory";
 import {
   isFeaturedHistoryEvent,
@@ -131,12 +133,7 @@ export function resolveFactionHistoricalName(
   if (!faction) {
     return factionId;
   }
-  const entries = faction.nameHistory ?? [];
-  for (let index = entries.length - 1; index >= 0; index -= 1) {
-    const entry = entries[index];
-    if (monthIndex >= entry.startMonth && (entry.endMonth === undefined || monthIndex <= entry.endMonth)) return entry.name;
-  }
-  return faction.displayName ?? faction.name;
+  return getHistoricalFactionIdentity(faction, monthIndex).name;
 }
 
 export function formatHistoryEventTitle(
@@ -145,6 +142,8 @@ export function formatHistoryEventTitle(
   rulersById?: Map<string, Ruler>
 ) {
   const month = event.monthIndex ?? event.year;
+  const diplomacy = formatRulerDiplomacyEvent(event, factionById);
+  if (diplomacy) return diplomacy;
   const name = (factionId?: string) =>
     resolveFactionHistoricalName(factionById, factionId, month);
   if (event.type === "state-founded") {

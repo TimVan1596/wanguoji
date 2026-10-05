@@ -1,13 +1,20 @@
 import type { WorldEvent } from "./WorldHistory";
 import { formatWorldDuration } from "../Simulation/WorldTime";
+import type { HistoryFactionLike } from "./HistoryRenderRules";
+import { getHistoricalFactionIdentity } from "./HistoricalFactionIdentity";
 
 export function formatRulerDiplomacyEvent(
   event: WorldEvent,
-  factionNameById: Map<string, string>,
+  factionById: Map<string, HistoryFactionLike>,
 ) {
   if (event.type !== "truce-signed" && event.type !== "non-aggression-signed" && event.type !== "alliance-signed") return undefined;
   const metadata = event.metadata ?? {};
-  const names = (event.factionIds ?? []).slice(0, 2).map((id) => factionNameById.get(id) ?? id);
+  const month = event.monthIndex ?? event.year;
+  const name = (id: string) => {
+    const faction = factionById.get(id);
+    return faction ? getHistoricalFactionIdentity(faction, month).name : id;
+  };
+  const names = (event.factionIds ?? []).slice(0, 2).map(name);
   if (names.length !== 2) return event.title;
   const duration = typeof metadata.expiresMonth === "number"
     ? formatWorldDuration(metadata.expiresMonth - (event.monthIndex ?? event.year))
@@ -18,7 +25,7 @@ export function formatRulerDiplomacyEvent(
     return `${names.join("、")}${evidence}${duration ? `，约期${duration}` : ""}。`;
   }
   const threatId = metadata.commonThreatFactionId;
-  const threatName = typeof threatId === "string" ? factionNameById.get(threatId) ?? threatId : "共同强敌";
+  const threatName = typeof threatId === "string" ? name(threatId) : "共同强敌";
   if (event.type === "alliance-signed") {
     const priorDuration = typeof metadata.preconditionDurationMonths === "number"
       ? formatWorldDuration(metadata.preconditionDurationMonths)

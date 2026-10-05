@@ -1,4 +1,5 @@
 import { beginHouseEpoch, evaluateDynasticRevolution, getRevolutionEligibility, type DynastyHouseEpoch, type RevolutionContext } from "./DynasticRevolution";
+import { RevolutionGateDiagnostics } from "./RevolutionGateDiagnostics";
 import { createStateName } from "../Simulation/StateNameGenerator";
 import { renameFactionDisplayName } from "../Simulation/FactionIdentity";
 import Team from "../Components/Team";
@@ -132,12 +133,14 @@ class DynastyRegistryStore {
   private dynasties = new Map<string, Dynasty>();
   private sequence = 0;
   private revolutionChecks: Array<{ factionId: string; worldMonth: number; blockers: string[] }> = [];
+  private revolutionGateDiagnostics = new RevolutionGateDiagnostics();
   private provisionalDiagnosticsSession = new ProvisionalRulerDiagnosticsSession();
 
   reset() {
     this.dynasties.clear();
     this.sequence = 0;
     this.revolutionChecks = [];
+    this.revolutionGateDiagnostics.reset();
     this.provisionalDiagnosticsSession.reset([]);
   }
 
@@ -170,6 +173,7 @@ class DynastyRegistryStore {
     }]));
     this.sequence = state.sequence;
     this.revolutionChecks = [];
+    this.revolutionGateDiagnostics.reset();
     this.provisionalDiagnosticsSession.reset(this.listForDiagnostics());
   }
 
@@ -394,7 +398,9 @@ class DynastyRegistryStore {
     const previousRulerTitle = this.getRulerTitle(team, predecessor, year);
     let successor = this.consumeHeir(dynasty, predecessor, year);
     const legitimateSuccessor = successor;
-    const revolution = evaluateDynasticRevolution(this.revolutionContext(team, dynasty, predecessor, successor, year, reason));
+    const revolutionContext = this.revolutionContext(team, dynasty, predecessor, successor, year, reason);
+    const revolution = evaluateDynasticRevolution(revolutionContext);
+    this.revolutionGateDiagnostics.record(team.name, oldStateName, revolutionContext, revolution);
     this.revolutionChecks = [{ factionId: team.name, worldMonth: year, blockers: revolution.blockers },
       ...this.revolutionChecks.filter((item) => item.factionId !== team.name)].slice(0, 5);
     if (revolution.usurpation) {
@@ -912,6 +918,7 @@ class DynastyRegistryStore {
       activeHouseEpochCount: epochs.filter((epoch) => epoch.endMonth === undefined && teams.some((team) => team.name === epoch.factionId && team.status === "ACTIVE")).length,
       lastRevolution: epochs.filter((epoch) => epoch.startReason === "USURPATION").sort((a, b) => b.startMonth - a.startMonth)[0],
       lastBoundaryChecks: this.revolutionChecks,
+      cumulativeGate: this.revolutionGateDiagnostics.snapshot(),
       candidateBlockers: teams.filter((team) => team.status === "ACTIVE").slice(0, 5).map((team) => {
         const dynasty = this.get(team.name);
         const predecessor = this.getCurrentRuler(team.name);

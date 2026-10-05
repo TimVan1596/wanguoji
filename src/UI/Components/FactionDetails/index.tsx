@@ -1,3 +1,4 @@
+import { getHouseEpochPresentation, getSignificantReignStats } from "./RoyalPresentation";
 import { getFactionColorAtMonth, type FactionColorHistoryEntry } from "../../../Simulation/FactionColorHistory";
 import { Box, Button, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -738,6 +739,7 @@ function DynastyTree({
       </Typography>
     );
   }
+  const epochPresentation = getHouseEpochPresentation(dynasty?.houseEpochs ?? []);
   const orderedRulers = [...formalRulers].sort((a, b) => {
     const rank = (ruler: Ruler) => ruler.id === currentRulerId ? 0 : 1;
     return rank(a) - rank(b) || (b.accessionYear ?? -1) - (a.accessionYear ?? -1);
@@ -767,18 +769,19 @@ function DynastyTree({
           })}
         </Box>
       ) : null}
-      <Box sx={{ display: "grid", gap: 0.5 }}>
-        {(dynasty?.houseEpochs ?? []).slice().reverse().map((epoch, index) => <Box key={`${epoch.startMonth}-${index}`} sx={{ borderTop: "1px solid var(--gg-border)", pt: 0.5 }}>
-          <Typography fontWeight="bold" fontSize="0.85rem">{epoch.houseName} · {formatWorldDate(epoch.startMonth)} · {{ FOUNDING: "开创", NATURAL_HOUSE_SUCCESSION: "易姓续统", USURPATION: "篡朝", RESTORATION: "复国" }[epoch.startReason]}</Typography>
-          <Typography fontSize="0.8rem" color="var(--gg-text-muted)">{epoch.endMonth === undefined ? "当前王统" : `至${formatWorldDate(epoch.endMonth)}`}</Typography>
-        </Box>)}
-      </Box>
+      {epochPresentation.current ? <Box sx={{ borderTop: "1px solid var(--gg-border)", pt: 0.5 }}>
+        <Typography fontWeight="bold" fontSize="0.9rem">当前王统</Typography>
+        <Typography fontSize="0.85rem">{epochPresentation.current.text}</Typography>
+      </Box> : null}
+      {epochPresentation.historical.length ? <Box>
+        <Typography fontWeight="bold" fontSize="0.9rem">历代王统</Typography>
+        {epochPresentation.historical.map(epoch => <Typography key={epoch.key} fontSize="0.85rem">{epoch.text}</Typography>)}
+      </Box> : null}
       <Typography fontWeight="bold" fontSize="0.9rem">历代君主</Typography>
       <Box sx={{ display: "grid", gap: 0.5 }}>
         {orderedRulers.map((ruler, index) => {
           const current = ruler.id === currentRulerId;
           const expanded = ruler.id === selectedRulerId;
-          const epoch = dynasty?.houseEpochs?.find(item => item.foundingRulerId === ruler.id);
           return (
             <Box
               key={ruler.id}
@@ -791,7 +794,6 @@ function DynastyTree({
                 borderRadius: "var(--gg-radius)",
               }}
             >
-              {epoch ? <Typography sx={{ borderTop: "1px solid var(--gg-border)", pt: 0.5 }} fontSize="0.84rem" fontWeight="bold">{epoch.houseName} · {formatWorldDate(epoch.startMonth)} · {{ FOUNDING: "开创", NATURAL_HOUSE_SUCCESSION: "易姓续统", USURPATION: "篡朝", RESTORATION: "复国" }[epoch.startReason]}</Typography> : null}
               <Box
                 onClick={() => onSelectedRulerIdChange(expanded ? undefined : ruler.id)}
                 sx={{ cursor: "pointer" }}
@@ -1018,7 +1020,6 @@ function RulerBiography({
     ruler.chronicle.notableEventIds,
     showAllEvents ? 1000 : 6
   );
-  const diplomacyFactionNames = new Map([...factionById].map(([id, faction]) => [id, faction.displayName]));
   const heirDeathEvents = events.filter((event) =>
     event.type === "heir-died" && event.metadata?.parentRulerId === ruler.id
   ).sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year));
@@ -1134,17 +1135,14 @@ function RulerBiography({
         在位统计
       </Typography>
       <Typography fontSize="0.82rem">
-        亲征夺城：{ruler.chronicle.citiesCapturedPersonally} · 失城：
-        {ruler.chronicle.citiesLostDuringReign} · 内乱：
-        {ruler.chronicle.rebellionsDuringReign} · 复国：
-        {ruler.chronicle.restorationsDuringReign}
+        {getSignificantReignStats(ruler.chronicle)}
       </Typography>
       <Typography fontWeight="bold" fontSize="0.86rem" sx={{ mt: 0.75 }}>
         大事记
       </Typography>
       {rulerEvents.length > 0 ? rulerEvents.map((event) => (
         <Typography key={event.id} fontSize="0.82rem">
-          {formatWorldDate(event.monthIndex ?? event.year)} ◆ {formatRulerDiplomacyEvent(event, diplomacyFactionNames) ?? formatFactionHistoryEvent(event, team.name, factionById) ?? formatHistoryEventTitle(event, factionById)}
+          {formatWorldDate(event.monthIndex ?? event.year)} ◆ {formatRulerDiplomacyEvent(event, factionById) ?? formatFactionHistoryEvent(event, team.name, factionById) ?? formatHistoryEventTitle(event, factionById)}
         </Typography>
       )) : (
         <Typography fontSize="0.82rem" color="var(--gg-text-muted)">

@@ -97,7 +97,9 @@ export function getFactionDisplayName(faction: Pick<FactionIdentityState, "displ
 }
 
 export function getFactionDisplayNameAtMonth(
-  faction: Pick<FactionIdentityState, "displayName" | "name" | "nameHistory">,
+  faction: Pick<FactionIdentityState, "displayName" | "name"> & {
+    nameHistory: ReadonlyArray<Pick<FactionNameHistoryEntry, "name" | "startMonth" | "endMonth">>;
+  },
   monthIndex: number
 ) {
   // Multiple canonical transitions can occur in one month; the last one wins.
