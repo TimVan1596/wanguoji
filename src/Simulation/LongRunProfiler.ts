@@ -241,13 +241,26 @@ class LongRunProfilerStore {
     monthlyStepMs?: number,
     counts: LongRunProfileCounts = {}
   ): LongRunProfileSnapshot | undefined {
+    this.observeMonthly(counts);
+    return this.captureSnapshot(worldMonth, teams, monthlyStepMs, counts);
+  }
+
+  shouldCaptureSnapshot(worldMonth: number) {
+    return this.lastObservedMonth < 0 ||
+      worldMonth - this.lastObservedMonth >= LONG_RUN_PROFILE_INTERVAL_MONTHS;
+  }
+
+  observeMonthly(counts: LongRunProfileCounts) {
     this.observeBottleneck(counts);
-    if (
-      this.lastObservedMonth >= 0 &&
-      worldMonth - this.lastObservedMonth < LONG_RUN_PROFILE_INTERVAL_MONTHS
-    ) {
-      return undefined;
-    }
+  }
+
+  captureSnapshot(
+    worldMonth: number,
+    teams: Team[],
+    monthlyStepMs?: number,
+    counts: LongRunProfileCounts = {}
+  ): LongRunProfileSnapshot | undefined {
+    if (!this.shouldCaptureSnapshot(worldMonth)) return undefined;
     this.lastObservedMonth = worldMonth;
     const snapshot = buildLongRunProfileSnapshot(
       worldMonth,

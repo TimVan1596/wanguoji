@@ -26,11 +26,13 @@ import { calculateImperialStrain, getCityDistanceFromCapital } from "./ImperialS
 import {
   calculateTerritoryMetrics,
   getFactionTerritoryMetric,
+  getTerritoryMetricsPerformanceDiagnostics,
 } from "./TerritoryMetrics";
 import { PopulationMutationContext, PopulationTransitionAudit } from "./PopulationTransitionAudit";
 import Diplomacy, { DiplomacySystem } from "../Politics/Diplomacy";
 import { createDiplomacyEventMetadata, describeDiplomacySigning } from "../Politics/DiplomacyPresentation";
-import { findStrategicUnionCandidate, StrategicUnionCandidate } from "./StrategicUnionSystem";
+import { diagnoseStrategicUnionCandidates, findStrategicUnionCandidate, StrategicUnionCandidate, StrategicUnionCandidateDiagnostic } from "./StrategicUnionSystem";
+import { RollingStepPerformance } from "./RollingStepPerformance";
 
 const debugProfileEnabled =
   import.meta.env.DEV ||
@@ -50,6 +52,8 @@ export default class AutoSimulator {
   private lastProfilerLiteralMonopoly = false;
   private lastProfilerDynasticOrderId?: string;
   readonly populationTransitionAudit = new PopulationTransitionAudit();
+  private stepPerformance = new RollingStepPerformance();
+  private strategicUnionDiagnostics: StrategicUnionCandidateDiagnostic[] = [];
   private lastKnownCities: City[] = [];
   private lastKnownTeams: Team[] = [];
   private diplomacy = new DiplomacySystem(Diplomacy, () => this.lastKnownCities, ({ type, month, relation, triggerContext }) => {
@@ -117,6 +121,8 @@ export default class AutoSimulator {
     this.lastProfilerCycleFamily = undefined;
     this.lastProfilerLiteralMonopoly = false;
     this.lastProfilerDynasticOrderId = undefined;
+    this.stepPerformance.reset();
+    this.strategicUnionDiagnostics = [];
     WorldHistory.reset();
     WorldHistory.addWorldBorn(0, teams);
     DynastyRegistry.reset();
@@ -250,40 +256,46 @@ export default class AutoSimulator {
 
     const advancedMonths = this.clock.update(simulationDeltaMs);
     for (let i = 0; i < advancedMonths; i++) {
-      const stepStart =
-        import.meta.env.DEV && globalThis.performance
-          ? globalThis.performance.now()
-          : undefined;
-      this.events.update(this.clock.year, teams, totalCells);
+      const stepStart = debugProfileEnabled ? this.readPerformanceNow() : undefined;
+      this.measure("WorldEventSystem.update", () => this.events.update(this.clock.year, teams, totalCells));
       this.lastKnownTeams = teams;
       this.lastKnownCities = teams.flatMap((team) => team.cities);
-      this.diplomacy.update(this.clock.year, teams, totalCells);
+      this.measure("DiplomacySystem.update", () => this.diplomacy.update(this.clock.year, teams, totalCells));
       if (this.clock.year % 12 === 0) {
-        const unionCandidate = findStrategicUnionCandidate({
+        const unionInput = {
           teams,
           relations: Diplomacy.list(this.clock.year),
           totalCells,
           worldMonth: this.clock.year,
           recentEvents: WorldHistory.getEventsBetween(Math.max(0, this.clock.year - 60), this.clock.year),
           blockSize: Game.BlockSize,
-        });
+        };
+        const unionCandidate = this.measure("StrategicUnion candidate scan", () => findStrategicUnionCandidate(unionInput));
+        if (debugProfileEnabled) {
+          const unionEvaluations = this.measure("debug/StrategicUnion blocker diagnostics", () => diagnoseStrategicUnionCandidates(unionInput));
+          this.strategicUnionDiagnostics = unionEvaluations
+            .slice()
+            .sort((a, b) => a.blockers.length - b.blockers.length || b.allianceMonths - a.allianceMonths)
+            .slice(0, 5);
+        }
         if (unionCandidate) this.mergeFaction(unionCandidate, this.clock.year);
       }
-      WorldEra.observe(this.clock.year, teams, totalCells, this.events.getCurrentPhase(this.clock.year, teams), captureMapSnapshot);
-      this.population.update(this.clock.year, teams, (team) =>
+      this.measure("WorldEra.observe", () => WorldEra.observe(this.clock.year, teams, totalCells, this.events.getCurrentPhase(this.clock.year, teams), captureMapSnapshot));
+      this.measure("PopulationSystem.update", () => this.population.update(this.clock.year, teams, (team) =>
         this.events.getPopulationGrowthMultiplier(team)
-      );
-      teams.forEach((team) => {
+      ));
+      this.measure("aggregate City.updateDefense", () => teams.forEach((team) => {
         team.cities.forEach((city) => city.updateDefense(this.clock.year));
-      });
-      FactionEffects.update(this.clock.year);
-      DynastyRegistry.update(this.clock.year, teams);
-      WorldExiles.update(this.clock.year, teams);
+      }));
+      this.measure("FactionEffects.update", () => FactionEffects.update(this.clock.year));
+      this.measure("DynastyRegistry.update", () => DynastyRegistry.update(this.clock.year, teams));
+      this.measure("WorldExiles.update", () => WorldExiles.update(this.clock.year, teams));
       this.populationTransitionAudit.reconcile(this.clock.year, teams);
-      FactionSnapshots.observe(this.clock.year, teams, totalCells);
-      WorldHistory.observeWorld(this.clock.year, teams, totalCells);
+      this.measure("FactionSnapshots.observe", () => FactionSnapshots.observe(this.clock.year, teams, totalCells));
+      this.measure("WorldHistory.observeWorld", () => WorldHistory.observeWorld(this.clock.year, teams, totalCells));
       this.events.observeWorldGoal(this.clock.year, teams, totalCells);
       if (debugProfileEnabled) {
+        this.measure("debug/LongRun diagnostics", () => {
         const cycle = this.events.getCycleDiagnostics();
         const currentEra = WorldEra.getCurrentEra();
         if (cycle.stage !== this.lastProfilerCycleStage) {
@@ -327,72 +339,61 @@ export default class AutoSimulator {
           ["SOLE_TOP2", (formalRanked[1]?.territory ?? 0) > 20],
         ] as Array<[string, boolean]>;
         const soleDynasticBlocker = dynasticBlockerFlags.filter(([, failed]) => failed);
-        const stateFormationBlockers = this.events.getProvisionalBlockerSummary(
-          this.clock.year,
-          teams,
-          totalCells
-        );
-        LongRunProfiler.observe(
-          this.clock.year,
-          teams,
-          stepStart === undefined || !globalThis.performance
-            ? undefined
-            : globalThis.performance.now() - stepStart,
-          {
+        const monthlyCounts = {
+          fragmentationAge: cycle.fragmentationAge,
+          unifiedAge: cycle.unifiedAge,
+          cycleStage: cycle.stage,
+          consolidationModifier: cycle.consolidationModifier,
+          dynasticGraceMultiplier: cycle.dynasticGraceMultiplier,
+          dynasticFatigueMultiplier: cycle.dynasticFatigueMultiplier,
+          hegemonicCandidateId: cycle.hegemonicCandidateId,
+          hegemonicOwnerId: cycle.hegemonicOwnerId,
+          hegemonicMomentum: cycle.hegemonicMomentum,
+          hegemonicSiegeMultiplier: cycle.hegemonicSiegeMultiplier,
+          consolidationLeaderId: cycle.consolidationLeaderId,
+          consolidationLeaderCandidateId: cycle.consolidationLeaderCandidateId,
+          consolidationLeaderOwnerId: cycle.consolidationLeaderOwnerId,
+          consolidationLeaderMomentum: cycle.consolidationLeaderMomentum,
+          controlledBlocks: territoryMetrics.controlledBlocks,
+          neutralBlocks: territoryMetrics.neutralBlocks,
+          top1AbsoluteShare: rankedTerritory[0]?.absoluteWorldShare ?? 0,
+          top1ControlledShare: rankedTerritory[0]?.controlledTerritoryShare ?? 0,
+          top2ControlledShare: rankedTerritory[1]?.controlledTerritoryShare ?? 0,
+          top3ControlledShare: rankedTerritory[2]?.controlledTerritoryShare ?? 0,
+          formalTop1TerritoryShare: formalTop1?.territory ?? 0,
+          formalTop1CityShare: formalTop1 ? formalTop1.cities / formalCityTotal * 100 : 0,
+          top1Provisional: provisionalRanked[0]?.team.identityStage === "PROVISIONAL",
+          top3ContainsProvisional: provisionalRanked.slice(0, 3).some((item) => item.team.identityStage === "PROVISIONAL"),
+          maxProvisionalTerritoryShare: Math.max(0, ...provisionalRanked.filter((item) => item.team.identityStage === "PROVISIONAL").map((item) => item.territory)),
+          maxProvisionalCityCount: Math.max(0, ...teams.filter((team) => team.identityStage === "PROVISIONAL").map((team) => team.cities.length)),
+          dynasticOrderBlockers: {
+            TERRITORY: !formalTop1 || formalTop1.territory < 60,
+            CITY_SHARE: !formalTop1 || formalTop1.cities / formalCityTotal * 100 < 55,
+            STABILITY: !formalTop1 || formalTop1.stability < 65,
+            TOP2_SHARE: (formalRanked[1]?.territory ?? 0) > 20,
+            NO_FORMAL_STATE: !formalTop1,
+          },
+          dynasticTerritoryQualified: (formalTop1?.territory ?? 0) >= 60,
+          dynasticCityQualified: (formalTop1 ? formalTop1.cities / formalCityTotal * 100 : 0) >= 55,
+          dynasticStabilityQualified: (formalTop1?.stability ?? 0) >= 65,
+          dynasticTop2Qualified: (formalRanked[1]?.territory ?? 0) <= 20,
+          dynasticAllQualified: Boolean(formalTop1 && formalTop1.territory >= 60 && formalTop1.cities / formalCityTotal * 100 >= 55 && formalTop1.stability >= 65 && (formalRanked[1]?.territory ?? 0) <= 20),
+          dynasticCandidateFactionId: cycle.dynasticOrderCandidateFactionId,
+          soleDynasticBlocker: soleDynasticBlocker.length === 1 ? soleDynasticBlocker[0][0] : undefined,
+          top1Stability: formalTop1?.stability,
+        };
+        LongRunProfiler.observeMonthly(monthlyCounts);
+        if (LongRunProfiler.shouldCaptureSnapshot(this.clock.year)) {
+          const stateFormationBlockers = this.events.getProvisionalBlockerSummary(this.clock.year, teams, totalCells);
+          const profileCounts = {
+            ...monthlyCounts,
             archivedCities: ArchivedCities.list().length,
-            totalRulers: DynastyRegistry.getAll().reduce(
-              (sum, dynasty) => sum + dynasty.rulers.length,
-              0
-            ),
+            totalRulers: DynastyRegistry.listForDiagnostics().reduce((sum, dynasty) => sum + dynasty.rulers.length, 0),
             historyEvents: WorldHistory.getEventCount(),
             factionSnapshots: FactionSnapshots.getTotalSnapshotCount(),
             worldEras: WorldEra.getEras().length,
-            fragmentationAge: cycle.fragmentationAge,
-            unifiedAge: cycle.unifiedAge,
-            cycleStage: cycle.stage,
-            consolidationModifier: cycle.consolidationModifier,
-            dynasticGraceMultiplier: cycle.dynasticGraceMultiplier,
-            dynasticFatigueMultiplier: cycle.dynasticFatigueMultiplier,
-            hegemonicCandidateId: cycle.hegemonicCandidateId,
-            hegemonicOwnerId: cycle.hegemonicOwnerId,
-            hegemonicMomentum: cycle.hegemonicMomentum,
-            hegemonicSiegeMultiplier: cycle.hegemonicSiegeMultiplier,
-            consolidationLeaderId: cycle.consolidationLeaderId,
-            consolidationLeaderCandidateId: cycle.consolidationLeaderCandidateId,
-            consolidationLeaderOwnerId: cycle.consolidationLeaderOwnerId,
-            consolidationLeaderMomentum: cycle.consolidationLeaderMomentum,
             stateFormationBlockers,
             provisionalOverageCount: stateFormationBlockers.PROVISIONAL_OVERAGE ?? 0,
-            controlledBlocks: territoryMetrics.controlledBlocks,
-            neutralBlocks: territoryMetrics.neutralBlocks,
-            top1AbsoluteShare: rankedTerritory[0]?.absoluteWorldShare ?? 0,
-            top1ControlledShare:
-              rankedTerritory[0]?.controlledTerritoryShare ?? 0,
-            top2ControlledShare:
-              rankedTerritory[1]?.controlledTerritoryShare ?? 0,
-            top3ControlledShare:
-              rankedTerritory[2]?.controlledTerritoryShare ?? 0,
-            formalTop1TerritoryShare: formalTop1?.territory ?? 0,
-            formalTop1CityShare: formalTop1 ? formalTop1.cities / formalCityTotal * 100 : 0,
-            top1Provisional: provisionalRanked[0]?.team.identityStage === "PROVISIONAL",
-            top3ContainsProvisional: provisionalRanked.slice(0, 3).some((item) => item.team.identityStage === "PROVISIONAL"),
-            maxProvisionalTerritoryShare: Math.max(0, ...provisionalRanked.filter((item) => item.team.identityStage === "PROVISIONAL").map((item) => item.territory)),
-            maxProvisionalCityCount: Math.max(0, ...teams.filter((team) => team.identityStage === "PROVISIONAL").map((team) => team.cities.length)),
-            dynasticOrderBlockers: {
-              TERRITORY: !formalTop1 || formalTop1.territory < 60,
-              CITY_SHARE: !formalTop1 || formalTop1.cities / formalCityTotal * 100 < 55,
-              STABILITY: !formalTop1 || formalTop1.stability < 65,
-              TOP2_SHARE: (formalRanked[1]?.territory ?? 0) > 20,
-              NO_FORMAL_STATE: !formalTop1,
-            },
-            dynasticTerritoryQualified: (formalTop1?.territory ?? 0) >= 60,
-            dynasticCityQualified: (formalTop1 ? formalTop1.cities / formalCityTotal * 100 : 0) >= 55,
-            dynasticStabilityQualified: (formalTop1?.stability ?? 0) >= 65,
-            dynasticTop2Qualified: (formalRanked[1]?.territory ?? 0) <= 20,
-            dynasticAllQualified: Boolean(formalTop1 && formalTop1.territory >= 60 && formalTop1.cities / formalCityTotal * 100 >= 55 && formalTop1.stability >= 65 && (formalRanked[1]?.territory ?? 0) <= 20),
-            dynasticCandidateFactionId: cycle.dynasticOrderCandidateFactionId,
-            soleDynasticBlocker: soleDynasticBlocker.length === 1 ? soleDynasticBlocker[0][0] : undefined,
-            top1Stability: formalTop1?.stability,
             rawImperialStrain: formalTop1 ? calculateImperialStrain(formalTop1.team, totalCells, 0) : undefined,
             effectiveImperialStrain: formalTop1 ? calculateImperialStrain(formalTop1.team, totalCells, 0) * FactionEffects.getAdministrativeStrainMultiplier(formalTop1.team.name) : undefined,
             lowLoyaltyCityCount: formalTop1?.team.cities.filter((city) => city.loyalty < 65).length,
@@ -401,9 +402,17 @@ export default class AutoSimulator {
             eraType: WorldEra.getCurrentEra()?.type,
             eraCandidateType: WorldEra.getCandidateDiagnostics(this.clock.year)?.type,
             eraCandidateSinceMonth: WorldEra.getCandidateDiagnostics(this.clock.year)?.sinceMonth,
-          }
-        );
+          };
+          LongRunProfiler.captureSnapshot(
+            this.clock.year,
+            teams,
+            stepStart === undefined ? undefined : this.readPerformanceNow() - stepStart,
+            profileCounts
+          );
+        }
+        });
       }
+      if (stepStart !== undefined) this.stepPerformance.record("total fixed/month step", this.readPerformanceNow() - stepStart);
     }
   }
 
@@ -417,6 +426,27 @@ export default class AutoSimulator {
 
   getDiplomacyDiagnostics() {
     return Diplomacy.getDiagnostics(this.clock.year);
+  }
+
+  getStepPerformanceDiagnostics() {
+    return { ...this.stepPerformance.snapshot(), ...getTerritoryMetricsPerformanceDiagnostics() };
+  }
+
+  getStrategicUnionCandidateDiagnostics() {
+    return this.strategicUnionDiagnostics;
+  }
+
+  private measure<T>(name: string, work: () => T): T {
+    const startedAt = debugProfileEnabled ? this.readPerformanceNow() : undefined;
+    try {
+      return work();
+    } finally {
+      if (startedAt !== undefined) this.stepPerformance.record(name, this.readPerformanceNow() - startedAt);
+    }
+  }
+
+  private readPerformanceNow() {
+    return globalThis.performance?.now?.() ?? Date.now();
   }
 
   private mergeFaction(candidate: StrategicUnionCandidate, month: number) {

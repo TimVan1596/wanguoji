@@ -55,6 +55,8 @@ export default function WorldDiagnosticsPanel() {
   const worldMonth = useSelector((state: RootState) => state.root.worldMonth);
   const worldPhase = useSelector((state: RootState) => state.root.worldPhase);
   const simulationSpeed = useSelector((state: RootState) => state.root.simulationSpeed);
+  const diagnosticsEnabled = debugEnabled();
+  const diagnosticsMonth = Math.floor(worldMonth / 12) * 12;
   const [, setTick] = useState(0);
   const [hydrationBusy, setHydrationBusy] = useState(false);
   const [hydrationStatus, setHydrationStatus] = useState("");
@@ -64,15 +66,17 @@ export default function WorldDiagnosticsPanel() {
   const [desktopDiagnostics, setDesktopDiagnostics] = useState<DesktopDiagnostics>();
   const [copyFeedback, setCopyFeedback] = useState("");
   useEffect(() => {
+    if (!diagnosticsEnabled) return undefined;
     const timer = window.setInterval(() => setTick((value) => value + 1), 500);
     return () => window.clearInterval(timer);
-  }, []);
+  }, [diagnosticsEnabled]);
   useEffect(() => {
     const unsubscribe = subscribeWorldSaveStorageDiagnostics(setStorageDiagnostics);
     return () => { unsubscribe(); };
   }, []);
   useEffect(() => subscribeGenealogyViewerDiagnostics(setGenealogyViewer), []);
   useEffect(() => {
+    if (!diagnosticsEnabled) return undefined;
     const bridge = window.gridGodDesktop;
     if (!bridge?.getDiagnostics) return;
     let active = true;
@@ -82,9 +86,21 @@ export default function WorldDiagnosticsPanel() {
     refresh();
     const timer = window.setInterval(refresh, 1000);
     return () => { active = false; window.clearInterval(timer); };
-  }, []);
+  }, [diagnosticsEnabled]);
+
+  const provisionalRulers = useMemo(() => diagnosticsEnabled ? summarizeProvisionalRulers(
+      DynastyRegistry.listForDiagnostics(),
+      new Map(teams.map((team) => [team.name, {
+        displayName: team.displayName,
+        identityStage: team.identityStage,
+        status: team.status,
+        sovereigntyHistory: team.sovereigntyHistory,
+      }]))
+    ) : undefined,
+  [diagnosticsEnabled, Math.floor(worldMonth / 60)]);
 
   const diagnostics = useMemo(() => {
+    if (!diagnosticsEnabled) return undefined;
     const totalCells = Game.Core?.totalCells ?? 1;
     const territory = calculateTerritoryMetrics(teams, totalCells);
     const ranked = teams
@@ -97,33 +113,24 @@ export default function WorldDiagnosticsPanel() {
       .sort((a, b) => b.metric.controlledTerritoryShare - a.metric.controlledTerritoryShare)
       .slice(0, 3);
     const currentEra = WorldEra.getCurrentEra();
-    const candidate = WorldEra.getCandidateDiagnostics(worldMonth);
-    const validity = WorldEra.getCurrentEraValidityDiagnostics(worldMonth);
+    const candidate = WorldEra.getCandidateDiagnostics(diagnosticsMonth);
+    const validity = WorldEra.getCurrentEraValidityDiagnostics(diagnosticsMonth);
     const liveClassification = classifyEra(
       teams,
       totalCells,
-      worldMonth,
+      diagnosticsMonth,
       worldPhase,
       currentEra
     );
     const cycle = Game.Core?.simulator?.getWorldCycleDiagnostics();
-    const longRun = LongRunProfiler.getSummary(worldMonth, WorldEra.getEras(), cycle?.stage);
+    const longRun = LongRunProfiler.getSummary(diagnosticsMonth, WorldEra.getEras(), cycle?.stage);
     const naming = getNameGenerationSummary();
     const cityNaming = getCityNamingSummary();
     const eraAtlas = getEraAtlasDiagnostics(WorldEra.getEras());
-    const dynasties = DynastyRegistry.listForDiagnostics();
-    const provisionalRulers = summarizeProvisionalRulers(
-      dynasties,
-      new Map(teams.map((team) => [team.name, {
-        identityStage: team.identityStage,
-        status: team.status,
-        sovereigntyHistory: team.sovereigntyHistory,
-      }]))
-    );
-    return { ranked, currentEra, candidate, validity, liveClassification, cycle, longRun, naming, cityNaming, eraAtlas, provisionalRulers };
-  }, [teams, worldMonth, worldPhase]);
+    return { ranked, currentEra, candidate, validity, liveClassification, cycle, longRun, naming, cityNaming, eraAtlas };
+  }, [diagnosticsEnabled, teams, diagnosticsMonth, worldPhase]);
 
-  if (!debugEnabled()) {
+  if (!diagnosticsEnabled || !diagnostics || !provisionalRulers) {
     return null;
   }
 
@@ -133,6 +140,8 @@ export default function WorldDiagnosticsPanel() {
   const desktopRuntime = core?.getRuntimeLivenessDiagnostics();
   const runtimeUnits = core?.getRuntimeUnitDiagnostics();
   const worldScale = core?.getWorldScaleDiagnostics();
+  const stepPerformance = core?.getStepPerformanceDiagnostics() ?? {};
+  const unionCandidateDiagnostics = core?.getStrategicUnionCandidateDiagnostics() ?? [];
   const desktopAutosave = desktopDiagnostics?.lastAutosaveResult;
   const summary = [
     `世界年月：${formatWorldDate(worldMonth)}（${worldMonth}月）`,
@@ -158,6 +167,9 @@ export default function WorldDiagnosticsPanel() {
     `Top Empire Stability：当前${diagnostics.longRun.bottleneck.currentTop1Stability?.toFixed(1) ?? "—"}｜>40%最低${diagnostics.longRun.bottleneck.minimumStabilityWhileAbove40?.toFixed(1) ?? "—"}｜>50%最低${diagnostics.longRun.bottleneck.minimumStabilityWhileAbove50?.toFixed(1) ?? "—"}｜>50%且<65 ${diagnostics.longRun.bottleneck.monthsAbove50ButStabilityBelow65}月｜raw/effective strain ${diagnostics.longRun.bottleneck.rawImperialStrain?.toFixed(1) ?? "—"}/${diagnostics.longRun.bottleneck.effectiveImperialStrain?.toFixed(1) ?? "—"}`,
     `Literal Monopoly：${diagnostics.longRun.literalUnificationCount}次｜已完成${diagnostics.longRun.literalMonopolyEpisodes}段｜平均${diagnostics.longRun.averageLiteralMonopolyDuration === undefined ? "—" : formatWorldDuration(diagnostics.longRun.averageLiteralMonopolyDuration)}｜当前${diagnostics.longRun.currentLiteralMonopolyAge === undefined ? "—" : formatWorldDuration(diagnostics.longRun.currentLiteralMonopolyAge)}`,
     `Dynastic Order：建立${diagnostics.longRun.dynasticOrderEstablishedCount}次｜瓦解${diagnostics.longRun.dynasticOrderLostCount}次｜完成${diagnostics.longRun.completedDynasticOrderEpisodes}段｜平均${diagnostics.longRun.averageDynasticOrderDuration === undefined ? "—" : formatWorldDuration(diagnostics.longRun.averageDynasticOrderDuration)}｜当前${diagnostics.longRun.currentDynasticOrderAge === undefined ? "—" : formatWorldDuration(diagnostics.longRun.currentDynasticOrderAge)}`,
+    `World scale（60月采样）：${JSON.stringify(worldScale ?? {})}`,
+    `Monthly step timing（debug rolling）：${Object.entries(stepPerformance).map(([name, metric]) => `${name} avg ${metric.averageMs.toFixed(3)}ms / p95 ${metric.p95Ms.toFixed(3)}ms / max ${metric.maxMs.toFixed(3)}ms (n=${metric.sampleCount})`).join("；") || "等待样本"}`,
+    `Strategic Union candidates（最多5组）：${unionCandidateDiagnostics.map((entry) => `${entry.factionAId}/${entry.factionBId}: sameOrigin=${entry.sameOrigin}, alliance=${entry.allianceMonths}m, adjacent=${entry.adjacent}, warFree=${entry.bilateralWarFreeMonths}m, territoryRatio=${entry.territoryRatio.toFixed(2)}, cityRatio=${entry.cityRatio.toFixed(2)}, weakerStability=${entry.weakerStability.toFixed(1)}, commonThreat=${entry.commonThreatStillRelevant}, blockers=${entry.blockers.join("+") || "ELIGIBLE"}`).join(" | ") || "暂无 active alliance candidates"}`,
   ].join("\n");
   const snapshotAndReload = async () => {
     const core = Game.Core;
@@ -244,7 +256,9 @@ export default function WorldDiagnosticsPanel() {
       avatarRenderer: getAvatarRendererMode(),
     } : undefined,
     populationTransitions,
-    provisionalRulers: diagnostics.provisionalRulers,
+    provisionalRulers,
+    simulationStepPerformance: stepPerformance,
+    strategicUnionCandidates: unionCandidateDiagnostics,
     performance: framePerformance ? {
       fps: framePerformance.frameDeltaMs.average && framePerformance.frameDeltaMs.average > 0 ? 1000 / framePerformance.frameDeltaMs.average : undefined,
       averageFrameMs: framePerformance.frameDeltaMs.average,
@@ -330,8 +344,10 @@ export default function WorldDiagnosticsPanel() {
     ["Runtime Units", coreReportData.units],
     ["Population Transition Audit", populationTransitions],
     ["Diplomacy", core?.getDiplomacyDiagnostics()],
-    ["Provisional ruler diagnostics", diagnostics.provisionalRulers],
+    ["Provisional ruler diagnostics", provisionalRulers],
     ["Frame Performance", coreReportData.performance],
+    ["Simulation Step Performance", stepPerformance],
+    ["Strategic Union Candidate Diagnostics", unionCandidateDiagnostics],
     ["World Scale", coreReportData.worldScale],
     ["Desktop Runtime", { diagnostics: desktopDiagnostics, runtime: desktopRuntime }],
     ["Era diagnostics", {
@@ -381,11 +397,24 @@ export default function WorldDiagnosticsPanel() {
       <details>
         <summary>临时势力首领诊断</summary>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{[
-          `当前临时势力首领：${diagnostics.provisionalRulers.currentProvisionalRulerCount}`,
-          `历史首领战死：${diagnostics.provisionalRulers.provisionalCombatDeathCount}`,
-          `已结束任期数：${diagnostics.provisionalRulers.completedProvisionalRulerCount}`,
-          `已结束任期中位数：${diagnostics.provisionalRulers.medianCompletedTenureMonths === undefined ? "—" : formatWorldDuration(diagnostics.provisionalRulers.medianCompletedTenureMonths)}`,
+          `当前临时势力首领：${provisionalRulers.currentProvisionalRulerCount}`,
+          `历史首领战死：${provisionalRulers.provisionalCombatDeathCount}`,
+          `已结束任期数：${provisionalRulers.completedProvisionalRulerCount}`,
+          `已结束任期中位数：${provisionalRulers.medianCompletedTenureMonths === undefined ? "—" : formatWorldDuration(provisionalRulers.medianCompletedTenureMonths)}`,
+          `最异常势力（最多5）：${provisionalRulers.topAbnormalFactions.map((faction) => `${faction.factionName}: ${faction.combatDeathCount}/${faction.completedRulerCount}战死 (${(faction.combatDeathRatio * 100).toFixed(0)}%), tenure median ${formatWorldDuration(faction.medianCompletedTenureMonths)}, min/max ${formatWorldDuration(faction.shortestCompletedTenureMonths)}/${formatWorldDuration(faction.longestCompletedTenureMonths ?? 0)}`).join("；") || "—"}`,
         ].join("\n")}</Typography>
+      </details>
+      <details>
+        <summary>Simulation Step Performance（rolling）</summary>
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{Object.entries(stepPerformance).map(([name, metric]) =>
+          `${name}: avg ${metric.averageMs.toFixed(3)}ms · p95 ${metric.p95Ms.toFixed(3)}ms · max ${metric.maxMs.toFixed(3)}ms · n=${metric.sampleCount}`
+        ).join("\n") || "等待 debug step 样本"}</Typography>
+      </details>
+      <details>
+        <summary>Strategic Union candidate blockers（最多5组）</summary>
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{unionCandidateDiagnostics.length
+          ? unionCandidateDiagnostics.map((entry) => `${entry.factionAId} / ${entry.factionBId}\nsameOrigin=${entry.sameOrigin} · alliance=${entry.allianceMonths}月 · adjacent=${entry.adjacent} · bilateralWarFree=${entry.bilateralWarFreeMonths}月\nterritoryRatio=${entry.territoryRatio.toFixed(2)} · cityRatio=${entry.cityRatio.toFixed(2)} · weakerStability=${entry.weakerStability.toFixed(1)} · commonThreat=${entry.commonThreatStillRelevant}\nblockers=${entry.blockers.join(", ") || "ELIGIBLE"}`).join("\n\n")
+          : "暂无 active alliance candidates"}</Typography>
       </details>
       <details>
         <summary>姓名文化统计（会话）</summary>

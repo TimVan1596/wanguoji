@@ -9,6 +9,7 @@ import {
   DesktopAutosaveGate,
   DesktopCloseHandshake,
 } from "./DesktopLifecycleRules";
+import { RendererWarningThrottle } from "./RendererWarningThrottle";
 
 interface RendererHeartbeat {
   worldMonth?: number;
@@ -68,6 +69,7 @@ app.setPath("userData", getStableUserDataPath(app.getPath("appData")));
 const instanceLock = app.requestSingleInstanceLock();
 const autosaveGate = new DesktopAutosaveGate();
 const closeHandshake = new DesktopCloseHandshake();
+const rendererWarningThrottle = new RendererWarningThrottle();
 const diagnostics: DesktopDiagnostics = {
   platform: process.platform,
   focused: true,
@@ -198,14 +200,25 @@ async function createWindow() {
     });
   });
   mainWindow.webContents.on("console-message", (details) => {
-    if (details.level === "error" || details.level === "warning") {
-      const log = details.level === "error" ? console.error : console.warn;
-      log("[Wanguoji Desktop] renderer console message", {
+    const payload = {
         level: details.level,
         message: details.message,
         sourceId: details.sourceId,
         lineNumber: details.lineNumber,
-      });
+      };
+    if (details.level === "error") {
+      console.error("[Wanguoji Desktop] renderer console message", payload);
+    } else if (details.level === "warning") {
+      const key = `${details.message}\u0000${details.sourceId}\u0000${details.lineNumber}`;
+      const decision = rendererWarningThrottle.accept(key, Date.now());
+      if (decision.kind === "LOG") {
+        console.warn("[Wanguoji Desktop] renderer console message", payload);
+      } else if (decision.kind === "SUMMARY") {
+        console.warn("[Wanguoji Desktop] repeated renderer warning", {
+          ...payload,
+          suppressedCount: decision.suppressedCount,
+        });
+      }
     }
   });
   mainWindow.webContents.on("did-finish-load", () => {

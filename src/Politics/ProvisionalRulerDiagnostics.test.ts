@@ -21,6 +21,16 @@ describe("provisional ruler diagnostics", () => {
       completedProvisionalRulerCount: 2,
       provisionalCombatDeathCount: 1,
       medianCompletedTenureMonths: 24,
+      topAbnormalFactions: [{
+        factionId: "rebel",
+        factionName: "rebel",
+        completedRulerCount: 2,
+        combatDeathCount: 1,
+        combatDeathRatio: 0.5,
+        medianCompletedTenureMonths: 24,
+        shortestCompletedTenureMonths: 24,
+        longestCompletedTenureMonths: 24,
+      }],
     });
   });
 });

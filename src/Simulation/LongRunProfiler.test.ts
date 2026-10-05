@@ -1,7 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { buildLongRunProfileSnapshot, deriveLongRunSummary } from "./LongRunProfiler";
+import LongRunProfiler, { buildLongRunProfileSnapshot, deriveLongRunSummary, LONG_RUN_PROFILE_INTERVAL_MONTHS } from "./LongRunProfiler";
 
 describe("long run profiler", () => {
+  it("keeps monthly bottleneck accumulation separate from scale snapshots", () => {
+    LongRunProfiler.reset();
+    LongRunProfiler.observeMonthly({ formalTop1TerritoryShare: 45, top1Stability: 60 });
+    expect(LongRunProfiler.getSnapshots()).toHaveLength(0);
+    expect(LongRunProfiler.shouldCaptureSnapshot(1)).toBe(true);
+    LongRunProfiler.captureSnapshot(1, []);
+    LongRunProfiler.observeMonthly({ formalTop1TerritoryShare: 50, top1Stability: 70 });
+    expect(LongRunProfiler.shouldCaptureSnapshot(LONG_RUN_PROFILE_INTERVAL_MONTHS)).toBe(false);
+    expect(LongRunProfiler.shouldCaptureSnapshot(LONG_RUN_PROFILE_INTERVAL_MONTHS + 1)).toBe(true);
+    expect(LongRunProfiler.getSummary(LONG_RUN_PROFILE_INTERVAL_MONTHS + 1, []).bottleneck.monthsFormalTop1Above40).toBe(2);
+    LongRunProfiler.reset();
+  });
+
   it("summarizes live and archived world counts without mutating simulation data", () => {
     const teams = [
       {

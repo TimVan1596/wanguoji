@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { findStrategicUnionCandidate } from "./StrategicUnionSystem";
+import { diagnoseStrategicUnionCandidates, findStrategicUnionCandidate } from "./StrategicUnionSystem";
 import type Team from "../Components/Team";
 
 function team(name: string, count: number, startX: number, parentFactionId: string, cities: number): Team {
@@ -41,5 +41,19 @@ describe("strategic union candidate selection", () => {
     expect(findStrategicUnionCandidate({ ...input, teams: [strong, team("weak", 5, 20, "different-house", 1), threat] })).toBeUndefined();
     expect(findStrategicUnionCandidate({ ...input, teams: [team("strong", 10, 0, "same-house", 2), team("weak", 10, 1, "same-house", 2), threat] })).toBeUndefined();
     expect(findStrategicUnionCandidate({ ...input, relations: [{ ...alliance, startedMonth: 13 }] })).toBeUndefined();
+  });
+
+  it("reports explicit blockers without changing eligible candidate selection", () => {
+    const diagnostics = diagnoseStrategicUnionCandidates(input);
+    expect(diagnostics[0]).toMatchObject({
+      factionAId: "strong", factionBId: "weak", sameOrigin: true,
+      adjacent: true, commonThreatStillRelevant: true, blockers: [],
+    });
+    expect(diagnostics[0].candidate).toEqual(findStrategicUnionCandidate(input));
+    const blocked = diagnoseStrategicUnionCandidates({
+      ...input,
+      teams: [strong, team("weak", 5, 40, "same-house", 1), threat],
+    });
+    expect(blocked[0].blockers).toContain("NOT_ADJACENT");
   });
 });

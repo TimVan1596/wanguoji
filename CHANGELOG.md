@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.99926a
+
+- Added bounded debug-only rolling timings for monthly simulation subsystems and reduced profile-only scale scans to LongRunProfiler snapshot months while preserving monthly bottleneck accumulation.
+- Added debug summaries for same-origin alliance absorption blockers, long-run world scale, and provisional-ruler outcomes by faction; these remain observational and are not persisted.
+- Throttled repeated identical Electron renderer warnings with periodic repeat summaries while preserving immediate errors and distinct warnings. Audited Canvas readback sources; no project-owned `getImageData` caller was found, so no context option or renderer path was changed.
+- No diplomacy/union thresholds, ruler survival, history retention, gameplay, or WorldSave V6 changes.
+
 ## v0.99926
 
 - Added finite strategic alliances after a sustained non-aggression pact and a shared, territorially or historically relevant strategic threat; alliance signing/expiry is recorded in WorldHistory and signatory ruler chronicles.

@@ -1,4 +1,10 @@
 import type Team from "../Components/Team";
+import { RollingStepPerformance } from "./RollingStepPerformance";
+
+const territoryTimingEnabled = import.meta.env.DEV || (
+  typeof window !== "undefined" && new URLSearchParams(window.location.search).get("debug") === "1"
+);
+const territoryTimings = new RollingStepPerformance();
 
 export interface TerritoryMetric {
   factionId: string;
@@ -16,6 +22,19 @@ export interface WorldTerritoryMetrics {
 }
 
 export function calculateTerritoryMetrics(
+  teams: Pick<Team, "name" | "status" | "blocks">[],
+  totalWorldBlocks: number
+): WorldTerritoryMetrics {
+  if (!territoryTimingEnabled) return calculateTerritoryMetricsRaw(teams, totalWorldBlocks);
+  const startedAt = globalThis.performance?.now?.();
+  try {
+    return calculateTerritoryMetricsRaw(teams, totalWorldBlocks);
+  } finally {
+    if (startedAt !== undefined) territoryTimings.record("calculateTerritoryMetrics (all callers)", (globalThis.performance?.now?.() ?? startedAt) - startedAt);
+  }
+}
+
+function calculateTerritoryMetricsRaw(
   teams: Pick<Team, "name" | "status" | "blocks">[],
   totalWorldBlocks: number
 ): WorldTerritoryMetrics {
@@ -47,6 +66,10 @@ export function calculateTerritoryMetrics(
     neutralBlocks: Math.max(0, claimableBlocks - controlledBlocks),
     byFactionId,
   };
+}
+
+export function getTerritoryMetricsPerformanceDiagnostics() {
+  return territoryTimings.snapshot();
 }
 
 export function getFactionTerritoryMetric(

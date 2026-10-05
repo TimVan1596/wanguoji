@@ -52,6 +52,7 @@ import { getTextureProbeSource } from "../Runtime/TextureProbe";
 import { createRuntimeUnitDiagnostics } from "../Simulation/RuntimeUnitDiagnostics";
 import { DeterminismCheckpointHistory } from "../Simulation/DeterminismFingerprint";
 import WorldEra from "../Simulation/WorldEra";
+import FactionSnapshots from "../Simulation/FactionSnapshots";
 import { captureEraMapSnapshot } from "../Simulation/EraMapSnapshot";
 import worldRandom from "../Simulation/WorldRandom";
 import Diplomacy from "../Politics/Diplomacy";
@@ -114,6 +115,12 @@ export default class Core {
   map: Map | undefined;
   config: ConfigState | undefined;
   private runtimeFactions = new RuntimeFactionRegistry<Team>();
+  private worldScaleDiagnosticsCache?: Record<string, number>;
+  private worldScaleDiagnosticsBucket = -1;
+  private worldScaleDiagnosticsTeams?: Team[];
+  private runtimeUnitDiagnosticsCache?: ReturnType<Core["createRuntimeUnitDiagnosticsSnapshot"]>;
+  private runtimeUnitDiagnosticsCachedAt = -Infinity;
+  private runtimeUnitDiagnosticsInstanceId = -1;
   isGameOver = false;
   toast: MessageToast | undefined;
 
@@ -654,6 +661,19 @@ export default class Core {
   }
 
   getRuntimeUnitDiagnostics() {
+    const now = globalThis.performance?.now?.() ?? Date.now();
+    if (
+      this.runtimeUnitDiagnosticsCache &&
+      this.runtimeUnitDiagnosticsInstanceId === this.worldInstanceId &&
+      now - this.runtimeUnitDiagnosticsCachedAt < 2_000
+    ) return this.runtimeUnitDiagnosticsCache;
+    this.runtimeUnitDiagnosticsCachedAt = now;
+    this.runtimeUnitDiagnosticsInstanceId = this.worldInstanceId;
+    this.runtimeUnitDiagnosticsCache = this.createRuntimeUnitDiagnosticsSnapshot();
+    return this.runtimeUnitDiagnosticsCache;
+  }
+
+  private createRuntimeUnitDiagnosticsSnapshot() {
     const roots = this.teams.flatMap((team) => team.players.getChildren() as Player[]);
     const allPlayers = new Set<Player>();
     const visit = (player: Player) => {
@@ -696,20 +716,37 @@ export default class Core {
   }
 
   getWorldScaleDiagnostics() {
-    return {
-      worldHistoryEventCount: WorldHistory.getEventCount(),
-      eraCount: WorldEra.getEras().length,
-      activeFactionCount: this.teams.filter((team) => team.status === "ACTIVE").length,
-      activeCityCount: this.teams.filter((team) => team.status === "ACTIVE")
-        .flatMap((team) => team.cities).filter((city) => !city.destroyed).length,
+    const month = this.simulator?.year ?? 0;
+    const bucket = Math.floor(month / 60);
+    if (this.worldScaleDiagnosticsCache && this.worldScaleDiagnosticsBucket === bucket && this.worldScaleDiagnosticsTeams === this.teams) return this.worldScaleDiagnosticsCache;
+    const dynasties = DynastyRegistry.listForDiagnostics();
+    const activeTeams = this.teams.filter((team) => team.status === "ACTIVE");
+    this.worldScaleDiagnosticsBucket = bucket;
+    this.worldScaleDiagnosticsTeams = this.teams;
+    this.worldScaleDiagnosticsCache = {
+      totalFactionCount: this.teams.length,
+      activeFactionCount: activeTeams.length,
+      exiledFactionCount: this.teams.filter((team) => team.status === "EXILED").length,
+      extinctFactionCount: this.teams.filter((team) => team.status === "EXTINCT" && team.terminationReason !== "MERGED").length,
+      mergedFactionCount: this.teams.filter((team) => team.terminationReason === "MERGED").length,
+      activeCityCount: activeTeams.reduce((sum, team) => sum + team.cities.filter((city) => !city.destroyed).length, 0),
       archivedCityCount: ArchivedCities.list().length,
-      activePlayerCount: this.getRuntimeUnitDiagnostics().activePhaserPlayers,
-      rulerCount: this.allDynasties.reduce((count, dynasty) => count + dynasty.rulers.length, 0),
-      rulerChronicleCount: this.allDynasties.reduce(
-        (count, dynasty) => count + dynasty.rulers.filter((ruler) => Boolean(ruler.chronicle)).length,
-        0
-      ),
+      runtimeUnitCount: this.teams.reduce((sum, team) => sum + team.users.size, 0),
+      totalRulerCount: dynasties.reduce((count, dynasty) => count + dynasty.rulers.length, 0),
+      rulerChronicleCount: dynasties.reduce((count, dynasty) => count + dynasty.rulers.filter((ruler) => Boolean(ruler.chronicle)).length, 0),
+      worldHistoryEventCount: WorldHistory.getEventCount(),
+      factionSnapshotCount: FactionSnapshots.getTotalSnapshotCount(),
+      eraCount: WorldEra.getEras().length,
     };
+    return this.worldScaleDiagnosticsCache;
+  }
+
+  getStepPerformanceDiagnostics() {
+    return this.simulator?.getStepPerformanceDiagnostics() ?? {};
+  }
+
+  getStrategicUnionCandidateDiagnostics() {
+    return this.simulator?.getStrategicUnionCandidateDiagnostics() ?? [];
   }
 
   scheduleDesktopResumeCatchUp(payload: DesktopResumeAfterSuspend) {

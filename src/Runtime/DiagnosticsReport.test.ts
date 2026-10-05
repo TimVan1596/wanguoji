@@ -4,7 +4,7 @@ import { formatCoreDiagnostics, formatFullDiagnostics } from "./DiagnosticsRepor
 describe("diagnostic reports", () => {
   it("formats core fields and renders missing values as dashes", () => {
     const report = formatCoreDiagnostics({
-      appVersion: "v0.99924",
+      appVersion: "v0.99926a",
       runtime: {
         mode: "DESKTOP_CONTINUOUS",
         activeCatchUpSource: "NONE",
@@ -22,10 +22,12 @@ describe("diagnostic reports", () => {
       },
       units: { logicalUsers: 7, missingTextureKeys: [], noFaceSource: "SVG" },
       performance: { fps: 60, renderFrameCount: 987, averageFrameMs: 16.7, p95FrameMs: 20, maxFrameMs: 40 },
-      worldScale: { worldHistoryEventCount: 123, eraCount: 5, activeFactionCount: 4, activeCityCount: 9, activePlayerCount: 7 },
+      simulationStepPerformance: { "total fixed/month step": { averageMs: 1.2, p95Ms: 2.4, maxMs: 3, sampleCount: 300 } },
+      strategicUnionCandidates: [{ factionAId: "a", factionBId: "b", blockers: ["NOT_ADJACENT"] }],
+      worldScale: { worldHistoryEventCount: 123, eraCount: 5, totalFactionCount: 9, activeFactionCount: 4, exiledFactionCount: 1, extinctFactionCount: 3, mergedFactionCount: 1, activeCityCount: 9, runtimeUnitCount: 7, archivedCityCount: 5, factionSnapshotCount: 18, totalRulerCount: 42, rulerChronicleCount: 40 },
       persistence: { totalSaveDurationMs: 200, indexedDbWriteMs: 80 },
     });
-    expect(report).toContain("APP_VERSION: v0.99924");
+    expect(report).toContain("APP_VERSION: v0.99926a");
     expect(report).toContain("runtime mode: DESKTOP_CONTINUOUS");
     expect(report).toContain("activeCatchUpSource: NONE");
     expect(report).toContain("worldMonth: 120");
@@ -37,6 +39,9 @@ describe("diagnostic reports", () => {
     expect(report).toContain("render frame count: 987");
     expect(report).toContain("p95 frame ms: 20");
     expect(report).toContain("world history events: 123");
+    expect(report).toContain('simulation fixed/month step subsystem timings: {"total fixed/month step": {"averageMs": 1.2');
+    expect(report).toContain("merged factions: 1");
+    expect(report).toContain("strategic union candidate blockers:");
     expect(report).toContain("save total duration ms: 200");
     expect(report).toContain("Electron version: —");
     expect(report).toContain("collider teardown post-drain: —");
