@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.99927b1
+
+- Confirmed the reported Dit symbol is Slaves in the v0.99927b desktop debug source map; its inherited Phaser 3.55.2 Group.preUpdate reads children.size. Group.destroy clears children without deactivating the group, while UpdateList removal is queued. ProcessQueue removes active entries before pending insertion, reproducing an active destroyed group and the same undefined.size fatal.
+- User death now immediately terminalizes Slaves (inactive, no child updates, no collider or owned units) and queues final destruction at that Scene's POST_UPDATE, after UpdateList and Core scene.update. Core disposal ownership/pending sets are deduplicated, bounded by registered runtime user groups, drained each frame and cleared at quiescent reset/hydration; they never enter saves or draw RNG. Final destruction detaches pending insertion so removal cannot be followed by zombie activation. Quiescent hydration uses the same safe handling for farm groups.
+- Upgraded lifecycle tests to the installed real Phaser Group/UpdateList/ProcessQueue event order, including the failing old sequence, in-iteration death, pending activation, 100 simultaneous/repeated deaths, transfer reset, repeated hydration and same-seed digest/RNG checks. Runtime Lifetime now reports actual live user groups, deferred count/peak/frame age and non-fatal invariant warnings; inactive pending disposals are distinct from orphan groups.
+- Preserved v0.99927b terminal faction collider release, Clock timer release, destroyed City Graphics guard and phase profiling. No performance/gameplay parameter, autosave timeout, Canvas/WebGL or history-retention changes. APP_VERSION v0.99927b1 / package 0.99.104; WorldSave remains V9.
+- The user's worldMonth=114 Renderer Fatal blocks the v0.99927b Gate. Mandatory real Electron Stage A: new world at 4× for 100–150 years without Save/Load; only after that passes, Stage B: the approximately 3451-year V9 save at 4× for 800–1200 continuous years. Automated lifecycle tests do not replace either manual Gate. See docs/RuntimeDisposalLifecycle.md for source-map/lifecycle evidence.
+
 ## v0.99927b
 
 - Measured a reproducible runtime leak: the previous User death path reset Slaves, recreating a collider and retaining an empty Phaser update-list group for each dead user. A 100-death structural reproduction retains 100 groups/colliders; terminal disposal now retains zero. Transfer resets still retain one valid live group/collider. Slave tree disposal also unregisters actual units and removes stale parent edges.

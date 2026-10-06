@@ -1,3 +1,6 @@
+import { DeferredUserGroupDisposal } from "../Simulation/DeferredUserGroupDisposal";
+import { destroyRuntimeGroupAtSafeBoundary } from "../Simulation/RuntimeGroupDisposal";
+import type Slaves from "../Components/Slaves";
 import LongRunProfiler from "../Simulation/LongRunProfiler";
 import { isRuntimeDebugEnabled } from "../Runtime/DebugMode";
 import { readRuntimeLifetimeDiagnostics } from "../Runtime/RuntimeLifetimeDiagnostics";
@@ -175,6 +178,7 @@ export default class Core {
   private visibilityListenerBound = false;
   private snapshotBoundaryRequest = new SnapshotBoundaryRequest();
   private lastHydrationStage = "IDLE";
+  private userGroupDisposals = new DeferredUserGroupDisposal(() => this.coreUpdateDiagnostics.frames);
   private teamColliders = new RuntimeColliderRegistry();
   private storeRefreshTimer?: Phaser.Time.TimerEvent;
   private colliderTeardownDiagnostics: ArcadeColliderTeardownDiagnostics = {
@@ -229,6 +233,7 @@ export default class Core {
   }
 
   clearUp() {
+    this.userGroupDisposals.resetAtSafeBoundary();
     this.snapshotBoundaryRequest.cancel(new Error("Safe snapshot request was canceled because the world was reset."));
     this.worldInstanceId += 1;
     this.isGameOver = false;
@@ -273,6 +278,7 @@ export default class Core {
   async init(scene: Phaser.Scene) {
     this.clearUp();
     this.scene = scene;
+    this.userGroupDisposals.bind(scene.sys.events);
     this.config = store.getState().config;
     this.runtimeMode = getGridGodRuntimeMode();
     this.desktopRuntimeDiagnostics.desktopMode =
@@ -377,6 +383,9 @@ export default class Core {
     this.teamColliders.scheduleTerminal(team);
     this.teams.filter((entry) => entry.status === "EXTINCT").forEach((entry) => this.teamColliders.scheduleTerminal(entry));
   }
+
+  registerUserGroupForDisposal(group: Slaves) { this.userGroupDisposals.register(group); }
+  deferUserGroupDisposal(group: Slaves) { this.userGroupDisposals.enqueue(group); }
 
   releaseTerminalTeamColliders(team: Team) {
     this.teamColliders.scheduleTerminal(team);
@@ -821,7 +830,7 @@ export default class Core {
     return { ...readRuntimeLifetimeDiagnostics(this.scene, this.teams, {
       fixedSteps: this.simulationDiagnostics.fixedSimulationSteps, interactionCells: this.cityInteractionIndex.size,
       colliders: this.teamColliders.snapshot(), visibilityListener: this.visibilityListenerBound,
-    }), ...this.simulator?.getRuntimeLifetimeDiagnostics(),
+    }), ...this.userGroupDisposals.snapshot(), ...this.simulator?.getRuntimeLifetimeDiagnostics(),
       ...LongRunProfiler.getRuntimeCardinality(), ...WorldHistory.getRuntimeCardinality(), ...FactionEffects.getRuntimeCardinality(),
       logicalAndPhaserPlayers: this.getRuntimeUnitDiagnostics() };
   }
@@ -908,6 +917,7 @@ export default class Core {
       this.scene.time.paused = true;
       this.scene.tweens.pauseAll();
     });
+    this.runHydrationTeardownStage("TEARDOWN_PENDING_USER_GROUPS", () => this.userGroupDisposals.flushAtSafeBoundary());
     this.runHydrationTeardownStage("TEARDOWN_COLLIDERS", () => {
       this.teamColliders.detachAfterWorldTeardown();
       this.colliderTeardownDiagnostics = teardownArcadeColliders(this.scene.physics.world.colliders);
@@ -943,20 +953,21 @@ export default class Core {
     });
     this.runHydrationTeardownStage("TEARDOWN_GROUPS", () => {
       this.teams.forEach((team) => {
-        team.users.forEach((user) => user.slaveGroup.destroy(true, false));
+        team.users.forEach((user) => user.slaveGroup.dispose());
         team.players.clear(false, false);
         team.players.destroy(true, false);
         team.blocks.clear(false, false);
         team.blocks.destroy(true, false);
         team.farms.setDie();
         team.farms.clear(false, false);
-        team.farms.destroy(true, false);
+        destroyRuntimeGroupAtSafeBoundary(team.farms, true);
         team.cities.forEach((city) => city.destroyRuntimeVisuals());
       });
       this.map?.blocks.flat().forEach((block) => block.destroyRuntimeObjects());
       this.map?.blocksGroup.destroy(false);
       this.factionLabels.forEach((label) => label.destroy());
       this.mapTooltip?.destroy();
+      this.userGroupDisposals.flushAtSafeBoundary();
     });
     this.runHydrationTeardownStage("REBUILD_MAP", () => {
       this.clearUp();

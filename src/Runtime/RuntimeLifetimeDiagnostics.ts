@@ -29,6 +29,15 @@ export function readRuntimeLifetimeDiagnostics(scene: any, teams: any[], core: {
     ? emitter.eventNames().reduce((sum: number, name: string | symbol) => sum + emitter.listenerCount(name), 0) : undefined;
   const queue = world?.colliders;
   const memory = (globalThis.performance as any)?.memory;
+  const runtimeUserGroups = new Set(runtimeObjects.filter((object) => object?.user && object.getChildren));
+  const orphanedUserGroups = [...runtimeUserGroups].filter((group) => !group.disposalPending && !group.user.team.users.has(group.user)).length;
+  const liveUserGroups = users.filter((user) => user.slaveGroup?.scene && !user.slaveGroup.disposalPending).length;
+  const disposedUserGroupsStillEligibleForPreUpdate = [...runtimeUserGroups].filter((group) => group.active && (group.disposalPending || !group.children)).length;
+  const userGroupInvariantWarnings = [
+    ...(orphanedUserGroups ? ["ORPHANED_USER_GROUPS"] : []),
+    ...(disposedUserGroupsStillEligibleForPreUpdate ? ["DISPOSED_USER_GROUP_PREUPDATE_ELIGIBLE"] : []),
+    ...(liveUserGroups !== users.length ? ["LIVE_USER_GROUP_COUNT_MISMATCH"] : []),
+  ];
   return {
     sessionFixedSteps: core.fixedSteps,
     sceneChildren: display.length, sceneObjectsIncludingContainerChildren: seen.size, sceneTypes: types,
@@ -49,10 +58,13 @@ export function readRuntimeLifetimeDiagnostics(scene: any, teams: any[], core: {
     zoneOutlines: cities.filter((city) => city.zoneOutline?.scene).length,
     activeTeams: teams.filter((team) => team.status === "ACTIVE").length, historicalTeams: teams.length,
     runtimeGroupsInUpdateList: groups.size,
-    orphanedUserGroups: [...groups].filter((group: any) => group.user && !group.user.team.users.has(group.user)).length,
+    orphanedUserGroups, userGroupInvariantWarnings,
     liveUserColliderTargetReferences: users.reduce((sum, user) => sum + (Array.isArray(user.slaveGroup?.collider?.object2) ? user.slaveGroup.collider.object2.length : 0), 0),
     knownTeamGroupShells: teams.length * 3,
-    liveUserGroups: users.length, liveUserColliderReferences: users.filter((user) => user.slaveGroup?.collider).length,
+    liveUsers: users.length,
+    liveUserGroups,
+    disposedUserGroupsStillEligibleForPreUpdate,
+    liveUserColliderReferences: users.filter((user) => user.slaveGroup?.collider).length,
     teamPlayerReferences: teams.reduce((sum, team) => sum + team.players.getChildren().length, 0),
     farmNpcReferences: teams.reduce((sum, team) => sum + team.farms.npcs.size, 0),
     farmTimerReferences: teams.reduce((sum, team) => sum + team.farms.farms.size, 0),

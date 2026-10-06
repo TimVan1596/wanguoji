@@ -4,6 +4,7 @@ import Team from "./Team";
 import User from "./User";
 import ColliderReference from "./ColliderReference";
 import { resolvePublicAssetUrl } from "../Runtime/PublicAssetUrl";
+import { destroyRuntimeGroupAtSafeBoundary } from "../Simulation/RuntimeGroupDisposal";
 
 export interface Slave {
   name: string;
@@ -16,6 +17,7 @@ export interface Slave {
 export default class Slaves extends Phaser.GameObjects.Group {
   npcs: Map<string, Npc> = new Map();
   private colliderReference = new ColliderReference<Phaser.Physics.Arcade.Collider>();
+  disposalPending = false;
 
   get collider() {
     return this.colliderReference.current;
@@ -25,10 +27,12 @@ export default class Slaves extends Phaser.GameObjects.Group {
     super(scene);
     this.runChildUpdate = true;
     this.scene.add.existing(this);
+    Game.Core.registerUserGroupForDisposal(this);
     if (!deferCollider) this.addCollider();
   }
 
   addCollider() {
+    if (this.disposalPending || !this.scene) return;
     const map = Game.Core.map;
     if (!map) return;
     const otherTeamsBlock = Team.GetOtherTeams(this.user.team).map(
@@ -49,6 +53,7 @@ export default class Slaves extends Phaser.GameObjects.Group {
   }
 
   makeSlave(slave: Slave) {
+    if (this.disposalPending || !this.scene) return;
     const slaveId = `${slave.name}-${slave.level}`;
     if (this.npcs.has(slaveId)) {
       const npc = this.npcs.get(slaveId);
@@ -94,12 +99,24 @@ export default class Slaves extends Phaser.GameObjects.Group {
   }
 
   dispose() {
-    if (!this.scene) return;
+    if (!this.scene || this.disposalPending) return;
+    this.disposalPending = true;
+    this.active = false;
+    this.runChildUpdate = false;
+    // Phaser's factory registers Group here, although its UpdateList typings only list GameObject.
+    this.scene.sys.updateList.remove(this as unknown as Phaser.GameObjects.GameObject);
     this.clearOwnedUnits();
-    this.destroy(false, false);
+    Game.Core.deferUserGroupDisposal(this);
+  }
+
+  /** Called only by Core at POST_UPDATE or quiescent world teardown. */
+  finishRuntimeDisposal() {
+    if (!this.scene || !this.disposalPending) return;
+    destroyRuntimeGroupAtSafeBoundary(this);
   }
 
   reset() {
+    if (this.disposalPending || !this.scene) return;
     this.clearOwnedUnits();
     this.addCollider();
   }

@@ -20,7 +20,7 @@
 
 ## 当前人工验收
 
-- v0.99927b Long-Run Runtime Accumulation Fix 已修复可测量的运行时资源残留并加入数量／分项计时，等待约3451年 V9 存档的 Electron 4× 连续800～1200年 Gate。用户已完成 v0.99927a 超长局测试；true USURPATION 的门槛／概率仍不得自行调整。通过本 Gate 前不开始 v0.99927c Dynastic Revolution Calibration、纳土归降、Era Atlas II 或 Faction Historiography。
+- v0.99927b1 Runtime Disposal preUpdate Crash Hotfix：v27b 已在 worldMonth=114 出现人工 Renderer Fatal，不能视为 Gate 通过。先验收新世界 Electron 4×100～150年 Crash Smoke（不 Save/Load）；通过后才做约3451年 V9 存档连续800～1200年 Long-Run Gate。通过前不得开始 v0.99927c Dynastic Revolution Calibration、Diplomacy II、纳土归降、Era Atlas II 或 Faction Historiography。
 
 ## 玩法后续
 

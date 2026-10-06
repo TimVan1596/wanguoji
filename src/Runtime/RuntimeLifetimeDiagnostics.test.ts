@@ -24,6 +24,17 @@ describe("runtime lifetime observations", () => {
     expect(scene.physics.world.colliders.update).not.toHaveBeenCalled();
     expect(scene.physics.world.colliders._pending).toEqual([3]);
   });
+  it("distinguishes harmless pending disposal from active invalid groups and warns without fatal", () => {
+    const user: any = { team: { users: new Set() } };
+    const pending: any = { user, disposalPending: true, active: false, children: { entries: [] }, getChildren: () => [] };
+    const invalid = { ...pending, active: true, children: undefined };
+    const scene = { sys: { updateList: { getActive: () => [pending, invalid], _pending: [] } } };
+    const result = readRuntimeLifetimeDiagnostics(scene, [], { fixedSteps: 0, interactionCells: 0, colliders: {}, visibilityListener: false });
+    expect(result.orphanedUserGroups).toBe(0);
+    expect(result.disposedUserGroupsStillEligibleForPreUpdate).toBe(1);
+    expect(result.userGroupInvariantWarnings).toContain("DISPOSED_USER_GROUP_PREUPDATE_ELIGIBLE");
+    expect(pending.active).toBe(false);
+  });
   it("reports unavailable private-engine counters as unavailable, not fabricated zeros", () => {
     const result = readRuntimeLifetimeDiagnostics({}, [], { fixedSteps: 0, interactionCells: 0, colliders: {}, visibilityListener: false });
     expect(result.timerEvents.active).toBeUndefined();
