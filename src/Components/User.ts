@@ -113,7 +113,7 @@ export default class User {
     }
     Game.Core?.recordUserDeathForDiagnostics();
     Game.Core?.logicalUnitRegistry.unregisterUser(this);
-    this.slaveGroup.reset();
+    this.slaveGroup.dispose();
     this.player.destroyPlayerTree();
     return true;
   }

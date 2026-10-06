@@ -281,6 +281,7 @@ export default class Team {
         user.slaveGroup.reset();
       });
       this.farms?.setDie();
+      Game.Core?.releaseTerminalTeamColliders?.(this);
     }
   }
 
@@ -331,6 +332,7 @@ export default class Team {
     markLifecycleExtinct(this, year);
     this.terminationReason = "EXTINCT";
     this.removeRulerUnit(true);
+    Game.Core?.releaseTerminalTeamColliders?.(this);
   }
 
   markMerged(year: number, absorbingFactionId: string) {
@@ -342,6 +344,7 @@ export default class Team {
     // The ruler's person transfers with the population; detach the political
     // office reference without destroying the person or recording a death.
     this.rulerUser = undefined;
+    Game.Core?.releaseTerminalTeamColliders?.(this);
   }
 
   getCumulativeActiveYears(year: number) {

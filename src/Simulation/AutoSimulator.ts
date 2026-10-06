@@ -1,3 +1,4 @@
+import { MonthlyPhaseProfiler, runtimeProfilingEnabled } from "./MonthlyPhaseProfiler";
 import Team from "../Components/Team";
 import Block from "../Components/Block";
 import City from "../Components/City";
@@ -34,10 +35,7 @@ import { createDiplomacyEventMetadata, describeDiplomacySigning } from "../Polit
 import { diagnoseStrategicUnionCandidates, findStrategicUnionCandidate, StrategicUnionCandidate, StrategicUnionCandidateDiagnostic } from "./StrategicUnionSystem";
 import { RollingStepPerformance } from "./RollingStepPerformance";
 
-const debugProfileEnabled =
-  import.meta.env.DEV ||
-  (typeof window !== "undefined" &&
-    new URLSearchParams(window.location.search).get("debug") === "1");
+const debugProfileEnabled = runtimeProfilingEnabled;
 
 export default class AutoSimulator {
   private clock = new WorldClock();
@@ -52,6 +50,8 @@ export default class AutoSimulator {
   private lastProfilerLiteralMonopoly = false;
   private lastProfilerDynasticOrderId?: string;
   readonly populationTransitionAudit = new PopulationTransitionAudit();
+  private phaseProfiler = debugProfileEnabled ? new MonthlyPhaseProfiler() : undefined;
+  private sessionStartMonth = 0;
   private stepPerformance = new RollingStepPerformance();
   private strategicUnionDiagnostics: StrategicUnionCandidateDiagnostic[] = [];
   private lastSimulationSubsystem = "—";
@@ -205,6 +205,8 @@ export default class AutoSimulator {
     this.running = false;
     this.speed = state.selectedSpeed;
     this.clock.importState({ ...state.clock, running: false });
+    this.sessionStartMonth = state.clock.worldMonth;
+    this.stepPerformance.reset();
     this.population.importState(state.populationSystem);
     this.events.importState(state.worldEventSystem, state.clock.worldMonth);
     if (teams) this.populationTransitionAudit.reset(state.clock.worldMonth, teams);
@@ -258,7 +260,7 @@ export default class AutoSimulator {
     const advancedMonths = this.clock.update(simulationDeltaMs);
     for (let i = 0; i < advancedMonths; i++) {
       const stepStart = debugProfileEnabled ? this.readPerformanceNow() : undefined;
-      this.measure("WorldEventSystem.update", () => this.events.update(this.clock.year, teams, totalCells));
+      this.measure("WorldEventSystem.update", () => this.events.update(this.clock.year, teams, totalCells, this.phaseProfiler));
       this.lastKnownTeams = teams;
       this.lastKnownCities = teams.flatMap((team) => team.cities);
       this.measure("DiplomacySystem.update", () => this.diplomacy.update(this.clock.year, teams, totalCells));
@@ -283,11 +285,12 @@ export default class AutoSimulator {
       }
       this.measure("WorldEra.observe", () => WorldEra.observe(this.clock.year, teams, totalCells, this.events.getCurrentPhase(this.clock.year, teams), captureMapSnapshot));
       this.measure("PopulationSystem.update", () => this.population.update(this.clock.year, teams, (team) =>
-        this.events.getPopulationGrowthMultiplier(team)
+        this.events.getPopulationGrowthMultiplier(team), this.phaseProfiler
       ));
       this.measure("aggregate City.updateDefense", () => teams.forEach((team) => {
-        team.cities.forEach((city) => city.updateDefense(this.clock.year));
+        team.cities.forEach((city) => city.updateDefense(this.clock.year, this.phaseProfiler));
       }));
+      this.phaseProfiler?.flush(this.stepPerformance);
       this.measure("FactionEffects.update", () => FactionEffects.update(this.clock.year));
       this.measure("DynastyRegistry.update", () => DynastyRegistry.update(this.clock.year, teams));
       this.measure("WorldExiles.update", () => WorldExiles.update(this.clock.year, teams));
@@ -427,6 +430,12 @@ export default class AutoSimulator {
 
   getDiplomacyDiagnostics() {
     return Diplomacy.getDiagnostics(this.clock.year);
+  }
+
+  getRuntimeLifetimeDiagnostics() {
+    return { sessionStartMonth: this.sessionStartMonth, sessionWorldMonths: this.clock.worldMonth - this.sessionStartMonth,
+      ...this.population.getRuntimeCardinality(), ...this.events.getRuntimeCardinality(),
+      lastKnownTeams: this.lastKnownTeams.length, lastKnownCities: this.lastKnownCities.length };
   }
 
   getStepPerformanceDiagnostics() {

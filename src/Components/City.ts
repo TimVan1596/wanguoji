@@ -1,3 +1,4 @@
+import { measurePhase, type MonthlyPhaseProfiler } from "../Simulation/MonthlyPhaseProfiler";
 import {
   CITY_BASE_MAX_DEFENSE,
   CITY_CAPTURED_DEFENSE_RATIO,
@@ -490,14 +491,14 @@ export default class City {
     return true;
   }
 
-  updateDefense(year: number) {
+  updateDefense(year: number, profile?: MonthlyPhaseProfiler) {
     if (this.destroyed) {
       return;
     }
-    this.updateLoyalty(year);
-    this.updateSiege(year);
-    this.updateDevastation(year);
-    const nextMaxDefense = this.calculateMaxDefense();
+    measurePhase(profile, "City.updateLoyalty", () => this.updateLoyalty(year));
+    measurePhase(profile, "City.updateSiege", () => this.updateSiege(year, profile));
+    measurePhase(profile, "City.updateDevastation", () => this.updateDevastation(year));
+    const nextMaxDefense = measurePhase(profile, "City.calculateMaxDefense/development", () => this.calculateMaxDefense());
     const previousZoneSize = getFortifiedZoneSize(this.maxDefense);
     this.maxDefense = nextMaxDefense;
     if (getFortifiedZoneSize(this.maxDefense) !== previousZoneSize) {
@@ -728,14 +729,14 @@ export default class City {
     }
   }
 
-  private updateSiege(year: number) {
+  private updateSiege(year: number, profile?: MonthlyPhaseProfiler) {
     const contacts = [...this.siegeContacts.values()].filter(
       (contact) => year - contact.year <= 1 && Boolean(this.ownerTeam) && Diplomacy.canAttack(contact.team.name, this.ownerTeam!.name, year)
     );
     const mainAttacker = contacts.sort((a, b) => b.count - a.count)[0];
     this.underSiege = Boolean(mainAttacker);
     this.attackingFactionId = mainAttacker?.team.name;
-    this.refreshZoneVisual();
+    measurePhase(profile, "City.zone/visual refresh", () => this.refreshZoneVisual());
     this.siegeContacts.clear();
     if (!mainAttacker) {
       return;

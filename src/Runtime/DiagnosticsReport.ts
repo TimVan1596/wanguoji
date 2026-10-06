@@ -173,6 +173,7 @@ const CORE_FIELDS: Array<[string, string]> = [
   ["noFace texture exists", "units.noFaceTextureExists"],
   ["star texture exists", "units.starTextureExists"],
   ["renderer type", "units.rendererType"],
+  ["Long-Run Runtime Lifetime", "runtimeLifetime"],
   ["simulation fixed/month step subsystem timings", "simulationStepPerformance"],
   ["strategic union candidate blockers", "strategicUnionCandidates"],
   ["Dynastic Revolution cumulative Gate diagnostics (session only)", "provisionalRulers.revolution.cumulativeGate"],

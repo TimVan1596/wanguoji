@@ -84,14 +84,23 @@ export default class Slaves extends Phaser.GameObjects.Group {
     return count;
   }
 
-  reset() {
+  private clearOwnedUnits() {
     this.npcs.forEach((v) => {
-      v.setDie();
-      this.remove(v, true, true);
+      v.destroyPlayerTree();
     });
     this.clear(true, true);
     this.npcs.clear();
     this.colliderReference.destroyOwned();
+  }
+
+  dispose() {
+    if (!this.scene) return;
+    this.clearOwnedUnits();
+    this.destroy(false, false);
+  }
+
+  reset() {
+    this.clearOwnedUnits();
     this.addCollider();
   }
 }

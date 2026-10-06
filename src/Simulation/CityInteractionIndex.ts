@@ -38,6 +38,8 @@ export function getCityInteractionGridFromCell(
 export class CityInteractionIndex {
   private cellToCityId = new Map<string, string>();
 
+  get size() { return this.cellToCityId.size; }
+
   reset() {
     this.cellToCityId.clear();
   }

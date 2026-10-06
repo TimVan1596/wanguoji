@@ -1,3 +1,6 @@
+import { isRuntimeDebugEnabled } from "../Runtime/DebugMode";
+import { readRuntimeLifetimeDiagnostics } from "../Runtime/RuntimeLifetimeDiagnostics";
+import { RuntimeColliderRegistry } from "../Simulation/RuntimeColliderRegistry";
 import CardController from "../Card/Controller";
 import Block from "../Components/Block";
 import Map from "../Components/Map";
@@ -171,6 +174,8 @@ export default class Core {
   private visibilityListenerBound = false;
   private snapshotBoundaryRequest = new SnapshotBoundaryRequest();
   private lastHydrationStage = "IDLE";
+  private teamColliders = new RuntimeColliderRegistry();
+  private storeRefreshTimer?: Phaser.Time.TimerEvent;
   private colliderTeardownDiagnostics: ArcadeColliderTeardownDiagnostics = {
     activeBeforeDrain: 0,
     activeAfterPreDrain: 0,
@@ -323,7 +328,8 @@ export default class Core {
   }
 
   asyncTeamsToStore() {
-    this.scene.time.addEvent({
+    this.storeRefreshTimer?.remove(false);
+    this.storeRefreshTimer = this.scene.time.addEvent({
       delay: 500,
       callback: () => {
         store.dispatch(updateTeams());
@@ -340,18 +346,8 @@ export default class Core {
     }
     this.registerTeamColliders(team);
     existingTeams.forEach((existingTeam) => {
-      this.scene.physics.add.collider(
-        existingTeam.players,
-        team.blocks,
-        //@ts-ignore
-        this.onPlayerOverlapBlock.bind(this)
-      );
-      this.scene.physics.add.collider(
-        existingTeam.farms,
-        team.blocks,
-        //@ts-ignore
-        this.onPlayerOverlapBlock.bind(this)
-      );
+      this.addTeamCollider(existingTeam, existingTeam.players, [team.blocks]);
+      this.addTeamCollider(existingTeam, existingTeam.farms, [team.blocks]);
     });
     store.dispatch(setTeams(this.teams));
     return true;
@@ -364,18 +360,22 @@ export default class Core {
     if (!this.map) {
       return;
     }
-    this.scene.physics.add.collider(
-      team.players,
-      [this.map.blocksGroup, ...otherTeamsBlock],
-      //@ts-ignore
+    this.addTeamCollider(team, team.players, [this.map.blocksGroup, ...otherTeamsBlock]);
+    this.addTeamCollider(team, team.farms, [this.map.blocksGroup, ...otherTeamsBlock]);
+  }
+
+  private addTeamCollider(team: Team, group: Phaser.GameObjects.Group, targets: Phaser.GameObjects.Group[]) {
+    this.teamColliders.register(team, group, targets, () => this.scene.physics.add.collider(
+      group, targets,
+      // @ts-ignore Phaser callback parameter types
       this.onPlayerOverlapBlock.bind(this)
-    );
-    this.scene.physics.add.collider(
-      team.farms,
-      [this.map.blocksGroup, ...otherTeamsBlock],
-      //@ts-ignore
-      this.onPlayerOverlapBlock.bind(this)
-    );
+    ));
+    this.teamColliders.releaseTerminal(team);
+    this.teams.filter((entry) => entry.status === "EXTINCT").forEach((entry) => this.teamColliders.releaseTerminal(entry));
+  }
+
+  releaseTerminalTeamColliders(team: Team) {
+    this.teamColliders.releaseTerminal(team);
   }
 
   createInitialCities() {
@@ -812,6 +812,14 @@ export default class Core {
     return this.lastHydrationStage;
   }
 
+  getRuntimeLifetimeDiagnostics() {
+    if (!isRuntimeDebugEnabled()) return undefined;
+    return { ...readRuntimeLifetimeDiagnostics(this.scene, this.teams, {
+      fixedSteps: this.simulationDiagnostics.fixedSimulationSteps, interactionCells: this.cityInteractionIndex.size,
+      colliders: this.teamColliders.snapshot(), visibilityListener: this.visibilityListenerBound,
+    }), ...this.simulator?.getRuntimeLifetimeDiagnostics(), logicalAndPhaserPlayers: this.getRuntimeUnitDiagnostics() };
+  }
+
   getColliderTeardownDiagnostics() {
     return { ...this.colliderTeardownDiagnostics };
   }
@@ -895,6 +903,7 @@ export default class Core {
       this.scene.tweens.pauseAll();
     });
     this.runHydrationTeardownStage("TEARDOWN_COLLIDERS", () => {
+      this.teamColliders.detachAfterWorldTeardown();
       this.colliderTeardownDiagnostics = teardownArcadeColliders(this.scene.physics.world.colliders);
       if (this.colliderTeardownDiagnostics.activeAfterPostDrain !== 0) {
         throw new Error(`Collider ProcessQueue did not drain; active count=${this.colliderTeardownDiagnostics.activeAfterPostDrain}.`);

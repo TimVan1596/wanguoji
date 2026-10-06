@@ -1,3 +1,4 @@
+import { measurePhase, type MonthlyPhaseProfiler } from "./MonthlyPhaseProfiler";
 import Team from "../Components/Team";
 import Danmu from "../Live/Danmu";
 import { createLocalDanmu, getLocalUserId } from "../Live/LocalDanmaku";
@@ -34,6 +35,8 @@ export default class PopulationSystem {
   private counters: Record<string, number> = {};
   private lastGrowthMonth = 0;
 
+  getRuntimeCardinality() { return { populationNameCounters: Object.keys(this.counters).length }; }
+
   exportState() {
     return { counters: { ...this.counters }, lastGrowthMonth: this.lastGrowthMonth };
   }
@@ -60,16 +63,17 @@ export default class PopulationSystem {
   update(
     worldMonth: number,
     teams: Team[],
-    getGrowthMultiplier: (team: Team) => number = () => 1
+    getGrowthMultiplier: (team: Team) => number = () => 1,
+    profile?: MonthlyPhaseProfiler
   ) {
     if (worldMonth - this.lastGrowthMonth < NATURAL_GROWTH_CHECK_MONTHS) {
       return;
     }
     this.lastGrowthMonth = worldMonth;
 
-    teams.filter((team) => !team.isDie).forEach((team) => {
-      const population = this.getPopulation(team);
-      const capacity = this.getCapacity(team);
+    const aliveTeams = measurePhase(profile, "Population.active faction scan", () => teams.filter((team) => !team.isDie));
+    aliveTeams.forEach((team) => {
+      const { population, capacity } = measurePhase(profile, "Population.capacity", () => ({ population: this.getPopulation(team), capacity: this.getCapacity(team) }));
       if (population >= capacity) {
         return;
       }
@@ -82,7 +86,7 @@ export default class PopulationSystem {
         recoveryRatio *
         getGrowthMultiplier(team);
       if (worldRandom.next() <= chance) {
-        this.spawn(team, undefined, false, { cause: "NATURAL_GROWTH", month: worldMonth });
+        measurePhase(profile, "Population.spawn/runtime creation", () => this.spawn(team, undefined, false, { cause: "NATURAL_GROWTH", month: worldMonth }));
       }
     });
   }

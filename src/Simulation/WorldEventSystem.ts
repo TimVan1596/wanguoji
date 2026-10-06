@@ -1,3 +1,4 @@
+import { measurePhase, type MonthlyPhaseProfiler } from "./MonthlyPhaseProfiler";
 import Team from "../Components/Team";
 import { getFactionDevelopmentLevel, getFactionStability } from "../Components/City";
 import Game from "../Game/Game";
@@ -222,21 +223,27 @@ export default class WorldEventSystem {
     this.cycleDiagnostics = getWorldCycleDiagnostics(this.cycleState, worldMonth);
   }
 
-  update(year: number, teams: Team[], totalCells: number) {
+  getRuntimeCardinality() {
+    return { worldEventActiveEffects: this.activeEffects.length,
+      cityFoundedCooldowns: Object.keys(this.cityFoundedYears).length,
+      cityRebellionCooldowns: Object.keys(this.cityRebellionYears).length };
+  }
+
+  update(year: number, teams: Team[], totalCells: number, profile?: MonthlyPhaseProfiler) {
     this.activeEffects = this.activeEffects.filter(
       (effect) => year < effect.endYear
     );
-    this.observeWorldGoal(year, teams, totalCells);
-    this.checkStateFormation(year, teams, totalCells);
-    this.applyProvisionalDissolutionPressure(year, teams, totalCells);
-    this.checkEmperorProclamation(year, teams, totalCells);
-    this.checkRestorations(year, teams);
-    this.checkEmpireSplit(year, teams, totalCells);
-    this.checkCityFounding(year, teams);
+    measurePhase(profile, "WorldEvent.observeWorldGoal", () => this.observeWorldGoal(year, teams, totalCells));
+    measurePhase(profile, "WorldEvent.checkStateFormation", () => this.checkStateFormation(year, teams, totalCells));
+    measurePhase(profile, "WorldEvent.applyProvisionalDissolutionPressure", () => this.applyProvisionalDissolutionPressure(year, teams, totalCells));
+    measurePhase(profile, "WorldEvent.checkEmperorProclamation", () => this.checkEmperorProclamation(year, teams, totalCells));
+    measurePhase(profile, "WorldEvent.checkRestorations", () => this.checkRestorations(year, teams));
+    measurePhase(profile, "WorldEvent.checkEmpireSplit", () => this.checkEmpireSplit(year, teams, totalCells));
+    measurePhase(profile, "WorldEvent.checkCityFounding", () => this.checkCityFounding(year, teams));
     if (year < this.nextEventYear) {
       return;
     }
-    this.triggerRandomEvent(year, teams, totalCells);
+    measurePhase(profile, "WorldEvent.triggerRandomEvent", () => this.triggerRandomEvent(year, teams, totalCells));
     this.nextEventYear = this.rollNextEventYear(year);
   }
 
