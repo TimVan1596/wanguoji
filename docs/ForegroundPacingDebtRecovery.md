@@ -1,3 +1,5 @@
+> b3 foreground debt 子目标已人工 PASS；2911年锁屏返回的7.5 FPS发生时 accumulator=0、steps=4、Core约2.14ms，转入 [b4 Desktop Wake Gate](DesktopWakeRecovery.md)。以下保留b3实现和原验收记录。
+
 # v0.99927b3 Foreground Pacing & Simulation Debt Recovery
 
 ## 基线与人工结论

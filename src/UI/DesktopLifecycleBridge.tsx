@@ -49,6 +49,7 @@ export default function DesktopLifecycleBridge() {
         });
       });
     });
+    const unsubscribeWake = bridge.onDesktopWake?.((message) => Game.Core?.handleDesktopWake(message));
     const unsubscribeResume = bridge.onResumeAfterSuspend?.((payload) => {
       const core = Game.Core;
       const runtimeWorldInstanceId = core?.getRuntimeLivenessDiagnostics().worldInstanceId;
@@ -73,6 +74,7 @@ export default function DesktopLifecycleBridge() {
       unsubscribeAutosave?.();
       unsubscribeClose?.();
       unsubscribeResume?.();
+      unsubscribeWake?.();
     };
   }, []);
 

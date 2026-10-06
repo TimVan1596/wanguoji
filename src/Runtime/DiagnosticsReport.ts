@@ -194,6 +194,8 @@ const CORE_FIELDS: Array<[string, string]> = [
   ["average/max simulation steps per frame", "performance.stepsPerFrame"],
   ["average/p95 fixed-step CPU ms", "performance.fixedStepCpuMs"],
   ["average/p95 presentation CPU ms", "performance.presentationCpuMs"],
+  ["Desktop power / lock / thermal / speed limit", "runtime.desktopPower"],
+  ["Desktop wake / Phaser TimeStep / RAF", "runtime.desktopWake"],
   ["Frame attribution (debug only; nested timings overlap)", "performance.frameAttribution"],
   ["world history events", "worldScale.worldHistoryEventCount"],
   ["era count", "worldScale.eraCount"],

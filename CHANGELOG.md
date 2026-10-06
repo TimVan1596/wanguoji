@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.99927b4
+
+- Recorded b3 foreground debt PASS: normal 4× ~60 FPS / ~4 steps, overload no longer retains whole-step debt. The ~2911-year macOS lock-return incident instead measured ~7.5 FPS / ~132.8ms raw frames, 4 steps, zero accumulator/cap, ~2.14ms Core CPU and ~130.7ms unattributed time. Scheduler/OS cause remains unproven; b3 debt algorithm is unchanged.
+- Main process now sends an allowlisted desktop-wake on resume, unlock-screen and user-did-become-active. Renderer calls the installed Phaser 3.55.2 TimeStep.resetDelta only, without loop restart, driver reset, world progression or an extra catch-up path. Existing suspend PAUSE/CATCH_UP semantics remain unchanged; focus is observation-only.
+- Debug-only bounded power/lifecycle observations include lock count/timestamps, user active/inactive, resume/focus, thermal state, advertised CPU speed limit and battery/AC. No initial CPU speed value is invented when no OS notification exists.
+- Debug-only TimeStep/RAF diagnostics expose actual installed fields (_coolDown presented as coolDown), and last 20 wake observations with before values and 1/5/10-second interval callback FPS / loop samples / first-normal-frame latency. Sampling runs on existing Core frames; delayed callbacks report actual elapsed time. No added polling loop, timers, PerformanceObserver or renderer monkey patch.
+- APP_VERSION v0.99927b4 / package 0.99.107; WorldSave V9 and IndexedDB 2 unchanged. No history, disposal, gameplay, physics, balancing, revolution or Save rewrite. backgroundThrottling:false remains; no powerSaveBlocker/A-B flag because App Nap attribution is not yet established.
+- Mandatory real Electron Gate uses an existing long save: foreground, 1–2min ordinary focus-away, 2–5min macOS lock/unlock, 1/5/10s recovery and paused comparison if still low FPS, then a normal-FPS long-world Save timing. Stop before v27c. If Gate passes, end the v27b audit; next user-authorized theme is Dynastic Revolution Calibration, never changed here.
+
 ## v0.99927b3
 
 - Recorded the v27b2 manual result: History Scalability passed; append publication and narrative indices remain intact, notification cost is near zero at 1000+ years, and a ~4228-year V9 world with ~9626 events/~2706 rulers returns to ~60–65 FPS after Load. Runtime Disposal invariants remain zero/healthy. The remaining failure was foreground pacing at ~1305 years (~15 FPS, 16 steps/frame) with God Tab open and near-zero history work.

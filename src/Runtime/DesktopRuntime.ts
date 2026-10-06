@@ -1,3 +1,4 @@
+import type { DesktopWakeMessage, installDesktopWakeLifecycle } from "../../desktop/DesktopWakeLifecycle";
 export type GridGodRuntimeMode = "WEB_CATCH_UP" | "DESKTOP_CONTINUOUS";
 export type GridGodRouterMode = "browser" | "hash";
 export type BackgroundCatchUpSource = "NONE" | "WEB_VISIBILITY" | "DESKTOP_OS_RESUME";
@@ -51,6 +52,7 @@ export interface DesktopResumeAfterSuspend {
 }
 
 export interface DesktopDiagnostics {
+  power?: ReturnType<ReturnType<typeof installDesktopWakeLifecycle>["snapshot"]>;
   platform: string;
   focused: boolean;
   visibility: string;
@@ -78,6 +80,7 @@ export interface GridGodDesktopBridge {
   reportAutosaveResult?: (payload: DesktopAutosaveResult) => void;
   onBeforeClose?: (callback: () => void) => () => void;
   reportCloseSaveResult?: (payload: { status: "SAVED" | "FAILED" | "SKIPPED"; worldStarted?: boolean; error?: string }) => void;
+  onDesktopWake?: (callback: (payload: DesktopWakeMessage) => void) => () => void;
   onResumeAfterSuspend?: (callback: (payload: DesktopResumeAfterSuspend) => void) => () => void;
   reportResumeCatchUpResult?: (payload: { status: "SCHEDULED" | "SKIPPED"; steps?: number; truncated?: boolean }) => void;
   getDiagnostics?: () => Promise<DesktopDiagnostics>;

@@ -1,3 +1,4 @@
+import { DesktopWakeRecovery } from "../Runtime/DesktopWakeRecovery";
 import { ForegroundDebtDiagnostics } from "../Simulation/ForegroundDebtDiagnostics";
 import { runtimeProfilingEnabled } from "../Simulation/MonthlyPhaseProfiler";
 import { getWorldSavePhaseDiagnostics } from "../Persistence/WorldSaveWorkflow";
@@ -152,6 +153,7 @@ export default class Core {
   private manualPhysicsStepper = new ManualArcadePhysicsStepper();
   private determinismCheckpoints = new DeterminismCheckpointHistory();
   private runtimePerformance = new RuntimePerformanceMetrics();
+  private readonly desktopWakeRecovery = new DesktopWakeRecovery(runtimeProfilingEnabled);
   private foregroundDebtDiagnostics = new ForegroundDebtDiagnostics(runtimeProfilingEnabled);
   private observedMinimized?: { value: boolean; observedAt: number };
   private frameFixedStepCpuMs = 0;
@@ -850,6 +852,10 @@ export default class Core {
     if (runtimeProfilingEnabled && minimized !== undefined) this.observedMinimized = { value: minimized, observedAt: Date.now() };
   }
 
+  handleDesktopWake(message: unknown) {
+    if (this.runtimeMode === "DESKTOP_CONTINUOUS") this.desktopWakeRecovery.wake(message, this.game.loop);
+  }
+
   getRuntimeLivenessDiagnostics() {
     const simulatorState = this.simulator?.exportState();
     const reduxWorldRunning = store.getState().root.worldRunning;
@@ -876,6 +882,7 @@ export default class Core {
       worldMonth: simulatorState?.clock.worldMonth ?? 0,
       clockElapsedMs: simulatorState?.clock.elapsedMs ?? 0,
       accumulatorMs: this.simulationDriver.getAccumulatorMs(),
+      desktopWake: this.runtimeMode === "DESKTOP_CONTINUOUS" ? this.desktopWakeRecovery.snapshot(this.game.loop) : undefined,
       foregroundDebt: this.foregroundDebtDiagnostics.snapshot(this.simulationDriver.getAccumulatorMs()),
       coreUpdateFrames: this.coreUpdateDiagnostics.frames,
       lastCoreUpdateRealAt: this.coreUpdateDiagnostics.lastUpdateRealAt,
@@ -1451,6 +1458,7 @@ export default class Core {
     }
     this.updateDesktopRuntimeDiagnostics();
     this.sendDesktopHeartbeatIfNeeded();
+    if (runtimeProfilingEnabled && this.runtimeMode === "DESKTOP_CONTINUOUS") this.desktopWakeRecovery.frame(this.game.loop);
     const frameFinishedAt = this.getRealNow();
     const fixedStepCpuMs = this.frameFixedStepCpuMs;
     frameAttribution.finishFrame(rawFrameDelta, frameFinishedAt - frameStartedAt, fixedStepCpuMs);

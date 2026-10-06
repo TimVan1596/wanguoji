@@ -1,5 +1,6 @@
 import { app, BrowserWindow, dialog, ipcMain, Menu, powerMonitor } from "electron";
 import path from "node:path";
+import { installDesktopWakeLifecycle } from "./DesktopWakeLifecycle";
 import { pathToFileURL } from "node:url";
 import { randomUUID } from "node:crypto";
 import { getStableUserDataPath, isAllowedDesktopNavigation } from "./DesktopSecurity";
@@ -83,6 +84,7 @@ const diagnostics: DesktopDiagnostics = {
   texImage2DBadImageWarningCount: 0,
 };
 
+let wakeLifecycle: ReturnType<typeof installDesktopWakeLifecycle> | undefined;
 let mainWindow: BrowserWindow | undefined;
 let latestHeartbeat: RendererHeartbeat | undefined;
 let closeAllowed = false;
@@ -161,7 +163,7 @@ async function createWindow() {
     }
   });
 
-  mainWindow.on("focus", () => { diagnostics.focused = true; });
+  mainWindow.on("focus", () => { diagnostics.focused = true; wakeLifecycle?.focus(); });
   mainWindow.on("blur", () => { diagnostics.focused = false; });
   mainWindow.on("minimize", () => {
     diagnostics.windowMinimized = true;
@@ -334,6 +336,7 @@ ipcMain.on("gridgod:renderer-heartbeat", (_event, payload: RendererHeartbeat) =>
 
 ipcMain.handle("gridgod:get-desktop-diagnostics", () => ({
   ...diagnostics,
+  power: wakeLifecycle?.snapshot(),
   heartbeatAgeSeconds: latestHeartbeat?.timestamp === undefined
     ? undefined
     : Math.max(0, (Date.now() - latestHeartbeat.timestamp) / 1000),
@@ -393,6 +396,16 @@ if (decideSingleInstance(instanceLock) === "QUIT") {
     setInterval(sendAutosaveRequest, 5 * 60 * 1000);
 
     if (powerMonitor) {
+      const debug = getDesktopDebugLaunchOptions(process.argv).debug;
+      wakeLifecycle = installDesktopWakeLifecycle(powerMonitor, (message) => {
+        if (mainWindow && !mainWindow.isDestroyed() && !mainWindow.webContents.isDestroyed()) {
+          mainWindow.webContents.send("gridgod:desktop-wake", message);
+        }
+      }, debug, debug ? {
+        onBattery: powerMonitor.isOnBatteryPower(),
+        thermalState: process.platform === "darwin" ? powerMonitor.getCurrentThermalState() : undefined,
+      } : {});
+      app.once("will-quit", () => wakeLifecycle?.dispose());
       powerMonitor.on("suspend", () => {
         suspendedAt = Date.now();
         suspendHeartbeat = latestHeartbeat ? { ...latestHeartbeat } : undefined;

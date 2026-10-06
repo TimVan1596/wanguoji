@@ -17,6 +17,7 @@ contextBridge.exposeInMainWorld("gridGodDesktop", {
   onBeforeClose: (callback: () => void) =>
     subscribe("gridgod:before-close", () => callback()),
   reportCloseSaveResult: (payload: unknown) => ipcRenderer.send("gridgod:close-save-result", payload),
+  onDesktopWake: (callback: (payload: unknown) => void) => subscribe("gridgod:desktop-wake", callback),
   onResumeAfterSuspend: (callback: (payload: unknown) => void) =>
     subscribe("gridgod:resume-after-suspend", callback),
   reportResumeCatchUpResult: (payload: unknown) => ipcRenderer.send("gridgod:resume-catch-up-result", payload),
