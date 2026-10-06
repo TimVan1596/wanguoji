@@ -1,3 +1,4 @@
+import { frameAttribution } from "../Simulation/FrameAttribution";
 import { DeferredUserGroupDisposal } from "../Simulation/DeferredUserGroupDisposal";
 import { destroyRuntimeGroupAtSafeBoundary } from "../Simulation/RuntimeGroupDisposal";
 import type Slaves from "../Components/Slaves";
@@ -885,6 +886,7 @@ export default class Core {
       runtimeMode: this.runtimeMode,
       runningStateDivergence: reduxWorldRunning !== simulatorRunning || simulatorRunning !== clockRunning,
       framePerformance: this.runtimePerformance.snapshot(),
+      frameAttribution: frameAttribution.snapshot(),
       worldScale: this.getWorldScaleDiagnostics(),
       resumeProbe: probe ? {
         requestedAt: probe.requestedAt,
@@ -1416,17 +1418,18 @@ export default class Core {
         }
       }
       if (this.logicalGameplayAuthority) {
-        this.logicalUnitRegistry.syncVisuals();
+        frameAttribution.measure("LogicalUnitRegistry.syncVisuals", () => this.logicalUnitRegistry.syncVisuals());
       }
     }
-    this.validateWorldStateInDev();
+    frameAttribution.measure("validateWorldStateInDev", () => this.validateWorldStateInDev());
     if (!this.backgroundProgression.isCatchingUp()) {
-      this.refreshPresentationFrame();
+      frameAttribution.measure("presentation CPU", () => this.refreshPresentationFrame());
     }
     this.updateDesktopRuntimeDiagnostics();
     this.sendDesktopHeartbeatIfNeeded();
     const frameFinishedAt = this.getRealNow();
     const fixedStepCpuMs = this.frameFixedStepCpuMs;
+    frameAttribution.finishFrame(rawFrameDelta, frameFinishedAt - frameStartedAt, fixedStepCpuMs);
     this.runtimePerformance.record(
       rawFrameDelta,
       this.simulationDiagnostics.fixedSimulationSteps - initialFixedSteps,
@@ -1451,11 +1454,11 @@ export default class Core {
   }
 
   private refreshPresentationFrame() {
-    this.updateFactionLabels();
-    this.updateFactionFocus();
+    frameAttribution.measure("faction labels", () => this.updateFactionLabels());
+    frameAttribution.measure("faction focus", () => this.updateFactionFocus());
     this.teams.filter((team) => team.status === "ACTIVE").forEach((team) => {
-      team.players.children.each((player) => player.update());
-      team.blocks.children.each((block) => block.update());
+      frameAttribution.measure("player presentation updates", () => team.players.children.each((player) => player.update()));
+      frameAttribution.measure("block presentation updates", () => team.blocks.children.each((block) => block.update()));
     });
   }
 
@@ -1503,11 +1506,11 @@ export default class Core {
     this.desktopRuntimeDiagnostics.lastSimulationStepRealAt =
       typeof performance === "undefined" ? Date.now() : performance.now();
     if (this.logicalGameplayAuthority) {
-      this.logicalSimulationCore.step(fixedDeltaMs);
+      frameAttribution.measure("logical simulation step", () => this.logicalSimulationCore.step(fixedDeltaMs));
     } else if (this.manualPhysicsStepping) {
-      this.advanceArcadePhysicsStep(fixedDeltaMs);
+      frameAttribution.measure("manual Arcade physics step", () => this.advanceArcadePhysicsStep(fixedDeltaMs));
     }
-    this.simulator?.advance(fixedDeltaMs, this.teams, this.totalCells, (capturedMonth) => this.captureEraMapSnapshot(capturedMonth));
+    frameAttribution.measure("AutoSimulator.advance", () => this.simulator?.advance(fixedDeltaMs, this.teams, this.totalCells, (capturedMonth) => this.captureEraMapSnapshot(capturedMonth)));
     this.teamColliders.flushTerminal();
     const clock = this.simulator?.exportState().clock;
     if (
@@ -1515,7 +1518,7 @@ export default class Core {
       this.isDeterminismDiagnosticsEnabled() &&
       this.determinismCheckpoints.isDue(clock.worldMonth)
     ) {
-      this.recordDeterminismCheckpoint(clock.worldMonth);
+      frameAttribution.measure("determinism checkpoint", () => this.recordDeterminismCheckpoint(clock.worldMonth));
     }
     if (clock && this.snapshotBoundaryRequest.reachBoundary(clock.worldMonth, clock.elapsedMs)) {
       this.setWorldRunning(false);
@@ -1596,6 +1599,7 @@ export default class Core {
 
   private resetSimulationDiagnostics() {
     this.runtimePerformance.reset();
+    frameAttribution.reset();
     this.frameFixedStepCpuMs = 0;
     this.simulationDiagnostics = {
       fixedSimulationSteps: 0,

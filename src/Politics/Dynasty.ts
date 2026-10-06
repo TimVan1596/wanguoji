@@ -1,3 +1,4 @@
+import { CurrentRulerLookup } from "./CurrentRulerLookup";
 import { beginHouseEpoch, evaluateDynasticRevolution, getRevolutionEligibility, type DynastyHouseEpoch, type RevolutionContext } from "./DynasticRevolution";
 import { RevolutionGateDiagnostics } from "./RevolutionGateDiagnostics";
 import { createStateName } from "../Simulation/StateNameGenerator";
@@ -131,6 +132,7 @@ function getRulerGivenNamePool(houseName: string) {
 
 class DynastyRegistryStore {
   private dynasties = new Map<string, Dynasty>();
+  private currentRulerLookup = new CurrentRulerLookup();
   private sequence = 0;
   private revolutionChecks: Array<{ factionId: string; worldMonth: number; blockers: string[] }> = [];
   private revolutionGateDiagnostics = new RevolutionGateDiagnostics();
@@ -138,6 +140,7 @@ class DynastyRegistryStore {
 
   reset() {
     this.dynasties.clear();
+    this.currentRulerLookup.reset();
     this.sequence = 0;
     this.revolutionChecks = [];
     this.revolutionGateDiagnostics.reset();
@@ -165,6 +168,7 @@ class DynastyRegistryStore {
   }
 
   importState(state: ReturnType<DynastyRegistryStore["exportState"]>) {
+    this.currentRulerLookup.reset();
     this.dynasties = new Map(state.dynasties.map((dynasty) => [dynasty.factionId, {
       ...dynasty,
       houseEpochs: dynasty.houseEpochs?.map((epoch) => ({ ...epoch })),
@@ -307,7 +311,7 @@ class DynastyRegistryStore {
     if (!dynasty?.currentRulerId) {
       return undefined;
     }
-    return dynasty.rulers.find((ruler) => ruler.id === dynasty.currentRulerId);
+    return this.currentRulerLookup.get(dynasty);
   }
 
   hasClaimant(factionId: string) {

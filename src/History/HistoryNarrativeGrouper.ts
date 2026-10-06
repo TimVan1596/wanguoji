@@ -66,11 +66,40 @@ interface CapitalTransitionGroup {
   relocated: WorldEvent;
 }
 
+/** Preserve input order and existing group predicates while avoiding an archive scan per anchor.
+ * Explicit groups can cross months; the month bucket is also needed for fallback matches. */
+function indexNarrativeCandidates(events: WorldEvent[]) {
+  const byMonth = new Map<number, WorldEvent[]>();
+  const byGroup = new Map<string, WorldEvent[]>();
+  const position = new Map<WorldEvent, number>();
+  events.forEach((event, index) => {
+    position.set(event, index);
+    const month = getEventMonth(event);
+    const monthEvents = byMonth.get(month) ?? [];
+    monthEvents.push(event); byMonth.set(month, monthEvents);
+    if (event.historyGroupId) {
+      const groupEvents = byGroup.get(event.historyGroupId) ?? [];
+      groupEvents.push(event); byGroup.set(event.historyGroupId, groupEvents);
+    }
+  });
+  return {
+    byGroup,
+    candidates(anchor: WorldEvent) {
+      const month = byMonth.get(getEventMonth(anchor)) ?? [];
+      const group = anchor.historyGroupId ? byGroup.get(anchor.historyGroupId) ?? [] : [];
+      if (!group.some(event => getEventMonth(event) !== getEventMonth(anchor))) return month;
+      return [...new Set([...month, ...group])].sort((a, b) => position.get(a)! - position.get(b)!);
+    },
+  };
+}
+type NarrativeIndex = ReturnType<typeof indexNarrativeCandidates>;
+
 export function groupHistoryNarratives(events: WorldEvent[]) {
-  const groups = buildCollapseGroups(events);
-  const foundingGroups = buildFoundingGroups(events);
-  const restorationGroups = buildRestorationGroups(events);
-  const capitalGroups = buildCapitalTransitionGroups(events);
+  const index = indexNarrativeCandidates(events);
+  const groups = buildCollapseGroups(events, index);
+  const foundingGroups = buildFoundingGroups(events, index);
+  const restorationGroups = buildRestorationGroups(events, index);
+  const capitalGroups = buildCapitalTransitionGroups(events, index);
   const eventToGroup = new Map<string, CollapseGroup | FoundingGroup | RestorationGroup | CapitalTransitionGroup>();
   capitalGroups.forEach((group) => {
     eventToGroup.set(group.fallen.id, group);
@@ -120,12 +149,12 @@ export function groupHistoryNarratives(events: WorldEvent[]) {
   return displayEvents;
 }
 
-function buildCapitalTransitionGroups(events: WorldEvent[]) {
+function buildCapitalTransitionGroups(events: WorldEvent[], index: NarrativeIndex) {
   const groups: CapitalTransitionGroup[] = [];
   events
     .filter((event) => event.type === "capital-relocated" && event.historyGroupId)
     .forEach((relocated) => {
-      const fallen = events.find((event) =>
+      const fallen = index.byGroup.get(relocated.historyGroupId!)?.find((event) =>
         event.type === "capital-fallen" &&
         event.historyGroupId === relocated.historyGroupId &&
         event.targetFactionId === relocated.actorFactionId
@@ -158,7 +187,7 @@ function createCapitalTransitionNarrativeEvent(group: CapitalTransitionGroup): W
   };
 }
 
-function buildCollapseGroups(events: WorldEvent[]) {
+function buildCollapseGroups(events: WorldEvent[], index: NarrativeIndex) {
   const groups: CollapseGroup[] = [];
   events
     .filter((event) => COLLAPSE_TYPES.has(event.type))
@@ -168,7 +197,7 @@ function buildCollapseGroups(events: WorldEvent[]) {
         return;
       }
       const month = getEventMonth(collapseEvent);
-      const groupEvents = events.filter(
+      const groupEvents = index.candidates(collapseEvent).filter(
         (event) => belongsToCollapseGroup(event, collapseEvent, month, factionId)
       );
       groups.push({
@@ -258,7 +287,7 @@ function createNarrativeEvent(group: CollapseGroup): WorldEvent {
   };
 }
 
-function buildFoundingGroups(events: WorldEvent[]) {
+function buildFoundingGroups(events: WorldEvent[], index: NarrativeIndex) {
   const groups: FoundingGroup[] = [];
   events
     .filter((event) => FOUNDING_TYPES.has(event.type))
@@ -268,7 +297,7 @@ function buildFoundingGroups(events: WorldEvent[]) {
         return;
       }
       const month = getEventMonth(foundingEvent);
-      const groupEvents = events.filter(
+      const groupEvents = index.candidates(foundingEvent).filter(
         (event) =>
           belongsToFoundingGroup(event, foundingEvent, month, factionId)
       );
@@ -329,7 +358,7 @@ function createFoundingNarrativeEvent(group: FoundingGroup): WorldEvent {
   };
 }
 
-function buildRestorationGroups(events: WorldEvent[]) {
+function buildRestorationGroups(events: WorldEvent[], index: NarrativeIndex) {
   const groups: RestorationGroup[] = [];
   events
     .filter((event) => RESTORATION_TYPES.has(event.type))
@@ -339,7 +368,7 @@ function buildRestorationGroups(events: WorldEvent[]) {
         return;
       }
       const month = getEventMonth(restorationEvent);
-      const groupEvents = events.filter(
+      const groupEvents = index.candidates(restorationEvent).filter(
         (event) =>
           belongsToRestorationGroup(event, restorationEvent, month, factionId)
       );

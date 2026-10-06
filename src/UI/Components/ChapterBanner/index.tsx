@@ -17,11 +17,9 @@ export default function ChapterBanner() {
   const catchUpActive = useSelector(
     (state: RootState) => state.root.backgroundCatchUpActive
   );
-  const seenIds = useRef(new Set<string>());
   const currentRef = useRef<ChapterBannerItem | undefined>();
   const catchUpActiveRef = useRef(false);
   const catchUpBufferRef = useRef<ChapterBannerItem[]>([]);
-  const initializedRef = useRef(false);
   const [current, setCurrent] = useState<ChapterBannerItem>();
   const [pending, setPending] = useState<ChapterBannerItem[]>([]);
   const teams = useSelector((state: RootState) => state.root.teams);
@@ -53,17 +51,10 @@ export default function ChapterBanner() {
 
   useEffect(
     () =>
-      WorldHistory.subscribe((events) => {
-        if (!initializedRef.current) {
-          events.forEach((event) => seenIds.current.add(event.id));
-          initializedRef.current = true;
-          return;
-        }
-        const unseen = events
-          .filter((event) => !seenIds.current.has(event.id))
-          .sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year));
+      WorldHistory.subscribeAppends((change) => {
+        if (change.kind === "reset") return;
+        const unseen = [...change.events].sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year));
         unseen.forEach((event) => {
-          seenIds.current.add(event.id);
           const factionById = new Map(teams.map((team) => [team.name, team]));
           const banner = createChapterBannerForEvent(event, factionById, eras);
           if (!banner) {

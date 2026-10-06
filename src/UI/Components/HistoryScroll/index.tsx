@@ -1,3 +1,4 @@
+import { queryHistoryPage } from "../../../History/HistoryPageQuery";
 import type Team from "../../../Components/Team";
 import { getHistoricalFactionIdentity } from "../../../History/HistoricalFactionIdentity";
 import { Box, Button, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
@@ -7,10 +8,8 @@ import WorldHistory, {
   formatEventDate,
   WorldEvent,
 } from "../../../History/WorldHistory";
-import { groupHistoryNarratives } from "../../../History/HistoryNarrativeGrouper";
 import {
   getEventFactionIds,
-  getFilteredHistoryEvents,
   HistoryFilter,
   HISTORY_RENDER_BATCH,
   formatHistoryEventDescription,
@@ -28,7 +27,6 @@ import { areHistoryEventListInputsEqual } from "./historyEventListMemo";
 import EraAtlasMap from "./EraAtlasMap";
 import {
   eraSelectionUIReducer,
-  getEventsForEraSelection,
   getSelectedEra,
   initialEraSelectionUIState,
 } from "./eraSelection";
@@ -42,7 +40,7 @@ const filters: { value: HistoryFilter; label: string }[] = [
 ];
 
 export default function HistoryScroll() {
-  const [events, setEvents] = useState<WorldEvent[]>([]);
+  const [historyRevision, setHistoryRevision] = useState(() => WorldHistory.getRevision());
   const [filter, setFilter] = useState<HistoryFilter>("featured");
   const [expandedId, setExpandedId] = useState<string>();
   const [visibleCount, setVisibleCount] = useState(HISTORY_RENDER_BATCH);
@@ -59,7 +57,7 @@ export default function HistoryScroll() {
   );
   const [manualFactionFilter, setManualFactionFilter] = useState<string>();
 
-  useEffect(() => WorldHistory.subscribe(setEvents), []);
+  useEffect(() => WorldHistory.subscribeRevision(setHistoryRevision), []);
   useEffect(() => WorldEra.subscribe(setEras), []);
   useEffect(() => {
     let active = true;
@@ -69,7 +67,7 @@ export default function HistoryScroll() {
     return () => {
       active = false;
     };
-  }, [events]);
+  }, [historyRevision]);
   useEffect(() => {
     if (
       eraSelectionUI.selectedEraId !== "all" &&
@@ -120,40 +118,17 @@ export default function HistoryScroll() {
   );
   const eraCandidate = WorldEra.getCandidateDiagnostics(worldMonth);
   const records = useMemo(
-    () => worldRecordsOpen ? deriveWorldRecords(dynasties, teams, events, eras, worldMonth) : [],
-    [worldRecordsOpen, dynasties, teams, events, eras, worldMonth]
-  );
-  const eraFilteredEvents = useMemo(
-    () => getEventsForEraSelection(selectedEra, events, (startMonth, endMonth) => WorldHistory.getEventsBetween(startMonth, endMonth)),
-    [events, selectedEra]
+    () => worldRecordsOpen ? deriveWorldRecords(dynasties, teams, WorldHistory.getEvents(), eras, worldMonth) : [],
+    [worldRecordsOpen, dynasties, teams, historyRevision, eras, worldMonth]
   );
   const factionFilterDisplay = factionFilter
     ? teamByName.get(factionFilter)?.displayName ?? factionFilter
     : undefined;
-  const filteredEvents = useMemo(
-    () => getFilteredHistoryEvents(eraFilteredEvents, filter, factionFilter),
-    [eraFilteredEvents, filter, factionFilter]
-  );
-  const eventsForGrouping = useMemo(
-    () =>
-      filter === "featured"
-        ? getFilteredHistoryEvents(eraFilteredEvents, "all", factionFilter)
-        : filteredEvents,
-    [eraFilteredEvents, factionFilter, filter, filteredEvents]
-  );
-  const displayEvents = useMemo(
-    () => {
-      const grouped = groupHistoryNarratives(eventsForGrouping);
-      return filter === "featured"
-        ? getFilteredHistoryEvents(grouped, "featured", factionFilter)
-        : grouped;
-    },
-    [eventsForGrouping, factionFilter, filter]
-  );
-  const visibleEvents = useMemo(
-    () => displayEvents.slice(0, visibleCount),
-    [displayEvents, visibleCount]
-  );
+  const page = useMemo(() => queryHistoryPage(WorldHistory, {
+    visibleCount, filter, factionId: factionFilter,
+    startMonth: selectedEra?.startMonth, endMonth: selectedEra?.endMonth,
+  }), [historyRevision, visibleCount, filter, factionFilter, selectedEra]);
+  const visibleEvents = page.events;
   const toggleExpandedEvent = useCallback((eventId: string, canExpand: boolean) => {
     if (canExpand) setExpandedId((current) => current === eventId ? undefined : eventId);
   }, []);
@@ -320,7 +295,7 @@ export default function HistoryScroll() {
           ) : null}
         </Box>
       ) : null}
-      {(worldRecordsOpen || dynasties.length > 0 || events.length > 0) ? (
+      {(worldRecordsOpen || dynasties.length > 0 || WorldHistory.getEventCount() > 0) ? (
         <Box sx={{ mb: 0.8 }}>
           <Button
             size="small"
@@ -384,7 +359,7 @@ export default function HistoryScroll() {
       ) : null}
       <HistoryEventList
         events={visibleEvents}
-        hasMore={visibleEvents.length < displayEvents.length}
+        hasMore={page.hasMore}
         expandedId={expandedId}
         teamByName={teamByName}
         rulerById={rulerById}

@@ -147,9 +147,10 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
-- v0.99927b1 使用 WorldSave V9；V8 及更旧存档不提供迁移，无法继续。IndexedDB 数据库版本仍为 2。首领诊断与 Revolution Gate 累计诊断的本会话样本在新世界／读档时重置，后者仅在 debug 模式观察，不写入存档。首领诊断的最近 100 年窗口按任期结束月份筛选。
+- v0.99927b2 使用 WorldSave V9；V8 及更旧存档不提供迁移，无法继续。IndexedDB 数据库版本仍为 2。首领诊断与 Revolution Gate 累计诊断的本会话样本在新世界／读档时重置，后者仅在 debug 模式观察，不写入存档。首领诊断的最近 100 年窗口按任期结束月份筛选。
 
-- v0.99927b1 修复已在 worldMonth=114 人工复现的 disposal／Group.preUpdate `.size` Fatal。保留 v27b 泄漏修复与诊断：死亡时立即停用，POST_UPDATE 安全销毁，pending 队列不再重新激活已销毁 group。真实 Electron Gate 分两阶段：先新世界4×100～150年无 Save/Load 崩溃 smoke；通过后才加载约3451年 V9 存档连续800～1200年。任一阶段失败均先回传 Fatal／完整 Runtime Lifetime；自动测试不替代人工验收。
+- v0.99927b1 disposal 已通过新世界 desktop debug 4×约1962年人工测试：无 `.size`／Renderer Fatal／disposal stalled，运行时资源 invariant 正常。本版保留该生命周期修复。
+- v0.99927b2 优化完整历史的发布／卷轴分页及叙事查询，新增有界 debug 帧阶段诊断；不删历史、不改玩法／概率／V9。仍待真实 Electron History / Frame Scalability Gate：先新世界4×1000～1500年，记录500／1000／1500年诊断并对比各 Tab；无 regression 后加载约3451年 V9 存档连续再跑至少500年，检查保存／自动保存、Load 前后性能与 runtime invariants。详细测量、边界语义与回传项见 [HistoryFrameScalability](docs/HistoryFrameScalability.md)。
 
 - Web 存档仅保存在当前浏览器 IndexedDB；无云存档或跨设备同步。手动档、200 游戏年轮换自动档与 `current` 恢复档共用当前版本化 WorldSave schema。
 - Web 中未触发存档的推进在刷新或关闭页面后不会保留；Electron 另有每 5 现实分钟恢复档和关闭前保存。

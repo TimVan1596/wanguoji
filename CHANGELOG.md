@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.99927b2
+
+- Recorded the user’s v0.99927b1 manual disposal pass: a new Electron debug world ran at 4× to approximately 1962 years, with no Group.preUpdate size fatal, Renderer Fatal or stalled disposal. At 768/1962 years all disposal/orphan invariants remained normal and live/registered user group counts matched 56/58 live users. The validated lifecycle is unchanged.
+- Measured full-history sorting/copying on every append at 1k/5k/20k events, including the always-mounted ChapterBanner subscriber. Runtime UI now subscribes to revisions or appended records; canonical insertion-order events remain complete. Derived ordered indices handle stable equal-month ordering and retrospective inserts. HistoryScroll queries bounded windows with complete month/group chains for paging, era and faction filters; complete archives remain available for biographies and explicitly opened world records.
+- Measured 254 full-history narrative scans at 5k events with 250 collapse anchors; derived month/group candidates reduce this to four scans without changing predicates, source event order or narrative facts. 150 deterministic mixed fixtures matched the baseline implementation exactly.
+- Added bounded debug frame timings for Core/fixed/physics/simulation/checkpoint/visual sync/presentation subphases/validation/history notification/UI query and an explicitly approximate unattributed frame residual. Nested timings overlap. Save export/serialize/write phase and existing save durations are exposed; no renderer monkey patch or timeout change.
+- Cached only the current-ruler array position using a derived WeakMap, reset on hydration. The complete ruler archive, candidate selection/order, RNG and monthly update semantics remain unchanged. Structural tests compare the cache with linear lookup.
+- APP_VERSION v0.99927b2 / package 0.99.105; WorldSave remains V9, IndexedDB remains 2. Gameplay/balance/diplomacy/revolution thresholds and probabilities/history retention/historical identity/lifecycle are unchanged.
+- Mandatory real Electron Gate: Stage A new world 4× to 1000–1500 years with diagnostics at ~500/~1000/~1500 and History paging/tab comparisons; only after no regression, Stage B the ~3451-year V9 save for at least 500 continuous years with initial/final diagnostics, autosave/Save-Load/checkpoint/resource checks. Automated checks do not replace this Gate.
+
 ## v0.99927b1
 
 - Confirmed the reported Dit symbol is Slaves in the v0.99927b desktop debug source map; its inherited Phaser 3.55.2 Group.preUpdate reads children.size. Group.destroy clears children without deactivating the group, while UpdateList removal is queued. ProcessQueue removes active entries before pending insertion, reproducing an active destroyed group and the same undefined.size fatal.

@@ -1,3 +1,4 @@
+import { frameAttribution } from "../Simulation/FrameAttribution";
 import { formatRevolutionEvidence } from "../Politics/DynasticRevolution";
 import Team from "../Components/Team";
 import { ArchivedCity } from "../Simulation/ArchivedCities";
@@ -103,10 +104,6 @@ interface LeaderCandidate {
   since: number;
 }
 
-function compareEventsDesc(a: WorldEvent, b: WorldEvent) {
-  return (b.monthIndex ?? b.year) - (a.monthIndex ?? a.year);
-}
-
 function getEventFactionIds(event: WorldEvent) {
   return [
     ...(event.factionIds ?? []),
@@ -150,9 +147,17 @@ function upperBoundMonth(events: WorldEvent[], month: number) {
   return left;
 }
 
-class WorldHistoryStore {
+export class WorldHistoryStore {
   private events: WorldEvent[] = [];
-  private sortedEventsCache: WorldEvent[] | undefined;
+  // Derived ascending index. Equal-month insertion is reversed to preserve stable descending ties.
+  private orderedEvents: WorldEvent[] = [];
+  private groupOldestMonth = new Map<string, number>();
+  private uiEventsByFactionId = new Map<string, WorldEvent[]>();
+  private revision = 0;
+  private revisionListeners = new Set<(revision: number) => void>();
+  private appendListeners = new Set<(change: { revision: number; kind: "append" | "reset"; events: readonly WorldEvent[] }) => void>();
+  private pendingEvents: WorldEvent[] = [];
+  private resetPending = false;
   private eventsByFactionId = new Map<string, WorldEvent[]>();
   private emitted = new Set<string>();
   private listeners = new Set<Listener>();
@@ -167,7 +172,7 @@ class WorldHistoryStore {
   private unificationCount = 0;
 
   getRuntimeCardinality() {
-    return { historyListeners: this.listeners.size, historySortedCache: this.sortedEventsCache?.length ?? 0,
+    return { historyListeners: this.listeners.size + this.revisionListeners.size + this.appendListeners.size, historySortedCache: this.orderedEvents.length,
       historyFactionIndexKeys: this.eventsByFactionId.size,
       historyFactionIndexReferences: [...this.eventsByFactionId.values()].reduce((sum, events) => sum + events.length, 0),
       canonicalHistoryEvents: this.events.length, canonicalHistoryEmittedKeys: this.emitted.size };
@@ -175,7 +180,11 @@ class WorldHistoryStore {
 
   reset() {
     this.events = [];
-    this.sortedEventsCache = undefined;
+    this.orderedEvents = [];
+    this.groupOldestMonth.clear();
+    this.uiEventsByFactionId.clear();
+    this.resetPending = true;
+    this.pendingEvents = [];
     this.eventsByFactionId.clear();
     this.emitted.clear();
     this.populationLeader = undefined;
@@ -208,11 +217,41 @@ class WorldHistoryStore {
     }
   }
 
-  getEvents() {
-    if (!this.sortedEventsCache) {
-      this.sortedEventsCache = [...this.events].sort(compareEventsDesc);
+  getRevision() { return this.revision; }
+
+  subscribeRevision(listener: (revision: number) => void) {
+    this.revisionListeners.add(listener);
+    listener(this.revision);
+    return () => { this.revisionListeners.delete(listener); };
+  }
+
+  subscribeAppends(listener: (change: { revision: number; kind: "append" | "reset"; events: readonly WorldEvent[] }) => void) {
+    this.appendListeners.add(listener);
+    return () => { this.appendListeners.delete(listener); };
+  }
+
+  getEvents() { return this.orderedEvents.slice().reverse(); }
+
+  /** Copies only the requested window. Complete months and explicit narrative groups keep
+   * capture/collapse chains intact at page boundaries, including retrospective records. */
+  getEventWindow(options: { startMonth?: number; endMonth?: number; factionId?: string;
+    limit: number; beforeIndex?: number; predicate?: (event: WorldEvent) => boolean }) {
+    const source = options.factionId ? this.uiEventsByFactionId.get(options.factionId) ?? [] : this.orderedEvents;
+    const start = lowerBoundMonth(source, options.startMonth ?? -Infinity);
+    const end = Math.min(options.beforeIndex ?? source.length, upperBoundMonth(source, options.endMonth ?? Infinity));
+    const events: WorldEvent[] = [];
+    let cutoff = Infinity;
+    let index = end - 1;
+    for (; index >= start; index--) {
+      const event = source[index];
+      const month = event.monthIndex ?? event.year;
+      if (events.length >= options.limit && month < cutoff) break;
+      if (options.predicate && !options.predicate(event)) continue;
+      events.push(event);
+      if (events.length === options.limit) cutoff = Math.min(cutoff, month);
+      if (event.historyGroupId) cutoff = Math.min(cutoff, this.groupOldestMonth.get(event.historyGroupId) ?? month);
     }
-    return [...this.sortedEventsCache];
+    return { events, hasOlder: index >= start, nextIndex: index + 1 };
   }
 
   getEventCount() {
@@ -250,7 +289,11 @@ class WorldHistoryStore {
       monthIndex,
       metadata: event.metadata ? { ...event.metadata } : undefined,
     }));
-    this.sortedEventsCache = undefined;
+    this.orderedEvents = [];
+    this.groupOldestMonth.clear();
+    this.uiEventsByFactionId.clear();
+    this.resetPending = true;
+    this.pendingEvents = [];
     this.eventsByFactionId.clear();
     this.events.forEach((event) => this.indexEvent(event));
     this.emitted = new Set(state.emittedKeys);
@@ -265,33 +308,46 @@ class WorldHistoryStore {
   }
 
   getEventsForFaction(factionId: string) {
-    return [...(this.eventsByFactionId.get(factionId) ?? [])].sort(compareEventsDesc);
+    return (this.eventsByFactionId.get(factionId) ?? []).slice().reverse();
   }
 
   getEventsBetween(startMonth: number, endMonth?: number) {
-    const startIndex = lowerBoundMonth(this.events, startMonth);
-    const endExclusive = endMonth === undefined ? this.events.length : upperBoundMonth(this.events, endMonth);
-    return this.events.slice(startIndex, endExclusive).sort(compareEventsDesc);
+    return this.orderedEvents.slice(lowerBoundMonth(this.orderedEvents, startMonth),
+      upperBoundMonth(this.orderedEvents, endMonth ?? Infinity)).reverse();
   }
 
   addEvent(event: WorldEvent) {
-    const normalizedEvent = {
-      ...event,
-      monthIndex: event.monthIndex ?? event.year,
-      metadata: event.metadata ? { ...event.metadata } : undefined,
-    };
+    const normalizedEvent = { ...event, monthIndex: event.monthIndex ?? event.year,
+      metadata: event.metadata ? { ...event.metadata } : undefined };
     this.events.push(normalizedEvent);
-    this.sortedEventsCache = undefined;
     this.indexEvent(normalizedEvent);
+    this.pendingEvents.push(normalizedEvent);
     this.notify();
     return event.id;
   }
 
+  private insertOrdered(events: WorldEvent[], event: WorldEvent) {
+    const month = event.monthIndex ?? event.year;
+    // Fast path for the usual strictly increasing month; binary insertion for ties/backdated facts.
+    if (!events.length || (events[events.length - 1].monthIndex ?? events[events.length - 1].year) < month) events.push(event);
+    else events.splice(lowerBoundMonth(events, month), 0, event);
+  }
+
   private indexEvent(event: WorldEvent) {
-    getEventFactionIds(event).forEach((factionId) => {
+    this.insertOrdered(this.orderedEvents, event);
+    if (event.historyGroupId) this.groupOldestMonth.set(event.historyGroupId,
+      Math.min(this.groupOldestMonth.get(event.historyGroupId) ?? Infinity, event.monthIndex ?? event.year));
+    const factionIds = getEventFactionIds(event);
+    factionIds.forEach((factionId) => {
       const events = this.eventsByFactionId.get(factionId) ?? [];
-      events.push(event);
+      this.insertOrdered(events, event);
       this.eventsByFactionId.set(factionId, events);
+    });
+    // UI relation matching also recognizes metadata values; retain the existing API index semantics.
+    new Set([...factionIds, ...Object.values(event.metadata ?? {}).filter((value): value is string => typeof value === "string")]).forEach((id) => {
+      const events = this.uiEventsByFactionId.get(id) ?? [];
+      this.insertOrdered(events, event);
+      this.uiEventsByFactionId.set(id, events);
     });
   }
 
@@ -1434,13 +1490,22 @@ class WorldHistoryStore {
   }
 
   private notify() {
-    if (this.batchDepth > 0) {
-      this.batchDirty = true;
-      return;
-    }
-    const events = this.getEvents();
-    this.listeners.forEach((listener) => listener(events));
+    if (this.batchDepth > 0) { this.batchDirty = true; return; }
+    frameAttribution.measure("history publish/notify", () => {
+      this.revision += 1;
+      const change = { revision: this.revision, kind: this.resetPending ? "reset" as const : "append" as const, events: this.pendingEvents };
+      this.pendingEvents = [];
+      this.resetPending = false;
+      this.appendListeners.forEach((listener) => listener(change));
+      this.revisionListeners.forEach((listener) => listener(this.revision));
+      // Compatibility for external consumers; runtime UI uses lightweight subscriptions only.
+      if (this.listeners.size) {
+        const events = this.getEvents();
+        this.listeners.forEach((listener) => listener(events));
+      }
+    });
   }
+
 }
 
 function buildCityCaptureTitle({

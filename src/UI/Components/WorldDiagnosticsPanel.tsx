@@ -1,4 +1,5 @@
 import { isRuntimeDebugEnabled } from "../../Runtime/DebugMode";
+import { getWorldSavePhaseDiagnostics } from "../../Persistence/WorldSaveWorkflow";
 import { Alert, Box, Button, Snackbar, Typography } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
@@ -281,12 +282,14 @@ function WorldDiagnosticsPanelContent() {
       stepsPerFrame: framePerformance.simulationStepsPerFrame,
       fixedStepCpuMs: framePerformance.fixedStepCpuMs,
       presentationCpuMs: framePerformance.presentationCpuMs,
+      frameAttribution: runtime?.frameAttribution,
       renderFrameCount: framePerformance.renderFrameCount,
       sampleCount: framePerformance.sampleCount,
     } : undefined,
     worldScale,
     persistence: {
       saveStatus: storageDiagnostics.status,
+      phase: getWorldSavePhaseDiagnostics(),
       savedAt: storageDiagnostics.savedAt,
       saveMonth: storageDiagnostics.worldMonth,
       serializedBytes: storageDiagnostics.serializedBytes ?? desktopDiagnostics?.lastAutosaveResult?.serializedBytes,
@@ -515,6 +518,7 @@ function WorldDiagnosticsPanelContent() {
           `Map pointer selection: faction ${runtime.mapPointer?.selectedFactionNameBefore ?? "—"} → ${runtime.mapPointer?.selectedFactionNameAfter ?? "—"} · panel ${runtime.mapPointer?.rightPanelTabBefore ?? "—"} → ${runtime.mapPointer?.rightPanelTabAfter ?? "—"}`,
           `Resume probe: ${stableStringify(runtime.resumeProbe ?? null)}`,
           `Frame performance: ${stableStringify(runtime.framePerformance)}`,
+          `Frame attribution: ${stableStringify(runtime.frameAttribution)}`,
           `World scale: ${stableStringify(runtime.worldScale)}`,
           `Renderer warnings: Canvas2D=${desktopDiagnostics?.canvasWarningCount ?? "browser n/a"} · texImage2D bad image=${desktopDiagnostics?.texImage2DBadImageWarningCount ?? "browser n/a"}`,
         ].join("\n")}</Typography>}

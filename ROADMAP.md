@@ -20,7 +20,8 @@
 
 ## 当前人工验收
 
-- v0.99927b1 Runtime Disposal preUpdate Crash Hotfix：v27b 已在 worldMonth=114 出现人工 Renderer Fatal，不能视为 Gate 通过。先验收新世界 Electron 4×100～150年 Crash Smoke（不 Save/Load）；通过后才做约3451年 V9 存档连续800～1200年 Long-Run Gate。通过前不得开始 v0.99927c Dynastic Revolution Calibration、Diplomacy II、纳土归降、Era Atlas II 或 Faction Historiography。
+- v0.99927b1 Runtime Disposal 已人工通过：新世界 Electron 4×约1962年，无 Group.preUpdate `.size` Fatal、Renderer Fatal 或 disposal stalled；768年与1962年 disposal／orphan invariants 正常，live users/groups/registered groups 分别56与58。
+- v0.99927b2 Long-Run History / Frame Scalability：历史增量发布／窗口查询、叙事候选索引与 debug 帧归属诊断。当前等待真实 Electron Stage A 新世界4×1000～1500年（500／1000／1500年记录）；无 regression 后 Stage B 约3451年 V9 存档连续推进至少500年。通过前不得开始 v0.99927c Dynastic Revolution Calibration、Diplomacy II、纳土归降、Faction Historiography 或 Era Atlas II。
 
 ## 玩法后续
 

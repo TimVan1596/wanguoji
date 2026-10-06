@@ -9,6 +9,12 @@ import {
   WorldSaveRepository,
 } from "./WorldSaveRepository";
 import { WorldSaveV1 } from "./WorldSaveSchema";
+import { runtimeProfilingEnabled } from "../Simulation/MonthlyPhaseProfiler";
+
+type SavePhase = "idle" | "safe boundary" | "export/validate" | "serialize" | "write";
+let savePhase: SavePhase = "idle";
+export function getWorldSavePhaseDiagnostics() { return { enabled: runtimeProfilingEnabled, phase: savePhase, inFlight: worldSaveInFlight }; }
+function recordSavePhase(phase: SavePhase) { if (runtimeProfilingEnabled) savePhase = phase; }
 
 export interface ManualSaveResult {
   record: StoredWorldSaveRecord;
@@ -132,17 +138,21 @@ export async function runManualSaveWorkflow(
   let waitSafeBoundaryMs = 0;
   let exportSerializeMs = 0;
   try {
+    recordSavePhase("safe boundary");
     const waitStartedAt = nowMs();
     await runtime.pauseAtBoundary();
     waitSafeBoundaryMs = nowMs() - waitStartedAt;
     const exportStartedAt = nowMs();
+    recordSavePhase("export/validate");
     const save = await exportSave();
     const validation = validateWorldSave(save);
     if (!validation.valid) throw new Error(`存档校验失败：${validation.errors.join("；")}`);
     const record = createStoredWorldSaveRecord(save, scenarioName, new Date().toISOString(), target);
+    recordSavePhase("serialize");
     const serializedBytes = new TextEncoder().encode(JSON.stringify(record)).length;
     exportSerializeMs = nowMs() - exportStartedAt;
     const startedAt = nowMs();
+    recordSavePhase("write");
     await repository.put(record.slotId, record);
     const indexedDbWriteMs = nowMs() - startedAt;
     return {
@@ -155,6 +165,7 @@ export async function runManualSaveWorkflow(
       totalSaveDurationMs: nowMs() - totalStartedAt,
     };
   } finally {
+    recordSavePhase("idle");
     runtime.restore(selectedSpeed, wasRunning);
   }
 }

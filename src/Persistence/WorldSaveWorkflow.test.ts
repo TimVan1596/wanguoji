@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { createEmptyWorldSaveV1 } from "./WorldSaveSchema";
-import { runManualSaveWorkflow, createWorldLaunchRunner, continueStoredWorldSave, WorldLaunchRequest, runExclusiveWorldSave, WorldSaveBusyError } from "./WorldSaveWorkflow";
+import { runManualSaveWorkflow, createWorldLaunchRunner, continueStoredWorldSave, WorldLaunchRequest, runExclusiveWorldSave, WorldSaveBusyError, getWorldSavePhaseDiagnostics } from "./WorldSaveWorkflow";
+import worldRandom from "../Simulation/WorldRandom";
 import { createStoredWorldSaveRecord, WorldSaveRepository, StoredWorldSaveRecord } from "./WorldSaveRepository";
 
 function memoryRepository(): WorldSaveRepository & { current?: StoredWorldSaveRecord } {
@@ -22,6 +23,29 @@ function memoryRepository(): WorldSaveRepository & { current?: StoredWorldSaveRe
 }
 
 describe("WorldSave workflow", () => {
+  it("reports debug save phases without persisting them or drawing RNG and returns to idle", async () => {
+    const save = createEmptyWorldSaveV1();
+    const rng = worldRandom.exportState();
+    const repository = memoryRepository();
+    const put = repository.put;
+    repository.put = async (slot, record) => {
+      expect(getWorldSavePhaseDiagnostics().phase).toBe("write");
+      expect(record.save).toEqual(save);
+      expect(record.save.saveSchemaVersion).toBe(9);
+      return put(slot, record);
+    };
+    const runtime = { started: true, running: true, speed: 4, catchingUp: () => false,
+      pauseAtBoundary: async () => { expect(getWorldSavePhaseDiagnostics().phase).toBe("safe boundary"); },
+      restore: vi.fn() };
+    await runManualSaveWorkflow(runtime, repository, () => {
+      expect(getWorldSavePhaseDiagnostics().phase).toBe("export/validate");
+      return save;
+    });
+    expect(getWorldSavePhaseDiagnostics().phase).toBe("idle");
+    await expect(runManualSaveWorkflow(runtime, repository, () => { throw Error("export failed"); })).rejects.toThrow("export failed");
+    expect(getWorldSavePhaseDiagnostics().phase).toBe("idle");
+    expect(worldRandom.exportState()).toEqual(rng);
+  });
   it("shares one save lock between manual, autosave, and close-save callers", async () => {
     let release!: () => void;
     const first = runExclusiveWorldSave(() => new Promise<void>((resolve) => { release = resolve; }));

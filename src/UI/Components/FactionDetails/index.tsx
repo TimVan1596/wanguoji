@@ -114,10 +114,14 @@ export default function FactionDetails() {
   );
   const [factionListFilter, setFactionListFilter] =
     useState<FactionListFilter>("all");
-  const [events, setEvents] = useState<WorldEvent[]>([]);
+  const [historyRevision, setHistoryRevision] = useState(() => WorldHistory.getRevision());
   const [rulerDetailId, setRulerDetailId] = useState<string | undefined>();
-  useEffect(() => WorldHistory.subscribe(setEvents), []);
+  useEffect(() => WorldHistory.subscribeRevision(setHistoryRevision), []);
   const team = teams.find((item) => item.name === selectedFactionName);
+  // Complete archive is intentional here: biographies and faction narratives may need
+  // another faction's member of the same historical chain. No eager publisher snapshot.
+  const events = useMemo(() => selectedFactionName ? WorldHistory.getEvents() : [],
+    [historyRevision, selectedFactionName]);
 
   if (!team) {
     return (
