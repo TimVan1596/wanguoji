@@ -10,27 +10,29 @@ import { createDeterminismCheckpoint } from "../Simulation/DeterminismFingerprin
 
 const require = createRequire(import.meta.url);
 const TimeStep = require("phaser/src/core/TimeStep.js");
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks(); });
 const message = (sequence = 1) => ({ source: "unlock-screen" as const, sequence, timestamp: 10000 + sequence });
 
 describe("Phaser desktop wake boundary", () => {
   it("uses installed Phaser resetDelta with its receiver; no loop restart or fake fields", () => {
     vi.stubGlobal("window", { performance: { now: () => 12345 } });
     const loop = new TimeStep({}, { target: 60 });
+    loop.raf.start = () => {}; loop.start(() => {});
     loop.lastTime = 1; loop.delta = 5000; loop.deltaHistory.fill(5000);
     const recovery = new DesktopWakeRecovery(true, () => 0);
     recovery.wake(message(), loop);
     expect(loop.lastTime).toBe(12345); expect(loop.delta).toBe(0);
     expect(loop.deltaHistory.every((delta: number) => delta <= 1000 / 60)).toBe(true);
     expect(loop._coolDown).toBe(loop.panicMax);
-    expect(loop.running).toBe(false); expect(loop.raf.isRunning).toBe(false);
+    expect(loop.running).toBe(true); expect(loop.raf.isRunning).toBe(false);
     expect(recovery.snapshot(loop)?.incidents[0].before.delta).toBe(5000);
     expect(readPhaserLoop({})).toMatchObject({ coolDown: undefined, actualFps: undefined, raf: { isRunning: undefined } });
     recovery.wake({ ...message(2), source: "focus" }, loop);
     expect(recovery.snapshot(loop)?.incidents[1].resetApplied).toBe(false);
   });
   it("deduplicates repeated IPC, rejects invalid messages and bounds wake/frame observations", () => {
-    let time = 0; const resetDelta = vi.fn(); const loop = { resetDelta, rawDelta: 132, delta: 16, actualFps: 7.5 };
+    let time = 0; vi.spyOn(Date, "now").mockImplementation(() => 10001 + time);
+    const resetDelta = vi.fn(); const loop = { resetDelta, rawDelta: 132, delta: 16, actualFps: 7.5 };
     const recovery = new DesktopWakeRecovery(true, () => time);
     recovery.wake(message(), loop); recovery.wake(message(), loop);
     recovery.wake({ ...message(2), source: "arbitrary-channel" }, loop);
@@ -49,6 +51,23 @@ describe("Phaser desktop wake boundary", () => {
     for (let i = 2; i <= 100; i++) recovery.wake(message(i), loop);
     expect(recovery.snapshot(loop)?.incidents).toHaveLength(20);
     expect(recovery.snapshot(loop)?.pendingObservations).toBe(20);
+  });
+  it("reports late first-normal recovery after the 10s samples; expires unresolved observations at 60s", () => {
+    let time = 0; vi.spyOn(Date, "now").mockImplementation(() => 10001 + time);
+    const recovery = new DesktopWakeRecovery(true, () => time);
+    const loop = { resetDelta: () => {}, rawDelta: 132 };
+    recovery.wake(message(), loop);
+    for (time = 132; time < 15000; time += 132) recovery.frame(loop);
+    expect(recovery.snapshot(loop)?.incidents[0].samples).toHaveLength(3);
+    expect(recovery.snapshot(loop)?.pendingObservations).toBe(1);
+    loop.rawDelta = 16; recovery.frame(loop);
+    expect(recovery.snapshot(loop)?.incidents[0].firstNormalFrameLatencyMs).toBe(time);
+    expect(recovery.snapshot(loop)?.pendingObservations).toBe(0);
+    recovery.wake(message(2), loop); loop.rawDelta = 132;
+    time += 1000; recovery.frame(loop); time += 5000; recovery.frame(loop);
+    time += 10000; recovery.frame(loop); time += 60000; recovery.frame(loop);
+    expect(recovery.snapshot(loop)?.incidents[1].normalFrameObservationExpired).toBe(true);
+    expect(recovery.snapshot(loop)?.pendingObservations).toBe(0);
   });
   it("debug off adds no loop reads, frame sampling, timers or diagnostic clock calls", () => {
     const now = vi.fn(() => 0); const resetDelta = vi.fn();

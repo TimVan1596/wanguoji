@@ -172,3 +172,7 @@ BrowserWindow 使用：
 - `sandbox: true`
 
 Preload 在 sandbox 下只通过 `contextBridge` 暴露受限的 heartbeat、autosave、close、resume 与 diagnostics IPC 方法；listener 返回 unsubscribe。Renderer 不获得 `require`、原始 `ipcRenderer` 或文件系统访问。
+
+### Desktop Wake Gate (v0.99927b4)
+
+b3前台追债已人工通过；macOS锁屏返回的低callback cadence仍需定位。resume/unlock/user-active IPC仅调用Phaser `resetDelta()`；focus观察、已有suspend策略与backgroundThrottling:false保持。Debug新增power/thermal/speed-limit及有界wake/TimeStep/RAF恢复记录，不存档、不推进世界。未启用powerSaveBlocker。使用现有长局存档完成[失焦、锁屏及正常FPS下Save检查](../docs/DesktopWakeRecovery.md)，通过前不进入下一版本。

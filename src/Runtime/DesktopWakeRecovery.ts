@@ -17,9 +17,9 @@ export function isDesktopWakeMessage(value: unknown): value is DesktopWakeMessag
 }
 
 interface Incident {
-  source: DesktopWakeMessage["source"]; timestamp: number; receivedAt: number;
+  source: DesktopWakeMessage["source"]; timestamp: number; receivedAt: number; dispatchLatencyMs: number;
   before: ReturnType<typeof readPhaserLoop>; resetApplied: boolean;
-  firstNormalFrameLatencyMs?: number;
+  firstNormalFrameLatencyMs?: number; normalFrameObservationExpired?: boolean;
   samples: Array<{ thresholdSeconds: number; elapsedMs: number; observedCallbackFps: number; loop: ReturnType<typeof readPhaserLoop> }>;
 }
 /** Resyncs only Phaser time bookkeeping. Never receives a world, RNG or driver. */
@@ -36,7 +36,9 @@ export class DesktopWakeRecovery {
     if (resetApplied) loop.resetDelta!();
     if (!this.debug) return;
     const start = this.now();
-    const incident: Incident = { source: message.source, timestamp: message.timestamp, receivedAt: Date.now(), before: before!, resetApplied, samples: [] };
+    const receivedAt = Date.now();
+    const incident: Incident = { source: message.source, timestamp: message.timestamp, receivedAt,
+      dispatchLatencyMs: Math.max(0, receivedAt - message.timestamp), before: before!, resetApplied, samples: [] };
     this.incidents.push(incident);
     if (this.incidents.length > 20) this.incidents.shift();
     this.pending = this.pending.filter(item => this.incidents.includes(item.incident));
@@ -50,7 +52,7 @@ export class DesktopWakeRecovery {
       const elapsedMs = Math.max(0, now - item.start);
       // resetDelta can produce a zero initial delta; that is not a normal cadence observation.
       if (item.incident.firstNormalFrameLatencyMs === undefined && (loop.rawDelta ?? 0) > 0 && loop.rawDelta! <= 25) {
-        item.incident.firstNormalFrameLatencyMs = elapsedMs;
+        item.incident.firstNormalFrameLatencyMs = item.incident.dispatchLatencyMs + elapsedMs;
       }
       const thresholdSeconds = [1, 5, 10][item.incident.samples.length];
       if (thresholdSeconds !== undefined && elapsedMs >= thresholdSeconds * 1000) {
@@ -60,15 +62,21 @@ export class DesktopWakeRecovery {
         item.lastSampleFrames = item.frames; item.lastSampleAt = now;
       }
     }
-    this.pending = this.pending.filter(item => item.incident.samples.length < 3);
+    this.pending = this.pending.filter(item => {
+      if (now - item.start >= 60_000 && item.incident.firstNormalFrameLatencyMs === undefined) {
+        item.incident.normalFrameObservationExpired = true;
+      }
+      return item.incident.samples.length < 3 ||
+        (item.incident.firstNormalFrameLatencyMs === undefined && !item.incident.normalFrameObservationExpired);
+    });
   }
   snapshot(loop: WakeLoop) {
     if (!this.debug) return undefined;
     const latest = (source: DesktopWakeMessage["source"]) => [...this.incidents].reverse().find(item => item.source === source);
     return { loop: readPhaserLoop(loop), resumeToFirstNormalFrameLatencyMs: latest("resume")?.firstNormalFrameLatencyMs,
       focusToFirstNormalFrameLatencyMs: latest("focus")?.firstNormalFrameLatencyMs,
-      normalFrameDefinition: "first observed Core callback with rawDelta > 0 and <=25ms; not proof of sustained recovery",
-      sampleDefinition: "1/5/10s monotonic elapsed thresholds, interval Core callbacks/sec; delayed callbacks report actual elapsed, Phaser FPS separate",
+      normalFrameDefinition: "OS/focus event to first observed Core callback with rawDelta > 0 and <=25ms, including IPC dispatch delay; wall-clock jump can affect dispatch estimate; not sustained recovery; observation expires after 60s of callback time",
+      sampleDefinition: "1/5/10s monotonic elapsed thresholds since receipt (dispatch delay separate), interval Core callbacks/sec; delayed callbacks report actual elapsed, Phaser FPS separate",
       pendingObservations: this.pending.length, incidentCapacity: 20,
       incidents: this.incidents.map(item => ({ ...item, before: { ...item.before, raf: { ...item.before.raf } },
         samples: item.samples.map(sample => ({ ...sample, loop: { ...sample.loop, raf: { ...sample.loop.raf } } })) })) };
