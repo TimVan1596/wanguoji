@@ -1,3 +1,4 @@
+import { destroyOwnedCollider } from "../Simulation/DestroyOwnedCollider";
 /** Tracks the convenience reference to a collider whose world may own teardown. */
 export default class ColliderReference<T extends { destroy(): void }> {
   private collider?: T;
@@ -20,6 +21,6 @@ export default class ColliderReference<T extends { destroy(): void }> {
   destroyOwned() {
     const collider = this.collider;
     this.collider = undefined;
-    collider?.destroy();
+    if (collider) destroyOwnedCollider(collider);
   }
 }

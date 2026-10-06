@@ -110,6 +110,7 @@ export default class AutoSimulator {
     this.started = true;
     this.running = true;
     this.clock.reset();
+    this.sessionStartMonth = 0;
     this.clock.setRunning(true);
     this.population.reset();
     this.events.reset(0);
@@ -434,7 +435,7 @@ export default class AutoSimulator {
 
   getRuntimeLifetimeDiagnostics() {
     return { sessionStartMonth: this.sessionStartMonth, sessionWorldMonths: this.clock.worldMonth - this.sessionStartMonth,
-      ...this.population.getRuntimeCardinality(), ...this.events.getRuntimeCardinality(),
+      ...this.population.getRuntimeCardinality(), ...this.events.getRuntimeCardinality(), ...this.populationTransitionAudit.getRuntimeCardinality(),
       lastKnownTeams: this.lastKnownTeams.length, lastKnownCities: this.lastKnownCities.length };
   }
 

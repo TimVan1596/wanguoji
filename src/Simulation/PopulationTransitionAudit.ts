@@ -49,6 +49,10 @@ export class PopulationTransitionAudit {
   private recent: PopulationTransitionRecord[] = [];
   private active = false;
 
+  getRuntimeCardinality() {
+    return { populationAuditPrevious: this.previousCounts.size, populationAuditPending: this.pending.size, populationAuditRecent: this.recent.length };
+  }
+
   reset(month: number, teams: TeamPopulation[]) {
     this.pending.clear();
     this.recent = [];

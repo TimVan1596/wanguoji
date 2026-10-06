@@ -236,6 +236,9 @@ export default class Player extends Phaser.GameObjects.Container {
   setTeam(team: Team) {
     traverseTree<Player>([this], (player) => player.children).nodes.forEach(({ node }) => {
       node.team.players.remove(node);
+      if (node.team.status === "EXTINCT" && node.team.players.children.size === 0) {
+        Game.Core?.releaseTerminalTeamColliders?.(node.team);
+      }
       node.team = team;
       Game.Core?.logicalUnitRegistry.updateFaction(node.logicalUnitId, team);
       node.factionRing.setStrokeStyle(2, team.color, 0.85);
@@ -315,10 +318,15 @@ export default class Player extends Phaser.GameObjects.Container {
     const { nodes } = traverseTree<Player>([this], (player) => player.children);
     for (let index = nodes.length - 1; index >= 0; index -= 1) {
       const player = nodes[index].node;
+      if (!player.scene) continue;
+      if (player.parent) player.parent.children = player.parent.children.filter((child) => child !== player);
       player.children = [];
       player.line?.destroy();
       Game.Core?.logicalUnitRegistry.unregisterPlayer(player);
       player.team.players.remove(player);
+      if (player.team.status === "EXTINCT" && player.team.players.children.size === 0) {
+        Game.Core?.releaseTerminalTeamColliders?.(player.team);
+      }
       player.destroy(true);
     }
   }

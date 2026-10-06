@@ -49,6 +49,8 @@ export function readRuntimeLifetimeDiagnostics(scene: any, teams: any[], core: {
     zoneOutlines: cities.filter((city) => city.zoneOutline?.scene).length,
     activeTeams: teams.filter((team) => team.status === "ACTIVE").length, historicalTeams: teams.length,
     runtimeGroupsInUpdateList: groups.size,
+    orphanedUserGroups: [...groups].filter((group: any) => group.user && !group.user.team.users.has(group.user)).length,
+    liveUserColliderTargetReferences: users.reduce((sum, user) => sum + (Array.isArray(user.slaveGroup?.collider?.object2) ? user.slaveGroup.collider.object2.length : 0), 0),
     knownTeamGroupShells: teams.length * 3,
     liveUserGroups: users.length, liveUserColliderReferences: users.filter((user) => user.slaveGroup?.collider).length,
     teamPlayerReferences: teams.reduce((sum, team) => sum + team.players.getChildren().length, 0),

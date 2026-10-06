@@ -1,3 +1,4 @@
+import { destroyOwnedCollider } from "./DestroyOwnedCollider";
 export interface RuntimeCollisionGroup { getChildren(): unknown[] }
 export interface RuntimeCollisionFaction {
   name: string;
@@ -9,6 +10,7 @@ interface OwnedCollider { destroy(): void; world?: unknown }
 
 /** Owns only Core colliders. Archive shells remain available to persistence/UI. */
 export class RuntimeColliderRegistry {
+  private pendingTerminals = new Set<RuntimeCollisionFaction>();
   private entries: Array<{
     collider: OwnedCollider;
     source: RuntimeCollisionFaction;
@@ -19,6 +21,16 @@ export class RuntimeColliderRegistry {
   register(source: RuntimeCollisionFaction, group: RuntimeCollisionGroup,
     targets: RuntimeCollisionGroup[], create: () => OwnedCollider) {
     this.entries.push({ collider: create(), source, group, targets });
+  }
+
+  scheduleTerminal(faction: RuntimeCollisionFaction) {
+    if (faction.status === "EXTINCT") this.pendingTerminals.add(faction);
+  }
+
+  /** Called between fixed steps, never while Arcade is iterating collider targets. */
+  flushTerminal() {
+    this.pendingTerminals.forEach((faction) => this.releaseTerminal(faction));
+    this.pendingTerminals.clear();
   }
 
   releaseTerminal(faction: RuntimeCollisionFaction) {
@@ -32,16 +44,17 @@ export class RuntimeColliderRegistry {
       }
       const emptySource = entry.source === faction && entry.group.getChildren().length === 0;
       if (emptySource || entry.targets.length === 0) {
-        if (entry.collider.world !== null) entry.collider.destroy();
+        destroyOwnedCollider(entry.collider);
         return false;
       }
       return true;
     });
   }
 
-  detachAfterWorldTeardown() { this.entries = []; }
+  detachAfterWorldTeardown() { this.entries = []; this.pendingTerminals.clear(); }
   snapshot() {
     return { colliders: this.entries.length,
+      pendingTerminalFactions: this.pendingTerminals.size,
       targetReferences: this.entries.reduce((sum, entry) => sum + entry.targets.length, 0) };
   }
 }

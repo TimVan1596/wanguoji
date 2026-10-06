@@ -28,6 +28,10 @@ class FactionEffectStore {
   private administrativeStrainMultipliers = new Map<string, number>();
   private sequence = 0;
 
+  getRuntimeCardinality() {
+    return { factionEffects: this.effects.length, strategicModifiers: this.strategicModifiers.size, administrativeStrainMultipliers: this.administrativeStrainMultipliers.size };
+  }
+
   reset() {
     this.effects = [];
     this.strategicModifiers.clear();

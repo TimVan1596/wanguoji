@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.99927b
+
+- Measured a reproducible runtime leak: the previous User death path reset Slaves, recreating a collider and retaining an empty Phaser update-list group for each dead user. A 100-death structural reproduction retains 100 groups/colliders; terminal disposal now retains zero. Transfer resets still retain one valid live group/collider. Slave tree disposal also unregisters actual units and removes stale parent edges.
+- Core now owns faction collider registrations and releases empty terminal sources/targets at extinction/merger, preserving any actual territory/units and exiled remnants. Phaser 3.55.2 pending insertion is detached before owned collider destruction to prevent dead pending entries becoming permanent active-queue references. Hydration detaches ownership after world teardown without double destruction.
+- Farm termination explicitly removes timers from Clock rather than only nulling callbacks; timer DTO counters remain intact. Core's store-refresh timer registration replaces its owned prior event. Destroyed City visuals cannot be recreated by stale refresh calls; existing archive/interaction teardown is retained.
+- Added debug-only Long-Run Runtime Lifetime counts: session months/steps, display and nested object types, bodies, collider queues/references, timers, scoped listeners, cities/zones/index, groups/players, orphaned user groups, subsystem collections and optional heap. These observations neither drain engine queues nor consume RNG nor enter saves.
+- Debug/development builds aggregate City, Population and WorldEvent phases into monthly bounded 300-sample rolling timings. Nested subphases are included in their parent times and must not be summed twice. Canonical update ordering/frequency is unchanged.
+- APP_VERSION v0.99927b / package 0.99.103; WorldSave remains V9 and IndexedDB remains 2. No diplomacy, population/rebellion balance, ruler hazards, revolution gates/odds, history retention or historiography changes; autosave timeout unchanged.
+- Structural tests locate concrete resource accumulation; they do not prove that all observed City/Population slowdown is resolved. Real Electron 4× 800–1200-year continuous-session Gate from the user's approximately 3451-year V9 save remains required, with pre/post-load diagnostics if slowdown recurs. No next version before user feedback.
+
 ## v0.99927a
 
 - Fixed ruler-biography diplomacy summaries that resolved old participants and common threats through current displayName. Biographies, faction chronicles and HistoryScroll diplomacy narratives now resolve the event month through shared historical identity presentation; colored history uses month-specific color history, including common-threat tokens.

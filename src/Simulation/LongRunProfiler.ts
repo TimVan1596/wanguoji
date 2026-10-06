@@ -226,6 +226,8 @@ class LongRunProfilerStore {
   private baselineCycleFamily: "UNIFIED" | "FRAGMENTED" = "FRAGMENTED";
   private bottleneck: ConsolidationBottleneckSummary = emptyBottleneck();
 
+  getRuntimeCardinality() { return { sessionProfileSnapshots: this.snapshots.length, sessionProfileTransitions: this.transitions.length }; }
+
   reset(profileStartMonth = 0, baselineCycleFamily: "UNIFIED" | "FRAGMENTED" = "FRAGMENTED") {
     this.snapshots = [];
     this.lastObservedMonth = -1;

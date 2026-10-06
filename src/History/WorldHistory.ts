@@ -166,6 +166,13 @@ class WorldHistoryStore {
   private sequence = 0;
   private unificationCount = 0;
 
+  getRuntimeCardinality() {
+    return { historyListeners: this.listeners.size, historySortedCache: this.sortedEventsCache?.length ?? 0,
+      historyFactionIndexKeys: this.eventsByFactionId.size,
+      historyFactionIndexReferences: [...this.eventsByFactionId.values()].reduce((sum, events) => sum + events.length, 0),
+      canonicalHistoryEvents: this.events.length, canonicalHistoryEmittedKeys: this.emitted.size };
+  }
+
   reset() {
     this.events = [];
     this.sortedEventsCache = undefined;

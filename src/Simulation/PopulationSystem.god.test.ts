@@ -18,6 +18,8 @@ vi.mock("../Live/LocalDanmaku", () => ({
 
 import PopulationSystem, { selectNormalUsersForGodRemoval } from "./PopulationSystem";
 import worldRandom from "./WorldRandom";
+import { MonthlyPhaseProfiler } from "./MonthlyPhaseProfiler";
+import { RollingStepPerformance } from "./RollingStepPerformance";
 
 function makeTeam() {
   const team: any = { name: "燕", shortName: "燕", isDie: false, users: new Set(), blocks: { children: { size: 1 } } };
@@ -65,13 +67,19 @@ describe("God population intervention", () => {
 });
 
 describe("seeded canonical population progression", () => {
-  function runPopulation(seed: string, months: number) {
+  function runPopulation(seed: string, months: number, debug = false) {
     worldRandom.initialize(seed);
     const team = makeTeam();
     gameCore.teams = [team];
     const population = new PopulationSystem();
     population.initialize([team], { [team.name]: 4 });
-    for (let month = 6; month <= months; month += 6) population.update(month, [team]);
+    const profile = debug ? new MonthlyPhaseProfiler() : undefined;
+    const timings = new RollingStepPerformance();
+    for (let month = 6; month <= months; month += 6) {
+      population.update(month, [team], () => 1, profile);
+      population.getRuntimeCardinality();
+      profile?.flush(timings);
+    }
     return { team, population };
   }
 
@@ -86,6 +94,14 @@ describe("seeded canonical population progression", () => {
     expect(snapshot(first.team, first.population)).toEqual(snapshot(second.team, second.population));
     const other = runPopulation("different-world", 720);
     expect(snapshot(first.team, first.population)).not.toEqual(snapshot(other.team, other.population));
+  });
+
+  it("debug profiling on/off preserves same-seed canonical digest and RNG position", () => {
+    const plain = runPopulation("debug-lifetime", 1200);
+    const rng = worldRandom.exportState();
+    const profiled = runPopulation("debug-lifetime", 1200, true);
+    expect(snapshot(plain.team, plain.population)).toEqual(snapshot(profiled.team, profiled.population));
+    expect(worldRandom.exportState()).toEqual(rng);
   });
 
   it("matches uninterrupted population progression after saving and restoring RNG plus subsystem state", () => {

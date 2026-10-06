@@ -77,8 +77,15 @@ export default class Farms extends Phaser.GameObjects.Group {
     }
   }
 
+  stopRuntimeTimers() {
+    this.farms.forEach((v) => {
+      this.scene.time.removeEvent(v);
+      v.destroy();
+    });
+  }
+
   setDie() {
-    this.farms.forEach((v) => v.destroy());
+    this.stopRuntimeTimers();
     this.npcs.forEach((v) => {
       v.setDie();
       this.remove(v, true, true);

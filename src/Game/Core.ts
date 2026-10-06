@@ -1,3 +1,4 @@
+import LongRunProfiler from "../Simulation/LongRunProfiler";
 import { isRuntimeDebugEnabled } from "../Runtime/DebugMode";
 import { readRuntimeLifetimeDiagnostics } from "../Runtime/RuntimeLifetimeDiagnostics";
 import { RuntimeColliderRegistry } from "../Simulation/RuntimeColliderRegistry";
@@ -328,7 +329,10 @@ export default class Core {
   }
 
   asyncTeamsToStore() {
-    this.storeRefreshTimer?.remove(false);
+    if (this.storeRefreshTimer) {
+      this.scene.time.removeEvent(this.storeRefreshTimer);
+      this.storeRefreshTimer.destroy();
+    }
     this.storeRefreshTimer = this.scene.time.addEvent({
       delay: 500,
       callback: () => {
@@ -370,12 +374,12 @@ export default class Core {
       // @ts-ignore Phaser callback parameter types
       this.onPlayerOverlapBlock.bind(this)
     ));
-    this.teamColliders.releaseTerminal(team);
-    this.teams.filter((entry) => entry.status === "EXTINCT").forEach((entry) => this.teamColliders.releaseTerminal(entry));
+    this.teamColliders.scheduleTerminal(team);
+    this.teams.filter((entry) => entry.status === "EXTINCT").forEach((entry) => this.teamColliders.scheduleTerminal(entry));
   }
 
   releaseTerminalTeamColliders(team: Team) {
-    this.teamColliders.releaseTerminal(team);
+    this.teamColliders.scheduleTerminal(team);
   }
 
   createInitialCities() {
@@ -817,7 +821,9 @@ export default class Core {
     return { ...readRuntimeLifetimeDiagnostics(this.scene, this.teams, {
       fixedSteps: this.simulationDiagnostics.fixedSimulationSteps, interactionCells: this.cityInteractionIndex.size,
       colliders: this.teamColliders.snapshot(), visibilityListener: this.visibilityListenerBound,
-    }), ...this.simulator?.getRuntimeLifetimeDiagnostics(), logicalAndPhaserPlayers: this.getRuntimeUnitDiagnostics() };
+    }), ...this.simulator?.getRuntimeLifetimeDiagnostics(),
+      ...LongRunProfiler.getRuntimeCardinality(), ...WorldHistory.getRuntimeCardinality(), ...FactionEffects.getRuntimeCardinality(),
+      logicalAndPhaserPlayers: this.getRuntimeUnitDiagnostics() };
   }
 
   getColliderTeardownDiagnostics() {
@@ -978,6 +984,7 @@ export default class Core {
     this.runtimeFactions.reset(teams);
     teams.forEach((team) => this.registerTeamColliders(team));
     teams.flatMap((team) => [...team.users]).forEach((user) => user.slaveGroup.addCollider());
+    this.teamColliders.flushTerminal();
     this.rebuildCityInteractionIndex();
     store.dispatch(setTeams(teams));
     store.dispatch(setSelectedFactionName(undefined));
@@ -1490,6 +1497,7 @@ export default class Core {
       this.advanceArcadePhysicsStep(fixedDeltaMs);
     }
     this.simulator?.advance(fixedDeltaMs, this.teams, this.totalCells, (capturedMonth) => this.captureEraMapSnapshot(capturedMonth));
+    this.teamColliders.flushTerminal();
     const clock = this.simulator?.exportState().clock;
     if (
       clock &&

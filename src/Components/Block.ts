@@ -341,7 +341,11 @@ export default class Block extends Phaser.GameObjects.Rectangle {
   }
 
   private _setTeam(team: Team) {
+    const previousTeam = this.team;
     this.team?.blocks.remove(this);
+    if (previousTeam?.status === "EXTINCT" && previousTeam.blocks.children.size === 0) {
+      Game.Core?.releaseTerminalTeamColliders?.(previousTeam);
+    }
     Game.Core.map?.blocksGroup.remove(this);
     this.setFillStyle(team.color);
     this.team = team;

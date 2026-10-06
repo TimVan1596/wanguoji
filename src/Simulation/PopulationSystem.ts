@@ -84,9 +84,9 @@ export default class PopulationSystem {
         BASE_GROWTH_CHANCE *
         roomRatio *
         recoveryRatio *
-        getGrowthMultiplier(team);
+        measurePhase(profile, "Population.growth context", () => getGrowthMultiplier(team));
       if (worldRandom.next() <= chance) {
-        measurePhase(profile, "Population.spawn/runtime creation", () => this.spawn(team, undefined, false, { cause: "NATURAL_GROWTH", month: worldMonth }));
+        measurePhase(profile, "Population.spawn/runtime creation", () => this.spawn(team, undefined, false, { cause: "NATURAL_GROWTH", month: worldMonth }, profile));
       }
     });
   }
@@ -129,7 +129,8 @@ export default class PopulationSystem {
     team: Team,
     forcedName?: string,
     bypassCapacity = false,
-    populationMutation: PopulationMutationContext = { cause: "NATURAL_GROWTH" }
+    populationMutation: PopulationMutationContext = { cause: "NATURAL_GROWTH" },
+    profile?: MonthlyPhaseProfiler
   ) {
     if (team.isDie || (!bypassCapacity && this.getPopulation(team) >= this.getCapacity(team))) return undefined;
     const teamKey = team.shortName ?? team.name;
@@ -139,17 +140,20 @@ export default class PopulationSystem {
       this.counters[team.name] = count;
       name = `${teamKey}-${String(count).padStart(3, "0")}`;
     }
-    let id = getLocalUserId(name);
-    while (Team.GetUserById(id)) id = id >= 1999999999 ? 1000000000 : id + 1;
-    const user = team.makeUser(
+    const id = measurePhase(profile, "Population.user id lookup", () => {
+      let candidateId = getLocalUserId(name!);
+      while (Team.GetUserById(candidateId)) candidateId = candidateId >= 1999999999 ? 1000000000 : candidateId + 1;
+      return candidateId;
+    });
+    const user = measurePhase(profile, "Population.makeUser", () => team.makeUser(
       id,
-      name,
+      name!,
       resolvePublicAssetUrl("img/no-face.svg"),
       worldRandom.int(USER_NATURAL_LOYALTY_MIN, USER_NATURAL_LOYALTY_MAX),
       "NORMAL",
       undefined,
       populationMutation
-    );
+    ));
     if (user) return user;
     // Legacy join-command routing remains the fallback for natural population.
     return Danmu.Apply(createLocalDanmu(name, team.name,

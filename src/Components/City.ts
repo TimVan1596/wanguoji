@@ -502,11 +502,11 @@ export default class City {
     const previousZoneSize = getFortifiedZoneSize(this.maxDefense);
     this.maxDefense = nextMaxDefense;
     if (getFortifiedZoneSize(this.maxDefense) !== previousZoneSize) {
-      this.rebuildFortifiedZone();
-      if (this.ownerTeam) {
-        this.claimFortifiedZone(this.ownerTeam);
-      }
-      this.refreshZoneVisual();
+      measurePhase(profile, "City.zone/visual refresh", () => {
+        this.rebuildFortifiedZone();
+        if (this.ownerTeam) this.claimFortifiedZone(this.ownerTeam);
+        this.refreshZoneVisual();
+      });
     }
     if (this.defense > this.maxDefense) {
       this.defense = this.maxDefense;
@@ -616,6 +616,10 @@ export default class City {
   }
 
   refreshZoneVisual() {
+    if (this.destroyed) {
+      this.zoneOutline?.clear();
+      return;
+    }
     if (!this.zoneOutline) {
       this.zoneOutline = this.block.scene.add.graphics().setDepth(this.block.depth + 4);
       this.zoneOutline.disableInteractive();

@@ -230,9 +230,9 @@ export default class WorldEventSystem {
   }
 
   update(year: number, teams: Team[], totalCells: number, profile?: MonthlyPhaseProfiler) {
-    this.activeEffects = this.activeEffects.filter(
-      (effect) => year < effect.endYear
-    );
+    measurePhase(profile, "WorldEvent.expired effects", () => {
+      this.activeEffects = this.activeEffects.filter((effect) => year < effect.endYear);
+    });
     measurePhase(profile, "WorldEvent.observeWorldGoal", () => this.observeWorldGoal(year, teams, totalCells));
     measurePhase(profile, "WorldEvent.checkStateFormation", () => this.checkStateFormation(year, teams, totalCells));
     measurePhase(profile, "WorldEvent.applyProvisionalDissolutionPressure", () => this.applyProvisionalDissolutionPressure(year, teams, totalCells));
