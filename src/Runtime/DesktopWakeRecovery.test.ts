@@ -69,6 +69,16 @@ describe("Phaser desktop wake boundary", () => {
     expect(recovery.snapshot(loop)?.incidents[1].normalFrameObservationExpired).toBe(true);
     expect(recovery.snapshot(loop)?.pendingObservations).toBe(0);
   });
+  it("keeps recent callback cadence observable while world simulation is paused, without pending wake", () => {
+    let time = 0; const recovery = new DesktopWakeRecovery(true, () => time);
+    const loop = { rawDelta: 50 };
+    for (let i = 0; i < 1000; i++) { time += 50; recovery.frame(loop); }
+    expect(recovery.snapshot(loop)?.observedCallbackFps).toBeCloseTo(20);
+    expect(recovery.snapshot(loop)?.callbackObservation.sampleCount).toBeLessThanOrEqual(300);
+    for (let i = 0; i < 300; i++) { time += 1000 / 60; recovery.frame(loop); }
+    expect(recovery.snapshot(loop)?.observedCallbackFps).toBeCloseTo(60);
+    expect(recovery.snapshot(loop)?.pendingObservations).toBe(0);
+  });
   it("debug off adds no loop reads, frame sampling, timers or diagnostic clock calls", () => {
     const now = vi.fn(() => 0); const resetDelta = vi.fn();
     const loop = { resetDelta, get rawDelta(): number { throw new Error("diagnostic read"); } };

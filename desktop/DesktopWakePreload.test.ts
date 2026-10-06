@@ -25,3 +25,15 @@ it("exposes only allowlisted wake subscription and unregisters repeated mounts",
   expect(bridge).toContain("Game.Core?.handleDesktopWake(message)");
   expect(bridge).toContain("unsubscribeWake?.()");
 });
+
+it("receives fixed main launch metadata before Game creation without exposing mutable Electron authority", async () => {
+  const originalArgs = process.argv;
+  try {
+    for (const args of [[], ["--wanguoji-force-timeout-loop"], ["--wanguoji-debug"], ["--wanguoji-debug", "--wanguoji-force-timeout-loop"]]) {
+      process.argv = args; vi.resetModules(); await import("./preload");
+      expect(exposed.bridge.debugLaunchOptions).toEqual({ debug: args.includes("--wanguoji-debug"),
+        forceTimeoutLoop: args.includes("--wanguoji-debug") && args.includes("--wanguoji-force-timeout-loop") });
+      expect(Object.isFrozen(exposed.bridge.debugLaunchOptions)).toBe(true);
+    }
+  } finally { process.argv = originalArgs; }
+});

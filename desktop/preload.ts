@@ -8,6 +8,10 @@ function subscribe<T>(channel: string, callback: (payload: T) => void) {
 
 contextBridge.exposeInMainWorld("gridGodDesktop", {
   isDesktop: true,
+  debugLaunchOptions: Object.freeze({
+    debug: process.argv.includes("--wanguoji-debug"),
+    forceTimeoutLoop: process.argv.includes("--wanguoji-debug") && process.argv.includes("--wanguoji-force-timeout-loop"),
+  }),
   platform: process.platform,
   electronVersion: process.versions.electron,
   sendHeartbeat: (payload: unknown) => ipcRenderer.send("gridgod:renderer-heartbeat", payload),

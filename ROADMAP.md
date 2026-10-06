@@ -23,7 +23,9 @@
 - v0.99927b1 Runtime Disposal 已人工通过：新世界 Electron 4×约1962年，无 Group.preUpdate `.size` Fatal、Renderer Fatal 或 disposal stalled；768年与1962年 disposal／orphan invariants 正常，live users/groups/registered groups 分别56与58。
 - v0.99927b2 History Scalability 子目标已人工通过：历史 publish/notify 在1000+年近零；4228年、约9600 events／2700 rulers存档 Load后恢复60～65 FPS。Runtime Disposal invariants继续正常。1305年God Tab仍出现15 FPS／16 steps per frame，foreground pacing Gate未通过。
 - v0.99927b3 Foreground debt fix 已人工 PASS：正常4×约60 FPS／4 steps；overload整步debt不再积累。2911年macOS锁屏返回约7.5 FPS，但4 steps、accumulator=0、Core约2.14ms，属于尚未定位的frame cadence问题。
-- v0.99927b4 Desktop Wake & Frame Scheduler Recovery：OS wake resetDelta、debug power／TimeStep／RAF与20条wake恢复记录。等待真实Electron前台／失焦／macOS锁屏恢复和正常FPS下长局Save Gate；通过后结束v27b性能审计，下一版直接v0.99927c Dynastic Revolution Calibration。当前732次succession boundary、stability eligible=0／fully eligible=0／usurpation=0，仅记录后续校准证据，本版不调参数。
+- v0.99927b4 Gate FAIL：nominal／AC／RAF running、resetDelta已执行，锁屏后仍10～30FPS；低Core CPU及4steps排除旧debt spiral，render／compositor／OS根因未定。
+- v0.99927b5 macOS Lock-Screen Scheduler A/B：默认RAF＋blocker OFF；独立debug实验B RAF＋prevent-app-suspension，C timeout＋blocker OFF。等待15～20分钟锁屏＋低FPS时暂停10s控制。B成功即停，不继续C；两者失败且暂停仍慢则记录known limitation，结束v27b审计，不做b6。人工结果回来前不开始v27c。
+- Gate后下一版直接v0.99927c Dynastic Revolution Calibration；732 boundaries／stabilityEligible=0／fullyEligible=0／usurpation=0仅为后续校准证据，本版不调门槛或概率。
 
 ## 玩法后续
 

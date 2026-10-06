@@ -1,3 +1,5 @@
+> b4人工Gate FAIL：unlock resetDelta已执行，锁屏后callback cadence仍低；进入 [b5 macOS Scheduler A/B Gate](MacOSLockScreenSchedulerAB.md)。下文保留b4实现及原验收清单。
+
 # v0.99927b4 Desktop Wake & Frame Scheduler Recovery
 
 ## 已确认与尚未确认

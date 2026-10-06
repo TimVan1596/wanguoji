@@ -1,10 +1,11 @@
-import { app, BrowserWindow, dialog, ipcMain, Menu, powerMonitor } from "electron";
+import { app, BrowserWindow, dialog, ipcMain, Menu, powerMonitor, powerSaveBlocker } from "electron";
 import path from "node:path";
 import { installDesktopWakeLifecycle } from "./DesktopWakeLifecycle";
 import { pathToFileURL } from "node:url";
 import { randomUUID } from "node:crypto";
 import { getStableUserDataPath, isAllowedDesktopNavigation } from "./DesktopSecurity";
-import { getDesktopDebugLaunchOptions, getDesktopRendererUrl } from "./DesktopRendererUrl";
+import { DesktopAppSuspensionBlocker } from "./DesktopAppSuspensionBlocker";
+import { getDesktopDebugLaunchOptions, getDesktopRendererUrl, getDesktopPreloadArguments } from "./DesktopRendererUrl";
 import {
   decideSingleInstance,
   DesktopAutosaveGate,
@@ -70,6 +71,8 @@ interface DesktopDiagnostics {
 app.setName("Wanguoji");
 app.setPath("userData", getStableUserDataPath(app.getPath("appData")));
 const instanceLock = app.requestSingleInstanceLock();
+const debugLaunchOptions = getDesktopDebugLaunchOptions(process.argv);
+const appSuspensionBlocker = new DesktopAppSuspensionBlocker(powerSaveBlocker, debugLaunchOptions.preventAppSuspension);
 const autosaveGate = new DesktopAutosaveGate();
 const closeHandshake = new DesktopCloseHandshake();
 const rendererWarningThrottle = new RendererWarningThrottle();
@@ -147,6 +150,7 @@ async function createWindow() {
     backgroundColor: "#eef4e8",
     webPreferences: {
       preload: getPreloadPath(),
+      additionalArguments: getDesktopPreloadArguments(debugLaunchOptions),
       nodeIntegration: false,
       contextIsolation: true,
       sandbox: true,
@@ -337,6 +341,8 @@ ipcMain.on("gridgod:renderer-heartbeat", (_event, payload: RendererHeartbeat) =>
 ipcMain.handle("gridgod:get-desktop-diagnostics", () => ({
   ...diagnostics,
   power: wakeLifecycle?.snapshot(),
+  appSuspensionBlocker: appSuspensionBlocker.snapshot(),
+  requestedFrameScheduler: debugLaunchOptions.forceTimeoutLoop ? "SET_TIMEOUT" : "RAF",
   heartbeatAgeSeconds: latestHeartbeat?.timestamp === undefined
     ? undefined
     : Math.max(0, (Date.now() - latestHeartbeat.timestamp) / 1000),
@@ -391,6 +397,8 @@ if (decideSingleInstance(instanceLock) === "QUIT") {
   });
 
   app.whenReady().then(async () => {
+    appSuspensionBlocker.start();
+    app.once("will-quit", () => appSuspensionBlocker.stop());
     installApplicationMenu();
     await createWindow();
     setInterval(sendAutosaveRequest, 5 * 60 * 1000);

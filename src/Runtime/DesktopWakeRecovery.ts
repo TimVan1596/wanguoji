@@ -6,7 +6,8 @@ export interface WakeLoop {
   raf?: { isRunning?: boolean; isSetTimeOut?: boolean };
 }
 export function readPhaserLoop(loop: WakeLoop) {
-  return { running: loop.running, started: loop.started, actualFps: loop.actualFps, targetFps: loop.targetFps,
+  return { frameScheduler: loop.raf?.isSetTimeOut === true ? "SET_TIMEOUT" : loop.raf?.isSetTimeOut === false ? "RAF" : undefined,
+    running: loop.running, started: loop.started, actualFps: loop.actualFps, targetFps: loop.targetFps,
     rawDelta: loop.rawDelta, delta: loop.delta, coolDown: loop._coolDown, panicMax: loop.panicMax,
     raf: { isRunning: loop.raf?.isRunning, isSetTimeOut: loop.raf?.isSetTimeOut } };
 }
@@ -25,6 +26,7 @@ interface Incident {
 /** Resyncs only Phaser time bookkeeping. Never receives a world, RNG or driver. */
 export class DesktopWakeRecovery {
   private lastSequence = 0;
+  private callbackTimes: number[] = [];
   private incidents: Incident[] = [];
   private pending: Array<{ incident: Incident; start: number; frames: number; lastSampleFrames: number; lastSampleAt: number }> = [];
   constructor(private readonly debug: boolean, private readonly now = () => performance.now()) {}
@@ -45,8 +47,10 @@ export class DesktopWakeRecovery {
     this.pending.push({ incident, start, frames: 0, lastSampleFrames: 0, lastSampleAt: start });
   }
   frame(loop: WakeLoop) {
-    if (!this.debug || !this.pending.length) return;
+    if (!this.debug) return;
     const now = this.now();
+    this.callbackTimes.push(now);
+    while (this.callbackTimes.length > 300 || (this.callbackTimes.length > 1 && this.callbackTimes[0] < now - 1000)) this.callbackTimes.shift();
     for (const item of this.pending) {
       item.frames++;
       const elapsedMs = Math.max(0, now - item.start);
@@ -73,7 +77,11 @@ export class DesktopWakeRecovery {
   snapshot(loop: WakeLoop) {
     if (!this.debug) return undefined;
     const latest = (source: DesktopWakeMessage["source"]) => [...this.incidents].reverse().find(item => item.source === source);
-    return { loop: readPhaserLoop(loop), resumeToFirstNormalFrameLatencyMs: latest("resume")?.firstNormalFrameLatencyMs,
+    const callbackSpanMs = this.callbackTimes.length > 1 ? this.callbackTimes[this.callbackTimes.length - 1] - this.callbackTimes[0] : 0;
+    return { observedCallbackFps: callbackSpanMs > 0 ? (this.callbackTimes.length - 1) * 1000 / callbackSpanMs : undefined,
+      callbackObservation: { sampleCount: this.callbackTimes.length, spanMs: callbackSpanMs, capacity: 300,
+        definition: "most recent 1s Core callback cadence (up to300 callbacks), active even while world paused; not renderer CPU measurement" },
+      loop: readPhaserLoop(loop), resumeToFirstNormalFrameLatencyMs: latest("resume")?.firstNormalFrameLatencyMs,
       focusToFirstNormalFrameLatencyMs: latest("focus")?.firstNormalFrameLatencyMs,
       normalFrameDefinition: "OS/focus event to first observed Core callback with rawDelta > 0 and <=25ms, including IPC dispatch delay; wall-clock jump can affect dispatch estimate; not sustained recovery; observation expires after 60s of callback time",
       sampleDefinition: "1/5/10s monotonic elapsed thresholds since receipt (dispatch delay separate), interval Core callbacks/sec; delayed callbacks report actual elapsed, Phaser FPS separate",

@@ -147,11 +147,12 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
-- v0.99927b4 使用 WorldSave V9；V8 及更旧存档不提供迁移，无法继续。IndexedDB 数据库版本仍为 2。首领诊断与 Revolution Gate 累计诊断的本会话样本在新世界／读档时重置，后者仅在 debug 模式观察，不写入存档。首领诊断的最近 100 年窗口按任期结束月份筛选。
+- v0.99927b5 使用 WorldSave V9；V8 及更旧存档不提供迁移，无法继续。IndexedDB 数据库版本仍为 2。首领诊断与 Revolution Gate 累计诊断的本会话样本在新世界／读档时重置，后者仅在 debug 模式观察，不写入存档。首领诊断的最近 100 年窗口按任期结束月份筛选。
 
 - v0.99927b1 disposal 已通过新世界 desktop debug 4×约1962年人工测试：无 `.size`／Renderer Fatal／disposal stalled，运行时资源 invariant 正常。本版保留该生命周期修复。
 - v0.99927b2 History Scalability 已人工通过，4228年／约10k历史事件存档Load后仍可恢复60～65 FPS；历史与disposal修复继续保留。原History测量见 [HistoryFrameScalability](docs/HistoryFrameScalability.md)。
-- v0.99927b3 限制前台追债：每帧仍最多16步，overload后丢弃未执行整步债务并保留小数余量；正常60FPS的1×／2×／4×不变。debug区分foreground accumulator与background catch-up，记录最近20条incident。帧统计统一rolling 300帧，long-frame次数是session累计，观察Phaser rawDelta但simulation输入仍为Scene delta。仍待真实Electron Gate：新世界4×1000～1500年＋失焦返回／Save恢复，通过后再跑4228年V9存档100～200年。细节见 [ForegroundPacingDebtRecovery](docs/ForegroundPacingDebtRecovery.md)。
+- v0.99927b3 前台追债已人工通过；有界accumulator及原速度保持。细节见 [ForegroundPacingDebtRecovery](docs/ForegroundPacingDebtRecovery.md)。
+- v0.99927b4锁屏恢复Gate FAIL：resetDelta并未恢复持续callback cadence。v0.99927b5提供独立debug blocker／timeout实验，release与普通debug默认RAF、blocker OFF，等待人工锁屏15～20分钟及暂停世界10秒控制。见 [macOS Scheduler A/B Gate](docs/MacOSLockScreenSchedulerAB.md)。
 
 - Web 存档仅保存在当前浏览器 IndexedDB；无云存档或跨设备同步。手动档、200 游戏年轮换自动档与 `current` 恢复档共用当前版本化 WorldSave schema。
 - Web 中未触发存档的推进在刷新或关闭页面后不会保留；Electron 另有每 5 现实分钟恢复档和关闭前保存。
@@ -194,4 +195,4 @@ MIT License。详见 [LICENSE](./LICENSE)。
 
 路线图见 [ROADMAP.md](./ROADMAP.md)。
 
-Desktop wake hotfix：b3 前台追债已人工通过；b4 增加 OS wake resync 和有界 power／Phaser／RAF 诊断，等待真实失焦、锁屏恢复及正常帧率下长局保存检查。见 [Desktop Wake Gate](docs/DesktopWakeRecovery.md)。
+Desktop scheduler A/B：`pnpm desktop:start:debug:blocker`测试RAF＋blocker ON；只有该实验仍慢时，再用`pnpm desktop:start:debug:timeout`测试timeout＋blocker OFF。两者不默认启用，不改变Web／存档／玩法。

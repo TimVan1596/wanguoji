@@ -1,3 +1,4 @@
+import type { DesktopAppSuspensionBlocker } from "../../desktop/DesktopAppSuspensionBlocker";
 import type { DesktopWakeMessage, installDesktopWakeLifecycle } from "../../desktop/DesktopWakeLifecycle";
 export type GridGodRuntimeMode = "WEB_CATCH_UP" | "DESKTOP_CONTINUOUS";
 export type GridGodRouterMode = "browser" | "hash";
@@ -52,6 +53,8 @@ export interface DesktopResumeAfterSuspend {
 }
 
 export interface DesktopDiagnostics {
+  appSuspensionBlocker?: ReturnType<DesktopAppSuspensionBlocker["snapshot"]>;
+  requestedFrameScheduler?: "RAF" | "SET_TIMEOUT";
   power?: ReturnType<ReturnType<typeof installDesktopWakeLifecycle>["snapshot"]>;
   platform: string;
   focused: boolean;
@@ -73,6 +76,7 @@ export interface DesktopDiagnostics {
 
 export interface GridGodDesktopBridge {
   isDesktop: true;
+  debugLaunchOptions?: { readonly debug: boolean; readonly forceTimeoutLoop: boolean };
   platform: string;
   electronVersion?: string;
   sendHeartbeat?: (payload: GridGodDesktopHeartbeat) => void;

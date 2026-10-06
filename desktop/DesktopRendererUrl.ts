@@ -1,8 +1,11 @@
 export function getDesktopDebugLaunchOptions(argv: string[]) {
   const avatarRenderer = argv.includes("--wanguoji-avatar-renderer=plain") ? "plain" as const : undefined;
   const textureProbe = argv.includes("--wanguoji-texture-probe=png") ? "png" as const : undefined;
+  const debug = argv.includes("--wanguoji-debug") || avatarRenderer === "plain" || textureProbe === "png";
   return {
-    debug: argv.includes("--wanguoji-debug") || avatarRenderer === "plain" || textureProbe === "png",
+    debug,
+    preventAppSuspension: debug && argv.includes("--wanguoji-prevent-app-suspension"),
+    forceTimeoutLoop: debug && argv.includes("--wanguoji-force-timeout-loop"),
     avatarRenderer,
     textureProbe,
     devServerUrl: argv.find((argument) => argument.startsWith("--wanguoji-dev-server="))
@@ -22,4 +25,9 @@ export function getDesktopRendererUrl(
   }
   if (url.protocol === "file:") url.hash = "/";
   return url.toString();
+}
+
+/** Fixed metadata for the sandboxed preload; never forward arbitrary CLI arguments. */
+export function getDesktopPreloadArguments(options: ReturnType<typeof getDesktopDebugLaunchOptions>) {
+  return options.debug ? ["--wanguoji-debug", ...(options.forceTimeoutLoop ? ["--wanguoji-force-timeout-loop"] : [])] : [];
 }

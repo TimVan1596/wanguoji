@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.99927b5
+
+- Recorded b4 manual Gate FAIL: normal foreground ~60 FPS / 4 steps with ~1–2ms fixed CPU; after extended macOS lock, rolling ~22.5 FPS / 44.4ms / p95 116.4ms despite 4 steps, ~1.74ms fixed CPU, nominal thermal state, AC power and an active RAF loop. unlock resetDelta ran, but 1/5/10s callback rates were ~5.7/6/14.3 FPS and subsequent focus stayed ~10–30 FPS. Debt is fixed; underlying scheduler/render/compositor/OS cause remains unproven.
+- Added two independent, explicit desktop-debug A/B launch flags. --wanguoji-prevent-app-suspension owns at most one Electron prevent-app-suspension blocker, records id/isStarted/start reason and releases it on actual will-quit. No prevent-display-sleep, no default blocker for release or ordinary debug.
+- --wanguoji-force-timeout-loop passes allowlisted immutable launch metadata through the sandboxed preload. Game creation merges fps.forceSetTimeOut:true (target60 default, preserving existing FPS fields) before Phaser constructs its TimeStep. Web/release/default debug remain unchanged; no runtime switch, RAF patch, alternative simulation loop or physics change.
+- Diagnostics explicitly show actual blocker OFF/ON and observed RAF/SET_TIMEOUT separately from requested launch mode, preserving all b4 power/wake/loop/save observations. A bounded recent1s Core callback cadence sample also remains available while the world is paused, for the mandatory10s paused control; no extra timer or renderer observer.
+- Added deterministic structural tests using installed Phaser TimeStep/runner boundaries for scheduler selection and equal callback input -> identical executed steps, WorldClock, RNG, digest and V9 DTO. Retained b3 debt and b4 wake tests; runtime timing and macOS visual acceptance remain manual.
+- APP_VERSION v0.99927b5 / package0.99.108; WorldSave V9 / IndexedDB2 unchanged. Gameplay/balance/history/retention/disposal/Save/renderer defaults unchanged. Added dedicated desktop:start:debug:blocker and desktop:start:debug:timeout scripts to avoid CLI forwarding ambiguity.
+- Mandatory Gate: existing b4 RAF/OFF is A; B is RAF/ON, existing long save4×, lock15–20min. If B positive, stop for user product decision without C. If still slow, pause world10s and copy diagnostics, then restart C timeout/OFF and repeat. Do not adopt either experiment as release default. If both fail and paused remains slow, record macOS lock-screen/Electron renderer scheduling known limitation and end v27b audit; no b6. Wait for manual results before v27c.
+
 ## v0.99927b4
 
 - Recorded b3 foreground debt PASS: normal 4× ~60 FPS / ~4 steps, overload no longer retains whole-step debt. The ~2911-year macOS lock-return incident instead measured ~7.5 FPS / ~132.8ms raw frames, 4 steps, zero accumulator/cap, ~2.14ms Core CPU and ~130.7ms unattributed time. Scheduler/OS cause remains unproven; b3 debt algorithm is unchanged.

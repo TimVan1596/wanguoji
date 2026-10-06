@@ -4,7 +4,7 @@ import Game from "../../Game/Game";
 import GoldKey from "../../Game/GoldKey";
 import MainScene from "../../Scenes/MainScene";
 import PreloadScene from "../../Scenes/PreloadScene";
-import { PHASER_AUDIO_CONFIG } from "../../Runtime/GameRuntimeConfig";
+import { PHASER_AUDIO_CONFIG, withDesktopSchedulerConfig } from "../../Runtime/GameRuntimeConfig";
 import Phaser from "phaser";
 import { installPhaser355InputCompatibility } from "../../Runtime/Phaser355InputCompatibility";
 
@@ -20,7 +20,7 @@ const GameCard = () => {
       if (compatibility === "UNSUPPORTED_VERSION" && import.meta.env.DEV) {
         console.warn(`[Wanguoji] Phaser input compatibility was not installed for Phaser ${Phaser.VERSION}; expected 3.55.2.`);
       }
-      game = new Game({
+      game = new Game(withDesktopSchedulerConfig({
         type: Phaser.AUTO,
         audio: PHASER_AUDIO_CONFIG,
         scale: {
@@ -38,7 +38,7 @@ const GameCard = () => {
             // debug: true,
           },
         },
-      });
+      }, window.gridGodDesktop));
       window.goldKey = new GoldKey(game);
     }
     return () => {

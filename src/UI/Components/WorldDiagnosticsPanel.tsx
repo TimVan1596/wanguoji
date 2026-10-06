@@ -255,6 +255,9 @@ function WorldDiagnosticsPanelContent() {
       foregroundDebt: runtime?.foregroundDebt,
       desktopWake: runtime?.desktopWake,
       desktopPower: desktopDiagnostics?.power,
+      appSuspensionBlocker: desktopDiagnostics?.appSuspensionBlocker,
+      frameScheduler: runtime?.desktopWake?.loop.frameScheduler,
+      requestedFrameScheduler: desktopDiagnostics?.requestedFrameScheduler,
       activeCatchUpSource: runtime?.catchUpSource ?? desktopHeartbeat?.catchUpSource,
       lastCatchUpSource: runtime?.lastCatchUpSource ?? desktopHeartbeat?.lastCatchUpSource,
       focused: desktopDiagnostics?.focused ?? desktopHeartbeat?.focused,
@@ -565,6 +568,10 @@ function WorldDiagnosticsPanelContent() {
         <summary>Desktop Runtime</summary>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{[
           "Mode: DESKTOP_CONTINUOUS",
+          `app suspension blocker: ${desktopDiagnostics?.appSuspensionBlocker?.status ?? "unknown (waiting for main diagnostics)"}`,
+          `blocker details: ${stableStringify(desktopDiagnostics?.appSuspensionBlocker)}`,
+          `frame scheduler: ${desktopRuntime?.desktopWake?.loop.frameScheduler ?? "unknown (loop not observed)"} · requested: ${desktopDiagnostics?.requestedFrameScheduler ?? "unknown"}`,
+          `observed callback FPS (recent 1s; also while world paused): ${desktopRuntime?.desktopWake?.observedCallbackFps?.toFixed(1) ?? "—"}`,
           `Platform: ${desktopDiagnostics?.platform ?? window.gridGodDesktop?.platform ?? "unknown"}`,
           `Focused: ${desktopDiagnostics?.focused ? "yes" : "no"}`,
           `Visibility: ${desktopDiagnostics?.visibility ?? document.visibilityState}`,

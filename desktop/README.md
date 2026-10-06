@@ -176,3 +176,14 @@ Preload 在 sandbox 下只通过 `contextBridge` 暴露受限的 heartbeat、aut
 ### Desktop Wake Gate (v0.99927b4)
 
 b3前台追债已人工通过；macOS锁屏返回的低callback cadence仍需定位。resume/unlock/user-active IPC仅调用Phaser `resetDelta()`；focus观察、已有suspend策略与backgroundThrottling:false保持。Debug新增power/thermal/speed-limit及有界wake/TimeStep/RAF恢复记录，不存档、不推进世界。未启用powerSaveBlocker。使用现有长局存档完成[失焦、锁屏及正常FPS下Save检查](../docs/DesktopWakeRecovery.md)，通过前不进入下一版本。
+
+### macOS Lock-Screen Scheduler A/B (v0.99927b5)
+
+b4默认RAF/no-blocker锁屏Gate失败。两个实验独立、仅desktop debug显式启用：
+
+- `pnpm desktop:start:debug:blocker`：RAF＋prevent-app-suspension ON。
+- `pnpm desktop:start:debug:timeout`：SET_TIMEOUT＋blocker OFF。
+
+先正常退出已有进程，再启动对应脚本；单实例不会把新参数应用到旧窗口。脚本内显式传flag，免去参数透传歧义。也可构建后直接`pnpm exec electron desktop/dist/main.js --wanguoji-debug --wanguoji-prevent-app-suspension`或将末尾flag改为`--wanguoji-force-timeout-loop`。这两个flag本身不会开启debug；普通release／debug默认保持RAF、blocker OFF。blocker在真正will-quit释放，不阻止屏幕关闭；timeout使用Phaser原有runner，在Game创建前配置，不能runtime切换。
+
+人工先做B（长局4×，锁屏15～20min）；成功即停止等待用户策略决定。仍慢必须先暂停世界10s复制完整对照，才重启做C。完整数据与分支见[人工Gate](../docs/MacOSLockScreenSchedulerAB.md)。不默认同时开两个实验，不根据结果自行改release默认；结果回来前不进入v27c。
