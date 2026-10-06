@@ -21,7 +21,8 @@
 ## 当前人工验收
 
 - v0.99927b1 Runtime Disposal 已人工通过：新世界 Electron 4×约1962年，无 Group.preUpdate `.size` Fatal、Renderer Fatal 或 disposal stalled；768年与1962年 disposal／orphan invariants 正常，live users/groups/registered groups 分别56与58。
-- v0.99927b2 Long-Run History / Frame Scalability：历史增量发布／窗口查询、叙事候选索引与 debug 帧归属诊断。当前等待真实 Electron Stage A 新世界4×1000～1500年（500／1000／1500年记录）；无 regression 后 Stage B 约3451年 V9 存档连续推进至少500年。通过前不得开始 v0.99927c Dynastic Revolution Calibration、Diplomacy II、纳土归降、Faction Historiography 或 Era Atlas II。
+- v0.99927b2 History Scalability 子目标已人工通过：历史 publish/notify 在1000+年近零；4228年、约9600 events／2700 rulers存档 Load后恢复60～65 FPS。Runtime Disposal invariants继续正常。1305年God Tab仍出现15 FPS／16 steps per frame，foreground pacing Gate未通过。
+- v0.99927b3 Foreground Pacing & Simulation Debt Recovery：有界前台 accumulator、20条session incident、统一rolling 300帧口径。等待真实Electron Stage A新世界4×1000～1500年＋失焦返回／Save恢复；通过后Stage B约4228年V9存档4×100～200年。通过后结束v27b性能审计；下一版直接v0.99927c Dynastic Revolution Calibration，收到人工回传前不得开始下一版本或其他主题。
 
 ## 玩法后续
 

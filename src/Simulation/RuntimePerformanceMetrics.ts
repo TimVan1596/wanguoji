@@ -1,4 +1,4 @@
-export const RUNTIME_PERFORMANCE_SAMPLE_CAPACITY = 600;
+export const RUNTIME_PERFORMANCE_SAMPLE_CAPACITY = 300;
 
 export interface RuntimePerformanceSnapshot {
   renderFrameCount: number;
@@ -8,6 +8,10 @@ export interface RuntimePerformanceSnapshot {
   fixedStepCpuMs: { average?: number; p95?: number };
   presentationCpuMs: { average?: number; p95?: number };
   sampleCount: number;
+  rollingWindowCapacity: number;
+  statisticsWindow: string;
+  longFrameCounterWindow: string;
+  frameDeltaSource: string;
 }
 
 export function percentile(values: number[], percentileValue: number) {
@@ -71,6 +75,10 @@ export class RuntimePerformanceMetrics {
       fixedStepCpuMs: { average: average(fixedCpu), p95: percentile(fixedCpu, 0.95) },
       presentationCpuMs: { average: average(presentationCpu), p95: percentile(presentationCpu, 0.95) },
       sampleCount: this.count,
+      rollingWindowCapacity: this.capacity,
+      statisticsWindow: `rolling ${this.capacity} frames (or available samples)`,
+      longFrameCounterWindow: "session cumulative since hydration/reset",
+      frameDeltaSource: "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback",
     };
   }
 

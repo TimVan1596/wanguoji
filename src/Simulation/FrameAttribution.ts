@@ -1,4 +1,4 @@
-import { RollingStepPerformance } from "./RollingStepPerformance";
+import { RollingStepPerformance, STEP_PERFORMANCE_SAMPLE_CAPACITY } from "./RollingStepPerformance";
 import { runtimeProfilingEnabled } from "./MonthlyPhaseProfiler";
 
 const PHASES = ["Core CPU", "fixed simulation CPU", "manual Arcade physics step", "logical simulation step",
@@ -32,6 +32,8 @@ export class FrameAttribution {
   }
   snapshot() {
     return { enabled: this.enabled, timings: this.samples.snapshot(),
+      statisticsWindow: `rolling ${STEP_PERFORMANCE_SAMPLE_CAPACITY} frames (or available samples)`,
+      frameDeltaSource: "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback",
       interpretation: "Nested phases overlap; unattributed = max(0, frame delta - current Core CPU), includes frame pacing/render/React/GC; not measured renderer CPU." };
   }
   reset() { this.samples.reset(); this.totals.forEach((_, name) => this.totals.set(name, 0)); }

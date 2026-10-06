@@ -46,9 +46,9 @@ describe("diagnostic reports", () => {
     expect(report).toContain("map pointer last target: BUTTON");
     expect(report).toContain("map pointer reason: NON_CANVAS_TARGET");
     expect(report).toContain("map pointer selected faction after: wei");
-    expect(report).toContain("FPS: 60");
-    expect(report).toContain("render frame count: 987");
-    expect(report).toContain("p95 frame ms: 20");
+    expect(report).toContain("FPS (rolling 300 frames): 60");
+    expect(report).toContain("render frame count (session cumulative): 987");
+    expect(report).toContain("p95 frame ms (rolling 300 frames): 20");
     expect(report).toContain("world history events: 123");
     expect(report).toContain('simulation fixed/month step subsystem timings: {"total fixed/month step": {"averageMs": 1.2');
     expect(report).toContain("merged factions: 1");
@@ -59,7 +59,7 @@ describe("diagnostic reports", () => {
     for (const field of [
       "package version:", "timestamp:", "platform:", "Electron version:", "running:",
       "speed:", "worldInstanceId:", "fixedSteps:", "physicsSteps:", "background mode:",
-      "catchUpDebt:", "lastCatchUpSource:", "focused:", "visibility:", "window minimized:",
+      "background catchUpDebt (fixed steps):", "lastCatchUpSource:", "focused:", "visibility:", "window minimized:",
       "genealogy viewer:",
       "minimize count:", "suspend count:", "last suspend duration:", "resume catch-up:",
       "logical users:", "root players:", "player children:", "active Phaser players:",

@@ -1,3 +1,6 @@
+import { ForegroundDebtDiagnostics } from "../Simulation/ForegroundDebtDiagnostics";
+import { runtimeProfilingEnabled } from "../Simulation/MonthlyPhaseProfiler";
+import { getWorldSavePhaseDiagnostics } from "../Persistence/WorldSaveWorkflow";
 import { frameAttribution } from "../Simulation/FrameAttribution";
 import { DeferredUserGroupDisposal } from "../Simulation/DeferredUserGroupDisposal";
 import { destroyRuntimeGroupAtSafeBoundary } from "../Simulation/RuntimeGroupDisposal";
@@ -149,6 +152,8 @@ export default class Core {
   private manualPhysicsStepper = new ManualArcadePhysicsStepper();
   private determinismCheckpoints = new DeterminismCheckpointHistory();
   private runtimePerformance = new RuntimePerformanceMetrics();
+  private foregroundDebtDiagnostics = new ForegroundDebtDiagnostics(runtimeProfilingEnabled);
+  private observedMinimized?: { value: boolean; observedAt: number };
   private frameFixedStepCpuMs = 0;
   private simulationDiagnostics = {
     fixedSimulationSteps: 0,
@@ -840,6 +845,11 @@ export default class Core {
     return { ...this.colliderTeardownDiagnostics };
   }
 
+  // Diagnostic-only cached main-process observation; never consulted by simulation pacing.
+  recordDesktopWindowDiagnostics(minimized: boolean | undefined) {
+    if (runtimeProfilingEnabled && minimized !== undefined) this.observedMinimized = { value: minimized, observedAt: Date.now() };
+  }
+
   getRuntimeLivenessDiagnostics() {
     const simulatorState = this.simulator?.exportState();
     const reduxWorldRunning = store.getState().root.worldRunning;
@@ -866,6 +876,7 @@ export default class Core {
       worldMonth: simulatorState?.clock.worldMonth ?? 0,
       clockElapsedMs: simulatorState?.clock.elapsedMs ?? 0,
       accumulatorMs: this.simulationDriver.getAccumulatorMs(),
+      foregroundDebt: this.foregroundDebtDiagnostics.snapshot(this.simulationDriver.getAccumulatorMs()),
       coreUpdateFrames: this.coreUpdateDiagnostics.frames,
       lastCoreUpdateRealAt: this.coreUpdateDiagnostics.lastUpdateRealAt,
       lastForegroundDeltaMs: this.coreUpdateDiagnostics.lastForegroundDeltaMs,
@@ -1387,7 +1398,10 @@ export default class Core {
   }
 
   update(delta: number) {
-    const rawFrameDelta = delta;
+    // Phaser Scene delta is smoothed. Observe actual wall-clock delta for frame metrics only;
+    // retain the existing Scene delta as the driver input (including visibility suppression).
+    const loopRawDelta = this.game.loop.rawDelta;
+    const rawFrameDelta = Number.isFinite(loopRawDelta) ? loopRawDelta : delta;
     const frameStartedAt = this.getRealNow();
     const initialFixedSteps = this.simulationDiagnostics.fixedSimulationSteps;
     this.frameFixedStepCpuMs = 0;
@@ -1402,12 +1416,22 @@ export default class Core {
       if (this.backgroundProgression.isCatchingUp()) {
         this.runBackgroundCatchUpFrame();
       } else {
+        const incidentWorldMonth = this.simulator.year;
         const result = this.simulationDriver.updateForeground(delta, {
           isRunning: () => Boolean(this.simulator?.isRunning()),
           getSpeed: () => this.simulator?.getSpeed() ?? 1,
           getBasePlayRate: () => BASE_PLAY_RATE,
           step: (fixedDeltaMs) => this.advanceLogicalStep(fixedDeltaMs),
         });
+        this.foregroundDebtDiagnostics.record(rawFrameDelta, delta, result, () => ({
+          worldMonth: incidentWorldMonth,
+          focused: typeof document === "undefined" ? undefined : document.hasFocus(),
+          visibility: typeof document === "undefined" ? "unknown" : document.visibilityState,
+          minimized: this.observedMinimized?.value,
+          minimizedObservedAt: this.observedMinimized?.observedAt,
+          savePhase: getWorldSavePhaseDiagnostics().phase,
+          rightPanelTab: store.getState().root.rightPanelTab,
+        }));
         this.coreUpdateDiagnostics.lastForegroundConsumedSteps = result.steps;
         if (result.stopped) {
           const clock = this.simulator?.exportState().clock;
@@ -1600,6 +1624,8 @@ export default class Core {
   private resetSimulationDiagnostics() {
     this.runtimePerformance.reset();
     frameAttribution.reset();
+    this.foregroundDebtDiagnostics.reset();
+    this.observedMinimized = undefined;
     this.frameFixedStepCpuMs = 0;
     this.simulationDiagnostics = {
       fixedSimulationSteps: 0,

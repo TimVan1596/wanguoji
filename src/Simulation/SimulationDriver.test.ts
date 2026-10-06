@@ -80,13 +80,14 @@ describe("SimulationDriver", () => {
     expect(ca.deltas.length).toBe(cb.deltas.length);
   });
 
-  it("caps foreground steps per frame and keeps remaining accumulator", () => {
+  it("caps foreground steps per frame and drops whole debt while retaining fractional carry", () => {
     const driver = new SimulationDriver();
     const { ctx, deltas } = context(1, true, 1);
     const result = driver.updateForeground(SIMULATION_FIXED_STEP_MS * 10, ctx, 3);
     expect(deltas).toHaveLength(3);
     expect(result.capped).toBe(true);
-    expect(driver.getAccumulatorMs()).toBeCloseTo(SIMULATION_FIXED_STEP_MS * 7);
+    expect(driver.getAccumulatorMs()).toBeCloseTo(0);
+    expect(result.droppedDebtMs).toBeCloseTo(SIMULATION_FIXED_STEP_MS * 7);
   });
 
   it("does not advance while paused", () => {

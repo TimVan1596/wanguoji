@@ -147,10 +147,11 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
-- v0.99927b2 使用 WorldSave V9；V8 及更旧存档不提供迁移，无法继续。IndexedDB 数据库版本仍为 2。首领诊断与 Revolution Gate 累计诊断的本会话样本在新世界／读档时重置，后者仅在 debug 模式观察，不写入存档。首领诊断的最近 100 年窗口按任期结束月份筛选。
+- v0.99927b3 使用 WorldSave V9；V8 及更旧存档不提供迁移，无法继续。IndexedDB 数据库版本仍为 2。首领诊断与 Revolution Gate 累计诊断的本会话样本在新世界／读档时重置，后者仅在 debug 模式观察，不写入存档。首领诊断的最近 100 年窗口按任期结束月份筛选。
 
 - v0.99927b1 disposal 已通过新世界 desktop debug 4×约1962年人工测试：无 `.size`／Renderer Fatal／disposal stalled，运行时资源 invariant 正常。本版保留该生命周期修复。
-- v0.99927b2 优化完整历史的发布／卷轴分页及叙事查询，新增有界 debug 帧阶段诊断；不删历史、不改玩法／概率／V9。仍待真实 Electron History / Frame Scalability Gate：先新世界4×1000～1500年，记录500／1000／1500年诊断并对比各 Tab；无 regression 后加载约3451年 V9 存档连续再跑至少500年，检查保存／自动保存、Load 前后性能与 runtime invariants。详细测量、边界语义与回传项见 [HistoryFrameScalability](docs/HistoryFrameScalability.md)。
+- v0.99927b2 History Scalability 已人工通过，4228年／约10k历史事件存档Load后仍可恢复60～65 FPS；历史与disposal修复继续保留。原History测量见 [HistoryFrameScalability](docs/HistoryFrameScalability.md)。
+- v0.99927b3 限制前台追债：每帧仍最多16步，overload后丢弃未执行整步债务并保留小数余量；正常60FPS的1×／2×／4×不变。debug区分foreground accumulator与background catch-up，记录最近20条incident。帧统计统一rolling 300帧，long-frame次数是session累计，观察Phaser rawDelta但simulation输入仍为Scene delta。仍待真实Electron Gate：新世界4×1000～1500年＋失焦返回／Save恢复，通过后再跑4228年V9存档100～200年。细节见 [ForegroundPacingDebtRecovery](docs/ForegroundPacingDebtRecovery.md)。
 
 - Web 存档仅保存在当前浏览器 IndexedDB；无云存档或跨设备同步。手动档、200 游戏年轮换自动档与 `current` 恢复档共用当前版本化 WorldSave schema。
 - Web 中未触发存档的推进在刷新或关闭页面后不会保留；Electron 另有每 5 现实分钟恢复档和关闭前保存。

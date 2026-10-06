@@ -87,7 +87,7 @@ function WorldDiagnosticsPanelContent() {
     if (!bridge?.getDiagnostics) return;
     let active = true;
     const refresh = () => {
-      void bridge.getDiagnostics?.().then((value) => { if (active) setDesktopDiagnostics(value); }).catch((error) => { console.error("Diagnostics refresh failed", error); });
+      void bridge.getDiagnostics?.().then((value) => { if (active) { setDesktopDiagnostics(value); Game.Core?.recordDesktopWindowDiagnostics(value.windowMinimized); } }).catch((error) => { console.error("Diagnostics refresh failed", error); });
     };
     refresh();
     const timer = window.setInterval(refresh, 1000);
@@ -252,6 +252,7 @@ function WorldDiagnosticsPanelContent() {
       physicsSteps: runtime?.physicsSteps ?? desktopHeartbeat?.physicsSteps,
       backgroundMode: runtime?.backgroundMode ?? desktopHeartbeat?.backgroundMode,
       catchUpDebt: runtime?.catchUpDebtSteps ?? desktopHeartbeat?.catchUpDebtSteps,
+      foregroundDebt: runtime?.foregroundDebt,
       activeCatchUpSource: runtime?.catchUpSource ?? desktopHeartbeat?.catchUpSource,
       lastCatchUpSource: runtime?.lastCatchUpSource ?? desktopHeartbeat?.lastCatchUpSource,
       focused: desktopDiagnostics?.focused ?? desktopHeartbeat?.focused,
@@ -285,6 +286,9 @@ function WorldDiagnosticsPanelContent() {
       frameAttribution: runtime?.frameAttribution,
       renderFrameCount: framePerformance.renderFrameCount,
       sampleCount: framePerformance.sampleCount,
+      statisticsWindow: framePerformance.statisticsWindow,
+      longFrameCounterWindow: framePerformance.longFrameCounterWindow,
+      frameDeltaSource: framePerformance.frameDeltaSource,
     } : undefined,
     worldScale,
     persistence: {
@@ -504,7 +508,8 @@ function WorldDiagnosticsPanelContent() {
           `WorldClock month / elapsed: ${runtime.worldMonth} / ${runtime.clockElapsedMs}`,
           `Scene time paused / physics paused / tweens all paused: ${runtime.sceneTimePaused} / ${runtime.physicsPaused} / ${runtime.tweensPaused ?? "no active tweens"}`,
           `active / paused tween count: ${runtime.activeTweenCount} / ${runtime.pausedTweenCount}`,
-          `SimulationDriver accumulator: ${runtime.accumulatorMs}`,
+          `Foreground accumulator (distinct from background catch-up debt): ${runtime.accumulatorMs}ms`,
+          `Foreground debt diagnostics (session cumulative; recent 20 incidents): ${stableStringify(runtime.foregroundDebt)}`,
           `coreUpdateFrames / lastCoreUpdateRealAt: ${runtime.coreUpdateFrames} / ${runtime.lastCoreUpdateRealAt}`,
           `lastForegroundDeltaMs / consumedSteps: ${runtime.lastForegroundDeltaMs} / ${runtime.lastForegroundConsumedSteps}`,
           `fixedSimulationSteps / physicsSteps: ${runtime.fixedSimulationSteps} / ${runtime.physicsSteps}`,
@@ -517,8 +522,8 @@ function WorldDiagnosticsPanelContent() {
           `Map pointer: lastTarget=${runtime.mapPointer?.lastTarget ?? "—"} accepted=${runtime.mapPointer?.accepted ?? "—"} reason=${runtime.mapPointer?.reason ?? "—"}`,
           `Map pointer selection: faction ${runtime.mapPointer?.selectedFactionNameBefore ?? "—"} → ${runtime.mapPointer?.selectedFactionNameAfter ?? "—"} · panel ${runtime.mapPointer?.rightPanelTabBefore ?? "—"} → ${runtime.mapPointer?.rightPanelTabAfter ?? "—"}`,
           `Resume probe: ${stableStringify(runtime.resumeProbe ?? null)}`,
-          `Frame performance: ${stableStringify(runtime.framePerformance)}`,
-          `Frame attribution: ${stableStringify(runtime.frameAttribution)}`,
+          `Frame performance (rolling 300 frames; long-frame counters session cumulative): ${stableStringify(runtime.framePerformance)}`,
+          `Frame attribution (rolling 300 frames; nested timings overlap): ${stableStringify(runtime.frameAttribution)}`,
           `World scale: ${stableStringify(runtime.worldScale)}`,
           `Renderer warnings: Canvas2D=${desktopDiagnostics?.canvasWarningCount ?? "browser n/a"} · texImage2D bad image=${desktopDiagnostics?.texImage2DBadImageWarningCount ?? "browser n/a"}`,
         ].join("\n")}</Typography>}

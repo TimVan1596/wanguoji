@@ -24,6 +24,11 @@ export interface ForegroundStepResult {
   accumulatorMs: number;
   capped: boolean;
   stopped: boolean;
+  accumulatorBeforeMs: number;
+  scaledDeltaMs: number;
+  accumulatorBeforeConsumptionMs: number;
+  stepCapHit: boolean;
+  droppedDebtMs: number;
 }
 
 export interface CatchUpStepResult {
@@ -44,20 +49,39 @@ export default class SimulationDriver {
     context: SimulationStepContext,
     maxSteps = MAX_FOREGROUND_STEPS_PER_FRAME
   ): ForegroundStepResult {
+    const accumulatorBeforeMs = this.accumulatorMs;
     if (!context.isRunning()) {
       return {
         steps: 0,
         accumulatorMs: this.accumulatorMs,
         capped: false,
         stopped: false,
+        accumulatorBeforeMs,
+        scaledDeltaMs: 0,
+        accumulatorBeforeConsumptionMs: accumulatorBeforeMs,
+        stepCapHit: false,
+        droppedDebtMs: 0,
       };
     }
-    this.accumulatorMs +=
-      Math.max(0, realDeltaMs) *
+    const scaledDeltaMs =
+      Math.max(0, Number.isFinite(realDeltaMs) ? realDeltaMs : 0) *
       sanitizeBasePlayRate(context.getBasePlayRate?.() ?? BASE_PLAY_RATE) *
       sanitizeSpeed(context.getSpeed());
+    this.accumulatorMs += scaledDeltaMs;
+    const accumulatorBeforeConsumptionMs = this.accumulatorMs;
     const result = this.consumeAccumulator(context, maxSteps);
-    return result;
+    // Foreground is a responsive real-time loop. Whole unexecuted steps are wall-clock
+    // debt, not committed world state: discard overload rather than carry it indefinitely.
+    // Keep the sub-step remainder so ordinary frames retain their exact fixed-step pacing.
+    let droppedDebtMs = 0;
+    if (!result.stopped && this.accumulatorMs + STEP_EPSILON_MS >= SIMULATION_FIXED_STEP_MS) {
+      const wholeSteps = Math.floor((this.accumulatorMs + STEP_EPSILON_MS) / SIMULATION_FIXED_STEP_MS);
+      droppedDebtMs = Math.min(this.accumulatorMs, wholeSteps * SIMULATION_FIXED_STEP_MS);
+      this.accumulatorMs = Math.max(0, this.accumulatorMs - droppedDebtMs);
+    }
+    return { ...result, accumulatorMs: this.accumulatorMs, accumulatorBeforeMs, scaledDeltaMs,
+      accumulatorBeforeConsumptionMs, stepCapHit: !result.stopped && result.steps >= maxSteps,
+      droppedDebtMs };
   }
 
   runCatchUpChunk(
@@ -96,7 +120,7 @@ export default class SimulationDriver {
   private consumeAccumulator(
     context: SimulationStepContext,
     maxSteps: number
-  ): ForegroundStepResult {
+  ): Pick<ForegroundStepResult, "steps" | "accumulatorMs" | "capped" | "stopped"> {
     let steps = 0;
     let stopped = false;
     while (

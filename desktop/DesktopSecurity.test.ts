@@ -28,7 +28,7 @@ describe("Desktop packaging and renderer security", () => {
     expect(packageJson.scripts["desktop:renderer-debug-build"]).toContain("--mode desktop-debug --sourcemap");
     expect(packageJson.scripts["desktop:renderer-build"]).toContain("--mode desktop");
     expect(packageJson.build.files).toContain("!**/*.map");
-    expect(packageJson.version).toBe("0.99.105");
+    expect(packageJson.version).toBe("0.99.106");
     expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(9);
   });
 
@@ -67,5 +67,12 @@ describe("Desktop packaging and renderer security", () => {
     expect(preloadSource).not.toMatch(/\b(?:require|fs|child_process|shell)\s*:/);
     expect(preloadSource).toContain('"gridgod:renderer-heartbeat"');
     expect(preloadSource).toContain('"gridgod:autosave-result"');
+  });
+
+  it("retains desktop continuous background throttling configuration and observational window events", () => {
+    expect(mainSource).toMatch(/backgroundThrottling:\s*false/);
+    for (const event of ["focus", "blur", "minimize", "restore"]) expect(mainSource).toContain(`mainWindow.on("${event}"`);
+    expect(mainSource).toContain('powerMonitor.on("suspend"');
+    expect(mainSource).toContain('powerMonitor.on("resume"');
   });
 });

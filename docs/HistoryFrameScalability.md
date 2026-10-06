@@ -1,5 +1,7 @@
 # v0.99927b2 History / Frame Scalability
 
+后续人工结论：History Scalability 子目标已通过，1000+年 history notify近零；4228年、约9600 events／2700 rulers的V9存档Load后恢复60～65 FPS。Runtime Disposal仍通过。1305年God Tab下15 FPS／16 steps per frame属于尚未关闭的foreground pacing问题，由v0.99927b3处理；本文件保留b2当时的测量／Gate记录，新的人工Gate见 [ForegroundPacingDebtRecovery](ForegroundPacingDebtRecovery.md)。
+
 ## 人工基线
 
 公开基线 a3d20fb，APP_VERSION v0.99927b1 / package 0.99.104 / WorldSave V9。

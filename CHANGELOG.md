@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.99927b3
+
+- Recorded the v27b2 manual result: History Scalability passed; append publication and narrative indices remain intact, notification cost is near zero at 1000+ years, and a ~4228-year V9 world with ~9626 events/~2706 rulers returns to ~60–65 FPS after Load. Runtime Disposal invariants remain zero/healthy. The remaining failure was foreground pacing at ~1305 years (~15 FPS, 16 steps/frame) with God Tab open and near-zero history work.
+- Reproduced old foreground accumulation before editing: 250/500/1000/5000ms stalls retain ~1.47/3.47/7.47/39.47 seconds of scaled debt; five seconds at 100ms/frame builds ~13.33 seconds, which remains after another 40 seconds at 15 FPS and the 16-step cap. This proves the driver permits persistent debt; the original Electron incident still needs the new diagnostics for direct attribution.
+- Foreground now executes at most the existing 16 fixed steps, discards remaining unexecuted whole-step wall-clock debt and retains fractional carry. Normal 60 FPS speed1/2/4 pacing is unchanged; overload intentionally advances less simulated time per wall-clock second. Background debt/chunk semantics and snapshot stop-and-discard remain unchanged; no simulated months, RNG draws or committed world state are skipped.
+- Added debug-only session foreground accumulator/raw input/scaled time/cap/debt/drop counters and the last 20 incidents with world month, focus/visibility, cached minimized observation, save phase and selected Tab. These observations do not enter V9 or consume RNG. Background catch-up debt remains separately labelled.
+- Aligned frame performance and attribution to rolling 300-frame windows and labelled long-frame/frame-count counters as session cumulative. Both observe Phaser rawDelta; the simulation still receives the existing smoothed Scene delta. Raw/driver/scaled deltas are distinct in debt diagnostics. Electron already used backgroundThrottling:false, so focus/minimize/suspend/runtime policy is unchanged and configuration is covered by tests.
+- APP_VERSION v0.99927b3 / package 0.99.106; WorldSave V9 and IndexedDB 2 unchanged. No history/filtering/disposal/physics/balance/diplomacy/revolution/name/era changes; City founding and Save were audited as possible stall triggers without being rewritten.
+- Mandatory real Electron Gate: Stage A new world4× to1000–1500 years, focus-away/return and Save/autosave recovery observation; only after Stage A passes, Stage B the ~4228-year V9 save4× for100–200 years with Tab/Save-Load/checkpoint checks. Stop before v0.99927c until the user returns results. After this Gate passes, end the performance audit and proceed only under the next user task to Dynastic Revolution Calibration.
+
 ## v0.99927b2
 
 - Recorded the user’s v0.99927b1 manual disposal pass: a new Electron debug world ran at 4× to approximately 1962 years, with no Group.preUpdate size fatal, Renderer Fatal or stalled disposal. At 768/1962 years all disposal/orphan invariants remained normal and live/registered user group counts matched 56/58 live users. The validated lifecycle is unchanged.
