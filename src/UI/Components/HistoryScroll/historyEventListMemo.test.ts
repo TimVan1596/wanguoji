@@ -16,5 +16,7 @@ describe("memoized history event list boundary", () => {
     };
     expect(areHistoryEventListInputsEqual(props, { ...props })).toBe(true);
     expect(areHistoryEventListInputsEqual(props, { ...props, events: [...events] })).toBe(false);
+    expect(areHistoryEventListInputsEqual(props, { ...props, unseenCount: 2 })).toBe(false);
+    expect(areHistoryEventListInputsEqual(props, { ...props, onBackToLatest: () => {} })).toBe(false);
   });
 });

@@ -1,8 +1,11 @@
+import { MAJOR_EVENT_FILTERS, type MajorEventFilter } from "../../../History/HistoryMajorEventFilters";
+import { getRevolutionEventDetails } from "../../../History/RevolutionEventDetails";
+import { HistoryBrowsingSession } from "./historyBrowsing";
 import { queryHistoryPage } from "../../../History/HistoryPageQuery";
 import type Team from "../../../Components/Team";
 import { getHistoricalFactionIdentity } from "../../../History/HistoricalFactionIdentity";
 import { Box, Button, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
-import { memo, useCallback, useEffect, useMemo, useReducer, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useReducer, useState, useRef, useLayoutEffect } from "react";
 import { useSelector } from "react-redux";
 import WorldHistory, {
   formatEventDate,
@@ -32,16 +35,21 @@ import {
 } from "./eraSelection";
 
 const filters: { value: HistoryFilter; label: string }[] = [
-  { value: "featured", label: "精选" },
-  { value: "all", label: "全部" },
+  { value: "featured", label: "大事" },
   { value: "war", label: "战争" },
-  { value: "politics", label: "政权" },
-  { value: "god", label: "上帝" },
+  { value: "diplomacy", label: "外交" },
+  { value: "all", label: "全部" },
 ];
 
 export default function HistoryScroll() {
   const [historyRevision, setHistoryRevision] = useState(() => WorldHistory.getRevision());
   const [filter, setFilter] = useState<HistoryFilter>("featured");
+  const [eventTypeFilter, setEventTypeFilter] = useState<MajorEventFilter>("all");
+  const browsing = useRef(new HistoryBrowsingSession());
+  const frozenEndMonth = useRef<number>();
+  const pageHeadMonth = useRef<number>();
+  const [pageRevision, setPageRevision] = useState(() => WorldHistory.getRevision());
+  const [unseenCount, setUnseenCount] = useState(0);
   const [expandedId, setExpandedId] = useState<string>();
   const [visibleCount, setVisibleCount] = useState(HISTORY_RENDER_BATCH);
   const [eras, setEras] = useState<WorldEraRecord[]>([]);
@@ -79,10 +87,11 @@ export default function HistoryScroll() {
   useEffect(() => {
     setManualFactionFilter(selectedFactionName);
   }, [selectedFactionName]);
-  useEffect(() => {
+  useLayoutEffect(() => {
+    browsing.current.reset(); frozenEndMonth.current = undefined; setUnseenCount(0); setPageRevision(WorldHistory.getRevision());
     setVisibleCount(HISTORY_RENDER_BATCH);
     setExpandedId(undefined);
-  }, [filter, manualFactionFilter, eraSelectionUI.selectedEraId]);
+  }, [filter, eventTypeFilter, manualFactionFilter, eraSelectionUI.selectedEraId]);
 
   const historyLookupSignature = JSON.stringify(teams.map((team) => [
     team.name, team.displayName, team.color, JSON.stringify(team.colorHistory),
@@ -125,10 +134,31 @@ export default function HistoryScroll() {
     ? teamByName.get(factionFilter)?.displayName ?? factionFilter
     : undefined;
   const page = useMemo(() => queryHistoryPage(WorldHistory, {
-    visibleCount, filter, factionId: factionFilter,
-    startMonth: selectedEra?.startMonth, endMonth: selectedEra?.endMonth,
-  }), [historyRevision, visibleCount, filter, factionFilter, selectedEra]);
+    visibleCount, filter, eventTypeFilter, factionId: factionFilter,
+    startMonth: selectedEra?.startMonth,
+    endMonth: browsing.current.followingLatest ? selectedEra?.endMonth
+      : Math.min(selectedEra?.endMonth ?? Infinity, frozenEndMonth.current ?? Infinity),
+  }), [pageRevision, visibleCount, filter, eventTypeFilter, factionFilter, selectedEra]);
+  const browsingOptions = useRef({ filter, eventTypeFilter, factionId: factionFilter, startMonth: selectedEra?.startMonth, endMonth: selectedEra?.endMonth });
+  browsingOptions.current = { filter, eventTypeFilter, factionId: factionFilter, startMonth: selectedEra?.startMonth, endMonth: selectedEra?.endMonth };
+  useEffect(() => WorldHistory.subscribeAppends(change => {
+    if (change.kind === "reset") { browsing.current.reset(); frozenEndMonth.current = undefined; }
+    else browsing.current.append(change.events, browsingOptions.current);
+    setUnseenCount(browsing.current.unseenCount);
+    if (browsing.current.followingLatest) setPageRevision(change.revision);
+  }), []);
+  const onScrollPosition = useCallback((scrollTop: number) => {
+    if (browsing.current.followingLatest && scrollTop > 32) frozenEndMonth.current = pageHeadMonth.current;
+    browsing.current.scroll(scrollTop);
+    if (browsing.current.followingLatest) { frozenEndMonth.current = undefined; setUnseenCount(0); setPageRevision(WorldHistory.getRevision()); }
+  }, []);
+  const backToLatest = useCallback(() => {
+    browsing.current.reset(); frozenEndMonth.current = undefined; setUnseenCount(0); setPageRevision(WorldHistory.getRevision());
+    setVisibleCount(HISTORY_RENDER_BATCH); setExpandedId(undefined);
+  }, []);
+  const browseKey = JSON.stringify([filter, eventTypeFilter, factionFilter, eraSelectionUI.selectedEraId]);
   const visibleEvents = page.events;
+  pageHeadMonth.current = visibleEvents[0]?.monthIndex ?? visibleEvents[0]?.year;
   const toggleExpandedEvent = useCallback((eventId: string, canExpand: boolean) => {
     if (canExpand) setExpandedId((current) => current === eventId ? undefined : eventId);
   }, []);
@@ -143,6 +173,7 @@ export default function HistoryScroll() {
         height: "100%",
         boxSizing: "border-box",
         overflow: "hidden",
+        display: "flex", flexDirection: "column",
       }}
     >
       <Typography fontWeight="bold" variant="h5" align="center">
@@ -151,7 +182,7 @@ export default function HistoryScroll() {
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
+          gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
           gap: 0.25,
           my: 0.75,
         }}
@@ -168,6 +199,13 @@ export default function HistoryScroll() {
           </Button>
         ))}
       </Box>
+      {filter === "featured" ? <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.25, mb: 0.5 }}>
+        {MAJOR_EVENT_FILTERS.map(item => <Button key={item.value} size="small"
+          variant={eventTypeFilter === item.value ? "contained" : "text"}
+          onClick={() => setEventTypeFilter(item.value)} sx={{ minWidth: 0, px: 0.5, fontSize: "0.7rem" }}>{item.label}</Button>)}
+      </Box> : null}
+      <Box sx={{ mb: 0.35 }}><Button size="small" variant={filter === "god" ? "contained" : "text"}
+        onClick={() => setFilter(filter === "god" ? "all" : "god")} sx={{ fontSize: "0.68rem", minWidth: 0 }}>更多：上帝事件</Button></Box>
       <EraPicker
         eras={eras}
         selectedEraId={eraSelectionUI.selectedEraId}
@@ -358,6 +396,10 @@ export default function HistoryScroll() {
         </Box>
       ) : null}
       <HistoryEventList
+        key={browseKey}
+        unseenCount={unseenCount}
+        onScrollPosition={onScrollPosition}
+        onBackToLatest={backToLatest}
         events={visibleEvents}
         hasMore={page.hasMore}
         expandedId={expandedId}
@@ -367,13 +409,14 @@ export default function HistoryScroll() {
         cityNames={cityNames}
         onToggleExpanded={toggleExpandedEvent}
         onLoadMore={loadMoreEvents}
-        sxHeight={factionFilter ? "calc(100% - 13rem)" : "calc(100% - 10.4rem)"}
+        sxHeight="100%"
       />
     </Box>
   );
 }
 
 type HistoryEventListProps = {
+  unseenCount: number; onScrollPosition: (scrollTop: number) => void; onBackToLatest: () => void;
   events: WorldEvent[];
   hasMore: boolean;
   expandedId?: string;
@@ -387,6 +430,7 @@ type HistoryEventListProps = {
 };
 
 function HistoryEventListContent({
+  unseenCount, onScrollPosition, onBackToLatest,
   events,
   hasMore,
   expandedId,
@@ -398,8 +442,27 @@ function HistoryEventListContent({
   onLoadMore,
   sxHeight,
 }: HistoryEventListProps) {
+  const listRef = useRef<HTMLDivElement>(null);
+  const anchorRef = useRef<{ id: string; offset: number }>();
+  useLayoutEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    const anchor = anchorRef.current;
+    if (list.scrollTop <= 32) list.scrollTop = 0;
+    else if (anchor) {
+      const card = Array.from(list.querySelectorAll<HTMLElement>("[data-history-id]")).find(item => item.dataset.historyId === anchor.id);
+      if (card) list.scrollTop += card.getBoundingClientRect().top - list.getBoundingClientRect().top - anchor.offset;
+    }
+    return () => {
+      const card = Array.from(list.querySelectorAll<HTMLElement>("[data-history-id]")).find(item => item.getBoundingClientRect().bottom > list.getBoundingClientRect().top);
+      anchorRef.current = card ? { id: card.dataset.historyId!, offset: card.getBoundingClientRect().top - list.getBoundingClientRect().top } : undefined;
+    };
+  });
   return (
-    <Box sx={{ height: sxHeight, overflowY: "auto" }}>
+    <Box sx={{ flex: 1, minHeight: 0, position: "relative", overflow: "hidden" }}>
+      {unseenCount > 0 ? <Button size="small" variant="contained" sx={{ position: "absolute", top: 2, right: 8, zIndex: 1 }}
+        onClick={() => { if (listRef.current) listRef.current.scrollTop = 0; onBackToLatest(); }}>↑ {unseenCount} 条新事件 · 回到最新</Button> : null}
+    <Box ref={listRef} onScroll={event => onScrollPosition(event.currentTarget.scrollTop)} sx={{ height: sxHeight, overflowY: "auto" }}>
       {events.map((event) => {
         const expanded = expandedId === event.id;
         const actorColor = resolveEventFactionColor(event, factionColorById, teamByName);
@@ -428,7 +491,7 @@ function HistoryEventListContent({
         const landmark = isLandmarkHistoryEvent(event);
         const canExpand = event.importance === "major" || Boolean(eventDescription) || Boolean(event.metadata);
         return (
-          <Box key={event.id} onClick={() => onToggleExpanded(event.id, canExpand)} sx={{
+          <Box key={event.id} data-history-id={event.id} onClick={() => onToggleExpanded(event.id, canExpand)} sx={{
             py: 0.5, px: 1, mb: 0.5,
             borderLeft: actorColor !== undefined ? `4px solid ${colorToString(actorColor)}` : landmark ? "4px solid #8a5a00" : event.importance === "major" ? "4px solid #d32f2f" : "4px solid rgba(0, 0, 0, 0.2)",
             borderTop: landmark ? "1px solid rgba(138, 90, 0, 0.22)" : "none",
@@ -437,8 +500,10 @@ function HistoryEventListContent({
             cursor: canExpand ? "pointer" : "default",
           }}>
             <Typography fontSize="1rem" fontWeight={landmark || event.importance === "major" ? "bold" : "normal"}>
-              {formatEventDate(event)} {landmark ? "◆ " : ""}
+              {formatEventDate(event)} {landmark ? "◆ " : ""}{event.type === "dynasty-usurped" ? "【篡朝】 " : ""}
               <EventText text={eventTitle} teamByName={eventTeamByDisplayName} factionNames={eventFactionNames} cityNames={cityNames} />
+              {event.type === "dynasty-usurped" && typeof event.metadata?.oldHouseName === "string" && typeof event.metadata?.newHouseName === "string"
+                ? <Box component="span" sx={{ display: "block", fontSize: "0.82rem" }}>{event.metadata.oldHouseName} → {event.metadata.newHouseName}</Box> : null}
             </Typography>
             {expanded ? <Box sx={{ mt: 0.5 }}>
               {eventDescription ? <Typography fontSize="0.85rem" sx={{ opacity: 0.85 }}><EventText text={eventDescription} teamByName={eventTeamByDisplayName} factionNames={eventFactionNames} cityNames={cityNames} /></Typography> : null}
@@ -448,6 +513,7 @@ function HistoryEventListContent({
         );
       })}
       {hasMore ? <Button fullWidth size="small" variant="outlined" onClick={onLoadMore} sx={{ my: 1 }}>加载更早历史</Button> : null}
+    </Box>
     </Box>
   );
 }
@@ -513,7 +579,7 @@ function EventDetails({
   factionNames: string[];
   cityNames: string[];
 }) {
-  const lines: string[] = [];
+  const lines: string[] = getRevolutionEventDetails(event);
   const metadata = event.metadata;
   const kind = metadata?.historyNarrativeKind;
   const isCapitalTransition = kind === "CAPITAL_TRANSITION" ||

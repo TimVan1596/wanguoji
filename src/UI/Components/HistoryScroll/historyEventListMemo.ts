@@ -1,4 +1,5 @@
 export interface HistoryEventListMemoInputs {
+  unseenCount?: number; onScrollPosition?: unknown; onBackToLatest?: unknown;
   events: unknown;
   hasMore: boolean;
   expandedId?: string;
@@ -15,7 +16,8 @@ export function areHistoryEventListInputsEqual(
   previous: HistoryEventListMemoInputs,
   next: HistoryEventListMemoInputs
 ) {
-  return previous.events === next.events && previous.hasMore === next.hasMore &&
+  return previous.unseenCount === next.unseenCount && previous.onScrollPosition === next.onScrollPosition &&
+    previous.onBackToLatest === next.onBackToLatest && previous.events === next.events && previous.hasMore === next.hasMore &&
     previous.expandedId === next.expandedId && previous.teamByName === next.teamByName &&
     previous.rulerById === next.rulerById && previous.factionColorById === next.factionColorById &&
     previous.cityNames === next.cityNames && previous.onToggleExpanded === next.onToggleExpanded &&

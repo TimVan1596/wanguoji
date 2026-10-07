@@ -1,3 +1,4 @@
+import { DIPLOMACY_EVENT_TYPES } from "./HistoryMajorEventFilters";
 import { getFactionColorAtMonth, type FactionColorHistoryEntry } from "../Simulation/FactionColorHistory";
 import { getHistoricalFactionIdentity } from "./HistoricalFactionIdentity";
 import { formatRulerDiplomacyEvent } from "./RulerDiplomacyFormatter";
@@ -20,7 +21,7 @@ import { resolveHistoricalRulerDisplay } from "../Politics/HistoricalRulerDispla
 
 export const HISTORY_RENDER_BATCH = 200;
 
-export type HistoryFilter = "featured" | "all" | WorldEventCategory;
+export type HistoryFilter = "featured" | "all" | "diplomacy" | WorldEventCategory;
 
 export interface HistoryFactionLike {
   name: string;
@@ -74,6 +75,8 @@ export function getFilteredHistoryEvents(
       if (!isFeaturedHistoryEvent(event)) {
         return false;
       }
+    } else if (filter === "diplomacy") {
+      if (!DIPLOMACY_EVENT_TYPES.includes(event.type)) return false;
     } else if (filter === "politics") {
       if (!isMajorPoliticalEvent(event)) {
         return false;

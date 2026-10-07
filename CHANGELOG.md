@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.99927d1
+
+- Froze v27d calibration after the user's natural usurpation at month9867 / year822 month4: Ling (internal factionId沅陵义军), 陆氏→欧阳氏, minor lawful successor + combat predecessor, stability56, chance9%. The year1005 run has239 boundaries/10 attempts/9 failures/1 usurpation, expected count0.50. No odds, succession, combat, population, diplomacy or Save changes.
+- History primary navigation is now major events / war / diplomacy / all; God remains secondary. Major subtypes expose founding, emperor, revolution, restoration, extinction, merger and era. Queries retain incremental revision/append subscriptions and bounded indexed windows, selecting narrative subtypes after existing grouping; isolated anchors are narrowed before copying. No full archive publication/sort, search engine or canonical history truncation.
+- Usurpation is a presentation LANDMARK with a clear 篡朝 badge and metadata-only factual details, retaining historical identity and canonical prose. Old-house/new-house, predecessor outcome, stability/evidence, displaced heir/archive ID and actual rename/banner transitions are visible.
+- Near-top browsing follows newest; older browsing freezes page revision and tracks matching append deltas. A return-to-latest button clears unseen and scrolls up; filter changes reset paging/expanded cards/scroll/unseen. UI state never enters saves or RNG. Browser anchoring and actual scrolling remain manual acceptance items.
+- APP_VERSION v0.99927d1 / package0.99.111; WorldSave V9 unchanged. Required manual Gate uses the existing V9 world with the actual event, not another800–1500-year search. Verify history/royal archive/genealogy/identity/Save-Load and dynamic scroll before any next gameplay version.
+
 ## v0.99927d
 
 - Reviewed the 2445-year Calibration Gate: 589 boundaries, 142 vulnerability eligible, 8 crisis eligible, 6 attempts/all failed, 0 usurpations. Six chances total about0.50 expected events; zero outcomes alone do not justify raising all probabilities. The original crisis-only gate blocked581 boundaries.
