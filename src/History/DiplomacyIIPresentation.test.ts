@@ -37,7 +37,7 @@ describe("Diplomacy II presentation hygiene",()=>{
     const context={reason:"COMMON_THREAT_ALLIANCE" as const,commonThreatFactionId:"threat",territoryShareA:10,territoryShareB:10,threatTerritoryShare:60,priorStatus:"NON_AGGRESSION" as const,priorDurationMonths:96,credibility:"SEVERE" as const,directA:true,directB:true,previousExpiresMonth:180,renewalDuration:60};
     const metadata=createDiplomacyEventMetadata(relation,context);
     expect(metadata).toMatchObject({originalStartedMonth:0,startedMonth:24,previousExpiresMonth:180,newExpiresMonth:240,renewalDuration:60,renewalCount:1,threatCredibility:"SEVERE",directContactA:1,directContactB:1});
-    const prose=describeDiplomacyRenewal(relation,context,{factionAName:"楚",factionBName:"燕",commonThreatName:"魏"});expect(prose).toContain("续盟5年");expect(prose).not.toContain("结成");
-    const e={...event("relation-renewed",120),metadata};expect(formatRulerDiplomacyEvent(e,new Map())).toContain("续盟5年");
+    const prose=describeDiplomacyRenewal(relation,context,{factionAName:"楚",factionBName:"燕",commonThreatName:"魏"});expect(prose).toContain("续盟，原约期再延5年");expect(prose).not.toContain("结成");
+    const e={...event("relation-renewed",120),metadata};expect(formatRulerDiplomacyEvent(e,new Map())).toContain("续盟，原约期再延5年");
   });
 });

@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.99928b
+
+- Diplomacy II manual Gate PASS: dynamic terms, credible/severe threats, reasonable frequency, natural TRUCE/NAP/ALLIANCE renewals, expiry/cooldown, decades-long continuity and Save/Load. Recent100year shortest reformation gap36months, active relation density~0.267. Gameplay frozen.
+- Presentation-only signing prose includes the actual expiry date; NAP→Alliance explicitly replaces the prior relation and starts the new term at the upgrade month. Recorded precondition/current/continuous start dates appear in details.
+- Renewal explicitly extends the previous expiry, with old/new expiry, extension, status start, chain start/count and last renewal month. Badge counts are labeled continuous-chain renewals, never inferred Alliance-specific renewals.
+- Existing V10 history titles are projected from recorded metadata with event-month identities; expanded diplomatic cards skip repeated narrative and retain factual metadata details. No stored event rewrite, relation mutation or RNG draw.
+- APP_VERSION v0.99928b / package0.99.115 / WorldSaveV10 unchanged. All gameplay, persistence schema and diplomacy lifecycle remain frozen. Existing long-world manual narrative Gate required; no new world or long rerun.
+
 ## v0.99928a
 
 - Recorded the ongoing Diplomacy II manual Gate: varied6/9-year NAP and12-year Alliance, NAP→Alliance upgrade, diplomatic-free newest-first power chronicle have passed. Natural renewal, threat disappearance/expiry/cooldown, renewed V10Save-Load, union age continuity and800–1200-year frequency remain pending. No diplomatic calibration.

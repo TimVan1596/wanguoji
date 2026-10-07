@@ -25,8 +25,8 @@ describe("diplomacy factual detail presentation",()=>{
   });
   it("renewal displays original chain age rather than restarting at renewal or alliance upgrade",()=>{
     const e=event("relation-renewed");e.monthIndex=125;Object.assign(e.metadata!,{status:"ALLIANCE",reason:"COMMON_THREAT_ALLIANCE",originalStartedMonth:0,startedMonth:24,lastRenewedMonth:125,renewalCount:2,previousExpiresMonth:132,newExpiresMonth:252,renewalDuration:120,threatCredibility:"SEVERE"});
-    const lines=getDiplomacyEventDetails(e,factions);expect(lines).toContain("连续关系起始：0年1月");expect(lines).toContain("原到期月份：11年1月");expect(lines).toContain("新到期月份：21年1月");expect(lines).toContain("累计续约次数：2");expect(lines).toContain("续约期限：10年（120个月）");
-    expect(lines.join("\n")).toContain("已连续维持 10年5个月");expect(lines.join("\n")).not.toContain("已连续维持 8年5个月");
+    const lines=getDiplomacyEventDetails(e,factions);expect(lines).toContain("连续关系始于：0年1月");expect(lines).toContain("原到期日：11年1月");expect(lines).toContain("新到期日：21年1月");expect(lines).toContain("连续关系已续约2次");expect(lines).toContain("本次再延：10年（120个月）");
+    expect(lines.join("\n")).toContain("连续外交关系已维持：10年5个月");expect(lines.join("\n")).not.toContain("连续外交关系已维持：8年5个月");
   });
   it.each([[50,"梁","赵"],[150,"新梁","新赵"]] as const)("month %i resolves parties and threat historically, ignoring current identity",(month,a,t)=>{
     const e=event();e.monthIndex=month;e.metadata!.threatCapturedA=1;expect(getDiplomacyEventDetails(e,factions)).toContain(`共同压力证据：${t}近期攻陷${a}城邑`);

@@ -20,10 +20,11 @@
 
 ## 当前人工验收
 
-- v0.99928a presentation/debug patch：v28动态期限、NAP→Alliance、国势叙事过滤/newest-first已人工确认；继续原V10世界完成renewal/威胁消失/冷却/V10续约读档/union年龄/800–1200年频率Gate，见[Observability](docs/DiplomacyIIGateObservability.md)。不修改外交参数。
+- v0.99928a Diplomacy II人工Gate正式PASS，gameplay冻结：动态期限、可信威胁、频率、三类续约、到期/冷却和Save/Load正常；recent100y shortestReformationGap=36月，density约0.267，连续关系数十年。
+- v0.99928b仅澄清首次签约/升级/续约日期、chain renewalCount和历史重复正文。用现有V10长局完成[文案Gate](docs/DiplomacyNarrativeClarity.md)，不重新开局或调整玩法。
 
 - v0.99927 Dynastic Revolution系列完整人工通过，校准及历史/谱系/persistence Gate正式冻结。
-- v0.99928 Diplomacy II代码与自动验证阶段：仅可信共同威胁/期限/连续性/续约/冷却及外交叙事清理。WorldSaveV10，需要新世界4×800–1200年人工Gate，见[Diplomacy II](docs/DiplomacyII.md)。通过前不进入纳土归降、Faction Historiography、Era Atlas II或Ruler Political Evidence II。
+- v0.99928 Diplomacy II规则与WorldSaveV10保留，长局人工Gate已通过。后续主题仍须等待当前v28b文案Gate。
 
 - v0.99927b1 Runtime Disposal 已人工通过：新世界 Electron 4×约1962年，无 Group.preUpdate `.size` Fatal、Renderer Fatal 或 disposal stalled；768年与1962年 disposal／orphan invariants 正常，live users/groups/registered groups 分别56与58。
 - v0.99927b2 History Scalability 子目标已人工通过：历史 publish/notify 在1000+年近零；4228年、约9600 events／2700 rulers存档 Load后恢复60～65 FPS。Runtime Disposal invariants继续正常。1305年God Tab仍出现15 FPS／16 steps per frame，foreground pacing Gate未通过。

@@ -10,21 +10,25 @@ const truce: DiplomaticRelation = {
 describe("diplomacy presentation", () => {
   it("formats agreement dates and actual term from month difference", () => {
     expect(formatDiplomacyRelationLines(truce, "魏")).toEqual([
-      "魏 · 停战 · 战后休兵", "11年2月订立 · 约期3年 · 至14年2月",
+      "魏 · 停战 · 战后休兵", "当前停战始于：11年2月", "有效至：14年2月",
     ]);
     const text = describeDiplomacySigning(truce, {
       reason: "WAR_EXHAUSTION_TRUCE", recentBilateralCaptureCount: 4, stabilityA: 44, stabilityB: 53,
     }, { factionAName: "齐", factionBName: "魏" });
     expect(text).toContain("4次城邑易手");
-    expect(text).toContain("停战3年");
+    expect(text).toContain("约期3年，至14年2月");
     expect(text).not.toContain("五年");
   });
 
   it("distinguishes renewed expiry from an initial treaty term and exposes both continuity and renewal date",()=>{
     const renewed={...truce,status:"ALLIANCE" as const,reason:"COMMON_THREAT_ALLIANCE" as const,originalStartedMonth:0,startedMonth:120,lastRenewedMonth:228,expiresMonth:396,renewalCount:1};
     const lines=formatDiplomacyRelationLines(renewed,"魏");
-    expect(lines[1]).toContain("续约后至");expect(lines[1]).not.toContain("约期23年");expect(lines[1]).toContain("已续约1次");
-    expect(lines[2]).toBe("连续关系始于0年1月");expect(lines[3]).toBe("最近续约：19年1月");
+    expect(lines).toContain("当前战略同盟始于：10年1月");
+    expect(lines).toContain("有效至：33年1月");
+    expect(lines.join("\n")).not.toContain("约期23年");
+    expect(lines).toContain("连续关系已续约1次");
+    expect(lines).toContain("连续关系始于：0年1月");
+    expect(lines).toContain("最近续约：19年1月");
   });
   it("uses common-threat identity and the actual non-aggression term", () => {
     const relation: DiplomaticRelation = {
@@ -35,7 +39,7 @@ describe("diplomacy presentation", () => {
       reason: "COMMON_THREAT_NON_AGGRESSION", commonThreatFactionId: "yan",
       territoryShareA: 5, territoryShareB: 7, threatTerritoryShare: 60,
     }, { factionAName: "赵", factionBName: "韩", commonThreatName: "燕" })).toContain("燕势明显强于赵、韩");
-    expect(formatDiplomacyRelationLines(relation, "韩")[1]).toContain("约期8年");
+    expect(formatDiplomacyRelationLines(relation, "韩")).toContain("有效至：9年1月");
   });
 
   it("shows at most two counterpart-specific badges with the correct relation", () => {
