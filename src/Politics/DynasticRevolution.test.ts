@@ -13,7 +13,7 @@ import WorldHistory from "../History/WorldHistory";
 import FactionEffects from "../Simulation/FactionEffects";
 import worldRandom from "../Simulation/WorldRandom";
 import { changeFactionColor, getFactionColorAtMonth } from "../Simulation/FactionColorHistory";
-import { evaluateDynasticRevolution, getRevolutionEligibility, type RevolutionContext } from "./DynasticRevolution";
+import { evaluateDynasticRevolution, getDynasticRevolutionChance, getRevolutionEligibility, type RevolutionContext } from "./DynasticRevolution";
 import { buildPoliticalGenealogy, buildPoliticalGenealogyEdges } from "./DynasticCandidateRules";
 import { resolveEventFactionColor, resolveFactionHistoricalName } from "../History/HistoryRenderRules";
 import { isFeaturedHistoryEvent } from "../History/HistorySignificanceRules";
@@ -128,6 +128,24 @@ describe("authoritative succession-boundary dynastic revolution", () => {
     expect(DynastyRegistry.getRevolutionDiagnostics([team], month)).toMatchObject({ usurpationCount: 1, activeHouseEpochCount: 1 });
     expect(worldRandom.exportState()).toEqual(rng);
   });
+  it("enters the existing canonical usurpation path at stability80 without a stability blocker", () => {
+    const { team, dynasty } = setup(); team.stability = 80;
+    vi.stubGlobal("window", { location: { search: "?debug=1" } });
+    vi.spyOn(worldRandom, "next").mockReturnValueOnce(0.08); // 4% base + minor2% + one-city3% =9%.
+    const ruler = transition(team, dynasty);
+    expect(ruler.relationType).toBe("USURPER"); expect(ruler.parentId).toBeUndefined();
+    expect(dynasty.rulers.find(r => r.id === "heir")).toMatchObject({ status: "kin", parentId: "old" });
+    expect(dynasty.rulers.find(r => r.id === "heir")!.endYear).toBeUndefined();
+    expect(dynasty.houseEpochs!.at(-1)).toMatchObject({ startReason: "USURPATION", displacedSuccessorId: "heir" });
+    expect(getFactionDisplayNameAtMonth(team, month - 1)).toBe("郑");
+    expect(getFactionDisplayNameAtMonth(team, month)).toBe(team.displayName);
+    expect(getFactionColorAtMonth(team, month - 1)).toBe(0x123456);
+    expect(getFactionColorAtMonth(team, month)).toBe(team.color);
+    const gate = DynastyRegistry.getRevolutionDiagnostics([team], month).cumulativeGate;
+    expect(gate).toMatchObject({ hardEligibleBeforeRollCount: 1, rollAttemptCount: 1, usurpationCount: 1 });
+    expect(gate.recentEligibleBoundaries[0]).toMatchObject({ stability: 80, baseChance: 0.04, computedChance: 0.09, rollResult: 0.08 });
+    expect(WorldHistory.getEvents().find(e => e.type === "dynasty-usurped")!.metadata!.stability).toBe(80);
+  });
   it("retains normal succession on a failed eligible draw and records its blocker", () => {
     const { team, dynasty } = setup();
     const roll = vi.spyOn(worldRandom, "next").mockReturnValue(0.9);
@@ -225,7 +243,7 @@ describe("revolution eligibility reuses succession crisis rules", () => {
       predecessor: dynasty.rulers[0], successor: dynasty.rulers[1], successionReason: "natural", previousSuccessionMonths: [] };
   }
   it("spends no random draw for each authoritative blocker", () => {
-    for (const change of [{ successor: undefined }, { identityStage: "PROVISIONAL" }, { status: "EXILED" }, { stability: 60 }]) {
+    for (const change of [{ successor: undefined }, { identityStage: "PROVISIONAL" }, { status: "EXILED" }, { cityCount: 0 }]) {
       const roll = vi.fn(() => 0);
       expect(evaluateDynasticRevolution({ ...context(), ...change }, roll).usurpation).toBe(false);
       expect(roll).not.toHaveBeenCalled();
@@ -234,8 +252,9 @@ describe("revolution eligibility reuses succession crisis rules", () => {
   it("uses actual recent transitions for the chain evidence, excluding minor crisis weighting", () => {
     const input = context();
     expect(getRevolutionEligibility(input).evidence).not.toContain("RECENT_SUCCESSION_CHAIN");
-    expect(evaluateDynasticRevolution(input, () => 0.039).usurpation).toBe(true);
-    expect(evaluateDynasticRevolution(input, () => 0.04).blockers).toEqual(["ROLL_FAILED"]);
+    const chance = getDynasticRevolutionChance(input);
+    expect(evaluateDynasticRevolution(input, () => chance - 0.001).usurpation).toBe(true);
+    expect(evaluateDynasticRevolution(input, () => chance).blockers).toEqual(["ROLL_FAILED"]);
     input.successor!.bornYear = 250; input.cityCount = 5;
     expect(getRevolutionEligibility(input).blockers).toContain("NO_SUCCESSION_CRISIS");
     input.previousSuccessionMonths = [590, 580];

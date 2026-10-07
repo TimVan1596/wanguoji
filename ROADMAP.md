@@ -24,8 +24,9 @@
 - v0.99927b2 History Scalability 子目标已人工通过：历史 publish/notify 在1000+年近零；4228年、约9600 events／2700 rulers存档 Load后恢复60～65 FPS。Runtime Disposal invariants继续正常。1305年God Tab仍出现15 FPS／16 steps per frame，foreground pacing Gate未通过。
 - v0.99927b3 Foreground debt fix 已人工 PASS：正常4×约60 FPS／4 steps；overload整步debt不再积累。2911年macOS锁屏返回约7.5 FPS，但4 steps、accumulator=0、Core约2.14ms，属于尚未定位的frame cadence问题。
 - v0.99927b4 Gate FAIL：nominal／AC／RAF running、resetDelta已执行，锁屏后仍10～30FPS；低Core CPU及4steps排除旧debt spiral，render／compositor／OS根因未定。
-- v0.99927b5 macOS Lock-Screen Scheduler A/B：默认RAF＋blocker OFF；独立debug实验B RAF＋prevent-app-suspension，C timeout＋blocker OFF。等待15～20分钟锁屏＋低FPS时暂停10s控制。B成功即停，不继续C；两者失败且暂停仍慢则记录known limitation，结束v27b审计，不做b6。人工结果回来前不开始v27c。
-- Gate后下一版直接v0.99927c Dynastic Revolution Calibration；732 boundaries／stabilityEligible=0／fullyEligible=0／usurpation=0仅为后续校准证据，本版不调门槛或概率。
+- v0.99927b5已人工回传：RAF＋blocker锁屏约18min后rolling~56FPS，unlock1／5／10s~17.5／50.5／58.2；timeout＋OFF锁屏约12min后rolling~52.6FPS，callback~39.8／51.2／51.6，均可正常游戏。v27b性能审计正式结束，不做b6；所有修复冻结，两个实验保留opt-in，release默认RAF＋OFF不变。
+- v0.99927c Dynastic Revolution Calibration：取消稳定度25独立硬门，保留合法successor／STATE／ACTIVE／有城／succession-crisis／真实vulnerability；概率为基础4／6／10／14%＋事实加成，cap18%，eligible boundary最多一次draw。V9不变。
+- 等待v27c新世界默认desktop debug4×800～1500年人工Gate：hard eligibility／roll attempts／chance buckets／最近samples及真实篡朝历史身份、旧宗亲、epoch与Save/Load。没有篡朝但已roll不自动提高概率；hard eligibility=0则回传证据。通过前不进入Diplomacy II、纳土归降、Faction Historiography或Era Atlas II。
 
 ## 玩法后续
 

@@ -4,13 +4,16 @@ import { DIAGNOSTIC_PREVIEW_BUDGET, stableStringify, formatCoreDiagnostics, form
 
 describe("diagnostic reports", () => {
   it("includes complete session Gate counters and all ten eligible samples in the core clipboard report", () => {
-    const cumulativeGate = { successionBoundaryCheckCount: 120, fullyEligibleBeforeRollCount: 10,
-      rollFailedCount: 10, usurpationCount: 0, blockerCounts: { STABILITY_TOO_HIGH: 80, ROLL_FAILED: 10 },
-      recentFullyEligibleBoundaries: Array.from({ length: 10 }, (_, index) => ({ factionId: `faction-${index}`,
-        month: 1000 + index, stability: 20, evidence: ["MINOR_SUCCESSOR"], successionReason: "natural", successorAgeMonths: 120 })) };
+    const cumulativeGate = { successionBoundaryCheckCount: 120, hardEligibleBeforeRollCount: 10, rollAttemptCount: 10, chanceBuckets: { base: { "4%": 10 }, final: { "6%": 10 } },
+      rollFailedCount: 10, usurpationCount: 0, blockerCounts: { NO_SUCCESSION_CRISIS: 80, ROLL_FAILED: 10 },
+      recentEligibleBoundaries: Array.from({ length: 10 }, (_, index) => ({ factionId: `faction-${index}`,
+        month: 1000 + index, stability: 20, crisisLevel: "succession-crisis", computedChance: 0.06, rollResult: 0.9, evidence: ["MINOR_SUCCESSOR"], successionReason: "natural", successorAgeMonths: 120 })) };
     const report = formatCoreDiagnostics({ provisionalRulers: { revolution: { cumulativeGate } } });
     expect(report).toContain("Dynastic Revolution cumulative Gate diagnostics (session only)");
-    for (const [key, value] of [["successionBoundaryCheckCount", 120], ["fullyEligibleBeforeRollCount", 10], ["rollFailedCount", 10], ["usurpationCount", 0]]) expect(report).toContain(`"${key}": ${value}`);
+    for (const [key, value] of [["successionBoundaryCheckCount", 120], ["hardEligibleBeforeRollCount", 10], ["rollAttemptCount", 10], ["rollFailedCount", 10], ["usurpationCount", 0]]) expect(report).toContain(`"${key}": ${value}`);
+    expect(report).toContain('"computedChance": 0.06');
+    expect(report).toContain('"rollResult": 0.9');
+    expect(report).toContain('"chanceBuckets"');
     for (let index = 0; index < 10; index++) expect(report).toContain(`"factionId": "faction-${index}"`);
   });
   it("formats core fields and renders missing values as dashes", () => {

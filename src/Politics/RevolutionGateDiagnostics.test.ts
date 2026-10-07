@@ -16,12 +16,15 @@ describe("session-only observational Revolution Gate diagnostics", () => {
     for (const input of inputs) diagnostics.record("id", "旧国", input, evaluateDynasticRevolution(input, () => 0.9));
     const snapshot = diagnostics.snapshot();
     expect(snapshot).toMatchObject({ successionBoundaryCheckCount: 4, hasLegitimateSuccessorCount: 3,
-      crisisEligibleCount: 2, vulnerabilityEligibleCount: 3, stabilityEligibleCount: 3,
-      fullyEligibleBeforeRollCount: 1, rollFailedCount: 1, usurpationCount: 0,
+      crisisEligibleCount: 2, vulnerabilityEligibleCount: 2,
+      hardEligibleBeforeRollCount: 2, rollAttemptCount: 2, rollFailedCount: 2, usurpationCount: 0,
       blockerCounts: { NO_ELIGIBLE_LEGITIMATE_SUCCESSOR: 1, NOT_STATE: 1, NOT_ACTIVE_STATE: 1,
-        STABILITY_TOO_HIGH: 1, NO_SUCCESSION_CRISIS: 2, SUCCESSOR_NOT_VULNERABLE: 1, ROLL_FAILED: 1 } });
-    expect(snapshot.recentFullyEligibleBoundaries[0]).toMatchObject({ factionId: "id", factionName: "旧国", month: 600,
-      stability: 20, successionReason: "natural", successorAgeMonths: 120, evidence: ["MINOR_SUCCESSOR", "ONE_CITY_REMAINING"] });
+        NO_SUCCESSION_CRISIS: 2, SUCCESSOR_NOT_VULNERABLE: 2, ROLL_FAILED: 2 } });
+    expect(snapshot).not.toHaveProperty("stabilityEligibleCount");
+    expect(snapshot.blockerCounts).not.toHaveProperty("STABILITY_TOO_HIGH");
+    expect(snapshot.chanceBuckets).toMatchObject({ base: { "4%": 1, "14%": 1 }, final: { "9%": 1, "18%": 1 }, cappedCount: 1 });
+    expect(snapshot.recentEligibleBoundaries[0]).toMatchObject({ factionId: "id", factionName: "旧国", month: 600,
+      stability: 80, crisisLevel: "succession-crisis", computedChance: 0.09, rollResult: 0.9, successionReason: "natural", successorAgeMonths: 120, evidence: ["MINOR_SUCCESSOR", "ONE_CITY_REMAINING"] });
   });
   it("bounds eligible samples at ten and resets all observations", () => {
     const diagnostics = new RevolutionGateDiagnostics(() => true);
@@ -31,12 +34,12 @@ describe("session-only observational Revolution Gate diagnostics", () => {
     }
     const snapshot = diagnostics.snapshot();
     expect(snapshot.usurpationCount).toBe(15);
-    expect(snapshot.fullyEligibleBeforeRollCount).toBe(15);
-    expect(snapshot.recentFullyEligibleBoundaries.map(boundary => boundary.month)).toEqual([614, 613, 612, 611, 610, 609, 608, 607, 606, 605]);
-    snapshot.recentFullyEligibleBoundaries[0].evidence.push("not canonical");
-    expect(diagnostics.snapshot().recentFullyEligibleBoundaries[0].evidence).not.toContain("not canonical");
+    expect(snapshot.hardEligibleBeforeRollCount).toBe(15);
+    expect(snapshot.recentEligibleBoundaries.map(boundary => boundary.month)).toEqual([614, 613, 612, 611, 610, 609, 608, 607, 606, 605]);
+    snapshot.recentEligibleBoundaries[0].evidence.push("not canonical");
+    expect(diagnostics.snapshot().recentEligibleBoundaries[0].evidence).not.toContain("not canonical");
     diagnostics.reset();
-    expect(diagnostics.snapshot()).toMatchObject({ successionBoundaryCheckCount: 0, usurpationCount: 0, recentFullyEligibleBoundaries: [] });
+    expect(diagnostics.snapshot()).toMatchObject({ successionBoundaryCheckCount: 0, usurpationCount: 0, recentEligibleBoundaries: [], recentBoundaryChecks: [], rollAttemptCount: 0, hardEligibleBeforeRollCount: 0 });
   });
   it("does not spend RNG for diagnostics and cannot change seeded decisions when enabled", () => {
     const saved = worldRandom.exportState();

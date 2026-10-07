@@ -30,23 +30,48 @@ export function getRevolutionEligibility(context: RevolutionContext) {
   if (minorSuccessor) evidence.push("MINOR_SUCCESSOR");
   if (recordedTransitions.recentSuccessionCount >= 3) evidence.push("RECENT_SUCCESSION_CHAIN");
   if (context.successionReason !== "natural") evidence.push(context.successionReason === "combat" ? "PREDECESSOR_COMBAT_DEATH" : "PREDECESSOR_CAPTURED");
-  if (context.cityCount <= 1) evidence.push("ONE_CITY_REMAINING");
+  if (context.cityCount === 1) evidence.push("ONE_CITY_REMAINING");
   const blockers: string[] = [];
   if (!context.successor) blockers.push("NO_ELIGIBLE_LEGITIMATE_SUCCESSOR");
   if (context.identityStage !== "STATE") blockers.push("NOT_STATE");
   if (context.status !== "ACTIVE" || context.cityCount <= 0) blockers.push("NOT_ACTIVE_STATE");
-  if (context.stability > 25) blockers.push("STABILITY_TOO_HIGH");
   if (crisis.level !== "succession-crisis") blockers.push("NO_SUCCESSION_CRISIS");
   if (!evidence.length) blockers.push("SUCCESSOR_NOT_VULNERABLE");
   return { blockers, evidence, crisis };
 }
 
-/** Exactly one low-frequency draw at an eligible authoritative succession boundary. */
+const EVIDENCE_CHANCE_PERCENT: Readonly<Record<string, number>> = {
+  PREDECESSOR_CAPTURED: 3, ONE_CITY_REMAINING: 3, RECENT_SUCCESSION_CHAIN: 2,
+  MINOR_SUCCESSOR: 2, PREDECESSOR_COMBAT_DEATH: 1,
+};
+const MAX_REVOLUTION_CHANCE_PERCENT = 18;
+
+function getRevolutionChanceProfile(context: RevolutionContext, eligibility: ReturnType<typeof getRevolutionEligibility>) {
+  if (eligibility.blockers.length) return { chance: 0, baseChance: 0, modifierChance: 0, capped: false };
+  // Integer percentage points avoid accumulated float error at the strict roll boundary.
+  const basePercent = context.stability <= 30 ? 14 : context.stability <= 45 ? 10 : context.stability <= 60 ? 6 : 4;
+  const modifierPercent = Object.entries(EVIDENCE_CHANCE_PERCENT)
+    .reduce((total, [evidence, percent]) => total + (eligibility.evidence.includes(evidence) ? percent : 0), 0);
+  return { chance: Math.min(MAX_REVOLUTION_CHANCE_PERCENT, basePercent + modifierPercent) / 100,
+    baseChance: basePercent / 100, modifierChance: modifierPercent / 100,
+    capped: basePercent + modifierPercent > MAX_REVOLUTION_CHANCE_PERCENT };
+}
+
+/** Pure probability from the existing pre-roll authoritative gates and recorded evidence. */
+export function getDynasticRevolutionChance(context: RevolutionContext, eligibility = getRevolutionEligibility(context)) {
+  return getRevolutionChanceProfile(context, eligibility).chance;
+}
+
+/** Exactly one draw at an eligible authoritative succession boundary; observers reuse its result. */
 export function evaluateDynasticRevolution(context: RevolutionContext, roll = () => worldRandom.next()) {
   const result = getRevolutionEligibility(context);
-  if (result.blockers.length) return { ...result, usurpation: false };
-  const usurpation = roll() < 0.04;
-  return { ...result, usurpation, blockers: usurpation ? [] : ["ROLL_FAILED"] };
+  const profile = getRevolutionChanceProfile(context, result);
+  const hardEligible = result.blockers.length === 0;
+  if (!hardEligible) return { ...result, ...profile, hardEligible, rollAttempted: false, rollResult: undefined, usurpation: false };
+  const rollResult = roll();
+  const usurpation = rollResult < profile.chance;
+  return { ...result, ...profile, hardEligible, rollAttempted: true, rollResult, usurpation,
+    blockers: usurpation ? [] : ["ROLL_FAILED"] };
 }
 
 export function beginHouseEpoch(epochs: DynastyHouseEpoch[], epoch: DynastyHouseEpoch) {

@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.99927c
+
+- Closed the v27b performance audit using the user's b5 results: RAF + explicit blocker recovered after ~18min lock (rolling~56 FPS, fixed CPU~1.3ms, steps~3.7; unlock1/5/10s callbacks~17.5/50.5/58.2 FPS); timeout without blocker also remained usable after ~12min lock (rolling~52.6 FPS, steps~3.96; callbacks~39.8/51.2/51.6 FPS). Both remain opt-in debug/compatibility experiments; RAF/OFF release default and all validated lifecycle/history/debt/wake fixes are frozen. No b6.
+- Removed stability<=25 as an independent revolution hard gate: multiple independent manual runs had 93/180/463/732+ succession boundaries but zero stability/full eligibility or rolls. Existing lawful successor, STATE/ACTIVE/positive city count, succession-crisis and recorded vulnerability gates remain authoritative.
+- Pure contextual chance uses base4/6/10/14% at stability>60/46–60/31–45/<=30, plus recorded captured3 / one-city3 / real succession-chain2 / minor2 / combat-death1 percentage points, capped18%. Integer percentage points preserve strict roll boundaries; exactly one WorldRandom draw per eligible succession boundary and none elsewhere. Zero-city states no longer claim ONE_CITY_REMAINING evidence.
+- Session-only diagnostics now report hardEligibleBeforeRollCount, rollAttemptCount, failures and usurpations, separate base/final chance distributions, modifier/capped counts, the last10 eligible samples with crisis/chance/actual draw/age/reason, and last10 all-boundary samples for zero-eligibility analysis. Removed stabilityEligibleCount and STABILITY_TOO_HIGH. Debug reads spend no RNG and reset on new world/load.
+- Existing canonical usurpation path, displaced living kin, distinct roots/house epochs, regime name/banner history, historical identity, featured event and badges/prose remain unchanged. Natural heirless NEW_HOUSE remains natural. Fixed-quantile frequency sanity tests are deterministic, not Monte Carlo or real-world occurrence guarantees.
+- APP_VERSION v0.99927c / package0.99.109; WorldSave V9 / IndexedDB2 unchanged. No Desktop performance/scheduler changes, diplomacy, ruler death, population, City/Dynasty balance outside revolution chance, history retention or Save rewrite.
+- Mandatory real Electron Gate: default pnpm desktop:start:debug, new world4×800–1500y; return cumulative gate/chance buckets/eligible samples and verify actual usurpation archive/kinship/epochs/badge/name/color/history/Save-Load. If rolls all fail, mechanism is reachable: do not raise chance automatically. If hard eligibility stays zero, return recent evidence; no further unilateral tuning or next theme.
+
 ## v0.99927b5
 
 - Recorded b4 manual Gate FAIL: normal foreground ~60 FPS / 4 steps with ~1–2ms fixed CPU; after extended macOS lock, rolling ~22.5 FPS / 44.4ms / p95 116.4ms despite 4 steps, ~1.74ms fixed CPU, nominal thermal state, AC power and an active RAF loop. unlock resetDelta ran, but 1/5/10s callback rates were ~5.7/6/14.3 FPS and subsequent focus stayed ~10–30 FPS. Debt is fixed; underlying scheduler/render/compositor/OS cause remains unproven.

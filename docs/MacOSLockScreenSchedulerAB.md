@@ -1,3 +1,5 @@
+> b5人工结果已回传，v27b性能审计正式结束：RAF＋blocker锁屏18min后rolling~56FPS、fixed~1.3ms、steps~3.7，unlock1/5/10s~17.5/50.5/58.2；timeout＋OFF锁屏12min后rolling~52.6FPS、steps~3.96，callbacks~39.8/51.2/51.6。两者均可正常游戏，仅保留opt-in，不修改release默认、不做b6。下文保留原A/B记录，当前进入 [v27c王朝易代校准](DynasticRevolutionCalibration.md)。
+
 # v0.99927b5 macOS Lock-Screen Scheduler A/B
 
 ## 已记录的人工证据
