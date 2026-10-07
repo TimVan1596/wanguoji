@@ -163,6 +163,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
     if (block.ownerFactionId !== undefined) requireRef(block.ownerFactionId, factionIds, "block.ownerFactionId", errors);
     if (block.isCityCenter && block.cityId === undefined) errors.push(`block center requires active city at ${block.gridX},${block.gridY}`);
     if (block.cityId !== undefined) {
+      if (typeof block.cityId !== "string") errors.push("block.cityId must be a string active-city reference");
       const cityId = String(block.cityId);
       if (!cityIds.has(cityId)) errors.push(`unknown active block.cityId: ${cityId} at ${block.gridX},${block.gridY}, owner=${String(block.ownerFactionId)}`);
       const city = activeCitiesById.get(cityId);

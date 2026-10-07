@@ -107,8 +107,12 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     expect(WorldHistory.exportState()).toEqual(history); expect(worldRandom.exportState()).toEqual(rng);
     expect(core.repairs.unresolvedCityBlockRefs[0]).toMatchObject({ gridX: 1, gridY: 0, owner: "qin", cityId: "not-archived" });
   });
-  it.each(["capital", "zone", "center", "owner", "blockOwner"])("rejects malformed %s references before teardown", kind => {
+  it.each(["capital", "zone", "center", "owner", "blockOwner", "blockCityType"])("rejects malformed %s references before teardown", kind => {
     const save = fixture();
+    if (kind === "blockCityType") {
+      save.cities[0].cityId = "123"; save.factions[0].capitalCityId = "123"; save.blocks[0].cityId = "123";
+      save.blocks[1].cityId = 123 as unknown as string; save.blocks[1].homeHitPoints = 7;
+    }
     if (kind === "capital") save.factions[0].capitalCityId = "秦-city-312-2";
     if (kind === "zone") save.cities[0].fortifiedCells = [{ gridX: 2, gridY: 0 }];
     if (kind === "center") { delete save.blocks[0].cityId; }
