@@ -128,6 +128,32 @@ describe("authoritative succession-boundary dynastic revolution", () => {
     expect(DynastyRegistry.getRevolutionDiagnostics([team], month)).toMatchObject({ usurpationCount: 1, activeHouseEpochCount: 1 });
     expect(worldRandom.exportState()).toEqual(rng);
   });
+  it.each(["combat", "captured"] as const)("preserves canonical archive and identity through a compound shock %s usurpation", reason => {
+    const run = (debug: boolean) => {
+      vi.stubGlobal("window", { location: { search: debug ? "?debug=1" : "" } });
+      WorldHistory.reset(); FactionEffects.reset();
+      const { team, dynasty } = setup(true, false);
+      worldRandom.initialize("compound-canonical");
+      vi.spyOn(worldRandom, "next").mockReturnValueOnce(0);
+      const ruler = transition(team, dynasty, reason);
+      expect(ruler.relationType).toBe("USURPER"); expect(ruler.parentId).toBeUndefined();
+      expect(dynasty.rulers.find(r => r.id === "heir")).toMatchObject({ status: "kin", parentId: "old" });
+      expect(dynasty.rulers.find(r => r.id === "heir")!.endYear).toBeUndefined();
+      expect(dynasty.houseEpochs!.at(-1)).toMatchObject({ startReason: "USURPATION", displacedSuccessorId: "heir" });
+      expect(getFactionDisplayNameAtMonth(team, month - 1)).toBe("郑");
+      expect(getFactionDisplayNameAtMonth(team, month)).toBe(team.displayName);
+      expect(getFactionColorAtMonth(team, month - 1)).toBe(0x123456);
+      expect(getFactionColorAtMonth(team, month)).toBe(team.color);
+      const event = WorldHistory.getEvents().find(e => e.type === "dynasty-usurped")!;
+      expect(event.metadata).toMatchObject({ displacedSuccessorId: "heir", successionReason: reason });
+      expect(event.description).toContain("仅余一城");
+      expect(event.description).not.toContain("合法继承人未成年");
+      const gate = DynastyRegistry.getRevolutionDiagnostics([team], month).cumulativeGate;
+      if (debug) expect(gate.recentEligibleBoundaries[0]).toMatchObject({ riskTier: "COMPOUND_SHOCK", crisisLevel: "succession-shock" });
+      return JSON.stringify({ dynasty: DynastyRegistry.exportState(), rng: worldRandom.exportState(), history: WorldHistory.exportState(), name: team.nameHistory, color: team.colorHistory });
+    };
+    expect(run(true)).toEqual(run(false));
+  });
   it("enters the existing canonical usurpation path at stability80 without a stability blocker", () => {
     const { team, dynasty } = setup(); team.stability = 80;
     vi.stubGlobal("window", { location: { search: "?debug=1" } });
@@ -223,7 +249,9 @@ describe("authoritative succession-boundary dynastic revolution", () => {
     vi.stubGlobal("Phaser", { GameObjects: { Group: class {} } });
     try {
       const restored = ActualTeam.hydrate({} as Phaser.Scene, factionState);
-      DynastyRegistry.importState(state); worldRandom.restore(rng);
+      DynastyRegistry.importState(state, month); worldRandom.restore(rng);
+      expect(DynastyRegistry.getRevolutionDiagnostics([restored], month + 12).cumulativeGate).toMatchObject({
+        sessionStartMonth: month, elapsedWorldYears: 1, expectedUsurpationCount: 0, rollAttemptCount: 0 });
       expect(DynastyRegistry.exportState().dynasties[0].houseEpochs).toEqual(state.dynasties[0].houseEpochs);
       expect(DynastyRegistry.get(restored.name)!.rulers.find(r => r.id === "heir")).toMatchObject({ status: "kin", parentId: "old" });
       const exported = restored.exportState();

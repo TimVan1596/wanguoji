@@ -297,7 +297,7 @@ function importPoliticalAndHistoryState(save: WorldSaveV1) {
         plannedEndYear: plannedEndMonth, endYear: endMonth, politicalStartYear: politicalStartMonth, politicalEndYear: politicalEndMonth };
     }),
   }));
-  DynastyRegistry.importState({ dynasties, sequence: Number(save.registries.dynastyRegistrySequence) } as ReturnType<typeof DynastyRegistry.exportState>);
+  DynastyRegistry.importState({ dynasties, sequence: Number(save.registries.dynastyRegistrySequence) } as ReturnType<typeof DynastyRegistry.exportState>, save.world.clock.worldMonth);
   WorldHistory.importState(save.worldHistory as Parameters<typeof WorldHistory.importState>[0]);
   WorldEra.importState(save.worldEra as Parameters<typeof WorldEra.importState>[0]);
   FactionSnapshots.importState(save.factionSnapshots as Parameters<typeof FactionSnapshots.importState>[0]);

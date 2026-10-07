@@ -73,3 +73,47 @@ describe("session-only observational Revolution Gate diagnostics", () => {
     } finally { draw.mockRestore(); }
   });
 });
+
+describe("calibration expectation and session world-time rates", () => {
+  it("sums actual attempted chances, including failed rolls and discounted lower tiers, without RNG", () => {
+    const diagnostics = new RevolutionGateDiagnostics(() => true);
+    diagnostics.reset(12000); // Load at year1000: no earlier world history in the denominator.
+    const inputs = [
+      { ...context(), worldMonth: 12120, stability: 80, cityCount: 3 }, // minor,6%
+      { ...context(), worldMonth: 12240, stability: 80, cityCount: 1, successionReason: "combat" as const,
+        successor: { ...context().successor!, bornYear: 0 } }, // shock,2%
+      { ...context(), worldMonth: 12360, stability: 80, cityCount: 1, successionReason: "combat" as const,
+        successor: { ...context().successor!, bornYear: 0 }, previousSuccessionMonths: [12300] }, // instability,4%
+      { ...context(), worldMonth: 12480, stability: 80, cityCount: 4, successor: { ...context().successor!, bornYear: 0 } }, // blocked
+    ];
+    // Keep the minor successor young at the loaded world's actual month.
+    inputs[0].successor!.bornYear = 12000;
+    const results = inputs.map((input, i) => evaluateDynasticRevolution(input, () => i === 0 ? 0 : 0.99));
+    const draw = vi.spyOn(worldRandom, "next");
+    try {
+      inputs.forEach((input, i) => diagnostics.record("id", "国", input, results[i]));
+      const snapshot = diagnostics.snapshot(13200); //100 elapsed years
+      expect(snapshot).toMatchObject({ worldMonth: 13200, sessionStartMonth: 12000, elapsedWorldYears: 100,
+        rollAttemptCount: 3, crisisEligibleCount: 1, lowerRiskEligibleCount: 2, usurpationCount: 1,
+        eligibleRollsPer1000Years: 30, actualUsurpationsPer1000Years: 10 });
+      expect(snapshot.expectedUsurpationCount).toBeCloseTo(0.12);
+      expect(snapshot.expectedUsurpationsPer1000Years).toBeCloseTo(1.2);
+      expect(snapshot.estimatedWorldYearsPerExpectedUsurpation).toBeCloseTo(100 / 0.12);
+      expect(snapshot.chanceBuckets.final["2%"]).toBe(1);
+      expect(snapshot.chanceBuckets.tiers).toEqual({ CRISIS: 1, COMPOUND_SHOCK: 1, COMPOUND_INSTABILITY: 1 });
+      const same = diagnostics.snapshot(13200);
+      expect(same).toEqual(snapshot); // repeated UI reads don't accumulate expectation
+      expect(draw).not.toHaveBeenCalled();
+      diagnostics.reset(13200);
+      expect(diagnostics.snapshot(13200)).toMatchObject({ elapsedWorldYears: 0, expectedUsurpationCount: 0,
+        eligibleRollsPer1000Years: null, estimatedWorldYearsPerExpectedUsurpation: null });
+      expect(diagnostics.snapshot(13320)).toMatchObject({ elapsedWorldYears: 10, expectedUsurpationsPer1000Years: 0,
+        estimatedWorldYearsPerExpectedUsurpation: null });
+    } finally { draw.mockRestore(); }
+  });
+  it("does not collect expectations or eligible samples when debug is off", () => {
+    const diagnostics = new RevolutionGateDiagnostics(() => false), input = context();
+    diagnostics.record("id", "国", input, evaluateDynasticRevolution(input, () => 0));
+    expect(diagnostics.snapshot(1200)).toMatchObject({ expectedUsurpationCount: 0, rollAttemptCount: 0, recentEligibleBoundaries: [] });
+  });
+});

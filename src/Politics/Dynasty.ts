@@ -167,7 +167,7 @@ class DynastyRegistryStore {
     return this.provisionalDiagnosticsSession.summarize(this.listForDiagnostics(), factions);
   }
 
-  importState(state: ReturnType<DynastyRegistryStore["exportState"]>) {
+  importState(state: ReturnType<DynastyRegistryStore["exportState"]>, diagnosticsStartMonth = 0) {
     this.currentRulerLookup.reset();
     this.dynasties = new Map(state.dynasties.map((dynasty) => [dynasty.factionId, {
       ...dynasty,
@@ -177,7 +177,7 @@ class DynastyRegistryStore {
     }]));
     this.sequence = state.sequence;
     this.revolutionChecks = [];
-    this.revolutionGateDiagnostics.reset();
+    this.revolutionGateDiagnostics.reset(diagnosticsStartMonth);
     this.provisionalDiagnosticsSession.reset(this.listForDiagnostics());
   }
 
@@ -922,7 +922,7 @@ class DynastyRegistryStore {
       activeHouseEpochCount: epochs.filter((epoch) => epoch.endMonth === undefined && teams.some((team) => team.name === epoch.factionId && team.status === "ACTIVE")).length,
       lastRevolution: epochs.filter((epoch) => epoch.startReason === "USURPATION").sort((a, b) => b.startMonth - a.startMonth)[0],
       lastBoundaryChecks: this.revolutionChecks,
-      cumulativeGate: this.revolutionGateDiagnostics.snapshot(),
+      cumulativeGate: this.revolutionGateDiagnostics.snapshot(worldMonth),
       candidateBlockers: teams.filter((team) => team.status === "ACTIVE").slice(0, 5).map((team) => {
         const dynasty = this.get(team.name);
         const predecessor = this.getCurrentRuler(team.name);

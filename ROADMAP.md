@@ -26,7 +26,8 @@
 - v0.99927b4 Gate FAIL：nominal／AC／RAF running、resetDelta已执行，锁屏后仍10～30FPS；低Core CPU及4steps排除旧debt spiral，render／compositor／OS根因未定。
 - v0.99927b5已人工回传：RAF＋blocker锁屏约18min后rolling~56FPS，unlock1／5／10s~17.5／50.5／58.2；timeout＋OFF锁屏约12min后rolling~52.6FPS，callback~39.8／51.2／51.6，均可正常游戏。v27b性能审计正式结束，不做b6；所有修复冻结，两个实验保留opt-in，release默认RAF＋OFF不变。
 - v0.99927c Dynastic Revolution Calibration：取消稳定度25独立硬门，保留合法successor／STATE／ACTIVE／有城／succession-crisis／真实vulnerability；概率为基础4／6／10／14%＋事实加成，cap18%，eligible boundary最多一次draw。V9不变。
-- 等待v27c新世界默认desktop debug4×800～1500年人工Gate：hard eligibility／roll attempts／chance buckets／最近samples及真实篡朝历史身份、旧宗亲、epoch与Save/Load。没有篡朝但已roll不自动提高概率；hard eligibility=0则回传证据。通过前不进入Diplomacy II、纳土归降、Faction Historiography或Era Atlas II。
+- v27c人工2445年：589 boundaries／8 crisis／6 draws／0篡朝，六次chance期望约0.50。v0.99927d只开放前君战死／被俘＋孤城复合低风险入口（shock¼／instability½），最高crisis不变，新增session期望频率诊断；V9不变。2445年低FPS／unlock卡顿仅记known performance debt。
+- 等待v27d人工Calibration Gate：新世界4×800～1500年，按机会与期望频率评估，不要求随机必见篡朝；自然事件的王室／谱系／历史身份／Save-Load由用户检查。回复前不进入Diplomacy II、纳土归降、Faction Historiography或Era Atlas II。
 
 ## 玩法后续
 

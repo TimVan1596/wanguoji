@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.99927d
+
+- Reviewed the 2445-year Calibration Gate: 589 boundaries, 142 vulnerability eligible, 8 crisis eligible, 6 attempts/all failed, 0 usurpations. Six chances total about0.50 expected events; zero outcomes alone do not justify raising all probabilities. The original crisis-only gate blocked581 boundaries.
+- Highest succession-crisis eligibility and its contextual chance remain unchanged. Lower shock/instability tiers require BOTH a combat/captured predecessor boundary and exactly one remaining city, alongside the existing lawful successor/STATE/ACTIVE gates. Chance is the existing capped profile multiplied by0.25/0.5 respectively; no ordinary succession rule change and exactly one eligible-boundary draw.
+- Session-only Gate diagnostics add elapsed world years, attempted/expected/actual events per1000years, summed attempted chance, years per expected event, tier counts and actual fractional-percent buckets. Load resets observations and starts the denominator at the saved month; no save schema or RNG changes. Existing canonical archive/epoch/identity/history path stays intact.
+- APP_VERSION v0.99927d / package0.99.110; WorldSave V9 unchanged. Low FPS/unlock stalls at year2445 are recorded as known performance debt only; no performance, combat, population, diplomacy or downstream feature work.
+- WAITING FOR USER MANUAL GATE: new world4×800–1500years, assess expected frequency without requiring a random usurpation. If one occurs, manually inspect displaced living kin, genealogy, house epochs, historical name/color, royal UI/chronicles/HistoryScroll and Save/Load. Automatic checks do not close the manual Gate.
+
 ## v0.99927c
 
 - Closed the v27b performance audit using the user's b5 results: RAF + explicit blocker recovered after ~18min lock (rolling~56 FPS, fixed CPU~1.3ms, steps~3.7; unlock1/5/10s callbacks~17.5/50.5/58.2 FPS); timeout without blocker also remained usable after ~12min lock (rolling~52.6 FPS, steps~3.96; callbacks~39.8/51.2/51.6 FPS). Both remain opt-in debug/compatibility experiments; RAF/OFF release default and all validated lifecycle/history/debt/wake fixes are frozen. No b6.

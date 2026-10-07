@@ -82,3 +82,50 @@ describe("contextual dynastic revolution chance", () => {
     for (const count of counts) { expect(count).toBeGreaterThan(0); expect(count).toBeLessThanOrEqual(200); }
   });
 });
+
+describe("calibration closure compound lower-risk boundaries", () => {
+  const shock = (): RevolutionContext => ({ ...context(), previousSuccessionMonths: [], cityCount: 1, successionReason: "combat" });
+  it("requires both violent predecessor loss and one-city exposure outside the highest crisis tier", () => {
+    for (const reason of ["combat", "captured"] as const) {
+      const input = { ...shock(), successionReason: reason }, roll = vi.fn(() => 0.99);
+      const result = evaluateDynasticRevolution(input, roll);
+      expect(result).toMatchObject({ hardEligible: true, riskTier: "COMPOUND_SHOCK", riskMultiplier: 0.25, crisis: { level: "succession-shock" } });
+      expect(result.chance).toBe(reason === "combat" ? 0.02 : 0.025);
+      expect(roll).toHaveBeenCalledTimes(1);
+      for (const change of [{ cityCount: 2 }, { successionReason: "natural" as const }, { successor: undefined },
+        { identityStage: "PROVISIONAL" }, { status: "EXILED" }, { cityCount: 0 }]) {
+        const blockedRoll = vi.fn(() => 0);
+        expect(evaluateDynasticRevolution({ ...input, ...change }, blockedRoll).rollAttempted).toBe(false);
+        expect(blockedRoll).not.toHaveBeenCalled();
+      }
+    }
+  });
+  it("uses unchanged SuccessionRules levels and progressively discounts lower tiers", () => {
+    for (const stability of [20, 45, 60, 80]) {
+      const input = { ...shock(), stability };
+      const lower = evaluateDynasticRevolution(input, () => 0.99);
+      const instability = evaluateDynasticRevolution({ ...input, previousSuccessionMonths: [1180] }, () => 0.99);
+      const crisis = evaluateDynasticRevolution({ ...input, previousSuccessionMonths: [1180, 1160] }, () => 0.99);
+      expect(instability).toMatchObject({ riskTier: "COMPOUND_INSTABILITY", riskMultiplier: 0.5, crisis: { level: "succession-instability" } });
+      expect(lower.chance).toBeLessThan(instability.chance);
+      expect(instability.chance).toBeLessThan(crisis.chance);
+      expect(crisis.riskMultiplier).toBe(1);
+      expect(lower.chance).toBeLessThanOrEqual(0.045);
+      expect(instability.chance).toBeLessThanOrEqual(0.09);
+      expect(crisis.chance).toBeLessThanOrEqual(0.18);
+    }
+  });
+  it("keeps lower-tier RNG consumption and decisions reproducible", () => {
+    const saved = worldRandom.exportState();
+    try {
+      const run = () => {
+        worldRandom.initialize("closure-compound-boundaries");
+        const results = Array.from({ length: 100 }, () => evaluateDynasticRevolution(shock()));
+        return { results, rng: worldRandom.exportState() };
+      };
+      const draw = vi.spyOn(worldRandom, "next");
+      try { const first = run(); expect(draw).toHaveBeenCalledTimes(100); expect(run()).toEqual(first); expect(draw).toHaveBeenCalledTimes(200); }
+      finally { draw.mockRestore(); }
+    } finally { worldRandom.restore(saved); }
+  });
+});

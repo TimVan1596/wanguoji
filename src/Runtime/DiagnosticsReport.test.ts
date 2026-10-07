@@ -5,7 +5,8 @@ import { DIAGNOSTIC_PREVIEW_BUDGET, stableStringify, formatCoreDiagnostics, form
 describe("diagnostic reports", () => {
   it("includes complete session Gate counters and all ten eligible samples in the core clipboard report", () => {
     const cumulativeGate = { successionBoundaryCheckCount: 120, hardEligibleBeforeRollCount: 10, rollAttemptCount: 10, chanceBuckets: { base: { "4%": 10 }, final: { "6%": 10 } },
-      rollFailedCount: 10, usurpationCount: 0, blockerCounts: { NO_SUCCESSION_CRISIS: 80, ROLL_FAILED: 10 },
+      rollFailedCount: 10, usurpationCount: 0, elapsedWorldYears: 1000, expectedUsurpationCount: 0.6, eligibleRollsPer1000Years: 10,
+      expectedUsurpationsPer1000Years: 0.6, estimatedWorldYearsPerExpectedUsurpation: 1666.67, actualUsurpationsPer1000Years: 0, blockerCounts: { NO_SUCCESSION_CRISIS: 80, ROLL_FAILED: 10 },
       recentEligibleBoundaries: Array.from({ length: 10 }, (_, index) => ({ factionId: `faction-${index}`,
         month: 1000 + index, stability: 20, crisisLevel: "succession-crisis", computedChance: 0.06, rollResult: 0.9, evidence: ["MINOR_SUCCESSOR"], successionReason: "natural", successorAgeMonths: 120 })) };
     const report = formatCoreDiagnostics({ provisionalRulers: { revolution: { cumulativeGate } } });
@@ -14,6 +15,8 @@ describe("diagnostic reports", () => {
     expect(report).toContain('"computedChance": 0.06');
     expect(report).toContain('"rollResult": 0.9');
     expect(report).toContain('"chanceBuckets"');
+    expect(report).toContain('"expectedUsurpationCount": 0.6');
+    expect(report).toContain('"estimatedWorldYearsPerExpectedUsurpation": 1666.67');
     for (let index = 0; index < 10; index++) expect(report).toContain(`"factionId": "faction-${index}"`);
   });
   it("formats core fields and renders missing values as dashes", () => {

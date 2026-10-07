@@ -35,9 +35,15 @@ export function getRevolutionEligibility(context: RevolutionContext) {
   if (!context.successor) blockers.push("NO_ELIGIBLE_LEGITIMATE_SUCCESSOR");
   if (context.identityStage !== "STATE") blockers.push("NOT_STATE");
   if (context.status !== "ACTIVE" || context.cityCount <= 0) blockers.push("NOT_ACTIVE_STATE");
-  if (crisis.level !== "succession-crisis") blockers.push("NO_SUCCESSION_CRISIS");
+  // Minor weighting and the recorded chain already reach crisis. Lower levels
+  // need both a violent succession boundary and actual territorial collapse.
+  const compoundExposure = context.cityCount === 1 && context.successionReason !== "natural";
+  const riskTier = crisis.level === "succession-crisis" ? "CRISIS" as const
+    : compoundExposure ? (crisis.level === "succession-instability" ? "COMPOUND_INSTABILITY" as const : "COMPOUND_SHOCK" as const)
+    : "BLOCKED" as const;
+  if (riskTier === "BLOCKED") blockers.push("NO_SUCCESSION_CRISIS");
   if (!evidence.length) blockers.push("SUCCESSOR_NOT_VULNERABLE");
-  return { blockers, evidence, crisis };
+  return { blockers, evidence, crisis, riskTier };
 }
 
 const EVIDENCE_CHANCE_PERCENT: Readonly<Record<string, number>> = {
@@ -47,12 +53,13 @@ const EVIDENCE_CHANCE_PERCENT: Readonly<Record<string, number>> = {
 const MAX_REVOLUTION_CHANCE_PERCENT = 18;
 
 function getRevolutionChanceProfile(context: RevolutionContext, eligibility: ReturnType<typeof getRevolutionEligibility>) {
-  if (eligibility.blockers.length) return { chance: 0, baseChance: 0, modifierChance: 0, capped: false };
+  if (eligibility.blockers.length) return { chance: 0, baseChance: 0, modifierChance: 0, capped: false, riskMultiplier: 0 };
   // Integer percentage points avoid accumulated float error at the strict roll boundary.
   const basePercent = context.stability <= 30 ? 14 : context.stability <= 45 ? 10 : context.stability <= 60 ? 6 : 4;
   const modifierPercent = Object.entries(EVIDENCE_CHANCE_PERCENT)
     .reduce((total, [evidence, percent]) => total + (eligibility.evidence.includes(evidence) ? percent : 0), 0);
-  return { chance: Math.min(MAX_REVOLUTION_CHANCE_PERCENT, basePercent + modifierPercent) / 100,
+  const riskMultiplier = eligibility.riskTier === "CRISIS" ? 1 : eligibility.riskTier === "COMPOUND_INSTABILITY" ? 0.5 : 0.25;
+  return { chance: Math.min(MAX_REVOLUTION_CHANCE_PERCENT, basePercent + modifierPercent) * riskMultiplier / 100, riskMultiplier,
     baseChance: basePercent / 100, modifierChance: modifierPercent / 100,
     capped: basePercent + modifierPercent > MAX_REVOLUTION_CHANCE_PERCENT };
 }
