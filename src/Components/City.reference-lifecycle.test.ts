@@ -52,6 +52,15 @@ describe("actual City lifecycle across full map references", () => {
     expect(city.destroyPermanently(120)).toBe(true);
     expect(refs()).toHaveLength(0); expect(blocks.flat().every(b => !b.isCityCenter)).toBe(true);
   });
+  it("submission uses the actual administrative path with independent non-conquest history", () => {
+    const { city, owners, refs } = fixture();
+    const captures = city.captureCount;
+    expect(city.administrativeMergeTransferTo(owners[1], 120, "SUBMITTED")).toBe(true);
+    expect(city.ownerFactionId).toBe("B");expect(city.captureCount).toBe(captures);
+    expect(city.history.at(-1)).toMatchObject({ type: "submitted", previousOwnerFactionId: "A", newOwnerFactionId: "B" });
+    expect(city.history.every((e: any) => e.type !== "captured")).toBe(true);
+    expect(refs().every(b => b.team === owners[1])).toBe(true);
+  });
   it("survives actual capture/revolt/merge transfers and repeated captures before destruction", () => {
     const { city, owners, refs } = fixture();
     city.capture(owners[1], 120); expect(city.ownerFactionId).toBe("B");

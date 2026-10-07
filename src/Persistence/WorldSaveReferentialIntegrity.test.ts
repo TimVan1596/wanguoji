@@ -61,6 +61,29 @@ function target() {
 }
 afterEach(() => { vi.restoreAllMocks(); });
 describe("V9 active city referential integrity and pre-teardown repair", () => {
+  it("V11 submission hydrate/export preserves terminal identity, abdication archive and administrative ownership",()=>{
+    const save=fixture();save.factions.push({...save.factions[0],factionId:"wei",displayName:"魏"});
+    Object.assign(save.factions[0],{status:"EXTINCT",terminationReason:"SUBMITTED",terminationTargetFactionId:"wei",terminationMonth:36,extinctionMonth:36,cumulativeActiveMonths:36});
+    delete save.factions[0].capitalCityId;
+    save.cities[0].ownerFactionId="wei";save.blocks.forEach(b=>b.ownerFactionId="wei");
+    save.dynasties=[{factionId:"qin",houseName:"陈氏",currentRulerId:null,heirIds:[],houseEpochs:[{houseName:"陈氏",startMonth:0,startReason:"FOUNDING",foundingRulerId:"last"}],rulers:[
+      {rulerId:"last",houseName:"陈氏",givenName:"平",bornMonth:0,accessionMonth:0,endMonth:36,politicalEndMonth:36,status:"abdicated",endReason:"纳土退位"},
+      {rulerId:"heir",houseName:"陈氏",givenName:"继",bornMonth:20,parentId:"last",status:"kin"},
+    ]}];
+    const rng=save.worldRandom,core=target();
+    expect(validateWorldSave(save)).toEqual({valid:true,errors:[]});hydrateWorldSave(core,save);
+    const first=exportWorldSave(core);expect(first.saveSchemaVersion).toBe(11);
+    expect(first.factions[0]).toMatchObject({terminationReason:"SUBMITTED",terminationTargetFactionId:"wei",terminationMonth:36});
+    expect(first.cities[0].ownerFactionId).toBe("wei");expect(first.blocks.every(b=>b.ownerFactionId === "wei")).toBe(true);
+    expect((first.dynasties[0].rulers as any[])[0]).toMatchObject({status:"abdicated",endReason:"纳土退位",politicalEndMonth:36});
+    expect((first.dynasties[0].rulers as any[])[1]).toMatchObject({status:"kin",parentId:"last"});
+    hydrateWorldSave(core,first);expect(exportWorldSave(core)).toEqual(first);expect(worldRandom.exportState()).toEqual(rng);
+    expect(validateWorldSave({...first,saveSchemaVersion:10}).valid).toBe(false);
+    const changed=structuredClone(first);changed.factions[0].terminationTargetFactionId="missing";
+    expect(validateWorldSave(changed).valid).toBe(false);
+    changed.factions[0].terminationTargetFactionId="wei";changed.diplomacy.relations=[{factionAId:"qin",factionBId:"wei",status:"ALLIANCE",reason:"COMMON_THREAT_ALLIANCE",originalStartedMonth:0,startedMonth:0,expiresMonth:120,renewalCount:0}];
+    expect(validateWorldSave(changed).valid).toBe(false);
+  });
   it("V10 actual hydrate/export round-trip retains diplomacy renewal and cooldown state without RNG draws",()=>{
     const save=fixture();save.factions.push({...save.factions[0],factionId:"wei"});
     delete save.factions[1].capitalCityId;

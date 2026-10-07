@@ -24,7 +24,7 @@ async function fixture() {
   const [weak,strong]=teams;
   weak.blocks.children.entries=[0,1,2].map((i)=>({x:i===0?32:1000+i*100,y:0,team:weak,claimForTeam(team:any){this.team=team;weak.blocks.children.entries=weak.blocks.children.entries.filter((b:any)=>b!==this);strong.blocks.children.entries.push(this);}}));
   strong.blocks.children.entries=[{x:0,y:0}];
-  weak.cities[0]={loyalty:40,administrativeMergeTransferTo:vi.fn((target:any,month:number,reason:string)=>{expect(reason).toBe("SUBMITTED");const city=weak.cities[0];weak.cities=[];target.cities.push(city);city.ownerFactionId=target.name;return true;})};
+  weak.cities[0]={loyalty:40,administrativeMergeTransferTo:vi.fn((target:any,_month:number,reason:string)=>{expect(reason).toBe("SUBMITTED");const city=weak.cities[0];weak.cities=[];target.cities.push(city);city.ownerFactionId=target.name;return true;})};
   const user:any={role:"RULER",rulerId:"weak-r",player:{setRole:vi.fn()},setTeam:vi.fn((target:any,ctx:any)=>{expect(ctx.cause).toBe("FACTION_SUBMISSION");weak.users.delete(user);target.users.add(user);user.team=target;})};weak.users.add(user);
   DynastyRegistry.importState({sequence:10,dynasties:[{factionId:"weak",houseName:"陈氏",currentRulerId:"weak-r",heirIds:["heir"],designatedHeirId:"heir",houseEpochs:[],rulers:[{id:"weak-r",houseName:"陈氏",givenName:"平",bornYear:0,accessionYear:0,status:"ruling"},{id:"heir",houseName:"陈氏",givenName:"继",bornYear:60,status:"heir",parentId:"weak-r"}]},{factionId:"strong",houseName:"贺氏",currentRulerId:"strong-r",heirIds:[],houseEpochs:[],rulers:[{id:"strong-r",houseName:"贺氏",givenName:"成",bornYear:0,accessionYear:0,status:"ruling"}]}]} as any);
   game.Core.teams=teams;

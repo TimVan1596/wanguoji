@@ -763,6 +763,7 @@ export default class Core {
       activeFactionCount: activeTeams.length,
       exiledFactionCount: this.teams.filter((team) => team.status === "EXILED").length,
       extinctFactionCount: this.teams.filter((team) => team.status === "EXTINCT" && team.terminationReason !== "MERGED" && team.terminationReason !== "SUBMITTED").length,
+      submittedFactionCount: this.teams.filter((team) => team.terminationReason === "SUBMITTED").length,
       mergedFactionCount: this.teams.filter((team) => team.terminationReason === "MERGED").length,
       activeCityCount: activeTeams.reduce((sum, team) => sum + team.cities.filter((city) => !city.destroyed).length, 0),
       archivedCityCount: ArchivedCities.list().length,

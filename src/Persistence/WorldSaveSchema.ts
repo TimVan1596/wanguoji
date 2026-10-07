@@ -312,7 +312,7 @@ function simplifyDiffValue(value: unknown): unknown {
   return String(value);
 }
 
-// Legacy source API aliases only; every emitted/accepted DTO is schema V10.
+// Legacy source API aliases only; every emitted/accepted DTO is schema V11.
 export type WorldSaveV9 = WorldSaveV11;
 export const createEmptyWorldSaveV9 = createEmptyWorldSaveV11;
 
