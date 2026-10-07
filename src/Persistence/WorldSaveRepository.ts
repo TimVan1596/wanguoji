@@ -1,3 +1,4 @@
+import { normalizeArchivedCityBlockRefs } from "./ArchivedCityHydrationRepair";
 import { APP_VERSION } from "../config/version";
 import { CURRENT_SAVE_SCHEMA_VERSION, WorldSaveV1 } from "./WorldSaveSchema";
 import { validateWorldSave } from "./WorldSaveValidator";
@@ -142,7 +143,7 @@ export function validateStoredWorldSaveRecord(value: unknown, expectedSlotId?: s
     if (record.summary.worldYearLabel !== undefined && typeof record.summary.worldYearLabel !== "string") errors.push("存档摘要年代无效");
   }
   if (record.displayName !== undefined && typeof record.displayName !== "string") errors.push("存档名称无效");
-  const saveValidation = validateWorldSave(saveValue);
+  const saveValidation = validateWorldSave(normalizeArchivedCityBlockRefs(saveValue).value);
   if (!saveValidation.valid) saveValidation.errors.forEach((error) => errors.push(error));
   else if (!(saveValue as WorldSaveV1).world.started) errors.push("存档尚未开始，不能继续");
   else if ((saveValue as WorldSaveV1).saveSchemaVersion !== record.saveSchemaVersion) errors.push("存档记录与数据的 schema 版本不一致");

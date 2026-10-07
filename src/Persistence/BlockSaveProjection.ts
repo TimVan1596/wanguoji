@@ -11,8 +11,11 @@ export interface BlockSaveProjectionInput {
 export function createBlockSaveProjection(
   block: BlockSaveProjectionInput,
   gridX: number,
-  gridY: number
+  gridY: number,
+  activeCityIds?: ReadonlySet<string>
 ) {
+  if (block.city && activeCityIds && !activeCityIds.has(block.city.id))
+    throw new Error(`Cannot export block reference to non-active city ${block.city.id} at ${gridX},${gridY}`);
   return {
     gridX,
     gridY,

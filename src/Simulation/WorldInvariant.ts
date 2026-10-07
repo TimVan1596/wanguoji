@@ -1,3 +1,4 @@
+import { getCityBlockReferenceIssues } from "./CityBlockReferences";
 import type Core from "../Game/Core";
 import { validateDynastyInvariants } from "../Politics/DynastyInvariant";
 import ArchivedCities from "./ArchivedCities";
@@ -62,6 +63,7 @@ export function validateWorldState(core: Core) {
       issues.push(`city founder missing from runtime teams: ${city.name} -> ${city.founderFactionId}`);
     }
   });
+  issues.push(...getCityBlockReferenceIssues(core.allCities, core.map?.blocks ?? []));
   issues.push(...validateCityNameUniqueness(core.allCities, ArchivedCities.list()));
   issues.push(...validateCityNameReservations(core.allCities, CityNameRegistry.entries()));
   issues.push(...validateCityZoneMappings(core.allCities));

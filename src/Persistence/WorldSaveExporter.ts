@@ -1,3 +1,4 @@
+import { getCityBlockReferenceIssues } from "../Simulation/CityBlockReferences";
 import type Core from "../Game/Core";
 import Game from "../Game/Game";
 import Npc from "../Components/Npc";
@@ -42,9 +43,12 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
     accumulatorMs: snapshotBoundary.simulationAccumulatorMs,
   };
 
+  const referenceIssues = getCityBlockReferenceIssues(core.allCities, core.map?.blocks ?? []);
+  if (referenceIssues.length) throw new Error(referenceIssues.join("; "));
   const teams = core.teams;
   const factions = teams.map((team) => team.exportState());
   const factionIds = new Set(teams.map((team) => team.name));
+  const activeCityIds = new Set(core.allCities.map(city => city.id));
   const cities = core.allCities.map((city) => {
     const gridX = Math.round(city.block.x / Game.BlockSize);
     const gridY = Math.round(city.block.y / Game.BlockSize);
@@ -116,7 +120,7 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
   });
 
   const blocks = core.map?.blocks.flatMap((column, gridX) => column.map((block, gridY) =>
-    createBlockSaveProjection(block, gridX, gridY)
+    createBlockSaveProjection(block, gridX, gridY, activeCityIds)
   )) ?? [];
   const dynastyState = DynastyRegistry.exportState();
   const dynasties = dynastyState.dynasties.map((dynasty) => ({

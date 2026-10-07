@@ -13,7 +13,7 @@ describe("major history discovery over canonical bounded pages", () => {
     ["dynasty-usurped", "revolution"], ["state-founded", "founding"], ["emperor-proclaimed", "emperor"],
     ["faction-merged", "merge"], ["faction-restored", "restoration"], ["dynasty-restored", "restoration"],
     ["faction-exiled", "extinction"], ["faction-extinct", "extinction"], ["world-era-started", "era"],
-    ["world-unification", "era"], ["world-hegemony", "era"], ["world-fractured", "era"], ["empire-split", "era"],
+    ["world-unification", "era"], ["world-hegemony", "era"], ["world-fractured", "era"],
   ] as const)("%s appears in major events and its %s subtype", (type, subtype) => {
     const store = new WorldHistoryStore(); store.addEvent(event(type, 9867));
     expect(queryHistoryPage(store, { visibleCount: 30, filter: "featured" }).events[0].type).toBe(type);

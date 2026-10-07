@@ -154,7 +154,6 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
     if (unit.parentUnitId !== undefined) requireRef(unit.parentUnitId, unitIds, "unit.parentUnitId", errors);
     if (Array.isArray(unit.children)) unit.children.forEach((id: unknown) => requireRef(id, unitIds, "unit.children", errors));
   });
-  const allCityIds = new Set([...cityIds, ...archivedCityIds]);
   const activeCitiesById = new Map(cities
     .filter((city) => typeof city.cityId === "string")
     .map((city) => [String(city.cityId), city]));
@@ -162,13 +161,33 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
     if (!finite(block.gridX) || !finite(block.gridY)) errors.push("block grid coordinates must be finite");
     if (!finite(block.homeHitPoints)) errors.push("block.homeHitPoints must be finite");
     if (block.ownerFactionId !== undefined) requireRef(block.ownerFactionId, factionIds, "block.ownerFactionId", errors);
+    if (block.isCityCenter && block.cityId === undefined) errors.push(`block center requires active city at ${block.gridX},${block.gridY}`);
     if (block.cityId !== undefined) {
       const cityId = String(block.cityId);
-      if (!allCityIds.has(cityId)) errors.push(`unknown block.cityId: ${cityId}`);
+      if (!cityIds.has(cityId)) errors.push(`unknown active block.cityId: ${cityId} at ${block.gridX},${block.gridY}, owner=${String(block.ownerFactionId)}`);
       const city = activeCitiesById.get(cityId);
       if (city && finite(city.defense) && finite(block.homeHitPoints) && block.homeHitPoints !== city.defense) {
         errors.push(`block.homeHitPoints must match city.defense for active city ${cityId}`);
       }
+    }
+  });
+  const savedBlocks = Array.isArray(save.blocks) ? save.blocks : [];
+  const byCoordinate = new Map(savedBlocks.map(block => [`${block.gridX},${block.gridY}`, block]));
+  cities.forEach(city => {
+    const zone = savedBlocks.filter(block => block.cityId === city.cityId);
+    if (zone.some(block => block.ownerFactionId !== city.ownerFactionId)) errors.push(`City ${city.cityId} fortified zone ownership conflicts with its owner.`);
+    if (save.world?.started && Number(save.world.map?.widthCells) > 0 && !zone.some(block => block.isCityCenter && block.gridX === city.centerGridX && block.gridY === city.centerGridY))
+      errors.push(`City ${city.cityId} has no saved center-cell relationship.`);
+    if (zone.some(block => block.isCityCenter && (block.gridX !== city.centerGridX || block.gridY !== city.centerGridY))) errors.push(`City ${city.cityId} has a misplaced center cell.`);
+    if (Array.isArray(city.fortifiedCells)) {
+      const seen = new Set<string>();
+      for (const cell of city.fortifiedCells) {
+        const key = cell && `${cell.gridX},${cell.gridY}`;
+        if (!cell || !Number.isInteger(cell.gridX) || !Number.isInteger(cell.gridY) || seen.has(key) || byCoordinate.get(key)?.cityId !== city.cityId)
+          errors.push(`City ${city.cityId} fortified zone sequence does not match authoritative block references.`);
+        seen.add(key);
+      }
+      if (seen.size !== zone.length) errors.push(`City ${city.cityId} fortified zone sequence does not match authoritative block references.`);
     }
   });
   dynasties.forEach((dynasty) => {

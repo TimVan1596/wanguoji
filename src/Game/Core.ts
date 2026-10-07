@@ -1,3 +1,4 @@
+import type { HydrationRepairs } from "../Persistence/ArchivedCityHydrationRepair";
 import { DesktopWakeRecovery } from "../Runtime/DesktopWakeRecovery";
 import { ForegroundDebtDiagnostics } from "../Simulation/ForegroundDebtDiagnostics";
 import { runtimeProfilingEnabled } from "../Simulation/MonthlyPhaseProfiler";
@@ -821,8 +822,10 @@ export default class Core {
     };
   }
 
+  private hydrationRepairs?: HydrationRepairs;
+  setHydrationRepairs(repairs: HydrationRepairs) { this.hydrationRepairs = repairs; }
   getHydrationDiagnostics() {
-    return { lastStage: this.lastHydrationStage };
+    return { lastStage: this.lastHydrationStage, hydrationRepairs: this.hydrationRepairs };
   }
 
   setHydrationStage(stage: string) {

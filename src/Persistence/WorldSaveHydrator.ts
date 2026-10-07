@@ -1,3 +1,4 @@
+import { normalizeArchivedCityBlockRefs, type HydrationRepairs } from "./ArchivedCityHydrationRepair";
 import Block from "../Components/Block";
 import City from "../Components/City";
 import Npc from "../Components/Npc";
@@ -34,29 +35,15 @@ export interface HydrationReport {
   unitCount: number;
   historyEventCount: number;
   validatorResult: "valid";
+  hydrationRepairs: HydrationRepairs;
 }
 
 export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
   core.setHydrationStage("PRECHECK");
-  const validation = validateWorldSave(value);
-  if (!validation.valid) throw new Error(`WorldSaveV1 rejected: ${validation.errors.join("; ")}`);
-  const save = value as WorldSaveV1;
-  if (save.saveSchemaVersion !== CURRENT_SAVE_SCHEMA_VERSION) {
-    throw new Error(`Unsupported save schema version: ${String(save.saveSchemaVersion)}`);
-  }
-  if (Game.Core !== core) throw new Error("Hydration target is not the active Phaser Core.");
-  if (!save.world.started) throw new Error("Cannot hydrate a save that has not started a world.");
-  const snapshotBoundary = canonicalizeSavedSnapshotBoundary({
-    worldRunning: save.world.running,
-    clockRunning: save.world.clock.running,
-    clockElapsedMs: save.world.clock.elapsedMs,
-    simulationAccumulatorMs: save.world.simulationDriver.accumulatorMs,
-  });
-  if (!snapshotBoundary) {
-    throw new Error("WorldSaveV1 hydration requires the saved complete-month/fixed-step boundary.");
-  }
-  validateRequiredImportState(save);
-  validateGeometryAndOwnership(save, core);
+  let prepared: ReturnType<typeof preflightWorldSave>;
+  try { prepared = preflightWorldSave(core, value); }
+  catch (error) { core.setHydrationStage("PRECHECK_FAILED"); throw error; }
+  const { save, snapshotBoundary, repairs } = prepared;
 
   // All preflight checks happen before teardown; malformed/incompatible saves leave the live world untouched.
   core.prepareForHydration(save.world.map);
@@ -183,7 +170,34 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
     unitCount: hydrated.unitCount,
     historyEventCount: WorldHistory.getEventCount(),
     validatorResult: "valid",
+    hydrationRepairs: repairs,
   };
+}
+
+function preflightWorldSave(core: Core, value: unknown) {
+  const normalized = normalizeArchivedCityBlockRefs(value);
+  core.setHydrationRepairs?.(normalized.repairs);
+  const validation = validateWorldSave(normalized.value);
+  if (!validation.valid) throw new Error(`WorldSaveV1 rejected: ${validation.errors.join("; ")}`);
+  const save = normalized.value as WorldSaveV1;
+  if (save.saveSchemaVersion !== CURRENT_SAVE_SCHEMA_VERSION) {
+    throw new Error(`Unsupported save schema version: ${String(save.saveSchemaVersion)}`);
+  }
+  if (Game.Core !== core) throw new Error("Hydration target is not the active Phaser Core.");
+  if (!save.world.started) throw new Error("Cannot hydrate a save that has not started a world.");
+  const snapshotBoundary = canonicalizeSavedSnapshotBoundary({
+    worldRunning: save.world.running,
+    clockRunning: save.world.clock.running,
+    clockElapsedMs: save.world.clock.elapsedMs,
+    simulationAccumulatorMs: save.world.simulationDriver.accumulatorMs,
+  });
+  if (!snapshotBoundary) {
+    throw new Error("WorldSaveV1 hydration requires the saved complete-month/fixed-step boundary.");
+  }
+  validateRequiredImportState(save);
+  validateGeometryAndOwnership(save, core);
+
+  return { save, snapshotBoundary, repairs: normalized.repairs };
 }
 
 function hydrateUsersAndUnits(save: WorldSaveV1, core: Core, teams: Map<string, Team>) {
@@ -329,15 +343,6 @@ function validateGeometryAndOwnership(save: WorldSaveV1, core: Core) {
   const factionIds = new Set(save.factions.map((faction) => faction.factionId));
   save.cities.forEach((city) => {
     if (!factionIds.has(city.ownerFactionId) || !factionIds.has(city.founderFactionId)) throw new Error(`City ${city.cityId} has an unknown faction reference.`);
-    const zone = save.blocks.filter((block) => block.cityId === city.cityId);
-    if (!zone.some((block) => block.isCityCenter && block.gridX === city.centerGridX && block.gridY === city.centerGridY)) throw new Error(`City ${city.cityId} has no saved center-cell relationship.`);
-    if (zone.some((block) => block.ownerFactionId !== city.ownerFactionId)) throw new Error(`City ${city.cityId} fortified zone ownership conflicts with its owner.`);
-    if (Array.isArray(city.fortifiedCells)) {
-      const savedZone = city.fortifiedCells as Array<{ gridX: number; gridY: number }>;
-      if (savedZone.length !== zone.length || savedZone.some(({ gridX, gridY }) => !zone.some((block) => block.gridX === gridX && block.gridY === gridY))) {
-        throw new Error(`City ${city.cityId} fortified zone sequence does not match authoritative block references.`);
-      }
-    }
     const contacts = Array.isArray(city.siegeContacts) ? city.siegeContacts as Array<{ factionId: string }> : [];
     if (contacts.some((contact) => !factionIds.has(contact.factionId))) throw new Error(`City ${city.cityId} has an unknown siege faction reference.`);
   });

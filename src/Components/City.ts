@@ -498,6 +498,7 @@ export default class City {
     measurePhase(profile, "City.updateLoyalty", () => this.updateLoyalty(year));
     measurePhase(profile, "City.updateSiege", () => this.updateSiege(year, profile));
     measurePhase(profile, "City.updateDevastation", () => this.updateDevastation(year));
+    if (this.destroyed) return; // terminal in this very monthly call; never reattach archived city cells
     const nextMaxDefense = measurePhase(profile, "City.calculateMaxDefense/development", () => this.calculateMaxDefense());
     const previousZoneSize = getFortifiedZoneSize(this.maxDefense);
     this.maxDefense = nextMaxDefense;
@@ -597,6 +598,7 @@ export default class City {
   }
 
   rebuildFortifiedZone() {
+    if (this.destroyed) return;
     this.fortifiedCells.forEach((cell) => {
       if (cell !== this.block) {
         cell.clearCity(this);
@@ -836,7 +838,10 @@ export default class City {
     Game.Core?.unregisterCityInteraction(this.id);
     const archived = ArchivedCities.archive(this, year);
     owner?.removeCity(this);
-    this.fortifiedCells.forEach((cell) => {
+    // Terminal cleanup includes stale refs outside the last zone; use the actual map.
+    const cellsToClear = new Set(this.fortifiedCells);
+    Game.Core?.map?.blocks.forEach(column => column.forEach(cell => { if (cell.city === this) cellsToClear.add(cell); }));
+    cellsToClear.forEach((cell) => {
       cell.clearCity(this);
       if (owner) {
         cell.claimForTeam(owner);

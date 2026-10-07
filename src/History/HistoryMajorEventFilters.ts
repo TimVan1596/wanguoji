@@ -10,7 +10,7 @@ export type MajorEventFilter = typeof MAJOR_EVENT_FILTERS[number]["value"];
 const TYPES: Record<Exclude<MajorEventFilter, "all">, readonly WorldEvent["type"][]> = {
   founding: ["state-founded"], emperor: ["emperor-proclaimed"], revolution: ["dynasty-usurped"],
   restoration: ["faction-restored", "dynasty-restored"], extinction: ["faction-exiled", "faction-extinct"],
-  merge: ["faction-merged"], era: ["world-era-started", "world-unification", "world-hegemony", "world-fractured", "empire-split"],
+  merge: ["faction-merged"], era: ["world-era-started", "world-unification", "world-hegemony", "world-fractured"],
 };
 /** Presentation over existing narrative anchors, not a second significance rule. */
 export function matchesMajorEventFilter(event: WorldEvent, filter: MajorEventFilter = "all") {
