@@ -206,6 +206,7 @@ const CORE_FIELDS: Array<[string, string]> = [
   ["active factions", "worldScale.activeFactionCount"],
   ["exiled factions", "worldScale.exiledFactionCount"],
   ["extinct factions", "worldScale.extinctFactionCount"],
+  ["Diplomacy II diagnostics", "diplomacy"],
   ["merged factions", "worldScale.mergedFactionCount"],
   ["active cities", "worldScale.activeCityCount"],
   ["runtime unit count", "worldScale.runtimeUnitCount"],

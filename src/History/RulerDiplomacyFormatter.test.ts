@@ -8,7 +8,7 @@ describe("ruler diplomacy event summary", () => {
       title: "楚、魏订立互不侵犯", factionIds: ["chu", "wei"], importance: "major",
       metadata: { commonThreatFactionId: "qi", expiresMonth: 276, signatoryARulerId: "r1" },
     }, new Map([["chu", { name: "chu", displayName: "楚", color: 1 }], ["wei", { name: "wei", displayName: "魏", color: 2 }], ["qi", { name: "qi", displayName: "齐", color: 3 }]]));
-    expect(line).toContain("齐势日强");
+    expect(line).toContain("齐构成共同威胁");
     expect(line).toContain("约期8年");
     expect(line).not.toContain("签约时君主");
   });

@@ -1,17 +1,17 @@
-import { CURRENT_SAVE_SCHEMA_VERSION, type WorldSaveV9 } from "./WorldSaveSchema";
+import { CURRENT_SAVE_SCHEMA_VERSION, type WorldSaveV10 } from "./WorldSaveSchema";
 
 export interface HydrationRepairs {
   staleArchivedCityBlockRefs: number; cityIds: string[]; summary: string;
   unresolvedCityBlockRefs: Array<{ gridX: number; gridY: number; owner?: string; cityId: string }>;
   activeCityIds: string[]; archivedCityIds: string[];
 }
-/** Narrow V9 normalization on a clone. Strict validation still runs on the result.
+/** Narrow current-schema normalization on a clone. Strict validation still runs on the result.
  * Repository admission may inspect this clone but must return the original stored record. */
 export function normalizeArchivedCityBlockRefs(value: unknown): { value: unknown; repairs: HydrationRepairs } {
   const repairs: HydrationRepairs = { staleArchivedCityBlockRefs: 0, cityIds: [], summary: "stale archived city refs repaired: 0",
     unresolvedCityBlockRefs: [], activeCityIds: [], archivedCityIds: [] };
   if (!value || typeof value !== "object") return { value, repairs };
-  const save = value as WorldSaveV9;
+  const save = value as WorldSaveV10;
   if (save.saveSchemaVersion !== CURRENT_SAVE_SCHEMA_VERSION || !Array.isArray(save.blocks) || !Array.isArray(save.cities)
     || !Array.isArray(save.registries?.archivedCities)) return { value, repairs };
   const active = new Set(save.cities.filter(city => city && typeof city.cityId === "string").map(city => city.cityId));

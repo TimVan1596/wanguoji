@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createEmptyWorldSaveV1, CURRENT_SAVE_SCHEMA_VERSION } from "./WorldSaveSchema";
+import { createEmptyWorldSaveV1, CURRENT_SAVE_SCHEMA_VERSION, diffCanonicalWorldSave } from "./WorldSaveSchema";
 import { isSafeSnapshotBoundary } from "./SnapshotBoundary";
 import { validateWorldSave } from "./WorldSaveValidator";
 
@@ -86,6 +86,8 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     const save=fixture(); save.factions.push({...save.factions[0],factionId:"wei"});
     save.diplomacy.relations=[{factionAId:"qin",factionBId:"wei",status:"NON_AGGRESSION",reason:"COMMON_THREAT_NON_AGGRESSION",originalStartedMonth:0,startedMonth:12,expiresMonth:180,lastRenewedMonth:36,renewalCount:1}];
     save.diplomacy.pairMemories=[{factionAId:"qin",factionBId:"wei",lastStatus:"TRUCE",lastReason:"WAR_EXHAUSTION_TRUCE",endedMonth:10,cooldownUntilMonth:34}];
+    const changed=structuredClone(save);changed.diplomacy.relations[0].renewalCount=2;changed.diplomacy.pairMemories[0].cooldownUntilMonth=46;
+    expect(diffCanonicalWorldSave(save,changed).subsystemCounts.diplomacy).toBe(2);
     const loaded=JSON.parse(JSON.stringify(save));expect(validateWorldSave(loaded)).toEqual({valid:true,errors:[]});expect(loaded.diplomacy).toEqual(save.diplomacy);
     expect(validateWorldSave({...save,saveSchemaVersion:9}).errors).toContain("unsupported saveSchemaVersion");
     for(const [key,value] of [["originalStartedMonth",13],["renewalCount",-1],["lastRenewedMonth",43]] as const){const broken=structuredClone(save);(broken.diplomacy.relations[0] as any)[key]=value;expect(validateWorldSave(broken).valid).toBe(false);}

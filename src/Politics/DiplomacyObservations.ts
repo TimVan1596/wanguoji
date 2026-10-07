@@ -21,24 +21,24 @@ function report(t: Totals): Record<string, number | undefined> {
     seen += count;
   }
   const defaults = Object.fromEntries(["truceFormed","napFormed","allianceFormed","upgrades","truceRenewed","napRenewed","allianceRenewed","expired","cooldownBlocked","reformedAfterCooldown","samePairReformationCount","reformedWithin5Years","commonThreatCandidates","weakThreat","credibleThreat","severeThreat","noStrategicContactBlocked"].map(key=>[key,0]));
-  return { ...defaults, ...t.counts, meanCompletedContinuousDuration: t.continuousCount ? t.continuousSum/t.continuousCount : 0, longestCompletedContinuousRelation: t.longestContinuous, meanInitialDuration: t.durationCount ? t.durationSum / t.durationCount : 0,
+  return { ...defaults, ...t.counts, completedContinuousDurationSum: t.continuousSum, completedContinuousCount: t.continuousCount, meanCompletedContinuousDuration: t.continuousCount ? t.continuousSum/t.continuousCount : 0, longestCompletedContinuousRelation: t.longestContinuous, meanInitialDuration: t.durationCount ? t.durationSum / t.durationCount : 0,
     medianInitialDuration: t.durationCount ? (lo + hi) / 2 : 0, shortestReformationGap: t.shortestReformationGap };
 }
 export class DiplomacyObservations {
-  private session = empty(); private years = new Map<number, Totals>();
+  private session = empty(); private months = new Map<number, Totals>();
   private recent: DiplomacyObservation[] = []; private blockers: DiplomacyObservation[] = [];
   record(o: DiplomacyObservation) {
     add(this.session, o);
-    const year = o.month;
-    const bucket = this.years.get(year) ?? empty(); add(bucket, o); this.years.set(year, bucket);
+    const month = o.month;
+    const bucket = this.months.get(month) ?? empty(); add(bucket, o); this.months.set(month, bucket);
     this.prune(o.month);
     if (["formation", "upgrade", "renewal"].includes(o.kind)) { this.recent.push(o); if(this.recent.length > 10) this.recent.shift(); }
     if (o.kind === "blocker") { this.blockers.push(o); if(this.blockers.length > 10) this.blockers.shift(); }
   }
-  private prune(month: number) { for (const year of this.years.keys()) if(year < month - 1200) this.years.delete(year); }
+  private prune(month: number) { for (const storedMonth of this.months.keys()) if(storedMonth < month - 1200) this.months.delete(storedMonth); }
   snapshot(month: number) {
     this.prune(month); const recent = empty();
-    for(const t of this.years.values()) {
+    for(const t of this.months.values()) {
       for(const [key,count] of Object.entries(t.counts)) recent.counts[key] = (recent.counts[key] ?? 0) + count;
       for(const [key,count] of Object.entries(t.durations)) recent.durations[key] = (recent.durations[key] ?? 0) + count;
       recent.continuousSum += t.continuousSum; recent.continuousCount += t.continuousCount; recent.longestContinuous = Math.max(recent.longestContinuous,t.longestContinuous);

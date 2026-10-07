@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import Diplomacy, { DiplomacyRegistry, DiplomacySystem, diplomaticPairKey, isHostileActionAllowed } from "./Diplomacy";
-import { DIPLOMACY_NON_AGGRESSION_DURATION_MONTHS, DIPLOMACY_TRUCE_DURATION_MONTHS } from "./Diplomacy";
+import { getDiplomaticDuration } from "./DiplomaticRules";
 import { areFactionsTerritoriallyAdjacent } from "./StrategicUnionRules";
 
 function faction(name: string, blocks: number, loyalty = 50, status = "ACTIVE") {
@@ -23,9 +23,9 @@ function territoryFaction(name: string, coordinates: Array<{ x: number; y: numbe
 afterEach(() => Diplomacy.reset());
 
 describe("Diplomacy", () => {
-  it("uses the longer canonical truce and non-aggression durations", () => {
-    expect(DIPLOMACY_TRUCE_DURATION_MONTHS).toBe(36);
-    expect(DIPLOMACY_NON_AGGRESSION_DURATION_MONTHS).toBe(96);
+  it("uses factual dynamic truce and non-aggression durations", () => {
+    expect(getDiplomaticDuration("TRUCE", { recentBilateralCaptureCount:2, stabilityA:50, stabilityB:55 })).toBe(36);
+    expect(getDiplomaticDuration("NON_AGGRESSION", { credibility:"CREDIBLE", directA:true, directB:false, threatTerritoryShare:60, territoryShareA:10, territoryShareB:10 })).toBe(96);
   });
   it("normalizes unordered pair keys and blocks both sides until expiry", () => {
     expect(diplomaticPairKey("wei", "qi")).toBe(diplomaticPairKey("qi", "wei"));

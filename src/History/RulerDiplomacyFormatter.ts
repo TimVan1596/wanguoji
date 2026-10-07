@@ -35,7 +35,7 @@ export function formatRulerDiplomacyEvent(
     const priorDuration = typeof metadata.preconditionDurationMonths === "number"
       ? formatWorldDuration(metadata.preconditionDurationMonths)
       : undefined;
-    return `${threatName}势日强，${names.join("、")}${priorDuration ? `在互不侵犯${priorDuration}后` : "因共同压力"}结成战略同盟${duration ? `，约期${duration}` : ""}。`;
+    return `${threatName}构成共同威胁，${names.join("、")}${priorDuration ? `在互不侵犯${priorDuration}后` : "因共同压力"}结成战略同盟${duration ? `，约期${duration}` : ""}。`;
   }
-  return `${threatName}势日强，${names.join("、")}因共同压力订立互不侵犯之约${duration ? `，约期${duration}` : ""}。`;
+  return `${threatName}构成共同威胁，${names.join("、")}因共同压力订立互不侵犯之约${duration ? `，约期${duration}` : ""}。`;
 }

@@ -17,7 +17,7 @@ describe("event-month identity across provisional, founded and usurped regimes",
       metadata: { commonThreatFactionId: faction.name, preconditionDurationMonths: 24, expiresMonth: month + 120 } };
     expect(getHistoricalFactionIdentity(faction, month)).toEqual({ name, color });
     for (const text of [formatRulerDiplomacyEvent(event, factions), formatFactionHistoryEvent(event, faction.name, factions), formatHistoryEventTitle(event, factions)]) {
-      expect(text).toContain(`${name}、同盟方`); expect(text).toContain(`${name}势日强`);
+      expect(text).toContain(`${name}、同盟方`); expect(text).toContain(`${name}构成共同威胁`);
       if (name !== "C") expect(text).not.toContain("C");
     }
     expect(resolveEventFactionColor(event, new Map([[faction.name, 3]]), factions)).toBe(color);

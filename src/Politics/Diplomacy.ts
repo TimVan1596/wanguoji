@@ -2,7 +2,7 @@ import type Team from "../Components/Team";
 import type City from "../Components/City";
 import WorldHistory from "../History/WorldHistory";
 import { calculateTerritoryMetrics, getFactionTerritoryMetric } from "../Simulation/TerritoryMetrics";
-import { areFactionsTerritoriallyAdjacent } from "./StrategicUnionRules";
+import { areFactionsTerritoriallyAdjacent, ALLIANCE_MIN_TRUCE_MONTHS_BEFORE_NON_AGGRESSION } from "./StrategicUnionRules";
 
 import { evaluateCommonThreatCredibility, getDiplomaticDuration, getDiplomaticCooldown, canUpgradeToAlliance, type CommonThreatFacts, type ThreatCredibility } from "./DiplomaticRules";
 import { DiplomacyObservations } from "./DiplomacyObservations";
@@ -34,8 +34,6 @@ export type DiplomacyTriggerContext = DiplomacyLifecycleEvidence & (
   | { reason: "COMMON_THREAT_ALLIANCE"; commonThreatFactionId: string; territoryShareA: number; territoryShareB: number; threatTerritoryShare: number; priorStatus: "NON_AGGRESSION"; priorDurationMonths: number });
 export const DIPLOMACY_EVALUATION_INTERVAL_MONTHS = 12;
 export const DIPLOMACY_RECENT_WAR_MONTHS = 36;
-export const DIPLOMACY_TRUCE_DURATION_MONTHS = 36;
-export const DIPLOMACY_NON_AGGRESSION_DURATION_MONTHS = 96;
 export const DIPLOMACY_WAR_PRESSURE_STABILITY = 58;
 export const DIPLOMACY_WEAK_TERRITORY_SHARE = 18;
 export const DIPLOMACY_COMMON_THREAT_RATIO = 2.5;
@@ -122,8 +120,14 @@ export class DiplomacyRegistry {
     const activeRelations = this.list(worldMonth);
     const counts = this.activeFactionIds.map(id => activeRelations.filter(r=>r.factionAId === id || r.factionBId === id).length);
     const durations = activeRelations.map(r=>worldMonth - r.originalStartedMonth);
+    const observation = this.observations?.snapshot(worldMonth);
+    const effectiveDuration = (stats: Record<string, number | undefined>): Record<string, number | undefined> => {
+      const count=(stats.completedContinuousCount ?? 0)+durations.length;
+      return {...stats, meanEffectiveContinuousDuration: count ? ((stats.completedContinuousDurationSum ?? 0)+durations.reduce((a,b)=>a+b,0))/count : 0,
+        longestContinuousRelation: Math.max(stats.longestCompletedContinuousRelation ?? 0,...durations)};
+    };
     return {
-      diplomacyII: this.observations?.snapshot(worldMonth),
+      diplomacyII: observation ? {...observation, sessionCumulative:effectiveDuration(observation.sessionCumulative), recent100Years:effectiveDuration(observation.recent100Years)} : undefined,
       activeRelationCount: activeRelations.length,
       activeRelationDensity: counts.length > 1 ? activeRelations.length / (counts.length * (counts.length - 1) / 2) : 0,
       factionsWith0Relations: counts.filter(n=>n===0).length, factionsWith1Relation: counts.filter(n=>n===1).length, factionsWith2Relations: counts.filter(n=>n===2).length,
@@ -156,7 +160,7 @@ export class DiplomacySystem {
       this.registry.expire(relation,worldMonth);
       this.emit({type: relation.status === "ALLIANCE" ? "alliance-expired" : "treaty-expired",month:worldMonth,relation});
     }
-    if(worldMonth === 0 || worldMonth % 12 !== 0 || this.registry.lastEvaluationMonth === worldMonth) return;
+    if(worldMonth === 0 || worldMonth % DIPLOMACY_EVALUATION_INTERVAL_MONTHS !== 0 || this.registry.lastEvaluationMonth === worldMonth) return;
     this.registry.lastEvaluationMonth = worldMonth;
     const active = teams.filter(t=>t.status === "ACTIVE" && !t.isDie).sort((a,b)=>a.name.localeCompare(b.name));
     this.registry.setActiveFactions(active.map(t=>t.name));
@@ -188,11 +192,30 @@ export class DiplomacySystem {
     const threatContext = (a: Team,b: Team,status: "NON_AGGRESSION" | "ALLIANCE",prior?: DiplomaticRelation): DiplomacyTriggerContext | undefined => {
       const threat = threatFor(a,b,prior);
       if(!threat || threat.credibility === "WEAK") { block(a,b,threat ? "NO_STRATEGIC_CONTACT" : "NO_CREDIBLE_COMMON_THREAT"); return undefined; }
-      if(status === "NON_AGGRESSION" && (share(a)>18 || share(b)>18)) { block(a,b,"NO_CREDIBLE_COMMON_THREAT"); return undefined; }
+      if(status === "NON_AGGRESSION" && (share(a)>DIPLOMACY_WEAK_TERRITORY_SHARE || share(b)>DIPLOMACY_WEAK_TERRITORY_SHARE)) { block(a,b,"NO_CREDIBLE_COMMON_THREAT"); return undefined; }
       if(status === "ALLIANCE" && (!prior || (prior.status !== "ALLIANCE" && !canUpgradeToAlliance(threat.credibility,worldMonth-prior.startedMonth)))) { block(a,b,"PRECONDITION_TOO_SHORT"); return undefined; }
+      if(status === "ALLIANCE" && prior?.status === "NON_AGGRESSION" && threat.credibility === "CREDIBLE" && prior.commonThreatFactionId !== threat.t.name) { block(a,b,"PRECONDITION_TOO_SHORT"); return undefined; }
       const facts = { ...threat.facts,credibility:threat.credibility,commonThreatFactionId:threat.t.name,priorDurationMonths:prior ? worldMonth-prior.startedMonth : 0 };
-      return status === "ALLIANCE" ? { ...facts,reason:"COMMON_THREAT_ALLIANCE",priorStatus:"NON_AGGRESSION" } : { ...facts,reason:"COMMON_THREAT_NON_AGGRESSION",priorStatus:prior?.status === "TRUCE" ? "TRUCE" : "NON_AGGRESSION" };
+      return status === "ALLIANCE" ? { ...facts,reason:"COMMON_THREAT_ALLIANCE",priorStatus:"NON_AGGRESSION" } : { ...facts,reason:"COMMON_THREAT_NON_AGGRESSION",priorStatus:prior?.status === "TRUCE" ? "TRUCE" : prior?.status === "NON_AGGRESSION" ? "NON_AGGRESSION" : undefined,priorDurationMonths:prior ? worldMonth-prior.startedMonth : undefined };
     };
+    let formed=0;
+    for(let i=0;i<active.length && formed<DIPLOMACY_MAX_NEW_RELATIONS_PER_EVALUATION;i++) for(let j=i+1;j<active.length && formed<DIPLOMACY_MAX_NEW_RELATIONS_PER_EVALUATION;j++) {
+      const a=active[i],b=active[j],prior=this.registry.get(a.name,b.name);
+      if(prior) {
+        const age=worldMonth-prior.startedMonth;
+        if(prior.status === "ALLIANCE") continue;
+        if(age<ALLIANCE_MIN_TRUCE_MONTHS_BEFORE_NON_AGGRESSION) { block(a,b,"PRECONDITION_TOO_SHORT"); continue; }
+        const status=prior.status === "TRUCE" ? "NON_AGGRESSION" : "ALLIANCE";
+        if(status === "ALLIANCE" && this.registry.list(worldMonth).some(r=>r.status === "ALLIANCE" && [r.factionAId,r.factionBId].some(id=>id===a.name||id===b.name))) { block(a,b,"ALLIANCE_CAP"); continue; }
+        const context=threatContext(a,b,status,prior);
+        if(context) { this.form(a,b,status,worldMonth,context,prior); formed++; }
+        continue;
+      }
+      if(this.registry.inCooldown(a.name,b.name,worldMonth)) { block(a,b,"COOLDOWN"); continue; }
+      if([a.name,b.name].some(id=>this.registry.list(worldMonth).filter(r=>r.factionAId===id||r.factionBId===id).length>=DIPLOMACY_MAX_ACTIVE_RELATIONS_PER_FACTION)) { block(a,b,"RELATION_CAP"); continue; }
+      const context=warContext(a,b) ?? threatContext(a,b,"NON_AGGRESSION");
+      if(context) { this.form(a,b,context.reason === "WAR_EXHAUSTION_TRUCE" ? "TRUCE" : "NON_AGGRESSION",worldMonth,context); formed++; }
+    }
     // Renewal is independent of the new formation cap, and retains the status/chain start.
     for(const relation of this.registry.list(worldMonth)) {
       if(relation.expiresMonth-worldMonth>12) continue;
@@ -207,24 +230,7 @@ export class DiplomacySystem {
       this.registry.observe(worldMonth,relation.status === "TRUCE" ? "truceRenewed" : relation.status === "ALLIANCE" ? "allianceRenewed" : "napRenewed");
       this.emit({type:"relation-renewed",month:worldMonth,relation:renewed,triggerContext:{...context,previousExpiresMonth:relation.expiresMonth,renewalDuration:duration}});
     }
-    let formed=0;
-    for(let i=0;i<active.length && formed<2;i++) for(let j=i+1;j<active.length && formed<2;j++) {
-      const a=active[i],b=active[j],prior=this.registry.get(a.name,b.name);
-      if(prior) {
-        const age=worldMonth-prior.startedMonth;
-        if(prior.status === "ALLIANCE") continue;
-        if(age<24) { block(a,b,"PRECONDITION_TOO_SHORT"); continue; }
-        const status=prior.status === "TRUCE" ? "NON_AGGRESSION" : "ALLIANCE";
-        if(status === "ALLIANCE" && this.registry.list(worldMonth).some(r=>r.status === "ALLIANCE" && [r.factionAId,r.factionBId].some(id=>id===a.name||id===b.name))) { block(a,b,"ALLIANCE_CAP"); continue; }
-        const context=threatContext(a,b,status,prior);
-        if(context) { this.form(a,b,status,worldMonth,context,prior); formed++; }
-        continue;
-      }
-      if(this.registry.inCooldown(a.name,b.name,worldMonth)) { block(a,b,"COOLDOWN"); continue; }
-      if([a.name,b.name].some(id=>this.registry.list(worldMonth).filter(r=>r.factionAId===id||r.factionBId===id).length>=2)) { block(a,b,"RELATION_CAP"); continue; }
-      const context=warContext(a,b) ?? threatContext(a,b,"NON_AGGRESSION");
-      if(context) { this.form(a,b,context.reason === "WAR_EXHAUSTION_TRUCE" ? "TRUCE" : "NON_AGGRESSION",worldMonth,context); formed++; }
-    }
+
   }
   private form(a: Team,b: Team,status: DiplomaticRelation["status"],month: number,context: DiplomacyTriggerContext,prior?: DiplomaticRelation) {
     const [factionAId,factionBId]=normalizeFactionPair(a.name,b.name);

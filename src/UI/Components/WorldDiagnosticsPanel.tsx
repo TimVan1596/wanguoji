@@ -296,6 +296,7 @@ function WorldDiagnosticsPanelContent() {
       frameDeltaSource: framePerformance.frameDeltaSource,
     } : undefined,
     worldScale,
+    diplomacy: core?.getDiplomacyDiagnostics(),
     persistence: {
       saveStatus: storageDiagnostics.status,
       phase: getWorldSavePhaseDiagnostics(),

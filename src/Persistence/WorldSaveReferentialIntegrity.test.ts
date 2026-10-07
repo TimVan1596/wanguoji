@@ -62,7 +62,8 @@ function target() {
 afterEach(() => { vi.restoreAllMocks(); });
 describe("V9 active city referential integrity and pre-teardown repair", () => {
   it("V10 actual hydrate/export round-trip retains diplomacy renewal and cooldown state without RNG draws",()=>{
-    const save=fixture();save.factions.push({...save.factions[0],factionId:"wei",capitalCityId:undefined});
+    const save=fixture();save.factions.push({...save.factions[0],factionId:"wei"});
+    delete save.factions[1].capitalCityId;
     save.diplomacy.relations=[{factionAId:"qin",factionBId:"wei",status:"NON_AGGRESSION",reason:"COMMON_THREAT_NON_AGGRESSION",originalStartedMonth:0,startedMonth:12,expiresMonth:180,lastRenewedMonth:36,renewalCount:1}];
     save.diplomacy.pairMemories=[{factionAId:"qin",factionBId:"wei",lastStatus:"TRUCE",lastReason:"WAR_EXHAUSTION_TRUCE",endedMonth:10,cooldownUntilMonth:34}];
     const core=target();hydrateWorldSave(core,save);const rng=worldRandom.exportState();const exported=exportWorldSave(core);

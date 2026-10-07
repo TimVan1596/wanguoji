@@ -20,6 +20,9 @@
 
 ## 当前人工验收
 
+- v0.99927 Dynastic Revolution系列完整人工通过，校准及历史/谱系/persistence Gate正式冻结。
+- v0.99928 Diplomacy II代码与自动验证阶段：仅可信共同威胁/期限/连续性/续约/冷却及外交叙事清理。WorldSaveV10，需要新世界4×800–1200年人工Gate，见[Diplomacy II](docs/DiplomacyII.md)。通过前不进入纳土归降、Faction Historiography、Era Atlas II或Ruler Political Evidence II。
+
 - v0.99927b1 Runtime Disposal 已人工通过：新世界 Electron 4×约1962年，无 Group.preUpdate `.size` Fatal、Renderer Fatal 或 disposal stalled；768年与1962年 disposal／orphan invariants 正常，live users/groups/registered groups 分别56与58。
 - v0.99927b2 History Scalability 子目标已人工通过：历史 publish/notify 在1000+年近零；4228年、约9600 events／2700 rulers存档 Load后恢复60～65 FPS。Runtime Disposal invariants继续正常。1305年God Tab仍出现15 FPS／16 steps per frame，foreground pacing Gate未通过。
 - v0.99927b3 Foreground debt fix 已人工 PASS：正常4×约60 FPS／4 steps；overload整步debt不再积累。2911年macOS锁屏返回约7.5 FPS，但4 steps、accumulator=0、Core约2.14ms，属于尚未定位的frame cadence问题。

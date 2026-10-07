@@ -147,13 +147,17 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
-- v0.99927d2阻断修复：永久城市销毁后不再重新挂载zone；存档导出及读取前校验active-city引用。旧V9仅对明确已归档城市的stale block指针进行副本恢复，未知引用安全拒绝、不拆当前世界。时代筛选仅显示世界级事件。等待 [Persistence Integrity + Era Filter Gate](docs/PersistenceIntegrityEraFilter.md)。
+- v0.99928 Diplomacy II：可信共同威胁、整年动态期限、续约连续性与冷却；国势大事记/趋势 marker 排除普通外交。WorldSave **V10**，V9及更旧直接拒绝，不迁移；IndexedDB版本仍为2。请使用新世界完成 [Diplomacy II Manual Gate](docs/DiplomacyII.md)。
+- v0.99927 Dynastic Revolution 系列已由用户完整人工通过并冻结，包括历史身份、时代筛选、旧V9安全修复及重新保存后零修复读档。
 
-- v0.99927d1：历史卷轴增加“大事→易代”等结构化筛选与新事件提示。请用含822年4月真实篡朝的现有V9存档完成 [History Major Events + Revolution Gate](docs/HistoryMajorEventsRevolutionGate.md)，无需重新长跑寻找事件。
 
-- v0.99927d Calibration Closure：最高继承危机概率不变，shock／instability仅在“前君战死或被俘＋仅余一城”时开放折扣入口；新增会话期望频率诊断。1005年人工长局已自然产生一次篡朝，校准冻结；仍待事件语义视觉验收。2445年低FPS／unlock卡顿为known performance debt，本版不处理。
+- v0.99927d2阻断修复：永久城市销毁后不再重新挂载zone；存档导出及读取前校验active-city引用。旧V9仅对明确已归档城市的stale block指针进行副本恢复，未知引用安全拒绝、不拆当前世界。时代筛选仅显示世界级事件。已通过 [Persistence Integrity + Era Filter Gate](docs/PersistenceIntegrityEraFilter.md)。
 
-- v0.99927d2 使用 WorldSave V9；V8 及更旧存档不提供迁移，无法继续。IndexedDB 数据库版本仍为 2。首领诊断与 Revolution Gate 累计诊断的本会话样本在新世界／读档时重置，后者仅在 debug 模式观察，不写入存档。首领诊断的最近 100 年窗口按任期结束月份筛选。
+- v0.99927d1：历史卷轴增加“大事→易代”等结构化筛选与新事件提示。请用含822年4月真实篡朝的现有V9存档完成 [History Major Events + Revolution Gate](docs/HistoryMajorEventsRevolutionGate.md)，该历史/宗谱/存读档语义 Gate 已人工通过。
+
+- v0.99927d Calibration Closure：最高继承危机概率不变，shock／instability仅在“前君战死或被俘＋仅余一城”时开放折扣入口；新增会话期望频率诊断。1005年人工长局已自然产生一次篡朝，校准冻结；事件语义视觉验收已通过。2445年低FPS／unlock卡顿为known performance debt，本版不处理。
+
+- 历史版本v0.99927d2使用WorldSaveV9；当前v0.99928仅接受V10，V9及更旧无法继续。IndexedDB 数据库版本仍为 2。首领诊断与 Revolution Gate 累计诊断的本会话样本在新世界／读档时重置，后者仅在 debug 模式观察，不写入存档。首领诊断的最近 100 年窗口按任期结束月份筛选。
 
 - v0.99927b1 disposal 已通过新世界 desktop debug 4×约1962年人工测试：无 `.size`／Renderer Fatal／disposal stalled，运行时资源 invariant 正常。本版保留该生命周期修复。
 - v0.99927b2 History Scalability 已人工通过，4228年／约10k历史事件存档Load后仍可恢复60～65 FPS；历史与disposal修复继续保留。原History测量见 [HistoryFrameScalability](docs/HistoryFrameScalability.md)。

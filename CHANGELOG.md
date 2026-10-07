@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.99928
+
+- Froze the complete v27 Dynastic Revolution Gate after user acceptance of natural usurpation, preserved lawful kin/independent houses, epoch/name/banner/history identity, major/era/unseen/paging and archived-city repair followed by clean reload.
+- Diplomacy II replaces distant-size-only NAP eligibility with pure factual WEAK/CREDIBLE/SEVERE common-threat assessment. CREDIBLE needs one direct exposure plus pair adjacency/aged continuity; SEVERE needs both exposures. Alliance retains24-month NAP minimum, requiring72months and the same threat when only CREDIBLE. Annual deterministic formation, active relation caps and Strategic Union rules remain; no added RNG.
+- Whole-year deterministic TRUCE24–60 / NAP72–144 / ALLIANCE96–180month terms use capture/capital-fall/stability/territory/contact/continuity evidence. Near-expiry annual renewal runs separately from formation quota, extends expiry and preserves status start/chain start. Peaceful truce cannot renew without remaining war-recovery facts; vanished strategic pressure prevents automatic NAP/alliance renewal.
+- Canonical diplomacy now stores originalStartedMonth, renewalCount/lastRenewedMonth and one latest memory/pair with bounded status-specific reformation cooldown. Alliance renewal preserves age for unchanged union eligibility. NORMAL relation-renewed history records real extension/evidence/signers; diplomacy filtering includes signing/upgrade/renewal/expiry, without renewal flooding major history.
+- Presentation-only power chronicle and trend markers exclude ordinary diplomacy, retain real national trajectory and formal-state conquest facts; power chronology is newest-first while chart markers remain chronological. Incremental history/index/paging is unchanged.
+- Session-only Diplomacy II diagnostics provide cumulative/recent100year lifecycle/duration/churn/threat metrics, density and10bounded lifecycle/blocker samples. Debug state does not persist or consume RNG.
+- APP_VERSION v0.99928 / package0.99.113 / WorldSaveV10. V9andolder are directly rejected without migration; IndexedDB remains2. New continuity/memory fields round-trip through canonical export/hydration/validator/diff. Combat/succession/revolution/population/rebellion/posthumous/desktop/performance and downstream themes remain frozen.
+- Mandatory real browser/Electron Gate: NEW V10world4×800–1200years, factual network/variable terms/renewal/expiry/History/power/markers/Save-Load/union-age/same-seed observations. Return metrics and samples if frequency feels wrong; no automatic tuning or next feature.
+
 ## v0.99927d2
 
 - Reproduced the save-blocking stale City pointer: updateDevastation permanently destroyed/archived a city, but the same updateDefense call proceeded to a changed zone tier and reattached13 map cells. Return immediately after terminal devastation, reject destroyed-zone rebuilds, and clear same-city pointers across the map during permanent teardown. Active city/capture/revolt/merge gameplay rules remain unchanged.

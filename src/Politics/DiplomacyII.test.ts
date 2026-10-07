@@ -45,6 +45,8 @@ describe("Diplomacy II factual rules",()=>{
   it("recent factual captures supply direct exposure without adjacency",()=>{
     const s=system();s.system.update(12,[a,b,distant],100,[{type:"city-captured",actorFactionId:"threat",targetFactionId:"a"},{type:"capital-fallen",actorFactionId:"threat",targetFactionId:"b"}] as never);
     expect(s.registry.get("a","b")?.status).toBe("NON_AGGRESSION");
+    expect(s.events[0].triggerContext?.reason).toBe("COMMON_THREAT_NON_AGGRESSION");
+    expect((s.events[0].triggerContext as any).priorStatus).toBeUndefined();
     expect(s.events[0].triggerContext).toMatchObject({directA:true,directB:true,capitalFall:true});
   });
   it.each(["TRUCE","NON_AGGRESSION","ALLIANCE"] as const)("%s has deterministic, whole-year, bounded varied duration",status=>{
