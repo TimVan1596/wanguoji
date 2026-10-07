@@ -368,6 +368,9 @@ export function formatHistoryEventDescription(
   event: WorldEvent,
   factionById: Map<string, HistoryFactionLike>
 ) {
+  // Diplomatic titles already show recorded term/expiry; details expose the evidence.
+  // Also applies to old V10 descriptions without rewriting the canonical event.
+  if (event.metadata && formatRulerDiplomacyEvent(event, factionById) !== undefined) return undefined;
   const month = event.monthIndex ?? event.year;
   const name = (factionId?: string) =>
     resolveFactionHistoricalName(factionById, factionId, month);

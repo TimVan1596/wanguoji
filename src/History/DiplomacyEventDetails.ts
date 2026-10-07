@@ -1,6 +1,7 @@
 import type { WorldEvent } from "./WorldHistory";
 import type { HistoryFactionLike } from "./HistoryRenderRules";
 import { getHistoricalFactionIdentity } from "./HistoricalFactionIdentity";
+import { diplomacyStatusLabel } from "../Politics/DiplomacyPresentation";
 import { formatWorldDate, formatWorldDuration } from "../Simulation/WorldTime";
 
 /** Read recorded metadata only; missing flags are unknown, never inferred. */
@@ -35,15 +36,29 @@ export function getDiplomacyEventDetails(event: WorldEvent, factions: Map<string
     if(typeof m.stabilityA === "number") lines.push(`${a}${moment}稳定度：${m.stabilityA}`);
     if(typeof m.stabilityB === "number") lines.push(`${b}${moment}稳定度：${m.stabilityB}`);
   }
+  const status = m.status === "ALLIANCE" || m.status === "TRUCE" || m.status === "NON_AGGRESSION" ? m.status : undefined;
+  const label = status ? diplomacyStatusLabel(status) : "关系";
   if (renewed) {
+    if (status) lines.push(`关系类型：${label}`);
     if(typeof m.originalStartedMonth === "number") {
-      lines.push(`连续关系起始：${formatWorldDate(m.originalStartedMonth)}`);
-      if(m.status === "ALLIANCE" && m.originalStartedMonth <= month) lines.push(`该联盟关系已连续维持 ${formatWorldDuration(month - m.originalStartedMonth)}（自连续外交关系起点计）`);
+      lines.push(`连续关系始于：${formatWorldDate(m.originalStartedMonth)}`);
+      if(m.originalStartedMonth <= month) lines.push(`连续外交关系已维持：${formatWorldDuration(month - m.originalStartedMonth)}`);
     }
-    if(typeof m.previousExpiresMonth === "number") lines.push(`原到期月份：${formatWorldDate(m.previousExpiresMonth)}`);
-    if(typeof m.newExpiresMonth === "number") lines.push(`新到期月份：${formatWorldDate(m.newExpiresMonth)}`);
-    if(typeof m.renewalDuration === "number") lines.push(`续约期限：${formatWorldDuration(m.renewalDuration)}（${m.renewalDuration}个月）`);
-    if(typeof m.renewalCount === "number") lines.push(`累计续约次数：${m.renewalCount}`);
+    if(typeof m.startedMonth === "number") lines.push(`当前${label}始于：${formatWorldDate(m.startedMonth)}`);
+    if(typeof m.previousExpiresMonth === "number") lines.push(`原到期日：${formatWorldDate(m.previousExpiresMonth)}`);
+    if(typeof m.renewalDuration === "number") lines.push(`本次再延：${formatWorldDuration(m.renewalDuration)}（${m.renewalDuration}个月）`);
+    if(typeof m.newExpiresMonth === "number") lines.push(`新到期日：${formatWorldDate(m.newExpiresMonth)}`);
+    if(typeof m.renewalCount === "number") lines.push(`连续关系已续约${m.renewalCount}次`);
+    if(typeof m.lastRenewedMonth === "number") lines.push(`最近续约：${formatWorldDate(m.lastRenewedMonth)}`);
+  } else {
+    const prior = m.preconditionStatus ?? m.priorStatus;
+    if (prior === "NON_AGGRESSION" || prior === "TRUCE") {
+      lines.push(`关系升级：${diplomacyStatusLabel(prior)} → ${label}`);
+      if(typeof m.preconditionStartedMonth === "number") lines.push(`原关系开始：${formatWorldDate(m.preconditionStartedMonth)}`);
+    }
+    if(typeof m.startedMonth === "number") lines.push(`当前${label}开始：${formatWorldDate(m.startedMonth)}`);
+    if(typeof m.expiresMonth === "number") lines.push(`当前${label}到期：${formatWorldDate(m.expiresMonth)}`);
+    if(typeof m.originalStartedMonth === "number") lines.push(`连续外交关系始于：${formatWorldDate(m.originalStartedMonth)}`);
   }
   return lines;
 }
