@@ -68,6 +68,18 @@ describe("Peaceful Submission hard gates and deterministic annual evaluation",()
       return calls;
     };expect(run(true)).toBe(run(false));
   });
+  it("same-seed candidate choice and terminal digest reproduce with debug on/off",()=>{
+    const run=(debug:boolean)=>{
+      worldRandom.initialize("peaceful-submission-seed");const input=fixture(),system=new PeacefulSubmissionSystem(debug);
+      const output:string[]=[];
+      for(const month of [120,132,144])system.update({...input,worldMonth:month},c=>{
+        output.push(`${c.evidence.submittedFactionId}->${c.evidence.receivingFactionId}@${month}`);
+        c.submitted.status="EXTINCT";return true;
+      });
+      return {output,canonical:input.teams.map(t=>({id:t.name,status:t.status})),rng:worldRandom.exportState()};
+    };
+    const before=worldRandom.exportState();expect(run(true)).toEqual(run(false));worldRandom.importState(before);
+  });
   it("bounds recent samples and 100y buckets, resets on hydration without changing facts",()=>{
     const system=new PeacefulSubmissionSystem(true),input=fixture(),original=JSON.stringify(input);
     for(let month=12;month<2400;month+=12)system.update({...input,worldMonth:month},()=>true);

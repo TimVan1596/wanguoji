@@ -211,6 +211,7 @@ function FactionProfile({
   const snapshots = FactionSnapshots.get(team.name);
   const dynasty = DynastyRegistry.get(team.name);
   const currentRuler = DynastyRegistry.getCurrentRuler(team.name);
+  const submittedLastRuler = dynasty?.rulers.find(r => r.endReason === "纳土退位");
   const currentRulerTenure = currentRuler?.accessionYear !== undefined
     ? deriveRulerTenureEvidence(currentRuler, team.name, events, worldMonth)
     : undefined;
@@ -343,7 +344,7 @@ function FactionProfile({
       {team.terminationReason === "SUBMITTED" && <Typography fontSize="0.84rem">
         纳土归附于 {teams.find(t => t.name === team.terminationTargetFactionId)?.displayName ?? team.terminationTargetFactionId}
         <br />归附时间：{team.terminationMonth !== undefined ? formatWorldDate(team.terminationMonth) : "—"}
-        <br />末代君主：{DynastyRegistry.get(team.name)?.rulers.find(r => r.endReason === "纳土退位")?.givenName ?? "—"}
+        <br />末代君主：{submittedLastRuler ? `${submittedLastRuler.houseName.replace(/氏$/, "")}${submittedLastRuler.givenName} · 纳土退位` : "—"}
       </Typography>}
       <Typography fontSize="0.84rem" color="var(--gg-text-muted)" sx={{ mt: 0.25 }}>
         {regimeLevel} · {formatStatus(team.status, team.terminationReason)} · 天下第{rankIndex}

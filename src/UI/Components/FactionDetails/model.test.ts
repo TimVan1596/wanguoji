@@ -94,6 +94,13 @@ describe("faction details model", () => {
     ).toContain("累计国祚：2年");
   });
 
+  it("presents submitted states as administrative termination, never death", () => {
+    const lines = buildFactionLifecycleLines({ name: "郑", status: "EXTINCT", terminationReason: "SUBMITTED",
+      terminationTargetFactionId: "楚", terminationMonth: 120, firstFoundedYear: 0 }, 150, 0);
+    expect(lines).toContain("纳土归附于：楚 · 10年1月");
+    expect(lines).toContain("状态：已纳土");
+    expect(lines.join("\n")).not.toContain("灭亡");
+  });
   it("renders absorbed factions as merged rather than extinct", () => {
     const lines = buildFactionLifecycleLines({
       name: "梁西", status: "EXTINCT", terminationReason: "MERGED",
