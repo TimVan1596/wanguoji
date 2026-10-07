@@ -155,7 +155,7 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 - v0.99927b2 History Scalability 已人工通过，4228年／约10k历史事件存档Load后仍可恢复60～65 FPS；历史与disposal修复继续保留。原History测量见 [HistoryFrameScalability](docs/HistoryFrameScalability.md)。
 - v0.99927b3 前台追债已人工通过；有界accumulator及原速度保持。细节见 [ForegroundPacingDebtRecovery](docs/ForegroundPacingDebtRecovery.md)。
 - v0.99927b5两种opt-in锁屏实验已人工可用，v27b性能审计结束；release／普通debug仍默认RAF、blocker OFF，不再继续scheduler调试。结果见 [macOS Scheduler A/B](docs/MacOSLockScreenSchedulerAB.md)。
-- v0.99927c篡朝校准：稳定度只影响概率，不再以<=25硬阻断；合法继承人、真实继承危机与脆弱证据仍为硬门，每eligible boundary最多一次draw，chance上限18%。等待新世界默认debug4×800～1500年人工Gate，见 [Dynastic Revolution Calibration](docs/DynasticRevolutionCalibration.md)。
+- v0.99927c取消稳定度<=25硬门后，2445年人工样本已确认机制可抽签，但最高危机入口仍很稀少。本轮v0.99927d扩展仅有真实复合证据的低风险入口，并以期望频率辅助验收；每eligible boundary最多一次draw。
 
 - Web 存档仅保存在当前浏览器 IndexedDB；无云存档或跨设备同步。手动档、200 游戏年轮换自动档与 `current` 恢复档共用当前版本化 WorldSave schema。
 - Web 中未触发存档的推进在刷新或关闭页面后不会保留；Electron 另有每 5 现实分钟恢复档和关闭前保存。
