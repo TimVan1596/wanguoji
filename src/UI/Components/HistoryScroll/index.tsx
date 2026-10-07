@@ -1,4 +1,4 @@
-import { getFactionDisplayNameAtMonth } from "../../../Simulation/FactionIdentity";
+import { getDiplomacyEventDetails } from "../../../History/DiplomacyEventDetails";
 import { MAJOR_EVENT_FILTERS, type MajorEventFilter } from "../../../History/HistoryMajorEventFilters";
 import { getRevolutionEventDetails } from "../../../History/RevolutionEventDetails";
 import { HistoryBrowsingSession } from "./historyBrowsing";
@@ -589,35 +589,7 @@ function EventDetails({
     event.type === "faction-extinct" || event.type === "faction-exiled" || event.type === "faction-dissolved";
   const isDiplomacySigning = event.type === "relation-renewed" || event.type === "truce-signed" || event.type === "non-aggression-signed" || event.type === "alliance-signed";
   if (isDiplomacySigning && metadata) {
-    const factionAName = event.factionIds?.[0] ? teamByName.get(event.factionIds[0]) ? getFactionDisplayNameAtMonth(teamByName.get(event.factionIds[0])!, event.monthIndex ?? event.year) : event.factionIds[0] : "一方";
-    const factionBName = event.factionIds?.[1] ? teamByName.get(event.factionIds[1]) ? getFactionDisplayNameAtMonth(teamByName.get(event.factionIds[1])!, event.monthIndex ?? event.year) : event.factionIds[1] : "另一方";
-    const signatories = [
-      [metadata.signatoryARole, metadata.signatoryATitle],
-      [metadata.signatoryBRole, metadata.signatoryBTitle],
-    ].filter((entry): entry is [string, string] => typeof entry[0] === "string" && typeof entry[1] === "string");
-    if (signatories.length) {
-      const roles = [...new Set(signatories.map(([role]) => role))].join("/");
-      lines.push(`签约时${roles}：${signatories.map(([, title]) => title).join("、")}`);
-    }
-    if(event.type === "relation-renewed") {
-      addMetadataTextLine(lines, metadata.threatCredibility, "威胁可信度");
-      addMetadataLine(lines, metadata.renewalDuration, "续约月数");
-      addMetadataLine(lines, metadata.renewalCount, "累计续约次数");
-      if(typeof metadata.originalStartedMonth === "number") lines.push(`连续关系起始：${formatWorldDate(metadata.originalStartedMonth)}`);
-      if(typeof metadata.newExpiresMonth === "number") lines.push(`新到期月份：${formatWorldDate(metadata.newExpiresMonth)}`);
-    }
-    if (metadata.reason === "WAR_EXHAUSTION_TRUCE") {
-      addMetadataLine(lines, metadata.recentBilateralCaptureCount, "近三年双边城邑易手");
-      addMetadataLine(lines, metadata.stabilityA, `${factionAName}签约时稳定度`);
-      addMetadataLine(lines, metadata.stabilityB, `${factionBName}签约时稳定度`);
-    } else if (metadata.reason === "COMMON_THREAT_NON_AGGRESSION" || metadata.reason === "COMMON_THREAT_ALLIANCE") {
-      addFactionLine(lines, teamByName, metadata.commonThreatFactionId, "共同强敌");
-      addMetadataPercentLine(lines, metadata.territoryShareA, `${factionAName}签约时领土占比`);
-      addMetadataPercentLine(lines, metadata.territoryShareB, `${factionBName}签约时领土占比`);
-      addMetadataPercentLine(lines, metadata.threatTerritoryShare, "共同强敌领土占比");
-      addMetadataTextLine(lines, metadata.preconditionStatus, "前置关系");
-      addMetadataLine(lines, metadata.preconditionDurationMonths, "前置关系持续月数");
-    }
+    lines.push(...getDiplomacyEventDetails(event, teamByName));
   } else if (isCapitalTransition && metadata) {
     addMetadataTextLine(lines, metadata.previousCapitalName, "旧都");
     addMetadataTextLine(lines, metadata.newCapitalName ?? event.cityName, "新都");

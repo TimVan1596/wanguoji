@@ -27,6 +27,7 @@ import { BASE_PLAY_RATE } from "../../Simulation/SimulationDriver";
 import worldRandom, { WORLD_RNG_ALGORITHM } from "../../Simulation/WorldRandom";
 import { getAvatarRendererMode } from "../../Runtime/AvatarRendererMode";
 import { formatCoreDiagnostics, formatFullDiagnostics, stableStringify } from "../../Runtime/DiagnosticsReport";
+import DiagnosticsOverlayFrame from "./DiagnosticsOverlayFrame";
 import DiagnosticsPanelBoundary from "./DiagnosticsPanelBoundary";
 import { createDiagnosticCopyAction } from "../../Runtime/DiagnosticCopyAction";
 import { readDesktopSuspendPolicy } from "../../Runtime/DesktopSuspendPolicy";
@@ -145,6 +146,8 @@ function WorldDiagnosticsPanelContent() {
     return null;
   }
 
+  // Keep polling/subscriptions above this lazy render; compact mode mounts no report DOM.
+  const renderExpanded = () => {
   const core = Game.Core;
   const determinism = core?.getDeterminismDiagnostics();
   const snapshotRequest = core?.getSnapshotRequestDiagnostics();
@@ -405,8 +408,7 @@ function WorldDiagnosticsPanelContent() {
   const statusSummary = `Hydration: ${hydrationStatus.startsWith("Hydration OK") ? "OK" : hydrationStatus.startsWith("Hydration failed") ? "FAILED" : "—"}｜Canonical: ${canonicalDiff ? canonicalDiff.matched ? "matched" : `DIFF (${canonicalDiff.differenceCount})` : "—"}｜Runtime: ${runtime?.simulatorRunning ? "RUNNING" : "PAUSED"}`;
 
   return (
-    <Box sx={{ position: "fixed", zIndex: 5000, right: 350, bottom: 8, width: 360, maxHeight: "48vh", overflowY: "auto", p: 1, bgcolor: "rgba(20,24,28,.95)", color: "#fff", border: "1px solid #90caf9", fontSize: 11 }}>
-      <Typography variant="subtitle2" sx={{ color: "#90caf9" }}>世界诊断（debug=1）</Typography>
+    <Box>
       <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9, my: 0.5 }}>{statusSummary}</Typography>
       <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{`Genealogy viewer: open=${genealogyViewer.open} lastCloseSource=${genealogyViewer.lastCloseSource ?? "—"} MUI reason=${genealogyViewer.lastMuiReason ?? "—"}`}</Typography>
       <Button size="small" variant="outlined" sx={{ color: "#90caf9", borderColor: "#90caf9" }} onClick={() => void copyReport(buildCoreReport, "核心诊断")}>复制核心诊断</Button>
@@ -420,11 +422,11 @@ function WorldDiagnosticsPanelContent() {
         <Typography variant="caption">关键门槛（仅解释真实规则，不改变规则）</Typography>
         {thresholds.map(([label, text]) => <Typography key={label} variant="caption" component="div">{label}：{text}</Typography>)}
       </details>
-      <details open>
+      <details>
         <summary>Dynastic Revolution diagnostics</summary>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(provisionalRulers.revolution)}</Typography>
       </details>
-      <details open>
+      <details>
         <summary>君主任期诊断（即位当月历史 rank；累计完成任期）</summary>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{[
           ...DIAGNOSTIC_RULER_RANKS.map((rank) => {
@@ -447,7 +449,7 @@ function WorldDiagnosticsPanelContent() {
       {[ ["本会话首领诊断（新世界/读档后完成；读档重置）", provisionalRulers.session],
          ["最近100年首领诊断（按任期结束月筛选）", provisionalRulers.recent] ].map(([label, value]) => {
         const stats = value as typeof provisionalRulers.session;
-        return <details key={String(label)} open>
+        return <details key={String(label)}>
           <summary>{String(label)}</summary>
           <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{[
             `completed count: ${stats.completedProvisionalRulerCount}`,
@@ -566,7 +568,7 @@ function WorldDiagnosticsPanelContent() {
           }).join("\n")
           : "暂无达到阈值的人口变化"}</Typography>
       </details>
-      {isDesktopContinuousRuntime() && <details open>
+      {isDesktopContinuousRuntime() && <details>
         <summary>Desktop Runtime</summary>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{[
           "Mode: DESKTOP_CONTINUOUS",
@@ -602,4 +604,6 @@ function WorldDiagnosticsPanelContent() {
       </details>}
     </Box>
   );
+  };
+  return <DiagnosticsOverlayFrame running={Game.Core?.simulator?.isRunning() ?? false} version={APP_VERSION}>{renderExpanded}</DiagnosticsOverlayFrame>;
 }

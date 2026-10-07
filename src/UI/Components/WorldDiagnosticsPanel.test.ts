@@ -34,4 +34,23 @@ describe("diagnostics report render isolation", () => {
     expect(found).toEqual(builders);
     expect(copyHandlers).toBe(3);
   });
+  it("all diagnostic details default collapsed, with refresh hooks outside the lazy expanded subtree",()=>{
+    const text=readFileSync(new URL("./WorldDiagnosticsPanel.tsx",import.meta.url),"utf8");
+    const source=ts.createSourceFile("panel.tsx",text,ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
+    let details=0,polls=0;
+    const walk=(node:ts.Node)=>{
+      if(ts.isJsxOpeningElement(node) && node.tagName.getText(source)==="details"){
+        details++;expect(node.attributes.properties.some(a=>ts.isJsxAttribute(a)&&a.name.getText(source)==="open")).toBe(false);
+      }
+      if(ts.isCallExpression(node)&&node.expression.getText(source)==="window.setInterval"){
+        polls++;let parent:ts.Node|undefined=node;
+        while(parent){if(ts.isVariableDeclaration(parent))expect(parent.name.getText(source)).not.toBe("renderExpanded");parent=parent.parent;}
+      }
+      ts.forEachChild(node,walk);
+    };
+    walk(source);expect(details).toBeGreaterThan(10);expect(polls).toBe(2);
+    expect(text).toContain("<DiagnosticsOverlayFrame");expect(text).toContain("{renderExpanded}");
+    expect(text).not.toContain("localStorage");
+  });
+
 });
