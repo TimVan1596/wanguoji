@@ -68,7 +68,7 @@ export default function GodConsole({ saving }: { saving: boolean }) {
     <Box sx={{ display: "grid", gap: 0.5, minWidth: 0 }}>
       {summary("目标")}
       <TextField select size="small" label="目标势力" value={selectedTeam?.name ?? ""} onChange={(event) => selectFaction(event.target.value)}>
-        <MenuItem value="">未选择势力</MenuItem>{factionOptions.map((team) => <MenuItem key={team.name} value={team.name}>{team.displayName}{team.status !== "ACTIVE" ? `（${team.status === "EXILED" ? "流亡" : "已灭亡"}）` : ""}</MenuItem>)}
+        <MenuItem value="">未选择势力</MenuItem>{factionOptions.map((team) => <MenuItem key={team.name} value={team.name}>{team.displayName}{team.status !== "ACTIVE" ? `（${team.status === "EXILED" ? "流亡" : "已终结"}）` : ""}</MenuItem>)}
       </TextField>
       <TextField select size="small" label="目标城市" value={selectedCity?.id ?? ""} onChange={(event) => {
         const city = cities.find((item) => item.id === event.target.value);
@@ -82,7 +82,7 @@ export default function GodConsole({ saving }: { saving: boolean }) {
         {([["faction", "势力"], ["city", "城市"], ["political", "政治"], ["advanced", "高级"]] as const).map(([key, label]) => <Button key={key} size="small" variant={section === key ? "contained" : "outlined"} onClick={() => setSection(key)}>{label}</Button>)}
       </Box>
       <Typography variant="caption" display="block">人口：{selectedTeam?.users.size ?? "—"} · 稳定度：{stability ?? "—"} · 城市：{activeCities.length}</Typography>
-      {section === "advanced" && <><Button size="small" onClick={() => setShowHistoricalFactions((value) => !value)}>显示流亡/灭亡政权：{showHistoricalFactions ? "开" : "关"}</Button><Button size="small" onClick={() => setShowAllCities((value) => !value)}>显示全部当前城市：{showAllCities ? "开" : "关"}</Button></>}
+      {section === "advanced" && <><Button size="small" onClick={() => setShowHistoricalFactions((value) => !value)}>显示流亡/终结政权：{showHistoricalFactions ? "开" : "关"}</Button><Button size="small" onClick={() => setShowAllCities((value) => !value)}>显示全部当前城市：{showAllCities ? "开" : "关"}</Button></>}
     </Box>
 
     {section === "faction" && <Box sx={{ borderTop: "1px solid var(--gg-border)", pt: 0.5 }}>

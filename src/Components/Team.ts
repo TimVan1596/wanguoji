@@ -10,16 +10,6 @@ import { resolvePublicAssetUrl } from "../Runtime/PublicAssetUrl";
 import type { PopulationMutationContext } from "../Simulation/PopulationTransitionAudit";
 import {
   FactionStatus,
-  markSubmitted(month: number, receivingFactionId: string) {
-    markLifecycleExtinct(this, month);
-    this.farms.setDie();
-    this.terminationReason = "SUBMITTED";
-    this.terminationTargetFactionId = receivingFactionId;
-    this.terminationMonth = month;
-    this.rulerUser = undefined;
-    Game.Core?.releaseTerminalTeamColliders?.(this);
-  }
-
   getCumulativeActiveYears,
   initializeFactionLifecycle,
   markLifecycleActive,
@@ -353,6 +343,16 @@ export default class Team {
     this.terminationMonth = year;
     // The ruler's person transfers with the population; detach the political
     // office reference without destroying the person or recording a death.
+    this.rulerUser = undefined;
+    Game.Core?.releaseTerminalTeamColliders?.(this);
+  }
+
+  markSubmitted(month: number, receivingFactionId: string) {
+    markLifecycleExtinct(this, month);
+    this.farms.setDie();
+    this.terminationReason = "SUBMITTED";
+    this.terminationTargetFactionId = receivingFactionId;
+    this.terminationMonth = month;
     this.rulerUser = undefined;
     Game.Core?.releaseTerminalTeamColliders?.(this);
   }

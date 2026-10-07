@@ -13,7 +13,7 @@ export function queryHistoryPage(store: WorldHistoryStore, options: {
     const result: WorldEvent[] = [];
     // These anchors never participate in collapse/founding/restoration chains.
     // Narrow before copying a window; grouped subtypes still select after grouping.
-    const isolatedSubtype = options.filter === "featured" && ["founding", "emperor", "revolution", "merge"].includes(options.eventTypeFilter ?? "all");
+    const isolatedSubtype = options.filter === "featured" && ["founding", "emperor", "revolution", "merge", "submission"].includes(options.eventTypeFilter ?? "all");
     let beforeIndex: number | undefined;
     for (;;) {
       const window = store.getEventWindow({ ...options, limit: 200, beforeIndex,

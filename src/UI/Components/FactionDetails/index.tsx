@@ -340,6 +340,11 @@ function FactionProfile({
           {headerName}
         </Typography>
       </Box>
+      {team.terminationReason === "SUBMITTED" && <Typography fontSize="0.84rem">
+        纳土归附于 {teams.find(t => t.name === team.terminationTargetFactionId)?.displayName ?? team.terminationTargetFactionId}
+        <br />归附时间：{team.terminationMonth !== undefined ? formatWorldDate(team.terminationMonth) : "—"}
+        <br />末代君主：{DynastyRegistry.get(team.name)?.rulers.find(r => r.endReason === "纳土退位")?.givenName ?? "—"}
+      </Typography>}
       <Typography fontSize="0.84rem" color="var(--gg-text-muted)" sx={{ mt: 0.25 }}>
         {regimeLevel} · {formatStatus(team.status, team.terminationReason)} · 天下第{rankIndex}
       </Typography>
@@ -588,7 +593,7 @@ function FactionList({
           ["all", "全部"],
           ["active", "存续"],
           ["exiled", "流亡"],
-          ["extinct", "灭亡"],
+          ["extinct", "终结"],
         ].map(([value, label]) => (
           <Button
             key={value}
@@ -1200,7 +1205,7 @@ function formatRulerStatus(
   if (status === "dead") {
     return "已故";
   }
-  if (status === "abdicated") return "合邦退位";
+  if (status === "abdicated") return "退位";
   return "君主";
 }
 
@@ -1320,7 +1325,7 @@ function formatStatus(status: string, terminationReason?: string) {
   if (status === "EXILED") {
     return "流亡";
   }
-  return terminationReason === "MERGED" ? "已合邦" : "灭绝";
+  return terminationReason === "SUBMITTED" ? "【纳土】已纳土" : terminationReason === "MERGED" ? "【归并】已合邦" : "【覆灭】已覆灭";
 }
 
 function TrendChart({

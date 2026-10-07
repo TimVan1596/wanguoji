@@ -21,7 +21,7 @@ const MAJOR_POLITICAL_TYPES = new Set<WorldEvent["type"]>([
   "capital-relocated",
   "dynasty-restored",
   "alliance-signed",
-  "faction-merged",
+  "faction-merged", "faction-submitted",
   "dynasty-line-ended",
   "god-restoration",
   "god-rebellion",
@@ -201,7 +201,7 @@ function getEventMonth(event: WorldEvent) {
 /** Presentation-only national trajectory selector; canonical significance is unchanged. */
 const POWER_TRAJECTORY_TYPES = new Set<WorldEvent["type"]>([
   "state-founded", "emperor-proclaimed", "dynasty-usurped", "faction-restored", "dynasty-restored",
-  "capital-fallen", "capital-relocated", "faction-exiled", "faction-extinct", "faction-merged",
+  "capital-fallen", "capital-relocated", "faction-exiled", "faction-extinct", "faction-merged", "faction-submitted",
   "world-unification", "world-hegemony", "world-era-started", "world-fractured", "empire-split",
   "rebel-faction-founded", "frontier-faction-founded",
 ]);

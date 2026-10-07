@@ -30,6 +30,8 @@ export function formatCityHistoryEvent(
       return `${previous}失都${city.name}`;
     case "capital-relocated":
       return next ? `${next}迁都${city.name}` : event.title;
+    case "submitted":
+      return previous && next ? `${previous}纳土归附${next}，${city.name}行政归入${next}` : event.title;
     default:
       return event.title;
   }
