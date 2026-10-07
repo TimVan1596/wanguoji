@@ -1,3 +1,4 @@
+import { getSubmissionEventPresentation } from "./PeacefulSubmissionPresentation";
 import {
   getFactionEventRelation,
   type FactionEventRelation,
@@ -44,6 +45,8 @@ export function formatFactionHistoryEvent(
   const name = (id?: string) => resolveFactionHistoricalName(factionById, id, month);
   const selectedName = name(factionId);
 
+  const submission = getSubmissionEventPresentation(event, factionById);
+  if (submission) return event.targetFactionId === factionId ? submission.receivingChronicle : submission.title;
   if (event.type === "heir-died") {
     const heirName = stringMeta(event, "heirName");
     const parentTitle = stringMeta(event, "parentRulerTitle");

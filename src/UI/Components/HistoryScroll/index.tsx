@@ -1,3 +1,4 @@
+import { getSubmissionEventPresentation } from "../../../History/PeacefulSubmissionPresentation";
 import { getDiplomacyEventDetails } from "../../../History/DiplomacyEventDetails";
 import { MAJOR_EVENT_FILTERS, type MajorEventFilter } from "../../../History/HistoryMajorEventFilters";
 import { getRevolutionEventDetails } from "../../../History/RevolutionEventDetails";
@@ -580,7 +581,7 @@ function EventDetails({
   factionNames: string[];
   cityNames: string[];
 }) {
-  const lines: string[] = getRevolutionEventDetails(event);
+  const lines: string[] = [...getRevolutionEventDetails(event), ...(getSubmissionEventPresentation(event, teamByName)?.lines ?? [])];
   const metadata = event.metadata;
   const kind = metadata?.historyNarrativeKind;
   const isCapitalTransition = kind === "CAPITAL_TRANSITION" ||

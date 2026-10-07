@@ -1,3 +1,4 @@
+import { getSubmissionEventPresentation } from "./PeacefulSubmissionPresentation";
 import { DIPLOMACY_EVENT_TYPES } from "./HistoryMajorEventFilters";
 import { getFactionColorAtMonth, type FactionColorHistoryEntry } from "../Simulation/FactionColorHistory";
 import { getHistoricalFactionIdentity } from "./HistoricalFactionIdentity";
@@ -145,6 +146,8 @@ export function formatHistoryEventTitle(
   rulersById?: Map<string, Ruler>
 ) {
   const month = event.monthIndex ?? event.year;
+  const submission = getSubmissionEventPresentation(event, factionById);
+  if (submission) return submission.title;
   const diplomacy = formatRulerDiplomacyEvent(event, factionById);
   if (diplomacy) return diplomacy;
   const name = (factionId?: string) =>
@@ -368,6 +371,7 @@ export function formatHistoryEventDescription(
   event: WorldEvent,
   factionById: Map<string, HistoryFactionLike>
 ) {
+  if (event.type === "faction-submitted") return undefined;
   // Diplomatic titles already show recorded term/expiry; details expose the evidence.
   // Also applies to old V10 descriptions without rewriting the canonical event.
   if (event.metadata && formatRulerDiplomacyEvent(event, factionById) !== undefined) return undefined;
