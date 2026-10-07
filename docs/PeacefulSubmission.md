@@ -36,6 +36,8 @@ NO_PRESSURE_PATH保留计数项；当前两个路径共享严格极弱门，未�
 
 运行：pnpm test -- --run、pnpm build、pnpm desktop:build、pnpm desktop:compile、pnpm desktop:renderer-debug-build、git diff --check。
 
+自动结果：171个测试文件、1040项测试全部通过（限制Vitest worker并发以避免既有动态import测试在资源竞争下超时，未提高timeout或削弱断言）。所有上述Web/Desktop构建、独立compile、debug asset/source map校验和diff check均通过。构建只有既有大chunk提示。人工自然频率、Phaser地图/宗谱/真实Save-Load尚未验收。
+
 ## 人工 Gate：请直接按下面做
 
 运行`pnpm desktop:start:debug`。因为V11，创建新世界，4×运行。最多到1500年；出现纳土事件就可立即停止，不继续寻找更多样本。
