@@ -60,7 +60,8 @@ export type WorldEventType =
   | "alliance-signed"
   | "relation-renewed"
   | "alliance-expired"
-  | "faction-merged";
+  | "faction-merged"
+  | "faction-submitted";
 
 export type WorldEventCategory = "war" | "politics" | "disaster" | "god";
 
@@ -1409,7 +1410,7 @@ export class WorldHistoryStore {
 
   private observeFactionFalls(year: number, teams: Team[]) {
     teams.forEach((team) => {
-      if (team.status === "EXTINCT" && team.terminationReason !== "MERGED") {
+      if (team.status === "EXTINCT" && team.terminationReason !== "MERGED" && team.terminationReason !== "SUBMITTED") {
         this.addFactionExtinct(
           year,
           team.name,

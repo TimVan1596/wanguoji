@@ -22,9 +22,9 @@ export interface FactionDetailsTeamLike {
   currentActiveSinceYear?: number;
   lastExiledYear?: number;
   extinctionYear?: number;
-  terminationReason?: "EXTINCT" | "MERGED";
-  mergedIntoFactionId?: string;
-  mergedMonth?: number;
+  terminationReason?: "EXTINCT" | "MERGED" | "SUBMITTED";
+  terminationTargetFactionId?: string;
+  terminationMonth?: number;
   restorationYears?: number[];
   stateFoundedMonth?: number;
   stateFormationEligibleSinceMonth?: number;
@@ -345,7 +345,7 @@ export function buildFactionLifecycleLines(
   return [
     `初建：${formatWorldDate(firstFoundedYear)}`,
     ...(team.terminationReason === "MERGED"
-      ? [`并入：${team.mergedIntoFactionId ?? "—"} · ${team.mergedMonth !== undefined ? formatWorldDate(team.mergedMonth) : "—"}`]
+      ? [`并入：${team.terminationTargetFactionId ?? "—"} · ${team.terminationMonth !== undefined ? formatWorldDate(team.terminationMonth) : "—"}`]
       : [`彻底灭亡：${team.extinctionYear !== undefined ? formatWorldDate(team.extinctionYear) : "—"}`]),
     `累计国祚：${formatWorldDuration(cumulativeActiveMonths)}`,
     team.terminationReason === "MERGED" ? "状态：已合邦" : "状态：已灭亡",
@@ -370,7 +370,7 @@ function buildLegacyLines(
     lines.push(`合法性：${exileLegitimacy ?? "—"}`);
     lines.push(`残部：${remnantPopulation}人`);
   } else if (team.status === "EXTINCT" && team.terminationReason === "MERGED") {
-    lines.push(`并入：${team.mergedIntoFactionId ?? "—"} · ${team.mergedMonth !== undefined ? formatWorldDate(team.mergedMonth) : "—"}`);
+    lines.push(`并入：${team.terminationTargetFactionId ?? "—"} · ${team.terminationMonth !== undefined ? formatWorldDate(team.terminationMonth) : "—"}`);
   } else if (team.status === "EXTINCT") {
     lines.push(
       `彻底灭亡：${team.extinctionYear !== undefined ? formatWorldDate(team.extinctionYear) : "—"}`

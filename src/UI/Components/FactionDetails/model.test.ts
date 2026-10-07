@@ -97,7 +97,7 @@ describe("faction details model", () => {
   it("renders absorbed factions as merged rather than extinct", () => {
     const lines = buildFactionLifecycleLines({
       name: "梁西", status: "EXTINCT", terminationReason: "MERGED",
-      mergedIntoFactionId: "梁东", mergedMonth: 36, firstFoundedYear: 0,
+      terminationTargetFactionId: "梁东", terminationMonth: 36, firstFoundedYear: 0,
     }, 60, 0);
     expect(lines).toContain("并入：梁东 · 3年1月");
     expect(lines).toContain("状态：已合邦");

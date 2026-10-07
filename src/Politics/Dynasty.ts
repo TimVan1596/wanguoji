@@ -302,6 +302,14 @@ class DynastyRegistryStore {
     dynasty.currentRulerId = null;
   }
 
+  markSubmitted(team: Team, monthIndex: number) {
+    // The same archival operation as union, with an independent political reason.
+    this.markMerged(team, monthIndex);
+    const dynasty = this.dynasties.get(team.name);
+    const ruler = dynasty?.rulers.find(r => r.politicalEndYear === monthIndex && r.endReason === "合邦退位");
+    if (ruler) ruler.endReason = "纳土退位";
+  }
+
   get(factionId: string) {
     return this.dynasties.get(factionId);
   }

@@ -126,12 +126,12 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     save.factions.push({ ...save.factions[0], factionId: "threat", displayName: "强敌" });
     save.factions[1] = {
       ...save.factions[1], status: "EXTINCT", terminationReason: "MERGED",
-      mergedIntoFactionId: "qin", mergedMonth: 48,
+      terminationTargetFactionId: "qin", terminationMonth: 48,
     };
     const loaded = JSON.parse(JSON.stringify(save));
     expect(validateWorldSave(loaded)).toEqual({ valid: true, errors: [] });
     expect(loaded.diplomacy.relations[0]).toMatchObject({ status: "ALLIANCE", commonThreatFactionId: "threat", preconditionDurationMonths: 24 });
-    expect(loaded.factions[1]).toMatchObject({ terminationReason: "MERGED", mergedIntoFactionId: "qin", mergedMonth: 48 });
+    expect(loaded.factions[1]).toMatchObject({ terminationReason: "MERGED", terminationTargetFactionId: "qin", terminationMonth: 48 });
     expect(validateWorldSave({ ...save, saveSchemaVersion: 5 }).valid).toBe(false);
   });
 

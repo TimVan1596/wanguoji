@@ -15,6 +15,7 @@ export type PopulationTransitionCause =
   | "BATTLE_DEATH"
   | "RULER_LIFECYCLE"
   | "FACTION_MERGER"
+  | "FACTION_SUBMISSION"
   | "LIVE_JOIN"
   | "LIVE_TRANSFER"
   | "INITIALIZATION"

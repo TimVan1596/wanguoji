@@ -10,6 +10,16 @@ import { resolvePublicAssetUrl } from "../Runtime/PublicAssetUrl";
 import type { PopulationMutationContext } from "../Simulation/PopulationTransitionAudit";
 import {
   FactionStatus,
+  markSubmitted(month: number, receivingFactionId: string) {
+    markLifecycleExtinct(this, month);
+    this.farms.setDie();
+    this.terminationReason = "SUBMITTED";
+    this.terminationTargetFactionId = receivingFactionId;
+    this.terminationMonth = month;
+    this.rulerUser = undefined;
+    Game.Core?.releaseTerminalTeamColliders?.(this);
+  }
+
   getCumulativeActiveYears,
   initializeFactionLifecycle,
   markLifecycleActive,
@@ -58,9 +68,9 @@ export default class Team {
   lastExiledYear: number | undefined;
   restorationYears: number[] = [];
   extinctionYear: number | undefined;
-  terminationReason: "EXTINCT" | "MERGED" | undefined;
-  mergedIntoFactionId: string | undefined;
-  mergedMonth: number | undefined;
+  terminationReason: "EXTINCT" | "MERGED" | "SUBMITTED" | undefined;
+  terminationTargetFactionId: string | undefined;
+  terminationMonth: number | undefined;
   cumulativeActiveYears = 0;
   farms: Farms;
   constructor(
@@ -138,8 +148,8 @@ export default class Team {
     team.restorationYears = [...(state.restorationMonths ?? [])];
     team.extinctionYear = state.extinctionMonth;
     team.terminationReason = state.terminationReason;
-    team.mergedIntoFactionId = state.mergedIntoFactionId;
-    team.mergedMonth = state.mergedMonth;
+    team.terminationTargetFactionId = state.terminationTargetFactionId;
+    team.terminationMonth = state.terminationMonth;
     team.cumulativeActiveYears = state.cumulativeActiveMonths;
     team.homeBlock = Game.Core.map?.getBlock(state.homeGridX, state.homeGridY);
     team.joinCommand = [...(state.joinCommand ?? [])];
@@ -312,15 +322,15 @@ export default class Team {
   initializeLifecycle(year: number) {
     initializeFactionLifecycle(this, year);
     this.terminationReason = undefined;
-    this.mergedIntoFactionId = undefined;
-    this.mergedMonth = undefined;
+    this.terminationTargetFactionId = undefined;
+    this.terminationMonth = undefined;
   }
 
   markActive(year: number) {
     markLifecycleActive(this, year);
     this.terminationReason = undefined;
-    this.mergedIntoFactionId = undefined;
-    this.mergedMonth = undefined;
+    this.terminationTargetFactionId = undefined;
+    this.terminationMonth = undefined;
   }
 
   markExiled(year: number) {
@@ -339,8 +349,8 @@ export default class Team {
     markLifecycleExtinct(this, year);
     this.farms.setDie();
     this.terminationReason = "MERGED";
-    this.mergedIntoFactionId = absorbingFactionId;
-    this.mergedMonth = year;
+    this.terminationTargetFactionId = absorbingFactionId;
+    this.terminationMonth = year;
     // The ruler's person transfers with the population; detach the political
     // office reference without destroying the person or recording a death.
     this.rulerUser = undefined;
@@ -413,8 +423,8 @@ export default class Team {
       restorationMonths: [...this.restorationYears],
       extinctionMonth: this.extinctionYear,
       terminationReason: this.terminationReason,
-      mergedIntoFactionId: this.mergedIntoFactionId,
-      mergedMonth: this.mergedMonth,
+      terminationTargetFactionId: this.terminationTargetFactionId,
+      terminationMonth: this.terminationMonth,
       cumulativeActiveMonths: this.cumulativeActiveYears,
       identityStage: this.identityStage,
       sovereigntyRank: this.sovereigntyRank,

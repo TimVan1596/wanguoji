@@ -52,7 +52,8 @@ export type CityHistoryType =
   | "recovered"
   | "capital-lost"
   | "capital-relocated"
-  | "merged";
+  | "merged"
+  | "submitted";
 
 export interface CityHistoryEvent {
   year: number;
@@ -401,7 +402,7 @@ export default class City {
     }
   }
 
-  administrativeMergeTransferTo(newOwner: Team, monthIndex: number) {
+  administrativeMergeTransferTo(newOwner: Team, monthIndex: number, reason: "MERGED" | "SUBMITTED" = "MERGED") {
     const oldOwner = this.ownerTeam;
     if (!oldOwner || oldOwner === newOwner) return false;
     oldOwner.removeCity(this);
@@ -411,7 +412,7 @@ export default class City {
     this.maxDefense = this.calculateMaxDefense();
     this.defense = Math.min(this.defense, this.maxDefense);
     this.clearSiegeState();
-    this.addHistory(monthIndex, "merged", `${oldOwner.displayName}并入${newOwner.displayName}后，${this.name}归入${newOwner.displayName}`, {
+    this.addHistory(monthIndex, reason === "SUBMITTED" ? "submitted" : "merged", `${oldOwner.displayName}${reason === "SUBMITTED" ? "纳土归附" : "并入"}${newOwner.displayName}后，${this.name}归入${newOwner.displayName}`, {
       previousOwnerFactionId: oldOwner.name,
       newOwnerFactionId: newOwner.name,
     });

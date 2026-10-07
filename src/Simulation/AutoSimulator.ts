@@ -503,8 +503,8 @@ export default class AutoSimulator {
       metadata: {
         absorbedFactionId: absorbed.name,
         absorbingFactionId: absorbing.name,
-        mergedIntoFactionId: absorbing.name,
-        mergedMonth: month,
+        terminationTargetFactionId: absorbing.name,
+        terminationMonth: month,
         commonThreatFactionId: candidate.commonThreatFactionId,
         absorbingTerritoryShare: candidate.absorbingTerritoryShare,
         absorbedTerritoryShare: candidate.absorbedTerritoryShare,

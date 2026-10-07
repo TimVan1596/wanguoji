@@ -65,7 +65,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
         diplomacyPairs.add(pair);
         requireRef(factionAId, factionIds, "diplomacy.factionAId", errors);
         requireRef(factionBId, factionIds, "diplomacy.factionBId", errors);
-        if (factionById.get(factionAId)?.terminationReason === "MERGED" || factionById.get(factionBId)?.terminationReason === "MERGED") errors.push("merged factions cannot retain diplomacy relations");
+        if (["MERGED","SUBMITTED"].includes(String(factionById.get(factionAId)?.terminationReason)) || ["MERGED","SUBMITTED"].includes(String(factionById.get(factionBId)?.terminationReason))) errors.push("merged factions cannot retain diplomacy relations");
       }
     });
     const relationCounts = new Map<string, number>();
@@ -88,7 +88,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
       const key = `${a}\u0000${b}`;
       if(memoryPairs.has(key)) errors.push("duplicate diplomatic pair memory"); memoryPairs.add(key);
       if(memory.commonThreatFactionId !== undefined) requireRef(memory.commonThreatFactionId,factionIds,"diplomacy.memory.commonThreatFactionId",errors);
-      if(typeof a === "string" && typeof b === "string" && (factionById.get(a)?.terminationReason === "MERGED" || factionById.get(b)?.terminationReason === "MERGED")) errors.push("merged factions cannot retain diplomacy memory");
+      if(typeof a === "string" && typeof b === "string" && (["MERGED","SUBMITTED"].includes(String(factionById.get(a)?.terminationReason)) || ["MERGED","SUBMITTED"].includes(String(factionById.get(b)?.terminationReason)))) errors.push("merged factions cannot retain diplomacy memory");
     });
   }
   factions.forEach((faction) => ["color", "firstFoundedMonth", "currentActiveSinceMonth", "cumulativeActiveMonths", "homeGridX", "homeGridY"].forEach((key) => {
@@ -106,13 +106,14 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
     });
   });
   factions.forEach((faction) => {
-    if (faction.terminationReason === "MERGED") {
-      if (typeof faction.mergedIntoFactionId !== "string" || !faction.mergedIntoFactionId) errors.push("merged faction requires mergedIntoFactionId");
-      else if (!factionIds.has(faction.mergedIntoFactionId)) errors.push("mergedIntoFactionId references an unknown faction");
-      if (!finite(faction.mergedMonth)) errors.push("merged faction requires finite mergedMonth");
+    if (faction.terminationReason !== undefined && !["EXTINCT","MERGED","SUBMITTED"].includes(String(faction.terminationReason))) errors.push("invalid terminationReason");
+    if (faction.terminationReason === "MERGED" || faction.terminationReason === "SUBMITTED") {
+      if (typeof faction.terminationTargetFactionId !== "string" || !faction.terminationTargetFactionId) errors.push("merged faction requires terminationTargetFactionId");
+      else if (faction.terminationTargetFactionId === faction.factionId || !factionIds.has(faction.terminationTargetFactionId)) errors.push("terminationTargetFactionId references an unknown faction");
+      if (!Number.isSafeInteger(faction.terminationMonth) || Number(faction.terminationMonth) < 0 || Number(faction.terminationMonth) > Number(save.world?.worldMonth)) errors.push("merged faction requires finite terminationMonth");
       if (faction.status !== "EXTINCT") errors.push("merged faction must be terminal");
-    } else if (faction.mergedIntoFactionId !== undefined || faction.mergedMonth !== undefined) {
-      errors.push("merge metadata requires MERGED terminationReason");
+    } else if (faction.terminationTargetFactionId !== undefined || faction.terminationMonth !== undefined) {
+      errors.push("termination metadata requires MERGED or SUBMITTED terminationReason");
     }
   });
   cities.forEach((city) => ["centerGridX", "centerGridY", "foundedMonth", "defense", "maxDefense", "loyalty", "devastation", "captureCount"].forEach((key) => {

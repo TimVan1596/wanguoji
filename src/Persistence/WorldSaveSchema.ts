@@ -3,7 +3,7 @@ import { WORLD_RNG_ALGORITHM, WorldRandomState } from "../Simulation/WorldRandom
 import type { DiplomaticRelation, DiplomaticPairMemory } from "../Politics/Diplomacy";
 import type { FactionColorHistoryEntry } from "../Simulation/FactionColorHistory";
 
-export const CURRENT_SAVE_SCHEMA_VERSION = 10 as const;
+export const CURRENT_SAVE_SCHEMA_VERSION = 11 as const;
 
 export interface FactionSaveV1 {
   factionId: string;
@@ -17,9 +17,9 @@ export interface FactionSaveV1 {
   lastExiledMonth?: number;
   restorationMonths: number[];
   extinctionMonth?: number;
-  terminationReason?: "EXTINCT" | "MERGED";
-  mergedIntoFactionId?: string;
-  mergedMonth?: number;
+  terminationReason?: "EXTINCT" | "MERGED" | "SUBMITTED";
+  terminationTargetFactionId?: string;
+  terminationMonth?: number;
   cumulativeActiveMonths: number;
   identityStage: string;
   sovereigntyRank: string;
@@ -137,7 +137,7 @@ export interface WorldEventSystemSaveV1 {
   cycleState: WorldCycleStateSaveV1;
 }
 
-export interface WorldSaveV10 {
+export interface WorldSaveV11 {
   saveSchemaVersion: typeof CURRENT_SAVE_SCHEMA_VERSION;
   appVersion: string;
   createdAt?: string;
@@ -171,7 +171,7 @@ export interface WorldSaveV10 {
   diplomacy: { relations: DiplomaticRelation[]; pairMemories: DiplomaticPairMemory[]; lastEvaluationMonth: number };
 }
 
-export function createEmptyWorldSaveV10(): WorldSaveV10 {
+export function createEmptyWorldSaveV11(): WorldSaveV11 {
   return {
     saveSchemaVersion: CURRENT_SAVE_SCHEMA_VERSION,
     appVersion: APP_VERSION,
@@ -210,24 +210,24 @@ export function createEmptyWorldSaveV10(): WorldSaveV10 {
   };
 }
 
-export type WorldSaveV8 = WorldSaveV10;
-export const createEmptyWorldSaveV8 = createEmptyWorldSaveV10;
+export type WorldSaveV8 = WorldSaveV11;
+export const createEmptyWorldSaveV8 = createEmptyWorldSaveV11;
 
 /** Internal call-site aliases; persisted saves still identify their exact schema number. */
-export type WorldSaveV7 = WorldSaveV10;
-export type WorldSaveV6 = WorldSaveV10;
-export type WorldSaveV5 = WorldSaveV10;
-export type WorldSaveV4 = WorldSaveV10;
-export type WorldSaveV3 = WorldSaveV10;
-export type WorldSaveV2 = WorldSaveV10;
-export type WorldSaveV1 = WorldSaveV10;
-export const createEmptyWorldSaveV7 = createEmptyWorldSaveV10;
-export const createEmptyWorldSaveV6 = createEmptyWorldSaveV10;
-export const createEmptyWorldSaveV5 = createEmptyWorldSaveV10;
-export const createEmptyWorldSaveV4 = createEmptyWorldSaveV10;
-export const createEmptyWorldSaveV3 = createEmptyWorldSaveV10;
-export const createEmptyWorldSaveV2 = createEmptyWorldSaveV10;
-export const createEmptyWorldSaveV1 = createEmptyWorldSaveV10;
+export type WorldSaveV7 = WorldSaveV11;
+export type WorldSaveV6 = WorldSaveV11;
+export type WorldSaveV5 = WorldSaveV11;
+export type WorldSaveV4 = WorldSaveV11;
+export type WorldSaveV3 = WorldSaveV11;
+export type WorldSaveV2 = WorldSaveV11;
+export type WorldSaveV1 = WorldSaveV11;
+export const createEmptyWorldSaveV7 = createEmptyWorldSaveV11;
+export const createEmptyWorldSaveV6 = createEmptyWorldSaveV11;
+export const createEmptyWorldSaveV5 = createEmptyWorldSaveV11;
+export const createEmptyWorldSaveV4 = createEmptyWorldSaveV11;
+export const createEmptyWorldSaveV3 = createEmptyWorldSaveV11;
+export const createEmptyWorldSaveV2 = createEmptyWorldSaveV11;
+export const createEmptyWorldSaveV1 = createEmptyWorldSaveV11;
 
 export function canonicalWorldSaveProjection(save: WorldSaveV1) {
   const { createdAt: _createdAt, ...canonical } = save;
@@ -313,5 +313,9 @@ function simplifyDiffValue(value: unknown): unknown {
 }
 
 // Legacy source API aliases only; every emitted/accepted DTO is schema V10.
-export type WorldSaveV9 = WorldSaveV10;
-export const createEmptyWorldSaveV9 = createEmptyWorldSaveV10;
+export type WorldSaveV9 = WorldSaveV11;
+export const createEmptyWorldSaveV9 = createEmptyWorldSaveV11;
+
+// Source aliases only, not compatibility: schema 10 is rejected.
+export type WorldSaveV10 = WorldSaveV11;
+export const createEmptyWorldSaveV10 = createEmptyWorldSaveV11;
