@@ -12,7 +12,7 @@ function add(t: Totals, o: DiplomacyObservation) {
     if (o.gap <= 60) t.counts.reformedWithin5Years = (t.counts.reformedWithin5Years ?? 0) + 1;
   }
 }
-function report(t: Totals) {
+function report(t: Totals): Record<string, number | undefined> {
   const middle = (t.durationCount - 1) / 2;
   let seen = 0, lo = 0, hi = 0;
   for (const [duration, count] of Object.entries(t.durations).sort((a,b) => Number(a[0]) - Number(b[0]))) {
@@ -45,6 +45,6 @@ export class DiplomacyObservations {
       recent.durationSum += t.durationSum; recent.durationCount += t.durationCount;
       if(t.shortestReformationGap !== undefined) recent.shortestReformationGap = Math.min(recent.shortestReformationGap ?? Infinity,t.shortestReformationGap);
     }
-    return { sessionCumulative: report(this.session), recent100Years: { window: "last 1200 world months", ...report(recent) }, recentLifecycle: this.recent.map(o=>({...o})), recentCandidateBlockers: this.blockers.map(o=>({...o})) };
+    return { sessionCumulative: report(this.session), recent100Years: report(recent), recentWindowMonths: 1200, recentLifecycle: this.recent.map(o=>({...o})), recentCandidateBlockers: this.blockers.map(o=>({...o})) };
   }
 }

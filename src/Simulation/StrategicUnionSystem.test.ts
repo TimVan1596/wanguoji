@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { diagnoseStrategicUnionCandidates, findStrategicUnionCandidate } from "./StrategicUnionSystem";
+import { DiplomacyRegistry, DiplomacySystem } from "../Politics/Diplomacy";
 import type Team from "../Components/Team";
 
 function team(name: string, count: number, startX: number, parentFactionId: string, cities: number): Team {
@@ -29,6 +30,15 @@ describe("strategic union candidate selection", () => {
     recentEvents: [] as never[], blockSize: 32,
   };
 
+  it("renewal at month60 preserves month72 alliance age and original union eligibility",()=>{
+    const registry=new DiplomacyRegistry();registry.setRelation({...alliance,expiresMonth:72});
+    const system=new DiplomacySystem(registry,()=>[],()=>undefined,32);
+    system.update(60,input.teams,90,[]);
+    const renewed=registry.get("strong","weak")!;
+    expect(renewed).toMatchObject({startedMonth:0,lastRenewedMonth:60,renewalCount:1});
+    expect(72-renewed.startedMonth).toBe(72);
+    expect(findStrategicUnionCandidate({...input,relations:[renewed]})).toMatchObject({absorbingFaction:strong,absorbedFaction:weak});
+  });
   it("selects a weaker adjacent same-origin ally only after a long peaceful alliance and continuing pressure", () => {
     expect(findStrategicUnionCandidate(input)).toMatchObject({
       absorbingFaction: strong, absorbedFaction: weak,

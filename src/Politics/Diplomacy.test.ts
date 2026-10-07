@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import Diplomacy, { DiplomacyRegistry, DiplomacySystem, diplomaticPairKey, isHostileActionAllowed } from "./Diplomacy";
 import { DIPLOMACY_NON_AGGRESSION_DURATION_MONTHS, DIPLOMACY_TRUCE_DURATION_MONTHS } from "./Diplomacy";
-import { ALLIANCE_DURATION_MONTHS } from "./StrategicUnionRules";
 import { areFactionsTerritoriallyAdjacent } from "./StrategicUnionRules";
 
 function faction(name: string, blocks: number, loyalty = 50, status = "ACTIVE") {
@@ -60,7 +59,7 @@ describe("Diplomacy", () => {
     expect(Diplomacy.get("a", "b")?.status).toBe("NON_AGGRESSION");
     system.update(24, teams, 80, []);
     expect(Diplomacy.get("a", "b")).toMatchObject({
-      status: "ALLIANCE", startedMonth: 24, expiresMonth: 24 + ALLIANCE_DURATION_MONTHS,
+      status: "ALLIANCE", startedMonth: 24, expiresMonth: 24 + 168,
       commonThreatFactionId: "threat", preconditionStatus: "NON_AGGRESSION", preconditionDurationMonths: 24,
     });
     expect(Diplomacy.canAttack("a", "b", 24)).toBe(false);
@@ -104,9 +103,12 @@ describe("Diplomacy", () => {
   it("forms a common-threat non-aggression pact only among active weaker factions", () => {
     const events: Array<{ type: string; triggerContext?: unknown }> = [];
     const system = new DiplomacySystem(Diplomacy, () => [], (event) => events.push(event));
-    system.update(12, [faction("small-a", 5), faction("small-b", 5), faction("power", 70), faction("exiled", 4, 50, "EXILED")], 100);
+    system.update(12, [faction("small-a", 5, 80), faction("small-b", 5, 80), faction("power", 70, 80), faction("exiled", 4, 50, "EXILED")], 100, [
+      {type:"city-captured",actorFactionId:"power",targetFactionId:"small-a"} as never,
+      {type:"city-captured",actorFactionId:"power",targetFactionId:"small-b"} as never,
+    ]);
     expect(Diplomacy.get("small-a", "small-b")?.status).toBe("NON_AGGRESSION");
-    expect(Diplomacy.get("small-a", "small-b")?.expiresMonth).toBe(108);
+    expect(Diplomacy.get("small-a", "small-b")?.expiresMonth).toBe(144);
     expect(events[0]).toMatchObject({ triggerContext: {
       reason: "COMMON_THREAT_NON_AGGRESSION", commonThreatFactionId: "power",
       territoryShareA: 6.25, territoryShareB: 6.25, threatTerritoryShare: 87.5,

@@ -82,6 +82,17 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     expect(save.worldRandom).toMatchObject({ algorithm: "mulberry32-v1", seed: expect.any(String), state: expect.any(Number), position: 0 });
   });
 
+  it("V10 preserves continuity, renewals and pair memory, and rejects V9 or malformed canonical metadata",()=>{
+    const save=fixture(); save.factions.push({...save.factions[0],factionId:"wei"});
+    save.diplomacy.relations=[{factionAId:"qin",factionBId:"wei",status:"NON_AGGRESSION",reason:"COMMON_THREAT_NON_AGGRESSION",originalStartedMonth:0,startedMonth:12,expiresMonth:180,lastRenewedMonth:36,renewalCount:1}];
+    save.diplomacy.pairMemories=[{factionAId:"qin",factionBId:"wei",lastStatus:"TRUCE",lastReason:"WAR_EXHAUSTION_TRUCE",endedMonth:10,cooldownUntilMonth:34}];
+    const loaded=JSON.parse(JSON.stringify(save));expect(validateWorldSave(loaded)).toEqual({valid:true,errors:[]});expect(loaded.diplomacy).toEqual(save.diplomacy);
+    expect(validateWorldSave({...save,saveSchemaVersion:9}).errors).toContain("unsupported saveSchemaVersion");
+    for(const [key,value] of [["originalStartedMonth",13],["renewalCount",-1],["lastRenewedMonth",43]] as const){const broken=structuredClone(save);(broken.diplomacy.relations[0] as any)[key]=value;expect(validateWorldSave(broken).valid).toBe(false);}
+    const missing=structuredClone(save);delete (missing.diplomacy as any).pairMemories;expect(validateWorldSave(missing).valid).toBe(false);
+    const unknown=structuredClone(save);unknown.diplomacy.pairMemories[0].factionBId="unknown";expect(validateWorldSave(unknown).valid).toBe(false);
+    const duplicate=structuredClone(save);duplicate.diplomacy.pairMemories.push({...duplicate.diplomacy.pairMemories[0]});expect(validateWorldSave(duplicate).valid).toBe(false);
+  });
   it("survives JSON stringify/parse with canonical month-index fields", () => {
     const save = fixture();
     const parsed = JSON.parse(JSON.stringify(save));
