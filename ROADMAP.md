@@ -28,7 +28,8 @@
 - v0.99927c Dynastic Revolution Calibration：取消稳定度25独立硬门，保留合法successor／STATE／ACTIVE／有城／succession-crisis／真实vulnerability；概率为基础4／6／10／14%＋事实加成，cap18%，eligible boundary最多一次draw。V9不变。
 - v27c人工2445年：589 boundaries／8 crisis／6 draws／0篡朝，六次chance期望约0.50。v0.99927d只开放前君战死／被俘＋孤城复合低风险入口（shock¼／instability½），最高crisis不变，新增session期望频率诊断；V9不变。2445年低FPS／unlock卡顿仅记known performance debt。
 - v27d自然可达已确认：1005年世界10draws／1篡朝／expected0.50；9867月陵政权陆氏→欧阳氏。校准冻结，不再改概率与门槛。
-- v0.99927d1增加历史“大事→易代”入口、重大篡朝标识和旧历史新事件提示。等待现有V9事件存档的人工语义／动态滚动／Save-Load Gate，不重新长跑找事件。回复前不进入Diplomacy II、纳土归降、Faction Historiography或Era Atlas II。
+- v0.99927d1人工已通过易代UI、旧宗亲／无假血缘及unseen滚动。当前阻断：唐→夏V9坏block city引用导致teardown后Load失败；时代筛选混入empire-split叛乱建势叙事。
+- v0.99927d2修复monthly销毁后重建zone、export/preflight active-city完整性与严格archived-ref副本恢复；时代只保留世界级事件。V9不变。等待现有存档repair／安全拒绝、再保存重载0repair及城市毁灭／时代／paging人工Gate。通过前不进入v0.99928或其他玩法。
 
 ## 玩法后续
 

@@ -102,3 +102,24 @@ describe("major history discovery over canonical bounded pages", () => {
     expect(getRevolutionEventDetails({ ...e, metadata: {} })).toEqual([]);
   });
 });
+
+describe("world-level era filter semantics", () => {
+  it.each(["rebel-faction-founded", "frontier-faction-founded", "god-rebellion", "empire-split"] as const)("excludes %s even after founding grouping, but retains it in all major events", type => {
+    const store = new WorldHistoryStore();
+    store.addEvent({ ...event(type, 100), title: "大规模叛乱，建立义军", historyGroupId: "founding-A" });
+    store.addEvent({ ...event("city-revolt", 100), historyGroupId: "founding-A" });
+    store.addEvent({ ...event("ruler-acceded", 100), historyGroupId: "founding-A" });
+    const major = queryHistoryPage(store, { visibleCount: 200, filter: "featured" });
+    expect(major.events).toHaveLength(1);
+    expect(major.events[0].metadata?.groupedFoundingEventCount).toBe(3);
+    expect(queryHistoryPage(store, { visibleCount: 200, filter: "featured", eventTypeFilter: "era" }).events).toEqual([]);
+    const browsing = new HistoryBrowsingSession(); browsing.scroll(200);
+    browsing.append(store.getEvents(), { filter: "featured", eventTypeFilter: "era" }); expect(browsing.unseenCount).toBe(0);
+  });
+  it("pages only world-scale era/pattern events in chronological order", () => {
+    const store = new WorldHistoryStore();
+    ["world-era-started", "world-unification", "world-hegemony", "world-fractured"].forEach((type, i) => store.addEvent(event(type as WorldEvent["type"], i)));
+    expect(queryHistoryPage(store, { visibleCount: 2, filter: "featured", eventTypeFilter: "era" })).toMatchObject({ hasMore: true, events: [{ type: "world-fractured" }, { type: "world-hegemony" }] });
+    expect(queryHistoryPage(store, { visibleCount: 4, filter: "featured", eventTypeFilter: "era" }).events.map(e => e.type)).toEqual(["world-fractured", "world-hegemony", "world-unification", "world-era-started"]);
+  });
+});

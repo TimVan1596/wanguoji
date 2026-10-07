@@ -843,7 +843,7 @@ export default class City {
     Game.Core?.map?.blocks.forEach(column => column.forEach(cell => { if (cell.city === this) cellsToClear.add(cell); }));
     cellsToClear.forEach((cell) => {
       cell.clearCity(this);
-      if (owner) {
+      if (owner && this.fortifiedCells.includes(cell)) {
         cell.claimForTeam(owner);
       }
     });

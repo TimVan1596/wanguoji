@@ -312,6 +312,7 @@ function WorldDiagnosticsPanelContent() {
     },
     hydration: {
       stage: hydration?.lastStage,
+      repairs: hydration?.hydrationRepairs,
       status: hydrationStatus || undefined,
       canonicalMatched: canonicalDiff?.matched,
       canonicalDiff,

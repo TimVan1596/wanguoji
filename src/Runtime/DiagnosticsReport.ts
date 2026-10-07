@@ -224,6 +224,7 @@ const CORE_FIELDS: Array<[string, string]> = [
   ["save export/serialize ms", "persistence.exportSerializeMs"],
   ["IndexedDB write ms", "persistence.indexedDbWriteMs"],
   ["hydration stage", "hydration.stage"],
+  ["hydration repairs", "hydration.repairs"],
   ["canonical matched", "hydration.canonicalMatched"],
   ["collider teardown post-drain", "collider.postDrain"],
 ];

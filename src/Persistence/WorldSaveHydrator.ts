@@ -335,7 +335,7 @@ function validateGeometryAndOwnership(save: WorldSaveV1, core: Core) {
   if (save.blocks.length !== widthCells * heightCells) throw new Error("Save must contain authoritative ownership for every map cell.");
   const blockCoordinates = new Set<string>();
   save.blocks.forEach((block) => {
-    if (block.gridX < 0 || block.gridY < 0 || block.gridX >= widthCells || block.gridY >= heightCells) throw new Error("Save block coordinate is outside its map geometry.");
+    if (!Number.isInteger(block.gridX) || !Number.isInteger(block.gridY) || block.gridX < 0 || block.gridY < 0 || block.gridX >= widthCells || block.gridY >= heightCells) throw new Error("Save block coordinate is outside its map geometry.");
     const key = `${block.gridX},${block.gridY}`;
     if (blockCoordinates.has(key)) throw new Error(`Duplicate block coordinate ${key}.`);
     blockCoordinates.add(key);

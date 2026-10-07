@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.99927d2
+
+- Reproduced the save-blocking stale City pointer: updateDevastation permanently destroyed/archived a city, but the same updateDefense call proceeded to a changed zone tier and reattached13 map cells. Return immediately after terminal devastation, reject destroyed-zone rebuilds, and clear same-city pointers across the map during permanent teardown. Active city/capture/revolt/merge gameplay rules remain unchanged.
+- Export checks active-city object/zone membership and rejects stale pointers before creating a DTO; BlockSaveProjection accepts an authoritative allowlist. Strict validation requires block references to active save.cities, checking center/owner/capital/zone relationships before hydration teardown.
+- Narrow V9 PRECHECK repair clones only proven archived destroyed-city block references, clears city/center/home and sets non-city HP0, preserving ownership/history/dynasty/RNG. Repository admission validates the clone but returns the original stored record; no IndexedDB rewrite. Unknown refs reject as PRECHECK_FAILED while the old runtime stays intact. Repair count/IDs and unresolved coordinates are copied in debug diagnostics; saving then reloading produces zero repairs.
+- Era subtype now includes only world-era-started/unification/hegemony/fractured. Empire-split and rebellion founding narratives remain in all major events, never the world-level era filter. Paging/index/unseen/scroll UX are retained.
+- APP_VERSION v0.99927d2 / package0.99.112; WorldSave V9 unchanged. Dynastic Revolution probability/succession/combat/population/posthumous/diplomacy and downstream features are frozen. Manual Gate must reload the existing Tang→Xia sample, verify archive evidence/repair or safe rejection, save/reload0repair, city destruction and era/unseen semantics.
+
 ## v0.99927d1
 
 - Froze v27d calibration after the user's natural usurpation at month9867 / year822 month4: Ling (internal factionId沅陵义军), 陆氏→欧阳氏, minor lawful successor + combat predecessor, stability56, chance9%. The year1005 run has239 boundaries/10 attempts/9 failures/1 usurpation, expected count0.50. No odds, succession, combat, population, diplomacy or Save changes.

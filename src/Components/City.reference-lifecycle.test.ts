@@ -47,6 +47,8 @@ describe("actual City lifecycle across full map references", () => {
     city.maxDefense = 12; city.rebuildFortifiedZone(); expect(refs()).toHaveLength(13);
     city.maxDefense = 5; city.rebuildFortifiedZone(); expect(refs()).toEqual([city.block]);
     city.maxDefense = 10; city.rebuildFortifiedZone(); expect(refs()).toHaveLength(9);
+    // A stale reference outside the last zone must be cleared at terminal cleanup too.
+    blocks[0][0].setCity(city, false);
     expect(city.destroyPermanently(120)).toBe(true);
     expect(refs()).toHaveLength(0); expect(blocks.flat().every(b => !b.isCityCenter)).toBe(true);
   });

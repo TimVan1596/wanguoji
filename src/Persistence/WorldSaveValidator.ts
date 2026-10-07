@@ -244,6 +244,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
     else if (eventIds.has(event.id)) errors.push(`duplicate worldHistory event id: ${event.id}`);
     else eventIds.add(event.id);
   });
+  const allCityIds = new Set([...cityIds, ...archivedCityIds]);
   if (worldEvents.length) {
     worldEvents.forEach((event: Record<string, any>) => {
       if (!isPlainRecord(event)) return;
