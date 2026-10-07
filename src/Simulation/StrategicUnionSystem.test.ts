@@ -18,7 +18,7 @@ function team(name: string, count: number, startX: number, parentFactionId: stri
 describe("strategic union candidate selection", () => {
   const alliance = {
     factionAId: "strong", factionBId: "weak", status: "ALLIANCE" as const,
-    startedMonth: 0, expiresMonth: 120, reason: "COMMON_THREAT_ALLIANCE" as const,
+    originalStartedMonth: 0, renewalCount: 0, startedMonth: 0, expiresMonth: 120, reason: "COMMON_THREAT_ALLIANCE" as const,
     commonThreatFactionId: "threat",
   };
   const threat = team("threat", 70, 100, "elsewhere", 4);

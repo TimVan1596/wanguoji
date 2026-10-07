@@ -1,9 +1,9 @@
 import { APP_VERSION } from "../config/version";
 import { WORLD_RNG_ALGORITHM, WorldRandomState } from "../Simulation/WorldRandom";
-import type { DiplomaticRelation } from "../Politics/Diplomacy";
+import type { DiplomaticRelation, DiplomaticPairMemory } from "../Politics/Diplomacy";
 import type { FactionColorHistoryEntry } from "../Simulation/FactionColorHistory";
 
-export const CURRENT_SAVE_SCHEMA_VERSION = 9 as const;
+export const CURRENT_SAVE_SCHEMA_VERSION = 10 as const;
 
 export interface FactionSaveV1 {
   factionId: string;
@@ -137,7 +137,7 @@ export interface WorldEventSystemSaveV1 {
   cycleState: WorldCycleStateSaveV1;
 }
 
-export interface WorldSaveV9 {
+export interface WorldSaveV10 {
   saveSchemaVersion: typeof CURRENT_SAVE_SCHEMA_VERSION;
   appVersion: string;
   createdAt?: string;
@@ -168,10 +168,10 @@ export interface WorldSaveV9 {
   registries: Record<string, unknown>;
   worldEventSystem: WorldEventSystemSaveV1;
   worldRandom: WorldRandomState;
-  diplomacy: { relations: DiplomaticRelation[]; lastEvaluationMonth: number };
+  diplomacy: { relations: DiplomaticRelation[]; pairMemories: DiplomaticPairMemory[]; lastEvaluationMonth: number };
 }
 
-export function createEmptyWorldSaveV9(): WorldSaveV9 {
+export function createEmptyWorldSaveV10(): WorldSaveV10 {
   return {
     saveSchemaVersion: CURRENT_SAVE_SCHEMA_VERSION,
     appVersion: APP_VERSION,
@@ -206,28 +206,28 @@ export function createEmptyWorldSaveV9(): WorldSaveV9 {
       cycleState: { fragmentationStartMonth: 0 },
     },
     worldRandom: { algorithm: WORLD_RNG_ALGORITHM, seed: "test-seed", state: 0, position: 0 },
-    diplomacy: { relations: [], lastEvaluationMonth: -1 },
+    diplomacy: { relations: [], pairMemories: [], lastEvaluationMonth: -1 },
   };
 }
 
-export type WorldSaveV8 = WorldSaveV9;
-export const createEmptyWorldSaveV8 = createEmptyWorldSaveV9;
+export type WorldSaveV8 = WorldSaveV10;
+export const createEmptyWorldSaveV8 = createEmptyWorldSaveV10;
 
 /** Internal call-site aliases; persisted saves still identify their exact schema number. */
-export type WorldSaveV7 = WorldSaveV9;
-export type WorldSaveV6 = WorldSaveV9;
-export type WorldSaveV5 = WorldSaveV9;
-export type WorldSaveV4 = WorldSaveV9;
-export type WorldSaveV3 = WorldSaveV9;
-export type WorldSaveV2 = WorldSaveV9;
-export type WorldSaveV1 = WorldSaveV9;
-export const createEmptyWorldSaveV7 = createEmptyWorldSaveV9;
-export const createEmptyWorldSaveV6 = createEmptyWorldSaveV9;
-export const createEmptyWorldSaveV5 = createEmptyWorldSaveV9;
-export const createEmptyWorldSaveV4 = createEmptyWorldSaveV9;
-export const createEmptyWorldSaveV3 = createEmptyWorldSaveV9;
-export const createEmptyWorldSaveV2 = createEmptyWorldSaveV9;
-export const createEmptyWorldSaveV1 = createEmptyWorldSaveV9;
+export type WorldSaveV7 = WorldSaveV10;
+export type WorldSaveV6 = WorldSaveV10;
+export type WorldSaveV5 = WorldSaveV10;
+export type WorldSaveV4 = WorldSaveV10;
+export type WorldSaveV3 = WorldSaveV10;
+export type WorldSaveV2 = WorldSaveV10;
+export type WorldSaveV1 = WorldSaveV10;
+export const createEmptyWorldSaveV7 = createEmptyWorldSaveV10;
+export const createEmptyWorldSaveV6 = createEmptyWorldSaveV10;
+export const createEmptyWorldSaveV5 = createEmptyWorldSaveV10;
+export const createEmptyWorldSaveV4 = createEmptyWorldSaveV10;
+export const createEmptyWorldSaveV3 = createEmptyWorldSaveV10;
+export const createEmptyWorldSaveV2 = createEmptyWorldSaveV10;
+export const createEmptyWorldSaveV1 = createEmptyWorldSaveV10;
 
 export function canonicalWorldSaveProjection(save: WorldSaveV1) {
   const { createdAt: _createdAt, ...canonical } = save;
@@ -311,3 +311,7 @@ function simplifyDiffValue(value: unknown): unknown {
   if (isPlainRecord(value)) return `{Object(${Object.keys(value).length} keys)}`;
   return String(value);
 }
+
+// Legacy source API aliases only; every emitted/accepted DTO is schema V10.
+export type WorldSaveV9 = WorldSaveV10;
+export const createEmptyWorldSaveV9 = createEmptyWorldSaveV10;

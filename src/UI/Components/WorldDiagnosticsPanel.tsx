@@ -550,7 +550,7 @@ function WorldDiagnosticsPanelContent() {
         ].join("\n")}</Typography>
       </details>}
       {core && <details>
-        <summary>Diplomacy</summary>
+        <summary>Diplomacy II</summary>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(core.getDiplomacyDiagnostics())}</Typography>
       </details>}
       <details>

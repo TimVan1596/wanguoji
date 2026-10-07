@@ -3,7 +3,7 @@ import { createDiplomacyEventMetadata, describeDiplomacySigning, formatDiplomacy
 import type { DiplomaticRelation } from "./Diplomacy";
 
 const truce: DiplomaticRelation = {
-  factionAId: "qi", factionBId: "wei", status: "TRUCE", startedMonth: 133, expiresMonth: 169,
+  factionAId: "qi", factionBId: "wei", status: "TRUCE", originalStartedMonth: 133, renewalCount: 0, startedMonth: 133, expiresMonth: 169,
   reason: "WAR_EXHAUSTION_TRUCE",
 };
 
@@ -22,7 +22,7 @@ describe("diplomacy presentation", () => {
 
   it("uses common-threat identity and the actual non-aggression term", () => {
     const relation: DiplomaticRelation = {
-      ...truce, status: "NON_AGGRESSION", startedMonth: 12, expiresMonth: 108,
+      ...truce, status: "NON_AGGRESSION", originalStartedMonth: 12, renewalCount: 0, startedMonth: 12, expiresMonth: 108,
       reason: "COMMON_THREAT_NON_AGGRESSION",
     };
     expect(describeDiplomacySigning(relation, {

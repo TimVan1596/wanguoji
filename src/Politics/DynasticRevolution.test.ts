@@ -197,7 +197,7 @@ describe("authoritative succession-boundary dynastic revolution", () => {
   });
   it("keeps diplomacy pairs and saved Era palettes when the same faction changes regime", () => {
     const { team, dynasty } = setup();
-    Diplomacy.importState({ relations: [{ factionAId: "other", factionBId: team.name, status: "TRUCE", startedMonth: 500, expiresMonth: 800, reason: "WAR_EXHAUSTION_TRUCE" }], lastEvaluationMonth: 590 });
+    Diplomacy.importState({ pairMemories: [], relations: [{ factionAId: "other", factionBId: team.name, status: "TRUCE", originalStartedMonth: 500, renewalCount: 0, startedMonth: 500, expiresMonth: 800, reason: "WAR_EXHAUSTION_TRUCE" }], lastEvaluationMonth: 590 });
     const treaty = Diplomacy.exportState();
     const snapshot = captureEraMapSnapshot({ capturedMonth: month - 1, widthCells: 1, heightCells: 1,
       factions: [{ ...team, cities: [] } as unknown as Team], ownerAt: () => team.name });

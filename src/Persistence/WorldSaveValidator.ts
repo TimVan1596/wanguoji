@@ -35,7 +35,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   const cityIds = uniqueIds(cities, "cityId", "cities", errors);
   const userIds = uniqueIds(users, "userId", "users", errors);
   const unitIds = uniqueIds(units, "unitId", "units", errors);
-  if (!isPlainRecord(save.diplomacy) || !Array.isArray(save.diplomacy.relations) || !Number.isSafeInteger(save.diplomacy.lastEvaluationMonth)) errors.push("diplomacy requires relations and lastEvaluationMonth");
+  if (!isPlainRecord(save.diplomacy) || !Array.isArray(save.diplomacy.relations) || !Array.isArray(save.diplomacy.pairMemories) || !Number.isSafeInteger(save.diplomacy.lastEvaluationMonth)) errors.push("diplomacy requires relations and lastEvaluationMonth");
   else {
     const diplomacyPairs = new Set<string>();
     const allianceFactionIds = new Set<string>();
@@ -45,6 +45,10 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
       if (typeof factionAId !== "string" || typeof factionBId !== "string" || factionAId >= factionBId) errors.push("diplomacy pair must be canonical and distinct");
       if (status !== "TRUCE" && status !== "NON_AGGRESSION" && status !== "ALLIANCE") errors.push("diplomacy status is invalid");
       if (!finite(startedMonth) || !finite(expiresMonth) || Number(expiresMonth) <= Number(startedMonth)) errors.push("diplomacy dates are invalid");
+      if (!Number.isSafeInteger(relation.originalStartedMonth) || relation.originalStartedMonth < 0 || relation.originalStartedMonth > Number(startedMonth) ||
+        !Number.isSafeInteger(relation.renewalCount) || relation.renewalCount < 0 ||
+        (relation.lastRenewedMonth !== undefined && (!Number.isSafeInteger(relation.lastRenewedMonth) || relation.lastRenewedMonth < relation.originalStartedMonth || relation.lastRenewedMonth > Number(save.world?.worldMonth))) ||
+        (relation.renewalCount > 0 && relation.lastRenewedMonth === undefined) || (relation.renewalCount === 0 && relation.lastRenewedMonth !== undefined)) errors.push("invalid diplomacy continuity/renewal state");
       if (reason !== "WAR_EXHAUSTION_TRUCE" && reason !== "COMMON_THREAT_NON_AGGRESSION" && reason !== "COMMON_THREAT_ALLIANCE") errors.push("diplomacy reason is invalid");
       if (status === "ALLIANCE" && reason !== "COMMON_THREAT_ALLIANCE") errors.push("alliance must have a common-threat reason");
       if (status !== "ALLIANCE" && reason === "COMMON_THREAT_ALLIANCE") errors.push("alliance reason requires alliance status");
@@ -63,6 +67,26 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
         requireRef(factionBId, factionIds, "diplomacy.factionBId", errors);
         if (factionById.get(factionAId)?.terminationReason === "MERGED" || factionById.get(factionBId)?.terminationReason === "MERGED") errors.push("merged factions cannot retain diplomacy relations");
       }
+    });
+    const relationCounts = new Map<string, number>();
+    for(const relation of save.diplomacy.relations) if(isPlainRecord(relation)) {
+      for(const id of [relation.factionAId,relation.factionBId]) if(typeof id === "string") relationCounts.set(id,(relationCounts.get(id) ?? 0)+1);
+      if(relation.commonThreatFactionId !== undefined) requireRef(relation.commonThreatFactionId,factionIds,"diplomacy.commonThreatFactionId",errors);
+    }
+    if([...relationCounts.values()].some(n=>n>2)) errors.push("a faction may have at most two active relations");
+    const memoryPairs = new Set<string>();
+    save.diplomacy.pairMemories.forEach((memory: unknown)=>{
+      if(!isPlainRecord(memory)) { errors.push("invalid diplomatic pair memory"); return; }
+      const { factionAId:a,factionBId:b,lastStatus,endedMonth,cooldownUntilMonth,lastReason } = memory;
+      if(typeof a !== "string" || typeof b !== "string" || a>=b || !factionIds.has(a) || !factionIds.has(b) ||
+        !["TRUCE","NON_AGGRESSION","ALLIANCE"].includes(String(lastStatus)) ||
+        !["WAR_EXHAUSTION_TRUCE","COMMON_THREAT_NON_AGGRESSION","COMMON_THREAT_ALLIANCE"].includes(String(lastReason)) ||
+        !Number.isSafeInteger(endedMonth) || Number(endedMonth)<0 || Number(endedMonth)>Number(save.world?.worldMonth) ||
+        !Number.isSafeInteger(cooldownUntilMonth) || Number(cooldownUntilMonth)<=Number(endedMonth)) errors.push("invalid diplomatic pair memory");
+      const key = `${a}\u0000${b}`;
+      if(memoryPairs.has(key)) errors.push("duplicate diplomatic pair memory"); memoryPairs.add(key);
+      if(memory.commonThreatFactionId !== undefined) requireRef(memory.commonThreatFactionId,factionIds,"diplomacy.memory.commonThreatFactionId",errors);
+      if(typeof a === "string" && typeof b === "string" && (factionById.get(a)?.terminationReason === "MERGED" || factionById.get(b)?.terminationReason === "MERGED")) errors.push("merged factions cannot retain diplomacy memory");
     });
   }
   factions.forEach((faction) => ["color", "firstFoundedMonth", "currentActiveSinceMonth", "cumulativeActiveMonths", "homeGridX", "homeGridY"].forEach((key) => {

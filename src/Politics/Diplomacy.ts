@@ -2,14 +2,21 @@ import type Team from "../Components/Team";
 import type City from "../Components/City";
 import WorldHistory from "../History/WorldHistory";
 import { calculateTerritoryMetrics, getFactionTerritoryMetric } from "../Simulation/TerritoryMetrics";
-import { areFactionsTerritoriallyAdjacent, ALLIANCE_DURATION_MONTHS, ALLIANCE_MIN_NON_AGGRESSION_MONTHS, ALLIANCE_MIN_TRUCE_MONTHS_BEFORE_NON_AGGRESSION } from "./StrategicUnionRules";
+import { areFactionsTerritoriallyAdjacent } from "./StrategicUnionRules";
 
+import { evaluateCommonThreatCredibility, getDiplomaticDuration, getDiplomaticCooldown, canUpgradeToAlliance, type CommonThreatFacts, type ThreatCredibility } from "./DiplomaticRules";
+import { DiplomacyObservations } from "./DiplomacyObservations";
+
+const observationEnabled = import.meta.env.DEV || import.meta.env.MODE === "desktop-debug";
 export type DiplomaticStatus = "NEUTRAL" | "TRUCE" | "NON_AGGRESSION" | "ALLIANCE";
 export type DiplomaticReason = "WAR_EXHAUSTION_TRUCE" | "COMMON_THREAT_NON_AGGRESSION" | "COMMON_THREAT_ALLIANCE";
 export interface DiplomaticRelation {
   factionAId: string;
   factionBId: string;
   status: Exclude<DiplomaticStatus, "NEUTRAL">;
+  originalStartedMonth: number;
+  renewalCount: number;
+  lastRenewedMonth?: number;
   startedMonth: number;
   expiresMonth: number;
   reason: DiplomaticReason;
@@ -18,10 +25,13 @@ export interface DiplomaticRelation {
   preconditionStartedMonth?: number;
   preconditionDurationMonths?: number;
 }
-export type DiplomacyTriggerContext =
+export interface DiplomaticPairMemory { factionAId: string; factionBId: string; lastStatus: DiplomaticRelation["status"]; endedMonth: number; lastReason: DiplomaticReason; commonThreatFactionId?: string; cooldownUntilMonth: number }
+export type DiplomacyState = { relations: DiplomaticRelation[]; pairMemories: DiplomaticPairMemory[]; lastEvaluationMonth: number };
+export interface DiplomacyLifecycleEvidence { credibility?: ThreatCredibility; directA?: boolean; directB?: boolean; adjacentPair?: boolean; capturedA?: boolean; capturedB?: boolean; capitalFall?: boolean; previousExpiresMonth?: number; renewalDuration?: number }
+export type DiplomacyTriggerContext = DiplomacyLifecycleEvidence & (
   | { reason: "WAR_EXHAUSTION_TRUCE"; recentBilateralCaptureCount: number; stabilityA: number; stabilityB: number }
   | { reason: "COMMON_THREAT_NON_AGGRESSION"; commonThreatFactionId: string; territoryShareA: number; territoryShareB: number; threatTerritoryShare: number; priorStatus?: "TRUCE" | "NON_AGGRESSION"; priorDurationMonths?: number }
-  | { reason: "COMMON_THREAT_ALLIANCE"; commonThreatFactionId: string; territoryShareA: number; territoryShareB: number; threatTerritoryShare: number; priorStatus: "NON_AGGRESSION"; priorDurationMonths: number };
+  | { reason: "COMMON_THREAT_ALLIANCE"; commonThreatFactionId: string; territoryShareA: number; territoryShareB: number; threatTerritoryShare: number; priorStatus: "NON_AGGRESSION"; priorDurationMonths: number });
 export const DIPLOMACY_EVALUATION_INTERVAL_MONTHS = 12;
 export const DIPLOMACY_RECENT_WAR_MONTHS = 36;
 export const DIPLOMACY_TRUCE_DURATION_MONTHS = 36;
@@ -53,12 +63,28 @@ export function isHostileActionAllowed(
 
 export class DiplomacyRegistry {
   private relations = new Map<string, DiplomaticRelation>();
+  private memories = new Map<string, DiplomaticPairMemory>();
+  private observations?: DiplomacyObservations;
+  private activeFactionIds: string[] = [];
+  constructor(readonly debugEnabled = observationEnabled) { this.reset(); }
+  observe(month: number, kind: string, extra: Record<string, unknown> = {}) { this.observations?.record({ month, kind, ...extra }); }
+  setActiveFactions(ids: string[]) { if(this.debugEnabled) this.activeFactionIds = ids; }
+  memory(a: string,b: string) { return this.memories.get(diplomaticPairKey(a,b)); }
+  inCooldown(a: string,b: string,month: number) { return (this.memory(a,b)?.cooldownUntilMonth ?? -1) > month; }
+  expire(relation: DiplomaticRelation, month: number) {
+    this.delete(relation.factionAId, relation.factionBId);
+    this.memories.set(diplomaticPairKey(relation.factionAId, relation.factionBId), { factionAId: relation.factionAId, factionBId: relation.factionBId, lastStatus: relation.status, endedMonth: month, lastReason: relation.reason, commonThreatFactionId: relation.commonThreatFactionId, cooldownUntilMonth: month + getDiplomaticCooldown(relation.status, relation.expiresMonth - relation.startedMonth) });
+    this.observe(month,"expired",{ continuousDuration: month - relation.originalStartedMonth });
+  }
   private blockedHostileOccupationCount = 0;
   private blockedSiegeContactCount = 0;
   lastEvaluationMonth = -1;
 
   reset() {
     this.relations.clear();
+    this.memories.clear();
+    this.observations = this.debugEnabled ? new DiplomacyObservations() : undefined;
+    this.activeFactionIds = [];
     this.lastEvaluationMonth = -1;
     this.blockedHostileOccupationCount = 0;
     this.blockedSiegeContactCount = 0;
@@ -69,13 +95,14 @@ export class DiplomacyRegistry {
     const relation = this.get(attackerFactionId, defenderFactionId);
     return !relation || relation.expiresMonth <= worldMonth;
   }
-  setRelation(relation: DiplomaticRelation) {
+  setRelation(relation: Omit<DiplomaticRelation, "originalStartedMonth" | "renewalCount"> & Partial<Pick<DiplomaticRelation, "originalStartedMonth" | "renewalCount">>) {
     const [factionAId, factionBId] = normalizeFactionPair(relation.factionAId, relation.factionBId);
     if (factionAId === factionBId) throw new Error("A faction cannot form a relation with itself");
-    this.relations.set(diplomaticPairKey(factionAId, factionBId), { ...relation, factionAId, factionBId });
+    this.relations.set(diplomaticPairKey(factionAId, factionBId), { ...relation, originalStartedMonth: relation.originalStartedMonth ?? relation.startedMonth, renewalCount: relation.renewalCount ?? 0, factionAId, factionBId });
   }
   delete(a: string, b: string) { return this.relations.delete(diplomaticPairKey(a, b)); }
   removeFaction(factionId: string) {
+    for (const [key, memory] of this.memories) if(memory.factionAId === factionId || memory.factionBId === factionId) this.memories.delete(key);
     for (const relation of this.relations.values()) {
       if (relation.factionAId === factionId || relation.factionBId === factionId) {
         this.relations.delete(diplomaticPairKey(relation.factionAId, relation.factionBId));
@@ -92,135 +119,128 @@ export class DiplomacyRegistry {
     else this.blockedSiegeContactCount += 1;
   }
   getDiagnostics(worldMonth: number) {
+    const activeRelations = this.list(worldMonth);
+    const counts = this.activeFactionIds.map(id => activeRelations.filter(r=>r.factionAId === id || r.factionBId === id).length);
+    const durations = activeRelations.map(r=>worldMonth - r.originalStartedMonth);
     return {
-      activeRelations: this.list(worldMonth),
+      diplomacyII: this.observations?.snapshot(worldMonth),
+      activeRelationCount: activeRelations.length,
+      activeRelationDensity: counts.length > 1 ? activeRelations.length / (counts.length * (counts.length - 1) / 2) : 0,
+      factionsWith0Relations: counts.filter(n=>n===0).length, factionsWith1Relation: counts.filter(n=>n===1).length, factionsWith2Relations: counts.filter(n=>n===2).length,
+      activeAllianceCount: activeRelations.filter(r=>r.status === "ALLIANCE").length,
+      meanEffectiveContinuousDuration: durations.length ? durations.reduce((a,b)=>a+b,0)/durations.length : 0,
+      longestContinuousRelation: durations.length ? Math.max(...durations) : 0,
+      pairMemoryCount: this.memories.size,
+      activeRelations,
       blockedHostileOccupationCount: this.blockedHostileOccupationCount,
       blockedSiegeContactCount: this.blockedSiegeContactCount,
       lastEvaluationMonth: this.lastEvaluationMonth,
     };
   }
   exportState() {
-    return { relations: this.list(), lastEvaluationMonth: this.lastEvaluationMonth };
+    return { relations: this.list().map(r=>({...r})), pairMemories: [...this.memories.values()].sort((a,b)=>diplomaticPairKey(a.factionAId,a.factionBId).localeCompare(diplomaticPairKey(b.factionAId,b.factionBId))).map(m=>({...m})), lastEvaluationMonth: this.lastEvaluationMonth };
   }
-  importState(state: { relations: DiplomaticRelation[]; lastEvaluationMonth: number }) {
+  importState(state: DiplomacyState) {
     this.reset();
     this.lastEvaluationMonth = state.lastEvaluationMonth;
     state.relations.forEach((relation) => this.setRelation(relation));
+    state.pairMemories.forEach(m => this.memories.set(diplomaticPairKey(m.factionAId,m.factionBId),{...m}));
   }
 }
 
+export type DiplomacyEmission = { type: "truce-signed" | "non-aggression-signed" | "alliance-signed" | "treaty-expired" | "alliance-expired" | "relation-renewed"; month: number; relation: DiplomaticRelation; triggerContext?: DiplomacyTriggerContext };
 export class DiplomacySystem {
-  constructor(
-    private readonly registry: DiplomacyRegistry,
-    private readonly cities: () => City[],
-    private readonly emit: (event: {type: "truce-signed" | "non-aggression-signed" | "alliance-signed" | "treaty-expired" | "alliance-expired"; month: number; relation: DiplomaticRelation; triggerContext?: DiplomacyTriggerContext}) => void,
-    private readonly blockSize = 0,
-  ) {}
-
+  constructor(private readonly registry: DiplomacyRegistry, private readonly cities: () => City[], private readonly emit: (event: DiplomacyEmission) => void, private readonly blockSize = 0) {}
   update(worldMonth: number, teams: Team[], totalCells: number, recentEvents = WorldHistory.getEventsBetween(Math.max(0, worldMonth - DIPLOMACY_RECENT_WAR_MONTHS), worldMonth)) {
-    const expiredThisMonth = new Set<string>();
-    for (const relation of this.registry.list()) {
-      if (relation.expiresMonth <= worldMonth) {
-        this.registry.delete(relation.factionAId, relation.factionBId);
-        expiredThisMonth.add(diplomaticPairKey(relation.factionAId, relation.factionBId));
-        this.emit({ type: relation.status === "ALLIANCE" ? "alliance-expired" : "treaty-expired", month: worldMonth, relation });
-      }
+    for(const relation of this.registry.list()) if(relation.expiresMonth <= worldMonth) {
+      this.registry.expire(relation,worldMonth);
+      this.emit({type: relation.status === "ALLIANCE" ? "alliance-expired" : "treaty-expired",month:worldMonth,relation});
     }
-    if (worldMonth % DIPLOMACY_EVALUATION_INTERVAL_MONTHS !== 0 || this.registry.lastEvaluationMonth === worldMonth) return;
+    if(worldMonth === 0 || worldMonth % 12 !== 0 || this.registry.lastEvaluationMonth === worldMonth) return;
     this.registry.lastEvaluationMonth = worldMonth;
-    if (worldMonth === 0) return;
-    const active = teams.filter((team) => team.status === "ACTIVE" && !team.isDie).sort((a, b) => a.name.localeCompare(b.name));
-    const metrics = calculateTerritoryMetrics(active, totalCells);
-    const recentCaptures = recentEvents.filter((event) => event.type === "city-captured" && event.actorFactionId && event.targetFactionId);
-    const stability = (team: Team) => team.cities.length
-      ? team.cities.reduce((sum, city) => sum + city.loyalty, 0) / team.cities.length
-      : 0;
-
-    const shares = (team: Team) => getFactionTerritoryMetric(metrics, team.name).controlledTerritoryShare;
-    const recentPairContact = (aId: string, bId: string) => recentEvents.some((event) => {
-      if (event.type !== "city-captured" && event.type !== "capital-fallen") return false;
-      const involved = new Set([...(event.factionIds ?? []), event.actorFactionId, event.targetFactionId].filter((id): id is string => Boolean(id)));
-      return involved.has(aId) && involved.has(bId);
-    });
-    const adjacent = (a: Team, b: Team) => areFactionsTerritoriallyAdjacent(a, b, this.blockSize);
-    const sharedThreat = (a: Team, b: Team, requireStrategicContact: boolean) => active
-      .filter((candidate) => candidate !== a && candidate !== b)
-      .map((threat) => ({ threat, share: shares(threat) }))
-      .filter(({ share }) => share >= Math.max(shares(a), shares(b), 1) * DIPLOMACY_COMMON_THREAT_RATIO)
-      .filter(({ threat }) => !requireStrategicContact ||
-        ((adjacent(a, threat) || recentPairContact(a.name, threat.name)) &&
-         (adjacent(b, threat) || recentPairContact(b.name, threat.name))))
-      .sort((x, y) => y.share - x.share || x.threat.name.localeCompare(y.threat.name))[0];
-
-    let formed = 0;
-    for (let i = 0; i < active.length && formed < DIPLOMACY_MAX_NEW_RELATIONS_PER_EVALUATION; i += 1) {
-      for (let j = i + 1; j < active.length && formed < DIPLOMACY_MAX_NEW_RELATIONS_PER_EVALUATION; j += 1) {
-        const a = active[i];
-        const b = active[j];
-        if (expiredThisMonth.has(diplomaticPairKey(a.name, b.name))) continue;
-        const existing = this.registry.get(a.name, b.name);
-        if (existing && existing.expiresMonth > worldMonth) {
-          const age = worldMonth - existing.startedMonth;
-          if (existing.status === "TRUCE" && age >= ALLIANCE_MIN_TRUCE_MONTHS_BEFORE_NON_AGGRESSION) {
-            const threat = sharedThreat(a, b, false);
-            if (threat && shares(a) <= DIPLOMACY_WEAK_TERRITORY_SHARE && shares(b) <= DIPLOMACY_WEAK_TERRITORY_SHARE) {
-              const context: DiplomacyTriggerContext = { reason: "COMMON_THREAT_NON_AGGRESSION", commonThreatFactionId: threat.threat.name, territoryShareA: shares(a), territoryShareB: shares(b), threatTerritoryShare: threat.share, priorStatus: "TRUCE", priorDurationMonths: age };
-              this.form(a, b, "NON_AGGRESSION", context.reason, worldMonth, DIPLOMACY_NON_AGGRESSION_DURATION_MONTHS, context, { commonThreatFactionId: threat.threat.name, preconditionStatus: "TRUCE", preconditionStartedMonth: existing.startedMonth, preconditionDurationMonths: age });
-              formed += 1;
-              continue;
-            }
-          }
-          if (existing.status === "NON_AGGRESSION" && age >= ALLIANCE_MIN_NON_AGGRESSION_MONTHS) {
-            const threat = sharedThreat(a, b, true);
-            const alreadyAllied = this.registry.list(worldMonth).some((relation) => relation.status === "ALLIANCE" && (relation.factionAId === a.name || relation.factionBId === a.name || relation.factionAId === b.name || relation.factionBId === b.name));
-            if (threat && !alreadyAllied) {
-              const context: DiplomacyTriggerContext = { reason: "COMMON_THREAT_ALLIANCE", commonThreatFactionId: threat.threat.name, territoryShareA: shares(a), territoryShareB: shares(b), threatTerritoryShare: threat.share, priorStatus: "NON_AGGRESSION", priorDurationMonths: age };
-              this.form(a, b, "ALLIANCE", context.reason, worldMonth, ALLIANCE_DURATION_MONTHS, context, { commonThreatFactionId: threat.threat.name, preconditionStatus: "NON_AGGRESSION", preconditionStartedMonth: existing.startedMonth, preconditionDurationMonths: age });
-              formed += 1;
-            }
-          }
-          continue;
-        }
-        const activeRelations = this.registry.list(worldMonth);
-        if ([a.name, b.name].some((id) => activeRelations.filter((relation) => relation.factionAId === id || relation.factionBId === id).length >= DIPLOMACY_MAX_ACTIVE_RELATIONS_PER_FACTION)) continue;
-        const bilateralWar = recentCaptures.some((event) =>
-          (event.actorFactionId === a.name && event.targetFactionId === b.name) ||
-          (event.actorFactionId === b.name && event.targetFactionId === a.name));
-        if (bilateralWar && (stability(a) <= DIPLOMACY_WAR_PRESSURE_STABILITY || stability(b) <= DIPLOMACY_WAR_PRESSURE_STABILITY)) {
-          const bilateralCaptureCount = recentCaptures.filter((event) =>
-            (event.actorFactionId === a.name && event.targetFactionId === b.name) ||
-            (event.actorFactionId === b.name && event.targetFactionId === a.name)).length;
-          this.form(a, b, "TRUCE", "WAR_EXHAUSTION_TRUCE", worldMonth, DIPLOMACY_TRUCE_DURATION_MONTHS, {
-            reason: "WAR_EXHAUSTION_TRUCE", recentBilateralCaptureCount: bilateralCaptureCount,
-            stabilityA: stability(a), stabilityB: stability(b),
-          });
-          formed += 1;
-          continue;
-        }
-        const aShare = shares(a);
-        const bShare = shares(b);
-        if (aShare > DIPLOMACY_WEAK_TERRITORY_SHARE || bShare > DIPLOMACY_WEAK_TERRITORY_SHARE) continue;
-        const threat = sharedThreat(a, b, false);
-        if (threat) {
-          this.form(a, b, "NON_AGGRESSION", "COMMON_THREAT_NON_AGGRESSION", worldMonth, DIPLOMACY_NON_AGGRESSION_DURATION_MONTHS, {
-            reason: "COMMON_THREAT_NON_AGGRESSION", commonThreatFactionId: threat.threat.name,
-            territoryShareA: aShare, territoryShareB: bShare,
-            threatTerritoryShare: threat.share,
-          }, { commonThreatFactionId: threat.threat.name });
-          formed += 1;
-        }
+    const active = teams.filter(t=>t.status === "ACTIVE" && !t.isDie).sort((a,b)=>a.name.localeCompare(b.name));
+    this.registry.setActiveFactions(active.map(t=>t.name));
+    const metrics = calculateTerritoryMetrics(active,totalCells);
+    const share = (t: Team) => getFactionTerritoryMetric(metrics,t.name).controlledTerritoryShare;
+    const stability = (t: Team) => t.cities.length ? t.cities.reduce((sum,c)=>sum+c.loyalty,0)/t.cities.length : 0;
+    const adjacent = (a: Team,b: Team) => areFactionsTerritoriallyAdjacent(a,b,this.blockSize);
+    const contact = (a: string,b: string) => recentEvents.filter(e => (e.type === "city-captured" || e.type === "capital-fallen") &&
+      ((e.actorFactionId === a && e.targetFactionId === b) || (e.actorFactionId === b && e.targetFactionId === a)));
+    const threatFor = (a: Team,b: Team,prior?: DiplomaticRelation) => {
+      const candidates = active.filter(t=>t!==a && t!==b).map(t=>{
+        const ca = contact(a.name,t.name), cb = contact(b.name,t.name);
+        const facts: CommonThreatFacts = { territoryShareA:share(a),territoryShareB:share(b),threatTerritoryShare:share(t),
+          directA:adjacent(a,t)||ca.length>0,directB:adjacent(b,t)||cb.length>0,adjacentPair:adjacent(a,b),priorRelationMonths:prior ? worldMonth - prior.originalStartedMonth : 0,
+          capturedA:ca.some(e=>e.type === "city-captured" && e.actorFactionId===t.name),capturedB:cb.some(e=>e.type === "city-captured" && e.actorFactionId===t.name),
+          capitalFall:[...ca,...cb].some(e=>e.type === "capital-fallen" && e.actorFactionId===t.name) };
+        return {t,facts,credibility:evaluateCommonThreatCredibility(facts)};
+      }).filter(c=>c.credibility !== "NONE");
+      for(const c of candidates) { this.registry.observe(worldMonth,"commonThreatCandidates"); this.registry.observe(worldMonth,c.credibility === "SEVERE" ? "severeThreat" : c.credibility === "CREDIBLE" ? "credibleThreat" : "weakThreat"); }
+      return candidates.sort((x,y)=> ({SEVERE:3,CREDIBLE:2,WEAK:1,NONE:0}[y.credibility]-{SEVERE:3,CREDIBLE:2,WEAK:1,NONE:0}[x.credibility]) || y.facts.threatTerritoryShare-x.facts.threatTerritoryShare || x.t.name.localeCompare(y.t.name))[0];
+    };
+    const block = (a: Team,b: Team,reason: string) => { this.registry.observe(worldMonth,"blocker",{factionAId:a.name,factionBId:b.name,reason}); if(reason === "COOLDOWN") this.registry.observe(worldMonth,"cooldownBlocked"); if(reason === "NO_STRATEGIC_CONTACT") this.registry.observe(worldMonth,"noStrategicContactBlocked"); };
+    const warContext = (a: Team,b: Team): DiplomacyTriggerContext | undefined => {
+      const pairEvents = contact(a.name,b.name);
+      const captures = pairEvents.filter(e=>e.type === "city-captured").length;
+      if(!captures || Math.min(stability(a),stability(b)) > DIPLOMACY_WAR_PRESSURE_STABILITY) return undefined;
+      return { reason:"WAR_EXHAUSTION_TRUCE", recentBilateralCaptureCount:captures, stabilityA:stability(a),stabilityB:stability(b),capitalFall:pairEvents.some(e=>e.type === "capital-fallen") };
+    };
+    const threatContext = (a: Team,b: Team,status: "NON_AGGRESSION" | "ALLIANCE",prior?: DiplomaticRelation): DiplomacyTriggerContext | undefined => {
+      const threat = threatFor(a,b,prior);
+      if(!threat || threat.credibility === "WEAK") { block(a,b,threat ? "NO_STRATEGIC_CONTACT" : "NO_CREDIBLE_COMMON_THREAT"); return undefined; }
+      if(status === "NON_AGGRESSION" && (share(a)>18 || share(b)>18)) { block(a,b,"NO_CREDIBLE_COMMON_THREAT"); return undefined; }
+      if(status === "ALLIANCE" && (!prior || (prior.status !== "ALLIANCE" && !canUpgradeToAlliance(threat.credibility,worldMonth-prior.startedMonth)))) { block(a,b,"PRECONDITION_TOO_SHORT"); return undefined; }
+      const facts = { ...threat.facts,credibility:threat.credibility,commonThreatFactionId:threat.t.name,priorDurationMonths:prior ? worldMonth-prior.startedMonth : 0 };
+      return status === "ALLIANCE" ? { ...facts,reason:"COMMON_THREAT_ALLIANCE",priorStatus:"NON_AGGRESSION" } : { ...facts,reason:"COMMON_THREAT_NON_AGGRESSION",priorStatus:prior?.status === "TRUCE" ? "TRUCE" : "NON_AGGRESSION" };
+    };
+    // Renewal is independent of the new formation cap, and retains the status/chain start.
+    for(const relation of this.registry.list(worldMonth)) {
+      if(relation.expiresMonth-worldMonth>12) continue;
+      const a=active.find(t=>t.name===relation.factionAId), b=active.find(t=>t.name===relation.factionBId);
+      if(!a||!b) continue;
+      const context = relation.status === "TRUCE" ? warContext(a,b) : threatContext(a,b,relation.status,relation);
+      if(!context) { block(a,b,"THREAT_NO_LONGER_RELEVANT"); continue; }
+      const duration=getDiplomaticDuration(relation.status,context);
+      const renewed={...relation,lastRenewedMonth:worldMonth,renewalCount:relation.renewalCount+1,expiresMonth:relation.expiresMonth+duration,commonThreatFactionId:"commonThreatFactionId" in context ? context.commonThreatFactionId : undefined};
+      this.registry.setRelation(renewed);
+      this.registry.observe(worldMonth,"renewal",{...renewed,evidence:context});
+      this.registry.observe(worldMonth,relation.status === "TRUCE" ? "truceRenewed" : relation.status === "ALLIANCE" ? "allianceRenewed" : "napRenewed");
+      this.emit({type:"relation-renewed",month:worldMonth,relation:renewed,triggerContext:{...context,previousExpiresMonth:relation.expiresMonth,renewalDuration:duration}});
+    }
+    let formed=0;
+    for(let i=0;i<active.length && formed<2;i++) for(let j=i+1;j<active.length && formed<2;j++) {
+      const a=active[i],b=active[j],prior=this.registry.get(a.name,b.name);
+      if(prior) {
+        const age=worldMonth-prior.startedMonth;
+        if(prior.status === "ALLIANCE") continue;
+        if(age<24) { block(a,b,"PRECONDITION_TOO_SHORT"); continue; }
+        const status=prior.status === "TRUCE" ? "NON_AGGRESSION" : "ALLIANCE";
+        if(status === "ALLIANCE" && this.registry.list(worldMonth).some(r=>r.status === "ALLIANCE" && [r.factionAId,r.factionBId].some(id=>id===a.name||id===b.name))) { block(a,b,"ALLIANCE_CAP"); continue; }
+        const context=threatContext(a,b,status,prior);
+        if(context) { this.form(a,b,status,worldMonth,context,prior); formed++; }
+        continue;
       }
+      if(this.registry.inCooldown(a.name,b.name,worldMonth)) { block(a,b,"COOLDOWN"); continue; }
+      if([a.name,b.name].some(id=>this.registry.list(worldMonth).filter(r=>r.factionAId===id||r.factionBId===id).length>=2)) { block(a,b,"RELATION_CAP"); continue; }
+      const context=warContext(a,b) ?? threatContext(a,b,"NON_AGGRESSION");
+      if(context) { this.form(a,b,context.reason === "WAR_EXHAUSTION_TRUCE" ? "TRUCE" : "NON_AGGRESSION",worldMonth,context); formed++; }
     }
   }
-
-  private form(a: Team, b: Team, status: DiplomaticRelation["status"], reason: DiplomaticReason, month: number, duration: number, triggerContext: DiplomacyTriggerContext, extra: Partial<DiplomaticRelation> = {}) {
-    const [factionAId, factionBId] = normalizeFactionPair(a.name, b.name);
-    const relation: DiplomaticRelation = { factionAId, factionBId, status, startedMonth: month, expiresMonth: month + duration, reason, ...extra };
+  private form(a: Team,b: Team,status: DiplomaticRelation["status"],month: number,context: DiplomacyTriggerContext,prior?: DiplomaticRelation) {
+    const [factionAId,factionBId]=normalizeFactionPair(a.name,b.name);
+    const duration=getDiplomaticDuration(status,context);
+    const relation: DiplomaticRelation={factionAId,factionBId,status,reason:context.reason,startedMonth:month,originalStartedMonth:prior?.originalStartedMonth ?? month,renewalCount:prior?.renewalCount ?? 0,lastRenewedMonth:prior?.lastRenewedMonth,expiresMonth:month+duration,
+      commonThreatFactionId:"commonThreatFactionId" in context ? context.commonThreatFactionId : undefined,
+      preconditionStatus:prior?.status === "TRUCE" || prior?.status === "NON_AGGRESSION" ? prior.status : undefined,preconditionStartedMonth:prior?.startedMonth,preconditionDurationMonths:prior ? month-prior.startedMonth : undefined};
+    const memory=this.registry.memory(a.name,b.name);
     this.registry.setRelation(relation);
-    this.cities().forEach((city) => city.clearSiegeContactBetween(factionAId, factionBId));
-    this.emit({ type: status === "TRUCE" ? "truce-signed" : status === "ALLIANCE" ? "alliance-signed" : "non-aggression-signed", month, relation, triggerContext });
+    this.cities().forEach(c=>c.clearSiegeContactBetween(factionAId,factionBId));
+    this.registry.observe(month,prior ? "upgrade" : "formation",{...relation,evidence:context,duration,gap:!prior && memory ? month-memory.endedMonth : undefined});
+    if(prior) this.registry.observe(month,"upgrades");
+    this.registry.observe(month,status === "TRUCE" ? "truceFormed" : status === "ALLIANCE" ? "allianceFormed" : "napFormed");
+    if(!prior && memory) this.registry.observe(month,"reformedAfterCooldown");
+    this.emit({type:status === "TRUCE" ? "truce-signed" : status === "ALLIANCE" ? "alliance-signed" : "non-aggression-signed",month,relation,triggerContext:context});
   }
 }
-
 const Diplomacy = new DiplomacyRegistry();
 export default Diplomacy;

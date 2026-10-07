@@ -17,5 +17,5 @@ export function matchesMajorEventFilter(event: WorldEvent, filter: MajorEventFil
   return filter === "all" || TYPES[filter].includes(event.type);
 }
 export const DIPLOMACY_EVENT_TYPES: readonly WorldEvent["type"][] = [
-  "truce-signed", "non-aggression-signed", "alliance-signed", "treaty-expired", "alliance-expired",
+  "truce-signed", "non-aggression-signed", "alliance-signed", "treaty-expired", "alliance-expired", "relation-renewed",
 ];

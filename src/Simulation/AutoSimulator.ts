@@ -31,7 +31,7 @@ import {
 } from "./TerritoryMetrics";
 import { PopulationMutationContext, PopulationTransitionAudit } from "./PopulationTransitionAudit";
 import Diplomacy, { DiplomacySystem } from "../Politics/Diplomacy";
-import { createDiplomacyEventMetadata, describeDiplomacySigning } from "../Politics/DiplomacyPresentation";
+import { createDiplomacyEventMetadata, describeDiplomacySigning, describeDiplomacyRenewal } from "../Politics/DiplomacyPresentation";
 import { diagnoseStrategicUnionCandidates, findStrategicUnionCandidate, StrategicUnionCandidate, StrategicUnionCandidateDiagnostic } from "./StrategicUnionSystem";
 import { RollingStepPerformance } from "./RollingStepPerformance";
 
@@ -71,12 +71,14 @@ export default class AutoSimulator {
         role,
       };
     };
+    const isRenewal = type === "relation-renewed";
     const isExpiry = type === "treaty-expired" || type === "alliance-expired";
     const signerA = isExpiry ? undefined : signer(relation.factionAId);
     const signerB = isExpiry ? undefined : signer(relation.factionBId);
     const commonThreatId = triggerContext && "commonThreatFactionId" in triggerContext ? triggerContext.commonThreatFactionId : relation.commonThreatFactionId;
     const title = isExpiry
       ? `${names.join("、")}协议到期`
+      : isRenewal ? `${names.join("、")}${relation.status === "ALLIANCE" ? "续盟" : "续约"}`
       : type === "truce-signed" ? `${names.join("、")}议定停战`
       : type === "alliance-signed" ? `${names.join("、")}结成战略同盟`
       : `${names.join("、")}订立互不侵犯`;
@@ -85,7 +87,7 @@ export default class AutoSimulator {
       year: month, monthIndex: month, category: "politics", type, title,
       description: isExpiry
         ? "双方恢复原有外交状态。"
-        : describeDiplomacySigning(relation, triggerContext!, {
+        : (isRenewal ? describeDiplomacyRenewal : describeDiplomacySigning)(relation, triggerContext!, {
           factionAName: names[0], factionBName: names[1],
           commonThreatName: commonThreatId ? factionName(commonThreatId) : undefined,
         }),

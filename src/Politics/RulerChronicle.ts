@@ -124,6 +124,7 @@ const RULER_EVENT_TYPES = new Set<WorldEvent["type"]>([
   "truce-signed",
   "non-aggression-signed",
   "alliance-signed",
+  "relation-renewed",
 ]);
 
 const RULER_EVENT_PRIORITIES: Partial<Record<WorldEvent["type"], number>> = {
@@ -146,6 +147,7 @@ const RULER_EVENT_PRIORITIES: Partial<Record<WorldEvent["type"], number>> = {
   "truce-signed": 48,
   "non-aggression-signed": 48,
   "alliance-signed": 52,
+  "relation-renewed": 30,
 };
 
 export function getRulerHistoricalEvents(
@@ -179,7 +181,7 @@ export function getRulerHistoricalEvents(
     if (direct) {
       return true;
     }
-    if (event.type === "truce-signed" || event.type === "non-aggression-signed" || event.type === "alliance-signed") {
+    if (event.type === "relation-renewed" || event.type === "truce-signed" || event.type === "non-aggression-signed" || event.type === "alliance-signed") {
       return false;
     }
     return event.importance === "major" && isRulerBiographyRelevantEvent(event, factionId);

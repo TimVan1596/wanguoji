@@ -55,7 +55,7 @@ const ROUTINE_POLITICAL_TYPES = new Set<WorldEvent["type"]>([
 ]);
 
 export function isMajorPoliticalEvent(event: WorldEvent) {
-  if (event.type === "treaty-expired" || event.type === "alliance-expired" || event.type === "truce-signed") return false;
+  if (event.type === "relation-renewed" || event.type === "treaty-expired" || event.type === "alliance-expired" || event.type === "truce-signed") return false;
   if (getHistorySignificance(event) === "LANDMARK") {
     return true;
   }
@@ -73,6 +73,7 @@ export function isMajorPoliticalEvent(event: WorldEvent) {
 }
 
 export function getHistorySignificance(event: WorldEvent): HistorySignificance {
+  if (event.type === "relation-renewed") return "NORMAL";
   if (
     event.metadata?.groupedEventCount ||
     event.metadata?.groupedFoundingEventCount ||
@@ -150,9 +151,10 @@ export function getMajorPoliticalEventsForFaction(
 export function selectMajorTimelineMarkers(
   events: WorldEvent[],
   factionId: string,
-  limit = 10
+  limit = 10,
+  isStateAtMonth?: (factionId: string, month: number) => boolean
 ) {
-  const ranked = getMajorPoliticalEventsForFaction(events, factionId)
+  const ranked = getFactionPowerChronicleEvents(events, factionId, isStateAtMonth)
     .map((event) => ({
       event,
       score: getEventMarkerScore(event),
@@ -194,4 +196,24 @@ function getEventMarkerScore(event: WorldEvent) {
 
 function getEventMonth(event: WorldEvent) {
   return event.monthIndex ?? event.year;
+}
+
+/** Presentation-only national trajectory selector; canonical significance is unchanged. */
+const POWER_TRAJECTORY_TYPES = new Set<WorldEvent["type"]>([
+  "state-founded", "emperor-proclaimed", "dynasty-usurped", "faction-restored", "dynasty-restored",
+  "capital-fallen", "capital-relocated", "faction-exiled", "faction-extinct", "faction-merged",
+  "world-unification", "world-hegemony", "world-era-started", "world-fractured", "empire-split",
+  "rebel-faction-founded", "frontier-faction-founded",
+]);
+export function getFactionPowerChronicleEvents(events: WorldEvent[], factionId: string, isStateAtMonth?: (factionId: string, month: number) => boolean) {
+  return events.filter(event=>{
+    const relation=getFactionEventRelation(event,factionId);
+    if(relation === "NONE") return false;
+    if(event.type === "territory-milestone") return Number(event.metadata?.milestone ?? 0)>=25;
+    if(!POWER_TRAJECTORY_TYPES.has(event.type)) return false;
+    if((event.type === "faction-exiled" || event.type === "faction-extinct") && relation === "CONQUEROR") {
+      return event.metadata?.targetIdentityStage === "STATE" || event.metadata?.fallenIdentityStage === "STATE" || Boolean(event.targetFactionId && isStateAtMonth?.(event.targetFactionId, getEventMonth(event)));
+    }
+    return true;
+  }).sort((a,b)=>getEventMonth(b)-getEventMonth(a));
 }

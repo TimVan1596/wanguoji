@@ -58,6 +58,7 @@ export type WorldEventType =
   | "non-aggression-signed"
   | "treaty-expired"
   | "alliance-signed"
+  | "relation-renewed"
   | "alliance-expired"
   | "faction-merged";
 

@@ -19,7 +19,7 @@ export function formatDiplomacyRelationLines(
   const duration = formatWorldDuration(relation.expiresMonth - relation.startedMonth);
   return [
     `${counterpartName} · ${diplomacyStatusLabel(relation.status)} · ${diplomacyReasonLabel(relation.reason)}`,
-    `${formatWorldDate(relation.startedMonth)}订立 · 约期${duration} · 至${formatWorldDate(relation.expiresMonth)}`,
+    `${formatWorldDate(relation.startedMonth)}订立 · 连续约期${duration} · 至${formatWorldDate(relation.expiresMonth)}${relation.renewalCount ? ` · 已续约${relation.renewalCount}次` : ""}`,
   ];
 }
 
@@ -62,7 +62,22 @@ export function createDiplomacyEventMetadata(
 ): Record<string, string | number | undefined> {
   const metadata: Record<string, string | number | undefined> = {
     reason: triggerContext?.reason ?? relation.reason,
+    status: relation.status,
+    originalStartedMonth: relation.originalStartedMonth,
+    startedMonth: relation.startedMonth,
+    renewalCount: relation.renewalCount,
+    lastRenewedMonth: relation.lastRenewedMonth,
     expiresMonth: relation.expiresMonth,
+    previousExpiresMonth: triggerContext?.previousExpiresMonth,
+    newExpiresMonth: relation.expiresMonth,
+    renewalDuration: triggerContext?.renewalDuration,
+    threatCredibility: triggerContext?.credibility,
+    directContactA: triggerContext?.directA === undefined ? undefined : Number(triggerContext.directA),
+    directContactB: triggerContext?.directB === undefined ? undefined : Number(triggerContext.directB),
+    adjacentPair: triggerContext?.adjacentPair === undefined ? undefined : Number(triggerContext.adjacentPair),
+    threatCapturedA: triggerContext?.capturedA === undefined ? undefined : Number(triggerContext.capturedA),
+    threatCapturedB: triggerContext?.capturedB === undefined ? undefined : Number(triggerContext.capturedB),
+    capitalFall: triggerContext?.capitalFall === undefined ? undefined : Number(triggerContext.capitalFall),
   };
   if (triggerContext?.reason === "WAR_EXHAUSTION_TRUCE") {
     metadata.recentBilateralCaptureCount = triggerContext.recentBilateralCaptureCount;
@@ -112,4 +127,11 @@ export function getFactionDiplomacyBadges(
       counterpartId: relation.factionAId === factionId ? relation.factionBId : relation.factionAId,
     }))
     .slice(0, limit);
+}
+
+export function describeDiplomacyRenewal(relation: DiplomaticRelation, context: DiplomacyTriggerContext, names: { factionAName: string; factionBName: string; commonThreatName?: string }) {
+  const duration=formatWorldDuration(context.renewalDuration ?? 0);
+  const pair=`${names.factionAName}、${names.factionBName}`;
+  if(relation.status === "TRUCE") return `战后休兵需求仍在，${pair}续订停战${duration}。`;
+  return `${names.commonThreatName ?? "共同强敌"}的共同压力仍在，${pair}${relation.status === "ALLIANCE" ? "续盟" : "续订互不侵犯之约"}${duration}。`;
 }

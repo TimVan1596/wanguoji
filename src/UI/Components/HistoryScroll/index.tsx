@@ -1,3 +1,4 @@
+import { getFactionDisplayNameAtMonth } from "../../../Simulation/FactionIdentity";
 import { MAJOR_EVENT_FILTERS, type MajorEventFilter } from "../../../History/HistoryMajorEventFilters";
 import { getRevolutionEventDetails } from "../../../History/RevolutionEventDetails";
 import { HistoryBrowsingSession } from "./historyBrowsing";
@@ -586,10 +587,10 @@ function EventDetails({
     (event.type === "capital-relocated" && typeof metadata?.previousCapitalName === "string");
   const isCollapse = kind === "FACTION_COLLAPSE" || Boolean(metadata?.groupedEventCount) ||
     event.type === "faction-extinct" || event.type === "faction-exiled" || event.type === "faction-dissolved";
-  const isDiplomacySigning = event.type === "truce-signed" || event.type === "non-aggression-signed" || event.type === "alliance-signed";
+  const isDiplomacySigning = event.type === "relation-renewed" || event.type === "truce-signed" || event.type === "non-aggression-signed" || event.type === "alliance-signed";
   if (isDiplomacySigning && metadata) {
-    const factionAName = event.factionIds?.[0] ? teamByName.get(event.factionIds[0])?.displayName ?? event.factionIds[0] : "一方";
-    const factionBName = event.factionIds?.[1] ? teamByName.get(event.factionIds[1])?.displayName ?? event.factionIds[1] : "另一方";
+    const factionAName = event.factionIds?.[0] ? teamByName.get(event.factionIds[0]) ? getFactionDisplayNameAtMonth(teamByName.get(event.factionIds[0])!, event.monthIndex ?? event.year) : event.factionIds[0] : "一方";
+    const factionBName = event.factionIds?.[1] ? teamByName.get(event.factionIds[1]) ? getFactionDisplayNameAtMonth(teamByName.get(event.factionIds[1])!, event.monthIndex ?? event.year) : event.factionIds[1] : "另一方";
     const signatories = [
       [metadata.signatoryARole, metadata.signatoryATitle],
       [metadata.signatoryBRole, metadata.signatoryBTitle],
@@ -597,6 +598,13 @@ function EventDetails({
     if (signatories.length) {
       const roles = [...new Set(signatories.map(([role]) => role))].join("/");
       lines.push(`签约时${roles}：${signatories.map(([, title]) => title).join("、")}`);
+    }
+    if(event.type === "relation-renewed") {
+      addMetadataTextLine(lines, metadata.threatCredibility, "威胁可信度");
+      addMetadataLine(lines, metadata.renewalDuration, "续约月数");
+      addMetadataLine(lines, metadata.renewalCount, "累计续约次数");
+      if(typeof metadata.originalStartedMonth === "number") lines.push(`连续关系起始：${formatWorldDate(metadata.originalStartedMonth)}`);
+      if(typeof metadata.newExpiresMonth === "number") lines.push(`新到期月份：${formatWorldDate(metadata.newExpiresMonth)}`);
     }
     if (metadata.reason === "WAR_EXHAUSTION_TRUCE") {
       addMetadataLine(lines, metadata.recentBilateralCaptureCount, "近三年双边城邑易手");

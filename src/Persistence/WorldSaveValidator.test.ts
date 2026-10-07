@@ -18,7 +18,7 @@ function fixture() {
 }
 
 describe("WorldSaveV1 validation and JSON contract", () => {
-  it("round-trips V9 house epochs, displaced living kin, names, colors and RNG; rejects V8", () => {
+  it("round-trips V10 house epochs, displaced living kin, names, colors and RNG; rejects V8", () => {
     const save = fixture();
     save.factions[0] = { ...save.factions[0], houseName: "侯氏", displayName: "梁", color: 2,
       nameHistory: [{ name: "秦", startMonth: 0, endMonth: 35, reason: "FOUNDING" }, { name: "梁", startMonth: 36, reason: "dynastic-revolution" }],
@@ -37,7 +37,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     delete missing.dynasties[0].houseEpochs;
     expect(validateWorldSave(missing).errors).toContain("faction.colorHistory must be non-empty");
     expect(validateWorldSave(missing).errors).toContain("dynasty.houseEpochs must be non-empty");
-    for (const old of [8, 7, 6, 1]) expect(validateWorldSave({ ...parsed, saveSchemaVersion: old }).errors).toContain("unsupported saveSchemaVersion");
+    for (const old of [9, 8, 7, 6, 1]) expect(validateWorldSave({ ...parsed, saveSchemaVersion: old }).errors).toContain("unsupported saveSchemaVersion");
     parsed.dynasties[0].houseEpochs[1].displacedSuccessorId = "missing";
     expect(validateWorldSave(parsed).valid).toBe(false);
     parsed.dynasties[0].houseEpochs[1].displacedSuccessorId = "heir";
@@ -74,11 +74,11 @@ describe("WorldSaveV1 validation and JSON contract", () => {
       expect(validateWorldSave(loaded).errors).toContain("ruler.lastBattleHazardCheckMonth must be a valid past reign month");
     }
   });
-  it("uses schema V8 and persists alliance/merge fields plus the deterministic random stream", () => {
+  it("uses schema V10 and persists alliance/merge fields plus the deterministic random stream", () => {
     const save = fixture();
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(9);
-    expect(save.saveSchemaVersion).toBe(9);
-    expect(save.diplomacy).toEqual({ relations: [], lastEvaluationMonth: -1 });
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(10);
+    expect(save.saveSchemaVersion).toBe(10);
+    expect(save.diplomacy).toEqual({ relations: [], pairMemories: [], lastEvaluationMonth: -1 });
     expect(save.worldRandom).toMatchObject({ algorithm: "mulberry32-v1", seed: expect.any(String), state: expect.any(Number), position: 0 });
   });
 
@@ -96,7 +96,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
   it("validates symmetric V8 treaty data and rejects the previous save schema", () => {
     const save = fixture();
     save.factions.push({ ...save.factions[0], factionId: "wei", displayName: "魏" });
-    save.diplomacy.relations = [{ factionAId: "qin", factionBId: "wei", status: "TRUCE", startedMonth: 12, expiresMonth: 36, reason: "WAR_EXHAUSTION_TRUCE" }];
+    save.diplomacy.relations = [{ factionAId: "qin", factionBId: "wei", status: "TRUCE", originalStartedMonth: 12, renewalCount: 0, startedMonth: 12, expiresMonth: 36, reason: "WAR_EXHAUSTION_TRUCE" }];
     expect(validateWorldSave(save).valid).toBe(true);
     expect(validateWorldSave({ ...save, saveSchemaVersion: 5 }).valid).toBe(false);
     expect(validateWorldSave({ ...save, diplomacy: { ...save.diplomacy, relations: [{ ...save.diplomacy.relations[0], factionAId: "wei", factionBId: "qin" }] } }).valid).toBe(false);
@@ -106,7 +106,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     const save = fixture();
     save.factions.push({ ...save.factions[0], factionId: "wei", displayName: "魏" });
     save.diplomacy.relations = [{
-      factionAId: "qin", factionBId: "threat", status: "ALLIANCE", startedMonth: 12, expiresMonth: 132,
+      factionAId: "qin", factionBId: "threat", status: "ALLIANCE", originalStartedMonth: 12, renewalCount: 0, startedMonth: 12, expiresMonth: 132,
       reason: "COMMON_THREAT_ALLIANCE", commonThreatFactionId: "threat",
       preconditionStatus: "NON_AGGRESSION", preconditionStartedMonth: 0, preconditionDurationMonths: 24,
     }];
@@ -126,8 +126,8 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     const save = fixture();
     save.factions.push(...["wei", "chu", "yan"].map((factionId) => ({ ...save.factions[0], factionId })));
     save.diplomacy.relations = [
-      { factionAId: "qin", factionBId: "wei", status: "ALLIANCE", startedMonth: 1, expiresMonth: 121, reason: "COMMON_THREAT_ALLIANCE" },
-      { factionAId: "chu", factionBId: "qin", status: "ALLIANCE", startedMonth: 1, expiresMonth: 121, reason: "COMMON_THREAT_ALLIANCE" },
+      { factionAId: "qin", factionBId: "wei", status: "ALLIANCE", originalStartedMonth: 1, renewalCount: 0, startedMonth: 1, expiresMonth: 121, reason: "COMMON_THREAT_ALLIANCE" },
+      { factionAId: "chu", factionBId: "qin", status: "ALLIANCE", originalStartedMonth: 1, renewalCount: 0, startedMonth: 1, expiresMonth: 121, reason: "COMMON_THREAT_ALLIANCE" },
     ];
     expect(validateWorldSave(save).errors).toContain("a faction may have at most one active alliance");
   });
@@ -154,7 +154,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     expect(loaded.dynasties[0]).toMatchObject({ designatedHeirId: "qin-ruler-2", designatedSinceMonth: 36 });
     expect(loaded.dynasties[0].rulers[2]).toMatchObject({ parentId: "qin-ruler-2", relationType: "DIRECT_CHILD" });
     expect(loaded.dynasties[0].rulers[3]).toMatchObject({ rulerId: "qin-ruler-4", status: "kin", parentId: "qin-ruler-1" });
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(9);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(10);
   });
 
   it("rejects a dynasty candidate list above the runtime bound", () => {

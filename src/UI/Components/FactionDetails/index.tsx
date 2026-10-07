@@ -18,7 +18,7 @@ import { formatRulerDiplomacyEvent } from "../../../History/RulerDiplomacyFormat
 import { formatFactionHistoryEvent } from "../../../History/FactionHistoryFormatter";
 import { groupHistoryNarratives } from "../../../History/HistoryNarrativeGrouper";
 import {
-  getMajorPoliticalEventsForFaction,
+  getFactionPowerChronicleEvents,
   selectMajorTimelineMarkers,
 } from "../../../History/HistorySignificanceRules";
 import { getPopulationCapacity } from "../../../Simulation/PopulationSystem";
@@ -235,12 +235,12 @@ function FactionProfile({
   const archiveLabelById = useMemo(() => createFactionArchiveLabelMap(teams), [teams]);
   const groupedEvents = useMemo(() => groupHistoryNarratives(events), [events]);
   const majorEvents = useMemo(
-    () => getMajorPoliticalEventsForFaction(groupedEvents, team.name),
-    [groupedEvents, team.name]
+    () => getFactionPowerChronicleEvents(groupedEvents, team.name, (id, month) => { const t = factionById.get(id); return t?.stateFoundedMonth !== undefined && t.stateFoundedMonth <= month; }),
+    [groupedEvents, team.name, factionById]
   );
   const timelineMarkers = useMemo(
-    () => selectMajorTimelineMarkers(groupedEvents, team.name, 10),
-    [groupedEvents, team.name]
+    () => selectMajorTimelineMarkers(groupedEvents, team.name, 10, (id, month) => { const t = factionById.get(id); return t?.stateFoundedMonth !== undefined && t.stateFoundedMonth <= month; }),
+    [groupedEvents, team.name, factionById]
   );
   const notableRulers = useMemo(
     () => getNotablePosthumousRulers(dynasty?.rulers ?? [], team, 3),
@@ -1280,7 +1280,7 @@ function FactionChronicle({
   }
   return (
     <Box sx={{ display: "grid", gap: 0.55 }}>
-      {[...events].reverse().map((event) => (
+      {events.map((event) => (
         <Box
           key={event.id}
           onClick={() => onEventSelect?.(event.id)}
