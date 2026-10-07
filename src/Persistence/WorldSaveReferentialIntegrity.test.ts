@@ -79,6 +79,8 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     expect((first.dynasties[0].rulers as any[])[1]).toMatchObject({status:"kin",parentId:"last"});
     hydrateWorldSave(core,first);expect(exportWorldSave(core)).toEqual(first);expect(worldRandom.exportState()).toEqual(rng);
     expect(validateWorldSave({...first,saveSchemaVersion:10}).valid).toBe(false);
+    const oldTarget=target();expect(()=>hydrateWorldSave(oldTarget,{...first,saveSchemaVersion:10} as any)).toThrow(/unsupported saveSchemaVersion/);expect(oldTarget.prepareForHydration).not.toHaveBeenCalled();
+
     const changed=structuredClone(first);changed.factions[0].terminationTargetFactionId="missing";
     expect(validateWorldSave(changed).valid).toBe(false);
     changed.factions[0].terminationTargetFactionId="wei";changed.diplomacy.relations=[{factionAId:"qin",factionBId:"wei",status:"ALLIANCE",reason:"COMMON_THREAT_ALLIANCE",originalStartedMonth:0,startedMonth:0,expiresMonth:120,renewalCount:0}];

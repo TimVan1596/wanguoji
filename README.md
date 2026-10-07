@@ -147,8 +147,8 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
-- v0.99928b仅澄清外交签约、升级及续约时间语义，WorldSave保持V10。请直接加载现有长局核对[文案Gate](docs/DiplomacyNarrativeClarity.md)，无需重新开局或长跑。
-- v0.99928a Diplomacy II已人工PASS并冻结gameplay：期限、可信威胁、频率、三类续约、到期/冷却及Save/Load正常。默认紧凑诊断浮层与证据详情保留。V9及更旧仍直接拒绝，IndexedDB版本仍为2。
+- v0.99929新增不同源正式国家的和平纳土。独立终结原因SUBMITTED，与同源合邦MERGED及战争覆灭区分；末代君主退位、旧王室保留。请用新世界完成[Peaceful Submission Gate](docs/PeacefulSubmission.md)，4×最多1500年，出现事件可停止。
+- 当前WorldSave **V11**，V10及更旧直接拒绝，不迁移；IndexedDB版本仍2。Diplomacy II全系列已人工PASS并冻结，期限/威胁/续约/冷却及Strategic Union条件不变。
 - v0.99927 Dynastic Revolution 系列已由用户完整人工通过并冻结，包括历史身份、时代筛选、旧V9安全修复及重新保存后零修复读档。
 
 
@@ -158,7 +158,7 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 - v0.99927d Calibration Closure：最高继承危机概率不变，shock／instability仅在“前君战死或被俘＋仅余一城”时开放折扣入口；新增会话期望频率诊断。1005年人工长局已自然产生一次篡朝，校准冻结；事件语义视觉验收已通过。2445年低FPS／unlock卡顿为known performance debt，本版不处理。
 
-- 历史版本v0.99927d2使用WorldSaveV9；当前v0.99928仅接受V10，V9及更旧无法继续。IndexedDB 数据库版本仍为 2。首领诊断与 Revolution Gate 累计诊断的本会话样本在新世界／读档时重置，后者仅在 debug 模式观察，不写入存档。首领诊断的最近 100 年窗口按任期结束月份筛选。
+- 历史版本v0.99927d2使用WorldSaveV9；当前v0.99929仅接受V11，V10及更旧无法继续。IndexedDB 数据库版本仍为 2。首领诊断与 Revolution Gate 累计诊断的本会话样本在新世界／读档时重置，后者仅在 debug 模式观察，不写入存档。首领诊断的最近 100 年窗口按任期结束月份筛选。
 
 - v0.99927b1 disposal 已通过新世界 desktop debug 4×约1962年人工测试：无 `.size`／Renderer Fatal／disposal stalled，运行时资源 invariant 正常。本版保留该生命周期修复。
 - v0.99927b2 History Scalability 已人工通过，4228年／约10k历史事件存档Load后仍可恢复60～65 FPS；历史与disposal修复继续保留。原History测量见 [HistoryFrameScalability](docs/HistoryFrameScalability.md)。

@@ -78,7 +78,7 @@ describe("Peaceful Submission hard gates and deterministic annual evaluation",()
       });
       return {output,canonical:input.teams.map(t=>({id:t.name,status:t.status})),rng:worldRandom.exportState()};
     };
-    const before=worldRandom.exportState();expect(run(true)).toEqual(run(false));worldRandom.importState(before);
+    const before=worldRandom.exportState();expect(run(true)).toEqual(run(false));worldRandom.restore(before);
   });
   it("bounds recent samples and 100y buckets, resets on hydration without changing facts",()=>{
     const system=new PeacefulSubmissionSystem(true),input=fixture(),original=JSON.stringify(input);

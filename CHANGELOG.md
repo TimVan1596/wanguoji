@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.99929
+
+- Diplomacy II全系列人工PASS并冻结，包括可信威胁/期限/升级/续约/冷却、Save-Load、联盟年龄连续性、国势叙事与频率。
+- 新增不同源ACTIVE正式国家的确定性和平纳土：双方有城、接壤，Alliance连续关系≥60月或NAP≥96月，近60月无双边城邑攻陷。弱国一城/领土≤8%/稳定≤55，接受国≥25%，弱强比≤¼。复用controlledTerritoryShare和现有地理/可信威胁函数，不新增战争真相或RNG。
+- 年度最多一次SUBMITTED，按Alliance/连续关系时长/实力差/弱国稳定/稳定ID排序；有当前真实credible/severe第三方时标联盟保护路径，否则极端强弱和平归附。同源仍只走既有Strategic Union MERGED，条件冻结。
+- 独立纳土行政转移城市/blocks/users，人口cause FACTION_SUBMISSION；末代君主abdicated/纳土退位，heirs→kin，旧王室保留，无假血缘、不生成征服事件。清理Diplomacy和terminal runtime资源。
+- canonical统一terminationReason EXTINCT/MERGED/SUBMITTED与terminationTargetFactionId/terminationMonth。WorldSaveV11，V10及更旧PRECHECK拒绝，无迁移；IndexedDB仍2。统一字段/退位档案/行政归属验证与hydrate-export往返。
+- 大事→纳降及事件月份身份/事实详情；天下势力终结列表以覆灭/归并/纳土区分，详情保留旧王室和末代退位君主，接受国国势可见纳土来归。防止WorldHistory观察把SUBMITTED错误追加为灭亡。
+- debug-only session/recent100y计数、完整blocker计数与最多10条候选，不存档、不抽RNG。APP_VERSION v0.99929 / package0.99.116。未改外交/革命/继承/战斗/人口balance或其他后续主题。真实新世界最多1500年人工Gate必须完成后停止。
+
 ## v0.99928b
 
 - Diplomacy II manual Gate PASS: dynamic terms, credible/severe threats, reasonable frequency, natural TRUCE/NAP/ALLIANCE renewals, expiry/cooldown, decades-long continuity and Save/Load. Recent100year shortest reformation gap36months, active relation density~0.267. Gameplay frozen.

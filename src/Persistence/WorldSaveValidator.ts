@@ -112,6 +112,8 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
       else if (faction.terminationTargetFactionId === faction.factionId || !factionIds.has(faction.terminationTargetFactionId)) errors.push("terminationTargetFactionId references an unknown faction");
       if (!Number.isSafeInteger(faction.terminationMonth) || Number(faction.terminationMonth) < 0 || Number(faction.terminationMonth) > Number(save.world?.worldMonth)) errors.push("merged faction requires finite terminationMonth");
       if (faction.status !== "EXTINCT") errors.push("merged faction must be terminal");
+      if (cities.some(c => c.ownerFactionId === faction.factionId) || (Array.isArray(save.blocks) && save.blocks.some(b => isPlainRecord(b) && b.ownerFactionId === faction.factionId)) || users.some(u => u.factionId === faction.factionId)) errors.push("administratively terminated faction cannot own active cities, blocks or population");
+
     } else if (faction.terminationTargetFactionId !== undefined || faction.terminationMonth !== undefined) {
       errors.push("termination metadata requires MERGED or SUBMITTED terminationReason");
     }
