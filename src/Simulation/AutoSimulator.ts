@@ -432,7 +432,7 @@ export default class AutoSimulator {
   }
 
   getDiplomacyDiagnostics() {
-    return Diplomacy.getDiagnostics(this.clock.year);
+    return Diplomacy.getDiagnostics(this.clock.year, this.lastKnownTeams.filter(t=>t.status === "ACTIVE" && !t.isDie).map(t=>t.name));
   }
 
   getRuntimeLifetimeDiagnostics() {

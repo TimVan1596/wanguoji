@@ -20,6 +20,12 @@ describe("diplomacy presentation", () => {
     expect(text).not.toContain("五年");
   });
 
+  it("distinguishes renewed expiry from an initial treaty term and exposes both continuity and renewal date",()=>{
+    const renewed={...truce,status:"ALLIANCE" as const,reason:"COMMON_THREAT_ALLIANCE" as const,originalStartedMonth:0,startedMonth:120,lastRenewedMonth:228,expiresMonth:396,renewalCount:1};
+    const lines=formatDiplomacyRelationLines(renewed,"魏");
+    expect(lines[1]).toContain("续约后至");expect(lines[1]).not.toContain("约期23年");expect(lines[1]).toContain("已续约1次");
+    expect(lines[2]).toBe("连续关系始于0年1月");expect(lines[3]).toBe("最近续约：19年1月");
+  });
   it("uses common-threat identity and the actual non-aggression term", () => {
     const relation: DiplomaticRelation = {
       ...truce, status: "NON_AGGRESSION", originalStartedMonth: 12, renewalCount: 0, startedMonth: 12, expiresMonth: 108,

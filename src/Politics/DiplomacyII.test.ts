@@ -72,6 +72,12 @@ describe("Diplomacy II durable lifecycle",()=>{
     expect(s.events[0].triggerContext).toMatchObject({previousExpiresMonth:72,renewalDuration:168,credibility:"SEVERE"});
     expect(s.registry.canAttack("a","b",100)).toBe(false);expect(worldRandom.exportState()).toEqual(before);
   });
+  it("TRUCE→NAP→Alliance upgrades retain the whole chain start and do not produce redundant same-boundary renewal",()=>{
+    const s=system();s.registry.setRelation({...nap,status:"TRUCE",reason:"WAR_EXHAUSTION_TRUCE",expiresMonth:36});
+    s.system.update(24,severeTeams,100,[]);expect(s.registry.get("a","b")).toMatchObject({status:"NON_AGGRESSION",startedMonth:24,originalStartedMonth:0});
+    expect(s.events.some(e=>e.type==="relation-renewed")).toBe(false);
+    s.system.update(48,severeTeams,100,[]);expect(s.registry.get("a","b")).toMatchObject({status:"ALLIANCE",startedMonth:48,originalStartedMonth:0});
+  });
   it("NAP renews with credible exposure even when too short to upgrade",()=>{
     const s=system();s.registry.setRelation({...nap,startedMonth:48,expiresMonth:72});
     s.system.update(60,severeTeams,100,[]);expect(s.registry.get("a","b")).toMatchObject({status:"NON_AGGRESSION",startedMonth:48,renewalCount:1});
@@ -121,6 +127,10 @@ describe("Diplomacy II durable lifecycle",()=>{
     const s=system();for(let i=0;i<100;i++){s.registry.setRelation({...nap,startedMonth:i*100,expiresMonth:i*100+24});s.registry.expire(s.registry.get("a","b")!,i*100+24);}expect(s.registry.exportState().pairMemories).toHaveLength(1);s.registry.removeFaction("a");expect(s.registry.exportState().pairMemories).toEqual([]);
   });
   it("cooldown durations stay bounded and deterministic",()=>{for(const status of ["TRUCE","NON_AGGRESSION","ALLIANCE"] as const)for(const duration of [24,60,120,180,900])expect(getDiplomaticCooldown(status,duration)).toBe(getDiplomaticCooldown(status,duration));});
+  it("density derives from current authoritative faction IDs even immediately after load",()=>{
+    const s=system();s.registry.setRelation(nap);const restored=new DiplomacyRegistry();restored.importState(s.registry.exportState());
+    expect(restored.getDiagnostics(12,["a","b"])).toMatchObject({activeRelationCount:1,activeRelationDensity:1,factionsWith1Relation:2});
+  });
   it("session diagnostics are cumulative; recent window and buffers are bounded",()=>{
     const o=new DiplomacyObservations();for(let month=0;month<=2400;month+=12){o.record({month,kind:"formation",duration:72});o.record({month,kind:"blocker",reason:"COOLDOWN"});}
     const d=o.snapshot(2400);expect(d.sessionCumulative.formation).toBe(201);expect(d.recent100Years.formation).toBe(101);expect(d.sessionCumulative.meanInitialDuration).toBe(72);expect(d.sessionCumulative.medianInitialDuration).toBe(72);expect(d.recentLifecycle).toHaveLength(10);expect(d.recentCandidateBlockers).toHaveLength(10);

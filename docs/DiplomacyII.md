@@ -29,7 +29,7 @@ Pure whole-year durations:
 - NAP:6years +2SEVERE +1both-exposed +2advantage≥5× +1prior relation status≥72months; cap12years.
 - Alliance:8years +3SEVERE +1both-exposed +2advantage≥5× +1prior status≥72months; cap15years.
 
-Current status `startedMonth` changes only on upgrade; `originalStartedMonth` persists throughout the chain. Annual evaluation first processes bounded formations/upgrades, then separately renews near-expiry relations (≤12months). This avoids renewing a NAP and upgrading it in the same boundary. Renewal consumes no formation slot, retains both starts, extends previous expiry by the computed term, increments renewalCount, records lastRenewedMonth. Alliance age in Strategic Union remains worldMonth−startedMonth; union rules are untouched.
+Current status `startedMonth` changes only on upgrade; `originalStartedMonth` persists throughout the chain. Annual evaluation first processes bounded formations/upgrades, then separately renews near-expiry relations (≤12months). This avoids renewing a NAP and upgrading it in the same boundary. Renewal consumes no formation slot, retains both starts, extends previous expiry by the computed term, increments renewalCount, records lastRenewedMonth. Current UI labels renewed expiry separately from the initial treaty term and exposes the chain/renewal dates. Alliance age in Strategic Union remains worldMonth−startedMonth; union rules are untouched.
 
 TRUCE renewal requires remaining recent capture evidence and low stability; old evidence ages out of the36-month window, so peaceful truces cannot renew indefinitely. NAP/Alliance require current credible pressure; a vanished/extinct threat cannot qualify, though another genuine common threat can replace it with explicitly recorded evidence.
 

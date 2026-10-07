@@ -44,7 +44,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
       const { factionAId, factionBId, status, startedMonth, expiresMonth, reason } = relation;
       if (typeof factionAId !== "string" || typeof factionBId !== "string" || factionAId >= factionBId) errors.push("diplomacy pair must be canonical and distinct");
       if (status !== "TRUCE" && status !== "NON_AGGRESSION" && status !== "ALLIANCE") errors.push("diplomacy status is invalid");
-      if (!finite(startedMonth) || !finite(expiresMonth) || Number(expiresMonth) <= Number(startedMonth)) errors.push("diplomacy dates are invalid");
+      if (!Number.isSafeInteger(startedMonth) || Number(startedMonth)<0 || Number(startedMonth)>Number(save.world?.worldMonth) || !Number.isSafeInteger(expiresMonth) || Number(expiresMonth) <= Number(startedMonth)) errors.push("diplomacy dates are invalid");
       if (!Number.isSafeInteger(relation.originalStartedMonth) || relation.originalStartedMonth < 0 || relation.originalStartedMonth > Number(startedMonth) ||
         !Number.isSafeInteger(relation.renewalCount) || relation.renewalCount < 0 ||
         (relation.lastRenewedMonth !== undefined && (!Number.isSafeInteger(relation.lastRenewedMonth) || relation.lastRenewedMonth < relation.originalStartedMonth || relation.lastRenewedMonth > Number(save.world?.worldMonth))) ||
@@ -82,7 +82,9 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
         !["TRUCE","NON_AGGRESSION","ALLIANCE"].includes(String(lastStatus)) ||
         !["WAR_EXHAUSTION_TRUCE","COMMON_THREAT_NON_AGGRESSION","COMMON_THREAT_ALLIANCE"].includes(String(lastReason)) ||
         !Number.isSafeInteger(endedMonth) || Number(endedMonth)<0 || Number(endedMonth)>Number(save.world?.worldMonth) ||
-        !Number.isSafeInteger(cooldownUntilMonth) || Number(cooldownUntilMonth)<=Number(endedMonth)) errors.push("invalid diplomatic pair memory");
+        !Number.isSafeInteger(cooldownUntilMonth) || Number(cooldownUntilMonth)<=Number(endedMonth) ||
+        Number(cooldownUntilMonth)-Number(endedMonth)>60 || (Number(cooldownUntilMonth)-Number(endedMonth))%12 !== 0 ||
+        (lastStatus === "ALLIANCE") !== (lastReason === "COMMON_THREAT_ALLIANCE")) errors.push("invalid diplomatic pair memory");
       const key = `${a}\u0000${b}`;
       if(memoryPairs.has(key)) errors.push("duplicate diplomatic pair memory"); memoryPairs.add(key);
       if(memory.commonThreatFactionId !== undefined) requireRef(memory.commonThreatFactionId,factionIds,"diplomacy.memory.commonThreatFactionId",errors);

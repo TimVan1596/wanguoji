@@ -19,7 +19,9 @@ export function formatDiplomacyRelationLines(
   const duration = formatWorldDuration(relation.expiresMonth - relation.startedMonth);
   return [
     `${counterpartName} · ${diplomacyStatusLabel(relation.status)} · ${diplomacyReasonLabel(relation.reason)}`,
-    `${formatWorldDate(relation.startedMonth)}订立 · 约期${duration} · 至${formatWorldDate(relation.expiresMonth)}${relation.renewalCount ? ` · 已续约${relation.renewalCount}次` : ""}`,
+    `${formatWorldDate(relation.startedMonth)}订立 · ${relation.renewalCount ? "续约后" : `约期${duration} · `}至${formatWorldDate(relation.expiresMonth)}${relation.renewalCount ? ` · 已续约${relation.renewalCount}次` : ""}`,
+    ...(relation.originalStartedMonth !== relation.startedMonth ? [`连续关系始于${formatWorldDate(relation.originalStartedMonth)}`] : []),
+    ...(relation.lastRenewedMonth !== undefined ? [`最近续约：${formatWorldDate(relation.lastRenewedMonth)}`] : []),
   ];
 }
 

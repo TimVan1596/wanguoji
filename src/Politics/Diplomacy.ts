@@ -116,9 +116,9 @@ export class DiplomacyRegistry {
     if (kind === "HOSTILE_OCCUPATION") this.blockedHostileOccupationCount += 1;
     else this.blockedSiegeContactCount += 1;
   }
-  getDiagnostics(worldMonth: number) {
+  getDiagnostics(worldMonth: number, factionIds: readonly string[] = this.activeFactionIds) {
     const activeRelations = this.list(worldMonth);
-    const counts = this.activeFactionIds.map(id => activeRelations.filter(r=>r.factionAId === id || r.factionBId === id).length);
+    const counts = factionIds.map(id => activeRelations.filter(r=>r.factionAId === id || r.factionBId === id).length);
     const durations = activeRelations.map(r=>worldMonth - r.originalStartedMonth);
     const observation = this.observations?.snapshot(worldMonth);
     const effectiveDuration = (stats: Record<string, number | undefined>): Record<string, number | undefined> => {
@@ -129,7 +129,7 @@ export class DiplomacyRegistry {
     return {
       diplomacyII: observation ? {...observation, sessionCumulative:effectiveDuration(observation.sessionCumulative), recent100Years:effectiveDuration(observation.recent100Years)} : undefined,
       activeRelationCount: activeRelations.length,
-      activeRelationDensity: counts.length > 1 ? activeRelations.length / (counts.length * (counts.length - 1) / 2) : 0,
+      activeRelationDensity: counts.length > 1 ? activeRelations.filter(r=>factionIds.includes(r.factionAId) && factionIds.includes(r.factionBId)).length / (counts.length * (counts.length - 1) / 2) : 0,
       factionsWith0Relations: counts.filter(n=>n===0).length, factionsWith1Relation: counts.filter(n=>n===1).length, factionsWith2Relations: counts.filter(n=>n===2).length,
       activeAllianceCount: activeRelations.filter(r=>r.status === "ALLIANCE").length,
       meanEffectiveContinuousDuration: durations.length ? durations.reduce((a,b)=>a+b,0)/durations.length : 0,

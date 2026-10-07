@@ -1,3 +1,4 @@
+import { ALLIANCE_MIN_NON_AGGRESSION_MONTHS, ALLIANCE_MIN_TRUCE_MONTHS_BEFORE_NON_AGGRESSION } from "./StrategicUnionRules";
 /** Pure factual diplomacy policy. No RNG and no hidden opinion/war state. */
 export type ThreatCredibility = "NONE" | "WEAK" | "CREDIBLE" | "SEVERE";
 export interface CommonThreatFacts {
@@ -11,7 +12,7 @@ export function evaluateCommonThreatCredibility(f: CommonThreatFacts): ThreatCre
   if (!f.directA && !f.directB) return "WEAK";
   if (f.directA && f.directB) return "SEVERE";
   // A common pressure corridor must be real, not just two distant weak states.
-  if (f.adjacentPair || f.priorRelationMonths >= 24) return "CREDIBLE";
+  if (f.adjacentPair || f.priorRelationMonths >= ALLIANCE_MIN_TRUCE_MONTHS_BEFORE_NON_AGGRESSION) return "CREDIBLE";
   return "WEAK";
 }
 export interface DiplomaticDurationFacts {
@@ -37,5 +38,5 @@ export function getDiplomaticCooldown(status: "TRUCE" | "NON_AGGRESSION" | "ALLI
   return Math.min(max, Math.max(min, Math.ceil(duration / 36) * 12));
 }
 export function canUpgradeToAlliance(credibility: ThreatCredibility, napMonths: number) {
-  return napMonths >= 24 && (credibility === "SEVERE" || (credibility === "CREDIBLE" && napMonths >= 72));
+  return napMonths >= ALLIANCE_MIN_NON_AGGRESSION_MONTHS && (credibility === "SEVERE" || (credibility === "CREDIBLE" && napMonths >= 72));
 }
