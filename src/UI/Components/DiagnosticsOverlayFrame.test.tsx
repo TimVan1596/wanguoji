@@ -7,7 +7,10 @@ import worldRandom from "../../Simulation/WorldRandom";
 import { DiplomacyRegistry, DiplomacySystem } from "../../Politics/Diplomacy";
 vi.mock("react/jsx-dev-runtime", async () => {
   const react = await vi.importActual<typeof import("react")>("react");
-  return { jsxDEV: (type: React.ElementType, props: Record<string, unknown>, key?: string) => react.createElement(type, { ...props, key }), Fragment: react.Fragment };
+  return { jsxDEV: (type: React.ElementType, props: Record<string, unknown>, key?: string) => {
+    const {children,...rest}=props;
+    return react.createElement(type,{...rest,key},...(Array.isArray(children)?children:[children]));
+  }, Fragment: react.Fragment };
 });
 function fixture() {
   const children = vi.fn(() => <details><summary>diagnostics</summary><pre>latest samples</pre></details>);

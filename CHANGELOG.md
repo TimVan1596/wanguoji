@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.99928a
+
+- Recorded the ongoing Diplomacy II manual Gate: varied6/9-year NAP and12-year Alliance, NAP→Alliance upgrade, diplomatic-free newest-first power chronicle have passed. Natural renewal, threat disappearance/expiry/cooldown, renewed V10Save-Load, union age continuity and800–1200-year frequency remain pending. No diplomatic calibration.
+- Debug overlay defaults to a230px compact RUNNING/PAUSED/version strip. Expand/minimize and collapse-all are session-local presentation state; every diagnostic detail defaults collapsed. Full report DOM/previews are lazy while polling/subscriptions and independent Core/Diplomacy/performance/runtime collectors stay active. Copy core/full remains on demand in the expanded panel.
+- History signing/renewal details expose recorded credibility, direct contact for each party, adjacency and directional city capture/capital-fall flags only when evidenced. Parties and threat use event-month identity. Renewal shows original chain start, old/new expiry, extension/count, and continuous relationship age measured from originalStartedMonth, never from renewal.
+- Backlog only: Deterministic Staggered Diplomacy Evaluation, potentially stableHash(pairKey)%12 if later manual evidence warrants it. No staggered scheduling is implemented.
+- APP_VERSIONv0.99928a / package0.99.114; WorldSaveV10 unchanged, existing V10world continues. Formation/duration/renewal/cooldown/caps/annual cadence/Strategic Union and all gameplay remain frozen. Browser/Electron observability and the original long-run Gate must be completed manually.
+
 ## v0.99928
 
 - Froze the complete v27 Dynastic Revolution Gate after user acceptance of natural usurpation, preserved lawful kin/independent houses, epoch/name/banner/history identity, major/era/unseen/paging and archived-city repair followed by clean reload.

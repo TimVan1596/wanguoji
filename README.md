@@ -147,6 +147,8 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
+- v0.99928a 仅补外交 Gate 可观察性与默认紧凑诊断浮层；所有详情默认收起，采集保持运行。历史详情展示事件时真实威胁/接触/续约连续性证据。现有V10世界可直接继续，按[Observability Gate](docs/DiplomacyIIGateObservability.md)完成剩余验收；不修改任何外交节奏或玩法。
+
 - v0.99928 Diplomacy II：可信共同威胁、整年动态期限、续约连续性与冷却；国势大事记/趋势 marker 排除普通外交。WorldSave **V10**，V9及更旧直接拒绝，不迁移；IndexedDB版本仍为2。请使用新世界完成 [Diplomacy II Manual Gate](docs/DiplomacyII.md)。
 - v0.99927 Dynastic Revolution 系列已由用户完整人工通过并冻结，包括历史身份、时代筛选、旧V9安全修复及重新保存后零修复读档。
 

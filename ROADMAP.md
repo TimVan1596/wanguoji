@@ -20,6 +20,8 @@
 
 ## 当前人工验收
 
+- v0.99928a presentation/debug patch：v28动态期限、NAP→Alliance、国势叙事过滤/newest-first已人工确认；继续原V10世界完成renewal/威胁消失/冷却/V10续约读档/union年龄/800–1200年频率Gate，见[Observability](docs/DiplomacyIIGateObservability.md)。不修改外交参数。
+
 - v0.99927 Dynastic Revolution系列完整人工通过，校准及历史/谱系/persistence Gate正式冻结。
 - v0.99928 Diplomacy II代码与自动验证阶段：仅可信共同威胁/期限/连续性/续约/冷却及外交叙事清理。WorldSaveV10，需要新世界4×800–1200年人工Gate，见[Diplomacy II](docs/DiplomacyII.md)。通过前不进入纳土归降、Faction Historiography、Era Atlas II或Ruler Political Evidence II。
 
@@ -44,3 +46,7 @@
 - 复杂经济。
 - 联盟共同作战、外交扩展与更复杂的国际关系。
 - 科技树。
+
+## 外交观察 backlog（未实现）
+
+**Deterministic Staggered Diplomacy Evaluation**：当前年度评价使用worldMonth%12===0，同月两条NAP符合现有配额，不能据此判断过密。只有长局人工确认每年同月扎堆影响历史自然感后，才考虑pair-specific deterministic phase=stableHash(pairKey)%12，保持每pair每年最多一次。本版只记录，不实现、不调整频率。
