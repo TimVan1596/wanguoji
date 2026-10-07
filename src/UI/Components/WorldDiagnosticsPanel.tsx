@@ -299,7 +299,7 @@ function WorldDiagnosticsPanelContent() {
       frameDeltaSource: framePerformance.frameDeltaSource,
     } : undefined,
     worldScale,
-    diplomacy: core?.getDiplomacyDiagnostics(),
+    diplomacy: { ...core?.getDiplomacyDiagnostics(), peacefulSubmission: core?.getPeacefulSubmissionDiagnostics() },
     persistence: {
       saveStatus: storageDiagnostics.status,
       phase: getWorldSavePhaseDiagnostics(),
@@ -376,6 +376,7 @@ function WorldDiagnosticsPanelContent() {
       ["Runtime Units", coreReportData.units],
       ["Population Transition Audit", populationTransitions],
       ["Diplomacy", core?.getDiplomacyDiagnostics()],
+      ["Peaceful Submission", core?.getPeacefulSubmissionDiagnostics()],
       ["Provisional ruler diagnostics", provisionalRulers],
       ["Frame Performance", coreReportData.performance],
       ["Simulation Step Performance", stepPerformance],
@@ -552,6 +553,7 @@ function WorldDiagnosticsPanelContent() {
           `renderer type: ${runtimeUnits.rendererType}`,
         ].join("\n")}</Typography>
       </details>}
+      {core && <details><summary>Peaceful Submission</summary><Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(core.getPeacefulSubmissionDiagnostics())}</Typography></details>}
       {core && <details>
         <summary>Diplomacy II</summary>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(core.getDiplomacyDiagnostics())}</Typography>

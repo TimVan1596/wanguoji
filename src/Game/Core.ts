@@ -726,6 +726,10 @@ export default class Core {
     return this.simulator?.getPopulationTransitionDiagnostics() ?? [];
   }
 
+  getPeacefulSubmissionDiagnostics() {
+    return this.simulator?.getPeacefulSubmissionDiagnostics();
+  }
+
   getDiplomacyDiagnostics() {
     return this.simulator?.getDiplomacyDiagnostics() ?? Diplomacy.getDiagnostics(0);
   }
@@ -758,7 +762,7 @@ export default class Core {
       totalFactionCount: this.teams.length,
       activeFactionCount: activeTeams.length,
       exiledFactionCount: this.teams.filter((team) => team.status === "EXILED").length,
-      extinctFactionCount: this.teams.filter((team) => team.status === "EXTINCT" && team.terminationReason !== "MERGED").length,
+      extinctFactionCount: this.teams.filter((team) => team.status === "EXTINCT" && team.terminationReason !== "MERGED" && team.terminationReason !== "SUBMITTED").length,
       mergedFactionCount: this.teams.filter((team) => team.terminationReason === "MERGED").length,
       activeCityCount: activeTeams.reduce((sum, team) => sum + team.cities.filter((city) => !city.destroyed).length, 0),
       archivedCityCount: ArchivedCities.list().length,

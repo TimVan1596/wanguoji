@@ -283,6 +283,10 @@ class DynastyRegistryStore {
   }
 
   markMerged(team: Team, monthIndex: number) {
+    this.markAdministrativeEnd(team, monthIndex, "合邦退位");
+  }
+
+  private markAdministrativeEnd(team: Team, monthIndex: number, reason: string) {
     const dynasty = this.dynasties.get(team.name);
     if (!dynasty) return;
     const ruler = this.getCurrentRuler(team.name);
@@ -290,7 +294,7 @@ class DynastyRegistryStore {
       ruler.status = "abdicated";
       ruler.endYear = monthIndex;
       ruler.politicalEndYear = monthIndex;
-      ruler.endReason = "合邦退位";
+      ruler.endReason = reason;
       if (ruler.chronicle) finishRulerChronicle(ruler.chronicle, createRulerSnapshot(team, monthIndex));
     }
     dynasty.rulers.forEach((recordedRuler) => {
@@ -303,11 +307,7 @@ class DynastyRegistryStore {
   }
 
   markSubmitted(team: Team, monthIndex: number) {
-    // The same archival operation as union, with an independent political reason.
-    this.markMerged(team, monthIndex);
-    const dynasty = this.dynasties.get(team.name);
-    const ruler = dynasty?.rulers.find(r => r.politicalEndYear === monthIndex && r.endReason === "合邦退位");
-    if (ruler) ruler.endReason = "纳土退位";
+    this.markAdministrativeEnd(team, monthIndex, "纳土退位");
   }
 
   get(factionId: string) {

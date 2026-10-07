@@ -37,6 +37,9 @@ import { RollingStepPerformance } from "./RollingStepPerformance";
 
 const debugProfileEnabled = runtimeProfilingEnabled;
 
+import { PeacefulSubmissionSystem } from "./PeacefulSubmissionSystem";
+import { executePeacefulSubmission } from "./PeacefulSubmissionExecution";
+
 export default class AutoSimulator {
   private clock = new WorldClock();
   private population = new PopulationSystem();
@@ -53,6 +56,7 @@ export default class AutoSimulator {
   private phaseProfiler = debugProfileEnabled ? new MonthlyPhaseProfiler() : undefined;
   private sessionStartMonth = 0;
   private stepPerformance = new RollingStepPerformance();
+  private readonly submission = new PeacefulSubmissionSystem(debugProfileEnabled);
   private strategicUnionDiagnostics: StrategicUnionCandidateDiagnostic[] = [];
   private lastSimulationSubsystem = "—";
   private lastKnownCities: City[] = [];
@@ -107,6 +111,7 @@ export default class AutoSimulator {
     captureMapSnapshot?: (capturedMonth: number) => EraMapSnapshotV1
   ) {
     Diplomacy.reset();
+    this.submission.reset();
     this.lastKnownTeams = teams;
     this.lastKnownCities = teams.flatMap((team) => team.cities);
     this.started = true;
@@ -209,6 +214,7 @@ export default class AutoSimulator {
     this.speed = state.selectedSpeed;
     this.clock.importState({ ...state.clock, running: false });
     this.sessionStartMonth = state.clock.worldMonth;
+    this.submission.reset();
     this.stepPerformance.reset();
     this.population.importState(state.populationSystem);
     this.events.importState(state.worldEventSystem, state.clock.worldMonth);
@@ -285,6 +291,9 @@ export default class AutoSimulator {
             .slice(0, 5);
         }
         if (unionCandidate) this.mergeFaction(unionCandidate, this.clock.year);
+        this.measure("PeacefulSubmission.update", () => this.submission.update({ ...unionInput,
+          relations: Diplomacy.list(this.clock.year),
+        }, executePeacefulSubmission));
       }
       this.measure("WorldEra.observe", () => WorldEra.observe(this.clock.year, teams, totalCells, this.events.getCurrentPhase(this.clock.year, teams), captureMapSnapshot));
       this.measure("PopulationSystem.update", () => this.population.update(this.clock.year, teams, (team) =>
@@ -447,6 +456,10 @@ export default class AutoSimulator {
 
   getLastSimulationSubsystem() {
     return this.lastSimulationSubsystem;
+  }
+
+  getPeacefulSubmissionDiagnostics() {
+    return this.submission.getDiagnostics(this.clock.year);
   }
 
   getStrategicUnionCandidateDiagnostics() {
