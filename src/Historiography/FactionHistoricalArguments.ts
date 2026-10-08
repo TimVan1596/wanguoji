@@ -47,10 +47,11 @@ export function deriveFactionHistoricalArguments(e: FactionHistoricalEvidence, e
   const capitals = getCapitalCaptureEvidence(events);
   const attacks = capitals.filter(x => ["ACTOR", "CONQUEROR"].includes(x.factionRole));
   const defenses = capitals.filter(x => x.factionRole === "TARGET");
-  const reversed = defenses.map(defense => ({ defense, attack: attacks.find(attack => attack.month < defense.month && attack.eventId !== defense.eventId && attack.targetFactionId !== e.factionId) }))
-    .find(pair => pair.attack);
-  if (reversed?.attack) {
-    const { attack, defense } = reversed;
+  // Captures are chronological: the earliest real attack is sufficient to
+  // find the earliest later defensive loss, without a cross-product scan.
+  const attack = attacks.find(x => x.targetFactionId !== e.factionId);
+  const defense = attack && defenses.find(x => x.month > attack.month && x.eventId !== attack.eventId);
+  if (attack && defense) {
     add("ATTACK_DEFENSE_REVERSAL", "WAR_REVERSAL", 108, [attack, defense], [], [], "先攻取他国首都，后自身首都被攻取；两件事件的行动角色与月份不同",
       `${date(attack.month)}曾取${attack.targetName ?? "他国"}都${attack.cityName ?? ""}，${date(defense.month)}又失己都${defense.cityName ?? ""}于${defense.actorName ?? "敌国"}；攻守之势在同一国史中倒转。`,
       `昔日兵锋抵${attack.cityName ?? "他国之都"}，后来${defense.cityName ?? "己都"}亦不能守；夺城之力，终未成为保国之固。`);
@@ -76,7 +77,7 @@ export function deriveFactionHistoricalArguments(e: FactionHistoricalEvidence, e
   if (loss && e.peakAbsoluteWorldShare >= 0.5 && e.lifetime.peakTerritoryBlocks.month < loss.month) {
     add("HALF_WORLD_LOSS", "POWER", 92, [loss], ["peakAbsoluteWorldShare", "lifetime.peakTerritoryBlocks"], [e.lifetime.peakTerritoryBlocks.month], "世界过半疆域峰值在最终失国之前；不据终结零领土断言渐进衰落",
       `${date(e.lifetime.peakTerritoryBlocks.month)}曾据世界${(e.peakAbsoluteWorldShare * 100).toFixed(1)}%，其后连${city}亦失；半壁之盛与无土之局，使其兴亡远非寻常守成可比。`,
-      `据地曾逾天下之半，结局却无一城可凭；疆域之广与建制之固，原来不是同一份保障。`);
+      `据地曾及天下之半以上，结局却无一城可凭；疆域之广与建制之固，原来不是同一份保障。`);
   }
   if (e.restorationCount >= 2) {
     const restores = events.filter(x => x.type === "faction-restored" && x.factionRole === "ACTOR");
