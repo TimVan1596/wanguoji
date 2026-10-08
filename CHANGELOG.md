@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.99930
+
+- v0.99929a Political Terminal Chronicle人工全部PASS；纳土、同源合邦、历史身份、退位纪事、宗谱、行政地图与V11 Save/Load正式冻结。
+- 新增永久FactionLifetimeRecord：按月读取users.size、受控block cardinality和cities.length，独立保留各峰值最早月份与观测来源；不依赖500条年度快照或debug开关，不扫描全地图/全历史。
+- MERGED / SUBMITTED行政转移前捕获末次国力、政治终结后冻结，EXTINCT在真正终结时冻结，EXILED可继续复国与更新。
+- 新增纯事实国家历史证据、可解释历史类型、2～4句国评与确定性史家曰；区分势力历时、正式国祚历时、累计在国，统计实际君主/王统与独立峰值日期。终结对象使用历史国号，不把退位写成死亡，不臆造灭国者。
+- 王室顶部新增折叠国评/势力结语；终结事件展开增加简短回顾，不新增重复历史事件。派生评价按冻结记录缓存，首次按势力索引查史料，保留现有分页与增量历史路径。
+- WorldSave升级V12，严格precheck唯一记录、势力引用、整数月份/非负峰值/世界格数基数与终结冻结状态；V11及更旧直接拒绝，无迁移，IndexedDB仍2。APP_VERSION v0.99930 / package0.99.118。玩法、RNG及所有后续主题不修改；等待[人工Gate](docs/FactionHistoriography.md)。
+
 ## v0.99929a
 
 - 政治终结展示按 terminationMonth 解析接受国历史国号，MERGED / SUBMITTED 的顶部、生命周期与王朝记忆不再被目标国未来改名污染。

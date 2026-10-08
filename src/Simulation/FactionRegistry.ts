@@ -1,3 +1,4 @@
+import FactionLifetimeRecords from "./FactionLifetimeRecord";
 import City from "../Components/City";
 import Block from "../Components/Block";
 import Team, { FactionType } from "../Components/Team";
@@ -206,6 +207,7 @@ class FactionRegistryStore {
       );
     }
     DynastyRegistry.recordRebellion(previousOwner.name);
+    FactionLifetimeRecords.observe(team, year);
     return team;
   }
 
@@ -281,6 +283,7 @@ class FactionRegistryStore {
       relatedFactionId: previousOwner.name,
       context: "empire split founding population",
     });
+    FactionLifetimeRecords.observe(team, year);
     return { team, transferredCities };
   }
 

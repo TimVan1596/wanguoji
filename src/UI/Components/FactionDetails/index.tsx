@@ -1,3 +1,4 @@
+import { FactionAssessmentPanel } from "../FactionAssessment";
 import { getTerminationTargetName } from "./model";
 import { formatRulerTerminalEvent } from "../../../History/PoliticalTerminalChronicle";
 import { getHouseEpochPresentation, getSignificantReignStats, formatRulerAge } from "./RoyalPresentation";
@@ -506,6 +507,8 @@ function FactionProfile({
         </Box>
       ) : null}
       {activeTab === "house" ? (
+        <Box sx={{ display: "grid", gap: 1 }}>
+        <FactionAssessmentPanel faction={team} factions={factionById} dynasty={dynasty} />
         <DynastyTree
           key={team.name}
           dynasty={dynasty}
@@ -520,6 +523,7 @@ function FactionProfile({
           onSelectedRulerIdChange={onRulerDetailIdChange}
           onOpenFullGenealogy={openFullGenealogy}
         />
+        </Box>
       ) : null}
       <GenealogyDialog
         open={genealogyViewerOpen}

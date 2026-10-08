@@ -1,9 +1,10 @@
+import type { FactionLifetimeState } from "../Simulation/FactionLifetimeRecord";
 import { APP_VERSION } from "../config/version";
 import { WORLD_RNG_ALGORITHM, WorldRandomState } from "../Simulation/WorldRandom";
 import type { DiplomaticRelation, DiplomaticPairMemory } from "../Politics/Diplomacy";
 import type { FactionColorHistoryEntry } from "../Simulation/FactionColorHistory";
 
-export const CURRENT_SAVE_SCHEMA_VERSION = 11 as const;
+export const CURRENT_SAVE_SCHEMA_VERSION = 12 as const;
 
 export interface FactionSaveV1 {
   factionId: string;
@@ -137,7 +138,7 @@ export interface WorldEventSystemSaveV1 {
   cycleState: WorldCycleStateSaveV1;
 }
 
-export interface WorldSaveV11 {
+export interface WorldSaveV12 {
   saveSchemaVersion: typeof CURRENT_SAVE_SCHEMA_VERSION;
   appVersion: string;
   createdAt?: string;
@@ -161,6 +162,7 @@ export interface WorldSaveV11 {
   worldHistory: Record<string, unknown>;
   worldEra: Record<string, unknown>;
   factionSnapshots: Record<string, unknown>;
+  factionLifetime: FactionLifetimeState;
   worldRemnants: Record<string, unknown>[];
   worldExiles: Record<string, unknown>[];
   factionEffects: Record<string, unknown>;
@@ -171,7 +173,7 @@ export interface WorldSaveV11 {
   diplomacy: { relations: DiplomaticRelation[]; pairMemories: DiplomaticPairMemory[]; lastEvaluationMonth: number };
 }
 
-export function createEmptyWorldSaveV11(): WorldSaveV11 {
+export function createEmptyWorldSaveV12(): WorldSaveV12 {
   return {
     saveSchemaVersion: CURRENT_SAVE_SCHEMA_VERSION,
     appVersion: APP_VERSION,
@@ -184,6 +186,7 @@ export function createEmptyWorldSaveV11(): WorldSaveV11 {
       simulationDriver: { accumulatorMs: 0 },
       map: { widthCells: 0, heightCells: 0, blockSize: 0 },
     },
+    factionLifetime: { totalWorldBlocks: 0, records: [] },
     factions: [], blocks: [], cities: [], users: [], units: [], dynasties: [],
     worldHistory: { events: [], emittedKeys: [], extinctFactionIds: [], sequence: 0, unificationCount: 0 },
     worldEra: { eras: [], sequence: 0, lastObservedMonth: -1 },
@@ -210,24 +213,24 @@ export function createEmptyWorldSaveV11(): WorldSaveV11 {
   };
 }
 
-export type WorldSaveV8 = WorldSaveV11;
-export const createEmptyWorldSaveV8 = createEmptyWorldSaveV11;
+export type WorldSaveV8 = WorldSaveV12;
+export const createEmptyWorldSaveV8 = createEmptyWorldSaveV12;
 
 /** Internal call-site aliases; persisted saves still identify their exact schema number. */
-export type WorldSaveV7 = WorldSaveV11;
-export type WorldSaveV6 = WorldSaveV11;
-export type WorldSaveV5 = WorldSaveV11;
-export type WorldSaveV4 = WorldSaveV11;
-export type WorldSaveV3 = WorldSaveV11;
-export type WorldSaveV2 = WorldSaveV11;
-export type WorldSaveV1 = WorldSaveV11;
-export const createEmptyWorldSaveV7 = createEmptyWorldSaveV11;
-export const createEmptyWorldSaveV6 = createEmptyWorldSaveV11;
-export const createEmptyWorldSaveV5 = createEmptyWorldSaveV11;
-export const createEmptyWorldSaveV4 = createEmptyWorldSaveV11;
-export const createEmptyWorldSaveV3 = createEmptyWorldSaveV11;
-export const createEmptyWorldSaveV2 = createEmptyWorldSaveV11;
-export const createEmptyWorldSaveV1 = createEmptyWorldSaveV11;
+export type WorldSaveV7 = WorldSaveV12;
+export type WorldSaveV6 = WorldSaveV12;
+export type WorldSaveV5 = WorldSaveV12;
+export type WorldSaveV4 = WorldSaveV12;
+export type WorldSaveV3 = WorldSaveV12;
+export type WorldSaveV2 = WorldSaveV12;
+export type WorldSaveV1 = WorldSaveV12;
+export const createEmptyWorldSaveV7 = createEmptyWorldSaveV12;
+export const createEmptyWorldSaveV6 = createEmptyWorldSaveV12;
+export const createEmptyWorldSaveV5 = createEmptyWorldSaveV12;
+export const createEmptyWorldSaveV4 = createEmptyWorldSaveV12;
+export const createEmptyWorldSaveV3 = createEmptyWorldSaveV12;
+export const createEmptyWorldSaveV2 = createEmptyWorldSaveV12;
+export const createEmptyWorldSaveV1 = createEmptyWorldSaveV12;
 
 export function canonicalWorldSaveProjection(save: WorldSaveV1) {
   const { createdAt: _createdAt, ...canonical } = save;
@@ -253,7 +256,7 @@ export interface CanonicalWorldSaveDiff {
 
 const CANONICAL_SUBSYSTEMS = [
   "world", "factions", "blocks", "cities", "users", "units", "dynasties",
-  "worldHistory", "worldEra", "factionSnapshots", "worldRemnants", "worldExiles",
+  "worldHistory", "worldEra", "factionLifetime", "factionSnapshots", "worldRemnants", "worldExiles",
   "factionEffects", "populationSystem", "registries", "worldEventSystem", "diplomacy", "metadata",
 ] as const;
 
@@ -312,10 +315,14 @@ function simplifyDiffValue(value: unknown): unknown {
   return String(value);
 }
 
-// Legacy source API aliases only; every emitted/accepted DTO is schema V11.
-export type WorldSaveV9 = WorldSaveV11;
-export const createEmptyWorldSaveV9 = createEmptyWorldSaveV11;
+// Legacy source API aliases only; every emitted/accepted DTO is schema V12.
+export type WorldSaveV9 = WorldSaveV12;
+export const createEmptyWorldSaveV9 = createEmptyWorldSaveV12;
 
 // Source aliases only, not compatibility: schema 10 is rejected.
-export type WorldSaveV10 = WorldSaveV11;
-export const createEmptyWorldSaveV10 = createEmptyWorldSaveV11;
+export type WorldSaveV10 = WorldSaveV12;
+export const createEmptyWorldSaveV10 = createEmptyWorldSaveV12;
+
+// Source aliases do not accept old persisted schemas.
+export type WorldSaveV11 = WorldSaveV12;
+export const createEmptyWorldSaveV11 = createEmptyWorldSaveV12;

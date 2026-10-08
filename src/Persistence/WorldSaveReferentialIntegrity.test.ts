@@ -1,3 +1,4 @@
+import { setFixtureLifetimeRecords } from "./testing/FactionLifetimeFixture";
 import { afterEach, describe, expect, it, vi } from "vitest";
 const { game } = vi.hoisted(() => ({ game: { Core: undefined as any, BlockSize: 32 } }));
 vi.mock("../Game/Game", () => ({ default: game }));
@@ -38,6 +39,7 @@ function fixture() {
     isCityCenter: gridX === 0, homeHitPoints: gridX === 0 ? 7 : 0, ...(gridX === 0 ? { cityId: "active" } : {}) }));
   save.registries.archivedCities = [{ id: "秦-city-312-2", name: "旧城", founderFactionId: "qin", lastOwnerFactionId: "qin", foundedMonth: 1,
     destroyedMonth: 30, captureCount: 2, historicalOwners: ["qin"], history: [] }];
+  setFixtureLifetimeRecords(save);
   return save;
 }
 function target() {
@@ -61,8 +63,36 @@ function target() {
 }
 afterEach(() => { vi.restoreAllMocks(); });
 describe("V9 active city referential integrity and pre-teardown repair", () => {
+  it("V12 preserves lifetime peaks, observations and RNG across actual hydrate/export", () => {
+    const save = fixture();
+    save.factionLifetime.records[0].peakPopulation = { value: 900, month: 10, source: "MONTHLY" };
+    save.factionLifetime.records[0].peakTerritoryBlocks = { value: 3, month: 11, source: "MONTHLY" };
+    save.factionLifetime.records[0].peakCityCount = { value: 2, month: 12, source: "PRE_TERMINAL" };
+    const core = target(); hydrateWorldSave(core, save);
+    const exported = exportWorldSave(core);
+    expect(exported.factionLifetime).toEqual(save.factionLifetime);
+    hydrateWorldSave(core, exported); expect(exportWorldSave(core)).toEqual(exported);
+    expect(worldRandom.exportState()).toEqual(save.worldRandom);
+    expect(validateWorldSave({ ...exported, saveSchemaVersion: 11 }).valid).toBe(false);
+  });
+  it("rejects bad V12 lifetime evidence and V11 before teardown, preserving the old world", () => {
+    for (const malformed of ["future", "unknown", "old-schema"]) {
+      const save = fixture();
+      if (malformed === "future") save.factionLifetime.records[0].peakPopulation.month = 1000;
+      if (malformed === "unknown") save.factionLifetime.records[0].factionId = "missing";
+      if (malformed === "old-schema") (save as any).saveSchemaVersion = 11;
+      const core = target(), oldTeams = core.teams, oldUnits = core.units, oldCities = core.oldCities;
+      const history = WorldHistory.exportState();
+      expect(() => hydrateWorldSave(core, save)).toThrow();
+      expect(core.prepareForHydration).not.toHaveBeenCalled(); expect(core.stage).toBe("PRECHECK_FAILED");
+      expect(core.teams).toBe(oldTeams); expect(core.units).toBe(oldUnits); expect(core.oldCities).toBe(oldCities);
+      expect(core.simulator.exportState().clock.worldMonth).toBe(500);
+      expect(WorldHistory.exportState()).toEqual(history);
+    }
+  });
   it("V11 submission hydrate/export preserves terminal identity, abdication archive and administrative ownership",()=>{
     const save=fixture();save.factions.push({...save.factions[0],factionId:"wei",displayName:"魏"});
+    setFixtureLifetimeRecords(save);
     Object.assign(save.factions[0],{status:"EXTINCT",terminationReason:"SUBMITTED",terminationTargetFactionId:"wei",terminationMonth:36,extinctionMonth:36,cumulativeActiveMonths:36});
     delete save.factions[0].capitalCityId;
     save.cities[0].ownerFactionId="wei";save.blocks.forEach(b=>b.ownerFactionId="wei");
@@ -70,9 +100,10 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
       {rulerId:"last",houseName:"陈氏",givenName:"平",bornMonth:0,accessionMonth:0,endMonth:36,politicalEndMonth:36,status:"abdicated",endReason:"纳土退位"},
       {rulerId:"heir",houseName:"陈氏",givenName:"继",bornMonth:20,parentId:"last",status:"kin"},
     ]}];
+    setFixtureLifetimeRecords(save);
     const rng=save.worldRandom,core=target();
     expect(validateWorldSave(save)).toEqual({valid:true,errors:[]});hydrateWorldSave(core,save);
-    const first=exportWorldSave(core);expect(first.saveSchemaVersion).toBe(11);
+    const first=exportWorldSave(core);expect(first.saveSchemaVersion).toBe(12);
     expect(first.factions[0]).toMatchObject({terminationReason:"SUBMITTED",terminationTargetFactionId:"wei",terminationMonth:36});
     expect(first.cities[0].ownerFactionId).toBe("wei");expect(first.blocks.every(b=>b.ownerFactionId === "wei")).toBe(true);
     expect((first.dynasties[0].rulers as any[])[0]).toMatchObject({status:"abdicated",endReason:"纳土退位",politicalEndMonth:36});
@@ -88,6 +119,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
   });
   it("V10 actual hydrate/export round-trip retains diplomacy renewal and cooldown state without RNG draws",()=>{
     const save=fixture();save.factions.push({...save.factions[0],factionId:"wei"});
+    setFixtureLifetimeRecords(save);
     delete save.factions[1].capitalCityId;
     save.diplomacy.relations=[{factionAId:"qin",factionBId:"wei",status:"NON_AGGRESSION",reason:"COMMON_THREAT_NON_AGGRESSION",originalStartedMonth:0,startedMonth:12,expiresMonth:180,lastRenewedMonth:36,renewalCount:1}];
     save.diplomacy.pairMemories=[{factionAId:"qin",factionBId:"wei",lastStatus:"TRUCE",lastReason:"WAR_EXHAUSTION_TRUCE",endedMonth:10,cooldownUntilMonth:34}];

@@ -1,3 +1,4 @@
+import { setFixtureLifetimeRecords } from "../Persistence/testing/FactionLifetimeFixture";
 import { describe, expect, it, vi } from "vitest";
 import { createEmptyWorldSaveV1 } from "../Persistence/WorldSaveSchema";
 import { validateWorldSave } from "../Persistence/WorldSaveValidator";
@@ -75,6 +76,7 @@ describe("WorldEventSystem persistence contract", () => {
       defense: 1, maxDefense: 1, loyalty: 80, devastation: 0, captureCount: 0,
     }];
     save.worldEventSystem = jsonState;
+    setFixtureLifetimeRecords(save);
     expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
   });
 });

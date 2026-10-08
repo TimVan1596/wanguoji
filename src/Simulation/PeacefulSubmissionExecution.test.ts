@@ -1,3 +1,4 @@
+import FactionLifetimeRecords from "./FactionLifetimeRecord";
 import { afterEach, describe, expect, it, vi } from "vitest";
 const { game }=vi.hoisted(()=>({game:{Core:{teams:[] as any[],releaseTerminalTeamColliders:vi.fn()},BlockSize:32}}));
 vi.mock("../Game/Game",()=>({default:game}));
@@ -15,12 +16,13 @@ import { evaluateSubmissionCandidates } from "./PeacefulSubmissionSystem";
 import worldRandom from "./WorldRandom";
 import type Team from "../Components/Team";
 
-afterEach(()=>{DynastyRegistry.reset();Diplomacy.reset();WorldHistory.reset();vi.restoreAllMocks();});
+afterEach(()=>{FactionLifetimeRecords.reset();DynastyRegistry.reset();Diplomacy.reset();WorldHistory.reset();vi.restoreAllMocks();});
 async function fixture() {
   const {default:RealTeam}=await vi.importActual<typeof import("../Components/Team")>("../Components/Team");
   const teams=["weak","strong","other"].map((name,index)=>Object.assign(Object.create(RealTeam.prototype),{
     name,displayName:name,status:"ACTIVE",identityStage:"STATE",origin:{type:"INITIAL"},currentActiveSinceYear:0,cumulativeActiveYears:0,restorationYears:[],users:new Set(),farms:{setDie:vi.fn()},cities:[{loyalty:40}],blocks:{children:{size:index===0?3:index===1?30:67,entries:[]}},
   }));
+  FactionLifetimeRecords.observeWorld(0, teams, 100);
   const [weak,strong]=teams;
   weak.blocks.children.entries=[0,1,2].map((i)=>({x:i===0?32:1000+i*100,y:0,team:weak,claimForTeam(team:any){this.team=team;weak.blocks.children.entries=weak.blocks.children.entries.filter((b:any)=>b!==this);strong.blocks.children.entries.push(this);}}));
   strong.blocks.children.entries=[{x:0,y:0}];
@@ -37,6 +39,8 @@ describe("actual submission orchestration and canonical terminal offices",()=>{
     const {weak,strong,user,candidate}=await fixture(),rng=worldRandom.exportState();
     expect(executePeacefulSubmission(candidate,120)).toBe(true);
     expect(weak).toMatchObject({status:"EXTINCT",terminationReason:"SUBMITTED",terminationTargetFactionId:"strong",terminationMonth:120,rulerUser:undefined});
+    expect(FactionLifetimeRecords.get("weak")!.terminal).toMatchObject({month:120,population:1,territoryBlocks:3,cityCount:1});
+    expect(FactionLifetimeRecords.get("weak")!.peakPopulation.value).toBe(1);
     expect(weak.cities).toHaveLength(0);expect(strong.cities).toHaveLength(2);expect(weak.blocks.children.entries).toHaveLength(0);expect(strong.blocks.children.entries.slice(1).every((b:any)=>b.team===strong)).toBe(true);
     expect(weak.users.size).toBe(0);expect(strong.users.has(user)).toBe(true);expect(user).toMatchObject({role:"NORMAL",rulerId:undefined});
     expect(DynastyRegistry.get("weak")).toMatchObject({currentRulerId:null,heirIds:[],designatedHeirId:undefined});

@@ -1,3 +1,4 @@
+import FactionLifetimeRecords from "../Simulation/FactionLifetimeRecord";
 import { normalizeArchivedCityBlockRefs, type HydrationRepairs } from "./ArchivedCityHydrationRepair";
 import Block from "../Components/Block";
 import City from "../Components/City";
@@ -314,6 +315,7 @@ function importPoliticalAndHistoryState(save: WorldSaveV1) {
   DynastyRegistry.importState({ dynasties, sequence: Number(save.registries.dynastyRegistrySequence) } as ReturnType<typeof DynastyRegistry.exportState>, save.world.clock.worldMonth);
   WorldHistory.importState(save.worldHistory as Parameters<typeof WorldHistory.importState>[0]);
   WorldEra.importState(save.worldEra as Parameters<typeof WorldEra.importState>[0]);
+  FactionLifetimeRecords.importState(save.factionLifetime);
   FactionSnapshots.importState(save.factionSnapshots as Parameters<typeof FactionSnapshots.importState>[0]);
   WorldRemnants.importState(save.worldRemnants as Parameters<typeof WorldRemnants.importState>[0]);
   WorldExiles.importState(save.worldExiles as unknown as Parameters<typeof WorldExiles.importState>[0]);

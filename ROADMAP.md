@@ -20,12 +20,15 @@
 
 ## 当前人工验收
 
+- v0.99929 Peaceful Submission及v0.99929a终结纪事人工全部PASS，正式冻结。
+- v0.99930 Faction Historiography：永久月度峰值、终结国评和史家曰、王室折叠展示及历史短回顾；WorldSave V12，等待[新世界人工Gate](docs/FactionHistoriography.md)。通过前不进入时代地图或其他后续主题。
+
 - v0.99928 Diplomacy II全系列人工PASS并冻结，包括v28b时间文案和Strategic Union续约年龄连续性。
-- v0.99929a Political Terminal Chronicle Closure：历史终结对象、退位措辞与双方君主个人纪事修复，等待[现有 V11 长局人工 Gate](docs/PoliticalTerminalChronicleClosure.md)，不展开国评或时代地图。
+- v0.99929a Political Terminal Chronicle Closure：历史终结对象、退位措辞与双方君主个人纪事修复，[现有 V11 长局人工 Gate](docs/PoliticalTerminalChronicleClosure.md)已PASS，不展开国评或时代地图。
 - v0.99929 Peaceful Submission代码阶段：不同源正式国家极端不对称/长期和平/接壤时纳土，独立SUBMITTED终结、退位档案和WorldSaveV11。用新世界4×最多1500年完成[人工Gate](docs/PeacefulSubmission.md)，出现事件可立即停止。
 
 - v0.99927 Dynastic Revolution系列完整人工通过，校准及历史/谱系/persistence Gate正式冻结。
-- v0.99928 Diplomacy II规则与WorldSaveV10保留，长局人工Gate已通过。后续主题须等待当前v29纳土Gate。
+- v0.99928 Diplomacy II规则与WorldSaveV10保留，长局人工Gate已通过。v29纳土与v29a终结纪事Gate均已通过。
 
 - v0.99927b1 Runtime Disposal 已人工通过：新世界 Electron 4×约1962年，无 Group.preUpdate `.size` Fatal、Renderer Fatal 或 disposal stalled；768年与1962年 disposal／orphan invariants 正常，live users/groups/registered groups 分别56与58。
 - v0.99927b2 History Scalability 子目标已人工通过：历史 publish/notify 在1000+年近零；4228年、约9600 events／2700 rulers存档 Load后恢复60～65 FPS。Runtime Disposal invariants继续正常。1305年God Tab仍出现15 FPS／16 steps per frame，foreground pacing Gate未通过。

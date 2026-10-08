@@ -68,6 +68,6 @@ describe("Diplomacy Narrative Clarity (recorded V10 events)",()=>{
       formatHistoryEventTitle(e,factions);formatHistoryEventDescription(e,factions);getDiplomacyEventDetails(e,factions);
     }
     expect(JSON.stringify({save,e,context:allianceContext})).toBe(canonical);
-    expect(worldRandom.exportState()).toEqual(rng);expect(save.saveSchemaVersion).toBe(11);
+    expect(worldRandom.exportState()).toEqual(rng);expect(save.saveSchemaVersion).toBe(12);
   });
 });

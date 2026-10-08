@@ -672,7 +672,7 @@ describe("evidence-grounded ruler historiography", () => {
     ]);
     expect(SIMULATION_SPEEDS).toEqual([1, 2, 4]);
     expect(BASE_PLAY_RATE).toBe(2);
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(11);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(12);
   });
 });
 

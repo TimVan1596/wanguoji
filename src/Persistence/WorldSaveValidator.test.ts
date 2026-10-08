@@ -1,3 +1,4 @@
+import { setFixtureLifetimeRecords } from "./testing/FactionLifetimeFixture";
 import { describe, expect, it } from "vitest";
 import { createEmptyWorldSaveV1, CURRENT_SAVE_SCHEMA_VERSION, diffCanonicalWorldSave } from "./WorldSaveSchema";
 import { isSafeSnapshotBoundary } from "./SnapshotBoundary";
@@ -14,6 +15,7 @@ function fixture() {
   save.dynasties = [{ factionId: "qin", houseName: "田氏", houseEpochs: [{ houseName: "田氏", startMonth: 0, foundingRulerId: "qin-ruler-1", startReason: "FOUNDING" }], rulers: [{ rulerId: "qin-ruler-1", houseName: "田氏" }], heirIds: [] }];
   save.blocks = [{ gridX: 0, gridY: 0, ownerFactionId: "qin", isHome: true, cityId: "xianyang", homeHitPoints: 10, isCityCenter: true }];
   save.populationSystem = { counters: { qin: 3 }, lastGrowthMonth: 12 };
+  setFixtureLifetimeRecords(save);
   return save;
 }
 
@@ -76,14 +78,15 @@ describe("WorldSaveV1 validation and JSON contract", () => {
   });
   it("uses schema V10 and persists alliance/merge fields plus the deterministic random stream", () => {
     const save = fixture();
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(11);
-    expect(save.saveSchemaVersion).toBe(11);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(12);
+    expect(save.saveSchemaVersion).toBe(12);
     expect(save.diplomacy).toEqual({ relations: [], pairMemories: [], lastEvaluationMonth: -1 });
     expect(save.worldRandom).toMatchObject({ algorithm: "mulberry32-v1", seed: expect.any(String), state: expect.any(Number), position: 0 });
   });
 
   it("V10 preserves continuity, renewals and pair memory, and rejects V9 or malformed canonical metadata",()=>{
     const save=fixture(); save.factions.push({...save.factions[0],factionId:"wei"});
+    setFixtureLifetimeRecords(save);
     save.diplomacy.relations=[{factionAId:"qin",factionBId:"wei",status:"NON_AGGRESSION",reason:"COMMON_THREAT_NON_AGGRESSION",originalStartedMonth:0,startedMonth:12,expiresMonth:180,lastRenewedMonth:36,renewalCount:1}];
     save.diplomacy.pairMemories=[{factionAId:"qin",factionBId:"wei",lastStatus:"TRUCE",lastReason:"WAR_EXHAUSTION_TRUCE",endedMonth:10,cooldownUntilMonth:34}];
     const changed=structuredClone(save);changed.diplomacy.relations[0].renewalCount=2;changed.diplomacy.pairMemories[0].cooldownUntilMonth=46;
@@ -109,6 +112,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
   it("validates symmetric V8 treaty data and rejects the previous save schema", () => {
     const save = fixture();
     save.factions.push({ ...save.factions[0], factionId: "wei", displayName: "魏" });
+    setFixtureLifetimeRecords(save);
     save.diplomacy.relations = [{ factionAId: "qin", factionBId: "wei", status: "TRUCE", originalStartedMonth: 12, renewalCount: 0, startedMonth: 12, expiresMonth: 36, reason: "WAR_EXHAUSTION_TRUCE" }];
     expect(validateWorldSave(save).valid).toBe(true);
     expect(validateWorldSave({ ...save, saveSchemaVersion: 5 }).valid).toBe(false);
@@ -118,16 +122,19 @@ describe("WorldSaveV1 validation and JSON contract", () => {
   it("validates the alliance reason and persistent absorbed-faction terminal state", () => {
     const save = fixture();
     save.factions.push({ ...save.factions[0], factionId: "wei", displayName: "魏" });
+    setFixtureLifetimeRecords(save);
     save.diplomacy.relations = [{
       factionAId: "qin", factionBId: "threat", status: "ALLIANCE", originalStartedMonth: 12, renewalCount: 0, startedMonth: 12, expiresMonth: 132,
       reason: "COMMON_THREAT_ALLIANCE", commonThreatFactionId: "threat",
       preconditionStatus: "NON_AGGRESSION", preconditionStartedMonth: 0, preconditionDurationMonths: 24,
     }];
     save.factions.push({ ...save.factions[0], factionId: "threat", displayName: "强敌" });
+    setFixtureLifetimeRecords(save);
     save.factions[1] = {
       ...save.factions[1], status: "EXTINCT", terminationReason: "MERGED",
       terminationTargetFactionId: "qin", terminationMonth: 36,
     };
+    setFixtureLifetimeRecords(save);
     const loaded = JSON.parse(JSON.stringify(save));
     expect(validateWorldSave(loaded)).toEqual({ valid: true, errors: [] });
     expect(loaded.diplomacy.relations[0]).toMatchObject({ status: "ALLIANCE", commonThreatFactionId: "threat", preconditionDurationMonths: 24 });
@@ -138,6 +145,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
   it("rejects multiple active alliances for one faction", () => {
     const save = fixture();
     save.factions.push(...["wei", "chu", "yan"].map((factionId) => ({ ...save.factions[0], factionId })));
+    setFixtureLifetimeRecords(save);
     save.diplomacy.relations = [
       { factionAId: "qin", factionBId: "wei", status: "ALLIANCE", originalStartedMonth: 1, renewalCount: 0, startedMonth: 1, expiresMonth: 121, reason: "COMMON_THREAT_ALLIANCE" },
       { factionAId: "chu", factionBId: "qin", status: "ALLIANCE", originalStartedMonth: 1, renewalCount: 0, startedMonth: 1, expiresMonth: 121, reason: "COMMON_THREAT_ALLIANCE" },
@@ -167,7 +175,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     expect(loaded.dynasties[0]).toMatchObject({ designatedHeirId: "qin-ruler-2", designatedSinceMonth: 36 });
     expect(loaded.dynasties[0].rulers[2]).toMatchObject({ parentId: "qin-ruler-2", relationType: "DIRECT_CHILD" });
     expect(loaded.dynasties[0].rulers[3]).toMatchObject({ rulerId: "qin-ruler-4", status: "kin", parentId: "qin-ruler-1" });
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(11);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(12);
   });
 
   it("rejects a dynasty candidate list above the runtime bound", () => {

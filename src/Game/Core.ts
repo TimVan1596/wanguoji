@@ -1,3 +1,4 @@
+import FactionLifetimeRecords from "../Simulation/FactionLifetimeRecord";
 import type { HydrationRepairs } from "../Persistence/ArchivedCityHydrationRepair";
 import { DesktopWakeRecovery } from "../Runtime/DesktopWakeRecovery";
 import { ForegroundDebtDiagnostics } from "../Simulation/ForegroundDebtDiagnostics";
@@ -253,6 +254,7 @@ export default class Core {
     DynastyRegistry.reset();
     Diplomacy.reset();
     FactionRegistry.reset();
+    FactionLifetimeRecords.reset();
     FactionEffects.reset();
     store.dispatch(setWorldStarted(false));
     store.dispatch(setWorldRunning(false));
@@ -363,6 +365,7 @@ export default class Core {
       console.error(`[Wanguoji] Runtime faction id duplicated: ${team.name}`);
       return false;
     }
+    FactionLifetimeRecords.observe(team, team.firstFoundedYear);
     this.registerTeamColliders(team);
     existingTeams.forEach((existingTeam) => {
       this.addTeamCollider(existingTeam, existingTeam.players, [team.blocks]);

@@ -1,3 +1,4 @@
+import { FactionTerminalRetrospective } from "../FactionAssessment";
 import { getSubmissionEventPresentation } from "../../../History/PeacefulSubmissionPresentation";
 import { getDiplomacyEventDetails } from "../../../History/DiplomacyEventDetails";
 import { MAJOR_EVENT_FILTERS, type MajorEventFilter } from "../../../History/HistoryMajorEventFilters";
@@ -105,6 +106,7 @@ export default function HistoryScroll() {
     teamByName: new Map(teams.map((team) => [team.name, team])),
     factionColorById: new Map(teams.map((team) => [team.name, team.color])),
   }), [historyLookupSignature]);
+  const dynastyByFactionId = useMemo(() => new Map(dynasties.map(dynasty => [dynasty.factionId, dynasty])), [dynasties]);
   const rulerById = useMemo(
     () => new Map(dynasties.flatMap((dynasty) => dynasty.rulers.map((ruler) => [ruler.id, ruler] as const))),
     [dynasties]
@@ -406,6 +408,7 @@ export default function HistoryScroll() {
         hasMore={page.hasMore}
         expandedId={expandedId}
         teamByName={teamByName}
+        dynastyByFactionId={dynastyByFactionId}
         rulerById={rulerById}
         factionColorById={factionColorById}
         cityNames={cityNames}
@@ -423,6 +426,7 @@ type HistoryEventListProps = {
   hasMore: boolean;
   expandedId?: string;
   teamByName: Map<string, RootState["root"]["teams"][number]>;
+  dynastyByFactionId: Map<string, import("../../../Politics/Dynasty").Dynasty>;
   rulerById: Map<string, import("../../../Politics/Dynasty").Ruler>;
   factionColorById: Map<string, number>;
   cityNames: string[];
@@ -438,6 +442,7 @@ function HistoryEventListContent({
   expandedId,
   teamByName,
   rulerById,
+  dynastyByFactionId,
   factionColorById,
   cityNames,
   onToggleExpanded,
@@ -509,6 +514,7 @@ function HistoryEventListContent({
             </Typography>
             {expanded ? <Box sx={{ mt: 0.5 }}>
               {eventDescription ? <Typography fontSize="0.85rem" sx={{ opacity: 0.85 }}><EventText text={eventDescription} teamByName={eventTeamByDisplayName} factionNames={eventFactionNames} cityNames={cityNames} /></Typography> : null}
+              <FactionTerminalRetrospective event={event} factions={teamByName} dynasties={dynastyByFactionId} />
               <EventDetails event={event} teamByName={eventTeamByDisplayName} factionNames={eventFactionNames} cityNames={cityNames} />
             </Box> : null}
           </Box>

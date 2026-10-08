@@ -1,3 +1,4 @@
+import FactionLifetimeRecords from "../Simulation/FactionLifetimeRecord";
 import { getCityBlockReferenceIssues } from "../Simulation/CityBlockReferences";
 import type Core from "../Game/Core";
 import Game from "../Game/Game";
@@ -171,6 +172,7 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
     worldHistory: WorldHistory.exportState(),
     worldEra: WorldEra.exportState(),
     factionSnapshots: FactionSnapshots.exportState(),
+    factionLifetime: FactionLifetimeRecords.exportState(),
     worldRemnants: WorldRemnants.exportState(),
     worldExiles: WorldExiles.exportState(),
     factionEffects: FactionEffects.exportState(),

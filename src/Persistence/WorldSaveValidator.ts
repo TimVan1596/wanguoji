@@ -1,3 +1,4 @@
+import { validateFactionLifetime } from "./FactionLifetimeValidation";
 import { CURRENT_SAVE_SCHEMA_VERSION, WorldSaveV1 } from "./WorldSaveSchema";
 import { isEraMapSnapshotV1 } from "../Simulation/EraMapSnapshot";
 import { MAX_DYNASTIC_SUCCESSION_CANDIDATES } from "../Politics/DynasticCandidateRules";
@@ -32,6 +33,8 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   const dynasties = array(save.dynasties, "dynasties", errors);
   const factionIds = uniqueIds(factions, "factionId", "factions", errors);
   const factionById = new Map(factions.map((faction) => [String(faction.factionId), faction]));
+  errors.push(...validateFactionLifetime(save.factionLifetime, factions as unknown as WorldSaveV1["factions"], Number(save.world?.worldMonth),
+    Number(save.world?.map?.widthCells) * Number(save.world?.map?.heightCells)));
   const cityIds = uniqueIds(cities, "cityId", "cities", errors);
   const userIds = uniqueIds(users, "userId", "users", errors);
   const unitIds = uniqueIds(units, "unitId", "units", errors);

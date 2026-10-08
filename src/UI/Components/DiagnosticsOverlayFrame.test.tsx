@@ -41,7 +41,7 @@ describe("session-only diagnostic overlay",()=>{
       system.update(24,[],1,[]);f.html();expect(f.frame.state.compact).toBe(true);
       expect(registry.getDiagnostics(24).diplomacyII?.sessionCumulative.expired).toBe(1);
       expect(worldRandom.exportState()).toEqual(random);expect(JSON.parse(JSON.stringify(save))).toEqual(save);
-      expect(save.saveSchemaVersion).toBe(11);expect(save).not.toHaveProperty("compact");expect(save).not.toHaveProperty("collapseRevision");
+      expect(save.saveSchemaVersion).toBe(12);expect(save).not.toHaveProperty("compact");expect(save).not.toHaveProperty("collapseRevision");
       return {canonical:registry.exportState(),rng:worldRandom.exportState()};
     };
     expect(run(true)).toEqual(run(false));

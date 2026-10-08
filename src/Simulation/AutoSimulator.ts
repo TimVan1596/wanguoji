@@ -1,3 +1,4 @@
+import FactionLifetimeRecords from "./FactionLifetimeRecord";
 import { MonthlyPhaseProfiler, runtimeProfilingEnabled } from "./MonthlyPhaseProfiler";
 import Team from "../Components/Team";
 import Block from "../Components/Block";
@@ -122,6 +123,7 @@ export default class AutoSimulator {
     this.population.reset();
     this.events.reset(0);
     FactionSnapshots.reset();
+    FactionLifetimeRecords.reset(totalCells);
     WorldEra.reset();
     LongRunProfiler.reset(0, "FRAGMENTED");
     resetNameGenerationTelemetry();
@@ -140,6 +142,7 @@ export default class AutoSimulator {
     teams.forEach((team) => DynastyRegistry.initializeFaction(team, 0));
     this.population.initialize(teams, populations);
     this.populationTransitionAudit.reset(0, teams);
+    FactionLifetimeRecords.observeWorld(0, teams, totalCells);
     FactionSnapshots.observe(0, teams, totalCells);
     WorldHistory.observeWorld(0, teams, totalCells);
     this.events.observeWorldGoal(0, teams, totalCells);
@@ -307,6 +310,7 @@ export default class AutoSimulator {
       this.measure("DynastyRegistry.update", () => DynastyRegistry.update(this.clock.year, teams));
       this.measure("WorldExiles.update", () => WorldExiles.update(this.clock.year, teams));
       this.populationTransitionAudit.reconcile(this.clock.year, teams);
+      FactionLifetimeRecords.observeWorld(this.clock.year, teams, totalCells);
       this.measure("FactionSnapshots.observe", () => FactionSnapshots.observe(this.clock.year, teams, totalCells));
       this.measure("WorldHistory.observeWorld", () => WorldHistory.observeWorld(this.clock.year, teams, totalCells));
       this.events.observeWorldGoal(this.clock.year, teams, totalCells);
@@ -485,6 +489,7 @@ export default class AutoSimulator {
     const absorbing = candidate.absorbingFaction;
     const transferredCityCount = absorbed.cities.length;
     if (absorbed.status !== "ACTIVE" || absorbing.status !== "ACTIVE") return;
+    FactionLifetimeRecords.prepareTerminal(absorbed, month);
     DynastyRegistry.markMerged(absorbed, month);
     [...absorbed.users].forEach((user) => {
       if (user.role === "RULER") {

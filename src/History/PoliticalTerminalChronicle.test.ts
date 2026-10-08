@@ -55,6 +55,6 @@ describe("political terminal chronicles, including existing V11 events", () => {
     expect(run()).toEqual(run());
     expect(JSON.stringify({ source, receiver, submission, merger, factions: [...factions] })).toBe(state);
     expect(worldRandom.exportState()).toEqual(rng);
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(11);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(12);
   });
 });

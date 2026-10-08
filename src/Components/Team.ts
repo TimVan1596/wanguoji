@@ -1,3 +1,4 @@
+import FactionLifetimeRecords from "../Simulation/FactionLifetimeRecord";
 import { changeFactionColor, type FactionColorHistoryEntry } from "../Simulation/FactionColorHistory";
 import Game from "../Game/Game";
 import { FarmConfig } from "../store/configSlice";
@@ -329,18 +330,22 @@ export default class Team {
   }
 
   markExtinct(year: number) {
+    FactionLifetimeRecords.prepareTerminal(this, year);
     markLifecycleExtinct(this, year);
     this.terminationReason = "EXTINCT";
+    FactionLifetimeRecords.freeze(this, year);
     this.removeRulerUnit(true);
     Game.Core?.releaseTerminalTeamColliders?.(this);
   }
 
   markMerged(year: number, absorbingFactionId: string) {
+    FactionLifetimeRecords.prepareTerminal(this, year);
     markLifecycleExtinct(this, year);
     this.farms.setDie();
     this.terminationReason = "MERGED";
     this.terminationTargetFactionId = absorbingFactionId;
     this.terminationMonth = year;
+    FactionLifetimeRecords.freeze(this, year);
     // The ruler's person transfers with the population; detach the political
     // office reference without destroying the person or recording a death.
     this.rulerUser = undefined;
@@ -348,11 +353,13 @@ export default class Team {
   }
 
   markSubmitted(month: number, receivingFactionId: string) {
+    FactionLifetimeRecords.prepareTerminal(this, month);
     markLifecycleExtinct(this, month);
     this.farms.setDie();
     this.terminationReason = "SUBMITTED";
     this.terminationTargetFactionId = receivingFactionId;
     this.terminationMonth = month;
+    FactionLifetimeRecords.freeze(this, month);
     this.rulerUser = undefined;
     Game.Core?.releaseTerminalTeamColliders?.(this);
   }

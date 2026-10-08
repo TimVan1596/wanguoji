@@ -1,3 +1,4 @@
+import { setFixtureLifetimeRecords } from "./testing/FactionLifetimeFixture";
 import { describe, expect, it } from "vitest";
 import { canonicalBlockHitPoints } from "../Components/BlockHitPoints";
 import { createEmptyWorldSaveV1, diffCanonicalWorldSave } from "./WorldSaveSchema";
@@ -62,6 +63,7 @@ describe("canonical Block HP authority", () => {
       createBlockSaveProjection({ hp: 1, city: { id: "city-qin-1", defense: 7 }, isHome: true, isCityCenter: false, team: { name: "qin" } }, 1, 0),
       createBlockSaveProjection({ hp: 3, isHome: true, isCityCenter: false, team: { name: "qin" } }, 2, 0),
     ];
+    setFixtureLifetimeRecords(save);
     const parsed = JSON.parse(JSON.stringify(save)) as typeof save;
     expect(validateWorldSave(parsed)).toEqual({ valid: true, errors: [] });
     const cityById = new Map(parsed.cities.map((city) => [city.cityId, city]));

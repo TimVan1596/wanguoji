@@ -103,7 +103,7 @@ describe("bounded foreground debt recovery", () => {
       save.world.simulationDriver = driver.exportState(); save.worldRandom = worldRandom.exportState();
       expect(validateWorldSave(save).valid).toBe(true);
       const restored = JSON.parse(JSON.stringify(save)) as typeof save;
-      expect(restored).toMatchObject({ saveSchemaVersion: 11, world: { simulationDriver: driver.exportState() }, worldRandom: worldRandom.exportState() });
+      expect(restored).toMatchObject({ saveSchemaVersion: 12, world: { simulationDriver: driver.exportState() }, worldRandom: worldRandom.exportState() });
       if (hydrate) { driver.importState(restored.world.simulationDriver); clock.importState(restored.world.clock); worldRandom.restore(restored.worldRandom); }
       deltas.forEach(advance);
       const random = worldRandom.exportState();

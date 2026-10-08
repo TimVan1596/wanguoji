@@ -1,3 +1,4 @@
+import FactionLifetimeRecords from "./FactionLifetimeRecord";
 import type Block from "../Components/Block";
 import DynastyRegistry from "../Politics/Dynasty";
 import Diplomacy from "../Politics/Diplomacy";
@@ -11,6 +12,7 @@ export function executePeacefulSubmission(candidate:SubmissionCandidate,month:nu
   const ruler=DynastyRegistry.getCurrentRuler(submitted.name),receiverRuler=DynastyRegistry.getCurrentRuler(receiving.name);
   const title=(r:typeof ruler)=>r?`${r.houseName.replace(/氏$/,"")}${r.givenName}`:undefined;
   const rulerName=title(ruler),receiverName=title(receiverRuler);
+  FactionLifetimeRecords.prepareTerminal(submitted,month);
   DynastyRegistry.markSubmitted(submitted,month);
   [...submitted.users].forEach(user=>{
     if(user.role === "RULER") { user.role="NORMAL";user.rulerId=undefined;user.player.setRole("NORMAL"); }
