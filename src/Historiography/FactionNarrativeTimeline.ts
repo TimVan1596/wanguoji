@@ -41,6 +41,8 @@ export function buildFactionTimeline(e: FactionHistoricalEvidence, events: reado
       `${x.rulerName ? `${x.rulerName}亲征，` : ""}${x.actorName ? `${x.actorName}攻陷${x.factionName}都${x.cityName}` : `${x.factionName}都${x.cityName}失陷`}`, { eventId: x.eventId });
   }
   const dedup = new Set<string>();
+  const restorationKey = (x: FactionNarrativeEvidence) => `${x.month}:${x.historyGroupId ?? x.cityId ?? x.cityName ?? "restoration"}`;
+  const restorations = new Map(events.filter(x => x.type === "faction-restored" && x.factionRole === "ACTOR").map(x => [restorationKey(x), x]));
   for (const x of events) {
     if (x.factionRole !== "ACTOR" && !(x.type === "empire-split" && x.factionRole === "TARGET")) continue;
     const extra = { eventId: x.eventId };
@@ -56,11 +58,10 @@ export function buildFactionTimeline(e: FactionHistoricalEvidence, events: reado
       add(x.month, "RELOCATION", 74, `${country}${old ? `由${old === x.factionName ? `${old}城` : old}` : ""}迁都${next ?? ""}`, extra);
     }
     if (["faction-restored", "dynasty-restored"].includes(x.type)) {
-      const key = `${x.month}:${x.historyGroupId ?? x.cityId ?? x.cityName ?? "restoration"}`;
+      const key = restorationKey(x);
       if (dedup.has(key)) continue;
       dedup.add(key);
-      const restored = events.find(y => y.type === "faction-restored" && y.factionRole === "ACTOR" && y.month === x.month &&
-        ((y.historyGroupId && y.historyGroupId === x.historyGroupId) || y.cityName === x.cityName));
+      const restored = restorations.get(key);
       const source = restored ?? x;
       add(x.month, "RESTORATION", restored ? 101 : 91, `${x.factionName}${x.cityName ? `在${x.cityName}` : ""}${restored || x.type === "faction-restored" ? "复国" : "王室还都"}`, { eventId: source.eventId });
     }
@@ -75,7 +76,7 @@ export function buildFactionTimeline(e: FactionHistoricalEvidence, events: reado
   add(e.endMonth!, "TERMINAL", 120, factionTerminalWording(e, events), { eventId: terminalEvent?.eventId, metricKey: "endMonth", required: true });
   const supporting = new Set(arguments_.flatMap(x => x.supportingEventIds));
   const compare = (a: FactionTimelineMilestone, b: FactionTimelineMilestone) => a.month - b.month ||
-    (a.kind === "ORIGIN" ? -1 : b.kind === "ORIGIN" ? 1 : a.kind === "TERMINAL" ? 1 : b.kind === "TERMINAL" ? -1 : 0) ||
+    (a.kind === b.kind ? 0 : a.kind === "ORIGIN" ? -1 : b.kind === "ORIGIN" ? 1 : a.kind === "TERMINAL" ? 1 : b.kind === "TERMINAL" ? -1 : 0) ||
     a.kind.localeCompare(b.kind) || (a.eventId ?? a.metricKey ?? "").localeCompare(b.eventId ?? b.metricKey ?? "");
   const selected = candidates.filter(x => x.required);
   const remaining = candidates.filter(x => !x.required);

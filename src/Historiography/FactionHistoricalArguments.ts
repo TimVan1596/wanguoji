@@ -69,14 +69,14 @@ export function deriveFactionHistoricalArguments(e: FactionHistoricalEvidence, e
   }
   const moves = events.filter(x => x.type === "capital-relocated" && x.factionRole === "ACTOR");
   if (moves.length >= 2) {
-    add("REPEATED_CAPITAL_MOVES", "CAPITALS", loss ? 100 : 82, moves, [], [], "至少两件有记录的迁都，不从国名或终结领土推断迁徙",
+    add("REPEATED_CAPITAL_MOVES", "CAPITALS", loss ? 100 : 82, [...moves, ...(loss ? [loss] : [])], [], [], "至少两件有记录的迁都，不从国名或终结领土推断迁徙",
       `先后迁都${moves.length}次${loss ? `，最后仍失${city}` : ""}，政权的延续屡次伴随政治中心转移。`,
       `${moves.map(x => x.cityName ?? x.metadata.newCapitalName).filter((x): x is string => typeof x === "string").filter((x, i, all) => all.indexOf(x) === i).slice(0, 3).join("、") || "数处都城"}相继为都；${loss ? "可移其治所，未能永保其疆土。" : "国号可以相续，都城却非一处长守。"}`);
   }
   if (loss && e.peakAbsoluteWorldShare >= 0.5 && e.lifetime.peakTerritoryBlocks.month < loss.month) {
     add("HALF_WORLD_LOSS", "POWER", 92, [loss], ["peakAbsoluteWorldShare", "lifetime.peakTerritoryBlocks"], [e.lifetime.peakTerritoryBlocks.month], "世界过半疆域峰值在最终失国之前；不据终结零领土断言渐进衰落",
       `${date(e.lifetime.peakTerritoryBlocks.month)}曾据世界${(e.peakAbsoluteWorldShare * 100).toFixed(1)}%，其后连${city}亦失；半壁之盛与无土之局，使其兴亡远非寻常守成可比。`,
-      `据地曾逾天下之半，结局却无一城可凭；疆域之广与国统之久，原来不是同一份保障。`);
+      `据地曾逾天下之半，结局却无一城可凭；疆域之广与建制之固，原来不是同一份保障。`);
   }
   if (e.restorationCount >= 2) {
     const restores = events.filter(x => x.type === "faction-restored" && x.factionRole === "ACTOR");
@@ -86,7 +86,7 @@ export function deriveFactionHistoricalArguments(e: FactionHistoricalEvidence, e
   }
   if (e.houseCount > 1) {
     const usurps = events.filter(x => x.type === "dynasty-usurped" && x.factionRole === "ACTOR");
-    add("HOUSE_STATE_CONTINUITY", "HOUSE", e.usurpationCount ? 98 : 87, usurps,
+    add("HOUSE_STATE_CONTINUITY", "HOUSE", e.usurpationCount ? 98 : 87, [...usurps, ...(loss ? [loss] : [])],
       ["houseCount", "epochCount", "usurpationCount"], [], "不同王统epoch属于同一faction；只按已记录次数说篡朝",
       `历${e.houseCount}姓、${e.epochCount}段王统${e.usurpationCount ? `，其中篡朝${e.usurpationCount}次` : "，并无篡朝记录"}；王室易姓而国家史相续，国之存亡不等于一家得失。`,
       `历${e.houseCount}姓而仍为一国，${e.usurpationCount ? "王统曾争，" : "易姓未必即是篡夺，"}${loss ? `${city}失守才将王统相续置于无土之境。` : "一家可以退场，国家之名却不必随之终结。"}`);
@@ -114,10 +114,10 @@ export function deriveFactionHistoricalArguments(e: FactionHistoricalEvidence, e
   if (e.formal && e.formalMonths! <= 120) add("SHORT_FORMAL_STATE", "LONGEVITY", 60, [], ["formalMonths", "formalRulerCount"], [e.stateFoundedMonth!, e.endMonth!], "正式国祚不超过十年",
     `正式立国仅${duration(e.formalMonths!)}，建制方立便告终结，开创未能转为长久的承续。`, "成国有其名，承国未有其久；建立建制与守住建制，是两件事。");
   if (e.activeMonths >= 600 && e.lifetime.peakCityCount.value === 1) add("LONG_ONE_CITY", "SCALE", 58, [], ["activeMonths", "lifetime.peakCityCount"], [], "至少50年在国，实测城市峰值仅1，不推测人口与疆域不曾增长",
-    "在国历时逾五十年，城市记录却未超过一座；其历史偏于延续一处建制，而非扩展城邑。", "一城足以载数代之史，却未必能开更广之局；所长在续存，所限亦在规模。");
+    "在国历时至少五十年，城市记录却未超过一座；其历史偏于延续一处建制，而非扩展城邑。", "一城足以载数代之史，却未必能开更广之局；所长在续存，所限亦在规模。");
   if (!e.formal && e.lifetimeMonths <= 60) add("SHORT_PROVISIONAL", "LONGEVITY", 65, [], ["lifetimeMonths", "formal"], [e.foundedMonth, e.endMonth!], "未正式建国且存续不超过5年",
     `势力历时${duration(e.lifetimeMonths)}，未及正式建国；兴起与终结挨得很近，尚未形成长久建制。`, "骤起骤终，未及成国；一时之势，终未化为可传之统。");
-  if (!arguments_.length) add("RECORDED_DURATION", "LONGEVITY", 10, [], ["lifetimeMonths", "rulerCount", "formal"], [e.foundedMonth, e.endMonth!], "材料不足以支持更具体的盛衰/因果判断",
+  if (!arguments_.length) add("RECORDED_DURATION", "LONGEVITY", 10, [], ["lifetimeMonths", "rulerCount", "formal", ...(e.formal ? ["formalMonths", "formalRulerCount"] : [])], [e.foundedMonth, e.endMonth!], "材料不足以支持更具体的盛衰/因果判断",
     e.formal ? `立国${duration(e.formalMonths!)}，历${e.formalRulerCount}君；其可见之业首先是独立建制的承续。` : `未正式建国，势力历时${duration(e.lifetimeMonths)}；一时起势终未化为正式国家。`,
     e.formal ? "成国而能传其位，自有延续之实；终局仍至，建制之存从非永定。" : "势力可以骤起，成国却非仅有其名；独立之势终未长成国家之制。");
   return arguments_.sort((a, b) => b.relevanceScore - a.relevanceScore || a.argumentKey.localeCompare(b.argumentKey));

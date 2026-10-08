@@ -63,7 +63,7 @@ describe("evidence-based faction historiography", () => {
   it("uses the explicit old terminal event for remnants, never the earlier last-city conqueror", () => {
     const c = context(); c.events = [{ id: "end", year: 3600, type: "faction-extinct", category: "politics", importance: "major", title: "残部已经消散，王统断绝", targetFactionId: "a", factionIds: ["a"] }];
     expect(deriveFactionAssessment(c)!.evidence.remnantsDissipated).toBe(true);
-    expect(deriveFactionAssessment(c)!.voice).toContain("消散");
+    expect(deriveFactionAssessment(c)!.narrative.join(" ")).toContain("消散");
   });
   it("chooses different factual branches with deterministic variants and no RNG draws", () => {
     const c = context(), rng = worldRandom.exportState(), original = JSON.stringify(c);

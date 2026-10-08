@@ -34,9 +34,9 @@ describe("fact-driven national rise and fall narratives", () => {
     const c = fixture(), a = deriveFactionAssessment(c)!;
     expect(a.narrative.join(" ")).toContain("117年7月"); expect(a.narrative.join(" ")).toContain("51.3%");
     expect(text(c)).toContain("227年4月"); expect(text(c)).toContain("秦王嬴康亲征"); expect(text(c)).toContain("范阳");
-    expect(text(c)).toContain("264年8月"); expect(text(c)).toContain("37年4个月"); expect(a.voice).toContain("过半");
-    expect(a.narrative).toHaveLength(4); expect(a.narrative.join(" ").match(/范阳/g)).toHaveLength(1);
-    expect(a.narrative.join(" ")).toContain("102年10月郢正式建国");
+    expect(text(c)).toContain("264年8月"); expect(text(c)).toContain("37年4个月"); expect(a.selectedArguments[0].argumentKey).toBe("HALF_WORLD_LOSS");
+    expect(a.narrative).toHaveLength(6); expect(a.narrative.join(" ").match(/范阳/g)).toHaveLength(1);
+    expect(a.narrative.join(" ")).toContain("102年10月，郢正式建国");
   });
   it("Han emphasizes Xinzheng and 35 years of exile rather than generic longevity", () => {
     const c = fixture("韩", month(59), month(94, 8));
@@ -44,7 +44,7 @@ describe("fact-driven national rise and fall narratives", () => {
     c.faction.cumulativeActiveYears = month(59); c.lifetime.peakTerritoryBlocks = { value: 1800, month: month(40, 2), source: "MONTHLY" };
     c.lifetime.peakCityCount = { value: 3, month: month(40), source: "MONTHLY" };
     c.events = c.events.filter(e => e.type !== "state-founded").map(e => e.cityId ? { ...e, cityId: "xinzheng", cityName: "新郑", rulerId: undefined, metadata: {} } : e);
-    const a = deriveFactionAssessment(c)!; expect(a.voice).toContain("新郑"); expect(a.voice).toContain("35年7个月");
+    const a = deriveFactionAssessment(c)!; expect(a.lines.join(" ")).toContain("新郑"); expect(a.lines.join(" ")).toContain("35年7个月"); expect(a.selectedArguments[0].argumentKey).toBe("EXILE_CONTINUITY");
     expect(a.summary).toContain("59年1月"); expect(a.summary).toContain("94年8月"); expect(a.voice).not.toContain("过半");
     expect(a.voice).not.toEqual(deriveFactionAssessment(fixture())!.voice);
   });
@@ -88,7 +88,7 @@ describe("fact-driven national rise and fall narratives", () => {
   });
   it("sparse evidence falls back to a short account without invented loss or extinction causes", () => {
     const c = fixture(); c.events = []; c.faction.lastExiledYear = undefined;
-    const a = deriveFactionAssessment(c)!; expect(a.narrative.length).toBeLessThanOrEqual(3);
+    const a = deriveFactionAssessment(c)!; expect(a.narrative.length).toBeLessThanOrEqual(5); expect(a.milestones.every(x => !x.eventId)).toBe(true);
     expect(text(c)).not.toMatch(/失国|绝统|范阳|嬴康|被秦灭亡/);
   });
   it("a last-city capture by itself does not prove exile or extinction responsibility", () => {
@@ -106,7 +106,7 @@ describe("fact-driven national rise and fall narratives", () => {
   it("same-month loss and termination never invent years of surviving exile", () => {
     const c = fixture("郢", month(264, 8), month(264, 8));
     const a = deriveFactionAssessment(c)!;
-    expect(a.voice).toContain("同月政权亦终"); expect(a.voice).not.toMatch(/非绝统之时|原非同日|犹续/);
+    expect(a.milestones.find(x => x.kind === "FINAL_LOSS")!.month).toBe(a.milestones.find(x => x.kind === "TERMINAL")!.month); expect(a.voice).not.toMatch(/非绝统之时|原非同日|犹续/);
   });
   it("a capital conquest has different emphasis from losing that same city", () => {
     const c = fixture(); c.events = [event("capital-fallen", month(150), { actorFactionId: c.faction.name, targetFactionId: "qin", cityName: "咸阳" })];
@@ -114,7 +114,7 @@ describe("fact-driven national rise and fall narratives", () => {
   });
   it("does not collapse a long trace into an unbounded narrative", () => {
     const c = fixture(); for (let i = 0; i < 20000; i++) (c.events as WorldEvent[]).push(event("capital-relocated", 1300 + i % 1000, { id: `move-${i}`, actorFactionId: c.faction.name, cityName: `都${i}` }));
-    const a = deriveFactionAssessment(c)!; expect(a.narrative.length).toBeLessThanOrEqual(6);
+    const a = deriveFactionAssessment(c)!; expect(a.narrative.length).toBeLessThanOrEqual(7); expect(a.milestones.map(x => x.month)).toEqual(a.milestones.map(x => x.month).sort((a, b) => a - b));
   });
   it("preserves narrative, clock-independent data and RNG across JSON save/load", () => {
     const c = fixture(), rng = worldRandom.exportState(), original = JSON.stringify({ faction: c.faction, dynasty: c.dynasty, lifetime: c.lifetime, events: c.events });

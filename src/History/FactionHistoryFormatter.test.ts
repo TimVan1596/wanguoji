@@ -115,7 +115,7 @@ describe("faction history formatter", () => {
       ["west", { name: "west", displayName: "梁西", color: 1 }],
       ["east", { name: "east", displayName: "梁东", color: 2 }],
     ]);
-    expect(formatFactionHistoryEvent(merge, "west", byId)).toContain("西梁并入东梁（同源合邦）");
+    expect(formatFactionHistoryEvent(merge, "west", byId)).toContain("梁西并入梁东（同源合邦）");
     expect(formatFactionHistoryEvent(merge, "east", byId)).toContain("接纳");
     expect(formatFactionHistoryEvent(merge, "west", byId)).not.toContain("彻底灭亡");
   });
