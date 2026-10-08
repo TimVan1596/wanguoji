@@ -5,6 +5,10 @@ import { formatWorldDate } from "../../../Simulation/WorldTime";
 const reasonLabels: Record<DynastyHouseEpoch["startReason"], string> = {
   FOUNDING: "开创", NATURAL_HOUSE_SUCCESSION: "易姓续统", USURPATION: "篡朝", RESTORATION: "复国",
 };
+/** EXILED is still politically continuous; all terminal reasons use EXTINCT status. */
+export function getHouseEpochHeading(status: string) {
+  return status === "EXTINCT" ? "末代王统" : "当前王统";
+}
 export function getHouseEpochPresentation(epochs: readonly DynastyHouseEpoch[]) {
   const latest = epochs.at(-1);
   return { current: latest ? { key: latest.foundingRulerId,

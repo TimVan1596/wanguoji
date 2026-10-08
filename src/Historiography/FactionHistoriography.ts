@@ -22,7 +22,7 @@ export interface FactionHistoricalEvidence {
   lifetimeMonths: number; formalMonths?: number; activeMonths: number; exileMonths: number;
   rulerCount: number; formalRulerCount: number; epochCount: number; houseCount: number;
   usurpationCount: number; restorationCount: number; wasExiled: boolean; wasEmperor: boolean; wasHegemon: boolean;
-  ending?: "EXTINCT" | "MERGED" | "SUBMITTED"; targetName?: string;
+  ending?: "EXTINCT" | "MERGED" | "SUBMITTED"; targetName?: string; targetFactionId?: string;
   remnantsDissipated: boolean; terminalEventId?: string;
   lifetime: FactionLifetimeRecord; totalWorldBlocks: number; peakAbsoluteWorldShare: number;
 }
@@ -58,7 +58,7 @@ export function deriveFactionHistoricalEvidence(context: FactionHistoryContext):
     wasExiled: f.lastExiledYear !== undefined || f.restorationYears.length > 0,
     wasEmperor: f.proclaimedEmperorMonth !== undefined || f.sovereigntyHistory.some(e => e.rank === "EMPEROR" && e.startMonth <= end),
     wasHegemon: events.some(e => e.type === "world-hegemony" && e.actorFactionId === f.name && (e.monthIndex ?? e.year) <= end),
-    ending, targetName: target ? getFactionDisplayNameAtMonth(target, end) : f.terminationTargetFactionId,
+    ending, targetFactionId: f.terminationTargetFactionId, targetName: target ? getFactionDisplayNameAtMonth(target, end) : f.terminationTargetFactionId,
     remnantsDissipated: ending === "EXTINCT" && Boolean(terminalEvent && /残部.*消散/.test(terminalEvent.title)), terminalEventId: terminalEvent?.id,
     lifetime, totalWorldBlocks, peakAbsoluteWorldShare: getLifetimeAbsoluteWorldShare(lifetime, totalWorldBlocks) };
 }

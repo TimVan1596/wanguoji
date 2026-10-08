@@ -85,9 +85,19 @@ export function deriveFactionHistoricalArguments(e: FactionHistoricalEvidence, e
       `复国${e.restorationCount}次，失而复得并非一时回光，而成为其政治生命反复展开的方式。`,
       `一失未便成终局，再立也未便成定局；${e.restorationCount}次复国，尽见建制可续而城土难常。`);
   }
+  const usurps = events.filter(x => x.type === "dynasty-usurped" && x.factionRole === "ACTOR");
+  const boundaryUsurp = loss && usurps.find(x => x.month === loss.month);
+  if (boundaryUsurp && loss) {
+    const oldHouse = typeof boundaryUsurp.metadata.oldHouseName === "string" ? boundaryUsurp.metadata.oldHouseName : undefined;
+    const newHouse = typeof boundaryUsurp.metadata.newHouseName === "string" ? boundaryUsurp.metadata.newHouseName : undefined;
+    const change = oldHouse && newHouse ? `${newHouse}取代${oldHouse}` : "新王统取代旧王统";
+    add("SAME_MONTH_USURPATION_LOSS", "HOUSE", 126, [boundaryUsurp, loss], [], [],
+      "真实篡朝与最终失国同月；ACTIVE有城硬门决定叙事依赖，不构成因果证据",
+      `${date(boundaryUsurp.month)}${change}，发生篡朝；同月${city}失陷，政权失去最后据点。易代与失国相接，构成王统变化与国家处境的鲜明反差。`,
+      `${newHouse ?? "新王统"}方接王统，同月便处无土之境；所得为一家之位，未能留住一国之土。`);
+  }
   if (e.houseCount > 1) {
-    const usurps = events.filter(x => x.type === "dynasty-usurped" && x.factionRole === "ACTOR");
-    add("HOUSE_STATE_CONTINUITY", "HOUSE", e.usurpationCount ? 98 : 87, [...usurps, ...(loss ? [loss] : [])],
+    add("HOUSE_STATE_CONTINUITY", "HOUSE", usurps.length ? 106 : e.formalMonths !== undefined && e.formalMonths >= 6000 && e.peakAbsoluteWorldShare >= 0.5 ? 104 : 87, [...usurps, ...(loss ? [loss] : [])],
       ["houseCount", "epochCount", "usurpationCount"], [], "不同王统epoch属于同一faction；只按已记录次数说篡朝",
       `历${e.houseCount}姓、${e.epochCount}段王统${e.usurpationCount ? `，其中篡朝${e.usurpationCount}次` : "，并无篡朝记录"}；王室易姓而国家史相续，国之存亡不等于一家得失。`,
       `历${e.houseCount}姓而仍为一国，${e.usurpationCount ? "王统曾争，" : "易姓未必即是篡夺，"}${loss ? `${city}失守才将王统相续置于无土之境。` : "一家可以退场，国家之名却不必随之终结。"}`);
@@ -106,6 +116,17 @@ export function deriveFactionHistoricalArguments(e: FactionHistoricalEvidence, e
         : `以纳土退位结束独立建制，归附${e.targetName ?? "接受国"}；终局所失为国家独立，末王则以退位结束政治任期。`,
       merged ? `自立与合邦，原是政治分合的两端；${e.name}之名止于独立建制，所治之土则续入${e.targetName ?? "接受国"}。`
         : `舍其独立而存其王室，纳土之终与兵败绝统不同；退位留下的，是另一种政治退场。`);
+  }
+  if (e.ending === "MERGED" && e.targetFactionId) {
+    const formerAttack = attacks.find(x => x.targetFactionId === e.targetFactionId && x.month < e.endMonth! && x.cityName);
+    if (formerAttack) {
+      const union = events.filter(x => x.type === "faction-merged" && x.factionRole === "ABSORBED" && x.month === e.endMonth);
+      add("FORMER_OPPONENT_UNION", "POLITICAL_END", 125, [formerAttack, ...union],
+        ["ending", "targetFactionId", "endMonth"], [e.endMonth!],
+        "同一稳定接受方ID：曾攻其真实首都，后行政并入；不推断和解动机或血缘",
+        `${date(formerAttack.month)}${formerAttack.factionName}曾攻陷${formerAttack.targetName ?? "接受国"}都${formerAttack.cityName}；至${date(e.endMonth!)}，却并入${e.targetName ?? "该国"}（同源合邦）。昔日攻都的一方，最终成为行政并入的一方，政治分合与战事胜负并非同一种结局。`,
+        `昔取${formerAttack.targetName ?? "其国"}都${formerAttack.cityName}，终又并入${e.targetName ?? "其国"}；一时兵争之得，不能定后来政治之分合。`);
+    }
   }
   if ((e.ending === "MERGED" || e.ending === "SUBMITTED") && e.lifetime.terminal?.cityCount === 1 && e.lifetime.peakCityCount.value >= 3) {
     add("MANY_CITIES_ONE_END", "SCALE", 81, [], ["lifetime.peakCityCount", "lifetime.terminal.cityCount"], [e.lifetime.peakCityCount.month, e.endMonth!], "行政转移前实际仅一城，对比曾经至少三城",

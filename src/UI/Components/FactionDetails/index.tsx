@@ -1,7 +1,7 @@
 import { FactionAssessmentPanel } from "../FactionAssessment";
 import { getTerminationTargetName } from "./model";
 import { formatRulerTerminalEvent } from "../../../History/PoliticalTerminalChronicle";
-import { getHouseEpochPresentation, getSignificantReignStats, formatRulerAge } from "./RoyalPresentation";
+import { getHouseEpochHeading, getHouseEpochPresentation, getSignificantReignStats, formatRulerAge } from "./RoyalPresentation";
 import { getFactionColorAtMonth, type FactionColorHistoryEntry } from "../../../Simulation/FactionColorHistory";
 import { Box, Button, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -786,7 +786,7 @@ function DynastyTree({
         </Box>
       ) : null}
       {epochPresentation.current ? <Box sx={{ borderTop: "1px solid var(--gg-border)", pt: 0.5 }}>
-        <Typography fontWeight="bold" fontSize="0.9rem">当前王统</Typography>
+        <Typography fontWeight="bold" fontSize="0.9rem">{getHouseEpochHeading(factionStatus)}</Typography>
         <Typography fontSize="0.85rem">{epochPresentation.current.text}</Typography>
       </Box> : null}
       {epochPresentation.historical.length ? <Box>

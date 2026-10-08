@@ -75,8 +75,14 @@ export function buildFactionTimeline(e: FactionHistoricalEvidence, events: reado
     (x.type === "faction-extinct" && x.factionRole === "TARGET" || x.type === "faction-merged" && x.factionRole === "ABSORBED" || x.type === "faction-submitted" && x.factionRole === "SUBMITTED"));
   add(e.endMonth!, "TERMINAL", 120, factionTerminalWording(e, events), { eventId: terminalEvent?.eventId, metricKey: "endMonth", required: true });
   const supporting = new Set(arguments_.flatMap(x => x.supportingEventIds));
+  // Presentation dependency phases, not invented days: founding precedes
+  // active-state politics (including usurpation), final exile follows them,
+  // and terminal extinction/administrative closure comes last. A phase order
+  // is transitive even when other same-month milestones intervene.
+  const dependencyPhase = (kind: string) => kind === "ORIGIN" ? 0 : kind === "STATE_FOUNDING" ? 1
+    : kind === "FINAL_LOSS" ? 3 : kind === "TERMINAL" ? 4 : 2;
   const compare = (a: FactionTimelineMilestone, b: FactionTimelineMilestone) => a.month - b.month ||
-    (a.kind === b.kind ? 0 : a.kind === "ORIGIN" ? -1 : b.kind === "ORIGIN" ? 1 : a.kind === "TERMINAL" ? 1 : b.kind === "TERMINAL" ? -1 : 0) ||
+    dependencyPhase(a.kind) - dependencyPhase(b.kind) ||
     a.kind.localeCompare(b.kind) || (a.eventId ?? a.metricKey ?? "").localeCompare(b.eventId ?? b.metricKey ?? "");
   const selected = candidates.filter(x => x.required);
   const remaining = candidates.filter(x => !x.required);
