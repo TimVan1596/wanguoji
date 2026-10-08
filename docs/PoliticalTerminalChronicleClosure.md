@@ -21,7 +21,16 @@ endYear 是统治结束时间，并不证明死亡。年龄标签按 status：de
 
 覆盖 MERGED / SUBMITTED 的历史身份、双方君主纪事、错误任期和错误 ID 拒绝、旧 V11 归并展示、终结事件优先保留、退位/死亡年龄与评述、原数据和 RNG 不变；全套测试包含既有 same-seed、纳土/合邦冻结规则和 V11 round-trip。
 
-自动测试与构建结果将在完成后记录。自动验证不代表浏览器视觉或真实 Save/Load Gate 通过。
+自动验证全部通过：
+
+- `pnpm test -- --run`（限定测试线程资源）：172 个测试文件 / 1049 项测试。
+- `pnpm build`。
+- `pnpm desktop:build`。
+- `pnpm desktop:compile`。
+- `pnpm desktop:renderer-debug-build`（含 sourcemap 与资源验证）。
+- `git diff --check`，以及已暂存变更、相对基线 bc8a178 的差异检查。
+
+首次构建发现新测试夹具缺少颜色字段；补齐后全量测试与全部构建重新通过。仍有既有 Vite 大 chunk 提示，不属于本轮范围。自动验证不代表浏览器视觉或真实 Save/Load Gate 通过。
 
 ## 人工 Gate
 
