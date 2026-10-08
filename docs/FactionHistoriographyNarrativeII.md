@@ -22,7 +22,16 @@ v0.99930永久史料、独立峰值日期、国祚、流亡终结和Save/Load人
 
 覆盖郢51.3%/范阳/37年后终结、韩新郑/35年7个月流亡、齐两姓零篡朝、事件角色及人物ID、缺失史料降级、失国与终结日期、行政退位、历史身份与旗色、分组不重复、卡片自身事件隔离、确定性/RNG、V12及20k索引缓存/历史分页回归。
 
-最终全量测试及构建结果完成后记录。命令行测试不代表人工视觉或叙事Gate通过。
+自动验证全部通过：
+
+- `VITEST_MAX_THREADS=4 VITEST_MIN_THREADS=1 pnpm test -- --run`：178个测试文件、1109项测试。
+- `pnpm build`。
+- `pnpm desktop:build`。
+- `pnpm desktop:compile`。
+- `pnpm desktop:renderer-debug-build`：包含桌面资源、2份source map及音乐资源校验。
+- `git diff --check`。
+
+构建保留现有大chunk提示，本版不扩展性能重构。命令行测试不代表人工视觉或叙事Gate通过。
 
 ## 人工检查：直接使用现有V12世界
 
