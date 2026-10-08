@@ -53,7 +53,7 @@ V12 DTO使用严格类型factionLifetime。Exporter直接输出永久观测；Hy
 
 新增覆盖初始/新势力、创建和复国不重置、60000个月/5000年窗口覆盖、同值最早月份、独立日期、.318/31.8%、三类终结前捕获与冻结、V12严格precheck及hydrate/export往返、V11拒绝、原runtime保留、事实分类与不同文案重点、无RNG消费、20k历史索引与单次缓存、静态UI结构。静态结构验证不是浏览器视觉验收。
 
-最终全量测试与构建结果在完成后记录。
+自动验证通过：`VITEST_MAX_THREADS=4 VITEST_MIN_THREADS=1 pnpm test -- --run`，共 176 个测试文件、1085 项测试。`pnpm build`、`pnpm desktop:build`、`pnpm desktop:compile`、`pnpm desktop:renderer-debug-build` 均通过；`git diff --check` 通过。自动验证不代表人工 UI / 历史语义 Gate 通过。
 
 ## 人工 Gate：直接按下面做
 

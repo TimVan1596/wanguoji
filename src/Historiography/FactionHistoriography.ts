@@ -90,7 +90,7 @@ export function composeFactionHistorianVoice(e: FactionHistoricalEvidence) {
   // Distinct factual axes determine emphasis, not a random evaluation or a claim about motives.
   const history = has("RESTORATIONS") ? choose(e, "restore", ["城池数失，国统数续，复国之迹使其历史不止一次兴亡。", "失地之后仍曾再立，数度复国是此国最鲜明的曲折。"])
     : has("MULTI_HOUSE") ? choose(e, "houses", ["一国历经数姓王统，国之沿革与一家兴替不可混为一谈。", "王统数更而势力历史相续，易姓并未另造一个国家。"])
-    : has("LONG") && e.wasEmperor ? choose(e, "long-empire", ["立国既久，亦曾称帝，帝制与长久存续共同构成其历史分量。", "久历岁月而曾建帝制，其历史不能仅以最后一朝的结局概括。"])
+    : has("LONG") && e.wasEmperor ? choose(e, "long-empire", ["势力历时既久，亦曾称帝，帝制与长久存续共同构成其历史分量。", "久历岁月而曾建帝制，其历史不能仅以最后一朝的结局概括。"])
     : has("LONG_EXILE") ? choose(e, "exile", ["离土之岁亦属其史，流亡与在国须分别记述。", "国土失去之后，政权曾续于流亡，终结不能倒写为失城之日。"])
     : has("SHORT") && !e.formal ? choose(e, "short", ["兴起未久而独立建制已终，未正式建国是其历史边界。", "势力短暂兴起，未及正式建国便告终结，记其所见，不补其未有。"])
     : e.lifetimeMonths >= 600 && e.lifetime.peakCityCount.value === 1 ? "势力延续至少五十年，月度记录最多仅一城；其历史分量在延续，不在城邑扩张。"
@@ -111,12 +111,12 @@ export function deriveFactionAssessment(context: FactionHistoryContext) {
   const p = e.lifetime;
   const ending = e.ending === "SUBMITTED" ? `和平纳土，归附于${e.targetName ?? "未记录的接受国"}`
     : e.ending === "MERGED" ? `同源合邦，并入${e.targetName ?? "未记录的吸收国"}` : e.remnantsDissipated ? "残部消散，王统断绝，政权彻底终结" : "政权彻底终结";
-  const facts = [`国家结局：${ending} · ${formatWorldDate(e.endMonth!)}`,
+  const facts = [`${e.formal ? "国家结局" : "势力结局"}：${ending} · ${formatWorldDate(e.endMonth!)}`,
     `${e.formal ? "势力存续" : "势力历时"}：${formatWorldDuration(e.lifetimeMonths)}（${formatWorldDate(e.foundedMonth)}～${formatWorldDate(e.endMonth!)}）`,
     ...(e.formal ? [`正式国祚历时：${formatWorldDuration(e.formalMonths!)}（自${formatWorldDate(e.stateFoundedMonth!)}正式建国）`] : []),
     `累计在国：${formatWorldDuration(e.activeMonths)}（势力阶段起累计，不含流亡）`,
     `${e.formal ? "实际历任统治者" : "历任首领"}：${e.rulerCount}位${e.formal ? ` · 正式国家时期君主：${e.formalRulerCount}位` : ""}`,
-    `王统：${e.epochCount}段 · ${e.houseCount}姓 · 篡朝：${e.usurpationCount}次`,
+    `${e.formal ? "王统" : "家族沿革"}：${e.epochCount}段 · ${e.houseCount}姓 · 篡朝：${e.usurpationCount}次`,
     `称帝记录：${e.wasEmperor ? "有" : "未见"} · 天下霸权记录：${e.wasHegemon ? "有" : "未见"}`,
     `复国：${e.restorationCount}次${e.wasExiled ? ` · 累计流亡：${formatWorldDuration(e.exileMonths)}` : ""}`,
     `最高人口：${p.peakPopulation.value}人（${formatWorldDate(p.peakPopulation.month)}）`,
@@ -128,11 +128,11 @@ export function deriveFactionAssessment(context: FactionHistoryContext) {
     : e.houseCount > 1 ? `同一势力经历${e.epochCount}段、${e.houseCount}姓王统${e.usurpationCount ? `，其中${e.usurpationCount}次篡朝` : ""}，不能以一家兴亡概括其国史。`
     : e.wasEmperor ? "存在称帝记录，帝制是其国家历史中的明确阶段。"
     : e.wasHegemon ? "曾确立天下霸权，对世界格局有明确影响。"
-    : e.lifetimeMonths >= 1200 ? "势力存续超过百年，长期延续构成其历史的主要特征。"
+    : e.lifetimeMonths >= 1200 ? "势力存续至少百年，长期延续构成其历史的主要特征。"
     : !e.formal ? "终结时尚未正式建国，其历史应记为势力兴替。" : "正式建国与独立统治构成其可核实的国家经历。";
   const retreat = profiles.some(p => p.key === "RETREAT") ? "终结前疆域已不超过记录峰值四分之一，版图有明显退潮。" : undefined;
   return { title: e.formal ? "国评" : "势力结语", evidence: e, profiles, facts,
     lines: [core, retreat, `最终政治结局为${ending}。`].filter((line): line is string => Boolean(line)),
     voice: composeFactionHistorianVoice(e)!,
-    summary: `${e.formal ? "势力存续" : "势力历时"}${formatWorldDuration(e.lifetimeMonths)}${e.formal ? ` · 正式国祚${formatWorldDuration(e.formalMonths!)} · 历${e.formalRulerCount}君` : ` · 历${e.rulerCount}位首领`} · ${e.epochCount}段王统 · ${ending}。${core}` };
+    summary: `${e.formal ? "势力存续" : "势力历时"}${formatWorldDuration(e.lifetimeMonths)}${e.formal ? ` · 正式国祚${formatWorldDuration(e.formalMonths!)} · 历${e.formalRulerCount}君` : ` · 历${e.rulerCount}位首领`} · ${e.epochCount}段${e.formal ? "王统" : "家族记录"} · ${ending}。${core}` };
 }

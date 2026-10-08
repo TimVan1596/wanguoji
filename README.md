@@ -148,9 +148,9 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 ## 当前已知问题
 
 - v0.99930 新增国家终身月度峰值与终结国评，王室可查看，历史终结事件提供简短回顾。当前仅接受 WorldSave V12，V11及更旧不迁移；请创建新世界完成 [Faction Historiography Gate](docs/FactionHistoriography.md)。
-- v0.99929a 修复政治终结历史身份、退位年龄与双方君主大事记。使用现有 V11 长局完成 [Political Terminal Chronicle Gate](docs/PoliticalTerminalChronicleClosure.md)，不必重跑数千年。
-- v0.99929新增不同源正式国家的和平纳土。独立终结原因SUBMITTED，与同源合邦MERGED及战争覆灭区分；末代君主退位、旧王室保留。请用新世界完成[Peaceful Submission Gate](docs/PeacefulSubmission.md)，4×最多1500年，出现事件可停止。
-- 当前WorldSave **V11**，V10及更旧直接拒绝，不迁移；IndexedDB版本仍2。Diplomacy II全系列已人工PASS并冻结，期限/威胁/续约/冷却及Strategic Union条件不变。
+- v0.99929a 修复政治终结历史身份、退位年龄与双方君主大事记。[Political Terminal Chronicle Gate](docs/PoliticalTerminalChronicleClosure.md)已由用户完成人工PASS。
+- v0.99929新增不同源正式国家的和平纳土。独立终结原因SUBMITTED，与同源合邦MERGED及战争覆灭区分；末代君主退位、旧王室保留。[Peaceful Submission Gate](docs/PeacefulSubmission.md)已人工PASS，规则冻结。
+- 当前WorldSave **V12**，V11及更旧直接拒绝，不迁移；IndexedDB版本仍2。Diplomacy II全系列已人工PASS并冻结，期限/威胁/续约/冷却及Strategic Union条件不变。
 - v0.99927 Dynastic Revolution 系列已由用户完整人工通过并冻结，包括历史身份、时代筛选、旧V9安全修复及重新保存后零修复读档。
 
 

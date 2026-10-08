@@ -43,7 +43,8 @@ describe("evidence-based faction historiography", () => {
     c.faction.sovereigntyHistory = [{ rank: "LEADER", startMonth: 0 }];
     const a = deriveFactionAssessment(c)!;
     expect(a.title).toBe("势力结语"); expect(a.summary).toContain("位首领");
-    expect(a.facts.join(" ")).not.toMatch(/正式国祚|历\d+帝/); expect(a.evidence.formalRulerCount).toBe(0);
+    expect(a.facts.join(" ")).toContain("势力结局：");
+    expect(a.facts.join(" ")).not.toMatch(/国家结局|正式国祚|历\d+帝/); expect(a.evidence.formalRulerCount).toBe(0);
   });
   it("keeps peak months and percentage bases independent", () => {
     const a = deriveFactionAssessment(context())!;
