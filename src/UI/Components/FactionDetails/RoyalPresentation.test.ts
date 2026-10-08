@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getHouseEpochPresentation, getSignificantReignStats } from "./RoyalPresentation";
+import { getHouseEpochPresentation, getSignificantReignStats, formatRulerAge } from "./RoyalPresentation";
 import type { DynastyHouseEpoch } from "../../../Politics/DynasticRevolution";
 
 const first: DynastyHouseEpoch = { houseName: "姬氏", startMonth: 0, foundingRulerId: "r1", startReason: "FOUNDING" };
@@ -24,4 +24,11 @@ describe("royal presentation without canonical mutations", () => {
     expect(getSignificantReignStats({ ...stats, restorationsDuringReign: 1 })).toBe("复国：1");
     expect(stats.restorationsDuringReign).toBe(0);
   });
+});
+
+it("distinguishes death, abdication and current age without inferring death from a reign end", () => {
+  expect(formatRulerAge("abdicated", 44)).toBe("退位时44岁");
+  expect(formatRulerAge("dead", 44)).toBe("享年44岁");
+  expect(formatRulerAge("ruling", 44)).toBe("当前年龄44岁");
+  expect(formatRulerAge("exiled", 44)).toBe("当前年龄44岁");
 });

@@ -675,3 +675,17 @@ describe("evidence-grounded ruler historiography", () => {
     expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(11);
   });
 });
+
+it("uses political-end wording for an abdicated ruler without changing the recorded evidence", () => {
+  const context = makeContext({ start: { territoryShare: 0.5 }, end: { territoryShare: 0.1 }, peakTerritory: 0.6, endReason: "纳土退位" });
+  context.ruler.status = "abdicated";
+  const original = JSON.stringify(context);
+  const assessment = deriveRulerAssessment(context);
+  expect(assessment.lines.join(" ")).not.toMatch(/身后|一生|去世/);
+  for (let i = 0; i < 20; i++) {
+    expect(composeHistorianVoice({ ...assessment.evidence, rulerId: `r-${i}`, roles: ["PEAK_AND_RETREAT"] })).not.toMatch(/身后|一生|去世/);
+  }
+  expect(JSON.stringify(context)).toBe(original);
+  context.ruler.status = "dead";
+  expect(deriveRulerAssessment(context).lines.join(" ")).toContain("身后");
+});

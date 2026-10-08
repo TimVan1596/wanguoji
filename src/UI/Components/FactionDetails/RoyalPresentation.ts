@@ -18,3 +18,8 @@ export function getSignificantReignStats(chronicle: Pick<RulerChronicle,
     ["失城", chronicle.citiesLostDuringReign], ["内乱", chronicle.rebellionsDuringReign], ["复国", chronicle.restorationsDuringReign]];
   return stats.filter(([, value]) => value > 0).map(([label, value]) => `${label}：${value}`).join(" · ") || "暂无显著在位统计";
 }
+
+/** endYear ends a reign; only status can establish death. */
+export function formatRulerAge(status: string, age: number) {
+  return `${status === "dead" ? "享年" : status === "abdicated" ? "退位时" : "当前年龄"}${age}岁`;
+}

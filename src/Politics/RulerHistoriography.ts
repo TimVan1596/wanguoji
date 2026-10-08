@@ -34,6 +34,7 @@ export interface RulerHistoricalEvidence {
   reignMonths: number;
   tenure: RulerTenureEvidence;
   isFinalized: boolean;
+  rulerStatus?: Ruler["status"];
   foundedFaction: boolean;
   foundedState: boolean;
   formalStateAtReignEnd: boolean;
@@ -324,6 +325,7 @@ export function deriveRulerHistoricalEvidence(
     reignMonths,
     tenure,
     isFinalized,
+    rulerStatus: ruler.status,
     foundedFaction,
     foundedState,
     formalStateAtReignEnd,
@@ -372,13 +374,15 @@ export function deriveRulerHistoricalEvidence(
 
 export function composeRulerAssessment(evidence: RulerHistoricalEvidence): RulerAssessment {
   const lines: string[] = [];
+  const abdicated = evidence.rulerStatus === "abdicated";
+  const finalTime = evidence.isFinalized ? (abdicated ? "退位时" : "身后") : "目前";
   const livingPrefix = evidence.isFinalized ? "" : "截至目前，";
   const childAccession = evidence.accessionAge !== undefined && evidence.accessionAge <= 11;
   const youthAccession = evidence.accessionAge !== undefined && evidence.accessionAge >= 12 && evidence.accessionAge <= 15;
   const agePrefix = childAccession ? "幼年承统，" : youthAccession ? "少年即位，" : "";
 
   if (evidence.roles.includes("RESTORED_FROM_EXILE")) {
-    lines.push(`亡国流亡${formatWorldDuration(evidence.tenure.restoredExileMonths)}后恢复国家，复国成为其${evidence.isFinalized ? "一生" : "截至目前"}最重要的历史转折。`);
+    lines.push(`亡国流亡${formatWorldDuration(evidence.tenure.restoredExileMonths)}后恢复国家，复国成为其${evidence.isFinalized ? (abdicated ? "承统经历中" : "一生") : "截至目前"}最重要的历史转折。`);
     if (evidence.tenure.exileMonths > evidence.tenure.restoredExileMonths) {
       lines.push(`其后仍有流亡经历，累计流亡${formatWorldDuration(evidence.tenure.exileMonths)}。`);
     }
@@ -387,11 +391,11 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
   if (evidence.roles.includes("LONG_EXILE")) {
     if (evidence.tenure.exiledAtAccession && evidence.tenure.activeRuleMonths <= 12) {
       const exileAccession = childAccession ? "幼年承接流亡王统" : youthAccession ? "少年承接流亡王统" : "承接流亡王统";
-      lines.push(`${exileAccession}，${evidence.isFinalized ? "其一生" : "截至目前的承统岁月中，大部分时间"}没有实际控制城邑。`);
+      lines.push(`${exileAccession}，${evidence.isFinalized ? (abdicated ? "其承统期间" : "其一生") : "截至目前的承统岁月中，大部分时间"}没有实际控制城邑。`);
       lines.push(`${evidence.isFinalized ? "其历史角色主要在于延续王统与复国希望，而非持续治理一个在国政权。" : "目前其身份更接近流亡王统的延续者，而非持续治理在国政权的君主。"}`);
     } else if (evidence.tenure.lostStateDuringTenure && (evidence.tenure.monthsUntilFirstExile ?? Infinity) <= 12) {
       lines.push(evidence.isFinalized
-        ? "即位不久即失去国土，此后王室长期流亡，终其一生未能复国。"
+        ? (abdicated ? "即位不久即失去国土，此后王室长期流亡，至退位时未能复国。" : "即位不久即失去国土，此后王室长期流亡，终其一生未能复国。")
         : "即位不久即失去国土，此后王室长期流亡；截至目前尚未复国。");
     } else if (evidence.tenure.diedInExile) {
       lines.push(`其治下国土终失，后半生长期流亡，累计流亡${formatWorldDuration(evidence.tenure.exileMonths)}，未能复国。`);
@@ -457,18 +461,18 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
 
   if (evidence.territorialPeakRetreat >= 0.15) {
     if (evidence.territorialPeakGain >= 0.08) {
-      lines.push(`其治下疆域一度达到${formatPercent(evidence.peakTerritory)}${evidence.peakTerritory >= 0.3 ? "，一度跻身天下强权" : ""}，至${evidence.isFinalized ? "身后" : "目前"}已明显回落，盛势未能维持。`);
+      lines.push(`其治下疆域一度达到${formatPercent(evidence.peakTerritory)}${evidence.peakTerritory >= 0.3 ? "，一度跻身天下强权" : ""}，至${finalTime}已明显回落，盛势未能维持。`);
     } else if (evidence.startTerritory >= 0.3 || evidence.territoryDelta <= -0.12) {
       const residualCoreStable = evidence.endStability >= 75 && evidence.stabilityDelta > 0;
-      lines.push(`承统时疆域已有${formatPercent(evidence.startTerritory)}，其后明显收缩${residualCoreStable ? "；末期残存核心虽稳，终未能复其旧势" : `，至${evidence.isFinalized ? "身后" : "目前"}回落至${formatPercent(evidence.endTerritory)}`}。`);
+      lines.push(`承统时疆域已有${formatPercent(evidence.startTerritory)}，其后明显收缩${residualCoreStable ? "；末期残存核心虽稳，终未能复其旧势" : `，至${finalTime}回落至${formatPercent(evidence.endTerritory)}`}。`);
     } else {
-      lines.push(`疆域一度达到${formatPercent(evidence.peakTerritory)}，至${evidence.isFinalized ? "身后" : "目前"}已明显回落。`);
+      lines.push(`疆域一度达到${formatPercent(evidence.peakTerritory)}，至${finalTime}已明显回落。`);
     }
   } else if (
     evidence.populationPeakGain >= Math.max(3, evidence.startPopulation * 0.25) &&
     evidence.populationPeakRetreat >= Math.max(8, evidence.peakPopulation * 0.35)
   ) {
-    lines.push(`人口一度达到${evidence.peakPopulation}，至${evidence.isFinalized ? "身后" : "目前"}明显回落，盛势未能转化为稳定基础。`);
+    lines.push(`人口一度达到${evidence.peakPopulation}，至${finalTime}明显回落，盛势未能转化为稳定基础。`);
   } else if ((evidence.governanceCost || hasGovernanceCost(evidence)) && evidence.roles.includes("EXPANDER")) {
     lines.push(evidence.startPopulation > 0 && evidence.endPopulation <= evidence.startPopulation * 0.6
       ? "开拓伴随明显代价，可谓得地而失民；人口与稳定的承受能力未能同步。"
@@ -478,14 +482,16 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
     evidence.populationPeakGain < Math.max(3, evidence.startPopulation * 0.25) &&
     evidence.startPopulation - evidence.endPopulation >= Math.max(5, evidence.startPopulation * 0.35)
   ) {
-    lines.push(`承统时人口已有${evidence.startPopulation}，至${evidence.isFinalized ? "身后" : "目前"}降至${evidence.endPopulation}。`);
+    lines.push(`承统时人口已有${evidence.startPopulation}，至${finalTime}降至${evidence.endPopulation}。`);
   } else if (evidence.forcedCapitalRelocationsDuringReign >= 2) {
     lines.push(`在位期间两度失都，王室被迫迁徙${evidence.rebellions > 0 ? "，又屡经内乱" : ""}；` +
       (evidence.terminalCollapse ? "最终未能保全国祚。" : "政权仍得以延续。"));
   } else if (evidence.rebellions > 0) {
     lines.push(`${evidence.rebellions >= 2 ? "其治下内乱频仍" : "其治下发生重大内乱"}，政权承受了持续的内部压力${evidence.terminalCollapse ? "，终亡于其世" : "，但国统仍得延续"}。`);
   } else if (evidence.predeceasedHeirCount > 0) {
-    const successionLoss = formatPredeceasedHeirAssessment(evidence.predeceasedHeirCount);
+    const successionLoss = abdicated
+      ? `在位期间有${evidence.predeceasedHeirCount}名继承候选去世，继承秩序因此受到冲击。`
+      : formatPredeceasedHeirAssessment(evidence.predeceasedHeirCount);
     if (successionLoss) lines.push(successionLoss);
   }
 
@@ -528,7 +534,12 @@ export function deriveRulerAssessment(context: RulerHistoriographyContext) {
 /** A compact, deterministic final judgement, derived only from recorded outcomes. */
 export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string | undefined {
   if (!evidence.isFinalized) return undefined;
-  const pick = (lines: string[]) => lines[stableHash(evidence.rulerId) % lines.length];
+  const pick = (lines: string[]) => {
+    const text = lines[stableHash(evidence.rulerId) % lines.length];
+    return evidence.rulerStatus === "abdicated"
+      ? text.replaceAll("身后", "退位时").replaceAll("其一生", "其承统期间").replaceAll("一生治绩", "在位治绩")
+      : text;
+  };
   const roles = evidence.roles;
 
   if (roles.includes("FOUNDER") && roles.includes("EXPANDER") && evidence.governanceCost && evidence.foundedState) return pick([

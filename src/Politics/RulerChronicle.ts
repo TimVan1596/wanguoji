@@ -1,3 +1,4 @@
+import { getRulerTerminalRole, isPoliticalTerminalEvent, type TerminalChronicleRuler } from "../History/PoliticalTerminalChronicle";
 import type { WorldEvent } from "../History/WorldHistory";
 import { getFactionEventRelation } from "../History/FactionEventRelation";
 import { getHistorySignificance } from "../History/HistorySignificanceRules";
@@ -114,6 +115,8 @@ const RULER_EVENT_TYPES = new Set<WorldEvent["type"]>([
   "dynasty-usurped",
   "ruler-succession",
   "faction-extinct",
+  "faction-merged",
+  "faction-submitted",
   "faction-exiled",
   "faction-dissolved",
   "city-revolt",
@@ -128,6 +131,8 @@ const RULER_EVENT_TYPES = new Set<WorldEvent["type"]>([
 ]);
 
 const RULER_EVENT_PRIORITIES: Partial<Record<WorldEvent["type"], number>> = {
+  "faction-merged": 130,
+  "faction-submitted": 130,
   "heir-died": 82,
   "state-founded": 120,
   "emperor-proclaimed": 120,
@@ -152,7 +157,7 @@ const RULER_EVENT_PRIORITIES: Partial<Record<WorldEvent["type"], number>> = {
 
 export function getRulerHistoricalEvents(
   events: WorldEvent[],
-  ruler: { id: string; accessionYear: number; endYear?: number },
+  ruler: TerminalChronicleRuler,
   factionId: string,
   worldMonth: number,
   notableEventIds: string[],
@@ -169,6 +174,7 @@ export function getRulerHistoricalEvents(
     if (month < ruler.accessionYear || month > endMonth || !RULER_EVENT_TYPES.has(event.type)) {
       return false;
     }
+    if (isPoliticalTerminalEvent(event)) return getRulerTerminalRole(event, ruler, factionId) !== undefined;
     const direct =
       event.rulerId === ruler.id ||
       event.metadata?.rulerId === ruler.id ||
@@ -205,7 +211,7 @@ export function getRulerHistoricalEvents(
   }
   const ranked = [...grouped.values()]
     .sort((a, b) => score(b) - score(a) || (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year) || a.id.localeCompare(b.id))
-  const mandatory = ranked.filter((event) => getHistorySignificance(event) === "LANDMARK" || ["capital-relocated", "dynasty-restored", "city-revolt", "rebel-faction-founded", "frontier-faction-founded"].includes(event.type));
+  const mandatory = ranked.filter((event) => isPoliticalTerminalEvent(event) || getHistorySignificance(event) === "LANDMARK" || ["capital-relocated", "dynasty-restored", "city-revolt", "rebel-faction-founded", "frontier-faction-founded"].includes(event.type));
   const selected = [...mandatory, ...ranked.filter((event) => !mandatory.includes(event))].slice(0, Math.max(limit, mandatory.length));
   return selected
     .sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year) || a.id.localeCompare(b.id));

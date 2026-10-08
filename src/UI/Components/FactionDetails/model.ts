@@ -199,7 +199,8 @@ export function buildFactionOverviewSections(input: OverviewSectionsInput) {
     team,
     worldMonth,
     remnantPopulation,
-    exileLegitimacy
+    exileLegitimacy,
+    teams
   );
   return {
     identityLines,
@@ -304,11 +305,20 @@ export function buildStateFormationStatusLines(
   return lines;
 }
 
+/** Terminal identity is frozen at the recorded political end, not today's target name. */
+export function getTerminationTargetName(team: FactionDetailsTeamLike, teams: readonly FactionDetailsTeamLike[]) {
+  const target = teams.find(candidate => candidate.name === team.terminationTargetFactionId);
+  return team.terminationMonth !== undefined
+    ? resolveFactionNameAtMonthSafe(target, team.terminationMonth) ?? team.terminationTargetFactionId ?? "—"
+    : team.terminationTargetFactionId ?? "—";
+}
+
 export function buildFactionLifecycleLines(
   team: FactionDetailsTeamLike,
   worldMonth: number,
   remnantPopulation: number,
-  exileLegitimacy?: number
+  exileLegitimacy?: number,
+  teams: readonly FactionDetailsTeamLike[] = []
 ) {
   const cumulativeActiveMonths = getCumulativeActiveMonthsSafe(team, worldMonth);
   const firstFoundedYear = team.firstFoundedYear ?? 0;
@@ -326,7 +336,7 @@ export function buildFactionLifecycleLines(
     }
     return [
       `建立：${formatWorldDate(firstFoundedYear)}`,
-      `国祚：${formatWorldDuration(worldMonth - firstFoundedYear)}`,
+      `势力存续：${formatWorldDuration(worldMonth - firstFoundedYear)}`,
       "状态：在国",
     ];
   }
@@ -345,9 +355,9 @@ export function buildFactionLifecycleLines(
   return [
     `初建：${formatWorldDate(firstFoundedYear)}`,
     ...((team.terminationReason === "MERGED" || team.terminationReason === "SUBMITTED")
-      ? [`${team.terminationReason === "SUBMITTED" ? "纳土归附于" : "并入"}：${team.terminationTargetFactionId ?? "—"} · ${team.terminationMonth !== undefined ? formatWorldDate(team.terminationMonth) : "—"}`]
+      ? [`${team.terminationReason === "SUBMITTED" ? "纳土归附于" : "并入"}：${getTerminationTargetName(team, teams)} · ${team.terminationMonth !== undefined ? formatWorldDate(team.terminationMonth) : "—"}`]
       : [`彻底灭亡：${team.extinctionYear !== undefined ? formatWorldDate(team.extinctionYear) : "—"}`]),
-    `累计国祚：${formatWorldDuration(cumulativeActiveMonths)}`,
+    `累计势力存续：${formatWorldDuration(cumulativeActiveMonths)}`,
     team.terminationReason === "SUBMITTED" ? "状态：已纳土" : team.terminationReason === "MERGED" ? "状态：已合邦" : "状态：已灭亡",
   ];
 }
@@ -356,11 +366,12 @@ function buildLegacyLines(
   team: FactionDetailsTeamLike,
   worldMonth: number,
   remnantPopulation: number,
-  exileLegitimacy?: number
+  exileLegitimacy?: number,
+  teams: readonly FactionDetailsTeamLike[] = []
 ) {
   const cumulativeActiveMonths = getCumulativeActiveMonthsSafe(team, worldMonth);
   const restorationYears = team.restorationYears ?? [];
-  const lines = [`国祚：${formatWorldDuration(cumulativeActiveMonths)}`];
+  const lines = [`势力存续：${formatWorldDuration(cumulativeActiveMonths)}`];
   if (restorationYears.length > 0) {
     lines.push(`复国次数：${restorationYears.length}`);
     lines.push(`最近复国：${formatWorldDate(restorationYears.at(-1) ?? 0)}`);
@@ -370,7 +381,7 @@ function buildLegacyLines(
     lines.push(`合法性：${exileLegitimacy ?? "—"}`);
     lines.push(`残部：${remnantPopulation}人`);
   } else if (team.status === "EXTINCT" && (team.terminationReason === "MERGED" || team.terminationReason === "SUBMITTED")) {
-    lines.push(`${team.terminationReason === "SUBMITTED" ? "纳土归附于" : "并入"}：${team.terminationTargetFactionId ?? "—"} · ${team.terminationMonth !== undefined ? formatWorldDate(team.terminationMonth) : "—"}`);
+    lines.push(`${team.terminationReason === "SUBMITTED" ? "纳土归附于" : "并入"}：${getTerminationTargetName(team, teams)} · ${team.terminationMonth !== undefined ? formatWorldDate(team.terminationMonth) : "—"}`);
   } else if (team.status === "EXTINCT") {
     lines.push(
       `彻底灭亡：${team.extinctionYear !== undefined ? formatWorldDate(team.extinctionYear) : "—"}`

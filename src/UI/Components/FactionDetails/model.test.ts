@@ -7,6 +7,7 @@ import {
   buildStateFormationStatusLines,
   getCumulativeActiveMonthsSafe,
   resolveFactionNameAtMonthSafe,
+  getTerminationTargetName,
 } from "./model";
 
 describe("faction details model", () => {
@@ -77,7 +78,7 @@ describe("faction details model", () => {
         60,
         0
       )
-    ).toContain("国祚：5年");
+    ).toContain("势力存续：5年");
     expect(
       buildFactionLifecycleLines(
         { name: "秦", status: "EXILED", firstFoundedYear: 0, lastExiledYear: 24 },
@@ -91,7 +92,7 @@ describe("faction details model", () => {
         60,
         0
       )
-    ).toContain("累计国祚：2年");
+    ).toContain("累计势力存续：2年");
   });
 
   it("presents submitted states as administrative termination, never death", () => {
@@ -232,5 +233,20 @@ describe("faction details model", () => {
         hasFormalRuler: true,
       })
     ).toEqual(["帝统已立", "称帝：13年10月"]);
+  });
+});
+
+describe("terminal target identity at the political end", () => {
+  it.each(["MERGED", "SUBMITTED"] as const)("freezes %s target names in both lifecycle and royal memory", terminationReason => {
+    const target = { name: "秦", displayName: "秦", nameHistory: [{ name: "鄄", startMonth: 0, endMonth: 100 }, { name: "秦", startMonth: 101 }] };
+    const team = { name: "张", status: "EXTINCT", terminationReason, terminationTargetFactionId: "秦", terminationMonth: 100, firstFoundedYear: 0 };
+    const before = JSON.stringify({ team, target });
+    expect(getTerminationTargetName(team, [target])).toBe("鄄");
+    expect(getTerminationTargetName({ ...team, terminationMonth: 101 }, [target])).toBe("秦");
+    expect(buildFactionLifecycleLines(team, 200, 0, undefined, [target]).join("\n")).toContain("：鄄");
+    expect(buildFactionOverviewSections({ team, teams: [target], worldMonth: 200, remnantPopulation: 0, cityNameById: new Map(), rulerNameById: new Map() }).legacyLines.join("\n")).toContain("：鄄");
+    expect(getTerminationTargetName({ ...team, terminationMonth: undefined }, [target])).toBe("秦");
+    expect(getTerminationTargetName(team, [])).toBe("秦");
+    expect(JSON.stringify({ team, target })).toBe(before);
   });
 });

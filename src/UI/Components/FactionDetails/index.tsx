@@ -1,4 +1,6 @@
-import { getHouseEpochPresentation, getSignificantReignStats } from "./RoyalPresentation";
+import { getTerminationTargetName } from "./model";
+import { formatRulerTerminalEvent } from "../../../History/PoliticalTerminalChronicle";
+import { getHouseEpochPresentation, getSignificantReignStats, formatRulerAge } from "./RoyalPresentation";
 import { getFactionColorAtMonth, type FactionColorHistoryEntry } from "../../../Simulation/FactionColorHistory";
 import { Box, Button, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -342,7 +344,7 @@ function FactionProfile({
         </Typography>
       </Box>
       {team.terminationReason === "SUBMITTED" && <Typography fontSize="0.84rem">
-        纳土归附于 {teams.find(t => t.name === team.terminationTargetFactionId)?.displayName ?? team.terminationTargetFactionId}
+        纳土归附于 {getTerminationTargetName(team, teams)}
         <br />归附时间：{team.terminationMonth !== undefined ? formatWorldDate(team.terminationMonth) : "—"}
         <br />末代君主：{submittedLastRuler ? `${submittedLastRuler.houseName.replace(/氏$/, "")}${submittedLastRuler.givenName} · 纳土退位` : "—"}
       </Typography>}
@@ -620,7 +622,7 @@ function FactionList({
           <span>名称</span>
           <span>状态</span>
           <span>初建</span>
-          <span>国祚</span>
+          <span>势力存续</span>
           <span>城</span>
           <span>复国</span>
         </Box>
@@ -1064,8 +1066,7 @@ function RulerBiography({
           : `在位：${formatWorldDuration(reignMonths)}`}
       </Typography>
       <Typography fontSize="0.85rem">
-        即位年龄：{accessionAge} 岁 · {ruler.endYear !== undefined ? "享年" : "当前年龄"}：
-        {finalAge} 岁
+        即位年龄：{accessionAge} 岁 · {formatRulerAge(ruler.status, finalAge)}
         {ruler.endReason ? ` · ${ruler.endReason}` : ""}
       </Typography>
       <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
@@ -1099,7 +1100,7 @@ function RulerBiography({
           ? `；祖父：${formatRulerRowName(grandparent, team)}`
           : ""}
       </Typography>
-      {posthumousLines.length > 0 ? (
+      {ruler.status === "dead" && posthumousLines.length > 0 ? (
         <Box sx={{ mt: 0.5 }}>
           <Typography fontWeight="bold" fontSize="0.82rem">身后称号</Typography>
           {posthumousLines.filter((line) => !line.startsWith("史称：")).map((line) => <Typography key={line} fontSize="0.82rem">{line}</Typography>)}
@@ -1152,7 +1153,7 @@ function RulerBiography({
       </Typography>
       {rulerEvents.length > 0 ? rulerEvents.map((event) => (
         <Typography key={event.id} fontSize="0.82rem">
-          {formatWorldDate(event.monthIndex ?? event.year)} ◆ {formatRulerDiplomacyEvent(event, factionById) ?? formatFactionHistoryEvent(event, team.name, factionById) ?? formatHistoryEventTitle(event, factionById)}
+          {formatWorldDate(event.monthIndex ?? event.year)} ◆ {formatRulerTerminalEvent(event, ruler, team.name, factionById) ?? formatRulerDiplomacyEvent(event, factionById) ?? formatFactionHistoryEvent(event, team.name, factionById) ?? formatHistoryEventTitle(event, factionById)}
         </Typography>
       )) : (
         <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
