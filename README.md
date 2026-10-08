@@ -147,7 +147,7 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
-- v0.99930永久史料、峰值、国祚和Save/Load已人工正常；v0.99930a改用具体事件组织国史简述、史评与史家曰，修复历史身份和零领土退潮误判。WorldSave仍V12，直接读取现有世界完成 [叙事人工Gate](docs/FactionHistoriographyNarrativeII.md)，无需重新长跑。
+- v0.99930a国史简述、永久史料、生命周期和Save/Load人工基本通过，史评/史家曰未通过。v0.99930b加入有来源的史论与统一编年，并明确同源合邦方向；WorldSave仍V12，直接读取现有世界完成[人工史论Gate](docs/FactionHistoriographyJudgment.md)，无需重新长跑。
 - v0.99929a 修复政治终结历史身份、退位年龄与双方君主大事记。[Political Terminal Chronicle Gate](docs/PoliticalTerminalChronicleClosure.md)已由用户完成人工PASS。
 - v0.99929新增不同源正式国家的和平纳土。独立终结原因SUBMITTED，与同源合邦MERGED及战争覆灭区分；末代君主退位、旧王室保留。[Peaceful Submission Gate](docs/PeacefulSubmission.md)已人工PASS，规则冻结。
 - 当前WorldSave **V12**，V11及更旧直接拒绝，不迁移；IndexedDB版本仍2。Diplomacy II全系列已人工PASS并冻结，期限/威胁/续约/冷却及Strategic Union条件不变。
@@ -210,5 +210,3 @@ MIT License。详见 [LICENSE](./LICENSE)。
 路线图见 [ROADMAP.md](./ROADMAP.md)。
 
 Desktop scheduler实验保留为debug／compatibility选项（blocker／timeout），不更改默认行为。本版按默认`pnpm desktop:start:debug`进行王朝易代人工Gate，不要求重复A/B。
-
-- v0.99930b Historiographic Judgment：有来源的史论、严格编年与同源合邦措辞；WorldSave V12不变，等待[人工史论Gate](docs/FactionHistoriographyJudgment.md)，不进入下一版本。

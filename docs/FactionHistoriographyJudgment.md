@@ -26,11 +26,13 @@ v30a国史简述、永久史料、生命周期和存档人工基本通过；史�
 验证命令及结果：
 
 - `VITEST_MAX_THREADS=4 VITEST_MIN_THREADS=1 pnpm test -- --run`：180个测试文件、1134项测试全部通过；包含V12往返、same-seed、20k历史、档案缓存及冻结玩法回归。
-- `pnpm build`：待记录。
-- `pnpm desktop:build`：待记录。
-- `pnpm desktop:compile`：待记录。
-- `pnpm desktop:renderer-debug-build`：待记录。
-- `git diff --check`：待记录。
+- `pnpm build`：通过，音乐资源检查通过。
+- `pnpm desktop:build`：通过，renderer资源检查及Electron编译通过。
+- `pnpm desktop:compile`：独立执行通过。
+- `pnpm desktop:renderer-debug-build`：通过，renderer资源、2份debug sourcemap及音乐资源检查通过。
+- `git diff --check`：通过；另检查暂存差异无空白错误。
+
+构建仅保留已有的bundle超过500kB提示；本版不进行无关拆包或桌面性能重构。
 
 ## 遗留风险
 
