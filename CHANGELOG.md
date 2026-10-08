@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.99929a
+
+- 政治终结展示按 terminationMonth 解析接受国历史国号，MERGED / SUBMITTED 的顶部、生命周期与王朝记忆不再被目标国未来改名污染。
+- 君主年龄按真实 status 区分享年、退位时年龄与当前年龄；退位评述使用任期措辞，不因 endYear 推定死亡。包含临时阶段的累计标签改为“势力存续”，不改计时。
+- 纳土与归并进入双方当时君主的个人大事记并优先保留；记录的君主 ID 优先，旧 V11 归并按势力角色、任期与合邦退位记录只读归属，不回填当前君主。
+- APP_VERSION v0.99929a / package 0.99.117 / WorldSave V11。玩法、RNG、存档 schema 与政治终结触发规则保持不变；使用现有长局完成 [Political Terminal Chronicle Gate](docs/PoliticalTerminalChronicleClosure.md)。
+
 ## v0.99929
 
 - Diplomacy II全系列人工PASS并冻结，包括可信威胁/期限/升级/续约/冷却、Save-Load、联盟年龄连续性、国势叙事与频率。

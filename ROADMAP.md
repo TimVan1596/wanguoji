@@ -21,6 +21,7 @@
 ## 当前人工验收
 
 - v0.99928 Diplomacy II全系列人工PASS并冻结，包括v28b时间文案和Strategic Union续约年龄连续性。
+- v0.99929a Political Terminal Chronicle Closure：历史终结对象、退位措辞与双方君主个人纪事修复，等待[现有 V11 长局人工 Gate](docs/PoliticalTerminalChronicleClosure.md)，不展开国评或时代地图。
 - v0.99929 Peaceful Submission代码阶段：不同源正式国家极端不对称/长期和平/接壤时纳土，独立SUBMITTED终结、退位档案和WorldSaveV11。用新世界4×最多1500年完成[人工Gate](docs/PeacefulSubmission.md)，出现事件可立即停止。
 
 - v0.99927 Dynastic Revolution系列完整人工通过，校准及历史/谱系/persistence Gate正式冻结。

@@ -1053,7 +1053,7 @@ function RulerBiography({
         background: "var(--gg-panel)",
       }}
     >
-      <Typography fontWeight="bold">{ruler.endYear !== undefined && (ruler.templeName || ruler.posthumousEpithet) ? formatPosthumousRulerName(ruler, team, ruler.endYear) : formatRulerName(ruler)}</Typography>
+      <Typography fontWeight="bold">{ruler.status === "dead" && ruler.endYear !== undefined && (ruler.templeName || ruler.posthumousEpithet) ? formatPosthumousRulerName(ruler, team, ruler.endYear) : formatRulerName(ruler)}</Typography>
       <Typography fontSize="0.85rem" color="var(--gg-text-muted)">
         {ruler.houseName} ·{" "}
         {ruler.reignOrdinal ? `第${ruler.reignOrdinal}代君主 · ` : ""}
@@ -1084,7 +1084,7 @@ function RulerBiography({
           <Typography fontWeight="bold" fontSize="0.82rem">储嗣</Typography>
           {heirDeathEvents.map((event) => (
             <Typography key={event.id} fontSize="0.82rem">
-              {stringMetadata(event.metadata?.heirName)} · {event.metadata?.age ?? "—"}岁 · {formatWorldDate(event.monthIndex ?? event.year)}先于父君{event.metadata?.reason === "combat" ? "战死" : event.metadata?.reason === "captured" ? "被俘处死" : "去世"}
+              {stringMetadata(event.metadata?.heirName)} · {event.metadata?.age ?? "—"}岁 · {formatWorldDate(event.monthIndex ?? event.year)}{ruler.status === "abdicated" ? "在其任内" : "先于父君"}{event.metadata?.reason === "combat" ? "战死" : event.metadata?.reason === "captured" ? "被俘处死" : "去世"}
             </Typography>
           ))}
         </Box>
@@ -1215,7 +1215,7 @@ function formatRulerRowName(
   ruler: Ruler,
   team: RootState["root"]["teams"][number]
 ) {
-  if (ruler.endYear !== undefined && (ruler.templeName || ruler.posthumousEpithet)) {
+  if (ruler.status === "dead" && ruler.endYear !== undefined && (ruler.templeName || ruler.posthumousEpithet)) {
     return formatPosthumousRulerName(ruler, team, ruler.endYear);
   }
   return formatRulerName(ruler);

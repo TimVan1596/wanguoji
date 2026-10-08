@@ -6,8 +6,8 @@ import worldRandom from "../Simulation/WorldRandom";
 import { CURRENT_SAVE_SCHEMA_VERSION } from "../Persistence/WorldSaveSchema";
 
 const factions = new Map([
-  ["a", { name: "a", displayName: "新张", nameHistory: [{ name: "张", startMonth: 0, endMonth: 120 }, { name: "新张", startMonth: 121 }] }],
-  ["b", { name: "b", displayName: "秦", nameHistory: [{ name: "鄄", startMonth: 0, endMonth: 120 }, { name: "秦", startMonth: 121 }] }],
+  ["a", { name: "a", color: 1, displayName: "新张", nameHistory: [{ name: "张", startMonth: 0, endMonth: 120 }, { name: "新张", startMonth: 121 }] }],
+  ["b", { name: "b", color: 2, displayName: "秦", nameHistory: [{ name: "鄄", startMonth: 0, endMonth: 120 }, { name: "秦", startMonth: 121 }] }],
 ]);
 const source = { id: "last", accessionYear: 20, endYear: 100, status: "abdicated", endReason: "纳土退位" };
 const receiver = { id: "receiver", accessionYear: 40, endYear: 110 };
