@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.99930a
+
+- v0.99930永久史料、峰值、国祚、流亡终结与Save/Load人工正常；国评/史家曰叙事Gate未通过，本版只修事实叙事。
+- 新增collectFactionNarrativeEvidence与buildFactionHistoricalNarrative，首次从该国事件索引收集真实角色、事件月份、城市、人物ID与来源metadata；按起源/盛时/政治转折/终局构建3～6句国史简述，史评与史家曰突出实际兴亡轨迹，不再主要按寿命标签选套话。
+- 亲征人物仅使用档案中属于真实行动方且处于当时任期的已记录ruler ID。国号与身份按事件月份解析；无失国/绝统证据不补写，无人物证据不编名，多姓王统不等于篡朝。
+- EXTINCT不再用最终零领土推断渐进衰退；MERGED/SUBMITTED仍可只读比较行政终结前观测值。终结历史简短回顾增加独特转折，不新增重复事件。
+- 修正终结/流亡描述与展开详情中的历史国号；分组历史不重复回放含内部势力名的原始标题。卡片标题、描述和详情共享自身event ID/object，新增韩/齐事件隔离测试。
+- APP_VERSION v0.99930a / package0.99.119 / WorldSave V12不变。永久峰值/计时/所有玩法/庙号谥号/RNG/桌面性能不修改，沿用档案缓存和历史分页。等待[现有V12世界人工叙事Gate](docs/FactionHistoriographyNarrativeII.md)。
+
 ## v0.99930
 
 - v0.99929a Political Terminal Chronicle人工全部PASS；纳土、同源合邦、历史身份、退位纪事、宗谱、行政地图与V11 Save/Load正式冻结。

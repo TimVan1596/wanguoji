@@ -21,7 +21,7 @@
 ## 当前人工验收
 
 - v0.99929 Peaceful Submission及v0.99929a终结纪事人工全部PASS，正式冻结。
-- v0.99930 Faction Historiography：永久月度峰值、终结国评和史家曰、王室折叠展示及历史短回顾；WorldSave V12，等待[新世界人工Gate](docs/FactionHistoriography.md)。通过前不进入时代地图或其他后续主题。
+- v0.99930永久月度峰值、国祚、流亡终结及Save/Load人工正常，叙事Gate未通过。v0.99930a Faction Historical Narrative II以具体事件重组国史/史评/史家曰，并修历史身份；V12保持不变，等待[现有世界人工Gate](docs/FactionHistoriographyNarrativeII.md)。通过前不进入下一主版本。
 
 - v0.99928 Diplomacy II全系列人工PASS并冻结，包括v28b时间文案和Strategic Union续约年龄连续性。
 - v0.99929a Political Terminal Chronicle Closure：历史终结对象、退位措辞与双方君主个人纪事修复，[现有 V11 长局人工 Gate](docs/PoliticalTerminalChronicleClosure.md)已PASS，修复范围已冻结。

@@ -1,3 +1,4 @@
+import { getHistoryCardFactionView, getHistoryCardPresentation } from "../../../History/HistoryCardPresentation";
 import { FactionTerminalRetrospective } from "../FactionAssessment";
 import { getSubmissionEventPresentation } from "../../../History/PeacefulSubmissionPresentation";
 import { getDiplomacyEventDetails } from "../../../History/DiplomacyEventDetails";
@@ -6,7 +7,6 @@ import { getRevolutionEventDetails } from "../../../History/RevolutionEventDetai
 import { HistoryBrowsingSession } from "./historyBrowsing";
 import { queryHistoryPage } from "../../../History/HistoryPageQuery";
 import type Team from "../../../Components/Team";
-import { getHistoricalFactionIdentity } from "../../../History/HistoricalFactionIdentity";
 import { Box, Button, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { memo, useCallback, useEffect, useMemo, useReducer, useState, useRef, useLayoutEffect } from "react";
 import { useSelector } from "react-redux";
@@ -18,8 +18,6 @@ import {
   getEventFactionIds,
   HistoryFilter,
   HISTORY_RENDER_BATCH,
-  formatHistoryEventDescription,
-  formatHistoryEventTitle,
   resolveFactionHistoricalName,
   resolveEventFactionColor,
 } from "../../../History/HistoryRenderRules";
@@ -471,14 +469,15 @@ function HistoryEventListContent({
         onClick={() => { if (listRef.current) listRef.current.scrollTop = 0; onBackToLatest(); }}>↑ {unseenCount} 条新事件 · 回到最新</Button> : null}
     <Box ref={listRef} onScroll={event => onScrollPosition(event.currentTarget.scrollTop)} sx={{ height: sxHeight, overflowY: "auto" }}>
       {events.map((event) => {
-        const expanded = expandedId === event.id;
+        const card = getHistoryCardPresentation(event, expandedId, teamByName, rulerById);
+        const expanded = card.expanded;
         const actorColor = resolveEventFactionColor(event, factionColorById, teamByName);
         const eventMonth = event.monthIndex ?? event.year;
         const eventFactionIds = [...getEventFactionIds(event),
           ...(typeof event.metadata?.commonThreatFactionId === "string" ? [event.metadata.commonThreatFactionId] : []),
         ].filter((name) => teamByName.has(name));
         const eventFactionNames = eventFactionIds.map((id) => resolveFactionHistoricalName(teamByName, id, eventMonth));
-        const eventTeamByDisplayName = new Map([...teamByName].map(([id, team]) => [id, { ...team, color: getHistoricalFactionIdentity(team, eventMonth).color } as Team]));
+        const eventTeamByDisplayName = getHistoryCardFactionView(teamByName, eventMonth);
         eventFactionIds.forEach((factionId) => {
           const team = teamByName.get(factionId);
           if (team) eventTeamByDisplayName.set(resolveFactionHistoricalName(teamByName, factionId, eventMonth), eventTeamByDisplayName.get(factionId)!);
@@ -493,8 +492,8 @@ function HistoryEventListContent({
             }
           }
         }
-        const eventTitle = formatHistoryEventTitle(event, teamByName, rulerById);
-        const eventDescription = formatHistoryEventDescription(event, teamByName);
+        const eventTitle = card.title;
+        const eventDescription = card.description;
         const landmark = isLandmarkHistoryEvent(event);
         const canExpand = event.importance === "major" || Boolean(eventDescription) || Boolean(event.metadata);
         return (
@@ -515,7 +514,7 @@ function HistoryEventListContent({
             {expanded ? <Box sx={{ mt: 0.5 }}>
               {eventDescription ? <Typography fontSize="0.85rem" sx={{ opacity: 0.85 }}><EventText text={eventDescription} teamByName={eventTeamByDisplayName} factionNames={eventFactionNames} cityNames={cityNames} /></Typography> : null}
               <FactionTerminalRetrospective event={event} factions={teamByName} dynasties={dynastyByFactionId} />
-              <EventDetails event={event} teamByName={eventTeamByDisplayName} factionNames={eventFactionNames} cityNames={cityNames} />
+              <EventDetails event={card.event} teamByName={eventTeamByDisplayName} factionNames={eventFactionNames} cityNames={cityNames} />
             </Box> : null}
           </Box>
         );
@@ -609,7 +608,7 @@ function EventDetails({
     const finalCityName = metadata.finalCityName ?? (metadata.isFinalCityCapture === 1 ? metadata.cityName : undefined);
     if (metadata.isFinalCityCapture === 1 && typeof finalCityName === "string") {
       addMetadataTextLine(lines, finalCityName, "最后据点");
-      addFactionLine(lines, teamByName, metadata.conquerorFactionId, "攻灭者");
+      addFactionLine(lines, teamByName, metadata.conquerorFactionId, "最后据点攻陷者");
     }
     addMetadataLine(lines, metadata.populationBefore, "灭亡前人口");
     addMetadataLine(lines, metadata.surrenderedPopulation, "投降人口");

@@ -46,6 +46,19 @@ describe("bounded, on-demand terminal faction presentation", () => {
     expect(WorldHistory.getEventCount()).toBe(20001); expect(JSON.stringify(WorldHistory.exportState())).toBe(original);
     expect(worldRandom.exportState()).toEqual(rng);
   });
+  it("indexes only an actually participating foreign ruler archive once", () => {
+    const { f, dynasty, factions } = fixture();
+    const rival = { ...f, name: "qin", displayName: "秦", nameHistory: [{ name: "秦", startMonth: 0 }], sovereigntyHistory: [{ rank: "KING", startMonth: 0 }] };
+    factions.set("qin", rival);
+    const ruler = { id: "qin-ruler", houseName: "嬴氏", givenName: "康", bornYear: 0, accessionYear: 0, status: "ruling" as const };
+    const lookup = vi.fn(() => [ruler]);
+    for (let i = 1; i <= 100; i++) WorldHistory.addEvent({ id: `capture-${i}`, year: i, type: "city-captured", category: "war", importance: "major", title: "原始史料", actorFactionId: "qin", targetFactionId: "a", cityName: "范阳", rulerId: ruler.id });
+    const first = getFactionAssessment(f, factions, dynasty, lookup)!;
+    expect(lookup).toHaveBeenCalledTimes(1); expect(lookup).toHaveBeenCalledWith("qin");
+    expect(first.narrativeEvidence.filter(e => e.rulerName === "秦王嬴康")).toHaveLength(100);
+    for (let i = 0; i < 100; i++) expect(getFactionAssessment(f, factions, dynasty, lookup)).toBe(first);
+    expect(lookup).toHaveBeenCalledTimes(1);
+  });
   it("does not finalize an exiled faction or cache incomplete dynasty loading", () => {
     const { f, dynasty, factions } = fixture();
     expect(getFactionAssessment(f, factions)).toBeUndefined();

@@ -395,6 +395,30 @@ export function formatHistoryEventDescription(
   if (event.metadata?.groupedEventCount && event.metadata.surrenderedPopulation !== undefined) {
     return `${event.metadata.surrenderedPopulation}名败兵投降。`;
   }
+  // Group titles already reconstruct their recorded clauses. Raw joined titles retain
+  // internal faction IDs and must not be replayed as a second description.
+  if (event.metadata?.groupedEventCount) return undefined;
+  if (event.type === "faction-extinct") {
+    const id = event.targetFactionId ?? event.factionIds?.[0];
+    const style = getHistoricalStyleName(factionById, id, month);
+    return event.description ? `${style}${/残部.*消散/.test(`${event.title} ${event.description}`) ? "残部消散，" : ""}政权彻底终结。` : undefined;
+  }
+  if (event.type === "faction-exiled") {
+    const count = event.metadata?.remnantPopulation;
+    const id = event.targetFactionId ?? event.factionIds?.[0];
+    const historicalName = name(id);
+    if (id && event.description) {
+      // Preserve the recorded escaping ruler, replacing only faction/title contexts,
+      // never an arbitrary surname inside that person's name.
+      return event.description.split(`${id}国`).join(getHistoricalStyleName(factionById, id, month))
+        .split(`${id}王`).join(`${historicalName}王`).split(`${id}帝`).join(`${historicalName}帝`)
+        .split(`${id}仍有`).join(`${historicalName}仍有`);
+    }
+    return `${historicalName}王室流亡${typeof count === "number" ? `，仍有${count}名残部` : ""}。`;
+  }
+  if (event.type === "dynasty-line-ended") {
+    return `${name(event.actorFactionId ?? event.factionIds?.[0])}流亡王室已无合法继承人，王统断绝。`;
+  }
   return event.description;
 }
 

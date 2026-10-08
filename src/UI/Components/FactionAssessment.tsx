@@ -1,16 +1,19 @@
+import type { Ruler } from "../../Politics/Dynasty";
 import type { Dynasty } from "../../Politics/Dynasty";
 import { Box, Typography } from "@mui/material";
 import type { HistoricalFaction } from "../../Historiography/FactionHistoriography";
 import { getFactionAssessment } from "../../Historiography/FactionAssessmentArchive";
 import type { WorldEvent } from "../../History/WorldHistory";
 
-export function FactionAssessmentPanel({ faction, factions, dynasty }: { faction: HistoricalFaction; factions: ReadonlyMap<string, HistoricalFaction>; dynasty?: Dynasty }) {
-  const assessment = getFactionAssessment(faction, factions, dynasty);
+export function FactionAssessmentPanel({ faction, factions, dynasty, rulersForFaction }: { faction: HistoricalFaction; factions: ReadonlyMap<string, HistoricalFaction>; dynasty?: Dynasty; rulersForFaction?: (factionId: string) => readonly Ruler[] | undefined }) {
+  const assessment = getFactionAssessment(faction, factions, dynasty, rulersForFaction);
   if (!assessment) return null;
   return <Box component="details" sx={{ border: "1px solid var(--gg-border)", borderRadius: "var(--gg-radius)", p: 1, overflowWrap: "anywhere" }}>
     <summary>{assessment.title}</summary>
     <Typography fontWeight="bold">{assessment.evidence.name} · {assessment.title}</Typography>
     {assessment.facts.map(line => <Typography key={line} fontSize="0.84rem">{line}</Typography>)}
+    <Typography sx={{ mt: 1 }} fontWeight="bold">国史简述</Typography>
+    {assessment.narrative.map(line => <Typography key={line} fontSize="0.84rem">{line}</Typography>)}
     <Typography sx={{ mt: 1 }} fontWeight="bold">史评</Typography>
     {assessment.lines.map(line => <Typography key={line} fontSize="0.84rem">{line}</Typography>)}
     <Typography sx={{ mt: 1 }} fontWeight="bold">史家曰</Typography>
@@ -22,7 +25,7 @@ export function FactionTerminalRetrospective({ event, factions, dynasties }: { e
     : event.type === "faction-merged" ? event.metadata?.absorbedFactionId
     : event.type === "faction-extinct" ? event.targetFactionId : undefined;
   const faction = typeof id === "string" ? factions.get(id) : undefined;
-  const assessment = faction ? getFactionAssessment(faction, factions, dynasties.get(faction.name)) : undefined;
+  const assessment = faction ? getFactionAssessment(faction, factions, dynasties.get(faction.name), (factionId) => dynasties.get(factionId)?.rulers) : undefined;
   if (!assessment || assessment.evidence.endMonth !== (event.monthIndex ?? event.year)) return null;
   return <Typography fontSize="0.84rem" sx={{ mt: 0.75, overflowWrap: "anywhere" }}>【{assessment.evidence.formal ? "国祚回顾" : "势力回顾"}】{assessment.summary}</Typography>;
 }

@@ -1,3 +1,5 @@
+import { collectFactionNarrativeEvidence, buildFactionHistoricalNarrative } from "./FactionHistoricalNarrative";
+import type { Ruler } from "../Politics/Dynasty";
 import type { Dynasty } from "../Politics/Dynasty";
 import type { WorldEvent } from "../History/WorldHistory";
 import type { FactionLifetimeRecord } from "../Simulation/FactionLifetimeRecord";
@@ -15,7 +17,7 @@ export interface HistoricalFaction {
   nameHistory: { name: string; startMonth: number; endMonth?: number }[];
 }
 export interface FactionHistoricalEvidence {
-  factionId: string; name: string; formal: boolean; terminal: boolean;
+  factionId: string; name: string; foundedName: string; stateFoundedName?: string; formal: boolean; terminal: boolean;
   foundedMonth: number; stateFoundedMonth?: number; endMonth?: number;
   lifetimeMonths: number; formalMonths?: number; activeMonths: number; exileMonths: number;
   rulerCount: number; formalRulerCount: number; epochCount: number; houseCount: number;
@@ -27,6 +29,7 @@ export interface FactionHistoricalEvidence {
 export interface FactionHistoryContext {
   faction: HistoricalFaction; dynasty?: Pick<Dynasty, "rulers" | "houseEpochs">;
   lifetime: FactionLifetimeRecord; totalWorldBlocks: number;
+  resolveRuler?: (rulerId: string, factionId: string) => Ruler | undefined;
   events: readonly WorldEvent[]; factions: ReadonlyMap<string, HistoricalFaction>;
 }
 export function deriveFactionHistoricalEvidence(context: FactionHistoryContext): FactionHistoricalEvidence {
@@ -47,6 +50,7 @@ export function deriveFactionHistoricalEvidence(context: FactionHistoryContext):
   const target = f.terminationTargetFactionId ? factions.get(f.terminationTargetFactionId) : undefined;
   const activeMonths = f.cumulativeActiveYears;
   return { factionId: f.name, name: getFactionDisplayNameAtMonth(f, end), formal, terminal, foundedMonth, stateFoundedMonth: f.stateFoundedMonth,
+    foundedName: getFactionDisplayNameAtMonth(f, foundedMonth), stateFoundedName: formal ? getFactionDisplayNameAtMonth(f, f.stateFoundedMonth!) : undefined,
     endMonth, lifetimeMonths: Math.max(0, end - foundedMonth), formalMonths: formal ? Math.max(0, end - f.stateFoundedMonth!) : undefined,
     activeMonths, exileMonths: Math.max(0, end - foundedMonth - activeMonths), rulerCount: rulers.length, formalRulerCount: formalRulers.length,
     epochCount: epochs.length, houseCount: new Set(epochs.map(e => e.houseName)).size,
@@ -71,7 +75,7 @@ export function classifyFactionHistoricalProfile(e: FactionHistoricalEvidence): 
   add(e.usurpationCount > 0, "USURPATION", "发生篡朝", ["usurpationCount"], "实际epoch有USURPATION起因");
   add(e.restorationCount >= 2, "RESTORATIONS", "多次复国", ["restorationCount"], "至少两次实际复国记录");
   add(e.wasExiled && e.exileMonths >= 120, "LONG_EXILE", "长期流亡", ["wasExiled", "exileMonths"], "累计非在国月份至少10年且存在流亡记录");
-  add(e.terminal && e.lifetime.peakTerritoryBlocks.value >= 3 && e.lifetime.terminal!.territoryBlocks <= e.lifetime.peakTerritoryBlocks.value * 0.25,
+  add(e.terminal && (e.ending === "MERGED" || e.ending === "SUBMITTED") && e.lifetime.peakTerritoryBlocks.value >= 3 && e.lifetime.terminal!.territoryBlocks <= e.lifetime.peakTerritoryBlocks.value * 0.25,
     "RETREAT", "极盛后显著退潮", ["lifetime.peakTerritoryBlocks", "lifetime.terminal.territoryBlocks"], "终结前疆域不超过月度实测峰值四分之一");
   add(e.lifetime.terminal?.cityCount === 1, "ONE_CITY_END", "终局一城", ["lifetime.terminal.cityCount"], "终结前实测仅有一城");
   add(e.ending === "MERGED", "MERGED", "同源归并", ["ending"], "canonical终结原因MERGED");
@@ -79,31 +83,8 @@ export function classifyFactionHistoricalProfile(e: FactionHistoricalEvidence): 
   add(e.remnantsDissipated, "REMNANTS", "残部消散后绝统", ["terminalEventId", "remnantsDissipated"], "原始终结事件明确记录残部消散");
   return profiles;
 }
-function choose(e: FactionHistoricalEvidence, key: string, variants: string[]) {
-  let hash = 2166136261;
-  for (const char of `${e.factionId}:${key}`) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619);
-  return variants[(hash >>> 0) % variants.length];
-}
-export function composeFactionHistorianVoice(e: FactionHistoricalEvidence) {
-  if (!e.terminal) return undefined;
-  const has = (key: string) => classifyFactionHistoricalProfile(e).some(p => p.key === key);
-  // Distinct factual axes determine emphasis, not a random evaluation or a claim about motives.
-  const history = has("RESTORATIONS") ? choose(e, "restore", ["城池数失，国统数续，复国之迹使其历史不止一次兴亡。", "失地之后仍曾再立，数度复国是此国最鲜明的曲折。"])
-    : has("MULTI_HOUSE") ? choose(e, "houses", ["一国历经数姓王统，国之沿革与一家兴替不可混为一谈。", "王统数更而势力历史相续，易姓并未另造一个国家。"])
-    : has("LONG") && e.wasEmperor ? choose(e, "long-empire", ["势力历时既久，亦曾称帝，帝制与长久存续共同构成其历史分量。", "久历岁月而曾建帝制，其历史不能仅以最后一朝的结局概括。"])
-    : has("LONG_EXILE") ? choose(e, "exile", ["离土之岁亦属其史，流亡与在国须分别记述。", "国土失去之后，政权曾续于流亡，终结不能倒写为失城之日。"])
-    : has("SHORT") && !e.formal ? choose(e, "short", ["兴起未久而独立建制已终，未正式建国是其历史边界。", "势力短暂兴起，未及正式建国便告终结，记其所见，不补其未有。"])
-    : e.lifetimeMonths >= 600 && e.lifetime.peakCityCount.value === 1 ? "势力延续至少五十年，月度记录最多仅一城；其历史分量在延续，不在城邑扩张。"
-    : e.wasHegemon ? "曾经确立天下霸权，足见其影响不止于一隅；终局仍须与盛时分别记述。"
-    : has("RETREAT") ? choose(e, "retreat", ["实测疆域峰值与终结前相去甚远，盛衰之差见于版图，不必另托虚构的兴亡缘由。", "疆域曾盛而后退潮，所得与所失均有记录，其史当兼记两端。"])
-    : has("LONG") ? "势力绵延百年以上，其历史分量在长期延续，非终局一事所能尽括。"
-    : e.lifetime.peakCityCount.value >= 3 ? `月度记录中城市最多${e.lifetime.peakCityCount.value}座，人口最高${e.lifetime.peakPopulation.value}人，城邑与人口各有可考之峰。`
-    : "其史以实际建制与疆域记录为据，不以未记载的功过补成兴亡故事。";
-  const ending = e.ending === "SUBMITTED" ? choose(e, "submitted", ["终其独立建制，以和平纳土收束，并非君主战死或王室被杀。", "末以纳土终止独立建制，退位与死亡有别，旧王室仍可稽考。"])
-    : e.ending === "MERGED" ? choose(e, "merged", ["终归同源合邦，其终结在政治归并，不在战败覆灭。", "同源政权终而合邦，独立建制的终点不应误作一场征服。"])
-    : e.remnantsDissipated ? "终结事件明载残部消散，失城与绝统之间仍有一段历史。"
-    : "独立政权最终彻底终结；没有明确终结归责的记录，不据此归功于最后攻城者。";
-  return `${history}${ending}`;
+export function composeFactionHistorianVoice(e: FactionHistoricalEvidence, events: readonly import("./FactionHistoricalNarrative").FactionNarrativeEvidence[] = []) {
+  return e.terminal ? buildFactionHistoricalNarrative(e, events).voice : undefined;
 }
 export function deriveFactionAssessment(context: FactionHistoryContext) {
   const e = deriveFactionHistoricalEvidence(context);
@@ -124,15 +105,7 @@ export function deriveFactionAssessment(context: FactionHistoryContext) {
     `最多城市：${p.peakCityCount.value}座（${formatWorldDate(p.peakCityCount.month)}）`,
     "峰值口径：月度记录及终结前实测；人口来自users.size，疆域来自受控格数，城市来自cities.length。未记录观测间瞬时极值。"];
   const profiles = classifyFactionHistoricalProfile(e);
-  const core = e.restorationCount >= 2 ? `实际复国${e.restorationCount}次，流亡与重建构成其历史的重要转折。`
-    : e.houseCount > 1 ? `同一势力经历${e.epochCount}段、${e.houseCount}姓王统${e.usurpationCount ? `，其中${e.usurpationCount}次篡朝` : ""}，不能以一家兴亡概括其国史。`
-    : e.wasEmperor ? "存在称帝记录，帝制是其国家历史中的明确阶段。"
-    : e.wasHegemon ? "曾确立天下霸权，对世界格局有明确影响。"
-    : e.lifetimeMonths >= 1200 ? "势力存续至少百年，长期延续构成其历史的主要特征。"
-    : !e.formal ? "终结时尚未正式建国，其历史应记为势力兴替。" : "正式建国与独立统治构成其可核实的国家经历。";
-  const retreat = profiles.some(p => p.key === "RETREAT") ? "终结前疆域已不超过记录峰值四分之一，版图有明显退潮。" : undefined;
-  return { title: e.formal ? "国评" : "势力结语", evidence: e, profiles, facts,
-    lines: [core, retreat, `最终政治结局为${ending}。`].filter((line): line is string => Boolean(line)),
-    voice: composeFactionHistorianVoice(e)!,
-    summary: `${e.formal ? "势力存续" : "势力历时"}${formatWorldDuration(e.lifetimeMonths)}${e.formal ? ` · 正式国祚${formatWorldDuration(e.formalMonths!)} · 历${e.formalRulerCount}君` : ` · 历${e.rulerCount}位首领`} · ${e.epochCount}段${e.formal ? "王统" : "家族记录"} · ${ending}。${core}` };
+  const narrativeEvidence = collectFactionNarrativeEvidence(context);
+  const story = buildFactionHistoricalNarrative(e, narrativeEvidence);
+  return { title: e.formal ? "国评" : "势力结语", evidence: e, profiles, facts, narrativeEvidence, ...story };
 }

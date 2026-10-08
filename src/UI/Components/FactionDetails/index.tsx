@@ -508,7 +508,7 @@ function FactionProfile({
       ) : null}
       {activeTab === "house" ? (
         <Box sx={{ display: "grid", gap: 1 }}>
-        <FactionAssessmentPanel faction={team} factions={factionById} dynasty={dynasty} />
+        <FactionAssessmentPanel faction={team} factions={factionById} dynasty={dynasty} rulersForFaction={(factionId) => DynastyRegistry.get(factionId)?.rulers} />
         <DynastyTree
           key={team.name}
           dynasty={dynasty}
