@@ -99,7 +99,7 @@ describe("faction details model", () => {
     const lines = buildFactionLifecycleLines({ name: "郑", status: "EXTINCT", terminationReason: "SUBMITTED",
       terminationTargetFactionId: "楚", terminationMonth: 120, firstFoundedYear: 0 }, 150, 0);
     expect(lines).toContain("纳土归附于：楚 · 10年1月");
-    expect(lines).toContain("状态：已纳土");
+    expect(lines).toContain("状态：已纳土归附");
     expect(lines.join("\n")).not.toContain("灭亡");
   });
   it("renders absorbed factions as merged rather than extinct", () => {
@@ -107,8 +107,8 @@ describe("faction details model", () => {
       name: "梁西", status: "EXTINCT", terminationReason: "MERGED",
       terminationTargetFactionId: "梁东", terminationMonth: 36, firstFoundedYear: 0,
     }, 60, 0);
-    expect(lines).toContain("并入：梁东 · 3年1月");
-    expect(lines).toContain("状态：已合邦");
+    expect(lines).toContain("同源合邦，并入：梁东 · 3年1月");
+    expect(lines).toContain("状态：已同源合邦");
     expect(lines.some((line) => line.includes("彻底灭亡"))).toBe(false);
   });
 

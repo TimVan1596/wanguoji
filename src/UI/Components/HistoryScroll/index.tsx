@@ -1,3 +1,4 @@
+import { getMergedEventPresentation } from "../../../History/MergedEventPresentation";
 import { getHistoryCardFactionView, getHistoryCardPresentation } from "../../../History/HistoryCardPresentation";
 import { FactionTerminalRetrospective } from "../FactionAssessment";
 import { getSubmissionEventPresentation } from "../../../History/PeacefulSubmissionPresentation";
@@ -586,7 +587,7 @@ function EventDetails({
   factionNames: string[];
   cityNames: string[];
 }) {
-  const lines: string[] = [...getRevolutionEventDetails(event), ...(getSubmissionEventPresentation(event, teamByName)?.lines ?? [])];
+  const lines: string[] = [...getRevolutionEventDetails(event), ...(getSubmissionEventPresentation(event, teamByName)?.lines ?? []), ...(getMergedEventPresentation(event, teamByName)?.lines ?? [])];
   const metadata = event.metadata;
   const kind = metadata?.historyNarrativeKind;
   const isCapitalTransition = kind === "CAPITAL_TRANSITION" ||

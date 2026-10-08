@@ -78,7 +78,7 @@ export function classifyFactionHistoricalProfile(e: FactionHistoricalEvidence): 
   add(e.terminal && (e.ending === "MERGED" || e.ending === "SUBMITTED") && e.lifetime.peakTerritoryBlocks.value >= 3 && e.lifetime.terminal!.territoryBlocks <= e.lifetime.peakTerritoryBlocks.value * 0.25,
     "RETREAT", "极盛后显著退潮", ["lifetime.peakTerritoryBlocks", "lifetime.terminal.territoryBlocks"], "终结前疆域不超过月度实测峰值四分之一");
   add(e.lifetime.terminal?.cityCount === 1, "ONE_CITY_END", "终局一城", ["lifetime.terminal.cityCount"], "终结前实测仅有一城");
-  add(e.ending === "MERGED", "MERGED", "同源归并", ["ending"], "canonical终结原因MERGED");
+  add(e.ending === "MERGED", "MERGED", "同源合邦", ["ending"], "canonical终结原因MERGED");
   add(e.ending === "SUBMITTED", "SUBMITTED", "和平纳土", ["ending"], "canonical终结原因SUBMITTED");
   add(e.remnantsDissipated, "REMNANTS", "残部消散后绝统", ["terminalEventId", "remnantsDissipated"], "原始终结事件明确记录残部消散");
   return profiles;

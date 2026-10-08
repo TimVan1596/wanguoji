@@ -36,8 +36,8 @@ describe("political terminal chronicles, including existing V11 events", () => {
     const last = { ...source, endReason: "合邦退位" };
     expect(getRulerHistoricalEvents([merger], last, "a", 200, [])).toEqual([merger]);
     expect(getRulerHistoricalEvents([merger], receiver, "b", 200, [])).toEqual([merger]);
-    expect(formatRulerTerminalEvent(merger, last, "a", factions)).toBe("合邦退位，张归并于鄄");
-    expect(formatRulerTerminalEvent(merger, receiver, "b", factions)).toContain("吸收张归并");
+    expect(formatRulerTerminalEvent(merger, last, "a", factions)).toBe("合邦退位，张并入鄄（同源合邦）");
+    expect(formatRulerTerminalEvent(merger, receiver, "b", factions)).toContain("通过同源合邦吸收张");
     expect(getRulerTerminalRole(merger, { ...last, status: "dead" }, "a")).toBeUndefined();
     expect(getRulerTerminalRole(merger, { ...receiver, endYear: 100 }, "b")).toBeUndefined();
     expect(getRulerTerminalRole(merger, { ...receiver, accessionYear: 101 }, "b")).toBeUndefined();

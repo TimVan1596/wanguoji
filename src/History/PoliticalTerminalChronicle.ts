@@ -47,6 +47,6 @@ export function formatRulerTerminalEvent(event: WorldEvent, ruler: TerminalChron
   const name = (id: unknown) => typeof id === "string"
     ? (factions.has(id) ? getHistoricalFactionIdentity(factions.get(id)!, event.monthIndex ?? event.year).name : id) : "—";
   return role === "SOURCE"
-    ? submitted ? `纳土退位，${name(source)}纳土归附于${name(target)}` : `合邦退位，${name(source)}归并于${name(target)}`
-    : submitted ? `受纳${name(source)}来归，纳入其城市与疆域` : `吸收${name(source)}归并，纳入其城市与疆域`;
+    ? submitted ? `纳土退位，${name(source)}纳土归附于${name(target)}` : `合邦退位，${name(source)}并入${name(target)}（同源合邦）`
+    : submitted ? `受纳${name(source)}来归，纳入其城市与疆域` : `通过同源合邦吸收${name(source)}，纳入其城市与疆域`;
 }
