@@ -113,7 +113,7 @@ describe("evidence-backed historiographic arguments and chronological material s
     expect(submission.narrative.at(-1)).toContain("纳土归附董"); expect(submission.voice).not.toContain("合邦"); expect(submission.voice).not.toBe(a.voice);
   });
   it("only true distinct capital events support an attack/defense reversal", () => {
-    const c = scenario("韩"); c.events = c.events.filter(x => x.month !== m(25, 5));
+    const c = scenario("韩"); c.events = c.events.filter(x => (x.monthIndex ?? x.year) !== m(25, 5));
     expect(assessment(c).arguments.map(x => x.argumentKey)).not.toContain("ATTACK_DEFENSE_REVERSAL");
     c.events = [...c.events, ev("capital-fallen", m(25, 5), { actorFactionId: "魏-id", targetFactionId: "秦-id", relatedFactionIds: [c.faction.name], cityName: "大梁" })];
     expect(assessment(c).arguments.map(x => x.argumentKey)).not.toContain("ATTACK_DEFENSE_REVERSAL");

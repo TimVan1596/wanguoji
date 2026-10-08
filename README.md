@@ -160,7 +160,7 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 - v0.99927d Calibration Closure：最高继承危机概率不变，shock／instability仅在“前君战死或被俘＋仅余一城”时开放折扣入口；新增会话期望频率诊断。1005年人工长局已自然产生一次篡朝，校准冻结；事件语义视觉验收已通过。2445年低FPS／unlock卡顿为known performance debt，本版不处理。
 
-- 历史版本v0.99927d2使用WorldSaveV9；当前v0.99930a仅接受V12，V11及更旧无法继续。IndexedDB 数据库版本仍为 2。首领诊断与 Revolution Gate 累计诊断的本会话样本在新世界／读档时重置，后者仅在 debug 模式观察，不写入存档。首领诊断的最近 100 年窗口按任期结束月份筛选。
+- 历史版本v0.99927d2使用WorldSaveV9；当前v0.99930b仅接受V12，V11及更旧无法继续。IndexedDB 数据库版本仍为 2。首领诊断与 Revolution Gate 累计诊断的本会话样本在新世界／读档时重置，后者仅在 debug 模式观察，不写入存档。首领诊断的最近 100 年窗口按任期结束月份筛选。
 
 - v0.99927b1 disposal 已通过新世界 desktop debug 4×约1962年人工测试：无 `.size`／Renderer Fatal／disposal stalled，运行时资源 invariant 正常。本版保留该生命周期修复。
 - v0.99927b2 History Scalability 已人工通过，4228年／约10k历史事件存档Load后仍可恢复60～65 FPS；历史与disposal修复继续保留。原History测量见 [HistoryFrameScalability](docs/HistoryFrameScalability.md)。
@@ -210,3 +210,5 @@ MIT License。详见 [LICENSE](./LICENSE)。
 路线图见 [ROADMAP.md](./ROADMAP.md)。
 
 Desktop scheduler实验保留为debug／compatibility选项（blocker／timeout），不更改默认行为。本版按默认`pnpm desktop:start:debug`进行王朝易代人工Gate，不要求重复A/B。
+
+- v0.99930b Historiographic Judgment：有来源的史论、严格编年与同源合邦措辞；WorldSave V12不变，等待[人工史论Gate](docs/FactionHistoriographyJudgment.md)，不进入下一版本。

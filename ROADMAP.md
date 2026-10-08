@@ -55,3 +55,5 @@
 ## 外交观察 backlog（未实现）
 
 **Deterministic Staggered Diplomacy Evaluation**：当前年度评价使用worldMonth%12===0，同月两条NAP符合现有配额，不能据此判断过密。只有长局人工确认每年同月扎堆影响历史自然感后，才考虑pair-specific deterministic phase=stableHash(pairKey)%12，保持每pair每年最多一次。本版只记录，不实现、不调整频率。
+
+- v0.99930b Historiographic Judgment：有来源的史论、严格编年与同源合邦措辞；WorldSave V12不变，等待[人工史论Gate](docs/FactionHistoriographyJudgment.md)，不进入下一版本。
