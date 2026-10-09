@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getHouseEpochPresentation, getSignificantReignStats, formatRulerAge } from "./RoyalPresentation";
+import { getHouseEpochHeading, getHouseEpochPresentation, getSignificantReignStats, formatRulerAge } from "./RoyalPresentation";
 import type { DynastyHouseEpoch } from "../../../Politics/DynasticRevolution";
 
 const first: DynastyHouseEpoch = { houseName: "姬氏", startMonth: 0, foundingRulerId: "r1", startReason: "FOUNDING" };
@@ -31,4 +31,18 @@ it("distinguishes death, abdication and current age without inferring death from
   expect(formatRulerAge("dead", 44)).toBe("享年44岁");
   expect(formatRulerAge("ruling", 44)).toBe("当前年龄44岁");
   expect(formatRulerAge("exiled", 44)).toBe("当前年龄44岁");
+});
+
+// All terminal reasons retain EXTINCT as the faction lifecycle status.
+describe("terminal house epoch title", () => {
+  it.each(["EXTINCT", "MERGED", "SUBMITTED"])("%s displays the actual last epoch as the final house", terminationReason => {
+    const faction = { status: "EXTINCT", terminationReason, houseName: "姬氏" };
+    const epochs: DynastyHouseEpoch[] = [first, { houseName: "张氏", startMonth: 100, foundingRulerId: "last", startReason: "USURPATION" }];
+    expect(getHouseEpochHeading(faction.status)).toBe("末代王统");
+    expect(getHouseEpochPresentation(epochs).current?.text).toContain("张氏");
+    expect(getHouseEpochPresentation(epochs).current?.key).toBe("last");
+  });
+  it.each(["ACTIVE", "EXILED"])("%s retains a current house, not a prematurely final one", status => {
+    expect(getHouseEpochHeading(status)).toBe("当前王统");
+  });
 });
