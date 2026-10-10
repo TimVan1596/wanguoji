@@ -485,9 +485,9 @@ function validateHydrationImportShapes(save: Partial<WorldSaveV1>, errors: strin
     const ownIds = new Set(rulers.filter(isPlainRecord).map((r: any) => r.rulerId));
     const faction = save.factions?.find(f => f.factionId === dynasty.factionId);
     if (faction?.status === "EXTINCT" && (dynasty.currentRulerId || (Array.isArray(dynasty.heirIds) && dynasty.heirIds.length) || dynasty.designatedHeirId ||
-      rulers.some((r: any) => ["ruling", "exiled", "heir"].includes(r.status)))) errors.push("terminal faction cannot retain political offices or heirs");
+      rulers.some((r: any) => isPlainRecord(r) && ["ruling", "exiled", "heir"].includes(String(r.status))))) errors.push("terminal faction cannot retain political offices or heirs");
     if (dynasty.currentRulerId != null) {
-      const current = rulers.find((r: any) => r.rulerId === dynasty.currentRulerId);
+      const current = rulers.find((r: any) => isPlainRecord(r) && r.rulerId === dynasty.currentRulerId);
       if (!ownIds.has(dynasty.currentRulerId) || !current || !["ruling", "exiled"].includes(current.status)) errors.push("invalid current ruler office");
       else if ((faction?.status === "ACTIVE" && current.status !== "ruling") || (faction?.status === "EXILED" && current.status !== "exiled")) errors.push("current ruler disagrees with faction status");
     }

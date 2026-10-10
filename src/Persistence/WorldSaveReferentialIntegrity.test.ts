@@ -80,9 +80,10 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     save.registries.dynastyRegistrySequence = state.sequence; save.worldHistory = WorldHistory.exportState(); save.worldRandom = worldRandom.exportState();
     expect(state.dynasties).toHaveLength(7);
     expect(state.dynasties.every(d => d.rulers.some(r => r.id === d.currentRulerId && r.status === "ruling" && r.deathMonth === undefined))).toBe(true);
-    expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
-    hydrateWorldSave(core, save); const first = exportWorldSave(core);
-    expect(first.dynasties).toEqual(save.dynasties); expect(first.worldHistory).toEqual(save.worldHistory);
+    const encoded = JSON.parse(JSON.stringify(save));
+    expect(validateWorldSave(encoded)).toEqual({ valid: true, errors: [] });
+    hydrateWorldSave(core, encoded); const first = exportWorldSave(core);
+    expect(first.dynasties).toEqual(encoded.dynasties); expect(first.worldHistory).toEqual(save.worldHistory);
     hydrateWorldSave(core, first); expect(exportWorldSave(core)).toEqual(first); expect(worldRandom.exportState()).toEqual(save.worldRandom);
   });
   it("V13 preserves independently ended offices, actual deaths, retirement, family and RNG across hydration", () => {
