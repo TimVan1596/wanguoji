@@ -493,7 +493,7 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
   } else if (evidence.rebellions > 0) {
     lines.push(`${evidence.rebellions >= 2 ? "其治下内乱频仍" : "其治下发生重大内乱"}，政权承受了持续的内部压力${evidence.terminalCollapse ? "，终亡于其世" : "，但国统仍得延续"}。`);
   } else if (evidence.predeceasedHeirCount > 0) {
-    const successionLoss = abdicated
+    const successionLoss = !evidence.hasRecordedDeath
       ? `在位期间有${evidence.predeceasedHeirCount}名继承候选去世，继承秩序因此受到冲击。`
       : formatPredeceasedHeirAssessment(evidence.predeceasedHeirCount);
     if (successionLoss) lines.push(successionLoss);

@@ -1,3 +1,4 @@
+import { validateRulerLifeRecord } from "./RulerLifeValidation";
 import { validateFactionLifetime } from "./FactionLifetimeValidation";
 import { CURRENT_SAVE_SCHEMA_VERSION, WorldSaveV1 } from "./WorldSaveSchema";
 import { isEraMapSnapshotV1 } from "../Simulation/EraMapSnapshot";
@@ -12,7 +13,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   const errors: string[] = [];
   if (!isPlainRecord(value)) return { valid: false, errors: ["save must be a plain object"] };
   const save = value as Partial<WorldSaveV1>;
-  if (save.saveSchemaVersion !== CURRENT_SAVE_SCHEMA_VERSION) errors.push("unsupported saveSchemaVersion");
+  if (save.saveSchemaVersion !== CURRENT_SAVE_SCHEMA_VERSION) errors.push(save.saveSchemaVersion === 12 ? "此存档为旧版V12，当前V13不支持读取，请新建世界。" : "unsupported saveSchemaVersion");
   if (typeof save.appVersion !== "string" || !save.appVersion.trim()) errors.push("appVersion is required");
   if (!isPlainRecord(save.worldRandom) || save.worldRandom.algorithm !== "mulberry32-v1" || typeof save.worldRandom.seed !== "string" || !save.worldRandom.seed.trim() || !Number.isInteger(save.worldRandom.state) || Number(save.worldRandom.state) < 0 || Number(save.worldRandom.state) > 0xffffffff || !Number.isSafeInteger(save.worldRandom.position) || Number(save.worldRandom.position) < 0) errors.push("worldRandom must contain a supported algorithm, seed, uint32 state, and non-negative draw position");
   if (!isPlainRecord(save.world)) errors.push("world must be an object");
@@ -157,6 +158,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
       if (isPlainRecord(ruler) && typeof ruler.rulerId === "string") {
         if (rulerIds.has(ruler.rulerId)) duplicateRulerIds.add(ruler.rulerId);
         rulerIds.add(ruler.rulerId);
+        errors.push(...validateRulerLifeRecord(ruler, Number(save.world?.worldMonth)));
       }
     });
   });
@@ -480,6 +482,15 @@ function validateHydrationImportShapes(save: Partial<WorldSaveV1>, errors: strin
   });
   save.dynasties?.forEach((dynasty, index) => {
     const rulers = Array.isArray(dynasty.rulers) ? dynasty.rulers : [];
+    const ownIds = new Set(rulers.filter(isPlainRecord).map((r: any) => r.rulerId));
+    const faction = save.factions?.find(f => f.factionId === dynasty.factionId);
+    if (faction?.status === "EXTINCT" && (dynasty.currentRulerId || (Array.isArray(dynasty.heirIds) && dynasty.heirIds.length) || dynasty.designatedHeirId ||
+      rulers.some((r: any) => ["ruling", "exiled", "heir"].includes(r.status)))) errors.push("terminal faction cannot retain political offices or heirs");
+    if (dynasty.currentRulerId != null) {
+      const current = rulers.find((r: any) => r.rulerId === dynasty.currentRulerId);
+      if (!ownIds.has(dynasty.currentRulerId) || !current || !["ruling", "exiled"].includes(current.status)) errors.push("invalid current ruler office");
+      else if ((faction?.status === "ACTIVE" && current.status !== "ruling") || (faction?.status === "EXILED" && current.status !== "exiled")) errors.push("current ruler disagrees with faction status");
+    }
     if (!Array.isArray(dynasty.rulers) || dynasty.rulers.some((ruler: unknown) => !isPlainRecord(ruler))) errors.push(`dynasties[${index}].rulers must be an array of objects`);
     if (!Array.isArray(dynasty.heirIds) || dynasty.heirIds.some((id: unknown) => typeof id !== "string")) errors.push(`dynasties[${index}].heirIds must be an array of strings`);
     else {

@@ -8,7 +8,7 @@ const faction = (name: string, extra: Record<string, unknown> = {}) => ({
 });
 const ruler = (id: string, extra: Record<string, unknown> = {}) => ({
   id, houseName: "嬴氏", givenName: "平", bornYear: 0, accessionYear: 120, endYear: 240,
-  reignOrdinal: 1, endReason: "去世", status: "dead",
+  reignOrdinal: 1, endReason: "去世", status: "dead", deathMonth: 240, deathReason: "去世",
   chronicle: {
     accessionSnapshot: { month: 120, population: 10, territoryShare: 0.2, cityCount: 2, stability: 70 },
     endSnapshot: { month: 240, population: 12, territoryShare: 0.4, cityCount: 5, stability: 75 },

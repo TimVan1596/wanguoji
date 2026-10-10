@@ -168,6 +168,7 @@ export function formatPosthumousRulerName(
   monthIndex: number
 ) {
   const personalName = `${ruler.houseName.replace(/氏$/, "")}${ruler.givenName}`;
+  if (!hasRecordedRulerDeath(ruler)) return personalName;
   const polityName = ruler.regimeNameAtEnd ?? getFactionDisplayNameAtMonth(faction, monthIndex);
   const rank = getSovereigntyRankAtMonth(faction, monthIndex);
   const epithetSuffix = rank === "EMPEROR" ? "帝" : "王";
@@ -187,7 +188,7 @@ export function getPosthumousLabelLines(
   faction: Pick<Team, "displayName" | "name" | "nameHistory" | "identityStage" | "stateFoundedMonth" | "sovereigntyRank" | "sovereigntyHistory">,
   monthIndex: number
 ) {
-  if (!ruler.templeName && !ruler.posthumousEpithet) {
+  if (!hasRecordedRulerDeath(ruler) || (!ruler.templeName && !ruler.posthumousEpithet)) {
     return [];
   }
   return [

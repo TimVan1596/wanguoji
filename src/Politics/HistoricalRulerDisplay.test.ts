@@ -5,6 +5,8 @@ const ruler = {
   houseName: "嬴氏",
   givenName: "平",
   endYear: 120,
+  deathMonth: 120,
+  deathReason: "去世" as const,
   posthumousEpithet: "武",
   templeName: undefined,
 };
@@ -19,8 +21,8 @@ describe("historical ruler display", () => {
   });
 
   it("shows the current formal ruler's polity and rank without inventing a posthumous title", () => {
-    expect(resolveHistoricalRulerDisplay({ ...ruler, endYear: undefined, posthumousEpithet: undefined }, "党", "compact", { historicalRank: "KING" })).toBe("党王嬴平");
-    expect(resolveHistoricalRulerDisplay({ ...ruler, endYear: undefined, posthumousEpithet: undefined }, "燕", "compact", { historicalRank: "EMPEROR" })).toBe("燕帝嬴平");
+    expect(resolveHistoricalRulerDisplay({ ...ruler, endYear: undefined, deathMonth: undefined, deathReason: undefined, posthumousEpithet: undefined }, "党", "compact", { historicalRank: "KING" })).toBe("党王嬴平");
+    expect(resolveHistoricalRulerDisplay({ ...ruler, endYear: undefined, deathMonth: undefined, deathReason: undefined, posthumousEpithet: undefined }, "燕", "compact", { historicalRank: "EMPEROR" })).toBe("燕帝嬴平");
   });
 
   it("uses the historical provisional faction and leader role", () => {

@@ -122,6 +122,6 @@ describe("fact-driven national rise and fall narratives", () => {
     const restored = { ...c, ...JSON.parse(original), factions: new Map([...c.factions].map(([id, f]) => [id, JSON.parse(JSON.stringify(f))])) };
     expect(deriveFactionAssessment(restored)).toEqual(a); expect(deriveFactionAssessment(c)).toEqual(a);
     expect(JSON.stringify({ faction: c.faction, dynasty: c.dynasty, lifetime: c.lifetime, events: c.events })).toBe(original);
-    expect(worldRandom.exportState()).toEqual(rng); expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(12);
+    expect(worldRandom.exportState()).toEqual(rng); expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(13);
   });
 });

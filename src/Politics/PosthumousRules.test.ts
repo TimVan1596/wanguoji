@@ -57,6 +57,8 @@ function ruler(overrides: Partial<Ruler> = {}): Ruler {
     status: "dead",
     chronicle,
     ...overrides,
+    deathMonth: overrides.endYear ?? 140,
+    deathReason: overrides.endReason === "战死" ? "战死" : overrides.endReason === "被俘处死" ? "被俘处死" : "去世",
   };
 }
 

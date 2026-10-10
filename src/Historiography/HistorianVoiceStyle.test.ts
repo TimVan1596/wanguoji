@@ -94,6 +94,6 @@ describe('commentary style isolated from exact historical statistics', () => {
     expect(a.voice).toContain('燕王甲2'); expect(a.voice).toContain('第3城');
     expect(story(JSON.parse(JSON.stringify(e)), JSON.parse(JSON.stringify(events)))).toEqual(a);
     expect(JSON.stringify({ e, events })).toBe(before); expect(worldRandom.exportState()).toEqual(rng);
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(12);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(13);
   });
 });

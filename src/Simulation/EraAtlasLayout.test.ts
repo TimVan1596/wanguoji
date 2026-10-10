@@ -24,7 +24,7 @@ describe("snapshot-only Era Atlas analysis and label geometry", () => {
     const s = snapshot(20, 20, () => 1), original = JSON.stringify(s), rng = worldRandom.exportState();
     const labels = layoutEraCountryLabels(s, 18, true);
     expect(labels.map(x => x.text)).toEqual(["旧秦"]); expect(analyzeEraSnapshot(s).territories[0].color).toBe(0xaa0000);
-    expect(JSON.stringify(s)).toBe(original); expect(worldRandom.exportState()).toEqual(rng); expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(12);
+    expect(JSON.stringify(s)).toBe(original); expect(worldRandom.exportState()).toEqual(rng); expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(13);
     const restored = JSON.parse(original); expect(analyzeEraSnapshot(restored)).toEqual(analyzeEraSnapshot(s)); expect(layoutEraCountryLabels(restored, 18, true)).toEqual(labels);
   });
   it("places a large country in its interior and draws its name once", () => {

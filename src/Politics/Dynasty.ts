@@ -235,9 +235,10 @@ class DynastyRegistryStore {
   }
 
   markExiled(team: Team, year: number) {
+    if (team.status === "EXTINCT") return;
     const dynasty = this.initializeFaction(team, 0);
     const ruler = dynasty ? this.getCurrentRuler(team.name) : undefined;
-    if (ruler && ruler.status !== "dead") {
+    if (ruler && (ruler.status === "ruling" || ruler.status === "exiled") && team.status !== "EXTINCT") {
       ruler.status = "exiled";
     }
     team.removeRulerUnit(true);
@@ -249,9 +250,10 @@ class DynastyRegistryStore {
   }
 
   markRestored(team: Team, year: number, cityName: string) {
+    if (team.status === "EXTINCT") return;
     const dynasty = this.initializeFaction(team, 0);
     const ruler = dynasty ? this.getCurrentRuler(team.name) : undefined;
-    if (ruler && ruler.status !== "dead") {
+    if (ruler && (ruler.status === "ruling" || ruler.status === "exiled") && team.status !== "EXTINCT") {
       ruler.status = "ruling";
     }
     this.ensureRulerUnit(team);
@@ -358,7 +360,7 @@ class DynastyRegistryStore {
   handleRulerCombatDeath(team: Team, rulerId: string, year: number) {
     const dynasty = this.dynasties.get(team.name);
     const ruler = dynasty?.rulers.find((item) => item.id === rulerId);
-    if (!dynasty || !ruler || ruler.status === "dead") {
+    if (!dynasty || !ruler || (ruler.status !== "ruling" && ruler.status !== "exiled") || team.status === "EXTINCT") {
       return true;
     }
     const stability = getFactionStability(team) ?? 100;
@@ -571,7 +573,7 @@ class DynastyRegistryStore {
   resolveCapturedRuler(team: Team, conqueror: Team, year: number) {
     const dynasty = this.dynasties.get(team.name);
     const ruler = dynasty ? this.getCurrentRuler(team.name) : undefined;
-    if (!dynasty || !ruler || ruler.status === "dead") {
+    if (!dynasty || !ruler || (ruler.status !== "ruling" && ruler.status !== "exiled") || team.status === "EXTINCT") {
       return false;
     }
     const eventId = WorldHistory.addRulerCaptured(
@@ -808,7 +810,7 @@ class DynastyRegistryStore {
     });
     const selectedIds = new Set(existingCandidates);
     dynasty.rulers.forEach((ruler) => {
-      if (ruler.id === current?.id || ruler.status === "dead" || ruler.status === "exiled") return;
+      if (ruler.id === current?.id || ruler.status === "dead" || ruler.status === "exiled" || ruler.status === "politically-ended" || ruler.status === "abdicated") return;
       ruler.status = selectedIds.has(ruler.id) ? "heir" : "kin";
     });
     dynasty.heirIds = existingCandidates;

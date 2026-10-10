@@ -1,10 +1,24 @@
 import type { FactionLifetimeState } from "../Simulation/FactionLifetimeRecord";
+import type { Ruler } from "../Politics/Dynasty";
 import { APP_VERSION } from "../config/version";
 import { WORLD_RNG_ALGORITHM, WorldRandomState } from "../Simulation/WorldRandom";
 import type { DiplomaticRelation, DiplomaticPairMemory } from "../Politics/Diplomacy";
 import type { FactionColorHistoryEntry } from "../Simulation/FactionColorHistory";
 
 export const CURRENT_SAVE_SCHEMA_VERSION = 13 as const;
+
+/** V13 person DTO: endMonth closes an office; deathMonth records an actual death. */
+export type RulerSaveV13 = Omit<Ruler, "id" | "bornYear" | "naturalDeathYear" | "accessionYear" |
+  "plannedEndYear" | "endYear" | "politicalStartYear" | "politicalEndYear"> & {
+  rulerId: string;
+  bornMonth: number;
+  naturalDeathMonth?: number;
+  accessionMonth?: number;
+  plannedEndMonth?: number;
+  endMonth?: number;
+  politicalStartMonth?: number;
+  politicalEndMonth?: number;
+};
 
 export interface FactionSaveV1 {
   factionId: string;

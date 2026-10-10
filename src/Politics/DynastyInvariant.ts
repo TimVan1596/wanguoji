@@ -1,3 +1,4 @@
+import { validateRulerLifeRecord } from "../Persistence/RulerLifeValidation";
 import type { Dynasty, Ruler } from "./Dynasty";
 import { MAX_DYNASTIC_SUCCESSION_CANDIDATES } from "./DynasticCandidateRules";
 
@@ -42,7 +43,9 @@ export function validateDynastyInvariants(
 }
 
 export function validateRulerInvariant(factionId: string, ruler: Ruler) {
-  const issues: string[] = [];
+  const issues: string[] = validateRulerLifeRecord({ ...ruler, rulerId: ruler.id,
+    bornMonth: ruler.bornYear, accessionMonth: ruler.accessionYear, endMonth: ruler.endYear,
+    politicalStartMonth: ruler.politicalStartYear, politicalEndMonth: ruler.politicalEndYear }, Number.MAX_SAFE_INTEGER);
   const formallyEnthroned =
     ruler.reignOrdinal !== undefined ||
     ruler.accessionYear !== undefined ||

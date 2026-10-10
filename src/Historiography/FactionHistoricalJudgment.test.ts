@@ -148,7 +148,7 @@ describe("evidence-backed historiographic arguments and chronological material s
     const c = scenario("韩"), rng = worldRandom.exportState();
     const a = assessment(c), raw = JSON.stringify({ faction: c.faction, dynasty: c.dynasty, lifetime: c.lifetime, events: c.events });
     const restored = { ...c, ...JSON.parse(raw), factions: new Map([...c.factions].map(([id, f]) => [id, JSON.parse(JSON.stringify(f))])) };
-    expect(assessment(restored)).toEqual(a); expect(worldRandom.exportState()).toEqual(rng); expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(12);
+    expect(assessment(restored)).toEqual(a); expect(worldRandom.exportState()).toEqual(rng); expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(13);
     expect(deriveFactionHistoricalArguments(a.evidence, collectFactionNarrativeEvidence(c))).toEqual(a.arguments);
   });
 });

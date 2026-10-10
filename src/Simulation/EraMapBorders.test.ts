@@ -31,7 +31,7 @@ describe("frozen owner grid borders", () => {
     }
     expect(getEraMapBorders(s)).toBe(borders);
     expect(getEraMapBorders(JSON.parse(before))).toEqual(borders);
-    expect(JSON.stringify(s)).toBe(before); expect(worldRandom.exportState()).toEqual(rng); expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(12);
+    expect(JSON.stringify(s)).toBe(before); expect(worldRandom.exportState()).toEqual(rng); expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(13);
   });
   it("batches borders after territory fills, before labels and capital rings; OFF retains the exact pure-color path", () => {
     const s = snapshot(Array.from({ length: 400 }, (_, i) => i % 20 < 10 ? 1 : 2), 20);

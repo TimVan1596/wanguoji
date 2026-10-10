@@ -1,3 +1,4 @@
+import { exportRulerSave } from "./RulerSaveProjection";
 import FactionLifetimeRecords from "../Simulation/FactionLifetimeRecord";
 import { getCityBlockReferenceIssues } from "../Simulation/CityBlockReferences";
 import type Core from "../Game/Core";
@@ -126,20 +127,7 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
   const dynastyState = DynastyRegistry.exportState();
   const dynasties = dynastyState.dynasties.map((dynasty) => ({
     ...dynasty,
-    rulers: dynasty.rulers.map((ruler) => {
-      const { id, bornYear, naturalDeathYear, accessionYear, plannedEndYear, endYear, politicalStartYear, politicalEndYear, ...rest } = ruler;
-      return {
-        ...rest,
-        rulerId: id,
-        bornMonth: bornYear,
-        naturalDeathMonth: naturalDeathYear,
-        accessionMonth: accessionYear,
-        plannedEndMonth: plannedEndYear,
-        endMonth: endYear,
-        politicalStartMonth: politicalStartYear,
-        politicalEndMonth: politicalEndYear,
-      };
-    }),
+    rulers: dynasty.rulers.map(exportRulerSave),
   }));
   const autoState = core.simulator?.exportState();
   if (!autoState) throw new UnsafeSaveSnapshotError();

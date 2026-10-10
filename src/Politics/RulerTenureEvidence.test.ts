@@ -7,7 +7,7 @@ const event = (id: string, type: string, month: number, group = id, extra: Recor
 });
 const ruler = (accessionYear: number, endYear: number, status: "dead" | "ruling" = "dead") => ({
   id: "r", houseName: "姬氏", givenName: "澄", bornYear: -36,
-  accessionYear, endYear, status,
+  accessionYear, endYear, status, deathMonth: status === "dead" ? endYear : undefined, deathReason: status === "dead" ? "去世" : undefined,
 } as any);
 
 describe("ruler tenure exile evidence", () => {

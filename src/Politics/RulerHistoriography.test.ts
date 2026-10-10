@@ -79,6 +79,8 @@ function makeContext(options: {
     endYear: options.endMonth === undefined ? endMonth : options.endMonth,
     endReason: options.endReason,
     status: options.endMonth === undefined ? "dead" : "dead",
+    deathMonth: endMonth,
+    deathReason: options.endReason === "战死" ? "战死" : options.endReason === "被俘处死" ? "被俘处死" : "去世",
     chronicle,
     posthumousEpithet: options.posthumousEpithet,
   };
@@ -672,13 +674,14 @@ describe("evidence-grounded ruler historiography", () => {
     ]);
     expect(SIMULATION_SPEEDS).toEqual([1, 2, 4]);
     expect(BASE_PLAY_RATE).toBe(2);
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(12);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(13);
   });
 });
 
 it("uses political-end wording for an abdicated ruler without changing the recorded evidence", () => {
   const context = makeContext({ start: { territoryShare: 0.5 }, end: { territoryShare: 0.1 }, peakTerritory: 0.6, endReason: "纳土退位" });
   context.ruler.status = "abdicated";
+  context.ruler.deathMonth = undefined; context.ruler.deathReason = undefined;
   const original = JSON.stringify(context);
   const assessment = deriveRulerAssessment(context);
   expect(assessment.lines.join(" ")).not.toMatch(/身后|一生|去世/);

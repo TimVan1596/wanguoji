@@ -106,7 +106,7 @@ describe("dynastic historiography closure", () => {
       const random = worldRandom.exportState(), a = assess(c);
       expect(JSON.stringify({ faction: c.faction, dynasty: c.dynasty, events: c.events, lifetime: c.lifetime })).toBe(original);
       expect(assess({ ...c, ...JSON.parse(original), factions: new Map([...c.factions].map(([id, f]) => [id, JSON.parse(JSON.stringify(f))])) })).toEqual(a);
-      expect(worldRandom.exportState()).toEqual(random); expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(12);
+      expect(worldRandom.exportState()).toEqual(random); expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(13);
     }
   });
 });

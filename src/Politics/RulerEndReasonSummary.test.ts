@@ -13,6 +13,8 @@ function ruler(endReason?: string): Ruler {
     reignOrdinal: 1,
     status: endReason ? "dead" : "ruling",
     endReason,
+    deathMonth: ["去世", "战死", "被俘处死"].includes(endReason ?? "") ? 120 : undefined,
+    deathReason: ["去世", "战死", "被俘处死"].includes(endReason ?? "") ? endReason as "去世" | "战死" | "被俘处死" : undefined,
   };
 }
 
