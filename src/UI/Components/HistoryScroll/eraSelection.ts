@@ -88,3 +88,10 @@ export function atlasArrowDirection(key: string, target?: { tagName?: string; is
   if (target?.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target?.tagName ?? "")) return 0;
   return key === "ArrowLeft" ? -1 : key === "ArrowRight" ? 1 : 0;
 }
+
+/** All-era browsing opens the latest actual era, even if its snapshot is missing. */
+export function getAtlasOpeningEra(eras: readonly WorldEra[], selectedId: string): WorldEra | undefined {
+  const selected = eras.find(era => era.id === selectedId);
+  const ordered = selected ? [] : orderAtlasEras(eras);
+  return selected ?? ordered[ordered.length - 1];
+}

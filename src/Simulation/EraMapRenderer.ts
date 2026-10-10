@@ -1,3 +1,4 @@
+import { placeEraCityLabel, type AtlasTextBox } from "./EraCityLabelLayout";
 import { analyzeEraSnapshot, layoutEraCountryLabels } from "./EraAtlasLayout";
 import { type EraMapSnapshotV1 } from "./EraMapSnapshot";
 
@@ -26,10 +27,12 @@ export function renderEraMapSnapshot(
     context.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
   });
 
+  const occupied: AtlasTextBox[] = [];
   if (options.showLabels) {
     const labels = layoutEraCountryLabels(snapshot, cellSize, Boolean(options.showCities), (text, size) => {
       context.font = `bold ${size}px sans-serif`; return context.measureText(text).width;
     });
+    occupied.push(...labels);
     context.textAlign = "center"; context.textBaseline = "middle";
     for (const label of labels) {
       context.font = `bold ${label.fontSize}px sans-serif`; context.lineWidth = 3;
@@ -37,6 +40,12 @@ export function renderEraMapSnapshot(
       context.strokeText(label.text, label.x, label.y); context.fillText(label.text, label.x, label.y);
     }
     context.textAlign = "start"; context.textBaseline = "alphabetic";
+  }
+  // Keep all city markers unobscured, including those drawn later in the pass.
+  for (const city of snapshot.cities) {
+    const x = (city.gridX + .5) * cellSize, y = (city.gridY + .5) * cellSize;
+    const radius = Math.max(3, cellSize * .4) + 1;
+    occupied.push({ left: x - radius, top: y - radius, right: x + radius, bottom: y + radius });
   }
   snapshot.cities.forEach((city) => {
     const x = (city.gridX + 0.5) * cellSize;
@@ -53,12 +62,20 @@ export function renderEraMapSnapshot(
         context.arc(x, y, Math.max(3, cellSize * 0.4), 0, Math.PI * 2);
         context.stroke();
       }
-      context.font = `${Math.max(9, Math.floor(cellSize * 0.62))}px sans-serif`;
-      context.lineWidth = 3;
-      context.strokeStyle = "rgba(255,255,255,0.92)";
-      context.strokeText(city.name, x + cellSize * 0.42, y - cellSize * 0.3);
-      context.fillStyle = "#18212b";
-      context.fillText(city.name, x + cellSize * 0.42, y - cellSize * 0.3);
+      const fontSize = Math.max(9, Math.floor(cellSize * 0.62));
+      context.font = `${fontSize}px sans-serif`;
+      const metrics = context.measureText(city.name);
+      const ascent = metrics.actualBoundingBoxAscent || fontSize * .8;
+      const descent = metrics.actualBoundingBoxDescent || fontSize * .2;
+      const textHeight = ascent + descent;
+      const label = placeEraCityLabel(x, y, metrics.width, textHeight, context.canvas.width, context.canvas.height, Math.max(3, cellSize * .4), occupied);
+      if (label) {
+        occupied.push(label);
+        context.textAlign = "left"; context.textBaseline = "alphabetic";
+        context.lineWidth = 3; context.strokeStyle = "rgba(255,255,255,0.92)";
+        context.strokeText(city.name, label.left, label.top + ascent);
+        context.fillStyle = "#18212b"; context.fillText(city.name, label.left, label.top + ascent);
+      }
     } else if (city.isCapital) {
       context.beginPath();
       context.fillStyle = "#f4c542";

@@ -34,8 +34,10 @@
 - `pnpm build`：通过，音乐资源检查通过。
 - `pnpm desktop:build`：通过，renderer/音乐资源检查及Electron编译通过。
 - `pnpm desktop:compile`：独立执行通过。
-- `pnpm desktop:renderer-debug-build`：待记录。
-- `git diff --check`：待记录。
+- `pnpm desktop:renderer-debug-build`：通过，renderer资源、2份debug sourcemap及音乐资源检查通过。
+- `git diff --check`：通过；暂存差异也无空白错误。
+
+构建只有已有的bundle超过500kB提示，本版不做无关拆包或桌面性能重构。
 
 ## 风险与性能观察口径
 

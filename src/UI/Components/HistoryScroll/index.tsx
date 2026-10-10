@@ -24,15 +24,14 @@ import {
 } from "../../../History/HistoryRenderRules";
 import { isLandmarkHistoryEvent } from "../../../History/HistorySignificanceRules";
 import { colorToString } from "../../../paid/theme";
-import WorldEra, { classifyEra, resolveEraDisplayLabel, WorldEra as WorldEraRecord } from "../../../Simulation/WorldEra";
+import WorldEra, { classifyEra, WorldEra as WorldEraRecord } from "../../../Simulation/WorldEra";
 import { formatWorldDate, formatWorldDuration } from "../../../Simulation/WorldTime";
 import { RootState } from "../../../store";
 import { deriveWorldRecords } from "../../../History/WorldRecords";
 import { areHistoryEventListInputsEqual } from "./historyEventListMemo";
-import EraAtlasMap from "./EraAtlasMap";
 import EraAtlasDialog from "./EraAtlasDialog";
 import {
-  getAtlasEraForEvent, orderAtlasEras,
+  getAtlasEraForEvent, getAtlasOpeningEra, orderAtlasEras,
   eraSelectionUIReducer,
   getSelectedEra,
   initialEraSelectionUIState,
@@ -121,7 +120,6 @@ export default function HistoryScroll() {
   const navigateEraMap = useCallback((eraId: string) => dispatchEraSelectionUI({ type: "NAVIGATE_MAP", eraId }), []);
   const closeEraMap = useCallback(() => dispatchEraSelectionUI({ type: "CLOSE_MAP" }), []);
   const selectEra = (eraId: string) => dispatchEraSelectionUI({ type: "SELECT", eraId });
-  const toggleEra = (eraId: string) => dispatchEraSelectionUI({ type: "TOGGLE", eraId });
   const currentEra = useMemo(
     () => eras.find((era) => era.endMonth === undefined),
     [eras]
@@ -214,6 +212,8 @@ export default function HistoryScroll() {
       </Box> : null}
       <Box sx={{ mb: 0.35 }}><Button size="small" variant={filter === "god" ? "contained" : "text"}
         onClick={() => setFilter(filter === "god" ? "all" : "god")} sx={{ fontSize: "0.68rem", minWidth: 0 }}>更多：上帝事件</Button></Box>
+      <Button size="small" variant="outlined" disabled={!eras.length} sx={{ mb: .5, alignSelf: "flex-start" }}
+        onClick={() => { const era = getAtlasOpeningEra(eras, eraSelectionUI.selectedEraId); if (era) openEraMap(era.id); }}>时代图鉴</Button>
       <EraPicker
         eras={eras}
         selectedEraId={eraSelectionUI.selectedEraId}
@@ -226,73 +226,6 @@ export default function HistoryScroll() {
           <br />当前格局：{liveClassification?.name ?? "格局转换中 / 天下未定"}
           {eraCandidate ? ` · 候选：${eraCandidate.name}（已持续${formatWorldDuration(eraCandidate.sustainedMonths)} / ${formatWorldDuration(eraCandidate.requiredMonths)}）` : ""}
         </Typography>
-      ) : null}
-      {eras.length > 0 ? (
-        <Box sx={{ mb: 0.8 }}>
-          <Button
-            size="small"
-            variant="text"
-            onClick={() => dispatchEraSelectionUI({ type: "TOGGLE_TIMELINE" })}
-            sx={{ px: 0, minWidth: 0, fontSize: "0.76rem" }}
-          >
-            时代脉络 {eraSelectionUI.eraTimelineOpen ? "⌃" : "›"}
-          </Button>
-          {eraSelectionUI.eraTimelineOpen ? (
-            <Box
-              sx={{
-                display: "grid",
-                gap: 0.35,
-                maxHeight: "8.5rem",
-                overflowY: "auto",
-                pr: 0.25,
-              }}
-            >
-              {orderAtlasEras(eras).reverse().map((era) => (
-                <Box
-                  key={era.id}
-                  sx={{
-                    borderLeft:
-                      era.endMonth === undefined
-                        ? "3px solid var(--gg-selected)"
-                        : "3px solid var(--gg-border)",
-                    pl: 0.65,
-                    py: 0.25,
-                    background:
-                      eraSelectionUI.selectedEraId === era.id
-                        ? "rgba(47,111,237,0.08)"
-                        : "transparent",
-                  }}
-                >
-                  <Button
-                    size="small"
-                    variant="text"
-                    onClick={() => toggleEra(era.id)}
-                    sx={{
-                      minWidth: 0,
-                      px: 0,
-                      py: 0,
-                      display: "block",
-                      textAlign: "left",
-                      color: "inherit",
-                    }}
-                  >
-                    <Typography component="span" fontSize="0.7rem" color="var(--gg-text-muted)" sx={{ display: "block" }}>
-                      {formatEraTimelineRange(era)}
-                    </Typography>
-                    <Typography component="span" fontSize="0.8rem" fontWeight={era.endMonth === undefined ? 700 : 500} sx={{ display: "block" }}>
-                      {era.name}
-                    </Typography>
-                    {era.cohortLabelSnapshot ? (
-                      <Typography component="span" fontSize="0.68rem" color="var(--gg-text-muted)" sx={{ display: "block" }}>
-                        {resolveEraDisplayLabel(era, teamByName)}主导
-                      </Typography>
-                    ) : null}
-                  </Button>
-                </Box>
-              ))}
-            </Box>
-          ) : null}
-        </Box>
       ) : null}
       {selectedEra ? (
         <Box sx={{ mb: 0.8, border: "1px solid var(--gg-border)", p: 0.65 }}>
@@ -311,18 +244,8 @@ export default function HistoryScroll() {
               ? `时代确立记录：${formatWorldDate(selectedEra.confirmedMonth)} · 地图快照：${formatWorldDate(selectedEra.mapSnapshot.capturedMonth)}`
               : "该时代没有保存历史地图"}
           </Typography>
-          {selectedEra.mapSnapshot ? (
-            <>
-              <EraAtlasMap snapshot={selectedEra.mapSnapshot} />
-              <Typography fontSize="0.68rem" color="var(--gg-text-muted)" sx={{ mt: 0.35 }}>
-                主导势力：{selectedEra.dominantFactionIds.map((id) => selectedEra.mapSnapshot?.factionPalette.find((entry) => entry.factionId === id)?.displayName ?? id).join(" · ") || "未记录"}
-              </Typography>
-
-            </>
-          ) : null}
         </Box>
       ) : null}
-      {selectedEra ? <Button size="small" onClick={() => openEraMap(selectedEra.id)}>查看大图 / 时代轴</Button> : null}
       <EraAtlasDialog open={eraSelectionUI.eraMapOpen} eras={eras} selectedEraId={eraSelectionUI.selectedEraId}
         onNavigate={navigateEraMap} onClose={closeEraMap} />
       {(worldRecordsOpen || dynasties.length > 0 || WorldHistory.getEventCount() > 0) ? (
