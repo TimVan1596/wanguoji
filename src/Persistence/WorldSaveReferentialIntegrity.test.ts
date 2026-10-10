@@ -63,6 +63,57 @@ function target() {
 }
 afterEach(() => { vi.restoreAllMocks(); });
 describe("V9 active city referential integrity and pre-teardown repair", () => {
+  it("V13 preserves independently ended offices, actual deaths, retirement, family and RNG across hydration", () => {
+    const save = fixture();
+    save.dynasties = [{ factionId: "qin", houseName: "田氏", currentRulerId: "current", heirIds: [],
+      houseEpochs: [{ houseName: "田氏", startMonth: 0, foundingRulerId: "dead", startReason: "FOUNDING" }],
+      rulers: [
+        { rulerId: "dead", houseName: "田氏", givenName: "古", bornMonth: -360, accessionMonth: 0, endMonth: 10, politicalEndMonth: 10, status: "dead", endReason: "去世", deathMonth: 10, deathReason: "去世" },
+        { rulerId: "unknown", houseName: "田氏", givenName: "终", bornMonth: -200, accessionMonth: 10, endMonth: 20, politicalEndMonth: 20, status: "politically-ended", endReason: "政治终结", predecessorId: "dead" },
+        { rulerId: "retired", houseName: "田氏", givenName: "退", bornMonth: -100, accessionMonth: 20, endMonth: 30, politicalEndMonth: 30, status: "abdicated", endReason: "合邦退位", parentId: "unknown" },
+        { rulerId: "current", houseName: "田氏", givenName: "今", bornMonth: 0, accessionMonth: 30, status: "ruling", predecessorId: "retired" },
+      ] }];
+    expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
+    const core = target(); hydrateWorldSave(core, save); const first = exportWorldSave(core);
+    expect(first.dynasties[0].rulers).toEqual(save.dynasties[0].rulers);
+    expect(first.saveSchemaVersion).toBe(13); expect(worldRandom.exportState()).toEqual(save.worldRandom);
+    hydrateWorldSave(core, JSON.parse(JSON.stringify(first))); expect(exportWorldSave(core)).toEqual(first);
+  });
+  it.each(["old-v12", "status", "dead-no-proof", "political-death-cause", "death-before-birth", "future-death", "incomplete-death", "end-before-accession", "missing-political-end", "unknown-posthumous", "terminal-office", "cross-faction-current", "event-reference"])("rejects %s during PRECHECK without tearing down the running world", kind => {
+    const save = fixture();
+    const ruler: any = { rulerId: "r1", houseName: "田氏", bornMonth: 0, accessionMonth: 1, status: "ruling" };
+    save.dynasties = [{ factionId: "qin", houseName: "田氏", currentRulerId: "r1", heirIds: [],
+      houseEpochs: [{ houseName: "田氏", startMonth: 1, foundingRulerId: "r1", startReason: "FOUNDING" }], rulers: [ruler] }];
+    if (kind === "old-v12") (save as any).saveSchemaVersion = 12;
+    if (kind === "status") ruler.status = "deposed";
+    if (["dead-no-proof", "political-death-cause", "death-before-birth", "future-death", "incomplete-death"].includes(kind)) {
+      Object.assign(ruler, { status: "dead", endMonth: 20, politicalEndMonth: 20, deathMonth: 20, deathReason: "去世" });
+      if (kind === "dead-no-proof") { delete ruler.deathMonth; delete ruler.deathReason; }
+      if (kind === "political-death-cause") ruler.deathReason = "彻底灭亡";
+      if (kind === "death-before-birth") ruler.deathMonth = -1;
+      if (kind === "future-death") ruler.deathMonth = 43;
+      if (kind === "incomplete-death") delete ruler.deathReason;
+    }
+    if (["end-before-accession", "missing-political-end", "unknown-posthumous"].includes(kind)) {
+      Object.assign(ruler, { status: "politically-ended", endMonth: 20, politicalEndMonth: 20, endReason: "政治终结" });
+      save.dynasties[0].currentRulerId = null;
+      if (kind === "end-before-accession") ruler.endMonth = ruler.politicalEndMonth = 0;
+      if (kind === "missing-political-end") delete ruler.politicalEndMonth;
+      if (kind === "unknown-posthumous") ruler.templeName = "世宗";
+    }
+    if (kind === "terminal-office") { Object.assign(save.factions[0], { status: "EXTINCT", terminationReason: "EXTINCT", terminationMonth: 30, extinctionMonth: 30 }); setFixtureLifetimeRecords(save); }
+    if (kind === "cross-faction-current") save.dynasties[0].currentRulerId = "other";
+    if (kind === "event-reference") save.worldHistory.events = [{ id: "bad", monthIndex: 20, year: 20, type: "ruler-died", category: "politics", title: "bad", rulerId: "missing", importance: "major" }] as any;
+    const core = target(), teams = core.teams, units = core.units, cities = core.oldCities;
+    const history = WorldHistory.exportState(), rng = worldRandom.exportState();
+    expect(validateWorldSave(save).valid).toBe(false);
+    if (kind === "old-v12") expect(() => hydrateWorldSave(core, save)).toThrow("此存档为旧版V12，当前V13不支持读取，请新建世界。");
+    else expect(() => hydrateWorldSave(core, save)).toThrow();
+    expect(core.prepareForHydration).not.toHaveBeenCalled(); expect(core.stage).toBe("PRECHECK_FAILED");
+    expect(core.teams).toBe(teams); expect(core.units).toBe(units); expect(core.oldCities).toBe(cities);
+    expect(core.simulator.exportState().clock.worldMonth).toBe(500);
+    expect(WorldHistory.exportState()).toEqual(history); expect(worldRandom.exportState()).toEqual(rng);
+  });
   it("V12 preserves lifetime peaks, observations and RNG across actual hydrate/export", () => {
     const save = fixture();
     save.factionLifetime.records[0].peakPopulation = { value: 900, month: 10, source: "MONTHLY" };

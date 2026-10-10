@@ -2,7 +2,7 @@ import { hasRecordedRulerDeath } from "../../../Politics/RulerLifeState";
 import { FactionAssessmentPanel } from "../FactionAssessment";
 import { getTerminationTargetName } from "./model";
 import { formatRulerTerminalEvent } from "../../../History/PoliticalTerminalChronicle";
-import { getHouseEpochHeading, getHouseEpochPresentation, getSignificantReignStats, formatRulerAge } from "./RoyalPresentation";
+import { getHouseEpochHeading, getHouseEpochPresentation, getSignificantReignStats, formatRulerLifeAge } from "./RoyalPresentation";
 import { getFactionColorAtMonth, type FactionColorHistoryEntry } from "../../../Simulation/FactionColorHistory";
 import { Box, Button, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -1018,7 +1018,6 @@ function RulerBiography({
   const reignEnd = ruler.endYear ?? worldMonth;
   const reignMonths = Math.max(0, reignEnd - ruler.accessionYear);
   const accessionAge = Math.floor(monthsToYears(ruler.accessionYear - ruler.bornYear));
-  const finalAge = Math.floor(monthsToYears((hasRecordedRulerDeath(ruler) ? ruler.deathMonth! : reignEnd) - ruler.bornYear));
   const assessment = deriveRulerAssessment({
     ruler,
     dynasty: { rulers },
@@ -1071,10 +1070,14 @@ function RulerBiography({
           : `在位：${formatWorldDuration(reignMonths)}`}
       </Typography>
       <Typography fontSize="0.85rem">
-        即位年龄：{accessionAge} 岁 · {formatRulerAge(ruler.status, finalAge)}
+        即位年龄：{accessionAge} 岁 · {formatRulerLifeAge(ruler, worldMonth)}
         {ruler.endReason ? ` · ${ruler.endReason}` : ""}
-        {ruler.status === "politically-ended" ? " · 生死未载" : ""}
       </Typography>
+      {hasRecordedRulerDeath(ruler) ? (
+        <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
+          实际死亡：{formatWorldDate(ruler.deathMonth!)} · {ruler.deathReason}
+        </Typography>
+      ) : null}
       <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
         继承关系：{predecessor && ["DIRECT_CHILD", "GRANDCHILD", "SIBLING", "NEPHEW", "UNCLE", "COUSIN", "COLLATERAL_KIN"].includes(ruler.relationType ?? "")
           ? formatRecordedSuccessionKinship(ruler, predecessor, rulers)

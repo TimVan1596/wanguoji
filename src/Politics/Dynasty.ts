@@ -189,6 +189,7 @@ class DynastyRegistryStore {
     if (this.dynasties.has(team.name)) {
       return this.dynasties.get(team.name);
     }
+    if (team.status === "EXTINCT") return undefined;
     const houseName = team.houseName ?? `${team.name}氏`;
     const ruler = this.createFormalRuler(team, houseName, year);
     ruler.reignOrdinal = 1;
@@ -238,7 +239,7 @@ class DynastyRegistryStore {
     if (team.status === "EXTINCT") return;
     const dynasty = this.initializeFaction(team, 0);
     const ruler = dynasty ? this.getCurrentRuler(team.name) : undefined;
-    if (ruler && (ruler.status === "ruling" || ruler.status === "exiled") && team.status !== "EXTINCT") {
+    if (ruler && (ruler.status === "ruling" || ruler.status === "exiled")) {
       ruler.status = "exiled";
     }
     team.removeRulerUnit(true);
@@ -253,7 +254,7 @@ class DynastyRegistryStore {
     if (team.status === "EXTINCT") return;
     const dynasty = this.initializeFaction(team, 0);
     const ruler = dynasty ? this.getCurrentRuler(team.name) : undefined;
-    if (ruler && (ruler.status === "ruling" || ruler.status === "exiled") && team.status !== "EXTINCT") {
+    if (ruler && (ruler.status === "ruling" || ruler.status === "exiled")) {
       ruler.status = "ruling";
     }
     this.ensureRulerUnit(team);
@@ -272,12 +273,20 @@ class DynastyRegistryStore {
       throw new Error(`Missing current ruler record: ${team.name}/${dynasty.currentRulerId}`);
     }
     // A polity's end is not a person's death. An already ended reign is immutable.
-    if (ruler && !hasRecordedRulerDeath(ruler) && ruler.endYear === undefined) {
-      ruler.status = "politically-ended";
-      ruler.endYear = year;
-      ruler.politicalEndYear = year;
-      ruler.endReason = "政治终结";
-      if (ruler.chronicle) finishRulerChronicle(ruler.chronicle, createTerminalRulerSnapshot(year));
+    const offices = dynasty?.rulers.filter(record => record === ruler || record.status === "ruling" || record.status === "exiled") ?? [];
+    for (const office of offices) {
+      if (hasRecordedRulerDeath(office)) continue;
+      if (office.endYear !== undefined) {
+        if (office.status === "ruling" || office.status === "exiled") {
+          throw new Error(`Ended ruler still holds office: ${team.name}/${office.id}`);
+        }
+        continue;
+      }
+      office.status = "politically-ended";
+      office.endYear = year;
+      office.politicalEndYear = year;
+      office.endReason = "政治终结";
+      if (office.chronicle) finishRulerChronicle(office.chronicle, createTerminalRulerSnapshot(year));
       // Missing chronicles still close the office; never invent an accession snapshot.
     }
     if (dynasty) {
@@ -866,9 +875,8 @@ class DynastyRegistryStore {
   }
 
   private archiveHeirs(dynasty: Dynasty) {
-    dynasty.heirIds.forEach((heirId) => {
-      const heir = dynasty.rulers.find((ruler) => ruler.id === heirId);
-      if (!heir || heir.reignOrdinal !== undefined || heir.status === "dead") {
+    dynasty.rulers.forEach((heir) => {
+      if (heir.reignOrdinal !== undefined || heir.status !== "heir") {
         return;
       }
       // Extinction ends succession eligibility, not the person's life.

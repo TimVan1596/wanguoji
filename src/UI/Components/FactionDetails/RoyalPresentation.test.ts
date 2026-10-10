@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getHouseEpochHeading, getHouseEpochPresentation, getSignificantReignStats, formatRulerAge } from "./RoyalPresentation";
+import { getHouseEpochHeading, getHouseEpochPresentation, getSignificantReignStats, formatRulerAge, formatRulerLifeAge } from "./RoyalPresentation";
 import type { DynastyHouseEpoch } from "../../../Politics/DynasticRevolution";
 
 const first: DynastyHouseEpoch = { houseName: "姬氏", startMonth: 0, foundingRulerId: "r1", startReason: "FOUNDING" };
@@ -45,4 +45,13 @@ describe("terminal house epoch title", () => {
   it.each(["ACTIVE", "EXILED"])("%s retains a current house, not a prematurely final one", status => {
     expect(getHouseEpochHeading(status)).toBe("当前王统");
   });
+});
+
+it("uses only actual death for lifetime age and freezes politically ended/retired ages", () => {
+  const ruler = { bornYear: 0, endYear: 528, status: "politically-ended" as const };
+  expect(formatRulerLifeAge(ruler, 1200)).toBe("政治任期终结时44岁 · 生死未载");
+  expect(formatRulerLifeAge(ruler, 2400)).toBe(formatRulerLifeAge(ruler, 1200));
+  expect(formatRulerLifeAge({ ...ruler, status: "abdicated" }, 1200)).toBe("退位时44岁");
+  expect(formatRulerLifeAge({ ...ruler, status: "dead", deathMonth: 600, deathReason: "去世" }, 1200)).toBe("享年50岁");
+  expect(formatRulerLifeAge({ ...ruler, status: "dead" }, 1200)).not.toContain("享年");
 });

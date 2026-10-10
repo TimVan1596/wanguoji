@@ -690,5 +690,6 @@ it("uses political-end wording for an abdicated ruler without changing the recor
   }
   expect(JSON.stringify(context)).toBe(original);
   context.ruler.status = "dead";
+  context.ruler.deathMonth = context.ruler.endYear; context.ruler.deathReason = "去世";
   expect(deriveRulerAssessment(context).lines.join(" ")).toContain("身后");
 });

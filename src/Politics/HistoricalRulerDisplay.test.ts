@@ -26,7 +26,7 @@ describe("historical ruler display", () => {
   });
 
   it("uses the historical provisional faction and leader role", () => {
-    expect(resolveHistoricalRulerDisplay({ ...ruler, endYear: undefined }, "新郑义军", "compact", { historicalRank: "LEADER" })).toBe("新郑义军首领嬴平");
+    expect(resolveHistoricalRulerDisplay({ ...ruler, endYear: undefined, deathMonth: undefined, deathReason: undefined }, "新郑义军", "compact", { historicalRank: "LEADER" })).toBe("新郑义军首领嬴平");
   });
 
   it("adds the polity and rank when a deceased ruler has no posthumous epithet", () => {

@@ -12,7 +12,7 @@ function fixture() {
   save.cities = [{ cityId: "xianyang", name: "咸阳", ownerFactionId: "qin", founderFactionId: "qin", foundedMonth: 0, centerGridX: 0, centerGridY: 0, isCapital: true, defense: 10, maxDefense: 10, loyalty: 80, devastation: 0, captureCount: 0 }];
   save.users = [{ userId: 7, factionId: "qin", sourceFactionId: "qin", name: "嬴平", loyalty: 70, role: "RULER", score: 0, playerUnitId: "unit-1" }];
   save.units = [{ unitId: "unit-1", factionId: "qin", userId: 7, x: 10, y: 20, vx: 1, vy: -1, speed: 100, radius: 10, scale: 1, speedCoefficient: 0, sizeCoefficient: 0, alive: true, role: "RULER" }];
-  save.dynasties = [{ factionId: "qin", houseName: "田氏", houseEpochs: [{ houseName: "田氏", startMonth: 0, foundingRulerId: "qin-ruler-1", startReason: "FOUNDING" }], rulers: [{ rulerId: "qin-ruler-1", houseName: "田氏" }], heirIds: [] }];
+  save.dynasties = [{ factionId: "qin", houseName: "田氏", houseEpochs: [{ houseName: "田氏", startMonth: 0, foundingRulerId: "qin-ruler-1", startReason: "FOUNDING" }], rulers: [{ rulerId: "qin-ruler-1", houseName: "田氏", bornMonth: -360, accessionMonth: 0, status: "ruling" }], heirIds: [] }];
   save.blocks = [{ gridX: 0, gridY: 0, ownerFactionId: "qin", isHome: true, cityId: "xianyang", homeHitPoints: 10, isCityCenter: true }];
   save.populationSystem = { counters: { qin: 3 }, lastGrowthMonth: 12 };
   setFixtureLifetimeRecords(save);
@@ -28,9 +28,9 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     save.dynasties = [{ factionId: "qin", houseName: "侯氏", currentRulerId: "new", heirIds: [],
       houseEpochs: [{ houseName: "田氏", startMonth: 0, endMonth: 35, foundingRulerId: "old", startReason: "FOUNDING" },
         { houseName: "侯氏", startMonth: 36, foundingRulerId: "new", startReason: "USURPATION", displacedHouseName: "田氏", displacedSuccessorId: "heir", displacedDesignatedHeirId: "heir" }],
-      rulers: [{ rulerId: "old", houseName: "田氏", accessionMonth: 0, endMonth: 36, status: "dead" },
-        { rulerId: "heir", houseName: "田氏", parentId: "old", status: "kin", displacedByUsurpationMonth: 36 },
-        { rulerId: "new", houseName: "侯氏", accessionMonth: 36, predecessorId: "old", status: "ruling", relationType: "USURPER" }] }];
+      rulers: [{ rulerId: "old", houseName: "田氏", bornMonth: -360, accessionMonth: 0, endMonth: 36, politicalEndMonth: 36, status: "dead", deathMonth: 36, deathReason: "去世" },
+        { rulerId: "heir", bornMonth: 0, houseName: "田氏", parentId: "old", status: "kin", displacedByUsurpationMonth: 36 },
+        { rulerId: "new", bornMonth: 0, houseName: "侯氏", accessionMonth: 36, predecessorId: "old", status: "ruling", relationType: "USURPER" }] }];
     const parsed = JSON.parse(JSON.stringify(save));
     expect(validateWorldSave(parsed)).toEqual({ valid: true, errors: [] });
     expect(parsed).toEqual(save);
@@ -163,10 +163,10 @@ describe("WorldSaveV1 validation and JSON contract", () => {
       designatedHeirId: "qin-ruler-2",
       designatedSinceMonth: 36,
       rulers: [
-        { rulerId: "qin-ruler-1", houseName: "田氏", status: "dead" },
-        { rulerId: "qin-ruler-2", status: "heir", parentId: "qin-ruler-1", relationType: "DIRECT_CHILD" },
-        { rulerId: "qin-ruler-3", status: "heir", parentId: "qin-ruler-2", relationType: "DIRECT_CHILD" },
-        { rulerId: "qin-ruler-4", status: "kin", parentId: "qin-ruler-1" },
+        { rulerId: "qin-ruler-1", houseName: "田氏", bornMonth: -600, accessionMonth: 0, status: "ruling" },
+        { rulerId: "qin-ruler-2", bornMonth: -300, status: "heir", parentId: "qin-ruler-1", relationType: "DIRECT_CHILD" },
+        { rulerId: "qin-ruler-3", bornMonth: 0, status: "heir", parentId: "qin-ruler-2", relationType: "DIRECT_CHILD" },
+        { rulerId: "qin-ruler-4", bornMonth: -200, status: "kin", parentId: "qin-ruler-1" },
       ],
     }];
     const loaded = JSON.parse(JSON.stringify(save));
@@ -174,7 +174,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     expect(loaded.dynasties[0].heirIds).toEqual(["qin-ruler-2", "qin-ruler-3"]);
     expect(loaded.dynasties[0]).toMatchObject({ designatedHeirId: "qin-ruler-2", designatedSinceMonth: 36 });
     expect(loaded.dynasties[0].rulers[2]).toMatchObject({ parentId: "qin-ruler-2", relationType: "DIRECT_CHILD" });
-    expect(loaded.dynasties[0].rulers[3]).toMatchObject({ rulerId: "qin-ruler-4", status: "kin", parentId: "qin-ruler-1" });
+    expect(loaded.dynasties[0].rulers[3]).toMatchObject({ rulerId: "qin-ruler-4", bornMonth: -200, status: "kin", parentId: "qin-ruler-1" });
     expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(13);
   });
 

@@ -1,3 +1,5 @@
+import type { Ruler } from "../../../Politics/Dynasty";
+import { hasRecordedRulerDeath } from "../../../Politics/RulerLifeState";
 import type { DynastyHouseEpoch } from "../../../Politics/DynasticRevolution";
 import type { RulerChronicle } from "../../../Politics/RulerChronicle";
 import { formatWorldDate } from "../../../Simulation/WorldTime";
@@ -23,7 +25,17 @@ export function getSignificantReignStats(chronicle: Pick<RulerChronicle,
   return stats.filter(([, value]) => value > 0).map(([label, value]) => `${label}：${value}`).join(" · ") || "暂无显著在位统计";
 }
 
-/** endYear ends a reign; only status can establish death. */
+/** endYear ends a reign; V13 dead status requires an actual recorded death. */
 export function formatRulerAge(status: string, age: number) {
   return `${status === "dead" ? "享年" : status === "abdicated" ? "退位时" : status === "politically-ended" ? "政治任期终结时" : "当前年龄"}${age}岁`;
+}
+
+/** Freeze ended-person ages at the recorded event, never at today's month. */
+export function formatRulerLifeAge(ruler: Pick<Ruler, "status" | "bornYear" | "endYear" | "deathMonth" | "deathReason">, worldMonth: number) {
+  const death = hasRecordedRulerDeath(ruler);
+  const month = death ? ruler.deathMonth! : ruler.endYear ?? worldMonth;
+  const age = Math.max(0, Math.floor((month - ruler.bornYear) / 12));
+  const status = death ? "dead" : ruler.status === "abdicated" ? "abdicated" :
+    ruler.endYear !== undefined ? "politically-ended" : ruler.status;
+  return formatRulerAge(status, age) + (status === "politically-ended" ? " · 生死未载" : "");
 }

@@ -58,7 +58,7 @@ describe("dynasty invariant", () => {
         politicalStartYear: 10,
         politicalEndYear: 20,
         endReason: "王统断绝",
-        status: "dead",
+        status: "kin",
       })
     ).toEqual([]);
   });
