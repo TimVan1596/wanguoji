@@ -56,3 +56,35 @@ describe("HistoryScroll Era selection UI state", () => {
     expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(12);
   });
 });
+
+describe("Era Atlas II shared navigation", () => {
+  const eras = [{ id: "late", startMonth: 120, confirmedMonth: 132 }, { id: "first", startMonth: 0, confirmedMonth: 24 }, { id: "missing", startMonth: 60, confirmedMonth: 72 }] as any[];
+  it("orders actual dates and stable IDs, keeps first/last bounds and missing-map eras", async () => {
+    const { orderAtlasEras, getEraNeighbors } = await import("./eraSelection");
+    expect(orderAtlasEras(eras).map(e => e.id)).toEqual(["first", "missing", "late"]);
+    expect(getEraNeighbors(eras, "first").previous).toBeUndefined(); expect(getEraNeighbors(eras, "late").next).toBeUndefined();
+    expect(getEraNeighbors(eras, "first").next?.id).toBe("missing");
+    expect(orderAtlasEras([{ id: "b", startMonth: 0, confirmedMonth: 2 }, { id: "a", startMonth: 0, confirmedMonth: 2 }]).map(e => e.id)).toEqual(["a", "b"]);
+  });
+  it("keeps the same open dialog during navigation and resets to all-era filtering on close detail", () => {
+    const open = eraSelectionUIReducer(initialEraSelectionUIState, { type: "OPEN_ERA_MAP", eraId: "first" });
+    const next = eraSelectionUIReducer(open, { type: "NAVIGATE_MAP", eraId: "missing" });
+    expect(next).toMatchObject({ selectedEraId: "missing", eraMapOpen: true });
+    expect(getSelectedEra(eras, next.selectedEraId)?.mapSnapshot).toBeUndefined();
+    expect(eraSelectionUIReducer(next, { type: "CLOSE_MAP" }).selectedEraId).toBe("missing");
+    expect(eraSelectionUIReducer(next, { type: "CLOSE_DETAIL" }).selectedEraId).toBe("all");
+  });
+  it("opens an event's explicit era, never a nearest-era substitute", async () => {
+    const { getAtlasEraForEvent } = await import("./eraSelection");
+    expect(getAtlasEraForEvent({ type: "world-era-started", year: 999, metadata: { eraId: "first" } } as any, eras)?.id).toBe("first");
+    expect(getAtlasEraForEvent({ type: "world-era-started", year: 0, metadata: { eraId: "unknown" } } as any, eras)).toBeUndefined();
+    expect(getAtlasEraForEvent({ type: "city-captured", year: 60 } as any, eras)).toBeUndefined();
+  });
+  it("does not intercept arrows in inputs or contenteditable", async () => {
+    const { atlasArrowDirection } = await import("./eraSelection");
+    expect(atlasArrowDirection("ArrowRight", { tagName: "BUTTON" })).toBe(1);
+    expect(atlasArrowDirection("ArrowLeft", { tagName: "DIV" })).toBe(-1);
+    for (const tagName of ["INPUT", "TEXTAREA", "SELECT"]) expect(atlasArrowDirection("ArrowRight", { tagName })).toBe(0);
+    expect(atlasArrowDirection("ArrowLeft", { isContentEditable: true })).toBe(0);
+  });
+});

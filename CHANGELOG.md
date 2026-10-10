@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.99931
+
+- v0.99930b1人工正式PASS，Faction Historiography全系列冻结。本版仅Era Atlas II展示与浏览，不修改时代判定、历史生成或任何玩法。
+- 从冻结ownerRuns派生格数/绝对世界占比/快照城市数，历史国号与颜色只取factionPalette，保留0格图例势力；不反填人口或君主。
+- Canvas国号使用最大连通领土块和边界深度选点，按实测文字矩形检查领土容纳、地图边界及首都标识；小国/长国号安全隐藏，缩略图仅少数主要国家，大图显示更多。
+- 同一大图支持前后时代、左右键、100/150/200%滚动查看及横向文字时代轴；按startMonth/confirmedMonth/id稳定排序，无快照时代仍可选择并明确缺失，不展示邻图。
+- 时代脉络、历史时代筛选、事件地图入口与弹窗共用EraSelectionUIState；保留bounded history page查询及全部原过滤器。确立记录使用confirmedMonth，地图年月使用capturedMonth。
+- snapshot identity派生缓存，不存Canvas图片、不逐帧解码或布局，时间轴不渲染全部缩略图。APP_VERSION v0.99931 / package0.99.122 / WorldSave V12和EraMapSnapshotV1均不变，等待[现有长局人工地图Gate](docs/EraAtlasII.md)。
+
 ## v0.99930b1
 
 - v30b永久史料、编年、攻守反转、主要史论、三种终结与Save/Load人工正常；本版仅收尾王统事实一致性，不扩展文学模板或玩法。

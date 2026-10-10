@@ -32,3 +32,15 @@ describe("EraMapRenderer", () => {
     expect(context.fillText).toHaveBeenCalledWith("咸阳", expect.any(Number), expect.any(Number));
   });
 });
+
+it("draws historical country names with frozen colors and leaves canonical snapshot unchanged", () => {
+  const colors: unknown[] = [], context = { canvas: { width: 0, height: 0 }, fillStyle: "",
+    fillRect: vi.fn(function(this: any) { colors.push(this.fillStyle); }), beginPath: vi.fn(), arc: vi.fn(), fill: vi.fn(), stroke: vi.fn(),
+    strokeText: vi.fn(), fillText: vi.fn(), measureText: (text: string) => ({ width: text.length * 20 }) } as any;
+  const snapshot: EraMapSnapshotV1 = { version: 1, capturedMonth: 24, widthCells: 20, heightCells: 20,
+    factionPalette: [{ factionId: "id", displayName: "昔日国号", color: 0xaa0000 }], ownerRuns: [{ paletteIndex: 1, length: 400 }], cities: [] };
+  const before = JSON.stringify(snapshot);
+  renderEraMapSnapshot(context, snapshot, { cellSize: 18, showCities: true, showLabels: true });
+  expect(context.fillText).toHaveBeenCalledWith("昔日国号", expect.any(Number), expect.any(Number));
+  expect(colors).toContain("#aa0000"); expect(JSON.stringify(snapshot)).toBe(before);
+});

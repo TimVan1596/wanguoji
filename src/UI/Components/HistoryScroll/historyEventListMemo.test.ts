@@ -15,6 +15,8 @@ describe("memoized history event list boundary", () => {
       onToggleExpanded: callback, onLoadMore: callback, sxHeight: "100%",
     };
     expect(areHistoryEventListInputsEqual(props, { ...props })).toBe(true);
+    expect(areHistoryEventListInputsEqual(props, { ...props, eras: [] })).toBe(false);
+    expect(areHistoryEventListInputsEqual(props, { ...props, onOpenEraMap: () => {} })).toBe(false);
     expect(areHistoryEventListInputsEqual(props, { ...props, dynastyByFactionId: new Map() })).toBe(false);
     expect(areHistoryEventListInputsEqual(props, { ...props, events: [...events] })).toBe(false);
     expect(areHistoryEventListInputsEqual(props, { ...props, unseenCount: 2 })).toBe(false);

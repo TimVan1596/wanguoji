@@ -297,7 +297,7 @@ export default function HistoryScroll() {
       {selectedEra ? (
         <Box sx={{ mb: 0.8, border: "1px solid var(--gg-border)", p: 0.65 }}>
           <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 0.5 }}>
-            <Typography fontSize="0.8rem" fontWeight={700}>{resolveEraDisplayLabel(selectedEra, teamByName)}</Typography>
+            <Typography fontSize="0.8rem" fontWeight={700}>{selectedEra.name}</Typography>
             <Button
               size="small"
               aria-label="收起时代详情并显示全部时代事件"

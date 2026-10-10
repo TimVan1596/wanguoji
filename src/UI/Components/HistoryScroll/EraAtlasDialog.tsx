@@ -13,6 +13,16 @@ export function EraAtlasDialogContent({ eras, selectedEraId, onNavigate }: { era
   const [zoom, setZoom] = useState(1); const timeline = useRef<HTMLDivElement>(null);
   useEffect(() => { setZoom(1); timeline.current?.querySelector<HTMLElement>('[aria-current="true"]')?.scrollIntoView?.({ block: "nearest", inline: "nearest" }); }, [selectedEraId]);
   useEffect(() => {
+    const box = timeline.current; if (!box) return;
+    const wheel = (e: WheelEvent) => {
+      if (e.ctrlKey || Math.abs(e.deltaX) >= Math.abs(e.deltaY)) return;
+      const before = box.scrollLeft; box.scrollLeft += e.deltaY;
+      if (box.scrollLeft !== before) e.preventDefault();
+    };
+    box.addEventListener("wheel", wheel, { passive: false });
+    return () => box.removeEventListener("wheel", wheel);
+  }, []);
+  useEffect(() => {
     const key = (e: KeyboardEvent) => {
       const direction = atlasArrowDirection(e.key, e.target as HTMLElement), neighbor = direction < 0 ? previous : direction > 0 ? next : undefined;
       if (neighbor && !e.altKey && !e.ctrlKey && !e.metaKey) { e.preventDefault(); onNavigate(neighbor.id); }
@@ -39,8 +49,7 @@ export function EraAtlasDialogContent({ eras, selectedEraId, onNavigate }: { era
         </Box>)}
       </Box>
     </> : <Typography sx={{ py: 4 }}>该时代没有保存历史地图</Typography>}
-    <Box ref={timeline} aria-label="横向时代时间轴" sx={{ display: "flex", overflowX: "auto", gap: .7, mt: 1.5, pb: 1, touchAction: "pan-x pan-y" }}
-      onWheel={e => { const box = timeline.current; if (box && !e.ctrlKey && box.scrollWidth > box.clientWidth && Math.abs(e.deltaY) > Math.abs(e.deltaX)) box.scrollLeft += e.deltaY; }}>
+    <Box ref={timeline} aria-label="横向时代时间轴" sx={{ display: "flex", overflowX: "auto", gap: .7, mt: 1.5, pb: 1, touchAction: "pan-x pan-y" }}>
       {ordered.map(era => <Button key={era.id} aria-current={era.id === selectedEraId ? "true" : undefined} variant={era.id === selectedEraId ? "contained" : "outlined"}
         onClick={() => onNavigate(era.id)} sx={{ flex: "0 0 180px", textAlign: "left", display: "block", overflowWrap: "anywhere" }}>
         {era.name}<br /><Typography component="span" fontSize="0.7rem">{formatWorldDate(era.startMonth)}～{era.endMonth === undefined ? "今" : formatWorldDate(era.endMonth)}<br />{types[era.type]}</Typography>
