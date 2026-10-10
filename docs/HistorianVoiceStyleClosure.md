@@ -50,7 +50,14 @@ FactionHistoricalArguments的voice直接调用date/duration和数字百分比，
 
 ## 自动验证
 
-待所有实际验证完成后填写。文风回归不是视觉验收。
+- `VITEST_MAX_THREADS=4 VITEST_MIN_THREADS=1 pnpm test -- --run`：191个测试文件、1219项测试全部通过，其中新增8项文风回归测试。
+- `pnpm build`：通过。
+- `pnpm desktop:build`：通过，renderer资源与音乐检查通过。
+- `pnpm desktop:compile`：通过。
+- `pnpm desktop:renderer-debug-build`：通过，renderer资源、debug sourcemap与音乐检查通过。
+- `git diff --check` / `git diff --cached --check`：通过。
+
+文风回归不是视觉验收。构建仍有既有的bundle体积提示，不影响构建通过。
 
 仓库无`pnpm desktop`脚本，执行真实的desktop:build、desktop:compile、desktop:renderer-debug-build三个验证命令。没有启动Playwright、CLI截图或自动浏览器Gate。
 
