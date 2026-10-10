@@ -265,7 +265,16 @@ export function deriveRulerHistoricalEvidence(
   const accessionCrisis =
     accessionSnapshot.stability <= 45 ||
     (accessionSnapshot.cityCount <= 1 && accessionSnapshot.territoryShare <= 0.12);
-  const ownTerminalCollapse = ruler.endReason === "政治终结" || ruler.endReason === "彻底灭亡" || ruler.endReason === "流亡" || tenure.diedInExile || tenure.extinctInExile;
+  // LAST_RULER means the final holder at actual polity extinction, not every
+  // deceased exile claimant or an administratively abdicated ruler.
+  const laterAccession = dynasty.rulers.some(candidate => candidate.id !== ruler.id &&
+    candidate.reignOrdinal !== undefined && candidate.accessionYear >= endMonth &&
+    (candidate.accessionYear > accessionMonth ||
+      (ruler.reignOrdinal !== undefined && candidate.reignOrdinal > ruler.reignOrdinal)));
+  const extinctionAtEnd = rulerEvents.some(event => event.type === "faction-extinct" &&
+    event.targetFactionId === faction.name && (event.monthIndex ?? event.year) === endMonth);
+  const ownTerminalCollapse = isFinalized && !laterAccession && ruler.status !== "abdicated" &&
+    (extinctionAtEnd || (ruler.status === "politically-ended" && ruler.endReason === "政治终结"));
   const expansion =
     finalSnapshot.territoryShare - accessionSnapshot.territoryShare >= 0.12 ||
     finalSnapshot.cityCount - accessionSnapshot.cityCount >= 3;
@@ -306,7 +315,7 @@ export function deriveRulerHistoricalEvidence(
   ) roles.push("CONTESTED_REIGN");
   if (majorDecline) roles.push("DECLINER");
   if (ownTerminalCollapse) roles.push("LAST_RULER");
-  if (tenure.activeRuleMonths <= 5 * 12) roles.push("SHORT_REIGN");
+  if (tenure.totalTenureMonths <= 5 * 12) roles.push("SHORT_REIGN");
   if (["战死", "被俘处死"].includes(ruler.endReason ?? "")) roles.push("TRAGIC_RULER");
   if (tenure.exiledAtAccession || tenure.exileMonths > 0) roles.push("EXILED_RULER");
   if (tenure.exileMonths >= 5 * 12 && tenure.exileMonths > tenure.activeRuleMonths) roles.push("LONG_EXILE");
@@ -393,20 +402,20 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
     return { heading: evidence.isFinalized ? "史评" : "在位评议", evidence, lines };
   }
   if (evidence.roles.includes("LONG_EXILE")) {
-    if (evidence.tenure.exiledAtAccession && evidence.tenure.activeRuleMonths <= 12) {
+    if (evidence.tenure.exiledAtAccession && evidence.tenure.activeRuleMonths === 0) {
       const exileAccession = childAccession ? "幼年承接流亡王统" : youthAccession ? "少年承接流亡王统" : "承接流亡王统";
-      lines.push(`${exileAccession}，${evidence.isFinalized ? (nonDeathFinal ? "其承统期间" : "其一生") : "截至目前的承统岁月中，大部分时间"}没有实际控制城邑。`);
-      lines.push(`${evidence.isFinalized ? "其历史角色主要在于延续王统与复国希望，而非持续治理一个在国政权。" : "目前其身份更接近流亡王统的延续者，而非持续治理在国政权的君主。"}`);
+      lines.push(`${exileAccession}，${evidence.isFinalized ? "全部承统岁月" : "截至目前的全部承统岁月"}均在流亡中度过，没有在国治理时期。`);
+      lines.push("其身份是流亡王统的承接者，不能将承统年限视为在国治绩。");
     } else if (evidence.tenure.lostStateDuringTenure && (evidence.tenure.monthsUntilFirstExile ?? Infinity) <= 12) {
       lines.push(evidence.isFinalized
         ? (nonDeathFinal ? `即位不久即失去国土，此后王室长期流亡，至${finalTime}未能复国。` : "即位不久即失去国土，此后王室长期流亡，终其一生未能复国。")
         : "即位不久即失去国土，此后王室长期流亡；截至目前尚未复国。");
     } else if (evidence.tenure.diedInExile) {
-      lines.push(`其治下国土终失，后半生长期流亡，累计流亡${formatWorldDuration(evidence.tenure.exileMonths)}，未能复国。`);
+      lines.push(`承统期间曾失去国土，其后长期流亡，累计流亡${formatWorldDuration(evidence.tenure.exileMonths)}，未能复国。`);
     } else {
       lines.push(`在位期间历经流亡，流亡${formatWorldDuration(evidence.tenure.exileMonths)}；在国治理时间为${formatWorldDuration(evidence.tenure.activeRuleMonths)}。`);
     }
-    if (evidence.tenure.extinctInExile) lines.push("王统与残部最终绝于流亡时期。");
+    if (evidence.terminalCollapse) lines.push("王统政治终结于其任期末；这不等于失国始于其任内，也不能据此认定其个人造成国家终结。");
     return { heading: evidence.isFinalized ? "史评" : "在位评议", evidence, lines: lines.slice(0, 4) };
   }
 
@@ -445,9 +454,9 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
   } else if (evidence.roles.includes("STEWARD")) {
     lines.push(`${livingPrefix}其治下少有显著拓境，长久维持政权与秩序，守成为其主要遗产。`);
   } else if (evidence.roles.includes("SHORT_REIGN") && !hasMajorLegacy(evidence)) {
-    lines.push(`${livingPrefix}在位不足五年，现有史实尚不足以形成明确的治绩判断。`);
+    lines.push(`${livingPrefix}承统不超过五年，现有史实尚不足以形成明确的治绩判断。`);
   } else if (evidence.roles.includes("LAST_RULER")) {
-    lines.push(`${agePrefix}其世国祚终结，结局为亡国之君。`);
+    lines.push(`${agePrefix}国家终结于其承统末期，属于最终政治终结时的末代君主。`);
   } else {
     lines.push(`${livingPrefix}${agePrefix}现有记录未见足以改写政权格局的突出功业。`);
   }
@@ -654,11 +663,14 @@ export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string
       "开拓的结果留在版图中，其一生最终止于军中。",
     ]);
   }
-  if (roles.includes("LONG_EXILE")) return pick([
-    `其承统岁月多在流亡中度过，历史位置主要系于王统延续，而非持续治理在国政权。`,
-    `流亡占据其承统生涯的大部，王统未绝是其身后最重要的遗留。`,
-    `其一生受国土沦失所限，所能维系者是流亡中的王统，而非疆域治理。`,
-  ]);
+  if (roles.includes("LONG_EXILE")) {
+    const fullExile = evidence.tenure.activeRuleMonths === 0;
+    const opening = fullExile ? "承统虽久，却无一月在国治理；其所承接的是流亡中的王统。" :
+      "流亡占据其承统岁月的大部，不能以承统之久代作在国治绩。";
+    return opening + (evidence.terminalCollapse
+      ? "王统终结于此，并不意味着失国始于此人，更不能据终局一事归尽兴亡之责。"
+      : "流亡承统与失国之责须分别看待，任期结束也不等于王统随之终结。");
+  }
   if (roles.includes("LAST_RULER")) return pick([
     "国亡于其世，但即位时的国势与此前危局亦须一并考量，不可把结局本身当作全部因果。",
     "其以末主身份承受国祚终结；判断其责任，还须分辨危局始于何时。",

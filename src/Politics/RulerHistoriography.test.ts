@@ -478,7 +478,8 @@ describe("evidence-grounded ruler historiography", () => {
     const text = deriveRulerAssessment(makeContext({
       start: { cityCount: 1, territoryShare: 0.08, stability: 35 },
       end: { cityCount: 0, territoryShare: 0.02, stability: 10 },
-      endReason: "彻底灭亡",
+      endReason: "去世",
+      events: [{ id: "extinction", type: "faction-extinct", year: 120, monthIndex: 120, targetFactionId: "秦", importance: "major" }],
     })).lines.join("");
     expect(text).toContain("并非由盛转衰的始作俑者");
     expect(text).toContain("这一结局始于承统前的危局");
