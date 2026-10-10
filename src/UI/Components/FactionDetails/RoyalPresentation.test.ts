@@ -54,4 +54,5 @@ it("uses only actual death for lifetime age and freezes politically ended/retire
   expect(formatRulerLifeAge({ ...ruler, status: "abdicated" }, 1200)).toBe("退位时44岁");
   expect(formatRulerLifeAge({ ...ruler, status: "dead", deathMonth: 600, deathReason: "去世" }, 1200)).toBe("享年50岁");
   expect(formatRulerLifeAge({ ...ruler, status: "dead" }, 1200)).not.toContain("享年");
+  expect(formatRulerLifeAge({ ...ruler, status: "dead", endYear: undefined }, 1200)).toBe("生死未载 · 终结年龄未载");
 });

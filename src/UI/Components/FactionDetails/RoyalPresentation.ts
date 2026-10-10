@@ -33,6 +33,9 @@ export function formatRulerAge(status: string, age: number) {
 /** Freeze ended-person ages at the recorded event, never at today's month. */
 export function formatRulerLifeAge(ruler: Pick<Ruler, "status" | "bornYear" | "endYear" | "deathMonth" | "deathReason">, worldMonth: number) {
   const death = hasRecordedRulerDeath(ruler);
+  if (!death && ["dead", "politically-ended", "abdicated"].includes(ruler.status) && ruler.endYear === undefined) {
+    return "生死未载 · 终结年龄未载";
+  }
   const month = death ? ruler.deathMonth! : ruler.endYear ?? worldMonth;
   const age = Math.max(0, Math.floor((month - ruler.bornYear) / 12));
   const status = death ? "dead" : ruler.status === "abdicated" ? "abdicated" :
