@@ -1,3 +1,4 @@
+import { hasRecordedRulerDeath, type RulerDeathReason } from "./RulerLifeState";
 import { CurrentRulerLookup } from "./CurrentRulerLookup";
 import { beginHouseEpoch, evaluateDynasticRevolution, getRevolutionEligibility, type DynastyHouseEpoch, type RevolutionContext } from "./DynasticRevolution";
 import { RevolutionGateDiagnostics } from "./RevolutionGateDiagnostics";
@@ -61,7 +62,7 @@ import {
   selectRecordedDynasticSuccessor,
 } from "./DynasticCandidateRules";
 
-export type RulerStatus = "ruling" | "exiled" | "heir" | "kin" | "dead" | "abdicated";
+export type RulerStatus = "ruling" | "exiled" | "heir" | "kin" | "dead" | "abdicated" | "politically-ended";
 export type RulerRelationType =
   | "FOUNDER"
   | "DIRECT_CHILD"
@@ -81,7 +82,10 @@ export interface Ruler {
   houseName: string;
   givenName: string;
   bornYear: number;
+  /** Scheduled lifespan, not an observed death. */
   naturalDeathYear?: number;
+  deathMonth?: number;
+  deathReason?: RulerDeathReason;
   lastBattleHazardCheckMonth?: number;
   lastPersonalSiegeContactMonth?: number;
   displacedByUsurpationMonth?: number;
@@ -262,18 +266,17 @@ class DynastyRegistryStore {
   markExtinct(team: Team, year: number) {
     const dynasty = this.dynasties.get(team.name);
     const ruler = dynasty ? this.getCurrentRuler(team.name) : undefined;
-    if (ruler?.chronicle) {
-      if (ruler.status !== "dead") {
-        ruler.status = "dead";
-        ruler.endYear = year;
-        ruler.endReason = "彻底灭亡";
-      }
-      finishRulerChronicle(
-        ruler.chronicle,
-        createTerminalRulerSnapshot(year),
-        ruler.endReason ?? "彻底灭亡"
-      );
-      finalizeRulerPosthumousNames(ruler, dynasty?.rulers ?? [], team, year);
+    if (dynasty?.currentRulerId && !ruler) {
+      throw new Error(`Missing current ruler record: ${team.name}/${dynasty.currentRulerId}`);
+    }
+    // A polity's end is not a person's death. An already ended reign is immutable.
+    if (ruler && !hasRecordedRulerDeath(ruler) && ruler.endYear === undefined) {
+      ruler.status = "politically-ended";
+      ruler.endYear = year;
+      ruler.politicalEndYear = year;
+      ruler.endReason = "政治终结";
+      if (ruler.chronicle) finishRulerChronicle(ruler.chronicle, createTerminalRulerSnapshot(year));
+      // Missing chronicles still close the office; never invent an accession snapshot.
     }
     if (dynasty) {
       this.archiveHeirs(dynasty);
@@ -290,7 +293,7 @@ class DynastyRegistryStore {
     const dynasty = this.dynasties.get(team.name);
     if (!dynasty) return;
     const ruler = this.getCurrentRuler(team.name);
-    if (ruler) {
+    if (ruler && !hasRecordedRulerDeath(ruler) && ruler.endYear === undefined) {
       ruler.status = "abdicated";
       ruler.endYear = monthIndex;
       ruler.politicalEndYear = monthIndex;
@@ -328,12 +331,12 @@ class DynastyRegistryStore {
       return false;
     }
     const current = this.getCurrentRuler(factionId);
-    if (current && current.status !== "dead" && current.status !== "abdicated") {
+    if (current && (current.status === "ruling" || current.status === "exiled")) {
       return true;
     }
     return dynasty.heirIds.some((id) => {
       const heir = dynasty.rulers.find((ruler) => ruler.id === id);
-      return Boolean(heir && heir.status !== "dead");
+      return Boolean(heir && heir.status === "heir");
     });
   }
 
@@ -392,8 +395,11 @@ class DynastyRegistryStore {
     predecessor.status = "dead";
     predecessor.regimeNameAtEnd = team.displayName;
     predecessor.endYear = year;
+    predecessor.politicalEndYear = year;
+    predecessor.deathMonth = year;
     predecessor.endReason =
       reason === "combat" ? "战死" : reason === "captured" ? "被俘处死" : "去世";
+    predecessor.deathReason = predecessor.endReason as RulerDeathReason;
     if (predecessor.chronicle) {
       finishRulerChronicle(
         predecessor.chronicle,
@@ -589,7 +595,7 @@ class DynastyRegistryStore {
       return;
     }
     const ruler = this.getCurrentRuler(team.name);
-    if (!ruler || ruler.status === "dead") {
+    if (!ruler || ruler.status !== "ruling") {
       return;
     }
     const month = Game.Core?.simulator?.year ?? ruler.accessionYear ?? 0;
@@ -886,6 +892,8 @@ class DynastyRegistryStore {
       heir.politicalEndYear = year;
       heir.endYear = year;
       heir.endReason = "自然去世";
+      heir.deathMonth = year;
+      heir.deathReason = "自然去世";
       const parent = heir.parentId
         ? dynasty.rulers.find((ruler) => ruler.id === heir.parentId)
         : undefined;

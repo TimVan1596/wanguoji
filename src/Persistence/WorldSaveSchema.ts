@@ -4,7 +4,7 @@ import { WORLD_RNG_ALGORITHM, WorldRandomState } from "../Simulation/WorldRandom
 import type { DiplomaticRelation, DiplomaticPairMemory } from "../Politics/Diplomacy";
 import type { FactionColorHistoryEntry } from "../Simulation/FactionColorHistory";
 
-export const CURRENT_SAVE_SCHEMA_VERSION = 12 as const;
+export const CURRENT_SAVE_SCHEMA_VERSION = 13 as const;
 
 export interface FactionSaveV1 {
   factionId: string;
