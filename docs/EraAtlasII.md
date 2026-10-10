@@ -32,8 +32,8 @@
 - 针对性测试：5个文件、24项通过。
 - `VITEST_MAX_THREADS=4 VITEST_MIN_THREADS=1 pnpm test -- --run`：183个测试文件、1168项全部通过；包含V12往返、世界时代分类、国评、外交、政治终结及same-seed回归。
 - `pnpm build`：通过，音乐资源检查通过。
-- `pnpm desktop:build`：待记录。
-- `pnpm desktop:compile`：待记录。
+- `pnpm desktop:build`：通过，renderer/音乐资源检查及Electron编译通过。
+- `pnpm desktop:compile`：独立执行通过。
 - `pnpm desktop:renderer-debug-build`：待记录。
 - `git diff --check`：待记录。
 
