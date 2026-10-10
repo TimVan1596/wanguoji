@@ -41,7 +41,7 @@ describe('personalized judgments from factual chains, not random synonym variant
     expect(a.selectedArguments.some(x => x.argumentKey === 'ATTACK_DEFENSE_REVERSAL')).toBe(false);
     expect(a.selectedArguments[0].supportingEventIds).toEqual(expect.arrayContaining([`capital-fallen-${m(9, 9)}`, `capital-fallen-${m(131, 8)}`, `faction-exiled-${m(302, 2)}`]));
     expect(a.selectedArguments[0].supportingMetricKeys).toContain('lifetime.peakTerritoryBlocks');
-    const both = a.lines.join('') + a.voice;
+    const both = a.lines.join('') + a.narrative.join('');
     for (const fact of ['燕王姬惟亲征', '临淄', '755格', '61.6%', '58年12月', '蓟', '131年8月', '邯郸', '302年2月', '47年1个月']) expect(both).toContain(fact);
     expect(a.voice).not.toMatch(/今日|民心|报应|复仇|权臣|导致/);
     expect(a.milestones.map(x => x.month)).toEqual(a.milestones.map(x => x.month).sort((x, y) => x - y));
@@ -49,9 +49,9 @@ describe('personalized judgments from factual chains, not random synonym variant
   });
   it('Zhao long reversal, Wei quick reversal and Qi exile have distinguishable factual emphasis', () => {
     const zhao = assess(fixture('赵')), wei = assess(fixture('魏')), qi = assess(fixture('齐'));
-    expect(zhao.voice).toContain('两役相隔'); expect(zhao.voice).toContain('13年11月'); expect(zhao.voice).toContain('106年8月');
-    expect(wei.voice).toContain('不过9年4个月'); expect(wei.voice).toContain('4年7月'); expect(wei.voice).toContain('13年11月');
-    expect(qi.voice).toContain('40年9个月'); expect(qi.voice).toContain('50年6月'); expect(qi.voice).toContain('临淄');
+    expect(zhao.voice).toContain('之后'); expect(zhao.lines[0]).toContain('13年11月'); expect(zhao.lines[0]).toContain('106年8月'); expect(zhao.voice).toContain('九十余载');
+    expect(wei.voice).toContain('未及十载'); expect(wei.lines[0]).toContain('4年7月'); expect(wei.lines[0]).toContain('13年11月');
+    expect(qi.lines[0]).toContain('40年9个月'); expect(qi.lines.join('')).toContain('50年6月'); expect(qi.voice).toContain('四十余载'); expect(qi.voice).toContain('临淄');
     expect(qi.voice).not.toMatch(/攻人之都|两役|亲征/);
     expect(new Set([zhao.voice, wei.voice, qi.voice]).size).toBe(3);
     // Commentary differs from the factual judgment rather than repeating its first sentence.
@@ -69,7 +69,7 @@ describe('personalized judgments from factual chains, not random synonym variant
     const a = assess(c);
     expect(a.selectedArguments[0].argumentKey).toBe('LONG_RULE_COLLAPSE');
     expect(a.arguments.some(x => x.argumentKey === 'ATTACK_DEFENSE_REVERSAL')).toBe(true);
-    expect(a.voice).toContain('700年'); expect(a.voice).toContain('20君');
+    expect(a.lines.join('')).toContain('700年'); expect(a.voice).toContain('七百载'); expect(a.voice).toContain('二十君');
   });
   it('no documented distinct capital phase means no invented three-stage trajectory', () => {
     const c = fixture('燕'); c.events = c.events.filter(e => e.cityName !== '蓟');

@@ -72,7 +72,7 @@ describe("evidence-backed historiographic arguments and chronological material s
     const chu = assessment(scenario("楚")), han = assessment(scenario("韩")), ying = assessment(scenario("郢"));
     expect(chu.selectedArguments[0].argumentKey).toBe("LONG_RULE_COLLAPSE");
     expect(ying.selectedArguments[0].argumentKey).toBe("HALF_WORLD_LOSS");
-    expect(chu.lines.join(" ")).toContain("906年"); expect(chu.voice).toContain("37君");
+    expect(chu.lines.join(" ")).toContain("906年"); expect(chu.voice).toContain("三十七君");
     expect(chu.narrative.join(" ")).toContain("852年4月"); expect(chu.narrative.join(" ")).toContain("兴亭");
     expect([chu.voice, han.voice, ying.voice].every((v, i, all) => all.indexOf(v) === i)).toBe(true);
     expect(chu.voice).not.toMatch(/帝国|称帝/); expect(chu.selectedArguments.map(x => x.argumentKey)).not.toContain("EMPIRE_COLLAPSE");
@@ -87,7 +87,7 @@ describe("evidence-backed historiographic arguments and chronological material s
   });
   it("Qi's two houses support continuity without inventing violent usurpation", () => {
     const a = assessment(scenario("齐")); expect(a.selectedArguments[0].argumentKey).toBe("HOUSE_STATE_CONTINUITY");
-    expect(a.evidence.usurpationCount).toBe(0); expect(a.voice).toContain("历2姓"); expect(a.voice).toContain("临淄");
+    expect(a.evidence.usurpationCount).toBe(0); expect(a.voice).toContain("历二姓"); expect(a.voice).toContain("临淄");
     expect(a.lines.join(" ")).toContain("并无篡朝记录"); expect(a.voice).not.toMatch(/发生篡朝|权臣|暴力夺位|两次篡/);
   });
   it.each(["郢", "韩", "楚", "齐", "州"] as const)("%s argument references all exist in its actual events or evidence fields", kind => {

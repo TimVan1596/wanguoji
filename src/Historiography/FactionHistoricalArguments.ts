@@ -2,6 +2,8 @@ import type { FactionHistoricalEvidence } from "./FactionHistoriography";
 import type { FactionNarrativeEvidence } from "./FactionHistoricalNarrative";
 import { formatWorldDate as date, formatWorldDuration as duration } from "../Simulation/WorldTime";
 
+import { historianNumber, historianSpan, historianTerritory } from "./HistorianVoiceLanguage";
+
 export interface FactionHistoricalArgument {
   argumentKey: string;
   supportingEventIds: string[];
@@ -61,7 +63,7 @@ export function deriveFactionHistoricalArguments(e: FactionHistoricalEvidence, e
       ["lifetime.peakTerritoryBlocks", "peakAbsoluteWorldShare", "endMonth"], [peakMonth, e.endMonth!],
       "过半疆域峰值、攻取敌都、后来失都、再失最后据点为分开的真实阶段",
       `${date(attack.month)}${attack.rulerName ? `${attack.rulerName}亲征，` : ""}${attack.factionName}攻取${attack.targetName ?? "他国"}都${attack.cityName ?? ""}；${date(peakMonth)}疆域达${e.lifetime.peakTerritoryBlocks.value}格、占世界${peakShare}%，扩张曾至过半之地。${date(defense.month)}失${defense.cityName ?? "己都"}，至${date(loss.month)}再失${city}而流亡${duration(gap)}，失都、失国与最终终结分属不同阶段。`,
-      `${attack.rulerName ? `${attack.rulerName}亲征取` : `${date(attack.month)}${attack.factionName}曾取`}${attack.cityName ?? "敌都"}，${date(peakMonth)}又据天下${peakShare}%；如此之盛，未能使${defense.cityName ?? "国都"}长守。${defense.cityName ?? "国都"}于${date(defense.month)}失，${city}至${date(loss.month)}亦失；由失都到无土尚隔${duration(loss.month - defense.month)}，无土之后又延其统${duration(gap)}，半壁之盛与无土之久相映。`);
+      `${attack.rulerName ? `${attack.rulerName}亲征取` : `${attack.factionName}曾取`}${attack.cityName ?? "敌都"}，盛时据${historianTerritory(e.peakAbsoluteWorldShare)}。后来${defense.cityName ?? "国都"}曾失，及至${city}亦失，方无立国之土；流亡${historianSpan(gap)}而后终结，昔日拓土之盛，终未换得长守之安。`);
   }
   if (attack && defense) {
     const longRule = e.formalMonths !== undefined && e.formalMonths >= 6000 && e.formalRulerCount >= 10 && gap >= 120;
@@ -69,13 +71,13 @@ export function deriveFactionHistoricalArguments(e: FactionHistoricalEvidence, e
       longRule ? ["formalMonths", "formalRulerCount", "endMonth"] : [], [], "先攻取他国首都，后自身首都被攻取；两件事件的行动角色与月份不同",
       `${date(attack.month)}曾取${attack.targetName ?? "他国"}都${attack.cityName ?? ""}，${date(defense.month)}又失己都${defense.cityName ?? ""}于${defense.actorName ?? "敌国"}；攻守之势在同一国史中倒转。`,
       defense.month - attack.month <= 120
-        ? `${date(attack.month)}${attack.rulerName ? `${attack.rulerName}亲征取` : `${attack.factionName}取`}${attack.targetName ?? "他国"}都${attack.cityName ?? ""}，不过${duration(defense.month - attack.month)}，${date(defense.month)}己都${defense.cityName ?? ""}便失于${defense.actorName ?? "他国"}；扩张之得与国都之失相去如此之近，兵锋所至未即成为守土之固。`
-        : `${date(attack.month)}${attack.rulerName ? `${attack.rulerName}亲征取` : `${attack.factionName}取`}${attack.targetName ?? "他国"}都${attack.cityName ?? ""}，至${date(defense.month)}，${defense.actorName ?? "他国"}又取其${defense.cityName ?? "国都"}；两役相隔${duration(defense.month - attack.month)}，昔日攻人之都的得势，不能替后世守住自己的都城。`);
+        ? `${attack.rulerName ? `${attack.rulerName}亲征取` : `${attack.factionName}曾取`}${attack.targetName ?? "他国"}都${attack.cityName ?? ""}，${historianSpan(defense.month - attack.month)}便失己都${defense.cityName ?? ""}于${defense.actorName ?? "他国"}；攻城所得犹近，守土之局已变，兵锋能进，未必能固其后。`
+        : `${attack.rulerName ? `${attack.rulerName}亲征取` : `${attack.factionName}曾取`}${attack.targetName ?? "他国"}都${attack.cityName ?? ""}，${historianSpan(defense.month - attack.month)}之后，己都${defense.cityName ?? ""}又失于${defense.actorName ?? "他国"}；昔日攻人之都的得势，不能替后世守住自己的城。`);
   }
   if (loss && e.formalMonths !== undefined && e.formalMonths >= 6000 && e.formalRulerCount >= 10 && gap >= 120) {
     add("LONG_RULE_COLLAPSE", "LONGEVITY", 103, [loss], ["formalMonths", "formalRulerCount", "endMonth"], [e.stateFoundedMonth!, e.endMonth!], "至少500年正式国祚、十位君主与失国后十年以上延续相对照",
       `正式国祚${duration(e.formalMonths)}，历${e.formalRulerCount}君，累世延续最终止于${city}失守后的末路；长统并未消去最后一代的危局。`,
-      `${duration(e.formalMonths!)}国祚、${e.formalRulerCount}君相承，积累如此之久，至${date(loss.month)}仍失${city}，又延至${date(e.endMonth!)}；累世之长与末路之窘相映，久祚并非最后一城的保障。`);
+      `立国${historianSpan(e.formalMonths!)}，${historianNumber(e.formalRulerCount)}君相承，至末世仍失${city}；累世积累虽厚，不能替最后一代留住一城。`);
   }
   const landmark = events.filter(x => ["world-unification", "world-hegemony", "emperor-proclaimed"].includes(x.type) && x.factionRole === "ACTOR" && loss && x.month < loss.month)[0];
   if (landmark && loss) {
@@ -93,13 +95,13 @@ export function deriveFactionHistoricalArguments(e: FactionHistoricalEvidence, e
   if (loss && e.peakAbsoluteWorldShare >= 0.5 && e.lifetime.peakTerritoryBlocks.month < loss.month) {
     add("HALF_WORLD_LOSS", "POWER", 92, [loss], ["peakAbsoluteWorldShare", "lifetime.peakTerritoryBlocks"], [e.lifetime.peakTerritoryBlocks.month], "世界过半疆域峰值在最终失国之前；不据终结零领土断言渐进衰落",
       `${date(e.lifetime.peakTerritoryBlocks.month)}曾据世界${(e.peakAbsoluteWorldShare * 100).toFixed(1)}%，其后连${city}亦失；半壁之盛与无土之局，使其兴亡远非寻常守成可比。`,
-      `${date(peakMonth)}据天下${peakShare}%之地，至${date(loss.month)}${city}失守${finalLoss?.capture?.rulerName ? `于${finalLoss.capture.rulerName}亲征之役` : ""}，已无一城可凭；半壁之盛，终未成为建制长存之固。${gap > 0 ? `国土尽失后仍延其统${duration(gap)}，疆域与王统各有其终，不能以一城之陷概尽其国史。` : ""}`);
+      `盛时据${historianTerritory(e.peakAbsoluteWorldShare)}，后来${city}失守${finalLoss?.capture?.rulerName ? `于${finalLoss.capture.rulerName}亲征之役` : ""}，竟无一城可凭；昔日疆土之广，终未成为长存之固。${gap > 0 ? `无土而续统${historianSpan(gap)}，城池失尽，国史却未就此写完。` : ""}`);
   }
   if (e.restorationCount >= 2) {
     const restores = events.filter(x => x.type === "faction-restored" && x.factionRole === "ACTOR");
     add("REPEATED_RESTORATION", "RESTORATION", 99, restores, ["restorationCount"], [], "canonical复国次数至少2，区别于仅有还都",
       `复国${e.restorationCount}次，失而复得并非一时回光，而成为其政治生命反复展开的方式。`,
-      `一失未便成终局，再立也未便成定局；${e.restorationCount}次复国，尽见建制可续而城土难常。`);
+      `一失未便成终局，再立也未便成定局；${historianNumber(e.restorationCount)}次复国，尽见建制可续而城土难常。`);
   }
   const usurps = events.filter(x => x.type === "dynasty-usurped" && x.factionRole === "ACTOR");
   const boundaryUsurp = loss && usurps.find(x => x.month === loss.month);
@@ -116,12 +118,12 @@ export function deriveFactionHistoricalArguments(e: FactionHistoricalEvidence, e
     add("HOUSE_STATE_CONTINUITY", "HOUSE", usurps.length ? 106 : e.formalMonths !== undefined && e.formalMonths >= 6000 && e.peakAbsoluteWorldShare >= 0.5 ? 104 : 87, [...usurps, ...(loss ? [loss] : [])],
       ["houseCount", "epochCount", "usurpationCount"], [], "不同王统epoch属于同一faction；只按已记录次数说篡朝",
       `历${e.houseCount}姓、${e.epochCount}段王统${e.usurpationCount ? `，其中篡朝${e.usurpationCount}次` : "，并无篡朝记录"}；王室易姓而国家史相续，国之存亡不等于一家得失。`,
-      `历${e.houseCount}姓而仍为一国，${e.usurpationCount ? "王统曾争，" : "易姓未必即是篡夺，"}${loss ? `${city}失守才将王统相续置于无土之境。` : "一家可以退场，国家之名却不必随之终结。"}`);
+      `历${historianNumber(e.houseCount)}姓而仍为一国，${e.usurpationCount ? "王统曾争，" : "易姓未必即是篡夺，"}${loss ? `${city}失守才将王统相续置于无土之境。` : "一家可以退场，国家之名却不必随之终结。"}`);
   }
   if (loss && gap > 0) {
     add("EXILE_CONTINUITY", "EXILE", 69, [loss], ["endMonth"], [e.endMonth!], "最终失国到终结的真实月份差，不等同累计流亡月份",
       `${city}失守后仍延续${duration(gap)}，流亡不是国史之外的空白，而是土地已失、建制未终的一段。`,
-      `${date(loss.month)}${loss.factionName}失${city}${finalLoss?.capture?.actorName ? `于${finalLoss.capture.actorName}` : ""}，到${date(e.endMonth!)}方告终结；无土而续统${duration(gap)}，其历史不能止于城门失守之日，也不能以流亡续统抵作在国之治。`);
+      `${loss.factionName}失${city}${finalLoss?.capture?.actorName ? `于${finalLoss.capture.actorName}` : ""}，无土而续统${historianSpan(gap)}；城门失守，未即是国史终篇，流亡虽能延其统，终不能代立国之土。`);
   }
   if (e.ending === "MERGED" || e.ending === "SUBMITTED") {
     const merged = e.ending === "MERGED";
@@ -141,7 +143,7 @@ export function deriveFactionHistoricalArguments(e: FactionHistoricalEvidence, e
         ["ending", "targetFactionId", "endMonth"], [e.endMonth!],
         "同一稳定接受方ID：曾攻其真实首都，后行政并入；不推断和解动机或血缘",
         `${date(formerAttack.month)}${formerAttack.factionName}曾攻陷${formerAttack.targetName ?? "接受国"}都${formerAttack.cityName}；至${date(e.endMonth!)}，却并入${e.targetName ?? "该国"}（同源合邦）。昔日攻都的一方，最终成为行政并入的一方，政治分合与战事胜负并非同一种结局。`,
-        `昔取${formerAttack.targetName ?? "其国"}都${formerAttack.cityName}，终又并入${e.targetName ?? "其国"}；一时兵争之得，不能定后来政治之分合。`);
+        `昔取${formerAttack.targetName ?? "其国"}都${formerAttack.cityName}，${e.peakAbsoluteWorldShare >= .5 && peakMonth < e.endMonth! ? `盛时曾据${historianTerritory(e.peakAbsoluteWorldShare)}，` : ""}终又并入${e.targetName ?? "其国"}（同源合邦）；一时兵争之得，不能定后来政治之分合。`);
     }
   }
   if ((e.ending === "MERGED" || e.ending === "SUBMITTED") && e.lifetime.terminal?.cityCount === 1 && e.lifetime.peakCityCount.value >= 3) {

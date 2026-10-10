@@ -54,7 +54,7 @@ describe("fact-driven national rise and fall narratives", () => {
     c.dynasty!.houseEpochs!.push({ houseName: "田氏", startMonth: 100, foundingRulerId: "tian", startReason: "NATURAL_HOUSE_SUCCESSION" });
     c.events = c.events.filter(e => e.type !== "state-founded").map(e => e.cityId ? { ...e, cityName: "临淄" } : e);
     const a = deriveFactionAssessment(c)!; expect(a.evidence.houseCount).toBe(2); expect(a.evidence.usurpationCount).toBe(0);
-    expect(a.voice).toContain("2姓"); expect(a.voice).toContain("临淄"); expect(a.voice).not.toMatch(/\d+次篡|发生篡朝/);
+    expect(a.voice).toContain("二姓"); expect(a.voice).toContain("临淄"); expect(a.voice).not.toMatch(/\d+次篡|发生篡朝/);
   });
   it("does not infer gradual retreat from zero territory at extinction", () => {
     const a = deriveFactionAssessment(fixture())!; expect(a.profiles.map(p => p.key)).not.toContain("RETREAT");

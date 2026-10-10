@@ -69,7 +69,7 @@ describe("dynastic historiography closure", () => {
   it("Dong's long, half-world, two-house history includes house continuity without inventing a coup", () => {
     const a = assess(fixture("董")); expect(a.evidence.formalMonths).toBe(m(901)); expect(a.evidence.usurpationCount).toBe(0);
     expect(a.selectedArguments.map(x => x.argumentKey)).toContain("HOUSE_STATE_CONTINUITY");
-    expect(a.voice).toContain("历2姓"); expect(a.lines.join(" ")).toContain("并无篡朝记录");
+    expect(a.voice).toContain("历二姓"); expect(a.lines.join(" ")).toContain("并无篡朝记录");
     expect(a.voice).not.toMatch(/夺权|暴力|篡朝|王统曾争/);
   });
   it("recognizes the same stable receiving ID as a former capital target before union", () => {
