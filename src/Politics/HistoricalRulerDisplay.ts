@@ -1,3 +1,4 @@
+import { hasRecordedRulerDeath } from "./RulerLifeState";
 import type { Ruler } from "./Dynasty";
 import type { SovereigntyRank } from "../Simulation/FactionIdentity";
 
@@ -6,7 +7,7 @@ export interface HistoricalRulerDisplayOptions {
 }
 
 export function resolveHistoricalRulerDisplay(
-  ruler: Pick<Ruler, "houseName" | "givenName" | "endYear" | "posthumousEpithet" | "templeName">,
+  ruler: Pick<Ruler, "houseName" | "givenName" | "endYear" | "posthumousEpithet" | "templeName" | "deathMonth" | "deathReason">,
   factionName: string,
   mode: "compact" | "full" = "compact",
   options: HistoricalRulerDisplayOptions = {}
@@ -14,7 +15,7 @@ export function resolveHistoricalRulerDisplay(
   const personal = `${ruler.houseName.replace(/氏$/, "")}${ruler.givenName}`;
   const rankTitle = getLivingRankTitle(options.historicalRank);
   const currentIdentity = rankTitle ? `${factionName}${rankTitle}${personal}` : personal;
-  if (ruler.endYear === undefined) return currentIdentity;
+  if (!hasRecordedRulerDeath(ruler)) return currentIdentity;
   const epithetSuffix = options.historicalRank === "EMPEROR" ? "帝" : "王";
   if (mode === "full") {
     if (!ruler.templeName && !ruler.posthumousEpithet) return currentIdentity;

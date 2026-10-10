@@ -1,3 +1,4 @@
+import { hasRecordedRulerDeath } from "../../../Politics/RulerLifeState";
 import { FactionAssessmentPanel } from "../FactionAssessment";
 import { getTerminationTargetName } from "./model";
 import { formatRulerTerminalEvent } from "../../../History/PoliticalTerminalChronicle";
@@ -1017,7 +1018,7 @@ function RulerBiography({
   const reignEnd = ruler.endYear ?? worldMonth;
   const reignMonths = Math.max(0, reignEnd - ruler.accessionYear);
   const accessionAge = Math.floor(monthsToYears(ruler.accessionYear - ruler.bornYear));
-  const finalAge = Math.floor(monthsToYears(reignEnd - ruler.bornYear));
+  const finalAge = Math.floor(monthsToYears((hasRecordedRulerDeath(ruler) ? ruler.deathMonth! : reignEnd) - ruler.bornYear));
   const assessment = deriveRulerAssessment({
     ruler,
     dynasty: { rulers },
@@ -1057,7 +1058,7 @@ function RulerBiography({
         background: "var(--gg-panel)",
       }}
     >
-      <Typography fontWeight="bold">{ruler.status === "dead" && ruler.endYear !== undefined && (ruler.templeName || ruler.posthumousEpithet) ? formatPosthumousRulerName(ruler, team, ruler.endYear) : formatRulerName(ruler)}</Typography>
+      <Typography fontWeight="bold">{hasRecordedRulerDeath(ruler) && ruler.endYear !== undefined && (ruler.templeName || ruler.posthumousEpithet) ? formatPosthumousRulerName(ruler, team, ruler.endYear) : formatRulerName(ruler)}</Typography>
       <Typography fontSize="0.85rem" color="var(--gg-text-muted)">
         {ruler.houseName} ·{" "}
         {ruler.reignOrdinal ? `第${ruler.reignOrdinal}代君主 · ` : ""}
@@ -1072,6 +1073,7 @@ function RulerBiography({
       <Typography fontSize="0.85rem">
         即位年龄：{accessionAge} 岁 · {formatRulerAge(ruler.status, finalAge)}
         {ruler.endReason ? ` · ${ruler.endReason}` : ""}
+        {ruler.status === "politically-ended" ? " · 生死未载" : ""}
       </Typography>
       <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
         继承关系：{predecessor && ["DIRECT_CHILD", "GRANDCHILD", "SIBLING", "NEPHEW", "UNCLE", "COUSIN", "COLLATERAL_KIN"].includes(ruler.relationType ?? "")
@@ -1088,7 +1090,7 @@ function RulerBiography({
           <Typography fontWeight="bold" fontSize="0.82rem">储嗣</Typography>
           {heirDeathEvents.map((event) => (
             <Typography key={event.id} fontSize="0.82rem">
-              {stringMetadata(event.metadata?.heirName)} · {event.metadata?.age ?? "—"}岁 · {formatWorldDate(event.monthIndex ?? event.year)}{ruler.status === "abdicated" ? "在其任内" : "先于父君"}{event.metadata?.reason === "combat" ? "战死" : event.metadata?.reason === "captured" ? "被俘处死" : "去世"}
+              {stringMetadata(event.metadata?.heirName)} · {event.metadata?.age ?? "—"}岁 · {formatWorldDate(event.monthIndex ?? event.year)}{!hasRecordedRulerDeath(ruler) ? "在其任内" : "先于父君"}{event.metadata?.reason === "combat" ? "战死" : event.metadata?.reason === "captured" ? "被俘处死" : "去世"}
             </Typography>
           ))}
         </Box>
@@ -1104,7 +1106,7 @@ function RulerBiography({
           ? `；祖父：${formatRulerRowName(grandparent, team)}`
           : ""}
       </Typography>
-      {ruler.status === "dead" && posthumousLines.length > 0 ? (
+      {hasRecordedRulerDeath(ruler) && posthumousLines.length > 0 ? (
         <Box sx={{ mt: 0.5 }}>
           <Typography fontWeight="bold" fontSize="0.82rem">身后称号</Typography>
           {posthumousLines.filter((line) => !line.startsWith("史称：")).map((line) => <Typography key={line} fontSize="0.82rem">{line}</Typography>)}
@@ -1212,6 +1214,7 @@ function formatRulerStatus(
     return "已故";
   }
   if (status === "abdicated") return "退位";
+  if (status === "politically-ended") return "政治任期已终 · 生死未载";
   return "君主";
 }
 
@@ -1219,7 +1222,7 @@ function formatRulerRowName(
   ruler: Ruler,
   team: RootState["root"]["teams"][number]
 ) {
-  if (ruler.status === "dead" && ruler.endYear !== undefined && (ruler.templeName || ruler.posthumousEpithet)) {
+  if (hasRecordedRulerDeath(ruler) && ruler.endYear !== undefined && (ruler.templeName || ruler.posthumousEpithet)) {
     return formatPosthumousRulerName(ruler, team, ruler.endYear);
   }
   return formatRulerName(ruler);

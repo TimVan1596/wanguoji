@@ -1,3 +1,4 @@
+import { hasRecordedRulerDeath } from "../Politics/RulerLifeState";
 import type { WorldEvent } from "./WorldHistory";
 import type { WorldEra } from "../Simulation/WorldEra";
 import type { Dynasty, Ruler } from "../Politics/Dynasty";
@@ -111,7 +112,7 @@ export function deriveWorldRecords(
   addRulerMax("youngest-accession", "最年幼正式即位", entries, (e) => e.formalStart - e.ruler.bornYear, (e) => age(e.formalStart - e.ruler.bornYear), undefined, true);
   addRulerMax("personal-captures", "亲征夺城最多", entries, (e) => e.evidence.personalCityCaptures, (e) => `${e.evidence.personalCityCaptures}座`);
 
-  addRulerMax("longest-life", "最长寿君主", entries.filter((e) => e.ruler.endYear !== undefined && e.evidence.finalAge !== undefined), (e) => e.evidence.finalAge ?? 0, (e) => `${e.evidence.finalAge}岁`);
+  addRulerMax("longest-life", "最长寿君主", entries.filter((e) => hasRecordedRulerDeath(e.ruler) && e.evidence.finalAge !== undefined), (e) => e.evidence.finalAge ?? 0, (e) => `${e.evidence.finalAge}岁`);
   addRulerMax("oldest-accession", "最高龄即位", entries, (e) => e.formalStart - e.ruler.bornYear, (e) => `${Math.floor((e.formalStart - e.ruler.bornYear) / 12)}岁`);
   addRulerMax("shortest-reign", "最短正式在位", entries.filter((e) => e.ruler.endYear !== undefined && e.reignMonths >= 1), (e) => e.reignMonths, (e) => duration(e.reignMonths), undefined, true);
   addRulerMax("peak-expansion", "最大峰值扩张", entries, (e) => e.evidence.territorialPeakGain, (e) => `+${pp(e.evidence.territorialPeakGain)}`, (e) => `即位${percent(e.evidence.startTerritory)} → 峰值${percent(e.evidence.peakTerritory)}`);

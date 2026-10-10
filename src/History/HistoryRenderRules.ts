@@ -1,3 +1,4 @@
+import { hasRecordedRulerDeath } from "../Politics/RulerLifeState";
 import { getMergedEventPresentation } from "./MergedEventPresentation";
 import { getSubmissionEventPresentation } from "./PeacefulSubmissionPresentation";
 import { DIPLOMACY_EVENT_TYPES } from "./HistoryMajorEventFilters";
@@ -440,7 +441,7 @@ function historicalRulerName(
 ) {
   const rulerId = event.rulerId ?? stringMeta(event, "rulerId");
   const ruler = rulerId ? rulersById?.get(rulerId) : undefined;
-  if (ruler && ruler.endYear !== undefined && (ruler.templeName || ruler.posthumousEpithet)) {
+  if (ruler && hasRecordedRulerDeath(ruler) && ruler.endYear !== undefined && (ruler.templeName || ruler.posthumousEpithet)) {
     const faction = factionById.get(event.actorFactionId ?? event.targetFactionId ?? "");
     const month = event.monthIndex ?? event.year;
     const rank = faction?.sovereigntyHistory?.find((entry) =>

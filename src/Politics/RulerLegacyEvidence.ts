@@ -61,7 +61,7 @@ export function buildRulerLegacyEvidence(
   const governedMonths = Math.min(reignMonths, Math.max(0, activeRuleMonths));
   const territorialCollapse = territoryDelta <= -0.12;
   const cityCollapse = cityDelta <= -2;
-  const terminalCollapse = endReason === "彻底灭亡" || endReason === "流亡";
+  const terminalCollapse = endReason === "政治终结" || endReason === "彻底灭亡" || endReason === "流亡";
   const stableGovernanceEligible =
     end.stability >= 75 &&
     stabilityDelta >= 0 &&

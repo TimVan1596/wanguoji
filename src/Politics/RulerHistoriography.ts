@@ -1,3 +1,4 @@
+import { hasRecordedRulerDeath } from "./RulerLifeState";
 import type { WorldEvent } from "../History/WorldHistory";
 import type { Dynasty, Ruler } from "./Dynasty";
 import { getRulerEffectiveSnapshot } from "./RulerChronicle";
@@ -31,6 +32,7 @@ export interface RulerHistoricalEvidence {
   factionId: string;
   accessionAge?: number;
   finalAge?: number;
+  hasRecordedDeath: boolean;
   reignMonths: number;
   tenure: RulerTenureEvidence;
   isFinalized: boolean;
@@ -263,7 +265,7 @@ export function deriveRulerHistoricalEvidence(
   const accessionCrisis =
     accessionSnapshot.stability <= 45 ||
     (accessionSnapshot.cityCount <= 1 && accessionSnapshot.territoryShare <= 0.12);
-  const ownTerminalCollapse = ruler.endReason === "彻底灭亡" || ruler.endReason === "流亡" || tenure.diedInExile || tenure.extinctInExile;
+  const ownTerminalCollapse = ruler.endReason === "政治终结" || ruler.endReason === "彻底灭亡" || ruler.endReason === "流亡" || tenure.diedInExile || tenure.extinctInExile;
   const expansion =
     finalSnapshot.territoryShare - accessionSnapshot.territoryShare >= 0.12 ||
     finalSnapshot.cityCount - accessionSnapshot.cityCount >= 3;
@@ -314,7 +316,7 @@ export function deriveRulerHistoricalEvidence(
     ? Math.floor(monthsToYears(accessionMonth - ruler.bornYear))
     : undefined;
   const finalAge = ruler.bornYear !== undefined
-    ? Math.floor(monthsToYears(endMonth - ruler.bornYear))
+    ? Math.floor(monthsToYears((hasRecordedRulerDeath(ruler) ? ruler.deathMonth! : endMonth) - ruler.bornYear))
     : undefined;
 
   return {
@@ -322,6 +324,7 @@ export function deriveRulerHistoricalEvidence(
     factionId: faction.name,
     accessionAge,
     finalAge,
+    hasRecordedDeath: hasRecordedRulerDeath(ruler),
     reignMonths,
     tenure,
     isFinalized,
@@ -375,14 +378,15 @@ export function deriveRulerHistoricalEvidence(
 export function composeRulerAssessment(evidence: RulerHistoricalEvidence): RulerAssessment {
   const lines: string[] = [];
   const abdicated = evidence.rulerStatus === "abdicated";
-  const finalTime = evidence.isFinalized ? (abdicated ? "退位时" : "身后") : "目前";
+  const finalTime = evidence.isFinalized ? (evidence.hasRecordedDeath ? "身后" : abdicated ? "退位时" : "政治任期终结时") : "目前";
+  const nonDeathFinal = !evidence.hasRecordedDeath;
   const livingPrefix = evidence.isFinalized ? "" : "截至目前，";
   const childAccession = evidence.accessionAge !== undefined && evidence.accessionAge <= 11;
   const youthAccession = evidence.accessionAge !== undefined && evidence.accessionAge >= 12 && evidence.accessionAge <= 15;
   const agePrefix = childAccession ? "幼年承统，" : youthAccession ? "少年即位，" : "";
 
   if (evidence.roles.includes("RESTORED_FROM_EXILE")) {
-    lines.push(`亡国流亡${formatWorldDuration(evidence.tenure.restoredExileMonths)}后恢复国家，复国成为其${evidence.isFinalized ? (abdicated ? "承统经历中" : "一生") : "截至目前"}最重要的历史转折。`);
+    lines.push(`亡国流亡${formatWorldDuration(evidence.tenure.restoredExileMonths)}后恢复国家，复国成为其${evidence.isFinalized ? (nonDeathFinal ? "承统经历中" : "一生") : "截至目前"}最重要的历史转折。`);
     if (evidence.tenure.exileMonths > evidence.tenure.restoredExileMonths) {
       lines.push(`其后仍有流亡经历，累计流亡${formatWorldDuration(evidence.tenure.exileMonths)}。`);
     }
@@ -391,11 +395,11 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
   if (evidence.roles.includes("LONG_EXILE")) {
     if (evidence.tenure.exiledAtAccession && evidence.tenure.activeRuleMonths <= 12) {
       const exileAccession = childAccession ? "幼年承接流亡王统" : youthAccession ? "少年承接流亡王统" : "承接流亡王统";
-      lines.push(`${exileAccession}，${evidence.isFinalized ? (abdicated ? "其承统期间" : "其一生") : "截至目前的承统岁月中，大部分时间"}没有实际控制城邑。`);
+      lines.push(`${exileAccession}，${evidence.isFinalized ? (nonDeathFinal ? "其承统期间" : "其一生") : "截至目前的承统岁月中，大部分时间"}没有实际控制城邑。`);
       lines.push(`${evidence.isFinalized ? "其历史角色主要在于延续王统与复国希望，而非持续治理一个在国政权。" : "目前其身份更接近流亡王统的延续者，而非持续治理在国政权的君主。"}`);
     } else if (evidence.tenure.lostStateDuringTenure && (evidence.tenure.monthsUntilFirstExile ?? Infinity) <= 12) {
       lines.push(evidence.isFinalized
-        ? (abdicated ? "即位不久即失去国土，此后王室长期流亡，至退位时未能复国。" : "即位不久即失去国土，此后王室长期流亡，终其一生未能复国。")
+        ? (nonDeathFinal ? `即位不久即失去国土，此后王室长期流亡，至${finalTime}未能复国。` : "即位不久即失去国土，此后王室长期流亡，终其一生未能复国。")
         : "即位不久即失去国土，此后王室长期流亡；截至目前尚未复国。");
     } else if (evidence.tenure.diedInExile) {
       lines.push(`其治下国土终失，后半生长期流亡，累计流亡${formatWorldDuration(evidence.tenure.exileMonths)}，未能复国。`);
@@ -536,8 +540,8 @@ export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string
   if (!evidence.isFinalized) return undefined;
   const pick = (lines: string[]) => {
     const text = lines[stableHash(evidence.rulerId) % lines.length];
-    return evidence.rulerStatus === "abdicated"
-      ? text.replaceAll("身后", "退位时").replaceAll("其一生", "其承统期间").replaceAll("一生治绩", "在位治绩")
+    return !evidence.hasRecordedDeath
+      ? text.replaceAll("身后", evidence.rulerStatus === "abdicated" ? "退位时" : "政治任期终结时").replaceAll("其一生", "其承统期间").replaceAll("一生治绩", "在位治绩")
       : text;
   };
   const roles = evidence.roles;

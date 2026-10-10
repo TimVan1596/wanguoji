@@ -1,3 +1,4 @@
+import { hasRecordedRulerDeath } from "./RulerLifeState";
 import type Team from "../Components/Team";
 import { getFactionDisplayNameAtMonth, getSovereigntyRankAtMonth } from "../Simulation/FactionIdentity";
 import { formatWorldDate } from "../Simulation/WorldTime";
@@ -35,7 +36,7 @@ export function finalizeRulerPosthumousNames(
   faction: Team,
   monthIndex: number
 ) {
-  if (ruler.endYear === undefined || ruler.accessionYear === undefined || !ruler.chronicle) {
+  if (!hasRecordedRulerDeath(ruler) || ruler.endYear === undefined || ruler.accessionYear === undefined || !ruler.chronicle) {
     return;
   }
   const evaluation = evaluatePosthumousNames(ruler, dynastyRulers, faction, monthIndex, WorldHistory.getEvents());
@@ -52,7 +53,7 @@ export function evaluatePosthumousNames(
   monthIndex: number,
   events: WorldEvent[] = WorldHistory.getEvents()
 ): PosthumousEvaluation {
-  if (ruler.endYear === undefined || ruler.accessionYear === undefined || !ruler.chronicle) {
+  if (!hasRecordedRulerDeath(ruler) || ruler.endYear === undefined || ruler.accessionYear === undefined || !ruler.chronicle) {
     return emptyEvaluation();
   }
   const rank = getSovereigntyRankAtMonth(faction, Math.min(ruler.endYear, monthIndex));
@@ -206,7 +207,7 @@ export function getNotablePosthumousRulers(
   limit = 6
 ) {
   return rulers
-    .filter((ruler) => ruler.endYear !== undefined && (ruler.templeName || ruler.posthumousEpithet))
+    .filter((ruler) => hasRecordedRulerDeath(ruler) && ruler.endYear !== undefined && (ruler.templeName || ruler.posthumousEpithet))
     .map((ruler) => ({
       ruler,
       displayName: formatPosthumousRulerName(ruler, faction, ruler.endYear ?? 0),

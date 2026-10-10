@@ -1,3 +1,4 @@
+import { hasRecordedRulerDeath } from "./RulerLifeState";
 import type { WorldEvent } from "../History/WorldHistory";
 import type { Ruler } from "./Dynasty";
 
@@ -19,7 +20,7 @@ type LifecycleEvent = { month: number; order: number; type: "EXILE" | "RESTORE" 
 
 /** Derive a ruler's real in-state / exile timeline from canonical faction lifecycle events. */
 export function deriveRulerTenureEvidence(
-  ruler: Pick<Ruler, "accessionYear" | "endYear" | "endReason" | "status">,
+  ruler: Pick<Ruler, "accessionYear" | "endYear" | "endReason" | "status" | "deathMonth" | "deathReason">,
   factionId: string,
   events: WorldEvent[],
   worldMonth: number
@@ -113,7 +114,10 @@ export function deriveRulerTenureEvidence(
     exiledAtAccession,
     lostStateDuringTenure,
     restoredDuringTenure,
-    diedInExile: ruler.endYear !== undefined && ruler.status === "dead" && exiled,
+    diedInExile: hasRecordedRulerDeath(ruler) && lifecycle
+      .filter(event => event.month <= ruler.deathMonth!)
+      .reduce((state, event) => event.type === "EXILE" ? true :
+        event.type === "EXTINCT" && event.month === ruler.deathMonth ? state : false, false),
     extinctInExile,
     restoredExileMonths,
     monthsUntilFirstExile,
