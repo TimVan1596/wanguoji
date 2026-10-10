@@ -30,8 +30,8 @@
 实际命令与结果：
 
 - 针对性测试：5个文件、24项通过。
-- `VITEST_MAX_THREADS=4 VITEST_MIN_THREADS=1 pnpm test -- --run`：待记录。
-- `pnpm build`：待记录。
+- `VITEST_MAX_THREADS=4 VITEST_MIN_THREADS=1 pnpm test -- --run`：183个测试文件、1168项全部通过；包含V12往返、世界时代分类、国评、外交、政治终结及same-seed回归。
+- `pnpm build`：通过，音乐资源检查通过。
 - `pnpm desktop:build`：待记录。
 - `pnpm desktop:compile`：待记录。
 - `pnpm desktop:renderer-debug-build`：待记录。
