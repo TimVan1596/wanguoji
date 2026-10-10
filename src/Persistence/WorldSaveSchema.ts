@@ -152,7 +152,7 @@ export interface WorldEventSystemSaveV1 {
   cycleState: WorldCycleStateSaveV1;
 }
 
-export interface WorldSaveV12 {
+export interface WorldSaveV13 {
   saveSchemaVersion: typeof CURRENT_SAVE_SCHEMA_VERSION;
   appVersion: string;
   createdAt?: string;
@@ -187,7 +187,7 @@ export interface WorldSaveV12 {
   diplomacy: { relations: DiplomaticRelation[]; pairMemories: DiplomaticPairMemory[]; lastEvaluationMonth: number };
 }
 
-export function createEmptyWorldSaveV12(): WorldSaveV12 {
+export function createEmptyWorldSaveV13(): WorldSaveV13 {
   return {
     saveSchemaVersion: CURRENT_SAVE_SCHEMA_VERSION,
     appVersion: APP_VERSION,
@@ -227,24 +227,24 @@ export function createEmptyWorldSaveV12(): WorldSaveV12 {
   };
 }
 
-export type WorldSaveV8 = WorldSaveV12;
-export const createEmptyWorldSaveV8 = createEmptyWorldSaveV12;
+export type WorldSaveV8 = WorldSaveV13;
+export const createEmptyWorldSaveV8 = createEmptyWorldSaveV13;
 
 /** Internal call-site aliases; persisted saves still identify their exact schema number. */
-export type WorldSaveV7 = WorldSaveV12;
-export type WorldSaveV6 = WorldSaveV12;
-export type WorldSaveV5 = WorldSaveV12;
-export type WorldSaveV4 = WorldSaveV12;
-export type WorldSaveV3 = WorldSaveV12;
-export type WorldSaveV2 = WorldSaveV12;
-export type WorldSaveV1 = WorldSaveV12;
-export const createEmptyWorldSaveV7 = createEmptyWorldSaveV12;
-export const createEmptyWorldSaveV6 = createEmptyWorldSaveV12;
-export const createEmptyWorldSaveV5 = createEmptyWorldSaveV12;
-export const createEmptyWorldSaveV4 = createEmptyWorldSaveV12;
-export const createEmptyWorldSaveV3 = createEmptyWorldSaveV12;
-export const createEmptyWorldSaveV2 = createEmptyWorldSaveV12;
-export const createEmptyWorldSaveV1 = createEmptyWorldSaveV12;
+export type WorldSaveV7 = WorldSaveV13;
+export type WorldSaveV6 = WorldSaveV13;
+export type WorldSaveV5 = WorldSaveV13;
+export type WorldSaveV4 = WorldSaveV13;
+export type WorldSaveV3 = WorldSaveV13;
+export type WorldSaveV2 = WorldSaveV13;
+export type WorldSaveV1 = WorldSaveV13;
+export const createEmptyWorldSaveV7 = createEmptyWorldSaveV13;
+export const createEmptyWorldSaveV6 = createEmptyWorldSaveV13;
+export const createEmptyWorldSaveV5 = createEmptyWorldSaveV13;
+export const createEmptyWorldSaveV4 = createEmptyWorldSaveV13;
+export const createEmptyWorldSaveV3 = createEmptyWorldSaveV13;
+export const createEmptyWorldSaveV2 = createEmptyWorldSaveV13;
+export const createEmptyWorldSaveV1 = createEmptyWorldSaveV13;
 
 export function canonicalWorldSaveProjection(save: WorldSaveV1) {
   const { createdAt: _createdAt, ...canonical } = save;
@@ -329,14 +329,18 @@ function simplifyDiffValue(value: unknown): unknown {
   return String(value);
 }
 
-// Legacy source API aliases only; every emitted/accepted DTO is schema V12.
-export type WorldSaveV9 = WorldSaveV12;
-export const createEmptyWorldSaveV9 = createEmptyWorldSaveV12;
+// Legacy source API aliases only; every emitted/accepted DTO is schema V13.
+export type WorldSaveV9 = WorldSaveV13;
+export const createEmptyWorldSaveV9 = createEmptyWorldSaveV13;
 
 // Source aliases only, not compatibility: schema 10 is rejected.
-export type WorldSaveV10 = WorldSaveV12;
-export const createEmptyWorldSaveV10 = createEmptyWorldSaveV12;
+export type WorldSaveV10 = WorldSaveV13;
+export const createEmptyWorldSaveV10 = createEmptyWorldSaveV13;
 
 // Source aliases do not accept old persisted schemas.
-export type WorldSaveV11 = WorldSaveV12;
-export const createEmptyWorldSaveV11 = createEmptyWorldSaveV12;
+export type WorldSaveV11 = WorldSaveV13;
+export const createEmptyWorldSaveV11 = createEmptyWorldSaveV13;
+
+// Source aliases only, not support for loading version 12 saves.
+export type WorldSaveV12 = WorldSaveV13;
+export const createEmptyWorldSaveV12 = createEmptyWorldSaveV13;

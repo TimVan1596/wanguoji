@@ -10,7 +10,7 @@ vi.mock("../Components/Team", () => ({ default: class {
   static hydrate(_scene: unknown, state: any) { return { ...state, name: state.factionId, cities: [], users: new Set(), farms: { npcs: new Map(), init() {} },
     addCity(city: any) { this.cities.push(city as never); }, exportState: () => structuredClone(state) }; }
 } }));
-vi.mock("../Components/City", () => ({ default: class {
+vi.mock("../Components/City", () => ({ getFactionStability: () => 80, default: class {
   static hydrate(state: any, block: any) { return { ...state, id: state.cityId, block, fortifiedCells: [],
     rebuildRuntimeVisuals() {}, exportState: () => structuredClone(state) }; }
 } }));
@@ -22,6 +22,8 @@ import { createEmptyWorldSaveV9 } from "./WorldSaveSchema";
 import { validateWorldSave } from "./WorldSaveValidator";
 import { normalizeArchivedCityBlockRefs } from "./ArchivedCityHydrationRepair";
 import { createStoredWorldSaveRecord, validateStoredWorldSaveRecord } from "./WorldSaveRepository";
+import DynastyRegistry from "../Politics/Dynasty";
+import { exportRulerSave } from "./RulerSaveProjection";
 import WorldHistory from "../History/WorldHistory";
 import worldRandom from "../Simulation/WorldRandom";
 import { createBlockSaveProjection } from "./BlockSaveProjection";
@@ -63,6 +65,26 @@ function target() {
 }
 afterEach(() => { vi.restoreAllMocks(); });
 describe("V9 active city referential integrity and pre-teardown repair", () => {
+  it("new seven-faction rulers use the actual initialization path and export/validate/hydrate as V13", () => {
+    const save = fixture(), core = target();
+    const names = ["qin", "chu", "yan", "qi", "han", "zhao", "wei"];
+    const base = save.factions[0]; save.factions = names.map(factionId => ({ ...base, factionId, ...(factionId === "qin" ? {} : { capitalCityId: undefined }) }));
+    setFixtureLifetimeRecords(save);
+    DynastyRegistry.reset(); WorldHistory.reset(); worldRandom.initialize("seven-new-v13");
+    const teams = names.map(name => ({ name, displayName: name, status: "ACTIVE", identityStage: "STATE", sovereigntyRank: "KING", factionType: "KINGDOM", stateFoundedMonth: 0,
+      users: new Set(), cities: [], blocks: { children: { size: 0 } }, removeRulerUnit() {}, makeUser() {} }));
+    core.teams = teams; Object.defineProperty(core, "totalCells", { value: 3 });
+    teams.forEach(team => DynastyRegistry.initializeFaction(team as any, 0));
+    const state = DynastyRegistry.exportState();
+    save.dynasties = state.dynasties.map(d => ({ ...d, rulers: d.rulers.map(exportRulerSave) }));
+    save.registries.dynastyRegistrySequence = state.sequence; save.worldHistory = WorldHistory.exportState(); save.worldRandom = worldRandom.exportState();
+    expect(state.dynasties).toHaveLength(7);
+    expect(state.dynasties.every(d => d.rulers.some(r => r.id === d.currentRulerId && r.status === "ruling" && r.deathMonth === undefined))).toBe(true);
+    expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
+    hydrateWorldSave(core, save); const first = exportWorldSave(core);
+    expect(first.dynasties).toEqual(save.dynasties); expect(first.worldHistory).toEqual(save.worldHistory);
+    hydrateWorldSave(core, first); expect(exportWorldSave(core)).toEqual(first); expect(worldRandom.exportState()).toEqual(save.worldRandom);
+  });
   it("V13 preserves independently ended offices, actual deaths, retirement, family and RNG across hydration", () => {
     const save = fixture();
     save.dynasties = [{ factionId: "qin", houseName: "田氏", currentRulerId: "current", heirIds: [],
