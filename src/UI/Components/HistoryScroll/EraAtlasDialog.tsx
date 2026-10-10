@@ -1,5 +1,8 @@
+import type Team from "../../../Components/Team";
+import type { Ruler } from "../../../Politics/Dynasty";
+import EraChronicle from "./EraChronicle";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
-import { Box, Button, Dialog, DialogContent, Typography } from "@mui/material";
+import { Box, Button, Dialog, DialogContent, Typography, FormControlLabel, Checkbox } from "@mui/material";
 import type { WorldEra } from "../../../Simulation/WorldEra";
 import { formatWorldDate } from "../../../Simulation/WorldTime";
 import { analyzeEraSnapshot } from "../../../Simulation/EraAtlasLayout";
@@ -7,12 +10,13 @@ import EraAtlasMap from "./EraAtlasMap";
 import { atlasArrowDirection, getEraNeighbors } from "./eraSelection";
 import { revealAtlasAxisItem } from "./atlasViewport";
 const types = { MULTIPOLAR: "群雄争衡", DUAL_RIVALRY: "双雄争霸", HEGEMONY: "霸权时代", DYNASTIC: "王朝时代", UNIFIED: "天下一统", FRAGMENTATION: "天下再裂" };
-export function EraAtlasDialogContent({ eras, selectedEraId, onNavigate, onClose }: { eras: WorldEra[]; selectedEraId: string; onNavigate: (id: string) => void; onClose?: () => void }) {
+export function EraAtlasDialogContent({ eras, selectedEraId, onNavigate, onClose, worldMonth, factions, rulers }: { worldMonth?: number; factions?: Map<string, Team>; rulers?: Map<string, Ruler>; eras: WorldEra[]; selectedEraId: string; onNavigate: (id: string) => void; onClose?: () => void }) {
   const { ordered, previous, next } = useMemo(() => getEraNeighbors(eras, selectedEraId), [eras, selectedEraId]);
   const selected = ordered.find(e => e.id === selectedEraId);
   const rows = useMemo(() => selected?.mapSnapshot ? analyzeEraSnapshot(selected.mapSnapshot).territories : [], [selected?.mapSnapshot]);
   const [zoom, setZoom] = useState(1);
-  const [mobileStats, setMobileStats] = useState(false);
+  const [mobilePanel, setMobilePanel] = useState<"chronicle" | "statistics">();
+  const [showBorders, setShowBorders] = useState(true);
   const timeline = useRef<HTMLDivElement>(null);
   useEffect(() => {
     setZoom(1);
@@ -37,26 +41,33 @@ export function EraAtlasDialogContent({ eras, selectedEraId, onNavigate, onClose
     window.addEventListener("keydown", key); return () => window.removeEventListener("keydown", key);
   }, [previous, next, onNavigate]);
   if (!selected) return <Typography>未选择时代。</Typography>;
-  return <Box data-atlas-layout="map-sidebar-axis" sx={{ height: "100%", minHeight: 0, minWidth: 0, display: "grid", gridTemplateRows: "auto minmax(0, 1fr) auto", gap: 1 }}>
+  return <Box data-atlas-layout="chronicle-map-statistics-axis" sx={{ height: "100%", minHeight: 0, minWidth: 0, display: "grid", gridTemplateRows: "auto minmax(0, 1fr) auto", gap: 1 }}>
     <Box component="header" sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: .5, minWidth: 0 }}>
       <Box sx={{ flex: "1 1 260px", minWidth: 0 }}>
         <Typography component="h2" fontWeight={700} fontSize="1rem" sx={{ overflowWrap: "anywhere" }}>时代图鉴 · {selected.name}</Typography>
         <Typography fontSize="0.7rem" color="text.secondary">{types[selected.type]} · 时代范围：{formatWorldDate(selected.startMonth)}～{selected.endMonth === undefined ? "今" : formatWorldDate(selected.endMonth)}<br />
-          时代确立记录：{formatWorldDate(selected.confirmedMonth)}{selected.mapSnapshot ? ` · 地图快照：${formatWorldDate(selected.mapSnapshot.capturedMonth)}` : ""}</Typography>
+          时代确立记录：{formatWorldDate(selected.confirmedMonth)}{selected.mapSnapshot ? ` · 地图记录：${formatWorldDate(selected.mapSnapshot.capturedMonth)}` : ""}</Typography>
       </Box>
       <Button size="small" disabled={!previous} onClick={() => previous && onNavigate(previous.id)}>← 上一时代</Button>
       <Button size="small" disabled={!next} onClick={() => next && onNavigate(next.id)}>下一时代 →</Button>
       {selected.mapSnapshot ? <Button size="small" onClick={() => setZoom(z => z === 1 ? 1.5 : z === 1.5 ? 2 : 1)}>查看比例 {Math.round(zoom * 100)}%</Button> : null}
-      <Button size="small" sx={{ display: { xs: "inline-flex", sm: "none" } }} onClick={() => setMobileStats(value => !value)}>诸国统计</Button>
+      <FormControlLabel sx={{ m: 0, '& .MuiFormControlLabel-label': { fontSize: '.75rem' } }} control={<Checkbox size="small" checked={showBorders} onChange={(_, value) => setShowBorders(value)} />} label="显示国界" />
+      <Button size="small" sx={{ display: { xs: "inline-flex", lg: "none" } }} onClick={() => setMobilePanel(value => value === "chronicle" ? undefined : "chronicle")}>时代大事</Button>
+      <Button size="small" sx={{ display: { xs: "inline-flex", md: "none" } }} onClick={() => setMobilePanel(value => value === "statistics" ? undefined : "statistics")}>诸国统计</Button>
       {onClose ? <Button size="small" onClick={onClose}>关闭</Button> : null}
     </Box>
-    <Box data-atlas-body="map-and-statistics" sx={{ display: "grid", minHeight: 0, minWidth: 0, gap: 1,
-      gridTemplateColumns: { xs: "minmax(0, 1fr)", sm: "minmax(0, 1fr) 220px" },
-      gridTemplateRows: { xs: mobileStats ? "minmax(0, 1fr) minmax(0, 35%)" : "minmax(0, 1fr)", sm: "minmax(0, 1fr)" } }}>
-      <Box sx={{ minHeight: 0, minWidth: 0, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        {selected.mapSnapshot ? <EraAtlasMap key={selected.id} snapshot={selected.mapSnapshot} full zoom={zoom} /> : <Typography>该时代没有保存历史地图</Typography>}
+    <Box data-atlas-body="chronicle-map-statistics" sx={{ display: "grid", minHeight: 0, minWidth: 0, gap: 1,
+      gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "minmax(0, 1fr) 200px", lg: "280px minmax(0, 1fr) 210px", xl: "310px minmax(0, 1fr) 220px" },
+      gridTemplateRows: { xs: mobilePanel ? "minmax(0, 1fr) minmax(0, 40%)" : "minmax(0, 1fr)", md: mobilePanel === "chronicle" ? "minmax(0, 1fr) minmax(0, 40%)" : "minmax(0, 1fr)", lg: "minmax(0, 1fr)" } }}>
+      <Box component="aside" aria-label="时代大事记" sx={{ minHeight: 0, minWidth: 0, overflowY: "auto", pr: .5,
+        display: { xs: mobilePanel === "chronicle" ? "block" : "none", lg: "block" },
+        gridRow: { xs: 2, lg: 1 }, gridColumn: { xs: 1, md: "1 / -1", lg: 1 } }}>
+        <EraChronicle key={selected.id} era={selected} worldMonth={worldMonth ?? selected.endMonth ?? selected.mapSnapshot?.capturedMonth ?? selected.confirmedMonth} factions={factions} rulers={rulers} />
       </Box>
-      <Box component="aside" aria-label="当时国家列表" sx={{ minHeight: 0, minWidth: 0, overflowY: "auto", display: { xs: mobileStats ? "block" : "none", sm: "block" }, pr: .5 }}>
+      <Box sx={{ minHeight: 0, minWidth: 0, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", gridRow: 1, gridColumn: { xs: 1, lg: 2 } }}>
+        {selected.mapSnapshot ? <EraAtlasMap key={selected.id} snapshot={selected.mapSnapshot} full zoom={zoom} showBorders={showBorders} /> : <Typography>该时代没有保存历史地图</Typography>}
+      </Box>
+      <Box component="aside" aria-label="当时国家列表" sx={{ minHeight: 0, minWidth: 0, overflowY: "auto", display: { xs: mobilePanel === "statistics" ? "block" : "none", md: "block" }, gridRow: { xs: 2, md: 1 }, gridColumn: { xs: 1, md: 2, lg: 3 }, pr: .5 }}>
         <Typography fontSize="0.8rem" fontWeight={700}>诸国 · 占世界地图</Typography>
         <Typography fontSize="0.65rem" color="text.secondary" sx={{ mb: .75 }}>点击国号查看格数与城市数。<br />城市点；金色环为首都。<br />人口与君主：当前快照未记录。</Typography>
         {rows.map(row => <Box component="details" key={row.factionId} sx={{ borderBottom: "1px solid var(--gg-border)", py: .5 }}>
@@ -79,11 +90,11 @@ export function EraAtlasDialogContent({ eras, selectedEraId, onNavigate, onClose
     </Box>
   </Box>;
 }
-export default memo(function EraAtlasDialog({ open, eras, selectedEraId, onNavigate, onClose }: { open: boolean; eras: WorldEra[]; selectedEraId: string; onNavigate: (id: string) => void; onClose: () => void }) {
+export default memo(function EraAtlasDialog({ open, eras, selectedEraId, onNavigate, onClose, worldMonth, factions, rulers }: { worldMonth?: number; factions?: Map<string, Team>; rulers?: Map<string, Ruler>; open: boolean; eras: WorldEra[]; selectedEraId: string; onNavigate: (id: string) => void; onClose: () => void }) {
   return <Dialog open={open} onClose={onClose} maxWidth={false} aria-label="历史时代图鉴"
     PaperProps={{ sx: { width: "96vw", maxWidth: "96vw", height: "92dvh", maxHeight: "94dvh", m: 0, overflow: "hidden" } }}>
     <DialogContent sx={{ p: { xs: 1, sm: 1.5 }, overflow: "hidden", minHeight: 0 }}>
-      {open ? <EraAtlasDialogContent eras={eras} selectedEraId={selectedEraId} onNavigate={onNavigate} onClose={onClose} /> : null}
+      {open ? <EraAtlasDialogContent eras={eras} selectedEraId={selectedEraId} onNavigate={onNavigate} onClose={onClose} worldMonth={worldMonth} factions={factions} rulers={rulers} /> : null}
     </DialogContent>
   </Dialog>;
 });

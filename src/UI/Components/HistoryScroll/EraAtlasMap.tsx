@@ -4,7 +4,7 @@ import type { EraMapSnapshotV1 } from "../../../Simulation/EraMapSnapshot";
 import { renderEraMapSnapshot } from "../../../Simulation/EraMapRenderer";
 import { fitAtlasViewport } from "./atlasViewport";
 
-export default function EraAtlasMap({ snapshot, full = false, zoom = 1 }: { snapshot: EraMapSnapshotV1; full?: boolean; zoom?: number }) {
+export default function EraAtlasMap({ snapshot, full = false, zoom = 1, showBorders = false }: { snapshot: EraMapSnapshotV1; full?: boolean; zoom?: number; showBorders?: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -20,11 +20,12 @@ export default function EraAtlasMap({ snapshot, full = false, zoom = 1 }: { snap
     observer.observe(box);
     return () => observer.disconnect();
   }, []);
+  const fitted = fitAtlasViewport(snapshot.widthCells, snapshot.heightCells, size.width, size.height, zoom);
+  const borderWidth = fitted.width > 0 ? (snapshot.widthCells * (full ? 18 : 3)) / fitted.width : 1;
   useEffect(() => {
     const context = canvasRef.current?.getContext("2d");
-    if (context) renderEraMapSnapshot(context, snapshot, { cellSize: full ? 18 : 3, showCities: full, showLabels: true });
-  }, [full, snapshot]);
-  const fitted = fitAtlasViewport(snapshot.widthCells, snapshot.heightCells, size.width, size.height, zoom);
+    if (context) renderEraMapSnapshot(context, snapshot, { cellSize: full ? 18 : 3, showCities: full, showLabels: true, showBorders, borderWidth });
+  }, [full, snapshot, showBorders, borderWidth]);
   return (
     <Box ref={viewportRef} data-atlas-viewport={full ? "full" : "thumbnail"} sx={{ width: "100%", height: full ? "100%" : 105, minWidth: 0, minHeight: 0,
       overflow: fitted.scrollable ? "auto" : "hidden", bgcolor: "#e9e5d8" }}>

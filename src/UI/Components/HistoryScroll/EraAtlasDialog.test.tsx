@@ -25,11 +25,14 @@ describe("bounded atlas dialog and shared indexed history selection (nonvisual)"
     const html = markup(Array.from({ length: 120 }, (_, i) => era(i)), "era-0");
     expect(html.match(/<canvas/g)).toHaveLength(1); expect(html).toContain("横向时代时间轴");
     expect(html).toContain("历史国号"); expect(html).toContain("100.0%"); expect(html).toContain("当时控制400格 · 0城");
-    expect(html).toContain('data-atlas-layout="map-sidebar-axis"');
+    expect(html).toContain('data-atlas-layout="chronicle-map-statistics-axis"');
     expect(html).toContain('<aside'); expect(html).toContain('data-atlas-viewport="full"');
-    expect(html.indexOf('<canvas')).toBeLessThan(html.indexOf('<aside'));
+    expect(html.indexOf('aria-label="时代大事记"')).toBeLessThan(html.indexOf('<canvas'));
+    expect(html.indexOf('<canvas')).toBeLessThan(html.indexOf('aria-label="当时国家列表"'));
+    expect(html).toContain('显示国界');
+    expect(html).toContain('本时代暂无符合筛选条件的大事');
     expect(html.indexOf('<aside')).toBeLessThan(html.indexOf('aria-label="横向时代时间轴"'));
-    expect(html).toContain("时代确立记录：2年1月"); expect(html).toContain("地图快照：2年1月");
+    expect(html).toContain("时代确立记录：2年1月"); expect(html).toContain("地图记录：2年1月");
     expect(html).toContain("人口与君主：当前快照未记录"); expect(html).not.toContain("时代开始当月地图");
     expect(html).toMatch(/disabled=""[^>]*>← 上一时代/);
     expect(markup([era(0)], "era-0")).toMatch(/disabled=""[^>]*>下一时代 →/);

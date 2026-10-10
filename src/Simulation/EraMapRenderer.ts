@@ -1,3 +1,4 @@
+import { getEraMapBorders } from "./EraMapBorders";
 import { placeEraCityLabel, type AtlasTextBox } from "./EraCityLabelLayout";
 import { analyzeEraSnapshot, layoutEraCountryLabels } from "./EraAtlasLayout";
 import { type EraMapSnapshotV1 } from "./EraMapSnapshot";
@@ -7,7 +8,7 @@ const NEUTRAL_COLOR = "#e9e5d8";
 export function renderEraMapSnapshot(
   context: CanvasRenderingContext2D,
   snapshot: EraMapSnapshotV1,
-  options: { cellSize?: number; showCities?: boolean; showLabels?: boolean } = {}
+  options: { cellSize?: number; showCities?: boolean; showLabels?: boolean; showBorders?: boolean; borderWidth?: number } = {}
 ) {
   const cellSize = Math.max(1, Math.floor(options.cellSize ?? 4));
   const width = snapshot.widthCells;
@@ -26,6 +27,21 @@ export function renderEraMapSnapshot(
     context.fillStyle = colors[paletteIndex] ?? NEUTRAL_COLOR;
     context.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
   });
+
+  if (options.showBorders) {
+    const borders = getEraMapBorders(snapshot);
+    // Two batched paths; the optional pixel width compensates for CSS display scale.
+    for (const neutral of [true, false]) {
+      context.beginPath();
+      context.strokeStyle = neutral ? "rgba(60,55,40,.35)" : "rgba(24,28,34,.8)";
+      context.lineWidth = options.borderWidth ?? Math.max(.7, cellSize * .055);
+      for (const edge of borders) if (edge.neutral === neutral) {
+        context.moveTo(edge.x1 * cellSize, edge.y1 * cellSize);
+        context.lineTo(edge.x2 * cellSize, edge.y2 * cellSize);
+      }
+      context.stroke();
+    }
+  }
 
   const occupied: AtlasTextBox[] = [];
   if (options.showLabels) {
