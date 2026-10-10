@@ -51,15 +51,31 @@ export function deriveFactionHistoricalArguments(e: FactionHistoricalEvidence, e
   // find the earliest later defensive loss, without a cross-product scan.
   const attack = attacks.find(x => x.targetFactionId !== e.factionId);
   const defense = attack && defenses.find(x => x.month > attack.month && x.eventId !== attack.eventId);
+  const peakMonth = e.lifetime.peakTerritoryBlocks.month;
+  const peakShare = (e.peakAbsoluteWorldShare * 100).toFixed(1);
+  // A three-stage history is more distinctive than merely exchanging capital captures.
+  // Capital loss alone must never stand in for loss of the final foothold.
+  if (attack && defense && loss && e.peakAbsoluteWorldShare >= 0.5 &&
+    attack.month <= peakMonth && peakMonth < defense.month && defense.month < loss.month) {
+    add("EXPANSION_CAPITAL_FINAL_LOSS", "POWER", 116, [attack, defense, loss],
+      ["lifetime.peakTerritoryBlocks", "peakAbsoluteWorldShare", "endMonth"], [peakMonth, e.endMonth!],
+      "过半疆域峰值、攻取敌都、后来失都、再失最后据点为分开的真实阶段",
+      `${date(attack.month)}${attack.rulerName ? `${attack.rulerName}亲征，` : ""}${attack.factionName}攻取${attack.targetName ?? "他国"}都${attack.cityName ?? ""}；${date(peakMonth)}疆域达${e.lifetime.peakTerritoryBlocks.value}格、占世界${peakShare}%，扩张曾至过半之地。${date(defense.month)}失${defense.cityName ?? "己都"}，至${date(loss.month)}再失${city}而流亡${duration(gap)}，失都、失国与最终终结分属不同阶段。`,
+      `${attack.rulerName ? `${attack.rulerName}亲征取` : `${date(attack.month)}${attack.factionName}曾取`}${attack.cityName ?? "敌都"}，${date(peakMonth)}又据天下${peakShare}%；如此之盛，未能使${defense.cityName ?? "国都"}长守。${defense.cityName ?? "国都"}于${date(defense.month)}失，${city}至${date(loss.month)}亦失；由失都到无土尚隔${duration(loss.month - defense.month)}，无土之后又延其统${duration(gap)}，半壁之盛与无土之久相映。`);
+  }
   if (attack && defense) {
-    add("ATTACK_DEFENSE_REVERSAL", "WAR_REVERSAL", 108, [attack, defense], [], [], "先攻取他国首都，后自身首都被攻取；两件事件的行动角色与月份不同",
+    const longRule = e.formalMonths !== undefined && e.formalMonths >= 6000 && e.formalRulerCount >= 10 && gap >= 120;
+    add("ATTACK_DEFENSE_REVERSAL", "WAR_REVERSAL", longRule ? 96 : 108, [attack, defense],
+      longRule ? ["formalMonths", "formalRulerCount", "endMonth"] : [], [], "先攻取他国首都，后自身首都被攻取；两件事件的行动角色与月份不同",
       `${date(attack.month)}曾取${attack.targetName ?? "他国"}都${attack.cityName ?? ""}，${date(defense.month)}又失己都${defense.cityName ?? ""}于${defense.actorName ?? "敌国"}；攻守之势在同一国史中倒转。`,
-      `昔日兵锋抵${attack.cityName ?? "他国之都"}，后来${defense.cityName ?? "己都"}亦不能守；夺城之力，终未成为保国之固。`);
+      defense.month - attack.month <= 120
+        ? `${date(attack.month)}${attack.rulerName ? `${attack.rulerName}亲征取` : `${attack.factionName}取`}${attack.targetName ?? "他国"}都${attack.cityName ?? ""}，不过${duration(defense.month - attack.month)}，${date(defense.month)}己都${defense.cityName ?? ""}便失于${defense.actorName ?? "他国"}；扩张之得与国都之失相去如此之近，兵锋所至未即成为守土之固。`
+        : `${date(attack.month)}${attack.rulerName ? `${attack.rulerName}亲征取` : `${attack.factionName}取`}${attack.targetName ?? "他国"}都${attack.cityName ?? ""}，至${date(defense.month)}，${defense.actorName ?? "他国"}又取其${defense.cityName ?? "国都"}；两役相隔${duration(defense.month - attack.month)}，昔日攻人之都的得势，不能替后世守住自己的都城。`);
   }
   if (loss && e.formalMonths !== undefined && e.formalMonths >= 6000 && e.formalRulerCount >= 10 && gap >= 120) {
     add("LONG_RULE_COLLAPSE", "LONGEVITY", 103, [loss], ["formalMonths", "formalRulerCount", "endMonth"], [e.stateFoundedMonth!, e.endMonth!], "至少500年正式国祚、十位君主与失国后十年以上延续相对照",
       `正式国祚${duration(e.formalMonths)}，历${e.formalRulerCount}君，累世延续最终止于${city}失守后的末路；长统并未消去最后一代的危局。`,
-      `${e.formalRulerCount}君相承，足以成就一部长史，却不能替末世留住一城；国祚之长与终局之窘，反相映照。`);
+      `${duration(e.formalMonths!)}国祚、${e.formalRulerCount}君相承，积累如此之久，至${date(loss.month)}仍失${city}，又延至${date(e.endMonth!)}；累世之长与末路之窘相映，久祚并非最后一城的保障。`);
   }
   const landmark = events.filter(x => ["world-unification", "world-hegemony", "emperor-proclaimed"].includes(x.type) && x.factionRole === "ACTOR" && loss && x.month < loss.month)[0];
   if (landmark && loss) {
@@ -77,7 +93,7 @@ export function deriveFactionHistoricalArguments(e: FactionHistoricalEvidence, e
   if (loss && e.peakAbsoluteWorldShare >= 0.5 && e.lifetime.peakTerritoryBlocks.month < loss.month) {
     add("HALF_WORLD_LOSS", "POWER", 92, [loss], ["peakAbsoluteWorldShare", "lifetime.peakTerritoryBlocks"], [e.lifetime.peakTerritoryBlocks.month], "世界过半疆域峰值在最终失国之前；不据终结零领土断言渐进衰落",
       `${date(e.lifetime.peakTerritoryBlocks.month)}曾据世界${(e.peakAbsoluteWorldShare * 100).toFixed(1)}%，其后连${city}亦失；半壁之盛与无土之局，使其兴亡远非寻常守成可比。`,
-      `据地曾及天下之半以上，结局却无一城可凭；疆域之广与建制之固，原来不是同一份保障。`);
+      `${date(peakMonth)}据天下${peakShare}%之地，至${date(loss.month)}${city}失守${finalLoss?.capture?.rulerName ? `于${finalLoss.capture.rulerName}亲征之役` : ""}，已无一城可凭；半壁之盛，终未成为建制长存之固。${gap > 0 ? `国土尽失后仍延其统${duration(gap)}，疆域与王统各有其终，不能以一城之陷概尽其国史。` : ""}`);
   }
   if (e.restorationCount >= 2) {
     const restores = events.filter(x => x.type === "faction-restored" && x.factionRole === "ACTOR");
@@ -105,7 +121,7 @@ export function deriveFactionHistoricalArguments(e: FactionHistoricalEvidence, e
   if (loss && gap > 0) {
     add("EXILE_CONTINUITY", "EXILE", 69, [loss], ["endMonth"], [e.endMonth!], "最终失国到终结的真实月份差，不等同累计流亡月份",
       `${city}失守后仍延续${duration(gap)}，流亡不是国史之外的空白，而是土地已失、建制未终的一段。`,
-      `城池尽失而仍延其统，国之所系，遂不独在城垣；流亡能续一时，却终不能代替立国之土。`);
+      `${date(loss.month)}${loss.factionName}失${city}${finalLoss?.capture?.actorName ? `于${finalLoss.capture.actorName}` : ""}，到${date(e.endMonth!)}方告终结；无土而续统${duration(gap)}，其历史不能止于城门失守之日，也不能以流亡续统抵作在国之治。`);
   }
   if (e.ending === "MERGED" || e.ending === "SUBMITTED") {
     const merged = e.ending === "MERGED";
@@ -149,6 +165,8 @@ export function selectFactionHistoricalArguments(arguments_: readonly FactionHis
   for (const candidate of arguments_) {
     if (selected.length >= 2) break;
     if (selected.some(x => x.axis === candidate.axis)) continue;
+    // The full expansion→capital loss→last foothold chain already includes the reversal.
+    if (candidate.axis === "WAR_REVERSAL" && selected.some(x => x.argumentKey === "EXPANSION_CAPITAL_FINAL_LOSS")) continue;
     // Avoid saying the same loss/long exile twice in judgment and voice.
     if (candidate.axis === "EXILE" && selected.some(x => ["POWER", "WAR_REVERSAL", "LONGEVITY", "CAPITALS", "HOUSE"].includes(x.axis))) continue;
     selected.push(candidate);
