@@ -21,7 +21,7 @@
 ## 当前人工验收
 
 - v0.99929 Peaceful Submission及v0.99929a终结纪事人工全部PASS，正式冻结。
-- v0.99930b1人工正式PASS，Faction Historiography全系列冻结。v0.99931地图国号、比例、前后导航、时代轴、Save/Load和快速切换人工PASS，布局FAIL。v0.99931a布局、国号、城市文字、导航、入口、Save/Load及10时代切换人工正常。v0.99931a1仅增加时代大事和历史国界，V12不变，等待[人工Gate](docs/EraAtlasChronicleBorders.md)并独立补验大事→时代→对应地图点击，通过前不进入下一版本。
+- v0.99930b1人工正式PASS，Faction Historiography全系列冻结。v0.99931地图国号、比例、前后导航、时代轴、Save/Load和快速切换人工PASS，布局FAIL。v0.99931a布局、国号、城市文字、导航、入口、Save/Load及10时代切换人工正常。v0.99931a1时代切换、时代事件对应地图跳转、V12 Save/Load与性能已获明确补验。v0.99931a2仅做时代精选与入口整合，V12不变，等待[人工Gate](docs/EraHighlightsClosure.md)，通过前不进入下一版本。
 
 - v0.99928 Diplomacy II全系列人工PASS并冻结，包括v28b时间文案和Strategic Union续约年龄连续性。
 - v0.99929a Political Terminal Chronicle Closure：历史终结对象、退位措辞与双方君主个人纪事修复，[现有 V11 长局人工 Gate](docs/PoliticalTerminalChronicleClosure.md)已PASS，修复范围已冻结。

@@ -1,6 +1,6 @@
 {
   "name": "wanguoji",
-  "version": "0.99.124",
+  "version": "0.99.125",
   "main": "desktop/dist/main.js",
   "description": "An autonomous alternate-history sandbox where nations, dynasties and empires rise, fall and write their own history.",
   "packageManager": "pnpm@8.5.1",

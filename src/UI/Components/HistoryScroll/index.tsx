@@ -1,7 +1,7 @@
 import { EventDetails, EventText } from "./HistoryEventDetails";
 import { getHistoryCardFactionView, getHistoryCardPresentation } from "../../../History/HistoryCardPresentation";
 import { FactionTerminalRetrospective } from "../FactionAssessment";
-import { MAJOR_EVENT_FILTERS, type MajorEventFilter } from "../../../History/HistoryMajorEventFilters";
+import { VISIBLE_MAJOR_EVENT_FILTERS, normalizeVisibleMajorEventFilter, type MajorEventFilter } from "../../../History/HistoryMajorEventFilters";
 import { HistoryBrowsingSession } from "./historyBrowsing";
 import { queryHistoryPage } from "../../../History/HistoryPageQuery";
 import type Team from "../../../Components/Team";
@@ -45,6 +45,7 @@ export default function HistoryScroll() {
   const [historyRevision, setHistoryRevision] = useState(() => WorldHistory.getRevision());
   const [filter, setFilter] = useState<HistoryFilter>("featured");
   const [eventTypeFilter, setEventTypeFilter] = useState<MajorEventFilter>("all");
+  useEffect(() => { setEventTypeFilter(value => normalizeVisibleMajorEventFilter(value)); }, [eventTypeFilter]);
   const browsing = useRef(new HistoryBrowsingSession());
   const frozenEndMonth = useRef<number>();
   const pageHeadMonth = useRef<number>();
@@ -116,6 +117,10 @@ export default function HistoryScroll() {
   const openEraMap = useCallback((eraId: string) => dispatchEraSelectionUI({ type: "OPEN_ERA_MAP", eraId }), []);
   const navigateEraMap = useCallback((eraId: string) => dispatchEraSelectionUI({ type: "NAVIGATE_MAP", eraId }), []);
   const closeEraMap = useCallback(() => dispatchEraSelectionUI({ type: "CLOSE_MAP" }), []);
+  const viewEraHistory = useCallback((eraId: string) => {
+    dispatchEraSelectionUI({ type: "SELECT", eraId });
+    setFilter("all"); setEventTypeFilter("all");
+  }, []);
   const selectEra = (eraId: string) => dispatchEraSelectionUI({ type: "SELECT", eraId });
   const currentEra = useMemo(
     () => eras.find((era) => era.endMonth === undefined),
@@ -203,7 +208,7 @@ export default function HistoryScroll() {
         ))}
       </Box>
       {filter === "featured" ? <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.25, mb: 0.5 }}>
-        {MAJOR_EVENT_FILTERS.map(item => <Button key={item.value} size="small"
+        {VISIBLE_MAJOR_EVENT_FILTERS.map(item => <Button key={item.value} size="small"
           variant={eventTypeFilter === item.value ? "contained" : "text"}
           onClick={() => setEventTypeFilter(item.value)} sx={{ minWidth: 0, px: 0.5, fontSize: "0.7rem" }}>{item.label}</Button>)}
       </Box> : null}
@@ -244,7 +249,7 @@ export default function HistoryScroll() {
         </Box>
       ) : null}
       <EraAtlasDialog open={eraSelectionUI.eraMapOpen} eras={eras} selectedEraId={eraSelectionUI.selectedEraId}
-        onNavigate={navigateEraMap} onClose={closeEraMap} worldMonth={worldMonth} factions={teamByName} rulers={rulerById} />
+        onNavigate={navigateEraMap} onClose={closeEraMap} onViewAllHistory={viewEraHistory} worldMonth={worldMonth} factions={teamByName} rulers={rulerById} />
       {(worldRecordsOpen || dynasties.length > 0 || WorldHistory.getEventCount() > 0) ? (
         <Box sx={{ mb: 0.8 }}>
           <Button

@@ -19,3 +19,9 @@ export function matchesMajorEventFilter(event: WorldEvent, filter: MajorEventFil
 export const DIPLOMACY_EVENT_TYPES: readonly WorldEvent["type"][] = [
   "truce-signed", "non-aggression-signed", "alliance-signed", "treaty-expired", "alliance-expired", "relation-renewed",
 ];
+
+/** Era browsing has one dedicated atlas entry; legacy query filters remain supported. */
+export const VISIBLE_MAJOR_EVENT_FILTERS = MAJOR_EVENT_FILTERS.filter(item => item.value !== "era");
+export function normalizeVisibleMajorEventFilter(filter: MajorEventFilter): MajorEventFilter {
+  return filter === "era" ? "all" : filter;
+}

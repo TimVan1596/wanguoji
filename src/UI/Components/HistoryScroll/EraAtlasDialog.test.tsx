@@ -27,10 +27,10 @@ describe("bounded atlas dialog and shared indexed history selection (nonvisual)"
     expect(html).toContain("历史国号"); expect(html).toContain("100.0%"); expect(html).toContain("当时控制400格 · 0城");
     expect(html).toContain('data-atlas-layout="chronicle-map-statistics-axis"');
     expect(html).toContain('<aside'); expect(html).toContain('data-atlas-viewport="full"');
-    expect(html.indexOf('aria-label="时代大事记"')).toBeLessThan(html.indexOf('<canvas'));
+    expect(html.indexOf('aria-label="时代精选"')).toBeLessThan(html.indexOf('<canvas'));
     expect(html.indexOf('<canvas')).toBeLessThan(html.indexOf('aria-label="当时国家列表"'));
     expect(html).toContain('显示国界');
-    expect(html).toContain('本时代暂无符合筛选条件的大事');
+    expect(html).toContain('本时代暂无符合筛选条件的精选事件');
     expect(html.indexOf('<aside')).toBeLessThan(html.indexOf('aria-label="横向时代时间轴"'));
     expect(html).toContain("时代确立记录：2年1月"); expect(html).toContain("地图记录：2年1月");
     expect(html).toContain("人口与君主：当前快照未记录"); expect(html).not.toContain("时代开始当月地图");

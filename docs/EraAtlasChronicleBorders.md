@@ -30,8 +30,8 @@ v31a地图布局、国号、城市文字、时代轴、前后切换、时代筛�
 - `pnpm build`：通过，音乐资源检查通过。
 - `pnpm desktop:build`：通过，renderer/音乐资源检查与Electron编译通过。
 - `pnpm desktop:compile`：独立执行通过。
-- `pnpm desktop:renderer-debug-build`：待完成。
-- `git diff --check`：当前通过，最终复核。
+- `pnpm desktop:renderer-debug-build`：通过，renderer资源、2份debug sourcemap及音乐资源检查通过。
+- `git diff --check`：最终通过，暂存差异也通过。
 
 构建只有既有500kB bundle提示，本版不做无关拆包。
 
