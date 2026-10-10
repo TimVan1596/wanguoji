@@ -127,6 +127,9 @@ export function validateStoredWorldSaveRecord(value: unknown, expectedSlotId?: s
   if (!isPlainRecord(value)) return { valid: false, errors: ["存档记录格式错误"] };
   const record = value as Partial<StoredWorldSaveRecord>;
   const saveValue = record.save;
+  if (record.saveSchemaVersion === 12 || (saveValue as { saveSchemaVersion?: unknown } | undefined)?.saveSchemaVersion === 12) {
+    return { valid: false, errors: ["此存档为旧版V12，当前V13不支持读取，请新建世界。"] };
+  }
   const errors: string[] = [];
   if (expectedSlotId !== undefined && record.slotId !== expectedSlotId) errors.push("存档记录与索引槽位不一致");
   const slotType = typeof record.slotId === "string" ? inferSaveSlotType(record.slotId, record.slotType) : undefined;

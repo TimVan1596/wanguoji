@@ -198,3 +198,11 @@ describe("multi-slot save repository", () => {
     expect(await repository.listMetadata()).toEqual([]);
   });
 });
+
+it("rejects old V12 records with one explicit message without transforming stored data", () => {
+  const record = createStoredWorldSaveRecord(startedSave());
+  record.saveSchemaVersion = 12; (record.save as any).saveSchemaVersion = 12;
+  const original = JSON.stringify(record);
+  expect(validateStoredWorldSaveRecord(record)).toEqual({ valid: false, errors: ["此存档为旧版V12，当前V13不支持读取，请新建世界。"] });
+  expect(JSON.stringify(record)).toBe(original); expect(WORLD_SAVE_DATABASE_VERSION).toBe(2);
+});

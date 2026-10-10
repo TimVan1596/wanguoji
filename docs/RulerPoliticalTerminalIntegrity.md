@@ -64,7 +64,7 @@ V12 明确拒绝：**此存档为旧版V12，当前V13不支持读取，请新�
 - 称号与客观记录：Politics/PosthumousRules.ts、HistoricalRulerDisplay.ts；History/HistoryRenderRules.ts、WorldRecords.ts。
 - UI：UI/Components/FactionDetails/index.tsx、RoyalPresentation.ts。
 - Core.ts：PRECHECK_FAILED 不再永久阻止完整旧世界继续保存；teardown 后的未完成 hydration 仍阻断。
-- 保存：Persistence/WorldSaveSchema.ts、RulerSaveProjection.ts、RulerLifeValidation.ts、WorldSaveValidator.ts、WorldSaveExporter.ts、WorldSaveHydrator.ts。
+- 保存：Persistence/WorldSaveSchema.ts、RulerSaveProjection.ts、RulerLifeValidation.ts、WorldSaveValidator.ts、WorldSaveExporter.ts、WorldSaveHydrator.ts、WorldSaveRepository.ts（旧 V12 单一明确拒绝提示，不处理旧档）。
 - 新测试：Politics/RulerPoliticalTerminalIntegrity.test.ts；原有 WorldSaveReferentialIntegrity.test.ts、RoyalPresentation.test.ts 增加集成/显示断言；既有测试夹具补实际死亡事实、修正旧的“有 currentRulerId 却已 dead”等不合法数据。既有冻结玩法断言未删除或弱化。
 - 版本及文档：config/version.ts、package.json、CHANGELOG、ROADMAP、README、本文件。
 

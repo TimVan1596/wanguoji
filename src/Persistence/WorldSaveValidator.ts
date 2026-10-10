@@ -13,7 +13,10 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   const errors: string[] = [];
   if (!isPlainRecord(value)) return { valid: false, errors: ["save must be a plain object"] };
   const save = value as Partial<WorldSaveV1>;
-  if (save.saveSchemaVersion !== CURRENT_SAVE_SCHEMA_VERSION) errors.push(save.saveSchemaVersion === 12 ? "此存档为旧版V12，当前V13不支持读取，请新建世界。" : "unsupported saveSchemaVersion");
+  if ((value as { saveSchemaVersion?: unknown }).saveSchemaVersion === 12) {
+    return { valid: false, errors: ["此存档为旧版V12，当前V13不支持读取，请新建世界。"] };
+  }
+  if (save.saveSchemaVersion !== CURRENT_SAVE_SCHEMA_VERSION) errors.push("unsupported saveSchemaVersion");
   if (typeof save.appVersion !== "string" || !save.appVersion.trim()) errors.push("appVersion is required");
   if (!isPlainRecord(save.worldRandom) || save.worldRandom.algorithm !== "mulberry32-v1" || typeof save.worldRandom.seed !== "string" || !save.worldRandom.seed.trim() || !Number.isInteger(save.worldRandom.state) || Number(save.worldRandom.state) < 0 || Number(save.worldRandom.state) > 0xffffffff || !Number.isSafeInteger(save.worldRandom.position) || Number(save.worldRandom.position) < 0) errors.push("worldRandom must contain a supported algorithm, seed, uint32 state, and non-negative draw position");
   if (!isPlainRecord(save.world)) errors.push("world must be an object");
