@@ -70,7 +70,16 @@ V12 明确拒绝：**此存档为旧版V12，当前V13不支持读取，请新�
 
 ## 自动验证
 
-最终结果见本节追加的验证记录。Vitest 使用 VITEST_MAX_THREADS=4 / VITEST_MIN_THREADS=1，避免长测试套件无限并发。
+2026-10-11 最终验证：
+
+- pnpm test：192 个文件 / 1254 项全部通过；使用 VITEST_MAX_THREADS=4 / VITEST_MIN_THREADS=1。
+- pnpm build：通过。
+- pnpm desktop:build：通过。
+- pnpm desktop:compile：通过。
+- pnpm desktop:renderer-debug-build：通过，renderer/debug/sourcemap/music 验证均通过。
+- git diff --check、git diff --cached --check：通过。
+
+一次与构建并行的中间全套测试发生 Slaves 初始化 hook 的 10 秒超时；未改测试或放宽超时，最终完整复跑全部通过。最终四项构建顺序执行。构建保留既有大 bundle 警告，无新增视觉验收结论。
 
 新增集成测试使用真实 DynastyRegistry、Core.handleFactionExtinction、City.destroyPermanently、WorldExiles、Exporter、Validator 和 Hydrator；Phaser/UI runtime 依赖以测试 stub 隔离。这证明代码路径与 DTO 语义，不代表真实浏览器视觉或 Electron 运行已经验收。
 
