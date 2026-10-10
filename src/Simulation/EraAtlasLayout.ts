@@ -46,6 +46,7 @@ export function layoutEraCountryLabels(snapshot: EraMapSnapshotV1, cellSize: num
     let placed = false;
     for (let font = full ? Math.min(28, Math.floor(cellSize * 1.4)) : 11; font >= (full ? 10 : 8) && !placed; font -= 2) {
       const halfWidth = (measure(row.displayName, font) + 6) / 2, halfHeight = (font * 1.3 + 4) / 2;
+      if (halfWidth * 2 > w * cellSize * (full ? .35 : .28)) continue;
       for (const i of candidates) {
         const x = (i % w + .5) * cellSize, y = (Math.floor(i / w) + .5) * cellSize;
         const box = { left: x - halfWidth, right: x + halfWidth, top: y - halfHeight, bottom: y + halfHeight };

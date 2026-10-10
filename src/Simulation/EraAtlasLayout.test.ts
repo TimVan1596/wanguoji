@@ -31,7 +31,7 @@ describe("snapshot-only Era Atlas analysis and label geometry", () => {
     const s = snapshot(20, 20, () => 1), a = analyzeEraSnapshot(s), labels = layoutEraCountryLabels(s, 18, true);
     expect(labels).toHaveLength(1);
     const i = Math.floor(labels[0].y / 18) * 20 + Math.floor(labels[0].x / 18);
-    expect(a.depth[i]).toBeGreaterThan(5); expect(labels[0].left).toBeGreaterThan(0); expect(labels[0].right).toBeLessThan(360);
+    expect(a.depth[i]).toBeGreaterThan(5); expect(labels[0].left).toBeGreaterThan(0); expect(labels[0].right).toBeLessThan(360); expect(labels[0].right - labels[0].left).toBeLessThanOrEqual(360 * .35);
   });
   it("keeps the whole text box inside the largest component of a ring/island country", () => {
     const s = snapshot(30, 25, (x, y) => x < 7 || x > 22 || y > 18 ? 1 : x >= 13 && x <= 16 && y >= 7 && y <= 10 ? 1 : 2);
