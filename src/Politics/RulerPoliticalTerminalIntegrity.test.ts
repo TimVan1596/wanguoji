@@ -10,6 +10,8 @@ vi.mock("../Components/Map", () => ({ default: class {} }));
 vi.mock("../Components/MessageToast", () => ({ MessageToast: class {} }));
 vi.mock("../Card/Controller", () => ({ default: class {} }));
 vi.mock("../Components/City", () => ({ getFactionStability: (team: any) => team.stability }));
+import { store } from "../store";
+import { setWorldStarted } from "../store/rootSlice";
 import Core from "../Game/Core";
 import DynastyRegistry, { type Ruler } from "./Dynasty";
 import { createRulerChronicle } from "./RulerChronicle";
@@ -43,6 +45,17 @@ beforeEach(() => { DynastyRegistry.reset(); WorldHistory.reset(); WorldExiles.re
 afterEach(() => { vi.restoreAllMocks(); });
 
 describe("authoritative V13 political termination and actual death", () => {
+  it("PRECHECK failure leaves the live Core saveable; post-teardown hydration remains blocked", () => {
+    const core: Core = Object.assign(Object.create(Core.prototype), { simulator: { exportState: () => ({ started: true }) },
+      backgroundProgression: { isCatchingUp: () => false }, snapshotBoundaryRequest: { getDiagnostics: () => ({ status: "idle" }) } });
+    const started = store.getState().root.worldStarted;
+    store.dispatch(setWorldStarted(true));
+    try {
+      core.setHydrationStage("PRECHECK"); expect(core.getDesktopSaveBlockReason()).toBe("HYDRATION");
+      core.setHydrationStage("PRECHECK_FAILED"); expect(core.getDesktopSaveBlockReason()).toBeUndefined();
+      core.setHydrationStage("HYDRATE_UNITS"); expect(core.getDesktopSaveBlockReason()).toBe("HYDRATION");
+    } finally { store.dispatch(setWorldStarted(started)); }
+  });
   it("in-state natural succession retains the actual death and legitimate successor reproducibly", () => {
     const run = () => {
       WorldHistory.reset(); worldRandom.initialize("natural-v13");

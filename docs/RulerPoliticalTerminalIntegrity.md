@@ -54,7 +54,7 @@ markExtinct 清理当前 office、候选与指定继承人、ruler unit；候选
 
 Exporter 使用明确人物投影，完整保存独立字段；Hydrator 仅恢复已验证字段，不猜测死亡，不做新世界初始化。Canonical diff 本来覆盖整个 dynasty 子树，新字段自然纳入比较。
 
-PRECHECK 验证状态枚举、实际死亡字段、出生/即位/政治结束/死亡月份、chronicle 快照、死后称号、继承资格、人物和事件引用。已终结国家不得保留 ruling/exiled/heir 或 currentRulerId。无效数据在 prepareForHydration 前拒绝，旧世界的年月、teams、units、cities、history 和 RNG 保持。
+PRECHECK 验证状态枚举、实际死亡字段、出生/即位/政治结束/死亡月份、chronicle 快照、死后称号、继承资格、人物和事件引用。已终结国家不得保留 ruling/exiled/heir 或 currentRulerId。无效数据在 prepareForHydration 前拒绝，旧世界的年月、teams、units、cities、history 和 RNG 保持。PRECHECK_FAILED 保留诊断记录但不再永久阻止保存；teardown 后失败仍禁止保存半成品世界。
 
 V12 明确拒绝：**此存档为旧版V12，当前V13不支持读取，请新建世界。** 其他旧 schema 也拒绝。没有开发迁移工具；没有自动删除旧文件或数据库；IndexedDB 版本仍 2。
 
@@ -63,6 +63,7 @@ V12 明确拒绝：**此存档为旧版V12，当前V13不支持读取，请新�
 - 生命周期与证据：Politics/Dynasty.ts、RulerLifeState.ts、DynastyInvariant.ts、RulerTenureEvidence.ts、RulerLegacyEvidence.ts、RulerHistoriography.ts、RulerEndReasonSummary.ts。
 - 称号与客观记录：Politics/PosthumousRules.ts、HistoricalRulerDisplay.ts；History/HistoryRenderRules.ts、WorldRecords.ts。
 - UI：UI/Components/FactionDetails/index.tsx、RoyalPresentation.ts。
+- Core.ts：PRECHECK_FAILED 不再永久阻止完整旧世界继续保存；teardown 后的未完成 hydration 仍阻断。
 - 保存：Persistence/WorldSaveSchema.ts、RulerSaveProjection.ts、RulerLifeValidation.ts、WorldSaveValidator.ts、WorldSaveExporter.ts、WorldSaveHydrator.ts。
 - 新测试：Politics/RulerPoliticalTerminalIntegrity.test.ts；原有 WorldSaveReferentialIntegrity.test.ts、RoyalPresentation.test.ts 增加集成/显示断言；既有测试夹具补实际死亡事实、修正旧的“有 currentRulerId 却已 dead”等不合法数据。既有冻结玩法断言未删除或弱化。
 - 版本及文档：config/version.ts、package.json、CHANGELOG、ROADMAP、README、本文件。

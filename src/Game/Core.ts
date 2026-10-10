@@ -680,7 +680,7 @@ export default class Core {
 
   getDesktopSaveBlockReason() {
     if (!this.simulator?.exportState().started || !store.getState().root.worldStarted) return "NO_WORLD" as const;
-    if (this.lastHydrationStage !== "IDLE" && this.lastHydrationStage !== "COMPLETE") return "HYDRATION" as const;
+    if (!["IDLE", "COMPLETE", "PRECHECK_FAILED"].includes(this.lastHydrationStage)) return "HYDRATION" as const;
     if (this.backgroundProgression.isCatchingUp()) return "CATCH_UP" as const;
     if (this.snapshotBoundaryRequest.getDiagnostics().status === "waiting") return "SNAPSHOT" as const;
     return undefined;
