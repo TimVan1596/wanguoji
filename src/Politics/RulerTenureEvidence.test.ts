@@ -53,3 +53,12 @@ describe("ruler tenure exile evidence", () => {
     });
   });
 });
+
+it("separates extinction in exile from actual death and preserves a real same-month death", () => {
+  const events = [event("fall", "faction-exiled", 10, "fall", { targetFactionId: "燕" }),
+    event("end", "faction-extinct", 100, "end", { targetFactionId: "燕" })] as any;
+  const dead = ruler(20, 100);
+  expect(deriveRulerTenureEvidence(dead, "燕", events, 100)).toMatchObject({ diedInExile: true, extinctInExile: true, activeRuleMonths: 0, exileMonths: 80 });
+  const unknown = { ...dead, status: "politically-ended", deathMonth: undefined, deathReason: undefined } as any;
+  expect(deriveRulerTenureEvidence(unknown, "燕", events, 1000)).toMatchObject({ diedInExile: false, extinctInExile: true, activeRuleMonths: 0, exileMonths: 80 });
+});

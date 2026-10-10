@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.99931c
+
+- v0.99931b1 史家曰、精确统计、V12 Save/Load 与运行布局已获人工 PASS，文风正式冻结。
+- 政治终结与真实死亡分离：新增 politically-ended，结束任期、继承资格和 ruler unit，但不制造死亡、血缘或授谥；实际死亡独立记录 deathMonth/deathReason，真实死亡不被后续国家终结覆盖。
+- 自然死亡、战死、被俘处死与候选自然死亡保留原有路径和 RNG；合邦及纳土仍为退位。王室年龄、个人史评/史家曰、庙谥号展示及最长寿记录使用可信死亡事实。
+- 用户授权 WorldSave V13，V12 及更旧直接拒绝、不迁移、不删除旧数据。V13 严格校验独立死亡/政治字段、任期快照及引用；失败在 teardown 前保护原运行世界。IndexedDB 版本仍 2。
+- 新增真实生命周期与 V13 初始化/export/validate/hydrate 回归；所有冻结玩法、国家文学叙事及时代规则不变。
+- APP_VERSION v0.99931c / package 0.99.128 / WorldSave V13。等待[新建七国世界人工 Gate](docs/RulerPoliticalTerminalIntegrity.md)。
+
 ## v0.99931b1
 
 - v31b国家史评差异化、V12 Save/Load、历史卷轴/图鉴/运行布局已获人工PASS；史家曰文学质量尚待本轮验收。

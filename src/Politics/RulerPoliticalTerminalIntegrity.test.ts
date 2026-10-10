@@ -125,6 +125,7 @@ describe("authoritative V13 political termination and actual death", () => {
     WorldExiles.update(120, [team]); WorldExiles.update(121, [team]);
     expect(team.status).toBe("EXTINCT"); expect(WorldHistory.getEvents().filter(e => e.type === "faction-extinct")).toHaveLength(1);
     expect(DynastyRegistry.get("张")!.rulers[0].deathMonth).toBeUndefined();
+    expect(DynastyRegistry.get("张")!.rulers[0].status).toBe("politically-ended");
   });
   it.each(["markMerged", "markSubmitted"] as const)("%s retains retirement and family without death or RNG", method => {
     const { team, ruler, heir } = fixture("ACTIVE", true), rng = worldRandom.exportState();

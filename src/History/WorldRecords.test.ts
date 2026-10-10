@@ -186,3 +186,12 @@ describe("world records and curiosities", () => {
     expect(first.find((record) => record.id === "longest-state")?.value).not.toContain("义军");
   });
 });
+
+it("longest life uses actual death, excluding retirement and unknown political end ages", () => {
+  const real = ruler("real", { givenName: "实", deathMonth: 600 });
+  const retired = ruler("retired", { givenName: "退", endYear: 1000, status: "abdicated", deathMonth: undefined, deathReason: undefined });
+  const unknown = ruler("unknown", { givenName: "终", endYear: 1100, status: "politically-ended", deathMonth: undefined, deathReason: undefined });
+  const life = records([{ factionId: "秦", rulers: [real, retired, unknown] }]).find(r => r.id === "longest-life");
+  expect(life?.value).toContain("50岁"); expect(life?.value).toContain("实");
+  expect(life?.value).not.toMatch(/退|终/);
+});

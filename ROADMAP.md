@@ -6,7 +6,7 @@
 
 ### P0
 
-- 政治终结与人物生死分离：markExtinct在最后首都毁坏/最后城市失守且无残部时可能将活着的君主写为dead，已确认代码路径。独立修复待后续授权，本轮文风补丁不处理。
+- 政治终结与人物生死分离：v0.99931c 已按用户授权实施 WorldSave V13 与独立死亡字段；代码验证后仍待[新建七国世界人工 Gate](docs/RulerPoliticalTerminalIntegrity.md)，不能把自动测试视为人工 P0 关闭。
 
 - [x] IndexedDB 多槽存档、手动存档管理与双槽游戏时间自动存档。
 - [x] Desktop Recovery 恢复档定时保存与关闭前保存。
@@ -22,8 +22,10 @@
 
 ## 当前人工验收
 
+- v0.99931b1 用户人工全部 PASS，国家史论与史家曰冻结。v0.99931c 只修人物政治终结/实际死亡事实：V13 直接拒绝旧 V12，不迁移、不清空数据库；等待新七国世界人物、存档及 UI 人工检查。通过前不得开始下一主题。
+
 - v0.99929 Peaceful Submission及v0.99929a终结纪事人工全部PASS，正式冻结。
-- v0.99930b1人工正式PASS，Faction Historiography全系列冻结。v0.99931地图国号、比例、前后导航、时代轴、Save/Load和快速切换人工PASS，布局FAIL。v0.99931a布局、国号、城市文字、导航、入口、Save/Load及10时代切换人工正常。v0.99931a1时代切换、时代事件对应地图跳转、V12 Save/Load与性能已获明确补验。v0.99931a2时代精选与入口整合人工PASS并冻结。v0.99931b差异化、Save/Load与运行布局人工PASS，史家曰文风仍待修订。v0.99931b1仅作评论语言收尾，V12不变，等待[人工Gate](docs/HistorianVoiceStyleClosure.md)，通过前不进入下一版本。
+- v0.99930b1人工正式PASS，Faction Historiography全系列冻结。v0.99931地图国号、比例、前后导航、时代轴、Save/Load和快速切换人工PASS，布局FAIL。v0.99931a布局、国号、城市文字、导航、入口、Save/Load及10时代切换人工正常。v0.99931a1时代切换、时代事件对应地图跳转、V12 Save/Load与性能已获明确补验。v0.99931a2时代精选与入口整合人工PASS并冻结。v0.99931b差异化、Save/Load与运行布局人工PASS，史家曰文风仍待修订。v0.99931b1评论语言人工PASS并冻结。当前v0.99931c/V13等待新的政治终结事实人工Gate。
 
 - v0.99928 Diplomacy II全系列人工PASS并冻结，包括v28b时间文案和Strategic Union续约年龄连续性。
 - v0.99929a Political Terminal Chronicle Closure：历史终结对象、退位措辞与双方君主个人纪事修复，[现有 V11 长局人工 Gate](docs/PoliticalTerminalChronicleClosure.md)已PASS，修复范围已冻结。
