@@ -19,7 +19,7 @@ function era(i: number): WorldEra {
       version: 1, capturedMonth: i * 120 + 24, widthCells: 20, heightCells: 20,
       factionPalette: [{ factionId: "a", displayName: "历史国号", color: 0x123456 }], ownerRuns: encodeOwnerRuns(Array(400).fill(1)), cities: [] } };
 }
-const markup = (eras: WorldEra[], id: string) => renderToStaticMarkup(<EraAtlasDialogContent eras={eras} selectedEraId={id} onNavigate={() => {}} />);
+const markup = (eras: WorldEra[], id: string) => renderToStaticMarkup(<EraAtlasDialogContent eras={eras} selectedEraId={id} worldMonth={30000} onNavigate={() => {}} />);
 describe("bounded atlas dialog and shared indexed history selection (nonvisual)", () => {
   it("renders one canvas for 120 era nodes and shows frozen names, absolute shares and confirmed date", () => {
     const html = markup(Array.from({ length: 120 }, (_, i) => era(i)), "era-0");

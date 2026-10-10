@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { WorldHistoryStore, type WorldEvent } from "../../../History/WorldHistory";
-import { queryEraChroniclePage } from "./eraChronicleQuery";
+import { queryEraChroniclePage, subscribeEraChronicle } from "./eraChronicleQuery";
 import { getHistoryCardPresentation } from "../../../History/HistoryCardPresentation";
 import worldRandom from "../../../Simulation/WorldRandom";
 const event = (month: number, id = `e-${month}`, type: WorldEvent['type'] = 'state-founded'): WorldEvent => ({ id, type, year: month, actorFactionId: 'a', title: type, category: 'politics', importance: 'major' });
@@ -38,6 +38,26 @@ describe("era chronicle bounded canonical queries", () => {
     expect(window.mock.calls[0][0]).toMatchObject({ startMonth: 1000, endMonth: 1099, limit: 200 });
     expect(worldRandom.exportState()).toEqual(rng);
     expect(queryEraChroniclePage(store, { startMonth: 1500, endMonth: 1501 }, 19000).events.map(e => e.id)).toEqual(['e-1501', 'e-1500']);
+  });
+  it("month cursors survive unrelated live appends and include retrospective older-window events", () => {
+    const store = new WorldHistoryStore(); for (let i = 0; i < 300; i++) store.addEvent(event(i));
+    const era = { startMonth: 0, endMonth: 299 }, first = queryEraChroniclePage(store, era, 500);
+    store.addEvent(event(500, 'future')); store.addEvent(event(50, 'retro'));
+    let next = queryEraChroniclePage(store, era, 500, first.cursor);
+    expect(next.events.map(e => e.id)).toEqual(Array.from({ length: 10 }, (_, i) => `e-${289 - i}`));
+    const ids = first.events.map(e => e.id);
+    for (;;) { ids.push(...next.events.map(e => e.id)); if (!next.cursor) break; next = queryEraChroniclePage(store, era, 500, next.cursor); }
+    expect(ids).toHaveLength(301); expect(new Set(ids).size).toBe(301);
+    expect(ids).toContain('retro'); expect(ids).not.toContain('future');
+  });
+  it("uses lightweight notifications, resets hydration browsing and removes the listener on unmount", () => {
+    const store = new WorldHistoryStore(), changed = vi.fn();
+    const off = subscribeEraChronicle(store, changed), full = vi.spyOn(store, 'getEvents');
+    store.addEvent(event(10)); expect(changed).toHaveBeenLastCalledWith(store.getRevision(), false);
+    const saved = store.exportState(); store.importState(saved);
+    expect(changed).toHaveBeenLastCalledWith(store.getRevision(), true);
+    expect(full).not.toHaveBeenCalled(); off();
+    expect(store.getRuntimeCardinality().historyListeners).toBe(0);
   });
   it("keeps event-time country names through a rename inside the same era and does not mutate canonical history", () => {
     const store = new WorldHistoryStore(); store.addEvent(event(50)); store.addEvent(event(150));
