@@ -8,7 +8,7 @@ import { getRevolutionEventDetails } from "../../../History/RevolutionEventDetai
 import { HistoryBrowsingSession } from "./historyBrowsing";
 import { queryHistoryPage } from "../../../History/HistoryPageQuery";
 import type Team from "../../../Components/Team";
-import { Box, Button, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { memo, useCallback, useEffect, useMemo, useReducer, useState, useRef, useLayoutEffect } from "react";
 import { useSelector } from "react-redux";
 import WorldHistory, {
@@ -30,7 +30,9 @@ import { RootState } from "../../../store";
 import { deriveWorldRecords } from "../../../History/WorldRecords";
 import { areHistoryEventListInputsEqual } from "./historyEventListMemo";
 import EraAtlasMap from "./EraAtlasMap";
+import EraAtlasDialog from "./EraAtlasDialog";
 import {
+  getAtlasEraForEvent, orderAtlasEras,
   eraSelectionUIReducer,
   getSelectedEra,
   initialEraSelectionUIState,
@@ -115,6 +117,9 @@ export default function HistoryScroll() {
     () => getSelectedEra(eras, eraSelectionUI.selectedEraId),
     [eras, eraSelectionUI.selectedEraId]
   );
+  const openEraMap = useCallback((eraId: string) => dispatchEraSelectionUI({ type: "OPEN_ERA_MAP", eraId }), []);
+  const navigateEraMap = useCallback((eraId: string) => dispatchEraSelectionUI({ type: "NAVIGATE_MAP", eraId }), []);
+  const closeEraMap = useCallback(() => dispatchEraSelectionUI({ type: "CLOSE_MAP" }), []);
   const selectEra = (eraId: string) => dispatchEraSelectionUI({ type: "SELECT", eraId });
   const toggleEra = (eraId: string) => dispatchEraSelectionUI({ type: "TOGGLE", eraId });
   const currentEra = useMemo(
@@ -242,7 +247,7 @@ export default function HistoryScroll() {
                 pr: 0.25,
               }}
             >
-              {eras.slice().reverse().map((era) => (
+              {orderAtlasEras(eras).reverse().map((era) => (
                 <Box
                   key={era.id}
                   sx={{
@@ -303,8 +308,8 @@ export default function HistoryScroll() {
           <Typography fontSize="0.7rem" color="var(--gg-text-muted)">
             时代范围：{formatEraTimelineRange(selectedEra)}<br />
             {selectedEra.mapSnapshot
-              ? `确立时地图 · ${formatWorldDate(selectedEra.mapSnapshot.capturedMonth)}`
-              : "该时代创建于 Era Atlas 之前，无历史地图快照。"}
+              ? `时代确立记录：${formatWorldDate(selectedEra.confirmedMonth)} · 地图快照：${formatWorldDate(selectedEra.mapSnapshot.capturedMonth)}`
+              : "该时代没有保存历史地图"}
           </Typography>
           {selectedEra.mapSnapshot ? (
             <>
@@ -312,30 +317,14 @@ export default function HistoryScroll() {
               <Typography fontSize="0.68rem" color="var(--gg-text-muted)" sx={{ mt: 0.35 }}>
                 主导势力：{selectedEra.dominantFactionIds.map((id) => selectedEra.mapSnapshot?.factionPalette.find((entry) => entry.factionId === id)?.displayName ?? id).join(" · ") || "未记录"}
               </Typography>
-              <Button size="small" onClick={() => dispatchEraSelectionUI({ type: "OPEN_MAP" })} sx={{ px: 0, minWidth: 0 }}>查看大图</Button>
-              <Dialog open={eraSelectionUI.eraMapOpen} onClose={() => dispatchEraSelectionUI({ type: "CLOSE_MAP" })} fullWidth maxWidth="lg">
-                <DialogTitle sx={{ pb: 0.5 }}>
-                  {resolveEraDisplayLabel(selectedEra, teamByName)} · 确立时地图 · {formatWorldDate(selectedEra.mapSnapshot.capturedMonth)}
-                </DialogTitle>
-                <DialogContent>
-                  <EraAtlasMap snapshot={selectedEra.mapSnapshot} full />
-                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
-                    {selectedEra.mapSnapshot.factionPalette.map((faction) => (
-                      <Typography key={faction.factionId} fontSize="0.78rem" sx={{ display: "inline-flex", alignItems: "center", gap: 0.5 }}>
-                        <Box component="span" sx={{ width: 12, height: 12, bgcolor: `#${(faction.color >>> 0).toString(16).slice(-6).padStart(6, "0")}`, border: "1px solid #555" }} />
-                        {faction.displayName}
-                      </Typography>
-                    ))}
-                  </Box>
-                  <Typography fontSize="0.72rem" color="var(--gg-text-muted)" sx={{ mt: 0.5 }}>
-                    城市点；金色环为首都。{selectedEra.mapSnapshot.cities.map((city) => city.isCapital ? city.name : undefined).filter(Boolean).join("、")}
-                  </Typography>
-                </DialogContent>
-              </Dialog>
+
             </>
           ) : null}
         </Box>
       ) : null}
+      {selectedEra ? <Button size="small" onClick={() => openEraMap(selectedEra.id)}>查看大图 / 时代轴</Button> : null}
+      <EraAtlasDialog open={eraSelectionUI.eraMapOpen} eras={eras} selectedEraId={eraSelectionUI.selectedEraId}
+        onNavigate={navigateEraMap} onClose={closeEraMap} />
       {(worldRecordsOpen || dynasties.length > 0 || WorldHistory.getEventCount() > 0) ? (
         <Box sx={{ mb: 0.8 }}>
           <Button
@@ -404,6 +393,8 @@ export default function HistoryScroll() {
         onScrollPosition={onScrollPosition}
         onBackToLatest={backToLatest}
         events={visibleEvents}
+        eras={eras}
+        onOpenEraMap={openEraMap}
         hasMore={page.hasMore}
         expandedId={expandedId}
         teamByName={teamByName}
@@ -420,6 +411,7 @@ export default function HistoryScroll() {
 }
 
 type HistoryEventListProps = {
+  eras: WorldEraRecord[]; onOpenEraMap: (eraId: string) => void;
   unseenCount: number; onScrollPosition: (scrollTop: number) => void; onBackToLatest: () => void;
   events: WorldEvent[];
   hasMore: boolean;
@@ -435,6 +427,7 @@ type HistoryEventListProps = {
 };
 
 function HistoryEventListContent({
+  eras, onOpenEraMap,
   unseenCount, onScrollPosition, onBackToLatest,
   events,
   hasMore,
@@ -493,6 +486,7 @@ function HistoryEventListContent({
             }
           }
         }
+        const eventEra = getAtlasEraForEvent(event, eras);
         const eventTitle = card.title;
         const eventDescription = card.description;
         const landmark = isLandmarkHistoryEvent(event);
@@ -512,6 +506,7 @@ function HistoryEventListContent({
               {event.type === "dynasty-usurped" && typeof event.metadata?.oldHouseName === "string" && typeof event.metadata?.newHouseName === "string"
                 ? <Box component="span" sx={{ display: "block", fontSize: "0.82rem" }}>{event.metadata.oldHouseName} → {event.metadata.newHouseName}</Box> : null}
             </Typography>
+            {eventEra ? <Button size="small" onClick={e => { e.stopPropagation(); onOpenEraMap(eventEra.id); }}>查看对应时代地图</Button> : null}
             {expanded ? <Box sx={{ mt: 0.5 }}>
               {eventDescription ? <Typography fontSize="0.85rem" sx={{ opacity: 0.85 }}><EventText text={eventDescription} teamByName={eventTeamByDisplayName} factionNames={eventFactionNames} cityNames={cityNames} /></Typography> : null}
               <FactionTerminalRetrospective event={event} factions={teamByName} dynasties={dynastyByFactionId} />
@@ -566,7 +561,7 @@ function EraPicker({
         }}
       >
         <option value="all">全部时代</option>
-        {eras.slice().reverse().map((era) => (
+        {orderAtlasEras(eras).reverse().map((era) => (
           <option key={era.id} value={era.id}>
             {formatStableEraOption(era)}
           </option>

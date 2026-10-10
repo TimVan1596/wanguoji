@@ -1,11 +1,12 @@
-import { decodeOwnerRuns, type EraMapSnapshotV1 } from "./EraMapSnapshot";
+import { analyzeEraSnapshot, layoutEraCountryLabels } from "./EraAtlasLayout";
+import { type EraMapSnapshotV1 } from "./EraMapSnapshot";
 
 const NEUTRAL_COLOR = "#e9e5d8";
 
 export function renderEraMapSnapshot(
   context: CanvasRenderingContext2D,
   snapshot: EraMapSnapshotV1,
-  options: { cellSize?: number; showCities?: boolean } = {}
+  options: { cellSize?: number; showCities?: boolean; showLabels?: boolean } = {}
 ) {
   const cellSize = Math.max(1, Math.floor(options.cellSize ?? 4));
   const width = snapshot.widthCells;
@@ -17,7 +18,7 @@ export function renderEraMapSnapshot(
   context.fillRect(0, 0, context.canvas.width, context.canvas.height);
 
   const colors = [NEUTRAL_COLOR, ...snapshot.factionPalette.map(({ color }) => toCssColor(color))];
-  const owners = decodeOwnerRuns(snapshot);
+  const owners = analyzeEraSnapshot(snapshot).owners;
   owners.forEach((paletteIndex, index) => {
     const x = index % width;
     const y = Math.floor(index / width);
@@ -25,6 +26,18 @@ export function renderEraMapSnapshot(
     context.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
   });
 
+  if (options.showLabels) {
+    const labels = layoutEraCountryLabels(snapshot, cellSize, Boolean(options.showCities), (text, size) => {
+      context.font = `bold ${size}px sans-serif`; return context.measureText(text).width;
+    });
+    context.textAlign = "center"; context.textBaseline = "middle";
+    for (const label of labels) {
+      context.font = `bold ${label.fontSize}px sans-serif`; context.lineWidth = 3;
+      context.strokeStyle = "rgba(255,255,255,.95)"; context.fillStyle = "#17212a";
+      context.strokeText(label.text, label.x, label.y); context.fillText(label.text, label.x, label.y);
+    }
+    context.textAlign = "start"; context.textBaseline = "alphabetic";
+  }
   snapshot.cities.forEach((city) => {
     const x = (city.gridX + 0.5) * cellSize;
     const y = (city.gridY + 0.5) * cellSize;
