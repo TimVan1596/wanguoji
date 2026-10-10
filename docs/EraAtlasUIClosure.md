@@ -29,8 +29,8 @@ v31国号、旗色、面积、导航、时代轴、Save/Load和10时代快速切
 - `pnpm build`：通过，音乐资源检查通过。
 - `pnpm desktop:build`：通过，renderer/音乐资源检查及Electron编译通过。
 - `pnpm desktop:compile`：独立执行通过。
-- `pnpm desktop:renderer-debug-build`：待完成。
-- `git diff --check`：通过，最终再核查。
+- `pnpm desktop:renderer-debug-build`：通过，renderer资源、2份debug sourcemap和音乐资源检查通过。
+- `git diff --check`：最终核查通过。
 
 构建保留已有大bundle提示，不在本版做无关拆包。
 
