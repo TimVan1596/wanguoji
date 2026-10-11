@@ -1142,7 +1142,7 @@ function RulerBiography({
       </Typography>
       {rulerEvents.length > 0 ? rulerEvents.map((event) => (
         <Typography key={event.id} fontSize="0.82rem">
-          {formatWorldDate(event.monthIndex ?? event.year)} ◆ {formatRulerTerminalEvent(event, ruler, team.name, factionById) ?? formatRulerDiplomacyEvent(event, factionById) ?? formatFactionHistoryEvent(event, team.name, factionById) ?? formatHistoryEventTitle(event, factionById)}
+          {formatWorldDate(event.monthIndex ?? event.year)} ◆ {formatRulerTerminalEvent(event, ruler, team.name, factionById) ?? formatRulerDiplomacyEvent(event, factionById, ruler.id) ?? formatFactionHistoryEvent(event, team.name, factionById) ?? formatHistoryEventTitle(event, factionById)}
         </Typography>
       )) : (
         <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
