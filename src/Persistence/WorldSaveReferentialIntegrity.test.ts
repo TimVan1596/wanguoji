@@ -1,3 +1,4 @@
+import AutoSimulator from "../Simulation/AutoSimulator";
 import { buildUnifiedFactionChronicle } from "../Historiography/UnifiedFactionChronicle";
 import { deriveHouseAssessments } from "../Historiography/DynastyHouseHistoriography";
 import { setFixtureLifetimeRecords } from "./testing/FactionLifetimeFixture";
@@ -48,9 +49,9 @@ function fixture() {
   setFixtureLifetimeRecords(save);
   return save;
 }
-function target() {
+function target(width = 3) {
   let sim: any = { started: true, running: false, selectedSpeed: 4, clock: { worldMonth: 500, elapsedMs: 0, running: false }, populationSystem: { counters: {}, lastGrowthMonth: 0 }, worldEventSystem: fixture().worldEventSystem };
-  const core: any = { teams: ["old teams"], units: ["old units"], oldCities: ["old cities"], scene: { renderer: { width: 96, height: 32 },
+  const core: any = { teams: ["old teams"], units: ["old units"], oldCities: ["old cities"], scene: { renderer: { width: width * 32, height: 32 },
     physics: { world: { pause() {} } }, time: {}, tweens: { pauseAll() {} } },
     backgroundProgression: { isCatchingUp: () => false }, simulationDriver: { exportState: () => ({ accumulatorMs: 0 }), importState() {} },
     logicalUnitRegistry: { importState() {}, getAliveUnits: () => [], exportState: () => ({ nextUnitSequence: 1 }) },
@@ -60,15 +61,45 @@ function target() {
   };
   core.prepareForHydration = vi.fn(() => {
     core.units = []; core.oldCities = [];
-    core.map = { blocks: Array.from({ length: 3 }, (_, x) => [{ x: x * 32, y: 0,
+    core.map = { blocks: Array.from({ length: width }, (_, x) => [{ x: x * 32, y: 0,
       restoreCanonicalState(state: any) { Object.assign(this, { team: state.owner, city: state.city, hp: state.hp, isHome: state.isHome, isCityCenter: state.isCityCenter }); },
-    }]), getMaxX: () => 3, getMaxY: () => 1 };
+    }]), getMaxX: () => width, getMaxY: () => 1 };
   });
   Object.defineProperty(core, "allCities", { get: () => core.teams.flatMap((team: any) => team.cities ?? []) });
   game.Core = core; return core;
 }
 afterEach(() => { vi.restoreAllMocks(); });
 describe("V9 active city referential integrity and pre-teardown repair", () => {
+  it("starts the actual seven INITIAL world, exports V13, validates, hydrates twice without household regeneration", () => {
+    const core = target(7), base = fixture().factions[0];
+    const fs = Array.from({ length: 7 }, (_, i) => ({ ...base, factionId: `house-${i}`, displayName: `国${i}`, houseName: `姓${i}氏`,
+      origin: { type: "INITIAL", foundedMonth: 0 }, homeGridX: i, capitalCityId: `city-${i}`, stateFoundedMonth: 0 }));
+    const cs = fs.map((f, i) => ({ ...fixture().cities[0], cityId: `city-${i}`, name: `城${i}`, founderFactionId: f.factionId,
+      ownerFactionId: f.factionId, centerGridX: i, fortifiedCells: [{ gridX: i, gridY: 0 }] }));
+    const ts: any[] = fs.map(f => ({ ...f, name: f.factionId, firstFoundedYear: 0, users: new Set(), cities: [],
+      blocks: { children: { size: 1 } }, farms: { npcs: new Map(), init() {} }, removeRulerUnit() {}, exportState: () => structuredClone(f) }));
+    core.prepareForHydration(); core.teams = ts;
+    const cities = cs.map((c, i) => ({ ...c, id: c.cityId, block: core.map.blocks[i][0], fortifiedCells: [core.map.blocks[i][0]],
+      exportState: () => structuredClone(c) }));
+    ts.forEach((t, i) => { t.cities = [cities[i]]; core.map.blocks[i][0].restoreCanonicalState({ owner: t, city: cities[i], hp: 7, isHome: true, isCityCenter: true }); });
+    Object.defineProperty(core, "totalCells", { value: 7 });
+    vi.spyOn(DynastyRegistry, "ensureRulerUnit").mockImplementation(() => undefined);
+    worldRandom.initialize("household-new-world-v13");
+    core.simulator = new AutoSimulator(); core.simulator.startWorld(ts, 7, {}); core.simulator.setRunning(false);
+    // Runtime objects are Phaser adapters; politics, simulator startup, exporter, validator and hydrator are real.
+    const before = exportWorldSave(core, { createdAt: "2026-10-11T00:00:00Z" });
+    expect(before.saveSchemaVersion).toBe(13); expect(before.dynasties).toHaveLength(7);
+    expect(before.dynasties.some(d => d.rulers.length > 2)).toBe(true);
+    expect(validateWorldSave(before)).toEqual({ valid: true, errors: [] });
+    const rng = worldRandom.exportState(); const init = vi.spyOn(DynastyRegistry, "initializeFaction");
+    hydrateWorldSave(core, JSON.parse(JSON.stringify(before)));
+    const after = exportWorldSave(core, { createdAt: before.createdAt });
+    expect(after).toEqual(before); expect(worldRandom.exportState()).toEqual(rng); expect(init).not.toHaveBeenCalled();
+    hydrateWorldSave(core, JSON.parse(JSON.stringify(after)));
+    expect(exportWorldSave(core, { createdAt: before.createdAt })).toEqual(before); expect(init).not.toHaveBeenCalled();
+    expect(new Set(before.dynasties.flatMap(d => (d.rulers as RulerSaveV13[]).map(r => r.rulerId))).size)
+      .toBe(before.dynasties.reduce((n, d) => n + d.rulers.length, 0));
+  });
   it("new seven-faction rulers use the actual initialization path and export/validate/hydrate as V13", () => {
     const save = fixture(), core = target();
     const names = ["qin", "chu", "yan", "qi", "han", "zhao", "wei"];

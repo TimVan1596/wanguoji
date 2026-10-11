@@ -139,7 +139,9 @@ export default class AutoSimulator {
     DynastyRegistry.reset();
     FactionEffects.reset();
     WorldExiles.reset();
-    teams.forEach((team) => DynastyRegistry.initializeFaction(team, 0));
+    // Only a fresh seven-state start uses the household model; hydration never calls startWorld.
+    const initialSevenStates = teams.length === 7 && teams.every(team => team.origin?.type === "INITIAL");
+    teams.forEach((team) => DynastyRegistry.initializeFaction(team, 0, initialSevenStates));
     this.population.initialize(teams, populations);
     this.populationTransitionAudit.reset(0, teams);
     FactionLifetimeRecords.observeWorld(0, teams, totalCells);

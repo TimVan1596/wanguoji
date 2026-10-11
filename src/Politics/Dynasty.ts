@@ -1,3 +1,4 @@
+import { planInitialRoyalHousehold } from "./InitialRoyalHousehold";
 import { hasRecordedRulerDeath, type RulerDeathReason } from "./RulerLifeState";
 import { CurrentRulerLookup } from "./CurrentRulerLookup";
 import { beginHouseEpoch, evaluateDynasticRevolution, getRevolutionEligibility, type DynastyHouseEpoch, type RevolutionContext } from "./DynasticRevolution";
@@ -185,7 +186,7 @@ class DynastyRegistryStore {
     this.provisionalDiagnosticsSession.reset(this.listForDiagnostics());
   }
 
-  initializeFaction(team: Team, year: number) {
+  initializeFaction(team: Team, year: number, initialRoyalHousehold = false) {
     if (this.dynasties.has(team.name)) {
       return this.dynasties.get(team.name);
     }
@@ -203,7 +204,11 @@ class DynastyRegistryStore {
       heirIds: [],
     };
     this.dynasties.set(team.name, dynasty);
-    this.ensureActiveHeir(team, dynasty, year, true);
+    if (initialRoyalHousehold && year === 0 && team.origin?.type === "INITIAL") {
+      this.initializeRoyalHousehold(team, dynasty, ruler, year);
+    } else {
+      this.ensureActiveHeir(team, dynasty, year, true);
+    }
     WorldHistory.addRulerAcceded(year, team.name, this.getRulerTitle(team, ruler, year), ruler.id);
     this.ensureRulerUnit(team);
     return dynasty;
@@ -747,6 +752,35 @@ class DynastyRegistryStore {
     };
   }
 
+  private initializeRoyalHousehold(team: Team, dynasty: Dynasty, founder: Ruler, month: number) {
+    const plan = planInitialRoyalHousehold(founder.bornYear, month, max => worldRandom.pickIndex(max));
+    const createKin = (bornYear: number, parentId?: string, relationType?: RulerRelationType): Ruler => {
+      this.sequence += 1;
+      const naturalDeathYear = createNaturalDeathMonth(bornYear, max => worldRandom.pickIndex(max));
+      return { id: `${team.name}-ruler-${this.sequence}`, houseName: dynasty.houseName,
+        givenName: pickRulerGivenName(getRulerGivenNamePool(dynasty.houseName), dynasty.rulers.map(r => r.givenName), max => worldRandom.pickIndex(max)),
+        bornYear, naturalDeathYear, plannedEndYear: naturalDeathYear, politicalStartYear: month,
+        parentId, relationType, status: "kin" };
+    };
+    const parentPlan = plan.find(p => p.kind === "PARENT");
+    // A scheduled lifespan already elapsed is not a historical death. Discard the pair rather than inventing one.
+    const parent = parentPlan ? createKin(parentPlan.bornMonth) : undefined;
+    if (parent && !isNaturallyDeadByMonth(parent.naturalDeathYear, month)) {
+      dynasty.rulers.push(parent);
+      founder.parentId = parent.id;
+      const siblingPlan = plan.find(p => p.kind === "SIBLING")!;
+      dynasty.rulers.push(createKin(siblingPlan.bornMonth, parent.id, "SIBLING"));
+    }
+    const childPlan = plan.find(p => p.kind === "CHILD");
+    if (childPlan) dynasty.rulers.push(createKin(childPlan.bornMonth, founder.id, "DIRECT_CHILD"));
+    dynasty.heirIds = selectActiveDynasticCandidateIds({ currentRuler: founder, rulers: dynasty.rulers,
+      month, cap: Math.min(2, getDynasticCandidateCap(team.identityStage, team.sovereigntyRank)),
+      isAlive: (r, at) => r.status !== "dead" && !isNaturallyDeadByMonth(r.naturalDeathYear ?? r.plannedEndYear, at),
+      pickIndex: max => worldRandom.pickIndex(max) });
+    for (const r of dynasty.rulers) if (dynasty.heirIds.includes(r.id)) r.status = "heir";
+    this.refreshDesignatedHeir(dynasty, founder, month);
+  }
+
   private createHeir(
     team: Team,
     houseName: string,
@@ -755,7 +789,6 @@ class DynastyRegistryStore {
     predecessorId?: string,
     relationType: RulerRelationType = "DIRECT_CHILD"
   ): Ruler {
-    this.sequence += 1;
     const parent = parentId
       ? this.dynasties
           .get(team.name)
@@ -770,9 +803,13 @@ class DynastyRegistryStore {
           yearsToMonths(HEIR_PARENT_MAX_AGE_AT_BIRTH)
         )
       : undefined;
+    if (parentId && (!parent || derivedBornYear === undefined)) {
+      throw new Error(`Cannot create age-valid child: ${team.name}/${parentId}`);
+    }
     const bornYear = derivedBornYear ?? politicalStartYear - yearsToMonths(
           worldRandom.int(RULER_MIN_AGE_AT_ACCESSION, RULER_MAX_AGE_AT_ACCESSION)
         );
+    this.sequence += 1;
     const naturalDeathYear = createNaturalDeathMonth(bornYear, (max) =>
       worldRandom.pickIndex(max)
     );
