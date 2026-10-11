@@ -307,7 +307,11 @@ describe("独立政治冲击真实继位执行", () => {
     expect(displaced).toMatchObject({ status: "kin", parentId: "old", displacedByUsurpationMonth: month });
     expect(displaced.deathMonth).toBeUndefined(); expect(displaced.endYear).toBeUndefined();
     const event = WorldHistory.getEvents().find(e => e.type === "dynasty-usurped")!;
-    expect(event.metadata).toMatchObject({ riskTier: "POLITICAL_SHOCK", crisisCapitalMonth: 500, crisisSplitMonth: 520, displacedSuccessorId: "heir" });
+    expect(event.metadata).toMatchObject({ riskTier: "POLITICAL_SHOCK", displacedSuccessorId: "heir" });
+    expect(JSON.parse(String(event.metadata?.crisisEvidence))).toEqual(expect.arrayContaining([
+      expect.objectContaining({ kind: "CAPITAL_LOSS", month: 500, cityNames: ["旧都"] }),
+      expect.objectContaining({ kind: "EMPIRE_SPLIT", month: 520, cityNames: ["甲城", "乙城"] }),
+    ]));
     expect(ruler.chronicle!.notableEventIds).toContain(event.id);
     expect(event.description).toContain("旧都"); expect(event.description).toContain("重大帝国分裂");
     expect(event.description).not.toMatch(/战死|储君.*早亡|将军|权臣|兵变|百官/);
