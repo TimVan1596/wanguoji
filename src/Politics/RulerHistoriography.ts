@@ -197,7 +197,7 @@ export function deriveRulerHistoricalEvidence(
       direct = event.rulerId === ruler.id || event.metadata?.rulerId === ruler.id;
     } else if (event.type === "faction-submitted" || event.type === "faction-merged") {
       if (!event.factionIds?.includes(faction.name)) return [];
-      participantRole = getRulerTerminalRole(event, ruler, faction.name);
+      participantRole = getRulerTerminalRole(event, { ...ruler, accessionYear: ruler.accessionYear ?? accessionMonth }, faction.name);
       if (!participantRole) return [];
       direct = participantRole === "SOURCE";
     } else {

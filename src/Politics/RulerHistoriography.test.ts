@@ -524,7 +524,7 @@ describe("evidence-grounded ruler historiography", () => {
     const evidence = deriveRulerHistoricalEvidence(context);
     expect(evidence.politicalFacts.map(fact => fact.eventId).sort()).toEqual([...signed.map(event => event.id), "renewed"].sort());
     expect(getSignificantReignStats(context.ruler.chronicle!, evidence.politicalFacts)).toContain("本人签署外交协议：3");
-    const biography = getRulerHistoricalEvents(events, context.ruler, "秦", 100, []);
+    const biography = getRulerHistoricalEvents(events, { ...context.ruler, accessionYear: context.ruler.accessionYear ?? 0 }, "秦", 100, []);
     expect(biography.filter(event => signed.some(row => row.id === event.id)).map(event => event.id).sort()).toEqual(signed.map(event => event.id).sort());
     expect(biography.some(event => event.id === "renewed")).toBe(true);
     expect(biography.some(event => event.id === "foreign-signing")).toBe(false);

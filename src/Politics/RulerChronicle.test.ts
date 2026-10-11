@@ -248,7 +248,7 @@ describe("ruler chronicle", () => {
       { id: "foreign-usurp", year: 11, type: "dynasty-usurped", importance: "major", actorFactionId: "楚", rulerId: "r1", factionIds: ["楚"] },
       { id: "foreign-capital", year: 12, type: "capital-fallen", importance: "major", actorFactionId: "秦", targetFactionId: "楚", previousOwnerFactionId: "楚", factionIds: ["秦", "楚"] },
     ] as any;
-    expect(getRulerHistoricalEvents(events, { id: "r1", accessionYear: 0, endYear: 20 }, "秦", 20, events.map(event => event.id))).toEqual([]);
+    expect(getRulerHistoricalEvents(events, { id: "r1", accessionYear: 0, endYear: 20 }, "秦", 20, events.map((event: any) => event.id))).toEqual([]);
   });
 });
 
