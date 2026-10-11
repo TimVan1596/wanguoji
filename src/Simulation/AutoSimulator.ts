@@ -579,6 +579,9 @@ export default class AutoSimulator {
     const absorbing = candidate.absorbingFaction;
     const transferredCityCount = absorbed.cities.length;
     if (absorbed.status !== "ACTIVE" || absorbing.status !== "ACTIVE") return;
+    const peaceful = candidate.unionPath === "LONG_NON_AGGRESSION";
+    const ruler = peaceful ? DynastyRegistry.getCurrentRuler(absorbed.name) : undefined;
+    const rulerTitle = ruler ? DynastyRegistry.getRulerHistoricalTitle(ruler.id,absorbed.name,month) : undefined;
     FactionLifetimeRecords.prepareTerminal(absorbed, month);
     DynastyRegistry.markMerged(absorbed, month);
     [...absorbed.users].forEach((user) => {
@@ -604,8 +607,10 @@ export default class AutoSimulator {
       monthIndex: month,
       category: "politics",
       type: "faction-merged",
-      title: `${absorbed.displayName}归并${absorbing.displayName}`,
-      description: `${absorbed.displayName}归并${absorbing.displayName}，结束独立建制。`,
+      title: peaceful ? `${absorbed.displayName}以同源和议并入${absorbing.displayName}` : `${absorbed.displayName}归并${absorbing.displayName}`,
+      description: peaceful ? `${absorbed.displayName}与${absorbing.displayName}持续互不侵犯${formatWorldDuration(month-candidate.alliance.startedMonth)}，` +
+        `${absorbed.displayName}以同源和议归并于${absorbing.displayName}，结束独立建制${rulerTitle ? `，${rulerTitle}合邦退位` : ""}。` :
+        `${absorbed.displayName}归并${absorbing.displayName}，结束独立建制。`,
       factionIds: [absorbed.name, absorbing.name],
       relatedFactionIds: [absorbed.name, absorbing.name],
       metadata: {

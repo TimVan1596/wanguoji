@@ -43,7 +43,7 @@ export function verifyNonAggressionPeace(r: DiplomaticRelation, worldMonth: numb
   if (expiry !== r.expiresMonth || count !== r.renewalCount || lastRenewed !== r.lastRenewedMonth || expiry <= worldMonth) return undefined;
   if (relevant.some(e => ["treaty-expired", "alliance-expired", "alliance-signed", "truce-signed"].includes(e.type) ||
       e.type === "non-aggression-signed" && e.id !== first.id)) return undefined;
-  const windowStart = worldMonth - REUNIFICATION_MIN_PEACE_MONTHS;
+  const windowStart = Math.min(r.startedMonth, worldMonth - REUNIFICATION_MIN_PEACE_MONTHS);
   // This window is checked in addition to the positively reconstructed treaty chain.
   if (events.some(e => monthOf(e) >= windowStart && monthOf(e) <= worldMonth && involvesPair(e,r) &&
       (e.category === "war" || e.type === "city-captured" || e.type === "capital-fallen"))) return undefined;

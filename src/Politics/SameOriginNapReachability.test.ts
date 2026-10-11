@@ -136,6 +136,6 @@ describe("same-origin NAP reachability — read-only Stage A", () => {
         strict10YearCandidates: capped.observations.hypotheses["10y/ratio0.35/cities1/pressuretrue"],
         relaxed10YearCandidates: capped.observations.hypotheses["10y/ratio0.6/cities1/pressuretrue"] };
     });
-    console.info("Stage A controlled diplomacy only (NOT natural world frequency)", JSON.stringify(results));
+    console.info("固定种子受控外交对照（未运行完整自然世界，不是发生率）", JSON.stringify(results));
   });
 });

@@ -1,6 +1,8 @@
 # v0.99931h 提案 · Same-Origin Peaceful Reunification
 
-## 状态：阶段A完成机制审计，阶段B未获证据放行
+## 历史状态：阶段A完成机制审计，随后用户正式授权阶段B
+
+下文保留阶段A当时的证据与停止结论。用户后续明确允许有限实验实装，不再要求先取得自然长局样本；当前进展见[阶段B开发报告](SameOriginPeacefulReunificationImplementation.md)。
 
 实际基线 HEAD `d378cf1`，开始时工作树、暂存区均干净。APP_VERSION `v0.99931g`、package `0.99.136`、WorldSave V13。期间用户自行提交研究文件为 `7bc411b`，Codex保留该提交，仅补充本报告的最终验证结果；未暂存、提交、重置。**本报告不是 v31h 实装完成报告，版本号保持基线。**
 
