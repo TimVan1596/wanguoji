@@ -140,14 +140,16 @@ export default class WorldEventSystem {
   private hegemonyCandidate: HegemonyCandidate | undefined;
   private restorationDiagnostics = { startMonth: 0, endMonth: 0, evaluationTicks: 0, exiledFactions: 0, lowLoyaltyCityChecks: 0,
     founderCandidates: 0, formerCapitalCandidates: 0, longRuleCandidates: 0, eligibleChecks: 0, attempts: 0, successes: 0,
+    founderEligible: 0, capitalEligible: 0, longRuleEligible: 0, founderSuccesses: 0, capitalSuccesses: 0, longRuleSuccesses: 0,
     blockers: {} as Record<string, number> };
   getRestorationDiagnostics() {
     const d = this.restorationDiagnostics;
-    return `复国统计（本次会话，读取时重置）\n实际观察：${d.endMonth - d.startMonth}个月\n年度检查：${d.evaluationTicks}次；本周期流亡国家：${d.exiledFactions}个\n低忠诚度城市检查：${d.lowLoyaltyCityChecks}次\n原始建城者候选：${d.founderCandidates}次\n旧都复国候选：${d.formerCapitalCandidates}次\n长期统治地候选：${d.longRuleCandidates}次\n完整资格通过：${d.eligibleChecks}次；执行尝试：${d.attempts}次；实际复国：${d.successes}次\n主要阻断：${Object.entries(d.blockers).map(([key, value]) => `${key} ${value}次`).join("、") || "暂无"}\n候选与资格为城市—国家年度检查次数，不是独立国家数；旧历史资格不可回溯。`;
+    return `复国统计（城市年度检查；本次会话，读取时重置）\n实际观察：${d.endMonth - d.startMonth}个月\n年度检查：${d.evaluationTicks}次；本周期流亡国家：${d.exiledFactions}个\n低忠诚度城市检查：${d.lowLoyaltyCityChecks}次\n原始建城者候选：${d.founderCandidates}次（合格${d.founderEligible}，复国${d.founderSuccesses}）\n旧都复国候选：${d.formerCapitalCandidates}次（合格${d.capitalEligible}，复国${d.capitalSuccesses}）\n长期统治地候选：${d.longRuleCandidates}次（合格${d.longRuleEligible}，复国${d.longRuleSuccesses}）\n完整资格通过：${d.eligibleChecks}次；执行尝试：${d.attempts}次；实际复国：${d.successes}次\n主要阻断：${Object.entries(d.blockers).map(([key, value]) => `${key} ${value}次`).join("、") || "暂无"}\n候选与资格为城市—国家年度检查次数，不是独立国家数。实际次数仅统计上述城市检查，不含神力支持和分裂判定的恢复；旧历史资格不可回溯。`;
   }
   private resetRestorationDiagnostics(month: number) {
     this.restorationDiagnostics = { startMonth: month, endMonth: month, evaluationTicks: 0, exiledFactions: 0, lowLoyaltyCityChecks: 0,
-      founderCandidates: 0, formerCapitalCandidates: 0, longRuleCandidates: 0, eligibleChecks: 0, attempts: 0, successes: 0, blockers: {} };
+      founderCandidates: 0, formerCapitalCandidates: 0, longRuleCandidates: 0, eligibleChecks: 0, attempts: 0, successes: 0,
+    founderEligible: 0, capitalEligible: 0, longRuleEligible: 0, founderSuccesses: 0, capitalSuccesses: 0, longRuleSuccesses: 0, blockers: {} };
   }
   private restorationBlock(reason: string) {
     this.restorationDiagnostics.blockers[reason] = (this.restorationDiagnostics.blockers[reason] ?? 0) + 1;
@@ -793,6 +795,7 @@ export default class WorldEventSystem {
           }
           historical.push({ team, basis, heldMonths: rule.heldMonths, chance: 0 });
           diagnostics.eligibleChecks++;
+          if (basis === "FORMER_CAPITAL") diagnostics.capitalEligible++; else diagnostics.longRuleEligible++;
         }
       }
       const originalPath = Boolean(founder && city.ownerFactionId !== city.founderFactionId);
@@ -825,7 +828,7 @@ export default class WorldEventSystem {
         cycleMultiplier;
       if (originalPath && founder?.status === "EXILED") {
         diagnostics.founderCandidates++;
-        if (FactionRegistry.canRestoreFaction(founder)) diagnostics.eligibleChecks++;
+        if (FactionRegistry.canRestoreFaction(founder)) { diagnostics.eligibleChecks++; diagnostics.founderEligible++; }
         else this.restorationBlock("建城者残部或继统资格不足");
       }
       for (const row of historical) {
@@ -847,7 +850,9 @@ export default class WorldEventSystem {
           const population = WorldRemnants.get(row.team.name)?.population ?? 0;
           if (FactionRegistry.restoreFaction(row.team, city, year, population, "RESTORATION", { basis: row.basis, heldMonths: row.heldMonths })) {
             WorldRemnants.consume(row.team.name, population);
-            diagnostics.successes++; this.cityRebellionYears[city.id] = year; return;
+            diagnostics.successes++;
+            if (row.basis === "FORMER_CAPITAL") diagnostics.capitalSuccesses++; else diagnostics.longRuleSuccesses++;
+            this.cityRebellionYears[city.id] = year; return;
           }
           this.restorationBlock("执行未成功"); continue;
         }
@@ -872,7 +877,7 @@ export default class WorldEventSystem {
         diagnostics.attempts++;
         if (FactionRegistry.restoreFaction(founder, city, year, restoredPopulation)) {
           WorldRemnants.consume(founder.name, restoredPopulation);
-          diagnostics.successes++;
+          diagnostics.successes++; diagnostics.founderSuccesses++;
           this.cityRebellionYears[city.id] = year;
           return;
         }
@@ -945,11 +950,9 @@ export default class WorldEventSystem {
         )
       ) {
         const remnants = WorldRemnants.get(founder.name);
-        const restoredPopulation = WorldRemnants.consume(
-          founder.name,
-          remnants?.population ?? 0
-        );
+        const restoredPopulation = remnants?.population ?? 0;
         if (FactionRegistry.restoreFaction(founder, coreCity, year, restoredPopulation)) {
+          WorldRemnants.consume(founder.name, restoredPopulation);
           this.fractureUntilMonth = year + 60;
           return;
         }
@@ -1054,10 +1057,7 @@ export default class WorldEventSystem {
     if (!FactionRegistry.canRestoreFaction(founder)) {
       return false;
     }
-    const restoredPopulation = WorldRemnants.consume(
-      founder.name,
-      remnants?.population ?? 0
-    );
+    const restoredPopulation = remnants.population;
     const restored = FactionRegistry.restoreFaction(
       founder,
       city,
@@ -1066,6 +1066,7 @@ export default class WorldEventSystem {
       "GOD_ACTION"
     );
     if (restored) {
+      WorldRemnants.consume(founder.name, restoredPopulation);
       WorldHistory.addGodSupportedRestoration(year, founder.name, city.name, city.id);
       this.cityRebellionYears[city.id] = year;
       return true;

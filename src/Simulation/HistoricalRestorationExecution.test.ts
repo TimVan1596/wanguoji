@@ -101,6 +101,12 @@ describe("真实世界事件系统→城市政治恢复→人物与历史", () =
     expect(events.some(e => e.type === "god-restoration")).toBe(true);
     expect(events.find(e => e.type === "faction-restored")?.metadata?.restorationBasis).toBeUndefined();
   });
+  it("神力恢复执行失败同样不提前扣除残部，不制造支持事件", async () => {
+    const f = await fixture("capital", true); vi.spyOn(f.city, "revoltTo").mockReturnValue(false);
+    expect(f.system.restoreByGod(f.city, 480)).toBe(false);
+    expect(WorldRemnants.get("founder")?.population).toBe(3);
+    expect(WorldHistory.getEvents().some(e => e.type === "god-restoration" || e.type === "faction-restored")).toBe(false);
+  });
   it.each(["ACTIVE", "EXTINCT", "MERGED", "SUBMITTED", "remnants", "claimant", "legitimacy", "loyalty", "grace", "cooldown", "destroyed", "history"])("%s 不允许新增复国", async gate => {
     const f = await fixture(); f.founder.isDie = true;
     if (["ACTIVE", "EXTINCT"].includes(gate)) f.candidate.status = gate;
