@@ -282,6 +282,7 @@ function WorldDiagnosticsPanelContent() {
     runtimeLifetime,
     simulationStepPerformance: stepPerformance,
     strategicUnionCandidates: unionCandidateDiagnostics,
+    peacefulPoliticalTransitions: core?.getPeacefulPoliticalTransitionDiagnostics(),
     performance: framePerformance ? {
       fps: framePerformance.frameDeltaMs.average && framePerformance.frameDeltaMs.average > 0 ? 1000 / framePerformance.frameDeltaMs.average : undefined,
       averageFrameMs: framePerformance.frameDeltaMs.average,
@@ -377,6 +378,7 @@ function WorldDiagnosticsPanelContent() {
       ["Population Transition Audit", populationTransitions],
       ["Diplomacy", core?.getDiplomacyDiagnostics()],
       ["Peaceful Submission", core?.getPeacefulSubmissionDiagnostics()],
+      ["Peaceful Political Transition Diagnostics", core?.getPeacefulPoliticalTransitionDiagnostics()],
       ["Provisional ruler diagnostics", provisionalRulers],
       ["Frame Performance", coreReportData.performance],
       ["Simulation Step Performance", stepPerformance],
@@ -553,6 +555,7 @@ function WorldDiagnosticsPanelContent() {
           `renderer type: ${runtimeUnits.rendererType}`,
         ].join("\n")}</Typography>
       </details>}
+      {core && <details><summary>Peaceful Political Transition Diagnostics</summary><Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(core.getPeacefulPoliticalTransitionDiagnostics())}</Typography></details>}
       {core && <details><summary>Peaceful Submission</summary><Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(core.getPeacefulSubmissionDiagnostics())}</Typography></details>}
       {core && <details>
         <summary>Diplomacy II</summary>

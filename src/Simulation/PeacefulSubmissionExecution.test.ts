@@ -1,3 +1,8 @@
+import AutoSimulator from "./AutoSimulator";
+import WorldEra from "./WorldEra";
+import WorldExiles from "./WorldExiles";
+import FactionSnapshots from "./FactionSnapshots";
+import { WORLD_MONTH_MS } from "../config/simulation";
 import FactionLifetimeRecords from "./FactionLifetimeRecord";
 import { afterEach, describe, expect, it, vi } from "vitest";
 const { game }=vi.hoisted(()=>({game:{Core:{teams:[] as any[],releaseTerminalTeamColliders:vi.fn()},BlockSize:32}}));
@@ -12,7 +17,7 @@ import DynastyRegistry from "../Politics/Dynasty";
 import Diplomacy from "../Politics/Diplomacy";
 import WorldHistory from "../History/WorldHistory";
 import { executePeacefulSubmission } from "./PeacefulSubmissionExecution";
-import { evaluateSubmissionCandidates } from "./PeacefulSubmissionSystem";
+import { PeacefulSubmissionSystem, evaluateSubmissionCandidates } from "./PeacefulSubmissionSystem";
 import worldRandom from "./WorldRandom";
 import type Team from "../Components/Team";
 
@@ -35,6 +40,63 @@ async function fixture() {
   return {weak,strong,user,candidate};
 }
 describe("actual submission orchestration and canonical terminal offices",()=>{
+  it("actual AutoSimulator executes union before submission with identical canonical results when observations are toggled",async()=>{
+    const run=async(enabled:boolean,sameOrigin:boolean)=>{
+      vi.restoreAllMocks();WorldHistory.reset();Diplomacy.reset();DynastyRegistry.reset();FactionLifetimeRecords.reset(100);
+      worldRandom.initialize("transition-runtime-order");
+      const {weak,strong,user}=await fixture();
+      user.setTeam=(target:any,context:any)=>{expect(context.cause).toBe(sameOrigin?"FACTION_MERGER":"FACTION_SUBMISSION");weak.users.delete(user);target.users.add(user);user.team=target;};
+      if(sameOrigin) {weak.origin={type:"SPLIT",parentFactionId:strong.name};}
+      const sim=new AutoSimulator(enabled), runtime=sim as any;
+      runtime.started=true;runtime.running=true;runtime.clock.importState({worldMonth:119,elapsedMs:0,running:true});
+      runtime.unionObservations.reset(119);runtime.submission.reset(119);
+      // Only spatial/economic/monthly succession adapters are omitted, never diplomacy or terminal execution.
+      vi.spyOn(runtime.events,"update").mockImplementation(()=>undefined);
+      vi.spyOn(runtime.events,"observeWorldGoal").mockImplementation(()=>undefined);
+      vi.spyOn(runtime.events,"getCurrentPhase").mockReturnValue("FRAGMENTED");
+      vi.spyOn(runtime.population,"update").mockImplementation(()=>undefined);
+      vi.spyOn(WorldEra,"observe").mockImplementation(()=>undefined);
+      vi.spyOn(WorldExiles,"update").mockImplementation(()=>undefined);
+      vi.spyOn(DynastyRegistry,"update").mockImplementation(()=>undefined);
+      vi.spyOn(FactionSnapshots,"observe").mockImplementation(()=>undefined);
+      vi.spyOn(WorldHistory,"observeWorld").mockImplementation(()=>undefined);
+      vi.spyOn(runtime.populationTransitionAudit,"reconcile").mockImplementation(()=>undefined);
+      for(const t of game.Core.teams)for(const c of t.cities)c.updateDefense=()=>{};
+      // The adapter transfers real administrative ownership; union uses the same method with no SUBMITTED argument.
+      weak.cities[0].administrativeMergeTransferTo=(target:any)=>{const c=weak.cities.shift();target.cities.push(c);return true;};
+      const trace:string[]=[];
+      const merge=runtime.mergeFaction.bind(sim);
+      vi.spyOn(runtime,"mergeFaction").mockImplementation((...args:unknown[])=>{trace.push("union");return merge(...args);});
+      const submission=runtime.submission.update.bind(runtime.submission);
+      vi.spyOn(runtime.submission,"update").mockImplementation((...args:unknown[])=>{trace.push("submission");return submission(...args);});
+      sim.update(WORLD_MONTH_MS,game.Core.teams,100);
+      const diagnostic=sim.getPeacefulPoliticalTransitionDiagnostics();
+      const result={history:WorldHistory.exportState(),dynasty:DynastyRegistry.exportState(),diplomacy:Diplomacy.exportState(),
+        rng:worldRandom.exportState(),terminal:weak.terminationReason,trace};
+      if(enabled){
+        const chosen=sameOrigin?diagnostic.strategicUnion:diagnostic.peacefulSubmission;
+        expect(chosen.sessionCumulative).toMatchObject({observedWorldMonths:1,evaluationTicks:1,selectedAttempts:1,successfulTransitions:1,executionFailures:0});
+        expect(diagnostic.retainedCanonicalHistory[sameOrigin?"mergedEvents":"submittedEvents"]).toBe(1);
+        expect(diagnostic.strategicUnion.sessionCumulative.extra.allNationalPairs).toBe(3);
+        if(sameOrigin)expect(diagnostic.peacefulSubmission.sessionCumulative.fullyEligibleChecks).toBe(0);
+      }
+      expect(weak.terminationReason).toBe(sameOrigin?"MERGED":"SUBMITTED");
+      expect(trace).toEqual(sameOrigin?["union","submission"]:["submission"]);
+      expect(strong.cities).toHaveLength(2);
+      return result;
+    };
+    for(const sameOrigin of [false,true])expect(await run(true,sameOrigin)).toEqual(await run(false,sameOrigin));
+  });
+  it("records actual execution guard failure without a success or canonical terminal event",async()=>{
+    const {candidate,strong}=await fixture(),system=new PeacefulSubmissionSystem(true);
+    system.update({teams:game.Core.teams,relations:Diplomacy.list(120),worldMonth:120,totalCells:100,blockSize:32,recentEvents:[]}, c=>{
+      expect(c.evidence).toEqual(candidate.evidence);
+      strong.status="EXILED";return executePeacefulSubmission(c,120);
+    });
+    expect(system.observations.snapshot(120).sessionCumulative).toMatchObject({selectedAttempts:1,successfulTransitions:0,
+      executionFailures:1,failureCounts:{FACTION_NOT_ACTIVE:1}});
+    expect(WorldHistory.getEvents()).toHaveLength(0);
+  });
   it("transfers administratively, retires without death, preserves heirs/kin and cleans diplomacy",async()=>{
     const {weak,strong,user,candidate}=await fixture(),rng=worldRandom.exportState();
     expect(executePeacefulSubmission(candidate,120)).toBe(true);

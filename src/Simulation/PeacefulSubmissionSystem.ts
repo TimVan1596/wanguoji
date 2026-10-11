@@ -1,3 +1,4 @@
+import { PoliticalTransitionObservations } from "./PoliticalTransitionObservations";
 import type Team from "../Components/Team";
 import type { WorldEvent } from "../History/WorldHistory";
 import type { DiplomaticRelation } from "../Politics/Diplomacy";
@@ -70,18 +71,26 @@ export function evaluateSubmissionCandidates(input: SubmissionInput) {
 const blockerTypes: SubmissionBlocker[] = ["NOT_FORMAL_STATE","SAME_ORIGIN_USES_STRATEGIC_UNION","NO_DURABLE_RELATION","RELATION_TOO_SHORT","NOT_ADJACENT","RECENT_BILATERAL_WAR","STRONGER_TOO_WEAK","WEAKER_TOO_LARGE","POWER_GAP_TOO_SMALL","STABILITY_TOO_HIGH","NO_PRESSURE_PATH"];
 const emptyCounts=()=>({candidateChecks:0,eligibleCount:0,submissionCount:0,blockerCounts:Object.fromEntries(blockerTypes.map(b=>[b,0])) as Record<SubmissionBlocker,number>});
 export class PeacefulSubmissionSystem {
+  readonly observations: PoliticalTransitionObservations;
   private lastEvaluationMonth=-1;
   private cumulative=emptyCounts();
   private yearly=new Map<number,ReturnType<typeof emptyCounts>>();
   private recentCandidates: Array<SubmissionEvidence & {worldMonth:number;blockers:SubmissionBlocker[]}> = [];
-  reset() { this.lastEvaluationMonth=-1;this.cumulative=emptyCounts();this.yearly.clear();this.recentCandidates=[]; }
-  constructor(private readonly debug=false) {}
+  reset(month=0) { this.observations.reset(month);this.lastEvaluationMonth=-1;this.cumulative=emptyCounts();this.yearly.clear();this.recentCandidates=[]; }
+  constructor(private readonly debug=false) { this.observations=new PoliticalTransitionObservations(debug); }
   update(input:SubmissionInput, submit:(candidate:SubmissionCandidate,month:number)=>boolean) {
     if(input.worldMonth<=0 || input.worldMonth%12!==0 || this.lastEvaluationMonth===input.worldMonth)return;
     this.lastEvaluationMonth=input.worldMonth;
     const results=evaluateSubmissionCandidates(input);
     const candidates=results.flatMap(r=>r.candidate?[r.candidate]:[]).sort(rankSubmissionCandidates);
-    const submitted=!!candidates[0]&&submit(candidates[0],input.worldMonth);
+    if(this.debug) this.observations.evaluation(input.worldMonth,results.map(r=>({
+      pair:[r.evidence.submittedFactionId,r.evidence.receivingFactionId],blockers:r.blockers,
+      preliminary:r.evidence.relationStatus === "ALLIANCE" || r.evidence.relationStatus === "NON_AGGRESSION",
+      sample:r.evidence,extra:submissionCounterfactuals(r.evidence)
+    })));
+    const selected=candidates[0];
+    const submitted=!!selected&&this.observations.attempt(input.worldMonth,()=>submit(selected,input.worldMonth),()=>
+      selected.submitted.status !== "ACTIVE" || selected.receiving.status !== "ACTIVE" ? "FACTION_NOT_ACTIVE" : "CALLBACK_RETURNED_FALSE_WITHOUT_REASON");
     if(!this.debug)return;
     const counts=emptyCounts();counts.candidateChecks=results.length;counts.eligibleCount=candidates.length;counts.submissionCount=Number(submitted);
     for(const r of results)for(const b of r.blockers) counts.blockerCounts[b]=(counts.blockerCounts[b]??0)+1;
@@ -99,4 +108,17 @@ export class PeacefulSubmissionSystem {
     }
     return {sessionCumulative:{...this.cumulative,blockerCounts:{...this.cumulative.blockerCounts}},recent100Years:recent,recentCandidates:this.recentCandidates.map(r=>({...r,blockers:r.blockers.slice()}))};
   }
+}
+
+/** Hypothetical gates only; never used by candidate selection or execution. Shares are percentages. */
+export function submissionCounterfactuals(e:SubmissionEvidence) {
+  const real=getSubmissionBlockers(e).length === 0;
+  const noCityLimit=getSubmissionBlockers({...e,submittedCityCount:1}).length === 0;
+  // Relax only all three territorial gates: strong>=20%, weak<=12%, weak<=strong*0.4.
+  const nonTerritorial=getSubmissionBlockers(e).filter(b=> !["STRONGER_TOO_WEAK","POWER_GAP_TOO_SMALL"].includes(b) &&
+    !(b === "WEAKER_TOO_LARGE" && e.submittedCityCount === 1));
+  const relaxed=nonTerritorial.length === 0 && e.receivingTerritoryShare>=20 && e.submittedTerritoryShare<=12 &&
+    e.submittedTerritoryShare<=e.receivingTerritoryShare*0.4;
+  return {withoutOneCityEligibleChecks:Number(noCityLimit),withoutOneCityAdditionalChecks:Number(noCityLimit&&!real),
+    relaxedTerritoryEligibleChecks:Number(relaxed),relaxedTerritoryAdditionalChecks:Number(relaxed&&!real)};
 }

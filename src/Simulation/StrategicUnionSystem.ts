@@ -16,6 +16,7 @@ import { DIPLOMACY_COMMON_THREAT_RATIO, DIPLOMACY_RECENT_WAR_MONTHS } from "../P
 import { calculateTerritoryMetrics, getFactionTerritoryMetric } from "./TerritoryMetrics";
 
 export type StrategicUnionBlocker =
+  | "EQUAL_TERRITORY_STRENGTH"
   | "NOT_SAME_ORIGIN"
   | "ALLIANCE_TOO_SHORT"
   | "NOT_ADJACENT"
@@ -45,6 +46,7 @@ export interface StrategicUnionCandidateDiagnostic {
   cityRatio: number;
   weakerStability: number;
   commonThreatStillRelevant: boolean;
+  veryWeak: boolean;
   blockers: StrategicUnionBlocker[];
   candidate?: StrategicUnionCandidate;
 }
@@ -116,6 +118,7 @@ export function diagnoseStrategicUnionCandidates(input: StrategicUnionInput): St
       weakerCities <= STRATEGIC_UNION_VERY_WEAK_MAX_CITIES &&
       weakerStability <= STRATEGIC_UNION_VERY_WEAK_MAX_STABILITY;
     const blockers: StrategicUnionBlocker[] = [];
+    if (aMetric.factionControlledBlocks === bMetric.factionControlledBlocks) blockers.push("EQUAL_TERRITORY_STRENGTH");
     if (!sameOrigin) blockers.push("NOT_SAME_ORIGIN");
     if (allianceMonths < STRATEGIC_UNION_MIN_ALLIANCE_MONTHS || bilateralWarFreeMonths < STRATEGIC_UNION_MIN_ALLIANCE_MONTHS) blockers.push("ALLIANCE_TOO_SHORT");
     if (!adjacent) blockers.push("NOT_ADJACENT");
@@ -145,6 +148,7 @@ export function diagnoseStrategicUnionCandidates(input: StrategicUnionInput): St
       cityRatio: strongerCities > 0 ? weakerCities / strongerCities : 0,
       weakerStability,
       commonThreatStillRelevant,
+      veryWeak,
       blockers,
       candidate,
     }];

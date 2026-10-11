@@ -1,3 +1,5 @@
+import { PoliticalTransitionObservations } from "./PoliticalTransitionObservations";
+import { areSameOriginFactions } from "../Politics/StrategicUnionRules";
 import FactionLifetimeRecords from "./FactionLifetimeRecord";
 import { MonthlyPhaseProfiler, runtimeProfilingEnabled } from "./MonthlyPhaseProfiler";
 import Team from "../Components/Team";
@@ -57,7 +59,13 @@ export default class AutoSimulator {
   private phaseProfiler = debugProfileEnabled ? new MonthlyPhaseProfiler() : undefined;
   private sessionStartMonth = 0;
   private stepPerformance = new RollingStepPerformance();
-  private readonly submission = new PeacefulSubmissionSystem(debugProfileEnabled);
+  constructor(private readonly transitionDiagnosticsEnabled=debugProfileEnabled) {
+    this.submission=new PeacefulSubmissionSystem(transitionDiagnosticsEnabled);
+    this.unionObservations=new PoliticalTransitionObservations(transitionDiagnosticsEnabled);
+  }
+  private readonly submission: PeacefulSubmissionSystem;
+  private readonly unionObservations: PoliticalTransitionObservations;
+  private transitionHistoryCache?: {revision:number;count:number;submitted:number;merged:number};
   private strategicUnionDiagnostics: StrategicUnionCandidateDiagnostic[] = [];
   private lastSimulationSubsystem = "—";
   private lastKnownCities: City[] = [];
@@ -113,6 +121,8 @@ export default class AutoSimulator {
   ) {
     Diplomacy.reset();
     this.submission.reset();
+    this.unionObservations.reset();
+    this.transitionHistoryCache=undefined;
     this.lastKnownTeams = teams;
     this.lastKnownCities = teams.flatMap((team) => team.cities);
     this.started = true;
@@ -219,7 +229,10 @@ export default class AutoSimulator {
     this.speed = state.selectedSpeed;
     this.clock.importState({ ...state.clock, running: false });
     this.sessionStartMonth = state.clock.worldMonth;
-    this.submission.reset();
+    this.submission.reset(state.clock.worldMonth);
+    this.unionObservations.reset(state.clock.worldMonth);
+    this.strategicUnionDiagnostics=[];
+    this.transitionHistoryCache=undefined;
     this.stepPerformance.reset();
     this.population.importState(state.populationSystem);
     this.events.importState(state.worldEventSystem, state.clock.worldMonth);
@@ -273,6 +286,9 @@ export default class AutoSimulator {
 
     const advancedMonths = this.clock.update(simulationDeltaMs);
     for (let i = 0; i < advancedMonths; i++) {
+      const observedMonth=this.clock.year-advancedMonths+i+1;
+      this.unionObservations.observeMonth(observedMonth);
+      this.submission.observations.observeMonth(observedMonth);
       const stepStart = debugProfileEnabled ? this.readPerformanceNow() : undefined;
       this.measure("WorldEventSystem.update", () => this.events.update(this.clock.year, teams, totalCells, this.phaseProfiler));
       this.lastKnownTeams = teams;
@@ -288,14 +304,34 @@ export default class AutoSimulator {
           blockSize: Game.BlockSize,
         };
         const unionCandidate = this.measure("StrategicUnion candidate scan", () => findStrategicUnionCandidate(unionInput));
-        if (debugProfileEnabled) {
+        if (this.transitionDiagnosticsEnabled) {
           const unionEvaluations = this.measure("debug/StrategicUnion blocker diagnostics", () => diagnoseStrategicUnionCandidates(unionInput));
+          const active=teams.filter(t=>t.status === "ACTIVE");
+          let sameOriginPairs=0;
+          for(let a=0;a<active.length;a++)for(let b=a+1;b<active.length;b++)
+            sameOriginPairs+=Number(areSameOriginFactions(active[a],active[b]));
+          this.unionObservations.evaluation(this.clock.year,unionEvaluations.map(r=>({
+            pair:[r.factionAId,r.factionBId],blockers:r.blockers,preliminary:r.sameOrigin,
+            sample:{...r,candidate:undefined},extra:{
+              pressureOnlyAdditionalChecks:Number(r.blockers.length===1&&r.blockers[0]==="NO_PRESSURE_TRIGGER"),
+              otherGatesPassMissingCommonThreat:Number(r.blockers.every(b=>b==="NO_PRESSURE_TRIGGER")&&!r.commonThreatStillRelevant),
+              otherGatesPassNotVeryWeak:Number(r.blockers.every(b=>b==="NO_PRESSURE_TRIGGER")&&!r.veryWeak)
+            }
+          })),{allNationalPairs:active.length*(active.length-1)/2,sameOriginPairs,
+            formalAlliancePairs:unionEvaluations.length,allianceAndSameOriginPairs:unionEvaluations.filter(r=>r.sameOrigin).length});
           this.strategicUnionDiagnostics = unionEvaluations
             .slice()
             .sort((a, b) => a.blockers.length - b.blockers.length || b.allianceMonths - a.allianceMonths)
             .slice(0, 5);
         }
-        if (unionCandidate) this.mergeFaction(unionCandidate, this.clock.year);
+        if (unionCandidate) {
+          const beforeActive=unionCandidate.absorbedFaction.status === "ACTIVE" && unionCandidate.absorbingFaction.status === "ACTIVE";
+          this.unionObservations.attempt(this.clock.year,()=>{
+            this.mergeFaction(unionCandidate,this.clock.year);
+            return beforeActive && unionCandidate.absorbedFaction.terminationReason === "MERGED" &&
+              unionCandidate.absorbedFaction.terminationMonth === this.clock.year;
+          },()=>!beforeActive?"FACTION_NOT_ACTIVE":"EXECUTION_RETURNED_WITHOUT_MERGED_TERMINAL_STATE");
+        }
         this.measure("PeacefulSubmission.update", () => this.submission.update({ ...unionInput,
           relations: Diplomacy.list(this.clock.year),
         }, executePeacefulSubmission));
@@ -462,6 +498,30 @@ export default class AutoSimulator {
 
   getLastSimulationSubsystem() {
     return this.lastSimulationSubsystem;
+  }
+
+  getPeacefulPoliticalTransitionDiagnostics() {
+    const revision=WorldHistory.getRevision(),count=WorldHistory.getEventCount();
+    if(!this.transitionHistoryCache || this.transitionHistoryCache.revision!==revision || this.transitionHistoryCache.count!==count) {
+      let submitted=0,merged=0,beforeIndex:number|undefined;
+      do {
+        const page=WorldHistory.getEventWindow({limit:256,beforeIndex,predicate:e=>e.type==="faction-submitted"||e.type==="faction-merged"});
+        for(const e of page.events) { submitted+=Number(e.type==="faction-submitted");merged+=Number(e.type==="faction-merged"); }
+        if(!page.hasOlder)break;
+        beforeIndex=page.nextIndex;
+      }while(true);
+      this.transitionHistoryCache={revision,count,submitted,merged};
+    }
+    return { title:"Peaceful Political Transition Diagnostics", worldMonth:this.clock.year,
+      peacefulSubmission:this.submission.observations.snapshot(this.clock.year),
+      strategicUnion:this.unionObservations.snapshot(this.clock.year),
+      retainedCanonicalHistory:{submittedEvents:this.transitionHistoryCache.submitted,mergedEvents:this.transitionHistoryCache.merged,
+        frequencyPer100Years:null,reason:"仅计存档保留的可验证事件；历史区间完整性未证明，不计算存档历史频率。旧历史资格不可回溯。"},
+      semantics:{submissionPairChecks:"年度ACTIVE国家组合；preliminary为有效NAP/ALLIANCE，不代表全部资格",
+        unionPairChecks:"年度正式ALLIANCE且双方ACTIVE的组合；preliminary为同时同源；allNationalPairs另计全部ACTIVE组合",
+        unionPressure:"共同威胁沿用现有大小/接触条件，未改为Diplomacy II可信度判定；缺少威胁与不极弱不是互斥，可同时计数",
+        submissionCounterfactual:"仅去掉一城条件；或仅放宽领土为强方>=20%、弱方<=12%、弱方<=强方40%，其他真实门槛不变，不执行",
+        reset:"新世界或V13读取重置会话，不回填；正常模式关闭详细诊断，模拟路径不变"} };
   }
 
   getPeacefulSubmissionDiagnostics() {
