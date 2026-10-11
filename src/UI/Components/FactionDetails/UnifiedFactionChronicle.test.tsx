@@ -66,3 +66,14 @@ describe("direct, indexed unified royal history", () => {
     expect(getFactionAssessment(c.faction, c.factions, c.dynasty)).toBe(before); expect(JSON.stringify(before)).toBe(facts);
   });
 });
+
+it("refreshes a participating foreign historical identity without replacing the faction map", () => {
+  const c = fixture(); const foreign = { ...c.faction, name: "g", displayName: "今名", nameHistory: [{ name: "秦", startMonth: 0 }] };
+  c.factions.set("g", foreign);
+  WorldHistory.addEvent({ id: "foreign-fall", year: 80, type: "capital-fallen", actorFactionId: "g", targetFactionId: "f", cityName: "郢", title: "失都", category: "war", importance: "major" });
+  const phases = getHouseAssessments(c.dynasty, c.faction, c.factions, c.worldMonth);
+  const get = () => getUnifiedFactionChronicle(c.dynasty, c.faction, c.factions, c.worldMonth, phases);
+  const first = get(); expect(first?.paragraphs.join("")).toContain("秦攻陷");
+  foreign.nameHistory[0].name = "楚";
+  expect(get()).not.toBe(first); expect(get()?.paragraphs.join("")).toContain("楚攻陷");
+});
