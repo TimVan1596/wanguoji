@@ -377,8 +377,8 @@ function WorldDiagnosticsPanelContent() {
       ["Runtime Units", coreReportData.units],
       ["Population Transition Audit", populationTransitions],
       ["Diplomacy", core?.getDiplomacyDiagnostics()],
-      ["Peaceful Submission", core?.getPeacefulSubmissionDiagnostics()],
-      ["Peaceful Political Transition Diagnostics", core?.getPeacefulPoliticalTransitionDiagnostics()],
+      ["纳土归附诊断", core?.getPeacefulSubmissionDiagnostics()],
+      ["和平政治转型诊断", core?.getPeacefulPoliticalTransitionDiagnostics()],
       ["Provisional ruler diagnostics", provisionalRulers],
       ["Frame Performance", coreReportData.performance],
       ["Simulation Step Performance", stepPerformance],
@@ -555,8 +555,8 @@ function WorldDiagnosticsPanelContent() {
           `renderer type: ${runtimeUnits.rendererType}`,
         ].join("\n")}</Typography>
       </details>}
-      {core && <details><summary>Peaceful Political Transition Diagnostics</summary><Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(core.getPeacefulPoliticalTransitionDiagnostics())}</Typography></details>}
-      {core && <details><summary>Peaceful Submission</summary><Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(core.getPeacefulSubmissionDiagnostics())}</Typography></details>}
+      {core && <details><summary>和平政治转型诊断</summary><Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 11 }}>{core.getPeacefulPoliticalTransitionDiagnostics()?.chineseSummary}</Typography><Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(core.getPeacefulPoliticalTransitionDiagnostics())}</Typography></details>}
+      {core && <details><summary>纳土归附诊断</summary><Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(core.getPeacefulSubmissionDiagnostics())}</Typography></details>}
       {core && <details>
         <summary>Diplomacy II</summary>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(core.getDiplomacyDiagnostics())}</Typography>

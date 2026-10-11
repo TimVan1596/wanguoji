@@ -33,6 +33,8 @@ export interface StrategicUnionCandidate {
   absorbingTerritoryShare: number;
   absorbedTerritoryShare: number;
   bilateralWarFreeMonths: number;
+  unionPath?: "LONG_NON_AGGRESSION";
+  peaceEvidence?: { signingEventId: string; eventIds: string[]; verifiedFromMonth: number; verifiedUntilMonth: number };
 }
 
 export interface StrategicUnionCandidateDiagnostic {

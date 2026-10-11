@@ -57,7 +57,8 @@ describe("diagnostics report render isolation", () => {
 
 it("transition report uses the existing copy routes and collapsed debug section",()=>{
   const text=readFileSync(new URL("./WorldDiagnosticsPanel.tsx",import.meta.url),"utf8");
-  expect(text).toContain("<summary>Peaceful Political Transition Diagnostics</summary>");
-  expect(text).toContain('["Peaceful Political Transition Diagnostics", core?.getPeacefulPoliticalTransitionDiagnostics()]');
+  expect(text).toContain("<summary>和平政治转型诊断</summary>");
+  expect(text).toContain('["和平政治转型诊断", core?.getPeacefulPoliticalTransitionDiagnostics()]');
+  expect(text).toContain("core.getPeacefulPoliticalTransitionDiagnostics()?.chineseSummary");
   expect(text).toContain('peacefulPoliticalTransitions: core?.getPeacefulPoliticalTransitionDiagnostics()');
 });

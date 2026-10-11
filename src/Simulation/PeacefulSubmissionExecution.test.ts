@@ -15,6 +15,7 @@ vi.mock("../Components/Farms",()=>({default:class {}}));
 vi.mock("../Components/City",()=>({default:class {},getFactionStability:()=>40}));
 import DynastyRegistry from "../Politics/Dynasty";
 import Diplomacy from "../Politics/Diplomacy";
+import { createDiplomacyEventMetadata } from "../Politics/DiplomacyPresentation";
 import WorldHistory from "../History/WorldHistory";
 import { executePeacefulSubmission } from "./PeacefulSubmissionExecution";
 import { PeacefulSubmissionSystem, evaluateSubmissionCandidates } from "./PeacefulSubmissionSystem";
@@ -41,15 +42,23 @@ async function fixture() {
 }
 describe("actual submission orchestration and canonical terminal offices",()=>{
   it("actual AutoSimulator executes union before submission with identical canonical results when observations are toggled",async()=>{
-    const run=async(enabled:boolean,sameOrigin:boolean)=>{
+    const run=async(enabled:boolean,sameOrigin:boolean,longNonAggression=false)=>{
       vi.restoreAllMocks();WorldHistory.reset();Diplomacy.reset();DynastyRegistry.reset();FactionLifetimeRecords.reset(100);
       worldRandom.initialize("transition-runtime-order");
       const {weak,strong,user}=await fixture();
       user.setTeam=(target:any,context:any)=>{expect(context.cause).toBe(sameOrigin?"FACTION_MERGER":"FACTION_SUBMISSION");weak.users.delete(user);target.users.add(user);user.team=target;};
       if(sameOrigin) {weak.origin={type:"SPLIT",parentFactionId:strong.name};}
+      if(longNonAggression) {
+        Diplomacy.delete("weak","strong");
+        Diplomacy.setRelation({factionAId:"strong",factionBId:"weak",status:"NON_AGGRESSION",reason:"COMMON_THREAT_NON_AGGRESSION",
+          startedMonth:0,originalStartedMonth:0,expiresMonth:240,renewalCount:0});
+        WorldHistory.addEvent({id:"actual-nap-signing",year:0,type:"non-aggression-signed",category:"politics",title:"互不侵犯签约",
+          factionIds:["strong","weak"],importance:"major",metadata:createDiplomacyEventMetadata(Diplomacy.get("weak","strong")!)});
+      }
       const sim=new AutoSimulator(enabled), runtime=sim as any;
       runtime.started=true;runtime.running=true;runtime.clock.importState({worldMonth:119,elapsedMs:0,running:true});
       runtime.unionObservations.reset(119);runtime.submission.reset(119);
+      runtime.reunificationObservations.reset(119);
       // Only spatial/economic/monthly succession adapters are omitted, never diplomacy or terminal execution.
       vi.spyOn(runtime.events,"update").mockImplementation(()=>undefined);
       vi.spyOn(runtime.events,"observeWorldGoal").mockImplementation(()=>undefined);
@@ -74,7 +83,7 @@ describe("actual submission orchestration and canonical terminal offices",()=>{
       const result={history:WorldHistory.exportState(),dynasty:DynastyRegistry.exportState(),diplomacy:Diplomacy.exportState(),
         rng:worldRandom.exportState(),terminal:weak.terminationReason,trace};
       if(enabled){
-        const chosen=sameOrigin?diagnostic.strategicUnion:diagnostic.peacefulSubmission;
+        const chosen=longNonAggression?diagnostic.peacefulReunification:sameOrigin?diagnostic.strategicUnion:diagnostic.peacefulSubmission;
         expect(chosen.sessionCumulative).toMatchObject({observedWorldMonths:1,evaluationTicks:1,selectedAttempts:1,successfulTransitions:1,executionFailures:0});
         expect(diagnostic.retainedCanonicalHistory[sameOrigin?"mergedEvents":"submittedEvents"]).toBe(1);
         expect(diagnostic.strategicUnion.sessionCumulative.extra.allNationalPairs).toBe(3);
@@ -83,9 +92,20 @@ describe("actual submission orchestration and canonical terminal offices",()=>{
       expect(weak.terminationReason).toBe(sameOrigin?"MERGED":"SUBMITTED");
       expect(trace).toEqual(sameOrigin?["union","submission"]:["submission"]);
       expect(strong.cities).toHaveLength(2);
+      if(longNonAggression) {
+        const event=WorldHistory.getEvents().find(e=>e.type === "faction-merged")!;
+        expect(event.metadata).toMatchObject({unionPath:"LONG_NON_AGGRESSION",diplomaticStatus:"NON_AGGRESSION",nonAggressionMonths:120,
+          absorbedFactionId:"weak",absorbingFactionId:"strong",peaceSigningEventId:"actual-nap-signing"});
+        expect(DynastyRegistry.get("weak")?.rulers.find(r=>r.id === "weak-r")).toMatchObject({status:"abdicated",endReason:"合邦退位"});
+        expect(DynastyRegistry.get("weak")?.rulers.find(r=>r.id === "weak-r")?.deathMonth).toBeUndefined();
+        expect(Diplomacy.list()).toEqual([]);
+        sim.update(WORLD_MONTH_MS,game.Core.teams,100);
+        expect(WorldHistory.getEvents().filter(e=>e.type === "faction-merged")).toHaveLength(1);
+      }
       return result;
     };
     for(const sameOrigin of [false,true])expect(await run(true,sameOrigin)).toEqual(await run(false,sameOrigin));
+    expect(await run(true,true,true)).toEqual(await run(false,true,true));
   });
   it("counts retained canonical transitions once per history change without replaying old eligibility",async()=>{
     await fixture();const sim=new AutoSimulator(true);

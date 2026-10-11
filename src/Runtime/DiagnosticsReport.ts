@@ -177,7 +177,7 @@ const CORE_FIELDS: Array<[string, string]> = [
   ["Long-Run Runtime Lifetime", "runtimeLifetime"],
   ["simulation fixed/month step subsystem timings", "simulationStepPerformance"],
   ["strategic union candidate blockers", "strategicUnionCandidates"],
-  ["Peaceful Political Transition Diagnostics", "peacefulPoliticalTransitions"],
+  ["和平政治转型诊断", "peacefulPoliticalTransitions"],
   ["Dynastic Revolution cumulative Gate diagnostics (session only)", "provisionalRulers.revolution.cumulativeGate"],
   ["Dynastic Revolution diagnostics", "provisionalRulers.revolution"],
   ["rulers by historical accession rank", "provisionalRulers.byAccessionRank"],

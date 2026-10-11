@@ -9,6 +9,7 @@ vi.mock("../Components/Block", () => ({ default: class {} }));
 vi.mock("../Components/Player", () => ({ default: class {} }));
 vi.mock("../Components/User", () => ({ default: class {} }));
 vi.mock("../Components/Npc", () => ({ default: class {} }));
+vi.mock("../Components/Farms", () => ({ default: class {} }));
 vi.mock("../Components/Team", () => ({ default: class {
   static hydrate(_scene: unknown, state: any) { return { ...state, name: state.factionId, cities: [], users: new Set(), farms: { npcs: new Map(), init() {} },
     addCity(city: any) { this.cities.push(city as never); }, exportState: () => structuredClone(state) }; }
@@ -31,6 +32,12 @@ import { deriveRulerAssessment, composeHistorianVoice } from "../Politics/RulerH
 import { buildRulerTags } from "../Politics/RulerChronicle";
 import WorldHistory, { type WorldEvent } from "../History/WorldHistory";
 import worldRandom from "../Simulation/WorldRandom";
+import Diplomacy from "../Politics/Diplomacy";
+import { createDiplomacyEventMetadata } from "../Politics/DiplomacyPresentation";
+import { WORLD_MONTH_MS } from "../config/simulation";
+import WorldEra from "../Simulation/WorldEra";
+import WorldExiles from "../Simulation/WorldExiles";
+import FactionSnapshots from "../Simulation/FactionSnapshots";
 import { createBlockSaveProjection } from "./BlockSaveProjection";
 
 function fixture() {
@@ -70,6 +77,65 @@ function target(width = 3) {
 }
 afterEach(() => { vi.restoreAllMocks(); });
 describe("V9 active city referential integrity and pre-teardown repair", () => {
+  it("真实年度执行长期互不侵犯归并，再导出、校验、恢复V13，历史与退位事实保持一致", async () => {
+    const {default:RealTeam}=await vi.importActual<typeof import("../Components/Team")>("../Components/Team");
+    const core=target(100),base=fixture().factions[0],starts=[0,30,33],counts=[30,3,67];
+    core.prepareForHydration();Object.defineProperty(core,"totalCells",{value:100});
+    const fs=["strong","weak","other"].map((id,i)=>({...base,factionId:id,displayName:id,houseName:`姓${i}氏`,
+      origin:i===1?{type:"SPLIT",parentFactionId:"strong",foundedMonth:0}:{type:"INITIAL",foundedMonth:0},
+      homeGridX:starts[i],capitalCityId:`city-${id}`,stateFoundedMonth:0}));
+    const ts:any[]=fs.map(f=>({...f,name:f.factionId,firstFoundedYear:0,currentActiveSinceYear:0,cumulativeActiveYears:0,restorationYears:[],
+      cities:[] as any[],extinctionYear:undefined as number|undefined,users:new Set(),blocks:{children:{entries:[] as any[],size:0}},farms:{npcs:new Map(),init(){},setDie(){}},removeRulerUnit(){},
+      markMerged:RealTeam.prototype.markMerged,
+      exportState(){return {...f,status:this.status,capitalCityId:this.cities.find((c:any)=>c.isCapital)?.id,
+        terminationReason:this.terminationReason,terminationTargetFactionId:this.terminationTargetFactionId,terminationMonth:this.terminationMonth,
+        cumulativeActiveMonths:this.cumulativeActiveYears,extinctionMonth:this.extinctionYear};}}));
+    core.teams=ts;
+    ts.forEach((t,i)=>{
+      const blocks=core.map.blocks.slice(starts[i],starts[i]+counts[i]).map((row:any)=>row[0]);
+      t.blocks.children.entries=blocks;t.blocks.children.size=blocks.length;
+      blocks.forEach((b:any)=>{b.hp=0;b.isHome=false;b.isCityCenter=false;b.team=t;b.claimForTeam=(target:any)=>{
+        const old=b.team;old.blocks.children.entries=old.blocks.children.entries.filter((v:any)=>v!==b);
+        old.blocks.children.size=old.blocks.children.entries.length;target.blocks.children.entries.push(b);
+        target.blocks.children.size=target.blocks.children.entries.length;b.team=target;};});
+      const cs={...fixture().cities[0],cityId:`city-${t.name}`,name:`城${i}`,ownerFactionId:t.name,founderFactionId:t.name,
+        centerGridX:starts[i],loyalty:40,fortifiedCells:[{gridX:starts[i],gridY:0}]};
+      const c:any={...cs,id:cs.cityId,block:blocks[0],fortifiedCells:[blocks[0]],updateDefense(){},
+        administrativeMergeTransferTo(target:any){t.cities=t.cities.filter((v:any)=>v!==c);target.cities.push(c);c.ownerFactionId=target.name;c.isCapital=false;c.block.isHome=false;},
+        exportState:()=>({...cs,ownerFactionId:c.ownerFactionId,isCapital:c.isCapital})};
+      blocks[0].restoreCanonicalState({owner:t,city:c,hp:7,isHome:true,isCityCenter:true});t.cities=[c];
+    });
+    vi.spyOn(DynastyRegistry,"ensureRulerUnit").mockImplementation(()=>undefined);
+    worldRandom.initialize("v13-long-peace-execution");
+    const sim=core.simulator=new AutoSimulator(true);sim.startWorld(ts,100,{});
+    Diplomacy.setRelation({factionAId:"strong",factionBId:"weak",status:"NON_AGGRESSION",reason:"COMMON_THREAT_NON_AGGRESSION",
+      startedMonth:0,originalStartedMonth:0,renewalCount:0,expiresMonth:240});
+    WorldHistory.addEvent({id:"nap-sign",year:0,type:"non-aggression-signed",category:"politics",title:"互不侵犯条约",
+      factionIds:["strong","weak"],importance:"major",metadata:createDiplomacyEventMetadata(Diplomacy.get("strong","weak")!)});
+    const runtime=sim as any;runtime.clock.importState({worldMonth:119,elapsedMs:0,running:true});
+    vi.spyOn(runtime.events,"update").mockImplementation(()=>undefined);
+    vi.spyOn(runtime.events,"observeWorldGoal").mockImplementation(()=>undefined);
+    vi.spyOn(runtime.events,"getCurrentPhase").mockReturnValue("FRAGMENTED");
+    vi.spyOn(runtime.population,"update").mockImplementation(()=>undefined);
+    vi.spyOn(runtime.populationTransitionAudit,"reconcile").mockImplementation(()=>undefined);
+    vi.spyOn(DynastyRegistry,"update").mockImplementation(()=>undefined);
+    vi.spyOn(WorldEra,"observe").mockImplementation(()=>undefined);
+    vi.spyOn(WorldExiles,"update").mockImplementation(()=>undefined);
+    vi.spyOn(FactionSnapshots,"observe").mockImplementation(()=>undefined);
+    vi.spyOn(WorldHistory,"observeWorld").mockImplementation(()=>undefined);
+    const rng=worldRandom.exportState();sim.update(WORLD_MONTH_MS,ts,100);sim.setRunning(false);
+    expect(ts[1].terminationReason).toBe("MERGED");
+    expect(DynastyRegistry.get("weak")?.rulers.find(r=>r.accessionYear!==undefined)?.status).toBe("abdicated");
+    expect(worldRandom.exportState()).toEqual(rng);
+    const save=exportWorldSave(core);expect(validateWorldSave(save)).toEqual({valid:true,errors:[]});
+    const event=(save.worldHistory.events as WorldEvent[]).find(e=>e.type === "faction-merged")!;
+    expect(event.metadata).toMatchObject({unionPath:"LONG_NON_AGGRESSION",diplomaticStatus:"NON_AGGRESSION",nonAggressionMonths:120,
+      peaceSigningEventId:"nap-sign",absorbedFactionId:"weak",absorbingFactionId:"strong"});
+    hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));const first=exportWorldSave(core);
+    expect(first).toEqual(save);expect(worldRandom.exportState()).toEqual(rng);
+    hydrateWorldSave(core,JSON.parse(JSON.stringify(first)));expect(exportWorldSave(core)).toEqual(first);
+    expect(WorldHistory.getEvents().filter(e=>e.type === "faction-merged")).toHaveLength(1);
+  });
   it("starts the actual seven INITIAL world, exports V13, validates, hydrates twice without household regeneration", () => {
     const core = target(7), base = fixture().factions[0];
     const fs = Array.from({ length: 7 }, (_, i) => ({ ...base, factionId: `house-${i}`, displayName: `国${i}`, houseName: `姓${i}氏`,
