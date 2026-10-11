@@ -77,3 +77,18 @@ it("refreshes a participating foreign historical identity without replacing the 
   foreign.nameHistory[0].name = "楚";
   expect(get()).not.toBe(first); expect(get()?.paragraphs.join("")).toContain("楚攻陷");
 });
+
+it("refreshes recorded own and verified foreign posthumous references without a history rewrite", () => {
+  const c = fixture();
+  const foreign = { ...c.faction, name: "g", nameHistory: [{ name: "秦", startMonth: 0 }], sovereigntyHistory: [{ rank: "KING", startMonth: 0 }] };
+  c.factions.set("g", foreign);
+  const ruler = { ...c.dynasty.rulers[0], id: "g-r", houseName: "嬴氏", givenName: "康", status: "dead" as const, endYear: 90, deathMonth: 90, deathReason: "战死" as const, posthumousEpithet: "武" };
+  WorldHistory.addEvent({ id: "foreign-fall", year: 80, type: "capital-fallen", actorFactionId: "g", targetFactionId: "f", rulerId: "g-r", cityName: "郢", title: "失都", category: "war", importance: "major" });
+  const phases = getHouseAssessments(c.dynasty, c.faction, c.factions, c.worldMonth);
+  const get = () => getUnifiedFactionChronicle(c.dynasty, c.faction, c.factions, c.worldMonth, phases, id => id === "g" ? [ruler] : []);
+  const first = get(); expect(first?.paragraphs.join("")).toContain("后谥武");
+  ruler.posthumousEpithet = "庄";
+  expect(get()).not.toBe(first); expect(get()?.paragraphs.join("")).toContain("后谥庄");
+  Object.assign(c.dynasty.rulers[0], { status: "dead", endYear: 90, deathMonth: 90, deathReason: "去世", posthumousEpithet: "文" });
+  expect(get()?.paragraphs.join("")).toContain("后谥文");
+});
