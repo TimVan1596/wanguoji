@@ -1,6 +1,5 @@
-import { DynastyHouseAssessment } from "./DynastyHouseAssessment";
+import { UnifiedFactionChronicle } from "./UnifiedFactionChronicle";
 import { hasRecordedRulerDeath } from "../../../Politics/RulerLifeState";
-import { getFactionAssessment } from "../../../Historiography/FactionAssessmentArchive";
 import { getTerminationTargetName } from "./model";
 import { formatRulerTerminalEvent } from "../../../History/PoliticalTerminalChronicle";
 import { getSignificantReignStats, formatRulerLifeAge } from "./RoyalPresentation";
@@ -749,8 +748,8 @@ function DynastyTree({
   const designatedHeir = livingCandidates.find((candidate) => candidate.id === dynasty?.designatedHeirId);
   const otherCandidates = livingCandidates.filter((candidate) => candidate.id !== dynasty?.designatedHeirId);
   const formalRulers = getFormalRulers(rulers);
-  const archive = dynasty ? <DynastyHouseAssessment key={team.name} dynasty={dynasty} faction={team} factions={factionById} worldMonth={worldMonth}
-    nationalAssessment={getFactionAssessment(team, factionById, dynasty, id => DynastyRegistry.get(id)?.rulers)} /> : null;
+  const archive = dynasty ? <UnifiedFactionChronicle key={team.name} dynasty={dynasty} faction={team} factions={factionById} worldMonth={worldMonth}
+    rulersForFaction={id => DynastyRegistry.get(id)?.rulers} /> : null;
   if (formalRulers.length === 0 && livingCandidates.length === 0) {
     return <Box sx={{ display: "grid", gap: 1 }}>{archive}
       <Typography fontSize="0.9rem" color="var(--gg-text-muted)">暂无王室记录。</Typography>
@@ -762,6 +761,7 @@ function DynastyTree({
   });
   return (
     <Box sx={{ display: "grid", gap: 1 }}>
+      {archive}
       <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
         <Button size="small" onClick={onOpenFullGenealogy}>查看完整宗谱</Button>
       </Box>
@@ -785,7 +785,6 @@ function DynastyTree({
           })}
         </Box>
       ) : null}
-      {archive}
       <Typography fontWeight="bold" fontSize="0.9rem">历代君主</Typography>
       <Box sx={{ display: "grid", gap: 0.5 }}>
         {orderedRulers.map((ruler, index) => {
