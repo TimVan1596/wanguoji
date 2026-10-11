@@ -104,6 +104,15 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     expect(exportWorldSave(core, { createdAt: before.createdAt })).toEqual(before); expect(init).not.toHaveBeenCalled();
     expect(new Set(before.dynasties.flatMap(d => (d.rulers as RulerSaveV13[]).map(r => r.rulerId))).size)
       .toBe(before.dynasties.reduce((n, d) => n + (d.rulers as RulerSaveV13[]).length, 0));
+    // Repeat real startup with observations disabled; canonical V13 must be identical.
+    worldRandom.initialize("household-new-world-v13");
+    ts.forEach((t,i)=>{
+      const block=core.map.blocks[i][0];cities[i].block=block;cities[i].fortifiedCells=[block];t.cities=[cities[i]];
+      block.restoreCanonicalState({owner:t,city:cities[i],hp:7,isHome:true,isCityCenter:true});
+    });
+    core.teams=ts;core.simulator=new AutoSimulator(false);core.simulator.startWorld(ts,7,{});core.simulator.setRunning(false);
+    expect(exportWorldSave(core,{createdAt:before.createdAt})).toEqual(before);
+    expect(worldRandom.exportState()).toEqual(rng);
     const dynastyBeforeContinuation = DynastyRegistry.exportState();
     // Restore the Phaser group adapter used by monthly ruler observation.
     core.teams.forEach((team: any) => { team.blocks = { children: { size: 1 } }; });
