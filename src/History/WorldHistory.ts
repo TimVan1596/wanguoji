@@ -1,5 +1,5 @@
 import { frameAttribution } from "../Simulation/FrameAttribution";
-import { formatRevolutionEvidence } from "../Politics/DynasticRevolution";
+import { composeRevolutionNarrative } from "./RevolutionEventDetails";
 import Team from "../Components/Team";
 import { ArchivedCity } from "../Simulation/ArchivedCities";
 import type { WorldEra } from "../Simulation/WorldEra";
@@ -1162,11 +1162,10 @@ export class WorldHistoryStore {
   }
 
   addDynasticRevolution(year: number, factionId: string, rulerId: string, metadata: Record<string, string | number | undefined>) {
-    const evidence = formatRevolutionEvidence(String(metadata.vulnerabilityEvidence ?? "").split(","));
     return this.addEvent({ id: `dynasty-usurped-${factionId}-${year}-${this.sequence++}`, year,
       type: "dynasty-usurped", category: "politics", actorFactionId: factionId, factionIds: [factionId], rulerId,
       title: `${metadata.oldStateName}王统易代：${metadata.newHouseName}夺取王统`,
-      description: `${metadata.previousRulerTitle}${metadata.successionReason === "combat" ? "战死" : metadata.successionReason === "captured" ? "被俘处死" : "去世"}。稳定度${metadata.stability}，${evidence}；${metadata.newHouseName}在继统危机中取代${metadata.oldHouseName}。合法继承人${metadata.displacedSuccessorName}被排除于继统序列，未记为死亡。${metadata.oldStateName !== metadata.newStateName ? `国号改为${metadata.newStateName}。` : ""}${metadata.oldColor !== metadata.newColor ? "易帜。" : ""}`,
+      description: composeRevolutionNarrative(metadata),
       metadata, importance: "major" });
   }
 

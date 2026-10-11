@@ -1,3 +1,4 @@
+import { derivePoliticalSuccessionShocks } from "./PoliticalSuccessionCrisis";
 import { planInitialRoyalHousehold } from "./InitialRoyalHousehold";
 import { hasRecordedRulerDeath, type RulerDeathReason } from "./RulerLifeState";
 import { CurrentRulerLookup } from "./CurrentRulerLookup";
@@ -541,6 +542,13 @@ class DynastyRegistryStore {
         vulnerabilityEvidence: revolution.evidence.join(","), stability: getFactionStability(team) ?? 100,
         oldStateName, newStateName: team.displayName, oldColor, newColor: team.color,
         successionReason: reason, month: year, actorFactionColor: team.color,
+        newRulerName: this.getRulerPersonalName(nextRuler), riskTier: revolution.riskTier,
+        ...(revolution.politicalShocks.length === 2 ? {
+          crisisCapitalEventId: revolution.politicalShocks[0].eventId, crisisCapitalMonth: revolution.politicalShocks[0].month,
+          crisisCapitalCityId: revolution.politicalShocks[0].cityIds[0], crisisCapitalCityName: revolution.politicalShocks[0].cityName,
+          crisisSplitEventId: revolution.politicalShocks[1].eventId, crisisSplitMonth: revolution.politicalShocks[1].month,
+          crisisSplitCityIds: revolution.politicalShocks[1].cityIds.join(","),
+        } : {}),
       });
       nextRuler.chronicle.notableEventIds.push(eventId);
     }
@@ -974,7 +982,10 @@ class DynastyRegistryStore {
     year: number, reason: "natural" | "combat" | "captured"): RevolutionContext {
     return { worldMonth: year, identityStage: team.identityStage, status: team.status,
       stability: getFactionStability(team) ?? 100, cityCount: team.cities.length,
-      predecessor, successor, successionReason: reason,
+      predecessor, successor, successionReason: reason, factionId: team.name,
+      // Candidate previews do not scan historical evidence or create political opportunities.
+      politicalShocks: predecessor.status === "dead" && predecessor.deathMonth === year
+        ? derivePoliticalSuccessionShocks(team.name, predecessor, year, WorldHistory.getEventsForFaction(team.name)) : [],
       previousSuccessionMonths: dynasty.rulers.filter((ruler) => ruler.predecessorId && ruler.accessionYear !== undefined)
         .map((ruler) => ruler.accessionYear!) };
   }

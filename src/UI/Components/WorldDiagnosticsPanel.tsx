@@ -427,7 +427,8 @@ function WorldDiagnosticsPanelContent() {
         {thresholds.map(([label, text]) => <Typography key={label} variant="caption" component="div">{label}：{text}</Typography>)}
       </details>
       <details>
-        <summary>Dynastic Revolution diagnostics</summary>
+        <summary>篡朝诊断</summary>
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 11 }}>{provisionalRulers.revolution.cumulativeGate.chineseSummary}</Typography>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(provisionalRulers.revolution)}</Typography>
       </details>
       <details>

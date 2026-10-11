@@ -5,13 +5,13 @@ const BLOCKERS = ["NO_ELIGIBLE_LEGITIMATE_SUCCESSOR", "NOT_STATE", "NOT_ACTIVE_S
   "NO_SUCCESSION_CRISIS", "SUCCESSOR_NOT_VULNERABLE", "ROLL_FAILED"] as const;
 function emptyCounters() {
   return { successionBoundaryCheckCount: 0, hasLegitimateSuccessorCount: 0, crisisEligibleCount: 0,
-    vulnerabilityEligibleCount: 0, lowerRiskEligibleCount: 0, hardEligibleBeforeRollCount: 0, rollAttemptCount: 0,
+    vulnerabilityEligibleCount: 0, lowerRiskEligibleCount: 0, politicalShockEligibleCount: 0, hardEligibleBeforeRollCount: 0, rollAttemptCount: 0,
     rollFailedCount: 0, usurpationCount: 0 };
 }
 function emptyChanceBuckets() {
   return { base: { "4%": 0, "6%": 0, "10%": 0, "14%": 0 } as Record<string, number>,
     final: Object.fromEntries(Array.from({ length: 15 }, (_, i) => [`${i + 4}%`, 0])) as Record<string, number>,
-    tiers: { CRISIS: 0, COMPOUND_INSTABILITY: 0, COMPOUND_SHOCK: 0 }, modifierAppliedCount: 0, cappedCount: 0 };
+    tiers: { CRISIS: 0, COMPOUND_INSTABILITY: 0, COMPOUND_SHOCK: 0, POLITICAL_SHOCK: 0 }, modifierAppliedCount: 0, cappedCount: 0 };
 }
 interface BoundaryObservation {
   factionId: string; factionName: string; month: number; stability: number; evidence: string[];
@@ -44,7 +44,8 @@ export class RevolutionGateDiagnostics {
     counters.successionBoundaryCheckCount++;
     if (context.successor) counters.hasLegitimateSuccessorCount++;
     if (result.crisis.level === "succession-crisis") counters.crisisEligibleCount++;
-    if (result.hardEligible && result.riskTier !== "CRISIS") counters.lowerRiskEligibleCount++;
+    if (result.hardEligible && (result.riskTier === "COMPOUND_SHOCK" || result.riskTier === "COMPOUND_INSTABILITY")) counters.lowerRiskEligibleCount++;
+    if (result.hardEligible && result.riskTier === "POLITICAL_SHOCK") counters.politicalShockEligibleCount++;
     if (!blockers.has("SUCCESSOR_NOT_VULNERABLE")) counters.vulnerabilityEligibleCount++;
     if (result.hardEligible) counters.hardEligibleBeforeRollCount++;
     BLOCKERS.forEach(key => { if (blockers.has(key)) this.blockerCounts[key]++; });
@@ -75,8 +76,9 @@ export class RevolutionGateDiagnostics {
     const elapsedWorldYears = Math.max(0, worldMonth - this.sessionStartMonth) / 12;
     const per1000Years = (count: number) => elapsedWorldYears > 0 ? count * 1000 / elapsedWorldYears : null;
     const clone = (boundary: BoundaryObservation) => ({ ...boundary, evidence: [...boundary.evidence], blockers: [...boundary.blockers] });
-    return { scope: "debug session; resets on new world/load", enabled: this.enabled(),
-      counterSemantics: "crisisEligibleCount counts the original highest crisis tier; lowerRiskEligibleCount counts hard-eligible compound lower tiers. NO_SUCCESSION_CRISIS means neither highest crisis nor sufficient compound exposure. Rates cover only months since new world/load; null means insufficient denominator.",
+    const recordedBuckets = Object.entries(this.chanceBuckets.final).filter(([, count]) => count > 0).map(([key]) => parseFloat(key));
+    return { chineseSummary: `篡朝诊断（本次观察会话，读取时重置）\n实际观察：${elapsedWorldYears.toFixed(2)}年\n继位边界：${this.counters.successionBoundaryCheckCount}次\n原最高级危机：${this.counters.crisisEligibleCount}次\n原低风险复合危机：${this.counters.lowerRiskEligibleCount}次\n新增完整合格危机：${this.counters.politicalShockEligibleCount}次\n实际抽签：${this.counters.rollAttemptCount}次\n抽签概率范围：${recordedBuckets.length ? `${Math.min(...recordedBuckets)}%～${Math.max(...recordedBuckets)}%` : "暂无抽签"}\n期望篡朝：${this.expectedUsurpationCount.toFixed(3)}次\n实际篡朝：${this.counters.usurpationCount}次\n每千世界年条件期望：${per1000Years(this.expectedUsurpationCount)?.toFixed(3) ?? "暂无观察时间"}次\n最高级为继承规则危机次数；两种低风险入口为完整合格检查次数。历史资格不可回溯；当前候选预览不评估新增历史入口。`, scope: "debug session; resets on new world/load", enabled: this.enabled(),
+      counterSemantics: "crisisEligibleCount counts the original highest crisis tier; lowerRiskEligibleCount counts original hard-eligible compound lower tiers; politicalShockEligibleCount counts the new independent historical-shock tier. NO_SUCCESSION_CRISIS means neither highest crisis nor sufficient compound exposure. Rates cover only months since new world/load; null means insufficient denominator.",
       chanceBucketSemantics: "Base and final chance buckets each partition roll attempts; modifier/capped counts overlap those buckets.",
       ...this.counters, worldMonth, sessionStartMonth: this.sessionStartMonth, elapsedWorldYears,
       eligibleRollsPer1000Years: per1000Years(this.counters.rollAttemptCount),

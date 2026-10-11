@@ -1,3 +1,4 @@
+import { formatWorldDate } from "../Simulation/WorldTime";
 import type { WorldEvent } from "./WorldHistory";
 import { formatRevolutionEvidence } from "../Politics/DynasticRevolution";
 
@@ -18,4 +19,17 @@ export function getRevolutionEventDetails(event: WorldEvent) {
   if (typeof m.oldColor === "number" && typeof m.newColor === "number" && m.oldColor !== m.newColor)
     lines.push(`易帜：#${m.oldColor.toString(16).padStart(6, "0")} → #${m.newColor.toString(16).padStart(6, "0")}`);
   return lines;
+}
+
+
+/** Frozen event evidence only; never infer court actors, motives or kinship. */
+export function composeRevolutionNarrative(m: Record<string, string | number | undefined>) {
+  const evidence = formatRevolutionEvidence(String(m.vulnerabilityEvidence ?? "").split(","));
+  const ending = m.successionReason === "combat" ? "战死" : m.successionReason === "captured" ? "被俘处死" : m.successionReason === "natural" ? "去世" : "";
+  const predecessor = typeof m.previousRulerTitle === "string" ? m.previousRulerTitle : m.predecessorRulerName;
+  const background = typeof m.crisisCapitalCityName === "string" && typeof m.crisisCapitalMonth === "number" && typeof m.crisisSplitMonth === "number"
+    && typeof m.crisisCapitalEventId === "string" && typeof m.crisisSplitEventId === "string"
+    ? `此前${formatWorldDate(m.crisisCapitalMonth)}失去${m.crisisCapitalCityName}，${formatWorldDate(m.crisisSplitMonth)}另有重大帝国分裂；` : "";
+  const death = predecessor && ending ? `${predecessor}${ending}，` : "";
+  return `${background}${death}${evidence ? `${evidence}，` : ""}继统之际${m.newRulerName ?? m.newHouseName}夺取王统，${m.newHouseName}取代${m.oldHouseName}。合法继承人${m.displacedSuccessorName}被排除于继统序列${m.oldStateName !== m.newStateName ? `，国号改为${m.newStateName}` : ""}${m.oldColor !== m.newColor ? "，并易帜" : ""}。`;
 }
