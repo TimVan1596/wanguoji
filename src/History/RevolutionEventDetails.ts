@@ -24,7 +24,7 @@ export function getRevolutionEventDetails(event: WorldEvent) {
 
 /** Frozen event evidence only; never infer court actors, motives or kinship. */
 export function composeRevolutionNarrative(m: Record<string, string | number | undefined>) {
-  const evidence = formatRevolutionEvidence(String(m.vulnerabilityEvidence ?? "").split(","));
+  const evidenceKeys = String(m.vulnerabilityEvidence ?? "").split(",");
   const ending = m.successionReason === "combat" ? "战死" : m.successionReason === "captured" ? "被俘处死" : m.successionReason === "natural" ? "去世" : "";
   const predecessor = typeof m.previousRulerTitle === "string" ? m.previousRulerTitle : m.predecessorRulerName;
   const backgroundFacts = typeof m.crisisCapitalCityName === "string" && typeof m.crisisCapitalMonth === "number" && typeof m.crisisSplitMonth === "number"
@@ -32,6 +32,10 @@ export function composeRevolutionNarrative(m: Record<string, string | number | u
     ? [{ month: m.crisisCapitalMonth, text: `失去${m.crisisCapitalCityName}` },
        { month: m.crisisSplitMonth, text: "另有重大帝国分裂" }].sort((a, b) => a.month - b.month) : [];
   const background = backgroundFacts.length ? `此前${backgroundFacts.map(row => `${formatWorldDate(row.month)}${row.text}`).join("，")}；` : "";
+  const evidence = formatRevolutionEvidence(evidenceKeys.filter(key =>
+    !(ending && (key === "PREDECESSOR_COMBAT_DEATH" || key === "PREDECESSOR_CAPTURED")) &&
+    !(background && (key === "RECENT_CAPITAL_LOSS" || key === "RECENT_EMPIRE_SPLIT"))
+  )).replace("少城且稳定度低", "国中城土所余不多，政局不稳");
   const death = predecessor && ending ? `${predecessor}${ending}，` : "";
   return `${background}${death}${evidence ? `${evidence}，` : ""}继统之际${m.newRulerName ?? m.newHouseName}夺取王统，${m.newHouseName}取代${m.oldHouseName}。合法继承人${m.displacedSuccessorName}被排除于继统序列${m.oldStateName !== m.newStateName ? `，国号改为${m.newStateName}` : ""}${m.oldColor !== m.newColor ? "，并易帜" : ""}。`;
 }
