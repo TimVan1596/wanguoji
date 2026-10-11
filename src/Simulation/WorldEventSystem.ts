@@ -1,4 +1,4 @@
-import { deriveHistoricalCityRules, getHistoricalRestorationBasis, historicalRestorationChance, selectRestorationOpportunity, type RestorationBasis } from "./HistoricalRestorationRules";
+import { getWarTornCityEvidence, warTornRestorationChance, deriveHistoricalCityRules, getHistoricalRestorationBasis, historicalRestorationChance, selectRestorationOpportunity, type RestorationBasis } from "./HistoricalRestorationRules";
 import { measurePhase, type MonthlyPhaseProfiler } from "./MonthlyPhaseProfiler";
 import Team from "../Components/Team";
 import { getFactionDevelopmentLevel, getFactionStability } from "../Components/City";
@@ -138,21 +138,25 @@ export default class WorldEventSystem {
   private nextEventYear = 0;
   private sequence = 0;
   private hegemonyCandidate: HegemonyCandidate | undefined;
-  private restorationDiagnostics = { startMonth: 0, endMonth: 0, evaluationTicks: 0, exiledFactions: 0, lowLoyaltyCityChecks: 0,
+  private restorationDiagnostics = { startMonth: 0, endMonth: 0, evaluationTicks: 0, exiledFactions: 0, lowLoyaltyCityChecks: 0, cityChecks: 0, warTornCityChecks: 0, historicalCandidates: 0, warTornEligible: 0, warTornSuccesses: 0, failures: 0,
     founderCandidates: 0, formerCapitalCandidates: 0, longRuleCandidates: 0, eligibleChecks: 0, attempts: 0, successes: 0,
     founderEligible: 0, capitalEligible: 0, longRuleEligible: 0, founderSuccesses: 0, capitalSuccesses: 0, longRuleSuccesses: 0,
-    blockers: {} as Record<string, number> };
+    soleBlockers: {} as Record<string, number>, blockers: {} as Record<string, number> };
   getRestorationDiagnostics() {
     const d = this.restorationDiagnostics;
-    return `复国统计（城市年度检查；本次会话，读取时重置）\n实际观察：${d.endMonth - d.startMonth}个月\n年度检查：${d.evaluationTicks}次；本周期流亡国家：${d.exiledFactions}个\n低忠诚度城市检查：${d.lowLoyaltyCityChecks}次\n原始建城者候选：${d.founderCandidates}次（合格${d.founderEligible}，复国${d.founderSuccesses}）\n旧都复国候选：${d.formerCapitalCandidates}次（合格${d.capitalEligible}，复国${d.capitalSuccesses}）\n长期统治地候选：${d.longRuleCandidates}次（合格${d.longRuleEligible}，复国${d.longRuleSuccesses}）\n完整资格通过：${d.eligibleChecks}次；执行尝试：${d.attempts}次；实际复国：${d.successes}次\n主要阻断：${Object.entries(d.blockers).map(([key, value]) => `${key} ${value}次`).join("、") || "暂无"}\n候选与资格为城市—国家年度检查次数，不是独立国家数。实际次数仅统计上述城市检查，不含神力支持和分裂判定的恢复；旧历史资格不可回溯。`;
+    const exile = WorldExiles.getDiagnostics();
+    return `复国统计（城市年度检查；本次会话，读取时重置）\n实际观察：${d.endMonth - d.startMonth}个月\n年度检查：${d.evaluationTicks}次；当前流亡国家：${exile.currentExiled}个；会话曾观察流亡国家：${exile.observedExiled}${exile.observedOverflow ? "个以上（计数容量4096）" : "个"}\n所有实际城市年度检查：${d.cityChecks}次\n忠诚度≤28的城市检查：${d.lowLoyaltyCityChecks}次\n忠诚度29～39的战乱城市检查：${d.warTornCityChecks}次\n具有历史资格的流亡候选：${d.historicalCandidates}次；战乱旧地完整合格：${d.warTornEligible}次\n原始建城者候选：${d.founderCandidates}次（合格${d.founderEligible}，复国${d.founderSuccesses}）\n旧都复国候选：${d.formerCapitalCandidates}次（合格${d.capitalEligible}，复国${d.capitalSuccesses}）\n长期统治地候选：${d.longRuleCandidates}次（合格${d.longRuleEligible}，复国${d.longRuleSuccesses}）\n完整资格通过：${d.eligibleChecks}次；执行尝试：${d.attempts}次；实际复国：${d.successes}次（战乱旧地${d.warTornSuccesses}次）；执行失败：${d.failures}次\n流亡政治终结：${exile.politicalEnds}次\n主要阻断：${Object.entries(d.blockers).map(([key, value]) => `${key} ${value}次`).join("、") || "暂无"}\n单项阻断：${Object.entries(d.soleBlockers).map(([key, value]) => `${key} ${value}次`).join("、") || "暂无"}\n阻断可同时出现多项，其总数不是独立城市或国家数。\n候选与资格为城市—国家年度检查次数，不是独立国家数。实际次数仅统计上述城市检查，不含神力支持和分裂判定的恢复；旧历史资格不可回溯。`;
   }
   private resetRestorationDiagnostics(month: number) {
-    this.restorationDiagnostics = { startMonth: month, endMonth: month, evaluationTicks: 0, exiledFactions: 0, lowLoyaltyCityChecks: 0,
+    this.restorationDiagnostics = { startMonth: month, endMonth: month, evaluationTicks: 0, exiledFactions: 0, lowLoyaltyCityChecks: 0, cityChecks: 0, warTornCityChecks: 0, historicalCandidates: 0, warTornEligible: 0, warTornSuccesses: 0, failures: 0,
       founderCandidates: 0, formerCapitalCandidates: 0, longRuleCandidates: 0, eligibleChecks: 0, attempts: 0, successes: 0,
-    founderEligible: 0, capitalEligible: 0, longRuleEligible: 0, founderSuccesses: 0, capitalSuccesses: 0, longRuleSuccesses: 0, blockers: {} };
+    founderEligible: 0, capitalEligible: 0, longRuleEligible: 0, founderSuccesses: 0, capitalSuccesses: 0, longRuleSuccesses: 0, soleBlockers: {}, blockers: {} };
   }
-  private restorationBlock(reason: string) {
-    this.restorationDiagnostics.blockers[reason] = (this.restorationDiagnostics.blockers[reason] ?? 0) + 1;
+  private restorationBlock(reason: string) { this.restorationBlocks([reason]); }
+  private restorationBlocks(reasons: string[]) {
+    const d = this.restorationDiagnostics;
+    for (const reason of reasons) d.blockers[reason] = (d.blockers[reason] ?? 0) + 1;
+    if (reasons.length === 1) d.soleBlockers[reasons[0]] = (d.soleBlockers[reasons[0]] ?? 0) + 1;
   }
   private hegemonyEmitted = false;
   private unificationEmitted = false;
@@ -761,47 +765,56 @@ export default class WorldEventSystem {
     const cities = teams.flatMap(team => team.cities);
     for (const city of cities) {
       if (city.destroyed) continue;
-      if (city.loyalty > REBELLION_LOYALTY_THRESHOLD) {
-        this.restorationBlock("忠诚度高于叛乱门槛"); continue;
-      }
-      diagnostics.lowLoyaltyCityChecks++;
-      if (city.isInCaptureGrace(year)) {
-        this.restorationBlock("占领保护期"); continue;
-      }
-      const lastRebellionYear = this.cityRebellionYears[city.id];
-      if (
-        lastRebellionYear !== undefined &&
-        year - lastRebellionYear < REBELLION_CITY_COOLDOWN_MONTHS
-      ) {
-        this.restorationBlock("城市叛乱冷却"); continue;
-      }
-
+      diagnostics.cityChecks++;
       const owner = city.ownerTeam;
       const founder = city.founderTeam;
       if (!owner) continue;
+      const warTornPath = city.loyalty > REBELLION_LOYALTY_THRESHOLD;
+      if (warTornPath && (city.loyalty >= 40 || city.devastation < 70)) {
+        this.restorationBlock("忠诚度高于叛乱门槛且无战乱旧地机会"); continue;
+      }
+      const ownerStability = getFactionStability(owner) ?? 100;
+      // High-loyalty cities never enter the original revolt/new-rebel path.
+      const warEvidence = warTornPath && city.loyalty < 40 && city.devastation >= 70
+        ? getWarTornCityEvidence(city, year, ownerStability) : undefined;
+      if (warTornPath && !warEvidence?.eligible) {
+        this.restorationBlock("忠诚度高于叛乱门槛且无战乱旧地机会"); continue;
+      }
+      if (warTornPath) diagnostics.warTornCityChecks++; else diagnostics.lowLoyaltyCityChecks++;
+      const cityBlocks: string[] = [];
+      if (city.isInCaptureGrace(year)) cityBlocks.push("占领保护期");
+      const lastRebellionYear = this.cityRebellionYears[city.id];
+      if (lastRebellionYear !== undefined && year - lastRebellionYear < REBELLION_CITY_COOLDOWN_MONTHS) cityBlocks.push("城市叛乱冷却");
+      if (cityBlocks.length) { this.restorationBlocks(cityBlocks); continue; }
+
       const historical: Array<{ team: Team; basis: RestorationBasis; heldMonths: number; chance: number }> = [];
       if (exiled.length) {
         const rules = deriveHistoricalCityRules(city, year, formalMonths);
         if (!rules) this.restorationBlock("城市历史不足或矛盾");
         for (const rule of rules ?? []) {
           const team = teamsById.get(rule.factionId);
-          if (!team || team === owner || team === founder || team.status !== "EXILED") continue;
+          if (!team || team === owner || (!warTornPath && team === founder) || team.status !== "EXILED") continue;
           const basis = getHistoricalRestorationBasis(rule);
           if (!basis) { this.restorationBlock("历史统治不足期限"); continue; }
           if (basis === "FORMER_CAPITAL") diagnostics.formerCapitalCandidates++; else diagnostics.longRuleCandidates++;
+          diagnostics.historicalCandidates++;
           const exile = WorldExiles.get(team.name);
-          if (!exile || exile.legitimacy <= 0 || (WorldRemnants.get(team.name)?.population ?? 0) <= 0 || !FactionRegistry.canRestoreFaction(team) || team.terminationReason) {
-            this.restorationBlock("残部、合法继统或流亡资格不足"); continue;
-          }
+          const blocks: string[] = [];
+          if (!exile || exile.legitimacy <= 0) blocks.push("流亡合法性不足");
+          if ((WorldRemnants.get(team.name)?.population ?? 0) <= 0) blocks.push("残部耗尽");
+          if (!DynastyRegistry.hasClaimant(team.name)) blocks.push("无合法继统者");
+          if (team.terminationReason || !exile) blocks.push("流亡政治资格不足");
+          if (blocks.length) { this.restorationBlocks(blocks); continue; }
+          if (!FactionRegistry.canRestoreFaction(team)) { this.restorationBlock("政治恢复资格不足"); continue; }
+          if (warTornPath) diagnostics.warTornEligible++;
           historical.push({ team, basis, heldMonths: rule.heldMonths, chance: 0 });
           diagnostics.eligibleChecks++;
           if (basis === "FORMER_CAPITAL") diagnostics.capitalEligible++; else diagnostics.longRuleEligible++;
         }
       }
-      const originalPath = Boolean(founder && city.ownerFactionId !== city.founderFactionId);
+      const originalPath = !warTornPath && Boolean(founder && city.ownerFactionId !== city.founderFactionId);
       if (!originalPath && !historical.length) continue;
-      const ownerStability = getFactionStability(owner) ?? 100;
-      const loyaltyPressure =
+      const loyaltyPressure = warTornPath ? 0 :
         (REBELLION_LOYALTY_THRESHOLD - city.loyalty) /
         REBELLION_LOYALTY_THRESHOLD;
       const instabilityBonus = (100 - ownerStability) / 100;
@@ -835,7 +848,10 @@ export default class WorldEventSystem {
         const exile = WorldExiles.get(row.team.name)!;
         const base = REBELLION_BASE_CHANCE * loyaltyPressure * (1 + instabilityBonus) * (exile.legitimacy / 100) *
           getRestorationWeightMultiplier(row.team.sovereigntyRank) * FactionEffects.getRebellionRiskMultiplier(owner.name) * cycleMultiplier;
-        row.chance = historicalRestorationChance(base, row.basis, row.heldMonths, year - exile.startedMonth);
+        row.chance = warTornPath ? warTornRestorationChance({ loyalty: city.loyalty, devastation: city.devastation,
+          ownerStability, recentTransfers: warEvidence!.recentTransfers, basis: row.basis, heldMonths: row.heldMonths,
+          legitimacy: exile.legitimacy, exileMonths: year - exile.startedMonth }) :
+          historicalRestorationChance(base, row.basis, row.heldMonths, year - exile.startedMonth);
       }
       const draw = worldRandom.next();
       if (historical.length) {
@@ -848,17 +864,18 @@ export default class WorldEventSystem {
         if (row) {
           diagnostics.attempts++;
           const population = WorldRemnants.get(row.team.name)?.population ?? 0;
-          if (FactionRegistry.restoreFaction(row.team, city, year, population, "RESTORATION", { basis: row.basis, heldMonths: row.heldMonths })) {
+          if (FactionRegistry.restoreFaction(row.team, city, year, population, "RESTORATION", { basis: row.basis, heldMonths: row.heldMonths, ...(warTornPath ? { trigger: "WAR_TORN_HISTORICAL_CITY" as const } : {}) })) {
             WorldRemnants.consume(row.team.name, population);
             diagnostics.successes++;
+            if (warTornPath) diagnostics.warTornSuccesses++;
             if (row.basis === "FORMER_CAPITAL") diagnostics.capitalSuccesses++; else diagnostics.longRuleSuccesses++;
             this.cityRebellionYears[city.id] = year; return;
           }
-          this.restorationBlock("执行未成功"); continue;
+          diagnostics.failures++; this.restorationBlock("执行未成功"); continue;
         }
         // The selected legacy slot retains its original execution chain and random draw.
       } else if (draw > chance) continue;
-      if (!founder) continue;
+      if (warTornPath || !founder) continue;
 
       if (!founder.isDie) {
         if (city.revoltTo(founder, year)) {
@@ -881,6 +898,7 @@ export default class WorldEventSystem {
           this.cityRebellionYears[city.id] = year;
           return;
         }
+        diagnostics.failures++; this.restorationBlock("建城者恢复执行未成功");
       }
 
       if (

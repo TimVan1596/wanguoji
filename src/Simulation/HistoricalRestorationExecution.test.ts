@@ -194,3 +194,102 @@ describe("真实世界事件系统→城市政治恢复→人物与历史", () =
   });
 
 });
+
+
+describe("战乱旧地真实执行与流亡终局", () => {
+  it.each(["capital", "territory"])("忠诚33、破坏94的%s历史资格进入独立风险且只恢复一次", async basis => {
+    const f = await fixture(basis); f.city.loyalty = 33; f.city.devastation = 94;
+    const next = vi.spyOn(worldRandom, "next").mockReturnValue(.0001);
+    check(f); check(f, 492);
+    expect(f.candidate.status).toBe("ACTIVE"); expect(f.candidate.restorationYears).toEqual([480]);
+    expect(WorldHistory.getEvents().filter(e => e.type === "faction-restored")).toHaveLength(1);
+    expect(WorldHistory.getEvents().find(e => e.type === "faction-restored")?.metadata?.restorationTrigger).toBe("WAR_TORN_HISTORICAL_CITY");
+    expect(f.candidate.users.size).toBe(3); expect(WorldRemnants.get("old")).toBeUndefined();
+    expect(next).toHaveBeenCalledTimes(4); // one decision plus the existing three population-spawn draws
+    expect(f.system.getRestorationDiagnostics()).toContain("实际复国：1次（战乱旧地1次）");
+  });
+  it.each(["no-exile", "no-history", "no-remnants", "no-legitimacy", "no-claimant", "peace", "low-damage", "expired-transfers", "grace", "cooldown", "EXTINCT", "MERGED", "SUBMITTED"])("战乱分支拒绝%s，不产生额外抽签与人口", async gate => {
+    const f = await fixture(); f.city.loyalty = 33; f.city.devastation = 94;
+    if (gate === "no-exile") f.candidate.status = "ACTIVE";
+    if (gate === "no-history") f.city.history = [];
+    if (gate === "no-remnants") WorldRemnants.consume("old", 3);
+    if (gate === "no-legitimacy") WorldExiles.get("old")!.legitimacy = 0;
+    if (gate === "no-claimant") { DynastyRegistry.get("old")!.currentRulerId = null; DynastyRegistry.get("old")!.heirIds = []; }
+    if (gate === "low-damage") f.city.devastation = 69;
+    if (gate === "peace" || gate === "expired-transfers") f.owner.cities.push({ loyalty: 100, destroyed: true });
+    if (gate === "grace") f.city.isInCaptureGrace = () => true;
+    if (gate === "cooldown") (f.system as any).cityRebellionYears.city = 470;
+    if (["EXTINCT", "MERGED", "SUBMITTED"].includes(gate)) { f.candidate.status = "EXTINCT"; f.candidate.terminationReason = gate; }
+    const next = vi.spyOn(worldRandom, "next").mockReturnValue(.0001); check(f);
+    expect(next).not.toHaveBeenCalled(); expect(f.city.ownerFactionId).toBe("owner");
+    expect(WorldHistory.getEvents().some(e => e.type === "faction-restored")).toBe(false);
+  });
+  it("同项与多项资格阻断分别计数，失败抽签不扣残部", async () => {
+    const f = await fixture(); f.city.loyalty = 33; f.city.devastation = 94;
+    WorldExiles.get("old")!.legitimacy = 0; WorldRemnants.consume("old", 3);
+    check(f); const d = (f.system as any).restorationDiagnostics;
+    expect(d.blockers["流亡合法性不足"]).toBe(1); expect(d.blockers["残部耗尽"]).toBe(1);
+    expect(d.soleBlockers["残部耗尽"]).toBeUndefined();
+    WorldExiles.get("old")!.legitimacy = 80; WorldRemnants.add("old", 3, 400);
+    vi.spyOn(worldRandom, "next").mockReturnValue(.9); check(f, 492);
+    expect(WorldRemnants.get("old")?.population).toBe(3); expect(d.attempts).toBe(0);
+  });
+  it("月度推进终结双零流亡，仍有亲属不能制造死亡，重复推进只记一次", async () => {
+    const f = await fixture(); const ruler = DynastyRegistry.getCurrentRuler("old")!;
+    const { default: Team } = await vi.importActual<typeof import("../Components/Team")>("../Components/Team");
+    f.candidate.markExtinct = Team.prototype.markExtinct; f.founder.markExtinct = Team.prototype.markExtinct;
+    WorldRemnants.consume("old", 3); WorldExiles.get("old")!.legitimacy = 0;
+    expect(DynastyRegistry.hasClaimant("old")).toBe(true);
+    const next = vi.spyOn(worldRandom, "next"); WorldExiles.update(401, f.teams); WorldExiles.update(402, f.teams);
+    expect(next).not.toHaveBeenCalled(); expect(f.candidate.status).toBe("EXTINCT");
+    expect(ruler.status).toBe("politically-ended"); expect(ruler.deathMonth).toBeUndefined(); expect(ruler.deathReason).toBeUndefined();
+    expect(ruler.posthumousEpithet).toBeUndefined(); expect(ruler.templeName).toBeUndefined();
+    expect(DynastyRegistry.hasClaimant("old")).toBe(false);
+    expect(WorldHistory.getEvents().filter(e => e.type === "faction-extinct" && e.targetFactionId === "old")).toHaveLength(1);
+    expect(WorldExiles.getDiagnostics().politicalEnds).toBe(2); // both actual zero-resource exiles in this fixture
+    expect(DynastyRegistry.get("old")!.rulers).toContain(ruler);
+  });
+  it.each(["remnants", "legitimacy"])("只有%s归零暂不扩大终结", async zero => {
+    const f = await fixture(); const { default: Team } = await vi.importActual<typeof import("../Components/Team")>("../Components/Team");
+    f.founder.markExtinct = Team.prototype.markExtinct;
+    if (zero === "remnants") WorldRemnants.consume("old", 3); else WorldExiles.get("old")!.legitimacy = 0;
+    WorldExiles.update(401, f.teams); expect(f.candidate.status).toBe("EXILED");
+  });
+});
+
+
+describe("战乱路径种子对照与只读观测", () => {
+  it("四个固定种子的30年年度业务对照可重现，候选不把总风险叠加", async () => {
+    const run = async (seed: string, enabled: boolean, observe: boolean) => {
+      const f = await fixture(); f.city.loyalty = 33; f.city.devastation = enabled ? 94 : 0; worldRandom.initialize(seed);
+      for (let month = 480; month < 840; month += 12) {
+        check(f, month); if (observe) f.system.getRestorationDiagnostics();
+      }
+      const events = WorldHistory.getEvents().filter(e => e.type === "faction-restored");
+      const d = (f.system as any).restorationDiagnostics;
+      return { successes: events.length, qualified: d.warTornEligible, month: events[0]?.year,
+        rng: worldRandom.exportState(), history: WorldHistory.exportState(), dynasty: DynastyRegistry.exportState() };
+    };
+    const results = [];
+    for (const seed of ["restore-j-1", "restore-j-2", "restore-j-3", "restore-j-4"]) {
+      const old = await run(seed, false, false); vi.restoreAllMocks();
+      const current = await run(seed, true, false); vi.restoreAllMocks();
+      expect(await run(seed, true, true)).toEqual(current); vi.restoreAllMocks();
+      expect(old.successes).toBe(0); expect(current.successes).toBeLessThanOrEqual(1);
+      results.push({ seed, 观察年数: 30, 旧机制成功: old.successes, 新机制合格检查: current.qualified,
+        新机制成功: current.successes, 复国月份索引: current.month ?? null });
+    }
+    console.log("战乱旧地受控年度执行对照（无战斗、人口演化、寿命和忠诚度更新，不是自然发生率）", results);
+  });
+  it("近期两次真实易手可以支持高稳定度占领国，但矛盾历史不放行", async () => {
+    const f = await fixture(); f.city.loyalty = 33; f.city.devastation = 94;
+    f.owner.cities.push({ loyalty: 100, destroyed: true });
+    f.city.history.push({ year: 450, type: "captured", title: "易手", previousOwnerFactionId: "owner", newOwnerFactionId: "founder" },
+      { year: 460, type: "captured", title: "易手", previousOwnerFactionId: "founder", newOwnerFactionId: "owner" });
+    f.city.captureCount += 2;
+    const next = vi.spyOn(worldRandom, "next").mockReturnValue(.9); check(f);
+    expect(next).toHaveBeenCalledTimes(1); expect((f.system as any).restorationDiagnostics.warTornEligible).toBe(1);
+    f.city.history[4].previousOwnerFactionId = "unknown"; next.mockClear(); check(f, 492);
+    expect(next).not.toHaveBeenCalled(); expect(f.city.ownerFactionId).toBe("owner");
+  });
+});

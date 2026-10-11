@@ -39,7 +39,8 @@ export function decayRemnantPopulation(remnantPopulation: number) {
 export function shouldExileBecomeExtinct(
   remnantPopulation: number,
   legitimacy: number,
-  hasClaimant: boolean
+  _hasClaimant: boolean
 ) {
-  return remnantPopulation <= 0 && legitimacy <= 0 && !hasClaimant;
+  // Family survival does not preserve an independent polity with neither political resource.
+  return remnantPopulation <= 0 && legitimacy <= 0;
 }

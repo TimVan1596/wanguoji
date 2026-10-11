@@ -30,7 +30,7 @@ describe("exile rules", () => {
   it("marks the final claimant line as extinct when no remnants and no claimant remain", () => {
     expect(shouldExileBecomeExtinct(0, 0, false)).toBe(true);
     expect(shouldExileBecomeExtinct(1, 0, false)).toBe(false);
-    expect(shouldExileBecomeExtinct(0, 0, true)).toBe(false);
+    expect(shouldExileBecomeExtinct(0, 0, true)).toBe(true);
   });
 
   it("reduces remnant population slowly", () => {

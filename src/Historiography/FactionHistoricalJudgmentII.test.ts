@@ -99,8 +99,8 @@ describe('personalized judgments from factual chains, not random synonym variant
     expect(assess(restored)).toEqual(assess(c)); expect(worldRandom.exportState()).toEqual(rng); expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(13);
     expect(JSON.stringify({ faction: c.faction, dynasty: c.dynasty, lifetime: c.lifetime, totalWorldBlocks: c.totalWorldBlocks, events: c.events })).toBe(raw);
   });
-  it('a living claimant prevents exile extinction even with no remnants or legitimacy', () => {
-    expect(shouldExileBecomeExtinct(0, 0, true)).toBe(false);
+  it('living relatives do not preserve a polity after both political resources reach zero', () => {
+    expect(shouldExileBecomeExtinct(0, 0, true)).toBe(true);
     expect(shouldExileBecomeExtinct(0, 0, false)).toBe(true);
   });
 });

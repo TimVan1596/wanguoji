@@ -392,7 +392,7 @@ export function formatHistoryEventDescription(
   if (event.type === "faction-restored") {
     const remnantPopulation = event.metadata?.remnantPopulation;
     return remnantPopulation !== undefined
-      ? `${remnantPopulation}名${name(event.actorFactionId)}国残部响应。${event.metadata?.restorationBasis === "FORMER_CAPITAL" ? "复国依据为已记录的正式旧都及历史持有。" : event.metadata?.restorationBasis === "LONG_RULE" ? "复国依据为已记录的长期统治。" : ""}`
+      ? `${remnantPopulation}名${name(event.actorFactionId)}国残部响应。${event.metadata?.restorationBasis === "FORMER_CAPITAL" ? "复国依据为已记录的正式旧都及历史持有。" : event.metadata?.restorationBasis === "LONG_RULE" ? "复国依据为已记录的长期统治。" : ""}${event.metadata?.restorationTrigger === "WAR_TORN_HISTORICAL_CITY" ? "本次恢复发生于具有战争创伤与占领动荡的历史旧地。" : ""}`
       : event.description;
   }
   if (event.type === "empire-split") {

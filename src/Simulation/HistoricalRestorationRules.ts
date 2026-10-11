@@ -65,3 +65,26 @@ export function selectRestorationOpportunity<T>(rows: Array<{ chance: number; va
   for (const row of rows) { point -= row.chance; if (point <= 0 && row.chance > 0) return row.value; }
   return rows[rows.length - 1]?.value;
 }
+
+/** Additional evidence, never a replacement for the validated ownership timeline. */
+export function getWarTornCityEvidence(city: { loyalty: number; devastation: number; history: CityHistoryEvent[] }, worldMonth: number, ownerStability: number) {
+  const recentTransfers = city.history.filter(event =>
+    (event.type === "captured" || event.type === "recovered") && event.year >= worldMonth - 60 && event.year <= worldMonth).length;
+  return { recentTransfers, eligible: city.loyalty > 28 && city.loyalty < 40 && city.devastation >= 70 &&
+    (recentTransfers >= 2 || ownerStability <= 40) };
+}
+
+/** Bounded annual risk, shared by all historical claimants to this city. No RNG here. */
+export function warTornRestorationChance(input: { loyalty: number; devastation: number; ownerStability: number; recentTransfers: number;
+  basis: RestorationBasis; heldMonths: number; legitimacy: number; exileMonths: number }) {
+  if (input.loyalty <= 28 || input.loyalty >= 40 || input.devastation < 70 || input.legitimacy <= 0 ||
+      (input.recentTransfers < 2 && input.ownerStability > 40)) return 0;
+  const clamp = (value: number) => Math.max(0, Math.min(1, value));
+  const loyalty = clamp((40 - input.loyalty) / 12);
+  const damage = clamp((input.devastation - 60) / 40);
+  const unrest = input.recentTransfers >= 2 ? 1 : .75;
+  const instability = .5 + .5 * clamp((100 - input.ownerStability) / 100);
+  const history = (input.basis === "FORMER_CAPITAL" ? 1 : .5) * Math.min(1.25, 1 + Math.max(0, input.heldMonths - 360) / 2400);
+  return Math.min(.03, .03 * loyalty * damage * unrest * instability * history * clamp(input.legitimacy / 100) /
+    (1 + Math.max(0, input.exileMonths) / 600));
+}

@@ -104,6 +104,16 @@ describe("authoritative V13 political termination and actual death", () => {
     expect(JSON.stringify(ruler)).toBe(record); expect(WorldHistory.exportState()).toEqual(history);
     expect(formatRulerAge(ruler.status, 40)).toBe("享年40岁");
   });
+  it("月度双零流亡终结保留已经实际死亡的末君，读取不提前终结", () => {
+    const { team, ruler } = fixture("EXILED", true); ruler.naturalDeathYear = 120;
+    DynastyRegistry.update(120, [team]);
+    const record = JSON.stringify(ruler);
+    WorldExiles.importState([{ factionId: team.name, startedMonth: 0, heirIds: [], remnantPopulation: 0, legitimacy: 0, lastLegitimacyMonth: 120, lastRemnantDecayMonth: 120 }]);
+    expect(team.status).toBe("EXILED"); expect(WorldExiles.getDiagnostics().politicalEnds).toBe(0);
+    WorldExiles.update(121, [team]); WorldExiles.update(122, [team]);
+    expect(team.status).toBe("EXTINCT"); expect(JSON.stringify(ruler)).toBe(record);
+    expect(WorldExiles.getDiagnostics().politicalEnds).toBe(1);
+  });
   it("records an unenthroned candidate's natural death without accession or posthumous titles", () => {
     const { team, heir } = fixture("EXILED", true); heir.naturalDeathYear = 120;
     DynastyRegistry.update(120, [team]);

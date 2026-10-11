@@ -66,7 +66,7 @@ class FactionRegistryStore {
     year: number,
     remnantPopulation: number,
     populationCause: "RESTORATION" | "GOD_ACTION" = "RESTORATION",
-    historicalBasis?: { basis: RestorationBasis; heldMonths: number }
+    historicalBasis?: { basis: RestorationBasis; heldMonths: number; trigger?: "WAR_TORN_HISTORICAL_CITY" }
   ) {
     if (!hasFormalStateIdentity(team)) {
       return false;

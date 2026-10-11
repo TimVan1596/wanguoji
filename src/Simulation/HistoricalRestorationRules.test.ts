@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { deriveHistoricalCityRules, getHistoricalRestorationBasis, historicalRestorationChance, selectRestorationOpportunity } from "./HistoricalRestorationRules";
+import { getWarTornCityEvidence, warTornRestorationChance, deriveHistoricalCityRules, getHistoricalRestorationBasis, historicalRestorationChance, selectRestorationOpportunity } from "./HistoricalRestorationRules";
 import type { CityHistoryEvent } from "../Components/City";
 const formal = new Map([["founder", 0], ["old", 10], ["owner", 0]]);
 const founded: CityHistoryEvent = { year: 0, type: "founded", title: "建城", newOwnerFactionId: "founder" };
@@ -71,5 +71,34 @@ describe("旧都与长期统治地真实历史证据", () => {
     const result = deriveHistoricalCityRules(c, 1200, formal);
     expect(result).toHaveLength(3);
     expect(deriveHistoricalCityRules(JSON.parse(JSON.stringify(c)), 1200, formal)).toEqual(result);
+  });
+});
+
+
+describe("战乱旧地有限复国风险", () => {
+  const base = { loyalty: 33, devastation: 94, ownerStability: 30, recentTransfers: 0,
+    basis: "FORMER_CAPITAL" as const, heldMonths: 390, legitimacy: 80, exileMonths: 80 };
+  it.each([28, 29, 33, 35, 39, 40])("忠诚度%s的边界独立于原低忠诚公式", loyalty => {
+    const chance = warTornRestorationChance({ ...base, loyalty });
+    if (loyalty <= 28 || loyalty >= 40) expect(chance).toBe(0);
+    else { expect(chance).toBeGreaterThan(0); expect(chance).toBeLessThanOrEqual(.03); }
+  });
+  it("严重破坏仍需反复易手或低稳定度，累计易手次数不能代替近期证据", () => {
+    expect(warTornRestorationChance({ ...base, ownerStability: 90 })).toBe(0);
+    expect(warTornRestorationChance({ ...base, ownerStability: 90, recentTransfers: 1 })).toBe(0);
+    expect(warTornRestorationChance({ ...base, ownerStability: 90, recentTransfers: 2 })).toBeGreaterThan(0);
+    expect(warTornRestorationChance({ ...base, devastation: 69 })).toBe(0);
+    const c = { loyalty: 33, devastation: 94, history: [capture(419, "old", "owner"), capture(420, "owner", "old"), capture(480, "old", "owner"), capital(450)] };
+    expect(getWarTornCityEvidence(c, 480, 90)).toEqual({ eligible: true, recentTransfers: 2 });
+    expect(getWarTornCityEvidence(c, 541, 90)).toEqual({ eligible: false, recentTransfers: 0 });
+  });
+  it("合法性、流亡衰减、统治依据和稳定度影响风险，多候选不突破上限", () => {
+    const chance = warTornRestorationChance(base);
+    expect(warTornRestorationChance({ ...base, legitimacy: 0 })).toBe(0);
+    expect(warTornRestorationChance({ ...base, exileMonths: 1200 })).toBeLessThan(chance);
+    expect(warTornRestorationChance({ ...base, basis: "LONG_RULE" })).toBeLessThan(chance);
+    const rows = Array.from({ length: 100 }, (_, value) => ({ chance, value }));
+    expect(selectRestorationOpportunity(rows, .031)).toBeUndefined();
+    expect(warTornRestorationChance(base)).toBe(chance);
   });
 });

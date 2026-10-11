@@ -136,7 +136,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     hydrateWorldSave(core,JSON.parse(JSON.stringify(first)));expect(exportWorldSave(core)).toEqual(first);
     expect(WorldHistory.getEvents().filter(e=>e.type === "faction-merged")).toHaveLength(1);
   });
-  it("真实旧都复国执行后V13导出、严格校验、恢复再导出一致，不回填旧历史", async () => {
+  it.each(["低忠诚旧路径", "战乱旧都", "双零流亡终结"])("%s真实月度执行后V13往返一致，不回填旧历史", async scenario => {
     const { default: RealTeam } = await vi.importActual<typeof import("../Components/Team")>("../Components/Team");
     const { default: RealCity } = await vi.importActual<typeof import("../Components/City")>("../Components/City");
     const { default: WorldRemnants } = await import("../Simulation/WorldRemnants");
@@ -179,18 +179,63 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     ts[1].markExiled(400); DynastyRegistry.markExiled(ts[1], 400);
     WorldRemnants.add("old", 1, 400); WorldExiles.start(ts[1], 400, 1); WorldExiles.get("old")!.legitimacy = 80;
     const rulerId = DynastyRegistry.getCurrentRuler("old")!.id;
-    const runtime = sim as any; runtime.clock.importState({ worldMonth: 480, elapsedMs: 0, running: false });
-    const draw = vi.spyOn(worldRandom, "next").mockReturnValue(.001);
-    runtime.events.checkRestorations(480, ts); draw.mockRestore(); sim.setRunning(false);
-    expect(ts[1].status).toBe("ACTIVE"); expect(cities[0].ownerFactionId).toBe("old"); expect(cells[0].team).toBe(ts[1]);
-    expect(WorldRemnants.get("old")).toBeUndefined(); expect(ts[1].restorationYears).toEqual([480]);
+    const runtime = sim as any;
+    const cityModule = await import("../Components/City");
+    vi.spyOn(cityModule, "getFactionStability").mockImplementation(team => team.cities.length ? Math.round(team.cities.reduce((sum, city) => sum + city.loyalty, 0) / team.cities.length) : undefined);
+    if (scenario === "战乱旧都") { cities[0].loyalty = 33; cities[0].devastation = 94; cities[1].loyalty = 30; }
+    if (scenario === "双零流亡终结") { WorldRemnants.consume("old", 1); WorldExiles.get("old")!.legitimacy = 0; }
+    // Pre-load an old V13 state: hydration must preserve it until the next authoritative month.
+    sim.setRunning(false);
+    runtime.clock.importState({ worldMonth: 479, elapsedMs: 0, running: false });
+    if (scenario === "双零流亡终结") {
+      const before = exportWorldSave(core); expect(validateWorldSave(before)).toEqual({ valid: true, errors: [] });
+      hydrateWorldSave(core, JSON.parse(JSON.stringify(before))); expect(exportWorldSave(core)).toEqual(before);
+      expect(core.teams[1].status).toBe("EXILED");
+      // The hydration adapter uses runtime shells; attach real political lifecycle methods.
+      core.teams.forEach((t: any) => { t.blocks = { children: { entries: [], size: 0 } }; });
+      core.teams[1].markExtinct = RealTeam.prototype.markExtinct;
+      core.teams[1].removeRulerUnit = () => undefined;
+      Object.assign(core.teams[1], { firstFoundedYear: 0, lastExiledYear: 400, cumulativeActiveYears: 400,
+        restorationYears: [], currentActiveSinceYear: 0 });
+      const baseState = core.teams[1].exportState();
+      core.teams[1].exportState = () => ({ ...baseState, status: core.teams[1].status, extinctionMonth: core.teams[1].extinctionYear,
+        terminationReason: core.teams[1].terminationReason });
+    }
+    const monthlySim = core.simulator as AutoSimulator, monthlyRuntime = monthlySim as any;
+    const liveTeams = core.teams;
+    monthlyRuntime.clock.importState({ worldMonth: 479, elapsedMs: 0, running: true });
+    for (const phase of ["observeWorldGoal", "checkStateFormation", "applyProvisionalDissolutionPressure", "checkEmperorProclamation", "checkEmpireSplit", "checkCityFounding", "triggerRandomEvent"])
+      vi.spyOn(monthlyRuntime.events, phase).mockImplementation(() => undefined);
+    vi.spyOn(monthlyRuntime.events, "getCurrentPhase").mockReturnValue("FRAGMENTED");
+    vi.spyOn(monthlyRuntime.population, "update").mockImplementation(() => undefined);
+    vi.spyOn(monthlyRuntime.populationTransitionAudit, "reconcile").mockImplementation(() => undefined);
+    vi.spyOn(monthlyRuntime.diplomacy, "update").mockImplementation(() => undefined);
+    vi.spyOn(DynastyRegistry, "update").mockImplementation(() => undefined);
+    vi.spyOn(WorldEra, "observe").mockImplementation(() => undefined);
+    vi.spyOn(FactionSnapshots, "observe").mockImplementation(() => undefined);
+    vi.spyOn(WorldHistory, "observeWorld").mockImplementation(() => undefined);
+    liveTeams.forEach((t: any) => t.cities.forEach((c: any) => { c.updateDefense = () => undefined; }));
+    const draw = vi.spyOn(worldRandom, "next").mockReturnValue(.0001);
+    monthlySim.setRunning(true);
+    monthlySim.update(WORLD_MONTH_MS, liveTeams, 3); draw.mockRestore(); monthlySim.setRunning(false);
+    if (scenario === "双零流亡终结") {
+      expect(liveTeams[1].status).toBe("EXTINCT");
+      const last = DynastyRegistry.get("old")!.rulers.find(r => r.id === rulerId)!;
+      expect(last.status).toBe("politically-ended"); expect(last.deathMonth).toBeUndefined();
+      expect(DynastyRegistry.hasClaimant("old")).toBe(false);
+      expect(WorldHistory.getEvents().filter(e => e.type === "faction-extinct" && e.targetFactionId === "old")).toHaveLength(1);
+    } else {
+      expect(liveTeams[1].status).toBe("ACTIVE"); expect(cities[0].ownerFactionId).toBe("old"); expect(cells[0].team).toBe(liveTeams[1]);
+      expect(WorldRemnants.get("old")).toBeUndefined(); expect(liveTeams[1].restorationYears).toEqual([480]);
+    }
     const save = exportWorldSave(core); expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
-    const restoration = (save.worldHistory.events as WorldEvent[]).find((e: any) => e.type === "faction-restored")!;
-    expect(restoration.metadata).toMatchObject({ restorationBasis: "FORMER_CAPITAL", historicalHeldMonths: 390, rulerId });
+    const restoration = (save.worldHistory.events as WorldEvent[]).find((e: any) => e.type === "faction-restored");
+    if (scenario !== "双零流亡终结") expect(restoration?.metadata).toMatchObject({ restorationBasis: "FORMER_CAPITAL", historicalHeldMonths: 390, rulerId });
+    if (scenario === "战乱旧都") expect(restoration?.metadata?.restorationTrigger).toBe("WAR_TORN_HISTORICAL_CITY");
     const rng = worldRandom.exportState(); hydrateWorldSave(core, JSON.parse(JSON.stringify(save)));
     expect(exportWorldSave(core)).toEqual(save); expect(worldRandom.exportState()).toEqual(rng);
     hydrateWorldSave(core, JSON.parse(JSON.stringify(save))); expect(exportWorldSave(core)).toEqual(save);
-    expect(WorldHistory.getEvents().filter(e => e.type === "faction-restored")).toHaveLength(1);
+    expect(WorldHistory.getEvents().filter(e => e.type === "faction-restored")).toHaveLength(scenario === "双零流亡终结" ? 0 : 1);
     vi.unstubAllGlobals();
   });
   it("starts the actual seven INITIAL world, exports V13, validates, hydrates twice without household regeneration", () => {

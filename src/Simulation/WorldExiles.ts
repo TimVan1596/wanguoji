@@ -31,9 +31,21 @@ export interface ExileState {
 
 class WorldExileStore {
   private exiles = new Map<string, ExileState>();
+  private observedIds = new Set<string>();
+  private observedOverflow = false;
+  private politicalEnds = 0;
+  private resetObservations() { this.observedIds.clear(); this.observedOverflow = false; this.politicalEnds = 0; }
+  getDiagnostics() {
+    return { currentExiled: this.exiles.size, observedExiled: this.observedIds.size, observedOverflow: this.observedOverflow, politicalEnds: this.politicalEnds };
+  }
+  private observe(factionId: string) {
+    if (this.observedIds.size < 4096 || this.observedIds.has(factionId)) this.observedIds.add(factionId);
+    else this.observedOverflow = true;
+  }
 
   reset() {
     this.exiles.clear();
+    this.resetObservations();
   }
 
   start(team: Team, worldMonth: number, remnantPopulation: number) {
@@ -52,6 +64,7 @@ class WorldExileStore {
       lastRemnantDecayMonth: worldMonth,
     };
     this.exiles.set(team.name, state);
+    this.observe(team.name);
     return state;
   }
 
@@ -68,6 +81,7 @@ class WorldExileStore {
   }
 
   importState(states: ExileState[]) {
+    this.resetObservations();
     this.exiles = new Map(states.map((state) => [state.factionId, { ...state, heirIds: [...state.heirIds] }]));
   }
 
@@ -75,6 +89,7 @@ class WorldExileStore {
     teams
       .filter((team) => team.status === "EXILED")
       .forEach((team) => {
+        this.observe(team.name);
         const remnant = WorldRemnants.get(team.name);
         const state =
           this.exiles.get(team.name) ??
@@ -119,10 +134,11 @@ class WorldExileStore {
           team.markExtinct(worldMonth);
           DynastyRegistry.markExtinct(team, worldMonth);
           this.exiles.delete(team.name);
+          this.politicalEnds++;
           WorldHistory.addFactionExtinct(
             worldMonth,
             team.name,
-            `${team.name}国残部已经消散，王统断绝，${team.name}国彻底灭亡`
+            `${team.name}国残部耗尽、流亡合法性归零，独立王统政治终结`
           );
         }
       });
