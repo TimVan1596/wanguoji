@@ -22,7 +22,7 @@ export function derivePoliticalSuccessionShocks(factionId: string, predecessor: 
   for (const event of events) {
     const month = event.monthIndex ?? event.year;
     if (!event.id || seen.has(event.id) || month !== event.year || !Number.isSafeInteger(month) || month < start || month >= worldMonth ||
-        event.targetFactionId !== factionId || !event.factionIds?.includes(factionId) || !event.actorFactionId || event.actorFactionId === factionId) continue;
+        event.targetFactionId !== factionId || !event.factionIds?.includes(factionId) || !event.actorFactionId || event.actorFactionId === factionId || !event.historyGroupId) continue;
     if (event.type === "capital-fallen" && event.previousOwnerFactionId === factionId && event.cityId && event.cityName && event.metadata?.wasCapital === 1) {
       rows.push({ kind: "CAPITAL_LOSS", eventId: event.id, factionId, predecessorId: predecessor.id, month,
         historyGroupId: event.historyGroupId, cityIds: [event.cityId], cityName: event.cityName, cityNames: [event.cityName] });
@@ -45,10 +45,9 @@ export function selectIndependentPoliticalShocks(shocks: readonly PoliticalSucce
   const valid = shocks.filter(row => row.factionId === factionId && row.predecessorId === predecessor.id &&
     !!row.eventId && !!row.historyGroupId && new Set(row.cityIds).size === row.cityIds.length && Number.isSafeInteger(row.month) && row.month >= Math.max(predecessor.accessionYear ?? worldMonth, worldMonth - 120) && row.month < worldMonth);
   const seenEvents = new Set<string>();
-  const seenKindGroups = new Set<string>();
+  const seenGroups = new Set<string>();
   return valid.filter(row => {
-    const groupKey = `${row.kind}:${row.historyGroupId}`;
-    if (seenEvents.has(row.eventId) || seenKindGroups.has(groupKey)) return false;
-    seenEvents.add(row.eventId); seenKindGroups.add(groupKey); return true;
+    if (seenEvents.has(row.eventId) || seenGroups.has(row.historyGroupId!)) return false;
+    seenEvents.add(row.eventId); seenGroups.add(row.historyGroupId!); return true;
   });
 }

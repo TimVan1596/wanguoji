@@ -14,6 +14,13 @@ describe("夺统事件只用冻结的真实背景", () => {
     expect(text.match(/重大帝国分裂/g)).toHaveLength(1);
     expect(text).not.toMatch(/甲康.*被杀|权臣|将军|拥立|父子|血亲/);
   });
+  it("新证据负载只叙述实际记录的单项失都或分裂", () => {
+    const text = composeRevolutionNarrative({ ...facts, crisisCapitalCityName: undefined, crisisCapitalMonth: undefined,
+      crisisCapitalEventId: undefined, crisisSplitMonth: undefined, crisisSplitEventId: undefined,
+      crisisEvidence: JSON.stringify([{ kind: "EMPIRE_SPLIT", eventId: "split", month: 500, cityIds: ["a", "b"], cityNames: ["甲", "乙"] }]),
+      vulnerabilityEvidence: "RECENT_EMPIRE_SPLIT,LOW_FACTION_STABILITY,POLITICAL_VULNERABILITY", successionReason: "natural" });
+    expect(text).toContain("重大分裂，甲、乙脱离"); expect(text).not.toContain("失去旧都");
+  });
   it.each([["combat", "战死"], ["captured", "被俘处死"], ["natural", "去世"]])("仅真实%s结局支持死亡用语", (reason, label) => {
     expect(composeRevolutionNarrative({ ...facts, successionReason: reason })).toContain(`旧王甲平${label}`);
   });

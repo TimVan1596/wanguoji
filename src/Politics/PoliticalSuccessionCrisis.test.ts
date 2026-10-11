@@ -28,14 +28,20 @@ describe("政治重创继位资格与真实历史证据", () => {
     const result = evaluateDynasticRevolution({ ...onlySplit, stability: 40, cityCount: 4 }, () => .5);
     expect(result).toMatchObject({ riskTier: "POLITICAL_SHOCK", chance: .03, rollAttempted: true });
     const duplicate = context([split(), { ...split(), id: "split-copy" }]);
-    expect(duplicate.politicalShocks).toHaveLength(1);
+    expect(evaluateDynasticRevolution({ ...duplicate, stability: 40, cityCount: 4 }, () => .5).politicalShocks).toHaveLength(1);
     expect(evaluateDynasticRevolution({ ...duplicate, stability: 40, cityCount: 4 }, () => .5).chance).toBe(.03);
+  });
+  it("同一历史事件组中的失都和分裂只贡献一个严重冲击", () => {
+    const events = [capital(), split()]; events[1].historyGroupId = "battle";
+    const result = evaluateDynasticRevolution({ ...context(events), cityCount: 2, stability: 50 }, () => .99);
+    expect(result.politicalShocks).toHaveLength(1);
+    expect(result.chance).toBe(.03);
   });
   it("区分2%至6%分层风险，单次概率不替代资格次数", () => {
     const input = context();
     const mild = evaluateDynasticRevolution({ ...input, cityCount: 4, stability: 55 }, () => .99);
-    const strong = evaluateDynasticRevolution({ ...input, cityCount: 2, stability: 40, successor: { ...input.successor!, bornYear: 500 } }, () => .99);
-    expect(mild.chance).toBe(.04);
+    const strong = evaluateDynasticRevolution({ ...input, cityCount: 2, stability: 40, successionReason: "combat" }, () => .99);
+    expect(mild.chance).toBe(.03);
     expect(strong.chance).toBe(.06);
     expect(mild.rollAttempted).toBe(true); expect(strong.rollAttempted).toBe(true);
   });
@@ -54,7 +60,7 @@ describe("政治重创继位资格与真实历史证据", () => {
     if (flaw === "one-split-city") event.metadata = { parentFactionId: "state", foundingCityIds: "a", splitCityCount: 1 };
     expect(derivePoliticalSuccessionShocks("state", predecessor, 600, [event])).toEqual([]);
   });
-  it.each([{ stability: 61 }, { cityCount: 5 }, { cityCount: 8, stability: 30 }, { cityCount: 5, stability: 80 }])("现实脆弱性不足时不因重大冲击单独抽签：%j", change => {
+  it.each([{ stability: 61 }, { cityCount: 5 }, { cityCount: 8, stability: 80 }, { cityCount: 5, stability: 80 }])("现实脆弱性不足时不因重大冲击单独抽签：%j", change => {
     const draw = vi.fn(() => 0), input = { ...context([capital()]), ...change };
     expect(evaluateDynasticRevolution(input, draw).rollAttempted).toBe(false); expect(draw).not.toHaveBeenCalled();
   });
@@ -64,7 +70,7 @@ describe("政治重创继位资格与真实历史证据", () => {
   });
   it("前君战死/被俘可以独立作为真实严重冲击，但必须仍有脆弱性", () => {
     const base = context([]);
-    expect(evaluateDynasticRevolution({ ...base, successionReason: "combat", cityCount: 3, stability: 50 }, () => .99).chance).toBe(.03);
+    expect(evaluateDynasticRevolution({ ...base, successionReason: "combat", cityCount: 2, stability: 50 }, () => .99).chance).toBe(.03);
     const draw = vi.fn(() => 0);
     expect(evaluateDynasticRevolution({ ...base, successionReason: "captured", cityCount: 6, stability: 80 }, draw).rollAttempted).toBe(false);
     expect(draw).not.toHaveBeenCalled();
