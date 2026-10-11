@@ -39,7 +39,7 @@ export function deriveChronicleArguments(f: FactionHistoricalEvidence, events: r
   if (f.ending === "MERGED" && f.targetFactionId) {
     const former = attacks.find(e => e.targetFactionId === f.targetFactionId && e.month < end);
     if (former) add("FORMER_OPPONENT_UNION", 130, [former, ...terminal], ["terminationTargetFactionId"], [end],
-      `${former.factionName}昔曾攻取${former.targetName ?? "对方"}都${former.cityName ?? "城邑"}，${historianSpan(end - former.month)}之后，却以同源合邦并入${f.targetName}。前者是攻守胜负，后者是独立建制的合流；曾经的进取与后来的并入，写在同一国史中，政治分合终非一场战事便能定下。`);
+      `${former.factionName}昔曾攻取${former.targetName ?? "对方"}都${former.cityName ?? "城邑"}，${historianSpan(end - former.month)}之后，却以同源合邦并入${f.targetName ?? "该政权"}。前者是攻守胜负，后者是独立建制的合流；曾经的进取与后来的并入，写在同一国史中，政治分合终非一场战事便能定下。`);
   }
   const splits = events.filter(e => e.type === "empire-split" && e.factionRole === "TARGET");
   // Only directly related splits in three successive calendar years form this contrast.
@@ -55,7 +55,7 @@ export function deriveChronicleArguments(f: FactionHistoricalEvidence, events: r
   if (!political && loss && peak.value > 0 && f.peakAbsoluteWorldShare >= .25 && peak.month < loss.month) {
     const share = f.peakAbsoluteWorldShare >= .5 ? historianTerritory(f.peakAbsoluteWorldShare) : `天下${historianNumber(Math.floor(f.peakAbsoluteWorldShare * 10))}成${Math.abs(f.peakAbsoluteWorldShare * 10 - Math.floor(f.peakAbsoluteWorldShare * 10)) < 1e-9 ? "" : "有余"}`;
     add("PEAK_LAND_AND_EXILE", 120, [loss], ["lifetime.peakTerritoryBlocks", "totalWorldBlocks", "endMonth"], [peak.month, end],
-      `盛时曾据${share}，从记录的疆域之峰到${loss.cityName ?? "最后据点"}失守，相距${historianSpan(loss.month - peak.month)}。城土尽失${end > loss.month ? `后，王统仍无土而续${historianSpan(end - loss.month)}` : "与政治终结同在一月"}；拓土之盛与传位之久，原是不同的历史尺度。${f.terminal ? "其国的终篇，既有疆域的丧失，也有土地之外仍延续的承统。" : "流亡尚未成为终篇，昔日强盛与今日无土的对照，仍是截至此时的处境。"}`);
+      `盛时曾据${share}，从记录的疆域之峰到${loss.cityName ?? "最后据点"}失守，相距${loss.month - peak.month < 600 && loss.month - peak.month >= 480 ? "不足五十年" : historianSpan(loss.month - peak.month)}。城土尽失${end > loss.month ? `后，王统仍无土而续${historianSpan(end - loss.month)}` : "与政治终结同在一月"}；拓土之盛与传位之久，原是不同的历史尺度。${f.terminal ? "其国的终篇，既有疆域的丧失，也有土地之外仍延续的承统。" : "流亡尚未成为终篇，昔日强盛与今日无土的对照，仍是截至此时的处境。"}`);
   }
   if (attack && defense && !political) add("ATTACK_DEFENSE_REVERSAL", 112, [attack, defense], [], [],
     `${attack.rulerName ?? attack.factionName}曾攻取${attack.targetName ?? "他国"}都${attack.cityName ?? ""}，${historianSpan(defense.month - attack.month)}后，己都${defense.cityName ?? ""}又失于${defense.actorName ?? "他国"}。进兵所得与守城所失，使攻守两面在此倒转；能取人之都，并不等于能长守己都。${loss && loss.month > defense.month ? `但失都之后，国家至${loss.cityName ?? "最后据点"}再失才转入流亡，前后仍有另一段承续。` : ""}`);
@@ -68,7 +68,7 @@ export function deriveChronicleArguments(f: FactionHistoricalEvidence, events: r
     f.ending === "MERGED" ? `${f.name}曾有独立建制，至终局并入${f.targetName ?? "同源政权"}。合邦所结束的是独立承统，所治城土则转入另一政权；这一结局属于政治合流，与失城流亡的覆灭有别。`
       : `${f.name}以纳土归附${f.targetName ?? "接受国"}结束独立建制，末君以退位收束任期。城土与统治权一同转出，末君退位与国家归附构成同一场政治退场。和平纳土，留下的是与兵争绝统不同的终篇。`);
   if (phases.length > 1) add("HOUSE_CONTINUITY", 90, usurps, ["houseEpochs"], phases.map(p => p.startMonth),
-    `一国先后历${historianNumber(phases.length)}段王统，${usurps.length ? "其中确有篡朝夺统，" : "自然承继与政治阶段的变化，"}家姓的传承与国家的延续并非一事。${last?.houseName ?? "后起王统"}承接的是前代已经展开的国家历史${f.terminal ? "，终局亦为各段承统共同的收束。" : "，截至此时仍在续写，而非另起一部与前代无关的国史。"}`);
+    `一国先后历${historianNumber(phases.length)}段王统，${phases.some(p => p.usurpationProven) ? "其中确有篡朝夺统，" : "自然承继与政治阶段的变化，"}家姓的传承与国家的延续并非一事。${last?.houseName ?? "后起王统"}承接的是前代已经展开的国家历史${f.terminal ? "，终局亦为各段承统共同的收束。" : "，截至此时仍在续写，而非另起一部与前代无关的国史。"}`);
   if (loss && !political) add("EXILE_CONTINUITY", 85, [loss], ["endMonth"], [end],
     `${loss.factionName}失${loss.cityName ?? "最后据点"}，城池已无，承统${end > loss.month ? `却仍延续${historianSpan(end - loss.month)}` : "亦于同月终结"}。${f.terminal ? "失国与政治终结各有其时；流亡所留下的，是土地丧失之后仍未立即结束的一段国史。" : "失国尚不是这部历史的终篇；如今延续的是流亡王统，而非在国治理。"}`);
   if (!out.length) add("LIMITED_RECORD", 10, [], ["formal", "houseEpochs"], [f.foundedMonth, end],

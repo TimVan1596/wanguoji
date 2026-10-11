@@ -35,7 +35,7 @@ export function buildUnifiedFactionChronicle(c: UnifiedChronicleContext): Unifie
     ["rebel-faction-founded", "frontier-faction-founded", "empire-split"].includes(e.type));
   const splitOrigin = events.some(e => e.type === "empire-split" && e.factionRole === "ACTOR" && e.month === fact.foundedMonth);
   const originCity = founding?.cityName ?? (founding ? meta(founding, "splitCoreCityName") : undefined);
-  add("origin", fact.foundedMonth, 100, `${fact.foundedName}${originCity ? `于${originCity}` : ""}${splitOrigin ? "建立于政权分裂之际" : "建立"}${first?.startMonth === fact.foundedMonth && first.founderName ? `，${reference(first.founderId, first.startMonth, first.founderName)}开创${first.houseName}王统` : ""}`, true, 0, "ORIGIN");
+  add(founding?.eventId ?? "origin", fact.foundedMonth, 100, `${fact.foundedName}${splitOrigin ? "在政权分裂之际" : ""}${originCity ? `于${originCity}` : ""}建立${first?.startMonth === fact.foundedMonth && first.founderName ? `，${reference(first.founderId, first.startMonth, first.founderName)}开创${first.houseName}王统` : ""}`, true, 0, "ORIGIN");
   const state = events.find(e => e.type === "state-founded" && e.factionRole === "ACTOR" && e.month === fact.stateFoundedMonth);
   if (fact.formal) {
     const holders = c.dynasty?.rulers.filter(r => phases.some(p => p.rulerIds.includes(r.id)) && r.accessionYear !== undefined && r.accessionYear <= fact.stateFoundedMonth! && (r.endYear ?? end) >= fact.stateFoundedMonth!) ?? [];

@@ -139,3 +139,111 @@ describe("unified factual chronicle", () => {
     expect(buildUnifiedFactionChronicle(restored)).toEqual(first); expect(JSON.stringify(c)).toBe(before); expect(worldRandom.exportState()).toEqual(rng); expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(13);
   });
 });
+
+describe("chronicle chapters, attributed names and evidence-bearing judgment", () => {
+  const prose = (a: ReturnType<typeof build>) => a.paragraphs.slice(0, -1).join("");
+  it("groups the Yi onset, prosperity and exile into phases, then judges the real peak/loss/continuity chain", () => {
+    const c = fixture(), a = build(c);
+    expect(a.paragraphs.length).toBeGreaterThanOrEqual(4);
+    expect(a.paragraphs[0]).toContain("154年1月"); expect(a.paragraphs[0]).toContain("186年2月");
+    expect(a.paragraphs.at(-1)).toBe(a.argument!.text); expect(a.argument!.key).toBe("PEAK_LAND_AND_EXILE");
+    expect(a.argument!.months).toEqual([month(493, 10), month(542, 5), month(583, 6)]);
+    expect(a.argument!.eventIds).toEqual(["exile"]); expect(a.argument!.metricKeys).toContain("lifetime.peakTerritoryBlocks");
+    expect(a.argument!.text).toContain("不足五十年"); expect(a.argument!.text).toContain("四十余载");
+    expect(a.argument!.text).not.toMatch(/%|\d+年\d+月|归责末君|构成其可核实/);
+    const dates = [...prose(a).matchAll(/(\d+)年(\d+)月/g)].map(m => month(Number(m[1]), Number(m[2])));
+    expect(dates).toEqual([...dates].sort((a, b) => a - b));
+  });
+  it("judges a long natural house and same-month political closure differently from a peak/exile history", () => {
+    const c = fixture(); const last = c.dynasty.rulers[17]; last.houseName = "钱氏"; last.givenName = "翊";
+    last.accessionYear = month(583, 6); last.status = "politically-ended"; last.deathMonth = undefined; last.deathReason = undefined;
+    c.dynasty.houseEpochs![0].endMonth = month(583, 6) - 1;
+    c.dynasty.houseEpochs!.push({ houseName: "钱氏", startMonth: month(583, 6), foundingRulerId: "last", startReason: "NATURAL_HOUSE_SUCCESSION" });
+    const a = build(c); expect(a.argument!.key).toBe("LONG_HOUSE_SAME_MONTH_END");
+    expect(a.paragraphs.at(-1)).toContain("钱翊自然接统"); expect(a.paragraphs.at(-1)).not.toContain("篡朝");
+    expect(prose(a)).toMatch(/583年6月，[^。]*钱翊自然易姓续统；[^。]*政权彻底终结/);
+    expect(prose(a)).not.toMatch(/0个月|同月.*同月|钱翊.*实际去世/);
+  });
+  function activeSplits() {
+    const c = fixture(); c.faction.status = "ACTIVE"; c.faction.terminationMonth = undefined; c.lifetime.terminal = undefined;
+    c.worldMonth = month(4000); c.lifetime.lastObservedMonth = c.worldMonth;
+    c.dynasty.rulers.push({ ...ruler("usurper", "王氏", "玄平", month(3365, 5), month(3400), 19), relationType: "USURPER" }, ruler("now", "王氏", "君安", month(3400), undefined, 20));
+    c.dynasty.currentRulerId = "now"; c.dynasty.houseEpochs![0].endMonth = month(3365, 5) - 1;
+    c.dynasty.houseEpochs!.push({ houseName: "王氏", startMonth: month(3365, 5), foundingRulerId: "usurper", startReason: "USURPATION" });
+    c.events = [2391, 2392, 2393].map(y => event(`split-${y}`, "empire-split", month(y), { actorFactionId: "other", targetFactionId: "f" }));
+    c.events = [...c.events, event("usurp", "dynasty-usurped", month(3365, 5), { rulerId: "usurper" })]; return c;
+  }
+  it("uses directly related successive splits and later verified usurpation for a living nation's provisional judgment", () => {
+    const c = activeSplits(), a = build(c);
+    expect(a.argument!.key).toBe("SPLITS_AND_LATER_USURPATION"); expect(a.argument!.eventIds).toEqual(["split-2391", "split-2392", "split-2393", "usurp"]);
+    for (const y of [2391, 2392, 2393]) expect(prose(a)).toContain(`${y}年1月`);
+    expect(prose(a)).toContain("王玄平篡朝"); expect(prose(a)).toContain("王君安承统");
+    expect(a.paragraphs.at(-1)).toContain("仍延续"); expect(a.paragraphs.at(-1)).not.toMatch(/终于|亡国|必将|导致|绝统/);
+  });
+  it("does not turn contemporary foreign splits into pressure or a cause of the nation's usurpation", () => {
+    const c = activeSplits(); c.events = c.events.map(e => e.type === "empire-split" ? { ...e, targetFactionId: "foreign", factionIds: ["f", "foreign"] } : e);
+    const a = build(c); expect(a.argument!.key).not.toBe("SPLITS_AND_LATER_USURPATION"); expect(prose(a)).not.toContain("2391年");
+    expect(a.paragraphs.join("")).not.toMatch(/外部压力|导致篡朝|遭三次分裂/);
+  });
+  it("merges a real founding/split group only once and preserves a distinct same-month political fact", () => {
+    const c = fixture(); c.events = [...c.events, event("found", "rebel-faction-founded", month(154), { historyGroupId: "founding", cityName: "临沂" }),
+      event("split", "empire-split", month(154), { targetFactionId: "parent", historyGroupId: "founding" }),
+      event("crown", "emperor-proclaimed", month(154), { rulerId: "founder", historyGroupId: "separate" })];
+    const s = prose(build(c)); expect((s.match(/临沂义军[^。]*建立/g) ?? [])).toHaveLength(1);
+    expect(s).toContain("在政权分裂之际于临沂建立"); expect(s).toContain("称帝"); expect(s).not.toMatch(/同月.*同月/);
+  });
+  it.each(["去世", "战死", "被俘处死"] as const)("uses the actual %s record and explicitly retrospective recorded titles", reason => {
+    const c = fixture(); Object.assign(c.dynasty.rulers[17], { deathReason: reason, templeName: "思宗", posthumousEpithet: "愍" });
+    const s = prose(build(c)); expect(s).toContain("沂王宋景怀（后谥愍，后世庙号思宗）");
+    expect(s).toContain(reason === "去世" ? "宋景怀实际去世" : `宋景怀${reason}`);
+    expect(s).not.toContain("沂愍王宋景怀亲征"); expect((s.match(/后谥愍/g) ?? [])).toHaveLength(1);
+  });
+  it("does not borrow a living ruler's invalid future epithet or invent one for a ruler without an award", () => {
+    const c = activeSplits(); Object.assign(c.dynasty.rulers.at(-1)!, { templeName: "太宗", posthumousEpithet: "武", naturalDeathYear: month(4100) });
+    const s = prose(build(c)); expect(s).not.toMatch(/太宗|后谥武|武王/); expect(s).toContain("王君安承统");
+    Object.assign(c.dynasty.rulers.at(-1)!, { deathMonth: month(4100), deathReason: "去世" });
+    expect(prose(build(c))).not.toContain("后谥武");
+  });
+  it("does not use titles or actual death language for political end with unknown life status", () => {
+    const c = fixture(); Object.assign(c.dynasty.rulers[17], { status: "politically-ended", deathMonth: undefined, deathReason: undefined, templeName: "思宗", posthumousEpithet: "愍" });
+    expect(prose(build(c))).not.toMatch(/后谥|后世庙号|实际去世|战死|被俘处死/);
+  });
+  it("keeps a verified foreign siege actor and historical rank, without attributing a foreign person to this dynasty", () => {
+    const c = fixture(); const foreign = ruler("foreign-r", "嬴氏", "康", month(530), month(550), 1);
+    Object.assign(foreign, { status: "dead", deathMonth: month(550), deathReason: "战死", posthumousEpithet: "武" });
+    c.factions = new Map([...c.factions, ["enemy", { ...c.faction, name: "enemy", nameHistory: [{ name: "秦", startMonth: 0 }], sovereigntyHistory: [{ rank: "KING", startMonth: 0 }] }]]);
+    c.resolveRuler = (id, faction) => id === foreign.id && faction === "enemy" ? foreign : undefined;
+    c.events = c.events.map(e => e.id === "capture" ? { ...e, rulerId: foreign.id } : e);
+    const a = build(c); expect(prose(a)).toContain("秦王嬴康（后谥武）亲征"); expect(prose(a)).not.toContain("沂王嬴康");
+    foreign.accessionYear = month(543); expect(prose(build(c))).not.toContain("嬴康");
+  });
+  it("retains a real restoration in the narrative and judges restored rule, not recovery of a capital", () => {
+    const c = fixture(); c.lifetime.peakTerritoryBlocks.value = 0;
+    c.events = [...c.events, event("restore", "faction-restored", month(560), { cityName: "郢" })];
+    const a = build(c); expect(a.argument!.key).toBe("REAL_RESTORATION"); expect(a.argument!.eventIds).toEqual(["restore"]);
+    expect(prose(a)).toContain("于郢复国"); expect(a.paragraphs.at(-1)).toContain("从流亡回到在国承统");
+    c.events = c.events.map(e => e.id === "restore" ? { ...e, type: "city-recovered" as const } : e);
+    expect(build(c).argument!.key).not.toBe("REAL_RESTORATION");
+  });
+  it.each(["MERGED", "SUBMITTED"] as const)("does not turn %s into warfare or death even with earlier lost capitals", reason => {
+    const c = fixture(); c.faction.terminationReason = reason; c.faction.terminationTargetFactionId = "target";
+    c.factions = new Map([...c.factions, ["target", { ...c.faction, name: "target", nameHistory: [{ name: "董", startMonth: 0 }] }]]);
+    Object.assign(c.dynasty.rulers[17], { status: "abdicated", deathMonth: undefined, deathReason: undefined });
+    const a = build(c); expect(a.argument!.key).toBe(reason); expect(a.paragraphs.at(-1)).not.toMatch(/战败|被杀|流亡所留下|无土而续/);
+    expect(prose(a)).not.toContain("实际去世"); expect(prose(a)).toContain(reason === "MERGED" ? "同源合邦" : "纳土归附");
+  });
+  it("derives meaningful attack/defense reversal from two distinct roles rather than duplicated city metadata", () => {
+    const c = fixture(); c.lifetime.peakTerritoryBlocks.value = 0;
+    c.events = [event("attack", "capital-fallen", month(200), { targetFactionId: "other", cityName: "大梁", cityId: "daliang" }), ...c.events];
+    const a = build(c); expect(a.argument!.key).toBe("ATTACK_DEFENSE_REVERSAL"); expect(a.argument!.eventIds).toEqual(["attack", "capture"]);
+    expect(a.paragraphs.at(-1)).toContain("大梁"); expect(a.paragraphs.at(-1)).toContain("郢"); expect(a.paragraphs.at(-1)).not.toMatch(/报仇|复仇|因果报应/);
+  });
+  it("keeps an open exile's argument explicitly provisional and preserves separate prose across V13 ruler round-trip", () => {
+    const c = fixture(); c.faction.status = "EXILED"; c.faction.terminationMonth = undefined; c.lifetime.terminal = undefined; c.lifetime.lastObservedMonth = c.worldMonth;
+    c.dynasty.currentRulerId = "last"; Object.assign(c.dynasty.rulers[17], { status: "exiled", endYear: undefined, deathMonth: undefined, deathReason: undefined });
+    const a = build(c); expect(a.paragraphs.at(-1)).toContain("截至此时"); expect(prose(a)).not.toContain("彻底终结");
+    const before = JSON.stringify(c), rng = worldRandom.exportState();
+    const loaded = { ...c, dynasty: { ...c.dynasty, rulers: c.dynasty.rulers.map(r => importRulerSave(exportRulerSave(r))) } };
+    expect(buildUnifiedFactionChronicle(loaded)).toEqual(a); expect(JSON.stringify(c)).toBe(before); expect(worldRandom.exportState()).toEqual(rng);
+  });
+});
