@@ -1,9 +1,9 @@
 import { DynastyHouseAssessment } from "./DynastyHouseAssessment";
 import { hasRecordedRulerDeath } from "../../../Politics/RulerLifeState";
-import { FactionAssessmentPanel } from "../FactionAssessment";
+import { getFactionAssessment } from "../../../Historiography/FactionAssessmentArchive";
 import { getTerminationTargetName } from "./model";
 import { formatRulerTerminalEvent } from "../../../History/PoliticalTerminalChronicle";
-import { getHouseEpochHeading, getHouseEpochPresentation, getSignificantReignStats, formatRulerLifeAge } from "./RoyalPresentation";
+import { getSignificantReignStats, formatRulerLifeAge } from "./RoyalPresentation";
 import { getFactionColorAtMonth, type FactionColorHistoryEntry } from "../../../Simulation/FactionColorHistory";
 import { Box, Button, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -510,7 +510,6 @@ function FactionProfile({
       ) : null}
       {activeTab === "house" ? (
         <Box sx={{ display: "grid", gap: 1 }}>
-        <FactionAssessmentPanel faction={team} factions={factionById} dynasty={dynasty} rulersForFaction={(factionId) => DynastyRegistry.get(factionId)?.rulers} />
         <DynastyTree
           key={team.name}
           dynasty={dynasty}
@@ -750,14 +749,13 @@ function DynastyTree({
   const designatedHeir = livingCandidates.find((candidate) => candidate.id === dynasty?.designatedHeirId);
   const otherCandidates = livingCandidates.filter((candidate) => candidate.id !== dynasty?.designatedHeirId);
   const formalRulers = getFormalRulers(rulers);
+  const archive = dynasty ? <DynastyHouseAssessment key={team.name} dynasty={dynasty} faction={team} factions={factionById} worldMonth={worldMonth}
+    nationalAssessment={getFactionAssessment(team, factionById, dynasty, id => DynastyRegistry.get(id)?.rulers)} /> : null;
   if (formalRulers.length === 0 && livingCandidates.length === 0) {
-    return (
-      <Typography fontSize="0.9rem" color="var(--gg-text-muted)">
-        暂无王室记录。
-      </Typography>
-    );
+    return <Box sx={{ display: "grid", gap: 1 }}>{archive}
+      <Typography fontSize="0.9rem" color="var(--gg-text-muted)">暂无王室记录。</Typography>
+    </Box>;
   }
-  const epochPresentation = getHouseEpochPresentation(dynasty?.houseEpochs ?? []);
   const orderedRulers = [...formalRulers].sort((a, b) => {
     const rank = (ruler: Ruler) => ruler.id === currentRulerId ? 0 : 1;
     return rank(a) - rank(b) || (b.accessionYear ?? -1) - (a.accessionYear ?? -1);
@@ -787,15 +785,7 @@ function DynastyTree({
           })}
         </Box>
       ) : null}
-      {epochPresentation.current ? <Box sx={{ borderTop: "1px solid var(--gg-border)", pt: 0.5 }}>
-        <Typography fontWeight="bold" fontSize="0.9rem">{getHouseEpochHeading(factionStatus)}</Typography>
-        <Typography fontSize="0.85rem">{epochPresentation.current.text}</Typography>
-      </Box> : null}
-      {epochPresentation.historical.length ? <Box>
-        <Typography fontWeight="bold" fontSize="0.9rem">历代王统</Typography>
-        {epochPresentation.historical.map(epoch => <Typography key={epoch.key} fontSize="0.85rem">{epoch.text}</Typography>)}
-      </Box> : null}
-      {dynasty ? <DynastyHouseAssessment key={team.name} dynasty={dynasty} faction={team} factions={factionById} worldMonth={worldMonth} /> : null}
+      {archive}
       <Typography fontWeight="bold" fontSize="0.9rem">历代君主</Typography>
       <Box sx={{ display: "grid", gap: 0.5 }}>
         {orderedRulers.map((ruler, index) => {

@@ -10,6 +10,12 @@ export function FactionAssessmentPanel({ faction, factions, dynasty, rulersForFa
   if (!assessment) return null;
   return <Box component="details" sx={{ border: "1px solid var(--gg-border)", borderRadius: "var(--gg-radius)", p: 1, overflowWrap: "anywhere" }}>
     <summary>{assessment.title}</summary>
+    <FactionAssessmentContent assessment={assessment} />
+  </Box>;
+}
+/** Full national text, shared without a second collapsible archive shell. */
+export function FactionAssessmentContent({ assessment }: { assessment: NonNullable<ReturnType<typeof getFactionAssessment>> }) {
+  return <>
     <Typography fontWeight="bold">{assessment.evidence.name} · {assessment.title}</Typography>
     {assessment.facts.map(line => <Typography key={line} fontSize="0.84rem">{line}</Typography>)}
     <Typography sx={{ mt: 1 }} fontWeight="bold">国史简述</Typography>
@@ -18,7 +24,7 @@ export function FactionAssessmentPanel({ faction, factions, dynasty, rulersForFa
     {assessment.lines.map(line => <Typography key={line} fontSize="0.84rem">{line}</Typography>)}
     <Typography sx={{ mt: 1 }} fontWeight="bold">史家曰</Typography>
     <Typography fontSize="0.84rem">{assessment.voice}</Typography>
-  </Box>;
+  </>;
 }
 export function FactionTerminalRetrospective({ event, factions, dynasties }: { event: WorldEvent; factions: ReadonlyMap<string, HistoricalFaction>; dynasties: ReadonlyMap<string, Dynasty> }) {
   const id = event.type === "faction-submitted" ? event.metadata?.submittedFactionId ?? event.actorFactionId
