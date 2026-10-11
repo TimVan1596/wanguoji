@@ -22,7 +22,7 @@ export function createChroniclePeople(factions: ReadonlyMap<string, HistoricalFa
         if (seen.has(key)) return personal;
         seen.add(key);
         const faction = factions.get(factionId);
-        const rank = faction?.sovereigntyHistory.find(h => h.startMonth <= month && (h.endMonth === undefined || h.endMonth >= month))?.rank;
+        const rank = faction?.sovereigntyHistory.slice().reverse().find(h => h.startMonth <= month && (h.endMonth === undefined || h.endMonth >= month))?.rank;
         const validRank = rank === "LEADER" || rank === "KING" || rank === "EMPEROR" ? rank : undefined;
         const name = faction ? getFactionDisplayNameAtMonth(faction, month) : "";
         // Event-time identity must not turn a later epithet into a contemporary title.

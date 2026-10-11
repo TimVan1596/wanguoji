@@ -73,7 +73,7 @@ export function deriveChronicleArguments(f: FactionHistoricalEvidence, events: r
     `${loss.factionName}失${loss.cityName ?? "最后据点"}，城池已无，承统${end > loss.month ? `却仍延续${historianSpan(end - loss.month)}` : "亦于同月终结"}。${f.terminal ? "失国与政治终结各有其时；流亡所留下的，是土地丧失之后仍未立即结束的一段国史。" : "失国尚不是这部历史的终篇；如今延续的是流亡王统，而非在国治理。"}`);
   if (!out.length) add("LIMITED_RECORD", 10, [], ["formal", "houseEpochs"], [f.foundedMonth, end],
     f.terminal ? f.formal ? `从正式建国到独立建制结束，${f.name}历${historianNumber(f.rulerCount)}位统治者。现存材料所见，以承接一国之位为主；未见足以另论扩张或中兴的政治转折。`
-      : `${f.foundedName}起势后未及正式建国，独立势力便告终结；有开创之名，尚未形成可以长期承接的国家建制。`
+      : `${f.foundedName}起势后未能立国，独立势力便告终结；有开创之名，尚未形成可以长期承接的国家建制。`
       : `${f.name}${f.formal ? "已经立国" : "尚在势力阶段"}，${last?.houseName ?? "现有王统"}仍在延续。眼前可见的是开创与承接，未来的兴亡尚不属于这段已成的历史。`);
   return out.sort((a, b) => b.score - a.score || a.key.localeCompare(b.key));
 }

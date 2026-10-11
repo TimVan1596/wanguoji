@@ -48,7 +48,7 @@ describe("unified factual chronicle", () => {
     const a = build(c), s = a.paragraphs.join("");
     expect(a.title).toBe("《沂国史》"); expect(s).toContain("宋昭开创宋氏"); expect(s).toContain("宋景在位时");
     expect(s).toContain("493年10月"); expect(s).toContain("526格"); expect(s).toContain("42.9%"); expect(s).toContain("齐攻陷郢");
-    expect(s).toContain("宋恺、宋景怀先后承统"); expect(s).toContain("宋景怀实际去世，同月沂政权彻底终结");
+    expect(s).toMatch(/宋恺[^。]*、[^。]*宋景怀[^。]*先后承统/); expect(s).toContain("宋景怀实际去世，同月沂政权彻底终结");
     expect(s).toContain("18位统治者"); expect(s).not.toMatch(/史家曰|王统总评|国史简述|造成|全部死亡/);
     console.info(`Unified fixture 沂: ${a.length} characters`); expect(a.length).toBeLessThan(550);
   });
@@ -62,7 +62,7 @@ describe("unified factual chronicle", () => {
     c.dynasty.houseEpochs = [{ houseName: "萧氏", startMonth: month(1796), endMonth: month(2466, 11) - 1, foundingRulerId: "x", startReason: "FOUNDING" },
       { houseName: "钱氏", startMonth: month(2466, 11), foundingRulerId: "q", startReason: "NATURAL_HOUSE_SUCCESSION" }];
     c.events = [event("state", "state-founded", month(1827, 12), { rulerId: "state" }), event("end", "faction-extinct", month(2466, 11), { targetFactionId: "f" })];
-    const s = text(c); console.info(`Unified fixture 郸: ${s.length} characters`); expect(s).toContain("萧弼在位时"); expect(s).toContain("钱翊自然易姓续统"); expect(s).toContain("28位统治者"); expect(s).toContain("同月，郸政权彻底终结");
+    const s = text(c); console.info(`Unified fixture 郸: ${s.length} characters`); expect(s).toContain("萧弼在位时"); expect(s).toContain("钱翊自然易姓续统"); expect(s).toContain("28位统治者"); expect(s).toMatch(/2466年11月，[^。]*钱翊自然易姓续统；郸政权彻底终结/);
     expect(s).not.toMatch(/篡朝|0个月|钱翊在位时.*建国|钱翊.*实际去世/);
   });
   it("retains the earlier house, a verified usurper and the real current holder in an ACTIVE nation", () => {
@@ -131,7 +131,7 @@ describe("unified factual chronicle", () => {
     const c = fixture(); c.worldMonth = 20000; c.faction.status = "ACTIVE"; c.faction.firstFoundedYear = 0; c.faction.terminationMonth = undefined; c.lifetime.terminal = undefined; c.lifetime.lastObservedMonth = 20000;
     c.dynasty.rulers = Array.from({ length: 100 }, (_, i) => ruler(`r${i}`, `姓${i}氏`, `君${i}`, i * 100, i === 99 ? undefined : (i + 1) * 100, i + 1));
     c.dynasty.houseEpochs = c.dynasty.rulers.map((r, i) => ({ houseName: r.houseName, startMonth: i * 100, endMonth: i === 99 ? undefined : (i + 1) * 100 - 1, foundingRulerId: r.id, startReason: i === 0 ? "FOUNDING" : "NATURAL_HOUSE_SUCCESSION" }));
-    c.dynasty.currentRulerId = "r99"; const a = build(c); console.info(`Unified fixture 100 epochs: ${a.length} characters`); expect(a.phaseCount).toBe(100); expect(a.length).toBeLessThanOrEqual(1600); expect(a.paragraphs).toHaveLength(1); expect(a.paragraphs[0]).toContain("100段政治王统");
+    c.dynasty.currentRulerId = "r99"; const a = build(c); console.info(`Unified fixture 100 epochs: ${a.length} characters`); expect(a.phaseCount).toBe(100); expect(a.length).toBeLessThanOrEqual(1600); expect(a.paragraphs.length).toBeGreaterThan(1); expect(a.paragraphs.length).toBeLessThanOrEqual(8); expect(a.paragraphs.slice(0, -1).join("")).toContain("100段政治王统"); expect(a.paragraphs.at(-1)).toBe(a.argument?.text);
   });
   it("remains deterministic after V13 ruler round-trip without mutating canonical input/history or RNG", () => {
     const c = fixture(); build(c); const before = JSON.stringify(c), rng = worldRandom.exportState(); const first = buildUnifiedFactionChronicle(c);

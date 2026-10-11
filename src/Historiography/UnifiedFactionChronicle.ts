@@ -5,9 +5,9 @@ import { getCapitalCaptureEvidence } from "./FactionHistoricalArguments";
 import { hasRecordedRulerDeath } from "../Politics/RulerLifeState";
 import { formatWorldDate as date } from "../Simulation/WorldTime";
 
-export interface UnifiedChronicleContext extends FactionHistoryContext { phases: readonly HouseAssessment[]; worldMonth: number }
 import { composeChronicleParagraphs, createChroniclePeople, type ChroniclePassage, type ChronicleKind } from "./ChronicleComposition";
 import { deriveChronicleArguments, type ChronicleArgument } from "./ChronicleJudgment";
+export interface UnifiedChronicleContext extends FactionHistoryContext { phases: readonly HouseAssessment[]; worldMonth: number }
 export interface UnifiedChronicle { title: string; range: string; paragraphs: string[]; eventIds: string[]; phaseCount: number; length: number; argument?: ChronicleArgument }
 const meta = (e: FactionNarrativeEvidence, key: string) => typeof e.metadata[key] === "string" ? e.metadata[key] as string : undefined;
 const person = (r: NonNullable<FactionHistoryContext["dynasty"]>["rulers"][number]) => `${r.houseName.replace(/氏$/, "")}${r.givenName}`;
@@ -106,7 +106,7 @@ export function buildUnifiedFactionChronicle(c: UnifiedChronicleContext): Unifie
   if (fact.terminal) {
     const ending = fact.ending === "MERGED" ? `${fact.name}并入${fact.targetName ?? "同源政权"}（同源合邦），独立建制终止` :
       fact.ending === "SUBMITTED" ? `${fact.name}纳土归附${fact.targetName ?? "接受国"}，独立建制终止` : `${fact.name}政权彻底终结`;
-    add(fact.terminalEventId ?? "terminal", end, 120, `${ruler && hasRecordedRulerDeath(ruler) && ruler.deathMonth === end ? `${reference(ruler.id, end, person(ruler))}实际去世，同月` : ""}${ending}`, true, 4, "TERMINAL");
+    add(fact.terminalEventId ?? "terminal", end, 120, `${ruler && hasRecordedRulerDeath(ruler) && ruler.deathMonth === end ? `${reference(ruler.id, end, person(ruler))}${ruler.deathReason === "战死" ? "战死" : ruler.deathReason === "被俘处死" ? "被俘处死" : "实际去世"}，同月` : ""}${ending}`, true, 4, "TERMINAL");
   }
   // Mandatory political stages plus a bounded, period-diverse representative sample.
   const selected = candidates.filter(x => x.required);

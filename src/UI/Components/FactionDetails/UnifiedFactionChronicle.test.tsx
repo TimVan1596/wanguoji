@@ -34,11 +34,11 @@ describe("direct, indexed unified royal history", () => {
     const c = fixture(), html = renderToStaticMarkup(<UnifiedFactionChronicle {...c} />);
     expect(html).toContain("《坂国史》"); expect(html).toContain("王宁承统"); expect(html).toContain("仍在延续");
     expect(html).not.toMatch(/<button|<select|<details|国家国评|王统摘要|史家曰|国史简述|王统总评/);
-    expect((html.match(/<p /g) ?? []).length).toBe(1); expect(html).toContain("overflow-wrap:anywhere");
+    expect((html.match(/<p /g) ?? []).length).toBeGreaterThanOrEqual(2); expect(html).toContain("overflow-wrap:anywhere");
   });
-  it("retains a bounded article and one paragraph regardless of the phase count", () => {
-    const html = renderToStaticMarkup(<UnifiedChronicleText article={{ title: "《长国史》", range: "0年1月～今", paragraphs: ["一百段政治王统依序相承。"], phaseCount: 100, length: 15, eventIds: [] }} />);
-    expect((html.match(/<p /g) ?? []).length).toBe(1); expect(html).not.toContain("<select"); expect(html).toContain("min-width:0");
+  it("renders supplied narrative paragraphs and a separate judgment without phase controls", () => {
+    const html = renderToStaticMarkup(<UnifiedChronicleText article={{ title: "《长国史》", range: "0年1月～今", paragraphs: ["一百段政治王统依序相承。", "国家的延续与一姓的传承不同。"], phaseCount: 100, length: 15, eventIds: [] }} />);
+    expect((html.match(/<p /g) ?? []).length).toBe(2); expect(html).not.toContain("<select"); expect(html).toContain("min-width:0");
     const source = readFileSync(new URL("./index.tsx", import.meta.url), "utf8");
     expect(source).toContain("<UnifiedFactionChronicle"); expect(source).not.toContain("<DynastyHouseAssessment"); expect(source).not.toContain("<FactionAssessmentPanel");
     expect(source.indexOf("{archive}", source.indexOf("const orderedRulers"))).toBeLessThan(source.indexOf("储君", source.indexOf("const orderedRulers")));
