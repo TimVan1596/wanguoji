@@ -1,3 +1,5 @@
+import { GenealogyPersonCard } from "./GenealogyPersonCard";
+import { deriveGenealogyNodePresentations, type GenealogyNodePresentation } from "./GenealogyNodePresentation";
 import { UnifiedFactionChronicle } from "./UnifiedFactionChronicle";
 import { hasRecordedRulerDeath } from "../../../Politics/RulerLifeState";
 import { getTerminationTargetName } from "./model";
@@ -532,6 +534,7 @@ function FactionProfile({
         rulers={dynasty?.rulers ?? []}
         currentRulerId={dynasty?.currentRulerId}
         team={team}
+        worldMonth={worldMonth}
       />
     </Box>
   );
@@ -860,7 +863,9 @@ function GenealogyDialog({
   rulers,
   currentRulerId,
   team,
+  worldMonth,
 }: {
+  worldMonth: number;
   open: boolean;
   onClose: (source: GenealogyViewerCloseSource, muiReason?: string) => void;
   dynasty?: Dynasty;
@@ -868,6 +873,11 @@ function GenealogyDialog({
   currentRulerId?: string | null;
   team: RootState["root"]["teams"][number];
 }) {
+  const revision = WorldHistory.getRevision();
+  const presentationStamp = JSON.stringify([dynasty?.currentRulerId, dynasty?.designatedHeirId, dynasty?.heirIds, dynasty?.houseEpochs, dynasty?.rulers.map(r => [r.id, r.accessionYear, r.endYear, r.status, r.reignOrdinal, r.relationType, r.displacedByUsurpationMonth, r.endReason, r.deathMonth, r.deathReason, r.templeName, r.posthumousEpithet]), team.status, team.terminationMonth, team.extinctionYear, team.terminationReason, team.stateFoundedMonth]);
+  const presentations = useMemo(() => open && dynasty ? deriveGenealogyNodePresentations(dynasty, team,
+    WorldHistory.getEventsForFaction(team.name), worldMonth) : new Map<string, GenealogyNodePresentation>(),
+    [open, revision, worldMonth, presentationStamp, team.name]);
   const [scale, setScale] = useState(1);
   const viewportRef = useRef<HTMLDivElement>(null);
   const treeRef = useRef<HTMLDivElement>(null);
@@ -937,7 +947,7 @@ function GenealogyDialog({
         {genealogy.length ? (
           <Box sx={{ position: "relative", width: genealogyCanvas.width, height: genealogyCanvas.height, minWidth: "100%", minHeight: "100%" }}>
             <Box ref={treeRef} sx={{ position: "absolute", left: genealogyCanvas.left, top: genealogyCanvas.top, width: "max-content", transform: `scale(${scale})`, transformOrigin: "top left", display: "flex", alignItems: "flex-start", gap: 3, py: 2 }}>
-              {genealogy.map((root) => <GenealogyTreeNode key={root.ruler.id} node={root} dynasty={dynasty} currentRulerId={currentRulerId} team={team} />)}
+              {genealogy.map((root) => <GenealogyTreeNode key={root.ruler.id} node={root} presentations={presentations} team={team} />)}
             </Box>
           </Box>
         ) : <Typography color="var(--gg-text-muted)">暂无可展示的宗谱关系。</Typography>}
@@ -946,42 +956,21 @@ function GenealogyDialog({
   );
 }
 
-function GenealogyTreeNode({
-  node,
-  dynasty,
-  currentRulerId,
-  team,
-}: {
+function GenealogyTreeNode({ node, presentations, team }: {
   node: ReturnType<typeof buildPoliticalGenealogy>[number];
-  dynasty?: Dynasty;
-  currentRulerId?: string | null;
+  presentations: Map<string, GenealogyNodePresentation>;
   team: RootState["root"]["teams"][number];
 }) {
   const ruler = node.ruler;
-  const badges = [
-    ruler.relationType === "USURPER" ? "篡朝" : undefined,
-    ruler.displacedByUsurpationMonth !== undefined ? "旧朝宗亲" : undefined,
-    ruler.id === currentRulerId ? "当前" : undefined,
-    ruler.id === dynasty?.designatedHeirId ? "储君" : undefined,
-    dynasty?.heirIds.includes(ruler.id) && ruler.id !== dynasty.designatedHeirId ? "宗室候选" : undefined,
-    ruler.chronicle?.foundedStateName ? "开国" : undefined,
-    ruler.chronicle?.proclaimedEmperorMonth !== undefined ? "称帝" : undefined,
-    ruler.endReason === "彻底灭亡" ? "亡国" : undefined,
-    ruler.chronicle && ruler.chronicle.restorationsDuringReign > 0 ? "复国" : undefined,
-    ruler.reignOrdinal !== undefined ? `第${ruler.reignOrdinal}代` : ruler.status === "kin" ? "在世宗亲" : undefined,
-  ].filter(Boolean);
+  const presentation = presentations.get(ruler.id);
   return (
     <Box data-ruler-id={ruler.id} sx={{ display: "flex", flexDirection: "column", alignItems: "center", flex: "0 0 auto", position: "relative", px: 0.5 }}>
-      <Box sx={{ border: "1px solid var(--gg-border)", borderRadius: "var(--gg-radius)", px: 0.8, py: 0.45, background: ruler.id === currentRulerId ? "var(--gg-panel)" : "transparent", whiteSpace: "nowrap" }}>
-        <Typography fontSize="0.83rem" fontWeight={ruler.id === currentRulerId || ruler.id === dynasty?.designatedHeirId ? 700 : 400}>
-          {formatRulerRowName(ruler, team)} <Box component="span" color="var(--gg-text-muted)">· {badges.join(" · ") || "宗室成员"}</Box>
-        </Typography>
-      </Box>
+      <GenealogyPersonCard ruler={ruler} displayName={formatRulerRowName(ruler, team)} presentation={presentation} />
       {node.children.length ? (
         <Box sx={{ display: "flex", position: "relative", pt: 1.5, mt: 0.15, gap: 0.5, alignItems: "flex-start", "&::before": { content: '""', position: "absolute", top: 0, left: "50%", height: 12, borderLeft: "1px solid var(--gg-border)" } }}>
           {node.children.map((child, index) => (
             <Box key={child.ruler.id} sx={{ position: "relative", pt: 1.5, "&::before": { content: '""', position: "absolute", top: 0, left: "50%", height: 12, borderLeft: "1px solid var(--gg-border)" }, ...(node.children.length > 1 && index === 0 ? { "&::after": { content: '""', position: "absolute", top: 0, left: "50%", right: "-50%", borderTop: "1px solid var(--gg-border)" } } : {}), ...(node.children.length > 1 && index === node.children.length - 1 ? { "&::after": { content: '""', position: "absolute", top: 0, left: "-50%", right: "50%", borderTop: "1px solid var(--gg-border)" } } : {}), ...(node.children.length > 2 && index > 0 && index < node.children.length - 1 ? { "&::after": { content: '""', position: "absolute", top: 0, left: "-50%", right: "-50%", borderTop: "1px solid var(--gg-border)" } } : {}) }}>
-              <GenealogyTreeNode node={child} dynasty={dynasty} currentRulerId={currentRulerId} team={team} />
+              <GenealogyTreeNode node={child} presentations={presentations} team={team} />
             </Box>
           ))}
         </Box>

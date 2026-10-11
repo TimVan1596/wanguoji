@@ -6,7 +6,7 @@
 
 ### P0
 
-- [x] 政治终结与人物生死分离：v0.99931c / WorldSave V13 已获用户人工 PASS，生死模型冻结。v31c1 派生任期角色人工 PASS。v31d 王统总评人工 PASS；v31d1 功能人工 PASS；v31d2 国史合传人工 PASS；当前 v31d3 分段国史与评议等待[原长局人工 Gate](docs/ChronicleChaptersJudgment.md)。
+- [x] 政治终结与人物生死分离：v0.99931c / WorldSave V13 已获用户人工 PASS，生死模型冻结。v31c1 派生任期角色人工 PASS。v31d 王统总评人工 PASS；v31d1 功能人工 PASS；v31d2 国史合传人工 PASS；v31d3 分段国史与评议人工 PASS，国史合传冻结。当前 v31e 政治宗谱身份与视觉层级等待[原 V13 长局人工 Gate](docs/PoliticalGenealogyVisualHierarchy.md)。
 
 - [x] IndexedDB 多槽存档、手动存档管理与双槽游戏时间自动存档。
 - [x] Desktop Recovery 恢复档定时保存与关闭前保存。
