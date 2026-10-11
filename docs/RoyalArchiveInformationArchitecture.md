@@ -35,7 +35,7 @@
 
 覆盖单段/多段、自然易姓、真实篡朝、同姓复国阶段、同月终结、建国前后人物任期、后起王统、实际ACTIVE和EXILED、合邦/纳土、生死未载、真实死亡同月、国家全文逐行访问、按钮回调和阶段选择、100阶段仅一个短正文、V13人物投影重载派生一致、canonical输入/历史及RNG不变。既有真实V13导出/validate/hydrate再导出测试继续执行。
 
-自动验证结果：完成后补录。
+自动验证全部通过：`VITEST_MAX_THREADS=4 VITEST_MIN_THREADS=1 pnpm test`（196个文件、1312项测试），`pnpm build`、`pnpm desktop:build`、`pnpm desktop:compile`、`pnpm desktop:renderer-debug-build`，以及`git diff --check`、`git diff --cached --check`。本版新增20项测试，包含缺少epoch时仍保留国家全文的边界；没有删除旧事实、缓存或玩法测试。最初构建发现测试夹具联合接口与可选即位月份的TypeScript约束，已修正，最终构建通过。构建保留已有大bundle提示。
 
 ## 性能与遗留风险
 
