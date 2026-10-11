@@ -290,3 +290,41 @@ describe("revolution eligibility reuses succession crisis rules", () => {
     expect(evaluateDynasticRevolution(input, () => 0).usurpation).toBe(true);
   });
 });
+
+
+describe("独立政治冲击真实继位执行", () => {
+  it("成年自然承统边界发生夺统，来源、被废继承人和新君纪事保持一致", () => {
+    const { team, dynasty } = setup(true, false);
+    WorldHistory.addCapitalFallen(500, "enemy", team.name, team.name, "旧都", "former-capital", true, 10, undefined, undefined, "battle");
+    WorldHistory.addEmpireSplit(520, team.name, "rebel", ["甲城", "乙城"], ["a", "b"], undefined, undefined, "split");
+    const sources = WorldHistory.exportState().events.map(e => JSON.stringify(e));
+    vi.spyOn(worldRandom, "next").mockReturnValueOnce(0);
+    DynastyRegistry.update(month, [team]);
+    const ruler = DynastyRegistry.getCurrentRuler(team.name)!;
+    expect(ruler.relationType).toBe("USURPER"); expect(ruler.parentId).toBeUndefined();
+    const displaced = dynasty.rulers.find(r => r.id === "heir")!;
+    expect(displaced).toMatchObject({ status: "kin", parentId: "old", displacedByUsurpationMonth: month });
+    expect(displaced.deathMonth).toBeUndefined(); expect(displaced.endYear).toBeUndefined();
+    const event = WorldHistory.getEvents().find(e => e.type === "dynasty-usurped")!;
+    expect(event.metadata).toMatchObject({ riskTier: "POLITICAL_SHOCK", crisisCapitalMonth: 500, crisisSplitMonth: 520, displacedSuccessorId: "heir" });
+    expect(ruler.chronicle!.notableEventIds).toContain(event.id);
+    expect(event.description).toContain("旧都"); expect(event.description).toContain("重大帝国分裂");
+    expect(event.description).not.toMatch(/战死|储君.*早亡|将军|权臣|兵变|百官/);
+    expect(WorldHistory.exportState().events.slice(0, sources.length).map(e => JSON.stringify(e))).toEqual(sources);
+    expect(dynasty.houseEpochs!.at(-1)!.foundingRulerId).toBe(ruler.id);
+    expect(team.name).toBe("state-id");
+  });
+  it("新入口的真实业务、事件与随机状态不受诊断开关影响", () => {
+    const run = (debug: boolean) => {
+      vi.stubGlobal("window", { location: { search: debug ? "?debug=1" : "" } });
+      WorldHistory.reset(); FactionEffects.reset(); const { team, dynasty } = setup(true, false);
+      WorldHistory.addCapitalFallen(500, "enemy", team.name, team.name, "旧都", "old-city", true);
+      WorldHistory.addEmpireSplit(520, team.name, "rebel", ["甲", "乙"], ["a", "b"]);
+      worldRandom.initialize("political-shock-debug"); transition(team, dynasty);
+      const value = { dynasty: DynastyRegistry.exportState(), history: WorldHistory.exportState(), rng: worldRandom.exportState() };
+      DynastyRegistry.getRevolutionDiagnostics([team], month);
+      return JSON.parse(JSON.stringify(value));
+    };
+    expect(run(true)).toEqual(run(false));
+  });
+});

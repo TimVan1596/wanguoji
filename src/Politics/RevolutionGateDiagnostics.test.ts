@@ -100,7 +100,7 @@ describe("calibration expectation and session world-time rates", () => {
       expect(snapshot.expectedUsurpationsPer1000Years).toBeCloseTo(1.2);
       expect(snapshot.estimatedWorldYearsPerExpectedUsurpation).toBeCloseTo(100 / 0.12);
       expect(snapshot.chanceBuckets.final["2%"]).toBe(1);
-      expect(snapshot.chanceBuckets.tiers).toEqual({ CRISIS: 1, COMPOUND_SHOCK: 1, COMPOUND_INSTABILITY: 1 });
+      expect(snapshot.chanceBuckets.tiers).toEqual({ CRISIS: 1, COMPOUND_SHOCK: 1, COMPOUND_INSTABILITY: 1, POLITICAL_SHOCK: 0 });
       const same = diagnostics.snapshot(13200);
       expect(same).toEqual(snapshot); // repeated UI reads don't accumulate expectation
       expect(draw).not.toHaveBeenCalled();

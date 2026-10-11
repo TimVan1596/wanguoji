@@ -238,6 +238,50 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     expect(WorldHistory.getEvents().filter(e => e.type === "faction-restored")).toHaveLength(scenario === "双零流亡终结" ? 0 : 1);
     vi.unstubAllGlobals();
   });
+  it("成年继位独立政治危机→真实夺统→历史→V13严格往返", async () => {
+    const core = target(3), base = fixture().factions[0]; core.prepareForHydration();
+    const fs = ["qin", "enemy"].map((id, i) => ({ ...base, factionId: id, displayName: id, houseName: i ? "魏氏" : "田氏",
+      colorHistory: [{ color: 1, startMonth: 0, reason: "FOUNDING" as const }], nameHistory: [{ name: id, startMonth: 0, reason: "FOUNDING" }],
+      sovereigntyRank: "KING", stateFoundedMonth: 0, origin: { type: "INITIAL", foundedMonth: 0 }, homeGridX: i, capitalCityId: i ? "b" : "active" }));
+    const ts: any[] = fs.map(f => ({ ...f, name: f.factionId, firstFoundedYear: 0, currentActiveSinceYear: 0, cumulativeActiveYears: 0,
+      restorationYears: [], cities: [], users: new Set(), blocks: { children: { entries: [], size: 0 } }, farms: { npcs: new Map(), init() {} }, removeRulerUnit() {},
+      setRegimeColor(color: number, month: number) { this.colorHistory.at(-1).endMonth = month - 1; this.colorHistory.push({ color, startMonth: month, reason: "DYNASTIC_REVOLUTION" }); this.color = color; },
+      exportState() { return { ...f, displayName: this.displayName, houseName: this.houseName, color: this.color, colorHistory: this.colorHistory, nameHistory: this.nameHistory }; },
+    }));
+    core.teams = ts; Object.defineProperty(core, "totalCells", { value: 3 });
+    const cs = ["active", "a", "b"].map((id, i) => ({ ...fixture().cities[0], cityId: id, name: i ? `城${i}` : "故都", centerGridX: i,
+      ownerFactionId: i ? "enemy" : "qin", founderFactionId: "qin", isCapital: i === 0 || i === 2, loyalty: 20,
+      fortifiedCells: [{ gridX: i, gridY: 0 }] }));
+    const cities = cs.map((c, i) => ({ ...c, id: c.cityId, block: core.map.blocks[i][0], fortifiedCells: [core.map.blocks[i][0]], exportState: () => structuredClone(c) }));
+    cities.forEach((c, i) => { const t = ts[i ? 1 : 0]; t.cities.push(c); t.blocks.children.entries.push(c.block); t.blocks.children.size++;
+      c.block.restoreCanonicalState({ owner: t, city: c, hp: 7, isHome: true, isCityCenter: true }); });
+    const cityModule = await import("../Components/City");
+    vi.spyOn(cityModule, "getFactionStability").mockReturnValue(20);
+    vi.spyOn(DynastyRegistry, "ensureRulerUnit").mockImplementation(() => undefined);
+    worldRandom.initialize("political-shock-round-trip");
+    core.simulator = new AutoSimulator(false); core.simulator.startWorld(ts, 3, {}); core.simulator.setRunning(false);
+    const d = DynastyRegistry.get("qin")!, previous = DynastyRegistry.getCurrentRuler("qin")!;
+    Object.assign(previous, { bornYear: -480, naturalDeathYear: 120, plannedEndYear: 120 });
+    const heir = d.rulers.find(r => d.heirIds.includes(r.id))!;
+    expect(heir).toBeDefined(); Object.assign(heir, { bornYear: -240, naturalDeathYear: 1000, plannedEndYear: 1000 });
+    WorldHistory.addCapitalFallen(60, "enemy", "qin", "qin", "故都", "active", true, 7, undefined, undefined, "capital-battle");
+    WorldHistory.addEmpireSplit(80, "qin", "enemy", ["城1", "城2"], ["a", "b"], undefined, undefined, "split-event");
+    const sources = WorldHistory.exportState().events.map(e => JSON.stringify(e));
+    const draw = vi.spyOn(worldRandom, "next").mockReturnValueOnce(0);
+    DynastyRegistry.update(120, ts); draw.mockRestore();
+    const ruler = DynastyRegistry.getCurrentRuler("qin")!;
+    expect(ruler.relationType).toBe("USURPER"); expect(ruler.parentId).toBeUndefined(); expect(heir.status).toBe("kin"); expect(heir.deathMonth).toBeUndefined();
+    expect(d.houseEpochs).toHaveLength(2); expect(d.houseEpochs!.at(-1)!.startReason).toBe("USURPATION");
+    const event = WorldHistory.getEvents().find(e => e.type === "dynasty-usurped")!;
+    expect(event.metadata?.riskTier).toBe("POLITICAL_SHOCK"); expect(ruler.chronicle?.notableEventIds).toContain(event.id);
+    expect(WorldHistory.exportState().events.slice(0, sources.length).map(e => JSON.stringify(e))).toEqual(sources);
+    (core.simulator as any).clock.importState({ worldMonth: 120, elapsedMs: 0, running: false });
+    const save = exportWorldSave(core); expect(save.saveSchemaVersion).toBe(13);
+    expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
+    const rng = worldRandom.exportState(); hydrateWorldSave(core, JSON.parse(JSON.stringify(save)));
+    expect(exportWorldSave(core)).toEqual(save); expect(worldRandom.exportState()).toEqual(rng);
+    hydrateWorldSave(core, JSON.parse(JSON.stringify(save))); expect(exportWorldSave(core)).toEqual(save);
+  });
   it("starts the actual seven INITIAL world, exports V13, validates, hydrates twice without household regeneration", () => {
     const core = target(7), base = fixture().factions[0];
     const fs = Array.from({ length: 7 }, (_, i) => ({ ...base, factionId: `house-${i}`, displayName: `国${i}`, houseName: `姓${i}氏`,
