@@ -57,11 +57,20 @@ ChronicleJudgment 只读取已核验的本国 indexed narrative evidence、永�
 
 ## 自动验证
 
-全套 `VITEST_MAX_THREADS=2 VITEST_MIN_THREADS=1 pnpm test`：198个文件、1352项测试通过。新增19项分段/主题/称谓/同组城市与缓存回归；原有V13真实导出→Hydration→再导出测试继续比较完整文章（包括段落、评论证据和顺序）。保留旧测试事实约束，只将“必须单段”和每条写“同月”等旧呈现断言更新为本版要求，并增加独立末段、编年、称谓时序与来源断言；不删减原有 gameplay regression。
+全套 `VITEST_MAX_THREADS=1 VITEST_MIN_THREADS=1 pnpm test`：198个文件、1352项测试通过。新增19项分段/主题/称谓/同组城市与缓存回归；原有V13真实导出→Hydration→再导出测试继续比较完整文章（包括段落、评论证据和顺序）。保留旧测试事实约束，只将“必须单段”和每条写“同月”等旧呈现断言更新为本版要求，并增加独立末段、编年、称谓时序与来源断言；不删减原有 gameplay regression。
 
 合成夹具正文长度：沂282字符、郸219字符、存续多王统228字符、100阶段390字符，全部受1600字符上限约束；20000条普通战事不挤掉政治转折。这些是测试夹具，不假称已经读取玩家私人存档或完成浏览器文风与运行性能验收。
 
-构建和diff检查结果在交付前补录。过程中发现的新测试只读类型及政治等级literal类型错误已修正；称谓缓存测试暴露非最终失都句未引用已核验的亲征者，已在展示句补足，未修改原始事件。
+pnpm build、pnpm desktop:build、pnpm desktop:compile、pnpm desktop:renderer-debug-build及两项git diff检查全部通过；renderer、debug source maps与音乐资源验证通过，保留既有大chunk提示。最终双worker全套曾出现旧Slaves.lifecycle初始化hook 10秒超时，单worker独立重跑198文件/1352项全部通过，没有修改旧测试超时或断言。过程中发现的新测试只读类型及政治等级literal类型错误已修正；称谓缓存测试暴露非最终失都句未引用已核验的亲征者，已在展示句补足，未修改原始事件。
+
+## 修改文件
+
+- 新增 `src/Historiography/ChronicleComposition.ts`、`ChronicleJudgment.ts`。
+- 修改 `src/Historiography/UnifiedFactionChronicle.ts`、`UnifiedFactionChronicleArchive.ts` 与对应纯测试。
+- 修改 `src/UI/Components/FactionDetails/UnifiedFactionChronicle.test.tsx`；既有生产组件已经按 paragraphs 渲染多个 p，不需要新增 UI 控件或改布局。
+- 更新 `src/config/version.ts`、`package.json`、`desktop/DesktopSecurity.test.ts` 的版本断言、`CHANGELOG.md`、`ROADMAP.md`、本报告及 d2 报告的前置 Gate 关闭记录。
+
+遗留限制：已丢失或未记录的事件、人物和称号不能补造；未记录的鼎盛持续时间等只省略；极长史料仍压缩中间段落。真实文字是否自然、庙谥追述读起来是否合适、长文本排版和打开速度尚待人工 Gate，不视为已通过。
 
 ## 人工 Gate：继续原 V13 长局
 
