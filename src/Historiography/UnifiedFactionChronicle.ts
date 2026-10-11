@@ -100,7 +100,7 @@ export function buildUnifiedFactionChronicle(c: UnifiedChronicleContext): Unifie
   for (const e of captures) {
     if (!e.cityName || (e.factionRole === "TARGET" && ((e.historyGroupId && exileGroups.has(`${e.month}:${e.historyGroupId}`)) || (e.cityId && exileCities.has(`${e.month}:${e.cityId}`))))) continue;
     if (validActor(e)) add(e.eventId, e.month, 82, `${e.factionName}攻取${e.targetName ?? "敌国"}都${e.cityName}${e.rulerName ? `，此役由${eventPerson(e)}亲征` : ""}`, false, 2, "CAMPAIGN");
-    else if (e.factionRole === "TARGET") add(e.eventId, e.month, 79, `${e.actorName ? `${e.actorName}攻陷` : ""}${e.factionName}都${e.cityName}${e.actorName ? "" : "失守"}`, false, 2, "CAMPAIGN");
+    else if (e.factionRole === "TARGET") add(e.eventId, e.month, 79, `${e.rulerName ? `${eventPerson(e)}亲征，` : ""}${e.actorName ? `${e.actorName}攻陷` : ""}${e.factionName}都${e.cityName}${e.actorName ? "" : "失守"}`, false, 2, "CAMPAIGN");
   }
   const last = phases.at(-1);
   const ruler = last?.terminalRulerName ? c.dynasty?.rulers.find(r => last.rulerIds.includes(r.id) && person(r) === last.terminalRulerName && r.endYear === end) : undefined;

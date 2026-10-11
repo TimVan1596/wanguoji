@@ -225,8 +225,8 @@ describe("chronicle chapters, attributed names and evidence-bearing judgment", (
     c.events = [...c.events, event("other-city", "capital-fallen", month(542, 5), {
       actorFactionId: "enemy", targetFactionId: "f", historyGroupId: "fall", cityId: "other", cityName: "新郑", rulerId: foreign.id })];
     const a = build(c); const body = prose(a);
-    expect(body).toContain("攻陷新郑"); expect(body).toContain("攻陷郢");
-    expect(body).not.toMatch(/嬴康亲征，秦攻陷郢/);
+    expect(body).toContain("攻陷沂都新郑"); expect(body).toContain("攻陷郢");
+    expect(body).not.toMatch(/嬴康[^。；]*攻陷郢/);
     expect(a.eventIds).toContain("other-city"); expect(a.eventIds).toContain("exile");
   });
   it("retains a real restoration in the narrative and judges restored rule, not recovery of a capital", () => {
