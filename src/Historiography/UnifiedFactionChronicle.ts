@@ -3,7 +3,6 @@ import { deriveFactionHistoricalEvidence, type FactionHistoryContext } from "./F
 import type { HouseAssessment } from "./DynastyHouseHistoriography";
 import { getCapitalCaptureEvidence } from "./FactionHistoricalArguments";
 import { hasRecordedRulerDeath } from "../Politics/RulerLifeState";
-import { getFactionDisplayNameAtMonth } from "../Simulation/FactionIdentity";
 import { formatWorldDate as date, formatWorldDuration as duration } from "../Simulation/WorldTime";
 
 export interface UnifiedChronicleContext extends FactionHistoryContext { phases: readonly HouseAssessment[]; worldMonth: number }
@@ -39,7 +38,7 @@ export function buildUnifiedFactionChronicle(c: UnifiedChronicleContext): Unifie
       p.startReason === "NATURAL_HOUSE_SUCCESSION" ? `${old}${p.founderName ?? p.houseName}自然易姓续统` :
       p.startReason === "RESTORATION" ? `${p.houseName}开启复国后的政治阶段` : `${p.founderName ?? p.houseName}开启${p.houseName}王统`;
     const usurp = events.find(e => e.type === "dynasty-usurped" && e.rulerId === p.founderId && e.month === p.startMonth);
-    add(usurp?.eventId ?? `epoch:${p.key}`, p.startMonth, 110, opening, true);
+    add(usurp?.eventId ?? `epoch:${p.key}`, p.startMonth, 110, opening + (p.rulerCount > 1 ? `，此段历${p.rulerCount}位统治者` : ""), true);
   }
   const peak = c.lifetime.peakTerritoryBlocks;
   if (peak.value > 0 && c.totalWorldBlocks > 0) add("peak", peak.month, 80,
@@ -55,7 +54,7 @@ export function buildUnifiedFactionChronicle(c: UnifiedChronicleContext): Unifie
       if (groups.has(group)) continue; groups.add(group);
       const capture = captures.find(x => x.month === e.month && x.factionRole === "TARGET" &&
         (x.historyGroupId && x.historyGroupId === e.historyGroupId || x.cityId && x.cityId === e.cityId));
-      add(e.eventId, e.month, 108, `${capture?.actorName ?? e.actorName ?? ""}${capture?.actorName || e.actorName ? "攻陷" : ""}${e.cityName ?? capture?.cityName ?? "最后据点"}，${e.factionName}失去最后据点，王室转入流亡`, false, 3);
+      add(e.eventId, e.month, 108, `${capture?.rulerName ? `${capture.rulerName}亲征，` : ""}${capture?.actorName ?? e.actorName ?? ""}${capture?.actorName || e.actorName ? "攻陷" : ""}${e.cityName ?? capture?.cityName ?? "最后据点"}，${e.factionName}失去最后据点，王室转入流亡`, false, 3);
       continue;
     }
     if (e.type === "empire-split" && e.factionRole === "TARGET") add(e.eventId, e.month, 95, `${e.factionName}发生分裂${e.actorName ? `，${e.actorName}另立政权` : ""}`);
@@ -94,7 +93,12 @@ export function buildUnifiedFactionChronicle(c: UnifiedChronicleContext): Unifie
     if (!selected.some(x => x.key === next.key)) selected.push(next);
   }
   selected.sort((a, b) => a.month - b.month || a.order - b.order || a.key.localeCompare(b.key));
-  const sentences = selected.map((x, i) => `${i && x.month === selected[i - 1].month ? "同月" : date(x.month)}，${x.text}。`);
+  const sentences = selected.map((x, i) => {
+    const time = i && x.month === selected[i - 1].month ? "同月" : !i ? date(x.month) :
+      x.key === "peak" ? `至${date(x.month)}` : x.order === 4 ? `到${date(x.month)}` :
+      x.key.startsWith("epoch:") ? `其后在${date(x.month)}` : date(x.month);
+    return `${time}，${x.text}。`;
+  });
   const lastExile = exiles.at(-1);
   if (lastExile && !events.some(e => e.type === "faction-restored" && e.month > lastExile.month && validActor(e))) {
     const known = new Set(phases.flatMap(p => p.rulerIds));
@@ -116,7 +120,7 @@ export function buildUnifiedFactionChronicle(c: UnifiedChronicleContext): Unifie
   const finalExile = exiles.at(-1);
   const restored = events.some(e => e.type === "faction-restored" && validActor(e));
   const judgment = !fact.terminal ? "" : fact.ending === "MERGED" ? "独立王统终于同源合邦，国家旧史并未因此消失。" :
-    fact.ending === "SUBMITTED" ? "独立统治以和平纳土收束，其终局是退位归附，而非战败覆灭。" :
+    fact.ending === "SUBMITTED" ? "独立统治以和平纳土收束，旧王室在退位归附中结束政治传承。" :
     finalExile && !events.some(e => e.type === "faction-restored" && e.month > finalExile.month && validActor(e)) ?
       `城土虽失，王统${end > finalExile.month ? `仍在流亡中延续${duration(end - finalExile.month)}` : "亦于同月终结"}；这一国的失土与传承，各有其起落。` :
     restored ? "国统曾在失国后复续，恢复独立建制成为这段历史的重要转折。" :
