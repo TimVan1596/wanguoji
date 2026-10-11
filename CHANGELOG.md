@@ -1,5 +1,11 @@
 # Changelog
 
+## 未发布研究 · v0.99931h Stage A
+
+- v31g 已获用户明确人工 PASS，关闭前置 Gate。人工未观察到同源NAP，不能将其记为零次。
+- 审计同源NAP形成、升级、续约及V13契约；新增四seed真实外交流程受控测试与只读参数矩阵，不能作为自然长局发生率。
+- 尚无合理自然同源NAP候选证据，按阶段条件停止，未实施归并新规则；APP/package保持v31g/0.99.136、V13不变。见[阶段A报告](docs/SameOriginPeacefulReunification.md)。
+
 ## v0.99931g · Peaceful Political Transition Observability
 
 - v31f 用户整体人工 PASS：已回传秦幼子、魏/楚兄弟储君及其余四国无指定储君，V13 与历史 UI 正常；未声称收到完整创始者年龄明细。
