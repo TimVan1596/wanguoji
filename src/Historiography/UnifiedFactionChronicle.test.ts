@@ -217,6 +217,18 @@ describe("chronicle chapters, attributed names and evidence-bearing judgment", (
     const a = build(c); expect(prose(a)).toContain("秦王嬴康（后谥武）亲征"); expect(prose(a)).not.toContain("沂王嬴康");
     foreign.accessionYear = month(543); expect(prose(build(c))).not.toContain("嬴康");
   });
+  it("does not borrow another city or its ruler from a shared history group", () => {
+    const c = fixture(); const foreign = ruler("foreign-r", "嬴氏", "康", month(530), month(550), 1);
+    c.factions = new Map([...c.factions, ["enemy", { ...c.faction, name: "enemy", nameHistory: [{ name: "秦", startMonth: 0 }] }]]);
+    c.resolveRuler = id => id === foreign.id ? foreign : undefined;
+    c.events = c.events.filter(e => e.id !== "capture");
+    c.events = [...c.events, event("other-city", "capital-fallen", month(542, 5), {
+      actorFactionId: "enemy", targetFactionId: "f", historyGroupId: "fall", cityId: "other", cityName: "新郑", rulerId: foreign.id })];
+    const a = build(c); const body = prose(a);
+    expect(body).toContain("攻陷新郑"); expect(body).toContain("攻陷郢");
+    expect(body).not.toMatch(/嬴康亲征，秦攻陷郢/);
+    expect(a.eventIds).toContain("other-city"); expect(a.eventIds).toContain("exile");
+  });
   it("retains a real restoration in the narrative and judges restored rule, not recovery of a capital", () => {
     const c = fixture(); c.lifetime.peakTerritoryBlocks.value = 0;
     c.events = [...c.events, event("restore", "faction-restored", month(560), { cityName: "郢" })];

@@ -74,6 +74,6 @@ export function deriveChronicleArguments(f: FactionHistoricalEvidence, events: r
   if (!out.length) add("LIMITED_RECORD", 10, [], ["formal", "houseEpochs"], [f.foundedMonth, end],
     f.terminal ? f.formal ? `从正式建国到独立建制结束，${f.name}历${historianNumber(f.rulerCount)}位统治者。现存材料所见，以承接一国之位为主；未见足以另论扩张或中兴的政治转折。`
       : `${f.foundedName}起势后未能立国，独立势力便告终结；有开创之名，尚未形成可以长期承接的国家建制。`
-      : `${f.name}${f.formal ? "已经立国" : "尚在势力阶段"}，${last?.houseName ?? "现有王统"}仍在延续。眼前可见的是开创与承接，未来的兴亡尚不属于这段已成的历史。`);
+      : `${f.name}${f.formal ? "已经立国" : "尚在势力阶段"}，${last?.houseName ?? "现有王统"}仍在延续。开创之后已有承接，眼前的独立建制仍由现任统治者延续。`);
   return out.sort((a, b) => b.score - a.score || a.key.localeCompare(b.key));
 }

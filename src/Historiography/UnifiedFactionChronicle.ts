@@ -61,7 +61,7 @@ export function buildUnifiedFactionChronicle(c: UnifiedChronicleContext): Unifie
   const captures = getCapitalCaptureEvidence(events);
   const exiles = events.filter(e => e.type === "faction-exiled" && e.factionRole === "TARGET");
   const capturesByGroup = new Map<string, FactionNarrativeEvidence>(), capturesByCity = new Map<string, FactionNarrativeEvidence>();
-  const exileGroups = new Set(exiles.filter(e => e.historyGroupId).map(e => `${e.month}:${e.historyGroupId}`));
+  const exileGroups = new Set(exiles.filter(e => e.historyGroupId && !e.cityId).map(e => `${e.month}:${e.historyGroupId}`));
   const exileCities = new Set(exiles.filter(e => e.cityId).map(e => `${e.month}:${e.cityId}`));
   for (const capture of captures) {
     if (capture.factionRole !== "TARGET") continue;
@@ -79,8 +79,9 @@ export function buildUnifiedFactionChronicle(c: UnifiedChronicleContext): Unifie
     if (e.type === "faction-exiled" && e.factionRole === "TARGET") {
       const group = `exile:${e.month}:${e.historyGroupId ?? e.eventId}`;
       if (groups.has(group)) continue; groups.add(group);
-      const capture = (e.historyGroupId ? capturesByGroup.get(`${e.month}:${e.historyGroupId}`) : undefined) ??
-        (e.cityId ? capturesByCity.get(`${e.month}:${e.cityId}`) : undefined);
+      const groupedCapture = e.historyGroupId ? capturesByGroup.get(`${e.month}:${e.historyGroupId}`) : undefined;
+      const capture = (e.cityId ? capturesByCity.get(`${e.month}:${e.cityId}`) : undefined) ??
+        (groupedCapture && (!e.cityId || !groupedCapture.cityId || e.cityId === groupedCapture.cityId) ? groupedCapture : undefined);
       add(e.eventId, e.month, 108, `${capture?.rulerName ? `${eventPerson(capture)}亲征，` : ""}${capture?.actorName ?? e.actorName ?? ""}${capture?.actorName || e.actorName ? "攻陷" : ""}${e.cityName ?? capture?.cityName ?? "最后据点"}，${e.factionName}失去最后据点，王室转入流亡`, false, 3, "EXILE");
       continue;
     }

@@ -80,7 +80,7 @@ it("refreshes a participating foreign historical identity without replacing the 
 
 it("refreshes recorded own and verified foreign posthumous references without a history rewrite", () => {
   const c = fixture();
-  const foreign = { ...c.faction, name: "g", nameHistory: [{ name: "秦", startMonth: 0 }], sovereigntyHistory: [{ rank: "KING", startMonth: 0 }] };
+  const foreign = { ...c.faction, name: "g", nameHistory: [{ name: "秦", startMonth: 0 }], sovereigntyHistory: [{ rank: "KING" as const, startMonth: 0 }] };
   c.factions.set("g", foreign);
   const ruler = { ...c.dynasty.rulers[0], id: "g-r", houseName: "嬴氏", givenName: "康", status: "dead" as const, endYear: 90, deathMonth: 90, deathReason: "战死" as const, posthumousEpithet: "武" };
   WorldHistory.addEvent({ id: "foreign-fall", year: 80, type: "capital-fallen", actorFactionId: "g", targetFactionId: "f", rulerId: "g-r", cityName: "郢", title: "失都", category: "war", importance: "major" });
