@@ -1,3 +1,4 @@
+import type { RestorationBasis } from "./HistoricalRestorationRules";
 import FactionLifetimeRecords from "./FactionLifetimeRecord";
 import City from "../Components/City";
 import Block from "../Components/Block";
@@ -64,7 +65,8 @@ class FactionRegistryStore {
     city: City,
     year: number,
     remnantPopulation: number,
-    populationCause: "RESTORATION" | "GOD_ACTION" = "RESTORATION"
+    populationCause: "RESTORATION" | "GOD_ACTION" = "RESTORATION",
+    historicalBasis?: { basis: RestorationBasis; heldMonths: number }
   ) {
     if (!hasFormalStateIdentity(team)) {
       return false;
@@ -96,7 +98,8 @@ class FactionRegistryStore {
         city.name,
         spawned,
         city.id,
-        historyGroupId
+        historyGroupId,
+        historicalBasis ? { ...historicalBasis, rulerId: DynastyRegistry.getCurrentRuler(team.name)?.id } : undefined
       );
       DynastyRegistry.recordRestoration(team.name, eventId);
       return true;

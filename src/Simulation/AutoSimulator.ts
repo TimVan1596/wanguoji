@@ -525,6 +525,8 @@ export default class AutoSimulator {
     return this.lastSimulationSubsystem;
   }
 
+  getRestorationDiagnostics() { return this.events.getRestorationDiagnostics(); }
+
   getPeacefulPoliticalTransitionDiagnostics() {
     const revision=WorldHistory.getRevision(),count=WorldHistory.getEventCount();
     if(!this.transitionHistoryCache || this.transitionHistoryCache.revision!==revision || this.transitionHistoryCache.count!==count) {

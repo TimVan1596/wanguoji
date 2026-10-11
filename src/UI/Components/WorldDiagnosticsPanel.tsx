@@ -379,6 +379,7 @@ function WorldDiagnosticsPanelContent() {
       ["Diplomacy", core?.getDiplomacyDiagnostics()],
       ["纳土归附诊断", core?.getPeacefulSubmissionDiagnostics()],
       ["和平政治转型诊断", core?.getPeacefulPoliticalTransitionDiagnostics()],
+      ["复国统计", core?.getRestorationDiagnostics()],
       ["Provisional ruler diagnostics", provisionalRulers],
       ["Frame Performance", coreReportData.performance],
       ["Simulation Step Performance", stepPerformance],
@@ -556,6 +557,7 @@ function WorldDiagnosticsPanelContent() {
         ].join("\n")}</Typography>
       </details>}
       {core && <details><summary>和平政治转型诊断</summary><Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 11 }}>{core.getPeacefulPoliticalTransitionDiagnostics()?.chineseSummary}</Typography><Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(core.getPeacefulPoliticalTransitionDiagnostics())}</Typography></details>}
+      {core && <details><summary>复国统计</summary><Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 11 }}>{core.getRestorationDiagnostics()}</Typography></details>}
       {core && <details><summary>纳土归附诊断</summary><Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(core.getPeacefulSubmissionDiagnostics())}</Typography></details>}
       {core && <details>
         <summary>Diplomacy II</summary>

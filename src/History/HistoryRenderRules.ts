@@ -243,7 +243,8 @@ export function formatHistoryEventTitle(
     return `${opening}，${uniqueStrings(clauses).join("，")}。`;
   }
   if (event.metadata?.groupedRestorationEventCount) {
-    return `${name(event.actorFactionId)}国在${event.cityName ?? ""}复国`;
+    const place = event.metadata?.restorationBasis === "FORMER_CAPITAL" ? "旧都" : event.metadata?.restorationBasis === "LONG_RULE" ? "长期统治地" : "";
+    return `${name(event.actorFactionId)}国在${place}${event.cityName ?? ""}复国`;
   }
   if (event.type === "faction-exiled") {
     const factionName = name(event.targetFactionId ?? event.factionIds?.[0]);
@@ -269,7 +270,8 @@ export function formatHistoryEventTitle(
       : `${conquerorName}灭${fallenName}`;
   }
   if (event.type === "faction-restored") {
-    return `${name(event.actorFactionId)}国在${event.cityName ?? ""}复国`;
+    const place = event.metadata?.restorationBasis === "FORMER_CAPITAL" ? "旧都" : event.metadata?.restorationBasis === "LONG_RULE" ? "长期统治地" : "";
+    return `${name(event.actorFactionId)}国在${place}${event.cityName ?? ""}复国`;
   }
   if (event.type === "world-unification") {
     return `${name(event.actorFactionId)}统一天下`;
@@ -390,7 +392,7 @@ export function formatHistoryEventDescription(
   if (event.type === "faction-restored") {
     const remnantPopulation = event.metadata?.remnantPopulation;
     return remnantPopulation !== undefined
-      ? `${remnantPopulation}名${name(event.actorFactionId)}国残部响应。`
+      ? `${remnantPopulation}名${name(event.actorFactionId)}国残部响应。${event.metadata?.restorationBasis === "FORMER_CAPITAL" ? "复国依据为已记录的正式旧都及历史持有。" : event.metadata?.restorationBasis === "LONG_RULE" ? "复国依据为已记录的长期统治。" : ""}`
       : event.description;
   }
   if (event.type === "empire-split") {

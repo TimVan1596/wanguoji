@@ -905,7 +905,8 @@ export class WorldHistoryStore {
     cityName: string,
     remnantPopulation: number,
     cityId?: string,
-    historyGroupId?: string
+    historyGroupId?: string,
+    historicalBasis?: { basis: "FORMER_CAPITAL" | "LONG_RULE"; heldMonths: number; rulerId?: string }
   ) {
     this.extinctFactions.delete(teamName);
     return this.addEvent({
@@ -919,8 +920,11 @@ export class WorldHistoryStore {
       actorFactionId: teamName,
       cityId,
       cityName,
+      ...(historicalBasis?.rulerId ? { rulerId: historicalBasis.rulerId } : {}),
       metadata: {
         remnantPopulation,
+        ...(historicalBasis ? { restorationBasis: historicalBasis.basis, historicalHeldMonths: historicalBasis.heldMonths,
+          ...(historicalBasis.rulerId ? { rulerId: historicalBasis.rulerId } : {}) } : {}),
       },
       historyGroupId,
       importance: "major",

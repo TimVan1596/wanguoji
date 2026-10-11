@@ -136,6 +136,63 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     hydrateWorldSave(core,JSON.parse(JSON.stringify(first)));expect(exportWorldSave(core)).toEqual(first);
     expect(WorldHistory.getEvents().filter(e=>e.type === "faction-merged")).toHaveLength(1);
   });
+  it("真实旧都复国执行后V13导出、严格校验、恢复再导出一致，不回填旧历史", async () => {
+    const { default: RealTeam } = await vi.importActual<typeof import("../Components/Team")>("../Components/Team");
+    const { default: RealCity } = await vi.importActual<typeof import("../Components/City")>("../Components/City");
+    const { default: WorldRemnants } = await import("../Simulation/WorldRemnants");
+    const { default: Danmu } = await import("../Live/Danmu");
+    const core = target(3), base = fixture().factions[0]; core.prepareForHydration();
+    vi.stubGlobal("Phaser", { Math: { Clamp: (v: number, min: number, max: number) => Math.max(min, Math.min(max, v)) } });
+    const fs = ["qin", "old"].map((name, i) => ({ ...base, factionId: name, displayName: name, houseName: `姓${i}氏`, stateFoundedMonth: 0,
+      origin: { type: "INITIAL", foundedMonth: 0 }, capitalCityId: undefined, homeGridX: 0 }));
+    const ts: any[] = fs.map(f => Object.assign(Object.create(RealTeam.prototype), f, {
+      name: f.factionId, firstFoundedYear: 0, currentActiveSinceYear: 0, cumulativeActiveYears: 0, restorationYears: [], cities: [], users: new Set(),
+      blocks: { children: { entries: [], size: 0 } }, farms: { npcs: new Map(), init() {} }, removeRulerUnit() {},
+      addCity(this: any, c: any) { if (!this.cities.includes(c)) this.cities.push(c); }, removeCity(this: any, c: any) { this.cities = this.cities.filter((v: any) => v !== c); },
+      exportState(this: any): any { return { ...f, status: this.status, capitalCityId: this.capitalCity?.id, lastExiledMonth: this.lastExiledYear,
+        currentActiveSinceMonth: this.currentActiveSinceYear, cumulativeActiveMonths: this.cumulativeActiveYears, restorationMonths: [...this.restorationYears] }; },
+    }));
+    core.teams = ts; Object.defineProperty(core, "totalCells", { value: 3 });
+    const cells = core.map.blocks.map((row: any) => row[0]); ts[0].blocks.children.entries = cells; ts[0].blocks.children.size = cells.length;
+    cells.forEach((b: any) => {
+      b.team = ts[0]; b.width = 32; b.height = 32; b.updateCityDisplay = () => undefined;
+      b.claimForTeam = (team: any) => { const prior = b.team; prior.blocks.children.entries = prior.blocks.children.entries.filter((v: any) => v !== b);
+        prior.blocks.children.size = prior.blocks.children.entries.length; team.blocks.children.entries.push(b); team.blocks.children.size = team.blocks.children.entries.length; b.team = team; };
+    });
+    const history = [{ year: 0, type: "founded", title: "建城", newOwnerFactionId: "qin" },
+      { year: 10, type: "captured", title: "攻陷", previousOwnerFactionId: "qin", newOwnerFactionId: "old" },
+      { year: 20, type: "capital-relocated", title: "迁都", newOwnerFactionId: "old", wasCapital: true },
+      { year: 400, type: "captured", title: "失守", previousOwnerFactionId: "old", newOwnerFactionId: "qin" }];
+    const cities = [0, 1].map(i => Object.assign(Object.create(RealCity.prototype), {
+      id: i ? "active" : "old-city", name: i ? "现城" : "旧城", founderFactionId: "qin", ownerFactionId: "qin", foundedYear: 0,
+      block: cells[i], fortifiedCells: [cells[i]], isCapital: Boolean(i), loyalty: i ? 80 : 0, history: i ? [history[0]] : history,
+      captureCount: i ? 0 : 2, devastation: 0, defense: 7, maxDefense: 10, lastCapturedYear: i ? undefined : 400,
+      siegeContacts: new Map(), underSiege: false, destroyed: false, isHistoricCity: false, isIndestructible: false,
+      calculateMaxDefense: () => 10, rebuildFortifiedZone() {}, clearSiegeState() {}, refreshZoneVisual() {}, isInCaptureGrace: () => false,
+    }));
+    ts[0].cities = cities; cities.forEach((c, i) => cells[i].restoreCanonicalState({ owner: ts[0], city: c, hp: 7, isHome: true, isCityCenter: true }));
+    cells[2].restoreCanonicalState({ owner: ts[0], city: undefined, hp: 0, isHome: false, isCityCenter: false });
+    vi.spyOn(DynastyRegistry, "ensureRulerUnit").mockImplementation(() => undefined);
+    vi.spyOn(Danmu, "Apply").mockReturnValue(ts[1]); // population rendering adapter; registry spawning loop remains real
+    worldRandom.initialize("old-capital-v13");
+    const sim = core.simulator = new AutoSimulator(false); sim.startWorld(ts, 3, {});
+    ts[1].markExiled(400); DynastyRegistry.markExiled(ts[1], 400);
+    WorldRemnants.add("old", 1, 400); WorldExiles.start(ts[1], 400, 1); WorldExiles.get("old")!.legitimacy = 80;
+    const rulerId = DynastyRegistry.getCurrentRuler("old")!.id;
+    const runtime = sim as any; runtime.clock.importState({ worldMonth: 480, elapsedMs: 0, running: false });
+    const draw = vi.spyOn(worldRandom, "next").mockReturnValue(.001);
+    runtime.events.checkRestorations(480, ts); draw.mockRestore(); sim.setRunning(false);
+    expect(ts[1].status).toBe("ACTIVE"); expect(cities[0].ownerFactionId).toBe("old"); expect(cells[0].team).toBe(ts[1]);
+    expect(WorldRemnants.get("old")).toBeUndefined(); expect(ts[1].restorationYears).toEqual([480]);
+    const save = exportWorldSave(core); expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
+    const restoration = (save.worldHistory.events as WorldEvent[]).find((e: any) => e.type === "faction-restored")!;
+    expect(restoration.metadata).toMatchObject({ restorationBasis: "FORMER_CAPITAL", historicalHeldMonths: 390, rulerId });
+    const rng = worldRandom.exportState(); hydrateWorldSave(core, JSON.parse(JSON.stringify(save)));
+    expect(exportWorldSave(core)).toEqual(save); expect(worldRandom.exportState()).toEqual(rng);
+    hydrateWorldSave(core, JSON.parse(JSON.stringify(save))); expect(exportWorldSave(core)).toEqual(save);
+    expect(WorldHistory.getEvents().filter(e => e.type === "faction-restored")).toHaveLength(1);
+    vi.unstubAllGlobals();
+  });
   it("starts the actual seven INITIAL world, exports V13, validates, hydrates twice without household regeneration", () => {
     const core = target(7), base = fixture().factions[0];
     const fs = Array.from({ length: 7 }, (_, i) => ({ ...base, factionId: `house-${i}`, displayName: `国${i}`, houseName: `姓${i}氏`,
