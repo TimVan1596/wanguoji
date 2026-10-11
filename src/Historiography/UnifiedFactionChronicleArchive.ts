@@ -13,7 +13,7 @@ export function getUnifiedFactionChronicle(dynasty: Dynasty, faction: Historical
   if (!lifetime) return undefined;
   const stamp = JSON.stringify([worldMonth, WorldHistory.getRevision(), lifetime, faction.nameHistory, faction.status,
     faction.terminationTargetFactionId, faction.stateFoundedMonth, faction.firstFoundedYear, faction.origin, faction.restorationYears,
-    faction.sovereigntyHistory, FactionLifetimeRecords.getTotalWorldBlocks()]);
+    faction.sovereigntyHistory, dynasty.rulers.map(r => [r.id, r.templeName, r.posthumousEpithet, r.deathMonth, r.deathReason]), FactionLifetimeRecords.getTotalWorldBlocks()]);
   const identityStamp = (ids: readonly string[]) => JSON.stringify(ids.map(id => {
     const f = factions.get(id); return [id, f?.displayName, f?.nameHistory, f?.sovereigntyHistory];
   }));
