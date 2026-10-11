@@ -43,12 +43,12 @@ const text = (c = fixture()) => build(c).paragraphs.join("");
 describe("unified factual chronicle", () => {
   it("weaves a single inherited house into one account, with distinct founding rulers and a measured peak", () => {
     const c = fixture(); c.factions = new Map([...c.factions, ["enemy", { ...c.faction, name: "enemy", displayName: "齐", nameHistory: [{ name: "齐", startMonth: 0 }] }]]);
-    // A ruler who inherited after exile began is recorded without inventing kinship.
-    c.dynasty.rulers[16].accessionYear = month(542, 6);
+    // Includes the incumbent who entered exile, then the real exile successor.
+    c.dynasty.rulers[15].endYear = month(540);
     const a = build(c), s = a.paragraphs.join("");
     expect(a.title).toBe("《沂国史》"); expect(s).toContain("宋昭开创宋氏"); expect(s).toContain("宋景在位时");
     expect(s).toContain("493年10月"); expect(s).toContain("526格"); expect(s).toContain("42.9%"); expect(s).toContain("齐攻陷郢");
-    expect(s).toContain("宋恺、宋景怀先后承接流亡王统"); expect(s).toContain("宋景怀实际去世，同月沂政权彻底终结");
+    expect(s).toContain("宋恺、宋景怀先后承统"); expect(s).toContain("宋景怀实际去世，同月沂政权彻底终结");
     expect(s).toContain("18位统治者"); expect(s).not.toMatch(/史家曰|王统总评|国史简述|造成|全部死亡/);
     console.info(`Unified fixture 沂: ${a.length} characters`); expect(a.length).toBeLessThan(550);
   });
@@ -56,11 +56,13 @@ describe("unified factual chronicle", () => {
     const c = fixture(); c.faction.stateFoundedMonth = month(1827, 12); c.faction.firstFoundedYear = month(1796); c.faction.terminationMonth = month(2466, 11);
     c.faction.nameHistory = [{ name: "邯郸义军", startMonth: month(1796), endMonth: month(1827, 12) - 1 }, { name: "郸", startMonth: month(1827, 12) }];
     c.worldMonth = month(2500); c.lifetime.lastObservedMonth = month(2466, 11); c.lifetime.terminal!.month = month(2466, 11); c.lifetime.peakTerritoryBlocks.month = month(1900);
-    c.dynasty.rulers = [ruler("x", "萧氏", "仲宁", month(1796), month(1820), 1), ruler("state", "萧氏", "弼", month(1820), month(2466, 11), 2), ruler("q", "钱氏", "翊", month(2466, 11), month(2466, 11), 3)];
+    c.dynasty.rulers = [ruler("x", "萧氏", "仲宁", month(1796), month(1826), 1), ruler("state", "萧氏", "弼", month(1826), month(1850), 2),
+      ...Array.from({ length: 25 }, (_, i) => ruler(`xiao${i}`, "萧氏", `君${i}`, month(1850 + i * 24), i === 24 ? month(2466, 11) : month(1874 + i * 24), i + 3)),
+      ruler("q", "钱氏", "翊", month(2466, 11), month(2466, 11), 28)];
     c.dynasty.houseEpochs = [{ houseName: "萧氏", startMonth: month(1796), endMonth: month(2466, 11) - 1, foundingRulerId: "x", startReason: "FOUNDING" },
       { houseName: "钱氏", startMonth: month(2466, 11), foundingRulerId: "q", startReason: "NATURAL_HOUSE_SUCCESSION" }];
     c.events = [event("state", "state-founded", month(1827, 12), { rulerId: "state" }), event("end", "faction-extinct", month(2466, 11), { targetFactionId: "f" })];
-    const s = text(c); console.info(`Unified fixture 郸: ${s.length} characters`); expect(s).toContain("萧弼在位时"); expect(s).toContain("钱翊自然易姓续统"); expect(s).toContain("同月，郸政权彻底终结");
+    const s = text(c); console.info(`Unified fixture 郸: ${s.length} characters`); expect(s).toContain("萧弼在位时"); expect(s).toContain("钱翊自然易姓续统"); expect(s).toContain("28位统治者"); expect(s).toContain("同月，郸政权彻底终结");
     expect(s).not.toMatch(/篡朝|0个月|钱翊在位时.*建国|钱翊.*实际去世/);
   });
   it("retains the earlier house, a verified usurper and the real current holder in an ACTIVE nation", () => {

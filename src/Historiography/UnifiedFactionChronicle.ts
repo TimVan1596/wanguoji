@@ -45,6 +45,14 @@ export function buildUnifiedFactionChronicle(c: UnifiedChronicleContext): Unifie
     `疆域达到${peak.source === "MONTHLY" ? "月度记录" : "终结前观测"}峰值${peak.value}格，占世界${(fact.peakAbsoluteWorldShare * 100).toFixed(1)}%`);
   const captures = getCapitalCaptureEvidence(events);
   const exiles = events.filter(e => e.type === "faction-exiled" && e.factionRole === "TARGET");
+  const capturesByGroup = new Map<string, FactionNarrativeEvidence>(), capturesByCity = new Map<string, FactionNarrativeEvidence>();
+  const exileGroups = new Set(exiles.filter(e => e.historyGroupId).map(e => `${e.month}:${e.historyGroupId}`));
+  const exileCities = new Set(exiles.filter(e => e.cityId).map(e => `${e.month}:${e.cityId}`));
+  for (const capture of captures) {
+    if (capture.factionRole !== "TARGET") continue;
+    if (capture.historyGroupId) capturesByGroup.set(`${capture.month}:${capture.historyGroupId}`, capture);
+    if (capture.cityId) capturesByCity.set(`${capture.month}:${capture.cityId}`, capture);
+  }
   const groups = new Set<string>();
   const validActor = (e: FactionNarrativeEvidence) => ["ACTOR", "CONQUEROR"].includes(e.factionRole);
   for (const e of events) {
@@ -52,8 +60,8 @@ export function buildUnifiedFactionChronicle(c: UnifiedChronicleContext): Unifie
     if (e.type === "faction-exiled" && e.factionRole === "TARGET") {
       const group = `exile:${e.month}:${e.historyGroupId ?? e.eventId}`;
       if (groups.has(group)) continue; groups.add(group);
-      const capture = captures.find(x => x.month === e.month && x.factionRole === "TARGET" &&
-        (x.historyGroupId && x.historyGroupId === e.historyGroupId || x.cityId && x.cityId === e.cityId));
+      const capture = (e.historyGroupId ? capturesByGroup.get(`${e.month}:${e.historyGroupId}`) : undefined) ??
+        (e.cityId ? capturesByCity.get(`${e.month}:${e.cityId}`) : undefined);
       add(e.eventId, e.month, 108, `${capture?.rulerName ? `${capture.rulerName}亲征，` : ""}${capture?.actorName ?? e.actorName ?? ""}${capture?.actorName || e.actorName ? "攻陷" : ""}${e.cityName ?? capture?.cityName ?? "最后据点"}，${e.factionName}失去最后据点，王室转入流亡`, false, 3);
       continue;
     }
@@ -70,7 +78,7 @@ export function buildUnifiedFactionChronicle(c: UnifiedChronicleContext): Unifie
     if (e.type === "empire-split" && e.factionRole === "ACTOR") add(e.eventId, e.month, 70, `${e.factionName}建立于分裂之际`);
   }
   for (const e of captures) {
-    if (!e.cityName || exiles.some(x => x.month === e.month && (x.historyGroupId && x.historyGroupId === e.historyGroupId || x.cityId && x.cityId === e.cityId))) continue;
+    if (!e.cityName || (e.factionRole === "TARGET" && ((e.historyGroupId && exileGroups.has(`${e.month}:${e.historyGroupId}`)) || (e.cityId && exileCities.has(`${e.month}:${e.cityId}`))))) continue;
     if (validActor(e)) add(e.eventId, e.month, 82, `${e.factionName}攻取${e.targetName ?? "敌国"}都${e.cityName}${e.rulerName ? `，此役由${e.rulerName}亲征` : ""}`);
     else if (e.factionRole === "TARGET") add(e.eventId, e.month, 79, `${e.actorName ? `${e.actorName}攻陷` : ""}${e.factionName}都${e.cityName}${e.actorName ? "" : "失守"}`);
   }
@@ -102,13 +110,13 @@ export function buildUnifiedFactionChronicle(c: UnifiedChronicleContext): Unifie
   const lastExile = exiles.at(-1);
   if (lastExile && !events.some(e => e.type === "faction-restored" && e.month > lastExile.month && validActor(e))) {
     const known = new Set(phases.flatMap(p => p.rulerIds));
-    const successors = (c.dynasty?.rulers ?? []).filter(r => known.has(r.id) && r.accessionYear !== undefined && r.accessionYear > lastExile.month && r.accessionYear <= end)
+    const successors = (c.dynasty?.rulers ?? []).filter(r => known.has(r.id) && r.accessionYear !== undefined && r.accessionYear <= end && (r.endYear ?? end) > lastExile.month)
       .sort((a, b) => a.accessionYear! - b.accessionYear! || a.id.localeCompare(b.id));
     if (successors.length) {
       const names = successors.slice(-2).map(person).join("、");
       // Insert before the dated terminal sentence, rather than after the end.
       const terminalIndex = selected.findIndex(x => x.order === 4);
-      sentences.splice(terminalIndex < 0 ? sentences.length : terminalIndex, 0, `失国以后，${names}${successors.length > 1 ? "先后" : ""}承接流亡王统。`);
+      sentences.splice(terminalIndex < 0 ? sentences.length : terminalIndex, 0, `流亡期间，${names}${successors.length > 1 ? "先后" : ""}承统。`);
     }
   }
   const actualHolders = new Set(phases.flatMap(p => p.rulerIds)).size;
@@ -128,13 +136,17 @@ export function buildUnifiedFactionChronicle(c: UnifiedChronicleContext): Unifie
   if (judgment) sentences.push(judgment);
   // Exceptionally many/long names remain bounded, without cutting a factual
   // sentence halfway. All phase counts survive even when individual episodes omit.
-  const bounded: string[] = [];
+  const narrative = sentences.slice(0, narrativeSentenceCount);
   const conclusion = sentences.slice(narrativeSentenceCount).join("");
-  let used = conclusion.length;
-  for (const sentence of sentences.slice(0, narrativeSentenceCount)) {
-    if (used + sentence.length <= 1600) { bounded.push(sentence); used += sentence.length; }
-  }
-  const text = bounded.join("") + (conclusion.length <= 1600 ? conclusion : "政治阶段众多，详见历代君主档案。");
+  const closing = conclusion.length <= 1600 ? conclusion : "政治阶段众多，详见历代君主档案。";
+  const kept = new Set<number>();
+  let used = closing.length;
+  const preserve = (i: number) => { if (!kept.has(i) && used + narrative[i].length <= 1600) { kept.add(i); used += narrative[i].length; } };
+  // Reserve the actual opening and terminal before optional middle episodes.
+  if (narrative.length) preserve(0);
+  if (fact.terminal && narrative.length > 1) preserve(narrative.length - 1);
+  narrative.forEach((_, i) => preserve(i));
+  const text = narrative.filter((_, i) => kept.has(i)).join("") + closing;
   return { title: `《${fact.name}${fact.formal && !fact.name.endsWith("国") ? "国" : ""}史》`, range: `${date(fact.foundedMonth)}～${fact.terminal ? date(end) : "今"}`,
     paragraphs: [text], eventIds: selected.map(x => x.key).filter(id => events.some(e => e.eventId === id)), phaseCount: phases.length, length: text.length };
 }

@@ -1,3 +1,4 @@
+import { buildUnifiedFactionChronicle } from "../Historiography/UnifiedFactionChronicle";
 import { deriveHouseAssessments } from "../Historiography/DynastyHouseHistoriography";
 import { setFixtureLifetimeRecords } from "./testing/FactionLifetimeFixture";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -88,7 +89,17 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     const houseBefore = state.dynasties.map(dynasty => deriveHouseAssessments({ dynasty,
       faction: { name: dynasty.factionId, displayName: dynasty.factionId, color: 1, status: "ACTIVE", stateFoundedMonth: 0 },
       factions: new Map(), events: [], worldMonth: save.world.worldMonth }));
+    const articles = (snapshot: ReturnType<typeof createEmptyWorldSaveV9>, dynasties: typeof state.dynasties) => {
+      const factions = new Map(snapshot.factions.map(f => [f.factionId, { ...f, name: f.factionId,
+        firstFoundedYear: f.firstFoundedMonth, cumulativeActiveYears: f.cumulativeActiveMonths,
+        restorationYears: f.restorationMonths, origin: undefined }]));
+      return dynasties.map((dynasty, i) => buildUnifiedFactionChronicle({ dynasty, faction: factions.get(dynasty.factionId)!,
+        factions, worldMonth: snapshot.world.worldMonth, events: snapshot.worldHistory.events, phases: houseBefore[i],
+        lifetime: snapshot.factionLifetime.records.find(r => r.factionId === dynasty.factionId)!, totalWorldBlocks: snapshot.factionLifetime.totalWorldBlocks }));
+    };
+    const articleBefore = articles(encoded, state.dynasties);
     hydrateWorldSave(core, encoded); const first = exportWorldSave(core);
+    expect(articles(first, DynastyRegistry.exportState().dynasties)).toEqual(articleBefore);
     const houseAfter = DynastyRegistry.exportState().dynasties.map(dynasty => deriveHouseAssessments({ dynasty,
       faction: { name: dynasty.factionId, displayName: dynasty.factionId, color: 1, status: "ACTIVE", stateFoundedMonth: 0 },
       factions: new Map(), events: [], worldMonth: first.world.worldMonth }));
