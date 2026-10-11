@@ -38,7 +38,18 @@ PosthumousRules 使用的是独立 RulerLegacyEvidence，不使用这里的 LAST
 
 未新增 canonical 字段；不改变 schema、IndexedDB、死亡或任期计算、国家国评、时代、战争、外交、人口、继承、篡朝、复国、归并、纳土、随机数消费。测试允许 mock Phaser 资源构建，但使用真实 DTO、Validator、Hydrator、Exporter 与派生函数，不冒充浏览器验收。
 
-自动验证结果在完成后补录。本机 Vitest 0.34.6 用 VITEST_MAX_THREADS=4 / VITEST_MIN_THREADS=1 限制并发，使用真实 desktop:build / desktop:compile / desktop:renderer-debug-build 脚本。
+自动验证最终结果（2026-10-11）：
+
+- `VITEST_MAX_THREADS=4 VITEST_MIN_THREADS=1 pnpm test`：193个文件、1270项测试全部通过；本轮新增16项回归。
+- `pnpm build`：通过。
+- `pnpm desktop:build`：通过，包含 production renderer 和 Electron TypeScript 编译。
+- `pnpm desktop:compile`：单独执行通过。
+- `pnpm desktop:renderer-debug-build`：通过，含 renderer/debug source map/music 资产验证。
+- `git diff --check`、`git diff --cached --check`：通过。
+
+首次执行修正了测试夹具的零城危局上下文和 JSON DTO 中的 undefined 清理；完整测试首次失败仅是既有包装测试仍期待0.99.128，已同步为0.99.129且保留原安全检查。TypeScript 指出了可选 accessionYear 和通用 DTO unknown 类型，补齐显式约束后全部构建及最终完整测试通过。未删除或弱化既有断言。既有大 bundle 警告与测试环境 redux-persist noop storage 提示仍在，不构成本轮新增玩法或运行路径。
+
+本机 Vitest 0.34.6 用上述环境变量限制并发；不使用该版本不支持的 maxWorkers/minWorkers 参数。自动结果仅验证代码和数据，UI及人物评论自然性仍等待人工。
 
 ## 人工检查：直接读取现有 V13 长局
 

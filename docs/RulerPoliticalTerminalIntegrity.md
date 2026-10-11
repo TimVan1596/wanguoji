@@ -89,11 +89,11 @@ V12 明确拒绝：**此存档为旧版V12，当前V13不支持读取，请新�
 
 所有战争、人口、外交、继承顺序、篡朝、分裂、复国、灭亡、合邦与纳土条件/概率不变；没有新 RNG draw。国家史论、时代图鉴、Era Highlights、庙谥评分体系和布局冻结。没有退位后的生活模拟；生死未载不会自动追补死亡，也不能保证宗族成员后来的真实寿命。内部史料损坏不通过猜测修复。
 
-自动验证通过后仍等待用户；P0 的代码修复和真实 UI Gate 分开报告，不提前宣称人工闭环。
+自动验证与真实 UI Gate 分开记录。下列 v31c 人工检查已由用户完成；v31c1 不再要求新建世界，而是读取现有 V13 长局核对任期角色。
 
 用户已明确回传 v31c / V13 人工 PASS：七国新世界、继承与长期模拟、实际死亡、保存读取继续运行、宗谱与历史 UI 正常。该 Gate 已关闭，生死模型冻结。后续 v31c1 只修派生任期角色，见 [RulerTenureHistoricalRoleIntegrity.md](RulerTenureHistoricalRoleIntegrity.md)。
 
-## 人工 Chrome / Electron Gate
+## 已完成的 v31c 人工 Chrome / Electron Gate
 
 运行 `pnpm desktop:start:debug`。**先新建七国世界，再保存新的 V13。旧 V12 不用于验收。**
 
