@@ -35,7 +35,7 @@ import {
 import { PopulationMutationContext, PopulationTransitionAudit } from "./PopulationTransitionAudit";
 import Diplomacy, { DiplomacySystem } from "../Politics/Diplomacy";
 import { createDiplomacyEventMetadata, describeDiplomacySigning, describeDiplomacyRenewal } from "../Politics/DiplomacyPresentation";
-import { diagnoseStrategicUnionCandidates, findStrategicUnionCandidate, StrategicUnionCandidate, StrategicUnionCandidateDiagnostic } from "./StrategicUnionSystem";
+import { unionPressureObservations, diagnoseStrategicUnionCandidates, findStrategicUnionCandidate, StrategicUnionCandidate, StrategicUnionCandidateDiagnostic } from "./StrategicUnionSystem";
 import { RollingStepPerformance } from "./RollingStepPerformance";
 
 const debugProfileEnabled = runtimeProfilingEnabled;
@@ -312,11 +312,7 @@ export default class AutoSimulator {
             sameOriginPairs+=Number(areSameOriginFactions(active[a],active[b]));
           this.unionObservations.evaluation(this.clock.year,unionEvaluations.map(r=>({
             pair:[r.factionAId,r.factionBId],blockers:r.blockers,preliminary:r.sameOrigin,
-            sample:{...r,candidate:undefined},extra:{
-              pressureOnlyAdditionalChecks:Number(r.blockers.length===1&&r.blockers[0]==="NO_PRESSURE_TRIGGER"),
-              otherGatesPassMissingCommonThreat:Number(r.blockers.every(b=>b==="NO_PRESSURE_TRIGGER")&&!r.commonThreatStillRelevant),
-              otherGatesPassNotVeryWeak:Number(r.blockers.every(b=>b==="NO_PRESSURE_TRIGGER")&&!r.veryWeak)
-            }
+            sample:{...r,candidate:undefined},extra:unionPressureObservations(r)
           })),{allNationalPairs:active.length*(active.length-1)/2,sameOriginPairs,
             formalAlliancePairs:unionEvaluations.length,allianceAndSameOriginPairs:unionEvaluations.filter(r=>r.sameOrigin).length});
           this.strategicUnionDiagnostics = unionEvaluations

@@ -225,3 +225,13 @@ function isBilateralWarEvent(event: WorldEvent, aId: string, bId: string) {
     .filter((id): id is string => Boolean(id)));
   return factions.has(aId) && factions.has(bId);
 }
+
+/** Counts alternate pressure paths independently; they are not mutually exclusive blockers. */
+export function unionPressureObservations(row: StrategicUnionCandidateDiagnostic) {
+  const otherGatesPass=row.blockers.every(b=>b === "NO_PRESSURE_TRIGGER");
+  return {
+    pressureOnlyAdditionalChecks:Number(row.blockers.length===1&&row.blockers[0] === "NO_PRESSURE_TRIGGER"),
+    otherGatesPassMissingCommonThreat:Number(otherGatesPass&&!row.commonThreatStillRelevant),
+    otherGatesPassNotVeryWeak:Number(otherGatesPass&&!row.veryWeak),
+  };
+}

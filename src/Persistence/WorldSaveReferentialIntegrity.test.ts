@@ -85,16 +85,21 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     Object.defineProperty(core, "totalCells", { value: 7 });
     vi.spyOn(DynastyRegistry, "ensureRulerUnit").mockImplementation(() => undefined);
     worldRandom.initialize("household-new-world-v13");
-    core.simulator = new AutoSimulator(); core.simulator.startWorld(ts, 7, {}); core.simulator.setRunning(false);
+    core.simulator = new AutoSimulator(true); core.simulator.startWorld(ts, 7, {}); core.simulator.setRunning(false);
     // Runtime objects are Phaser adapters; politics, simulator startup, exporter, validator and hydrator are real.
     const before = exportWorldSave(core, { createdAt: "2026-10-11T00:00:00Z" });
     expect(before.saveSchemaVersion).toBe(13); expect(before.dynasties).toHaveLength(7);
     expect(before.dynasties.some(d => (d.rulers as RulerSaveV13[]).length > 2)).toBe(true);
     expect(validateWorldSave(before)).toEqual({ valid: true, errors: [] });
     const rng = worldRandom.exportState(); const init = vi.spyOn(DynastyRegistry, "initializeFaction");
+    (core.simulator as any).unionObservations.evaluation(0,[]);
+    expect(core.simulator.getPeacefulPoliticalTransitionDiagnostics().strategicUnion.sessionCumulative.evaluationTicks).toBe(1);
     hydrateWorldSave(core, JSON.parse(JSON.stringify(before)));
     const after = exportWorldSave(core, { createdAt: before.createdAt });
     expect(after).toEqual(before); expect(worldRandom.exportState()).toEqual(rng); expect(init).not.toHaveBeenCalled();
+    expect(core.simulator.getPeacefulPoliticalTransitionDiagnostics()).toMatchObject({worldMonth:0,
+      peacefulSubmission:{sessionStartMonth:0,sessionCumulative:{observedWorldMonths:0,evaluationTicks:0}},
+      strategicUnion:{sessionStartMonth:0,sessionCumulative:{observedWorldMonths:0,evaluationTicks:0}}});
     hydrateWorldSave(core, JSON.parse(JSON.stringify(after)));
     expect(exportWorldSave(core, { createdAt: before.createdAt })).toEqual(before); expect(init).not.toHaveBeenCalled();
     expect(new Set(before.dynasties.flatMap(d => (d.rulers as RulerSaveV13[]).map(r => r.rulerId))).size)

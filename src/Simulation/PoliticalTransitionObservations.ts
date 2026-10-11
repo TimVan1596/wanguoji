@@ -7,6 +7,7 @@ export interface TransitionCheck {
   sample?: object;
 }
 const MAX_UNIQUE_PAIRS = 4096;
+const MAX_ANNUAL_UNIQUE_PAIRS = 256;
 const empty = () => ({ observedWorldMonths: 0, evaluationTicks: 0, pairChecks: 0,
   preliminaryEligiblePairs: 0, fullyEligibleChecks: 0, selectedAttempts: 0,
   successfulTransitions: 0, executionFailures: 0, blockerCounts: {} as Record<string, number>,
@@ -29,10 +30,12 @@ export class PoliticalTransitionObservations {
   private lastEvaluationMonth = -1;
   private startMonth = 0;
   private samples: object[] = [];
+  private pairRevision=0;
+  private recentUniqueCache?: {revision:number;year:number;count:number;overflow:boolean};
   constructor(readonly enabled = true) {}
   reset(month = 0) {
     this.cumulative = empty(); this.buckets.clear(); this.pairs.clear(); this.overflow = false;
-    this.startMonth = this.lastObservedMonth = month; this.lastEvaluationMonth = -1; this.samples = [];
+    this.startMonth = this.lastObservedMonth = month; this.lastEvaluationMonth = -1; this.samples = [];this.pairRevision++;this.recentUniqueCache=undefined;
   }
   private bucket(month: number) {
     const year = Math.floor((month - 1) / 12);
@@ -51,9 +54,10 @@ export class PoliticalTransitionObservations {
     if (!this.enabled || this.lastEvaluationMonth === month) return;
     this.lastEvaluationMonth = month;
     const b = this.bucket(month), c = empty(); c.evaluationTicks = 1; c.pairChecks = rows.length; c.extra = { ...extra };
-    const insert = (set: Set<string>, key: string) => {
+    this.pairRevision++;
+    const insert = (set: Set<string>, key: string, cap=MAX_UNIQUE_PAIRS) => {
       if (set.has(key)) return true;
-      if (set.size >= MAX_UNIQUE_PAIRS) return false;
+      if (set.size >= cap) return false;
       set.add(key); return true;
     };
     for (const row of rows) {
@@ -63,7 +67,7 @@ export class PoliticalTransitionObservations {
         c.fullyEligibleChecks++;
         const key = pairKey(row.pair);
         if (!insert(this.pairs,key)) this.overflow = true;
-        if (!insert(b.pairs,key)) b.overflow = true;
+        if (!insert(b.pairs,key,MAX_ANNUAL_UNIQUE_PAIRS)) b.overflow = true;
       }
       for (const blocker of blockers) c.blockerCounts[blocker] = (c.blockerCounts[blocker] ?? 0) + 1;
       if (blockers.length === 1) c.soleBlockerCounts[blockers[0]] = (c.soleBlockerCounts[blockers[0]] ?? 0) + 1;
@@ -83,26 +87,33 @@ export class PoliticalTransitionObservations {
       return success;
     } catch (error) {
       c.executionFailures = 1;
-      const name = error instanceof Error ? error.name : typeof error;
+      const name = error instanceof Error ? (["TypeError","RangeError","ReferenceError","SyntaxError","Error"].includes(error.name)?error.name:"OtherError") : typeof error;
       c.failureCounts[`EXECUTION_THROW:${name}`] = 1;
       throw error; // Diagnostics do not suppress or retry gameplay errors.
     } finally { add(this.cumulative,c); add(this.bucket(month).counts,c); }
   }
   snapshot(month: number) {
-    const recent = empty(), unique = new Set<string>(); let overflow = false;
+    const recent = empty();
     const year = Math.floor((month - 1) / 12);
     for (const [key,b] of this.buckets) if (key >= year - 99 && key <= year) {
-      add(recent,b.counts); overflow ||= b.overflow;
-      for (const pair of b.pairs) {
-        if (unique.size < MAX_UNIQUE_PAIRS || unique.has(pair)) unique.add(pair); else overflow = true;
+      add(recent,b.counts);
+    }
+    if(!this.recentUniqueCache || this.recentUniqueCache.revision!==this.pairRevision || this.recentUniqueCache.year!==year) {
+      const unique=new Set<string>();let overflow=false;
+      for(const [key,b] of this.buckets)if(key>=year-99&&key<=year){
+        overflow ||= b.overflow;
+        for(const pair of b.pairs)if(unique.size<MAX_UNIQUE_PAIRS || unique.has(pair))unique.add(pair);else overflow=true;
       }
+      this.recentUniqueCache={revision:this.pairRevision,year,count:unique.size,overflow};
     }
     const summary = (c:Counts, pairs:number, overflow:boolean) => ({...structuredClone(c),uniqueEligiblePairs:pairs,
-      uniquePairCountIsLowerBound:overflow, eligibilityRate:c.pairChecks ? c.fullyEligibleChecks/c.pairChecks : 0,
+      uniquePairCountIsLowerBound:overflow,
+      fullyEligibleChecksWithoutSelection:Math.max(0,c.fullyEligibleChecks-c.selectedAttempts),
+      topBlockers:Object.entries(c.blockerCounts).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,5), eligibilityRate:c.pairChecks ? c.fullyEligibleChecks/c.pairChecks : 0,
       successfulTransitionsPer100ObservedYears:c.observedWorldMonths ? c.successfulTransitions/c.observedWorldMonths*1200 : 0 });
     return { enabled:this.enabled, sessionStartMonth:this.startMonth, observationEndMonth:this.lastObservedMonth,
-      sessionCumulative:summary(this.cumulative,this.pairs.size,this.overflow),recent100Years:summary(recent,unique.size,overflow),
-      recentCandidates:structuredClone(this.samples), limits:{uniquePairCap:MAX_UNIQUE_PAIRS,annualBuckets:100,recentCandidates:10},
+      sessionCumulative:summary(this.cumulative,this.pairs.size,this.overflow),recent100Years:summary(recent,this.recentUniqueCache.count,this.recentUniqueCache.overflow),
+      recentCandidates:structuredClone(this.samples), limits:{uniquePairCap:MAX_UNIQUE_PAIRS,annualUniquePairCap:MAX_ANNUAL_UNIQUE_PAIRS,annualBuckets:100,recentCandidates:10},
       notes:'recent100Years为当前观察年及前99个观察历年桶；仅实际推进月份计入分母。unique超限为下界；多项阻断之和可超过pairChecks。读取V13/新建世界reset；旧历史资格不可回溯。' };
   }
 }

@@ -205,3 +205,11 @@ describe("diagnostic reports", () => {
     expect(report.length).toBeLessThanOrEqual(262_144);
   });
 });
+
+it("copies the transition session separately from retained canonical history",()=>{
+  const report=formatCoreDiagnostics({peacefulPoliticalTransitions:{title:"Peaceful Political Transition Diagnostics",
+    peacefulSubmission:{sessionStartMonth:24000,sessionCumulative:{observedWorldMonths:12,pairChecks:3}},
+    retainedCanonicalHistory:{submittedEvents:2,mergedEvents:4,frequencyPer100Years:null}}});
+  expect(report).toContain("Peaceful Political Transition Diagnostics");expect(report).toContain('"sessionStartMonth": 24000');
+  expect(report).toContain('"observedWorldMonths": 12');expect(report).toContain('"mergedEvents": 4');
+});

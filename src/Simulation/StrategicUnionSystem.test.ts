@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { diagnoseStrategicUnionCandidates, findStrategicUnionCandidate } from "./StrategicUnionSystem";
+import { unionPressureObservations, diagnoseStrategicUnionCandidates, findStrategicUnionCandidate } from "./StrategicUnionSystem";
 import { DiplomacyRegistry, DiplomacySystem } from "../Politics/Diplomacy";
 import type Team from "../Components/Team";
 
@@ -65,5 +65,25 @@ describe("strategic union candidate selection", () => {
       teams: [strong, team("weak", 5, 40, "same-house", 1), threat],
     });
     expect(blocked[0].blockers).toContain("NOT_ADJACENT");
+  });
+});
+
+ describe("union observational gates match frozen actual selection",()=>{
+  it("distinguishes pressure-only failure and the two independently missing alternatives",()=>{
+    const teams=[team("a",80,0,"parent",3),team("b",20,1,"parent",1)];
+    const input={teams,totalCells:100,worldMonth:120,recentEvents:[],blockSize:32,relations:[{factionAId:"a",factionBId:"b",status:"ALLIANCE" as const,originalStartedMonth:0,startedMonth:0,expiresMonth:300,renewalCount:0,reason:"COMMON_THREAT_ALLIANCE" as const}]};
+    const r=diagnoseStrategicUnionCandidates(input)[0];expect(r.blockers).toEqual(["NO_PRESSURE_TRIGGER"]);
+    expect(findStrategicUnionCandidate(input)).toBeUndefined();
+    expect(unionPressureObservations(r)).toEqual({pressureOnlyAdditionalChecks:1,otherGatesPassMissingCommonThreat:1,otherGatesPassNotVeryWeak:1});
+    teams[1].cities[0].loyalty=40;teams[1].blocks.children.size=3;
+    const weak=diagnoseStrategicUnionCandidates(input)[0];expect(weak.veryWeak).toBe(true);expect(weak.blockers).toEqual([]);
+    expect(unionPressureObservations(weak)).toEqual({pressureOnlyAdditionalChecks:0,otherGatesPassMissingCommonThreat:1,otherGatesPassNotVeryWeak:0});
+    expect(findStrategicUnionCandidate(input)?.absorbedFaction.name).toBe("b");
+  });
+  it("diagnoses the real equal-territory skip rather than inventing eligibility",()=>{
+    const teams=[team("a",0,0,"parent",0),team("b",0,1,"parent",0)];
+    const input={teams,totalCells:100,worldMonth:120,recentEvents:[],blockSize:32,relations:[{factionAId:"a",factionBId:"b",status:"ALLIANCE" as const,originalStartedMonth:0,startedMonth:0,expiresMonth:300,renewalCount:0,reason:"COMMON_THREAT_ALLIANCE" as const}]};
+    expect(diagnoseStrategicUnionCandidates(input)[0].blockers).toContain("EQUAL_TERRITORY_STRENGTH");
+    expect(findStrategicUnionCandidate(input)).toBeUndefined();
   });
 });

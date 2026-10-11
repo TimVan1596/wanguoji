@@ -68,7 +68,7 @@ export function evaluateSubmissionCandidates(input: SubmissionInput) {
   }
   return results;
 }
-const blockerTypes: SubmissionBlocker[] = ["NOT_FORMAL_STATE","SAME_ORIGIN_USES_STRATEGIC_UNION","NO_DURABLE_RELATION","RELATION_TOO_SHORT","NOT_ADJACENT","RECENT_BILATERAL_WAR","STRONGER_TOO_WEAK","WEAKER_TOO_LARGE","POWER_GAP_TOO_SMALL","STABILITY_TOO_HIGH","NO_PRESSURE_PATH"];
+const blockerTypes: SubmissionBlocker[] = ["NOT_FORMAL_STATE","SAME_ORIGIN_USES_STRATEGIC_UNION","NO_DURABLE_RELATION","RELATION_TOO_SHORT","NOT_ADJACENT","RECENT_BILATERAL_WAR","STRONGER_TOO_WEAK","WEAKER_TOO_LARGE","POWER_GAP_TOO_SMALL","STABILITY_TOO_HIGH"];
 const emptyCounts=()=>({candidateChecks:0,eligibleCount:0,submissionCount:0,blockerCounts:Object.fromEntries(blockerTypes.map(b=>[b,0])) as Record<SubmissionBlocker,number>});
 export class PeacefulSubmissionSystem {
   readonly observations: PoliticalTransitionObservations;

@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.99931g · Peaceful Political Transition Observability
+
+- v31f 用户整体人工 PASS：已回传秦幼子、魏/楚兄弟储君及其余四国无指定储君，V13 与历史 UI 正常；未声称收到完整创始者年龄明细。
+- 新增纳土与同源合邦年度运行时资格漏斗：观察月份、外交候选基础、资格、独立国家对、选择、成功、失败及单一/多项阻断。保留合邦先于纳土、实际选择顺序和全部真实门槛。
+- 纳土复用现有检查；不将未执行的 NO_PRESSURE_PATH 作为实际阻断。同源合邦记录全部 ACTIVE 组合、正式同盟、同源及两者交集；压力的两条替代路径分别观察。
+- 加入仅去掉一城、仅放宽领土门槛以及仅放宽合邦压力的只读反事实，不执行事件、不改变 RNG。
+- 诊断仅在调试启用时累计，不持久化；100个年度桶、有限候选样本与有容量/下界说明的独立对计数。旧历史资格不可回溯，存档保留事件与本次会话次数分开。
+- 复用世界诊断及核心/全部复制报告。APP v0.99931g / package 0.99.136 / WorldSave V13；等待[和平政治转型诊断人工 Gate](docs/PeacefulPoliticalTransitionObservability.md)。
+
 ## v0.99931f · Initial Royal Household Integrity
 
 - v31e 政治宗谱身份、缩放/定位、V13 Save/Load 与历史 UI 已获用户人工 PASS，关闭前置 Gate。

@@ -87,6 +87,20 @@ describe("actual submission orchestration and canonical terminal offices",()=>{
     };
     for(const sameOrigin of [false,true])expect(await run(true,sameOrigin)).toEqual(await run(false,sameOrigin));
   });
+  it("counts retained canonical transitions once per history change without replaying old eligibility",async()=>{
+    await fixture();const sim=new AutoSimulator(true);
+    for(let m=0;m<20000;m++)WorldHistory.addEvent({id:`background-${m}`,year:m,category:"war",type:"city-captured",title:"",importance:"normal"});
+    WorldHistory.addEvent({id:"old-merge",year:20000,category:"politics",type:"faction-merged",title:"",importance:"major"});
+    const state=sim.exportState();sim.importState({...state,clock:{...state.clock,worldMonth:24000}},game.Core.teams);
+    const rng=worldRandom.exportState(),history=WorldHistory.exportState(),query=vi.spyOn(WorldHistory,"getEventWindow");
+    const first=sim.getPeacefulPoliticalTransitionDiagnostics();const calls=query.mock.calls.length;
+    expect(first.retainedCanonicalHistory).toMatchObject({submittedEvents:0,mergedEvents:1,frequencyPer100Years:null});
+    expect(first.peacefulSubmission).toMatchObject({sessionStartMonth:24000,sessionCumulative:{pairChecks:0,observedWorldMonths:0}});
+    expect(sim.getPeacefulPoliticalTransitionDiagnostics()).toEqual(first);expect(query).toHaveBeenCalledTimes(calls);
+    expect(WorldHistory.exportState()).toEqual(history);expect(worldRandom.exportState()).toEqual(rng);
+    WorldHistory.addEvent({id:"old-submission",year:21000,category:"politics",type:"faction-submitted",title:"",importance:"major"});
+    expect(sim.getPeacefulPoliticalTransitionDiagnostics().retainedCanonicalHistory.submittedEvents).toBe(1);
+  });
   it("records actual execution guard failure without a success or canonical terminal event",async()=>{
     const {candidate,strong}=await fixture(),system=new PeacefulSubmissionSystem(true);
     system.update({teams:game.Core.teams,relations:Diplomacy.list(120),worldMonth:120,totalCells:100,blockSize:32,recentEvents:[]}, c=>{
