@@ -39,6 +39,7 @@ describe("ruler chronicle", () => {
     const result = getRulerHistoricalEvents([usurp, succession], { id: "new", accessionYear: 20 }, "state", 20, []);
     expect(result.map(event => event.id)).toEqual(["usurp"]);
     expect(getRulerHistoricalEvents([usurp, succession], { id: "old", accessionYear: 0, endYear: 20 }, "state", 20, [])).toHaveLength(1);
+    expect(getRulerHistoricalEvents([usurp], { id: "heir", accessionYear: 20 }, "state", 20, [])).toEqual([usurp]);
     const unrelated = { ...succession, id: "other-succession", metadata: { previousRulerId: "other-old", nextRulerId: "new" } };
     expect(getRulerHistoricalEvents([usurp, unrelated], { id: "new", accessionYear: 20 }, "state", 20, [])).toHaveLength(2);
   });

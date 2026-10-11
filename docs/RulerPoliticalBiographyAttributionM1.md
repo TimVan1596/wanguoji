@@ -9,6 +9,7 @@ APP_VERSION `v0.99931m1`，package `0.99.143`，WorldSave V13。沿用 v31m 的�
 - 世界历史事件先按君主任期筛选仍不足以确定归属；每种政治事件还必须核对国家角色。现在继承候选死亡核对事件所属国家、父君 ID、人物档案亲子关系与真实死亡记录；篡朝核对本国 actor 和夺统君主 ID；帝国分裂核对原国家 target 与 parentFactionId；失都核对 target/previous owner；被迫迁都核对本国 actor 与 `CAPITAL_FALL` 原因。
 - 复国仅在本国实际发起时纳入；纳土与合邦通过既有终结角色解析区分来源方和接受方。外交关系可作为任内事实，但只有有双方国家 ID、签署君主 ID 与对应签署方 faction ID 的初次签约才是本人直接行为；续约保留为任内外交事实，不增加“本人签署外交协议”数。
 - 君主个人页默认大事记原按重要性限制六条，历史上可能漏掉已计入统计的直接签约。现在先保留所有身份完整的本人初次签约，再填充其余重要事件；展开列表可与统计逐项核对。若签约数量本身超过六条，列表会相应超过六条。
+- 同一 `dynasty-usurped` canonical event 可按真实 ID 归入新君（本人行为）、前君（任期边界）及被排除合法继承人（政治关系）；只有新君作为实际 `rulerId` 时计入“本人篡朝开统”并驱动篡朝史评。个人纪事视图继续复用该事件，不复制历史记录。
 - 储君早亡不能由 `heir-died` 或候选排序推定。统计使用父君 ID、实际人物亲子关系和 `hasRecordedRulerDeath`；文字仍称“继承候选先逝”。没有正式立储权威记录时，不写“储君”。
 - v31m已修复人物纪事中同月同一夺统事件重复；本版不会改变 canonical event 序列。`getRulerHistoricalEvents` 对常见政治类别增加身份校验，避免相同 rulerId 或相同月份将他国事实拉入本君纪事。
 - `factionId` 延续同一势力身份，`nameHistory` 按月份记录国号，`houseEpochs` 表示王统阶段。v31m已有身份沿革与当月国号展示，本版不重建或改写这些数据。
@@ -35,7 +36,12 @@ APP_VERSION `v0.99931m1`，package `0.99.143`，WorldSave V13。沿用 v31m 的�
 
 ## 自动验证结果
 
-待最终执行完整命令后填写。必须报告 `pnpm test`、`pnpm build`、`pnpm desktop:build`、`pnpm desktop:compile`、`pnpm desktop:renderer-debug-build`、`git diff --check` 与 `git diff --cached --check` 的真实结果。
+- `pnpm test`：210个测试文件、1544项通过。
+- `pnpm build`：通过（TypeScript、Vite与音乐资源校验）；主应用 JS chunk 约3.15 MB，保留既有“超过500 kB”打包提示。
+- `pnpm desktop:build`：通过（desktop renderer assets、音乐资源与 Electron TypeScript 编译）。
+- `pnpm desktop:compile`：通过。
+- `pnpm desktop:renderer-debug-build`：通过（debug source map、desktop renderer assets、音乐资源校验）；主应用 JS chunk 同样超过500 kB。
+- `git diff --check`、`git diff --cached --check` 与 `git diff edb164d..HEAD --check`：全部通过。
 
 ## 人工 Chrome/Electron Gate
 

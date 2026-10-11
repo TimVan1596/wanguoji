@@ -479,7 +479,8 @@ describe("evidence-grounded ruler historiography", () => {
   it("attributes only the ruler's own polity events and carries a usurpation into assessment and historian voice", () => {
     const usurp = { id: "real-usurp", historyGroupId: "usurp-group", year: 40, monthIndex: 40,
       type: "dynasty-usurped", actorFactionId: "秦", factionIds: ["秦"], rulerId: "r1", importance: "major",
-      metadata: { oldHouseName: "旧氏", newHouseName: "新氏", displacedSuccessorName: "合法候选", oldStateName: "郡", newStateName: "巨" } };
+      metadata: { predecessorRulerId: "predecessor", oldHouseName: "旧氏", newHouseName: "新氏",
+        displacedSuccessorId: "lawful-heir", displacedSuccessorName: "合法候选", oldStateName: "郡", newStateName: "巨" } };
     const foreignHeir = { id: "foreign-heir", year: 50, monthIndex: 50, type: "heir-died", actorFactionId: "楚", rulerId: "r1",
       factionIds: ["楚"], metadata: { parentRulerId: "r1", heirId: "foreign-candidate" } };
     const foreignSplit = { id: "foreign-split", year: 55, monthIndex: 55, type: "empire-split", actorFactionId: "rebels", targetFactionId: "楚",
@@ -496,6 +497,11 @@ describe("evidence-grounded ruler historiography", () => {
     expect(assessment).toContain("不足以证明由夺统所致");
     expect(voice).toContain("篡朝方式改变王统");
     expect(voice).toContain("不能据此断定因果");
+    const predecessorContext = makeContext({ events: [usurp], endMonth: 40 });
+    predecessorContext.ruler.id = "predecessor";
+    expect(deriveRulerHistoricalEvidence(predecessorContext).politicalFacts).toMatchObject([
+      { eventId: "real-usurp", role: "IN_TENURE", usurpationRole: "PREDECESSOR" },
+    ]);
     expect(getSignificantReignStats(context.ruler.chronicle!, evidence.politicalFacts)).toContain("本人篡朝开统：1");
     const expanded = deriveRulerHistoricalEvidence(makeContext({ endMonth: 120,
       start: { territoryShare: 0.1, cityCount: 2 }, end: { territoryShare: 0.3, cityCount: 5 }, events: [usurp] }));

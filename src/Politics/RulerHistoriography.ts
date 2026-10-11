@@ -97,6 +97,7 @@ export interface RulerPoliticalFact {
   outcome: string;
   suitableForAssessment: boolean;
   participantRole?: "SOURCE" | "RECEIVER";
+  usurpationRole?: "USURPER" | "PREDECESSOR" | "DISPLACED_SUCCESSOR";
   oldHouseName?: string;
   newHouseName?: string;
   displacedSuccessorName?: string;
@@ -171,14 +172,22 @@ export function deriveRulerHistoricalEvidence(
     const diplomacy = ["truce-signed", "non-aggression-signed", "alliance-signed", "relation-renewed"].includes(event.type);
     let direct = false;
     let participantRole: RulerPoliticalFact["participantRole"];
+    let usurpationRole: RulerPoliticalFact["usurpationRole"];
     if (diplomacy) {
       const signerA = event.metadata?.signatoryARulerId === ruler.id && event.metadata?.signatoryAFactionId === faction.name;
       const signerB = event.metadata?.signatoryBRulerId === ruler.id && event.metadata?.signatoryBFactionId === faction.name;
       if (!factionParticipant || new Set(event.factionIds ?? []).size < 2) return [];
       direct = event.type !== "relation-renewed" && (signerA || signerB) && (event.factionIds ?? []).includes(faction.name);
     } else if (event.type === "dynasty-usurped") {
-      if (event.actorFactionId !== faction.name || !event.factionIds?.includes(faction.name) || event.rulerId !== ruler.id) return [];
-      direct = true;
+      if (event.actorFactionId !== faction.name || !event.factionIds?.includes(faction.name)) return [];
+      if (event.rulerId === ruler.id) {
+        direct = true;
+        usurpationRole = "USURPER";
+      } else if (event.metadata?.predecessorRulerId === ruler.id) {
+        usurpationRole = "PREDECESSOR";
+      } else if (event.metadata?.displacedSuccessorId === ruler.id) {
+        usurpationRole = "DISPLACED_SUCCESSOR";
+      } else return [];
     } else if (event.type === "heir-died") {
       const candidate = dynasty.rulers.find((person) => person.id === event.metadata?.heirId);
       if (event.actorFactionId !== faction.name || !event.factionIds?.includes(faction.name) ||
@@ -216,7 +225,7 @@ export function deriveRulerHistoricalEvidence(
       event.type === "relation-renewed" ? "外交关系续约" : "政治关系终结或合并";
     const metadata = event.metadata ?? {};
     return [{ eventId: event.id, historyGroupId: event.historyGroupId, month, factionId: faction.name, rulerId: direct ? ruler.id : undefined,
-      role, type: event.type, confidence: direct ? "DIRECT" : "TENURE", participantRole,
+      role, type: event.type, confidence: direct ? "DIRECT" : "TENURE", participantRole, usurpationRole,
       oldHouseName: typeof metadata.oldHouseName === "string" ? metadata.oldHouseName : undefined,
       newHouseName: typeof metadata.newHouseName === "string" ? metadata.newHouseName : undefined,
       displacedSuccessorName: typeof metadata.displacedSuccessorName === "string" ? metadata.displacedSuccessorName : undefined,
@@ -466,7 +475,7 @@ export function deriveRulerHistoricalEvidence(
 
 export function composeRulerAssessment(evidence: RulerHistoricalEvidence): RulerAssessment {
   const lines: string[] = [];
-  const usurpation = evidence.politicalFacts.find((fact) => fact.type === "dynasty-usurped" && fact.role === "DIRECT_ACTOR");
+    const usurpation = evidence.politicalFacts.find((fact) => fact.type === "dynasty-usurped" && fact.usurpationRole === "USURPER");
   const abdicated = evidence.rulerStatus === "abdicated";
   const finalTime = evidence.isFinalized ? (evidence.hasRecordedDeath ? "身后" : abdicated ? "退位时" : "政治任期终结时") : "目前";
   const nonDeathFinal = !evidence.hasRecordedDeath;
@@ -647,7 +656,7 @@ export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string
       : text;
   };
   const roles = evidence.roles;
-  const usurpation = evidence.politicalFacts.find((fact) => fact.type === "dynasty-usurped" && fact.role === "DIRECT_ACTOR");
+  const usurpation = evidence.politicalFacts.find((fact) => fact.type === "dynasty-usurped" && fact.usurpationRole === "USURPER");
 
   if (usurpation) {
     const displaced = usurpation.displacedSuccessorName ? "并排除原合法继承人" : "";
