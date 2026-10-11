@@ -9,7 +9,7 @@ const cache = new WeakMap<Dynasty, { revision: number; month: number; stamp: str
 export function getHouseAssessments(dynasty: Dynasty, faction: HouseHistoricalFaction,
   factions: HouseHistoryContext["factions"], worldMonth: number) {
   const stamp = JSON.stringify([dynasty.currentRulerId, dynasty.houseEpochs, dynasty.rulers.map(r =>
-    [r.id, r.houseName, r.givenName, r.reignOrdinal, r.accessionYear, r.endYear, r.status, r.relationType, Boolean(r.chronicle)]),
+    [r.id, r.houseName, r.givenName, r.reignOrdinal, r.accessionYear, r.endYear, r.status, r.relationType, r.bornYear, r.deathMonth, r.deathReason, Boolean(r.chronicle)]),
     faction.name, faction.displayName, faction.status, faction.stateFoundedMonth, faction.terminationMonth, faction.extinctionYear, faction.terminationReason, faction.nameHistory]);
   const identityStamp = (ids: string[]) => JSON.stringify(ids.map(id => {
     const f = factions.get(id); return [id, f?.name, f?.displayName, f?.nameHistory];
