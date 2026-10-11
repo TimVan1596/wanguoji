@@ -268,7 +268,7 @@ export function deriveRulerHistoricalEvidence(
   // LAST_RULER means the final holder at actual polity extinction, not every
   // deceased exile claimant or an administratively abdicated ruler.
   const laterAccession = dynasty.rulers.some(candidate => candidate.id !== ruler.id &&
-    candidate.reignOrdinal !== undefined && candidate.accessionYear >= endMonth &&
+    candidate.reignOrdinal !== undefined && candidate.accessionYear !== undefined && candidate.accessionYear >= endMonth &&
     (candidate.accessionYear > accessionMonth ||
       (ruler.reignOrdinal !== undefined && candidate.reignOrdinal > ruler.reignOrdinal)));
   const extinctionAtEnd = rulerEvents.some(event => event.type === "faction-extinct" &&
@@ -646,7 +646,7 @@ export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string
     "其位不久而终局骤至；应记下所见国难，不宜据此补写未有的治绩。",
   ]);
   if (roles.includes("EXPANDER") && roles.includes("TRAGIC_RULER")) {
-    if (evidence.roles.includes("SHORT_REIGN") || (evidence.finalAge !== undefined && evidence.finalAge <= 25)) {
+    if (evidence.roles.includes("SHORT_REIGN")) {
       return pick([
         "疆域拓展已有实绩，但统治年限有限，战死使其事业未及充分展开。",
         "短祚中仍留下拓境记录，最终战死；可见功业有限，结局明确。",

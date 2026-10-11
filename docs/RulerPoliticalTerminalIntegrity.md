@@ -91,6 +91,8 @@ V12 明确拒绝：**此存档为旧版V12，当前V13不支持读取，请新�
 
 自动验证通过后仍等待用户；P0 的代码修复和真实 UI Gate 分开报告，不提前宣称人工闭环。
 
+用户已明确回传 v31c / V13 人工 PASS：七国新世界、继承与长期模拟、实际死亡、保存读取继续运行、宗谱与历史 UI 正常。该 Gate 已关闭，生死模型冻结。后续 v31c1 只修派生任期角色，见 [RulerTenureHistoricalRoleIntegrity.md](RulerTenureHistoricalRoleIntegrity.md)。
+
 ## 人工 Chrome / Electron Gate
 
 运行 `pnpm desktop:start:debug`。**先新建七国世界，再保存新的 V13。旧 V12 不用于验收。**

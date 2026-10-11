@@ -14,7 +14,8 @@ const event = (type: WorldEvent["type"], month: number, factionId = "沂"): Worl
 });
 function context(total: number, active: number, terminal = false): RulerHistoriographyContext {
   const start = 100, end = start + total;
-  const snapshot = (month: number) => ({ month, population: 0, territoryShare: 0, cityCount: 0, stability: 0 });
+  const snapshot = (month: number) => ({ month, population: active > 0 ? 40 : 0,
+    territoryShare: active > 0 ? 0.2 : 0, cityCount: active > 0 ? 3 : 0, stability: active > 0 ? 80 : 0 });
   const chronicle = createRulerChronicle(snapshot(start));
   finishRulerChronicle(chronicle, snapshot(end), "去世");
   const ruler: Ruler = { id: "沂-ruler-18", houseName: "宋氏", givenName: "景怀", reignOrdinal: 18,
@@ -107,6 +108,27 @@ describe("tenure and historical role integrity", () => {
     expect(actual.evidence.roles).toContain("LAST_RULER");
     expect(actual.evidence.hasRecordedDeath).toBe(false);
     expect(actual.assessment + actual.voice).not.toMatch(/身后|去世|终其一生/);
+  });
+  it("does not call a young battle-dead ruler short-reigned after eight years of actual tenure", () => {
+    const ctx = context(96, 96);
+    Object.assign(ctx.ruler, { bornYear: 100 - 15 * 12, endReason: "战死", deathReason: "战死" });
+    ctx.ruler.chronicle!.deathCause = "战死";
+    ctx.ruler.chronicle!.endSnapshot!.territoryShare = 0.34;
+    ctx.ruler.chronicle!.peakTerritoryShare = 0.34;
+    const actual = result(ctx);
+    expect(actual.evidence.finalAge).toBe(23);
+    expect(actual.evidence.roles).toEqual(expect.arrayContaining(["EXPANDER", "TRAGIC_RULER"]));
+    expect(actual.evidence.roles).not.toContain("SHORT_REIGN");
+    expect(actual.assessment + actual.voice).not.toMatch(/短祚|短暂统治|在位不足五年/);
+  });
+  it("does not assign another faction's extinction or a later terminal month to an earlier claimant", () => {
+    const ctx = context(453, 0);
+    ctx.events.push(event("faction-extinct", ctx.ruler.endYear!, "他国"),
+      event("faction-extinct", ctx.ruler.endYear! + 120));
+    const actual = result(ctx);
+    expect(actual.evidence.tenure.diedInExile).toBe(true);
+    expect(actual.evidence.roles).not.toContain("LAST_RULER");
+    expect(actual.evidence.terminalCollapse).toBe(false);
   });
   it("sums multiple real exile/restoration episodes without changing total tenure", () => {
     const ctx = context(480, 480);

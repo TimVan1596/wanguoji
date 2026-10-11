@@ -18,13 +18,15 @@ vi.mock("../Simulation/WorldInvariant", () => ({ validateWorldState: () => [] })
 import type Core from "../Game/Core";
 import { hydrateWorldSave } from "./WorldSaveHydrator";
 import { exportWorldSave } from "./WorldSaveExporter";
-import { createEmptyWorldSaveV9 } from "./WorldSaveSchema";
+import { createEmptyWorldSaveV9, type RulerSaveV13 } from "./WorldSaveSchema";
 import { validateWorldSave } from "./WorldSaveValidator";
 import { normalizeArchivedCityBlockRefs } from "./ArchivedCityHydrationRepair";
 import { createStoredWorldSaveRecord, validateStoredWorldSaveRecord } from "./WorldSaveRepository";
 import DynastyRegistry from "../Politics/Dynasty";
-import { exportRulerSave } from "./RulerSaveProjection";
-import WorldHistory from "../History/WorldHistory";
+import { exportRulerSave, importRulerSave } from "./RulerSaveProjection";
+import { deriveRulerAssessment, composeHistorianVoice } from "../Politics/RulerHistoriography";
+import { buildRulerTags } from "../Politics/RulerChronicle";
+import WorldHistory, { type WorldEvent } from "../History/WorldHistory";
 import worldRandom from "../Simulation/WorldRandom";
 import { createBlockSaveProjection } from "./BlockSaveProjection";
 
@@ -85,6 +87,44 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     hydrateWorldSave(core, encoded); const first = exportWorldSave(core);
     expect(first.dynasties).toEqual(encoded.dynasties); expect(first.worldHistory).toEqual(save.worldHistory);
     hydrateWorldSave(core, first); expect(exportWorldSave(core)).toEqual(first); expect(worldRandom.exportState()).toEqual(save.worldRandom);
+  });
+  it("retains tenure roles, tags and commentary after real V13 hydration without changing genealogy or RNG", () => {
+    const save = fixture();
+    save.world.worldMonth = save.world.clock.worldMonth = 600;
+    setFixtureLifetimeRecords(save);
+    save.dynasties = [{ factionId: "qin", houseName: "田氏", currentRulerId: "next", heirIds: [],
+      houseEpochs: [{ houseName: "田氏", startMonth: 0, foundingRulerId: "exile", startReason: "FOUNDING" }],
+      rulers: [
+        { rulerId: "exile", houseName: "田氏", givenName: "怀", bornMonth: -400, accessionMonth: 20, endMonth: 473,
+          politicalEndMonth: 473, status: "dead", endReason: "去世", deathMonth: 473, deathReason: "去世" },
+        { rulerId: "next", houseName: "田氏", givenName: "续", bornMonth: 100, accessionMonth: 473,
+          status: "ruling", predecessorId: "exile", parentId: "exile" },
+      ] }];
+    WorldHistory.reset(); WorldHistory.addFactionExiled(10, "qin", "田氏", 1);
+    WorldHistory.addFactionRestored(500, "qin", "现城", 1, "active");
+    save.worldHistory = WorldHistory.exportState();
+    const derived = (input: typeof save) => {
+      const dynasty = { rulers: (input.dynasties[0].rulers as RulerSaveV13[]).map(importRulerSave) };
+      const assessment = deriveRulerAssessment({ ruler: dynasty.rulers[0], dynasty,
+        faction: { name: "qin", stateFoundedMonth: 0 }, events: input.worldHistory.events as WorldEvent[],
+        worldMonth: input.world.worldMonth });
+      return { assessment, tags: buildRulerTags(assessment.evidence), voice: composeHistorianVoice(assessment.evidence) };
+    };
+    const before = derived(save);
+    expect(before.assessment.evidence.tenure).toMatchObject({ totalTenureMonths: 453, activeRuleMonths: 0, exileMonths: 453 });
+    expect(before.assessment.evidence.roles).toContain("LONG_EXILE");
+    expect(before.assessment.evidence.roles).not.toContain("LAST_RULER");
+    expect(before.tags).not.toContain("短祚");
+    const encoded = JSON.parse(JSON.stringify(save));
+    expect(validateWorldSave(encoded)).toEqual({ valid: true, errors: [] });
+    const core = target(); hydrateWorldSave(core, encoded);
+    const first = exportWorldSave(core);
+    expect(derived(first)).toEqual(before);
+    expect(first.dynasties).toEqual(save.dynasties); expect(first.factionLifetime).toEqual(save.factionLifetime);
+    expect(first.worldHistory).toEqual(encoded.worldHistory); expect(first.worldRandom).toEqual(save.worldRandom);
+    hydrateWorldSave(core, JSON.parse(JSON.stringify(first)));
+    const second = exportWorldSave(core);
+    expect(second).toEqual(first); expect(derived(second)).toEqual(before);
   });
   it("V13 preserves independently ended offices, actual deaths, retirement, family and RNG across hydration", () => {
     const save = fixture();
