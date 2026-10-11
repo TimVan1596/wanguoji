@@ -2,6 +2,7 @@ import type { Ruler } from "../../../Politics/Dynasty";
 import { hasRecordedRulerDeath } from "../../../Politics/RulerLifeState";
 import type { DynastyHouseEpoch } from "../../../Politics/DynasticRevolution";
 import type { RulerChronicle } from "../../../Politics/RulerChronicle";
+import type { RulerPoliticalFact } from "../../../Politics/RulerHistoriography";
 import { formatWorldDate } from "../../../Simulation/WorldTime";
 
 const reasonLabels: Record<DynastyHouseEpoch["startReason"], string> = {
@@ -19,9 +20,18 @@ export function getHouseEpochPresentation(epochs: readonly DynastyHouseEpoch[]) 
       text: `${epoch.houseName} · ${formatWorldDate(epoch.startMonth)}～${epoch.endMonth === undefined ? "今" : formatWorldDate(epoch.endMonth)} · ${reasonLabels[epoch.startReason]}` })) };
 }
 export function getSignificantReignStats(chronicle: Pick<RulerChronicle,
-  "citiesCapturedPersonally" | "citiesLostDuringReign" | "rebellionsDuringReign" | "restorationsDuringReign">) {
+  "citiesCapturedPersonally" | "citiesLostDuringReign" | "rebellionsDuringReign" | "restorationsDuringReign">,
+  politicalFacts: RulerPoliticalFact[] = []) {
   const stats: Array<[string, number]> = [["亲征夺城", chronicle.citiesCapturedPersonally],
     ["失城", chronicle.citiesLostDuringReign], ["内乱", chronicle.rebellionsDuringReign], ["复国", chronicle.restorationsDuringReign]];
+  const count = (predicate: (fact: RulerPoliticalFact) => boolean) =>
+    new Set(politicalFacts.filter(predicate).map((fact) => fact.eventId)).size;
+  stats.push(["本人签署外交协议", count((fact) => fact.role === "DIRECT_ACTOR" &&
+    ["truce-signed", "non-aggression-signed", "alliance-signed"].includes(fact.type))]);
+  stats.push(["任内重大分裂", count((fact) => fact.type === "empire-split")]);
+  stats.push(["被迫迁都", count((fact) => fact.type === "capital-relocated")]);
+  stats.push(["本人篡朝开统", count((fact) => fact.type === "dynasty-usurped" && fact.role === "DIRECT_ACTOR")]);
+  stats.push(["继承候选先逝", count((fact) => fact.type === "heir-died")]);
   return stats.filter(([, value]) => value > 0).map(([label, value]) => `${label}：${value}`).join(" · ") || "暂无显著在位统计";
 }
 

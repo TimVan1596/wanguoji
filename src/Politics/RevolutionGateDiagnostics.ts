@@ -10,7 +10,7 @@ function emptyCounters() {
     rollFailedCount: 0, usurpationCount: 0 };
 }
 function emptyChanceBuckets() {
-  return { base: { "4%": 0, "6%": 0, "10%": 0, "14%": 0 } as Record<string, number>,
+  return { base: { "2%": 0, "4%": 0, "6%": 0, "10%": 0, "14%": 0 } as Record<string, number>,
     final: Object.fromEntries(Array.from({ length: 17 }, (_, i) => [`${i + 2}%`, 0])) as Record<string, number>,
     tiers: { CRISIS: 0, COMPOUND_INSTABILITY: 0, COMPOUND_SHOCK: 0, POLITICAL_SHOCK: 0 }, modifierAppliedCount: 0, cappedCount: 0 };
 }
@@ -69,7 +69,8 @@ export class RevolutionGateDiagnostics {
       counters.rollAttemptCount++;
       this.expectedUsurpationCount += result.chance;
       if (result.riskTier !== "BLOCKED") this.chanceBuckets.tiers[result.riskTier]++;
-      this.chanceBuckets.base[`${Math.round(result.baseChance * 100)}%`]++;
+      const baseKey = `${Math.round(result.baseChance * 100)}%`;
+      this.chanceBuckets.base[baseKey] = (this.chanceBuckets.base[baseKey] ?? 0) + 1;
       const finalKey = `${Math.round(result.chance * 10000) / 100}%`;
       this.chanceBuckets.final[finalKey] = (this.chanceBuckets.final[finalKey] ?? 0) + 1;
       if (result.modifierChance > 0) this.chanceBuckets.modifierAppliedCount++;

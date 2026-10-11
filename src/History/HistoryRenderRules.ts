@@ -164,6 +164,14 @@ export function formatHistoryEventTitle(
       ? `${oldName}正式建国，定国号“${newName}”，首领${rulerName}称王。`
       : `${oldName}正式建国，定国号“${newName}”。`;
   }
+  if (event.type === "dynasty-usurped") {
+    const oldName = stringMeta(event, "oldStateName") || name(event.actorFactionId);
+    const newName = stringMeta(event, "newStateName");
+    const newRuler = stringMeta(event, "newRulerName") || historicalRulerName(event, name, factionById, rulersById);
+    const house = stringMeta(event, "newHouseName");
+    const rulerClause = newRuler ? `${newRuler}夺取王统` : `${house || "新王统"}夺取王统`;
+    return `${oldName}国易代：${rulerClause}${newName && oldName !== newName ? `，改国号为${newName}` : ""}。`;
+  }
   if (event.type === "emperor-proclaimed") {
     const factionName = name(event.actorFactionId);
     const rulerName = historicalRulerName(event, name, factionById, rulersById);

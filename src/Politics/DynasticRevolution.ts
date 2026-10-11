@@ -61,7 +61,11 @@ export function getRevolutionEligibility(context: RevolutionContext) {
   }
   if (riskTier === "BLOCKED") blockers.push("NO_SUCCESSION_CRISIS");
   if (!evidence.length) blockers.push("SUCCESSOR_NOT_VULNERABLE");
-  return { blockers, evidence, crisis, riskTier, politicalShocks: riskTier === "POLITICAL_SHOCK" ? independentShocks : [],
+  // The same predecessor outcome can be added by both the general and the
+  // political-shock evidence paths. Keep one code per fact in the derived
+  // eligibility result; canonical history remains untouched.
+  const normalizedEvidence = [...new Set(evidence)];
+  return { blockers, evidence: normalizedEvidence, crisis, riskTier, politicalShocks: riskTier === "POLITICAL_SHOCK" ? independentShocks : [],
     observedPoliticalShocks: independentShocks, politicalVulnerability: vulnerabilityScore >= 2, vulnerabilityScore };
 }
 

@@ -1135,7 +1135,7 @@ function RulerBiography({
         在位统计
       </Typography>
       <Typography fontSize="0.82rem">
-        {getSignificantReignStats(ruler.chronicle)}
+        {getSignificantReignStats(ruler.chronicle, assessment.evidence.politicalFacts)}
       </Typography>
       <Typography fontWeight="bold" fontSize="0.86rem" sx={{ mt: 0.75 }}>
         大事记

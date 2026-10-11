@@ -180,6 +180,10 @@ export function getRulerHistoricalEvents(
       event.metadata?.rulerId === ruler.id ||
       event.metadata?.previousRulerId === ruler.id ||
       event.metadata?.nextRulerId === ruler.id ||
+      (event.type === "dynasty-usurped" && (
+        event.metadata?.predecessorRulerId === ruler.id ||
+        event.metadata?.displacedSuccessorId === ruler.id
+      )) ||
       event.metadata?.signatoryARulerId === ruler.id ||
       event.metadata?.signatoryBRulerId === ruler.id ||
       notable.has(event.id) ||
@@ -192,6 +196,22 @@ export function getRulerHistoricalEvents(
     }
     return event.importance === "major" && isRulerBiographyRelevantEvent(event, factionId);
   });
+  // A successful usurpation and its ordinary succession record are two
+  // canonical facts about the same boundary. Link them only by the recorded
+  // ruler IDs, faction and exact month, then present the richer usurpation
+  // record once in this ruler's biography.
+  const linkedSuccession = new Map<string, string>();
+  const usurpations = candidates.filter((event) => event.type === "dynasty-usurped");
+  for (const succession of candidates.filter((event) => event.type === "ruler-succession")) {
+    const month = succession.monthIndex ?? succession.year;
+    const usurpation = usurpations.find((event) =>
+      (event.monthIndex ?? event.year) === month &&
+      event.actorFactionId === succession.actorFactionId &&
+      event.rulerId === succession.metadata?.nextRulerId &&
+      event.metadata?.predecessorRulerId === succession.metadata?.previousRulerId
+    );
+    if (usurpation) linkedSuccession.set(succession.id, usurpation.id);
+  }
   const score = (event: WorldEvent) => {
     const direct =
       event.rulerId === ruler.id ||
@@ -205,7 +225,12 @@ export function getRulerHistoricalEvents(
   };
   const grouped = new Map<string, WorldEvent>();
   for (const event of candidates) {
-    const key = event.historyGroupId ?? event.id;
+    const key = linkedSuccession.has(event.id)
+      ? `usurpation:${linkedSuccession.get(event.id)}`
+      : event.type === "dynasty-usurped" && candidates.some(candidate =>
+        linkedSuccession.get(candidate.id) === event.id)
+        ? `usurpation:${event.id}`
+        : event.historyGroupId ?? event.id;
     const existing = grouped.get(key);
     if (!existing || score(event) > score(existing)) grouped.set(key, event);
   }
