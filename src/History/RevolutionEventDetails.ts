@@ -27,14 +27,25 @@ export function composeRevolutionNarrative(m: Record<string, string | number | u
   const evidenceKeys = String(m.vulnerabilityEvidence ?? "").split(",");
   const ending = m.successionReason === "combat" ? "战死" : m.successionReason === "captured" ? "被俘处死" : m.successionReason === "natural" ? "去世" : "";
   const predecessor = typeof m.previousRulerTitle === "string" ? m.previousRulerTitle : m.predecessorRulerName;
-  const backgroundFacts = typeof m.crisisCapitalCityName === "string" && typeof m.crisisCapitalMonth === "number" && typeof m.crisisSplitMonth === "number"
+  const storedEvidence = typeof m.crisisEvidence === "string" ? (() => { try { return JSON.parse(m.crisisEvidence); } catch { return []; } })() : [];
+  const backgroundFacts: Array<{ month: number; eventId: string; evidenceKey: string; text: string }> = Array.isArray(storedEvidence)
+    ? storedEvidence.filter((row: any) => row && typeof row.eventId === "string" && Number.isSafeInteger(row.month) &&
+      (row.kind === "CAPITAL_LOSS" || row.kind === "EMPIRE_SPLIT") && Array.isArray(row.cityIds) && row.cityIds.every((id: unknown) => typeof id === "string"))
+      .map((row: any) => ({ month: row.month, eventId: row.eventId,
+        evidenceKey: row.kind === "CAPITAL_LOSS" ? "RECENT_CAPITAL_LOSS" : "RECENT_EMPIRE_SPLIT",
+        text: row.kind === "CAPITAL_LOSS" ? `失去${row.cityNames?.[0] || "都城"}` : `发生重大分裂${row.cityNames?.length ? `，${row.cityNames.join("、")}脱离` : ""}` }))
+    : [];
+  if (!backgroundFacts.length && typeof m.crisisCapitalCityName === "string" && typeof m.crisisCapitalMonth === "number" && typeof m.crisisSplitMonth === "number"
     && typeof m.crisisCapitalEventId === "string" && typeof m.crisisSplitEventId === "string"
-    ? [{ month: m.crisisCapitalMonth, text: `失去${m.crisisCapitalCityName}` },
-       { month: m.crisisSplitMonth, text: "另有重大帝国分裂" }].sort((a, b) => a.month - b.month) : [];
+  ) {
+    backgroundFacts.push({ month: m.crisisCapitalMonth, eventId: m.crisisCapitalEventId, evidenceKey: "RECENT_CAPITAL_LOSS", text: `失去${m.crisisCapitalCityName}` },
+      { month: m.crisisSplitMonth, eventId: m.crisisSplitEventId, evidenceKey: "RECENT_EMPIRE_SPLIT", text: "发生重大帝国分裂" });
+  }
+  backgroundFacts.sort((a, b) => a.month - b.month || a.eventId.localeCompare(b.eventId));
   const background = backgroundFacts.length ? `此前${backgroundFacts.map(row => `${formatWorldDate(row.month)}${row.text}`).join("，")}；` : "";
   const evidence = formatRevolutionEvidence(evidenceKeys.filter(key =>
     !(ending && (key === "PREDECESSOR_COMBAT_DEATH" || key === "PREDECESSOR_CAPTURED")) &&
-    !(background && (key === "RECENT_CAPITAL_LOSS" || key === "RECENT_EMPIRE_SPLIT"))
+    !(background && backgroundFacts.some(row => row.evidenceKey === key))
   )).replace("少城且稳定度低", "国中城土所余不多，政局不稳");
   const death = predecessor && ending ? `${predecessor}${ending}，` : "";
   return `${background}${death}${evidence ? `${evidence}，` : ""}继统之际${m.newRulerName ?? m.newHouseName}夺取王统，${m.newHouseName}取代${m.oldHouseName}。合法继承人${m.displacedSuccessorName}被排除于继统序列${m.oldStateName !== m.newStateName ? `，国号改为${m.newStateName}` : ""}${m.oldColor !== m.newColor ? "，并易帜" : ""}。`;

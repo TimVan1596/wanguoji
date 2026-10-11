@@ -38,18 +38,31 @@ export function getRevolutionEligibility(context: RevolutionContext) {
   if (!context.successor) blockers.push("NO_ELIGIBLE_LEGITIMATE_SUCCESSOR");
   if (context.identityStage !== "STATE") blockers.push("NOT_STATE");
   if (context.status !== "ACTIVE" || context.cityCount <= 0) blockers.push("NOT_ACTIVE_STATE");
-  // Minor weighting and the recorded chain already reach crisis. Lower levels
-  // need both a violent succession boundary and actual territorial collapse.
+  // Preserve the existing crisis and violent one-city tiers. The political
+  // shock tier requires one independently sourced severe shock plus multiple
+  // signs of vulnerability at this succession boundary.
   const compoundExposure = context.cityCount === 1 && context.successionReason !== "natural";
   const independentShocks = selectIndependentPoliticalShocks(context.politicalShocks ?? [], context.factionId, context.predecessor, context.worldMonth);
-  const politicalExposure = independentShocks.length === 2 && !minorSuccessor && context.cityCount <= 2 && context.stability <= 45;
+  const vulnerabilityScore = (context.cityCount <= 2 ? 2 : context.cityCount <= 4 ? 1 : 0) +
+    (context.stability <= 45 ? 2 : context.stability <= 60 ? 1 : 0) +
+    (crisis.level === "succession-instability" ? 1 : 0) + (minorSuccessor ? 1 : 0);
+  const politicalExposure = (independentShocks.length > 0 || context.successionReason !== "natural") && vulnerabilityScore >= 2;
   const riskTier = crisis.level === "succession-crisis" ? "CRISIS" as const
     : compoundExposure ? (crisis.level === "succession-instability" ? "COMPOUND_INSTABILITY" as const : "COMPOUND_SHOCK" as const)
     : politicalExposure ? "POLITICAL_SHOCK" as const : "BLOCKED" as const;
-  if (riskTier === "POLITICAL_SHOCK") evidence.push("RECENT_CAPITAL_LOSS", "RECENT_EMPIRE_SPLIT", "WEAK_STATE_POSITION");
+  if (riskTier === "POLITICAL_SHOCK") {
+    if (independentShocks.some(shock => shock.kind === "CAPITAL_LOSS")) evidence.push("RECENT_CAPITAL_LOSS");
+    if (independentShocks.some(shock => shock.kind === "EMPIRE_SPLIT")) evidence.push("RECENT_EMPIRE_SPLIT");
+    if (context.successionReason !== "natural") evidence.push(context.successionReason === "combat" ? "PREDECESSOR_COMBAT_DEATH" : "PREDECESSOR_CAPTURED");
+    if (context.cityCount <= 4) evidence.push("FEW_CITIES_REMAINING");
+    if (context.stability <= 60) evidence.push("LOW_FACTION_STABILITY");
+    if (crisis.level === "succession-instability") evidence.push("RECENT_SUCCESSION_INSTABILITY");
+    evidence.push("POLITICAL_VULNERABILITY");
+  }
   if (riskTier === "BLOCKED") blockers.push("NO_SUCCESSION_CRISIS");
   if (!evidence.length) blockers.push("SUCCESSOR_NOT_VULNERABLE");
-  return { blockers, evidence, crisis, riskTier, politicalShocks: riskTier === "POLITICAL_SHOCK" ? independentShocks : [] };
+  return { blockers, evidence, crisis, riskTier, politicalShocks: riskTier === "POLITICAL_SHOCK" ? independentShocks : [],
+    observedPoliticalShocks: independentShocks, politicalVulnerability: vulnerabilityScore >= 2, vulnerabilityScore };
 }
 
 const EVIDENCE_CHANCE_PERCENT: Readonly<Record<string, number>> = {
@@ -62,8 +75,14 @@ function getRevolutionChanceProfile(context: RevolutionContext, eligibility: Ret
   if (eligibility.blockers.length) return { chance: 0, baseChance: 0, modifierChance: 0, capped: false, riskMultiplier: 0 };
   // Integer percentage points avoid accumulated float error at the strict roll boundary.
   const basePercent = context.stability <= 30 ? 14 : context.stability <= 45 ? 10 : context.stability <= 60 ? 6 : 4;
-  if (eligibility.riskTier === "POLITICAL_SHOCK") return { chance: Math.min(.015, basePercent / 1000),
-    baseChance: basePercent / 100, modifierChance: 0, capped: basePercent / 1000 > .015, riskMultiplier: .1 };
+  if (eligibility.riskTier === "POLITICAL_SHOCK") {
+    const distinctShockCount = new Set(eligibility.politicalShocks.map(shock => shock.eventId)).size + (context.successionReason !== "natural" ? 1 : 0);
+    const politicalRiskPercent = Math.min(6, 2 + (distinctShockCount >= 2 ? 1 : 0) +
+      (context.cityCount <= 2 ? 1 : 0) + (context.stability <= 45 ? 1 : 0) +
+      (eligibility.crisis.level === "succession-instability" || eligibility.evidence.includes("MINOR_SUCCESSOR") ? 1 : 0));
+    return { chance: politicalRiskPercent / 100, baseChance: .02, modifierChance: (politicalRiskPercent - 2) / 100,
+      capped: politicalRiskPercent === 6, riskMultiplier: 1 };
+  }
   const modifierPercent = Object.entries(EVIDENCE_CHANCE_PERCENT)
     .reduce((total, [evidence, percent]) => total + (eligibility.evidence.includes(evidence) ? percent : 0), 0);
   const riskMultiplier = eligibility.riskTier === "CRISIS" ? 1 : eligibility.riskTier === "COMPOUND_INSTABILITY" ? 0.5 : 0.25;
@@ -97,6 +116,9 @@ export function beginHouseEpoch(epochs: DynastyHouseEpoch[], epoch: DynastyHouse
 
 export function formatRevolutionEvidence(evidence: string[]) {
   const labels: Record<string, string> = { MINOR_SUCCESSOR: "合法继承人未成年", RECENT_SUCCESSION_CHAIN: "近期连续换君",
-    PREDECESSOR_COMBAT_DEATH: "前君战死", PREDECESSOR_CAPTURED: "前君被俘处死", ONE_CITY_REMAINING: "仅余一城", RECENT_CAPITAL_LOSS: "前君任内近期失都", RECENT_EMPIRE_SPLIT: "另有重大帝国分裂", WEAK_STATE_POSITION: "少城且稳定度低" };
+    RECENT_SUCCESSION_INSTABILITY: "近期继位频繁", PREDECESSOR_COMBAT_DEATH: "前君战死", PREDECESSOR_CAPTURED: "前君被俘处死",
+    ONE_CITY_REMAINING: "仅余一城", FEW_CITIES_REMAINING: "所余城市不多", LOW_FACTION_STABILITY: "国家稳定度偏低",
+    RECENT_CAPITAL_LOSS: "前君任内近期失都", RECENT_EMPIRE_SPLIT: "前君任内近期发生重大分裂",
+    POLITICAL_VULNERABILITY: "继位时存在政治脆弱性", WEAK_STATE_POSITION: "少城且稳定度低" };
   return evidence.map((item) => labels[item]).filter(Boolean).join("、");
 }

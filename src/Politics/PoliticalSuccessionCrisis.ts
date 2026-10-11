@@ -9,6 +9,7 @@ export interface PoliticalSuccessionShock {
   month: number;
   historyGroupId?: string;
   cityIds: string[];
+  cityNames?: string[];
   cityName?: string;
 }
 
@@ -24,28 +25,30 @@ export function derivePoliticalSuccessionShocks(factionId: string, predecessor: 
         event.targetFactionId !== factionId || !event.factionIds?.includes(factionId) || !event.actorFactionId || event.actorFactionId === factionId) continue;
     if (event.type === "capital-fallen" && event.previousOwnerFactionId === factionId && event.cityId && event.cityName && event.metadata?.wasCapital === 1) {
       rows.push({ kind: "CAPITAL_LOSS", eventId: event.id, factionId, predecessorId: predecessor.id, month,
-        historyGroupId: event.historyGroupId, cityIds: [event.cityId], cityName: event.cityName });
+        historyGroupId: event.historyGroupId, cityIds: [event.cityId], cityName: event.cityName, cityNames: [event.cityName] });
       seen.add(event.id);
     }
     if (event.type === "empire-split" && event.metadata?.parentFactionId === factionId && typeof event.metadata.foundingCityIds === "string") {
       const cityIds = event.metadata.foundingCityIds.split(",").filter(Boolean);
       if (new Set(cityIds).size !== cityIds.length || cityIds.length < 2 || event.metadata.splitCityCount !== cityIds.length) continue;
       rows.push({ kind: "EMPIRE_SPLIT", eventId: event.id, factionId, predecessorId: predecessor.id, month,
-        historyGroupId: event.historyGroupId, cityIds });
+        historyGroupId: event.historyGroupId, cityIds,
+        cityNames: typeof event.metadata.foundingCityNames === "string" ? event.metadata.foundingCityNames.split("、") : [] });
       seen.add(event.id);
     }
   }
   return rows.sort((a, b) => b.month - a.month || (a.eventId < b.eventId ? -1 : a.eventId > b.eventId ? 1 : 0));
 }
 
-/** Different groups and disjoint affected cities prevent counting one political loss twice. */
+/** Return distinct, fully attributed historical shocks; one shock is sufficient. */
 export function selectIndependentPoliticalShocks(shocks: readonly PoliticalSuccessionShock[], factionId: string | undefined, predecessor: Ruler, worldMonth: number) {
   const valid = shocks.filter(row => row.factionId === factionId && row.predecessorId === predecessor.id &&
     !!row.eventId && !!row.historyGroupId && new Set(row.cityIds).size === row.cityIds.length && Number.isSafeInteger(row.month) && row.month >= Math.max(predecessor.accessionYear ?? worldMonth, worldMonth - 120) && row.month < worldMonth);
-  for (const capital of valid.filter(row => row.kind === "CAPITAL_LOSS" && row.cityIds.length === 1)) {
-    const split = valid.find(row => row.kind === "EMPIRE_SPLIT" && row.cityIds.length >= 2 && row.eventId !== capital.eventId &&
-      row.historyGroupId !== capital.historyGroupId && !row.cityIds.some(id => capital.cityIds.includes(id)));
-    if (split) return [capital, split];
-  }
-  return [];
+  const seenEvents = new Set<string>();
+  const seenKindGroups = new Set<string>();
+  return valid.filter(row => {
+    const groupKey = `${row.kind}:${row.historyGroupId}`;
+    if (seenEvents.has(row.eventId) || seenKindGroups.has(groupKey)) return false;
+    seenEvents.add(row.eventId); seenKindGroups.add(groupKey); return true;
+  });
 }

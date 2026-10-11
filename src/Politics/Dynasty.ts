@@ -543,12 +543,9 @@ class DynastyRegistryStore {
         oldStateName, newStateName: team.displayName, oldColor, newColor: team.color,
         successionReason: reason, month: year, actorFactionColor: team.color,
         newRulerName: this.getRulerPersonalName(nextRuler), riskTier: revolution.riskTier,
-        ...(revolution.politicalShocks.length === 2 ? {
-          crisisCapitalEventId: revolution.politicalShocks[0].eventId, crisisCapitalMonth: revolution.politicalShocks[0].month,
-          crisisCapitalCityId: revolution.politicalShocks[0].cityIds[0], crisisCapitalCityName: revolution.politicalShocks[0].cityName,
-          crisisSplitEventId: revolution.politicalShocks[1].eventId, crisisSplitMonth: revolution.politicalShocks[1].month,
-          crisisSplitCityIds: revolution.politicalShocks[1].cityIds.join(","),
-        } : {}),
+        ...(revolution.politicalShocks.length ? { crisisEvidence: JSON.stringify(revolution.politicalShocks.map(shock => ({
+          kind: shock.kind, eventId: shock.eventId, month: shock.month, cityIds: shock.cityIds, cityNames: shock.cityNames ?? [],
+        }))) } : {}),
       });
       nextRuler.chronicle.notableEventIds.push(eventId);
     }
