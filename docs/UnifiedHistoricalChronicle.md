@@ -36,7 +36,9 @@ UnifiedFactionChronicle只接收现有资料：本国indexed events、FactionLif
 
 统一文章是最终展示缓存，WeakMap以live dynasty为键，每国只缓存一篇，不新存第二套历史资料。失效条件包含历史revision、worldMonth、lifetime/本国身份、王统派生结果及参与的外国历史身份；新世界/重载runtime变化后重建。人物查询按参与势力建立索引。只查询本国历史，不按帧扫描世界史。战争分组关联按month/group/city索引，不交叉遍历全部攻城与失国。
 
-文章字符数、100阶段及20000普通战事夹具和自动验证结果完成后补录。它们是合成单元测试，不假称读取用户私人长局，也不能代替实际浏览器文风/性能判断。
+合成夹具正文长度：沂220字符、郸162字符、存续王统146字符、100阶段290字符。稀疏史料不强行补足200字；20000条普通攻城不会挤掉真实政治转折。缓存测试确认重复查看复用本国索引结果，历史revision、新runtime与相关外国身份变化会失效重建。它们是单元测试结果，不假称读取用户私人长局，也不能代替实际浏览器文风/性能判断。
+
+自动验证：全套198个测试文件、1333项测试通过，使用VITEST_MAX_THREADS=2、VITEST_MIN_THREADS=1独立执行pnpm test。此前一次全套运行中旧Slaves.lifecycle初始化hook超时，未修改其断言或超时标准，降低worker后全部通过。pnpm build、pnpm desktop:build、pnpm desktop:compile已通过；renderer-debug构建与两项diff检查在交付前核对。新增21项纯事实、组件结构与缓存测试，并在原有V13真实导出→Hydration→再导出测试中增加统一文章前后一致性断言。未删除或弱化已有测试。
 
 ## 改动与冻结范围
 
