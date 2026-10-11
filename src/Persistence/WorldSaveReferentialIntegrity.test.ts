@@ -92,9 +92,13 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     const articles = (snapshot: ReturnType<typeof createEmptyWorldSaveV9>, dynasties: typeof state.dynasties) => {
       const factions = new Map(snapshot.factions.map(f => [f.factionId, { ...f, name: f.factionId,
         firstFoundedYear: f.firstFoundedMonth, cumulativeActiveYears: f.cumulativeActiveMonths,
-        restorationYears: f.restorationMonths, origin: undefined }]));
+        restorationYears: f.restorationMonths, origin: undefined,
+        sovereigntyHistory: f.sovereigntyHistory.flatMap(h => typeof h.rank === "string" && typeof h.startMonth === "number" ?
+          [{ rank: h.rank, startMonth: h.startMonth, endMonth: typeof h.endMonth === "number" ? h.endMonth : undefined }] : []),
+        nameHistory: f.nameHistory.flatMap(h => typeof h.name === "string" && typeof h.startMonth === "number" ?
+          [{ name: h.name, startMonth: h.startMonth, endMonth: typeof h.endMonth === "number" ? h.endMonth : undefined }] : []) }]));
       return dynasties.map((dynasty, i) => buildUnifiedFactionChronicle({ dynasty, faction: factions.get(dynasty.factionId)!,
-        factions, worldMonth: snapshot.world.worldMonth, events: snapshot.worldHistory.events, phases: houseBefore[i],
+        factions, worldMonth: snapshot.world.worldMonth, events: WorldHistory.getEventsForFaction(dynasty.factionId), phases: houseBefore[i],
         lifetime: snapshot.factionLifetime.records.find(r => r.factionId === dynasty.factionId)!, totalWorldBlocks: snapshot.factionLifetime.totalWorldBlocks }));
     };
     const articleBefore = articles(encoded, state.dynasties);
