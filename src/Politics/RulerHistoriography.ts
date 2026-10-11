@@ -161,9 +161,9 @@ export function deriveRulerHistoricalEvidence(
     const month = event.monthIndex ?? event.year;
     const diplomacy = ["truce-signed", "non-aggression-signed", "alliance-signed", "relation-renewed"].includes(event.type);
     const signatory = event.metadata?.signatoryARulerId === ruler.id || event.metadata?.signatoryBRulerId === ruler.id;
-    const direct = directToRuler(event) || signatory ||
-      event.type === "dynasty-usurped" && event.rulerId === ruler.id ||
-      event.type === "capital-relocated" && event.metadata?.rulerId === ruler.id;
+    const direct = diplomacy ? signatory :
+      event.type === "dynasty-usurped" ? event.rulerId === ruler.id :
+      event.type === "capital-relocated" ? event.metadata?.rulerId === ruler.id : false;
     const relevant = diplomacy || ["dynasty-usurped", "capital-fallen", "capital-relocated", "empire-split", "faction-restored", "faction-submitted", "faction-merged", "heir-died"].includes(event.type);
     if (!relevant) return [];
     if (diplomacy && !direct && !(event.factionIds ?? []).includes(faction.name)) return [];
