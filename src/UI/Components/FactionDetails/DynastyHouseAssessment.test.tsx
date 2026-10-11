@@ -39,6 +39,8 @@ describe("compact house assessment and indexed cache", () => {
     const c = fixture(); const query = vi.spyOn(WorldHistory, "getEventsForFaction");
     const get = () => getHouseAssessments(c.dynasty, c.faction, c.factions, c.worldMonth);
     const first = get(); expect(get()).toBe(first); expect(query).toHaveBeenCalledTimes(1);
+    expect(getHouseAssessments(c.dynasty, { ...c.faction }, new Map(c.factions), c.worldMonth)).toBe(first);
+    expect(query).toHaveBeenCalledTimes(1);
     WorldHistory.addEvent({ id: "emperor", year: 50, type: "emperor-proclaimed", category: "politics", title: "称帝", importance: "major", actorFactionId: "f", rulerId: "r0", factionIds: ["f"] });
     const changed = get(); expect(changed).not.toBe(first); expect(changed[0].assessment.join("")).toContain("称帝");
     c.worldMonth++; expect(get()).not.toBe(changed);

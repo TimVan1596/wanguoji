@@ -53,7 +53,7 @@ export function deriveHouseAssessments(c: HouseHistoryContext): HouseAssessment[
   };
   const phases = epochs.map((epoch, i): HouseAssessment => {
     const next = epochs[i + 1];
-    const end = next ? epoch.endMonth ?? next.startMonth : terminalMonth ?? epoch.endMonth;
+    const end = next ? epoch.endMonth ?? next.startMonth : epoch.endMonth ?? terminalMonth;
     const recordedFounder = byId.get(epoch.foundingRulerId);
     const founder = recordedFounder && recordedFounder.houseName === epoch.houseName && recordedFounder.accessionYear <= epoch.startMonth &&
       (recordedFounder.endYear ?? limit) >= epoch.startMonth ? recordedFounder : undefined;
@@ -69,9 +69,9 @@ export function deriveHouseAssessments(c: HouseHistoryContext): HouseAssessment[
       }
       return true;
     });
-    const status: HouseAssessment["status"] = next ? "REPLACED" : terminalMonth !== undefined ? c.faction.terminationReason ?? "EXTINCT" :
+    const status: HouseAssessment["status"] = next ? "REPLACED" : terminalMonth !== undefined && (epoch.endMonth === undefined || epoch.endMonth === terminalMonth) ? c.faction.terminationReason ?? "EXTINCT" :
       epoch.endMonth !== undefined || c.faction.status === "EXTINCT" ? "ENDED" : c.faction.status === "EXILED" ? "EXILED" : "CONTINUING";
-    const terminalRuler = terminalMonth === undefined ? undefined : [...members].sort((a, b) => b.reignOrdinal - a.reignOrdinal).find(r => r.endYear === terminalMonth);
+    const terminalRuler = next || terminalMonth === undefined || end !== terminalMonth ? undefined : [...members].sort((a, b) => b.reignOrdinal - a.reignOrdinal).find(r => r.endYear === terminalMonth);
     const current = members.find(r => r.id === c.dynasty.currentRulerId);
     return { key: `${c.dynasty.factionId}:${epoch.startMonth}:${epoch.foundingRulerId}:${i}`,
       factionId: c.dynasty.factionId, houseName: epoch.houseName, startMonth: epoch.startMonth, endMonth: end,
@@ -93,7 +93,7 @@ export function deriveHouseAssessments(c: HouseHistoryContext): HouseAssessment[
   const seen = new Set<string>();
   for (const e of c.events) {
     const month = e.monthIndex ?? e.year;
-    const evidenceKey = `${e.type}:${e.historyGroupId ?? e.id}`;
+    const evidenceKey = `${e.type}:${e.historyGroupId ?? e.id}:${month}`;
     if (!TYPES.has(e.type) || month > limit || seen.has(evidenceKey)) continue;
     let source = e.actorFactionId === c.faction.name;
     let target = e.targetFactionId === c.faction.name;

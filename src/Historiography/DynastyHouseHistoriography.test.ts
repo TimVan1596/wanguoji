@@ -129,6 +129,12 @@ describe("political house epoch assessment", () => {
     const p = deriveHouseAssessments(c); expect(p).toHaveLength(2); expect(p.every(x => x.rulerIds.length === 1 && x.rulerIds[0] === "a")).toBe(true);
     expect(c.dynasty.rulers).toHaveLength(1); expect(text(c)).not.toMatch(/全新血缘|兄弟王室/);
   });
+  it("does not extend an explicitly closed final epoch to a later national termination", () => {
+    const c = fixture(); c.dynasty.houseEpochs![0].endMonth = 75;
+    Object.assign(c.faction, { status: "EXTINCT", terminationMonth: 100, terminationReason: "EXTINCT" });
+    const p = deriveHouseAssessments(c)[0]; expect(p.endMonth).toBe(75); expect(p.status).toBe("ENDED");
+    expect(p.terminalRulerName).toBeUndefined();
+  });
   it("does not mutate canonical history, RNG or V13 DTO and is identical after JSON round-trip", () => {
     const c = fixture(), before = JSON.stringify(c.dynasty), history = JSON.stringify(c.events), rng = worldRandom.exportState();
     const expected = deriveHouseAssessments(c);
