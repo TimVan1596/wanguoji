@@ -9,7 +9,7 @@ describe("和平政治转型中文摘要",()=>{
     const text=formatPoliticalTransitionChineseSummary({worldMonth:12012,peacefulReunification:obs.snapshot(12012),
       strategicUnion:empty,peacefulSubmission:empty,retainedCanonicalHistory:{submittedEvents:1,mergedEvents:3}});
     expect(text).toContain("本次实际观察：1个月");expect(text).toContain("同源长期互不侵犯候选检查：1");
-    expect(text).toContain("十年和平证据不足或存在战事：1");expect(text).toContain("长期互不侵犯归并次数：0");
+    expect(text).toContain("十年和平证据不足或条约记录矛盾：1");expect(text).toContain("长期互不侵犯归并次数：0");
     expect(text).toContain("同源合邦3次，纳土归附1次");expect(text).toContain("旧历史资格不可回溯");
     expect(text).not.toMatch(/NAP|ALLIANCE|NaN|Infinity|Submission|Strategic/);
   });

@@ -4,9 +4,9 @@ type Snapshot = ReturnType<PoliticalTransitionObservations["snapshot"]>;
 const labels: Record<string,string> = {
   NOT_SAME_ORIGIN:"无政治同源关系",NO_ACTIVE_STATE:"无有效正式建制",TREATY_EXPIRED:"条约已到期",
   NON_AGGRESSION_TOO_SHORT:"互不侵犯不足十年",NOT_ADJACENT:"领土不接壤",POWER_GAP_TOO_SMALL:"实力差距不足",
-  WEAKER_TOO_MANY_CITIES:"弱方城市超过限制",PEACE_EVIDENCE_INSUFFICIENT:"十年和平证据不足或存在战事",
+  WEAKER_TOO_MANY_CITIES:"弱方城市超过限制",PEACE_EVIDENCE_INSUFFICIENT:"十年和平证据不足或条约记录矛盾",
   NO_PRESSURE_TRIGGER:"无可信共同压力且不符合极弱条件",ALLIANCE_TOO_SHORT:"战略同盟或和平期限不足",
-  RECENT_BILATERAL_WAR:"近期双边战争",CITY_RATIO_TOO_HIGH:"城市比例过高",EQUAL_TERRITORY_STRENGTH:"领土实力相等",
+  RECENT_BILATERAL_WAR:"近期或条约期间双边战争",CITY_RATIO_TOO_HIGH:"城市比例过高",EQUAL_TERRITORY_STRENGTH:"领土实力相等",
   NO_DURABLE_RELATION:"无有效长期外交关系",RELATION_TOO_SHORT:"外交关系期限不足",STRONGER_TOO_WEAK:"强方规模不足",
   WEAKER_TOO_LARGE:"弱方规模过大",STABILITY_TOO_HIGH:"弱方稳定度过高",SAME_ORIGIN_USES_STRATEGIC_UNION:"同源应走合邦路径",
   NOT_ACTIVE_STATE:"双方不是有效正式国家",

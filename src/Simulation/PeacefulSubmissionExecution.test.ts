@@ -107,6 +107,33 @@ describe("actual submission orchestration and canonical terminal offices",()=>{
     for(const sameOrigin of [false,true])expect(await run(true,sameOrigin)).toEqual(await run(false,sameOrigin));
     expect(await run(true,true,true)).toEqual(await run(false,true,true));
   });
+  it("互不侵犯路径被选中后执行守卫拒绝，记录失败而非成功",async()=>{
+    const {weak,strong}=await fixture();weak.origin={type:"SPLIT",parentFactionId:strong.name};
+    Diplomacy.delete("strong","weak");Diplomacy.setRelation({factionAId:"strong",factionBId:"weak",status:"NON_AGGRESSION",
+      reason:"COMMON_THREAT_NON_AGGRESSION",startedMonth:0,originalStartedMonth:0,renewalCount:0,expiresMonth:240});
+    WorldHistory.addEvent({id:"guard-sign",year:0,type:"non-aggression-signed",category:"politics",title:"条约",
+      factionIds:["strong","weak"],importance:"major",metadata:createDiplomacyEventMetadata(Diplomacy.get("strong","weak")!)});
+    const sim=new AutoSimulator(true),runtime=sim as any;
+    runtime.started=runtime.running=true;runtime.clock.importState({worldMonth:119,elapsedMs:0,running:true});
+    vi.spyOn(runtime.events,"update").mockImplementation(()=>undefined);
+    vi.spyOn(runtime.events,"observeWorldGoal").mockImplementation(()=>undefined);
+    vi.spyOn(runtime.events,"getCurrentPhase").mockReturnValue("FRAGMENTED");
+    vi.spyOn(runtime.population,"update").mockImplementation(()=>undefined);
+    vi.spyOn(runtime.populationTransitionAudit,"reconcile").mockImplementation(()=>undefined);
+    vi.spyOn(WorldEra,"observe").mockImplementation(()=>undefined);
+    vi.spyOn(WorldExiles,"update").mockImplementation(()=>undefined);
+    vi.spyOn(DynastyRegistry,"update").mockImplementation(()=>undefined);
+    vi.spyOn(FactionSnapshots,"observe").mockImplementation(()=>undefined);
+    vi.spyOn(WorldHistory,"observeWorld").mockImplementation(()=>undefined);
+    for(const t of game.Core.teams)for(const c of t.cities)c.updateDefense=()=>{};
+    const actual=runtime.mergeFaction.bind(sim);
+    vi.spyOn(runtime,"mergeFaction").mockImplementation((...args:unknown[])=>{weak.status="EXILED";actual(...args);});
+    sim.update(WORLD_MONTH_MS,game.Core.teams,100);
+    expect(sim.getPeacefulPoliticalTransitionDiagnostics().peacefulReunification.sessionCumulative).toMatchObject({
+      selectedAttempts:1,successfulTransitions:0,executionFailures:1,failureCounts:{EXECUTION_RETURNED_WITHOUT_MERGED_TERMINAL_STATE:1}});
+    expect(WorldHistory.getEvents().some(e=>e.type === "faction-merged")).toBe(false);
+    expect(strong.cities).toHaveLength(1);
+  });
   it("counts retained canonical transitions once per history change without replaying old eligibility",async()=>{
     await fixture();const sim=new AutoSimulator(true);
     for(let m=0;m<20000;m++)WorldHistory.addEvent({id:`background-${m}`,year:m,category:"war",type:"city-captured",title:"",importance:"normal"});

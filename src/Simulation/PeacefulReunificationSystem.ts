@@ -15,6 +15,11 @@ const involvesPair = (e: WorldEvent, r: DiplomaticRelation) => {
   const ids = new Set([...(e.factionIds ?? []), e.actorFactionId, e.targetFactionId]);
   return ids.has(r.factionAId) && ids.has(r.factionBId);
 };
+function hasBilateralWar(r: DiplomaticRelation, worldMonth: number, events: readonly WorldEvent[]) {
+  const start = Math.min(r.startedMonth, worldMonth-REUNIFICATION_MIN_PEACE_MONTHS);
+  return events.some(e => monthOf(e) >= start && monthOf(e) <= worldMonth && involvesPair(e,r) &&
+    (e.category === "war" || e.type === "city-captured" || e.type === "capital-fallen"));
+}
 
 /** Positive evidence of uninterrupted attack prohibition; absence of war alone is insufficient.
  * All evidence is persisted V13 history. No session clock or load-dependent eligibility. */
@@ -43,10 +48,8 @@ export function verifyNonAggressionPeace(r: DiplomaticRelation, worldMonth: numb
   if (expiry !== r.expiresMonth || count !== r.renewalCount || lastRenewed !== r.lastRenewedMonth || expiry <= worldMonth) return undefined;
   if (relevant.some(e => ["treaty-expired", "alliance-expired", "alliance-signed", "truce-signed"].includes(e.type) ||
       e.type === "non-aggression-signed" && e.id !== first.id)) return undefined;
-  const windowStart = Math.min(r.startedMonth, worldMonth - REUNIFICATION_MIN_PEACE_MONTHS);
   // This window is checked in addition to the positively reconstructed treaty chain.
-  if (events.some(e => monthOf(e) >= windowStart && monthOf(e) <= worldMonth && involvesPair(e,r) &&
-      (e.category === "war" || e.type === "city-captured" || e.type === "capital-fallen"))) return undefined;
+  if (hasBilateralWar(r,worldMonth,events)) return undefined;
   return { signingEventId: first.id, eventIds: ids, verifiedFromMonth: r.startedMonth, verifiedUntilMonth: worldMonth };
 }
 
@@ -77,7 +80,10 @@ export function diagnosePeacefulReunificationCandidates(input: PeacefulReunifica
       const events = sameOrigin && age >= REUNIFICATION_MIN_PEACE_MONTHS && relation.expiresMonth > input.worldMonth
         ? input.getRelationEvents(relation) : [];
       const peace = events.length ? verifyNonAggressionPeace(relation,input.worldMonth,events) : undefined;
-      if (sameOrigin && age >= REUNIFICATION_MIN_PEACE_MONTHS && !peace) blockers.push("PEACE_EVIDENCE_INSUFFICIENT");
+      if (sameOrigin && age >= REUNIFICATION_MIN_PEACE_MONTHS) {
+        if (hasBilateralWar(relation,input.worldMonth,events)) blockers.push("RECENT_BILATERAL_WAR");
+        else if (!peace) blockers.push("PEACE_EVIDENCE_INSUFFICIENT");
+      }
       const threat = relation.commonThreatFactionId ? active.get(relation.commonThreatFactionId) : undefined;
       const direct = (t: Team) => Boolean(threat && (areFactionsTerritoriallyAdjacent(t,threat,input.blockSize) || events.some(e =>
         monthOf(e) >= input.worldMonth-36 && monthOf(e) <= input.worldMonth &&

@@ -51,7 +51,7 @@ describe("同源长期互不侵犯归并资格",()=>{
   it("检查完整120个月窗口，包含旧五年窗口之外的战争，忽略未来与第三方事件",()=>{
     const f=fixture();const battle:WorldEvent={id:"war",year:30,type:"city-captured",category:"war",title:"战事",
       actorFactionId:"a",targetFactionId:"b",importance:"major"};
-    f.events.push(battle);expect(chosen(f).candidate).toBeUndefined();
+    f.events.push(battle);expect(chosen(f).candidate).toBeUndefined();expect(chosen(f).blockers).toContain("RECENT_BILATERAL_WAR");
     battle.year=140;expect(chosen(f).candidate).toBeDefined();
     battle.year=30;battle.targetFactionId="z";expect(chosen(f).candidate).toBeDefined();
   });
