@@ -28,6 +28,20 @@ describe("ruler chronicle", () => {
       .toEqual([event]);
   });
 
+  it("merges only the exact same-boundary succession record into its usurpation biography event", () => {
+    const usurp = { id: "usurp", year: 20, monthIndex: 20, category: "politics" as const,
+      type: "dynasty-usurped" as const, title: "旧王统易代", actorFactionId: "state", rulerId: "new",
+      metadata: { predecessorRulerId: "old", displacedSuccessorId: "heir" }, importance: "major" as const };
+    const succession = { id: "succession", year: 20, monthIndex: 20, category: "politics" as const,
+      type: "ruler-succession" as const, title: "前君之后，新君夺取王统", actorFactionId: "state",
+      metadata: { previousRulerId: "old", nextRulerId: "new" }, importance: "major" as const };
+    const result = getRulerHistoricalEvents([usurp, succession], { id: "new", accessionYear: 20 }, "state", 20, []);
+    expect(result.map(event => event.id)).toEqual(["usurp"]);
+    expect(getRulerHistoricalEvents([usurp, succession], { id: "old", accessionYear: 0, endYear: 20 }, "state", 20, [])).toHaveLength(1);
+    const unrelated = { ...succession, id: "other-succession", metadata: { previousRulerId: "other-old", nextRulerId: "other-new" } };
+    expect(getRulerHistoricalEvents([usurp, unrelated], { id: "new", accessionYear: 20 }, "state", 20, [])).toHaveLength(2);
+  });
+
   it("uses objective accession-age context bands", () => {
     expect(formatAccessionAge(7)).toContain("幼年即位");
     expect(formatAccessionAge(14)).toContain("少年即位");

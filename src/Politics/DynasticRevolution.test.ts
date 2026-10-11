@@ -92,6 +92,16 @@ describe("authoritative succession-boundary dynastic revolution", () => {
     expect(transition(team, dynasty).id).toBe("heir");
     expect(roll).not.toHaveBeenCalled(); expect(dynasty.houseEpochs).toHaveLength(1);
   });
+  it("lists a predecessor combat outcome once in the political-shock evidence", () => {
+    const { team, dynasty } = setup();
+    const old = { ...dynasty.rulers[0], accessionYear: month - 10 };
+    const eligible = getRevolutionEligibility({ worldMonth: month, identityStage: "STATE", status: "ACTIVE",
+      stability: 45, cityCount: 3, predecessor: old, successor: { ...dynasty.rulers[1], bornYear: 300 }, successionReason: "combat",
+      previousSuccessionMonths: [], factionId: team.name, politicalShocks: [{ kind: "CAPITAL_LOSS", eventId: "fall",
+        factionId: team.name, predecessorId: old.id, month: month - 2, historyGroupId: "fall-group", cityIds: ["c"], cityName: "旧都" }] });
+    expect(eligible.riskTier).toBe("POLITICAL_SHOCK");
+    expect(eligible.evidence.filter(item => item === "PREDECESSOR_COMBAT_DEATH")).toHaveLength(1);
+  });
   it.each(["natural", "combat", "captured"] as const)("preserves displaced legitimate kin and factual history after %s succession usurpation", reason => {
     const { team, dynasty } = setup();
     vi.spyOn(worldRandom, "next").mockReturnValueOnce(0);

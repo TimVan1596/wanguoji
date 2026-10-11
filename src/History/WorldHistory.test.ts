@@ -13,7 +13,7 @@ describe("world history", () => {
       rulerId: "ruler-1",
       metadata: { heirId: "heir-1", parentRulerId: "ruler-1", heirName: "姬衡", age: 23, reason: "natural" },
     });
-    expect(event?.description).toBe("储君姬衡去世，先于燕王而卒。");
+    expect(event?.description).toBe("继承候选姬衡去世，先于燕王而卒。");
   });
 
   it("normal succession creates a single ruler-succession event", () => {

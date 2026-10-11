@@ -100,6 +100,8 @@ describe("calibration expectation and session world-time rates", () => {
       expect(snapshot.expectedUsurpationsPer1000Years).toBeCloseTo(1.2);
       expect(snapshot.estimatedWorldYearsPerExpectedUsurpation).toBeCloseTo(100 / 0.12);
       expect(snapshot.chanceBuckets.final["2%"]).toBe(1);
+      for (const bucket of Object.values(snapshot.chanceBuckets.base)) expect(Number.isFinite(bucket) && bucket >= 0 && Number.isInteger(bucket)).toBe(true);
+      for (const bucket of Object.values(snapshot.chanceBuckets.final)) expect(Number.isFinite(bucket) && bucket >= 0 && Number.isInteger(bucket)).toBe(true);
       expect(snapshot.chanceBuckets.tiers).toEqual({ CRISIS: 1, COMPOUND_SHOCK: 1, COMPOUND_INSTABILITY: 1, POLITICAL_SHOCK: 0 });
       const same = diagnostics.snapshot(13200);
       expect(same).toEqual(snapshot); // repeated UI reads don't accumulate expectation
@@ -110,6 +112,20 @@ describe("calibration expectation and session world-time rates", () => {
       expect(diagnostics.snapshot(13320)).toMatchObject({ elapsedWorldYears: 10, expectedUsurpationsPer1000Years: 0,
         estimatedWorldYearsPerExpectedUsurpation: null });
     } finally { draw.mockRestore(); }
+  });
+  it("counts the 2% political-shock base bucket as a finite integer", () => {
+    const diagnostics = new RevolutionGateDiagnostics(() => true);
+    const input: RevolutionContext = { ...context(), worldMonth: 600, stability: 45, cityCount: 3,
+      predecessor: { ...context().predecessor, accessionYear: 590 }, successionReason: "combat",
+      successor: { ...context().successor!, bornYear: 300 },
+      politicalShocks: [{ kind: "CAPITAL_LOSS", eventId: "fall", factionId: "id", predecessorId: "old",
+        month: 590, historyGroupId: "fall", cityIds: ["city"] }] };
+    const result = evaluateDynasticRevolution(input, () => 0.99);
+    expect(result.riskTier).toBe("POLITICAL_SHOCK");
+    diagnostics.record("id", "国", input, result);
+    const buckets = diagnostics.snapshot().chanceBuckets.base;
+    expect(buckets["2%"]).toBe(1);
+    expect(Object.values(buckets).every(value => Number.isFinite(value) && Number.isInteger(value) && value >= 0)).toBe(true);
   });
   it("does not collect expectations or eligible samples when debug is off", () => {
     const diagnostics = new RevolutionGateDiagnostics(() => false), input = context();

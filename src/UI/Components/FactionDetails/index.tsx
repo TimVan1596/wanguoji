@@ -1070,7 +1070,7 @@ function RulerBiography({
       ) : null}
       {heirDeathEvents.length ? (
         <Box sx={{ mt: 0.55 }}>
-          <Typography fontWeight="bold" fontSize="0.82rem">储嗣</Typography>
+          <Typography fontWeight="bold" fontSize="0.82rem">继承候选</Typography>
           {heirDeathEvents.map((event) => (
             <Typography key={event.id} fontSize="0.82rem">
               {stringMetadata(event.metadata?.heirName)} · {event.metadata?.age ?? "—"}岁 · {formatWorldDate(event.monthIndex ?? event.year)}{!hasRecordedRulerDeath(ruler) ? "在其任内" : "先于父君"}{event.metadata?.reason === "combat" ? "战死" : event.metadata?.reason === "captured" ? "被俘处死" : "去世"}
