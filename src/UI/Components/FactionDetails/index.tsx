@@ -1,3 +1,4 @@
+import { DynastyHouseAssessment } from "./DynastyHouseAssessment";
 import { hasRecordedRulerDeath } from "../../../Politics/RulerLifeState";
 import { FactionAssessmentPanel } from "../FactionAssessment";
 import { getTerminationTargetName } from "./model";
@@ -794,6 +795,7 @@ function DynastyTree({
         <Typography fontWeight="bold" fontSize="0.9rem">历代王统</Typography>
         {epochPresentation.historical.map(epoch => <Typography key={epoch.key} fontSize="0.85rem">{epoch.text}</Typography>)}
       </Box> : null}
+      {dynasty ? <DynastyHouseAssessment key={team.name} dynasty={dynasty} faction={team} factions={factionById} worldMonth={worldMonth} /> : null}
       <Typography fontWeight="bold" fontSize="0.9rem">历代君主</Typography>
       <Box sx={{ display: "grid", gap: 0.5 }}>
         {orderedRulers.map((ruler, index) => {

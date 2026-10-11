@@ -1,3 +1,4 @@
+import { deriveHouseAssessments } from "../Historiography/DynastyHouseHistoriography";
 import { setFixtureLifetimeRecords } from "./testing/FactionLifetimeFixture";
 import { afterEach, describe, expect, it, vi } from "vitest";
 const { game } = vi.hoisted(() => ({ game: { Core: undefined as any, BlockSize: 32 } }));
@@ -84,7 +85,14 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     expect(state.dynasties.every(d => d.rulers.some(r => r.id === d.currentRulerId && r.status === "ruling" && r.deathMonth === undefined))).toBe(true);
     const encoded = JSON.parse(JSON.stringify(save));
     expect(validateWorldSave(encoded)).toEqual({ valid: true, errors: [] });
+    const houseBefore = state.dynasties.map(dynasty => deriveHouseAssessments({ dynasty,
+      faction: { name: dynasty.factionId, displayName: dynasty.factionId, color: 1, status: "ACTIVE", stateFoundedMonth: 0 },
+      factions: new Map(), events: [], worldMonth: save.world.worldMonth }));
     hydrateWorldSave(core, encoded); const first = exportWorldSave(core);
+    const houseAfter = DynastyRegistry.exportState().dynasties.map(dynasty => deriveHouseAssessments({ dynasty,
+      faction: { name: dynasty.factionId, displayName: dynasty.factionId, color: 1, status: "ACTIVE", stateFoundedMonth: 0 },
+      factions: new Map(), events: [], worldMonth: first.world.worldMonth }));
+    expect(houseAfter).toEqual(houseBefore); expect(houseAfter.every(phases => phases[0].rulerCount === 1)).toBe(true);
     expect(first.dynasties).toEqual(encoded.dynasties); expect(first.worldHistory).toEqual(save.worldHistory);
     hydrateWorldSave(core, first); expect(exportWorldSave(core)).toEqual(first); expect(worldRandom.exportState()).toEqual(save.worldRandom);
   });

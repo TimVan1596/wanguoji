@@ -51,7 +51,9 @@ PosthumousRules 使用的是独立 RulerLegacyEvidence，不使用这里的 LAST
 
 本机 Vitest 0.34.6 用上述环境变量限制并发；不使用该版本不支持的 maxWorkers/minWorkers 参数。自动结果仅验证代码和数据，UI及人物评论自然性仍等待人工。
 
-## 人工检查：直接读取现有 V13 长局
+用户已明确回传 v31c1 / 0.99.129 人工 PASS：宋景怀、宋恺、宋武、V13 Save/Load 与历史 UI 正常。该 Gate 关闭，本轮结果冻结。后续 v31d 见 [DynastyHouseEpochHistoriography.md](DynastyHouseEpochHistoriography.md)。
+
+## 已完成的人工检查：直接读取现有 V13 长局
 
 运行 `pnpm desktop:start:debug`。无需新世界，无需再模拟数百年。
 
