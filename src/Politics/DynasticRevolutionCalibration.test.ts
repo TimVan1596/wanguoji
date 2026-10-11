@@ -92,7 +92,9 @@ describe("calibration closure compound lower-risk boundaries", () => {
       expect(result).toMatchObject({ hardEligible: true, riskTier: "COMPOUND_SHOCK", riskMultiplier: 0.25, crisis: { level: "succession-shock" } });
       expect(result.chance).toBe(reason === "combat" ? 0.02 : 0.025);
       expect(roll).toHaveBeenCalledTimes(1);
-      for (const change of [{ cityCount: 2 }, { successionReason: "natural" as const }, { successor: undefined },
+      const newlyEligible = evaluateDynasticRevolution({ ...input, cityCount: 2 }, () => 0.99);
+      expect(newlyEligible).toMatchObject({ hardEligible: true, riskTier: "POLITICAL_SHOCK", chance: 0.03 });
+      for (const change of [{ successionReason: "natural" as const }, { successor: undefined },
         { identityStage: "PROVISIONAL" }, { status: "EXILED" }, { cityCount: 0 }]) {
         const blockedRoll = vi.fn(() => 0);
         expect(evaluateDynasticRevolution({ ...input, ...change }, blockedRoll).rollAttempted).toBe(false);

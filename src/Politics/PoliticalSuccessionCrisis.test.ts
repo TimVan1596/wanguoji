@@ -40,7 +40,7 @@ describe("政治重创继位资格与真实历史证据", () => {
   it("区分2%至6%分层风险，单次概率不替代资格次数", () => {
     const input = context();
     const mild = evaluateDynasticRevolution({ ...input, cityCount: 4, stability: 55 }, () => .99);
-    const strong = evaluateDynasticRevolution({ ...input, cityCount: 2, stability: 40, successionReason: "combat" }, () => .99);
+    const strong = evaluateDynasticRevolution({ ...input, cityCount: 2, stability: 40, successionReason: "combat", previousSuccessionMonths: [580] }, () => .99);
     expect(mild.chance).toBe(.03);
     expect(strong.chance).toBe(.06);
     expect(mild.rollAttempted).toBe(true); expect(strong.rollAttempted).toBe(true);
