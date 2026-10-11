@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildRulerTags, createRulerChronicle, finishRulerChronicle } from "./RulerChronicle";
+import { buildRulerTags, createRulerChronicle, finishRulerChronicle, getRulerHistoricalEvents } from "./RulerChronicle";
 import { CURRENT_SAVE_SCHEMA_VERSION } from "../Persistence/WorldSaveSchema";
 import { BASE_PLAY_RATE } from "../Simulation/SimulationDriver";
 import {
@@ -20,6 +20,7 @@ import {
   RulerHistoriographyContext,
 } from "./RulerHistoriography";
 import { getSignificantReignStats } from "../UI/Components/FactionDetails/RoyalPresentation";
+import { WorldHistoryStore } from "../History/WorldHistory";
 
 function makeContext(options: {
   start?: Partial<{ population: number; territoryShare: number; cityCount: number; stability: number }>;
@@ -458,7 +459,7 @@ describe("evidence-grounded ruler historiography", () => {
 
   it("recognizes a predeceased biological heir but ignores a dynasty archive", () => {
     const parent = makeContext({ endMonth: 120 });
-    const heir = { id: "heir", parentId: "r1", bornYear: -240, endYear: 80, endReason: "自然去世", status: "dead" };
+    const heir = { id: "heir", parentId: "r1", bornYear: -240, endYear: 80, deathMonth: 80, deathReason: "自然去世", endReason: "自然去世", status: "dead" };
     const archived = { id: "archived", parentId: "r1", bornYear: -240, politicalEndYear: 90, endReason: "王统断绝", status: "dead" };
     parent.dynasty.rulers.push(heir as any, archived as any);
     expect(deriveRulerHistoricalEvidence(parent).predeceasedHeirCount).toBe(1);
@@ -501,6 +502,29 @@ describe("evidence-grounded ruler historiography", () => {
     expect(composeHistorianVoice(expanded)).toContain("篡朝方式改变王统");
     expect(composeHistorianVoice(deriveRulerHistoricalEvidence(makeContext({ endMonth: 120,
       start: { territoryShare: 0.1, cityCount: 2 }, end: { territoryShare: 0.3, cityCount: 5 } })))).not.toContain("篡朝");
+  });
+
+  it("reconciles signed agreements from one WorldHistory event set through facts, statistics and default biography", () => {
+    const signed = ["non-aggression-signed", "alliance-signed", "truce-signed"].map((type, index) => ({
+      id: `world-signature-${index}`, historyGroupId: `signature-${index}`, year: 20 + index, monthIndex: 20 + index,
+      type, category: "politics", actorFactionId: "秦", factionIds: ["秦", "魏"], importance: "normal",
+      metadata: { signatoryARulerId: "r1", signatoryAFactionId: "秦", signatoryBRulerId: "wei-ruler", signatoryBFactionId: "魏" },
+    }));
+    const renewal = { ...signed[0], id: "renewed", historyGroupId: "renewal", monthIndex: 25, year: 25,
+      type: "relation-renewed", metadata: { ...signed[0].metadata } };
+    const foreignSigning = { ...signed[0], id: "foreign-signing", historyGroupId: "foreign", actorFactionId: "楚",
+      factionIds: ["楚", "魏"], metadata: { ...signed[0].metadata, signatoryAFactionId: "楚" } };
+    const history = new WorldHistoryStore();
+    [...signed, renewal, foreignSigning].forEach(event => history.addEvent(event as any));
+    const events = history.getEvents();
+    const context = makeContext({ endMonth: 100, events });
+    const evidence = deriveRulerHistoricalEvidence(context);
+    expect(evidence.politicalFacts.map(fact => fact.eventId)).toEqual([...signed.map(event => event.id), "renewed"]);
+    expect(getSignificantReignStats(context.ruler.chronicle!, evidence.politicalFacts)).toContain("本人签署外交协议：3");
+    const biography = getRulerHistoricalEvents(events, context.ruler, "秦", 100, []);
+    expect(biography.filter(event => signed.some(row => row.id === event.id)).map(event => event.id).sort()).toEqual(signed.map(event => event.id).sort());
+    expect(biography.some(event => event.id === "renewed")).toBe(true);
+    expect(biography.some(event => event.id === "foreign-signing")).toBe(false);
   });
 
   it.each([

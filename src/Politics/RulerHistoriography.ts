@@ -135,7 +135,6 @@ const COLLAPSE_TYPES = new Set<WorldEvent["type"]>([
   "faction-extinct",
   "faction-dissolved",
 ]);
-const DEATH_END_REASONS = new Set(["去世", "自然去世", "战死", "被俘处死"]);
 
 export function deriveRulerHistoricalEvidence(
   context: RulerHistoriographyContext
@@ -315,14 +314,11 @@ export function deriveRulerHistoricalEvidence(
 
   const parentEndMonth = ruler.endYear ?? worldMonth;
   const predeceasedHeirCount = dynasty.rulers.filter((candidate) => {
-    const candidateEnd = candidate.endYear ?? candidate.politicalEndYear;
     return Boolean(
       candidate.parentId === ruler.id &&
         candidate.reignOrdinal === undefined &&
-        candidateEnd !== undefined &&
-        candidateEnd < parentEndMonth &&
-        candidate.endReason &&
-        DEATH_END_REASONS.has(candidate.endReason)
+        hasRecordedRulerDeath(candidate) &&
+        candidate.deathMonth! < parentEndMonth
     );
   }).length;
 
@@ -654,11 +650,12 @@ export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string
   const usurpation = evidence.politicalFacts.find((fact) => fact.type === "dynasty-usurped" && fact.role === "DIRECT_ACTOR");
 
   if (usurpation) {
+    const displaced = usurpation.displacedSuccessorName ? "并排除原合法继承人" : "";
     if (evidence.territoryDelta <= -0.08 || evidence.cityDelta <= -1) {
-      return `其以篡朝方式改变王统，并排除原合法继承人；任内疆域由${formatPrecisePercent(evidence.startTerritory)}变为${formatPrecisePercent(evidence.endTerritory)}、城市由${evidence.startCityCount}座变为${evidence.endCityCount}座。现有记录只证明两者同在其任期，不能据此断定因果。`;
+      return `其以篡朝方式改变王统${displaced}；任内疆域由${formatPrecisePercent(evidence.startTerritory)}变为${formatPrecisePercent(evidence.endTerritory)}、城市由${evidence.startCityCount}座变为${evidence.endCityCount}座。现有记录只证明两者同在其任期，不能据此断定因果。`;
     }
     if (evidence.territoryDelta >= 0.12 || evidence.cityDelta >= 2) {
-      return `其以篡朝方式改变王统，任内疆域由${formatPrecisePercent(evidence.startTerritory)}变为${formatPrecisePercent(evidence.endTerritory)}、城市由${evidence.startCityCount}座增至${evidence.endCityCount}座；夺统身份与治理结果各有其事实依据。`;
+      return `其以篡朝方式改变王统${displaced}，任内疆域由${formatPrecisePercent(evidence.startTerritory)}变为${formatPrecisePercent(evidence.endTerritory)}、城市由${evidence.startCityCount}座增至${evidence.endCityCount}座；夺统身份与治理结果各有其事实依据。`;
     }
     return `其以篡朝方式取得王统，改变了政治承统关系；现有任期记录未显示足以将这一身份直接等同于治绩的依据。`;
   }
