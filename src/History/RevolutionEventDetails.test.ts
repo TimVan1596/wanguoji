@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { composeRevolutionNarrative } from "./RevolutionEventDetails";
+import { composeRevolutionNarrative, getRevolutionEventDetails } from "./RevolutionEventDetails";
 import { formatWorldDate } from "../Simulation/WorldTime";
 
 const facts = { oldHouseName: "甲氏", newHouseName: "乙氏", newRulerName: "乙安", previousRulerTitle: "旧王甲平",
@@ -7,6 +7,30 @@ const facts = { oldHouseName: "甲氏", newHouseName: "乙氏", newRulerName: "�
   crisisCapitalCityName: "旧都", crisisCapitalMonth: 520, crisisCapitalEventId: "capital", crisisSplitMonth: 500, crisisSplitEventId: "split" };
 
 describe("夺统事件只用冻结的真实背景", () => {
+  it("在旧V13展示中稳定去重旧证据码且不改写原始metadata", () => {
+    const metadata = { vulnerabilityEvidence: "PREDECESSOR_COMBAT_DEATH,PREDECESSOR_COMBAT_DEATH,LOW_FACTION_STABILITY,PREDECESSOR_COMBAT_DEATH,UNKNOWN_CODE" };
+    const event = { id: "old-v13-usurp", year: 483 * 12 + 7, monthIndex: 483 * 12 + 7, category: "politics" as const,
+      type: "dynasty-usurped" as const, title: "郡国易代", metadata, importance: "major" as const };
+    const before = JSON.stringify(event.metadata);
+    const details = getRevolutionEventDetails(event as any).join("；");
+    expect(details.match(/前君战死/g)).toHaveLength(1);
+    expect(details.match(/国家稳定度偏低/g)).toHaveLength(1);
+    expect(details).not.toContain("UNKNOWN_CODE");
+    expect(JSON.stringify(event.metadata)).toBe(before);
+  });
+
+  it("保留两场不同日期和城市的失都事实，不把事件记录合并", () => {
+    const text = composeRevolutionNarrative({ ...facts,
+      crisisEvidence: JSON.stringify([
+        { kind: "CAPITAL_LOSS", eventId: "capital-a", month: 500, cityIds: ["a"], cityNames: ["甲都"] },
+        { kind: "CAPITAL_LOSS", eventId: "capital-b", month: 510, cityIds: ["b"], cityNames: ["乙都"] },
+      ]),
+      vulnerabilityEvidence: "RECENT_CAPITAL_LOSS,RECENT_CAPITAL_LOSS,LOW_FACTION_STABILITY", successionReason: "natural",
+    });
+    expect(text).toContain("甲都"); expect(text).toContain("乙都");
+    expect(text.match(/失去/g)).toHaveLength(2);
+  });
+
   it("背景按真实月份组织，不把字段顺序当作事件顺序", () => {
     const text = composeRevolutionNarrative({ ...facts, successionReason: "natural" });
     expect(text.indexOf(formatWorldDate(500))).toBeLessThan(text.indexOf(formatWorldDate(520)));

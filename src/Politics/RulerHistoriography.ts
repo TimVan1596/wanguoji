@@ -565,7 +565,7 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
   }
 
   if (usurpation && (evidence.territoryDelta <= -0.08 || evidence.cityDelta <= -1 || evidence.stabilityDelta !== 0)) {
-    const changes = [`疆域由${formatPercent(evidence.startTerritory)}至${formatPercent(evidence.endTerritory)}`,
+    const changes = [`疆域由${formatPrecisePercent(evidence.startTerritory)}至${formatPrecisePercent(evidence.endTerritory)}`,
       `城市${evidence.startCityCount}座至${evidence.endCityCount}座`];
     if (evidence.startStability !== evidence.endStability) changes.push(`稳定度${evidence.startStability}至${evidence.endStability}`);
     lines.push(`其任内国家结果为${changes.join("，")}；这是在位变化的记录，不足以证明由夺统所致。`);

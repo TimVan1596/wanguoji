@@ -20,6 +20,7 @@ describe("ruler chronicle", () => {
       type: "heir-died" as const,
       title: "储君姬衡去世",
       actorFactionId: "燕",
+      factionIds: ["燕"],
       rulerId: "parent",
       metadata: { parentRulerId: "parent", heirName: "姬衡", age: 23, reason: "natural" },
       importance: "normal" as const,
@@ -31,7 +32,7 @@ describe("ruler chronicle", () => {
   it("merges only the exact same-boundary succession record into its usurpation biography event", () => {
     const usurp = { id: "usurp", year: 20, monthIndex: 20, category: "politics" as const,
       type: "dynasty-usurped" as const, title: "旧王统易代", actorFactionId: "state", rulerId: "new",
-      metadata: { predecessorRulerId: "old", displacedSuccessorId: "heir" }, importance: "major" as const };
+      factionIds: ["state"], metadata: { predecessorRulerId: "old", displacedSuccessorId: "heir" }, importance: "major" as const };
     const succession = { id: "succession", year: 20, monthIndex: 20, category: "politics" as const,
       type: "ruler-succession" as const, title: "前君之后，新君夺取王统", actorFactionId: "state",
       metadata: { previousRulerId: "old", nextRulerId: "new" }, importance: "major" as const };
@@ -167,7 +168,7 @@ describe("ruler chronicle", () => {
   it("selects direct canonical ruler events in reign order without duplicate groups", () => {
     const events = [
       { id: "late", year: 30, monthIndex: 30, type: "city-captured", importance: "major", title: "秦攻陷安邑", factionIds: ["秦"], rulerId: "r1", historyGroupId: "g1" },
-      { id: "duplicate", year: 30, monthIndex: 30, type: "capital-fallen", importance: "major", title: "安邑陷落", factionIds: ["秦"], rulerId: "r1", historyGroupId: "g1" },
+      { id: "duplicate", year: 30, monthIndex: 30, type: "capital-fallen", importance: "major", title: "安邑陷落", factionIds: ["秦"], actorFactionId: "魏", targetFactionId: "秦", previousOwnerFactionId: "秦", rulerId: "r1", historyGroupId: "g1" },
       { id: "early", year: 10, monthIndex: 10, type: "state-founded", importance: "major", title: "秦正式建国", factionIds: ["秦"], rulerId: "r1" },
       { id: "other", year: 20, monthIndex: 20, type: "city-captured", importance: "major", title: "楚攻城", factionIds: ["楚"], rulerId: "r2" },
     ] as any;
@@ -238,7 +239,7 @@ describe("ruler chronicle", () => {
     const events = [...treaties, ...distractions] as any;
     const visible = getRulerHistoricalEvents(events, { id: "qi-ruler", accessionYear: 0, endYear: 40 }, "齐", 40, []);
     expect(visible.filter(event => treaties.some(treaty => treaty.id === event.id)).map(event => event.id)).toEqual(treaties.map(treaty => treaty.id));
-    expect(visible.length).toBeGreaterThan(6);
+    expect(visible.length).toBe(6);
   });
 
   it("rejects foreign political events even when they fall inside a ruler's tenure", () => {

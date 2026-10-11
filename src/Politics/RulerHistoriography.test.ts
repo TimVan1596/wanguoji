@@ -19,6 +19,7 @@ import {
   formatAccessionAge,
   RulerHistoriographyContext,
 } from "./RulerHistoriography";
+import { getSignificantReignStats } from "../UI/Components/FactionDetails/RoyalPresentation";
 
 function makeContext(options: {
   start?: Partial<{ population: number; territoryShare: number; cityCount: number; stability: number }>;
@@ -472,6 +473,34 @@ describe("evidence-grounded ruler historiography", () => {
       metadata: { parentRulerId: "r1", heirId: "candidate", heirName: "安" }, importance: "normal" }] }));
     expect(result.politicalFacts).toMatchObject([{ eventId: "candidate-death", role: "IN_TENURE", confidence: "TENURE",
       outcome: "继承候选先逝", suitableForAssessment: true }]);
+  });
+
+  it("attributes only the ruler's own polity events and carries a usurpation into assessment and historian voice", () => {
+    const usurp = { id: "real-usurp", historyGroupId: "usurp-group", year: 40, monthIndex: 40,
+      type: "dynasty-usurped", actorFactionId: "秦", factionIds: ["秦"], rulerId: "r1", importance: "major",
+      metadata: { oldHouseName: "旧氏", newHouseName: "新氏", displacedSuccessorName: "合法候选", oldStateName: "郡", newStateName: "巨" } };
+    const foreignHeir = { id: "foreign-heir", year: 50, monthIndex: 50, type: "heir-died", actorFactionId: "楚", rulerId: "r1",
+      factionIds: ["楚"], metadata: { parentRulerId: "r1", heirId: "foreign-candidate" } };
+    const foreignSplit = { id: "foreign-split", year: 55, monthIndex: 55, type: "empire-split", actorFactionId: "rebels", targetFactionId: "楚",
+      factionIds: ["楚", "rebels"], metadata: { parentFactionId: "楚" } };
+    const context = makeContext({ endMonth: 120, start: { territoryShare: 0.229, cityCount: 3, stability: 53 },
+      end: { territoryShare: 0.061, cityCount: 1, stability: 68 }, events: [usurp, foreignHeir, foreignSplit] });
+    const evidence = deriveRulerHistoricalEvidence(context);
+    expect(evidence.politicalFacts.map(fact => fact.eventId)).toEqual(["real-usurp"]);
+    const assessment = composeRulerAssessment(evidence).lines.join("");
+    const voice = composeHistorianVoice(evidence)!;
+    expect(assessment).toContain("篡朝方式夺取王统");
+    expect(assessment).toContain("国号由郡改为巨");
+    expect(assessment).toContain("疆域由22.9%至6.1%");
+    expect(assessment).toContain("不足以证明由夺统所致");
+    expect(voice).toContain("篡朝方式改变王统");
+    expect(voice).toContain("不能据此断定因果");
+    expect(getSignificantReignStats(context.ruler.chronicle!, evidence.politicalFacts)).toContain("本人篡朝开统：1");
+    const expanded = deriveRulerHistoricalEvidence(makeContext({ endMonth: 120,
+      start: { territoryShare: 0.1, cityCount: 2 }, end: { territoryShare: 0.3, cityCount: 5 }, events: [usurp] }));
+    expect(composeHistorianVoice(expanded)).toContain("篡朝方式改变王统");
+    expect(composeHistorianVoice(deriveRulerHistoricalEvidence(makeContext({ endMonth: 120,
+      start: { territoryShare: 0.1, cityCount: 2 }, end: { territoryShare: 0.3, cityCount: 5 } })))).not.toContain("篡朝");
   });
 
   it.each([
