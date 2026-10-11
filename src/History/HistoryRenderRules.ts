@@ -172,6 +172,13 @@ export function formatHistoryEventTitle(
     const rulerClause = newRuler ? `${newRuler}夺取王统` : `${house || "新王统"}夺取王统`;
     return `${oldName}国易代：${rulerClause}${newName && oldName !== newName ? `，改国号为${newName}` : ""}。`;
   }
+  if (event.type === "heir-died") {
+    const heir = stringMeta(event, "heirName") || "继承候选";
+    const parent = stringMeta(event, "parentRulerTitle");
+    const ending = stringMeta(event, "reason") === "combat" ? "战死" :
+      stringMeta(event, "reason") === "captured" ? "被俘处死" : "去世";
+    return `${heir}（继承候选）${ending}${parent ? `，先于${parent}而卒` : ""}。`;
+  }
   if (event.type === "emperor-proclaimed") {
     const factionName = name(event.actorFactionId);
     const rulerName = historicalRulerName(event, name, factionById, rulersById);

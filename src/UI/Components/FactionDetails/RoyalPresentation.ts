@@ -25,7 +25,7 @@ export function getSignificantReignStats(chronicle: Pick<RulerChronicle,
   const stats: Array<[string, number]> = [["亲征夺城", chronicle.citiesCapturedPersonally],
     ["失城", chronicle.citiesLostDuringReign], ["内乱", chronicle.rebellionsDuringReign], ["复国", chronicle.restorationsDuringReign]];
   const count = (predicate: (fact: RulerPoliticalFact) => boolean) =>
-    new Set(politicalFacts.filter(predicate).map((fact) => fact.eventId)).size;
+    new Set(politicalFacts.filter(predicate).map((fact) => fact.historyGroupId ?? fact.eventId)).size;
   stats.push(["本人签署外交协议", count((fact) => fact.role === "DIRECT_ACTOR" &&
     ["truce-signed", "non-aggression-signed", "alliance-signed"].includes(fact.type))]);
   stats.push(["任内重大分裂", count((fact) => fact.type === "empire-split")]);

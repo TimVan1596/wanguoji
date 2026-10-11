@@ -86,6 +86,7 @@ export interface RulerHistoricalEvidence {
 
 export interface RulerPoliticalFact {
   eventId: string;
+  historyGroupId?: string;
   month: number;
   factionId: string;
   rulerId?: string;
@@ -169,6 +170,7 @@ export function deriveRulerHistoricalEvidence(
     if (event.type === "empire-split" && event.targetFactionId !== faction.name) return [];
     if (event.type === "capital-fallen" && event.targetFactionId !== faction.name) return [];
     if (["faction-restored", "capital-relocated"].includes(event.type) && event.actorFactionId !== faction.name) return [];
+    if (event.type === "capital-relocated" && event.metadata?.cause !== "CAPITAL_FALL") return [];
     if (["faction-submitted", "faction-merged"].includes(event.type) && !event.factionIds?.includes(faction.name)) return [];
     const role: RulerPoliticalFact["role"] = direct ? "DIRECT_ACTOR" : "IN_TENURE";
     const outcome = event.type === "dynasty-usurped" ? "夺取王统" :
@@ -181,7 +183,7 @@ export function deriveRulerHistoricalEvidence(
       event.type === "non-aggression-signed" ? "订立互不侵犯之约" :
       event.type === "truce-signed" ? "议定停战" :
       event.type === "relation-renewed" ? "外交关系续约" : "政治关系终结或合并";
-    return [{ eventId: event.id, month, factionId: faction.name, rulerId: direct ? ruler.id : undefined,
+    return [{ eventId: event.id, historyGroupId: event.historyGroupId, month, factionId: faction.name, rulerId: direct ? ruler.id : undefined,
       role, type: event.type, confidence: direct ? "DIRECT" : "TENURE",
       outcome, suitableForAssessment: !diplomacy || event.type !== "relation-renewed" }];
   });
