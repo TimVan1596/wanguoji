@@ -2,7 +2,8 @@ import type Team from "../Components/Team";
 import type { WorldEvent } from "../History/WorldHistory";
 import type { DiplomaticRelation } from "../Politics/Diplomacy";
 import { evaluateCommonThreatCredibility } from "../Politics/DiplomaticRules";
-import { areSameOriginFactions, areFactionsTerritoriallyAdjacent } from "../Politics/StrategicUnionRules";
+import { areSameOriginFactions, areFactionsTerritoriallyAdjacent, STRATEGIC_UNION_VERY_WEAK_TERRITORY_SHARE,
+  STRATEGIC_UNION_VERY_WEAK_MAX_CITIES, STRATEGIC_UNION_VERY_WEAK_MAX_STABILITY } from "../Politics/StrategicUnionRules";
 import { calculateTerritoryMetrics, getFactionTerritoryMetric } from "./TerritoryMetrics";
 import type { StrategicUnionCandidate } from "./StrategicUnionSystem";
 
@@ -40,7 +41,8 @@ export function verifyNonAggressionPeace(r: DiplomaticRelation, worldMonth: numb
     expiry = Number(n.newExpiresMonth); count++; lastRenewed = month; ids.push(e.id);
   }
   if (expiry !== r.expiresMonth || count !== r.renewalCount || lastRenewed !== r.lastRenewedMonth || expiry <= worldMonth) return undefined;
-  if (relevant.some(e => ["treaty-expired", "alliance-expired", "alliance-signed", "truce-signed"].includes(e.type))) return undefined;
+  if (relevant.some(e => ["treaty-expired", "alliance-expired", "alliance-signed", "truce-signed"].includes(e.type) ||
+      e.type === "non-aggression-signed" && e.id !== first.id)) return undefined;
   const windowStart = worldMonth - REUNIFICATION_MIN_PEACE_MONTHS;
   // This window is checked in addition to the positively reconstructed treaty chain.
   if (events.some(e => monthOf(e) >= windowStart && monthOf(e) <= worldMonth && involvesPair(e,r) &&
@@ -86,7 +88,8 @@ export function diagnosePeacefulReunificationCandidates(input: PeacefulReunifica
         capturedA:false,capturedB:false,capitalFall:false });
       const pressure = credibility === "CREDIBLE" || credibility === "SEVERE";
       const stability = weak.cities.length ? weak.cities.reduce((sum,c) => sum+c.loyalty,0)/weak.cities.length : 0;
-      const veryWeak = share(weak) <= 8 && weak.cities.length === 1 && stability <= 45;
+      const veryWeak = share(weak) <= STRATEGIC_UNION_VERY_WEAK_TERRITORY_SHARE && weak.cities.length <= STRATEGIC_UNION_VERY_WEAK_MAX_CITIES &&
+        stability <= STRATEGIC_UNION_VERY_WEAK_MAX_STABILITY;
       if (!pressure && !veryWeak) blockers.push("NO_PRESSURE_TRIGGER");
       const candidate: StrategicUnionCandidate | undefined = blockers.length === 0 && peace ? {
         absorbingFaction:strong,absorbedFaction:weak,alliance:relation,unionPath:"LONG_NON_AGGRESSION",peaceEvidence:peace,

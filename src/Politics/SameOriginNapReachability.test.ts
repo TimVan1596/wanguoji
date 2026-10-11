@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import type Team from "../Components/Team";
 import { DiplomacyRegistry, DiplomacySystem } from "./Diplomacy";
+import { createDiplomacyEventMetadata } from "./DiplomacyPresentation";
+import type { WorldEvent } from "../History/WorldHistory";
+import { diagnosePeacefulReunificationCandidates } from "../Simulation/PeacefulReunificationSystem";
 import { areFactionsTerritoriallyAdjacent, areSameOriginFactions } from "./StrategicUnionRules";
 import { findStrategicUnionCandidate } from "../Simulation/StrategicUnionSystem";
 import worldRandom, { WorldRandom } from "../Simulation/WorldRandom";
@@ -16,7 +19,7 @@ function run(seed: string, capped: boolean, loseContact = false, sameOrigin = tr
     const start = offset;
     offset += count;
     return {
-      name: ["a", "b", "c"][index], status: "ACTIVE", isDie: false,
+      name: ["a", "b", "c"][index], status: "ACTIVE", identityStage:"STATE", isDie: false,
       origin: index === 2 && sameOrigin ? { type: "SPLIT", parentFactionId: "b" } : { type: "INITIAL" },
       cities: [{ loyalty: 80 }],
       blocks: { children: { size: count, entries: Array.from({ length: count }, (_, i) => ({ x: start + i, y: 0 })) } },
@@ -28,10 +31,16 @@ function run(seed: string, capped: boolean, loseContact = false, sameOrigin = tr
   } as unknown as Team);
   const registry = new DiplomacyRegistry();
   const emissions: string[] = [];
-  const system = new DiplomacySystem(registry, () => [], e => emissions.push(e.type), 1);
+  const history:WorldEvent[]=[];
+  const system = new DiplomacySystem(registry, () => [], e => {
+    emissions.push(e.type);
+    history.push({id:`${e.type}-${e.relation.factionAId}-${e.relation.factionBId}-${e.month}`,year:e.month,monthIndex:e.month,
+      type:e.type,category:"politics",title:"外交记录",importance:"normal",factionIds:[e.relation.factionAId,e.relation.factionBId],
+      metadata:createDiplomacyEventMetadata(e.relation,e.triggerContext)});
+  }, 1);
   const observations = { sameOriginNapChecks: 0, nap10Years: 0, nap15Years: 0,
     oldAllianceEligibleChecks: 0, firstAllianceMonth: undefined as number | undefined,
-    renewedNapChecks: 0, hypotheses: {} as Record<string, number> };
+    renewedNapChecks: 0, implementedEligibleChecks:0, hypotheses: {} as Record<string, number> };
   const before = worldRandom.exportState();
   for (let month = 12; month <= 300; month += 12) {
     // Explicit controlled contact removal, not a simulated war/territory change.
@@ -39,6 +48,8 @@ function run(seed: string, capped: boolean, loseContact = false, sameOrigin = tr
       (block as { y: number }).y = 100;
     });
     system.update(month, teams, 200, []);
+    observations.implementedEligibleChecks += diagnosePeacefulReunificationCandidates({teams,relations:registry.list(month),
+      totalCells:200,worldMonth:month,blockSize:1,getRelationEvents:()=>history}).filter(r=>r.candidate).length;
     const b = teams.find(t => t.name === "b")!, c = teams.find(t => t.name === "c")!;
     const relation = registry.get("b", "c");
     if (relation?.status === "ALLIANCE" && observations.firstAllianceMonth === undefined) observations.firstAllianceMonth = month;
@@ -115,11 +126,13 @@ describe("same-origin NAP reachability — read-only Stage A", () => {
       const ordinary = run(seed, false), capped = run(seed, true);
       expect(run(seed, true)).toEqual(capped);
       expect(capped.observations.hypotheses["10y/ratio0.6/cities1/pressuretrue"]).toBeGreaterThan(0);
+      expect(capped.observations.implementedEligibleChecks).toBe(capped.observations.hypotheses["10y/ratio0.35/cities1/pressuretrue"]);
       return { seed, controlledYears: 25, counts: capped.counts,
         ordinaryNapChecks: ordinary.observations.sameOriginNapChecks,
         ordinaryOldAllianceEligibleChecks: ordinary.observations.oldAllianceEligibleChecks,
         cappedNapChecks: capped.observations.sameOriginNapChecks,
         cappedNap10Years: capped.observations.nap10Years, cappedNap15Years: capped.observations.nap15Years,
+        implementedEligibleChecks:capped.observations.implementedEligibleChecks,
         strict10YearCandidates: capped.observations.hypotheses["10y/ratio0.35/cities1/pressuretrue"],
         relaxed10YearCandidates: capped.observations.hypotheses["10y/ratio0.6/cities1/pressuretrue"] };
     });

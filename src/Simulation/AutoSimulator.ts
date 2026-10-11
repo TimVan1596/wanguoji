@@ -1,6 +1,7 @@
 import { PoliticalTransitionObservations } from "./PoliticalTransitionObservations";
 import { diagnosePeacefulReunificationCandidates } from "./PeacefulReunificationSystem";
 import { formatPoliticalTransitionChineseSummary } from "./PoliticalTransitionChineseSummary";
+import { formatWorldDuration } from "./WorldTime";
 import { areSameOriginFactions } from "../Politics/StrategicUnionRules";
 import FactionLifetimeRecords from "./FactionLifetimeRecord";
 import { MonthlyPhaseProfiler, runtimeProfilingEnabled } from "./MonthlyPhaseProfiler";

@@ -27,6 +27,15 @@ describe("legacy V12 same-origin union presentation", () => {
   it("does not treat peaceful submission as same-origin union", () => {
     expect(getMergedEventPresentation({ ...event, type: "faction-submitted" }, factions)).toBeUndefined();
   });
+  it("长期互不侵犯归并显示真实外交依据，历史国号、方向与原事件保持一致",()=>{
+    const e={...event,metadata:{...event.metadata,unionPath:"LONG_NON_AGGRESSION",diplomaticStatus:"NON_AGGRESSION",
+      nonAggressionMonths:120,nonAggressionStartedMonth:month-120}};
+    const before=JSON.stringify(e),p=getMergedEventPresentation(e,factions)!;
+    expect(p.description).toContain("州以同源和议归并于董");expect(p.description).toContain("互不侵犯达10年");
+    expect(p.description+p.lines.join("")).not.toMatch(/战略同盟|战死|血缘|新州|秦/);
+    expect(p.lines).toContain("外交依据：长期互不侵犯条约");
+    expect(JSON.stringify(e)).toBe(before);
+  });
   it("does not infer missing parties from an ambiguous old title", () => {
     const p = getMergedEventPresentation({ ...event, metadata: {} }, factions)!;
     expect(p.sourceId).toBeUndefined(); expect(p.targetId).toBeUndefined();
