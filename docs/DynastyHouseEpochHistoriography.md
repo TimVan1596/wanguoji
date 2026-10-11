@@ -43,7 +43,9 @@ HouseEpoch 持久化 houseName、startMonth、可选 endMonth、foundingRulerId�
 
 更新 APP_VERSION、package、包装版本断言、CHANGELOG、ROADMAP、前置 Gate 文档和本报告。没有修改模拟、RNG、原始历史、epoch记录、生死状态、V13 DTO、IndexedDB、永久峰值、庙谥、国家国评、个人史评、外交或时代。
 
-自动验证完成后补录结果。SSR只验证结构，不代表浏览器文案质量或视觉通过。用户提供的沂国样本用独立纯夹具验证，不假称已读取用户私有存档。
+自动验证全部通过：`VITEST_MAX_THREADS=4 VITEST_MIN_THREADS=1 pnpm test`（195个文件、1292项测试），`pnpm build`、`pnpm desktop:build`、`pnpm desktop:compile`、`pnpm desktop:renderer-debug-build`。新增19项纯事实测试与3项UI结构/缓存测试，并扩充既有真实V13初始化→导出→校验→hydrate→导出测试。两项Git diff检查通过。构建仅保留已有的大bundle提示，不影响构建通过。
+
+SSR只验证结构，不代表浏览器文案质量或视觉通过。用户提供的沂国样本用独立纯夹具验证，不假称已读取用户私有存档。长局测试覆盖100段王统与20000条本国事件，证明查询与正文数量受控，不据此宣称浏览器性能通过。
 
 ## 人工 Gate：现有 V13 长局
 
