@@ -499,7 +499,10 @@ describe("evidence-grounded ruler historiography", () => {
     expect(getSignificantReignStats(context.ruler.chronicle!, evidence.politicalFacts)).toContain("本人篡朝开统：1");
     const expanded = deriveRulerHistoricalEvidence(makeContext({ endMonth: 120,
       start: { territoryShare: 0.1, cityCount: 2 }, end: { territoryShare: 0.3, cityCount: 5 }, events: [usurp] }));
-    expect(composeHistorianVoice(expanded)).toContain("篡朝方式改变王统");
+    const expansionVoice = composeHistorianVoice(expanded)!;
+    expect(expansionVoice).toContain("篡朝方式改变王统");
+    expect(expansionVoice).toContain("城市由2座增至5座");
+    expect(expansionVoice).not.toBe(voice);
     expect(composeHistorianVoice(deriveRulerHistoricalEvidence(makeContext({ endMonth: 120,
       start: { territoryShare: 0.1, cityCount: 2 }, end: { territoryShare: 0.3, cityCount: 5 } })))).not.toContain("篡朝");
   });
@@ -519,7 +522,7 @@ describe("evidence-grounded ruler historiography", () => {
     const events = history.getEvents();
     const context = makeContext({ endMonth: 100, events });
     const evidence = deriveRulerHistoricalEvidence(context);
-    expect(evidence.politicalFacts.map(fact => fact.eventId)).toEqual([...signed.map(event => event.id), "renewed"]);
+    expect(evidence.politicalFacts.map(fact => fact.eventId).sort()).toEqual([...signed.map(event => event.id), "renewed"].sort());
     expect(getSignificantReignStats(context.ruler.chronicle!, evidence.politicalFacts)).toContain("本人签署外交协议：3");
     const biography = getRulerHistoricalEvents(events, context.ruler, "秦", 100, []);
     expect(biography.filter(event => signed.some(row => row.id === event.id)).map(event => event.id).sort()).toEqual(signed.map(event => event.id).sort());

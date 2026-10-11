@@ -269,6 +269,28 @@ function isRulerPoliticalEventRelevant(event: WorldEvent, rulerId: string, facti
       return event.actorFactionId === factionId && factions.includes(factionId) && event.metadata?.cause === "CAPITAL_FALL";
     case "faction-restored":
       return event.actorFactionId === factionId && factions.includes(factionId);
+    case "city-captured":
+    case "city-recovered":
+      return (event.actorFactionId === factionId || event.targetFactionId === factionId) && factions.includes(factionId);
+    case "state-founded":
+    case "emperor-proclaimed":
+    case "world-unification":
+    case "rebel-faction-founded":
+    case "frontier-faction-founded":
+    case "dynasty-restored":
+      return event.actorFactionId === factionId && factions.includes(factionId);
+    case "ruler-succession":
+      return event.actorFactionId === factionId && factions.includes(factionId) &&
+        (event.rulerId === rulerId || event.metadata?.previousRulerId === rulerId || event.metadata?.nextRulerId === rulerId);
+    case "ruler-captured":
+      return event.targetFactionId === factionId && factions.includes(factionId) &&
+        (event.rulerId === rulerId || event.metadata?.rulerId === rulerId);
+    case "faction-exiled":
+    case "faction-extinct":
+    case "faction-dissolved":
+      return event.targetFactionId === factionId && factions.includes(factionId);
+    case "city-revolt":
+      return (event.actorFactionId === factionId || event.targetFactionId === factionId) && factions.includes(factionId);
     case "truce-signed":
     case "non-aggression-signed":
     case "alliance-signed":
