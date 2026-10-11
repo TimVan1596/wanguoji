@@ -245,7 +245,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
       sovereigntyRank: "KING", stateFoundedMonth: 0, origin: { type: "INITIAL", foundedMonth: 0 }, homeGridX: i, capitalCityId: i ? "b" : "active" }));
     const ts: any[] = fs.map(f => ({ ...f, name: f.factionId, firstFoundedYear: 0, currentActiveSinceYear: 0, cumulativeActiveYears: 0,
       restorationYears: [], cities: [], users: new Set(), blocks: { children: { entries: [], size: 0 } }, farms: { npcs: new Map(), init() {} }, removeRulerUnit() {},
-      setRegimeColor(color: number, month: number) { this.colorHistory.at(-1).endMonth = month - 1; this.colorHistory.push({ color, startMonth: month, reason: "DYNASTIC_REVOLUTION" }); this.color = color; },
+      setRegimeColor(this: any, color: number, month: number) { this.colorHistory.at(-1).endMonth = month - 1; this.colorHistory.push({ color, startMonth: month, reason: "DYNASTIC_REVOLUTION" }); this.color = color; },
       exportState() { return { ...f, displayName: this.displayName, houseName: this.houseName, color: this.color, colorHistory: this.colorHistory, nameHistory: this.nameHistory }; },
     }));
     core.teams = ts; Object.defineProperty(core, "totalCells", { value: 3 });
@@ -331,6 +331,43 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     DynastyRegistry.update(1, core.teams);
     expect(DynastyRegistry.exportState().dynasties.map(d => d.rulers.map(r => r.id)))
       .toEqual(dynastyBeforeContinuation.dynasties.map(d => d.rulers.map(r => r.id)));
+  });
+  it("真实七国新世界启动与四种子120年王室流程新旧对照", async () => {
+    const political = await import("../Politics/PoliticalSuccessionCrisis");
+    const colors = await import("../Simulation/FactionColorHistory");
+    const run = (seed: string, enabled: boolean) => {
+      const core = target(7), base = fixture().factions[0]; core.prepareForHydration();
+      vi.stubGlobal("window", { location: { search: "?debug=1" } });
+      const ts: any[] = Array.from({ length: 7 }, (_, i) => ({ ...base, factionId: `trial-${i}`, name: `trial-${i}`,
+        displayName: `国${i}`, houseName: `姓${i}氏`, stateFoundedMonth: 0, origin: { type: "INITIAL", foundedMonth: 0 },
+        nameHistory: [{ name: `国${i}`, startMonth: 0 }], color: i + 1, colorHistory: [{ color: i + 1, startMonth: 0, reason: "FOUNDING" }],
+        firstFoundedYear: 0, currentActiveSinceYear: 0, cumulativeActiveYears: 0, restorationYears: [], users: new Set(),
+        cities: [{ name: `城${i}`, loyalty: 40 }], blocks: { children: { size: 1 } }, farms: { npcs: new Map(), init() {} }, removeRulerUnit() {},
+        setRegimeColor(color: number, month: number) { colors.changeFactionColor(this, color, month); },
+      }));
+      core.teams = ts; Object.defineProperty(core, "totalCells", { value: 7 });
+      vi.spyOn(DynastyRegistry, "ensureRulerUnit").mockImplementation(() => undefined);
+      if (!enabled) vi.spyOn(political, "derivePoliticalSuccessionShocks").mockReturnValue([]);
+      worldRandom.initialize(seed);
+      core.simulator = new AutoSimulator(true); core.simulator.startWorld(ts, 7, {}); core.simulator.setRunning(false);
+      for (let month = 1; month <= 1440; month++) DynastyRegistry.update(month, ts);
+      const snapshot = DynastyRegistry.getRevolutionDiagnostics(ts, 1440).cumulativeGate;
+      const value = { snapshot, dynasty: DynastyRegistry.exportState(), history: WorldHistory.exportState(), rng: worldRandom.exportState() };
+      vi.restoreAllMocks(); vi.unstubAllGlobals(); return JSON.parse(JSON.stringify(value));
+    };
+    const results = [];
+    for (const seed of ["political-k-1", "political-k-2", "political-k-3", "political-k-4"]) {
+      const old = run(seed, false), current = run(seed, true);
+      expect(run(seed, true)).toEqual(current);
+      // With no war/split subsystem, the new historical gate must stay closed and consume no extra RNG.
+      expect(current).toEqual(old);
+      results.push({ seed, 观察年数: 120, 继位次数: current.snapshot.successionBoundaryCheckCount,
+        最高危机: current.snapshot.crisisEligibleCount, 原复合危机: current.snapshot.lowerRiskEligibleCount,
+        新危机: current.snapshot.politicalShockEligibleCount, 抽签: current.snapshot.rollAttemptCount,
+        篡朝: current.snapshot.usurpationCount, 期望: current.snapshot.expectedUsurpationCount,
+        每千年条件期望: current.snapshot.expectedUsurpationsPer1000Years });
+    }
+    console.log("真实七国启动、120年王室流程对照（未运行战争、人口、城市、外交与分裂，不是自然世界发生率）", results);
   });
   it("new seven-faction rulers use the actual initialization path and export/validate/hydrate as V13", () => {
     const save = fixture(), core = target();

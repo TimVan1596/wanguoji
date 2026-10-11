@@ -298,6 +298,7 @@ describe("独立政治冲击真实继位执行", () => {
     WorldHistory.addCapitalFallen(500, "enemy", team.name, team.name, "旧都", "former-capital", true, 10, undefined, undefined, "battle");
     WorldHistory.addEmpireSplit(520, team.name, "rebel", ["甲城", "乙城"], ["a", "b"], undefined, undefined, "split");
     const sources = WorldHistory.exportState().events.map(e => JSON.stringify(e));
+    const indexedQuery = vi.spyOn(WorldHistory, "getEventsForFaction");
     vi.spyOn(worldRandom, "next").mockReturnValueOnce(0);
     DynastyRegistry.update(month, [team]);
     const ruler = DynastyRegistry.getCurrentRuler(team.name)!;
@@ -313,16 +314,21 @@ describe("独立政治冲击真实继位执行", () => {
     expect(WorldHistory.exportState().events.slice(0, sources.length).map(e => JSON.stringify(e))).toEqual(sources);
     expect(dynasty.houseEpochs!.at(-1)!.foundingRulerId).toBe(ruler.id);
     expect(team.name).toBe("state-id");
+    expect(indexedQuery).toHaveBeenCalledTimes(1);
+    DynastyRegistry.getRevolutionDiagnostics([team], month);
+    expect(indexedQuery).toHaveBeenCalledTimes(1);
   });
   it("新入口的真实业务、事件与随机状态不受诊断开关影响", () => {
     const run = (debug: boolean) => {
       vi.stubGlobal("window", { location: { search: debug ? "?debug=1" : "" } });
       WorldHistory.reset(); FactionEffects.reset(); const { team, dynasty } = setup(true, false);
-      WorldHistory.addCapitalFallen(500, "enemy", team.name, team.name, "旧都", "old-city", true);
-      WorldHistory.addEmpireSplit(520, team.name, "rebel", ["甲", "乙"], ["a", "b"]);
+      WorldHistory.addCapitalFallen(500, "enemy", team.name, team.name, "旧都", "old-city", true, undefined, undefined, undefined, "battle");
+      WorldHistory.addEmpireSplit(520, team.name, "rebel", ["甲", "乙"], ["a", "b"], undefined, undefined, "split");
       worldRandom.initialize("political-shock-debug"); transition(team, dynasty);
       const value = { dynasty: DynastyRegistry.exportState(), history: WorldHistory.exportState(), rng: worldRandom.exportState() };
-      DynastyRegistry.getRevolutionDiagnostics([team], month);
+      const gate = DynastyRegistry.getRevolutionDiagnostics([team], month).cumulativeGate;
+      expect(gate.politicalShockEligibleCount).toBe(debug ? 1 : 0);
+      expect(gate.rollAttemptCount).toBe(debug ? 1 : 0);
       return JSON.parse(JSON.stringify(value));
     };
     expect(run(true)).toEqual(run(false));

@@ -5,9 +5,9 @@ import { evaluateDynasticRevolution, type RevolutionContext } from "./DynasticRe
 import { RevolutionGateDiagnostics } from "./RevolutionGateDiagnostics";
 import worldRandom from "../Simulation/WorldRandom";
 const predecessor = { id: "old", houseName: "田氏", givenName: "平", bornYear: 0, accessionYear: 200, status: "dead" as const };
-const capital = (): WorldEvent => ({ id: "capital", year: 500, monthIndex: 500, type: "capital-fallen", category: "war", title: "失都", factionIds: ["state", "enemy"],
+const capital = (): WorldEvent => ({ id: "capital", year: 500, monthIndex: 500, type: "capital-fallen", category: "war", importance: "major", title: "失都", factionIds: ["state", "enemy"],
   actorFactionId: "enemy", targetFactionId: "state", previousOwnerFactionId: "state", cityId: "former-capital", cityName: "旧都", historyGroupId: "battle", metadata: { wasCapital: 1 } });
-const split = (): WorldEvent => ({ id: "split", year: 520, type: "empire-split", category: "politics", title: "分裂", factionIds: ["state", "rebel"],
+const split = (): WorldEvent => ({ id: "split", year: 520, type: "empire-split", category: "politics", importance: "major", title: "分裂", factionIds: ["state", "rebel"],
   actorFactionId: "rebel", targetFactionId: "state", historyGroupId: "split-group", metadata: { parentFactionId: "state", foundingCityIds: "a,b", splitCityCount: 2 } });
 const context = (events = [capital(), split()]): RevolutionContext => ({ worldMonth: 600, factionId: "state", predecessor,
   successor: { id: "heir", houseName: "田氏", givenName: "安", bornYear: 250, status: "heir" }, previousSuccessionMonths: [],
@@ -24,9 +24,10 @@ describe("有来源的独立失都与分裂危机", () => {
     expect(evaluateDynasticRevolution(input, () => .014).usurpation).toBe(false);
     expect(evaluateDynasticRevolution(input, () => .013).usurpation).toBe(true);
   });
-  it.each(["single", "same-group", "same-city", "same-id", "future", "same-month", "foreign", "foreign-role", "relocation", "ordinary-rebel", "heir-death", "kin-death", "before-reign", "expired", "month-mismatch", "missing-capital-proof", "one-split-city"])("拒绝%s错误证据且不抽签", flaw => {
+  it.each(["single", "missing-group", "same-group", "same-city", "same-id", "future", "same-month", "foreign", "foreign-role", "relocation", "ordinary-rebel", "heir-death", "kin-death", "before-reign", "expired", "month-mismatch", "missing-capital-proof", "one-split-city"])("拒绝%s错误证据且不抽签", flaw => {
     let events = [capital(), split()];
     if (flaw === "single") events.pop();
+    if (flaw === "missing-group") events[1].historyGroupId = undefined;
     if (flaw === "same-group") events[1].historyGroupId = events[0].historyGroupId;
     if (flaw === "same-city") events[1].metadata!.foundingCityIds = "former-capital,b";
     if (flaw === "same-id") events[1].id = "capital";
@@ -34,7 +35,7 @@ describe("有来源的独立失都与分裂危机", () => {
     if (flaw === "foreign") events[1].targetFactionId = "other";
     if (flaw === "foreign-role") events[1].actorFactionId = "state";
     if (flaw === "relocation") events[0].type = "capital-relocated";
-    if (flaw === "ordinary-rebel") events[1].type = "rebel-founded";
+    if (flaw === "ordinary-rebel") events[1].type = "rebel-faction-founded";
     if (flaw === "heir-death") events[1].type = "heir-died";
     if (flaw === "kin-death") events[1].type = "ruler-died";
     if (flaw === "before-reign" || flaw === "expired") { events[0].year = flaw === "before-reign" ? 199 : 479; events[0].monthIndex = events[0].year; }

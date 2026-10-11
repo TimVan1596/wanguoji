@@ -27,9 +27,11 @@ export function composeRevolutionNarrative(m: Record<string, string | number | u
   const evidence = formatRevolutionEvidence(String(m.vulnerabilityEvidence ?? "").split(","));
   const ending = m.successionReason === "combat" ? "战死" : m.successionReason === "captured" ? "被俘处死" : m.successionReason === "natural" ? "去世" : "";
   const predecessor = typeof m.previousRulerTitle === "string" ? m.previousRulerTitle : m.predecessorRulerName;
-  const background = typeof m.crisisCapitalCityName === "string" && typeof m.crisisCapitalMonth === "number" && typeof m.crisisSplitMonth === "number"
+  const backgroundFacts = typeof m.crisisCapitalCityName === "string" && typeof m.crisisCapitalMonth === "number" && typeof m.crisisSplitMonth === "number"
     && typeof m.crisisCapitalEventId === "string" && typeof m.crisisSplitEventId === "string"
-    ? `此前${formatWorldDate(m.crisisCapitalMonth)}失去${m.crisisCapitalCityName}，${formatWorldDate(m.crisisSplitMonth)}另有重大帝国分裂；` : "";
+    ? [{ month: m.crisisCapitalMonth, text: `失去${m.crisisCapitalCityName}` },
+       { month: m.crisisSplitMonth, text: "另有重大帝国分裂" }].sort((a, b) => a.month - b.month) : [];
+  const background = backgroundFacts.length ? `此前${backgroundFacts.map(row => `${formatWorldDate(row.month)}${row.text}`).join("，")}；` : "";
   const death = predecessor && ending ? `${predecessor}${ending}，` : "";
   return `${background}${death}${evidence ? `${evidence}，` : ""}继统之际${m.newRulerName ?? m.newHouseName}夺取王统，${m.newHouseName}取代${m.oldHouseName}。合法继承人${m.displacedSuccessorName}被排除于继统序列${m.oldStateName !== m.newStateName ? `，国号改为${m.newStateName}` : ""}${m.oldColor !== m.newColor ? "，并易帜" : ""}。`;
 }

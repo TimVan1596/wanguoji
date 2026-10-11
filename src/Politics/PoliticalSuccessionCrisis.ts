@@ -41,10 +41,10 @@ export function derivePoliticalSuccessionShocks(factionId: string, predecessor: 
 /** Different groups and disjoint affected cities prevent counting one political loss twice. */
 export function selectIndependentPoliticalShocks(shocks: readonly PoliticalSuccessionShock[], factionId: string | undefined, predecessor: Ruler, worldMonth: number) {
   const valid = shocks.filter(row => row.factionId === factionId && row.predecessorId === predecessor.id &&
-    Number.isSafeInteger(row.month) && row.month >= Math.max(predecessor.accessionYear ?? worldMonth, worldMonth - 120) && row.month < worldMonth);
+    !!row.eventId && !!row.historyGroupId && new Set(row.cityIds).size === row.cityIds.length && Number.isSafeInteger(row.month) && row.month >= Math.max(predecessor.accessionYear ?? worldMonth, worldMonth - 120) && row.month < worldMonth);
   for (const capital of valid.filter(row => row.kind === "CAPITAL_LOSS" && row.cityIds.length === 1)) {
     const split = valid.find(row => row.kind === "EMPIRE_SPLIT" && row.cityIds.length >= 2 && row.eventId !== capital.eventId &&
-      !(row.historyGroupId && row.historyGroupId === capital.historyGroupId) && !row.cityIds.some(id => capital.cityIds.includes(id)));
+      row.historyGroupId !== capital.historyGroupId && !row.cityIds.some(id => capital.cityIds.includes(id)));
     if (split) return [capital, split];
   }
   return [];
