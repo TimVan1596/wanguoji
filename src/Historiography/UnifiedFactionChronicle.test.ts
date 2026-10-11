@@ -8,6 +8,7 @@ import { createRulerChronicle } from "../Politics/RulerChronicle";
 import worldRandom from "../Simulation/WorldRandom";
 import { exportRulerSave, importRulerSave } from "../Persistence/RulerSaveProjection";
 import { CURRENT_SAVE_SCHEMA_VERSION } from "../Persistence/WorldSaveSchema";
+import { composeChronicleParagraphs, type ChroniclePassage } from "./ChronicleComposition";
 const month = (year: number, m = 1) => year * 12 + m - 1;
 const ruler = (id: string, house: string, given: string, start: number, end: number | undefined, n: number): Ruler => ({
   id, houseName: house, givenName: given, bornYear: start - 360, accessionYear: start, endYear: end, reignOrdinal: n,
@@ -142,6 +143,15 @@ describe("unified factual chronicle", () => {
 
 describe("chronicle chapters, attributed names and evidence-bearing judgment", () => {
   const prose = (a: ReturnType<typeof build>) => a.paragraphs.slice(0, -1).join("");
+  it("uses relative historical distance and political phases, not text length or fixed century boundaries", () => {
+    const passage = (key: string, m: number): ChroniclePassage => ({ key, month: m, kind: "CAMPAIGN", order: 2, priority: 80, text: key });
+    const separated = [passage("初次进取", 0), passage("再次进取", 12), passage("后代进取", 1200)];
+    const a = composeChronicleParagraphs(separated, s => s, "仍在延续。", "阶段性评论。", false);
+    expect(a).toHaveLength(3); expect(a[0]).toContain("再次进取"); expect(a[0]).not.toContain("后代进取"); expect(a[1]).toContain("后代进取");
+    const scaled = separated.map(p => ({ ...p, month: p.month * 10 }));
+    expect(composeChronicleParagraphs(scaled, s => s, "仍在延续。", "阶段性评论。", false)).toHaveLength(3);
+    expect(composeChronicleParagraphs(separated.map(p => ({ ...p, month: 1200 })), s => s, "仍在延续。", "阶段性评论。", false)).toHaveLength(2);
+  });
   it("groups the Yi onset, prosperity and exile into phases, then judges the real peak/loss/continuity chain", () => {
     const c = fixture(), a = build(c);
     expect(a.paragraphs.length).toBeGreaterThanOrEqual(4);

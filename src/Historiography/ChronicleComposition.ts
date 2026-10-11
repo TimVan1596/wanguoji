@@ -40,13 +40,17 @@ export function composeChronicleParagraphs(passages: readonly ChroniclePassage[]
   tail: string, judgment: string, terminal: boolean): string[] {
   const blocks: { parts: string[]; month: number; kind: ChronicleKind }[] = [];
   const turning = new Set<ChronicleKind>(["POLITICS", "EXILE", "RESTORE", "TERMINAL"]);
+  const span = passages.length ? Math.max(1, passages.at(-1)!.month - passages[0].month) : 1;
   for (let i = 0; i < passages.length; i++) {
     const p = passages[i], previous = passages[i - 1];
     const sameMonth = previous?.month === p.month;
     let block = blocks.at(-1);
     const originEnded = block && block.kind === "STATE" && !["STATE", "ORIGIN"].includes(p.kind);
     const newPhase = block && turning.has(p.kind) && block.kind !== p.kind && block.parts.length >= 2;
-    if (!block || !sameMonth && (originEnded || newPhase || block.parts.length >= 3)) {
+    // A gap separating a substantial part of this country's visible history
+    // can close a developed paragraph; no fixed 50/100-year boundaries.
+    const distant = block && block.parts.length >= 2 && p.month - block.month > span / 4;
+    if (!block || !sameMonth && (originEnded || newPhase || distant || block.parts.length >= 3)) {
       block = { parts: [], month: p.month, kind: p.kind }; blocks.push(block);
     }
     const text = render(p.text);
