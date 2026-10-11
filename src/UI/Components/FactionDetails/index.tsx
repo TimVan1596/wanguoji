@@ -874,7 +874,7 @@ function GenealogyDialog({
   team: RootState["root"]["teams"][number];
 }) {
   const revision = WorldHistory.getRevision();
-  const presentationStamp = JSON.stringify([dynasty?.currentRulerId, dynasty?.designatedHeirId, dynasty?.heirIds, dynasty?.houseEpochs, dynasty?.rulers.map(r => [r.id, r.accessionYear, r.endYear, r.status, r.reignOrdinal, r.relationType, r.displacedByUsurpationMonth, r.endReason, r.deathMonth, r.deathReason, r.templeName, r.posthumousEpithet]), team.status, team.terminationMonth, team.extinctionYear, team.terminationReason, team.stateFoundedMonth]);
+  const presentationStamp = JSON.stringify([dynasty?.currentRulerId, dynasty?.designatedHeirId, dynasty?.heirIds, dynasty?.houseEpochs, dynasty?.rulers.map(r => [r.id, r.bornYear, r.accessionYear, r.endYear, r.status, r.reignOrdinal, r.relationType, r.displacedByUsurpationMonth, r.endReason, r.deathMonth, r.deathReason, r.templeName, r.posthumousEpithet]), team.status, team.terminationMonth, team.extinctionYear, team.terminationReason, team.stateFoundedMonth]);
   const presentations = useMemo(() => open && dynasty ? deriveGenealogyNodePresentations(dynasty, team,
     WorldHistory.getEventsForFaction(team.name), worldMonth) : new Map<string, GenealogyNodePresentation>(),
     [open, revision, worldMonth, presentationStamp, team.name]);

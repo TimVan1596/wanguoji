@@ -89,7 +89,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     // Runtime objects are Phaser adapters; politics, simulator startup, exporter, validator and hydrator are real.
     const before = exportWorldSave(core, { createdAt: "2026-10-11T00:00:00Z" });
     expect(before.saveSchemaVersion).toBe(13); expect(before.dynasties).toHaveLength(7);
-    expect(before.dynasties.some(d => d.rulers.length > 2)).toBe(true);
+    expect(before.dynasties.some(d => (d.rulers as RulerSaveV13[]).length > 2)).toBe(true);
     expect(validateWorldSave(before)).toEqual({ valid: true, errors: [] });
     const rng = worldRandom.exportState(); const init = vi.spyOn(DynastyRegistry, "initializeFaction");
     hydrateWorldSave(core, JSON.parse(JSON.stringify(before)));
@@ -98,7 +98,13 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     hydrateWorldSave(core, JSON.parse(JSON.stringify(after)));
     expect(exportWorldSave(core, { createdAt: before.createdAt })).toEqual(before); expect(init).not.toHaveBeenCalled();
     expect(new Set(before.dynasties.flatMap(d => (d.rulers as RulerSaveV13[]).map(r => r.rulerId))).size)
-      .toBe(before.dynasties.reduce((n, d) => n + d.rulers.length, 0));
+      .toBe(before.dynasties.reduce((n, d) => n + (d.rulers as RulerSaveV13[]).length, 0));
+    const dynastyBeforeContinuation = DynastyRegistry.exportState();
+    // Restore the Phaser group adapter used by monthly ruler observation.
+    core.teams.forEach((team: any) => { team.blocks = { children: { size: 1 } }; });
+    DynastyRegistry.update(1, core.teams);
+    expect(DynastyRegistry.exportState().dynasties.map(d => d.rulers.map(r => r.id)))
+      .toEqual(dynastyBeforeContinuation.dynasties.map(d => d.rulers.map(r => r.id)));
   });
   it("new seven-faction rulers use the actual initialization path and export/validate/hydrate as V13", () => {
     const save = fixture(), core = target();

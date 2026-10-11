@@ -769,7 +769,8 @@ class DynastyRegistryStore {
       dynasty.rulers.push(parent);
       founder.parentId = parent.id;
       const siblingPlan = plan.find(p => p.kind === "SIBLING")!;
-      dynasty.rulers.push(createKin(siblingPlan.bornMonth, parent.id, "SIBLING"));
+      const sibling = createKin(siblingPlan.bornMonth, parent.id, "SIBLING");
+      if (!isNaturallyDeadByMonth(sibling.naturalDeathYear, month)) dynasty.rulers.push(sibling);
     }
     const childPlan = plan.find(p => p.kind === "CHILD");
     if (childPlan) dynasty.rulers.push(createKin(childPlan.bornMonth, founder.id, "DIRECT_CHILD"));

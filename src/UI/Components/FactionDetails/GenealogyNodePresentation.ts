@@ -1,3 +1,4 @@
+import { formatRulerLifeAge } from "./RoyalPresentation";
 import type { Dynasty, Ruler } from "../../../Politics/Dynasty";
 import type { WorldEvent } from "../../../History/WorldHistory";
 import type { HouseHistoricalFaction } from "../../../Historiography/DynastyHouseHistoriography";
@@ -78,6 +79,9 @@ export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: Hous
     const details = [...roles, r.reignOrdinal !== undefined ? `第${r.reignOrdinal}代` : "宗室成员",
       dynasty.heirIds.includes(r.id) && !roles.includes("储君") ? "宗室候选" : "",
       r.displacedByUsurpationMonth !== undefined ? "旧朝宗亲" : "", r.endReason ?? "",
+      formatRulerLifeAge(r, worldMonth),
+      r.status === "kin" && r.accessionYear === undefined ? "未曾承统" : "",
+      byId.get(dynasty.currentRulerId ?? "")?.parentId === r.id ? "当今君主的父辈" : "",
       r.status === "politically-ended" ? "生死未载" : r.status === "exiled" ? "流亡承统" : ""].filter(Boolean);
     return [r.id, { roles, labels: roles.slice(0, 2), theme, details, evidence: proof,
       hasPosthumousTitle: hasRecordedRulerDeath(r) && Boolean(r.templeName || r.posthumousEpithet) }];

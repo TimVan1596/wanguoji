@@ -28,7 +28,7 @@ function getAncestorDepths(ruler: Ruler, rulersById: Map<string, Ruler>) {
   const depths = new Map<string, number>();
   let parentId = ruler.parentId;
   let depth = 1;
-  while (parentId && depth <= MAX_KIN_ANCESTOR_DEPTH) {
+  while (parentId && rulersById.has(parentId) && depth <= MAX_KIN_ANCESTOR_DEPTH) {
     if (depths.has(parentId)) break;
     depths.set(parentId, depth);
     parentId = rulersById.get(parentId)?.parentId;
@@ -48,7 +48,7 @@ export function getRecordedKinRelation(
   const candidateParent = candidate.parentId ? rulersById.get(candidate.parentId) : undefined;
   if (candidateParent?.parentId === predecessor.id) return "GRANDCHILD";
 
-  if (predecessor.parentId && candidate.parentId === predecessor.parentId) return "SIBLING";
+  if (predecessor.parentId && rulersById.has(predecessor.parentId) && candidate.parentId === predecessor.parentId) return "SIBLING";
 
   const predecessorParent = predecessor.parentId ? rulersById.get(predecessor.parentId) : undefined;
   if (
@@ -61,10 +61,12 @@ export function getRecordedKinRelation(
     predecessorParent && candidateParent &&
     predecessorParent.id !== candidateParent.id &&
     predecessorParent.parentId !== undefined &&
-    predecessorParent.parentId === candidateParent.parentId
+    predecessorParent.parentId === candidateParent.parentId &&
+    rulersById.has(predecessorParent.parentId)
   ) return "COUSIN";
   if (
     predecessorParent?.parentId &&
+    rulersById.has(predecessorParent.parentId) &&
     candidate.parentId === predecessorParent.parentId &&
     candidate.id !== predecessorParent.id
   ) return "UNCLE";

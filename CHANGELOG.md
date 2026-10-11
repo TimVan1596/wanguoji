@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.99931f · Initial Royal Household Integrity
+
+- v31e 政治宗谱身份、缩放/定位、V13 Save/Load 与历史 UI 已获用户人工 PASS，关闭前置 Gate。
+- 仅新世界七个 INITIAL 势力采用小规模年龄约束宗室：可无候选、仅子女、仅兄弟或两者兼有；最多新增三人，初始合法候选最多两人，指定储君至多一人。不填满既有 candidateCap。
+- 兄弟具有真实共同父辈记录；长辈为活着、未曾承统的 kin，不补造死亡，不计入君主代数或创始者。亲子出生年龄沿用18～40岁，寿限已过的初始人物不入册。
+- 阻止亲子生年派生失败时补造成人子女；亲属链必须存在真实祖先记录，合法继位优先级、寿限分布和政治概率保持不变。宗谱悬停补充年龄与未承统身份。
+- 后续新势力沿用原初始化；V13 Hydration 不回填或重复生成宗室。新增真实 startWorld→导出→校验→两次恢复及继续运行回归。
+- 24个固定种子、每版168国、同为120年政治流程对照保留继承危机和自然易姓；不是战争/人口完整平衡验收。初始化 RNG 路径改变，同版本同种子可重现。
+- APP_VERSION v0.99931f / package 0.99.135 / WorldSave V13；待[初始宗室人工 Gate](docs/InitialRoyalHouseholdIntegrity.md)。
+
 ## v0.99931e · Political Genealogy Visual Hierarchy
 
 - 前置 v0.99931d3 国史合传人工 PASS，冻结文章与史论。

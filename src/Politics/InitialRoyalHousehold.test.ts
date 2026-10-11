@@ -33,7 +33,7 @@ function run(seed: string, modern = true, months = 0) {
   return { initial, final: DynastyRegistry.exportState(), rng: worldRandom.exportState(),
     early: { naturalHouseChanges: DynastyRegistry.getAll().flatMap(d => d.houseEpochs ?? []).filter(p => p.startReason === "NATURAL_HOUSE_SUCCESSION").length,
       usurpations: events.filter(e => e.type === "dynasty-usurped").length,
-      crises: events.filter(e => e.type === "ruler-succession" && e.metadata?.effectType === "succession-crisis").length } };
+      crises: events.filter(e => e.type === "ruler-succession" && e.metadata?.effectType === "SUCCESSION_CRISIS").length } };
 }
 beforeEach(() => { vi.spyOn(DynastyRegistry, "ensureRulerUnit").mockImplementation(() => undefined); });
 afterEach(() => { vi.restoreAllMocks(); DynastyRegistry.reset(); WorldHistory.reset(); FactionEffects.reset(); });
@@ -63,10 +63,13 @@ describe("bounded age-valid initial seven-state households", () => {
     expect(d.rulers).toHaveLength(before);
   });
   it("uses only actual parent chains, keeps priorities and excludes unenthroned parents from ruler/founder counts", () => {
+    const ages = new Set<number>();
     for (let seed = 0; seed < 40; seed++) {
       const s = run(`household-${seed}`);
       for (const d of s.initial.dynasties) {
         const founder = d.rulers.find(r => r.id === d.currentRulerId)!;
+        ages.add(-founder.bornYear / 12);
+        expect(d.rulers.every(r => r.deathMonth === undefined && r.naturalDeathYear! > 0)).toBe(true);
         expect(d.rulers.length).toBeLessThanOrEqual(4); expect(d.heirIds.length).toBeLessThanOrEqual(2);
         expect(d.designatedHeirId === undefined || d.heirIds.includes(d.designatedHeirId)).toBe(true);
         expect(d.rulers.filter(r => r.reignOrdinal !== undefined)).toHaveLength(1);
@@ -81,10 +84,16 @@ describe("bounded age-valid initial seven-state households", () => {
         if (child) expect(d.designatedHeirId).toBe(child.id);
         const p = deriveGenealogyNodePresentations(d, { name: d.factionId, color: 1, status: "ACTIVE", stateFoundedMonth: 0 }, [], 0);
         for (const r of d.rulers) if (r.id !== founder.id) expect(p.get(r.id)!.roles).not.toContain("势力创始");
+        if (founder.parentId) {
+          expect(p.get(founder.parentId)!.details).toContain("未曾承统");
+          expect(p.get(founder.parentId)!.details).toContain("当今君主的父辈");
+          expect(p.get(founder.parentId)!.details.some(text => text.includes("岁"))).toBe(true);
+        }
         expect(buildPoliticalGenealogy(d.rulers, d.currentRulerId, d.designatedHeirId, d.heirIds).length).toBeGreaterThan(0);
       }
       expect(validateDynastyInvariants(s.initial.dynasties, () => "ACTIVE")).toEqual([]);
     }
+    for (const age of [18, 22, 30, 35, 42]) expect(ages.has(age)).toBe(true);
   });
   it("requires recorded common ancestors for siblings, uncles, nephews and cousins; relationType alone proves nothing", () => {
     const r = (id: string, parentId?: string): Ruler => ({ id, parentId, houseName: "甲氏", givenName: id, bornYear: 0, status: "kin" });
@@ -93,6 +102,9 @@ describe("bounded age-valid initial seven-state households", () => {
     expect(getRecordedKinRelation(uncle, ruler, all)).toBe("UNCLE"); expect(getRecordedKinRelation(cousin, ruler, all)).toBe("COUSIN");
     expect(getRecordedKinRelation(nephew, ruler, all)).toBe("NEPHEW");
     expect(getRecordedKinRelation({ ...sibling, parentId: undefined, relationType: "SIBLING" }, ruler, all)).toBeUndefined();
+    expect(getRecordedKinRelation(sibling, ruler, all.filter(r => r.id !== "p"))).toBeUndefined();
+    expect(getRecordedKinRelation(cousin, ruler, all.filter(r => r.id !== "g"))).toBeUndefined();
+    expect(getRecordedKinRelation(uncle, ruler, all.filter(r => r.id !== "g"))).toBeUndefined();
     sibling.status = "heir"; cousin.status = "heir";
     const child = { ...r("child", "r"), status: "heir" as const };
     expect(selectRecordedDynasticSuccessor({ predecessor: ruler, candidates: [sibling, cousin, child], rulers: [...all, child], houseName: "甲氏", month: 0,
@@ -117,17 +129,33 @@ describe("bounded age-valid initial seven-state households", () => {
     expect(kin.status).toBe("dead"); expect(kin.deathMonth).toBe(1);
     expect(heir.status).toBe("dead"); expect(d!.heirIds).not.toContain(heir.id);
   });
+  it("discards an already elapsed sibling lifespan without inventing an initial death", () => {
+    const ts = teams(); DynastyRegistry.reset(); worldRandom.initialize("elapsed-sibling");
+    const d = DynastyRegistry.initializeFaction(ts[0], 0)!;
+    const founder = d.rulers[0]; founder.bornYear = -42 * 12;
+    d.rulers = [founder]; d.heirIds = []; d.designatedHeirId = undefined;
+    const rolls = [60, 4, 0, 99, 0, 0, 0, 0, 0, 0, 0];
+    vi.spyOn(worldRandom, "pickIndex").mockImplementation(() => rolls.shift() ?? 0);
+    const history = WorldHistory.exportState();
+    (DynastyRegistry as any).initializeRoyalHousehold(ts[0], d, founder, 0);
+    expect(d.rulers).toHaveLength(2); // Founder and living parent; aged sibling is not inserted.
+    expect(d.heirIds).toEqual([]);
+    expect(d.rulers.every(r => r.deathMonth === undefined)).toBe(true);
+    expect(WorldHistory.exportState()).toEqual(history);
+  });
   it("repeats exactly by seed and reports initial distributions and a reproducible 120-year political-only comparison", () => {
     const results = [];
     for (const modern of [false, true]) {
       const summary = { modern, countries: 0, relatives: 0, candidates: 0, designated: 0, noCandidates: 0, directOnly: 0, collateral: 0, ages: [] as number[],
-        zero: 0, one: 0, two: 0, childMinAge: 100, childMaxAge: 0, naturalHouseChanges: 0, usurpations: 0, crises: 0 };
+        young: 0, mature: 0, older: 0, parents: 0, noCandidatesAt120: 0, zero: 0, one: 0, two: 0, childMinAge: 100, childMaxAge: 0, naturalHouseChanges: 0, usurpations: 0, crises: 0 };
       for (let i = 0; i < 24; i++) {
         const s = run(`initial-household-comparison-${i}`, modern, 120 * 12);
         expect(run(`initial-household-comparison-${i}`, modern, 120 * 12)).toEqual(s);
         const ids = s.initial.dynasties.flatMap(d => d.rulers.map(r => r.id)); expect(new Set(ids).size).toBe(ids.length);
         for (const d of s.initial.dynasties) {
           const founder = d.rulers.find(r => r.id === d.currentRulerId)!; summary.ages.push(-founder.bornYear / 12);
+          summary.young += Number(-founder.bornYear < 22 * 12); summary.mature += Number(-founder.bornYear >= 22 * 12 && -founder.bornYear < 35 * 12); summary.older += Number(-founder.bornYear >= 35 * 12);
+          summary.parents += Number(Boolean(founder.parentId));
           summary.countries++; summary.relatives += d.rulers.length - 1; summary.candidates += d.heirIds.length;
           summary.designated += Number(Boolean(d.designatedHeirId)); summary.noCandidates += Number(d.heirIds.length === 0);
           summary.zero += Number(d.heirIds.length === 0); summary.one += Number(d.heirIds.length === 1); summary.two += Number(d.heirIds.length === 2);
@@ -136,6 +164,7 @@ describe("bounded age-valid initial seven-state households", () => {
           summary.collateral += Number(relations.includes("SIBLING"));
           for (const r of d.rulers.filter(r => r.parentId === founder.id)) { summary.childMinAge = Math.min(summary.childMinAge, -r.bornYear / 12); summary.childMaxAge = Math.max(summary.childMaxAge, -r.bornYear / 12); }
         }
+        summary.noCandidatesAt120 += s.final.dynasties.filter(d => !d.heirIds.length).length;
         summary.naturalHouseChanges += s.early.naturalHouseChanges; summary.usurpations += s.early.usurpations; summary.crises += s.early.crises;
       }
       expect(Math.min(...summary.ages)).toBe(18); expect(Math.max(...summary.ages)).toBe(42);
