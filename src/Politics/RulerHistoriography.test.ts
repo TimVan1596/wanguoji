@@ -465,7 +465,9 @@ describe("evidence-grounded ruler historiography", () => {
   });
 
   it("keeps a candidate-death record as a tenure fact, not a direct ruler act", () => {
-    const result = deriveRulerHistoricalEvidence(makeContext({ events: [{ id: "candidate-death", year: 50, monthIndex: 50,
+    const result = deriveRulerHistoricalEvidence(makeContext({ rulers: [
+      { id: "candidate", parentId: "r1", bornYear: 20, deathMonth: 50, deathReason: "自然去世", status: "dead" },
+    ], events: [{ id: "candidate-death", year: 50, monthIndex: 50,
       type: "heir-died", actorFactionId: "秦", rulerId: "r1", factionIds: ["秦"],
       metadata: { parentRulerId: "r1", heirId: "candidate", heirName: "安" }, importance: "normal" }] }));
     expect(result.politicalFacts).toMatchObject([{ eventId: "candidate-death", role: "IN_TENURE", confidence: "TENURE",

@@ -5,6 +5,7 @@ import { getRulerEffectiveSnapshot } from "./RulerChronicle";
 import { monthsToYears } from "../Simulation/WorldTime";
 import { deriveRulerTenureEvidence, type RulerTenureEvidence } from "./RulerTenureEvidence";
 import { buildRulerLegacyEvidence } from "./RulerLegacyEvidence";
+import { getRulerTerminalRole } from "../History/PoliticalTerminalChronicle";
 
 export type HistoricalRole =
   | "FOUNDER"
@@ -95,6 +96,12 @@ export interface RulerPoliticalFact {
   confidence: "DIRECT" | "TENURE" | "CONTEXT";
   outcome: string;
   suitableForAssessment: boolean;
+  participantRole?: "SOURCE" | "RECEIVER";
+  oldHouseName?: string;
+  newHouseName?: string;
+  displacedSuccessorName?: string;
+  oldStateName?: string;
+  newStateName?: string;
 }
 
 export interface RulerHistoriographyContext {
@@ -159,19 +166,44 @@ export function deriveRulerHistoricalEvidence(
   const rulerEvents = events.filter(inReign);
   const politicalFacts: RulerPoliticalFact[] = rulerEvents.flatMap((event) => {
     const month = event.monthIndex ?? event.year;
+    const factionParticipant = (event.factionIds ?? []).includes(faction.name) ||
+      event.relatedFactionIds?.includes(faction.name) || event.actorFactionId === faction.name ||
+      event.targetFactionId === faction.name;
     const diplomacy = ["truce-signed", "non-aggression-signed", "alliance-signed", "relation-renewed"].includes(event.type);
-    const signatory = event.metadata?.signatoryARulerId === ruler.id || event.metadata?.signatoryBRulerId === ruler.id;
-    const direct = diplomacy ? signatory :
-      event.type === "dynasty-usurped" ? event.rulerId === ruler.id :
-      event.type === "capital-relocated" ? event.metadata?.rulerId === ruler.id : false;
-    const relevant = diplomacy || ["dynasty-usurped", "capital-fallen", "capital-relocated", "empire-split", "faction-restored", "faction-submitted", "faction-merged", "heir-died"].includes(event.type);
-    if (!relevant) return [];
-    if (diplomacy && !direct && !(event.factionIds ?? []).includes(faction.name)) return [];
-    if (event.type === "empire-split" && event.targetFactionId !== faction.name) return [];
-    if (event.type === "capital-fallen" && event.targetFactionId !== faction.name) return [];
-    if (["faction-restored", "capital-relocated"].includes(event.type) && event.actorFactionId !== faction.name) return [];
-    if (event.type === "capital-relocated" && event.metadata?.cause !== "CAPITAL_FALL") return [];
-    if (["faction-submitted", "faction-merged"].includes(event.type) && !event.factionIds?.includes(faction.name)) return [];
+    let direct = false;
+    let participantRole: RulerPoliticalFact["participantRole"];
+    if (diplomacy) {
+      const signerA = event.metadata?.signatoryARulerId === ruler.id && event.metadata?.signatoryAFactionId === faction.name;
+      const signerB = event.metadata?.signatoryBRulerId === ruler.id && event.metadata?.signatoryBFactionId === faction.name;
+      if (!factionParticipant || new Set(event.factionIds ?? []).size < 2) return [];
+      direct = event.type !== "relation-renewed" && (signerA || signerB) && (event.factionIds ?? []).includes(faction.name);
+    } else if (event.type === "dynasty-usurped") {
+      if (event.actorFactionId !== faction.name || !event.factionIds?.includes(faction.name) || event.rulerId !== ruler.id) return [];
+      direct = true;
+    } else if (event.type === "heir-died") {
+      const candidate = dynasty.rulers.find((person) => person.id === event.metadata?.heirId);
+      if (event.actorFactionId !== faction.name || !event.factionIds?.includes(faction.name) ||
+          event.rulerId !== ruler.id || event.metadata?.parentRulerId !== ruler.id ||
+          !candidate || candidate.parentId !== ruler.id || candidate.reignOrdinal !== undefined ||
+          !hasRecordedRulerDeath(candidate)) return [];
+    } else if (event.type === "empire-split") {
+      if (event.targetFactionId !== faction.name || event.metadata?.parentFactionId !== faction.name ||
+          !event.factionIds?.includes(faction.name) || !event.actorFactionId || event.actorFactionId === faction.name) return [];
+    } else if (event.type === "capital-fallen") {
+      if (event.targetFactionId !== faction.name || event.previousOwnerFactionId !== faction.name || !event.factionIds?.includes(faction.name)) return [];
+    } else if (event.type === "capital-relocated") {
+      if (event.actorFactionId !== faction.name || !event.factionIds?.includes(faction.name) || event.metadata?.cause !== "CAPITAL_FALL") return [];
+    } else if (event.type === "faction-restored") {
+      if (event.actorFactionId !== faction.name || !event.factionIds?.includes(faction.name)) return [];
+      direct = event.rulerId === ruler.id || event.metadata?.rulerId === ruler.id;
+    } else if (event.type === "faction-submitted" || event.type === "faction-merged") {
+      if (!event.factionIds?.includes(faction.name)) return [];
+      participantRole = getRulerTerminalRole(event, ruler, faction.name);
+      if (!participantRole) return [];
+      direct = participantRole === "SOURCE";
+    } else {
+      return [];
+    }
     const role: RulerPoliticalFact["role"] = direct ? "DIRECT_ACTOR" : "IN_TENURE";
     const outcome = event.type === "dynasty-usurped" ? "夺取王统" :
       event.type === "empire-split" ? "发生重大分裂" :
@@ -183,8 +215,14 @@ export function deriveRulerHistoricalEvidence(
       event.type === "non-aggression-signed" ? "订立互不侵犯之约" :
       event.type === "truce-signed" ? "议定停战" :
       event.type === "relation-renewed" ? "外交关系续约" : "政治关系终结或合并";
+    const metadata = event.metadata ?? {};
     return [{ eventId: event.id, historyGroupId: event.historyGroupId, month, factionId: faction.name, rulerId: direct ? ruler.id : undefined,
-      role, type: event.type, confidence: direct ? "DIRECT" : "TENURE",
+      role, type: event.type, confidence: direct ? "DIRECT" : "TENURE", participantRole,
+      oldHouseName: typeof metadata.oldHouseName === "string" ? metadata.oldHouseName : undefined,
+      newHouseName: typeof metadata.newHouseName === "string" ? metadata.newHouseName : undefined,
+      displacedSuccessorName: typeof metadata.displacedSuccessorName === "string" ? metadata.displacedSuccessorName : undefined,
+      oldStateName: typeof metadata.oldStateName === "string" ? metadata.oldStateName : undefined,
+      newStateName: typeof metadata.newStateName === "string" ? metadata.newStateName : undefined,
       outcome, suitableForAssessment: !diplomacy || event.type !== "relation-renewed" }];
   });
 
@@ -432,6 +470,7 @@ export function deriveRulerHistoricalEvidence(
 
 export function composeRulerAssessment(evidence: RulerHistoricalEvidence): RulerAssessment {
   const lines: string[] = [];
+  const usurpation = evidence.politicalFacts.find((fact) => fact.type === "dynasty-usurped" && fact.role === "DIRECT_ACTOR");
   const abdicated = evidence.rulerStatus === "abdicated";
   const finalTime = evidence.isFinalized ? (evidence.hasRecordedDeath ? "身后" : abdicated ? "退位时" : "政治任期终结时") : "目前";
   const nonDeathFinal = !evidence.hasRecordedDeath;
@@ -465,7 +504,14 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
     return { heading: evidence.isFinalized ? "史评" : "在位评议", evidence, lines: lines.slice(0, 4) };
   }
 
-  if (evidence.foundedState) {
+  if (usurpation) {
+    const replacedHouse = usurpation.oldHouseName ? `${usurpation.oldHouseName}王统` : "前王统";
+    const newHouse = usurpation.newHouseName ? `${usurpation.newHouseName}王统` : "新王统";
+    const displaced = usurpation.displacedSuccessorName ? `，排除合法继承人${usurpation.displacedSuccessorName}` : "";
+    const nameChange = usurpation.oldStateName && usurpation.newStateName && usurpation.oldStateName !== usurpation.newStateName
+      ? `，国号由${usurpation.oldStateName}改为${usurpation.newStateName}` : "";
+    lines.push(`${livingPrefix}其以篡朝方式夺取王统，${newHouse}取代${replacedHouse}${displaced}${nameChange}。`);
+  } else if (evidence.foundedState) {
     lines.push(`${livingPrefix}${agePrefix}其开创之功在于正式建国${evidence.foundedStateName ? `、奠定${evidence.foundedStateName}国统` : "，使政权成为正式国家"}。`);
   } else if (evidence.foundedFaction) {
     lines.push(`${livingPrefix}${agePrefix}其创立势力、开其端绪，为后来政权留下政治前身。`);
@@ -518,7 +564,12 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
     lines.push(`其疆域一度达到${formatPercent(evidence.peakTerritory)}，开拓使${polity}${getTerritorialScaleJudgement(evidence.peakTerritory)}。`);
   }
 
-  if (evidence.territorialPeakRetreat >= 0.15) {
+  if (usurpation && (evidence.territoryDelta <= -0.08 || evidence.cityDelta <= -1 || evidence.stabilityDelta !== 0)) {
+    const changes = [`疆域由${formatPercent(evidence.startTerritory)}至${formatPercent(evidence.endTerritory)}`,
+      `城市${evidence.startCityCount}座至${evidence.endCityCount}座`];
+    if (evidence.startStability !== evidence.endStability) changes.push(`稳定度${evidence.startStability}至${evidence.endStability}`);
+    lines.push(`其任内国家结果为${changes.join("，")}；这是在位变化的记录，不足以证明由夺统所致。`);
+  } else if (!usurpation && evidence.territorialPeakRetreat >= 0.15) {
     if (evidence.territorialPeakGain >= 0.08) {
       lines.push(`其治下疆域一度达到${formatPercent(evidence.peakTerritory)}${evidence.peakTerritory >= 0.3 ? "，一度跻身天下强权" : ""}，至${finalTime}已明显回落，盛势未能维持。`);
     } else if (evidence.startTerritory >= 0.3 || evidence.territoryDelta <= -0.12) {
@@ -568,10 +619,10 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
       : "最终身死军中。");
   } else if (evidence.deathCause === "战死" && hasMajorLegacy(evidence)) {
     lines.push("功业未竟而身死军中，留下的事业仍有未竟之处。");
-  } else if (
+  } else if (!usurpation && (
     evidence.roles.includes("DECLINER") && !evidence.roles.includes("PEAK_AND_RETREAT") &&
     !lines.some((line) => line.includes("终未能复其旧势"))
-  ) {
+  )) {
     lines.push("国势在其任内显著衰退，主要遗产因而蒙上阴影。");
   }
 
@@ -600,6 +651,17 @@ export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string
       : text;
   };
   const roles = evidence.roles;
+  const usurpation = evidence.politicalFacts.find((fact) => fact.type === "dynasty-usurped" && fact.role === "DIRECT_ACTOR");
+
+  if (usurpation) {
+    if (evidence.territoryDelta <= -0.08 || evidence.cityDelta <= -1) {
+      return `其以篡朝方式改变王统，并排除原合法继承人；任内疆域由${formatPrecisePercent(evidence.startTerritory)}变为${formatPrecisePercent(evidence.endTerritory)}、城市由${evidence.startCityCount}座变为${evidence.endCityCount}座。现有记录只证明两者同在其任期，不能据此断定因果。`;
+    }
+    if (evidence.territoryDelta >= 0.12 || evidence.cityDelta >= 2) {
+      return `其以篡朝方式改变王统，任内疆域由${formatPrecisePercent(evidence.startTerritory)}变为${formatPrecisePercent(evidence.endTerritory)}、城市由${evidence.startCityCount}座增至${evidence.endCityCount}座；夺统身份与治理结果各有其事实依据。`;
+    }
+    return `其以篡朝方式取得王统，改变了政治承统关系；现有任期记录未显示足以将这一身份直接等同于治绩的依据。`;
+  }
 
   if (roles.includes("FOUNDER") && roles.includes("EXPANDER") && evidence.governanceCost && evidence.foundedState) return pick([
     "开国与拓境并见，国家规模由此扩大；人口或稳定所见的治理代价，亦不可略。",

@@ -124,5 +124,10 @@ export function formatRevolutionEvidence(evidence: string[]) {
     ONE_CITY_REMAINING: "仅余一城", FEW_CITIES_REMAINING: "所余城市不多", LOW_FACTION_STABILITY: "国家稳定度偏低",
     RECENT_CAPITAL_LOSS: "前君任内近期失都", RECENT_EMPIRE_SPLIT: "前君任内近期发生重大分裂",
     POLITICAL_VULNERABILITY: "继位时存在政治脆弱性", WEAK_STATE_POSITION: "少城且稳定度低" };
-  return evidence.map((item) => labels[item]).filter(Boolean).join("、");
+  const seen = new Set<string>();
+  return evidence.filter((item) => {
+    if (seen.has(item)) return false;
+    seen.add(item);
+    return true;
+  }).map((item) => labels[item]).filter(Boolean).join("、");
 }

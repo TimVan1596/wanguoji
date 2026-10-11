@@ -175,6 +175,7 @@ export function getRulerHistoricalEvents(
       return false;
     }
     if (isPoliticalTerminalEvent(event)) return getRulerTerminalRole(event, ruler, factionId) !== undefined;
+    if (!isRulerPoliticalEventRelevant(event, ruler.id, factionId)) return false;
     const direct =
       event.rulerId === ruler.id ||
       event.metadata?.rulerId === ruler.id ||
@@ -237,9 +238,47 @@ export function getRulerHistoricalEvents(
   const ranked = [...grouped.values()]
     .sort((a, b) => score(b) - score(a) || (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year) || a.id.localeCompare(b.id))
   const mandatory = ranked.filter((event) => isPoliticalTerminalEvent(event) || getHistorySignificance(event) === "LANDMARK" || ["capital-relocated", "dynasty-restored", "city-revolt", "rebel-faction-founded", "frontier-faction-founded"].includes(event.type));
-  const selected = [...mandatory, ...ranked.filter((event) => !mandatory.includes(event))].slice(0, Math.max(limit, mandatory.length));
+  const signedByRuler = ranked.filter(event => isDirectRulerTreatySignature(event, ruler.id, factionId));
+  const ordered = [...mandatory, ...signedByRuler, ...ranked.filter((event) => !mandatory.includes(event) && !signedByRuler.includes(event))];
+  const selected = [...new Set(ordered)].slice(0, Math.max(limit, mandatory.length, signedByRuler.length));
   return selected
     .sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year) || a.id.localeCompare(b.id));
+}
+
+function isDirectRulerTreatySignature(event: WorldEvent, rulerId: string, factionId: string) {
+  if (!["truce-signed", "non-aggression-signed", "alliance-signed"].includes(event.type) ||
+      !(event.factionIds ?? []).includes(factionId) || new Set(event.factionIds ?? []).size < 2) return false;
+  return (event.metadata?.signatoryARulerId === rulerId && event.metadata?.signatoryAFactionId === factionId) ||
+    (event.metadata?.signatoryBRulerId === rulerId && event.metadata?.signatoryBFactionId === factionId);
+}
+
+function isRulerPoliticalEventRelevant(event: WorldEvent, rulerId: string, factionId: string) {
+  const factions = event.factionIds ?? [];
+  switch (event.type) {
+    case "heir-died":
+      return event.actorFactionId === factionId && factions.includes(factionId) &&
+        event.rulerId === rulerId && event.metadata?.parentRulerId === rulerId;
+    case "dynasty-usurped":
+      return event.actorFactionId === factionId && factions.includes(factionId) &&
+        (event.rulerId === rulerId || event.metadata?.predecessorRulerId === rulerId || event.metadata?.displacedSuccessorId === rulerId);
+    case "empire-split":
+      return event.targetFactionId === factionId && event.metadata?.parentFactionId === factionId && factions.includes(factionId);
+    case "capital-fallen":
+      return event.targetFactionId === factionId && event.previousOwnerFactionId === factionId && factions.includes(factionId);
+    case "capital-relocated":
+      return event.actorFactionId === factionId && factions.includes(factionId) && event.metadata?.cause === "CAPITAL_FALL";
+    case "faction-restored":
+      return event.actorFactionId === factionId && factions.includes(factionId);
+    case "truce-signed":
+    case "non-aggression-signed":
+    case "alliance-signed":
+    case "relation-renewed":
+      return factions.includes(factionId) && new Set(factions).size >= 2 &&
+        ((event.metadata?.signatoryARulerId === rulerId && event.metadata?.signatoryAFactionId === factionId) ||
+          (event.metadata?.signatoryBRulerId === rulerId && event.metadata?.signatoryBFactionId === factionId));
+    default:
+      return true;
+  }
 }
 
 export function isRulerBiographyRelevantEvent(event: WorldEvent, factionId: string) {

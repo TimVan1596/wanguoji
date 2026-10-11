@@ -212,17 +212,42 @@ describe("ruler chronicle", () => {
     const signed = {
       id: "treaty", year: 12, monthIndex: 12, category: "politics", type: "truce-signed",
       title: "齐魏议定停战", factionIds: ["齐", "魏"], importance: "normal",
-      metadata: { signatoryARulerId: "qi-ruler", signatoryBRulerId: "wei-ruler" },
+      metadata: { signatoryARulerId: "qi-ruler", signatoryAFactionId: "齐", signatoryBRulerId: "wei-ruler", signatoryBFactionId: "魏" },
     };
     const expiry = {
       id: "expiry", year: 20, monthIndex: 20, category: "politics", type: "treaty-expired",
       title: "齐魏协议到期", factionIds: ["齐", "魏"], importance: "normal",
-      metadata: { signatoryARulerId: "qi-ruler", signatoryBRulerId: "wei-ruler" },
+      metadata: { signatoryARulerId: "qi-ruler", signatoryAFactionId: "齐", signatoryBRulerId: "wei-ruler", signatoryBFactionId: "魏" },
     };
     const events = [signed, expiry] as any;
     expect(getRulerHistoricalEvents(events, { id: "qi-ruler", accessionYear: 0, endYear: 30 }, "齐", 30, []).map((event) => event.id)).toEqual(["treaty"]);
     expect(getRulerHistoricalEvents(events, { id: "wei-ruler", accessionYear: 0, endYear: 30 }, "魏", 30, []).map((event) => event.id)).toEqual(["treaty"]);
     expect(getRulerHistoricalEvents(events, { id: "other", accessionYear: 0, endYear: 30 }, "齐", 30, [])).toEqual([]);
+  });
+
+  it("keeps each recorded initial treaty signature visible in the default biography", () => {
+    const treaties = ["truce-signed", "non-aggression-signed", "alliance-signed"].map((type, index) => ({
+      id: `signed-${index}`, year: 10 + index, monthIndex: 10 + index, category: "politics", type,
+      title: `协议${index}`, factionIds: ["齐", "魏"], importance: "normal",
+      metadata: { signatoryARulerId: "qi-ruler", signatoryAFactionId: "齐", signatoryBRulerId: "wei-ruler", signatoryBFactionId: "魏" },
+    }));
+    const distractions = Array.from({ length: 7 }, (_, index) => ({
+      id: `war-${index}`, year: 20 + index, monthIndex: 20 + index, type: "city-captured", importance: "major",
+      title: `攻城${index}`, actorFactionId: "齐", factionIds: ["齐"],
+    }));
+    const events = [...treaties, ...distractions] as any;
+    const visible = getRulerHistoricalEvents(events, { id: "qi-ruler", accessionYear: 0, endYear: 40 }, "齐", 40, []);
+    expect(visible.filter(event => treaties.some(treaty => treaty.id === event.id)).map(event => event.id)).toEqual(treaties.map(treaty => treaty.id));
+    expect(visible.length).toBeGreaterThan(6);
+  });
+
+  it("rejects foreign political events even when they fall inside a ruler's tenure", () => {
+    const events = [
+      { id: "foreign-heir", year: 10, type: "heir-died", importance: "major", actorFactionId: "楚", rulerId: "r1", factionIds: ["楚"], metadata: { parentRulerId: "r1" } },
+      { id: "foreign-usurp", year: 11, type: "dynasty-usurped", importance: "major", actorFactionId: "楚", rulerId: "r1", factionIds: ["楚"] },
+      { id: "foreign-capital", year: 12, type: "capital-fallen", importance: "major", actorFactionId: "秦", targetFactionId: "楚", previousOwnerFactionId: "楚", factionIds: ["秦", "楚"] },
+    ] as any;
+    expect(getRulerHistoricalEvents(events, { id: "r1", accessionYear: 0, endYear: 20 }, "秦", 20, events.map(event => event.id))).toEqual([]);
   });
 });
 
