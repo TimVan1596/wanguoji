@@ -90,6 +90,48 @@ describe("authoritative V13 political termination and actual death", () => {
     expect(WorldHistory.getEvents().some(event => event.type === "ruler-died" && event.metadata?.rulerId === ruler.id && event.year === 24)).toBe(true);
   });
 
+  it("同一位宗室先废立继位、再被废，随后按预定月份自然死亡", () => {
+    const { team, ruler: predecessor, heir: deposer } = fixture("ACTIVE", true);
+    team.cities = [{ id: "capital", name: "都" }]; team.stability = 30;
+    deposer.bornYear = -240; deposer.naturalDeathYear = 96;
+    predecessor.naturalDeathYear = 600;
+    const dynasty = DynastyRegistry.get(team.name)!;
+    const finalRuler: Ruler = { id: "h2", houseName: "张氏", givenName: "终", bornYear: -120,
+      parentId: deposer.id, naturalDeathYear: 600, status: "kin" };
+    dynasty.rulers.push(finalRuler);
+    team.users = new Set();
+    vi.spyOn(DynastyRegistry, "ensureRulerUnit").mockImplementation(() => {
+      const current = DynastyRegistry.getCurrentRuler(team.name);
+      if (!current) return;
+      const user = { rulerId: current.id, role: "RULER", player: { role: "RULER", rulerId: current.id,
+        setRole(role: string, id?: string) { this.role = role; this.rulerId = id ?? current.id; } } } as any;
+      team.rulerUser = user; team.users.add(user);
+    });
+    WorldHistory.addCapitalFallen(1, "魏", team.name, team.name, "旧都", "capital", true, 10, undefined, undefined, "siege-1");
+    worldRandom.initialize("double-deposition-lifecycle");
+    const draw = vi.spyOn(worldRandom, "next").mockReturnValue(0);
+    DynastyRegistry.update(12, [team]);
+    expect(DynastyRegistry.getCurrentRuler(team.name)?.id).toBe(deposer.id);
+    expect(deposer.accessionCause).toBe("DEPOSITION");
+    WorldHistory.addCapitalFallen(61, "魏", team.name, team.name, "新都", "capital", true, 10, undefined, undefined, "siege-2");
+    for (let month = 13; month <= 72; month += 1) DynastyRegistry.update(month, [team]);
+    expect(draw).toHaveBeenCalledTimes(2);
+    expect(predecessor.status).toBe("deposed");
+    expect(deposer).toMatchObject({ status: "deposed", accessionCause: "DEPOSITION", endYear: 72, endReason: "被废" });
+    expect(deposer.deathMonth).toBeUndefined();
+    expect(finalRuler).toMatchObject({ status: "ruling", accessionCause: "DEPOSITION", accessionYear: 72, predecessorId: deposer.id });
+    expect(dynasty.currentRulerId).toBe(finalRuler.id);
+    expect(dynasty.heirIds).not.toContain(predecessor.id);
+    expect(dynasty.heirIds).not.toContain(deposer.id);
+    const coups = WorldHistory.getEvents().filter(event => event.type === "ruler-deposed");
+    expect(coups).toHaveLength(2);
+    expect(new Set(coups.map(event => event.id)).size).toBe(2);
+    DynastyRegistry.update(96, [team]);
+    expect(deposer).toMatchObject({ status: "dead", endYear: 72, endReason: "被废", deathMonth: 96, deathReason: "自然去世" });
+    expect(WorldHistory.getEvents().filter(event => event.type === "ruler-died" && event.metadata?.rulerId === deposer.id)).toHaveLength(1);
+    expect(JSON.stringify(dynasty.houseEpochs)).toBe(JSON.stringify([{ houseName: "张氏", startMonth: 0, foundingRulerId: "r1", startReason: "FOUNDING" }]));
+  });
+
   it("抽签失败没有成功事件，并将失败纳入冷却", () => {
     const { team, ruler, heir } = fixture("ACTIVE", true);
     team.cities = [{ id: "capital", name: "都" }]; team.stability = 30; heir.bornYear = -240;

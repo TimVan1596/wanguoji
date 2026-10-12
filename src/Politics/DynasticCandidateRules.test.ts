@@ -202,6 +202,15 @@ describe("recorded dynastic succession candidates", () => {
     expect(root.children.find((node) => node.ruler.id === "brother")?.children[0].ruler.id).toBe("nephew");
   });
 
+  it("labels a deposition accession separately from the true kinship", () => {
+    const father = ruler("father", undefined, "deposed");
+    father.givenName = "湛"; father.endYear = 299; father.endReason = "被废";
+    const son = { ...ruler("son", "father", "ruling"), givenName: "武", accessionYear: 299,
+      accessionCause: "DEPOSITION" as const, predecessorId: "father", relationType: "DIRECT_CHILD" as const };
+    expect(formatRecordedSuccessionKinship(son, father, [father, son])).toBe("前君之子");
+    expect(getSuccessionBackground(son, [father, son])).toBe("宗室废立，废父姬湛而继位");
+  });
+
   it("distinguishes nephew, uncle, and paternal cousin only from recorded parent links", () => {
     const grandfather = ruler("grandfather", undefined, "dead");
     const father = { ...ruler("father", "grandfather", "dead"), bornYear: 20 };

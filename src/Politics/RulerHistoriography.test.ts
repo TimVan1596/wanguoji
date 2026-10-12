@@ -513,6 +513,35 @@ describe("evidence-grounded ruler historiography", () => {
       start: { territoryShare: 0.1, cityCount: 2 }, end: { territoryShare: 0.3, cityCount: 5 } })))).not.toContain("篡朝");
   });
 
+  it("attributes one real deposition event to the deposed ruler and the successor with distinct historiography", () => {
+    const previous = makeContext({ endMonth: 60, endReason: "被废", end: { territoryShare: 0.05, cityCount: 1, stability: 80 } });
+    const old = previous.ruler as any;
+    old.id = "old"; old.houseName = "嬴氏"; old.givenName = "谦"; old.status = "deposed";
+    old.deathMonth = 240; old.deathReason = "自然去世";
+    const successorContext = makeContext({ accession: 60, endMonth: 120, end: { territoryShare: 0.18, cityCount: 3 } });
+    const successor = successorContext.ruler as any;
+    successor.id = "new"; successor.houseName = "嬴氏"; successor.givenName = "弼";
+    successor.accessionCause = "DEPOSITION"; successor.predecessorId = old.id; successor.parentId = old.id;
+    successor.relationType = "DIRECT_CHILD";
+    const relation = { ...successor, id: "new", parentId: "old", status: "dead", accessionYear: 60, accessionCause: "DEPOSITION", predecessorId: "old" };
+    const event = { id: "deposition-60", historyGroupId: "deposition-60", year: 60, monthIndex: 60,
+      type: "ruler-deposed", category: "politics", actorFactionId: "秦", factionIds: ["秦"], rulerId: "new", importance: "major",
+      metadata: { factionId: "秦", month: 60, previousRulerId: "old", nextRulerId: "new", previousRulerName: "嬴谦",
+        nextRulerName: "嬴弼", previousHouseName: "嬴氏", nextHouseName: "嬴氏", relation: "DIRECT_CHILD",
+        crisisEvidenceEventIds: "crisis", houseChanged: 0, nameChanged: 0, colorChanged: 0 } };
+    const oldContext = { ...previous, events: [event], dynasty: { rulers: [old, relation] } as any };
+    const newContext = { ...successorContext, events: [event], dynasty: { rulers: [old, relation] } as any };
+    const oldEvidence = deriveRulerHistoricalEvidence(oldContext);
+    const newEvidence = deriveRulerHistoricalEvidence(newContext);
+    expect(oldEvidence.politicalFacts).toMatchObject([{ eventId: "deposition-60", role: "SUBJECT", depositionRole: "DEPOSED_RULER", relatedRulerId: "new" }]);
+    expect(newEvidence.politicalFacts).toMatchObject([{ eventId: "deposition-60", role: "DIRECT_ACTOR", depositionRole: "DEPOSING_SUCCESSOR", relatedRulerId: "old" }]);
+    expect(composeRulerAssessment(oldEvidence).lines.join(" ")).toContain("在位末期被宗室嬴弼废黜");
+    expect(composeRulerAssessment(newEvidence).lines.join(" ")).toContain("经宗室废立取得君位");
+    expect(composeHistorianVoice(oldEvidence)).toContain("废位后仍继续生存");
+    expect(composeHistorianVoice(newEvidence)).toContain("前君仍在世时经宗室废立");
+    expect(composeRulerAssessment(oldEvidence).lines.join(" ")).not.toMatch(/因失地.*废立|失地导致废立/);
+  });
+
   it("reconciles signed agreements from one WorldHistory event set through facts, statistics and default biography", () => {
     const signed = ["non-aggression-signed", "alliance-signed", "truce-signed"].map((type, index) => ({
       id: `world-signature-${index}`, historyGroupId: `signature-${index}`, year: 20 + index, monthIndex: 20 + index,

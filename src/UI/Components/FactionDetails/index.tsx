@@ -4,7 +4,7 @@ import { UnifiedFactionChronicle } from "./UnifiedFactionChronicle";
 import { hasRecordedRulerDeath } from "../../../Politics/RulerLifeState";
 import { getTerminationTargetName } from "./model";
 import { formatRulerTerminalEvent } from "../../../History/PoliticalTerminalChronicle";
-import { getSignificantReignStats, formatRulerLifeAge } from "./RoyalPresentation";
+import { getSignificantReignStats, formatRulerLifeAge, formatRulerDepositionFact } from "./RoyalPresentation";
 import { getFactionColorAtMonth, type FactionColorHistoryEntry } from "../../../Simulation/FactionColorHistory";
 import { Box, Button, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -1008,6 +1008,9 @@ function RulerBiography({
   const historianVoice = composeHistorianVoice(assessment.evidence);
   const tags = buildRulerTags(assessment.evidence);
   const tenure = assessment.evidence.tenure;
+  const depositionFacts = assessment.evidence.politicalFacts.filter((fact) => fact.type === "ruler-deposed");
+  const depositionAccession = depositionFacts.find((fact) => fact.depositionRole === "DEPOSING_SUCCESSOR");
+  const depositionDeparture = depositionFacts.find((fact) => fact.depositionRole === "DEPOSED_RULER");
   const historicalEvents = getRulerHistoricalEvents(
     events,
     ruler,
@@ -1063,6 +1066,16 @@ function RulerBiography({
           ? formatRecordedSuccessionKinship(ruler, predecessor, rulers)
           : formatRulerRelation(ruler.relationType, team.identityStage, Boolean(parent), Boolean(ruler.chronicle?.foundedStateName))}
       </Typography>
+      {depositionAccession ? (
+        <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
+          即位方式：{formatRulerDepositionFact(depositionAccession, ruler, rulers) ?? getSuccessionBackground(ruler, rulers)}
+        </Typography>
+      ) : null}
+      {depositionDeparture ? (
+        <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
+          离位方式：{formatRulerDepositionFact(depositionDeparture, ruler, rulers)}
+        </Typography>
+      ) : null}
       {ruler.predecessorId ? (
         <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
           继位背景：{getSuccessionBackground(ruler, rulers)}

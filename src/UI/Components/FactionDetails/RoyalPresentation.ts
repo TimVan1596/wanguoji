@@ -52,3 +52,21 @@ export function formatRulerLifeAge(ruler: Pick<Ruler, "status" | "bornYear" | "e
     ruler.endYear !== undefined ? "politically-ended" : ruler.status;
   return formatRulerAge(status, age) + (status === "politically-ended" ? " · 生死未载" : "");
 }
+
+export function formatRulerDepositionFact(fact: RulerPoliticalFact, ruler: Ruler, rulers: Ruler[]) {
+  if (fact.type !== "ruler-deposed" || !fact.depositionRole || !fact.relatedRulerId || !fact.relatedRulerName || !fact.recordedKinRelation) return undefined;
+  const other = rulers.find((candidate) => candidate.id === fact.relatedRulerId);
+  if (!other) return undefined;
+  const relation = fact.recordedKinRelation;
+  const siblingRelation = ruler.bornYear < other.bornYear ? "弟" : ruler.bornYear > other.bornYear ? "兄" : "兄弟";
+  if (fact.depositionRole === "DEPOSING_SUCCESSOR") {
+    const target = relation === "DIRECT_CHILD" ? "父" : relation === "GRANDCHILD" ? "祖父" :
+      relation === "SIBLING" ? siblingRelation : relation === "NEPHEW" ? "叔伯" :
+      relation === "UNCLE" ? "侄" : "堂亲";
+    return `宗室废立，废${target}${fact.relatedRulerName}而继位`;
+  }
+  const subject = relation === "DIRECT_CHILD" ? "其子" : relation === "GRANDCHILD" ? "其孙" :
+    relation === "SIBLING" ? `其${siblingRelation}` : relation === "NEPHEW" ? "其侄" :
+    relation === "UNCLE" ? "其叔伯" : "其堂亲";
+  return `${formatWorldDate(fact.month)}被${subject}${fact.relatedRulerName}废黜`;
+}

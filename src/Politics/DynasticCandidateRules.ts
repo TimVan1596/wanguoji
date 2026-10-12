@@ -193,6 +193,14 @@ export function getSuccessionBackground(ruler: Ruler, rulers: Ruler[]) {
     ? rulers.find((candidate) => candidate.id === ruler.predecessorId)
     : undefined;
   if (!predecessor) return ruler.relationType === "FOUNDER" ? "开国君主" : "继位背景未记录";
+  if (ruler.accessionCause === "DEPOSITION") {
+    const relation = getRecordedKinRelation(ruler, predecessor, rulers);
+    const predecessorName = `${predecessor.houseName.replace(/氏$/, "")}${predecessor.givenName}`;
+    const target = relation === "DIRECT_CHILD" ? "父" : relation === "GRANDCHILD" ? "祖父" :
+      relation === "SIBLING" ? (ruler.bornYear < predecessor.bornYear ? "弟" : "兄") :
+      relation === "NEPHEW" ? "叔伯" : relation === "UNCLE" ? "侄" : relation === "COUSIN" ? "堂亲" : "宗室成员";
+    return `宗室废立，废${target}${predecessorName}而继位`;
+  }
   const kinship = formatRecordedSuccessionKinship(ruler, predecessor, rulers);
   if (ruler.relationType === "DIRECT_CHILD") return `${kinship}承统`;
   if (ruler.relationType === "GRANDCHILD") {
