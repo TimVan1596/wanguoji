@@ -525,12 +525,12 @@ describe("evidence-grounded ruler historiography", () => {
     successor.relationType = "DIRECT_CHILD";
     const relation = { ...successor, id: "new", parentId: "old", status: "dead", accessionYear: 60, accessionCause: "DEPOSITION", predecessorId: "old" };
     const event = { id: "deposition-60", historyGroupId: "deposition-60", year: 60, monthIndex: 60,
-      type: "ruler-deposed", category: "politics", actorFactionId: "秦", factionIds: ["秦"], rulerId: "new", importance: "major",
+      type: "ruler-deposed", category: "politics", title: "宗室废立", actorFactionId: "秦", factionIds: ["秦"], rulerId: "new", importance: "major",
       metadata: { factionId: "秦", month: 60, previousRulerId: "old", nextRulerId: "new", previousRulerName: "嬴谦",
         nextRulerName: "嬴弼", previousHouseName: "嬴氏", nextHouseName: "嬴氏", relation: "DIRECT_CHILD",
         crisisEvidenceEventIds: "crisis", houseChanged: 0, nameChanged: 0, colorChanged: 0 } };
-    const oldContext = { ...previous, events: [event], dynasty: { rulers: [old, relation] } as any };
-    const newContext = { ...successorContext, events: [event], dynasty: { rulers: [old, relation] } as any };
+    const oldContext = { ...previous, events: [event as any], dynasty: { rulers: [old, relation] } as any };
+    const newContext = { ...successorContext, events: [event as any], dynasty: { rulers: [old, relation] } as any };
     const oldEvidence = deriveRulerHistoricalEvidence(oldContext);
     const newEvidence = deriveRulerHistoricalEvidence(newContext);
     expect(oldEvidence.politicalFacts).toMatchObject([{ eventId: "deposition-60", role: "SUBJECT", depositionRole: "DEPOSED_RULER", relatedRulerId: "new" }]);

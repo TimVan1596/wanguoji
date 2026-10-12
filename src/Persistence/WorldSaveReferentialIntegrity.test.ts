@@ -465,17 +465,22 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     expect(first.saveSchemaVersion).toBe(14); expect(worldRandom.exportState()).toEqual(save.worldRandom);
     hydrateWorldSave(core, JSON.parse(JSON.stringify(first))); expect(exportWorldSave(core)).toEqual(first);
   });
-  it("V14 keeps a living deposed ruler, crisis linkage and cooldown canonical across export/hydration", () => {
+  it("V14 keeps successive deposition accessions, later deposition, death and cooldown canonical across export/hydration", () => {
     const save = fixture();
     const snapshot = (month: number) => ({ month, population: 10, territoryShare: 0.2, cityCount: 1, stability: 35 });
-    save.dynasties = [{ factionId: "qin", houseName: "田氏", currentRulerId: "successor", heirIds: [], lastDepositionAttemptMonth: 12,
+    save.world.worldMonth = save.world.clock.worldMonth = 42;
+    save.dynasties = [{ factionId: "qin", houseName: "田氏", currentRulerId: "final", heirIds: [], lastDepositionAttemptMonth: 36,
       houseEpochs: [{ houseName: "田氏", startMonth: 0, foundingRulerId: "predecessor", startReason: "FOUNDING" }], rulers: [
         { rulerId: "predecessor", houseName: "田氏", givenName: "平", bornMonth: -360, accessionMonth: 0, endMonth: 12,
           politicalEndMonth: 12, endReason: "被废", status: "deposed", reignOrdinal: 1,
           chronicle: { accessionSnapshot: snapshot(0), latestSnapshot: snapshot(12), endSnapshot: snapshot(12), notableEventIds: ["deposed-event"] } },
-        { rulerId: "successor", houseName: "田氏", givenName: "继", bornMonth: -240, accessionMonth: 12,
-          status: "ruling", accessionCause: "DEPOSITION", predecessorId: "predecessor", parentId: "predecessor", relationType: "DIRECT_CHILD", reignOrdinal: 2,
-          chronicle: { accessionSnapshot: snapshot(12), latestSnapshot: snapshot(42), notableEventIds: ["deposed-event"] } },
+        { rulerId: "successor", houseName: "田氏", givenName: "继", bornMonth: -240, accessionMonth: 12, endMonth: 36,
+          politicalEndMonth: 36, endReason: "被废", status: "dead", deathMonth: 42, deathReason: "自然去世",
+          accessionCause: "DEPOSITION", predecessorId: "predecessor", parentId: "predecessor", relationType: "DIRECT_CHILD", reignOrdinal: 2,
+          chronicle: { accessionSnapshot: snapshot(12), latestSnapshot: snapshot(36), endSnapshot: snapshot(36), notableEventIds: ["deposed-event", "deposed-event-2"], deathCause: "自然去世" } },
+        { rulerId: "final", houseName: "田氏", givenName: "终", bornMonth: -180, accessionMonth: 36,
+          status: "ruling", accessionCause: "DEPOSITION", predecessorId: "successor", parentId: "successor", relationType: "DIRECT_CHILD", reignOrdinal: 3,
+          chronicle: { accessionSnapshot: snapshot(36), latestSnapshot: snapshot(42), notableEventIds: ["deposed-event-2"] } },
       ] }];
     save.worldHistory.events = [
       { id: "crisis-event", year: 1, monthIndex: 1, category: "war", type: "capital-fallen", title: "都城陷落",
@@ -485,15 +490,25 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
         metadata: { factionId: "qin", month: 12, previousRulerId: "predecessor", nextRulerId: "successor",
           previousRulerName: "田平", nextRulerName: "田继", previousHouseName: "田氏", nextHouseName: "田氏",
           relation: "DIRECT_CHILD", crisisEvidenceEventIds: "crisis-event", houseChanged: 0, nameChanged: 0, colorChanged: 0 } },
+      { id: "crisis-event-2", year: 25, monthIndex: 25, category: "war", type: "capital-fallen", title: "再失都城",
+        factionIds: ["qin"], actorFactionId: "qin", targetFactionId: "qin", importance: "major" },
+      { id: "deposed-event-2", year: 36, monthIndex: 36, category: "politics", type: "ruler-deposed", title: "再次宗室废立",
+        factionIds: ["qin"], actorFactionId: "qin", rulerId: "final", importance: "major",
+        metadata: { factionId: "qin", month: 36, previousRulerId: "successor", nextRulerId: "final",
+          previousRulerName: "田继", nextRulerName: "田终", previousHouseName: "田氏", nextHouseName: "田氏",
+          relation: "DIRECT_CHILD", crisisEvidenceEventIds: "crisis-event-2", houseChanged: 0, nameChanged: 0, colorChanged: 0 } },
+      { id: "successor-death", year: 42, monthIndex: 42, category: "politics", type: "ruler-died", title: "田继去世",
+        factionIds: ["qin"], actorFactionId: "qin", importance: "normal", metadata: { rulerId: "successor", deathReason: "自然去世" } },
     ] as any;
     expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
     const core = target(); hydrateWorldSave(core, JSON.parse(JSON.stringify(save)));
     const restored = exportWorldSave(core);
     expect(restored.saveSchemaVersion).toBe(14);
-    expect(restored.dynasties[0]).toMatchObject({ currentRulerId: "successor", lastDepositionAttemptMonth: 12 });
+    expect(restored.dynasties[0]).toMatchObject({ currentRulerId: "final", lastDepositionAttemptMonth: 36 });
     expect(restored.dynasties[0].rulers).toMatchObject([
       { rulerId: "predecessor", status: "deposed", endMonth: 12, endReason: "被废" },
-      { rulerId: "successor", status: "ruling", accessionMonth: 12, accessionCause: "DEPOSITION" },
+      { rulerId: "successor", status: "dead", endMonth: 36, endReason: "被废", deathMonth: 42, accessionMonth: 12, accessionCause: "DEPOSITION" },
+      { rulerId: "final", status: "ruling", accessionMonth: 36, accessionCause: "DEPOSITION" },
     ]);
     hydrateWorldSave(core, JSON.parse(JSON.stringify(restored)));
     expect(exportWorldSave(core)).toEqual(restored);
