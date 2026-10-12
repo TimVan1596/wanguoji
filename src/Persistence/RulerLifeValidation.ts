@@ -1,6 +1,6 @@
 import { RULER_DEATH_REASONS, RULER_STATUSES } from "../Politics/RulerLifeState";
 
-/** V13 persisted person facts; never infer death from the scheduled lifespan. */
+/** V14 persisted person facts; never infer death from the scheduled lifespan. */
 export function validateRulerLifeRecord(r: Record<string, any>, worldMonth: number): string[] {
   const errors: string[] = [];
   const bad = (message: string) => errors.push(`ruler ${String(r.rulerId)}: ${message}`);
@@ -21,10 +21,14 @@ export function validateRulerLifeRecord(r: Record<string, any>, worldMonth: numb
   if (hasDeath && r.status !== "dead") bad("actual death requires dead status");
   if (hasDeath && r.endMonth !== undefined && r.deathMonth < r.endMonth) bad("death precedes recorded end");
   if (["ruling", "exiled", "heir", "kin"].includes(r.status) && r.endMonth !== undefined) bad("active person has an ended record");
-  if (["dead", "abdicated", "politically-ended"].includes(r.status) && r.endMonth === undefined) bad("ended person requires endMonth");
-  if (["ruling", "exiled", "abdicated", "politically-ended"].includes(r.status) && r.accessionMonth === undefined) bad("political office requires accessionMonth");
+  if (["dead", "abdicated", "politically-ended", "deposed"].includes(r.status) && r.endMonth === undefined) bad("ended person requires endMonth");
+  if (["ruling", "exiled", "abdicated", "politically-ended", "deposed"].includes(r.status) && r.accessionMonth === undefined) bad("political office requires accessionMonth");
   if (r.status === "abdicated" && !["合邦退位", "纳土退位"].includes(r.endReason)) bad("invalid abdication reason");
   if (r.status === "politically-ended" && r.endReason !== "政治终结") bad("invalid political termination reason");
+  if (r.status === "deposed" && r.endReason !== "被废") bad("invalid deposition reason");
+  if (r.status === "deposed" && hasDeath) bad("deposed living person cannot have an actual death record");
+  if (r.status === "deposed" && (r.accessionCause === "DEPOSITION" || r.templeName || r.posthumousEpithet)) bad("deposed predecessor cannot have a deposition accession or posthumous title");
+  if (r.accessionCause === "DEPOSITION" && (!Number.isSafeInteger(r.accessionMonth) || r.reignOrdinal === undefined || !["ruling", "dead", "exiled"].includes(r.status))) bad("invalid deposition accession");
   if (!hasDeath && (r.templeName || r.posthumousEpithet)) bad("posthumous title requires actual death");
   if (r.reignOrdinal !== undefined && (!Number.isSafeInteger(r.reignOrdinal) || r.reignOrdinal < 1)) bad("invalid reign ordinal");
   if (r.chronicle !== undefined && (!r.chronicle || typeof r.chronicle !== "object" || Array.isArray(r.chronicle))) bad("invalid chronicle");

@@ -20,6 +20,45 @@ function fixture() {
 }
 
 describe("WorldSaveV1 validation and JSON contract", () => {
+  it("V14 validates a living same-house deposition and later actual death as distinct months", () => {
+    const save = fixture();
+    save.factions.push({ ...save.factions[0], factionId: "wei", displayName: "魏" });
+    setFixtureLifetimeRecords(save);
+    save.world.worldMonth = 42; save.world.clock.worldMonth = 42;
+    const snapshot = (month: number) => ({ month, population: 10, territoryShare: 0.2, cityCount: 1, stability: 35 });
+    const coupId = "ruler-deposed-12-qin-0";
+    save.dynasties = [{ factionId: "qin", houseName: "田氏", currentRulerId: "successor", heirIds: [],
+      lastDepositionAttemptMonth: 12,
+      houseEpochs: [{ houseName: "田氏", startMonth: 0, foundingRulerId: "predecessor", startReason: "FOUNDING" }],
+      rulers: [
+        { rulerId: "predecessor", houseName: "田氏", givenName: "平", bornMonth: -360, accessionMonth: 0,
+          endMonth: 12, politicalEndMonth: 12, status: "dead", endReason: "被废", deathMonth: 24,
+          deathReason: "自然去世", reignOrdinal: 1,
+          chronicle: { accessionSnapshot: snapshot(0), latestSnapshot: snapshot(12), endSnapshot: snapshot(12),
+            notableEventIds: [coupId], deathCause: "自然去世" } },
+        { rulerId: "successor", houseName: "田氏", givenName: "继", bornMonth: -240, accessionMonth: 12,
+          status: "ruling", accessionCause: "DEPOSITION", predecessorId: "predecessor", parentId: "predecessor",
+          relationType: "DIRECT_CHILD", reignOrdinal: 2,
+          chronicle: { accessionSnapshot: snapshot(12), latestSnapshot: snapshot(42), notableEventIds: [coupId] } },
+      ] }];
+    save.worldHistory.events = [
+      { id: "capital-crisis", year: 1, monthIndex: 1, category: "war", type: "capital-fallen", title: "都城陷落",
+        factionIds: ["qin", "wei"], actorFactionId: "wei", targetFactionId: "qin", importance: "major" },
+      { id: coupId, year: 12, monthIndex: 12, category: "politics", type: "ruler-deposed", title: "宗室废立",
+        factionIds: ["qin"], actorFactionId: "qin", rulerId: "successor", importance: "major",
+        metadata: { factionId: "qin", month: 12, previousRulerId: "predecessor", nextRulerId: "successor",
+          previousRulerName: "田平", nextRulerName: "田继", previousHouseName: "田氏", nextHouseName: "田氏",
+          relation: "DIRECT_CHILD", crisisEvidenceEventIds: "capital-crisis", houseChanged: 0, nameChanged: 0, colorChanged: 0 } },
+      { id: "later-death", year: 24, monthIndex: 24, category: "politics", type: "ruler-died", title: "田平去世",
+        factionIds: ["qin"], actorFactionId: "qin", importance: "normal", metadata: { rulerId: "predecessor", deathReason: "自然去世" } },
+    ];
+    const json = JSON.parse(JSON.stringify(save));
+    expect(validateWorldSave(json)).toEqual({ valid: true, errors: [] });
+    expect(json.dynasties[0].rulers[0]).toMatchObject({ status: "dead", endMonth: 12, endReason: "被废", deathMonth: 24 });
+    expect(json.dynasties[0].rulers[1]).toMatchObject({ accessionCause: "DEPOSITION", accessionMonth: 12 });
+    expect(json.dynasties[0].lastDepositionAttemptMonth).toBe(12);
+  });
+
   it("round-trips V10 house epochs, displaced living kin, names, colors and RNG; rejects V8", () => {
     const save = fixture();
     save.factions[0] = { ...save.factions[0], houseName: "侯氏", displayName: "梁", color: 2,
@@ -39,7 +78,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     delete missing.dynasties[0].houseEpochs;
     expect(validateWorldSave(missing).errors).toContain("faction.colorHistory must be non-empty");
     expect(validateWorldSave(missing).errors).toContain("dynasty.houseEpochs must be non-empty");
-    for (const old of [9, 8, 7, 6, 1]) expect(validateWorldSave({ ...parsed, saveSchemaVersion: old }).errors).toContain("unsupported saveSchemaVersion");
+    for (const old of [13, 9, 8, 7, 6, 1]) expect(validateWorldSave({ ...parsed, saveSchemaVersion: old }).errors).toContain("该存档版本已不受支持，请创建新世界。");
     parsed.dynasties[0].houseEpochs[1].displacedSuccessorId = "missing";
     expect(validateWorldSave(parsed).valid).toBe(false);
     parsed.dynasties[0].houseEpochs[1].displacedSuccessorId = "heir";
@@ -78,8 +117,8 @@ describe("WorldSaveV1 validation and JSON contract", () => {
   });
   it("uses schema V10 and persists alliance/merge fields plus the deterministic random stream", () => {
     const save = fixture();
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(13);
-    expect(save.saveSchemaVersion).toBe(13);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(14);
+    expect(save.saveSchemaVersion).toBe(14);
     expect(save.diplomacy).toEqual({ relations: [], pairMemories: [], lastEvaluationMonth: -1 });
     expect(save.worldRandom).toMatchObject({ algorithm: "mulberry32-v1", seed: expect.any(String), state: expect.any(Number), position: 0 });
   });
@@ -92,7 +131,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     const changed=structuredClone(save);changed.diplomacy.relations[0].renewalCount=2;changed.diplomacy.pairMemories[0].cooldownUntilMonth=46;
     expect(diffCanonicalWorldSave(save,changed).subsystemCounts.diplomacy).toBe(2);
     const loaded=JSON.parse(JSON.stringify(save));expect(validateWorldSave(loaded)).toEqual({valid:true,errors:[]});expect(loaded.diplomacy).toEqual(save.diplomacy);
-    expect(validateWorldSave({...save,saveSchemaVersion:9}).errors).toContain("unsupported saveSchemaVersion");
+    expect(validateWorldSave({...save,saveSchemaVersion:9}).errors).toContain("该存档版本已不受支持，请创建新世界。");
     for(const [key,value] of [["originalStartedMonth",13],["renewalCount",-1],["lastRenewedMonth",43]] as const){const broken=structuredClone(save);(broken.diplomacy.relations[0] as any)[key]=value;expect(validateWorldSave(broken).valid).toBe(false);}
     const missing=structuredClone(save);delete (missing.diplomacy as any).pairMemories;expect(validateWorldSave(missing).valid).toBe(false);
     const unknown=structuredClone(save);unknown.diplomacy.pairMemories[0].factionBId="unknown";expect(validateWorldSave(unknown).valid).toBe(false);
@@ -175,7 +214,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     expect(loaded.dynasties[0]).toMatchObject({ designatedHeirId: "qin-ruler-2", designatedSinceMonth: 36 });
     expect(loaded.dynasties[0].rulers[2]).toMatchObject({ parentId: "qin-ruler-2", relationType: "DIRECT_CHILD" });
     expect(loaded.dynasties[0].rulers[3]).toMatchObject({ rulerId: "qin-ruler-4", bornMonth: -200, status: "kin", parentId: "qin-ruler-1" });
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(13);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(14);
   });
 
   it("rejects a dynasty candidate list above the runtime bound", () => {
@@ -193,7 +232,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
 
   it("rejects unsupported schema versions and dangling references", () => {
     const save = fixture();
-    save.saveSchemaVersion = 3 as never;
+    save.saveSchemaVersion = 15 as never;
     save.cities[0].ownerFactionId = "missing";
     const result = validateWorldSave(save);
     expect(result.valid).toBe(false);

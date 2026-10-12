@@ -14,7 +14,7 @@ export function GenealogyPersonCard({ ruler, displayName, presentation }: {
     {presentation?.labels.length ? <Typography fontSize="0.72rem" sx={{ mt: 0.2 }}>{presentation.labels.join(" · ")}</Typography> : null}
     <Typography fontSize="0.68rem" color="var(--gg-text-muted)">
       {ruler.reignOrdinal !== undefined ? `第${ruler.reignOrdinal}代` : presentation?.roles.includes("储君") ? "继承候选" : "宗室成员"}
-      {ruler.status === "exiled" ? " · 流亡承统" : ruler.status === "politically-ended" ? " · 生死未载" : ""}
+      {ruler.status === "exiled" ? " · 流亡承统" : ruler.status === "politically-ended" ? " · 生死未载" : ruler.status === "deposed" ? " · 在位时被废，生存未终" : ""}
     </Typography>
   </Box>;
 }

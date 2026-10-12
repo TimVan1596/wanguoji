@@ -7,7 +7,7 @@ import SimulationDriver from "../Simulation/SimulationDriver";
 import WorldClock from "../Simulation/WorldClock";
 import worldRandom from "../Simulation/WorldRandom";
 import { createDeterminismCheckpoint } from "../Simulation/DeterminismFingerprint";
-import { createEmptyWorldSaveV9 } from "../Persistence/WorldSaveSchema";
+import { createEmptyWorldSaveV14 } from "../Persistence/WorldSaveSchema";
 import { validateWorldSave } from "../Persistence/WorldSaveValidator";
 
 const require = createRequire(import.meta.url);
@@ -48,7 +48,7 @@ describe("Phaser scheduler selection before Game creation", () => {
       expect(forceTimeoutLoop ? raf : timeout).not.toHaveBeenCalled();
       // Structural runner boundary, not a real Electron cadence/visual acceptance test.
       for (let i = 0; i < 600; i++) { time += i % 100 === 99 ? 250 : 1000 / 60; loop.raf.callback(time); }
-      const save = createEmptyWorldSaveV9(); save.world.clock = clock.exportState(); save.world.worldMonth = clock.worldMonth;
+      const save = createEmptyWorldSaveV14(); save.world.clock = clock.exportState(); save.world.worldMonth = clock.worldMonth;
       save.world.running = true; save.world.simulationDriver = driver.exportState(); save.worldRandom = worldRandom.exportState();
       expect(validateWorldSave(save).valid).toBe(true); expect(JSON.parse(JSON.stringify(save))).toEqual(save);
       return { steps, save, digest: createDeterminismCheckpoint({ worldMonth: clock.worldMonth, random: worldRandom.exportState(), factions: [], cities: [], territory: [] }) };

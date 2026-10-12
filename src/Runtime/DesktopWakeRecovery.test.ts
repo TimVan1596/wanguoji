@@ -4,7 +4,7 @@ import { DesktopWakeRecovery, readPhaserLoop } from "./DesktopWakeRecovery";
 import SimulationDriver from "../Simulation/SimulationDriver";
 import WorldClock from "../Simulation/WorldClock";
 import worldRandom from "../Simulation/WorldRandom";
-import { createEmptyWorldSaveV9 } from "../Persistence/WorldSaveSchema";
+import { createEmptyWorldSaveV14 } from "../Persistence/WorldSaveSchema";
 import { validateWorldSave } from "../Persistence/WorldSaveValidator";
 import { createDeterminismCheckpoint } from "../Simulation/DeterminismFingerprint";
 
@@ -95,7 +95,7 @@ describe("Phaser desktop wake boundary", () => {
       const recovery = new DesktopWakeRecovery(debug, () => 0); const loop = { resetDelta: vi.fn(), rawDelta: 16 };
       const context = { isRunning: () => true, getSpeed: () => 4,
         step: (delta: number) => { clock.update(delta); worldRandom.next(); } };
-      const save = () => { const dto = createEmptyWorldSaveV9(); dto.world.clock = clock.exportState(); dto.world.worldMonth = clock.worldMonth;
+      const save = () => { const dto = createEmptyWorldSaveV14(); dto.world.clock = clock.exportState(); dto.world.worldMonth = clock.worldMonth;
         dto.world.running = true; dto.world.simulationDriver = driver.exportState(); dto.worldRandom = worldRandom.exportState(); return dto; };
       const before = JSON.stringify(save());
       for (let i = 1; i <= 100; i++) recovery.wake(message(i), loop);

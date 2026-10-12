@@ -2,6 +2,20 @@ import { describe, expect, it } from "vitest";
 import WorldHistory, { formatEventDate } from "./WorldHistory";
 
 describe("world history", () => {
+  it("records one explicit in-reign deposition event with factual identity and unchanged state", () => {
+    WorldHistory.reset();
+    WorldHistory.addCapitalFallen(9, "魏", "秦", "秦", "旧都", "capital", true, 10, undefined, undefined, "siege");
+    const crisisId = WorldHistory.getEvents()[0].id;
+    const id = WorldHistory.addRulerDeposed(12, "秦", "秦", { id: "old", houseName: "嬴氏", givenName: "平" },
+      { id: "new", houseName: "嬴氏", givenName: "继" }, "DIRECT_CHILD", [crisisId]);
+    const event = WorldHistory.getEvents().find(item => item.id === id)!;
+    expect(event).toMatchObject({ type: "ruler-deposed", actorFactionId: "秦", monthIndex: 12, rulerId: "new",
+      metadata: { previousRulerId: "old", nextRulerId: "new", relation: "DIRECT_CHILD", crisisEvidenceEventIds: crisisId,
+        houseChanged: 0, nameChanged: 0, colorChanged: 0 } });
+    expect(event.description).toContain("嬴平被废，其子嬴继继位");
+    expect(WorldHistory.getEvents().filter(item => item.type === "ruler-deposed")).toHaveLength(1);
+  });
+
   it("stores structured heir-death facts and links the event to the parent ruler", () => {
     WorldHistory.reset();
     const id = WorldHistory.addHeirDied(880, "燕", "heir-1", "ruler-1", "姬衡", 23, "natural", "燕王");

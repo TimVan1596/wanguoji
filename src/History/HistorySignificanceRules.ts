@@ -5,6 +5,7 @@ export type HistorySignificance = "MINOR" | "NORMAL" | "MAJOR" | "LANDMARK";
 
 const MAJOR_POLITICAL_TYPES = new Set<WorldEvent["type"]>([
   "dynasty-usurped",
+  "ruler-deposed",
   "world-born",
   "world-unification",
   "world-fractured",
@@ -29,6 +30,7 @@ const MAJOR_POLITICAL_TYPES = new Set<WorldEvent["type"]>([
 
 const LANDMARK_TYPES = new Set<WorldEvent["type"]>([
   "dynasty-usurped",
+  "ruler-deposed",
   "world-born",
   "world-unification",
   "world-fractured",

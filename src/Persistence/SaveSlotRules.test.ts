@@ -2,9 +2,10 @@ import { describe, expect, it } from "vitest";
 import { createEmptyWorldSaveV1 } from "./WorldSaveSchema";
 import { chooseAutosaveSlot, findLatestValidSave, GameYearAutosaveSchedule, getNextAutosaveBoundary, renameManualSave } from "./SaveSlotRules";
 import { createStoredWorldSaveRecord, StoredWorldSaveRecord, WorldSaveRepository } from "./WorldSaveRepository";
+import { CURRENT_SAVE_SCHEMA_VERSION } from "./WorldSaveSchema";
 
 function metadata(slotId: string, savedAt: string) {
-  return { slotId, slotType: "AUTOSAVE" as const, savedAt, worldMonth: 0, appVersion: "test", saveSchemaVersion: 2 };
+  return { slotId, slotType: "AUTOSAVE" as const, savedAt, worldMonth: 0, appVersion: "test", saveSchemaVersion: CURRENT_SAVE_SCHEMA_VERSION };
 }
 
 describe("save slot rules", () => {
@@ -30,6 +31,19 @@ describe("save slot rules", () => {
     expect(await chooseAutosaveSlot(repo)).toBe("autosave-1");
   });
 
+  it("does not choose an old-version autosave slot for overwrite", async () => {
+    const repo = { async listMetadata() { return [
+      { ...metadata("autosave-1", "2026-01-01T00:00:00.000Z"), saveSchemaVersion: 13 },
+      metadata("autosave-2", "2026-01-02T00:00:00.000Z"),
+    ]; } } as unknown as WorldSaveRepository;
+    expect(await chooseAutosaveSlot(repo)).toBe("autosave-2");
+    const onlyOld = { async listMetadata() { return [
+      { ...metadata("autosave-1", "2026-01-01T00:00:00.000Z"), saveSchemaVersion: 13 },
+      { ...metadata("autosave-2", "2026-01-02T00:00:00.000Z"), saveSchemaVersion: 13 },
+    ]; } } as unknown as WorldSaveRepository;
+    await expect(chooseAutosaveSlot(onlyOld)).rejects.toThrow("旧档已保留");
+  });
+
   it("Continue selects newest valid full save and falls back past corrupt slots", async () => {
     const save = createEmptyWorldSaveV1();
     save.world.started = true;
@@ -38,8 +52,8 @@ describe("save slot rules", () => {
     const records = new Map<string, unknown>([["manual-new", { ...newer, save: [] }], ["current", older]]);
     const repo = {
       async listMetadata() { return [
-        { slotId: "manual-new", slotType: "MANUAL" as const, savedAt: newer.savedAt, worldMonth: 0, appVersion: newer.appVersion, saveSchemaVersion: 2 },
-        { slotId: "current", slotType: "RECOVERY" as const, savedAt: older.savedAt, worldMonth: 0, appVersion: older.appVersion, saveSchemaVersion: 2 },
+        { slotId: "manual-new", slotType: "MANUAL" as const, savedAt: newer.savedAt, worldMonth: 0, appVersion: newer.appVersion, saveSchemaVersion: CURRENT_SAVE_SCHEMA_VERSION },
+        { slotId: "current", slotType: "RECOVERY" as const, savedAt: older.savedAt, worldMonth: 0, appVersion: older.appVersion, saveSchemaVersion: CURRENT_SAVE_SCHEMA_VERSION },
       ]; },
       async get(slotId: string) { return records.get(slotId); },
     } as unknown as WorldSaveRepository;

@@ -2,7 +2,7 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import DiagnosticsOverlayFrame from "./DiagnosticsOverlayFrame";
-import { createEmptyWorldSaveV10 } from "../../Persistence/WorldSaveSchema";
+import { createEmptyWorldSaveV14 } from "../../Persistence/WorldSaveSchema";
 import worldRandom from "../../Simulation/WorldRandom";
 import { DiplomacyRegistry, DiplomacySystem } from "../../Politics/Diplomacy";
 vi.mock("react/jsx-dev-runtime", async () => {
@@ -34,14 +34,14 @@ describe("session-only diagnostic overlay",()=>{
   });
   it("view transitions do not alter V10 or RNG and leave diagnostic collection independent",()=>{
     const run=(interact:boolean)=>{
-      worldRandom.initialize("compact-observability");const random=worldRandom.exportState(),save=createEmptyWorldSaveV10();
+      worldRandom.initialize("compact-observability");const random=worldRandom.exportState(),save=createEmptyWorldSaveV14();
       const f=fixture(),registry=new DiplomacyRegistry(true),system=new DiplomacySystem(registry,()=>[],()=>undefined);
       registry.setRelation({factionAId:"a",factionBId:"b",status:"TRUCE",startedMonth:0,expiresMonth:24,reason:"WAR_EXHAUSTION_TRUCE"});
       if(interact){f.frame.expand();f.html();f.frame.collapseAll();f.frame.minimize();}
       system.update(24,[],1,[]);f.html();expect(f.frame.state.compact).toBe(true);
       expect(registry.getDiagnostics(24).diplomacyII?.sessionCumulative.expired).toBe(1);
       expect(worldRandom.exportState()).toEqual(random);expect(JSON.parse(JSON.stringify(save))).toEqual(save);
-      expect(save.saveSchemaVersion).toBe(13);expect(save).not.toHaveProperty("compact");expect(save).not.toHaveProperty("collapseRevision");
+      expect(save.saveSchemaVersion).toBe(14);expect(save).not.toHaveProperty("compact");expect(save).not.toHaveProperty("collapseRevision");
       return {canonical:registry.exportState(),rng:worldRandom.exportState()};
     };
     expect(run(true)).toEqual(run(false));

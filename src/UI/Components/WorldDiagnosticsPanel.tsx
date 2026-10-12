@@ -105,6 +105,7 @@ function WorldDiagnosticsPanelContent() {
     return {
       ...summarizeProvisionalRulers(dynasties, factions),
       revolution: DynastyRegistry.getRevolutionDiagnostics(teams, worldMonth),
+      deposition: DynastyRegistry.getInReignDepositionDiagnostics(worldMonth),
       byAccessionRank: summarizeRulersByAccessionRank(dynasties, factions),
       session: DynastyRegistry.getProvisionalSessionDiagnostics(factions),
       recent: summarizeProvisionalRulers(dynasties, factions, { completedSinceMonth: Math.max(0, worldMonth - 1200) }),
@@ -430,6 +431,11 @@ function WorldDiagnosticsPanelContent() {
         <summary>篡朝诊断</summary>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 11 }}>{provisionalRulers.revolution.cumulativeGate.chineseSummary}</Typography>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(provisionalRulers.revolution)}</Typography>
+      </details>
+      <details>
+        <summary>宗室废立诊断</summary>
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 11 }}>{provisionalRulers.deposition.chineseSummary}</Typography>
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(provisionalRulers.deposition)}</Typography>
       </details>
       <details>
         <summary>君主任期诊断（即位当月历史 rank；累计完成任期）</summary>

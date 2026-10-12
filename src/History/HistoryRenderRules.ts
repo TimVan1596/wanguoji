@@ -172,6 +172,13 @@ export function formatHistoryEventTitle(
     const rulerClause = newRuler ? `${newRuler}夺取王统` : `${house || "新王统"}夺取王统`;
     return `${oldName}国易代：${rulerClause}${newName && oldName !== newName ? `，改国号为${newName}` : ""}。`;
   }
+  if (event.type === "ruler-deposed") {
+    const oldName = stringMeta(event, "previousRulerName") || "前君";
+    const newName = stringMeta(event, "nextRulerName") || "宗室";
+    const relationCode = stringMeta(event, "relation") ?? "";
+    const relation = ({ DIRECT_CHILD: "其子", GRANDCHILD: "其孙", SIBLING: "其兄弟", NEPHEW: "其侄", UNCLE: "其叔伯", COUSIN: "其堂亲" } as Record<string, string>)[relationCode] ?? "有记录亲属关系的宗室";
+    return `${name(event.actorFactionId)}国宗室废立：${oldName}被废，${relation}${newName}继位。王统、国号与旗色未变。`;
+  }
   if (event.type === "heir-died") {
     const heir = stringMeta(event, "heirName") || "继承候选";
     const parent = stringMeta(event, "parentRulerTitle");

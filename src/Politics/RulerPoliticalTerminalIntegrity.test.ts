@@ -45,6 +45,72 @@ beforeEach(() => { DynastyRegistry.reset(); WorldHistory.reset(); WorldExiles.re
 afterEach(() => { vi.restoreAllMocks(); });
 
 describe("authoritative V13 political termination and actual death", () => {
+  it("废立真实在位君主并在预定月份记录其后续自然死亡", () => {
+    const { team, ruler, heir } = fixture("ACTIVE", true);
+    team.cities = [{ id: "capital", name: "都" }];
+    team.stability = 30;
+    heir.bornYear = -240;
+    ruler.naturalDeathYear = 24;
+    const dynasty = DynastyRegistry.get(team.name)!;
+    const originalHouse = JSON.stringify(dynasty.houseEpochs);
+    const activeUnit = (rulerId: string): any => ({ rulerId, role: "RULER", player: { role: "RULER", rulerId,
+      setRole(role: string, id?: string) { this.role = role; this.rulerId = id ?? rulerId; } } });
+    team.users = new Set();
+    vi.spyOn(DynastyRegistry, "ensureRulerUnit").mockImplementation(() => {
+      const current = DynastyRegistry.getCurrentRuler(team.name);
+      if (!current) return;
+      if (team.rulerUser?.rulerId === current.id) return;
+      const user = activeUnit(current.id);
+      team.rulerUser = user;
+      team.users.add(user);
+    });
+    WorldHistory.addCapitalFallen(1, "魏", team.name, team.name, "旧都", "capital", true, 10, undefined, undefined, "siege-1");
+    const evidence = WorldHistory.getEvents().find(event => event.type === "capital-fallen")!;
+    worldRandom.initialize("deposition-state-transition");
+    const draw = vi.spyOn(worldRandom, "next").mockReturnValue(0);
+    DynastyRegistry.update(12, [team]);
+    expect(draw).toHaveBeenCalledTimes(1);
+    expect(ruler).toMatchObject({ status: "deposed", endYear: 12, politicalEndYear: 12, endReason: "被废" });
+    expect(ruler.deathMonth).toBeUndefined(); expect(ruler.deathReason).toBeUndefined();
+    expect(ruler.templeName).toBeUndefined(); expect(ruler.posthumousEpithet).toBeUndefined();
+    expect(heir).toMatchObject({ status: "ruling", accessionYear: 12, accessionCause: "DEPOSITION", predecessorId: ruler.id });
+    expect(dynasty.currentRulerId).toBe(heir.id); expect(dynasty.heirIds).not.toContain(ruler.id);
+    expect(JSON.stringify(dynasty.houseEpochs)).toBe(originalHouse);
+    expect(team.rulerUser?.rulerId).toBe(heir.id);
+    const coup = WorldHistory.getEvents().find(event => event.type === "ruler-deposed")!;
+    expect(coup.metadata).toMatchObject({ previousRulerId: ruler.id, nextRulerId: heir.id, crisisEvidenceEventIds: evidence.id,
+      relation: "DIRECT_CHILD", houseChanged: 0, nameChanged: 0, colorChanged: 0 });
+    expect(ruler.chronicle?.notableEventIds).toContain(coup.id); expect(heir.chronicle?.notableEventIds).toContain(coup.id);
+    DynastyRegistry.update(13, [team]);
+    expect(ruler.status).toBe("deposed"); expect(dynasty.heirIds).not.toContain(ruler.id);
+    DynastyRegistry.update(24, [team]);
+    expect(ruler).toMatchObject({ status: "dead", endYear: 12, endReason: "被废", deathMonth: 24, deathReason: "自然去世" });
+    expect(ruler.chronicle?.endSnapshot?.month).toBe(12); expect(ruler.chronicle?.deathCause).toBe("自然去世");
+    expect(WorldHistory.getEvents().filter(event => event.type === "ruler-deposed")).toHaveLength(1);
+    expect(WorldHistory.getEvents().some(event => event.type === "ruler-died" && event.metadata?.rulerId === ruler.id && event.year === 24)).toBe(true);
+  });
+
+  it("抽签失败没有成功事件，并将失败纳入冷却", () => {
+    const { team, ruler, heir } = fixture("ACTIVE", true);
+    team.cities = [{ id: "capital", name: "都" }]; team.stability = 30; heir.bornYear = -240;
+    const users = team.users = new Set<any>();
+    vi.spyOn(DynastyRegistry, "ensureRulerUnit").mockImplementation(() => undefined);
+    WorldHistory.addCapitalFallen(1, "魏", team.name, team.name, "旧都", "capital", true, 10, undefined, undefined, "siege-1");
+    worldRandom.initialize("deposition-failed-roll");
+    const draw = vi.spyOn(worldRandom, "next").mockReturnValue(0.99);
+    DynastyRegistry.update(12, [team]);
+    expect(draw).toHaveBeenCalledTimes(1);
+    expect(DynastyRegistry.getCurrentRuler(team.name)?.id).toBe(ruler.id);
+    expect(ruler.status).toBe("ruling"); expect(heir.status).toBe("heir");
+    expect(WorldHistory.getEvents().some(event => event.type === "ruler-deposed")).toBe(false);
+    expect(DynastyRegistry.get(team.name)?.lastDepositionAttemptMonth).toBe(12);
+    DynastyRegistry.update(24, [team]);
+    expect(draw).toHaveBeenCalledTimes(1); expect(users.size).toBe(0);
+    expect(DynastyRegistry.getInReignDepositionDiagnostics(24)).toMatchObject({
+      drawAttempts: 1, failures: 1, successes: 0, cooldownBlocked: 1, expectedSuccesses: 0.005,
+    });
+  });
+
   it("PRECHECK failure leaves the live Core saveable; post-teardown hydration remains blocked", () => {
     const core: Core = Object.assign(Object.create(Core.prototype), { simulator: { exportState: () => ({ started: true }) },
       backgroundProgression: { isCatchingUp: () => false }, snapshotBoundaryRequest: { getDiagnostics: () => ({ status: "idle" }) } });

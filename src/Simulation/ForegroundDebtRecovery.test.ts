@@ -4,7 +4,7 @@ import { ForegroundDebtDiagnostics } from "./ForegroundDebtDiagnostics";
 import WorldClock from "./WorldClock";
 import worldRandom from "./WorldRandom";
 import { createDeterminismCheckpoint } from "./DeterminismFingerprint";
-import { createEmptyWorldSaveV9 } from "../Persistence/WorldSaveSchema";
+import { createEmptyWorldSaveV14 } from "../Persistence/WorldSaveSchema";
 import { validateWorldSave } from "../Persistence/WorldSaveValidator";
 
 const ctx = { isRunning: () => true, getSpeed: () => 4, step: () => {} };
@@ -98,12 +98,12 @@ describe("bounded foreground debt recovery", () => {
         diagnostics.record(delta, delta, result, () => ({ worldMonth: clock.worldMonth, visibility: "visible", focused: true, savePhase: "idle" }));
       };
       deltas.forEach(advance);
-      const save = createEmptyWorldSaveV9();
+      const save = createEmptyWorldSaveV14();
       save.world.worldMonth = clock.worldMonth; save.world.clock = clock.exportState(); save.world.running = true;
       save.world.simulationDriver = driver.exportState(); save.worldRandom = worldRandom.exportState();
       expect(validateWorldSave(save).valid).toBe(true);
       const restored = JSON.parse(JSON.stringify(save)) as typeof save;
-      expect(restored).toMatchObject({ saveSchemaVersion: 13, world: { simulationDriver: driver.exportState() }, worldRandom: worldRandom.exportState() });
+      expect(restored).toMatchObject({ saveSchemaVersion: 14, world: { simulationDriver: driver.exportState() }, worldRandom: worldRandom.exportState() });
       if (hydrate) { driver.importState(restored.world.simulationDriver); clock.importState(restored.world.clock); worldRandom.restore(restored.worldRandom); }
       deltas.forEach(advance);
       const random = worldRandom.exportState();

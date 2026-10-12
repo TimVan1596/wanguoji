@@ -63,8 +63,10 @@ import {
   selectActiveDynasticCandidateIds,
   selectRecordedDynasticSuccessor,
 } from "./DynasticCandidateRules";
+import { evaluateDepositionOpportunity, InReignDepositionDiagnostics, type DepositionEvaluation, type DepositionRiskGroup } from "./InReignDeposition";
+import type { RecordedKinRelation } from "./DynasticCandidateRules";
 
-export type RulerStatus = "ruling" | "exiled" | "heir" | "kin" | "dead" | "abdicated" | "politically-ended";
+export type RulerStatus = "ruling" | "exiled" | "heir" | "kin" | "dead" | "abdicated" | "politically-ended" | "deposed";
 export type RulerRelationType =
   | "FOUNDER"
   | "DIRECT_CHILD"
@@ -100,6 +102,7 @@ export interface Ruler {
   predecessorId?: string;
   relationType?: RulerRelationType;
   reignOrdinal?: number;
+  accessionCause?: "SUCCESSION" | "DEPOSITION";
   endReason?: string;
   status: RulerStatus;
   chronicle?: RulerChronicle;
@@ -119,6 +122,7 @@ export interface Dynasty {
   designatedHeirId?: string;
   designatedSinceMonth?: number;
   lastRulerBattleDeathYear?: number;
+  lastDepositionAttemptMonth?: number;
 }
 
 const rulerGivenNamePool = {
@@ -142,6 +146,8 @@ class DynastyRegistryStore {
   private sequence = 0;
   private revolutionChecks: Array<{ factionId: string; worldMonth: number; blockers: string[] }> = [];
   private revolutionGateDiagnostics = new RevolutionGateDiagnostics();
+  private depositionDiagnostics = new InReignDepositionDiagnostics();
+  private depositionRiskGroup: DepositionRiskGroup = "CONSERVATIVE";
   private provisionalDiagnosticsSession = new ProvisionalRulerDiagnosticsSession();
 
   reset() {
@@ -150,6 +156,8 @@ class DynastyRegistryStore {
     this.sequence = 0;
     this.revolutionChecks = [];
     this.revolutionGateDiagnostics.reset();
+    this.depositionDiagnostics.reset();
+    this.depositionRiskGroup = "CONSERVATIVE";
     this.provisionalDiagnosticsSession.reset([]);
   }
 
@@ -184,6 +192,7 @@ class DynastyRegistryStore {
     this.sequence = state.sequence;
     this.revolutionChecks = [];
     this.revolutionGateDiagnostics.reset(diagnosticsStartMonth);
+    this.depositionDiagnostics.reset(diagnosticsStartMonth);
     this.provisionalDiagnosticsSession.reset(this.listForDiagnostics());
   }
 
@@ -216,6 +225,11 @@ class DynastyRegistryStore {
   }
 
   update(year: number, teams: Team[]) {
+    // Formerly enthroned deposed rulers keep a life after their polity ends.
+    teams.forEach((team) => {
+      const archivedDynasty = this.get(team.name);
+      if (archivedDynasty) this.archiveNaturallyDeadDeposedRulers(team, archivedDynasty, year);
+    });
     teams.filter((team) => shouldDynastyContinue(team.status)).forEach((team) => {
       const dynasty = this.initializeFaction(team, 0);
       if (dynasty) {
@@ -235,6 +249,7 @@ class DynastyRegistryStore {
           this.ensureActiveHeir(team, dynasty, year);
         }
         this.ensureRulerUnit(team);
+        if (dynasty && ruler) this.evaluateInReignDeposition(team, dynasty, ruler, year);
         return;
       }
       this.succeedRuler(team, dynasty, ruler, year, "natural");
@@ -640,6 +655,182 @@ class DynastyRegistryStore {
     );
   }
 
+  getInReignDepositionDiagnostics(worldMonth: number) {
+    return this.depositionDiagnostics.snapshot(worldMonth);
+  }
+
+  /** Test/experiment control. Production callers keep the conservative default. */
+  setInReignDepositionRiskGroupForSimulation(riskGroup: DepositionRiskGroup) {
+    this.depositionRiskGroup = riskGroup;
+  }
+
+  private evaluateInReignDeposition(team: Team, dynasty: Dynasty, current: Ruler, worldMonth: number) {
+    if (worldMonth % 12 !== 0) return;
+    const recentEvents: import("../History/WorldHistory").WorldEvent[] = [];
+    let beforeIndex: number | undefined;
+    do {
+      const page = WorldHistory.getEventWindow({ factionId: team.name,
+        startMonth: worldMonth - 36, endMonth: worldMonth, limit: 256, beforeIndex });
+      recentEvents.push(...page.events);
+      if (!page.hasOlder) break;
+      beforeIndex = page.nextIndex;
+    } while (true);
+    const evaluation = evaluateDepositionOpportunity({
+      factionId: team.name, status: team.status, identityStage: team.identityStage, cityCount: team.cities.length,
+      stability: getFactionStability(team), currentRuler: current, rulers: dynasty.rulers,
+      houseName: dynasty.houseName, worldMonth, lastAttemptMonth: dynasty.lastDepositionAttemptMonth,
+      events: recentEvents, riskGroup: this.depositionRiskGroup,
+    });
+    if (evaluation.blockers.includes("COOLDOWN")) {
+      this.depositionDiagnostics.observe(team.name, worldMonth, evaluation, team.status === "ACTIVE" && team.identityStage === "STATE", "COOLDOWN");
+      return;
+    }
+    if (!evaluation.eligible) {
+      this.depositionDiagnostics.observe(team.name, worldMonth, evaluation, team.status === "ACTIVE" && team.identityStage === "STATE");
+      return;
+    }
+    // Exactly one canonical roll per qualified annual boundary. Diagnostics do not touch RNG.
+    dynasty.lastDepositionAttemptMonth = worldMonth;
+    const succeeds = worldRandom.next() < evaluation.probability;
+    if (!succeeds) {
+      this.depositionDiagnostics.observe(team.name, worldMonth, evaluation, team.status === "ACTIVE" && team.identityStage === "STATE", "FAILURE");
+      return;
+    }
+    const claimant = evaluation.candidates[0];
+    if (!claimant || !this.commitDeposition(team, dynasty, current, claimant.ruler, claimant.relation, worldMonth, evaluation)) {
+      this.depositionDiagnostics.observe(team.name, worldMonth, evaluation, team.status === "ACTIVE" && team.identityStage === "STATE", "FAILURE");
+      return;
+    }
+    this.depositionDiagnostics.observe(team.name, worldMonth, evaluation, team.status === "ACTIVE" && team.identityStage === "STATE", "SUCCESS");
+  }
+
+  private commitDeposition(team: Team, dynasty: Dynasty, predecessor: Ruler, successor: Ruler,
+    relation: RecordedKinRelation,
+    worldMonth: number, evaluation: DepositionEvaluation) {
+    if (team.status !== "ACTIVE" || team.cities.length === 0 || dynasty.currentRulerId !== predecessor.id ||
+      predecessor.status !== "ruling" || hasRecordedRulerDeath(predecessor) ||
+      successor.status !== "heir" && successor.status !== "kin" || successor.reignOrdinal !== undefined ||
+      successor.houseName !== dynasty.houseName || !dynasty.rulers.includes(successor) ||
+      !evaluation.candidates.some((candidate) => candidate.ruler.id === successor.id) ||
+      evaluation.evidence.some((fact) => fact.month > worldMonth)) return false;
+    const previousState = {
+      predecessor: structuredClone(predecessor), successor: structuredClone(successor), currentRulerId: dynasty.currentRulerId,
+      heirIds: [...dynasty.heirIds], designatedHeirId: dynasty.designatedHeirId,
+      designatedSinceMonth: dynasty.designatedSinceMonth,
+    };
+    const previousRulerUser = team.rulerUser;
+    const previousUserRole = previousRulerUser?.role;
+    const previousUserRulerId = previousRulerUser?.rulerId;
+    const previousPlayerRole = previousRulerUser?.player.role;
+    const previousPlayerRulerId = previousRulerUser?.player.rulerId;
+    const candidateStatuses = dynasty.rulers.map((ruler) => [ruler.id, ruler.status] as const);
+    const monthSnapshot = createRulerSnapshot(team, worldMonth);
+    const nextChronicle = createRulerChronicle(monthSnapshot);
+    try {
+      predecessor.status = "deposed";
+      predecessor.endYear = worldMonth;
+      predecessor.politicalEndYear = worldMonth;
+      predecessor.endReason = "被废";
+      predecessor.regimeNameAtEnd = team.displayName;
+      predecessor.templeName = undefined;
+      predecessor.templeNameReasons = undefined;
+      predecessor.posthumousEpithet = undefined;
+      predecessor.posthumousEpithetReasons = undefined;
+      if (predecessor.chronicle) finishRulerChronicle(predecessor.chronicle, monthSnapshot);
+
+      successor.status = "ruling";
+      successor.accessionYear = worldMonth;
+      successor.politicalStartYear = worldMonth;
+      successor.politicalEndYear = undefined;
+      successor.endYear = undefined;
+      successor.endReason = undefined;
+      successor.accessionCause = "DEPOSITION";
+      successor.predecessorId = predecessor.id;
+      successor.relationType = relation;
+      successor.reignOrdinal = this.getNextReignOrdinal(dynasty);
+      successor.plannedEndYear = successor.naturalDeathYear;
+      successor.chronicle = nextChronicle;
+      successor.templeName = undefined;
+      successor.templeNameReasons = undefined;
+      successor.posthumousEpithet = undefined;
+      successor.posthumousEpithetReasons = undefined;
+
+      dynasty.currentRulerId = successor.id;
+      dynasty.heirIds = dynasty.heirIds.filter((id) => id !== successor.id);
+      if (dynasty.designatedHeirId === successor.id) {
+        dynasty.designatedHeirId = undefined;
+        dynasty.designatedSinceMonth = undefined;
+      }
+      dynasty.rulers.forEach((ruler) => {
+        if (ruler.id !== successor.id && (ruler.status === "heir" || ruler.status === "kin")) ruler.status = "kin";
+      });
+      // Candidate refresh is deterministic and does not create kin as a side effect of the coup.
+      dynasty.heirIds = selectActiveDynasticCandidateIds({ currentRuler: successor, rulers: dynasty.rulers,
+        month: worldMonth, cap: getDynasticCandidateCap(team.identityStage, team.sovereigntyRank),
+        isAlive: (candidate, month) => candidate.status !== "dead" && candidate.status !== "deposed" && !isNaturallyDeadByMonth(candidate.naturalDeathYear, month),
+        pickIndex: () => 0, preferredIds: [] });
+      const selected = new Set(dynasty.heirIds);
+      dynasty.rulers.forEach((ruler) => { if (ruler.id !== successor.id && (ruler.status === "heir" || ruler.status === "kin")) ruler.status = selected.has(ruler.id) ? "heir" : "kin"; });
+      // The annual qualification already consumed its sole political roll. Do not
+      // let a tied heir designation introduce a second, unrelated RNG draw.
+      this.refreshDesignatedHeir(dynasty, successor, worldMonth, () => 0);
+
+      // The old monarch remains a living person: remove only the political role/crown,
+      // and keep the existing population unit instead of silently destroying it.
+      if (team.rulerUser?.rulerId === predecessor.id) {
+        team.rulerUser.role = "NORMAL";
+        team.rulerUser.rulerId = undefined;
+        team.rulerUser.player.setRole("NORMAL", undefined);
+        team.rulerUser = undefined;
+      }
+      this.ensureRulerUnit(team);
+      const successorShouldHaveUnit = Math.floor(monthsToYears(Math.max(0, worldMonth - successor.bornYear))) >= RULER_COMBAT_MIN_AGE;
+      if (dynasty.currentRulerId !== successor.id || successor.status !== "ruling" || predecessor.status !== "deposed" ||
+        (successorShouldHaveUnit && (!team.rulerUser || team.rulerUser.rulerId !== successor.id || !team.users.has(team.rulerUser))) ||
+        (!successorShouldHaveUnit && team.rulerUser)) throw new Error("deposition runtime invariant failed");
+
+    } catch {
+      Object.assign(predecessor, previousState.predecessor);
+      Object.assign(successor, previousState.successor);
+      dynasty.currentRulerId = previousState.currentRulerId;
+      dynasty.heirIds = previousState.heirIds;
+      dynasty.designatedHeirId = previousState.designatedHeirId;
+      dynasty.designatedSinceMonth = previousState.designatedSinceMonth;
+      candidateStatuses.forEach(([id, status]) => { const record = dynasty.rulers.find((ruler) => ruler.id === id); if (record) record.status = status; });
+      if (team.rulerUser && team.rulerUser !== previousRulerUser) team.removeRulerUnit(true);
+      if (previousRulerUser) {
+        previousRulerUser.role = previousUserRole!;
+        previousRulerUser.rulerId = previousUserRulerId;
+        previousRulerUser.player.setRole(previousPlayerRole!, previousPlayerRulerId);
+        team.rulerUser = previousRulerUser;
+      }
+      this.ensureRulerUnit(team);
+      return false;
+    }
+    const eventId = WorldHistory.addRulerDeposed(worldMonth, team.name, team.displayName, predecessor, successor, relation,
+      evaluation.evidence.map(({ eventId: id }) => id));
+    if (predecessor.chronicle) predecessor.chronicle.notableEventIds.push(eventId);
+    successor.chronicle!.notableEventIds.push(eventId);
+    return true;
+  }
+
+  private archiveNaturallyDeadDeposedRulers(team: Team, dynasty: Dynasty, worldMonth: number) {
+    dynasty.rulers.forEach((ruler) => {
+      if (ruler.status !== "deposed" || ruler.reignOrdinal === undefined || hasRecordedRulerDeath(ruler) ||
+        !isNaturallyDeadByMonth(ruler.naturalDeathYear ?? ruler.plannedEndYear, worldMonth)) return;
+      ruler.status = "dead";
+      ruler.deathMonth = worldMonth;
+      ruler.deathReason = "自然去世";
+      if (ruler.chronicle) {
+        ruler.chronicle.deathCause = ruler.deathReason;
+        finalizeRulerPosthumousNames(ruler, dynasty.rulers, team, worldMonth);
+      }
+      WorldHistory.addRulerDied(worldMonth, team.name, this.getRulerTitle(team, ruler, worldMonth), {
+        rulerId: ruler.id, deathReason: ruler.deathReason, age: Math.floor(monthsToYears(worldMonth - ruler.bornYear)),
+      });
+    });
+  }
+
   recordCityCaptured(rulerId: string | undefined, _cityId: string, eventId?: string) {
     if (!rulerId) {
       return;
@@ -849,7 +1040,7 @@ class DynastyRegistryStore {
     const current = this.getCurrentRuler(team.name);
     const candidateCap = getDynasticCandidateCap(team.identityStage, team.sovereigntyRank);
     const isAlive = (candidate: Ruler, atMonth: number) =>
-      candidate.status !== "dead" &&
+      candidate.status !== "dead" && candidate.status !== "deposed" &&
       !isNaturallyDeadByMonth(candidate.naturalDeathYear ?? candidate.plannedEndYear, atMonth);
     const existingCandidates = selectActiveDynasticCandidateIds({
       currentRuler: current,
@@ -862,7 +1053,7 @@ class DynastyRegistryStore {
     });
     const selectedIds = new Set(existingCandidates);
     dynasty.rulers.forEach((ruler) => {
-      if (ruler.id === current?.id || ruler.status === "dead" || ruler.status === "exiled" || ruler.status === "politically-ended" || ruler.status === "abdicated") return;
+      if (ruler.id === current?.id || ruler.status === "dead" || ruler.status === "exiled" || ruler.status === "politically-ended" || ruler.status === "abdicated" || ruler.status === "deposed") return;
       ruler.status = selectedIds.has(ruler.id) ? "heir" : "kin";
     });
     dynasty.heirIds = existingCandidates;
@@ -889,7 +1080,7 @@ class DynastyRegistryStore {
     this.refreshDesignatedHeir(dynasty, current, year);
   }
 
-  private refreshDesignatedHeir(dynasty: Dynasty, current: Ruler | undefined, month: number) {
+  private refreshDesignatedHeir(dynasty: Dynasty, current: Ruler | undefined, month: number, pickIndex?: (length: number) => number) {
     const selection = current
       ? selectRecordedDynasticSuccessor({
           predecessor: current,
@@ -900,10 +1091,10 @@ class DynastyRegistryStore {
           houseName: dynasty.houseName,
           month,
           isAlive: (candidate, atMonth) =>
-            candidate.status !== "dead" &&
+            candidate.status !== "dead" && candidate.status !== "deposed" &&
             !isNaturallyDeadByMonth(candidate.naturalDeathYear ?? candidate.plannedEndYear, atMonth),
           preferredCandidateId: dynasty.designatedHeirId,
-          pickIndex: (length) => length === 1 ? 0 : worldRandom.pickIndex(length),
+          pickIndex: pickIndex ?? ((length) => length === 1 ? 0 : worldRandom.pickIndex(length)),
         })
       : undefined;
     if (!selection) {
@@ -1001,7 +1192,7 @@ class DynastyRegistryStore {
         if (!dynasty || !predecessor) return { factionId: team.name, blockers: ["NO_ELIGIBLE_LEGITIMATE_SUCCESSOR"] };
         const selected = selectRecordedDynasticSuccessor({ predecessor, candidates: dynasty.rulers.filter((ruler) => dynasty.heirIds.includes(ruler.id)),
           rulers: dynasty.rulers, houseName: dynasty.houseName, month: worldMonth,
-          isAlive: (ruler, month) => ruler.status !== "dead" && !isNaturallyDeadByMonth(ruler.naturalDeathYear, month),
+          isAlive: (ruler, month) => ruler.status !== "dead" && ruler.status !== "deposed" && !isNaturallyDeadByMonth(ruler.naturalDeathYear, month),
           preferredCandidateId: dynasty.designatedHeirId, pickIndex: () => 0 });
         return { factionId: team.name, ...getRevolutionEligibility(this.revolutionContext(team, dynasty, predecessor, selected?.ruler, worldMonth, "natural")) };
       }) };
@@ -1018,7 +1209,7 @@ class DynastyRegistryStore {
       houseName: dynasty.houseName,
       month: year,
       isAlive: (candidate, month) =>
-        candidate.status !== "dead" &&
+        candidate.status !== "dead" && candidate.status !== "deposed" &&
         !isNaturallyDeadByMonth(candidate.naturalDeathYear ?? candidate.plannedEndYear, month),
       preferredCandidateId: dynasty.designatedHeirId,
       pickIndex: (length) => length === 1 ? 0 : worldRandom.pickIndex(length),

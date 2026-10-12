@@ -2,7 +2,7 @@ import { validateRulerLifeRecord } from "./RulerLifeValidation";
 import { validateFactionLifetime } from "./FactionLifetimeValidation";
 import { CURRENT_SAVE_SCHEMA_VERSION, WorldSaveV1 } from "./WorldSaveSchema";
 import { isEraMapSnapshotV1 } from "../Simulation/EraMapSnapshot";
-import { MAX_DYNASTIC_SUCCESSION_CANDIDATES } from "../Politics/DynasticCandidateRules";
+import { getRecordedKinRelation, MAX_DYNASTIC_SUCCESSION_CANDIDATES } from "../Politics/DynasticCandidateRules";
 
 export interface SaveValidationResult {
   valid: boolean;
@@ -13,8 +13,8 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   const errors: string[] = [];
   if (!isPlainRecord(value)) return { valid: false, errors: ["save must be a plain object"] };
   const save = value as Partial<WorldSaveV1>;
-  if ((value as { saveSchemaVersion?: unknown }).saveSchemaVersion === 12) {
-    return { valid: false, errors: ["此存档为旧版V12，当前V13不支持读取，请新建世界。"] };
+  if (typeof save.saveSchemaVersion === "number" && save.saveSchemaVersion < CURRENT_SAVE_SCHEMA_VERSION) {
+    return { valid: false, errors: ["该存档版本已不受支持，请创建新世界。"] };
   }
   if (save.saveSchemaVersion !== CURRENT_SAVE_SCHEMA_VERSION) errors.push("unsupported saveSchemaVersion");
   if (typeof save.appVersion !== "string" || !save.appVersion.trim()) errors.push("appVersion is required");
@@ -230,6 +230,11 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   });
   dynasties.forEach((dynasty) => {
     if (dynasty.factionId !== undefined) requireRef(dynasty.factionId, factionIds, "dynasty.factionId", errors);
+    if (dynasty.lastDepositionAttemptMonth !== undefined &&
+      (!Number.isSafeInteger(dynasty.lastDepositionAttemptMonth) || dynasty.lastDepositionAttemptMonth < 0 ||
+        dynasty.lastDepositionAttemptMonth > Number(save.world?.worldMonth) || dynasty.lastDepositionAttemptMonth % 12 !== 0)) {
+      errors.push("dynasty.lastDepositionAttemptMonth must be a valid annual world month");
+    }
     if (typeof dynasty.currentRulerId === "string") requireRef(dynasty.currentRulerId, rulerIds, "dynasty.currentRulerId", errors);
     if (Array.isArray(dynasty.heirIds)) dynasty.heirIds.forEach((id: unknown) => requireRef(id, rulerIds, "dynasty.heirIds", errors));
     if (dynasty.designatedHeirId !== undefined) {
@@ -277,6 +282,9 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
     ? save.worldHistory.events.filter(isPlainRecord)
     : [];
   const eventIds = new Set<string>();
+  const depositionEventsByNewRuler = new Map<string, Record<string, any>>();
+  const depositionEventsByPreviousRuler = new Map<string, Record<string, any>>();
+  const depositionFactionMonths = new Set<string>();
   worldEvents.forEach((event: Record<string, any>) => {
     if (typeof event.id !== "string") errors.push("worldHistory event id is required");
     else if (eventIds.has(event.id)) errors.push(`duplicate worldHistory event id: ${event.id}`);
@@ -293,8 +301,85 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
       if (event.cityId !== undefined && !allCityIds.has(String(event.cityId))) errors.push(`unknown worldHistory cityId: ${String(event.cityId)}`);
       if (event.rulerId !== undefined) requireRef(event.rulerId, rulerIds, "worldHistory rulerId", errors);
       if (event.monthIndex !== undefined && !finite(event.monthIndex)) errors.push("worldHistory event monthIndex must be finite");
+      if (event.type === "ruler-deposed") {
+        const meta = isPlainRecord(event.metadata) ? event.metadata : {};
+        const month = event.monthIndex ?? event.year;
+        const oldId = meta.previousRulerId;
+        const newId = meta.nextRulerId;
+        if (typeof event.actorFactionId !== "string" || !Array.isArray(event.factionIds) || !event.factionIds.includes(event.actorFactionId) ||
+          typeof oldId !== "string" || typeof newId !== "string" || oldId === newId ||
+          typeof meta.relation !== "string" || typeof meta.crisisEvidenceEventIds !== "string" || !meta.crisisEvidenceEventIds.length ||
+          meta.houseChanged !== 0 || meta.nameChanged !== 0 || meta.colorChanged !== 0) {
+          errors.push("invalid ruler-deposed event identity/result");
+        } else {
+          const key = `${event.actorFactionId}\u0000${month}`;
+          if (depositionFactionMonths.has(key)) errors.push("duplicate same-month ruler-deposed event");
+          depositionFactionMonths.add(key);
+          depositionEventsByNewRuler.set(newId, event);
+          depositionEventsByPreviousRuler.set(oldId, event);
+          requireRef(oldId, rulerIds, "ruler-deposed.previousRulerId", errors);
+          requireRef(newId, rulerIds, "ruler-deposed.nextRulerId", errors);
+          const owner = dynasties.find((item) => item.factionId === event.actorFactionId);
+          const ownerRulers = owner && Array.isArray(owner.rulers) ? owner.rulers.filter(isPlainRecord) : [];
+          const oldRuler = ownerRulers.find((r: any) => r.rulerId === oldId);
+          const newRuler = ownerRulers.find((r: any) => r.rulerId === newId);
+          const runtimeRulers = ownerRulers.map((r: any) => ({ ...r,
+            id: r.rulerId, bornYear: r.bornMonth, accessionYear: r.accessionMonth }));
+          const actualKinship = oldRuler && newRuler
+            ? getRecordedKinRelation(runtimeRulers.find((r: any) => r.rulerId === newId)!, runtimeRulers.find((r: any) => r.rulerId === oldId)!, runtimeRulers)
+            : undefined;
+          const personName = (ruler: any) => `${String(ruler.houseName).replace(/氏$/, "")}${String(ruler.givenName ?? "")}`;
+          if (!oldRuler || !newRuler || oldRuler.houseName !== newRuler.houseName ||
+            meta.factionId !== event.actorFactionId || meta.month !== month ||
+            meta.previousHouseName !== oldRuler.houseName || meta.nextHouseName !== newRuler.houseName ||
+            meta.previousRulerName !== personName(oldRuler) || meta.nextRulerName !== personName(newRuler) ||
+            oldRuler.endMonth !== month || oldRuler.politicalEndMonth !== month || oldRuler.endReason !== "被废" ||
+            !["deposed", "dead"].includes(String(oldRuler.status)) ||
+            oldRuler.deathMonth !== undefined && oldRuler.deathMonth < month ||
+            newRuler.accessionMonth !== month || newRuler.accessionCause !== "DEPOSITION" ||
+            newRuler.predecessorId !== oldId || newRuler.parentId === undefined ||
+            !actualKinship || actualKinship === "COLLATERAL_KIN" || actualKinship !== meta.relation ||
+            !Number.isSafeInteger(newRuler.bornMonth) || Number(newRuler.bornMonth) + 16 * 12 > month ||
+            !["ruling", "dead", "deposed", "abdicated", "politically-ended", "exiled"].includes(String(newRuler.status))) {
+            errors.push("ruler-deposed event disagrees with saved ruler offices");
+          }
+          const evidenceIds = (meta.crisisEvidenceEventIds as string).split(",").filter(Boolean);
+          if (!evidenceIds.length || new Set(evidenceIds).size !== evidenceIds.length) errors.push("ruler-deposed event requires unique crisis evidence ids");
+          evidenceIds.forEach((id) => {
+            const evidenceEvent = worldEvents.find((candidate) => candidate.id === id);
+            const evidenceMonth = evidenceEvent?.monthIndex ?? evidenceEvent?.year;
+            if (!evidenceEvent || !Number.isSafeInteger(evidenceMonth) || evidenceMonth > month ||
+              !Array.isArray(evidenceEvent.factionIds) || !evidenceEvent.factionIds.includes(event.actorFactionId)) {
+              errors.push(`invalid ruler-deposed crisis evidence reference: ${id}`);
+            }
+          });
+        }
+      }
     });
   }
+  dynasties.forEach((dynasty) => {
+    (Array.isArray(dynasty.rulers) ? dynasty.rulers : []).forEach((ruler: any) => {
+      if (!isPlainRecord(ruler)) return;
+      if (ruler.status === "deposed") {
+        const savedHeirIds = Array.isArray(dynasty.heirIds) ? dynasty.heirIds : [];
+        if (ruler.deathMonth !== undefined || ruler.deathReason !== undefined || ruler.endReason !== "被废" ||
+          ruler.endMonth === undefined || ruler.politicalEndMonth !== ruler.endMonth ||
+          ruler.templeName !== undefined || ruler.posthumousEpithet !== undefined ||
+          dynasty.currentRulerId === ruler.rulerId || savedHeirIds.includes(ruler.rulerId) ||
+          !depositionEventsByPreviousRuler.has(String(ruler.rulerId))) {
+          errors.push(`deposed ruler has an inconsistent living/office state: ${String(ruler.rulerId)}`);
+        }
+      }
+      if (ruler.endReason === "被废" && !depositionEventsByPreviousRuler.has(String(ruler.rulerId))) {
+        errors.push(`deposition end lacks matching ruler-deposed event: ${String(ruler.rulerId)}`);
+      }
+      if (ruler.accessionCause !== "DEPOSITION") return;
+      const event = depositionEventsByNewRuler.get(String(ruler.rulerId));
+      if (!event || event.actorFactionId !== dynasty.factionId || (event.monthIndex ?? event.year) !== ruler.accessionMonth) {
+        errors.push(`deposition accession lacks matching ruler-deposed event: ${String(ruler.rulerId)}`);
+      }
+    });
+  });
   dynasties.forEach((dynasty) => {
     const rulers = Array.isArray(dynasty.rulers) ? dynasty.rulers : [];
     rulers.forEach((ruler: unknown) => {

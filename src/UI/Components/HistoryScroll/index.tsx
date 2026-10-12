@@ -426,7 +426,7 @@ function HistoryEventListContent({
             cursor: canExpand ? "pointer" : "default",
           }}>
             <Typography fontSize="1rem" fontWeight={landmark || event.importance === "major" ? "bold" : "normal"}>
-              {formatEventDate(event)} {landmark ? "◆ " : ""}{event.type === "dynasty-usurped" ? "【篡朝】 " : ""}
+              {formatEventDate(event)} {landmark ? "◆ " : ""}{event.type === "dynasty-usurped" ? "【篡朝】 " : event.type === "ruler-deposed" ? "【宗室废立】 " : ""}
               <EventText text={eventTitle} teamByName={eventTeamByDisplayName} factionNames={eventFactionNames} cityNames={cityNames} />
               {event.type === "dynasty-usurped" && typeof event.metadata?.oldHouseName === "string" && typeof event.metadata?.newHouseName === "string"
                 ? <Box component="span" sx={{ display: "block", fontSize: "0.82rem" }}>{event.metadata.oldHouseName} → {event.metadata.newHouseName}</Box> : null}

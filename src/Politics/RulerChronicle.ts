@@ -114,6 +114,7 @@ const RULER_EVENT_TYPES = new Set<WorldEvent["type"]>([
   "ruler-captured",
   "dynasty-usurped",
   "ruler-succession",
+  "ruler-deposed",
   "faction-extinct",
   "faction-merged",
   "faction-submitted",
@@ -147,6 +148,7 @@ const RULER_EVENT_PRIORITIES: Partial<Record<WorldEvent["type"], number>> = {
   "empire-split": 90,
   "dynasty-usurped": 120,
   "ruler-succession": 88,
+  "ruler-deposed": 125,
   "city-recovered": 75,
   "city-captured": 65,
   "truce-signed": 48,
@@ -181,6 +183,7 @@ export function getRulerHistoricalEvents(
       event.metadata?.rulerId === ruler.id ||
       event.metadata?.previousRulerId === ruler.id ||
       event.metadata?.nextRulerId === ruler.id ||
+      (event.type === "ruler-deposed" && event.metadata?.previousRulerId === ruler.id) ||
       (event.type === "dynasty-usurped" && (
         event.metadata?.predecessorRulerId === ruler.id ||
         event.metadata?.displacedSuccessorId === ruler.id
@@ -282,6 +285,9 @@ function isRulerPoliticalEventRelevant(event: WorldEvent, rulerId: string, facti
     case "ruler-succession":
       return event.actorFactionId === factionId && factions.includes(factionId) &&
         (event.rulerId === rulerId || event.metadata?.previousRulerId === rulerId || event.metadata?.nextRulerId === rulerId);
+    case "ruler-deposed":
+      return event.actorFactionId === factionId && factions.includes(factionId) &&
+        (event.metadata?.previousRulerId === rulerId || event.metadata?.nextRulerId === rulerId);
     case "ruler-captured":
       return event.targetFactionId === factionId && factions.includes(factionId) &&
         (event.rulerId === rulerId || event.metadata?.rulerId === rulerId);

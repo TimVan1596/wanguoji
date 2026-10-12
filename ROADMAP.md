@@ -6,6 +6,8 @@
 
 ### P0
 
+- [ ] v0.99931n 在位废立与真实宗室夺位：阶段 A 已批准，V14不兼容升级及阶段 B 代码已进入开发；完成自动验证后等待[新七国世界人工 Gate](docs/InReignDepositionImplementation.md)。V13及更早存档按用户授权拒绝读取，不迁移。
+
 - [x] 政治终结与人物生死分离：v0.99931c / WorldSave V13 已获用户人工 PASS，生死模型冻结。v31c1 派生任期角色人工 PASS。v31d 王统总评人工 PASS；v31d1 功能人工 PASS；v31d2 国史合传人工 PASS；v31d3 分段国史与评议人工 PASS，国史合传冻结。v31e 政治宗谱身份与视觉层级人工 PASS。v31f 用户整体人工 PASS，未回传所有创始者年龄明细。v31g 和平政治转型诊断已获用户人工 PASS。v31h 阶段B已获用户人工PASS；233.5年观察中新路径没有实际归并，不放宽参数。v31i故都与长期统治地复国已获用户人工PASS；低忠诚城市未出现的实测已记录。v31j复国可达性与双零流亡终局已获用户人工PASS，复国参数冻结。v31k人工Gate已PASS，但511.33年/101次继位仅有一次旧复合资格、新入口为零；v31l人工Gate已PASS：914.50年/216次继位、30次抽签、实际篡朝1次，机制冻结。v31m人工Gate已PASS；v31m1政治事实归属与史评闭环等待[人工验收](docs/RulerPoliticalBiographyAttributionM1.md)。
 
 - [x] IndexedDB 多槽存档、手动存档管理与双槽游戏时间自动存档。

@@ -12,7 +12,7 @@ function weight(event: WorldEvent): { score: number; category: string } | undefi
     case "world-unification": case "world-hegemony": case "world-fractured": case "world-era-started": case "empire-split":
       return { score: 100, category: "world" };
     case "emperor-proclaimed": return { score: 100, category: "emperor" };
-    case "dynasty-usurped": return { score: 100, category: "revolution" };
+    case "dynasty-usurped": case "ruler-deposed": return { score: 100, category: "revolution" };
     case "state-founded": return { score: 80, category: "founding" };
     case "faction-extinct": case "faction-exiled": return { score: 85, category: "collapse" };
     case "faction-restored": case "dynasty-restored": return { score: 85, category: "restoration" };

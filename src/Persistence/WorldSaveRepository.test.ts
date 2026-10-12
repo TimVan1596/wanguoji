@@ -56,7 +56,9 @@ function fakeIndexedDb(initialVersion = 0, initialRecords: Array<[string, unknow
     createObjectStore: (name: string) => { stores.set(name, new Map()); return {}; },
     close: () => undefined,
     transaction: (_names: string | string[]) => {
+      let aborted = false;
       const tx: any = { error: new Error("mock IndexedDB transaction failed") };
+      tx.abort = () => { aborted = true; setTimeout(() => tx.onabort?.({ target: tx }), 0); };
       tx.objectStore = (name: string) => {
         const values = stores.get(name)!;
         return {
@@ -96,7 +98,7 @@ function fakeIndexedDb(initialVersion = 0, initialRecords: Array<[string, unknow
         },
       };
       };
-      setTimeout(() => tx.oncomplete?.({ target: tx }), 0);
+      setTimeout(() => { if (!aborted) tx.oncomplete?.({ target: tx }); }, 0);
       return tx;
     },
   };
@@ -161,6 +163,15 @@ describe("multi-slot save repository", () => {
     expect(await repository.getCurrent()).toEqual(record);
   });
 
+  it("never overwrites a stored pre-V14 save", async () => {
+    const oldRecord = { ...createStoredWorldSaveRecord(startedSave(), "Old"), saveSchemaVersion: 13 };
+    const indexed = fakeIndexedDb(WORLD_SAVE_DATABASE_VERSION, [["current", oldRecord]]);
+    const repository = new IndexedDbWorldSaveRepository(indexed.factory);
+    await expect(repository.putCurrent(createStoredWorldSaveRecord(startedSave(), "New")))
+      .rejects.toThrow("旧版本存档已保留");
+    expect(await repository.getCurrent()).toEqual(oldRecord);
+  });
+
   it("preserves a legacy v1 current record and indexes it as Recovery during v2 upgrade", async () => {
     const legacySave = startedSave();
     const legacyRecord = { ...createStoredWorldSaveRecord(legacySave), slotType: undefined };
@@ -199,10 +210,10 @@ describe("multi-slot save repository", () => {
   });
 });
 
-it("rejects old V12 records with one explicit message without transforming stored data", () => {
+it("rejects old V13 records with one explicit message without transforming stored data", () => {
   const record = createStoredWorldSaveRecord(startedSave());
-  record.saveSchemaVersion = 12; (record.save as any).saveSchemaVersion = 12;
+  record.saveSchemaVersion = 13; (record.save as any).saveSchemaVersion = 13;
   const original = JSON.stringify(record);
-  expect(validateStoredWorldSaveRecord(record)).toEqual({ valid: false, errors: ["此存档为旧版V12，当前V13不支持读取，请新建世界。"] });
+  expect(validateStoredWorldSaveRecord(record)).toEqual({ valid: false, errors: ["该存档版本已不受支持，请创建新世界。"] });
   expect(JSON.stringify(record)).toBe(original); expect(WORLD_SAVE_DATABASE_VERSION).toBe(2);
 });

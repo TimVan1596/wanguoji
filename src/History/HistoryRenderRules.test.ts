@@ -25,6 +25,12 @@ function event(index: number, category: WorldEvent["category"] = "politics"): Wo
 }
 
 describe("history render rules", () => {
+  it("renders in-reign deposition with a readable recorded kin role", () => {
+    const coup = { ...event(483), type: "ruler-deposed" as const, actorFactionId: "qin", factionIds: ["qin"],
+      metadata: { previousRulerName: "秦平", nextRulerName: "秦继", relation: "DIRECT_CHILD", houseChanged: 0, nameChanged: 0, colorChanged: 0 } };
+    expect(formatHistoryEventTitle(coup, new Map())).toBe("qin国宗室废立：秦平被废，其子秦继继位。王统、国号与旗色未变。");
+  });
+
   it("limits default rendered rows for long histories", () => {
     const events = Array.from({ length: 5000 }, (_, index) => event(index));
     expect(getRenderedHistoryEvents(events, "all", HISTORY_RENDER_BATCH)).toHaveLength(

@@ -1,4 +1,5 @@
-import { AUTOSAVE_SLOT_IDS, SaveSlotMetadata, StoredWorldSaveRecord, WorldSaveRepository } from "./WorldSaveRepository";
+import { AUTOSAVE_SLOT_IDS, type SaveSlotMetadata, type StoredWorldSaveRecord, type WorldSaveRepository } from "./WorldSaveRepository";
+import { CURRENT_SAVE_SCHEMA_VERSION } from "./WorldSaveSchema";
 
 export const AUTOSAVE_INTERVAL_MONTHS = 200 * 12;
 export const MAX_MANUAL_SAVE_NAME_LENGTH = 64;
@@ -29,8 +30,13 @@ export async function chooseAutosaveSlot(repository: Pick<WorldSaveRepository, "
   const existing = AUTOSAVE_SLOT_IDS.map((slotId) => entries.find((entry) => entry.slotId === slotId));
   const emptyIndex = existing.findIndex((entry) => !entry);
   if (emptyIndex >= 0) return AUTOSAVE_SLOT_IDS[emptyIndex];
-  return [...existing]
-    .map((entry, index) => ({ entry: entry as SaveSlotMetadata, slotId: AUTOSAVE_SLOT_IDS[index] }))
+  const supported = existing.flatMap((entry, index): Array<{ entry: SaveSlotMetadata; slotId: string }> => entry?.saveSchemaVersion === CURRENT_SAVE_SCHEMA_VERSION
+    ? [{ entry, slotId: AUTOSAVE_SLOT_IDS[index] }]
+    : []);
+  if (!supported.length) {
+    throw new Error("自动存档槽位均被旧版本存档占用，旧档已保留；请另存为新的手动存档或在存档管理中处理旧档。");
+  }
+  return supported
     .sort((a, b) => a.entry.savedAt.localeCompare(b.entry.savedAt) || a.slotId.localeCompare(b.slotId))[0].slotId;
 }
 

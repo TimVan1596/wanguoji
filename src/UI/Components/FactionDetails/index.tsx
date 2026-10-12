@@ -1197,6 +1197,7 @@ function formatRulerStatus(
     return "已故";
   }
   if (status === "abdicated") return "退位";
+  if (status === "deposed") return "被废";
   if (status === "politically-ended") return "政治任期已终 · 生死未载";
   return "君主";
 }

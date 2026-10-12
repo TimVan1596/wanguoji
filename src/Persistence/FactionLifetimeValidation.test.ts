@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { validateWorldSave } from "./WorldSaveValidator";
-import { createEmptyWorldSaveV12, diffCanonicalWorldSave } from "./WorldSaveSchema";
+import { createEmptyWorldSaveV14, diffCanonicalWorldSave } from "./WorldSaveSchema";
 import { setFixtureLifetimeRecords } from "./testing/FactionLifetimeFixture";
 import { FactionLifetimeStore } from "../Simulation/FactionLifetimeRecord";
 function fixture() {
-  const save = createEmptyWorldSaveV12(); save.world.worldMonth = 100; save.world.clock.worldMonth = 100;
+  const save = createEmptyWorldSaveV14(); save.world.worldMonth = 100; save.world.clock.worldMonth = 100;
   save.world.map = { widthCells: 10, heightCells: 10, blockSize: 32 };
   save.factions = [{ factionId: "a", displayName: "甲", color: 1, colorHistory: [{ color: 1, startMonth: 0, reason: "FOUNDING" }], factionType: "KINGDOM", status: "ACTIVE",
     firstFoundedMonth: 0, currentActiveSinceMonth: 0, cumulativeActiveMonths: 0, restorationMonths: [], identityStage: "STATE", sovereigntyRank: "KING", sovereigntyHistory: [],
@@ -14,7 +14,7 @@ function fixture() {
 describe("WorldSave V12 permanent faction lifetime precheck", () => {
   it("requires permanent records, rejects V11, round-trips exact peaks and includes the canonical diff subsystem", () => {
     const save = fixture(); expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
-    expect(validateWorldSave({ ...save, saveSchemaVersion: 11 }).errors).toContain("unsupported saveSchemaVersion");
+    expect(validateWorldSave({ ...save, saveSchemaVersion: 11 }).errors).toContain("该存档版本已不受支持，请创建新世界。");
     const loaded = JSON.parse(JSON.stringify(save)); const store = new FactionLifetimeStore(); store.importState(loaded.factionLifetime);
     expect(store.exportState()).toEqual(save.factionLifetime); expect(diffCanonicalWorldSave(save, loaded).matched).toBe(true);
     loaded.factionLifetime.records[0].peakPopulation.value = 20;

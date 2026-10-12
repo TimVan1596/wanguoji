@@ -5,7 +5,7 @@ import { createDiplomacyEventMetadata, describeDiplomacySigning, describeDiploma
 import type { DiplomaticRelation, DiplomacyTriggerContext } from "../Politics/Diplomacy";
 import type { WorldEvent } from "./WorldHistory";
 import worldRandom from "../Simulation/WorldRandom";
-import { createEmptyWorldSaveV10 } from "../Persistence/WorldSaveSchema";
+import { createEmptyWorldSaveV14 } from "../Persistence/WorldSaveSchema";
 
 const factions = new Map([
   ["a", {name:"a", displayName:"新赵", color:1, nameHistory:[{name:"赵",startMonth:0,endMonth:15000},{name:"新赵",startMonth:15001}]}],
@@ -60,7 +60,7 @@ describe("Diplomacy Narrative Clarity (recorded V10 events)",()=>{
     expect(formatDiplomacyRelationLines(nap,"沈").filter(x=>x.startsWith("连续关系始于"))).toEqual([]);
   });
   it("rendering leaves gameplay/V10 snapshot, events and RNG position unchanged",()=>{
-    const save=createEmptyWorldSaveV10(); save.diplomacy.relations=[alliance];
+    const save=createEmptyWorldSaveV14(); save.diplomacy.relations=[alliance];
     const e=event(alliance,allianceContext,"alliance-signed");
     const canonical=JSON.stringify({save,e,context:allianceContext}), rng=worldRandom.exportState();
     for(let i=0;i<20;i++) {
@@ -68,6 +68,6 @@ describe("Diplomacy Narrative Clarity (recorded V10 events)",()=>{
       formatHistoryEventTitle(e,factions);formatHistoryEventDescription(e,factions);getDiplomacyEventDetails(e,factions);
     }
     expect(JSON.stringify({save,e,context:allianceContext})).toBe(canonical);
-    expect(worldRandom.exportState()).toEqual(rng);expect(save.saveSchemaVersion).toBe(13);
+    expect(worldRandom.exportState()).toEqual(rng);expect(save.saveSchemaVersion).toBe(14);
   });
 });

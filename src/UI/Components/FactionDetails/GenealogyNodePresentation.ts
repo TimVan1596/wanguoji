@@ -5,7 +5,7 @@ import type { HouseHistoricalFaction } from "../../../Historiography/DynastyHous
 import { hasRecordedRulerDeath } from "../../../Politics/RulerLifeState";
 import { getRulerTerminalRole } from "../../../History/PoliticalTerminalChronicle";
 
-export type GenealogyRole = "当前君主" | "储君" | "势力创始" | "正式开国" | "称帝" | "篡朝开统" | "复国" | "末代承统" | "合邦退位" | "纳土退位";
+export type GenealogyRole = "当前君主" | "储君" | "势力创始" | "正式开国" | "称帝" | "篡朝开统" | "宗室废立继位" | "被宗室废黜" | "复国" | "末代承统" | "合邦退位" | "纳土退位";
 export type GenealogyTheme = "neutral" | "current" | "heir" | "foundation" | "usurpation" | "restoration" | "terminal";
 export interface GenealogyNodePresentation {
   roles: GenealogyRole[];
@@ -15,7 +15,7 @@ export interface GenealogyNodePresentation {
   hasPosthumousTitle: boolean;
   evidence: { role: GenealogyRole; source: string }[];
 }
-const order: GenealogyRole[] = ["当前君主", "储君", "篡朝开统", "纳土退位", "合邦退位", "末代承统", "正式开国", "称帝", "势力创始", "复国"];
+const order: GenealogyRole[] = ["当前君主", "储君", "宗室废立继位", "被宗室废黜", "篡朝开统", "纳土退位", "合邦退位", "末代承统", "正式开国", "称帝", "势力创始", "复国"];
 /** A single indexed faction window; no mutation, bloodline changes or per-node history searches. */
 export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: HouseHistoricalFaction,
   events: readonly WorldEvent[], worldMonth: number): Map<string, GenealogyNodePresentation> {
@@ -52,6 +52,12 @@ export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: Hous
       if (event.type === "dynasty-usurped" && r?.relationType === "USURPER" && dynasty.houseEpochs?.some(p =>
         p.startReason === "USURPATION" && p.startMonth === month && p.foundingRulerId === r.id)) add(r, "篡朝开统", event.id);
     }
+    if (event.type === "ruler-deposed" && event.actorFactionId === faction.name) {
+      const predecessor = holder(typeof m.previousRulerId === "string" ? m.previousRulerId : undefined, month);
+      const successor = holder(typeof m.nextRulerId === "string" ? m.nextRulerId : undefined, month);
+      add(predecessor, "被宗室废黜", event.id);
+      add(successor, "宗室废立继位", event.id);
+    }
     if (faction.status === "EXTINCT" && (event.type === "faction-merged" || event.type === "faction-submitted")) {
       for (const r of dynasty.rulers) if (r.accessionYear !== undefined && r.status === "abdicated" && r.endYear === month &&
         month === (faction.terminationMonth ?? faction.extinctionYear) &&
@@ -82,7 +88,7 @@ export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: Hous
       formatRulerLifeAge(r, worldMonth),
       r.status === "kin" && r.accessionYear === undefined ? "未曾承统" : "",
       byId.get(dynasty.currentRulerId ?? "")?.parentId === r.id ? "当今君主的父辈" : "",
-      r.status === "politically-ended" ? "生死未载" : r.status === "exiled" ? "流亡承统" : ""].filter(Boolean);
+      r.status === "politically-ended" ? "生死未载" : r.status === "exiled" ? "流亡承统" : r.status === "deposed" ? "被宗室废黜" : ""].filter(Boolean);
     return [r.id, { roles, labels: roles.slice(0, 2), theme, details, evidence: proof,
       hasPosthumousTitle: hasRecordedRulerDeath(r) && Boolean(r.templeName || r.posthumousEpithet) }];
   }));

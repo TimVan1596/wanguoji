@@ -8,7 +8,7 @@ export const MAJOR_EVENT_FILTERS = [
 ] as const;
 export type MajorEventFilter = typeof MAJOR_EVENT_FILTERS[number]["value"];
 const TYPES: Record<Exclude<MajorEventFilter, "all">, readonly WorldEvent["type"][]> = {
-  founding: ["state-founded"], emperor: ["emperor-proclaimed"], revolution: ["dynasty-usurped"],
+  founding: ["state-founded"], emperor: ["emperor-proclaimed"], revolution: ["dynasty-usurped", "ruler-deposed"],
   restoration: ["faction-restored", "dynasty-restored"], extinction: ["faction-exiled", "faction-extinct"],
   submission: ["faction-submitted"], merge: ["faction-merged"], era: ["world-era-started", "world-unification", "world-hegemony", "world-fractured"],
 };

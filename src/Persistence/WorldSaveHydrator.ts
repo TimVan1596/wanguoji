@@ -1,5 +1,5 @@
 import { importRulerSave } from "./RulerSaveProjection";
-import type { RulerSaveV13 } from "./WorldSaveSchema";
+import type { RulerSaveV14 } from "./WorldSaveSchema";
 import FactionLifetimeRecords from "../Simulation/FactionLifetimeRecord";
 import { normalizeArchivedCityBlockRefs, type HydrationRepairs } from "./ArchivedCityHydrationRepair";
 import Block from "../Components/Block";
@@ -178,8 +178,9 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
 }
 
 function preflightWorldSave(core: Core, value: unknown) {
-  if (value && typeof value === "object" && (value as { saveSchemaVersion?: unknown }).saveSchemaVersion === 12) {
-    throw new Error("此存档为旧版V12，当前V13不支持读取，请新建世界。");
+  if (value && typeof value === "object" && typeof (value as { saveSchemaVersion?: unknown }).saveSchemaVersion === "number" &&
+    Number((value as { saveSchemaVersion: number }).saveSchemaVersion) < CURRENT_SAVE_SCHEMA_VERSION) {
+    throw new Error("该存档版本已不受支持，请创建新世界。");
   }
   const normalized = normalizeArchivedCityBlockRefs(value);
   core.setHydrationRepairs?.(normalized.repairs);
@@ -311,7 +312,7 @@ function applyUnitState(player: Player, unit: WorldSaveV1["units"][number]) {
 function importPoliticalAndHistoryState(save: WorldSaveV1) {
   const dynasties = save.dynasties.map((entry) => ({
     ...entry,
-    rulers: (entry.rulers as RulerSaveV13[]).map(importRulerSave),
+    rulers: (entry.rulers as RulerSaveV14[]).map(importRulerSave),
   }));
   DynastyRegistry.importState({ dynasties, sequence: Number(save.registries.dynastyRegistrySequence) } as ReturnType<typeof DynastyRegistry.exportState>, save.world.clock.worldMonth);
   WorldHistory.importState(save.worldHistory as Parameters<typeof WorldHistory.importState>[0]);

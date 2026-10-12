@@ -22,7 +22,7 @@ vi.mock("../Simulation/WorldInvariant", () => ({ validateWorldState: () => [] })
 import type Core from "../Game/Core";
 import { hydrateWorldSave } from "./WorldSaveHydrator";
 import { exportWorldSave } from "./WorldSaveExporter";
-import { createEmptyWorldSaveV9, type RulerSaveV13 } from "./WorldSaveSchema";
+import { createEmptyWorldSaveV14, type RulerSaveV14 } from "./WorldSaveSchema";
 import { validateWorldSave } from "./WorldSaveValidator";
 import { normalizeArchivedCityBlockRefs } from "./ArchivedCityHydrationRepair";
 import { createStoredWorldSaveRecord, validateStoredWorldSaveRecord } from "./WorldSaveRepository";
@@ -41,7 +41,7 @@ import FactionSnapshots from "../Simulation/FactionSnapshots";
 import { createBlockSaveProjection } from "./BlockSaveProjection";
 
 function fixture() {
-  const save = createEmptyWorldSaveV9();
+  const save = createEmptyWorldSaveV14();
   save.world.started = true; save.world.worldMonth = 42; save.world.clock.worldMonth = 42;
   save.world.map = { widthCells: 3, heightCells: 1, blockSize: 32 };
   save.factions = [{ factionId: "qin", displayName: "秦", color: 1, colorHistory: [{ color: 1, startMonth: 0, reason: "FOUNDING" }],
@@ -77,7 +77,7 @@ function target(width = 3) {
 }
 afterEach(() => { vi.restoreAllMocks(); });
 describe("V9 active city referential integrity and pre-teardown repair", () => {
-  it("真实年度执行长期互不侵犯归并，再导出、校验、恢复V13，历史与退位事实保持一致", async () => {
+  it("真实年度执行长期互不侵犯归并，再导出、校验、恢复V14，历史与退位事实保持一致", async () => {
     const {default:RealTeam}=await vi.importActual<typeof import("../Components/Team")>("../Components/Team");
     const core=target(100),base=fixture().factions[0],starts=[0,30,33],counts=[30,3,67];
     core.prepareForHydration();Object.defineProperty(core,"totalCells",{value:100});
@@ -136,7 +136,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     hydrateWorldSave(core,JSON.parse(JSON.stringify(first)));expect(exportWorldSave(core)).toEqual(first);
     expect(WorldHistory.getEvents().filter(e=>e.type === "faction-merged")).toHaveLength(1);
   });
-  it.each(["低忠诚旧路径", "战乱旧都", "双零流亡终结"])("%s真实月度执行后V13往返一致，不回填旧历史", async scenario => {
+  it.each(["低忠诚旧路径", "战乱旧都", "双零流亡终结"])("%s真实月度执行后V14往返一致，不回填旧历史", async scenario => {
     const { default: RealTeam } = await vi.importActual<typeof import("../Components/Team")>("../Components/Team");
     const { default: RealCity } = await vi.importActual<typeof import("../Components/City")>("../Components/City");
     const { default: WorldRemnants } = await import("../Simulation/WorldRemnants");
@@ -184,7 +184,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     vi.spyOn(cityModule, "getFactionStability").mockImplementation(team => team.cities.length ? Math.round(team.cities.reduce((sum, city) => sum + city.loyalty, 0) / team.cities.length) : undefined);
     if (scenario === "战乱旧都") { cities[0].loyalty = 33; cities[0].devastation = 94; cities[1].loyalty = 30; }
     if (scenario === "双零流亡终结") { WorldRemnants.consume("old", 1); WorldExiles.get("old")!.legitimacy = 0; }
-    // Pre-load an old V13 state: hydration must preserve it until the next authoritative month.
+    // Hydration must preserve the restored V14 state until the next authoritative month.
     sim.setRunning(false);
     runtime.clock.importState({ worldMonth: 479, elapsedMs: 0, running: false });
     if (scenario === "双零流亡终结") {
@@ -238,7 +238,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     expect(WorldHistory.getEvents().filter(e => e.type === "faction-restored")).toHaveLength(scenario === "双零流亡终结" ? 0 : 1);
     vi.unstubAllGlobals();
   });
-  it("成年继位独立政治危机→真实夺统→历史→V13严格往返", async () => {
+  it("成年继位独立政治危机→真实夺统→历史→V14严格往返", async () => {
     const core = target(3), base = fixture().factions[0]; core.prepareForHydration();
     const fs = ["qin", "enemy"].map((id, i) => ({ ...base, factionId: id, displayName: id, houseName: i ? "魏氏" : "田氏",
       colorHistory: [{ color: 1, startMonth: 0, reason: "FOUNDING" as const }], nameHistory: [{ name: id, startMonth: 0, reason: "FOUNDING" }],
@@ -276,13 +276,13 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     expect(event.metadata?.riskTier).toBe("POLITICAL_SHOCK"); expect(ruler.chronicle?.notableEventIds).toContain(event.id);
     expect(WorldHistory.exportState().events.slice(0, sources.length).map(e => JSON.stringify(e))).toEqual(sources);
     (core.simulator as any).clock.importState({ worldMonth: 120, elapsedMs: 0, running: false });
-    const save = exportWorldSave(core); expect(save.saveSchemaVersion).toBe(13);
+    const save = exportWorldSave(core); expect(save.saveSchemaVersion).toBe(14);
     expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
     const rng = worldRandom.exportState(); hydrateWorldSave(core, JSON.parse(JSON.stringify(save)));
     expect(exportWorldSave(core)).toEqual(save); expect(worldRandom.exportState()).toEqual(rng);
     hydrateWorldSave(core, JSON.parse(JSON.stringify(save))); expect(exportWorldSave(core)).toEqual(save);
   });
-  it("starts the actual seven INITIAL world, exports V13, validates, hydrates twice without household regeneration", () => {
+  it("starts the actual seven INITIAL world, exports V14, validates, hydrates twice without household regeneration", () => {
     const core = target(7), base = fixture().factions[0];
     const fs = Array.from({ length: 7 }, (_, i) => ({ ...base, factionId: `house-${i}`, displayName: `国${i}`, houseName: `姓${i}氏`,
       origin: { type: "INITIAL", foundedMonth: 0 }, homeGridX: i, capitalCityId: `city-${i}`, stateFoundedMonth: 0 }));
@@ -300,8 +300,8 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     core.simulator = new AutoSimulator(true); core.simulator.startWorld(ts, 7, {}); core.simulator.setRunning(false);
     // Runtime objects are Phaser adapters; politics, simulator startup, exporter, validator and hydrator are real.
     const before = exportWorldSave(core, { createdAt: "2026-10-11T00:00:00Z" });
-    expect(before.saveSchemaVersion).toBe(13); expect(before.dynasties).toHaveLength(7);
-    expect(before.dynasties.some(d => (d.rulers as RulerSaveV13[]).length > 2)).toBe(true);
+    expect(before.saveSchemaVersion).toBe(14); expect(before.dynasties).toHaveLength(7);
+    expect(before.dynasties.some(d => (d.rulers as RulerSaveV14[]).length > 2)).toBe(true);
     expect(validateWorldSave(before)).toEqual({ valid: true, errors: [] });
     const rng = worldRandom.exportState(); const init = vi.spyOn(DynastyRegistry, "initializeFaction");
     (core.simulator as any).unionObservations.evaluation(0,[]);
@@ -314,9 +314,9 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
       strategicUnion:{sessionStartMonth:0,sessionCumulative:{observedWorldMonths:0,evaluationTicks:0}}});
     hydrateWorldSave(core, JSON.parse(JSON.stringify(after)));
     expect(exportWorldSave(core, { createdAt: before.createdAt })).toEqual(before); expect(init).not.toHaveBeenCalled();
-    expect(new Set(before.dynasties.flatMap(d => (d.rulers as RulerSaveV13[]).map(r => r.rulerId))).size)
-      .toBe(before.dynasties.reduce((n, d) => n + (d.rulers as RulerSaveV13[]).length, 0));
-    // Repeat real startup with observations disabled; canonical V13 must be identical.
+    expect(new Set(before.dynasties.flatMap(d => (d.rulers as RulerSaveV14[]).map(r => r.rulerId))).size)
+      .toBe(before.dynasties.reduce((n, d) => n + (d.rulers as RulerSaveV14[]).length, 0));
+    // Repeat real startup with observations disabled; canonical V14 must be identical.
     worldRandom.initialize("household-new-world-v13");
     ts.forEach((t,i)=>{
       const block=core.map.blocks[i][0];cities[i].block=block;cities[i].fortifiedCells=[block];t.cities=[cities[i]];
@@ -369,12 +369,12 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     }
     console.log("真实七国启动、120年王室流程对照（未运行战争、人口、城市、外交与分裂，不是自然世界发生率）", results);
   });
-  it("new seven-faction rulers use the actual initialization path and export/validate/hydrate as V13", () => {
+  it("new seven-faction rulers use the actual initialization path and export/validate/hydrate as V14", () => {
     const save = fixture(), core = target();
     const names = ["qin", "chu", "yan", "qi", "han", "zhao", "wei"];
     const base = save.factions[0]; save.factions = names.map(factionId => ({ ...base, factionId, ...(factionId === "qin" ? {} : { capitalCityId: undefined }) }));
     setFixtureLifetimeRecords(save);
-    DynastyRegistry.reset(); WorldHistory.reset(); worldRandom.initialize("seven-new-v13");
+    DynastyRegistry.reset(); WorldHistory.reset(); worldRandom.initialize("seven-new-v14");
     const teams = names.map(name => ({ name, displayName: name, status: "ACTIVE", identityStage: "STATE", sovereigntyRank: "KING", factionType: "KINGDOM", stateFoundedMonth: 0,
       users: new Set(), cities: [], blocks: { children: { size: 0 } }, removeRulerUnit() {}, makeUser() {} }));
     core.teams = teams; Object.defineProperty(core, "totalCells", { value: 3 });
@@ -389,7 +389,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     const houseBefore = state.dynasties.map(dynasty => deriveHouseAssessments({ dynasty,
       faction: { name: dynasty.factionId, displayName: dynasty.factionId, color: 1, status: "ACTIVE", stateFoundedMonth: 0 },
       factions: new Map(), events: [], worldMonth: save.world.worldMonth }));
-    const articles = (snapshot: ReturnType<typeof createEmptyWorldSaveV9>, dynasties: typeof state.dynasties) => {
+    const articles = (snapshot: ReturnType<typeof createEmptyWorldSaveV14>, dynasties: typeof state.dynasties) => {
       const factions = new Map(snapshot.factions.map(f => [f.factionId, { ...f, name: f.factionId,
         firstFoundedYear: f.firstFoundedMonth, cumulativeActiveYears: f.cumulativeActiveMonths,
         restorationYears: f.restorationMonths, origin: undefined,
@@ -411,7 +411,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     expect(first.dynasties).toEqual(encoded.dynasties); expect(first.worldHistory).toEqual(save.worldHistory);
     hydrateWorldSave(core, first); expect(exportWorldSave(core)).toEqual(first); expect(worldRandom.exportState()).toEqual(save.worldRandom);
   });
-  it("retains tenure roles, tags and commentary after real V13 hydration without changing genealogy or RNG", () => {
+  it("retains tenure roles, tags and commentary after real V14 hydration without changing genealogy or RNG", () => {
     const save = fixture();
     save.world.worldMonth = save.world.clock.worldMonth = 600;
     setFixtureLifetimeRecords(save);
@@ -427,7 +427,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     WorldHistory.addFactionRestored(500, "qin", "现城", 1, "active");
     save.worldHistory = WorldHistory.exportState();
     const derived = (input: typeof save) => {
-      const dynasty = { rulers: (input.dynasties[0].rulers as RulerSaveV13[]).map(importRulerSave) };
+      const dynasty = { rulers: (input.dynasties[0].rulers as RulerSaveV14[]).map(importRulerSave) };
       const assessment = deriveRulerAssessment({ ruler: dynasty.rulers[0], dynasty,
         faction: { name: "qin", stateFoundedMonth: 0 }, events: input.worldHistory.events as WorldEvent[],
         worldMonth: input.world.worldMonth });
@@ -449,7 +449,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     const second = exportWorldSave(core);
     expect(second).toEqual(first); expect(derived(second)).toEqual(before);
   });
-  it("V13 preserves independently ended offices, actual deaths, retirement, family and RNG across hydration", () => {
+  it("V14 preserves independently ended offices, actual deaths, retirement, family and RNG across hydration", () => {
     const save = fixture();
     save.dynasties = [{ factionId: "qin", houseName: "田氏", currentRulerId: "current", heirIds: [],
       houseEpochs: [{ houseName: "田氏", startMonth: 0, foundingRulerId: "dead", startReason: "FOUNDING" }],
@@ -462,15 +462,48 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
     const core = target(); hydrateWorldSave(core, save); const first = exportWorldSave(core);
     expect(first.dynasties[0].rulers).toEqual(save.dynasties[0].rulers);
-    expect(first.saveSchemaVersion).toBe(13); expect(worldRandom.exportState()).toEqual(save.worldRandom);
+    expect(first.saveSchemaVersion).toBe(14); expect(worldRandom.exportState()).toEqual(save.worldRandom);
     hydrateWorldSave(core, JSON.parse(JSON.stringify(first))); expect(exportWorldSave(core)).toEqual(first);
   });
-  it.each(["old-v12", "status", "dead-no-proof", "political-death-cause", "death-before-birth", "future-death", "incomplete-death", "end-before-accession", "missing-political-end", "unknown-posthumous", "terminal-office", "cross-faction-current", "event-reference"])("rejects %s during PRECHECK without tearing down the running world", kind => {
+  it("V14 keeps a living deposed ruler, crisis linkage and cooldown canonical across export/hydration", () => {
+    const save = fixture();
+    const snapshot = (month: number) => ({ month, population: 10, territoryShare: 0.2, cityCount: 1, stability: 35 });
+    save.dynasties = [{ factionId: "qin", houseName: "田氏", currentRulerId: "successor", heirIds: [], lastDepositionAttemptMonth: 12,
+      houseEpochs: [{ houseName: "田氏", startMonth: 0, foundingRulerId: "predecessor", startReason: "FOUNDING" }], rulers: [
+        { rulerId: "predecessor", houseName: "田氏", givenName: "平", bornMonth: -360, accessionMonth: 0, endMonth: 12,
+          politicalEndMonth: 12, endReason: "被废", status: "deposed", reignOrdinal: 1,
+          chronicle: { accessionSnapshot: snapshot(0), latestSnapshot: snapshot(12), endSnapshot: snapshot(12), notableEventIds: ["deposed-event"] } },
+        { rulerId: "successor", houseName: "田氏", givenName: "继", bornMonth: -240, accessionMonth: 12,
+          status: "ruling", accessionCause: "DEPOSITION", predecessorId: "predecessor", parentId: "predecessor", relationType: "DIRECT_CHILD", reignOrdinal: 2,
+          chronicle: { accessionSnapshot: snapshot(12), latestSnapshot: snapshot(42), notableEventIds: ["deposed-event"] } },
+      ] }];
+    save.worldHistory.events = [
+      { id: "crisis-event", year: 1, monthIndex: 1, category: "war", type: "capital-fallen", title: "都城陷落",
+        factionIds: ["qin"], actorFactionId: "qin", targetFactionId: "qin", importance: "major" },
+      { id: "deposed-event", year: 12, monthIndex: 12, category: "politics", type: "ruler-deposed", title: "宗室废立",
+        factionIds: ["qin"], actorFactionId: "qin", rulerId: "successor", importance: "major",
+        metadata: { factionId: "qin", month: 12, previousRulerId: "predecessor", nextRulerId: "successor",
+          previousRulerName: "田平", nextRulerName: "田继", previousHouseName: "田氏", nextHouseName: "田氏",
+          relation: "DIRECT_CHILD", crisisEvidenceEventIds: "crisis-event", houseChanged: 0, nameChanged: 0, colorChanged: 0 } },
+    ] as any;
+    expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
+    const core = target(); hydrateWorldSave(core, JSON.parse(JSON.stringify(save)));
+    const restored = exportWorldSave(core);
+    expect(restored.saveSchemaVersion).toBe(14);
+    expect(restored.dynasties[0]).toMatchObject({ currentRulerId: "successor", lastDepositionAttemptMonth: 12 });
+    expect(restored.dynasties[0].rulers).toMatchObject([
+      { rulerId: "predecessor", status: "deposed", endMonth: 12, endReason: "被废" },
+      { rulerId: "successor", status: "ruling", accessionMonth: 12, accessionCause: "DEPOSITION" },
+    ]);
+    hydrateWorldSave(core, JSON.parse(JSON.stringify(restored)));
+    expect(exportWorldSave(core)).toEqual(restored);
+  });
+  it.each(["old-v13", "status", "dead-no-proof", "political-death-cause", "death-before-birth", "future-death", "incomplete-death", "end-before-accession", "missing-political-end", "unknown-posthumous", "terminal-office", "cross-faction-current", "event-reference"])("rejects %s during PRECHECK without tearing down the running world", kind => {
     const save = fixture();
     const ruler: any = { rulerId: "r1", houseName: "田氏", bornMonth: 0, accessionMonth: 1, status: "ruling" };
     save.dynasties = [{ factionId: "qin", houseName: "田氏", currentRulerId: "r1", heirIds: [],
       houseEpochs: [{ houseName: "田氏", startMonth: 1, foundingRulerId: "r1", startReason: "FOUNDING" }], rulers: [ruler] }];
-    if (kind === "old-v12") (save as any).saveSchemaVersion = 12;
+    if (kind === "old-v13") (save as any).saveSchemaVersion = 13;
     if (kind === "status") ruler.status = "deposed";
     if (["dead-no-proof", "political-death-cause", "death-before-birth", "future-death", "incomplete-death"].includes(kind)) {
       Object.assign(ruler, { status: "dead", endMonth: 20, politicalEndMonth: 20, deathMonth: 20, deathReason: "去世" });
@@ -493,7 +526,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     const core = target(), teams = core.teams, units = core.units, cities = core.oldCities;
     const history = WorldHistory.exportState(), rng = worldRandom.exportState();
     expect(validateWorldSave(save).valid).toBe(false);
-    if (kind === "old-v12") expect(() => hydrateWorldSave(core, save)).toThrow("此存档为旧版V12，当前V13不支持读取，请新建世界。");
+    if (kind === "old-v13") expect(() => hydrateWorldSave(core, save)).toThrow("该存档版本已不受支持，请创建新世界。");
     else expect(() => hydrateWorldSave(core, save)).toThrow();
     expect(core.prepareForHydration).not.toHaveBeenCalled(); expect(core.stage).toBe("PRECHECK_FAILED");
     expect(core.teams).toBe(teams); expect(core.units).toBe(units); expect(core.oldCities).toBe(cities);
@@ -540,14 +573,14 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     setFixtureLifetimeRecords(save);
     const rng=save.worldRandom,core=target();
     expect(validateWorldSave(save)).toEqual({valid:true,errors:[]});hydrateWorldSave(core,save);
-    const first=exportWorldSave(core);expect(first.saveSchemaVersion).toBe(13);
+    const first=exportWorldSave(core);expect(first.saveSchemaVersion).toBe(14);
     expect(first.factions[0]).toMatchObject({terminationReason:"SUBMITTED",terminationTargetFactionId:"wei",terminationMonth:36});
     expect(first.cities[0].ownerFactionId).toBe("wei");expect(first.blocks.every(b=>b.ownerFactionId === "wei")).toBe(true);
     expect((first.dynasties[0].rulers as any[])[0]).toMatchObject({status:"abdicated",endReason:"纳土退位",politicalEndMonth:36});
     expect((first.dynasties[0].rulers as any[])[1]).toMatchObject({status:"kin",parentId:"last"});
     hydrateWorldSave(core,first);expect(exportWorldSave(core)).toEqual(first);expect(worldRandom.exportState()).toEqual(rng);
     expect(validateWorldSave({...first,saveSchemaVersion:10}).valid).toBe(false);
-    const oldTarget=target();expect(()=>hydrateWorldSave(oldTarget,{...first,saveSchemaVersion:10} as any)).toThrow(/unsupported saveSchemaVersion/);expect(oldTarget.prepareForHydration).not.toHaveBeenCalled();
+    const oldTarget=target();expect(()=>hydrateWorldSave(oldTarget,{...first,saveSchemaVersion:10} as any)).toThrow(/不受支持/);expect(oldTarget.prepareForHydration).not.toHaveBeenCalled();
 
     const changed=structuredClone(first);changed.factions[0].terminationTargetFactionId="missing";
     expect(validateWorldSave(changed).valid).toBe(false);

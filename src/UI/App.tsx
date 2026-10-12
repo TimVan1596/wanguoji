@@ -124,7 +124,7 @@ export default function App({ launchRequest, onReturnToMenu, onLoadRecord }: App
       } catch (error) {
         console.error("[Wanguoji] game-year autosave failed", error);
         pendingAutosaveBoundary.current = undefined;
-        Game.Core?.toast?.showMessage("自动存档失败");
+        Game.Core?.toast?.showMessage(`自动存档失败：${error instanceof Error ? error.message : String(error)}`);
       } finally {
         autosaveInFlight.current = false;
       }

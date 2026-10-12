@@ -1,14 +1,14 @@
 import type { Ruler } from "../Politics/Dynasty";
-import type { RulerSaveV13 } from "./WorldSaveSchema";
+import type { RulerSaveV14 } from "./WorldSaveSchema";
 
-export function exportRulerSave(ruler: Ruler): RulerSaveV13 {
+export function exportRulerSave(ruler: Ruler): RulerSaveV14 {
   const { id, bornYear, naturalDeathYear, accessionYear, plannedEndYear, endYear, politicalStartYear, politicalEndYear, ...rest } = ruler;
   return { ...rest, rulerId: id, bornMonth: bornYear, naturalDeathMonth: naturalDeathYear,
     accessionMonth: accessionYear, plannedEndMonth: plannedEndYear, endMonth: endYear,
     politicalStartMonth: politicalStartYear, politicalEndMonth: politicalEndYear };
 }
 /** Input is already validated before teardown. No inference or initialization. */
-export function importRulerSave(ruler: RulerSaveV13): Ruler {
+export function importRulerSave(ruler: RulerSaveV14): Ruler {
   const { rulerId, bornMonth, naturalDeathMonth, accessionMonth, plannedEndMonth, endMonth, politicalStartMonth, politicalEndMonth, ...rest } = ruler;
   return { ...rest, id: rulerId, bornYear: bornMonth, naturalDeathYear: naturalDeathMonth,
     accessionYear: accessionMonth, plannedEndYear: plannedEndMonth, endYear: endMonth,

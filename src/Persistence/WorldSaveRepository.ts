@@ -127,8 +127,10 @@ export function validateStoredWorldSaveRecord(value: unknown, expectedSlotId?: s
   if (!isPlainRecord(value)) return { valid: false, errors: ["存档记录格式错误"] };
   const record = value as Partial<StoredWorldSaveRecord>;
   const saveValue = record.save;
-  if (record.saveSchemaVersion === 12 || (saveValue as { saveSchemaVersion?: unknown } | undefined)?.saveSchemaVersion === 12) {
-    return { valid: false, errors: ["此存档为旧版V12，当前V13不支持读取，请新建世界。"] };
+  if ((typeof record.saveSchemaVersion === "number" && record.saveSchemaVersion < CURRENT_SAVE_SCHEMA_VERSION) ||
+    (typeof (saveValue as { saveSchemaVersion?: unknown } | undefined)?.saveSchemaVersion === "number" &&
+      Number((saveValue as { saveSchemaVersion: number }).saveSchemaVersion) < CURRENT_SAVE_SCHEMA_VERSION)) {
+    return { valid: false, errors: ["该存档版本已不受支持，请创建新世界。"] };
   }
   const errors: string[] = [];
   if (expectedSlotId !== undefined && record.slotId !== expectedSlotId) errors.push("存档记录与索引槽位不一致");
@@ -170,9 +172,31 @@ export class IndexedDbWorldSaveRepository implements WorldSaveRepository {
     if (record.slotId !== slotId) throw new Error("存档记录 slotId 与写入目标不一致");
     const metadata = toSaveSlotMetadata(record);
     if (!metadata) throw new Error("无法生成存档列表摘要");
-    await this.withDatabase((db) => transactionDone(db, [WORLD_SAVE_STORE, WORLD_SAVE_INDEX_STORE], (tx) => {
-      tx.objectStore(WORLD_SAVE_STORE).put(record, slotId);
-      tx.objectStore(WORLD_SAVE_INDEX_STORE).put(metadata, slotId);
+    await this.withDatabase((db) => new Promise<void>((resolve, reject) => {
+      const tx = db.transaction([WORLD_SAVE_STORE, WORLD_SAVE_INDEX_STORE], "readwrite");
+      const saveStore = tx.objectStore(WORLD_SAVE_STORE);
+      const existingRequest = saveStore.get(slotId);
+      let protectedSaveError: Error | undefined;
+      existingRequest.onsuccess = () => {
+        const existing = existingRequest.result;
+        const existingSave = isPlainRecord(existing) ? existing.save : undefined;
+        const existingVersion = isPlainRecord(existing) && typeof existing.saveSchemaVersion === "number"
+          ? existing.saveSchemaVersion
+          : isPlainRecord(existingSave) && typeof existingSave.saveSchemaVersion === "number"
+            ? existingSave.saveSchemaVersion
+            : undefined;
+        if (existing !== undefined && existingVersion !== CURRENT_SAVE_SCHEMA_VERSION) {
+          protectedSaveError = new Error("旧版本存档已保留，不能覆盖；请使用新存档槽位。该存档版本已不受支持，请创建新世界。");
+          tx.abort();
+          return;
+        }
+        saveStore.put(record, slotId);
+        tx.objectStore(WORLD_SAVE_INDEX_STORE).put(metadata, slotId);
+      };
+      existingRequest.onerror = () => { tx.abort(); };
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(protectedSaveError ?? tx.error ?? new Error("写入本地存档失败"));
+      tx.onabort = () => reject(protectedSaveError ?? tx.error ?? new Error("本地存档事务中止"));
     }));
   }
 

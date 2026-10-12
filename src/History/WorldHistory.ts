@@ -38,6 +38,7 @@ export type WorldEventType =
   | "ruler-acceded"
   | "dynasty-usurped"
   | "ruler-succession"
+  | "ruler-deposed"
   | "ruler-captured"
   | "dynasty-exiled"
   | "dynasty-restored"
@@ -1167,6 +1168,49 @@ export class WorldHistoryStore {
       title: `${metadata.oldStateName}王统易代：${metadata.newHouseName}夺取王统`,
       description: composeRevolutionNarrative(metadata),
       metadata, importance: "major" });
+  }
+
+  addRulerDeposed(
+    month: number,
+    factionId: string,
+    factionName: string,
+    predecessor: { id: string; houseName: string; givenName: string },
+    successor: { id: string; houseName: string; givenName: string },
+    relation: string,
+    evidenceEventIds: string[]
+  ) {
+    const predecessorName = `${predecessor.houseName.replace(/氏$/, "")}${predecessor.givenName}`;
+    const successorName = `${successor.houseName.replace(/氏$/, "")}${successor.givenName}`;
+    const relationLabel: Record<string, string> = { DIRECT_CHILD: "其子", GRANDCHILD: "其孙", SIBLING: "其兄弟", NEPHEW: "其侄", UNCLE: "其叔伯", COUSIN: "其堂亲" };
+    const recordedRelation = relationLabel[relation] ?? "有记录亲属关系的宗室";
+    return this.addEvent({
+      id: `ruler-deposed-${month}-${factionId}-${this.sequence++}`,
+      year: month,
+      monthIndex: month,
+      category: "politics",
+      type: "ruler-deposed",
+      title: `${factionName}宗室废立：${predecessorName}被废，${successorName}继位`,
+      description: `在近期已记录政治冲击的背景下，${predecessorName}被废，${recordedRelation}${successorName}继位。此事未改变王统、国号与旗色。`,
+      factionIds: [factionId],
+      actorFactionId: factionId,
+      rulerId: successor.id,
+      importance: "major",
+      metadata: {
+        factionId,
+        month,
+        previousRulerId: predecessor.id,
+        nextRulerId: successor.id,
+        previousRulerName: predecessorName,
+        nextRulerName: successorName,
+        previousHouseName: predecessor.houseName,
+        nextHouseName: successor.houseName,
+        relation,
+        crisisEvidenceEventIds: evidenceEventIds.join(","),
+        houseChanged: 0,
+        nameChanged: 0,
+        colorChanged: 0,
+      },
+    });
   }
 
   addRulerSuccession(

@@ -37,18 +37,18 @@ export function getSignificantReignStats(chronicle: Pick<RulerChronicle,
 
 /** endYear ends a reign; V13 dead status requires an actual recorded death. */
 export function formatRulerAge(status: string, age: number) {
-  return `${status === "dead" ? "享年" : status === "abdicated" ? "退位时" : status === "politically-ended" ? "政治任期终结时" : "当前年龄"}${age}岁`;
+  return `${status === "dead" ? "享年" : status === "abdicated" ? "退位时" : status === "deposed" ? "废位时" : status === "politically-ended" ? "政治任期终结时" : "当前年龄"}${age}岁`;
 }
 
 /** Freeze ended-person ages at the recorded event, never at today's month. */
 export function formatRulerLifeAge(ruler: Pick<Ruler, "status" | "bornYear" | "endYear" | "deathMonth" | "deathReason">, worldMonth: number) {
   const death = hasRecordedRulerDeath(ruler);
-  if (!death && ["dead", "politically-ended", "abdicated"].includes(ruler.status) && ruler.endYear === undefined) {
+  if (!death && ["dead", "politically-ended", "abdicated", "deposed"].includes(ruler.status) && ruler.endYear === undefined) {
     return "生死未载 · 终结年龄未载";
   }
-  const month = death ? ruler.deathMonth! : ruler.endYear ?? worldMonth;
+  const month = death ? ruler.deathMonth! : ruler.status === "deposed" ? worldMonth : ruler.endYear ?? worldMonth;
   const age = Math.max(0, Math.floor((month - ruler.bornYear) / 12));
-  const status = death ? "dead" : ruler.status === "abdicated" ? "abdicated" :
+  const status = death ? "dead" : ruler.status === "abdicated" ? "abdicated" : ruler.status === "deposed" ? "deposed" :
     ruler.endYear !== undefined ? "politically-ended" : ruler.status;
   return formatRulerAge(status, age) + (status === "politically-ended" ? " · 生死未载" : "");
 }
