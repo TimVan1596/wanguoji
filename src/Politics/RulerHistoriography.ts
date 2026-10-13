@@ -750,19 +750,20 @@ function composeLegacyRulerAssessment(evidence: RulerHistoricalEvidence): RulerA
 export function composeRulerAssessment(evidence: RulerHistoricalEvidence): RulerAssessment {
   const legacy = composeLegacyRulerAssessment(evidence);
   const deposition = evidence.politicalFacts.find((fact) => fact.type === "ruler-deposed" && fact.depositionRole);
-  const identityLine = legacy.lines.find((line) =>
-    /篡朝方式夺取王统|被宗室.*废黜|经宗室废立取得君位|开创之功|正式建国|创立势力|称帝|复国|天下统一|末代君主|流亡王统/.test(line)
-  ) ?? legacy.lines[0];
-  const lines = identityLine ? [identityLine] : [];
-  const hasMaterialChange = Math.abs(evidence.territoryDelta) >= 0.02 || evidence.cityDelta !== 0 ||
-    Math.abs(evidence.stabilityDelta) >= 12 || Math.abs(evidence.populationDelta) >= Math.max(5, evidence.startPopulation * 0.2);
-  if (hasMaterialChange) {
+  const lines = [...legacy.lines];
+  const conflictingScale = evidence.territoryDelta * evidence.cityDelta < 0;
+  if (conflictingScale && !lines.some((line) => line.includes(formatPrecisePercent(evidence.startTerritory)) && line.includes(formatPrecisePercent(evidence.endTerritory)))) {
     const changes: string[] = [];
     if (Math.abs(evidence.territoryDelta) >= 0.02) changes.push(`疆域占比由${formatPrecisePercent(evidence.startTerritory)}${evidence.territoryDelta > 0 ? "升" : "降"}至${formatPrecisePercent(evidence.endTerritory)}`);
     if (evidence.cityDelta !== 0) changes.push(`城市由${evidence.startCityCount}座${evidence.cityDelta > 0 ? "增" : "减"}至${evidence.endCityCount}座`);
     if (Math.abs(evidence.stabilityDelta) >= 12) changes.push(`稳定度由${evidence.startStability}${evidence.stabilityDelta > 0 ? "升" : "降"}至${evidence.endStability}`);
     if (Math.abs(evidence.populationDelta) >= Math.max(5, evidence.startPopulation * 0.2)) changes.push(`人口由${evidence.startPopulation}${evidence.populationDelta > 0 ? "增" : "减"}至${evidence.endPopulation}`);
-    lines.push(`任期记录显示${changes.join("，")}；这些变化说明国势结果，不单独证明个人行为或因果。`);
+    const metrics = `任期记录显示${changes.join("，")}；这些变化说明国势结果，不单独证明个人行为或因果。`;
+    if (lines.length >= 4) {
+      const replaceIndex = lines.findIndex((line, index) => index > 0 && /现有记录未见|不能据此|如何维系|尚不足|无法证明/.test(line));
+      lines.splice(replaceIndex > 0 ? replaceIndex : 1, 1);
+    }
+    lines.splice(Math.min(1, lines.length), 0, metrics);
   }
 
   const facts = evidence.politicalFacts.filter((fact) => fact.suitableForAssessment);
@@ -787,16 +788,19 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
   const nationalCrises = facts.filter((fact) => fact.role === "IN_TENURE" && ["capital-fallen", "capital-relocated", "empire-split"].includes(fact.type));
   if (nationalCrises.length) eventLines.push(`任内另有${nationalCrises.length}项可核实的失都、迁都或国家分裂记录。`);
   const selectedEvent = eventLines.find((line) => !lines.some((existing) => existing.includes(line.slice(0, 12))));
-  if (selectedEvent) lines.push(selectedEvent);
+  if (selectedEvent && lines.length < 4) lines.push(selectedEvent);
 
   if (evidence.hasRecordedDeath && evidence.deathMonth !== undefined) {
     const death = `其后于${formatWorldDate(evidence.deathMonth)}${evidence.deathReason ? `因${evidence.deathReason}` : "去世"}${evidence.finalAge !== undefined ? `，享年${evidence.finalAge}岁` : ""}。`;
-    if (!lines.some((line) => line.includes(formatWorldDate(evidence.deathMonth!)))) lines.push(death);
+    if (!lines.some((line) => line.includes(formatWorldDate(evidence.deathMonth!)))) {
+      if (lines.length >= 4) lines[lines.length - 1] = death;
+      else lines.push(death);
+    }
   } else if (deposition?.depositionRole === "DEPOSED_RULER") {
-    lines.push("废位仅终结其君主任期；没有真实死亡记录时，不推定其生命结局。 ");
+    if (lines.length < 4) lines.push("废位仅终结其君主任期；没有真实死亡记录时，不推定其生命结局。");
   } else {
     const other = legacy.lines.find((line) => line !== identityLine && !/疆域|城市|稳定度|人口|治下|在位期间|终结|身死|死亡/.test(line));
-    if (other && !lines.includes(other)) lines.push(other);
+    if (other && !lines.includes(other) && lines.length < 4) lines.push(other);
   }
   return { heading: evidence.isFinalized ? "史评" : "在位评议", evidence, lines: uniqueLines(lines).slice(0, 4) };
 }
