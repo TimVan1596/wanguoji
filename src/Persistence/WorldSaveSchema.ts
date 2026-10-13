@@ -323,4 +323,4 @@ function simplifyDiffValue(value: unknown): unknown {
   return String(value);
 }
 
-export type RulerSaveV1 = RulerSaveV14;
+export type RulerSaveV1 = RulerSaveV15;

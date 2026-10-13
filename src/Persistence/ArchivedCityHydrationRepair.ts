@@ -1,4 +1,4 @@
-import { CURRENT_SAVE_SCHEMA_VERSION, type WorldSaveV14 } from "./WorldSaveSchema";
+import { CURRENT_SAVE_SCHEMA_VERSION, type WorldSaveV15 } from "./WorldSaveSchema";
 
 export interface HydrationRepairs {
   staleArchivedCityBlockRefs: number; cityIds: string[]; summary: string;
@@ -11,7 +11,7 @@ export function normalizeArchivedCityBlockRefs(value: unknown): { value: unknown
   const repairs: HydrationRepairs = { staleArchivedCityBlockRefs: 0, cityIds: [], summary: "stale archived city refs repaired: 0",
     unresolvedCityBlockRefs: [], activeCityIds: [], archivedCityIds: [] };
   if (!value || typeof value !== "object") return { value, repairs };
-  const save = value as WorldSaveV14;
+  const save = value as WorldSaveV15;
   if (save.saveSchemaVersion !== CURRENT_SAVE_SCHEMA_VERSION || !Array.isArray(save.blocks) || !Array.isArray(save.cities)
     || !Array.isArray(save.registries?.archivedCities)) return { value, repairs };
   const active = new Set(save.cities.filter(city => city && typeof city.cityId === "string").map(city => city.cityId));

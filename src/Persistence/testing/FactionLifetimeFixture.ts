@@ -1,6 +1,6 @@
-import type { WorldSaveV14 } from "../WorldSaveSchema";
+import type { WorldSaveV15 } from "../WorldSaveSchema";
 /** Explicit V12 observations for persistence fixtures; never used by production validation/hydration. */
-export function setFixtureLifetimeRecords(save: WorldSaveV14) {
+export function setFixtureLifetimeRecords(save: WorldSaveV15) {
   if (!save.world.map.widthCells && save.blocks.length) save.world.map.widthCells = Math.max(...save.blocks.map(b => b.gridX)) + 1;
   if (!save.world.map.heightCells && save.blocks.length) save.world.map.heightCells = Math.max(...save.blocks.map(b => b.gridY)) + 1;
   const peak = (value: number, month: number) => ({ value, month, source: "MONTHLY" as const });

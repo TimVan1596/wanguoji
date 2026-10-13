@@ -465,6 +465,24 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     expect(first.saveSchemaVersion).toBe(15); expect(worldRandom.exportState()).toEqual(save.worldRandom);
     hydrateWorldSave(core, JSON.parse(JSON.stringify(first))); expect(exportWorldSave(core)).toEqual(first);
   });
+  it("V15 restores archived military people and ended formations without reappointing or drawing RNG", () => {
+    const save = fixture();
+    save.registries.militaryCommandRegistry = {
+      people: [{ personId: "military-person-1", sourceUserId: 81, name: "旧将", bornMonth: -500, factionId: "qin", status: "RETIRED",
+        appointments: [{ factionId: "qin", startMonth: 12, endMonth: 24, endReason: "TRANSFERRED", commandId: "military-command-1" }], capturedEventIds: [] }],
+      formations: [{ commandId: "military-command-1", factionId: "qin", commanderPersonId: "military-person-1", memberUnitIds: [],
+        createdMonth: 12, status: "DISBANDED", captures: [] }],
+      personSequence: 2, commandSequence: 2, lastEvaluationMonth: 24,
+    };
+    expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
+    const core = target(); const rng = worldRandom.exportState();
+    hydrateWorldSave(core, JSON.parse(JSON.stringify(save)));
+    const first = exportWorldSave(core);
+    expect(first.registries.militaryCommandRegistry).toEqual(save.registries.militaryCommandRegistry);
+    expect(worldRandom.exportState()).toEqual(rng);
+    hydrateWorldSave(core, JSON.parse(JSON.stringify(first)));
+    expect(exportWorldSave(core)).toEqual(first);
+  });
   it("V14 keeps successive deposition accessions, later deposition, death and cooldown canonical across export/hydration", () => {
     const save = fixture();
     const snapshot = (month: number) => ({ month, population: 10, territoryShare: 0.2, cityCount: 1, stability: 35 });

@@ -64,7 +64,7 @@ const stableHash = (value: string) => {
 
 /** Deterministic adult birth date assigned when a simulated person first enters the world. */
 export function deriveUserBornMonth(userId: number, name: string, factionId: string, spawnMonth: number) {
-  const hash = stableHash(`${factionId}\u0000${userId}\u0000${name}`);
+  const hash = stableHash(`${worldRandom.exportState().seed}\u0000${factionId}\u0000${userId}\u0000${name}\u0000${spawnMonth}`);
   const ageMonths = 18 * 12 + (hash % (43 * 12));
   const birthMonthOffset = (hash >>> 8) % 12;
   return spawnMonth - ageMonths - birthMonthOffset;
