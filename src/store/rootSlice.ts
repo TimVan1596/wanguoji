@@ -27,7 +27,7 @@ export interface RootDataState {
   selectedFactionName: string | undefined;
   selectedCityId: string | undefined;
   rightPanelTab: "history" | "faction" | "city" | "god";
-  factionDetailTab: "overview" | "trend" | "house" | "chronicle";
+  factionDetailTab: "overview" | "trend" | "house" | "chronicle" | "military";
   backgroundCatchUpActive: boolean;
   backgroundCatchUpOverlayVisible: boolean;
   backgroundCatchUpProgress: number;

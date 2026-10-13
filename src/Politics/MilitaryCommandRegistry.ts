@@ -1,8 +1,10 @@
 import type User from "../Components/User";
 import type Team from "../Components/Team";
 import type City from "../Components/City";
+import type { LogicalUnitState } from "../Simulation/LogicalUnitState";
 import Diplomacy from "./Diplomacy";
 import worldRandom from "../Simulation/WorldRandom";
+import type { WorldEvent } from "../History/WorldHistory";
 
 export const MAX_COMMANDERS_PER_FACTION = 2;
 export const MAX_FORMATIONS_PER_FACTION = 2;
@@ -74,6 +76,7 @@ export class MilitaryCommandRegistryStore {
   private personSequence = 1;
   private commandSequence = 1;
   private lastEvaluationMonth = -1;
+  private eventWriter?: (event: Omit<WorldEvent, "id"> & { id: string }) => string;
   private diagnostics = { candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0 };
 
   reset() {
@@ -81,6 +84,8 @@ export class MilitaryCommandRegistryStore {
     this.lastEvaluationMonth = -1;
     this.diagnostics = { candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0 };
   }
+
+  setEventWriter(writer: (event: Omit<WorldEvent, "id"> & { id: string }) => string) { this.eventWriter = writer; }
 
   exportState(): MilitaryCommandState {
     return { people: [...this.people.values()].map(person => structuredClone(person)),
@@ -149,6 +154,10 @@ export class MilitaryCommandRegistryStore {
     person.appointments.push({ factionId, startMonth: worldMonth, commandId });
     this.formations.set(commandId, { commandId, factionId, commanderPersonId: personId,
       memberUnitIds: [...new Set(memberUnitIds)], createdMonth: worldMonth, status: "ACTIVE", captures: [] });
+    this.eventWriter?.({ id: `military-appointment-${commandId}`, year: worldMonth, monthIndex: worldMonth,
+      category: "politics", type: "military-appointment", title: `${factionId}任命${person.name}为军事指挥者`,
+      description: `${person.name}由既有人口任职，指挥${memberUnitIds.length}个现存单位。`, factionIds: [factionId], actorFactionId: factionId,
+      metadata: { personId, commandId, unitCount: memberUnitIds.length }, importance: "normal" });
     return true;
   }
 
@@ -175,11 +184,15 @@ export class MilitaryCommandRegistryStore {
   }
 
   private endFormation(formation: MilitaryFormation, worldMonth: number, reason: MilitaryAppointment["endReason"]) {
+    if (formation.status !== "ACTIVE") return;
     formation.status = "DISBANDED"; formation.targetCityId = undefined; formation.orderStartMonth = undefined;
     const person = this.people.get(formation.commanderPersonId);
     const appointment = person?.appointments.find(item => item.commandId === formation.commandId && item.endMonth === undefined);
     if (appointment) { appointment.endMonth = worldMonth; appointment.endReason = reason; }
     if (person && person.status !== "DEAD") person.status = "RETIRED";
+    if (person) this.eventWriter?.({ id: `military-command-ended-${formation.commandId}`, year: worldMonth, monthIndex: worldMonth,
+      category: "politics", type: "military-command-ended", title: `${person.name}结束军事任职`, factionIds: [formation.factionId],
+      actorFactionId: formation.factionId, metadata: { personId: person.personId, commandId: formation.commandId, endReason: reason }, importance: "normal" });
   }
 
   private refreshOrders(worldMonth: number, cities: City[]) {
@@ -221,6 +234,26 @@ export class MilitaryCommandRegistryStore {
     }
   }
 
+  steerLogicalUnits(worldMonth: number, units: LogicalUnitState[], cities: City[]) {
+    const unitById = new Map(units.map(unit => [unit.unitId, unit]));
+    const cityById = new Map(cities.map(city => [city.id, city]));
+    for (const formation of this.formations.values()) {
+      if (formation.status !== "ACTIVE" || !formation.targetCityId) continue;
+      const target = cityById.get(formation.targetCityId);
+      if (!target || target.ownerFactionId === formation.factionId || !Diplomacy.canAttack(formation.factionId, target.ownerFactionId, worldMonth)) continue;
+      for (const unitId of formation.memberUnitIds) {
+        const unit = unitById.get(unitId);
+        if (!unit?.alive || unit.factionId !== formation.factionId) continue;
+        const dx = target.block.x - unit.logicalX; const dy = target.block.y - unit.logicalY; const length = Math.hypot(dx, dy);
+        if (length < 1) continue;
+        const desiredX = dx / length * unit.speed; const desiredY = dy / length * unit.speed;
+        const vx = unit.logicalVX * 0.92 + desiredX * 0.08; const vy = unit.logicalVY * 0.92 + desiredY * 0.08;
+        const velocityLength = Math.hypot(vx, vy) || 1;
+        unit.logicalVX = vx / velocityLength * unit.speed; unit.logicalVY = vy / velocityLength * unit.speed;
+      }
+    }
+  }
+
   getCommandForUnit(unitId: string) { return [...this.formations.values()].find(f => f.status === "ACTIVE" && f.memberUnitIds.includes(unitId)); }
   getPerson(personId: string) { return this.people.get(personId); }
 
@@ -241,6 +274,9 @@ export class MilitaryCommandRegistryStore {
     }
     if (death) {
       person.status = "DEAD"; person.deathMonth = worldMonth; person.deathCause = cause; this.diagnostics.deaths++;
+      this.eventWriter?.({ id: `military-person-death-${person.personId}-${worldMonth}`, year: worldMonth, monthIndex: worldMonth,
+        category: "politics", type: "military-person-died", title: `${person.name}去世`, factionIds: [person.factionId], actorFactionId: person.factionId,
+        metadata: { personId: person.personId, deathCause: cause }, importance: "normal" });
     } else if (person.status === "ACTIVE") person.status = "RETIRED";
   }
 

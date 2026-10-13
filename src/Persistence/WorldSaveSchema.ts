@@ -4,6 +4,7 @@ import { APP_VERSION } from "../config/version";
 import { WORLD_RNG_ALGORITHM, WorldRandomState } from "../Simulation/WorldRandom";
 import type { DiplomaticRelation, DiplomaticPairMemory } from "../Politics/Diplomacy";
 import type { FactionColorHistoryEntry } from "../Simulation/FactionColorHistory";
+import type { MilitaryCommandState } from "../Politics/MilitaryCommandRegistry";
 
 export const CURRENT_SAVE_SCHEMA_VERSION = 15 as const;
 
@@ -183,7 +184,7 @@ export interface WorldSaveV15 {
   worldExiles: Record<string, unknown>[];
   factionEffects: Record<string, unknown>;
   populationSystem: PopulationSystemSaveV1;
-    registries: Record<string, unknown> & { militaryCommandRegistry: Record<string, unknown> };
+    registries: Record<string, unknown> & { militaryCommandRegistry: MilitaryCommandState };
   worldEventSystem: WorldEventSystemSaveV1;
   worldRandom: WorldRandomState;
   diplomacy: { relations: DiplomaticRelation[]; pairMemories: DiplomaticPairMemory[]; lastEvaluationMonth: number };

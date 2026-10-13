@@ -318,7 +318,7 @@ function importPoliticalAndHistoryState(save: WorldSaveV1) {
   }));
   DynastyRegistry.importState({ dynasties, sequence: Number(save.registries.dynastyRegistrySequence) } as ReturnType<typeof DynastyRegistry.exportState>, save.world.clock.worldMonth);
   WorldHistory.importState(save.worldHistory as Parameters<typeof WorldHistory.importState>[0]);
-  MilitaryCommandRegistry.importState(save.registries.militaryCommandRegistry as MilitaryCommandState);
+  MilitaryCommandRegistry.importState(save.registries.militaryCommandRegistry as unknown as MilitaryCommandState);
   WorldEra.importState(save.worldEra as Parameters<typeof WorldEra.importState>[0]);
   FactionLifetimeRecords.importState(save.factionLifetime);
   FactionSnapshots.importState(save.factionSnapshots as Parameters<typeof FactionSnapshots.importState>[0]);

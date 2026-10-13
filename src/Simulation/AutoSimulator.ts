@@ -64,6 +64,7 @@ export default class AutoSimulator {
   private sessionStartMonth = 0;
   private stepPerformance = new RollingStepPerformance();
   constructor(private readonly transitionDiagnosticsEnabled=debugProfileEnabled) {
+    MilitaryCommandRegistry.setEventWriter(event => WorldHistory.addEvent(event));
     this.submission=new PeacefulSubmissionSystem(transitionDiagnosticsEnabled);
     this.unionObservations=new PoliticalTransitionObservations(transitionDiagnosticsEnabled);
     this.reunificationObservations=new PoliticalTransitionObservations(transitionDiagnosticsEnabled);

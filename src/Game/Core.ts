@@ -1111,6 +1111,18 @@ export default class Core {
     });
   }
 
+  focusMilitaryFormation(commandId: string) {
+    const formation = MilitaryCommandRegistry.getFormations().find(item => item.commandId === commandId && item.status === "ACTIVE");
+    if (!formation) return false;
+    const entries = formation.memberUnitIds.map(unitId => this.logicalUnitRegistry.getEntry(unitId))
+      .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry?.player?.active));
+    if (!entries.length) return false;
+    const x = entries.reduce((sum, entry) => sum + entry.player!.x, 0) / entries.length;
+    const y = entries.reduce((sum, entry) => sum + entry.player!.y, 0) / entries.length;
+    this.scene.cameras.main.centerOn(x + Game.BlockSize / 2, y + Game.BlockSize / 2);
+    return true;
+  }
+
   selectFaction(name: string | undefined) {
     store.dispatch(setSelectedFactionName(name));
     if (name) {

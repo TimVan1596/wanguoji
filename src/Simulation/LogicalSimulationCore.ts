@@ -6,6 +6,7 @@ import {
   createLogicalOccupationContactState,
 } from "./LogicalOccupationSystem";
 import { stepLogicalMovement } from "./LogicalMovementSystem";
+import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
 
 export interface LogicalSimulationCoreContext {
   registry: LogicalUnitRegistry;
@@ -24,6 +25,7 @@ export default class LogicalSimulationCore {
       return;
     }
     const units = this.context.registry.getAliveUnits();
+    MilitaryCommandRegistry.steerLogicalUnits(this.context.getWorldMonth(), units, Game.Core?.allCities ?? []);
     const movementResults = stepLogicalMovement({
       units,
       deltaMs,

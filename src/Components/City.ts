@@ -73,6 +73,7 @@ interface SiegeContact {
   rulerId?: string;
   commandId?: string;
   commanderPersonId?: string;
+  commandContributions?: Array<{ commandId: string; commanderPersonId: string; count: number }>;
 }
 
 export default class City {
@@ -123,6 +124,8 @@ export default class City {
       siegeDamageRemainder: state.siegeDamageRemainder,
       siegeContacts: new Map((state.siegeContacts ?? []).map((contact: Record<string, any>) => [contact.factionId, {
         team: teams.get(contact.factionId), count: contact.count, year: contact.month, rulerId: contact.rulerId,
+        commandId: contact.commandId, commanderPersonId: contact.commanderPersonId,
+        commandContributions: Array.isArray(contact.commandContributions) ? contact.commandContributions.map((row: any) => ({ ...row })) : [],
       }])),
       underSiege: state.underSiege,
       attackingFactionId: state.attackingFactionId,
@@ -174,6 +177,8 @@ export default class City {
       siegeDamageRemainder: this.siegeDamageRemainder,
       siegeContacts: [...this.siegeContacts.entries()].map(([factionId, contact]) => ({
         factionId, count: contact.count, month: contact.year, rulerId: contact.rulerId,
+        commandId: contact.commandId, commanderPersonId: contact.commanderPersonId,
+        commandContributions: contact.commandContributions?.map(row => ({ ...row })),
       })),
       underSiege: this.underSiege,
       attackingFactionId: this.attackingFactionId,
@@ -240,6 +245,12 @@ export default class City {
 
     if (rulerId) DynastyRegistry.recordPersonalSiegeContact(attacker.name, rulerId, year);
     const contact = this.siegeContacts.get(attacker.name);
+    const commandContributions = [...(contact?.commandContributions ?? [])];
+    if (commandId && commanderPersonId) {
+      const row = commandContributions.find(item => item.commandId === commandId);
+      if (row) row.count++;
+      else commandContributions.push({ commandId, commanderPersonId, count: 1 });
+    }
     this.siegeContacts.set(attacker.name, {
       team: attacker,
       count: (contact?.count ?? 0) + 1,
@@ -247,6 +258,7 @@ export default class City {
       rulerId: contact?.rulerId ?? rulerId,
       commandId: contact?.commandId ?? commandId,
       commanderPersonId: contact?.commanderPersonId ?? commanderPersonId,
+      commandContributions,
     });
   }
 
@@ -340,7 +352,7 @@ export default class City {
         commandId,
         commanderPersonId
       );
-      MilitaryCommandRegistry.recordCapture(commandId, eventId.id, this.id, year);
+      if (!recovered) MilitaryCommandRegistry.recordCapture(commandId, eventId, this.id, year);
     }
 
     if (recovered) {
@@ -367,7 +379,7 @@ export default class City {
         commandId,
         commanderPersonId
       );
-      MilitaryCommandRegistry.recordCapture(commandId, eventId.id, this.id, year);
+      MilitaryCommandRegistry.recordCapture(commandId, eventId, this.id, year);
       DynastyRegistry.recordCityCaptured(rulerId, this.id, eventId);
     } else {
       const title = buildCityCaptureTitle({
@@ -402,7 +414,7 @@ export default class City {
           commandId,
           commanderPersonId
         );
-        MilitaryCommandRegistry.recordCapture(commandId, eventId.id, this.id, year);
+        MilitaryCommandRegistry.recordCapture(commandId, eventId, this.id, year);
         DynastyRegistry.recordCityCaptured(rulerId, this.id, eventId);
       }
     }
@@ -755,6 +767,7 @@ export default class City {
       (contact) => year - contact.year <= 1 && Boolean(this.ownerTeam) && Diplomacy.canAttack(contact.team.name, this.ownerTeam!.name, year)
     );
     const mainAttacker = contacts.sort((a, b) => b.count - a.count)[0];
+    const mainCommand = mainAttacker?.commandContributions?.slice().sort((a, b) => b.count - a.count || a.commandId.localeCompare(b.commandId))[0];
     this.underSiege = Boolean(mainAttacker);
     this.attackingFactionId = mainAttacker?.team.name;
     measurePhase(profile, "City.zone/visual refresh", () => this.refreshZoneVisual());
@@ -793,7 +806,7 @@ export default class City {
     this.ownerTeam?.removeOneUser();
     this.block.updateCityDisplay();
     if (this.defense <= 0) {
-      this.capture(mainAttacker.team, year, mainAttacker.rulerId, mainAttacker.commandId, mainAttacker.commanderPersonId);
+      this.capture(mainAttacker.team, year, mainAttacker.rulerId, mainCommand?.commandId, mainCommand?.commanderPersonId);
     }
   }
 

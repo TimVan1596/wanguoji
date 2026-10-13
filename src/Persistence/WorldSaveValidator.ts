@@ -3,6 +3,7 @@ import { validateFactionLifetime } from "./FactionLifetimeValidation";
 import { CURRENT_SAVE_SCHEMA_VERSION, WorldSaveV1 } from "./WorldSaveSchema";
 import { isEraMapSnapshotV1 } from "../Simulation/EraMapSnapshot";
 import { getRecordedKinRelation, MAX_DYNASTIC_SUCCESSION_CANDIDATES } from "../Politics/DynasticCandidateRules";
+import { validateMilitaryCommandState } from "./MilitaryCommandValidation";
 
 export interface SaveValidationResult {
   valid: boolean;
@@ -128,9 +129,11 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   cities.forEach((city) => ["centerGridX", "centerGridY", "foundedMonth", "defense", "maxDefense", "loyalty", "devastation", "captureCount"].forEach((key) => {
     if (!finite(city[key])) errors.push(`cities.${key} must be finite`);
   }));
-  users.forEach((user) => ["loyalty", "score"].forEach((key) => {
-    if (!finite(user[key])) errors.push(`users.${key} must be finite`);
-  }));
+  users.forEach((user) => {
+    ["loyalty", "score"].forEach((key) => { if (!finite(user[key])) errors.push(`users.${key} must be finite`); });
+    if (!Number.isSafeInteger(user.bornMonth) || Number(user.bornMonth) > Number(save.world?.worldMonth)) errors.push("users.bornMonth must be an integer no later than the current world month");
+    if (user.militaryPersonId !== undefined && (typeof user.militaryPersonId !== "string" || !user.militaryPersonId)) errors.push("users.militaryPersonId must be a non-empty string");
+  });
   units.forEach((unit) => ["x", "y", "vx", "vy", "speed", "radius", "scale", "speedCoefficient", "sizeCoefficient"].forEach((key) => {
     if (!finite(unit[key])) errors.push(`units.${key} must be finite`);
   }));
@@ -394,6 +397,11 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   validatePopulationSystem(save.populationSystem, errors);
   validateWorldEventSystem(save.worldEventSystem, factionIds, new Set([...cityIds, ...archivedCityIds]), errors);
   validateHydrationImportShapes(save, errors);
+  errors.push(...validateMilitaryCommandState(
+    isPlainRecord(save.registries) ? save.registries.militaryCommandRegistry : undefined,
+    users, units, cities, factionIds, Number(save.world?.worldMonth),
+    isPlainRecord(save.worldHistory) ? save.worldHistory : { events: [] }
+  ));
   return { valid: errors.length === 0, errors };
 }
 

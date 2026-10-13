@@ -14,6 +14,7 @@ import Game from "../../../Game/Game";
 import { colorToString } from "../../../paid/theme";
 import DynastyRegistry, { Dynasty, Ruler } from "../../../Politics/Dynasty";
 import Diplomacy from "../../../Politics/Diplomacy";
+import MilitaryCommandRegistry from "../../../Politics/MilitaryCommandRegistry";
 import { formatDiplomacyRelationLines, getFactionDiplomacyBadges } from "../../../Politics/DiplomacyPresentation";
 import FactionSnapshots, {
   FactionSnapshot,
@@ -367,6 +368,7 @@ function FactionProfile({
           ["overview", "概况"],
           ["power", "国势"],
           ["house", "王室"],
+          ["military", "军政人物"],
         ].map(([value, label]) => (
           <Button
             key={value}
@@ -534,6 +536,7 @@ function FactionProfile({
         />
         </Box>
       ) : null}
+      {activeTab === "military" ? <MilitaryPeoplePanel factionId={team.name} worldMonth={worldMonth} /> : null}
       <GenealogyDialog
         open={genealogyViewerOpen}
         onClose={closeFullGenealogy}
@@ -545,6 +548,34 @@ function FactionProfile({
       />
     </Box>
   );
+}
+
+function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; worldMonth: number }) {
+  const people = MilitaryCommandRegistry.getPeople().filter(person => person.factionId === factionId)
+    .slice().sort((a, b) => b.status.localeCompare(a.status) || a.name.localeCompare(b.name));
+  const formations = MilitaryCommandRegistry.getFormations();
+  if (!people.length) return <Typography fontSize="0.86rem" color="var(--gg-text-muted)">本国尚无已任命的军事指挥人物。</Typography>;
+  return <Box sx={{ display: "grid", gap: 1, mt: 0.5 }}>
+    {people.map(person => {
+      const formation = formations.find(item => item.commanderPersonId === person.personId && item.status === "ACTIVE");
+      const target = formation?.targetCityId ? Game.Core?.allCities.find(city => city.id === formation.targetCityId) : undefined;
+      const activeUser = [...(Game.Core?.teams.find(team => team.name === factionId)?.users ?? [])]
+        .find(user => user.militaryPersonId === person.personId);
+      const age = Math.floor(monthsToYears(worldMonth - person.bornMonth));
+      return <Box key={person.personId} sx={{ borderBottom: "1px solid var(--gg-border-muted)", pb: 0.75 }}>
+        <Typography fontWeight="bold" fontSize="0.9rem">{person.name} · {person.status === "ACTIVE" ? "现役指挥官" : person.status === "DEAD" ? "已故" : "已离任"}</Typography>
+        <Typography fontSize="0.82rem" color="var(--gg-text-muted)">年龄 {age} 岁 · 任职 {person.appointments.map(item => `${formatWorldDate(item.startMonth)}${item.endMonth === undefined ? "至今" : `—${formatWorldDate(item.endMonth)}`}`).join("；")}</Typography>
+        {person.deathMonth !== undefined && <Typography fontSize="0.82rem">生命结局：{formatWorldDate(person.deathMonth)}去世（{person.deathCause}）</Typography>}
+        {formation && <>
+          <Typography fontSize="0.82rem">编组 {formation.commandId} · 真实成员 {formation.memberUnitIds.length} 人</Typography>
+          <Typography fontSize="0.82rem">目标：{target?.name ?? "暂无有效目标"} · 命令始于 {formation.orderStartMonth === undefined ? "—" : formatWorldDate(formation.orderStartMonth)}</Typography>
+          <Typography fontSize="0.82rem">已核验攻城结果：{formation.captures.length} 次</Typography>
+          <Button size="small" disabled={!activeUser} onClick={() => Game.Core?.focusMilitaryFormation(formation.commandId)}>定位编组</Button>
+          {target && <Button size="small" onClick={() => Game.Core?.focusCameraOnCity(target.id)}>定位目标城市</Button>}
+        </>}
+      </Box>;
+    })}
+  </Box>;
 }
 
 function OverviewSection({

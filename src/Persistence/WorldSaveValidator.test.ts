@@ -11,7 +11,7 @@ function fixture() {
   save.world.clock.worldMonth = 42;
   save.factions = [{ factionId: "qin", displayName: "秦", color: 1, colorHistory: [{ color: 1, startMonth: 0, reason: "FOUNDING" }], factionType: "KINGDOM", status: "ACTIVE", firstFoundedMonth: 0, currentActiveSinceMonth: 0, restorationMonths: [], cumulativeActiveMonths: 0, identityStage: "STATE", sovereigntyRank: "KING", sovereigntyHistory: [], nameHistory: [], origin: {}, homeGridX: 0, homeGridY: 0 }];
   save.cities = [{ cityId: "xianyang", name: "咸阳", ownerFactionId: "qin", founderFactionId: "qin", foundedMonth: 0, centerGridX: 0, centerGridY: 0, isCapital: true, defense: 10, maxDefense: 10, loyalty: 80, devastation: 0, captureCount: 0 }];
-  save.users = [{ userId: 7, factionId: "qin", sourceFactionId: "qin", name: "嬴平", loyalty: 70, role: "RULER", score: 0, playerUnitId: "unit-1" }];
+  save.users = [{ userId: 7, name: "嬴平", factionId: "qin", sourceFactionId: "qin", loyalty: 70, role: "RULER", score: 0, bornMonth: -360, playerUnitId: "unit-1" }];
   save.units = [{ unitId: "unit-1", factionId: "qin", userId: 7, x: 10, y: 20, vx: 1, vy: -1, speed: 100, radius: 10, scale: 1, speedCoefficient: 0, sizeCoefficient: 0, alive: true, role: "RULER" }];
   save.dynasties = [{ factionId: "qin", houseName: "田氏", houseEpochs: [{ houseName: "田氏", startMonth: 0, foundingRulerId: "qin-ruler-1", startReason: "FOUNDING" }], rulers: [{ rulerId: "qin-ruler-1", houseName: "田氏", bornMonth: -360, accessionMonth: 0, status: "ruling" }], heirIds: [] }];
   save.blocks = [{ gridX: 0, gridY: 0, ownerFactionId: "qin", isHome: true, cityId: "xianyang", homeHitPoints: 10, isCityCenter: true }];
@@ -265,7 +265,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
 
   it("rejects duplicate ids, non-finite values and class instances", () => {
     const save = fixture();
-    save.users.push({ userId: 7, factionId: "qin", sourceFactionId: "qin", name: "duplicate", loyalty: 0, role: "NORMAL", score: 0, playerUnitId: "unit-1" });
+    save.users.push({ userId: 7, factionId: "qin", sourceFactionId: "qin", name: "duplicate", loyalty: 0, role: "NORMAL", score: 0, bornMonth: -360, playerUnitId: "unit-1" });
     save.units[0].x = Number.NaN;
     expect(validateWorldSave(save).valid).toBe(false);
     expect(validateWorldSave({ ...fixture(), world: new Date() }).valid).toBe(false);

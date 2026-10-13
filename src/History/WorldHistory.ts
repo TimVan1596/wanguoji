@@ -62,7 +62,10 @@ export type WorldEventType =
   | "relation-renewed"
   | "alliance-expired"
   | "faction-merged"
-  | "faction-submitted";
+  | "faction-submitted"
+  | "military-appointment"
+  | "military-command-ended"
+  | "military-person-died";
 
 export type WorldEventCategory = "war" | "politics" | "disaster" | "god";
 
