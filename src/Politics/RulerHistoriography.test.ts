@@ -565,6 +565,38 @@ describe("evidence-grounded ruler historiography", () => {
     expect(biography.some(event => event.id === "foreign-signing")).toBe(false);
   });
 
+  it("derives personal military credit only from real WorldHistory ruler attribution and current-month capital status", () => {
+    const history = new WorldHistoryStore();
+    history.addCityCaptured(24, "秦", "魏", "魏", "河阳", "city-1", false, false, undefined, "嬴平", "r1", "campaign-a");
+    history.addCapitalFallen(36, "秦", "赵", "赵", "邯郸", "city-2", true, undefined, "嬴平", "r1", "campaign-b");
+    history.addCityCaptured(48, "秦", "韩", "韩", "阳城", "city-3", true, true, undefined, "", undefined, "campaign-c");
+    const context = makeContext({
+      events: history.getEvents(),
+      start: { territoryShare: 0.057, cityCount: 2, stability: 84 },
+      end: { territoryShare: 0.127, cityCount: 1, stability: 95 },
+    });
+    const evidence = deriveRulerHistoricalEvidence(context);
+    expect(evidence.politicalFacts.filter((fact) => fact.type === "city-captured" && fact.role === "DIRECT_ACTOR")).toMatchObject([
+      { cityName: "河阳", wasCapital: false, historyGroupId: "campaign-a" },
+    ]);
+    expect(evidence.politicalFacts.find((fact) => fact.type === "capital-fallen" && fact.role === "DIRECT_ACTOR"))
+      .toMatchObject({ cityName: "邯郸", wasCapital: true, militaryRole: "ATTACKER", outcome: "亲自参与攻陷当时都城" });
+    expect(evidence.politicalFacts.some((fact) => fact.cityName === "阳城" && fact.role === "DIRECT_ACTOR")).toBe(false);
+    const assessment = composeRulerAssessment(evidence).lines.join(" ");
+    expect(assessment).toContain("疆域占比由5.7%升至12.7%");
+    expect(assessment).toContain("城市由2座减至1座");
+    expect(assessment).toContain("攻陷当时都城1次");
+  });
+
+  it("keeps a polity's terminal outcome distinct and does not credit it personally without a linked campaign action", () => {
+    const history = new WorldHistoryStore();
+    history.addFactionExtinct(48, "魏", undefined, { conquerorFactionId: "秦" }, "campaign-final");
+    const context = makeContext({ events: history.getEvents() });
+    const evidence = deriveRulerHistoricalEvidence(context);
+    expect(evidence.politicalFacts).toMatchObject([{ terminalOutcome: "EXTINCT", militaryRole: "ATTACKER", role: "IN_TENURE" }]);
+    expect(composeRulerAssessment(evidence).lines.join(" ")).not.toContain("有本人行动记录");
+  });
+
   it.each([
     [1, "有1名继承候选"],
     [2, "先后有2名继承候选"],

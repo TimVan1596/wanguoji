@@ -302,7 +302,9 @@ export function deriveRulerHistoricalEvidence(
     const outcome = event.type === "ruler-deposed" ? (subject ? "被宗室废黜" : "经宗室废立取得君位") :
       event.type === "dynasty-usurped" ? "夺取王统" :
       event.type === "empire-split" ? "发生重大分裂" :
-      event.type === "capital-fallen" ? "失去都城" :
+      event.type === "capital-fallen" ? (militaryRole === "ATTACKER"
+        ? direct ? "亲自参与攻陷当时都城" : "任内本国攻陷都城"
+        : "本国失去都城") :
       event.type === "city-captured" ? (direct ? "亲自参与攻占城市" : "任内本国攻占城市") :
       event.type === "faction-extinct" ? "政权彻底灭亡" :
       event.type === "faction-dissolved" ? "失去最后据点后残部解散" :
@@ -767,7 +769,7 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
   }
 
   const facts = evidence.politicalFacts.filter((fact) => fact.suitableForAssessment);
-  const directCaptures = facts.filter((fact) => fact.type === "city-captured" && fact.role === "DIRECT_ACTOR");
+  const directCaptures = facts.filter((fact) => ["city-captured", "capital-fallen"].includes(fact.type) && fact.role === "DIRECT_ACTOR");
   const directCapitalCaptures = directCaptures.filter((fact) => fact.wasCapital);
   const terminalAttacks = facts.filter((fact) => fact.terminalOutcome && fact.militaryRole === "ATTACKER");
   const groupedTerminal = terminalAttacks.filter((fact) => !fact.historyGroupId ||
