@@ -6,11 +6,13 @@
 
 ### P0
 
+- [ ] v0.99931p 终结势力档案排序与时间展示：按权威终结月份排序并支持长局档案多种排序；V14 Schema与生命周期规则不变，等待[人工Gate](docs/TerminalFactionArchiveSortingP.md)。
+
 - [ ] v0.99931o 君主多维治绩与历史评价重构：按可核验的政治身份、任内国势、本人行为、外交及生命/政治结局组织王室人物史评；V14、庙谥算法与玩法规则保持不变，等待[人工Gate](docs/RulerMultidimensionalAssessmentO.md)。
 
 - [x] v0.99931n1 宗室废立历史与人物生命周期闭环：用户已完成人工 Chrome 验收并明确 PASS；V14与废立玩法保持不变。
 
-- [x] 政治终结与人物生死分离：v0.99931c / WorldSave V13 已获用户人工 PASS，生死模型冻结。v31c1 派生任期角色人工 PASS。v31d 王统总评人工 PASS；v31d1 功能人工 PASS；v31d2 国史合传人工 PASS；v31d3 分段国史与评议人工 PASS，国史合传冻结。v31e 政治宗谱身份与视觉层级人工 PASS。v31f 用户整体人工 PASS，未回传所有创始者年龄明细。v31g 和平政治转型诊断已获用户人工 PASS。v31h 阶段B已获用户人工PASS；233.5年观察中新路径没有实际归并，不放宽参数。v31i故都与长期统治地复国已获用户人工PASS；低忠诚城市未出现的实测已记录。v31j复国可达性与双零流亡终局已获用户人工PASS，复国参数冻结。v31k人工Gate已PASS，但511.33年/101次继位仅有一次旧复合资格、新入口为零；v31l人工Gate已PASS：914.50年/216次继位、30次抽签、实际篡朝1次，机制冻结。v31m人工Gate已PASS；v31m1、v31n、v31n1均已人工PASS，当前v31o等待[人工验收](docs/RulerMultidimensionalAssessmentO.md)。
+- [x] 政治终结与人物生死分离：v0.99931c / WorldSave V13 已获用户人工 PASS，生死模型冻结。v31c1 派生任期角色人工 PASS。v31d 王统总评人工 PASS；v31d1 功能人工 PASS；v31d2 国史合传人工 PASS；v31d3 分段国史与评议人工 PASS，国史合传冻结。v31e 政治宗谱身份与视觉层级人工 PASS。v31f 用户整体人工 PASS，未回传所有创始者年龄明细。v31g 和平政治转型诊断已获用户人工 PASS。v31h 阶段B已获用户人工PASS；233.5年观察中新路径没有实际归并，不放宽参数。v31i故都与长期统治地复国已获用户人工PASS；低忠诚城市未出现的实测已记录。v31j复国可达性与双零流亡终局已获用户人工PASS，复国参数冻结。v31k人工Gate已PASS，但511.33年/101次继位仅有一次旧复合资格、新入口为零；v31l人工Gate已PASS：914.50年/216次继位、30次抽签、实际篡朝1次，机制冻结。v31m人工Gate已PASS；v31m1、v31n、v31n1、v31o均已人工PASS，当前v31p等待[人工验收](docs/TerminalFactionArchiveSortingP.md)。
 
 - [x] IndexedDB 多槽存档、手动存档管理与双槽游戏时间自动存档。
 - [x] Desktop Recovery 恢复档定时保存与关闭前保存。
@@ -26,7 +28,7 @@
 
 ## 当前人工验收
 
-- v0.99931b1 用户人工全部 PASS，国家史论与史家曰冻结。v0.99931c 只修人物政治终结/实际死亡事实：V13 直接拒绝旧 V12，不迁移、不清空数据库；新七国世界人物、存档及 UI 人工检查已 PASS。v31c1 任期标签与人物叙述人工 PASS，v31d 王统总评人工 PASS，v31d1 功能人工 PASS，v31d2 国史合传人工 PASS，v31d3 分段与史论人工 PASS，v31e 政治宗谱人工 PASS；v31f 整体人工 PASS，v31g 只读政治转型诊断人工 PASS；v31h 阶段B人工PASS；v31i人工PASS；v31j人工PASS；v31k人工PASS（自然频率未改善）；v31l人工PASS，篡朝机制冻结；v31m、v31m1、v31n、v31n1均人工PASS；v31o等待人工Chrome/Electron检查。
+- v0.99931b1 用户人工全部 PASS，国家史论与史家曰冻结。v0.99931c 只修人物政治终结/实际死亡事实：V13 直接拒绝旧 V12，不迁移、不清空数据库；新七国世界人物、存档及 UI 人工检查已 PASS。v31c1 任期标签与人物叙述人工 PASS，v31d 王统总评人工 PASS，v31d1 功能人工 PASS，v31d2 国史合传人工 PASS，v31d3 分段与史论人工 PASS，v31e 政治宗谱人工 PASS；v31f 整体人工 PASS，v31g 只读政治转型诊断人工 PASS；v31h阶段B人工PASS；v31i人工PASS；v31j人工PASS；v31k人工PASS（自然频率未改善）；v31l人工PASS，篡朝机制冻结；v31m、v31m1、v31n、v31n1、v31o均人工PASS；v31p等待人工Chrome/Electron检查。
 
 - v0.99929 Peaceful Submission及v0.99929a终结纪事人工全部PASS，正式冻结。
 - v0.99930b1人工正式PASS，Faction Historiography全系列冻结。v0.99931地图国号、比例、前后导航、时代轴、Save/Load和快速切换人工PASS，布局FAIL。v0.99931a布局、国号、城市文字、导航、入口、Save/Load及10时代切换人工正常。v0.99931a1时代切换、时代事件对应地图跳转、V12 Save/Load与性能已获明确补验。v0.99931a2时代精选与入口整合人工PASS并冻结。v0.99931b差异化、Save/Load与运行布局人工PASS，史家曰文风仍待修订。v0.99931b1评论语言人工PASS并冻结。v0.99931c/V13人物政治终结事实人工PASS并冻结；v31c1任期角色人工PASS；v31d王统总评人工PASS；v31d1功能人工PASS；v31d2国史合传人工PASS；v31d3分段与史论人工PASS；v31e政治宗谱人工PASS；v31f初始宗室整体人工PASS；v31g政治转型诊断人工PASS；v31h阶段B人工PASS；v31i人工PASS；v31j人工PASS；v31k等待人工验收。

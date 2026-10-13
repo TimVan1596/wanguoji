@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { createEmptyWorldSaveV1, CURRENT_SAVE_SCHEMA_VERSION, diffCanonicalWorldSave } from "./WorldSaveSchema";
 import { isSafeSnapshotBoundary } from "./SnapshotBoundary";
 import { validateWorldSave } from "./WorldSaveValidator";
+import { sortHistoricalFactions, type FactionListItem } from "../Simulation/FactionListRules";
 
 function fixture() {
   const save = createEmptyWorldSaveV1();
@@ -169,15 +170,37 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     }];
     save.factions.push({ ...save.factions[0], factionId: "threat", displayName: "强敌" });
     setFixtureLifetimeRecords(save);
+    save.factions.push({ ...save.factions[0], factionId: "chu", displayName: "楚" });
+    setFixtureLifetimeRecords(save);
     save.factions[1] = {
       ...save.factions[1], status: "EXTINCT", terminationReason: "MERGED",
       terminationTargetFactionId: "qin", terminationMonth: 36,
     };
+    save.factions[3] = {
+      ...save.factions[3], status: "EXTINCT", terminationReason: "SUBMITTED",
+      terminationTargetFactionId: "qin", terminationMonth: 24,
+    };
     setFixtureLifetimeRecords(save);
+    const sortFromV14 = (factions: typeof save.factions) => sortHistoricalFactions(
+      factions.filter(faction => faction.status === "EXTINCT").map(faction => ({
+        name: faction.factionId,
+        factionId: faction.factionId,
+        status: faction.status as FactionListItem["status"],
+        identityStage: faction.identityStage as FactionListItem["identityStage"],
+        stateFoundedMonth: faction.stateFoundedMonth,
+        firstFoundedMonth: faction.firstFoundedMonth,
+        terminationReason: faction.terminationReason,
+        extinctionYear: faction.extinctionMonth,
+        terminationMonth: faction.terminationMonth,
+        restorationYears: faction.restorationMonths,
+        cumulativeActiveMonths: faction.cumulativeActiveMonths,
+      })), "terminal-recent", save.world.worldMonth).map(faction => faction.factionId);
+    const beforeOrder = sortFromV14(save.factions);
     const loaded = JSON.parse(JSON.stringify(save));
     expect(validateWorldSave(loaded)).toEqual({ valid: true, errors: [] });
     expect(loaded.diplomacy.relations[0]).toMatchObject({ status: "ALLIANCE", commonThreatFactionId: "threat", preconditionDurationMonths: 24 });
     expect(loaded.factions[1]).toMatchObject({ terminationReason: "MERGED", terminationTargetFactionId: "qin", terminationMonth: 36 });
+    expect(sortFromV14(loaded.factions)).toEqual(beforeOrder);
     expect(validateWorldSave({ ...save, saveSchemaVersion: 5 }).valid).toBe(false);
   });
 

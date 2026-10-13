@@ -47,6 +47,7 @@ describe("terminal historical faction sorting", () => {
     factionId: options.factionId ?? options.name,
     status: options.status ?? "EXTINCT",
     identityStage: options.identityStage ?? "STATE",
+    stateFoundedMonth: options.stateFoundedMonth ?? 0,
     terminationReason: options.terminationReason,
     extinctionYear: options.extinctionYear,
     terminationMonth: options.terminationMonth,
@@ -100,12 +101,27 @@ describe("terminal historical faction sorting", () => {
     const rows = [
       terminal({ name: "临时义军", identityStage: "PROVISIONAL", terminationReason: "EXTINCT", extinctionYear: 80 }),
       terminal({ name: "正式国家", stateFoundedMonth: 0, terminationReason: "EXTINCT", extinctionYear: 30 }),
-      { name: "流亡", status: "EXILED", identityStage: "STATE" },
+      { name: "流亡", status: "EXILED" as const, identityStage: "STATE" as const },
     ];
     const original = rows.map((row) => row.name);
     const visible = getVisibleFactions(rows, "extinct");
     expect(visible.map((row) => row.name)).toEqual(["正式国家"]);
     expect(sortHistoricalFactions(visible, "terminal-recent", 100).map((row) => row.name)).toEqual(["正式国家"]);
     expect(rows.map((row) => row.name)).toEqual(original);
+  });
+
+  it("handles a long archive without quadratic list work", () => {
+    const rows = Array.from({ length: 5000 }, (_, index) => terminal({
+      name: `faction-${index}`,
+      factionId: `f-${index.toString().padStart(5, "0")}`,
+      firstFoundedYear: index % 300,
+      terminationReason: index % 3 === 0 ? "EXTINCT" : index % 3 === 1 ? "MERGED" : "SUBMITTED",
+      extinctionYear: index * 2,
+      terminationMonth: index * 2,
+    }));
+    const start = Date.now();
+    const sorted = sortHistoricalFactions(rows, "terminal-recent", 12000);
+    expect(sorted).toHaveLength(rows.length);
+    expect(Date.now() - start).toBeLessThan(1000);
   });
 });

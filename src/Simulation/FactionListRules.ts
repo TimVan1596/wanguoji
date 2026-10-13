@@ -100,7 +100,8 @@ function compareSortValue(
 }
 
 function getActiveMonths(faction: FactionListItem, worldMonth: number) {
-  return faction.getCumulativeActiveYears?.(worldMonth) ?? faction.cumulativeActiveMonths ?? faction.cumulativeActiveYears;
+  const value = faction.getCumulativeActiveYears?.(worldMonth) ?? faction.cumulativeActiveMonths ?? faction.cumulativeActiveYears;
+  return isValidMonth(value) ? value : undefined;
 }
 
 function getFoundedMonth(faction: FactionListItem) {
