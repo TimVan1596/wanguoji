@@ -37,7 +37,10 @@ async function fixture(basis = "capital", founderPath = false) {
   const [founder, old, owner] = teams;
   game.Core = { teams, totalCells: 3, handleFactionExtinction() {}, simulator: { year: 480 }, map: {} };
   vi.spyOn(DynastyRegistry, "ensureRulerUnit").mockImplementation(() => undefined);
-  teams.forEach(team => DynastyRegistry.initializeFaction(team, 0));
+  teams.forEach(team => {
+    DynastyRegistry.initializeFaction(team, 0);
+    DynastyRegistry.get(team.name)!.rulers.forEach(ruler => { ruler.naturalDeathYear = 10000; ruler.plannedEndYear = 10000; });
+  });
   if (!founderPath) {
     founder.status = "EXILED"; founder.isDie = true; DynastyRegistry.markExiled(founder, 400);
     WorldExiles.start(founder, 400, 0); WorldExiles.get("founder")!.legitimacy = 0;
@@ -93,6 +96,33 @@ describe("真实世界事件系统→城市政治恢复→人物与历史", () =
     f.city.history = []; check(f);
     expect(f.city.ownerFactionId).toBe("founder");
     expect(WorldHistory.getEvents().some(e => e.type === "faction-restored")).toBe(false);
+  });
+  it("旧都年度检查不会把真实死亡月的最后继统者当作存活；有另一名继统者时仍保留资格", async () => {
+    const f = await fixture();
+    const dynasty = DynastyRegistry.get("old")!;
+    const lastRuler = DynastyRegistry.getCurrentRuler("old")!;
+    dynasty.heirIds = [];
+    dynasty.designatedHeirId = undefined;
+    lastRuler.naturalDeathYear = 480;
+    expect(DynastyRegistry.hasClaimant("old")).toBe(true);
+    expect(DynastyRegistry.hasClaimantAtMonth("old", 479)).toBe(true);
+    expect(DynastyRegistry.hasClaimantAtMonth("old", 480)).toBe(false);
+    vi.spyOn(worldRandom, "next").mockReturnValue(.001);
+    check(f, 480);
+    expect(f.city.ownerFactionId).toBe("owner");
+    expect(lastRuler.deathMonth).toBeUndefined(); // qualification is read-only; Dynasty.update owns death.
+    expect(WorldHistory.getEvents().some(e => e.type === "faction-restored")).toBe(false);
+
+    const successor = { ...lastRuler, id: "old-live-heir", status: "heir" as const, reignOrdinal: undefined,
+      accessionYear: undefined, naturalDeathYear: 900, plannedEndYear: 900, chronicle: undefined };
+    dynasty.rulers.push(successor);
+    dynasty.heirIds.push(successor.id);
+    expect(DynastyRegistry.hasClaimantAtMonth("old", 480)).toBe(true);
+    DynastyRegistry.update(480, f.teams);
+    expect(lastRuler.status).toBe("dead");
+    expect(lastRuler.deathMonth).toBe(480);
+    expect(WorldHistory.getEvents().some(e => e.type === "ruler-succession" && e.metadata?.previousRulerId === lastRuler.id && e.monthIndex === 480)).toBe(true);
+    expect(DynastyRegistry.getCurrentRuler("old")?.id).toBe(successor.id);
   });
   it("神力支持复国仍走原支持事件，不冒充城市历史新路径", async () => {
     const f = await fixture("capital", true);

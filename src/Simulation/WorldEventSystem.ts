@@ -802,10 +802,10 @@ export default class WorldEventSystem {
           const blocks: string[] = [];
           if (!exile || exile.legitimacy <= 0) blocks.push("流亡合法性不足");
           if ((WorldRemnants.get(team.name)?.population ?? 0) <= 0) blocks.push("残部耗尽");
-          if (!DynastyRegistry.hasClaimant(team.name)) blocks.push("无合法继统者");
+          if (!DynastyRegistry.hasClaimantAtMonth(team.name, year)) blocks.push("无合法继统者");
           if (team.terminationReason || !exile) blocks.push("流亡政治资格不足");
           if (blocks.length) { this.restorationBlocks(blocks); continue; }
-          if (!FactionRegistry.canRestoreFaction(team)) { this.restorationBlock("政治恢复资格不足"); continue; }
+          if (!FactionRegistry.canRestoreFaction(team, year)) { this.restorationBlock("政治恢复资格不足"); continue; }
           if (warTornPath) diagnostics.warTornEligible++;
           historical.push({ team, basis, heldMonths: rule.heldMonths, chance: 0 });
           diagnostics.eligibleChecks++;
@@ -864,7 +864,7 @@ export default class WorldEventSystem {
         if (row) {
           diagnostics.attempts++;
           const population = WorldRemnants.get(row.team.name)?.population ?? 0;
-          if (FactionRegistry.restoreFaction(row.team, city, year, population, "RESTORATION", { basis: row.basis, heldMonths: row.heldMonths, ...(warTornPath ? { trigger: "WAR_TORN_HISTORICAL_CITY" as const } : {}) })) {
+          if (FactionRegistry.restoreFaction(row.team, city, year, population, "RESTORATION", { basis: row.basis, heldMonths: row.heldMonths, ...(warTornPath ? { trigger: "WAR_TORN_HISTORICAL_CITY" as const } : {}) }, year)) {
             WorldRemnants.consume(row.team.name, population);
             diagnostics.successes++;
             if (warTornPath) diagnostics.warTornSuccesses++;
@@ -888,11 +888,11 @@ export default class WorldEventSystem {
       const canRestoreFounder =
         founder.status === "EXILED" &&
         (remnants?.population ?? 0) > 0 &&
-        FactionRegistry.canRestoreFaction(founder);
+        FactionRegistry.canRestoreFaction(founder, year);
       if (canRestoreFounder) {
         const restoredPopulation = remnants?.population ?? 0;
         diagnostics.attempts++;
-        if (FactionRegistry.restoreFaction(founder, city, year, restoredPopulation)) {
+        if (FactionRegistry.restoreFaction(founder, city, year, restoredPopulation, "RESTORATION", undefined, year)) {
           WorldRemnants.consume(founder.name, restoredPopulation);
           diagnostics.successes++; diagnostics.founderSuccesses++;
           this.cityRebellionYears[city.id] = year;
@@ -963,13 +963,13 @@ export default class WorldEventSystem {
       if (
         founder &&
         shouldRestoreBeforeNewRebel(
-          FactionRegistry.canRestoreFaction(founder),
+          FactionRegistry.canRestoreFaction(founder, year),
           founder.status
         )
       ) {
         const remnants = WorldRemnants.get(founder.name);
         const restoredPopulation = remnants?.population ?? 0;
-        if (FactionRegistry.restoreFaction(founder, coreCity, year, restoredPopulation)) {
+        if (FactionRegistry.restoreFaction(founder, coreCity, year, restoredPopulation, "RESTORATION", undefined, year)) {
           WorldRemnants.consume(founder.name, restoredPopulation);
           this.fractureUntilMonth = year + 60;
           return;
@@ -1072,7 +1072,7 @@ export default class WorldEventSystem {
     if (!remnants || remnants.population <= 0) {
       return false;
     }
-    if (!FactionRegistry.canRestoreFaction(founder)) {
+    if (!FactionRegistry.canRestoreFaction(founder, year)) {
       return false;
     }
     const restoredPopulation = remnants.population;
@@ -1081,7 +1081,9 @@ export default class WorldEventSystem {
       city,
       year,
       restoredPopulation,
-      "GOD_ACTION"
+      "GOD_ACTION",
+      undefined,
+      year
     );
     if (restored) {
       WorldRemnants.consume(founder.name, restoredPopulation);

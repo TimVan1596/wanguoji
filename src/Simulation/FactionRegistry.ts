@@ -48,14 +48,14 @@ class FactionRegistryStore {
     this.sequence = state.sequence;
   }
 
-  canRestoreFaction(team: Team) {
+  canRestoreFaction(team: Team, worldMonth?: number) {
     if (!hasFormalStateIdentity(team)) {
       return false;
     }
     const exile = WorldExiles.get(team.name);
     return canRestoreExiledFaction(
       WorldRemnants.get(team.name)?.population ?? 0,
-      DynastyRegistry.hasClaimant(team.name),
+      worldMonth === undefined ? DynastyRegistry.hasClaimant(team.name) : DynastyRegistry.hasClaimantAtMonth(team.name, worldMonth),
       exile?.legitimacy ?? 100
     );
   }
@@ -66,7 +66,8 @@ class FactionRegistryStore {
     year: number,
     remnantPopulation: number,
     populationCause: "RESTORATION" | "GOD_ACTION" = "RESTORATION",
-    historicalBasis?: { basis: RestorationBasis; heldMonths: number; trigger?: "WAR_TORN_HISTORICAL_CITY" }
+    historicalBasis?: { basis: RestorationBasis; heldMonths: number; trigger?: "WAR_TORN_HISTORICAL_CITY" },
+    claimantMonth?: number
   ) {
     if (!hasFormalStateIdentity(team)) {
       return false;
@@ -75,7 +76,7 @@ class FactionRegistryStore {
     if (
       !canRestoreExiledFaction(
         remnantPopulation,
-        DynastyRegistry.hasClaimant(team.name),
+        claimantMonth === undefined ? DynastyRegistry.hasClaimant(team.name) : DynastyRegistry.hasClaimantAtMonth(team.name, claimantMonth),
         exile?.legitimacy ?? 100
       )
     ) {

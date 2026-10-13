@@ -372,6 +372,20 @@ class DynastyRegistryStore {
     });
   }
 
+  /** Read-only month-boundary claimant check for systems that run before Dynasty.update(). */
+  hasClaimantAtMonth(factionId: string, worldMonth: number) {
+    const dynasty = this.dynasties.get(factionId);
+    if (!dynasty) return false;
+    const current = this.getCurrentRuler(factionId);
+    if (current && (current.status === "ruling" || current.status === "exiled") &&
+        !isNaturallyDeadByMonth(current.naturalDeathYear ?? current.plannedEndYear, worldMonth)) return true;
+    return dynasty.heirIds.some((id) => {
+      const heir = dynasty.rulers.find((ruler) => ruler.id === id);
+      return Boolean(heir && heir.status === "heir" &&
+        !isNaturallyDeadByMonth(heir.naturalDeathYear ?? heir.plannedEndYear, worldMonth));
+    });
+  }
+
   getRulerDisplay(factionId: string) {
     const ruler = this.getCurrentRuler(factionId);
     if (!ruler) {

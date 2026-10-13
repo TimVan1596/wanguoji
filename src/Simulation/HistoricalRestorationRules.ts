@@ -2,6 +2,18 @@ import type { CityHistoryEvent } from "../Components/City";
 
 export type RestorationBasis = "FORMER_CAPITAL" | "LONG_RULE";
 export interface HistoricalCityRule { factionId: string; heldMonths: number; formalCapitalRecorded: boolean; }
+export interface RestorationHistoricalProfile {
+  factionId: string;
+  stateTenureMonths: number;
+  currentHouseEpochStartMonth?: number;
+  currentHouseTenureMonths: number;
+  historicalCityBasis: RestorationBasis;
+  heldMonths: number;
+  stateHistoricalWeight: number;
+  houseHistoricalWeight: number;
+  /** Analysis-only multiplier. Production risk remains unchanged in B1. */
+  combinedMultiplier: number;
+}
 interface CityEvidence { foundedYear: number; founderFactionId: string; ownerFactionId: string; history: CityHistoryEvent[]; captureCount: number; }
 const transfers = new Set(["captured", "recovered", "merged", "submitted"]);
 
@@ -48,6 +60,71 @@ export function getHistoricalRestorationBasis(rule: HistoricalCityRule): Restora
   if (rule.formalCapitalRecorded && rule.heldMonths >= 120) return "FORMER_CAPITAL";
   if (rule.heldMonths >= 360) return "LONG_RULE";
   return undefined;
+}
+
+/** Pure, bounded analysis profile. It describes recorded tenure, not public support. */
+export function deriveRestorationHistoricalProfile(input: {
+  factionId: string;
+  stateTenureMonths: number;
+  currentHouseEpochStartMonth?: number;
+  worldMonth: number;
+  basis: RestorationBasis;
+  heldMonths: number;
+  cap?: number;
+}): RestorationHistoricalProfile {
+  const nonNegative = (value: number) => Number.isFinite(value) ? Math.max(0, value) : 0;
+  const stateTenureMonths = nonNegative(input.stateTenureMonths);
+  const currentHouseTenureMonths = input.currentHouseEpochStartMonth === undefined
+    ? 0 : nonNegative(input.worldMonth - input.currentHouseEpochStartMonth);
+  // Each tenure source saturates over 300 years; neither can grow without bound.
+  const saturatingWeight = (months: number) => 0.15 * months / (months + 3600);
+  const stateHistoricalWeight = saturatingWeight(stateTenureMonths);
+  const houseHistoricalWeight = saturatingWeight(currentHouseTenureMonths);
+  const cap = Number.isFinite(input.cap) ? Math.max(1, Math.min(1.35, input.cap!)) : 1.35;
+  return {
+    factionId: input.factionId,
+    stateTenureMonths,
+    currentHouseEpochStartMonth: input.currentHouseEpochStartMonth,
+    currentHouseTenureMonths,
+    historicalCityBasis: input.basis,
+    heldMonths: nonNegative(input.heldMonths),
+    stateHistoricalWeight,
+    houseHistoricalWeight,
+    combinedMultiplier: Math.min(cap, 1 + stateHistoricalWeight + houseHistoricalWeight),
+  };
+}
+
+/** Adapt authoritative runtime records to the pure profile without mutating them. */
+export function deriveFactionRestorationHistoricalProfile(input: {
+  team: { name: string; cumulativeActiveYears: number; status: string; currentActiveSinceYear?: number };
+  dynasty?: { houseEpochs?: Array<{ startMonth: number; endMonth?: number }> };
+  worldMonth: number;
+  basis: RestorationBasis;
+  heldMonths: number;
+  cap?: number;
+}): RestorationHistoricalProfile {
+  const activeMonths = input.team.status === "ACTIVE" && input.team.currentActiveSinceYear !== undefined
+    ? Math.max(0, input.worldMonth - input.team.currentActiveSinceYear) : 0;
+  const epoch = input.dynasty?.houseEpochs
+    ?.filter(item => item.endMonth === undefined && Number.isSafeInteger(item.startMonth) && item.startMonth <= input.worldMonth)
+    .sort((a, b) => b.startMonth - a.startMonth)[0];
+  return deriveRestorationHistoricalProfile({
+    factionId: input.team.name,
+    stateTenureMonths: Math.max(0, input.team.cumulativeActiveYears) + activeMonths,
+    currentHouseEpochStartMonth: epoch?.startMonth,
+    worldMonth: input.worldMonth,
+    basis: input.basis,
+    heldMonths: input.heldMonths,
+    cap: input.cap,
+  });
+}
+
+/** Counterfactual only: preserves each production path's existing hard probability ceiling. */
+export function applyRestorationHistoricalMultiplier(baseChance: number, multiplier: number, pathCap = 0.09) {
+  const chance = Number.isFinite(baseChance) ? Math.max(0, baseChance) : 0;
+  const factor = Number.isFinite(multiplier) ? Math.max(1, multiplier) : 1;
+  const cap = Number.isFinite(pathCap) ? Math.max(0, pathCap) : 0;
+  return Math.min(cap, chance * factor);
 }
 
 export function historicalRestorationChance(baseChance: number, basis: RestorationBasis, heldMonths: number, exileMonths: number) {

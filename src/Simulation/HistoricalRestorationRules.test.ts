@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getWarTornCityEvidence, warTornRestorationChance, deriveHistoricalCityRules, getHistoricalRestorationBasis, historicalRestorationChance, selectRestorationOpportunity } from "./HistoricalRestorationRules";
+import { getWarTornCityEvidence, warTornRestorationChance, deriveHistoricalCityRules, getHistoricalRestorationBasis, historicalRestorationChance, selectRestorationOpportunity, deriveRestorationHistoricalProfile, deriveFactionRestorationHistoricalProfile, applyRestorationHistoricalMultiplier } from "./HistoricalRestorationRules";
 import type { CityHistoryEvent } from "../Components/City";
 const formal = new Map([["founder", 0], ["old", 10], ["owner", 0]]);
 const founded: CityHistoryEvent = { year: 0, type: "founded", title: "建城", newOwnerFactionId: "founder" };
@@ -8,6 +8,47 @@ const capture = (year: number, from: string, to: string): CityHistoryEvent => ({
 const capital = (year: number): CityHistoryEvent => ({ year, type: "capital-relocated", title: "迁都", newOwnerFactionId: "old", wasCapital: true });
 
 describe("旧都与长期统治地真实历史证据", () => {
+  it("国家历史与当前王统历史分别计权，异姓新epoch不继承旧王统年资", () => {
+    const youngState = deriveRestorationHistoricalProfile({ factionId: "old-state", stateTenureMonths: 300 * 12,
+      currentHouseEpochStartMonth: 3500, worldMonth: 3600, basis: "FORMER_CAPITAL", heldMonths: 5000 });
+    const matureHouse = deriveRestorationHistoricalProfile({ factionId: "old-state", stateTenureMonths: 300 * 12,
+      currentHouseEpochStartMonth: 0, worldMonth: 3600, basis: "FORMER_CAPITAL", heldMonths: 5000 });
+    const newState = deriveRestorationHistoricalProfile({ factionId: "new-state", stateTenureMonths: 20 * 12,
+      currentHouseEpochStartMonth: 0, worldMonth: 20 * 12, basis: "LONG_RULE", heldMonths: 500 });
+    expect(youngState.stateTenureMonths).toBe(3600);
+    expect(youngState.currentHouseTenureMonths).toBe(100);
+    expect(youngState.houseHistoricalWeight).toBeLessThan(matureHouse.houseHistoricalWeight);
+    expect(youngState.combinedMultiplier).toBeGreaterThan(newState.combinedMultiplier);
+    expect(matureHouse.combinedMultiplier).toBeLessThanOrEqual(1.35);
+    expect(youngState.combinedMultiplier).toBeLessThanOrEqual(1.35);
+  });
+  it("从V14既有势力累计在国月份和houseEpoch派生新旧王统差异", () => {
+    const profile = deriveFactionRestorationHistoricalProfile({
+      team: { name: "qin", cumulativeActiveYears: 3600, status: "EXILED" },
+      dynasty: { houseEpochs: [{ startMonth: 0, endMonth: 3500 }, { startMonth: 3500 }] },
+      worldMonth: 3600, basis: "FORMER_CAPITAL", heldMonths: 4200,
+    });
+    expect(profile.stateTenureMonths).toBe(3600);
+    expect(profile.currentHouseEpochStartMonth).toBe(3500);
+    expect(profile.currentHouseTenureMonths).toBe(100);
+  });
+  it("无epoch证据时保持中性家族权重，年资加成有边际递减", () => {
+    const short = deriveRestorationHistoricalProfile({ factionId: "x", stateTenureMonths: 120, worldMonth: 120,
+      basis: "LONG_RULE", heldMonths: 360 });
+    const long = deriveRestorationHistoricalProfile({ factionId: "x", stateTenureMonths: 12000, worldMonth: 12000,
+      basis: "LONG_RULE", heldMonths: 360, cap: 1.2 });
+    expect(short.houseHistoricalWeight).toBe(0);
+    expect(short.combinedMultiplier).toBeGreaterThan(1);
+    expect(long.combinedMultiplier).toBeGreaterThan(short.combinedMultiplier);
+    expect(long.combinedMultiplier).toBeLessThanOrEqual(1.2);
+    expect(deriveRestorationHistoricalProfile({ factionId: "x", stateTenureMonths: -1, worldMonth: 0,
+      basis: "LONG_RULE", heldMonths: 360 }).combinedMultiplier).toBe(1);
+  });
+  it("候选风险只作离线乘数重算且保留原路径上限", () => {
+    expect(applyRestorationHistoricalMultiplier(.04, 1.15)).toBeCloseTo(.046);
+    expect(applyRestorationHistoricalMultiplier(.08, 1.35)).toBe(.09);
+    expect(applyRestorationHistoricalMultiplier(.02, 1.35, .03)).toBeCloseTo(.027);
+  });
   it("非建立者正式旧都，实际持有十年可派生资格", () => {
     const c = city([capture(10, "founder", "old"), capital(20), capture(130, "old", "owner")]);
     const before = JSON.stringify(c);
