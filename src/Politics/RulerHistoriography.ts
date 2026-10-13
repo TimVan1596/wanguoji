@@ -799,7 +799,7 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
   } else if (deposition?.depositionRole === "DEPOSED_RULER") {
     if (lines.length < 4) lines.push("废位仅终结其君主任期；没有真实死亡记录时，不推定其生命结局。");
   } else {
-    const other = legacy.lines.find((line) => line !== identityLine && !/疆域|城市|稳定度|人口|治下|在位期间|终结|身死|死亡/.test(line));
+    const other = legacy.lines.find((line) => !lines.includes(line) && !/疆域|城市|稳定度|人口|治下|在位期间|终结|身死|死亡/.test(line));
     if (other && !lines.includes(other) && lines.length < 4) lines.push(other);
   }
   return { heading: evidence.isFinalized ? "史评" : "在位评议", evidence, lines: uniqueLines(lines).slice(0, 4) };
@@ -835,12 +835,19 @@ export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string
 
   if (deposition?.depositionRole === "DEPOSED_RULER") {
     const laterDeath = evidence.hasRecordedDeath && evidence.endReason === "被废";
-    return `其在位末期遭宗室废立，废位后${laterDeath ? "仍继续生存，后来才有真实死亡记录" : "的生死依实际记录另行判断"}；疆土变化与王位易手均可考，但不足以证明失地就是废立缘由。`;
+    const outcome = evidence.territoryDelta > 0.05 ? "任内疆域有所扩展" : evidence.territoryDelta < -0.05 ? "任内疆域有所收缩" : "任内疆域变化有限";
+    const ending = laterDeath && evidence.deathMonth !== undefined
+      ? `，于${formatWorldDate(evidence.deathMonth)}真实去世`
+      : "";
+    return `其在位末期遭宗室废立，废位后${laterDeath ? "仍继续生存，后来才有真实死亡记录" : "的生死依实际记录另行判断"}；${outcome}${ending}。王位易手与国势变化均可考，但不足以证明前者由后者造成。`;
   }
   if (deposition?.depositionRole === "DEPOSING_SUCCESSOR") {
     const result = evidence.territoryDelta > 0.05 || evidence.cityDelta > 0 ? "有所扩展" :
       evidence.territoryDelta < -0.05 || evidence.cityDelta < 0 ? "有所收缩" : "变化有限";
-    return `其在前君仍在世时经宗室废立取得君位；此后国势${result}，任内结果不能反推夺位动机。`;
+    const ending = evidence.hasRecordedDeath
+      ? evidence.deathReason === "战死" ? "，最终战死" : evidence.deathMonth !== undefined ? `，后于${formatWorldDate(evidence.deathMonth)}去世` : ""
+      : "";
+    return `其在前君仍在世时经宗室废立取得君位；任内国势${result}${ending}。夺位身份、统治结果与生命结局各有其据，不以其一推定其余。`;
   }
 
   if (roles.includes("FOUNDER") && roles.includes("EXPANDER") && evidence.governanceCost && evidence.foundedState) return pick([
