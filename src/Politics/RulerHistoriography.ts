@@ -568,7 +568,7 @@ export function deriveRulerHistoricalEvidence(
   };
 }
 
-export function composeRulerAssessment(evidence: RulerHistoricalEvidence): RulerAssessment {
+function composeLegacyRulerAssessment(evidence: RulerHistoricalEvidence): RulerAssessment {
   const lines: string[] = [];
     const usurpation = evidence.politicalFacts.find((fact) => fact.type === "dynasty-usurped" && fact.usurpationRole === "USURPER");
   const deposition = evidence.politicalFacts.find((fact) => fact.type === "ruler-deposed" && fact.depositionRole);
@@ -744,6 +744,61 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
     evidence,
     lines: uniqueLines(lines).slice(0, 4),
   };
+}
+
+/** Compose the assessment from separate identity, tenure result, major events and ending dimensions. */
+export function composeRulerAssessment(evidence: RulerHistoricalEvidence): RulerAssessment {
+  const legacy = composeLegacyRulerAssessment(evidence);
+  const deposition = evidence.politicalFacts.find((fact) => fact.type === "ruler-deposed" && fact.depositionRole);
+  const identityLine = legacy.lines.find((line) =>
+    /篡朝方式夺取王统|被宗室.*废黜|经宗室废立取得君位|开创之功|正式建国|创立势力|称帝|复国|天下统一|末代君主|流亡王统/.test(line)
+  ) ?? legacy.lines[0];
+  const lines = identityLine ? [identityLine] : [];
+  const hasMaterialChange = Math.abs(evidence.territoryDelta) >= 0.02 || evidence.cityDelta !== 0 ||
+    Math.abs(evidence.stabilityDelta) >= 12 || Math.abs(evidence.populationDelta) >= Math.max(5, evidence.startPopulation * 0.2);
+  if (hasMaterialChange) {
+    const changes: string[] = [];
+    if (Math.abs(evidence.territoryDelta) >= 0.02) changes.push(`疆域占比由${formatPrecisePercent(evidence.startTerritory)}${evidence.territoryDelta > 0 ? "升" : "降"}至${formatPrecisePercent(evidence.endTerritory)}`);
+    if (evidence.cityDelta !== 0) changes.push(`城市由${evidence.startCityCount}座${evidence.cityDelta > 0 ? "增" : "减"}至${evidence.endCityCount}座`);
+    if (Math.abs(evidence.stabilityDelta) >= 12) changes.push(`稳定度由${evidence.startStability}${evidence.stabilityDelta > 0 ? "升" : "降"}至${evidence.endStability}`);
+    if (Math.abs(evidence.populationDelta) >= Math.max(5, evidence.startPopulation * 0.2)) changes.push(`人口由${evidence.startPopulation}${evidence.populationDelta > 0 ? "增" : "减"}至${evidence.endPopulation}`);
+    lines.push(`任期记录显示${changes.join("，")}；这些变化说明国势结果，不单独证明个人行为或因果。`);
+  }
+
+  const facts = evidence.politicalFacts.filter((fact) => fact.suitableForAssessment);
+  const directCaptures = facts.filter((fact) => fact.type === "city-captured" && fact.role === "DIRECT_ACTOR");
+  const directCapitalCaptures = directCaptures.filter((fact) => fact.wasCapital);
+  const terminalAttacks = facts.filter((fact) => fact.terminalOutcome && fact.militaryRole === "ATTACKER");
+  const groupedTerminal = terminalAttacks.filter((fact) => !fact.historyGroupId ||
+    !directCaptures.some((capture) => capture.historyGroupId === fact.historyGroupId));
+  const eventLines: string[] = [];
+  if (directCaptures.length) {
+    eventLines.push(`有本人行动记录的攻城共${directCaptures.length}次${directCapitalCaptures.length ? `，其中攻陷当时都城${directCapitalCaptures.length}次` : ""}。`);
+  }
+  if (groupedTerminal.length) {
+    const count = (outcome: RulerPoliticalFact["terminalOutcome"]) => groupedTerminal.filter((fact) => fact.terminalOutcome === outcome).length;
+    const parts = [count("EXTINCT") ? `正式政权灭亡${count("EXTINCT")}个` : "", count("DISSOLVED") ? `残部解散${count("DISSOLVED")}个` : "", count("EXILED") ? `政权流亡${count("EXILED")}个` : ""].filter(Boolean);
+    eventLines.push(`任内与本国军事行动相关的结果包括${parts.join("、")}；这些终局彼此有别。`);
+  }
+  const signedAgreements = facts.filter((fact) => fact.role === "DIRECT_ACTOR" && ["truce-signed", "non-aggression-signed", "alliance-signed"].includes(fact.type));
+  if (signedAgreements.length) eventLines.push(`可核实的本人外交签署记录共${signedAgreements.length}项；签约本身不等同于外交成效。`);
+  const successionFacts = facts.filter((fact) => fact.type === "heir-died");
+  if (successionFacts.length) eventLines.push(`任内有${successionFacts.length}名继承候选先于其去世；现有记录不足以证明其已正式立储。`);
+  const nationalCrises = facts.filter((fact) => fact.role === "IN_TENURE" && ["capital-fallen", "capital-relocated", "empire-split"].includes(fact.type));
+  if (nationalCrises.length) eventLines.push(`任内另有${nationalCrises.length}项可核实的失都、迁都或国家分裂记录。`);
+  const selectedEvent = eventLines.find((line) => !lines.some((existing) => existing.includes(line.slice(0, 12))));
+  if (selectedEvent) lines.push(selectedEvent);
+
+  if (evidence.hasRecordedDeath && evidence.deathMonth !== undefined) {
+    const death = `其后于${formatWorldDate(evidence.deathMonth)}${evidence.deathReason ? `因${evidence.deathReason}` : "去世"}${evidence.finalAge !== undefined ? `，享年${evidence.finalAge}岁` : ""}。`;
+    if (!lines.some((line) => line.includes(formatWorldDate(evidence.deathMonth!)))) lines.push(death);
+  } else if (deposition?.depositionRole === "DEPOSED_RULER") {
+    lines.push("废位仅终结其君主任期；没有真实死亡记录时，不推定其生命结局。 ");
+  } else {
+    const other = legacy.lines.find((line) => line !== identityLine && !/疆域|城市|稳定度|人口|治下|在位期间|终结|身死|死亡/.test(line));
+    if (other && !lines.includes(other)) lines.push(other);
+  }
+  return { heading: evidence.isFinalized ? "史评" : "在位评议", evidence, lines: uniqueLines(lines).slice(0, 4) };
 }
 
 export function deriveRulerAssessment(context: RulerHistoriographyContext) {

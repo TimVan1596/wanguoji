@@ -1053,13 +1053,21 @@ function RulerBiography({
           : `在位：${formatWorldDuration(reignMonths)}`}
       </Typography>
       <Typography fontSize="0.85rem">
-        即位年龄：{accessionAge} 岁 · {formatRulerLifeAge(ruler, worldMonth)}
-        {ruler.endReason ? ` · ${ruler.endReason}` : ""}
+        即位年龄：{accessionAge} 岁
       </Typography>
+      {ruler.endReason === "被废" && ruler.endYear !== undefined ? (
+        <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
+          王位结局：{formatWorldDate(ruler.endYear)}被废
+        </Typography>
+      ) : ruler.endReason ? (
+        <Typography fontSize="0.82rem" color="var(--gg-text-muted)">王位结局：{ruler.endReason}</Typography>
+      ) : null}
       {hasRecordedRulerDeath(ruler) ? (
         <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
-          实际死亡：{formatWorldDate(ruler.deathMonth!)} · {ruler.deathReason}
+          生命结局：{formatWorldDate(ruler.deathMonth!)}{ruler.deathReason ? ` · ${ruler.deathReason}` : ""} · {formatRulerLifeAge(ruler, worldMonth)}
         </Typography>
+      ) : ruler.endReason === "被废" ? (
+        <Typography fontSize="0.82rem" color="var(--gg-text-muted)">生命结局：废位后仍存活，暂无死亡记录</Typography>
       ) : null}
       <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
         继承关系：{predecessor && ["DIRECT_CHILD", "GRANDCHILD", "SIBLING", "NEPHEW", "UNCLE", "COUSIN", "COLLATERAL_KIN"].includes(ruler.relationType ?? "")
@@ -1076,7 +1084,7 @@ function RulerBiography({
           离位方式：{formatRulerDepositionFact(depositionDeparture, ruler, rulers)}
         </Typography>
       ) : null}
-      {ruler.predecessorId ? (
+      {ruler.predecessorId && !depositionAccession ? (
         <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
           继位背景：{getSuccessionBackground(ruler, rulers)}
         </Typography>
