@@ -113,8 +113,10 @@ describe("真实世界事件系统→城市政治恢复→人物与历史", () =
     expect(lastRuler.deathMonth).toBeUndefined(); // qualification is read-only; Dynasty.update owns death.
     expect(WorldHistory.getEvents().some(e => e.type === "faction-restored")).toBe(false);
 
-    const successor = { ...lastRuler, id: "old-live-heir", status: "heir" as const, reignOrdinal: undefined,
-      accessionYear: undefined, naturalDeathYear: 900, plannedEndYear: 900, chronicle: undefined };
+    const successor = (DynastyRegistry as any).createHeir(f.candidate, dynasty.houseName, 480, lastRuler.id);
+    successor.id = "old-live-heir";
+    successor.naturalDeathYear = 900;
+    successor.plannedEndYear = 900;
     dynasty.rulers.push(successor);
     dynasty.heirIds.push(successor.id);
     expect(DynastyRegistry.hasClaimantAtMonth("old", 480)).toBe(true);
