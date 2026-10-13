@@ -259,19 +259,30 @@ export class MilitaryCommandRegistryStore {
 
   onUserTransfer(user: User, nextFactionId: string, worldMonth: number) {
     const person = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
-    if (!person || person.status !== "ACTIVE" || person.factionId === nextFactionId) return;
-    for (const formation of this.formations.values()) if (formation.status === "ACTIVE" && formation.commanderPersonId === person.personId) this.endFormation(formation, worldMonth, "TRANSFERRED");
-    person.factionId = nextFactionId;
+    const unitId = user.player.logicalUnitId;
+    if (unitId) for (const formation of this.formations.values()) {
+      if (formation.status !== "ACTIVE" || !formation.memberUnitIds.includes(unitId)) continue;
+      if (person && formation.commanderPersonId === person.personId) this.endFormation(formation, worldMonth, "TRANSFERRED");
+      else {
+        formation.memberUnitIds = formation.memberUnitIds.filter(id => id !== unitId);
+        if (formation.memberUnitIds.length < 2) this.endFormation(formation, worldMonth, "DISMISSED");
+      }
+    }
+    if (person && person.status !== "DEAD") person.factionId = nextFactionId;
   }
 
   onUserDestroyed(user: User, worldMonth: number, cause: string) {
     const person = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
-    if (!person || person.status === "DEAD") return;
     const death = cause === "SIEGE_LOSS" || cause === "BATTLE_DEATH";
-    for (const formation of this.formations.values()) if (formation.status === "ACTIVE" && formation.memberUnitIds.includes(user.player.logicalUnitId ?? "")) {
-      if (formation.commanderPersonId === person.personId) this.endFormation(formation, worldMonth, death ? "DEATH" : "DISMISSED");
-      else formation.memberUnitIds = formation.memberUnitIds.filter(id => id !== user.player.logicalUnitId);
+    const unitId = user.player.logicalUnitId;
+    if (unitId) for (const formation of this.formations.values()) if (formation.status === "ACTIVE" && formation.memberUnitIds.includes(unitId)) {
+      if (person && formation.commanderPersonId === person.personId) this.endFormation(formation, worldMonth, death ? "DEATH" : "DISMISSED");
+      else {
+        formation.memberUnitIds = formation.memberUnitIds.filter(id => id !== unitId);
+        if (formation.memberUnitIds.length < 2) this.endFormation(formation, worldMonth, "DISMISSED");
+      }
     }
+    if (!person || person.status === "DEAD") return;
     if (death) {
       person.status = "DEAD"; person.deathMonth = worldMonth; person.deathCause = cause; this.diagnostics.deaths++;
       this.eventWriter?.({ id: `military-person-death-${person.personId}-${worldMonth}`, year: worldMonth, monthIndex: worldMonth,

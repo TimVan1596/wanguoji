@@ -551,17 +551,22 @@ function FactionProfile({
 }
 
 function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; worldMonth: number }) {
-  const people = MilitaryCommandRegistry.getPeople().filter(person => person.factionId === factionId)
+  const people = MilitaryCommandRegistry.getPeople().filter(person => person.factionId === factionId || person.appointments.some(appointment => appointment.factionId === factionId))
     .slice().sort((a, b) => b.status.localeCompare(a.status) || a.name.localeCompare(b.name));
   const formations = MilitaryCommandRegistry.getFormations();
-  if (!people.length) return <Typography fontSize="0.86rem" color="var(--gg-text-muted)">本国尚无已任命的军事指挥人物。</Typography>;
+  const diagnostics = MilitaryCommandRegistry.getDiagnostics();
   return <Box sx={{ display: "grid", gap: 1, mt: 0.5 }}>
+    <Typography fontSize="0.78rem" color="var(--gg-text-muted)">
+      本次运行：候选 {diagnostics.candidates} · 符合资格 {diagnostics.eligible} · 任命 {diagnostics.appointments} · 名额阻断 {diagnostics.capBlocked} · 编组不足 {diagnostics.unitBlocked}
+    </Typography>
+    {!people.length && <Typography fontSize="0.86rem" color="var(--gg-text-muted)">本国尚无已任命的军事指挥人物。</Typography>}
     {people.map(person => {
       const formation = formations.find(item => item.commanderPersonId === person.personId && item.status === "ACTIVE");
       const target = formation?.targetCityId ? Game.Core?.allCities.find(city => city.id === formation.targetCityId) : undefined;
       const activeUser = [...(Game.Core?.teams.find(team => team.name === factionId)?.users ?? [])]
         .find(user => user.militaryPersonId === person.personId);
-      const age = Math.floor(monthsToYears(worldMonth - person.bornMonth));
+      const ageAtMonth = person.deathMonth ?? worldMonth;
+      const age = Math.floor(monthsToYears(Math.max(0, ageAtMonth - person.bornMonth)));
       return <Box key={person.personId} sx={{ borderBottom: "1px solid var(--gg-border-muted)", pb: 0.75 }}>
         <Typography fontWeight="bold" fontSize="0.9rem">{person.name} · {person.status === "ACTIVE" ? "现役指挥官" : person.status === "DEAD" ? "已故" : "已离任"}</Typography>
         <Typography fontSize="0.82rem" color="var(--gg-text-muted)">年龄 {age} 岁 · 任职 {person.appointments.map(item => `${formatWorldDate(item.startMonth)}${item.endMonth === undefined ? "至今" : `—${formatWorldDate(item.endMonth)}`}`).join("；")}</Typography>

@@ -172,6 +172,19 @@ describe("multi-slot save repository", () => {
     expect(await repository.getCurrent()).toEqual(oldRecord);
   });
 
+  it("keeps an unsupported V14 file intact and refuses reads without rewriting it", async () => {
+    const v14Record = { ...createStoredWorldSaveRecord(startedSave(), "V14"), saveSchemaVersion: 14,
+      save: { ...startedSave(), saveSchemaVersion: 14 } } as any;
+    const indexed = fakeIndexedDb(WORLD_SAVE_DATABASE_VERSION, [["current", v14Record]]);
+    const repository = new IndexedDbWorldSaveRepository(indexed.factory);
+    const original = JSON.stringify(v14Record);
+    const listed = await repository.listMetadata();
+    expect(listed).toHaveLength(1);
+    await expect(repository.putCurrent(createStoredWorldSaveRecord(startedSave(), "New"))).rejects.toThrow("旧版本存档已保留");
+    expect(JSON.stringify(await repository.getCurrent())).toBe(original);
+    expect(validateStoredWorldSaveRecord(v14Record).errors).toContain("该存档版本已不受支持，请创建新世界。");
+  });
+
   it("preserves a legacy v1 current record and indexes it as Recovery during v2 upgrade", async () => {
     const legacySave = startedSave();
     const legacyRecord = { ...createStoredWorldSaveRecord(legacySave), slotType: undefined };

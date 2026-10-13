@@ -255,12 +255,52 @@ describe("WorldSaveV1 validation and JSON contract", () => {
 
   it("rejects unsupported schema versions and dangling references", () => {
     const save = fixture();
-    save.saveSchemaVersion = 15 as never;
+    save.saveSchemaVersion = 99 as never;
     save.cities[0].ownerFactionId = "missing";
     const result = validateWorldSave(save);
     expect(result.valid).toBe(false);
     expect(result.errors).toContain("unsupported saveSchemaVersion");
     expect(result.errors.some((error) => error.includes("city.ownerFactionId"))).toBe(true);
+  });
+
+  it("rejects V14 with the supported-version message without mutating its contents", () => {
+    const save = fixture();
+    const before = JSON.stringify(save);
+    const result = validateWorldSave({ ...save, saveSchemaVersion: 14 });
+    expect(result).toEqual({ valid: false, errors: ["该存档版本已不受支持，请创建新世界。"] });
+    expect(JSON.stringify(save)).toBe(before);
+  });
+
+  it("strictly validates V15 commander, formation, unit, target and capture references", () => {
+    const save: any = fixture();
+    save.factions.push({ ...save.factions[0], factionId: "wei", displayName: "魏" });
+    setFixtureLifetimeRecords(save);
+    save.cities.push({ ...save.cities[0], cityId: "wei-city", ownerFactionId: "wei", founderFactionId: "wei", isCapital: true });
+    save.users.push({ userId: 8, name: "指挥者", factionId: "qin", sourceFactionId: "qin", loyalty: 70, role: "NORMAL", score: 0,
+      bornMonth: -300, playerUnitId: "unit-2", militaryPersonId: "military-person-1" },
+    { userId: 9, name: "成员", factionId: "qin", sourceFactionId: "qin", loyalty: 70, role: "NORMAL", score: 0,
+      bornMonth: -280, playerUnitId: "unit-3" });
+    for (const [unitId, userId] of [["unit-2", 8], ["unit-3", 9]] as const) {
+      save.units.push({ ...save.units[0], unitId, userId, role: "NORMAL", rulerId: undefined });
+    }
+    const eventId = "city-captured-24-qin-魏城-1";
+    save.worldHistory.events.push({ id: eventId, year: 24, monthIndex: 24, type: "city-captured", category: "war", title: "攻陷魏城",
+      actorFactionId: "qin", targetFactionId: "wei", factionIds: ["qin", "wei"], cityId: "wei-city", importance: "major",
+      metadata: { commandId: "military-command-1", commanderPersonId: "military-person-1" } });
+    save.registries.militaryCommandRegistry = {
+      people: [{ personId: "military-person-1", sourceUserId: 8, name: "指挥者", bornMonth: -300, factionId: "qin", status: "ACTIVE",
+        appointments: [{ factionId: "qin", startMonth: 12, commandId: "military-command-1" }], capturedEventIds: [eventId] }],
+      formations: [{ commandId: "military-command-1", factionId: "qin", commanderPersonId: "military-person-1", memberUnitIds: ["unit-2", "unit-3"],
+        createdMonth: 12, status: "ACTIVE", targetCityId: "wei-city", orderStartMonth: 12, captures: [{ eventId, cityId: "wei-city", month: 24 }] }],
+      personSequence: 2, commandSequence: 2, lastEvaluationMonth: 12,
+    };
+    expect(validateWorldSave(JSON.parse(JSON.stringify(save)))).toEqual({ valid: true, errors: [] });
+    const broken = structuredClone(save);
+    broken.registries.militaryCommandRegistry.formations[0].memberUnitIds.push("unit-2");
+    expect(validateWorldSave(broken).errors).toContain("active formation size is invalid: military-command-1");
+    const dangling = structuredClone(save);
+    dangling.registries.militaryCommandRegistry.formations[0].memberUnitIds[1] = "missing-unit";
+    expect(validateWorldSave(dangling).errors).toContain("active formation references invalid member unit: missing-unit");
   });
 
   it("rejects duplicate ids, non-finite values and class instances", () => {
