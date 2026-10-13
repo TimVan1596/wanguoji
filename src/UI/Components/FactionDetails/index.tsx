@@ -6,7 +6,7 @@ import { getTerminationTargetName } from "./model";
 import { formatRulerTerminalEvent } from "../../../History/PoliticalTerminalChronicle";
 import { getSignificantReignStats, formatRulerLifeAge, formatRulerDepositionFact } from "./RoyalPresentation";
 import { getFactionColorAtMonth, type FactionColorHistoryEntry } from "../../../Simulation/FactionColorHistory";
-import { Box, Button, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
+import { Box, Button, Dialog, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, Typography, type SelectChangeEvent } from "@mui/material";
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getFactionStability } from "../../../Components/City";
@@ -37,7 +37,10 @@ import {
 } from "../../../Simulation/WorldTime";
 import {
   FactionListFilter,
+  getFactionTerminalMonth,
   getVisibleFactions,
+  sortHistoricalFactions,
+  type HistoricalFactionSort,
 } from "../../../Simulation/FactionListRules";
 import { createFactionArchiveLabelMap } from "../../../Simulation/FactionArchiveLabels";
 import {
@@ -120,6 +123,8 @@ export default function FactionDetails() {
   );
   const [factionListFilter, setFactionListFilter] =
     useState<FactionListFilter>("all");
+  const [historicalFactionSort, setHistoricalFactionSort] =
+    useState<HistoricalFactionSort>("terminal-recent");
   const [historyRevision, setHistoryRevision] = useState(() => WorldHistory.getRevision());
   const [rulerDetailId, setRulerDetailId] = useState<string | undefined>();
   useEffect(() => WorldHistory.subscribeRevision(setHistoryRevision), []);
@@ -136,6 +141,8 @@ export default function FactionDetails() {
         worldMonth={worldMonth}
         filter={factionListFilter}
         onFilterChange={setFactionListFilter}
+        historicalSort={historicalFactionSort}
+        onHistoricalSortChange={setHistoricalFactionSort}
       />
     );
   }
@@ -575,22 +582,26 @@ function FactionList({
   worldMonth,
   filter,
   onFilterChange,
+  historicalSort,
+  onHistoricalSortChange,
 }: {
   teams: RootState["root"]["teams"];
   worldMonth: number;
   filter: FactionListFilter;
   onFilterChange: (filter: FactionListFilter) => void;
+  historicalSort: HistoricalFactionSort;
+  onHistoricalSortChange: (sort: HistoricalFactionSort) => void;
 }) {
-  const visibleTeams = getVisibleFactions(
-    [...teams].sort((a, b) => {
+  const filteredTeams = useMemo(() => getVisibleFactions(teams, filter), [teams, filter]);
+  const visibleTeams = useMemo(() => filter === "extinct"
+    ? sortHistoricalFactions(filteredTeams, historicalSort, worldMonth)
+    : [...filteredTeams].sort((a, b) => {
       if (a.status !== b.status) {
         const order = { ACTIVE: 0, EXILED: 1, EXTINCT: 2 };
         return order[a.status] - order[b.status];
       }
       return getCumulativeActiveMonthsSafe(b, worldMonth) - getCumulativeActiveMonthsSafe(a, worldMonth);
-    }),
-    filter
-  );
+    }), [filteredTeams, filter, historicalSort, worldMonth]);
   const archiveLabelById = useMemo(() => createFactionArchiveLabelMap(teams), [teams]);
   const activeRelations = Diplomacy.list(worldMonth);
   return (
@@ -616,6 +627,25 @@ function FactionList({
           </Button>
         ))}
       </Box>
+      {filter === "extinct" ? (
+        <FormControl size="small" fullWidth sx={{ mb: 0.8 }}>
+          <InputLabel id="historical-faction-sort-label">终结排序</InputLabel>
+          <Select
+            labelId="historical-faction-sort-label"
+            value={historicalSort}
+            label="终结排序"
+            onChange={(event: SelectChangeEvent<HistoricalFactionSort>) => onHistoricalSortChange(event.target.value as HistoricalFactionSort)}
+            sx={{ fontSize: "0.78rem" }}
+          >
+            <MenuItem value="terminal-recent">终结时间：由近到远</MenuItem>
+            <MenuItem value="terminal-oldest">终结时间：由远到近</MenuItem>
+            <MenuItem value="active-longest">累计在国：由长到短</MenuItem>
+            <MenuItem value="active-shortest">累计在国：由短到长</MenuItem>
+            <MenuItem value="founded-recent">建立时间：由近到远</MenuItem>
+            <MenuItem value="restorations-most">复国次数：由多到少</MenuItem>
+          </Select>
+        </FormControl>
+      ) : null}
       <Box sx={{ display: "grid", gap: 0.45 }}>
         <Box
           sx={{
@@ -627,11 +657,11 @@ function FactionList({
           }}
         >
           <span>名称</span>
-          <span>状态</span>
+          <span>{filter === "extinct" ? "类型 / 终结时间" : "状态"}</span>
           <span>初建</span>
-          <span>势力存续</span>
+          <span>{filter === "extinct" ? "累计在国" : "势力存续"}</span>
           <span>城</span>
-          <span>复国</span>
+          <span>{filter === "extinct" ? "复国数" : "复国"}</span>
         </Box>
         {visibleTeams.map((team) => (
           <Box
@@ -708,7 +738,14 @@ function FactionList({
                 {getFactionRegimeBadge(team)}
               </Box>
             </span>
-            <span>{formatStatus(team.status, team.terminationReason)}</span>
+            <span>
+              {filter === "extinct" ? "已终结" : formatStatus(team.status, team.terminationReason)}
+              {filter === "extinct" ? (
+                <Box component="span" sx={{ display: "block", mt: 0.15, fontSize: "0.66rem", color: "var(--gg-text-muted)" }}>
+                  {formatTerminationKind(team.terminationReason)} · {getFactionTerminalMonth(team) === undefined ? "—" : formatWorldDate(getFactionTerminalMonth(team)!)}
+                </Box>
+              ) : null}
+            </span>
             <span>{formatWorldDate(team.firstFoundedYear)}</span>
             <span>{formatWorldDuration(getCumulativeActiveMonthsSafe(team, worldMonth))}</span>
             <span>{team.cities.length}</span>
@@ -1340,6 +1377,13 @@ function formatStatus(status: string, terminationReason?: string) {
     return "流亡";
   }
   return terminationReason === "SUBMITTED" ? "【纳土归附】已纳土" : terminationReason === "MERGED" ? "【同源合邦】已并入" : "【覆灭】已覆灭";
+}
+
+function formatTerminationKind(reason?: string) {
+  if (reason === "SUBMITTED") return "纳土归附";
+  if (reason === "MERGED") return "同源合邦";
+  if (reason === "EXTINCT") return "彻底覆灭";
+  return "终结原因未记录";
 }
 
 function TrendChart({
