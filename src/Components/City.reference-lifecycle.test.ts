@@ -70,4 +70,12 @@ describe("actual City lifecycle across full map references", () => {
     expect(refs().every(b => city.fortifiedCells.includes(b))).toBe(true);
     city.devastation = 100; expect(city.destroyPermanently(500)).toBe(true); expect(refs()).toHaveLength(0);
   });
+  it("keeps actual command contributions in the authoritative siege-contact snapshot", () => {
+    const { city, owners } = fixture();
+    city.registerSiegeContact(owners[1], 120, undefined, "military-command-1", "military-person-1");
+    city.registerSiegeContact(owners[1], 121, undefined, "military-command-1", "military-person-1");
+    const save = city.exportState(3, 3) as any;
+    expect(save.siegeContacts).toMatchObject([{ factionId: "B", count: 2, commandId: "military-command-1",
+      commanderPersonId: "military-person-1", commandContributions: [{ commandId: "military-command-1", commanderPersonId: "military-person-1", count: 2 }] }]);
+  });
 });

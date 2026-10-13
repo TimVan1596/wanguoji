@@ -3,6 +3,7 @@ import type Team from "../Components/Team";
 import type { LogicalUnitState } from "./LogicalUnitState";
 import type { LogicalMovementResult } from "./LogicalMovementSystem";
 import Diplomacy, { isHostileActionAllowed } from "../Politics/Diplomacy";
+import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
 
 export interface LogicalOccupationContext {
   getTeam: (factionId: string) => Team | undefined;
@@ -64,10 +65,13 @@ export function applyLogicalOccupation({
         return;
       }
       contactState?.siegeContactMonthByUnitCity.set(contactKey, worldMonth);
+      const command = MilitaryCommandRegistry.getCommandForUnit(unit.unitId);
       block.city.registerSiegeContact(
         team,
         worldMonth,
-        unit.role === "RULER" ? unit.rulerId : undefined
+        unit.role === "RULER" ? unit.rulerId : undefined,
+        command?.commandId,
+        command?.commanderPersonId
       );
       siegeContacts += 1;
       return;

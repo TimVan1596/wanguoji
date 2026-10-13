@@ -1,8 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { deriveUserBornMonth, MilitaryCommandRegistryStore } from "./MilitaryCommandRegistry";
+import MilitaryCommandRegistry, { deriveUserBornMonth, MilitaryCommandRegistryStore } from "./MilitaryCommandRegistry";
 import worldRandom from "../Simulation/WorldRandom";
+import { stepLogicalMovement } from "../Simulation/LogicalMovementSystem";
+import { applyLogicalOccupation } from "../Simulation/LogicalOccupationSystem";
+import Diplomacy from "./Diplomacy";
 
-afterEach(() => { vi.restoreAllMocks(); });
+afterEach(() => { vi.restoreAllMocks(); MilitaryCommandRegistry.reset(); });
 
 function user(id: number, faction: any, unitId: string, bornMonth = -300) {
   return { id, name: `人口${id}`, team: faction, role: "NORMAL", bornMonth,
@@ -20,7 +23,7 @@ describe("persistent military command registry", () => {
 
   it("appoints an existing User, assigns only existing units and issues an executable hostile-city order", () => {
     const draw = vi.spyOn(worldRandom, "next").mockReturnValue(0);
-    const registry = new MilitaryCommandRegistryStore();
+    const registry = MilitaryCommandRegistry;
     const events: any[] = [];
     registry.setEventWriter(event => { events.push(event); return event.id; });
     const qin: any = { name: "qin", status: "ACTIVE", users: new Set(), cities: [] };
@@ -28,7 +31,8 @@ describe("persistent military command registry", () => {
     const commander = user(1, qin, "unit-1");
     const member = user(2, qin, "unit-2");
     qin.users.add(commander); qin.users.add(member);
-    const city: any = { id: "wei-capital", ownerFactionId: "wei", ownerTeam: wei, block: { x: 100, y: 100 } };
+    const registerSiegeContact = vi.fn();
+    const city: any = { id: "wei-capital", ownerFactionId: "wei", ownerTeam: wei, block: { x: 32, y: 0 }, registerSiegeContact };
 
     registry.update(12, [qin, wei], [city]);
     draw.mockRestore();
@@ -41,10 +45,19 @@ describe("persistent military command registry", () => {
     expect(events).toHaveLength(1);
     expect(registry.getDiagnostics()).toMatchObject({ candidates: 2, eligible: 2, appointments: 1, activeCommanders: 1, activeFormations: 1 });
 
-    const units: any[] = ["unit-1", "unit-2"].map((unitId, index) => ({ unitId, factionId: "qin", logicalX: 0,
-      logicalY: index, logicalVX: 0, logicalVY: 0, alive: true, currentGridX: 0, currentGridY: 0, radius: 1, speed: 10 }));
+    const units: any[] = ["unit-1", "unit-2"].map(unitId => ({ unitId, factionId: "qin", logicalX: 0,
+      logicalY: 0, logicalVX: 0, logicalVY: 0, alive: true, currentGridX: 0, currentGridY: 0, radius: 1, speed: 32, role: "NORMAL" }));
     registry.steerLogicalUnits(12, units, [city]);
-    expect(units.every(unit => unit.logicalVX > 0 && unit.logicalVY > 0)).toBe(true);
+    expect(units.every(unit => unit.logicalVX === 32 && unit.logicalVY === 0)).toBe(true);
+    const moved = stepLogicalMovement({ units, deltaMs: 1000, blockSize: 32, bounds: { minX: 0, minY: 0, maxX: 64, maxY: 32 } });
+    expect(moved.every(result => result.enteredNewGrid && result.currentGridX === 1)).toBe(true);
+    Diplomacy.reset();
+    const contactResult = applyLogicalOccupation({ units, movementResults: moved,
+      context: { getTeam: factionId => factionId === "qin" ? qin : wei,
+        getBlock: gridX => gridX === 1 ? { city, team: wei } as any : { team: qin } as any, getWorldMonth: () => 12 } });
+    expect(contactResult.siegeContacts).toBe(2);
+    expect(registerSiegeContact).toHaveBeenCalledTimes(2);
+    expect(registerSiegeContact).toHaveBeenCalledWith(qin, 12, undefined, formation.commandId, person.personId);
   });
 
   it("retires the command on faction transfer without recording a death", () => {

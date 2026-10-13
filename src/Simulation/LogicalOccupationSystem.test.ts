@@ -1,10 +1,11 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   applyLogicalOccupation,
   createLogicalOccupationContactState,
 } from "./LogicalOccupationSystem";
 import type { LogicalUnitState } from "./LogicalUnitState";
 import Diplomacy from "../Politics/Diplomacy";
+import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
 
 function unit(overrides: Partial<LogicalUnitState> = {}): LogicalUnitState {
   return {
@@ -38,6 +39,20 @@ describe("LogicalOccupationSystem", () => {
     expect(contacts).toBe(0);
     expect(Diplomacy.getDiagnostics(12).blockedSiegeContactCount).toBe(1);
     Diplomacy.reset();
+  });
+  it("passes the real unit's active command attribution into city siege contact", () => {
+    vi.spyOn(MilitaryCommandRegistry, "getCommandForUnit").mockReturnValue({
+      commandId: "military-command-2", commanderPersonId: "military-person-2",
+    } as any);
+    const registerSiegeContact = vi.fn();
+    const qin = { name: "qin", isDie: false };
+    const city = { ownerTeam: { name: "chu" }, registerSiegeContact };
+    const result = applyLogicalOccupation({
+      units: [unit({ unitId: "commanded-unit" })], movementResults: [],
+      context: { getTeam: () => qin as never, getBlock: () => ({ city }) as never, getWorldMonth: () => 12 },
+    });
+    expect(result.siegeContacts).toBe(1);
+    expect(registerSiegeContact).toHaveBeenCalledWith(qin, 12, undefined, "military-command-2", "military-person-2");
   });
   it("occupies an enemy non-city block without Phaser collision", () => {
     const qin = { name: "qin", isDie: false };

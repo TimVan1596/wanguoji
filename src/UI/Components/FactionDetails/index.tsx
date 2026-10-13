@@ -557,7 +557,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
   const diagnostics = MilitaryCommandRegistry.getDiagnostics();
   return <Box sx={{ display: "grid", gap: 1, mt: 0.5 }}>
     <Typography fontSize="0.78rem" color="var(--gg-text-muted)">
-      本次运行：候选 {diagnostics.candidates} · 符合资格 {diagnostics.eligible} · 任命 {diagnostics.appointments} · 名额阻断 {diagnostics.capBlocked} · 编组不足 {diagnostics.unitBlocked}
+      全世界本次运行累计：候选 {diagnostics.candidates} · 符合资格 {diagnostics.eligible} · 任命 {diagnostics.appointments} · 名额阻断 {diagnostics.capBlocked} · 编组不足 {diagnostics.unitBlocked}
     </Typography>
     {!people.length && <Typography fontSize="0.86rem" color="var(--gg-text-muted)">本国尚无已任命的军事指挥人物。</Typography>}
     {people.map(person => {
