@@ -37,7 +37,6 @@ import {
 } from "../../../Simulation/WorldTime";
 import {
   FactionListFilter,
-  getFactionTerminalMonth,
   getVisibleFactions,
   sortHistoricalFactions,
   type HistoricalFactionSort,
@@ -93,6 +92,7 @@ import formatNumber from "../../../utils/formatNumber";
 import {
   buildEmperorQualificationLines,
   buildFactionOverviewSections,
+  buildTerminalFactionArchiveDetails,
   buildStateFormationStatusLines,
   getCumulativeActiveMonthsSafe,
 } from "./model";
@@ -647,111 +647,138 @@ function FactionList({
         </FormControl>
       ) : null}
       <Box sx={{ display: "grid", gap: 0.45 }}>
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: "1.1fr 0.65fr 0.9fr 1fr 0.55fr 0.65fr",
-            gap: 0.45,
-            fontSize: "0.72rem",
-            color: "var(--gg-text-muted)",
-          }}
-        >
-          <span>名称</span>
-          <span>{filter === "extinct" ? "类型 / 终结时间" : "状态"}</span>
-          <span>初建</span>
-          <span>{filter === "extinct" ? "累计在国" : "势力存续"}</span>
-          <span>城</span>
-          <span>{filter === "extinct" ? "复国数" : "复国"}</span>
-        </Box>
-        {visibleTeams.map((team) => (
+        {filter !== "extinct" ? (
           <Box
-            key={team.name}
-            onClick={() => Game.Core?.selectFaction(team.name)}
             sx={{
               display: "grid",
               gridTemplateColumns: "1.1fr 0.65fr 0.9fr 1fr 0.55fr 0.65fr",
               gap: 0.45,
-              alignItems: "center",
-              fontSize: "0.76rem",
-              p: 0.55,
-              border: "1px solid var(--gg-border)",
-              borderRadius: "var(--gg-radius)",
-              cursor: "pointer",
-              background: "var(--gg-panel)",
-              "&:hover": {
-                borderColor: "var(--gg-selected)",
-              },
+              fontSize: "0.72rem",
+              color: "var(--gg-text-muted)",
             }}
           >
-            <span>
-              <Box
-                component="span"
-                sx={{
-                  display: "inline-block",
-                  width: "0.65rem",
-                  height: "0.65rem",
-                  mr: 0.45,
-                  backgroundColor: colorToString(team.color),
-                  border: "1px solid rgba(0,0,0,0.35)",
-                  verticalAlign: "-0.05rem",
-                }}
-              />
-              <Box component="span" sx={{ fontWeight: getFactionRegimeWeight(team) === 2 ? 800 : 600 }}>
-                {archiveLabelById.get(team.name) ?? getFactionListDisplayName(team, worldMonth)}
-              </Box>
-              <Box component="span" sx={{ display: "inline-flex", gap: 0.25, ml: 0.45, verticalAlign: "middle" }}>
-                {getFactionDiplomacyBadges(activeRelations, team.name).map(({ relation, counterpartId }) => {
-                  const counterpart = teams.find((candidate) => candidate.name === counterpartId);
-                  const short = relation.status === "TRUCE" ? "停" : relation.status === "ALLIANCE" ? "盟" : "约";
-                  const counterpartName = counterpart?.displayName ?? counterpartId;
-                  const full = relation.status === "TRUCE" ? "停战" : relation.status === "ALLIANCE" ? "战略同盟" : "互不侵犯";
-                  return (
-                    <Box
-                      component="span"
-                      key={`${relation.factionAId}:${relation.factionBId}`}
-                      title={`${counterpartName} · ${full} · ${formatWorldDate(relation.startedMonth)}订立 · 约期${formatWorldDuration(relation.expiresMonth - relation.startedMonth)} · 至${formatWorldDate(relation.expiresMonth)}`}
-                      sx={{
-                        display: "inline-flex", alignItems: "center", gap: 0.2,
-                        px: 0.3, border: `1px solid ${counterpart ? colorToString(counterpart.color) : "var(--gg-border)"}`,
-                        borderRadius: "999px", fontSize: "0.61rem", lineHeight: 1.4, whiteSpace: "nowrap",
-                      }}
-                    >
-                      <Box component="span" sx={{ width: 5, height: 5, borderRadius: "50%", bgcolor: counterpart ? colorToString(counterpart.color) : "var(--gg-border)" }} />
-                      {short}·{counterpartName}
-                    </Box>
-                  );
-                })}
-              </Box>
-              <Box
-                component="span"
-                sx={{
-                  display: "block",
-                  mt: 0.1,
-                  ml: 1.1,
-                  fontSize: "0.66rem",
-                  color:
-                    getFactionRegimeWeight(team) === 2
-                      ? "#7a4b00"
-                      : "var(--gg-text-muted)",
-                }}
-              >
-                {getFactionRegimeBadge(team)}
-              </Box>
-            </span>
-            <span>
-              {filter === "extinct" ? "已终结" : formatStatus(team.status, team.terminationReason)}
-              {filter === "extinct" ? (
-                <Box component="span" sx={{ display: "block", mt: 0.15, fontSize: "0.66rem", color: "var(--gg-text-muted)" }}>
-                  {formatTerminationKind(team.terminationReason)} · {getFactionTerminalMonth(team) === undefined ? "—" : formatWorldDate(getFactionTerminalMonth(team)!)}
-                </Box>
-              ) : null}
-            </span>
-            <span>{formatWorldDate(team.firstFoundedYear)}</span>
-            <span>{formatWorldDuration(getCumulativeActiveMonthsSafe(team, worldMonth))}</span>
-            <span>{team.cities.length}</span>
-            <span>{team.restorationYears.length || "—"}</span>
+            <span>名称</span>
+            <span>状态</span>
+            <span>初建</span>
+            <span>势力存续</span>
+            <span>城</span>
+            <span>复国</span>
           </Box>
+        ) : null}
+        {visibleTeams.map((team) => (
+          filter === "extinct" ? (
+            <TerminalFactionArchiveCard
+              key={team.name}
+              team={team}
+              worldMonth={worldMonth}
+              sort={historicalSort}
+              displayName={archiveLabelById.get(team.name) ?? getFactionListDisplayName(team, worldMonth)}
+            />
+          ) : (
+            <Box
+              key={team.name}
+              onClick={() => Game.Core?.selectFaction(team.name)}
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "1.1fr 0.65fr 0.9fr 1fr 0.55fr 0.65fr",
+                gap: 0.45,
+                alignItems: "center",
+                fontSize: "0.76rem",
+                p: 0.55,
+                border: "1px solid var(--gg-border)",
+                borderRadius: "var(--gg-radius)",
+                cursor: "pointer",
+                background: "var(--gg-panel)",
+                "&:hover": { borderColor: "var(--gg-selected)" },
+              }}
+            >
+              <span>
+                <Box component="span" sx={{ display: "inline-block", width: "0.65rem", height: "0.65rem", mr: 0.45, backgroundColor: colorToString(team.color), border: "1px solid rgba(0,0,0,0.35)", verticalAlign: "-0.05rem" }} />
+                <Box component="span" sx={{ fontWeight: getFactionRegimeWeight(team) === 2 ? 800 : 600 }}>
+                  {archiveLabelById.get(team.name) ?? getFactionListDisplayName(team, worldMonth)}
+                </Box>
+                <Box component="span" sx={{ display: "inline-flex", gap: 0.25, ml: 0.45, verticalAlign: "middle" }}>
+                  {getFactionDiplomacyBadges(activeRelations, team.name).map(({ relation, counterpartId }) => {
+                    const counterpart = teams.find((candidate) => candidate.name === counterpartId);
+                    const short = relation.status === "TRUCE" ? "停" : relation.status === "ALLIANCE" ? "盟" : "约";
+                    const counterpartName = counterpart?.displayName ?? counterpartId;
+                    const full = relation.status === "TRUCE" ? "停战" : relation.status === "ALLIANCE" ? "战略同盟" : "互不侵犯";
+                    return (
+                      <Box component="span" key={`${relation.factionAId}:${relation.factionBId}`} title={`${counterpartName} · ${full} · ${formatWorldDate(relation.startedMonth)}订立 · 约期${formatWorldDuration(relation.expiresMonth - relation.startedMonth)} · 至${formatWorldDate(relation.expiresMonth)}`} sx={{ display: "inline-flex", alignItems: "center", gap: 0.2, px: 0.3, border: `1px solid ${counterpart ? colorToString(counterpart.color) : "var(--gg-border)"}`, borderRadius: "999px", fontSize: "0.61rem", lineHeight: 1.4, whiteSpace: "nowrap" }}>
+                        <Box component="span" sx={{ width: 5, height: 5, borderRadius: "50%", bgcolor: counterpart ? colorToString(counterpart.color) : "var(--gg-border)" }} />
+                        {short}·{counterpartName}
+                      </Box>
+                    );
+                  })}
+                </Box>
+                <Box component="span" sx={{ display: "block", mt: 0.1, ml: 1.1, fontSize: "0.66rem", color: getFactionRegimeWeight(team) === 2 ? "#7a4b00" : "var(--gg-text-muted)" }}>
+                  {getFactionRegimeBadge(team)}
+                </Box>
+              </span>
+              <span>{formatStatus(team.status, team.terminationReason)}</span>
+              <span>{formatWorldDate(team.firstFoundedYear)}</span>
+              <span>{formatWorldDuration(getCumulativeActiveMonthsSafe(team, worldMonth))}</span>
+              <span>{team.cities.length}</span>
+              <span>{team.restorationYears.length || "—"}</span>
+            </Box>
+          )
         ))}
+      </Box>
+    </Box>
+  );
+}
+
+function TerminalFactionArchiveCard({
+  team,
+  worldMonth,
+  sort,
+  displayName,
+}: {
+  team: RootState["root"]["teams"][number];
+  worldMonth: number;
+  sort: HistoricalFactionSort;
+  displayName: string;
+}) {
+  const details = buildTerminalFactionArchiveDetails(team, worldMonth, sort);
+  return (
+    <Box
+      onClick={() => Game.Core?.selectFaction(team.name)}
+      sx={{
+        p: 0.7,
+        border: "1px solid var(--gg-border)",
+        borderRadius: "var(--gg-radius)",
+        cursor: "pointer",
+        background: "var(--gg-panel)",
+        "&:hover": { borderColor: "var(--gg-selected)" },
+      }}
+    >
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 0.75, minWidth: 0 }}>
+        <Box sx={{ display: "flex", alignItems: "center", minWidth: 0, flex: 1 }}>
+          <Box component="span" sx={{ flex: "0 0 auto", width: "0.7rem", height: "0.7rem", mr: 0.55, backgroundColor: colorToString(team.color), border: "1px solid rgba(0,0,0,0.35)" }} />
+          <Typography
+            component="span"
+            title={displayName}
+            sx={{ minWidth: 0, fontSize: "0.9rem", fontWeight: getFactionRegimeWeight(team) === 2 ? 800 : 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+          >
+            {displayName}
+          </Typography>
+        </Box>
+        <Typography component="span" sx={{ flex: "0 0 auto", whiteSpace: "nowrap", fontSize: "0.83rem", fontWeight: 600 }}>
+          {details.terminalDate === undefined ? "—" : formatWorldDate(details.terminalDate)}
+        </Typography>
+      </Box>
+      <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", columnGap: 0.45, rowGap: 0.05, mt: 0.2, pl: 1.25, color: "var(--gg-text-muted)" }}>
+        <Typography component="span" sx={{ fontSize: "0.76rem", lineHeight: 1.35 }}>
+          {details.terminalKind} · 累计在国{details.activeDuration}
+        </Typography>
+        <Typography component="span" sx={{ fontSize: "0.7rem", lineHeight: 1.35 }}>
+          {details.foundedDate ? `初建${details.foundedDate}` : null}
+        </Typography>
+        {details.showRestorationCount ? (
+          <Typography component="span" sx={{ fontSize: "0.7rem", lineHeight: 1.35 }}>
+            {details.restorationLabel}
+          </Typography>
+        ) : null}
       </Box>
     </Box>
   );
@@ -1377,13 +1404,6 @@ function formatStatus(status: string, terminationReason?: string) {
     return "流亡";
   }
   return terminationReason === "SUBMITTED" ? "【纳土归附】已纳土" : terminationReason === "MERGED" ? "【同源合邦】已并入" : "【覆灭】已覆灭";
-}
-
-function formatTerminationKind(reason?: string) {
-  if (reason === "SUBMITTED") return "纳土归附";
-  if (reason === "MERGED") return "同源合邦";
-  if (reason === "EXTINCT") return "彻底覆灭";
-  return "终结原因未记录";
 }
 
 function TrendChart({

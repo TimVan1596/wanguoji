@@ -1,4 +1,5 @@
 import { formatWorldDate, formatWorldDuration } from "../../../Simulation/WorldTime";
+import { getFactionTerminalMonth, type HistoricalFactionSort } from "../../../Simulation/FactionListRules";
 import {
   EMPEROR_MIN_CITY_SHARE,
   EMPEROR_MIN_KING_MONTHS,
@@ -104,6 +105,36 @@ export function getCumulativeActiveMonthsSafe(
     return Math.max(0, (faction.lastExiledYear ?? worldMonth) - firstFounded);
   }
   return Math.max(0, worldMonth - firstFounded);
+}
+
+export function buildTerminalFactionArchiveDetails(
+  faction: FactionDetailsTeamLike,
+  worldMonth: number,
+  sort: HistoricalFactionSort
+) {
+  const restorationCount = faction.restorationYears?.length ?? 0;
+  const reason = faction.terminationReason;
+  return {
+    terminalDate: getFactionTerminalMonth({
+      name: faction.name,
+      status: faction.status as "ACTIVE" | "EXILED" | "EXTINCT",
+      terminationReason: reason,
+      extinctionYear: faction.extinctionYear,
+      terminationMonth: faction.terminationMonth,
+    }),
+    terminalKind: reason === "SUBMITTED"
+      ? "纳土归附"
+      : reason === "MERGED"
+        ? "同源合邦"
+        : reason === "EXTINCT"
+          ? "彻底覆灭"
+          : "终结原因未记录",
+    activeDuration: formatWorldDuration(getCumulativeActiveMonthsSafe(faction, worldMonth)),
+    foundedDate: faction.firstFoundedYear === undefined ? undefined : formatWorldDate(faction.firstFoundedYear),
+    restorationCount,
+    showRestorationCount: restorationCount > 0 || sort === "restorations-most",
+    restorationLabel: restorationCount > 0 ? `曾复国${restorationCount}次` : "复国0次",
+  };
 }
 
 export function buildFactionIdentityLines(

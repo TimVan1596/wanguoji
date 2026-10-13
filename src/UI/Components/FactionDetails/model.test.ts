@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildFactionIdentityLines,
+  buildTerminalFactionArchiveDetails,
   buildEmperorQualificationLines,
   buildFactionOverviewSections,
   buildFactionLifecycleLines,
@@ -11,6 +12,67 @@ import {
 } from "./model";
 
 describe("faction details model", () => {
+  it("builds compact terminal archive details without city or zero-restoration clutter", () => {
+    const details = buildTerminalFactionArchiveDetails({
+      name: "qin-id",
+      displayName: "秦",
+      status: "EXTINCT",
+      terminationReason: "EXTINCT",
+      extinctionYear: 2782,
+      firstFoundedYear: 120,
+      restorationYears: [],
+      getCumulativeActiveYears: () => 2530,
+      cities: [],
+    }, 3000, "terminal-recent");
+    expect(details).toMatchObject({
+      terminalDate: 2782,
+      terminalKind: "彻底覆灭",
+      activeDuration: "210年10个月",
+      foundedDate: "10年1月",
+      showRestorationCount: false,
+      restorationLabel: "复国0次",
+    });
+    expect(details).not.toHaveProperty("cities");
+  });
+
+  it("uses termination months for submission and union, and reveals zero when sorting by restoration", () => {
+    const submitted = buildTerminalFactionArchiveDetails({
+      name: "submitted",
+      status: "EXTINCT",
+      terminationReason: "SUBMITTED",
+      extinctionYear: 80,
+      terminationMonth: 240,
+      restorationYears: [],
+      getCumulativeActiveYears: () => 96,
+    }, 300, "restorations-most");
+    const restored = buildTerminalFactionArchiveDetails({
+      name: "restored",
+      status: "EXTINCT",
+      terminationReason: "MERGED",
+      terminationMonth: 360,
+      restorationYears: [120, 240],
+      getCumulativeActiveYears: () => 240,
+    }, 400, "terminal-recent");
+    expect(submitted.terminalDate).toBe(240);
+    expect(submitted.terminalKind).toBe("纳土归附");
+    expect(submitted.showRestorationCount).toBe(true);
+    expect(submitted.restorationLabel).toBe("复国0次");
+    expect(restored.terminalDate).toBe(360);
+    expect(restored.terminalKind).toBe("同源合邦");
+    expect(restored.showRestorationCount).toBe(true);
+    expect(restored.restorationLabel).toBe("曾复国2次");
+  });
+
+  it("preserves a missing terminal date as missing for the card to render as a dash", () => {
+    const details = buildTerminalFactionArchiveDetails({
+      name: "unknown-end",
+      status: "EXTINCT",
+      terminationReason: "EXTINCT",
+      restorationYears: [],
+    }, 400, "terminal-recent");
+    expect(details.terminalDate).toBeUndefined();
+  });
+
   it("resolves historical names without requiring Team prototype methods", () => {
     expect(
       resolveFactionNameAtMonthSafe(
