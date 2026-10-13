@@ -1123,6 +1123,19 @@ export default class Core {
     return true;
   }
 
+  focusMilitaryTargetCity(cityId: string) {
+    const city = this.allCities.find(item => item.id === cityId);
+    if (!city) return false;
+    const camera = this.scene.cameras.main;
+    camera.centerOn(city.block.x + Game.BlockSize / 2, city.block.y + Game.BlockSize / 2);
+    city.setZoneHighlight(true);
+    this.scene.time.delayedCall(1200, () => {
+      city.setZoneHighlight(false);
+      city.block.updateCityDisplay();
+    });
+    return true;
+  }
+
   selectFaction(name: string | undefined) {
     store.dispatch(setSelectedFactionName(name));
     if (name) {

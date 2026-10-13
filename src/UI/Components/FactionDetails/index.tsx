@@ -15,6 +15,7 @@ import { colorToString } from "../../../paid/theme";
 import DynastyRegistry, { Dynasty, Ruler } from "../../../Politics/Dynasty";
 import Diplomacy from "../../../Politics/Diplomacy";
 import MilitaryCommandRegistry from "../../../Politics/MilitaryCommandRegistry";
+import { describeMilitaryDeathCause, sortMilitaryPeople } from "./MilitaryPeoplePresentation";
 import { formatDiplomacyRelationLines, getFactionDiplomacyBadges } from "../../../Politics/DiplomacyPresentation";
 import FactionSnapshots, {
   FactionSnapshot,
@@ -551,13 +552,17 @@ function FactionProfile({
 }
 
 function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; worldMonth: number }) {
-  const people = MilitaryCommandRegistry.getPeople().filter(person => person.factionId === factionId || person.appointments.some(appointment => appointment.factionId === factionId))
-    .slice().sort((a, b) => b.status.localeCompare(a.status) || a.name.localeCompare(b.name));
+  const people = sortMilitaryPeople(MilitaryCommandRegistry.getPeople().filter(person => person.factionId === factionId || person.appointments.some(appointment => appointment.factionId === factionId)));
   const formations = MilitaryCommandRegistry.getFormations();
   const diagnostics = MilitaryCommandRegistry.getDiagnostics();
+  const factionCommanders = people.filter(person => person.factionId === factionId && person.status === "ACTIVE").length;
+  const factionFormations = formations.filter(formation => formation.factionId === factionId && formation.status === "ACTIVE").length;
   return <Box sx={{ display: "grid", gap: 1, mt: 0.5 }}>
     <Typography fontSize="0.78rem" color="var(--gg-text-muted)">
-      全世界本次运行累计：候选 {diagnostics.candidates} · 符合资格 {diagnostics.eligible} · 任命 {diagnostics.appointments} · 名额阻断 {diagnostics.capBlocked} · 编组不足 {diagnostics.unitBlocked}
+      本国：现役指挥官 {factionCommanders} · 活动编组 {factionFormations} · 历史任职人物 {people.length}
+    </Typography>
+    <Typography fontSize="0.76rem" color="var(--gg-text-muted)">
+      全世界本次运行累计诊断：候选 {diagnostics.candidates} · 符合资格 {diagnostics.eligible} · 任命 {diagnostics.appointments} · 命令 {diagnostics.orders} · 转向步进 {diagnostics.unitsSteered} · 围城接触 {diagnostics.commandedSiegeContacts} · 攻陷 {diagnostics.captures} · 目标失效 {diagnostics.invalidatedTargets} · 长期远距命令 {diagnostics.staleOrderChecks}
     </Typography>
     {!people.length && <Typography fontSize="0.86rem" color="var(--gg-text-muted)">本国尚无已任命的军事指挥人物。</Typography>}
     {people.map(person => {
@@ -569,14 +574,17 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
       const age = Math.floor(monthsToYears(Math.max(0, ageAtMonth - person.bornMonth)));
       return <Box key={person.personId} sx={{ borderBottom: "1px solid var(--gg-border-muted)", pb: 0.75 }}>
         <Typography fontWeight="bold" fontSize="0.9rem">{person.name} · {person.status === "ACTIVE" ? "现役指挥官" : person.status === "DEAD" ? "已故" : "已离任"}</Typography>
-        <Typography fontSize="0.82rem" color="var(--gg-text-muted)">年龄 {age} 岁 · 任职 {person.appointments.map(item => `${formatWorldDate(item.startMonth)}${item.endMonth === undefined ? "至今" : `—${formatWorldDate(item.endMonth)}`}`).join("；")}</Typography>
-        {person.deathMonth !== undefined && <Typography fontSize="0.82rem">生命结局：{formatWorldDate(person.deathMonth)}去世（{person.deathCause}）</Typography>}
+        <Typography fontSize="0.82rem" color="var(--gg-text-muted)">{person.status === "DEAD" ? `享年 ${age} 岁` : `年龄 ${age} 岁`} · 任职 {person.appointments.map(item => `${formatWorldDate(item.startMonth)}${item.endMonth === undefined ? "至今" : `—${formatWorldDate(item.endMonth)}`}`).join("；")}</Typography>
+        {person.deathMonth !== undefined && <Typography fontSize="0.82rem">生命结局：{formatWorldDate(person.deathMonth)}去世（{describeMilitaryDeathCause(person.deathCause)}）</Typography>}
         {formation && <>
           <Typography fontSize="0.82rem">编组 {formation.commandId} · 真实成员 {formation.memberUnitIds.length} 人</Typography>
           <Typography fontSize="0.82rem">目标：{target?.name ?? "暂无有效目标"} · 命令始于 {formation.orderStartMonth === undefined ? "—" : formatWorldDate(formation.orderStartMonth)}</Typography>
           <Typography fontSize="0.82rem">已核验攻城结果：{formation.captures.length} 次</Typography>
-          <Button size="small" disabled={!activeUser} onClick={() => Game.Core?.focusMilitaryFormation(formation.commandId)}>定位编组</Button>
-          {target && <Button size="small" onClick={() => Game.Core?.focusCameraOnCity(target.id)}>定位目标城市</Button>}
+          <Typography fontSize="0.78rem" color="var(--gg-text-muted)">军令自动执行；以下操作只定位地图。</Typography>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+            <Button size="small" disabled={!activeUser} sx={{ minWidth: 0, px: 1 }} onClick={() => Game.Core?.focusMilitaryFormation(formation.commandId)}>定位部队</Button>
+            {target && <Button size="small" sx={{ minWidth: 0, px: 1 }} onClick={() => Game.Core?.focusMilitaryTargetCity(target.id)}>查看目标城</Button>}
+          </Box>
         </>}
       </Box>;
     })}

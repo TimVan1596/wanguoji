@@ -76,13 +76,17 @@ export class MilitaryCommandRegistryStore {
   private personSequence = 1;
   private commandSequence = 1;
   private lastEvaluationMonth = -1;
+  private lastArrivalTargetByCommand = new Map<string, string>();
   private eventWriter?: (event: Omit<WorldEvent, "id"> & { id: string }) => string;
-  private diagnostics = { candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0 };
+  private diagnostics = { candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
+    unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0 };
 
   reset() {
     this.people.clear(); this.formations.clear(); this.personSequence = 1; this.commandSequence = 1;
     this.lastEvaluationMonth = -1;
-    this.diagnostics = { candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0 };
+    this.lastArrivalTargetByCommand.clear();
+    this.diagnostics = { candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
+      unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0 };
   }
 
   setEventWriter(writer: (event: Omit<WorldEvent, "id"> & { id: string }) => string) { this.eventWriter = writer; }
@@ -98,7 +102,9 @@ export class MilitaryCommandRegistryStore {
     this.formations = new Map(state.formations.map(formation => [formation.commandId, structuredClone(formation)]));
     this.personSequence = state.personSequence; this.commandSequence = state.commandSequence;
     this.lastEvaluationMonth = state.lastEvaluationMonth;
-    this.diagnostics = { candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0 };
+    this.lastArrivalTargetByCommand.clear();
+    this.diagnostics = { candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
+      unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0 };
   }
 
   getPeople() { return [...this.people.values()]; }
@@ -109,6 +115,7 @@ export class MilitaryCommandRegistryStore {
   update(worldMonth: number, teams: Team[], cities: City[]) {
     this.reconcile(worldMonth, teams);
     this.refreshOrders(worldMonth, cities);
+    this.observeLongRangeOrders(worldMonth, teams, cities);
     if (worldMonth % 12 !== 0 || worldMonth === this.lastEvaluationMonth) return;
     this.lastEvaluationMonth = worldMonth;
     for (const team of teams) {
@@ -199,16 +206,43 @@ export class MilitaryCommandRegistryStore {
     for (const formation of this.formations.values()) {
       if (formation.status !== "ACTIVE") continue;
       const current = cities.find(city => city.id === formation.targetCityId);
-      if (current && current.ownerFactionId !== formation.factionId && Diplomacy.canAttack(formation.factionId, current.ownerFactionId, worldMonth)) continue;
+      if (current && current.ownerFactionId !== formation.factionId && current.ownerTeam?.status === "ACTIVE" &&
+        Diplomacy.canAttack(formation.factionId, current.ownerFactionId, worldMonth)) continue;
+      if (formation.targetCityId) {
+        this.diagnostics.invalidatedTargets++;
+        this.lastArrivalTargetByCommand.delete(formation.commandId);
+      }
+      const team = cities.flatMap(city => city.ownerTeam ? [city.ownerTeam] : []).find(candidate => candidate.name === formation.factionId);
+      const members = team ? [...team.users].filter(user => formation.memberUnitIds.includes(user.player.logicalUnitId ?? "") && user.player.active) : [];
+      const center = members.length ? members.reduce((sum, user) => ({ x: sum.x + user.player.x / members.length, y: sum.y + user.player.y / members.length }), { x: 0, y: 0 }) : undefined;
       const options = cities.filter(city => city.ownerFactionId !== formation.factionId && city.ownerTeam?.status === "ACTIVE" &&
         Diplomacy.canAttack(formation.factionId, city.ownerFactionId, worldMonth))
-        .sort((a, b) => a.id.localeCompare(b.id));
+        .sort((a, b) => {
+          if (!center) return a.id.localeCompare(b.id);
+          const distance = (city: City) => Math.hypot(city.block.x - center.x, city.block.y - center.y);
+          return distance(a) - distance(b) || a.id.localeCompare(b.id);
+        });
       const next = options[0];
       if (next) {
         formation.targetCityId = next.id;
         formation.orderStartMonth = worldMonth;
         this.diagnostics.orders++;
       } else { formation.targetCityId = undefined; formation.orderStartMonth = undefined; }
+    }
+  }
+
+  private observeLongRangeOrders(worldMonth: number, teams: Team[], cities: City[]) {
+    const cityById = new Map(cities.map(city => [city.id, city]));
+    for (const formation of this.formations.values()) {
+      if (formation.status !== "ACTIVE" || !formation.targetCityId || formation.orderStartMonth === undefined) continue;
+      const age = worldMonth - formation.orderStartMonth;
+      if (age < 120 || age % 120 !== 0) continue;
+      const target = cityById.get(formation.targetCityId);
+      const team = teams.find(candidate => candidate.name === formation.factionId);
+      const members = team ? [...team.users].filter(user => formation.memberUnitIds.includes(user.player.logicalUnitId ?? "") && user.player.active) : [];
+      if (!target || !members.length) continue;
+      const stillFar = members.every(user => Math.hypot(target.block.x - user.player.x, target.block.y - user.player.y) > 8 * 32);
+      if (stillFar) this.diagnostics.staleOrderChecks++;
     }
   }
 
@@ -227,6 +261,7 @@ export class MilitaryCommandRegistryStore {
         if (length < 1) continue;
         const body = player.Body;
         const desiredX = dx / length * player.speed; const desiredY = dy / length * player.speed;
+        if (Math.abs(body.velocity.x - desiredX) + Math.abs(body.velocity.y - desiredY) > 0.5) this.diagnostics.unitsSteered++;
         const vx = body.velocity.x * 0.92 + desiredX * 0.08; const vy = body.velocity.y * 0.92 + desiredY * 0.08;
         const velocityLength = Math.hypot(vx, vy) || 1;
         body.setVelocity(vx / velocityLength * player.speed, vy / velocityLength * player.speed);
@@ -247,6 +282,7 @@ export class MilitaryCommandRegistryStore {
         const dx = target.block.x - unit.logicalX; const dy = target.block.y - unit.logicalY; const length = Math.hypot(dx, dy);
         if (length < 1) continue;
         const desiredX = dx / length * unit.speed; const desiredY = dy / length * unit.speed;
+        if (Math.abs(unit.logicalVX - desiredX) + Math.abs(unit.logicalVY - desiredY) > 0.5) this.diagnostics.unitsSteered++;
         const vx = unit.logicalVX * 0.92 + desiredX * 0.08; const vy = unit.logicalVY * 0.92 + desiredY * 0.08;
         const velocityLength = Math.hypot(vx, vy) || 1;
         unit.logicalVX = vx / velocityLength * unit.speed; unit.logicalVY = vy / velocityLength * unit.speed;
@@ -256,6 +292,18 @@ export class MilitaryCommandRegistryStore {
 
   getCommandForUnit(unitId: string) { return [...this.formations.values()].find(f => f.status === "ACTIVE" && f.memberUnitIds.includes(unitId)); }
   getPerson(personId: string) { return this.people.get(personId); }
+
+  recordCommandSiegeContact(commandId?: string, commanderPersonId?: string) {
+    if (!commandId || !commanderPersonId) return;
+    const formation = this.formations.get(commandId);
+    if (formation?.status === "ACTIVE" && formation.commanderPersonId === commanderPersonId) {
+      this.diagnostics.commandedSiegeContacts++;
+      if (formation.targetCityId && this.lastArrivalTargetByCommand.get(commandId) !== formation.targetCityId) {
+        this.lastArrivalTargetByCommand.set(commandId, formation.targetCityId);
+        this.diagnostics.targetCityArrivals++;
+      }
+    }
+  }
 
   onUserTransfer(user: User, nextFactionId: string, worldMonth: number) {
     const person = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
