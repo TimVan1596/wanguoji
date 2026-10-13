@@ -5,10 +5,10 @@ import { WORLD_RNG_ALGORITHM, WorldRandomState } from "../Simulation/WorldRandom
 import type { DiplomaticRelation, DiplomaticPairMemory } from "../Politics/Diplomacy";
 import type { FactionColorHistoryEntry } from "../Simulation/FactionColorHistory";
 
-export const CURRENT_SAVE_SCHEMA_VERSION = 14 as const;
+export const CURRENT_SAVE_SCHEMA_VERSION = 15 as const;
 
 /** V14 person DTO keeps political office end and actual death as separate facts. */
-export type RulerSaveV14 = Omit<Ruler, "id" | "bornYear" | "naturalDeathYear" | "accessionYear" |
+export type RulerSaveV15 = Omit<Ruler, "id" | "bornYear" | "naturalDeathYear" | "accessionYear" |
   "plannedEndYear" | "endYear" | "politicalStartYear" | "politicalEndYear"> & {
   rulerId: string;
   bornMonth: number;
@@ -77,6 +77,8 @@ export interface UserSaveV1 {
   role: string;
   score: number;
   playerUnitId: string;
+  bornMonth: number;
+  militaryPersonId?: string;
   [additionalCanonicalState: string]: unknown;
 }
 
@@ -152,7 +154,7 @@ export interface WorldEventSystemSaveV1 {
   cycleState: WorldCycleStateSaveV1;
 }
 
-export interface WorldSaveV14 {
+export interface WorldSaveV15 {
   saveSchemaVersion: typeof CURRENT_SAVE_SCHEMA_VERSION;
   appVersion: string;
   createdAt?: string;
@@ -181,13 +183,13 @@ export interface WorldSaveV14 {
   worldExiles: Record<string, unknown>[];
   factionEffects: Record<string, unknown>;
   populationSystem: PopulationSystemSaveV1;
-  registries: Record<string, unknown>;
+    registries: Record<string, unknown> & { militaryCommandRegistry: Record<string, unknown> };
   worldEventSystem: WorldEventSystemSaveV1;
   worldRandom: WorldRandomState;
   diplomacy: { relations: DiplomaticRelation[]; pairMemories: DiplomaticPairMemory[]; lastEvaluationMonth: number };
 }
 
-export function createEmptyWorldSaveV14(): WorldSaveV14 {
+export function createEmptyWorldSaveV15(): WorldSaveV15 {
   return {
     saveSchemaVersion: CURRENT_SAVE_SCHEMA_VERSION,
     appVersion: APP_VERSION,
@@ -212,6 +214,7 @@ export function createEmptyWorldSaveV14(): WorldSaveV14 {
       cityNameRegistry: { reserved: [], recentDynamicNames: [] },
       logicalUnitRegistry: { nextUnitSequence: 1 },
       dynastyRegistrySequence: 0,
+      militaryCommandRegistry: { people: [], formations: [], personSequence: 1, commandSequence: 1, lastEvaluationMonth: -1 },
       archivedCities: [],
       knownFactionIds: [],
     },
@@ -228,8 +231,13 @@ export function createEmptyWorldSaveV14(): WorldSaveV14 {
 }
 
 /** Generic current-format type retained for persistence service signatures. */
-export type WorldSaveV1 = WorldSaveV14;
-export const createEmptyWorldSaveV1 = createEmptyWorldSaveV14;
+export type WorldSaveV1 = WorldSaveV15;
+export const createEmptyWorldSaveV1 = createEmptyWorldSaveV15;
+/** @deprecated Current schema is V15; alias retained for test fixture source compatibility only. */
+export type WorldSaveV14 = WorldSaveV15;
+export type RulerSaveV14 = RulerSaveV15;
+/** @deprecated Current schema is V15; alias retained for test fixture source compatibility only. */
+export const createEmptyWorldSaveV14 = createEmptyWorldSaveV15;
 
 export function canonicalWorldSaveProjection(save: WorldSaveV1) {
   const { createdAt: _createdAt, ...canonical } = save;

@@ -40,6 +40,7 @@ import Diplomacy, { DiplomacySystem } from "../Politics/Diplomacy";
 import { createDiplomacyEventMetadata, describeDiplomacySigning, describeDiplomacyRenewal } from "../Politics/DiplomacyPresentation";
 import { unionPressureObservations, diagnoseStrategicUnionCandidates, findStrategicUnionCandidate, StrategicUnionCandidate, StrategicUnionCandidateDiagnostic } from "./StrategicUnionSystem";
 import { RollingStepPerformance } from "./RollingStepPerformance";
+import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
 
 const debugProfileEnabled = runtimeProfilingEnabled;
 
@@ -155,6 +156,7 @@ export default class AutoSimulator {
     DynastyRegistry.reset();
     FactionEffects.reset();
     WorldExiles.reset();
+    MilitaryCommandRegistry.reset();
     // Only a fresh seven-state start uses the household model; hydration never calls startWorld.
     const initialSevenStates = teams.length === 7 && teams.every(team => team.origin?.type === "INITIAL");
     teams.forEach((team) => DynastyRegistry.initializeFaction(team, 0, initialSevenStates));
@@ -302,6 +304,7 @@ export default class AutoSimulator {
       this.lastKnownTeams = teams;
       this.lastKnownCities = teams.flatMap((team) => team.cities);
       this.measure("DiplomacySystem.update", () => this.diplomacy.update(this.clock.year, teams, totalCells));
+      this.measure("MilitaryCommandRegistry.update", () => MilitaryCommandRegistry.update(this.clock.year, teams, teams.flatMap(team => team.cities)));
       if (this.clock.year % 12 === 0) {
         const unionInput = {
           teams,

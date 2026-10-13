@@ -27,6 +27,7 @@ import { resolveFactionStatus } from "../Simulation/FactionLifecycle";
 import { hasFormalStateIdentity } from "../Simulation/FactionIdentity";
 import WorldExiles from "../Simulation/WorldExiles";
 import DynastyRegistry from "../Politics/Dynasty";
+import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
 import FactionRegistry from "../Simulation/FactionRegistry";
 import FactionEffects from "../Simulation/FactionEffects";
 import ArchivedCities from "../Simulation/ArchivedCities";
@@ -1552,6 +1553,7 @@ export default class Core {
   private advanceLogicalStep(fixedDeltaMs: number): void | "stop-and-discard" {
     const stepStartedAt = this.getRealNow();
     this.simulationDiagnostics.fixedSimulationSteps += 1;
+    MilitaryCommandRegistry.steerActiveUnits(this.simulator?.year ?? 0, this);
     this.desktopRuntimeDiagnostics.lastSimulationStepRealAt =
       typeof performance === "undefined" ? Date.now() : performance.now();
     if (this.logicalGameplayAuthority) {

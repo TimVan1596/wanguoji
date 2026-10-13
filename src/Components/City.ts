@@ -24,6 +24,7 @@ import {
 import Game from "../Game/Game";
 import WorldHistory from "../History/WorldHistory";
 import DynastyRegistry from "../Politics/Dynasty";
+import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
 import Diplomacy, { isHostileActionAllowed } from "../Politics/Diplomacy";
 import FactionEffects from "../Simulation/FactionEffects";
 import ArchivedCities from "../Simulation/ArchivedCities";
@@ -70,6 +71,8 @@ interface SiegeContact {
   count: number;
   year: number;
   rulerId?: string;
+  commandId?: string;
+  commanderPersonId?: string;
 }
 
 export default class City {
@@ -220,7 +223,7 @@ export default class City {
     this.refreshZoneVisual();
   }
 
-  registerSiegeContact(attacker: Team, year: number, rulerId?: string) {
+  registerSiegeContact(attacker: Team, year: number, rulerId?: string, commandId?: string, commanderPersonId?: string) {
     const owner = this.ownerTeam;
     if (!owner || owner === attacker || attacker.isDie) {
       return;
@@ -242,6 +245,8 @@ export default class City {
       count: (contact?.count ?? 0) + 1,
       year,
       rulerId: contact?.rulerId ?? rulerId,
+      commandId: contact?.commandId ?? commandId,
+      commanderPersonId: contact?.commanderPersonId ?? commanderPersonId,
     });
   }
 
@@ -257,7 +262,7 @@ export default class City {
     }
   }
 
-  capture(newOwner: Team, year: number, rulerId?: string) {
+  capture(newOwner: Team, year: number, rulerId?: string, commandId?: string, commanderPersonId?: string) {
     const oldOwner = this.ownerTeam;
     if (!oldOwner || oldOwner === newOwner) {
       return;
@@ -320,7 +325,7 @@ export default class City {
         wasCapital,
         rulerId,
       });
-      WorldHistory.addCapitalFallen(
+      const eventId = WorldHistory.addCapitalFallen(
         year,
         newOwner.name,
         previousOwnerName,
@@ -331,8 +336,11 @@ export default class City {
         cityDefenseBefore,
         rulerId ? DynastyRegistry.getRulerTitleDisplay(newOwner.name, year) : undefined,
         rulerId,
-        capitalTransitionGroupId
+        capitalTransitionGroupId,
+        commandId,
+        commanderPersonId
       );
+      MilitaryCommandRegistry.recordCapture(commandId, eventId.id, this.id, year);
     }
 
     if (recovered) {
@@ -355,8 +363,11 @@ export default class City {
         founderCapital,
         cityDefenseBefore,
         rulerId,
-        collapseGroupId
+        collapseGroupId,
+        commandId,
+        commanderPersonId
       );
+      MilitaryCommandRegistry.recordCapture(commandId, eventId.id, this.id, year);
       DynastyRegistry.recordCityCaptured(rulerId, this.id, eventId);
     } else {
       const title = buildCityCaptureTitle({
@@ -387,8 +398,11 @@ export default class City {
           cityDefenseBefore,
           rulerId ? DynastyRegistry.getRulerTitleDisplay(newOwner.name, year) : undefined,
           rulerId,
-          collapseGroupId
+          collapseGroupId,
+          commandId,
+          commanderPersonId
         );
+        MilitaryCommandRegistry.recordCapture(commandId, eventId.id, this.id, year);
         DynastyRegistry.recordCityCaptured(rulerId, this.id, eventId);
       }
     }
@@ -779,7 +793,7 @@ export default class City {
     this.ownerTeam?.removeOneUser();
     this.block.updateCityDisplay();
     if (this.defense <= 0) {
-      this.capture(mainAttacker.team, year, mainAttacker.rulerId);
+      this.capture(mainAttacker.team, year, mainAttacker.rulerId, mainAttacker.commandId, mainAttacker.commanderPersonId);
     }
   }
 

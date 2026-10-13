@@ -4,12 +4,16 @@ import Slaves from "./Slaves";
 import Team from "./Team";
 import { resolvePublicAssetUrl } from "../Runtime/PublicAssetUrl";
 import type { PopulationMutationContext } from "../Simulation/PopulationTransitionAudit";
+import { deriveUserBornMonth } from "../Politics/MilitaryCommandRegistry";
+import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
 
 export type PlayerRole = "NORMAL" | "RULER";
 
 export default class User {
   isFaceLoadDone = false;
   score = 0;
+  militaryPersonId?: string;
+  readonly bornMonth: number;
   sourceTeam: Team;
   slaveGroup: Slaves;
   constructor(
@@ -21,8 +25,11 @@ export default class User {
     public loyalty = 70,
     public role: PlayerRole = "NORMAL",
     public rulerId?: string,
-    options: { deferRuntime?: boolean } = {}
+    options: { deferRuntime?: boolean; bornMonth?: number; militaryPersonId?: string } = {}
   ) {
+    const spawnMonth = Game.Core?.simulator?.year ?? 0;
+    this.bornMonth = options.bornMonth ?? deriveUserBornMonth(id, name, team.name, spawnMonth);
+    this.militaryPersonId = options.militaryPersonId;
     this.sourceTeam = team;
     this.player.role = role;
     this.player.rulerId = rulerId;
@@ -54,6 +61,7 @@ export default class User {
       return;
     }
     const previousTeam = this.team;
+    MilitaryCommandRegistry.onUserTransfer(this, team.name, populationMutation.month ?? Game.Core?.simulator?.year ?? 0);
     const previousCount = previousTeam.users.size;
     const nextCount = team.users.size;
     this.team.users.delete(this);
@@ -105,6 +113,7 @@ export default class User {
       }
     }
     const team = this.team;
+    MilitaryCommandRegistry.onUserDestroyed(this, populationMutation.month ?? Game.Core?.simulator?.year ?? 0, populationMutation.cause);
     const before = team.users.size;
     team.users.delete(this);
     Game.Core?.simulator?.recordPopulationMutation(team, before, team.users.size, populationMutation);

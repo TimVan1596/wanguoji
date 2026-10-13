@@ -130,6 +130,10 @@ export default class LogicalUnitRegistry {
     return this.units.get(unitId)?.state;
   }
 
+  getEntry(unitId: string) {
+    return this.units.get(unitId);
+  }
+
   getAliveUnits() {
     return [...this.units.values()]
       .map((entry) => entry.state)

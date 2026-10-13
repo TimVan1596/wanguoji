@@ -30,6 +30,7 @@ import { validateWorldSave } from "./WorldSaveValidator";
 import { canonicalizeSavedSnapshotBoundary } from "./SnapshotBoundary";
 import worldRandom from "../Simulation/WorldRandom";
 import Diplomacy from "../Politics/Diplomacy";
+import MilitaryCommandRegistry, { type MilitaryCommandState } from "../Politics/MilitaryCommandRegistry";
 
 export interface HydrationReport {
   worldMonth: number;
@@ -221,7 +222,8 @@ function hydrateUsersAndUnits(save: WorldSaveV1, core: Core, teams: Map<string, 
     player.logicalUnitId = unit.unitId;
     player.setTeam(team);
     const user = new User(Number(state.userId), state.name, team, player, state.face as string | undefined, state.loyalty,
-      state.role === "RULER" ? "RULER" : "NORMAL", typeof state.rulerId === "string" ? state.rulerId : undefined, { deferRuntime: true });
+      state.role === "RULER" ? "RULER" : "NORMAL", typeof state.rulerId === "string" ? state.rulerId : undefined,
+      { deferRuntime: true, bornMonth: state.bornMonth, militaryPersonId: typeof state.militaryPersonId === "string" ? state.militaryPersonId : undefined });
     user.sourceTeam = teams.get(state.sourceFactionId)!;
     user.score = state.score;
     user.isFaceLoadDone = true;
@@ -316,6 +318,7 @@ function importPoliticalAndHistoryState(save: WorldSaveV1) {
   }));
   DynastyRegistry.importState({ dynasties, sequence: Number(save.registries.dynastyRegistrySequence) } as ReturnType<typeof DynastyRegistry.exportState>, save.world.clock.worldMonth);
   WorldHistory.importState(save.worldHistory as Parameters<typeof WorldHistory.importState>[0]);
+  MilitaryCommandRegistry.importState(save.registries.militaryCommandRegistry as MilitaryCommandState);
   WorldEra.importState(save.worldEra as Parameters<typeof WorldEra.importState>[0]);
   FactionLifetimeRecords.importState(save.factionLifetime);
   FactionSnapshots.importState(save.factionSnapshots as Parameters<typeof FactionSnapshots.importState>[0]);

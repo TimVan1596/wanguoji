@@ -22,6 +22,7 @@ import { APP_VERSION } from "../config/version";
 import { createBlockSaveProjection } from "./BlockSaveProjection";
 import worldRandom from "../Simulation/WorldRandom";
 import Diplomacy from "../Politics/Diplomacy";
+import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
 
 export class UnsafeSaveSnapshotError extends Error {
   constructor() {
@@ -115,6 +116,8 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
         score: user.score,
         face: user.face,
         playerUnitId: rootUnitId,
+        bornMonth: user.bornMonth,
+        militaryPersonId: user.militaryPersonId,
         slaveUnits: [...user.slaveGroup.npcs.entries()].map(([npcKey, npc]) => addUnitTree(npc, undefined, "slave", npcKey)),
       } as UserSaveV1);
     });
@@ -170,6 +173,7 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
       cityNameRegistry: CityNameRegistry.exportState(),
       logicalUnitRegistry: core.logicalUnitRegistry.exportState(),
       dynastyRegistrySequence: dynastyState.sequence,
+      militaryCommandRegistry: MilitaryCommandRegistry.exportState(),
       archivedCities: ArchivedCities.list().map(({ destroyedMonth, foundedMonth, history, ...city }) => ({
         ...city,
         destroyedMonth,

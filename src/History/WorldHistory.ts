@@ -587,7 +587,9 @@ export class WorldHistoryStore {
     cityDefenseBefore?: number,
     rulerName?: string,
     rulerId?: string,
-    historyGroupId?: string
+    historyGroupId?: string,
+    commandId?: string,
+    commanderPersonId?: string
   ) {
     return this.addEvent({
       id: `city-captured-${year}-${attackerName}-${cityName}-${this.sequence++}`,
@@ -619,6 +621,8 @@ export class WorldHistoryStore {
         founder: founderFactionId,
         wasCapital: wasCapital ? 1 : 0,
         cityDefenseBefore,
+        commandId,
+        commanderPersonId,
       },
       historyGroupId,
       importance: "major",
@@ -635,7 +639,9 @@ export class WorldHistoryStore {
     founderCapital = false,
     cityDefenseBefore?: number,
     rulerId?: string,
-    historyGroupId?: string
+    historyGroupId?: string,
+    commandId?: string,
+    commanderPersonId?: string
   ) {
     return this.addEvent({
       id: `city-recovered-${year}-${teamName}-${cityName}-${this.sequence++}`,
@@ -658,6 +664,8 @@ export class WorldHistoryStore {
         previousOwner: previousOwnerName,
         founder: founderFactionId,
         cityDefenseBefore,
+        commandId,
+        commanderPersonId,
       },
       historyGroupId,
       importance: "major",
@@ -675,9 +683,11 @@ export class WorldHistoryStore {
     cityDefenseBefore?: number,
     rulerName?: string,
     rulerId?: string,
-    historyGroupId?: string
+    historyGroupId?: string,
+    commandId?: string,
+    commanderPersonId?: string
   ) {
-    this.addEvent({
+    return this.addEvent({
       id: `capital-fallen-${year}-${attackerName}-${defenderName}-${cityName}-${this.sequence++}`,
       year,
       category: "war",
@@ -705,6 +715,8 @@ export class WorldHistoryStore {
         founder: founderFactionId,
         wasCapital: wasCapital ? 1 : 0,
         cityDefenseBefore,
+        commandId,
+        commanderPersonId,
       },
       historyGroupId,
       importance: "major",

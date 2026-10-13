@@ -11,6 +11,7 @@ import { canonicalBlockHitPoints } from "./BlockHitPoints";
 import { resolvePublicAssetUrl } from "../Runtime/PublicAssetUrl";
 import { inspectMapPointerTarget } from "../Simulation/MapPointerInput";
 import Diplomacy, { isHostileActionAllowed } from "../Politics/Diplomacy";
+import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
 
 export default class Block extends Phaser.GameObjects.Rectangle {
   hp = 0;
@@ -127,10 +128,13 @@ export default class Block extends Phaser.GameObjects.Rectangle {
   setTeam(team: Team, player?: Player) {
     const oldTeam = this.team;
     if (this.city && this.city.ownerTeam !== team) {
+      const command = player?.logicalUnitId ? MilitaryCommandRegistry.getCommandForUnit(player.logicalUnitId) : undefined;
       this.city.registerSiegeContact(
         team,
         Game.Core?.simulator?.year ?? 0,
-        player?.role === "RULER" ? player.rulerId : undefined
+        player?.role === "RULER" ? player.rulerId : undefined,
+        command?.commandId,
+        command?.commanderPersonId
       );
       return;
     }
