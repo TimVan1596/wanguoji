@@ -7,6 +7,7 @@ import { deriveRulerTenureEvidence, type RulerTenureEvidence } from "./RulerTenu
 import { buildRulerLegacyEvidence } from "./RulerLegacyEvidence";
 import { getRulerTerminalRole } from "../History/PoliticalTerminalChronicle";
 import { getRecordedKinRelation, type RecordedKinRelation } from "./DynasticCandidateRules";
+import { formatWorldDate } from "../Simulation/WorldTime";
 
 export type HistoricalRole =
   | "FOUNDER"
@@ -39,6 +40,8 @@ export interface RulerHistoricalEvidence {
   tenure: RulerTenureEvidence;
   isFinalized: boolean;
   rulerStatus?: Ruler["status"];
+  deathMonth?: number;
+  deathReason?: Ruler["deathReason"];
   foundedFaction: boolean;
   foundedState: boolean;
   formalStateAtReignEnd: boolean;
@@ -108,6 +111,12 @@ export interface RulerPoliticalFact {
   displacedSuccessorName?: string;
   oldStateName?: string;
   newStateName?: string;
+  affectedFactionId?: string;
+  cityId?: string;
+  cityName?: string;
+  wasCapital?: boolean;
+  terminalOutcome?: "EXTINCT" | "DISSOLVED" | "EXILED";
+  militaryRole?: "ATTACKER" | "DEFENDER";
 }
 
 export interface RulerHistoriographyContext {
@@ -173,7 +182,7 @@ export function deriveRulerHistoricalEvidence(
     const month = event.monthIndex ?? event.year;
     const factionParticipant = (event.factionIds ?? []).includes(faction.name) ||
       event.relatedFactionIds?.includes(faction.name) || event.actorFactionId === faction.name ||
-      event.targetFactionId === faction.name;
+      event.targetFactionId === faction.name || event.conquerorFactionId === faction.name;
     const diplomacy = ["truce-signed", "non-aggression-signed", "alliance-signed", "relation-renewed"].includes(event.type);
     let direct = false;
     let subject = false;
@@ -183,6 +192,12 @@ export function deriveRulerHistoricalEvidence(
     let relatedRulerId: string | undefined;
     let relatedRulerName: string | undefined;
     let recordedKinRelation: RecordedKinRelation | undefined;
+    let affectedFactionId: string | undefined;
+    let cityId: string | undefined;
+    let cityName: string | undefined;
+    let wasCapital: boolean | undefined;
+    let terminalOutcome: RulerPoliticalFact["terminalOutcome"];
+    let militaryRole: RulerPoliticalFact["militaryRole"];
     if (diplomacy) {
       const signerA = event.metadata?.signatoryARulerId === ruler.id && event.metadata?.signatoryAFactionId === faction.name;
       const signerB = event.metadata?.signatoryBRulerId === ruler.id && event.metadata?.signatoryBFactionId === faction.name;
@@ -235,10 +250,43 @@ export function deriveRulerHistoricalEvidence(
     } else if (event.type === "empire-split") {
       if (event.targetFactionId !== faction.name || event.metadata?.parentFactionId !== faction.name ||
           !event.factionIds?.includes(faction.name) || !event.actorFactionId || event.actorFactionId === faction.name) return [];
-    } else if (event.type === "capital-fallen") {
-      if (event.targetFactionId !== faction.name || event.previousOwnerFactionId !== faction.name || !event.factionIds?.includes(faction.name)) return [];
     } else if (event.type === "capital-relocated") {
       if (event.actorFactionId !== faction.name || !event.factionIds?.includes(faction.name) || event.metadata?.cause !== "CAPITAL_FALL") return [];
+    } else if (event.type === "city-captured" || event.type === "capital-fallen") {
+      cityId = event.cityId ?? (typeof event.metadata?.cityId === "string" ? event.metadata.cityId : undefined);
+      cityName = event.cityName ?? (typeof event.metadata?.cityName === "string" ? event.metadata.cityName : undefined);
+      wasCapital = event.type === "capital-fallen" || event.metadata?.wasCapital === 1;
+      const attacker = event.actorFactionId === faction.name && event.factionIds?.includes(faction.name);
+      const defender = event.targetFactionId === faction.name && event.factionIds?.includes(faction.name);
+      if (!attacker && !defender) return [];
+      affectedFactionId = attacker ? event.targetFactionId : faction.name;
+      if (attacker) {
+        militaryRole = "ATTACKER";
+        direct = directToRuler(event);
+      } else {
+        militaryRole = "DEFENDER";
+        participantRole = "RECEIVER";
+      }
+    } else if (event.type === "faction-extinct" || event.type === "faction-dissolved" || event.type === "faction-exiled") {
+      terminalOutcome = event.type === "faction-extinct" ? "EXTINCT" : event.type === "faction-dissolved" ? "DISSOLVED" : "EXILED";
+      const conqueror = event.conquerorFactionId ?? (typeof event.metadata?.conquerorFactionId === "string" ? event.metadata.conquerorFactionId : undefined);
+      const target = event.targetFactionId ?? (typeof event.metadata?.factionId === "string" ? event.metadata.factionId :
+        (event.factionIds ?? []).includes(faction.name) ? faction.name : undefined);
+      const attacker = conqueror === faction.name && Boolean(target) && target !== faction.name;
+      const defender = target === faction.name;
+      if (!attacker && !defender) return [];
+      affectedFactionId = target;
+      if (attacker) {
+        militaryRole = "ATTACKER";
+        const sameCampaignDirectAction = Boolean(event.historyGroupId && rulerEvents.some((related) =>
+          related.historyGroupId === event.historyGroupId && related.actorFactionId === faction.name &&
+          (related.type === "city-captured" || related.type === "capital-fallen") && directToRuler(related)));
+        direct = directToRuler(event) || event.metadata?.conquerorRulerId === ruler.id || sameCampaignDirectAction;
+        participantRole = "SOURCE";
+      } else {
+        militaryRole = "DEFENDER";
+        participantRole = "RECEIVER";
+      }
     } else if (event.type === "faction-restored") {
       if (event.actorFactionId !== faction.name || !event.factionIds?.includes(faction.name)) return [];
       direct = event.rulerId === ruler.id || event.metadata?.rulerId === ruler.id;
@@ -255,6 +303,10 @@ export function deriveRulerHistoricalEvidence(
       event.type === "dynasty-usurped" ? "夺取王统" :
       event.type === "empire-split" ? "发生重大分裂" :
       event.type === "capital-fallen" ? "失去都城" :
+      event.type === "city-captured" ? (direct ? "亲自参与攻占城市" : "任内本国攻占城市") :
+      event.type === "faction-extinct" ? "政权彻底灭亡" :
+      event.type === "faction-dissolved" ? "失去最后据点后残部解散" :
+      event.type === "faction-exiled" ? "失去疆土并进入流亡" :
       event.type === "capital-relocated" ? "被迫迁都" :
       event.type === "faction-restored" ? "国家复国" :
       event.type === "heir-died" ? "继承候选先逝" :
@@ -271,6 +323,7 @@ export function deriveRulerHistoricalEvidence(
       displacedSuccessorName: typeof metadata.displacedSuccessorName === "string" ? metadata.displacedSuccessorName : undefined,
       oldStateName: typeof metadata.oldStateName === "string" ? metadata.oldStateName : undefined,
       newStateName: typeof metadata.newStateName === "string" ? metadata.newStateName : undefined,
+      affectedFactionId, cityId, cityName, wasCapital, terminalOutcome, militaryRole,
       outcome, suitableForAssessment: !diplomacy || event.type !== "relation-renewed" }];
   });
 
@@ -466,6 +519,8 @@ export function deriveRulerHistoricalEvidence(
     tenure,
     isFinalized,
     rulerStatus: ruler.status,
+    deathMonth: hasRecordedRulerDeath(ruler) ? ruler.deathMonth : undefined,
+    deathReason: hasRecordedRulerDeath(ruler) ? ruler.deathReason : undefined,
     foundedFaction,
     foundedState,
     formalStateAtReignEnd,
