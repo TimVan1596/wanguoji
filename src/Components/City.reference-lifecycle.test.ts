@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const { core } = vi.hoisted(() => ({ core: {} as any }));
 vi.mock("../Game/Game", () => ({ default: { Core: core, BlockSize: 32 } }));
 vi.mock("./Block", () => ({ default: class {} }));
@@ -8,6 +8,8 @@ vi.mock("../History/WorldHistory", () => ({ default: new Proxy({}, { get: () => 
 vi.mock("../Politics/Dynasty", () => ({ default: new Proxy({}, { get: () => vi.fn() }) }));
 vi.mock("../Simulation/ArchivedCities", () => ({ default: { archive: (city: any) => ({ id: city.id }) } }));
 import City from "./City";
+import Diplomacy from "../Politics/Diplomacy";
+import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
 
 function fixture() {
   const blocks = Array.from({ length: 7 }, (_, x) => Array.from({ length: 7 }, (_, y) => ({ x: x * 32, y: y * 32,
@@ -18,6 +20,7 @@ function fixture() {
   })));
   const owners = ["A", "B", "C"].map(name => ({ name, displayName: name, status: "ACTIVE", origin: {},
     cities: [] as any[], capitalCity: {} as any, markActive: vi.fn(), chooseCapitalCandidate: () => undefined,
+    removeOneUser: vi.fn(),
     addCity(city: any) { this.cities.push(city); }, removeCity(city: any) { this.cities = this.cities.filter(c => c !== city); },
   }));
   const city: any = Object.assign(Object.create(City.prototype), { id: "秦-city-312-2", name: "故城", block: blocks[3][3],
@@ -32,6 +35,7 @@ function fixture() {
   return { city, blocks, owners, refs };
 }
 beforeEach(() => { vi.restoreAllMocks(); vi.stubGlobal("Phaser", { Math: { Clamp: (v: number, a: number, b: number) => Math.min(b, Math.max(a, v)) } }); });
+afterEach(() => { Diplomacy.reset(); MilitaryCommandRegistry.reset(); });
 describe("actual City lifecycle across full map references", () => {
   it("does not rebuild a permanently destroyed city later in the same monthly update", () => {
     const { city, refs } = fixture();
@@ -77,5 +81,36 @@ describe("actual City lifecycle across full map references", () => {
     const save = city.exportState(3, 3) as any;
     expect(save.siegeContacts).toMatchObject([{ factionId: "B", count: 2, commandId: "military-command-1",
       commanderPersonId: "military-person-1", commandContributions: [{ commandId: "military-command-1", commanderPersonId: "military-person-1", count: 2 }] }]);
+  });
+
+  it("applies siege population loss once per city damage interval, regardless of same-month contacts", () => {
+    const { city, owners } = fixture();
+    Diplomacy.reset();
+    Object.assign(city, { defense: 20, lastSiegeDamageYear: -1, lastSiegeDevastationYear: 120, siegeDamageRemainder: 0,
+      devastation: 0, underSiege: false, attackingFactionId: undefined });
+    const damageMonth = (month: number, repeats: number) => {
+      for (let index = 0; index < repeats; index++) city.registerSiegeContact(owners[1] as any, month);
+      (city as any).updateSiege(month);
+    };
+    damageMonth(120, 8);
+    damageMonth(121, 8);
+    damageMonth(122, 8);
+    expect(owners[0].removeOneUser).toHaveBeenCalledTimes(2);
+    expect((city as any).lastSiegeDamageYear).toBe(122);
+  });
+
+  it("allows independent cities to apply their own valid same-month siege loss", () => {
+    const { city, owners } = fixture();
+    Diplomacy.reset();
+    Object.assign(city, { defense: 20, lastSiegeDamageYear: -1, lastSiegeDevastationYear: 120, siegeDamageRemainder: 0,
+      devastation: 0, underSiege: false, attackingFactionId: undefined });
+    const otherCity = Object.assign(Object.create(City.prototype), { ...city, id: "A-other-city", siegeContacts: new Map(),
+      lastSiegeDamageYear: -1, lastSiegeDevastationYear: 120 });
+    vi.spyOn(otherCity, "refreshZoneVisual").mockImplementation(() => {});
+    for (const target of [city, otherCity]) {
+      target.registerSiegeContact(owners[1] as any, 120);
+      (target as any).updateSiege(120);
+    }
+    expect(owners[0].removeOneUser).toHaveBeenCalledTimes(2);
   });
 });

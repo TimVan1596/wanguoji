@@ -94,6 +94,21 @@ describe("PopulationTransitionAudit", () => {
     expect(audit.getRecentSignificant()).toHaveLength(1); // 2 lost is still 25%.
   });
 
+  it("keeps same-month siege losses attributable to distinct trigger cities", () => {
+    const audit = new PopulationTransitionAudit();
+    const state = faction("小国", 10);
+    audit.reset(0, [state]);
+    state.users.delete(0);
+    audit.record(state, 10, 9, { cause: "SIEGE_LOSS", month: 12, context: "围城损失触发城市：city-a" });
+    state.users.delete(1);
+    audit.record(state, 9, 8, { cause: "SIEGE_LOSS", month: 12, context: "围城损失触发城市：city-b" });
+    audit.reconcile(12, [state]);
+    expect(audit.getRecent().filter(row => row.cause === "SIEGE_LOSS")).toMatchObject([
+      { before: 10, after: 9, delta: -1, context: "围城损失触发城市：city-a" },
+      { before: 9, after: 8, delta: -1, context: "围城损失触发城市：city-b" },
+    ]);
+  });
+
   it("bounds retained session history", () => {
     const audit = new PopulationTransitionAudit();
     const state = faction("齐", 0);

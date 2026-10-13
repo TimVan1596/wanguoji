@@ -114,7 +114,7 @@ export class MilitaryCommandRegistryStore {
 
   update(worldMonth: number, teams: Team[], cities: City[]) {
     this.reconcile(worldMonth, teams);
-    this.refreshOrders(worldMonth, cities);
+    this.refreshOrders(worldMonth, teams, cities);
     this.observeLongRangeOrders(worldMonth, teams, cities);
     if (worldMonth % 12 !== 0 || worldMonth === this.lastEvaluationMonth) return;
     this.lastEvaluationMonth = worldMonth;
@@ -136,7 +136,7 @@ export class MilitaryCommandRegistryStore {
       if (members.length < 2 || !candidate.player.logicalUnitId) { this.diagnostics.unitBlocked++; continue; }
       this.appoint(candidate, team.name, worldMonth, members.map(user => user.player.logicalUnitId!));
       this.diagnostics.appointments++;
-      this.refreshOrders(worldMonth, cities);
+      this.refreshOrders(worldMonth, teams, cities);
     }
   }
 
@@ -202,7 +202,7 @@ export class MilitaryCommandRegistryStore {
       actorFactionId: formation.factionId, metadata: { personId: person.personId, commandId: formation.commandId, endReason: reason }, importance: "normal" });
   }
 
-  private refreshOrders(worldMonth: number, cities: City[]) {
+  private refreshOrders(worldMonth: number, teams: Team[], cities: City[]) {
     for (const formation of this.formations.values()) {
       if (formation.status !== "ACTIVE") continue;
       const current = cities.find(city => city.id === formation.targetCityId);
@@ -212,7 +212,7 @@ export class MilitaryCommandRegistryStore {
         this.diagnostics.invalidatedTargets++;
         this.lastArrivalTargetByCommand.delete(formation.commandId);
       }
-      const team = cities.flatMap(city => city.ownerTeam ? [city.ownerTeam] : []).find(candidate => candidate.name === formation.factionId);
+      const team = teams.find(candidate => candidate.name === formation.factionId);
       const members = team ? [...team.users].filter(user => formation.memberUnitIds.includes(user.player.logicalUnitId ?? "") && user.player.active) : [];
       const center = members.length ? members.reduce((sum, user) => ({ x: sum.x + user.player.x / members.length, y: sum.y + user.player.y / members.length }), { x: 0, y: 0 }) : undefined;
       const options = cities.filter(city => city.ownerFactionId !== formation.factionId && city.ownerTeam?.status === "ACTIVE" &&

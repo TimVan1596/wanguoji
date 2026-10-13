@@ -23,8 +23,8 @@ export function sortMilitaryPeople(people: MilitaryPerson[]) {
 
 export function describeMilitaryDeathCause(cause?: string) {
   switch (cause) {
-    case "SIEGE_LOSS": return "围城战损";
-    case "BATTLE_DEATH": return "战斗损失";
+    case "SIEGE_LOSS": return "围城战损（SIEGE_LOSS）";
+    case "BATTLE_DEATH": return "战斗损失（BATTLE_DEATH）";
     default: return cause ?? "原因未记录";
   }
 }

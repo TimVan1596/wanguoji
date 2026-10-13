@@ -9,7 +9,7 @@ afterEach(() => { vi.restoreAllMocks(); MilitaryCommandRegistry.reset(); });
 
 function user(id: number, faction: any, unitId: string, bornMonth = -300) {
   return { id, name: `人口${id}`, team: faction, role: "NORMAL", bornMonth,
-    militaryPersonId: undefined, player: { active: true, logicalUnitId: unitId } } as any;
+    militaryPersonId: undefined, player: { active: true, logicalUnitId: unitId, x: id * 10, y: 0 } } as any;
 }
 
 describe("persistent military command registry", () => {
@@ -32,22 +32,23 @@ describe("persistent military command registry", () => {
     const member = user(2, qin, "unit-2");
     qin.users.add(commander); qin.users.add(member);
     const registerSiegeContact = vi.fn();
-    const city: any = { id: "wei-capital", ownerFactionId: "wei", ownerTeam: wei, block: { x: 32, y: 0 }, registerSiegeContact };
+    const farCity: any = { id: "a-wei-city", ownerFactionId: "wei", ownerTeam: wei, block: { x: 512, y: 0 }, registerSiegeContact };
+    const city: any = { id: "z-wei-capital", ownerFactionId: "wei", ownerTeam: wei, block: { x: 32, y: 0 }, registerSiegeContact };
 
-    registry.update(12, [qin, wei], [city]);
+    registry.update(12, [qin, wei], [farCity, city]);
     draw.mockRestore();
 
     const [person] = registry.getPeople();
     const [formation] = registry.getFormations();
     expect(person).toMatchObject({ sourceUserId: 1, name: "人口1", bornMonth: -300, status: "ACTIVE" });
     expect(commander.militaryPersonId).toBe(person.personId);
-    expect(formation).toMatchObject({ factionId: "qin", commanderPersonId: person.personId, memberUnitIds: ["unit-1", "unit-2"], targetCityId: "wei-capital" });
+    expect(formation).toMatchObject({ factionId: "qin", commanderPersonId: person.personId, memberUnitIds: ["unit-1", "unit-2"], targetCityId: "z-wei-capital" });
     expect(events).toHaveLength(1);
-    expect(registry.getDiagnostics()).toMatchObject({ candidates: 2, eligible: 2, appointments: 1, activeCommanders: 1, activeFormations: 1 });
+    expect(registry.getDiagnostics()).toMatchObject({ candidates: 2, eligible: 2, appointments: 1, activeCommanders: 1, activeFormations: 1, orders: 1 });
 
     const units: any[] = ["unit-1", "unit-2"].map(unitId => ({ unitId, factionId: "qin", logicalX: 0,
       logicalY: 0, logicalVX: 0, logicalVY: 0, alive: true, currentGridX: 0, currentGridY: 0, radius: 1, speed: 32, role: "NORMAL" }));
-    registry.steerLogicalUnits(12, units, [city]);
+    registry.steerLogicalUnits(12, units, [farCity, city]);
     expect(units.every(unit => unit.logicalVX === 32 && unit.logicalVY === 0)).toBe(true);
     const moved = stepLogicalMovement({ units, deltaMs: 1000, blockSize: 32, bounds: { minX: 0, minY: 0, maxX: 64, maxY: 32 } });
     expect(moved.every(result => result.enteredNewGrid && result.currentGridX === 1)).toBe(true);
@@ -58,6 +59,8 @@ describe("persistent military command registry", () => {
     expect(contactResult.siegeContacts).toBe(2);
     expect(registerSiegeContact).toHaveBeenCalledTimes(2);
     expect(registerSiegeContact).toHaveBeenCalledWith(qin, 12, undefined, formation.commandId, person.personId);
+    registry.recordCommandSiegeContact(formation.commandId, person.personId);
+    expect(registry.getDiagnostics()).toMatchObject({ targetCityArrivals: 1, commandedSiegeContacts: 1 });
   });
 
   it("retires the command on faction transfer without recording a death", () => {

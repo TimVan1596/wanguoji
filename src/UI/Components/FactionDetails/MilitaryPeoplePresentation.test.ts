@@ -18,7 +18,7 @@ describe("military people presentation", () => {
   });
 
   it("uses a neutral death label without implying a city or personal battle action", () => {
-    expect(describeMilitaryDeathCause("SIEGE_LOSS")).toBe("围城战损");
+    expect(describeMilitaryDeathCause("SIEGE_LOSS")).toBe("围城战损（SIEGE_LOSS）");
     expect(describeMilitaryDeathCause("OTHER_CAUSE")).toBe("OTHER_CAUSE");
   });
 });

@@ -72,7 +72,8 @@ export class PopulationTransitionAudit {
   ) {
     if (!this.active || before === after) return;
     const month = metadata.month ?? this.lastReconciledMonth;
-    const key = [month, team.name, metadata.cause, metadata.relatedFactionId ?? ""].join("|");
+    const causeContext = metadata.cause === "SIEGE_LOSS" ? metadata.context ?? "" : "";
+    const key = [month, team.name, metadata.cause, metadata.relatedFactionId ?? "", causeContext].join("|");
     const previous = this.pending.get(key);
     const record: PopulationTransitionRecord = previous
       ? { ...previous, after: previous.after + (after - before), delta: previous.delta + (after - before), context: metadata.context ?? previous.context }

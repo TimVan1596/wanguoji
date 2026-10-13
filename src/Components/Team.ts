@@ -205,9 +205,9 @@ export default class Team {
     return [...this.users].find((user) => user.id === id);
   }
 
-  removeOneUser(cause: "SIEGE_LOSS" | "BATTLE_DEATH" = "SIEGE_LOSS") {
+  removeOneUser(cause: "SIEGE_LOSS" | "BATTLE_DEATH" = "SIEGE_LOSS", context?: Pick<PopulationMutationContext, "month" | "context">) {
     for (const user of this.users) {
-      if (user.destroyUser(false, { cause, month: Game.Core?.simulator?.year })) {
+      if (user.destroyUser(false, { cause, month: context?.month ?? Game.Core?.simulator?.year, context: context?.context })) {
         return;
       }
     }

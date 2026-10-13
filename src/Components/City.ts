@@ -244,6 +244,7 @@ export default class City {
     }
 
     if (rulerId) DynastyRegistry.recordPersonalSiegeContact(attacker.name, rulerId, year);
+    MilitaryCommandRegistry.recordCommandSiegeContact(commandId, commanderPersonId);
     const contact = this.siegeContacts.get(attacker.name);
     const commandContributions = [...(contact?.commandContributions ?? [])];
     if (commandId && commanderPersonId) {
@@ -803,7 +804,7 @@ export default class City {
     const siegeDamage = Math.max(1, Math.floor(rawSiegeDamage));
     this.siegeDamageRemainder = rawSiegeDamage - siegeDamage;
     this.defense -= siegeDamage;
-    this.ownerTeam?.removeOneUser();
+    this.ownerTeam?.removeOneUser("SIEGE_LOSS", { month: year, context: `围城损失触发城市：${this.id}` });
     this.block.updateCityDisplay();
     if (this.defense <= 0) {
       this.capture(mainAttacker.team, year, mainAttacker.rulerId, mainCommand?.commandId, mainCommand?.commanderPersonId);
