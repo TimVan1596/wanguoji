@@ -38,6 +38,8 @@ V15 增加 User 的 `bornMonth` / `militaryPersonId`，以及 `registries.milita
 
 逻辑移动/占领用例调用生产 `stepLogicalMovement` 和 `applyLogicalOccupation`；City 用例调用真实 `registerSiegeContact` 并检查其权威导出。当前项目没有可以脱离 Phaser/Core 窗口外壳、同时保留完整自然战争、人口、外交、城战与人物生命周期的现成多种子长跑运行器。本次没有声称完成完整自然多种子率或5000年性能校准；自动测试的受控路径证明命令如何被执行，不证明自然战争中指挥官出现率、实际攻城率或长期平衡。人工 Gate 要在 Electron 新七国世界检查完整生产运行。
 
+本次实际验证：`pnpm test` 通过，212 个测试文件、1583 条测试；`pnpm build`、`pnpm desktop:build`、`pnpm desktop:compile`、`pnpm desktop:renderer-debug-build` 均通过；`git diff --check` 与 `git diff --cached --check` 均通过。Web/桌面构建仍报告主 JavaScript chunk 约3.2 MB、超过Vite默认500 KB提示线；构建未失败，本版未做无关拆包。
+
 当前尚未通过用户人工观察验证的风险包括：5%年度任命率是否造成合适的军力集中；目标顺序简单且不做路径寻优时，地图上的实际行军是否可读；Phaser 物理步进中的转向是否能在实际地图环境稳定到达目标；自然世界中是否经常遇到候选不足；5000年人物/事件/存档增长规模。若任一现象不合理，本版先收集人工结果，不在此处扩展到将领政治夺权或新军事模型。
 
 ## 人工 Chrome/Electron Gate
