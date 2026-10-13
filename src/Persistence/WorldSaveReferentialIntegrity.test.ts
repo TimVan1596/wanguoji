@@ -276,7 +276,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     expect(event.metadata?.riskTier).toBe("POLITICAL_SHOCK"); expect(ruler.chronicle?.notableEventIds).toContain(event.id);
     expect(WorldHistory.exportState().events.slice(0, sources.length).map(e => JSON.stringify(e))).toEqual(sources);
     (core.simulator as any).clock.importState({ worldMonth: 120, elapsedMs: 0, running: false });
-    const save = exportWorldSave(core); expect(save.saveSchemaVersion).toBe(14);
+    const save = exportWorldSave(core); expect(save.saveSchemaVersion).toBe(15);
     expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
     const rng = worldRandom.exportState(); hydrateWorldSave(core, JSON.parse(JSON.stringify(save)));
     expect(exportWorldSave(core)).toEqual(save); expect(worldRandom.exportState()).toEqual(rng);
@@ -300,7 +300,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     core.simulator = new AutoSimulator(true); core.simulator.startWorld(ts, 7, {}); core.simulator.setRunning(false);
     // Runtime objects are Phaser adapters; politics, simulator startup, exporter, validator and hydrator are real.
     const before = exportWorldSave(core, { createdAt: "2026-10-11T00:00:00Z" });
-    expect(before.saveSchemaVersion).toBe(14); expect(before.dynasties).toHaveLength(7);
+    expect(before.saveSchemaVersion).toBe(15); expect(before.dynasties).toHaveLength(7);
     expect(before.dynasties.some(d => (d.rulers as RulerSaveV14[]).length > 2)).toBe(true);
     expect(validateWorldSave(before)).toEqual({ valid: true, errors: [] });
     const rng = worldRandom.exportState(); const init = vi.spyOn(DynastyRegistry, "initializeFaction");
@@ -462,7 +462,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
     const core = target(); hydrateWorldSave(core, save); const first = exportWorldSave(core);
     expect(first.dynasties[0].rulers).toEqual(save.dynasties[0].rulers);
-    expect(first.saveSchemaVersion).toBe(14); expect(worldRandom.exportState()).toEqual(save.worldRandom);
+    expect(first.saveSchemaVersion).toBe(15); expect(worldRandom.exportState()).toEqual(save.worldRandom);
     hydrateWorldSave(core, JSON.parse(JSON.stringify(first))); expect(exportWorldSave(core)).toEqual(first);
   });
   it("V14 keeps successive deposition accessions, later deposition, death and cooldown canonical across export/hydration", () => {
@@ -503,7 +503,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
     const core = target(); hydrateWorldSave(core, JSON.parse(JSON.stringify(save)));
     const restored = exportWorldSave(core);
-    expect(restored.saveSchemaVersion).toBe(14);
+    expect(restored.saveSchemaVersion).toBe(15);
     expect(restored.dynasties[0]).toMatchObject({ currentRulerId: "final", lastDepositionAttemptMonth: 36 });
     expect(restored.dynasties[0].rulers).toMatchObject([
       { rulerId: "predecessor", status: "deposed", endMonth: 12, endReason: "被废" },
@@ -588,7 +588,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     setFixtureLifetimeRecords(save);
     const rng=save.worldRandom,core=target();
     expect(validateWorldSave(save)).toEqual({valid:true,errors:[]});hydrateWorldSave(core,save);
-    const first=exportWorldSave(core);expect(first.saveSchemaVersion).toBe(14);
+    const first=exportWorldSave(core);expect(first.saveSchemaVersion).toBe(15);
     expect(first.factions[0]).toMatchObject({terminationReason:"SUBMITTED",terminationTargetFactionId:"wei",terminationMonth:36});
     expect(first.cities[0].ownerFactionId).toBe("wei");expect(first.blocks.every(b=>b.ownerFactionId === "wei")).toBe(true);
     expect((first.dynasties[0].rulers as any[])[0]).toMatchObject({status:"abdicated",endReason:"纳土退位",politicalEndMonth:36});
