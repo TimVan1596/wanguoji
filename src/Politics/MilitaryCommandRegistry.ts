@@ -77,6 +77,7 @@ export class MilitaryCommandRegistryStore {
   private commandSequence = 1;
   private lastEvaluationMonth = -1;
   private lastArrivalTargetByCommand = new Map<string, string>();
+  private longRangeOrderSamples = new Map<string, number>();
   private eventWriter?: (event: Omit<WorldEvent, "id"> & { id: string }) => string;
   private diagnostics = { candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
     unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0 };
@@ -85,6 +86,7 @@ export class MilitaryCommandRegistryStore {
     this.people.clear(); this.formations.clear(); this.personSequence = 1; this.commandSequence = 1;
     this.lastEvaluationMonth = -1;
     this.lastArrivalTargetByCommand.clear();
+    this.longRangeOrderSamples.clear();
     this.diagnostics = { candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
       unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0 };
   }
@@ -103,6 +105,7 @@ export class MilitaryCommandRegistryStore {
     this.personSequence = state.personSequence; this.commandSequence = state.commandSequence;
     this.lastEvaluationMonth = state.lastEvaluationMonth;
     this.lastArrivalTargetByCommand.clear();
+    this.longRangeOrderSamples.clear();
     this.diagnostics = { candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
       unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0 };
   }
@@ -211,6 +214,7 @@ export class MilitaryCommandRegistryStore {
       if (formation.targetCityId) {
         this.diagnostics.invalidatedTargets++;
         this.lastArrivalTargetByCommand.delete(formation.commandId);
+        this.longRangeOrderSamples.delete(formation.commandId);
       }
       const team = teams.find(candidate => candidate.name === formation.factionId);
       const members = team ? [...team.users].filter(user => formation.memberUnitIds.includes(user.player.logicalUnitId ?? "") && user.player.active) : [];
@@ -224,6 +228,10 @@ export class MilitaryCommandRegistryStore {
         });
       const next = options[0];
       if (next) {
+        if (formation.targetCityId !== next.id) {
+          this.lastArrivalTargetByCommand.delete(formation.commandId);
+          this.longRangeOrderSamples.delete(formation.commandId);
+        }
         formation.targetCityId = next.id;
         formation.orderStartMonth = worldMonth;
         this.diagnostics.orders++;
@@ -232,6 +240,9 @@ export class MilitaryCommandRegistryStore {
   }
 
   private observeLongRangeOrders(worldMonth: number, teams: Team[], cities: City[]) {
+    const activeCommandIds = new Set([...this.formations.values()].filter(formation => formation.status === "ACTIVE").map(formation => formation.commandId));
+    for (const commandId of this.longRangeOrderSamples.keys()) if (!activeCommandIds.has(commandId)) this.longRangeOrderSamples.delete(commandId);
+    for (const commandId of this.lastArrivalTargetByCommand.keys()) if (!activeCommandIds.has(commandId)) this.lastArrivalTargetByCommand.delete(commandId);
     const cityById = new Map(cities.map(city => [city.id, city]));
     for (const formation of this.formations.values()) {
       if (formation.status !== "ACTIVE" || !formation.targetCityId || formation.orderStartMonth === undefined) continue;
@@ -241,8 +252,12 @@ export class MilitaryCommandRegistryStore {
       const team = teams.find(candidate => candidate.name === formation.factionId);
       const members = team ? [...team.users].filter(user => formation.memberUnitIds.includes(user.player.logicalUnitId ?? "") && user.player.active) : [];
       if (!target || !members.length) continue;
-      const stillFar = members.every(user => Math.hypot(target.block.x - user.player.x, target.block.y - user.player.y) > 8 * 32);
-      if (stillFar) this.diagnostics.staleOrderChecks++;
+      const nearestMemberDistance = Math.min(...members.map(user => Math.hypot(target.block.x - user.player.x, target.block.y - user.player.y)));
+      const previousDistance = this.longRangeOrderSamples.get(formation.commandId);
+      if (nearestMemberDistance > 8 * 32 && previousDistance !== undefined && previousDistance - nearestMemberDistance < 32) {
+        this.diagnostics.staleOrderChecks++;
+      }
+      this.longRangeOrderSamples.set(formation.commandId, nearestMemberDistance);
     }
   }
 
@@ -293,12 +308,12 @@ export class MilitaryCommandRegistryStore {
   getCommandForUnit(unitId: string) { return [...this.formations.values()].find(f => f.status === "ACTIVE" && f.memberUnitIds.includes(unitId)); }
   getPerson(personId: string) { return this.people.get(personId); }
 
-  recordCommandSiegeContact(commandId?: string, commanderPersonId?: string) {
+  recordCommandSiegeContact(commandId?: string, commanderPersonId?: string, cityId?: string) {
     if (!commandId || !commanderPersonId) return;
     const formation = this.formations.get(commandId);
     if (formation?.status === "ACTIVE" && formation.commanderPersonId === commanderPersonId) {
       this.diagnostics.commandedSiegeContacts++;
-      if (formation.targetCityId && this.lastArrivalTargetByCommand.get(commandId) !== formation.targetCityId) {
+      if (formation.targetCityId && formation.targetCityId === cityId && this.lastArrivalTargetByCommand.get(commandId) !== formation.targetCityId) {
         this.lastArrivalTargetByCommand.set(commandId, formation.targetCityId);
         this.diagnostics.targetCityArrivals++;
       }

@@ -52,6 +52,10 @@ describe("persistent military command registry", () => {
     expect(units.every(unit => unit.logicalVX === 32 && unit.logicalVY === 0)).toBe(true);
     const moved = stepLogicalMovement({ units, deltaMs: 1000, blockSize: 32, bounds: { minX: 0, minY: 0, maxX: 64, maxY: 32 } });
     expect(moved.every(result => result.enteredNewGrid && result.currentGridX === 1)).toBe(true);
+    const uncommanded: any = { unitId: "unit-ordinary", factionId: "qin", logicalX: 0, logicalY: 0,
+      logicalVX: 0, logicalVY: 0, alive: true, currentGridX: 0, currentGridY: 0, radius: 1, speed: 32, role: "NORMAL" };
+    const ordinaryMove = stepLogicalMovement({ units: [uncommanded], deltaMs: 1000, blockSize: 32, bounds: { minX: 0, minY: 0, maxX: 64, maxY: 32 } });
+    expect(ordinaryMove[0].enteredNewGrid).toBe(false);
     Diplomacy.reset();
     const contactResult = applyLogicalOccupation({ units, movementResults: moved,
       context: { getTeam: factionId => factionId === "qin" ? qin : wei,
@@ -59,8 +63,13 @@ describe("persistent military command registry", () => {
     expect(contactResult.siegeContacts).toBe(2);
     expect(registerSiegeContact).toHaveBeenCalledTimes(2);
     expect(registerSiegeContact).toHaveBeenCalledWith(qin, 12, undefined, formation.commandId, person.personId);
-    registry.recordCommandSiegeContact(formation.commandId, person.personId);
-    expect(registry.getDiagnostics()).toMatchObject({ targetCityArrivals: 1, commandedSiegeContacts: 1 });
+    registry.recordCommandSiegeContact(formation.commandId, person.personId, farCity.id);
+    registry.recordCommandSiegeContact(formation.commandId, person.personId, city.id);
+    expect(registry.getDiagnostics()).toMatchObject({ targetCityArrivals: 1, commandedSiegeContacts: 2 });
+    city.ownerFactionId = "qin";
+    registry.update(13, [qin, wei], [farCity, city]);
+    expect(registry.getFormations()[0].targetCityId).toBe(farCity.id);
+    expect(registry.getDiagnostics()).toMatchObject({ invalidatedTargets: 1, orders: 2 });
   });
 
   it("retires the command on faction transfer without recording a death", () => {
@@ -90,5 +99,23 @@ describe("persistent military command registry", () => {
     expect(registry.getFormations()[0].status).toBe("DISBANDED");
     expect(registry.getPeople()[0].status).toBe("RETIRED");
     expect(registry.getPeople()[0].deathMonth).toBeUndefined();
+  });
+
+  it("counts a distant order only after ten years without meaningful approach", () => {
+    vi.spyOn(worldRandom, "next").mockReturnValue(0);
+    const registry = new MilitaryCommandRegistryStore();
+    const qin: any = { name: "qin", status: "ACTIVE", users: new Set(), cities: [] };
+    const wei: any = { name: "wei", status: "ACTIVE", users: new Set(), cities: [] };
+    const commander = user(1, qin, "unit-1");
+    const member = user(2, qin, "unit-2");
+    commander.player.x = 0; member.player.x = 1;
+    qin.users.add(commander); qin.users.add(member);
+    const city: any = { id: "wei-far", ownerFactionId: "wei", ownerTeam: wei, block: { x: 1000, y: 0 } };
+    registry.update(12, [qin, wei], [city]);
+    expect(registry.getDiagnostics().staleOrderChecks).toBe(0);
+    registry.update(132, [qin, wei], [city]);
+    expect(registry.getDiagnostics().staleOrderChecks).toBe(0); // first distant sample establishes baseline
+    registry.update(252, [qin, wei], [city]);
+    expect(registry.getDiagnostics().staleOrderChecks).toBe(1);
   });
 });

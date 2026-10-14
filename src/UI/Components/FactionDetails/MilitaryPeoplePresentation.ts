@@ -7,18 +7,15 @@ const STATUS_ORDER: Record<MilitaryPerson["status"], number> = {
 };
 
 export function getMilitaryPersonRelevantMonth(person: MilitaryPerson) {
-  return Math.max(
-    person.deathMonth ?? -1,
-    ...person.appointments.flatMap(appointment => [appointment.startMonth, appointment.endMonth ?? -1])
-  );
+  return person.appointments.reduce((latest, appointment) =>
+    Math.max(latest, appointment.startMonth, appointment.endMonth ?? -1), person.deathMonth ?? -1);
 }
 
 export function sortMilitaryPeople(people: MilitaryPerson[]) {
-  return [...people].sort((a, b) =>
-    STATUS_ORDER[a.status] - STATUS_ORDER[b.status] ||
-    getMilitaryPersonRelevantMonth(b) - getMilitaryPersonRelevantMonth(a) ||
-    a.personId.localeCompare(b.personId)
-  );
+  return people.map(person => ({ person, relevantMonth: getMilitaryPersonRelevantMonth(person) }))
+    .sort((a, b) => STATUS_ORDER[a.person.status] - STATUS_ORDER[b.person.status] ||
+      b.relevantMonth - a.relevantMonth || a.person.personId.localeCompare(b.person.personId))
+    .map(row => row.person);
 }
 
 export function describeMilitaryDeathCause(cause?: string) {

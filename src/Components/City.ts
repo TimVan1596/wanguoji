@@ -244,7 +244,7 @@ export default class City {
     }
 
     if (rulerId) DynastyRegistry.recordPersonalSiegeContact(attacker.name, rulerId, year);
-    MilitaryCommandRegistry.recordCommandSiegeContact(commandId, commanderPersonId);
+    MilitaryCommandRegistry.recordCommandSiegeContact(commandId, commanderPersonId, this.id);
     const contact = this.siegeContacts.get(attacker.name);
     const commandContributions = [...(contact?.commandContributions ?? [])];
     if (commandId && commanderPersonId) {
