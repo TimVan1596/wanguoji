@@ -141,6 +141,11 @@ describe("production casualty business path", () => {
         populationBefore: 6, populationAfter: 5, destroyed: true },
     }]);
     expect(audit.getRecentSignificant()[0].casualty?.victimPosition?.x).not.toBe(city.block.x);
+    expect(victim.destroyUser(false, { cause: "SIEGE_LOSS", month: 12, damageSource: "CITY_SIEGE", triggerCityId: context!.triggerCityId })).toBe(false);
+    expect(defender.users.size).toBe(5);
+    expect(MilitaryCommandRegistry.getPeople()[0]).toMatchObject({ status: "DEAD", deathMonth: 12, deathCause: "SIEGE_LOSS" });
+    expect(events.filter(event => event.type === "military-person-died")).toHaveLength(1);
+    expect(audit.getRecentSignificant()).toHaveLength(1);
     expect(rngBefore).toEqual(worldRandom.exportState());
   });
 

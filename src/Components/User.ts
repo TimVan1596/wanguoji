@@ -131,11 +131,18 @@ export default class User {
     const y = logical ? logical.logicalY : core?.logicalGameplayAuthority ? undefined : this.player.y;
     const hasPosition = x !== undefined && y !== undefined && Number.isFinite(x) && Number.isFinite(y);
     const grid = hasPosition ? getLogicalGridCoordinate(x!, y!, Game.BlockSize) : undefined;
+    const militaryPerson = this.militaryPersonId
+      ? MilitaryCommandRegistry.getPerson(this.militaryPersonId)
+      : undefined;
+    const verifiedMilitaryPersonId = militaryPerson?.sourceUserId === this.id &&
+      militaryPerson.factionId === team.name && militaryPerson.status !== "DEAD"
+      ? militaryPerson.personId
+      : undefined;
     const casualty = (populationMutation.cause === "SIEGE_LOSS" || populationMutation.cause === "BATTLE_DEATH")
       ? {
           victimUserId: this.id,
           victimLogicalUnitId: unitId,
-          victimMilitaryPersonId: this.militaryPersonId,
+          victimMilitaryPersonId: verifiedMilitaryPersonId,
           victimPosition: hasPosition && grid ? {
             x: x!, y: y!, gridX: grid.gridX, gridY: grid.gridY,
             source: logical ? "LOGICAL" as const : "PHASER" as const,
