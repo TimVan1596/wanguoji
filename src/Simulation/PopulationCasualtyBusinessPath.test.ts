@@ -86,7 +86,7 @@ function setup() {
     defender.users.add(user);
     users.push(user);
     logicalEntries.set(unitId, { state: { unitId, factionId: "defender", logicalX: index * 32, logicalY: 64,
-      currentGridX: index, currentGridY: 2, alive: true }, player });
+      currentGridX: index, currentGridY: 2, userId: index, alive: true }, player });
   }
   return { audit, defender, attacker, users, logicalEntries, populationMutations, removedUsers, events };
 }
@@ -115,7 +115,7 @@ describe("production casualty business path", () => {
     });
     const city: any = Object.assign(Object.create(City.prototype), {
       id: context!.triggerCityId, name: "北城", ownerFactionId: defender.name, defense: 20, maxDefense: 20,
-      block: { updateCityDisplay: vi.fn() }, siegeDamageRemainder: 0, lastSiegeDamageYear: -1,
+      block: { x: 1024, y: 1024, updateCityDisplay: vi.fn() }, siegeDamageRemainder: 0, lastSiegeDamageYear: -1,
       lastSiegeDevastationYear: 12, devastation: 0, lastCapturedYear: undefined,
       siegeContacts: new Map([[attacker.name, { team: attacker, count: 3, year: 12 }]]),
     });
@@ -140,6 +140,7 @@ describe("production casualty business path", () => {
         victimMilitaryPersonId: personId, victimPosition: { x: victim.id * 32, y: 64, source: "LOGICAL" },
         populationBefore: 6, populationAfter: 5, destroyed: true },
     }]);
+    expect(audit.getRecentSignificant()[0].casualty?.victimPosition?.x).not.toBe(city.block.x);
     expect(rngBefore).toEqual(worldRandom.exportState());
   });
 
@@ -160,6 +161,32 @@ describe("production casualty business path", () => {
     expect(row.triggerCityId).toBeUndefined();
     expect(row.casualty?.victimUserId).toBeDefined();
     expect(users.some(user => user.id === row.casualty?.victimUserId)).toBe(true);
+    expect(rngBefore).toEqual(worldRandom.exportState());
+  });
+
+  it("preserves the ruler death gate and calls it at most once when the ruler candidate is protected", () => {
+    const { defender, users } = setup();
+    const ruler = users[0];
+    ruler.role = "RULER";
+    ruler.player.role = "RULER";
+    const candidates = users.map(user => ({ user, identity: {
+      userId: user.id, name: user.name, bornMonth: user.bornMonth,
+      logicalUnitId: user.player.logicalUnitId, militaryPersonId: user.militaryPersonId,
+    } }));
+    const context = Array.from({ length: 100 }, (_, index) => ({ factionId: "defender", worldMonth: 12,
+      damageSource: "CITY_SIEGE", triggerCityId: `ruler-city-${index}` }))
+      .find(candidateContext => orderCasualtyCandidates(candidates, candidateContext)?.[0].user === ruler);
+    expect(context).toBeDefined();
+    const rngBefore = worldRandom.exportState();
+
+    const removed = defender.removeOneUser("SIEGE_LOSS", { ...context!, damageSource: "CITY_SIEGE" });
+
+    expect(core.handleRulerCombatDeath).toHaveBeenCalledTimes(1);
+    expect(defender.users.has(ruler)).toBe(true);
+    expect(ruler.isDestroyed).toBe(false);
+    expect(ruler.player.tp).toHaveBeenCalledOnce();
+    expect(removed).toBeDefined();
+    expect(removed).not.toBe(ruler);
     expect(rngBefore).toEqual(worldRandom.exportState());
   });
 

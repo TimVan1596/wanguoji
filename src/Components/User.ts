@@ -124,17 +124,20 @@ export default class User {
     const unitId = this.player.logicalUnitId;
     const core = Game.Core;
     const logicalEntry = unitId ? core?.logicalUnitRegistry.getEntry(unitId) : undefined;
-    const logical = core?.logicalGameplayAuthority ? logicalEntry?.state : undefined;
+    const logicalState = logicalEntry?.state;
+    const logical = core?.logicalGameplayAuthority && logicalState?.unitId === unitId && logicalState.alive &&
+      logicalState.factionId === team.name && logicalState.userId === this.id ? logicalState : undefined;
     const x = logical ? logical.logicalX : core?.logicalGameplayAuthority ? undefined : this.player.x;
     const y = logical ? logical.logicalY : core?.logicalGameplayAuthority ? undefined : this.player.y;
-    const grid = x !== undefined && y !== undefined ? getLogicalGridCoordinate(x, y, Game.BlockSize) : undefined;
+    const hasPosition = x !== undefined && y !== undefined && Number.isFinite(x) && Number.isFinite(y);
+    const grid = hasPosition ? getLogicalGridCoordinate(x!, y!, Game.BlockSize) : undefined;
     const casualty = (populationMutation.cause === "SIEGE_LOSS" || populationMutation.cause === "BATTLE_DEATH")
       ? {
           victimUserId: this.id,
           victimLogicalUnitId: unitId,
           victimMilitaryPersonId: this.militaryPersonId,
-          victimPosition: x !== undefined && y !== undefined && grid ? {
-            x, y, gridX: grid.gridX, gridY: grid.gridY,
+          victimPosition: hasPosition && grid ? {
+            x: x!, y: y!, gridX: grid.gridX, gridY: grid.gridY,
             source: logical ? "LOGICAL" as const : "PHASER" as const,
           } : undefined,
           populationBefore: before,

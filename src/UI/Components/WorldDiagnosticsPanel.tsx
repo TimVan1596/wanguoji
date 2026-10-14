@@ -590,7 +590,7 @@ function WorldDiagnosticsPanelContent() {
               : "";
             return `${formatWorldDate(entry.month)} | ${entry.factionName} ${entry.before}→${entry.after} (${entry.delta > 0 ? "+" : ""}${entry.delta}) | ${entry.cause}${entry.damageSource ? ` | 损耗来源: ${entry.damageSource}` : ""}${entry.triggerCityId ? ` | 触发城市: ${entry.triggerCityId}` : ""}${relation}${entry.context ? ` | ${entry.context}` : ""}${casualtyText}`;
           }).join("\n")
-          : "暂无达到阈值的人口变化",
+          : "暂无达到阈值的人口变化或具体受损者记录",
         ].join("\n")}</Typography>
       </details>
       {isDesktopContinuousRuntime() && <details>
