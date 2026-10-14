@@ -125,7 +125,7 @@ export default class User {
     const core = Game.Core;
     const logicalEntry = unitId ? core?.logicalUnitRegistry.getEntry(unitId) : undefined;
     const logicalState = logicalEntry?.state;
-    const logical = core?.logicalGameplayAuthority && logicalState?.unitId === unitId && logicalState.alive &&
+    const logical = core?.logicalGameplayAuthority && logicalState && logicalState.unitId === unitId && logicalState.alive &&
       logicalState.factionId === team.name && logicalState.userId === this.id ? logicalState : undefined;
     const x = logical ? logical.logicalX : core?.logicalGameplayAuthority ? undefined : this.player.x;
     const y = logical ? logical.logicalY : core?.logicalGameplayAuthority ? undefined : this.player.y;

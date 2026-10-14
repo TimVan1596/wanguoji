@@ -45,7 +45,7 @@ afterEach(() => {
   FactionEffects.reset();
   Diplomacy.reset();
 });
-afterAll(() => vi.unstubAllGlobals());
+afterAll(() => { vi.unstubAllGlobals(); });
 
 function setup() {
   const audit = new PopulationTransitionAudit();
