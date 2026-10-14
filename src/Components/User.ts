@@ -6,12 +6,14 @@ import { resolvePublicAssetUrl } from "../Runtime/PublicAssetUrl";
 import type { PopulationMutationContext } from "../Simulation/PopulationTransitionAudit";
 import { deriveUserBornMonth } from "../Politics/MilitaryCommandRegistry";
 import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
+import { getLogicalGridCoordinate } from "../Simulation/LogicalUnitState";
 
 export type PlayerRole = "NORMAL" | "RULER";
 
 export default class User {
   isFaceLoadDone = false;
   score = 0;
+  private destroyed = false;
   militaryPersonId?: string;
   readonly bornMonth: number;
   sourceTeam: Team;
@@ -104,7 +106,12 @@ export default class User {
     return `${this.id}-${this.name}`;
   }
 
+  get isDestroyed() {
+    return this.destroyed;
+  }
+
   destroyUser(silentRulerDeath = false, populationMutation: PopulationMutationContext = { cause: "UNATTRIBUTED" }) {
+    if (this.destroyed) return false;
     if (this.role === "RULER" && !silentRulerDeath) {
       const shouldDestroy = Game.Core?.handleRulerCombatDeath(this) ?? true;
       if (!shouldDestroy) {
@@ -113,10 +120,35 @@ export default class User {
       }
     }
     const team = this.team;
-    MilitaryCommandRegistry.onUserDestroyed(this, populationMutation.month ?? Game.Core?.simulator?.year ?? 0, populationMutation.cause);
     const before = team.users.size;
-    team.users.delete(this);
-    Game.Core?.simulator?.recordPopulationMutation(team, before, team.users.size, populationMutation);
+    const unitId = this.player.logicalUnitId;
+    const core = Game.Core;
+    const logicalEntry = unitId ? core?.logicalUnitRegistry.getEntry(unitId) : undefined;
+    const logical = core?.logicalGameplayAuthority ? logicalEntry?.state : undefined;
+    const x = logical ? logical.logicalX : core?.logicalGameplayAuthority ? undefined : this.player.x;
+    const y = logical ? logical.logicalY : core?.logicalGameplayAuthority ? undefined : this.player.y;
+    const grid = x !== undefined && y !== undefined ? getLogicalGridCoordinate(x, y, Game.BlockSize) : undefined;
+    const casualty = (populationMutation.cause === "SIEGE_LOSS" || populationMutation.cause === "BATTLE_DEATH")
+      ? {
+          victimUserId: this.id,
+          victimLogicalUnitId: unitId,
+          victimMilitaryPersonId: this.militaryPersonId,
+          victimPosition: x !== undefined && y !== undefined && grid ? {
+            x, y, gridX: grid.gridX, gridY: grid.gridY,
+            source: logical ? "LOGICAL" as const : "PHASER" as const,
+          } : undefined,
+          populationBefore: before,
+          populationAfter: before - 1,
+          destroyed: true as const,
+        }
+      : undefined;
+    this.destroyed = true;
+    MilitaryCommandRegistry.onUserDestroyed(this, populationMutation.month ?? Game.Core?.simulator?.year ?? 0, populationMutation.cause);
+    const removedFromPopulation = team.users.delete(this);
+    Game.Core?.simulator?.recordPopulationMutation(team, before, team.users.size, {
+      ...populationMutation,
+      casualty: removedFromPopulation && populationMutation.damageSource ? casualty : undefined,
+    });
     if (team.rulerUser === this) {
       team.rulerUser = undefined;
     }

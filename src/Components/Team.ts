@@ -9,6 +9,7 @@ import Player from "./Player";
 import User, { PlayerRole } from "./User";
 import { resolvePublicAssetUrl } from "../Runtime/PublicAssetUrl";
 import type { PopulationMutationContext } from "../Simulation/PopulationTransitionAudit";
+import { orderCasualtyCandidates } from "../Simulation/PopulationCasualtySelection";
 import {
   FactionStatus,
   getCumulativeActiveYears,
@@ -205,12 +206,35 @@ export default class Team {
     return [...this.users].find((user) => user.id === id);
   }
 
-  removeOneUser(cause: "SIEGE_LOSS" | "BATTLE_DEATH" = "SIEGE_LOSS", context?: Pick<PopulationMutationContext, "month" | "context">) {
-    for (const user of this.users) {
-      if (user.destroyUser(false, { cause, month: context?.month ?? Game.Core?.simulator?.year, context: context?.context })) {
-        return;
-      }
+  removeOneUser(
+    cause: "SIEGE_LOSS" | "BATTLE_DEATH" = "SIEGE_LOSS",
+    context: Pick<PopulationMutationContext, "month" | "context" | "damageSource" | "triggerCityId"> = {}
+  ) {
+    const worldMonth = context.month ?? Game.Core?.simulator?.year ?? 0;
+    const damageSource = context.damageSource ?? "UNSPECIFIED";
+    const candidates = [...this.users].filter(user => this.users.has(user) && user.team === this && !user.isDestroyed);
+    const ordered = orderCasualtyCandidates(candidates.map(user => ({
+      user,
+      identity: {
+        userId: user.id,
+        name: user.name,
+        bornMonth: user.bornMonth,
+        logicalUnitId: user.player.logicalUnitId,
+        militaryPersonId: user.militaryPersonId,
+      },
+    })), { factionId: this.name, worldMonth, damageSource, triggerCityId: context.triggerCityId });
+    // A malformed/ambiguous identity must not fall back to Set iteration order.
+    if (!ordered) return undefined;
+    for (const { user } of ordered) {
+      if (user.destroyUser(false, {
+        cause,
+        month: worldMonth,
+        context: context.context,
+        damageSource,
+        triggerCityId: context.triggerCityId,
+      })) return user;
     }
+    return undefined;
   }
 
   static GetUserById(id: number) {

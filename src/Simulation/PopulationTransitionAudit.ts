@@ -21,11 +21,26 @@ export type PopulationTransitionCause =
   | "INITIALIZATION"
   | "UNATTRIBUTED";
 
+export type PopulationDamageSource = "CITY_SIEGE" | "HOSTILE_HOME_OCCUPATION" | "UNSPECIFIED";
+
+export interface PopulationCasualtyEvidence {
+  victimUserId: number;
+  victimLogicalUnitId?: string;
+  victimMilitaryPersonId?: string;
+  victimPosition?: { x: number; y: number; gridX: number; gridY: number; source: "LOGICAL" | "PHASER" };
+  populationBefore: number;
+  populationAfter: number;
+  destroyed: true;
+}
+
 export interface PopulationMutationContext {
   cause: PopulationTransitionCause;
   month?: number;
   relatedFactionId?: string;
   context?: string;
+  damageSource?: PopulationDamageSource;
+  triggerCityId?: string;
+  casualty?: PopulationCasualtyEvidence;
 }
 
 export interface PopulationTransitionRecord {
@@ -38,6 +53,9 @@ export interface PopulationTransitionRecord {
   cause: PopulationTransitionCause;
   relatedFactionId?: string;
   context?: string;
+  damageSource?: PopulationDamageSource;
+  triggerCityId?: string;
+  casualty?: PopulationCasualtyEvidence;
 }
 
 type TeamPopulation = Pick<Team, "name" | "displayName"> & { users: { size: number } };
@@ -73,7 +91,13 @@ export class PopulationTransitionAudit {
     if (!this.active || before === after) return;
     const month = metadata.month ?? this.lastReconciledMonth;
     const causeContext = metadata.cause === "SIEGE_LOSS" ? metadata.context ?? "" : "";
-    const key = [month, team.name, metadata.cause, metadata.relatedFactionId ?? "", causeContext].join("|");
+    // A successful casualty has its own row so that the victim identity and exact
+    // population delta cannot be merged into an anonymous aggregate.
+    const casualtyKey = metadata.casualty
+      ? `${metadata.casualty.victimLogicalUnitId ?? ""}|${metadata.casualty.victimMilitaryPersonId ?? ""}|${metadata.casualty.victimUserId}`
+      : "";
+    const key = [month, team.name, metadata.cause, metadata.relatedFactionId ?? "", metadata.damageSource ?? "",
+      metadata.triggerCityId ?? "", causeContext, casualtyKey].join("|");
     const previous = this.pending.get(key);
     const record: PopulationTransitionRecord = previous
       ? { ...previous, after: previous.after + (after - before), delta: previous.delta + (after - before), context: metadata.context ?? previous.context }
@@ -87,6 +111,9 @@ export class PopulationTransitionAudit {
           cause: metadata.cause,
           relatedFactionId: metadata.relatedFactionId,
           context: metadata.context,
+          damageSource: metadata.damageSource,
+          triggerCityId: metadata.triggerCityId,
+          casualty: metadata.casualty ? { ...metadata.casualty, victimPosition: metadata.casualty.victimPosition ? { ...metadata.casualty.victimPosition } : undefined } : undefined,
         };
     this.pending.set(key, record);
   }
@@ -146,7 +173,7 @@ export class PopulationTransitionAudit {
   }
 
   getRecentSignificant(limit = 12) {
-    return this.getRecent().filter(isSignificantPopulationTransition).slice(-limit).reverse();
+    return this.getRecent().filter(record => Boolean(record.casualty) || isSignificantPopulationTransition(record)).slice(-limit).reverse();
   }
 
   private snapshot(teams: TeamPopulation[]) {

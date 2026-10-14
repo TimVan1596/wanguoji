@@ -109,6 +109,29 @@ describe("PopulationTransitionAudit", () => {
     ]);
   });
 
+  it("retains one bounded session row per successfully destroyed casualty with separate trigger and victim location", () => {
+    const audit = new PopulationTransitionAudit();
+    const state = faction("大国", 100);
+    audit.reset(0, [state]);
+    state.users.delete(42);
+    audit.record(state, 100, 99, {
+      cause: "SIEGE_LOSS", month: 12, damageSource: "CITY_SIEGE", triggerCityId: "city-b",
+      context: "围城损失触发城市：city-b",
+      casualty: {
+        victimUserId: 42, victimLogicalUnitId: "unit-42", victimMilitaryPersonId: "military-person-3",
+        victimPosition: { x: 32, y: 64, gridX: 1, gridY: 2, source: "LOGICAL" },
+        populationBefore: 100, populationAfter: 99, destroyed: true,
+      },
+    });
+    audit.reconcile(12, [state]);
+    expect(audit.getRecentSignificant()).toMatchObject([{
+      cause: "SIEGE_LOSS", triggerCityId: "city-b", damageSource: "CITY_SIEGE",
+      before: 100, after: 99, delta: -1,
+      casualty: { victimUserId: 42, victimLogicalUnitId: "unit-42", populationBefore: 100, populationAfter: 99, destroyed: true,
+        victimPosition: { gridX: 1, gridY: 2, source: "LOGICAL" } },
+    }]);
+  });
+
   it("bounds retained session history", () => {
     const audit = new PopulationTransitionAudit();
     const state = faction("齐", 0);

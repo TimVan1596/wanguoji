@@ -140,7 +140,11 @@ export default class Block extends Phaser.GameObjects.Rectangle {
     }
     if (this.isHome) {
       this.hp--;
-      oldTeam?.removeOneUser();
+      oldTeam?.removeOneUser("SIEGE_LOSS", {
+        month: Game.Core?.simulator?.year ?? 0,
+        damageSource: "HOSTILE_HOME_OCCUPATION",
+        context: "敌对占领首基地块导致的人口损耗",
+      });
       if (this.hp <= 0) {
         this._setTeam(team);
         this.setIsNotHome();

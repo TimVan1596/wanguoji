@@ -572,15 +572,26 @@ function WorldDiagnosticsPanelContent() {
       </details>}
       <details>
         <summary>Population Transition Audit（最近显著变化）</summary>
-        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{populationTransitions.length
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{[
+          "本次会话数据；读取存档后重置。触发城市与受损者位置分开记录，位置不证明参战。",
+          populationTransitions.length
           ? populationTransitions.map((entry) => {
             const related = entry.relatedFactionId
               ? core?.teams.find((team) => team.name === entry.relatedFactionId)?.displayName ?? entry.relatedFactionId
               : undefined;
             const relation = related ? ` | ${entry.delta < 0 ? "→" : "←"} ${related}` : "";
-            return `${formatWorldDate(entry.month)} | ${entry.factionName} ${entry.before}→${entry.after} (${entry.delta > 0 ? "+" : ""}${entry.delta}) | ${entry.cause}${relation}${entry.context ? ` | ${entry.context}` : ""}`;
+            const casualty = entry.casualty;
+            const casualtyText = casualty
+              ? ` | 受损User: ${casualty.victimUserId}` +
+                `${casualty.victimLogicalUnitId ? ` | logicalUnit: ${casualty.victimLogicalUnitId}` : ""}` +
+                `${casualty.victimMilitaryPersonId ? ` | militaryPerson: ${casualty.victimMilitaryPersonId}` : ""}` +
+                `${casualty.victimPosition ? ` | 受损者位置(${casualty.victimPosition.source}): ${casualty.victimPosition.x.toFixed(1)},${casualty.victimPosition.y.toFixed(1)} / 格${casualty.victimPosition.gridX},${casualty.victimPosition.gridY}` : " | 受损者位置: —"}` +
+                ` | 实际销毁: ${casualty.destroyed ? "是" : "否"} (${casualty.populationBefore}→${casualty.populationAfter})`
+              : "";
+            return `${formatWorldDate(entry.month)} | ${entry.factionName} ${entry.before}→${entry.after} (${entry.delta > 0 ? "+" : ""}${entry.delta}) | ${entry.cause}${entry.damageSource ? ` | 损耗来源: ${entry.damageSource}` : ""}${entry.triggerCityId ? ` | 触发城市: ${entry.triggerCityId}` : ""}${relation}${entry.context ? ` | ${entry.context}` : ""}${casualtyText}`;
           }).join("\n")
-          : "暂无达到阈值的人口变化"}</Typography>
+          : "暂无达到阈值的人口变化",
+        ].join("\n")}</Typography>
       </details>
       {isDesktopContinuousRuntime() && <details>
         <summary>Desktop Runtime</summary>
