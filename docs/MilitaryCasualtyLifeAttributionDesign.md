@@ -1,7 +1,7 @@
 # 军政人物生命与围城战损归因设计审计
 
-日期：2026-10-14
-仓库状态：HEAD `c2090ad`；工作树干净；package `0.99.150`；APP `v0.99931q1`；WorldSave V15。
+日期：2026-10-14；Stage B实施状态更新：2026-10-15。
+审计时仓库状态：HEAD `c2090ad`；工作树干净；package `0.99.150`；APP `v0.99931q1`；WorldSave V15。
 前置状态：用户已确认 v0.99931q1 最终人工 Gate PASS。现有 q1 报告中的“等待人工检查”状态已被本次用户回传取代；该报告和版本记录未改动。
 
 ## 结论摘要
@@ -161,4 +161,4 @@ Stage B人工Chrome/Electron Gate建议使用 `pnpm desktop:start:debug` 读取�
 **自然寿命：**本轮不改。普通User无自然死亡流程；若未来要求为退役将领/普通人建立自然寿命，应另立主题并评估全人口模型。
 **需要用户批准的范围：**批准方案C及其Stage B最小实现；明确接受 `SIEGE_LOSS`只表示围城/敌对占领造成的人口损耗，不作为个人在场参战证明；确认保留V15和当前人口/围城平衡。
 
-**【Stage A设计Gate：等待用户明确批准。不得自行进入Stage B。】**
+**Stage A设计Gate：用户已明确回复“按建议批准”，授权按方案C进入Stage B；Stage B实施结果见[实现报告](MilitaryCasualtyLifeAttributionImplementation.md)。**
