@@ -1,3 +1,5 @@
+import { deriveRestorationTenureEvidence } from "../../../Simulation/RestorationTenureEvidence";
+import { buildRestorationMemoryLines } from "./model";
 import { GenealogyPersonCard } from "./GenealogyPersonCard";
 import { deriveGenealogyNodePresentations, type GenealogyNodePresentation } from "./GenealogyNodePresentation";
 import { UnifiedFactionChronicle } from "./UnifiedFactionChronicle";
@@ -298,6 +300,14 @@ function FactionProfile({
     foundingKingName: foundingKing ? formatRulerName(foundingKing) : undefined,
     foundingEmperorName: foundingEmperor ? formatRulerName(foundingEmperor) : undefined,
   });
+  const restorationMemoryLines = useMemo(() => {
+    if (team.status !== "EXILED") return [];
+    const evidence = deriveRestorationTenureEvidence({ team, dynasty,
+      events: WorldHistory.getEventsForFaction(team.name), worldMonth });
+    return buildRestorationMemoryLines(evidence, { worldMonth, exileStartedMonth: exile?.startedMonth,
+      legitimacy: exile?.legitimacy, remnants: remnant?.population ?? 0,
+      hasClaimant: DynastyRegistry.hasClaimantAtMonth(team.name, worldMonth) });
+  }, [team, dynasty, worldMonth, events, exile?.startedMonth, exile?.legitimacy, remnant?.population]);
   const emperorQualificationLines = buildEmperorQualificationLines({
     team,
     worldMonth,
@@ -420,7 +430,7 @@ function FactionProfile({
           {emperorQualificationLines.length > 0 ? (
             <OverviewSection title="帝号资格" lines={emperorQualificationLines} muted />
           ) : null}
-          <OverviewSection title="王朝记忆" lines={overviewSections.legacyLines} />
+          <OverviewSection title="王朝记忆" lines={restorationMemoryLines.length ? [...overviewSections.legacyLines.filter(line => !/^(势力存续|流亡|合法性|残部)：/.test(line)), ...restorationMemoryLines] : overviewSections.legacyLines} />
           {diplomacyLines.length > 0 ? <OverviewSection title="外交关系" lines={diplomacyLines} /> : null}
           {notableRulers.length > 0 ? (
             <Box sx={{ mt: 1 }}>

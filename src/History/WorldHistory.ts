@@ -192,6 +192,7 @@ export class WorldHistoryStore {
     this.resetPending = true;
     this.pendingEvents = [];
     this.eventsByFactionId.clear();
+    this.eventTypeCounts.clear();
     this.emitted.clear();
     this.populationLeader = undefined;
     this.territoryLeader = undefined;
@@ -260,6 +261,9 @@ export class WorldHistoryStore {
     return { events, hasOlder: index >= start, nextIndex: index + 1 };
   }
 
+  private eventTypeCounts = new Map<WorldEventType, number>();
+  getEventTypeCount(type: WorldEventType) { return this.eventTypeCounts.get(type) ?? 0; }
+
   getEventCount() {
     return this.events.length;
   }
@@ -301,6 +305,7 @@ export class WorldHistoryStore {
     this.resetPending = true;
     this.pendingEvents = [];
     this.eventsByFactionId.clear();
+    this.eventTypeCounts.clear();
     this.events.forEach((event) => this.indexEvent(event));
     this.emitted = new Set(state.emittedKeys);
     this.populationLeader = state.populationLeader;
@@ -340,6 +345,7 @@ export class WorldHistoryStore {
   }
 
   private indexEvent(event: WorldEvent) {
+    this.eventTypeCounts.set(event.type, (this.eventTypeCounts.get(event.type) ?? 0) + 1);
     this.insertOrdered(this.orderedEvents, event);
     if (event.historyGroupId) this.groupOldestMonth.set(event.historyGroupId,
       Math.min(this.groupOldestMonth.get(event.historyGroupId) ?? Infinity, event.monthIndex ?? event.year));

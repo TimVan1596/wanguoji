@@ -10,11 +10,11 @@ const capital = (year: number): CityHistoryEvent => ({ year, type: "capital-relo
 describe("旧都与长期统治地真实历史证据", () => {
   it("国家历史与当前王统历史分别计权，异姓新epoch不继承旧王统年资", () => {
     const youngState = deriveRestorationHistoricalProfile({ factionId: "old-state", stateTenureMonths: 300 * 12,
-      currentHouseEpochStartMonth: 3500, worldMonth: 3600, basis: "FORMER_CAPITAL", heldMonths: 5000 });
+      currentHouseTenureMonths: 100, currentHouseEpochStartMonth: 3500, worldMonth: 3600, basis: "FORMER_CAPITAL", heldMonths: 5000 });
     const matureHouse = deriveRestorationHistoricalProfile({ factionId: "old-state", stateTenureMonths: 300 * 12,
-      currentHouseEpochStartMonth: 0, worldMonth: 3600, basis: "FORMER_CAPITAL", heldMonths: 5000 });
+      currentHouseTenureMonths: 3600, currentHouseEpochStartMonth: 0, worldMonth: 3600, basis: "FORMER_CAPITAL", heldMonths: 5000 });
     const newState = deriveRestorationHistoricalProfile({ factionId: "new-state", stateTenureMonths: 20 * 12,
-      currentHouseEpochStartMonth: 0, worldMonth: 20 * 12, basis: "LONG_RULE", heldMonths: 500 });
+      currentHouseTenureMonths: 240, currentHouseEpochStartMonth: 0, worldMonth: 20 * 12, basis: "LONG_RULE", heldMonths: 500 });
     expect(youngState.stateTenureMonths).toBe(3600);
     expect(youngState.currentHouseTenureMonths).toBe(100);
     expect(youngState.houseHistoricalWeight).toBeLessThan(matureHouse.houseHistoricalWeight);
@@ -24,8 +24,9 @@ describe("旧都与长期统治地真实历史证据", () => {
   });
   it("从V14既有势力累计在国月份和houseEpoch派生新旧王统差异", () => {
     const profile = deriveFactionRestorationHistoricalProfile({
-      team: { name: "qin", cumulativeActiveYears: 3600, status: "EXILED" },
-      dynasty: { houseEpochs: [{ startMonth: 0, endMonth: 3500 }, { startMonth: 3500 }] },
+      team: { name: "qin", firstFoundedYear: 0, stateFoundedMonth: 0, lastExiledYear: 3600, restorationYears: [], cumulativeActiveYears: 3600, status: "EXILED" },
+      events: [{ id: "exile", year: 3600, type: "faction-exiled", targetFactionId: "qin", category: "politics", title: "流亡", importance: "major" }],
+      dynasty: { houseEpochs: [{ startMonth: 0, endMonth: 3499 }, { startMonth: 3500 }] },
       worldMonth: 3600, basis: "FORMER_CAPITAL", heldMonths: 4200,
     });
     expect(profile.stateTenureMonths).toBe(3600);

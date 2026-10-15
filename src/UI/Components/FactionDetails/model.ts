@@ -1,3 +1,4 @@
+import type { RestorationTenureEvidence } from "../../../Simulation/RestorationTenureEvidence";
 import { formatWorldDate, formatWorldDuration } from "../../../Simulation/WorldTime";
 import { getFactionTerminalMonth, type HistoricalFactionSort } from "../../../Simulation/FactionListRules";
 import {
@@ -480,4 +481,20 @@ function formatIdentityStage(factionType?: string) {
     return "正式国家";
   }
   return "义军政权";
+}
+
+export function buildRestorationMemoryLines(evidence: RestorationTenureEvidence, input: {
+  worldMonth: number; exileStartedMonth?: number; legitimacy?: number; remnants: number; hasClaimant: boolean;
+}) {
+  const duration = (value: number) => evidence.complete ? formatWorldDuration(value) : "历史证据不足";
+  return [
+    `国家正式在国累计：${duration(evidence.stateTenureMonths)}`,
+    `当前王统正式在国累计：${duration(evidence.currentHouseTenureMonths)}`,
+    `当前王统延续：${duration(evidence.currentHouseContinuityMonths)}`,
+    `王统开始：${evidence.complete && evidence.currentHouseEpochStartMonth !== undefined ? formatWorldDate(evidence.currentHouseEpochStartMonth) : "历史证据不足"}`,
+    `证据截止：${formatWorldDate(evidence.evidenceEndMonth)}`,
+    `本次流亡：${input.exileStartedMonth !== undefined ? formatWorldDuration(input.worldMonth-input.exileStartedMonth) : "—"}`,
+    `流亡合法性：${input.legitimacy ?? "—"} · 残部：${input.remnants}人`,
+    `真实合法继统主体：${input.hasClaimant ? "存在" : "无"}`,
+  ];
 }

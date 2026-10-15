@@ -103,6 +103,7 @@ class FactionRegistryStore {
         historicalBasis ? { ...historicalBasis, rulerId: DynastyRegistry.getCurrentRuler(team.name)?.id } : undefined
       );
       DynastyRegistry.recordRestoration(team.name, eventId);
+      WorldExiles.recordRestoration(team.name, year);
       return true;
     }
     return false;

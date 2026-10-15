@@ -1,11 +1,13 @@
+import { ExileResourceDiagnostics } from "./ExileResourceDiagnostics";
+import { deriveRestorationTenureEvidence } from "./RestorationTenureEvidence";
 import Team from "../Components/Team";
 import {
   EXILE_BASE_LEGITIMACY_DECAY,
   EXILE_INITIAL_LEGITIMACY_MAX,
   EXILE_INITIAL_LEGITIMACY_MIN,
   EXILE_LEGITIMACY_DECAY_INTERVAL_MONTHS,
-  EXILE_REMNANT_DECAY_CHANCE,
   EXILE_REMNANT_DECAY_INTERVAL_MONTHS,
+  EXILE_REMNANT_DECAY_CHANCE,
 } from "../config/simulation";
 import WorldHistory from "../History/WorldHistory";
 import DynastyRegistry from "../Politics/Dynasty";
@@ -34,9 +36,14 @@ class WorldExileStore {
   private observedIds = new Set<string>();
   private observedOverflow = false;
   private politicalEnds = 0;
-  private resetObservations() { this.observedIds.clear(); this.observedOverflow = false; this.politicalEnds = 0; }
+  private resources = new ExileResourceDiagnostics();
+  private pendingSamples = new WeakSet<ExileState>();
+  getResourceSamples() { return this.resources.getSamples(); }
+  getResourceComparisonSummary() { return this.resources.comparisonSummary(); }
+  recordRestoration(factionId: string, month: number) { this.resources.recordRestoration(factionId, month); }
+  private resetObservations() { this.observedIds.clear(); this.observedOverflow = false; this.politicalEnds = 0; this.resources = new ExileResourceDiagnostics(); this.pendingSamples = new WeakSet(); }
   getDiagnostics() {
-    return { currentExiled: this.exiles.size, observedExiled: this.observedIds.size, observedOverflow: this.observedOverflow, politicalEnds: this.politicalEnds };
+    return { currentExiled: this.exiles.size, observedExiled: this.observedIds.size, observedOverflow: this.observedOverflow, politicalEnds: this.politicalEnds, ...this.resources.snapshot() };
   }
   private observe(factionId: string) {
     if (this.observedIds.size < 4096 || this.observedIds.has(factionId)) this.observedIds.add(factionId);
@@ -64,6 +71,11 @@ class WorldExileStore {
       lastRemnantDecayMonth: worldMonth,
     };
     this.exiles.set(team.name, state);
+    if (!existing) { this.resources.started(team.name); this.pendingSamples.add(state); }
+    else {
+      this.resources.replaceEpisode(existing, state);
+      if (this.pendingSamples.has(existing)) { this.pendingSamples.delete(existing); this.pendingSamples.add(state); }
+    }
     this.observe(team.name);
     return state;
   }
@@ -95,6 +107,16 @@ class WorldExileStore {
           this.exiles.get(team.name) ??
           this.start(team, team.lastExiledYear ?? worldMonth, remnant?.population ?? 0);
 
+        const beforePopulation = remnant?.population ?? 0;
+        const beforeLegitimacy = state.legitimacy;
+        if (this.pendingSamples.has(state)) {
+          this.pendingSamples.delete(state);
+          const tenure = deriveRestorationTenureEvidence({ team, dynasty: DynastyRegistry.get(team.name),
+            events: WorldHistory.getEventsForFaction(team.name), worldMonth });
+          this.resources.addSample({ factionId: team.name, startedMonth: state.startedMonth,
+            initialRemnants: beforePopulation, initialLegitimacy: beforeLegitimacy,
+            emperor: team.sovereigntyRank === "EMPEROR", tenure });
+        }
         if (
           worldMonth - state.lastLegitimacyMonth >=
           EXILE_LEGITIMACY_DECAY_INTERVAL_MONTHS
@@ -115,7 +137,11 @@ class WorldExileStore {
             EXILE_REMNANT_DECAY_INTERVAL_MONTHS
         ) {
           state.lastRemnantDecayMonth = worldMonth;
+          this.resources.remnantChecks++;
+          // B1 deliberately retains the original production constant and single draw.
+          // Experimental protection is never used to select runtime casualties.
           if (worldRandom.next() <= EXILE_REMNANT_DECAY_CHANCE) {
+            this.resources.remnantHits++;
             const nextPopulation = decayRemnantPopulation(remnant.population);
             WorldRemnants.setPopulation(team.name, nextPopulation, remnant.extinctYear);
             state.remnantPopulation = nextPopulation;
@@ -124,6 +150,8 @@ class WorldExileStore {
 
         const currentRemnants = WorldRemnants.get(team.name)?.population ?? 0;
         state.remnantPopulation = currentRemnants;
+        this.resources.recordResources(state, beforePopulation, currentRemnants, beforeLegitimacy, state.legitimacy,
+          DynastyRegistry.hasClaimantAtMonth(team.name, worldMonth));
         if (
           shouldExileBecomeExtinct(
             currentRemnants,
@@ -142,6 +170,7 @@ class WorldExileStore {
           );
         }
       });
+    this.resources.updateFollowups(worldMonth, teams);
   }
 }
 
