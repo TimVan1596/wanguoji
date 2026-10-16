@@ -20,6 +20,7 @@ import { isFeaturedHistoryEvent } from "../History/HistorySignificanceRules";
 import { getFactionDisplayNameAtMonth, renameFactionDisplayName } from "../Simulation/FactionIdentity";
 import Diplomacy from "./Diplomacy";
 import { captureEraMapSnapshot } from "../Simulation/EraMapSnapshot";
+import { createRulerChronicle } from "./RulerChronicle";
 import { formatPosthumousRulerName } from "./PosthumousRules";
 
 const month = 600;
@@ -74,6 +75,19 @@ describe("authoritative succession-boundary dynastic revolution", () => {
       return canonical;
     };
     expect(run(true)).toEqual(run(false));
+  });
+  it("settles the last exile ruler only after actual same-month political extinction", () => {
+    const { team, dynasty } = setup(false);
+    team.status = "EXILED"; team.cities = [];
+    team.markExtinct = vi.fn(() => { team.status = "EXTINCT"; });
+    dynasty.rulers[0].status = "exiled";
+    dynasty.rulers[0].chronicle = createRulerChronicle({ month: 200, population: 0, territoryShare: 0, cityCount: 0, stability: 20 });
+    WorldHistory.addFactionExiled(200, team.name, "田平", 0);
+    const next = transition(team, dynasty);
+    expect(next).toBeUndefined();
+    expect(dynasty.rulers[0]).toMatchObject({ status: "dead", deathMonth: month, deathReason: "去世", posthumousEpithet: "愍" });
+    expect(dynasty.rulers[0].posthumousEpithetReasons).toContain("国家真正政治终结");
+    expect(WorldHistory.getEvents().filter(e => e.type === "faction-extinct")).toHaveLength(1);
   });
   it("keeps heirless NEW_HOUSE natural, preserving the state name and banner", () => {
     const { team, dynasty } = setup(false);

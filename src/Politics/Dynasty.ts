@@ -452,7 +452,6 @@ class DynastyRegistryStore {
         createRulerSnapshot(team, year),
         predecessor.endReason
       );
-      finalizeRulerPosthumousNames(predecessor, dynasty.rulers, team, year);
     }
     this.archiveNaturallyDeadHeirs(dynasty, year);
     const displacedDesignatedHeirId = dynasty.designatedHeirId;
@@ -532,8 +531,11 @@ class DynastyRegistryStore {
           `${team.name}国残部已经消散，${dynasty.houseName}王统断绝，${team.name}国彻底灭亡`
         );
       }
+      // Settle only after the same-boundary terminal outcome is canonical.
+      finalizeRulerPosthumousNames(predecessor, dynasty.rulers, team, year);
       return;
     }
+    finalizeRulerPosthumousNames(predecessor, dynasty.rulers, team, year);
     const nextRuler = successor;
     nextRuler.accessionYear = year;
     nextRuler.politicalEndYear = undefined;
