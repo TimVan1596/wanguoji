@@ -214,7 +214,7 @@ function FactionProfile({
   const factionTerritory = getFactionTerritoryMetric(territoryMetrics, team.name);
   const activeTab = tab === "trend" || tab === "chronicle" ? "power" : tab;
   const rankedTeams = [...teams].sort(
-    (a, b) => b.blocks.children.size - a.blocks.children.size
+    (a, b) => getFactionTerritoryMetric(territoryMetrics,b.name).factionControlledBlocks - getFactionTerritoryMetric(territoryMetrics,a.name).factionControlledBlocks
   );
   const activeCityCount = teams
     .filter((item) => item.status === "ACTIVE")

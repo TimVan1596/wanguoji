@@ -51,7 +51,7 @@ export function isInLocalRestorationArea(city: City, unit: LogicalUnitState, are
 /** Ordinary formation members may respond only if their departure leaves a valid
  * formation and never removes its commander. Unassigned users are preferred. */
 export function assessLocalRestorationPopulation(city: City) {
-  const result={users:[] as User[], nearbyNormal:0, identityBlocked:0, outsideArea:0, invalidUnit:0, observedUnitIds:[] as string[]};
+  const result={users:[] as User[], legacyEligible:0, nearbyNormal:0, identityBlocked:0, outsideArea:0, invalidUnit:0, observedUnitIds:[] as string[]};
   const core=Game.Core,owner=city.ownerTeam;
   if (!core?.logicalUnitRegistry || !owner || owner.status!=="ACTIVE" || city.destroyed) return result;
   const area=getLocalRestorationArea(city);
@@ -72,6 +72,7 @@ export function assessLocalRestorationPopulation(city: City) {
     if (!Number.isSafeInteger(user.id) || !Number.isSafeInteger(user.bornMonth) || !user.name || user.team!==owner || user.isDestroyed ||
         unit.role!=="NORMAL" || unit.rulerId || user.role!=="NORMAL" || user.rulerId || user.militaryPersonId || !safeMember || player.role!=="NORMAL" || player.rulerId || !player.active || player.team!==owner ||
         player.parent || player.children.length || user.slaveGroup.npcs.size || user.slaveGroup.children.size) {result.identityBlocked++;continue;}
+    if(!assigned.length && Math.hypot(unit.logicalX-(city.block.x+Game.BlockSize/2),unit.logicalY-(city.block.y+Game.BlockSize/2))<=Game.BlockSize*LOCAL_RESTORATION_RADIUS_CELLS) result.legacyEligible++;
     result.users.push(user);
   }
   result.users.sort((a,b)=>Number(memberships.has(a.player.logicalUnitId!))-Number(memberships.has(b.player.logicalUnitId!)) ||

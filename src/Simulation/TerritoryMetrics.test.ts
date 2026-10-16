@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateTerritoryMetrics } from "./TerritoryMetrics";
+import { calculateTerritoryMetrics, getFactionTerritoryDisplay } from "./TerritoryMetrics";
 
 function team(name: string, blocks: number, status = "ACTIVE") {
   return {
@@ -53,4 +53,13 @@ describe("TerritoryMetrics", () => {
     expect(metrics.controlledBlocks).toBe(40);
     expect(metrics.byFactionId.get("rebel")?.controlledTerritoryShare).toBe(25);
   });
+});
+
+it("流亡零城市的地块标记不混入当前领土，地图与存档所用原始组保持原值",()=>{
+  const exile=team("old",25,"EXILED"),active=team("new",40);
+  const before=JSON.stringify(exile),m=calculateTerritoryMetrics([exile,active],100);
+  expect(getFactionTerritoryDisplay(exile,m.byFactionId.get("old")!)).toEqual({currentBlocks:0,retainedBlockMarkers:25});
+  expect(m.byFactionId.get("old")!.absoluteWorldShare).toBe(0);
+  expect(getFactionTerritoryDisplay(active,m.byFactionId.get("new")!)).toEqual({currentBlocks:40,retainedBlockMarkers:0});
+  expect(JSON.stringify(exile)).toBe(before);
 });

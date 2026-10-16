@@ -183,7 +183,7 @@ export function localResidentRestorationChance(input: {
   if (![loyalty,devastation,recentTransfers,ownerStability,legitimacy,input.legacyChance].every(Number.isFinite) || legitimacy<=0 || loyalty>=40 ||
       (loyalty>28 && (devastation<70 || (recentTransfers<2 && ownerStability>40)))) return 0;
   const clamp=(v:number)=>Math.max(0,Math.min(1,v));
-  const crisis=.45*clamp((40-loyalty)/40)+.25*clamp(devastation/100)+.15*clamp(recentTransfers/3)+.15*clamp((100-ownerStability)/100);
+  const crisis=.45*clamp((40-loyalty)/12)+.25*clamp(devastation/100)+.15*clamp(recentTransfers/3)+.15*clamp((100-ownerStability)/100);
   const t=input.tenure;
   const valid=t.complete && Number.isSafeInteger(t.stateTenureMonths) && t.stateTenureMonths>=0 && Number.isSafeInteger(t.currentHouseTenureMonths) && t.currentHouseTenureMonths>=0 && t.currentHouseTenureMonths<=t.stateTenureMonths;
   const h=valid ? .25*t.stateTenureMonths/(t.stateTenureMonths+3600)+.75*t.currentHouseTenureMonths/(t.currentHouseTenureMonths+3600) : 0;
@@ -207,7 +207,7 @@ export function getLocalResponseDrawDistribution(rows: readonly {legacyChance:nu
 
 export function selectLocalResponseOpportunity<T>(rows:Array<{legacyChance:number;chance:number;local:boolean;value:T}>,draw:number,cap:number):T|undefined {
   const d=getLocalResponseDrawDistribution(rows,cap);
-  if(draw<=d.baselineChance) return selectRestorationOpportunity(rows.map(r=>({chance:r.legacyChance,value:r.value})),draw);
+  if(d.baselineChance>0 && draw<=d.baselineChance) return selectRestorationOpportunity(rows.map(r=>({chance:r.legacyChance,value:r.value})),draw);
   let point=draw-d.baselineChance;
   if(point>d.extraChance || d.extraChance<=0) return undefined;
   for(let i=0;i<rows.length;i++){point-=d.extra[i];if(point<=0 && d.extra[i]>0)return rows[i].value;}

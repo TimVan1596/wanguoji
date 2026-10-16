@@ -144,3 +144,32 @@ describe("战乱旧地有限复国风险", () => {
     expect(warTornRestorationChance(base)).toBe(chance);
   });
 });
+
+describe("s1居民响应危机分层与共享风险",()=>{
+  const tenure={complete:true,stateTenureMonths:6000,currentHouseTenureMonths:6000};
+  const base={legacyChance:.001,loyalty:39,devastation:70,recentTransfers:0,ownerStability:40,legitimacy:80,basis:"FORMER_CAPITAL" as const,tenure};
+  it("强危机显著高于弱危机，年资和旧都身份有界，证据不足不补造年资",async()=>{
+    const {localResidentRestorationChance:p}=await import("./HistoricalRestorationRules");
+    const weak=p(base),strong=p({...base,loyalty:29,devastation:100,recentTransfers:3,ownerStability:20});
+    expect(strong).toBeGreaterThan(weak);expect(strong).toBeGreaterThan(.005);expect(strong).toBeLessThan(.02);
+    expect(p({...base,loyalty:29,devastation:100,recentTransfers:3,ownerStability:20,basis:"LONG_RULE"})).toBeLessThan(strong);
+    expect(p({...base,loyalty:29,devastation:100,recentTransfers:3,ownerStability:20,tenure:{...tenure,currentHouseTenureMonths:240}})).toBeLessThan(strong);
+    expect(p({...base,loyalty:90})).toBe(0);expect(p({...base,legitimacy:0})).toBe(0);
+    expect(p({...base,legacyChance:.09})).toBe(.03);
+    expect(p({...base,loyalty:0,legacyChance:.09})).toBe(.09);
+    expect(p({...base,tenure:{...tenure,complete:false,stateTenureMonths:999999}})).toBe(p({...base,tenure:{...tenure,complete:false,stateTenureMonths:0}}));
+    console.log("s1同一危机输入反事实（非自然长局）",{v31s:base.legacyChance,弱危机:weak,强危机:strong});
+  });
+  it("多个旧朝不相加突破上限，原残部槽位质量和对应draw结果不降低",async()=>{
+    const {getLocalResponseDrawDistribution:d,selectLocalResponseOpportunity:select}=await import("./HistoricalRestorationRules");
+    const rows=[{legacyChance:.02,chance:.02,local:false,value:"remnant"},
+      {legacyChance:.001,chance:.015,local:true,value:"resident-a"}];
+    const old=d(rows.map(r=>({...r,chance:r.legacyChance})),.03),next=d(rows,.03);
+    expect(next.probabilities[0]).toBe(old.probabilities[0]);expect(next.extraChance).toBeCloseTo(.01);
+    expect(select(rows,.01,.03)).toBe("remnant");expect(select(rows,.025,.03)).toBe("resident-a");
+    const many=Array.from({length:100},(_,i)=>({legacyChance:.001,chance:.02,local:true,value:i}));
+    const distribution=d(many,.03);expect(distribution.probabilities.reduce((a,b)=>a+b,0)).toBeCloseTo(.02);
+    expect(d([{legacyChance:.09,chance:.09,local:false},{legacyChance:.001,chance:.02,local:true}],.09).extraChance).toBe(0);
+    expect(select([{legacyChance:0,chance:.01,local:true,value:1}],0,.03)).toBe(1);
+  });
+});

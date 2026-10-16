@@ -829,7 +829,7 @@ export default class WorldEventSystem {
       if (lastRebellionYear !== undefined && year - lastRebellionYear < REBELLION_CITY_COOLDOWN_MONTHS) cityBlocks.push("城市叛乱冷却");
       if (cityBlocks.length) { local.cityBlocked += localHistoryCount; this.restorationBlocks(cityBlocks); continue; }
 
-      const historical: Array<{ team: Team; basis: RestorationBasis; heldMonths: number; chance: number; legacyChance?:number; supporter?: User }> = [];
+      const historical: Array<{ team: Team; basis: RestorationBasis; heldMonths: number; chance: number; legacyChance?:number; legacyAvailable?:boolean; supporter?: User }> = [];
       let localUsers: User[] | undefined;
       if (exiled.length) {
         if (!rules) this.restorationBlock("城市历史不足或矛盾");
@@ -858,7 +858,7 @@ export default class WorldEventSystem {
           if (!noRemnants && !FactionRegistry.canRestoreFaction(team, year)) { this.restorationBlock("政治恢复资格不足"); continue; }
           if (supporter) local.eligible++;
           if (warTornPath) diagnostics.warTornEligible++;
-          historical.push({ team, basis, heldMonths: rule.heldMonths, chance: 0, ...(supporter ? { supporter } : {}) });
+          historical.push({ team, basis, heldMonths: rule.heldMonths, chance: 0, legacyAvailable:!supporter || (population?.legacyEligible ?? 0)>0, ...(supporter ? { supporter } : {}) });
           diagnostics.eligibleChecks++;
           if (basis === "FORMER_CAPITAL") diagnostics.capitalEligible++; else diagnostics.longRuleEligible++;
         }
@@ -917,7 +917,7 @@ export default class WorldEventSystem {
       }
       const slots = [
         ...(originalPath ? [{chance,legacyChance:chance,local:false,restoration:founder?.status==="EXILED" && FactionRegistry.canRestoreFaction(founder,year),value:{historical:undefined as typeof historical[number]|undefined}}] : []),
-        ...historical.map(row=>({chance:row.chance,legacyChance:row.legacyChance!,local:Boolean(row.supporter),restoration:true,value:{historical:row as typeof historical[number]|undefined}})),
+        ...historical.map(row=>({chance:row.chance,legacyChance:row.legacyAvailable ? row.legacyChance! : 0,local:Boolean(row.supporter),restoration:true,value:{historical:row as typeof historical[number]|undefined}})),
       ];
       const riskDistribution=getLocalResponseDrawDistribution(slots,warTornPath?.03:.09);
       const expectedRestoration=riskDistribution.probabilities.reduce((sum,p,i)=>sum+(slots[i].restoration?p:0),0);

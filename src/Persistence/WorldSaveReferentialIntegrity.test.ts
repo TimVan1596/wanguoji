@@ -784,8 +784,13 @@ it("V15旧地响应事件及真实User/逻辑单位完整往返，严格拒绝�
   house.currentRulerId="new-r";house.houseName="叶氏";house.houseEpochs[0].endMonth=479;
   house.houseEpochs.push({houseName:"叶氏",startMonth:480,foundingRulerId:"new-r",startReason:"NATURAL_HOUSE_SUCCESSION"});
   expect(validateWorldSave(boundary)).toEqual({valid:true,errors:[]});
+  const zone=structuredClone(encoded), zoneMeta=zone.worldHistory.events.find((e:any)=>e.type==="faction-restored").metadata;
+  zoneMeta.responseRadiusCells=5;
+  expect(validateWorldSave(zone).errors).toContain("invalid local-resident restoration evidence");
+  Object.assign(zoneMeta,{responseArea:"CONTROLLED_CITY_ZONE",responseNeighborLayers:2,responseCenterX:16,responseCenterY:16});
+  expect(validateWorldSave(zone)).toEqual({valid:true,errors:[]});
   const core=target(); core.logicalUnitRegistry=new LogicalUnitRegistry(); core.logicalGameplayAuthority=true;
-  hydrateWorldSave(core,encoded);
+  hydrateWorldSave(core,zone);
   const user=core.teams.find((t:any)=>t.name==="old").users.values().next().value;
   expect(user).toMatchObject({id:77,name:"居民",bornMonth:100,team:{name:"old"},sourceTeam:{name:"qin"}});
   expect(core.logicalUnitRegistry.get("unit-1")).toMatchObject({factionId:"old",userId:77,alive:true});
