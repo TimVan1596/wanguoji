@@ -448,12 +448,15 @@ export default class City {
     return true;
   }
 
-  revoltTo(newOwner: Team, year: number) {
+  revoltTo(newOwner: Team, year: number, preparePopulation?: () => boolean) {
     const oldOwner = this.ownerTeam;
     if (!oldOwner || oldOwner === newOwner) {
       return false;
     }
 
+    // A prepared population transfer runs before any city/history/lifecycle mutation,
+    // and before losing the final city can consume the old owner's population.
+    if (preparePopulation && !preparePopulation()) return false;
     const wasCapital = this.isCapital;
     const restoredFromExile = newOwner.status === "EXILED";
     oldOwner.removeCity(this);

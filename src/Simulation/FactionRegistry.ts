@@ -1,3 +1,7 @@
+import { getLocalRestorationClaimant, getLocalRestorationSupporters, LOCAL_RESTORATION_RADIUS_CELLS } from "./LocalRestorationSupport";
+import { deriveHistoricalCityRules, getHistoricalRestorationBasis, getWarTornCityEvidence } from "./HistoricalRestorationRules";
+import { getFactionStability } from "../Components/City";
+import type User from "../Components/User";
 import type { RestorationBasis } from "./HistoricalRestorationRules";
 import FactionLifetimeRecords from "./FactionLifetimeRecord";
 import City from "../Components/City";
@@ -103,10 +107,68 @@ class FactionRegistryStore {
         historicalBasis ? { ...historicalBasis, rulerId: DynastyRegistry.getCurrentRuler(team.name)?.id } : undefined
       );
       DynastyRegistry.recordRestoration(team.name, eventId);
-      WorldExiles.recordRestoration(team.name, year);
+      WorldExiles.recordRestoration(team.name, year, populationCause === "GOD_ACTION" ? "OTHER" : "REMNANT");
       return true;
     }
     return false;
+  }
+
+  /** One real resident transfers. No remnant substitution and no spawnMembers call. */
+  restoreThroughLocalSupport(team: Team, city: City, worldMonth: number, supporter: User) {
+    const owner = city.ownerTeam, claimant = getLocalRestorationClaimant(team, worldMonth);
+    const core = Game.Core;
+    if (!core || !owner || owner === team || !claimant || city.destroyed || city.lastCapturedYear === worldMonth ||
+        city.isInCaptureGrace(worldMonth) || !getLocalRestorationSupporters(city).includes(supporter)) return "INVALID" as const;
+    const rules = deriveHistoricalCityRules(city, worldMonth,
+      new Map(core.teams.filter(t => t.stateFoundedMonth !== undefined).map(t => [t.name,t.stateFoundedMonth!])));
+    const rule = rules?.find(r => r.factionId === team.name), basis = rule && getHistoricalRestorationBasis(rule);
+    const stability = getFactionStability(owner) ?? 100;
+    const war = getWarTornCityEvidence(city, worldMonth, stability);
+    if (!rule || !basis || !(city.loyalty <= 28 || war.eligible)) return "INVALID" as const;
+    const unitId = supporter.player.logicalUnitId!;
+    const unit = core.logicalUnitRegistry.get(unitId)!;
+    const position = { x: unit.logicalX, y: unit.logicalY };
+    const crisis = { cityLoyalty: city.loyalty, cityDevastation: city.devastation, ownerStability: stability, recentTransfers: war.recentTransfers };
+    const historyGroupId = getRestorationHistoryGroupId(team.name, worldMonth, city.id);
+    const beforeOwnerCount = owner.users.size, beforeNewCount = team.users.size;
+    WorldHistory.beginBatchNotifications();
+    try {
+      // Resolve a genuinely due death through the existing succession path, only
+      // once a successful restoration has been selected. Never resurrect the predecessor.
+      if (DynastyRegistry.getCurrentRuler(team.name)?.id !== claimant.id) DynastyRegistry.update(worldMonth, [team]);
+      if (!getLocalRestorationClaimant(team, worldMonth)) return "INVALID" as const;
+      let transferAttempted = false;
+      const transferred = city.revoltTo(team, worldMonth, () => {
+        transferAttempted = true;
+        try {
+          supporter.setTeam(team, { cause: "RESTORATION", month: worldMonth,
+            relatedFactionId: owner.name, context: `local resident response ${city.id}/${unitId}` });
+          if (supporter.team === team && team.users.has(supporter) && !owner.users.has(supporter) &&
+              supporter.player.team === team && core.logicalUnitRegistry.get(unitId)?.factionId === team.name &&
+              owner.users.size === beforeOwnerCount - 1 && team.users.size === beforeNewCount + 1) return true;
+        } catch { /* Roll back only the prepared transfer; no city mutation has begun. */ }
+        if (supporter.team !== owner) supporter.setTeam(owner, { cause: "RESTORATION", month: worldMonth, context: "local response transfer rollback" });
+        return false;
+      });
+      if (!transferred) return transferAttempted ? "TRANSFER_FAILED" as const : "INVALID" as const;
+      WorldExiles.restore(team.name);
+      const rulerId = DynastyRegistry.getCurrentRuler(team.name)!.id;
+      const dynasty = DynastyRegistry.get(team.name)!;
+      const epoch = dynasty.houseEpochs![dynasty.houseEpochs!.length - 1];
+      const eventId = WorldHistory.addLocalResidentRestoration(worldMonth, team, owner, city, {
+        rulerId, claimantName: `${DynastyRegistry.getCurrentRuler(team.name)!.houseName.replace(/氏$/, "")}${DynastyRegistry.getCurrentRuler(team.name)!.givenName}`, supporterUserId: supporter.id, supporterName: supporter.name, supporterBornMonth: supporter.bornMonth,
+        supporterLogicalUnitId: unitId, supporterX: position.x, supporterY: position.y,
+        houseName: epoch.houseName, houseEpochStartMonth: epoch.startMonth,
+        restorationBasis: basis, historicalHeldMonths: rule.heldMonths,
+        restorationTrigger: war.eligible ? "WAR_TORN_HISTORICAL_CITY" : "LOW_LOYALTY",
+        ...crisis,
+        responseRadiusCells: LOCAL_RESTORATION_RADIUS_CELLS,
+      }, historyGroupId);
+      DynastyRegistry.recordRestoration(team.name, eventId);
+      WorldExiles.recordRestoration(team.name, worldMonth, "LOCAL_RESIDENT");
+      FactionLifetimeRecords.observe(team, worldMonth);
+      return "RESTORED" as const;
+    } finally { WorldHistory.endBatchNotifications(); }
   }
 
   createRebelFaction(options: RebelFactionOptions) {

@@ -3,8 +3,11 @@ const { game } = vi.hoisted(() => ({ game: { Core: {} as any, BlockSize: 32 } })
 vi.mock("../Game/Game", () => ({ default: game }));
 vi.mock("../Components/Team", () => ({ default: class {} }));
 vi.mock("../Components/Block", () => ({ default: class {} }));
+vi.mock("phaser3-rex-plugins/plugins/circlemaskimage", () => ({ default: class {} }));
 vi.mock("../Components/Player", () => ({ default: class {} }));
+vi.mock("../Components/Slaves", () => ({ default: class { npcs=new Map(); children={size:0}; } }));
 vi.mock("../Components/User", () => ({ default: class {} }));
+vi.mock("../Components/MessageToast", () => ({ MessageToast: class {} }));
 vi.mock("../Components/Farms", () => ({ default: class {} }));
 vi.mock("../Live/Danmu", () => ({ default: { Apply: vi.fn((message: any) => {
   const team = game.Core.teams.find((t: any) => t.name === message.teamName);
@@ -477,5 +480,197 @@ describe("r1真实18月残部保护业务",()=>{
     expect(WorldExiles.getDiagnostics().productionProtection.recentChecks[0]).toMatchObject({exileMonths:18,tenure:{complete:true,stateTenureMonths:6120,currentHouseTenureMonths:6120}});
     expect(WorldHistory.getEventTypeCount("faction-restored")).toBe(1);
     WorldExiles.update(6238,[f.candidate]); expect(WorldHistory.getEventTypeCount("faction-restored")).toBe(1);
+  });
+});
+
+// Real City/Team/User/Player methods and logical registry, with rendering constructors replaced.
+describe("s真实旧地人口响应→复国事务",()=>{
+  async function localFixture(basis="capital", founderPath=false) {
+    const f=await fixture(basis,founderPath);
+    const {default:RealTeam}=await vi.importActual<typeof import("../Components/Team")>("../Components/Team");
+    vi.stubGlobal("Phaser",{Math:{Clamp:(n:number,min:number,max:number)=>Math.max(min,Math.min(max,n))},GameObjects:{Container:class {}}});
+    const {default:RealUser}=await vi.importActual<typeof import("../Components/User")>("../Components/User");
+    const {default:RealPlayer}=await vi.importActual<typeof import("../Components/Player")>("../Components/Player");
+    const {default:LogicalUnitRegistry}=await import("./LogicalUnitRegistry");
+    const {createLogicalUnitState}=await import("./LogicalUnitState");
+    const {PopulationTransitionAudit}=await import("./PopulationTransitionAudit");
+    const {default:Military}=await import("../Politics/MilitaryCommandRegistry"); Military.reset();
+    const logical=new LogicalUnitRegistry(),audit=new PopulationTransitionAudit();
+    f.teams.forEach(t=>{
+      Object.setPrototypeOf(t,RealTeam.prototype);
+      t.players={add(){},remove(){}}; t.color=1;
+      t.addCity=RealTeam.prototype.addCity;
+      t.removeCity=RealTeam.prototype.removeCity;
+    });
+    f.city.block.x=64; f.city.block.y=64;
+    WorldRemnants.consume(f.candidate.name,100); WorldExiles.get(f.candidate.name)!.remnantPopulation=0;
+    const player:any=Object.create(RealPlayer.prototype);
+    Object.assign(player,{team:f.owner,active:true,children:[],factionRing:{setStrokeStyle(){}},x:99999,y:99999});
+    const user=new RealUser(77,"真实居民",f.owner,player,undefined,70,"NORMAL",undefined,{deferRuntime:true,bornMonth:100});
+    player.user=user; f.owner.users.add(user);
+    logical.importState(2,[{state:createLogicalUnitState({unitId:"unit-1",factionId:"owner",x:80,y:80,vx:0,vy:0,blockSize:32,radius:16,speed:150,userId:77}),player,user}]);
+    game.Core.logicalUnitRegistry=logical;
+    game.Core.simulator.recordPopulationMutation=(team:any,before:number,after:number,m:any)=>audit.record(team,before,after,m);
+    audit.reset(480,f.teams);
+    // Keep a second real city so the primary assertion isolates the resident transfer.
+    const {default:RealCity}=await vi.importActual<typeof import("../Components/City")>("../Components/City");
+    const second:any=Object.create(RealCity.prototype);
+    Object.assign(second,{id:"owner-home",name:"另城",ownerFactionId:"owner",founderFactionId:"owner",foundedYear:0,captureCount:0,history:[{year:0,type:"founded",title:"建城",newOwnerFactionId:"owner"}],loyalty:80,destroyed:false});
+    f.owner.cities.push(second);
+    return {...f,user,player,logical,audit,second};
+  }
+  it.each(["capital","territory"])("%s 实际转属既有User，不生成人口/残部，记录同组真实城市与复国事件",async basis=>{
+    const f=await localFixture(basis); const ruler=DynastyRegistry.getCurrentRuler("old")!;
+    const before=structuredClone(DynastyRegistry.get("old")!.houseEpochs), born=ruler.bornYear;
+    const next=vi.spyOn(worldRandom,"next").mockReturnValue(.00001);
+    const setTeam=vi.spyOn(f.user,"setTeam"); check(f);
+    expect(setTeam).toHaveBeenCalledOnce();expect(next).toHaveBeenCalledOnce();
+    expect(f.city.ownerFactionId).toBe("old");expect(f.candidate.status).toBe("ACTIVE");
+    expect(f.owner.users.size).toBe(0);expect(f.candidate.users.size).toBe(1);expect(f.candidate.users.has(f.user)).toBe(true);
+    expect(f.user.team).toBe(f.candidate);expect(f.player.team).toBe(f.candidate);expect(f.logical.get("unit-1")!.factionId).toBe("old");
+    expect(f.logical.get("unit-1")!.logicalX).toBe(80); // visual x=99999 was never used, nor was the unit teleported
+    expect(WorldRemnants.get("old")).toBeUndefined();expect(WorldExiles.get("old")).toBeUndefined();
+    expect(DynastyRegistry.get("old")!.houseEpochs).toEqual(before);expect(DynastyRegistry.getCurrentRuler("old")!.id).toBe(ruler.id);expect(ruler.bornYear).toBe(born);
+    const events=WorldHistory.getEvents(), restored=events.filter(e=>e.type==="faction-restored");
+    expect(restored).toHaveLength(1);
+    expect(restored[0]).toMatchObject({rulerId:ruler.id,previousOwnerFactionId:"owner",metadata:{restorationSource:"LOCAL_RESIDENT",supporterUserId:77,supporterLogicalUnitId:"unit-1",supporterPopulation:1,remnantPopulation:0,cityLoyalty:0}});
+    expect(events.find(e=>e.type==="city-revolt")!.historyGroupId).toBe(restored[0].historyGroupId);
+    expect(restored[0].description).toContain("附近居民");expect(restored[0].description).not.toContain("残部响应");
+    expect(formatHistoryEventTitle(restored[0],new Map())).toContain("旧地响应复国");
+    expect(ruler.chronicle!.notableEventIds).toContain(restored[0].id);
+    f.audit.reconcile(480,f.teams); const changes=f.audit.getRecent();
+    expect(changes.filter(c=>c.cause==="RESTORATION").map(c=>c.delta).sort()).toEqual([-1,1]);
+    expect(f.system.getRestorationDiagnosticSnapshot().localSupport).toMatchObject({eligible:1,draws:1,drawHits:1,successes:1});
+    WorldExiles.update(492,f.teams);WorldExiles.update(540,f.teams);
+    expect(WorldExiles.getDiagnostics().bySource.LOCAL_RESIDENT).toMatchObject({restorations:1,matured12:1,active12:1,matured60:1,active60:1});
+    check(f,492);expect(WorldHistory.getEventTypeCount("faction-restored")).toBe(1);
+  });
+  it.each(["foreign","distant","ruler","destroyed","dead-unit","missing-unit","mismatched-player","assigned","military-person","dependent","child","no-user"])("%s 不能伪装旧地响应人口",async reason=>{
+    const f=await localFixture();const unit=f.logical.get("unit-1")!;
+    if(reason==="foreign") unit.factionId="founder";
+    if(reason==="distant") {unit.logicalX=99999;unit.logicalY=99999;f.player.x=80;f.player.y=80;}
+    if(reason==="ruler") f.user.role="RULER";
+    if(reason==="destroyed") (f.user as any).destroyed=true;
+    if(reason==="dead-unit") unit.alive=false;
+    if(reason==="missing-unit") f.player.logicalUnitId="missing";
+    if(reason==="mismatched-player") f.player.user=undefined;
+    if(reason==="military-person") f.user.militaryPersonId="person-1";
+    if(reason==="dependent") f.user.slaveGroup.npcs.set("child",{} as any);
+    if(reason==="child") f.player.parent={} as any;
+    if(reason==="no-user") f.owner.users.clear();
+    if(reason==="assigned") {const {default:m}=await import("../Politics/MilitaryCommandRegistry");vi.spyOn(m,"getFormations").mockReturnValue([{status:"ACTIVE",memberUnitIds:["unit-1"]}] as any);}
+    const next=vi.spyOn(worldRandom,"next").mockReturnValue(.00001);check(f);
+    expect(f.city.ownerFactionId).toBe("owner");expect(WorldHistory.getEventTypeCount("faction-restored")).toBe(0);
+    expect(f.system.getRestorationDiagnosticSnapshot().localSupport).toMatchObject({eligible:0,noUser:1,draws:0});
+    // A legacy founder political draw may still exist, but never a local-response slot.
+    expect(next.mock.calls.length).toBeLessThanOrEqual(1);
+  });
+  it.each(["terminated","no-heir","legitimacy","short-rule","high-loyalty","grace","cooldown","missing-exile","bad-house"])("%s 不放宽历史、政治或城市硬资格",async reason=>{
+    const f=await localFixture();
+    if(reason==="terminated") {f.candidate.status="EXTINCT";f.candidate.terminationReason="EXTINCT";}
+    if(reason==="no-heir") {const d=DynastyRegistry.get("old")!;d.currentRulerId=null;d.heirIds=[];}
+    if(reason==="legitimacy") WorldExiles.get("old")!.legitimacy=0;
+    if(reason==="short-rule") {f.city.history=f.city.history.filter((e:any)=>e.type!=="capital-relocated");f.city.history[1].year=399;}
+    if(reason==="high-loyalty") f.city.loyalty=90;
+    if(reason==="grace") f.city.isInCaptureGrace=()=>true;
+    if(reason==="cooldown") (f.system as any).cityRebellionYears.city=479;
+    if(reason==="missing-exile") WorldExiles.restore("old");
+    if(reason==="bad-house") DynastyRegistry.get("old")!.houseEpochs=[];
+    vi.spyOn(worldRandom,"next").mockReturnValue(.00001);check(f);
+    expect(WorldHistory.getEventTypeCount("faction-restored")).toBe(0);expect(f.user.team).toBe(f.owner);
+    expect(f.system.getRestorationDiagnosticSnapshot().localSupport.eligible).toBe(0);
+  });
+  it("原始建城者的零残部旧都路径只占一个风险槽位",async()=>{
+    const f=await localFixture("capital",true);
+    f.city.history.splice(1,0,{year:20,type:"capital-relocated",title:"真实正式设都",newOwnerFactionId:"founder",wasCapital:true});
+    const next=vi.spyOn(worldRandom,"next").mockReturnValue(.00001); check(f);
+    expect(next).toHaveBeenCalledOnce();expect(f.city.ownerFactionId).toBe("founder");expect(WorldHistory.getEventTypeCount("faction-restored")).toBe(1);
+  });
+  it("转属拒绝或城市拒绝都不留下半份成功、人口或历史",async()=>{
+    const f=await localFixture();const before=WorldHistory.exportState();
+    const transfer=vi.spyOn(f.user,"setTeam").mockImplementation(()=>{});
+    expect(FactionRegistry.restoreThroughLocalSupport(f.candidate,f.city,480,f.user)).toBe("TRANSFER_FAILED");
+    expect(f.user.team).toBe(f.owner);expect(f.candidate.users.size).toBe(0);expect(f.city.ownerFactionId).toBe("owner");expect(WorldHistory.exportState()).toEqual(before);
+    transfer.mockRestore();vi.spyOn(f.city,"revoltTo").mockReturnValue(false);
+    expect(FactionRegistry.restoreThroughLocalSupport(f.candidate,f.city,480,f.user)).toBe("INVALID");expect(f.user.team).toBe(f.owner);expect(WorldHistory.exportState()).toEqual(before);
+  });
+  it("最后一城后果处理发生在响应者转出之后",async()=>{
+    const f=await localFixture();f.owner.cities=[f.city];
+    const {default:RealCore}=await vi.importActual<typeof import("../Game/Core")>("../Game/Core");
+    const collapse=vi.fn((...args:any[])=>{expect(args[0].users.has(f.user)).toBe(false);return (RealCore.prototype.handleFactionExtinction as any).apply(game.Core,args);});
+    game.Core.handleFactionExtinction=collapse;
+    vi.spyOn(worldRandom,"next").mockReturnValue(.00001);check(f);
+    expect(collapse).toHaveBeenCalledOnce();expect(f.user.team).toBe(f.candidate);expect(f.candidate.users.size).toBe(1);expect(f.owner.status).toBe("EXTINCT");
+    expect(DynastyRegistry.getCurrentRuler("owner")).toBeUndefined();
+  });
+  it("部分转属后抛错可以回退人口、单位归属，城市和历史尚未提交",async()=>{
+    const f=await localFixture();const original=f.user.setTeam;
+    vi.spyOn(f.user,"setTeam").mockImplementation(function(this:typeof f.user,team,context){
+      original.call(this,team,context); if(team===f.candidate) throw new Error("controlled transfer failure");
+    });
+    const history=WorldHistory.exportState();
+    expect(FactionRegistry.restoreThroughLocalSupport(f.candidate,f.city,480,f.user)).toBe("TRANSFER_FAILED");
+    expect(f.owner.users.has(f.user)).toBe(true);expect(f.candidate.users.size).toBe(0);
+    expect(f.logical.get("unit-1")!.factionId).toBe("owner");expect(f.player.team).toBe(f.owner);
+    expect(f.city.ownerFactionId).toBe("owner");expect(WorldHistory.exportState()).toEqual(history);
+    expect(f.audit.getRecent().filter(r=>r.delta!==0)).toEqual([]);
+  });
+  it("当月前君到寿而有真实合法继承人时，通过既有死亡继位后复国",async()=>{
+    const f=await localFixture();const d=DynastyRegistry.get("old")!,predecessor=DynastyRegistry.getCurrentRuler("old")!;
+    const heir=d.rulers.find(r=>d.heirIds.includes(r.id))!; expect(heir).toBeDefined();
+    predecessor.naturalDeathYear=480; heir.naturalDeathYear=10000;
+    vi.spyOn(worldRandom,"next").mockReturnValue(.00001); check(f);
+    expect(predecessor.status).toBe("dead");expect(predecessor.deathMonth).toBe(480);
+    const event=WorldHistory.getEvents().find(e=>e.type==="faction-restored")!;
+    expect(event).toBeDefined();expect(event.rulerId).not.toBe(predecessor.id);
+    expect(event.rulerId).toBe(DynastyRegistry.getCurrentRuler("old")!.id);
+    expect(DynastyRegistry.getCurrentRuler("old")!.status).toBe("ruling");
+  });
+  it("无其他合法继承人的当月真实死亡阻断响应",async()=>{
+    const f=await localFixture();const d=DynastyRegistry.get("old")!;d.heirIds=[];DynastyRegistry.getCurrentRuler("old")!.naturalDeathYear=480;
+    vi.spyOn(worldRandom,"next").mockReturnValue(.00001);check(f);
+    expect(f.system.getRestorationDiagnosticSnapshot().localSupport).toMatchObject({eligible:0,claimantBlocked:1});
+    expect(WorldHistory.getEventTypeCount("faction-restored")).toBe(0);expect(f.user.team).toBe(f.owner);
+  });
+  it("真实战乱窗口共用3%上限，不在安定城市开启额外抽签",async()=>{
+    const f=await localFixture();f.city.loyalty=33;f.city.devastation=94;f.second.loyalty=30;
+    const next=vi.spyOn(worldRandom,"next").mockReturnValue(.99);check(f);
+    const d=f.system.getRestorationDiagnosticSnapshot().localSupport;
+    expect(d.eligible).toBe(1);expect(d.expected).toBeGreaterThan(0);expect(d.expected).toBeLessThanOrEqual(.03);expect(next).toHaveBeenCalledOnce();
+  });
+  it("同城两个旧国共用一次draw与最大风险，命中后仍只有一次复国",async()=>{
+    const f=await localFixture();
+    const second={...f.candidate,name:"old2",displayName:"另一旧国",users:new Set(),cities:[],restorationYears:[]};
+    Object.setPrototypeOf(second,Object.getPrototypeOf(f.candidate));
+    f.teams.push(second);DynastyRegistry.initializeFaction(second,0);DynastyRegistry.markExiled(second,600);
+    DynastyRegistry.get(second.name)!.rulers.forEach(r=>r.naturalDeathYear=10000);
+    WorldExiles.start(second,600,0);WorldExiles.get("old2")!.legitimacy=80;
+    f.city.history=[{year:0,type:"founded",title:"建城",newOwnerFactionId:"founder"},
+      {year:10,type:"captured",title:"易手",previousOwnerFactionId:"founder",newOwnerFactionId:"old"},
+      {year:20,type:"capital-relocated",title:"设都",newOwnerFactionId:"old",wasCapital:true},
+      {year:200,type:"captured",title:"易手",previousOwnerFactionId:"old",newOwnerFactionId:"old2"},
+      {year:220,type:"capital-relocated",title:"设都",newOwnerFactionId:"old2",wasCapital:true},
+      {year:600,type:"captured",title:"易手",previousOwnerFactionId:"old2",newOwnerFactionId:"owner"}];f.city.captureCount=3;f.city.lastCapturedYear=600;
+    const next=vi.spyOn(worldRandom,"next").mockReturnValue(.99);check(f,720);
+    const d=f.system.getRestorationDiagnosticSnapshot().localSupport;
+    expect(next).toHaveBeenCalledOnce();expect(d).toMatchObject({eligible:2,draws:1});expect(d.expected).toBeLessThanOrEqual(.09);
+    next.mockReturnValue(.00001);check(f,732);expect(next).toHaveBeenCalledTimes(2);expect(WorldHistory.getEventTypeCount("faction-restored")).toBe(1);
+  });
+  it("实际WorldEventSystem月度入口能产生旧地响应，无额外响应抽签调度",async()=>{
+    const f=await localFixture();
+    f.system.importState({...f.system.exportState(),nextEventMonth:10000},468);
+    vi.spyOn(worldRandom,"next").mockReturnValue(.00001);
+    f.system.update(480,f.teams,3);
+    expect(f.system.getRestorationDiagnosticSnapshot().localSupport.successes).toBe(1);
+    expect(WorldHistory.getEventTypeCount("faction-restored")).toBe(1);
+  });
+  it("miss、诊断与读档重置不改变随机流；旧地响应随原年度调度而运行",async()=>{
+    const f=await localFixture();const next=vi.spyOn(worldRandom,"next").mockReturnValue(.99);
+    // The production annual entry point, not a separate response simulator.
+    check(f);const state=f.system.exportState(),rng=worldRandom.exportState();
+    expect(f.system.getRestorationDiagnosticSnapshot().localSupport).toMatchObject({eligible:1,draws:1,drawHits:0,successes:0});
+    const summary=f.system.getRestorationDiagnostics();expect(summary).toContain("旧地真实响应");expect(worldRandom.exportState()).toEqual(rng);expect(next).toHaveBeenCalledOnce();
+    check(f,480);expect(next).toHaveBeenCalledOnce();
+    f.system.importState(state,480);expect(f.system.getRestorationDiagnosticSnapshot().localSupport.draws).toBe(0);
   });
 });

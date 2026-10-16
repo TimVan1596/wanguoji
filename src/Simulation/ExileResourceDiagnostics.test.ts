@@ -42,3 +42,12 @@ it("生产检查样本只保留最近3条，计数和有限范围仍保留，返
   expect(d.snapshot().productionProtection.recentChecks[0].chance).toBe(.4);
   expect(new ExileResourceDiagnostics().productionSummary()).toContain("暂无自然抽签样本");
 });
+
+it("残部、居民与其他复国随访按真实来源区分，不重复记作各来源成功",()=>{
+  const d=new ExileResourceDiagnostics();d.recordRestoration("a",0,"REMNANT");d.recordRestoration("b",0,"LOCAL_RESIDENT");d.recordRestoration("c",0,"OTHER");
+  d.updateFollowups(12,[{name:"a",status:"ACTIVE"},{name:"b",status:"ACTIVE"},{name:"c",status:"ACTIVE"}]);
+  d.started("b");d.updateFollowups(60,[{name:"a",status:"ACTIVE"},{name:"b",status:"EXILED"},{name:"c",status:"ACTIVE"}]);
+  expect(d.snapshot().bySource.LOCAL_RESIDENT).toMatchObject({restorations:1,active12:1,matured60:1,active60:0});
+  expect(d.snapshot().bySource.REMNANT.active60).toBe(1);expect(d.snapshot().bySource.OTHER.active60).toBe(1);
+  expect(d.snapshot().restorations).toBe(3);
+});

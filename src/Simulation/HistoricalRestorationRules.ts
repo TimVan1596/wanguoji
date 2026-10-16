@@ -24,7 +24,7 @@ const transfers = new Set(["captured", "recovered", "merged", "submitted"]);
 /** Append order is authoritative within a month; capital changes never transfer ownership. */
 export function deriveHistoricalCityRules(city: CityEvidence, worldMonth: number, formalMonths: ReadonlyMap<string, number>): HistoricalCityRule[] | undefined {
   const events = city.history;
-  if (!events.length || events[0].type !== "founded" || events[0].year !== city.foundedYear ||
+  if (!Array.isArray(events) || !events.length || events[0].type !== "founded" || events[0].year !== city.foundedYear ||
       events[0].newOwnerFactionId !== city.founderFactionId || !Number.isSafeInteger(worldMonth) || !Number.isSafeInteger(city.foundedYear) || city.foundedYear < 0 || city.foundedYear > worldMonth) return undefined;
   let owner = city.founderFactionId, since = city.foundedYear, last = since, count = 0;
   let lastTransfer: CityHistoryEvent | undefined;

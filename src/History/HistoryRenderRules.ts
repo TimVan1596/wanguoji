@@ -292,6 +292,7 @@ export function formatHistoryEventTitle(
       : `${conquerorName}灭${fallenName}`;
   }
   if (event.type === "faction-restored") {
+    if (event.metadata?.restorationSource === "LOCAL_RESIDENT") return `【旧地响应复国】${name(event.actorFactionId)}国在${event.cityName ?? ""}恢复国统`;
     const place = event.metadata?.restorationBasis === "FORMER_CAPITAL" ? "旧都" : event.metadata?.restorationBasis === "LONG_RULE" ? "长期统治地" : "";
     return `${name(event.actorFactionId)}国在${place}${event.cityName ?? ""}复国`;
   }
@@ -412,6 +413,7 @@ export function formatHistoryEventDescription(
     return event.cityName ? `${event.cityName}原由${name(event.targetFactionId)}控制。` : event.description;
   }
   if (event.type === "faction-restored") {
+    if (event.metadata?.restorationSource === "LOCAL_RESIDENT") return event.description;
     const remnantPopulation = event.metadata?.remnantPopulation;
     return remnantPopulation !== undefined
       ? `${remnantPopulation}名${name(event.actorFactionId)}国残部响应。${event.metadata?.restorationBasis === "FORMER_CAPITAL" ? "复国依据为已记录的正式旧都及历史持有。" : event.metadata?.restorationBasis === "LONG_RULE" ? "复国依据为已记录的长期统治。" : ""}${event.metadata?.restorationTrigger === "WAR_TORN_HISTORICAL_CITY" ? "本次恢复发生于具有战争创伤与占领动荡的历史旧地。" : ""}`

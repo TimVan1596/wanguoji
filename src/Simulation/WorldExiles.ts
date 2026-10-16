@@ -1,5 +1,5 @@
 import { getProductionRemnantProtection } from "./ExileResourceExperiments";
-import { ExileResourceDiagnostics } from "./ExileResourceDiagnostics";
+import { ExileResourceDiagnostics, type RestorationSource } from "./ExileResourceDiagnostics";
 import { deriveRestorationTenureEvidence } from "./RestorationTenureEvidence";
 import Team from "../Components/Team";
 import {
@@ -41,7 +41,7 @@ class WorldExileStore {
   getResourceSamples() { return this.resources.getSamples(); }
   getProductionProtectionSummary() { return this.resources.productionSummary(); }
   getResourceComparisonSummary() { return this.resources.comparisonSummary(); }
-  recordRestoration(factionId: string, month: number) { this.resources.recordRestoration(factionId, month); }
+  recordRestoration(factionId: string, month: number, source: RestorationSource = "OTHER") { this.resources.recordRestoration(factionId, month, source); }
   private resetObservations() { this.observedIds.clear(); this.observedOverflow = false; this.politicalEnds = 0; this.resources = new ExileResourceDiagnostics(); this.pendingSamples = new WeakSet(); }
   getDiagnostics() {
     return { currentExiled: this.exiles.size, observedExiled: this.observedIds.size, observedOverflow: this.observedOverflow, politicalEnds: this.politicalEnds, ...this.resources.snapshot() };

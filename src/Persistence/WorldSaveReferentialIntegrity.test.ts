@@ -6,8 +6,17 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 const { game } = vi.hoisted(() => ({ game: { Core: undefined as any, BlockSize: 32 } }));
 vi.mock("../Game/Game", () => ({ default: game }));
 vi.mock("../Components/Block", () => ({ default: class {} }));
-vi.mock("../Components/Player", () => ({ default: class {} }));
-vi.mock("../Components/User", () => ({ default: class {} }));
+// Render-only player adapter. User life, political registries and persistence stay real.
+vi.mock("../Components/Player", () => ({ default: class {
+  logicalUnitId?: string; user: any; role="NORMAL"; rulerId?: string; active=true; children:any[]=[]; movement:any={};
+  constructor(_scene:unknown, public x:number,public y:number,public team:any) {}
+  setTeam(team:any){this.team=team;}
+  setFace(){}
+  applyHydratedMovementState(state:any){this.movement={...state};Object.assign(this,state);}
+  exportMovementState(unitId:string){return {...this.movement,unitId,factionId:this.team.name,userId:this.user?.id};}
+} }));
+vi.mock("../Components/Slaves", () => ({ default: class { npcs=new Map(); children={size:0}; } }));
+vi.mock("../Components/User", async () => await vi.importActual("../Components/User"));
 vi.mock("../Components/Npc", () => ({ default: class {} }));
 vi.mock("../Components/Farms", () => ({ default: class {} }));
 vi.mock("../Components/Team", () => ({ default: class {
@@ -742,4 +751,47 @@ it("V15完整水合保留轻度保护输入、18月时钟和单次RNG续跑，�
   // Full post-check export/validation/hydration also retains the actual result.
   const after=exportWorldSave(core); expect(validateWorldSave(after)).toEqual({valid:true,errors:[]});
   hydrateWorldSave(core,JSON.parse(JSON.stringify(after))); expect(exportWorldSave(core)).toEqual(after);
+});
+
+it("V15旧地响应事件及真实User/逻辑单位完整往返，严格拒绝伪造响应证据",async()=>{
+  const {default:LogicalUnitRegistry}=await import("../Simulation/LogicalUnitRegistry");
+  const save=fixture(); save.world.worldMonth=save.world.clock.worldMonth=480;
+  save.factions.push({...save.factions[0],factionId:"old",displayName:"旧",stateFoundedMonth:0,
+    capitalCityId:"active",lastExiledMonth:400,currentActiveSinceMonth:480,restorationMonths:[480],cumulativeActiveMonths:400});
+  delete save.factions[0].capitalCityId;
+  save.cities[0].ownerFactionId="old"; save.blocks[0].ownerFactionId="old";
+  save.dynasties=[{factionId:"old",houseName:"田氏",currentRulerId:"old-r",heirIds:[],houseEpochs:[{houseName:"田氏",startMonth:0,foundingRulerId:"old-r",startReason:"FOUNDING"}],
+    rulers:[{rulerId:"old-r",houseName:"田氏",givenName:"续",bornMonth:100,accessionMonth:400,naturalDeathMonth:1000,status:"ruling"}]}];
+  save.users=[{userId:77,name:"居民",factionId:"old",sourceFactionId:"qin",playerUnitId:"unit-1",loyalty:70,score:0,role:"NORMAL",bornMonth:100,slaveUnits:[]}];
+  save.units=[{unitId:"unit-1",factionId:"old",userId:77,x:16,y:16,vx:0,vy:0,speed:150,radius:16,scale:1,speedCoefficient:0,sizeCoefficient:0,role:"NORMAL",alive:true,kind:"user",children:[]}];
+  save.registries.logicalUnitRegistry={nextUnitSequence:2};
+  WorldHistory.reset();WorldHistory.addFactionExiled(400,"old","田续",1);
+  WorldHistory.addCityRevolt(480,"现城","qin","old","active","restoration-old-480-active");
+  WorldHistory.addLocalResidentRestoration(480,{name:"old",displayName:"旧"},{name:"qin",displayName:"秦"},{id:"active",name:"现城"},
+    {rulerId:"old-r",claimantName:"田续",supporterUserId:77,supporterName:"居民",supporterBornMonth:100,supporterLogicalUnitId:"unit-1",supporterX:16,supporterY:16,
+      houseName:"田氏",houseEpochStartMonth:0,restorationBasis:"FORMER_CAPITAL",historicalHeldMonths:400,restorationTrigger:"LOW_LOYALTY",cityLoyalty:20,cityDevastation:0,ownerStability:70,recentTransfers:1,responseRadiusCells:3},"restoration-old-480-active");
+  save.worldHistory=WorldHistory.exportState();setFixtureLifetimeRecords(save);
+  const encoded=JSON.parse(JSON.stringify(save));expect(validateWorldSave(encoded)).toEqual({valid:true,errors:[]});
+  for(const [field,value] of [["supporterPopulation",2],["supporterLogicalUnitId",""],["historicalHeldMonths",119],["houseName","不存在氏"],["cityLoyalty",90],["supporterBornMonth",481]] as const){
+    const bad=structuredClone(encoded);bad.worldHistory.events.find((e:any)=>e.type==="faction-restored").metadata[field]=value;
+    expect(validateWorldSave(bad).errors).toContain("invalid local-resident restoration evidence");
+  }
+  // An earlier restoration keeps its old-house snapshot if the polity changes
+  // house later in the very same month (existing inclusive epoch convention).
+  const boundary=structuredClone(encoded), house=boundary.dynasties[0];
+  Object.assign(house.rulers[0],{status:"dead",bornMonth:-400,naturalDeathMonth:480,endMonth:480,politicalEndMonth:480,endReason:"去世",deathMonth:480,deathReason:"去世"});
+  house.rulers.push({rulerId:"new-r",houseName:"叶氏",givenName:"续",bornMonth:0,accessionMonth:480,naturalDeathMonth:1000,status:"ruling"});
+  house.currentRulerId="new-r";house.houseName="叶氏";house.houseEpochs[0].endMonth=479;
+  house.houseEpochs.push({houseName:"叶氏",startMonth:480,foundingRulerId:"new-r",startReason:"NATURAL_HOUSE_SUCCESSION"});
+  expect(validateWorldSave(boundary)).toEqual({valid:true,errors:[]});
+  const core=target(); core.logicalUnitRegistry=new LogicalUnitRegistry(); core.logicalGameplayAuthority=true;
+  hydrateWorldSave(core,encoded);
+  const user=core.teams.find((t:any)=>t.name==="old").users.values().next().value;
+  expect(user).toMatchObject({id:77,name:"居民",bornMonth:100,team:{name:"old"},sourceTeam:{name:"qin"}});
+  expect(core.logicalUnitRegistry.get("unit-1")).toMatchObject({factionId:"old",userId:77,alive:true});
+  const first=exportWorldSave(core);expect(validateWorldSave(first)).toEqual({valid:true,errors:[]});
+  hydrateWorldSave(core,JSON.parse(JSON.stringify(first)));expect(exportWorldSave(core)).toEqual(first);
+  expect(WorldHistory.getEventTypeCount("faction-restored")).toBe(1);
+  const random=worldRandom.exportState();WorldExiles.update(481,core.teams);
+  expect(worldRandom.exportState()).toEqual(random);expect(WorldHistory.getEventTypeCount("faction-restored")).toBe(1);
 });

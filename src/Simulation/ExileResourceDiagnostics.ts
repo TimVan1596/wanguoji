@@ -1,3 +1,4 @@
+export type RestorationSource = "REMNANT" | "LOCAL_RESIDENT" | "OTHER";
 import { formatWorldDate } from "./WorldTime";
 import type { RestorationTenureEvidence } from "./RestorationTenureEvidence";
 import { compareExileResourceProtection, PRODUCTION_REMNANT_PROTECTION, type ExileResourceSample } from "./ExileResourceExperiments";
@@ -16,7 +17,8 @@ export class ExileResourceDiagnostics {
   private zeroSeen = new WeakMap<object, { remnant: boolean; legitimacy: boolean }>();
   private samples: ExileResourceSample[] = [];
   private comparisonCache?: { sample: ExileResourceSample; text: string };
-  private followups: Array<{ factionId: string; month: number; checked12: boolean; ended: boolean; reexiled: boolean }> = [];
+  private sourceTotals: Partial<Record<RestorationSource, { restorations: number; matured12: number; active12: number; matured60: number; active60: number }>> = {};
+  private followups: Array<{ source: RestorationSource; factionId: string; month: number; checked12: boolean; ended: boolean; reexiled: boolean }> = [];
   private protectedChecks = 0; private fallbackChecks = 0; private expiredChecks = 0;
   private chanceSum = 0; private minChance = Infinity; private maxChance = -Infinity;
   private recentChecks: RemnantCheck[] = [];
@@ -58,25 +60,32 @@ export class ExileResourceDiagnostics {
     this.zeroSeen.set(key, seen);
   }
   addSample(sample: ExileResourceSample) { this.samples.push(sample); if (this.samples.length > 16) this.samples.shift(); }
-  recordRestoration(factionId: string, month: number) {
+  recordRestoration(factionId: string, month: number, source: RestorationSource = "OTHER") {
     this.restorations++;
+    const total = this.sourceTotals[source] ??= { restorations: 0, matured12: 0, active12: 0, matured60: 0, active60: 0 };
+    total.restorations++;
     if (this.restoredSinceExile.size < 4096) this.restoredSinceExile.add(factionId); else this.reexileTrackingOverflow++;
     if (this.followups.length >= 512) { this.followupOverflow++; return; }
-    this.followups.push({ factionId, month, checked12: false, ended: false, reexiled: false });
+    this.followups.push({ source, factionId, month, checked12: false, ended: false, reexiled: false });
   }
   updateFollowups(month: number, teams: readonly { name: string; status: string }[]) {
     const states = new Map(teams.map(t => [t.name,t.status]));
     this.followups = this.followups.filter(f => {
       const status = states.get(f.factionId);
+      const total = this.sourceTotals[f.source]!;
       if (status !== "ACTIVE") f.ended = true;
       if (status === "EXILED" && !f.reexiled) { f.reexiled = true; if (this.restoredSinceExile.delete(f.factionId)) this.reexiles++; }
-      if (!f.checked12 && month - f.month >= 12) { f.checked12 = true; this.matured12++; if (!f.ended) this.active12++; }
-      if (month - f.month >= 60) { this.matured60++; if (!f.ended) this.active60++; return false; }
+      if (!f.checked12 && month - f.month >= 12) { f.checked12 = true; this.matured12++; total.matured12++; if (!f.ended) { this.active12++; total.active12++; } }
+      if (month - f.month >= 60) { this.matured60++; total.matured60++; if (!f.ended) { this.active60++; total.active60++; } return false; }
       return true;
     });
   }
   snapshot() {
-    return { productionProtection: { strength: PRODUCTION_REMNANT_PROTECTION, protectedChecks: this.protectedChecks,
+    return { bySource: Object.fromEntries((["REMNANT", "LOCAL_RESIDENT", "OTHER"] as const).map(source => [source, {
+      ...(this.sourceTotals[source] ?? { restorations: 0, matured12: 0, active12: 0, matured60: 0, active60: 0 }),
+      insufficient12: this.followups.filter(f => f.source === source && !f.checked12).length,
+      insufficient60: this.followups.filter(f => f.source === source).length,
+    }])), productionProtection: { strength: PRODUCTION_REMNANT_PROTECTION, protectedChecks: this.protectedChecks,
       fallbackChecks: this.fallbackChecks, expiredChecks: this.expiredChecks, meanChance: this.remnantChecks ? this.chanceSum / this.remnantChecks : 0,
       minChance: this.remnantChecks ? this.minChance : 0, maxChance: this.remnantChecks ? this.maxChance : 0,
       recentChecks: structuredClone(this.recentChecks) }, newExiles: this.newExiles, resourceChecks: this.resourceChecks, remnantChecks: this.remnantChecks,

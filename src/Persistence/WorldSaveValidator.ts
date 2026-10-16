@@ -304,6 +304,38 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
       if (event.cityId !== undefined && !allCityIds.has(String(event.cityId))) errors.push(`unknown worldHistory cityId: ${String(event.cityId)}`);
       if (event.rulerId !== undefined) requireRef(event.rulerId, rulerIds, "worldHistory rulerId", errors);
       if (event.monthIndex !== undefined && !finite(event.monthIndex)) errors.push("worldHistory event monthIndex must be finite");
+      if (event.type === "faction-restored" && isPlainRecord(event.metadata) && event.metadata.restorationSource === "LOCAL_RESIDENT") {
+        const m = event.metadata, month = Number(event.monthIndex ?? event.year);
+        const dynasty = Array.isArray(save.dynasties) ? save.dynasties.find((d: any) => d?.factionId === event.actorFactionId) : undefined;
+        const epochs = isPlainRecord(dynasty) && Array.isArray(dynasty.houseEpochs) ? dynasty.houseEpochs : [];
+        if (!Number.isSafeInteger(month) || month < 0 || month > Number(save.world?.worldMonth) || !event.cityId || !event.historyGroupId ||
+            !event.actorFactionId || !event.previousOwnerFactionId || event.actorFactionId === event.previousOwnerFactionId || event.targetFactionId !== event.previousOwnerFactionId ||
+            !event.rulerId || event.rulerId !== m.rulerId || m.supporterPopulation !== 1 || m.remnantPopulation !== 0 ||
+            !Number.isSafeInteger(m.supporterUserId) || typeof m.supporterName !== "string" || !m.supporterName ||
+            typeof m.supporterLogicalUnitId !== "string" || !m.supporterLogicalUnitId ||
+            !Number.isSafeInteger(m.supporterBornMonth) || Number(m.supporterBornMonth) > month ||
+            !finite(m.supporterX) || !finite(m.supporterY) || m.responseRadiusCells !== 3 ||
+            typeof m.claimantName !== "string" || !m.claimantName ||
+            !Number.isSafeInteger(m.houseEpochStartMonth) || Number(m.houseEpochStartMonth) < 0 ||
+            !finite(m.cityDevastation) || m.cityDevastation < 0 || m.cityDevastation > 100 ||
+            !finite(m.ownerStability) || m.ownerStability < 0 || m.ownerStability > 100 ||
+            !Number.isSafeInteger(m.recentTransfers) || Number(m.recentTransfers) < 0 ||
+            !finite(m.cityLoyalty) || m.cityLoyalty < 0 || m.cityLoyalty > 100 ||
+            !(isPlainRecord(dynasty) && Array.isArray(dynasty.rulers) && dynasty.rulers.some((r: any) =>
+              isPlainRecord(r) && r.rulerId === event.rulerId && r.houseName === m.houseName &&
+              (r.deathMonth === undefined || Number(r.deathMonth) >= month))) ||
+            !["FORMER_CAPITAL", "LONG_RULE"].includes(String(m.restorationBasis)) ||
+            !Number.isSafeInteger(m.historicalHeldMonths) || Number(m.historicalHeldMonths) < (m.restorationBasis === "FORMER_CAPITAL" ? 120 : 360) ||
+            !(finite(m.cityLoyalty) && (m.cityLoyalty <= 28 || (m.cityLoyalty < 40 && finite(m.cityDevastation) && m.cityDevastation >= 70 &&
+              (Number(m.recentTransfers) >= 2 || Number(m.ownerStability) <= 40)))) ||
+            !epochs.some((e: any) => isPlainRecord(e) && e.startMonth === m.houseEpochStartMonth && e.houseName === m.houseName &&
+              // Epochs end at next.startMonth - 1; earlier events in that same
+              // transition month still retain the old house's real snapshot.
+              Number(e.startMonth) <= month && (e.endMonth === undefined || month <= Number(e.endMonth) ||
+                (month === Number(e.endMonth) + 1 && epochs.some((next: any) => isPlainRecord(next) && next.startMonth === month))))) {
+          errors.push("invalid local-resident restoration evidence");
+        }
+      }
       if (event.type === "ruler-deposed") {
         const meta = isPlainRecord(event.metadata) ? event.metadata : {};
         const month = event.monthIndex ?? event.year;

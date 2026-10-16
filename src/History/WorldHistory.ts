@@ -92,6 +92,14 @@ export interface WorldEvent {
   importance: "normal" | "major";
 }
 
+export interface LocalResidentRestorationDetails {
+  rulerId: string; claimantName: string; supporterUserId: number; supporterName: string; supporterBornMonth: number;
+  supporterLogicalUnitId: string; supporterX: number; supporterY: number; houseName: string; houseEpochStartMonth: number;
+  restorationBasis: "FORMER_CAPITAL" | "LONG_RULE"; historicalHeldMonths: number;
+  restorationTrigger: "WAR_TORN_HISTORICAL_CITY" | "LOW_LOYALTY";
+  cityLoyalty: number; cityDevastation: number; ownerStability: number; recentTransfers: number; responseRadiusCells: number;
+}
+
 export interface CapitalRelocationContext {
   previousCapitalId?: string;
   previousCapitalName?: string;
@@ -952,6 +960,19 @@ export class WorldHistoryStore {
       historyGroupId,
       importance: "major",
     });
+  }
+
+  addLocalResidentRestoration(worldMonth: number, team: Pick<Team, "name" | "displayName">,
+    previousOwner: Pick<Team, "name" | "displayName">, city: { id: string; name: string },
+    details: LocalResidentRestorationDetails, historyGroupId: string) {
+    this.extinctFactions.delete(team.name);
+    return this.addEvent({ id: `faction-restored-${worldMonth}-${team.name}-${city.id}-${this.sequence++}`,
+      year: worldMonth, category: "politics", type: "faction-restored", importance: "major",
+      title: `【旧地响应复国】${team.displayName}在${city.name}恢复国统`,
+      description: `${city.name}为${team.displayName}${details.restorationBasis === "FORMER_CAPITAL" ? "正式旧都" : "长期统治地"}，历史实际持有${details.historicalHeldMonths}个月。${details.houseName}王统的合法继统者${details.claimantName}尚存。当地${details.restorationTrigger === "WAR_TORN_HISTORICAL_CITY" ? "存在战争创伤及占领动荡" : "出现低忠诚危机"}，1名当时属于${previousOwner.displayName}的附近居民${details.supporterName}（User ${details.supporterUserId}，单位${details.supporterLogicalUnitId}）转属${team.displayName}，该国恢复对${city.name}的控制。`,
+      factionIds: [team.name,previousOwner.name], actorFactionId: team.name, targetFactionId: previousOwner.name,
+      previousOwnerFactionId: previousOwner.name, cityId: city.id, cityName: city.name, rulerId: details.rulerId,
+      metadata: { ...details, restorationSource: "LOCAL_RESIDENT", supporterPopulation: 1, remnantPopulation: 0 }, historyGroupId });
   }
 
   addPopulationSurrendered(
