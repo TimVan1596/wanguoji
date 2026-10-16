@@ -10,8 +10,11 @@ export function normalizeRulerPoliticalFacts(facts: readonly RulerPoliticalFact[
     if (!previous) rows.set(key, { ...fact });
     else {
       const preferred = fact.terminalOutcome === "EXTINCT" || (previous.terminalOutcome === "EXILED" && fact.terminalOutcome === "DISSOLVED") ? fact : previous;
+      const direct = previous.role === "DIRECT_ACTOR" ? previous : fact.role === "DIRECT_ACTOR" ? fact : undefined;
       rows.set(key, { ...preferred, wasCapital: previous.wasCapital || fact.wasCapital,
-        role: previous.role === "DIRECT_ACTOR" || fact.role === "DIRECT_ACTOR" ? "DIRECT_ACTOR" : preferred.role });
+        role: direct ? "DIRECT_ACTOR" : preferred.role,
+        confidence: direct ? "DIRECT" : preferred.confidence,
+        rulerId: direct?.rulerId ?? preferred.rulerId });
     }
   }
   return [...rows.values()];

@@ -99,6 +99,29 @@ describe("canonical history → ruler evidence → titles, assessment and presen
     const future = history.addCityCaptured(121, "楚", "齐", "齐", "未来", "future", true);
     expect(assessment(ruler, history).evidence.politicalFacts.some(f => f.eventId === future)).toBe(false);
   });
+  it("counts one national crisis process and separate facts without blaming the ruler", () => {
+    const history = new WorldHistoryStore(), ruler = person(0, 120, 3);
+    history.addCapitalFallen(40, "齐", "楚", "楚", "故都", "c", true, 10, undefined, undefined, "fall");
+    history.addCapitalRelocated(40, "楚", "新都", "new", "fall", { cause: "CAPITAL_FALL" });
+    history.addFactionExiled(40, "楚", "熊谦", 1, {}, "fall");
+    // A second state's loss is never this ruler's domestic crisis.
+    history.addCapitalFallen(50, "齐", "燕", "燕", "燕都", "foreign", true, 10, undefined, undefined, "foreign");
+    const e = assessment(ruler, history).evidence;
+    expect(summarizeRulerPoliticalFacts(e.politicalFacts)).toMatchObject({ crisisEpisodes: 1, stateLosses: 1, capitalLosses: 1 });
+    expect(e.politicalFacts.find(f => f.type === "capital-fallen")?.outcome).toBe("本国失去都城");
+    expect(assessment(ruler, history).lines.join("")).not.toMatch(/失德|昏庸|暴虐/);
+  });
+  it("deduplicates actual signatures but never promotes renewals to diplomatic achievement", () => {
+    const history = new WorldHistoryStore(), ruler = person(0, 120, 3);
+    const signature = { id: "sign", year: 40, type: "alliance-signed" as const, category: "politics" as const, title: "结盟", importance: "major" as const,
+      historyGroupId: "treaty", factionIds: ["楚", "齐"], metadata: { signatoryARulerId: "r", signatoryAFactionId: "楚" } };
+    history.addEvent(signature); history.addEvent({ ...signature, id: "duplicate" });
+    history.addEvent({ ...signature, id: "renew", year: 50, type: "relation-renewed", historyGroupId: "renew" });
+    history.addEvent({ ...signature, id: "unsigned", year: 60, historyGroupId: "unsigned", metadata: {} });
+    const result = assessment(ruler, history);
+    expect(summarizeRulerPoliticalFacts(result.evidence.politicalFacts)).toMatchObject({ personalSignatures: 1, renewals: 1, nationalDiplomacy: 1 });
+    expect(result.lines.join("")).not.toMatch(/外交卓越|结盟致胜|同盟取胜/);
+  });
   it("does not silently regrant frozen V15 names or reasons", () => {
     const ruler = person(); ruler.posthumousEpithet = "愍"; ruler.posthumousEpithetReasons = ["原V15理由"];
     ruler.templeName = "中宗"; ruler.templeNameReasons = ["既有庙号"];

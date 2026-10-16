@@ -62,3 +62,13 @@ it("separates extinction in exile from actual death and preserves a real same-mo
   const unknown = { ...dead, status: "politically-ended", deathMonth: undefined, deathReason: undefined } as any;
   expect(deriveRulerTenureEvidence(unknown, "燕", events, 1000)).toMatchObject({ diedInExile: false, extinctInExile: true, activeRuleMonths: 0, exileMonths: 80 });
 });
+
+
+it("preserves actual same-month lifecycle order without sorting by event ID", () => {
+  const loss = event("z-loss", "faction-exiled", 20, "loss", { targetFactionId: "燕" });
+  const restore = event("a-restore", "faction-restored", 20, "restore", { actorFactionId: "燕" });
+  const ordered = deriveRulerTenureEvidence(ruler(0, 40), "燕", [loss, restore] as any, 40);
+  expect(ordered).toMatchObject({ exileMonths: 0, restoredActiveRuleMonths: 20, diedInExile: false });
+  const reversed = deriveRulerTenureEvidence(ruler(0, 40), "燕", [restore, loss] as any, 40);
+  expect(reversed).toMatchObject({ exileMonths: 20, restoredActiveRuleMonths: 0, diedInExile: true });
+});
