@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { deriveRestorationTenureEvidence, type RestorationTenureInput } from "./RestorationTenureEvidence";
 import type { WorldEvent } from "../History/WorldHistory";
 import { buildRestorationMemoryLines } from "../UI/Components/FactionDetails/model";
-import { getRemnantDecayChance, compareExileResourceProtection } from "./ExileResourceExperiments";
+import { getRemnantDecayChance, compareExileResourceProtection, getProductionRemnantProtection, PRODUCTION_REMNANT_PROTECTION } from "./ExileResourceExperiments";
 import { getRestorationDrawExpectation } from "./HistoricalRestorationRules";
 function event(type: "faction-exiled" | "faction-restored", at: number, id = type + at, faction = "qin"): WorldEvent {
   return { id, year: at, type, category: "politics", title: type, importance: "major",
@@ -50,10 +50,15 @@ describe("真实正式在国年资", () => {
     expect(buildRestorationMemoryLines(e,{worldMonth:6000,remnants:0,hasClaimant:false})[0]).toContain("历史证据不足");
   });
 });
-describe("有限残部保护只作对照",()=>{
+describe("轻度生产保护及有限资源对照",()=>{
   it("基线45%、轻中公式、240月退出、无证据中性",()=>{
     const e=deriveRestorationTenureEvidence(input());
-    expect(getRemnantDecayChance(e,0)).toBe(.45);
+    expect(PRODUCTION_REMNANT_PROTECTION).toBe(.25);
+    expect(getRemnantDecayChance(e,0,0)).toBe(.45);
+    expect(getRemnantDecayChance(e,0)).toBeCloseTo(.3796875);
+    expect(getRemnantDecayChance(e,120)).toBeCloseTo(.41484375);
+    expect(getRemnantDecayChance(e,240)).toBe(.45);
+    expect(getRemnantDecayChance(e,1000)).toBe(.45);
     expect(getRemnantDecayChance(e,0,.25)).toBeCloseTo(.3796875);
     expect(getRemnantDecayChance(e,0,.5)).toBeCloseTo(.309375);
     expect(getRemnantDecayChance(e,240,.5)).toBe(.45);
@@ -90,4 +95,19 @@ it("5000年、4000条生命周期事件按本国区间派生，结果确定",()=
   expect(e).toMatchObject({complete:true,stateTenureMonths:58000,currentHouseTenureMonths:58000});
   expect(deriveRestorationTenureEvidence(JSON.parse(JSON.stringify(i)))).toEqual(e);
   console.log("5000年规模纯派生（非Core自然长局）",{events:events.length,elapsedMs:performance.now()-start});
+});
+
+it("生产和页面复用相同概率；流亡起点不符回退，零残部不显示仍有保护", () => {
+  const i=input(); Object.assign(i.team,{status:"EXILED",lastExiledYear:6000,cumulativeActiveYears:6000});
+  i.events=[event("faction-exiled",6000)]; i.worldMonth=6018;
+  const e=deriveRestorationTenureEvidence(i);
+  const p=getProductionRemnantProtection(e,6018,6000,6000);
+  expect(p).toMatchObject({status:"LIGHT",exileMonths:18,remainingMonths:222});
+  expect(p.chance).toBeCloseTo(.3849609375);
+  expect(getProductionRemnantProtection(e,6018,6001,6000)).toMatchObject({status:"INSUFFICIENT",chance:.45});
+  expect(getProductionRemnantProtection(e,6019,6000,6000)).toMatchObject({status:"INSUFFICIENT",chance:.45});
+  const viewInput={worldMonth:6018,exileStartedMonth:6000,lastExiledMonth:6000,remnants:1,legitimacy:80,hasClaimant:true};
+  expect(buildRestorationMemoryLines(e,viewInput).join("\n")).toContain("当前残部衰减命中率：38.496%");
+  const empty=buildRestorationMemoryLines(e,{...viewInput,remnants:0}).join("\n");
+  expect(empty).toContain("无残部可保护"); expect(empty).not.toContain("当前残部衰减命中率");
 });

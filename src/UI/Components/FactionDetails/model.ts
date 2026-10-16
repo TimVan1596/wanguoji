@@ -1,3 +1,4 @@
+import { getProductionRemnantProtection } from "../../../Simulation/ExileResourceExperiments";
 import type { RestorationTenureEvidence } from "../../../Simulation/RestorationTenureEvidence";
 import { formatWorldDate, formatWorldDuration } from "../../../Simulation/WorldTime";
 import { getFactionTerminalMonth, type HistoricalFactionSort } from "../../../Simulation/FactionListRules";
@@ -484,8 +485,10 @@ function formatIdentityStage(factionType?: string) {
 }
 
 export function buildRestorationMemoryLines(evidence: RestorationTenureEvidence, input: {
-  worldMonth: number; exileStartedMonth?: number; legitimacy?: number; remnants: number; hasClaimant: boolean;
+  worldMonth: number; exileStartedMonth?: number; lastExiledMonth?: number; legitimacy?: number; remnants: number; hasClaimant: boolean;
 }) {
+  const protection = getProductionRemnantProtection(evidence, input.worldMonth, input.exileStartedMonth, input.lastExiledMonth);
+  const protectionLabel = input.remnants <= 0 ? "无残部可保护" : protection.status === "INSUFFICIENT" ? "历史证据不足" : protection.status === "EXPIRED" ? "保护期结束" : "轻度";
   const duration = (value: number) => evidence.complete ? formatWorldDuration(value) : "历史证据不足";
   return [
     `国家正式在国累计：${duration(evidence.stateTenureMonths)}`,
@@ -496,5 +499,8 @@ export function buildRestorationMemoryLines(evidence: RestorationTenureEvidence,
     `本次流亡：${input.exileStartedMonth !== undefined ? formatWorldDuration(input.worldMonth-input.exileStartedMonth) : "—"}`,
     `流亡合法性：${input.legitimacy ?? "—"} · 残部：${input.remnants}人`,
     `真实合法继统主体：${input.hasClaimant ? "存在" : "无"}`,
+    `残部保护：${protectionLabel}`,
+    ...(input.remnants > 0 ? [`当前残部衰减命中率：${(protection.chance * 100).toFixed(3)}%`,
+      `保护剩余：${protection.remainingMonths === undefined ? "历史证据不足，回退45%" : protection.remainingMonths > 0 ? protection.remainingMonths + "个月 · 逐渐退去" : "已结束"}`] : []),
   ];
 }

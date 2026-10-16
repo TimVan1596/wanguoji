@@ -304,7 +304,7 @@ function FactionProfile({
     if (team.status !== "EXILED") return [];
     const evidence = deriveRestorationTenureEvidence({ team, dynasty,
       events: WorldHistory.getEventsForFaction(team.name), worldMonth });
-    return buildRestorationMemoryLines(evidence, { worldMonth, exileStartedMonth: exile?.startedMonth,
+    return buildRestorationMemoryLines(evidence, { worldMonth, exileStartedMonth: exile?.startedMonth, lastExiledMonth: team.lastExiledYear,
       legitimacy: exile?.legitimacy, remnants: remnant?.population ?? 0,
       hasClaimant: DynastyRegistry.hasClaimantAtMonth(team.name, worldMonth) });
   }, [team, dynasty, worldMonth, events, exile?.startedMonth, exile?.legitimacy, remnant?.population]);

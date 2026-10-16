@@ -327,20 +327,20 @@ describe("战乱路径种子对照与只读观测", () => {
 });
 
 describe("r B1真实资源和复国诊断",()=>{
-  it("生产资源检查仍按45%抽签，归零只计首次，保存字段与随机流不被诊断改变",async()=>{
+  it("生产资源检查使用轻度保护，归零只计首次，保存字段与随机流不被诊断改变",async()=>{
     const f=await fixture();
     WorldExiles.reset();WorldRemnants.setPopulation("old",1,400);
     f.candidate.cumulativeActiveYears=400;f.candidate.currentActiveSinceYear=0;
     WorldExiles.start(f.candidate,400,1);WorldExiles.get("old")!.legitimacy=80;
     WorldHistory.addFactionExiled(400,"old","真实流亡君主",1);
-    const next=vi.spyOn(worldRandom,"next").mockReturnValue(.44);
+    const next=vi.spyOn(worldRandom,"next").mockReturnValue(.43);
     WorldExiles.update(418,[f.candidate]);
     expect(next).toHaveBeenCalledOnce();
     expect(WorldRemnants.get("old")).toBeUndefined();
     expect(WorldExiles.getDiagnostics()).toMatchObject({newExiles:1,resourceChecks:1,remnantChecks:1,remnantHits:1,remnantFirstZero:1});
     expect(WorldExiles.getResourceSamples()[0]).toMatchObject({initialRemnants:1,tenure:{complete:true,stateTenureMonths:400,currentHouseTenureMonths:400}});
     const before=worldRandom.exportState(), canonical=WorldExiles.exportState();
-    expect(WorldExiles.getResourceComparisonSummary()).toContain("生产仍a=0");
+    expect(WorldExiles.getResourceComparisonSummary()).toContain("生产采用a=0.25");
     console.log("真实资源业务夹具的条件对照（非自然世界）", WorldExiles.getResourceComparisonSummary());
     expect(WorldExiles.exportState()).toEqual(canonical);expect(worldRandom.exportState()).toEqual(before);expect(next).toHaveBeenCalledOnce();
     WorldExiles.update(419,[f.candidate]);expect(WorldExiles.getDiagnostics().remnantFirstZero).toBe(1);
@@ -403,5 +403,79 @@ describe("r B1建城者诊断按实际月份核对",()=>{
     DynastyRegistry.getCurrentRuler("founder")!.naturalDeathYear=480;
     vi.spyOn(worldRandom,"next").mockReturnValue(.99);check(f);
     expect(f.system.getRestorationDiagnosticSnapshot()).toMatchObject({draws:1,founderEligible:0,expectedRestorations:0,attempts:0,blockers:{"无合法继统者":1}});
+  });
+});
+
+describe("r1真实18月残部保护业务",()=>{
+  async function longExile(houseStart=0) {
+    const f=await fixture(); WorldExiles.reset(); WorldRemnants.reset();
+    Object.assign(f.candidate,{lastExiledYear:6000,cumulativeActiveYears:6000});
+    const d=DynastyRegistry.get("old")!;
+    if(houseStart) d.houseEpochs=[{...d.houseEpochs![0],endMonth:houseStart-1},{...d.houseEpochs![0],startMonth:houseStart}];
+    WorldHistory.addFactionExiled(6000,"old","真实流亡",12);
+    WorldRemnants.add("old",12,6000); WorldExiles.start(f.candidate,6000,12);
+    WorldExiles.get("old")!.legitimacy=80;
+    return f;
+  }
+  it("生产按真实年资降低命中率；周期、一次draw、损耗量、合法性与诊断隔离",async()=>{
+    const f=await longExile(); const next=vi.spyOn(worldRandom,"next").mockReturnValue(.40);
+    WorldExiles.update(6017,[f.candidate]); expect(next).not.toHaveBeenCalled();
+    WorldExiles.update(6018,[f.candidate]); expect(next).toHaveBeenCalledOnce();
+    expect(WorldRemnants.get("old")!.population).toBe(12); // .40 would hit the old .45 rule
+    expect(WorldExiles.get("old")!.legitimacy).toBeLessThan(80);
+    const check=WorldExiles.getDiagnostics().productionProtection;
+    expect(check).toMatchObject({strength:.25,protectedChecks:1,fallbackChecks:0,expiredChecks:0});
+    expect(check.recentChecks[0]).toMatchObject({worldMonth:6018,exileMonths:18,hit:false,tenure:{complete:true,stateTenureMonths:6000,currentHouseTenureMonths:6000}});
+    expect(check.meanChance).toBeCloseTo(.3849609375);
+    WorldExiles.update(6018,[f.candidate]); expect(next).toHaveBeenCalledOnce();
+    const random=worldRandom.exportState(), history=WorldHistory.exportState();
+    expect(WorldExiles.getProductionProtectionSummary()).toContain("a=0.25");
+    expect(f.system.getRestorationDiagnostics()).toContain("有效保护1");
+    expect(worldRandom.exportState()).toEqual(random); expect(WorldHistory.exportState()).toEqual(history);
+    next.mockReturnValue(.1); WorldExiles.update(6036,[f.candidate]);
+    expect(next).toHaveBeenCalledTimes(2); expect(WorldRemnants.get("old")!.population).toBe(10);
+    expect(WorldExiles.getDiagnostics().remnantHits).toBe(1);
+  });
+  it("年轻王统不借前朝年资；历史缺口与流亡起点矛盾回退原45%",async()=>{
+    const f=await longExile(5760); const next=vi.spyOn(worldRandom,"next").mockReturnValue(.44);
+    WorldExiles.update(6018,[f.candidate]);
+    expect(WorldExiles.getDiagnostics().productionProtection.recentChecks[0]).toMatchObject({tenure:{stateTenureMonths:6000,currentHouseTenureMonths:240}});
+    expect(WorldExiles.getDiagnostics().productionProtection.meanChance).toBeCloseTo(.4288623046875);
+    expect(WorldRemnants.get("old")!.population).toBe(12);
+    WorldExiles.get("old")!.startedMonth=6001; WorldExiles.update(6036,[f.candidate]);
+    expect(WorldExiles.getDiagnostics().productionProtection).toMatchObject({fallbackChecks:1});
+    expect(WorldExiles.getDiagnostics().productionProtection.recentChecks[1].chance).toBe(.45);
+    expect(WorldRemnants.get("old")!.population).toBe(10);
+    WorldExiles.get("old")!.startedMonth=6000; f.candidate.restorationYears=[1];
+    WorldExiles.update(6054,[f.candidate]); expect(next).toHaveBeenCalledTimes(3);
+    expect(WorldExiles.getDiagnostics().productionProtection).toMatchObject({fallbackChecks:2});
+  });
+  it("同一流亡不重置时钟；240月后原45%，耗尽不复生，终结政权不检查",async()=>{
+    const f=await longExile(); const next=vi.spyOn(worldRandom,"next").mockReturnValue(.44);
+    const state=WorldExiles.get("old")!;
+    expect(WorldExiles.start(f.candidate,6120,99)).toBe(state);
+    expect(state).toMatchObject({startedMonth:6000,lastRemnantDecayMonth:6000,remnantPopulation:12});
+    WorldExiles.update(6240,[f.candidate]);
+    expect(WorldExiles.getDiagnostics().productionProtection).toMatchObject({expiredChecks:1,meanChance:.45});
+    WorldRemnants.setPopulation("old",1,6000); WorldExiles.update(6258,[f.candidate]);
+    expect(WorldRemnants.get("old")).toBeUndefined();
+    WorldExiles.update(6276,[f.candidate]); expect(next).toHaveBeenCalledTimes(2);
+    f.candidate.status="EXTINCT"; WorldRemnants.add("old",1,6000);
+    WorldExiles.update(6294,[f.candidate]); expect(next).toHaveBeenCalledTimes(2);
+  });
+  it("真实复国再流亡启动新窗口，累计年资排除前次流亡，不重复历史",async()=>{
+    const f=await longExile();
+    WorldHistory.addFactionRestored(6100,"old","旧城",1,"city");
+    WorldExiles.restore("old"); f.candidate.markActive(6100);
+    const {default:RealTeam}=await vi.importActual<typeof import("../Components/Team")>("../Components/Team");
+    RealTeam.prototype.markExiled.call(f.candidate,6220);
+    WorldHistory.addFactionExiled(6220,"old","真实流亡",5);
+    WorldRemnants.setPopulation("old",5,6220); WorldExiles.start(f.candidate,6220,5);
+    const next=vi.spyOn(worldRandom,"next").mockReturnValue(.99);
+    WorldExiles.update(6238,[f.candidate]);
+    expect(next).toHaveBeenCalledOnce();
+    expect(WorldExiles.getDiagnostics().productionProtection.recentChecks[0]).toMatchObject({exileMonths:18,tenure:{complete:true,stateTenureMonths:6120,currentHouseTenureMonths:6120}});
+    expect(WorldHistory.getEventTypeCount("faction-restored")).toBe(1);
+    WorldExiles.update(6238,[f.candidate]); expect(WorldHistory.getEventTypeCount("faction-restored")).toBe(1);
   });
 });

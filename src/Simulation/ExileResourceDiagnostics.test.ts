@@ -28,3 +28,17 @@ describe("流亡会话统计",()=>{
     expect(d.snapshot()).toMatchObject({restorations:600,insufficient60:512,followupOverflow:88});
   });
 });
+
+it("生产检查样本只保留最近3条，计数和有限范围仍保留，返回副本不能影响诊断",()=>{
+  const d=new ExileResourceDiagnostics();
+  for(let month=1;month<=10000;month++) d.recordRemnantCheck({factionId:"qin",worldMonth:month,
+    tenure:{factionId:"qin",evidenceEndMonth:month,complete:true,stateTenureMonths:6000,currentHouseTenureMonths:6000,currentHouseContinuityMonths:6000},
+    chance:.4,status:"LIGHT",exileMonths:18,hit:month%2===0});
+  const snapshot=d.snapshot();
+  expect(snapshot).toMatchObject({remnantChecks:10000,remnantHits:5000,productionProtection:{protectedChecks:10000,minChance:.4,maxChance:.4}});
+  expect(snapshot.productionProtection.meanChance).toBeCloseTo(.4);
+  expect(snapshot.productionProtection.recentChecks.map(c=>c.worldMonth)).toEqual([9998,9999,10000]);
+  snapshot.productionProtection.recentChecks[0].chance=0;
+  expect(d.snapshot().productionProtection.recentChecks[0].chance).toBe(.4);
+  expect(new ExileResourceDiagnostics().productionSummary()).toContain("暂无自然抽签样本");
+});

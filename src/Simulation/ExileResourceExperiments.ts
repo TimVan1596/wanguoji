@@ -2,7 +2,7 @@ import { EXILE_REMNANT_DECAY_CHANCE } from "../config/simulation";
 import { decayExileLegitimacy, decayRemnantPopulation } from "../Politics/ExileRules";
 import type { RestorationTenureEvidence } from "./RestorationTenureEvidence";
 
-export const PRODUCTION_REMNANT_PROTECTION = 0 as const;
+export const PRODUCTION_REMNANT_PROTECTION = 0.25 as const;
 export type RemnantProtection = 0 | 0.25 | 0.5;
 export function getRemnantDecayChance(evidence: Pick<RestorationTenureEvidence, "complete" | "stateTenureMonths" | "currentHouseTenureMonths">,
   exileMonths: number, protection: RemnantProtection = PRODUCTION_REMNANT_PROTECTION) {
@@ -12,6 +12,18 @@ export function getRemnantDecayChance(evidence: Pick<RestorationTenureEvidence, 
   const s = evidence.stateTenureMonths / (evidence.stateTenureMonths + 3600);
   const d = evidence.currentHouseTenureMonths / (evidence.currentHouseTenureMonths + 3600);
   return EXILE_REMNANT_DECAY_CHANCE * (1 - protection * (.25 * s + .75 * d) * Math.max(0, 1 - exileMonths / 240));
+}
+/** Shared production/UI policy. The episode must agree with authoritative lifecycle evidence. */
+export function getProductionRemnantProtection(evidence: RestorationTenureEvidence, worldMonth: number,
+  startedMonth: number | undefined, lastExiledMonth: number | undefined) {
+  const validEpisode = Number.isSafeInteger(worldMonth) && worldMonth >= 0 &&
+    Number.isSafeInteger(startedMonth) && startedMonth! >= 0 && startedMonth! <= worldMonth &&
+    startedMonth === lastExiledMonth && evidence.evidenceEndMonth === worldMonth;
+  const exileMonths = validEpisode ? worldMonth - startedMonth! : undefined;
+  const complete = evidence.complete && validEpisode;
+  const chance = getRemnantDecayChance({ ...evidence, complete }, exileMonths ?? -1);
+  const status = !complete ? "INSUFFICIENT" : exileMonths! >= 240 ? "EXPIRED" : "LIGHT";
+  return { chance, status, exileMonths, remainingMonths: complete ? Math.max(0, 240 - exileMonths!) : undefined };
 }
 export interface ExileResourceSample {
   factionId: string; startedMonth: number; initialRemnants: number; initialLegitimacy: number;

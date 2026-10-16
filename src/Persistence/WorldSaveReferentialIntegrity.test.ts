@@ -701,3 +701,45 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     expect(() => exportWorldSave(core as Core)).toThrow("outside its fortifiedCells");
   });
 });
+
+it("V15完整水合保留轻度保护输入、18月时钟和单次RNG续跑，不持久化会话诊断", async () => {
+  const {default:WorldRemnants}=await import("../Simulation/WorldRemnants");
+  const save=fixture(); save.appVersion="v0.99931r"; // Existing V15 saves remain readable.
+  save.world.worldMonth=save.world.clock.worldMonth=6017;
+  save.factions.push({...save.factions[0],factionId:"old",displayName:"旧",status:"EXILED",stateFoundedMonth:0,
+    capitalCityId:undefined,lastExiledMonth:6000,cumulativeActiveMonths:6000});
+  save.dynasties=[{factionId:"old",houseName:"田氏",currentRulerId:"old-r",heirIds:[],
+    houseEpochs:[{houseName:"田氏",startMonth:0,foundingRulerId:"old-r",startReason:"FOUNDING"}],
+    rulers:[{rulerId:"old-r",houseName:"田氏",givenName:"续",bornMonth:5400,accessionMonth:5800,naturalDeathMonth:6500,status:"exiled"}]}];
+  save.worldExiles=[{factionId:"old",startedMonth:6000,rulerId:"old-r",heirIds:[],remnantPopulation:12,legitimacy:80,lastLegitimacyMonth:6012,lastRemnantDecayMonth:6000}];
+  save.worldRemnants=[{factionId:"old",population:12,extinctMonth:6000}];
+  WorldHistory.reset(); WorldHistory.addFactionExiled(6000,"old","田续",12); save.worldHistory=WorldHistory.exportState();
+  setFixtureLifetimeRecords(save);
+  expect(save.saveSchemaVersion).toBe(15);
+  const encoded=JSON.parse(JSON.stringify(save));
+  expect(validateWorldSave(encoded)).toEqual({valid:true,errors:[]});
+  const core=target(); hydrateWorldSave(core,encoded);
+  const canonical=exportWorldSave(core); expect(validateWorldSave(canonical)).toEqual({valid:true,errors:[]});
+  hydrateWorldSave(core,JSON.parse(JSON.stringify(canonical))); expect(exportWorldSave(core)).toEqual(canonical);
+  const nextCheck=()=>{
+    // The rendering shell adapter retains DTO field names; use the real runtime aliases for this resource check.
+    const team=core.teams.find((t:any)=>t.name==="old");
+    Object.assign(team,{firstFoundedYear:0,lastExiledYear:6000,cumulativeActiveYears:6000,restorationYears:[]});
+    const sim=core.simulator.exportState();
+    core.simulator.importState({...sim,clock:{...sim.clock,worldMonth:6018}});
+    WorldExiles.update(6018,[team]);
+    expect(WorldExiles.getDiagnostics().productionProtection).toMatchObject({protectedChecks:1,meanChance:.3849609375});
+    const result={exiles:WorldExiles.exportState(),remnants:WorldRemnants.exportState(),rng:worldRandom.exportState()};
+    WorldExiles.update(6018,[team]);
+    expect({exiles:WorldExiles.exportState(),remnants:WorldRemnants.exportState(),rng:worldRandom.exportState()}).toEqual(result);
+    return result;
+  };
+  const a=nextCheck();
+  hydrateWorldSave(core,JSON.parse(JSON.stringify(canonical)));
+  expect(WorldExiles.getDiagnostics().remnantChecks).toBe(0);
+  expect(nextCheck()).toEqual(a);
+  expect(WorldHistory.exportState()).toEqual(save.worldHistory);
+  // Full post-check export/validation/hydration also retains the actual result.
+  const after=exportWorldSave(core); expect(validateWorldSave(after)).toEqual({valid:true,errors:[]});
+  hydrateWorldSave(core,JSON.parse(JSON.stringify(after))); expect(exportWorldSave(core)).toEqual(after);
+});

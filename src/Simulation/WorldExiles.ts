@@ -1,3 +1,4 @@
+import { getProductionRemnantProtection } from "./ExileResourceExperiments";
 import { ExileResourceDiagnostics } from "./ExileResourceDiagnostics";
 import { deriveRestorationTenureEvidence } from "./RestorationTenureEvidence";
 import Team from "../Components/Team";
@@ -7,7 +8,6 @@ import {
   EXILE_INITIAL_LEGITIMACY_MIN,
   EXILE_LEGITIMACY_DECAY_INTERVAL_MONTHS,
   EXILE_REMNANT_DECAY_INTERVAL_MONTHS,
-  EXILE_REMNANT_DECAY_CHANCE,
 } from "../config/simulation";
 import WorldHistory from "../History/WorldHistory";
 import DynastyRegistry from "../Politics/Dynasty";
@@ -39,6 +39,7 @@ class WorldExileStore {
   private resources = new ExileResourceDiagnostics();
   private pendingSamples = new WeakSet<ExileState>();
   getResourceSamples() { return this.resources.getSamples(); }
+  getProductionProtectionSummary() { return this.resources.productionSummary(); }
   getResourceComparisonSummary() { return this.resources.comparisonSummary(); }
   recordRestoration(factionId: string, month: number) { this.resources.recordRestoration(factionId, month); }
   private resetObservations() { this.observedIds.clear(); this.observedOverflow = false; this.politicalEnds = 0; this.resources = new ExileResourceDiagnostics(); this.pendingSamples = new WeakSet(); }
@@ -58,24 +59,20 @@ class WorldExileStore {
   start(team: Team, worldMonth: number, remnantPopulation: number) {
     const dynasty = DynastyRegistry.get(team.name);
     const existing = this.exiles.get(team.name);
+    // Repeated notification of the same episode must not restart resource clocks.
+    if (existing) return existing;
     const state: ExileState = {
       factionId: team.name,
-      startedMonth: existing?.startedMonth ?? worldMonth,
+      startedMonth: worldMonth,
       rulerId: dynasty?.currentRulerId ?? undefined,
       heirIds: dynasty?.heirIds ? [...dynasty.heirIds] : [],
       remnantPopulation,
-      legitimacy:
-        existing?.legitimacy ??
-        worldRandom.int(EXILE_INITIAL_LEGITIMACY_MIN, EXILE_INITIAL_LEGITIMACY_MAX),
+      legitimacy: worldRandom.int(EXILE_INITIAL_LEGITIMACY_MIN, EXILE_INITIAL_LEGITIMACY_MAX),
       lastLegitimacyMonth: worldMonth,
       lastRemnantDecayMonth: worldMonth,
     };
     this.exiles.set(team.name, state);
-    if (!existing) { this.resources.started(team.name); this.pendingSamples.add(state); }
-    else {
-      this.resources.replaceEpisode(existing, state);
-      if (this.pendingSamples.has(existing)) { this.pendingSamples.delete(existing); this.pendingSamples.add(state); }
-    }
+    this.resources.started(team.name); this.pendingSamples.add(state);
     this.observe(team.name);
     return state;
   }
@@ -132,16 +129,18 @@ class WorldExileStore {
         }
 
         if (
-          remnant &&
+          remnant && remnant.population > 0 &&
           worldMonth - state.lastRemnantDecayMonth >=
             EXILE_REMNANT_DECAY_INTERVAL_MONTHS
         ) {
           state.lastRemnantDecayMonth = worldMonth;
-          this.resources.remnantChecks++;
-          // B1 deliberately retains the original production constant and single draw.
-          // Experimental protection is never used to select runtime casualties.
-          if (worldRandom.next() <= EXILE_REMNANT_DECAY_CHANCE) {
-            this.resources.remnantHits++;
+          const tenure = deriveRestorationTenureEvidence({ team, dynasty: DynastyRegistry.get(team.name),
+            events: WorldHistory.getEventsForFaction(team.name), worldMonth });
+          const protection = getProductionRemnantProtection(tenure, worldMonth, state.startedMonth, team.lastExiledYear);
+          // Exactly one existing business draw; observations never affect the decision.
+          const hit = worldRandom.next() <= protection.chance;
+          this.resources.recordRemnantCheck({ factionId: team.name, factionName: team.displayName, worldMonth, tenure, ...protection, hit });
+          if (hit) {
             const nextPopulation = decayRemnantPopulation(remnant.population);
             WorldRemnants.setPopulation(team.name, nextPopulation, remnant.extinctYear);
             state.remnantPopulation = nextPopulation;
