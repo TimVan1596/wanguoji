@@ -89,3 +89,10 @@ export function getFactionTerritoryMetric(
 function getBlockCount(team: Pick<Team, "blocks">) {
   return team.blocks?.children?.size ?? 0;
 }
+
+/** Raw inactive block tags are retained by the map/save model, but do not confer
+ * current political control (the same rule already used by territory shares). */
+export function getFactionTerritoryDisplay(team: Pick<Team,"status"|"blocks">, metric: TerritoryMetric) {
+  return { currentBlocks:metric.factionControlledBlocks,
+    retainedBlockMarkers:team.status==="ACTIVE" ? 0 : getBlockCount(team) };
+}

@@ -172,3 +172,44 @@ export function getRestorationDrawExpectation(rows: readonly { chance: number; r
   }
   return expectation;
 }
+
+/** Resident response has its own graduated crisis component; it never changes
+ * remnant risk. Historical tenure is evidence, not a record of popular loyalty. */
+export function localResidentRestorationChance(input: {
+  legacyChance:number; loyalty:number; devastation:number; recentTransfers:number; ownerStability:number;
+  legitimacy:number; basis:RestorationBasis; tenure:Pick<import("./RestorationTenureEvidence").RestorationTenureEvidence,"complete"|"stateTenureMonths"|"currentHouseTenureMonths">;
+}) {
+  const {loyalty,devastation,recentTransfers,ownerStability,legitimacy}=input;
+  if (![loyalty,devastation,recentTransfers,ownerStability,legitimacy,input.legacyChance].every(Number.isFinite) || legitimacy<=0 || loyalty>=40 ||
+      (loyalty>28 && (devastation<70 || (recentTransfers<2 && ownerStability>40)))) return 0;
+  const clamp=(v:number)=>Math.max(0,Math.min(1,v));
+  const crisis=.45*clamp((40-loyalty)/40)+.25*clamp(devastation/100)+.15*clamp(recentTransfers/3)+.15*clamp((100-ownerStability)/100);
+  const t=input.tenure;
+  const valid=t.complete && Number.isSafeInteger(t.stateTenureMonths) && t.stateTenureMonths>=0 && Number.isSafeInteger(t.currentHouseTenureMonths) && t.currentHouseTenureMonths>=0 && t.currentHouseTenureMonths<=t.stateTenureMonths;
+  const h=valid ? .25*t.stateTenureMonths/(t.stateTenureMonths+3600)+.75*t.currentHouseTenureMonths/(t.currentHouseTenureMonths+3600) : 0;
+  const graduated=.02*crisis*crisis*(.5+.5*clamp(legitimacy/100))*(input.basis==="FORMER_CAPITAL"?1:.7)*(.75+.25*h);
+  return Math.min(loyalty>28?.03:.09,Math.max(0,input.legacyChance,graduated));
+}
+
+/** Keep every v31s slot's probability mass. Only the shared, bounded unused city
+ * risk budget can fund the resident increment; extra candidates cannot add risk. */
+export function getLocalResponseDrawDistribution(rows: readonly {legacyChance:number;chance:number;local:boolean}[], cap:number) {
+  const baselineChance=Math.min(1,Math.max(0,...rows.map(r=>r.legacyChance)));
+  const total=rows.reduce((sum,r)=>sum+Math.max(0,r.legacyChance),0);
+  const baseline=rows.map(r=>total>0?baselineChance*Math.max(0,r.legacyChance)/total:0);
+  const oldLocal=Math.max(0,...rows.filter(r=>r.local).map(r=>r.legacyChance));
+  const newLocal=Math.max(0,...rows.filter(r=>r.local).map(r=>r.chance));
+  const extraChance=Math.max(0,Math.min(cap-baselineChance,newLocal-oldLocal));
+  const localWeight=rows.reduce((sum,r)=>sum+(r.local?Math.max(0,r.chance):0),0);
+  const extra=rows.map(r=>r.local && localWeight>0 ? extraChance*Math.max(0,r.chance)/localWeight:0);
+  return {baselineChance,extraChance,baseline,extra,probabilities:baseline.map((p,i)=>p+extra[i])};
+}
+
+export function selectLocalResponseOpportunity<T>(rows:Array<{legacyChance:number;chance:number;local:boolean;value:T}>,draw:number,cap:number):T|undefined {
+  const d=getLocalResponseDrawDistribution(rows,cap);
+  if(draw<=d.baselineChance) return selectRestorationOpportunity(rows.map(r=>({chance:r.legacyChance,value:r.value})),draw);
+  let point=draw-d.baselineChance;
+  if(point>d.extraChance || d.extraChance<=0) return undefined;
+  for(let i=0;i<rows.length;i++){point-=d.extra[i];if(point<=0 && d.extra[i]>0)return rows[i].value;}
+  return undefined;
+}

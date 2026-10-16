@@ -55,6 +55,7 @@ import { getRegimeStyleNameAtMonth } from "../../../Simulation/RegimeStyle";
 import {
   calculateTerritoryMetrics,
   getFactionTerritoryMetric,
+  getFactionTerritoryDisplay,
 } from "../../../Simulation/TerritoryMetrics";
 import {
   getFactionListDisplayName,
@@ -218,7 +219,8 @@ function FactionProfile({
   const activeCityCount = teams
     .filter((item) => item.status === "ACTIVE")
     .reduce((sum, item) => sum + item.cities.length, 0);
-  const territory = team.blocks.children.size;
+  const territoryDisplay = getFactionTerritoryDisplay(team, factionTerritory);
+  const territory = territoryDisplay.currentBlocks;
   const territoryPercent = factionTerritory.absoluteWorldShare;
   const controlledTerritoryPercent = factionTerritory.controlledTerritoryShare;
   const cityShare = activeCityCount > 0 ? (team.cities.length / activeCityCount) * 100 : 0;
@@ -414,6 +416,7 @@ function FactionProfile({
               `王室：${dynasty?.houseName ?? team.houseName ?? "无"}`,
               `人口：${formatNumber(team.users.size)} / ${formatNumber(getPopulationCapacity(team))}`,
               `领土：${formatNumber(territory)} 格 · 世界${territoryPercent.toFixed(1)}% · 诸国${controlledTerritoryPercent.toFixed(1)}%`,
+              ...(territoryDisplay.retainedBlockMarkers > 0 ? [`遗留地块标记：${formatNumber(territoryDisplay.retainedBlockMarkers)} 格（非当前控制领土）`] : []),
               `城市：${team.cities.length}`,
               `首都：${team.capitalCity?.name ?? "无"}`,
               `稳定度：${

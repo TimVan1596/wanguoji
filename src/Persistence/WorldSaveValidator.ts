@@ -314,7 +314,10 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
             !Number.isSafeInteger(m.supporterUserId) || typeof m.supporterName !== "string" || !m.supporterName ||
             typeof m.supporterLogicalUnitId !== "string" || !m.supporterLogicalUnitId ||
             !Number.isSafeInteger(m.supporterBornMonth) || Number(m.supporterBornMonth) > month ||
-            !finite(m.supporterX) || !finite(m.supporterY) || m.responseRadiusCells !== 3 ||
+            !finite(m.supporterX) || !finite(m.supporterY) ||
+            !(m.responseRadiusCells === 3 || (m.responseRadiusCells === 5 && m.responseArea === "CONTROLLED_CITY_ZONE" && m.responseNeighborLayers === 2 &&
+              finite(m.responseCenterX) && finite(m.responseCenterY) && finite(m.supporterX) && finite(m.supporterY) &&
+              Math.hypot(m.supporterX-m.responseCenterX,m.supporterY-m.responseCenterY)<=5*Number(save.world?.map?.blockSize))) ||
             typeof m.claimantName !== "string" || !m.claimantName ||
             !Number.isSafeInteger(m.houseEpochStartMonth) || Number(m.houseEpochStartMonth) < 0 ||
             !finite(m.cityDevastation) || m.cityDevastation < 0 || m.cityDevastation > 100 ||

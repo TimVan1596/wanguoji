@@ -1,4 +1,5 @@
-import { getLocalRestorationClaimant, getLocalRestorationSupporters, LOCAL_RESTORATION_RADIUS_CELLS } from "./LocalRestorationSupport";
+import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
+import { getLocalRestorationClaimant, getLocalRestorationSupporters, LOCAL_RESTORATION_RADIUS_CELLS, LOCAL_RESTORATION_ZONE_MAX_CELLS } from "./LocalRestorationSupport";
 import { deriveHistoricalCityRules, getHistoricalRestorationBasis, getWarTornCityEvidence } from "./HistoricalRestorationRules";
 import { getFactionStability } from "../Components/City";
 import type User from "../Components/User";
@@ -128,6 +129,12 @@ class FactionRegistryStore {
     const unitId = supporter.player.logicalUnitId!;
     const unit = core.logicalUnitRegistry.get(unitId)!;
     const position = { x: unit.logicalX, y: unit.logicalY };
+    const spatialEvidence = Math.hypot(position.x-(city.block.x+Game.BlockSize/2),position.y-(city.block.y+Game.BlockSize/2)) <= Game.BlockSize*LOCAL_RESTORATION_RADIUS_CELLS
+      ? {responseRadiusCells:LOCAL_RESTORATION_RADIUS_CELLS}
+      : {responseRadiusCells:LOCAL_RESTORATION_ZONE_MAX_CELLS,responseArea:"CONTROLLED_CITY_ZONE" as const,responseNeighborLayers:2,
+        responseCenterX:city.block.x+Game.BlockSize/2,responseCenterY:city.block.y+Game.BlockSize/2};
+    const formationSnapshots=MilitaryCommandRegistry.getFormations().filter(f=>f.status==="ACTIVE" && f.memberUnitIds.includes(unitId))
+      .map(formation=>({formation,memberUnitIds:[...formation.memberUnitIds]}));
     const crisis = { cityLoyalty: city.loyalty, cityDevastation: city.devastation, ownerStability: stability, recentTransfers: war.recentTransfers };
     const historyGroupId = getRestorationHistoryGroupId(team.name, worldMonth, city.id);
     const beforeOwnerCount = owner.users.size, beforeNewCount = team.users.size;
@@ -148,6 +155,7 @@ class FactionRegistryStore {
               owner.users.size === beforeOwnerCount - 1 && team.users.size === beforeNewCount + 1) return true;
         } catch { /* Roll back only the prepared transfer; no city mutation has begun. */ }
         if (supporter.team !== owner) supporter.setTeam(owner, { cause: "RESTORATION", month: worldMonth, context: "local response transfer rollback" });
+        for(const snapshot of formationSnapshots) snapshot.formation.memberUnitIds=snapshot.memberUnitIds;
         return false;
       });
       if (!transferred) return transferAttempted ? "TRANSFER_FAILED" as const : "INVALID" as const;
@@ -162,7 +170,7 @@ class FactionRegistryStore {
         restorationBasis: basis, historicalHeldMonths: rule.heldMonths,
         restorationTrigger: war.eligible ? "WAR_TORN_HISTORICAL_CITY" : "LOW_LOYALTY",
         ...crisis,
-        responseRadiusCells: LOCAL_RESTORATION_RADIUS_CELLS,
+        ...spatialEvidence,
       }, historyGroupId);
       DynastyRegistry.recordRestoration(team.name, eventId);
       WorldExiles.recordRestoration(team.name, worldMonth, "LOCAL_RESIDENT");

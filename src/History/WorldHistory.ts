@@ -98,6 +98,7 @@ export interface LocalResidentRestorationDetails {
   restorationBasis: "FORMER_CAPITAL" | "LONG_RULE"; historicalHeldMonths: number;
   restorationTrigger: "WAR_TORN_HISTORICAL_CITY" | "LOW_LOYALTY";
   cityLoyalty: number; cityDevastation: number; ownerStability: number; recentTransfers: number; responseRadiusCells: number;
+  responseArea?: "CONTROLLED_CITY_ZONE"; responseNeighborLayers?: number; responseCenterX?: number; responseCenterY?: number;
 }
 
 export interface CapitalRelocationContext {
