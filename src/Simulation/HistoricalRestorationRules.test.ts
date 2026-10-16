@@ -165,6 +165,7 @@ describe("s1居民响应危机分层与共享风险",()=>{
     const rows=[{legacyChance:.02,chance:.02,local:false,value:"remnant"},
       {legacyChance:.001,chance:.015,local:true,value:"resident-a"}];
     const old=d(rows.map(r=>({...r,chance:r.legacyChance})),.03),next=d(rows,.03);
+    expect(d([{legacyChance:.02,chance:.02,local:false},{legacyChance:0,chance:.015,local:true}],.03).probabilities[0]).toBe(.02);
     expect(next.probabilities[0]).toBe(old.probabilities[0]);expect(next.extraChance).toBeCloseTo(.01);
     expect(select(rows,.01,.03)).toBe("remnant");expect(select(rows,.025,.03)).toBe("resident-a");
     const many=Array.from({length:100},(_,i)=>({legacyChance:.001,chance:.02,local:true,value:i}));

@@ -545,6 +545,14 @@ describe("s真实旧地人口响应→复国事务",()=>{
     const event=WorldHistory.getEvents().find(e=>e.type==="faction-restored")!;
     expect(event.metadata).toMatchObject({responseRadiusCells:5,responseArea:"CONTROLLED_CITY_ZONE",responseNeighborLayers:2,responseCenterX:80});
   });
+  it("s1只读取真实逻辑移动后的城域位置，远处渲染坐标不能替代",async()=>{
+    const f=await zoneFixture(),unit=f.logical.get("unit-1")!;
+    const {stepLogicalMovement}=await import("./LogicalMovementSystem");const {getLocalRestorationSupporters:get}=await import("./LocalRestorationSupport");
+    unit.logicalX=300;unit.logicalY=80;unit.logicalVX=-92;unit.logicalVY=0;
+    expect(get(f.city)).toEqual([]);
+    stepLogicalMovement({units:[unit],deltaMs:1000,bounds:{minX:0,minY:0,maxX:320,maxY:320},blockSize:32});
+    expect(unit.logicalX).toBe(208);expect(get(f.city)).toContain(f.user);expect(f.player.x).toBe(99999);
+  });
   it.each(["far","foreign-cell","disconnected","other-city"])("s1 %s 不能借受控邻地代表本城人口",async reason=>{
     const f=await zoneFixture();const unit=f.logical.get("unit-1")!;unit.logicalX=208;unit.logicalY=80;
     if(reason==="far")unit.logicalX=900;

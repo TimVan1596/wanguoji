@@ -138,14 +138,14 @@ const PROVISIONAL_DISSOLUTION_LOYALTY_DELTA = -2;
 
 interface LocalOpportunitySample {
   factionId:string; cityId:string; cityName:string; ownerId:string; worldMonth:number; supporters:number;
-  basis:string; crisis:string; legacyChance:number; finalChance:number; actualChance:number; result:string;
+  basis:string; crisis:string; baselineChance:number; legacyChance:number; finalChance:number; actualChance:number; result:string;
 }
 
 function createLocalSupportDiagnostics() {
   return { candidateChecks: 0, historyEligible: 0, populationCandidates: 0, noUser: 0, claimantBlocked: 0,
     legitimacyBlocked: 0, cityBlocked: 0, identityBlocked: 0, eligible: 0, draws: 0, expected: 0,
     drawHits: 0, successes: 0, transferFailures: 0, executionFailures: 0,
-    populationScans:0, nearbyNormal:0, identityInArea:0, outsideArea:0, invalidUnit:0, historyBlocked:0,
+    populationScans:0, legacyPopulation:0, nearbyNormal:0, identityInArea:0, outsideArea:0, invalidUnit:0, historyBlocked:0,
     distinct:{countries:0,cities:0,users:0},distinctOverflow:false,recentOpportunities:[] as LocalOpportunitySample[] };
 }
 
@@ -169,7 +169,7 @@ export default class WorldEventSystem {
     const d = this.restorationDiagnostics;
     const exile = WorldExiles.getDiagnostics();
     const local = d.localSupport, followup = exile.bySource.LOCAL_RESIDENT;
-    const localSummary = `旧地真实响应（本次会话，读取后重置；检查次数不是国家数）：\n旧地候选检查${local.candidateChecks}；历史资格通过${local.historyEligible}次、未通过${local.historyBlocked}次；响应User候选${local.populationCandidates}人次（城市—旧国检查）；完整响应资格${local.eligible}次\n城域人口扫描${local.populationScans}次（每城市一次）：附近NORMAL ${local.nearbyNormal}人次；域内身份不适合${local.identityInArea}人次；域外${local.outsideArea}人次；无效逻辑引用${local.invalidUnit}人次\n本会话去重：旧国${local.distinct.countries}、城市${local.distinct.cities}、有效位置User ${local.distinct.users}${local.distinctOverflow ? "（去重容量4096，至少以上数量）" : ""}\n阻断：无可响应User ${local.noUser}；无合法继统者${local.claimantBlocked}；合法性不足${local.legitimacyBlocked}；城市条件/保护期/冷却${local.cityBlocked}；政治身份不足${local.identityBlocked}（可重叠）\n真实政治draw ${local.draws}；条件期望响应${local.expected.toFixed(6)}；响应抽签命中${local.drawHits}；实际复国${local.successes}；人口转属成功${local.successes}；人口转属失败${local.transferFailures}；其他执行失败${local.executionFailures}\n响应复国连续在国随访：12月${followup.active12}/${followup.matured12}，随访不足${followup.insufficient12}；60月${followup.active60}/${followup.matured60}，随访不足${followup.insufficient60}\n各恢复来源（全路径会话成功）：原残部${exile.bySource.REMNANT.restorations}；旧地居民${followup.restorations}；其他${exile.bySource.OTHER.restorations}\n最近真实机会（最多3条，概率为该次实际draw使用值）：\n${local.recentOpportunities.map(s=>`${s.worldMonth}月 · ${s.factionId}／${s.cityName}[${s.cityId}]／占领国${s.ownerId}；可响应${s.supporters}人；${s.basis=== "FORMER_CAPITAL"?"正式旧都":"长期统治地"}、${s.crisis}；原候选风险${(100*s.legacyChance).toFixed(4)}%→本次候选风险${(100*s.finalChance).toFixed(4)}%；共享draw实际概率${(100*s.actualChance).toFixed(4)}%；${s.result}`).join("\n") || "本会话无有效机会"}`;
+    const localSummary = `旧地真实响应（本次会话，读取后重置；检查次数不是国家数）：\n旧地候选检查${local.candidateChecks}；历史资格通过${local.historyEligible}次、未通过${local.historyBlocked}次；响应User候选${local.populationCandidates}人次（城市—旧国检查）；完整响应资格${local.eligible}次\n城域人口扫描${local.populationScans}次（每城市一次）：附近NORMAL ${local.nearbyNormal}人次（其中v31s三格独立条件${local.legacyPopulation}人次）；域内身份不适合${local.identityInArea}人次；域外${local.outsideArea}人次；无效逻辑引用${local.invalidUnit}人次\n本会话去重：旧国${local.distinct.countries}、城市${local.distinct.cities}、有效位置User ${local.distinct.users}${local.distinctOverflow ? "（去重容量4096，至少以上数量）" : ""}\n阻断：无可响应User ${local.noUser}；无合法继统者${local.claimantBlocked}；合法性不足${local.legitimacyBlocked}；城市条件/保护期/冷却${local.cityBlocked}；政治身份不足${local.identityBlocked}（可重叠）\n真实政治draw ${local.draws}；条件期望响应${local.expected.toFixed(6)}；响应抽签命中${local.drawHits}；实际复国${local.successes}；人口转属成功${local.successes}；人口转属失败${local.transferFailures}；其他执行失败${local.executionFailures}\n响应复国连续在国随访：12月${followup.active12}/${followup.matured12}，随访不足${followup.insufficient12}；60月${followup.active60}/${followup.matured60}，随访不足${followup.insufficient60}\n各恢复来源（全路径会话成功）：原残部${exile.bySource.REMNANT.restorations}；旧地居民${followup.restorations}；其他${exile.bySource.OTHER.restorations}\n最近真实机会（最多3条，概率为该次实际draw使用值）：\n${local.recentOpportunities.map(s=>`${s.worldMonth}月 · ${s.factionId}／${s.cityName}[${s.cityId}]／占领国${s.ownerId}；可响应${s.supporters}人；${s.basis=== "FORMER_CAPITAL"?"正式旧都":"长期统治地"}、${s.crisis}；原公式风险${(100*s.legacyChance).toFixed(4)}%（v31s可达槽位${(100*s.baselineChance).toFixed(4)}%）→本次候选风险${(100*s.finalChance).toFixed(4)}%；共享draw实际概率${(100*s.actualChance).toFixed(4)}%；${s.result}`).join("\n") || "本会话无有效机会"}`;
     const resourceSummary = `完整资格资源阻断（城市—国家候选检查）：残部为0 ${d.blockers["残部耗尽"] ?? 0}；合法性不足 ${d.blockers["流亡合法性不足"] ?? 0}；无真实继统者 ${d.blockers["无合法继统者"] ?? 0}\n城市现实阻断（城市检查）：忠诚/战乱条件 ${d.blockers["忠诚度高于叛乱门槛且无战乱旧地机会"] ?? 0}；保护期 ${d.blockers["占领保护期"] ?? 0}；冷却 ${d.blockers["城市叛乱冷却"] ?? 0}（可重叠）\n流亡资源（月度检查）：新流亡${exile.newExiles}；实际资源检查${exile.resourceChecks}；残部衰减检查${exile.remnantChecks}、命中${exile.remnantHits}\n首次残部归零${exile.remnantFirstZero}；首次合法性归零${exile.legitimacyFirstZero}；当月无真实继统主体检查${exile.claimantBlocked}\n真正城市政治draw：${d.draws}；其中有有效复国概率${d.restorationDraws}；条件期望复国触发${d.expectedRestorations.toFixed(6)}（非保证执行成功）\n复国随访（所有真实恢复路径、本会话、连续在国）：12月${exile.active12}/${exile.matured12}，随访不足${exile.insufficient12}；60月${exile.active60}/${exile.matured60}，随访不足${exile.insufficient60}；再度流亡${exile.reexiles}；随访容量未跟踪${exile.followupOverflow}；再流亡计数容量未跟踪${exile.reexileTrackingOverflow}\n存档canonical复国事件累计：${WorldHistory.getEventTypeCount("faction-restored")}（全历史、与会话成功分开）\n${WorldExiles.getProductionProtectionSummary()}\n${WorldExiles.getResourceComparisonSummary()}`;
     return `复国统计（城市年度检查；本次会话，读取时重置）\n实际观察：${d.endMonth - d.startMonth}个月（${((d.endMonth-d.startMonth)/12).toFixed(2)}世界年）\n${localSummary}\n${resourceSummary}\n年度检查：${d.evaluationTicks}次；当前流亡国家：${exile.currentExiled}个；会话曾观察流亡国家：${exile.observedExiled}${exile.observedOverflow ? "个以上（计数容量4096）" : "个"}\n所有实际城市年度检查：${d.cityChecks}次\n忠诚度≤28的城市检查：${d.lowLoyaltyCityChecks}次\n忠诚度29～39的战乱城市检查：${d.warTornCityChecks}次\n具有历史资格的流亡候选：${d.historicalCandidates}次；战乱旧地完整合格：${d.warTornEligible}次\n原始建城者候选：${d.founderCandidates}次（合格${d.founderEligible}，复国${d.founderSuccesses}）\n旧都复国候选：${d.formerCapitalCandidates}次（合格${d.capitalEligible}，复国${d.capitalSuccesses}）\n长期统治地候选：${d.longRuleCandidates}次（合格${d.longRuleEligible}，复国${d.longRuleSuccesses}）\n完整资格通过：${d.eligibleChecks}次；执行尝试：${d.attempts}次；实际复国：${d.successes}次（战乱旧地${d.warTornSuccesses}次）；执行失败：${d.failures}次\n流亡政治终结：${exile.politicalEnds}次\n主要阻断：${Object.entries(d.blockers).map(([key, value]) => `${key} ${value}次`).join("、") || "暂无"}\n单项阻断：${Object.entries(d.soleBlockers).map(([key, value]) => `${key} ${value}次`).join("、") || "暂无"}\n阻断可同时出现多项，其总数不是独立城市或国家数。\n候选与资格为城市—国家年度检查次数，不是独立国家数。实际次数仅统计上述城市检查，不含神力支持和分裂判定的恢复；旧历史资格不可回溯。`;
   }
@@ -807,7 +807,7 @@ export default class WorldEventSystem {
       if(zeroRemnantExiles.length) this.observeLocal("cities",[city.id]);
       const population=localHistoryCount>0 ? assessLocalRestorationPopulation(city) : undefined;
       if(population) {
-        local.populationScans++; local.nearbyNormal+=population.nearbyNormal;local.identityInArea+=population.identityBlocked;
+        local.populationScans++; local.legacyPopulation+=population.legacyEligible; local.nearbyNormal+=population.nearbyNormal;local.identityInArea+=population.identityBlocked;
         local.outsideArea+=population.outsideArea;local.invalidUnit+=population.invalidUnit;
         this.observeLocal("users",population.observedUnitIds);
       }
@@ -933,7 +933,7 @@ export default class WorldEventSystem {
       for(const row of historical) if(row.supporter) {
         const sample:LocalOpportunitySample={factionId:row.team.name,cityId:city.id,cityName:city.name,ownerId:owner.name,worldMonth:year,
           supporters:localUsers?.length ?? 0,basis:row.basis,crisis:warTornPath?"战乱旧地":"低忠诚危机",legacyChance:row.legacyChance!,finalChance:row.chance,
-          actualChance:riskDistribution.probabilities[slots.findIndex(slot=>slot.value.historical===row)],result:"未命中该旧国"};
+          baselineChance:riskDistribution.baseline[slots.findIndex(slot=>slot.value.historical===row)],actualChance:riskDistribution.probabilities[slots.findIndex(slot=>slot.value.historical===row)],result:"未命中该旧国"};
         opportunitySamples.set(row,sample);local.recentOpportunities.push(sample);
         if(local.recentOpportunities.length>3) local.recentOpportunities.shift();
       }
