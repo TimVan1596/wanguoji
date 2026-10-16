@@ -55,7 +55,7 @@ export function buildRulerLegacyEvidence(
   endMonth?: number,
   endReason?: string,
   activeRuleMonths = Math.max(0, (endMonth ?? getRulerEffectiveSnapshot(chronicle).month) - accessionMonth),
-  facts?: { restorations: number; personalCityCaptures: number; personalCapitalCaptures: number; personalExtinctions: number; terminalCollapse: boolean; changedHouse: boolean }
+  facts?: { restorations: number; personalCityCaptures: number; personalCapitalCaptures: number; personalExtinctions: number; terminalCollapse: boolean; changedHouse: boolean; restoredActiveRuleMonths: number }
 ): RulerLegacyEvidence {
   const start = chronicle.accessionSnapshot;
   const end = getRulerEffectiveSnapshot(chronicle);
@@ -83,7 +83,7 @@ export function buildRulerLegacyEvidence(
     proclaimedEmperor: chronicle.proclaimedEmperorMonth !== undefined,
     completedUnification: chronicle.completedUnification,
     restoration: restorations > 0,
-    durableRestoration: restorations > 0 && governedMonths >= 10 * 12,
+    durableRestoration: restorations > 0 && (facts?.restoredActiveRuleMonths ?? 0) >= 10 * 12,
     personalCapitalCaptures: facts?.personalCapitalCaptures ?? 0,
     personalExtinctions: facts?.personalExtinctions ?? 0,
     changedHouse: facts?.changedHouse ?? false,

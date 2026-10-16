@@ -37,6 +37,8 @@ export function getSignificantReignStats(chronicle: Pick<RulerChronicle,
   stats[3][1] = Math.max(stats[3][1], summary.restorations);
   stats.push(["本人签署外交协议", count((fact) => fact.role === "DIRECT_ACTOR" &&
     ["truce-signed", "non-aggression-signed", "alliance-signed"].includes(fact.type))]);
+  stats.push(["国家正式政治终结", count(f => f.terminalOutcome === "EXTINCT" && f.militaryRole === "DEFENDER")],
+    ["遭宗室废立", count(f => f.depositionRole === "DEPOSED_RULER")], ["宗室废立夺位", count(f => f.depositionRole === "DEPOSING_SUCCESSOR")]);
   stats.push(["任内重大分裂", count((fact) => fact.type === "empire-split")]);
   stats.push(["被迫迁都", count((fact) => fact.type === "capital-relocated")]);
   stats.push(["本人篡朝开统", count((fact) => fact.type === "dynasty-usurped" && fact.role === "DIRECT_ACTOR")]);

@@ -36,7 +36,7 @@ describe("canonical history → ruler evidence → titles, assessment and presen
     const ruler = person(), history = restoredHistory(), before = JSON.stringify(history.getEvents());
     observeRulerPeak(ruler.chronicle!, { month: 400, population: 12, territoryShare: 0.12, cityCount: 2, stability: 70 });
     const result = assessment(ruler, history), e = result.evidence;
-    expect(e.tenure).toMatchObject({ totalTenureMonths: 539, activeRuleMonths: 228, exileMonths: 311, restorationCount: 2, stateLossCount: 3, diedInExile: true });
+    expect(e.tenure).toMatchObject({ totalTenureMonths: 539, activeRuleMonths: 228, exileMonths: 311, restorationCount: 2, restoredActiveRuleMonths: 228, stateLossCount: 3, diedInExile: true });
     expect(e).toMatchObject({ startCityCount: 0, endCityCount: 0, observedPeakCityCount: 2, restorationCount: 2, terminalCollapse: false });
     const text = result.lines.join("");
     expect(text).toContain("实际复国2次"); expect(text).toContain("在国治理19年"); expect(text).toContain("本人外交签署记录共2项");
@@ -73,6 +73,16 @@ describe("canonical history → ruler evidence → titles, assessment and presen
     never.addFactionExtinct(120, "楚");
     expect(assessment(ruler, never).evidence.terminalCollapse).toBe(true);
     expect(evaluatePosthumousNames(ruler, [ruler], faction, 120, never.getEvents()).posthumousEpithet).toBe("愍");
+  });
+  it("does not use decades before loss to inflate a three-month restoration", () => {
+    const history = new WorldHistoryStore(), ruler = person(0, 500, 3);
+    history.addFactionExiled(400, "楚", "熊谦", 1);
+    history.addFactionRestored(450, "楚", "故都", 1, "c", undefined, { basis: "FORMER_CAPITAL", heldMonths: 400, rulerId: "r" });
+    history.addFactionExiled(453, "楚", "熊谦", 1);
+    const result = assessment(ruler, history);
+    expect(result.evidence.tenure).toMatchObject({ activeRuleMonths: 403, restoredActiveRuleMonths: 3 });
+    expect(evaluatePosthumousNames(ruler, [ruler], faction, 500, history.getEvents()).epithetReasons.join("")).not.toContain("至少十年");
+    expect(composeHistorianVoice(result.evidence)).toContain("恢复尚未稳固");
   });
   it.each([false, true])("distinguishes national captures from direct actions (%s) and groups duplicate city results", direct => {
     const history = new WorldHistoryStore(), ruler = person(0, 120, 3), actor = direct ? "r" : undefined;

@@ -307,7 +307,7 @@ export function deriveRulerHistoricalEvidence(
       event.type === "capital-fallen" ? (militaryRole === "ATTACKER"
         ? direct ? "亲自参与攻陷当时都城" : "任内本国攻陷都城"
         : "本国失去都城") :
-      event.type === "city-captured" ? (direct ? "亲自参与攻占城市" : "任内本国攻占城市") :
+      event.type === "city-captured" ? (militaryRole === "DEFENDER" ? wasCapital ? "本国失去都城" : "本国失去城市" : direct ? "亲自参与攻占城市" : "任内本国攻占城市") :
       event.type === "faction-extinct" ? "政权彻底灭亡" :
       event.type === "faction-dissolved" ? "失去最后据点后残部解散" :
       event.type === "faction-exiled" ? "失去疆土并进入流亡" :
@@ -827,7 +827,7 @@ export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string
   const deposition = evidence.politicalFacts.find((fact) => fact.type === "ruler-deposed" && fact.depositionRole);
 
   if (evidence.tenure.restoredDuringTenure) {
-    const lasting = evidence.tenure.activeRuleMonths >= 10 * 12;
+    const lasting = evidence.tenure.restoredActiveRuleMonths >= 10 * 12;
     return `其${evidence.restorationCount > 1 ? "屡复故国" : "恢复故国"}，${lasting ? "复国后的在国治理亦有年月可考" : "惟在国治理短促，恢复尚未稳固"}；${evidence.terminalCollapse ? "政权终于其世，复国与国难当并记" : evidence.tenure.diedInExile ? "末年流亡虽是其结局，却不足以抹去此前恢复国统之事" : "复国之功与此后能否守成，应合观而不偏废"}。`;
   }
   if (usurpation) {

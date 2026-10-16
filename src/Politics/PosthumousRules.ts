@@ -74,7 +74,7 @@ export function evaluatePosthumousNames(
   const historical = deriveRulerHistoricalEvidence({ ruler, dynasty: { rulers: dynastyRulers }, faction, events, worldMonth: monthIndex });
   const political = summarizeRulerPoliticalFacts(historical.politicalFacts);
   const evidence = buildRulerLegacyEvidence(chronicle, ruler.accessionYear, ruler.endYear, ruler.endReason, activeRuleMonths, {
-    ...political, terminalCollapse: historical.terminalCollapse,
+    ...political, terminalCollapse: historical.terminalCollapse, restoredActiveRuleMonths: tenure.restoredActiveRuleMonths,
     changedHouse: historical.politicalFacts.some(f => f.usurpationRole === "USURPER"),
   });
   const outcome = evaluateReignOutcome(chronicle.accessionSnapshot, end);
@@ -280,7 +280,7 @@ function chooseEpithet(
   }
   if (chronicle.citiesCapturedPersonally >= 4) add("烈", 38, "亲征战功显著");
   if (chronicle.deathCause === "战死" && evidence.militaryAchievement) add("烈", 48, "有战功而战死");
-  if (evidence.institutionalAchievement) add("昭", 36, chronicle.completedUnification ? "完成一统并改变天下格局" : "建立或提升国家制度格局");
+  if (evidence.institutionalAchievement) add("昭", 36, chronicle.completedUnification ? "完成一统并改变天下格局" : evidence.restoration && !evidence.foundedState && !evidence.proclaimedEmperor ? "恢复国统，延续国家秩序" : "建立或提升国家制度格局");
   if (evidence.foundedState) add("成", 34, "正式建国，建立国家秩序");
   if (evidence.restoration) {
     add("宣", evidence.durableRestoration ? 70 : 42, evidence.durableRestoration ? `复国${evidence.restorations}次，并有至少十年实际在国治理` : "曾恢复国统，但在国治理未满十年");

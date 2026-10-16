@@ -11,6 +11,7 @@ export interface RulerTenureEvidence {
   lostStateDuringTenure: boolean;
   restoredDuringTenure: boolean;
   restorationCount: number;
+  restoredActiveRuleMonths: number;
   stateLossCount: number;
   diedInExile: boolean;
   extinctInExile: boolean;
@@ -53,6 +54,8 @@ export function deriveRulerTenureEvidence(
   let lostStateDuringTenure = false;
   let restoredDuringTenure = false;
   let restorationCount = 0;
+  let restoredActiveRuleMonths = 0;
+  let restoredRuleStart: number | undefined;
   let stateLossCount = 0;
   let extinctInExile = false;
   let exiledAtAccession = false;
@@ -69,12 +72,19 @@ export function deriveRulerTenureEvidence(
           monthsUntilFirstExile ??= 0;
         }
       } else if (event.type === "RESTORE" || event.type === "EXTINCT") {
+        if (event.type === "RESTORE" && event.month === start && exiled) {
+          restoredDuringTenure = true; restorationCount++; restoredRuleStart = start;
+        }
         exiled = false;
         exileStart = undefined;
       }
       continue;
     }
     if (event.month > end) break;
+    if ((event.type === "EXILE" || event.type === "EXTINCT") && restoredRuleStart !== undefined) {
+      restoredActiveRuleMonths += Math.max(0, event.month - restoredRuleStart);
+      restoredRuleStart = undefined;
+    }
     if (event.type === "EXILE" && !exiled) {
       exiled = true;
       exileStart = event.month;
@@ -90,6 +100,7 @@ export function deriveRulerTenureEvidence(
       exileStart = undefined;
       restoredDuringTenure = true;
       restorationCount++;
+      restoredRuleStart = event.month;
     } else if (event.type === "EXTINCT" && exiled) {
       const clippedStart = Math.max(start, exileStart ?? event.month);
       exileMonths += Math.max(0, event.month - clippedStart);
@@ -113,6 +124,8 @@ export function deriveRulerTenureEvidence(
     exileMonths += Math.max(0, end - Math.max(start, exileStart));
   }
 
+  if (restoredRuleStart !== undefined) restoredActiveRuleMonths += Math.max(0, end - restoredRuleStart);
+
   return {
     totalTenureMonths,
     activeRuleMonths: Math.max(0, totalTenureMonths - exileMonths),
@@ -122,6 +135,7 @@ export function deriveRulerTenureEvidence(
     lostStateDuringTenure,
     restoredDuringTenure,
     restorationCount,
+    restoredActiveRuleMonths,
     stateLossCount,
     diedInExile: hasRecordedRulerDeath(ruler) && lifecycle
       .filter(event => event.month <= ruler.deathMonth!)

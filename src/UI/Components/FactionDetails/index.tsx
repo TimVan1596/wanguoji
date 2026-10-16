@@ -1269,7 +1269,7 @@ function RulerBiography({
       </Typography>
       <Typography fontSize="0.82rem">
         城市：{start.cityCount} → {end.cityCount}
-        {` · 已存快照最高${assessment.evidence.observedPeakCityCount}座`}
+        {assessment.evidence.observedPeakCityCount === 0 && assessment.evidence.restorationCount > 0 ? " · 任内曾复国，城市峰值未留存" : ` · 已存快照最高${assessment.evidence.observedPeakCityCount}座（非完整峰值）`}
       </Typography>
       <Typography fontSize="0.82rem">
         {`任内记录峰值：领土${(assessment.evidence.peakTerritory * 100).toFixed(1)}% · 人口${assessment.evidence.peakPopulation}`}
