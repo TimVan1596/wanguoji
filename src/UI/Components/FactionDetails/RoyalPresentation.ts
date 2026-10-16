@@ -1,3 +1,4 @@
+import { summarizeRulerPoliticalFacts } from "../../../Politics/RulerPoliticalFacts";
 import type { Ruler } from "../../../Politics/Dynasty";
 import { hasRecordedRulerDeath } from "../../../Politics/RulerLifeState";
 import type { DynastyHouseEpoch } from "../../../Politics/DynasticRevolution";
@@ -26,6 +27,14 @@ export function getSignificantReignStats(chronicle: Pick<RulerChronicle,
     ["失城", chronicle.citiesLostDuringReign], ["内乱", chronicle.rebellionsDuringReign], ["复国", chronicle.restorationsDuringReign]];
   const count = (predicate: (fact: RulerPoliticalFact) => boolean) =>
     new Set(politicalFacts.filter(predicate).map((fact) => fact.historyGroupId ?? fact.eventId)).size;
+  const summary = summarizeRulerPoliticalFacts(politicalFacts);
+  stats.push(["治下攻陷普通城市", summary.nationalCityCaptures], ["治下攻陷当时敌都", summary.nationalCapitalCaptures],
+    ["本人亲征攻陷敌都", summary.personalCapitalCaptures], ["治下政权彻底灭亡", summary.nationalExtinctions],
+    ["本人直接参与灭国", summary.personalExtinctions], ["本国失都", summary.capitalLosses],
+    ["失国", summary.stateLosses], ["国难过程（按历史组）", summary.crisisEpisodes],
+    ["任内国家签约（无本人签署证据）", summary.nationalDiplomacy], ["外交关系续约", summary.renewals]);
+  stats[0][1] = Math.max(stats[0][1], summary.personalCityCaptures);
+  stats[3][1] = Math.max(stats[3][1], summary.restorations);
   stats.push(["本人签署外交协议", count((fact) => fact.role === "DIRECT_ACTOR" &&
     ["truce-signed", "non-aggression-signed", "alliance-signed"].includes(fact.type))]);
   stats.push(["任内重大分裂", count((fact) => fact.type === "empire-split")]);

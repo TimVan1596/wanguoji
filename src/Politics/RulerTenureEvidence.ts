@@ -10,6 +10,8 @@ export interface RulerTenureEvidence {
   exiledAtAccession: boolean;
   lostStateDuringTenure: boolean;
   restoredDuringTenure: boolean;
+  restorationCount: number;
+  stateLossCount: number;
   diedInExile: boolean;
   extinctInExile: boolean;
   restoredExileMonths: number;
@@ -35,7 +37,7 @@ export function deriveRulerTenureEvidence(
     if (event.type === "faction-exiled" && event.targetFactionId === factionId) type = "EXILE";
     else if (event.type === "faction-restored" && event.actorFactionId === factionId) type = "RESTORE";
     else if (event.type === "faction-extinct" && event.targetFactionId === factionId) type = "EXTINCT";
-    if (!type) return;
+    if (!type || !Number.isSafeInteger(event.monthIndex ?? event.year) || (event.monthIndex ?? event.year) < 0 || (event.monthIndex ?? event.year) > worldMonth) return;
     const groupKey = `${type}:${factionId}:${event.historyGroupId ?? event.id}`;
     if (seen.has(groupKey)) return;
     seen.add(groupKey);
@@ -50,6 +52,8 @@ export function deriveRulerTenureEvidence(
   let restoredExileMonths = 0;
   let lostStateDuringTenure = false;
   let restoredDuringTenure = false;
+  let restorationCount = 0;
+  let stateLossCount = 0;
   let extinctInExile = false;
   let exiledAtAccession = false;
   let monthsUntilFirstExile: number | undefined;
@@ -61,6 +65,7 @@ export function deriveRulerTenureEvidence(
         exileStart = event.month;
         if (event.month === start) {
           lostStateDuringTenure = true;
+          stateLossCount++;
           monthsUntilFirstExile ??= 0;
         }
       } else if (event.type === "RESTORE" || event.type === "EXTINCT") {
@@ -74,6 +79,7 @@ export function deriveRulerTenureEvidence(
       exiled = true;
       exileStart = event.month;
       exileEpisodeCount += 1;
+      stateLossCount++;
       lostStateDuringTenure = true;
       monthsUntilFirstExile ??= event.month - start;
     } else if (event.type === "RESTORE" && exiled) {
@@ -83,6 +89,7 @@ export function deriveRulerTenureEvidence(
       exiled = false;
       exileStart = undefined;
       restoredDuringTenure = true;
+      restorationCount++;
     } else if (event.type === "EXTINCT" && exiled) {
       const clippedStart = Math.max(start, exileStart ?? event.month);
       exileMonths += Math.max(0, event.month - clippedStart);
@@ -114,6 +121,8 @@ export function deriveRulerTenureEvidence(
     exiledAtAccession,
     lostStateDuringTenure,
     restoredDuringTenure,
+    restorationCount,
+    stateLossCount,
     diedInExile: hasRecordedRulerDeath(ruler) && lifecycle
       .filter(event => event.month <= ruler.deathMonth!)
       .reduce((state, event) => event.type === "EXILE" ? true :

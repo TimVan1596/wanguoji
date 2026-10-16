@@ -1,3 +1,4 @@
+import { normalizeRulerPoliticalFacts, summarizeRulerPoliticalFacts } from "./RulerPoliticalFacts";
 import { hasRecordedRulerDeath } from "./RulerLifeState";
 import type { WorldEvent } from "../History/WorldHistory";
 import type { Dynasty, Ruler } from "./Dynasty";
@@ -51,6 +52,7 @@ export interface RulerHistoricalEvidence {
   proclaimedEmperor: boolean;
   completedUnification: boolean;
   restorationCount: number;
+  observedPeakCityCount: number;
   startPopulation: number;
   endPopulation: number;
   peakPopulation: number;
@@ -167,7 +169,7 @@ export function deriveRulerHistoricalEvidence(
         chronicle,
         accessionMonth,
         ruler.endYear,
-        tenure.diedInExile ? "流亡" : ruler.endReason,
+        ruler.endReason,
         tenure.activeRuleMonths
       )
     : undefined;
@@ -178,7 +180,7 @@ export function deriveRulerHistoricalEvidence(
   const directToRuler = (event: WorldEvent) =>
     event.rulerId === ruler.id || event.metadata?.rulerId === ruler.id;
   const rulerEvents = events.filter(inReign);
-  const politicalFacts: RulerPoliticalFact[] = rulerEvents.flatMap((event) => {
+  const rawPoliticalFacts: RulerPoliticalFact[] = rulerEvents.flatMap((event) => {
     const month = event.monthIndex ?? event.year;
     const factionParticipant = (event.factionIds ?? []).includes(faction.name) ||
       event.relatedFactionIds?.includes(faction.name) || event.actorFactionId === faction.name ||
@@ -255,8 +257,8 @@ export function deriveRulerHistoricalEvidence(
     } else if (event.type === "city-captured" || event.type === "capital-fallen") {
       cityId = event.cityId ?? (typeof event.metadata?.cityId === "string" ? event.metadata.cityId : undefined);
       cityName = event.cityName ?? (typeof event.metadata?.cityName === "string" ? event.metadata.cityName : undefined);
-      wasCapital = event.type === "capital-fallen" || event.metadata?.wasCapital === 1;
-      const attacker = event.actorFactionId === faction.name && event.factionIds?.includes(faction.name);
+      wasCapital = event.metadata?.wasCapital === 0 ? false : event.metadata?.wasCapital === 1 || event.type === "capital-fallen";
+      const attacker = event.actorFactionId === faction.name && event.targetFactionId !== faction.name && Boolean(event.targetFactionId) && event.factionIds?.includes(faction.name);
       const defender = event.targetFactionId === faction.name && event.factionIds?.includes(faction.name);
       if (!attacker && !defender) return [];
       affectedFactionId = attacker ? event.targetFactionId : faction.name;
@@ -328,6 +330,10 @@ export function deriveRulerHistoricalEvidence(
       affectedFactionId, cityId, cityName, wasCapital, terminalOutcome, militaryRole,
       outcome, suitableForAssessment: !diplomacy || event.type !== "relation-renewed" }];
   });
+
+  const politicalFacts = normalizeRulerPoliticalFacts(rawPoliticalFacts);
+  const politicalStats = summarizeRulerPoliticalFacts(politicalFacts);
+  const restorationCount = Math.max(chronicle?.restorationsDuringReign ?? 0, politicalStats.restorations, tenure.restorationCount);
 
   const foundingFactionEvent = rulerEvents.find(
     (event) =>
@@ -403,18 +409,6 @@ export function deriveRulerHistoricalEvidence(
       const current = collapseGroups.get(key);
       if (!current || event.type === "faction-extinct") collapseGroups.set(key, event);
     });
-  const directlyAttributedDestroyedGroups = [...collapseGroups.values()].filter((collapse) => {
-    if (collapse.rulerId === ruler.id || collapse.metadata?.conquerorRulerId === ruler.id) return true;
-    const groupId = collapse.historyGroupId;
-    if (!groupId) return false;
-    return rulerEvents.some(
-      (event) =>
-        event.historyGroupId === groupId &&
-        (event.type === "city-captured" || event.type === "capital-fallen") &&
-        event.actorFactionId === faction.name &&
-        event.rulerId === ruler.id
-    );
-  }).length;
 
   const parentEndMonth = ruler.endYear ?? worldMonth;
   const predeceasedHeirCount = dynasty.rulers.filter((candidate) => {
@@ -422,7 +416,7 @@ export function deriveRulerHistoricalEvidence(
       candidate.parentId === ruler.id &&
         candidate.reignOrdinal === undefined &&
         hasRecordedRulerDeath(candidate) &&
-        candidate.deathMonth! < parentEndMonth
+        candidate.deathMonth! >= accessionMonth && candidate.deathMonth! < parentEndMonth
     );
   }).length;
 
@@ -457,7 +451,7 @@ export function deriveRulerHistoricalEvidence(
   const extinctionAtEnd = rulerEvents.some(event => event.type === "faction-extinct" &&
     event.targetFactionId === faction.name && (event.monthIndex ?? event.year) === endMonth);
   const ownTerminalCollapse = isFinalized && !laterAccession && ruler.status !== "abdicated" &&
-    (extinctionAtEnd || (ruler.status === "politically-ended" && ruler.endReason === "政治终结"));
+    (extinctionAtEnd || ruler.endReason === "彻底灭亡" || ruler.endReason === "政治终结");
   const expansion =
     finalSnapshot.territoryShare - accessionSnapshot.territoryShare >= 0.12 ||
     finalSnapshot.cityCount - accessionSnapshot.cityCount >= 3;
@@ -473,7 +467,7 @@ export function deriveRulerHistoricalEvidence(
   const roles: HistoricalRole[] = [];
   if (foundedFaction || foundedState) roles.push("FOUNDER");
   if (proclaimedEmperor) roles.push("IMPERIAL_FOUNDER");
-  if ((chronicle?.restorationsDuringReign ?? 0) > 0) roles.push("RESTORER");
+  if (restorationCount > 0) roles.push("RESTORER");
   if (completedUnification) roles.push("UNIFIER");
   if (expansion) roles.push("EXPANDER");
   if ((chronicle?.citiesCapturedPersonally ?? 0) >= 2 || collapseGroups.size > 0) roles.push("CONQUEROR");
@@ -531,7 +525,8 @@ export function deriveRulerHistoricalEvidence(
     monthsSinceFactionFoundationAtEnd,
     proclaimedEmperor,
     completedUnification,
-    restorationCount: chronicle?.restorationsDuringReign ?? 0,
+    restorationCount,
+    observedPeakCityCount: Math.max(...[start, chronicle?.latestSnapshot, chronicle?.endSnapshot].filter(Boolean).map(s => s!.cityCount), 0),
     startPopulation: accessionSnapshot.population,
     endPopulation: finalSnapshot.population,
     peakPopulation,
@@ -549,8 +544,8 @@ export function deriveRulerHistoricalEvidence(
     endReason: ruler.endReason,
     forcedCapitalRelocationsDuringReign: capitalRelocations.length,
     directlyAttributedCapitalRelocations,
-    factionsDestroyedByFactionDuringReign: collapseGroups.size,
-    factionsDestroyedDirectlyAttributedToRuler: directlyAttributedDestroyedGroups,
+    factionsDestroyedByFactionDuringReign: politicalStats.nationalExtinctions,
+    factionsDestroyedDirectlyAttributedToRuler: politicalStats.personalExtinctions,
     predeceasedHeirCount,
     territorialPeakRetreat,
     territorialPeakGain,
@@ -632,7 +627,7 @@ function composeLegacyRulerAssessment(evidence: RulerHistoricalEvidence): RulerA
     const accessionPhrase = childAccession ? "幼年继任时" : youthAccession ? "少年继位时" : "承统之初";
     lines.push(`${livingPrefix}${accessionPhrase}国势未固，其后疆域显著扩展，由危局转入进取。`);
   } else if (evidence.terminalCollapse && evidence.accessionCrisis) {
-    lines.push(`${agePrefix}其时国势已陷危局${evidence.startCityCount <= 1 ? "，仅据孤城" : ""}，并非由盛转衰的始作俑者。`);
+    lines.push(`${agePrefix}其时国势已陷危局${evidence.startCityCount === 1 ? "，仅据孤城" : evidence.startCityCount === 0 ? "，承统之际已无城土" : ""}，并非由盛转衰的始作俑者。`);
   } else if (evidence.roles.includes("CRISIS_SURVIVOR") && !evidence.roles.includes("EXPANDER")) {
     const accessionPhrase = childAccession ? "幼年继任" : youthAccession ? "少年继位" : "临危承统";
     lines.push(`${livingPrefix}${accessionPhrase}，其时政权尚处危局；主要考验在于维系既有政权。`);
@@ -753,6 +748,11 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
   const legacy = composeLegacyRulerAssessment(evidence);
   const deposition = evidence.politicalFacts.find((fact) => fact.type === "ruler-deposed" && fact.depositionRole);
   const lines = [...legacy.lines];
+  if (evidence.tenure.restoredDuringTenure) {
+    lines.splice(0, lines.length,
+      `${evidence.tenure.exiledAtAccession ? "承统之际已失城土，继承流亡王统" : "任内曾失去城土"}，其后实际复国${evidence.restorationCount}次${evidence.restorationCount === 1 ? `，流亡${formatWorldDuration(evidence.tenure.restoredExileMonths)}后恢复国家` : ""}。`,
+      `承统${formatWorldDuration(evidence.reignMonths)}，其中在国治理${formatWorldDuration(evidence.tenure.activeRuleMonths)}、流亡${formatWorldDuration(evidence.tenure.exileMonths)}${evidence.endCityCount === 0 ? "；任期末再次无城土" : ""}。`);
+  }
   const conflictingScale = evidence.territoryDelta * evidence.cityDelta < 0;
   if (conflictingScale && !lines.some((line) => line.includes(formatPrecisePercent(evidence.startTerritory)) && line.includes(formatPrecisePercent(evidence.endTerritory)))) {
     const changes: string[] = [];
@@ -769,6 +769,7 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
   }
 
   const facts = evidence.politicalFacts.filter((fact) => fact.suitableForAssessment);
+  const nationalStats = summarizeRulerPoliticalFacts(facts);
   const directCaptures = facts.filter((fact) => ["city-captured", "capital-fallen"].includes(fact.type) && fact.role === "DIRECT_ACTOR");
   const directCapitalCaptures = directCaptures.filter((fact) => fact.wasCapital);
   const terminalAttacks = facts.filter((fact) => fact.terminalOutcome && fact.militaryRole === "ATTACKER");
@@ -778,6 +779,7 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
   if (directCaptures.length) {
     eventLines.push(`有本人行动记录的攻城共${directCaptures.length}次${directCapitalCaptures.length ? `，其中攻陷当时都城${directCapitalCaptures.length}次` : ""}。`);
   }
+  if (!directCaptures.length && nationalStats.nationalCapitalCaptures) eventLines.push(`其治下攻陷当时敌都${nationalStats.nationalCapitalCaptures}次，未见可归为本人亲征的行动证据。`);
   if (groupedTerminal.length) {
     const count = (outcome: RulerPoliticalFact["terminalOutcome"]) => groupedTerminal.filter((fact) => fact.terminalOutcome === outcome).length;
     const parts = [count("EXTINCT") ? `正式政权灭亡${count("EXTINCT")}个` : "", count("DISSOLVED") ? `残部解散${count("DISSOLVED")}个` : "", count("EXILED") ? `政权流亡${count("EXILED")}个` : ""].filter(Boolean);
@@ -788,12 +790,12 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
   const successionFacts = facts.filter((fact) => fact.type === "heir-died");
   if (successionFacts.length) eventLines.push(`任内有${successionFacts.length}名继承候选先于其去世；现有记录不足以证明其已正式立储。`);
   const nationalCrises = facts.filter((fact) => fact.role === "IN_TENURE" && ["capital-fallen", "capital-relocated", "empire-split"].includes(fact.type));
-  if (nationalCrises.length) eventLines.push(`任内另有${nationalCrises.length}项可核实的失都、迁都或国家分裂记录。`);
+  if (nationalCrises.length) eventLines.push(`任内另有${nationalStats.crisisEpisodes}组可核实的失都、迁都、失国或国家分裂经历，同一历史过程合并看待。`);
   const selectedEvent = eventLines.find((line) => !lines.some((existing) => existing.includes(line.slice(0, 12))));
   if (selectedEvent && lines.length < 4) lines.push(selectedEvent);
 
   if (evidence.hasRecordedDeath && evidence.deathMonth !== undefined) {
-    const death = `其后于${formatWorldDate(evidence.deathMonth)}${evidence.deathReason ? `因${evidence.deathReason}` : "去世"}${evidence.finalAge !== undefined ? `，享年${evidence.finalAge}岁` : ""}。`;
+    const death = `${evidence.tenure.diedInExile ? "流亡期间于" : "其后于"}${formatWorldDate(evidence.deathMonth)}${evidence.deathReason === "战死" ? "战死" : evidence.deathReason === "被俘处死" ? "被俘处死" : "去世"}${evidence.finalAge !== undefined ? `，享年${evidence.finalAge}岁` : ""}。`;
     if (!lines.some((line) => line.includes(formatWorldDate(evidence.deathMonth!)))) {
       if (lines.length >= 4) lines[lines.length - 1] = death;
       else lines.push(death);
@@ -824,6 +826,10 @@ export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string
   const usurpation = evidence.politicalFacts.find((fact) => fact.type === "dynasty-usurped" && fact.usurpationRole === "USURPER");
   const deposition = evidence.politicalFacts.find((fact) => fact.type === "ruler-deposed" && fact.depositionRole);
 
+  if (evidence.tenure.restoredDuringTenure) {
+    const lasting = evidence.tenure.activeRuleMonths >= 10 * 12;
+    return `其${evidence.restorationCount > 1 ? "屡复故国" : "恢复故国"}，${lasting ? "复国后的在国治理亦有年月可考" : "惟在国治理短促，恢复尚未稳固"}；${evidence.terminalCollapse ? "政权终于其世，复国与国难当并记" : evidence.tenure.diedInExile ? "末年流亡虽是其结局，却不足以抹去此前恢复国统之事" : "复国之功与此后能否守成，应合观而不偏废"}。`;
+  }
   if (usurpation) {
     const displaced = usurpation.displacedSuccessorName ? "并排除原合法继承人" : "";
     if (evidence.territoryDelta <= -0.08 || evidence.cityDelta <= -1) {

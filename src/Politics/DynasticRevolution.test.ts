@@ -129,7 +129,9 @@ describe("authoritative succession-boundary dynastic revolution", () => {
     expect(formatPosthumousRulerName({ ...dynasty.rulers[0], templeName: "世宗" }, team, month)).toContain("郑世宗");
     const event = WorldHistory.getEvents().find(event => event.type === "dynasty-usurped")!;
     expect(isFeaturedHistoryEvent(event)).toBe(true);
-    expect(event.metadata).toMatchObject({ predecessorRulerId: "old", displacedSuccessorId: "heir", successionReason: reason, stability: 20 });
+    expect(event.metadata).toMatchObject({ predecessorRulerId: "old", displacedSuccessorId: "heir", successionReason: reason, stability: 20,
+      displacedSuccessorAge: 10, oldHouseFoundingRulerId: dynasty.houseEpochs![0].foundingRulerId,
+      newHouseFoundingRulerId: dynasty.houseEpochs![1].foundingRulerId });
     expect(event.description).toContain("合法继承人未成年");
     expect(event.description).not.toMatch(/近期连续换君|权倾朝野|群臣拥戴|弑君/);
     expect(resolveEventFactionColor({ ...event, year: month - 1, monthIndex: month - 1, metadata: {} }, new Map([[team.name, team.color]]), new Map([[team.name, team]]))).toBe(0x123456);

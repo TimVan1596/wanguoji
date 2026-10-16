@@ -1269,6 +1269,13 @@ function RulerBiography({
       </Typography>
       <Typography fontSize="0.82rem">
         城市：{start.cityCount} → {end.cityCount}
+        {` · 已存快照最高${assessment.evidence.observedPeakCityCount}座`}
+      </Typography>
+      <Typography fontSize="0.82rem">
+        {`任内记录峰值：领土${(assessment.evidence.peakTerritory * 100).toFixed(1)}% · 人口${assessment.evidence.peakPopulation}`}
+      </Typography>
+      <Typography fontSize="0.82rem">
+        {`失国${assessment.evidence.tenure.stateLossCount}次 · 复国${assessment.evidence.restorationCount}次（失城次数不等于净城市损失）`}
       </Typography>
       <Typography fontSize="0.82rem">
         稳定：{start.stability} → {end.stability}

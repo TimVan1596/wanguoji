@@ -6,6 +6,10 @@ export interface RulerLegacyEvidence {
   proclaimedEmperor: boolean;
   completedUnification: boolean;
   restoration: boolean;
+  durableRestoration: boolean;
+  personalCapitalCaptures: number;
+  personalExtinctions: number;
+  changedHouse: boolean;
   accessionMonth: number;
   endMonth?: number;
   reignMonths: number;
@@ -50,7 +54,8 @@ export function buildRulerLegacyEvidence(
   accessionMonth: number,
   endMonth?: number,
   endReason?: string,
-  activeRuleMonths = Math.max(0, (endMonth ?? getRulerEffectiveSnapshot(chronicle).month) - accessionMonth)
+  activeRuleMonths = Math.max(0, (endMonth ?? getRulerEffectiveSnapshot(chronicle).month) - accessionMonth),
+  facts?: { restorations: number; personalCityCaptures: number; personalCapitalCaptures: number; personalExtinctions: number; terminalCollapse: boolean; changedHouse: boolean }
 ): RulerLegacyEvidence {
   const start = chronicle.accessionSnapshot;
   const end = getRulerEffectiveSnapshot(chronicle);
@@ -61,7 +66,9 @@ export function buildRulerLegacyEvidence(
   const governedMonths = Math.min(reignMonths, Math.max(0, activeRuleMonths));
   const territorialCollapse = territoryDelta <= -0.12;
   const cityCollapse = cityDelta <= -2;
-  const terminalCollapse = endReason === "政治终结" || endReason === "彻底灭亡" || endReason === "流亡";
+  const terminalCollapse = facts?.terminalCollapse ?? (endReason === "政治终结" || endReason === "彻底灭亡");
+  const restorations = Math.max(chronicle.restorationsDuringReign, facts?.restorations ?? 0);
+  const captures = Math.max(chronicle.citiesCapturedPersonally, facts?.personalCityCaptures ?? 0);
   const stableGovernanceEligible =
     end.stability >= 75 &&
     stabilityDelta >= 0 &&
@@ -75,7 +82,11 @@ export function buildRulerLegacyEvidence(
     foundedState: Boolean(chronicle.foundedStateName),
     proclaimedEmperor: chronicle.proclaimedEmperorMonth !== undefined,
     completedUnification: chronicle.completedUnification,
-    restoration: chronicle.restorationsDuringReign > 0,
+    restoration: restorations > 0,
+    durableRestoration: restorations > 0 && governedMonths >= 10 * 12,
+    personalCapitalCaptures: facts?.personalCapitalCaptures ?? 0,
+    personalExtinctions: facts?.personalExtinctions ?? 0,
+    changedHouse: facts?.changedHouse ?? false,
     accessionMonth,
     endMonth,
     reignMonths,
@@ -89,15 +100,15 @@ export function buildRulerLegacyEvidence(
     stabilityDelta,
     peakPopulation: chronicle.peakPopulation,
     peakTerritory: chronicle.peakTerritoryShare,
-    personallyCapturedCities: chronicle.citiesCapturedPersonally,
+    personallyCapturedCities: captures,
     citiesLost: chronicle.citiesLostDuringReign,
     rebellions: chronicle.rebellionsDuringReign,
-    restorations: chronicle.restorationsDuringReign,
+    restorations: restorations,
     endReason,
     deathCause: chronicle.deathCause,
     exileOrExtinction: endReason === "流亡" || endReason === "彻底灭亡",
     majorExpansion: territoryDelta >= 0.12 || cityDelta >= 3 || chronicle.completedUnification,
-    militaryAchievement: chronicle.citiesCapturedPersonally >= 2 || chronicle.completedUnification,
+    militaryAchievement: captures >= 2 || (facts?.personalCapitalCaptures ?? 0) > 0 || (facts?.personalExtinctions ?? 0) > 0 || chronicle.completedUnification,
     institutionalAchievement: Boolean(chronicle.foundedStateName) || chronicle.proclaimedEmperorMonth !== undefined || chronicle.completedUnification || chronicle.restorationsDuringReign > 0,
     stableGovernanceEligible,
     stableGovernance: stableGovernanceEligible,

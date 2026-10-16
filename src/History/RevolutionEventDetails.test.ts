@@ -54,3 +54,22 @@ describe("夺统事件只用冻结的真实背景", () => {
     expect(text).toContain("乙氏取代甲氏");
   });
 });
+
+
+describe("篡朝叙事的缺失与时间证据边界", () => {
+  it("does not invent an excluded heir, a name change or a flag change from absent values", () => {
+    const text = composeRevolutionNarrative({ newRulerName: "乙安", oldHouseName: "甲氏", newHouseName: "乙氏" });
+    expect(text).toContain("乙安夺取王统"); expect(text).not.toMatch(/undefined|合法继承人|国号|易帜|禅让|拥立|黄袍/);
+  });
+  it("excludes later shocks and repeats only distinct canonical events", () => {
+    const row = { kind: "CAPITAL_LOSS", eventId: "same", month: 90, cityIds: ["c"], cityNames: ["旧都"] };
+    const text = composeRevolutionNarrative({ ...facts, month: 100, crisisCapitalEventId: undefined, crisisSplitEventId: undefined,
+      vulnerabilityEvidence: "", crisisEvidence: JSON.stringify([row, row, { ...row, eventId: "future", month: 101, cityNames: ["后都"] }]) });
+    expect(text.match(/失去旧都/g)).toHaveLength(1); expect(text).not.toContain("后都");
+  });
+  it("keeps age, identity and actual changes separate", () => {
+    const text = composeRevolutionNarrative({ ...facts, displacedSuccessorAge: 9, successionReason: "captured" });
+    expect(text).toContain("旧王甲平被俘处死"); expect(text).toContain("合法继承人甲康（时年9岁）被排除");
+    expect(text).toContain("国号由旧国改为新国"); expect(text).not.toMatch(/弑君|秘密|将军|太后/);
+  });
+});

@@ -1,3 +1,5 @@
+import { deriveRulerHistoricalEvidence } from "./RulerHistoriography";
+import { summarizeRulerPoliticalFacts } from "./RulerPoliticalFacts";
 import { hasRecordedRulerDeath } from "./RulerLifeState";
 import type Team from "../Components/Team";
 import { getFactionDisplayNameAtMonth, getSovereigntyRankAtMonth } from "../Simulation/FactionIdentity";
@@ -39,6 +41,7 @@ export function finalizeRulerPosthumousNames(
   if (!hasRecordedRulerDeath(ruler) || ruler.endYear === undefined || ruler.accessionYear === undefined || !ruler.chronicle) {
     return;
   }
+  if (ruler.posthumousEpithet !== undefined || ruler.templeName !== undefined || ruler.posthumousEpithetReasons !== undefined || ruler.templeNameReasons !== undefined) return;
   const evaluation = evaluatePosthumousNames(ruler, dynastyRulers, faction, monthIndex, WorldHistory.getEvents());
   ruler.posthumousEpithet = evaluation.posthumousEpithet;
   ruler.posthumousEpithetReasons = evaluation.epithetReasons;
@@ -68,12 +71,16 @@ export function evaluatePosthumousNames(
   const territoryDelta = end.territoryShare - chronicle.accessionSnapshot.territoryShare;
   const cityDelta = end.cityCount - chronicle.accessionSnapshot.cityCount;
   const stabilityDelta = end.stability - chronicle.accessionSnapshot.stability;
-  const evidenceEndReason = tenure.diedInExile ? "流亡" : ruler.endReason;
-  const evidence = buildRulerLegacyEvidence(chronicle, ruler.accessionYear, ruler.endYear, evidenceEndReason, activeRuleMonths);
+  const historical = deriveRulerHistoricalEvidence({ ruler, dynasty: { rulers: dynastyRulers }, faction, events, worldMonth: monthIndex });
+  const political = summarizeRulerPoliticalFacts(historical.politicalFacts);
+  const evidence = buildRulerLegacyEvidence(chronicle, ruler.accessionYear, ruler.endYear, ruler.endReason, activeRuleMonths, {
+    ...political, terminalCollapse: historical.terminalCollapse,
+    changedHouse: historical.politicalFacts.some(f => f.usurpationRole === "USURPER"),
+  });
   const outcome = evaluateReignOutcome(chronicle.accessionSnapshot, end);
   const tragicEnd = evidence.terminalCollapse || ruler.endReason === "被俘处死";
   const accessionAge = Math.max(0, Math.floor(monthsToYears(ruler.accessionYear - ruler.bornYear)));
-  const capitalFallCount = WorldHistory.getEvents().filter((event) => {
+  const capitalFallCount = events.filter((event) => {
     const eventMonth = event.monthIndex ?? event.year;
     return event.type === "capital-relocated" &&
       event.actorFactionId === faction.name &&
@@ -100,7 +107,7 @@ export function evaluatePosthumousNames(
     score += 45;
     reasons.push("一统");
   }
-  if (chronicle.restorationsDuringReign > 0) {
+  if (evidence.restoration) {
     score += 36;
     reasons.push("复国");
   }
@@ -227,7 +234,8 @@ interface NameCandidate {
 
 export function isTempleNameEligible(evidence: RulerLegacyEvidence, historicalRank: "LEADER" | "KING" | "EMPEROR") {
   if (evidence.foundedState || evidence.proclaimedEmperor || evidence.completedUnification) return true;
-  if (evidence.restoration && (evidence.majorExpansion || evidence.longStableReign || evidence.stableGovernance)) return true;
+  if (evidence.durableRestoration) return true;
+  if (evidence.changedHouse && evidence.activeRuleMonths >= VERY_LONG_REIGN_MONTHS && evidence.stableGovernance && evidence.majorExpansion) return true;
   if (historicalRank === "EMPEROR" && evidence.activeRuleMonths >= LONG_REIGN_MONTHS && (evidence.majorExpansion || evidence.longStableReign || evidence.institutionalAchievement)) return true;
   return historicalRank === "KING" && evidence.activeRuleMonths >= VERY_LONG_REIGN_MONTHS && evidence.territoryDelta >= 0.28 && evidence.cityDelta >= 5 && (evidence.stableGovernance || evidence.militaryAchievement);
 }
@@ -247,7 +255,7 @@ function chooseEpithet(
   const candidates: NameCandidate[] = [];
   const add = (name: string, score: number, reason: string) => addScoredCandidate(candidates, name, score, reason);
   const terminalCrisis = evidence.terminalCollapse || ruler.endReason === "被俘处死";
-  if (terminalCrisis) add("愍", 92, evidence.exileOrExtinction ? "国祚终结或王室流亡" : "遭遇被俘处死的国难");
+  if (terminalCrisis) add("愍", evidence.durableRestoration ? 58 : 92, evidence.terminalCollapse ? "国家真正政治终结" : "遭遇被俘处死的国难");
   if (accessionAge <= 15 && evidence.activeRuleMonths <= 5 * 12 && terminalCrisis) {
     add("哀", 116, "幼少即位、短祚并遭遇亡国国难");
   } else if (evidence.activeRuleMonths <= 12 && evidence.tragicEnd) {
@@ -264,6 +272,8 @@ function chooseEpithet(
   } else if (evidence.territoryDelta >= 0.08 || evidence.cityDelta >= 2) {
     add("襄", 36, "国势有所扩张");
   }
+  if (evidence.personalCapitalCaptures > 0) add("武", 58, `亲征攻陷当时敌都${evidence.personalCapitalCaptures}次，有直接行动证据`);
+  if (evidence.personalExtinctions > 0) add("武", 60, `直接参与使${evidence.personalExtinctions}个政权彻底灭亡`);
   if (chronicle.citiesCapturedPersonally >= 2) {
     add("武", 38 + Math.min(18, chronicle.citiesCapturedPersonally * 4), "亲征夺城有据");
     add("威", 46 + Math.min(12, chronicle.citiesCapturedPersonally * 2), "军事威势与亲征战果突出");
@@ -273,7 +283,7 @@ function chooseEpithet(
   if (evidence.institutionalAchievement) add("昭", 36, chronicle.completedUnification ? "完成一统并改变天下格局" : "建立或提升国家制度格局");
   if (evidence.foundedState) add("成", 34, "正式建国，建立国家秩序");
   if (evidence.restoration) {
-    add("宣", 62, "复国并恢复政权延续");
+    add("宣", evidence.durableRestoration ? 70 : 42, evidence.durableRestoration ? `复国${evidence.restorations}次，并有至少十年实际在国治理` : "曾恢复国统，但在国治理未满十年");
     add("成", 38, "完成复国，重建王朝");
   }
   if (evidence.completedUnification) add("武", 34, "完成大规模征服并一统天下");
@@ -288,8 +298,8 @@ function chooseEpithet(
   if (evidence.stabilityDeterioration && evidence.activeRuleMonths >= LONG_REIGN_MONTHS && (evidence.territorialCollapse || evidence.cityCollapse || evidence.majorDisorder || evidence.terminalCollapse)) {
     add("灵", 66 + (evidence.majorDisorder ? 8 : 0) + (evidence.demographicCollapse ? 6 : 0), "长期稳定恶化，并有疆土、城市、内乱或终局失序证据");
   }
-  if (evidence.territorialCollapse || evidence.cityCollapse) add("愍", 32, "任内疆土或城市严重丧失");
-  if (evidence.territorialCollapse && evidence.cityCollapse && evidence.stabilityDeterioration) add("哀", 42, "疆土、城市与稳定均显著衰退");
+  if (!terminalCrisis && (evidence.territorialCollapse || evidence.cityCollapse)) add("愍", 32, "任内疆土或城市严重丧失");
+  if (!terminalCrisis && evidence.territorialCollapse && evidence.cityCollapse && evidence.stabilityDeterioration) add("哀", 42, "疆土、城市与稳定均显著衰退");
   if (evidence.activeRuleMonths >= VERY_LONG_REIGN_MONTHS && evidence.stableGovernance && evidence.majorExpansion) add("景", 42, "长期统治兼有扩张与稳定治理");
   if (chronicle.rebellionsDuringReign > 0 && evidence.stableGovernanceEligible) add("定", 34, "经历内乱后恢复秩序，末期治理稳定");
   if (
@@ -329,6 +339,8 @@ function chooseTempleName(
       candidate("太祖", chronicle.proclaimedEmperorMonth !== undefined ? "开国并建立帝号，奠定王朝基业" : "开国建制，奠定王朝基业"),
       candidate("高祖", "开创国家并建立统治根基")
     );
+  } else if (evidence.changedHouse && evidence.activeRuleMonths >= VERY_LONG_REIGN_MONTHS && evidence.stableGovernance && evidence.majorExpansion) {
+    role(candidate("世祖", "建立新王统，且长期在国治理兼有扩张与稳定"));
   } else if (
     evidence.restoration && evidence.proclaimedEmperor &&
     evidence.territoryDelta >= 0.3 && evidence.cityDelta >= 5 &&
