@@ -32,7 +32,7 @@ export interface MilitaryPerson {
   sourceUserId: number;
   name: string;
   /** Authoritative personal identity; name above remains the original User label. */
-  personalName: string;
+  readonly personalName: string;
   bornMonth: number;
   factionId: string;
   status: "ACTIVE" | "RETIRED" | "DEAD";

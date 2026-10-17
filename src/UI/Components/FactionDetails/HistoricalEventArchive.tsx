@@ -1,4 +1,4 @@
-import React, { useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 /** Presentation pagination only; the complete canonical event set stays with the caller. */
 export default function HistoricalEventArchive({ title, entries, defaultOpen = false }: {

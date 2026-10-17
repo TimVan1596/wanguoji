@@ -171,7 +171,10 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
           person.deathMonth !== undefined && at > person.deathMonth ||
           !["city-captured", "city-recovered", "capital-fallen"].includes(event.type) || !event.cityId ||
           !formation.captures.some((c: any) => c.eventId === event.id || c.cityId === event.cityId && c.month === at &&
-            event.historyGroupId && historyById.get(c.eventId)?.historyGroupId === event.historyGroupId))
+            (event.historyGroupId && historyById.get(c.eventId)?.historyGroupId === event.historyGroupId ||
+              event.type === "capital-fallen" && historyById.get(c.eventId)?.type === "city-recovered" &&
+              historyById.get(c.eventId)?.actorFactionId === event.actorFactionId && historyById.get(c.eventId)?.targetFactionId === event.targetFactionId &&
+              historyById.get(c.eventId)?.metadata?.wasCapital === 1)))
         errors.push(`military victory name snapshot has invalid evidence: ${event.id}`);
     }
   }
