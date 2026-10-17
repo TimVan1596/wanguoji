@@ -5,6 +5,7 @@ import {
   finishRulerChronicle,
   getRulerTerritoryDelta,
   getRulerHistoricalEvents,
+  getRulerDiplomaticEvents,
   recordPersonalCityCapture,
 } from "./RulerChronicle";
 import { deriveRulerHistoricalEvidence, formatAccessionAge } from "./RulerHistoriography";
@@ -222,12 +223,12 @@ describe("ruler chronicle", () => {
       metadata: { signatoryARulerId: "qi-ruler", signatoryAFactionId: "齐", signatoryBRulerId: "wei-ruler", signatoryBFactionId: "魏" },
     };
     const events = [signed, expiry] as any;
-    expect(getRulerHistoricalEvents(events, { id: "qi-ruler", accessionYear: 0, endYear: 30 }, "齐", 30, []).map((event) => event.id)).toEqual(["treaty"]);
-    expect(getRulerHistoricalEvents(events, { id: "wei-ruler", accessionYear: 0, endYear: 30 }, "魏", 30, []).map((event) => event.id)).toEqual(["treaty"]);
-    expect(getRulerHistoricalEvents(events, { id: "other", accessionYear: 0, endYear: 30 }, "齐", 30, [])).toEqual([]);
+    expect(getRulerDiplomaticEvents(events, { id: "qi-ruler", accessionYear: 0, endYear: 30 }, "齐", 30).map((event) => event.id)).toEqual(["treaty"]);
+    expect(getRulerDiplomaticEvents(events, { id: "wei-ruler", accessionYear: 0, endYear: 30 }, "魏", 30).map((event) => event.id)).toEqual(["treaty"]);
+    expect(getRulerDiplomaticEvents(events, { id: "other", accessionYear: 0, endYear: 30 }, "齐", 30)).toEqual([]);
   });
 
-  it("keeps each recorded initial treaty signature visible in the default biography", () => {
+  it("keeps all recorded signatures in the archive and only important diplomacy in the bounded core", () => {
     const treaties = ["truce-signed", "non-aggression-signed", "alliance-signed"].map((type, index) => ({
       id: `signed-${index}`, year: 10 + index, monthIndex: 10 + index, category: "politics", type,
       title: `协议${index}`, factionIds: ["齐", "魏"], importance: "normal",
@@ -239,7 +240,8 @@ describe("ruler chronicle", () => {
     }));
     const events = [...treaties, ...distractions] as any;
     const visible = getRulerHistoricalEvents(events, { id: "qi-ruler", accessionYear: 0, endYear: 40 }, "齐", 40, []);
-    expect(visible.filter(event => treaties.some(treaty => treaty.id === event.id)).map(event => event.id)).toEqual(treaties.map(treaty => treaty.id));
+    expect(visible.filter(event => treaties.some(treaty => treaty.id === event.id)).map(event => event.id)).toEqual(["signed-2"]);
+    expect(getRulerDiplomaticEvents(events, { id: "qi-ruler", accessionYear: 0, endYear: 40 }, "齐", 40).map(e => e.id)).toEqual(treaties.map(e => e.id));
     expect(visible.length).toBe(6);
   });
 

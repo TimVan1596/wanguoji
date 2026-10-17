@@ -18,7 +18,8 @@ describe("军政人口标签不是姓名，身份不重写",()=>{
       registry.update(12,[team],[]);
       const person=registry.getPeople()[0];
       expect(person.name).toBe(name);expect(user.name).toBe(name);
-      expect(getMilitaryPersonDisplayName(person)).toContain("姓名未核验");
+      expect(getMilitaryPersonDisplayName(person)).toBe(person.personalName);
+      expect(person.personalName).toMatch(/^[\u3400-\u9fff]{2,5}$/);
       expect(events.find(e=>e.type==="military-appointment").title).not.toContain(name);
       registry.onUserDestroyed(user,24,"BATTLE_DEATH");
       expect(person.status).toBe("DEAD");
@@ -26,7 +27,7 @@ describe("军政人口标签不是姓名，身份不重写",()=>{
       const loaded=new MilitaryCommandRegistryStore();loaded.importState(state);
       expect(loaded.exportState()).toEqual(registry.exportState());
       expect(getMilitaryPersonDisplayName(loaded.getPeople()[0])).toBe(getMilitaryPersonDisplayName(person));
-      const old:any={id:"legacy",type:"military-person-died",title:`${name}自然去世`,year:24,metadata:{personId:person.personId}};
+      const old:any={id:"legacy",type:"military-person-died",title:`${name}自然去世`,year:24,metadata:{personId:person.personId,personalName:person.personalName}};
       expect(formatHistoryEventTitle(old,new Map())).toBe(`${getMilitaryPersonDisplayName(person)}自然去世`);
       expect(old.title).toBe(`${name}自然去世`); // do not mutate historical evidence
     } finally {next.mockRestore();}

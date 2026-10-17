@@ -40,5 +40,6 @@ export function formatMilitaryHistoryIdentity(event: {type:string; title:string;
   if(event.type==="military-command-ended") raw=event.title.match(/^(.+)(?:年老退役|结束军事任职)$/)?.[1];
   if(event.type==="military-person-died") raw=event.title.match(/^(.+?)(?:自然去世|去世)$/)?.[1];
   const sourceUserId=typeof event.metadata?.sourceUserId==="number"?event.metadata.sourceUserId:undefined;
-  return raw && isPopulationIdentityLabel(raw) ? text.split(raw).join(getMilitaryPersonDisplayName({name:raw,personId,sourceUserId})) : text;
+  const personalName = typeof event.metadata?.personalName === "string" ? event.metadata.personalName : undefined;
+  return raw && isPopulationIdentityLabel(raw) ? text.split(raw).join(getMilitaryPersonDisplayName({name:raw,personId,sourceUserId,personalName})) : text;
 }

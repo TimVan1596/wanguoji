@@ -163,7 +163,7 @@ const DIPLOMATIC_TYPES = new Set<WorldEvent["type"]>(["truce-signed", "non-aggre
 
 export function isCoreDiplomaticEvent(event: WorldEvent, events: WorldEvent[]) {
   if (!DIPLOMATIC_TYPES.has(event.type)) return false;
-  if (event.type === "alliance-signed" || event.type === "non-aggression-signed" && event.metadata?.preconditionStatus === "TRUCE") return true;
+  if (event.type === "alliance-signed" || event.type === "non-aggression-signed" && (event.metadata?.priorStatus === "TRUCE" || event.metadata?.preconditionStatus === "TRUCE")) return true;
   if (event.metadata?.capitalFall === 1) return true;
   return Boolean(event.historyGroupId && events.some(other => other.id !== event.id && other.historyGroupId === event.historyGroupId &&
     (other.monthIndex ?? other.year) === (event.monthIndex ?? event.year) &&

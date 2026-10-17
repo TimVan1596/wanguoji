@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildRulerTags, createRulerChronicle, finishRulerChronicle, getRulerHistoricalEvents } from "./RulerChronicle";
+import { buildRulerTags, createRulerChronicle, finishRulerChronicle, getRulerHistoricalEvents, getRulerDiplomaticEvents } from "./RulerChronicle";
 import { CURRENT_SAVE_SCHEMA_VERSION } from "../Persistence/WorldSaveSchema";
 import { BASE_PLAY_RATE } from "../Simulation/SimulationDriver";
 import {
@@ -560,8 +560,10 @@ describe("evidence-grounded ruler historiography", () => {
     expect(evidence.politicalFacts.map(fact => fact.eventId).sort()).toEqual([...signed.map(event => event.id), "renewed"].sort());
     expect(getSignificantReignStats(context.ruler.chronicle!, evidence.politicalFacts)).toContain("本人签署外交协议：3");
     const biography = getRulerHistoricalEvents(events, { ...context.ruler, accessionYear: context.ruler.accessionYear ?? 0 }, "秦", 100, []);
-    expect(biography.filter(event => signed.some(row => row.id === event.id)).map(event => event.id).sort()).toEqual(signed.map(event => event.id).sort());
-    expect(biography.some(event => event.id === "renewed")).toBe(true);
+    expect(biography.filter(event => signed.some(row => row.id === event.id)).map(event => event.id)).toEqual([signed[1].id]);
+    const archive = getRulerDiplomaticEvents(events, { ...context.ruler, accessionYear: context.ruler.accessionYear ?? 0 }, "秦", 100);
+    expect(archive.map(e => e.id).sort()).toEqual([...signed.map(e => e.id), renewal.id].sort());
+    expect(biography.some(event => event.id === "renewed")).toBe(false);
     expect(biography.some(event => event.id === "foreign-signing")).toBe(false);
   });
 
@@ -811,7 +813,7 @@ describe("evidence-grounded ruler historiography", () => {
     ]);
     expect(SIMULATION_SPEEDS).toEqual([1, 2, 4]);
     expect(BASE_PLAY_RATE).toBe(2);
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(15);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(16);
   });
 });
 

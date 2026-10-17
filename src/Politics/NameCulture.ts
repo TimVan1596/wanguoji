@@ -15,7 +15,7 @@ export interface AtomicGivenNamePool {
 
 /** Shared vocabulary, not historical people's identities or kinship evidence. */
 export const hanGivenNamePool = {
-  singleNames: [..."安昭武文景烈成康惠襄平宣靖威怀玄昶恪恭恺弘琰珩琮璋瑾弼谦衡朔钧湛惟承允宸绍曜澄翊彦修仪朗谌祐穆珣琬敦晏桓桢棣楷植溥济渊泓澈温谅恂慎端毅敏睿达适逵逊融泰雍翰韶颂骞骥璟珏珽璨琨璞璠瑜琦琛珪玠璆琚琇晟晖昱晔旻旸旭昂昉晁晤暄晞昀奕弈卓伦俨侃俭偲佑儒傅任信忠孝廉礼义仁勇刚健启定宁远和甫实直固厚宽肃敬恺"].filter((v, i, a) => a.indexOf(v) === i),
+  singleNames: [..."安昭武文景烈成康惠襄平宣靖威怀玄昶恪恭恺弘琰珩琮璋瑾弼谦衡朔钧湛惟承允宸绍曜澄翊彦修仪朗谌祐穆珣琬敦晏桓桢棣楷植溥济渊泓澈温谅恂慎端毅敏睿达适逵逊融泰雍翰韶颂骞骥璟珏珽璨琨璞璠瑜琦琛珪玠璆琚琇晟晖昱晔旻旸旭昂昉晁晤暄晞昀奕弈卓伦俨侃俭偲佑儒傅任信忠孝廉礼义仁勇刚健启定宁远和甫实直固厚宽肃敬"],
   doubleNamePrefixes: ["子", "伯", "仲", "元", "明", "承", "景", "玄", "怀", "彦", "君", "文", "德", "思", "世", "维", "守", "宗", "廷", "修", "绍", "令", "允", "敬", "崇", "秉", "季", "庭", "孟", "克", "惟", "致"],
   doubleNameSuffixes: ["安", "衡", "宣", "平", "宁", "成", "昭", "远", "和", "恭", "允", "珩", "澄", "绍", "甫", "礼", "义", "仁", "谦", "仪", "达", "之", "卿", "正", "信", "诚", "忠", "贤", "良", "修", "毅", "敬", "济", "康", "佑", "泰", "清", "温", "宽", "睦"],
   doubleNameChancePercent: 55,
@@ -43,7 +43,7 @@ export function generateMilitaryPersonalName(input: {
   if (input.culture !== "HAN") return pick("surname", cultureSurnames[input.culture]) + pick("given", cultureGivenNamePools[input.culture].atomicNames);
   const surname = pick("surname", identityHash(`${key}/compound`) % 100 < 3 ? compoundSurnames : commonSurnames);
   const given = identityHash(`${key}/length`) % 100 < hanGivenNamePool.doubleNameChancePercent
-    ? pick("prefix", hanGivenNamePool.doubleNamePrefixes) + pick("suffix", hanGivenNamePool.doubleNameSuffixes)
+    ? pick("prefix", hanGivenNamePool.doubleNamePrefixes) + pick("suffix", hanGivenNamePool.doubleNameSuffixes.filter(suffix => suffix !== pick("prefix", hanGivenNamePool.doubleNamePrefixes)))
     : pick("given", hanGivenNamePool.singleNames);
   return surname + given;
 }
