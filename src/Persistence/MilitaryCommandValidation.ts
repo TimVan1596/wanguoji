@@ -1,3 +1,4 @@
+import { deriveMilitaryLifeSchedule } from "../Politics/MilitaryLifeRules";
 import { MAX_COMMANDERS_PER_FACTION, MAX_FORMATION_UNITS, type MilitaryCommandState } from "../Politics/MilitaryCommandRegistry";
 
 const plain = (value: unknown): value is Record<string, any> => Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -12,6 +13,19 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
     return ["militaryCommandRegistry has invalid state shape"];
   }
   const registry = state as unknown as MilitaryCommandState;
+  const naturalEvents = new Map<string, any[]>(), retirementEvents = new Map<string, any[]>();
+  for (const event of Array.isArray(history?.events) ? history.events : []) {
+    if (!plain(event) || !plain(event.metadata)) continue;
+    const natural = event.type === "military-person-died" && event.metadata.deathCause === "NATURAL_DEATH";
+    const retirement = event.type === "military-command-ended" && event.metadata.endReason === "AGE_RETIREMENT";
+    if (!natural && !retirement) continue;
+    const key = natural ? event.metadata.personId : event.metadata.commandId;
+    if (typeof key !== "string") { errors.push("military lifecycle event lacks identity"); continue; }
+    const target = natural ? naturalEvents : retirementEvents;
+    const rows = target.get(key) ?? []; rows.push(event); target.set(key, rows);
+  }
+  const liveMilitaryIds = new Set(users.map(user => user.militaryPersonId));
+  const ageCommandOwners = new Map<string, string>();
   const people = new Map<string, any>();
   const formations = new Map<string, any>();
   const userById = new Map(users.map(user => [String(user.userId), user]));
@@ -36,14 +50,27 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
     if (person.status === "DEAD") {
       if (!month(person.deathMonth) || Number(person.deathMonth) < person.bornMonth || Number(person.deathMonth) > worldMonth || typeof person.deathCause !== "string" || !person.deathCause) errors.push(`military dead person lacks actual death: ${person.personId}`);
     } else if (person.deathMonth !== undefined || person.deathCause !== undefined) errors.push(`living military person has death data: ${person.personId}`);
+    const life = deriveMilitaryLifeSchedule(person);
+    if (person.deathCause === "NATURAL_DEATH" && (person.status !== "DEAD" || Number(person.deathMonth) < life.naturalDeathMonth)) errors.push(`military natural death precedes derived lifespan: ${person.personId}`);
+    if (person.deathCause === "NATURAL_DEATH") {
+      const rows = naturalEvents.get(person.personId) ?? [];
+      if (rows.length !== 1 || (rows[0].monthIndex ?? rows[0].year) !== person.deathMonth || rows[0].actorFactionId !== person.factionId) errors.push(`military natural death lacks unique matching history: ${person.personId}`);
+    }
+    if (person.status === "DEAD" && liveMilitaryIds.has(person.personId)) errors.push(`dead military person retains a live User: ${person.personId}`);
     const open = person.appointments.filter((item: any) => plain(item) && item.endMonth === undefined);
     if ((person.status === "ACTIVE") !== (open.length === 1) || (person.status !== "ACTIVE" && open.length !== 0)) errors.push(`military appointment state disagrees with person status: ${person.personId}`);
     let priorEnd = Number.NEGATIVE_INFINITY;
     for (const appointment of person.appointments) {
       if (!plain(appointment)) { errors.push(`military appointment interval is invalid: ${person.personId}`); continue; }
       if (!factions.has(appointment.factionId) || !month(appointment.startMonth) || appointment.startMonth < person.bornMonth || appointment.startMonth > worldMonth || typeof appointment.commandId !== "string" || !appointment.commandId ||
-          (appointment.endMonth !== undefined && (!month(appointment.endMonth) || Number(appointment.endMonth) < appointment.startMonth || Number(appointment.endMonth) > worldMonth || !["DISMISSED", "TRANSFERRED", "FACTION_ENDED", "DEATH"].includes(String(appointment.endReason)))) ||
+          (appointment.endMonth !== undefined && (!month(appointment.endMonth) || Number(appointment.endMonth) < appointment.startMonth || Number(appointment.endMonth) > worldMonth || !["DISMISSED", "TRANSFERRED", "FACTION_ENDED", "DEATH", "AGE_RETIREMENT"].includes(String(appointment.endReason)))) ||
           (appointment.endMonth === undefined && appointment.endReason !== undefined) || appointment.startMonth < priorEnd) errors.push(`military appointment interval is invalid: ${person.personId}`);
+      if (appointment.endReason === "AGE_RETIREMENT" && Number(appointment.endMonth) < life.retirementMonth) errors.push(`military age retirement precedes retirement age: ${person.personId}`);
+      if (appointment.endReason === "AGE_RETIREMENT") {
+        ageCommandOwners.set(appointment.commandId, person.personId);
+        const rows = retirementEvents.get(appointment.commandId) ?? [];
+        if (rows.length !== 1 || rows[0].metadata.personId !== person.personId || rows[0].actorFactionId !== appointment.factionId || (rows[0].monthIndex ?? rows[0].year) !== appointment.endMonth) errors.push(`military age retirement lacks unique matching history: ${person.personId}`);
+      }
       if (appointment.endMonth !== undefined) priorEnd = appointment.endMonth;
       if (appointmentCommandRefs.has(appointment.commandId)) errors.push(`duplicate military appointment command reference: ${appointment.commandId}`);
       appointmentCommandRefs.add(appointment.commandId);
@@ -56,6 +83,8 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
     }
     for (const eventId of person.capturedEventIds) if (typeof eventId !== "string" || !Array.isArray(history.events) || !history.events.some((event: any) => event.id === eventId)) errors.push(`military person references missing capture event: ${person.personId}`);
   }
+  for (const personId of naturalEvents.keys()) if (people.get(personId)?.deathCause !== "NATURAL_DEATH") errors.push(`natural death event references no actual military death: ${personId}`);
+  for (const [commandId, rows] of retirementEvents) if (ageCommandOwners.get(commandId) !== rows[0].metadata.personId) errors.push(`retirement event references no actual appointment: ${commandId}`);
   const activeUnits = new Set<string>();
   const activeCommanders = new Map<string, number>();
   const activeFormations = new Map<string, number>();

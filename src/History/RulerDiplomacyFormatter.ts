@@ -1,3 +1,4 @@
+import { formatRecordedRulerTitle } from "../Politics/RulerTitleRules";
 import type { WorldEvent } from "./WorldHistory";
 import { formatDiplomacyRecordedNarrative } from "../Politics/DiplomacyPresentation";
 import type { HistoryFactionLike } from "./HistoryRenderRules";
@@ -24,7 +25,7 @@ export function formatRulerDiplomacyEvent(
   if (rulerId && event.type !== "relation-renewed") {
     const side = metadata.signatoryARulerId === rulerId ? "A" : metadata.signatoryBRulerId === rulerId ? "B" : undefined;
     const title = side ? metadata[`signatory${side}Title`] : undefined;
-    if (side) return `${typeof title === "string" && title ? `${title}亲自签署：` : "本人参与签署："}${narrative}`;
+    if (side) return `${typeof title === "string" && title ? `${formatRecordedRulerTitle(title, side === "A" ? names[0] : names[1])}亲自签署：` : "本人参与签署："}${narrative}`;
   }
   return narrative;
 }

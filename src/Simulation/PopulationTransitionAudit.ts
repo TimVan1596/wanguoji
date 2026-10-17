@@ -2,6 +2,7 @@ import type Team from "../Components/Team";
 
 export type PopulationTransitionCause =
   | "NATURAL_GROWTH"
+  | "NATURAL_DEATH"
   | "RANDOM_EVENT"
   | "REBELLION_TRANSFER"
   | "EMPIRE_SPLIT_TRANSFER"
@@ -21,7 +22,7 @@ export type PopulationTransitionCause =
   | "INITIALIZATION"
   | "UNATTRIBUTED";
 
-export type PopulationDamageSource = "CITY_SIEGE" | "HOSTILE_HOME_OCCUPATION" | "UNSPECIFIED";
+export type PopulationDamageSource = "CITY_SIEGE" | "HOSTILE_HOME_OCCUPATION" | "MILITARY_LIFESPAN" | "UNSPECIFIED";
 
 export interface PopulationCasualtyEvidence {
   victimUserId: number;

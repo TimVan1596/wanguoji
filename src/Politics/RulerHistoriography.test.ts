@@ -356,9 +356,9 @@ describe("evidence-grounded ruler historiography", () => {
       peakTerritory: 0.56,
     }));
     expect(result.evidence.territorialPeakRetreat).toBeCloseTo(0.25);
-    expect(result.lines.join("")).toContain("一度达到56%");
+    expect(result.lines.join("")).toContain("记录峰值达到56.0%");
     expect(result.lines.join("")).toContain("明显回落");
-    expect(result.lines.join("")).toContain("一度达到鼎盛");
+    expect(result.lines.join("")).not.toMatch(/一度达到.*一度达到/);
   });
 
   it("describes inherited high-position decline without claiming the ruler created the peak", () => {
@@ -829,4 +829,12 @@ it("uses political-end wording for an abdicated ruler without changing the recor
   context.ruler.status = "dead";
   context.ruler.deathMonth = context.ruler.endYear; context.ruler.deathReason = "去世";
   expect(deriveRulerAssessment(context).lines.join(" ")).toContain("身后");
+});
+
+
+it("keeps state 王 distinct from a house and renders one precise peak without a repeated 一度", () => {
+  const ctx = makeContext({ foundedStateName: "王", foundedStateMonth: 0, start: { territoryShare: .069 }, end: { territoryShare: .069 }, peakTerritory: .408 });
+  const text = deriveRulerAssessment(ctx).lines.join("");
+  expect(text).toContain("确立王国的统治基础"); expect(text).not.toContain("奠定王国统");
+  expect(text).toContain("记录峰值达到40.8%"); expect(text).not.toMatch(/一度达到.*一度达到|其后于/);
 });

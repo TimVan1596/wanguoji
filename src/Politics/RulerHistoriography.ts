@@ -625,7 +625,7 @@ function composeLegacyRulerAssessment(evidence: RulerHistoricalEvidence): RulerA
   } else if (deposition?.depositionRole === "DEPOSING_SUCCESSOR") {
     lines.push(`${livingPrefix}其在前君仍在世时经宗室废立取得君位；这一政治身份与其后任内治绩应分别考察。`);
   } else if (evidence.foundedState) {
-    lines.push(`${livingPrefix}${agePrefix}其开创之功在于正式建国${evidence.foundedStateName ? `、奠定${evidence.foundedStateName}国统` : "，使政权成为正式国家"}。`);
+    lines.push(`${livingPrefix}${agePrefix}其开创之功在于正式建国${evidence.foundedStateName ? evidence.foundedStateName === "王" ? "、确立王国的统治基础" : `、奠定${evidence.foundedStateName}国统` : "，使政权成为正式国家"}。`);
   } else if (evidence.foundedFaction) {
     lines.push(`${livingPrefix}${agePrefix}其创立势力、开其端绪，为后来政权留下政治前身。`);
   } else if (evidence.proclaimedEmperor) {
@@ -766,9 +766,7 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
   }
   if (evidence.trajectory.expandedThenRetreated || evidence.trajectory.inheritedDecline) {
     const prefix = evidence.trajectory.inheritedDecline ? "承统时国势已居高位；" : "";
-    const height = evidence.trajectory.expandedThenRetreated
-      ? `疆域一度达到${formatPercent(evidence.peakTerritory)}${evidence.peakTerritory >= 0.3 ? "，一度达到鼎盛规模" : ""}；` : "";
-    const summary = `${prefix}${height}即位${formatPrecisePercent(evidence.startTerritory)}→记录峰值${formatPrecisePercent(evidence.peakTerritory)}→终局${formatPrecisePercent(evidence.endTerritory)}，明显回落${evidence.citiesLost ? `，失城记录${evidence.citiesLost}次（非净损失）` : ""}${evidence.hasRecordedDeath ? "；身后评议须兼看过程与终局" : ""}。`;
+    const summary = `${prefix}疆域即位${formatPrecisePercent(evidence.startTerritory)}→记录峰值达到${formatPrecisePercent(evidence.peakTerritory)}→终局${formatPrecisePercent(evidence.endTerritory)}，明显回落${evidence.citiesLost ? `，失城记录${evidence.citiesLost}次（非净损失）` : ""}${evidence.hasRecordedDeath ? "；身后评议须兼看过程与终局" : ""}。`;
     const peakSentence = (line: string) => /记录峰值|承统时国势已居高位|疆域.*一度|疆域一度|承统时疆域已有|^疆域由.*城市由/.test(line);
     if (evidence.tenure.restoredDuringTenure) lines[1] += summary;
     else {
@@ -820,7 +818,7 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
   if (selectedEvent && lines.length < 4) lines.push(selectedEvent);
 
   if (evidence.hasRecordedDeath && evidence.deathMonth !== undefined) {
-    const death = `${evidence.tenure.diedInExile ? "流亡期间于" : "其后于"}${formatWorldDate(evidence.deathMonth)}${evidence.deathReason === "战死" ? "战死" : evidence.deathReason === "被俘处死" ? "被俘处死" : "去世"}${evidence.finalAge !== undefined ? `，享年${evidence.finalAge}岁` : ""}。`;
+    const death = `${evidence.tenure.diedInExile ? "流亡期间于" : ""}${formatWorldDate(evidence.deathMonth)}${evidence.deathReason === "战死" ? "战死" : evidence.deathReason === "被俘处死" ? "被俘处死" : "去世"}${evidence.finalAge !== undefined ? `，享年${evidence.finalAge}岁` : ""}。`;
     if (!lines.some((line) => line.includes(formatWorldDate(evidence.deathMonth!)))) {
       if (lines.length >= 4) lines[lines.length - 1] = death;
       else lines.push(death);

@@ -492,6 +492,32 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     hydrateWorldSave(core, JSON.parse(JSON.stringify(first)));
     expect(exportWorldSave(core)).toEqual(first);
   });
+  it.each(["AGE_RETIREMENT", "NATURAL_DEATH"] as const)("V15 strictly restores and round-trips the new military lifecycle %s without a hydration action", reason => {
+    const save = fixture();
+    save.registries.militaryCommandRegistry = {
+      people: [{ personId: "military-person-1", sourceUserId: 81, name: "旧将", bornMonth: -1200, factionId: "qin", status: reason === "NATURAL_DEATH" ? "DEAD" : "RETIRED",
+        appointments: [{ factionId: "qin", startMonth: 12, endMonth: 24, endReason: reason === "NATURAL_DEATH" ? "DEATH" : "AGE_RETIREMENT", commandId: "military-command-1" }],
+        ...(reason === "NATURAL_DEATH" ? { deathMonth: 24, deathCause: "NATURAL_DEATH" } : {}), capturedEventIds: [] }],
+      formations: [{ commandId: "military-command-1", factionId: "qin", commanderPersonId: "military-person-1", memberUnitIds: [], createdMonth: 12, status: "DISBANDED", captures: [] }],
+      personSequence: 2, commandSequence: 2, lastEvaluationMonth: 24,
+    };
+    (save.worldHistory.events as WorldEvent[]).push({ id: "military-life-event", year: 24, monthIndex: 24, category: "politics", importance: "normal", title: "真实生命周期", actorFactionId: "qin", factionIds: ["qin"],
+      type: reason === "NATURAL_DEATH" ? "military-person-died" : "military-command-ended",
+      metadata: reason === "NATURAL_DEATH" ? { personId: "military-person-1", deathCause: "NATURAL_DEATH" } : { personId: "military-person-1", commandId: "military-command-1", endReason: "AGE_RETIREMENT" } });
+    expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
+    const missing = structuredClone(save); missing.worldHistory.events = []; expect(validateWorldSave(missing).valid).toBe(false);
+    const duplicate = structuredClone(save); (duplicate.worldHistory.events as WorldEvent[]).push({ ...(duplicate.worldHistory.events as WorldEvent[])[0], id: "duplicate-life" }); expect(validateWorldSave(duplicate).valid).toBe(false);
+    const core = target(), rng = worldRandom.exportState();
+    hydrateWorldSave(core, JSON.parse(JSON.stringify(save)));
+    const exported = exportWorldSave(core);
+    expect(exported.registries.militaryCommandRegistry).toEqual(save.registries.militaryCommandRegistry);
+    expect(worldRandom.exportState()).toEqual(rng);
+    hydrateWorldSave(core, JSON.parse(JSON.stringify(exported)));
+    expect(exportWorldSave(core)).toEqual(exported);
+    const invalid = structuredClone(save);
+    invalid.registries.militaryCommandRegistry.people[0].bornMonth = 0;
+    expect(validateWorldSave(invalid).valid).toBe(false);
+  });
   it("V14 keeps successive deposition accessions, later deposition, death and cooldown canonical across export/hydration", () => {
     const save = fixture();
     const snapshot = (month: number) => ({ month, population: 10, territoryShare: 0.2, cityCount: 1, stability: 35 });

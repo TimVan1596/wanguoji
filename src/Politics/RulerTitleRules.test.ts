@@ -76,3 +76,8 @@ describe("ruler title rules", () => {
     expect(getNaturalDeathVerbForTitle("帝")).toBe("崩");
   });
 });
+
+
+it("separates a state named 王 from the title and a personal name beginning with 王", () => {
+  expect(formatRulerTitleAtMonth({ name: "state", displayName: "王", identityStage: "STATE", stateFoundedMonth: 0, sovereigntyRank: "KING" }, "王文", 12)).toBe("王国国君王文");
+});

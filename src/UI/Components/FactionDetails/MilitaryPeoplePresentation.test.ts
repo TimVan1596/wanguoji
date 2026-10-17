@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { MilitaryPerson } from "../../../Politics/MilitaryCommandRegistry";
-import { describeMilitaryDeathCause, getMilitaryPersonRelevantMonth, sortMilitaryPeople } from "./MilitaryPeoplePresentation";
+import { describeMilitaryAge, describeMilitaryDeathCause, getMilitaryPersonRelevantMonth, sortMilitaryPeople } from "./MilitaryPeoplePresentation";
 
 const person = (personId: string, status: MilitaryPerson["status"], startMonth: number, endMonth?: number, deathMonth?: number): MilitaryPerson => ({
   personId, sourceUserId: Number(personId.replace(/\\D/g, "")) || 1, name: personId, bornMonth: -300,
@@ -21,4 +21,13 @@ describe("military people presentation", () => {
     expect(describeMilitaryDeathCause("SIEGE_LOSS")).toBe("围城战损（SIEGE_LOSS）");
     expect(describeMilitaryDeathCause("OTHER_CAUSE")).toBe("OTHER_CAUSE");
   });
+});
+
+
+it("does not describe untraceable retired records as verified centuries-old living people", () => {
+  const p = person("retired-1", "RETIRED", 10, 20);
+  expect(describeMilitaryAge(p, 6000, false)).toContain("生死未载");
+  expect(describeMilitaryAge(p, 6000, false)).toContain("原User未核验");
+  expect(describeMilitaryAge(p, 600, true)).toBe("年龄 75 岁");
+  expect(describeMilitaryAge({ ...p, status: "DEAD", deathMonth: 660 }, 6000, false)).toBe("享年 80 岁");
 });

@@ -1,3 +1,4 @@
+import { deriveMilitaryLifeSchedule } from "../Politics/MilitaryLifeRules";
 import Game from "../Game/Game";
 import Player from "./Player";
 import Slaves from "./Slaves";
@@ -110,8 +111,24 @@ export default class User {
     return this.destroyed;
   }
 
+  /** Exact live binding; a recycled numeric User ID is never sufficient. */
+  matchesMilitaryLife(person: import("../Politics/MilitaryCommandRegistry").MilitaryPerson) {
+    const entry = this.player.logicalUnitId ? Game.Core?.logicalUnitRegistry.getEntry(this.player.logicalUnitId) : undefined;
+    return !this.destroyed && person.status !== "DEAD" && this.role === "NORMAL" && this.militaryPersonId === person.personId &&
+      this.id === person.sourceUserId && this.bornMonth === person.bornMonth && this.name === person.name &&
+      this.team.name === person.factionId && this.team.users.has(this) && this.player.user === this && this.player.active &&
+      this.player.team === this.team && this.player.role === "NORMAL" && !this.rulerId && !this.player.rulerId &&
+      entry?.player === this.player && entry.state.alive && entry.state.unitId === this.player.logicalUnitId &&
+      entry.state.userId === this.id && entry.state.factionId === this.team.name && entry.state.role === "NORMAL";
+  }
+
   destroyUser(silentRulerDeath = false, populationMutation: PopulationMutationContext = { cause: "UNATTRIBUTED" }) {
     if (this.destroyed) return false;
+    if (populationMutation.cause === "NATURAL_DEATH") {
+      const person = this.militaryPersonId ? MilitaryCommandRegistry.getPerson(this.militaryPersonId) : undefined;
+      const month = populationMutation.month;
+      if (!person || month === undefined || month % 12 !== 0 || month < deriveMilitaryLifeSchedule(person).naturalDeathMonth || !this.matchesMilitaryLife(person)) return false;
+    }
     if (this.role === "RULER" && !silentRulerDeath) {
       const shouldDestroy = Game.Core?.handleRulerCombatDeath(this) ?? true;
       if (!shouldDestroy) {
@@ -135,10 +152,10 @@ export default class User {
       ? MilitaryCommandRegistry.getPerson(this.militaryPersonId)
       : undefined;
     const verifiedMilitaryPersonId = militaryPerson?.sourceUserId === this.id &&
-      militaryPerson.factionId === team.name && militaryPerson.status !== "DEAD"
+      militaryPerson.bornMonth === this.bornMonth && militaryPerson.name === this.name && militaryPerson.factionId === team.name && militaryPerson.status !== "DEAD"
       ? militaryPerson.personId
       : undefined;
-    const casualty = (populationMutation.cause === "SIEGE_LOSS" || populationMutation.cause === "BATTLE_DEATH")
+    const casualty = (populationMutation.cause === "SIEGE_LOSS" || populationMutation.cause === "BATTLE_DEATH" || populationMutation.cause === "NATURAL_DEATH")
       ? {
           victimUserId: this.id,
           victimLogicalUnitId: unitId,

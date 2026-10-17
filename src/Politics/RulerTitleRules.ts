@@ -78,7 +78,7 @@ export function formatRulerTitleAtMonth(
     },
     monthIndex
   );
-  return `${factionName}${getRulerTitleAtMonth(faction, monthIndex)}${rulerName}`;
+  return formatNamedRulerTitle(factionName, getRulerTitleAtMonth(faction, monthIndex), rulerName);
 }
 
 export function getSuccessionVerbForTitle(title: RulerPoliticalTitle) {
@@ -93,4 +93,16 @@ export function getNaturalDeathVerbForTitle(title: RulerPoliticalTitle) {
     return "崩";
   }
   return title === "王" ? "薨" : "去世";
+}
+
+
+export function formatNamedRulerTitle(factionName: string, title: RulerPoliticalTitle, rulerName: string) {
+  if (factionName === title && title === "王") return `${factionName}国国君${rulerName}`;
+  if (factionName === title && title === "帝") return `${factionName}国皇帝${rulerName}`;
+  return `${factionName}${title}${rulerName}`;
+}
+/** Old frozen conventional titles can be displayed structurally without editing metadata or names. */
+export function formatRecordedRulerTitle(title: string, factionName: string) {
+  if (factionName === "王" && title.startsWith(`${factionName}王`)) return formatNamedRulerTitle(factionName, "王", title.slice(factionName.length + 1));
+  return title;
 }

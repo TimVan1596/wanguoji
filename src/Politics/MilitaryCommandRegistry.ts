@@ -1,3 +1,4 @@
+import { deriveMilitaryLifeSchedule } from "./MilitaryLifeRules";
 import type User from "../Components/User";
 import type Team from "../Components/Team";
 import type City from "../Components/City";
@@ -16,7 +17,7 @@ export interface MilitaryAppointment {
   factionId: string;
   startMonth: number;
   endMonth?: number;
-  endReason?: "DISMISSED" | "TRANSFERRED" | "FACTION_ENDED" | "DEATH";
+  endReason?: "DISMISSED" | "TRANSFERRED" | "FACTION_ENDED" | "DEATH" | "AGE_RETIREMENT";
   commandId: string;
 }
 
@@ -80,7 +81,7 @@ export class MilitaryCommandRegistryStore {
   private longRangeOrderSamples = new Map<string, number>();
   private eventWriter?: (event: Omit<WorldEvent, "id"> & { id: string }) => string;
   private diagnostics = { candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
-    unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0 };
+    unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
 
   reset() {
     this.people.clear(); this.formations.clear(); this.personSequence = 1; this.commandSequence = 1;
@@ -88,7 +89,7 @@ export class MilitaryCommandRegistryStore {
     this.lastArrivalTargetByCommand.clear();
     this.longRangeOrderSamples.clear();
     this.diagnostics = { candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
-      unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0 };
+      unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
   }
 
   setEventWriter(writer: (event: Omit<WorldEvent, "id"> & { id: string }) => string) { this.eventWriter = writer; }
@@ -107,7 +108,7 @@ export class MilitaryCommandRegistryStore {
     this.lastArrivalTargetByCommand.clear();
     this.longRangeOrderSamples.clear();
     this.diagnostics = { candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
-      unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0 };
+      unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
   }
 
   getPeople() { return [...this.people.values()]; }
@@ -116,11 +117,15 @@ export class MilitaryCommandRegistryStore {
     activeFormations: [...this.formations.values()].filter(f => f.status === "ACTIVE").length }; }
 
   update(worldMonth: number, teams: Team[], cities: City[]) {
+    const annual = worldMonth % 12 === 0 && worldMonth > this.lastEvaluationMonth;
+    if (annual) {
+      this.lastEvaluationMonth = worldMonth;
+      this.advanceLifecycles(worldMonth, teams);
+    }
     this.reconcile(worldMonth, teams);
     this.refreshOrders(worldMonth, teams, cities);
     this.observeLongRangeOrders(worldMonth, teams, cities);
-    if (worldMonth % 12 !== 0 || worldMonth === this.lastEvaluationMonth) return;
-    this.lastEvaluationMonth = worldMonth;
+    if (!annual) return;
     for (const team of teams) {
       if (team.status !== "ACTIVE" || team.users.size < 2) continue;
       const activeCount = [...this.people.values()].filter(p => p.status === "ACTIVE" && p.factionId === team.name).length;
@@ -137,13 +142,40 @@ export class MilitaryCommandRegistryStore {
       const candidate = candidates[worldRandom.pickIndex(candidates.length)];
       const members = [candidate, ...availableUnits.filter(user => user !== candidate)].slice(0, MAX_FORMATION_UNITS);
       if (members.length < 2 || !candidate.player.logicalUnitId) { this.diagnostics.unitBlocked++; continue; }
-      this.appoint(candidate, team.name, worldMonth, members.map(user => user.player.logicalUnitId!));
-      this.diagnostics.appointments++;
+      if (this.appoint(candidate, team.name, worldMonth, members.map(user => user.player.logicalUnitId!))) this.diagnostics.appointments++;
       this.refreshOrders(worldMonth, teams, cities);
     }
   }
 
+  private advanceLifecycles(worldMonth: number, teams: Team[]) {
+    const bound = new Map<string, User[]>();
+    for (const team of teams) for (const user of team.users) if (user.militaryPersonId) {
+      const rows = bound.get(user.militaryPersonId) ?? []; rows.push(user); bound.set(user.militaryPersonId, rows);
+    }
+    for (const person of this.people.values()) {
+      if (person.status === "DEAD") continue;
+      const life = deriveMilitaryLifeSchedule(person);
+      if (worldMonth < life.retirementMonth) continue;
+      // Retired records without a verifiable original User are historical unknowns.
+      const matches = bound.get(person.personId) ?? [];
+      const user = matches.length === 1 ? matches[0] : undefined;
+      if (!user || !user.matchesMilitaryLife?.(person)) { this.diagnostics.identityFailures++; continue; }
+      if (worldMonth >= life.naturalDeathMonth) {
+        // destroyUser ends the appointment before removing population and runtime units.
+        if (!user.destroyUser(false, { cause: "NATURAL_DEATH", month: worldMonth, context: "MILITARY_NATURAL_LIFESPAN", damageSource: "MILITARY_LIFESPAN" })) this.diagnostics.identityFailures++;
+      } else if (person.status === "ACTIVE") {
+        for (const formation of this.formations.values()) if (formation.commanderPersonId === person.personId && formation.status === "ACTIVE")
+          this.endFormation(formation, worldMonth, "AGE_RETIREMENT");
+      }
+    }
+  }
+
   private isEligible(user: User, worldMonth: number) {
+    const person = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
+    if (user.isDestroyed || person?.status === "DEAD" || (user.militaryPersonId && (!person || person.sourceUserId !== user.id || person.bornMonth !== user.bornMonth || person.name !== user.name || person.factionId !== user.team.name))) return false;
+    if (worldMonth >= deriveMilitaryLifeSchedule(person ?? { personId: `military-person-${this.personSequence}`, bornMonth: user.bornMonth }).retirementMonth) {
+      this.diagnostics.ageBlocked++; return false;
+    }
     return user.role === "NORMAL" && user.team.status === "ACTIVE" && user.bornMonth <= worldMonth - MIN_COMMANDER_AGE_MONTHS &&
       Boolean(user.player.active && user.player.logicalUnitId) && !this.isUnitAssigned(user.player.logicalUnitId!) &&
       (!user.militaryPersonId || this.people.get(user.militaryPersonId)?.status !== "ACTIVE");
@@ -151,7 +183,8 @@ export class MilitaryCommandRegistryStore {
 
   private appoint(user: User, factionId: string, worldMonth: number, memberUnitIds: string[]) {
     let person = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
-    if (person?.status === "DEAD") return false;
+    if (person?.status === "DEAD" || !this.isEligible(user, worldMonth)) return false;
+    if (person?.status === "RETIRED") this.diagnostics.reappointments++;
     const personId = person?.personId ?? `military-person-${this.personSequence++}`;
     const commandId = `military-command-${this.commandSequence++}`;
     if (!person) {
@@ -179,7 +212,7 @@ export class MilitaryCommandRegistryStore {
       if (formation.status !== "ACTIVE") continue;
       const team = teamById.get(formation.factionId);
       const person = this.people.get(formation.commanderPersonId);
-      const commander = team && person ? [...team.users].find(user => user.id === person.sourceUserId && user.militaryPersonId === person.personId && user.role === "NORMAL") : undefined;
+      const commander = team && person ? [...team.users].find(user => user.id === person.sourceUserId && user.bornMonth === person.bornMonth && user.name === person.name && !user.isDestroyed && user.militaryPersonId === person.personId && user.role === "NORMAL") : undefined;
       if (!team || team.status !== "ACTIVE" || !commander || !commander.player.logicalUnitId || person?.status !== "ACTIVE") {
         this.endFormation(formation, worldMonth, team?.status === "ACTIVE" ? "DISMISSED" : "FACTION_ENDED");
         continue;
@@ -195,13 +228,15 @@ export class MilitaryCommandRegistryStore {
 
   private endFormation(formation: MilitaryFormation, worldMonth: number, reason: MilitaryAppointment["endReason"]) {
     if (formation.status !== "ACTIVE") return;
+    this.diagnostics.releasedFormations++;
+    if (reason === "AGE_RETIREMENT") this.diagnostics.ageRetirements++;
     formation.status = "DISBANDED"; formation.targetCityId = undefined; formation.orderStartMonth = undefined;
     const person = this.people.get(formation.commanderPersonId);
     const appointment = person?.appointments.find(item => item.commandId === formation.commandId && item.endMonth === undefined);
     if (appointment) { appointment.endMonth = worldMonth; appointment.endReason = reason; }
     if (person && person.status !== "DEAD") person.status = "RETIRED";
     if (person) this.eventWriter?.({ id: `military-command-ended-${formation.commandId}`, year: worldMonth, monthIndex: worldMonth,
-      category: "politics", type: "military-command-ended", title: `${person.name}结束军事任职`, factionIds: [formation.factionId],
+      category: "politics", type: "military-command-ended", title: reason === "AGE_RETIREMENT" ? `${person.name}年老退役` : `${person.name}结束军事任职`, factionIds: [formation.factionId],
       actorFactionId: formation.factionId, metadata: { personId: person.personId, commandId: formation.commandId, endReason: reason }, importance: "normal" });
   }
 
@@ -335,8 +370,10 @@ export class MilitaryCommandRegistryStore {
   }
 
   onUserDestroyed(user: User, worldMonth: number, cause: string) {
-    const person = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
-    const death = cause === "SIEGE_LOSS" || cause === "BATTLE_DEATH";
+    const record = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
+    const person = record?.sourceUserId === user.id && record.bornMonth === user.bornMonth && record.name === user.name && record.factionId === user.team.name ? record : undefined;
+    if (cause === "NATURAL_DEATH" && (!person || worldMonth % 12 !== 0 || worldMonth < deriveMilitaryLifeSchedule(person).naturalDeathMonth)) return;
+    const death = cause === "SIEGE_LOSS" || cause === "BATTLE_DEATH" || cause === "NATURAL_DEATH";
     const unitId = user.player.logicalUnitId;
     if (unitId) for (const formation of this.formations.values()) if (formation.status === "ACTIVE" && formation.memberUnitIds.includes(unitId)) {
       if (person && formation.commanderPersonId === person.personId) this.endFormation(formation, worldMonth, death ? "DEATH" : "DISMISSED");
@@ -348,8 +385,9 @@ export class MilitaryCommandRegistryStore {
     if (!person || person.status === "DEAD") return;
     if (death) {
       person.status = "DEAD"; person.deathMonth = worldMonth; person.deathCause = cause; this.diagnostics.deaths++;
+      if (cause === "NATURAL_DEATH") this.diagnostics.naturalDeaths++;
       this.eventWriter?.({ id: `military-person-death-${person.personId}-${worldMonth}`, year: worldMonth, monthIndex: worldMonth,
-        category: "politics", type: "military-person-died", title: `${person.name}去世`, factionIds: [person.factionId], actorFactionId: person.factionId,
+        category: "politics", type: "military-person-died", title: cause === "NATURAL_DEATH" ? `${person.name}自然去世` : `${person.name}去世`, factionIds: [person.factionId], actorFactionId: person.factionId,
         metadata: { personId: person.personId, deathCause: cause }, importance: "normal" });
     } else if (person.status === "ACTIVE") person.status = "RETIRED";
   }

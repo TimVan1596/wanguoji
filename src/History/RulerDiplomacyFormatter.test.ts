@@ -18,3 +18,12 @@ describe("ruler diplomacy event summary", () => {
     }, new Map())).toBeUndefined();
   });
 });
+
+
+it("formats an old recorded 王 title structurally without changing the real name or metadata", () => {
+  const event: any = { id: "king-wang", year: 12, type: "truce-signed", category: "politics", title: "停战", factionIds: ["state", "other"], importance: "major",
+    metadata: { signatoryARulerId: "r", signatoryATitle: "王王王文" } };
+  const before = JSON.stringify(event);
+  const text = formatRulerDiplomacyEvent(event, new Map([["state", { name: "state", displayName: "王", color: 1 }], ["other", { name: "other", displayName: "齐", color: 2 }]]), "r");
+  expect(text).toContain("王国国君王文亲自签署"); expect(text).not.toContain("王王王文"); expect(JSON.stringify(event)).toBe(before);
+});

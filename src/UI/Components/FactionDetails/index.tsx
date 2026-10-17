@@ -17,7 +17,7 @@ import { colorToString } from "../../../paid/theme";
 import DynastyRegistry, { Dynasty, Ruler } from "../../../Politics/Dynasty";
 import Diplomacy from "../../../Politics/Diplomacy";
 import MilitaryCommandRegistry from "../../../Politics/MilitaryCommandRegistry";
-import { describeMilitaryDeathCause, sortMilitaryPeople } from "./MilitaryPeoplePresentation";
+import { describeMilitaryAge, describeMilitaryStatus, describeMilitaryAppointmentEnd, describeMilitaryDeathCause, sortMilitaryPeople } from "./MilitaryPeoplePresentation";
 import { formatDiplomacyRelationLines, getFactionDiplomacyBadges } from "../../../Politics/DiplomacyPresentation";
 import FactionSnapshots, {
   FactionSnapshot,
@@ -576,18 +576,22 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
     <Typography fontSize="0.76rem" color="var(--gg-text-muted)">
       全世界本次运行累计诊断：候选 {diagnostics.candidates} · 符合资格 {diagnostics.eligible} · 任命 {diagnostics.appointments} · 新命令 {diagnostics.orders} · 转向步进 {diagnostics.unitsSteered} · 到达目标城 {diagnostics.targetCityArrivals} · 围城接触 {diagnostics.commandedSiegeContacts} · 攻陷 {diagnostics.captures} · 目标失效 {diagnostics.invalidatedTargets} · 长期远距命令检查 {diagnostics.staleOrderChecks}
     </Typography>
+    <Typography fontSize="0.76rem" color="var(--gg-text-muted)">
+      全世界世代更替（本次会话，读取后重置）：年老退役 {diagnostics.ageRetirements} · 自然死亡 {diagnostics.naturalDeaths} · 释放编组 {diagnostics.releasedFormations} · 合法重新任职 {diagnostics.reappointments} · 到龄任命阻断 {diagnostics.ageBlocked} · 原User核验失败 {diagnostics.identityFailures}
+    </Typography>
     {!people.length && <Typography fontSize="0.86rem" color="var(--gg-text-muted)">本国尚无已任命的军事指挥人物。</Typography>}
     {people.map(person => {
       const formation = formations.find(item => item.commanderPersonId === person.personId && item.status === "ACTIVE");
       const target = formation?.targetCityId ? Game.Core?.allCities.find(city => city.id === formation.targetCityId) : undefined;
-      const activeUser = [...(Game.Core?.teams.find(team => team.name === factionId)?.users ?? [])]
+      const activeUser = [...(Game.Core?.teams.find(team => team.name === person.factionId)?.users ?? [])]
         .find(user => user.militaryPersonId === person.personId);
-      const ageAtMonth = person.deathMonth ?? worldMonth;
-      const age = Math.floor(monthsToYears(Math.max(0, ageAtMonth - person.bornMonth)));
+      const lastAppointment = person.appointments.at(-1);
       return <Box key={person.personId} sx={{ borderBottom: "1px solid var(--gg-border-muted)", pb: 0.75 }}>
-        <Typography fontWeight="bold" fontSize="0.9rem">{person.name} · {person.status === "ACTIVE" ? "现役指挥官" : person.status === "DEAD" ? "已故" : "已离任"}</Typography>
-        <Typography fontSize="0.82rem" color="var(--gg-text-muted)">{person.status === "DEAD" ? `享年 ${age} 岁` : `年龄 ${age} 岁`} · 任职 {person.appointments.map(item => `${formatWorldDate(item.startMonth)}${item.endMonth === undefined ? "至今" : `—${formatWorldDate(item.endMonth)}`}`).join("；")}</Typography>
-        {person.deathMonth !== undefined && <Typography fontSize="0.82rem">生命结局：{formatWorldDate(person.deathMonth)}去世（{describeMilitaryDeathCause(person.deathCause)}）</Typography>}
+        <Typography fontWeight="bold" fontSize="0.9rem">{person.name} · {describeMilitaryStatus(person)}</Typography>
+        <Typography fontSize="0.82rem" color="var(--gg-text-muted)">{describeMilitaryAge(person, worldMonth, Boolean(activeUser?.matchesMilitaryLife(person)))} · 任职 {person.appointments.map(item => `${formatWorldDate(item.startMonth)}${item.endMonth === undefined ? "至今" : `—${formatWorldDate(item.endMonth)}（${describeMilitaryAppointmentEnd(item.endReason)}）`}`).join("；")}</Typography>
+        {lastAppointment?.endReason === "AGE_RETIREMENT" && lastAppointment.endMonth !== undefined && <Typography fontSize="0.82rem">退休时年龄：{Math.floor((lastAppointment.endMonth - person.bornMonth) / 12)}岁</Typography>}
+        {person.deathMonth !== undefined && <Typography fontSize="0.82rem">生命结局：{formatWorldDate(person.deathMonth)} · {describeMilitaryDeathCause(person.deathCause)}</Typography>}
+        {!formation && <Typography fontSize="0.82rem">已核验历史攻城记录：{new Set(person.capturedEventIds).size} 次 · 当前无活动编组</Typography>}
         {formation && <>
           <Typography fontSize="0.82rem">编组 {formation.commandId} · 真实成员 {formation.memberUnitIds.length} 人</Typography>
           <Typography fontSize="0.82rem">目标：{target?.name ?? "暂无有效目标"} · 命令始于 {formation.orderStartMonth === undefined ? "—" : formatWorldDate(formation.orderStartMonth)}</Typography>
@@ -1236,7 +1240,7 @@ function RulerBiography({
         </Box>
       ) : null}
       <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap", my: 0.75 }}>
-        {(tags.length > 0 ? tags : ["未定"]).map((tag) => (
+        {tags.map((tag) => (
           <Box
             key={tag}
             component="span"
