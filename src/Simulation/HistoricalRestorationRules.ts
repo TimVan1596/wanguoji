@@ -173,8 +173,10 @@ export function getRestorationDrawExpectation(rows: readonly { chance: number; r
   return expectation;
 }
 
-/** Resident response has its own graduated crisis component; it never changes
- * remnant risk. Historical tenure is evidence, not a record of popular loyalty. */
+/** Graduated response requires a verified historical claim AND actual political
+ * resources (remnants or a transferable resident). Caller owns these hard gates.
+ * Keeping a surviving remnant must not make an otherwise identical claim weaker.
+ * Historical tenure is evidence, not a record of popular loyalty. */
 export function localResidentRestorationChance(input: {
   legacyChance:number; loyalty:number; devastation:number; recentTransfers:number; ownerStability:number;
   legitimacy:number; basis:RestorationBasis; tenure:Pick<import("./RestorationTenureEvidence").RestorationTenureEvidence,"complete"|"stateTenureMonths"|"currentHouseTenureMonths">;
@@ -193,19 +195,20 @@ export function localResidentRestorationChance(input: {
 
 /** Keep every v31s slot's probability mass. Only the shared, bounded unused city
  * risk budget can fund the resident increment; extra candidates cannot add risk. */
-export function getLocalResponseDrawDistribution(rows: readonly {legacyChance:number;chance:number;local:boolean}[], cap:number) {
+export function getLocalResponseDrawDistribution(rows: readonly {legacyChance:number;chance:number;local:boolean;resourceBacked?:boolean}[], cap:number) {
   const baselineChance=Math.min(1,Math.max(0,...rows.map(r=>r.legacyChance)));
   const total=rows.reduce((sum,r)=>sum+Math.max(0,r.legacyChance),0);
   const baseline=rows.map(r=>total>0?baselineChance*Math.max(0,r.legacyChance)/total:0);
-  const oldLocal=Math.max(0,...rows.filter(r=>r.local).map(r=>r.legacyChance));
-  const newLocal=Math.max(0,...rows.filter(r=>r.local).map(r=>r.chance));
+  const responds = (r: typeof rows[number]) => r.local || r.resourceBacked === true;
+  const oldLocal=Math.max(0,...rows.filter(responds).map(r=>r.legacyChance));
+  const newLocal=Math.max(0,...rows.filter(responds).map(r=>r.chance));
   const extraChance=Math.max(0,Math.min(cap-baselineChance,newLocal-oldLocal));
-  const localWeight=rows.reduce((sum,r)=>sum+(r.local?Math.max(0,r.chance):0),0);
-  const extra=rows.map(r=>r.local && localWeight>0 ? extraChance*Math.max(0,r.chance)/localWeight:0);
+  const localWeight=rows.reduce((sum,r)=>sum+(responds(r)?Math.max(0,r.chance):0),0);
+  const extra=rows.map(r=>responds(r) && localWeight>0 ? extraChance*Math.max(0,r.chance)/localWeight:0);
   return {baselineChance,extraChance,baseline,extra,probabilities:baseline.map((p,i)=>p+extra[i])};
 }
 
-export function selectLocalResponseOpportunity<T>(rows:Array<{legacyChance:number;chance:number;local:boolean;value:T}>,draw:number,cap:number):T|undefined {
+export function selectLocalResponseOpportunity<T>(rows:Array<{legacyChance:number;chance:number;local:boolean;resourceBacked?:boolean;value:T}>,draw:number,cap:number):T|undefined {
   const d=getLocalResponseDrawDistribution(rows,cap);
   if(d.baselineChance>0 && draw<=d.baselineChance) return selectRestorationOpportunity(rows.map(r=>({chance:r.legacyChance,value:r.value})),draw);
   let point=draw-d.baselineChance;

@@ -23,18 +23,20 @@ import WorldExiles from "./WorldExiles";
 import WorldRemnants from "./WorldRemnants";
 import worldRandom from "./WorldRandom";
 import { formatHistoryEventTitle } from "../History/HistoryRenderRules";
+import FactionEffects from "./FactionEffects";
+import * as restorationRules from "./HistoricalRestorationRules";
 
-async function fixture(basis = "capital", founderPath = false) {
+async function fixture(basis = "capital", founderPath = false, naturalLives = false, seed = "historical-restoration-execution") {
   vi.stubGlobal("Phaser", { Math: { Clamp: (value: number, min: number, max: number) => Math.max(min, Math.min(max, value)) } });
   const { default: City } = await vi.importActual<typeof import("../Components/City")>("../Components/City");
   const { default: Team } = await vi.importActual<typeof import("../Components/Team")>("../Components/Team");
-  WorldHistory.reset(); DynastyRegistry.reset(); WorldExiles.reset(); WorldRemnants.reset(); FactionRegistry.reset();
-  worldRandom.initialize("historical-restoration-execution");
+  WorldHistory.reset(); DynastyRegistry.reset(); WorldExiles.reset(); WorldRemnants.reset(); FactionRegistry.reset(); FactionEffects.reset();
+  worldRandom.initialize(seed);
   const teams = ["founder", "old", "owner"].map(name => ({ name, displayName: name, houseName: "宋氏", nameHistory: [{ name, startMonth: 0 }],
     status: "ACTIVE", factionType: "KINGDOM", identityStage: "STATE", sovereigntyRank: "KING", stateFoundedMonth: 0,
     firstFoundedYear: 0, cumulativeActiveYears: 0, currentActiveSinceYear: 0, restorationYears: [], origin: { type: "INITIAL", foundedMonth: 0 },
     cities: [] as any[], users: new Set(), blocks: { children: { size: 1, entries: [] } }, removeRulerUnit() {},
-    markActive: Team.prototype.markActive, addCity(c: any) { if (!this.cities.includes(c)) this.cities.push(c); }, removeCity(c: any) { this.cities = this.cities.filter((v: any) => v !== c); },
+    markActive: Team.prototype.markActive, markExtinct: Team.prototype.markExtinct, addCity(c: any) { if (!this.cities.includes(c)) this.cities.push(c); }, removeCity(c: any) { this.cities = this.cities.filter((v: any) => v !== c); },
     setCapitalCity(c: any, month: number) { c.setCapital(true, month); },
   } as any));
   const [founder, old, owner] = teams;
@@ -42,8 +44,9 @@ async function fixture(basis = "capital", founderPath = false) {
   vi.spyOn(DynastyRegistry, "ensureRulerUnit").mockImplementation(() => undefined);
   teams.forEach(team => {
     DynastyRegistry.initializeFaction(team, 0);
-    DynastyRegistry.get(team.name)!.rulers.forEach(ruler => { ruler.naturalDeathYear = 10000; ruler.plannedEndYear = 10000; });
+    if (!naturalLives) DynastyRegistry.get(team.name)!.rulers.forEach(ruler => { ruler.naturalDeathYear = 10000; ruler.plannedEndYear = 10000; });
   });
+  if (naturalLives) for(let month=1;month<=400;month++) DynastyRegistry.update(month,teams);
   if (!founderPath) {
     founder.status = "EXILED"; founder.isDie = true; DynastyRegistry.markExiled(founder, 400);
     WorldExiles.start(founder, 400, 0); WorldExiles.get("founder")!.legitimacy = 0;
@@ -67,6 +70,71 @@ async function fixture(basis = "capital", founderPath = false) {
   return { teams, city: c, candidate, system, old, founder, owner };
 }
 function check(f: Awaited<ReturnType<typeof fixture>>, month = 480) { (f.system as any).checkRestorations(month, f.teams); }
+
+describe("w资源不连续性修复：真实年度事务与种子演练",()=>{
+  it("相同真实战乱旧都，有残部可使用渐进响应；一次draw，旧期望单独保留",async()=>{
+    const f=await fixture(); f.city.loyalty=39; f.city.devastation=90;
+    const draw=vi.spyOn(worldRandom,"next").mockReturnValue(.99);
+    check(f);
+    const d=f.system.getRestorationDiagnosticSnapshot();
+    expect(draw).toHaveBeenCalledOnce(); expect(d.resourceResponseChecks).toBe(1);
+    expect(d.expectedRestorations).toBeGreaterThan(d.baselineExpectedRestorations);
+    expect(d.expectedRestorations).toBeLessThanOrEqual(.03);
+    expect(d.localSupport.eligible).toBe(0); // genuine remnants, not fabricated residents
+    expect(WorldRemnants.get("old")?.population).toBe(3);
+    const state=worldRandom.exportState();f.system.getRestorationDiagnostics();expect(worldRandom.exportState()).toEqual(state);
+  });
+
+  it("32固定种子×100年，实际资源/继统/年度抽签/复国执行对照；不是完整自然世界发生率",async()=>{
+    const run=async(seed:number,previous:boolean)=>{
+      const f=await fixture("capital",false,true,`w-resource-${seed}`);
+      // Recorded initial scenario, not a second war/population simulator. The city
+      // remains a war-torn old capital. No forced political rolls or success events.
+      f.city.loyalty=39;f.city.devastation=90;
+      WorldExiles.reset();WorldRemnants.reset();WorldRemnants.add("old",3,400);
+      Object.assign(f.candidate,{cumulativeActiveYears:400,currentActiveSinceYear:undefined});
+      WorldExiles.start(f.candidate,400,3);
+      WorldHistory.addFactionExiled(400,"old",DynastyRegistry.getCurrentRuler("old")?.name??"流亡君主",3);
+      f.system.reset(400);
+      const old=previous ? vi.spyOn(restorationRules,"localResidentRestorationChance").mockImplementation(i=>i.legacyChance) : undefined;
+      const start=performance.now();
+      for(let month=401;month<=1600;month++) {
+        game.Core.simulator.year=month;
+        check(f,month);FactionEffects.update(month);DynastyRegistry.update(month,f.teams);WorldExiles.update(month,f.teams);
+      }
+      old?.mockRestore();
+      const d=f.system.getRestorationDiagnosticSnapshot(),e=WorldExiles.getDiagnostics();
+      const events=WorldHistory.getEvents().filter(e=>e.type==="faction-restored" && e.actorFactionId==="old");
+      expect(events.length).toBe(d.successes);
+      if(events.length) {
+        expect(f.city.ownerFactionId).toBe("old");expect(f.candidate.status).toBe("ACTIVE");
+        expect(events[0].metadata).toMatchObject({restorationBasis:"FORMER_CAPITAL"});
+        expect(formatHistoryEventTitle(events[0],new Map())).toContain("旧都");
+        const saved=WorldHistory.exportState();WorldHistory.importState(JSON.parse(JSON.stringify(saved)));
+        expect(WorldHistory.exportState()).toEqual(saved);
+      }
+      if(f.candidate.status==="EXTINCT") {
+        const before=WorldHistory.getEventTypeCount("faction-restored");check(f,1612);
+        expect(WorldHistory.getEventTypeCount("faction-restored")).toBe(before);
+      }
+      const result={draws:d.restorationDraws,eligible:d.warTornEligible,expected:d.expectedRestorations,
+        successes:d.successes,ends:e.politicalEnds,remnantZero:e.remnantFirstZero,
+        population:f.candidate.users.size,monthMs:(performance.now()-start)/1200,
+        evidence:events.map(e=>({id:e.id,month:e.monthIndex,metadata:e.metadata}))};
+      vi.restoreAllMocks();return result;
+    };
+    const rows=[];
+    for(let seed=0;seed<32;seed++) rows.push({seed,before:await run(seed,true),after:await run(seed,false)});
+    const totals=(key:"before"|"after")=>rows.reduce((s,r)=>({draws:s.draws+r[key].draws,eligible:s.eligible+r[key].eligible,
+      expected:s.expected+r[key].expected,successes:s.successes+r[key].successes,ends:s.ends+r[key].ends,
+      remnantZero:s.remnantZero+r[key].remnantZero,population:s.population+r[key].population,
+      monthMs:s.monthMs+r[key].monthMs/32}),{draws:0,eligible:0,expected:0,successes:0,ends:0,remnantZero:0,population:0,monthMs:0});
+    console.log("w受控真实子系统演练（32种子各100年；固定初始旧都危机，非Core自然战争/人口发生率）",JSON.stringify({before:totals("before"),after:totals("after"),evidence:rows.filter(r=>r.after.successes).map(r=>({seed:r.seed,events:r.after.evidence}))}));
+    expect(totals("after").expected).toBeGreaterThan(totals("before").expected);
+    const repeat=await run(0,false);
+    expect({...repeat,monthMs:0}).toEqual({...rows[0].after,monthMs:0});
+  },60000);
+});
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); WorldHistory.reset(); DynastyRegistry.reset(); WorldRemnants.reset(); WorldExiles.reset(); });
 
 describe("真实世界事件系统→城市政治恢复→人物与历史", () => {
