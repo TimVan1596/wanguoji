@@ -421,8 +421,8 @@ export function deriveRulerHistoricalEvidence(
     stability: 0,
   };
   const finalSnapshot = end ?? accessionSnapshot;
-  const peakPopulation = chronicle?.peakPopulation ?? finalSnapshot.population;
-  const peakTerritory = chronicle?.peakTerritoryShare ?? finalSnapshot.territoryShare;
+  const peakPopulation = Math.max(accessionSnapshot.population, finalSnapshot.population, chronicle?.peakPopulation ?? 0);
+  const peakTerritory = Math.max(accessionSnapshot.territoryShare, finalSnapshot.territoryShare, chronicle?.peakTerritoryShare ?? 0);
   const reignMonths = Math.max(0, endMonth - accessionMonth);
   const territorialPeakRetreat = Math.max(0, peakTerritory - finalSnapshot.territoryShare);
   const territorialPeakGain = peakTerritory - accessionSnapshot.territoryShare;
@@ -565,14 +565,14 @@ export function deriveRulerHistoricalEvidence(
   };
 }
 
-function describeRulerExileEnding(evidence: RulerHistoricalEvidence) {
+function describeRulerExileEnding(evidence: RulerHistoricalEvidence, historian = false) {
   if (evidence.tenure.lostStateDuringTenure) {
     return evidence.terminalCollapse
       ? "失国与政治终结均发生于其承统期间，二者时间有别；发生于任内，不等于由其个人造成。"
       : "失国发生于其任内；任期结束不等于国家政治终结，个人责任亦须另有证据。";
   }
   return evidence.tenure.exiledAtAccession
-    ? evidence.terminalCollapse ? "失国早于其继位，所承为无土王统；政治终结于其任内，不能将此前失国归作其在位事件。" : "失国早于其继位，流亡承统年限不能代作在国治绩。"
+    ? evidence.terminalCollapse ? `失国早于其继位，所承为无土王统；王统${historian ? "" : "政治"}终结于其任内，不能将此前失国归作其在位事件。` : "失国早于其继位，流亡承统年限不能代作在国治绩。"
     : evidence.terminalCollapse ? "政治终结发生于其任内；失国起点缺少明确记录，不据终局推定个人责任。" : "流亡经历与个人责任分别记载，任期结束不等于国家终结。";
 }
 
@@ -723,9 +723,9 @@ function composeLegacyRulerAssessment(evidence: RulerHistoricalEvidence): RulerA
   }
 
   if (evidence.terminalCollapse && !evidence.accessionCrisis) {
-    lines.push("国势在其任内进一步恶化，最终亡于其世。");
+    lines.push(describeRulerExileEnding(evidence));
   } else if (evidence.terminalCollapse && evidence.accessionCrisis) {
-    lines.push("其后仍未能扭转颓势，国家终亡于其世；这一结局始于承统前的危局。");
+    lines.push(`承统时已见危局；${describeRulerExileEnding(evidence)}`);
   } else if (evidence.deathCause === "战死" && evidence.foundedState) {
     lines.push(evidence.monthsSinceStateFoundationAtEnd !== undefined && evidence.monthsSinceStateFoundationAtEnd <= FOUNDING_EARLY_DEATH_MAX_MONTHS
       ? "正式建国未久即身死军中。"
@@ -998,7 +998,7 @@ export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string
     const fullExile = evidence.tenure.activeRuleMonths === 0;
     const opening = fullExile ? "承统虽久，却无一月在国治理；其所承接的是流亡中的王统。" :
       "流亡占据其承统岁月的大部，不能以承统之久代作在国治绩。";
-    return opening + describeRulerExileEnding(evidence);
+    return opening + describeRulerExileEnding(evidence, true);
   }
   if (roles.includes("LAST_RULER")) return pick([
     "国亡于其世，但即位时的国势与此前危局亦须一并考量，不可把结局本身当作全部因果。",

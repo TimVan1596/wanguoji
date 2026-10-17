@@ -1265,10 +1265,10 @@ function RulerBiography({
       </Typography>
       <Typography fontWeight="bold" fontSize="0.86rem" sx={{ mt: 0.5 }}>任内国势轨迹</Typography>
       <Typography fontSize="0.82rem" sx={{ overflowWrap: "anywhere" }}>
-        {getReignTrajectoryPresentation(assessment.evidence.trajectory)}
+        {getReignTrajectoryPresentation(assessment.evidence.trajectory, assessment.evidence.isFinalized)}
       </Typography>
       <Typography fontSize="0.82rem">
-        {`人口：即位${start.population} → 记录峰值${assessment.evidence.trajectory.peakPopulation} → 终局${end.population}`}
+        {`人口：即位${start.population} → 记录峰值${assessment.evidence.trajectory.peakPopulation} → ${assessment.evidence.isFinalized ? "终局" : "目前"}${end.population}`}
       </Typography>
       <Typography fontSize="0.78rem" color="var(--gg-text-muted)">
         峰值来自已存月度观察，无峰值年月及完整城市峰值记录。

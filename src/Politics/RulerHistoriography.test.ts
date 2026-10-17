@@ -615,7 +615,10 @@ describe("evidence-grounded ruler historiography", () => {
       events: [{ id: "extinction", type: "faction-extinct", year: 120, monthIndex: 120, targetFactionId: "秦", importance: "major" }],
     })).lines.join("");
     expect(text).toContain("并非由盛转衰的始作俑者");
-    expect(text).toContain("这一结局始于承统前的危局");
+    // A weak accession snapshot is not evidence of when the actual loss began.
+    expect(text).toContain("承统时已见危局");
+    expect(text).toContain("失国起点缺少明确记录");
+    expect(text).not.toContain("这一结局始于承统前的危局");
   });
 
   it("does not mistake a one-city but broad and stable accession for a crisis", () => {

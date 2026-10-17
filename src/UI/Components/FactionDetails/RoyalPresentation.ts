@@ -94,9 +94,9 @@ export function formatReignTerritoryChange(start: number, end: number) {
   return `${(start * 100).toFixed(digits)}% → ${(end * 100).toFixed(digits)}%（${change}）`;
 }
 
-export function getReignTrajectoryPresentation(t: RulerReignTrajectory) {
+export function getReignTrajectoryPresentation(t: RulerReignTrajectory, finalized = true) {
   const label = t.expandedThenRetreated ? "扩张后显著回撤" : t.inheritedDecline ? "承接高位后显著收缩" :
-    t.expandedAndRetained ? "扩张成果大部保有" : t.recoveredAfterWarfare ? "城邑反复得失，终局恢复" :
+    t.expandedAndRetained ? "扩张成果大部保有" : t.recoveredAfterWarfare ? "城邑反复得失，末期恢复" :
     t.majorTerritoryRetreat ? "峰值后显著回落" : "首末与记录峰值分列，不推定全程无事";
-  return `疆域：即位${(t.accessionTerritory * 100).toFixed(1)}% → 记录峰值${(t.peakTerritory * 100).toFixed(1)}% → 终局${(t.endTerritory * 100).toFixed(1)}%；${label}。`;
+  return `疆域：即位${(t.accessionTerritory * 100).toFixed(1)}% → 记录峰值${(t.peakTerritory * 100).toFixed(1)}% → ${finalized ? "终局" : "目前"}${(t.endTerritory * 100).toFixed(1)}%；${label}。`;
 }
