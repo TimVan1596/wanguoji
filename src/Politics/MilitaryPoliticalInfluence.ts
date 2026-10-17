@@ -3,6 +3,7 @@ import type { WorldEvent } from "../History/WorldHistory";
 import { deriveMilitaryCareer } from "./MilitaryCareerEvidence";
 import { deriveMilitaryLifeSchedule } from "./MilitaryLifeRules";
 import { formatWorldDate } from "../Simulation/WorldTime";
+import { getMilitaryPersonDisplayName } from "./MilitaryPersonIdentity";
 
 export interface MilitaryPoliticalUser {
   userId: number; name: string; bornMonth: number; factionId: string; personId?: string;
@@ -88,7 +89,7 @@ export function readMilitaryParticipation(event: WorldEvent): MilitaryPoliticalP
 }
 export function formatMilitaryParticipation(event: WorldEvent) {
   const p = readMilitaryParticipation(event);
-  return p ? `${p.participant.name}统兵参与${p.kind === "DEPOSITION" ? "王室废立" : "继统政治压力"}（${p.participant.commandId}，当时${p.participant.unitCount}人；军事参与者并非新君）` : undefined;
+  return p ? `${getMilitaryPersonDisplayName(p.participant)}统兵参与${p.kind === "DEPOSITION" ? "王室废立" : "继统政治压力"}（${p.participant.commandId}，当时${p.participant.unitCount}人；军事参与者并非新君）` : undefined;
 }
 export function getMilitaryPoliticalEvents(events: WorldEvent[], personId: string) {
   return events.filter(e => readMilitaryParticipation(e)?.participant.personId === personId)

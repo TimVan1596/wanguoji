@@ -1,4 +1,5 @@
 import { deriveMilitaryLifeSchedule } from "./MilitaryLifeRules";
+import { getMilitaryPersonDisplayName } from "./MilitaryPersonIdentity";
 import WorldHistory from "../History/WorldHistory";
 import { deriveMilitaryCareer, selectMilitaryCandidate } from "./MilitaryCareerEvidence";
 import { deriveMilitaryPoliticalInfluence, getMilitaryPoliticalEvents } from "./MilitaryPoliticalInfluence";
@@ -242,8 +243,8 @@ export class MilitaryCommandRegistryStore {
     this.formations.set(commandId, { commandId, factionId, commanderPersonId: personId,
       memberUnitIds: [...new Set(memberUnitIds)], createdMonth: worldMonth, status: "ACTIVE", captures: [] });
     this.eventWriter?.({ id: `military-appointment-${commandId}`, year: worldMonth, monthIndex: worldMonth,
-      category: "politics", type: "military-appointment", title: `${factionId}任命${person.name}为军事指挥者`,
-      description: `${person.name}由既有人口任职，指挥${memberUnitIds.length}个现存单位。`, factionIds: [factionId], actorFactionId: factionId,
+      category: "politics", type: "military-appointment", title: `${factionId}任命${getMilitaryPersonDisplayName(person)}为军事指挥者`,
+      description: `${getMilitaryPersonDisplayName(person)}由既有人口任职，指挥${memberUnitIds.length}个现存单位。`, factionIds: [factionId], actorFactionId: factionId,
       metadata: { personId, commandId, unitCount: memberUnitIds.length }, importance: "normal" });
     return true;
   }
@@ -280,7 +281,7 @@ export class MilitaryCommandRegistryStore {
     if (appointment) { appointment.endMonth = worldMonth; appointment.endReason = reason; }
     if (person && person.status !== "DEAD") person.status = "RETIRED";
     if (person) this.eventWriter?.({ id: `military-command-ended-${formation.commandId}`, year: worldMonth, monthIndex: worldMonth,
-      category: "politics", type: "military-command-ended", title: reason === "AGE_RETIREMENT" ? `${person.name}年老退役` : `${person.name}结束军事任职`, factionIds: [formation.factionId],
+      category: "politics", type: "military-command-ended", title: reason === "AGE_RETIREMENT" ? `${getMilitaryPersonDisplayName(person)}年老退役` : `${getMilitaryPersonDisplayName(person)}结束军事任职`, factionIds: [formation.factionId],
       actorFactionId: formation.factionId, metadata: { personId: person.personId, commandId: formation.commandId, endReason: reason }, importance: "normal" });
   }
 
@@ -443,7 +444,7 @@ export class MilitaryCommandRegistryStore {
       person.status = "DEAD"; person.deathMonth = worldMonth; person.deathCause = cause; this.diagnostics.deaths++;
       if (cause === "NATURAL_DEATH") this.diagnostics.naturalDeaths++;
       this.eventWriter?.({ id: `military-person-death-${person.personId}-${worldMonth}`, year: worldMonth, monthIndex: worldMonth,
-        category: "politics", type: "military-person-died", title: cause === "NATURAL_DEATH" ? `${person.name}自然去世` : `${person.name}去世`, factionIds: [person.factionId], actorFactionId: person.factionId,
+        category: "politics", type: "military-person-died", title: cause === "NATURAL_DEATH" ? `${getMilitaryPersonDisplayName(person)}自然去世` : `${getMilitaryPersonDisplayName(person)}去世`, factionIds: [person.factionId], actorFactionId: person.factionId,
         metadata: { personId: person.personId, deathCause: cause }, importance: "normal" });
     } else if (person.status === "ACTIVE") person.status = "RETIRED";
   }
