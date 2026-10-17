@@ -1113,3 +1113,28 @@ it("x真实User→合法任命→军令→真实City.capture→三视角同一�
     expect(JSON.stringify(old)).toBe(beforeOld);
   } finally { vi.unstubAllGlobals(); }
 }, 10000);
+
+it("x三个长王统的真实继统姓名分布与近代避重，不改人物时间或读取姓名", () => {
+  const core = target(); Object.defineProperty(core, "totalCells", { value: 300 });
+  const teams: any[] = ["李氏", "司马氏", "赵氏"].map((houseName, i) => ({ name: `names-${i}`, displayName: `国${i}`, houseName,
+    status: "ACTIVE", identityStage: "STATE", sovereigntyRank: "KING", stateFoundedMonth: 0, firstFoundedYear: 0,
+    nameHistory: [], sovereigntyHistory: [], origin: { type: "INITIAL", foundedMonth: 0 }, users: new Set(),
+    blocks: { children: { size: 100 } }, cities: [{ id: `c-${i}`, name: `城${i}`, isCapital: true }], removeRulerUnit() {} }));
+  core.teams = teams;
+  vi.spyOn(DynastyRegistry, "ensureRulerUnit").mockImplementation(() => undefined);
+  WorldHistory.reset(); DynastyRegistry.reset(); MilitaryCommandRegistry.reset(); worldRandom.initialize("x-long-houses");
+  teams.forEach(t => DynastyRegistry.initializeFaction(t, 0, true));
+  for (let month = 1; month <= 12000; month++) DynastyRegistry.update(month, teams);
+  const report = teams.map(team => {
+    const rulers = DynastyRegistry.get(team.name)!.rulers.filter(r => r.reignOrdinal !== undefined);
+    expect(rulers.length).toBeGreaterThanOrEqual(10);
+    for (let i = 1; i < rulers.length; i++) expect(rulers.slice(Math.max(0, i - 8), i).map(r => r.houseName + r.givenName)).not.toContain(rulers[i].houseName + rulers[i].givenName);
+    return { house: team.houseName, rulers: rulers.length, doubleNames: rulers.filter(r => r.givenName.length === 2).length };
+  });
+  const count = report.reduce((n, r) => n + r.rulers, 0), doubles = report.reduce((n, r) => n + r.doubleNames, 0);
+  expect(doubles / count).toBeGreaterThan(.35); expect(doubles / count).toBeLessThan(.8);
+  const before = DynastyRegistry.exportState(), random = worldRandom.exportState();
+  DynastyRegistry.importState(JSON.parse(JSON.stringify(before)), 12000);
+  expect(DynastyRegistry.exportState()).toEqual(before); expect(worldRandom.exportState()).toEqual(random);
+  console.log("x受控真实王室生命周期姓名分布（无战争人口运行）", report);
+}, 10000);

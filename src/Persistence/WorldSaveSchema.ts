@@ -8,7 +8,7 @@ import type { MilitaryCommandState } from "../Politics/MilitaryCommandRegistry";
 
 export const CURRENT_SAVE_SCHEMA_VERSION = 16 as const;
 
-/** V14 person DTO keeps political office end and actual death as separate facts. */
+/** V16 preserves political office/death facts and adds authoritative military personal names in registries. */
 export type RulerSaveV16 = Omit<Ruler, "id" | "bornYear" | "naturalDeathYear" | "accessionYear" |
   "plannedEndYear" | "endYear" | "politicalStartYear" | "politicalEndYear"> & {
   rulerId: string;
