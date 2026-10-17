@@ -1,5 +1,5 @@
 import { importRulerSave } from "./RulerSaveProjection";
-import type { RulerSaveV15 } from "./WorldSaveSchema";
+import type { RulerSaveV16 } from "./WorldSaveSchema";
 import FactionLifetimeRecords from "../Simulation/FactionLifetimeRecord";
 import { normalizeArchivedCityBlockRefs, type HydrationRepairs } from "./ArchivedCityHydrationRepair";
 import Block from "../Components/Block";
@@ -314,7 +314,7 @@ function applyUnitState(player: Player, unit: WorldSaveV1["units"][number]) {
 function importPoliticalAndHistoryState(save: WorldSaveV1) {
   const dynasties = save.dynasties.map((entry) => ({
     ...entry,
-    rulers: (entry.rulers as RulerSaveV15[]).map(importRulerSave),
+    rulers: (entry.rulers as RulerSaveV16[]).map(importRulerSave),
   }));
   DynastyRegistry.importState({ dynasties, sequence: Number(save.registries.dynastyRegistrySequence) } as ReturnType<typeof DynastyRegistry.exportState>, save.world.clock.worldMonth);
   WorldHistory.importState(save.worldHistory as Parameters<typeof WorldHistory.importState>[0]);

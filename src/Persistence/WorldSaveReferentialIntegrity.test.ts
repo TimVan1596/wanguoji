@@ -1059,8 +1059,8 @@ it("x真实User→合法任命→军令→真实City.capture→三视角同一�
   }
   const city = wei.cities.find((c: any) => c.id === "linzi");
   const cityDTO = save.cities.find(c => c.cityId === city.id)!;
-  Object.assign(city, { history: [], calculateMaxDefense: () => 10, clearSiegeState() {}, rebuildFortifiedZone() {}, claimFortifiedZone() {}, refreshZoneVisual() {},
-    addHistory: RealCity.prototype.addHistory,
+  Object.assign(city, { history: [], calculateMaxDefense: () => 10, clearSiegeState() {}, rebuildFortifiedZone() {}, claimFortifiedZone(owner: any) { city.block.team = owner; qin.blocks.children.size = 2; wei.blocks.children.size = 1; }, refreshZoneVisual() {},
+    addHistory: (RealCity.prototype as any).addHistory,
     exportState: () => ({ ...cityDTO, ownerFactionId: city.ownerFactionId, isCapital: city.isCapital, defense: city.defense, maxDefense: city.maxDefense,
       loyalty: city.loyalty, devastation: city.devastation, captureCount: city.captureCount, lastCapturedMonth: city.lastCapturedYear, history: city.history }) });
   Object.defineProperty(city, "ownerTeam", { get: () => core.teams.find((t: any) => t.name === city.ownerFactionId) });

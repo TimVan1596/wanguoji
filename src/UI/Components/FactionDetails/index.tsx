@@ -577,6 +577,7 @@ function MilitaryPoliticalEventFacts({ event }: { event: WorldEvent }) {
 }
 
 function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; worldMonth: number }) {
+  const [expandedPersonId, setExpandedPersonId] = useState<string>();
   const people = sortMilitaryPeople(MilitaryCommandRegistry.getPeople().filter(person => person.factionId === factionId || person.appointments.some(appointment => appointment.factionId === factionId)));
   const formations = MilitaryCommandRegistry.getFormations();
   const politicalTeam = Game.Core?.teams.find(team => team.name === factionId);
@@ -606,8 +607,9 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
       const politicalEvents = MilitaryCommandRegistry.getPoliticalEvents(person);
       const politicalCandidate = militaryPolitics?.candidates.find(p => p.personId === person.personId);
       const orderEvidence = formation ? MilitaryCommandRegistry.getOrderEvidence(formation) : undefined;
-      return <Box component="details" key={person.personId} sx={{ borderBottom: "1px solid var(--gg-border-muted)", pb: 0.75 }}>
-        <Box component="summary" sx={{ cursor: "pointer" }}><Typography component="span" fontWeight="bold" fontSize="0.9rem">{getMilitaryPersonDisplayName(person)} · {describeMilitaryStatus(person)}</Typography></Box>
+      return <Box key={person.personId} sx={{ borderBottom: "1px solid var(--gg-border-muted)", pb: 0.75 }}>
+        <Button size="small" aria-expanded={expandedPersonId === person.personId} onClick={() => setExpandedPersonId(expandedPersonId === person.personId ? undefined : person.personId)} sx={{ textAlign: "left", justifyContent: "flex-start", maxWidth: "100%", overflowWrap: "anywhere" }}>{getMilitaryPersonDisplayName(person)} · {describeMilitaryStatus(person)}</Button>
+        {expandedPersonId === person.personId && <>
         <Typography fontSize="0.78rem">{person.factionId === factionId ? "目前所属本国" : `曾在本国任职 · 目前身份归属${person.factionId}`}</Typography>
         <Typography fontSize="0.75rem" color="var(--gg-text-muted)">身份追溯：{person.personId} / User {person.sourceUserId} / 原始名称或人口标签：{person.name}（不是另一个人物）</Typography>
         <Typography fontSize="0.75rem" color="var(--gg-text-muted)">{describeMilitaryNameEvidence(person)}</Typography>
@@ -642,6 +644,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
             <Button size="small" disabled={!activeUser} sx={{ minWidth: 0, px: 1 }} onClick={() => Game.Core?.focusMilitaryFormation(formation.commandId)}>定位部队</Button>
             {target && <Button size="small" sx={{ minWidth: 0, px: 1 }} onClick={() => Game.Core?.focusMilitaryTargetCity(target.id)}>查看目标城</Button>}
           </Box>
+        </>}
         </>}
       </Box>;
     })}

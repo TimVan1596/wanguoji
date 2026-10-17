@@ -5,7 +5,7 @@ import { getMilitaryPersonDisplayName } from "./MilitaryPersonIdentity";
 import { pickRulerGivenName } from "./SuccessionRules";
 import worldRandom, { WorldRandom } from "../Simulation/WorldRandom";
 
-afterEach(() => vi.restoreAllMocks());
+afterEach(() => { vi.restoreAllMocks(); });
 const identity = { seed: "names-x", personId: "military-person-1", sourceUserId: 1000000407, bornMonth: -300, originalName: "赵-407", culture: "HAN" as const };
 
 describe("authoritative character names", () => {

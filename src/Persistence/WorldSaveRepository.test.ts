@@ -172,9 +172,9 @@ describe("multi-slot save repository", () => {
     expect(await repository.getCurrent()).toEqual(oldRecord);
   });
 
-  it("keeps an unsupported V14 file intact and refuses reads without rewriting it", async () => {
-    const v14Record = { ...createStoredWorldSaveRecord(startedSave(), "V14"), saveSchemaVersion: 14,
-      save: { ...startedSave(), saveSchemaVersion: 14 } } as any;
+  it.each([14, 15])("keeps an unsupported V%s file intact and refuses reads without rewriting it", async version => {
+    const v14Record = { ...createStoredWorldSaveRecord(startedSave(), `V${version}`), saveSchemaVersion: version,
+      save: { ...startedSave(), saveSchemaVersion: version } } as any;
     const indexed = fakeIndexedDb(WORLD_SAVE_DATABASE_VERSION, [["current", v14Record]]);
     const repository = new IndexedDbWorldSaveRepository(indexed.factory);
     const original = JSON.stringify(v14Record);

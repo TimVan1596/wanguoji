@@ -243,7 +243,7 @@ export class MilitaryCommandRegistryStore {
     const personId = person?.personId ?? `military-person-${this.personSequence++}`;
     const commandId = `military-command-${this.commandSequence++}`;
     if (!person) {
-      person = { personId, sourceUserId: user.id, name: user.name, personalName: isPopulationIdentityLabel(user.name)
+      person = { personId, sourceUserId: user.id, name: user.name, personalName: isPopulationIdentityLabel(user.name) && user.id >= 1000000000 && user.id <= 1999999999
           ? generateMilitaryPersonalName({ seed: worldRandom.exportState().seed, personId, sourceUserId: user.id,
               bornMonth: user.bornMonth, originalName: user.name, culture: deriveNameCulture(user.team.houseName) })
           : user.name, bornMonth: user.bornMonth, factionId,

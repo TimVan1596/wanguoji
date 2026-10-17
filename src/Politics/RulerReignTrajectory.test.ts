@@ -151,6 +151,16 @@ describe("exile loss attribution and life boundaries", () => {
     expect(result.evidence.tenure).toMatchObject({ stateLossCount: 2, restorationCount: 1, activeRuleMonths: 90 });
     expect(result.lines.join("")).toContain("实际复国1次"); expect(result.lines.join("")).not.toContain("全部承统岁月均在流亡");
   });
+  it("does not append the legacy restoration sentence after the inherited-exile tenure summary", () => {
+    const r = terminal(120, 250), history = new WorldHistoryStore();
+    history.addFactionExiled(100, team.name, "前君", 1);
+    history.addFactionRestored(135, team.name, "城", 1, "c", "restore", { basis: "FORMER_CAPITAL", heldMonths: 120, rulerId: "r" });
+    const result = deriveRulerAssessment(context(r, history));
+    expect(result.evidence.tenure).toMatchObject({ exiledAtAccession: true, restoredDuringTenure: true });
+    expect(result.lines[0]).toContain("承统之际已失城土");
+    expect(result.lines.filter(line => /复国|恢复国家/.test(line))).toHaveLength(1);
+    expect(result.lines.join("")).not.toContain("最重要的历史转折");
+  });
   it("generates the same evidence without consuming RNG or modifying canonical facts", () => {
     const r = ruler(), history = new WorldHistoryStore(), input = context(r, history);
     worldRandom.initialize("trajectory-audit"); const random = worldRandom.exportState(), before = JSON.stringify(input);
