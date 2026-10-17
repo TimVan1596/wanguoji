@@ -260,7 +260,7 @@ export class MilitaryCommandRegistryStore {
     for (const formation of this.formations.values()) {
       if (formation.status !== "ACTIVE") continue;
       const current = cities.find(city => city.id === formation.targetCityId);
-      if (current && current.ownerFactionId !== formation.factionId && current.ownerTeam?.status === "ACTIVE" &&
+      if (current && !current.destroyed && current.ownerFactionId !== formation.factionId && current.ownerTeam?.status === "ACTIVE" &&
         Diplomacy.canAttack(formation.factionId, current.ownerFactionId, worldMonth)) continue;
       if (formation.targetCityId) {
         this.diagnostics.invalidatedTargets++;
@@ -270,7 +270,7 @@ export class MilitaryCommandRegistryStore {
       const team = teams.find(candidate => candidate.name === formation.factionId);
       const members = team ? [...team.users].filter(user => formation.memberUnitIds.includes(user.player.logicalUnitId ?? "") && user.player.active) : [];
       const center = members.length ? members.reduce((sum, user) => ({ x: sum.x + user.player.x / members.length, y: sum.y + user.player.y / members.length }), { x: 0, y: 0 }) : undefined;
-      const options = cities.filter(city => city.ownerFactionId !== formation.factionId && city.ownerTeam?.status === "ACTIVE" &&
+      const options = cities.filter(city => !city.destroyed && city.ownerFactionId !== formation.factionId && city.ownerTeam?.status === "ACTIVE" &&
         Diplomacy.canAttack(formation.factionId, city.ownerFactionId, worldMonth))
         .sort((a, b) => {
           if (!center) return a.id.localeCompare(b.id);

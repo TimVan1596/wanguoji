@@ -43,7 +43,9 @@ describe("persistent military command registry", () => {
     expect(person).toMatchObject({ sourceUserId: 1, name: "人口1", bornMonth: -300, status: "ACTIVE" });
     expect(commander.militaryPersonId).toBe(person.personId);
     expect(formation).toMatchObject({ factionId: "qin", commanderPersonId: person.personId, memberUnitIds: ["unit-1", "unit-2"], targetCityId: "z-wei-capital" });
-    expect(events).toHaveLength(1);
+    expect(events.filter(event => event.type === "military-appointment")).toHaveLength(1);
+    expect(events.filter(event => event.type === "military-order-issued")).toHaveLength(1);
+    expect(events.find(event => event.type === "military-order-issued").metadata.meritInfluenced).toBe(0);
     expect(registry.getDiagnostics()).toMatchObject({ candidates: 2, eligible: 2, appointments: 1, activeCommanders: 1, activeFormations: 1, orders: 1 });
 
     const units: any[] = ["unit-1", "unit-2"].map(unitId => ({ unitId, factionId: "qin", logicalX: 0,

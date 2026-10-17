@@ -108,7 +108,11 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
           event.metadata?.commandId !== formation.commandId || event.metadata?.commanderPersonId !== formation.commanderPersonId) {
         errors.push(`military formation has invalid capture evidence: ${formation.commandId}`);
       }
+      if (event && (event.actorFactionId !== formation.factionId || !event.targetFactionId || event.targetFactionId === formation.factionId ||
+          !person?.appointments.some((a: any) => a.commandId === formation.commandId && a.factionId === formation.factionId &&
+            capture.month >= a.startMonth && capture.month <= (a.endMonth ?? worldMonth)))) errors.push(`military capture outside actual service: ${formation.commandId}`);
     }
+    if (new Set(formation.captures.map((c: any) => c.eventId)).size !== formation.captures.length) errors.push(`duplicate military capture: ${formation.commandId}`);
     if (formation.status !== "ACTIVE") {
       if (formation.targetCityId !== undefined || formation.orderStartMonth !== undefined) errors.push(`disbanded formation retains active order: ${formation.commandId}`);
       continue;
@@ -130,9 +134,22 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
     if (formation.targetCityId !== undefined && (!cities.some(city => city.cityId === formation.targetCityId && city.ownerFactionId !== formation.factionId) || !month(formation.orderStartMonth) || Number(formation.orderStartMonth) > worldMonth)) errors.push(`active formation has invalid target order: ${formation.commandId}`);
   }
   for (const appointmentCommandId of commandRefs) if (!formations.has(appointmentCommandId)) errors.push(`military appointment references missing formation: ${appointmentCommandId}`);
+  for (const event of Array.isArray(history.events) ? history.events : []) {
+    if (!plain(event) || event.type !== "military-order-issued") continue;
+    const m = event.metadata ?? {}, formation = formations.get(m.commandId), person = people.get(m.personId);
+    const at = event.monthIndex ?? event.year;
+    if (!formation || !person || formation.commanderPersonId !== person.personId || formation.factionId !== event.actorFactionId ||
+        !person.appointments.some((a: any) => a.commandId === formation.commandId && at >= a.startMonth && at <= (a.endMonth ?? worldMonth)) ||
+        !event.cityId || !event.targetFactionId || event.targetFactionId === event.actorFactionId || ![0, 1].includes(m.meritInfluenced) ||
+        typeof m.nearestCityId !== "string" ||
+        (m.meritInfluenced === 1 && (!Number.isFinite(m.nearestDistance) || !Number.isFinite(m.targetDistance) ||
+          m.nearestDistance < 0 || m.targetDistance < m.nearestDistance || m.targetDistance > m.nearestDistance * 1.15 || m.targetDistance - m.nearestDistance > 32))) errors.push("invalid military order provenance");
+  }
   if (registry.personSequence <= maxPersonSequence) errors.push("military person sequence would reuse an existing id");
   if (registry.commandSequence <= maxCommandSequence) errors.push("military command sequence would reuse an existing id");
   for (const person of people.values()) {
+    if (new Set(person.capturedEventIds).size !== person.capturedEventIds.length || person.capturedEventIds.some((id: string) =>
+      ![...formations.values()].some(f => f.commanderPersonId === person.personId && f.captures.some((c: any) => c.eventId === id)))) errors.push(`military person capture identity mismatch: ${person.personId}`);
     if (person.status === "ACTIVE") {
       const activeAppointment = person.appointments.find((appointment: any) => appointment.endMonth === undefined);
       if (!activeAppointment || formations.get(activeAppointment.commandId)?.status !== "ACTIVE") errors.push(`active military person has no active formation: ${person.personId}`);

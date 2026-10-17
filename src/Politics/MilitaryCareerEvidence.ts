@@ -1,6 +1,5 @@
 import type { MilitaryPerson, MilitaryFormation } from "./MilitaryCommandRegistry";
 import type { WorldEvent } from "../History/WorldHistory";
-import { deriveMilitaryLifeSchedule } from "./MilitaryLifeRules";
 
 /** Pure projection: no diagnostic totals, inferred battles or random draws. */
 export function deriveMilitaryCareer(person: MilitaryPerson, formations: MilitaryFormation[], events: WorldEvent[], worldMonth: number) {
@@ -26,7 +25,7 @@ export function deriveMilitaryCareer(person: MilitaryPerson, formations: Militar
     appointments.some(a => a.commandId === e.metadata?.commandId && a.factionId === e.actorFactionId && a.startMonth === (e.monthIndex ?? e.year)))
     .map(e => Number(e.metadata?.unitCount)).filter(n => Number.isSafeInteger(n) && n >= 2 && n <= 12);
   const recordedCommandSize = Math.max(0, ...initialSizes);
-  const active = person.status === "ACTIVE" && worldMonth < deriveMilitaryLifeSchedule(person).retirementMonth
+  const active = person.status === "ACTIVE"
     ? commands.filter(f => f.status === "ACTIVE" && f.factionId === person.factionId && appointments.some(a => a.commandId === f.commandId && a.endMonth === undefined)) : [];
   const currentUnitCount = new Set(active.flatMap(f => f.memberUnitIds)).size;
   // Time alone contributes at most .35; combined appointment advantage is capped at 2x.

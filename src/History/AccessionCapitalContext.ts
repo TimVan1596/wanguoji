@@ -16,6 +16,7 @@ export function captureAccessionCapital(team: Team, worldMonth: number, nextRule
 }
 
 export function formatAccessionCapital(event: WorldEvent) {
+  if (typeof event.metadata?.groupedAccessionCapitalText === "string") return event.metadata.groupedAccessionCapitalText;
   if (!ACCESSION_EVENT_TYPES.includes(event.type)) return undefined;
   const m = event.metadata;
   if (m?.accessionCapitalVersion !== 1) return "继位时国都：未记录";

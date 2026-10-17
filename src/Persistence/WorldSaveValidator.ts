@@ -4,6 +4,7 @@ import { CURRENT_SAVE_SCHEMA_VERSION, WorldSaveV1 } from "./WorldSaveSchema";
 import { isEraMapSnapshotV1 } from "../Simulation/EraMapSnapshot";
 import { getRecordedKinRelation, MAX_DYNASTIC_SUCCESSION_CANDIDATES } from "../Politics/DynasticCandidateRules";
 import { validateMilitaryCommandState } from "./MilitaryCommandValidation";
+import { ACCESSION_EVENT_TYPES } from "../History/AccessionCapitalContext";
 
 export interface SaveValidationResult {
   valid: boolean;
@@ -304,6 +305,28 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
       if (event.cityId !== undefined && !allCityIds.has(String(event.cityId))) errors.push(`unknown worldHistory cityId: ${String(event.cityId)}`);
       if (event.rulerId !== undefined) requireRef(event.rulerId, rulerIds, "worldHistory rulerId", errors);
       if (event.monthIndex !== undefined && !finite(event.monthIndex)) errors.push("worldHistory event monthIndex must be finite");
+      const context = isPlainRecord(event.metadata) ? event.metadata : {};
+      if (context.accessionCapitalVersion !== undefined || context.accessionCapitalState !== undefined) {
+        const m = context;
+        if (!ACCESSION_EVENT_TYPES.includes(event.type) || m.accessionCapitalVersion !== 1 ||
+            m.accessionMonth !== (event.monthIndex ?? event.year) || m.accessionFactionId !== event.actorFactionId ||
+            !["ACTIVE", "EXILED", "EXTINCT"].includes(m.accessionFactionStatus) || !["STATE", "PROVISIONAL"].includes(m.accessionIdentityStage) ||
+            !["CAPITAL", "EXILED", "PROVISIONAL", "NO_CAPITAL"].includes(m.accessionCapitalState)) errors.push("invalid accession capital snapshot");
+        requireRef(m.nextRulerId, rulerIds, "accession nextRulerId", errors);
+        if (m.previousRulerId !== undefined) requireRef(m.previousRulerId, rulerIds, "accession previousRulerId", errors);
+        const d = Array.isArray(save.dynasties) ? save.dynasties.find(d => d.factionId === event.actorFactionId) : undefined;
+        const dynastyRulers = d && Array.isArray(d.rulers) ? d.rulers as Record<string, any>[] : [];
+        const next = dynastyRulers.find(r => r.rulerId === m.nextRulerId);
+        if (!next || next.accessionMonth !== m.accessionMonth ||
+            (event.type === "ruler-acceded" || event.type === "ruler-deposed" || event.type === "dynasty-usurped") && event.rulerId !== m.nextRulerId ||
+            event.type !== "ruler-acceded" && (!dynastyRulers.some(r => r.rulerId === m.previousRulerId) || next.predecessorId !== m.previousRulerId)) errors.push("accession snapshot ruler identity mismatch");
+        if (m.accessionCapitalState === "CAPITAL") {
+          if (m.accessionFactionStatus !== "ACTIVE" || m.accessionIdentityStage !== "STATE" || m.capitalControlled !== 1 ||
+              typeof m.capitalCityName !== "string" || !m.capitalCityName.trim() || !allCityIds.has(String(m.capitalCityId))) errors.push("invalid recorded accession capital");
+        } else if (m.capitalControlled !== 0 || m.capitalCityId !== undefined || m.capitalCityName !== undefined ||
+            (m.accessionCapitalState === "EXILED") !== (m.accessionFactionStatus === "EXILED" && m.accessionIdentityStage === "STATE") ||
+            (m.accessionCapitalState === "PROVISIONAL") !== (m.accessionIdentityStage === "PROVISIONAL")) errors.push("accession snapshot invents a capital");
+      }
       if (event.type === "faction-restored" && isPlainRecord(event.metadata) && event.metadata.restorationSource === "LOCAL_RESIDENT") {
         const m = event.metadata, month = Number(event.monthIndex ?? event.year);
         const dynasty = Array.isArray(save.dynasties) ? save.dynasties.find((d: any) => d?.factionId === event.actorFactionId) : undefined;

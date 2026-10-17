@@ -1,4 +1,5 @@
 import type { WorldEvent } from "./WorldHistory";
+import { formatAccessionCapital } from "./AccessionCapitalContext";
 
 const COLLAPSE_TYPES = new Set(["faction-exiled", "faction-extinct", "faction-dissolved"]);
 const COLLAPSIBLE_TYPES = new Set([
@@ -269,6 +270,7 @@ function createNarrativeEvent(group: CollapseGroup): WorldEvent {
     metadata: {
       ...group.collapseEvent.metadata,
       groupedEventCount: group.events.length,
+      groupedAccessionCapitalText: succession ? formatAccessionCapital(succession) : undefined,
       sourceEventIds,
       capturedRulerName,
       capturedRulerTitle,
@@ -350,6 +352,7 @@ function createFoundingNarrativeEvent(group: FoundingGroup): WorldEvent {
     metadata: {
       ...group.foundingEvent.metadata,
       groupedFoundingEventCount: group.events.length,
+      groupedAccessionCapitalText: accession ? formatAccessionCapital(accession) : undefined,
       sourceEventIds,
       parentFactionId,
       foundingCityNames: unique(cityNames).join("、"),
