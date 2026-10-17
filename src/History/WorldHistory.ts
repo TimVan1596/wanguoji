@@ -660,7 +660,8 @@ export class WorldHistoryStore {
     rulerId?: string,
     historyGroupId?: string,
     commandId?: string,
-    commanderPersonId?: string
+    commanderPersonId?: string,
+    wasCapital?: boolean
   ) {
     return this.addEvent({
       id: `city-recovered-${year}-${teamName}-${cityName}-${this.sequence++}`,
@@ -682,6 +683,7 @@ export class WorldHistoryStore {
         rulerId,
         previousOwner: previousOwnerName,
         founder: founderFactionId,
+        wasCapital: wasCapital === undefined ? undefined : wasCapital ? 1 : 0,
         cityDefenseBefore,
         commandId,
         commanderPersonId,

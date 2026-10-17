@@ -295,7 +295,7 @@ export class MilitaryCommandRegistryStore {
         formation.targetCityId = next.id;
         formation.orderStartMonth = worldMonth;
         this.diagnostics.orders++;
-        this.eventWriter?.({ id: `military-order-${formation.commandId}-${worldMonth}`, year: worldMonth, monthIndex: worldMonth,
+        this.eventWriter?.({ id: `military-order-${formation.commandId}-${worldMonth}-${next.id}`, year: worldMonth, monthIndex: worldMonth,
           type: "military-order-issued", category: "war", title: "军事编组确定目标", importance: "normal",
           factionIds: [formation.factionId, next.ownerFactionId], actorFactionId: formation.factionId, targetFactionId: next.ownerFactionId,
           cityId: next.id, cityName: next.name, metadata: { commandId: formation.commandId, personId: formation.commanderPersonId,

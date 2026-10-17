@@ -114,6 +114,7 @@ const RULER_EVENT_TYPES = new Set<WorldEvent["type"]>([
   "ruler-captured",
   "dynasty-usurped",
   "ruler-succession",
+  "ruler-acceded",
   "ruler-deposed",
   "faction-extinct",
   "faction-merged",
@@ -148,6 +149,7 @@ const RULER_EVENT_PRIORITIES: Partial<Record<WorldEvent["type"], number>> = {
   "empire-split": 90,
   "dynasty-usurped": 120,
   "ruler-succession": 88,
+  "ruler-acceded": 88,
   "ruler-deposed": 125,
   "city-recovered": 75,
   "city-captured": 65,
@@ -283,6 +285,7 @@ function isRulerPoliticalEventRelevant(event: WorldEvent, rulerId: string, facti
     case "dynasty-restored":
       return event.actorFactionId === factionId && factions.includes(factionId);
     case "ruler-succession":
+    case "ruler-acceded":
       return event.actorFactionId === factionId && factions.includes(factionId) &&
         (event.rulerId === rulerId || event.metadata?.previousRulerId === rulerId || event.metadata?.nextRulerId === rulerId);
     case "ruler-deposed":

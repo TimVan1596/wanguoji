@@ -378,7 +378,8 @@ export default class City {
         rulerId,
         collapseGroupId,
         commandId,
-        commanderPersonId
+        commanderPersonId,
+        wasCapital
       );
       MilitaryCommandRegistry.recordCapture(commandId, eventId, this.id, year);
       DynastyRegistry.recordCityCaptured(rulerId, this.id, eventId);

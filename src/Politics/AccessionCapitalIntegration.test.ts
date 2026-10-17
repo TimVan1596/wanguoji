@@ -91,6 +91,8 @@ describe("live Dynasty → immutable history → restored presentation", () => {
     DynastyRegistry.initializeFaction(team, 0); DynastyRegistry.initializeFaction(team, 0);
     const events = WorldHistory.getEvents().filter(e => e.type === "ruler-acceded");
     expect(events).toHaveLength(1); expect(events[0].metadata?.capitalCityName).toBe("大梁");
+    const founder = DynastyRegistry.getCurrentRuler("qin")!;
+    expect(getRulerHistoricalEvents(WorldHistory.getEvents(), { ...founder, accessionYear: 0 }, "qin", 0, []).map(e => e.id)).toContain(events[0].id);
     const old = { ...events[0], metadata: undefined };
     expect(formatHistoryEventTitle(old, new Map())).toContain("继位时国都：未记录");
     expect(captureAccessionCapital({ ...team, capitalCity: { ...team.capitalCity, destroyed: true } }, 0, "x").capitalControlled).toBe(0);

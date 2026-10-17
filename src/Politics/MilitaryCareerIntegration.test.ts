@@ -5,6 +5,7 @@ import WorldHistory from "../History/WorldHistory";
 import worldRandom from "../Simulation/WorldRandom";
 import Diplomacy from "./Diplomacy";
 import { deriveMilitaryLifeSchedule } from "./MilitaryLifeRules";
+import { validateMilitaryCommandState } from "../Persistence/MilitaryCommandValidation";
 
 beforeEach(() => { WorldHistory.reset(); Diplomacy.reset(); });
 afterEach(() => { vi.restoreAllMocks(); });
@@ -121,5 +122,27 @@ describe("real registry career influence", () => {
     f.capital.destroyed = false; f.enemy.capitalCity = f.city; f.formation.targetCityId = undefined;
     f.registry.update(23, [f.team, f.enemy], [f.city, f.capital]);
     expect(f.formation.targetCityId).toBe("near");
+  });
+
+  it("strictly validates restored live members, merit-linked orders and historical capture identity", () => {
+    const f = fixture(); f.capture(); f.formation.targetCityId = undefined;
+    f.registry.update(22, [f.team, f.enemy], [f.city, f.capital]);
+    const users = f.users.map(u => ({ userId: u.id, name: u.name, bornMonth: u.bornMonth, factionId: "qin", role: "NORMAL",
+      playerUnitId: u.player.logicalUnitId, militaryPersonId: u.militaryPersonId }));
+    const units = users.map(u => ({ unitId: u.playerUnitId, userId: u.userId, factionId: "qin", role: "NORMAL", alive: true }));
+    const cities = [f.city, f.capital].map(c => ({ cityId: c.id, ownerFactionId: c.ownerFactionId }));
+    const state = JSON.parse(JSON.stringify(f.registry.exportState())), history = JSON.parse(JSON.stringify(WorldHistory.exportState()));
+    const validate = (s = state, h = history) => validateMilitaryCommandState(s, users, units, cities, new Set(["qin", "wei"]), 22, h);
+    expect(validate()).toEqual([]);
+    const noVictories = structuredClone(state); noVictories.people[0].capturedEventIds = []; noVictories.formations[0].captures = [];
+    expect(validate(noVictories)).toContain("military order merit has no verified victory");
+    const invalidHistory = structuredClone(history);
+    invalidHistory.events.find((e: any) => e.type === "city-captured").metadata.commanderPersonId = "another-person";
+    expect(validate(state, invalidHistory).some(e => e.includes("invalid capture evidence"))).toBe(true);
+    const distant = structuredClone(history);
+    distant.events.find((e: any) => e.type === "military-order-issued" && e.metadata.meritInfluenced === 1).metadata.targetDistance = 10000;
+    expect(validate(state, distant)).toContain("invalid military order provenance");
+    const invalidMembers = structuredClone(state); invalidMembers.formations[0].memberUnitIds.push("missing-unit");
+    expect(validate(invalidMembers).some(e => e.includes("invalid member unit"))).toBe(true);
   });
 });

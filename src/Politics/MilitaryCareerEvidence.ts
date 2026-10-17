@@ -14,13 +14,14 @@ export function deriveMilitaryCareer(person: MilitaryPerson, formations: Militar
     const e = byId.get(id), month = e?.monthIndex ?? e?.year ?? Infinity;
     const f = commands.find(f => f.commandId === e?.metadata?.commandId);
     const a = appointments.find(a => a.commandId === f?.commandId);
-    return e && f && a && ["city-captured", "capital-fallen"].includes(e.type) &&
+    return e && f && a && ["city-captured", "capital-fallen", "city-recovered"].includes(e.type) &&
       e.metadata?.commanderPersonId === person.personId && e.actorFactionId === f.factionId &&
       e.targetFactionId !== f.factionId && Boolean(e.targetFactionId) && e.cityId &&
       month >= a.startMonth && month <= Math.min(a.endMonth ?? worldMonth, worldMonth) &&
       f.captures.some(c => c.eventId === id && c.cityId === e.cityId && c.month === month) ? [e] : [];
   });
   const capitalCaptures = captures.filter(e => e.metadata?.wasCapital === 1).length;
+  const ordinaryCaptures = captures.filter(e => e.metadata?.wasCapital === 0).length;
   const initialSizes = events.filter(e => e.type === "military-appointment" && e.metadata?.personId === person.personId &&
     appointments.some(a => a.commandId === e.metadata?.commandId && a.factionId === e.actorFactionId && a.startMonth === (e.monthIndex ?? e.year)))
     .map(e => Number(e.metadata?.unitCount)).filter(n => Number.isSafeInteger(n) && n >= 2 && n <= 12);
@@ -31,7 +32,7 @@ export function deriveMilitaryCareer(person: MilitaryPerson, formations: Militar
   // Time alone contributes at most .35; combined appointment advantage is capped at 2x.
   const weight = 1 + Math.min(.35, serviceMonths / 240 * .35) + Math.min(.5, captures.length * .1 + capitalCaptures * .05) + Math.min(.15, recordedCommandSize / 12 * .15);
   return { serviceMonths, appointmentCount: appointments.length, reappointments: Math.max(0, appointments.length - 1),
-    ordinaryCaptures: captures.length - capitalCaptures, capitalCaptures, verifiedCaptures: captures.length,
+    ordinaryCaptures, capitalCaptures, unclassifiedCaptures: captures.length - ordinaryCaptures - capitalCaptures, verifiedCaptures: captures.length,
     capturedEventIds: captures.map(e => e.id), recordedCommandSize, currentUnitCount, hasActiveFormation: active.length > 0,
     ageRetired: person.status !== "ACTIVE" && appointments.at(-1)?.endReason === "AGE_RETIREMENT", dead: person.status === "DEAD",
     appointmentWeight: Math.min(2, weight), level: weight >= 1.7 ? "资深" : weight >= 1.2 ? "有经验" : "初历" };
