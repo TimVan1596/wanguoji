@@ -909,6 +909,7 @@ it.each(["DEPOSITION", "REVOLUTION"] as const)("真实军权→%s事务→同一
   expect(royalEvents.map(e => e.id)).toContain(event.id);
   const person = MilitaryCommandRegistry.getPerson(participation.participant.personId)!;
   expect(MilitaryCommandRegistry.getPoliticalEvents(person).map(e => e.id)).toEqual([event.id]);
+  expect(MilitaryCommandRegistry.getChronicle(person, 72).map(e => e.eventId)).toContain(event.id);
   expect(formatHistoryEventTitle(event, new Map())).toContain(formatMilitaryParticipation(event));
   expect(getMilitaryParticipationDetails(event).join(" ")).toContain(crisisId);
   core.simulator.exportState().clock.worldMonth = 72;
@@ -1022,17 +1023,18 @@ it.each(["RETIRED","DEAD"] as const)("w人口标签%s档案V15严格往返、显
   expect(worldRandom.exportState()).toEqual(rng);expect(MilitaryCommandRegistry.getPeople()[0]).toEqual(person);
 });
 
-it("x真实User→合法任命→军令→真实City.capture→三视角同一事件→V16完整水合续跑", async () => {
+it.each(["ordinary", "capital", "recovery"])("x真实User→任命军令→真实City.capture %s→三视角同一事件→V16完整水合续跑", async kind => {
   const { default: LogicalUnitRegistry } = await import("../Simulation/LogicalUnitRegistry");
   const { default: User } = await import("../Components/User");
   const { default: RealCity } = await vi.importActual<typeof import("../Components/City")>("../Components/City");
   const save = fixture(); save.world.worldMonth = save.world.clock.worldMonth = 0;
   save.registries.archivedCities = [];
+  const capital = kind !== "ordinary", recovered = kind === "recovery";
   Object.assign(save.factions[0], { houseName: "田氏", stateFoundedMonth: 0 });
-  save.factions.push({ ...save.factions[0], factionId: "wei", displayName: "魏", homeGridX: 2, capitalCityId: "wei-capital" });
+  save.factions.push({ ...save.factions[0], factionId: "wei", displayName: "魏", homeGridX: capital ? 1 : 2, capitalCityId: capital ? "linzi" : "wei-capital" });
   save.cities.push(...[1, 2].map(x => ({ ...save.cities[0], cityId: x === 1 ? "linzi" : "wei-capital", name: x === 1 ? "临淄" : "魏都",
-    ownerFactionId: "wei", founderFactionId: "wei", centerGridX: x, isCapital: x === 2, fortifiedCells: [{ gridX: x, gridY: 0 }] })));
-  for (let x = 1; x <= 2; x++) Object.assign(save.blocks[x], { ownerFactionId: "wei", cityId: save.cities[x].cityId, isCityCenter: true, isHome: x === 2, homeHitPoints: 7 });
+    ownerFactionId: "wei", founderFactionId: recovered && x === 1 ? "qin" : "wei", centerGridX: x, isCapital: x === (capital ? 1 : 2), fortifiedCells: [{ gridX: x, gridY: 0 }] })));
+  for (let x = 1; x <= 2; x++) Object.assign(save.blocks[x], { ownerFactionId: "wei", cityId: save.cities[x].cityId, isCityCenter: true, isHome: x === (capital ? 1 : 2), homeHitPoints: 7 });
   const labels = ["赵-407", "Heaven-燕-3834-0268"];
   save.users = labels.map((name, i) => ({ userId: getLocalUserId(name), name, factionId: "qin", sourceFactionId: "qin", playerUnitId: `unit-${i + 1}`,
     bornMonth: -300, role: "NORMAL", loyalty: 70, score: 0, slaveUnits: [] }));
@@ -1055,12 +1057,18 @@ it("x真实User→合法任命→军令→真实City.capture→三视角同一�
     team.addCity = (city: any) => { team.cities.push(city); };
     team.removeCity = (city: any) => { team.cities = team.cities.filter((c: any) => c !== city); };
     team.markActive = () => undefined;
+    team.chooseCapitalCandidate = () => team.cities[0];
+    team.setCapitalCity = (newCapital: any) => { newCapital.isCapital = true; newCapital.block.isHome = true; };
+    for (const c of team.cities) {
+      const originalCity = save.cities.find(row => row.cityId === c.id)!;
+      c.exportState = () => ({ ...originalCity, isCapital: c.isCapital });
+    }
     team.exportState = () => ({ ...original, capitalCityId: team.cities.find((c: any) => c.isCapital)?.id });
   }
   const city = wei.cities.find((c: any) => c.id === "linzi");
   const cityDTO = save.cities.find(c => c.cityId === city.id)!;
-  Object.assign(city, { history: [], calculateMaxDefense: () => 10, clearSiegeState() {}, rebuildFortifiedZone() {}, claimFortifiedZone(owner: any) { city.block.team = owner; qin.blocks.children.size = 2; wei.blocks.children.size = 1; }, refreshZoneVisual() {},
-    addHistory: (RealCity.prototype as any).addHistory,
+  Object.assign(city, { history: [], calculateMaxDefense: () => 10, clearSiegeState() {}, rebuildFortifiedZone() {}, claimFortifiedZone(owner: any) { city.block.team = owner; city.block.isHome = false; qin.blocks.children.size = 2; wei.blocks.children.size = 1; }, refreshZoneVisual() {},
+    addHistory: (RealCity.prototype as any).addHistory, handleCapitalLoss: (RealCity.prototype as any).handleCapitalLoss,
     exportState: () => ({ ...cityDTO, ownerFactionId: city.ownerFactionId, isCapital: city.isCapital, defense: city.defense, maxDefense: city.maxDefense,
       loyalty: city.loyalty, devastation: city.devastation, captureCount: city.captureCount, lastCapturedMonth: city.lastCapturedYear, history: city.history }) });
   Object.defineProperty(city, "ownerTeam", { get: () => core.teams.find((t: any) => t.name === city.ownerFactionId) });
@@ -1075,12 +1083,15 @@ it("x真实User→合法任命→军令→真实City.capture→三视角同一�
     expect(user).toBeInstanceOf(User); expect(user.militaryPersonId).toBe(person.personId);
     expect(person.personalName).toMatch(/^[\u3400-\u9fff]{2,5}$/);
     expect(MilitaryCommandRegistry.getOrderEvidence(formation)?.cityId).toBe(city.id);
+    MilitaryCommandRegistry.recordCommandSiegeContact(formation.commandId, person.personId, city.id);
+    expect(MilitaryCommandRegistry.getDiagnostics().commandedSiegeContacts).toBe(1);
     expect(MilitaryCommandRegistry.getChronicle(person, 0).some(e => e.victory)).toBe(false);
     RealCity.prototype.capture.call(city, qin, 1, undefined, formation.commandId, person.personId);
-    const victory = WorldHistory.getEvents().find(e => e.type === "city-captured")!;
-    expect(victory).toMatchObject({ cityId: "linzi", actorFactionId: "qin", metadata: { commanderPersonId: person.personId, commandId: formation.commandId, commanderPersonalName: person.personalName, wasCapital: 0 } });
+    const victory = WorldHistory.getEvents().find(e => e.type === (recovered ? "city-recovered" : capital ? "capital-fallen" : "city-captured"))!;
+    expect(victory).toMatchObject({ cityId: "linzi", actorFactionId: "qin", metadata: { commanderPersonId: person.personId, commandId: formation.commandId, commanderPersonalName: person.personalName, wasCapital: capital ? 1 : 0 } });
     expect(city.ownerFactionId).toBe("qin"); expect(qin.users.size).toBe(2); expect(user.name).toBe(person.name);
     const chronicle = MilitaryCommandRegistry.getChronicle(person, 1), row = chronicle.find(e => e.victory)!;
+    expect(chronicle.filter(e => e.victory)).toHaveLength(1);
     expect(row.eventId).toBe(victory.id); expect(row.text).toContain(person.personalName);
     expect(formatHistoryEventTitle(victory, new Map())).toContain(person.personalName);
     const king = DynastyRegistry.getCurrentRuler("qin")!;
@@ -1114,7 +1125,7 @@ it("x真实User→合法任命→军令→真实City.capture→三视角同一�
   } finally { vi.unstubAllGlobals(); }
 }, 10000);
 
-it("x三个长王统的真实继统姓名分布与近代避重，不改人物时间或读取姓名", () => {
+it("x三个国家千年王室继统姓名分布与近代避重，不改人物时间或读取姓名", () => {
   const core = target(); Object.defineProperty(core, "totalCells", { value: 300 });
   const teams: any[] = ["李氏", "司马氏", "赵氏"].map((houseName, i) => ({ name: `names-${i}`, displayName: `国${i}`, houseName,
     status: "ACTIVE", identityStage: "STATE", sovereigntyRank: "KING", stateFoundedMonth: 0, firstFoundedYear: 0,
@@ -1129,7 +1140,7 @@ it("x三个长王统的真实继统姓名分布与近代避重，不改人物时
     const rulers = DynastyRegistry.get(team.name)!.rulers.filter(r => r.reignOrdinal !== undefined);
     expect(rulers.length).toBeGreaterThanOrEqual(10);
     for (let i = 1; i < rulers.length; i++) expect(rulers.slice(Math.max(0, i - 8), i).map(r => r.houseName + r.givenName)).not.toContain(rulers[i].houseName + rulers[i].givenName);
-    return { house: team.houseName, rulers: rulers.length, doubleNames: rulers.filter(r => r.givenName.length === 2).length };
+    return { faction: team.name, houseEpochs: DynastyRegistry.get(team.name)!.houseEpochs?.length, rulers: rulers.length, doubleNames: rulers.filter(r => r.givenName.length === 2).length };
   });
   const count = report.reduce((n, r) => n + r.rulers, 0), doubles = report.reduce((n, r) => n + r.doubleNames, 0);
   expect(doubles / count).toBeGreaterThan(.35); expect(doubles / count).toBeLessThan(.8);

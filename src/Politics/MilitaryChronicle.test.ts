@@ -1,3 +1,4 @@
+import { deriveMilitaryLifeSchedule } from "./MilitaryLifeRules";
 import { describe, expect, it } from "vitest";
 import type { MilitaryFormation, MilitaryPerson } from "./MilitaryCommandRegistry";
 import { deriveMilitaryChronicle, formatMilitaryVictorySource } from "./MilitaryChronicle";
@@ -45,7 +46,10 @@ describe("evidence based military biography", () => {
     if (reason === "wrong-command") e.metadata!.commandId = "foreign";
     if (reason === "missing-canonical-event") f.events.length = 0;
     if (reason === "outside-service") e.year = e.monthIndex = f.formations[1].captures[0].month = 35;
-    if (reason === "after-death") e.year = e.monthIndex = f.formations[1].captures[0].month = 61;
+    if (reason === "after-death") {
+      e.year = e.monthIndex = f.formations[1].captures[0].month = 61;
+      f.person.appointments[1].endMonth = 100; // isolate the actual death gate from the office gate
+    }
     expect(deriveMilitaryChronicle(f.person, f.formations, f.events, 100)).toEqual([]);
   });
 
@@ -58,6 +62,23 @@ describe("evidence based military biography", () => {
     expect(deriveMilitaryChronicle(f.person, f.formations, [], 100)).toEqual([]);
     const capture = f.capture("unknown", "city-captured", 12); delete capture.metadata!.commanderPersonId;
     expect(formatMilitaryVictorySource(capture)).toBeUndefined();
+  });
+
+  it("links appointment, transfer, age retirement and actual death to their real office/source records", () => {
+    const f = fixture();
+    f.person.appointments[1].endReason = "AGE_RETIREMENT";
+    const retirementMonth = deriveMilitaryLifeSchedule(f.person).retirementMonth;
+    f.person.appointments[1].endMonth = retirementMonth; f.person.deathMonth = retirementMonth + 12;
+    const event = (id: string, type: WorldEvent["type"], year: number, factionId: string, metadata: Record<string, string | number>) =>
+      ({ id, type, year, category: "politics", title: "人物记录", actorFactionId: factionId, importance: "normal", metadata } as WorldEvent);
+    f.events.push(event("appoint", "military-appointment", 10, "赵", { personId: "p", commandId: "a" }),
+      event("transfer", "military-command-ended", 30, "赵", { personId: "p", commandId: "a", endReason: "TRANSFERRED" }),
+      event("retire", "military-command-ended", retirementMonth, "黄", { personId: "p", commandId: "b", endReason: "AGE_RETIREMENT" }),
+      event("death", "military-person-died", retirementMonth + 12, "黄", { personId: "p", deathCause: "BATTLE_DEATH" }));
+    const rows = deriveMilitaryChronicle(f.person, f.formations, f.events, retirementMonth + 12);
+    expect(rows.map(r => r.eventId)).toEqual(["appoint", "transfer", "retire", "death"]);
+    expect(rows[2].text).toContain("年老退役"); expect(rows[3].text).toContain("去世");
+    expect(rows.every(r => !r.victory && r.text.includes("李承远"))).toBe(true);
   });
 });
 

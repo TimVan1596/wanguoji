@@ -74,4 +74,21 @@ describe("authoritative character names", () => {
       expect(new Set(names).size).toBeGreaterThan(80);
     }
   });
+
+  it("two namesakes keep distinct people and original User IDs", () => {
+    const registry = new MilitaryCommandRegistryStore();
+    const teams: any[] = ["赵", "黄"].map((name, i) => {
+      const team: any = { name, status: "ACTIVE", users: new Set() };
+      for (let j = 0; j < 2; j++) team.users.add({ id: 10 * i + j + 1, name: j ? "成员" : "张清", bornMonth: -300,
+        role: "NORMAL", team, player: { active: true, logicalUnitId: `u-${i}-${j}` } });
+      return team;
+    });
+    vi.spyOn(worldRandom, "next").mockReturnValue(0);
+    registry.update(12, teams, []);
+    const people = registry.getPeople();
+    expect(people.map(p => p.personalName)).toEqual(["张清", "张清"]);
+    expect(new Set(people.map(p => p.personId)).size).toBe(2);
+    expect(people.map(p => p.sourceUserId)).toEqual([1, 11]);
+    expect(teams.map(t => t.users.size)).toEqual([2, 2]);
+  });
 });

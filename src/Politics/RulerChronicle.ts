@@ -252,11 +252,23 @@ export function getRulerHistoricalEvents(
     const isSignatory = event.metadata?.signatoryARulerId === ruler.id || event.metadata?.signatoryBRulerId === ruler.id;
     return (
       RULER_EVENT_PRIORITIES[event.type] ?? 40
-    ) + (direct || isSignatory ? 20 : 0) + (notable.has(event.id) ? 15 : 0) + (event.importance === "major" ? 5 : 0);
+    ) + (direct || isSignatory ? 20 : 0) + (notable.has(event.id) ? 15 : 0) + (event.importance === "major" ? 5 : 0) +
+      (event.type === "city-recovered" && event.metadata?.wasCapital === 1 ? 30 : 0);
   };
+  // Recovering an occupied enemy capital also emits the defender's capital-loss
+  // record. Their groups can differ during relocation; show the attacker's one
+  // verified recovery, while retaining both original events and the losing view.
+  const militaryCityKey = (event: WorldEvent) => event.actorFactionId === factionId && event.cityId &&
+    typeof event.metadata?.commandId === "string" && typeof event.metadata?.commanderPersonId === "string" &&
+    typeof event.metadata?.commanderPersonalName === "string"
+    ? JSON.stringify([event.monthIndex ?? event.year, event.cityId, event.actorFactionId, event.targetFactionId,
+        event.metadata.commandId, event.metadata.commanderPersonId]) : undefined;
+  const recoveryIds = new Map(candidates.filter(e => e.type === "city-recovered" && militaryCityKey(e))
+    .map(e => [militaryCityKey(e), e.id]));
   const grouped = new Map<string, WorldEvent>();
   for (const event of candidates) {
-    const key = linkedSuccession.has(event.id)
+    const recovery = ["capital-fallen", "city-recovered"].includes(event.type) ? recoveryIds.get(militaryCityKey(event)) : undefined;
+    const key = recovery ? `recovery:${recovery}` : linkedSuccession.has(event.id)
       ? `usurpation:${linkedSuccession.get(event.id)}`
       : event.type === "dynasty-usurped" && candidates.some(candidate =>
         linkedSuccession.get(candidate.id) === event.id)
@@ -342,7 +354,10 @@ export function isRulerBiographyRelevantEvent(event: WorldEvent, factionId: stri
   const relation = getFactionEventRelation(event, factionId);
   if (relation === "NONE") return false;
   if (event.type === "city-captured" || event.type === "city-recovered" || event.type === "capital-fallen") {
-    return relation === "ACTOR" || relation === "TARGET" || relation === "CONQUEROR" || relation === "CONQUERED";
+    // Being the city's founder must not mask a real in-tenure recovery by the
+    // same faction; a founder without an acting/losing role still gets no credit.
+    return event.actorFactionId === factionId || event.targetFactionId === factionId ||
+      event.conquerorFactionId === factionId || event.previousOwnerFactionId === factionId;
   }
   return true;
 }
