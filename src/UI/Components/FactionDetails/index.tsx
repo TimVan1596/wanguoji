@@ -17,6 +17,7 @@ import { colorToString } from "../../../paid/theme";
 import DynastyRegistry, { Dynasty, Ruler } from "../../../Politics/Dynasty";
 import Diplomacy from "../../../Politics/Diplomacy";
 import MilitaryCommandRegistry from "../../../Politics/MilitaryCommandRegistry";
+import { formatMilitaryParticipation } from "../../../Politics/MilitaryPoliticalInfluence";
 import { describeMilitaryAge, describeMilitaryStatus, describeMilitaryAppointmentEnd, describeMilitaryDeathCause, sortMilitaryPeople } from "./MilitaryPeoplePresentation";
 import { formatDiplomacyRelationLines, getFactionDiplomacyBadges } from "../../../Politics/DiplomacyPresentation";
 import FactionSnapshots, {
@@ -566,6 +567,8 @@ function FactionProfile({
 function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; worldMonth: number }) {
   const people = sortMilitaryPeople(MilitaryCommandRegistry.getPeople().filter(person => person.factionId === factionId || person.appointments.some(appointment => appointment.factionId === factionId)));
   const formations = MilitaryCommandRegistry.getFormations();
+  const politicalTeam = Game.Core?.teams.find(team => team.name === factionId);
+  const militaryPolitics = politicalTeam ? MilitaryCommandRegistry.getPoliticalInfluence(politicalTeam, worldMonth, Game.Core?.logicalUnitRegistry) : undefined;
   const diagnostics = MilitaryCommandRegistry.getDiagnostics();
   const factionCommanders = people.filter(person => person.factionId === factionId && person.status === "ACTIVE").length;
   const factionFormations = formations.filter(formation => formation.factionId === factionId && formation.status === "ACTIVE").length;
@@ -587,9 +590,13 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
         .find(user => user.militaryPersonId === person.personId);
       const lastAppointment = person.appointments.at(-1);
       const career = MilitaryCommandRegistry.getCareer(person, worldMonth);
+      const politicalEvents = MilitaryCommandRegistry.getPoliticalEvents(person);
+      const politicalCandidate = militaryPolitics?.candidates.find(p => p.personId === person.personId);
       const orderEvidence = formation ? MilitaryCommandRegistry.getOrderEvidence(formation) : undefined;
       return <Box key={person.personId} sx={{ borderBottom: "1px solid var(--gg-border-muted)", pb: 0.75 }}>
         <Typography fontWeight="bold" fontSize="0.9rem">{person.name} · {describeMilitaryStatus(person)}</Typography>
+        <Typography fontSize="0.78rem">军事政治参与资格：{politicalCandidate ? `已核验（现役编组${politicalCandidate.unitCount}人，压力等级${politicalCandidate.strength}）` : `不合格：${militaryPolitics?.blocked.find(b => b.personId === person.personId)?.reason ?? "无本国实时军权"}`}。仅已有危机中可能参与；不代表政治行动已发生。</Typography>
+        {politicalEvents.map(event => <Typography key={event.id} fontSize="0.78rem">{formatWorldDate(event.monthIndex ?? event.year)} · {formatMilitaryParticipation(event)} · 事件 {event.id}</Typography>)}
         <Typography fontSize="0.82rem" color="var(--gg-text-muted)">{describeMilitaryAge(person, worldMonth, Boolean(activeUser?.matchesMilitaryLife(person)))} · 任职 {person.appointments.map(item => `${formatWorldDate(item.startMonth)}${item.endMonth === undefined ? "至今" : `—${formatWorldDate(item.endMonth)}（${describeMilitaryAppointmentEnd(item.endReason)}）`}`).join("；")}</Typography>
         {lastAppointment?.endReason === "AGE_RETIREMENT" && lastAppointment.endMonth !== undefined && <Typography fontSize="0.82rem">退休时年龄：{Math.floor((lastAppointment.endMonth - person.bornMonth) / 12)}岁</Typography>}
         {person.deathMonth !== undefined && <Typography fontSize="0.82rem">生命结局：{formatWorldDate(person.deathMonth)} · {describeMilitaryDeathCause(person.deathCause)}</Typography>}

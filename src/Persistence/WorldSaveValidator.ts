@@ -4,6 +4,7 @@ import { CURRENT_SAVE_SCHEMA_VERSION, WorldSaveV1 } from "./WorldSaveSchema";
 import { isEraMapSnapshotV1 } from "../Simulation/EraMapSnapshot";
 import { getRecordedKinRelation, MAX_DYNASTIC_SUCCESSION_CANDIDATES } from "../Politics/DynasticCandidateRules";
 import { validateMilitaryCommandState } from "./MilitaryCommandValidation";
+import { validateMilitaryPoliticalParticipation } from "./MilitaryPoliticalParticipationValidation";
 import { ACCESSION_EVENT_TYPES } from "../History/AccessionCapitalContext";
 
 export interface SaveValidationResult {
@@ -461,6 +462,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
     users, units, cities, factionIds, Number(save.world?.worldMonth),
     isPlainRecord(save.worldHistory) ? save.worldHistory : { events: [] }
   ));
+  if (!errors.length) errors.push(...validateMilitaryPoliticalParticipation(save as WorldSaveV1));
   return { valid: errors.length === 0, errors };
 }
 

@@ -1,5 +1,6 @@
 import { hasRecordedRulerDeath } from "../Politics/RulerLifeState";
 import { formatAccessionCapital } from "./AccessionCapitalContext";
+import { formatMilitaryParticipation } from "../Politics/MilitaryPoliticalInfluence";
 import { getMergedEventPresentation } from "./MergedEventPresentation";
 import { getSubmissionEventPresentation } from "./PeacefulSubmissionPresentation";
 import { DIPLOMACY_EVENT_TYPES } from "./HistoryMajorEventFilters";
@@ -150,7 +151,8 @@ export function formatHistoryEventTitle(
 ) {
   const title = formatHistoryEventTitleBase(event, factionById, rulersById);
   const capital = formatAccessionCapital(event);
-  return capital ? `${title} · ${capital}` : title;
+  const military = formatMilitaryParticipation(event);
+  return [title, capital, military].filter(Boolean).join(" · ");
 }
 
 function formatHistoryEventTitleBase(

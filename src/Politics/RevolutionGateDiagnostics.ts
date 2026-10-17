@@ -1,4 +1,5 @@
 import { isRuntimeDebugEnabled } from "../Runtime/DebugMode";
+import { MilitaryPoliticalDiagnostics } from "./MilitaryPoliticalDiagnostics";
 import type { RevolutionContext, evaluateDynasticRevolution } from "./DynasticRevolution";
 
 const BLOCKERS = ["NO_ELIGIBLE_LEGITIMATE_SUCCESSOR", "NOT_STATE", "NOT_ACTIVE_STATE",
@@ -23,6 +24,7 @@ interface BoundaryObservation {
 
 /** Observes the already-computed result. Never draws RNG or enters the save DTO. */
 export class RevolutionGateDiagnostics {
+  private military = new MilitaryPoliticalDiagnostics();
   private sessionStartMonth = 0;
   private lastObservedMonth = 0;
   private expectedUsurpationCount = 0;
@@ -33,6 +35,7 @@ export class RevolutionGateDiagnostics {
   private recentBoundaryChecks: BoundaryObservation[] = [];
   constructor(private readonly enabled = isRuntimeDebugEnabled) {}
   reset(worldMonth = 0) {
+    this.military.reset();
     this.sessionStartMonth = worldMonth; this.lastObservedMonth = worldMonth; this.expectedUsurpationCount = 0;
     this.counters = emptyCounters(); this.chanceBuckets = emptyChanceBuckets();
     BLOCKERS.forEach(key => { this.blockerCounts[key] = 0; });
@@ -45,6 +48,8 @@ export class RevolutionGateDiagnostics {
     counters.successionBoundaryCheckCount++;
     if (context.successor) counters.hasLegitimateSuccessorCount++;
     const observedShocks = result.observedPoliticalShocks ?? [];
+    this.military.observe(context.military, observedShocks.length > 0 || context.successionReason !== "natural" || result.crisis.level === "succession-crisis",
+      result.baselineChance, result.chance, result.rollAttempted, result.usurpation);
     if (observedShocks.some(shock => shock.kind === "CAPITAL_LOSS")) counters.capitalLossEvidenceBoundaryCount++;
     if (observedShocks.some(shock => shock.kind === "EMPIRE_SPLIT")) counters.empireSplitEvidenceBoundaryCount++;
     if (context.successionReason !== "natural") counters.violentPredecessorBoundaryCount++;
@@ -87,7 +92,7 @@ export class RevolutionGateDiagnostics {
     return { chineseSummary: `篡朝诊断（本次观察会话，读取时重置）\n实际观察：${elapsedWorldYears.toFixed(2)}年\n真实继位边界：${this.counters.successionBoundaryCheckCount}次\n有失都证据的继位：${this.counters.capitalLossEvidenceBoundaryCount}次\n有重大分裂证据的继位：${this.counters.empireSplitEvidenceBoundaryCount}次\n前君暴力结局的继位：${this.counters.violentPredecessorBoundaryCount}次\n存在政治脆弱性的继位：${this.counters.politicalVulnerabilityBoundaryCount}次\n原最高级危机合格：${this.counters.crisisEligibleCount}次\n原复合危机合格：${this.counters.lowerRiskEligibleCount}次\n新政治重创合格：${this.counters.politicalShockEligibleCount}次\n实际抽签：${this.counters.rollAttemptCount}次\n抽签概率范围：${recordedBuckets.length ? `${Math.min(...recordedBuckets)}%～${Math.max(...recordedBuckets)}%` : "暂无抽签"}\n期望篡朝：${this.expectedUsurpationCount.toFixed(3)}次\n实际篡朝：${this.counters.usurpationCount}次\n每千世界年条件期望：${per1000Years(this.expectedUsurpationCount)?.toFixed(3) ?? "暂无观察时间"}次\n以上证据统计来自已发生继位；当前候选预览仅显示原继承危机，不扫描新增历史冲击。`, scope: "debug session; resets on new world/load", enabled: this.enabled(),
       counterSemantics: "capitalLossEvidenceBoundaryCount and empireSplitEvidenceBoundaryCount count completed succession boundaries with valid faction history evidence; violentPredecessorBoundaryCount counts combat/captured terminations; politicalVulnerabilityBoundaryCount counts boundaries meeting the multi-signal vulnerability threshold. politicalShockEligibleCount is the new severe-shock plus vulnerability tier. Candidate previews do not scan new historical evidence. Rates cover only months since new world/load.",
       chanceBucketSemantics: "Base and final chance buckets each partition roll attempts; modifier/capped counts overlap those buckets.",
-      ...this.counters, worldMonth, sessionStartMonth: this.sessionStartMonth, elapsedWorldYears,
+      ...this.counters, military: this.military.snapshot(), worldMonth, sessionStartMonth: this.sessionStartMonth, elapsedWorldYears,
       eligibleRollsPer1000Years: per1000Years(this.counters.rollAttemptCount),
       expectedUsurpationCount: this.expectedUsurpationCount,
       expectedUsurpationsPer1000Years: per1000Years(this.expectedUsurpationCount),

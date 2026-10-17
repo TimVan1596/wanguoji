@@ -19,6 +19,8 @@ import {
   RULER_MIN_AGE_AT_ACCESSION,
 } from "../config/simulation";
 import WorldHistory from "../History/WorldHistory";
+import MilitaryCommandRegistry from "./MilitaryCommandRegistry";
+import { militaryParticipationMetadata } from "./MilitaryPoliticalInfluence";
 import { captureAccessionCapital } from "../History/AccessionCapitalContext";
 import {
   calculateSuccessionEffect,
@@ -568,6 +570,9 @@ class DynastyRegistryStore {
     );
     if (revolution.usurpation && legitimateSuccessor) {
       const eventId = WorldHistory.addDynasticRevolution(year, team.name, nextRuler.id, {
+        ...militaryParticipationMetadata("REVOLUTION", team.name, year, revolution.militaryParticipant,
+          revolution.observedPoliticalShocks.map(s => s.eventId), revolution.baselineChance, revolution.chance, revolution.rollResult,
+          { stability: revolutionContext.stability, cityCount: revolutionContext.cityCount, riskTier: revolution.riskTier }),
         ...captureAccessionCapital(team, year, nextRuler.id, predecessor.id),
         oldHouseName, newHouseName: dynasty.houseName, predecessorRulerId: predecessor.id,
         predecessorRulerName: this.getRulerPersonalName(predecessor), previousRulerTitle,
@@ -702,6 +707,7 @@ class DynastyRegistryStore {
       stability: getFactionStability(team), currentRuler: current, rulers: dynasty.rulers,
       houseName: dynasty.houseName, worldMonth, lastAttemptMonth: dynasty.lastDepositionAttemptMonth,
       events: recentEvents, riskGroup: this.depositionRiskGroup,
+      military: MilitaryCommandRegistry.getPoliticalInfluence(team, worldMonth, Game.Core?.logicalUnitRegistry),
     });
     if (evaluation.blockers.includes("COOLDOWN")) {
       this.depositionDiagnostics.observe(team.name, worldMonth, evaluation, team.status === "ACTIVE" && team.identityStage === "STATE", "COOLDOWN");
@@ -713,7 +719,9 @@ class DynastyRegistryStore {
     }
     // Exactly one canonical roll per qualified annual boundary. Diagnostics do not touch RNG.
     dynasty.lastDepositionAttemptMonth = worldMonth;
-    const succeeds = worldRandom.next() < evaluation.probability;
+    const roll = worldRandom.next();
+    evaluation.militaryRoll = roll;
+    const succeeds = roll < evaluation.probability;
     if (!succeeds) {
       this.depositionDiagnostics.observe(team.name, worldMonth, evaluation, team.status === "ACTIVE" && team.identityStage === "STATE", "FAILURE");
       return;
@@ -735,6 +743,8 @@ class DynastyRegistryStore {
       successor.houseName !== dynasty.houseName || !dynasty.rulers.includes(successor) ||
       !evaluation.candidates.some((candidate) => candidate.ruler.id === successor.id) ||
       evaluation.evidence.some((fact) => fact.month > worldMonth)) return false;
+    if (evaluation.militaryParticipant && !MilitaryCommandRegistry.getPoliticalInfluence(team, worldMonth, Game.Core?.logicalUnitRegistry).candidates.some(p =>
+      JSON.stringify(p) === JSON.stringify(evaluation.militaryParticipant))) return false;
     const previousState = {
       predecessor: structuredClone(predecessor), successor: structuredClone(successor), currentRulerId: dynasty.currentRulerId,
       heirIds: [...dynasty.heirIds], designatedHeirId: dynasty.designatedHeirId,
@@ -830,7 +840,10 @@ class DynastyRegistryStore {
       return false;
     }
     const eventId = WorldHistory.addRulerDeposed(worldMonth, team.name, team.displayName, predecessor, successor, relation,
-      evaluation.evidence.map(({ eventId: id }) => id), captureAccessionCapital(team, worldMonth, successor.id, predecessor.id));
+      evaluation.evidence.map(({ eventId: id }) => id), { ...captureAccessionCapital(team, worldMonth, successor.id, predecessor.id),
+        ...militaryParticipationMetadata("DEPOSITION", team.name, worldMonth, evaluation.militaryParticipant,
+          evaluation.evidence.map(e => e.eventId), evaluation.baselineProbability ?? evaluation.probability, evaluation.probability, evaluation.militaryRoll,
+          { stability: getFactionStability(team) ?? 100, cityCount: team.cities.length }) });
     if (predecessor.chronicle) predecessor.chronicle.notableEventIds.push(eventId);
     successor.chronicle!.notableEventIds.push(eventId);
     return true;
@@ -1196,6 +1209,7 @@ class DynastyRegistryStore {
       // Candidate previews do not scan historical evidence or create political opportunities.
       politicalShocks: predecessor.status === "dead" && predecessor.deathMonth === year
         ? derivePoliticalSuccessionShocks(team.name, predecessor, year, WorldHistory.getEventsForFaction(team.name)) : [],
+      military: predecessor.status === "dead" && predecessor.deathMonth === year ? MilitaryCommandRegistry.getPoliticalInfluence(team, year, Game.Core?.logicalUnitRegistry) : undefined,
       previousSuccessionMonths: dynasty.rulers.filter((ruler) => ruler.predecessorId && ruler.accessionYear !== undefined)
         .map((ruler) => ruler.accessionYear!) };
   }

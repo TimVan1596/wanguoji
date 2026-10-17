@@ -6,6 +6,7 @@ import { getMergedEventPresentation } from "../../../History/MergedEventPresenta
 import { getSubmissionEventPresentation } from "../../../History/PeacefulSubmissionPresentation";
 import { getDiplomacyEventDetails } from "../../../History/DiplomacyEventDetails";
 import { getRevolutionEventDetails } from "../../../History/RevolutionEventDetails";
+import { getMilitaryParticipationDetails } from "../../../Politics/MilitaryPoliticalInfluence";
 export function EventDetails({
   event,
   teamByName,
@@ -17,7 +18,7 @@ export function EventDetails({
   factionNames: string[];
   cityNames: string[];
 }) {
-  const lines: string[] = [...getRevolutionEventDetails(event), ...(getSubmissionEventPresentation(event, teamByName)?.lines ?? []), ...(getMergedEventPresentation(event, teamByName)?.lines ?? [])];
+  const lines: string[] = [...getRevolutionEventDetails(event), ...getMilitaryParticipationDetails(event), ...(getSubmissionEventPresentation(event, teamByName)?.lines ?? []), ...(getMergedEventPresentation(event, teamByName)?.lines ?? [])];
   const metadata = event.metadata;
   const kind = metadata?.historyNarrativeKind;
   const isCapitalTransition = kind === "CAPITAL_TRANSITION" ||

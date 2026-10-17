@@ -2,6 +2,7 @@ import { selectIndependentPoliticalShocks, type PoliticalSuccessionShock } from 
 import type { Ruler } from "./Dynasty";
 import { calculateSuccessionEffect } from "./SuccessionRules";
 import worldRandom from "../Simulation/WorldRandom";
+import type { MilitaryPoliticalEvidence } from "./MilitaryPoliticalInfluence";
 
 export interface DynastyHouseEpoch {
   houseName: string;
@@ -20,6 +21,7 @@ export interface RevolutionContext {
   previousSuccessionMonths: number[];
   factionId?: string;
   politicalShocks?: PoliticalSuccessionShock[];
+  military?: MilitaryPoliticalEvidence;
 }
 
 export function getRevolutionEligibility(context: RevolutionContext) {
@@ -75,7 +77,7 @@ const EVIDENCE_CHANCE_PERCENT: Readonly<Record<string, number>> = {
 };
 const MAX_REVOLUTION_CHANCE_PERCENT = 18;
 
-function getRevolutionChanceProfile(context: RevolutionContext, eligibility: ReturnType<typeof getRevolutionEligibility>) {
+function getBaseRevolutionChanceProfile(context: RevolutionContext, eligibility: ReturnType<typeof getRevolutionEligibility>) {
   if (eligibility.blockers.length) return { chance: 0, baseChance: 0, modifierChance: 0, capped: false, riskMultiplier: 0 };
   // Integer percentage points avoid accumulated float error at the strict roll boundary.
   const basePercent = context.stability <= 30 ? 14 : context.stability <= 45 ? 10 : context.stability <= 60 ? 6 : 4;
@@ -96,6 +98,16 @@ function getRevolutionChanceProfile(context: RevolutionContext, eligibility: Ret
 }
 
 /** Pure probability from the existing pre-roll authoritative gates and recorded evidence. */
+function getRevolutionChanceProfile(context: RevolutionContext, eligibility: ReturnType<typeof getRevolutionEligibility>) {
+  const base = getBaseRevolutionChanceProfile(context, eligibility);
+  const candidate = base.chance > 0 && eligibility.politicalVulnerability &&
+    (eligibility.observedPoliticalShocks.length > 0 || context.successionReason !== "natural") ? context.military?.candidates[0] : undefined;
+  const cap = eligibility.riskTier === "POLITICAL_SHOCK" ? .06 : .18 * base.riskMultiplier;
+  const chance = candidate ? Math.min(cap, base.chance + Math.min(3, candidate.strength) * .0025) : base.chance;
+  return { ...base, chance, baselineChance: base.chance, militaryBonus: chance - base.chance,
+    militaryParticipant: chance > base.chance ? candidate : undefined };
+}
+
 export function getDynasticRevolutionChance(context: RevolutionContext, eligibility = getRevolutionEligibility(context)) {
   return getRevolutionChanceProfile(context, eligibility).chance;
 }

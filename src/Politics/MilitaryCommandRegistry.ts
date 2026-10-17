@@ -1,6 +1,7 @@
 import { deriveMilitaryLifeSchedule } from "./MilitaryLifeRules";
 import WorldHistory from "../History/WorldHistory";
 import { deriveMilitaryCareer, selectMilitaryCandidate } from "./MilitaryCareerEvidence";
+import { deriveMilitaryPoliticalInfluence, getMilitaryPoliticalEvents } from "./MilitaryPoliticalInfluence";
 import type User from "../Components/User";
 import type Team from "../Components/Team";
 import type City from "../Components/City";
@@ -120,6 +121,29 @@ export class MilitaryCommandRegistryStore {
   getCareer(person: MilitaryPerson, worldMonth: number) {
     const events = [...new Map([...new Set(person.appointments.map(a => a.factionId))].flatMap(id => this.eventReader(id)).map(e => [e.id, e])).values()];
     return deriveMilitaryCareer(person, this.getFormations(), events, worldMonth);
+  }
+
+  getPoliticalInfluence(team: Team, worldMonth: number, logicalRegistry?: Pick<import("../Simulation/LogicalUnitRegistry").default, "getEntry">) {
+    const people = this.getPeople();
+    const users = [...(team.users ?? [])].filter(user => user.role === "NORMAL" && user.team === team).map(user => {
+      const unitId = user.player.logicalUnitId;
+      const entry = unitId ? logicalRegistry?.getEntry(unitId) : undefined;
+      const person = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
+      const liveBindingVerified = !user.isDestroyed && user.role === "NORMAL" && user.team === team && user.player.active &&
+        user.player.user === user && user.player.team === team && user.player.role === "NORMAL" && !user.rulerId && !user.player.rulerId &&
+        entry?.player === user.player && entry.state.alive && entry.state.userId === user.id && entry.state.factionId === team.name &&
+        entry.state.unitId === unitId && entry.state.role === "NORMAL" && (!person || Boolean(user.matchesMilitaryLife?.(person)));
+      return { userId: user.id, name: user.name, bornMonth: user.bornMonth, factionId: user.team.name,
+        personId: user.militaryPersonId, unitId, liveBindingVerified: Boolean(liveBindingVerified) };
+    });
+    const relevantFactions = [...new Set(people.filter(p => p.factionId === team.name && p.status === "ACTIVE").flatMap(p => p.appointments.map(a => a.factionId)))];
+    return deriveMilitaryPoliticalInfluence({ factionId: team.name, worldMonth, people, formations: this.getFormations(), users,
+      events: [...new Map(relevantFactions.flatMap(id => this.eventReader(id)).map(e => [e.id, e])).values()] });
+  }
+
+  getPoliticalEvents(person: MilitaryPerson) {
+    return getMilitaryPoliticalEvents([...new Map([...new Set(person.appointments.map(a => a.factionId))]
+      .flatMap(id => this.eventReader(id)).map(e => [e.id, e])).values()], person.personId);
   }
 
   getOrderEvidence(formation: MilitaryFormation) {

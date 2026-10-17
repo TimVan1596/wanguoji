@@ -42,6 +42,8 @@ import { buildRulerTags } from "../Politics/RulerChronicle";
 import WorldHistory, { type WorldEvent } from "../History/WorldHistory";
 import { formatHistoryEventTitle } from "../History/HistoryRenderRules";
 import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
+import { readMilitaryParticipation, formatMilitaryParticipation, getMilitaryParticipationDetails } from "../Politics/MilitaryPoliticalInfluence";
+import { getRulerHistoricalEvents } from "../Politics/RulerChronicle";
 import worldRandom from "../Simulation/WorldRandom";
 import Diplomacy from "../Politics/Diplomacy";
 import { createDiplomacyEventMetadata } from "../Politics/DiplomacyPresentation";
@@ -811,6 +813,89 @@ it("V15完整水合保留轻度保护输入、18月时钟和单次RNG续跑，�
   // Full post-check export/validation/hydration also retains the actual result.
   const after=exportWorldSave(core); expect(validateWorldSave(after)).toEqual({valid:true,errors:[]});
   hydrateWorldSave(core,JSON.parse(JSON.stringify(after))); expect(exportWorldSave(core)).toEqual(after);
+});
+
+it.each(["DEPOSITION", "REVOLUTION"] as const)("真实军权→%s事务→同一历史→V15严格往返与双页面证据", async kind => {
+  const { default: LogicalUnitRegistry } = await import("../Simulation/LogicalUnitRegistry");
+  const { default: User } = await import("../Components/User");
+  const { default: Player } = await import("../Components/Player");
+  const save = fixture(); save.world.worldMonth = save.world.clock.worldMonth = 0; save.registries.archivedCities = [];
+  Object.assign(save.factions[0], { houseName: "田氏", stateFoundedMonth: 0, nameHistory: [{ name: "秦", startMonth: 0, reason: "FOUNDING" }] });
+  save.factions.push({ ...save.factions[0], factionId: "enemy", displayName: "敌", nameHistory: [], capitalCityId: undefined,
+    status: "EXILED", lastExiledMonth: 0, homeGridX: 2 });
+  save.dynasties = [{ factionId: "qin", houseName: "田氏", currentRulerId: "old", heirIds: ["next"],
+    houseEpochs: [{ houseName: "田氏", startMonth: 0, foundingRulerId: "old", startReason: "FOUNDING" }], rulers: [
+      { rulerId: "old", houseName: "田氏", givenName: "平", bornMonth: -600, accessionMonth: 0, reignOrdinal: 1,
+        naturalDeathMonth: kind === "REVOLUTION" ? 72 : 1200, status: "ruling" },
+      { rulerId: "next", houseName: "田氏", givenName: "继", bornMonth: -240, naturalDeathMonth: 1200, parentId: "old", status: "heir" },
+    ] }];
+  save.users = Array.from({ length: 24 }, (_, i) => ({ userId: i + 1, name: `真实人口${i + 1}`, factionId: "qin", sourceFactionId: "qin",
+    playerUnitId: `unit-${i + 1}`, bornMonth: -300, role: "NORMAL", loyalty: 70, score: 0, slaveUnits: [] }));
+  save.units = save.users.map(u => ({ unitId: u.playerUnitId, factionId: "qin", userId: u.userId, x: 16, y: 16, vx: 0, vy: 0,
+    speed: 150, radius: 16, scale: 1, speedCoefficient: 0, sizeCoefficient: 0, role: "NORMAL", alive: true, kind: "user", children: [] }));
+  save.registries.logicalUnitRegistry = { nextUnitSequence: 25 }; setFixtureLifetimeRecords(save);
+  expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
+  const core = target(); core.logicalUnitRegistry = new LogicalUnitRegistry(); core.logicalGameplayAuthority = true;
+  hydrateWorldSave(core, JSON.parse(JSON.stringify(save)));
+  const team = core.teams[0]; team.blocks = { children: { size: 3 } }; team.removeRulerUnit = () => undefined;
+  team.setRegimeColor = function(color: number, month: number) {
+    this.colorHistory.at(-1).endMonth = month - 1; this.colorHistory.push({ color, startMonth: month, reason: "DYNASTIC_REVOLUTION" }); this.color = color;
+  };
+  team.exportState = () => ({ ...save.factions[0], houseName: team.houseName, displayName: team.displayName, color: team.color, colorHistory: team.colorHistory, nameHistory: team.nameHistory });
+  MilitaryCommandRegistry.setEventWriter(e => WorldHistory.addEvent(e));
+  const appointmentDraw = vi.spyOn(worldRandom, "next").mockReturnValue(0);
+  MilitaryCommandRegistry.update(0, [team], []); MilitaryCommandRegistry.update(12, [team], []); appointmentDraw.mockRestore();
+  expect(MilitaryCommandRegistry.getPeople()).toHaveLength(2);
+  const qualified = MilitaryCommandRegistry.getPoliticalInfluence(team, 72, core.logicalUnitRegistry);
+  expect(qualified.candidates).toHaveLength(2);
+  expect([...team.users].every((u: any) => u instanceof User)).toBe(true);
+  vi.spyOn(DynastyRegistry, "ensureRulerUnit").mockImplementation(t => {
+    const current = DynastyRegistry.getCurrentRuler(t.name)!;
+    if (current.id === "old" || t.rulerUser) return;
+    // Renderer-only ruler unit adapter; the political transaction and User binding remain real.
+    const player: any = new Player(core.scene, 16, 16, t);
+    player.applyHydratedMovementState({ ...save.units[0], userId: 900, role: "RULER", rulerId: current.id });
+    const user = new User(900, "真实新君单位", t, player, undefined, 70, "RULER", current.id, { deferRuntime: true, bornMonth: current.bornYear });
+    player.user = user; t.users.add(user); t.rulerUser = user;
+    core.logicalUnitRegistry.importState(26, [...core.logicalUnitRegistry.getEntries(), { player, user,
+      state: { ...core.logicalUnitRegistry.get("unit-1"), unitId: "unit-25", userId: 900, role: "RULER", rulerId: current.id } }]);
+  });
+  vi.spyOn(await import("../Components/City"), "getFactionStability").mockReturnValue(20);
+  const crisisId = WorldHistory.addCapitalFallen(70, "enemy", "qin", "qin", "旧都", "active", true, 7, undefined, undefined, "actual-crisis");
+  const formationsBefore = MilitaryCommandRegistry.exportState().formations;
+  const draw = vi.spyOn(worldRandom, "next").mockReturnValue(kind === "DEPOSITION" ? .009 : .045);
+  DynastyRegistry.update(72, [team]);
+  if (kind === "DEPOSITION") expect(draw).toHaveBeenCalledTimes(1); // two real commanders, one political roll
+  draw.mockRestore();
+  const event = WorldHistory.getEvents().find(e => e.type === (kind === "DEPOSITION" ? "ruler-deposed" : "dynasty-usurped"))!;
+  const participation = readMilitaryParticipation(event)!;
+  expect(participation).toMatchObject({ kind, factionId: "qin", worldMonth: 72, crisisEventIds: [crisisId],
+    participant: { personId: qualified.candidates[0].personId, unitCount: 12 } });
+  expect(participation.roll).toBeGreaterThanOrEqual(participation.baselineChance);
+  expect(participation.roll).toBeLessThan(participation.finalChance);
+  expect(MilitaryCommandRegistry.exportState().formations).toEqual(formationsBefore);
+  const dynasty = DynastyRegistry.get("qin")!, current = DynastyRegistry.getCurrentRuler("qin")!;
+  expect(dynasty.houseEpochs).toHaveLength(kind === "DEPOSITION" ? 1 : 2);
+  expect(dynasty.rulers.find(r => r.id === "old")?.status).toBe(kind === "DEPOSITION" ? "deposed" : "dead");
+  expect(current.id).not.toBe(participation.participant.personId);
+  const royalEvents = getRulerHistoricalEvents(WorldHistory.getEvents(), { ...current, accessionYear: 72 }, "qin", 72, [], 100);
+  expect(royalEvents.map(e => e.id)).toContain(event.id);
+  const person = MilitaryCommandRegistry.getPerson(participation.participant.personId)!;
+  expect(MilitaryCommandRegistry.getPoliticalEvents(person).map(e => e.id)).toEqual([event.id]);
+  expect(formatHistoryEventTitle(event, new Map())).toContain(formatMilitaryParticipation(event));
+  expect(getMilitaryParticipationDetails(event).join(" ")).toContain(crisisId);
+  core.simulator.exportState().clock.worldMonth = 72;
+  const before = exportWorldSave(core); expect(validateWorldSave(before)).toEqual({ valid: true, errors: [] });
+  const rng = worldRandom.exportState(); hydrateWorldSave(core, JSON.parse(JSON.stringify(before)));
+  expect(exportWorldSave(core)).toEqual(before); expect(worldRandom.exportState()).toEqual(rng);
+  hydrateWorldSave(core, JSON.parse(JSON.stringify(before))); expect(exportWorldSave(core)).toEqual(before);
+  expect(MilitaryCommandRegistry.getPoliticalEvents(MilitaryCommandRegistry.getPerson(person.personId)!)[0].id).toBe(event.id);
+  for (const field of ["sourceUserId", "commandId", "serviceMonths", "unitCount"] as const) {
+    const bad = structuredClone(before), metadata = (bad.worldHistory.events as WorldEvent[]).find(e => e.id === event.id)!.metadata!;
+    const record = JSON.parse(String(metadata.militaryParticipation)); record.participant[field] = field === "commandId" ? "missing-command" : -1;
+    metadata.militaryParticipation = JSON.stringify(record);
+    expect(validateWorldSave(bad).errors).toContain(`invalid military political participation: ${event.id}`);
+  }
 });
 
 it("V15旧地响应事件及真实User/逻辑单位完整往返，严格拒绝伪造响应证据",async()=>{

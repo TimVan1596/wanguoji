@@ -430,11 +430,13 @@ function WorldDiagnosticsPanelContent() {
       <details>
         <summary>篡朝诊断</summary>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 11 }}>{provisionalRulers.revolution.cumulativeGate.chineseSummary}</Typography>
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 11 }}>{provisionalRulers.revolution.cumulativeGate.military.chineseSummary}</Typography>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(provisionalRulers.revolution)}</Typography>
       </details>
       <details>
         <summary>宗室废立诊断</summary>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 11 }}>{provisionalRulers.deposition.chineseSummary}</Typography>
+        <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 11 }}>{provisionalRulers.deposition.military.chineseSummary}</Typography>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(provisionalRulers.deposition)}</Typography>
       </details>
       <details>

@@ -3,6 +3,8 @@ import type { Ruler } from "./Dynasty";
 import { getRecordedKinRelation } from "./DynasticCandidateRules";
 import { isNaturallyDeadByMonth } from "./RulerLifespanRules";
 import { yearsToMonths } from "../Simulation/WorldTime";
+import type { MilitaryPoliticalEvidence, MilitaryPoliticalParticipant } from "./MilitaryPoliticalInfluence";
+import { MilitaryPoliticalDiagnostics } from "./MilitaryPoliticalDiagnostics";
 
 export const DEPOSITION_EVALUATION_INTERVAL_MONTHS = 12;
 export const DEPOSITION_COOLDOWN_MONTHS = 60;
@@ -28,6 +30,10 @@ export interface DepositionEvaluation {
   evidence: DepositionCrisisEvidence[];
   probability: number;
   vulnerability: boolean;
+  baselineProbability?: number;
+  military?: MilitaryPoliticalEvidence;
+  militaryParticipant?: MilitaryPoliticalParticipant;
+  militaryRoll?: number;
 }
 
 const relationPriority = ["DIRECT_CHILD", "GRANDCHILD", "SIBLING", "NEPHEW", "UNCLE", "COUSIN"];
@@ -82,7 +88,7 @@ export function selectDepositionCandidates({
 
 export function evaluateDepositionOpportunity({
   factionId, status, identityStage, cityCount, stability, currentRuler, rulers, houseName, worldMonth,
-  lastAttemptMonth, events, riskGroup = "CONSERVATIVE",
+  lastAttemptMonth, events, riskGroup = "CONSERVATIVE", military,
 }: {
   factionId: string;
   status: string;
@@ -96,6 +102,7 @@ export function evaluateDepositionOpportunity({
   lastAttemptMonth?: number;
   events: readonly WorldEvent[];
   riskGroup?: DepositionRiskGroup;
+  military?: MilitaryPoliticalEvidence;
 }): DepositionEvaluation {
   const blockers: string[] = [];
   const ruler = currentRuler;
@@ -119,11 +126,15 @@ export function evaluateDepositionOpportunity({
   const base = riskGroup === "CONTROL" ? 0.02 : 0.005;
   const step = riskGroup === "CONTROL" ? 0.02 : 0.005;
   const cap = riskGroup === "CONTROL" ? 0.06 : 0.015;
-  const probability = evidence.length ? Math.min(cap, base + Math.max(0, evidence.length - 1) * step) : 0;
-  return { eligible: blockers.length === 0, blockers, candidates, evidence, probability, vulnerability };
+  const baselineProbability = evidence.length ? Math.min(cap, base + Math.max(0, evidence.length - 1) * step) : 0;
+  const strongCrisis = evidence.length >= 2 || evidence.some(e => e.type === "capital-fallen" || e.type === "empire-split") && stability !== undefined && stability <= 30;
+  const militaryParticipant = blockers.length === 0 && strongCrisis && riskGroup === "CONSERVATIVE" ? military?.candidates[0] : undefined;
+  const probability = militaryParticipant ? Math.min(.03, baselineProbability + Math.min(.01, militaryParticipant.strength * .0025 + (evidence.length >= 3 ? .0025 : 0))) : baselineProbability;
+  return { eligible: blockers.length === 0, blockers, candidates, evidence, probability, vulnerability, baselineProbability, military, militaryParticipant };
 }
 
 export class InReignDepositionDiagnostics {
+  private military = new MilitaryPoliticalDiagnostics();
   private sessionStartMonth = 0;
   private totals = this.empty();
   private readonly recent: Array<{ factionId: string; month: number; blockers: string[]; candidateIds: string[]; evidenceIds: string[]; probability: number }> = [];
@@ -131,8 +142,10 @@ export class InReignDepositionDiagnostics {
     return { observedChecks: 0, activePolities: 0, existingAdultKinCandidates: 0, qualifiedChecks: 0,
       drawAttempts: 0, failures: 0, successes: 0, cooldownBlocked: 0, expectedSuccesses: 0 };
   }
-  reset(worldMonth = 0) { this.sessionStartMonth = worldMonth; this.totals = this.empty(); this.recent.length = 0; }
+  reset(worldMonth = 0) { this.sessionStartMonth = worldMonth; this.totals = this.empty(); this.recent.length = 0; this.military.reset(); }
   observe(factionId: string, worldMonth: number, evaluation: DepositionEvaluation, active: boolean, outcome?: "SUCCESS" | "FAILURE" | "COOLDOWN") {
+    this.military.observe(evaluation.military, evaluation.evidence.length > 0, evaluation.eligible ? evaluation.baselineProbability ?? evaluation.probability : 0,
+      evaluation.eligible ? evaluation.probability : 0, evaluation.eligible, outcome === "SUCCESS");
     this.totals.observedChecks++;
     if (active) this.totals.activePolities++;
     this.totals.existingAdultKinCandidates += evaluation.candidates.length;
@@ -151,7 +164,7 @@ export class InReignDepositionDiagnostics {
   snapshot(worldMonth: number) {
     const elapsedYears = Math.max(0, worldMonth - this.sessionStartMonth) / 12;
     const per100Years = (n: number) => elapsedYears > 0 ? n * 100 / elapsedYears : null;
-    return { ...this.totals, elapsedYears, expectedSuccessesPer100Years: per100Years(this.totals.expectedSuccesses),
+    return { ...this.totals, elapsedYears, military: this.military.snapshot(), expectedSuccessesPer100Years: per100Years(this.totals.expectedSuccesses),
       actualSuccessesPer100Years: per100Years(this.totals.successes), recent: this.recent.map(row => ({ ...row,
         blockers: [...row.blockers], candidateIds: [...row.candidateIds], evidenceIds: [...row.evidenceIds] })),
       chineseSummary: `宗室废立诊断（本次观察）\n实际观察：${elapsedYears.toFixed(2)}年\n已观察在国正式政权：${this.totals.activePolities}次\n现存成年宗室候选：${this.totals.existingAdultKinCandidates}人次\n完整资格通过：${this.totals.qualifiedChecks}次\n实际抽签：${this.totals.drawAttempts}次\n抽签失败：${this.totals.failures}次\n实际废立：${this.totals.successes}次\n冷却阻断：${this.totals.cooldownBlocked}次\n条件期望废立：${this.totals.expectedSuccesses.toFixed(3)}次` };
