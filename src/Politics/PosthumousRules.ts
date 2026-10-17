@@ -74,7 +74,7 @@ export function evaluatePosthumousNames(
   const historical = deriveRulerHistoricalEvidence({ ruler, dynasty: { rulers: dynastyRulers }, faction, events, worldMonth: monthIndex });
   const political = summarizeRulerPoliticalFacts(historical.politicalFacts);
   const evidence = buildRulerLegacyEvidence(chronicle, ruler.accessionYear, ruler.endYear, ruler.endReason, activeRuleMonths, {
-    ...political, terminalCollapse: historical.terminalCollapse, restoredActiveRuleMonths: tenure.restoredActiveRuleMonths,
+    ...political, stateLosses: tenure.stateLossCount, exileMonths: tenure.exileMonths, terminalCollapse: historical.terminalCollapse, restoredActiveRuleMonths: tenure.restoredActiveRuleMonths,
     changedHouse: historical.politicalFacts.some(f => f.usurpationRole === "USURPER"),
   });
   const outcome = evaluateReignOutcome(chronicle.accessionSnapshot, end);
@@ -87,7 +87,7 @@ export function evaluatePosthumousNames(
       event.metadata?.cause === "CAPITAL_FALL" &&
       eventMonth >= ruler.accessionYear! && eventMonth <= ruler.endYear!;
   }).length;
-  const peacefulLongReign = activeRuleMonths >= 20 * 12 &&
+  const peacefulLongReign = activeRuleMonths >= 20 * 12 && evidence.trajectory.quietStewardshipEligible &&
     evidence.stableGovernanceEligible &&
     chronicle.rebellionsDuringReign === 0 &&
     Math.abs(territoryDelta) < 0.08 && Math.abs(cityDelta) <= 1 &&
@@ -141,7 +141,7 @@ export function evaluatePosthumousNames(
     score += 10;
     reasons.push("烈终");
   }
-  if (tragicEnd || evidence.stabilityDeterioration || evidence.territorialCollapse || evidence.cityCollapse) {
+  if (tragicEnd || evidence.stabilityDeterioration || evidence.territorialCollapse || evidence.cityCollapse || evidence.trajectory.majorTerritoryRetreat) {
     score += 24;
     reasons.push("国难");
   }
@@ -298,12 +298,12 @@ function chooseEpithet(
   if (evidence.stabilityDeterioration && evidence.activeRuleMonths >= LONG_REIGN_MONTHS && (evidence.territorialCollapse || evidence.cityCollapse || evidence.majorDisorder || evidence.terminalCollapse)) {
     add("灵", 66 + (evidence.majorDisorder ? 8 : 0) + (evidence.demographicCollapse ? 6 : 0), "长期稳定恶化，并有疆土、城市、内乱或终局失序证据");
   }
-  if (!terminalCrisis && (evidence.territorialCollapse || evidence.cityCollapse)) add("愍", 32, "任内疆土或城市严重丧失");
+  if (!terminalCrisis && (evidence.territorialCollapse || evidence.cityCollapse || evidence.trajectory.majorTerritoryRetreat)) add("愍", 32, evidence.trajectory.majorTerritoryRetreat ? "任内记录峰值至终局显著回撤" : "任内疆土或城市严重丧失");
   if (!terminalCrisis && evidence.territorialCollapse && evidence.cityCollapse && evidence.stabilityDeterioration) add("哀", 42, "疆土、城市与稳定均显著衰退");
   if (evidence.activeRuleMonths >= VERY_LONG_REIGN_MONTHS && evidence.stableGovernance && evidence.majorExpansion) add("景", 42, "长期统治兼有扩张与稳定治理");
   if (chronicle.rebellionsDuringReign > 0 && evidence.stableGovernanceEligible) add("定", 34, "经历内乱后恢复秩序，末期治理稳定");
   if (
-    evidence.activeRuleMonths >= 20 * 12 &&
+    evidence.activeRuleMonths >= 20 * 12 && evidence.trajectory.quietStewardshipEligible &&
     evidence.stableGovernanceEligible &&
     end.stability >= 75 && evidence.stabilityDelta >= 0 &&
     chronicle.rebellionsDuringReign === 0 &&

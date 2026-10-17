@@ -34,6 +34,7 @@ export function summarizeRulerPoliticalFacts(facts: readonly RulerPoliticalFact[
     personalExtinctions: count(f => f.terminalOutcome === "EXTINCT" && !own(f) && f.role === "DIRECT_ACTOR"),
     stateLosses: count(f => f.type === "faction-exiled" && own(f)),
     restorations: count(f => f.type === "faction-restored"),
+    forcedRelocations: count(f => f.type === "capital-relocated"),
     capitalLosses: count(f => ["capital-fallen", "city-captured"].includes(f.type) && !!f.wasCapital && own(f)),
     crisisEpisodes: new Set(rows.filter(f => own(f) && (["capital-fallen", "capital-relocated", "empire-split", "faction-exiled", "faction-extinct"].includes(f.type) || f.type === "city-captured" && f.wasCapital)).map(f => f.historyGroupId ?? f.eventId)).size,
     personalSignatures: count(f => f.role === "DIRECT_ACTOR" && ["truce-signed", "non-aggression-signed", "alliance-signed"].includes(f.type)),

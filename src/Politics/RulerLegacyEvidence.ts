@@ -1,7 +1,9 @@
+import { deriveRulerReignTrajectory, type RulerReignTrajectory, type RulerReignTrajectoryContext } from "./RulerReignTrajectory";
 import type { RulerChronicle } from "./RulerChronicle";
 import { getRulerEffectiveSnapshot } from "./RulerChronicle";
 
 export interface RulerLegacyEvidence {
+  trajectory: RulerReignTrajectory;
   foundedState: boolean;
   proclaimedEmperor: boolean;
   completedUnification: boolean;
@@ -55,7 +57,7 @@ export function buildRulerLegacyEvidence(
   endMonth?: number,
   endReason?: string,
   activeRuleMonths = Math.max(0, (endMonth ?? getRulerEffectiveSnapshot(chronicle).month) - accessionMonth),
-  facts?: { restorations: number; personalCityCaptures: number; personalCapitalCaptures: number; personalExtinctions: number; terminalCollapse: boolean; changedHouse: boolean; restoredActiveRuleMonths: number }
+  facts?: RulerReignTrajectoryContext & { restorations: number; personalCityCaptures: number; personalCapitalCaptures: number; personalExtinctions: number; terminalCollapse: boolean; changedHouse: boolean; restoredActiveRuleMonths: number }
 ): RulerLegacyEvidence {
   const start = chronicle.accessionSnapshot;
   const end = getRulerEffectiveSnapshot(chronicle);
@@ -69,7 +71,9 @@ export function buildRulerLegacyEvidence(
   const terminalCollapse = facts?.terminalCollapse ?? (endReason === "政治终结" || endReason === "彻底灭亡");
   const restorations = Math.max(chronicle.restorationsDuringReign, facts?.restorations ?? 0);
   const captures = Math.max(chronicle.citiesCapturedPersonally, facts?.personalCityCaptures ?? 0);
+  const trajectory = deriveRulerReignTrajectory(chronicle, { ...facts, activeRuleMonths: governedMonths });
   const stableGovernanceEligible =
+    trajectory.stableTrajectoryEligible &&
     end.stability >= 75 &&
     stabilityDelta >= 0 &&
     !territorialCollapse &&
@@ -79,6 +83,7 @@ export function buildRulerLegacyEvidence(
     cityDelta >= -1 &&
     !(start.cityCount >= 3 && end.cityCount <= 1);
   return {
+    trajectory,
     foundedState: Boolean(chronicle.foundedStateName),
     proclaimedEmperor: chronicle.proclaimedEmperorMonth !== undefined,
     completedUnification: chronicle.completedUnification,
@@ -123,7 +128,7 @@ export function buildRulerLegacyEvidence(
     governanceCost: (start.population > 0 && end.population <= start.population * 0.6) || stabilityDelta <= -20,
     strongExpansion: territoryDelta >= 0.16 || cityDelta >= 3 || chronicle.completedUnification,
     severeDecline: territoryDelta <= -0.12 || cityDelta <= -2 || (start.population > 0 && end.population <= start.population * 0.6) || endReason === "彻底灭亡",
-    steadyRule: governedMonths >= 18 * 12 && stableGovernanceEligible && Math.abs(territoryDelta) < 0.04 && cityDelta === 0,
+    steadyRule: governedMonths >= 18 * 12 && stableGovernanceEligible && trajectory.quietStewardshipEligible && cityDelta === 0,
   };
 }
 

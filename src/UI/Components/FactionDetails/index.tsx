@@ -6,7 +6,7 @@ import { UnifiedFactionChronicle } from "./UnifiedFactionChronicle";
 import { hasRecordedRulerDeath } from "../../../Politics/RulerLifeState";
 import { getTerminationTargetName } from "./model";
 import { formatRulerTerminalEvent } from "../../../History/PoliticalTerminalChronicle";
-import { getSignificantReignStats, formatRulerLifeAge, formatRulerDepositionFact } from "./RoyalPresentation";
+import { formatReignTerritoryChange, getReignTrajectoryPresentation, getSignificantReignStats, formatRulerLifeAge, formatRulerDepositionFact } from "./RoyalPresentation";
 import { getFactionColorAtMonth, type FactionColorHistoryEntry } from "../../../Simulation/FactionColorHistory";
 import { Box, Button, Dialog, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, Typography, type SelectChangeEvent } from "@mui/material";
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -65,7 +65,6 @@ import {
 import {
   buildRulerTags,
   getRulerHistoricalEvents,
-  getRulerTerritoryDelta,
 } from "../../../Politics/RulerChronicle";
 import { composeHistorianVoice, deriveRulerAssessment } from "../../../Politics/RulerHistoriography";
 import { deriveRulerTenureEvidence } from "../../../Politics/RulerTenureEvidence";
@@ -1147,7 +1146,6 @@ function RulerBiography({
   const rulerEvents = historicalEvents.filter((event) => !heirDeathIds.has(event.id));
   const start = ruler.chronicle.accessionSnapshot;
   const end = ruler.chronicle.endSnapshot ?? ruler.chronicle.latestSnapshot ?? start;
-  const territoryDelta = getRulerTerritoryDelta(ruler.chronicle);
   const posthumousLines = getPosthumousLabelLines(ruler, team, ruler.endYear ?? worldMonth);
   const parent = ruler.parentId ? rulers.find((candidate) => candidate.id === ruler.parentId) : undefined;
   const predecessor = ruler.predecessorId ? rulers.find((candidate) => candidate.id === ruler.predecessorId) : undefined;
@@ -1259,20 +1257,21 @@ function RulerBiography({
         国势变化
       </Typography>
       <Typography fontSize="0.82rem">
-        人口：{start.population} → {end.population}
-      </Typography>
-      <Typography fontSize="0.82rem">
-        领土：{(start.territoryShare * 100).toFixed(1)}% →{" "}
-        {(end.territoryShare * 100).toFixed(1)}% (
-        {territoryDelta >= 0 ? "+" : ""}
-        {(territoryDelta * 100).toFixed(1)}%)
+        领土：{formatReignTerritoryChange(start.territoryShare, end.territoryShare)}
       </Typography>
       <Typography fontSize="0.82rem">
         城市：{start.cityCount} → {end.cityCount}
         {assessment.evidence.observedPeakCityCount === 0 && assessment.evidence.restorationCount > 0 ? " · 任内曾复国，城市峰值未留存" : ` · 已存快照最高${assessment.evidence.observedPeakCityCount}座（非完整峰值）`}
       </Typography>
+      <Typography fontWeight="bold" fontSize="0.86rem" sx={{ mt: 0.5 }}>任内国势轨迹</Typography>
+      <Typography fontSize="0.82rem" sx={{ overflowWrap: "anywhere" }}>
+        {getReignTrajectoryPresentation(assessment.evidence.trajectory)}
+      </Typography>
       <Typography fontSize="0.82rem">
-        {`任内记录峰值：领土${(assessment.evidence.peakTerritory * 100).toFixed(1)}% · 人口${assessment.evidence.peakPopulation}`}
+        {`人口：即位${start.population} → 记录峰值${assessment.evidence.trajectory.peakPopulation} → 终局${end.population}`}
+      </Typography>
+      <Typography fontSize="0.78rem" color="var(--gg-text-muted)">
+        峰值来自已存月度观察，无峰值年月及完整城市峰值记录。
       </Typography>
       <Typography fontSize="0.82rem">
         {`失国${assessment.evidence.tenure.stateLossCount}次 · 复国${assessment.evidence.restorationCount}次（失城次数不等于净城市损失）`}

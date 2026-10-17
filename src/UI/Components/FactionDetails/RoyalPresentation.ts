@@ -1,3 +1,4 @@
+import type { RulerReignTrajectory } from "../../../Politics/RulerReignTrajectory";
 import { summarizeRulerPoliticalFacts } from "../../../Politics/RulerPoliticalFacts";
 import type { Ruler } from "../../../Politics/Dynasty";
 import { hasRecordedRulerDeath } from "../../../Politics/RulerLifeState";
@@ -80,4 +81,22 @@ export function formatRulerDepositionFact(fact: RulerPoliticalFact, ruler: Ruler
     relation === "SIBLING" ? `其${siblingRelation}` : relation === "NEPHEW" ? "其侄" :
     relation === "UNCLE" ? "其叔伯" : "其堂亲";
   return `${formatWorldDate(fact.month)}被${subject}${fact.relatedRulerName}废黜`;
+}
+
+
+/** Percentage points, not relative percentages; retain real sub-display differences. */
+export function formatReignTerritoryChange(start: number, end: number) {
+  const delta = (end - start) * 100;
+  let digits = 1;
+  while (digits < 6 && start !== end && (start * 100).toFixed(digits) === (end * 100).toFixed(digits)) digits++;
+  const amount = Math.abs(delta).toFixed(digits);
+  const change = delta === 0 ? "持平" : Number(amount) === 0 ? `约持平（实际微${delta > 0 ? "升" : "降"}，不足0.000001个百分点）` : `${delta > 0 ? "+" : "−"}${amount}个百分点`;
+  return `${(start * 100).toFixed(digits)}% → ${(end * 100).toFixed(digits)}%（${change}）`;
+}
+
+export function getReignTrajectoryPresentation(t: RulerReignTrajectory) {
+  const label = t.expandedThenRetreated ? "扩张后显著回撤" : t.inheritedDecline ? "承接高位后显著收缩" :
+    t.expandedAndRetained ? "扩张成果大部保有" : t.recoveredAfterWarfare ? "城邑反复得失，终局恢复" :
+    t.majorTerritoryRetreat ? "峰值后显著回落" : "首末与记录峰值分列，不推定全程无事";
+  return `疆域：即位${(t.accessionTerritory * 100).toFixed(1)}% → 记录峰值${(t.peakTerritory * 100).toFixed(1)}% → 终局${(t.endTerritory * 100).toFixed(1)}%；${label}。`;
 }
