@@ -288,7 +288,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
       actorFactionId: "qin", targetFactionId: "wei", factionIds: ["qin", "wei"], cityId: "wei-city", importance: "major",
       metadata: { commandId: "military-command-1", commanderPersonId: "military-person-1" } });
     save.registries.militaryCommandRegistry = {
-      people: [{ personId: "military-person-1", sourceUserId: 8, name: "指挥者", bornMonth: -300, factionId: "qin", status: "ACTIVE",
+      people: [{ personId: "military-person-1", sourceUserId: 8, personalName: "李承远", name: "指挥者", bornMonth: -300, factionId: "qin", status: "ACTIVE",
         appointments: [{ factionId: "qin", startMonth: 12, commandId: "military-command-1" }], capturedEventIds: [eventId] }],
       formations: [{ commandId: "military-command-1", factionId: "qin", commanderPersonId: "military-person-1", memberUnitIds: ["unit-2", "unit-3"],
         createdMonth: 12, status: "ACTIVE", targetCityId: "wei-city", orderStartMonth: 12, captures: [{ eventId, cityId: "wei-city", month: 24 }] }],

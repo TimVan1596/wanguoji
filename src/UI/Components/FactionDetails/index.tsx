@@ -1,3 +1,4 @@
+import { formatMilitaryVictorySource } from "../../../Politics/MilitaryChronicle";
 import { deriveRestorationTenureEvidence } from "../../../Simulation/RestorationTenureEvidence";
 import { buildRestorationMemoryLines } from "./model";
 import { GenealogyPersonCard } from "./GenealogyPersonCard";
@@ -67,6 +68,7 @@ import {
 import {
   buildRulerTags,
   getRulerHistoricalEvents,
+  getRulerDiplomaticEvents,
 } from "../../../Politics/RulerChronicle";
 import { composeHistorianVoice, deriveRulerAssessment } from "../../../Politics/RulerHistoriography";
 import { deriveRulerTenureEvidence } from "../../../Politics/RulerTenureEvidence";
@@ -603,22 +605,32 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
       const politicalEvents = MilitaryCommandRegistry.getPoliticalEvents(person);
       const politicalCandidate = militaryPolitics?.candidates.find(p => p.personId === person.personId);
       const orderEvidence = formation ? MilitaryCommandRegistry.getOrderEvidence(formation) : undefined;
-      return <Box key={person.personId} sx={{ borderBottom: "1px solid var(--gg-border-muted)", pb: 0.75 }}>
-        <Typography fontWeight="bold" fontSize="0.9rem">{getMilitaryPersonDisplayName(person)} · {describeMilitaryStatus(person)}</Typography>
+      return <Box component="details" key={person.personId} sx={{ borderBottom: "1px solid var(--gg-border-muted)", pb: 0.75 }}>
+        <Box component="summary" sx={{ cursor: "pointer" }}><Typography component="span" fontWeight="bold" fontSize="0.9rem">{getMilitaryPersonDisplayName(person)} · {describeMilitaryStatus(person)}</Typography></Box>
+        <Typography fontSize="0.78rem">{person.factionId === factionId ? "目前所属本国" : `曾在本国任职 · 目前身份归属${person.factionId}`}</Typography>
         <Typography fontSize="0.75rem" color="var(--gg-text-muted)">身份追溯：{person.personId} / User {person.sourceUserId} / 原始名称或人口标签：{person.name}（不是另一个人物）</Typography>
         <Typography fontSize="0.75rem" color="var(--gg-text-muted)">{describeMilitaryNameEvidence(person)}</Typography>
         <Typography fontSize="0.78rem">军事政治参与资格：{politicalCandidate ? `已核验（现役编组${politicalCandidate.unitCount}人，压力等级${politicalCandidate.strength}）` : `不合格：${describeMilitaryPoliticalBlock(militaryPolitics?.blocked.find(b => b.personId === person.personId)?.reason)}`}。仅已有危机中可能参与；不代表政治行动已发生。</Typography>
-        {politicalEvents.map(event => <Box key={event.id}>
+        {politicalEvents.filter(event => event.actorFactionId === factionId).map(event => <Box key={event.id}>
           <Typography fontSize="0.78rem">{formatWorldDate(event.monthIndex ?? event.year)} · {formatHistoryEventTitle(event, politicalFactionById)}</Typography>
           <MilitaryPoliticalEventFacts event={event} />
         </Box>)}
-        <Typography fontSize="0.82rem" color="var(--gg-text-muted)">{describeMilitaryAge(person, worldMonth, Boolean(activeUser?.matchesMilitaryLife(person)))} · 任职 {person.appointments.map(item => `${formatWorldDate(item.startMonth)}${item.endMonth === undefined ? "至今" : `—${formatWorldDate(item.endMonth)}（${describeMilitaryAppointmentEnd(item.endReason)}）`}`).join("；")}</Typography>
+        <Typography fontSize="0.82rem" color="var(--gg-text-muted)">{describeMilitaryAge(person, worldMonth, Boolean(activeUser?.matchesMilitaryLife(person)))} · 任职 {person.appointments.filter(item => item.factionId === factionId).map(item => `${formatWorldDate(item.startMonth)}${item.endMonth === undefined ? "至今" : `—${formatWorldDate(item.endMonth)}（${describeMilitaryAppointmentEnd(item.endReason)}）`}`).join("；")}</Typography>
         {lastAppointment?.endReason === "AGE_RETIREMENT" && lastAppointment.endMonth !== undefined && <Typography fontSize="0.82rem">退休时年龄：{Math.floor((lastAppointment.endMonth - person.bornMonth) / 12)}岁</Typography>}
         {person.deathMonth !== undefined && <Typography fontSize="0.82rem">生命结局：{formatWorldDate(person.deathMonth)} · {describeMilitaryDeathCause(person.deathCause)}</Typography>}
-        <Typography fontSize="0.82rem">累计实际任职 {formatWorldDuration(career.serviceMonths)} · 任职 {career.appointmentCount} 次（再次任职 {career.reappointments} 次）</Typography>
+        <Typography fontSize="0.82rem">生涯累计实际任职 {formatWorldDuration(career.serviceMonths)} · 任职 {career.appointmentCount} 次（再次任职 {career.reappointments} 次）</Typography>
         <Typography fontSize="0.82rem">核验普通城市攻陷 {career.ordinaryCaptures} · 敌都攻陷 {career.capitalCaptures} · 当前实际指挥 {career.currentUnitCount} 人</Typography>
         {career.unclassifiedCaptures > 0 && <Typography fontSize="0.78rem">另有核验战果 {career.unclassifiedCaptures} 次，当时都城属性未记录（不以“故都”推断敌都）。</Typography>}
         <Typography fontSize="0.78rem" color="var(--gg-text-muted)">军事资历：{career.level} · 权重 {career.appointmentWeight.toFixed(2)}×（上限2×，非爵位）；曾任命编组规模 {career.recordedCommandSize || "未记录"} 人。仅未到龄且合格的在世候选参与任命。</Typography>
+        <Box component="details" sx={{ mt: 0.5 }}>
+          <Box component="summary" sx={{ cursor: "pointer", fontSize: "0.82rem" }}>人物大事记（本国任职史料）</Box>
+          <Box sx={{ maxHeight: 300, overflowY: "auto", overflowWrap: "anywhere" }}>
+            {MilitaryCommandRegistry.getChronicle(person, worldMonth, factionId).map(entry => <Box key={entry.eventId} sx={{ mt: 0.5 }}>
+              <Typography fontSize="0.82rem">{formatWorldDate(entry.worldMonth)} · {entry.text}</Typography>
+              <Typography fontSize="0.72rem" color="var(--gg-text-muted)">来源：{entry.source}{entry.commandId ? ` · ${entry.commandId}` : ""}</Typography>
+            </Box>)}
+          </Box>
+        </Box>
         {!formation && <Typography fontSize="0.82rem">当前无活动编组，无现役指挥权。</Typography>}
         {formation && <>
           <Typography fontSize="0.82rem">编组 {formation.commandId} · 真实成员 {formation.memberUnitIds.length} 人</Typography>
@@ -1171,6 +1183,7 @@ function RulerBiography({
     ruler.chronicle.notableEventIds,
     showAllEvents ? 1000 : 6
   );
+  const diplomaticEvents = getRulerDiplomaticEvents(events, ruler, team.name, worldMonth);
   const heirDeathEvents = events.filter((event) =>
     event.type === "heir-died" && event.metadata?.parentRulerId === ruler.id
   ).sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year));
@@ -1318,12 +1331,12 @@ function RulerBiography({
         {getSignificantReignStats(ruler.chronicle, assessment.evidence.politicalFacts)}
       </Typography>
       <Typography fontWeight="bold" fontSize="0.86rem" sx={{ mt: 0.75 }}>
-        大事记
+        核心大事记
       </Typography>
       {rulerEvents.length > 0 ? rulerEvents.map((event) => (
         <Box key={event.id}>
         <Typography fontSize="0.82rem">
-          {formatWorldDate(event.monthIndex ?? event.year)} ◆ {formatRulerTerminalEvent(event, ruler, team.name, factionById) ?? formatRulerDiplomacyEvent(event, factionById, ruler.id) ?? formatFactionHistoryEvent(event, team.name, factionById) ?? formatHistoryEventTitle(event, factionById)}
+          {formatWorldDate(event.monthIndex ?? event.year)} ◆ {(event.actorFactionId === team.name && formatMilitaryVictorySource(event) ? `其治下，${formatMilitaryVictorySource(event)}` : undefined) ?? formatRulerTerminalEvent(event, ruler, team.name, factionById) ?? formatRulerDiplomacyEvent(event, factionById, ruler.id) ?? formatFactionHistoryEvent(event, team.name, factionById) ?? formatHistoryEventTitle(event, factionById)}
         </Typography>
         <MilitaryPoliticalEventFacts event={event} />
         </Box>
@@ -1333,6 +1346,16 @@ function RulerBiography({
         </Typography>
       )}
       {rulerEvents.length >= 6 ? <Button size="small" onClick={() => setShowAllEvents((value) => !value)} sx={{ px: 0, minWidth: 0 }}>{showAllEvents ? "收起" : "查看全部"}</Button> : null}
+      <Box component="details" sx={{ mt: 0.75, overflowWrap: "anywhere" }}>
+        <Box component="summary" sx={{ cursor: "pointer", fontSize: "0.86rem" }}>查看完整外交档案（{diplomaticEvents.length}条）</Box>
+        <Box sx={{ maxHeight: 300, overflowY: "auto" }}>
+          {diplomaticEvents.map(event => <Box key={event.id} sx={{ mt: 0.5 }}>
+            <Typography fontSize="0.82rem">{formatWorldDate(event.monthIndex ?? event.year)} · {formatRulerDiplomacyEvent(event, factionById, ruler.id) ?? formatHistoryEventTitle(event, factionById)}</Typography>
+            <Typography fontSize="0.75rem">{event.description}</Typography>
+            <Typography fontSize="0.72rem" color="var(--gg-text-muted)">来源：{event.id}</Typography>
+          </Box>)}
+        </Box>
+      </Box>
       <Typography fontWeight="bold" fontSize="0.86rem" sx={{ mt: 0.75 }}>
         {assessment.heading}
       </Typography>

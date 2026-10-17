@@ -7,7 +7,7 @@ import { MilitaryPoliticalDiagnostics } from "./MilitaryPoliticalDiagnostics";
 
 function fixture() {
   const input: Parameters<typeof deriveMilitaryPoliticalInfluence>[0] = { factionId: "qin", status: "ACTIVE", identityStage: "STATE", worldMonth: 72, events: [],
-    people: [{ personId: "military-person-1", sourceUserId: 1, name: "将甲", bornMonth: -300, factionId: "qin", status: "ACTIVE",
+    people: [{ personId: "military-person-1", sourceUserId: 1, personalName: "李承远", name: "将甲", bornMonth: -300, factionId: "qin", status: "ACTIVE",
       appointments: [{ factionId: "qin", startMonth: 0, commandId: "military-command-1" }], capturedEventIds: [] }],
     formations: [{ commandId: "military-command-1", factionId: "qin", commanderPersonId: "military-person-1", createdMonth: 0,
       status: "ACTIVE", captures: [], memberUnitIds: ["unit-1", "unit-2", "unit-3", "unit-4"] }],

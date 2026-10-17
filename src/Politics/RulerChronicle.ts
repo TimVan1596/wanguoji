@@ -159,6 +159,30 @@ const RULER_EVENT_PRIORITIES: Partial<Record<WorldEvent["type"], number>> = {
   "relation-renewed": 30,
 };
 
+const DIPLOMATIC_TYPES = new Set<WorldEvent["type"]>(["truce-signed", "non-aggression-signed", "alliance-signed", "relation-renewed"]);
+
+export function isCoreDiplomaticEvent(event: WorldEvent, events: WorldEvent[]) {
+  if (!DIPLOMATIC_TYPES.has(event.type)) return false;
+  if (event.type === "alliance-signed" || event.type === "non-aggression-signed" && event.metadata?.preconditionStatus === "TRUCE") return true;
+  if (event.metadata?.capitalFall === 1) return true;
+  return Boolean(event.historyGroupId && events.some(other => other.id !== event.id && other.historyGroupId === event.historyGroupId &&
+    (other.monthIndex ?? other.year) === (event.monthIndex ?? event.year) &&
+    ["capital-fallen", "faction-exiled", "faction-restored", "faction-submitted", "faction-merged"].includes(other.type) &&
+    (other.factionIds ?? []).some(id => (event.factionIds ?? []).includes(id))));
+}
+
+/** Complete evidence remains separate from the bounded core biography. */
+export function getRulerDiplomaticEvents(events: WorldEvent[], ruler: TerminalChronicleRuler, factionId: string, worldMonth: number) {
+  return events.filter(event => {
+    const month = event.monthIndex ?? event.year;
+    if (month < ruler.accessionYear || month > Math.min(ruler.endYear ?? worldMonth, worldMonth)) return false;
+    return isDirectRulerTreatySignature(event, ruler.id, factionId) || event.type === "relation-renewed" &&
+      (event.factionIds ?? []).includes(factionId) && new Set(event.factionIds).size >= 2 &&
+      (event.metadata?.signatoryARulerId === ruler.id && event.metadata?.signatoryAFactionId === factionId ||
+       event.metadata?.signatoryBRulerId === ruler.id && event.metadata?.signatoryBFactionId === factionId);
+  }).sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year) || a.id.localeCompare(b.id));
+}
+
 export function getRulerHistoricalEvents(
   events: WorldEvent[],
   ruler: TerminalChronicleRuler,
@@ -167,7 +191,7 @@ export function getRulerHistoricalEvents(
   notableEventIds: string[],
   limit = 6
 ) {
-  const endMonth = ruler.endYear ?? worldMonth;
+  const endMonth = Math.min(ruler.endYear ?? worldMonth, worldMonth);
   const notable = new Set(notableEventIds);
   const sourceIds = (event: WorldEvent) =>
     typeof event.metadata?.sourceEventIds === "string"
@@ -178,6 +202,7 @@ export function getRulerHistoricalEvents(
     if (month < ruler.accessionYear || month > endMonth || !RULER_EVENT_TYPES.has(event.type)) {
       return false;
     }
+    if (DIPLOMATIC_TYPES.has(event.type) && !isCoreDiplomaticEvent(event, events)) return false;
     if (isPoliticalTerminalEvent(event)) return getRulerTerminalRole(event, ruler, factionId) !== undefined;
     if (!isRulerPoliticalEventRelevant(event, ruler.id, factionId)) return false;
     const direct =
@@ -243,14 +268,13 @@ export function getRulerHistoricalEvents(
   const ranked = [...grouped.values()]
     .sort((a, b) => score(b) - score(a) || (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year) || a.id.localeCompare(b.id))
   const mandatory = ranked.filter((event) => isPoliticalTerminalEvent(event) || getHistorySignificance(event) === "LANDMARK" || ["capital-relocated", "dynasty-restored", "city-revolt", "rebel-faction-founded", "frontier-faction-founded"].includes(event.type));
-  const signedByRuler = ranked.filter(event => isDirectRulerTreatySignature(event, ruler.id, factionId));
-  const ordered = [...mandatory, ...signedByRuler, ...ranked.filter((event) => !mandatory.includes(event) && !signedByRuler.includes(event))];
-  const selected = [...new Set(ordered)].slice(0, Math.max(limit, mandatory.length, signedByRuler.length));
+  const ordered = [...mandatory, ...ranked.filter(event => !mandatory.includes(event))];
+  const selected = [...new Set(ordered)].slice(0, limit);
   return selected
     .sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year) || a.id.localeCompare(b.id));
 }
 
-function isDirectRulerTreatySignature(event: WorldEvent, rulerId: string, factionId: string) {
+export function isDirectRulerTreatySignature(event: WorldEvent, rulerId: string, factionId: string) {
   if (!["truce-signed", "non-aggression-signed", "alliance-signed"].includes(event.type) ||
       !(event.factionIds ?? []).includes(factionId) || new Set(event.factionIds ?? []).size < 2) return false;
   return (event.metadata?.signatoryARulerId === rulerId && event.metadata?.signatoryAFactionId === factionId) ||

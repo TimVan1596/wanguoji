@@ -1,3 +1,4 @@
+import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
 import { frameAttribution } from "../Simulation/FrameAttribution";
 import { composeRevolutionNarrative } from "./RevolutionEventDetails";
 import Team from "../Components/Team";
@@ -642,6 +643,7 @@ export class WorldHistoryStore {
         cityDefenseBefore,
         commandId,
         commanderPersonId,
+        commanderPersonalName: MilitaryCommandRegistry.getCaptureIdentity(commandId, commanderPersonId, attackerName, year),
       },
       historyGroupId,
       importance: "major",
@@ -687,6 +689,7 @@ export class WorldHistoryStore {
         cityDefenseBefore,
         commandId,
         commanderPersonId,
+        commanderPersonalName: MilitaryCommandRegistry.getCaptureIdentity(commandId, commanderPersonId, teamName, year),
       },
       historyGroupId,
       importance: "major",
@@ -738,6 +741,7 @@ export class WorldHistoryStore {
         cityDefenseBefore,
         commandId,
         commanderPersonId,
+        commanderPersonalName: MilitaryCommandRegistry.getCaptureIdentity(commandId, commanderPersonId, attackerName, year),
       },
       historyGroupId,
       importance: "major",

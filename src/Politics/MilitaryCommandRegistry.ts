@@ -1,5 +1,7 @@
+import { deriveMilitaryChronicle } from "./MilitaryChronicle";
 import { deriveMilitaryLifeSchedule } from "./MilitaryLifeRules";
-import { getMilitaryPersonDisplayName } from "./MilitaryPersonIdentity";
+import { deriveNameCulture, generateMilitaryPersonalName } from "./NameCulture";
+import { isPopulationIdentityLabel, getMilitaryPersonDisplayName } from "./MilitaryPersonIdentity";
 import WorldHistory from "../History/WorldHistory";
 import { deriveMilitaryCareer, selectMilitaryCandidate } from "./MilitaryCareerEvidence";
 import { deriveMilitaryPoliticalInfluence, getMilitaryPoliticalEvents } from "./MilitaryPoliticalInfluence";
@@ -29,6 +31,8 @@ export interface MilitaryPerson {
   personId: string;
   sourceUserId: number;
   name: string;
+  /** Authoritative personal identity; name above remains the original User label. */
+  personalName: string;
   bornMonth: number;
   factionId: string;
   status: "ACTIVE" | "RETIRED" | "DEAD";
@@ -122,6 +126,12 @@ export class MilitaryCommandRegistryStore {
   getCareer(person: MilitaryPerson, worldMonth: number) {
     const events = [...new Map([...new Set(person.appointments.map(a => a.factionId))].flatMap(id => this.eventReader(id)).map(e => [e.id, e])).values()];
     return deriveMilitaryCareer(person, this.getFormations(), events, worldMonth);
+  }
+
+  getChronicle(person: MilitaryPerson, worldMonth: number, factionId?: string) {
+    const events = [...new Map([...new Set(person.appointments.map(a => a.factionId).concat(person.factionId))]
+      .flatMap(id => this.eventReader(id)).map(e => [e.id, e])).values()];
+    return deriveMilitaryChronicle(person, this.getFormations(), events, worldMonth, factionId);
   }
 
   getPoliticalInfluence(team: Team, worldMonth: number, logicalRegistry?: Pick<import("../Simulation/LogicalUnitRegistry").default, "getEntry">) {
@@ -233,7 +243,10 @@ export class MilitaryCommandRegistryStore {
     const personId = person?.personId ?? `military-person-${this.personSequence++}`;
     const commandId = `military-command-${this.commandSequence++}`;
     if (!person) {
-      person = { personId, sourceUserId: user.id, name: user.name, bornMonth: user.bornMonth, factionId,
+      person = { personId, sourceUserId: user.id, name: user.name, personalName: isPopulationIdentityLabel(user.name)
+          ? generateMilitaryPersonalName({ seed: worldRandom.exportState().seed, personId, sourceUserId: user.id,
+              bornMonth: user.bornMonth, originalName: user.name, culture: deriveNameCulture(user.team.houseName) })
+          : user.name, bornMonth: user.bornMonth, factionId,
         status: "ACTIVE", appointments: [], capturedEventIds: [] };
       this.people.set(personId, person);
       user.militaryPersonId = personId;
@@ -245,7 +258,7 @@ export class MilitaryCommandRegistryStore {
     this.eventWriter?.({ id: `military-appointment-${commandId}`, year: worldMonth, monthIndex: worldMonth,
       category: "politics", type: "military-appointment", title: `${factionId}任命${getMilitaryPersonDisplayName(person)}为军事指挥者`,
       description: `${getMilitaryPersonDisplayName(person)}由既有人口任职，指挥${memberUnitIds.length}个现存单位。`, factionIds: [factionId], actorFactionId: factionId,
-      metadata: { personId, sourceUserId: person.sourceUserId, commandId, unitCount: memberUnitIds.length }, importance: "normal" });
+      metadata: { personId, sourceUserId: person.sourceUserId, personalName: person.personalName, commandId, unitCount: memberUnitIds.length }, importance: "normal" });
     return true;
   }
 
@@ -282,7 +295,7 @@ export class MilitaryCommandRegistryStore {
     if (person && person.status !== "DEAD") person.status = "RETIRED";
     if (person) this.eventWriter?.({ id: `military-command-ended-${formation.commandId}`, year: worldMonth, monthIndex: worldMonth,
       category: "politics", type: "military-command-ended", title: reason === "AGE_RETIREMENT" ? `${getMilitaryPersonDisplayName(person)}年老退役` : `${getMilitaryPersonDisplayName(person)}结束军事任职`, factionIds: [formation.factionId],
-      actorFactionId: formation.factionId, metadata: { personId: person.personId, sourceUserId: person.sourceUserId, commandId: formation.commandId, endReason: reason }, importance: "normal" });
+      actorFactionId: formation.factionId, metadata: { personId: person.personId, sourceUserId: person.sourceUserId, personalName: person.personalName, commandId: formation.commandId, endReason: reason }, importance: "normal" });
   }
 
   private refreshOrders(worldMonth: number, teams: Team[], cities: City[]) {
@@ -323,7 +336,7 @@ export class MilitaryCommandRegistryStore {
         this.eventWriter?.({ id: `military-order-${formation.commandId}-${worldMonth}-${next.id}`, year: worldMonth, monthIndex: worldMonth,
           type: "military-order-issued", category: "war", title: "军事编组确定目标", importance: "normal",
           factionIds: [formation.factionId, next.ownerFactionId], actorFactionId: formation.factionId, targetFactionId: next.ownerFactionId,
-          cityId: next.id, cityName: next.name, metadata: { commandId: formation.commandId, personId: formation.commanderPersonId,
+          cityId: next.id, cityName: next.name, metadata: { commandId: formation.commandId, personId: formation.commanderPersonId, personalName: person?.personalName,
             meritInfluenced: next !== nearest ? 1 : 0, nearestCityId: nearest?.id, nearestDistance: center && nearest ? distance(nearest) : undefined,
             targetWasCapital: next.isCapital && next.ownerTeam?.capitalCity === next ? 1 : 0,
             targetDistance: center ? distance(next) : undefined } });
@@ -445,15 +458,24 @@ export class MilitaryCommandRegistryStore {
       if (cause === "NATURAL_DEATH") this.diagnostics.naturalDeaths++;
       this.eventWriter?.({ id: `military-person-death-${person.personId}-${worldMonth}`, year: worldMonth, monthIndex: worldMonth,
         category: "politics", type: "military-person-died", title: cause === "NATURAL_DEATH" ? `${getMilitaryPersonDisplayName(person)}自然去世` : `${getMilitaryPersonDisplayName(person)}去世`, factionIds: [person.factionId], actorFactionId: person.factionId,
-        metadata: { personId: person.personId, sourceUserId: person.sourceUserId, deathCause: cause }, importance: "normal" });
+        metadata: { personId: person.personId, sourceUserId: person.sourceUserId, personalName: person.personalName, deathCause: cause }, importance: "normal" });
     } else if (person.status === "ACTIVE") person.status = "RETIRED";
+  }
+
+  getCaptureIdentity(commandId: string | undefined, personId: string | undefined, factionId: string, worldMonth: number) {
+    const formation = commandId ? this.formations.get(commandId) : undefined;
+    const person = personId ? this.people.get(personId) : undefined;
+    return formation?.status === "ACTIVE" && person?.status === "ACTIVE" && formation.commanderPersonId === person.personId &&
+      formation.factionId === factionId && person.factionId === factionId && person.deathMonth === undefined &&
+      person.appointments.some(a => a.commandId === commandId && a.factionId === factionId && a.startMonth <= worldMonth && a.endMonth === undefined)
+      ? person.personalName : undefined;
   }
 
   recordCapture(commandId: string | undefined, eventId: string, cityId: string, worldMonth: number) {
     if (!commandId) return;
     const formation = this.formations.get(commandId);
     const person = formation ? this.people.get(formation.commanderPersonId) : undefined;
-    if (!formation || formation.status !== "ACTIVE" || !person || person.capturedEventIds.includes(eventId)) return;
+    if (!formation || formation.status !== "ACTIVE" || !person || person.status !== "ACTIVE" || (person.deathMonth !== undefined && worldMonth > person.deathMonth) || person.capturedEventIds.includes(eventId)) return;
     formation.captures.push({ eventId, cityId, month: worldMonth });
     person.capturedEventIds.push(eventId); this.diagnostics.captures++;
   }

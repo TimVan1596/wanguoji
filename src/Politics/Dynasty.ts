@@ -53,7 +53,7 @@ import { finalizeRulerPosthumousNames } from "./PosthumousRules";
 import worldRandom from "../Simulation/WorldRandom";
 import { createSuccessorDynastyHouseName } from "./DynastySurnameGenerator";
 import { getUnrelatedSuccessorRelation } from "./DynastySuccessionIdentity";
-import { cultureGivenNamePools, deriveNameCulture } from "./NameCulture";
+import { cultureGivenNamePools, deriveNameCulture, hanGivenNamePool } from "./NameCulture";
 import {
   createNaturalDeathMonth,
   deriveHeirBirthMonth,
@@ -128,15 +128,7 @@ export interface Dynasty {
   lastDepositionAttemptMonth?: number;
 }
 
-const rulerGivenNamePool = {
-  singleNames: [
-    "安", "昭", "武", "文", "景", "烈", "成", "康", "惠", "襄", "平", "宣", "靖", "威", "怀",
-    "玄", "昶", "恪", "恭", "恺", "弘", "琰", "珩", "琮", "璋", "瑾", "弼", "谦", "衡", "朔", "朔", "钧", "湛", "惟", "承", "允", "宸", "绍", "曜", "澄", "翊", "恪",
-  ],
-  doubleNamePrefixes: ["子", "伯", "仲", "叔", "元", "明", "承", "景", "玄", "怀", "彦", "君"],
-  doubleNameSuffixes: ["安", "衡", "宣", "平", "宁", "成", "怀", "昭", "远", "和", "恭", "允", "珩", "澄", "绍", "宸"],
-  doubleNameChancePercent: 24,
-};
+const rulerGivenNamePool = hanGivenNamePool;
 
 function getRulerGivenNamePool(houseName: string) {
   const culture = deriveNameCulture(houseName);
@@ -963,7 +955,8 @@ class DynastyRegistryStore {
     const recentNames =
       this.dynasties
         .get(team.name)
-        ?.rulers.filter((ruler) => ruler.reignOrdinal !== undefined)
+        ?.rulers.filter((ruler) => ruler.houseName === houseName &&
+          (ruler.reignOrdinal !== undefined || !hasRecordedRulerDeath(ruler)))
         .map((ruler) => ruler.givenName) ?? [];
     return {
       id: `${team.name}-ruler-${this.sequence}`,
@@ -1048,7 +1041,8 @@ class DynastyRegistryStore {
     const recentNames =
       this.dynasties
         .get(team.name)
-        ?.rulers.filter((ruler) => ruler.reignOrdinal !== undefined)
+        ?.rulers.filter((ruler) => ruler.houseName === houseName &&
+          (ruler.reignOrdinal !== undefined || !hasRecordedRulerDeath(ruler)))
         .map((ruler) => ruler.givenName) ?? [];
     return {
       id: `${team.name}-ruler-${this.sequence}`,

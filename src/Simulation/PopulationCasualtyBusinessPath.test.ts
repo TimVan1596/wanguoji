@@ -113,7 +113,7 @@ describe("production casualty business path", () => {
     const victim = users[0];
     const remainingUnits = users.filter(user => user !== victim).slice(0, 1).map(user => user.player.logicalUnitId!);
     MilitaryCommandRegistry.importState({
-      people: [{ personId, sourceUserId: victim.id, name: victim.name, bornMonth: victim.bornMonth, factionId: defender.name,
+      people: [{ personId, sourceUserId: victim.id, personalName: "李承远", name: victim.name, bornMonth: victim.bornMonth, factionId: defender.name,
         status: "ACTIVE", appointments: [{ factionId: defender.name, startMonth: 0, commandId: "military-command-1" }], capturedEventIds: [] }],
       formations: [{ commandId: "military-command-1", factionId: defender.name, commanderPersonId: personId,
         memberUnitIds: [victim.player.logicalUnitId!, ...remainingUnits], createdMonth: 0, status: "ACTIVE", captures: [] }],

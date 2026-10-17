@@ -826,7 +826,7 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
   } else if (deposition?.depositionRole === "DEPOSED_RULER") {
     if (lines.length < 4) lines.push("废位仅终结其君主任期；没有真实死亡记录时，不推定其生命结局。");
   } else {
-    const other = legacy.lines.find((line) => !lines.includes(line) && !/疆域|城市|稳定度|人口|治下|在位期间|终结|身死|死亡/.test(line));
+    const other = legacy.lines.find((line) => !lines.includes(line) && (!evidence.tenure.restoredDuringTenure || !/复国|恢复国家|流亡/.test(line)) && !/疆域|城市|稳定度|人口|治下|在位期间|终结|身死|死亡/.test(line));
     if (other && !lines.includes(other) && lines.length < 4) lines.push(other);
   }
   return { heading: evidence.isFinalized ? "史评" : "在位评议", evidence, lines: uniqueLines(lines).slice(0, 4) };

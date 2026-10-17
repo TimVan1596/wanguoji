@@ -10,7 +10,7 @@ export interface MilitaryPoliticalUser {
   unitId?: string; liveBindingVerified: boolean;
 }
 export interface MilitaryPoliticalParticipant {
-  personId: string; sourceUserId: number; name: string; bornMonth: number; factionId: string;
+  personId: string; sourceUserId: number; name: string; personalName?: string; bornMonth: number; factionId: string;
   commandId: string; commanderUnitId: string; memberUnitIds: string[]; unitCount: number;
   serviceMonths: number; capturedEventIds: string[]; strength: number;
 }
@@ -50,7 +50,7 @@ export function deriveMilitaryPoliticalInfluence(input: {
     const career = deriveMilitaryCareer(p, formations, events, worldMonth);
     const experience = militaryPoliticalStrength(career.serviceMonths, members.length, career.verifiedCaptures);
     if (!experience.eligible) { block(p.personId, "INSUFFICIENT_CAREER"); continue; }
-    candidates.push({ personId: p.personId, sourceUserId: p.sourceUserId, name: p.name, bornMonth: p.bornMonth, factionId,
+    candidates.push({ personId: p.personId, sourceUserId: p.sourceUserId, name: p.name, personalName: p.personalName, bornMonth: p.bornMonth, factionId,
       commandId: f.commandId, commanderUnitId: u.unitId, memberUnitIds: members, unitCount: members.length,
       serviceMonths: career.serviceMonths, capturedEventIds: career.capturedEventIds.slice().sort(),
       strength: experience.strength });

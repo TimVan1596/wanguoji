@@ -1,3 +1,4 @@
+import { formatMilitaryVictorySource } from "../Politics/MilitaryChronicle";
 import { hasRecordedRulerDeath } from "../Politics/RulerLifeState";
 import { formatMilitaryHistoryIdentity } from "../Politics/MilitaryPersonIdentity";
 import { formatAccessionCapital } from "./AccessionCapitalContext";
@@ -153,7 +154,7 @@ export function formatHistoryEventTitle(
   const title = formatMilitaryHistoryIdentity({ ...event, title: formatHistoryEventTitleBase(event, factionById, rulersById) });
   const capital = formatAccessionCapital(event);
   const military = formatMilitaryParticipation(event);
-  return [title, capital, military].filter(Boolean).join(" · ");
+  return [title, capital, military, formatMilitaryVictorySource(event)].filter(Boolean).join(" · ");
 }
 
 function formatHistoryEventTitleBase(

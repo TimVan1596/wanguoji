@@ -39,7 +39,7 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
   let maxCommandSequence = 0;
   for (const person of registry.people) {
     if (!plain(person) || typeof person.personId !== "string" || !person.personId || people.has(person.personId) ||
-        !Number.isSafeInteger(person.sourceUserId) || typeof person.name !== "string" || !person.name.trim() ||
+        !Number.isSafeInteger(person.sourceUserId) || typeof person.personalName !== "string" || !person.personalName.trim() || person.personalName.length > 32 || typeof person.name !== "string" || !person.name.trim() ||
         !month(person.bornMonth) || person.bornMonth > worldMonth || !factions.has(person.factionId) ||
         !["ACTIVE", "RETIRED", "DEAD"].includes(person.status) || !Array.isArray(person.appointments) || !Array.isArray(person.capturedEventIds)) {
       errors.push("military person identity or lifecycle is invalid"); continue;
@@ -104,7 +104,7 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
     if (!person) errors.push(`military formation references missing commander: ${formation.commandId}`);
     for (const capture of formation.captures) {
       const event = plain(capture) ? historyById.get(capture.eventId) : undefined;
-      if (!plain(capture) || !event || !["city-captured", "capital-fallen", "city-recovered"].includes(event.type) || !month(capture.month) || capture.month > worldMonth ||
+      if (!plain(capture) || !event || !["city-captured", "capital-fallen", "city-recovered"].includes(event.type) || !month(capture.month) || capture.month > worldMonth || (person?.deathMonth !== undefined && capture.month > person.deathMonth) ||
           !Number.isSafeInteger(capture.cityId) && typeof capture.cityId !== "string" ||
           !person?.capturedEventIds.includes(capture.eventId) || event.cityId !== capture.cityId || (event.monthIndex ?? event.year) !== capture.month ||
           event.metadata?.commandId !== formation.commandId || event.metadata?.commanderPersonId !== formation.commanderPersonId) {
@@ -153,6 +153,27 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
       return e && ["city-captured", "capital-fallen", "city-recovered"].includes(e.type) && e.metadata?.commanderPersonId === person.personId && (e.monthIndex ?? e.year) <= at;
     }))
       errors.push("military order merit has no verified victory");
+  }
+  for (const event of historyById.values()) {
+    const m = event.metadata ?? {};
+    if (m.personalName !== undefined) {
+      const person = people.get(m.personId), formation = formations.get(m.commandId);
+      if (!person || m.personalName !== person.personalName ||
+          m.sourceUserId !== undefined && m.sourceUserId !== person.sourceUserId ||
+          m.commandId !== undefined && (!formation || formation.commanderPersonId !== person.personId))
+        errors.push(`military name snapshot has invalid identity: ${event.id}`);
+    }
+    if (m.commanderPersonalName !== undefined) {
+      const person = people.get(m.commanderPersonId), formation = formations.get(m.commandId), at = event.monthIndex ?? event.year;
+      if (!person || !formation || person.personalName !== m.commanderPersonalName || formation.commanderPersonId !== person.personId ||
+          formation.factionId !== event.actorFactionId || !person.appointments.some((a: any) => a.commandId === formation.commandId &&
+            a.factionId === event.actorFactionId && a.startMonth <= at && at <= (a.endMonth ?? worldMonth)) ||
+          person.deathMonth !== undefined && at > person.deathMonth ||
+          !["city-captured", "city-recovered", "capital-fallen"].includes(event.type) || !event.cityId ||
+          !formation.captures.some((c: any) => c.eventId === event.id || c.cityId === event.cityId && c.month === at &&
+            event.historyGroupId && historyById.get(c.eventId)?.historyGroupId === event.historyGroupId))
+        errors.push(`military victory name snapshot has invalid evidence: ${event.id}`);
+    }
   }
   if (registry.personSequence <= maxPersonSequence) errors.push("military person sequence would reuse an existing id");
   if (registry.commandSequence <= maxCommandSequence) errors.push("military command sequence would reuse an existing id");

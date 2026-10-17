@@ -26,7 +26,7 @@ export function validateMilitaryPoliticalParticipation(save: WorldSaveV1): strin
       const person = state.people.find(p => p.personId === s.personId), formation = state.formations.find(f => f.commandId === s.commandId);
       const appointment = person?.appointments.find(a => a.commandId === s.commandId && a.factionId === record.factionId && a.startMonth <= at && (a.endMonth === undefined || a.endMonth >= at));
       if (!person || !formation || !appointment || formation.commanderPersonId !== person.personId || formation.factionId !== record.factionId ||
-          person.sourceUserId !== s.sourceUserId || person.name !== s.name || person.bornMonth !== s.bornMonth || s.factionId !== record.factionId ||
+          person.sourceUserId !== s.sourceUserId || person.name !== s.name || (s.personalName !== undefined && person.personalName !== s.personalName) || person.bornMonth !== s.bornMonth || s.factionId !== record.factionId ||
           person.deathMonth !== undefined && (person.deathMonth < at || person.deathMonth === at &&
             !after.some(e => e.type === "military-person-died" && e.metadata?.personId === person.personId && (e.monthIndex ?? e.year) === at)) || at >= deriveMilitaryLifeSchedule(person).retirementMonth ||
           !Number.isSafeInteger(s.unitCount) || s.unitCount < 2 || s.unitCount > 12 || s.memberUnitIds.length !== s.unitCount ||

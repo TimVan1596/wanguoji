@@ -522,7 +522,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
   it("V15 restores archived military people and ended formations without reappointing or drawing RNG", () => {
     const save = fixture();
     save.registries.militaryCommandRegistry = {
-      people: [{ personId: "military-person-1", sourceUserId: 81, name: "旧将", bornMonth: -500, factionId: "qin", status: "RETIRED",
+      people: [{ personId: "military-person-1", sourceUserId: 81, personalName: "李承远", name: "旧将", bornMonth: -500, factionId: "qin", status: "RETIRED",
         appointments: [{ factionId: "qin", startMonth: 12, endMonth: 24, endReason: "TRANSFERRED", commandId: "military-command-1" }], capturedEventIds: [] }],
       formations: [{ commandId: "military-command-1", factionId: "qin", commanderPersonId: "military-person-1", memberUnitIds: [],
         createdMonth: 12, status: "DISBANDED", captures: [] }],
@@ -540,7 +540,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
   it.each(["AGE_RETIREMENT", "NATURAL_DEATH"] as const)("V15 strictly restores and round-trips the new military lifecycle %s without a hydration action", reason => {
     const save = fixture();
     save.registries.militaryCommandRegistry = {
-      people: [{ personId: "military-person-1", sourceUserId: 81, name: "旧将", bornMonth: -1200, factionId: "qin", status: reason === "NATURAL_DEATH" ? "DEAD" : "RETIRED",
+      people: [{ personId: "military-person-1", sourceUserId: 81, personalName: "李承远", name: "旧将", bornMonth: -1200, factionId: "qin", status: reason === "NATURAL_DEATH" ? "DEAD" : "RETIRED",
         appointments: [{ factionId: "qin", startMonth: 12, endMonth: 24, endReason: reason === "NATURAL_DEATH" ? "DEATH" : "AGE_RETIREMENT", commandId: "military-command-1" }],
         ...(reason === "NATURAL_DEATH" ? { deathMonth: 24, deathCause: "NATURAL_DEATH" } : {}), capturedEventIds: [] }],
       formations: [{ commandId: "military-command-1", factionId: "qin", commanderPersonId: "military-person-1", memberUnitIds: [], createdMonth: 12, status: "DISBANDED", captures: [] }],
@@ -1003,7 +1003,7 @@ it("V15旧地响应事件及真实User/逻辑单位完整往返，严格拒绝�
 it.each(["RETIRED","DEAD"] as const)("w人口标签%s档案V15严格往返、显示和续跑不改身份",status=>{
   const save=fixture(),name="Heaven-燕-3834-0268";
   save.registries.militaryCommandRegistry={
-    people:[{personId:"military-person-1",sourceUserId:getLocalUserId(name),name,bornMonth:-500,factionId:"qin",status,
+    people:[{personId:"military-person-1",sourceUserId:getLocalUserId(name),personalName:"李承远",name,bornMonth:-500,factionId:"qin",status,
       appointments:[{factionId:"qin",startMonth:12,endMonth:24,endReason:status==="DEAD"?"DEATH":"DISMISSED",commandId:"military-command-1"}],
       ...(status==="DEAD"?{deathMonth:24,deathCause:"BATTLE_DEATH"}:{}),capturedEventIds:[]}],
     formations:[{commandId:"military-command-1",factionId:"qin",commanderPersonId:"military-person-1",memberUnitIds:[],createdMonth:12,status:"DISBANDED",captures:[]}],

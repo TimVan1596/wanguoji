@@ -6,10 +6,10 @@ import type { DiplomaticRelation, DiplomaticPairMemory } from "../Politics/Diplo
 import type { FactionColorHistoryEntry } from "../Simulation/FactionColorHistory";
 import type { MilitaryCommandState } from "../Politics/MilitaryCommandRegistry";
 
-export const CURRENT_SAVE_SCHEMA_VERSION = 15 as const;
+export const CURRENT_SAVE_SCHEMA_VERSION = 16 as const;
 
 /** V14 person DTO keeps political office end and actual death as separate facts. */
-export type RulerSaveV15 = Omit<Ruler, "id" | "bornYear" | "naturalDeathYear" | "accessionYear" |
+export type RulerSaveV16 = Omit<Ruler, "id" | "bornYear" | "naturalDeathYear" | "accessionYear" |
   "plannedEndYear" | "endYear" | "politicalStartYear" | "politicalEndYear"> & {
   rulerId: string;
   bornMonth: number;
@@ -155,7 +155,7 @@ export interface WorldEventSystemSaveV1 {
   cycleState: WorldCycleStateSaveV1;
 }
 
-export interface WorldSaveV15 {
+export interface WorldSaveV16 {
   saveSchemaVersion: typeof CURRENT_SAVE_SCHEMA_VERSION;
   appVersion: string;
   createdAt?: string;
@@ -190,7 +190,7 @@ export interface WorldSaveV15 {
   diplomacy: { relations: DiplomaticRelation[]; pairMemories: DiplomaticPairMemory[]; lastEvaluationMonth: number };
 }
 
-export function createEmptyWorldSaveV15(): WorldSaveV15 {
+export function createEmptyWorldSaveV16(): WorldSaveV16 {
   return {
     saveSchemaVersion: CURRENT_SAVE_SCHEMA_VERSION,
     appVersion: APP_VERSION,
@@ -232,13 +232,13 @@ export function createEmptyWorldSaveV15(): WorldSaveV15 {
 }
 
 /** Generic current-format type retained for persistence service signatures. */
-export type WorldSaveV1 = WorldSaveV15;
-export const createEmptyWorldSaveV1 = createEmptyWorldSaveV15;
-/** @deprecated Current schema is V15; alias retained for test fixture source compatibility only. */
-export type WorldSaveV14 = WorldSaveV15;
-export type RulerSaveV14 = RulerSaveV15;
-/** @deprecated Current schema is V15; alias retained for test fixture source compatibility only. */
-export const createEmptyWorldSaveV14 = createEmptyWorldSaveV15;
+export type WorldSaveV1 = WorldSaveV16;
+export const createEmptyWorldSaveV1 = createEmptyWorldSaveV16;
+/** @deprecated Current schema is V16; alias retained for test fixture source compatibility only. */
+export type WorldSaveV14 = WorldSaveV16;
+export type RulerSaveV14 = RulerSaveV16;
+/** @deprecated Current schema is V16; alias retained for test fixture source compatibility only. */
+export const createEmptyWorldSaveV14 = createEmptyWorldSaveV16;
 
 export function canonicalWorldSaveProjection(save: WorldSaveV1) {
   const { createdAt: _createdAt, ...canonical } = save;
@@ -323,4 +323,9 @@ function simplifyDiffValue(value: unknown): unknown {
   return String(value);
 }
 
-export type RulerSaveV1 = RulerSaveV15;
+export type RulerSaveV1 = RulerSaveV16;
+
+/** Source aliases only: these denote V16 DTOs and do not enable reading V15 files. */
+export type WorldSaveV15 = WorldSaveV16;
+export type RulerSaveV15 = RulerSaveV16;
+export const createEmptyWorldSaveV15 = createEmptyWorldSaveV16;

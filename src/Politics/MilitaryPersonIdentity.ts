@@ -9,7 +9,8 @@ export function isPopulationIdentityLabel(name: string) {
     /^.+-\d{3,}$/.test(name);
 }
 
-export function getMilitaryPersonDisplayName(person: { name: string; personId: string; sourceUserId?: number }) {
+export function getMilitaryPersonDisplayName(person: { name: string; personId: string; sourceUserId?: number; personalName?: string }) {
+  if (person.personalName?.trim()) return person.personalName;
   // An external person's genuine nickname can also contain '-123'. The local
   // ID range is necessary evidence; do not suppress a verified external name.
   const localIdentity = person.sourceUserId === undefined ||
@@ -19,7 +20,8 @@ export function getMilitaryPersonDisplayName(person: { name: string; personId: s
   return `姓名未核验的指挥者〔${person.personId}〕`;
 }
 
-export function describeMilitaryNameEvidence(person: {name:string;sourceUserId:number}) {
+export function describeMilitaryNameEvidence(person: {name:string;sourceUserId:number;personalName?:string}) {
+  if (person.personalName && person.personalName !== person.name) return "游戏世界生成姓名；首次任职时确立，与原User身份分别保存";
   return isPopulationIdentityLabel(person.name) && person.sourceUserId === getLocalUserId(person.name) ?
     "人口生成格式及本地User哈希吻合；未另存真实姓名" :
     isPopulationIdentityLabel(person.name) && person.sourceUserId>=1000000000 ?
