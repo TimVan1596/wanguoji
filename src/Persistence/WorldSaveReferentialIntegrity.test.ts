@@ -44,6 +44,7 @@ import { formatHistoryEventTitle } from "../History/HistoryRenderRules";
 import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
 import { getMilitaryPersonDisplayName } from "../Politics/MilitaryPersonIdentity";
 import { getLocalUserId } from "../Live/LocalUserIdentity";
+import { formatRulerMilitaryEvent } from "../Politics/MilitaryChronicle";
 import { readMilitaryParticipation, formatMilitaryParticipation, getMilitaryParticipationDetails } from "../Politics/MilitaryPoliticalInfluence";
 import { getRulerHistoricalEvents, createRulerChronicle } from "../Politics/RulerChronicle";
 import worldRandom, { WorldRandom } from "../Simulation/WorldRandom";
@@ -1020,3 +1021,95 @@ it.each(["RETIRED","DEAD"] as const)("w人口标签%s档案V15严格往返、显
   const rng=worldRandom.exportState();MilitaryCommandRegistry.update(121,core.teams,core.allCities);
   expect(worldRandom.exportState()).toEqual(rng);expect(MilitaryCommandRegistry.getPeople()[0]).toEqual(person);
 });
+
+it("x真实User→合法任命→军令→真实City.capture→三视角同一事件→V16完整水合续跑", async () => {
+  const { default: LogicalUnitRegistry } = await import("../Simulation/LogicalUnitRegistry");
+  const { default: User } = await import("../Components/User");
+  const { default: RealCity } = await vi.importActual<typeof import("../Components/City")>("../Components/City");
+  const save = fixture(); save.world.worldMonth = save.world.clock.worldMonth = 0;
+  save.registries.archivedCities = [];
+  Object.assign(save.factions[0], { houseName: "田氏", stateFoundedMonth: 0 });
+  save.factions.push({ ...save.factions[0], factionId: "wei", displayName: "魏", homeGridX: 2, capitalCityId: "wei-capital" });
+  save.cities.push(...[1, 2].map(x => ({ ...save.cities[0], cityId: x === 1 ? "linzi" : "wei-capital", name: x === 1 ? "临淄" : "魏都",
+    ownerFactionId: "wei", founderFactionId: "wei", centerGridX: x, isCapital: x === 2, fortifiedCells: [{ gridX: x, gridY: 0 }] })));
+  for (let x = 1; x <= 2; x++) Object.assign(save.blocks[x], { ownerFactionId: "wei", cityId: save.cities[x].cityId, isCityCenter: true, isHome: x === 2, homeHitPoints: 7 });
+  const labels = ["赵-407", "Heaven-燕-3834-0268"];
+  save.users = labels.map((name, i) => ({ userId: getLocalUserId(name), name, factionId: "qin", sourceFactionId: "qin", playerUnitId: `unit-${i + 1}`,
+    bornMonth: -300, role: "NORMAL", loyalty: 70, score: 0, slaveUnits: [] }));
+  save.units = save.users.map(u => ({ unitId: u.playerUnitId, userId: u.userId, factionId: "qin", x: 0, y: 0, vx: 0, vy: 0,
+    speed: 150, radius: 16, scale: 1, speedCoefficient: 0, sizeCoefficient: 0, role: "NORMAL", alive: true, kind: "user", children: [] }));
+  save.registries.logicalUnitRegistry = { nextUnitSequence: 3 };
+  save.dynasties = [{ factionId: "qin", houseName: "田氏", currentRulerId: "king", heirIds: [],
+    houseEpochs: [{ houseName: "田氏", startMonth: 0, foundingRulerId: "king", startReason: "FOUNDING" }],
+    rulers: [{ rulerId: "king", houseName: "田氏", givenName: "子安", bornMonth: -600, naturalDeathMonth: 1200, accessionMonth: 0, status: "ruling", reignOrdinal: 1,
+      chronicle: createRulerChronicle({ month: 0, population: 2, territoryShare: 1 / 3, cityCount: 1, stability: 80 }) }] }];
+  setFixtureLifetimeRecords(save);
+  expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
+  const core = target(); core.logicalUnitRegistry = new LogicalUnitRegistry(); core.logicalGameplayAuthority = true;
+  Object.defineProperty(core, "totalCells", { value: 3 });
+  hydrateWorldSave(core, JSON.parse(JSON.stringify(save)));
+  const [qin, wei] = core.teams;
+  for (const team of core.teams) {
+    const original = save.factions.find(f => f.factionId === team.name)!;
+    team.blocks = { children: { size: team === qin ? 1 : 2 } };
+    team.addCity = (city: any) => { team.cities.push(city); };
+    team.removeCity = (city: any) => { team.cities = team.cities.filter((c: any) => c !== city); };
+    team.markActive = () => undefined;
+    team.exportState = () => ({ ...original, capitalCityId: team.cities.find((c: any) => c.isCapital)?.id });
+  }
+  const city = wei.cities.find((c: any) => c.id === "linzi");
+  const cityDTO = save.cities.find(c => c.cityId === city.id)!;
+  Object.assign(city, { history: [], calculateMaxDefense: () => 10, clearSiegeState() {}, rebuildFortifiedZone() {}, claimFortifiedZone() {}, refreshZoneVisual() {},
+    addHistory: RealCity.prototype.addHistory,
+    exportState: () => ({ ...cityDTO, ownerFactionId: city.ownerFactionId, isCapital: city.isCapital, defense: city.defense, maxDefense: city.maxDefense,
+      loyalty: city.loyalty, devastation: city.devastation, captureCount: city.captureCount, lastCapturedMonth: city.lastCapturedYear, history: city.history }) });
+  Object.defineProperty(city, "ownerTeam", { get: () => core.teams.find((t: any) => t.name === city.ownerFactionId) });
+  vi.stubGlobal("Phaser", { Math: { Clamp: (n: number, min: number, max: number) => Math.max(min, Math.min(max, n)) } });
+  try {
+    MilitaryCommandRegistry.setEventWriter(e => WorldHistory.addEvent(e));
+    const random = vi.spyOn(worldRandom, "next").mockReturnValue(0);
+    MilitaryCommandRegistry.update(0, core.teams, core.allCities);
+    expect(random).toHaveBeenCalledTimes(2); random.mockRestore();
+    const person = MilitaryCommandRegistry.getPeople()[0], formation = MilitaryCommandRegistry.getFormations()[0];
+    const user = [...qin.users].find((u: any) => u.id === person.sourceUserId) as any;
+    expect(user).toBeInstanceOf(User); expect(user.militaryPersonId).toBe(person.personId);
+    expect(person.personalName).toMatch(/^[\u3400-\u9fff]{2,5}$/);
+    expect(MilitaryCommandRegistry.getOrderEvidence(formation)?.cityId).toBe(city.id);
+    expect(MilitaryCommandRegistry.getChronicle(person, 0).some(e => e.victory)).toBe(false);
+    RealCity.prototype.capture.call(city, qin, 1, undefined, formation.commandId, person.personId);
+    const victory = WorldHistory.getEvents().find(e => e.type === "city-captured")!;
+    expect(victory).toMatchObject({ cityId: "linzi", actorFactionId: "qin", metadata: { commanderPersonId: person.personId, commandId: formation.commandId, commanderPersonalName: person.personalName, wasCapital: 0 } });
+    expect(city.ownerFactionId).toBe("qin"); expect(qin.users.size).toBe(2); expect(user.name).toBe(person.name);
+    const chronicle = MilitaryCommandRegistry.getChronicle(person, 1), row = chronicle.find(e => e.victory)!;
+    expect(row.eventId).toBe(victory.id); expect(row.text).toContain(person.personalName);
+    expect(formatHistoryEventTitle(victory, new Map())).toContain(person.personalName);
+    const king = DynastyRegistry.getCurrentRuler("qin")!;
+    expect(getRulerHistoricalEvents(WorldHistory.getEvents(), { ...king, accessionYear: 0 }, "qin", 1, []).map(e => e.id)).toContain(victory.id);
+    const royal = formatRulerMilitaryEvent(victory, { accessionYear: 0 }, "qin", 1)!;
+    expect(royal).toContain(`其治下，${person.personalName}所属编组参与`); expect(royal).not.toContain("亲征");
+    expect(formatRulerMilitaryEvent(victory, { accessionYear: 2 }, "qin", 3)).toBeUndefined();
+    expect(formatRulerMilitaryEvent(victory, { accessionYear: 0 }, "wei", 1)).toBeUndefined();
+    // Complete the following production order refresh before exporting the now-friendly target.
+    MilitaryCommandRegistry.update(1, core.teams, core.allCities);
+    core.simulator.exportState().clock.worldMonth = 1;
+    const snapshot = exportWorldSave(core); expect(snapshot.saveSchemaVersion).toBe(16);
+    expect(validateWorldSave(snapshot)).toEqual({ valid: true, errors: [] });
+    const rng = worldRandom.exportState();
+    hydrateWorldSave(core, JSON.parse(JSON.stringify(snapshot)));
+    expect(exportWorldSave(core)).toEqual(snapshot); expect(worldRandom.exportState()).toEqual(rng);
+    const loaded = MilitaryCommandRegistry.getPerson(person.personId)!;
+    expect(loaded).toEqual(person); expect(MilitaryCommandRegistry.getChronicle(loaded, 1)).toEqual(chronicle);
+    expect(DynastyRegistry.getCurrentRuler("qin")?.givenName).toBe("子安");
+    MilitaryCommandRegistry.update(2, core.teams, core.allCities);
+    expect(loaded.personalName).toBe(person.personalName);
+    for (const mutate of [(s: any) => delete s.registries.militaryCommandRegistry.people[0].personalName,
+      (s: any) => { s.registries.militaryCommandRegistry.people[0].personalName = "另一个姓名"; },
+      (s: any) => { s.worldHistory.events.find((e: any) => e.id === victory.id).metadata.commanderPersonId = "missing-person"; }]) {
+      const invalid = structuredClone(snapshot); mutate(invalid); expect(validateWorldSave(invalid).valid).toBe(false);
+    }
+    const old = { ...snapshot, saveSchemaVersion: 15 };
+    const beforeOld = JSON.stringify(old);
+    expect(validateWorldSave(old)).toEqual({ valid: false, errors: ["该存档版本已不受支持，请创建新世界。"] });
+    expect(JSON.stringify(old)).toBe(beforeOld);
+  } finally { vi.unstubAllGlobals(); }
+}, 10000);

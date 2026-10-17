@@ -33,7 +33,7 @@ describe("authoritative character names", () => {
     const qin: any = { name: "赵", houseName: "赵氏", status: "ACTIVE", users: new Set() };
     const wei: any = { name: "黄", houseName: "耶律氏", status: "ACTIVE", users: new Set() };
     const user: any = { id: identity.sourceUserId, name: identity.originalName, bornMonth: -300, team: qin, role: "NORMAL", player: { active: true, logicalUnitId: "u1" } };
-    const member = (id: number, team: any) => ({ ...user, id, name: `居民${id}`, team, player: { active: true, logicalUnitId: `u${id}` } });
+    const member = (id: number, team: any) => ({ ...user, id: identity.sourceUserId + id, name: `居民${id}`, team, player: { active: true, logicalUnitId: `u${id}` } });
     qin.users.add(user); qin.users.add(member(2, qin)); wei.users.add(member(3, wei));
     const draw = vi.spyOn(worldRandom, "next").mockReturnValue(0);
     registry.update(12, [qin], []);
