@@ -1,3 +1,4 @@
+import { getDiplomacyEventDetails } from "../../../History/DiplomacyEventDetails";
 import { formatMilitaryVictorySource } from "../../../Politics/MilitaryChronicle";
 import { deriveRestorationTenureEvidence } from "../../../Simulation/RestorationTenureEvidence";
 import { buildRestorationMemoryLines } from "./model";
@@ -1352,6 +1353,7 @@ function RulerBiography({
           {diplomaticEvents.map(event => <Box key={event.id} sx={{ mt: 0.5 }}>
             <Typography fontSize="0.82rem">{formatWorldDate(event.monthIndex ?? event.year)} · {formatRulerDiplomacyEvent(event, factionById, ruler.id) ?? formatHistoryEventTitle(event, factionById)}</Typography>
             <Typography fontSize="0.75rem">{event.description}</Typography>
+            {getDiplomacyEventDetails(event, factionById).map(line => <Typography key={line} fontSize="0.75rem">{line}</Typography>)}
             <Typography fontSize="0.72rem" color="var(--gg-text-muted)">来源：{event.id}</Typography>
           </Box>)}
         </Box>

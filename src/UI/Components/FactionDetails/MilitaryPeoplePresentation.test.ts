@@ -3,7 +3,7 @@ import type { MilitaryPerson } from "../../../Politics/MilitaryCommandRegistry";
 import { describeMilitaryAge, describeMilitaryDeathCause, getMilitaryPersonRelevantMonth, sortMilitaryPeople } from "./MilitaryPeoplePresentation";
 
 const person = (personId: string, status: MilitaryPerson["status"], startMonth: number, endMonth?: number, deathMonth?: number): MilitaryPerson => ({
-  personId, sourceUserId: Number(personId.replace(/\\D/g, "")) || 1, name: personId, bornMonth: -300,
+  personId, sourceUserId: Number(personId.replace(/\\D/g, "")) || 1, name: personId, personalName: "李承远", bornMonth: -300,
   factionId: "qin", status, appointments: [{ factionId: "qin", startMonth, endMonth, commandId: `cmd-${personId}` }],
   ...(deathMonth === undefined ? {} : { deathMonth, deathCause: "SIEGE_LOSS" }), capturedEventIds: [],
 });
