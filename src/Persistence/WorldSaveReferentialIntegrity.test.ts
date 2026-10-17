@@ -43,7 +43,7 @@ import WorldHistory, { type WorldEvent } from "../History/WorldHistory";
 import { formatHistoryEventTitle } from "../History/HistoryRenderRules";
 import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
 import { readMilitaryParticipation, formatMilitaryParticipation, getMilitaryParticipationDetails } from "../Politics/MilitaryPoliticalInfluence";
-import { getRulerHistoricalEvents } from "../Politics/RulerChronicle";
+import { getRulerHistoricalEvents, createRulerChronicle } from "../Politics/RulerChronicle";
 import worldRandom from "../Simulation/WorldRandom";
 import Diplomacy from "../Politics/Diplomacy";
 import { createDiplomacyEventMetadata } from "../Politics/DiplomacyPresentation";
@@ -823,9 +823,11 @@ it.each(["DEPOSITION", "REVOLUTION"] as const)("真实军权→%s事务→同一
   Object.assign(save.factions[0], { houseName: "田氏", stateFoundedMonth: 0, nameHistory: [{ name: "秦", startMonth: 0, reason: "FOUNDING" }] });
   save.factions.push({ ...save.factions[0], factionId: "enemy", displayName: "敌", nameHistory: [], capitalCityId: undefined,
     status: "EXILED", lastExiledMonth: 0, homeGridX: 2 });
+  delete save.factions[1].capitalCityId;
   save.dynasties = [{ factionId: "qin", houseName: "田氏", currentRulerId: "old", heirIds: ["next"],
     houseEpochs: [{ houseName: "田氏", startMonth: 0, foundingRulerId: "old", startReason: "FOUNDING" }], rulers: [
       { rulerId: "old", houseName: "田氏", givenName: "平", bornMonth: -600, accessionMonth: 0, reignOrdinal: 1,
+        chronicle: createRulerChronicle({ month: 0, population: 24, territoryShare: 1, cityCount: 1, stability: 80 }),
         naturalDeathMonth: kind === "REVOLUTION" ? 72 : 1200, status: "ruling" },
       { rulerId: "next", houseName: "田氏", givenName: "继", bornMonth: -240, naturalDeathMonth: 1200, parentId: "old", status: "heir" },
     ] }];
@@ -836,6 +838,7 @@ it.each(["DEPOSITION", "REVOLUTION"] as const)("真实军权→%s事务→同一
   save.registries.logicalUnitRegistry = { nextUnitSequence: 25 }; setFixtureLifetimeRecords(save);
   expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
   const core = target(); core.logicalUnitRegistry = new LogicalUnitRegistry(); core.logicalGameplayAuthority = true;
+  Object.defineProperty(core, "totalCells", { value: 3 });
   hydrateWorldSave(core, JSON.parse(JSON.stringify(save)));
   const team = core.teams[0]; team.blocks = { children: { size: 3 } }; team.removeRulerUnit = () => undefined;
   team.setRegimeColor = function(color: number, month: number) {

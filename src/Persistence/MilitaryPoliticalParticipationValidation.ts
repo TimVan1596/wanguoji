@@ -12,7 +12,8 @@ import { importRulerSave } from "./RulerSaveProjection";
  * not against today's roster: real participants may subsequently retire, transfer or die. */
 export function validateMilitaryPoliticalParticipation(save: WorldSaveV1): string[] {
   const errors: string[] = [], state = save.registries.militaryCommandRegistry;
-  const events = save.worldHistory.events as WorldEvent[];
+  // WorldHistory DTO intentionally stores monthIndex, not the legacy runtime year alias.
+  const events = (save.worldHistory.events as WorldEvent[]).map(e => ({ ...e, year: e.monthIndex ?? e.year }));
   const close = (a: number, b: number) => Math.abs(a - b) < 1e-12;
   for (const [index, event] of events.entries()) {
     if (event.metadata?.militaryParticipation === undefined) continue;
