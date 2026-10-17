@@ -22,17 +22,20 @@ export function validateMilitaryPoliticalParticipation(save: WorldSaveV1): strin
       const record = readMilitaryParticipation(event);
       if (!record) { fail(); continue; }
       const s = record.participant, at = record.worldMonth, political = record.politicalContext;
+      const before = events.slice(0, index), after = events.slice(index + 1);
       const person = state.people.find(p => p.personId === s.personId), formation = state.formations.find(f => f.commandId === s.commandId);
       const appointment = person?.appointments.find(a => a.commandId === s.commandId && a.factionId === record.factionId && a.startMonth <= at && (a.endMonth === undefined || a.endMonth >= at));
       if (!person || !formation || !appointment || formation.commanderPersonId !== person.personId || formation.factionId !== record.factionId ||
           person.sourceUserId !== s.sourceUserId || person.name !== s.name || person.bornMonth !== s.bornMonth || s.factionId !== record.factionId ||
-          person.deathMonth !== undefined && person.deathMonth <= at || at >= deriveMilitaryLifeSchedule(person).retirementMonth ||
+          person.deathMonth !== undefined && (person.deathMonth < at || person.deathMonth === at &&
+            !after.some(e => e.type === "military-person-died" && e.metadata?.personId === person.personId && (e.monthIndex ?? e.year) === at)) || at >= deriveMilitaryLifeSchedule(person).retirementMonth ||
           !Number.isSafeInteger(s.unitCount) || s.unitCount < 2 || s.unitCount > 12 || s.memberUnitIds.length !== s.unitCount ||
           new Set(s.memberUnitIds).size !== s.unitCount || !s.memberUnitIds.every(id => typeof id === "string" && id.length > 0) || !s.memberUnitIds.includes(s.commanderUnitId) ||
           !political || !Number.isFinite(political.stability) || political.stability < 0 || political.stability > 100 || !Number.isSafeInteger(political.cityCount) || political.cityCount < 1 ||
           !Array.isArray(s.capturedEventIds) || record.crisisEventIds.some(id => typeof id !== "string") || new Set(record.crisisEventIds).size !== record.crisisEventIds.length ||
           !Number.isFinite(record.baselineChance) || !Number.isFinite(record.finalChance) || !Number.isFinite(record.roll) || record.baselineChance <= 0) { fail(); continue; }
-      const before = events.slice(0, index);
+      if (record.crisisFacts.length !== record.crisisEventIds.length || record.crisisFacts.some(f => !record.crisisEventIds.includes(f.eventId) ||
+        !before.some(e => e.id === f.eventId && e.title === f.title && (e.monthIndex ?? e.year) === f.worldMonth))) { fail(); continue; }
       const career = deriveMilitaryCareer(person, state.formations, before, at);
       const strength = militaryPoliticalStrength(career.serviceMonths, s.unitCount, career.verifiedCaptures);
       if (!strength.eligible || s.strength !== strength.strength || s.serviceMonths !== career.serviceMonths ||
@@ -47,7 +50,8 @@ export function validateMilitaryPoliticalParticipation(save: WorldSaveV1): strin
         const strong = evidence.length >= 2 || evidence.some(e => e.type === "capital-fallen" || e.type === "empire-split") && political.stability <= 30;
         const chance = Math.min(.03, baseline + Math.min(.01, strength.strength * .0025 + (evidence.length >= 3 ? .0025 : 0)));
         if (at % 12 !== 0 || !strong || !(political.stability <= 40 || political.cityCount <= 2) || evidence.length !== record.crisisEventIds.length ||
-            previous.endReason !== "被废" || previous.endYear !== at || previous.deathMonth !== undefined && previous.deathMonth <= at ||
+            previous.endReason !== "被废" || previous.endYear !== at || previous.deathMonth !== undefined && (previous.deathMonth < at || previous.deathMonth === at &&
+              !after.some(e => e.type === "ruler-died" && e.metadata?.rulerId === previous.id && (e.monthIndex ?? e.year) === at)) ||
             !close(record.baselineChance, baseline) || !close(record.finalChance, chance)) fail();
       } else {
         const successor = rulers.find(r => r.id === event.metadata?.displacedSuccessorId);

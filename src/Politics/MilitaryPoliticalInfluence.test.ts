@@ -6,7 +6,7 @@ import worldRandom from "../Simulation/WorldRandom";
 import { MilitaryPoliticalDiagnostics } from "./MilitaryPoliticalDiagnostics";
 
 function fixture() {
-  const input: Parameters<typeof deriveMilitaryPoliticalInfluence>[0] = { factionId: "qin", worldMonth: 72, events: [],
+  const input: Parameters<typeof deriveMilitaryPoliticalInfluence>[0] = { factionId: "qin", status: "ACTIVE", identityStage: "STATE", worldMonth: 72, events: [],
     people: [{ personId: "military-person-1", sourceUserId: 1, name: "将甲", bornMonth: -300, factionId: "qin", status: "ACTIVE",
       appointments: [{ factionId: "qin", startMonth: 0, commandId: "military-command-1" }], capturedEventIds: [] }],
     formations: [{ commandId: "military-command-1", factionId: "qin", commanderPersonId: "military-person-1", createdMonth: 0,
@@ -41,8 +41,10 @@ describe("pure military political eligibility", () => {
     expect(deriveMilitaryPoliticalInfluence(input).candidates[0]).toMatchObject({ serviceMonths: 72, unitCount: 4, capturedEventIds: [], strength: 2 });
     expect(worldRandom.exportState()).toEqual(before);
   });
-  it.each(["retired", "dead", "foreign", "old", "missing-user", "wrong-name", "recycled-user", "unverified", "no-command", "no-members", "duplicate-person", "shared-unit"])("blocks %s evidence", mode => {
+  it.each(["provisional", "exiled", "retired", "dead", "foreign", "old", "missing-user", "wrong-name", "recycled-user", "unverified", "no-command", "no-members", "duplicate-person", "shared-unit"])("blocks %s evidence", mode => {
     const i = fixture(), p = i.people[0];
+    if (mode === "provisional") i.identityStage = "PROVISIONAL";
+    if (mode === "exiled") i.status = "EXILED";
     if (mode === "retired") p.status = "RETIRED";
     if (mode === "dead") { p.status = "DEAD"; p.deathMonth = 60; }
     if (mode === "foreign") p.factionId = "wei";

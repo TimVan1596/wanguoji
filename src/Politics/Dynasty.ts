@@ -570,9 +570,9 @@ class DynastyRegistryStore {
     );
     if (revolution.usurpation && legitimateSuccessor) {
       const eventId = WorldHistory.addDynasticRevolution(year, team.name, nextRuler.id, {
-        ...militaryParticipationMetadata("REVOLUTION", team.name, year, revolution.militaryParticipant,
+        ...(revolution.militaryParticipant ? militaryParticipationMetadata("REVOLUTION", team.name, year, revolution.militaryParticipant,
           revolution.observedPoliticalShocks.map(s => s.eventId), revolution.baselineChance, revolution.chance, revolution.rollResult,
-          { stability: revolutionContext.stability, cityCount: revolutionContext.cityCount, riskTier: revolution.riskTier }),
+          { stability: revolutionContext.stability, cityCount: revolutionContext.cityCount, riskTier: revolution.riskTier }, WorldHistory.getEventsForFaction(team.name)) : {}),
         ...captureAccessionCapital(team, year, nextRuler.id, predecessor.id),
         oldHouseName, newHouseName: dynasty.houseName, predecessorRulerId: predecessor.id,
         predecessorRulerName: this.getRulerPersonalName(predecessor), previousRulerTitle,
@@ -841,9 +841,9 @@ class DynastyRegistryStore {
     }
     const eventId = WorldHistory.addRulerDeposed(worldMonth, team.name, team.displayName, predecessor, successor, relation,
       evaluation.evidence.map(({ eventId: id }) => id), { ...captureAccessionCapital(team, worldMonth, successor.id, predecessor.id),
-        ...militaryParticipationMetadata("DEPOSITION", team.name, worldMonth, evaluation.militaryParticipant,
+        ...(evaluation.militaryParticipant ? militaryParticipationMetadata("DEPOSITION", team.name, worldMonth, evaluation.militaryParticipant,
           evaluation.evidence.map(e => e.eventId), evaluation.baselineProbability ?? evaluation.probability, evaluation.probability, evaluation.militaryRoll,
-          { stability: getFactionStability(team) ?? 100, cityCount: team.cities.length }) });
+          { stability: getFactionStability(team) ?? 100, cityCount: team.cities.length }, WorldHistory.getEventsForFaction(team.name)) : {}) });
     if (predecessor.chronicle) predecessor.chronicle.notableEventIds.push(eventId);
     successor.chronicle!.notableEventIds.push(eventId);
     return true;

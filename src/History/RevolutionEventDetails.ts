@@ -1,16 +1,11 @@
 import { formatWorldDate } from "../Simulation/WorldTime";
 import type { WorldEvent } from "./WorldHistory";
 import { formatRevolutionEvidence } from "../Politics/DynasticRevolution";
-import { formatMilitaryParticipation, readMilitaryParticipation } from "../Politics/MilitaryPoliticalInfluence";
 
 /** Only recorded event-time facts; current faction/ruler state is irrelevant. */
 export function getRevolutionEventDetails(event: WorldEvent) {
   if (event.type !== "dynasty-usurped" || !event.metadata) return [];
   const m = event.metadata, lines: string[] = [];
-  const military = readMilitaryParticipation(event);
-  if (military) lines.push(formatMilitaryParticipation(event)!, `军事人物：${military.participant.personId} / User ${military.participant.sourceUserId}`,
-    `军事参与危机事件：${military.crisisEventIds.join("、") || "前君真实暴力死亡与继统脆弱性"}`,
-    `同次抽签风险：${(military.baselineChance * 100).toFixed(2)}% → ${(military.finalChance * 100).toFixed(2)}%`);
   const text = (label: string, value: unknown) => { if (typeof value === "string" && value) lines.push(`${label}：${value}`); };
   text("前君", m.previousRulerTitle ?? m.predecessorRulerName);
   text("前君结局", m.successionReason === "combat" ? "战死" : m.successionReason === "captured" ? "被俘处死" : m.successionReason === "natural" ? "去世" : undefined);
