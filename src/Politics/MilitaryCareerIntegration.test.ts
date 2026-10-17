@@ -55,6 +55,18 @@ describe("real registry career influence", () => {
     expect(f.registry.getCareer(f.person, 10000).appointmentWeight).toBeLessThanOrEqual(2);
   });
 
+  it("counts actual recovered-city results but never confuses a historical homeland capital with the enemy's capital", () => {
+    const f = fixture();
+    const recovered = (month: number, wasCapital?: boolean) => {
+      const id = WorldHistory.addCityRecovered(month, "qin", "wei", "qin", "故都", `recovered-${month}`, true,
+        7, undefined, undefined, f.formation.commandId, f.person.personId, wasCapital);
+      f.registry.recordCapture(f.formation.commandId, id, `recovered-${month}`, month);
+    };
+    recovered(20, false); recovered(21, true); recovered(22);
+    expect(f.registry.getCareer(f.person, 22)).toMatchObject({ verifiedCaptures: 3, ordinaryCaptures: 1,
+      capitalCaptures: 1, unclassifiedCaptures: 1 });
+  });
+
   it.each([false, true])("reappoints a verified veteran with a real capped advantage, independent of Set order (%s)", reverse => {
     const f = fixture(reverse); f.capture();
     f.registry.reconcileFactionEnd("qin", 240);
