@@ -64,6 +64,7 @@ export type WorldEventType =
   | "faction-merged"
   | "faction-submitted"
   | "military-appointment"
+  | "military-order-issued"
   | "military-command-ended"
   | "military-person-died";
 
@@ -1191,12 +1192,13 @@ export class WorldHistoryStore {
     });
   }
 
-  addRulerAcceded(year: number, factionId: string, rulerTitle: string, rulerId?: string) {
+  addRulerAcceded(year: number, factionId: string, rulerTitle: string, rulerId?: string, metadata?: Record<string, string | number | undefined>) {
     return this.addEvent({
       id: `ruler-acceded-${year}-${factionId}-${rulerTitle}-${this.sequence++}`,
       year,
       category: "politics",
       type: "ruler-acceded",
+      metadata,
       title: `${rulerTitle}继位`,
       factionIds: [factionId],
       actorFactionId: factionId,
@@ -1220,7 +1222,8 @@ export class WorldHistoryStore {
     predecessor: { id: string; houseName: string; givenName: string },
     successor: { id: string; houseName: string; givenName: string },
     relation: string,
-    evidenceEventIds: string[]
+    evidenceEventIds: string[],
+    capitalContext?: Record<string, string | number | undefined>
   ) {
     const predecessorName = `${predecessor.houseName.replace(/氏$/, "")}${predecessor.givenName}`;
     const successorName = `${successor.houseName.replace(/氏$/, "")}${successor.givenName}`;
@@ -1252,6 +1255,7 @@ export class WorldHistoryStore {
         houseChanged: 0,
         nameChanged: 0,
         colorChanged: 0,
+        ...capitalContext,
       },
     });
   }

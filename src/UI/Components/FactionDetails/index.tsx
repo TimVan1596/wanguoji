@@ -586,16 +586,21 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
       const activeUser = [...(Game.Core?.teams.find(team => team.name === person.factionId)?.users ?? [])]
         .find(user => user.militaryPersonId === person.personId);
       const lastAppointment = person.appointments.at(-1);
+      const career = MilitaryCommandRegistry.getCareer(person, worldMonth);
+      const orderEvidence = formation ? MilitaryCommandRegistry.getOrderEvidence(formation) : undefined;
       return <Box key={person.personId} sx={{ borderBottom: "1px solid var(--gg-border-muted)", pb: 0.75 }}>
         <Typography fontWeight="bold" fontSize="0.9rem">{person.name} · {describeMilitaryStatus(person)}</Typography>
         <Typography fontSize="0.82rem" color="var(--gg-text-muted)">{describeMilitaryAge(person, worldMonth, Boolean(activeUser?.matchesMilitaryLife(person)))} · 任职 {person.appointments.map(item => `${formatWorldDate(item.startMonth)}${item.endMonth === undefined ? "至今" : `—${formatWorldDate(item.endMonth)}（${describeMilitaryAppointmentEnd(item.endReason)}）`}`).join("；")}</Typography>
         {lastAppointment?.endReason === "AGE_RETIREMENT" && lastAppointment.endMonth !== undefined && <Typography fontSize="0.82rem">退休时年龄：{Math.floor((lastAppointment.endMonth - person.bornMonth) / 12)}岁</Typography>}
         {person.deathMonth !== undefined && <Typography fontSize="0.82rem">生命结局：{formatWorldDate(person.deathMonth)} · {describeMilitaryDeathCause(person.deathCause)}</Typography>}
-        {!formation && <Typography fontSize="0.82rem">已核验历史攻城记录：{new Set(person.capturedEventIds).size} 次 · 当前无活动编组</Typography>}
+        <Typography fontSize="0.82rem">累计实际任职 {formatWorldDuration(career.serviceMonths)} · 任职 {career.appointmentCount} 次（再次任职 {career.reappointments} 次）</Typography>
+        <Typography fontSize="0.82rem">核验普通城市攻陷 {career.ordinaryCaptures} · 敌都攻陷 {career.capitalCaptures} · 当前实际指挥 {career.currentUnitCount} 人</Typography>
+        <Typography fontSize="0.78rem" color="var(--gg-text-muted)">军事资历：{career.level} · 合法任命候选权重 {career.appointmentWeight.toFixed(2)}×（上限2×，非爵位）；曾任命编组规模 {career.recordedCommandSize || "未记录"} 人。</Typography>
+        {!formation && <Typography fontSize="0.82rem">当前无活动编组，无现役指挥权。</Typography>}
         {formation && <>
           <Typography fontSize="0.82rem">编组 {formation.commandId} · 真实成员 {formation.memberUnitIds.length} 人</Typography>
           <Typography fontSize="0.82rem">目标：{target?.name ?? "暂无有效目标"} · 命令始于 {formation.orderStartMonth === undefined ? "—" : formatWorldDate(formation.orderStartMonth)}</Typography>
-          <Typography fontSize="0.82rem">已核验攻城结果：{formation.captures.length} 次</Typography>
+          <Typography fontSize="0.78rem">本令资历影响：{!orderEvidence ? "旧命令未记录选择依据" : orderEvidence.metadata?.meritInfluenced === 1 ? "是，近距离容差内优先敌都" : "否，沿用最近合法目标规则"}；有效军令保持不变。</Typography>
           <Typography fontSize="0.78rem" color="var(--gg-text-muted)">军令自动执行；以下操作只定位地图。</Typography>
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
             <Button size="small" disabled={!activeUser} sx={{ minWidth: 0, px: 1 }} onClick={() => Game.Core?.focusMilitaryFormation(formation.commandId)}>定位部队</Button>

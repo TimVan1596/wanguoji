@@ -1,4 +1,5 @@
 import { hasRecordedRulerDeath } from "../Politics/RulerLifeState";
+import { formatAccessionCapital } from "./AccessionCapitalContext";
 import { getMergedEventPresentation } from "./MergedEventPresentation";
 import { getSubmissionEventPresentation } from "./PeacefulSubmissionPresentation";
 import { DIPLOMACY_EVENT_TYPES } from "./HistoryMajorEventFilters";
@@ -143,6 +144,16 @@ export function resolveFactionHistoricalName(
 }
 
 export function formatHistoryEventTitle(
+  event: WorldEvent,
+  factionById: Map<string, HistoryFactionLike>,
+  rulersById?: Map<string, Ruler>
+) {
+  const title = formatHistoryEventTitleBase(event, factionById, rulersById);
+  const capital = formatAccessionCapital(event);
+  return capital ? `${title} · ${capital}` : title;
+}
+
+function formatHistoryEventTitleBase(
   event: WorldEvent,
   factionById: Map<string, HistoryFactionLike>,
   rulersById?: Map<string, Ruler>

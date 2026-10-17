@@ -19,6 +19,7 @@ import {
   RULER_MIN_AGE_AT_ACCESSION,
 } from "../config/simulation";
 import WorldHistory from "../History/WorldHistory";
+import { captureAccessionCapital } from "../History/AccessionCapitalContext";
 import {
   calculateSuccessionEffect,
   pickRulerGivenName,
@@ -219,7 +220,7 @@ class DynastyRegistryStore {
     } else {
       this.ensureActiveHeir(team, dynasty, year, true);
     }
-    WorldHistory.addRulerAcceded(year, team.name, this.getRulerTitle(team, ruler, year), ruler.id);
+    WorldHistory.addRulerAcceded(year, team.name, this.getRulerTitle(team, ruler, year), ruler.id, captureAccessionCapital(team, year, ruler.id));
     this.ensureRulerUnit(team);
     return dynasty;
   }
@@ -567,6 +568,7 @@ class DynastyRegistryStore {
     );
     if (revolution.usurpation && legitimateSuccessor) {
       const eventId = WorldHistory.addDynasticRevolution(year, team.name, nextRuler.id, {
+        ...captureAccessionCapital(team, year, nextRuler.id, predecessor.id),
         oldHouseName, newHouseName: dynasty.houseName, predecessorRulerId: predecessor.id,
         predecessorRulerName: this.getRulerPersonalName(predecessor), previousRulerTitle,
         displacedSuccessorId: legitimateSuccessor.id, displacedSuccessorName: this.getRulerPersonalName(legitimateSuccessor),
@@ -591,6 +593,7 @@ class DynastyRegistryStore {
       this.getRulerPersonalName(nextRuler),
       {
         reason,
+        ...captureAccessionCapital(team, year, nextRuler.id, predecessor.id),
         previousRulerTitle,
         rulerPoliticalTitle: getRulerTitleAtMonth(team, year),
         naturalDeathVerb: getNaturalDeathVerbForTitle(getRulerTitleAtMonth(team, year)),
@@ -827,7 +830,7 @@ class DynastyRegistryStore {
       return false;
     }
     const eventId = WorldHistory.addRulerDeposed(worldMonth, team.name, team.displayName, predecessor, successor, relation,
-      evaluation.evidence.map(({ eventId: id }) => id));
+      evaluation.evidence.map(({ eventId: id }) => id), captureAccessionCapital(team, worldMonth, successor.id, predecessor.id));
     if (predecessor.chronicle) predecessor.chronicle.notableEventIds.push(eventId);
     successor.chronicle!.notableEventIds.push(eventId);
     return true;

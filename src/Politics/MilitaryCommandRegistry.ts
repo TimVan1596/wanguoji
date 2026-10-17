@@ -1,4 +1,6 @@
 import { deriveMilitaryLifeSchedule } from "./MilitaryLifeRules";
+import WorldHistory from "../History/WorldHistory";
+import { deriveMilitaryCareer, selectMilitaryCandidate } from "./MilitaryCareerEvidence";
 import type User from "../Components/User";
 import type Team from "../Components/Team";
 import type City from "../Components/City";
@@ -111,6 +113,16 @@ export class MilitaryCommandRegistryStore {
       unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
   }
 
+  getCareer(person: MilitaryPerson, worldMonth: number) {
+    const events = [...new Map(person.appointments.flatMap(a => WorldHistory.getEventsForFaction(a.factionId)).map(e => [e.id, e])).values()];
+    return deriveMilitaryCareer(person, this.getFormations(), events, worldMonth);
+  }
+
+  getOrderEvidence(formation: MilitaryFormation) {
+    return WorldHistory.getEventsForFaction(formation.factionId).find(e => e.type === "military-order-issued" &&
+      e.metadata?.commandId === formation.commandId && e.cityId === formation.targetCityId && (e.monthIndex ?? e.year) === formation.orderStartMonth);
+  }
+
   getPeople() { return [...this.people.values()]; }
   getFormations() { return [...this.formations.values()]; }
   getDiagnostics() { return { ...this.diagnostics, activeCommanders: [...this.people.values()].filter(p => p.status === "ACTIVE").length,
@@ -139,7 +151,11 @@ export class MilitaryCommandRegistryStore {
       if (availableUnits.length < 2) { this.diagnostics.unitBlocked++; continue; }
       this.diagnostics.eligible += candidates.length;
       if (worldRandom.next() >= ANNUAL_APPOINTMENT_CHANCE) continue;
-      const candidate = candidates[worldRandom.pickIndex(candidates.length)];
+      const weights = candidates.map(user => {
+        const person = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
+        return person ? this.getCareer(person, worldMonth).appointmentWeight : 1;
+      });
+      const candidate = selectMilitaryCandidate(candidates, weights, worldRandom.next());
       const members = [candidate, ...availableUnits.filter(user => user !== candidate)].slice(0, MAX_FORMATION_UNITS);
       if (members.length < 2 || !candidate.player.logicalUnitId) { this.diagnostics.unitBlocked++; continue; }
       if (this.appoint(candidate, team.name, worldMonth, members.map(user => user.player.logicalUnitId!))) this.diagnostics.appointments++;
@@ -261,7 +277,12 @@ export class MilitaryCommandRegistryStore {
           const distance = (city: City) => Math.hypot(city.block.x - center.x, city.block.y - center.y);
           return distance(a) - distance(b) || a.id.localeCompare(b.id);
         });
-      const next = options[0];
+      const nearest = options[0];
+      const person = this.people.get(formation.commanderPersonId);
+      const experienced = person && this.getCareer(person, worldMonth).verifiedCaptures > 0;
+      const distance = (city: City) => center ? Math.hypot(city.block.x - center.x, city.block.y - center.y) : Infinity;
+      const next = experienced && center && nearest ? options.find(city => city.isCapital && city.ownerTeam?.capitalCity === city &&
+        distance(city) <= distance(nearest) * 1.15 && distance(city) - distance(nearest) <= 32) ?? nearest : nearest;
       if (next) {
         if (formation.targetCityId !== next.id) {
           this.lastArrivalTargetByCommand.delete(formation.commandId);
@@ -270,6 +291,12 @@ export class MilitaryCommandRegistryStore {
         formation.targetCityId = next.id;
         formation.orderStartMonth = worldMonth;
         this.diagnostics.orders++;
+        this.eventWriter?.({ id: `military-order-${formation.commandId}-${worldMonth}`, year: worldMonth, monthIndex: worldMonth,
+          type: "military-order-issued", category: "war", title: "军事编组确定目标", importance: "normal",
+          factionIds: [formation.factionId, next.ownerFactionId], actorFactionId: formation.factionId, targetFactionId: next.ownerFactionId,
+          cityId: next.id, cityName: next.name, metadata: { commandId: formation.commandId, personId: formation.commanderPersonId,
+            meritInfluenced: next !== nearest ? 1 : 0, nearestCityId: nearest?.id, nearestDistance: center && nearest ? distance(nearest) : undefined,
+            targetDistance: center ? distance(next) : undefined } });
       } else { formation.targetCityId = undefined; formation.orderStartMonth = undefined; }
     }
   }
@@ -396,7 +423,7 @@ export class MilitaryCommandRegistryStore {
     if (!commandId) return;
     const formation = this.formations.get(commandId);
     const person = formation ? this.people.get(formation.commanderPersonId) : undefined;
-    if (!formation || formation.status !== "ACTIVE" || !person) return;
+    if (!formation || formation.status !== "ACTIVE" || !person || person.capturedEventIds.includes(eventId)) return;
     formation.captures.push({ eventId, cityId, month: worldMonth });
     person.capturedEventIds.push(eventId); this.diagnostics.captures++;
   }
