@@ -104,7 +104,7 @@ describe("w资源不连续性修复：真实年度事务与种子演练",()=>{
       WorldExiles.reset();WorldRemnants.reset();WorldRemnants.add("old",3,400);
       Object.assign(f.candidate,{cumulativeActiveYears:400,currentActiveSinceYear:undefined});
       WorldExiles.start(f.candidate,400,3);
-      WorldHistory.addFactionExiled(400,"old",DynastyRegistry.getCurrentRuler("old")?.name??"流亡君主",3);
+      WorldHistory.addFactionExiled(400,"old",DynastyRegistry.getCurrentRuler("old")?.givenName??"流亡君主",3);
       f.system.reset(400);
       const old=previous ? vi.spyOn(restorationRules,"localResidentRestorationChance").mockImplementation(i=>i.legacyChance) : undefined;
       const start=performance.now();
@@ -133,7 +133,7 @@ describe("w资源不连续性修复：真实年度事务与种子演练",()=>{
         evidence:events.map(e=>({id:e.id,month:e.monthIndex,metadata:e.metadata}))};
       vi.restoreAllMocks();return result;
     };
-    const rows=[];
+    const rows:Array<{seed:number;before:Awaited<ReturnType<typeof run>>;after:Awaited<ReturnType<typeof run>>}>=[];
     for(let seed=0;seed<32;seed++) rows.push({seed,before:await run(seed,true),after:await run(seed,false)});
     const totals=(key:"before"|"after")=>rows.reduce((s,r)=>({draws:s.draws+r[key].draws,eligible:s.eligible+r[key].eligible,
       expected:s.expected+r[key].expected,successes:s.successes+r[key].successes,ends:s.ends+r[key].ends,

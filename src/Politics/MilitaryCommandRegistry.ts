@@ -245,7 +245,7 @@ export class MilitaryCommandRegistryStore {
     this.eventWriter?.({ id: `military-appointment-${commandId}`, year: worldMonth, monthIndex: worldMonth,
       category: "politics", type: "military-appointment", title: `${factionId}任命${getMilitaryPersonDisplayName(person)}为军事指挥者`,
       description: `${getMilitaryPersonDisplayName(person)}由既有人口任职，指挥${memberUnitIds.length}个现存单位。`, factionIds: [factionId], actorFactionId: factionId,
-      metadata: { personId, commandId, unitCount: memberUnitIds.length }, importance: "normal" });
+      metadata: { personId, sourceUserId: person.sourceUserId, commandId, unitCount: memberUnitIds.length }, importance: "normal" });
     return true;
   }
 
@@ -282,7 +282,7 @@ export class MilitaryCommandRegistryStore {
     if (person && person.status !== "DEAD") person.status = "RETIRED";
     if (person) this.eventWriter?.({ id: `military-command-ended-${formation.commandId}`, year: worldMonth, monthIndex: worldMonth,
       category: "politics", type: "military-command-ended", title: reason === "AGE_RETIREMENT" ? `${getMilitaryPersonDisplayName(person)}年老退役` : `${getMilitaryPersonDisplayName(person)}结束军事任职`, factionIds: [formation.factionId],
-      actorFactionId: formation.factionId, metadata: { personId: person.personId, commandId: formation.commandId, endReason: reason }, importance: "normal" });
+      actorFactionId: formation.factionId, metadata: { personId: person.personId, sourceUserId: person.sourceUserId, commandId: formation.commandId, endReason: reason }, importance: "normal" });
   }
 
   private refreshOrders(worldMonth: number, teams: Team[], cities: City[]) {
@@ -445,7 +445,7 @@ export class MilitaryCommandRegistryStore {
       if (cause === "NATURAL_DEATH") this.diagnostics.naturalDeaths++;
       this.eventWriter?.({ id: `military-person-death-${person.personId}-${worldMonth}`, year: worldMonth, monthIndex: worldMonth,
         category: "politics", type: "military-person-died", title: cause === "NATURAL_DEATH" ? `${getMilitaryPersonDisplayName(person)}自然去世` : `${getMilitaryPersonDisplayName(person)}去世`, factionIds: [person.factionId], actorFactionId: person.factionId,
-        metadata: { personId: person.personId, deathCause: cause }, importance: "normal" });
+        metadata: { personId: person.personId, sourceUserId: person.sourceUserId, deathCause: cause }, importance: "normal" });
     } else if (person.status === "ACTIVE") person.status = "RETIRED";
   }
 

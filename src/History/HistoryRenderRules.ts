@@ -414,6 +414,7 @@ export function formatHistoryEventDescription(
   event: WorldEvent,
   factionById: Map<string, HistoryFactionLike>
 ) {
+  if (event.description && event.type.startsWith("military-")) return formatMilitaryHistoryIdentity(event,event.description);
   const merged = getMergedEventPresentation(event, factionById);
   if (merged) return merged.description;
   if (event.type === "faction-submitted") return undefined;

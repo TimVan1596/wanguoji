@@ -30,12 +30,13 @@ export function describeMilitaryNameEvidence(person: {name:string;sourceUserId:n
  * as personal names. Only typed military events with a person reference qualify.
  * No registry/live User lookup: death, transfer and loading cannot change this.
  */
-export function formatMilitaryHistoryIdentity(event: {type:string; title:string; metadata?:Record<string,unknown>}) {
+export function formatMilitaryHistoryIdentity(event: {type:string; title:string; metadata?:Record<string,unknown>}, text = event.title) {
   const personId=event.metadata?.personId;
-  if(typeof personId!=="string") return event.title;
+  if(typeof personId!=="string") return text;
   let raw: string | undefined;
   if(event.type==="military-appointment") raw=event.title.match(/任命(.+)为军事指挥者$/)?.[1];
   if(event.type==="military-command-ended") raw=event.title.match(/^(.+)(?:年老退役|结束军事任职)$/)?.[1];
   if(event.type==="military-person-died") raw=event.title.match(/^(.+?)(?:自然去世|去世)$/)?.[1];
-  return raw && isPopulationIdentityLabel(raw) ? event.title.replace(raw,getMilitaryPersonDisplayName({name:raw,personId})) : event.title;
+  const sourceUserId=typeof event.metadata?.sourceUserId==="number"?event.metadata.sourceUserId:undefined;
+  return raw && isPopulationIdentityLabel(raw) ? text.split(raw).join(getMilitaryPersonDisplayName({name:raw,personId,sourceUserId})) : text;
 }

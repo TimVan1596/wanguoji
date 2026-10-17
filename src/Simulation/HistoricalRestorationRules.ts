@@ -193,8 +193,10 @@ export function localResidentRestorationChance(input: {
   return Math.min(loyalty>28?.03:.09,Math.max(0,input.legacyChance,graduated));
 }
 
-/** Keep every v31s slot's probability mass. Only the shared, bounded unused city
- * risk budget can fund the resident increment; extra candidates cannot add risk. */
+/** Keep every legacy slot's baseline probability mass. Only the shared, bounded
+ * unused city budget funds resource-backed response, never one roll per claimant.
+ * local denotes actual resident transfer; resourceBacked denotes a gated remnant
+ * candidate. Keeping these separate avoids reporting remnants as resident Users. */
 export function getLocalResponseDrawDistribution(rows: readonly {legacyChance:number;chance:number;local:boolean;resourceBacked?:boolean}[], cap:number) {
   const baselineChance=Math.min(1,Math.max(0,...rows.map(r=>r.legacyChance)));
   const total=rows.reduce((sum,r)=>sum+Math.max(0,r.legacyChance),0);
