@@ -42,6 +42,8 @@ import { buildRulerTags } from "../Politics/RulerChronicle";
 import WorldHistory, { type WorldEvent } from "../History/WorldHistory";
 import { formatHistoryEventTitle } from "../History/HistoryRenderRules";
 import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
+import { getMilitaryPersonDisplayName } from "../Politics/MilitaryPersonIdentity";
+import { getLocalUserId } from "../Live/LocalUserIdentity";
 import { readMilitaryParticipation, formatMilitaryParticipation, getMilitaryParticipationDetails } from "../Politics/MilitaryPoliticalInfluence";
 import { getRulerHistoricalEvents, createRulerChronicle } from "../Politics/RulerChronicle";
 import worldRandom, { WorldRandom } from "../Simulation/WorldRandom";
@@ -149,7 +151,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     hydrateWorldSave(core,JSON.parse(JSON.stringify(first)));expect(exportWorldSave(core)).toEqual(first);
     expect(WorldHistory.getEvents().filter(e=>e.type === "faction-merged")).toHaveLength(1);
   });
-  it.each(["低忠诚旧路径", "战乱旧都", "双零流亡终结"])("%s真实月度执行后V14往返一致，不回填旧历史", async scenario => {
+  it.each(["低忠诚旧路径", "战乱旧都", "战乱旧都残部响应", "双零流亡终结"])("%s真实月度执行后V15往返一致，不回填旧历史", async scenario => {
     const { default: RealTeam } = await vi.importActual<typeof import("../Components/Team")>("../Components/Team");
     const { default: RealCity } = await vi.importActual<typeof import("../Components/City")>("../Components/City");
     const { default: WorldRemnants } = await import("../Simulation/WorldRemnants");
@@ -196,6 +198,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     const cityModule = await import("../Components/City");
     vi.spyOn(cityModule, "getFactionStability").mockImplementation(team => team.cities.length ? Math.round(team.cities.reduce((sum, city) => sum + city.loyalty, 0) / team.cities.length) : undefined);
     if (scenario === "战乱旧都") { cities[0].loyalty = 33; cities[0].devastation = 94; cities[1].loyalty = 30; }
+    if (scenario === "战乱旧都残部响应") { cities[0].loyalty = 39; cities[0].devastation = 90; cities[1].loyalty = 30; }
     if (scenario === "双零流亡终结") { WorldRemnants.consume("old", 1); WorldExiles.get("old")!.legitimacy = 0; }
     // Hydration must preserve the restored V14 state until the next authoritative month.
     sim.setRunning(false);
@@ -228,9 +231,15 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     vi.spyOn(FactionSnapshots, "observe").mockImplementation(() => undefined);
     vi.spyOn(WorldHistory, "observeWorld").mockImplementation(() => undefined);
     liveTeams.forEach((t: any) => t.cities.forEach((c: any) => { c.updateDefense = () => undefined; }));
-    const draw = vi.spyOn(worldRandom, "next").mockReturnValue(.0001);
+    const draw = vi.spyOn(worldRandom, "next").mockReturnValue(scenario === "战乱旧都残部响应" ? .0015 : .0001);
     monthlySim.setRunning(true);
     monthlySim.update(WORLD_MONTH_MS, liveTeams, 3); draw.mockRestore(); monthlySim.setRunning(false);
+    if (scenario === "战乱旧都残部响应") {
+      const d=monthlyRuntime.events.getRestorationDiagnosticSnapshot();
+      expect(d.baselineExpectedRestorations).toBeLessThan(.0015);
+      expect(d.expectedRestorations).toBeGreaterThan(.0015);
+      expect(d.resourceResponseChecks).toBe(1);
+    }
     if (scenario === "双零流亡终结") {
       expect(liveTeams[1].status).toBe("EXTINCT");
       const last = DynastyRegistry.get("old")!.rulers.find(r => r.id === rulerId)!;
@@ -244,7 +253,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     const save = exportWorldSave(core); expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
     const restoration = (save.worldHistory.events as WorldEvent[]).find((e: any) => e.type === "faction-restored");
     if (scenario !== "双零流亡终结") expect(restoration?.metadata).toMatchObject({ restorationBasis: "FORMER_CAPITAL", historicalHeldMonths: 390, rulerId });
-    if (scenario === "战乱旧都") expect(restoration?.metadata?.restorationTrigger).toBe("WAR_TORN_HISTORICAL_CITY");
+    if (scenario.startsWith("战乱旧都")) expect(restoration?.metadata?.restorationTrigger).toBe("WAR_TORN_HISTORICAL_CITY");
     const rng = worldRandom.exportState(); hydrateWorldSave(core, JSON.parse(JSON.stringify(save)));
     expect(exportWorldSave(core)).toEqual(save); expect(worldRandom.exportState()).toEqual(rng);
     hydrateWorldSave(core, JSON.parse(JSON.stringify(save))); expect(exportWorldSave(core)).toEqual(save);
@@ -989,4 +998,25 @@ it("V15旧地响应事件及真实User/逻辑单位完整往返，严格拒绝�
   expect(WorldHistory.getEventTypeCount("faction-restored")).toBe(1);
   const random=worldRandom.exportState();WorldExiles.update(481,core.teams);
   expect(worldRandom.exportState()).toEqual(random);expect(WorldHistory.getEventTypeCount("faction-restored")).toBe(1);
+});
+
+it.each(["RETIRED","DEAD"] as const)("w人口标签%s档案V15严格往返、显示和续跑不改身份",status=>{
+  const save=fixture(),name="Heaven-燕-3834-0268";
+  save.registries.militaryCommandRegistry={
+    people:[{personId:"military-person-1",sourceUserId:getLocalUserId(name),name,bornMonth:-500,factionId:"qin",status,
+      appointments:[{factionId:"qin",startMonth:12,endMonth:24,endReason:status==="DEAD"?"DEATH":"DISMISSED",commandId:"military-command-1"}],
+      ...(status==="DEAD"?{deathMonth:24,deathCause:"BATTLE_DEATH"}:{}),capturedEventIds:[]}],
+    formations:[{commandId:"military-command-1",factionId:"qin",commanderPersonId:"military-person-1",memberUnitIds:[],createdMonth:12,status:"DISBANDED",captures:[]}],
+    personSequence:2,commandSequence:2,lastEvaluationMonth:24,
+  };
+  if(status==="DEAD") (save.worldHistory.events as WorldEvent[]).push({id:"name-death",year:24,monthIndex:24,category:"politics",type:"military-person-died",
+    title:`${name}去世`,actorFactionId:"qin",factionIds:["qin"],importance:"normal",metadata:{personId:"military-person-1",deathCause:"BATTLE_DEATH"}});
+  expect(validateWorldSave(save)).toEqual({valid:true,errors:[]});
+  const core=target();hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));
+  const first=exportWorldSave(core),person=MilitaryCommandRegistry.getPeople()[0];
+  expect(person.name).toBe(name);expect(getMilitaryPersonDisplayName(person)).toContain("姓名未核验");
+  if(status==="DEAD") expect(formatHistoryEventTitle(WorldHistory.getEvents().find(e=>e.id==="name-death")!,new Map())).not.toContain(name);
+  hydrateWorldSave(core,JSON.parse(JSON.stringify(first)));expect(exportWorldSave(core)).toEqual(first);
+  const rng=worldRandom.exportState();MilitaryCommandRegistry.update(121,core.teams,core.allCities);
+  expect(worldRandom.exportState()).toEqual(rng);expect(MilitaryCommandRegistry.getPeople()[0]).toEqual(person);
 });
