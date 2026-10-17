@@ -1,3 +1,5 @@
+import { getLocalUserId } from "../Live/LocalUserIdentity";
+
 /** Presentation only. Never rename User/name snapshots or change identity hashes.
  * Generated population labels have no recorded personal name; do not invent one.
  * The original label remains available separately for provenance, also after death.
@@ -8,9 +10,20 @@ export function isPopulationIdentityLabel(name: string) {
 }
 
 export function getMilitaryPersonDisplayName(person: { name: string; personId: string; sourceUserId?: number }) {
-  if (person.name.trim() && !isPopulationIdentityLabel(person.name)) return person.name;
+  // An external person's genuine nickname can also contain '-123'. The local
+  // ID range is necessary evidence; do not suppress a verified external name.
+  const localIdentity = person.sourceUserId === undefined ||
+    (person.sourceUserId >= 1000000000 && person.sourceUserId <= 1999999999);
+  if (person.name.trim() && (!isPopulationIdentityLabel(person.name) || !localIdentity)) return person.name;
   // personId distinguishes unnamed people without suggesting a fictitious name.
   return `姓名未核验的指挥者〔${person.personId}〕`;
+}
+
+export function describeMilitaryNameEvidence(person: {name:string;sourceUserId:number}) {
+  return isPopulationIdentityLabel(person.name) && person.sourceUserId === getLocalUserId(person.name) ?
+    "人口生成格式及本地User哈希吻合；未另存真实姓名" :
+    isPopulationIdentityLabel(person.name) && person.sourceUserId>=1000000000 ?
+      "人口格式标签；来源存在碰撞或缺口，姓名待核验" : "沿用原User记录的名称";
 }
 
 /** Old V15 events retain their raw text, but generated labels are not presented

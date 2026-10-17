@@ -54,14 +54,15 @@ class FactionRegistryStore {
   }
 
   canRestoreFaction(team: Team, worldMonth?: number) {
-    if (!hasFormalStateIdentity(team)) {
+    if (!hasFormalStateIdentity(team) || team.status !== "EXILED" || team.terminationReason) {
       return false;
     }
     const exile = WorldExiles.get(team.name);
+    if (!exile) return false;
     return canRestoreExiledFaction(
       WorldRemnants.get(team.name)?.population ?? 0,
       worldMonth === undefined ? DynastyRegistry.hasClaimant(team.name) : DynastyRegistry.hasClaimantAtMonth(team.name, worldMonth),
-      exile?.legitimacy ?? 100
+      exile.legitimacy
     );
   }
 
@@ -74,7 +75,9 @@ class FactionRegistryStore {
     historicalBasis?: { basis: RestorationBasis; heldMonths: number; trigger?: "WAR_TORN_HISTORICAL_CITY" },
     claimantMonth?: number
   ) {
-    if (!hasFormalStateIdentity(team)) {
+    if (!this.canRestoreFaction(team, claimantMonth ?? year) || city.destroyed ||
+        !Number.isSafeInteger(remnantPopulation) || remnantPopulation <= 0 ||
+        remnantPopulation > (WorldRemnants.get(team.name)?.population ?? 0)) {
       return false;
     }
     const exile = WorldExiles.get(team.name);

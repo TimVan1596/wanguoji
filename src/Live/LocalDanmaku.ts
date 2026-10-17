@@ -7,6 +7,8 @@ import { store } from "../store";
 import Danmu from "./Danmu";
 import { IParseDanmuData } from "./type";
 import { resolvePublicAssetUrl } from "../Runtime/PublicAssetUrl";
+import { getLocalUserId } from "./LocalUserIdentity";
+export { getLocalUserId } from "./LocalUserIdentity";
 
 const LOCAL_FACE = resolvePublicAssetUrl("img/no-face.svg");
 const COLOR_ALIASES: Record<string, string> = {
@@ -16,14 +18,6 @@ const COLOR_ALIASES: Record<string, string> = {
   绿色: "绿",
   紫色: "紫",
 };
-
-export function getLocalUserId(name: string) {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
-  }
-  return 1000000000 + (hash % 1000000000);
-}
 
 function normalizeLocalText(text: string) {
   const safeText = text.trim();

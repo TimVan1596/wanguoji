@@ -72,6 +72,16 @@ async function fixture(basis = "capital", founderPath = false, naturalLives = fa
 function check(f: Awaited<ReturnType<typeof fixture>>, month = 480) { (f.system as any).checkRestorations(month, f.teams); }
 
 describe("w资源不连续性修复：真实年度事务与种子演练",()=>{
+  it.each(["EXTINCT","MERGED","SUBMITTED","missing-exile","fake-remnants"])("事务入口拒绝%s，不因调用方绕过检查而复生",async reason=>{
+    const f=await fixture();
+    if(reason==="EXTINCT") f.candidate.status="EXTINCT";
+    if(reason==="MERGED" || reason==="SUBMITTED") f.candidate.terminationReason=reason;
+    if(reason==="missing-exile") WorldExiles.restore("old");
+    const history=WorldHistory.exportState(),rng=worldRandom.exportState();
+    expect(FactionRegistry.restoreFaction(f.candidate,f.city,480,reason==="fake-remnants"?30:3)).toBe(false);
+    expect(WorldHistory.exportState()).toEqual(history);expect(worldRandom.exportState()).toEqual(rng);
+    expect(f.city.ownerFactionId).toBe("owner");expect(WorldRemnants.get("old")?.population).toBe(3);
+  });
   it("相同真实战乱旧都，有残部可使用渐进响应；一次draw，旧期望单独保留",async()=>{
     const f=await fixture(); f.city.loyalty=39; f.city.devastation=90;
     const draw=vi.spyOn(worldRandom,"next").mockReturnValue(.99);
@@ -118,7 +128,7 @@ describe("w资源不连续性修复：真实年度事务与种子演练",()=>{
         expect(WorldHistory.getEventTypeCount("faction-restored")).toBe(before);
       }
       const result={draws:d.restorationDraws,eligible:d.warTornEligible,expected:d.expectedRestorations,
-        successes:d.successes,ends:e.politicalEnds,remnantZero:e.remnantFirstZero,
+        successes:d.successes,ends:WorldHistory.getEvents().filter(e=>e.type==="faction-extinct" && e.targetFactionId==="old").length,remnantZero:e.remnantFirstZero,
         population:f.candidate.users.size,monthMs:(performance.now()-start)/1200,
         evidence:events.map(e=>({id:e.id,month:e.monthIndex,metadata:e.metadata}))};
       vi.restoreAllMocks();return result;
@@ -131,6 +141,8 @@ describe("w资源不连续性修复：真实年度事务与种子演练",()=>{
       monthMs:s.monthMs+r[key].monthMs/32}),{draws:0,eligible:0,expected:0,successes:0,ends:0,remnantZero:0,population:0,monthMs:0});
     console.log("w受控真实子系统演练（32种子各100年；固定初始旧都危机，非Core自然战争/人口发生率）",JSON.stringify({before:totals("before"),after:totals("after"),evidence:rows.filter(r=>r.after.successes).map(r=>({seed:r.seed,events:r.after.evidence}))}));
     expect(totals("after").expected).toBeGreaterThan(totals("before").expected);
+    expect(rows[16].before.successes).toBe(0);expect(rows[16].after.successes).toBe(1);
+    expect(rows[16].after.evidence[0].metadata).toMatchObject({remnantPopulation:3,rulerId:"old-ruler-4",restorationTrigger:"WAR_TORN_HISTORICAL_CITY"});
     const repeat=await run(0,false);
     expect({...repeat,monthMs:0}).toEqual({...rows[0].after,monthMs:0});
   },60000);
