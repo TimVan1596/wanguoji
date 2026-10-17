@@ -899,6 +899,22 @@ it.each(["DEPOSITION", "REVOLUTION"] as const)("真实军权→%s事务→同一
     metadata.militaryParticipation = JSON.stringify(record);
     expect(validateWorldSave(bad).errors).toContain(`invalid military political participation: ${event.id}`);
   }
+  // Historical participation outlives command and User. Only renderer cleanup is adapted.
+  MilitaryCommandRegistry.reconcileFactionEnd("qin", 84);
+  const liveUser = [...core.teams[0].users].find((u: any) => u.militaryPersonId === person.personId) as any;
+  core.simulator.recordPopulationMutation = () => undefined; core.recordUserDeathForDiagnostics = () => undefined;
+  liveUser.slaveGroup.dispose = () => undefined;
+  liveUser.player.destroyPlayerTree = () => { liveUser.player.active = false; };
+  expect(liveUser.destroyUser(false, { cause: "BATTLE_DEATH", month: 96, context: "controlled business regression" })).toBe(true);
+  core.simulator.exportState().clock.worldMonth = 96;
+  const archived = exportWorldSave(core);
+  expect(validateWorldSave(archived)).toEqual({ valid: true, errors: [] });
+  hydrateWorldSave(core, JSON.parse(JSON.stringify(archived)));
+  expect(exportWorldSave(core)).toEqual(archived);
+  const deadPerson = MilitaryCommandRegistry.getPerson(person.personId)!;
+  expect(deadPerson.status).toBe("DEAD");
+  expect(MilitaryCommandRegistry.getPoliticalEvents(deadPerson).map(e => e.id)).toEqual([event.id]);
+  expect(MilitaryCommandRegistry.getPoliticalInfluence(core.teams[0], 96, core.logicalUnitRegistry).candidates.some(p => p.personId === person.personId)).toBe(false);
 });
 
 it("V15旧地响应事件及真实User/逻辑单位完整往返，严格拒绝伪造响应证据",async()=>{

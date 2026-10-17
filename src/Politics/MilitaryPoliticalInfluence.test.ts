@@ -3,6 +3,7 @@ import { deriveMilitaryPoliticalInfluence, militaryPoliticalStrength, type Milit
 import { evaluateDepositionOpportunity } from "./InReignDeposition";
 import { evaluateDynasticRevolution } from "./DynasticRevolution";
 import worldRandom from "../Simulation/WorldRandom";
+import { MilitaryPoliticalDiagnostics } from "./MilitaryPoliticalDiagnostics";
 
 function fixture() {
   const input: Parameters<typeof deriveMilitaryPoliticalInfluence>[0] = { factionId: "qin", worldMonth: 72, events: [],
@@ -24,6 +25,17 @@ function deposition(military?: MilitaryPoliticalEvidence) {
 }
 
 describe("pure military political eligibility", () => {
+  it("reports actor-checks separately from one political draw and compares the same baseline cohort without RNG", () => {
+    const diagnostics = new MilitaryPoliticalDiagnostics(), input = deriveMilitaryPoliticalInfluence(fixture()), before = worldRandom.exportState();
+    const two = { ...input, candidates: [...input.candidates, input.candidates[0]] };
+    diagnostics.observe(two, true, .005, .01, true, true);
+    diagnostics.observe(two, true, .005, .01, true, false);
+    diagnostics.observe(undefined, true, .005, .005, true, true);
+    expect(diagnostics.snapshot()).toMatchObject({ checks: 3, eligibleActorChecks: 4, draws: 2, riskChanged: 2,
+      militarySuccesses: 1, militaryFailures: 1, nonMilitarySuccesses: 1, baselineExpected: .015, finalExpected: .025 });
+    expect(worldRandom.exportState()).toEqual(before);
+    diagnostics.reset(); expect(diagnostics.snapshot().draws).toBe(0);
+  });
   it("separates real command, verified service and historical victories without drawing RNG", () => {
     const before = worldRandom.exportState(), input = fixture();
     expect(deriveMilitaryPoliticalInfluence(input).candidates[0]).toMatchObject({ serviceMonths: 72, unitCount: 4, capturedEventIds: [], strength: 2 });
