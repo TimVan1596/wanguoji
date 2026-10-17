@@ -23,6 +23,13 @@ export function formatMilitaryVictorySource(event: WorldEvent) {
   return `${m.commanderPersonalName}所属编组参与${event.type === "city-recovered" ? "收复" : "攻陷"}${event.cityName ?? event.cityId}${m.wasCapital === 1 ? "（当时敌都）" : ""}（编组${m.commandId}；来源${event.id}）`;
 }
 
+export function formatRulerMilitaryEvent(event: WorldEvent, ruler: { accessionYear: number; endYear?: number }, factionId: string, worldMonth: number) {
+  const month = event.monthIndex ?? event.year;
+  if (event.actorFactionId !== factionId || month < ruler.accessionYear || month > Math.min(ruler.endYear ?? worldMonth, worldMonth)) return undefined;
+  const source = formatMilitaryVictorySource(event);
+  return source ? `其治下，${source}` : undefined;
+}
+
 /** One projection of the existing events. No new history facts or military score. */
 export function deriveMilitaryChronicle(person: MilitaryPerson, formations: MilitaryFormation[], events: WorldEvent[], worldMonth: number, factionId?: string) {
   const captures = new Set(deriveMilitaryCareer(person, formations, events, worldMonth).capturedEventIds);

@@ -293,7 +293,9 @@ function isRulerPoliticalEventRelevant(event: WorldEvent, rulerId: string, facti
     case "empire-split":
       return event.targetFactionId === factionId && event.metadata?.parentFactionId === factionId && factions.includes(factionId);
     case "capital-fallen":
-      return event.targetFactionId === factionId && event.previousOwnerFactionId === factionId && factions.includes(factionId);
+      return factions.includes(factionId) && (event.targetFactionId === factionId && event.previousOwnerFactionId === factionId ||
+        event.actorFactionId === factionId && typeof event.metadata?.commanderPersonalName === "string" &&
+        typeof event.metadata?.commanderPersonId === "string" && typeof event.metadata?.commandId === "string");
     case "capital-relocated":
       return event.actorFactionId === factionId && factions.includes(factionId) && event.metadata?.cause === "CAPITAL_FALL";
     case "faction-restored":

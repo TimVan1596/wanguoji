@@ -1,5 +1,5 @@
 import { getDiplomacyEventDetails } from "../../../History/DiplomacyEventDetails";
-import { formatMilitaryVictorySource } from "../../../Politics/MilitaryChronicle";
+import { formatRulerMilitaryEvent } from "../../../Politics/MilitaryChronicle";
 import { deriveRestorationTenureEvidence } from "../../../Simulation/RestorationTenureEvidence";
 import { buildRestorationMemoryLines } from "./model";
 import { GenealogyPersonCard } from "./GenealogyPersonCard";
@@ -1337,7 +1337,7 @@ function RulerBiography({
       {rulerEvents.length > 0 ? rulerEvents.map((event) => (
         <Box key={event.id}>
         <Typography fontSize="0.82rem">
-          {formatWorldDate(event.monthIndex ?? event.year)} ◆ {(event.actorFactionId === team.name && formatMilitaryVictorySource(event) ? `其治下，${formatMilitaryVictorySource(event)}` : undefined) ?? formatRulerTerminalEvent(event, ruler, team.name, factionById) ?? formatRulerDiplomacyEvent(event, factionById, ruler.id) ?? formatFactionHistoryEvent(event, team.name, factionById) ?? formatHistoryEventTitle(event, factionById)}
+          {formatWorldDate(event.monthIndex ?? event.year)} ◆ {formatRulerMilitaryEvent(event, ruler, team.name, worldMonth) ?? formatRulerTerminalEvent(event, ruler, team.name, factionById) ?? formatRulerDiplomacyEvent(event, factionById, ruler.id) ?? formatFactionHistoryEvent(event, team.name, factionById) ?? formatHistoryEventTitle(event, factionById)}
         </Typography>
         <MilitaryPoliticalEventFacts event={event} />
         </Box>
