@@ -40,6 +40,8 @@ import { exportRulerSave, importRulerSave } from "./RulerSaveProjection";
 import { deriveRulerAssessment, composeHistorianVoice } from "../Politics/RulerHistoriography";
 import { buildRulerTags } from "../Politics/RulerChronicle";
 import WorldHistory, { type WorldEvent } from "../History/WorldHistory";
+import { formatHistoryEventTitle } from "../History/HistoryRenderRules";
+import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
 import worldRandom from "../Simulation/WorldRandom";
 import Diplomacy from "../Politics/Diplomacy";
 import { createDiplomacyEventMetadata } from "../Politics/DiplomacyPresentation";
@@ -264,6 +266,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     const cities = cs.map((c, i) => ({ ...c, id: c.cityId, block: core.map.blocks[i][0], fortifiedCells: [core.map.blocks[i][0]], exportState: () => structuredClone(c) }));
     cities.forEach((c, i) => { const t = ts[i ? 1 : 0]; t.cities.push(c); t.blocks.children.entries.push(c.block); t.blocks.children.size++;
       c.block.restoreCanonicalState({ owner: t, city: c, hp: 7, isHome: true, isCityCenter: true }); });
+    ts.forEach(t => { t.capitalCity = t.cities.find((c: any) => c.isCapital); });
     const cityModule = await import("../Components/City");
     vi.spyOn(cityModule, "getFactionStability").mockReturnValue(20);
     vi.spyOn(DynastyRegistry, "ensureRulerUnit").mockImplementation(() => undefined);
@@ -283,13 +286,42 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     expect(d.houseEpochs).toHaveLength(2); expect(d.houseEpochs!.at(-1)!.startReason).toBe("USURPATION");
     const event = WorldHistory.getEvents().find(e => e.type === "dynasty-usurped")!;
     expect(event.metadata?.riskTier).toBe("POLITICAL_SHOCK"); expect(ruler.chronicle?.notableEventIds).toContain(event.id);
+    expect(event.metadata).toMatchObject({ capitalCityId: "active", capitalCityName: "故都", nextRulerId: ruler.id, previousRulerId: previous.id });
+    const succession = WorldHistory.getEvents().find(e => e.type === "ruler-succession")!;
+    expect(succession.metadata?.capitalCityName).toBe("故都");
+    expect(WorldHistory.getEventTypeCount("ruler-succession")).toBe(1);
     expect(WorldHistory.exportState().events.slice(0, sources.length).map(e => JSON.stringify(e))).toEqual(sources);
+    // Exercise actual appointment/capture/end business before exporting an archived career.
+    const commandTeam: any = { name: "qin", status: "ACTIVE", users: new Set(), cities: [] };
+    [81, 82].forEach(id => commandTeam.users.add({ id, name: `军人${id}`, bornMonth: -300, team: commandTeam,
+      role: "NORMAL", player: { active: true, logicalUnitId: `career-unit-${id}`, x: 0, y: 0 } }));
+    const appointDraw = vi.spyOn(worldRandom, "next").mockReturnValue(0);
+    MilitaryCommandRegistry.update(12, [commandTeam], []); appointDraw.mockRestore();
+    const commander = MilitaryCommandRegistry.getPeople()[0], formation = MilitaryCommandRegistry.getFormations()[0];
+    const victoryId = WorldHistory.addCityCaptured(20, "qin", "enemy", "qin", "故都", "active", true,
+      false, 7, undefined, undefined, undefined, formation.commandId, commander.personId);
+    MilitaryCommandRegistry.recordCapture(formation.commandId, victoryId, "active", 20);
+    MilitaryCommandRegistry.reconcileFactionEnd("qin", 24);
+    const career = MilitaryCommandRegistry.getCareer(commander, 120);
+    expect(career).toMatchObject({ serviceMonths: 12, capitalCaptures: 1, currentUnitCount: 0 });
     (core.simulator as any).clock.importState({ worldMonth: 120, elapsedMs: 0, running: false });
     const save = exportWorldSave(core); expect(save.saveSchemaVersion).toBe(15);
     expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
     const rng = worldRandom.exportState(); hydrateWorldSave(core, JSON.parse(JSON.stringify(save)));
     expect(exportWorldSave(core)).toEqual(save); expect(worldRandom.exportState()).toEqual(rng);
     hydrateWorldSave(core, JSON.parse(JSON.stringify(save))); expect(exportWorldSave(core)).toEqual(save);
+    const restoredEvent = WorldHistory.getEvents().find(e => e.id === event.id)!;
+    expect(formatHistoryEventTitle(restoredEvent, new Map())).toContain("继位时国都：故都");
+    expect(MilitaryCommandRegistry.getCareer(MilitaryCommandRegistry.getPeople()[0], 120)).toEqual(career);
+    MilitaryCommandRegistry.update(121, core.teams, core.allCities);
+    expect(exportWorldSave(core)).toEqual(save);
+    const invalidMerit = structuredClone(save);
+    invalidMerit.registries.militaryCommandRegistry.people[0].capturedEventIds.push(victoryId);
+    expect(validateWorldSave(invalidMerit).errors).toContain(`military person capture identity mismatch: ${commander.personId}`);
+    const invalidCapital = structuredClone(save);
+    const capitalMeta = (invalidCapital.worldHistory.events as WorldEvent[]).find(e => e.id === event.id)!.metadata!;
+    capitalMeta.capitalCityId = "missing";
+    expect(validateWorldSave(invalidCapital).errors).toContain("invalid recorded accession capital");
   });
   it("starts the actual seven INITIAL world, exports V14, validates, hydrates twice without household regeneration", () => {
     const core = target(7), base = fixture().factions[0];
@@ -302,7 +334,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     core.prepareForHydration(); core.teams = ts;
     const cities = cs.map((c, i) => ({ ...c, id: c.cityId, block: core.map.blocks[i][0], fortifiedCells: [core.map.blocks[i][0]],
       exportState: () => structuredClone(c) }));
-    ts.forEach((t, i) => { t.cities = [cities[i]]; core.map.blocks[i][0].restoreCanonicalState({ owner: t, city: cities[i], hp: 7, isHome: true, isCityCenter: true }); });
+    ts.forEach((t, i) => { t.cities = [cities[i]]; t.capitalCity = cities[i]; core.map.blocks[i][0].restoreCanonicalState({ owner: t, city: cities[i], hp: 7, isHome: true, isCityCenter: true }); });
     Object.defineProperty(core, "totalCells", { value: 7 });
     vi.spyOn(DynastyRegistry, "ensureRulerUnit").mockImplementation(() => undefined);
     worldRandom.initialize("household-new-world-v13");
@@ -310,6 +342,8 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     // Runtime objects are Phaser adapters; politics, simulator startup, exporter, validator and hydrator are real.
     const before = exportWorldSave(core, { createdAt: "2026-10-11T00:00:00Z" });
     expect(before.saveSchemaVersion).toBe(15); expect(before.dynasties).toHaveLength(7);
+    expect((before.worldHistory.events as WorldEvent[]).filter(e => e.type === "ruler-acceded").map(e => e.metadata?.capitalCityName).sort())
+      .toEqual(cities.map(c => c.name).sort());
     expect(before.dynasties.some(d => (d.rulers as RulerSaveV14[]).length > 2)).toBe(true);
     expect(validateWorldSave(before)).toEqual({ valid: true, errors: [] });
     const rng = worldRandom.exportState(); const init = vi.spyOn(DynastyRegistry, "initializeFaction");

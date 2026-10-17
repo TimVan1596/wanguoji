@@ -569,7 +569,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
   const diagnostics = MilitaryCommandRegistry.getDiagnostics();
   const factionCommanders = people.filter(person => person.factionId === factionId && person.status === "ACTIVE").length;
   const factionFormations = formations.filter(formation => formation.factionId === factionId && formation.status === "ACTIVE").length;
-  return <Box sx={{ display: "grid", gap: 1, mt: 0.5 }}>
+  return <Box sx={{ display: "grid", gap: 1, mt: 0.5, minWidth: 0, overflowWrap: "anywhere" }}>
     <Typography fontSize="0.78rem" color="var(--gg-text-muted)">
       本国：现役指挥官 {factionCommanders} · 活动编组 {factionFormations} · 历史任职人物 {people.length}
     </Typography>
@@ -595,7 +595,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
         {person.deathMonth !== undefined && <Typography fontSize="0.82rem">生命结局：{formatWorldDate(person.deathMonth)} · {describeMilitaryDeathCause(person.deathCause)}</Typography>}
         <Typography fontSize="0.82rem">累计实际任职 {formatWorldDuration(career.serviceMonths)} · 任职 {career.appointmentCount} 次（再次任职 {career.reappointments} 次）</Typography>
         <Typography fontSize="0.82rem">核验普通城市攻陷 {career.ordinaryCaptures} · 敌都攻陷 {career.capitalCaptures} · 当前实际指挥 {career.currentUnitCount} 人</Typography>
-        <Typography fontSize="0.78rem" color="var(--gg-text-muted)">军事资历：{career.level} · 合法任命候选权重 {career.appointmentWeight.toFixed(2)}×（上限2×，非爵位）；曾任命编组规模 {career.recordedCommandSize || "未记录"} 人。</Typography>
+        <Typography fontSize="0.78rem" color="var(--gg-text-muted)">军事资历：{career.level} · 权重 {career.appointmentWeight.toFixed(2)}×（上限2×，非爵位）；曾任命编组规模 {career.recordedCommandSize || "未记录"} 人。仅未到龄且合格的在世候选参与任命。</Typography>
         {!formation && <Typography fontSize="0.82rem">当前无活动编组，无现役指挥权。</Typography>}
         {formation && <>
           <Typography fontSize="0.82rem">编组 {formation.commandId} · 真实成员 {formation.memberUnitIds.length} 人</Typography>

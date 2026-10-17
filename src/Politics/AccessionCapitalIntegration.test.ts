@@ -95,4 +95,21 @@ describe("live Dynasty → immutable history → restored presentation", () => {
     expect(formatHistoryEventTitle(old, new Map())).toContain("继位时国都：未记录");
     expect(captureAccessionCapital({ ...team, capitalCity: { ...team.capitalCity, destroyed: true } }, 0, "x").capitalControlled).toBe(0);
   });
+
+  it("uses the single real deposition event for the successor's capital context", () => {
+    const { team } = fixture(); team.stability = 30;
+    vi.mocked(DynastyRegistry.ensureRulerUnit).mockImplementation(() => {
+      const ruler = DynastyRegistry.getCurrentRuler("qin")!;
+      const user: any = { role: "RULER", rulerId: ruler.id, player: { role: "RULER", rulerId: ruler.id, setRole() {} } };
+      team.rulerUser = user; team.users.add(user);
+    });
+    WorldHistory.addCapitalFallen(1, "enemy", "qin", "qin", "失守旧都", "old-capital", true);
+    vi.spyOn(worldRandom, "next").mockReturnValue(0);
+    DynastyRegistry.update(12, [team]);
+    const event = WorldHistory.getEvents().find(e => e.type === "ruler-deposed")!;
+    expect(event.metadata).toMatchObject({ previousRulerId: "old", nextRulerId: "next", capitalCityName: "大梁", accessionMonth: 12 });
+    expect(formatHistoryEventTitle(event, new Map())).toContain("继位时国都：大梁");
+    expect(WorldHistory.getEventTypeCount("ruler-succession")).toBe(0);
+    expect(WorldHistory.getEventTypeCount("ruler-deposed")).toBe(1);
+  });
 });

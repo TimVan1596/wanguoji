@@ -80,7 +80,7 @@ function setup(born: (index: number) => number = index => -300 - index) {
   };
   core.recordUserDeathForDiagnostics = vi.fn();
   core.handleRulerCombatDeath = vi.fn(() => false);
-  MilitaryCommandRegistry.setEventWriter(event => { events.push(event); return event.id; });
+  MilitaryCommandRegistry.setEventWriter(event => { events.push(event); return event.id; }, factionId => events.filter(e => e.factionIds?.includes(factionId)));
   const users: InstanceType<typeof User>[] = [];
   for (let index = 1; index <= 6; index += 1) {
     const unitId = `unit-${index}`;
@@ -221,7 +221,7 @@ function militaryLifeFixture(born: (index: number) => number = i => i === 1 ? -4
   registry.importState(7, fixture.users.map(user => ({ state: fixture.logicalEntries.get(user.player.logicalUnitId!)!.state, player: user.player, user })));
   core.logicalUnitRegistry = registry;
   const history = new HistoryStore();
-  MilitaryCommandRegistry.setEventWriter(event => history.addEvent(event));
+  MilitaryCommandRegistry.setEventWriter(event => history.addEvent(event), factionId => history.getEventsForFaction(factionId));
   vi.spyOn(worldRandom, "next").mockReturnValue(0);
   MilitaryCommandRegistry.update(0, [fixture.defender, fixture.attacker], []);
   const person = MilitaryCommandRegistry.getPeople()[0];

@@ -28,7 +28,7 @@ describe("Desktop packaging and renderer security", () => {
     expect(packageJson.scripts["desktop:renderer-debug-build"]).toContain("--mode desktop-debug --sourcemap");
     expect(packageJson.scripts["desktop:renderer-build"]).toContain("--mode desktop");
     expect(packageJson.build.files).toContain("!**/*.map");
-    expect(packageJson.version).toBe("0.99.158");
+    expect(packageJson.version).toBe("0.99.159");
     expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(15);
   });
 
@@ -52,7 +52,11 @@ describe("Desktop packaging and renderer security", () => {
   });
 
   it("uses a stable application userData folder and preserves Electron security defaults", () => {
-    expect(getStableUserDataPath("/Users/test/Library/Application Support")).toBe("/Users/test/Library/Application Support/Wanguoji");
+    const windows = process.platform === "win32";
+    const appData = windows ? "C:\\Users\\test\\AppData\\Roaming" : "/Users/test/Library/Application Support";
+    expect(getStableUserDataPath(appData)).toBe(windows
+      ? "C:\\Users\\test\\AppData\\Roaming\\Wanguoji"
+      : "/Users/test/Library/Application Support/Wanguoji");
     expect(mainSource).toMatch(/nodeIntegration:\s*false/);
     expect(mainSource).toMatch(/contextIsolation:\s*true/);
     expect(mainSource).toMatch(/sandbox:\s*true/);

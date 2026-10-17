@@ -82,6 +82,7 @@ export class MilitaryCommandRegistryStore {
   private lastArrivalTargetByCommand = new Map<string, string>();
   private longRangeOrderSamples = new Map<string, number>();
   private eventWriter?: (event: Omit<WorldEvent, "id"> & { id: string }) => string;
+  private eventReader: (factionId: string) => WorldEvent[] = factionId => WorldHistory.getEventsForFaction(factionId);
   private diagnostics = { candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
     unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
 
@@ -94,7 +95,10 @@ export class MilitaryCommandRegistryStore {
       unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
   }
 
-  setEventWriter(writer: (event: Omit<WorldEvent, "id"> & { id: string }) => string) { this.eventWriter = writer; }
+  setEventWriter(writer: (event: Omit<WorldEvent, "id"> & { id: string }) => string,
+    reader: (factionId: string) => WorldEvent[] = factionId => WorldHistory.getEventsForFaction(factionId)) {
+    this.eventWriter = writer; this.eventReader = reader;
+  }
 
   exportState(): MilitaryCommandState {
     return { people: [...this.people.values()].map(person => structuredClone(person)),
@@ -114,12 +118,12 @@ export class MilitaryCommandRegistryStore {
   }
 
   getCareer(person: MilitaryPerson, worldMonth: number) {
-    const events = [...new Map(person.appointments.flatMap(a => WorldHistory.getEventsForFaction(a.factionId)).map(e => [e.id, e])).values()];
+    const events = [...new Map([...new Set(person.appointments.map(a => a.factionId))].flatMap(id => this.eventReader(id)).map(e => [e.id, e])).values()];
     return deriveMilitaryCareer(person, this.getFormations(), events, worldMonth);
   }
 
   getOrderEvidence(formation: MilitaryFormation) {
-    return WorldHistory.getEventsForFaction(formation.factionId).find(e => e.type === "military-order-issued" &&
+    return this.eventReader(formation.factionId).find(e => e.type === "military-order-issued" &&
       e.metadata?.commandId === formation.commandId && e.cityId === formation.targetCityId && (e.monthIndex ?? e.year) === formation.orderStartMonth);
   }
 
@@ -279,10 +283,10 @@ export class MilitaryCommandRegistryStore {
         });
       const nearest = options[0];
       const person = this.people.get(formation.commanderPersonId);
-      const experienced = person && this.getCareer(person, worldMonth).verifiedCaptures > 0;
       const distance = (city: City) => center ? Math.hypot(city.block.x - center.x, city.block.y - center.y) : Infinity;
-      const next = experienced && center && nearest ? options.find(city => city.isCapital && city.ownerTeam?.capitalCity === city &&
-        distance(city) <= distance(nearest) * 1.15 && distance(city) - distance(nearest) <= 32) ?? nearest : nearest;
+      const nearbyCapital = center && nearest ? options.find(city => city.isCapital && city.ownerTeam?.capitalCity === city &&
+        distance(city) <= distance(nearest) * 1.15 && distance(city) - distance(nearest) <= 32) : undefined;
+      const next = nearbyCapital && nearbyCapital !== nearest && person && this.getCareer(person, worldMonth).verifiedCaptures > 0 ? nearbyCapital : nearest;
       if (next) {
         if (formation.targetCityId !== next.id) {
           this.lastArrivalTargetByCommand.delete(formation.commandId);
@@ -296,6 +300,7 @@ export class MilitaryCommandRegistryStore {
           factionIds: [formation.factionId, next.ownerFactionId], actorFactionId: formation.factionId, targetFactionId: next.ownerFactionId,
           cityId: next.id, cityName: next.name, metadata: { commandId: formation.commandId, personId: formation.commanderPersonId,
             meritInfluenced: next !== nearest ? 1 : 0, nearestCityId: nearest?.id, nearestDistance: center && nearest ? distance(nearest) : undefined,
+            targetWasCapital: next.isCapital && next.ownerTeam?.capitalCity === next ? 1 : 0,
             targetDistance: center ? distance(next) : undefined } });
       } else { formation.targetCityId = undefined; formation.orderStartMonth = undefined; }
     }
@@ -329,7 +334,7 @@ export class MilitaryCommandRegistryStore {
     for (const formation of this.formations.values()) {
       if (formation.status !== "ACTIVE" || !formation.targetCityId) continue;
       const target = cityById.get(formation.targetCityId);
-      if (!target || target.ownerFactionId === formation.factionId || !Diplomacy.canAttack(formation.factionId, target.ownerFactionId, worldMonth)) continue;
+      if (!target || target.destroyed || target.ownerFactionId === formation.factionId || !Diplomacy.canAttack(formation.factionId, target.ownerFactionId, worldMonth)) continue;
       for (const unitId of formation.memberUnitIds) {
         const entry = core.logicalUnitRegistry.getEntry(unitId);
         const player = entry?.player;
@@ -352,7 +357,7 @@ export class MilitaryCommandRegistryStore {
     for (const formation of this.formations.values()) {
       if (formation.status !== "ACTIVE" || !formation.targetCityId) continue;
       const target = cityById.get(formation.targetCityId);
-      if (!target || target.ownerFactionId === formation.factionId || !Diplomacy.canAttack(formation.factionId, target.ownerFactionId, worldMonth)) continue;
+      if (!target || target.destroyed || target.ownerFactionId === formation.factionId || !Diplomacy.canAttack(formation.factionId, target.ownerFactionId, worldMonth)) continue;
       for (const unitId of formation.memberUnitIds) {
         const unit = unitById.get(unitId);
         if (!unit?.alive || unit.factionId !== formation.factionId) continue;

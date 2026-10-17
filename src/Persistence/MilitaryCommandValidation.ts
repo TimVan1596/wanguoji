@@ -1,4 +1,5 @@
 import { deriveMilitaryLifeSchedule } from "../Politics/MilitaryLifeRules";
+import { deriveMilitaryCareer } from "../Politics/MilitaryCareerEvidence";
 import { MAX_COMMANDERS_PER_FACTION, MAX_FORMATION_UNITS, type MilitaryCommandState } from "../Politics/MilitaryCommandRegistry";
 
 const plain = (value: unknown): value is Record<string, any> => Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -140,10 +141,12 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
     const at = event.monthIndex ?? event.year;
     if (!formation || !person || formation.commanderPersonId !== person.personId || formation.factionId !== event.actorFactionId ||
         !person.appointments.some((a: any) => a.commandId === formation.commandId && at >= a.startMonth && at <= (a.endMonth ?? worldMonth)) ||
-        !event.cityId || !event.targetFactionId || event.targetFactionId === event.actorFactionId || ![0, 1].includes(m.meritInfluenced) ||
+        !event.cityId || !event.targetFactionId || event.targetFactionId === event.actorFactionId || ![0, 1].includes(m.meritInfluenced) || ![0, 1].includes(m.targetWasCapital) ||
         typeof m.nearestCityId !== "string" ||
-        (m.meritInfluenced === 1 && (!Number.isFinite(m.nearestDistance) || !Number.isFinite(m.targetDistance) ||
+        (m.meritInfluenced === 1 && (m.targetWasCapital !== 1 || m.nearestCityId === event.cityId || !Number.isFinite(m.nearestDistance) || !Number.isFinite(m.targetDistance) ||
           m.nearestDistance < 0 || m.targetDistance < m.nearestDistance || m.targetDistance > m.nearestDistance * 1.15 || m.targetDistance - m.nearestDistance > 32))) errors.push("invalid military order provenance");
+    if (!errors.length && m.meritInfluenced === 1 && deriveMilitaryCareer(person, [...formations.values()], history.events, at).verifiedCaptures === 0)
+      errors.push("military order merit has no verified victory");
   }
   if (registry.personSequence <= maxPersonSequence) errors.push("military person sequence would reuse an existing id");
   if (registry.commandSequence <= maxCommandSequence) errors.push("military command sequence would reuse an existing id");

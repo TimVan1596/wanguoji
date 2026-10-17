@@ -304,6 +304,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
       factionRefs.filter((id) => id !== undefined).forEach((id) => requireRef(id, factionIds, "worldHistory faction reference", errors));
       if (event.cityId !== undefined && !allCityIds.has(String(event.cityId))) errors.push(`unknown worldHistory cityId: ${String(event.cityId)}`);
       if (event.rulerId !== undefined) requireRef(event.rulerId, rulerIds, "worldHistory rulerId", errors);
+      if (event.type === "military-order-issued" && !allCityIds.has(String(event.metadata?.nearestCityId))) errors.push("unknown military order nearestCityId");
       if (event.monthIndex !== undefined && !finite(event.monthIndex)) errors.push("worldHistory event monthIndex must be finite");
       const context = isPlainRecord(event.metadata) ? event.metadata : {};
       if (context.accessionCapitalVersion !== undefined || context.accessionCapitalState !== undefined) {
