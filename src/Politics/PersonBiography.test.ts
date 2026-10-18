@@ -37,6 +37,19 @@ it("national victory and duplicated capital facts do not manufacture personal ac
   c.ruler.chronicle!.citiesLostDuringReign=24;
   expect(composeRulerBiography(deriveRulerHistoricalEvidence(c),"嬴文衡",0).assessment.join("")).not.toContain("净失24座");
 });
+it("real capital-loss/recovery companion records with different political groups count as one personal victory",()=>{
+  const c=context();
+  const fallen=c.history.addCapitalFallen(24,"秦","楚","秦","临淄","city",true,0,undefined,"r1","capital-group");
+  const recovery=c.history.addCityRecovered(24,"秦","楚","秦","临淄","city",true,0,"r1","collapse-group");
+  c.events=c.history.getEvents();
+  const bio=composeRulerBiography(deriveRulerHistoricalEvidence(c),"嬴文衡",0);
+  expect(bio.stats.personalCityCaptures).toBe(1);expect(bio.stats.personalCapitalCaptures).toBe(1);
+  expect(getRulerHistoricalEvents(c.events,c.ruler as any,"秦",120,[],100).map(e=>e.id)).toEqual([recovery]);
+  expect(c.history.getEvents().map(e=>e.id)).toEqual([fallen,recovery]);
+  // A second actual recovery is a new capture, not another perspective of the first.
+  c.history.addCityRecovered(36,"秦","楚","秦","临淄","city",true,0,"r1","next-capture");
+  c.events=c.history.getEvents();expect(composeRulerBiography(deriveRulerHistoricalEvidence(c),"嬴文衡",0).stats.personalCityCaptures).toBe(2);
+});
 it("does not rewrite titles or finalize a living ruler; a landless exile is never praised for governance",()=>{
   const c=context();c.ruler.status="exiled";c.ruler.chronicle!.accessionSnapshot.cityCount=0;c.ruler.chronicle!.accessionSnapshot.territoryShare=0;
   c.events=[{id:"exile",type:"faction-exiled",year:0,monthIndex:0,targetFactionId:"秦",factionIds:["秦"],category:"politics",importance:"major",title:"秦失土流亡"}];

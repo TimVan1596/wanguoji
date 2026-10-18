@@ -3,7 +3,7 @@ import { normalizeRulerPoliticalFacts, summarizeRulerPoliticalFacts } from "./Ru
 import { hasRecordedRulerDeath } from "./RulerLifeState";
 import type { WorldEvent } from "../History/WorldHistory";
 import type { Dynasty, Ruler } from "./Dynasty";
-import { createRulerChronicle, getRulerEffectiveSnapshot } from "./RulerChronicle";
+import { createRulerChronicle, getRulerEffectiveSnapshot, getCityVictoryCompanionKey } from "./RulerChronicle";
 import { monthsToYears } from "../Simulation/WorldTime";
 import { deriveRulerTenureEvidence, type RulerTenureEvidence } from "./RulerTenureEvidence";
 import { buildRulerLegacyEvidence } from "./RulerLegacyEvidence";
@@ -181,7 +181,11 @@ function deriveRulerEvidence(
   const directToRuler = (event: WorldEvent) =>
     event.rulerId === ruler.id || event.metadata?.rulerId === ruler.id;
   const rulerEvents = events.filter(inReign);
+  const recoveryKeys=includeRecoveredCaptures?new Set(rulerEvents.filter(e=>e.type==="city-recovered").map(getCityVictoryCompanionKey).filter(Boolean)):new Set<string>();
+  const capitalKeys=includeRecoveredCaptures?new Set(rulerEvents.filter(e=>e.type==="capital-fallen").map(getCityVictoryCompanionKey).filter(Boolean)):new Set<string>();
   const rawPoliticalFacts: RulerPoliticalFact[] = rulerEvents.flatMap((event) => {
+    const recoveryKey=getCityVictoryCompanionKey(event);
+    if(includeRecoveredCaptures&&event.type==="capital-fallen"&&recoveryKey&&recoveryKeys.has(recoveryKey))return [];
     const month = event.monthIndex ?? event.year;
     const factionParticipant = (event.factionIds ?? []).includes(faction.name) ||
       event.relatedFactionIds?.includes(faction.name) || event.actorFactionId === faction.name ||
@@ -259,6 +263,7 @@ function deriveRulerEvidence(
       cityId = event.cityId ?? (typeof event.metadata?.cityId === "string" ? event.metadata.cityId : undefined);
       cityName = event.cityName ?? (typeof event.metadata?.cityName === "string" ? event.metadata.cityName : undefined);
       wasCapital = event.metadata?.wasCapital === 0 ? false : event.metadata?.wasCapital === 1 || event.type === "capital-fallen";
+      if(includeRecoveredCaptures&&event.type==="city-recovered"&&recoveryKey&&capitalKeys.has(recoveryKey))wasCapital=true;
       const attacker = event.actorFactionId === faction.name && event.targetFactionId !== faction.name && Boolean(event.targetFactionId) && event.factionIds?.includes(faction.name);
       const defender = event.targetFactionId === faction.name && event.factionIds?.includes(faction.name);
       if (!attacker && !defender) return [];

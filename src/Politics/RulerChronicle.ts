@@ -258,11 +258,7 @@ export function getRulerHistoricalEvents(
   // Recovering an occupied enemy capital also emits the defender's capital-loss
   // record. Their groups can differ during relocation; show the attacker's one
   // verified recovery, while retaining both original events and the losing view.
-  const militaryCityKey = (event: WorldEvent) => event.actorFactionId === factionId && event.cityId &&
-    typeof event.metadata?.commandId === "string" && typeof event.metadata?.commanderPersonId === "string" &&
-    typeof event.metadata?.commanderPersonalName === "string"
-    ? JSON.stringify([event.monthIndex ?? event.year, event.cityId, event.actorFactionId, event.targetFactionId,
-        event.metadata.commandId, event.metadata.commanderPersonId]) : undefined;
+  const militaryCityKey = (event: WorldEvent) => event.actorFactionId === factionId ? getCityVictoryCompanionKey(event) : undefined;
   const recoveryIds = new Map(candidates.filter(e => e.type === "city-recovered" && militaryCityKey(e))
     .map(e => [militaryCityKey(e), e.id]));
   const grouped = new Map<string, WorldEvent>();
@@ -275,7 +271,8 @@ export function getRulerHistoricalEvents(
         ? `usurpation:${event.id}`
         : event.historyGroupId ?? event.id;
     const existing = grouped.get(key);
-    if (!existing || score(event) > score(existing)) grouped.set(key, event);
+    if (!existing || recovery && event.type === "city-recovered" ||
+      !(recovery && existing.type === "city-recovered") && score(event) > score(existing)) grouped.set(key, event);
   }
   const ranked = [...grouped.values()]
     .sort((a, b) => score(b) - score(a) || (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year) || a.id.localeCompare(b.id))
@@ -284,6 +281,18 @@ export function getRulerHistoricalEvents(
   const selected = [...new Set(ordered)].slice(0, limit);
   return selected
     .sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year) || a.id.localeCompare(b.id));
+}
+
+/** Capital-loss and recovery can use different political groups for the same capture.
+ * Require an explicit identical actor, city, month, opponents and personal/command identity.
+ * This joins companion perspectives; it never merges two recovery events. */
+export function getCityVictoryCompanionKey(event:WorldEvent){
+  const m=event.metadata;
+  const ruler=event.rulerId??(typeof m?.rulerId==="string"?m.rulerId:undefined);
+  const command=typeof m?.commandId==="string"&&typeof m.commanderPersonId==="string"&&typeof m.commanderPersonalName==="string"
+    ? [m.commandId,m.commanderPersonId]:undefined;
+  return event.cityId&&event.actorFactionId&&event.targetFactionId&&(ruler||command)
+    ? JSON.stringify([event.monthIndex??event.year,event.cityId,event.actorFactionId,event.targetFactionId,ruler??null,command??null]):undefined;
 }
 
 export function isDirectRulerTreatySignature(event: WorldEvent, rulerId: string, factionId: string) {

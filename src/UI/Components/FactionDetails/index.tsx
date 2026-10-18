@@ -1233,7 +1233,14 @@ function RulerBiography({
           {getDiplomacyEventDetails(event,factionById).map(line=><Typography key={line} fontSize="0.78rem">{line}</Typography>)}
           <HistoricalEvidence eventId={event.id} source={event.type}/>
         </>}))}/>
-        <HistoricalEventArchive title="人物事件依据" entries={evidence.politicalFacts.map(fact=>({id:fact.eventId,content:<HistoricalEvidence eventId={fact.eventId} source={fact.type}/>}))}/>
+        <HistoricalEventArchive title="任期国家原始事件（不全属个人事迹）" entries={events.filter(event=>{
+          const month=event.monthIndex??event.year;
+          return month>=ruler.accessionYear&&month<=Math.min(ruler.endYear??worldMonth,worldMonth)&&
+            (event.actorFactionId===team.name||event.targetFactionId===team.name||event.factionIds?.includes(team.name));
+        }).map(event=>({id:event.id,content:<>
+          <Typography fontSize="0.78rem">{formatWorldDate(event.monthIndex??event.year)} · {textFor(event)}</Typography>
+          <HistoricalEvidence eventId={event.id} source={event.type}/>
+        </>}))}/>
       </>}
     />
   </Box>;
