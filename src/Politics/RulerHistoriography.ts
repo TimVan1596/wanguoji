@@ -155,8 +155,16 @@ const COLLAPSE_TYPES = new Set<WorldEvent["type"]>([
   "faction-dissolved",
 ]);
 
-export function deriveRulerHistoricalEvidence(
-  context: RulerHistoriographyContext
+/** Frozen adjudication scope: posthumous naming continues to use its existing evidence. */
+export function deriveRulerHistoricalEvidence(context:RulerHistoriographyContext):RulerHistoricalEvidence {
+  return deriveRulerEvidence(context,false);
+}
+/** Display audit includes real recoveries; never feeds back into saved names or adjudication. */
+export function deriveRulerPresentationEvidence(context:RulerHistoriographyContext):RulerHistoricalEvidence {
+  return deriveRulerEvidence(context,true);
+}
+function deriveRulerEvidence(
+  context: RulerHistoriographyContext, includeRecoveredCaptures:boolean
 ): RulerHistoricalEvidence {
   const { ruler, dynasty, faction, events, worldMonth } = context;
   const chronicle = ruler.chronicle;
@@ -168,7 +176,7 @@ export function deriveRulerHistoricalEvidence(
   const tenure = deriveRulerTenureEvidence(ruler, faction.name, events, worldMonth);
   const inReign = (event: WorldEvent) => {
     const month = event.monthIndex ?? event.year;
-    return month >= accessionMonth && month <= Math.min(endMonth, worldMonth);
+    return month >= accessionMonth && month <= endMonth && (!includeRecoveredCaptures || month <= worldMonth);
   };
   const directToRuler = (event: WorldEvent) =>
     event.rulerId === ruler.id || event.metadata?.rulerId === ruler.id;
@@ -247,7 +255,7 @@ export function deriveRulerHistoricalEvidence(
           !event.factionIds?.includes(faction.name) || !event.actorFactionId || event.actorFactionId === faction.name) return [];
     } else if (event.type === "capital-relocated") {
       if (event.actorFactionId !== faction.name || !event.factionIds?.includes(faction.name) || event.metadata?.cause !== "CAPITAL_FALL") return [];
-    } else if (event.type === "city-captured" || event.type === "city-recovered" || event.type === "capital-fallen") {
+    } else if (event.type === "city-captured" || event.type === "capital-fallen" || includeRecoveredCaptures && event.type === "city-recovered") {
       cityId = event.cityId ?? (typeof event.metadata?.cityId === "string" ? event.metadata.cityId : undefined);
       cityName = event.cityName ?? (typeof event.metadata?.cityName === "string" ? event.metadata.cityName : undefined);
       wasCapital = event.metadata?.wasCapital === 0 ? false : event.metadata?.wasCapital === 1 || event.type === "capital-fallen";
@@ -834,7 +842,7 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
 }
 
 export function deriveRulerAssessment(context: RulerHistoriographyContext) {
-  return composeRulerAssessment(deriveRulerHistoricalEvidence(context));
+  return composeRulerAssessment(deriveRulerPresentationEvidence(context));
 }
 
 /** A compact, deterministic final judgement, derived only from recorded outcomes. */

@@ -164,6 +164,7 @@ export class MilitaryCommandRegistryStore {
 
   getPeople() { return [...this.people.values()]; }
   getFormations() { return [...this.formations.values()]; }
+  getFormation(commandId: string) { return this.formations.get(commandId); }
   getDiagnostics() { return { ...this.diagnostics, activeCommanders: [...this.people.values()].filter(p => p.status === "ACTIVE").length,
     activeFormations: [...this.formations.values()].filter(f => f.status === "ACTIVE").length }; }
 

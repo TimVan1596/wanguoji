@@ -373,6 +373,19 @@ it("large-capacity natural recovery is limited to one User per month while prese
   expect(changes.reduce((a,b)=>a+b,0)).toBe(8);expect(Math.max(...changes)).toBe(1);next.mockRestore();
 });
 
+it("one split check commits one polity and one history event, including after restoring the check clock",()=>{
+  const f=fixture(101,8,4);core.totalCells=256;
+  for(const c of f.team.cities){c.loyalty=0;c.devastation=100;}
+  for(const u of f.team.users){u.loyalty=60;Object.assign(f.entries.get(u.player.logicalUnitId).state,{logicalX:f.team.cities[1].block.x+16,logicalY:16});}
+  (f.eventSystem as any).checkEmpireSplit(120,core.teams,256);
+  expect(core.teams).toHaveLength(3);const initial=History.getEvents().filter((e:any)=>e.type==="empire-split");expect(initial).toHaveLength(1);
+  const state=f.eventSystem.exportState();expect(state.lastEmpireSplitCheckMonth).toBe(120);
+  f.eventSystem.importState(state,120);
+  (f.eventSystem as any).checkEmpireSplit(120,core.teams,256);
+  expect(core.teams).toHaveLength(3);expect(History.getEvents().filter((e:any)=>e.type==="empire-split")).toEqual(initial);
+  f.audit.reconcile(120,core.teams);expect(f.audit.getSummary(undefined,core.teams).unexplainedWorldDifference).toBe(0);
+});
+
 it("12-seed actual large-territory recovery cadence and siege comparison",()=>{
   const rows:any[]=[];
   for(const scenario of ["large-peace","large-siege"])for(let seed=0;seed<12;seed++){

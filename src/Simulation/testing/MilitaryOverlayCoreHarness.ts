@@ -30,6 +30,7 @@ export async function runMilitaryOverlayCore(seed="military-overlay-z"){
   check(view.members.every(m=>{const e=core.logicalUnitRegistry.getEntry(m.unitId)!;return m.x===e.player!.x&&m.y===e.player!.y;}),"live Player positions and real registry bindings");
   check(view.members.some(m=>{const s=core.logicalUnitRegistry.getEntry(m.unitId)!.state;return Math.hypot(m.x-s.logicalX,m.y-s.logicalY)>1;}),"natural motion diverges from registration snapshot");
   check(core.focusMilitaryFormation(command),"real Core focuses and highlights actual formation");
+  check(core.focusMilitaryTargetCity(view.target!.cityId,command),"target focus uses the shared command overlay lifecycle");
   core.showMilitaryCommand(command,true);
   const overlay=(core as any).militaryCommandOverlay,g=overlay.graphics;
   check(g instanceof Phaser.GameObjects.Graphics&&!g.input,"real noninteractive Phaser Graphics");

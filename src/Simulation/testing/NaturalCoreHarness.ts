@@ -32,7 +32,7 @@ export async function runNaturalCore(seed:string,years=100){
     for(let step=0;step<30;step++)(core as any).advanceLogicalStep(SIMULATION_FIXED_STEP_MS);
     core.scene.sys.events.emit("postupdate"); // quiescent disposal boundary, no render or screenshot
     if(m%600===0||m===years*12){
-      const state=core.simulator.exportState(),counts=(core.simulator as any).events.getRegionalRebellionSnapshot();
+      const state=core.simulator!.exportState(),counts=(core.simulator as any).events.getRegionalRebellionSnapshot();
       const users=core.teams.flatMap(t=>[...t.users]),positions={realPlayers:0,movedFromRegistry:0,validBindings:0};
       for(const u of users){const player=u.player,entry=player.logicalUnitId?core.logicalUnitRegistry.getEntry(player.logicalUnitId):undefined;
         if(player instanceof Player)positions.realPlayers++;

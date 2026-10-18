@@ -9,15 +9,15 @@ function fixture(){
   const team:any={name:"qin",status:"ACTIVE",users:new Set()},enemy:any={name:"wei",status:"ACTIVE"};
   const units=new Map<string,any>();
   for(let i=1;i<=2;i++){
-    const p:any={active:true,team,logicalUnitId:`u${i}`,x:100*i,y:200},u:any={id:i,team,player:p,militaryPersonId:i===1?"p":undefined};p.user=u;team.users.add(u);
-    units.set(p.logicalUnitId,{player:p,state:{unitId:p.logicalUnitId,alive:true,userId:i,factionId:"qin",logicalX:i*10,logicalY:20}});
+    const p:any={active:true,team,role:"NORMAL",logicalUnitId:`u${i}`,x:100*i,y:200},u:any={id:i,team,role:"NORMAL",player:p,militaryPersonId:i===1?"p":undefined,matchesMilitaryLife:()=>true};p.user=u;team.users.add(u);
+    units.set(p.logicalUnitId,{player:p,state:{unitId:p.logicalUnitId,alive:true,role:"NORMAL",userId:i,factionId:"qin",logicalX:i*10,logicalY:20}});
   }
   const person:any={personId:"p",sourceUserId:1,factionId:"qin",status:"ACTIVE",appointments:[{commandId:"c",factionId:"qin",startMonth:0}]};
   const formation:any={commandId:"c",commanderPersonId:"p",factionId:"qin",status:"ACTIVE",memberUnitIds:["u1","u2"],targetCityId:"city"};
   const target:any={id:"city",name:"邺",ownerFactionId:"wei",ownerTeam:enemy,block:{x:500,y:500}};
   const g:any={clear:vi.fn(),destroy:vi.fn(),lineStyle:vi.fn(),strokeCircle:vi.fn(),lineBetween:vi.fn()};g.setDepth=vi.fn(()=>g);
   const core:any={teams:[team,enemy],logicalGameplayAuthority:false,logicalUnitRegistry:{getEntry:(id:string)=>units.get(id)},allCities:[target],simulator:{year:12},scene:{add:{graphics:vi.fn(()=>g)}}};
-  vi.spyOn(Military,"getPeople").mockReturnValue([person]);vi.spyOn(Military,"getFormations").mockReturnValue([formation]);vi.spyOn(Diplomacy,"canAttack").mockReturnValue(true);
+  vi.spyOn(Military,"getPerson").mockImplementation(id=>id==="p"?person:undefined);vi.spyOn(Military,"getFormation").mockImplementation(id=>id==="c"?formation:undefined);vi.spyOn(Diplomacy,"canAttack").mockReturnValue(true);
   return {core,units,person,formation,target,g};
 }
 afterEach(()=>{vi.restoreAllMocks();});

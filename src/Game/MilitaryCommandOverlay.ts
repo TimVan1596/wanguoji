@@ -5,21 +5,22 @@ import Game from "./Game";
 
 /** Presentation only. Registry identity is checked in both runtimes; positions follow runtime authority. */
 export function resolveMilitaryCommandView(core:Core,commandId:string){
-  const formation=Military.getFormations().find(f=>f.commandId===commandId&&f.status==="ACTIVE");
-  const person=formation&&Military.getPeople().find(p=>p.personId===formation.commanderPersonId&&p.status==="ACTIVE"&&p.factionId===formation.factionId);
+  const formation=Military.getFormation(commandId);
+  if(formation?.status!=="ACTIVE")return undefined;
+  const person=Military.getPerson(formation.commanderPersonId);
   const team=formation&&core.teams.find(t=>t.name===formation.factionId&&t.status==="ACTIVE");
-  if(!formation||!person||!team)return undefined;
+  if(!person||person.status!=="ACTIVE"||person.factionId!==formation.factionId||!team)return undefined;
   const commander=[...team.users].find(u=>!u.isDestroyed&&u.id===person.sourceUserId&&u.militaryPersonId===person.personId);
-  if(!commander||!person.appointments.some(a=>a.commandId===commandId&&a.factionId===team.name&&a.endMonth===undefined))return undefined;
+  const month=core.simulator?.year??0;
+  if(!commander?.matchesMilitaryLife(person)||!person.appointments.some(a=>a.commandId===commandId&&a.factionId===team.name&&a.startMonth<=month&&a.endMonth===undefined))return undefined;
   const members=[...new Set(formation.memberUnitIds)].flatMap(id=>{
     const e=core.logicalUnitRegistry.getEntry(id),p=e?.player,s=e?.state,u=p?.user;
     if(!s?.alive||!p?.active||p.logicalUnitId!==id||s.unitId!==id||s.factionId!==team.name||p.team!==team||
-      !u||u.isDestroyed||u.team!==team||!team.users.has(u)||s.userId!==u.id||u.player!==p)return [];
+      !u||u.isDestroyed||u.team!==team||!team.users.has(u)||s.userId!==u.id||u.player!==p||s.role!=="NORMAL"||p.role!=="NORMAL"||u.role!=="NORMAL"||s.rulerId||p.rulerId||u.rulerId)return [];
     const x=core.logicalGameplayAuthority?s.logicalX:p.x,y=core.logicalGameplayAuthority?s.logicalY:p.y;
     return Number.isFinite(x)&&Number.isFinite(y)?[{unitId:id,x,y}]:[];
   });
   if(!members.length||!members.some(m=>m.unitId===commander.player.logicalUnitId))return undefined;
-  const month=core.simulator?.year??0;
   const target=core.allCities.find(c=>c.id===formation.targetCityId&&!c.destroyed&&c.ownerFactionId!==team.name&&c.ownerTeam?.status==="ACTIVE"&&Diplomacy.canAttack(team.name,c.ownerFactionId,month));
   return {commandId,factionId:team.name,members,center:{x:members.reduce((n,m)=>n+m.x,0)/members.length,y:members.reduce((n,m)=>n+m.y,0)/members.length},
     target:target?{cityId:target.id,name:target.name,x:target.block.x+Game.BlockSize/2,y:target.block.y+Game.BlockSize/2}:undefined};

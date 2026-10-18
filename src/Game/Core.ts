@@ -245,6 +245,7 @@ export default class Core {
   }
 
   clearUp() {
+    this.militaryCommandOverlay?.clear();
     this.userGroupDisposals.resetAtSafeBoundary();
     this.snapshotBoundaryRequest.cancel(new Error("Safe snapshot request was canceled because the world was reset."));
     this.worldInstanceId += 1;
@@ -1135,17 +1136,13 @@ export default class Core {
     return this.showMilitaryCommand(commandId, false);
   }
 
-  focusMilitaryTargetCity(cityId: string) {
-    const city = this.allCities.find(item => item.id === cityId);
+  focusMilitaryTargetCity(cityId: string, commandId?: string) {
+    const city = this.allCities.find(item => item.id === cityId && !item.destroyed);
     if (!city) return false;
-    const camera = this.scene.cameras.main;
-    camera.centerOn(city.block.x + Game.BlockSize / 2, city.block.y + Game.BlockSize / 2);
-    city.setZoneHighlight(true);
-    this.scene.time.delayedCall(1200, () => {
-      city.setZoneHighlight(false);
-      city.block.updateCityDisplay();
-    });
-    return true;
+    if (commandId && resolveMilitaryCommandView(this,commandId)?.target?.cityId !== cityId) return false;
+    this.scene.cameras.main.centerOn(city.block.x + Game.BlockSize / 2, city.block.y + Game.BlockSize / 2);
+    // Command marks share the overlay lifecycle; no independent delayed city highlight.
+    return commandId ? this.showMilitaryCommand(commandId,true) : true;
   }
 
   selectFaction(name: string | undefined) {

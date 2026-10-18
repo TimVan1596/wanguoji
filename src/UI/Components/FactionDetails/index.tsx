@@ -16,7 +16,7 @@ import { UnifiedFactionChronicle } from "./UnifiedFactionChronicle";
 import { hasRecordedRulerDeath } from "../../../Politics/RulerLifeState";
 import { getTerminationTargetName } from "./model";
 import { formatRulerTerminalEvent } from "../../../History/PoliticalTerminalChronicle";
-import { formatReignTerritoryChange, getReignTrajectoryPresentation, getSignificantReignStats, formatRulerLifeAge } from "./RoyalPresentation";
+import { formatReignTerritoryChange, getReignTrajectoryPresentation, formatRulerLifeAge } from "./RoyalPresentation";
 import { getFactionColorAtMonth, type FactionColorHistoryEntry } from "../../../Simulation/FactionColorHistory";
 import { Box, Button, Dialog, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, Typography, type SelectChangeEvent } from "@mui/material";
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -669,7 +669,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
               <Typography fontSize="0.75rem" color="var(--gg-text-muted)">连线仅表示当前军令方向，不是行军路径或抵达预告。</Typography>
               <Box sx={{display:"flex",flexWrap:"wrap",gap:.5}}>
                 <Button size="small" onClick={()=>Game.Core?.focusMilitaryFormation(view.commandId)}>定位部队</Button>
-                <Button size="small" disabled={!view.target} onClick={()=>view.target&&Game.Core?.focusMilitaryTargetCity(view.target.cityId)}>查看目标城</Button>
+                <Button size="small" disabled={!view.target} onClick={()=>view.target&&Game.Core?.focusMilitaryTargetCity(view.target.cityId,view.commandId)}>查看目标城</Button>
                 <Button size="small" onClick={()=>Game.Core?.showMilitaryCommand(view.commandId,true)}>显示军令方向</Button>
                 <Button size="small" onClick={()=>Game.Core?.clearMilitaryCommandHighlight()}>清除标记</Button>
               </Box>
@@ -1225,7 +1225,7 @@ function RulerBiography({
         <Typography fontSize="0.78rem">即位年龄{Math.floor(monthsToYears(ruler.accessionYear-ruler.bornYear))}岁；{formatRulerLifeAge(ruler,worldMonth)}</Typography>
         {posthumousLines.map(line=><Typography key={line} fontSize="0.78rem">{line}</Typography>)}
         <Typography fontSize="0.78rem">继位背景：{getSuccessionBackground(ruler,rulers)}</Typography>
-        <Typography fontSize="0.78rem">原始任期累计（未改写）：{getSignificantReignStats(ruler.chronicle,evidence.politicalFacts)}</Typography>
+        <Typography fontSize="0.78rem">原始任期累计（未改写）：内乱{ruler.chronicle.rebellionsDuringReign}次、复国{ruler.chronicle.restorationsDuringReign}次</Typography>
         <Typography fontSize="0.78rem">旧累计亲征夺城{ruler.chronicle.citiesCapturedPersonally}次；当前保留事件核验本人行动夺城{bio.stats.personalCityCaptures}次（含收复）。前者为已保存累计值，后者要求在任月份、本国进攻方、本人行动与事件分组证据；资料缺口时不强行改成同数。</Typography>
         <Typography fontSize="0.78rem">{getReignTrajectoryPresentation(evidence.trajectory,evidence.isFinalized)}；峰值为留存观察，不代表本人亲自组织征服。</Typography>
         <HistoricalEventArchive title="完整外交档案" entries={diplomaticEvents.map(event=>({id:event.id,content:<>
