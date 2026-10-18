@@ -21,7 +21,7 @@ export function composeRulerBiography(e:RulerHistoricalEvidence,name:string,acce
   else if(e.territoryDelta>0&&e.cityDelta>=0)assessment.push("任内领土有所拓展，城邑规模亦未缩减；这些是治下国势的变化。");
   else if(e.territoryDelta<0)assessment.push("任内领土收缩；城邑的反复得失，应与最终保有疆土分别衡量。");
   if(stats.crisisEpisodes>0)assessment.push("其世曾历失都、迁都或分裂等政治危机；事件发生于任内，本身不能证明由其个人造成。");
-  if(stats.personalCityCaptures>0)assessment.push(`已核验本人行动夺城${stats.personalCityCaptures}次（含收复），与本国军队整体战果分列。`);
+  if(stats.personalCityCaptures>0)assessment.push("其经历留有本人行动夺城的记录，与本国军队整体战果分别考察。");
   if(e.predeceasedHeirCount>0)assessment.push("任内有继承候选先逝的记录，继统经历亦有波折。");
   if(!assessment.length)assessment.push("现有记载尚不足以作更广泛的治世评价。");
   let voice:string|undefined;
@@ -43,7 +43,7 @@ export function composeMilitaryBiography(person:MilitaryPerson,entries:MilitaryC
   const ending=person.status==="DEAD"&&person.deathMonth!==undefined
     ? `${formatWorldDate(person.deathMonth)}${person.deathCause==="NATURAL_DEATH"?"自然去世":person.deathCause==="SIEGE_LOSS"?"因围城人口战损去世":person.deathCause==="BATTLE_DEATH"?"因战斗损失去世":"去世"}。`
     : person.status!=="ACTIVE"&&person.appointments.at(-1)?.endReason==="AGE_RETIREMENT"?"年老退役；退役并非死亡。":undefined;
-  const assessment=victories.length?`本国任职史料核验其所属编组参与夺城${victories.length}次；这是编组战果，不等同于本人冲锋或君主亲征。`
+  const assessment=victories.length?"本国任职史料留有其所属编组的夺城实绩；编组战果不等同于本人冲锋或君主亲征。"
     : entries.some(e=>e.source.startsWith("military-order-issued"))?"现有史料记有受命出征，尚无可核验的本国夺城战果。":"现有任职史料有限，尚不足以评价军事功业。";
   return {life,ending,assessment,victories,voice:person.status==="DEAD"&&victories.length>=2?"军旅功业，当据任职与战果论之；受命与得城之间，不可略去事实的分别。":undefined};
 }

@@ -20,7 +20,7 @@ function fixture(){
   vi.spyOn(Military,"getPeople").mockReturnValue([person]);vi.spyOn(Military,"getFormations").mockReturnValue([formation]);vi.spyOn(Diplomacy,"canAttack").mockReturnValue(true);
   return {core,units,person,formation,target,g};
 }
-afterEach(()=>vi.restoreAllMocks());
+afterEach(()=>{vi.restoreAllMocks();});
 it("reads live Arcade Player coordinates and logical-mode authority without consuming RNG",()=>{
   const f=fixture(),rng=worldRandom.exportState();
   expect(resolveMilitaryCommandView(f.core,"c")?.center).toEqual({x:150,y:200});

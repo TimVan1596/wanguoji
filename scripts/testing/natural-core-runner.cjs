@@ -13,7 +13,9 @@ app.whenReady().then(async()=>{
    const win=new BrowserWindow({show:false,webPreferences:{backgroundThrottling:false,partition:`natural-core-${seed}-${process.pid}`}});
    win.webContents.on('console-message',(_e,_l,message)=>{if(message.includes('Error'))process.stderr.write(message+'\n');});
    await win.loadURL(process.env.WANGUOJI_CORE_URL||'http://localhost:5197/?debug=1&avatarRenderer=plain');
-   const result=await win.webContents.executeJavaScript(`(async()=>{const h=await import('/src/Simulation/testing/NaturalCoreHarness.ts');return h.runNaturalCore(${JSON.stringify(seed)},${Number(process.env.WANGUOJI_CORE_YEARS||100)});})()`);
+   const military=process.env.WANGUOJI_CORE_SUITE==='military-overlay';
+   const invocation=military?`const h=await import('/src/Simulation/testing/MilitaryOverlayCoreHarness.ts');return h.runMilitaryOverlayCore(${JSON.stringify(seed)});`:`const h=await import('/src/Simulation/testing/NaturalCoreHarness.ts');return h.runNaturalCore(${JSON.stringify(seed)},${Number(process.env.WANGUOJI_CORE_YEARS||100)});`;
+   const result=await win.webContents.executeJavaScript(`(async()=>{${invocation}})()`);
    results.push(result);if(process.env.WANGUOJI_CORE_OUTPUT)fs.writeFileSync(process.env.WANGUOJI_CORE_OUTPUT,JSON.stringify(results,null,2));
    process.stdout.write(JSON.stringify(result)+'\n');win.destroy();
   }

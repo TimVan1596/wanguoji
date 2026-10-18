@@ -1,3 +1,4 @@
+import Phaser from "phaser";
 /** Real Core/Phaser business regression, without screenshots or a visual Gate. */
 import {createNaturalCore} from "./NaturalCoreHarness";
 import Military from "../../Politics/MilitaryCommandRegistry";
@@ -41,8 +42,7 @@ export async function runMilitaryOverlayCore(seed="military-overlay-z"){
   check(JSON.stringify(worldRandom.exportState())===rng&&WorldHistory.getEvents().length===history,"UI projections preserve RNG and canonical history");
   const target=core.allCities.find(c=>c.id===view.target!.cityId)!;
   // Exercise a real relation transition, not a fake target or substitute battle.
-  const relation=Diplomacy.getRelation(person.factionId,target.ownerFactionId);
-  if(!relation){Diplomacy.addTruce(person.factionId,target.ownerFactionId,core.simulator!.year,24);}
+  Diplomacy.setRelation({factionAId:person.factionId,factionBId:target.ownerFactionId,status:"TRUCE",reason:"WAR_EXHAUSTION_TRUCE",startedMonth:core.simulator!.year,expiresMonth:core.simulator!.year+24});
   check(!resolveMilitaryCommandView(core,command)?.target,"real truce removes hostile target");overlay.update();
   core.selectFaction(undefined);check(!overlay.selection,"country selection clears overlay");
   core.setWorldRunning(false);
