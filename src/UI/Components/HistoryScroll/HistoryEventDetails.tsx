@@ -18,8 +18,11 @@ export function EventDetails({
   factionNames: string[];
   cityNames: string[];
 }) {
-  const lines: string[] = [...getRevolutionEventDetails(event), ...getMilitaryParticipationDetails(event), ...(getSubmissionEventPresentation(event, teamByName)?.lines ?? []), ...(getMergedEventPresentation(event, teamByName)?.lines ?? [])];
+  const lines: string[] = [...getRevolutionEventDetails(event), ...(getSubmissionEventPresentation(event, teamByName)?.lines ?? []), ...(getMergedEventPresentation(event, teamByName)?.lines ?? [])];
   const metadata = event.metadata;
+  if(["rebel-faction-founded","frontier-faction-founded","empire-split"].includes(event.type)){
+    addMetadataLine(lines,metadata?.transferredPopulation,"真实居民转属");addMetadataLine(lines,metadata?.externalPopulation,"额外增员");
+  }
   const kind = metadata?.historyNarrativeKind;
   const isCapitalTransition = kind === "CAPITAL_TRANSITION" ||
     (event.type === "capital-relocated" && typeof metadata?.previousCapitalName === "string");
@@ -78,6 +81,7 @@ export function EventDetails({
   }
   return (
     <>
+      {getMilitaryParticipationDetails(event).length>0 && <details onClick={e=>e.stopPropagation()} style={{overflowWrap:"anywhere",fontSize:"0.75rem"}}><summary>史料依据（军事参与）</summary>{getMilitaryParticipationDetails(event).map((line,i)=><Typography key={i} fontSize="0.75rem">{line}</Typography>)}</details>}
       {lines.map((line) => (
         <Typography key={line} fontSize="0.82rem" sx={{ opacity: 0.82 }}>
           <EventText

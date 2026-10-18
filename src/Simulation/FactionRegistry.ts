@@ -47,6 +47,7 @@ class FactionRegistryStore {
 
   reset() {
     this.sequence = 0;
+    this.foundingTransactions = new WeakSet();
   }
 
   exportState() {
@@ -196,16 +197,21 @@ class FactionRegistryStore {
   private prepareFoundingPopulation(team: Team, owner: Team, users: User[], month: number, cause: "REBELLION_TRANSFER" | "EMPIRE_SPLIT_TRANSFER") {
     if(users.some(u=>this.foundingTransactions.has(u))) return false;
     users.forEach(u=>this.foundingTransactions.add(u));
+    const beforeOwner=owner.users.size,beforeNew=team.users.size;
     const memberships = MilitaryCommandRegistry.getFormations().filter(f => f.status === "ACTIVE").map(f => ({f,members:[...f.memberUnitIds]}));
     try {
       for (const user of users) {
         if (user.team !== owner || user.isDestroyed) throw new Error("founding supporter identity changed");
-        user.setTeam(team, { cause, month, context: "真实既有人口支持新政权" });
+        user.setTeam(team, { cause, month, context: "真实既有人口支持新政权", deferPopulationAudit:true });
         if (user.team !== team) throw new Error("founding supporter transfer failed");
       }
-      if (Game.Core.addRuntimeTeam(team)) {users.forEach(u=>this.foundingTransactions.delete(u));return true;}
+      if (Game.Core.addRuntimeTeam(team)) {
+        Game.Core.simulator?.recordPopulationMutation(owner,beforeOwner,owner.users.size,{cause,month,relatedFactionId:team.name,context:"本地真实居民支持新政权"});
+        Game.Core.simulator?.recordPopulationMutation(team,beforeNew,team.users.size,{cause,month,relatedFactionId:owner.name,context:"本地真实居民支持新政权"});
+        users.forEach(u=>this.foundingTransactions.delete(u));return true;
+      }
     } catch { /* Roll back while no city has changed owner. */ }
-    for (const user of users) if (user.team === team) user.setTeam(owner, { cause, month, context: "建势人口转属回退" });
+    for (const user of users) if (user.team === team) user.setTeam(owner, { cause, month, context: "建势人口转属回退", deferPopulationAudit:true });
     for (const {f,members} of memberships) f.memberUnitIds = members;
     users.forEach(u=>this.foundingTransactions.delete(u));
     return false;

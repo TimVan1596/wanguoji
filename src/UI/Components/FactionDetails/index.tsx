@@ -583,7 +583,8 @@ function FactionProfile({
 function MilitaryPoliticalEventFacts({ event }: { event: WorldEvent }) {
   const lines = getMilitaryParticipationDetails(event);
   return lines.length ? <Box component="details" sx={{ minWidth: 0, overflowWrap: "anywhere", fontSize: "0.78rem" }}>
-    <summary>军事参与证据 · {event.id}</summary>
+    <summary>史料依据（军事参与）</summary>
+    <Typography fontSize="0.72rem">原事件：{event.id}</Typography>
     {lines.map((line, index) => <Typography key={index} fontSize="0.78rem">{line}</Typography>)}
   </Box> : null;
 }

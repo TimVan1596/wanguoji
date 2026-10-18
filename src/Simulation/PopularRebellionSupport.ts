@@ -17,7 +17,8 @@ export function localPoliticalPressure(city: City, month: number) {
 export function assessPopularSupport(city: City, month: number) {
   const result={users:[] as User[],validOrdinary:0,identityBlocked:0,outsideArea:0,discontentBlocked:0,pressure:localPoliticalPressure(city,month)};
   const owner=city.ownerTeam,core=Game.Core;
-  if(!core?.logicalUnitRegistry || !owner || owner.status!=="ACTIVE" || city.destroyed)return result;
+  if(!core?.logicalUnitRegistry || !owner || owner.status!=="ACTIVE" || city.destroyed || !city.block ||
+    !Number.isFinite(city.block.x)||!Number.isFinite(city.block.y)||typeof core.map?.getBlock!=="function")return result;
   const idCounts=new Map<number,number>(),unitCounts=new Map<string,number>();
   for(const u of owner.users){idCounts.set(u.id,(idCounts.get(u.id)??0)+1);const id=u.player?.logicalUnitId;if(id)unitCounts.set(id,(unitCounts.get(id)??0)+1);}
   const area=getLocalRestorationArea(city),seenUnits=new Set<string>(),seenIds=new Set<number>();
@@ -32,7 +33,7 @@ export function assessPopularSupport(city: City, month: number) {
       seenUnits.has(id)||seenIds.has(user.id)||assigned.length>1||assigned.some(f=>f.factionId!==owner.name||!remaining.get(f.commandId))){result.identityBlocked++;continue;}
     seenUnits.add(id);seenIds.add(user.id);result.validOrdinary++;
     if(!Number.isFinite(s.logicalX)||!Number.isFinite(s.logicalY)){result.identityBlocked++;continue;}
-    const g=getLogicalGridCoordinate(s.logicalX,s.logicalY,Game.BlockSize),block=core.map?.getBlock(g.gridX,g.gridY);
+    const g=getLogicalGridCoordinate(s.logicalX,s.logicalY,Game.BlockSize),block=core.map?.getBlock?.(g.gridX,g.gridY);
     if(!block||block.team!==owner||block.city&&block.city!==city||!isInLocalRestorationArea(city,s,area)){result.outsideArea++;continue;}
     if(user.loyalty-result.pressure>=REBEL_LOW_LOYALTY_USER_THRESHOLD){result.discontentBlocked++;continue;}
     result.users.push(user);for(const f of assigned)remaining.set(f.commandId,remaining.get(f.commandId)!-1);
@@ -43,6 +44,6 @@ export function assessPopularSupport(city: City, month: number) {
 /** A single collapsed province need not drag the entire country's mean below 55.
  * The exception needs extreme local disaffection plus actual destruction or imperial strain. */
 export function hasPopularPoliticalCrisis(city:City,_month:number,totalCells:number){
-  const owner=city.ownerTeam;if(!owner||owner.status!=="ACTIVE"||city.destroyed||city.loyalty>REBEL_LOYALTY_THRESHOLD_V095)return false;
+  const owner=city.ownerTeam;if(!owner||!city.block||owner.status!=="ACTIVE"||city.destroyed||city.loyalty>REBEL_LOYALTY_THRESHOLD_V095)return false;
   return (getFactionStability(owner)??100)<=REBEL_OWNER_STABILITY_THRESHOLD_V095 || city.loyalty<=REBEL_LOYALTY_THRESHOLD && (city.devastation>=70||calculateImperialStrain(owner,totalCells)>=EMPIRE_SPLIT_STRAIN_THRESHOLD);
 }

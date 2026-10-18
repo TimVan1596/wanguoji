@@ -1,0 +1,103 @@
+{
+  "baselineHead": "47ebe3da2618e7d6e88b046e52399001d43541da",
+  "scope": "Controlled production subsystems; default 55-95 User loyalty; actual annual city decay under imperial pressure; renderer adapters, no royal map units; not Core natural worlds",
+  "seedCount": 12,
+  "regional": {
+    "stable": {
+      "100": {
+        "historical": 2.0,
+        "active": 2.0,
+        "popular": 0.0,
+        "split": 0.0,
+        "restored": 0.0,
+        "population": 48.0,
+        "natural": 28.0,
+        "warDeaths": 0.0,
+        "cityChecks": 400.0,
+        "politicalCities": 0.0
+      },
+      "200": {
+        "historical": 2.0,
+        "active": 2.0,
+        "popular": 0.0,
+        "split": 0.0,
+        "restored": 0.0,
+        "population": 48.0,
+        "natural": 28.0,
+        "warDeaths": 0.0,
+        "cityChecks": 800.0,
+        "politicalCities": 0.0
+      }
+    },
+    "popular": {
+      "100": {
+        "historical": 2.0,
+        "active": 2.0,
+        "popular": 0.0,
+        "split": 0.0,
+        "restored": 0.0,
+        "population": 40.0,
+        "natural": 20.0,
+        "warDeaths": 0.0,
+        "cityChecks": 400.0,
+        "politicalCities": 44.0
+      },
+      "200": {
+        "historical": 2.0,
+        "active": 2.0,
+        "popular": 0.0,
+        "split": 0.0,
+        "restored": 0.0,
+        "population": 40.0,
+        "natural": 20.0,
+        "warDeaths": 0.0,
+        "cityChecks": 800.0,
+        "politicalCities": 144.0
+      }
+    },
+    "imperial": {
+      "100": {
+        "historical": 2.0,
+        "active": 2.0,
+        "popular": 0.0,
+        "split": 0.0,
+        "restored": 0.0,
+        "population": 40.0,
+        "natural": 20.0,
+        "warDeaths": 0.0,
+        "cityChecks": 400.0,
+        "politicalCities": 44.0
+      },
+      "200": {
+        "historical": 2.0,
+        "active": 2.0,
+        "popular": 0.0,
+        "split": 0.0,
+        "restored": 0.0,
+        "population": 40.0,
+        "natural": 20.0,
+        "warDeaths": 0.0,
+        "cityChecks": 800.0,
+        "politicalCities": 144.0
+      }
+    }
+  },
+  "cadence": {
+    "large-peace": {
+      "maxNatural": 3.0,
+      "warMinimum": 10.0,
+      "natural": 94.0,
+      "warDeaths": 0.0,
+      "populationAt20Years": 85.25,
+      "populationAt200Years": 104.0
+    },
+    "large-siege": {
+      "maxNatural": 3.0,
+      "warMinimum": 8.083333,
+      "natural": 101.583333,
+      "warDeaths": 7.583333,
+      "populationAt20Years": 74.33333333333333,
+      "populationAt200Years": 104.0
+    }
+  }
+}

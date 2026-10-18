@@ -37,6 +37,8 @@ export interface PopulationCasualtyEvidence {
 }
 
 export interface PopulationMutationContext {
+  /** A synchronous transfer transaction records its committed aggregate after preparation. */
+  deferPopulationAudit?: boolean;
   cause: PopulationTransitionCause;
   month?: number;
   relatedFactionId?: string;

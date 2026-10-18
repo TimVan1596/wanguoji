@@ -891,7 +891,7 @@ export default class WorldEventSystem {
       if(cityPolitical&&!populationSupport?.users.length)rd.noSupport++;
       const newPopular=cityPolitical&&!capacityBlocked&&Boolean(populationSupport?.users.length);
       // Own-founded cities can form a popular polity; former-owner restoration retains its original priority/slot.
-      const originalPath = !warTornPath && (Boolean(founder && city.ownerFactionId !== city.founderFactionId)||newPopular) && !historical.some(row => row.team === founder && row.supporter);
+      const originalPath = !warTornPath && (Boolean(founder && city.ownerFactionId !== city.founderFactionId)||(newPopular && historical.length===0)) && !historical.some(row => row.team === founder && row.supporter);
       if (!originalPath && !historical.length) continue;
       const loyaltyPressure = warTornPath ? 0 :
         (REBELLION_LOYALTY_THRESHOLD - city.loyalty) /

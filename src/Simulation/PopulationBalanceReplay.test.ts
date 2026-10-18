@@ -1,5 +1,6 @@
 import { beforeAll, afterEach, afterAll, expect, it, vi } from "vitest";
 import { writeFileSync } from "node:fs";
+import yBaseline from "./testing/PopulationYBaseline.json";
 import xBaseline from "./testing/PopulationXBaseline.json";
 import { PopulationTransitionAudit } from "./PopulationTransitionAudit";
 import worldRandom from "./WorldRandom";
@@ -212,8 +213,12 @@ it.each(["rebellion","split"])("%s requires existing legal ordinary supporters a
   for(const c of f.team.cities)c.loyalty=20;
   const city=f.team.cities[1];for(const u of f.team.users)Object.assign(f.entries.get(u.player.logicalUnitId).state,{logicalX:city.block.x+16,logicalY:16});const refused=original.filter(u=>u.role==="NORMAL"&&!u.militaryPersonId).sort((a,b)=>a.id-b.id)[1];const originalMove=refused.setTeam;
   refused.setTeam=function(...args:any[]){if(args[0]!==f.team)throw new Error("controlled identity refusal");return originalMove.apply(this,args);};
+  const history=History.exportState();
   const result=kind==="split"?Factions.createSplitFaction(f.team,[city],1):Factions.createRebelFaction({city,year:1,factionType:"REBEL"});
   expect(result).toBeUndefined();expect(core.teams).toHaveLength(count);expect(f.team.users.size).toBe(6);expect(city.ownerFactionId).toBe(f.team.name);
+  expect(History.exportState()).toEqual(history);
+  expect(f.audit.getSummary(undefined,core.teams).totals.transferIn).toBe(0);
+  for(const u of original)expect(f.entries.get(u.player.logicalUnitId).state.factionId).toBe(f.team.name);
   refused.setTeam=originalMove;
   for(const c of f.team.cities){c.loyalty=95;c.devastation=0;}
   for(const u of original)u.loyalty=99;
@@ -261,6 +266,9 @@ it("12 seeds: default-loyalty population and actual annual imperial city decay, 
     expect(f.audit.getSummary(undefined,core.teams).unexplainedWorldDifference).toBe(0);
     rows.push({scenario,seed,checkpoints});vi.restoreAllMocks();
   }
+  expect(yBaseline.baselineHead).toBe("47ebe3da2618e7d6e88b046e52399001d43541da");
+  const stable=rows.filter(r=>r.scenario==="stable");expect(stable.every(r=>r.checkpoints[200].historical===2)).toBe(true);
+  for(const scenario of ["popular","imperial"]){const rs=rows.filter(r=>r.scenario===scenario);expect(rs.some(r=>r.checkpoints[200].historical>2)).toBe(true);expect(rs.every(r=>r.checkpoints[200].historical<6)).toBe(true);}
   if(process.env.WANGUOJI_REGIONAL_REPLAY_OUTPUT)writeFileSync(process.env.WANGUOJI_REGIONAL_REPLAY_OUTPUT,JSON.stringify(rows,null,2));
   console.log("REGIONAL_PRODUCTION_REPLAY",rows.length,"controlled runs / 12 seeds / 200 years");
 },30000);
@@ -331,6 +339,10 @@ it("12-seed actual large-territory recovery cadence and siege comparison",()=>{
     rows.push({scenario,seed,capacity:f.populationSystem.getCapacity(f.team),checkpoints,maxNatural,warMinimum,natural:f.totals.NATURAL_GROWTH??0,warDeaths:-(f.totals.SIEGE_LOSS??0)});
     vi.restoreAllMocks();
   }
+  for(const r of rows)expect(r.maxNatural).toBeLessThanOrEqual(1);
+  for(const scenario of ["large-peace","large-siege"] as const){const rs=rows.filter(r=>r.scenario===scenario);
+    expect(rs.reduce((n,r)=>n+r.checkpoints[20],0)/12).toBeGreaterThanOrEqual(yBaseline.cadence[scenario].populationAt20Years*.95);
+    expect(rs.reduce((n,r)=>n+r.checkpoints[200],0)/12).toBeGreaterThanOrEqual(yBaseline.cadence[scenario].populationAt200Years*.95);}
   if(process.env.WANGUOJI_CADENCE_REPLAY_OUTPUT)writeFileSync(process.env.WANGUOJI_CADENCE_REPLAY_OUTPUT,JSON.stringify(rows,null,2));
   console.log("LARGE_RECOVERY_PRODUCTION_REPLAY",rows.length,"controlled runs / capacity104 / 200 years");
 },30000);

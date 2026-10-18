@@ -70,14 +70,16 @@ export default class User {
     this.team.users.delete(this);
     this.team = team;
     this.team.users.add(this);
-    Game.Core?.simulator?.recordPopulationMutation(previousTeam, previousCount, previousTeam.users.size, {
-      ...populationMutation,
-      relatedFactionId: team.name,
-    });
-    Game.Core?.simulator?.recordPopulationMutation(team, nextCount, team.users.size, {
-      ...populationMutation,
-      relatedFactionId: previousTeam.name,
-    });
+    if (!populationMutation.deferPopulationAudit) {
+      Game.Core?.simulator?.recordPopulationMutation(previousTeam, previousCount, previousTeam.users.size, {
+        ...populationMutation,
+        relatedFactionId: team.name,
+      });
+      Game.Core?.simulator?.recordPopulationMutation(team, nextCount, team.users.size, {
+        ...populationMutation,
+        relatedFactionId: previousTeam.name,
+      });
+    }
     Game.Core?.logicalUnitRegistry.updateFaction(this.player?.logicalUnitId, team);
     if (this.player?.team !== team) {
       this.player?.setTeam(team);

@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 const { game } = vi.hoisted(() => ({ game: { Core: undefined as any, BlockSize: 32 } }));
 vi.mock("../Game/Game", () => ({ default: game }));
 vi.mock("../Components/Block", () => ({ default: class {} }));
+vi.mock("../Components/MessageToast",()=>({MessageToast:class{}}));
 // Render-only player adapter. User life, political registries and persistence stay real.
 vi.mock("../Components/Player", () => ({ default: class {
   logicalUnitId?: string; user: any; role="NORMAL"; rulerId?: string; active=true; children:any[]=[]; movement:any={vx:0,vy:0,speed:150,radius:16,scale:1,speedCoefficient:0,sizeCoefficient:0,alive:true,role:"NORMAL",children:[]};
@@ -1206,7 +1207,7 @@ it.each(["siege-recovery", "split", "popular"])("y1 %s: real Users and political
     sim.canApplyWartimePopulationLoss=(t:any,m:number)=>pop.canApplyWartimeLoss(t,m);
     sim.recordWartimePopulationLoss=(t:any,m:number)=>pop.recordWartimeLoss(t,m);
     sim.exportState=()=>({...baseExport(),populationSystem:pop.exportState(),worldEventSystem:events.exportState()});
-    sim.importState=(state:any)=>{baseImport(state);pop=new Population();pop.importState(state.populationSystem);events=new Events();events.importState(state.worldEventSystem,state.clock.worldMonth);sim.year=state.clock.worldMonth;};
+    sim.importState=(state:any)=>{baseImport(state);pop=new Population();pop.importState(state.populationSystem);events=new Events();events.importState(state.worldEventSystem,state.clock.worldMonth);sim.year=state.clock.worldMonth;audit.reset(sim.year,core.teams);};
     const identities=save.users.map(u=>({id:u.userId,bornMonth:u.bornMonth}));
     if(scenario!=="siege-recovery"){
       const old=core.teams[0];
@@ -1255,5 +1256,34 @@ it.each(["siege-recovery", "split", "popular"])("y1 %s: real Users and political
     const resumed=continueWorld();expect(resumed).toEqual(uninterrupted);
     for(const identity of identities){const live=resumed.users.find(u=>u.userId===identity.id);if(scenario!=="siege-recovery"){expect(live?.bornMonth).toBe(identity.bornMonth);expect(live?.sourceFactionId).toBe("qin");}}
     if(scenario==="siege-recovery")expect(resumed.populationSystem.wartimeLossMonths.qin).toBe(1);
+    else {
+      const {default:RealCore}=await vi.importActual<typeof import("../Game/Core")>("../Game/Core");
+      const {default:Registry}=await import("../Simulation/FactionRegistry");
+      core.handleFactionExtinction=(...args:any[])=>(RealCore.prototype.handleFactionExtinction as any).apply(core,args);
+      core.registerCityInteraction=()=>{};
+      (RealCity.prototype.rebuildFortifiedZone as any).mockRestore();
+      core.map.blocks.flat().forEach((b:any)=>Object.assign(b,{
+        setCity(this:any,city:any,center:boolean){this.city=city;this.isCityCenter=center;},
+        clearCity(this:any,city:any){if(this.city===city){this.city=undefined;this.isCityCenter=false;}}
+      }));
+      const cityConstructor=vi.spyOn(CityModule,"default").mockImplementation((...args:any[])=>Reflect.construct(RealCity,args));
+      Object.setPrototypeOf(cityConstructor,RealCity);(cityConstructor as any).hydrate=RealCity.hydrate;
+      const [parent,regional]=core.teams,at=month+37;
+      const founder=DynastyRegistry.getCurrentRuler(regional.name)!;
+      expect(founder.relationType).toBe("FOUNDER");expect(founder.parentId).toBeUndefined();
+      sim.year=at;core.map.blocks[12][0].claimForTeam(regional);
+      const newCity=Registry.foundCity(regional,core.map.blocks[12][0],"新邑",at);
+      expect(regional.cities).toContain(newCity);
+      sim.year=at+1;const expansion=parent.cities.find((c:any)=>!c.isCapital)!;expansion.capture(regional,at+1);
+      expect(expansion.ownerFactionId).toBe(regional.name);
+      // The new polity uses the normal conquest/last-city extinction path, with real surrender/death rules.
+      const next=vi.spyOn(worldRandom,"next").mockReturnValue(0);
+      for(const c of [...regional.cities]){sim.year++;c.capture(parent,sim.year);}
+      next.mockRestore();expect(regional.status).toBe("EXTINCT");expect(regional.cities).toHaveLength(0);
+      baseExport().clock.worldMonth=sim.year;audit.reconcile(sim.year,core.teams);
+      expect(audit.getSummary(undefined,core.teams).unexplainedWorldDifference).toBe(0);
+      const ended=exportWorldSave(core);expect(validateWorldSave(ended)).toEqual({valid:true,errors:[]});
+      hydrateWorldSave(core,JSON.parse(JSON.stringify(ended)));expect(exportWorldSave(core)).toEqual(ended);
+    }
   }finally{vi.unstubAllGlobals();}
 },10000);
