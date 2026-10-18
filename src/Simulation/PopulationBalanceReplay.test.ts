@@ -310,6 +310,61 @@ it.each(["commander","ruler","dead","bad-unit","wrong-owner","duplicate-id","det
   expect(assessPopularSupport(city,12).users).toHaveLength(0);
 });
 
+it("Arcade uses live Player coordinates, logical mode uses registry coordinates, and neither relocates residents",async()=>{
+  const {assessPopularSupport}=await import("./PopularRebellionSupport");
+  const f=fixture(91,2),city=f.team.cities[0];city.loyalty=0;city.devastation=100;
+  const users=[...f.team.users] as any[];
+  for(const u of users){u.loyalty=70;Object.assign(u.player,{x:6*32+16,y:10*32+16});Object.assign(f.entries.get(u.player.logicalUnitId).state,{logicalX:4000,logicalY:4000});}
+  const rng=worldRandom.exportState(),coordinates=users.map(u=>[u.player.x,u.player.y]);
+  core.logicalGameplayAuthority=false;
+  const actual=assessPopularSupport(city,12);
+  expect(actual.users).toEqual(users.sort((a,b)=>a.id-b.id));
+  expect(actual.spatial).toMatchObject({arcadePosition:2,staleRegistryPosition:2,outsideLegacy:2,recoveredDistrict:2});
+  core.logicalGameplayAuthority=true;
+  expect(assessPopularSupport(city,12).spatial).toMatchObject({logicalPosition:2,invalidPosition:2});
+  expect(users.map(u=>[u.player.x,u.player.y])).toEqual(coordinates);
+  expect(worldRandom.exportState()).toEqual(rng);
+});
+
+it.each(["invalidPosition","unowned","foreign","otherCity","otherDistrict","disconnected","referenceMismatch"])("reports %s with actual position and identity evidence",async reason=>{
+  const {assessPopularSupport}=await import("./PopularRebellionSupport");
+  const f=fixture(92,1,2),city=f.team.cities[0],u=[...f.team.users][0] as any;
+  city.loyalty=0;city.devastation=100;u.loyalty=60;core.logicalGameplayAuthority=false;
+  Object.assign(u.player,{x:16,y:16});
+  if(reason==="invalidPosition")u.player.x=NaN;
+  if(reason==="unowned"){u.player.x=32+16;core.map.blocks[1][0].team=undefined;}
+  if(reason==="foreign")u.player.x=9*32+16;
+  if(reason==="otherCity")u.player.x=2*32+16;
+  if(reason==="otherDistrict"){u.player.x=4*32+16;u.player.y=5*32+16;}
+  if(reason==="disconnected"){
+    for(const b of core.map.blocks[1])b.team=undefined;
+    f.team.cities=[city];u.player.x=4*32+16;
+  }
+  if(reason==="referenceMismatch")f.entries.get(u.player.logicalUnitId).state.userId=-1;
+  const result=assessPopularSupport(city,12);
+  expect(result.users).toHaveLength(0);expect(result.spatial[reason as keyof typeof result.spatial]).toBe(1);
+  if(reason==="referenceMismatch")expect(result.spatial.referenceWithOwnedPosition).toBe(1);
+});
+
+it("a selected popular uprising is not consumed by returning the city to its still-active historical builder",()=>{
+  const f=fixture(93,8,3),city=f.team.cities[1];core.totalCells=256;
+  for(const c of f.team.cities){c.loyalty=0;c.devastation=100;}
+  city.founderFactionId=f.enemy.name; // both historical builder and current owner are still ACTIVE
+  for(const u of f.team.users){u.loyalty=60;Object.assign(f.entries.get(u.player.logicalUnitId).state,{logicalX:city.block.x+16,logicalY:16});}
+  const before=[...f.team.users] as any[],world=before.length;
+  const returned=vi.spyOn(city,"revoltTo"),rng=vi.spyOn(worldRandom,"next").mockReturnValue(0);
+  f.eventSystem.checkRestorations(120,core.teams);
+  const snap=f.eventSystem.getRegionalRebellionSnapshot(),newTeam=core.teams[2];
+  expect(snap.popular).toBe(1);expect(snap.territorialReturns).toBe(0);
+  expect(returned).toHaveBeenCalledTimes(1);expect(returned.mock.calls[0][0]).toBe(newTeam);
+  expect(city.ownerFactionId).toBe(newTeam.name);expect(newTeam.users.size).toBeGreaterThan(0);
+  expect(core.teams.reduce((n:number,t:any)=>n+t.users.size,0)).toBe(world);
+  expect([...newTeam.users].every(u=>before.includes(u))).toBe(true);
+  expect(History.getEvents().filter((e:any)=>["rebel-faction-founded","frontier-faction-founded"].includes(e.type))).toHaveLength(1);
+  f.eventSystem.checkRestorations(120,core.teams);expect(core.teams).toHaveLength(3);
+  rng.mockRestore();
+});
+
 it("large-capacity natural recovery is limited to one User per month while preserving three opportunities per quarter",()=>{
   const f=fixture(42,4,4);for(const row of core.map.blocks)for(const b of row)b.claimForTeam(f.team);
   // Actual owned blocks create capacity 40 (two attempts/quarter).

@@ -1153,7 +1153,7 @@ it("x三个国家千年王室继统姓名分布与近代避重，不改人物时
   console.log("x受控真实王室生命周期姓名分布（无战争人口运行）", report);
 }, 10000);
 
-it.each(["siege-recovery", "split", "popular"])("y1 %s: real Users and political transactions → strict V17 hydration → deterministic continuation", async scenario => {
+it.each(["siege-recovery", "split", "popular", "arcade-popular"])("regional %s: real Users and political transactions → strict V17 hydration → deterministic continuation", async scenario => {
   const { default: RealTeam } = await vi.importActual<typeof import("../Components/Team")>("../Components/Team");
   const { default: RealCity } = await vi.importActual<typeof import("../Components/City")>("../Components/City");
   const TeamModule = await import("../Components/Team"), CityModule = await import("../Components/City");
@@ -1187,10 +1187,10 @@ it.each(["siege-recovery", "split", "popular"])("y1 %s: real Users and political
     save.cities.forEach(c=>Object.assign(save.blocks[c.centerGridX],{cityId:c.cityId,isCityCenter:true,homeHitPoints:c.defense}));
     const names=Array.from({length:6},(_,i)=>`秦-${i}`);
     save.users=names.map((name,i)=>({userId:getLocalUserId(name),name,factionId:"qin",sourceFactionId:"qin",playerUnitId:`unit-${i+1}`,bornMonth:-300,role:"NORMAL",loyalty:70,score:0,slaveUnits:[]}));
-    save.units=save.users.map(u=>({unitId:u.playerUnitId,userId:u.userId,factionId:"qin",x:9*32+16,y:16,vx:0,vy:0,speed:150,radius:16,scale:1,speedCoefficient:0,sizeCoefficient:0,role:"NORMAL",alive:true,kind:"user",children:[]}));
+    save.units=save.users.map(u=>({unitId:u.playerUnitId,userId:u.userId,factionId:"qin",x:(scenario==="arcade-popular"?13:9)*32+16,y:16,vx:0,vy:0,speed:150,radius:16,scale:1,speedCoefficient:0,sizeCoefficient:0,role:"NORMAL",alive:true,kind:"user",children:[]}));
     save.registries.logicalUnitRegistry={nextUnitSequence:7};setFixtureLifetimeRecords(save);
     const core=target(30),prepare=core.prepareForHydration;
-    Object.defineProperty(core,"totalCells",{value:30});core.logicalGameplayAuthority=true;core.logicalUnitRegistry=new LogicalUnits();
+    Object.defineProperty(core,"totalCells",{value:30});core.logicalGameplayAuthority=scenario!=="arcade-popular";core.logicalUnitRegistry=new LogicalUnits();
     core.prepareForHydration=(...args:any[])=>{prepare(...args);core.map.getBlock=(x:number,y:number)=>core.map.blocks[x]?.[y];
       core.map.blocks.flat().forEach((b:any)=>Object.assign(b,{width:32,height:32,scene:core.scene,updateCityDisplay(){},
         restoreCanonicalState(state:any){Object.assign(this,{team:state.owner,city:state.city,hp:state.hp,isHome:state.isHome,isCityCenter:state.isCityCenter});state.owner?.blocks.add(this);},
@@ -1198,6 +1198,10 @@ it.each(["siege-recovery", "split", "popular"])("y1 %s: real Users and political
     core.recordUserDeathForDiagnostics=()=>{};core.handleRulerCombatDeath=()=>false;
     core.addRuntimeTeam=(t:any)=>{core.teams.push(t);return true;};
     hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));
+    if(scenario==="arcade-popular")for(const u of core.teams[0].users){
+      // Real live-position authority can diverge from registration during Arcade movement.
+      const state=core.logicalUnitRegistry.getEntry(u.player.logicalUnitId).state;state.logicalX=-4000;state.logicalY=-4000;
+    }
     let pop=new Population();pop.importState(save.populationSystem);
     const {default:Events}=await import("../Simulation/WorldEventSystem");
     let events=new Events();events.importState(save.worldEventSystem as ReturnType<InstanceType<typeof Events>["exportState"]>);

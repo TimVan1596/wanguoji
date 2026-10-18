@@ -1,3 +1,4 @@
+import MilitaryPersonIdentityHeader from "./MilitaryPersonIdentityHeader";
 import HistoricalEvidence from "../HistoricalEvidence";
 import { buildPopulationRecoveryLines } from "./PopulationPresentation";
 import HistoricalEventArchive from "./HistoricalEventArchive";
@@ -24,7 +25,7 @@ import Diplomacy from "../../../Politics/Diplomacy";
 import MilitaryCommandRegistry from "../../../Politics/MilitaryCommandRegistry";
 import { getMilitaryParticipationDetails, describeMilitaryPoliticalBlock } from "../../../Politics/MilitaryPoliticalInfluence";
 import { describeMilitaryAge, describeMilitaryStatus, describeMilitaryAppointmentEnd, describeMilitaryDeathCause, sortMilitaryPeople } from "./MilitaryPeoplePresentation";
-import { describeMilitaryNameEvidence, getMilitaryPersonDisplayName } from "../../../Politics/MilitaryPersonIdentity";
+import { getMilitaryPersonDisplayName } from "../../../Politics/MilitaryPersonIdentity";
 import { formatDiplomacyRelationLines, getFactionDiplomacyBadges } from "../../../Politics/DiplomacyPresentation";
 import FactionSnapshots, {
   FactionSnapshot,
@@ -627,19 +628,8 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
           const politicalCandidate = militaryPolitics?.candidates.find(p => p.personId === person.personId);
           const orderEvidence = formation ? MilitaryCommandRegistry.getOrderEvidence(formation) : undefined;
           return <>
-            <Typography fontWeight="bold" fontSize="0.9rem">{getMilitaryPersonDisplayName(person)} · {politicalFactionById.get(person.factionId)?.displayName ?? person.factionId}{politicalFactionById.get(person.factionId)?.identityStage === "STATE" ? "国" : ""}{describeMilitaryStatus(person)}</Typography>
+            <MilitaryPersonIdentityHeader person={person} country={`${politicalFactionById.get(person.factionId)?.displayName ?? person.factionId}${politicalFactionById.get(person.factionId)?.identityStage === "STATE" ? "国" : ""}`} />
             {person.factionId!==factionId && <Typography fontSize="0.78rem">曾在本国任职；以下大事记只列本国任职史料。</Typography>}
-            <Box component="details" sx={{minWidth:0,overflowWrap:"anywhere"}}><summary>身份与史料依据</summary>
-              <Typography fontSize="0.75rem">{person.personId} / User {person.sourceUserId} / 原始名称或人口标签：{person.name}（不是另一个人物）</Typography>
-              <Typography fontSize="0.75rem" color="var(--gg-text-muted)">{describeMilitaryNameEvidence(person)}</Typography>
-            </Box>
-            <Typography fontSize="0.72rem" color="var(--gg-text-muted)">资格计数是累计检查次数，不是独立人物数。</Typography>
-            <Typography fontSize="0.78rem">军事政治参与资格：{politicalCandidate ? `已核验（现役编组${politicalCandidate.unitCount}人，压力等级${politicalCandidate.strength}）` : `不合格：${describeMilitaryPoliticalBlock(militaryPolitics?.blocked.find(b => b.personId === person.personId)?.reason)}`}。仅已有危机中可能参与；不代表政治行动已发生。</Typography>
-            {politicalEvents.filter(event => event.actorFactionId === factionId).map(event => <Box key={event.id}>
-              <Typography fontSize="0.78rem">{formatWorldDate(event.monthIndex ?? event.year)} · {formatHistoryEventTitle(event, politicalFactionById)}</Typography>
-              {typeof event.metadata?.commanderPersonId === "string" && <HistoricalEvidence eventId={event.id} source={event.type} commandId={String(event.metadata.commandId)} personId={event.metadata.commanderPersonId} />}
-        <MilitaryPoliticalEventFacts event={event} />
-            </Box>)}
             <Typography fontSize="0.82rem" color="var(--gg-text-muted)">{describeMilitaryAge(person, worldMonth, Boolean(activeUser?.matchesMilitaryLife(person)))} · 任职 {person.appointments.filter(item => item.factionId === factionId).map(item => `${formatWorldDate(item.startMonth)}${item.endMonth === undefined ? "至今" : `—${formatWorldDate(item.endMonth)}（${describeMilitaryAppointmentEnd(item.endReason)}）`}`).join("；")}</Typography>
             {lastAppointment?.endReason === "AGE_RETIREMENT" && lastAppointment.endMonth !== undefined && <Typography fontSize="0.82rem">退休时年龄：{Math.floor((lastAppointment.endMonth - person.bornMonth) / 12)}岁</Typography>}
             {person.deathMonth !== undefined && <Typography fontSize="0.82rem">生命结局：{formatWorldDate(person.deathMonth)} · {describeMilitaryDeathCause(person.deathCause)}</Typography>}
@@ -647,6 +637,13 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
             <Typography fontSize="0.82rem">核验普通城市攻陷 {career.ordinaryCaptures} · 敌都攻陷 {career.capitalCaptures} · 当前实际指挥 {career.currentUnitCount} 人</Typography>
             {career.unclassifiedCaptures > 0 && <Typography fontSize="0.78rem">另有核验战果 {career.unclassifiedCaptures} 次，当时都城属性未记录（不以“故都”推断敌都）。</Typography>}
             <Typography fontSize="0.78rem" color="var(--gg-text-muted)">军事资历：{career.level} · 权重 {career.appointmentWeight.toFixed(2)}×（上限2×，非爵位）；曾任命编组规模 {career.recordedCommandSize || "未记录"} 人。仅未到龄且合格的在世候选参与任命。</Typography>
+            <Typography fontSize="0.72rem" color="var(--gg-text-muted)">资格计数是累计检查次数，不是独立人物数。</Typography>
+            <Typography fontSize="0.78rem">军事政治参与资格：{politicalCandidate ? `已核验（现役编组${politicalCandidate.unitCount}人，压力等级${politicalCandidate.strength}）` : `不合格：${describeMilitaryPoliticalBlock(militaryPolitics?.blocked.find(b => b.personId === person.personId)?.reason)}`}。仅已有危机中可能参与；不代表政治行动已发生。</Typography>
+            {politicalEvents.filter(event => event.actorFactionId === factionId).map(event => <Box key={event.id}>
+              <Typography fontSize="0.78rem">{formatWorldDate(event.monthIndex ?? event.year)} · {formatHistoryEventTitle(event, politicalFactionById)}</Typography>
+              {typeof event.metadata?.commanderPersonId === "string" && <HistoricalEvidence eventId={event.id} source={event.type} commandId={String(event.metadata.commandId)} personId={event.metadata.commanderPersonId} />}
+        <MilitaryPoliticalEventFacts event={event} />
+            </Box>)}
             <HistoricalEventArchive title="人物大事记（本国任职史料）" entries={MilitaryCommandRegistry.getChronicle(person, worldMonth, factionId).map(entry => ({
               id: entry.eventId, content: <>
                 <Typography fontSize="0.82rem">{formatWorldDate(entry.worldMonth)} · {entry.text}</Typography>
