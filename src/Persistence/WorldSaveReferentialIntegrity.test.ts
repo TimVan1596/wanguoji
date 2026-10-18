@@ -1160,7 +1160,6 @@ it.each(["siege-recovery", "split", "popular"])("y1 %s: real Users and political
   const { default: LogicalUnits } = await import("../Simulation/LogicalUnitRegistry");
   const { default: Population } = await import("../Simulation/PopulationSystem");
   const { PopulationTransitionAudit } = await import("../Simulation/PopulationTransitionAudit");
-  const { default: Factions } = await import("../Simulation/FactionRegistry");
   class Group {
     children = { size: 0, entries: [] as any[] };
     add(v:any) { if(!this.children.entries.includes(v))this.children.entries.push(v);this.children.size=this.children.entries.length; }
@@ -1223,7 +1222,7 @@ it.each(["siege-recovery", "split", "popular"])("y1 %s: real Users and political
       else (events as any).checkRestorations(840,core.teams);
       next.mockRestore();
       expect(core.teams).toHaveLength(2);const created=core.teams[1];
-      const founded=WorldHistory.getEvents().filter(e=>e.type===(scenario==="split"?"empire-split":"rebel-faction-founded"));
+      const founded=WorldHistory.getEvents().filter(e=>scenario==="split"?e.type==="empire-split":["rebel-faction-founded","frontier-faction-founded"].includes(e.type));
       expect(founded).toHaveLength(1);expect(founded[0].actorFactionId).toBe(created.name);
       expect(created.users.size).toBeGreaterThan(0);expect(created.cities.length).toBeGreaterThan(0);
       expect(created.origin.parentFactionId).toBe(old.name);expect(DynastyRegistry.getCurrentRuler(created.name)).toBeDefined();

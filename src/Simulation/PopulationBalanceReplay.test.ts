@@ -264,3 +264,48 @@ it("12 seeds: default-loyalty population and actual annual imperial city decay, 
   if(process.env.WANGUOJI_REGIONAL_REPLAY_OUTPUT)writeFileSync(process.env.WANGUOJI_REGIONAL_REPLAY_OUTPUT,JSON.stringify(rows,null,2));
   console.log("REGIONAL_PRODUCTION_REPLAY",rows.length,"controlled runs / 12 seeds / 200 years");
 },30000);
+
+it("default ordinary Users respond to local crisis, never to stable prose or distant map labels, with no new RNG",async()=>{
+  const {assessPopularSupport,hasPopularPoliticalCrisis}=await import("./PopularRebellionSupport");
+  const f=fixture(40,8,4),city=f.team.cities[1];core.totalCells=256;
+  const rng=worldRandom.exportState();expect(assessPopularSupport(city,12).users).toHaveLength(0);
+  for(const c of f.team.cities){c.loyalty=10;c.devastation=80;}
+  for(const u of f.team.users)Object.assign(f.entries.get(u.player.logicalUnitId).state,{logicalX:city.block.x+16,logicalY:16});
+  const before=[...f.team.users].map((u:any)=>u.loyalty);
+  expect(hasPopularPoliticalCrisis(city,12,256)).toBe(true);
+  expect(assessPopularSupport(city,12).users.length).toBeGreaterThan(0);
+  expect([...f.team.users].map((u:any)=>u.loyalty)).toEqual(before);
+  expect(worldRandom.exportState()).toEqual(rng);
+  const snapshots=Array.from({length:10},()=>f.eventSystem.getRegionalRebellionDiagnostics());
+  expect(new Set(snapshots).size).toBe(1);expect(worldRandom.exportState()).toEqual(rng);
+  for(const u of f.team.users)Object.assign(f.entries.get(u.player.logicalUnitId).state,{logicalX:4000,logicalY:4000});
+  const outside=assessPopularSupport(city,12);expect(outside.users).toHaveLength(0);expect(outside.outsideArea).toBe(8);
+  const count=f.team.users.size;expect(Factions.createRebelFaction({city,year:12,factionType:"REBEL"})).toBeUndefined();expect(f.team.users.size).toBe(count);
+});
+
+it.each(["commander","ruler","dead","bad-unit","wrong-owner","duplicate-id","detached-player","dependent"])("%s is never mistaken for local popular support",async kind=>{
+  const {assessPopularSupport}=await import("./PopularRebellionSupport");
+  const f=fixture(41,2,4),city=f.team.cities[1],users=[...f.team.users] as any[];
+  for(const c of f.team.cities){c.loyalty=0;c.devastation=100;}
+  for(const u of users)Object.assign(f.entries.get(u.player.logicalUnitId).state,{logicalX:city.block.x+16,logicalY:16});
+  expect(assessPopularSupport(city,12).users).toHaveLength(2);
+  for(const u of users){const entry=f.entries.get(u.player.logicalUnitId);
+    if(kind==="commander")u.militaryPersonId="military-person-existing";
+    if(kind==="ruler")u.role="RULER";
+    if(kind==="dead")entry.state.alive=false;
+    if(kind==="bad-unit")entry.state.userId=-1;
+    if(kind==="wrong-owner")entry.state.factionId=f.enemy.name;
+    if(kind==="duplicate-id")u.id=12345;
+    if(kind==="detached-player")u.player.user=undefined;
+    if(kind==="dependent")u.player.children=[{}];
+  }
+  expect(assessPopularSupport(city,12).users).toHaveLength(0);
+});
+
+it("large-capacity natural recovery is limited to one User per month while preserving three opportunities per quarter",()=>{
+  const f=fixture(42,4,4);for(const row of core.map.blocks)for(const b of row)b.claimForTeam(f.team);
+  // Actual owned blocks create capacity 40 (two attempts/quarter).
+  const next=vi.spyOn(worldRandom,"next").mockReturnValue(0);const changes=[];
+  for(let m=1;m<=12;m++){const before=f.team.users.size;core.simulator.year=m;f.populationSystem.update(m,[f.team]);changes.push(f.team.users.size-before);f.populationSystem.update(m,[f.team]);expect(f.team.users.size-before).toBeLessThanOrEqual(1);}
+  expect(changes.reduce((a,b)=>a+b,0)).toBe(8);expect(Math.max(...changes)).toBe(1);next.mockRestore();
+});
