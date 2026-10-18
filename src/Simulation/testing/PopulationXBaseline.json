@@ -1,0 +1,120 @@
+{
+  "baselineHead": "122e470e5a507cb1af413cc617382f5891fb30fb",
+  "scope": "Controlled real production subsystems; renderer adapters; no royal map units; not Core natural worlds",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "meanResults": {
+    "peace": {
+      "initial": 10.0,
+      "final": 24.0,
+      "minWar": 10.0,
+      "warDeaths": 0.0,
+      "zeros": 0.0,
+      "maxMonthDelta": 1.0,
+      "foundingWorldNet": 0.0,
+      "actualTransferred": 0.0,
+      "external": 0.0,
+      "unexplained": 0.0,
+      "populationAt20Years": 17.25
+    },
+    "one-siege": {
+      "initial": 10.0,
+      "final": 23.875,
+      "minWar": 0.0,
+      "warDeaths": 11.125,
+      "zeros": 1.0,
+      "maxMonthDelta": 1.0,
+      "foundingWorldNet": 0.0,
+      "actualTransferred": 0.0,
+      "external": 0.0,
+      "unexplained": 0.0,
+      "populationAt20Years": 9.0
+    },
+    "three-sieges": {
+      "initial": 10.0,
+      "final": 23.875,
+      "minWar": 0.0,
+      "warDeaths": 10.625,
+      "zeros": 1.125,
+      "maxMonthDelta": 3.0,
+      "foundingWorldNet": 0.0,
+      "actualTransferred": 0.0,
+      "external": 0.0,
+      "unexplained": 0.0,
+      "populationAt20Years": 8.75
+    },
+    "small-immigration": {
+      "initial": 4.0,
+      "final": 12.25,
+      "minWar": 4.0,
+      "warDeaths": 0.0,
+      "zeros": 0.0,
+      "maxMonthDelta": 6.25,
+      "foundingWorldNet": 6.25,
+      "actualTransferred": 0.0,
+      "external": 6.25,
+      "unexplained": 0.0,
+      "populationAt20Years": 0.0
+    },
+    "rebellion": {
+      "initial": 10.0,
+      "final": 11.375,
+      "minWar": 10.0,
+      "warDeaths": 0.0,
+      "zeros": 0.0,
+      "maxMonthDelta": 4.375,
+      "foundingWorldNet": 1.375,
+      "actualTransferred": 4.375,
+      "external": 0.0,
+      "unexplained": 0.0,
+      "populationAt20Years": 0.0
+    },
+    "split": {
+      "initial": 10.0,
+      "final": 11.875,
+      "minWar": 10.0,
+      "warDeaths": 0.0,
+      "zeros": 0.0,
+      "maxMonthDelta": 4.375,
+      "foundingWorldNet": 1.875,
+      "actualTransferred": 4.375,
+      "external": 0.0,
+      "unexplained": 0.0,
+      "populationAt20Years": 0.0
+    },
+    "union": {
+      "initial": 10.0,
+      "final": 10.0,
+      "minWar": 10.0,
+      "warDeaths": 0.0,
+      "zeros": 0.0,
+      "maxMonthDelta": 0.0,
+      "foundingWorldNet": 0.0,
+      "actualTransferred": 10.0,
+      "external": 0.0,
+      "unexplained": 0.0,
+      "populationAt20Years": 0.0
+    },
+    "submission": {
+      "initial": 10.0,
+      "final": 10.0,
+      "minWar": 10.0,
+      "warDeaths": 0.0,
+      "zeros": 0.0,
+      "maxMonthDelta": 0.0,
+      "foundingWorldNet": 0.0,
+      "actualTransferred": 10.0,
+      "external": 0.0,
+      "unexplained": 0.0,
+      "populationAt20Years": 0.0
+    }
+  }
+}

@@ -378,3 +378,21 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     expect(isSafeSnapshotBoundary({ paused: true, clockElapsedMs: 0, simulationAccumulatorMs: 0.1 })).toBe(false);
   });
 });
+
+it("V17 validates persisted national casualty budgets and bounded migration settlement plans",()=>{
+  const s=fixture();s.populationSystem.wartimeLossMonths={qin:36};
+  s.worldEventSystem.activeEffects=[{id:"migration-1",type:"migration",factionId:"qin",startMonth:24,endMonth:60,remainingPopulation:2,lastSettlementMonth:36,modifiers:{populationGrowthMultiplier:1}}];
+  expect(validateWorldSave(s)).toEqual({valid:true,errors:[]});
+  for(const mutate of [
+    (x:any)=>delete x.populationSystem.wartimeLossMonths,
+    (x:any)=>x.populationSystem.wartimeLossMonths.qin=43,
+    (x:any)=>x.populationSystem.wartimeLossMonths.missing=1,
+    (x:any)=>x.worldEventSystem.activeEffects[0].remainingPopulation=7,
+    (x:any)=>x.worldEventSystem.activeEffects[0].lastSettlementMonth=43,
+    (x:any)=>x.worldEventSystem.activeEffects[0].lastSettlementMonth=23,
+    (x:any)=>x.worldEventSystem.activeEffects.push({...x.worldEventSystem.activeEffects[0],id:"second"}),
+    (x:any)=>x.worldEventSystem.activeEffects[0].type="harvest",
+  ]){const broken=structuredClone(s);mutate(broken);expect(validateWorldSave(broken).valid).toBe(false);}
+  const old={...s,saveSchemaVersion:16},before=JSON.stringify(old);
+  expect(validateWorldSave(old)).toEqual({valid:false,errors:["该存档版本已不受支持，请创建新世界。"]});expect(JSON.stringify(old)).toBe(before);
+});

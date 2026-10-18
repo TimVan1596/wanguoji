@@ -1,5 +1,6 @@
 import { beforeAll, afterEach, afterAll, expect, it, vi } from "vitest";
 import { writeFileSync } from "node:fs";
+import xBaseline from "./testing/PopulationXBaseline.json";
 import { PopulationTransitionAudit } from "./PopulationTransitionAudit";
 import worldRandom from "./WorldRandom";
 const { core } = vi.hoisted(() => ({ core: {} as any }));
@@ -104,6 +105,15 @@ it("fixed-seed actual production demographic replay (controlled siege contacts, 
       vi.restoreAllMocks();
     }
   }
+  expect(xBaseline.baselineHead).toBe("122e470e5a507cb1af413cc617382f5891fb30fb");
+  const mean=(scenario:string,key:string)=>{const selected=rows.filter(r=>r.scenario===scenario);return selected.reduce((n,r)=>n+r[key],0)/selected.length;};
+  expect(rows.filter(r=>r.scenario==="peace").reduce((n,r)=>n+r.checkpoints["20"],0)/8).toBeGreaterThan(xBaseline.meanResults.peace.populationAt20Years);
+  for(const scenario of ["one-siege","three-sieges"]){
+    expect(mean(scenario,"zeros")).toBe(0);
+    expect(mean(scenario,"warDeaths")).toBeLessThan(xBaseline.meanResults[scenario as "one-siege"|"three-sieges"].warDeaths);
+  }
+  expect(mean("small-immigration","external")).toBeLessThanOrEqual(2);
+  expect(mean("rebellion","foundingWorldNet")).toBe(0);expect(mean("split","foundingWorldNet")).toBe(0);
   console.log("POPULATION_PRODUCTION_REPLAY", `${rows.length} controlled production runs; 8 fixed seeds; up to 200 years; all population sources reconciled`);
   if(process.env.WANGUOJI_POPULATION_REPLAY_OUTPUT)writeFileSync(process.env.WANGUOJI_POPULATION_REPLAY_OUTPUT,JSON.stringify(rows,null,2));
 },20000);

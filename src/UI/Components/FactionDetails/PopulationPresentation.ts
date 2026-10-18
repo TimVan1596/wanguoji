@@ -23,7 +23,7 @@ export function buildPopulationRecoveryLines(team: Team, month: number, summary:
     lines.push(`最近12个月净变化${r.net >= 0 ? "+" : ""}${r.net}（本次会话已观察${summary.observedMonths}个月，读档重置）`,
       `自然恢复+${r.naturalGrowth} · 外来迁入+${r.external} · 特殊外源+${r.special}`,
       `战争损失−${r.warDeaths} · 自然死亡−${r.naturalDeaths} · 转入+${r.transferIn} · 转出−${r.transferOut}`);
-    if (r.otherNet || r.unattributed) lines.push(`君主地图单位、残部池转换等其他净变化${r.otherNet >= 0 ? "+" : ""}${r.otherNet}；未归因${r.unattributed}`);
+    if (r.otherNet || r.unattributed) lines.push(`君主地图单位、残部转换、离散与神力等其他净变化${r.otherNet >= 0 ? "+" : ""}${r.otherNet}；未归因${r.unattributed}`);
     if (summary.rollingLimited) lines.push("近期国家分项达到诊断上限，不能视为完整记录。");
   }
   if (last) lines.push(`最近有记录的变化：${formatWorldDate(last.month)}，${populationCauseLabel(last.cause)} ${last.delta > 0 ? "+" : ""}${last.delta}`);

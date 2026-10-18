@@ -20,7 +20,7 @@ vi.mock("../Components/Player", () => ({ default: class {
 vi.mock("../Components/Slaves", () => ({ default: class { npcs=new Map(); children={size:0,each(){}}; dispose(){} reset(){} } }));
 vi.mock("../Components/User", async () => await vi.importActual("../Components/User"));
 vi.mock("../Components/Npc", () => ({ default: class {} }));
-vi.mock("../Components/Farms", () => ({ default: class { npcs=new Map(); init(){} setDie(){} } }));
+vi.mock("../Components/Farms", () => ({ default: class { npcs=new Map(); init(){} setDie(){} exportState(){return {configs:[],timers:[]};} importState(){} } }));
 vi.mock("../Components/Team", () => ({ default: class {
   static hydrate(_scene: unknown, state: any) { return { ...state, name: state.factionId, cities: [], users: new Set(), farms: { npcs: new Map(), init() {} },
     addCity(city: any) { this.cities.push(city as never); }, exportState: () => structuredClone(state) }; }
@@ -1175,14 +1175,14 @@ it.each(["siege-recovery", "split"])("y %s: real Users and political transaction
   vi.spyOn(RealCity.prototype,"rebuildRuntimeVisuals").mockImplementation(()=>{});
   vi.spyOn(RealCity.prototype,"refreshZoneVisual").mockImplementation(()=>{});
   vi.spyOn(RealCity.prototype,"rebuildFortifiedZone").mockImplementation(()=>{});
-  vi.spyOn(RealCity.prototype,"calculateMaxDefense").mockReturnValue(10);
+  vi.spyOn(RealCity.prototype as any,"calculateMaxDefense").mockReturnValue(10);
   vi.spyOn(RealCity.prototype,"claimFortifiedZone").mockImplementation(function(this:any,owner:any){this.fortifiedCells.forEach((b:any)=>b.claimForTeam(owner));});
   vi.spyOn(User.prototype,"load").mockImplementation(()=>{});
   vi.spyOn(DynastyRegistry,"ensureRulerUnit").mockImplementation(()=>undefined); // off-map royal people remain real
   try {
     const save=fixture();save.world.worldMonth=save.world.clock.worldMonth=0;save.registries.archivedCities=[];
     save.cities.push(...[1,2].map(x=>({...save.cities[0],cityId:`town-${x}`,name:`城${x}`,isCapital:false,centerGridX:x,fortifiedCells:[{gridX:x,gridY:0}]})));
-    save.blocks.forEach((b,i)=>Object.assign(b,{cityId:save.cities[i].cityId,isCityCenter:true}));
+    save.blocks.forEach((b,i)=>Object.assign(b,{cityId:save.cities[i].cityId,isCityCenter:true,homeHitPoints:7}));
     const names=Array.from({length:6},(_,i)=>`秦-${i}`);
     save.users=names.map((name,i)=>({userId:getLocalUserId(name),name,factionId:"qin",sourceFactionId:"qin",playerUnitId:`unit-${i+1}`,bornMonth:-300,role:"NORMAL",loyalty:20,score:0,slaveUnits:[]}));
     save.units=save.users.map(u=>({unitId:u.playerUnitId,userId:u.userId,factionId:"qin",x:0,y:0,vx:0,vy:0,speed:150,radius:16,scale:1,speedCoefficient:0,sizeCoefficient:0,role:"NORMAL",alive:true,kind:"user",children:[]}));
@@ -1192,18 +1192,20 @@ it.each(["siege-recovery", "split"])("y %s: real Users and political transaction
     core.prepareForHydration=(...args:any[])=>{prepare(...args);core.map.getBlock=(x:number,y:number)=>core.map.blocks[x]?.[y];
       core.map.blocks.flat().forEach((b:any)=>Object.assign(b,{width:32,height:32,updateCityDisplay(){},
         restoreCanonicalState(state:any){Object.assign(this,{team:state.owner,city:state.city,hp:state.hp,isHome:state.isHome,isCityCenter:state.isCityCenter});state.owner?.blocks.add(this);},
-        claimForTeam(owner:any){this.team?.blocks.remove(this);this.team=owner;owner.blocks.add(this);}}));};
+        claimForTeam(this:any,owner:any){this.team?.blocks.remove(this);this.team=owner;owner.blocks.add(this);}}));};
     core.recordUserDeathForDiagnostics=()=>{};core.handleRulerCombatDeath=()=>false;
     core.addRuntimeTeam=(t:any)=>{core.teams.push(t);return true;};
     hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));
     let pop=new Population();pop.importState(save.populationSystem);
+    const {default:Events}=await import("../Simulation/WorldEventSystem");
+    let events=new Events();events.importState(save.worldEventSystem as ReturnType<InstanceType<typeof Events>["exportState"]>);
     const audit=new PopulationTransitionAudit();audit.reset(0,core.teams);
     const sim=core.simulator,baseExport=sim.exportState,baseImport=sim.importState;
     sim.year=0;sim.recordPopulationMutation=(t:any,b:number,a:number,m:any)=>audit.record(t,b,a,m);
     sim.canApplyWartimePopulationLoss=(t:any,m:number)=>pop.canApplyWartimeLoss(t,m);
     sim.recordWartimePopulationLoss=(t:any,m:number)=>pop.recordWartimeLoss(t,m);
-    sim.exportState=()=>({...baseExport(),populationSystem:pop.exportState()});
-    sim.importState=(state:any)=>{baseImport(state);pop=new Population();pop.importState(state.populationSystem);sim.year=state.clock.worldMonth;};
+    sim.exportState=()=>({...baseExport(),populationSystem:pop.exportState(),worldEventSystem:events.exportState()});
+    sim.importState=(state:any)=>{baseImport(state);pop=new Population();pop.importState(state.populationSystem);events=new Events();events.importState(state.worldEventSystem,state.clock.worldMonth);sim.year=state.clock.worldMonth;};
     const identities=save.users.map(u=>({id:u.userId,bornMonth:u.bornMonth}));
     if(scenario==="split"){
       const old=core.teams[0],result=Factions.createSplitFaction(old,[old.cities[1]],1)!;
@@ -1216,6 +1218,7 @@ it.each(["siege-recovery", "split"])("y %s: real Users and political transaction
     }else{
       const defender=core.teams[0];
       const attacker=RealTeam.hydrate(core.scene,{...save.factions[0],factionId:"enemy",displayName:"敌",capitalCityId:undefined,homeGridX:2});core.teams.push(attacker);
+      (await import("../Simulation/FactionLifetimeRecord")).default.observe(attacker,0);
       const city=defender.cities[1];city.defense=1;city.lastSiegeDamageYear=-1;city.lastSiegeDevastationYear=-1;city.siegeDamageRemainder=0;
       city.siegeContacts.set(attacker.name,{team:attacker,count:3,year:1});
       (city as any).updateSiege(1);expect(city.ownerFactionId).toBe(attacker.name);expect(defender.users.size).toBe(5);
@@ -1227,9 +1230,12 @@ it.each(["siege-recovery", "split"])("y %s: real Users and political transaction
     }
     const month=scenario==="split"?1:24;sim.year=month;baseExport().clock.worldMonth=month;
     audit.reconcile(month,core.teams);expect(audit.getSummary(undefined,core.teams).unexplainedWorldDifference).toBe(0);
+    vi.spyOn(events as any,"pickRandomEventType").mockReturnValue("population-boom");
+    vi.spyOn(events as any,"pickFaction").mockReturnValue(core.teams[0]);
+    (events as any).triggerRandomEvent(month,core.teams,3);
     const snapshot=exportWorldSave(core);expect(validateWorldSave(snapshot)).toEqual({valid:true,errors:[]});
     expect(snapshot.saveSchemaVersion).toBe(17);
-    const continueWorld=()=>{for(let m=month+1;m<=month+36;m++){sim.year=m;pop.update(m,core.teams);}baseExport().clock.worldMonth=month+36;return exportWorldSave(core);};
+    const continueWorld=()=>{for(let m=month+1;m<=month+36;m++){sim.year=m;events.settlePopulationEffects(m,core.teams);pop.update(m,core.teams,team=>events.getPopulationGrowthMultiplier(team));}baseExport().clock.worldMonth=month+36;return exportWorldSave(core);};
     const uninterrupted=continueWorld();hydrateWorldSave(core,JSON.parse(JSON.stringify(snapshot)));
     expect(exportWorldSave(core)).toEqual(snapshot);
     const resumed=continueWorld();expect(resumed).toEqual(uninterrupted);

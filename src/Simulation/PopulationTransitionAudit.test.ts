@@ -168,3 +168,19 @@ describe("PopulationTransitionAudit", () => {
     expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(17);
   });
 });
+
+it("keeps centuries of source totals with bounded recent rows and exposes unexplained changes",()=>{
+  const audit=new PopulationTransitionAudit(),team=faction("秦",0);audit.reset(0,[team]);
+  for(let month=1;month<=3600;month++){
+    team.users.add(month);audit.record(team,month-1,month,{cause:"NATURAL_GROWTH",month});audit.reconcile(month,[team]);
+  }
+  const report=audit.getSummary(undefined,[team]);
+  expect(report.openingWorldPopulation).toBe(0);expect(report.closingWorldPopulation).toBe(3600);
+  expect(report.totals.naturalGrowth).toBe(3600);expect(report.recent.naturalGrowth).toBe(12);
+  expect(report.unexplainedWorldDifference).toBe(0);
+  expect(audit.getRecent()).toHaveLength(240);expect(audit.getRuntimeCardinality().populationAuditMonthBuckets).toBe(12);
+  team.users.add(99999);audit.reconcile(3601,[team]);
+  const unexplained=audit.getSummary(undefined,[team]);
+  expect(unexplained.totals.unattributed).toBe(1);expect(unexplained.unexplainedWorldDifference).toBe(1);
+  audit.reset(3601,[team]);expect(audit.getSummary(undefined,[team]).totals.net).toBe(0);
+});

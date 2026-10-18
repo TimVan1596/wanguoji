@@ -328,7 +328,7 @@ function simplifyDiffValue(value: unknown): unknown {
 
 export type RulerSaveV1 = RulerSaveV17;
 
-/** Source aliases only: these denote V16 DTOs and do not enable reading V15 files. */
+/** Source aliases only: these denote V17 DTOs and do not enable reading older files. */
 export type WorldSaveV15 = WorldSaveV17;
 export type RulerSaveV15 = RulerSaveV17;
 export const createEmptyWorldSaveV15 = createEmptyWorldSaveV17;
