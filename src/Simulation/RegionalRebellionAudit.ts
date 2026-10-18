@@ -4,7 +4,7 @@ import type Team from "../Components/Team";
 export class RegionalRebellionAudit {
   counts={cityChecks:0,politicalCities:0,loyaltyBlocked:0,stabilityBlocked:0,capacityBlocked:0,identityBlocked:0,
     validOrdinary:0,discontentBlocked:0,geographyBlocked:0,supporters:0,noSupport:0,draws:0,drawFailed:0,executionFailed:0,
-    popular:0,split:0,splitChecks:0,splitPolitical:0,splitRestored:0,alive12:0,matured12:0,alive60:0,matured60:0,overflow:0};
+    popular:0,split:0,territorialReturns:0,splitChecks:0,splitPolitical:0,splitRestored:0,alive12:0,matured12:0,alive60:0,matured60:0,overflow:0};
   spatial=emptyPopularSpatialCounts();
   accountSpatial(value:ReturnType<typeof emptyPopularSpatialCounts>){for(const k of Object.keys(this.spatial) as Array<keyof typeof this.spatial>)this.spatial[k]+=value[k];}
   private pending:Array<{id:string;month:number;active:boolean;observed12:boolean}>=[];
@@ -27,7 +27,7 @@ export class RegionalRebellionAudit {
     `旧小城域以外${this.spatial.outsideLegacy}人次，其中经本国连通辖区重新识别${this.spatial.recoveredDistrict}；旧城域构造为空${this.spatial.emptyLegacyArea}城次；当前城市无有效辖区${this.spatial.emptyDistrict}城次`,
     `逻辑身份引用不符${this.spatial.referenceMismatch}（其中位置可解析且在本国地块${this.spatial.referenceWithOwnedPosition}，仍不作为合法响应者）；辖区只说明当前控制联系，不证明籍贯或居住史。`,
     `真正城市政治抽签${c.draws}（包括原复国共享抽签，非额外民变抽签）；未命中${c.drawFailed}；新建势执行失败${c.executionFailed}`,
-    `帝国候选检查${c.splitChecks}；分裂政治资格通过${c.splitPolitical}；民众叛乱成功${c.popular}；帝国分裂成功${c.split}；原历史势力恢复${c.restored}`,
+    `帝国候选检查${c.splitChecks}；分裂政治资格通过${c.splitPolitical}；民众叛乱成功${c.popular}；帝国分裂成功${c.split}；原历史势力恢复${c.restored}；旧建城者在国、纯城市归还${c.territorialReturns}`,
     `新建政权连续在国：12月${c.alive12}/${c.matured12}，随访不足${c.insufficient12}；60月${c.alive60}/${c.matured60}，随访不足${c.insufficient60}；随访容量256，未跟踪${c.overflow}`,
     "个人忠诚保持原值；起事意愿由真实城域危机派生，军政人物不作为民变领袖。"
   ].join("\n");}

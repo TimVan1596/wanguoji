@@ -1009,6 +1009,7 @@ export default class WorldEventSystem {
 
       if (!founder.isDie && !newPopular) {
         if (city.revoltTo(founder, year)) {
+          rd.territorialReturns++;
           this.cityRebellionYears[city.id] = year;
           return;
         }

@@ -603,12 +603,15 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
     <Typography fontSize="0.78rem" color="var(--gg-text-muted)">
       本国：现役指挥官 {factionCommanders} · 活动编组 {factionFormations} · 历史任职人物 {people.length}
     </Typography>
+    <Typography fontSize="0.75rem" color="var(--gg-text-muted)">资格计数是累计检查次数，不是独立人物数。</Typography>
+    <Box component="details" sx={{minWidth:0,overflowWrap:"anywhere"}}><summary>军事系统诊断</summary>
     <Typography fontSize="0.76rem" color="var(--gg-text-muted)">
       全世界本次运行累计诊断：候选 {diagnostics.candidates} · 符合资格 {diagnostics.eligible} · 任命 {diagnostics.appointments} · 新命令 {diagnostics.orders} · 转向步进 {diagnostics.unitsSteered} · 到达目标城 {diagnostics.targetCityArrivals} · 围城接触 {diagnostics.commandedSiegeContacts} · 攻陷 {diagnostics.captures} · 目标失效 {diagnostics.invalidatedTargets} · 长期远距命令检查 {diagnostics.staleOrderChecks}
     </Typography>
     <Typography fontSize="0.76rem" color="var(--gg-text-muted)">
       全世界世代更替（本次会话，读取后重置）：年老退役 {diagnostics.ageRetirements} · 自然死亡 {diagnostics.naturalDeaths} · 释放编组 {diagnostics.releasedFormations} · 合法重新任职 {diagnostics.reappointments} · 到龄任命阻断 {diagnostics.ageBlocked} · 原User核验失败 {diagnostics.identityFailures}
     </Typography>
+    </Box>
     {!people.length && <Typography fontSize="0.86rem" color="var(--gg-text-muted)">本国尚无已任命的军事指挥人物。</Typography>}
     {people.map(person => {
       return <Box key={person.personId} sx={{ borderBottom: "1px solid var(--gg-border-muted)", pb: 0.75 }}>
@@ -624,9 +627,13 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
           const politicalCandidate = militaryPolitics?.candidates.find(p => p.personId === person.personId);
           const orderEvidence = formation ? MilitaryCommandRegistry.getOrderEvidence(formation) : undefined;
           return <>
-            <Typography fontSize="0.78rem">{person.factionId === factionId ? "目前所属本国" : `曾在本国任职 · 目前身份归属${person.factionId}`}</Typography>
-            <Typography fontSize="0.75rem" color="var(--gg-text-muted)">身份追溯：{person.personId} / User {person.sourceUserId} / 原始名称或人口标签：{person.name}（不是另一个人物）</Typography>
-            <Typography fontSize="0.75rem" color="var(--gg-text-muted)">{describeMilitaryNameEvidence(person)}</Typography>
+            <Typography fontWeight="bold" fontSize="0.9rem">{getMilitaryPersonDisplayName(person)} · {politicalFactionById.get(person.factionId)?.displayName ?? person.factionId}{politicalFactionById.get(person.factionId)?.identityStage === "STATE" ? "国" : ""}{describeMilitaryStatus(person)}</Typography>
+            {person.factionId!==factionId && <Typography fontSize="0.78rem">曾在本国任职；以下大事记只列本国任职史料。</Typography>}
+            <Box component="details" sx={{minWidth:0,overflowWrap:"anywhere"}}><summary>身份与史料依据</summary>
+              <Typography fontSize="0.75rem">{person.personId} / User {person.sourceUserId} / 原始名称或人口标签：{person.name}（不是另一个人物）</Typography>
+              <Typography fontSize="0.75rem" color="var(--gg-text-muted)">{describeMilitaryNameEvidence(person)}</Typography>
+            </Box>
+            <Typography fontSize="0.72rem" color="var(--gg-text-muted)">资格计数是累计检查次数，不是独立人物数。</Typography>
             <Typography fontSize="0.78rem">军事政治参与资格：{politicalCandidate ? `已核验（现役编组${politicalCandidate.unitCount}人，压力等级${politicalCandidate.strength}）` : `不合格：${describeMilitaryPoliticalBlock(militaryPolitics?.blocked.find(b => b.personId === person.personId)?.reason)}`}。仅已有危机中可能参与；不代表政治行动已发生。</Typography>
             {politicalEvents.filter(event => event.actorFactionId === factionId).map(event => <Box key={event.id}>
               <Typography fontSize="0.78rem">{formatWorldDate(event.monthIndex ?? event.year)} · {formatHistoryEventTitle(event, politicalFactionById)}</Typography>
@@ -648,7 +655,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
             }))} />
             {!formation && <Typography fontSize="0.82rem">当前无活动编组，无现役指挥权。</Typography>}
             {formation && <>
-              <Typography fontSize="0.82rem">编组 {formation.commandId} · 真实成员 {formation.memberUnitIds.length} 人</Typography>
+              <Typography fontSize="0.82rem">现役部队 · 真实成员 {formation.memberUnitIds.length} 人</Typography>
               <Typography fontSize="0.82rem">目标：{target?.name ?? "暂无有效目标"} · 命令始于 {formation.orderStartMonth === undefined ? "—" : formatWorldDate(formation.orderStartMonth)}</Typography>
               <Typography fontSize="0.78rem">本令资历影响：{!orderEvidence ? "旧命令未记录选择依据" : orderEvidence.metadata?.meritInfluenced === 1 ? "是，近距离容差内优先敌都" : "否，沿用最近合法目标规则"}；有效军令保持不变。</Typography>
               <Typography fontSize="0.78rem" color="var(--gg-text-muted)">军令自动执行；以下操作只定位地图。</Typography>

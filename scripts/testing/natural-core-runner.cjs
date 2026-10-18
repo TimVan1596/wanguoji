@@ -4,6 +4,7 @@ const fs=require('node:fs');
 app.setPath('userData',fs.mkdtempSync('/tmp/wanguoji-core-'));
 app.commandLine.appendSwitch('disable-background-timer-throttling');
 app.commandLine.appendSwitch('disable-renderer-backgrounding');
+app.on('window-all-closed',()=>{});
 app.whenReady().then(async()=>{
  const results=[];
  try{
