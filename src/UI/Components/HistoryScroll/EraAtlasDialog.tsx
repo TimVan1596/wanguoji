@@ -91,6 +91,7 @@ export function EraAtlasDialogContent({ eras, selectedEraId, onNavigate, onClose
   </Box>;
 }
 export default memo(function EraAtlasDialog({ open, eras, selectedEraId, onNavigate, onClose, worldMonth, factions, rulers, onViewAllHistory }: { onViewAllHistory?: (eraId: string) => void; worldMonth: number; factions?: Map<string, Team>; rulers?: Map<string, Ruler>; open: boolean; eras: WorldEra[]; selectedEraId: string; onNavigate: (id: string) => void; onClose: () => void }) {
+  useEffect(()=>{if(open)void import("../../../Game/Game").then(({default:Game})=>Game.Core?.clearMilitaryCommandHighlight());},[open,selectedEraId]);
   return <Dialog open={open} onClose={onClose} maxWidth={false} aria-label="历史时代图鉴"
     PaperProps={{ sx: { width: "96vw", maxWidth: "96vw", height: "92dvh", maxHeight: "94dvh", m: 0, overflow: "hidden" } }}>
     <DialogContent sx={{ p: { xs: 1, sm: 1.5 }, overflow: "hidden", minHeight: 0 }}>

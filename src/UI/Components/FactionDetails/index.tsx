@@ -16,7 +16,7 @@ import { UnifiedFactionChronicle } from "./UnifiedFactionChronicle";
 import { hasRecordedRulerDeath } from "../../../Politics/RulerLifeState";
 import { getTerminationTargetName } from "./model";
 import { formatRulerTerminalEvent } from "../../../History/PoliticalTerminalChronicle";
-import { formatReignTerritoryChange, getReignTrajectoryPresentation, getSignificantReignStats, formatRulerLifeAge, formatRulerDepositionFact } from "./RoyalPresentation";
+import { formatReignTerritoryChange, getReignTrajectoryPresentation, getSignificantReignStats, formatRulerLifeAge } from "./RoyalPresentation";
 import { getFactionColorAtMonth, type FactionColorHistoryEntry } from "../../../Simulation/FactionColorHistory";
 import { Box, Button, Dialog, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, Typography, type SelectChangeEvent } from "@mui/material";
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -75,11 +75,10 @@ import {
   getFactionRegimeWeight,
 } from "../../../Simulation/FactionDisplayRules";
 import {
-  buildRulerTags,
   getRulerHistoricalEvents,
   getRulerDiplomaticEvents,
 } from "../../../Politics/RulerChronicle";
-import { composeHistorianVoice, deriveRulerAssessment } from "../../../Politics/RulerHistoriography";
+import { deriveRulerAssessment } from "../../../Politics/RulerHistoriography";
 import { deriveRulerTenureEvidence } from "../../../Politics/RulerTenureEvidence";
 import { getFormalRulers, isFormalRulerRecord } from "../../../Politics/RulerPresentationRules";
 import {
@@ -563,7 +562,7 @@ function FactionProfile({
           worldMonth={worldMonth}
           factionStatus={team.status}
           team={team}
-          events={groupedEvents}
+          events={events}
           factionById={factionById}
           selectedRulerId={rulerDetailId}
           onSelectedRulerIdChange={onRulerDetailIdChange}
@@ -1207,6 +1206,7 @@ function RulerBiography({
       identity={<ChronicleSection title="身份与王统">
         <Typography fontSize="0.82rem">{ruler.houseName} · {ruler.reignOrdinal?`第${ruler.reignOrdinal}代君主 · `:""}{formatWorldDate(ruler.accessionYear)}—{ruler.endYear===undefined?"今":formatWorldDate(ruler.endYear)}</Typography>
         <Typography fontSize="0.82rem">{predecessor&&["DIRECT_CHILD","GRANDCHILD","SIBLING","NEPHEW","UNCLE","COUSIN","COLLATERAL_KIN"].includes(ruler.relationType??"")?formatRecordedSuccessionKinship(ruler,predecessor,rulers):formatRulerRelation(ruler.relationType,team.identityStage,Boolean(parent),Boolean(ruler.chronicle.foundedStateName))}</Typography>
+        <Typography fontSize="0.82rem">世系：{formatRulerLineage(ruler.relationType,parent?formatRulerRowName(parent,team):undefined,team.identityStage,Boolean(ruler.chronicle.foundedStateName))}</Typography>
       </ChronicleSection>}
       biographyTitle="生平本纪" biography={bio.life} milestoneTitle="重大纪年"
       milestones={milestoneEvents.map(event=>({id:event.id,content:<>
@@ -1247,10 +1247,6 @@ type FormalRuler = Ruler & {
 
 function isFormalRuler(ruler: Ruler): ruler is FormalRuler {
   return isFormalRulerRecord(ruler);
-}
-
-function stringMetadata(value: string | number | undefined) {
-  return typeof value === "string" ? value : "储君";
 }
 
 function formatRulerStatus(

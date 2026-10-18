@@ -300,6 +300,7 @@ export function deriveRulerHistoricalEvidence(
       event.type === "capital-fallen" ? (militaryRole === "ATTACKER"
         ? direct ? "亲自参与攻陷当时都城" : "任内本国攻陷都城"
         : "本国失去都城") :
+      event.type === "city-recovered" ? (militaryRole === "ATTACKER" ? direct ? "本人参与收复城市" : "任内本国收复城市" : "本国失去城市") :
       event.type === "city-captured" ? (militaryRole === "DEFENDER" ? wasCapital ? "本国失去都城" : "本国失去城市" : direct ? "亲自参与攻占城市" : "任内本国攻占城市") :
       event.type === "faction-extinct" ? "政权彻底灭亡" :
       event.type === "faction-dissolved" ? "失去最后据点后残部解散" :
