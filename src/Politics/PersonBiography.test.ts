@@ -46,6 +46,9 @@ it("real capital-loss/recovery companion records with different political groups
   expect(bio.stats.personalCityCaptures).toBe(1);expect(bio.stats.personalCapitalCaptures).toBe(1);
   expect(getRulerHistoricalEvents(c.events,c.ruler as any,"秦",120,[],100).map(e=>e.id)).toEqual([recovery]);
   expect(c.history.getEvents().map(e=>e.id)).toEqual([fallen,recovery]);
+  const defender=context();defender.ruler.id="defender";defender.faction.name="楚";defender.events=c.events;
+  const losingView=composeRulerBiography(deriveRulerHistoricalEvidence(defender),"楚君",0);
+  expect(losingView.stats.capitalLosses).toBe(1);expect(losingView.stats.crisisEpisodes).toBe(1);expect(losingView.stats.personalCityCaptures).toBe(0);
   // A second actual recovery is a new capture, not another perspective of the first.
   c.history.addCityRecovered(36,"秦","楚","秦","临淄","city",true,0,"r1","next-capture");
   c.events=c.history.getEvents();expect(composeRulerBiography(deriveRulerHistoricalEvidence(c),"嬴文衡",0).stats.personalCityCaptures).toBe(2);

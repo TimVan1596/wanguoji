@@ -185,7 +185,9 @@ function deriveRulerEvidence(
   const capitalKeys=includeRecoveredCaptures?new Set(rulerEvents.filter(e=>e.type==="capital-fallen").map(getCityVictoryCompanionKey).filter(Boolean)):new Set<string>();
   const rawPoliticalFacts: RulerPoliticalFact[] = rulerEvents.flatMap((event) => {
     const recoveryKey=getCityVictoryCompanionKey(event);
-    if(includeRecoveredCaptures&&event.type==="capital-fallen"&&recoveryKey&&recoveryKeys.has(recoveryKey))return [];
+    if(includeRecoveredCaptures&&recoveryKey&&(
+      event.type==="capital-fallen"&&event.actorFactionId===faction.name&&recoveryKeys.has(recoveryKey)||
+      event.type==="city-recovered"&&event.targetFactionId===faction.name&&capitalKeys.has(recoveryKey)))return [];
     const month = event.monthIndex ?? event.year;
     const factionParticipant = (event.factionIds ?? []).includes(faction.name) ||
       event.relatedFactionIds?.includes(faction.name) || event.actorFactionId === faction.name ||
