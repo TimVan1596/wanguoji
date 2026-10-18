@@ -12,7 +12,7 @@ import {SIMULATION_FIXED_STEP_MS} from "../SimulationDriver";
 import {installPhaser355InputCompatibility} from "../../Runtime/Phaser355InputCompatibility";
 import Player from "../../Components/Player";
 
-export async function runNaturalCore(seed:string,years=100){
+export async function createNaturalCore(seed:string){
   store.dispatch(applyScenario({name:warringStatesScenario.name,teams:scenarioToTeams(warringStatesScenario)}));
   worldRandom.initialize(seed);
   installPhaser355InputCompatibility(Phaser.VERSION,Phaser.Input.InputPlugin.prototype);
@@ -21,6 +21,11 @@ export async function runNaturalCore(seed:string,years=100){
   for(let i=0;!Game.Core?.simulator&&i<500;i++)await new Promise(r=>setTimeout(r,20));
   const core=Game.Core;if(!core?.simulator)throw new Error("Core initialization timed out");
   game.loop.stop();core.startWorld(scenarioToInitialPopulations(warringStatesScenario));core.setWorldRunning(true);
+  return {game,core};
+}
+
+export async function runNaturalCore(seed:string,years=100){
+  const {game,core}=await createNaturalCore(seed);
   const started=performance.now(),checkpoints:any[]=[];
   // The same 30Hz Core step used by foreground/catch-up, with real Arcade Player/body/colliders.
   for(let m=1;m<=years*12;m++){
