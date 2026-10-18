@@ -30,4 +30,4 @@ export function buildPopularDistricts(team:Team,map:WorldMap|undefined,blockSize
 }
 
 export function emptyPopularSpatialCounts(){return {invalidPosition:0,unowned:0,foreign:0,otherCity:0,otherDistrict:0,
-  disconnected:0,outsideLegacy:0,recoveredDistrict:0,emptyLegacyArea:0,emptyDistrict:0,referenceMismatch:0,referenceWithOwnedPosition:0,arcadePosition:0,logicalPosition:0};}
+  disconnected:0,outsideLegacy:0,recoveredDistrict:0,emptyLegacyArea:0,emptyDistrict:0,referenceMismatch:0,referenceWithOwnedPosition:0,arcadePosition:0,logicalPosition:0,staleRegistryPosition:0};}

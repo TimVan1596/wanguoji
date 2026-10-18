@@ -881,7 +881,7 @@ export default class WorldEventSystem {
         }
       }
       const populationSupport = !warTornPath ? assessPopularSupport(city,year) : undefined;
-      if(populationSupport){rd.validOrdinary+=populationSupport.validOrdinary;rd.identityBlocked+=populationSupport.identityBlocked;
+      if(populationSupport){this.regional.accountSpatial(populationSupport.spatial);rd.validOrdinary+=populationSupport.validOrdinary;rd.identityBlocked+=populationSupport.identityBlocked;
         rd.geographyBlocked+=populationSupport.outsideArea;rd.discontentBlocked+=populationSupport.discontentBlocked;rd.supporters+=populationSupport.users.length;}
       const stableBlocked=!hasPopularPoliticalCrisis(city,year,Game.Core?.totalCells ?? 1);
       const capacityBlocked=(Game.Core?.teams ?? teams).filter(t=>!t.isDie).length>=MAX_ACTIVE_FACTIONS;
@@ -1007,7 +1007,7 @@ export default class WorldEventSystem {
       } else if (draw > chance) {rd.drawFailed++;continue;}
       if (warTornPath || !founder) continue;
 
-      if (!founder.isDie) {
+      if (!founder.isDie && !newPopular) {
         if (city.revoltTo(founder, year)) {
           this.cityRebellionYears[city.id] = year;
           return;
@@ -1081,7 +1081,7 @@ export default class WorldEventSystem {
       }
       this.regional.counts.splitPolitical++;
       const support=assessPopularSupport(coreCity,year),rd=this.regional.counts;
-      rd.validOrdinary+=support.validOrdinary;rd.identityBlocked+=support.identityBlocked;rd.geographyBlocked+=support.outsideArea;rd.discontentBlocked+=support.discontentBlocked;rd.supporters+=support.users.length;
+      this.regional.accountSpatial(support.spatial);rd.validOrdinary+=support.validOrdinary;rd.identityBlocked+=support.identityBlocked;rd.geographyBlocked+=support.outsideArea;rd.discontentBlocked+=support.discontentBlocked;rd.supporters+=support.users.length;
       const founder = coreCity.founderTeam;
       if (
         founder &&
