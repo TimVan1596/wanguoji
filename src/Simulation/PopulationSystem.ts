@@ -65,9 +65,10 @@ export default class PopulationSystem {
     getGrowthMultiplier: (team: Team) => number = () => 1,
     profile?: MonthlyPhaseProfiler
   ) {
-    if (worldMonth - this.lastGrowthMonth < NATURAL_GROWTH_CHECK_MONTHS) {
+    if (worldMonth <= this.lastGrowthMonth) {
       return;
     }
+    const previousMonth = this.lastGrowthMonth;
     this.lastGrowthMonth = worldMonth;
 
     const recentEvents = WorldHistory.getEventsBetween?.(Math.max(0, worldMonth - 24), worldMonth) ?? [];
@@ -80,9 +81,15 @@ export default class PopulationSystem {
 
       const context = measurePhase(profile, "Population.growth context", () => getPopulationRecoveryContext(team, worldMonth, recentEvents));
       const effect = getGrowthMultiplier(team);
-      for (let attempt = 0; attempt < context.attempts; attempt++) {
+      // Same 1–3 opportunities per three months, spread over calendar months.
+      // At most one real natural increment per faction/month; skipped time is not replayed in a burst.
+      const phase = [...team.name].reduce((h,c)=>(h*31+c.charCodeAt(0))>>>0,0)%NATURAL_GROWTH_CHECK_MONTHS;
+      const due = Array.from({length:Math.min(NATURAL_GROWTH_CHECK_MONTHS,worldMonth-previousMonth)},(_,i)=>worldMonth-i)
+        .some(m=>(m+phase)%NATURAL_GROWTH_CHECK_MONTHS<context.attempts);
+      if (!due) return;
+      {
         const current = this.getPopulation(team);
-        if (current >= capacity) break;
+        if (current >= capacity) return;
         const roomRatio = (capacity - current) / capacity;
         const chance = Math.min(.85, BASE_GROWTH_CHANCE * roomRatio * (current <= 0 ? .65 : 1) * context.multiplier * effect);
         if (worldRandom.next() < chance) {

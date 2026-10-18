@@ -1,3 +1,4 @@
+import HistoricalEvidence from "../HistoricalEvidence";
 import { buildPopulationRecoveryLines } from "./PopulationPresentation";
 import HistoricalEventArchive from "./HistoricalEventArchive";
 import { getDiplomacyEventDetails } from "../../../History/DiplomacyEventDetails";
@@ -386,7 +387,7 @@ function FactionProfile({
       </Typography>
       <Box sx={{ display: "flex", gap: 0.5, my: 1 }}>
         {[
-          ["overview", "概况"],
+          ["overview", "概览"],
           ["power", "国势"],
           ["house", "王室"],
           ["military", "军政人物"],
@@ -404,6 +405,12 @@ function FactionProfile({
       {activeTab === "overview" ? (
         <>
           <OverviewSection title="身份沿革" lines={overviewSections.identityLines} />
+          {team.origin?.parentFactionId && <OverviewSection title="政权源流" lines={[
+            `来源：${team.origin.type === "SPLIT" ? "地方分裂政权" : "地方民众起事"} · ${formatWorldDate(team.origin.foundedMonth)}`,
+            `母体国家：${teams.find(t=>t.name===team.origin.parentFactionId)?.displayName ?? team.origin.parentFactionId}`,
+            `发源城市：${(team.origin.foundingCityIds ?? []).map(id=>Game.Core?.allCities.find(c=>c.id===id)?.name ?? id).join("、")}`,
+            ...WorldHistory.getEventsForFaction(team.name).filter(e=>["rebel-faction-founded","frontier-faction-founded","empire-split"].includes(e.type)&& (e.actorFactionId===team.name||e.metadata?.newFactionId===team.name||e.metadata?.splitFactionId===team.name)).slice(0,1).map(e=>`初始真实支持人口：${e.metadata?.transferredPopulation ?? "未记录"}；额外增员：${e.metadata?.externalPopulation ?? "未记录"}`)
+          ]} />}
           {buildStateFormationStatusLines(team, worldMonth, effectiveStability, hasFormalRuler).map((line) => (
             <Typography key={line} fontSize="0.9rem" color="var(--gg-text-muted)">
               {line}
@@ -622,7 +629,8 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
             <Typography fontSize="0.78rem">军事政治参与资格：{politicalCandidate ? `已核验（现役编组${politicalCandidate.unitCount}人，压力等级${politicalCandidate.strength}）` : `不合格：${describeMilitaryPoliticalBlock(militaryPolitics?.blocked.find(b => b.personId === person.personId)?.reason)}`}。仅已有危机中可能参与；不代表政治行动已发生。</Typography>
             {politicalEvents.filter(event => event.actorFactionId === factionId).map(event => <Box key={event.id}>
               <Typography fontSize="0.78rem">{formatWorldDate(event.monthIndex ?? event.year)} · {formatHistoryEventTitle(event, politicalFactionById)}</Typography>
-              <MilitaryPoliticalEventFacts event={event} />
+              {typeof event.metadata?.commanderPersonId === "string" && <HistoricalEvidence eventId={event.id} source={event.type} commandId={String(event.metadata.commandId)} personId={event.metadata.commanderPersonId} />}
+        <MilitaryPoliticalEventFacts event={event} />
             </Box>)}
             <Typography fontSize="0.82rem" color="var(--gg-text-muted)">{describeMilitaryAge(person, worldMonth, Boolean(activeUser?.matchesMilitaryLife(person)))} · 任职 {person.appointments.filter(item => item.factionId === factionId).map(item => `${formatWorldDate(item.startMonth)}${item.endMonth === undefined ? "至今" : `—${formatWorldDate(item.endMonth)}（${describeMilitaryAppointmentEnd(item.endReason)}）`}`).join("；")}</Typography>
             {lastAppointment?.endReason === "AGE_RETIREMENT" && lastAppointment.endMonth !== undefined && <Typography fontSize="0.82rem">退休时年龄：{Math.floor((lastAppointment.endMonth - person.bornMonth) / 12)}岁</Typography>}
@@ -634,7 +642,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
             <HistoricalEventArchive title="人物大事记（本国任职史料）" entries={MilitaryCommandRegistry.getChronicle(person, worldMonth, factionId).map(entry => ({
               id: entry.eventId, content: <>
                 <Typography fontSize="0.82rem">{formatWorldDate(entry.worldMonth)} · {entry.text}</Typography>
-                <Typography fontSize="0.72rem" color="var(--gg-text-muted)">来源：{entry.source}{entry.commandId ? ` · ${entry.commandId}` : ""}</Typography>
+                <HistoricalEvidence eventId={entry.eventId} source={entry.source} commandId={entry.commandId} personId={person.personId} />
               </>,
             }))} />
             {!formation && <Typography fontSize="0.82rem">当前无活动编组，无现役指挥权。</Typography>}
@@ -1347,6 +1355,7 @@ function RulerBiography({
         <Typography fontSize="0.82rem">
           {formatWorldDate(event.monthIndex ?? event.year)} ◆ {formatRulerMilitaryEvent(event, ruler, team.name, worldMonth) ?? formatRulerTerminalEvent(event, ruler, team.name, factionById) ?? formatRulerDiplomacyEvent(event, factionById, ruler.id) ?? formatFactionHistoryEvent(event, team.name, factionById) ?? formatHistoryEventTitle(event, factionById)}
         </Typography>
+        {typeof event.metadata?.commanderPersonId === "string" && <HistoricalEvidence eventId={event.id} source={event.type} commandId={String(event.metadata.commandId)} personId={event.metadata.commanderPersonId} />}
         <MilitaryPoliticalEventFacts event={event} />
         </Box>
       )) : (
@@ -1361,7 +1370,7 @@ function RulerBiography({
           <Typography fontSize="0.82rem">{formatWorldDate(event.monthIndex ?? event.year)} · {formatRulerDiplomacyEvent(event, factionById, ruler.id) ?? formatHistoryEventTitle(event, factionById)}</Typography>
           <Typography fontSize="0.75rem">{event.description}</Typography>
           {getDiplomacyEventDetails(event, factionById).map(line => <Typography key={line} fontSize="0.75rem">{line}</Typography>)}
-          <Typography fontSize="0.72rem" color="var(--gg-text-muted)">来源：{event.id}</Typography>
+          <HistoricalEvidence eventId={event.id} source={event.type} />
         </>,
       }))} />
       <Typography fontWeight="bold" fontSize="0.86rem" sx={{ mt: 0.75 }}>

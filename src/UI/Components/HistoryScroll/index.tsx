@@ -1,3 +1,4 @@
+import HistoricalEvidence from "../HistoricalEvidence";
 import { EventDetails, EventText } from "./HistoryEventDetails";
 import { getHistoryCardFactionView, getHistoryCardPresentation } from "../../../History/HistoryCardPresentation";
 import { FactionTerminalRetrospective } from "../FactionAssessment";
@@ -435,6 +436,7 @@ function HistoryEventListContent({
             {expanded ? <Box sx={{ mt: 0.5 }}>
               {eventDescription ? <Typography fontSize="0.85rem" sx={{ opacity: 0.85 }}><EventText text={eventDescription} teamByName={eventTeamByDisplayName} factionNames={eventFactionNames} cityNames={cityNames} /></Typography> : null}
               <FactionTerminalRetrospective event={event} factions={teamByName} dynasties={dynastyByFactionId} />
+              <HistoricalEvidence eventId={event.id} source={event.type} commandId={typeof event.metadata?.commandId === "string" ? event.metadata.commandId : undefined} personId={typeof event.metadata?.commanderPersonId === "string" ? event.metadata.commanderPersonId : undefined} />
               <EventDetails event={card.event} teamByName={eventTeamByDisplayName} factionNames={eventFactionNames} cityNames={cityNames} />
             </Box> : null}
           </Box>

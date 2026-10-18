@@ -568,6 +568,7 @@ function WorldDiagnosticsPanelContent() {
         ].join("\n")}</Typography>
       </details>}
       {core && <details><summary>和平政治转型诊断</summary><Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 11 }}>{core.getPeacefulPoliticalTransitionDiagnostics()?.chineseSummary}</Typography><Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(core.getPeacefulPoliticalTransitionDiagnostics())}</Typography></details>}
+      {core && <details><summary>地方叛乱与帝国分裂</summary><Typography component="pre" sx={{whiteSpace:"pre-wrap",overflowWrap:"anywhere",fontSize:11}}>{core.getRegionalRebellionDiagnostics()}</Typography></details>}
       {core && <details><summary>复国统计</summary><Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 11 }}>{core.getRestorationDiagnostics()}</Typography></details>}
       {core && <details><summary>纳土归附诊断</summary><Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(core.getPeacefulSubmissionDiagnostics())}</Typography></details>}
       {core && <details>

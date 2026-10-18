@@ -1,3 +1,4 @@
+import HistoricalEvidence from "../HistoricalEvidence";
 import { useEffect, useMemo, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import WorldHistory, { formatEventDate, type WorldEvent, type WorldHistoryStore } from "../../../History/WorldHistory";
@@ -49,7 +50,8 @@ export function EraChronicleEventCard({ event, factions, rulers, expandedId, onT
     {card.expanded ? <Box sx={{ mt: .5 }}>
       {isAfterEraSnapshot(event, capturedMonth) ? <Typography fontSize="0.7rem" color="text.secondary">此事件发生于地图记录月份之后，地图未反映本事件造成的疆域变化。</Typography> : null}
       {card.description ? <Typography fontSize="0.75rem"><EventText text={card.description} teamByName={view} factionNames={factionNames} cityNames={cityNames} /></Typography> : null}
-      <EventDetails event={card.event} teamByName={view} factionNames={factionNames} cityNames={cityNames} />
+      <HistoricalEvidence eventId={event.id} source={event.type} commandId={typeof event.metadata?.commandId === "string" ? event.metadata.commandId : undefined} personId={typeof event.metadata?.commanderPersonId === "string" ? event.metadata.commanderPersonId : undefined} />
+              <EventDetails event={card.event} teamByName={view} factionNames={factionNames} cityNames={cityNames} />
     </Box> : null}
   </Box>;
 }

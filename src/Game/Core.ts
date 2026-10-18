@@ -732,6 +732,7 @@ export default class Core {
     return this.simulator?.getPopulationTransitionDiagnostics() ?? [];
   }
 
+  getRegionalRebellionDiagnostics(){return this.simulator?.getRegionalRebellionDiagnostics();}
   getRestorationDiagnostics() { return this.simulator?.getRestorationDiagnostics(); }
 
   getPeacefulPoliticalTransitionDiagnostics() {

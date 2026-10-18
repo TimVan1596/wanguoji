@@ -14,10 +14,11 @@ vi.mock("../Components/Player", () => ({ default: class {
 vi.mock("../Components/Slaves", () => ({ default: class { dispose(){} reset(){} children={each(){}}; } }));
 vi.mock("../store", () => ({ store: { getState: () => ({ root: {} }), dispatch: vi.fn() } }));
 vi.mock("../Politics/Dynasty", () => ({ default: new Proxy({}, { get: () => vi.fn() }) }));
-let Team:any, User:any, City:any, Population:any, History:any, Military:any, Effects:any, Diplomacy:any, Events:any, Factions:any, AutoSim:any, Submission:any;
+let Lifetime:any, Team:any, User:any, City:any, Population:any, History:any, Military:any, Effects:any, Diplomacy:any, Events:any, Factions:any, AutoSim:any, Submission:any;
 beforeAll(async()=>{
   class Group { children={size:0,entries:[] as any[]}; add(v:any){this.children.entries.push(v);this.children.size++;} remove(v:any){this.children.entries=this.children.entries.filter(x=>x!==v);this.children.size=this.children.entries.length;} }
   vi.stubGlobal("Phaser",{GameObjects:{Rectangle:class{},Group},Math:{Clamp:(n:number,a:number,b:number)=>Math.max(a,Math.min(b,n))},Display:{Align:{In:{Center(){}}},Color:{HSLToColor:()=>({color:12345})}}});
+  Lifetime=(await import("./FactionLifetimeRecord")).default;
   Team=(await import("../Components/Team")).default; User=(await import("../Components/User")).default;
   City=(await import("../Components/City")).default; Population=(await import("./PopulationSystem")).default;
   History=(await import("../History/WorldHistory")).default; Military=(await import("../Politics/MilitaryCommandRegistry")).default;
@@ -29,7 +30,7 @@ beforeAll(async()=>{
 afterEach(()=>{vi.restoreAllMocks();}); afterAll(()=>{vi.unstubAllGlobals();});
 
 function fixture(seed:number, population=10, cityCount=1) {
-  History.reset(); Military.reset(); Effects.reset(); Diplomacy.reset(); Factions.reset();worldRandom.initialize(`population-replay-${seed}`);
+  Lifetime.reset(); History.reset(); Military.reset(); Effects.reset(); Diplomacy.reset(); Factions.reset();worldRandom.initialize(`population-replay-${seed}`);
   vi.spyOn(User.prototype,"load").mockImplementation(()=>{}); // renderer asset loading only
   core.scene={}; core.map={getBlock:()=>({x:0,y:0})}; core.recordUserDeathForDiagnostics=()=>{};
   core.handleRulerCombatDeath=()=>false;core.logicalGameplayAuthority=true;
@@ -39,7 +40,7 @@ function fixture(seed:number, population=10, cityCount=1) {
   const make=(name:string)=>new Team({},name,1,0,0,[],undefined,name,"田氏",undefined,undefined,undefined,undefined,false);
   const team=make("守国"),enemy=make("敌国");core.teams=[team,enemy];
   core.addRuntimeTeam=(t:any)=>{core.teams.push(t);return true;};core.releaseTerminalTeamColliders=()=>{};
-  const blocks=Array.from({length:16},(_,x)=>Array.from({length:16},(_,y)=>({x:x*32,y:y*32,team:x<8?team:enemy,city:undefined as any,
+  const blocks=Array.from({length:16},(_,x)=>Array.from({length:16},(_,y)=>({scene:{renderer:{width:512,height:512}},x:x*32,y:y*32,team:x<8?team:enemy,city:undefined as any,
     updateCityDisplay(){},claimForTeam(t:any){if(this.team===t)return;this.team.blocks.remove(this);this.team=t;t.blocks.add(this);}})));
   for(const row of blocks)for(const block of row)block.team.blocks.add(block);
   core.map={blocks,getBlock:(x:number,y:number)=>blocks[x]?.[y]};
@@ -64,7 +65,7 @@ it("fixed-seed actual production demographic replay (controlled siege contacts, 
   const rows:any[]=[];
   for(const scenario of ["peace","one-siege","three-sieges","small-immigration","rebellion","split","union","submission"]){
     for(let seed=0;seed<8;seed++){
-      const f=fixture(seed,scenario==="small-immigration"?4:10,["three-sieges","rebellion","split"].includes(scenario)?3:1);
+      const f=fixture(seed,scenario==="small-immigration"?4:10,scenario==="split"?4:["three-sieges","rebellion"].includes(scenario)?3:1);
       const initialUsers=[...f.team.users] as any[];
       const initial=f.team.users.size;let zeros=0,maxMonthDelta=0,minWar=initial,last=initial;
       if(scenario==="small-immigration"){
@@ -76,6 +77,8 @@ it("fixed-seed actual production demographic replay (controlled siege contacts, 
       if(scenario==="rebellion"||scenario==="split") {
         for(const u of f.team.users)u.loyalty=20;
         const city=f.team.cities[1];
+        for(const c of f.team.cities)c.loyalty=20;
+        for(const u of f.team.users)Object.assign(f.entries.get(u.player.logicalUnitId).state,{logicalX:city.block.x+16,logicalY:16});
         const created=scenario==="rebellion"?Factions.createRebelFaction({city,year:0,factionType:"REBEL"}):Factions.createSplitFaction(f.team,[city],0)?.team;
         expect(created).toBeDefined();last=f.team.users.size;maxMonthDelta=Math.max(maxMonthDelta,Math.abs(last-initial));
       }
@@ -203,14 +206,16 @@ it.each(["harvest","famine","population-boom","heavenly-reinforcements"])("actua
 });
 
 it.each(["rebellion","split"])("%s requires existing legal ordinary supporters and rolls failed preparation back without orphan Users",(kind)=>{
-  const f=fixture(7,6,3), original=[...f.team.users] as any[], count=core.teams.length;
+  const f=fixture(7,6,4), original=[...f.team.users] as any[], count=core.teams.length;
   for(const u of original)u.loyalty=20;
   original[0].militaryPersonId="active-commander";original[1].role="RULER";
-  const city=f.team.cities[1];const refused=original.filter(u=>u.role==="NORMAL"&&!u.militaryPersonId).sort((a,b)=>a.id-b.id)[1];const originalMove=refused.setTeam;
+  for(const c of f.team.cities)c.loyalty=20;
+  const city=f.team.cities[1];for(const u of f.team.users)Object.assign(f.entries.get(u.player.logicalUnitId).state,{logicalX:city.block.x+16,logicalY:16});const refused=original.filter(u=>u.role==="NORMAL"&&!u.militaryPersonId).sort((a,b)=>a.id-b.id)[1];const originalMove=refused.setTeam;
   refused.setTeam=function(...args:any[]){if(args[0]!==f.team)throw new Error("controlled identity refusal");return originalMove.apply(this,args);};
   const result=kind==="split"?Factions.createSplitFaction(f.team,[city],1):Factions.createRebelFaction({city,year:1,factionType:"REBEL"});
   expect(result).toBeUndefined();expect(core.teams).toHaveLength(count);expect(f.team.users.size).toBe(6);expect(city.ownerFactionId).toBe(f.team.name);
   refused.setTeam=originalMove;
+  for(const c of f.team.cities){c.loyalty=95;c.devastation=0;}
   for(const u of original)u.loyalty=99;
   expect(kind==="split"?Factions.createSplitFaction(f.team,[city],1):Factions.createRebelFaction({city,year:1,factionType:"REBEL"})).toBeUndefined();
   expect(f.team.users.size).toBe(6);
@@ -230,3 +235,32 @@ it("actual siege casualty, capital loss/capture and peaceful recovery stay disti
   expect(report.totals.warDeaths).toBe(1);expect(report.unexplainedWorldDifference).toBe(0);
   expect(report.openingWorldPopulation+report.totals.net).toBe(report.closingWorldPopulation);
 });
+
+it("12 seeds: default-loyalty population and actual annual imperial city decay, controlled production paths (not Core natural worlds)",()=>{
+  const rows:any[]=[];
+  for(const scenario of ["stable","popular","imperial"])for(let seed=0;seed<12;seed++){
+    const f=fixture(seed,20,4);core.totalCells=256;
+    if(scenario!=="stable")for(const row of core.map.blocks)for(const b of row)b.claimForTeam(f.team);
+    for(const c of f.team.cities)c.lastLoyaltyYear=0;
+    const identities=[...f.team.users] as any[];expect(identities.every(u=>u.loyalty>=55&&u.loyalty<=95)).toBe(true);
+    identities.forEach((u,i)=>{const c=f.team.cities[i%4],s=f.entries.get(u.player.logicalUnitId).state;s.logicalX=c.block.x+16;s.logicalY=16;});
+    const checkpoints:any={};let cityChecks=0,politicalCities=0;
+    for(let month=1;month<=2400;month++){
+      core.simulator.year=month;
+      for(const c of core.teams.flatMap((t:any)=>t.cities)){c.updateLoyalty(month);if(month%12===0){cityChecks++;if(c.loyalty<=28)politicalCities++;}}
+      f.populationSystem.update(month,core.teams);
+      f.eventSystem.checkRestorations(month,[...core.teams]);
+      if(scenario==="imperial")f.eventSystem.checkEmpireSplit(month,[...core.teams],256);
+      f.audit.reconcile(month,core.teams);
+      if(month===1200||month===2400){const events=History.getEvents();checkpoints[month/12]={historical:core.teams.length,active:core.teams.filter((t:any)=>t.status==="ACTIVE").length,
+        popular:events.filter((e:any)=>["rebel-faction-founded","frontier-faction-founded"].includes(e.type)).length,
+        split:events.filter((e:any)=>e.type==="empire-split").length,restored:events.filter((e:any)=>e.type==="faction-restored").length,
+        population:core.teams.reduce((n:number,t:any)=>n+t.users.size,0),natural:f.totals.NATURAL_GROWTH??0,warDeaths:-(f.totals.SIEGE_LOSS??0),cityChecks,politicalCities,
+        diagnostics:f.eventSystem.getRegionalRebellionSnapshot?.()};}
+    }
+    expect(f.audit.getSummary(undefined,core.teams).unexplainedWorldDifference).toBe(0);
+    rows.push({scenario,seed,checkpoints});vi.restoreAllMocks();
+  }
+  if(process.env.WANGUOJI_REGIONAL_REPLAY_OUTPUT)writeFileSync(process.env.WANGUOJI_REGIONAL_REPLAY_OUTPUT,JSON.stringify(rows,null,2));
+  console.log("REGIONAL_PRODUCTION_REPLAY",rows.length,"controlled runs / 12 seeds / 200 years");
+},30000);

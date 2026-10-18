@@ -1152,7 +1152,7 @@ it("x三个国家千年王室继统姓名分布与近代避重，不改人物时
   console.log("x受控真实王室生命周期姓名分布（无战争人口运行）", report);
 }, 10000);
 
-it.each(["siege-recovery", "split"])("y %s: real Users and political transactions → strict V17 hydration → deterministic continuation", async scenario => {
+it.each(["siege-recovery", "split", "popular"])("y1 %s: real Users and political transactions → strict V17 hydration → deterministic continuation", async scenario => {
   const { default: RealTeam } = await vi.importActual<typeof import("../Components/Team")>("../Components/Team");
   const { default: RealCity } = await vi.importActual<typeof import("../Components/City")>("../Components/City");
   const TeamModule = await import("../Components/Team"), CityModule = await import("../Components/City");
@@ -1181,16 +1181,18 @@ it.each(["siege-recovery", "split"])("y %s: real Users and political transaction
   vi.spyOn(DynastyRegistry,"ensureRulerUnit").mockImplementation(()=>undefined); // off-map royal people remain real
   try {
     const save=fixture();save.world.worldMonth=save.world.clock.worldMonth=0;save.registries.archivedCities=[];
-    save.cities.push(...[1,2].map(x=>({...save.cities[0],cityId:`town-${x}`,name:`城${x}`,isCapital:false,centerGridX:x,fortifiedCells:[{gridX:x,gridY:0}]})));
-    save.blocks.forEach((b,i)=>Object.assign(b,{cityId:save.cities[i].cityId,isCityCenter:true,homeHitPoints:7}));
+    save.cities.push(...[1,2,3].map(x=>({...save.cities[0],cityId:`town-${x}`,name:`城${x}`,isCapital:false,centerGridX:x*9,fortifiedCells:[{gridX:x*9,gridY:0}]})));
+    save.world.map.widthCells=30;
+    save.blocks=Array.from({length:30},(_,gridX)=>({gridX,gridY:0,ownerFactionId:"qin",isHome:gridX===0,isCityCenter:false,homeHitPoints:0}));
+    save.cities.forEach(c=>Object.assign(save.blocks[c.centerGridX],{cityId:c.cityId,isCityCenter:true,homeHitPoints:c.defense}));
     const names=Array.from({length:6},(_,i)=>`秦-${i}`);
-    save.users=names.map((name,i)=>({userId:getLocalUserId(name),name,factionId:"qin",sourceFactionId:"qin",playerUnitId:`unit-${i+1}`,bornMonth:-300,role:"NORMAL",loyalty:20,score:0,slaveUnits:[]}));
-    save.units=save.users.map(u=>({unitId:u.playerUnitId,userId:u.userId,factionId:"qin",x:0,y:0,vx:0,vy:0,speed:150,radius:16,scale:1,speedCoefficient:0,sizeCoefficient:0,role:"NORMAL",alive:true,kind:"user",children:[]}));
+    save.users=names.map((name,i)=>({userId:getLocalUserId(name),name,factionId:"qin",sourceFactionId:"qin",playerUnitId:`unit-${i+1}`,bornMonth:-300,role:"NORMAL",loyalty:70,score:0,slaveUnits:[]}));
+    save.units=save.users.map(u=>({unitId:u.playerUnitId,userId:u.userId,factionId:"qin",x:9*32+16,y:16,vx:0,vy:0,speed:150,radius:16,scale:1,speedCoefficient:0,sizeCoefficient:0,role:"NORMAL",alive:true,kind:"user",children:[]}));
     save.registries.logicalUnitRegistry={nextUnitSequence:7};setFixtureLifetimeRecords(save);
-    const core=target(),prepare=core.prepareForHydration;
-    Object.defineProperty(core,"totalCells",{value:3});core.logicalGameplayAuthority=true;core.logicalUnitRegistry=new LogicalUnits();
+    const core=target(30),prepare=core.prepareForHydration;
+    Object.defineProperty(core,"totalCells",{value:30});core.logicalGameplayAuthority=true;core.logicalUnitRegistry=new LogicalUnits();
     core.prepareForHydration=(...args:any[])=>{prepare(...args);core.map.getBlock=(x:number,y:number)=>core.map.blocks[x]?.[y];
-      core.map.blocks.flat().forEach((b:any)=>Object.assign(b,{width:32,height:32,updateCityDisplay(){},
+      core.map.blocks.flat().forEach((b:any)=>Object.assign(b,{width:32,height:32,scene:core.scene,updateCityDisplay(){},
         restoreCanonicalState(state:any){Object.assign(this,{team:state.owner,city:state.city,hp:state.hp,isHome:state.isHome,isCityCenter:state.isCityCenter});state.owner?.blocks.add(this);},
         claimForTeam(this:any,owner:any){this.team?.blocks.remove(this);this.team=owner;owner.blocks.add(this);}}));};
     core.recordUserDeathForDiagnostics=()=>{};core.handleRulerCombatDeath=()=>false;
@@ -1207,13 +1209,26 @@ it.each(["siege-recovery", "split"])("y %s: real Users and political transaction
     sim.exportState=()=>({...baseExport(),populationSystem:pop.exportState(),worldEventSystem:events.exportState()});
     sim.importState=(state:any)=>{baseImport(state);pop=new Population();pop.importState(state.populationSystem);events=new Events();events.importState(state.worldEventSystem,state.clock.worldMonth);sim.year=state.clock.worldMonth;};
     const identities=save.users.map(u=>({id:u.userId,bornMonth:u.bornMonth}));
-    if(scenario==="split"){
-      const old=core.teams[0],result=Factions.createSplitFaction(old,[old.cities[1]],1)!;
-      expect(result).toBeDefined();expect(result.externalPopulation).toBe(0);
+    if(scenario!=="siege-recovery"){
+      const old=core.teams[0];
+      // Default 70 loyalty Users remain unchanged; real imperial distance decay creates local discontent.
+      const cityModule=await import("../Components/City");
+      vi.spyOn(cityModule,"getFactionStability").mockImplementation(t=>t.cities.reduce((n,c)=>n+c.loyalty,0)/Math.max(1,t.cities.length));
+      for(const c of old.cities)c.lastLoyaltyYear=0;
+      for(let m=12;m<=840;m+=12){sim.year=m;for(const c of old.cities)(c as any).updateLoyalty(m);}
+      expect(old.cities[1].loyalty).toBeLessThan(26);
+      expect([...old.users].every((u:any)=>u.loyalty===70)).toBe(true);
+      const next=vi.spyOn(worldRandom,"next").mockReturnValue(0);
+      if(scenario==="split")(events as any).checkEmpireSplit(840,core.teams,30);
+      else (events as any).checkRestorations(840,core.teams);
+      next.mockRestore();
+      expect(core.teams).toHaveLength(2);const created=core.teams[1];
+      const founded=WorldHistory.getEvents().filter(e=>e.type===(scenario==="split"?"empire-split":"rebel-faction-founded"));
+      expect(founded).toHaveLength(1);expect(founded[0].actorFactionId).toBe(created.name);
+      expect(created.users.size).toBeGreaterThan(0);expect(created.cities.length).toBeGreaterThan(0);
+      expect(created.origin.parentFactionId).toBe(old.name);expect(DynastyRegistry.getCurrentRuler(created.name)).toBeDefined();
       expect(core.teams.reduce((n:number,t:any)=>n+t.users.size,0)).toBe(6);
-      expect(result.team.users.size).toBe(result.transferredPopulation);
-      expect(old.users.size+result.transferredPopulation).toBe(6);
-      audit.reconcile(1,core.teams);const totals=audit.getSummary(undefined,core.teams).totals;
+      audit.reconcile(840,core.teams);const totals=audit.getSummary(undefined,core.teams).totals;
       expect(totals.transferIn).toBe(totals.transferOut);expect(totals.net).toBe(0);
     }else{
       const defender=core.teams[0];
@@ -1228,7 +1243,7 @@ it.each(["siege-recovery", "split"])("y %s: real Users and political transaction
       for(let m=3;m<=24;m+=3){sim.year=m;pop.update(m,core.teams);audit.reconcile(m,core.teams);}next.mockRestore();
       expect(defender.users.size).toBeGreaterThan(5);expect(audit.getSummary(undefined,core.teams).totals.warDeaths).toBe(1);
     }
-    const month=scenario==="split"?1:24;sim.year=month;baseExport().clock.worldMonth=month;
+    const month=scenario!=="siege-recovery"?840:24;sim.year=month;baseExport().clock.worldMonth=month;
     audit.reconcile(month,core.teams);expect(audit.getSummary(undefined,core.teams).unexplainedWorldDifference).toBe(0);
     vi.spyOn(events as any,"pickRandomEventType").mockReturnValue("population-boom");
     vi.spyOn(events as any,"pickFaction").mockReturnValue(core.teams[0]);
@@ -1239,7 +1254,7 @@ it.each(["siege-recovery", "split"])("y %s: real Users and political transaction
     const uninterrupted=continueWorld();hydrateWorldSave(core,JSON.parse(JSON.stringify(snapshot)));
     expect(exportWorldSave(core)).toEqual(snapshot);
     const resumed=continueWorld();expect(resumed).toEqual(uninterrupted);
-    for(const identity of identities){const live=resumed.users.find(u=>u.userId===identity.id);if(scenario==="split"){expect(live?.bornMonth).toBe(identity.bornMonth);expect(live?.sourceFactionId).toBe("qin");}}
+    for(const identity of identities){const live=resumed.users.find(u=>u.userId===identity.id);if(scenario!=="siege-recovery"){expect(live?.bornMonth).toBe(identity.bornMonth);expect(live?.sourceFactionId).toBe("qin");}}
     if(scenario==="siege-recovery")expect(resumed.populationSystem.wartimeLossMonths.qin).toBe(1);
   }finally{vi.unstubAllGlobals();}
 },10000);

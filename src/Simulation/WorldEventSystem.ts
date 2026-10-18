@@ -1,3 +1,5 @@
+import {RegionalRebellionAudit} from "./RegionalRebellionAudit";
+import {assessPopularSupport,hasPopularPoliticalCrisis} from "./PopularRebellionSupport";
 import { getPopulationCapacity } from "./PopulationSystem";
 import { getLocalRestorationClaimant, assessLocalRestorationPopulation } from "./LocalRestorationSupport";
 import { deriveRestorationTenureEvidence } from "./RestorationTenureEvidence";
@@ -49,7 +51,6 @@ import {
   USER_NATURAL_LOYALTY_MAX,
   USER_NATURAL_LOYALTY_MIN,
   REBEL_LOYALTY_THRESHOLD_V095,
-  REBEL_OWNER_STABILITY_THRESHOLD_V095,
   WEAK_FACTION_POSITIVE_EVENT_BIAS,
   HARVEST_DURATION_MONTHS,
   FAMINE_DURATION_MONTHS,
@@ -156,6 +157,9 @@ function createLocalSupportDiagnostics() {
 }
 
 export default class WorldEventSystem {
+  private regional = new RegionalRebellionAudit();
+  getRegionalRebellionSnapshot(){return this.regional.snapshot(this.restorationDiagnostics.successes);}
+  getRegionalRebellionDiagnostics(){return this.regional.summary(this.restorationDiagnostics.successes);}
   private localObserved={countries:new Set<string>(),cities:new Set<string>(),users:new Set<string>()};
   private observeLocal(kind:"countries"|"cities"|"users", ids:readonly string[]) {
     const set=this.localObserved[kind], d=this.restorationDiagnostics.localSupport;
@@ -209,6 +213,7 @@ export default class WorldEventSystem {
   );
 
   reset(startYear = 0) {
+    this.regional.reset(startYear);
     this.resetRestorationDiagnostics(startYear);
     this.activeEffects = [];
     this.nextEventYear = this.rollNextEventYear(startYear);
@@ -255,6 +260,7 @@ export default class WorldEventSystem {
   }
 
   importState(state: ReturnType<WorldEventSystem["exportState"]>, worldMonth = 0) {
+    this.regional.reset(worldMonth);
     this.resetRestorationDiagnostics(worldMonth);
     this.activeEffects = state.activeEffects.map(({ startMonth, endMonth, ...effect }) => ({
       ...effect,
@@ -786,6 +792,7 @@ export default class WorldEventSystem {
   }
 
   private checkRestorations(year: number, teams: Team[]) {
+    this.regional.observe(year, Game.Core?.teams ?? teams);
     if (year - this.lastRebellionCheckYear < REBELLION_CHECK_INTERVAL_MONTHS) {
       return;
     }
@@ -805,6 +812,7 @@ export default class WorldEventSystem {
     for (const city of cities) {
       if (city.destroyed) continue;
       diagnostics.cityChecks++;
+      const rd=this.regional.counts;rd.cityChecks++;
       const owner = city.ownerTeam;
       const founder = city.founderTeam;
       if (!owner) continue;
@@ -822,7 +830,7 @@ export default class WorldEventSystem {
       }
       const warTornPath = city.loyalty > REBELLION_LOYALTY_THRESHOLD;
       if (warTornPath && (city.loyalty >= 40 || city.devastation < 70)) {
-        local.cityBlocked += localHistoryCount; this.restorationBlock("忠诚度高于叛乱门槛且无战乱旧地机会"); continue;
+        rd.loyaltyBlocked++;local.cityBlocked += localHistoryCount; this.restorationBlock("忠诚度高于叛乱门槛且无战乱旧地机会"); continue;
       }
       const ownerStability = getFactionStability(owner) ?? 100;
       // High-loyalty cities never enter the original revolt/new-rebel path.
@@ -872,7 +880,18 @@ export default class WorldEventSystem {
           if (basis === "FORMER_CAPITAL") diagnostics.capitalEligible++; else diagnostics.longRuleEligible++;
         }
       }
-      const originalPath = !warTornPath && Boolean(founder && city.ownerFactionId !== city.founderFactionId) && !historical.some(row => row.team === founder && row.supporter);
+      const populationSupport = !warTornPath ? assessPopularSupport(city,year) : undefined;
+      if(populationSupport){rd.validOrdinary+=populationSupport.validOrdinary;rd.identityBlocked+=populationSupport.identityBlocked;
+        rd.geographyBlocked+=populationSupport.outsideArea;rd.discontentBlocked+=populationSupport.discontentBlocked;rd.supporters+=populationSupport.users.length;}
+      const stableBlocked=!hasPopularPoliticalCrisis(city,year,Game.Core?.totalCells ?? 1);
+      const capacityBlocked=(Game.Core?.teams ?? teams).filter(t=>!t.isDie).length>=MAX_ACTIVE_FACTIONS;
+      if(stableBlocked)rd.stabilityBlocked++;if(capacityBlocked)rd.capacityBlocked++;
+      const cityPolitical=!warTornPath&&city.loyalty<=REBEL_LOYALTY_THRESHOLD_V095&&!stableBlocked;
+      if(cityPolitical)rd.politicalCities++;
+      if(cityPolitical&&!populationSupport?.users.length)rd.noSupport++;
+      const newPopular=cityPolitical&&!capacityBlocked&&Boolean(populationSupport?.users.length);
+      // Own-founded cities can form a popular polity; former-owner restoration retains its original priority/slot.
+      const originalPath = !warTornPath && (Boolean(founder && city.ownerFactionId !== city.founderFactionId)||newPopular) && !historical.some(row => row.team === founder && row.supporter);
       if (!originalPath && !historical.length) continue;
       const loyaltyPressure = warTornPath ? 0 :
         (REBELLION_LOYALTY_THRESHOLD - city.loyalty) /
@@ -891,7 +910,7 @@ export default class WorldEventSystem {
         year,
         teams
       );
-      const chance =
+      const baseChance =
         REBELLION_BASE_CHANCE *
         loyaltyPressure *
         (1 + instabilityBonus) *
@@ -899,6 +918,7 @@ export default class WorldEventSystem {
         restorationWeight *
         FactionEffects.getRebellionRiskMultiplier(owner.name) *
         cycleMultiplier;
+      const chance = city.ownerFactionId===city.founderFactionId ? Math.min(.09,baseChance) : baseChance;
       if (originalPath && founder?.status === "EXILED") {
         diagnostics.founderCandidates++;
         if (FactionRegistry.canRestoreFaction(founder, year)) { diagnostics.eligibleChecks++; diagnostics.founderEligible++; }
@@ -942,6 +962,7 @@ export default class WorldEventSystem {
       diagnostics.draws++;
       if (expectedRestoration > 0) diagnostics.restorationDraws++;
       diagnostics.expectedRestorations += expectedRestoration;
+      rd.draws++;
       const draw = worldRandom.next();
       const opportunitySamples=new Map<typeof historical[number],LocalOpportunitySample>();
       for(const row of historical) if(row.supporter) {
@@ -953,7 +974,7 @@ export default class WorldEventSystem {
       }
       if (historical.length) {
         const selected = selectLocalResponseOpportunity(slots,draw,warTornPath?.03:.09);
-        if (!selected) continue;
+        if (!selected) {rd.drawFailed++;continue;}
         const row = selected.historical;
         if (row) {
           diagnostics.attempts++;
@@ -983,7 +1004,7 @@ export default class WorldEventSystem {
           diagnostics.failures++; this.restorationBlock("执行未成功"); continue;
         }
         // The selected legacy slot retains its original execution chain and random draw.
-      } else if (draw > chance) continue;
+      } else if (draw > chance) {rd.drawFailed++;continue;}
       if (warTornPath || !founder) continue;
 
       if (!founder.isDie) {
@@ -1010,22 +1031,11 @@ export default class WorldEventSystem {
         diagnostics.failures++; this.restorationBlock("建城者恢复执行未成功");
       }
 
-      if (
-        teams.filter((team) => !team.isDie).length < MAX_ACTIVE_FACTIONS &&
-        ownerStability <= REBEL_OWNER_STABILITY_THRESHOLD_V095 &&
-        city.loyalty <= REBEL_LOYALTY_THRESHOLD_V095
-      ) {
+      if (newPopular) {
         const frontier = isFrontierCity(city) && worldRandom.next() <= FRONTIER_REBELLION_CHANCE;
-        if (
-          FactionRegistry.createRebelFaction({
-            city,
-            year,
-            factionType: frontier ? "FRONTIER" : "REBEL",
-          })
-        ) {
-          this.cityRebellionYears[city.id] = year;
-          return;
-        }
+        const created=FactionRegistry.createRebelFaction({city,year,factionType:frontier?"FRONTIER":"REBEL"});
+        if(created){this.regional.created(created,year,"popular");this.cityRebellionYears[city.id]=year;return;}
+        rd.executionFailed++;
       }
     }
   }
@@ -1044,6 +1054,7 @@ export default class WorldEventSystem {
       .filter((team) => !team.isDie && team.cities.length >= EMPIRE_SPLIT_MIN_CITIES)
       .sort((a, b) => b.cities.length - a.cities.length);
     for (const team of candidates) {
+      this.regional.counts.splitChecks++;
       const stability = getFactionStability(team) ?? 100;
       const unifiedDuration =
         this.unifyingFactionId === team.name && this.unificationMonth !== undefined
@@ -1068,6 +1079,9 @@ export default class WorldEventSystem {
       if (!coreCity) {
         continue;
       }
+      this.regional.counts.splitPolitical++;
+      const support=assessPopularSupport(coreCity,year),rd=this.regional.counts;
+      rd.validOrdinary+=support.validOrdinary;rd.identityBlocked+=support.identityBlocked;rd.geographyBlocked+=support.outsideArea;rd.discontentBlocked+=support.discontentBlocked;rd.supporters+=support.users.length;
       const founder = coreCity.founderTeam;
       if (
         founder &&
@@ -1080,20 +1094,23 @@ export default class WorldEventSystem {
         const restoredPopulation = remnants?.population ?? 0;
         if (FactionRegistry.restoreFaction(founder, coreCity, year, restoredPopulation, "RESTORATION", undefined, year)) {
           WorldRemnants.consume(founder.name, restoredPopulation);
+          this.regional.counts.splitRestored++;
           this.fractureUntilMonth = year + 60;
           return;
         }
       }
 
+      if(!support.users.length){rd.noSupport++;continue;}
       const splitCities = selectSplitCities(
         coreCity,
         team.cities,
         EMPIRE_SPLIT_MAX_CITIES,
         Game.BlockSize
       ) as City[];
-      const split = FactionRegistry.createSplitFaction(team, splitCities, year);
+      const split = FactionRegistry.createSplitFaction(team, splitCities, year, strain);
       if (split) {
         const rebel = split.team;
+        this.regional.created(rebel,year,"split");
         const transferredCities = split.transferredCities;
         WorldHistory.addEmpireSplit(
           year,
@@ -1112,6 +1129,7 @@ export default class WorldEventSystem {
         this.fractureUntilMonth = year + 60;
         return;
       }
+      rd.executionFailed++;
     }
   }
 

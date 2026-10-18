@@ -20,7 +20,7 @@ export function formatMilitaryVictorySource(event: WorldEvent) {
   if (!["city-captured", "city-recovered", "capital-fallen"].includes(event.type) ||
       typeof m?.commanderPersonId !== "string" || typeof m.commandId !== "string" ||
       typeof m.commanderPersonalName !== "string" || !m.commanderPersonalName.trim() || !event.cityId || !event.actorFactionId) return undefined;
-  return `${m.commanderPersonalName}所属编组参与${event.type === "city-recovered" ? "收复" : "攻陷"}${event.cityName ?? event.cityId}${m.wasCapital === 1 ? "（当时敌都）" : ""}（编组${m.commandId}；来源${event.id}）`;
+  return `${m.commanderPersonalName}所属编组参与${event.type === "city-recovered" ? "收复" : "攻陷"}${event.cityName ?? event.cityId}${m.wasCapital === 1 ? "（当时敌都）" : ""}`;
 }
 
 export function formatRulerMilitaryEvent(event: WorldEvent, ruler: { accessionYear: number; endYear?: number }, factionId: string, worldMonth: number) {

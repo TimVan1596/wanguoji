@@ -1,3 +1,5 @@
+import { assessPopularSupport, hasPopularPoliticalCrisis } from "./PopularRebellionSupport";
+import { calculateImperialStrain } from "./ImperialStrain";
 import { destroyRuntimeGroupAtSafeBoundary } from "./RuntimeGroupDisposal";
 import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
 import { getLocalRestorationClaimant, getLocalRestorationSupporters, LOCAL_RESTORATION_RADIUS_CELLS, LOCAL_RESTORATION_ZONE_MAX_CELLS } from "./LocalRestorationSupport";
@@ -20,7 +22,6 @@ import WorldRemnants from "./WorldRemnants";
 import {
   REBEL_INITIAL_POPULATION_MAX,
   REBEL_INITIAL_POPULATION_MIN,
-  REBEL_LOW_LOYALTY_USER_THRESHOLD,
   USER_RESTORED_LOYALTY_MAX,
   USER_RESTORED_LOYALTY_MIN,
 } from "../config/simulation";
@@ -183,17 +184,6 @@ class FactionRegistryStore {
     } finally { WorldHistory.endBatchNotifications(); }
   }
 
-  private foundingSupporters(owner: Team) {
-    return [...owner.users].filter(user => {
-      const id = user.player?.logicalUnitId;
-      const entry = id ? Game.Core?.logicalUnitRegistry.getEntry(id) : undefined;
-      return user.role === "NORMAL" && !user.rulerId && !user.militaryPersonId && !user.isDestroyed && user.team === owner &&
-        user.loyalty < REBEL_LOW_LOYALTY_USER_THRESHOLD && user.player.active && !user.player.rulerId &&
-        !user.slaveGroup?.npcs?.size && !user.player.children?.length && entry?.player === user.player &&
-        entry.state.alive && entry.state.userId === user.id && entry.state.factionId === owner.name && entry.state.role === "NORMAL";
-    }).sort((a,b) => a.loyalty-b.loyalty || a.id-b.id || a.bornMonth-b.bornMonth);
-  }
-
   private discardUnregisteredFaction(team: Team) {
     const groups = [team.players, team.blocks, team.farms];
     for (const group of groups) if (group) { group.active = false; group.runChildUpdate = false; }
@@ -202,6 +192,7 @@ class FactionRegistryStore {
 
   /** Population preparation precedes city consequences and runtime registration. */
   private prepareFoundingPopulation(team: Team, owner: Team, users: User[], month: number, cause: "REBELLION_TRANSFER" | "EMPIRE_SPLIT_TRANSFER") {
+    const memberships = MilitaryCommandRegistry.getFormations().filter(f => f.status === "ACTIVE").map(f => ({f,members:[...f.memberUnitIds]}));
     try {
       for (const user of users) {
         if (user.team !== owner || user.isDestroyed) throw new Error("founding supporter identity changed");
@@ -211,6 +202,7 @@ class FactionRegistryStore {
       if (Game.Core.addRuntimeTeam(team)) return true;
     } catch { /* Roll back while no city has changed owner. */ }
     for (const user of users) if (user.team === team) user.setTeam(owner, { cause, month, context: "建势人口转属回退" });
+    for (const {f,members} of memberships) f.memberUnitIds = members;
     return false;
   }
 
@@ -222,7 +214,8 @@ class FactionRegistryStore {
     const { city, year, factionType } = options;
     const previousOwner = city.ownerTeam;
     if (!previousOwner || city.destroyed || previousOwner.status !== "ACTIVE") return undefined;
-    const candidates = this.foundingSupporters(previousOwner);
+    if (!options.godDriven && (!hasPopularPoliticalCrisis(city,year,core.totalCells) || city.isInCaptureGrace(year))) return undefined;
+    const candidates = assessPopularSupport(city, year).users;
     if (!candidates.length && !options.godDriven) return undefined;
     const targetPopulation = worldRandom.int(REBEL_INITIAL_POPULATION_MIN, REBEL_INITIAL_POPULATION_MAX);
     const lowLoyaltyUsers = candidates.slice(0, targetPopulation);
@@ -300,14 +293,16 @@ class FactionRegistryStore {
     return team;
   }
 
-  createSplitFaction(previousOwner: Team, cities: City[], year: number) {
+  createSplitFaction(previousOwner: Team, cities: City[], year: number, politicalStrain = calculateImperialStrain(previousOwner,Game.Core?.totalCells ?? 1)) {
     const core = Game.Core;
     const coreCity = cities[0];
     if (!core?.map || !coreCity || !previousOwner) {
       return undefined;
     }
     if (previousOwner.status !== "ACTIVE" || coreCity.destroyed || cities.some(c => c.ownerFactionId !== previousOwner.name || c.destroyed)) return undefined;
-    const candidates = this.foundingSupporters(previousOwner);
+    if (previousOwner.cities.length < 4 || coreCity.loyalty > 42 ||
+      ((getFactionStability(previousOwner) ?? 100) >= 45 && politicalStrain < 72) || coreCity.isInCaptureGrace(year)) return undefined;
+    const candidates = assessPopularSupport(coreCity, year).users;
     if (!candidates.length) return undefined;
     const lowLoyaltyUsers = candidates.slice(0, worldRandom.int(REBEL_INITIAL_POPULATION_MIN, REBEL_INITIAL_POPULATION_MAX));
     const name = createRebelFactionName(coreCity, "REBEL", this.getExistingNames());

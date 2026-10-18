@@ -543,6 +543,7 @@ export default class AutoSimulator {
     return this.lastSimulationSubsystem;
   }
 
+  getRegionalRebellionDiagnostics(){return this.events.getRegionalRebellionDiagnostics();}
   getRestorationDiagnostics() { return this.events.getRestorationDiagnostics(); }
 
   getPeacefulPoliticalTransitionDiagnostics() {
