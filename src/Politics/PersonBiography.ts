@@ -16,7 +16,7 @@ export function composeRulerBiography(e:RulerHistoricalEvidence,name:string,acce
   else if(e.endReason)life.push(`君主任期以${e.endReason}告终；生命结局另依死亡记录。`);
   const assessment:string[]=[];
   if(e.tenure.activeRuleMonths===0&&e.tenure.exileMonths>0)assessment.push("其经历以流亡承统为主，缺少可据以评价在国治理的时期。");
-  else if(e.trajectory.expandedThenRetreated)assessment.push("任内疆域曾经扩张，随后回落；衡量其世，应兼看发展过程与最后国势。");
+  else if(e.trajectory.expandedThenRetreated)assessment.push(`任内疆域曾经扩张，随后回落；衡量其世，应兼看发展过程与${e.isFinalized?"任期终局":"目前国势"}。`);
   else if(e.trajectory.inheritedDecline)assessment.push("承统时疆域已居高位，任内国势回落，前代积累与后来的变化应分别看待。");
   else if(e.territoryDelta>0&&e.cityDelta>=0)assessment.push("任内领土有所拓展，城邑规模亦未缩减；这些是治下国势的变化。");
   else if(e.territoryDelta<0)assessment.push("任内领土收缩；城邑的反复得失，应与最终保有疆土分别衡量。");
