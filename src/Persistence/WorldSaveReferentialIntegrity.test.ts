@@ -8,17 +8,19 @@ vi.mock("../Game/Game", () => ({ default: game }));
 vi.mock("../Components/Block", () => ({ default: class {} }));
 // Render-only player adapter. User life, political registries and persistence stay real.
 vi.mock("../Components/Player", () => ({ default: class {
-  logicalUnitId?: string; user: any; role="NORMAL"; rulerId?: string; active=true; children:any[]=[]; movement:any={};
+  logicalUnitId?: string; user: any; role="NORMAL"; rulerId?: string; active=true; children:any[]=[]; movement:any={vx:0,vy:0,speed:150,radius:16,scale:1,speedCoefficient:0,sizeCoefficient:0,alive:true,role:"NORMAL",children:[]};
   constructor(_scene:unknown, public x:number,public y:number,public team:any) {}
   setTeam(team:any){this.team=team;}
   setFace(){}
+  speed=150; Body={velocity:{x:0,y:0},setVelocity(){},moves:false};
+  setRole(role:string){this.role=role;} tp(){} destroyPlayerTree(){this.active=false;}
   applyHydratedMovementState(state:any){this.movement={...state};Object.assign(this,state);}
-  exportMovementState(unitId:string){return {...this.movement,unitId,factionId:this.team.name,userId:this.user?.id};}
+  exportMovementState(unitId:string){return {...this.movement,x:this.x,y:this.y,unitId,factionId:this.team.name,userId:this.user?.id};}
 } }));
-vi.mock("../Components/Slaves", () => ({ default: class { npcs=new Map(); children={size:0}; } }));
+vi.mock("../Components/Slaves", () => ({ default: class { npcs=new Map(); children={size:0,each(){}}; dispose(){} reset(){} } }));
 vi.mock("../Components/User", async () => await vi.importActual("../Components/User"));
 vi.mock("../Components/Npc", () => ({ default: class {} }));
-vi.mock("../Components/Farms", () => ({ default: class {} }));
+vi.mock("../Components/Farms", () => ({ default: class { npcs=new Map(); init(){} setDie(){} } }));
 vi.mock("../Components/Team", () => ({ default: class {
   static hydrate(_scene: unknown, state: any) { return { ...state, name: state.factionId, cities: [], users: new Set(), farms: { npcs: new Map(), init() {} },
     addCity(city: any) { this.cities.push(city as never); }, exportState: () => structuredClone(state) }; }
@@ -1149,3 +1151,89 @@ it("x三个国家千年王室继统姓名分布与近代避重，不改人物时
   expect(DynastyRegistry.exportState()).toEqual(before); expect(worldRandom.exportState()).toEqual(random);
   console.log("x受控真实王室生命周期姓名分布（无战争人口运行）", report);
 }, 10000);
+
+it.each(["siege-recovery", "split"])("y %s: real Users and political transactions → strict V17 hydration → deterministic continuation", async scenario => {
+  const { default: RealTeam } = await vi.importActual<typeof import("../Components/Team")>("../Components/Team");
+  const { default: RealCity } = await vi.importActual<typeof import("../Components/City")>("../Components/City");
+  const TeamModule = await import("../Components/Team"), CityModule = await import("../Components/City");
+  const { default: User } = await import("../Components/User");
+  const { default: LogicalUnits } = await import("../Simulation/LogicalUnitRegistry");
+  const { default: Population } = await import("../Simulation/PopulationSystem");
+  const { PopulationTransitionAudit } = await import("../Simulation/PopulationTransitionAudit");
+  const { default: Factions } = await import("../Simulation/FactionRegistry");
+  class Group {
+    children = { size: 0, entries: [] as any[] };
+    add(v:any) { if(!this.children.entries.includes(v))this.children.entries.push(v);this.children.size=this.children.entries.length; }
+    remove(v:any) { this.children.entries=this.children.entries.filter(e=>e!==v);this.children.size=this.children.entries.length; }
+  }
+  vi.stubGlobal("Phaser", { GameObjects:{Group}, Math:{Clamp:(n:number,a:number,b:number)=>Math.max(a,Math.min(b,n))},
+    Display:{Color:{HSLToColor:()=>({color:12345})}} });
+  // Only graphics, physics and asset loading are adapters; Team/User/City/Population/registries/save paths are production.
+  const constructor = vi.spyOn(TeamModule,"default").mockImplementation((...args:any[])=>Reflect.construct(RealTeam,args));
+  Object.setPrototypeOf(constructor,RealTeam); (constructor as any).hydrate=RealTeam.hydrate;
+  vi.spyOn(CityModule.default,"hydrate").mockImplementation(RealCity.hydrate);
+  vi.spyOn(RealCity.prototype,"rebuildRuntimeVisuals").mockImplementation(()=>{});
+  vi.spyOn(RealCity.prototype,"refreshZoneVisual").mockImplementation(()=>{});
+  vi.spyOn(RealCity.prototype,"rebuildFortifiedZone").mockImplementation(()=>{});
+  vi.spyOn(RealCity.prototype,"calculateMaxDefense").mockReturnValue(10);
+  vi.spyOn(RealCity.prototype,"claimFortifiedZone").mockImplementation(function(this:any,owner:any){this.fortifiedCells.forEach((b:any)=>b.claimForTeam(owner));});
+  vi.spyOn(User.prototype,"load").mockImplementation(()=>{});
+  vi.spyOn(DynastyRegistry,"ensureRulerUnit").mockImplementation(()=>undefined); // off-map royal people remain real
+  try {
+    const save=fixture();save.world.worldMonth=save.world.clock.worldMonth=0;save.registries.archivedCities=[];
+    save.cities.push(...[1,2].map(x=>({...save.cities[0],cityId:`town-${x}`,name:`城${x}`,isCapital:false,centerGridX:x,fortifiedCells:[{gridX:x,gridY:0}]})));
+    save.blocks.forEach((b,i)=>Object.assign(b,{cityId:save.cities[i].cityId,isCityCenter:true}));
+    const names=Array.from({length:6},(_,i)=>`秦-${i}`);
+    save.users=names.map((name,i)=>({userId:getLocalUserId(name),name,factionId:"qin",sourceFactionId:"qin",playerUnitId:`unit-${i+1}`,bornMonth:-300,role:"NORMAL",loyalty:20,score:0,slaveUnits:[]}));
+    save.units=save.users.map(u=>({unitId:u.playerUnitId,userId:u.userId,factionId:"qin",x:0,y:0,vx:0,vy:0,speed:150,radius:16,scale:1,speedCoefficient:0,sizeCoefficient:0,role:"NORMAL",alive:true,kind:"user",children:[]}));
+    save.registries.logicalUnitRegistry={nextUnitSequence:7};setFixtureLifetimeRecords(save);
+    const core=target(),prepare=core.prepareForHydration;
+    Object.defineProperty(core,"totalCells",{value:3});core.logicalGameplayAuthority=true;core.logicalUnitRegistry=new LogicalUnits();
+    core.prepareForHydration=(...args:any[])=>{prepare(...args);core.map.getBlock=(x:number,y:number)=>core.map.blocks[x]?.[y];
+      core.map.blocks.flat().forEach((b:any)=>Object.assign(b,{width:32,height:32,updateCityDisplay(){},
+        restoreCanonicalState(state:any){Object.assign(this,{team:state.owner,city:state.city,hp:state.hp,isHome:state.isHome,isCityCenter:state.isCityCenter});state.owner?.blocks.add(this);},
+        claimForTeam(owner:any){this.team?.blocks.remove(this);this.team=owner;owner.blocks.add(this);}}));};
+    core.recordUserDeathForDiagnostics=()=>{};core.handleRulerCombatDeath=()=>false;
+    core.addRuntimeTeam=(t:any)=>{core.teams.push(t);return true;};
+    hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));
+    let pop=new Population();pop.importState(save.populationSystem);
+    const audit=new PopulationTransitionAudit();audit.reset(0,core.teams);
+    const sim=core.simulator,baseExport=sim.exportState,baseImport=sim.importState;
+    sim.year=0;sim.recordPopulationMutation=(t:any,b:number,a:number,m:any)=>audit.record(t,b,a,m);
+    sim.canApplyWartimePopulationLoss=(t:any,m:number)=>pop.canApplyWartimeLoss(t,m);
+    sim.recordWartimePopulationLoss=(t:any,m:number)=>pop.recordWartimeLoss(t,m);
+    sim.exportState=()=>({...baseExport(),populationSystem:pop.exportState()});
+    sim.importState=(state:any)=>{baseImport(state);pop=new Population();pop.importState(state.populationSystem);sim.year=state.clock.worldMonth;};
+    const identities=save.users.map(u=>({id:u.userId,bornMonth:u.bornMonth}));
+    if(scenario==="split"){
+      const old=core.teams[0],result=Factions.createSplitFaction(old,[old.cities[1]],1)!;
+      expect(result).toBeDefined();expect(result.externalPopulation).toBe(0);
+      expect(core.teams.reduce((n:number,t:any)=>n+t.users.size,0)).toBe(6);
+      expect(result.team.users.size).toBe(result.transferredPopulation);
+      expect(old.users.size+result.transferredPopulation).toBe(6);
+      audit.reconcile(1,core.teams);const totals=audit.getSummary(undefined,core.teams).totals;
+      expect(totals.transferIn).toBe(totals.transferOut);expect(totals.net).toBe(0);
+    }else{
+      const defender=core.teams[0];
+      const attacker=RealTeam.hydrate(core.scene,{...save.factions[0],factionId:"enemy",displayName:"敌",capitalCityId:undefined,homeGridX:2});core.teams.push(attacker);
+      const city=defender.cities[1];city.defense=1;city.lastSiegeDamageYear=-1;city.lastSiegeDevastationYear=-1;city.siegeDamageRemainder=0;
+      city.siegeContacts.set(attacker.name,{team:attacker,count:3,year:1});
+      (city as any).updateSiege(1);expect(city.ownerFactionId).toBe(attacker.name);expect(defender.users.size).toBe(5);
+      expect(WorldHistory.getEvents().some(e=>e.type==="city-captured")).toBe(true);
+      // Actual production recovery draws and User creation, with renderer asset loading suppressed.
+      const next=vi.spyOn(worldRandom,"next").mockReturnValue(0);
+      for(let m=3;m<=24;m+=3){sim.year=m;pop.update(m,core.teams);audit.reconcile(m,core.teams);}next.mockRestore();
+      expect(defender.users.size).toBeGreaterThan(5);expect(audit.getSummary(undefined,core.teams).totals.warDeaths).toBe(1);
+    }
+    const month=scenario==="split"?1:24;sim.year=month;baseExport().clock.worldMonth=month;
+    audit.reconcile(month,core.teams);expect(audit.getSummary(undefined,core.teams).unexplainedWorldDifference).toBe(0);
+    const snapshot=exportWorldSave(core);expect(validateWorldSave(snapshot)).toEqual({valid:true,errors:[]});
+    expect(snapshot.saveSchemaVersion).toBe(17);
+    const continueWorld=()=>{for(let m=month+1;m<=month+36;m++){sim.year=m;pop.update(m,core.teams);}baseExport().clock.worldMonth=month+36;return exportWorldSave(core);};
+    const uninterrupted=continueWorld();hydrateWorldSave(core,JSON.parse(JSON.stringify(snapshot)));
+    expect(exportWorldSave(core)).toEqual(snapshot);
+    const resumed=continueWorld();expect(resumed).toEqual(uninterrupted);
+    for(const identity of identities){const live=resumed.users.find(u=>u.userId===identity.id);if(scenario==="split"){expect(live?.bornMonth).toBe(identity.bornMonth);expect(live?.sourceFactionId).toBe("qin");}}
+    if(scenario==="siege-recovery")expect(resumed.populationSystem.wartimeLossMonths.qin).toBe(1);
+  }finally{vi.unstubAllGlobals();}
+},10000);

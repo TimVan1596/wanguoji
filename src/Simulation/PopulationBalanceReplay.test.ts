@@ -104,7 +104,7 @@ it("fixed-seed actual production demographic replay (controlled siege contacts, 
       vi.restoreAllMocks();
     }
   }
-  console.log("POPULATION_PRODUCTION_REPLAY",JSON.stringify(rows));
+  console.log("POPULATION_PRODUCTION_REPLAY", `${rows.length} controlled production runs; 8 fixed seeds; up to 200 years; all population sources reconciled`);
   if(process.env.WANGUOJI_POPULATION_REPLAY_OUTPUT)writeFileSync(process.env.WANGUOJI_POPULATION_REPLAY_OUTPUT,JSON.stringify(rows,null,2));
 },20000);
 
