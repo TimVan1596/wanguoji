@@ -4,7 +4,7 @@ import type { RulerPoliticalFact } from "./RulerHistoriography";
 export function normalizeRulerPoliticalFacts(facts: readonly RulerPoliticalFact[]) {
   const rows = new Map<string, RulerPoliticalFact>();
   for (const fact of facts) {
-    const capture = ["city-captured", "capital-fallen"].includes(fact.type);
+    const capture = ["city-captured", "city-recovered", "capital-fallen"].includes(fact.type);
     const key = `${capture ? "CAPTURE" : fact.terminalOutcome && fact.militaryRole === "ATTACKER" ? "TERMINAL" : fact.type}:${fact.historyGroupId ?? fact.eventId}:${capture ? fact.cityId ?? fact.cityName ?? fact.eventId : fact.affectedFactionId ?? ""}:${fact.militaryRole ?? ""}`;
     const previous = rows.get(key);
     if (!previous) rows.set(key, { ...fact });
@@ -23,7 +23,7 @@ export function normalizeRulerPoliticalFacts(facts: readonly RulerPoliticalFact[
 export function summarizeRulerPoliticalFacts(facts: readonly RulerPoliticalFact[]) {
   const rows = normalizeRulerPoliticalFacts(facts);
   const count = (test: (fact: RulerPoliticalFact) => boolean) => rows.filter(test).length;
-  const capture = (f: RulerPoliticalFact) => ["city-captured", "capital-fallen"].includes(f.type) && f.militaryRole === "ATTACKER";
+  const capture = (f: RulerPoliticalFact) => ["city-captured", "city-recovered", "capital-fallen"].includes(f.type) && f.militaryRole === "ATTACKER";
   const own = (f: RulerPoliticalFact) => f.militaryRole !== "ATTACKER";
   return {
     nationalCityCaptures: count(f => capture(f) && !f.wasCapital),

@@ -168,7 +168,7 @@ export function deriveRulerHistoricalEvidence(
   const tenure = deriveRulerTenureEvidence(ruler, faction.name, events, worldMonth);
   const inReign = (event: WorldEvent) => {
     const month = event.monthIndex ?? event.year;
-    return month >= accessionMonth && month <= endMonth;
+    return month >= accessionMonth && month <= Math.min(endMonth, worldMonth);
   };
   const directToRuler = (event: WorldEvent) =>
     event.rulerId === ruler.id || event.metadata?.rulerId === ruler.id;
@@ -247,7 +247,7 @@ export function deriveRulerHistoricalEvidence(
           !event.factionIds?.includes(faction.name) || !event.actorFactionId || event.actorFactionId === faction.name) return [];
     } else if (event.type === "capital-relocated") {
       if (event.actorFactionId !== faction.name || !event.factionIds?.includes(faction.name) || event.metadata?.cause !== "CAPITAL_FALL") return [];
-    } else if (event.type === "city-captured" || event.type === "capital-fallen") {
+    } else if (event.type === "city-captured" || event.type === "city-recovered" || event.type === "capital-fallen") {
       cityId = event.cityId ?? (typeof event.metadata?.cityId === "string" ? event.metadata.cityId : undefined);
       cityName = event.cityName ?? (typeof event.metadata?.cityName === "string" ? event.metadata.cityName : undefined);
       wasCapital = event.metadata?.wasCapital === 0 ? false : event.metadata?.wasCapital === 1 || event.type === "capital-fallen";
@@ -793,7 +793,7 @@ export function composeRulerAssessment(evidence: RulerHistoricalEvidence): Ruler
 
   const facts = evidence.politicalFacts.filter((fact) => fact.suitableForAssessment);
   const nationalStats = summarizeRulerPoliticalFacts(facts);
-  const directCaptures = facts.filter((fact) => ["city-captured", "capital-fallen"].includes(fact.type) && fact.role === "DIRECT_ACTOR");
+  const directCaptures = facts.filter((fact) => ["city-captured", "city-recovered", "capital-fallen"].includes(fact.type) && fact.role === "DIRECT_ACTOR");
   const directCapitalCaptures = directCaptures.filter((fact) => fact.wasCapital);
   const terminalAttacks = facts.filter((fact) => fact.terminalOutcome && fact.militaryRole === "ATTACKER");
   const groupedTerminal = terminalAttacks.filter((fact) => !fact.historyGroupId ||

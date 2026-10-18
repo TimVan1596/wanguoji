@@ -1,3 +1,4 @@
+import {MilitaryCommandOverlay,resolveMilitaryCommandView} from "./MilitaryCommandOverlay";
 import FactionLifetimeRecords from "../Simulation/FactionLifetimeRecord";
 import type { HydrationRepairs } from "../Persistence/ArchivedCityHydrationRepair";
 import { DesktopWakeRecovery } from "../Runtime/DesktopWakeRecovery";
@@ -945,6 +946,7 @@ export default class Core {
   }
 
   prepareForHydration(expected: { widthCells: number; heightCells: number; blockSize: number }) {
+    this.clearMilitaryCommandHighlight();
     this.snapshotBoundaryRequest.cancel(
       new Error("Safe snapshot request was canceled because hydration teardown began.")
     );
@@ -1114,16 +1116,23 @@ export default class Core {
     });
   }
 
+  private militaryCommandOverlay?: MilitaryCommandOverlay;
+
+  clearMilitaryCommandHighlight() { this.militaryCommandOverlay?.clear(); }
+
+  showMilitaryCommand(commandId: string, direction = true) {
+    if (!this.militaryCommandOverlay) {
+      this.militaryCommandOverlay = new MilitaryCommandOverlay(this);
+      this.scene.events.once("shutdown", () => { this.militaryCommandOverlay?.destroy(); this.militaryCommandOverlay = undefined; });
+    }
+    return this.militaryCommandOverlay.show(commandId, direction);
+  }
+
   focusMilitaryFormation(commandId: string) {
-    const formation = MilitaryCommandRegistry.getFormations().find(item => item.commandId === commandId && item.status === "ACTIVE");
-    if (!formation) return false;
-    const entries = formation.memberUnitIds.map(unitId => this.logicalUnitRegistry.getEntry(unitId))
-      .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry?.player?.active));
-    if (!entries.length) return false;
-    const x = entries.reduce((sum, entry) => sum + entry.player!.x, 0) / entries.length;
-    const y = entries.reduce((sum, entry) => sum + entry.player!.y, 0) / entries.length;
-    this.scene.cameras.main.centerOn(x + Game.BlockSize / 2, y + Game.BlockSize / 2);
-    return true;
+    const view = resolveMilitaryCommandView(this, commandId);
+    if (!view) { this.clearMilitaryCommandHighlight(); return false; }
+    this.scene.cameras.main.centerOn(view.center.x, view.center.y);
+    return this.showMilitaryCommand(commandId, false);
   }
 
   focusMilitaryTargetCity(cityId: string) {
@@ -1140,6 +1149,7 @@ export default class Core {
   }
 
   selectFaction(name: string | undefined) {
+    this.clearMilitaryCommandHighlight();
     store.dispatch(setSelectedFactionName(name));
     if (name) {
       store.dispatch(setRightPanelTab("faction"));
@@ -1532,6 +1542,7 @@ export default class Core {
   }
 
   private refreshPresentationFrame() {
+    this.militaryCommandOverlay?.update();
     frameAttribution.measure("faction labels", () => this.updateFactionLabels());
     frameAttribution.measure("faction focus", () => this.updateFactionFocus());
     this.teams.filter((team) => team.status === "ACTIVE").forEach((team) => {
