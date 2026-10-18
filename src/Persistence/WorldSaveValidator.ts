@@ -454,8 +454,8 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
     });
   });
   if (!jsonSafe(value)) errors.push("save contains non-JSON-safe values or class instances");
-  validatePopulationSystem(save.populationSystem, errors);
-  validateWorldEventSystem(save.worldEventSystem, factionIds, new Set([...cityIds, ...archivedCityIds]), errors);
+  validatePopulationSystem(save.populationSystem, errors, factionIds, Number(save.world?.worldMonth));
+  validateWorldEventSystem(save.worldEventSystem, factionIds, new Set([...cityIds, ...archivedCityIds]), errors, Number(save.world?.worldMonth));
   validateHydrationImportShapes(save, errors);
   errors.push(...validateMilitaryCommandState(
     isPlainRecord(save.registries) ? save.registries.militaryCommandRegistry : undefined,
@@ -466,7 +466,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   return { valid: errors.length === 0, errors };
 }
 
-function validatePopulationSystem(value: unknown, errors: string[]) {
+function validatePopulationSystem(value: unknown, errors: string[], factions: Set<string>, worldMonth: number) {
   if (!isPlainRecord(value)) {
     errors.push("populationSystem must be an object");
     return;
@@ -483,13 +483,19 @@ function validatePopulationSystem(value: unknown, errors: string[]) {
   if (!Number.isInteger(value.lastGrowthMonth) || value.lastGrowthMonth < 0) {
     errors.push("populationSystem.lastGrowthMonth must be a non-negative integer");
   }
+  if (!isPlainRecord(value.wartimeLossMonths)) errors.push("populationSystem.wartimeLossMonths must be an object");
+  else for (const [id, at] of Object.entries(value.wartimeLossMonths)) {
+    if (!factions.has(id) || !Number.isSafeInteger(at) || Number(at) < 0 || Number(at) > worldMonth) errors.push("invalid population wartime casualty clock");
+  }
+
 }
 
 function validateWorldEventSystem(
   value: unknown,
   factionIds: Set<string>,
   knownCityIds: Set<string>,
-  errors: string[]
+  errors: string[],
+  worldMonth: number
 ) {
   if (!isPlainRecord(value)) {
     errors.push("worldEventSystem must be an object");
@@ -514,6 +520,7 @@ function validateWorldEventSystem(
   if (!Array.isArray(value.activeEffects)) {
     errors.push("worldEventSystem.activeEffects must be an array");
   } else {
+    const effectIds = new Set<string>(), migratingFactions = new Set<string>();
     value.activeEffects.forEach((entry: unknown, index: number) => {
       const label = `worldEventSystem.activeEffects[${index}]`;
       if (!isPlainRecord(entry)) {
@@ -521,9 +528,17 @@ function validateWorldEventSystem(
         return;
       }
       if (typeof entry.id !== "string" || !entry.id) errors.push(`${label}.id must be a non-empty string`);
+      if (effectIds.has(String(entry.id))) errors.push(`${label} duplicate effect id`);
+      effectIds.add(String(entry.id));
+      if (entry.type === "migration" && migratingFactions.has(String(entry.factionId))) errors.push(`${label} duplicate migration plan`);
+      if (entry.type === "migration") migratingFactions.add(String(entry.factionId));
       requireRef(entry.factionId, factionIds, `${label}.factionId`, errors);
-      if (entry.type !== "harvest" && entry.type !== "famine") errors.push(`${label}.type is unsupported`);
-      if (!integer(entry.startMonth) || !integer(entry.endMonth)) errors.push(`${label} startMonth/endMonth must be integer months`);
+      if (entry.type !== "harvest" && entry.type !== "famine" && entry.type !== "migration") errors.push(`${label}.type is unsupported`);
+      if (entry.type === "migration" && (!Number.isSafeInteger(entry.remainingPopulation) || Number(entry.remainingPopulation) < 1 || Number(entry.remainingPopulation) > 6 ||
+          !Number.isSafeInteger(entry.lastSettlementMonth) || Number(entry.lastSettlementMonth) < Number(entry.startMonth) || Number(entry.lastSettlementMonth) >= Number(entry.endMonth) || Number(entry.lastSettlementMonth) > worldMonth))
+        errors.push(`${label} invalid migration settlement state`);
+      if (entry.type !== "migration" && (entry.remainingPopulation !== undefined || entry.lastSettlementMonth !== undefined)) errors.push(`${label} unexpected migration state`);
+      if (!integer(entry.startMonth) || !integer(entry.endMonth) || entry.startMonth < 0 || entry.startMonth > worldMonth || entry.endMonth <= entry.startMonth) errors.push(`${label} startMonth/endMonth must be integer months`);
       if (!isPlainRecord(entry.modifiers) || !finite(entry.modifiers.populationGrowthMultiplier)) {
         errors.push(`${label}.modifiers.populationGrowthMultiplier must be finite`);
       }

@@ -1,3 +1,4 @@
+import { getPopulationCapacity } from "./PopulationSystem";
 import { getLocalRestorationClaimant, assessLocalRestorationPopulation } from "./LocalRestorationSupport";
 import { deriveRestorationTenureEvidence } from "./RestorationTenureEvidence";
 import type User from "../Components/User";
@@ -50,7 +51,10 @@ import {
   REBEL_LOYALTY_THRESHOLD_V095,
   REBEL_OWNER_STABILITY_THRESHOLD_V095,
   WEAK_FACTION_POSITIVE_EVENT_BIAS,
-  WORLD_EFFECT_DURATION_MONTHS,
+  HARVEST_DURATION_MONTHS,
+  FAMINE_DURATION_MONTHS,
+  MIGRATION_DURATION_MONTHS,
+  MIGRATION_INTERVAL_MONTHS,
 } from "../config/simulation";
 import { store } from "../store";
 import { setWorldPhase, setWorldResult } from "../store/rootSlice";
@@ -109,13 +113,15 @@ import {
   getFactionTerritoryMetric,
 } from "./TerritoryMetrics";
 
-export type WorldEffectType = "harvest" | "famine";
+export type WorldEffectType = "harvest" | "famine" | "migration";
 
 export interface ActiveWorldEffect {
   id: string;
   factionId: string;
   type: WorldEffectType;
   startYear: number;
+  remainingPopulation?: number;
+  lastSettlementMonth?: number;
   endYear: number;
   modifiers: {
     populationGrowthMultiplier: number;
@@ -281,6 +287,7 @@ export default class WorldEventSystem {
 
   update(year: number, teams: Team[], totalCells: number, profile?: MonthlyPhaseProfiler) {
     this.restorationDiagnostics.endMonth = year;
+    this.settlePopulationEffects(year, teams);
     measurePhase(profile, "WorldEvent.expired effects", () => {
       this.activeEffects = this.activeEffects.filter((effect) => year < effect.endYear);
     });
@@ -299,12 +306,12 @@ export default class WorldEventSystem {
   }
 
   getCurrentPhase(year: number, teams: Team[]) {
-    const aliveTeams = teams.filter((team) => !team.isDie);
+    const aliveTeams = teams.filter((team) => team.status === "ACTIVE" && !team.isDie);
     return getWorldPhase(aliveTeams.length, this.fractureUntilMonth, year);
   }
 
   observeWorldGoal(year: number, teams: Team[], totalCells: number) {
-    const aliveTeams = teams.filter((team) => !team.isDie);
+    const aliveTeams = teams.filter((team) => team.status === "ACTIVE" && !team.isDie);
     const hadDynasticOrder = this.cycleState.dynasticOrderFactionId !== undefined;
     const metrics = this.buildWorldCycleMetrics(teams, totalCells);
     this.cycleState = observeDynasticOrder(
@@ -387,13 +394,13 @@ export default class WorldEventSystem {
   }
 
   getPopulationGrowthMultiplier(team: Team) {
-    return this.activeEffects
-      .filter((effect) => effect.factionId === team.name)
+    return Math.max(.2, Math.min(2, this.activeEffects
+      .filter((effect) => effect.factionId === team.name && effect.type !== "migration")
       .reduce(
         (multiplier, effect) =>
           multiplier * effect.modifiers.populationGrowthMultiplier,
         1
-      );
+      )));
   }
 
   getEffects() {
@@ -438,7 +445,7 @@ export default class WorldEventSystem {
   }
 
   private triggerRandomEvent(year: number, teams: Team[], totalCells: number) {
-    const aliveTeams = teams.filter((team) => !team.isDie);
+    const aliveTeams = teams.filter((team) => team.status === "ACTIVE" && !team.isDie);
     if (aliveTeams.length === 0) {
       return;
     }
@@ -456,11 +463,11 @@ export default class WorldEventSystem {
       WorldHistory.addRandomEvent(
         year,
         team.name,
-        `${team.displayName}势力迎来丰收（持续${WORLD_EFFECT_DURATION_MONTHS}个月）`,
+        `${team.displayName}势力迎来丰收（持续${HARVEST_DURATION_MONTHS}个月）`,
         `人口自然增长 ×${HARVEST_GROWTH_MULTIPLIER.toFixed(2)}，所有城市忠诚 +${HARVEST_CITY_LOYALTY_DELTA}。`,
         "normal",
         {
-          duration: WORLD_EFFECT_DURATION_MONTHS,
+          duration: HARVEST_DURATION_MONTHS,
           populationGrowthMultiplier: HARVEST_GROWTH_MULTIPLIER,
           cityLoyaltyDelta: HARVEST_CITY_LOYALTY_DELTA,
         }
@@ -474,11 +481,11 @@ export default class WorldEventSystem {
       WorldHistory.addRandomEvent(
         year,
         team.name,
-        `${team.displayName}势力发生旱灾（持续${WORLD_EFFECT_DURATION_MONTHS}个月）`,
+        `${team.displayName}势力发生旱灾（持续${FAMINE_DURATION_MONTHS}个月）`,
         `人口自然增长 ×${FAMINE_GROWTH_MULTIPLIER.toFixed(2)}，所有城市忠诚 ${FAMINE_CITY_LOYALTY_DELTA}。`,
         "normal",
         {
-          duration: WORLD_EFFECT_DURATION_MONTHS,
+          duration: FAMINE_DURATION_MONTHS,
           populationGrowthMultiplier: FAMINE_GROWTH_MULTIPLIER,
           cityLoyaltyDelta: FAMINE_CITY_LOYALTY_DELTA,
         }
@@ -488,25 +495,17 @@ export default class WorldEventSystem {
 
     if (eventType === "population-boom") {
       const count = worldRandom.int(POPULATION_BOOM_MIN, POPULATION_BOOM_MAX);
-      const spawned = this.spawnMembers(
-        year,
-        team,
-        count,
-        "Prosperity",
-        USER_NATURAL_LOYALTY_MIN,
-        USER_NATURAL_LOYALTY_MAX,
-        { cause: "RANDOM_EVENT", month: year, context: "population-boom" }
-      );
-      WorldHistory.addRandomEvent(
-        year,
-        team.name,
-        `${team.displayName}势力流民迁入，新增${spawned}人`,
-        `立即增加${spawned}名人口。`,
-        "normal",
-        {
-          immediatePopulation: spawned,
-        }
-      );
+      const accepted = this.activeEffects.some(e => e.type === "migration" && e.factionId === team.name) ? 0 : Math.max(0, Math.min(count, 6, Math.max(1, Math.floor(team.users.size / 2)), getPopulationCapacity(team) - team.users.size));
+      const existingPlan = this.activeEffects.some(e => e.type === "migration" && e.factionId === team.name);
+      if (accepted > 0 && !existingPlan) {
+        this.sequence++;
+        this.activeEffects.push({ id: `migration-${team.name}-${year}-${this.sequence}`, factionId: team.name, type: "migration",
+          startYear: year, endYear: year + MIGRATION_DURATION_MONTHS, remainingPopulation: accepted, lastSettlementMonth: year,
+          modifiers: { populationGrowthMultiplier: 1 } });
+      }
+      WorldHistory.addRandomEvent(year, team.name, `${team.displayName}势力出现流民迁入机会`,
+        `未来${MIGRATION_DURATION_MONTHS}个月最多接纳${accepted}名外来人口，每${MIGRATION_INTERVAL_MONTHS}个月最多1人，受实际容量限制；本月尚未新增人口。`, "normal",
+        { immediatePopulation: 0, plannedPopulation: accepted, duration: MIGRATION_DURATION_MONTHS, source: "EXTERNAL_MIGRATION" });
       return;
     }
 
@@ -517,13 +516,13 @@ export default class WorldEventSystem {
       "Heaven",
       USER_GOD_LOYALTY_MIN,
       USER_GOD_LOYALTY_MAX,
-      { cause: "RANDOM_EVENT", month: year, context: "heavenly-reinforcements" }
+      { cause: "SPECIAL_EVENT", month: year, context: "heavenly-reinforcements（特殊外源人口）" }
     );
     WorldHistory.addRandomEvent(
       year,
       team.name,
       `${team.displayName}势力获得天降援军，新增${spawned}人`,
-      `立即增加${spawned}名高忠诚援军。`,
+      `特殊外源事件：立即增加${spawned}名高忠诚援军，不属于自然增长或普通迁入。`,
       "normal",
       {
         immediatePopulation: spawned,
@@ -725,6 +724,25 @@ export default class WorldEventSystem {
     }).length;
   }
 
+  settlePopulationEffects(worldMonth: number, teams: Team[]) {
+    const byId = new Map(teams.map(t => [t.name,t]));
+    for (const effect of this.activeEffects) {
+      if (effect.type !== "migration" || worldMonth >= effect.endYear || !effect.remainingPopulation) continue;
+      const team = byId.get(effect.factionId);
+      if (!team || team.status !== "ACTIVE") { effect.remainingPopulation = 0; continue; }
+      if (worldMonth - effect.lastSettlementMonth! < MIGRATION_INTERVAL_MONTHS) continue;
+      effect.lastSettlementMonth = worldMonth;
+      if (team.users.size >= getPopulationCapacity(team)) continue;
+      const actual = this.spawnMembers(worldMonth, team, 1, "Migrant", USER_NATURAL_LOYALTY_MIN, USER_NATURAL_LOYALTY_MAX,
+        { cause: "IMMIGRATION", month: worldMonth, context: `流民分期迁入：${effect.id}` });
+      effect.remainingPopulation -= actual;
+      if (actual) WorldHistory.addRandomEvent(worldMonth, team.name, `${team.displayName}接纳${actual}名流民`,
+        `实际新增${actual}名外来人口，属于分期迁入，不是其他国家人口转属。`, "normal",
+        { immediatePopulation: actual, source: "EXTERNAL_MIGRATION", populationEffectId: effect.id });
+    }
+    this.activeEffects = this.activeEffects.filter(e => worldMonth < e.endYear && (e.type !== "migration" || Boolean(e.remainingPopulation)));
+  }
+
   private addEffect(
     year: number,
     team: Team,
@@ -737,7 +755,7 @@ export default class WorldEventSystem {
       factionId: team.name,
       type,
       startYear: year,
-      endYear: year + WORLD_EFFECT_DURATION_MONTHS,
+      endYear: year + (type === "famine" ? FAMINE_DURATION_MONTHS : HARVEST_DURATION_MONTHS),
       modifiers: {
         populationGrowthMultiplier,
       },
@@ -760,18 +778,9 @@ export default class WorldEventSystem {
         4,
         "0"
       )}`;
-      if (
-        Danmu.Apply(
-          createLocalDanmu(
-            name,
-            team.name,
-            worldRandom.int(minLoyalty, maxLoyalty)
-          ),
-          populationMutation
-        )
-      ) {
-        spawned += 1;
-      }
+      const before = team.users.size;
+      const joined = Danmu.Apply(createLocalDanmu(name, team.name, worldRandom.int(minLoyalty, maxLoyalty)), populationMutation);
+      if (joined === team && team.users.size > before) spawned += team.users.size - before;
     }
     return spawned;
   }
@@ -1096,7 +1105,8 @@ export default class WorldEventSystem {
           DynastyRegistry.getCurrentRuler(rebel.name)?.id,
           `founding-${rebel.name}-${year}`,
           transferredCities[0]?.id,
-          transferredCities[0]?.name
+          transferredCities[0]?.name,
+          { transferredPopulation: split.transferredPopulation, externalPopulation: split.externalPopulation }
         );
         DynastyRegistry.recordRebellion(team.name);
         this.fractureUntilMonth = year + 60;

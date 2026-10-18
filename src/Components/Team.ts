@@ -1,3 +1,4 @@
+import { getVerifiedLocalCasualtyUsers } from "../Simulation/PopulationCasualtyGeography";
 import FactionLifetimeRecords from "../Simulation/FactionLifetimeRecord";
 import { changeFactionColor, type FactionColorHistoryEntry } from "../Simulation/FactionColorHistory";
 import Game from "../Game/Game";
@@ -212,6 +213,8 @@ export default class Team {
   ) {
     const worldMonth = context.month ?? Game.Core?.simulator?.year ?? 0;
     const damageSource = context.damageSource ?? "UNSPECIFIED";
+    const simulator = Game.Core?.simulator;
+    if (cause === "SIEGE_LOSS" && simulator?.canApplyWartimePopulationLoss && !simulator.canApplyWartimePopulationLoss(this, worldMonth)) return undefined;
     const candidates = [...this.users].filter(user => this.users.has(user) && user.team === this && !user.isDestroyed);
     const ordered = orderCasualtyCandidates(candidates.map(user => ({
       user,
@@ -225,14 +228,19 @@ export default class Team {
     })), { factionId: this.name, worldMonth, damageSource, triggerCityId: context.triggerCityId });
     // A malformed/ambiguous identity must not fall back to Set iteration order.
     if (!ordered) return undefined;
-    for (const { user } of ordered) {
+    const local = getVerifiedLocalCasualtyUsers(this, context.triggerCityId, Game.Core, Game.BlockSize);
+    const prioritized = [...ordered.filter(c => local.has(c.user)), ...ordered.filter(c => !local.has(c.user))];
+    for (const { user } of prioritized) {
       if (user.destroyUser(false, {
         cause,
         month: worldMonth,
-        context: context.context,
+        context: `${context.context ?? "人口战损"}；${local.has(user) ? "权威城域位置优先（不证明守城参战）" : "全国性人口损耗（不作为当地守军归因）"}`,
         damageSource,
         triggerCityId: context.triggerCityId,
-      })) return user;
+      })) {
+        if (cause === "SIEGE_LOSS") simulator?.recordWartimePopulationLoss?.(this, worldMonth);
+        return user;
+      }
     }
     return undefined;
   }

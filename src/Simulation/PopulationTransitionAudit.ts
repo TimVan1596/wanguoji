@@ -4,6 +4,8 @@ export type PopulationTransitionCause =
   | "NATURAL_GROWTH"
   | "NATURAL_DEATH"
   | "RANDOM_EVENT"
+  | "IMMIGRATION"
+  | "SPECIAL_EVENT"
   | "REBELLION_TRANSFER"
   | "EMPIRE_SPLIT_TRANSFER"
   | "SURRENDER_TRANSFER"
@@ -62,20 +64,47 @@ export interface PopulationTransitionRecord {
 type TeamPopulation = Pick<Team, "name" | "displayName"> & { users: { size: number } };
 const MAX_RECENT_TRANSITIONS = 240;
 
+export function emptyPopulationTotals() {
+  return { net: 0, naturalGrowth: 0, external: 0, warDeaths: 0, naturalDeaths: 0, transferIn: 0, transferOut: 0, special: 0, otherNet: 0, unattributed: 0 };
+}
+type PopulationTotals = ReturnType<typeof emptyPopulationTotals>;
+const TRANSFERS = new Set<PopulationTransitionCause>(["REBELLION_TRANSFER", "EMPIRE_SPLIT_TRANSFER", "SURRENDER_TRANSFER", "CONQUEST_TRANSFER", "FACTION_MERGER", "FACTION_SUBMISSION", "LIVE_TRANSFER"]);
+function addPopulationTotal(total: PopulationTotals, row: Pick<PopulationTransitionRecord, "delta" | "cause" | "relatedFactionId">) {
+  const d = row.delta; total.net += d;
+  if (TRANSFERS.has(row.cause) || row.cause === "RESTORATION" && row.relatedFactionId) { if (d > 0) total.transferIn += d; else total.transferOut -= d; }
+  else if (row.cause === "NATURAL_GROWTH" && d > 0) total.naturalGrowth += d;
+  else if (["IMMIGRATION", "LIVE_JOIN"].includes(row.cause) && d > 0) total.external += d;
+  else if (["SIEGE_LOSS", "BATTLE_DEATH"].includes(row.cause) && d < 0) total.warDeaths -= d;
+  else if (row.cause === "NATURAL_DEATH" && d < 0) total.naturalDeaths -= d;
+  else if (["SPECIAL_EVENT", "RANDOM_EVENT"].includes(row.cause) && d > 0) total.special += d;
+  else if (row.cause === "UNATTRIBUTED") total.unattributed += d;
+  else total.otherNet += d;
+}
+
 /** Session-only diagnostics: never exported to WorldSave or consulted by simulation rules. */
 export class PopulationTransitionAudit {
   private previousCounts = new Map<string, { count: number; displayName: string }>();
   private pending = new Map<string, PopulationTransitionRecord>();
   private recent: PopulationTransitionRecord[] = [];
   private active = false;
+  private sessionStartMonth = 0;
+  private openingWorldPopulation = 0;
+  private totals = emptyPopulationTotals();
+  private monthly = new Map<number, Map<string, PopulationTotals>>();
+  private latestMonth = 0;
+  private rollingLimited = false;
+
 
   getRuntimeCardinality() {
-    return { populationAuditPrevious: this.previousCounts.size, populationAuditPending: this.pending.size, populationAuditRecent: this.recent.length };
+    return { populationAuditPrevious: this.previousCounts.size, populationAuditPending: this.pending.size, populationAuditRecent: this.recent.length, populationAuditMonthBuckets: this.monthly.size };
   }
 
   reset(month: number, teams: TeamPopulation[]) {
     this.pending.clear();
     this.recent = [];
+    this.sessionStartMonth = this.latestMonth = month;
+    this.openingWorldPopulation = teams.reduce((n,t) => n + t.users.size, 0);
+    this.totals = emptyPopulationTotals(); this.monthly.clear(); this.rollingLimited = false;
     this.previousCounts = this.snapshot(teams);
     this.active = true;
     this.lastReconciledMonth = month;
@@ -91,6 +120,7 @@ export class PopulationTransitionAudit {
   ) {
     if (!this.active || before === after) return;
     const month = metadata.month ?? this.lastReconciledMonth;
+    this.account({ month, factionId: team.name, delta: after - before, cause: metadata.cause, relatedFactionId: metadata.relatedFactionId });
     const causeContext = metadata.cause === "SIEGE_LOSS" ? metadata.context ?? "" : "";
     // A successful casualty has its own row so that the victim identity and exact
     // population delta cannot be merged into an anonymous aggregate.
@@ -147,6 +177,7 @@ export class PopulationTransitionAudit {
         .reduce((sum, entry) => sum + entry.delta, 0);
       const unexplainedDelta = actualDelta - explainedDelta;
       if (unexplainedDelta !== 0) {
+        this.account({ month, factionId, delta: unexplainedDelta, cause: "UNATTRIBUTED" });
         pendingRecords.push({
           month,
           factionId,
@@ -167,6 +198,33 @@ export class PopulationTransitionAudit {
     this.previousCounts = current;
     this.lastReconciledMonth = month;
     return this.getRecentSignificant();
+  }
+
+  private account(row: Pick<PopulationTransitionRecord, "month" | "factionId" | "delta" | "cause" | "relatedFactionId">) {
+    addPopulationTotal(this.totals, row);
+    this.latestMonth = Math.max(this.latestMonth, row.month);
+    for (const month of this.monthly.keys()) if (month < this.latestMonth - 11) this.monthly.delete(month);
+    if (row.month < this.latestMonth - 11) return;
+    const bucket = this.monthly.get(row.month) ?? new Map<string, PopulationTotals>();
+    for (const id of ["", row.factionId]) {
+      if (!bucket.has(id) && bucket.size >= 2049) { this.rollingLimited = true; continue; }
+      const total = bucket.get(id) ?? emptyPopulationTotals(); addPopulationTotal(total, row); bucket.set(id, total);
+    }
+    this.monthly.set(row.month, bucket);
+  }
+
+  getSummary(factionId?: string, teams?: TeamPopulation[]) {
+    const month = Math.max(this.lastReconciledMonth, this.latestMonth);
+    const recent = emptyPopulationTotals();
+    for (const [at, bucket] of this.monthly) if (at > month - 12 && at <= month) {
+      const t = bucket.get(factionId ?? "");
+      if (t) for (const key of Object.keys(recent) as Array<keyof PopulationTotals>) recent[key] += t[key];
+    }
+    const closingWorldPopulation = teams ? teams.reduce((n,t) => n+t.users.size,0) : [...this.previousCounts.values()].reduce((n,t)=>n+t.count,0);
+    return { sessionStartMonth: this.sessionStartMonth, worldMonth: month, observedMonths: Math.min(12, Math.max(0, month-this.sessionStartMonth)),
+      openingWorldPopulation: this.openingWorldPopulation, closingWorldPopulation, totals: { ...this.totals }, recent,
+      unexplainedWorldDifference: closingWorldPopulation - this.openingWorldPopulation - (this.totals.net - this.totals.unattributed),
+      rollingLimited: this.rollingLimited };
   }
 
   getRecent() {

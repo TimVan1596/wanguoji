@@ -820,6 +820,8 @@ export default class City {
     }
   }
 
+  get lastSiegeDamageMonth() { return this.lastSiegeDamageYear; }
+
   private clearSiegeState() {
     this.underSiege = false;
     this.attackingFactionId = undefined;

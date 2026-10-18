@@ -1,3 +1,4 @@
+import { buildPopulationRecoveryLines } from "./PopulationPresentation";
 import HistoricalEventArchive from "./HistoricalEventArchive";
 import { getDiplomacyEventDetails } from "../../../History/DiplomacyEventDetails";
 import { formatRulerMilitaryEvent } from "../../../Politics/MilitaryChronicle";
@@ -296,6 +297,8 @@ function FactionProfile({
       ),
     [dynasty?.rulers]
   );
+  const populationSummary = Game.Core?.getPopulationSummary(team.name);
+  const populationLines = buildPopulationRecoveryLines(team, worldMonth, populationSummary, populationSummary?.latest, Game.Core?.simulator?.getPopulationClimateMultiplier(team), WorldHistory.getEventsBetween(Math.max(0, worldMonth - 24), worldMonth));
   const overviewSections = buildFactionOverviewSections({
     team,
     teams,
@@ -438,6 +441,7 @@ function FactionProfile({
           {emperorQualificationLines.length > 0 ? (
             <OverviewSection title="帝号资格" lines={emperorQualificationLines} muted />
           ) : null}
+          <OverviewSection title="人口恢复与来源" lines={populationLines} />
           <OverviewSection title="王朝记忆" lines={restorationMemoryLines.length ? [...overviewSections.legacyLines.filter(line => !/^(势力存续|流亡|合法性|残部)：/.test(line)), ...restorationMemoryLines] : overviewSections.legacyLines} />
           {diplomacyLines.length > 0 ? <OverviewSection title="外交关系" lines={diplomacyLines} /> : null}
           {notableRulers.length > 0 ? (

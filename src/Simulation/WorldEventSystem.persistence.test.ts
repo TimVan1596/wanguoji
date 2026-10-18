@@ -64,6 +64,7 @@ describe("WorldEventSystem persistence contract", () => {
     expect(second.exportState()).toEqual(jsonState);
 
     const save = createEmptyWorldSaveV1();
+    save.world.worldMonth = save.world.clock.worldMonth = 48;
     save.factions = [{
       factionId: "Qin", displayName: "秦", color: 1, colorHistory: [{ color: 1, startMonth: 0, reason: "FOUNDING" }], factionType: "KINGDOM", status: "ACTIVE",
       firstFoundedMonth: 0, currentActiveSinceMonth: 0, restorationMonths: [], cumulativeActiveMonths: 0,

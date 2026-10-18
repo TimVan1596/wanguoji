@@ -139,6 +139,7 @@ export default class Block extends Phaser.GameObjects.Rectangle {
       return;
     }
     if (this.isHome) {
+      if (oldTeam && (oldTeam === team || !Diplomacy.canAttack(team.name, oldTeam.name, Game.Core?.simulator?.year ?? 0))) return;
       this.hp--;
       oldTeam?.removeOneUser("SIEGE_LOSS", {
         month: Game.Core?.simulator?.year ?? 0,

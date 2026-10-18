@@ -1,12 +1,12 @@
+import WorldHistory from "../History/WorldHistory";
+import { getEffectivePopulationCapacity, getPopulationRecoveryContext, wartimePopulationLossInterval } from "./PopulationRecoveryRules";
 import { measurePhase, type MonthlyPhaseProfiler } from "./MonthlyPhaseProfiler";
 import Team from "../Components/Team";
 import Danmu from "../Live/Danmu";
 import { createLocalDanmu, getLocalUserId } from "../Live/LocalDanmaku";
 import {
   BASE_GROWTH_CHANCE,
-  BASE_POPULATION_CAPACITY,
   NATURAL_GROWTH_CHECK_MONTHS,
-  TERRITORY_CELLS_PER_POPULATION,
   USER_NATURAL_LOYALTY_MAX,
   USER_NATURAL_LOYALTY_MIN,
 } from "../config/simulation";
@@ -24,31 +24,30 @@ export function selectNormalUsersForGodRemoval<T extends { id: number; name: str
 }
 
 export function getPopulationCapacity(team: Team) {
-  const territory = team.blocks.children.size;
-  return (
-    BASE_POPULATION_CAPACITY +
-    Math.floor(territory / TERRITORY_CELLS_PER_POPULATION)
-  );
+  return getEffectivePopulationCapacity(team);
 }
 
 export default class PopulationSystem {
   private counters: Record<string, number> = {};
   private lastGrowthMonth = 0;
+  private wartimeLossMonths: Record<string, number> = {};
 
   getRuntimeCardinality() { return { populationNameCounters: Object.keys(this.counters).length }; }
 
   exportState() {
-    return { counters: { ...this.counters }, lastGrowthMonth: this.lastGrowthMonth };
+    return { counters: { ...this.counters }, lastGrowthMonth: this.lastGrowthMonth, wartimeLossMonths: { ...this.wartimeLossMonths } };
   }
 
-  importState(state: { counters: Record<string, number>; lastGrowthMonth: number }) {
+  importState(state: { counters: Record<string, number>; lastGrowthMonth: number; wartimeLossMonths: Record<string, number> }) {
     this.counters = { ...state.counters };
     this.lastGrowthMonth = state.lastGrowthMonth;
+    this.wartimeLossMonths = { ...state.wartimeLossMonths };
   }
 
   reset() {
     this.counters = {};
     this.lastGrowthMonth = 0;
+    this.wartimeLossMonths = {};
   }
 
   initialize(teams: Team[], populations: InitialPopulationMap) {
@@ -71,25 +70,35 @@ export default class PopulationSystem {
     }
     this.lastGrowthMonth = worldMonth;
 
-    const aliveTeams = measurePhase(profile, "Population.active faction scan", () => teams.filter((team) => !team.isDie));
+    const recentEvents = WorldHistory.getEventsBetween?.(Math.max(0, worldMonth - 24), worldMonth) ?? [];
+    const aliveTeams = measurePhase(profile, "Population.active faction scan", () => teams.filter((team) => team.status === "ACTIVE" && !team.isDie));
     aliveTeams.forEach((team) => {
       const { population, capacity } = measurePhase(profile, "Population.capacity", () => ({ population: this.getPopulation(team), capacity: this.getCapacity(team) }));
       if (population >= capacity) {
         return;
       }
 
-      const roomRatio = (capacity - population) / capacity;
-      const recoveryRatio = population <= 0 ? 0.25 : 1;
-      const chance =
-        BASE_GROWTH_CHANCE *
-        roomRatio *
-        recoveryRatio *
-        measurePhase(profile, "Population.growth context", () => getGrowthMultiplier(team));
-      if (worldRandom.next() <= chance) {
-        measurePhase(profile, "Population.spawn/runtime creation", () => this.spawn(team, undefined, false, { cause: "NATURAL_GROWTH", month: worldMonth }, profile));
+      const context = measurePhase(profile, "Population.growth context", () => getPopulationRecoveryContext(team, worldMonth, recentEvents));
+      const effect = getGrowthMultiplier(team);
+      for (let attempt = 0; attempt < context.attempts; attempt++) {
+        const current = this.getPopulation(team);
+        if (current >= capacity) break;
+        const roomRatio = (capacity - current) / capacity;
+        const chance = Math.min(.85, BASE_GROWTH_CHANCE * roomRatio * (current <= 0 ? .65 : 1) * context.multiplier * effect);
+        if (worldRandom.next() < chance) {
+          measurePhase(profile, "Population.spawn/runtime creation", () => this.spawn(team, undefined, false, { cause: "NATURAL_GROWTH", month: worldMonth, context: context.state }, profile));
+        }
       }
     });
   }
+
+  canApplyWartimeLoss(team: Team, worldMonth: number) {
+    const last = this.wartimeLossMonths[team.name];
+    return Number.isSafeInteger(worldMonth) && worldMonth >= 0 && team.status === "ACTIVE" && team.users.size > 0 &&
+      (last === undefined || worldMonth - last >= wartimePopulationLossInterval(team.users.size));
+  }
+
+  recordWartimeLoss(team: Team, worldMonth: number) { this.wartimeLossMonths[team.name] = worldMonth; }
 
   getPopulation(team: Team) {
     return team.users.size;

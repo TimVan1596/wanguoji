@@ -1,3 +1,4 @@
+import { destroyRuntimeGroupAtSafeBoundary } from "./RuntimeGroupDisposal";
 import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
 import { getLocalRestorationClaimant, getLocalRestorationSupporters, LOCAL_RESTORATION_RADIUS_CELLS, LOCAL_RESTORATION_ZONE_MAX_CELLS } from "./LocalRestorationSupport";
 import { deriveHistoricalCityRules, getHistoricalRestorationBasis, getWarTornCityEvidence } from "./HistoricalRestorationRules";
@@ -182,6 +183,37 @@ class FactionRegistryStore {
     } finally { WorldHistory.endBatchNotifications(); }
   }
 
+  private foundingSupporters(owner: Team) {
+    return [...owner.users].filter(user => {
+      const id = user.player?.logicalUnitId;
+      const entry = id ? Game.Core?.logicalUnitRegistry.getEntry(id) : undefined;
+      return user.role === "NORMAL" && !user.rulerId && !user.militaryPersonId && !user.isDestroyed && user.team === owner &&
+        user.loyalty < REBEL_LOW_LOYALTY_USER_THRESHOLD && user.player.active && !user.player.rulerId &&
+        !user.slaveGroup?.npcs?.size && !user.player.children?.length && entry?.player === user.player &&
+        entry.state.alive && entry.state.userId === user.id && entry.state.factionId === owner.name && entry.state.role === "NORMAL";
+    }).sort((a,b) => a.loyalty-b.loyalty || a.id-b.id || a.bornMonth-b.bornMonth);
+  }
+
+  private discardUnregisteredFaction(team: Team) {
+    const groups = [team.players, team.blocks, team.farms];
+    for (const group of groups) if (group) { group.active = false; group.runChildUpdate = false; }
+    Game.Core?.scene?.sys?.events?.once("postupdate", () => groups.forEach(g => { if (g?.scene) destroyRuntimeGroupAtSafeBoundary(g, true); }));
+  }
+
+  /** Population preparation precedes city consequences and runtime registration. */
+  private prepareFoundingPopulation(team: Team, owner: Team, users: User[], month: number, cause: "REBELLION_TRANSFER" | "EMPIRE_SPLIT_TRANSFER") {
+    try {
+      for (const user of users) {
+        if (user.team !== owner || user.isDestroyed) throw new Error("founding supporter identity changed");
+        user.setTeam(team, { cause, month, context: "真实既有人口支持新政权" });
+        if (user.team !== team) throw new Error("founding supporter transfer failed");
+      }
+      if (Game.Core.addRuntimeTeam(team)) return true;
+    } catch { /* Roll back while no city has changed owner. */ }
+    for (const user of users) if (user.team === team) user.setTeam(owner, { cause, month, context: "建势人口转属回退" });
+    return false;
+  }
+
   createRebelFaction(options: RebelFactionOptions) {
     const core = Game.Core;
     if (!core?.map) {
@@ -189,9 +221,11 @@ class FactionRegistryStore {
     }
     const { city, year, factionType } = options;
     const previousOwner = city.ownerTeam;
-    if (!previousOwner) {
-      return undefined;
-    }
+    if (!previousOwner || city.destroyed || previousOwner.status !== "ACTIVE") return undefined;
+    const candidates = this.foundingSupporters(previousOwner);
+    if (!candidates.length && !options.godDriven) return undefined;
+    const targetPopulation = worldRandom.int(REBEL_INITIAL_POPULATION_MIN, REBEL_INITIAL_POPULATION_MAX);
+    const lowLoyaltyUsers = candidates.slice(0, targetPopulation);
 
     const name = createRebelFactionName(city, factionType, this.getExistingNames());
     const color = this.createRebelColor();
@@ -226,39 +260,14 @@ class FactionRegistryStore {
       parentFactionId: previousOwner.name,
       foundingCityIds: [city.id],
     });
-    if (!core.addRuntimeTeam(team)) {
-      return undefined;
+    if (!city.revoltTo(team, year, () => this.prepareFoundingPopulation(team, previousOwner, lowLoyaltyUsers, year, "REBELLION_TRANSFER"))) {
+      this.discardUnregisteredFaction(team); return undefined;
     }
     DynastyRegistry.initializeFaction(team, year);
-    team.setOrigin({
-      ...team.origin,
-      foundingRulerId: DynastyRegistry.getCurrentRuler(team.name)?.id,
-    });
-
-    const lowLoyaltyUsers = [...previousOwner.users]
-      .filter((user) => user.loyalty < REBEL_LOW_LOYALTY_USER_THRESHOLD)
-      .slice(0, worldRandom.int(REBEL_INITIAL_POPULATION_MIN, REBEL_INITIAL_POPULATION_MAX));
-
-    const populationCause = options.godDriven ? "GOD_ACTION" : "REBELLION_TRANSFER";
-    lowLoyaltyUsers.forEach((user) => user.obedience(team, {
-      cause: populationCause,
-      month: year,
-      relatedFactionId: previousOwner.name,
-      context: options.godDriven ? "god-created rebel faction" : "rebel faction founding",
-    }));
-    city.revoltTo(team, year);
-
-    const targetPopulation = worldRandom.int(
-      REBEL_INITIAL_POPULATION_MIN,
-      REBEL_INITIAL_POPULATION_MAX
-    );
-    const needed = Math.max(1, targetPopulation - lowLoyaltyUsers.length);
-    this.spawnMembers(team, needed, "Rebel", year, {
-      cause: populationCause,
-      month: year,
-      relatedFactionId: previousOwner.name,
-      context: "rebel faction founding population",
-    });
+    team.setOrigin({ ...team.origin, foundingRulerId: DynastyRegistry.getCurrentRuler(team.name)?.id });
+    const external = options.godDriven ? this.spawnMembers(team, Math.max(0, targetPopulation-lowLoyaltyUsers.length), "Rebel", year,
+      { cause: "GOD_ACTION", month: year, context: "神力建势的特殊外源人口，非转属" }) : 0;
+    const populationSource = { transferredPopulation: lowLoyaltyUsers.length, externalPopulation: external };
     const historyGroupId = getFoundingHistoryGroupId(team.name, year);
 
     if (factionType === "FRONTIER") {
@@ -270,7 +279,8 @@ class FactionRegistryStore {
         city.id,
         DynastyRegistry.getRulerDisplay(team.name),
         DynastyRegistry.getCurrentRuler(team.name)?.id,
-        historyGroupId
+        historyGroupId,
+        populationSource
       );
     } else {
       WorldHistory.addRebelFactionFounded(
@@ -281,7 +291,8 @@ class FactionRegistryStore {
         city.id,
         DynastyRegistry.getRulerDisplay(team.name),
         DynastyRegistry.getCurrentRuler(team.name)?.id,
-        historyGroupId
+        historyGroupId,
+        populationSource
       );
     }
     DynastyRegistry.recordRebellion(previousOwner.name);
@@ -295,6 +306,10 @@ class FactionRegistryStore {
     if (!core?.map || !coreCity || !previousOwner) {
       return undefined;
     }
+    if (previousOwner.status !== "ACTIVE" || coreCity.destroyed || cities.some(c => c.ownerFactionId !== previousOwner.name || c.destroyed)) return undefined;
+    const candidates = this.foundingSupporters(previousOwner);
+    if (!candidates.length) return undefined;
+    const lowLoyaltyUsers = candidates.slice(0, worldRandom.int(REBEL_INITIAL_POPULATION_MIN, REBEL_INITIAL_POPULATION_MAX));
     const name = createRebelFactionName(coreCity, "REBEL", this.getExistingNames());
     const color = this.createRebelColor();
     const team = new Team(
@@ -328,41 +343,15 @@ class FactionRegistryStore {
       parentFactionId: previousOwner.name,
       foundingCityIds: cities.map((city) => city.id),
     });
-    if (!core.addRuntimeTeam(team)) {
-      return undefined;
+    if (!coreCity.revoltTo(team, year, () => this.prepareFoundingPopulation(team, previousOwner, lowLoyaltyUsers, year, "EMPIRE_SPLIT_TRANSFER"))) {
+      this.discardUnregisteredFaction(team); return undefined;
     }
-    DynastyRegistry.initializeFaction(team, year);
-    team.setOrigin({
-      ...team.origin,
-      foundingRulerId: DynastyRegistry.getCurrentRuler(team.name)?.id,
-    });
-
-    const lowLoyaltyUsers = [...previousOwner.users]
-      .filter((user) => user.loyalty < REBEL_LOW_LOYALTY_USER_THRESHOLD)
-      .slice(0, worldRandom.int(REBEL_INITIAL_POPULATION_MIN, REBEL_INITIAL_POPULATION_MAX));
-    lowLoyaltyUsers.forEach((user) => user.obedience(team, {
-      cause: "EMPIRE_SPLIT_TRANSFER",
-      month: year,
-      relatedFactionId: previousOwner.name,
-      context: "empire split founding",
-    }));
-
-    const transferredCities = cities.filter((city) => city.revoltTo(team, year));
-    if (transferredCities.length === 0) {
-      return undefined;
-    }
+    const transferredCities = [coreCity, ...cities.slice(1).filter(city => city.revoltTo(team, year))];
     this.transferNearbyTerritory(previousOwner, team, coreCity);
-
-    const targetPopulation = worldRandom.int(3, 8);
-    const needed = Math.max(1, Math.min(2, targetPopulation - lowLoyaltyUsers.length));
-    this.spawnMembers(team, needed, "Split", year, {
-      cause: "EMPIRE_SPLIT_TRANSFER",
-      month: year,
-      relatedFactionId: previousOwner.name,
-      context: "empire split founding population",
-    });
+    DynastyRegistry.initializeFaction(team, year);
+    team.setOrigin({ ...team.origin, foundingRulerId: DynastyRegistry.getCurrentRuler(team.name)?.id });
     FactionLifetimeRecords.observe(team, year);
-    return { team, transferredCities };
+    return { team, transferredCities, transferredPopulation: lowLoyaltyUsers.length, externalPopulation: 0 };
   }
 
   foundCity(team: Team, block: Block, cityName: string | undefined, year: number) {
@@ -381,6 +370,7 @@ class FactionRegistryStore {
     for (let i = 0; i < count; i++) {
       this.sequence += 1;
       const name = `${prefix}-${team.name}-${year}-${String(this.sequence).padStart(4, "0")}`;
+      const before = team.users.size;
       const joinedTeam = Danmu.Apply(
         createLocalDanmu(
           name,
@@ -389,8 +379,8 @@ class FactionRegistryStore {
         ),
         populationMutation
       );
-      if (joinedTeam) {
-        spawned += 1;
+      if (joinedTeam === team && team.users.size > before) {
+        spawned += team.users.size - before;
       }
     }
     return spawned;

@@ -192,6 +192,20 @@ export default class AutoSimulator {
     return this.speed;
   }
 
+  canApplyWartimePopulationLoss(team: Team, worldMonth: number) { return this.population.canApplyWartimeLoss(team, worldMonth); }
+  recordWartimePopulationLoss(team: Team, worldMonth: number) { this.population.recordWartimeLoss(team, worldMonth); }
+  getPopulationSummary(factionId?: string) {
+    const teams = Game.Core?.teams ?? this.lastKnownTeams;
+    const users = teams.flatMap(t => [...t.users]);
+    return { ...this.populationTransitionAudit.getSummary(factionId, teams),
+      ordinaryUsers: users.filter(u => u.role === "NORMAL").length, rulerMapUsers: users.filter(u => u.role === "RULER").length,
+      activeUsers: teams.filter(t => t.status === "ACTIVE").reduce((n,t)=>n+t.users.size,0),
+      exiledUsers: teams.filter(t => t.status === "EXILED").reduce((n,t)=>n+t.users.size,0),
+      inactiveUsers: teams.filter(t => t.status !== "ACTIVE" && t.status !== "EXILED").reduce((n,t)=>n+t.users.size,0),
+      latest: this.populationTransitionAudit.getRecent().filter(r => !factionId || r.factionId === factionId).at(-1) };
+  }
+  getPopulationClimateMultiplier(team: Team) { return this.events.getPopulationGrowthMultiplier(team); }
+
   recordPopulationMutation(team: Team, before: number, after: number, metadata: PopulationMutationContext) {
     this.populationTransitionAudit.record(team, before, after, {
       ...metadata,
@@ -376,7 +390,7 @@ export default class AutoSimulator {
       this.measure("FactionEffects.update", () => FactionEffects.update(this.clock.year));
       this.measure("DynastyRegistry.update", () => DynastyRegistry.update(this.clock.year, teams));
       this.measure("WorldExiles.update", () => WorldExiles.update(this.clock.year, teams));
-      this.populationTransitionAudit.reconcile(this.clock.year, teams);
+      this.populationTransitionAudit.reconcile(this.clock.year, Game.Core?.teams ?? teams);
       FactionLifetimeRecords.observeWorld(this.clock.year, teams, totalCells);
       this.measure("FactionSnapshots.observe", () => FactionSnapshots.observe(this.clock.year, teams, totalCells));
       this.measure("WorldHistory.observeWorld", () => WorldHistory.observeWorld(this.clock.year, teams, totalCells));

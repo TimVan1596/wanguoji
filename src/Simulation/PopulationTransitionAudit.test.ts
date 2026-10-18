@@ -165,6 +165,6 @@ describe("PopulationTransitionAudit", () => {
     const hasAuditField: "populationTransitionAudit" extends keyof WorldSaveV1 ? true : false = false;
     expect(audit).not.toHaveProperty("exportState");
     expect(hasAuditField).toBe(false);
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(16);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(17);
   });
 });

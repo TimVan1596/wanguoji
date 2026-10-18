@@ -726,6 +726,8 @@ export default class Core {
     };
   }
 
+  getPopulationSummary(factionId?: string) { return this.simulator?.getPopulationSummary(factionId); }
+
   getPopulationTransitionAudit() {
     return this.simulator?.getPopulationTransitionDiagnostics() ?? [];
   }

@@ -223,6 +223,7 @@ function WorldDiagnosticsPanelContent() {
 
   const runtime = desktopRuntime;
   const populationTransitions = core?.getPopulationTransitionAudit() ?? [];
+  const populationSummary = core?.getPopulationSummary();
   const framePerformance = runtime?.framePerformance;
   const hydration = core?.getHydrationDiagnostics();
   const snapshotState = snapshotRequest?.requestState;
@@ -279,6 +280,7 @@ function WorldDiagnosticsPanelContent() {
       avatarRenderer: getAvatarRendererMode(),
     } : undefined,
     populationTransitions,
+    populationSummary,
     provisionalRulers,
     runtimeLifetime,
     simulationStepPerformance: stepPerformance,
@@ -376,7 +378,7 @@ function WorldDiagnosticsPanelContent() {
       ["Runtime Liveness", { runtime, simulationCounters: core?.getSimulationDiagnostics() }],
       ["Genealogy Viewer", genealogyViewer],
       ["Runtime Units", coreReportData.units],
-      ["Population Transition Audit", populationTransitions],
+      ["Population Transition Audit", { populationSummary, populationTransitions }],
       ["Diplomacy", core?.getDiplomacyDiagnostics()],
       ["纳土归附诊断", core?.getPeacefulSubmissionDiagnostics()],
       ["和平政治转型诊断", core?.getPeacefulPoliticalTransitionDiagnostics()],
@@ -576,6 +578,10 @@ function WorldDiagnosticsPanelContent() {
         <summary>Population Transition Audit（最近显著变化）</summary>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{[
           "本次会话数据；读取存档后重置。触发城市与受损者位置分开记录，位置不证明参战。",
+          "世界口径：所有国家真实User（包括君主地图单位）；不含匿名残部池或未上图王室人物。转属只改变国家归属。",
+          populationSummary ? `世界期初${populationSummary.openingWorldPopulation}→期末${populationSummary.closingWorldPopulation}；普通人口${populationSummary.ordinaryUsers}、君主地图单位${populationSummary.rulerMapUsers}；在国${populationSummary.activeUsers}、流亡${populationSummary.exiledUsers}、其他状态${populationSummary.inactiveUsers}` : "",
+          populationSummary ? `会话来源：自然恢复+${populationSummary.totals.naturalGrowth}；外来+${populationSummary.totals.external}；特殊+${populationSummary.totals.special}；战争−${populationSummary.totals.warDeaths}；自然死亡−${populationSummary.totals.naturalDeaths}；转入+${populationSummary.totals.transferIn}/转出−${populationSummary.totals.transferOut}；王室地图单位/残部池/离散等其他净额${populationSummary.totals.otherNet}；未归因${populationSummary.totals.unattributed}；未解释世界差额${populationSummary.unexplainedWorldDifference}` : "",
+          "近期分项仅保留12个月；详细记录最多240条。",
           populationTransitions.length
           ? populationTransitions.map((entry) => {
             const related = entry.relatedFactionId

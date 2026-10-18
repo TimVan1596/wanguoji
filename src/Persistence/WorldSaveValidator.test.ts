@@ -15,7 +15,7 @@ function fixture() {
   save.units = [{ unitId: "unit-1", factionId: "qin", userId: 7, x: 10, y: 20, vx: 1, vy: -1, speed: 100, radius: 10, scale: 1, speedCoefficient: 0, sizeCoefficient: 0, alive: true, role: "RULER" }];
   save.dynasties = [{ factionId: "qin", houseName: "田氏", houseEpochs: [{ houseName: "田氏", startMonth: 0, foundingRulerId: "qin-ruler-1", startReason: "FOUNDING" }], rulers: [{ rulerId: "qin-ruler-1", houseName: "田氏", bornMonth: -360, accessionMonth: 0, status: "ruling" }], heirIds: [] }];
   save.blocks = [{ gridX: 0, gridY: 0, ownerFactionId: "qin", isHome: true, cityId: "xianyang", homeHitPoints: 10, isCityCenter: true }];
-  save.populationSystem = { counters: { qin: 3 }, lastGrowthMonth: 12 };
+  save.populationSystem = { counters: { qin: 3 }, lastGrowthMonth: 12, wartimeLossMonths: {} };
   setFixtureLifetimeRecords(save);
   return save;
 }
@@ -118,8 +118,8 @@ describe("WorldSaveV1 validation and JSON contract", () => {
   });
   it("uses schema V10 and persists alliance/merge fields plus the deterministic random stream", () => {
     const save = fixture();
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(16);
-    expect(save.saveSchemaVersion).toBe(16);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(17);
+    expect(save.saveSchemaVersion).toBe(17);
     expect(save.diplomacy).toEqual({ relations: [], pairMemories: [], lastEvaluationMonth: -1 });
     expect(save.worldRandom).toMatchObject({ algorithm: "mulberry32-v1", seed: expect.any(String), state: expect.any(Number), position: 0 });
   });
@@ -237,7 +237,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     expect(loaded.dynasties[0]).toMatchObject({ designatedHeirId: "qin-ruler-2", designatedSinceMonth: 36 });
     expect(loaded.dynasties[0].rulers[2]).toMatchObject({ parentId: "qin-ruler-2", relationType: "DIRECT_CHILD" });
     expect(loaded.dynasties[0].rulers[3]).toMatchObject({ rulerId: "qin-ruler-4", bornMonth: -200, status: "kin", parentId: "qin-ruler-1" });
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(16);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(17);
   });
 
   it("rejects a dynasty candidate list above the runtime bound", () => {
@@ -325,7 +325,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     save.populationSystem.counters = [] as never;
     expect(validateWorldSave(save).errors).toContain("populationSystem.counters must be an object");
 
-    save.populationSystem = { counters: { qin: 1.5 }, lastGrowthMonth: 12 };
+    save.populationSystem = { counters: { qin: 1.5 }, lastGrowthMonth: 12, wartimeLossMonths: {} };
     expect(validateWorldSave(save).errors).toContain("populationSystem.counters.qin must be a non-negative integer");
   });
 

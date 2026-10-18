@@ -22,7 +22,7 @@ import { MonthlyPhaseProfiler } from "./MonthlyPhaseProfiler";
 import { RollingStepPerformance } from "./RollingStepPerformance";
 
 function makeTeam() {
-  const team: any = { name: "燕", shortName: "燕", isDie: false, users: new Set(), blocks: { children: { size: 1 } } };
+  const team: any = { name: "燕", shortName: "燕", isDie: false, status: "ACTIVE", users: new Set(), blocks: { children: { size: 1 } } };
   team.makeUser = (id: number, name: string, _face?: string, loyalty = 50) => {
     if ([...team.users].some((user: any) => user.id === id)) return false;
     const user: any = { id, name, loyalty, role: "NORMAL", logicalUnitId: `unit-${team.users.size + 1}`, destroyUser: vi.fn(() => { team.users.delete(user); return true; }) };

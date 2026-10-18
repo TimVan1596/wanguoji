@@ -556,7 +556,8 @@ export class WorldHistoryStore {
     foundingRulerId?: string,
     historyGroupId?: string,
     splitCoreCityId?: string,
-    splitCoreCityName?: string
+    splitCoreCityName?: string,
+    populationSource?: { transferredPopulation: number; externalPopulation: number }
   ) {
     this.addEvent({
       id: `empire-split-${year}-${empireName}-${rebelName}-${this.sequence++}`,
@@ -569,6 +570,7 @@ export class WorldHistoryStore {
       actorFactionId: rebelName,
       targetFactionId: empireName,
       metadata: {
+        ...populationSource,
         splitCityCount: cityNames.length,
         parentFactionId: empireName,
         foundingCityNames: cityNames.join("、"),
@@ -1018,7 +1020,8 @@ export class WorldHistoryStore {
     cityId?: string,
     foundingRulerName?: string,
     foundingRulerId?: string,
-    historyGroupId?: string
+    historyGroupId?: string,
+    populationSource?: { transferredPopulation: number; externalPopulation: number }
   ) {
     this.addEvent({
       id: `rebel-founded-${year}-${rebelFactionId}-${cityName}-${this.sequence++}`,
@@ -1033,6 +1036,7 @@ export class WorldHistoryStore {
       cityId,
       cityName,
       metadata: {
+        ...populationSource,
         parentFactionId: previousOwnerName,
         foundingCityNames: cityName,
         foundingCityIds: cityId,
@@ -1052,7 +1056,8 @@ export class WorldHistoryStore {
     cityId?: string,
     foundingRulerName?: string,
     foundingRulerId?: string,
-    historyGroupId?: string
+    historyGroupId?: string,
+    populationSource?: { transferredPopulation: number; externalPopulation: number }
   ) {
     this.addEvent({
       id: `frontier-founded-${year}-${factionId}-${cityName}-${this.sequence++}`,
@@ -1067,6 +1072,7 @@ export class WorldHistoryStore {
       cityId,
       cityName,
       metadata: {
+        ...populationSource,
         parentFactionId: previousOwnerName,
         foundingCityNames: cityName,
         foundingCityIds: cityId,
