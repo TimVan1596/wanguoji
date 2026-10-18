@@ -34,7 +34,7 @@ export function assessPopularSupport(city: City, month: number) {
     const referenceInvalid=!id||!s||e?.player!==p||!s.alive||s.unitId!==id||s.userId!==user.id||s.factionId!==owner.name;
     if(referenceInvalid){result.spatial.referenceMismatch++;
       const x=core.logicalGameplayAuthority?s?.logicalX:p?.x,y=core.logicalGameplayAuthority?s?.logicalY:p?.y;
-      if(Number.isFinite(x)&&Number.isFinite(y)&&core.map.blocks?.[Math.floor(x/Game.BlockSize)]?.[Math.floor(y/Game.BlockSize)]?.team===owner)result.spatial.referenceWithOwnedPosition++;
+      if(typeof x==="number"&&typeof y==="number"&&Number.isFinite(x)&&Number.isFinite(y)&&core.map.blocks?.[Math.floor(x/Game.BlockSize)]?.[Math.floor(y/Game.BlockSize)]?.team===owner)result.spatial.referenceWithOwnedPosition++;
     }
     if(!id||idCounts.get(user.id)!==1||unitCounts.get(id)!==1||!s||e?.player!==p||!s.alive||s.unitId!==id||s.userId!==user.id||s.factionId!==owner.name||s.role!=="NORMAL"||s.rulerId||
       user.isDestroyed||user.team!==owner||user.role!=="NORMAL"||user.rulerId||user.militaryPersonId||!Number.isSafeInteger(user.id)||!Number.isSafeInteger(user.bornMonth)||
@@ -47,7 +47,8 @@ export function assessPopularSupport(city: City, month: number) {
       result.spatial.arcadePosition++;
       if(Number.isFinite(s.logicalX)&&Number.isFinite(s.logicalY)&&Math.hypot(x-s.logicalX,y-s.logicalY)>Game.BlockSize)result.spatial.staleRegistryPosition++;
     }
-    const g=getLogicalGridCoordinate(x,y,Game.BlockSize),block=core.map.blocks?.[g.gridX]?.[g.gridY];
+    const g=getLogicalGridCoordinate(x,y,Game.BlockSize);
+    const block:import("../Components/Block").default|undefined=core.map.blocks?.[g.gridX]?.[g.gridY];
     if(!Number.isFinite(x)||!Number.isFinite(y)||x<0||y<0||!block){result.spatial.invalidPosition++;result.outsideArea++;continue;}
     if(!block.team){result.spatial.unowned++;result.outsideArea++;continue;}
     if(block.team!==owner){result.spatial.foreign++;result.outsideArea++;continue;}
