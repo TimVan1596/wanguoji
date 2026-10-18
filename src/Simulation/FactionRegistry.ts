@@ -20,6 +20,7 @@ import { canRestoreExiledFaction } from "../Politics/ExileRules";
 import WorldExiles from "./WorldExiles";
 import WorldRemnants from "./WorldRemnants";
 import {
+  EMPIRE_SPLIT_MIN_CITIES, EMPIRE_SPLIT_LOW_LOYALTY, EMPIRE_SPLIT_STABILITY_THRESHOLD, EMPIRE_SPLIT_STRAIN_THRESHOLD,
   REBEL_INITIAL_POPULATION_MAX,
   REBEL_INITIAL_POPULATION_MIN,
   USER_RESTORED_LOYALTY_MAX,
@@ -42,6 +43,7 @@ interface RebelFactionOptions {
 
 class FactionRegistryStore {
   private sequence = 0;
+  private foundingTransactions = new WeakSet<User>();
 
   reset() {
     this.sequence = 0;
@@ -192,6 +194,8 @@ class FactionRegistryStore {
 
   /** Population preparation precedes city consequences and runtime registration. */
   private prepareFoundingPopulation(team: Team, owner: Team, users: User[], month: number, cause: "REBELLION_TRANSFER" | "EMPIRE_SPLIT_TRANSFER") {
+    if(users.some(u=>this.foundingTransactions.has(u))) return false;
+    users.forEach(u=>this.foundingTransactions.add(u));
     const memberships = MilitaryCommandRegistry.getFormations().filter(f => f.status === "ACTIVE").map(f => ({f,members:[...f.memberUnitIds]}));
     try {
       for (const user of users) {
@@ -199,10 +203,11 @@ class FactionRegistryStore {
         user.setTeam(team, { cause, month, context: "真实既有人口支持新政权" });
         if (user.team !== team) throw new Error("founding supporter transfer failed");
       }
-      if (Game.Core.addRuntimeTeam(team)) return true;
+      if (Game.Core.addRuntimeTeam(team)) {users.forEach(u=>this.foundingTransactions.delete(u));return true;}
     } catch { /* Roll back while no city has changed owner. */ }
     for (const user of users) if (user.team === team) user.setTeam(owner, { cause, month, context: "建势人口转属回退" });
     for (const {f,members} of memberships) f.memberUnitIds = members;
+    users.forEach(u=>this.foundingTransactions.delete(u));
     return false;
   }
 
@@ -215,7 +220,7 @@ class FactionRegistryStore {
     const previousOwner = city.ownerTeam;
     if (!previousOwner || city.destroyed || previousOwner.status !== "ACTIVE") return undefined;
     if (!options.godDriven && (!hasPopularPoliticalCrisis(city,year,core.totalCells) || city.isInCaptureGrace(year))) return undefined;
-    const candidates = assessPopularSupport(city, year).users;
+    const candidates = assessPopularSupport(city, year).users.filter(u=>!this.foundingTransactions.has(u));
     if (!candidates.length && !options.godDriven) return undefined;
     const targetPopulation = worldRandom.int(REBEL_INITIAL_POPULATION_MIN, REBEL_INITIAL_POPULATION_MAX);
     const lowLoyaltyUsers = candidates.slice(0, targetPopulation);
@@ -300,9 +305,9 @@ class FactionRegistryStore {
       return undefined;
     }
     if (previousOwner.status !== "ACTIVE" || coreCity.destroyed || cities.some(c => c.ownerFactionId !== previousOwner.name || c.destroyed)) return undefined;
-    if (previousOwner.cities.length < 4 || coreCity.loyalty > 42 ||
-      ((getFactionStability(previousOwner) ?? 100) >= 45 && politicalStrain < 72) || coreCity.isInCaptureGrace(year)) return undefined;
-    const candidates = assessPopularSupport(coreCity, year).users;
+    if (previousOwner.cities.length < EMPIRE_SPLIT_MIN_CITIES || coreCity.loyalty > EMPIRE_SPLIT_LOW_LOYALTY ||
+      ((getFactionStability(previousOwner) ?? 100) >= EMPIRE_SPLIT_STABILITY_THRESHOLD && politicalStrain < EMPIRE_SPLIT_STRAIN_THRESHOLD) || coreCity.isInCaptureGrace(year)) return undefined;
+    const candidates = assessPopularSupport(coreCity, year).users.filter(u=>!this.foundingTransactions.has(u));
     if (!candidates.length) return undefined;
     const lowLoyaltyUsers = candidates.slice(0, worldRandom.int(REBEL_INITIAL_POPULATION_MIN, REBEL_INITIAL_POPULATION_MAX));
     const name = createRebelFactionName(coreCity, "REBEL", this.getExistingNames());

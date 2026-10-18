@@ -309,3 +309,39 @@ it("large-capacity natural recovery is limited to one User per month while prese
   for(let m=1;m<=12;m++){const before=f.team.users.size;core.simulator.year=m;f.populationSystem.update(m,[f.team]);changes.push(f.team.users.size-before);f.populationSystem.update(m,[f.team]);expect(f.team.users.size-before).toBeLessThanOrEqual(1);}
   expect(changes.reduce((a,b)=>a+b,0)).toBe(8);expect(Math.max(...changes)).toBe(1);next.mockRestore();
 });
+
+it("12-seed actual large-territory recovery cadence and siege comparison",()=>{
+  const rows:any[]=[];
+  for(const scenario of ["large-peace","large-siege"])for(let seed=0;seed<12;seed++){
+    const f=fixture(seed,10,3),old=core.map.blocks;
+    for(const row of old)for(const b of row)b.claimForTeam(f.team);
+    const blocks=Array.from({length:32},(_,x)=>Array.from({length:24},(_,y)=>{
+      if(old[x]?.[y])return old[x][y];const b={...old[0][0],x:x*32,y:y*32,city:undefined};f.team.blocks.add(b);return b;
+    }));
+    core.map={blocks,getBlock:(x:number,y:number)=>blocks[x]?.[y]};core.totalCells=768;
+    let maxNatural=0,warMinimum=10;const checkpoints:any={};
+    for(let month=1;month<=2400;month++){
+      core.simulator.year=month;const war=scenario==="large-siege"&&month<=60;
+      for(const c of f.team.cities){c.siegeContacts=war?new Map([[f.enemy.name,{team:f.enemy,count:3,year:month}]]):new Map();c.underSiege=war;if(war)c.updateSiege(month);}
+      const before=f.team.users.size;f.populationSystem.update(month,[f.team]);maxNatural=Math.max(maxNatural,f.team.users.size-before);
+      if(war)warMinimum=Math.min(warMinimum,f.team.users.size);f.audit.reconcile(month,core.teams);
+      if([240,1200,2400].includes(month))checkpoints[month/12]=f.team.users.size;
+    }
+    const report=f.audit.getSummary(undefined,core.teams);expect(report.unexplainedWorldDifference).toBe(0);
+    rows.push({scenario,seed,capacity:f.populationSystem.getCapacity(f.team),checkpoints,maxNatural,warMinimum,natural:f.totals.NATURAL_GROWTH??0,warDeaths:-(f.totals.SIEGE_LOSS??0)});
+    vi.restoreAllMocks();
+  }
+  if(process.env.WANGUOJI_CADENCE_REPLAY_OUTPUT)writeFileSync(process.env.WANGUOJI_CADENCE_REPLAY_OUTPUT,JSON.stringify(rows,null,2));
+  console.log("LARGE_RECOVERY_PRODUCTION_REPLAY",rows.length,"controlled runs / capacity104 / 200 years");
+},30000);
+
+it("reading regional debug observations never changes a production political decision or its RNG",()=>{
+  const run=(debug:boolean)=>{
+    const f=fixture(70,20,4);core.totalCells=256;for(const row of core.map.blocks)for(const b of row)b.claimForTeam(f.team);
+    for(const c of f.team.cities)c.lastLoyaltyYear=0;
+    for(const u of f.team.users)Object.assign(f.entries.get(u.player.logicalUnitId).state,{logicalX:f.team.cities[3].block.x+16,logicalY:16});
+    for(let m=1;m<=1200;m++){core.simulator.year=m;for(const c of core.teams.flatMap((t:any)=>t.cities))c.updateLoyalty(m);f.populationSystem.update(m,core.teams);f.eventSystem.checkRestorations(m,[...core.teams]);if(debug){f.eventSystem.getRegionalRebellionSnapshot();f.eventSystem.getRegionalRebellionDiagnostics();}}
+    const state={rng:worldRandom.exportState(),people:core.teams.map((t:any)=>[t.name,[...t.users].map((u:any)=>[u.id,u.loyalty,u.team.name])]),events:History.getEvents()};vi.restoreAllMocks();return state;
+  };
+  expect(run(true)).toEqual(run(false));
+});

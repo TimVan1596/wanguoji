@@ -6,7 +6,7 @@ import type User from "../Components/User";
 import Military from "../Politics/MilitaryCommandRegistry";
 import {getLocalRestorationArea,isInLocalRestorationArea} from "./LocalRestorationSupport";
 import {getLogicalGridCoordinate} from "./LogicalUnitState";
-import {REBEL_LOW_LOYALTY_USER_THRESHOLD} from "../config/simulation";
+import {REBEL_LOW_LOYALTY_USER_THRESHOLD,REBEL_LOYALTY_THRESHOLD_V095,REBEL_OWNER_STABILITY_THRESHOLD_V095,REBEL_LOYALTY_THRESHOLD,EMPIRE_SPLIT_STRAIN_THRESHOLD} from "../config/simulation";
 
 /** Derived willingness, not a rewrite of personal loyalty. No RNG or session state. */
 export function localPoliticalPressure(city: City, month: number) {
@@ -43,6 +43,6 @@ export function assessPopularSupport(city: City, month: number) {
 /** A single collapsed province need not drag the entire country's mean below 55.
  * The exception needs extreme local disaffection plus actual destruction or imperial strain. */
 export function hasPopularPoliticalCrisis(city:City,_month:number,totalCells:number){
-  const owner=city.ownerTeam;if(!owner||owner.status!=="ACTIVE"||city.destroyed||city.loyalty>26)return false;
-  return (getFactionStability(owner)??100)<=55 || city.loyalty<=18 && (city.devastation>=70||calculateImperialStrain(owner,totalCells)>=72);
+  const owner=city.ownerTeam;if(!owner||owner.status!=="ACTIVE"||city.destroyed||city.loyalty>REBEL_LOYALTY_THRESHOLD_V095)return false;
+  return (getFactionStability(owner)??100)<=REBEL_OWNER_STABILITY_THRESHOLD_V095 || city.loyalty<=REBEL_LOYALTY_THRESHOLD && (city.devastation>=70||calculateImperialStrain(owner,totalCells)>=EMPIRE_SPLIT_STRAIN_THRESHOLD);
 }
