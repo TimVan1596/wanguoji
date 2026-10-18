@@ -406,7 +406,7 @@ function FactionProfile({
         <>
           <OverviewSection title="身份沿革" lines={overviewSections.identityLines} />
           {team.origin?.parentFactionId && <OverviewSection title="政权源流" lines={[
-            `来源：${team.origin.type === "SPLIT" ? "地方分裂政权" : "地方民众起事"} · ${formatWorldDate(team.origin.foundedMonth)}`,
+            `来源：${team.origin.type === "SPLIT" ? "地方分裂政权" : "地方起事政权"} · ${formatWorldDate(team.origin.foundedMonth)}`,
             `母体国家：${teams.find(t=>t.name===team.origin.parentFactionId)?.displayName ?? team.origin.parentFactionId}`,
             `发源城市：${(team.origin.foundingCityIds ?? []).map(id=>Game.Core?.allCities.find(c=>c.id===id)?.name ?? id).join("、")}`,
             ...WorldHistory.getEventsForFaction(team.name).filter(e=>["rebel-faction-founded","frontier-faction-founded","empire-split"].includes(e.type)&& (e.actorFactionId===team.name||e.metadata?.newFactionId===team.name||e.metadata?.splitFactionId===team.name)).slice(0,1).map(e=>`初始真实支持人口：${e.metadata?.transferredPopulation ?? "未记录"}；额外增员：${e.metadata?.externalPopulation ?? "未记录"}`)
