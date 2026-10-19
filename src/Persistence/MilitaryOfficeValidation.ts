@@ -24,7 +24,7 @@ export function validateMilitaryOffices(state:MilitaryCommandState,events:any[],
         const rule=MILITARY_OFFICE_RULES[g.office as "JIANGJUN"|"SHANGJIANGJUN"];
         const eligible=new Set(entries.filter(e=>e.victory&&e.commandId===a.commandId&&e.factionId===a.factionId&&e.worldMonth<=g.month&&e.worldMonth>=a.startMonth&&
           (g.office!=="SHANGJIANGJUN"||e.worldMonth>(previous?.month??Infinity))).map(e=>e.eventId));
-        if(!rule||!previous||g.serviceMonths<rule.serviceMonths||g.month-previous.month<rule.intervalMonths||g.captureEventIds.length!==rule.captures||new Set(g.captureEventIds).size!==g.captureEventIds.length||g.captureEventIds.some(id=>used.has(id)||!eligible.has(id)))errors.push(`military office lacks verified merit/service: ${g.eventId}`);
+        if(g.month%12!==0||!rule||!previous||g.serviceMonths<rule.serviceMonths||g.month-previous.month<rule.intervalMonths||g.captureEventIds.length!==rule.captures||new Set(g.captureEventIds).size!==g.captureEventIds.length||g.captureEventIds.some(id=>used.has(id)||!eligible.has(id)))errors.push(`military office lacks verified merit/service: ${g.eventId}`);
         g.captureEventIds.forEach(id=>used.add(id));
       }
     }

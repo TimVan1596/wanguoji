@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MilitaryCommandRegistryStore } from "./MilitaryCommandRegistry";
 import { deriveMilitaryCareer } from "./MilitaryCareerEvidence";
+import {describeMilitaryOffice} from "./MilitaryOffice";
 import WorldHistory from "../History/WorldHistory";
 import worldRandom from "../Simulation/WorldRandom";
 import Diplomacy from "./Diplomacy";
@@ -156,5 +157,75 @@ describe("real registry career influence", () => {
     expect(validate(state, distant)).toContain("invalid military order provenance");
     const invalidMembers = structuredClone(state); invalidMembers.formations[0].memberUnitIds.push("missing-unit");
     expect(validate(invalidMembers).some(e => e.includes("invalid member unit"))).toBe(true);
+  });
+});
+
+
+describe("formal military offices use production careers and canonical history",()=>{
+  function ready(){
+    const f=fixture();
+    for(const u of f.users)u.matchesMilitaryLife=(p:any)=>u.militaryPersonId===p.personId&&u.id===p.sourceUserId&&u.team.name===p.factionId;
+    return f;
+  }
+  it("grants an initial office, then promotes only on annual checks with verified service and distinct new victories",()=>{
+    const f=ready();
+    expect(f.person.appointments[0].officeHistory?.[0]).toMatchObject({office:"PIJIANG",month:12,serviceMonths:0,captureEventIds:[]});
+    f.capture(false,20);f.capture(true,24);
+    f.registry.update(60,[f.team,f.enemy],[f.city]);
+    expect(f.person.appointments[0].officeHistory).toHaveLength(1);
+    f.registry.update(72,[f.team,f.enemy],[f.city]);
+    expect(describeMilitaryOffice(f.person,"qin")).toBe("现任将军");
+    const before=worldRandom.exportState();
+    f.registry.update(72,[f.team,f.enemy],[f.city]);
+    expect(worldRandom.exportState()).toEqual(before);
+    expect(f.person.appointments[0].officeHistory).toHaveLength(2);
+    f.capture(false,84);f.capture(false,96);
+    f.registry.update(132,[f.team,f.enemy],[f.city]);
+    expect(f.person.appointments[0].officeHistory).toHaveLength(2); // no third fresh victory
+    f.capture(true,140);
+    f.registry.update(141,[f.team,f.enemy],[f.city]);
+    expect(f.person.appointments[0].officeHistory).toHaveLength(2); // not an annual grant
+    f.registry.update(144,[f.team,f.enemy],[f.city]);
+    const grants=f.person.appointments[0].officeHistory!;
+    expect(grants.map(g=>g.office)).toEqual(["PIJIANG","JIANGJUN","SHANGJIANGJUN"]);
+    expect(new Set(grants.flatMap(g=>g.captureEventIds)).size).toBe(5);
+    expect(f.registry.getChronicle(f.person,144).filter(e=>e.source.startsWith("military-office-granted"))).toHaveLength(3);
+    expect(f.registry.getOfficeSummary(144)).toMatchObject({pijiang:1,jiangjun:1,shangjiangjun:1,promotions:2,activeFormationSizes:[2]});
+  });
+  it.each(["no-merit","invalid-user","ended-command"])("does not promote through %s",mode=>{
+    const f=ready();
+    if(mode!=="no-merit"){f.capture(false,20);f.capture(true,24);}
+    if(mode==="invalid-user")f.users.forEach(u=>u.matchesMilitaryLife=()=>false);
+    if(mode==="ended-command")f.registry.reconcileFactionEnd("qin",36);
+    f.registry.update(72,[f.team,f.enemy],[f.city]);
+    expect(f.person.appointments[0].officeHistory).toHaveLength(1);
+  });
+  it("keeps foreign, ended and posthumous offices historical; a new country grants its own initial office",()=>{
+    const f=ready();f.capture(false,20);f.capture(true,24);f.registry.update(72,[f.team,f.enemy],[f.city]);
+    const commander=f.users.find(u=>u.id===f.person.sourceUserId)!,old=structuredClone(f.person.appointments[0].officeHistory);
+    f.registry.onUserTransfer(commander,"wei",80);f.team.users.delete(commander);commander.team=f.enemy;f.enemy.users.add(commander);
+    f.enemy.users.add({...f.users[0],id:3,name:"新国居民",militaryPersonId:undefined,team:f.enemy,player:{active:true,logicalUnitId:"unit-3",x:0,y:0}});
+    f.draw.mockReset().mockReturnValue(0);
+    f.registry.update(84,[f.team,f.enemy],[f.city]);
+    expect(f.person.appointments).toHaveLength(2);
+    expect(f.person.appointments[0].officeHistory).toEqual(old);
+    expect(describeMilitaryOffice(f.person,"qin")).toBe("原任将军（本国历史最高职务）");
+    expect(describeMilitaryOffice(f.person,"wei")).toBe("现任裨将");
+    f.registry.update(144,[f.team,f.enemy],[f.city]);
+    expect(f.person.appointments[1].officeHistory).toHaveLength(1); // old-country victories cannot promote
+    f.registry.onUserDestroyed(commander,145,"BATTLE_DEATH");
+    expect(f.person.status).toBe("DEAD");
+    expect(describeMilitaryOffice(f.person,"wei")).toBe("原任裨将（本国历史最高职务）");
+    expect(f.person.appointments[0].officeHistory).toEqual(old);
+    expect(f.registry.getFormations().every(a=>a.status==="DISBANDED")).toBe(true);
+    expect(f.registry.getChronicle(f.person,145,"wei").some(e=>e.text.includes("去世"))).toBe(true);
+  });
+  it("age retirement ends current authority and preserves the actual granted office",()=>{
+    const f=ready(),month=Math.ceil(deriveMilitaryLifeSchedule(f.person).retirementMonth/12)*12;
+    f.registry.update(month,[f.team,f.enemy],[f.city]);
+    expect(f.person.status).toBe("RETIRED");
+    expect(f.person.deathMonth).toBeUndefined();
+    expect(describeMilitaryOffice(f.person,"qin")).toBe("原任裨将（本国历史最高职务）");
+    expect(f.person.appointments[0].endReason).toBe("AGE_RETIREMENT");
   });
 });

@@ -31,15 +31,15 @@ describe("save slot rules", () => {
     expect(await chooseAutosaveSlot(repo)).toBe("autosave-1");
   });
 
-  it("does not choose an old-version autosave slot for overwrite", async () => {
+  it.each([16,17])("does not overwrite old V%s autosave slots", async version => {
     const repo = { async listMetadata() { return [
-      { ...metadata("autosave-1", "2026-01-01T00:00:00.000Z"), saveSchemaVersion: 16 },
+      { ...metadata("autosave-1", "2026-01-01T00:00:00.000Z"), saveSchemaVersion: version },
       metadata("autosave-2", "2026-01-02T00:00:00.000Z"),
     ]; } } as unknown as WorldSaveRepository;
     expect(await chooseAutosaveSlot(repo)).toBe("autosave-2");
     const onlyOld = { async listMetadata() { return [
-      { ...metadata("autosave-1", "2026-01-01T00:00:00.000Z"), saveSchemaVersion: 16 },
-      { ...metadata("autosave-2", "2026-01-02T00:00:00.000Z"), saveSchemaVersion: 16 },
+      { ...metadata("autosave-1", "2026-01-01T00:00:00.000Z"), saveSchemaVersion: version },
+      { ...metadata("autosave-2", "2026-01-02T00:00:00.000Z"), saveSchemaVersion: version },
     ]; } } as unknown as WorldSaveRepository;
     await expect(chooseAutosaveSlot(onlyOld)).rejects.toThrow("旧档已保留");
   });

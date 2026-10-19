@@ -621,6 +621,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
       本国：现役指挥官 {factionCommanders} · 活动编组 {factionFormations} · 历史任职人物 {people.length}
     </Typography>
     <Box component="details" sx={{minWidth:0,overflowWrap:"anywhere"}}><summary>军事系统诊断</summary>
+    <Typography fontSize="0.75rem">候选与资格数字是累计检查次数，不是独立人物数；正式军职提供同国任职史料参考，不单独增加政治风险或重复抽签。</Typography>
     <Typography fontSize="0.76rem">军职档案累计授裨将{officeSummary.pijiang}次、将军{officeSummary.jiangjun}次、上将军{officeSummary.shangjiangjun}次；真实晋阶{officeSummary.promotions}次；平均任期{officeSummary.meanServiceMonths.toFixed(1)}个月；当前实授军职{officeSummary.currentOffices.length}人。职序为游戏世界抽象军职，不是统一历史官品；军职不改变统兵上限或政治抽签。</Typography>
     <Typography fontSize="0.76rem" color="var(--gg-text-muted)">
       全世界本次运行累计诊断：候选 {diagnostics.candidates} · 符合资格 {diagnostics.eligible} · 任命 {diagnostics.appointments} · 新命令 {diagnostics.orders} · 转向步进 {diagnostics.unitsSteered} · 到达目标城 {diagnostics.targetCityArrivals} · 围城接触 {diagnostics.commandedSiegeContacts} · 攻陷 {diagnostics.captures} · 目标失效 {diagnostics.invalidatedTargets} · 长期远距命令检查 {diagnostics.staleOrderChecks}

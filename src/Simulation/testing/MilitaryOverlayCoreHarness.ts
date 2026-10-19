@@ -9,6 +9,7 @@ import {exportWorldSave} from "../../Persistence/WorldSaveExporter";
 import {hydrateWorldSave} from "../../Persistence/WorldSaveHydrator";
 import {validateWorldSave} from "../../Persistence/WorldSaveValidator";
 import Diplomacy from "../../Politics/Diplomacy";
+import {reconcileMilitaryPersonSelection,toggleMilitaryPerson} from "../../UI/Components/FactionDetails/MilitaryPersonSelection";
 import WorldHistory from "../../History/WorldHistory";
 import {composeMilitaryBiography} from "../../Politics/PersonBiography";
 
@@ -29,6 +30,16 @@ export async function runMilitaryOverlayCore(seed="military-overlay-z"){
   check(core.logicalGameplayAuthority===false,"actual default Arcade Core");
   check(view.members.every(m=>{const e=core.logicalUnitRegistry.getEntry(m.unitId)!;return m.x===e.player!.x&&m.y===e.player!.y;}),"live Player positions and real registry bindings");
   check(view.members.some(m=>{const s=core.logicalUnitRegistry.getEntry(m.unitId)!.state;return Math.hypot(m.x-s.logicalX,m.y-s.logicalY)>1;}),"natural motion diverges from registration snapshot");
+  const factionPeople=Military.getPeople().filter(p=>p.factionId===person.factionId);
+  const liveIds=new Set(factionPeople.filter(p=>core.teams.some(t=>[...t.users].some(u=>u.matchesMilitaryLife(p)))).map(p=>p.personId));
+  const selection=reconcileMilitaryPersonSelection(undefined,person.factionId,factionPeople,Military.getFormations(),liveIds);
+  check(selection.expandedIds.length===factionPeople.filter(p=>p.status==="ACTIVE"&&liveIds.has(p.personId)&&Military.getFormations().some(f=>f.status==="ACTIVE"&&f.commanderPersonId===p.personId)).length,"all real active commanders open by default");
+  check(Boolean(selection.focusedId),"one real commander receives automatic map focus");
+  const focused=Military.getFormations().find(f=>f.status==="ACTIVE"&&f.commanderPersonId===selection.focusedId)!;
+  check(core.showMilitaryCommand(focused.commandId,true),"default selection automatically highlights a real formation");
+  const changed=toggleMilitaryPerson(selection,person.personId,true);
+  check(changed.focusedId===person.personId&&changed.expandedIds.length===selection.expandedIds.length,"active header focus preserves all current biographies");
+  check(person.appointments.at(-1)?.officeHistory?.[0]?.office==="PIJIANG"&&WorldHistory.getEvents().some(e=>e.id===person.appointments.at(-1)?.officeHistory?.[0]?.eventId),"real User appointment grants canonical initial office");
   check(core.focusMilitaryFormation(command),"real Core focuses and highlights actual formation");
   check(core.focusMilitaryTargetCity(view.target!.cityId,command),"target focus uses the shared command overlay lifecycle");
   core.showMilitaryCommand(command,true);
@@ -49,10 +60,10 @@ export async function runMilitaryOverlayCore(seed="military-overlay-z"){
   core.setWorldRunning(false);
   core.showMilitaryCommand(command,true);
   const save=exportWorldSave(core);
-  check(validateWorldSave(save).valid,"strict V17 real Core export");
+  check(validateWorldSave(save).valid,"strict V18 real Core export");
   hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));
   check(!overlay.selection&&g.commandBuffer.length===0,"hydration clears selected overlay and drawing");
-  check(validateWorldSave(exportWorldSave(core)).valid,"strict V17 real Core hydration");
+  check(validateWorldSave(exportWorldSave(core)).valid,"strict V18 real Core hydration");
   check(Military.getPerson(person.personId)?.personalName===person.personalName,"person identity and recorded name survive load");
   core.setWorldRunning(true);for(let m=0;m<12;m++)month();core.setWorldRunning(false);
   check(validateWorldSave(exportWorldSave(core)).valid,"12-month post-load production continuation");

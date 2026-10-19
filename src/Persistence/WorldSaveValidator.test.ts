@@ -1,3 +1,4 @@
+import {addInitialOfficeFacts} from "./testing/MilitaryOfficeFixture";
 import { setFixtureLifetimeRecords } from "./testing/FactionLifetimeFixture";
 import { describe, expect, it } from "vitest";
 import { createEmptyWorldSaveV1, CURRENT_SAVE_SCHEMA_VERSION, diffCanonicalWorldSave } from "./WorldSaveSchema";
@@ -294,6 +295,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
         createdMonth: 12, status: "ACTIVE", targetCityId: "wei-city", orderStartMonth: 12, captures: [{ eventId, cityId: "wei-city", month: 24 }] }],
       personSequence: 2, commandSequence: 2, lastEvaluationMonth: 12,
     };
+  addInitialOfficeFacts(save);
     expect(validateWorldSave(JSON.parse(JSON.stringify(save)))).toEqual({ valid: true, errors: [] });
     const broken = structuredClone(save);
     broken.registries.militaryCommandRegistry.formations[0].memberUnitIds.push("unit-2");
