@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MilitaryCommandRegistryStore } from "./MilitaryCommandRegistry";
 import { deriveMilitaryCareer } from "./MilitaryCareerEvidence";
+import {validateMilitaryOffices} from "../Persistence/MilitaryOfficeValidation";
 import {describeMilitaryOffice} from "./MilitaryOffice";
 import WorldHistory from "../History/WorldHistory";
 import worldRandom from "../Simulation/WorldRandom";
@@ -199,6 +200,22 @@ describe("formal military offices use production careers and canonical history",
     if(mode==="ended-command")f.registry.reconcileFactionEnd("qin",36);
     f.registry.update(72,[f.team,f.enemy],[f.city]);
     expect(f.person.appointments[0].officeHistory).toHaveLength(1);
+  });
+  it("validates the entire authoritative office chain, not just matching display metadata",()=>{
+    const f=ready();f.capture(false,20);f.capture(true,24);f.registry.update(72,[f.team,f.enemy],[f.city]);
+    for(const month of [84,96,108])f.capture(false,month);
+    f.registry.update(132,[f.team,f.enemy],[f.city]);
+    const state=f.registry.exportState(),history=WorldHistory.getEvents();
+    expect(validateMilitaryOffices(state,history,132)).toEqual([]);
+    const mutateCases=[
+      (s:any,h:any[])=>{const g=s.people[0].appointments[0].officeHistory[2];g.captureEventIds[0]=s.people[0].appointments[0].officeHistory[1].captureEventIds[0];h.find(e=>e.id===g.eventId).metadata.captureEventIds=JSON.stringify(g.captureEventIds);},
+      (s:any,h:any[])=>{const g=s.people[0].appointments[0].officeHistory[2];g.month=120;g.serviceMonths=108;const e=h.find(e=>e.id===g.eventId);e.year=e.monthIndex=120;e.metadata.serviceMonths=108;},
+      (s:any,h:any[])=>{const g=s.people[0].appointments[0].officeHistory[2];h.find(e=>e.id===g.eventId).actorFactionId="wei";},
+      (s:any)=>{s.people[0].appointments[0].officeHistory.push({...s.people[0].appointments[0].officeHistory[2]});},
+      (s:any)=>{delete s.people[0].appointments[0].officeHistory;},
+      (_s:any,h:any[])=>{h.push({...h.find(e=>e.type==="military-office-granted"),id:"orphan-office"});},
+    ];
+    for(const mutate of mutateCases){const s=structuredClone(state),h=structuredClone(history);mutate(s,h);expect(validateMilitaryOffices(s,h,132).length).toBeGreaterThan(0);}
   });
   it("keeps foreign, ended and posthumous offices historical; a new country grants its own initial office",()=>{
     const f=ready();f.capture(false,20);f.capture(true,24);f.registry.update(72,[f.team,f.enemy],[f.city]);
