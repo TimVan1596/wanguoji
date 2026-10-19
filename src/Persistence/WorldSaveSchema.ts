@@ -6,7 +6,7 @@ import type { DiplomaticRelation, DiplomaticPairMemory } from "../Politics/Diplo
 import type { FactionColorHistoryEntry } from "../Simulation/FactionColorHistory";
 import type { MilitaryCommandState } from "../Politics/MilitaryCommandRegistry";
 
-export const CURRENT_SAVE_SCHEMA_VERSION = 17 as const;
+export const CURRENT_SAVE_SCHEMA_VERSION = 18 as const;
 
 /** V16 preserves political office/death facts and adds authoritative military personal names in registries. */
 export type RulerSaveV17 = Omit<Ruler, "id" | "bornYear" | "naturalDeathYear" | "accessionYear" |
@@ -158,7 +158,7 @@ export interface WorldEventSystemSaveV1 {
   cycleState: WorldCycleStateSaveV1;
 }
 
-export interface WorldSaveV17 {
+export interface WorldSaveV18 {
   saveSchemaVersion: typeof CURRENT_SAVE_SCHEMA_VERSION;
   appVersion: string;
   createdAt?: string;
@@ -193,7 +193,7 @@ export interface WorldSaveV17 {
   diplomacy: { relations: DiplomaticRelation[]; pairMemories: DiplomaticPairMemory[]; lastEvaluationMonth: number };
 }
 
-export function createEmptyWorldSaveV17(): WorldSaveV17 {
+export function createEmptyWorldSaveV18(): WorldSaveV18 {
   return {
     saveSchemaVersion: CURRENT_SAVE_SCHEMA_VERSION,
     appVersion: APP_VERSION,
@@ -235,13 +235,13 @@ export function createEmptyWorldSaveV17(): WorldSaveV17 {
 }
 
 /** Generic current-format type retained for persistence service signatures. */
-export type WorldSaveV1 = WorldSaveV17;
-export const createEmptyWorldSaveV1 = createEmptyWorldSaveV17;
-/** @deprecated Current schema is V17; alias retained for test fixture source compatibility only. */
-export type WorldSaveV14 = WorldSaveV17;
+export type WorldSaveV1 = WorldSaveV18;
+export const createEmptyWorldSaveV1 = createEmptyWorldSaveV18;
+/** @deprecated Current schema is V18; alias retained for test fixture source compatibility only. */
+export type WorldSaveV14 = WorldSaveV18;
 export type RulerSaveV14 = RulerSaveV17;
-/** @deprecated Current schema is V17; alias retained for test fixture source compatibility only. */
-export const createEmptyWorldSaveV14 = createEmptyWorldSaveV17;
+/** @deprecated Current schema is V18; alias retained for test fixture source compatibility only. */
+export const createEmptyWorldSaveV14 = createEmptyWorldSaveV18;
 
 export function canonicalWorldSaveProjection(save: WorldSaveV1) {
   const { createdAt: _createdAt, ...canonical } = save;
@@ -328,12 +328,16 @@ function simplifyDiffValue(value: unknown): unknown {
 
 export type RulerSaveV1 = RulerSaveV17;
 
-/** Source aliases only: these denote V17 DTOs and do not enable reading older files. */
-export type WorldSaveV15 = WorldSaveV17;
+/** Source aliases only: these denote V18 DTOs and do not enable reading older files. */
+export type WorldSaveV15 = WorldSaveV18;
 export type RulerSaveV15 = RulerSaveV17;
-export const createEmptyWorldSaveV15 = createEmptyWorldSaveV17;
+export const createEmptyWorldSaveV15 = createEmptyWorldSaveV18;
 
-/** Source aliases denote the current V17 DTO; old V16 files are rejected, not migrated. */
-export type WorldSaveV16 = WorldSaveV17;
+/** Source aliases denote the current V18 DTO; old V16 files are rejected, not migrated. */
+export type WorldSaveV16 = WorldSaveV18;
 export type RulerSaveV16 = RulerSaveV17;
-export const createEmptyWorldSaveV16 = createEmptyWorldSaveV17;
+export const createEmptyWorldSaveV16 = createEmptyWorldSaveV18;
+
+/** Source aliases only; actual V17 files are rejected without migration. */
+export type WorldSaveV17 = WorldSaveV18;
+export const createEmptyWorldSaveV17 = createEmptyWorldSaveV18;

@@ -1,3 +1,4 @@
+import {getOfficePromotion,MILITARY_OFFICE_NAMES,type MilitaryOfficeGrant} from "./MilitaryOffice";
 import { deriveMilitaryChronicle } from "./MilitaryChronicle";
 import { deriveMilitaryLifeSchedule } from "./MilitaryLifeRules";
 import { deriveNameCulture, generateMilitaryPersonalName } from "./NameCulture";
@@ -25,6 +26,8 @@ export interface MilitaryAppointment {
   endMonth?: number;
   endReason?: "DISMISSED" | "TRANSFERRED" | "FACTION_ENDED" | "DEATH" | "AGE_RETIREMENT";
   commandId: string;
+  /** Required by V18 validation; historical source-only fixtures may omit it. */
+  officeHistory?: MilitaryOfficeGrant[];
 }
 
 export interface MilitaryPerson {
@@ -178,6 +181,7 @@ export class MilitaryCommandRegistryStore {
     this.refreshOrders(worldMonth, teams, cities);
     this.observeLongRangeOrders(worldMonth, teams, cities);
     if (!annual) return;
+    this.advanceOffices(worldMonth,teams);
     for (const team of teams) {
       if (team.status !== "ACTIVE" || team.users.size < 2) continue;
       const activeCount = [...this.people.values()].filter(p => p.status === "ACTIVE" && p.factionId === team.name).length;
@@ -253,14 +257,38 @@ export class MilitaryCommandRegistryStore {
       user.militaryPersonId = personId;
     }
     person.factionId = factionId; person.status = "ACTIVE";
-    person.appointments.push({ factionId, startMonth: worldMonth, commandId });
+    person.appointments.push({ factionId, startMonth: worldMonth, commandId, officeHistory: [] });
     this.formations.set(commandId, { commandId, factionId, commanderPersonId: personId,
       memberUnitIds: [...new Set(memberUnitIds)], createdMonth: worldMonth, status: "ACTIVE", captures: [] });
     this.eventWriter?.({ id: `military-appointment-${commandId}`, year: worldMonth, monthIndex: worldMonth,
       category: "politics", type: "military-appointment", title: `${factionId}任命${getMilitaryPersonDisplayName(person)}为军事指挥者`,
       description: `${getMilitaryPersonDisplayName(person)}由既有人口任职，指挥${memberUnitIds.length}个现存单位。`, factionIds: [factionId], actorFactionId: factionId,
       metadata: { personId, sourceUserId: person.sourceUserId, personalName: person.personalName, commandId, unitCount: memberUnitIds.length }, importance: "normal" });
+    this.grantOffice(person,person.appointments.at(-1)!,{office:"PIJIANG",month:worldMonth,serviceMonths:0,captureEventIds:[]});
     return true;
+  }
+
+  private grantOffice(person:MilitaryPerson,appointment:MilitaryAppointment,grant:Omit<MilitaryOfficeGrant,"eventId">){
+    const previous=appointment.officeHistory?.at(-1),eventId=`military-office-${appointment.commandId}-${grant.office}`;
+    const record={...grant,eventId};
+    (appointment.officeHistory??=[]).push(record);
+    this.eventWriter?.({id:eventId,year:grant.month,monthIndex:grant.month,category:"politics",type:"military-office-granted",
+      title:`${appointment.factionId}${previous?"晋任":"授予"}${getMilitaryPersonDisplayName(person)}${MILITARY_OFFICE_NAMES[grant.office]}`,
+      description:`据本次真实任职${grant.serviceMonths}个月及${grant.captureEventIds.length}条核验战果授职。`,actorFactionId:appointment.factionId,factionIds:[appointment.factionId],importance:"normal",
+      metadata:{personId:person.personId,sourceUserId:person.sourceUserId,personalName:person.personalName,commandId:appointment.commandId,previousOffice:previous?.office??"NONE",office:grant.office,serviceMonths:grant.serviceMonths,captureEventIds:JSON.stringify(grant.captureEventIds)}});
+  }
+
+  private advanceOffices(month:number,teams:Team[]){
+    for(const person of this.people.values()){
+      if(person.status!=="ACTIVE")continue;
+      const team=teams.find(t=>t.name===person.factionId&&t.status==="ACTIVE");
+      const user=team&&[...team.users].find(u=>u.militaryPersonId===person.personId&&u.id===person.sourceUserId);
+      const appointment=person.appointments.find(a=>a.factionId===person.factionId&&a.endMonth===undefined);
+      const formation=appointment&&this.formations.get(appointment.commandId);
+      if(!user?.matchesMilitaryLife?.(person)||!appointment||!formation||formation.status!=="ACTIVE"||formation.commanderPersonId!==person.personId||formation.factionId!==person.factionId||formation.memberUnitIds.length<2||!formation.memberUnitIds.includes(user.player.logicalUnitId??""))continue;
+      const grant=getOfficePromotion(appointment,this.getChronicle(person,month,person.factionId),month);
+      if(grant)this.grantOffice(person,appointment,grant);
+    }
   }
 
   private isUnitAssigned(unitId: string) { return [...this.formations.values()].some(f => f.status === "ACTIVE" && f.memberUnitIds.includes(unitId)); }

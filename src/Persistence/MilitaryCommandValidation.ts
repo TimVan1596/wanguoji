@@ -1,3 +1,4 @@
+import {validateMilitaryOffices} from "./MilitaryOfficeValidation";
 import { deriveMilitaryLifeSchedule } from "../Politics/MilitaryLifeRules";
 import { MAX_COMMANDERS_PER_FACTION, MAX_FORMATION_UNITS, type MilitaryCommandState } from "../Politics/MilitaryCommandRegistry";
 
@@ -191,5 +192,6 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
   for (const [factionId, count] of activeCommanders) if (count > MAX_COMMANDERS_PER_FACTION) errors.push(`military commander cap exceeded: ${factionId}`);
   for (const [factionId, count] of activeFormations) if (count > MAX_COMMANDERS_PER_FACTION) errors.push(`military formation cap exceeded: ${factionId}`);
   for (const user of users) if (user.militaryPersonId !== undefined && !people.has(String(user.militaryPersonId))) errors.push(`User references missing military person: ${String(user.militaryPersonId)}`);
+  if(!errors.length)errors.push(...validateMilitaryOffices(registry,[...historyById.values()],worldMonth));
   return errors;
 }

@@ -64,6 +64,7 @@ export type WorldEventType =
   | "alliance-expired"
   | "faction-merged"
   | "faction-submitted"
+  | "military-office-granted"
   | "military-appointment"
   | "military-order-issued"
   | "military-command-ended"
