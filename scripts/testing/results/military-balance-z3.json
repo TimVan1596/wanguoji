@@ -1,0 +1,1190 @@
+{
+  "baselineHead": "6bf420333a19d9f7f5c25ca0dac342c897f98610",
+  "runtime": "real Core / Arcade Phaser / default warring-states",
+  "candidate": "initial 2 including commander, annual replenishment from real unassigned same-country units, office ceilings 2/4/6; all appointment, promotion and political rules unchanged",
+  "denominator": "hostile-contact city-months entering City.updateSiege; captures per 100 city-months is a frequency, NOT a battle win probability",
+  "adopted": false,
+  "baseline": [
+    {
+      "seed": "army-1",
+      "years": 200,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "worldPopulation": 105,
+          "populationUnexplained": 0,
+          "naturalGrowth": 497,
+          "warDeaths": 480,
+          "activeStates": 3,
+          "historicalStates": 11,
+          "cities": 18,
+          "captures": 133,
+          "recoveries": 18,
+          "siegeCityMonths": 1760,
+          "capturesPer100SiegeCityMonths": 7.556818181818182,
+          "formationSizeSamples": {
+            "2": 68,
+            "3": 19,
+            "4": 23,
+            "5": 47,
+            "6": 89,
+            "7": 84,
+            "8": 210,
+            "9": 161,
+            "10": 258,
+            "11": 291,
+            "12": 308
+          },
+          "factionCommandSamples": {
+            "0": 3396,
+            "1": 1266,
+            "2": 146
+          },
+          "meanFormationSize": 9.145057766367138,
+          "appointments": 17,
+          "meanServiceMonths": 91.6470588235294,
+          "matureEnded": 11,
+          "matureEndedNeverPromoted": 2,
+          "politicalCandidateChecks": 109,
+          "militaryPoliticalEvents": 0,
+          "depositions": 0,
+          "usurpations": 0,
+          "extinctions": 8,
+          "unifications": 0,
+          "splits": 4,
+          "restorations": 2,
+          "rebellions": 0,
+          "strictSaveValid": true,
+          "officeGrants": {
+            "pijiang": 17,
+            "jiangjun": 9,
+            "shangjiangjun": 2,
+            "promotions": 11
+          },
+          "promotionWaitMonths": {
+            "JIANGJUN": [
+              60,
+              60,
+              60,
+              60,
+              60,
+              60,
+              60,
+              60,
+              96
+            ],
+            "SHANGJIANGJUN": [
+              144,
+              132
+            ]
+          }
+        },
+        {
+          "month": 2400,
+          "worldPopulation": 99,
+          "populationUnexplained": 0,
+          "naturalGrowth": 940,
+          "warDeaths": 994,
+          "activeStates": 3,
+          "historicalStates": 23,
+          "cities": 16,
+          "captures": 299,
+          "recoveries": 58,
+          "siegeCityMonths": 4008,
+          "capturesPer100SiegeCityMonths": 7.460079840319361,
+          "formationSizeSamples": {
+            "2": 123,
+            "3": 107,
+            "4": 304,
+            "5": 338,
+            "6": 376,
+            "7": 399,
+            "8": 496,
+            "9": 400,
+            "10": 408,
+            "11": 457,
+            "12": 555
+          },
+          "factionCommandSamples": {
+            "0": 5269,
+            "1": 3025,
+            "2": 469
+          },
+          "meanFormationSize": 8.038607115821348,
+          "appointments": 36,
+          "meanServiceMonths": 110.08333333333333,
+          "matureEnded": 22,
+          "matureEndedNeverPromoted": 3,
+          "politicalCandidateChecks": 275,
+          "militaryPoliticalEvents": 0,
+          "depositions": 0,
+          "usurpations": 0,
+          "extinctions": 20,
+          "unifications": 0,
+          "splits": 16,
+          "restorations": 2,
+          "rebellions": 0,
+          "strictSaveValid": true,
+          "officeGrants": {
+            "pijiang": 36,
+            "jiangjun": 19,
+            "shangjiangjun": 9,
+            "promotions": 28
+          },
+          "promotionWaitMonths": {
+            "JIANGJUN": [
+              60,
+              60,
+              60,
+              60,
+              60,
+              60,
+              60,
+              60,
+              96,
+              60,
+              60,
+              60,
+              60,
+              60,
+              60,
+              60,
+              60,
+              60,
+              60
+            ],
+            "SHANGJIANGJUN": [
+              144,
+              132,
+              120,
+              168,
+              144,
+              156,
+              120,
+              132,
+              216
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "seed": "army-2",
+      "years": 200,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "worldPopulation": 94,
+          "populationUnexplained": 0,
+          "naturalGrowth": 480,
+          "warDeaths": 450,
+          "activeStates": 5,
+          "historicalStates": 12,
+          "cities": 17,
+          "captures": 96,
+          "recoveries": 15,
+          "siegeCityMonths": 1684,
+          "capturesPer100SiegeCityMonths": 5.7007125890736345,
+          "formationSizeSamples": {
+            "2": 12,
+            "3": 205,
+            "4": 102,
+            "5": 153,
+            "6": 182,
+            "7": 275,
+            "8": 107,
+            "9": 207,
+            "10": 260,
+            "11": 200,
+            "12": 370
+          },
+          "factionCommandSamples": {
+            "0": 2990,
+            "1": 1077,
+            "2": 498
+          },
+          "meanFormationSize": 8.098408104196816,
+          "appointments": 16,
+          "meanServiceMonths": 129.4375,
+          "matureEnded": 8,
+          "matureEndedNeverPromoted": 1,
+          "politicalCandidateChecks": 145,
+          "militaryPoliticalEvents": 0,
+          "depositions": 0,
+          "usurpations": 0,
+          "extinctions": 7,
+          "unifications": 0,
+          "splits": 5,
+          "restorations": 2,
+          "rebellions": 0,
+          "strictSaveValid": true,
+          "officeGrants": {
+            "pijiang": 16,
+            "jiangjun": 8,
+            "shangjiangjun": 3,
+            "promotions": 11
+          },
+          "promotionWaitMonths": {
+            "JIANGJUN": [
+              60,
+              60,
+              192,
+              60,
+              60,
+              60,
+              60,
+              60
+            ],
+            "SHANGJIANGJUN": [
+              156,
+              384,
+              180
+            ]
+          }
+        },
+        {
+          "month": 2400,
+          "worldPopulation": 99,
+          "populationUnexplained": 0,
+          "naturalGrowth": 957,
+          "warDeaths": 986,
+          "activeStates": 6,
+          "historicalStates": 29,
+          "cities": 15,
+          "captures": 276,
+          "recoveries": 45,
+          "siegeCityMonths": 3863,
+          "capturesPer100SiegeCityMonths": 7.144706186901371,
+          "formationSizeSamples": {
+            "2": 366,
+            "3": 370,
+            "4": 230,
+            "5": 399,
+            "6": 423,
+            "7": 417,
+            "8": 171,
+            "9": 334,
+            "10": 362,
+            "11": 304,
+            "12": 799
+          },
+          "factionCommandSamples": {
+            "0": 6716,
+            "1": 2211,
+            "2": 982
+          },
+          "meanFormationSize": 7.458682634730539,
+          "appointments": 32,
+          "meanServiceMonths": 130.4375,
+          "matureEnded": 18,
+          "matureEndedNeverPromoted": 4,
+          "politicalCandidateChecks": 277,
+          "militaryPoliticalEvents": 0,
+          "depositions": 0,
+          "usurpations": 0,
+          "extinctions": 22,
+          "unifications": 0,
+          "splits": 22,
+          "restorations": 3,
+          "rebellions": 0,
+          "strictSaveValid": true,
+          "officeGrants": {
+            "pijiang": 32,
+            "jiangjun": 14,
+            "shangjiangjun": 9,
+            "promotions": 23
+          },
+          "promotionWaitMonths": {
+            "JIANGJUN": [
+              60,
+              60,
+              192,
+              60,
+              60,
+              60,
+              60,
+              60,
+              60,
+              60,
+              60,
+              60,
+              60,
+              60
+            ],
+            "SHANGJIANGJUN": [
+              156,
+              384,
+              180,
+              132,
+              120,
+              120,
+              120,
+              144,
+              120
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "seed": "army-3",
+      "years": 100,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "worldPopulation": 96,
+          "populationUnexplained": 0,
+          "naturalGrowth": 448,
+          "warDeaths": 419,
+          "activeStates": 3,
+          "historicalStates": 15,
+          "cities": 12,
+          "captures": 117,
+          "recoveries": 23,
+          "siegeCityMonths": 1634,
+          "capturesPer100SiegeCityMonths": 7.1603427172582625,
+          "formationSizeSamples": {
+            "2": 171,
+            "3": 148,
+            "4": 239,
+            "5": 151,
+            "6": 157,
+            "7": 248,
+            "8": 183,
+            "9": 217,
+            "10": 210,
+            "11": 323,
+            "12": 347
+          },
+          "factionCommandSamples": {
+            "0": 2175,
+            "1": 1770,
+            "2": 312
+          },
+          "meanFormationSize": 7.689640768588137,
+          "appointments": 17,
+          "meanServiceMonths": 140.76470588235293,
+          "matureEnded": 11,
+          "matureEndedNeverPromoted": 1,
+          "politicalCandidateChecks": 168,
+          "militaryPoliticalEvents": 0,
+          "depositions": 0,
+          "usurpations": 0,
+          "extinctions": 12,
+          "unifications": 0,
+          "splits": 8,
+          "restorations": 2,
+          "rebellions": 0,
+          "strictSaveValid": true,
+          "officeGrants": {
+            "pijiang": 17,
+            "jiangjun": 10,
+            "shangjiangjun": 5,
+            "promotions": 15
+          },
+          "promotionWaitMonths": {
+            "JIANGJUN": [
+              60,
+              60,
+              84,
+              84,
+              72,
+              60,
+              108,
+              120,
+              72,
+              60
+            ],
+            "SHANGJIANGJUN": [
+              132,
+              144,
+              144,
+              120,
+              168
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "seed": "army-4",
+      "years": 100,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "worldPopulation": 98,
+          "populationUnexplained": 0,
+          "naturalGrowth": 392,
+          "warDeaths": 360,
+          "activeStates": 4,
+          "historicalStates": 18,
+          "cities": 13,
+          "captures": 85,
+          "recoveries": 13,
+          "siegeCityMonths": 1345,
+          "capturesPer100SiegeCityMonths": 6.319702602230483,
+          "formationSizeSamples": {
+            "2": 469,
+            "3": 131,
+            "4": 154,
+            "5": 13,
+            "6": 75,
+            "7": 64,
+            "8": 202,
+            "9": 64,
+            "10": 122,
+            "11": 176,
+            "12": 335
+          },
+          "factionCommandSamples": {
+            "0": 2351,
+            "1": 1021,
+            "2": 392
+          },
+          "meanFormationSize": 6.802216066481995,
+          "appointments": 10,
+          "meanServiceMonths": 180.5,
+          "matureEnded": 8,
+          "matureEndedNeverPromoted": 0,
+          "politicalCandidateChecks": 118,
+          "militaryPoliticalEvents": 0,
+          "depositions": 0,
+          "usurpations": 0,
+          "extinctions": 14,
+          "unifications": 0,
+          "splits": 11,
+          "restorations": 7,
+          "rebellions": 0,
+          "strictSaveValid": true,
+          "officeGrants": {
+            "pijiang": 10,
+            "jiangjun": 8,
+            "shangjiangjun": 3,
+            "promotions": 11
+          },
+          "promotionWaitMonths": {
+            "JIANGJUN": [
+              60,
+              108,
+              60,
+              60,
+              168,
+              108,
+              108,
+              60
+            ],
+            "SHANGJIANGJUN": [
+              120,
+              120,
+              192
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "seed": "army-5",
+      "years": 100,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "worldPopulation": 84,
+          "populationUnexplained": 0,
+          "naturalGrowth": 452,
+          "warDeaths": 435,
+          "activeStates": 5,
+          "historicalStates": 16,
+          "cities": 16,
+          "captures": 125,
+          "recoveries": 18,
+          "siegeCityMonths": 1655,
+          "capturesPer100SiegeCityMonths": 7.552870090634441,
+          "formationSizeSamples": {
+            "2": 93,
+            "3": 43,
+            "4": 68,
+            "5": 67,
+            "6": 82,
+            "7": 200,
+            "8": 231,
+            "9": 283,
+            "10": 313,
+            "11": 198,
+            "12": 273
+          },
+          "factionCommandSamples": {
+            "0": 2614,
+            "1": 1241,
+            "2": 305
+          },
+          "meanFormationSize": 8.532144786601837,
+          "appointments": 15,
+          "meanServiceMonths": 123.33333333333333,
+          "matureEnded": 12,
+          "matureEndedNeverPromoted": 2,
+          "politicalCandidateChecks": 108,
+          "militaryPoliticalEvents": 0,
+          "depositions": 0,
+          "usurpations": 0,
+          "extinctions": 10,
+          "unifications": 0,
+          "splits": 9,
+          "restorations": 0,
+          "rebellions": 0,
+          "strictSaveValid": true,
+          "officeGrants": {
+            "pijiang": 15,
+            "jiangjun": 11,
+            "shangjiangjun": 2,
+            "promotions": 13
+          },
+          "promotionWaitMonths": {
+            "JIANGJUN": [
+              60,
+              60,
+              60,
+              84,
+              60,
+              84,
+              84,
+              72,
+              60,
+              60,
+              60
+            ],
+            "SHANGJIANGJUN": [
+              120,
+              120
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "seed": "army-6",
+      "years": 100,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "worldPopulation": 81,
+          "populationUnexplained": 0,
+          "naturalGrowth": 466,
+          "warDeaths": 476,
+          "activeStates": 3,
+          "historicalStates": 17,
+          "cities": 16,
+          "captures": 137,
+          "recoveries": 20,
+          "siegeCityMonths": 1937,
+          "capturesPer100SiegeCityMonths": 7.072792978833248,
+          "formationSizeSamples": {
+            "2": 100,
+            "3": 69,
+            "4": 339,
+            "5": 148,
+            "6": 339,
+            "7": 172,
+            "8": 198,
+            "9": 184,
+            "10": 255,
+            "11": 258,
+            "12": 459
+          },
+          "factionCommandSamples": {
+            "0": 2286,
+            "1": 1563,
+            "2": 479
+          },
+          "meanFormationSize": 7.884569615232051,
+          "appointments": 20,
+          "meanServiceMonths": 125.95,
+          "matureEnded": 11,
+          "matureEndedNeverPromoted": 2,
+          "politicalCandidateChecks": 172,
+          "militaryPoliticalEvents": 0,
+          "depositions": 0,
+          "usurpations": 0,
+          "extinctions": 14,
+          "unifications": 0,
+          "splits": 10,
+          "restorations": 2,
+          "rebellions": 0,
+          "strictSaveValid": true,
+          "officeGrants": {
+            "pijiang": 20,
+            "jiangjun": 10,
+            "shangjiangjun": 5,
+            "promotions": 15
+          },
+          "promotionWaitMonths": {
+            "JIANGJUN": [
+              60,
+              60,
+              60,
+              60,
+              108,
+              60,
+              60,
+              60,
+              60,
+              60
+            ],
+            "SHANGJIANGJUN": [
+              156,
+              120,
+              132,
+              180,
+              120
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "candidate246": [
+    {
+      "seed": "army-1",
+      "years": 200,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "worldPopulation": 91,
+          "populationUnexplained": 0,
+          "naturalGrowth": 515,
+          "warDeaths": 472,
+          "activeStates": 4,
+          "historicalStates": 8,
+          "cities": 18,
+          "captures": 132,
+          "recoveries": 38,
+          "siegeCityMonths": 1666,
+          "capturesPer100SiegeCityMonths": 7.923169267707082,
+          "formationSizeSamples": {
+            "2": 764,
+            "3": 42,
+            "4": 287,
+            "5": 22,
+            "6": 279
+          },
+          "factionCommandSamples": {
+            "0": 3965,
+            "1": 1302,
+            "2": 46
+          },
+          "meanFormationSize": 3.289813486370158,
+          "appointments": 16,
+          "meanServiceMonths": 87.0625,
+          "matureEnded": 6,
+          "matureEndedNeverPromoted": 2,
+          "politicalCandidateChecks": 76,
+          "militaryPoliticalEvents": 0,
+          "depositions": 0,
+          "usurpations": 0,
+          "extinctions": 4,
+          "unifications": 0,
+          "splits": 1,
+          "restorations": 2,
+          "rebellions": 0,
+          "strictSaveValid": true,
+          "officeGrants": {
+            "pijiang": 16,
+            "jiangjun": 4,
+            "shangjiangjun": 2,
+            "promotions": 6
+          },
+          "promotionWaitMonths": {
+            "JIANGJUN": [
+              60,
+              84,
+              120,
+              144
+            ],
+            "SHANGJIANGJUN": [
+              120,
+              240
+            ]
+          }
+        },
+        {
+          "month": 2400,
+          "worldPopulation": 92,
+          "populationUnexplained": 0,
+          "naturalGrowth": 978,
+          "warDeaths": 982,
+          "activeStates": 4,
+          "historicalStates": 13,
+          "cities": 18,
+          "captures": 283,
+          "recoveries": 70,
+          "siegeCityMonths": 3398,
+          "capturesPer100SiegeCityMonths": 8.328428487345498,
+          "formationSizeSamples": {
+            "2": 1904,
+            "3": 102,
+            "4": 799,
+            "5": 74,
+            "6": 584
+          },
+          "factionCommandSamples": {
+            "0": 6329,
+            "1": 3121,
+            "2": 171
+          },
+          "meanFormationSize": 3.2295697372220618,
+          "appointments": 32,
+          "meanServiceMonths": 108.21875,
+          "matureEnded": 17,
+          "matureEndedNeverPromoted": 6,
+          "politicalCandidateChecks": 191,
+          "militaryPoliticalEvents": 1,
+          "depositions": 1,
+          "usurpations": 0,
+          "extinctions": 9,
+          "unifications": 0,
+          "splits": 6,
+          "restorations": 2,
+          "rebellions": 0,
+          "strictSaveValid": true,
+          "officeGrants": {
+            "pijiang": 32,
+            "jiangjun": 11,
+            "shangjiangjun": 5,
+            "promotions": 16
+          },
+          "promotionWaitMonths": {
+            "JIANGJUN": [
+              60,
+              84,
+              120,
+              144,
+              108,
+              120,
+              84,
+              108,
+              156,
+              84,
+              96
+            ],
+            "SHANGJIANGJUN": [
+              120,
+              240,
+              144,
+              156,
+              144
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "seed": "army-2",
+      "years": 200,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "worldPopulation": 99,
+          "populationUnexplained": 0,
+          "naturalGrowth": 492,
+          "warDeaths": 470,
+          "activeStates": 4,
+          "historicalStates": 9,
+          "cities": 17,
+          "captures": 116,
+          "recoveries": 18,
+          "siegeCityMonths": 1395,
+          "capturesPer100SiegeCityMonths": 8.315412186379929,
+          "formationSizeSamples": {
+            "2": 507,
+            "3": 66,
+            "4": 315,
+            "5": 14,
+            "6": 149
+          },
+          "factionCommandSamples": {
+            "0": 3424,
+            "1": 859,
+            "2": 96
+          },
+          "meanFormationSize": 3.269267364414843,
+          "appointments": 12,
+          "meanServiceMonths": 87.58333333333333,
+          "matureEnded": 4,
+          "matureEndedNeverPromoted": 0,
+          "politicalCandidateChecks": 65,
+          "militaryPoliticalEvents": 0,
+          "depositions": 0,
+          "usurpations": 0,
+          "extinctions": 5,
+          "unifications": 0,
+          "splits": 2,
+          "restorations": 0,
+          "rebellions": 0,
+          "strictSaveValid": true,
+          "officeGrants": {
+            "pijiang": 12,
+            "jiangjun": 4,
+            "shangjiangjun": 2,
+            "promotions": 6
+          },
+          "promotionWaitMonths": {
+            "JIANGJUN": [
+              72,
+              84,
+              60,
+              60
+            ],
+            "SHANGJIANGJUN": [
+              192,
+              120
+            ]
+          }
+        },
+        {
+          "month": 2400,
+          "worldPopulation": 92,
+          "populationUnexplained": 0,
+          "naturalGrowth": 906,
+          "warDeaths": 972,
+          "activeStates": 3,
+          "historicalStates": 10,
+          "cities": 16,
+          "captures": 265,
+          "recoveries": 51,
+          "siegeCityMonths": 3125,
+          "capturesPer100SiegeCityMonths": 8.48,
+          "formationSizeSamples": {
+            "2": 1816,
+            "3": 92,
+            "4": 793,
+            "5": 76,
+            "6": 385
+          },
+          "factionCommandSamples": {
+            "0": 5358,
+            "1": 2590,
+            "2": 286
+          },
+          "meanFormationSize": 3.0898165717900063,
+          "appointments": 33,
+          "meanServiceMonths": 95.75757575757575,
+          "matureEnded": 18,
+          "matureEndedNeverPromoted": 5,
+          "politicalCandidateChecks": 174,
+          "militaryPoliticalEvents": 0,
+          "depositions": 0,
+          "usurpations": 0,
+          "extinctions": 7,
+          "unifications": 0,
+          "splits": 3,
+          "restorations": 0,
+          "rebellions": 0,
+          "strictSaveValid": true,
+          "officeGrants": {
+            "pijiang": 33,
+            "jiangjun": 13,
+            "shangjiangjun": 5,
+            "promotions": 18
+          },
+          "promotionWaitMonths": {
+            "JIANGJUN": [
+              72,
+              84,
+              60,
+              60,
+              84,
+              60,
+              60,
+              84,
+              60,
+              132,
+              72,
+              72,
+              60
+            ],
+            "SHANGJIANGJUN": [
+              192,
+              120,
+              144,
+              132,
+              132
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "seed": "army-3",
+      "years": 100,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "worldPopulation": 94,
+          "populationUnexplained": 0,
+          "naturalGrowth": 449,
+          "warDeaths": 433,
+          "activeStates": 3,
+          "historicalStates": 7,
+          "cities": 16,
+          "captures": 112,
+          "recoveries": 20,
+          "siegeCityMonths": 1412,
+          "capturesPer100SiegeCityMonths": 7.932011331444759,
+          "formationSizeSamples": {
+            "2": 938,
+            "3": 28,
+            "4": 508,
+            "5": 26,
+            "6": 82
+          },
+          "factionCommandSamples": {
+            "0": 2424,
+            "1": 1422,
+            "2": 80
+          },
+          "meanFormationSize": 2.9165613147914033,
+          "appointments": 15,
+          "meanServiceMonths": 105.4,
+          "matureEnded": 9,
+          "matureEndedNeverPromoted": 3,
+          "politicalCandidateChecks": 82,
+          "militaryPoliticalEvents": 0,
+          "depositions": 0,
+          "usurpations": 0,
+          "extinctions": 4,
+          "unifications": 0,
+          "splits": 0,
+          "restorations": 0,
+          "rebellions": 0,
+          "strictSaveValid": true,
+          "officeGrants": {
+            "pijiang": 15,
+            "jiangjun": 7,
+            "shangjiangjun": 1,
+            "promotions": 8
+          },
+          "promotionWaitMonths": {
+            "JIANGJUN": [
+              72,
+              84,
+              60,
+              168,
+              60,
+              60,
+              72
+            ],
+            "SHANGJIANGJUN": [
+              144
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "seed": "army-4",
+      "years": 100,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "worldPopulation": 105,
+          "populationUnexplained": 0,
+          "naturalGrowth": 465,
+          "warDeaths": 456,
+          "activeStates": 4,
+          "historicalStates": 10,
+          "cities": 16,
+          "captures": 141,
+          "recoveries": 31,
+          "siegeCityMonths": 1770,
+          "capturesPer100SiegeCityMonths": 7.966101694915253,
+          "formationSizeSamples": {
+            "2": 1335,
+            "3": 51,
+            "4": 698,
+            "5": 26,
+            "6": 208
+          },
+          "factionCommandSamples": {
+            "0": 3291,
+            "1": 1232,
+            "2": 543
+          },
+          "meanFormationSize": 3.016824849007765,
+          "appointments": 21,
+          "meanServiceMonths": 110.19047619047619,
+          "matureEnded": 8,
+          "matureEndedNeverPromoted": 1,
+          "politicalCandidateChecks": 140,
+          "militaryPoliticalEvents": 0,
+          "depositions": 2,
+          "usurpations": 1,
+          "extinctions": 6,
+          "unifications": 0,
+          "splits": 3,
+          "restorations": 0,
+          "rebellions": 0,
+          "strictSaveValid": true,
+          "officeGrants": {
+            "pijiang": 21,
+            "jiangjun": 8,
+            "shangjiangjun": 4,
+            "promotions": 12
+          },
+          "promotionWaitMonths": {
+            "JIANGJUN": [
+              60,
+              72,
+              60,
+              204,
+              144,
+              84,
+              60,
+              60
+            ],
+            "SHANGJIANGJUN": [
+              228,
+              264,
+              120,
+              168
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "seed": "army-5",
+      "years": 100,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "worldPopulation": 82,
+          "populationUnexplained": 0,
+          "naturalGrowth": 455,
+          "warDeaths": 455,
+          "activeStates": 3,
+          "historicalStates": 7,
+          "cities": 16,
+          "captures": 128,
+          "recoveries": 17,
+          "siegeCityMonths": 1526,
+          "capturesPer100SiegeCityMonths": 8.387942332896461,
+          "formationSizeSamples": {
+            "2": 1433,
+            "3": 18,
+            "4": 369,
+            "5": 9,
+            "6": 48
+          },
+          "factionCommandSamples": {
+            "0": 3583,
+            "1": 1089,
+            "2": 394
+          },
+          "meanFormationSize": 2.519445924347363,
+          "appointments": 22,
+          "meanServiceMonths": 85.27272727272727,
+          "matureEnded": 11,
+          "matureEndedNeverPromoted": 7,
+          "politicalCandidateChecks": 65,
+          "militaryPoliticalEvents": 0,
+          "depositions": 0,
+          "usurpations": 1,
+          "extinctions": 3,
+          "unifications": 0,
+          "splits": 0,
+          "restorations": 1,
+          "rebellions": 0,
+          "strictSaveValid": true,
+          "officeGrants": {
+            "pijiang": 22,
+            "jiangjun": 5,
+            "shangjiangjun": 3,
+            "promotions": 8
+          },
+          "promotionWaitMonths": {
+            "JIANGJUN": [
+              96,
+              60,
+              144,
+              60,
+              156
+            ],
+            "SHANGJIANGJUN": [
+              120,
+              276,
+              192
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "seed": "army-6",
+      "years": 100,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "worldPopulation": 93,
+          "populationUnexplained": 0,
+          "naturalGrowth": 484,
+          "warDeaths": 454,
+          "activeStates": 3,
+          "historicalStates": 7,
+          "cities": 16,
+          "captures": 193,
+          "recoveries": 48,
+          "siegeCityMonths": 1582,
+          "capturesPer100SiegeCityMonths": 12.199747155499367,
+          "formationSizeSamples": {
+            "2": 977,
+            "3": 24,
+            "4": 328,
+            "5": 38,
+            "6": 303
+          },
+          "factionCommandSamples": {
+            "0": 2999,
+            "1": 1538,
+            "2": 66
+          },
+          "meanFormationSize": 3.201197604790419,
+          "appointments": 19,
+          "meanServiceMonths": 87.84210526315789,
+          "matureEnded": 8,
+          "matureEndedNeverPromoted": 1,
+          "politicalCandidateChecks": 90,
+          "militaryPoliticalEvents": 0,
+          "depositions": 0,
+          "usurpations": 0,
+          "extinctions": 4,
+          "unifications": 0,
+          "splits": 0,
+          "restorations": 0,
+          "rebellions": 0,
+          "strictSaveValid": true,
+          "officeGrants": {
+            "pijiang": 19,
+            "jiangjun": 7,
+            "shangjiangjun": 3,
+            "promotions": 10
+          },
+          "promotionWaitMonths": {
+            "JIANGJUN": [
+              144,
+              120,
+              108,
+              60,
+              60,
+              60,
+              60
+            ],
+            "SHANGJIANGJUN": [
+              156,
+              132,
+              132
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import {diffCanonicalWorldSave} from "../../Persistence/WorldSaveSchema";
 import React from "react";
 import {renderToStaticMarkup} from "react-dom/server";
 import {createNaturalCore} from "./NaturalCoreHarness";
@@ -37,7 +38,7 @@ export async function runCharacterArchivePerformance(seed:string,years=500){
       results.push({month:m,people:people.length,countryPeople:archive.visiblePeople.length,records:records.length,allRecordsPresent:true,renderMs,htmlBytes:html.length,heapBytes:(performance as any).memory?.usedJSHeapSize,strictSaveValid:true});
       if(m===years*12){
         const continueOnce=()=>{hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));core.setWorldRunning(true);for(let i=0;i<12;i++)stepMonth();core.setWorldRunning(false);return exportWorldSave(core);};
-        const a=continueOnce(),b=continueOnce();if(JSON.stringify(a)!==JSON.stringify(b))throw new Error("Long-world continuation diverged");
+        const a=continueOnce(),b=continueOnce();const diff=diffCanonicalWorldSave(a,b);if(!diff.matched)throw new Error(`Long-world continuation diverged: ${JSON.stringify(diff)}`);
       }else core.setWorldRunning(true);
     }
     return {seed,years,results,deterministic12MonthContinuation:true};
