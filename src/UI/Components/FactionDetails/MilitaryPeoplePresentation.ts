@@ -48,3 +48,10 @@ export function getMilitaryArchive(people:MilitaryPerson[],factionId:string,form
   const historicalPeople=ordered.filter(p=>!currentPeople.includes(p));
   return {currentPeople,historicalPeople,visiblePeople:[...currentPeople,...historicalPeople]};
 }
+
+export function getMilitaryLocalServiceMonths(person:MilitaryPerson,factionId:string,worldMonth:number){
+  return person.appointments.filter(a=>a.factionId===factionId).reduce((months,a)=>months+Math.max(0,Math.min(a.endMonth??worldMonth,person.deathMonth??worldMonth,worldMonth)-a.startMonth),0);
+}
+export function getMilitaryLocalFormation(person:MilitaryPerson,factionId:string,formations:MilitaryFormation[]){
+  return person.status==="ACTIVE"&&person.factionId===factionId?formations.find(f=>f.status==="ACTIVE"&&f.factionId===factionId&&f.commanderPersonId===person.personId):undefined;
+}

@@ -38,7 +38,7 @@ export function composeMilitaryBiography(person:MilitaryPerson,entries:MilitaryC
   const life:string[]=[];
   if(appointments.length)life.push(`${name}于${formatWorldDate(appointments[0].startMonth)}始任本国军职。`);
   const factions=[...new Set(person.appointments.map(a=>a.factionId))];
-  if(factions.length>1)life.push(`生涯曾在${factions.join("、")}任职。`);
+  if(factions.length>1)life.push(person.factionId===factionId?"其军旅生涯曾有转属。":"后转属他国。");
   const victories=entries.filter(e=>e.victory);
   const ending=person.status==="DEAD"&&person.deathMonth!==undefined
     ? `${formatWorldDate(person.deathMonth)}${person.deathCause==="NATURAL_DEATH"?"自然去世":person.deathCause==="SIEGE_LOSS"?"在战乱中去世":person.deathCause==="BATTLE_DEATH"?"在战乱中去世":"去世"}。`

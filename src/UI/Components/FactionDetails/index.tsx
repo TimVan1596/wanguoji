@@ -33,7 +33,7 @@ import DynastyRegistry, { Dynasty, Ruler } from "../../../Politics/Dynasty";
 import Diplomacy from "../../../Politics/Diplomacy";
 import MilitaryCommandRegistry from "../../../Politics/MilitaryCommandRegistry";
 import { getMilitaryParticipationDetails, describeMilitaryPoliticalBlock } from "../../../Politics/MilitaryPoliticalInfluence";
-import { describeMilitaryAge, describeMilitaryStatus, describeMilitaryAppointmentEnd, describeMilitaryDeathCause, sortMilitaryPeople,getMilitaryArchive } from "./MilitaryPeoplePresentation";
+import { describeMilitaryAge, describeMilitaryStatus, describeMilitaryAppointmentEnd, describeMilitaryDeathCause, sortMilitaryPeople,getMilitaryArchive,getMilitaryLocalServiceMonths,getMilitaryLocalFormation } from "./MilitaryPeoplePresentation";
 import { getMilitaryPersonDisplayName } from "../../../Politics/MilitaryPersonIdentity";
 import { formatDiplomacyRelationLines, getFactionDiplomacyBadges } from "../../../Politics/DiplomacyPresentation";
 import FactionSnapshots, {
@@ -642,10 +642,10 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
         </>}
       >
         {resolvedSelection.expandedIds.includes(person.personId) && (() => {
-          const formation = formations.find(item => item.commanderPersonId === person.personId && item.status === "ACTIVE");
+          const formation = getMilitaryLocalFormation(person,factionId,formations);
           const activeUser = [...(Game.Core?.teams.find(team => team.name === person.factionId)?.users ?? [])]
             .find(user => user.militaryPersonId === person.personId);
-          const lastAppointment = person.appointments.at(-1);
+          const lastAppointment = localAppointments.at(-1);
           const career = MilitaryCommandRegistry.getCareer(person, worldMonth);
           const politicalEvents = MilitaryCommandRegistry.getPoliticalEvents(person);
           const politicalCandidate = militaryPolitics?.candidates.find(p => p.personId === person.personId);
@@ -662,7 +662,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
             biographyTitle="生平" biography={bio.life} milestoneTitle="军旅纪事"
             milestones={milestones.map(entry=>({id:entry.eventId,content:<Typography fontSize="0.82rem">{formatWorldDate(entry.worldMonth)} · {entry.text}</Typography>}))}
             assessment={[bio.assessment]} voice={bio.voice}
-            governance={<ChronicleSection title="军功与任职"><Typography fontSize="0.82rem">历任军职{formatWorldDuration(career.serviceMonths)}；本国任内，所部参与取城{bio.victories.length}次。</Typography></ChronicleSection>}
+            governance={<ChronicleSection title="军功与任职"><Typography fontSize="0.82rem">本国历任军职{formatWorldDuration(getMilitaryLocalServiceMonths(person,factionId,worldMonth))}；任内，所部参与取城{bio.victories.length}次。</Typography></ChronicleSection>}
             evidence={<>
               <Typography fontSize="0.75rem">人物：{person.personId} / User {person.sourceUserId} / 原人口标签：{person.name}</Typography>
               <Typography fontSize="0.75rem">{describeMilitaryNameEvidence(person)}</Typography>

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { MilitaryPerson } from "../../../Politics/MilitaryCommandRegistry";
-import { describeMilitaryAge, describeMilitaryDeathCause, getMilitaryPersonRelevantMonth,getMilitaryArchive, sortMilitaryPeople } from "./MilitaryPeoplePresentation";
+import { describeMilitaryAge, describeMilitaryDeathCause, getMilitaryPersonRelevantMonth,getMilitaryArchive,getMilitaryLocalServiceMonths,getMilitaryLocalFormation, sortMilitaryPeople } from "./MilitaryPeoplePresentation";
 
 const person = (personId: string, status: MilitaryPerson["status"], startMonth: number, endMonth?: number, deathMonth?: number): MilitaryPerson => ({
   personId, sourceUserId: Number(personId.replace(/\\D/g, "")) || 1, name: personId, personalName: "李承远", bornMonth: -300,
@@ -50,4 +50,12 @@ it("uses the latest appointment in the displayed country and preserves stable ti
   for(const rows of [[a,c,b],[c,b,a]])expect(sortMilitaryPeople(rows,"qin").map(p=>p.personId)).toEqual(["b","c","a"]);
   a.appointments.push({factionId:"qin",startMonth:80,endMonth:90,commandId:"return"});
   expect(sortMilitaryPeople([b,a],"qin")[0]).toBe(a);
+});
+
+it("a transferred person's current foreign army and foreign service months do not enter the former country's page",()=>{
+  const p=person("p","ACTIVE",10,20);p.factionId="wei";p.appointments.push({factionId:"wei",commandId:"new",startMonth:30});
+  const f:any={factionId:"wei",commandId:"new",commanderPersonId:p.personId,status:"ACTIVE"};
+  expect(getMilitaryLocalServiceMonths(p,"qin",72)).toBe(10);expect(getMilitaryLocalServiceMonths(p,"wei",72)).toBe(42);
+  expect(getMilitaryLocalFormation(p,"qin",[f])).toBeUndefined();expect(getMilitaryLocalFormation(p,"wei",[f])).toBe(f);
+  p.status="DEAD";p.deathMonth=60;expect(getMilitaryLocalServiceMonths(p,"wei",72)).toBe(30);expect(getMilitaryLocalFormation(p,"wei",[f])).toBeUndefined();
 });
