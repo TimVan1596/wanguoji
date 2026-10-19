@@ -1,3 +1,4 @@
+import {diffCanonicalWorldSave} from "../../Persistence/WorldSaveSchema";
 import {militaryMilestones} from "../../UI/Components/FactionDetails/PersonChroniclePresentation";
 import {getMilitaryArchive} from "../../UI/Components/FactionDetails/MilitaryPeoplePresentation";
 import Phaser from "phaser";
@@ -71,10 +72,18 @@ export async function runMilitaryOverlayCore(seed="military-overlay-z"){
   check(validateWorldSave(save).valid,"strict V18 real Core export");
   hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));
   check(!overlay.selection&&g.commandBuffer.length===0,"hydration clears selected overlay and drawing");
+  check(core.scene.physics.world.pendingDestroy.size===0,"hydration drains old Phaser bodies before rebuilding the world");
   check(validateWorldSave(exportWorldSave(core)).valid,"strict V18 real Core hydration");
   check(Military.getPerson(person.personId)?.personalName===person.personalName,"person identity and recorded name survive load");
-  core.setWorldRunning(true);for(let m=0;m<12;m++)month();core.setWorldRunning(false);
-  check(validateWorldSave(exportWorldSave(core)).valid,"12-month post-load production continuation");
+  const continueOnce=()=>{
+    hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));
+    check(core.scene.physics.world.pendingDestroy.size===0,"repeated hydration leaves no destroyed physics bodies");
+    core.setWorldRunning(true);for(let m=0;m<12;m++)month();core.setWorldRunning(false);
+    return exportWorldSave(core);
+  };
+  const first=continueOnce(),second=continueOnce();
+  check(diffCanonicalWorldSave(first,second).matched,"same Arcade snapshot resumes deterministically across repeated loads");
+  check(validateWorldSave(second).valid,"12-month post-load production continuation");
   const result={seed,checks,commandId:command,personId:person.personId,memberCount:view.members.length,worldMonth:core.simulator!.year,saveSchemaVersion:save.saveSchemaVersion};
   game.destroy(true);return result;
 }

@@ -96,3 +96,16 @@ describe("pure military political eligibility", () => {
     expect(capped.chance).toBeLessThanOrEqual(.18);
   });
 });
+
+it("retains existing political hard conditions for two-member commands without manufacturing merit or extra draws",()=>{
+  const i=fixture(),before=worldRandom.exportState();i.users=i.users.slice(0,2);i.formations[0].memberUnitIds=["unit-1","unit-2"];
+  expect(deriveMilitaryPoliticalInfluence(i).candidates).toEqual([]); // five-year veteran still lacks four units AND lacks personal victories
+  const event:any={id:"personal-capture",type:"city-captured",year:24,monthIndex:24,actorFactionId:"qin",targetFactionId:"wei",cityId:"real-city",
+    metadata:{commandId:"military-command-1",commanderPersonId:"military-person-1",wasCapital:0}};
+  i.events.push(event);i.people[0].capturedEventIds.push(event.id);i.formations[0].captures.push({eventId:event.id,cityId:event.cityId,month:24});
+  const evidence=deriveMilitaryPoliticalInfluence(i);
+  expect(evidence.candidates).toHaveLength(1);expect(evidence.candidates[0]).toMatchObject({personId:"military-person-1",unitCount:2,capturedEventIds:[event.id]});
+  expect(evaluateDepositionOpportunity(deposition(evidence)).probability).toBeLessThanOrEqual(.03);
+  i.identityStage="PROVISIONAL";expect(deriveMilitaryPoliticalInfluence(i).candidates).toEqual([]);
+  expect(worldRandom.exportState()).toEqual(before);
+});

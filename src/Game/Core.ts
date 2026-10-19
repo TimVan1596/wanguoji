@@ -1012,6 +1012,9 @@ export default class Core {
       this.factionLabels.forEach((label) => label.destroy());
       this.mapTooltip?.destroy();
       this.userGroupDisposals.flushAtSafeBoundary();
+      // Body.destroy queues removal in Phaser. Drain before creating the new map/units,
+      // so old broadphase bodies cannot coexist with the hydrated world.
+      this.scene.physics.world.postUpdate?.();
     });
     this.runHydrationTeardownStage("REBUILD_MAP", () => {
       this.clearUp();
