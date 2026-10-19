@@ -600,9 +600,13 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
   const liveIds=new Set(people.filter(person=>[...(Game.Core?.teams.find(t=>t.name===person.factionId)?.users??[])].some(u=>u.militaryPersonId===person.personId&&u.matchesMilitaryLife(person))).map(p=>p.personId));
   const resolvedSelection=reconcileMilitaryPersonSelection(selection,factionId,people,formations,liveIds);
   if(resolvedSelection!==selection)setSelection(resolvedSelection);
-  const expandedPersonId=resolvedSelection.selectedId;
-  const selectedPerson=people.find(p=>p.personId===expandedPersonId);
-  useEffect(()=>{Game.Core?.clearMilitaryCommandHighlight();return ()=>Game.Core?.clearMilitaryCommandHighlight();},[factionId,expandedPersonId,selectedPerson?.status]);
+  const focusedPerson=people.find(p=>p.personId===resolvedSelection.focusedId);
+  const focusedCommand=formations.find(f=>f.commanderPersonId===focusedPerson?.personId&&f.status==="ACTIVE"&&f.factionId===factionId)?.commandId;
+  const core=Game.Core;
+  useEffect(()=>{
+    if(focusedCommand)core?.showMilitaryCommand(focusedCommand,true);else core?.clearMilitaryCommandHighlight();
+    return ()=>core?.clearMilitaryCommandHighlight();
+  },[core,factionId,focusedCommand,focusedPerson]);
 
   const politicalTeam = Game.Core?.teams.find(team => team.name === factionId);
   const politicalFactionById = new Map((Game.Core?.teams ?? []).map(team => [team.name, team]));
@@ -614,7 +618,6 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
     <Typography fontSize="0.78rem" color="var(--gg-text-muted)">
       本国：现役指挥官 {factionCommanders} · 活动编组 {factionFormations} · 历史任职人物 {people.length}
     </Typography>
-    <Typography fontSize="0.75rem" color="var(--gg-text-muted)">资格计数是累计检查次数，不是独立人物数。</Typography>
     <Box component="details" sx={{minWidth:0,overflowWrap:"anywhere"}}><summary>军事系统诊断</summary>
     <Typography fontSize="0.76rem" color="var(--gg-text-muted)">
       全世界本次运行累计诊断：候选 {diagnostics.candidates} · 符合资格 {diagnostics.eligible} · 任命 {diagnostics.appointments} · 新命令 {diagnostics.orders} · 转向步进 {diagnostics.unitsSteered} · 到达目标城 {diagnostics.targetCityArrivals} · 围城接触 {diagnostics.commandedSiegeContacts} · 攻陷 {diagnostics.captures} · 目标失效 {diagnostics.invalidatedTargets} · 长期远距命令检查 {diagnostics.staleOrderChecks}
@@ -626,8 +629,8 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
     {!people.length && <Typography fontSize="0.86rem" color="var(--gg-text-muted)">本国尚无已任命的军事指挥人物。</Typography>}
     {people.map(person => {
       return <Box key={person.personId} sx={{ border: person.status==="ACTIVE"?"1px solid var(--gg-border)":undefined, borderBottom: "1px solid var(--gg-border-muted)", p:0.75, opacity:person.status==="DEAD"?.8:1 }}>
-        <Button size="small" aria-expanded={expandedPersonId === person.personId} onClick={() => setSelection(toggleMilitaryPerson(resolvedSelection,person.personId))} sx={{ fontWeight: person.status==="ACTIVE"?"bold":undefined, textAlign: "left", justifyContent: "flex-start", maxWidth: "100%", overflowWrap: "anywhere" }}>{getMilitaryPersonDisplayName(person)} · {describeMilitaryStatus(person)}</Button>
-        {expandedPersonId === person.personId && (() => {
+        <Button size="small" aria-expanded={resolvedSelection.expandedIds.includes(person.personId)} onClick={() => setSelection(toggleMilitaryPerson(resolvedSelection,person.personId,person.status==="ACTIVE"&&person.factionId===factionId&&liveIds.has(person.personId)))} sx={{ fontWeight: person.status==="ACTIVE"?"bold":undefined, textAlign: "left", justifyContent: "flex-start", maxWidth: "100%", overflowWrap: "anywhere" }}>{getMilitaryPersonDisplayName(person)} · {describeMilitaryStatus(person)}</Button>
+        {resolvedSelection.expandedIds.includes(person.personId) && (() => {
           const formation = formations.find(item => item.commanderPersonId === person.personId && item.status === "ACTIVE");
           const activeUser = [...(Game.Core?.teams.find(team => team.name === person.factionId)?.users ?? [])]
             .find(user => user.militaryPersonId === person.personId);
@@ -667,12 +670,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
             {view&&<ChronicleSection title="现役部队与军令">
               <Typography fontSize="0.82rem">真实存活成员{view.members.length}人 · {view.target?`当前军令指向${view.target.name}`:"当前无有效进攻目标。"}</Typography>
               <Typography fontSize="0.75rem" color="var(--gg-text-muted)">连线仅表示当前军令方向，不是行军路径或抵达预告。</Typography>
-              <Box sx={{display:"flex",flexWrap:"wrap",gap:.5}}>
-                <Button size="small" onClick={()=>Game.Core?.focusMilitaryFormation(view.commandId)}>定位部队</Button>
-                <Button size="small" disabled={!view.target} onClick={()=>view.target&&Game.Core?.focusMilitaryTargetCity(view.target.cityId,view.commandId)}>查看目标城</Button>
-                <Button size="small" onClick={()=>Game.Core?.showMilitaryCommand(view.commandId,true)}>显示军令方向</Button>
-                <Button size="small" onClick={()=>Game.Core?.clearMilitaryCommandHighlight()}>清除标记</Button>
-              </Box>
+
             </ChronicleSection>}
           </PersonChronicleLayout>;
         })()}
