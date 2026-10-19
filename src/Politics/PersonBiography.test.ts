@@ -57,7 +57,7 @@ it("does not rewrite titles or finalize a living ruler; a landless exile is neve
   const c=context();c.ruler.status="exiled";c.ruler.chronicle!.accessionSnapshot.cityCount=0;c.ruler.chronicle!.accessionSnapshot.territoryShare=0;
   c.events=[{id:"exile",type:"faction-exiled",year:0,monthIndex:0,targetFactionId:"秦",factionIds:["秦"],category:"politics",importance:"major",title:"秦失土流亡"}];
   const before=JSON.stringify(c.ruler),bio=composeRulerBiography(deriveRulerHistoricalEvidence(c),"嬴文衡",0);
-  expect(bio.life.join("")).toContain("流亡");expect(bio.assessment.join("")).toContain("缺少");expect(bio.voice).toBeUndefined();
+  expect(bio.life.join("")).toContain("流亡");expect(bio.assessment.join("")).toContain("未有在国施政");expect(bio.voice).toBeUndefined();
   expect(JSON.stringify(c.ruler)).toBe(before);
 });
 it("an order-only military life has no victory or posthumous voice; retirement is distinct from death",()=>{
@@ -65,7 +65,7 @@ it("an order-only military life has no victory or posthumous voice; retirement i
   const formation:any={commandId:"c",commanderPersonId:"p",factionId:"赵",status:"DISBANDED",memberUnitIds:[],captures:[]};
   const order:any={id:"order",year:24,type:"military-order-issued",actorFactionId:"赵",cityId:"x",cityName:"蓟",metadata:{personId:"p",commandId:"c"}};
   const entries=deriveMilitaryChronicle(person,[formation],[order],120),bio=composeMilitaryBiography(person,entries,"赵");
-  expect(bio.victories).toHaveLength(0);expect(bio.assessment).toContain("受命");expect(bio.ending).toContain("退役并非死亡");expect(bio.voice).toBeUndefined();
+  expect(bio.victories).toHaveLength(0);expect(bio.assessment).toContain("受命");expect(bio.ending).toBe("年老退职。");expect(bio.voice).toBeUndefined();
   person.status="DEAD";person.deathMonth=48;person.deathCause="NATURAL_DEATH";
   expect(composeMilitaryBiography(person,entries,"赵").ending).toContain("自然去世");
 });

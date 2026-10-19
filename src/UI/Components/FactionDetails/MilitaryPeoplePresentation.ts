@@ -1,4 +1,4 @@
-import type { MilitaryPerson } from "../../../Politics/MilitaryCommandRegistry";
+import type { MilitaryPerson,MilitaryFormation } from "../../../Politics/MilitaryCommandRegistry";
 
 
 export function getMilitaryPersonRelevantMonth(person: MilitaryPerson) {
@@ -33,4 +33,14 @@ export function describeMilitaryAppointmentEnd(reason?: string) {
 export function describeMilitaryAge(person: MilitaryPerson, worldMonth: number, verifiedLive: boolean) {
   const age = Math.floor(Math.max(0, (person.deathMonth ?? worldMonth) - person.bornMonth) / 12);
   return person.status === "DEAD" ? `享年 ${age} 岁` : verifiedLive ? `年龄 ${age} 岁` : `生死未载`;
+}
+
+
+/** Active commanders stay visible while historical careers use a bounded chronological page. */
+export function getMilitaryArchivePage(people:MilitaryPerson[],factionId:string,formations:MilitaryFormation[],liveIds:Set<string>,requestedPage:number){
+  const ordered=sortMilitaryPeople(people,factionId);
+  const currentPeople=ordered.filter(p=>p.factionId===factionId&&p.status==="ACTIVE"&&liveIds.has(p.personId)&&formations.some(f=>f.status==="ACTIVE"&&f.commanderPersonId===p.personId&&f.factionId===factionId));
+  const historicalPeople=ordered.filter(p=>!currentPeople.includes(p));
+  const pageCount=Math.max(1,Math.ceil(historicalPeople.length/10)),page=Math.max(0,Math.min(requestedPage,pageCount-1));
+  return {currentPeople,historicalPeople,pageCount,page,visiblePeople:[...currentPeople,...historicalPeople.slice(page*10,(page+1)*10)]};
 }

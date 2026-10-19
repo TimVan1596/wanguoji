@@ -33,7 +33,7 @@ import DynastyRegistry, { Dynasty, Ruler } from "../../../Politics/Dynasty";
 import Diplomacy from "../../../Politics/Diplomacy";
 import MilitaryCommandRegistry from "../../../Politics/MilitaryCommandRegistry";
 import { getMilitaryParticipationDetails, describeMilitaryPoliticalBlock } from "../../../Politics/MilitaryPoliticalInfluence";
-import { describeMilitaryAge, describeMilitaryStatus, describeMilitaryAppointmentEnd, describeMilitaryDeathCause, sortMilitaryPeople } from "./MilitaryPeoplePresentation";
+import { describeMilitaryAge, describeMilitaryStatus, describeMilitaryAppointmentEnd, describeMilitaryDeathCause, sortMilitaryPeople,getMilitaryArchivePage } from "./MilitaryPeoplePresentation";
 import { getMilitaryPersonDisplayName } from "../../../Politics/MilitaryPersonIdentity";
 import { formatDiplomacyRelationLines, getFactionDiplomacyBadges } from "../../../Politics/DiplomacyPresentation";
 import FactionSnapshots, {
@@ -606,10 +606,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
   const liveIds=new Set(people.filter(person=>[...(Game.Core?.teams.find(t=>t.name===person.factionId)?.users??[])].some(u=>u.militaryPersonId===person.personId&&u.matchesMilitaryLife(person))).map(p=>p.personId));
   const resolvedSelection=reconcileMilitaryPersonSelection(selection,factionId,people,formations,liveIds);
   if(resolvedSelection!==selection)setSelection(resolvedSelection);
-  const currentPeople=people.filter(p=>p.factionId===factionId&&p.status==="ACTIVE"&&liveIds.has(p.personId)&&formations.some(f=>f.status==="ACTIVE"&&f.commanderPersonId===p.personId));
-  const historicalPeople=people.filter(p=>!currentPeople.includes(p));
-  const pageCount=Math.max(1,Math.ceil(historicalPeople.length/10)),page=Math.min(archivePage,pageCount-1);
-  const visiblePeople=[...currentPeople,...historicalPeople.slice(page*10,(page+1)*10)];
+  const {currentPeople,pageCount,page,visiblePeople}=getMilitaryArchivePage(people,factionId,formations,liveIds,archivePage);
   const focusedPerson=people.find(p=>p.personId===resolvedSelection.focusedId);
   const focusedCommand=formations.find(f=>f.commanderPersonId===focusedPerson?.personId&&f.status==="ACTIVE"&&f.factionId===factionId)?.commandId;
   const core=Game.Core;
@@ -631,7 +628,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
     </Typography>
 
     <Typography fontSize="0.78rem" color="var(--gg-text-muted)">现役在前；历任人物按本国首次任职年月排列。</Typography>
-    {!people.length && <Typography fontSize="0.86rem" color="var(--gg-text-muted)">本国尚无已任命的军事指挥人物。</Typography>}
+    {!people.length && <Typography fontSize="0.86rem" color="var(--gg-text-muted)">本国尚无将领任职。</Typography>}
     {visiblePeople.map((person,index) => {
       const localAppointments=person.appointments.filter(a=>a.factionId===factionId);
       const first=localAppointments[0],last=localAppointments.at(-1),current=currentPeople.includes(person);
@@ -661,7 +658,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
             title={<MilitaryPersonIdentityHeader person={person} country={`${politicalFactionById.get(person.factionId)?.displayName ?? person.factionId}${politicalFactionById.get(person.factionId)?.identityStage === "STATE" ? "国" : ""}`} />}
             identity={<>
               <Typography fontSize="0.86rem" fontWeight="bold">{describeMilitaryOffice(person,factionId)}</Typography>
-              {person.factionId!==factionId&&<Typography fontSize="0.78rem">曾在本国任职；现属及生涯结局按原始人物记录。</Typography>}
+              {person.factionId!==factionId&&<Typography fontSize="0.78rem">曾在本国任职，后已转属。</Typography>}
               <Typography fontSize="0.82rem">{describeMilitaryAge(person,worldMonth,Boolean(activeUser?.matchesMilitaryLife(person)))} · 本国任职：{person.appointments.filter(a=>a.factionId===factionId).map(a=>`${formatWorldDate(a.startMonth)}—${a.endMonth===undefined?"今":formatWorldDate(a.endMonth)}`).join("；")}</Typography>
             </>}
             biographyTitle="生平" biography={bio.life} milestoneTitle="军旅纪事"
@@ -1221,7 +1218,7 @@ function RulerBiography({
   const parent=rulers.find(p=>p.id===ruler.parentId),predecessor=rulers.find(p=>p.id===ruler.predecessorId);
   const title=hasRecordedRulerDeath(ruler)&&ruler.endYear!==undefined&&(ruler.templeName||ruler.posthumousEpithet)?formatPosthumousRulerName(ruler,team,ruler.endYear):formatRulerName(ruler);
   const posthumousLines=hasRecordedRulerDeath(ruler)?getPosthumousLabelLines(ruler,team,ruler.endYear??worldMonth):[];
-  const textFor=(event:WorldEvent)=>formatRulerMilitaryEvent(event,ruler,team.name,worldMonth)??formatRulerTerminalEvent(event,ruler,team.name,factionById)??formatRulerDiplomacyEvent(event,factionById,ruler.id)??formatFactionHistoryEvent(event,team.name,factionById)??formatHistoryEventTitle(event,factionById);
+  const textFor=(event:WorldEvent)=>(formatRulerMilitaryEvent(event,ruler,team.name,worldMonth)??formatRulerTerminalEvent(event,ruler,team.name,factionById)??formatRulerDiplomacyEvent(event,factionById,ruler.id)??formatFactionHistoryEvent(event,team.name,factionById)??formatHistoryEventTitle(event,factionById)).replace(/所属编组/g,"所部");
   return <Box sx={{border:"1px solid var(--gg-border)",borderRadius:"var(--gg-radius)",p:1,background:"var(--gg-panel)"}}>
     <PersonChronicleLayout title={<Typography fontWeight="bold">{title}</Typography>}
       identity={<ChronicleSection title="身份与王统">

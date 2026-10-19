@@ -202,7 +202,7 @@ export class MilitaryCommandRegistryStore {
       const candidates = [...team.users].filter(user => this.isEligible(user, worldMonth)).sort((a, b) => a.id - b.id || a.name.localeCompare(b.name));
       this.diagnostics.candidates += candidates.length;
       if (!candidates.length) continue;
-      const availableUnits = [...team.users].filter(user => user.player.logicalUnitId && user.role === "NORMAL" &&
+      const availableUnits = [...team.users].filter(user => user.player.logicalUnitId && user.role === "NORMAL" && !user.rulerId && !user.player.rulerId &&
         !this.isUnitAssigned(user.player.logicalUnitId) && user.team === team).sort((a, b) => a.id - b.id || a.name.localeCompare(b.name));
       if (availableUnits.length < 2) { this.diagnostics.unitBlocked++; continue; }
       this.diagnostics.eligible += candidates.length;
@@ -248,7 +248,7 @@ export class MilitaryCommandRegistryStore {
     if (worldMonth >= deriveMilitaryLifeSchedule(person ?? { personId: `military-person-${this.personSequence}`, bornMonth: user.bornMonth }).retirementMonth) {
       this.diagnostics.ageBlocked++; return false;
     }
-    return user.role === "NORMAL" && user.team.status === "ACTIVE" && user.bornMonth <= worldMonth - MIN_COMMANDER_AGE_MONTHS &&
+    return user.role === "NORMAL" && !user.rulerId && !user.player.rulerId && user.team.status === "ACTIVE" && user.bornMonth <= worldMonth - MIN_COMMANDER_AGE_MONTHS &&
       Boolean(user.player.active && user.player.logicalUnitId) && !this.isUnitAssigned(user.player.logicalUnitId!) &&
       (!user.militaryPersonId || this.people.get(user.militaryPersonId)?.status !== "ACTIVE");
   }
@@ -311,13 +311,13 @@ export class MilitaryCommandRegistryStore {
       if (formation.status !== "ACTIVE") continue;
       const team = teamById.get(formation.factionId);
       const person = this.people.get(formation.commanderPersonId);
-      const commander = team && person ? [...team.users].find(user => user.id === person.sourceUserId && user.bornMonth === person.bornMonth && user.name === person.name && !user.isDestroyed && user.militaryPersonId === person.personId && user.role === "NORMAL") : undefined;
+      const commander = team && person ? [...team.users].find(user => user.id === person.sourceUserId && user.bornMonth === person.bornMonth && user.name === person.name && !user.isDestroyed && user.militaryPersonId === person.personId && user.role === "NORMAL" && !user.rulerId && !user.player.rulerId) : undefined;
       if (!team || team.status !== "ACTIVE" || !commander || !commander.player.logicalUnitId || person?.status !== "ACTIVE") {
         this.endFormation(formation, worldMonth, team?.status === "ACTIVE" ? "DISMISSED" : "FACTION_ENDED");
         continue;
       }
       formation.memberUnitIds = formation.memberUnitIds.filter(unitId => {
-        const user = [...team.users].find(candidate => candidate.player.logicalUnitId === unitId && candidate.role === "NORMAL");
+        const user = [...team.users].find(candidate => candidate.player.logicalUnitId === unitId && candidate.role === "NORMAL" && !candidate.rulerId && !candidate.player.rulerId);
         return Boolean(user && user.player.active);
       });
       if (!formation.memberUnitIds.includes(commander.player.logicalUnitId)) formation.memberUnitIds.unshift(commander.player.logicalUnitId);

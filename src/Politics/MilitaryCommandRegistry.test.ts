@@ -121,3 +121,24 @@ describe("persistent military command registry", () => {
     expect(registry.getDiagnostics().staleOrderChecks).toBe(1);
   });
 });
+
+
+it.each(["user","player"])("blocks a NORMAL unit retaining a %s royal identity from appointment and formation membership",binding=>{
+  const registry=new MilitaryCommandRegistryStore(),team:any={name:"qin",status:"ACTIVE",users:new Set(),cities:[]};
+  const royal=user(1,team,"unit-1"),ordinary=user(2,team,"unit-2");
+  if(binding==="user")royal.rulerId="king";else royal.player.rulerId="king";
+  team.users.add(royal);team.users.add(ordinary);
+  const draw=vi.spyOn(worldRandom,"next").mockReturnValue(0);
+  registry.update(12,[team],[]);
+  expect(registry.getPeople()).toEqual([]);expect(registry.getFormations()).toEqual([]);expect(draw).not.toHaveBeenCalled();
+});
+it("revokes a formation if its commander acquires an incompatible royal binding, without recording death",()=>{
+  const registry=new MilitaryCommandRegistryStore(),team:any={name:"qin",status:"ACTIVE",users:new Set(),cities:[]};
+  const commander=user(1,team,"unit-1");team.users.add(commander);team.users.add(user(2,team,"unit-2"));
+  vi.spyOn(worldRandom,"next").mockReturnValue(0);registry.update(12,[team],[]);
+  const person=registry.getPeople()[0];commander.rulerId="king";
+  registry.update(13,[team],[]);
+  expect(person.status).toBe("RETIRED");expect(person.deathMonth).toBeUndefined();
+  expect(person.appointments[0]).toMatchObject({endMonth:13,endReason:"DISMISSED"});
+  expect(registry.getFormations()[0].status).toBe("DISBANDED");
+});

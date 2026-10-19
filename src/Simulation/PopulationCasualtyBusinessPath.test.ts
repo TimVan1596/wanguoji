@@ -1,3 +1,4 @@
+import {composeMilitaryBiography} from "../Politics/PersonBiography";
 import { afterAll, beforeAll, afterEach, describe, expect, it, vi } from "vitest";
 import { PopulationTransitionAudit } from "./PopulationTransitionAudit";
 import worldRandom from "./WorldRandom";
@@ -147,6 +148,12 @@ describe("production casualty business path", () => {
         populationBefore: 6, populationAfter: 5, destroyed: true },
     }]);
     expect(audit.getRecentSignificant()[0].casualty?.victimPosition?.x).not.toBe(city.block.x);
+    const person=MilitaryCommandRegistry.getPeople()[0];
+    const biography=composeMilitaryBiography(person,MilitaryCommandRegistry.getChronicle(person,12),"defender");
+    expect(biography.ending).toContain("战乱中去世");
+    expect(biography.ending).not.toMatch(/死守|守城|城下|战伤/);
+    expect(events.find(e=>e.type==="military-person-died").metadata.deathCause).toBe("SIEGE_LOSS");
+
     expect(victim.destroyUser(false, { cause: "SIEGE_LOSS", month: 12, damageSource: "CITY_SIEGE", triggerCityId: context!.triggerCityId })).toBe(false);
     expect(defender.users.size).toBe(5);
     expect(MilitaryCommandRegistry.getPeople()[0]).toMatchObject({ status: "DEAD", deathMonth: 12, deathCause: "SIEGE_LOSS" });

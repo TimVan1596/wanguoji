@@ -297,6 +297,12 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     };
   addInitialOfficeFacts(save);
     expect(validateWorldSave(JSON.parse(JSON.stringify(save)))).toEqual({ valid: true, errors: [] });
+    for(const royalBinding of ["user","unit"]){
+      const conflicting=structuredClone(save);
+      if(royalBinding==="user")conflicting.users.find((u:any)=>u.userId===8).rulerId="royal-person";
+      else conflicting.units.find((u:any)=>u.unitId==="unit-2").rulerId="royal-person";
+      expect(validateWorldSave(conflicting).valid).toBe(false);
+    }
     const broken = structuredClone(save);
     broken.registries.militaryCommandRegistry.formations[0].memberUnitIds.push("unit-2");
     expect(validateWorldSave(broken).errors).toContain("active formation size is invalid: military-command-1");

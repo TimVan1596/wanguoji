@@ -82,7 +82,7 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
     }
     if (person.status === "ACTIVE") {
       const user = userById.get(String(person.sourceUserId));
-      if (!user || String(user.militaryPersonId) !== person.personId || user.name !== person.name || user.bornMonth !== person.bornMonth || user.factionId !== person.factionId || user.role !== "NORMAL") errors.push(`active military person has no matching live User: ${person.personId}`);
+      if (!user || String(user.militaryPersonId) !== person.personId || user.name !== person.name || user.bornMonth !== person.bornMonth || user.factionId !== person.factionId || (user.role !== "NORMAL" || user.rulerId !== undefined)) errors.push(`active military person has no matching live User: ${person.personId}`);
     }
     for (const eventId of person.capturedEventIds) if (typeof eventId !== "string" || !historyById.has(eventId)) errors.push(`military person references missing capture event: ${person.personId}`);
   }
@@ -130,7 +130,7 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
       const key = String(unitId); const unit = unitById.get(key);
       if (activeUnits.has(key)) errors.push(`unit belongs to multiple active formations: ${key}`);
       activeUnits.add(key);
-      if (!unit || unit.alive !== true || unit.role !== "NORMAL" || unit.factionId !== formation.factionId || unit.userId === undefined ||
+      if (!unit || unit.alive !== true || unit.role !== "NORMAL" || unit.rulerId !== undefined || unit.factionId !== formation.factionId || unit.userId === undefined ||
           !userById.has(String(unit.userId)) || String(userById.get(String(unit.userId))?.playerUnitId) !== key) errors.push(`active formation references invalid member unit: ${key}`);
     }
     if (!commanderUser || commanderUser.role !== "NORMAL" || commanderUser.factionId !== formation.factionId || !formation.memberUnitIds.includes(commanderUser.playerUnitId)) errors.push(`active commander is not a formation member: ${formation.commandId}`);
