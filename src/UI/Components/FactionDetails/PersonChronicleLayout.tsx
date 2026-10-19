@@ -16,6 +16,6 @@ export default function PersonChronicleLayout({title,identity,biographyTitle,bio
     {governance}{children}
     {assessment.length>0&&<ChronicleSection title="史评">{assessment.map(line=><Typography key={line} fontSize="0.82rem">{line}</Typography>)}</ChronicleSection>}
     {voice&&<ChronicleSection title="史家曰"><Typography fontSize="0.82rem">{voice}</Typography></ChronicleSection>}
-    <Box component="details" sx={{mt:1,minWidth:0}}><summary>完整史料依据</summary>{evidence}</Box>
+    <Box component="details" sx={{mt:1,minWidth:0}}><summary>详细记录</summary>{evidence}</Box>
   </Box>;
 }
