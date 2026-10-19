@@ -1,5 +1,4 @@
 import {diffCanonicalWorldSave} from "../../Persistence/WorldSaveSchema";
-import React from "react";
 import {renderToStaticMarkup} from "react-dom/server";
 import {createNaturalCore} from "./NaturalCoreHarness";
 import {SIMULATION_FIXED_STEP_MS} from "../SimulationDriver";

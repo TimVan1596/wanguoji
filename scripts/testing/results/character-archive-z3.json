@@ -1,0 +1,35 @@
+{
+  "scope": "real Core default world; programmatic complete-record/SSR performance checks, not visual acceptance",
+  "heapScope": "whole renderer/world heap; canonical world history grows with time, not an isolated UI allocation measure",
+  "runs": [
+    {
+      "seed": "archive-500",
+      "years": 500,
+      "results": [
+        {
+          "month": 2400,
+          "people": 30,
+          "countryPeople": 10,
+          "records": 590,
+          "allRecordsPresent": true,
+          "renderMs": 3.6099999994039536,
+          "htmlBytes": 62326,
+          "heapBytes": 72817919,
+          "strictSaveValid": true
+        },
+        {
+          "month": 6000,
+          "people": 79,
+          "countryPeople": 20,
+          "records": 1492,
+          "allRecordsPresent": true,
+          "renderMs": 4.619999999552965,
+          "htmlBytes": 158845,
+          "heapBytes": 102767207,
+          "strictSaveValid": true
+        }
+      ],
+      "deterministic12MonthContinuation": true
+    }
+  ]
+}
