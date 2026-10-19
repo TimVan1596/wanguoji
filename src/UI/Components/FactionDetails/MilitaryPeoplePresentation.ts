@@ -6,9 +6,14 @@ export function getMilitaryPersonRelevantMonth(person: MilitaryPerson) {
     Math.max(latest, appointment.startMonth, appointment.endMonth ?? -1), person.deathMonth ?? -1);
 }
 
-export function sortMilitaryPeople(people: MilitaryPerson[],factionId?:string) {
-  const first=(p:MilitaryPerson)=>Math.min(...p.appointments.filter(a=>!factionId||a.factionId===factionId).map(a=>a.startMonth));
-  return [...people].sort((a,b)=>first(a)-first(b)||a.personId.localeCompare(b.personId));
+/** Dates belong to this country's appointment history; later foreign service/death is irrelevant. */
+export function sortMilitaryPeople(people:MilitaryPerson[],factionId?:string){
+  const dates=(p:MilitaryPerson)=>{
+    const local=p.appointments.filter(a=>!factionId||a.factionId===factionId);
+    return {end:Math.max(-1,...local.flatMap(a=>a.endMonth===undefined?[]:[a.endMonth])),start:Math.max(-1,...local.map(a=>a.startMonth))};
+  };
+  const rows=people.filter(p=>!factionId||p.appointments.some(a=>a.factionId===factionId)).map(person=>({person,...dates(person)}));
+  return rows.sort((a,b)=>b.end-a.end||b.start-a.start||a.person.personId.localeCompare(b.person.personId)).map(r=>r.person);
 }
 
 export function describeMilitaryDeathCause(cause?: string) {
@@ -36,11 +41,10 @@ export function describeMilitaryAge(person: MilitaryPerson, worldMonth: number, 
 }
 
 
-/** Active commanders stay visible while historical careers use a bounded chronological page. */
-export function getMilitaryArchivePage(people:MilitaryPerson[],factionId:string,formations:MilitaryFormation[],liveIds:Set<string>,requestedPage:number){
+/** All current and historical rows are available without navigation or a second click. */
+export function getMilitaryArchive(people:MilitaryPerson[],factionId:string,formations:MilitaryFormation[],liveIds:Set<string>){
   const ordered=sortMilitaryPeople(people,factionId);
   const currentPeople=ordered.filter(p=>p.factionId===factionId&&p.status==="ACTIVE"&&liveIds.has(p.personId)&&formations.some(f=>f.status==="ACTIVE"&&f.commanderPersonId===p.personId&&f.factionId===factionId));
   const historicalPeople=ordered.filter(p=>!currentPeople.includes(p));
-  const pageCount=Math.max(1,Math.ceil(historicalPeople.length/10)),page=Math.max(0,Math.min(requestedPage,pageCount-1));
-  return {currentPeople,historicalPeople,pageCount,page,visiblePeople:[...currentPeople,...historicalPeople.slice(page*10,(page+1)*10)]};
+  return {currentPeople,historicalPeople,visiblePeople:[...currentPeople,...historicalPeople]};
 }

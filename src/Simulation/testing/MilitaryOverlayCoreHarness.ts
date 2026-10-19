@@ -1,5 +1,5 @@
 import {militaryMilestones} from "../../UI/Components/FactionDetails/PersonChroniclePresentation";
-import {getMilitaryArchivePage} from "../../UI/Components/FactionDetails/MilitaryPeoplePresentation";
+import {getMilitaryArchive} from "../../UI/Components/FactionDetails/MilitaryPeoplePresentation";
 import Phaser from "phaser";
 /** Real Core/Phaser business regression, without screenshots or a visual Gate. */
 import {createNaturalCore} from "./NaturalCoreHarness";
@@ -55,7 +55,7 @@ export async function runMilitaryOverlayCore(seed="military-overlay-z"){
   const reading=militaryMilestones(person,fullEntries,WorldHistory.getEventsForFaction(person.factionId));
   check(fullEntries.some(e=>e.source.startsWith("military-order-issued"))&&!reading.some(e=>e.source.startsWith("military-order-issued")),"ordinary orders retained in the archive but omitted from public milestones");
   check(reading.some(e=>e.text.includes("授裨将"))&&!reading.some(e=>e.text.includes("据本次任职")),"formal initial office is readable without zero-month audit wording");
-  const archive=getMilitaryArchivePage(factionPeople,person.factionId,Military.getFormations(),liveIds,0);
+  const archive=getMilitaryArchive(factionPeople,person.factionId,Military.getFormations(),liveIds);
   check(archive.currentPeople.some(p=>p.personId===person.personId)&&archive.visiblePeople.includes(person),"real living commander remains visible in the chronological archive");
   const bio=composeMilitaryBiography(person,Military.getChronicle(person,core.simulator!.year,person.factionId),person.factionId);
   check(bio.life.length>0&&Military.getChronicle(person,core.simulator!.year).some(e=>e.source.startsWith("military-appointment")),"real appointment enters biography");

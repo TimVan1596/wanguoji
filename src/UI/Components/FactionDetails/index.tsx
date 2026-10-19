@@ -33,7 +33,7 @@ import DynastyRegistry, { Dynasty, Ruler } from "../../../Politics/Dynasty";
 import Diplomacy from "../../../Politics/Diplomacy";
 import MilitaryCommandRegistry from "../../../Politics/MilitaryCommandRegistry";
 import { getMilitaryParticipationDetails, describeMilitaryPoliticalBlock } from "../../../Politics/MilitaryPoliticalInfluence";
-import { describeMilitaryAge, describeMilitaryStatus, describeMilitaryAppointmentEnd, describeMilitaryDeathCause, sortMilitaryPeople,getMilitaryArchivePage } from "./MilitaryPeoplePresentation";
+import { describeMilitaryAge, describeMilitaryStatus, describeMilitaryAppointmentEnd, describeMilitaryDeathCause, sortMilitaryPeople,getMilitaryArchive } from "./MilitaryPeoplePresentation";
 import { getMilitaryPersonDisplayName } from "../../../Politics/MilitaryPersonIdentity";
 import { formatDiplomacyRelationLines, getFactionDiplomacyBadges } from "../../../Politics/DiplomacyPresentation";
 import FactionSnapshots, {
@@ -601,12 +601,11 @@ function MilitaryPoliticalEventFacts({ event }: { event: WorldEvent }) {
 function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; worldMonth: number }) {
   const [selection, setSelection] = useState<MilitaryPersonSelection>();
   const people = sortMilitaryPeople(MilitaryCommandRegistry.getPeople().filter(person => person.factionId === factionId || person.appointments.some(appointment => appointment.factionId === factionId)),factionId);
-  const [archivePage,setArchivePage]=useState(0);
   const formations = MilitaryCommandRegistry.getFormations();
   const liveIds=new Set(people.filter(person=>[...(Game.Core?.teams.find(t=>t.name===person.factionId)?.users??[])].some(u=>u.militaryPersonId===person.personId&&u.matchesMilitaryLife(person))).map(p=>p.personId));
   const resolvedSelection=reconcileMilitaryPersonSelection(selection,factionId,people,formations,liveIds);
   if(resolvedSelection!==selection)setSelection(resolvedSelection);
-  const {currentPeople,pageCount,page,visiblePeople}=getMilitaryArchivePage(people,factionId,formations,liveIds,archivePage);
+  const {currentPeople,visiblePeople}=getMilitaryArchive(people,factionId,formations,liveIds);
   const focusedPerson=people.find(p=>p.personId===resolvedSelection.focusedId);
   const focusedCommand=formations.find(f=>f.commanderPersonId===focusedPerson?.personId&&f.status==="ACTIVE"&&f.factionId===factionId)?.commandId;
   const core=Game.Core;
@@ -626,7 +625,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
       现役将领 {factionCommanders} 人 · 历任将领 {people.length} 人
     </Typography>
 
-    <Typography fontSize="0.78rem" color="var(--gg-text-muted)">现役在前；历任人物按本国首次任职年月排列。</Typography>
+    <Typography fontSize="0.78rem" color="var(--gg-text-muted)">现役在前；历任人物按最近一次本国离任年月排列。</Typography>
     {!people.length && <Typography fontSize="0.86rem" color="var(--gg-text-muted)">本国尚无将领任职。</Typography>}
     {visiblePeople.map((person,index) => {
       const localAppointments=person.appointments.filter(a=>a.factionId===factionId);
@@ -701,11 +700,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
         })()}
       </PersonArchiveCard>;
     })}
-    {pageCount>1&&<Box sx={{display:"flex",gap:.5,alignItems:"center",flexWrap:"wrap"}}>
-      <Button size="small" disabled={page===0} onClick={()=>setArchivePage(page-1)}>上一页</Button>
-      <Typography fontSize="0.78rem">历任人物 {page+1} / {pageCount}</Typography>
-      <Button size="small" disabled={page===pageCount-1} onClick={()=>setArchivePage(page+1)}>下一页</Button>
-    </Box>}
+
   </Box>;
 }
 
