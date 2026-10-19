@@ -1,3 +1,4 @@
+import {validateMilitaryCommandState} from "./MilitaryCommandValidation";
 import {addInitialOfficeFacts} from "./testing/MilitaryOfficeFixture";
 import { setFixtureLifetimeRecords } from "./testing/FactionLifetimeFixture";
 import { describe, expect, it } from "vitest";
@@ -299,9 +300,11 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     expect(validateWorldSave(JSON.parse(JSON.stringify(save)))).toEqual({ valid: true, errors: [] });
     for(const royalBinding of ["user","unit"]){
       const conflicting=structuredClone(save);
-      if(royalBinding==="user")conflicting.users.find((u:any)=>u.userId===8).rulerId="royal-person";
-      else conflicting.units.find((u:any)=>u.unitId==="unit-2").rulerId="royal-person";
+      if(royalBinding==="user")conflicting.users.find((u:any)=>u.userId===8).rulerId="qin-ruler-1";
+      else conflicting.units.find((u:any)=>u.unitId==="unit-2").rulerId="qin-ruler-1";
       expect(validateWorldSave(conflicting).valid).toBe(false);
+      const errors=validateMilitaryCommandState(conflicting.registries.militaryCommandRegistry,conflicting.users,conflicting.units,conflicting.cities,new Set(["qin","wei"]),42,conflicting.worldHistory);
+      expect(errors).toContain(royalBinding==="user"?"active military person has no matching live User: military-person-1":"active formation references invalid member unit: unit-2");
     }
     const broken = structuredClone(save);
     broken.registries.militaryCommandRegistry.formations[0].memberUnitIds.push("unit-2");

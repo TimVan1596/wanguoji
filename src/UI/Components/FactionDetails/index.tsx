@@ -621,10 +621,9 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
   const diagnostics = MilitaryCommandRegistry.getDiagnostics();
   const officeSummary=MilitaryCommandRegistry.getOfficeSummary(worldMonth);
   const factionCommanders = people.filter(person => person.factionId === factionId && person.status === "ACTIVE").length;
-  const factionFormations = formations.filter(formation => formation.factionId === factionId && formation.status === "ACTIVE").length;
   return <Box sx={{ display: "grid", gap: 1, mt: 0.5, minWidth: 0, overflowWrap: "anywhere" }}>
     <Typography fontSize="0.78rem" color="var(--gg-text-muted)">
-      本国：现役指挥官 {factionCommanders} · 活动编组 {factionFormations} · 历史任职人物 {people.length}
+      现役将领 {factionCommanders} 人 · 历任将领 {people.length} 人
     </Typography>
 
     <Typography fontSize="0.78rem" color="var(--gg-text-muted)">现役在前；历任人物按本国首次任职年月排列。</Typography>
@@ -640,7 +639,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
         heading={<>
           <Typography fontSize="0.92rem" fontWeight={current?"bold":600}>{current?"● ":""}{getMilitaryPersonDisplayName(person)} · {current?"现役":person.status==="ACTIVE"&&person.factionId!==factionId?"已转属":describeMilitaryStatus(person)}</Typography>
           <Typography fontSize="0.82rem" color="var(--gg-text-muted)">{politicalTeam?.displayName??factionId} · {highest?`最高任${MILITARY_OFFICE_NAMES[highest.office]}`:"军职未载"}</Typography>
-          <Typography fontSize="0.8rem" color="var(--gg-text-muted)">{first?formatWorldDate(first.startMonth):"任期未载"}—{last?.endMonth===undefined?"今":formatWorldDate(last.endMonth)} · 所部取城{entries.filter(e=>e.victory).length}次</Typography>
+          <Typography fontSize="0.8rem" color="var(--gg-text-muted)">{first?formatWorldDate(first.startMonth):"任期未载"}—{last?.endMonth===undefined?"今":formatWorldDate(last.endMonth)} · 所部参与取城{entries.filter(e=>e.victory).length}次</Typography>
         </>}
       >
         {resolvedSelection.expandedIds.includes(person.personId) && (() => {
@@ -657,27 +656,27 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
           return <PersonChronicleLayout
             title={<MilitaryPersonIdentityHeader person={person} country={`${politicalFactionById.get(person.factionId)?.displayName ?? person.factionId}${politicalFactionById.get(person.factionId)?.identityStage === "STATE" ? "国" : ""}`} />}
             identity={<>
-              <Typography fontSize="0.86rem" fontWeight="bold">{describeMilitaryOffice(person,factionId)}</Typography>
+              <Typography fontSize="0.86rem" fontWeight="bold">{describeMilitaryOffice(person,factionId).replace("（本国历史最高职务）","")}</Typography>
               {person.factionId!==factionId&&<Typography fontSize="0.78rem">曾在本国任职，后已转属。</Typography>}
               <Typography fontSize="0.82rem">{describeMilitaryAge(person,worldMonth,Boolean(activeUser?.matchesMilitaryLife(person)))} · 本国任职：{person.appointments.filter(a=>a.factionId===factionId).map(a=>`${formatWorldDate(a.startMonth)}—${a.endMonth===undefined?"今":formatWorldDate(a.endMonth)}`).join("；")}</Typography>
             </>}
             biographyTitle="生平" biography={bio.life} milestoneTitle="军旅纪事"
             milestones={milestones.map(entry=>({id:entry.eventId,content:<Typography fontSize="0.82rem">{formatWorldDate(entry.worldMonth)} · {entry.text}</Typography>}))}
             assessment={[bio.assessment]} voice={bio.voice}
-            governance={<ChronicleSection title="军功与任职"><Typography fontSize="0.82rem">历任军职{formatWorldDuration(career.serviceMonths)}；本国任内，所部取城{bio.victories.length}次。</Typography></ChronicleSection>}
+            governance={<ChronicleSection title="军功与任职"><Typography fontSize="0.82rem">历任军职{formatWorldDuration(career.serviceMonths)}；本国任内，所部参与取城{bio.victories.length}次。</Typography></ChronicleSection>}
             evidence={<>
               <Typography fontSize="0.75rem">人物：{person.personId} / User {person.sourceUserId} / 原人口标签：{person.name}</Typography>
               <Typography fontSize="0.75rem">{describeMilitaryNameEvidence(person)}</Typography>
-    <Box component="details" sx={{minWidth:0,overflowWrap:"anywhere"}}><summary>军事系统诊断</summary>
-    <Typography fontSize="0.75rem">候选与资格数字是累计检查次数，不是独立人物数；正式军职提供同国任职史料参考，不单独增加政治风险或重复抽签。</Typography>
-    <Typography fontSize="0.76rem">军职档案累计授裨将{officeSummary.pijiang}次、将军{officeSummary.jiangjun}次、上将军{officeSummary.shangjiangjun}次；真实晋阶{officeSummary.promotions}次；平均任期{officeSummary.meanServiceMonths.toFixed(1)}个月；当前实授军职{officeSummary.currentOffices.length}人。职序为游戏世界抽象军职，不是统一历史官品；军职不改变统兵上限或政治抽签。</Typography>
-    <Typography fontSize="0.76rem" color="var(--gg-text-muted)">
-      全世界本次运行累计诊断：候选 {diagnostics.candidates} · 符合资格 {diagnostics.eligible} · 任命 {diagnostics.appointments} · 新命令 {diagnostics.orders} · 转向步进 {diagnostics.unitsSteered} · 到达目标城 {diagnostics.targetCityArrivals} · 围城接触 {diagnostics.commandedSiegeContacts} · 攻陷 {diagnostics.captures} · 目标失效 {diagnostics.invalidatedTargets} · 长期远距命令检查 {diagnostics.staleOrderChecks}
-    </Typography>
-    <Typography fontSize="0.76rem" color="var(--gg-text-muted)">
-      全世界世代更替（本次会话，读取后重置）：年老退役 {diagnostics.ageRetirements} · 自然死亡 {diagnostics.naturalDeaths} · 释放编组 {diagnostics.releasedFormations} · 合法重新任职 {diagnostics.reappointments} · 到龄任命阻断 {diagnostics.ageBlocked} · 原User核验失败 {diagnostics.identityFailures}
-    </Typography>
-    </Box>
+              <Box component="details" sx={{minWidth:0,overflowWrap:"anywhere"}}><summary>军事系统诊断</summary>
+              <Typography fontSize="0.75rem">候选与资格数字是累计检查次数，不是独立人物数；正式军职提供同国任职史料参考，不单独增加政治风险或重复抽签。</Typography>
+              <Typography fontSize="0.76rem">军职档案累计授裨将{officeSummary.pijiang}次、将军{officeSummary.jiangjun}次、上将军{officeSummary.shangjiangjun}次；真实晋阶{officeSummary.promotions}次；平均任期{officeSummary.meanServiceMonths.toFixed(1)}个月；当前实授军职{officeSummary.currentOffices.length}人。职序为游戏世界抽象军职，不是统一历史官品；军职不改变统兵上限或政治抽签。</Typography>
+              <Typography fontSize="0.76rem" color="var(--gg-text-muted)">
+                全世界本次运行累计诊断：候选 {diagnostics.candidates} · 符合资格 {diagnostics.eligible} · 任命 {diagnostics.appointments} · 新命令 {diagnostics.orders} · 转向步进 {diagnostics.unitsSteered} · 到达目标城 {diagnostics.targetCityArrivals} · 围城接触 {diagnostics.commandedSiegeContacts} · 攻陷 {diagnostics.captures} · 目标失效 {diagnostics.invalidatedTargets} · 长期远距命令检查 {diagnostics.staleOrderChecks}
+              </Typography>
+              <Typography fontSize="0.76rem" color="var(--gg-text-muted)">
+                全世界世代更替（本次会话，读取后重置）：年老退役 {diagnostics.ageRetirements} · 自然死亡 {diagnostics.naturalDeaths} · 释放编组 {diagnostics.releasedFormations} · 合法重新任职 {diagnostics.reappointments} · 到龄任命阻断 {diagnostics.ageBlocked} · 原User核验失败 {diagnostics.identityFailures}
+              </Typography>
+              </Box>
               <HistoricalEventArchive title="全部军旅记录" entries={entries.map(entry=>({id:entry.eventId,content:<>
                 <Typography fontSize="0.78rem">{formatWorldDate(entry.worldMonth)} · {entry.text}</Typography>
                 <Typography fontSize="0.72rem">来源：{entry.source} · 编组：{entry.commandId??"未记录"}</Typography>
@@ -697,8 +696,6 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
             {bio.ending&&<ChronicleSection title="退役与生命结局"><Typography fontSize="0.82rem">{bio.ending}</Typography></ChronicleSection>}
             {view&&<ChronicleSection title="现役部队与军令">
               <Typography fontSize="0.82rem">统兵{view.members.length}人 · {view.target?`奉命进军${view.target.name}`:"暂未奉进攻军令。"}</Typography>
-
-
             </ChronicleSection>}
           </PersonChronicleLayout>;
         })()}
@@ -1233,7 +1230,7 @@ function RulerBiography({
       </>}))}
       governance={<ChronicleSection title="治世与国势">
         <Typography fontSize="0.82rem">领土：{formatReignTerritoryChange(start.territoryShare,end.territoryShare)}</Typography>
-        <Typography fontSize="0.82rem">记录疆域峰值{(evidence.peakTerritory*100).toFixed(1)}% · 城市{start.cityCount}→{end.cityCount}座</Typography>
+        <Typography fontSize="0.82rem">疆域曾达{(evidence.peakTerritory*100).toFixed(1)}% · 城市{start.cityCount}→{end.cityCount}座</Typography>
         <Typography fontSize="0.82rem">人口{start.population}→{end.population} · 稳定{start.stability}→{end.stability}</Typography>
         <Typography fontSize="0.82rem">城邑失守{evidence.citiesLost}次。</Typography>
         <Typography fontSize="0.82rem">本人参战取城{bio.stats.personalCityCaptures}次；治下军队取城{bio.stats.nationalCityCaptures}次、攻取敌都{bio.stats.nationalCapitalCaptures}次。</Typography>
