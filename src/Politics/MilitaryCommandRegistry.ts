@@ -155,6 +155,18 @@ export class MilitaryCommandRegistryStore {
       events: [...new Map(relevantFactions.flatMap(id => this.eventReader(id)).map(e => [e.id, e])).values()] });
   }
 
+  getOfficeSummary(worldMonth:number){
+    const people=this.getPeople(),appointments=people.flatMap(p=>p.appointments),grants=appointments.flatMap(a=>a.officeHistory??[]);
+    const count=(office:MilitaryOfficeGrant["office"])=>grants.filter(g=>g.office===office).length;
+    const active=people.filter(p=>p.status==="ACTIVE").flatMap(p=>p.appointments.filter(a=>a.endMonth===undefined&&a.factionId===p.factionId));
+    return {pijiang:count("PIJIANG"),jiangjun:count("JIANGJUN"),shangjiangjun:count("SHANGJIANGJUN"),promotions:grants.filter(g=>g.office!=="PIJIANG").length,
+      meanServiceMonths:appointments.length?appointments.reduce((n,a)=>n+Math.max(0,(a.endMonth??worldMonth)-a.startMonth),0)/appointments.length:0,
+      currentOffices:active.map(a=>a.officeHistory?.at(-1)?.office),naturalDeaths:people.filter(p=>p.deathCause==="NATURAL_DEATH").length,
+      ageRetirements:appointments.filter(a=>a.endReason==="AGE_RETIREMENT").length,
+      highOfficeMerits:grants.filter(g=>g.office==="SHANGJIANGJUN").map(g=>({serviceMonths:g.serviceMonths,verifiedMerits:g.captureEventIds.length})),
+      activeFormationSizes:this.getFormations().filter(f=>f.status==="ACTIVE").map(f=>f.memberUnitIds.length)};
+  }
+
   getPoliticalEvents(person: MilitaryPerson) {
     return getMilitaryPoliticalEvents([...new Map([...new Set(person.appointments.map(a => a.factionId))]
       .flatMap(id => this.eventReader(id)).map(e => [e.id, e])).values()], person.personId);

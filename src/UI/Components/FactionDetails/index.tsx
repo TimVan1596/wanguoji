@@ -1,3 +1,4 @@
+import {describeMilitaryOffice} from "../../../Politics/MilitaryOffice";
 import PersonChronicleLayout, {ChronicleSection} from "./PersonChronicleLayout";
 import {composeRulerBiography,composeMilitaryBiography} from "../../../Politics/PersonBiography";
 import {reconcileMilitaryPersonSelection,toggleMilitaryPerson,type MilitaryPersonSelection} from "./MilitaryPersonSelection";
@@ -612,6 +613,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
   const politicalFactionById = new Map((Game.Core?.teams ?? []).map(team => [team.name, team]));
   const militaryPolitics = politicalTeam ? MilitaryCommandRegistry.getPoliticalInfluence(politicalTeam, worldMonth, Game.Core?.logicalUnitRegistry) : undefined;
   const diagnostics = MilitaryCommandRegistry.getDiagnostics();
+  const officeSummary=MilitaryCommandRegistry.getOfficeSummary(worldMonth);
   const factionCommanders = people.filter(person => person.factionId === factionId && person.status === "ACTIVE").length;
   const factionFormations = formations.filter(formation => formation.factionId === factionId && formation.status === "ACTIVE").length;
   return <Box sx={{ display: "grid", gap: 1, mt: 0.5, minWidth: 0, overflowWrap: "anywhere" }}>
@@ -619,6 +621,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
       本国：现役指挥官 {factionCommanders} · 活动编组 {factionFormations} · 历史任职人物 {people.length}
     </Typography>
     <Box component="details" sx={{minWidth:0,overflowWrap:"anywhere"}}><summary>军事系统诊断</summary>
+    <Typography fontSize="0.76rem">军职档案累计授裨将{officeSummary.pijiang}次、将军{officeSummary.jiangjun}次、上将军{officeSummary.shangjiangjun}次；真实晋阶{officeSummary.promotions}次；平均任期{officeSummary.meanServiceMonths.toFixed(1)}个月；当前实授军职{officeSummary.currentOffices.length}人。职序为游戏世界抽象军职，不是统一历史官品；军职不改变统兵上限或政治抽签。</Typography>
     <Typography fontSize="0.76rem" color="var(--gg-text-muted)">
       全世界本次运行累计诊断：候选 {diagnostics.candidates} · 符合资格 {diagnostics.eligible} · 任命 {diagnostics.appointments} · 新命令 {diagnostics.orders} · 转向步进 {diagnostics.unitsSteered} · 到达目标城 {diagnostics.targetCityArrivals} · 围城接触 {diagnostics.commandedSiegeContacts} · 攻陷 {diagnostics.captures} · 目标失效 {diagnostics.invalidatedTargets} · 长期远距命令检查 {diagnostics.staleOrderChecks}
     </Typography>
@@ -645,6 +648,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
           return <PersonChronicleLayout
             title={<MilitaryPersonIdentityHeader person={person} country={`${politicalFactionById.get(person.factionId)?.displayName ?? person.factionId}${politicalFactionById.get(person.factionId)?.identityStage === "STATE" ? "国" : ""}`} />}
             identity={<>
+              <Typography fontSize="0.86rem" fontWeight="bold">{describeMilitaryOffice(person,factionId)}</Typography>
               {person.factionId!==factionId&&<Typography fontSize="0.78rem">曾在本国任职；现属及生涯结局按原始人物记录。</Typography>}
               <Typography fontSize="0.82rem">{describeMilitaryAge(person,worldMonth,Boolean(activeUser?.matchesMilitaryLife(person)))} · 本国任职：{person.appointments.filter(a=>a.factionId===factionId).map(a=>`${formatWorldDate(a.startMonth)}—${a.endMonth===undefined?"今":formatWorldDate(a.endMonth)}`).join("；")}</Typography>
             </>}
