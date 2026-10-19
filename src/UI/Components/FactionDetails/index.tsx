@@ -639,7 +639,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
         heading={<>
           <Typography fontSize="0.92rem" fontWeight={current?"bold":600}>{current?"● ":""}{getMilitaryPersonDisplayName(person)} · {current?"现役":person.status==="ACTIVE"&&person.factionId!==factionId?"已转属":describeMilitaryStatus(person)}</Typography>
           <Typography fontSize="0.82rem" color="var(--gg-text-muted)">{politicalTeam?.displayName??factionId} · {highest?`最高任${MILITARY_OFFICE_NAMES[highest.office]}`:"军职未载"}</Typography>
-          <Typography fontSize="0.8rem" color="var(--gg-text-muted)">{first?formatWorldDate(first.startMonth):"任期未载"}—{last?.endMonth===undefined?"今":formatWorldDate(last.endMonth)} · 所部参与取城{entries.filter(e=>e.victory).length}次</Typography>
+          <Typography fontSize="0.8rem" color="var(--gg-text-muted)">{first?`${formatWorldDate(first.startMonth)}—${last?.endMonth===undefined?(current?"今":"止期未载"):formatWorldDate(last.endMonth)}`:"任期未载"} · 所部参与取城{entries.filter(e=>e.victory).length}次</Typography>
         </>}
       >
         {resolvedSelection.expandedIds.includes(person.personId) && (() => {

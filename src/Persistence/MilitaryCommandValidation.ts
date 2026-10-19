@@ -131,7 +131,7 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
       if (activeUnits.has(key)) errors.push(`unit belongs to multiple active formations: ${key}`);
       activeUnits.add(key);
       if (!unit || unit.alive !== true || unit.role !== "NORMAL" || unit.rulerId !== undefined || unit.factionId !== formation.factionId || unit.userId === undefined ||
-          !userById.has(String(unit.userId)) || String(userById.get(String(unit.userId))?.playerUnitId) !== key) errors.push(`active formation references invalid member unit: ${key}`);
+          !userById.has(String(unit.userId)) || userById.get(String(unit.userId))?.rulerId !== undefined || String(userById.get(String(unit.userId))?.playerUnitId) !== key) errors.push(`active formation references invalid member unit: ${key}`);
     }
     if (!commanderUser || commanderUser.role !== "NORMAL" || commanderUser.factionId !== formation.factionId || !formation.memberUnitIds.includes(commanderUser.playerUnitId)) errors.push(`active commander is not a formation member: ${formation.commandId}`);
     if (formation.targetCityId !== undefined && (!cities.some(city => city.cityId === formation.targetCityId && city.ownerFactionId !== formation.factionId) || !month(formation.orderStartMonth) || Number(formation.orderStartMonth) > worldMonth)) errors.push(`active formation has invalid target order: ${formation.commandId}`);

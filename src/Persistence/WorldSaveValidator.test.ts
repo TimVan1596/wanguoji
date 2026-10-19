@@ -306,6 +306,8 @@ describe("WorldSaveV1 validation and JSON contract", () => {
       const errors=validateMilitaryCommandState(conflicting.registries.militaryCommandRegistry,conflicting.users,conflicting.units,conflicting.cities,new Set(["qin","wei"]),42,conflicting.worldHistory);
       expect(errors).toContain(royalBinding==="user"?"active military person has no matching live User: military-person-1":"active formation references invalid member unit: unit-2");
     }
+    const royalMember=structuredClone(save);royalMember.users.find((u:any)=>u.userId===9).rulerId="qin-ruler-1";
+    expect(validateMilitaryCommandState(royalMember.registries.militaryCommandRegistry,royalMember.users,royalMember.units,royalMember.cities,new Set(["qin","wei"]),42,royalMember.worldHistory)).toContain("active formation references invalid member unit: unit-3");
     const broken = structuredClone(save);
     broken.registries.militaryCommandRegistry.formations[0].memberUnitIds.push("unit-2");
     expect(validateWorldSave(broken).errors).toContain("active formation size is invalid: military-command-1");
