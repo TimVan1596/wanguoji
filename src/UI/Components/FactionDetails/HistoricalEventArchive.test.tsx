@@ -14,11 +14,16 @@ describe("narrow character sidebar archives", () => {
     const html = renderToStaticMarkup(<HistoricalEventArchive title="完整外交档案" entries={entries} />);
     expect(html).toContain("完整外交档案（200条）"); expect(html).not.toContain("记录【");
   });
-  it("renders a bounded page of real records and navigation when opened", () => {
+  it("renders every real record in a scroll area without any navigation when opened", () => {
     const html = renderToStaticMarkup(<HistoricalEventArchive title="人物大事记" entries={entries} defaultOpen />);
-    expect(html.match(/记录【/g)).toHaveLength(8);
-    expect(html).toContain("记录【7】"); expect(html).not.toContain("记录【8】");
-    expect(html).toContain("下一页"); expect(html).toContain("1 / 25");
+    expect(html.match(/记录【/g)).toHaveLength(200);
+    expect(html).toContain("记录【7】"); expect(html).toContain("记录【8】"); expect(html).toContain("记录【199】");
+    expect(html).not.toMatch(/上一页|下一页|加载更多|查看下一批/);
     expect(html).toContain("overflow-wrap:anywhere"); expect(html).toContain("overflow-y:auto");
   });
+});
+
+it("retains all 5000 records and the last important event without a second click",()=>{
+  const html=renderToStaticMarkup(<HistoricalEventArchive title="长局纪年" defaultOpen entries={Array.from({length:5000},(_,i)=>({id:`e${i}`,content:<p>长局【{i}】</p>}))}/>);
+  expect(html.match(/长局【/g)).toHaveLength(5000);expect(html).toContain("长局【4999】");expect(html).not.toMatch(/上一页|下一页|加载更多|查看下一批/);
 });
