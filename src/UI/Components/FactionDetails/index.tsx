@@ -654,10 +654,17 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
               <Typography fontSize="0.82rem">{describeMilitaryAge(person,worldMonth,Boolean(activeUser?.matchesMilitaryLife(person)))} · 本国任职：{person.appointments.filter(a=>a.factionId===factionId).map(a=>`${formatWorldDate(a.startMonth)}—${a.endMonth===undefined?"今":formatWorldDate(a.endMonth)}`).join("；")}</Typography>
             </>}
             biographyTitle="生平" biography={bio.life} milestoneTitle="军旅纪事"
-            milestones={entries.map(entry=>({id:entry.eventId,content:<>
+            milestones={entries.map(entry=>{
+              const grant=person.appointments.flatMap(a=>a.officeHistory??[]).find(g=>g.eventId===entry.eventId);
+              return {id:entry.eventId,content:<>
               <Typography fontSize="0.82rem">{formatWorldDate(entry.worldMonth)} · {entry.text}</Typography>
-              <HistoricalEvidence eventId={entry.eventId} source={entry.source} commandId={entry.commandId} personId={person.personId}/>
-            </>}))}
+              <HistoricalEvidence eventId={entry.eventId} source={entry.source} commandId={entry.commandId} personId={person.personId}>
+                {grant?.captureEventIds.map(id=>{
+                  const fact=entries.find(e=>e.eventId===id&&e.victory);
+                  return <div key={id}>授职战果依据：{fact?`${formatWorldDate(fact.worldMonth)} · ${fact.text}`:"仅保留原始引用"}（原事件：{id}）</div>;
+                })}
+              </HistoricalEvidence>
+            </>};})}
             assessment={[bio.assessment]} voice={bio.voice}
             governance={<ChronicleSection title="军功与任职"><Typography fontSize="0.82rem">实际任职累计{formatWorldDuration(career.serviceMonths)}；本国核验夺城{bio.victories.length}次。</Typography></ChronicleSection>}
             evidence={<>
