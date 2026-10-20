@@ -82,7 +82,7 @@ describe("live Dynasty → immutable history → restored presentation", () => {
     const event = WorldHistory.getEvents().find(e => e.type === "ruler-succession")!;
     expect(event.metadata?.capitalCityId).toBeUndefined(); expect(event.metadata?.capitalControlled).toBe(0);
     const output = formatHistoryEventTitle(event, new Map());
-    expect(output).not.toContain("大梁");
+    if(mode==="PROVISIONAL"){expect(event.metadata?.provisionalSeatCityId).toBe(team.capitalCity.id);expect(output).toContain("当时治所：大梁");expect(output).not.toContain("继位时国都：大梁");}else expect(output).not.toContain("大梁");
     expect(output).toContain(mode === "EXILED" ? "流亡承统，当时无实际国都" : mode === "PROVISIONAL" ? "尚未正式建国" : "无实际国都");
   });
 

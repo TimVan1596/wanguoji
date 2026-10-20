@@ -310,7 +310,7 @@ describe("history narrative grouper", () => {
           ["新郑义军", { name: "新郑义军", color: 2, displayName: "新郑义军" }],
         ])
       )
-    ).toBe("韩发生大规模叛乱。新郑、大梁、南阳脱离韩，建立新郑义军，韩威成为首任君主。 · 继位时国都：未记录");
+    ).toBe("韩发生大规模叛乱。新郑、大梁、南阳脱离韩，建立新郑义军，韩威成为首任首领。 · 继位时国都：未记录");
   });
 
   it("groups restoration chains by historyGroupId", () => {

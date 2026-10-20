@@ -66,8 +66,8 @@ export async function runRebelMilitaryIdentity(seed="rebel-identity-z4") {
     check(commander.bornMonth===born&&core.teams.reduce((n,t)=>n+t.users.size,0)===population&&members.slice(1).every(u=>u.team===rebel),"transfer preserves identity/population and does not silently transfer the old troops");
     const save=strict();
     const resume=()=>{hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return strict();};
-    const first=resume(),second=resume();check(diffCanonicalWorldSave(first,second).matched,"V19 rebel polity and military histories resume deterministically for twelve months");
+    const first=resume(),second=resume();check(diffCanonicalWorldSave(first,second).matched,"V20 rebel polity and military histories resume deterministically for twelve months");
     check(second.registries.militaryCommandRegistry.people.some(p=>p.personId===person.personId&&p.appointments[0].factionId===rebel.name),"old rebel appointment history survives save, load and continuation");
-    return {seed,scope:"controlled real Core transactions; resident founder identity implemented; no military revolt",checks,supporterCount:supporters.length,sourceUserId:commander.id,personId:person.personId,commandId:formation.commandId,saveSchemaVersion:19};
+    return {seed,scope:"controlled real Core transactions; resident founder identity implemented; no military revolt",checks,supporterCount:supporters.length,sourceUserId:commander.id,personId:person.personId,commandId:formation.commandId,saveSchemaVersion:20};
   } finally {game.destroy(true);}
 }

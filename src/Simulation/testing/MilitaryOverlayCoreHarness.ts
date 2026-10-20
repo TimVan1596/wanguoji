@@ -71,11 +71,11 @@ export async function runMilitaryOverlayCore(seed="military-overlay-z"){
   core.setWorldRunning(false);
   core.showMilitaryCommand(command,true);
   const save=exportWorldSave(core);
-  check(validateWorldSave(save).valid,"strict V19 real Core export");
+  check(validateWorldSave(save).valid,"strict V20 real Core export");
   hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));
   check(!overlay.selection&&g.commandBuffer.length===0,"hydration clears selected overlay and drawing");
   check(core.scene.physics.world.pendingDestroy.size===0,"hydration drains old Phaser bodies before rebuilding the world");
-  check(validateWorldSave(exportWorldSave(core)).valid,"strict V19 real Core hydration");
+  check(validateWorldSave(exportWorldSave(core)).valid,"strict V20 real Core hydration");
   check(WorldHistory.getEvents().find(e=>e.id===initialOffice.id)?.metadata?.authorizingRulerTitle===initialOffice.metadata?.authorizingRulerTitle,"frozen issuing ruler survives real Core hydration");
   check(Military.getPerson(person.personId)?.personalName===person.personalName,"person identity and recorded name survive load");
   const continueOnce=()=>{

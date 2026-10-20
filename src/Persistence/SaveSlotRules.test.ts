@@ -31,7 +31,7 @@ describe("save slot rules", () => {
     expect(await chooseAutosaveSlot(repo)).toBe("autosave-1");
   });
 
-  it.each([16,17,18])("does not overwrite old V%s autosave slots", async version => {
+  it.each([16,17,18,19])("does not overwrite old V%s autosave slots", async version => {
     const repo = { async listMetadata() { return [
       { ...metadata("autosave-1", "2026-01-01T00:00:00.000Z"), saveSchemaVersion: version },
       metadata("autosave-2", "2026-01-02T00:00:00.000Z"),

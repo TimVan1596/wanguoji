@@ -1,4 +1,4 @@
-import type {ReactNode} from "react";
+import {useState,type ReactNode} from "react";
 import {Box,Typography} from "@mui/material";
 import PersonMilestones from "./PersonMilestones";
 
@@ -16,6 +16,8 @@ export default function PersonChronicleLayout({title,identity,biographyTitle,bio
     {governance}{children}
     {assessment.length>0&&<ChronicleSection title="史评">{assessment.map(line=><Typography key={line} fontSize="0.82rem">{line}</Typography>)}</ChronicleSection>}
     {voice&&<ChronicleSection title="史家曰"><Typography fontSize="0.82rem">{voice}</Typography></ChronicleSection>}
-    <Box component="details" sx={{mt:1,minWidth:0}}><summary>详细记录</summary>{evidence}</Box>
+    <LazyEvidence key={personKey} evidence={evidence}/>
   </Box>;
 }
+
+function LazyEvidence({evidence}:{evidence:ReactNode}){const [open,setOpen]=useState(false);return <details open={open} onToggle={e=>setOpen(e.currentTarget.open)} style={{marginTop:8,minWidth:0}}><summary>详细记录</summary>{open&&evidence}</details>;}
