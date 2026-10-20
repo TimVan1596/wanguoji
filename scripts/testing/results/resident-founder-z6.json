@@ -1,0 +1,2679 @@
+{
+  "baselineHead": "3502deb0a2b41e1518ee04e6a18a8f713e83d895",
+  "baselineEvidence": "chronicle-reachability-z5.json: original simulation state matched z4 across all eight checkpoints, excluding read-only attribution fields",
+  "scope": "Real Core / Arcade Phaser / same default seven-state conditions and six fixed seeds. Two seeds through 200 years. Aggregate comparison, not event-by-event RNG equality.",
+  "intentionalBehaviourChanges": [
+    "Transferred resident becomes the founder, no extra random royal age or synthetic founder avatar; own birth retained and one royal lifetime scheduled conditional on being alive at founding.",
+    "Restoration through actual city capture now restores royal and exile lifecycle and records its original capture evidence. Duplicate collapse callbacks cannot settle an already-exiled polity again."
+  ],
+  "unchangedParameters": [
+    "war/siege/casualty probabilities",
+    "natural population recovery",
+    "diplomacy",
+    "popular rebellion and empire split probabilities",
+    "restoration eligibility/probability",
+    "succession probability",
+    "military promotions and 2 commanders/2 formations/12 members"
+  ],
+  "paired": [
+    {
+      "seed": "army-1",
+      "years": 200,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "baseline": {
+            "worldPopulation": 105,
+            "naturalGrowth": 497,
+            "warDeaths": 480,
+            "cities": 18,
+            "captures": 133,
+            "rebellions": 0,
+            "splits": 4,
+            "restorations": 2,
+            "extinctions": 8,
+            "appointments": 17,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          },
+          "current": {
+            "month": 1200,
+            "worldPopulation": 95,
+            "populationUnexplained": 0,
+            "naturalGrowth": 492,
+            "warDeaths": 438,
+            "activeStates": 4,
+            "historicalStates": 20,
+            "cities": 16,
+            "captures": 131,
+            "recoveries": 19,
+            "siegeCityMonths": 1750,
+            "capturesPer100SiegeCityMonths": 7.485714285714286,
+            "formationSizeSamples": {
+              "2": 102,
+              "3": 339,
+              "4": 151,
+              "5": 78,
+              "6": 313,
+              "7": 230,
+              "8": 364,
+              "9": 119,
+              "10": 152,
+              "11": 362,
+              "12": 376
+            },
+            "factionCommandSamples": {
+              "0": 2778,
+              "1": 1358,
+              "2": 614
+            },
+            "meanFormationSize": 7.617942768754833,
+            "appointments": 25,
+            "offices": {
+              "pijiang": 25,
+              "jiangjun": 11,
+              "shangjiangjun": 7,
+              "promotions": 18,
+              "meanServiceMonths": 103.28,
+              "currentOffices": [
+                "SHANGJIANGJUN",
+                "SHANGJIANGJUN",
+                "SHANGJIANGJUN",
+                "PIJIANG"
+              ],
+              "naturalDeaths": 3,
+              "ageRetirements": 5,
+              "highOfficeMerits": [
+                {
+                  "serviceMonths": 156,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 264,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 156,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 156,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 168,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 144,
+                  "verifiedMerits": 3
+                }
+              ],
+              "activeFormationSizes": [
+                8,
+                6,
+                3,
+                3
+              ]
+            },
+            "promotions": [
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 156
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 264
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 72
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 156
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 96
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 156
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 168
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 144
+              }
+            ],
+            "meanServiceMonths": 103.28,
+            "matureEnded": 10,
+            "matureEndedNeverPromoted": 2,
+            "politicalCandidateChecks": 165,
+            "militaryPoliticalEvents": 0,
+            "depositions": 0,
+            "usurpations": 0,
+            "extinctions": 16,
+            "unifications": 0,
+            "splits": 13,
+            "restorations": 2,
+            "rebellions": 0,
+            "classicRebellions": 0,
+            "frontierRebellions": 0,
+            "canonicalSha256": "3ff2c0d2bee259d68a5e3fb5007062cccd4da73642fb27d8be442d562dbd7dc9",
+            "baseFactsSha256": "7afdc14fd7f5ad741d3d25dde37ba8e932f6a15cc30ca83e1e156962648e25cc",
+            "monthlyExposure": {
+              "cityMonths": 15960,
+              "politicalCityMonths": 0,
+              "supporters": 0,
+              "identityBlocked": 0,
+              "geographyBlocked": 0,
+              "discontentBlocked": 0
+            },
+            "issuingRulerGrants": 39,
+            "worldRandomPosition": 6839,
+            "regional": {
+              "cityChecks": 1323,
+              "politicalCities": 0,
+              "loyaltyBlocked": 1103,
+              "stabilityBlocked": 85,
+              "capacityBlocked": 0,
+              "identityBlocked": 65,
+              "validOrdinary": 648,
+              "discontentBlocked": 43,
+              "geographyBlocked": 566,
+              "supporters": 39,
+              "noSupport": 5,
+              "draws": 18,
+              "drawFailed": 17,
+              "executionFailed": 0,
+              "popular": 0,
+              "split": 13,
+              "territorialReturns": 0,
+              "splitChecks": 149,
+              "splitPolitical": 19,
+              "splitRestored": 1,
+              "alive12": 5,
+              "matured12": 13,
+              "alive60": 2,
+              "matured60": 10,
+              "overflow": 0,
+              "popularFunnel": {
+                "cityChecks": 1323,
+                "political": 0,
+                "captureGrace": 0,
+                "cooldown": 0,
+                "capacity": 0,
+                "populationScans": 0,
+                "validUsers": 0,
+                "identityBlocked": 0,
+                "geographyBlocked": 0,
+                "discontentBlocked": 0,
+                "supporters": 0,
+                "noSupport": 0,
+                "candidates": 0,
+                "priorityBlocked": 0,
+                "draws": 0,
+                "expectedHits": 0,
+                "hits": 0,
+                "misses": 0,
+                "historicalSelected": 0,
+                "founderRestored": 0,
+                "failures": 0,
+                "successes": 0
+              },
+              "popularFailures": {},
+              "spatial": {
+                "invalidPosition": 0,
+                "unowned": 0,
+                "foreign": 4,
+                "otherCity": 82,
+                "otherDistrict": 471,
+                "disconnected": 9,
+                "outsideLegacy": 524,
+                "recoveredDistrict": 47,
+                "emptyLegacyArea": 0,
+                "emptyDistrict": 0,
+                "referenceMismatch": 0,
+                "referenceWithOwnedPosition": 0,
+                "arcadePosition": 648,
+                "logicalPosition": 0,
+                "staleRegistryPosition": 643
+              },
+              "restored": 2,
+              "worldMonth": 1200,
+              "insufficient12": 0,
+              "insufficient60": 3
+            },
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "currentMilitaryByRegime": [
+              {
+                "factionId": "秦",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 25,
+                "commands": 1
+              },
+              {
+                "factionId": "齐",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 42,
+                "commands": 1
+              },
+              {
+                "factionId": "魏",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 24,
+                "commands": 1
+              },
+              {
+                "factionId": "大梁义军",
+                "factionType": "SPLIT",
+                "stage": "PROVISIONAL",
+                "rank": "LEADER",
+                "population": 4,
+                "commands": 1
+              }
+            ],
+            "residentFounders": 13,
+            "residentLiveBindings": 1,
+            "residentIdentityConflicts": 0,
+            "strictSaveValid": true,
+            "elapsedMs": 16126,
+            "heapBytes": 75791540
+          }
+        },
+        {
+          "month": 2400,
+          "baseline": {
+            "worldPopulation": 99,
+            "naturalGrowth": 940,
+            "warDeaths": 994,
+            "cities": 16,
+            "captures": 299,
+            "rebellions": 0,
+            "splits": 16,
+            "restorations": 2,
+            "extinctions": 20,
+            "appointments": 36,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          },
+          "current": {
+            "month": 2400,
+            "worldPopulation": 98,
+            "populationUnexplained": 0,
+            "naturalGrowth": 923,
+            "warDeaths": 877,
+            "activeStates": 3,
+            "historicalStates": 50,
+            "cities": 17,
+            "captures": 271,
+            "recoveries": 37,
+            "siegeCityMonths": 3399,
+            "capturesPer100SiegeCityMonths": 7.972933215651662,
+            "formationSizeSamples": {
+              "2": 170,
+              "3": 510,
+              "4": 219,
+              "5": 172,
+              "6": 597,
+              "7": 657,
+              "8": 505,
+              "9": 378,
+              "10": 273,
+              "11": 462,
+              "12": 440
+            },
+            "factionCommandSamples": {
+              "0": 5980,
+              "1": 2479,
+              "2": 952
+            },
+            "meanFormationSize": 7.374172940908053,
+            "appointments": 38,
+            "offices": {
+              "pijiang": 38,
+              "jiangjun": 18,
+              "shangjiangjun": 12,
+              "promotions": 30,
+              "meanServiceMonths": 115.28947368421052,
+              "currentOffices": [
+                "JIANGJUN",
+                "JIANGJUN"
+              ],
+              "naturalDeaths": 5,
+              "ageRetirements": 9,
+              "highOfficeMerits": [
+                {
+                  "serviceMonths": 156,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 264,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 156,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 156,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 168,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 144,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 156,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 156,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 156,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                }
+              ],
+              "activeFormationSizes": [
+                7,
+                6
+              ]
+            },
+            "promotions": [
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 156
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 264
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 72
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 156
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 96
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 156
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 168
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 144
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 96
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 156
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 156
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 96
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 156
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 72
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              }
+            ],
+            "meanServiceMonths": 115.28947368421052,
+            "matureEnded": 19,
+            "matureEndedNeverPromoted": 3,
+            "politicalCandidateChecks": 263,
+            "militaryPoliticalEvents": 0,
+            "depositions": 0,
+            "usurpations": 0,
+            "extinctions": 45,
+            "unifications": 0,
+            "splits": 43,
+            "restorations": 3,
+            "rebellions": 0,
+            "classicRebellions": 0,
+            "frontierRebellions": 0,
+            "canonicalSha256": "9bd212862f676d906f8a22884b5f2749daaef8eda9132f8788945387eac54da4",
+            "baseFactsSha256": "95131ed9c498fabaa1ccdbdb0484136f04c0f22e37c0f37bf5fb49db52fd763b",
+            "monthlyExposure": {
+              "cityMonths": 34885,
+              "politicalCityMonths": 0,
+              "supporters": 0,
+              "identityBlocked": 0,
+              "geographyBlocked": 0,
+              "discontentBlocked": 0
+            },
+            "issuingRulerGrants": 52,
+            "worldRandomPosition": 13852,
+            "regional": {
+              "cityChecks": 2898,
+              "politicalCities": 0,
+              "loyaltyBlocked": 2363,
+              "stabilityBlocked": 263,
+              "capacityBlocked": 0,
+              "identityBlocked": 230,
+              "validOrdinary": 2459,
+              "discontentBlocked": 173,
+              "geographyBlocked": 2174,
+              "supporters": 112,
+              "noSupport": 23,
+              "draws": 41,
+              "drawFailed": 40,
+              "executionFailed": 1,
+              "popular": 0,
+              "split": 43,
+              "territorialReturns": 0,
+              "splitChecks": 315,
+              "splitPolitical": 68,
+              "splitRestored": 1,
+              "alive12": 23,
+              "matured12": 43,
+              "alive60": 10,
+              "matured60": 43,
+              "overflow": 0,
+              "popularFunnel": {
+                "cityChecks": 2898,
+                "political": 0,
+                "captureGrace": 0,
+                "cooldown": 0,
+                "capacity": 0,
+                "populationScans": 0,
+                "validUsers": 0,
+                "identityBlocked": 0,
+                "geographyBlocked": 0,
+                "discontentBlocked": 0,
+                "supporters": 0,
+                "noSupport": 0,
+                "candidates": 0,
+                "priorityBlocked": 0,
+                "draws": 0,
+                "expectedHits": 0,
+                "hits": 0,
+                "misses": 0,
+                "historicalSelected": 0,
+                "founderRestored": 0,
+                "failures": 0,
+                "successes": 0
+              },
+              "popularFailures": {},
+              "spatial": {
+                "invalidPosition": 0,
+                "unowned": 0,
+                "foreign": 9,
+                "otherCity": 287,
+                "otherDistrict": 1858,
+                "disconnected": 20,
+                "outsideLegacy": 2050,
+                "recoveredDistrict": 177,
+                "emptyLegacyArea": 0,
+                "emptyDistrict": 0,
+                "referenceMismatch": 0,
+                "referenceWithOwnedPosition": 0,
+                "arcadePosition": 2459,
+                "logicalPosition": 0,
+                "staleRegistryPosition": 2438
+              },
+              "restored": 2,
+              "worldMonth": 2400,
+              "insufficient12": 0,
+              "insufficient60": 0
+            },
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "currentMilitaryByRegime": [
+              {
+                "factionId": "齐",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "EMPEROR",
+                "population": 44,
+                "commands": 1
+              },
+              {
+                "factionId": "魏",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 32,
+                "commands": 1
+              },
+              {
+                "factionId": "北平义军",
+                "factionType": "SPLIT",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 22,
+                "commands": 0
+              }
+            ],
+            "residentFounders": 43,
+            "residentLiveBindings": 0,
+            "residentIdentityConflicts": 0,
+            "strictSaveValid": true,
+            "elapsedMs": 33754.5,
+            "heapBytes": 103390985
+          }
+        }
+      ]
+    },
+    {
+      "seed": "army-2",
+      "years": 200,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "baseline": {
+            "worldPopulation": 94,
+            "naturalGrowth": 480,
+            "warDeaths": 450,
+            "cities": 17,
+            "captures": 96,
+            "rebellions": 0,
+            "splits": 5,
+            "restorations": 2,
+            "extinctions": 7,
+            "appointments": 16,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          },
+          "current": {
+            "month": 1200,
+            "worldPopulation": 87,
+            "populationUnexplained": 0,
+            "naturalGrowth": 458,
+            "warDeaths": 439,
+            "activeStates": 3,
+            "historicalStates": 11,
+            "cities": 14,
+            "captures": 149,
+            "recoveries": 26,
+            "siegeCityMonths": 1846,
+            "capturesPer100SiegeCityMonths": 8.071505958829903,
+            "formationSizeSamples": {
+              "3": 24,
+              "4": 58,
+              "5": 278,
+              "6": 183,
+              "7": 113,
+              "8": 252,
+              "9": 244,
+              "10": 311,
+              "11": 182,
+              "12": 388
+            },
+            "factionCommandSamples": {
+              "0": 3052,
+              "1": 1381,
+              "2": 326
+            },
+            "meanFormationSize": 8.638957206099361,
+            "appointments": 15,
+            "offices": {
+              "pijiang": 15,
+              "jiangjun": 9,
+              "shangjiangjun": 7,
+              "promotions": 16,
+              "meanServiceMonths": 135.4,
+              "currentOffices": [
+                "SHANGJIANGJUN",
+                "SHANGJIANGJUN"
+              ],
+              "naturalDeaths": 3,
+              "ageRetirements": 7,
+              "highOfficeMerits": [
+                {
+                  "serviceMonths": 156,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 144,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 168,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 156,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 156,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 132,
+                  "verifiedMerits": 3
+                }
+              ],
+              "activeFormationSizes": [
+                5,
+                8
+              ]
+            },
+            "promotions": [
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 156
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 144
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 168
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 156
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 156
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 132
+              }
+            ],
+            "meanServiceMonths": 135.4,
+            "matureEnded": 8,
+            "matureEndedNeverPromoted": 1,
+            "politicalCandidateChecks": 142,
+            "militaryPoliticalEvents": 0,
+            "depositions": 0,
+            "usurpations": 0,
+            "extinctions": 8,
+            "unifications": 0,
+            "splits": 4,
+            "restorations": 3,
+            "rebellions": 0,
+            "classicRebellions": 0,
+            "frontierRebellions": 0,
+            "canonicalSha256": "180b1c68a1ab94c8ecb3031e42fe370e0d671dd2a6b24d0cde3b9418cb1d4d26",
+            "baseFactsSha256": "ec8c5c3dc7f6a69d8d2fcd1350d01c5300e57fe230a6e1635132cd481cd15a5e",
+            "monthlyExposure": {
+              "cityMonths": 14932,
+              "politicalCityMonths": 0,
+              "supporters": 0,
+              "identityBlocked": 0,
+              "geographyBlocked": 0,
+              "discontentBlocked": 0
+            },
+            "issuingRulerGrants": 31,
+            "worldRandomPosition": 6577,
+            "regional": {
+              "cityChecks": 1242,
+              "politicalCities": 0,
+              "loyaltyBlocked": 1046,
+              "stabilityBlocked": 100,
+              "capacityBlocked": 0,
+              "identityBlocked": 18,
+              "validOrdinary": 363,
+              "discontentBlocked": 17,
+              "geographyBlocked": 325,
+              "supporters": 21,
+              "noSupport": 1,
+              "draws": 22,
+              "drawFailed": 22,
+              "executionFailed": 0,
+              "popular": 0,
+              "split": 4,
+              "territorialReturns": 0,
+              "splitChecks": 144,
+              "splitPolitical": 8,
+              "splitRestored": 3,
+              "alive12": 3,
+              "matured12": 4,
+              "alive60": 2,
+              "matured60": 4,
+              "overflow": 0,
+              "popularFunnel": {
+                "cityChecks": 1242,
+                "political": 0,
+                "captureGrace": 0,
+                "cooldown": 0,
+                "capacity": 0,
+                "populationScans": 0,
+                "validUsers": 0,
+                "identityBlocked": 0,
+                "geographyBlocked": 0,
+                "discontentBlocked": 0,
+                "supporters": 0,
+                "noSupport": 0,
+                "candidates": 0,
+                "priorityBlocked": 0,
+                "draws": 0,
+                "expectedHits": 0,
+                "hits": 0,
+                "misses": 0,
+                "historicalSelected": 0,
+                "founderRestored": 0,
+                "failures": 0,
+                "successes": 0
+              },
+              "popularFailures": {},
+              "spatial": {
+                "invalidPosition": 0,
+                "unowned": 0,
+                "foreign": 3,
+                "otherCity": 44,
+                "otherDistrict": 263,
+                "disconnected": 15,
+                "outsideLegacy": 299,
+                "recoveredDistrict": 22,
+                "emptyLegacyArea": 0,
+                "emptyDistrict": 0,
+                "referenceMismatch": 0,
+                "referenceWithOwnedPosition": 0,
+                "arcadePosition": 363,
+                "logicalPosition": 0,
+                "staleRegistryPosition": 359
+              },
+              "restored": 3,
+              "worldMonth": 1200,
+              "insufficient12": 0,
+              "insufficient60": 0
+            },
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "currentMilitaryByRegime": [
+              {
+                "factionId": "秦",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "EMPEROR",
+                "population": 45,
+                "commands": 0
+              },
+              {
+                "factionId": "燕",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 15,
+                "commands": 1
+              },
+              {
+                "factionId": "楚",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 27,
+                "commands": 1
+              }
+            ],
+            "residentFounders": 4,
+            "residentLiveBindings": 0,
+            "residentIdentityConflicts": 0,
+            "strictSaveValid": true,
+            "elapsedMs": 23320,
+            "heapBytes": 86335483
+          }
+        },
+        {
+          "month": 2400,
+          "baseline": {
+            "worldPopulation": 99,
+            "naturalGrowth": 957,
+            "warDeaths": 986,
+            "cities": 15,
+            "captures": 276,
+            "rebellions": 0,
+            "splits": 22,
+            "restorations": 3,
+            "extinctions": 22,
+            "appointments": 32,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          },
+          "current": {
+            "month": 2400,
+            "worldPopulation": 71,
+            "populationUnexplained": 0,
+            "naturalGrowth": 925,
+            "warDeaths": 960,
+            "activeStates": 4,
+            "historicalStates": 26,
+            "cities": 16,
+            "captures": 326,
+            "recoveries": 52,
+            "siegeCityMonths": 3909,
+            "capturesPer100SiegeCityMonths": 8.339728830903043,
+            "formationSizeSamples": {
+              "2": 71,
+              "3": 70,
+              "4": 111,
+              "5": 534,
+              "6": 327,
+              "7": 257,
+              "8": 424,
+              "9": 369,
+              "10": 489,
+              "11": 432,
+              "12": 595
+            },
+            "factionCommandSamples": {
+              "0": 6563,
+              "1": 2491,
+              "2": 594
+            },
+            "meanFormationSize": 8.350638760532753,
+            "appointments": 35,
+            "offices": {
+              "pijiang": 35,
+              "jiangjun": 16,
+              "shangjiangjun": 11,
+              "promotions": 27,
+              "meanServiceMonths": 105.08571428571429,
+              "currentOffices": [
+                "PIJIANG"
+              ],
+              "naturalDeaths": 5,
+              "ageRetirements": 9,
+              "highOfficeMerits": [
+                {
+                  "serviceMonths": 156,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 144,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 168,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 156,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 156,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 132,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 156,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                }
+              ],
+              "activeFormationSizes": [
+                9
+              ]
+            },
+            "promotions": [
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 156
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 144
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 168
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 156
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 156
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 132
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 156
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              }
+            ],
+            "meanServiceMonths": 105.08571428571429,
+            "matureEnded": 19,
+            "matureEndedNeverPromoted": 3,
+            "politicalCandidateChecks": 235,
+            "militaryPoliticalEvents": 0,
+            "depositions": 0,
+            "usurpations": 0,
+            "extinctions": 22,
+            "unifications": 0,
+            "splits": 19,
+            "restorations": 3,
+            "rebellions": 0,
+            "classicRebellions": 0,
+            "frontierRebellions": 0,
+            "canonicalSha256": "6a14568b18ecc402c6981e45b5ed301b835cada2a283aed43955cc2f32a9205c",
+            "baseFactsSha256": "598441da996b857f1eab87eab652a000d8754b8730d686b01c6f421b6c99dd28",
+            "monthlyExposure": {
+              "cityMonths": 33991,
+              "politicalCityMonths": 3,
+              "supporters": 1,
+              "identityBlocked": 6,
+              "geographyBlocked": 86,
+              "discontentBlocked": 2
+            },
+            "issuingRulerGrants": 55,
+            "worldRandomPosition": 13459,
+            "regional": {
+              "cityChecks": 2827,
+              "politicalCities": 1,
+              "loyaltyBlocked": 2289,
+              "stabilityBlocked": 277,
+              "capacityBlocked": 0,
+              "identityBlocked": 94,
+              "validOrdinary": 1191,
+              "discontentBlocked": 66,
+              "geographyBlocked": 1066,
+              "supporters": 59,
+              "noSupport": 15,
+              "draws": 26,
+              "drawFailed": 26,
+              "executionFailed": 1,
+              "popular": 0,
+              "split": 19,
+              "territorialReturns": 0,
+              "splitChecks": 370,
+              "splitPolitical": 38,
+              "splitRestored": 3,
+              "alive12": 11,
+              "matured12": 19,
+              "alive60": 6,
+              "matured60": 19,
+              "overflow": 0,
+              "popularFunnel": {
+                "cityChecks": 2827,
+                "political": 1,
+                "captureGrace": 0,
+                "cooldown": 0,
+                "capacity": 0,
+                "populationScans": 1,
+                "validUsers": 29,
+                "identityBlocked": 2,
+                "geographyBlocked": 28,
+                "discontentBlocked": 0,
+                "supporters": 1,
+                "noSupport": 0,
+                "candidates": 1,
+                "priorityBlocked": 0,
+                "draws": 1,
+                "expectedHits": 0.01967142857142857,
+                "hits": 0,
+                "misses": 1,
+                "historicalSelected": 0,
+                "founderRestored": 0,
+                "failures": 0,
+                "successes": 0
+              },
+              "popularFailures": {},
+              "spatial": {
+                "invalidPosition": 0,
+                "unowned": 0,
+                "foreign": 6,
+                "otherCity": 152,
+                "otherDistrict": 886,
+                "disconnected": 22,
+                "outsideLegacy": 966,
+                "recoveredDistrict": 65,
+                "emptyLegacyArea": 0,
+                "emptyDistrict": 0,
+                "referenceMismatch": 0,
+                "referenceWithOwnedPosition": 0,
+                "arcadePosition": 1191,
+                "logicalPosition": 0,
+                "staleRegistryPosition": 1182
+              },
+              "restored": 3,
+              "worldMonth": 2400,
+              "insufficient12": 0,
+              "insufficient60": 0
+            },
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "currentMilitaryByRegime": [
+              {
+                "factionId": "秦",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "EMPEROR",
+                "population": 27,
+                "commands": 1
+              },
+              {
+                "factionId": "燕",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 19,
+                "commands": 0
+              },
+              {
+                "factionId": "楚",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 19,
+                "commands": 0
+              },
+              {
+                "factionId": "邯郸中义军",
+                "factionType": "SPLIT",
+                "stage": "PROVISIONAL",
+                "rank": "LEADER",
+                "population": 6,
+                "commands": 0
+              }
+            ],
+            "residentFounders": 19,
+            "residentLiveBindings": 1,
+            "residentIdentityConflicts": 0,
+            "strictSaveValid": true,
+            "elapsedMs": 40896.59999999963,
+            "heapBytes": 79099668
+          }
+        }
+      ]
+    },
+    {
+      "seed": "army-3",
+      "years": 100,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "baseline": {
+            "worldPopulation": 96,
+            "naturalGrowth": 448,
+            "warDeaths": 419,
+            "cities": 12,
+            "captures": 117,
+            "rebellions": 0,
+            "splits": 8,
+            "restorations": 2,
+            "extinctions": 12,
+            "appointments": 17,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          },
+          "current": {
+            "month": 1200,
+            "worldPopulation": 73,
+            "populationUnexplained": 0,
+            "naturalGrowth": 443,
+            "warDeaths": 455,
+            "activeStates": 3,
+            "historicalStates": 19,
+            "cities": 14,
+            "captures": 112,
+            "recoveries": 29,
+            "siegeCityMonths": 1763,
+            "capturesPer100SiegeCityMonths": 6.352807714123652,
+            "formationSizeSamples": {
+              "2": 107,
+              "3": 256,
+              "4": 155,
+              "5": 125,
+              "6": 339,
+              "7": 188,
+              "8": 123,
+              "9": 244,
+              "10": 166,
+              "11": 261,
+              "12": 284
+            },
+            "factionCommandSamples": {
+              "0": 2505,
+              "1": 1486,
+              "2": 381
+            },
+            "meanFormationSize": 7.427046263345196,
+            "appointments": 14,
+            "offices": {
+              "pijiang": 14,
+              "jiangjun": 9,
+              "shangjiangjun": 6,
+              "promotions": 15,
+              "meanServiceMonths": 160.5,
+              "currentOffices": [
+                "SHANGJIANGJUN"
+              ],
+              "naturalDeaths": 1,
+              "ageRetirements": 3,
+              "highOfficeMerits": [
+                {
+                  "serviceMonths": 144,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 156,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 156,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 180,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 216,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 132,
+                  "verifiedMerits": 3
+                }
+              ],
+              "activeFormationSizes": [
+                3
+              ]
+            },
+            "promotions": [
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 144
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 156
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 156
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 84
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 72
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 180
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 72
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 216
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 132
+              }
+            ],
+            "meanServiceMonths": 160.5,
+            "matureEnded": 8,
+            "matureEndedNeverPromoted": 0,
+            "politicalCandidateChecks": 168,
+            "militaryPoliticalEvents": 0,
+            "depositions": 0,
+            "usurpations": 0,
+            "extinctions": 16,
+            "unifications": 0,
+            "splits": 12,
+            "restorations": 2,
+            "rebellions": 0,
+            "classicRebellions": 0,
+            "frontierRebellions": 0,
+            "canonicalSha256": "ffba986cc8275a10c6ed7676ad0eec088a0e80d3a7bc6496855de12ddfa842ec",
+            "baseFactsSha256": "c4a29d4adea99f1ba050822161a682d759317b5d9251174929d6ee9e3f47015b",
+            "monthlyExposure": {
+              "cityMonths": 14124,
+              "politicalCityMonths": 0,
+              "supporters": 0,
+              "identityBlocked": 0,
+              "geographyBlocked": 0,
+              "discontentBlocked": 0
+            },
+            "issuingRulerGrants": 28,
+            "worldRandomPosition": 6458,
+            "regional": {
+              "cityChecks": 1175,
+              "politicalCities": 0,
+              "loyaltyBlocked": 1033,
+              "stabilityBlocked": 82,
+              "capacityBlocked": 0,
+              "identityBlocked": 45,
+              "validOrdinary": 538,
+              "discontentBlocked": 27,
+              "geographyBlocked": 479,
+              "supporters": 32,
+              "noSupport": 2,
+              "draws": 8,
+              "drawFailed": 8,
+              "executionFailed": 0,
+              "popular": 0,
+              "split": 12,
+              "territorialReturns": 0,
+              "splitChecks": 141,
+              "splitPolitical": 15,
+              "splitRestored": 1,
+              "alive12": 4,
+              "matured12": 12,
+              "alive60": 2,
+              "matured60": 12,
+              "overflow": 0,
+              "popularFunnel": {
+                "cityChecks": 1175,
+                "political": 0,
+                "captureGrace": 0,
+                "cooldown": 0,
+                "capacity": 0,
+                "populationScans": 0,
+                "validUsers": 0,
+                "identityBlocked": 0,
+                "geographyBlocked": 0,
+                "discontentBlocked": 0,
+                "supporters": 0,
+                "noSupport": 0,
+                "candidates": 0,
+                "priorityBlocked": 0,
+                "draws": 0,
+                "expectedHits": 0,
+                "hits": 0,
+                "misses": 0,
+                "historicalSelected": 0,
+                "founderRestored": 0,
+                "failures": 0,
+                "successes": 0
+              },
+              "popularFailures": {},
+              "spatial": {
+                "invalidPosition": 0,
+                "unowned": 0,
+                "foreign": 0,
+                "otherCity": 51,
+                "otherDistrict": 427,
+                "disconnected": 1,
+                "outsideLegacy": 463,
+                "recoveredDistrict": 36,
+                "emptyLegacyArea": 0,
+                "emptyDistrict": 0,
+                "referenceMismatch": 0,
+                "referenceWithOwnedPosition": 0,
+                "arcadePosition": 538,
+                "logicalPosition": 0,
+                "staleRegistryPosition": 532
+              },
+              "restored": 1,
+              "worldMonth": 1200,
+              "insufficient12": 0,
+              "insufficient60": 0
+            },
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "currentMilitaryByRegime": [
+              {
+                "factionId": "秦",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 27,
+                "commands": 0
+              },
+              {
+                "factionId": "齐",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 24,
+                "commands": 0
+              },
+              {
+                "factionId": "楚",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 22,
+                "commands": 1
+              }
+            ],
+            "residentFounders": 12,
+            "residentLiveBindings": 1,
+            "residentIdentityConflicts": 0,
+            "strictSaveValid": true,
+            "elapsedMs": 16795.200000000186,
+            "heapBytes": 76389036
+          }
+        }
+      ]
+    },
+    {
+      "seed": "army-4",
+      "years": 100,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "baseline": {
+            "worldPopulation": 98,
+            "naturalGrowth": 392,
+            "warDeaths": 360,
+            "cities": 13,
+            "captures": 85,
+            "rebellions": 0,
+            "splits": 11,
+            "restorations": 7,
+            "extinctions": 14,
+            "appointments": 10,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          },
+          "current": {
+            "month": 1200,
+            "worldPopulation": 93,
+            "populationUnexplained": 0,
+            "naturalGrowth": 405,
+            "warDeaths": 333,
+            "activeStates": 3,
+            "historicalStates": 29,
+            "cities": 15,
+            "captures": 82,
+            "recoveries": 5,
+            "siegeCityMonths": 1351,
+            "capturesPer100SiegeCityMonths": 6.069578090303479,
+            "formationSizeSamples": {
+              "3": 59,
+              "4": 25,
+              "5": 76,
+              "6": 275,
+              "7": 34,
+              "8": 226,
+              "9": 67,
+              "10": 332,
+              "11": 116,
+              "12": 423
+            },
+            "factionCommandSamples": {
+              "0": 2194,
+              "1": 1087,
+              "2": 273
+            },
+            "meanFormationSize": 8.95774647887324,
+            "appointments": 13,
+            "offices": {
+              "pijiang": 13,
+              "jiangjun": 5,
+              "shangjiangjun": 3,
+              "promotions": 8,
+              "meanServiceMonths": 125.46153846153847,
+              "currentOffices": [
+                "SHANGJIANGJUN",
+                "JIANGJUN"
+              ],
+              "naturalDeaths": 4,
+              "ageRetirements": 7,
+              "highOfficeMerits": [
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 204,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                }
+              ],
+              "activeFormationSizes": [
+                6,
+                5
+              ]
+            },
+            "promotions": [
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 72
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 204
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              }
+            ],
+            "meanServiceMonths": 125.46153846153847,
+            "matureEnded": 5,
+            "matureEndedNeverPromoted": 2,
+            "politicalCandidateChecks": 110,
+            "militaryPoliticalEvents": 1,
+            "depositions": 1,
+            "usurpations": 0,
+            "extinctions": 26,
+            "unifications": 0,
+            "splits": 22,
+            "restorations": 5,
+            "rebellions": 0,
+            "classicRebellions": 0,
+            "frontierRebellions": 0,
+            "canonicalSha256": "4da16557be021e492d2ad1bd88cb8bcd4ae0df0edca7bb526460440fd8cbd145",
+            "baseFactsSha256": "76dd0a8b3385b36387b9ed7292dee77024e7eb31328845ae205aaad597e7dab0",
+            "monthlyExposure": {
+              "cityMonths": 13538,
+              "politicalCityMonths": 24,
+              "supporters": 112,
+              "identityBlocked": 75,
+              "geographyBlocked": 910,
+              "discontentBlocked": 46
+            },
+            "issuingRulerGrants": 21,
+            "worldRandomPosition": 6284,
+            "regional": {
+              "cityChecks": 1127,
+              "politicalCities": 3,
+              "loyaltyBlocked": 846,
+              "stabilityBlocked": 139,
+              "capacityBlocked": 0,
+              "identityBlocked": 240,
+              "validOrdinary": 2838,
+              "discontentBlocked": 160,
+              "geographyBlocked": 2552,
+              "supporters": 126,
+              "noSupport": 10,
+              "draws": 28,
+              "drawFailed": 28,
+              "executionFailed": 0,
+              "popular": 0,
+              "split": 22,
+              "territorialReturns": 0,
+              "splitChecks": 146,
+              "splitPolitical": 36,
+              "splitRestored": 5,
+              "alive12": 10,
+              "matured12": 22,
+              "alive60": 3,
+              "matured60": 21,
+              "overflow": 0,
+              "popularFunnel": {
+                "cityChecks": 1127,
+                "political": 3,
+                "captureGrace": 0,
+                "cooldown": 0,
+                "capacity": 0,
+                "populationScans": 3,
+                "validUsers": 135,
+                "identityBlocked": 9,
+                "geographyBlocked": 119,
+                "discontentBlocked": 5,
+                "supporters": 11,
+                "noSupport": 1,
+                "candidates": 2,
+                "priorityBlocked": 0,
+                "draws": 2,
+                "expectedHits": 0.034682142857142856,
+                "hits": 0,
+                "misses": 2,
+                "historicalSelected": 0,
+                "founderRestored": 0,
+                "failures": 0,
+                "successes": 0
+              },
+              "popularFailures": {},
+              "spatial": {
+                "invalidPosition": 0,
+                "unowned": 0,
+                "foreign": 21,
+                "otherCity": 242,
+                "otherDistrict": 2275,
+                "disconnected": 14,
+                "outsideLegacy": 2463,
+                "recoveredDistrict": 177,
+                "emptyLegacyArea": 0,
+                "emptyDistrict": 0,
+                "referenceMismatch": 0,
+                "referenceWithOwnedPosition": 0,
+                "arcadePosition": 2838,
+                "logicalPosition": 0,
+                "staleRegistryPosition": 2825
+              },
+              "restored": 5,
+              "worldMonth": 1200,
+              "insufficient12": 0,
+              "insufficient60": 1
+            },
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "currentMilitaryByRegime": [
+              {
+                "factionId": "赵",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 40,
+                "commands": 0
+              },
+              {
+                "factionId": "燕",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 50,
+                "commands": 2
+              },
+              {
+                "factionId": "大梁南义军",
+                "factionType": "SPLIT",
+                "stage": "PROVISIONAL",
+                "rank": "LEADER",
+                "population": 3,
+                "commands": 0
+              }
+            ],
+            "residentFounders": 22,
+            "residentLiveBindings": 1,
+            "residentIdentityConflicts": 0,
+            "strictSaveValid": true,
+            "elapsedMs": 17966.600000000093,
+            "heapBytes": 90664468
+          }
+        }
+      ]
+    },
+    {
+      "seed": "army-5",
+      "years": 100,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "baseline": {
+            "worldPopulation": 84,
+            "naturalGrowth": 452,
+            "warDeaths": 435,
+            "cities": 16,
+            "captures": 125,
+            "rebellions": 0,
+            "splits": 9,
+            "restorations": 0,
+            "extinctions": 10,
+            "appointments": 15,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          },
+          "current": {
+            "month": 1200,
+            "worldPopulation": 81,
+            "populationUnexplained": 0,
+            "naturalGrowth": 410,
+            "warDeaths": 401,
+            "activeStates": 6,
+            "historicalStates": 25,
+            "cities": 13,
+            "captures": 170,
+            "recoveries": 17,
+            "siegeCityMonths": 1786,
+            "capturesPer100SiegeCityMonths": 9.518477043673013,
+            "formationSizeSamples": {
+              "2": 459,
+              "3": 362,
+              "4": 155,
+              "5": 86,
+              "6": 130,
+              "7": 236,
+              "8": 188,
+              "9": 282,
+              "10": 256,
+              "11": 211,
+              "12": 178
+            },
+            "factionCommandSamples": {
+              "0": 2517,
+              "1": 1919,
+              "2": 312
+            },
+            "meanFormationSize": 6.506095163193079,
+            "appointments": 18,
+            "offices": {
+              "pijiang": 18,
+              "jiangjun": 9,
+              "shangjiangjun": 6,
+              "promotions": 15,
+              "meanServiceMonths": 141.16666666666666,
+              "currentOffices": [
+                "JIANGJUN",
+                "PIJIANG"
+              ],
+              "naturalDeaths": 3,
+              "ageRetirements": 5,
+              "highOfficeMerits": [
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 252,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 132,
+                  "verifiedMerits": 3
+                }
+              ],
+              "activeFormationSizes": [
+                3,
+                2
+              ]
+            },
+            "promotions": [
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 252
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 132
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              }
+            ],
+            "meanServiceMonths": 141.16666666666666,
+            "matureEnded": 10,
+            "matureEndedNeverPromoted": 2,
+            "politicalCandidateChecks": 159,
+            "militaryPoliticalEvents": 0,
+            "depositions": 0,
+            "usurpations": 0,
+            "extinctions": 18,
+            "unifications": 0,
+            "splits": 18,
+            "restorations": 0,
+            "rebellions": 0,
+            "classicRebellions": 0,
+            "frontierRebellions": 0,
+            "canonicalSha256": "91da09df548d095c3d5e96dc39e60ff32c18ef08ef4a66d7ede9630b6077ed01",
+            "baseFactsSha256": "ebd9936f97d8cacbfb387032e1bfb10eec8aeefdebfcb72d9903775e4344c33c",
+            "monthlyExposure": {
+              "cityMonths": 13355,
+              "politicalCityMonths": 0,
+              "supporters": 0,
+              "identityBlocked": 0,
+              "geographyBlocked": 0,
+              "discontentBlocked": 0
+            },
+            "issuingRulerGrants": 23,
+            "worldRandomPosition": 6199,
+            "regional": {
+              "cityChecks": 1111,
+              "politicalCities": 0,
+              "loyaltyBlocked": 852,
+              "stabilityBlocked": 191,
+              "capacityBlocked": 0,
+              "identityBlocked": 66,
+              "validOrdinary": 591,
+              "discontentBlocked": 32,
+              "geographyBlocked": 503,
+              "supporters": 56,
+              "noSupport": 3,
+              "draws": 23,
+              "drawFailed": 23,
+              "executionFailed": 1,
+              "popular": 0,
+              "split": 18,
+              "territorialReturns": 0,
+              "splitChecks": 107,
+              "splitPolitical": 22,
+              "splitRestored": 0,
+              "alive12": 10,
+              "matured12": 17,
+              "alive60": 7,
+              "matured60": 16,
+              "overflow": 0,
+              "popularFunnel": {
+                "cityChecks": 1111,
+                "political": 0,
+                "captureGrace": 0,
+                "cooldown": 0,
+                "capacity": 0,
+                "populationScans": 0,
+                "validUsers": 0,
+                "identityBlocked": 0,
+                "geographyBlocked": 0,
+                "discontentBlocked": 0,
+                "supporters": 0,
+                "noSupport": 0,
+                "candidates": 0,
+                "priorityBlocked": 0,
+                "draws": 0,
+                "expectedHits": 0,
+                "hits": 0,
+                "misses": 0,
+                "historicalSelected": 0,
+                "founderRestored": 0,
+                "failures": 0,
+                "successes": 0
+              },
+              "popularFailures": {},
+              "spatial": {
+                "invalidPosition": 0,
+                "unowned": 0,
+                "foreign": 2,
+                "otherCity": 48,
+                "otherDistrict": 422,
+                "disconnected": 31,
+                "outsideLegacy": 503,
+                "recoveredDistrict": 51,
+                "emptyLegacyArea": 0,
+                "emptyDistrict": 0,
+                "referenceMismatch": 0,
+                "referenceWithOwnedPosition": 0,
+                "arcadePosition": 591,
+                "logicalPosition": 0,
+                "staleRegistryPosition": 580
+              },
+              "restored": 0,
+              "worldMonth": 1200,
+              "insufficient12": 1,
+              "insufficient60": 2
+            },
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "currentMilitaryByRegime": [
+              {
+                "factionId": "秦",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 27,
+                "commands": 0
+              },
+              {
+                "factionId": "燕",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 27,
+                "commands": 0
+              },
+              {
+                "factionId": "郢东义军",
+                "factionType": "SPLIT",
+                "stage": "PROVISIONAL",
+                "rank": "LEADER",
+                "population": 7,
+                "commands": 0
+              },
+              {
+                "factionId": "邯郸右义军",
+                "factionType": "SPLIT",
+                "stage": "PROVISIONAL",
+                "rank": "LEADER",
+                "population": 9,
+                "commands": 2
+              },
+              {
+                "factionId": "清安义军",
+                "factionType": "SPLIT",
+                "stage": "PROVISIONAL",
+                "rank": "LEADER",
+                "population": 8,
+                "commands": 0
+              },
+              {
+                "factionId": "新郑西义军",
+                "factionType": "SPLIT",
+                "stage": "PROVISIONAL",
+                "rank": "LEADER",
+                "population": 3,
+                "commands": 0
+              }
+            ],
+            "residentFounders": 18,
+            "residentLiveBindings": 2,
+            "residentIdentityConflicts": 0,
+            "strictSaveValid": true,
+            "elapsedMs": 19435.19999999972,
+            "heapBytes": 82412066
+          }
+        }
+      ]
+    },
+    {
+      "seed": "army-6",
+      "years": 100,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "baseline": {
+            "worldPopulation": 81,
+            "naturalGrowth": 466,
+            "warDeaths": 476,
+            "cities": 16,
+            "captures": 137,
+            "rebellions": 0,
+            "splits": 10,
+            "restorations": 2,
+            "extinctions": 14,
+            "appointments": 20,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          },
+          "current": {
+            "month": 1200,
+            "worldPopulation": 96,
+            "populationUnexplained": 0,
+            "naturalGrowth": 364,
+            "warDeaths": 247,
+            "activeStates": 1,
+            "historicalStates": 44,
+            "cities": 11,
+            "captures": 96,
+            "recoveries": 4,
+            "siegeCityMonths": 973,
+            "capturesPer100SiegeCityMonths": 9.866392600205549,
+            "formationSizeSamples": {
+              "2": 24,
+              "3": 6,
+              "4": 144,
+              "5": 85,
+              "6": 230,
+              "7": 437,
+              "8": 231,
+              "9": 178,
+              "10": 146,
+              "11": 96,
+              "12": 275
+            },
+            "factionCommandSamples": {
+              "0": 1860,
+              "1": 1030,
+              "2": 411
+            },
+            "meanFormationSize": 7.976241900647948,
+            "appointments": 13,
+            "offices": {
+              "pijiang": 13,
+              "jiangjun": 6,
+              "shangjiangjun": 4,
+              "promotions": 10,
+              "meanServiceMonths": 142.30769230769232,
+              "currentOffices": [
+                "SHANGJIANGJUN",
+                "PIJIANG"
+              ],
+              "naturalDeaths": 7,
+              "ageRetirements": 6,
+              "highOfficeMerits": [
+                {
+                  "serviceMonths": 180,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 324,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                }
+              ],
+              "activeFormationSizes": [
+                7,
+                12
+              ]
+            },
+            "promotions": [
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 180
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 108
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 72
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 324
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              }
+            ],
+            "meanServiceMonths": 142.30769230769232,
+            "matureEnded": 6,
+            "matureEndedNeverPromoted": 1,
+            "politicalCandidateChecks": 135,
+            "militaryPoliticalEvents": 0,
+            "depositions": 0,
+            "usurpations": 0,
+            "extinctions": 42,
+            "unifications": 15,
+            "splits": 36,
+            "restorations": 6,
+            "rebellions": 1,
+            "classicRebellions": 1,
+            "frontierRebellions": 0,
+            "canonicalSha256": "635abadb801e5a58787f7e9b80c4eb023aca9269ee40b91adf344781881d5e65",
+            "baseFactsSha256": "9645cd12b4727d0fed64fdbd11426f35614e6b29396d4b975161fda47bad1a8d",
+            "monthlyExposure": {
+              "cityMonths": 12273,
+              "politicalCityMonths": 226,
+              "supporters": 1173,
+              "identityBlocked": 617,
+              "geographyBlocked": 20071,
+              "discontentBlocked": 1099
+            },
+            "issuingRulerGrants": 23,
+            "worldRandomPosition": 5552,
+            "regional": {
+              "cityChecks": 1016,
+              "politicalCities": 16,
+              "loyaltyBlocked": 725,
+              "stabilityBlocked": 179,
+              "capacityBlocked": 0,
+              "identityBlocked": 351,
+              "validOrdinary": 5757,
+              "discontentBlocked": 380,
+              "geographyBlocked": 5138,
+              "supporters": 239,
+              "noSupport": 13,
+              "draws": 30,
+              "drawFailed": 29,
+              "executionFailed": 0,
+              "popular": 1,
+              "split": 36,
+              "territorialReturns": 0,
+              "splitChecks": 96,
+              "splitPolitical": 53,
+              "splitRestored": 5,
+              "alive12": 15,
+              "matured12": 37,
+              "alive60": 4,
+              "matured60": 33,
+              "overflow": 0,
+              "popularFunnel": {
+                "cityChecks": 1016,
+                "political": 16,
+                "captureGrace": 0,
+                "cooldown": 0,
+                "capacity": 0,
+                "populationScans": 16,
+                "validUsers": 1592,
+                "identityBlocked": 51,
+                "geographyBlocked": 1435,
+                "discontentBlocked": 83,
+                "supporters": 74,
+                "noSupport": 1,
+                "candidates": 15,
+                "priorityBlocked": 0,
+                "draws": 15,
+                "expectedHits": 0.3738007216216216,
+                "hits": 1,
+                "misses": 14,
+                "historicalSelected": 0,
+                "founderRestored": 0,
+                "failures": 0,
+                "successes": 1
+              },
+              "popularFailures": {},
+              "spatial": {
+                "invalidPosition": 0,
+                "unowned": 0,
+                "foreign": 8,
+                "otherCity": 517,
+                "otherDistrict": 4608,
+                "disconnected": 5,
+                "outsideLegacy": 5057,
+                "recoveredDistrict": 446,
+                "emptyLegacyArea": 0,
+                "emptyDistrict": 0,
+                "referenceMismatch": 0,
+                "referenceWithOwnedPosition": 0,
+                "arcadePosition": 5757,
+                "logicalPosition": 0,
+                "staleRegistryPosition": 5725
+              },
+              "restored": 5,
+              "worldMonth": 1200,
+              "insufficient12": 0,
+              "insufficient60": 4
+            },
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "currentMilitaryByRegime": [
+              {
+                "factionId": "秦",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 96,
+                "commands": 2
+              }
+            ],
+            "residentFounders": 37,
+            "residentLiveBindings": 4,
+            "residentIdentityConflicts": 0,
+            "strictSaveValid": true,
+            "elapsedMs": 15573.600000000093,
+            "heapBytes": 93724187
+          }
+        }
+      ]
+    }
+  ],
+  "residentTransactions": [
+    {
+      "seed": "resident-z6",
+      "scope": "controlled real Core/Phaser production founding and lifecycle",
+      "results": [
+        {
+          "kind": "popular",
+          "checks": [
+            "actual local ordinary residents support the crisis",
+            "failed royal initialization refuses city transaction",
+            "initialization rollback preserves original Users, city and roles",
+            "initialization rollback leaves no orphan ruler or history",
+            "runtime registration failure aborts prepared founder",
+            "registration rollback restores permanent identity and logical role",
+            "exception after runtime registration rolls back the whole prepared faction",
+            "post-registration rollback removes faction and orphan dynasty",
+            "failed political promotion does not alter Player speed or size",
+            "production founding succeeds",
+            "founder is the actual transferred resident and same live object",
+            "original numeric ID, label, birth and parent faction are preserved",
+            "same real Player and logical unit acquire political role",
+            "founding conserves world population with no extra royal avatar",
+            "founder is not duplicated as a military person",
+            "strict V19 rejects broken or duplicate resident identity",
+            "strict V19 rejects broken or duplicate resident identity",
+            "strict V19 rejects broken or duplicate resident identity",
+            "V18 is explicitly unsupported without rewriting the old file",
+            "exile removes entity without killing the permanent person",
+            "restoration recreates only the same person's map entity",
+            "restoration has one live binding",
+            "two V19 hydrations continue identically for twelve production months",
+            "saved founder retains permanent identity after twelve months",
+            "real final-city capture creates the first exile episode",
+            "a second monarch really succeeds during long exile",
+            "actual recapture restores polity, royal role and exile registry together",
+            "two real losses have a recorded intervening military restoration",
+            "military restoration references its actual capture event",
+            "repeated collapse notification during one exile is a no-op",
+            "successor chronicle retains restoration without confusing predecessor death or accession",
+            "polity termination is not person death",
+            "ended founder's single life expires and cannot be restored"
+          ],
+          "sourceUserId": 1050980811,
+          "personId": "resident-咸阳义军-1050980811--643",
+          "rulerId": "咸阳义军-ruler-16",
+          "populationBefore": 56,
+          "populationAfterFounding": 56,
+          "saveSchemaVersion": 19
+        },
+        {
+          "kind": "split",
+          "checks": [
+            "actual local ordinary residents support the crisis",
+            "failed royal initialization refuses city transaction",
+            "initialization rollback preserves original Users, city and roles",
+            "initialization rollback leaves no orphan ruler or history",
+            "runtime registration failure aborts prepared founder",
+            "registration rollback restores permanent identity and logical role",
+            "exception after runtime registration rolls back the whole prepared faction",
+            "post-registration rollback removes faction and orphan dynasty",
+            "failed political promotion does not alter Player speed or size",
+            "production founding succeeds",
+            "founder is the actual transferred resident and same live object",
+            "original numeric ID, label, birth and parent faction are preserved",
+            "same real Player and logical unit acquire political role",
+            "founding conserves world population with no extra royal avatar",
+            "founder is not duplicated as a military person",
+            "strict V19 rejects broken or duplicate resident identity",
+            "strict V19 rejects broken or duplicate resident identity",
+            "strict V19 rejects broken or duplicate resident identity",
+            "V18 is explicitly unsupported without rewriting the old file",
+            "exile removes entity without killing the permanent person",
+            "restoration recreates only the same person's map entity",
+            "restoration has one live binding",
+            "two V19 hydrations continue identically for twelve production months",
+            "saved founder retains permanent identity after twelve months",
+            "polity termination is not person death",
+            "ended founder's single life expires and cannot be restored"
+          ],
+          "sourceUserId": 1050980811,
+          "personId": "resident-咸阳义军-1050980811--268",
+          "rulerId": "咸阳义军-ruler-13",
+          "populationBefore": 56,
+          "populationAfterFounding": 56,
+          "saveSchemaVersion": 19
+        }
+      ]
+    }
+  ],
+  "corePhaser": [
+    {
+      "seed": "overlay-z6",
+      "checks": [
+        "actual default Arcade Core",
+        "live Player positions and real registry bindings",
+        "natural motion diverges from registration snapshot",
+        "all real active commanders open by default",
+        "one real commander receives automatic map focus",
+        "default selection automatically highlights a real formation",
+        "active header focus preserves all current biographies",
+        "actual formal-state grant freezes its contemporary issuing ruler",
+        "real User appointment grants canonical initial office",
+        "real Core focuses and highlights actual formation",
+        "target focus uses the shared command overlay lifecycle",
+        "real noninteractive Phaser Graphics",
+        "one Graphics reused across presentation updates",
+        "logical-mode coordinate authority",
+        "ordinary orders retained in the archive but omitted from public milestones",
+        "formal initial office is readable without zero-month audit wording",
+        "real living commander remains visible in the chronological archive",
+        "real appointment enters biography",
+        "UI projections preserve RNG and canonical history",
+        "real truce removes hostile target",
+        "country selection clears overlay",
+        "strict V19 real Core export",
+        "hydration clears selected overlay and drawing",
+        "hydration drains old Phaser bodies before rebuilding the world",
+        "strict V19 real Core hydration",
+        "frozen issuing ruler survives real Core hydration",
+        "person identity and recorded name survive load",
+        "repeated hydration leaves no destroyed physics bodies",
+        "repeated hydration leaves no destroyed physics bodies",
+        "same Arcade snapshot resumes deterministically across repeated loads",
+        "12-month post-load production continuation"
+      ],
+      "commandId": "military-command-1",
+      "personId": "military-person-1",
+      "memberCount": 7,
+      "worldMonth": 36,
+      "saveSchemaVersion": 19
+    }
+  ],
+  "longArchive": [
+    {
+      "seed": "archive-500",
+      "years": 500,
+      "results": [
+        {
+          "month": 2400,
+          "people": 33,
+          "countryPeople": 11,
+          "records": 581,
+          "allRecordsPresent": true,
+          "noNestedScroll": true,
+          "renderMs": 4.6400000000372525,
+          "htmlBytes": 61182,
+          "heapBytes": 76555743,
+          "strictSaveValid": true
+        },
+        {
+          "month": 6000,
+          "people": 86,
+          "countryPeople": 22,
+          "records": 1428,
+          "allRecordsPresent": true,
+          "noNestedScroll": true,
+          "renderMs": 6.629999999981374,
+          "htmlBytes": 152158,
+          "heapBytes": 116886970,
+          "strictSaveValid": true
+        }
+      ],
+      "deterministic12MonthContinuation": true
+    }
+  ]
+}
