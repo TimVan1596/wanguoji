@@ -38,7 +38,7 @@ it("the shared royal/military reader shows one closed detail entrance, with no p
     evidence={<span>{f.entries.map(e=>e.source).join("；")}</span>}/>);
   const publicPart=html.slice(0,html.indexOf("<summary>详细记录</summary>"));
   expect(publicPart).not.toMatch(/史料依据|military-command|military-order-issued|军令不代表|据本次任职/);
-  expect(html).not.toContain("military-order-issued · order");expect(entries.map(e=>e.source)).toContain("military-order-issued · order");
+  expect(html).not.toContain("military-order-issued · order");expect(f.entries.map(e=>e.source)).toContain("military-order-issued · order");
   expect(html.match(/<summary>详细记录<\/summary>/g)).toHaveLength(1);
   expect(html.slice(html.lastIndexOf("<details"))).not.toMatch(/^<details[^>]* open/);
 });

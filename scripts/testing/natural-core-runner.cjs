@@ -11,7 +11,7 @@ app.whenReady().then(async()=>{
   const seeds=(process.env.WANGUOJI_CORE_SEEDS||'regional-1').split(',');
   for(const seed of seeds){
    const win=new BrowserWindow({show:false,webPreferences:{backgroundThrottling:false,partition:`natural-core-${seed}-${process.pid}`}});
-   win.webContents.on('console-message',(_e,_l,message)=>{if(message.includes('Error'))process.stderr.write(message+'\n');});
+   win.webContents.on('console-message',(_e,_l,message)=>{if(message.includes('Error')||message.startsWith('[CoreTest]'))process.stderr.write(message+'\n');});
    await win.loadURL(process.env.WANGUOJI_CORE_URL||'http://localhost:5197/?debug=1&avatarRenderer=plain');
    const years=(process.env.WANGUOJI_CORE_LONG_SEEDS||'').split(',').includes(seed)?Number(process.env.WANGUOJI_CORE_LONG_YEARS||200):Number(process.env.WANGUOJI_CORE_YEARS||100);
    const secession=process.env.WANGUOJI_CORE_SUITE==='military-secession';

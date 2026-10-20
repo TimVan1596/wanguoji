@@ -19,17 +19,17 @@ import {formatHistoryEventTitle} from "../../History/HistoryRenderRules";
 /** Controlled crisis after a real naturally appointed military career; never a natural frequency claim. */
 export async function runMilitarySecessionCore(seed="military-secession-z7"){
  const {core,game}=await createNaturalCore(seed),checks:string[]=[];
- const check=(yes:unknown,label:string)=>{if(!yes)throw new Error(label);checks.push(label);};
+ const check=(yes:unknown,label:string)=>{if(!yes)throw new Error(label);checks.push(label);if(checks.length%5===0)console.info(`[CoreTest] ${checks.length}: ${label}`);};
  const step=()=>{const before=core.simulator!.year;for(let n=0;n<30;n++)(core as any).advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit("postupdate");if(core.simulator!.year===before)throw new Error(`Core clock stopped at ${before}; last check: ${checks[checks.length-1]}`);};
  const strict=()=>{const s=exportWorldSave(core),v=validateWorldSave(s);if(!v.valid)throw new Error(v.errors.join("; "));return s;};
  try{
   let chosen:ReturnType<typeof Military.getPoliticalInfluence>["candidates"][number]|undefined,parent:typeof core.teams[number]|undefined;
-  for(let month=0;month<600&&!chosen;month++){step();for(const t of core.teams){const p=Military.getPoliticalInfluence(t,core.simulator!.year,core.logicalUnitRegistry).candidates.find(c=>c.unitCount>=4);if(p){chosen=p;parent=t;break;}}}
+  for(let month=0;month<600&&!chosen;month++){step();for(const t of core.teams.filter(t=>t.cities.length>=4&&t.cities.some(c=>!c.isCapital&&!c.isInCaptureGrace(core.simulator!.year)))){const p=Military.getPoliticalInfluence(t,core.simulator!.year,core.logicalUnitRegistry).candidates.find(c=>c.unitCount>=4);if(p){chosen=p;parent=t;break;}}}
   check(chosen&&parent,"natural Core appointments and real service produce an existing military political candidate");if(!chosen||!parent)throw new Error("No military candidate");
   core.setWorldRunning(false);const month=core.simulator!.year,personId=chosen.personId,commandId=chosen.commandId;
   const commander=[...parent.users].find(u=>u.militaryPersonId===personId)!;
-  while(parent.cities.length<4){const site=core.map!.blocks.flat().find(b=>!b.team&&!b.city&&core.allCities.every(c=>Math.hypot(c.block.x-b.x,c.block.y-b.y)>256));if(!site)throw new Error("No free city site");Factions.foundCity(parent,site,undefined,month);}
-  const city=parent.cities.find(c=>!c.isCapital)!,secondCity=parent.cities.find(c=>c!==city&&!c.isCapital)!;
+  while(parent.cities.length<4){const site=core.map!.blocks.flat().find(b=>(b.team===parent||!b.team)&&!b.city&&core.allCities.every(c=>Math.hypot(c.block.x-b.x,c.block.y-b.y)>160));if(!site)throw new Error("No free city site");Factions.foundCity(parent,site,undefined,month);}
+  const city=parent.cities.find(c=>!c.isCapital&&!c.isInCaptureGrace(month))!,secondCity=parent.cities.find(c=>c!==city&&!c.isCapital)!;
   const originalIds=[...chosen.memberUnitIds],members=[...parent.users].filter(u=>originalIds.includes(u.player.logicalUnitId!));
   for(const c of parent.cities)c.loyalty=20;city.loyalty=0;city.devastation=100;
   for(const u of parent.users)u.loyalty=99;
@@ -38,7 +38,7 @@ export async function runMilitarySecessionCore(seed="military-secession-z7"){
   let candidate=assessMilitarySecession(city,month);check(candidate?.users[0]===commander,"political crisis, current office and actual local commander qualify together");if(!candidate)throw new Error("No local military party");
   check(!candidate.users.includes(loyalist)&&candidate.users.length<originalIds.length,"only a verified willing part of the old formation follows");
   const follow=candidate.users.filter(u=>u!==commander),sourceName=Military.getPerson(personId)!.personalName,deathSchedule=deriveMilitaryLifeSchedule(Military.getPerson(personId)!).naturalDeathMonth;
-  for(const u of follow)u.loyalty=99;check(!assessMilitarySecession(city,month),"no actual willing followers means no military secession");for(const u of follow)u.loyalty=20;
+  const loyalties=new Map(members.map(u=>[u,u.loyalty]));for(const u of members)if(u!==commander)u.loyalty=99;check(!assessMilitarySecession(city,month),"no actual willing followers means no military secession");for(const u of members)u.loyalty=loyalties.get(u)!;
   const entry=core.logicalUnitRegistry.getEntry(commander.player.logicalUnitId!)!;
   core.logicalGameplayAuthority=true;entry.state.logicalX=-9999;entry.state.logicalY=-9999;
   check(!assessMilitarySecession(city,month),"logical mode rejects a valid-looking Player whose authoritative location is illegal");
