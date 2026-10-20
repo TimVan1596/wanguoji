@@ -18,7 +18,7 @@ async function fingerprint(snapshot: ReturnType<typeof exportWorldSave>,baseFact
     canonical.worldHistory=structuredClone(canonical.worldHistory);
     for(const e of canonical.worldHistory.events as any[]){
       if(e.type==="military-office-granted"){delete e.rulerId;if(e.metadata)delete e.metadata.authorizingRulerTitle;}
-      if(["city-captured","city-recovered","capital-fallen"].includes(e.type)&&e.metadata){delete e.metadata.commanderOffice;if(e.type==="city-recovered")delete e.metadata.founderCapital;}
+      if(["city-captured","city-recovered","capital-fallen"].includes(e.type)&&e.metadata){delete e.metadata.commanderOffice;delete e.metadata.attackerNameAtEvent;delete e.metadata.defenderNameAtEvent;if(e.type==="city-recovered")delete e.metadata.founderCapital;}
     }
   }
   const ordered = (value: any): any => Array.isArray(value) ? value.map(ordered) : value && typeof value === "object"

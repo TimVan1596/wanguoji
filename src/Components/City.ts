@@ -282,6 +282,7 @@ export default class City {
     }
 
     const previousOwnerName = oldOwner.name;
+    const namesAtEvent={attacker:newOwner.displayName,defender:oldOwner.displayName};
     const wasCapital = this.isCapital;
     const recovered = newOwner.name === this.founderFactionId;
     const cityDefenseBefore = this.defense;
@@ -351,7 +352,8 @@ export default class City {
         rulerId,
         capitalTransitionGroupId,
         commandId,
-        commanderPersonId
+        commanderPersonId,
+        namesAtEvent
       );
       if (!recovered) MilitaryCommandRegistry.recordCapture(commandId, eventId, this.id, year);
     }
@@ -379,7 +381,8 @@ export default class City {
         collapseGroupId,
         commandId,
         commanderPersonId,
-        wasCapital
+        wasCapital,
+        namesAtEvent
       );
       MilitaryCommandRegistry.recordCapture(commandId, eventId, this.id, year);
       DynastyRegistry.recordCityCaptured(rulerId, this.id, eventId);
@@ -414,7 +417,8 @@ export default class City {
           rulerId,
           collapseGroupId,
           commandId,
-          commanderPersonId
+          commanderPersonId,
+          namesAtEvent
         );
         MilitaryCommandRegistry.recordCapture(commandId, eventId, this.id, year);
         DynastyRegistry.recordCityCaptured(rulerId, this.id, eventId);

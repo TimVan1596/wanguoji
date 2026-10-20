@@ -1095,7 +1095,7 @@ it.each(["ordinary", "capital", "recovery", "office"])("x真实User→任命军�
     expect(MilitaryCommandRegistry.getChronicle(person, 0).some(e => e.victory)).toBe(false);
     RealCity.prototype.capture.call(city, qin, 1, undefined, formation.commandId, person.personId);
     const victory = WorldHistory.getEvents().find(e => e.type === (recovered ? "city-recovered" : capital ? "capital-fallen" : "city-captured"))!;
-    expect(victory).toMatchObject({ cityId: "linzi", actorFactionId: "qin", metadata: { commanderPersonId: person.personId, commandId: formation.commandId, commanderPersonalName: person.personalName, wasCapital: capital ? 1 : 0 } });
+    expect(victory).toMatchObject({ cityId: "linzi", actorFactionId: "qin", metadata: { commanderPersonId: person.personId, commandId: formation.commandId, commanderPersonalName: person.personalName, wasCapital: capital ? 1 : 0,attackerNameAtEvent:"秦",defenderNameAtEvent:"魏" } });
     expect(city.ownerFactionId).toBe("qin"); expect(qin.users.size).toBe(2); expect(user.name).toBe(person.name);
     let chronicle = MilitaryCommandRegistry.getChronicle(person, 1); const row = chronicle.find(e => e.victory)!;
     expect(chronicle.filter(e => e.victory)).toHaveLength(1);
@@ -1104,7 +1104,7 @@ it.each(["ordinary", "capital", "recovery", "office"])("x真实User→任命军�
     const king = DynastyRegistry.getCurrentRuler("qin")!;
     expect(getRulerHistoricalEvents(WorldHistory.getEvents(), { ...king, accessionYear: 0 }, "qin", 1, []).map(e => e.id)).toContain(victory.id);
     const royal = formatRulerMilitaryEvent(victory, { accessionYear: 0 }, "qin", 1)!;
-    expect(royal).toContain(`其治下，qin裨将${person.personalName}所部参与`); expect(royal).not.toContain("亲征");
+    expect(royal).toContain(`其治下，秦裨将${person.personalName}所部参与`); expect(royal).not.toContain("亲征");
     expect(formatRulerMilitaryEvent(victory, { accessionYear: 2 }, "qin", 3)).toBeUndefined();
     expect(formatRulerMilitaryEvent(victory, { accessionYear: 0 }, "wei", 1)).toBeUndefined();
     let snapshotMonth=1;
@@ -1128,10 +1128,10 @@ it.each(["ordinary", "capital", "recovery", "office"])("x真实User→任命军�
       expect(person.appointments[0].officeHistory?.map(g=>g.office)).toEqual(["PIJIANG","JIANGJUN","SHANGJIANGJUN"]);
       expect(chronicle.filter(e=>e.victory)).toHaveLength(5);
       expect(victory.metadata?.commanderOffice).toBe("PIJIANG");
-      expect(formatRulerMilitaryEvent(victory,{accessionYear:0},"qin",120)).toContain(`qin裨将${person.personalName}`);
+      expect(formatRulerMilitaryEvent(victory,{accessionYear:0},"qin",120)).toContain(`秦裨将${person.personalName}`);
       const later=WorldHistory.getEvents().find(e=>e.metadata?.commanderPersonId===person.personId&&e.type==="city-captured"&&(e.monthIndex??e.year)===84)!;
       expect(later.metadata?.commanderOffice).toBe("JIANGJUN");
-      expect(formatRulerMilitaryEvent(later,{accessionYear:0},"qin",120)).toContain(`qin将军${person.personalName}`);
+      expect(formatRulerMilitaryEvent(later,{accessionYear:0},"qin",120)).toContain(`秦将军${person.personalName}`);
       const grants=person.appointments[0].officeHistory!;
       expect(new Set(grants.flatMap(g=>g.captureEventIds)).size).toBe(5);
       expect(chronicle.filter(e=>e.source.startsWith("military-office-granted"))).toHaveLength(3);
@@ -1153,7 +1153,8 @@ it.each(["ordinary", "capital", "recovery", "office"])("x真实User→任命军�
     for (const mutate of [(s: any) => delete s.registries.militaryCommandRegistry.people[0].personalName,
       (s: any) => { s.registries.militaryCommandRegistry.people[0].personalName = "另一个姓名"; },
       (s: any) => { s.worldHistory.events.find((e: any) => e.id === victory.id).metadata.commanderPersonId = "missing-person"; },
-      (s:any)=>{s.worldHistory.events.find((e:any)=>e.id===victory.id).metadata.commanderOffice="SHANGJIANGJUN";}]) {
+      (s:any)=>{s.worldHistory.events.find((e:any)=>e.id===victory.id).metadata.commanderOffice="SHANGJIANGJUN";},
+      (s:any)=>{s.worldHistory.events.find((e:any)=>e.id===victory.id).metadata.defenderNameAtEvent="伪造政权";}]) {
       const invalid = structuredClone(snapshot); mutate(invalid); expect(validateWorldSave(invalid).valid).toBe(false);
     }
     if(kind==="office"){

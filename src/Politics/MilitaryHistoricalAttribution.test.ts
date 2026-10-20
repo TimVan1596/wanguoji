@@ -1,7 +1,7 @@
 import {expect,it} from "vitest";
 import {formatMilitaryVictorySource,formatRulerMilitaryEvent,getMilitaryOfficeAtEvent} from "./MilitaryChronicle";
 import {freezeMilitaryOfficeAuthority} from "./MilitaryOfficeAuthority";
-import {validateMilitaryOfficeAuthorities} from "../Persistence/MilitaryOfficeAuthorityValidation";
+import {validateMilitaryOfficeAuthorities,validateMilitaryBattleNames} from "../Persistence/MilitaryOfficeAuthorityValidation";
 import {createEmptyWorldSaveV18} from "../Persistence/WorldSaveSchema";
 import {exportRulerSave} from "../Persistence/RulerSaveProjection";
 import {militaryMilestones} from "../UI/Components/FactionDetails/PersonChroniclePresentation";
@@ -56,4 +56,17 @@ it("the simulation writer freezes the actual issuing ruler; later death, success
 it.each(["dead","exiled","foreign","provisional"])("does not invent a %s ruler as the issuing authority",kind=>{
   const f=authorityFixture();if(kind==="dead"){f.ruler.status="dead";f.ruler.deathMonth=10;}if(kind==="exiled")f.ruler.status="exiled";if(kind==="foreign")f.dynasty.factionId="魏";if(kind==="provisional")f.team.identityStage="PROVISIONAL";
   expect(freezeMilitaryOfficeAuthority(f.event,f.team,f.dynasty)).toBe(f.event);
+});
+
+it("frozen issuer and opposing-country names survive a later rename within the same month",()=>{
+  const f=authorityFixture();f.event.year=100;
+  const grant=freezeMilitaryOfficeAuthority(f.event,f.team,f.dynasty);
+  f.team.displayName="汉";f.team.nameHistory=[{name:"秦",startMonth:0,endMonth:99},{name:"汉",startMonth:100}];
+  const save=createEmptyWorldSaveV18();save.world.worldMonth=100;save.factions=[{...f.team,factionId:"秦"}];save.dynasties=[{...f.dynasty,rulers:[exportRulerSave(f.ruler)]}];save.worldHistory.events=[grant];
+  expect(grant.metadata?.authorizingRulerTitle).toBe("秦王嬴文");expect(validateMilitaryOfficeAuthorities(save)).toEqual([]);
+  const capture=battle("boundary",100);capture.metadata.attackerNameAtEvent="秦";capture.metadata.defenderNameAtEvent="魏";
+  expect(formatMilitaryVictorySource(capture,{factions})).toBe("秦将领鲍成所部参与攻取魏都睢阳");
+  save.factions=[...factions.values()].map((v:any)=>({...v,factionId:v.name,identityStage:"STATE",stateFoundedMonth:0}));save.worldHistory.events=[capture];
+  expect(validateMilitaryBattleNames(save)).toEqual([]);
+  capture.metadata.defenderNameAtEvent="不存在的政权";expect(validateMilitaryBattleNames(save)).not.toEqual([]);
 });

@@ -1,3 +1,4 @@
+import {metadataFactionReferences} from "./HistoricalLabelMetadata";
 import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
 import { frameAttribution } from "../Simulation/FrameAttribution";
 import { composeRevolutionNarrative } from "./RevolutionEventDetails";
@@ -368,7 +369,7 @@ export class WorldHistoryStore {
       this.eventsByFactionId.set(factionId, events);
     });
     // UI relation matching also recognizes metadata values; retain the existing API index semantics.
-    new Set([...factionIds, ...Object.values(event.metadata ?? {}).filter((value): value is string => typeof value === "string")]).forEach((id) => {
+    new Set([...factionIds, ...metadataFactionReferences(event.metadata)]).forEach((id) => {
       const events = this.uiEventsByFactionId.get(id) ?? [];
       this.insertOrdered(events, event);
       this.uiEventsByFactionId.set(id, events);
@@ -612,7 +613,8 @@ export class WorldHistoryStore {
     rulerId?: string,
     historyGroupId?: string,
     commandId?: string,
-    commanderPersonId?: string
+    commanderPersonId?: string,
+    namesAtEvent?: {attacker:string;defender:string}
   ) {
     return this.addEvent({
       id: `city-captured-${year}-${attackerName}-${cityName}-${this.sequence++}`,
@@ -646,6 +648,8 @@ export class WorldHistoryStore {
         cityDefenseBefore,
         commandId,
         commanderPersonId,
+        attackerNameAtEvent:namesAtEvent?.attacker,
+        defenderNameAtEvent:namesAtEvent?.defender,
         commanderPersonalName: MilitaryCommandRegistry.getCaptureIdentity(commandId, commanderPersonId, attackerName, year),
         commanderOffice: MilitaryCommandRegistry.getCaptureOffice(commandId, commanderPersonId, attackerName, year),
       },
@@ -667,7 +671,8 @@ export class WorldHistoryStore {
     historyGroupId?: string,
     commandId?: string,
     commanderPersonId?: string,
-    wasCapital?: boolean
+    wasCapital?: boolean,
+    namesAtEvent?: {attacker:string;defender:string}
   ) {
     return this.addEvent({
       id: `city-recovered-${year}-${teamName}-${cityName}-${this.sequence++}`,
@@ -694,6 +699,8 @@ export class WorldHistoryStore {
         cityDefenseBefore,
         commandId,
         commanderPersonId,
+        attackerNameAtEvent:namesAtEvent?.attacker,
+        defenderNameAtEvent:namesAtEvent?.defender,
         commanderPersonalName: MilitaryCommandRegistry.getCaptureIdentity(commandId, commanderPersonId, teamName, year),
         commanderOffice: MilitaryCommandRegistry.getCaptureOffice(commandId, commanderPersonId, teamName, year),
       },
@@ -715,7 +722,8 @@ export class WorldHistoryStore {
     rulerId?: string,
     historyGroupId?: string,
     commandId?: string,
-    commanderPersonId?: string
+    commanderPersonId?: string,
+    namesAtEvent?: {attacker:string;defender:string}
   ) {
     return this.addEvent({
       id: `capital-fallen-${year}-${attackerName}-${defenderName}-${cityName}-${this.sequence++}`,
@@ -747,6 +755,8 @@ export class WorldHistoryStore {
         cityDefenseBefore,
         commandId,
         commanderPersonId,
+        attackerNameAtEvent:namesAtEvent?.attacker,
+        defenderNameAtEvent:namesAtEvent?.defender,
         commanderPersonalName: MilitaryCommandRegistry.getCaptureIdentity(commandId, commanderPersonId, attackerName, year),
         commanderOffice: MilitaryCommandRegistry.getCaptureOffice(commandId, commanderPersonId, attackerName, year),
       },

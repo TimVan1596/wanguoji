@@ -1,3 +1,4 @@
+import {metadataFactionReferences} from "./HistoricalLabelMetadata";
 import { formatMilitaryVictorySource } from "../Politics/MilitaryChronicle";
 import { hasRecordedRulerDeath } from "../Politics/RulerLifeState";
 import { formatMilitaryHistoryIdentity } from "../Politics/MilitaryPersonIdentity";
@@ -69,7 +70,7 @@ export function isEventRelatedToFaction(event: WorldEvent, factionName: string) 
   if (!event.metadata) {
     return false;
   }
-  return Object.values(event.metadata).some((value) => value === factionName);
+  return metadataFactionReferences(event.metadata).some((value) => value === factionName);
 }
 
 export function getFilteredHistoryEvents(
