@@ -25,3 +25,8 @@ it("retains source and rejects birth/provenance or military recapture without it
  const t=fixture();(t.worldHistory.events as any[]).push({id:"restore",type:"faction-restored",actorFactionId:"rebel",cityId:"city",year:18,metadata:{restorationTrigger:"MILITARY_RECAPTURE",captureEventId:"missing",remnantPopulation:0}});
  expect(validateResidentIdentities(t)).toContain("military restoration lacks matching capture evidence");
 });
+
+it("defers malformed base records to the primary validator without throwing",()=>{
+ const s=fixture();s.users.push(null as any);s.factions.push(null as any);s.cities.push(null as any);(s.worldHistory.events as any[]).unshift(null);
+ expect(()=>validateResidentIdentities(s)).not.toThrow();
+});

@@ -50,6 +50,8 @@ export async function runResidentFounderCore(seed="resident-z6"){
    const created=create();check(created,"production founding succeeds");if(!created)throw new Error("No polity");
    const r=Dynasty.getCurrentRuler(created.name)!,i=r.residentIdentity!,u=created.rulerUser!;
    check(Boolean(i)&&eligible.includes(u)&&originalUsers.includes(u)&&u.historicalPersonId===i.personId,"founder is the actual transferred resident and same live object");
+   const original=originalMovement[eligible.indexOf(u)];
+   check(u.player.logicalUnitId===original.unitId&&u.player.x===original.x&&u.player.y===original.y,"political identity conversion retains the real unit and never teleports the resident");
    check(u.id===i.sourceUserId&&u.name===i.sourceUserLabel&&u.bornMonth===r.bornYear&&r.bornYear===i.bornMonth&&i.sourceFactionId===parent.name,"original numeric ID, label, birth and parent faction are preserved");
    const entry=core.logicalUnitRegistry.getEntry(u.player.logicalUnitId!)!;
    check(u.role==="RULER"&&u.player.role==="RULER"&&entry.state.role==="RULER"&&entry.state.rulerId===r.id,"same real Player and logical unit acquire political role");
@@ -71,6 +73,8 @@ export async function runResidentFounderCore(seed="resident-z6"){
    check(diffCanonicalWorldSave(first,second).matched,"two V19 hydrations continue identically for twelve production months");
    const sr=(second.dynasties.find(d=>d.factionId===created.name)!.rulers as any[]).find(x=>x.rulerId===r.id);
    check(sr.residentIdentity.personId===i.personId&&sr.bornMonth===u.bornMonth,"saved founder retains permanent identity after twelve months");
+   hydrateWorldSave(core,JSON.parse(JSON.stringify(first)));
+   check(diffCanonicalWorldSave(first,strict()).matched,"a second-generation V19 save reads again without identity or life changes");
    if(kind==="popular"){
      hydrateWorldSave(core,JSON.parse(JSON.stringify(actualSave)));
      const polity=core.teams.find(t=>t.name===created.name)!,oldParent=core.teams.find(t=>t.name===parent.name)!,town=polity.cities[0],firstKing=Dynasty.getCurrentRuler(polity.name)!;
