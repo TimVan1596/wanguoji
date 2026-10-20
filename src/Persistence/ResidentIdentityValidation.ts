@@ -24,7 +24,7 @@ export function validateResidentIdentities(save:WorldSaveV1):string[]{
     const bindings=users.filter(u=>u.historicalPersonId===i.personId||u.rulerId===r.rulerId||(u.userId===i.sourceUserId&&u.bornMonth===i.bornMonth&&u.name===i.sourceUserLabel));
     if(bindings.length>1)errors.push("resident person has duplicate live entities");
     for(const u of bindings){
-      if(u.historicalPersonId!==i.personId||u.userId!==i.sourceUserId||u.name!==i.sourceUserLabel||u.bornMonth!==r.bornMonth||u.militaryPersonId||r.deathMonth!==undefined||
+      if(u.historicalPersonId!==i.personId||u.userId!==i.sourceUserId||u.name!==i.sourceUserLabel||u.bornMonth!==r.bornMonth||(u.militaryPersonId!==undefined&&u.militaryPersonId!==i.military?.personId)||r.deathMonth!==undefined||
         (u.role==="RULER"&&(u.rulerId!==r.rulerId||u.factionId!==d.factionId||d.currentRulerId!==r.rulerId||r.status!=="ruling")))errors.push("resident person life/entity mismatch");
     }
     const accession=events.find((e:any)=>e.type==="ruler-acceded"&&e.rulerId===r.rulerId);

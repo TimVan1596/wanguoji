@@ -153,6 +153,6 @@ describe("tenure and historical role integrity", () => {
       expect(JSON.stringify(ctx)).toBe(canonical); expect(worldRandom.exportState()).toEqual(rng);
       expect(before.evidence.roles).not.toContain("SHORT_REIGN");
     }
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(19);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(20);
   });
 });
