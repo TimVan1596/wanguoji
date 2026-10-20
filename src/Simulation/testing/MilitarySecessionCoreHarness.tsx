@@ -20,7 +20,7 @@ import {formatHistoryEventTitle} from "../../History/HistoryRenderRules";
 export async function runMilitarySecessionCore(seed="military-secession-z7"){
  const {core,game}=await createNaturalCore(seed),checks:string[]=[];
  const check=(yes:unknown,label:string)=>{if(!yes)throw new Error(label);checks.push(label);};
- const step=()=>{for(let n=0;n<30;n++)(core as any).advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit("postupdate");};
+ const step=()=>{const before=core.simulator!.year;for(let n=0;n<30;n++)(core as any).advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit("postupdate");if(core.simulator!.year===before)throw new Error(`Core clock stopped at ${before}; last check: ${checks[checks.length-1]}`);};
  const strict=()=>{const s=exportWorldSave(core),v=validateWorldSave(s);if(!v.valid)throw new Error(v.errors.join("; "));return s;};
  try{
   let chosen:ReturnType<typeof Military.getPoliticalInfluence>["candidates"][number]|undefined,parent:typeof core.teams[number]|undefined;

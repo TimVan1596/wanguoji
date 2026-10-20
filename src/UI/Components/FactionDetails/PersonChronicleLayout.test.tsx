@@ -24,6 +24,6 @@ it("labels an eight-event selection explicitly while the complete archive remain
     evidence={<div>{all.map(e=><div key={e.id}>{e.content}</div>)}</div>}/>);
   const publicPart=html.slice(0,html.indexOf("<summary>详细记录</summary>"));
   expect(publicPart.match(/原纪年【/g)).toHaveLength(8);expect(publicPart).toContain("重大纪年（精选8条／共21条）");
-  expect(html).not.toContain("原纪年【10】");expect(html).not.toContain("原纪年【20】");expect(html).toContain("展开全部（共21条）");
+  expect(html).not.toContain("原纪年【10】");expect(html).toContain("原纪年【20】");expect(html).toContain("展开全部（共21条）");
   expect(html).not.toMatch(/上一页|下一页|加载更多|overflow-y|max-height/);
 });

@@ -27,6 +27,7 @@ export function assessMilitarySecession(city:City,month:number):{users:User[];ev
   const person=Military.getPerson(candidate.personId),formation=Military.getFormation(candidate.commandId);
   const commander=[...owner.users].find(u=>u.id===candidate.sourceUserId&&u.militaryPersonId===candidate.personId);
   if(!person||!formation||!commander||!commander.matchesMilitaryLife(person)||!local(commander)||!splitEstablishedPersonalName(person.personalName))continue;
+  if(formation.memberUnitIds.length!==candidate.memberUnitIds.length||formation.memberUnitIds.some(id=>!candidate.memberUnitIds.includes(id)))continue;
   const office=Military.getCaptureOffice(formation.commandId,person.personId,owner.name,month);if(!office)continue;
   const followers=[...owner.users].filter(u=>u!==commander&&!u.militaryPersonId&&formation.memberUnitIds.includes(u.player.logicalUnitId??"")&&local(u))
    .sort((a,b)=>a.loyalty-b.loyalty||a.id-b.id||a.bornMonth-b.bornMonth).slice(0,Math.max(1,Math.floor((candidate.memberUnitIds.length-1)/2)));
