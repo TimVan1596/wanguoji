@@ -1128,21 +1128,6 @@ export default class WorldEventSystem {
       if (split) {
         const rebel = split.team;
         this.regional.created(rebel,year,"split");
-        const transferredCities = split.transferredCities;
-        WorldHistory.addEmpireSplit(
-          year,
-          team.name,
-          rebel.name,
-          transferredCities.map((city) => city.name),
-          transferredCities.map((city) => city.id),
-          DynastyRegistry.getRulerDisplay(rebel.name),
-          DynastyRegistry.getCurrentRuler(rebel.name)?.id,
-          `founding-${rebel.name}-${year}`,
-          transferredCities[0]?.id,
-          transferredCities[0]?.name,
-          { transferredPopulation: split.transferredPopulation, externalPopulation: split.externalPopulation, ...split.foundingMetadata }
-        );
-        DynastyRegistry.recordRebellion(team.name);
         this.fractureUntilMonth = year + 60;
         return;
       }

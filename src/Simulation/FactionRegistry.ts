@@ -379,6 +379,10 @@ class FactionRegistryStore {
     DynastyRegistry.initializeFaction(team, year);
     DynastyRegistry.completeResidentFounding(team,year);
     team.setOrigin({ ...team.origin, foundingRulerId: DynastyRegistry.getCurrentRuler(team.name)?.id });
+    WorldHistory.addEmpireSplit(year,previousOwner.name,team.name,transferredCities.map(c=>c.name),transferredCities.map(c=>c.id),
+      DynastyRegistry.getRulerDisplay(team.name),DynastyRegistry.getCurrentRuler(team.name)?.id,`founding-${team.name}-${year}`,coreCity.id,coreCity.name,
+      {transferredPopulation:lowLoyaltyUsers.length,externalPopulation:0,...this.getFoundingMetadata(team)});
+    DynastyRegistry.recordRebellion(previousOwner.name);
     FactionLifetimeRecords.observe(team, year);
     return { team, transferredCities, transferredPopulation: lowLoyaltyUsers.length, externalPopulation: 0, foundingMetadata:this.getFoundingMetadata(team) };
   }
