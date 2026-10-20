@@ -427,6 +427,7 @@ export default class City {
       }
     }
 
+    MilitaryCommandRegistry.clearObsoleteCityTarget?.(this.id,newOwner.name);
     if(restoredFromExile){
       DynastyRegistry.markRestored(newOwner,year,this.name);
       WorldExiles.restore(newOwner.name);
@@ -536,6 +537,7 @@ export default class City {
     } else if (oldOwner.cities.length === 0) {
       Game.Core.handleFactionExtinction(oldOwner, newOwner, this, year, historyGroupId);
     }
+    MilitaryCommandRegistry.clearObsoleteCityTarget?.(this.id,newOwner.name);
     return true;
   }
 
@@ -906,6 +908,7 @@ export default class City {
     this.fortifiedCells = [];
     this.refreshZoneVisual();
     WorldHistory.addCityDestroyed(year, archived);
+    MilitaryCommandRegistry.clearObsoleteCityTarget?.(this.id);
     this.zoneOutline?.destroy();
     this.zoneOutline = undefined;
     if (owner && wasCapital && owner.status === "ACTIVE") {

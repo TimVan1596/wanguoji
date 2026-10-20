@@ -13,6 +13,19 @@ function user(id: number, faction: any, unitId: string, bornMonth = -300) {
 }
 
 describe("persistent military command registry", () => {
+  it("clears a newly friendly or destroyed target immediately without rolling a replacement order",()=>{
+    const registry=new MilitaryCommandRegistryStore(),qin:any={name:"qin",status:"ACTIVE",users:new Set(),cities:[]};
+    const wei:any={name:"wei",status:"ACTIVE",users:new Set(),cities:[]};
+    qin.users.add(user(1,qin,"unit-1"));qin.users.add(user(2,qin,"unit-2"));
+    const draw=vi.spyOn(worldRandom,"next").mockReturnValue(0);
+    registry.update(12,[qin,wei],[{id:"target",ownerFactionId:"wei",ownerTeam:wei,block:{x:32,y:0}} as any]);
+    draw.mockRestore();const formation=registry.getFormations()[0],before=worldRandom.exportState();
+    expect(formation.targetCityId).toBe("target");
+    registry.clearObsoleteCityTarget("target","third-country");expect(formation.targetCityId).toBe("target");
+    registry.clearObsoleteCityTarget("target","qin");expect(formation.targetCityId).toBeUndefined();expect(formation.orderStartMonth).toBeUndefined();
+    expect(worldRandom.exportState()).toEqual(before);expect(formation.status).toBe("ACTIVE");expect(formation.memberUnitIds).toEqual(["unit-1","unit-2"]);
+  });
+
   it("derives adult birth months without consuming the world random stream", () => {
     const before = worldRandom.exportState();
     const born = deriveUserBornMonth(7, "甲", "qin", 120);

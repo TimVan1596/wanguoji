@@ -12,11 +12,11 @@ export default function PersonChronicleLayout({title,identity,biographyTitle,bio
   return <Box sx={{minWidth:0,overflowWrap:"anywhere"}}>
     {title}{identity}
     <ChronicleSection title={biographyTitle}>{biography.map(line=><Typography key={line} fontSize="0.82rem">{line}</Typography>)}</ChronicleSection>
-    <PersonMilestones key={personKey} title={milestoneTitle} total={milestoneTotal??milestones.length} selected={milestones} all={allMilestones} />
+    <PersonMilestones key={`milestones-${personKey}`} title={milestoneTitle} total={milestoneTotal??milestones.length} selected={milestones} all={allMilestones} />
     {governance}{children}
     {assessment.length>0&&<ChronicleSection title="史评">{assessment.map(line=><Typography key={line} fontSize="0.82rem">{line}</Typography>)}</ChronicleSection>}
     {voice&&<ChronicleSection title="史家曰"><Typography fontSize="0.82rem">{voice}</Typography></ChronicleSection>}
-    <LazyEvidence key={personKey} evidence={evidence}/>
+    <LazyEvidence key={`evidence-${personKey}`} evidence={evidence}/>
   </Box>;
 }
 

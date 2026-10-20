@@ -83,10 +83,15 @@ export async function runResidentFounderCore(seed="resident-z6"){
      const next=worldRandom.next;worldRandom.next=()=>0;
      try{
        town.capture(oldParent,0);check(polity.status==="EXILED","real final-city capture creates the first exile episode");
+       (core.simulator as any).clock.importState({worldMonth:120,elapsedMs:0,running:false});
        firstKing.naturalDeathYear=120;firstKing.plannedEndYear=120;Dynasty.update(120,core.teams);
        const successor=Dynasty.getCurrentRuler(polity.name)!;check(successor.id!==firstKing.id&&successor.status==="exiled","a second monarch really succeeds during long exile");
+       (core.simulator as any).clock.importState({worldMonth:156,elapsedMs:0,running:false});
        town.capture(polity,156);
        check(polity.status as string==="ACTIVE"&&successor.status as string==="ruling"&&!WorldExiles.get(polity.name),"actual recapture restores polity, royal role and exile registry together");
+       // The restored successor has its own genuine population loyalty; require a remnant for this second exile scenario.
+       for(const member of polity.users)member.loyalty=100;
+       (core.simulator as any).clock.importState({worldMonth:163,elapsedMs:0,running:false});
        town.capture(oldParent,163);
        const rows=History.getEventsForFaction(polity.name),exiles=rows.filter(e=>e.type==="faction-exiled"),restores=rows.filter(e=>e.type==="faction-restored");
        check(exiles.length===2&&restores.length===1&&restores[0].year===156&&restores[0].metadata?.restorationTrigger==="MILITARY_RECAPTURE","two real losses have a recorded intervening military restoration");

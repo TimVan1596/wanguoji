@@ -527,6 +527,13 @@ export class MilitaryCommandRegistryStore {
       ? person.personalName : undefined;
   }
 
+  /** A friendly or destroyed target is already ignored by movement; clear its stale persisted order without rolling a new one. */
+  clearObsoleteCityTarget(cityId:string,ownerFactionId?:string){
+    for(const f of this.formations.values())if(f.status==="ACTIVE"&&f.targetCityId===cityId&&(!ownerFactionId||f.factionId===ownerFactionId)){
+      f.targetCityId=undefined;f.orderStartMonth=undefined;this.lastArrivalTargetByCommand.delete(f.commandId);this.longRangeOrderSamples.delete(f.commandId);this.diagnostics.invalidatedTargets++;
+    }
+  }
+
   getCaptureOffice(commandId:string|undefined,personId:string|undefined,factionId:string,month:number){
     if(!this.getCaptureIdentity(commandId,personId,factionId,month))return undefined;
     return this.people.get(personId!)?.appointments.find(a=>a.commandId===commandId&&a.factionId===factionId&&a.endMonth===undefined)?.officeHistory?.at(-1)?.office;

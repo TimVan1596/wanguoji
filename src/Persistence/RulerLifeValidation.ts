@@ -28,7 +28,7 @@ export function validateRulerLifeRecord(r: Record<string, any>, worldMonth: numb
   if (r.status === "deposed" && r.endReason !== "被废") bad("invalid deposition reason");
   if (r.status === "deposed" && hasDeath) bad("deposed living person cannot have an actual death record");
   if (r.status === "deposed" && (r.templeName || r.posthumousEpithet)) bad("deposed ruler cannot have a posthumous title before actual death");
-  if (r.accessionCause === "DEPOSITION" && (!Number.isSafeInteger(r.accessionMonth) || r.reignOrdinal === undefined || !["ruling", "deposed", "dead", "exiled"].includes(r.status))) bad("invalid deposition accession");
+  if (r.accessionCause === "DEPOSITION" && (!Number.isSafeInteger(r.accessionMonth) || r.reignOrdinal === undefined || !["ruling", "deposed", "dead", "exiled", "abdicated", "politically-ended"].includes(r.status))) bad("invalid deposition accession");
   if (!hasDeath && (r.templeName || r.posthumousEpithet)) bad("posthumous title requires actual death");
   if (r.reignOrdinal !== undefined && (!Number.isSafeInteger(r.reignOrdinal) || r.reignOrdinal < 1)) bad("invalid reign ordinal");
   if (r.chronicle !== undefined && (!r.chronicle || typeof r.chronicle !== "object" || Array.isArray(r.chronicle))) bad("invalid chronicle");

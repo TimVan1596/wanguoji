@@ -50,13 +50,16 @@ export async function runMilitarySecessionCore(seed="military-secession-z7"){
   const projection=(s:ReturnType<typeof strict>)=>{const c=canonicalWorldSaveProjection(s);return {...c,worldRandom:undefined};};
   const before=strict(),baseline=JSON.stringify(projection(before)),oldTeams=core.teams.length;
   const create=(cities=[city])=>Factions.createSplitFaction(parent!,cities,month,100);
-  const verifyRollback=()=>{check(JSON.stringify(projection(strict()))===baseline,"failed transaction restores complete canonical world except attempted RNG draws");check(Military.getPerson(personId)!.status==="ACTIVE"&&Military.getFormation(commandId)!.status==="ACTIVE"&&commander.team===parent&&commander.role==="NORMAL"&&!commander.historicalPersonId&&core.teams.length===oldTeams,"rollback restores command, people, faction registration and live roles");};
+  const verifyRollback=()=>{const actual=projection(strict()),diff=diffCanonicalWorldSave(JSON.parse(baseline),actual as any);if(!diff.matched)console.error("Error Rollback diff",JSON.stringify(diff));check(diff.matched,"failed transaction restores complete canonical world except attempted RNG draws");check(Military.getPerson(personId)!.status==="ACTIVE"&&Military.getFormation(commandId)!.status==="ACTIVE"&&commander.team===parent&&commander.role==="NORMAL"&&!commander.historicalPersonId&&core.teams.length===oldTeams,"rollback restores command, people, faction registration and live roles");};
   const initialize=Dynasty.initializeFaction;
   Dynasty.initializeFaction=function(...args:Parameters<typeof initialize>){if(args[3]?.origin.military)throw new Error("injected military ruler initialization failure");return initialize.apply(this,args);};
   try{check(!create(),"royal initialization failure aborts military split");}finally{Dynasty.initializeFaction=initialize;}verifyRollback();
   const register=core.addRuntimeTeam;core.addRuntimeTeam=function(t){register.call(this,t);throw new Error("injected post-registration failure");};
   try{check(!create(),"registered faction failure aborts military split");}finally{core.addRuntimeTeam=register;}verifyRollback();
-  const revolt=secondCity.revoltTo;secondCity.revoltTo=function(...args:Parameters<typeof revolt>){const result=revolt.apply(this,args);if(result)throw new Error("injected second-city post-mutation failure");return result;};
+  const revolt=secondCity.revoltTo;
+  secondCity.revoltTo=()=>false;
+  try{check(!create([city,secondCity]),"second-city refusal rolls back the whole military transaction");}finally{secondCity.revoltTo=revolt;}verifyRollback();
+  secondCity.revoltTo=function(...args:Parameters<typeof revolt>){const result=revolt.apply(this,args);if(result)throw new Error("injected second-city post-mutation failure");return result;};
   try{check(!create([city,secondCity]),"failure after a second city changes owner rolls back both cities");}finally{secondCity.revoltTo=revolt;}verifyRollback();
   const writer=History.addEmpireSplit;History.addEmpireSplit=()=>{throw new Error("injected final history writer failure");};
   try{check(!create(),"failure at final split event rolls back the prepared country and territory");}finally{History.addEmpireSplit=writer;}verifyRollback();

@@ -332,6 +332,7 @@ function formatHistoryEventTitleBase(
     const parentName = name(event.targetFactionId);
     const cities = stringMeta(event, "foundingCityNames");
     const childName = name(event.actorFactionId);
+    const frozen=formatFoundingIdentity(event,childName);if(frozen)return frozen;
     return cities
       ? `${cities}脱离${parentName}，${childName}势力建立`
       : `${parentName}发生大规模分裂，${childName}势力建立`;
@@ -441,6 +442,7 @@ export function formatHistoryEventDescription(
       : event.description;
   }
   if (event.type === "empire-split") {
+    if(formatFoundingIdentity(event,name(event.actorFactionId)))return undefined;
     return event.description
       ? event.description.replace(event.targetFactionId ?? "", name(event.targetFactionId))
       : undefined;

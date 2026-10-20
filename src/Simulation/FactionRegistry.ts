@@ -379,7 +379,11 @@ class FactionRegistryStore {
     if (!coreCity.revoltTo(team, year, () => this.prepareFoundingPopulation(team, previousOwner, lowLoyaltyUsers, year, "EMPIRE_SPLIT_TRANSFER", coreCity, military?.evidence,Boolean(military)))) {
       rollback?.();this.discardUnregisteredFaction(team); return undefined;
     }
-    const transferredCities = [coreCity, ...cities.slice(1).filter(city => city.revoltTo(team, year))];
+    const transferredCities = [coreCity, ...cities.slice(1).filter(city => {
+      const transferred=city.revoltTo(team,year);
+      if(military&&!transferred)throw new Error("Military split city transfer refused");
+      return transferred;
+    })];
     this.transferNearbyTerritory(previousOwner, team, coreCity);
     DynastyRegistry.initializeFaction(team, year);
     DynastyRegistry.completeResidentFounding(team,year);

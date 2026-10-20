@@ -11,6 +11,7 @@ export function captureMilitarySplitRollback(parent:Team,created:Team,participan
  const core=Game.Core,teams=new Map(core.teams.map(t=>[t.name,t]));
  const cities=parent.cities.map(c=>({city:c,state:c.exportState(Math.round(c.block.x/Game.BlockSize),Math.round(c.block.y/Game.BlockSize)),cells:[...c.fortifiedCells]}));
  const oldCities=[...parent.cities],home=parent.homeBlock;
+ const collectionOrder=core.teams.map(t=>({t,users:[...t.users],players:t.players.getChildren().slice(),blocks:t.blocks.getChildren().slice()}));
  const blocks=core.map!.blocks.flat().map(b=>({b,state:{owner:b.team,isHome:b.isHome,hp:b.hp,city:b.city,isCityCenter:b.isCityCenter}}));
  const military=Military.snapshotTransaction(),dynasty=Dynasty.exportState(),history=History.exportState(),lifetime=Lifetime.exportState();
  const people=participants.map(u=>({u,team:u.team,role:u.role,rulerId:u.rulerId,historicalPersonId:u.historicalPersonId}));
@@ -26,5 +27,8 @@ export function captureMilitarySplitRollback(parent:Team,created:Team,participan
   Dynasty.importState(dynasty);Military.rollbackTransaction(military);History.importState(history);Lifetime.importState(lifetime);
   core.rollbackRuntimeTeam(created);
   for(const x of cities){core.registerCityInteraction(x.city);try{x.city.rebuildRuntimeVisuals();}catch{/* Canonical state and interaction bounds are already restored. */}}
+  // Runtime reconstruction must preserve canonical flags and iteration order too.
+  for(const x of blocks)x.b.isHome=x.state.isHome;
+  for(const x of collectionOrder){x.t.users.clear();x.users.forEach(u=>x.t.users.add(u));x.t.players.clear(false,false);x.players.forEach(p=>x.t.players.add(p));x.t.blocks.clear(false,false);x.blocks.forEach(b=>x.t.blocks.add(b));}
  };
 }
