@@ -1,3 +1,4 @@
+import {assessPopularSupport,hasPopularPoliticalCrisis} from "../PopularRebellionSupport";
 import {createNaturalCore} from "./NaturalCoreHarness";
 import Military from "../../Politics/MilitaryCommandRegistry";
 import {readMilitaryParticipation} from "../../Politics/MilitaryPoliticalInfluence";
@@ -11,8 +12,15 @@ import {SIMULATION_FIXED_STEP_MS} from "../SimulationDriver";
 
 /** Stable full-world fingerprint, excluding only version label and creation timestamp.
  * Measurement is test-session only and consumes no production randomness. */
-async function fingerprint(snapshot: ReturnType<typeof exportWorldSave>) {
+async function fingerprint(snapshot: ReturnType<typeof exportWorldSave>,baseFacts=false) {
   const {appVersion: _version, ...canonical} = canonicalWorldSaveProjection(snapshot);
+  if(baseFacts){
+    canonical.worldHistory=structuredClone(canonical.worldHistory);
+    for(const e of canonical.worldHistory.events as any[]){
+      if(e.type==="military-office-granted"){delete e.rulerId;if(e.metadata)delete e.metadata.authorizingRulerTitle;}
+      if(["city-captured","city-recovered","capital-fallen"].includes(e.type)&&e.metadata){delete e.metadata.commanderOffice;if(e.type==="city-recovered")delete e.metadata.founderCapital;}
+    }
+  }
   const ordered = (value: any): any => Array.isArray(value) ? value.map(ordered) : value && typeof value === "object"
     ? Object.fromEntries(Object.keys(value).sort().filter(k => value[k] !== undefined).map(k => [k, ordered(value[k])])) : value;
   const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(JSON.stringify(ordered(canonical))));
@@ -33,11 +41,15 @@ export async function runMilitaryBalance(seed:string,years=100){
     }
     return original.call(this,month,...args);
   };
-  const checkpoints:any[]=[];
+  const checkpoints:any[]=[],monthlyExposure={cityMonths:0,politicalCityMonths:0,supporters:0,identityBlocked:0,geographyBlocked:0,discontentBlocked:0};
   try{
     for(let m=1;m<=years*12;m++){
       for(let n=0;n<30;n++)(core as any).advanceLogicalStep(SIMULATION_FIXED_STEP_MS);
       core.scene.sys.events.emit("postupdate");
+      for(const city of core.allCities){
+        if(city.destroyed)continue;monthlyExposure.cityMonths++;
+        if(hasPopularPoliticalCrisis(city,m,core.totalCells)){const p=assessPopularSupport(city,m);monthlyExposure.politicalCityMonths++;monthlyExposure.supporters+=p.users.length;monthlyExposure.identityBlocked+=p.identityBlocked;monthlyExposure.geographyBlocked+=p.outsideArea;monthlyExposure.discontentBlocked+=p.discontentBlocked;}
+      }
       const formations=Military.getFormations().filter(f=>f.status==="ACTIVE");
       for(const f of formations){sizeSamples[f.memberUnitIds.length]=(sizeSamples[f.memberUnitIds.length]??0)+1;activeFormationSamples++;totalFormationMembers+=f.memberUnitIds.length;}
       for(const t of core.teams.filter(t=>t.status==="ACTIVE")){
@@ -54,7 +66,7 @@ export async function runMilitaryBalance(seed:string,years=100){
         const p=core.getPopulationSummary();
         core.setWorldRunning(false);
         const snapshot=exportWorldSave(core),validation=validateWorldSave(snapshot);
-        const canonicalSha256 = await fingerprint(snapshot);
+        const canonicalSha256 = await fingerprint(snapshot),baseFactsSha256=await fingerprint(snapshot,true);
         core.setWorldRunning(true);
         if(!validation.valid)throw new Error(`Invalid natural snapshot: ${validation.errors.join("; ")}`);
         if(p?.unexplainedWorldDifference!==0)throw new Error("Unexplained population difference");
@@ -67,7 +79,7 @@ export async function runMilitaryBalance(seed:string,years=100){
           meanServiceMonths:Military.getOfficeSummary(m).meanServiceMonths,matureEnded:matureEnded.length,matureEndedNeverPromoted:matureEnded.filter(a=>(a.officeHistory?.length??0)<2).length,
           politicalCandidateChecks,militaryPoliticalEvents:events.filter(e=>readMilitaryParticipation(e)).length,depositions:count("ruler-deposed"),usurpations:count("dynasty-usurped"),
           extinctions:count("faction-extinct"),unifications:count("world-unification"),splits:count("empire-split"),restorations:count("faction-restored"),rebellions:count("rebel-faction-founded"),
-          canonicalSha256, worldRandomPosition:snapshot.worldRandom.position,
+          canonicalSha256,baseFactsSha256,monthlyExposure:{...monthlyExposure},issuingRulerGrants:events.filter(e=>e.type==="military-office-granted"&&e.rulerId&&e.metadata?.authorizingRulerTitle).length, worldRandomPosition:snapshot.worldRandom.position,
           regional:(core.simulator as any).events.getRegionalRebellionSnapshot(),
           militaryRoyalOverlap:snapshot.users.filter(u=>u.militaryPersonId&&(u.role==="RULER"||u.rulerId)).length,
           duplicatePopulationIds:snapshot.users.length-new Set(snapshot.users.map(u=>u.userId)).size,
