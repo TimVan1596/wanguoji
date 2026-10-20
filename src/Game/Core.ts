@@ -476,6 +476,7 @@ export default class Core {
     year: number,
     historyGroupId?: string
   ) {
+    if(fallenTeam.status!=="ACTIVE")return; // A collapse episode cannot be settled again while already exiled/ended.
     const users = [...fallenTeam.users];
     let surrenderedPopulation = 0;
     let disbandedPopulation = 0;

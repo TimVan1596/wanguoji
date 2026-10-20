@@ -278,7 +278,7 @@ export default class City {
 
   capture(newOwner: Team, year: number, rulerId?: string, commandId?: string, commanderPersonId?: string) {
     const oldOwner = this.ownerTeam;
-    if (!oldOwner || oldOwner === newOwner) {
+    if (!oldOwner || oldOwner === newOwner || newOwner.status==="EXTINCT") {
       return;
     }
 
@@ -430,7 +430,8 @@ export default class City {
     if(restoredFromExile){
       DynastyRegistry.markRestored(newOwner,year,this.name);
       WorldExiles.restore(newOwner.name);
-      const restorationId=WorldHistory.addFactionRestored(year,newOwner.name,this.name,0,this.id,`restoration-${newOwner.name}-${year}-${this.id}`);
+      const capture=WorldHistory.getEventsForFaction(newOwner.name).find(e=>e.actorFactionId===newOwner.name&&e.cityId===this.id&&(e.monthIndex??e.year)===year&&["city-captured","city-recovered","capital-fallen"].includes(e.type));
+      const restorationId=WorldHistory.addFactionRestored(year,newOwner.name,this.name,0,this.id,`restoration-${newOwner.name}-${year}-${this.id}`,undefined,capture?.id);
       DynastyRegistry.recordRestoration(newOwner.name,restorationId);
       WorldExiles.recordRestoration(newOwner.name,year,"OTHER");
     }

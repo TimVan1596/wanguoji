@@ -13,7 +13,7 @@ import {validateWorldSave} from "../../Persistence/WorldSaveValidator";
 import {diffCanonicalWorldSave} from "../../Persistence/WorldSaveSchema";
 
 /** Controlled real Core transactions, NOT a natural rebellion/appointment frequency experiment.
- * Documents the existing separate royal identity; never claims a resident is the new ruler. */
+ * Checks the resident founder and the separate real military appointment. */
 export async function runRebelMilitaryIdentity(seed="rebel-identity-z4") {
   const {core,game}=await createNaturalCore(seed),checks:string[]=[];
   const check=(ok:unknown,label:string)=>{if(!ok)throw new Error(label);checks.push(label);};
@@ -38,12 +38,12 @@ export async function runRebelMilitaryIdentity(seed="rebel-identity-z4") {
     if(!rebel)throw new Error("No rebel polity");
     const supporters=originals.filter(u=>u.team===rebel),ruler=Dynasty.getCurrentRuler(rebel.name)!;
     check(supporters.length>0&&supporters.every(u=>!owner.users.has(u)&&rebel.users.has(u)),"supporter Users transfer once, retaining their original objects and birth identities");
-    check(!supporters.includes(rebel.rulerUser!)&&supporters.every(u=>u.role==="NORMAL"&&!u.rulerId),"current founder is a separately generated royal identity, NOT a bound resident leader");
+    check(supporters.includes(rebel.rulerUser!)&&ruler.residentIdentity?.sourceUserId===rebel.rulerUser!.id,"founder is the same real transferred resident with a permanent royal life");
     check(core.teams.reduce((n,t)=>n+t.users.size,0)-before===(rebel.rulerUser?1:0)-(owner.rulerUser?0:1),"ordinary transfer conserves population; existing ruler lifecycle additions/removals are separate");
     check(History.getEventsForFaction(rebel.name).filter(e=>e.type==="rebel-faction-founded").length===1,"one canonical popular founding event");
-    const candidates=supporters.filter(u=>u.bornMonth<=-216&&deriveMilitaryLifeSchedule({personId:"military-person-1",bornMonth:u.bornMonth}).retirementMonth>0);
+    const candidates=supporters.filter(u=>u.role==="NORMAL"&&u.bornMonth<=-216&&deriveMilitaryLifeSchedule({personId:"military-person-1",bornMonth:u.bornMonth}).retirementMonth>0);
     check(candidates.length>=1&&supporters.length>=2,"rebel has real eligible military candidates and existing members");
-    const commander=candidates[0],members=[commander,...supporters.filter(u=>u!==commander)].slice(0,12);
+    const commander=candidates[0],members=[commander,...supporters.filter(u=>u!==commander&&u.role==="NORMAL")].slice(0,12);
     // Invoke the same appointment transaction used by the annual lottery; no claim about its probability.
     check((Military as any).appoint(commander,rebel.name,0,members.map(u=>u.player.logicalUnitId)),"a provisional rebel can receive a real commander, formation and initial office");
     const person=Military.getPerson(commander.militaryPersonId!)!,formation=Military.getFormations().find(f=>f.commanderPersonId===person.personId)!;
@@ -66,8 +66,8 @@ export async function runRebelMilitaryIdentity(seed="rebel-identity-z4") {
     check(commander.bornMonth===born&&core.teams.reduce((n,t)=>n+t.users.size,0)===population&&members.slice(1).every(u=>u.team===rebel),"transfer preserves identity/population and does not silently transfer the old troops");
     const save=strict();
     const resume=()=>{hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return strict();};
-    const first=resume(),second=resume();check(diffCanonicalWorldSave(first,second).matched,"V18 rebel polity and military histories resume deterministically for twelve months");
+    const first=resume(),second=resume();check(diffCanonicalWorldSave(first,second).matched,"V19 rebel polity and military histories resume deterministically for twelve months");
     check(second.registries.militaryCommandRegistry.people.some(p=>p.personId===person.personId&&p.appointments[0].factionId===rebel.name),"old rebel appointment history survives save, load and continuation");
-    return {seed,scope:"controlled real Core transactions; no resident-ruler identity or military revolt implemented",checks,supporterCount:supporters.length,sourceUserId:commander.id,personId:person.personId,commandId:formation.commandId,saveSchemaVersion:18};
+    return {seed,scope:"controlled real Core transactions; resident founder identity implemented; no military revolt",checks,supporterCount:supporters.length,sourceUserId:commander.id,personId:person.personId,commandId:formation.commandId,saveSchemaVersion:19};
   } finally {game.destroy(true);}
 }

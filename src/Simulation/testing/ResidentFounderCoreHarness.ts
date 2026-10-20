@@ -1,3 +1,6 @@
+import worldRandom from "../WorldRandom";
+import WorldExiles from "../WorldExiles";
+import {getRulerHistoricalEvents} from "../../Politics/RulerChronicle";
 import Lifetime from "../FactionLifetimeRecord";
 import {createNaturalCore} from "./NaturalCoreHarness";
 import Factions from "../FactionRegistry";
@@ -28,6 +31,7 @@ export async function runResidentFounderCore(seed="resident-z6"){
    for(const u of parent.users)if(u.role==="NORMAL"){u.player.setPosition(city.block.x+1,city.block.y+1);(u.player.body as Phaser.Physics.Arcade.Body).reset(u.player.x,u.player.y);}
    const eligible=assessPopularSupport(city,0).users;
    check(eligible.length>=2,"actual local ordinary residents support the crisis");
+   const originalMovement=eligible.map(u=>u.player.exportMovementState(u.player.logicalUnitId!));
    const originalUsers=core.teams.flatMap(t=>[...t.users]),before=originalUsers.length,ownerCount=parent.users.size;
    const beforeHistory=JSON.stringify(History.exportState()),beforeDynasty=JSON.stringify(Dynasty.exportState());
    const create=()=>kind==="popular"?Factions.createRebelFaction({city,year:0,factionType:"REBEL"}):Factions.createSplitFaction(parent,[city],0,100)?.team;
@@ -39,6 +43,10 @@ export async function runResidentFounderCore(seed="resident-z6"){
    const register=core.addRuntimeTeam;core.addRuntimeTeam=()=>false;
    try{check(!create(),"runtime registration failure aborts prepared founder");}finally{core.addRuntimeTeam=register;}
    check(JSON.stringify(Dynasty.exportState())===beforeDynasty&&JSON.stringify(History.exportState())===beforeHistory&&eligible.every(u=>!u.historicalPersonId&&u.role==="NORMAL"&&u.team===parent),"registration rollback restores permanent identity and logical role");
+   core.addRuntimeTeam=function(t){register.call(this,t);throw new Error("injected post-registration collider failure");};
+   try{check(!create(),"exception after runtime registration rolls back the whole prepared faction");}finally{core.addRuntimeTeam=register;}
+   check(core.teams.length===7&&JSON.stringify(Dynasty.exportState())===beforeDynasty,"post-registration rollback removes faction and orphan dynasty");
+   check(eligible.every((u,n)=>{const m=u.player.exportMovementState(u.player.logicalUnitId!);return m.speed===originalMovement[n].speed&&m.speedCoefficient===originalMovement[n].speedCoefficient&&m.sizeCoefficient===originalMovement[n].sizeCoefficient&&m.scale===originalMovement[n].scale;}),"failed political promotion does not alter Player speed or size");
    const created=create();check(created,"production founding succeeds");if(!created)throw new Error("No polity");
    const r=Dynasty.getCurrentRuler(created.name)!,i=r.residentIdentity!,u=created.rulerUser!;
    check(Boolean(i)&&eligible.includes(u)&&originalUsers.includes(u)&&u.historicalPersonId===i.personId,"founder is the actual transferred resident and same live object");
@@ -63,6 +71,28 @@ export async function runResidentFounderCore(seed="resident-z6"){
    check(diffCanonicalWorldSave(first,second).matched,"two V19 hydrations continue identically for twelve production months");
    const sr=(second.dynasties.find(d=>d.factionId===created.name)!.rulers as any[]).find(x=>x.rulerId===r.id);
    check(sr.residentIdentity.personId===i.personId&&sr.bornMonth===u.bornMonth,"saved founder retains permanent identity after twelve months");
+   if(kind==="popular"){
+     hydrateWorldSave(core,JSON.parse(JSON.stringify(actualSave)));
+     const polity=core.teams.find(t=>t.name===created.name)!,oldParent=core.teams.find(t=>t.name===parent.name)!,town=polity.cities[0],firstKing=Dynasty.getCurrentRuler(polity.name)!;
+     polity.formState("验邦",0);
+     for(const member of polity.users)member.loyalty=100;
+     const next=worldRandom.next;worldRandom.next=()=>0;
+     try{
+       town.capture(oldParent,0);check(polity.status==="EXILED","real final-city capture creates the first exile episode");
+       firstKing.naturalDeathYear=120;firstKing.plannedEndYear=120;Dynasty.update(120,core.teams);
+       const successor=Dynasty.getCurrentRuler(polity.name)!;check(successor.id!==firstKing.id&&successor.status==="exiled","a second monarch really succeeds during long exile");
+       town.capture(polity,156);
+       check(polity.status as string==="ACTIVE"&&successor.status as string==="ruling"&&!WorldExiles.get(polity.name),"actual recapture restores polity, royal role and exile registry together");
+       town.capture(oldParent,163);
+       const rows=History.getEventsForFaction(polity.name),exiles=rows.filter(e=>e.type==="faction-exiled"),restores=rows.filter(e=>e.type==="faction-restored");
+       check(exiles.length===2&&restores.length===1&&restores[0].year===156&&restores[0].metadata?.restorationTrigger==="MILITARY_RECAPTURE","two real losses have a recorded intervening military restoration");
+       check(Boolean(rows.find(e=>e.id===restores[0].metadata?.captureEventId&&e.cityId===town.id&&e.actorFactionId===polity.name)),"military restoration references its actual capture event");
+       core.handleFactionExtinction(polity,oldParent,town,164);
+       check(History.getEventsForFaction(polity.name).filter(e=>e.type==="faction-exiled").length===2,"repeated collapse notification during one exile is a no-op");
+       const selected=getRulerHistoricalEvents(rows,successor,polity.name,164,[],8);
+       check(selected.some(e=>e.type==="faction-restored")&&firstKing.deathMonth===120&&successor.deathMonth===undefined,"successor chronicle retains restoration without confusing predecessor death or accession");
+     }finally{worldRandom.next=next;}
+   }
    hydrateWorldSave(core,JSON.parse(JSON.stringify(actualSave)));
    const liveTeam=core.teams.find(t=>t.name===created.name)!,person=Dynasty.getCurrentRuler(created.name)!;
    liveTeam.markExtinct(0);Dynasty.markExtinct(liveTeam,0);
@@ -71,7 +101,7 @@ export async function runResidentFounderCore(seed="resident-z6"){
    Dynasty.update(12,core.teams);
    check(person.status as string==="dead"&&person.deathMonth===12&&!liveTeam.rulerUser,"ended founder's single life expires and cannot be restored");
    results.push({kind,checks,sourceUserId:i.sourceUserId,personId:i.personId,rulerId:r.id,populationBefore:before,populationAfterFounding:before,saveSchemaVersion:19});
-  }finally{game.destroy(true);}
+  }finally{game.destroy(true);(game as any).runDestroy?.();}
  }
  return {seed,scope:"controlled real Core/Phaser production founding and lifecycle",results};
 }

@@ -961,7 +961,8 @@ export class WorldHistoryStore {
     remnantPopulation: number,
     cityId?: string,
     historyGroupId?: string,
-    historicalBasis?: { basis: "FORMER_CAPITAL" | "LONG_RULE"; heldMonths: number; rulerId?: string; trigger?: "WAR_TORN_HISTORICAL_CITY" }
+    historicalBasis?: { basis: "FORMER_CAPITAL" | "LONG_RULE"; heldMonths: number; rulerId?: string; trigger?: "WAR_TORN_HISTORICAL_CITY" },
+    militaryCaptureEventId?: string
   ) {
     this.extinctFactions.delete(teamName);
     return this.addEvent({
@@ -970,7 +971,7 @@ export class WorldHistoryStore {
       category: "politics",
       type: "faction-restored",
       title: `${teamName}国在${cityName}复国`,
-      description: `${remnantPopulation}名${teamName}国残部响应。`,
+      description: militaryCaptureEventId ? `${teamName}既有部众攻取${cityName}，恢复在国政权；本次未新增残部人口。` : `${remnantPopulation}名${teamName}国残部响应。`,
       factionIds: [teamName],
       actorFactionId: teamName,
       cityId,
@@ -978,6 +979,7 @@ export class WorldHistoryStore {
       ...(historicalBasis?.rulerId ? { rulerId: historicalBasis.rulerId } : {}),
       metadata: {
         remnantPopulation,
+        ...(militaryCaptureEventId?{restorationTrigger:"MILITARY_RECAPTURE",captureEventId:militaryCaptureEventId}:{}),
         ...(historicalBasis ? { restorationBasis: historicalBasis.basis, historicalHeldMonths: historicalBasis.heldMonths,
           ...(historicalBasis.trigger ? { restorationTrigger: historicalBasis.trigger } : {}),
           ...(historicalBasis.rulerId ? { rulerId: historicalBasis.rulerId } : {}) } : {}),

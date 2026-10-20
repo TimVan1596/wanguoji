@@ -18,8 +18,8 @@ export async function createNaturalCore(seed:string){
   installPhaser355InputCompatibility(Phaser.VERSION,Phaser.Input.InputPlugin.prototype);
   const game=new Game({type:Phaser.CANVAS,width:1120,height:1120,parent:document.body,scene:[PreloadScene,MainScene],
     audio:{noAudio:true},physics:{default:"arcade",arcade:{}}});
-  for(let i=0;!Game.Core?.simulator&&i<500;i++)await new Promise(r=>setTimeout(r,20));
-  const core=Game.Core;if(!core?.simulator)throw new Error("Core initialization timed out");
+  for(let i=0;(!Game.Core?.simulator||Game.Core.game!==game)&&i<500;i++)await new Promise(r=>setTimeout(r,20));
+  const core=Game.Core;if(!core?.simulator||core.game!==game)throw new Error("Core initialization timed out");
   game.loop.stop();core.startWorld(scenarioToInitialPopulations(warringStatesScenario));core.setWorldRunning(true);
   return {game,core};
 }
