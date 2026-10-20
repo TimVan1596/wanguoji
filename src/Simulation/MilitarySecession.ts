@@ -8,7 +8,7 @@ import {splitEstablishedPersonalName} from "../Politics/NameCulture";
 
 export interface MilitarySecessionEvidence {
  personId:string; commandId:string; sourceFactionId:string; sourceFactionName:string; personalName:string;
- office:string; worldMonth:number; cityId:string; originalMemberUnitIds:string[];
+ office:string; serviceMonths:number; capturedEventIds:string[]; worldMonth:number; cityId:string; originalMemberUnitIds:string[];
  participants:Array<{userId:number;name:string;bornMonth:number;unitId:string;x:number;y:number;positionSource:"PHASER"|"LOGICAL";districtCityId:string;ownedFactionId:string}>;
 }
 /** Source substitution within an already eligible split. No lottery, new opportunity or extra population. */
@@ -33,7 +33,7 @@ export function assessMilitarySecession(city:City,month:number):{users:User[];ev
   if(!followers.length)continue;
   const users=[commander,...followers];
   return {users,evidence:{personId:person.personId,commandId:formation.commandId,sourceFactionId:owner.name,sourceFactionName:owner.displayName,
-   personalName:person.personalName,office,worldMonth:month,cityId:city.id,originalMemberUnitIds:[...candidate.memberUnitIds],
+   personalName:person.personalName,office,serviceMonths:candidate.serviceMonths,capturedEventIds:[...candidate.capturedEventIds],worldMonth:month,cityId:city.id,originalMemberUnitIds:[...candidate.memberUnitIds],
    participants:users.map(u=>{const s=core.logicalUnitRegistry.getEntry(u.player.logicalUnitId!)!.state;return {userId:u.id,name:u.name,bornMonth:u.bornMonth,unitId:u.player.logicalUnitId!,
      x:core.logicalGameplayAuthority?s.logicalX:u.player.x,y:core.logicalGameplayAuthority?s.logicalY:u.player.y,positionSource:core.logicalGameplayAuthority?"LOGICAL":"PHASER",districtCityId:city.id,ownedFactionId:owner.name};})}};
  }
