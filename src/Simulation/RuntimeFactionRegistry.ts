@@ -23,6 +23,11 @@ export class RuntimeFactionRegistry<T extends RuntimeFactionEntry> {
     return true;
   }
 
+  unregister(entry:T) {
+    if(this.byName.get(entry.name)!==entry)return;
+    this.byName.delete(entry.name);this.entries=this.entries.filter(e=>e!==entry);
+  }
+
   get(name: string) {
     return this.byName.get(name);
   }

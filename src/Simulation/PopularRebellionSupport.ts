@@ -37,7 +37,7 @@ export function assessPopularSupport(city: City, month: number) {
       if(typeof x==="number"&&typeof y==="number"&&Number.isFinite(x)&&Number.isFinite(y)&&core.map.blocks?.[Math.floor(x/Game.BlockSize)]?.[Math.floor(y/Game.BlockSize)]?.team===owner)result.spatial.referenceWithOwnedPosition++;
     }
     if(!id||idCounts.get(user.id)!==1||unitCounts.get(id)!==1||!s||e?.player!==p||!s.alive||s.unitId!==id||s.userId!==user.id||s.factionId!==owner.name||s.role!=="NORMAL"||s.rulerId||
-      user.isDestroyed||user.team!==owner||user.role!=="NORMAL"||user.rulerId||user.militaryPersonId||!Number.isSafeInteger(user.id)||!Number.isSafeInteger(user.bornMonth)||
+      user.isDestroyed||user.team!==owner||user.role!=="NORMAL"||user.rulerId||user.militaryPersonId||user.historicalPersonId||!Number.isSafeInteger(user.id)||!Number.isSafeInteger(user.bornMonth)||
       p.user!==user||p.team!==owner||p.role!=="NORMAL"||p.rulerId||!p.active||p.parent||p.children?.length||user.slaveGroup?.npcs?.size||user.slaveGroup?.children?.size||
       seenUnits.has(id)||seenIds.has(user.id)||assigned.length>1||assigned.some(f=>f.factionId!==owner.name||!remaining.get(f.commandId))){result.identityBlocked++;continue;}
     seenUnits.add(id);seenIds.add(user.id);result.validOrdinary++;

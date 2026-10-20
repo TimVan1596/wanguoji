@@ -295,8 +295,9 @@ export function getRulerHistoricalEvents(
     const military=["city-captured","city-recovered","capital-fallen"].includes(event.type);
     const personal=military&&(event.rulerId===ruler.id||event.metadata?.rulerId===ruler.id);
     const capital=event.type==="capital-fallen"||event.metadata?.wasCapital===1;
-    return {id:event.id,month,priority:score(event)+(accession||ending?1000:turning?400:personal||capital||event.type==="capital-relocated"||DIPLOMATIC_TYPES.has(event.type)?200:0),
-      cityId:military?event.cityId:undefined};
+    return {id:event.id,month,priority:score(event)+(accession||ending?1000:personal?500:turning?400:capital||event.type==="capital-relocated"||DIPLOMATIC_TYPES.has(event.type)?200:0),
+      cityId:military?event.cityId:undefined,
+      diversityGroup:["city-revolt","rebel-faction-founded","frontier-faction-founded","empire-split"].includes(event.type)?"local-upheaval":undefined};
   },{start:ruler.accessionYear,end:endMonth});
 }
 

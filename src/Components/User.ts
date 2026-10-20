@@ -1,3 +1,4 @@
+import DynastyRegistry from "../Politics/Dynasty";
 import { deriveMilitaryLifeSchedule } from "../Politics/MilitaryLifeRules";
 import Game from "../Game/Game";
 import Player from "./Player";
@@ -16,6 +17,7 @@ export default class User {
   score = 0;
   private destroyed = false;
   militaryPersonId?: string;
+  historicalPersonId?: string;
   readonly bornMonth: number;
   sourceTeam: Team;
   slaveGroup: Slaves;
@@ -28,11 +30,12 @@ export default class User {
     public loyalty = 70,
     public role: PlayerRole = "NORMAL",
     public rulerId?: string,
-    options: { deferRuntime?: boolean; bornMonth?: number; militaryPersonId?: string } = {}
+    options: { deferRuntime?: boolean; bornMonth?: number; historicalPersonId?: string; militaryPersonId?: string } = {}
   ) {
     const spawnMonth = Game.Core?.simulator?.year ?? 0;
     this.bornMonth = options.bornMonth ?? deriveUserBornMonth(id, name, team.name, spawnMonth);
     this.militaryPersonId = options.militaryPersonId;
+    this.historicalPersonId=options.historicalPersonId;
     this.sourceTeam = team;
     this.player.role = role;
     this.player.rulerId = rulerId;
@@ -64,6 +67,11 @@ export default class User {
       return;
     }
     const previousTeam = this.team;
+    if(this.historicalPersonId&&this.role==="RULER"){
+      if(previousTeam.rulerUser===this)previousTeam.rulerUser=undefined;
+      this.role="NORMAL";this.rulerId=undefined;this.player.setRole("NORMAL");
+      Game.Core?.logicalUnitRegistry.updateRole(this.player.logicalUnitId,"NORMAL");
+    }
     MilitaryCommandRegistry.onUserTransfer(this, team.name, populationMutation.month ?? Game.Core?.simulator?.year ?? 0);
     const previousCount = previousTeam.users.size;
     const nextCount = team.users.size;
@@ -171,6 +179,8 @@ export default class User {
           destroyed: true as const,
         }
       : undefined;
+    if(this.historicalPersonId && ["SIEGE_LOSS","BATTLE_DEATH"].includes(populationMutation.cause))
+      DynastyRegistry.recordResidentEntityDeath(this.historicalPersonId,populationMutation.month??core?.simulator?.year??0);
     this.destroyed = true;
     MilitaryCommandRegistry.onUserDestroyed(this, populationMutation.month ?? Game.Core?.simulator?.year ?? 0, populationMutation.cause);
     const removedFromPopulation = team.users.delete(this);

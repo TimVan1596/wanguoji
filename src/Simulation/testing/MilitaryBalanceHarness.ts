@@ -85,6 +85,9 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
           duplicatePopulationIds:snapshot.users.length-new Set(snapshot.users.map(u=>u.userId)).size,
           currentMilitaryByRegime:core.teams.filter(t=>t.status==="ACTIVE").map(t=>({factionId:t.name,factionType:t.factionType,stage:t.identityStage,rank:t.sovereigntyRank,
             population:t.users.size,commands:formations.filter(f=>f.factionId===t.name).length})),
+          residentFounders:snapshot.dynasties.flatMap(d=>(d.rulers as any[]).filter(r=>r.residentIdentity)).length,
+          residentLiveBindings:snapshot.users.filter(u=>u.historicalPersonId).length,
+          residentIdentityConflicts:(()=>{const rs=snapshot.dynasties.flatMap(d=>(d.rulers as any[]).filter(r=>r.residentIdentity));const ids=rs.map(r=>r.residentIdentity.personId);return ids.length-new Set(ids).size+snapshot.users.filter(u=>u.historicalPersonId&&!rs.some(r=>r.residentIdentity.personId===u.historicalPersonId&&r.residentIdentity.sourceUserId===u.userId&&r.bornMonth===u.bornMonth&&r.deathMonth===undefined)).length;})(),
           strictSaveValid:true,elapsedMs:performance.now()-started,heapBytes:(performance as any).memory?.usedJSHeapSize});
       }
       if(m%120===0)await new Promise(r=>setTimeout(r,0));

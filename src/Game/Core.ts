@@ -378,6 +378,11 @@ export default class Core {
     return true;
   }
 
+  rollbackRuntimeTeam(team:Team){
+    this.runtimeFactions.unregister(team);this.teamColliders.discardFaction(team);
+    store.dispatch(setTeams(this.teams));
+  }
+
   private registerTeamColliders(team: Team) {
     const otherTeamsBlock = this.teams
       .filter((t) => t !== team)

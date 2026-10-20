@@ -198,9 +198,11 @@ class FactionRegistryStore {
   }
 
   /** Population preparation precedes city consequences and runtime registration. */
-  private prepareFoundingPopulation(team: Team, owner: Team, users: User[], month: number, cause: "REBELLION_TRANSFER" | "EMPIRE_SPLIT_TRANSFER") {
+  private prepareFoundingPopulation(team: Team, owner: Team, users: User[], month: number, cause: "REBELLION_TRANSFER" | "EMPIRE_SPLIT_TRANSFER", city: City) {
     if(users.some(u=>this.foundingTransactions.has(u))) {this.lastFoundingFailure="居民已在另一转属事务中";return false;}
     users.forEach(u=>this.foundingTransactions.add(u));
+    const dynastyBefore=DynastyRegistry.exportState(),historyBefore=WorldHistory.exportState(),lifetimeBefore=FactionLifetimeRecords.exportState();
+    const leader=users[0];
     const beforeOwner=owner.users.size,beforeNew=team.users.size;
     const memberships = MilitaryCommandRegistry.getFormations().filter(f => f.status === "ACTIVE").map(f => ({f,members:[...f.memberUnitIds]}));
     try {
@@ -209,6 +211,10 @@ class FactionRegistryStore {
         user.setTeam(team, { cause, month, context: "真实既有人口支持新政权", deferPopulationAudit:true });
         if (user.team !== team) {this.lastFoundingFailure="居民未完成转属";throw new Error("founding supporter transfer failed");}
       }
+      if(leader)DynastyRegistry.initializeFaction(team,month,false,{user:leader,origin:{
+        personId:`resident-${team.name}-${leader.id}-${leader.bornMonth}`,sourceUserId:leader.id,sourceUserLabel:leader.name,bornMonth:leader.bornMonth,
+        sourceFactionId:owner.name,sourceFactionName:owner.displayName,foundedMonth:month,cityId:city.id,cityName:city.name,
+      }});
       if (Game.Core.addRuntimeTeam(team)) {
         Game.Core.simulator?.recordPopulationMutation(owner,beforeOwner,owner.users.size,{cause,month,relatedFactionId:team.name,context:"本地真实居民支持新政权"});
         Game.Core.simulator?.recordPopulationMutation(team,beforeNew,team.users.size,{cause,month,relatedFactionId:owner.name,context:"本地真实居民支持新政权"});
@@ -216,7 +222,12 @@ class FactionRegistryStore {
       }
     this.lastFoundingFailure="运行时国家注册被拒绝";
     } catch { this.lastFoundingFailure??="人口准备事务异常并回退"; /* No city has changed owner. */ }
+    if(leader?.historicalPersonId){leader.historicalPersonId=undefined;leader.role="NORMAL";leader.rulerId=undefined;leader.player.setRole("NORMAL");Game.Core?.logicalUnitRegistry.updateRole(leader.player.logicalUnitId,"NORMAL");team.rulerUser=undefined;}
+    if(dynastyBefore)DynastyRegistry.importState(dynastyBefore);
+    if(historyBefore)WorldHistory.importState(historyBefore);
     for (const user of users) if (user.team === team) user.setTeam(owner, { cause, month, context: "建势人口转属回退", deferPopulationAudit:true });
+    Game.Core?.rollbackRuntimeTeam?.(team);
+    FactionLifetimeRecords.importState(lifetimeBefore);
     for (const {f,members} of memberships) f.memberUnitIds = members;
     users.forEach(u=>this.foundingTransactions.delete(u));
     return false;
@@ -270,10 +281,11 @@ class FactionRegistryStore {
       parentFactionId: previousOwner.name,
       foundingCityIds: [city.id],
     });
-    if (!city.revoltTo(team, year, () => this.prepareFoundingPopulation(team, previousOwner, lowLoyaltyUsers, year, "REBELLION_TRANSFER"))) {
+    if (!city.revoltTo(team, year, () => this.prepareFoundingPopulation(team, previousOwner, lowLoyaltyUsers, year, "REBELLION_TRANSFER", city))) {
       this.lastFoundingFailure??="城市转属被拒绝";this.discardUnregisteredFaction(team); return undefined;
     }
     DynastyRegistry.initializeFaction(team, year);
+    DynastyRegistry.completeResidentFounding(team,year);
     team.setOrigin({ ...team.origin, foundingRulerId: DynastyRegistry.getCurrentRuler(team.name)?.id });
     const external = options.godDriven ? this.spawnMembers(team, Math.max(0, targetPopulation-lowLoyaltyUsers.length), "Rebel", year,
       { cause: "GOD_ACTION", month: year, context: "神力建势的特殊外源人口，非转属" }) : 0;
@@ -355,12 +367,13 @@ class FactionRegistryStore {
       parentFactionId: previousOwner.name,
       foundingCityIds: cities.map((city) => city.id),
     });
-    if (!coreCity.revoltTo(team, year, () => this.prepareFoundingPopulation(team, previousOwner, lowLoyaltyUsers, year, "EMPIRE_SPLIT_TRANSFER"))) {
+    if (!coreCity.revoltTo(team, year, () => this.prepareFoundingPopulation(team, previousOwner, lowLoyaltyUsers, year, "EMPIRE_SPLIT_TRANSFER", coreCity))) {
       this.discardUnregisteredFaction(team); return undefined;
     }
     const transferredCities = [coreCity, ...cities.slice(1).filter(city => city.revoltTo(team, year))];
     this.transferNearbyTerritory(previousOwner, team, coreCity);
     DynastyRegistry.initializeFaction(team, year);
+    DynastyRegistry.completeResidentFounding(team,year);
     team.setOrigin({ ...team.origin, foundingRulerId: DynastyRegistry.getCurrentRuler(team.name)?.id });
     FactionLifetimeRecords.observe(team, year);
     return { team, transferredCities, transferredPopulation: lowLoyaltyUsers.length, externalPopulation: 0 };

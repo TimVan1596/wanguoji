@@ -1,3 +1,4 @@
+import {validateResidentIdentities} from "./ResidentIdentityValidation";
 import {validateMilitaryOfficeAuthorities,validateMilitaryBattleNames} from "./MilitaryOfficeAuthorityValidation";
 import { validateRulerLifeRecord } from "./RulerLifeValidation";
 import { validateFactionLifetime } from "./FactionLifetimeValidation";
@@ -39,6 +40,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   const users = array(save.users, "users", errors);
   const units = array(save.units, "units", errors);
   const dynasties = array(save.dynasties, "dynasties", errors);
+  if(Array.isArray(save.users)&&Array.isArray(save.dynasties)&&Array.isArray(save.factions)&&Array.isArray(save.cities)&&Array.isArray(save.worldHistory?.events))errors.push(...validateResidentIdentities(save as unknown as WorldSaveV1));
   const factionIds = uniqueIds(factions, "factionId", "factions", errors);
   const factionById = new Map(factions.map((faction) => [String(faction.factionId), faction]));
   errors.push(...validateFactionLifetime(save.factionLifetime, factions as unknown as WorldSaveV1["factions"], Number(save.world?.worldMonth),

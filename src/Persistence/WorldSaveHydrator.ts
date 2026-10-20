@@ -223,7 +223,7 @@ function hydrateUsersAndUnits(save: WorldSaveV1, core: Core, teams: Map<string, 
     player.setTeam(team);
     const user = new User(Number(state.userId), state.name, team, player, state.face as string | undefined, state.loyalty,
       state.role === "RULER" ? "RULER" : "NORMAL", typeof state.rulerId === "string" ? state.rulerId : undefined,
-      { deferRuntime: true, bornMonth: state.bornMonth, militaryPersonId: typeof state.militaryPersonId === "string" ? state.militaryPersonId : undefined });
+      { deferRuntime: true, bornMonth: state.bornMonth, historicalPersonId:typeof state.historicalPersonId==="string"?state.historicalPersonId:undefined, militaryPersonId: typeof state.militaryPersonId === "string" ? state.militaryPersonId : undefined });
     user.sourceTeam = teams.get(state.sourceFactionId)!;
     user.score = state.score;
     user.isFaceLoadDone = true;

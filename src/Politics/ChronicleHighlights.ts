@@ -1,6 +1,6 @@
 /** Reading selection only: canonical facts and complete archives are never edited. */
 export function selectChronicleHighlights<T>(items: readonly T[], limit: number, describe: (item:T)=>{
-  id:string; month:number; priority:number; cityId?:string;
+  id:string; month:number; priority:number; cityId?:string; diversityGroup?:string;
 }, range?: {start:number;end:number}) {
   const capacity=Math.max(0,Math.floor(limit));
   const rows=items.map(item=>({item,...describe(item)}));
@@ -12,6 +12,7 @@ export function selectChronicleHighlights<T>(items: readonly T[], limit: number,
   while(selected.length<capacity&&remaining.length){
     const value=(r:typeof rows[number])=>r.priority+
       (selected.some(s=>period(s.month)===period(r.month))?0:60)-
+      (r.diversityGroup?selected.filter(s=>s.diversityGroup===r.diversityGroup).length*220:0)-
       (r.cityId&&selected.some(s=>s.cityId===r.cityId)?80:0);
     remaining.sort((a,b)=>value(b)-value(a)||chronological(a,b));
     selected.push(remaining.shift()!);

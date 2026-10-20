@@ -83,7 +83,14 @@ export type RulerRelationType =
   | "NEW_HOUSE"
   | "LEADER_SUCCESSOR";
 
+export interface ResidentFounderIdentity {
+  personId: string; sourceUserId: number; sourceUserLabel: string; bornMonth: number;
+  sourceFactionId: string; sourceFactionName: string; foundedMonth: number; cityId: string; cityName: string;
+}
+
 export interface Ruler {
+  /** Permanent resident identity; this record owns its life even when no map entity exists. */
+  residentIdentity?: ResidentFounderIdentity;
   regimeNameAtEnd?: string;
   id: string;
   houseName: string;
@@ -191,13 +198,20 @@ class DynastyRegistryStore {
     this.provisionalDiagnosticsSession.reset(this.listForDiagnostics());
   }
 
-  initializeFaction(team: Team, year: number, initialRoyalHousehold = false) {
+  initializeFaction(team: Team, year: number, initialRoyalHousehold = false, resident?: {user: import("../Components/User").default; origin: ResidentFounderIdentity}) {
     if (this.dynasties.has(team.name)) {
       return this.dynasties.get(team.name);
     }
     if (team.status === "EXTINCT") return undefined;
     const houseName = team.houseName ?? `${team.name}氏`;
-    const ruler = this.createFormalRuler(team, houseName, year);
+    const ruler = this.createFormalRuler(team, houseName, year, undefined, undefined, resident?.user.bornMonth);
+    if (resident) {
+      const u=resident.user;
+      if(u.isDestroyed||u.team!==team||!team.users.has(u)||u.role!=="NORMAL"||u.militaryPersonId||u.historicalPersonId)throw new Error("Invalid resident founder");
+      ruler.residentIdentity={...resident.origin};
+      u.historicalPersonId=resident.origin.personId;u.role="RULER";u.rulerId=ruler.id;u.player.setRole("RULER",ruler.id);
+      Game.Core?.logicalUnitRegistry.updateRole(u.player.logicalUnitId,"RULER",ruler.id);team.rulerUser=u;
+    }
     ruler.reignOrdinal = 1;
     ruler.relationType = "FOUNDER";
     const dynasty: Dynasty = {
@@ -214,9 +228,38 @@ class DynastyRegistryStore {
     } else {
       this.ensureActiveHeir(team, dynasty, year, true);
     }
-    WorldHistory.addRulerAcceded(year, team.name, this.getRulerTitle(team, ruler, year), ruler.id, captureAccessionCapital(team, year, ruler.id));
+    if (!resident) WorldHistory.addRulerAcceded(year, team.name, this.getRulerTitle(team, ruler, year), ruler.id, captureAccessionCapital(team, year, ruler.id));
     this.ensureRulerUnit(team);
     return dynasty;
+  }
+
+  completeResidentFounding(team: Team, month: number) {
+    const r=this.getCurrentRuler(team.name);
+    if(!r?.residentIdentity)return;
+    r.chronicle=createRulerChronicle(createRulerSnapshot(team,month));
+    WorldHistory.addRulerAcceded(month,team.name,this.getRulerTitle(team,r,month),r.id,{
+      ...captureAccessionCapital(team,month,r.id),residentPersonId:r.residentIdentity.personId,
+      sourceUserId:r.residentIdentity.sourceUserId,sourceFactionId:r.residentIdentity.sourceFactionId,foundingCityId:r.residentIdentity.cityId,
+    });
+  }
+
+  /** Permanent identity lookup is independent of present office, faction and map entity. */
+  findResidentPerson(personId: string) {
+    for(const d of this.dynasties.values())for(const r of d.rulers)if(r.residentIdentity?.personId===personId)return r;
+    return undefined;
+  }
+
+  recordResidentEntityDeath(personId: string, month: number) {
+    const r=this.findResidentPerson(personId);
+    if(!r||hasRecordedRulerDeath(r))return;
+    // Current rulers must go through the existing protected royal death/succession transaction.
+    if(r.status==="ruling"||r.status==="exiled"){
+      const team=Game.Core?.teams.find(t=>this.get(t.name)?.currentRulerId===r.id),d=team?this.get(team.name):undefined;
+      if(team&&d){if(team.rulerUser?.historicalPersonId===personId)team.rulerUser=undefined;this.succeedRuler(team,d,r,month,"combat");return;}
+    }
+    r.status="dead";r.deathMonth=month;r.deathReason="战死";
+    const team=Game.Core?.teams.find(t=>this.get(t.name)?.rulers.includes(r));
+    if(team)WorldHistory.addRulerDied(month,team.name,this.getRulerTitle(team,r,month),{rulerId:r.id,deathReason:r.deathReason,age:Math.floor((month-r.bornYear)/12)});
   }
 
   update(year: number, teams: Team[]) {
@@ -253,6 +296,8 @@ class DynastyRegistryStore {
 
   markExiled(team: Team, year: number) {
     if (team.status === "EXTINCT") return;
+    const existing=this.getCurrentRuler(team.name);
+    if(existing?.status==="exiled")return;
     const dynasty = this.initializeFaction(team, 0);
     const ruler = dynasty ? this.getCurrentRuler(team.name) : undefined;
     if (ruler && (ruler.status === "ruling" || ruler.status === "exiled")) {
@@ -433,6 +478,10 @@ class DynastyRegistryStore {
     year: number,
     reason: "natural" | "combat" | "captured"
   ) {
+    if(predecessor.residentIdentity){
+      const u=Team.GetUserById(predecessor.residentIdentity.sourceUserId);
+      if(u?.historicalPersonId===predecessor.residentIdentity.personId&&team.rulerUser!==undefined&&reason!=="combat")team.removeRulerUnit(true);
+    }
     predecessor.status = "dead";
     predecessor.regimeNameAtEnd = team.displayName;
     predecessor.endYear = year;
@@ -662,15 +711,24 @@ class DynastyRegistryStore {
       return;
     }
     team.removeRulerUnit(true);
+    if(ruler.residentIdentity){
+      const existing=Team.GetUserById(ruler.residentIdentity.sourceUserId);
+      if(existing){
+        if(existing.historicalPersonId!==ruler.residentIdentity.personId)return; // A recycled live ID is not this person. Never replace it.
+        if(existing.team===team){existing.role="RULER";existing.rulerId=ruler.id;existing.player.setRole("RULER",ruler.id);Game.Core?.logicalUnitRegistry.updateRole(existing.player.logicalUnitId,"RULER",ruler.id);team.rulerUser=existing;}
+        return;
+      }
+    }
     const name = this.getRulerTitle(team, ruler, month);
     team.makeUser(
-      getRulerUserId(ruler.id),
-      name,
+      ruler.residentIdentity?.sourceUserId ?? getRulerUserId(ruler.id),
+      ruler.residentIdentity?.sourceUserLabel ?? name,
       undefined,
       100,
       "RULER",
       ruler.id,
-      { cause: "RULER_LIFECYCLE", month, context: "ruler unit established" }
+      { cause: "RULER_LIFECYCLE", month, context: "ruler unit established" },
+      ruler.residentIdentity ? {bornMonth:ruler.bornYear,historicalPersonId:ruler.residentIdentity.personId} : undefined
     );
   }
 
@@ -843,11 +901,12 @@ class DynastyRegistryStore {
 
   private archiveNaturallyDeadDeposedRulers(team: Team, dynasty: Dynasty, worldMonth: number) {
     dynasty.rulers.forEach((ruler) => {
-      if (ruler.status !== "deposed" || ruler.reignOrdinal === undefined || hasRecordedRulerDeath(ruler) ||
+      if ((ruler.status !== "deposed" && !(ruler.residentIdentity && ["politically-ended","abdicated","kin"].includes(ruler.status))) || ruler.reignOrdinal === undefined || hasRecordedRulerDeath(ruler) ||
         !isNaturallyDeadByMonth(ruler.naturalDeathYear ?? ruler.plannedEndYear, worldMonth)) return;
       ruler.status = "dead";
       ruler.deathMonth = worldMonth;
       ruler.deathReason = "自然去世";
+      if(ruler.residentIdentity){const u=Team.GetUserById(ruler.residentIdentity.sourceUserId);if(u?.historicalPersonId===ruler.residentIdentity.personId)u.destroyUser(true,{cause:"RULER_LIFECYCLE",month:worldMonth,context:"人物自然死亡，移除其唯一地图实体"});}
       if (ruler.chronicle) {
         ruler.chronicle.deathCause = ruler.deathReason;
         finalizeRulerPosthumousNames(ruler, dynasty.rulers, team, worldMonth);
@@ -941,17 +1000,18 @@ class DynastyRegistryStore {
     houseName: string,
     accessionYear: number,
     parentId?: string,
-    predecessorId?: string
+    predecessorId?: string,
+    residentBornMonth?: number
   ): Ruler {
     this.sequence += 1;
-    const accessionAge = worldRandom.int(
+    const accessionAge = residentBornMonth === undefined ? worldRandom.int(
       RULER_MIN_AGE_AT_ACCESSION,
       RULER_MAX_AGE_AT_ACCESSION
-    );
-    const bornYear = accessionYear - yearsToMonths(accessionAge);
-    const naturalDeathYear = createNaturalDeathMonth(bornYear, (max) =>
-      worldRandom.pickIndex(max)
-    );
+    ) : 0;
+    const bornYear = residentBornMonth ?? accessionYear - yearsToMonths(accessionAge);
+    const sampledDeathMonth = createNaturalDeathMonth(bornYear, (max) => worldRandom.pickIndex(max));
+    // Residents were already alive before acquiring a scheduled life. Never backdate their death.
+    const naturalDeathYear = residentBornMonth === undefined ? sampledDeathMonth : Math.max(accessionYear + 12, sampledDeathMonth);
     const recentNames =
       this.dynasties
         .get(team.name)

@@ -248,7 +248,7 @@ export class MilitaryCommandRegistryStore {
     if (worldMonth >= deriveMilitaryLifeSchedule(person ?? { personId: `military-person-${this.personSequence}`, bornMonth: user.bornMonth }).retirementMonth) {
       this.diagnostics.ageBlocked++; return false;
     }
-    return user.role === "NORMAL" && !user.rulerId && !user.player.rulerId && user.team.status === "ACTIVE" && user.bornMonth <= worldMonth - MIN_COMMANDER_AGE_MONTHS &&
+    return !user.historicalPersonId && user.role === "NORMAL" && !user.rulerId && !user.player.rulerId && user.team.status === "ACTIVE" && user.bornMonth <= worldMonth - MIN_COMMANDER_AGE_MONTHS &&
       Boolean(user.player.active && user.player.logicalUnitId) && !this.isUnitAssigned(user.player.logicalUnitId!) &&
       (!user.militaryPersonId || this.people.get(user.militaryPersonId)?.status !== "ACTIVE");
   }

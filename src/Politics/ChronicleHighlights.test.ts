@@ -46,3 +46,18 @@ it("preserves the predecessor's real dynastic ending even when the richer usurpa
   const selected=getRulerHistoricalEvents(events,ruler,"秦",600,[],8);
   expect(selected).toHaveLength(8);expect(selected.map(e=>e.id)).toContain("accession");expect(selected.map(e=>e.id)).toContain("usurp");expect(selected.map(e=>e.id)).not.toContain("succession");
 });
+
+it("personal campaigns have representation and repeated local uprisings cannot monopolize a reign",()=>{
+  const events=[event("accession","ruler-acceded",0,{rulerId:"king"}),
+    ...Array.from({length:8},(_,i)=>event(`split${i}`,"empire-split",30+i*36,{targetFactionId:"秦",actorFactionId:`rebel${i}`,factionIds:["秦",`rebel${i}`]})),
+    ...Array.from({length:15},(_,i)=>event(`national${i}`,"city-captured",i*20+5,{cityId:`city${i}`,metadata:{wasCapital:1}})),
+    event("personal-early","city-captured",70,{rulerId:"king",cityId:"self1"}),event("personal-late","city-captured",320,{rulerId:"king",cityId:"self2"}),
+    event("dead","ruler-died",384,{rulerId:"king"})];
+  const selected=getRulerHistoricalEvents(events,{...ruler,endYear:384},"秦",384,[],8);
+  expect(selected).toHaveLength(8);
+  expect(selected.map(e=>e.id)).toEqual(expect.arrayContaining(["accession","dead","personal-early","personal-late"]));
+  expect(selected.filter(e=>e.type==="empire-split").length).toBeLessThanOrEqual(2);
+  expect(new Set(selected.map(e=>e.id)).size).toBe(8);
+  expect(getRulerHistoricalEvents([...events].reverse(),{...ruler,endYear:384},"秦",384,[],8).map(e=>e.id)).toEqual(selected.map(e=>e.id));
+  expect(events).toHaveLength(27);
+});

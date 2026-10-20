@@ -181,7 +181,8 @@ export default class Team {
     loyalty = 70,
     role: PlayerRole = "NORMAL",
     rulerId?: string,
-    populationMutation: PopulationMutationContext = { cause: "LIVE_JOIN" }
+    populationMutation: PopulationMutationContext = { cause: "LIVE_JOIN" },
+    identityOptions: {bornMonth:number;historicalPersonId:string}|undefined = undefined
   ) {
     const spawnBlock = this.spawnBlock;
     if (!spawnBlock) return false;
@@ -191,7 +192,7 @@ export default class Team {
     const populationBefore = this.users.size;
     const player = new Player(this.scene, x, y, this);
     player.setTeam(this);
-    const user = new User(id, name, this, player, face, loyalty, role, rulerId);
+    const user = new User(id, name, this, player, face, loyalty, role, rulerId, identityOptions);
     player.user = user;
     player.setRole(role, rulerId);
     user.setTeam(this);

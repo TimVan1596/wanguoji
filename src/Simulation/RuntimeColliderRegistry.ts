@@ -51,6 +51,15 @@ export class RuntimeColliderRegistry {
     });
   }
 
+  /** Failed registration only, before the faction owns committed territory. */
+  discardFaction(faction:RuntimeCollisionFaction){
+    this.pendingTerminals.delete(faction);
+    this.entries=this.entries.filter(e=>{
+      for(let i=e.targets.length-1;i>=0;i--)if(e.targets[i]===faction.blocks)e.targets.splice(i,1);
+      if(e.source===faction||!e.targets.length){destroyOwnedCollider(e.collider);return false;}return true;
+    });
+  }
+
   detachAfterWorldTeardown() { this.entries = []; this.pendingTerminals.clear(); }
   snapshot() {
     return { colliders: this.entries.length,

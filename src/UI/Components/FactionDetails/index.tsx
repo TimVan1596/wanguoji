@@ -1221,7 +1221,7 @@ function RulerBiography({
         <Typography fontSize="0.82rem">{predecessor&&["DIRECT_CHILD","GRANDCHILD","SIBLING","NEPHEW","UNCLE","COUSIN","COLLATERAL_KIN"].includes(ruler.relationType??"")?formatRecordedSuccessionKinship(ruler,predecessor,rulers):formatRulerRelation(ruler.relationType,team.identityStage,Boolean(parent),Boolean(ruler.chronicle.foundedStateName))}</Typography>
         <Typography fontSize="0.82rem">世系：{formatRulerLineage(ruler.relationType,parent?formatRulerRowName(parent,team):undefined,team.identityStage,Boolean(ruler.chronicle.foundedStateName))}</Typography>
       </ChronicleSection>}
-      biographyTitle="生平本纪" biography={bio.life} milestoneTitle="重大纪年" milestoneTotal={fullMilestoneEvents.length}
+      biographyTitle="生平本纪" biography={ruler.residentIdentity?[`${formatWorldDate(ruler.residentIdentity.foundedMonth)}，原为${ruler.residentIdentity.sourceFactionName}居民，于${ruler.residentIdentity.cityName}参与起事，随本次居民转属建立新势力并成为其首领。`,...bio.life]:bio.life} milestoneTitle="重大纪年" milestoneTotal={fullMilestoneEvents.length}
       milestones={milestoneEvents.map(event=>({id:event.id,content:<>
         <Typography fontSize="0.82rem">{formatWorldDate(event.monthIndex??event.year)} · {textFor(event)}</Typography>
 
@@ -1237,6 +1237,7 @@ function RulerBiography({
       evidence={<>
         <Typography fontSize="0.78rem">即位年龄{Math.floor(monthsToYears(ruler.accessionYear-ruler.bornYear))}岁；{formatRulerLifeAge(ruler,worldMonth)}</Typography>
         {posthumousLines.map(line=><Typography key={line} fontSize="0.78rem">{line}</Typography>)}
+        {ruler.residentIdentity&&<Typography fontSize="0.78rem">居民身份：{ruler.residentIdentity.personId}；原User {ruler.residentIdentity.sourceUserId} / {ruler.residentIdentity.sourceUserLabel}；出生{formatWorldDate(ruler.residentIdentity.bornMonth)}</Typography>}
         <Typography fontSize="0.78rem">继位背景：{getSuccessionBackground(ruler,rulers)}</Typography>
         <Typography fontSize="0.78rem">原始任期累计（未改写）：内乱{ruler.chronicle.rebellionsDuringReign}次、复国{ruler.chronicle.restorationsDuringReign}次</Typography>
         <Typography fontSize="0.78rem">旧累计亲征夺城{ruler.chronicle.citiesCapturedPersonally}次；当前保留事件核验本人行动夺城{bio.stats.personalCityCaptures}次（含收复）。前者为已保存累计值，后者要求在任月份、本国进攻方、本人行动与事件分组证据；资料缺口时不强行改成同数。</Typography>

@@ -1,3 +1,4 @@
+import WorldExiles from "../Simulation/WorldExiles";
 import { measurePhase, type MonthlyPhaseProfiler } from "../Simulation/MonthlyPhaseProfiler";
 import {
   CITY_BASE_MAX_DEFENSE,
@@ -281,6 +282,7 @@ export default class City {
       return;
     }
 
+    const restoredFromExile=newOwner.status==="EXILED";
     const previousOwnerName = oldOwner.name;
     const namesAtEvent={attacker:newOwner.displayName,defender:oldOwner.displayName};
     const wasCapital = this.isCapital;
@@ -423,6 +425,14 @@ export default class City {
         MilitaryCommandRegistry.recordCapture(commandId, eventId, this.id, year);
         DynastyRegistry.recordCityCaptured(rulerId, this.id, eventId);
       }
+    }
+
+    if(restoredFromExile){
+      DynastyRegistry.markRestored(newOwner,year,this.name);
+      WorldExiles.restore(newOwner.name);
+      const restorationId=WorldHistory.addFactionRestored(year,newOwner.name,this.name,0,this.id,`restoration-${newOwner.name}-${year}-${this.id}`);
+      DynastyRegistry.recordRestoration(newOwner.name,restorationId);
+      WorldExiles.recordRestoration(newOwner.name,year,"OTHER");
     }
 
     DynastyRegistry.recordCityLost(previousOwnerName);
