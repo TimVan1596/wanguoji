@@ -5,6 +5,7 @@ import {militaryMilestones} from "./PersonChroniclePresentation";
 import {composeMilitaryBiography} from "../../../Politics/PersonBiography";
 import PersonChronicleLayout from "./PersonChronicleLayout";
 import PersonArchiveCard from "./PersonArchiveCard";
+import HistoricalEventArchive from "./HistoricalEventArchive";
 import worldRandom from "../../../Simulation/WorldRandom";
 vi.mock("react/jsx-dev-runtime",async()=>{const r=await vi.importActual<typeof import("react")>("react");return {jsxDEV:(type:React.ElementType,props:Record<string,unknown>,key?:string)=>r.createElement(type,{...props,key}),Fragment:r.Fragment};});
 function fixture(){
@@ -44,4 +45,15 @@ it("the shared royal/military reader shows one closed detail entrance, with no p
 it("archive headings use the same native control for rulers and officers instead of blue name links",()=>{
   const html=renderToStaticMarkup(<PersonArchiveCard heading={<>赵彦 · 赵国 · 将军<br/>12年1月—今</>} expanded active onSelect={()=>{}}><p>履历</p></PersonArchiveCard>);
   expect(html).toContain("aria-expanded=\"true\"");expect(html).toContain("button");expect(html).not.toContain("<a ");expect(html).toContain("overflow-wrap:anywhere");expect(html).toContain("12年1月—今");
+});
+
+
+it("collapsed historical cards do not mount biographies or their long record trees", () => {
+  let mounts = 0;
+  function Records() { mounts++; return <HistoricalEventArchive title="军旅纪事" defaultOpen entries={Array.from({length:100},(_,i)=>({id:`e${i}`,content:<p>完整记录【{i}】</p>}))}/>; }
+  const closed = renderToStaticMarkup(<PersonArchiveCard heading="历任将领" expanded={false} onSelect={()=>{}}><Records/></PersonArchiveCard>);
+  expect(mounts).toBe(0); expect(closed).not.toContain("完整记录【");
+  const opened = renderToStaticMarkup(<PersonArchiveCard heading="历任将领" expanded onSelect={()=>{}}><Records/></PersonArchiveCard>);
+  expect(mounts).toBe(1); expect(opened.match(/完整记录【/g)).toHaveLength(100); expect(opened).toContain("完整记录【99】");
+  expect(opened).not.toMatch(/overflow-y|overflow:auto|overflow:hidden|max-height|上一页|下一页|加载更多/);
 });

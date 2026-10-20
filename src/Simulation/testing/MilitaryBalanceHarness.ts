@@ -6,7 +6,18 @@ import Diplomacy from "../../Politics/Diplomacy";
 import WorldHistory from "../../History/WorldHistory";
 import {exportWorldSave} from "../../Persistence/WorldSaveExporter";
 import {validateWorldSave} from "../../Persistence/WorldSaveValidator";
+import {canonicalWorldSaveProjection} from "../../Persistence/WorldSaveSchema";
 import {SIMULATION_FIXED_STEP_MS} from "../SimulationDriver";
+
+/** Stable full-world fingerprint, excluding only version label and creation timestamp.
+ * Measurement is test-session only and consumes no production randomness. */
+async function fingerprint(snapshot: ReturnType<typeof exportWorldSave>) {
+  const {appVersion: _version, ...canonical} = canonicalWorldSaveProjection(snapshot);
+  const ordered = (value: any): any => Array.isArray(value) ? value.map(ordered) : value && typeof value === "object"
+    ? Object.fromEntries(Object.keys(value).sort().filter(k => value[k] !== undefined).map(k => [k, ordered(value[k])])) : value;
+  const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(JSON.stringify(ordered(canonical))));
+  return Array.from(new Uint8Array(bytes), b => b.toString(16).padStart(2,"0")).join("");
+}
 
 /** Instrument the real City transaction, never substitute combat or its RNG. Test-session aggregates only. */
 export async function runMilitaryBalance(seed:string,years=100){
@@ -43,6 +54,7 @@ export async function runMilitaryBalance(seed:string,years=100){
         const p=core.getPopulationSummary();
         core.setWorldRunning(false);
         const snapshot=exportWorldSave(core),validation=validateWorldSave(snapshot);
+        const canonicalSha256 = await fingerprint(snapshot);
         core.setWorldRunning(true);
         if(!validation.valid)throw new Error(`Invalid natural snapshot: ${validation.errors.join("; ")}`);
         if(p?.unexplainedWorldDifference!==0)throw new Error("Unexplained population difference");
@@ -55,6 +67,12 @@ export async function runMilitaryBalance(seed:string,years=100){
           meanServiceMonths:Military.getOfficeSummary(m).meanServiceMonths,matureEnded:matureEnded.length,matureEndedNeverPromoted:matureEnded.filter(a=>(a.officeHistory?.length??0)<2).length,
           politicalCandidateChecks,militaryPoliticalEvents:events.filter(e=>readMilitaryParticipation(e)).length,depositions:count("ruler-deposed"),usurpations:count("dynasty-usurped"),
           extinctions:count("faction-extinct"),unifications:count("world-unification"),splits:count("empire-split"),restorations:count("faction-restored"),rebellions:count("rebel-faction-founded"),
+          canonicalSha256, worldRandomPosition:snapshot.worldRandom.position,
+          regional:(core.simulator as any).events.getRegionalRebellionSnapshot(),
+          militaryRoyalOverlap:snapshot.users.filter(u=>u.militaryPersonId&&(u.role==="RULER"||u.rulerId)).length,
+          duplicatePopulationIds:snapshot.users.length-new Set(snapshot.users.map(u=>u.userId)).size,
+          currentMilitaryByRegime:core.teams.filter(t=>t.status==="ACTIVE").map(t=>({factionId:t.name,factionType:t.factionType,stage:t.identityStage,rank:t.sovereigntyRank,
+            population:t.users.size,commands:formations.filter(f=>f.factionId===t.name).length})),
           strictSaveValid:true,elapsedMs:performance.now()-started,heapBytes:(performance as any).memory?.usedJSHeapSize});
       }
       if(m%120===0)await new Promise(r=>setTimeout(r,0));

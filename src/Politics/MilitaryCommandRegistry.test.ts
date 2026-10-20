@@ -142,3 +142,37 @@ it("revokes a formation if its commander acquires an incompatible royal binding,
   expect(person.appointments[0]).toMatchObject({endMonth:13,endReason:"DISMISSED"});
   expect(registry.getFormations()[0].status).toBe("DISBANDED");
 });
+
+
+it.each(["id", "name", "bornMonth", "faction"])("a stale %s binding cannot transfer another commander's identity or office", field => {
+  const registry = new MilitaryCommandRegistryStore();
+  const qin:any = { name: "qin", status: "ACTIVE", users: new Set(), cities: [] };
+  const commander = user(1, qin, "unit-1");
+  qin.users.add(commander); qin.users.add(user(2, qin, "unit-2"));
+  vi.spyOn(worldRandom, "next").mockReturnValue(0); registry.update(12, [qin], []);
+  const person = registry.getPeople()[0], before = registry.exportState(), rng = worldRandom.exportState();
+  const stale = { ...commander, player: { ...commander.player, logicalUnitId: "unrelated-unit" } };
+  if (field === "id") stale.id++;
+  if (field === "name") stale.name = "unrelated population";
+  if (field === "bornMonth") stale.bornMonth--;
+  if (field === "faction") stale.team = { name: "other" };
+  registry.onUserTransfer(stale, "wei", 20);
+  expect(registry.exportState()).toEqual(before); expect(person.factionId).toBe("qin");
+  expect(worldRandom.exportState()).toEqual(rng);
+});
+
+
+it.each(["REBEL", "SPLIT", "KINGDOM"])("%s military command ends cleanly when its polity terminates", factionType => {
+  const registry = new MilitaryCommandRegistryStore();
+  const team:any = { name: "test-polity", factionType, identityStage: factionType === "KINGDOM" ? "STATE" : "PROVISIONAL", status: "ACTIVE", users: new Set(), cities: [] };
+  const commander = user(1, team, "unit-1"); team.users.add(commander); team.users.add(user(2, team, "unit-2"));
+  const events:any[] = []; registry.setEventWriter(e=>{events.push(e);return e.id;});
+  vi.spyOn(worldRandom,"next").mockReturnValue(0); registry.update(12,[team],[]);
+  const person=registry.getPeople()[0],formation=registry.getFormations()[0];
+  expect(person.appointments[0].officeHistory?.[0].office).toBe("PIJIANG");
+  expect(formation.memberUnitIds).toEqual(["unit-1","unit-2"]); expect(team.users.size).toBe(2);
+  team.status="EXTINCT"; registry.update(13,[team],[]);
+  expect(formation.status).toBe("DISBANDED"); expect(person.status).toBe("RETIRED"); expect(person.deathMonth).toBeUndefined();
+  expect(person.appointments[0]).toMatchObject({factionId:team.name,endMonth:13,endReason:"FACTION_ENDED"});
+  expect(events.some(e=>e.type==="military-command-ended")).toBe(true);expect(events.some(e=>e.type==="military-person-died")).toBe(false);
+});

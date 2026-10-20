@@ -467,7 +467,10 @@ export class MilitaryCommandRegistryStore {
   }
 
   onUserTransfer(user: User, nextFactionId: string, worldMonth: number) {
-    const person = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
+    const record = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
+    // A stale or copied personId must never transfer another person's identity or office.
+    const person = record?.sourceUserId === user.id && record.bornMonth === user.bornMonth &&
+      record.name === user.name && record.factionId === user.team.name ? record : undefined;
     const unitId = user.player.logicalUnitId;
     if (unitId) for (const formation of this.formations.values()) {
       if (formation.status !== "ACTIVE" || !formation.memberUnitIds.includes(unitId)) continue;

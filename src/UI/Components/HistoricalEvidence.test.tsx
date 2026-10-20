@@ -13,4 +13,5 @@ it("narrative hides internal IDs and closed evidence retains canonical reference
   expect(text).not.toContain(event.id);expect(text).not.toContain(event.metadata.commandId);expect(text).not.toContain("亲征");
   const html=renderToStaticMarkup(<Evidence eventId={event.id} commandId={event.metadata.commandId} personId={event.metadata.commanderPersonId}><div>授职战果依据：{event.id}</div></Evidence>);
   expect(html).toContain("<summary>史料依据</summary>");expect(html).toContain("授职战果依据");expect(html).toContain(event.id);expect(html).toContain(event.metadata.commandId);expect(html).not.toMatch(/<details[^>]*\bopen/);
+  expect(html).not.toMatch(/max-height|overflow-y|overflow:auto|overflow:hidden/);
 });

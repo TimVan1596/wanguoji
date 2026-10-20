@@ -32,9 +32,10 @@ export async function runCharacterArchivePerformance(seed:string,years=500){
       </>);
       const renderMs=(performance.now()-before)/10,node=document.createElement("div");node.innerHTML=html;
       if(node.querySelectorAll("p[data-event-id]").length!==records.length||node.querySelectorAll("button[aria-expanded]").length!==archive.visiblePeople.length||/上一页|下一页|加载更多|查看下一批/.test(html))throw new Error("Archive omitted content or retained pagination");
+      if(node.querySelector('[style*="max-height"], [style*="overflow-y"], [style*="overflow: auto"], [style*="overflow: hidden"]'))throw new Error("Character records still contain a nested scrolling or clipped region");
       if(JSON.stringify(worldRandom.exportState())!==rng||events.length!==WorldHistory.getEvents().length)throw new Error("Presentation mutated the world");
       core.setWorldRunning(false);const save=exportWorldSave(core);if(!validateWorldSave(save).valid)throw new Error("Invalid long-world snapshot");
-      results.push({month:m,people:people.length,countryPeople:archive.visiblePeople.length,records:records.length,allRecordsPresent:true,renderMs,htmlBytes:html.length,heapBytes:(performance as any).memory?.usedJSHeapSize,strictSaveValid:true});
+      results.push({month:m,people:people.length,countryPeople:archive.visiblePeople.length,records:records.length,allRecordsPresent:true,noNestedScroll:true,renderMs,htmlBytes:html.length,heapBytes:(performance as any).memory?.usedJSHeapSize,strictSaveValid:true});
       if(m===years*12){
         const continueOnce=()=>{hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));core.setWorldRunning(true);for(let i=0;i<12;i++)stepMonth();core.setWorldRunning(false);return exportWorldSave(core);};
         const a=continueOnce(),b=continueOnce();const diff=diffCanonicalWorldSave(a,b);if(!diff.matched)throw new Error(`Long-world continuation diverged: ${JSON.stringify(diff)}`);

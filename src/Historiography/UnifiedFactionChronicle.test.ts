@@ -44,12 +44,14 @@ const text = (c = fixture()) => build(c).paragraphs.join("");
 describe("unified factual chronicle", () => {
   it("weaves a single inherited house into one account, with distinct founding rulers and a measured peak", () => {
     const c = fixture(); c.factions = new Map([...c.factions, ["enemy", { ...c.faction, name: "enemy", displayName: "齐", nameHistory: [{ name: "齐", startMonth: 0 }] }]]);
-    // Includes the incumbent who entered exile, then the real exile successor.
+    // The loss names the actual incumbent; the later succession keeps its own date.
     c.dynasty.rulers[15].endYear = month(540);
     const a = build(c), s = a.paragraphs.join("");
     expect(a.title).toBe("《沂国史》"); expect(s).toContain("宋昭开创宋氏"); expect(s).toContain("宋景在位时");
     expect(s).toContain("493年10月"); expect(s).toContain("526格"); expect(s).toContain("42.9%"); expect(s).toContain("齐攻陷郢");
-    expect(s).toMatch(/宋恺[^。]*、[^。]*宋景怀[^。]*先后承统/); expect(s).toContain("宋景怀实际去世，同月沂政权彻底终结");
+    expect(s).toMatch(/542年5月，[^。]*宋恺[^。]*当时在位/);
+    expect(s).toMatch(/545年9月，流亡期间，[^。]*宋景怀[^。]*承统/);
+    expect(s).not.toMatch(/583年6月，流亡期间[^。]*承统/); expect(s).toContain("宋景怀实际去世，同月沂政权彻底终结");
     expect(s).toContain("18位统治者"); expect(s).not.toMatch(/史家曰|王统总评|国史简述|造成|全部死亡/);
     console.info(`Unified fixture 沂: ${a.length} characters`); expect(a.length).toBeLessThan(550);
   });
@@ -267,5 +269,47 @@ describe("chronicle chapters, attributed names and evidence-bearing judgment", (
     const before = JSON.stringify(c), rng = worldRandom.exportState();
     const loaded = { ...c, dynasty: { ...c.dynasty, rulers: c.dynasty.rulers.map(r => importRulerSave(exportRulerSave(r))) } };
     expect(buildUnifiedFactionChronicle(loaded)).toEqual(a); expect(JSON.stringify(c)).toBe(before); expect(worldRandom.exportState()).toEqual(rng);
+  });
+});
+
+
+describe("exile accession dates are independent of political termination and personal death", () => {
+  function exileFixture(extraSuccessor = false) {
+    const c = fixture();
+    Object.assign(c.faction, { firstFoundedYear: 0, stateFoundedMonth: 0, terminationMonth: month(26, 10),
+      nameHistory: [{ name: "韩", startMonth: 0 }], cumulativeActiveYears: month(2) });
+    c.worldMonth = month(40);
+    c.dynasty.rulers = [ruler("han-first", "韩氏", "昭", 0, month(3, 10), 1),
+      ruler("han-second", "韩氏", "明睦", month(3, 10), extraSuccessor ? month(13, 10) : month(26, 10), 2)];
+    if (extraSuccessor) c.dynasty.rulers.push(ruler("han-third", "韩氏", "承远", month(13, 10), month(26, 10), 3));
+    c.dynasty.currentRulerId = null;
+    c.dynasty.houseEpochs = [{ houseName: "韩氏", startMonth: 0, foundingRulerId: "han-first", startReason: "FOUNDING" }];
+    c.lifetime = { factionId: "f", lastObservedMonth: month(26, 10), peakPopulation: { value: 10, month: 0, source: "MONTHLY" },
+      peakTerritoryBlocks: { value: 10, month: 0, source: "MONTHLY" }, peakCityCount: { value: 1, month: 0, source: "MONTHLY" },
+      terminal: { month: month(26, 10), population: 0, territoryBlocks: 0, cityCount: 0 } };
+    c.events = [event("han-exile", "faction-exiled", month(2), { actorFactionId: "enemy", targetFactionId: "f", cityId: "han-capital", cityName: "新郑" }),
+      event("han-accede", "ruler-acceded", month(3, 10), { rulerId: "han-second" }),
+      event("han-end", "faction-extinct", month(26, 10), { targetFactionId: "f" })];
+    return c;
+  }
+  it.each([false, true])("dates each actual exile succession before the later ending (multiple successors: %s)", extra => {
+    const c = exileFixture(extra), before = JSON.stringify({ dynasty: c.dynasty, events: c.events });
+    const rng = worldRandom.exportState(), s = text(c);
+    expect(s).toMatch(/3年10月，流亡期间，[^。]*韩明睦[^。]*承统/);
+    if (extra) expect(s).toMatch(/13年10月，流亡期间，[^。]*韩承远[^。]*承统/);
+    expect(s).toContain("26年10月，韩政权彻底终结");
+    expect(s).not.toMatch(/26年10月，[^。]*承统|流亡期间[^。]*韩昭[^。]*承统|去世|战死|享年/);
+    expect(JSON.stringify({ dynasty: c.dynasty, events: c.events })).toBe(before);
+    expect(worldRandom.exportState()).toEqual(rng);
+  });
+  it("does not move a later personal death into the political end, including after save projection", () => {
+    const c = exileFixture(), last = c.dynasty.rulers.at(-1)!;
+    Object.assign(last, { deathMonth: month(32), deathReason: "去世", status: "dead" });
+    const before = text(c);
+    c.dynasty.rulers = c.dynasty.rulers.map(r => importRulerSave(exportRulerSave(r)));
+    expect(text(c)).toBe(before);
+    expect(before).toContain("3年10月"); expect(before).toContain("26年10月，韩政权彻底终结");
+    expect(before).not.toMatch(/实际去世|享年|32年/);
+    expect(c.dynasty.rulers.at(-1)!.deathMonth).toBe(month(32));
   });
 });

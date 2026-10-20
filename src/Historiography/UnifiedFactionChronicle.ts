@@ -124,15 +124,28 @@ export function buildUnifiedFactionChronicle(c: UnifiedChronicleContext): Unifie
   const lastExile = exiles.at(-1);
   if (lastExile && !events.some(e => e.type === "faction-restored" && e.month > lastExile.month && validActor(e))) {
     const known = new Set(phases.flatMap(p => p.rulerIds));
-    const successors = (c.dynasty?.rulers ?? []).filter(r => known.has(r.id) && r.accessionYear !== undefined && r.accessionYear <= end && (r.endYear ?? end) > lastExile.month)
-      .sort((a, b) => a.accessionYear! - b.accessionYear! || a.id.localeCompare(b.id));
-    if (successors.length) {
-      const names = successors.slice(-2).map(r => reference(r.id, Math.max(lastExile.month, r.accessionYear!), person(r))).join("、");
-      // Insert before the dated terminal sentence, rather than after the end.
-      const terminalIndex = selected.findIndex(x => x.order === 4);
-      selected.splice(terminalIndex < 0 ? selected.length : terminalIndex, 0, { key: "exile-holders", month: end,
-        order: 3, priority: 100, kind: "EXILE", text: `流亡期间，${names}${successors.length > 1 ? "先后" : ""}承统` });
+    const incumbents = (c.dynasty?.rulers ?? []).filter(r => known.has(r.id) && r.accessionYear !== undefined &&
+      r.accessionYear < lastExile.month && (r.endYear ?? end) > lastExile.month);
+    const exilePassage = selected.find(p => p.key === lastExile.eventId);
+    if (incumbents.length === 1 && exilePassage) {
+      const incumbent = incumbents[0];
+      exilePassage.text += `，${reference(incumbent.id, lastExile.month, person(incumbent))}当时在位`;
     }
+    // Accession is an event at its own month, never at the later political ending.
+    // An incumbent who lost the country did not accede again on entering exile.
+    const successors = (c.dynasty?.rulers ?? []).filter(r => known.has(r.id) && r.accessionYear !== undefined &&
+      r.accessionYear > lastExile.month && r.accessionYear <= end)
+      .sort((a, b) => a.accessionYear! - b.accessionYear! || a.id.localeCompare(b.id));
+    for (const r of successors.slice(-2)) {
+      const accession = r.accessionYear!;
+      const epoch = phases.find(p => p.founderId === r.id && p.startMonth === accession);
+      const existing = selected.find(p => p.month === accession &&
+        (p.key === `epoch:${epoch?.key}` || events.some(e => e.eventId === p.key && e.rulerId === r.id && e.type === "dynasty-usurped")));
+      // A retained founding/succession passage already dates this same accession.
+      if (!existing) selected.push({ key: `exile-accession:${r.id}`, month: accession, order: 3, priority: 100, kind: "EXILE",
+        text: `流亡期间，${reference(r.id, accession, person(r))}承统` });
+    }
+    selected.sort((a, b) => a.month - b.month || a.order - b.order || a.key.localeCompare(b.key));
   }
   const actualHolders = new Set(phases.flatMap(p => p.rulerIds)).size;
   const transmission = phases.length > 1 ? `其间历${actualHolders}位统治者、${phases.length}段政治王统` : `此统先后历${actualHolders}位统治者`;

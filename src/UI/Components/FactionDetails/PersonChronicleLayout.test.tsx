@@ -6,7 +6,7 @@ vi.mock("react/jsx-dev-runtime",async()=>{
   const r=await vi.importActual<typeof import("react")>("react");
   return {jsxDEV:(type:React.ElementType,props:Record<string,unknown>,key?:string)=>r.createElement(type,{...props,key}),Fragment:r.Fragment};
 });
-it.each(["生平本纪","生平"])("%s shares bounded milestones, readable sections and closed original evidence",biographyTitle=>{
+it.each(["生平本纪","生平"])("%s shares complete document-flow milestones, readable sections and closed original evidence",biographyTitle=>{
   const html=renderToStaticMarkup(<PersonChronicleLayout title={<b>赵彦</b>} biographyTitle={biographyTitle} biography={["有实际任职记录。"]}
     milestoneTitle="重大纪年" milestones={Array.from({length:50},(_,i)=>({id:`e${i}`,content:<p>纪年【{i}】</p>}))}
     assessment={["以所存史料为据。"]} evidence={<span>command-id-user-id</span>}/>);
@@ -14,4 +14,5 @@ it.each(["生平本纪","生平"])("%s shares bounded milestones, readable secti
   const evidence=html.slice(html.lastIndexOf("<details"));expect(evidence).toContain("详细记录");expect(evidence).toContain("command-id-user-id");
   expect(evidence.match(/^<details[^>]*>/)?.[0]).not.toContain("open");expect(html).not.toContain("史家曰");
   expect(html).toContain("overflow-wrap:anywhere");
+  expect(html).not.toMatch(/overflow-y|overflow:auto|overflow:hidden|max-height/);
 });

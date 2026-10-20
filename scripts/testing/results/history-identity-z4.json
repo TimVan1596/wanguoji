@@ -1,0 +1,404 @@
+{
+  "baselineHead": "fc7f7c16f5ec4ff073412e16f7d0df86ffa29796",
+  "scope": "real Core / Arcade Phaser / default warring states; no probability or capacity changes",
+  "fingerprint": "SHA-256 of full canonical save, sorted object keys; excludes only createdAt and appVersion, includes RNG/history/units/population/royalty/military",
+  "paired": [
+    {
+      "seed": "army-1",
+      "years": 200,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "canonicalMatched": true,
+          "canonicalSha256": "71981f43905e330aadd90ef35a397ff6643aaa44161e1f29f8262c7324e1e8ad",
+          "worldRandomPosition": 6826,
+          "strictSaveValid": true,
+          "baseline": {
+            "worldPopulation": 105,
+            "naturalGrowth": 497,
+            "warDeaths": 480,
+            "rebellions": 0,
+            "splits": 4,
+            "restorations": 2,
+            "extinctions": 8,
+            "cities": 18,
+            "appointments": 17,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          },
+          "current": {
+            "worldPopulation": 105,
+            "naturalGrowth": 497,
+            "warDeaths": 480,
+            "rebellions": 0,
+            "splits": 4,
+            "restorations": 2,
+            "extinctions": 8,
+            "cities": 18,
+            "appointments": 17,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          }
+        },
+        {
+          "month": 2400,
+          "canonicalMatched": true,
+          "canonicalSha256": "e929179b4d00764d960628a5f81ce264b074a450cd94513f956038533c5657c3",
+          "worldRandomPosition": 13650,
+          "strictSaveValid": true,
+          "baseline": {
+            "worldPopulation": 99,
+            "naturalGrowth": 940,
+            "warDeaths": 994,
+            "rebellions": 0,
+            "splits": 16,
+            "restorations": 2,
+            "extinctions": 20,
+            "cities": 16,
+            "appointments": 36,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          },
+          "current": {
+            "worldPopulation": 99,
+            "naturalGrowth": 940,
+            "warDeaths": 994,
+            "rebellions": 0,
+            "splits": 16,
+            "restorations": 2,
+            "extinctions": 20,
+            "cities": 16,
+            "appointments": 36,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          }
+        }
+      ]
+    },
+    {
+      "seed": "army-2",
+      "years": 200,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "canonicalMatched": true,
+          "canonicalSha256": "ab134fb13b42df971d6ec76090c8f856213f2ccd72ba3b9b4e85cd689db31320",
+          "worldRandomPosition": 6637,
+          "strictSaveValid": true,
+          "baseline": {
+            "worldPopulation": 94,
+            "naturalGrowth": 480,
+            "warDeaths": 450,
+            "rebellions": 0,
+            "splits": 5,
+            "restorations": 2,
+            "extinctions": 7,
+            "cities": 17,
+            "appointments": 16,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          },
+          "current": {
+            "worldPopulation": 94,
+            "naturalGrowth": 480,
+            "warDeaths": 450,
+            "rebellions": 0,
+            "splits": 5,
+            "restorations": 2,
+            "extinctions": 7,
+            "cities": 17,
+            "appointments": 16,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          }
+        },
+        {
+          "month": 2400,
+          "canonicalMatched": true,
+          "canonicalSha256": "c9742fcc07016a577552b861930e0bdfecc584d0f09f17c20398b141c7101402",
+          "worldRandomPosition": 13830,
+          "strictSaveValid": true,
+          "baseline": {
+            "worldPopulation": 99,
+            "naturalGrowth": 957,
+            "warDeaths": 986,
+            "rebellions": 0,
+            "splits": 22,
+            "restorations": 3,
+            "extinctions": 22,
+            "cities": 15,
+            "appointments": 32,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          },
+          "current": {
+            "worldPopulation": 99,
+            "naturalGrowth": 957,
+            "warDeaths": 986,
+            "rebellions": 0,
+            "splits": 22,
+            "restorations": 3,
+            "extinctions": 22,
+            "cities": 15,
+            "appointments": 32,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          }
+        }
+      ]
+    },
+    {
+      "seed": "army-3",
+      "years": 100,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "canonicalMatched": true,
+          "canonicalSha256": "ea0c11b62196d017832aaccfc7d9f05140fc1ff14421e9aa7a1219c607a0c619",
+          "worldRandomPosition": 6149,
+          "strictSaveValid": true,
+          "baseline": {
+            "worldPopulation": 96,
+            "naturalGrowth": 448,
+            "warDeaths": 419,
+            "rebellions": 0,
+            "splits": 8,
+            "restorations": 2,
+            "extinctions": 12,
+            "cities": 12,
+            "appointments": 17,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          },
+          "current": {
+            "worldPopulation": 96,
+            "naturalGrowth": 448,
+            "warDeaths": 419,
+            "rebellions": 0,
+            "splits": 8,
+            "restorations": 2,
+            "extinctions": 12,
+            "cities": 12,
+            "appointments": 17,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          }
+        }
+      ]
+    },
+    {
+      "seed": "army-4",
+      "years": 100,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "canonicalMatched": true,
+          "canonicalSha256": "9da1a24200e4a11e3d95508172a0a8da93285dd1308ec855fb56e931170f42fe",
+          "worldRandomPosition": 6090,
+          "strictSaveValid": true,
+          "baseline": {
+            "worldPopulation": 98,
+            "naturalGrowth": 392,
+            "warDeaths": 360,
+            "rebellions": 0,
+            "splits": 11,
+            "restorations": 7,
+            "extinctions": 14,
+            "cities": 13,
+            "appointments": 10,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          },
+          "current": {
+            "worldPopulation": 98,
+            "naturalGrowth": 392,
+            "warDeaths": 360,
+            "rebellions": 0,
+            "splits": 11,
+            "restorations": 7,
+            "extinctions": 14,
+            "cities": 13,
+            "appointments": 10,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          }
+        }
+      ]
+    },
+    {
+      "seed": "army-5",
+      "years": 100,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "canonicalMatched": true,
+          "canonicalSha256": "27eaa7a2f77f00d29889150586c671c68f530bf2989b238bcd5f295eefa3004f",
+          "worldRandomPosition": 6300,
+          "strictSaveValid": true,
+          "baseline": {
+            "worldPopulation": 84,
+            "naturalGrowth": 452,
+            "warDeaths": 435,
+            "rebellions": 0,
+            "splits": 9,
+            "restorations": 0,
+            "extinctions": 10,
+            "cities": 16,
+            "appointments": 15,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          },
+          "current": {
+            "worldPopulation": 84,
+            "naturalGrowth": 452,
+            "warDeaths": 435,
+            "rebellions": 0,
+            "splits": 9,
+            "restorations": 0,
+            "extinctions": 10,
+            "cities": 16,
+            "appointments": 15,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          }
+        }
+      ]
+    },
+    {
+      "seed": "army-6",
+      "years": 100,
+      "checkpoints": [
+        {
+          "month": 1200,
+          "canonicalMatched": true,
+          "canonicalSha256": "e17202097ec864df2b089585fe01542f6bda1da56f0b61d5ac10e03a055c7652",
+          "worldRandomPosition": 6651,
+          "strictSaveValid": true,
+          "baseline": {
+            "worldPopulation": 81,
+            "naturalGrowth": 466,
+            "warDeaths": 476,
+            "rebellions": 0,
+            "splits": 10,
+            "restorations": 2,
+            "extinctions": 14,
+            "cities": 16,
+            "appointments": 20,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          },
+          "current": {
+            "worldPopulation": 81,
+            "naturalGrowth": 466,
+            "warDeaths": 476,
+            "rebellions": 0,
+            "splits": 10,
+            "restorations": 2,
+            "extinctions": 14,
+            "cities": 16,
+            "appointments": 20,
+            "militaryPoliticalEvents": 0,
+            "militaryRoyalOverlap": 0,
+            "duplicatePopulationIds": 0,
+            "populationUnexplained": 0
+          }
+        }
+      ]
+    }
+  ],
+  "archivePerformanceScope": "programmatic SSR and detached DOM checks, not visual acceptance; heap measures entire world/renderer",
+  "archive": [
+    {
+      "seed": "archive-500",
+      "years": 500,
+      "results": [
+        {
+          "month": 2400,
+          "people": 30,
+          "countryPeople": 10,
+          "records": 590,
+          "allRecordsPresent": true,
+          "noNestedScroll": true,
+          "renderMs": 4.569999999552965,
+          "htmlBytes": 62293,
+          "heapBytes": 66947728,
+          "strictSaveValid": true
+        },
+        {
+          "month": 6000,
+          "people": 79,
+          "countryPeople": 20,
+          "records": 1492,
+          "allRecordsPresent": true,
+          "noNestedScroll": true,
+          "renderMs": 7.020000000298023,
+          "htmlBytes": 158812,
+          "heapBytes": 79519815,
+          "strictSaveValid": true
+        }
+      ],
+      "deterministic12MonthContinuation": true
+    }
+  ],
+  "controlledIdentity": [
+    {
+      "seed": "rebel-identity-z4",
+      "scope": "controlled real Core transactions; no resident-ruler identity or military revolt implemented",
+      "checks": [
+        "controlled setup has an unoccupied valid city site",
+        "real ordinary Users with valid local Player/registry bindings support the crisis",
+        "actual popular transaction creates a polity and transfers its city",
+        "supporter Users transfer once, retaining their original objects and birth identities",
+        "current founder is a separately generated royal identity, NOT a bound resident leader",
+        "ordinary transfer conserves population; existing ruler lifecycle additions/removals are separate",
+        "one canonical popular founding event",
+        "rebel has real eligible military candidates and existing members",
+        "a provisional rebel can receive a real commander, formation and initial office",
+        "rebel commander and all formation members have real unique identities",
+        "provisional command is distinct from formal-state coup participation",
+        "controlled formal-state transition uses the existing polity",
+        "controlled imperial transition preserves the existing polity",
+        "rebel to kingdom to empire does not duplicate people, offices or formations",
+        "real commander transfer ends old command; it is NOT a military revolt or a second army",
+        "transfer preserves identity/population and does not silently transfer the old troops",
+        "V18 rebel polity and military histories resume deterministically for twelve months",
+        "old rebel appointment history survives save, load and continuation"
+      ],
+      "supporterCount": 3,
+      "sourceUserId": 1050980811,
+      "personId": "military-person-1",
+      "commandId": "military-command-1",
+      "saveSchemaVersion": 18
+    }
+  ]
+}
