@@ -10,7 +10,7 @@ import worldRandom from "../../../Simulation/WorldRandom";
 vi.mock("react/jsx-dev-runtime",async()=>{const r=await vi.importActual<typeof import("react")>("react");return {jsxDEV:(type:React.ElementType,props:Record<string,unknown>,key?:string)=>r.createElement(type,{...props,key}),Fragment:r.Fragment};});
 function fixture(){
   const person:any={personId:"p",name:"赵-407",personalName:"赵彦",factionId:"赵",status:"ACTIVE",appointments:[{commandId:"c",factionId:"赵",startMonth:0,officeHistory:[{office:"PIJIANG",eventId:"grant",month:0}]}]};
-  const events:any[]=[{id:"appoint",type:"military-appointment",metadata:{}},{id:"grant",type:"military-office-granted",metadata:{}},{id:"order",type:"military-order-issued",cityName:"临淄",importance:"normal",metadata:{}},{id:"capture",type:"city-captured",cityName:"临淄",metadata:{wasCapital:1}}];
+  const events:any[]=[{id:"appoint",type:"military-appointment",metadata:{}},{id:"grant",type:"military-office-granted",metadata:{}},{id:"order",type:"military-order-issued",cityName:"临淄",importance:"normal",metadata:{}},{id:"capture",type:"city-captured",cityId:"linzi",actorFactionId:"赵",targetFactionId:"齐",cityName:"临淄",metadata:{wasCapital:1,commanderPersonId:"p",commandId:"c",commanderPersonalName:"赵彦"}}];
   const entries:any[]=events.map((e,i)=>({eventId:e.id,worldMonth:i<2?0:i,commandId:"c",factionId:"赵",text:i===2?"军令不代表攻陷":"据本次任职0个月",source:`${e.type} · ${e.id}`,victory:i===3}));
   return {person,events,entries};
 }
@@ -18,7 +18,7 @@ it("keeps canonical orders and evidence intact while the public milestones show 
   const f=fixture(),before=JSON.stringify(f),rng=worldRandom.exportState();
   const rows=militaryMilestones(f.person,f.entries,f.events);
   expect(rows.map(e=>e.eventId)).toEqual(["grant","capture"]);
-  expect(rows.map(e=>e.text)).toEqual(["赵彦授裨将。","赵彦所部参与攻取临淄，时为敌都。"]);
+  expect(rows.map(e=>e.text)).toEqual(["赵授职，赵彦获授裨将。","赵将领赵彦所部参与攻取齐都临淄。"]);
   expect(rows.map(e=>e.text).join("")).not.toMatch(/核验|编组|不代表|0个月|亲自|亲征/);
   expect(JSON.stringify(f)).toBe(before);expect(worldRandom.exportState()).toEqual(rng);
   f.events[2].importance="major";

@@ -9,7 +9,7 @@ vi.mock("react/jsx-dev-runtime", async()=>{
 });
 it("narrative hides internal IDs and closed evidence retains canonical references",()=>{
   const event:any={id:"city-captured-123",type:"city-captured",cityId:"c",cityName:"临淄",actorFactionId:"楚",metadata:{commandId:"military-command-3",commanderPersonId:"person-7",commanderPersonalName:"柴翊",wasCapital:0}};
-  const text=formatMilitaryVictorySource(event)!;expect(text).toContain("柴翊所属编组参与攻陷临淄");
+  const text=formatMilitaryVictorySource(event)!;expect(text).toContain("楚将领柴翊所部参与攻取临淄");
   expect(text).not.toContain(event.id);expect(text).not.toContain(event.metadata.commandId);expect(text).not.toContain("亲征");
   const html=renderToStaticMarkup(<Evidence eventId={event.id} commandId={event.metadata.commandId} personId={event.metadata.commanderPersonId}><div>授职战果依据：{event.id}</div></Evidence>);
   expect(html).toContain("<summary>史料依据</summary>");expect(html).toContain("授职战果依据");expect(html).toContain(event.id);expect(html).toContain(event.metadata.commandId);expect(html).not.toMatch(/<details[^>]*\bopen/);

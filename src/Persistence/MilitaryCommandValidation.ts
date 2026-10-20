@@ -17,6 +17,7 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
   const registry = state as unknown as MilitaryCommandState;
   const historyById = new Map<string, any>((Array.isArray(history?.events) ? history.events : [])
     .filter((e: unknown) => plain(e) && typeof e.id === "string").map((e: any) => [e.id, e]));
+  const historyOrder=new Map([...historyById.keys()].map((id,index)=>[id,index]));
   const naturalEvents = new Map<string, any[]>(), retirementEvents = new Map<string, any[]>();
   for (const event of Array.isArray(history?.events) ? history.events : []) {
     if (!plain(event) || !plain(event.metadata)) continue;
@@ -168,8 +169,8 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
     if(m.commanderOffice!==undefined){
       const p=people.get(m.commanderPersonId),at=event.monthIndex??event.year;
       const appointment=p?.appointments.find((a:any)=>a.commandId===m.commandId&&a.factionId===event.actorFactionId&&a.startMonth<=at&&at<=(a.endMonth??worldMonth));
-      const events=[...historyById.values()],index=events.findIndex(e=>e.id===event.id);
-      const office=appointment?.officeHistory?.filter((g:any)=>g.month<at||g.month===at&&events.findIndex(e=>e.id===g.eventId)>=0&&events.findIndex(e=>e.id===g.eventId)<index).at(-1)?.office;
+      const index=historyOrder.get(event.id)??-1;
+      const office=appointment?.officeHistory?.filter((g:any)=>g.month<at||g.month===at&&(historyOrder.get(g.eventId)??-1)>=0&&(historyOrder.get(g.eventId)??Infinity)<index).at(-1)?.office;
       if(!MILITARY_OFFICES.includes(m.commanderOffice)||!m.commanderPersonalName||office!==m.commanderOffice)errors.push(`military victory office snapshot invalid: ${event.id}`);
     }
     if (m.commanderPersonalName !== undefined) {

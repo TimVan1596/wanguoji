@@ -28,7 +28,7 @@ async function fingerprint(snapshot: ReturnType<typeof exportWorldSave>,baseFact
 }
 
 /** Instrument the real City transaction, never substitute combat or its RNG. Test-session aggregates only. */
-export async function runMilitaryBalance(seed:string,years=100){
+export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=false){
   const {core,game}=await createNaturalCore(seed),started=performance.now();
   const original=(City.prototype as any).updateSiege;
   let siegeCityMonths=0,contactMonth=-1;
@@ -78,8 +78,8 @@ export async function runMilitaryBalance(seed:string,years=100){
           appointments:Military.getDiagnostics().appointments,offices:Military.getOfficeSummary(m),promotions,
           meanServiceMonths:Military.getOfficeSummary(m).meanServiceMonths,matureEnded:matureEnded.length,matureEndedNeverPromoted:matureEnded.filter(a=>(a.officeHistory?.length??0)<2).length,
           politicalCandidateChecks,militaryPoliticalEvents:events.filter(e=>readMilitaryParticipation(e)).length,depositions:count("ruler-deposed"),usurpations:count("dynasty-usurped"),
-          extinctions:count("faction-extinct"),unifications:count("world-unification"),splits:count("empire-split"),restorations:count("faction-restored"),rebellions:count("rebel-faction-founded"),
-          canonicalSha256,baseFactsSha256,monthlyExposure:{...monthlyExposure},issuingRulerGrants:events.filter(e=>e.type==="military-office-granted"&&e.rulerId&&e.metadata?.authorizingRulerTitle).length, worldRandomPosition:snapshot.worldRandom.position,
+          extinctions:count("faction-extinct"),unifications:count("world-unification"),splits:count("empire-split"),restorations:count("faction-restored"),rebellions:count("rebel-faction-founded")+count("frontier-faction-founded"),classicRebellions:count("rebel-faction-founded"),frontierRebellions:count("frontier-faction-founded"),
+          ...(includeSnapshot?{snapshot}:{}),canonicalSha256,baseFactsSha256,monthlyExposure:{...monthlyExposure},issuingRulerGrants:events.filter(e=>e.type==="military-office-granted"&&e.rulerId&&e.metadata?.authorizingRulerTitle).length, worldRandomPosition:snapshot.worldRandom.position,
           regional:(core.simulator as any).events.getRegionalRebellionSnapshot(),
           militaryRoyalOverlap:snapshot.users.filter(u=>u.militaryPersonId&&(u.role==="RULER"||u.rulerId)).length,
           duplicatePopulationIds:snapshot.users.length-new Set(snapshot.users.map(u=>u.userId)).size,

@@ -16,3 +16,14 @@ it.each(["生平本纪","生平"])("%s shares complete document-flow milestones,
   expect(html).toContain("overflow-wrap:anywhere");
   expect(html).not.toMatch(/overflow-y|overflow:auto|overflow:hidden|max-height/);
 });
+
+it("labels an eight-event selection explicitly while the complete archive remains in details without paging or nested scroll",()=>{
+  const all=Array.from({length:21},(_,i)=>({id:`record${i}`,content:<p>原纪年【{i}】</p>}));
+  const html=renderToStaticMarkup(<PersonChronicleLayout title="秦王" biographyTitle="生平本纪" biography={[]}
+    milestoneTitle="重大纪年" milestoneTotal={all.length} milestones={[...all.slice(0,4),...all.slice(-4)]} assessment={[]}
+    evidence={<div>{all.map(e=><div key={e.id}>{e.content}</div>)}</div>}/>);
+  const publicPart=html.slice(0,html.indexOf("<summary>详细记录</summary>"));
+  expect(publicPart.match(/原纪年【/g)).toHaveLength(8);expect(publicPart).toContain("重大纪年（精选8条／共21条）");
+  expect(html).toContain("原纪年【10】");expect(html).toContain("原纪年【20】");
+  expect(html).not.toMatch(/上一页|下一页|加载更多|overflow-y|max-height/);
+});

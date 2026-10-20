@@ -204,7 +204,7 @@ export function getRulerHistoricalEvents(
       : [];
   const candidates = events.filter((event) => {
     const month = event.monthIndex ?? event.year;
-    if (month < ruler.accessionYear || month > endMonth || !RULER_EVENT_TYPES.has(event.type)) {
+    if (month < ruler.accessionYear || month > endMonth && !(event.type==="ruler-died"&&month<=worldMonth&&(event.rulerId===ruler.id||event.metadata?.rulerId===ruler.id)) || !RULER_EVENT_TYPES.has(event.type)) {
       return false;
     }
     if (DIPLOMATIC_TYPES.has(event.type) && !isCoreDiplomaticEvent(event, events)) return false;
@@ -275,9 +275,14 @@ export function getRulerHistoricalEvents(
         linkedSuccession.get(candidate.id) === event.id)
         ? `usurpation:${event.id}`
         : event.historyGroupId ?? event.id;
-    const existing = grouped.get(key);
+    const boundary=event.type==="ruler-acceded"&&event.rulerId===ruler.id?`accession:${event.monthIndex??event.year}`:
+      event.type==="ruler-succession"&&event.metadata?.nextRulerId===ruler.id&&!linkedSuccession.has(event.id)?`accession:${event.monthIndex??event.year}`:
+      event.type==="ruler-died"&&(event.rulerId===ruler.id||event.metadata?.rulerId===ruler.id)?`ending:${event.monthIndex??event.year}`:
+      event.type==="ruler-succession"&&event.metadata?.previousRulerId===ruler.id&&!linkedSuccession.has(event.id)?`ending:${event.monthIndex??event.year}`:undefined;
+    const groupKey=boundary??key;
+    const existing = grouped.get(groupKey);
     if (!existing || recovery && event.type === "city-recovered" ||
-      !(recovery && existing.type === "city-recovered") && score(event) > score(existing)) grouped.set(key, event);
+      !(recovery && existing.type === "city-recovered") && score(event) > score(existing)) grouped.set(groupKey, event);
   }
   const ranked = [...grouped.values()]
     .sort((a, b) => score(b) - score(a) || (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year) || a.id.localeCompare(b.id))
@@ -285,7 +290,7 @@ export function getRulerHistoricalEvents(
     const month=event.monthIndex??event.year;
     const accession=month===ruler.accessionYear&&["ruler-acceded","ruler-succession","dynasty-usurped","ruler-deposed"].includes(event.type)&&
       (event.rulerId===ruler.id||event.metadata?.nextRulerId===ruler.id);
-    const ending=["ruler-died","ruler-captured"].includes(event.type)||event.type==="ruler-deposed"&&event.metadata?.previousRulerId===ruler.id;
+    const ending=["ruler-died","ruler-captured"].includes(event.type)||["ruler-deposed","ruler-succession"].includes(event.type)&&event.metadata?.previousRulerId===ruler.id;
     const turning=isPoliticalTerminalEvent(event)||getHistorySignificance(event)==="LANDMARK"||["dynasty-line-ended","dynasty-restored"].includes(event.type);
     const military=["city-captured","city-recovered","capital-fallen"].includes(event.type);
     const personal=military&&(event.rulerId===ruler.id||event.metadata?.rulerId===ruler.id);

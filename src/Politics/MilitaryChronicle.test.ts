@@ -37,7 +37,7 @@ describe("evidence based military biography", () => {
     expect(rows.every(r => r.source.includes(r.eventId) && r.text.includes(f.person.personalName))).toBe(true);
     expect(deriveMilitaryChronicle(f.person, f.formations, f.events, 100, "赵").map(r => r.eventId)).toEqual(["ordinary", "capital"]);
     expect(deriveMilitaryChronicle(f.person, f.formations, f.events, 100, "黄").map(r => r.eventId)).toEqual(["recovery"]);
-    for (const event of f.events) expect(formatMilitaryVictorySource(event)).toContain(`${f.person.personalName}所属编组参与`);
+    for (const event of f.events) expect(formatMilitaryVictorySource(event)).toContain(`${f.person.personalName}所部参与`);
   });
 
   it.each(["no-person", "wrong-command", "missing-canonical-event", "outside-service", "after-death"])("rejects %s credit", reason => {

@@ -35,7 +35,7 @@ export function militaryMilestones(person:MilitaryPerson,entries:MilitaryChronic
 
 export function selectMilitaryMilestones(entries:MilitaryChronicleEntry[],events:WorldEvent[],limit=8){
   const byId=new Map(events.map(e=>[e.id,e]));
-  const firstGrant=entries.find(e=>e.source.startsWith("military-office-granted")||e.source.startsWith("military-appointment"));
+  const firstGrant=[...entries].sort((a,b)=>a.worldMonth-b.worldMonth||a.eventId.localeCompare(b.eventId)).find(e=>e.source.startsWith("military-office-granted")||e.source.startsWith("military-appointment"));
   const candidates=entries.filter(e=>!(e.source.startsWith("military-command-ended")&&byId.get(e.eventId)?.metadata?.endReason==="DEATH"&&entries.some(d=>d.worldMonth===e.worldMonth&&d.source.startsWith("military-person-died"))));
   return selectChronicleHighlights(candidates,limit,e=>{
     const event=byId.get(e.eventId),type=event?.type??e.source.split(" · ")[0];

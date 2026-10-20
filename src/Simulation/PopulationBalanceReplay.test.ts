@@ -425,3 +425,28 @@ it("reading regional debug observations never changes a production political dec
   };
   expect(run(true)).toEqual(run(false));
 });
+
+it.each([false,true])("popular-only funnel distinguishes a successful transaction from runtime registration rollback (failure: %s)", fail=>{
+  const f=fixture(71,8,4),city=f.team.cities[1];core.totalCells=256;
+  for(const c of f.team.cities){c.loyalty=10;c.devastation=80;}
+  for(const u of f.team.users)Object.assign(f.entries.get(u.player.logicalUnitId).state,{logicalX:city.block.x+16,logicalY:16});
+  const original=[...f.team.users],population=core.teams.reduce((n:number,t:any)=>n+t.users.size,0);
+  if(fail)core.addRuntimeTeam=()=>false;
+  const next=vi.spyOn(worldRandom,"next").mockReturnValue(0);
+  f.eventSystem.checkRestorations(12,[...core.teams]);next.mockRestore();
+  const report=f.eventSystem.getRegionalRebellionSnapshot(),p=report.popularFunnel;
+  expect(p.political).toBeGreaterThan(0);expect(p.validUsers).toBeGreaterThan(0);expect(p.supporters).toBeGreaterThan(0);
+  expect(p.candidates).toBeGreaterThan(0);expect(p.draws).toBeGreaterThan(0);expect(p.hits).toBeGreaterThan(0);
+  if(fail){
+    expect(p.successes).toBe(0);expect(p.failures).toBeGreaterThan(0);
+    expect(report.popularFailures["运行时国家注册被拒绝"]).toBeGreaterThan(0);
+    expect(city.ownerFactionId).toBe(f.team.name);expect([...f.team.users]).toEqual(expect.arrayContaining(original));
+    expect(History.getEvents().some((e:any)=>["rebel-faction-founded","frontier-faction-founded"].includes(e.type))).toBe(false);
+  }else{
+    expect(p.successes).toBe(1);expect(report.popular).toBe(1);expect(report.split).toBe(0);
+    expect(History.getEvents().filter((e:any)=>["rebel-faction-founded","frontier-faction-founded"].includes(e.type))).toHaveLength(1);
+  }
+  expect(core.teams.reduce((n:number,t:any)=>n+t.users.size,0)).toBe(population);
+  expect(f.audit.getSummary(undefined,core.teams).unexplainedWorldDifference).toBe(0);
+  const rng=worldRandom.exportState();f.eventSystem.getRegionalRebellionDiagnostics();expect(worldRandom.exportState()).toEqual(rng);
+});
