@@ -36,8 +36,9 @@ export function formatMilitaryVictorySource(event: WorldEvent,context:MilitaryHi
       typeof m?.commanderPersonId !== "string" || typeof m.commandId !== "string" ||
       typeof m.commanderPersonalName !== "string" || !m.commanderPersonalName.trim() || !event.cityId || !event.actorFactionId) return undefined;
   const month=event.monthIndex??event.year;
-  const country=(id:string|undefined)=>id?(context.factions?.get(id)?getHistoricalFactionIdentity(context.factions.get(id)!,month).name:id):"";
-  const office=getMilitaryOfficeAtEvent(event,context),actor=country(event.actorFactionId),defender=country(event.previousOwnerFactionId??event.targetFactionId);
+  const country=(id:string|undefined)=>id?(context.factions?.get(id)?getHistoricalFactionIdentity({...context.factions.get(id)!,displayName:id},month).name:id):"";
+  const office=getMilitaryOfficeAtEvent(event,context),actor=country(event.actorFactionId);
+  const defender=country(event.previousOwnerFactionId&&event.targetFactionId&&event.previousOwnerFactionId!==event.targetFactionId?undefined:event.previousOwnerFactionId??event.targetFactionId);
   const subject=`${actor}${office?MILITARY_OFFICE_NAMES[office]:"将领"}${m.commanderPersonalName}所部`;
   const city=event.cityName??"城邑";
   if(event.type==="city-recovered")return `${subject}参与收复${defender?`${defender}所据的`:""}${m.founderCapital===1?"故都":m.wasCapital===1?"都城":""}${city}`;
@@ -58,7 +59,7 @@ export function deriveMilitaryChronicle(person: MilitaryPerson, formations: Mili
   const groups = new Set<string>();
   const entries: MilitaryChronicleEntry[] = [];
   const name = getMilitaryPersonDisplayName(person);
-  for (const e of [...byId.values()].sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year)||a.id.localeCompare(b.id))) {
+  for (const e of [...byId.values()].sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year))) {
     const month = e.monthIndex ?? e.year;
     if (month > worldMonth || person.deathMonth !== undefined && month > person.deathMonth || factionId && e.actorFactionId !== factionId) continue;
     const m = e.metadata ?? {};
@@ -71,7 +72,7 @@ export function deriveMilitaryChronicle(person: MilitaryPerson, formations: Mili
     let text: string | undefined;
     let victory = false;
     if (captures.has(e.id) && served) {
-      const key = `${e.historyGroupId ?? e.id}:${e.cityId??""}`;
+      const key = e.historyGroupId ?? e.id;
       if (groups.has(key)) continue;
       groups.add(key);
       victory = true;

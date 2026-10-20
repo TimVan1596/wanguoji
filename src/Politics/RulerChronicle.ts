@@ -290,7 +290,7 @@ export function getRulerHistoricalEvents(
     const month=event.monthIndex??event.year;
     const accession=month===ruler.accessionYear&&["ruler-acceded","ruler-succession","dynasty-usurped","ruler-deposed"].includes(event.type)&&
       (event.rulerId===ruler.id||event.metadata?.nextRulerId===ruler.id);
-    const ending=["ruler-died","ruler-captured"].includes(event.type)||["ruler-deposed","ruler-succession"].includes(event.type)&&event.metadata?.previousRulerId===ruler.id;
+    const ending=["ruler-died","ruler-captured"].includes(event.type)||["ruler-deposed","ruler-succession"].includes(event.type)&&event.metadata?.previousRulerId===ruler.id||event.type==="dynasty-usurped"&&event.metadata?.predecessorRulerId===ruler.id;
     const turning=isPoliticalTerminalEvent(event)||getHistorySignificance(event)==="LANDMARK"||["dynasty-line-ended","dynasty-restored"].includes(event.type);
     const military=["city-captured","city-recovered","capital-fallen"].includes(event.type);
     const personal=military&&(event.rulerId===ruler.id||event.metadata?.rulerId===ruler.id);

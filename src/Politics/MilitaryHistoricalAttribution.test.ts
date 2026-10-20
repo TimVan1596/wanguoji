@@ -30,6 +30,7 @@ it("recovery and unknown defenders/capital status use only recorded facts",()=>{
   expect(formatMilitaryVictorySource(e,{factions})).toBe("秦将领鲍成所部参与收复魏所据的故都睢阳");
   delete e.targetFactionId;e.type="city-captured";e.metadata.wasCapital=undefined;
   expect(formatMilitaryVictorySource(e,{factions})).toBe("秦将领鲍成所部参与攻取睢阳");
+  e.previousOwnerFactionId="defender";e.targetFactionId="conflicting";expect(formatMilitaryVictorySource(e,{factions})).toBe("秦将领鲍成所部参与攻取睢阳");
   delete e.metadata.commanderPersonId;expect(formatMilitaryVictorySource(e,{factions})).toBeUndefined();
 });
 function authorityFixture(){
@@ -44,7 +45,8 @@ it("the simulation writer freezes the actual issuing ruler; later death, success
   expect(e.rulerId).toBe("old");expect(e.metadata?.authorizingRulerTitle).toBe("秦王嬴文");expect(f.event.rulerId).toBeUndefined();
   Object.assign(f.ruler,{status:"dead",deathMonth:48,deathReason:"去世",endYear:48});f.dynasty.currentRulerId="next";
   f.dynasty.rulers.push({...f.ruler,id:"next",givenName:"武",status:"ruling",accessionYear:48,endYear:undefined,deathMonth:undefined});
-  const save=createEmptyWorldSaveV18();save.factions=[{...f.team,factionId:"秦"}];save.dynasties=[{...f.dynasty,rulers:f.dynasty.rulers.map(exportRulerSave)}];save.worldHistory.events=[e];
+  f.team.displayName="汉";f.team.nameHistory=[{name:"秦",startMonth:0,endMonth:99},{name:"汉",startMonth:100}];
+  const save=createEmptyWorldSaveV18();save.world.worldMonth=200;save.factions=[{...f.team,factionId:"秦"}];save.dynasties=[{...f.dynasty,rulers:f.dynasty.rulers.map(exportRulerSave)}];save.worldHistory.events=[e];
   expect(validateMilitaryOfficeAuthorities(save)).toEqual([]);
   const person:any={personId:"p",name:"tag",personalName:"鲍成",appointments:[{officeHistory:[{eventId:"grant",office:"PIJIANG"}]}]};
   const rows=militaryMilestones(person,[{eventId:"grant",worldMonth:12,factionId:"秦",source:"military-office-granted · grant",text:"source",victory:false}], [e]);

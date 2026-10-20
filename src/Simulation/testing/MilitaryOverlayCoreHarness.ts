@@ -42,6 +42,8 @@ export async function runMilitaryOverlayCore(seed="military-overlay-z"){
   check(core.showMilitaryCommand(focused.commandId,true),"default selection automatically highlights a real formation");
   const changed=toggleMilitaryPerson(selection,person.personId,true);
   check(changed.focusedId===person.personId&&changed.expandedIds.length===selection.expandedIds.length,"active header focus preserves all current biographies");
+  const initialOffice=WorldHistory.getEvents().find(e=>e.id===person.appointments.at(-1)?.officeHistory?.[0]?.eventId)!;
+  check(typeof initialOffice.rulerId==="string"&&typeof initialOffice.metadata?.authorizingRulerTitle==="string","actual formal-state grant freezes its contemporary issuing ruler");
   check(person.appointments.at(-1)?.officeHistory?.[0]?.office==="PIJIANG"&&WorldHistory.getEvents().some(e=>e.id===person.appointments.at(-1)?.officeHistory?.[0]?.eventId),"real User appointment grants canonical initial office");
   check(core.focusMilitaryFormation(command),"real Core focuses and highlights actual formation");
   check(core.focusMilitaryTargetCity(view.target!.cityId,command),"target focus uses the shared command overlay lifecycle");
@@ -74,6 +76,7 @@ export async function runMilitaryOverlayCore(seed="military-overlay-z"){
   check(!overlay.selection&&g.commandBuffer.length===0,"hydration clears selected overlay and drawing");
   check(core.scene.physics.world.pendingDestroy.size===0,"hydration drains old Phaser bodies before rebuilding the world");
   check(validateWorldSave(exportWorldSave(core)).valid,"strict V18 real Core hydration");
+  check(WorldHistory.getEvents().find(e=>e.id===initialOffice.id)?.metadata?.authorizingRulerTitle===initialOffice.metadata?.authorizingRulerTitle,"frozen issuing ruler survives real Core hydration");
   check(Military.getPerson(person.personId)?.personalName===person.personalName,"person identity and recorded name survive load");
   const continueOnce=()=>{
     hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));

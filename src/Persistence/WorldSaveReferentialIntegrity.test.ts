@@ -1104,7 +1104,7 @@ it.each(["ordinary", "capital", "recovery", "office"])("x真实User→任命军�
     const king = DynastyRegistry.getCurrentRuler("qin")!;
     expect(getRulerHistoricalEvents(WorldHistory.getEvents(), { ...king, accessionYear: 0 }, "qin", 1, []).map(e => e.id)).toContain(victory.id);
     const royal = formatRulerMilitaryEvent(victory, { accessionYear: 0 }, "qin", 1)!;
-    expect(royal).toContain(`其治下，${person.personalName}所属编组参与`); expect(royal).not.toContain("亲征");
+    expect(royal).toContain(`其治下，qin裨将${person.personalName}所部参与`); expect(royal).not.toContain("亲征");
     expect(formatRulerMilitaryEvent(victory, { accessionYear: 2 }, "qin", 3)).toBeUndefined();
     expect(formatRulerMilitaryEvent(victory, { accessionYear: 0 }, "wei", 1)).toBeUndefined();
     let snapshotMonth=1;
@@ -1127,6 +1127,11 @@ it.each(["ordinary", "capital", "recovery", "office"])("x真实User→任命军�
       snapshotMonth=120;chronicle=MilitaryCommandRegistry.getChronicle(person,snapshotMonth);
       expect(person.appointments[0].officeHistory?.map(g=>g.office)).toEqual(["PIJIANG","JIANGJUN","SHANGJIANGJUN"]);
       expect(chronicle.filter(e=>e.victory)).toHaveLength(5);
+      expect(victory.metadata?.commanderOffice).toBe("PIJIANG");
+      expect(formatRulerMilitaryEvent(victory,{accessionYear:0},"qin",120)).toContain(`qin裨将${person.personalName}`);
+      const later=WorldHistory.getEvents().find(e=>e.metadata?.commanderPersonId===person.personId&&e.type==="city-captured"&&(e.monthIndex??e.year)===84)!;
+      expect(later.metadata?.commanderOffice).toBe("JIANGJUN");
+      expect(formatRulerMilitaryEvent(later,{accessionYear:0},"qin",120)).toContain(`qin将军${person.personalName}`);
       const grants=person.appointments[0].officeHistory!;
       expect(new Set(grants.flatMap(g=>g.captureEventIds)).size).toBe(5);
       expect(chronicle.filter(e=>e.source.startsWith("military-office-granted"))).toHaveLength(3);
@@ -1147,7 +1152,8 @@ it.each(["ordinary", "capital", "recovery", "office"])("x真实User→任命军�
     expect(loaded.personalName).toBe(person.personalName);
     for (const mutate of [(s: any) => delete s.registries.militaryCommandRegistry.people[0].personalName,
       (s: any) => { s.registries.militaryCommandRegistry.people[0].personalName = "另一个姓名"; },
-      (s: any) => { s.worldHistory.events.find((e: any) => e.id === victory.id).metadata.commanderPersonId = "missing-person"; }]) {
+      (s: any) => { s.worldHistory.events.find((e: any) => e.id === victory.id).metadata.commanderPersonId = "missing-person"; },
+      (s:any)=>{s.worldHistory.events.find((e:any)=>e.id===victory.id).metadata.commanderOffice="SHANGJIANGJUN";}]) {
       const invalid = structuredClone(snapshot); mutate(invalid); expect(validateWorldSave(invalid).valid).toBe(false);
     }
     if(kind==="office"){

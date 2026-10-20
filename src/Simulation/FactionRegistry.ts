@@ -58,6 +58,7 @@ class FactionRegistryStore {
   }
 
   importState(state: { sequence: number }) {
+    this.lastFoundingFailure=undefined;
     this.sequence = state.sequence;
   }
 

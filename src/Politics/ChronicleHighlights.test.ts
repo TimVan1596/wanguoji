@@ -38,3 +38,11 @@ it("military summary preserves office progression and the political/life ending 
   expect(selectMilitaryMilestones([...entries].reverse(),[...events].reverse()).map(e=>e.eventId)).toEqual(selected.map(e=>e.eventId));
   expect(selectMilitaryMilestones(entries.slice(0,3),events)).toEqual(entries.slice(0,3));expect(entries).toHaveLength(26);
 });
+
+it("preserves the predecessor's real dynastic ending even when the richer usurpation event replaces succession",()=>{
+  const events=[event("accession","ruler-acceded",0,{rulerId:"king"}),...Array.from({length:12},(_,i)=>event(`unify${i}`,"world-unification",300+i*12,{rulerId:"king"})),
+    event("succession","ruler-succession",600,{rulerId:"new",metadata:{previousRulerId:"king",nextRulerId:"new"}}),
+    event("usurp","dynasty-usurped",600,{rulerId:"new",metadata:{predecessorRulerId:"king"}})];
+  const selected=getRulerHistoricalEvents(events,ruler,"秦",600,[],8);
+  expect(selected).toHaveLength(8);expect(selected.map(e=>e.id)).toContain("accession");expect(selected.map(e=>e.id)).toContain("usurp");expect(selected.map(e=>e.id)).not.toContain("succession");
+});
