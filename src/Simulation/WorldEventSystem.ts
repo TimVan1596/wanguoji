@@ -813,6 +813,9 @@ export default class WorldEventSystem {
       if (city.destroyed) continue;
       diagnostics.cityChecks++;
       const rd=this.regional.counts;rd.cityChecks++;
+      const pf=this.regional.popularFunnel;pf.cityChecks++;
+      const politicalBeforeFilters=hasPopularPoliticalCrisis(city,year,Game.Core?.totalCells??1);
+      if(politicalBeforeFilters)pf.political++;
       const owner = city.ownerTeam;
       const founder = city.founderTeam;
       if (!owner) continue;
@@ -841,9 +844,9 @@ export default class WorldEventSystem {
       }
       if (warTornPath) diagnostics.warTornCityChecks++; else diagnostics.lowLoyaltyCityChecks++;
       const cityBlocks: string[] = [];
-      if (city.isInCaptureGrace(year)) cityBlocks.push("占领保护期");
+      if (city.isInCaptureGrace(year)) {cityBlocks.push("占领保护期");if(politicalBeforeFilters)pf.captureGrace++;}
       const lastRebellionYear = this.cityRebellionYears[city.id];
-      if (lastRebellionYear !== undefined && year - lastRebellionYear < REBELLION_CITY_COOLDOWN_MONTHS) cityBlocks.push("城市叛乱冷却");
+      if (lastRebellionYear !== undefined && year - lastRebellionYear < REBELLION_CITY_COOLDOWN_MONTHS) {cityBlocks.push("城市叛乱冷却");if(politicalBeforeFilters)pf.cooldown++;}
       if (cityBlocks.length) { local.cityBlocked += localHistoryCount; this.restorationBlocks(cityBlocks); continue; }
 
       const historical: Array<{ team: Team; basis: RestorationBasis; heldMonths: number; chance: number; legacyChance?:number; legacyAvailable?:boolean; supporter?: User }> = [];
@@ -889,9 +892,17 @@ export default class WorldEventSystem {
       const cityPolitical=!warTornPath&&city.loyalty<=REBEL_LOYALTY_THRESHOLD_V095&&!stableBlocked;
       if(cityPolitical)rd.politicalCities++;
       if(cityPolitical&&!populationSupport?.users.length)rd.noSupport++;
+      if(cityPolitical&&populationSupport){
+        pf.populationScans++;pf.validUsers+=populationSupport.validOrdinary;pf.identityBlocked+=populationSupport.identityBlocked;pf.geographyBlocked+=populationSupport.outsideArea;
+        pf.discontentBlocked+=populationSupport.discontentBlocked;pf.supporters+=populationSupport.users.length;if(!populationSupport.users.length)pf.noSupport++;
+        if(capacityBlocked)pf.capacity++;
+      }
       const newPopular=cityPolitical&&!capacityBlocked&&Boolean(populationSupport?.users.length);
+      if(newPopular)pf.candidates++;
       // Own-founded cities can form a popular polity; former-owner restoration retains its original priority/slot.
       const originalPath = !warTornPath && (Boolean(founder && city.ownerFactionId !== city.founderFactionId)||(newPopular && historical.length===0)) && !historical.some(row => row.team === founder && row.supporter);
+      const popularSlot=newPopular&&originalPath;
+      if(newPopular&&!originalPath)pf.priorityBlocked++;
       if (!originalPath && !historical.length) continue;
       const loyaltyPressure = warTornPath ? 0 :
         (REBELLION_LOYALTY_THRESHOLD - city.loyalty) /
@@ -959,6 +970,7 @@ export default class WorldEventSystem {
         local.draws++;
         local.expected+=riskDistribution.probabilities.reduce((sum,p,i)=>sum+(slots[i].local?p:0),0);
       }
+      if(popularSlot){pf.draws++;pf.expectedHits+=riskDistribution.probabilities[0]??0;}
       diagnostics.draws++;
       if (expectedRestoration > 0) diagnostics.restorationDraws++;
       diagnostics.expectedRestorations += expectedRestoration;
@@ -974,9 +986,10 @@ export default class WorldEventSystem {
       }
       if (historical.length) {
         const selected = selectLocalResponseOpportunity(slots,draw,warTornPath?.03:.09);
-        if (!selected) {rd.drawFailed++;continue;}
+        if (!selected) {rd.drawFailed++;if(popularSlot)pf.misses++;continue;}
         const row = selected.historical;
         if (row) {
+          if(popularSlot)pf.historicalSelected++;
           diagnostics.attempts++;
           if (row.supporter) {
             local.drawHits++;
@@ -1004,7 +1017,8 @@ export default class WorldEventSystem {
           diagnostics.failures++; this.restorationBlock("执行未成功"); continue;
         }
         // The selected legacy slot retains its original execution chain and random draw.
-      } else if (draw > chance) {rd.drawFailed++;continue;}
+      } else if (draw > chance) {rd.drawFailed++;if(popularSlot)pf.misses++;continue;}
+      if(popularSlot)pf.hits++;
       if (warTornPath || !founder) continue;
 
       if (!founder.isDie && !newPopular) {
@@ -1025,7 +1039,7 @@ export default class WorldEventSystem {
         diagnostics.attempts++;
         if (FactionRegistry.restoreFaction(founder, city, year, restoredPopulation, "RESTORATION", undefined, year)) {
           WorldRemnants.consume(founder.name, restoredPopulation);
-          diagnostics.successes++; diagnostics.founderSuccesses++;
+          diagnostics.successes++; diagnostics.founderSuccesses++;if(popularSlot)pf.founderRestored++;
           this.cityRebellionYears[city.id] = year;
           return;
         }
@@ -1035,8 +1049,10 @@ export default class WorldEventSystem {
       if (newPopular) {
         const frontier = isFrontierCity(city) && worldRandom.next() <= FRONTIER_REBELLION_CHANCE;
         const created=FactionRegistry.createRebelFaction({city,year,factionType:frontier?"FRONTIER":"REBEL"});
-        if(created){this.regional.created(created,year,"popular");this.cityRebellionYears[city.id]=year;return;}
-        rd.executionFailed++;
+        if(created){pf.successes++;this.regional.created(created,year,"popular");this.cityRebellionYears[city.id]=year;return;}
+        rd.executionFailed++;pf.failures++;
+        const reason=FactionRegistry.getLastFoundingFailure()??"原因未记录";
+        this.regional.popularFailures[reason]=(this.regional.popularFailures[reason]??0)+1;
       }
     }
   }
