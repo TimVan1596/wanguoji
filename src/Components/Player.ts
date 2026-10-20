@@ -209,7 +209,7 @@ export default class Player extends Phaser.GameObjects.Container {
     this.user = user;
   }
 
-  setRole(role: PlayerRole, rulerId?: string) {
+  setRole(role: PlayerRole, rulerId?: string, preserveMovement = false) {
     this.role = role;
     this.rulerId = rulerId;
     if (role !== "RULER") {
@@ -229,8 +229,7 @@ export default class Player extends Phaser.GameObjects.Container {
       this.add(this.crownMarker);
     }
     this.crownMarker.setVisible(true).setActive(true);
-    this.speedUp(1);
-    this.sizeUp(1);
+    if(!preserveMovement){this.speedUp(1);this.sizeUp(1);}
   }
 
   setTeam(team: Team) {

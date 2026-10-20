@@ -67,3 +67,10 @@ describe("Core faction collider lifecycle", () => {
     expect(registry.snapshot().colliders).toBe(0);
   });
 });
+
+it("failed faction registration removes its colliders and cross references without ending other factions",()=>{
+ const r=new RuntimeColliderRegistry(),a={name:"a",status:"ACTIVE",blocks:group()},b={name:"b",status:"ACTIVE",blocks:group()},map=group();let destroyed=0;
+ const collider=()=>({destroy(){destroyed++;}});
+ r.register(a,group(),[map,b.blocks],collider);r.register(b,group(),[map,a.blocks],collider);
+ r.discardFaction(b);expect(r.snapshot()).toEqual({colliders:1,targetReferences:1,pendingTerminalFactions:0});expect(destroyed).toBe(1);expect(a.status).toBe("ACTIVE");
+});

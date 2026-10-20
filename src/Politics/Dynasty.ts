@@ -209,7 +209,7 @@ class DynastyRegistryStore {
       const u=resident.user;
       if(u.isDestroyed||u.team!==team||!team.users.has(u)||u.role!=="NORMAL"||u.militaryPersonId||u.historicalPersonId)throw new Error("Invalid resident founder");
       ruler.residentIdentity={...resident.origin};
-      u.historicalPersonId=resident.origin.personId;u.role="RULER";u.rulerId=ruler.id;u.player.setRole("RULER",ruler.id);
+      u.historicalPersonId=resident.origin.personId;u.role="RULER";u.rulerId=ruler.id;u.player.setRole("RULER",ruler.id,true);
       Game.Core?.logicalUnitRegistry.updateRole(u.player.logicalUnitId,"RULER",ruler.id);team.rulerUser=u;
     }
     ruler.reignOrdinal = 1;
@@ -715,7 +715,7 @@ class DynastyRegistryStore {
       const existing=Team.GetUserById(ruler.residentIdentity.sourceUserId);
       if(existing){
         if(existing.historicalPersonId!==ruler.residentIdentity.personId)return; // A recycled live ID is not this person. Never replace it.
-        if(existing.team===team){existing.role="RULER";existing.rulerId=ruler.id;existing.player.setRole("RULER",ruler.id);Game.Core?.logicalUnitRegistry.updateRole(existing.player.logicalUnitId,"RULER",ruler.id);team.rulerUser=existing;}
+        if(existing.team===team){existing.role="RULER";existing.rulerId=ruler.id;existing.player.setRole("RULER",ruler.id,true);Game.Core?.logicalUnitRegistry.updateRole(existing.player.logicalUnitId,"RULER",ruler.id);team.rulerUser=existing;}
         return;
       }
     }

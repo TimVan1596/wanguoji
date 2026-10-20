@@ -29,3 +29,8 @@ describe("runtime faction registry", () => {
     expect(registry.list()).toHaveLength(1);
   });
 });
+
+it("rollback removes only the exact new runtime faction",()=>{
+ const r=new RuntimeFactionRegistry<FakeFaction>(),a={name:"a"},b={name:"b"};r.reset([a,b]);
+ r.unregister({name:"a"});expect(r.list()).toEqual([a,b]);r.unregister(b);expect(r.list()).toEqual([a]);expect(r.has("b")).toBe(false);
+});

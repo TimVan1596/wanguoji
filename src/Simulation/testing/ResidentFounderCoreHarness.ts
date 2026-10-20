@@ -1,3 +1,4 @@
+import Lifetime from "../FactionLifetimeRecord";
 import {createNaturalCore} from "./NaturalCoreHarness";
 import Factions from "../FactionRegistry";
 import Dynasty from "../../Politics/Dynasty";
@@ -16,7 +17,7 @@ export async function runResidentFounderCore(seed="resident-z6"){
  for(const kind of ["popular","split"]){
   const {core,game}=await createNaturalCore(`${seed}-${kind}`),checks:string[]=[];
   const check=(ok:unknown,label:string)=>{if(!ok)throw new Error(`${kind}: ${label}`);checks.push(label);};
-  const strict=()=>{const save=exportWorldSave(core),v=validateWorldSave(save);if(!v.valid)throw new Error(v.errors.join("; "));return save;};
+  const strict=()=>{let save;try{save=exportWorldSave(core);}catch(e){throw new Error(`${String(e)}; teams=${core.teams.map(t=>t.name)}; records=${JSON.stringify(Lifetime.exportState().records.map(r=>r.factionId))}; checks=${checks[checks.length-1]}`);}const v=validateWorldSave(save);if(!v.valid)throw new Error(v.errors.join("; "));return save;};
   const step=()=>{for(let n=0;n<30;n++)(core as any).advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit("postupdate");};
   try{
    core.setWorldRunning(false);
