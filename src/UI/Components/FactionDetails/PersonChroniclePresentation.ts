@@ -10,7 +10,7 @@ import {MILITARY_OFFICE_NAMES} from "../../../Politics/MilitaryOffice";
 /** Only changes the reading view. Full entries and canonical events remain available for audit and promotion. */
 export function militaryMilestones(person:MilitaryPerson,entries:MilitaryChronicleEntry[],events:WorldEvent[],context:MilitaryHistoryContext={}){
   const byId=new Map(events.map(e=>[e.id,e])),name=getMilitaryPersonDisplayName(person);
-  return entries.flatMap(entry=>{
+  return entries.filter(e=>!(e.source.startsWith("military-command-ended")&&byId.get(e.eventId)?.metadata?.endReason==="DEATH"&&entries.some(d=>d.worldMonth===e.worldMonth&&d.source.startsWith("military-person-died")))).flatMap(entry=>{
     const type=entry.source.split(" · ")[0],event=byId.get(entry.eventId);
     if(type==="military-order-issued"&&event?.importance!=="major")return [];
     if(type==="military-order-issued")return [{...entry,text:`${name}奉命以${event?.cityName??"城邑"}为进军目标。`}];

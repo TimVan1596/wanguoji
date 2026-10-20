@@ -33,7 +33,7 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
   const original=(City.prototype as any).updateSiege;
   let siegeCityMonths=0,contactMonth=-1;
   const seen=new Set<string>(),sizeSamples:Record<string,number>={},factionCommandSamples:Record<string,number>={};
-  let politicalCandidateChecks=0,activeFormationSamples=0,totalFormationMembers=0;
+  let politicalCandidateChecks=0,activeFormationSamples=0,totalFormationMembers=0,activeStateMonthSum=0;
   (City.prototype as any).updateSiege=function(month:number,...args:unknown[]){
     if(contactMonth!==month){seen.clear();contactMonth=month;}
     if(this.ownerTeam&&[...this.siegeContacts.values()].some((c:any)=>month-c.year<=1&&Diplomacy.canAttack(c.team.name,this.ownerTeam.name,month))&&!seen.has(this.id)){
@@ -50,6 +50,7 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
         if(city.destroyed)continue;monthlyExposure.cityMonths++;
         if(hasPopularPoliticalCrisis(city,m,core.totalCells)){const p=assessPopularSupport(city,m);monthlyExposure.politicalCityMonths++;monthlyExposure.supporters+=p.users.length;monthlyExposure.identityBlocked+=p.identityBlocked;monthlyExposure.geographyBlocked+=p.outsideArea;monthlyExposure.discontentBlocked+=p.discontentBlocked;}
       }
+      activeStateMonthSum+=core.teams.filter(t=>t.status==="ACTIVE").length;
       const formations=Military.getFormations().filter(f=>f.status==="ACTIVE");
       for(const f of formations){sizeSamples[f.memberUnitIds.length]=(sizeSamples[f.memberUnitIds.length]??0)+1;activeFormationSamples++;totalFormationMembers+=f.memberUnitIds.length;}
       for(const t of core.teams.filter(t=>t.status==="ACTIVE")){
@@ -85,6 +86,10 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
           duplicatePopulationIds:snapshot.users.length-new Set(snapshot.users.map(u=>u.userId)).size,
           currentMilitaryByRegime:core.teams.filter(t=>t.status==="ACTIVE").map(t=>({factionId:t.name,factionType:t.factionType,stage:t.identityStage,rank:t.sovereigntyRank,
             population:t.users.size,commands:formations.filter(f=>f.factionId===t.name).length})),
+          meanActiveStates:activeStateMonthSum/m,
+          meanEndedStateLifetimeMonths:(()=>{const ts=core.teams.filter(t=>t.status==="EXTINCT");return ts.length?ts.reduce((sum,t)=>sum+Math.max(0,(t.extinctionYear??m)-t.firstFoundedYear),0)/ts.length:0;})(),
+          militarySplits:events.filter(e=>e.type==="empire-split"&&e.metadata?.splitSource==="MILITARY").length,
+          formationOwnershipConflicts:formations.filter(f=>f.memberUnitIds.some(id=>!core.teams.find(t=>t.name===f.factionId)?.users.has(core.teams.flatMap(t=>[...t.users]).find(u=>u.player.logicalUnitId===id)!))).length,
           residentFounders:snapshot.dynasties.flatMap(d=>(d.rulers as any[]).filter(r=>r.residentIdentity)).length,
           residentLiveBindings:snapshot.users.filter(u=>u.historicalPersonId).length,
           residentIdentityConflicts:(()=>{const rs=snapshot.dynasties.flatMap(d=>(d.rulers as any[]).filter(r=>r.residentIdentity));const ids=rs.map(r=>r.residentIdentity.personId);return ids.length-new Set(ids).size+snapshot.users.filter(u=>u.historicalPersonId&&!rs.some(r=>r.residentIdentity.personId===u.historicalPersonId&&r.residentIdentity.sourceUserId===u.userId&&r.bornMonth===u.bornMonth&&r.deathMonth===undefined)).length;})(),
