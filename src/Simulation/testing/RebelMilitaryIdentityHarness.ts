@@ -39,7 +39,7 @@ export async function runRebelMilitaryIdentity(seed="rebel-identity-z4") {
     const supporters=originals.filter(u=>u.team===rebel),ruler=Dynasty.getCurrentRuler(rebel.name)!;
     check(supporters.length>0&&supporters.every(u=>!owner.users.has(u)&&rebel.users.has(u)),"supporter Users transfer once, retaining their original objects and birth identities");
     check(supporters.includes(rebel.rulerUser!)&&ruler.residentIdentity?.sourceUserId===rebel.rulerUser!.id,"founder is the same real transferred resident with a permanent royal life");
-    check(core.teams.reduce((n,t)=>n+t.users.size,0)-before===(rebel.rulerUser?1:0)-(owner.rulerUser?0:1),"ordinary transfer conserves population; existing ruler lifecycle additions/removals are separate");
+    check(core.teams.reduce((n,t)=>n+t.users.size,0)===before,"resident founder and ordinary transfer conserve population without an extra royal avatar");
     check(History.getEventsForFaction(rebel.name).filter(e=>e.type==="rebel-faction-founded").length===1,"one canonical popular founding event");
     const candidates=supporters.filter(u=>u.role==="NORMAL"&&u.bornMonth<=-216&&deriveMilitaryLifeSchedule({personId:"military-person-1",bornMonth:u.bornMonth}).retirementMonth>0);
     check(candidates.length>=1&&supporters.length>=2,"rebel has real eligible military candidates and existing members");
