@@ -1,3 +1,4 @@
+import {captureMilitarySplitRollback} from "./MilitarySplitRollback";
 import {assessMilitarySecession,type MilitarySecessionEvidence} from "./MilitarySecession";
 import { assessPopularSupport, hasPopularPoliticalCrisis } from "./PopularRebellionSupport";
 import { calculateImperialStrain } from "./ImperialStrain";
@@ -199,7 +200,7 @@ class FactionRegistryStore {
   }
 
   /** Population preparation precedes city consequences and runtime registration. */
-  private prepareFoundingPopulation(team: Team, owner: Team, users: User[], month: number, cause: "REBELLION_TRANSFER" | "EMPIRE_SPLIT_TRANSFER", city: City, military?:MilitarySecessionEvidence) {
+  private prepareFoundingPopulation(team: Team, owner: Team, users: User[], month: number, cause: "REBELLION_TRANSFER" | "EMPIRE_SPLIT_TRANSFER", city: City, military?:MilitarySecessionEvidence, deferAudit=false) {
     if(users.some(u=>this.foundingTransactions.has(u))) {this.lastFoundingFailure="居民已在另一转属事务中";return false;}
     users.forEach(u=>this.foundingTransactions.add(u));
     const dynastyBefore=DynastyRegistry.exportState(),historyBefore=WorldHistory.exportState(),lifetimeBefore=FactionLifetimeRecords.exportState();
@@ -217,8 +218,8 @@ class FactionRegistryStore {
         sourceFactionId:owner.name,sourceFactionName:owner.displayName,foundedMonth:month,cityId:city.id,cityName:city.name,
       }});
       if (Game.Core.addRuntimeTeam(team)) {
-        Game.Core.simulator?.recordPopulationMutation(owner,beforeOwner,owner.users.size,{cause,month,relatedFactionId:team.name,context:"本地真实居民支持新政权"});
-        Game.Core.simulator?.recordPopulationMutation(team,beforeNew,team.users.size,{cause,month,relatedFactionId:owner.name,context:"本地真实居民支持新政权"});
+        if(!deferAudit)Game.Core.simulator?.recordPopulationMutation(owner,beforeOwner,owner.users.size,{cause,month,relatedFactionId:team.name,context:"本地真实居民支持新政权"});
+        if(!deferAudit)Game.Core.simulator?.recordPopulationMutation(team,beforeNew,team.users.size,{cause,month,relatedFactionId:owner.name,context:"本地真实居民支持新政权"});
         users.forEach(u=>this.foundingTransactions.delete(u));return true;
       }
     this.lastFoundingFailure="运行时国家注册被拒绝";
@@ -371,8 +372,12 @@ class FactionRegistryStore {
       parentFactionId: previousOwner.name,
       foundingCityIds: cities.map((city) => city.id),
     });
-    if (!coreCity.revoltTo(team, year, () => this.prepareFoundingPopulation(team, previousOwner, lowLoyaltyUsers, year, "EMPIRE_SPLIT_TRANSFER", coreCity, military?.evidence))) {
-      this.discardUnregisteredFaction(team); return undefined;
+    if(military&&cities.length>=previousOwner.cities.length){this.discardUnregisteredFaction(team);return undefined;}
+    const beforeOwner=previousOwner.users.size;
+    const rollback=military?captureMilitarySplitRollback(previousOwner,team,lowLoyaltyUsers):undefined;
+    try {
+    if (!coreCity.revoltTo(team, year, () => this.prepareFoundingPopulation(team, previousOwner, lowLoyaltyUsers, year, "EMPIRE_SPLIT_TRANSFER", coreCity, military?.evidence,Boolean(military)))) {
+      rollback?.();this.discardUnregisteredFaction(team); return undefined;
     }
     const transferredCities = [coreCity, ...cities.slice(1).filter(city => city.revoltTo(team, year))];
     this.transferNearbyTerritory(previousOwner, team, coreCity);
@@ -384,7 +389,12 @@ class FactionRegistryStore {
       {transferredPopulation:lowLoyaltyUsers.length,externalPopulation:0,...this.getFoundingMetadata(team)});
     DynastyRegistry.recordRebellion(previousOwner.name);
     FactionLifetimeRecords.observe(team, year);
+    if(military){
+      Game.Core.simulator?.recordPopulationMutation(previousOwner,beforeOwner,previousOwner.users.size,{cause:"EMPIRE_SPLIT_TRANSFER",month:year,relatedFactionId:team.name,context:"真实将领与部分旧部建立割据政权"});
+      Game.Core.simulator?.recordPopulationMutation(team,0,team.users.size,{cause:"EMPIRE_SPLIT_TRANSFER",month:year,relatedFactionId:previousOwner.name,context:"真实将领与部分旧部建立割据政权"});
+    }
     return { team, transferredCities, transferredPopulation: lowLoyaltyUsers.length, externalPopulation: 0, foundingMetadata:this.getFoundingMetadata(team) };
+    } catch(error){if(!rollback)throw error;rollback();this.lastFoundingFailure="军事分裂事务异常并完整回退";this.discardUnregisteredFaction(team);return undefined;}
   }
 
   getFoundingMetadata(team:Team):Record<string,string|number|undefined>{

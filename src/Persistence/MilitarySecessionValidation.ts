@@ -18,8 +18,8 @@ export function validateMilitarySecessions(save:WorldSaveV1){
  for(const r of records){
   const i=r.residentIdentity,e=i?.military;if(e===undefined)continue;
   const p=state.people.filter(object).find(p=>p.personId===e?.personId),f=state.formations.filter(object).find(f=>f.commandId===e?.commandId);
-  const a=Array.isArray(p?.appointments)?p.appointments.filter(object).find(a=>a.commandId===e.commandId&&a.factionId===i.sourceFactionId):undefined;
-  const grant=Array.isArray(a?.officeHistory)?a.officeHistory.filter(g=>object(g)&&g.month<=i.foundedMonth).at(-1):undefined;
+  const a=Array.isArray(p?.appointments)?p!.appointments.filter(object).find(a=>a.commandId===e.commandId&&a.factionId===i.sourceFactionId):undefined;
+  const grant=Array.isArray(a?.officeHistory)?a!.officeHistory!.filter(g=>object(g)&&g.month<=i.foundedMonth).at(-1):undefined;
   let valid=Boolean(object(e)&&p&&f&&a&&grant&&typeof r.houseName==="string"&&typeof r.givenName==="string"&&Array.isArray(f.memberUnitIds)&&p.politicalRulerId===r.rulerId&&p.personId===i.personId&&p.sourceUserId===i.sourceUserId&&p.name===i.sourceUserLabel&&p.bornMonth===r.bornMonth&&
    `${r.houseName?.replace(/氏$/,"")}${r.givenName}`===p.personalName&&e.personalName===p.personalName&&p.status!=="ACTIVE"&&
    r.naturalDeathMonth===deriveMilitaryLifeSchedule(p).naturalDeathMonth&&r.deathMonth===p.deathMonth&&
