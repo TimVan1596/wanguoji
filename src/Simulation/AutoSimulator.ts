@@ -1,3 +1,4 @@
+import {freezeMilitaryOfficeAuthority} from "../Politics/MilitaryOfficeAuthority";
 import { PoliticalTransitionObservations } from "./PoliticalTransitionObservations";
 import { diagnosePeacefulReunificationCandidates } from "./PeacefulReunificationSystem";
 import { formatPoliticalTransitionChineseSummary } from "./PoliticalTransitionChineseSummary";
@@ -64,7 +65,10 @@ export default class AutoSimulator {
   private sessionStartMonth = 0;
   private stepPerformance = new RollingStepPerformance();
   constructor(private readonly transitionDiagnosticsEnabled=debugProfileEnabled) {
-    MilitaryCommandRegistry.setEventWriter(event => WorldHistory.addEvent(event));
+    MilitaryCommandRegistry.setEventWriter(event => {
+      const team=event.type==="military-office-granted"?Game.Core?.teams.find(t=>t.name===event.actorFactionId):undefined;
+      return WorldHistory.addEvent(freezeMilitaryOfficeAuthority(event,team,team?DynastyRegistry.get(team.name):undefined));
+    });
     this.submission=new PeacefulSubmissionSystem(transitionDiagnosticsEnabled);
     this.unionObservations=new PoliticalTransitionObservations(transitionDiagnosticsEnabled);
     this.reunificationObservations=new PoliticalTransitionObservations(transitionDiagnosticsEnabled);

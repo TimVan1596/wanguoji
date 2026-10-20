@@ -1,3 +1,4 @@
+import {MILITARY_OFFICES} from "../Politics/MilitaryOffice";
 import {validateMilitaryOffices} from "./MilitaryOfficeValidation";
 import { deriveMilitaryLifeSchedule } from "../Politics/MilitaryLifeRules";
 import { MAX_COMMANDERS_PER_FACTION, MAX_FORMATION_UNITS, type MilitaryCommandState } from "../Politics/MilitaryCommandRegistry";
@@ -163,6 +164,13 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
           m.sourceUserId !== undefined && m.sourceUserId !== person.sourceUserId ||
           m.commandId !== undefined && (!formation || formation.commanderPersonId !== person.personId))
         errors.push(`military name snapshot has invalid identity: ${event.id}`);
+    }
+    if(m.commanderOffice!==undefined){
+      const p=people.get(m.commanderPersonId),at=event.monthIndex??event.year;
+      const appointment=p?.appointments.find((a:any)=>a.commandId===m.commandId&&a.factionId===event.actorFactionId&&a.startMonth<=at&&at<=(a.endMonth??worldMonth));
+      const events=[...historyById.values()],index=events.findIndex(e=>e.id===event.id);
+      const office=appointment?.officeHistory?.filter((g:any)=>g.month<at||g.month===at&&events.findIndex(e=>e.id===g.eventId)>=0&&events.findIndex(e=>e.id===g.eventId)<index).at(-1)?.office;
+      if(!MILITARY_OFFICES.includes(m.commanderOffice)||!m.commanderPersonalName||office!==m.commanderOffice)errors.push(`military victory office snapshot invalid: ${event.id}`);
     }
     if (m.commanderPersonalName !== undefined) {
       const person = people.get(m.commanderPersonId), formation = formations.get(m.commandId), at = event.monthIndex ?? event.year;

@@ -1,3 +1,4 @@
+import { selectChronicleHighlights } from "./ChronicleHighlights";
 import { getRulerTerminalRole, isPoliticalTerminalEvent, type TerminalChronicleRuler } from "../History/PoliticalTerminalChronicle";
 import type { WorldEvent } from "../History/WorldHistory";
 import { getFactionEventRelation } from "../History/FactionEventRelation";
@@ -103,6 +104,8 @@ export function buildRulerTags(evidence: RulerHistoricalEvidence) {
 
 const RULER_EVENT_TYPES = new Set<WorldEvent["type"]>([
   "heir-died",
+  "ruler-died",
+  "dynasty-line-ended",
   "city-captured",
   "city-recovered",
   "capital-fallen",
@@ -133,6 +136,8 @@ const RULER_EVENT_TYPES = new Set<WorldEvent["type"]>([
 ]);
 
 const RULER_EVENT_PRIORITIES: Partial<Record<WorldEvent["type"], number>> = {
+  "ruler-died": 150,
+  "dynasty-line-ended": 125,
   "faction-merged": 130,
   "faction-submitted": 130,
   "heir-died": 82,
@@ -276,11 +281,18 @@ export function getRulerHistoricalEvents(
   }
   const ranked = [...grouped.values()]
     .sort((a, b) => score(b) - score(a) || (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year) || a.id.localeCompare(b.id))
-  const mandatory = ranked.filter((event) => isPoliticalTerminalEvent(event) || getHistorySignificance(event) === "LANDMARK" || ["capital-relocated", "dynasty-restored", "city-revolt", "rebel-faction-founded", "frontier-faction-founded"].includes(event.type));
-  const ordered = [...mandatory, ...ranked.filter(event => !mandatory.includes(event))];
-  const selected = [...new Set(ordered)].slice(0, limit);
-  return selected
-    .sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year) || a.id.localeCompare(b.id));
+  return selectChronicleHighlights(ranked,limit,event=>{
+    const month=event.monthIndex??event.year;
+    const accession=month===ruler.accessionYear&&["ruler-acceded","ruler-succession","dynasty-usurped","ruler-deposed"].includes(event.type)&&
+      (event.rulerId===ruler.id||event.metadata?.nextRulerId===ruler.id);
+    const ending=["ruler-died","ruler-captured"].includes(event.type)||event.type==="ruler-deposed"&&event.metadata?.previousRulerId===ruler.id;
+    const turning=isPoliticalTerminalEvent(event)||getHistorySignificance(event)==="LANDMARK"||["dynasty-line-ended","dynasty-restored"].includes(event.type);
+    const military=["city-captured","city-recovered","capital-fallen"].includes(event.type);
+    const personal=military&&(event.rulerId===ruler.id||event.metadata?.rulerId===ruler.id);
+    const capital=event.type==="capital-fallen"||event.metadata?.wasCapital===1;
+    return {id:event.id,month,priority:score(event)+(accession||ending?1000:turning?400:personal||capital||event.type==="capital-relocated"?200:0),
+      cityId:military?event.cityId:undefined};
+  },{start:ruler.accessionYear,end:endMonth});
 }
 
 /** Capital-loss and recovery can use different political groups for the same capture.
@@ -305,6 +317,10 @@ export function isDirectRulerTreatySignature(event: WorldEvent, rulerId: string,
 function isRulerPoliticalEventRelevant(event: WorldEvent, rulerId: string, factionId: string) {
   const factions = event.factionIds ?? [];
   switch (event.type) {
+    case "ruler-died":
+      return event.actorFactionId === factionId && factions.includes(factionId) && (event.rulerId === rulerId || event.metadata?.rulerId === rulerId);
+    case "dynasty-line-ended":
+      return event.actorFactionId === factionId && factions.includes(factionId);
     case "heir-died":
       return event.actorFactionId === factionId && factions.includes(factionId) &&
         event.rulerId === rulerId && event.metadata?.parentRulerId === rulerId;

@@ -154,7 +154,9 @@ export function formatHistoryEventTitle(
   const title = formatMilitaryHistoryIdentity({ ...event, title: formatHistoryEventTitleBase(event, factionById, rulersById) });
   const capital = formatAccessionCapital(event);
   const military = formatMilitaryParticipation(event);
-  return [title, capital, military, formatMilitaryVictorySource(event)].filter(Boolean).join(" · ");
+  const victory=formatMilitaryVictorySource(event,{factions:factionById});
+  if(victory)return `${victory}${event.rulerId?"；此役另有君主亲征记录":""}`;
+  return [title, capital, military].filter(Boolean).join(" · ");
 }
 
 function formatHistoryEventTitleBase(

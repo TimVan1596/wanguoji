@@ -1,4 +1,6 @@
-import {MILITARY_OFFICE_NAMES} from "./MilitaryOffice";
+import {getHistoricalFactionIdentity} from "../History/HistoricalFactionIdentity";
+import type {HistoryFactionLike} from "../History/HistoryRenderRules";
+import {MILITARY_OFFICES,MILITARY_OFFICE_NAMES} from "./MilitaryOffice";
 import type { WorldEvent } from "../History/WorldHistory";
 import type { MilitaryFormation, MilitaryPerson } from "./MilitaryCommandRegistry";
 import { deriveMilitaryCareer } from "./MilitaryCareerEvidence";
@@ -16,18 +18,36 @@ export interface MilitaryChronicleEntry {
 }
 
 /** Frozen at event creation after validating the live command. No current-map inference. */
-export function formatMilitaryVictorySource(event: WorldEvent) {
+export interface MilitaryHistoryContext {factions?:ReadonlyMap<string,HistoryFactionLike>;people?:readonly MilitaryPerson[];events?:readonly WorldEvent[];}
+
+/** Same-month promotions are ordered by canonical events, never backdated into earlier battles. */
+export function getMilitaryOfficeAtEvent(event:WorldEvent,context:MilitaryHistoryContext={}){
+  const m=event.metadata,month=event.monthIndex??event.year;
+  if(MILITARY_OFFICES.includes(m?.commanderOffice as any))return m!.commanderOffice as typeof MILITARY_OFFICES[number];
+  const person=context.people?.find(p=>p.personId===m?.commanderPersonId);
+  const appointment=person?.appointments.find(a=>a.commandId===m?.commandId&&a.factionId===event.actorFactionId&&a.startMonth<=month&&month<=(a.endMonth??month));
+  const history=context.events??[],eventIndex=history.findIndex(e=>e.id===event.id);
+  return appointment?.officeHistory?.filter(g=>g.month<month||g.month===month&&eventIndex>=0&&history.findIndex(e=>e.id===g.eventId)>=0&&history.findIndex(e=>e.id===g.eventId)<eventIndex).at(-1)?.office;
+}
+
+export function formatMilitaryVictorySource(event: WorldEvent,context:MilitaryHistoryContext={}) {
   const m = event.metadata;
   if (!["city-captured", "city-recovered", "capital-fallen"].includes(event.type) ||
       typeof m?.commanderPersonId !== "string" || typeof m.commandId !== "string" ||
       typeof m.commanderPersonalName !== "string" || !m.commanderPersonalName.trim() || !event.cityId || !event.actorFactionId) return undefined;
-  return `${m.commanderPersonalName}所属编组参与${event.type === "city-recovered" ? "收复" : "攻陷"}${event.cityName ?? event.cityId}${m.wasCapital === 1 ? "（当时敌都）" : ""}`;
+  const month=event.monthIndex??event.year;
+  const country=(id:string|undefined)=>id?(context.factions?.get(id)?getHistoricalFactionIdentity(context.factions.get(id)!,month).name:id):"";
+  const office=getMilitaryOfficeAtEvent(event,context),actor=country(event.actorFactionId),defender=country(event.previousOwnerFactionId??event.targetFactionId);
+  const subject=`${actor}${office?MILITARY_OFFICE_NAMES[office]:"将领"}${m.commanderPersonalName}所部`;
+  const city=event.cityName??"城邑";
+  if(event.type==="city-recovered")return `${subject}参与收复${defender?`${defender}所据的`:""}${m.founderCapital===1?"故都":m.wasCapital===1?"都城":""}${city}`;
+  return `${subject}参与攻取${defender}${m.wasCapital===1?(defender?"都":"敌都"):defender?"城":""}${city}`;
 }
 
-export function formatRulerMilitaryEvent(event: WorldEvent, ruler: { accessionYear: number; endYear?: number }, factionId: string, worldMonth: number) {
+export function formatRulerMilitaryEvent(event: WorldEvent, ruler: { accessionYear: number; endYear?: number }, factionId: string, worldMonth: number,context:MilitaryHistoryContext={}) {
   const month = event.monthIndex ?? event.year;
   if (event.actorFactionId !== factionId || month < ruler.accessionYear || month > Math.min(ruler.endYear ?? worldMonth, worldMonth)) return undefined;
-  const source = formatMilitaryVictorySource(event);
+  const source = formatMilitaryVictorySource(event,context);
   return source ? `其治下，${source}` : undefined;
 }
 
@@ -38,7 +58,7 @@ export function deriveMilitaryChronicle(person: MilitaryPerson, formations: Mili
   const groups = new Set<string>();
   const entries: MilitaryChronicleEntry[] = [];
   const name = getMilitaryPersonDisplayName(person);
-  for (const e of [...byId.values()].sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year))) {
+  for (const e of [...byId.values()].sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year)||a.id.localeCompare(b.id))) {
     const month = e.monthIndex ?? e.year;
     if (month > worldMonth || person.deathMonth !== undefined && month > person.deathMonth || factionId && e.actorFactionId !== factionId) continue;
     const m = e.metadata ?? {};
@@ -51,7 +71,7 @@ export function deriveMilitaryChronicle(person: MilitaryPerson, formations: Mili
     let text: string | undefined;
     let victory = false;
     if (captures.has(e.id) && served) {
-      const key = e.historyGroupId ?? e.id;
+      const key = `${e.historyGroupId ?? e.id}:${e.cityId??""}`;
       if (groups.has(key)) continue;
       groups.add(key);
       victory = true;

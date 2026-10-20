@@ -1,3 +1,4 @@
+import {validateMilitaryOfficeAuthorities} from "./MilitaryOfficeAuthorityValidation";
 import { validateRulerLifeRecord } from "./RulerLifeValidation";
 import { validateFactionLifetime } from "./FactionLifetimeValidation";
 import { CURRENT_SAVE_SCHEMA_VERSION, WorldSaveV1 } from "./WorldSaveSchema";
@@ -463,6 +464,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
     isPlainRecord(save.worldHistory) ? save.worldHistory : { events: [] }
   ));
   if (!errors.length) errors.push(...validateMilitaryPoliticalParticipation(save as WorldSaveV1));
+  if (!errors.length) errors.push(...validateMilitaryOfficeAuthorities(save as WorldSaveV1));
   return { valid: errors.length === 0, errors };
 }
 

@@ -515,6 +515,11 @@ export class MilitaryCommandRegistryStore {
       ? person.personalName : undefined;
   }
 
+  getCaptureOffice(commandId:string|undefined,personId:string|undefined,factionId:string,month:number){
+    if(!this.getCaptureIdentity(commandId,personId,factionId,month))return undefined;
+    return this.people.get(personId!)?.appointments.find(a=>a.commandId===commandId&&a.factionId===factionId&&a.endMonth===undefined)?.officeHistory?.at(-1)?.office;
+  }
+
   recordCapture(commandId: string | undefined, eventId: string, cityId: string, worldMonth: number) {
     if (!commandId) return;
     const formation = this.formations.get(commandId);
