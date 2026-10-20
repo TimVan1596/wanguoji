@@ -290,7 +290,7 @@ export function getRulerHistoricalEvents(
     const military=["city-captured","city-recovered","capital-fallen"].includes(event.type);
     const personal=military&&(event.rulerId===ruler.id||event.metadata?.rulerId===ruler.id);
     const capital=event.type==="capital-fallen"||event.metadata?.wasCapital===1;
-    return {id:event.id,month,priority:score(event)+(accession||ending?1000:turning?400:personal||capital||event.type==="capital-relocated"?200:0),
+    return {id:event.id,month,priority:score(event)+(accession||ending?1000:turning?400:personal||capital||event.type==="capital-relocated"||DIPLOMATIC_TYPES.has(event.type)?200:0),
       cityId:military?event.cityId:undefined};
   },{start:ruler.accessionYear,end:endMonth});
 }

@@ -12,7 +12,7 @@ export default function PersonChronicleLayout({title,identity,biographyTitle,bio
   return <Box sx={{minWidth:0,overflowWrap:"anywhere"}}>
     {title}{identity}
     <ChronicleSection title={biographyTitle}>{biography.map(line=><Typography key={line} fontSize="0.82rem">{line}</Typography>)}</ChronicleSection>
-    <HistoricalEventArchive title={milestoneTotal!==undefined&&milestoneTotal>milestones.length?`${milestoneTitle}（精选${milestones.length}条／共${milestoneTotal}条）`:milestoneTitle} entries={milestones} defaultOpen />
+    <HistoricalEventArchive title={milestoneTitle} totalCount={milestoneTotal} entries={milestones} defaultOpen />
     {governance}{children}
     {assessment.length>0&&<ChronicleSection title="史评">{assessment.map(line=><Typography key={line} fontSize="0.82rem">{line}</Typography>)}</ChronicleSection>}
     {voice&&<ChronicleSection title="史家曰"><Typography fontSize="0.82rem">{voice}</Typography></ChronicleSection>}
