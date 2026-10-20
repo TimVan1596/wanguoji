@@ -19,7 +19,7 @@ export function validateResidentIdentities(save:WorldSaveV1):string[]{
       !Number.isSafeInteger(r.naturalDeathMonth)||r.naturalDeathMonth<=i.foundedMonth||r.relationType!=="FOUNDER"||
       factions.get(String(d.factionId))?.origin?.parentFactionId!==i.sourceFactionId||factions.get(String(d.factionId))?.origin?.foundingRulerId!==r.rulerId){errors.push("resident founder identity/provenance mismatch");continue;}
     people.set(i.personId,{r,d,i});sourceIds.add(`${i.sourceUserId}:${i.bornMonth}:${i.sourceUserLabel}`);
-    const bindings=save.users.filter(u=>u.historicalPersonId===i.personId||(u.userId===i.sourceUserId&&u.bornMonth===i.bornMonth&&u.name===i.sourceUserLabel));
+    const bindings=save.users.filter(u=>u.historicalPersonId===i.personId||u.rulerId===r.rulerId||(u.userId===i.sourceUserId&&u.bornMonth===i.bornMonth&&u.name===i.sourceUserLabel));
     if(bindings.length>1)errors.push("resident person has duplicate live entities");
     for(const u of bindings){
       if(u.historicalPersonId!==i.personId||u.userId!==i.sourceUserId||u.name!==i.sourceUserLabel||u.bornMonth!==r.bornMonth||u.militaryPersonId||r.deathMonth!==undefined||

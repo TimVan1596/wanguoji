@@ -89,7 +89,7 @@ export async function runResidentFounderCore(seed="resident-z6"){
        check(Boolean(rows.find(e=>e.id===restores[0].metadata?.captureEventId&&e.cityId===town.id&&e.actorFactionId===polity.name)),"military restoration references its actual capture event");
        core.handleFactionExtinction(polity,oldParent,town,164);
        check(History.getEventsForFaction(polity.name).filter(e=>e.type==="faction-exiled").length===2,"repeated collapse notification during one exile is a no-op");
-       const selected=getRulerHistoricalEvents(rows,successor,polity.name,164,[],8);
+       const selected=getRulerHistoricalEvents(rows,{...successor,accessionYear:successor.accessionYear!},polity.name,164,[],8);
        check(selected.some(e=>e.type==="faction-restored")&&firstKing.deathMonth===120&&successor.deathMonth===undefined,"successor chronicle retains restoration without confusing predecessor death or accession");
      }finally{worldRandom.next=next;}
    }

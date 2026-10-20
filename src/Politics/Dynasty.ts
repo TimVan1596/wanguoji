@@ -163,12 +163,12 @@ class DynastyRegistryStore {
     this.provisionalDiagnosticsSession.reset([]);
   }
 
-  exportState() {
+  exportState(): {dynasties:Dynasty[];sequence:number} {
     return {
       dynasties: [...this.dynasties.values()].map((dynasty) => ({
         ...dynasty,
         houseEpochs: dynasty.houseEpochs?.map((epoch) => ({ ...epoch })),
-        rulers: dynasty.rulers.map((ruler) => ({ ...ruler, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
+        rulers: dynasty.rulers.map((ruler) => ({ ...ruler, residentIdentity:ruler.residentIdentity?{...ruler.residentIdentity}:undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
         heirIds: [...dynasty.heirIds],
       })),
       sequence: this.sequence,
@@ -188,7 +188,7 @@ class DynastyRegistryStore {
     this.dynasties = new Map(state.dynasties.map((dynasty) => [dynasty.factionId, {
       ...dynasty,
       houseEpochs: dynasty.houseEpochs?.map((epoch) => ({ ...epoch })),
-      rulers: dynasty.rulers.map((ruler) => ({ ...ruler, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
+      rulers: dynasty.rulers.map((ruler) => ({ ...ruler, residentIdentity:ruler.residentIdentity?{...ruler.residentIdentity}:undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
       heirIds: [...dynasty.heirIds],
     }]));
     this.sequence = state.sequence;
