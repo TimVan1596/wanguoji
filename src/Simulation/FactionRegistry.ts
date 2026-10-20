@@ -1,3 +1,4 @@
+import {assessMilitarySecession,type MilitarySecessionEvidence} from "./MilitarySecession";
 import { assessPopularSupport, hasPopularPoliticalCrisis } from "./PopularRebellionSupport";
 import { calculateImperialStrain } from "./ImperialStrain";
 import { destroyRuntimeGroupAtSafeBoundary } from "./RuntimeGroupDisposal";
@@ -198,13 +199,13 @@ class FactionRegistryStore {
   }
 
   /** Population preparation precedes city consequences and runtime registration. */
-  private prepareFoundingPopulation(team: Team, owner: Team, users: User[], month: number, cause: "REBELLION_TRANSFER" | "EMPIRE_SPLIT_TRANSFER", city: City) {
+  private prepareFoundingPopulation(team: Team, owner: Team, users: User[], month: number, cause: "REBELLION_TRANSFER" | "EMPIRE_SPLIT_TRANSFER", city: City, military?:MilitarySecessionEvidence) {
     if(users.some(u=>this.foundingTransactions.has(u))) {this.lastFoundingFailure="居民已在另一转属事务中";return false;}
     users.forEach(u=>this.foundingTransactions.add(u));
     const dynastyBefore=DynastyRegistry.exportState(),historyBefore=WorldHistory.exportState(),lifetimeBefore=FactionLifetimeRecords.exportState();
     const leader=users[0];
     const beforeOwner=owner.users.size,beforeNew=team.users.size;
-    const memberships = MilitaryCommandRegistry.getFormations().filter(f => f.status === "ACTIVE").map(f => ({f,members:[...f.memberUnitIds]}));
+    const militaryBefore=MilitaryCommandRegistry.snapshotTransaction();
     try {
       for (const user of users) {
         if (user.team !== owner || user.isDestroyed) {this.lastFoundingFailure="支持者身份在转属前改变";throw new Error("founding supporter identity changed");}
@@ -212,7 +213,7 @@ class FactionRegistryStore {
         if (user.team !== team) {this.lastFoundingFailure="居民未完成转属";throw new Error("founding supporter transfer failed");}
       }
       if(leader)DynastyRegistry.initializeFaction(team,month,false,{user:leader,origin:{
-        personId:`resident-${team.name}-${leader.id}-${leader.bornMonth}`,sourceUserId:leader.id,sourceUserLabel:leader.name,bornMonth:leader.bornMonth,
+        military,personId:military?.personId??`resident-${team.name}-${leader.id}-${leader.bornMonth}`,sourceUserId:leader.id,sourceUserLabel:leader.name,bornMonth:leader.bornMonth,
         sourceFactionId:owner.name,sourceFactionName:owner.displayName,foundedMonth:month,cityId:city.id,cityName:city.name,
       }});
       if (Game.Core.addRuntimeTeam(team)) {
@@ -228,7 +229,8 @@ class FactionRegistryStore {
     for (const user of users) if (user.team === team) user.setTeam(owner, { cause, month, context: "建势人口转属回退", deferPopulationAudit:true });
     Game.Core?.rollbackRuntimeTeam?.(team);
     FactionLifetimeRecords.importState(lifetimeBefore);
-    for (const {f,members} of memberships) f.memberUnitIds = members;
+    MilitaryCommandRegistry.rollbackTransaction(militaryBefore);
+    if(historyBefore)WorldHistory.importState(historyBefore);
     users.forEach(u=>this.foundingTransactions.delete(u));
     return false;
   }
@@ -289,7 +291,7 @@ class FactionRegistryStore {
     team.setOrigin({ ...team.origin, foundingRulerId: DynastyRegistry.getCurrentRuler(team.name)?.id });
     const external = options.godDriven ? this.spawnMembers(team, Math.max(0, targetPopulation-lowLoyaltyUsers.length), "Rebel", year,
       { cause: "GOD_ACTION", month: year, context: "神力建势的特殊外源人口，非转属" }) : 0;
-    const populationSource = { transferredPopulation: lowLoyaltyUsers.length, externalPopulation: external };
+    const populationSource = { transferredPopulation: lowLoyaltyUsers.length, externalPopulation: external, ...this.getFoundingMetadata(team) };
     const historyGroupId = getFoundingHistoryGroupId(team.name, year);
 
     if (factionType === "FRONTIER") {
@@ -333,7 +335,9 @@ class FactionRegistryStore {
       ((getFactionStability(previousOwner) ?? 100) >= EMPIRE_SPLIT_STABILITY_THRESHOLD && politicalStrain < EMPIRE_SPLIT_STRAIN_THRESHOLD) || coreCity.isInCaptureGrace(year)) return undefined;
     const candidates = assessPopularSupport(coreCity, year).users.filter(u=>!this.foundingTransactions.has(u));
     if (!candidates.length) return undefined;
-    const lowLoyaltyUsers = candidates.slice(0, worldRandom.int(REBEL_INITIAL_POPULATION_MIN, REBEL_INITIAL_POPULATION_MAX));
+    const targetPopulation=worldRandom.int(REBEL_INITIAL_POPULATION_MIN,REBEL_INITIAL_POPULATION_MAX);
+    const military=assessMilitarySecession(coreCity,year);
+    const lowLoyaltyUsers = military?.users??candidates.slice(0,targetPopulation);
     const name = createRebelFactionName(coreCity, "REBEL", this.getExistingNames());
     const color = this.createRebelColor();
     const team = new Team(
@@ -367,7 +371,7 @@ class FactionRegistryStore {
       parentFactionId: previousOwner.name,
       foundingCityIds: cities.map((city) => city.id),
     });
-    if (!coreCity.revoltTo(team, year, () => this.prepareFoundingPopulation(team, previousOwner, lowLoyaltyUsers, year, "EMPIRE_SPLIT_TRANSFER", coreCity))) {
+    if (!coreCity.revoltTo(team, year, () => this.prepareFoundingPopulation(team, previousOwner, lowLoyaltyUsers, year, "EMPIRE_SPLIT_TRANSFER", coreCity, military?.evidence))) {
       this.discardUnregisteredFaction(team); return undefined;
     }
     const transferredCities = [coreCity, ...cities.slice(1).filter(city => city.revoltTo(team, year))];
@@ -376,7 +380,15 @@ class FactionRegistryStore {
     DynastyRegistry.completeResidentFounding(team,year);
     team.setOrigin({ ...team.origin, foundingRulerId: DynastyRegistry.getCurrentRuler(team.name)?.id });
     FactionLifetimeRecords.observe(team, year);
-    return { team, transferredCities, transferredPopulation: lowLoyaltyUsers.length, externalPopulation: 0 };
+    return { team, transferredCities, transferredPopulation: lowLoyaltyUsers.length, externalPopulation: 0, foundingMetadata:this.getFoundingMetadata(team) };
+  }
+
+  getFoundingMetadata(team:Team):Record<string,string|number|undefined>{
+    const r=DynastyRegistry.getCurrentRuler(team.name),i=r?.residentIdentity;
+    return {foundingIdentityStage:team.identityStage,foundingSovereigntyRank:team.sovereigntyRank,
+      ...(i?{leaderPersonId:i.personId,leaderSourceUserId:i.sourceUserId,leaderBornMonth:i.bornMonth,leaderOriginalFactionId:i.sourceFactionId,leaderOriginalFactionName:i.sourceFactionName,
+        leaderSourceCityId:i.cityId,leaderSourceCityName:i.cityName,leaderPreviousRole:i.military?"MILITARY":"RESIDENT",splitSource:i.military?"MILITARY":"RESIDENT",
+        ...(i.military?{militaryPersonId:i.military.personId,militarySplitEvidence:JSON.stringify(i.military)}:{})}:{}),};
   }
 
   foundCity(team: Team, block: Block, cityName: string | undefined, year: number) {

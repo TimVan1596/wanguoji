@@ -521,7 +521,8 @@ export default class City {
       oldOwner.name,
       newOwner.name,
       this.id,
-      historyGroupId
+      historyGroupId,
+      restoredFromExile?"RESTORATION":newOwner.origin?.foundedMonth===year?(newOwner.factionType==="SPLIT"?"SPLIT":"FOUNDING"):"RETURN"
     );
 
     if (!newOwner.capitalCity) {

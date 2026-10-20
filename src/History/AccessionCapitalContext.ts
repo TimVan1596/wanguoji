@@ -8,7 +8,9 @@ export function captureAccessionCapital(team: Team, worldMonth: number, nextRule
   const capital = team.capitalCity;
   const controlled = team.status === "ACTIVE" && team.identityStage === "STATE" && capital && !capital.destroyed &&
     capital.isCapital && capital.ownerFactionId === team.name && team.cities.includes(capital);
-  return { accessionCapitalVersion: 1, accessionMonth: worldMonth, accessionFactionId: team.name,
+  const seat=team.status==="ACTIVE"&&capital&&!capital.destroyed&&capital.ownerFactionId===team.name&&team.cities.includes(capital)?capital:undefined;
+  return { provisionalSeatCityId:team.identityStage!=="STATE"?seat?.id:undefined,provisionalSeatCityName:team.identityStage!=="STATE"?seat?.name:undefined,
+    accessionCapitalVersion: 1, accessionMonth: worldMonth, accessionFactionId: team.name,
     previousRulerId, nextRulerId, accessionFactionStatus: team.status, accessionIdentityStage: team.identityStage,
     accessionCapitalState: team.identityStage !== "STATE" ? "PROVISIONAL" : team.status === "EXILED" ? "EXILED" : controlled ? "CAPITAL" : "NO_CAPITAL",
     capitalControlled: controlled ? 1 : 0, capitalCityId: controlled ? capital.id : undefined,
@@ -16,6 +18,7 @@ export function captureAccessionCapital(team: Team, worldMonth: number, nextRule
 }
 
 export function formatAccessionCapital(event: WorldEvent) {
+  if(["empire-split","rebel-faction-founded","frontier-faction-founded"].includes(event.type)&&event.metadata?.leaderSourceCityName)return undefined;
   if (typeof event.metadata?.groupedAccessionCapitalText === "string") return event.metadata.groupedAccessionCapitalText;
   if (!ACCESSION_EVENT_TYPES.includes(event.type)) return undefined;
   const m = event.metadata;
@@ -23,7 +26,7 @@ export function formatAccessionCapital(event: WorldEvent) {
   switch (m.accessionCapitalState) {
     case "CAPITAL": return `继位时国都：${m.capitalCityName}`;
     case "EXILED": return "流亡承统，当时无实际国都。";
-    case "PROVISIONAL": return "继任时尚未正式建国，无正式国都。";
+    case "PROVISIONAL": return typeof m.provisionalSeatCityName==="string"?`当时治所：${m.provisionalSeatCityName}（尚未正式建国）。`:"当时尚未正式建国，治所未记录。";
     default: return "继位时无实际国都。";
   }
 }

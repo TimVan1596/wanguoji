@@ -66,3 +66,10 @@ export const historicalEchoAffinity: Partial<Record<NameCulture, string>> = {
 export const hanEchoAffinity: Record<string, string> = {
   刘: "汉", 司马: "晋", 杨: "隋", 李: "唐", 赵: "宋", 朱: "明", 曹: "魏", 孙: "吴",
 };
+
+/** Split an already established generated name; never generate or change it at a political transition. */
+export function splitEstablishedPersonalName(name:string){
+ const surnames=[...compoundSurnames,...commonSurnames,...Object.values(cultureSurnames).flat()].sort((a,b)=>b.length-a.length||a.localeCompare(b));
+ const surname=surnames.find(s=>name.startsWith(s)&&name.length>s.length);
+ return surname?{houseName:`${surname}氏`,givenName:name.slice(surname.length)}:undefined;
+}

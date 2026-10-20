@@ -182,7 +182,7 @@ export default class Team {
     role: PlayerRole = "NORMAL",
     rulerId?: string,
     populationMutation: PopulationMutationContext = { cause: "LIVE_JOIN" },
-    identityOptions: {bornMonth:number;historicalPersonId:string}|undefined = undefined
+    identityOptions: {bornMonth:number;historicalPersonId:string;militaryPersonId?:string}|undefined = undefined
   ) {
     const spawnBlock = this.spawnBlock;
     if (!spawnBlock) return false;

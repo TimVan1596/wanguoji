@@ -1,3 +1,6 @@
+import {splitEstablishedPersonalName} from "./NameCulture";
+import {deriveMilitaryLifeSchedule} from "./MilitaryLifeRules";
+import type {MilitarySecessionEvidence} from "../Simulation/MilitarySecession";
 import { derivePoliticalSuccessionShocks } from "./PoliticalSuccessionCrisis";
 import { planInitialRoyalHousehold } from "./InitialRoyalHousehold";
 import { hasRecordedRulerDeath, type RulerDeathReason } from "./RulerLifeState";
@@ -84,6 +87,7 @@ export type RulerRelationType =
   | "LEADER_SUCCESSOR";
 
 export interface ResidentFounderIdentity {
+  military?:MilitarySecessionEvidence;
   personId: string; sourceUserId: number; sourceUserLabel: string; bornMonth: number;
   sourceFactionId: string; sourceFactionName: string; foundedMonth: number; cityId: string; cityName: string;
 }
@@ -168,7 +172,7 @@ class DynastyRegistryStore {
       dynasties: [...this.dynasties.values()].map((dynasty) => ({
         ...dynasty,
         houseEpochs: dynasty.houseEpochs?.map((epoch) => ({ ...epoch })),
-        rulers: dynasty.rulers.map((ruler) => ({ ...ruler, residentIdentity:ruler.residentIdentity?{...ruler.residentIdentity}:undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
+        rulers: dynasty.rulers.map((ruler) => ({ ...ruler, residentIdentity:ruler.residentIdentity?structuredClone(ruler.residentIdentity):undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
         heirIds: [...dynasty.heirIds],
       })),
       sequence: this.sequence,
@@ -188,7 +192,7 @@ class DynastyRegistryStore {
     this.dynasties = new Map(state.dynasties.map((dynasty) => [dynasty.factionId, {
       ...dynasty,
       houseEpochs: dynasty.houseEpochs?.map((epoch) => ({ ...epoch })),
-      rulers: dynasty.rulers.map((ruler) => ({ ...ruler, residentIdentity:ruler.residentIdentity?{...ruler.residentIdentity}:undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
+      rulers: dynasty.rulers.map((ruler) => ({ ...ruler, residentIdentity:ruler.residentIdentity?structuredClone(ruler.residentIdentity):undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
       heirIds: [...dynasty.heirIds],
     }]));
     this.sequence = state.sequence;
@@ -203,12 +207,18 @@ class DynastyRegistryStore {
       return this.dynasties.get(team.name);
     }
     if (team.status === "EXTINCT") return undefined;
-    const houseName = team.houseName ?? `${team.name}氏`;
-    const ruler = this.createFormalRuler(team, houseName, year, undefined, undefined, resident?.user.bornMonth);
+    const military=resident?.origin.military;
+    const sourcePerson=military?MilitaryCommandRegistry.getPerson(military.personId):undefined;
+    const established=sourcePerson?splitEstablishedPersonalName(sourcePerson.personalName):undefined;
+    if(military&&(!sourcePerson||sourcePerson.status!=="RETIRED"||sourcePerson.politicalRulerId||sourcePerson.sourceUserId!==resident?.user.id||sourcePerson.bornMonth!==resident.user.bornMonth||!established))throw new Error("Invalid military founder");
+    const houseName = established?.houseName??team.houseName ?? `${team.name}氏`;
+    if(established)team.houseName=established.houseName;
+    const ruler = this.createFormalRuler(team, houseName, year, undefined, undefined, resident?.user.bornMonth,sourcePerson&&established?{givenName:established.givenName,naturalDeathMonth:deriveMilitaryLifeSchedule(sourcePerson).naturalDeathMonth}:undefined);
     if (resident) {
       const u=resident.user;
-      if(u.isDestroyed||u.team!==team||!team.users.has(u)||u.role!=="NORMAL"||u.militaryPersonId||u.historicalPersonId)throw new Error("Invalid resident founder");
-      ruler.residentIdentity={...resident.origin};
+      if(u.isDestroyed||u.team!==team||!team.users.has(u)||u.role!=="NORMAL"||(u.militaryPersonId&&!sourcePerson)||u.historicalPersonId)throw new Error("Invalid resident founder");
+      ruler.residentIdentity=structuredClone(resident.origin);
+      if(sourcePerson)sourcePerson.politicalRulerId=ruler.id;
       u.historicalPersonId=resident.origin.personId;u.role="RULER";u.rulerId=ruler.id;u.player.setRole("RULER",ruler.id,true);
       Game.Core?.logicalUnitRegistry.updateRole(u.player.logicalUnitId,"RULER",ruler.id);team.rulerUser=u;
     }
@@ -258,6 +268,7 @@ class DynastyRegistryStore {
       if(team&&d){if(team.rulerUser?.historicalPersonId===personId)team.rulerUser=undefined;this.succeedRuler(team,d,r,month,"combat");return;}
     }
     r.status="dead";r.deathMonth=month;r.deathReason="战死";
+    if(r.residentIdentity?.military)MilitaryCommandRegistry.mirrorPoliticalDeath(r.residentIdentity.military.personId,r.id,month,"BATTLE_DEATH");
     const team=Game.Core?.teams.find(t=>this.get(t.name)?.rulers.includes(r));
     if(team)WorldHistory.addRulerDied(month,team.name,this.getRulerTitle(team,r,month),{rulerId:r.id,deathReason:r.deathReason,age:Math.floor((month-r.bornYear)/12)});
   }
@@ -490,6 +501,7 @@ class DynastyRegistryStore {
     predecessor.endReason =
       reason === "combat" ? "战死" : reason === "captured" ? "被俘处死" : "去世";
     predecessor.deathReason = predecessor.endReason as RulerDeathReason;
+    if(predecessor.residentIdentity?.military)MilitaryCommandRegistry.mirrorPoliticalDeath(predecessor.residentIdentity.military.personId,predecessor.id,year,reason==="natural"?"NATURAL_DEATH":reason==="captured"?"CAPTURED":"BATTLE_DEATH");
     if (predecessor.chronicle) {
       finishRulerChronicle(
         predecessor.chronicle,
@@ -728,7 +740,7 @@ class DynastyRegistryStore {
       "RULER",
       ruler.id,
       { cause: "RULER_LIFECYCLE", month, context: "ruler unit established" },
-      ruler.residentIdentity ? {bornMonth:ruler.bornYear,historicalPersonId:ruler.residentIdentity.personId} : undefined
+      ruler.residentIdentity ? {bornMonth:ruler.bornYear,historicalPersonId:ruler.residentIdentity.personId,militaryPersonId:ruler.residentIdentity.military?.personId} : undefined
     );
   }
 
@@ -906,6 +918,7 @@ class DynastyRegistryStore {
       ruler.status = "dead";
       ruler.deathMonth = worldMonth;
       ruler.deathReason = "自然去世";
+      if(ruler.residentIdentity?.military)MilitaryCommandRegistry.mirrorPoliticalDeath(ruler.residentIdentity.military.personId,ruler.id,worldMonth,"NATURAL_DEATH");
       if(ruler.residentIdentity){const u=Team.GetUserById(ruler.residentIdentity.sourceUserId);if(u?.historicalPersonId===ruler.residentIdentity.personId)u.destroyUser(true,{cause:"RULER_LIFECYCLE",month:worldMonth,context:"人物自然死亡，移除其唯一地图实体"});}
       if (ruler.chronicle) {
         ruler.chronicle.deathCause = ruler.deathReason;
@@ -1001,7 +1014,8 @@ class DynastyRegistryStore {
     accessionYear: number,
     parentId?: string,
     predecessorId?: string,
-    residentBornMonth?: number
+    residentBornMonth?: number,
+    establishedMilitary?:{givenName:string;naturalDeathMonth:number}
   ): Ruler {
     this.sequence += 1;
     const accessionAge = residentBornMonth === undefined ? worldRandom.int(
@@ -1009,7 +1023,7 @@ class DynastyRegistryStore {
       RULER_MAX_AGE_AT_ACCESSION
     ) : 0;
     const bornYear = residentBornMonth ?? accessionYear - yearsToMonths(accessionAge);
-    const sampledDeathMonth = createNaturalDeathMonth(bornYear, (max) => worldRandom.pickIndex(max));
+    const sampledDeathMonth = establishedMilitary?.naturalDeathMonth ?? createNaturalDeathMonth(bornYear, (max) => worldRandom.pickIndex(max));
     // Residents were already alive before acquiring a scheduled life. Never backdate their death.
     const naturalDeathYear = residentBornMonth === undefined ? sampledDeathMonth : Math.max(accessionYear + 12, sampledDeathMonth);
     const recentNames =
@@ -1021,7 +1035,7 @@ class DynastyRegistryStore {
     return {
       id: `${team.name}-ruler-${this.sequence}`,
       houseName,
-      givenName: pickRulerGivenName(getRulerGivenNamePool(houseName), recentNames, (max) =>
+      givenName: establishedMilitary?.givenName ?? pickRulerGivenName(getRulerGivenNamePool(houseName), recentNames, (max) =>
         worldRandom.pickIndex(max)
       ),
       bornYear,

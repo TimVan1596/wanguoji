@@ -1140,7 +1140,7 @@ export default class WorldEventSystem {
           `founding-${rebel.name}-${year}`,
           transferredCities[0]?.id,
           transferredCities[0]?.name,
-          { transferredPopulation: split.transferredPopulation, externalPopulation: split.externalPopulation }
+          { transferredPopulation: split.transferredPopulation, externalPopulation: split.externalPopulation, ...split.foundingMetadata }
         );
         DynastyRegistry.recordRebellion(team.name);
         this.fractureUntilMonth = year + 60;

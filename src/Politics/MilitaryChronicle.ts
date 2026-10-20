@@ -62,7 +62,8 @@ export function deriveMilitaryChronicle(person: MilitaryPerson, formations: Mili
   const name = getMilitaryPersonDisplayName(person);
   for (const e of [...byId.values()].sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year))) {
     const month = e.monthIndex ?? e.year;
-    if (month > worldMonth || person.deathMonth !== undefined && month > person.deathMonth || factionId && e.actorFactionId !== factionId) continue;
+    const secession=e.type==="empire-split"&&e.metadata?.militaryPersonId===person.personId&&person.politicalRulerId===e.metadata?.foundingRulerId;
+    if (month > worldMonth || person.deathMonth !== undefined && month > person.deathMonth || factionId && e.actorFactionId !== factionId&&!(secession&&e.targetFactionId===factionId)) continue;
     const m = e.metadata ?? {};
     const political = readMilitaryParticipation(e);
     const commandId = String(political?.participant.commandId ?? m.commandId ?? "");
@@ -72,7 +73,10 @@ export function deriveMilitaryChronicle(person: MilitaryPerson, formations: Mili
     const served = Boolean(appointment && formation);
     let text: string | undefined;
     let victory = false;
-    if (captures.has(e.id) && served) {
+    if(secession&&person.appointments.some(a=>a.commandId===(()=>{try{return JSON.parse(String(e.metadata?.militarySplitEvidence)).commandId;}catch{return "";}})()&&a.factionId===e.targetFactionId&&a.endMonth===month&&a.endReason==="TRANSFERRED")){
+      let count=0;try{count=JSON.parse(String(e.metadata?.militarySplitEvidence)).participants.length-1;}catch{}
+      text=`${name}率${count}名旧部于${e.cityName??e.metadata?.splitCoreCityName??"当地"}起事，脱离${e.metadata?.leaderOriginalFactionName??e.targetFactionId}，建立${e.actorFactionId}并成为首领。`;
+    } else if (captures.has(e.id) && served) {
       const key = e.historyGroupId ?? e.id;
       if (groups.has(key)) continue;
       groups.add(key);
@@ -92,7 +96,7 @@ export function deriveMilitaryChronicle(person: MilitaryPerson, formations: Mili
     } else if (served && political?.participant.personId === person.personId && political.participant.sourceUserId === person.sourceUserId) {
       text = `${name}统兵参与${political.kind === "DEPOSITION" ? "宗室废立" : "继统政治压力"}，军事参与者并非新君。`;
     }
-    if (text) entries.push({ eventId: e.id, worldMonth: month, factionId: e.actorFactionId!, commandId: commandId || undefined, text,
+    if (text) entries.push({ eventId: e.id, worldMonth: month, factionId: secession?e.targetFactionId!:e.actorFactionId!, commandId: commandId || undefined, text,
       source: `${e.type} · ${e.id}`, victory });
   }
   return entries;

@@ -1,3 +1,4 @@
+import {formatFoundingIdentity} from "./FoundingIdentityNarrative";
 import { getSubmissionEventPresentation } from "./PeacefulSubmissionPresentation";
 import {
   getFactionEventRelation,
@@ -164,6 +165,7 @@ function formatFounding(
   const parentName = name(parentId);
   const cityNames = stringMeta(event, "foundingCityNames");
   const rulerName = stringMeta(event, "foundingRulerName");
+  const frozen=formatFoundingIdentity(event,childName);if(frozen)return frozen;
   const rulerClause = rulerName ? `，${rulerName}成为首任首领` : "";
   if (relation === "PARENT") {
     return cityNames

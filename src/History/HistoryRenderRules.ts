@@ -1,3 +1,4 @@
+import {formatFoundingIdentity} from "./FoundingIdentityNarrative";
 import {metadataFactionReferences} from "./HistoricalLabelMetadata";
 import { formatMilitaryVictorySource } from "../Politics/MilitaryChronicle";
 import { hasRecordedRulerDeath } from "../Politics/RulerLifeState";
@@ -243,7 +244,8 @@ function formatHistoryEventTitleBase(
         ? `${cityNames}脱离${parentName}，`
         : `${cityNames}发生叛乱，`
       : "";
-    const rulerClause = rulerName ? `，${rulerName}成为首任君主` : "";
+    const frozen=formatFoundingIdentity(event,factionName);if(frozen)return frozen;
+    const rulerClause = rulerName ? `，${rulerName}成为${event.metadata?.foundingIdentityStage==="STATE"?"首任国君":"首任首领"}` : "";
     return `${parentClause}${cityClause}建立${factionName}${rulerClause}。`;
   }
   if (event.metadata?.groupedEventCount) {

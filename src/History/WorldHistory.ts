@@ -559,7 +559,7 @@ export class WorldHistoryStore {
     historyGroupId?: string,
     splitCoreCityId?: string,
     splitCoreCityName?: string,
-    populationSource?: { transferredPopulation: number; externalPopulation: number }
+    populationSource?: { transferredPopulation: number; externalPopulation: number } & Record<string,string|number|undefined>
   ) {
     this.addEvent({
       id: `empire-split-${year}-${empireName}-${rebelName}-${this.sequence++}`,
@@ -935,14 +935,16 @@ export class WorldHistoryStore {
     previousOwnerName: string,
     restoredOwnerName: string,
     cityId?: string,
-    historyGroupId?: string
+    historyGroupId?: string,
+    origin:"FOUNDING"|"SPLIT"|"RESTORATION"|"RETURN"="RETURN"
   ) {
     this.addEvent({
       id: `city-revolt-${year}-${cityName}-${this.sequence++}`,
       year,
       category: "politics",
       type: "city-revolt",
-      title: `${cityName}起义并重新归附${restoredOwnerName}`,
+      title: origin==="FOUNDING"?`${cityName}起事，建立${restoredOwnerName}`:origin==="SPLIT"?`${cityName}脱离${previousOwnerName}，另立${restoredOwnerName}`:origin==="RESTORATION"?`${cityName}响应${restoredOwnerName}复国`:`${cityName}起义并重新归附${restoredOwnerName}`,
+      metadata:{revoltOrigin:origin},
       description: `${cityName}脱离${previousOwnerName}控制。`,
       factionIds: [previousOwnerName, restoredOwnerName],
       actorFactionId: restoredOwnerName,
@@ -1038,7 +1040,7 @@ export class WorldHistoryStore {
     foundingRulerName?: string,
     foundingRulerId?: string,
     historyGroupId?: string,
-    populationSource?: { transferredPopulation: number; externalPopulation: number }
+    populationSource?: { transferredPopulation: number; externalPopulation: number } & Record<string,string|number|undefined>
   ) {
     this.addEvent({
       id: `rebel-founded-${year}-${rebelFactionId}-${cityName}-${this.sequence++}`,
@@ -1074,7 +1076,7 @@ export class WorldHistoryStore {
     foundingRulerName?: string,
     foundingRulerId?: string,
     historyGroupId?: string,
-    populationSource?: { transferredPopulation: number; externalPopulation: number }
+    populationSource?: { transferredPopulation: number; externalPopulation: number } & Record<string,string|number|undefined>
   ) {
     this.addEvent({
       id: `frontier-founded-${year}-${factionId}-${cityName}-${this.sequence++}`,

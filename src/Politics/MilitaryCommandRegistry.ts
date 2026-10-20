@@ -31,6 +31,8 @@ export interface MilitaryAppointment {
 }
 
 export interface MilitaryPerson {
+  /** Same person now holds a political office; the linked Ruler owns this one life. */
+  politicalRulerId?:string;
   personId: string;
   sourceUserId: number;
   name: string;
@@ -124,6 +126,16 @@ export class MilitaryCommandRegistryStore {
     this.longRangeOrderSamples.clear();
     this.diagnostics = { candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
       unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
+  }
+
+  snapshotTransaction(){return {state:this.exportState(),diagnostics:{...this.diagnostics},arrivals:new Map(this.lastArrivalTargetByCommand),ranges:new Map(this.longRangeOrderSamples)};}
+  rollbackTransaction(snapshot:ReturnType<MilitaryCommandRegistryStore["snapshotTransaction"]>){this.importState(snapshot.state);this.diagnostics=snapshot.diagnostics;this.lastArrivalTargetByCommand=snapshot.arrivals;this.longRangeOrderSamples=snapshot.ranges;}
+  mirrorPoliticalDeath(personId:string,rulerId:string,month:number,cause:string){
+    const p=this.people.get(personId);if(!p||p.politicalRulerId!==rulerId||p.status==="DEAD")return;
+    if(p.status==="ACTIVE")throw new Error("Political person still has military command");
+    p.status="DEAD";p.deathMonth=month;p.deathCause=cause;this.diagnostics.deaths++;
+    if(cause==="NATURAL_DEATH")this.diagnostics.naturalDeaths++;
+    this.eventWriter?.({id:`military-person-death-${p.personId}-${month}`,year:month,monthIndex:month,type:"military-person-died",category:"politics",actorFactionId:p.factionId,factionIds:[p.factionId],title:`${p.personalName}去世`,metadata:{personId:p.personId,sourceUserId:p.sourceUserId,personalName:p.personalName,deathCause:cause,politicalRulerId:rulerId},importance:"normal"});
   }
 
   getCareer(person: MilitaryPerson, worldMonth: number) {
@@ -225,7 +237,7 @@ export class MilitaryCommandRegistryStore {
       const rows = bound.get(user.militaryPersonId) ?? []; rows.push(user); bound.set(user.militaryPersonId, rows);
     }
     for (const person of this.people.values()) {
-      if (person.status === "DEAD") continue;
+      if (person.status === "DEAD" || person.politicalRulerId) continue;
       const life = deriveMilitaryLifeSchedule(person);
       if (worldMonth < life.retirementMonth) continue;
       // Retired records without a verifiable original User are historical unknowns.
