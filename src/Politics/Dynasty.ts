@@ -480,7 +480,7 @@ class DynastyRegistryStore {
   ) {
     if(predecessor.residentIdentity){
       const u=Team.GetUserById(predecessor.residentIdentity.sourceUserId);
-      if(u?.historicalPersonId===predecessor.residentIdentity.personId&&team.rulerUser!==undefined&&reason!=="combat")team.removeRulerUnit(true);
+      if(u?.historicalPersonId===predecessor.residentIdentity.personId&&reason!=="combat")u.destroyUser(true,{cause:"RULER_LIFECYCLE",month:year,context:"唯一人物生命结束，移除其地图实体"});
     }
     predecessor.status = "dead";
     predecessor.regimeNameAtEnd = team.displayName;

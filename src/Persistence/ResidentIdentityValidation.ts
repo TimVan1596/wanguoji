@@ -3,6 +3,11 @@ import type {WorldSaveV1} from "./WorldSaveSchema";
 export function validateResidentIdentities(save:WorldSaveV1):string[]{
   if(!Array.isArray(save.users)||!Array.isArray(save.factions)||!Array.isArray(save.cities)||!Array.isArray(save.dynasties)||!Array.isArray(save.worldHistory?.events))return [];
   const errors:string[]=[],people=new Map<string,any>(),sourceIds=new Set<string>();
+  const events=save.worldHistory.events as any[],eventById=new Map(events.map(e=>[e.id,e]));
+  for(const e of events)if(e.type==="faction-restored"&&e.metadata?.restorationTrigger==="MILITARY_RECAPTURE"){
+    const c=eventById.get(e.metadata.captureEventId);
+    if(!c||!["city-captured","city-recovered","capital-fallen"].includes(c.type)||c.actorFactionId!==e.actorFactionId||c.cityId!==e.cityId||(c.monthIndex??c.year)!==(e.monthIndex??e.year)||e.metadata.remnantPopulation!==0)errors.push("military restoration lacks matching capture evidence");
+  }
   const factions=new Map(save.factions.map(f=>[f.factionId,f]));
   const cities=new Set([...save.cities.map(c=>c.cityId),...(Array.isArray(save.registries?.archivedCities)?save.registries.archivedCities:[]).map((c:any)=>c?.cityId??c?.id)]);
   for(const d of save.dynasties)for(const r of (Array.isArray(d?.rulers)?d.rulers:[]) as any[]){
