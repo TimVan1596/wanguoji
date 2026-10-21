@@ -38,3 +38,8 @@ describe("world time", () => {
     expect(formatWorldDuration(84)).toBe("7年");
   });
 });
+
+it.each([[-1,"纪元前1年12月"],[-12,"纪元前1年1月"],[-13,"纪元前2年12月"],[-24,"纪元前2年1月"],[0,"0年1月"],[12,"1年1月"]])("formats canonical month %s across the era boundary",(month,text)=>{
+ expect(formatWorldDate(month as number)).toBe(text);expect(getWorldMonth(month as number)).toBeGreaterThanOrEqual(1);expect(getWorldMonth(month as number)).toBeLessThanOrEqual(12);
+});
+it("keeps cross-era age arithmetic unchanged",()=>{expect(monthsToYears(12-(-12))).toBe(2);});

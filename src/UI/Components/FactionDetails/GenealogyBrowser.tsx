@@ -17,6 +17,7 @@ import {formatWorldDate} from "../../../Simulation/WorldTime";
 
 export default function GenealogyBrowser({open,onClose,dynasty,team,worldMonth,targetId}:{open:boolean;onClose:(source:GenealogyViewerCloseSource,reason?:string)=>void;dynasty?:Dynasty;team:RootState["root"]["teams"][number];worldMonth:number;targetId?:string}){
  const nav=usePersonArchiveNavigation(),[focus,setFocus]=useState(""),[query,setQuery]=useState(""),[expanded,setExpanded]=useState(new Set<string>()),[selected,setSelected]=useState<string>(),[scale,setScale]=useState(1);
+ const [browse,setBrowse]=useState(false),[searchOffset,setSearchOffset]=useState(0);
  const viewport=useRef<HTMLDivElement>(null),canvas=useRef<HTMLDivElement>(null);
  const events=open?History.getEvents():[],people=open?Military.getPeople():[];
  const stamp=open?JSON.stringify([dynasty,History.getRevision(),people]):"";
@@ -29,15 +30,19 @@ export default function GenealogyBrowser({open,onClose,dynasty,team,worldMonth,t
  useEffect(()=>{if(open&&data)locate(targetId??dynasty?.currentRulerId??data.index.keys().next().value??"");},[open,targetId,team.name]);
  useEffect(()=>{if(open)canvas.current?.querySelector<HTMLElement>('[data-genealogy-focused="true"]')?.scrollIntoView({block:"center",inline:"nearest"});},[open,focus]);
  const rows=data?genealogyWindow(data.index,focus,expanded):[];
- const matches=data&&query?[...data.index.values()].filter(n=>`${n.ruler.houseName}${n.ruler.givenName} ${n.ruler.id}`.includes(query)).slice(0,30):[];
- const person=selected&&data?.index.get(selected)?.ruler,service=person&&data?.military.get(person.id);
+ const allMatches=data&&(query||browse)?[...data.index.values()].filter(n=>`${n.ruler.houseName}${n.ruler.givenName} ${n.ruler.id}`.includes(query)):[];
+ const matches=allMatches.slice(searchOffset,searchOffset+30);
+ const person=selected?data?.index.get(selected)?.ruler:undefined,service=person?data?.military.get(person.id):undefined;
  return <Dialog open={open} onClose={(_,reason)=>onClose(reason==="escapeKeyDown"?"ESCAPE":"BACKDROP",reason)} fullWidth maxWidth="xl" PaperProps={{sx:{width:"90vw",height:"84vh",maxWidth:1500,display:"flex",flexDirection:"column"}}}>
   <DialogTitle><Typography variant="h6">完整宗谱</Typography><Box sx={{display:"flex",gap:1,flexWrap:"wrap"}}>
    <Button onClick={()=>setScale(s=>clampGenealogyScale(s-.1))}>－</Button><Button onClick={()=>setScale(1)}>{Math.round(scale*100)}%</Button><Button onClick={()=>setScale(s=>clampGenealogyScale(s+.1))}>＋</Button>
    <Button onClick={()=>setScale(getGenealogyFitScale(canvas.current?.scrollWidth??0,canvas.current?.scrollHeight??0,viewport.current?.clientWidth??0,viewport.current?.clientHeight??0))}>适应窗口</Button>
    <Button onClick={()=>dynasty?.currentRulerId&&locate(dynasty.currentRulerId)}>定位当今君主</Button><Button onClick={()=>setExpanded(new Set())}>收起分支</Button><Button onClick={()=>onClose("EXPLICIT")}>关闭</Button>
-  </Box><TextField size="small" label="检索全部人物（姓名或永久ID）" value={query} onChange={e=>setQuery(e.target.value)}/>
-  {matches.map(n=><Button key={n.ruler.id} onClick={()=>{locate(n.ruler.id);setQuery("");}}>{n.ruler.houseName.replace(/氏$/,"")+n.ruler.givenName} · {n.ruler.id}</Button>)}
+  </Box><TextField size="small" label="检索全部人物（姓名或永久ID）" value={query} onChange={e=>{setQuery(e.target.value);setSearchOffset(0);}}/>
+  <Button onClick={()=>{setBrowse(b=>!b);setSearchOffset(0);}}>浏览全部人物</Button>
+  {searchOffset>0&&<Button onClick={()=>setSearchOffset(n=>Math.max(0,n-30))}>先前匹配人物</Button>}
+  {searchOffset+30<allMatches.length&&<Button onClick={()=>setSearchOffset(n=>n+30)}>后续匹配人物（共{allMatches.length}人）</Button>}
+  {matches.map(n=><Button key={n.ruler.id} onClick={()=>{locate(n.ruler.id);setQuery("");setBrowse(false);setSearchOffset(0);}}>{n.ruler.houseName.replace(/氏$/,"")+n.ruler.givenName} · {n.ruler.id}</Button>)}
   <Typography fontSize="0.75rem">完整收录{data?.index.size??0}人，当前分支显示{rows.length}人。检索覆盖全部历史人物；点击“查看此支”浏览其他支系。</Typography>
   </DialogTitle>
   <DialogContent ref={viewport} sx={{overflow:"auto",minHeight:0}}>

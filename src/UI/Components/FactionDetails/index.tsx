@@ -1,3 +1,6 @@
+import GenealogyBrowser from "./GenealogyBrowser";
+import PersonLifeDates from "./PersonLifeDates";
+import {militaryIdentityLabels} from "../../../Politics/RoyalArchiveIdentity";
 import {RoyalMilitaryRoster} from "./RoyalMilitaryPanel";
 import {getFactionDisplayNameAtMonth} from "../../../Simulation/FactionIdentity";
 import PortraitSummary from "./PortraitSummary";
@@ -23,16 +26,14 @@ import { getDiplomacyEventDetails } from "../../../History/DiplomacyEventDetails
 import { formatRulerMilitaryEvent } from "../../../Politics/MilitaryChronicle";
 import { deriveRestorationTenureEvidence } from "../../../Simulation/RestorationTenureEvidence";
 import { buildRestorationMemoryLines } from "./model";
-import { GenealogyPersonCard } from "./GenealogyPersonCard";
-import { deriveGenealogyNodePresentations, type GenealogyNodePresentation } from "./GenealogyNodePresentation";
 import { UnifiedFactionChronicle } from "./UnifiedFactionChronicle";
 import { hasRecordedRulerDeath } from "../../../Politics/RulerLifeState";
 import { getTerminationTargetName } from "./model";
 import { formatRulerTerminalEvent } from "../../../History/PoliticalTerminalChronicle";
 import { formatReignTerritoryChange, getReignTrajectoryPresentation, formatRulerLifeAge, rulerPortraitAge } from "./RoyalPresentation";
 import { getFactionColorAtMonth, type FactionColorHistoryEntry } from "../../../Simulation/FactionColorHistory";
-import { Box, Button, Dialog, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, Typography, type SelectChangeEvent } from "@mui/material";
-import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Box, Button, FormControl, InputLabel, MenuItem, Select, Typography, type SelectChangeEvent } from "@mui/material";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getFactionStability } from "../../../Components/City";
 import Game from "../../../Game/Game";
@@ -95,7 +96,6 @@ import { deriveRulerAssessment } from "../../../Politics/RulerHistoriography";
 import { deriveRulerTenureEvidence } from "../../../Politics/RulerTenureEvidence";
 import { getFormalRulers, isFormalRulerRecord } from "../../../Politics/RulerPresentationRules";
 import {
-  buildPoliticalGenealogy,
   formatRecordedKinship,
   formatRecordedSuccessionKinship,
   getSuccessionBackground,
@@ -127,13 +127,6 @@ import {
 } from "./model";
 import { buildNotableRulerIndexEntry } from "./notableRulerIndex";
 import {
-  clampGenealogyScale,
-  buildGenealogyOnDemand,
-  GENEALOGY_SCALE_STEP,
-  getGenealogyCanvasLayout,
-  getGenealogyFitScale,
-} from "./genealogyViewport";
-import {
   recordGenealogyViewerClose,
   recordGenealogyViewerOpen,
   type GenealogyViewerCloseSource,
@@ -156,12 +149,15 @@ export default function FactionDetails() {
     useState<HistoricalFactionSort>("terminal-recent");
   const [historyRevision, setHistoryRevision] = useState(() => WorldHistory.getRevision());
   const [rulerDetailId, setRulerDetailId] = useState<string | undefined>();
+  const [genealogyTarget,setGenealogyTarget]=useState<(PersonArchiveTarget&{serial:number})|undefined>();
   const [militaryTarget,setMilitaryTarget]=useState<(PersonArchiveTarget&{serial:number})|undefined>();
   const navigationSequence=useRef(0),navigationDispatch=useDispatch();
   const openPerson=(target:PersonArchiveTarget)=>{
     const resolved=resolvePersonArchiveTarget(target,teams,DynastyRegistry.getAll(),MilitaryCommandRegistry.getPeople());
     if(!resolved)return;
-    if(target.kind==="RULER"){
+    if(target.kind==="GENEALOGY"){
+      setGenealogyTarget({...target,serial:++navigationSequence.current});
+    }else if(target.kind==="RULER"){
       setRulerDetailId(target.id);setMilitaryTarget(undefined);
     }else{
       setMilitaryTarget({...target,serial:++navigationSequence.current});
@@ -191,7 +187,7 @@ export default function FactionDetails() {
   }
 
   return (
-    <PersonArchiveNavigation.Provider value={{open:openPerson,militaryTarget,consume:()=>setMilitaryTarget(undefined)}}><FactionProfile
+    <PersonArchiveNavigation.Provider value={{open:openPerson,militaryTarget,genealogyTarget,consume:()=>setMilitaryTarget(undefined)}}><FactionProfile
       team={team}
       teams={teams}
       worldMonth={worldMonth}
@@ -225,11 +221,18 @@ function FactionProfile({
   const [genealogyViewerOpen, setGenealogyViewerOpen] = useState(false);
   const genealogyViewerOpenRef = useRef(false);
   const previousFactionIdRef = useRef(team.name);
-  const openFullGenealogy = () => {
+  const archiveNavigation=usePersonArchiveNavigation();
+  const [genealogyTargetId,setGenealogyTargetId]=useState<string>();
+  const openFullGenealogy = (id?:string) => {
+    setGenealogyTargetId(id);
     genealogyViewerOpenRef.current = true;
     setGenealogyViewerOpen(true);
     recordGenealogyViewerOpen();
   };
+  useEffect(()=>{
+    const t=archiveNavigation.genealogyTarget;
+    if(t?.factionId===team.name)openFullGenealogy(t.id);
+  },[archiveNavigation.genealogyTarget?.serial,team.name]);
   const closeFullGenealogy = (source: GenealogyViewerCloseSource, muiReason?: string) => {
     genealogyViewerOpenRef.current = false;
     setGenealogyViewerOpen(false);
@@ -598,12 +601,11 @@ function FactionProfile({
         </Box>
       ) : null}
       {activeTab === "military" ? <MilitaryPeoplePanel key={team.name} factionId={team.name} worldMonth={worldMonth} /> : null}
-      <GenealogyDialog
+      <GenealogyBrowser
         open={genealogyViewerOpen}
         onClose={closeFullGenealogy}
         dynasty={dynasty}
-        rulers={dynasty?.rulers ?? []}
-        currentRulerId={dynasty?.currentRulerId}
+        targetId={genealogyTargetId}
         team={team}
         worldMonth={worldMonth}
       />
@@ -675,14 +677,16 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
       const milestones=selectMilitaryMilestones(allMilestones,localEvents,8);
       const portraitContext=militaryPortraitContext(person,factionId,politicalTeam,worldMonth);
       const linked=linkedRulers.get(person.personId);
+      const identityLabels=militaryIdentityLabels(person,DynastyRegistry.getAll(),WorldHistory.getEvents(),worldMonth);
       const ageText=linked?formatRulerLifeAge(linked,worldMonth):describeMilitaryAge(person,worldMonth,liveIds.has(person.personId));
       const portraitAge=linked?rulerPortraitAge(linked,worldMonth):person.status==="DEAD"&&person.deathMonth!==undefined?Math.max(0,Math.floor((person.deathMonth-person.bornMonth)/12)):liveIds.has(person.personId)?Math.max(0,Math.floor((worldMonth-person.bornMonth)/12)):undefined;
       return <PersonArchiveCard key={person.personId} index={index} active={current} expanded={resolvedSelection.expandedIds.includes(person.personId)}
         focusRequest={navigation.militaryTarget?.id===person.personId}
         onSelect={()=>setSelection(toggleMilitaryPerson(resolvedSelection,person.personId,current))}
-        portrait={<PortraitSummary portrait={{personId:person.personId,age:portraitAge,...portraitContext}} name={getMilitaryPersonDisplayName(person)} lines={[politicalTeam?getFactionDisplayNameAtMonth(politicalTeam,portraitContext.month):factionId,ageText,describeMilitaryOffice(person,factionId),first?`${formatWorldDate(first.startMonth)}—${last?.endMonth===undefined?"今":formatWorldDate(last.endMonth)}`:""]} onFull={()=>{if(!resolvedSelection.expandedIds.includes(person.personId))setSelection(toggleMilitaryPerson(resolvedSelection,person.personId,current));}}/>}
+        portrait={<PortraitSummary portrait={{personId:person.personId,age:portraitAge,...portraitContext}} name={getMilitaryPersonDisplayName(person)} lines={[...identityLabels,politicalTeam?getFactionDisplayNameAtMonth(politicalTeam,portraitContext.month):factionId,ageText,describeMilitaryOffice(person,factionId),first?`${formatWorldDate(first.startMonth)}—${last?.endMonth===undefined?"今":formatWorldDate(last.endMonth)}`:""]} onFull={()=>{if(!resolvedSelection.expandedIds.includes(person.personId))setSelection(toggleMilitaryPerson(resolvedSelection,person.personId,current));}}/>}
         heading={<>
           <Typography fontSize="0.92rem" sx={{display:"flow-root"}} fontWeight={current?"bold":600}>{current?"● ":""}{getMilitaryPersonDisplayName(person)} · <Box component="span" sx={{fontSize:"0.76rem",fontWeight:400,color:"var(--gg-text-muted)"}}>{ageText}</Box> · {current?"现役":person.status==="ACTIVE"&&person.factionId!==factionId?"已转属":describeMilitaryStatus(person)}</Typography>
+          <Typography fontSize="0.76rem">{identityLabels.join(" · ")}</Typography>
           <Typography fontSize="0.82rem" color="var(--gg-text-muted)">{politicalTeam?.displayName??factionId} · {highest?`最高任${MILITARY_OFFICE_NAMES[highest.office]}`:"军职未载"}</Typography>
           <Typography fontSize="0.8rem" color="var(--gg-text-muted)">{first?`${formatWorldDate(first.startMonth)}—${last?.endMonth===undefined?(current?"今":"止期未载"):formatWorldDate(last.endMonth)}`:"任期未载"} · 所部参与取城{entries.filter(e=>e.victory).length}次</Typography>
         </>}
@@ -703,6 +707,8 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
           return <PersonChronicleLayout
             title={<MilitaryPersonIdentityHeader person={person} country={`${politicalFactionById.get(person.factionId)?.displayName ?? person.factionId}${politicalFactionById.get(person.factionId)?.identityStage === "STATE" ? "国" : ""}`} />}
             identity={<>
+              <PersonLifeDates bornMonth={person.bornMonth} deathMonth={person.deathMonth}/>
+              <Typography fontSize="0.76rem">{identityLabels.join(" · ")}</Typography>
               <Typography fontSize="0.86rem" fontWeight="bold">{describeMilitaryOffice(person,factionId).replace("（本国历史最高职务）","")}</Typography>
               {portraitContext.historical&&<Typography fontSize="0.74rem" color="var(--gg-text-muted)">肖像服饰与旗色取本国任职末期，非其后来外国身份。</Typography>}
             {person.factionId!==factionId&&<Typography fontSize="0.78rem">曾在本国任职，后已转属。</Typography>}
@@ -1015,7 +1021,7 @@ function DynastyTree({
   factionById: Map<string, RootState["root"]["teams"][number]>;
   selectedRulerId?: string;
   onSelectedRulerIdChange: (id: string | undefined) => void;
-  onOpenFullGenealogy: () => void;
+  onOpenFullGenealogy: (id?:string) => void;
 }) {
   const livingCandidates = (dynasty?.heirIds ?? [])
     .map((id) => rulers.find((ruler) => ruler.id === id))
@@ -1038,13 +1044,13 @@ function DynastyTree({
     <Box sx={{ display: "grid", gap: 1 }}>
       {archive}
       <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-        <Button size="small" onClick={onOpenFullGenealogy}>查看完整宗谱</Button>
+        <Button size="small" onClick={()=>onOpenFullGenealogy()}>查看完整宗谱</Button>
       </Box>
       {designatedHeir ? (
         <Box sx={{ p: 0.8, border: "1px solid var(--gg-border)", borderRadius: "var(--gg-radius)", background: "var(--gg-panel)" }}>
           <Typography fontWeight="bold" fontSize="0.86rem">储君</Typography>
           <Typography component="div" fontSize="0.84rem" sx={{display:"flow-root"}}>
-            <Box component="button" type="button" onClick={onOpenFullGenealogy} aria-label="查看储君宗谱" sx={{p:0,border:0,background:"none",cursor:"pointer",color:"inherit",font:"inherit",textDecoration:"underline"}}>{formatRulerName(designatedHeir)}</Box> · {formatRulerLifeAge(designatedHeir,worldMonth,false,team.status!=="EXTINCT")} · {currentRulerId ? formatRecordedKinship(designatedHeir, rulers.find((ruler) => ruler.id === currentRulerId) ?? designatedHeir, rulers) : "关系未记录"}
+            <Box component="button" type="button" onClick={()=>onOpenFullGenealogy(designatedHeir.id)} aria-label="查看储君宗谱" sx={{p:0,border:0,background:"none",cursor:"pointer",color:"inherit",font:"inherit",textDecoration:"underline"}}>{formatRulerName(designatedHeir)}</Box> · {formatRulerLifeAge(designatedHeir,worldMonth,false,team.status!=="EXTINCT")} · {currentRulerId ? formatRecordedKinship(designatedHeir, rulers.find((ruler) => ruler.id === currentRulerId) ?? designatedHeir, rulers) : "关系未记录"}
             {dynasty?.designatedSinceMonth !== undefined ? ` · 立储${formatWorldDuration(Math.max(0, worldMonth - dynasty.designatedSinceMonth))}` : ""}
           </Typography>
         </Box>
@@ -1055,7 +1061,7 @@ function DynastyTree({
           {otherCandidates.map((candidate) => {
             const current = rulers.find((ruler) => ruler.id === currentRulerId);
             return <Typography key={candidate.id} component="div" fontSize="0.84rem" sx={{display:"flow-root"}}>
-              <Box component="button" type="button" onClick={onOpenFullGenealogy} aria-label="查看宗室谱系" sx={{p:0,border:0,background:"none",cursor:"pointer",color:"inherit",font:"inherit",textDecoration:"underline"}}>{formatRulerName(candidate)}</Box> · {formatRulerLifeAge(candidate,worldMonth,false,team.status!=="EXTINCT")} · {current ? formatRecordedKinship(candidate, current, rulers) : "关系未记录"}
+              <Box component="button" type="button" onClick={()=>onOpenFullGenealogy(candidate.id)} aria-label="查看宗室谱系" sx={{p:0,border:0,background:"none",cursor:"pointer",color:"inherit",font:"inherit",textDecoration:"underline"}}>{formatRulerName(candidate)}</Box> · {formatRulerLifeAge(candidate,worldMonth,false,team.status!=="EXTINCT")} · {current ? formatRecordedKinship(candidate, current, rulers) : "关系未记录"}
             </Typography>;
           })}
         </Box>
@@ -1106,6 +1112,7 @@ function DynastyTree({
               </>}>
               {expanded ? (
                 <Box sx={{ mt: 0.65 }}>
+                  <Button size="small" onClick={()=>onOpenFullGenealogy(ruler.id)}>查看宗谱</Button>
                   <RulerBiography ruler={ruler as FormalRuler} rulers={rulers} worldMonth={worldMonth} team={team} events={events} factionById={factionById} />
                 </Box>
               ) : null}
@@ -1113,130 +1120,6 @@ function DynastyTree({
           );
         })}
       </Box>
-    </Box>
-  );
-}
-
-function GenealogyDialog({
-  open,
-  onClose,
-  dynasty,
-  rulers,
-  currentRulerId,
-  team,
-  worldMonth,
-}: {
-  worldMonth: number;
-  open: boolean;
-  onClose: (source: GenealogyViewerCloseSource, muiReason?: string) => void;
-  dynasty?: Dynasty;
-  rulers: Ruler[];
-  currentRulerId?: string | null;
-  team: RootState["root"]["teams"][number];
-}) {
-  const revision = WorldHistory.getRevision();
-  const presentationStamp = JSON.stringify([dynasty?.currentRulerId, dynasty?.designatedHeirId, dynasty?.heirIds, dynasty?.houseEpochs, dynasty?.rulers.map(r => [r.id, r.bornYear, r.accessionYear, r.endYear, r.status, r.reignOrdinal, r.relationType, r.displacedByUsurpationMonth, r.endReason, r.deathMonth, r.deathReason, r.templeName, r.posthumousEpithet]), team.status, team.terminationMonth, team.extinctionYear, team.terminationReason, team.stateFoundedMonth]);
-  const presentations = useMemo(() => open && dynasty ? deriveGenealogyNodePresentations(dynasty, team,
-    WorldHistory.getEventsForFaction(team.name), worldMonth) : new Map<string, GenealogyNodePresentation>(),
-    [open, revision, worldMonth, presentationStamp, team.name]);
-  const [scale, setScale] = useState(1);
-  const viewportRef = useRef<HTMLDivElement>(null);
-  const treeRef = useRef<HTMLDivElement>(null);
-  const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
-  const genealogy = buildGenealogyOnDemand(open, () => buildPoliticalGenealogy(
-    rulers,
-    currentRulerId,
-    dynasty?.designatedHeirId,
-    dynasty?.heirIds ?? []
-  )) ?? [];
-  useLayoutEffect(() => {
-    const viewport = viewportRef.current;
-    if (!viewport) return;
-    const update = () => setViewportSize({ width: viewport.clientWidth, height: viewport.clientHeight });
-    update();
-    const observer = new ResizeObserver(update);
-    observer.observe(viewport);
-    if (treeRef.current) observer.observe(treeRef.current);
-    return () => observer.disconnect();
-  }, [open]);
-  const treeWidth = treeRef.current?.scrollWidth ?? 0;
-  const treeHeight = treeRef.current?.scrollHeight ?? 0;
-  const genealogyCanvas = getGenealogyCanvasLayout(
-    treeWidth,
-    treeHeight,
-    viewportSize.width,
-    viewportSize.height,
-    scale
-  );
-  const fitGenealogyToWindow = () => {
-    setScale(getGenealogyFitScale(
-      treeRef.current?.scrollWidth ?? 0,
-      treeRef.current?.scrollHeight ?? 0,
-      viewportRef.current?.clientWidth ?? 0,
-      viewportRef.current?.clientHeight ?? 0
-    ));
-    if (viewportRef.current) {
-      viewportRef.current.scrollTo({ left: 0, top: 0, behavior: "smooth" });
-    }
-  };
-  const locateCurrentRuler = () => {
-    const currentNode = treeRef.current?.querySelector<HTMLElement>(`[data-ruler-id="${currentRulerId}"]`);
-    currentNode?.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" });
-  };
-  return (
-    <Dialog
-      open={open}
-      onClose={(_, reason) => {
-        onClose(reason === "escapeKeyDown" ? "ESCAPE" : "BACKDROP", reason);
-      }}
-      fullWidth
-      maxWidth="xl"
-      PaperProps={{ sx: { width: "90vw", height: "84vh", maxWidth: 1500, display: "flex", flexDirection: "column" } }}
-    >
-      <DialogTitle sx={{ pb: 0.5, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1 }}>
-        <Typography variant="h6">政治宗谱</Typography>
-        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", justifyContent: "flex-end" }}>
-          <Button size="small" onClick={() => setScale((value) => clampGenealogyScale(value - GENEALOGY_SCALE_STEP))} disabled={scale <= 0.5}>－</Button>
-          <Button size="small" onClick={() => setScale(1)} sx={{ minWidth: 48 }}>{Math.round(scale * 100)}%</Button>
-          <Button size="small" onClick={() => setScale((value) => clampGenealogyScale(value + GENEALOGY_SCALE_STEP))} disabled={scale >= 1.6}>＋</Button>
-          <Button size="small" onClick={fitGenealogyToWindow}>适应窗口</Button>
-          <Button size="small" onClick={locateCurrentRuler} disabled={!currentRulerId}>定位当今君主</Button>
-          <Button size="small" onClick={() => onClose("EXPLICIT")}>关闭</Button>
-        </Box>
-      </DialogTitle>
-      <DialogContent ref={viewportRef} sx={{ display: "flex", flexDirection: "column", minHeight: 0, overflow: "auto" }}>
-        {genealogy.length ? (
-          <Box sx={{ position: "relative", width: genealogyCanvas.width, height: genealogyCanvas.height, minWidth: "100%", minHeight: "100%" }}>
-            <Box ref={treeRef} sx={{ position: "absolute", left: genealogyCanvas.left, top: genealogyCanvas.top, width: "max-content", transform: `scale(${scale})`, transformOrigin: "top left", display: "flex", alignItems: "flex-start", gap: 3, py: 2 }}>
-              {genealogy.map((root) => <GenealogyTreeNode key={root.ruler.id} node={root} presentations={presentations} team={team} worldMonth={worldMonth} />)}
-            </Box>
-          </Box>
-        ) : <Typography color="var(--gg-text-muted)">暂无可展示的宗谱关系。</Typography>}
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function GenealogyTreeNode({ node, presentations, team, worldMonth }: {
-  worldMonth:number;
-  node: ReturnType<typeof buildPoliticalGenealogy>[number];
-  presentations: Map<string, GenealogyNodePresentation>;
-  team: RootState["root"]["teams"][number];
-}) {
-  const ruler = node.ruler;
-  const presentation = presentations.get(ruler.id);
-  return (
-    <Box data-ruler-id={ruler.id} sx={{ display: "flex", flexDirection: "column", alignItems: "center", flex: "0 0 auto", position: "relative", px: 0.5 }}>
-      <GenealogyPersonCard ruler={ruler} displayName={formatRulerRowName(ruler, team)} presentation={presentation} worldMonth={worldMonth} managedLife={team.status!=="EXTINCT"} />
-      {node.children.length ? (
-        <Box sx={{ display: "flex", position: "relative", pt: 1.5, mt: 0.15, gap: 0.5, alignItems: "flex-start", "&::before": { content: '""', position: "absolute", top: 0, left: "50%", height: 12, borderLeft: "1px solid var(--gg-border)" } }}>
-          {node.children.map((child, index) => (
-            <Box key={child.ruler.id} sx={{ position: "relative", pt: 1.5, "&::before": { content: '""', position: "absolute", top: 0, left: "50%", height: 12, borderLeft: "1px solid var(--gg-border)" }, ...(node.children.length > 1 && index === 0 ? { "&::after": { content: '""', position: "absolute", top: 0, left: "50%", right: "-50%", borderTop: "1px solid var(--gg-border)" } } : {}), ...(node.children.length > 1 && index === node.children.length - 1 ? { "&::after": { content: '""', position: "absolute", top: 0, left: "-50%", right: "50%", borderTop: "1px solid var(--gg-border)" } } : {}), ...(node.children.length > 2 && index > 0 && index < node.children.length - 1 ? { "&::after": { content: '""', position: "absolute", top: 0, left: "-50%", right: "-50%", borderTop: "1px solid var(--gg-border)" } } : {}) }}>
-              <GenealogyTreeNode node={child} presentations={presentations} team={team} worldMonth={worldMonth} />
-            </Box>
-          ))}
-        </Box>
-      ) : null}
     </Box>
   );
 }
@@ -1269,6 +1152,7 @@ function RulerBiography({
   return <Box sx={{border:"1px solid var(--gg-border)",borderRadius:"var(--gg-radius)",p:1,background:"var(--gg-panel)"}}>
     <PersonChronicleLayout title={<><Typography fontWeight="bold">{title}</Typography><Typography fontSize="0.76rem" color="var(--gg-text-muted)">{formatRulerLifeAge(ruler,worldMonth,false,team.status!=="EXTINCT")}</Typography></>}
       identity={<ChronicleSection title="身份与王统">
+        <PersonLifeDates bornMonth={ruler.bornYear} deathMonth={ruler.deathMonth}/>
         <Typography fontSize="0.82rem">{ruler.houseName} · {ruler.reignOrdinal?`第${ruler.reignOrdinal}代君主 · `:""}{formatWorldDate(ruler.accessionYear)}—{ruler.endYear===undefined?"今":formatWorldDate(ruler.endYear)}</Typography>
         <Typography fontSize="0.82rem">{predecessor&&["DIRECT_CHILD","GRANDCHILD","SIBLING","NEPHEW","UNCLE","COUSIN","COLLATERAL_KIN"].includes(ruler.relationType??"")?formatRecordedSuccessionKinship(ruler,predecessor,rulers):formatRulerRelation(ruler.relationType,team.identityStage,Boolean(parent),Boolean(ruler.chronicle.foundedStateName))}</Typography>
         <Typography fontSize="0.82rem">世系：{formatRulerLineage(ruler.relationType,parent?formatRulerRowName(parent,team):undefined,team.identityStage,Boolean(ruler.chronicle.foundedStateName))}</Typography>

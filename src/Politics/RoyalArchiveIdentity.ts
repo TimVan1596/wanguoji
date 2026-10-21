@@ -1,4 +1,4 @@
-import type {Dynasty,Ruler} from "./Dynasty";
+import type {Dynasty} from "./Dynasty";
 import type {MilitaryPerson} from "./MilitaryCommandRegistry";
 import type {WorldEvent} from "../History/WorldHistory";
 import {buildPoliticalGenealogy} from "./DynasticCandidateRules";
