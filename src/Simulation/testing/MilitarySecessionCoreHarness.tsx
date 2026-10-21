@@ -1,3 +1,4 @@
+import {militaryIdentityLabels} from "../../Politics/RoyalArchiveIdentity";
 import {CURRENT_SAVE_SCHEMA_VERSION} from "../../Persistence/WorldSaveSchema";
 import {createRoot} from "react-dom/client";
 import {flushSync} from "react-dom";
@@ -77,6 +78,7 @@ export async function runMilitarySecessionCore(seed="military-secession-z7"){
   check(text.includes(sourceName)&&text.includes(`${follow.length}名旧部`)&&text.includes("首任首领")&&!text.includes("首任君主"),"history reads actual old office, followers, polity and political leadership");
   check(Military.getChronicle(person,month,parent.name).some(e=>e.eventId===founding[0].id&&!e.victory),"old-country military biography records secession without inventing a capture");
   await checkPersonArchiveInteraction(core,split.team.name,personId,check);
+  check(militaryIdentityLabels(Military.getPerson(personId)!,Dynasty.getAll(),History.getEvents(),month).includes("义军创立者"),"real founding transaction supplies composite military founder identity");
   const save=strict();
   for(const mutate of [(s:any)=>s.registries.militaryCommandRegistry.people.find((p:any)=>p.personId===personId).politicalRulerId="wrong",(s:any)=>{const r=s.dynasties.find((d:any)=>d.factionId===split.team.name).rulers.find((r:any)=>r.residentIdentity?.personId===personId);r.naturalDeathMonth++;},(s:any)=>s.registries.militaryCommandRegistry.people.find((p:any)=>p.personId===personId).status="ACTIVE"]){const bad=structuredClone(save);mutate(bad);check(!validateWorldSave(bad).valid,"V21 refuses incompatible political/military life or simultaneous military authority");}
   const resume=()=>{hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return strict();};

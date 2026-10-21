@@ -1,7 +1,10 @@
 const fs=require('node:fs'),path=require('node:path'),{spawn}=require('node:child_process'),repo=process.cwd();
 const label=process.env.WANGUOJI_VERIFY_LABEL||'z11';
 const out=fs.openSync(path.join(require('node:os').tmpdir(),`wanguoji-person-core-${label}.log`),'w');
-const server=spawn(process.execPath,['node_modules/vite/bin/vite.js','--host','127.0.0.1','--port','5222','--strictPort'],{windowsHide:true,stdio:['ignore',out,out]});
+const cacheRoot=fs.mkdtempSync(path.join(require('node:os').tmpdir(),'wanguoji-verification-'));
+const config=path.join(cacheRoot,'vite.config.ts');
+fs.writeFileSync(config,`import configure from ${JSON.stringify(path.join(repo,'vite.config'))};export default env=>({...configure(env),root:${JSON.stringify(repo)},optimizeDeps:{include:['react','react-dom','react-dom/client','react-dom/server']},cacheDir:${JSON.stringify(path.join(cacheRoot,'cache'))}});`);
+const server=spawn(process.execPath,['node_modules/vite/bin/vite.js','--config',config,'--host','127.0.0.1','--port','5222','--strictPort'],{windowsHide:true,stdio:['ignore',out,out]});
 (async()=>{try{
  for(let n=0;n<100;n++){try{if((await fetch('http://127.0.0.1:5222')).ok)break;}catch{}await new Promise(r=>setTimeout(r,200));}
  for(const [suite,seed,years]of [['military-secession','military-secession-z7',100],['resident-founder','resident-z6',100],['character-archive','archive-z10-500',500],['siege-defense','siege-defense-z10',100],['military-balance','regional-1',200]]){

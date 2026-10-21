@@ -1,6 +1,6 @@
 import {genealogyArchiveMetrics} from "./GenealogyArchiveMetrics";
 import {formatRulerLifeAge} from "../../UI/Components/FactionDetails/RoyalPresentation";
-import {checkRoyalArchiveInteraction,checkHistoryFactionNavigation,checkGenealogyRendering} from "./RoyalArchiveInteractionHarness";
+import {checkRoyalArchiveInteraction,checkHistoryFactionNavigation,checkGenealogyRendering,checkRoyalGenealogyRecord} from "./RoyalArchiveInteractionHarness";
 import {evaluateDepositionOpportunity,chooseDepositionClaimant,selectDepositionCandidates} from "../../Politics/InReignDeposition";
 import {getFactionStability} from "../../Components/City";
 import worldRandom from "../WorldRandom";
@@ -17,10 +17,10 @@ import {preAccessionMilitary} from "../../Politics/PersonServiceLinks";
 
 /** Controlled rare career, using real Core/Phaser, population and political transactions. */
 export async function runRoyalMilitaryCore(seed="royal-military-z11") {
- const {core,game}=await createNaturalCore(seed),checks:string[]=[];
+ const {core,game}=await createNaturalCore(seed),checks:string[]=[],shortAppointmentAudits:any[]=[];
  const check=(value:unknown,label:string)=>{if(!value)throw new Error(label);checks.push(label);console.info(`[CoreTest] ${checks.length}: ${label}`);};
  const step=()=>{const before=core.simulator!.year;for(let i=0;i<30;i++)(core as any).advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit("postupdate");if(core.simulator!.year!==before+1)throw new Error("Clock stalled");};
- const strict=()=>{genealogyArchiveMetrics();const s=exportWorldSave(core),v=validateWorldSave(s);if(!v.valid)throw new Error(v.errors.join("; "));return s;};
+ const strict=()=>{for(const row of genealogyArchiveMetrics().shortAppointments)if(!shortAppointmentAudits.some(a=>JSON.stringify(a)===JSON.stringify(row)))shortAppointmentAudits.push(row);const s=exportWorldSave(core),v=validateWorldSave(s);if(!v.valid)throw new Error(v.errors.join("; "));return s;};
  try {
   const eligibleTeam=(t:typeof core.teams[number],m:number)=>{
    const d=Dynasty.get(t.name),current=Dynasty.getCurrentRuler(t.name);
@@ -58,7 +58,7 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
   {
    const {t,d,r,p}=restore(),u=t.getUserById(identity.sourceUserId)!;
    check(u.destroyUser(false,{cause:"BATTLE_DEATH",month,damageSource:"HOSTILE_HOME_OCCUPATION"}),"royal combat casualty uses real User destruction");
-   check(r.status==="dead"&&p.status==="DEAD"&&r.deathMonth===p.deathMonth&&!d.heirIds.includes(r.id)&&Military.getFormations().every(f=>f.commanderPersonId!==personId||f.status==="DISBANDED"),"battle death closes royal succession, military life and command");strict();
+   check(r.status==="dead"&&p.status==="DEAD"&&r.deathMonth===p.deathMonth&&!d.heirIds.includes(r.id)&&Military.getFormations().every(f=>f.commanderPersonId!==personId||f.status==="DISBANDED"),"battle death closes royal succession, military life and command");strict();await checkRoyalGenealogyRecord(core,t.name,personId,check);
   }
   {
    const {t,r,p}=restore();r.naturalDeathYear=month+1;r.plannedEndYear=month+1;p.royalIdentity!.naturalDeathMonth=month+1;
@@ -80,7 +80,7 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
    check(p.appointments[0].officeHistory?.at(-1)?.office==="SHANGJIANGJUN"&&formation.memberUnitIds.length===size,"three new actual victories and ten years grant senior office without adding troops");
    check(r.reignOrdinal===undefined&&!r.chronicle,"pre-accession victories create no ruler reign or personal royal campaign score");strict();
    Military.endPersonCommands(personId,month+120,"DISMISSED");
-   check(p.status==="RETIRED"&&formation.status==="DISBANDED"&&r.deathMonth===undefined,"dismissal ends command without ending the royal's life");strict();
+   check(p.status==="RETIRED"&&formation.status==="DISBANDED"&&r.deathMonth===undefined,"dismissal ends command without ending the royal's life");strict();await checkRoyalGenealogyRecord(core,t.name,personId,check);
   }
   {
    const {t,r,p}=restore();t.markExiled(month);Dynasty.markExiled(t,month);Military.update(month,core.teams,core.allCities);
@@ -88,7 +88,7 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
    t.markExtinct(month);Dynasty.markExtinct(t,month);
    check(r.status==="kin"&&r.deathMonth===undefined,"political termination removes succession eligibility without manufacturing a death");
    (core.simulator as any).clock.importState({worldMonth:death!,elapsedMs:0,running:false});Dynasty.update(death!,core.teams);
-   check(r.status as string==="dead"&&r.deathMonth===death&&p.deathMonth===death,"terminated country's royal military person retains the one natural life clock");
+   check(r.status as string==="dead"&&r.deathMonth===death&&p.deathMonth===death,"terminated country's royal military person retains the one natural life clock");await checkRoyalGenealogyRecord(core,t.name,personId,check);
   }
   {
    const coupMonth=month+24;
@@ -120,6 +120,7 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
    force();try{(Dynasty as any).evaluateInReignDeposition(liveTeam,liveDynasty,Dynasty.getCurrentRuler(t.name)!,coupMonth);}finally{worldRandom.next=originalNext;}
    check(Dynasty.getCurrentRuler(t.name)?.id===r.id&&Military.getPerson(personId)?.status==="RETIRED"&&liveTeam.rulerUser?.historicalPersonId===personId,"successful legal deposition converts the same serving royal and ends old command");const selectedSave=strict();
    check(selectedSave.worldRandom.position===checkpoint.worldRandom.position+1,"successful weighted coup consumes exactly the one existing political draw");
+   await checkRoyalGenealogyRecord(core,t.name,personId,check);
    const event=History.getEvents().find(e=>e.type==="ruler-deposed"&&e.metadata?.nextRulerId===r.id)!;
    check(JSON.parse(String(event.metadata!.depositionSelection)).candidates.some((c:any)=>c.ownMilitary?.rulerId===r.id),"successful transaction freezes own military evidence");
    for(const mutate of [(e:any)=>e.candidates.find((c:any)=>c.ownMilitary).ownMilitary.members[0].bornMonth--,(e:any)=>e.candidates.find((c:any)=>c.ownMilitary).ownMilitary.office="SHANGJIANGJUN",(e:any)=>e.candidates.find((c:any)=>c.ownMilitary).ownMilitary.victories[0].cityId="invented"]){
@@ -136,7 +137,7 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
    core.setWorldRunning(true);step();core.setWorldRunning(false);
    check(Dynasty.getCurrentRuler(t.name)===r&&t.rulerUser?.historicalPersonId===personId&&p.politicalRulerId===r.id,"legal succession converts the same royal User into the ruler");
    check(p.status==="RETIRED"&&Military.getFormations().every(f=>f.commanderPersonId!==personId||f.status==="DISBANDED")&&r.parentId===parent&&r.bornYear===birth&&r.naturalDeathYear===death,"accession closes old commands and preserves kin and life");
-   check(preAccessionMilitary(r,Military.getPeople(),Military.getFormations(),History.getEvents())?.person.personId===personId,"ruler biography resolves the same pre-accession military person");strict();
+   check(preAccessionMilitary(r,Military.getPeople(),Military.getFormations(),History.getEvents())?.person.personId===personId,"ruler biography resolves the same pre-accession military person");strict();await checkRoyalGenealogyRecord(core,t.name,personId,check);
    const enemy=core.teams.find(e=>e!==t&&e.status==="ACTIVE")!;
    // Controlled administrative terminal transaction, not a claim of natural union eligibility.
    (core.simulator as any).mergeFaction({absorbedFaction:t,absorbingFaction:enemy},month+1);
@@ -156,6 +157,6 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
    core.setWorldRunning(true);step();core.setWorldRunning(false);
    check(living.status as string==="dead"&&living.deathMonth===death&&living.endYear===month+1&&Military.getPerson(personId)?.deathMonth===death,"loaded terminal person reaches natural death while preserving the original political end");strict();
   }
-  return {seed,checks,genealogyRender,month,personId,royalRulerId:ruler.id,saveSchemaVersion:strict().saveSchemaVersion};
+  return {seed,checks,genealogyRender,shortAppointmentAudits,month,personId,royalRulerId:ruler.id,saveSchemaVersion:strict().saveSchemaVersion};
  } finally {game.destroy(true);}
 }

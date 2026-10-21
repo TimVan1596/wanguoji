@@ -88,3 +88,18 @@ export async function checkGenealogyRendering(core:Core,check:(ok:unknown,label:
  }finally{flushSync(()=>root.unmount());host.remove();}
  check(JSON.stringify(exportWorldSave(core))===before,"large genealogy rendering consumes no RNG, population or canonical state");return samples;
 }
+
+export async function checkRoyalGenealogyRecord(core:Core,factionId:string,personId:string,check:(ok:unknown,label:string)=>void){
+ const [{default:Browser},{default:Dynasty},{default:Military}]=await Promise.all([import("../../UI/Components/FactionDetails/GenealogyBrowser"),import("../../Politics/Dynasty"),import("../../Politics/MilitaryCommandRegistry")]);
+ const d=Dynasty.get(factionId)!,p=Military.getPerson(personId)!,r=d.rulers.find(r=>r.id===p.royalIdentity!.rulerId)!;
+ const host=document.createElement("div");document.body.append(host);const root=createRoot(host);
+ try{
+  flushSync(()=>root.render(<Provider store={store}><Browser open onClose={()=>{}} dynasty={d} team={core.teams.find(t=>t.name===factionId)!} worldMonth={core.simulator!.year} targetId={r.id}/></Provider>));
+  await new Promise(resolve=>setTimeout(resolve,20));
+  const nodes=Array.from(document.querySelectorAll('[data-ruler-id]')).filter(n=>n.getAttribute("data-ruler-id")===r.id);
+  check(nodes.length===1,p.status+": actual genealogy retains one permanent royal node");
+  check(document.querySelector('[data-genealogy-person]')?.textContent?.includes("出生："+formatWorldDate(p.bornMonth)),p.status+": genealogy retains original birth month");
+  if(p.deathMonth!==undefined)check(document.querySelector('[data-genealogy-person]')?.textContent?.includes("死亡："+formatWorldDate(p.deathMonth)),"actual deceased royal genealogy shows the one death month");
+  if(r.reignOrdinal!==undefined)check(!nodes[0].querySelector('[data-genealogy-theme="neutral"]'),"actual ascended royal uses a monarch theme on the one node");
+ }finally{flushSync(()=>root.unmount());host.remove();}
+}
