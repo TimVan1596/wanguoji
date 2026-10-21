@@ -1,3 +1,5 @@
+import {historyFactionMentions,historyProtectedNames} from "../../../History/HistoryFactionMentions";
+import {HistoryFactionNavigation,MentionContext} from "./HistoryFactionNavigation";
 import HistoricalEvidence from "../HistoricalEvidence";
 import { EventDetails, EventText } from "./HistoryEventDetails";
 import { getHistoryCardFactionView, getHistoryCardPresentation } from "../../../History/HistoryCardPresentation";
@@ -313,7 +315,7 @@ export default function HistoryScroll() {
           </Button>
         </Box>
       ) : null}
-      <HistoryEventList
+      <HistoryFactionNavigation factions={teamByName}><HistoryEventList
         key={browseKey}
         unseenCount={unseenCount}
         onScrollPosition={onScrollPosition}
@@ -331,7 +333,7 @@ export default function HistoryScroll() {
         onToggleExpanded={toggleExpandedEvent}
         onLoadMore={loadMoreEvents}
         sxHeight="100%"
-      />
+      /></HistoryFactionNavigation>
     </Box>
   );
 }
@@ -418,7 +420,7 @@ function HistoryEventListContent({
         const landmark = isLandmarkHistoryEvent(event);
         const canExpand = event.importance === "major" || Boolean(eventDescription) || Boolean(event.metadata);
         return (
-          <Box key={event.id} data-history-id={event.id} onClick={() => onToggleExpanded(event.id, canExpand)} sx={{
+          <MentionContext.Provider key={event.id} value={{ids:historyFactionMentions(event,teamByName,cityNames),protectedNames:historyProtectedNames(event)}}><Box data-history-id={event.id} onClick={() => onToggleExpanded(event.id, canExpand)} sx={{
             py: 0.5, px: 1, mb: 0.5,
             borderLeft: actorColor !== undefined ? `4px solid ${colorToString(actorColor)}` : landmark ? "4px solid #8a5a00" : event.importance === "major" ? "4px solid #d32f2f" : "4px solid rgba(0, 0, 0, 0.2)",
             borderTop: landmark ? "1px solid rgba(138, 90, 0, 0.22)" : "none",
@@ -439,7 +441,7 @@ function HistoryEventListContent({
               <HistoricalEvidence eventId={event.id} source={event.type} commandId={typeof event.metadata?.commandId === "string" ? event.metadata.commandId : undefined} personId={typeof event.metadata?.commanderPersonId === "string" ? event.metadata.commanderPersonId : undefined} />
               <EventDetails event={card.event} teamByName={eventTeamByDisplayName} factionNames={eventFactionNames} cityNames={cityNames} />
             </Box> : null}
-          </Box>
+          </Box></MentionContext.Provider>
         );
       })}
       {hasMore ? <Button fullWidth size="small" variant="outlined" onClick={onLoadMore} sx={{ my: 1 }}>加载更早历史</Button> : null}

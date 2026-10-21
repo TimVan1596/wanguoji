@@ -83,24 +83,37 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
    check(r.status as string==="dead"&&r.deathMonth===death&&p.deathMonth===death,"terminated country's royal military person retains the one natural life clock");
   }
   {
+   const coupMonth=month+24;
    const {t,d,r}=restore(),old=Dynasty.getCurrentRuler(t.name)!,capital=t.capitalCity!;
    const enemy=core.teams.find(e=>e!==t&&e.status==="ACTIVE")!,town=enemy.cities[0];
-   town.capture(t,month);capital.capture(enemy,month);
+   (core.simulator as any).clock.importState({worldMonth:coupMonth,elapsedMs:0,running:false});
+   town.capture(t,coupMonth,undefined,Military.getPerson(personId)!.appointments[0].commandId,personId);capital.capture(enemy,coupMonth);
    for(const city of t.cities)city.loyalty=20;
-   const evaluation=evaluateDepositionOpportunity({factionId:t.name,status:t.status,identityStage:t.identityStage,cityCount:t.cities.length,stability:getFactionStability(t),currentRuler:old,rulers:d.rulers,houseName:d.houseName,worldMonth:month,events:History.getEvents()});
+   const evaluation=evaluateDepositionOpportunity({factionId:t.name,status:t.status,identityStage:t.identityStage,cityCount:t.cities.length,stability:getFactionStability(t),currentRuler:old,rulers:d.rulers,houseName:d.houseName,worldMonth:coupMonth,events:History.getEvents()});
    check(evaluation.eligible,"real capital loss creates a legal deposition opportunity");
-   const roll=Array.from({length:1000},(_,i)=>evaluation.probability*(i+.5)/1000).find(value=>chooseDepositionClaimant(evaluation,month,value)?.claimant.ruler.id===r.id);
-   check(roll!==undefined,"the serving real royal is a legal claimant under the unchanged selection rules");
+   evaluation.royalMilitaryClaims=Military.getRoyalDepositionClaims(t,coupMonth,evaluation.candidates.map(c=>c.ruler),core.logicalUnitRegistry);
+   check(evaluation.royalMilitaryClaims.length===1,"verified own royal command receives bounded advantage from real capture");
+   check(evaluation.candidates.length>=2,"real dynasty has competing adult legal kin");
+   const unweighted={...evaluation,royalMilitaryClaims:[]};
+   const roll=Array.from({length:1000},(_,i)=>evaluation.probability*(i+.5)/1000).find(value=>chooseDepositionClaimant(evaluation,coupMonth,value)?.claimant.ruler.id===r.id&&chooseDepositionClaimant(unweighted,coupMonth,value)?.claimant.ruler.id!==r.id);
+   check(roll!==undefined,"same original coup draw changes claimant only because of verified bounded royal command");
    const checkpoint=strict(),writer=History.addRulerDeposed,originalNext=worldRandom.next;
    const force=()=>{let first=true;worldRandom.next=()=>{const actual=originalNext.call(worldRandom);if(first){first=false;return roll!;}return actual;};};
    force();History.addRulerDeposed=function(...args:Parameters<typeof writer>){writer.apply(this,args);throw new Error("injected royal deposition failure");};
-   try{(Dynasty as any).evaluateInReignDeposition(t,d,old,month);}finally{History.addRulerDeposed=writer;worldRandom.next=originalNext;}
-   const failed=strict(),expected=structuredClone(checkpoint);expected.dynasties.find(d=>d.factionId===t.name)!.lastDepositionAttemptMonth=month;failed.worldRandom=expected.worldRandom;
+   try{(Dynasty as any).evaluateInReignDeposition(t,d,old,coupMonth);}finally{History.addRulerDeposed=writer;worldRandom.next=originalNext;}
+   const failed=strict(),expected=structuredClone(checkpoint);expected.dynasties.find(d=>d.factionId===t.name)!.lastDepositionAttemptMonth=coupMonth;failed.worldRandom=expected.worldRandom;
    check(diffCanonicalWorldSave(expected,failed).matched,"failed deposition restores the royal's military authority, User role and formation");
    hydrateWorldSave(core,JSON.parse(JSON.stringify(checkpoint)));
    const liveTeam=core.teams.find(x=>x.name===t.name)!,liveDynasty=Dynasty.get(t.name)!;
-   force();try{(Dynasty as any).evaluateInReignDeposition(liveTeam,liveDynasty,Dynasty.getCurrentRuler(t.name)!,month);}finally{worldRandom.next=originalNext;}
-   check(Dynasty.getCurrentRuler(t.name)?.id===r.id&&Military.getPerson(personId)?.status==="RETIRED"&&liveTeam.rulerUser?.historicalPersonId===personId,"successful legal deposition converts the same serving royal and ends old command");strict();
+   force();try{(Dynasty as any).evaluateInReignDeposition(liveTeam,liveDynasty,Dynasty.getCurrentRuler(t.name)!,coupMonth);}finally{worldRandom.next=originalNext;}
+   check(Dynasty.getCurrentRuler(t.name)?.id===r.id&&Military.getPerson(personId)?.status==="RETIRED"&&liveTeam.rulerUser?.historicalPersonId===personId,"successful legal deposition converts the same serving royal and ends old command");const selectedSave=strict();
+   const event=History.getEvents().find(e=>e.type==="ruler-deposed"&&e.metadata?.nextRulerId===r.id)!;
+   check(JSON.parse(String(event.metadata!.depositionSelection)).candidates.some((c:any)=>c.ownMilitary?.rulerId===r.id),"successful transaction freezes own military evidence");
+   for(const mutate of [(e:any)=>e.candidates.find((c:any)=>c.ownMilitary).ownMilitary.members[0].bornMonth--,(e:any)=>e.candidates.find((c:any)=>c.ownMilitary).ownMilitary.office="SHANGJIANGJUN",(e:any)=>e.candidates.find((c:any)=>c.ownMilitary).ownMilitary.victories[0].cityId="invented"]){
+    const bad=structuredClone(selectedSave),raw=bad.worldHistory.events.find(e=>e.id===event.id)!;const data=JSON.parse(String(raw.metadata!.depositionSelection));mutate(data);raw.metadata!.depositionSelection=JSON.stringify(data);check(!validateWorldSave(bad).valid,"save rejects forged royal command selection evidence");
+   }
+   const continueFrom=()=>{hydrateWorldSave(core,JSON.parse(JSON.stringify(selectedSave)));core.setWorldRunning(true);for(let n=0;n<12;n++)step();core.setWorldRunning(false);return strict();};
+   const continued=continueFrom();check(diffCanonicalWorldSave(continued,continueFrom()).matched,"weighted deposition save resumes twelve months deterministically");hydrateWorldSave(core,JSON.parse(JSON.stringify(continued)));check(diffCanonicalWorldSave(continued,strict()).matched,"weighted selection proof survives second save and load");
   }
   {
    const {t,d,r,p}=restore(),current=Dynasty.getCurrentRuler(t.name)!;

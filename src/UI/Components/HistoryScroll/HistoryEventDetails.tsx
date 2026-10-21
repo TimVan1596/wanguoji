@@ -1,3 +1,5 @@
+import {useContext} from "react";
+import {MentionContext,FactionMention} from "./HistoryFactionNavigation";
 import DepositionSelectionDetails from "../DepositionSelectionDetails";
 import { Box, Typography } from "@mui/material";
 import type { WorldEvent } from "../../../History/WorldHistory";
@@ -155,17 +157,20 @@ export function EventText({
   factionNames: string[];
   cityNames: string[];
 }) {
+  const mentions=useContext(MentionContext);
   const names = [
+    ...mentions.protectedNames,
     ...[...new Set(factionNames)].sort((a, b) => b.length - a.length),
     ...[...cityNames].sort((a, b) => b.length - a.length),
   ].filter(Boolean);
   if (names.length === 0) {
     return <>{text}</>;
   }
-  const pattern = new RegExp(`(${names.map(escapeRegExp).join("|")})`, "g");
+  const pattern = new RegExp(`(${[...new Set(names)].sort((a,b)=>b.length-a.length).map(escapeRegExp).join("|")})`, "g");
   return (
     <>
       {text.split(pattern).map((part, index) => {
+        if(mentions.protectedNames.includes(part))return part;
         const team = teamByName.get(part);
         if (team) {
           return (
@@ -173,6 +178,7 @@ export function EventText({
               key={`${part}-${index}`}
               name={part}
               color={team.color}
+              id={mentions.ids.get(part)}
             />
           );
         }
@@ -185,15 +191,8 @@ export function EventText({
   );
 }
 
-function FactionToken({ name, color }: { name: string; color: number }) {
-  return (
-    <Box
-      component="span"
-      sx={{ color: colorToString(color), fontWeight: "bold" }}
-    >
-      {name}
-    </Box>
-  );
+function FactionToken({name,color,id}:{name:string;color:number;id?:string}) {
+ return <FactionMention name={name} color={colorToString(color)} id={id}/>;
 }
 
 function CityToken({ name }: { name: string }) {

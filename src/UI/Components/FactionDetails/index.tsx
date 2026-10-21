@@ -1,4 +1,4 @@
-import {RoyalMilitaryPanel} from "./RoyalMilitaryPanel";
+import {RoyalMilitaryRoster} from "./RoyalMilitaryPanel";
 import {getFactionDisplayNameAtMonth} from "../../../Simulation/FactionIdentity";
 import PortraitSummary from "./PortraitSummary";
 import {resolvePersonArchiveTarget} from "./PersonArchiveTarget";
@@ -1060,7 +1060,7 @@ function DynastyTree({
           })}
         </Box>
       ) : null}
-      {rulers.filter(r=>r.militaryIdentity).map(r=><RoyalMilitaryPanel key={r.id} ruler={r} month={worldMonth} onGenealogy={onOpenFullGenealogy}/>)}
+      <RoyalMilitaryRoster key={team.name} rulers={rulers} month={worldMonth} onGenealogy={onOpenFullGenealogy}/>
       <Typography fontWeight="bold" fontSize="0.9rem">历代君主</Typography>
       <Box sx={{ display: "grid", gap: 0.5 }}>
         {orderedRulers.map((ruler, index) => {
