@@ -101,6 +101,11 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
     }
   });
   citiesById.forEach((city) => city.rebuildRuntimeVisuals());
+  // Runtime capital-zone labels currently project isHome. The DTO remains the
+  // authority, including saved non-home cells inside an expanded capital zone.
+  save.blocks.forEach(state => {
+    blocksByGrid.get(`${state.gridX},${state.gridY}`)!.isHome = state.isHome;
+  });
 
   core.setHydrationStage("HYDRATE_HISTORY");
   importPoliticalAndHistoryState(save);

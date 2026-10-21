@@ -64,3 +64,9 @@ it("managed former rulers keep aging until their one real death, never at politi
  expect(formatRulerLifeAge({...r,status:"dead",deathMonth:700,deathReason:"自然去世"},800)).toBe("享年58岁");
  expect(formatRulerLifeAge({...r,status:"abdicated"},600,true)).toBe("当前年龄50岁");
 });
+
+it("does not infer survival from a stale kin status after its dynasty loses life management",()=>{
+ const kin={status:"kin" as const,bornYear:0};
+ expect(formatRulerLifeAge(kin,1200,false,false)).toContain("生死未载");
+ expect(formatRulerLifeAge(kin,1200,false,false)).not.toContain("当前年龄");
+});

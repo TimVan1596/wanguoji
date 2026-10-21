@@ -1338,3 +1338,18 @@ it.each(["siege-recovery", "split", "popular", "arcade-popular"])("regional %s: 
     }
   }finally{vi.unstubAllGlobals();}
 },10000);
+
+it("hydration keeps DTO home flags after capital-zone runtime labels are rebuilt",async()=>{
+ const save=fixture();save.blocks[1]={...save.blocks[1],cityId:"active",isHome:false,isCityCenter:false,homeHitPoints:save.cities[0].defense};
+ (save.cities[0].fortifiedCells as Array<{gridX:number;gridY:number}>).push({gridX:1,gridY:0});
+ const CityModule=await import("../Components/City"),hydrate=CityModule.default.hydrate;
+ vi.spyOn(CityModule.default,"hydrate").mockImplementation((...args:Parameters<typeof hydrate>)=>{
+  const city=hydrate(...args);city.rebuildRuntimeVisuals=()=>{for(const block of city.fortifiedCells as any[])block.isHome=true;};return city;
+ });
+ const core=target();
+ for(let i=0;i<3;i++){
+  hydrateWorldSave(core,structuredClone(save));
+  expect(core.map!.blocks[0][0].isHome).toBe(true);expect(core.map!.blocks[1][0].isHome).toBe(false);
+  expect(exportWorldSave(core).blocks).toEqual(save.blocks);
+ }
+});

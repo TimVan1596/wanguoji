@@ -1034,7 +1034,7 @@ function DynastyTree({
                   fontSize="0.92rem" sx={{display:"flow-root"}}
                 >
                   {current ? "● " : ""}
-                  <PersonPortrait personId={ruler.residentIdentity?.personId??ruler.id} age={rulerPortraitAge(ruler,worldMonth)}/>{formatRulerRowName(ruler, team)} · {formatRulerLifeAge(ruler,worldMonth)}{ruler.relationType === "USURPER" ? "【篡朝】" : ""}
+                  <PersonPortrait personId={ruler.residentIdentity?.personId??ruler.id} age={rulerPortraitAge(ruler,worldMonth,team.status!=="EXTINCT")}/>{formatRulerRowName(ruler, team)} · {formatRulerLifeAge(ruler,worldMonth,false,team.status!=="EXTINCT")}{ruler.relationType === "USURPER" ? "【篡朝】" : ""}
                 </Typography>
                 <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
                   {formatRulerListSubtitle(ruler, worldMonth, factionStatus, events, team.name)}
@@ -1186,7 +1186,7 @@ function GenealogyTreeNode({ node, presentations, team, worldMonth }: {
   const presentation = presentations.get(ruler.id);
   return (
     <Box data-ruler-id={ruler.id} sx={{ display: "flex", flexDirection: "column", alignItems: "center", flex: "0 0 auto", position: "relative", px: 0.5 }}>
-      <GenealogyPersonCard ruler={ruler} displayName={formatRulerRowName(ruler, team)} presentation={presentation} worldMonth={worldMonth} />
+      <GenealogyPersonCard ruler={ruler} displayName={formatRulerRowName(ruler, team)} presentation={presentation} worldMonth={worldMonth} managedLife={team.status!=="EXTINCT"} />
       {node.children.length ? (
         <Box sx={{ display: "flex", position: "relative", pt: 1.5, mt: 0.15, gap: 0.5, alignItems: "flex-start", "&::before": { content: '""', position: "absolute", top: 0, left: "50%", height: 12, borderLeft: "1px solid var(--gg-border)" } }}>
           {node.children.map((child, index) => (
@@ -1226,7 +1226,7 @@ function RulerBiography({
   const posthumousLines=hasRecordedRulerDeath(ruler)?getPosthumousLabelLines(ruler,team,ruler.endYear??worldMonth):[];
   const textFor=(event:WorldEvent)=>(formatRulerMilitaryEvent(event,ruler,team.name,worldMonth,{factions:factionById,people:MilitaryCommandRegistry.getPeople(),events})??formatRulerTerminalEvent(event,ruler,team.name,factionById)??formatRulerDiplomacyEvent(event,factionById,ruler.id)??formatFactionHistoryEvent(event,team.name,factionById)??formatHistoryEventTitle(event,factionById)).replace(/所属编组/g,"所部");
   return <Box sx={{border:"1px solid var(--gg-border)",borderRadius:"var(--gg-radius)",p:1,background:"var(--gg-panel)"}}>
-    <PersonChronicleLayout title={<><Typography fontWeight="bold">{title}</Typography><Typography fontSize="0.84rem">{formatRulerLifeAge(ruler,worldMonth)}</Typography></>}
+    <PersonChronicleLayout title={<><Typography fontWeight="bold">{title}</Typography><Typography fontSize="0.84rem">{formatRulerLifeAge(ruler,worldMonth,false,team.status!=="EXTINCT")}</Typography></>}
       identity={<ChronicleSection title="身份与王统">
         <Typography fontSize="0.82rem">{ruler.houseName} · {ruler.reignOrdinal?`第${ruler.reignOrdinal}代君主 · `:""}{formatWorldDate(ruler.accessionYear)}—{ruler.endYear===undefined?"今":formatWorldDate(ruler.endYear)}</Typography>
         <Typography fontSize="0.82rem">{predecessor&&["DIRECT_CHILD","GRANDCHILD","SIBLING","NEPHEW","UNCLE","COUSIN","COLLATERAL_KIN"].includes(ruler.relationType??"")?formatRecordedSuccessionKinship(ruler,predecessor,rulers):formatRulerRelation(ruler.relationType,team.identityStage,Boolean(parent),Boolean(ruler.chronicle.foundedStateName))}</Typography>
@@ -1248,7 +1248,7 @@ function RulerBiography({
       assessment={bio.assessment} voice={bio.voice}
       evidence={<>
         {fullMilestoneEvents.filter(e=>e.type==="ruler-deposed").map(e=><DepositionSelectionDetails key={e.id} event={e}/>)}
-        <Typography fontSize="0.78rem">即位年龄{Math.floor(monthsToYears(ruler.accessionYear-ruler.bornYear))}岁；{formatRulerLifeAge(ruler,worldMonth)}</Typography>
+        <Typography fontSize="0.78rem">即位年龄{Math.floor(monthsToYears(ruler.accessionYear-ruler.bornYear))}岁；{formatRulerLifeAge(ruler,worldMonth,false,team.status!=="EXTINCT")}</Typography>
         {posthumousLines.map(line=><Typography key={line} fontSize="0.78rem">{line}</Typography>)}
         {ruler.residentIdentity&&<Typography fontSize="0.78rem">居民身份：{ruler.residentIdentity.personId}；原User {ruler.residentIdentity.sourceUserId} / {ruler.residentIdentity.sourceUserLabel}；出生{formatWorldDate(ruler.residentIdentity.bornMonth)}</Typography>}
         <Typography fontSize="0.78rem">继位背景：{getSuccessionBackground(ruler,rulers)}</Typography>

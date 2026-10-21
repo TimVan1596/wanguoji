@@ -147,10 +147,12 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
+- 当前 APP **v0.99931z8** / package **0.99.174** / WorldSave **V20**。z7已获人工PASS；本版废立继任选择、人物当前年龄与程序化肖像等待独立人工Gate。攻守候选未通过整合安全门，未发布，仍使用z7原规则。以下旧版本验收条目为历史记录，不代表当前schema。
+
 - v0.99931n人工Gate已PASS，真实长局自然发生至少11次同王统宗室废立。当前v0.99931n1修复连续废立后的V14生命周期校验，并完善君主即离位叙述与史评，等待[人工Gate](docs/RulerDepositionLifecycleClosureN1.md)。
 - v0.99929a 修复政治终结历史身份、退位年龄与双方君主大事记。[Political Terminal Chronicle Gate](docs/PoliticalTerminalChronicleClosure.md)已由用户完成人工PASS。
 - v0.99929新增不同源正式国家的和平纳土。独立终结原因SUBMITTED，与同源合邦MERGED及战争覆灭区分；末代君主退位、旧王室保留。[Peaceful Submission Gate](docs/PeacefulSubmission.md)已人工PASS，规则冻结。
-- 当前WorldSave **V14**。按用户明确授权，V13及更旧存档均拒绝读取，不迁移、不覆盖、不删除；IndexedDB版本仍2。Diplomacy II全系列已人工PASS并冻结，期限/威胁/续约/冷却及Strategic Union条件不变。
+- 历史v0.99931n1的WorldSave为 **V14**。按用户明确授权，V13及更旧存档均拒绝读取，不迁移、不覆盖、不删除；IndexedDB版本仍2。Diplomacy II全系列已人工PASS并冻结，期限/威胁/续约/冷却及Strategic Union条件不变。
 - v0.99927 Dynastic Revolution 系列已由用户完整人工通过并冻结，包括历史身份、时代筛选、旧V9安全修复及重新保存后零修复读档。
 
 

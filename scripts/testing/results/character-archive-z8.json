@@ -1,0 +1,37 @@
+[
+  {
+    "seed": "archive-z8",
+    "years": 500,
+    "results": [
+      {
+        "month": 2400,
+        "people": 31,
+        "countryPeople": 14,
+        "records": 754,
+        "allRecordsPresent": true,
+        "noNestedScroll": true,
+        "personReadableRecords": 22,
+        "publicPersonRecords": 8,
+        "renderMs": 13.380000001192093,
+        "htmlBytes": 94770,
+        "heapBytes": 68111673,
+        "strictSaveValid": true
+      },
+      {
+        "month": 6000,
+        "people": 61,
+        "countryPeople": 25,
+        "records": 1494,
+        "allRecordsPresent": true,
+        "noNestedScroll": true,
+        "personReadableRecords": 22,
+        "publicPersonRecords": 8,
+        "renderMs": 26.77000000178814,
+        "htmlBytes": 184288,
+        "heapBytes": 83360864,
+        "strictSaveValid": true
+      }
+    ],
+    "deterministic12MonthContinuation": true
+  }
+]

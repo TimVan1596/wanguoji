@@ -358,3 +358,15 @@ describe("real military User retirement, mortality and succession", () => {
     expect(MilitaryCommandRegistry.getFormations().filter(f => f.status === "ACTIVE")).toHaveLength(0);
   });
 });
+
+it("real Block restoration preserves a saved non-home capital-zone cell through visual initialization",()=>{
+ const {defender}=setup();
+ defender.blocks={add:vi.fn(),remove:vi.fn()} as any;
+ core.map={blocksGroup:{add:vi.fn(),remove:vi.fn()}};
+ const city:any={isCapital:true,defense:5,maxDefense:7,ownerTeam:defender,name:"都",id:"capital"};
+ const block:any=Object.assign(Object.create(Block.prototype),{setFillStyle:vi.fn(),setStrokeStyle:vi.fn(),scene:{},team:defender});
+ for(let i=0;i<10;i++)for(const isHome of [false,true]){
+  block.restoreCanonicalState({owner:defender,isHome,hp:999,city,isCityCenter:false});
+  expect(block.isHome).toBe(isHome);expect(block.city).toBe(city);expect(block.hp).toBe(5);expect(block.isCityCenter).toBe(false);
+ }
+});

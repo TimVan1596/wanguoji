@@ -912,7 +912,7 @@ class DynastyRegistryStore {
       if (previousRulerUser) {
         previousRulerUser.role = previousUserRole!;
         previousRulerUser.rulerId = previousUserRulerId;
-        previousRulerUser.player.setRole(previousPlayerRole!, previousPlayerRulerId);
+        previousRulerUser.player.setRole(previousPlayerRole!, previousPlayerRulerId, true);
         team.rulerUser = previousRulerUser;
       }
       if(unitsBefore&&unitSequenceBefore!==undefined)unitRegistry!.importState(unitSequenceBefore,unitsBefore as Array<{state: import("../Simulation/LogicalUnitState").LogicalUnitState;player: import("../Components/Player").default}>);

@@ -254,6 +254,9 @@ export default class Block extends Phaser.GameObjects.Rectangle {
       }
     }
     this.updateCityDisplay();
+    // setCity/updateCityDisplay rebuild runtime appearance and may project capital flags.
+    // Hydration/rollback must finish with the saved canonical flag, not that projection.
+    this.isHome = state.isHome;
   }
 
   destroyRuntimeObjects() {

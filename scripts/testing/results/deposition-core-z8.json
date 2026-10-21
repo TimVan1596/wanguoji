@@ -1,0 +1,44 @@
+[
+  {
+    "seed": "deposition-z8",
+    "scope": "controlled real Core/Phaser deposition after actual capital capture, not natural frequency",
+    "month": 48,
+    "checks": [
+      "natural live royal kin and an existing hostile faction are available",
+      "real capital capture creates the crisis without ending the dynasty",
+      "actual political crisis and existing kin qualify",
+      "failed final history writer restores full canonical state except attempted roll and cooldown",
+      "political deposition preserves the predecessor's real life",
+      "selected real claimant and frozen explanation are saved in the one authoritative event",
+      "claimant selection reuses the original political roll; separate runtime unit initialization draws are reported",
+      "twelve real months after strict hydration are deterministic",
+      "the second save loads with one royal identity and office chain"
+    ],
+    "previousId": "魏-ruler-9",
+    "nextId": "魏-ruler-11",
+    "relation": "SIBLING",
+    "selection": {
+      "version": 1,
+      "candidates": [
+        {
+          "rulerId": "魏-ruler-11",
+          "name": "魏骞",
+          "relation": "SIBLING",
+          "bornMonth": -350,
+          "weight": 1.4
+        }
+      ],
+      "conditionalRoll": 0.75,
+      "maturityFactor": 0.15,
+      "roll": 0.00375,
+      "probability": 0.005,
+      "selectedRulerId": "魏-ruler-11",
+      "crisisEventIds": [
+        "capital-fallen-48-秦-魏-大梁-14"
+      ]
+    },
+    "ageAtDeposition": "当前年龄30岁",
+    "runtimeInitializationDraws": 1,
+    "saveSchemaVersion": 20
+  }
+]

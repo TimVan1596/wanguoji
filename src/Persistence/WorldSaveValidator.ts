@@ -392,8 +392,14 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
           const oldRuler = ownerRulers.find((r: any) => r.rulerId === oldId);
           const newRuler = ownerRulers.find((r: any) => r.rulerId === newId);
           const runtimeRulers = ownerRulers.map((r: any) => ({ ...r,
-            id: r.rulerId, bornYear: r.bornMonth, accessionYear: r.accessionMonth }));
+            id: r.rulerId, bornYear: r.bornMonth, accessionYear: r.accessionMonth, naturalDeathYear:r.naturalDeathMonth, plannedEndYear:r.plannedEndMonth }));
           if(!validDepositionSelection(meta.depositionSelection,runtimeRulers as any,oldId,newId,Number(month))) errors.push("invalid deposition candidate selection evidence");
+          if(typeof meta.depositionSelection==="string")try{
+            const selection=JSON.parse(meta.depositionSelection);
+            const military=typeof meta.militaryParticipation==="string"?JSON.parse(meta.militaryParticipation):undefined;
+            if(JSON.stringify(selection.crisisEventIds)!==JSON.stringify(String(meta.crisisEvidenceEventIds).split(","))||
+              selection.supporterPersonId!==military?.participant?.personId)errors.push("deposition selection context mismatch");
+          }catch{errors.push("invalid deposition selection context");}
           const actualKinship = oldRuler && newRuler
             ? getRecordedKinRelation(runtimeRulers.find((r: any) => r.rulerId === newId)!, runtimeRulers.find((r: any) => r.rulerId === oldId)!, runtimeRulers)
             : undefined;
