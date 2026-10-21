@@ -24,6 +24,11 @@ it("protects full personal names without treating arbitrary text labels as facti
 
 it("never links unlabelled person substrings while keeping explicit narrative mentions",()=>{
  expect(standaloneFactionMention("赵惟修攻城",0,1)).toBe(false);expect(standaloneFactionMention("北义军使者来朝",0,3)).toBe(false);
- expect(standaloneFactionMention("赵攻陷魏都",0,1)).toBe(true);expect(standaloneFactionMention("归附赵",2,1)).toBe(false);
- expect(standaloneFactionMention("赵国攻城",0,1)).toBe(true);expect(standaloneFactionMention("向赵进军",1,1)).toBe(false);
+ expect(standaloneFactionMention("赵攻陷魏都",0,1)).toBe(true);expect(standaloneFactionMention("归附赵",2,1)).toBe(true);
+ expect(standaloneFactionMention("赵国攻城",0,1)).toBe(true);expect(standaloneFactionMention("向赵进军",1,1)).toBe(true);
+});
+
+it("keeps explicit diplomacy and warfare faction mentions clickable",()=>{
+ expect(standaloneFactionMention("秦向赵宣战",2,1)).toBe(true);expect(standaloneFactionMention("秦与赵结盟",2,1)).toBe(true);
+ expect(standaloneFactionMention("秦与赵签订停战",2,1)).toBe(true);
 });

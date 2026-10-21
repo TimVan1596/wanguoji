@@ -19,7 +19,7 @@ export function historyProtectedNames(event:WorldEvent){
 export function standaloneFactionMention(text:string,start:number,length:number){
  const before=text.slice(0,start),after=text.slice(start+length);
  const han=/[\u3400-\u9fff]/;
- if(after&&han.test(after[0])&&!/^(国|朝|义军|军|王|皇帝|首领|政权|都城|攻|围|收复|陷|失|灭|覆|与|向|于|遭|被|由|在|自|以|遣|建立|更|复|宣布|册|降|归|并|分|接|继|战|迁|结束|领土|阵亡|俘)/.test(after))return false;
- if(before&&han.test(before.at(-1)!)&&!/(于|向|为|由|对|与|属|从|归|及|同|复|并|入|了|攻陷|收复|吞并|灭亡|册立|出自|来自|脱离)$/.test(before))return false;
+ if(after&&han.test(after[0])&&!/^(宣战|进军|出兵|交战|结盟|签订|缔结|续约|达成|互不|停战|休战|纳土|归附|残部|脱离|任命|授予|晋任|废立|继位|国|朝|义军|军|王|皇帝|首领|政权|都城|攻|围|收复|陷|失|灭|覆|与|向|于|遭|被|由|在|自|以|遣|建立|更|复|宣布|册|降|归|并|分|接|战|迁|结束|领土|阵亡|俘)/.test(after))return false;
+ if(before&&han.test(before.at(-1)!)&&!/(于|向|为|由|对|与|属|从|归|及|同|复|并|入|了|攻陷|收复|吞并|灭亡|册立|出自|来自|脱离|归附)$/.test(before))return false;
  return true;
 }

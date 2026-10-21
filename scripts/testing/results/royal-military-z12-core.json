@@ -44,9 +44,12 @@
       "real capital loss creates a legal deposition opportunity",
       "verified own royal command receives bounded advantage from real capture",
       "real dynasty has competing adult legal kin",
+      "real logical-unit identity mismatch removes own command advantage",
       "same original coup draw changes claimant only because of verified bounded royal command",
+      "failed weighted coup consumes exactly the one existing political draw",
       "failed deposition restores the royal's military authority, User role and formation",
       "successful legal deposition converts the same serving royal and ends old command",
+      "successful weighted coup consumes exactly the one existing political draw",
       "successful transaction freezes own military evidence",
       "save rejects forged royal command selection evidence",
       "save rejects forged royal command selection evidence",
@@ -66,6 +69,6 @@
     "month": 36,
     "personId": "military-person-3",
     "royalRulerId": "魏-ruler-16",
-    "saveSchemaVersion": 21
+    "saveSchemaVersion": 22
   }
 ]
