@@ -1,0 +1,127 @@
+[
+  {
+    "seed": "siege-defense-z10",
+    "candidate": false,
+    "checks": [
+      "false/1/0: unique real attackers",
+      "false/1/0: only owner units defend",
+      "false: single attacker baseline fixed damage",
+      "false/3/0: unique real attackers",
+      "false/3/0: only owner units defend",
+      "false: advantage can damage undefended walls",
+      "false/3/3: unique real attackers",
+      "false/3/3: only owner units defend",
+      "false: defenders do not change baseline damage",
+      "false/3/8: unique real attackers",
+      "false/3/8: only owner units defend",
+      "false: enough verified defenders do not block baseline damage",
+      "false/3/0: unique real attackers",
+      "false/3/0: only owner units defend",
+      "false: baseline accepts historical contact",
+      "false/3/0: unique real attackers",
+      "false/3/0: only owner units defend",
+      "false: baseline callback count determines attacker",
+      "false: third-party attacker is never a defender",
+      "false: capture clears old contacts",
+      "true/1/0: unique real attackers",
+      "true/1/0: only owner units defend",
+      "true: single attacker baseline fixed damage",
+      "true/3/0: unique real attackers",
+      "true/3/0: only owner units defend",
+      "true: advantage can damage undefended walls",
+      "true/3/3: unique real attackers",
+      "true/3/3: only owner units defend",
+      "true: defenders do not change baseline damage",
+      "true/3/8: unique real attackers",
+      "true/3/8: only owner units defend",
+      "true: enough verified defenders do not block baseline damage",
+      "true/3/0: unique real attackers",
+      "true/3/0: only owner units defend",
+      "true: baseline accepts historical contact",
+      "true/3/0: unique real attackers",
+      "true/3/0: only owner units defend",
+      "true: baseline callback count determines attacker",
+      "true: third-party attacker is never a defender",
+      "true: capture clears old contacts",
+      "pending real siege contact is valid JSON DTO",
+      "pending siege survives hydration without duplicate events",
+      "twelve month real siege continuation deterministic",
+      "second save reads identically"
+    ],
+    "damage": [
+      {
+        "logical": false,
+        "attackers": 1,
+        "defenders": 0,
+        "damage": 1
+      },
+      {
+        "logical": false,
+        "attackers": 3,
+        "defenders": 0,
+        "damage": 1
+      },
+      {
+        "logical": false,
+        "attackers": 3,
+        "defenders": 3,
+        "damage": 1
+      },
+      {
+        "logical": false,
+        "attackers": 3,
+        "defenders": 8,
+        "damage": 1
+      },
+      {
+        "logical": false,
+        "attackers": 3,
+        "defenders": 0,
+        "damage": 1
+      },
+      {
+        "logical": false,
+        "attackers": 3,
+        "defenders": 0,
+        "damage": 1
+      },
+      {
+        "logical": true,
+        "attackers": 1,
+        "defenders": 0,
+        "damage": 1
+      },
+      {
+        "logical": true,
+        "attackers": 3,
+        "defenders": 0,
+        "damage": 1
+      },
+      {
+        "logical": true,
+        "attackers": 3,
+        "defenders": 3,
+        "damage": 1
+      },
+      {
+        "logical": true,
+        "attackers": 3,
+        "defenders": 8,
+        "damage": 1
+      },
+      {
+        "logical": true,
+        "attackers": 3,
+        "defenders": 0,
+        "damage": 1
+      },
+      {
+        "logical": true,
+        "attackers": 3,
+        "defenders": 0,
+        "damage": 1
+      }
+    ],
+    "saveSchemaVersion": 22
+  }
+]

@@ -33,7 +33,7 @@ describe("genealogy card and integration structure", () => {
     expect(dialog).toContain('events=open?History.getEvents():[]');expect(dialog).toContain('if(!open||!dynasty)return undefined');
     expect(dialog).toContain('[open,stamp,worldMonth,team.name]');expect(dialog).toContain('genealogyWindow(data.index,focus,expanded)');
     expect(window).toContain('GENEALOGY_WINDOW_LIMIT=150');expect(dialog).not.toContain('<GenealogyTreeNode');
-    expect(dialog).toContain('borderLeft:parent?');expect(dialog).toContain('r.parentId');
+    expect(dialog).toContain('data-parent-id={node.ruler.parentId}');expect(dialog).toContain('layout.positions.get(r.id)');expect(dialog).toContain('<svg');expect(dialog).not.toContain('ml:Math.min(depth');
     expect(dialog).toContain('适应窗口');expect(dialog).toContain('定位当今君主');expect(dialog).toContain('"ESCAPE"');
     expect(dialog).not.toContain('endReason === "彻底灭亡"');
   });
