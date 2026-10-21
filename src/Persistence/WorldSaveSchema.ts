@@ -159,7 +159,7 @@ export interface WorldEventSystemSaveV1 {
   cycleState: WorldCycleStateSaveV1;
 }
 
-export interface WorldSaveV20 {
+export interface WorldSaveV21 {
   saveSchemaVersion: typeof CURRENT_SAVE_SCHEMA_VERSION;
   appVersion: string;
   createdAt?: string;
@@ -194,7 +194,7 @@ export interface WorldSaveV20 {
   diplomacy: { relations: DiplomaticRelation[]; pairMemories: DiplomaticPairMemory[]; lastEvaluationMonth: number };
 }
 
-export function createEmptyWorldSaveV20(): WorldSaveV20 {
+export function createEmptyWorldSaveV21(): WorldSaveV21 {
   return {
     saveSchemaVersion: CURRENT_SAVE_SCHEMA_VERSION,
     appVersion: APP_VERSION,
@@ -236,13 +236,13 @@ export function createEmptyWorldSaveV20(): WorldSaveV20 {
 }
 
 /** Generic current-format type retained for persistence service signatures. */
-export type WorldSaveV1 = WorldSaveV20;
-export const createEmptyWorldSaveV1 = createEmptyWorldSaveV20;
+export type WorldSaveV1 = WorldSaveV21;
+export const createEmptyWorldSaveV1 = createEmptyWorldSaveV21;
 /** @deprecated Current schema is V20; alias retained for test fixture source compatibility only. */
-export type WorldSaveV14 = WorldSaveV20;
+export type WorldSaveV14 = WorldSaveV21;
 export type RulerSaveV14 = RulerSaveV17;
 /** @deprecated Current schema is V20; alias retained for test fixture source compatibility only. */
-export const createEmptyWorldSaveV14 = createEmptyWorldSaveV20;
+export const createEmptyWorldSaveV14 = createEmptyWorldSaveV21;
 
 export function canonicalWorldSaveProjection(save: WorldSaveV1) {
   const { createdAt: _createdAt, ...canonical } = save;
@@ -330,27 +330,27 @@ function simplifyDiffValue(value: unknown): unknown {
 export type RulerSaveV1 = RulerSaveV17;
 
 /** Source aliases only: these denote V20 DTOs and do not enable reading older files. */
-export type WorldSaveV15 = WorldSaveV20;
+export type WorldSaveV15 = WorldSaveV21;
 export type RulerSaveV15 = RulerSaveV17;
-export const createEmptyWorldSaveV15 = createEmptyWorldSaveV20;
+export const createEmptyWorldSaveV15 = createEmptyWorldSaveV21;
 
 /** Source aliases denote the current V20 DTO; old V16 files are rejected, not migrated. */
-export type WorldSaveV16 = WorldSaveV20;
+export type WorldSaveV16 = WorldSaveV21;
 export type RulerSaveV16 = RulerSaveV17;
-export const createEmptyWorldSaveV16 = createEmptyWorldSaveV20;
+export const createEmptyWorldSaveV16 = createEmptyWorldSaveV21;
 
 /** Source aliases only; actual V17 files are rejected without migration. */
-export type WorldSaveV17 = WorldSaveV20;
-export const createEmptyWorldSaveV17 = createEmptyWorldSaveV20;
+export type WorldSaveV17 = WorldSaveV21;
+export const createEmptyWorldSaveV17 = createEmptyWorldSaveV21;
 
 /** Source aliases only. V18 files are rejected; no implicit identity migration. */
-export type WorldSaveV18 = WorldSaveV20;
-export const createEmptyWorldSaveV18 = createEmptyWorldSaveV20;
+export type WorldSaveV18 = WorldSaveV21;
+export const createEmptyWorldSaveV18 = createEmptyWorldSaveV21;
 
 /** Source alias only: V19 files are unsupported and never implicitly migrated. */
-export type WorldSaveV19=WorldSaveV20;
-export const createEmptyWorldSaveV19=createEmptyWorldSaveV20;
+export type WorldSaveV19=WorldSaveV21;
+export const createEmptyWorldSaveV19=createEmptyWorldSaveV21;
 
-/** V21 adds validated royal/military identity bridges; V20 files are rejected. */
-export type WorldSaveV21 = WorldSaveV20;
-export const createEmptyWorldSaveV21 = createEmptyWorldSaveV20;
+/** Source aliases only. V20 JSON files are rejected, never migrated. */
+export type WorldSaveV20 = WorldSaveV21;
+export const createEmptyWorldSaveV20 = createEmptyWorldSaveV21;

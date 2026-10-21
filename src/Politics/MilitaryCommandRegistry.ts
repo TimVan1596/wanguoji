@@ -289,7 +289,7 @@ export class MilitaryCommandRegistryStore {
 
   appointRoyal(user: User, link: RoyalMilitaryLink, month: number, memberUnitIds: string[]) {
     if (!this.royalService?.eligible(user, month) || user.historicalPersonId !== `military-person-${this.personSequence}`) return false;
-    if (!this.appoint(user, link.factionId, month, memberUnitIds)) return false;
+    if (!this.appoint(user, link.factionId, month, memberUnitIds, link)) return false;
     this.people.get(user.militaryPersonId!)!.royalIdentity = {...link};
     return true;
   }
@@ -298,14 +298,14 @@ export class MilitaryCommandRegistryStore {
     for (const formation of this.formations.values()) if (formation.commanderPersonId === personId) this.endFormation(formation, month, reason);
   }
 
-  private appoint(user: User, factionId: string, worldMonth: number, memberUnitIds: string[]) {
+  private appoint(user: User, factionId: string, worldMonth: number, memberUnitIds: string[], royalIdentity?: RoyalMilitaryLink) {
     let person = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
     if (person?.status === "DEAD" || !this.isEligible(user, worldMonth)) return false;
     if (person?.status === "RETIRED") this.diagnostics.reappointments++;
     const personId = person?.personId ?? `military-person-${this.personSequence++}`;
     const commandId = `military-command-${this.commandSequence++}`;
     if (!person) {
-      person = { personId, sourceUserId: user.id, name: user.name, personalName: isPopulationIdentityLabel(user.name) && user.id >= 1000000000 && user.id <= 1999999999
+      person = { ...(royalIdentity ? {royalIdentity:{...royalIdentity}} : {}), personId, sourceUserId: user.id, name: user.name, personalName: isPopulationIdentityLabel(user.name) && user.id >= 1000000000 && user.id <= 1999999999
           ? generateMilitaryPersonalName({ seed: worldRandom.exportState().seed, personId, sourceUserId: user.id,
               bornMonth: user.bornMonth, originalName: user.name, culture: deriveNameCulture(user.team.houseName) })
           : user.name, bornMonth: user.bornMonth, factionId,
@@ -319,8 +319,8 @@ export class MilitaryCommandRegistryStore {
       memberUnitIds: [...new Set(memberUnitIds)], createdMonth: worldMonth, status: "ACTIVE", captures: [] });
     this.eventWriter?.({ id: `military-appointment-${commandId}`, year: worldMonth, monthIndex: worldMonth,
       category: "politics", type: "military-appointment", title: `${factionId}任命${getMilitaryPersonDisplayName(person)}为军事指挥者`,
-      description: `${getMilitaryPersonDisplayName(person)}由既有人口任职，指挥${memberUnitIds.length}个现存单位。`, factionIds: [factionId], actorFactionId: factionId,
-      metadata: { personId, sourceUserId: person.sourceUserId, personalName: person.personalName, commandId, unitCount: memberUnitIds.length }, importance: "normal" });
+      description: royalIdentity ? `${getMilitaryPersonDisplayName(person)}以原王室身份首次从军，建立一个真实人口单位，与${memberUnitIds.length-1}名既有部众组成军队。` : `${getMilitaryPersonDisplayName(person)}由既有人口任职，指挥${memberUnitIds.length}个现存单位。`, factionIds: [factionId], actorFactionId: factionId,
+      metadata: { personId, sourceUserId: person.sourceUserId, personalName: person.personalName, commandId, unitCount: memberUnitIds.length, ...(royalIdentity ? {royalRulerId:royalIdentity.rulerId,populationDelta:1} : {}) }, importance: "normal" });
     this.grantOffice(person,person.appointments.at(-1)!,{office:"PIJIANG",month:worldMonth,serviceMonths:0,captureEventIds:[]});
     return true;
   }

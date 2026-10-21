@@ -1,3 +1,6 @@
+import {evaluateDepositionOpportunity,chooseDepositionClaimant} from "../../Politics/InReignDeposition";
+import {getFactionStability} from "../../Components/City";
+import worldRandom from "../WorldRandom";
 import {createNaturalCore} from "./NaturalCoreHarness";
 import {SIMULATION_FIXED_STEP_MS} from "../SimulationDriver";
 import Dynasty from "../../Politics/Dynasty";
@@ -75,6 +78,26 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
    check(r.status==="kin"&&r.deathMonth===undefined,"political termination removes succession eligibility without manufacturing a death");
    (core.simulator as any).clock.importState({worldMonth:death!,elapsedMs:0,running:false});Dynasty.update(death!,core.teams);
    check(r.status as string==="dead"&&r.deathMonth===death&&p.deathMonth===death,"terminated country's royal military person retains the one natural life clock");
+  }
+  {
+   const {t,d,r}=restore(),old=Dynasty.getCurrentRuler(t.name)!,capital=t.capitalCity!;
+   const enemy=core.teams.find(e=>e!==t&&e.status==="ACTIVE")!,town=enemy.cities[0];
+   town.capture(t,month);capital.capture(enemy,month);
+   for(const city of t.cities)city.loyalty=20;
+   const evaluation=evaluateDepositionOpportunity({factionId:t.name,status:t.status,identityStage:t.identityStage,cityCount:t.cities.length,stability:getFactionStability(t),currentRuler:old,rulers:d.rulers,houseName:d.houseName,worldMonth:month,events:History.getEvents()});
+   check(evaluation.eligible,"real capital loss creates a legal deposition opportunity");
+   const roll=Array.from({length:1000},(_,i)=>evaluation.probability*(i+.5)/1000).find(value=>chooseDepositionClaimant(evaluation,month,value)?.claimant.ruler.id===r.id);
+   check(roll!==undefined,"the serving real royal is a legal claimant under the unchanged selection rules");
+   const checkpoint=strict(),writer=History.addRulerDeposed,originalNext=worldRandom.next;
+   const force=()=>{let first=true;worldRandom.next=()=>{const actual=originalNext.call(worldRandom);if(first){first=false;return roll!;}return actual;};};
+   force();History.addRulerDeposed=function(...args:Parameters<typeof writer>){writer.apply(this,args);throw new Error("injected royal deposition failure");};
+   try{(Dynasty as any).evaluateInReignDeposition(t,d,old,month);}finally{History.addRulerDeposed=writer;worldRandom.next=originalNext;}
+   const failed=strict(),expected=structuredClone(checkpoint);expected.dynasties.find(d=>d.factionId===t.name)!.lastDepositionAttemptMonth=month;failed.worldRandom=expected.worldRandom;
+   check(diffCanonicalWorldSave(expected,failed).matched,"failed deposition restores the royal's military authority, User role and formation");
+   hydrateWorldSave(core,JSON.parse(JSON.stringify(checkpoint)));
+   const liveTeam=core.teams.find(x=>x.name===t.name)!,liveDynasty=Dynasty.get(t.name)!;
+   force();try{(Dynasty as any).evaluateInReignDeposition(liveTeam,liveDynasty,Dynasty.getCurrentRuler(t.name)!,month);}finally{worldRandom.next=originalNext;}
+   check(Dynasty.getCurrentRuler(t.name)?.id===r.id&&Military.getPerson(personId)?.status==="RETIRED"&&liveTeam.rulerUser?.historicalPersonId===personId,"successful legal deposition converts the same serving royal and ends old command");strict();
   }
   {
    const {t,d,r,p}=restore(),current=Dynasty.getCurrentRuler(t.name)!;

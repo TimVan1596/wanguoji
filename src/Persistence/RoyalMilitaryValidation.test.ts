@@ -7,7 +7,7 @@ const fixture=()=>{
  s.dynasties=[{factionId:"a",currentRulerId:"father",rulers:[{rulerId:"father"},{rulerId:"son",houseName:"李氏",givenName:"景",parentId:"father",bornMonth:-300,naturalDeathMonth:600,status:"heir",militaryIdentity}]}];
  s.registries.militaryCommandRegistry.people=[{personId:militaryIdentity.personId,sourceUserId:7,name:"李景",personalName:"李景",bornMonth:-300,factionId:"a",status:"ACTIVE",appointments:[{factionId:"a",startMonth:12,commandId:"c"}],capturedEventIds:[],royalIdentity:{rulerId:"son",factionId:"a",naturalDeathMonth:600}}];
  s.users=[{userId:7,name:"李景",factionId:"a",bornMonth:-300,role:"NORMAL",militaryPersonId:militaryIdentity.personId,historicalPersonId:militaryIdentity.personId}] as any;
- s.worldHistory.events=[{type:"military-appointment",year:12,actorFactionId:"a",metadata:{personId:militaryIdentity.personId,sourceUserId:7}}];return s;
+ s.worldHistory.events=[{type:"military-appointment",year:12,actorFactionId:"a",metadata:{personId:militaryIdentity.personId,sourceUserId:7,royalRulerId:"son",populationDelta:1}}];return s;
 };
 it("links royal parentage, existing lifespan and one real military body without relying on names",()=>{
  expect(validate(fixture())).toEqual([]);
