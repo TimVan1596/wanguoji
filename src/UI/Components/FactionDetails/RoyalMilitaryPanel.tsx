@@ -1,3 +1,5 @@
+import {formatRecordedKinship} from "../../../Politics/DynasticCandidateRules";
+import Game from "../../../Game/Game";
 import {Box,Typography} from "@mui/material";
 import Dynasty,{type Ruler} from "../../../Politics/Dynasty";
 import Military from "../../../Politics/MilitaryCommandRegistry";
@@ -11,9 +13,11 @@ const buttonStyle={border:0,padding:0,background:"none",font:"inherit",color:"in
 export function RoyalMilitaryPanel({ruler,month,onGenealogy}:{ruler:Ruler;month:number;onGenealogy?:()=>void}){
  const nav=usePersonArchiveNavigation(),i=ruler.militaryIdentity,p=i&&Military.getPerson(i.personId);
  if(!p||p.royalIdentity?.rulerId!==ruler.id)return null;
- const events=History.getEvents(),readable=militaryMilestones(p,Military.getChronicle(p,month),events);
+ const d=Dynasty.get(p.royalIdentity.factionId),current=d?.rulers.find(r=>r.id===d.currentRulerId),parent=d?.rulers.find(r=>r.id===ruler.parentId);
+ const events=History.getEvents(),readable=militaryMilestones(p,Military.getChronicle(p,month),events,{factions:new Map((Game.Core?.teams??[]).map(t=>[t.name,t]))});
  return <Box sx={{fontSize:"0.8rem",my:.5}} data-royal-military-person={p.personId}>
   <Typography fontSize="0.8rem">{p.personalName} · {ruler.reignOrdinal!==undefined?"已继位":"宗室军旅"} · {p.status==="ACTIVE"?"现役":p.status==="DEAD"?"已故":"已离任"}</Typography>
+  <Typography fontSize="0.76rem">{parent?`${parent.houseName.replace(/氏$/,"")}${parent.givenName}之子`:""}{current&&current.id!==ruler.id&&d?` · ${formatRecordedKinship(ruler,current,d.rulers)}`:""}</Typography>
   {p.appointments.map(a=><Typography key={a.commandId} fontSize="0.76rem">{formatWorldDate(a.startMonth)}—{a.endMonth===undefined?"今":formatWorldDate(a.endMonth)} · {a.officeHistory?.map(g=>MILITARY_OFFICE_NAMES[g.office]).join(" → ")}</Typography>)}
   {selectMilitaryMilestones(readable,events,3).map(e=><Typography key={e.eventId} fontSize="0.76rem">{formatWorldDate(e.worldMonth)} · {e.text}</Typography>)}
   <button type="button" style={buttonStyle} onClick={()=>nav.open({kind:"MILITARY",factionId:p.appointments[0].factionId,id:p.personId})}>查看真实军旅档案</button>

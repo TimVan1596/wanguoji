@@ -39,7 +39,10 @@
       "ruler biography resolves the same pre-accession military person",
       "administrative termination preserves the former royal's real living body",
       "former ruler's actual body can subsequently die in war",
-      "later death preserves the earlier political end and terminal reign snapshot"
+      "later death preserves the earlier political end and terminal reign snapshot",
+      "actual death survives load and never displays current age",
+      "loaded terminal polity retains the person's actual living age",
+      "loaded terminal person reaches natural death while preserving the original political end"
     ],
     "month": 0,
     "personId": "military-person-1",

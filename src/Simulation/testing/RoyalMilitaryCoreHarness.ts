@@ -1,3 +1,4 @@
+import {formatRulerLifeAge} from "../../UI/Components/FactionDetails/RoyalPresentation";
 import {checkRoyalArchiveInteraction} from "./RoyalArchiveInteractionHarness";
 import {evaluateDepositionOpportunity,chooseDepositionClaimant} from "../../Politics/InReignDeposition";
 import {getFactionStability} from "../../Components/City";
@@ -113,11 +114,21 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
    const enemy=core.teams.find(e=>e!==t&&e.status==="ACTIVE")!;
    // Controlled administrative terminal transaction, not a claim of natural union eligibility.
    (core.simulator as any).mergeFaction({absorbedFaction:t,absorbingFaction:enemy},month+1);
+   const terminalSave=strict();
    const former=enemy.getUserById(identity.sourceUserId)!;
    check(r.status as string==="abdicated"&&former.role==="NORMAL"&&r.deathMonth===undefined,"administrative termination preserves the former royal's real living body");
    (core.simulator as any).clock.importState({worldMonth:month+2,elapsedMs:0,running:false});
    check(former.destroyUser(false,{cause:"BATTLE_DEATH",month:month+2,damageSource:"HOSTILE_HOME_OCCUPATION"}),"former ruler's actual body can subsequently die in war");
-   check(r.endYear===month+1&&r.politicalEndYear===month+1&&r.endReason==="合邦退位"&&r.deathMonth===month+2&&r.chronicle?.endSnapshot?.month===month+1&&r.chronicle.deathCause==="战死","later death preserves the earlier political end and terminal reign snapshot");strict();
+   check(r.endYear===month+1&&r.politicalEndYear===month+1&&r.endReason==="合邦退位"&&r.deathMonth===month+2&&r.chronicle?.endSnapshot?.month===month+1&&r.chronicle.deathCause==="战死","later death preserves the earlier political end and terminal reign snapshot");
+   const deadSave=strict();hydrateWorldSave(core,JSON.parse(JSON.stringify(deadSave)));
+   const deadRecord=Dynasty.get(t.name)!.rulers.find(x=>x.id===r.id)!;
+   check(formatRulerLifeAge(deadRecord,month+120,false,false).startsWith("享年"),"actual death survives load and never displays current age");
+   hydrateWorldSave(core,JSON.parse(JSON.stringify(terminalSave)));
+   const living=Dynasty.get(t.name)!.rulers.find(x=>x.id===r.id)!;
+   check(formatRulerLifeAge(living,month+1,false,false).startsWith("当前年龄"),"loaded terminal polity retains the person's actual living age");
+   (core.simulator as any).clock.importState({worldMonth:death!-1,elapsedMs:0,running:false});
+   core.setWorldRunning(true);step();core.setWorldRunning(false);
+   check(living.status as string==="dead"&&living.deathMonth===death&&living.endYear===month+1&&Military.getPerson(personId)?.deathMonth===death,"loaded terminal person reaches natural death while preserving the original political end");strict();
   }
   return {seed,checks,month,personId,royalRulerId:ruler.id,saveSchemaVersion:21};
  } finally {game.destroy(true);}

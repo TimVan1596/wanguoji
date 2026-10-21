@@ -13011,8 +13011,8 @@
         "residentLiveBindings": 2,
         "residentIdentityConflicts": 0,
         "strictSaveValid": true,
-        "elapsedMs": 30447,
-        "heapBytes": 65587170
+        "elapsedMs": 34090.90000000037,
+        "heapBytes": 92942821
       },
       {
         "royalMilitary": {
@@ -13388,8 +13388,8 @@
         "residentLiveBindings": 0,
         "residentIdentityConflicts": 0,
         "strictSaveValid": true,
-        "elapsedMs": 60355.699999999255,
-        "heapBytes": 77014763
+        "elapsedMs": 67711.60000000149,
+        "heapBytes": 91765683
       }
     ]
   },
@@ -29611,8 +29611,8 @@
         "residentLiveBindings": 2,
         "residentIdentityConflicts": 0,
         "strictSaveValid": true,
-        "elapsedMs": 29714.799999998882,
-        "heapBytes": 63165243
+        "elapsedMs": 35214.79999999888,
+        "heapBytes": 74359889
       },
       {
         "royalMilitary": {
@@ -29966,8 +29966,8 @@
         "residentLiveBindings": 1,
         "residentIdentityConflicts": 0,
         "strictSaveValid": true,
-        "elapsedMs": 61592,
-        "heapBytes": 91062403
+        "elapsedMs": 76070,
+        "heapBytes": 85200872
       }
     ]
   },
@@ -46555,8 +46555,8 @@
         "residentLiveBindings": 1,
         "residentIdentityConflicts": 0,
         "strictSaveValid": true,
-        "elapsedMs": 26276.300000000745,
-        "heapBytes": 62924020
+        "elapsedMs": 31364.900000000373,
+        "heapBytes": 62730204
       },
       {
         "royalMilitary": {
@@ -46943,8 +46943,8 @@
         "residentLiveBindings": 4,
         "residentIdentityConflicts": 0,
         "strictSaveValid": true,
-        "elapsedMs": 57537.800000000745,
-        "heapBytes": 73737826
+        "elapsedMs": 71977.90000000037,
+        "heapBytes": 76414207
       }
     ]
   }
