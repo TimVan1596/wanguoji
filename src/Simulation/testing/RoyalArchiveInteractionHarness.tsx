@@ -16,13 +16,18 @@ export async function checkRoyalArchiveInteraction(core:Core,factionId:string,pe
  try{
   flushSync(()=>{store.dispatch(setTeams([...core.teams]));store.dispatch(setWorldYear(core.simulator!.year));store.dispatch(setSelectedFactionName(factionId));store.dispatch(setFactionDetailTab("house"));root.render(<Provider store={store}><FactionDetails/></Provider>);});
   const card=host.querySelector(`[data-royal-military-person="${personId}"]`);
-  check(card?.textContent?.includes("宗室军旅"),"royal page shows the actual unenthroned serving person");
+  check(card&&host.textContent?.includes("宗室军旅：累计"),"royal summary retains a direct archive entry for the serving person");
   flushSync(()=>(card!.querySelector("button") as HTMLButtonElement).click());await pause();await pause();
   check(store.getState().root.factionDetailTab==="military"&&host.textContent?.includes("宗室身份：")&&host.textContent.includes("之子"),"royal-to-military navigation opens the same real identity and recorded parentage");
   const reverse=Array.from(host.querySelectorAll("button")).find(b=>b.textContent==="查看王室与亲属宗谱")!;
   check(reverse,"military page provides the matching royal archive link");
   flushSync(()=>reverse.click());await pause();
-  check(store.getState().root.factionDetailTab==="house"&&host.querySelector(`[data-royal-military-person="${personId}"]`),"reverse navigation finds the unenthroned royal without inventing a reign");
+  const {default:Military}=await import("../../Politics/MilitaryCommandRegistry");
+  const royalId=Military.getPerson(personId)!.royalIdentity!.rulerId;
+  const focus=Array.from(document.querySelectorAll('[data-ruler-id]')).find(n=>n.getAttribute("data-ruler-id")===royalId);
+  check(store.getState().root.factionDetailTab==="house"&&focus,"reverse navigation focuses the actual unenthroned royal in genealogy");
+  check(focus?.querySelector('[data-genealogy-theme="neutral"]'),"military-only royal remains neutral in actual tree");
+  const close=Array.from(document.querySelectorAll("button")).find(b=>b.textContent==="关闭")!;flushSync(()=>close.click());await pause();
  }finally{flushSync(()=>root.unmount());host.remove();}
  const after=exportWorldSave(core);
  check(JSON.stringify(random.exportState())===rng&&["dynasties","registries","users","worldHistory"].every(k=>JSON.stringify((before as any)[k])===JSON.stringify((after as any)[k])),"royal archive reading changes no identity, history, command or random state");
@@ -50,4 +55,30 @@ export async function checkHistoryFactionNavigation(core:Core,check:(ok:unknown,
   }
   check(JSON.stringify(exportWorldSave(core))===before,"history navigation does not alter canonical world or RNG");
  }finally{flushSync(()=>root.unmount());host.remove();}
+}
+
+/** Size fixtures exercise the real renderer; they do not simulate history. */
+export async function checkGenealogyRendering(core:Core,check:(ok:unknown,label:string)=>void){
+ const {default:Browser}=await import("../../UI/Components/FactionDetails/GenealogyBrowser");
+ const before=JSON.stringify(exportWorldSave(core)),samples:any[]=[];
+ const host=document.createElement("div");document.body.append(host);const root=createRoot(host);
+ try{
+  for(const size of [150,1000,10000])for(const shape of ["deep","wide"]){
+   const rulers=Array.from({length:size},(_,i)=>({id:"bench-"+i,houseName:"测氏",givenName:"宗"+i,bornYear:i-10000,naturalDeathYear:20000,status:"dead",deathMonth:i+100,deathReason:"去世",accessionYear:i,reignOrdinal:i+1,parentId:i?"bench-"+(shape==="deep"?i-1:0):undefined}));
+   const dynasty:any={factionId:"render-bench",houseName:"测氏",rulers,heirIds:[],currentRulerId:"bench-"+(size-1)};
+   const team:any={...core.teams[0],name:"render-bench",status:"EXTINCT"},target=shape==="wide"?"bench-0":"bench-"+(size-1);
+   const heapBefore=(performance as any).memory?.usedJSHeapSize,start=performance.now();
+   flushSync(()=>root.render(<Provider store={store}><Browser key={size+shape} open onClose={()=>{}} dynasty={dynasty} team={team} worldMonth={20000} targetId={target}/></Provider>));await new Promise(r=>setTimeout(r,20));
+   const rows=document.querySelectorAll('[role="treeitem"]'),elapsed=performance.now()-start;
+   check(rows.length<=150&&rows.length>0,size+" "+shape+": actual React tree mounts bounded nodes");
+   check(Array.from(rows).some(r=>r.getAttribute("data-ruler-id")===target),size+" "+shape+": requested permanent ID is mounted");
+   const locate=Array.from(document.querySelectorAll("button")).find(b=>b.textContent==="定位当今君主")!;flushSync(()=>locate.click());
+   check(Array.from(document.querySelectorAll('[data-ruler-id]')).some(r=>r.getAttribute("data-ruler-id")==="bench-"+(size-1)),size+" "+shape+": current-ruler control locates tail");
+   samples.push({size,shape,mountedNodes:rows.length,mountMs:elapsed,heapDelta:(performance as any).memory?.usedJSHeapSize-heapBefore});
+   if(elapsed>3000)throw Error("Genealogy render exceeded 3000ms: "+size+"/"+shape+"/"+elapsed);
+   flushSync(()=>root.render(<></>));await new Promise(r=>setTimeout(r,10));
+   check(!document.querySelector('[role="treeitem"]'),size+" "+shape+": closing removes genealogy nodes");
+  }
+ }finally{flushSync(()=>root.unmount());host.remove();}
+ check(JSON.stringify(exportWorldSave(core))===before,"large genealogy rendering consumes no RNG, population or canonical state");return samples;
 }

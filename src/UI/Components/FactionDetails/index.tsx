@@ -187,7 +187,7 @@ export default function FactionDetails() {
   }
 
   return (
-    <PersonArchiveNavigation.Provider value={{open:openPerson,militaryTarget,genealogyTarget,consume:()=>setMilitaryTarget(undefined)}}><FactionProfile
+    <PersonArchiveNavigation.Provider value={{open:openPerson,militaryTarget,genealogyTarget,consumeGenealogy:()=>setGenealogyTarget(undefined),consume:()=>setMilitaryTarget(undefined)}}><FactionProfile
       team={team}
       teams={teams}
       worldMonth={worldMonth}
@@ -231,7 +231,7 @@ function FactionProfile({
   };
   useEffect(()=>{
     const t=archiveNavigation.genealogyTarget;
-    if(t?.factionId===team.name)openFullGenealogy(t.id);
+    if(t?.factionId===team.name){openFullGenealogy(t.id);archiveNavigation.consumeGenealogy();}
   },[archiveNavigation.genealogyTarget?.serial,team.name]);
   const closeFullGenealogy = (source: GenealogyViewerCloseSource, muiReason?: string) => {
     genealogyViewerOpenRef.current = false;
@@ -239,7 +239,7 @@ function FactionProfile({
     recordGenealogyViewerClose(source, muiReason);
   };
   useEffect(() => {
-    if (previousFactionIdRef.current !== team.name && genealogyViewerOpenRef.current) {
+    if (previousFactionIdRef.current !== team.name && genealogyViewerOpenRef.current && archiveNavigation.genealogyTarget?.factionId!==team.name) {
       closeFullGenealogy("FACTION_CHANGED");
     }
     previousFactionIdRef.current = team.name;

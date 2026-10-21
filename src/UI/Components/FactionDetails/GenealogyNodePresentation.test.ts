@@ -72,7 +72,7 @@ describe("verified genealogy identity and restrained hierarchy", () => {
     expect(resolveHistoricalRulerDisplay(d.rulers[0], "旧国")).toContain("旧国太祖");
   });
   it("keeps 150 ordinary nodes neutral, graph and scaled bloodline layout intact; V13 projection and RNG unchanged", () => {
-    const d = fixture(); d.rulers.push(...Array.from({ length: 150 }, (_, i) => ({ ...ruler(`ordinary${i}`, 40 + i), parentId: i % 2 ? `ordinary${i - 1}` : undefined })));
+    const d = fixture(); d.rulers.push(...Array.from({ length: 150 }, (_, i) => ({ ...ruler(`ordinary${i}`, 40 + i), accessionYear:undefined,reignOrdinal:undefined,status:"kin" as const,parentId: i % 2 ? `ordinary${i - 1}` : undefined })));
     const events = [event("state-founded", 20, "b")]; const before = JSON.stringify([d, events]); const rng = random.exportState();
     const graph = JSON.stringify(buildPoliticalGenealogy(d.rulers, d.currentRulerId, d.designatedHeirId, d.heirIds));
     const result = derive(d, faction, events, 500);

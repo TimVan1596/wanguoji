@@ -1,5 +1,6 @@
+import {genealogyArchiveMetrics} from "./GenealogyArchiveMetrics";
 import {formatRulerLifeAge} from "../../UI/Components/FactionDetails/RoyalPresentation";
-import {checkRoyalArchiveInteraction,checkHistoryFactionNavigation} from "./RoyalArchiveInteractionHarness";
+import {checkRoyalArchiveInteraction,checkHistoryFactionNavigation,checkGenealogyRendering} from "./RoyalArchiveInteractionHarness";
 import {evaluateDepositionOpportunity,chooseDepositionClaimant,selectDepositionCandidates} from "../../Politics/InReignDeposition";
 import {getFactionStability} from "../../Components/City";
 import worldRandom from "../WorldRandom";
@@ -19,7 +20,7 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
  const {core,game}=await createNaturalCore(seed),checks:string[]=[];
  const check=(value:unknown,label:string)=>{if(!value)throw new Error(label);checks.push(label);console.info(`[CoreTest] ${checks.length}: ${label}`);};
  const step=()=>{const before=core.simulator!.year;for(let i=0;i<30;i++)(core as any).advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit("postupdate");if(core.simulator!.year!==before+1)throw new Error("Clock stalled");};
- const strict=()=>{const s=exportWorldSave(core),v=validateWorldSave(s);if(!v.valid)throw new Error(v.errors.join("; "));return s;};
+ const strict=()=>{genealogyArchiveMetrics();const s=exportWorldSave(core),v=validateWorldSave(s);if(!v.valid)throw new Error(v.errors.join("; "));return s;};
  try {
   const eligibleTeam=(t:typeof core.teams[number],m:number)=>{
    const d=Dynasty.get(t.name),current=Dynasty.getCurrentRuler(t.name);
@@ -46,6 +47,7 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
   check(!Dynasty.enlistRoyalMilitary(candidate,team,month,members()),"duplicate enlistment refused");
   await checkRoyalArchiveInteraction(core,team.name,personId,check);
   await checkHistoryFactionNavigation(core,check);
+  const genealogyRender=await checkGenealogyRendering(core,check);
   const save=strict();
   for(const mutate of [(s:any)=>s.registries.militaryCommandRegistry.people.find((p:any)=>p.personId===personId).royalIdentity.naturalDeathMonth++, (s:any)=>s.dynasties.find((d:any)=>d.factionId===team!.name).rulers.find((r:any)=>r.rulerId===ruler.id).militaryIdentity.sourceUserId++, (s:any)=>s.users.push({...s.users.find((u:any)=>u.militaryPersonId===personId),userId:123})]){const bad=structuredClone(save);mutate(bad);check(!validateWorldSave(bad).valid,"V22 rejects broken royal life/body references");}
   const resume=()=>{hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return strict();};
@@ -154,6 +156,6 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
    core.setWorldRunning(true);step();core.setWorldRunning(false);
    check(living.status as string==="dead"&&living.deathMonth===death&&living.endYear===month+1&&Military.getPerson(personId)?.deathMonth===death,"loaded terminal person reaches natural death while preserving the original political end");strict();
   }
-  return {seed,checks,month,personId,royalRulerId:ruler.id,saveSchemaVersion:strict().saveSchemaVersion};
+  return {seed,checks,genealogyRender,month,personId,royalRulerId:ruler.id,saveSchemaVersion:strict().saveSchemaVersion};
  } finally {game.destroy(true);}
 }
