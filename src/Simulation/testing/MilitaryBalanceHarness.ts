@@ -1,3 +1,4 @@
+import {genealogyArchiveMetrics} from "./GenealogyArchiveMetrics";
 import Dynasty from "../../Politics/Dynasty";
 import {getRecordedKinRelation} from "../../Politics/DynasticCandidateRules";
 import {siegeParticipants} from "../SiegeParticipants";
@@ -105,7 +106,7 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
           const prior=d.rulers.find(p=>p.id===r.predecessorId);
           return r.accessionYear!==undefined&&r.accessionCause!=="DEPOSITION"&&!!prior&&r.houseName===prior.houseName&&!!getRecordedKinRelation(r,prior,d.rulers);
         }));
-        checkpoints.push({normalRoyalSuccessions:normalRoyalSuccessions.length,depositionDiagnostics:Dynasty.getInReignDepositionDiagnostics(m),royalMilitary:{normalAccessions:normalRoyalSuccessions.filter(r=>r.militaryIdentity).length,candidatePeople:[...royalOffers.values()].filter(at=>at<=m).length,adultKinObserved:royalCandidates.size,enlisted:royalPeople.length,victories:royalPeople.reduce((n,p)=>n+p.capturedEventIds.length,0),promotions:royalPeople.flatMap(p=>p.appointments.flatMap(a=>(a.officeHistory??[]).filter(g=>g.office!=="PIJIANG"))).length,
+        checkpoints.push({genealogyArchive:genealogyArchiveMetrics(),normalRoyalSuccessions:normalRoyalSuccessions.length,depositionDiagnostics:Dynasty.getInReignDepositionDiagnostics(m),royalMilitary:{normalAccessions:normalRoyalSuccessions.filter(r=>r.militaryIdentity).length,candidatePeople:[...royalOffers.values()].filter(at=>at<=m).length,adultKinObserved:royalCandidates.size,enlisted:royalPeople.length,victories:royalPeople.reduce((n,p)=>n+p.capturedEventIds.length,0),promotions:royalPeople.flatMap(p=>p.appointments.flatMap(a=>(a.officeHistory??[]).filter(g=>g.office!=="PIJIANG"))).length,
           battleDeaths:royalPeople.filter(p=>["BATTLE_DEATH","SIEGE_LOSS"].includes(p.deathCause??"")).length,naturalDeaths:royalPeople.filter(p=>p.deathCause==="NATURAL_DEATH").length,accessions:royals.filter(r=>r.reignOrdinal!==undefined).length,
           identityConflicts:royalPeople.filter(p=>{const r=royals.find(r=>r.id===p.royalIdentity!.rulerId);return !r||r.militaryIdentity?.personId!==p.personId||r.deathMonth!==p.deathMonth||r.naturalDeathYear!==p.royalIdentity!.naturalDeathMonth;}).length,
           duplicateActiveMembers:formations.flatMap(f=>f.memberUnitIds).length-new Set(formations.flatMap(f=>f.memberUnitIds)).size},
