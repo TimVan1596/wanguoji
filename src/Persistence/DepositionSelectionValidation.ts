@@ -7,7 +7,7 @@ export function validDepositionSelection(raw: unknown, rulers: Ruler[], previous
   try {
     if(typeof raw!=="string") return false;
     const s=JSON.parse(raw), old=rulers.find(r=>r.id===previousId);
-    if(!old||s.version!==1||s.selectedRulerId!==nextId||!Array.isArray(s.candidates)||!s.candidates.length||
+    if(!old||![1,2].includes(s.version)||s.selectedRulerId!==nextId||!Array.isArray(s.candidates)||!s.candidates.length||
       !Number.isFinite(s.conditionalRoll)||s.conditionalRoll<0||s.conditionalRoll>=1||!Number.isFinite(s.maturityFactor)||
       !Number.isFinite(s.probability)||s.probability<=0||s.probability>.03||
       !Number.isFinite(s.roll)||s.roll<0||s.roll>=s.probability||Math.abs(s.roll/s.probability-s.conditionalRoll)>1e-12||
@@ -21,7 +21,8 @@ export function validDepositionSelection(raw: unknown, rulers: Ruler[], previous
         c.name!==`${r.houseName.replace(/氏$/,"")}${r.givenName}`||r.bornYear!==c.bornMonth||age<192||getRecordedKinRelation(r,old,rulers)!==c.relation||!legitimacy[c.relation]||
         r.deathMonth!==undefined&&r.deathMonth<month||r.accessionYear!==undefined&&r.accessionYear<month||
         (r.naturalDeathYear??r.plannedEndYear)!<=month||
-        !Number.isFinite(c.weight)||Math.abs(c.weight-(legitimacy[c.relation]+Math.max(0,Math.min(1,(age-192)/168))*s.maturityFactor))>1e-12)return false;
+        !Number.isFinite(c.weight)||Math.abs(c.weight-(legitimacy[c.relation]+Math.max(0,Math.min(1,(age-192)/168))*s.maturityFactor)*(s.version===2?1+c.militaryAdvantage:1))>1e-12||
+        s.version===2&&(!Number.isFinite(c.baseWeight)||Math.abs(c.baseWeight-(legitimacy[c.relation]+Math.max(0,Math.min(1,(age-192)/168))*s.maturityFactor))>1e-12||!Number.isFinite(c.militaryAdvantage)||c.militaryAdvantage<0||c.militaryAdvantage>.250000000001||(c.militaryAdvantage>0)!==!!c.ownMilitary||c.ownMilitary&&c.ownMilitary.advantage!==c.militaryAdvantage))return false;
       ids.add(r.id);previous=r.id;total+=c.weight;
     }
     let cursor=s.conditionalRoll*total;

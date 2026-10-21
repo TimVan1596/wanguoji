@@ -881,6 +881,7 @@ class DynastyRegistryStore {
       this.depositionDiagnostics.observe(team.name, worldMonth, evaluation, team.status === "ACTIVE" && team.identityStage === "STATE");
       return;
     }
+    evaluation.royalMilitaryClaims=MilitaryCommandRegistry.getRoyalDepositionClaims(team,worldMonth,evaluation.candidates.map(c=>c.ruler),Game.Core?.logicalUnitRegistry);
     // Exactly one canonical roll per qualified annual boundary. Diagnostics do not touch RNG.
     dynasty.lastDepositionAttemptMonth = worldMonth;
     const roll = worldRandom.next();
@@ -911,6 +912,11 @@ class DynastyRegistryStore {
       evaluation.evidence.some((fact) => fact.month > worldMonth)) return false;
     if (evaluation.militaryParticipant && !MilitaryCommandRegistry.getPoliticalInfluence(team, worldMonth, Game.Core?.logicalUnitRegistry).candidates.some(p =>
       JSON.stringify(p) === JSON.stringify(evaluation.militaryParticipant))) return false;
+    if(evaluation.selection?.version===2){
+      const verified={...evaluation,royalMilitaryClaims:MilitaryCommandRegistry.getRoyalDepositionClaims(team,worldMonth,evaluation.candidates.map(c=>c.ruler),Game.Core?.logicalUnitRegistry)};
+      const expected=chooseDepositionClaimant(verified,worldMonth,evaluation.selection.roll);
+      if(!expected||expected.claimant.ruler.id!==successor.id||JSON.stringify(expected.evidence)!==JSON.stringify(evaluation.selection))return false;
+    }
     const previousState = {
       predecessor: structuredClone(predecessor), successor: structuredClone(successor), currentRulerId: dynasty.currentRulerId,
       heirIds: [...dynasty.heirIds], designatedHeirId: dynasty.designatedHeirId,

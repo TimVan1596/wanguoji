@@ -1,3 +1,5 @@
+import {deriveRoyalDepositionMilitary} from "./RoyalDepositionMilitary";
+import type {Ruler} from "./Dynasty";
 import {getOfficePromotion,MILITARY_OFFICE_NAMES,type MilitaryOfficeGrant} from "./MilitaryOffice";
 import { deriveMilitaryChronicle } from "./MilitaryChronicle";
 import { deriveMilitaryLifeSchedule } from "./MilitaryLifeRules";
@@ -164,9 +166,8 @@ export class MilitaryCommandRegistryStore {
     return deriveMilitaryChronicle(person, this.getFormations(), events, worldMonth, factionId);
   }
 
-  getPoliticalInfluence(team: Team, worldMonth: number, logicalRegistry?: Pick<import("../Simulation/LogicalUnitRegistry").default, "getEntry">) {
-    const people = this.getPeople();
-    const users = [...(team.users ?? [])].filter(user => user.role === "NORMAL" && user.team === team).map(user => {
+  private politicalUsers(team: Team, logicalRegistry?: Pick<import("../Simulation/LogicalUnitRegistry").default, "getEntry">) {
+    return [...(team.users ?? [])].filter(user => user.role === "NORMAL" && user.team === team).map(user => {
       const unitId = user.player.logicalUnitId;
       const entry = unitId ? logicalRegistry?.getEntry(unitId) : undefined;
       const person = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
@@ -177,8 +178,16 @@ export class MilitaryCommandRegistryStore {
       return { userId: user.id, name: user.name, bornMonth: user.bornMonth, factionId: user.team.name,
         personId: user.militaryPersonId, unitId, liveBindingVerified: Boolean(liveBindingVerified) };
     });
+  }
+
+  getRoyalDepositionClaims(team: Team, worldMonth:number, rulers:readonly Ruler[], logicalRegistry?:Pick<import("../Simulation/LogicalUnitRegistry").default,"getEntry">){
+    return deriveRoyalDepositionMilitary({factionId:team.name,month:worldMonth,rulers,people:this.getPeople(),formations:this.getFormations(),users:this.politicalUsers(team,logicalRegistry),events:this.eventReader(team.name),influence:this.getPoliticalInfluence(team,worldMonth,logicalRegistry,true)});
+  }
+
+  getPoliticalInfluence(team: Team, worldMonth: number, logicalRegistry?: Pick<import("../Simulation/LogicalUnitRegistry").default, "getEntry">, includeRoyal=false) {
+    const people=this.getPeople(),users=this.politicalUsers(team,logicalRegistry);
     const relevantFactions = [...new Set(people.filter(p => p.factionId === team.name && p.status === "ACTIVE").flatMap(p => p.appointments.map(a => a.factionId)))];
-    return deriveMilitaryPoliticalInfluence({ factionId: team.name, status: team.status, identityStage: team.identityStage, worldMonth, people:people.filter(p=>!p.royalIdentity), formations: this.getFormations(), users,
+    return deriveMilitaryPoliticalInfluence({ factionId: team.name, status: team.status, identityStage: team.identityStage, worldMonth, people:includeRoyal?people:people.filter(p=>!p.royalIdentity), formations: this.getFormations(), users,
       events: [...new Map(relevantFactions.flatMap(id => this.eventReader(id)).map(e => [e.id, e])).values()] });
   }
 

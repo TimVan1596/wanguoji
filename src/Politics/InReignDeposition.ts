@@ -1,3 +1,4 @@
+import type {RoyalDepositionMilitaryEvidence} from "./RoyalDepositionMilitary";
 import type { WorldEvent } from "../History/WorldHistory";
 import type { Ruler } from "./Dynasty";
 import { getRecordedKinRelation } from "./DynasticCandidateRules";
@@ -24,12 +25,13 @@ export interface DepositionCandidate {
   relation: NonNullable<ReturnType<typeof getRecordedKinRelation>>;
 }
 export interface DepositionSelectionEvidence {
-  version:1; candidates:Array<{rulerId:string;name:string;relation:DepositionCandidate["relation"];bornMonth:number;weight:number}>;
+  version:1|2; candidates:Array<{rulerId:string;name:string;relation:DepositionCandidate["relation"];bornMonth:number;weight:number;baseWeight?:number;militaryAdvantage?:number;ownMilitary?:RoyalDepositionMilitaryEvidence}>;
   conditionalRoll:number; maturityFactor:number; roll:number; probability:number; selectedRulerId:string;
   crisisEventIds:string[]; supporterPersonId?:string;
 }
 export interface DepositionEvaluation {
   selection?:DepositionSelectionEvidence;
+  royalMilitaryClaims?:RoyalDepositionMilitaryEvidence[];
   eligible: boolean;
   blockers: string[];
   candidates: DepositionCandidate[];
@@ -187,14 +189,17 @@ export function chooseDepositionClaimant(evaluation: DepositionEvaluation, world
   const candidates = evaluation.candidates.map(c=>{
     const ageMonths = worldMonth-c.ruler.bornYear;
     const maturity = Math.max(0,Math.min(1,(ageMonths-192)/168));
-    return {rulerId:c.ruler.id,name:`${c.ruler.houseName.replace(/氏$/,"")}${c.ruler.givenName}`,relation:c.relation,bornMonth:c.ruler.bornYear,
-      weight:legitimacy[c.relation]+maturity*maturityFactor};
+    const baseWeight=legitimacy[c.relation]+maturity*maturityFactor;
+    const ownMilitary=evaluation.royalMilitaryClaims?.find(m=>m.rulerId===c.ruler.id);
+    const militaryAdvantage=ownMilitary?.advantage??0;
+    return {baseWeight,militaryAdvantage,...(ownMilitary?{ownMilitary:structuredClone(ownMilitary)}:{}),rulerId:c.ruler.id,name:`${c.ruler.houseName.replace(/氏$/,"")}${c.ruler.givenName}`,relation:c.relation,bornMonth:c.ruler.bornYear,
+      weight:baseWeight*(1+militaryAdvantage)};
   }).sort((a,b)=>a.rulerId.localeCompare(b.rulerId));
   if (!candidates.length) return undefined;
   const conditionalRoll = roll/evaluation.probability;
   let remaining = conditionalRoll*candidates.reduce((n,c)=>n+c.weight,0);
   const picked = candidates.find(c=>(remaining-=c.weight)<0)??candidates.at(-1)!;
   return {claimant:evaluation.candidates.find(c=>c.ruler.id===picked.rulerId)!,
-    evidence:{version:1,candidates,conditionalRoll,maturityFactor,roll,probability:evaluation.probability,selectedRulerId:picked.rulerId,
+    evidence:{version:2,candidates,conditionalRoll,maturityFactor,roll,probability:evaluation.probability,selectedRulerId:picked.rulerId,
       crisisEventIds:evaluation.evidence.map(e=>e.eventId),supporterPersonId:evaluation.militaryParticipant?.personId}};
 }

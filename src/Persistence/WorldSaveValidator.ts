@@ -1,3 +1,4 @@
+import {validRoyalDepositionMilitary} from "./RoyalDepositionMilitaryValidation";
 import {validateRoyalMilitaryIdentities} from "./RoyalMilitaryValidation";
 import {validDepositionSelection} from "./DepositionSelectionValidation";
 import {validateMilitarySecessions} from "./MilitarySecessionValidation";
@@ -396,6 +397,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
             id: r.rulerId, bornYear: r.bornMonth, accessionYear: r.accessionMonth, naturalDeathYear:r.naturalDeathMonth, plannedEndYear:r.plannedEndMonth }));
           if(!validDepositionSelection(meta.depositionSelection,runtimeRulers as any,oldId,newId,Number(month))) errors.push("invalid deposition candidate selection evidence");
           if(typeof meta.depositionSelection==="string")try{
+            if(!validRoyalDepositionMilitary(save as unknown as WorldSaveV1,event))errors.push("invalid royal command selection evidence");
             const selection=JSON.parse(meta.depositionSelection);
             const military=typeof meta.militaryParticipation==="string"?JSON.parse(meta.militaryParticipation):undefined;
             if(JSON.stringify(selection.crisisEventIds)!==JSON.stringify(String(meta.crisisEvidenceEventIds).split(","))||
