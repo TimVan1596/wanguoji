@@ -1,3 +1,4 @@
+import {RoyalMilitaryPanel} from "./RoyalMilitaryPanel";
 import {getFactionDisplayNameAtMonth} from "../../../Simulation/FactionIdentity";
 import PortraitSummary from "./PortraitSummary";
 import {resolvePersonArchiveTarget} from "./PersonArchiveTarget";
@@ -1059,6 +1060,7 @@ function DynastyTree({
           })}
         </Box>
       ) : null}
+      {rulers.filter(r=>r.militaryIdentity).map(r=><RoyalMilitaryPanel key={r.id} ruler={r} month={worldMonth} onGenealogy={onOpenFullGenealogy}/>)}
       <Typography fontWeight="bold" fontSize="0.9rem">历代君主</Typography>
       <Box sx={{ display: "grid", gap: 0.5 }}>
         {orderedRulers.map((ruler, index) => {
@@ -1066,7 +1068,7 @@ function DynastyTree({
           const expanded = ruler.id === selectedRulerId;
           return (
             <PersonArchiveCard key={ruler.id} index={index} active={current} expanded={expanded}
-              focusRequest={expanded} onSelect={()=>onSelectedRulerIdChange(expanded?undefined:ruler.id)} portrait={<PortraitSummary portrait={{personId:ruler.residentIdentity?.personId??ruler.id,age:rulerPortraitAge(ruler,worldMonth,team.status!=="EXTINCT"),...royalPortraitContext(ruler,team,worldMonth)}} name={formatRulerRowName(ruler,team)} lines={[`${getFactionDisplayNameAtMonth(team,royalPortraitContext(ruler,team,worldMonth).month)} · ${{LEADER:"首领",KING:"国王",EMPEROR:"皇帝",UNKNOWN:"身份未载",PIJIANG:"裨将",JIANGJUN:"将军",SHANGJIANGJUN:"上将军"}[royalPortraitContext(ruler,team,worldMonth).role]}`,formatRulerListSubtitle(ruler,worldMonth,factionStatus,events,team.name),formatRulerLifeAge(ruler,worldMonth,false,team.status!=="EXTINCT"),...getPosthumousLabelLines(ruler,team,ruler.endYear??worldMonth),`${formatWorldDate(ruler.accessionYear??0)}—${ruler.endYear===undefined?"今":formatWorldDate(ruler.endYear)}`,ruler.residentIdentity?`于${ruler.residentIdentity.cityName}起事`:""]} onFull={()=>onSelectedRulerIdChange(ruler.id)}/>}
+              focusRequest={expanded} onSelect={()=>onSelectedRulerIdChange(expanded?undefined:ruler.id)} portrait={<PortraitSummary portrait={{personId:ruler.militaryIdentity?.personId??ruler.residentIdentity?.personId??ruler.id,age:rulerPortraitAge(ruler,worldMonth,team.status!=="EXTINCT"),...royalPortraitContext(ruler,team,worldMonth)}} name={formatRulerRowName(ruler,team)} lines={[`${getFactionDisplayNameAtMonth(team,royalPortraitContext(ruler,team,worldMonth).month)} · ${{LEADER:"首领",KING:"国王",EMPEROR:"皇帝",UNKNOWN:"身份未载",PIJIANG:"裨将",JIANGJUN:"将军",SHANGJIANGJUN:"上将军"}[royalPortraitContext(ruler,team,worldMonth).role]}`,formatRulerListSubtitle(ruler,worldMonth,factionStatus,events,team.name),formatRulerLifeAge(ruler,worldMonth,false,team.status!=="EXTINCT"),...getPosthumousLabelLines(ruler,team,ruler.endYear??worldMonth),`${formatWorldDate(ruler.accessionYear??0)}—${ruler.endYear===undefined?"今":formatWorldDate(ruler.endYear)}`,ruler.residentIdentity?`于${ruler.residentIdentity.cityName}起事`:""]} onFull={()=>onSelectedRulerIdChange(ruler.id)}/>}
               heading={<>
                 <Typography
                   fontWeight={ruler.templeName ? "bold" : current || ruler.posthumousEpithet ? 600 : "normal"}

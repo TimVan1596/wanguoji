@@ -14,7 +14,7 @@ export function validateRoyalMilitaryIdentities(save: WorldSaveV1): string[] {
     if (!i || !p || linked.has(i.personId) || sources.has(i.sourceUserId) || r.residentIdentity ||
       !Number.isSafeInteger(i.sourceUserId) || typeof i.sourceUserLabel !== "string" || !i.sourceUserLabel ||
       !Number.isSafeInteger(i.enteredMonth) || i.enteredMonth > Number(save.world.worldMonth) || i.enteredMonth < r.bornMonth + 216 ||
-      !r.parentId || !d.rulers.some(parent => parent.rulerId === r.parentId) ||
+      !r.parentId || !(d.rulers as any[]).some(parent => parent?.rulerId === r.parentId) ||
       p.sourceUserId !== i.sourceUserId || p.name !== i.sourceUserLabel || p.personalName !== r.houseName.replace(/氏$/,"") + r.givenName ||
       p.bornMonth !== r.bornMonth || !p.royalIdentity || p.royalIdentity.rulerId !== r.rulerId || p.royalIdentity.factionId !== d.factionId ||
       !Number.isSafeInteger(r.naturalDeathMonth) || p.royalIdentity.naturalDeathMonth !== r.naturalDeathMonth || r.naturalDeathMonth! <= i.enteredMonth ||
@@ -31,7 +31,7 @@ export function validateRoyalMilitaryIdentities(save: WorldSaveV1): string[] {
       u.userId !== i.sourceUserId || u.name !== i.sourceUserLabel || u.bornMonth !== r.bornMonth ||
       (u.role === "RULER" && (u.rulerId !== r.rulerId || u.factionId !== d.factionId || d.currentRulerId !== r.rulerId || r.status !== "ruling")))
       errors.push("royal military life/entity mismatch");
-    if (!save.worldHistory.events.some((e:any) => e.type === "military-appointment" && e.metadata?.personId === i.personId && e.metadata?.sourceUserId === i.sourceUserId && e.actorFactionId === d.factionId && (e.monthIndex??e.year) === i.enteredMonth))
+    if (!(save.worldHistory.events as any[]).some((e:any) => e?.type === "military-appointment" && e.metadata?.personId === i.personId && e.metadata?.sourceUserId === i.sourceUserId && e.actorFactionId === d.factionId && (e.monthIndex??e.year) === i.enteredMonth))
       errors.push("royal military person lacks first service evidence");
   }
   for (const p of people) if (p?.royalIdentity !== undefined && !linked.has(p.personId)) errors.push("military royal link has no unique royal owner");

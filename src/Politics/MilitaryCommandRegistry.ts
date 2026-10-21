@@ -348,6 +348,7 @@ export class MilitaryCommandRegistryStore {
     }
   }
 
+  isAssigned(unitId: string) { return this.isUnitAssigned(unitId); }
   private isUnitAssigned(unitId: string) { return [...this.formations.values()].some(f => f.status === "ACTIVE" && f.memberUnitIds.includes(unitId)); }
 
   private reconcile(worldMonth: number, teams: Team[]) {

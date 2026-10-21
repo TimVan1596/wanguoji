@@ -1,3 +1,4 @@
+import {MilitaryRoyalOrigin} from "./RoyalMilitaryPanel";
 import Game from "../../../Game/Game";
 import {getFactionDisplayNameAtMonth} from "../../../Simulation/FactionIdentity";
 import {Box,Typography} from "@mui/material";
@@ -31,9 +32,9 @@ export function RulerServicePanel({ruler,factionId,month}:{ruler:Ruler;factionId
 export function MilitaryServicePanel({personId,month}:{personId:string;month:number}){
  const nav=usePersonArchiveNavigation(),person=Military.getPerson(personId);if(!person)return null;
  const rows=Dynasty.getAll().filter(d=>person.appointments.some(a=>a.factionId===d.factionId)).flatMap(d=>personServiceLinks(d.factionId,d.rulers,[person],Military.getFormations(),History.getEvents(),month));
- return rows.length>0?<ChronicleSection title="历任所事君主"><Typography fontSize="0.74rem">按真实任职与在位交集排列；仅有原始授职事件时注明本人授职。</Typography>
+ return <><MilitaryRoyalOrigin personId={personId}/>{rows.length>0?<ChronicleSection title="历任所事君主"><Typography fontSize="0.74rem">按真实任职与在位交集排列；仅有原始授职事件时注明本人授职。</Typography>
   <ServiceRows rows={rows} ruler label={id=>{const r=Dynasty.getAll().flatMap(d=>d.rulers).find(r=>r.id===id)!;return r.houseName.replace(/氏$/,"")+r.givenName;}} onOpen={(id,factionId)=>nav.open({kind:"RULER",id,factionId})}/>
- </ChronicleSection>:null;
+ </ChronicleSection>:null}</>;
 }
 function ServiceRows({rows,label,onOpen,ruler=false}:{rows:ReturnType<typeof personServiceLinks>;label:(id:string)=>string;onOpen:(id:string,faction:string)=>void;ruler?:boolean}){
  const render=(xs:typeof rows)=>xs.map((r,i)=><Box key={`${r.personId}:${r.rulerId}:${r.startMonth}:${i}`} sx={{fontSize:"0.8rem",mt:.4,overflowWrap:"anywhere"}}>

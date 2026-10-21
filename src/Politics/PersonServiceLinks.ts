@@ -4,7 +4,6 @@ import type {MilitaryPerson,MilitaryFormation} from "./MilitaryCommandRegistry";
 import type {WorldEvent} from "../History/WorldHistory";
 import {deriveMilitaryCareer} from "./MilitaryCareerEvidence";
 import {deriveMilitaryChronicle} from "./MilitaryChronicle";
-import {readMilitaryParticipation} from "./MilitaryPoliticalInfluence";
 
 /** Half-open political/appointment intervals; overlap is not personal patronage. */
 export function personServiceLinks(factionId:string,rulers:Ruler[],people:MilitaryPerson[],formations:MilitaryFormation[],events:WorldEvent[],month:number){

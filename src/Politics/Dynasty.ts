@@ -71,6 +71,7 @@ import {
   selectRecordedDynasticSuccessor,
 } from "./DynasticCandidateRules";
 import { chooseDepositionClaimant, evaluateDepositionOpportunity, InReignDepositionDiagnostics, type DepositionEvaluation, type DepositionRiskGroup } from "./InReignDeposition";
+import {getRecordedKinRelation} from "./DynasticCandidateRules";
 import type { RecordedKinRelation } from "./DynasticCandidateRules";
 
 export type RulerStatus = "ruling" | "exiled" | "heir" | "kin" | "dead" | "abdicated" | "politically-ended" | "deposed";
@@ -302,12 +303,12 @@ class DynastyRegistryStore {
       MilitaryCommandRegistry.getPeople().filter(p=>p.factionId===team.name&&p.status==="ACTIVE").length >= 2 ||
       MilitaryCommandRegistry.getFormations().filter(f=>f.factionId===team.name&&f.status==="ACTIVE").length >= 2 ||
       members.length < 1 || members.length > 11 || new Set(members).size !== members.length ||
-      members.some(u=>u.team!==team||u.isDestroyed||u.role!=="NORMAL"||u.rulerId||u.player.rulerId||!u.player.logicalUnitId||MilitaryCommandRegistry.isUnitAssigned(u.player.logicalUnitId))) return false;
+      members.some(u=>u.team!==team||u.isDestroyed||u.role!=="NORMAL"||u.rulerId||u.player.rulerId||!u.player.logicalUnitId||MilitaryCommandRegistry.isAssigned(u.player.logicalUnitId))) return false;
     const ruler = this.get(team.name)!.rulers.find(r=>r.id===candidate.rulerId)!;
     const personId = MilitaryCommandRegistry.nextPersonId(), sourceUserId = getRulerUserId(ruler.id), sourceUserLabel = this.getRulerPersonalName(ruler);
     const militaryBefore=MilitaryCommandRegistry.snapshotTransaction(), historyBefore=WorldHistory.exportState();
     const registry=Game.Core?.logicalUnitRegistry, entries=registry?.getEntries().map(e=>({...e,state:{...e.state}})), sequence=registry?.exportState().nextUnitSequence;
-    const before=team.users.size;
+    const before=team.users.size, randomBefore=worldRandom.exportState();
     let user: import("../Components/User").default | false | undefined;
     try {
       ruler.militaryIdentity={personId,sourceUserId,sourceUserLabel,enteredMonth:month};
@@ -321,7 +322,7 @@ class DynastyRegistryStore {
       const created=user || Team.GetUserById(sourceUserId);
       if(created?.historicalPersonId===personId) created.destroyUser(true,{cause:"RULER_LIFECYCLE",month,deferPopulationAudit:true});
       delete ruler.militaryIdentity;
-      MilitaryCommandRegistry.rollbackTransaction(militaryBefore); WorldHistory.importState(historyBefore);
+      MilitaryCommandRegistry.rollbackTransaction(militaryBefore); WorldHistory.importState(historyBefore); worldRandom.importState(randomBefore);
       if(registry&&entries&&sequence!==undefined)registry.importState(sequence,entries as any);
       return false;
     }

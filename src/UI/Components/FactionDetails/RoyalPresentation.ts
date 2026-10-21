@@ -52,18 +52,18 @@ export function formatRulerAge(status: string, age: number) {
   return `${status === "dead" ? "享年" : status === "abdicated" ? "退位时" : status === "deposed" ? "废位时" : status === "politically-ended" ? "政治任期终结时" : "当前年龄"}${age}岁`;
 }
 
-export function rulerPortraitAge(ruler: Pick<Ruler,"status"|"bornYear"|"deathMonth"|"deathReason"> & Partial<Pick<Ruler,"naturalDeathYear"|"residentIdentity">>, worldMonth:number, managedRoyalOffice=true) {
+export function rulerPortraitAge(ruler: Pick<Ruler,"status"|"bornYear"|"deathMonth"|"deathReason"> & Partial<Pick<Ruler,"naturalDeathYear"|"residentIdentity"|"militaryIdentity">>, worldMonth:number, managedRoyalOffice=true) {
   if(hasRecordedRulerDeath(ruler))return Math.max(0,Math.floor((ruler.deathMonth!-ruler.bornYear)/12));
   const living=managedRoyalOffice&&["ruling","exiled","heir","kin"].includes(ruler.status)||
-    (ruler.status==="deposed"||Boolean(ruler.residentIdentity))&&ruler.naturalDeathYear!==undefined&&worldMonth<ruler.naturalDeathYear;
+    (ruler.status==="deposed"||Boolean(ruler.residentIdentity||ruler.militaryIdentity))&&ruler.naturalDeathYear!==undefined&&worldMonth<ruler.naturalDeathYear;
   return living?Math.max(0,Math.floor((worldMonth-ruler.bornYear)/12)):undefined;
 }
 
 /** A political end is not a death. Only a managed life or explicit runtime evidence permits current age. */
-export function formatRulerLifeAge(ruler: Pick<Ruler, "status" | "bornYear" | "endYear" | "deathMonth" | "deathReason"> & Partial<Pick<Ruler,"naturalDeathYear"|"residentIdentity">>, worldMonth: number, verifiedLive = false, managedRoyalOffice = true) {
+export function formatRulerLifeAge(ruler: Pick<Ruler, "status" | "bornYear" | "endYear" | "deathMonth" | "deathReason"> & Partial<Pick<Ruler,"naturalDeathYear"|"residentIdentity"|"militaryIdentity">>, worldMonth: number, verifiedLive = false, managedRoyalOffice = true) {
   if (hasRecordedRulerDeath(ruler)) return `享年${Math.max(0,Math.floor((ruler.deathMonth!-ruler.bornYear)/12))}岁`;
   const managed = managedRoyalOffice && ["ruling","exiled","heir","kin"].includes(ruler.status) ||
-    (ruler.status === "deposed" || Boolean(ruler.residentIdentity)) && ruler.naturalDeathYear !== undefined && worldMonth < ruler.naturalDeathYear;
+    (ruler.status === "deposed" || Boolean(ruler.residentIdentity||ruler.militaryIdentity)) && ruler.naturalDeathYear !== undefined && worldMonth < ruler.naturalDeathYear;
   if (ruler.status !== "dead" && (verifiedLive || managed)) return `当前年龄${Math.max(0,Math.floor((worldMonth-ruler.bornYear)/12))}岁`;
   if(ruler.endYear===undefined) return "生死未载 · 终结年龄未载";
   return formatRulerAge(ruler.status==="dead"?"politically-ended":ruler.status,Math.max(0,Math.floor((ruler.endYear-ruler.bornYear)/12))) + " · 生死未载";
