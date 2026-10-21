@@ -1051,7 +1051,7 @@ function DynastyTree({
       ) : null}
       {otherCandidates.length ? (
         <Box sx={{ p: 0.8, border: "1px solid var(--gg-border)", borderRadius: "var(--gg-radius)", background: "var(--gg-panel)" }}>
-          <Typography fontWeight="bold" fontSize="0.86rem">宗室候选</Typography>
+          <Typography fontWeight="bold" fontSize="0.86rem">宗室继承候选</Typography>
           {otherCandidates.map((candidate) => {
             const current = rulers.find((ruler) => ruler.id === currentRulerId);
             return <Typography key={candidate.id} component="div" fontSize="0.84rem" sx={{display:"flow-root"}}>
