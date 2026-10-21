@@ -20,7 +20,7 @@ function group(lives){
 function panel(runs,month){
  const records=runs.flatMap(r=>{const c=r.checkpoints.find(c=>c.metrics.month===month);return c?[{seed:r.seed,...c}]:[];});
  const perSeed=records.map(c=>({seed:c.seed,groups:Object.fromEntries(['RESIDENT_FOUNDER','MILITARY_FOUNDER','INITIAL','SUCCESSOR'].map(k=>[k,group(c.lives.filter(r=>r.kind===k))])),metrics:c.metrics,
-  oldExpiredLifeSamples:runs.find(r=>r.seed===c.seed).created.filter(r=>r.accessionMonth<=month&&r.legacySampleDeathMonth<=r.accessionMonth).length}));
+  oldExpiredLifeSamples:new Set(runs.find(r=>r.seed===c.seed).created.filter(r=>r.accessionMonth<=month&&r.legacySampleDeathMonth<=r.accessionMonth&&c.lives.some(l=>l.id===r.rulerId&&l.bornMonth===r.bornMonth&&l.accessionMonth===r.accessionMonth&&l.scheduledDeathMonth===r.scheduledDeathMonth)).map(r=>r.rulerId)).size}));
  const lives=records.flatMap(c=>c.lives),metrics=records.map(c=>c.metrics),sum=k=>metrics.reduce((n,c)=>n+c[k],0);
  return {seeds:records.length,groups:Object.fromEntries(['RESIDENT_FOUNDER','MILITARY_FOUNDER','INITIAL','SUCCESSOR'].map(k=>[k,group(lives.filter(r=>r.kind===k))])),
   oldExpiredLifeSamples:perSeed.reduce((n,c)=>n+c.oldExpiredLifeSamples,0),balance:{meanPopulation:mean(metrics.map(c=>c.worldPopulation)),warDeaths:sum('warDeaths'),splits:sum('splits'),militarySplits:sum('militarySplits'),restorations:sum('restorations'),extinctions:sum('extinctions'),unifications:sum('unifications'),populationUnexplained:sum('populationUnexplained'),identityConflicts:sum('residentIdentityConflicts')+sum('formationOwnershipConflicts')+sum('militaryRoyalOverlap')+sum('duplicatePopulationIds')},perSeed};

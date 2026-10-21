@@ -68,6 +68,13 @@ export async function runResidentFounderCore(seed="resident-z6"){
    check(restored!==u&&restored.id===u.id&&restored.historicalPersonId===i.personId&&restored.bornMonth===u.bornMonth&&r.id===restored.rulerId,"restoration recreates only the same person's map entity");
    check(core.teams.flatMap(t=>[...t.users]).filter(x=>x.historicalPersonId===i.personId).length===1,"restoration has one live binding");
    const actualSave=strict();
+   // Controlled severe-siege boundary uses the real User -> royal death gate -> succession path.
+   for(const c of created.cities)c.loyalty=0;
+   created.capitalCity!.underSiege=true;
+   check(restored.destroyUser(false,{cause:"BATTLE_DEATH",month:0}),"resident founder can actually die through the severe-crisis battle gate");
+   check(r.deathMonth===0&&r.deathReason==="战死"&&Dynasty.getCurrentRuler(created.name)?.id!==r.id,"battle death is recorded separately from lifespan and causes one real succession");
+   Dynasty.recordResidentEntityDeath(i.personId,0);
+   check(History.getEvents().filter(e=>e.type==="ruler-succession"&&e.metadata?.previousRulerId===r.id&&e.metadata?.reason==="combat").length===1&&!created.users.has(restored),"duplicate death notification cannot kill or succeed the same founder twice");
    const resume=()=>{hydrateWorldSave(core,JSON.parse(JSON.stringify(actualSave)));core.setWorldRunning(true);for(let m=0;m<12;m++)step();core.setWorldRunning(false);return strict();};
    const first=resume(),second=resume();
    check(diffCanonicalWorldSave(first,second).matched,"two V20 hydrations continue identically for twelve production months");

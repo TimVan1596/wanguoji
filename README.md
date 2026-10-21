@@ -147,7 +147,7 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
-- 当前 APP **v0.99931z9** / package **0.99.175** / WorldSave **V20**。z8已获用户人工PASS；本版发布占领后城防缓冲、围城伤亡地域修复及身份肖像增强，等待独立人工Gate。未发布有效攻守公式或初任缩编，长期拉锯尚未彻底解决。以下旧版本验收条目为历史记录，不代表当前schema。
+- 当前 APP **v0.99931z10** / package **0.99.176** / WorldSave **V20**。z9已获用户最终人工PASS。本版修复居民创立者寿命夹到12个月的问题，增加登位前真实军旅、君臣任期交集与双向档案导航、彩色肖像摘要；等待独立人工Chrome Gate。普通人口尚未统一自然寿命制度，战争及政治概率不变。以下旧版本验收条目为历史记录，不代表当前schema。
 
 - v0.99931n人工Gate已PASS，真实长局自然发生至少11次同王统宗室废立。当前v0.99931n1修复连续废立后的V14生命周期校验，并完善君主即离位叙述与史评，等待[人工Gate](docs/RulerDepositionLifecycleClosureN1.md)。
 - v0.99929a 修复政治终结历史身份、退位年龄与双方君主大事记。[Political Terminal Chronicle Gate](docs/PoliticalTerminalChronicleClosure.md)已由用户完成人工PASS。
