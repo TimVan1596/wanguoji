@@ -1066,7 +1066,7 @@ function DynastyTree({
           })}
         </Box>
       ) : null}
-      <RoyalMilitaryRoster key={team.name} rulers={rulers} month={worldMonth} onGenealogy={onOpenFullGenealogy}/>
+      <RoyalMilitaryRoster key={team.name} factionId={team.name} rulers={rulers} month={worldMonth} onGenealogy={onOpenFullGenealogy}/>
       <Typography fontWeight="bold" fontSize="0.9rem">历代君主</Typography>
       <Box sx={{ display: "grid", gap: 0.5 }}>
         {orderedRulers.map((ruler, index) => {

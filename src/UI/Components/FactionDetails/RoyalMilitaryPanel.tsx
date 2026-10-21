@@ -27,9 +27,9 @@ export function RoyalMilitaryPanel({ruler,month,onGenealogy}:{ruler:Ruler;month:
   {onGenealogy&&<> · <button type="button" style={buttonStyle} onClick={onGenealogy}>查看亲属宗谱</button></>}
  </Box>;
 }
-export function RoyalMilitaryRoster({rulers,month,onGenealogy}:{rulers:Ruler[];month:number;onGenealogy?:(id?:string)=>void}){
+export function RoyalMilitaryRoster({rulers,month,onGenealogy,factionId}:{rulers:Ruler[];factionId:string;month:number;onGenealogy?:(id?:string)=>void}){
  const nav=usePersonArchiveNavigation();
- const faction=Military.getPeople().find(p=>rulers.some(r=>r.militaryIdentity?.personId===p.personId))?.royalIdentity?.factionId;
+ const faction=factionId;
  const rows=faction?royalMilitaryArchive({factionId:faction,rulers},Military.getPeople(),History.getEvents()):new Map();
  const active=[...rows.values()].filter(p=>p.status==="ACTIVE").length;
  if(!rows.size)return null;
