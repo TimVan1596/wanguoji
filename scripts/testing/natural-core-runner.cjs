@@ -21,11 +21,13 @@ app.whenReady().then(async()=>{
    const identity=process.env.WANGUOJI_CORE_SUITE==='rebel-military-identity';
    const archive=process.env.WANGUOJI_CORE_SUITE==='character-archive';
    const balance=process.env.WANGUOJI_CORE_SUITE==='military-balance';
+   const turnover=process.env.WANGUOJI_CORE_SUITE==='siege-turnover';
    const military=process.env.WANGUOJI_CORE_SUITE==='military-overlay';
    const calibration=process.env.WANGUOJI_CORE_SUITE==='military-office-calibration';
    const invocation=deposition?`const h=await import('/src/Simulation/testing/DepositionCoreHarness.ts');return h.runDepositionCore(${JSON.stringify(seed)});`:secession?`const h=await import('/src/Simulation/testing/MilitarySecessionCoreHarness.tsx');return h.runMilitarySecessionCore(${JSON.stringify(seed)});`:resident?`const h=await import('/src/Simulation/testing/ResidentFounderCoreHarness.ts');return h.runResidentFounderCore(${JSON.stringify(seed)});`:identity?`const h=await import('/src/Simulation/testing/RebelMilitaryIdentityHarness.ts');return h.runRebelMilitaryIdentity(${JSON.stringify(seed)});`:archive?`const h=await import('/src/Simulation/testing/CharacterArchivePerformanceHarness.tsx');return h.runCharacterArchivePerformance(${JSON.stringify(seed)},${years});`:balance?`const h=await import('/src/Simulation/testing/MilitaryBalanceHarness.ts');return h.runMilitaryBalance(${JSON.stringify(seed)},${years},${process.env.WANGUOJI_CORE_INCLUDE_SNAPSHOT==='1'});`:calibration?`const h=await import('/src/Simulation/testing/MilitaryOfficeCalibrationHarness.ts');return h.runMilitaryOfficeCalibration(${JSON.stringify(seed)},${Number(process.env.WANGUOJI_CORE_YEARS||200)});`:military?`const h=await import('/src/Simulation/testing/MilitaryOverlayCoreHarness.ts');return h.runMilitaryOverlayCore(${JSON.stringify(seed)});`:`const h=await import('/src/Simulation/testing/NaturalCoreHarness.ts');return h.runNaturalCore(${JSON.stringify(seed)},${Number(process.env.WANGUOJI_CORE_YEARS||100)});`;
    process.stderr.write('[CoreTest] page loaded, invoking harness\n');
-   const result=await win.webContents.executeJavaScript(`(async()=>{${invocation}})()`);
+   const call=turnover?`const h=await import('/src/Simulation/testing/SiegeTurnoverHarness.ts');return h.runSiegeTurnover(${JSON.stringify(seed)},${years});`:invocation;
+   const result=await win.webContents.executeJavaScript(`(async()=>{${call}})()`);
    results.push(result);if(process.env.WANGUOJI_CORE_OUTPUT)fs.writeFileSync(process.env.WANGUOJI_CORE_OUTPUT,JSON.stringify(results,null,2));
    process.stdout.write(JSON.stringify(result)+'\n');win.destroy();
   }
