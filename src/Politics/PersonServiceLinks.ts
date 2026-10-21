@@ -1,3 +1,4 @@
+import {militaryMilestones,selectMilitaryMilestones} from "./MilitaryChroniclePresentation";
 import type {Ruler} from "./Dynasty";
 import type {MilitaryPerson,MilitaryFormation} from "./MilitaryCommandRegistry";
 import type {WorldEvent} from "../History/WorldHistory";
@@ -28,15 +29,12 @@ export function personServiceLinks(factionId:string,rulers:Ruler[],people:Milita
 }
 
 export function preAccessionMilitary(ruler:Ruler,people:MilitaryPerson[],formations:MilitaryFormation[],events:WorldEvent[]){
- const id=ruler.residentIdentity,person=id?.military?people.find(p=>p.personId===id.personId&&id.military!.personId===p.personId&&p.sourceUserId===id.sourceUserId&&p.name===id.sourceUserLabel&&p.politicalRulerId===ruler.id&&p.bornMonth===ruler.bornYear&&id.bornMonth===p.bornMonth&&p.appointments.some(a=>a.commandId===id.military!.commandId&&a.factionId===id.sourceFactionId&&a.endMonth===id.foundedMonth&&a.endReason==="TRANSFERRED")):undefined;
+ const id=ruler.residentIdentity,founder=id?.military?people.find(p=>p.personId===id.personId&&id.military!.personId===p.personId&&p.sourceUserId===id.sourceUserId&&p.name===id.sourceUserLabel&&p.politicalRulerId===ruler.id&&p.bornMonth===ruler.bornYear&&id.bornMonth===p.bornMonth&&p.appointments.some(a=>a.commandId===id.military!.commandId&&a.factionId===id.sourceFactionId&&a.endMonth===id.foundedMonth&&a.endReason==="TRANSFERRED")):undefined;
+ const royal=ruler.militaryIdentity;
+ const person=founder??(royal?people.find(p=>p.personId===royal.personId&&p.royalIdentity?.rulerId===ruler.id&&p.sourceUserId===royal.sourceUserId&&p.name===royal.sourceUserLabel&&p.bornMonth===ruler.bornYear&&p.politicalRulerId===ruler.id):undefined);
  if(!person||ruler.accessionYear===undefined)return undefined;
- const entries=deriveMilitaryChronicle(person,formations,events,ruler.accessionYear).filter(e=>e.worldMonth<ruler.accessionYear!);
- const byId=new Map(events.map(e=>[e.id,e]));
- const preferred=[entries.find(e=>byId.get(e.eventId)?.type==="military-appointment"),
-  entries.filter(e=>byId.get(e.eventId)?.type==="military-office-granted").at(-1),
-  entries.filter(e=>e.victory).at(-1),
-  entries.filter(e=>{const event=byId.get(e.eventId);return event&&readMilitaryParticipation(event);}).at(-1),
-  entries.filter(e=>byId.get(e.eventId)?.type==="military-command-ended").at(-1),...entries];
- const representative=[...new Map(preferred.filter((e):e is typeof entries[number]=>Boolean(e)).map(e=>[e.eventId,e])).values()].slice(0,5).sort((a,b)=>a.worldMonth-b.worldMonth);
+ const raw=deriveMilitaryChronicle(person,formations,events,ruler.accessionYear).filter(e=>e.worldMonth<ruler.accessionYear!);
+ const entries=militaryMilestones(person,raw,events);
+ const representative=selectMilitaryMilestones(entries,events,5);
  return {person,entries,representative};
 }

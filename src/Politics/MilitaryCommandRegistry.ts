@@ -30,7 +30,20 @@ export interface MilitaryAppointment {
   officeHistory?: MilitaryOfficeGrant[];
 }
 
+export interface RoyalMilitaryLink {
+  rulerId: string;
+  factionId: string;
+  /** Frozen copy of the existing royal schedule, validated against its owner. Never sampled here. */
+  naturalDeathMonth: number;
+}
+export interface RoyalMilitaryCandidate { rulerId: string; factionId: string }
+export interface RoyalMilitaryService {
+  candidates(team: Team, month: number): RoyalMilitaryCandidate[];
+  enlist(candidate: RoyalMilitaryCandidate, team: Team, month: number, members: User[]): boolean;
+  eligible(user: User, month: number): boolean;
+}
 export interface MilitaryPerson {
+  royalIdentity?: RoyalMilitaryLink;
   /** Same person now holds a political office; the linked Ruler owns this one life. */
   politicalRulerId?:string;
   personId: string;
@@ -85,6 +98,8 @@ export function deriveUserBornMonth(userId: number, name: string, factionId: str
 }
 
 export class MilitaryCommandRegistryStore {
+  private royalService?: RoyalMilitaryService;
+  setRoyalService(service: RoyalMilitaryService) { this.royalService = service; }
   private people = new Map<string, MilitaryPerson>();
   private formations = new Map<string, MilitaryFormation>();
   private personSequence = 1;
@@ -131,7 +146,7 @@ export class MilitaryCommandRegistryStore {
   snapshotTransaction(){return {state:this.exportState(),diagnostics:{...this.diagnostics},arrivals:new Map(this.lastArrivalTargetByCommand),ranges:new Map(this.longRangeOrderSamples)};}
   rollbackTransaction(snapshot:ReturnType<MilitaryCommandRegistryStore["snapshotTransaction"]>){this.importState(snapshot.state);this.diagnostics=snapshot.diagnostics;this.lastArrivalTargetByCommand=snapshot.arrivals;this.longRangeOrderSamples=snapshot.ranges;}
   mirrorPoliticalDeath(personId:string,rulerId:string,month:number,cause:string){
-    const p=this.people.get(personId);if(!p||p.politicalRulerId!==rulerId||p.status==="DEAD")return;
+    const p=this.people.get(personId);if(!p||(p.politicalRulerId!==rulerId&&p.royalIdentity?.rulerId!==rulerId)||p.status==="DEAD")return;
     if(p.status==="ACTIVE")throw new Error("Political person still has military command");
     p.status="DEAD";p.deathMonth=month;p.deathCause=cause;this.diagnostics.deaths++;
     if(cause==="NATURAL_DEATH")this.diagnostics.naturalDeaths++;
@@ -213,7 +228,8 @@ export class MilitaryCommandRegistryStore {
       if (activeCount >= MAX_COMMANDERS_PER_FACTION || activeFormations >= MAX_FORMATIONS_PER_FACTION) { this.diagnostics.capBlocked++; continue; }
       const candidates = [...team.users].filter(user => this.isEligible(user, worldMonth)).sort((a, b) => a.id - b.id || a.name.localeCompare(b.name));
       this.diagnostics.candidates += candidates.length;
-      if (!candidates.length) continue;
+      const royals = this.royalService?.candidates(team, worldMonth) ?? [];
+      if (!candidates.length && !royals.length) continue;
       const availableUnits = [...team.users].filter(user => user.player.logicalUnitId && user.role === "NORMAL" && !user.rulerId && !user.player.rulerId &&
         !this.isUnitAssigned(user.player.logicalUnitId) && user.team === team).sort((a, b) => a.id - b.id || a.name.localeCompare(b.name));
       if (availableUnits.length < 2) { this.diagnostics.unitBlocked++; continue; }
@@ -223,7 +239,13 @@ export class MilitaryCommandRegistryStore {
         const person = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
         return person ? this.getCareer(person, worldMonth).appointmentWeight : 1;
       });
-      const candidate = selectMilitaryCandidate(candidates, weights, worldRandom.next());
+      const selected = selectMilitaryCandidate([...candidates.map(user => ({user, royal: undefined as RoyalMilitaryCandidate | undefined})), ...royals.map(royal => ({user: undefined as User | undefined, royal}))], [...weights, ...royals.map(() => 1)], worldRandom.next());
+      if (selected.royal) {
+        if (this.royalService?.enlist(selected.royal, team, worldMonth, availableUnits.slice(0, MAX_FORMATION_UNITS - 1))) this.diagnostics.appointments++;
+        this.refreshOrders(worldMonth, teams, cities);
+        continue;
+      }
+      const candidate = selected.user!;
       const members = [candidate, ...availableUnits.filter(user => user !== candidate)].slice(0, MAX_FORMATION_UNITS);
       if (members.length < 2 || !candidate.player.logicalUnitId) { this.diagnostics.unitBlocked++; continue; }
       if (this.appoint(candidate, team.name, worldMonth, members.map(user => user.player.logicalUnitId!))) this.diagnostics.appointments++;
@@ -244,7 +266,7 @@ export class MilitaryCommandRegistryStore {
       const matches = bound.get(person.personId) ?? [];
       const user = matches.length === 1 ? matches[0] : undefined;
       if (!user || !user.matchesMilitaryLife?.(person)) { this.diagnostics.identityFailures++; continue; }
-      if (worldMonth >= life.naturalDeathMonth) {
+      if (!person.royalIdentity && worldMonth >= life.naturalDeathMonth) {
         // destroyUser ends the appointment before removing population and runtime units.
         if (!user.destroyUser(false, { cause: "NATURAL_DEATH", month: worldMonth, context: "MILITARY_NATURAL_LIFESPAN", damageSource: "MILITARY_LIFESPAN" })) this.diagnostics.identityFailures++;
       } else if (person.status === "ACTIVE") {
@@ -260,9 +282,20 @@ export class MilitaryCommandRegistryStore {
     if (worldMonth >= deriveMilitaryLifeSchedule(person ?? { personId: `military-person-${this.personSequence}`, bornMonth: user.bornMonth }).retirementMonth) {
       this.diagnostics.ageBlocked++; return false;
     }
-    return !user.historicalPersonId && user.role === "NORMAL" && !user.rulerId && !user.player.rulerId && user.team.status === "ACTIVE" && user.bornMonth <= worldMonth - MIN_COMMANDER_AGE_MONTHS &&
+    return (!user.historicalPersonId || Boolean(this.royalService?.eligible(user, worldMonth))) && user.role === "NORMAL" && !user.rulerId && !user.player.rulerId && user.team.status === "ACTIVE" && user.bornMonth <= worldMonth - MIN_COMMANDER_AGE_MONTHS &&
       Boolean(user.player.active && user.player.logicalUnitId) && !this.isUnitAssigned(user.player.logicalUnitId!) &&
       (!user.militaryPersonId || this.people.get(user.militaryPersonId)?.status !== "ACTIVE");
+  }
+
+  appointRoyal(user: User, link: RoyalMilitaryLink, month: number, memberUnitIds: string[]) {
+    if (!this.royalService?.eligible(user, month) || user.historicalPersonId !== `military-person-${this.personSequence}`) return false;
+    if (!this.appoint(user, link.factionId, month, memberUnitIds)) return false;
+    this.people.get(user.militaryPersonId!)!.royalIdentity = {...link};
+    return true;
+  }
+  nextPersonId() { return `military-person-${this.personSequence}`; }
+  endPersonCommands(personId: string, month: number, reason: MilitaryAppointment["endReason"]) {
+    for (const formation of this.formations.values()) if (formation.commanderPersonId === personId) this.endFormation(formation, month, reason);
   }
 
   private appoint(user: User, factionId: string, worldMonth: number, memberUnitIds: string[]) {
@@ -498,7 +531,7 @@ export class MilitaryCommandRegistryStore {
   onUserDestroyed(user: User, worldMonth: number, cause: string) {
     const record = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
     const person = record?.sourceUserId === user.id && record.bornMonth === user.bornMonth && record.name === user.name && record.factionId === user.team.name ? record : undefined;
-    if (cause === "NATURAL_DEATH" && (!person || worldMonth % 12 !== 0 || worldMonth < deriveMilitaryLifeSchedule(person).naturalDeathMonth)) return;
+    if (cause === "NATURAL_DEATH" && (!person || (!person.royalIdentity && worldMonth % 12 !== 0) || worldMonth < deriveMilitaryLifeSchedule(person).naturalDeathMonth)) return;
     const death = cause === "SIEGE_LOSS" || cause === "BATTLE_DEATH" || cause === "NATURAL_DEATH";
     const unitId = user.player.logicalUnitId;
     if (unitId) for (const formation of this.formations.values()) if (formation.status === "ACTIVE" && formation.memberUnitIds.includes(unitId)) {

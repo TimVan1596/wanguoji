@@ -6,7 +6,7 @@ import type { DiplomaticRelation, DiplomaticPairMemory } from "../Politics/Diplo
 import type { FactionColorHistoryEntry } from "../Simulation/FactionColorHistory";
 import type { MilitaryCommandState } from "../Politics/MilitaryCommandRegistry";
 
-export const CURRENT_SAVE_SCHEMA_VERSION = 20 as const;
+export const CURRENT_SAVE_SCHEMA_VERSION = 21 as const;
 
 /** V16 preserves political office/death facts and adds authoritative military personal names in registries. */
 export type RulerSaveV17 = Omit<Ruler, "id" | "bornYear" | "naturalDeathYear" | "accessionYear" |
@@ -350,3 +350,7 @@ export const createEmptyWorldSaveV18 = createEmptyWorldSaveV20;
 /** Source alias only: V19 files are unsupported and never implicitly migrated. */
 export type WorldSaveV19=WorldSaveV20;
 export const createEmptyWorldSaveV19=createEmptyWorldSaveV20;
+
+/** V21 adds validated royal/military identity bridges; V20 files are rejected. */
+export type WorldSaveV21 = WorldSaveV20;
+export const createEmptyWorldSaveV21 = createEmptyWorldSaveV20;

@@ -121,7 +121,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
   it("uses schema V10 and persists alliance/merge fields plus the deterministic random stream", () => {
     const save = fixture();
     expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(20);
-    expect(save.saveSchemaVersion).toBe(20);
+    expect(save.saveSchemaVersion).toBe(21);
     expect(save.diplomacy).toEqual({ relations: [], pairMemories: [], lastEvaluationMonth: -1 });
     expect(save.worldRandom).toMatchObject({ algorithm: "mulberry32-v1", seed: expect.any(String), state: expect.any(Number), position: 0 });
   });
