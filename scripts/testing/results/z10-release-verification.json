@@ -76,5 +76,11 @@
     "Identical lifespan draw count/bounds do not imply identical later histories.",
     "Chrome layout and human interaction acceptance pending."
   ],
-  "manualChromeGate": "WAITING_USER"
+  "manualChromeGate": "WAITING_USER",
+  "finalChecks": {
+    "gitDiffCheck": true,
+    "allBuildCommandsExitedZero": true,
+    "productionSourceMatchedFrozenCandidate": true,
+    "testProcessesStopped": true
+  }
 }
