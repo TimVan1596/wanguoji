@@ -25730,5 +25730,592 @@
         ]
       }
     ]
+  },
+  {
+    "seed": "regional-24",
+    "years": 100,
+    "created": [
+      {
+        "rulerId": "开明义军-ruler-43",
+        "accessionMonth": 660,
+        "bornMonth": -590,
+        "scheduledDeathMonth": 663,
+        "legacySampleDeathMonth": 70
+      },
+      {
+        "rulerId": "郢义军-ruler-52",
+        "accessionMonth": 900,
+        "bornMonth": -76,
+        "scheduledDeathMonth": 956,
+        "legacySampleDeathMonth": 596
+      },
+      {
+        "rulerId": "大梁义军-ruler-57",
+        "accessionMonth": 936,
+        "bornMonth": 473,
+        "scheduledDeathMonth": 1471,
+        "legacySampleDeathMonth": 1457
+      },
+      {
+        "rulerId": "郢西义军-ruler-59",
+        "accessionMonth": 948,
+        "bornMonth": -143,
+        "scheduledDeathMonth": 972,
+        "legacySampleDeathMonth": 541
+      }
+    ],
+    "checkpoints": [
+      {
+        "metrics": {
+          "month": 1200,
+          "worldPopulation": 133,
+          "populationUnexplained": 0,
+          "naturalGrowth": 391,
+          "warDeaths": 297,
+          "activeStates": 4,
+          "historicalStates": 12,
+          "cities": 18,
+          "captures": 112,
+          "recoveries": 16,
+          "siegeCityMonths": 1772,
+          "capturesPer100SiegeCityMonths": 6.320541760722348,
+          "formationSizeSamples": {
+            "4": 10,
+            "8": 107,
+            "9": 144,
+            "10": 75,
+            "11": 434,
+            "12": 306
+          },
+          "factionCommandSamples": {
+            "0": 3657,
+            "1": 360,
+            "2": 358
+          },
+          "meanFormationSize": 10.58364312267658,
+          "appointments": 11,
+          "offices": {
+            "pijiang": 11,
+            "jiangjun": 5,
+            "shangjiangjun": 1,
+            "promotions": 6,
+            "meanServiceMonths": 97.81818181818181,
+            "currentOffices": [],
+            "naturalDeaths": 1,
+            "ageRetirements": 2,
+            "highOfficeMerits": [
+              {
+                "serviceMonths": 300,
+                "verifiedMerits": 3
+              }
+            ],
+            "activeFormationSizes": []
+          },
+          "promotions": [
+            {
+              "office": "JIANGJUN",
+              "waitMonths": 60
+            },
+            {
+              "office": "JIANGJUN",
+              "waitMonths": 60
+            },
+            {
+              "office": "SHANGJIANGJUN",
+              "waitMonths": 300
+            },
+            {
+              "office": "JIANGJUN",
+              "waitMonths": 120
+            },
+            {
+              "office": "JIANGJUN",
+              "waitMonths": 60
+            },
+            {
+              "office": "JIANGJUN",
+              "waitMonths": 60
+            }
+          ],
+          "meanServiceMonths": 97.81818181818181,
+          "matureEnded": 6,
+          "matureEndedNeverPromoted": 1,
+          "politicalCandidateChecks": 72,
+          "militaryPoliticalEvents": 0,
+          "depositions": 0,
+          "usurpations": 0,
+          "extinctions": 8,
+          "unifications": 0,
+          "splits": 5,
+          "restorations": 0,
+          "rebellions": 0,
+          "classicRebellions": 0,
+          "frontierRebellions": 0,
+          "canonicalSha256": "312ea7a92ba117a3d69aa66dd23bd5fef5ed1984ced3824f6d7d2fdd8d3c5fe8",
+          "baseFactsSha256": "37daf9f1da4a2bb6a35f96d2ba14893c109f9b203045855982fa1d0e794e9346",
+          "monthlyExposure": {
+            "cityMonths": 16883,
+            "politicalCityMonths": 0,
+            "supporters": 0,
+            "identityBlocked": 0,
+            "geographyBlocked": 0,
+            "discontentBlocked": 0
+          },
+          "issuingRulerGrants": 15,
+          "worldRandomPosition": 6440,
+          "regional": {
+            "cityChecks": 1406,
+            "politicalCities": 0,
+            "loyaltyBlocked": 1221,
+            "stabilityBlocked": 97,
+            "capacityBlocked": 0,
+            "identityBlocked": 12,
+            "validOrdinary": 194,
+            "discontentBlocked": 20,
+            "geographyBlocked": 158,
+            "supporters": 16,
+            "noSupport": 0,
+            "draws": 0,
+            "drawFailed": 0,
+            "executionFailed": 0,
+            "popular": 0,
+            "split": 5,
+            "territorialReturns": 0,
+            "splitChecks": 206,
+            "splitPolitical": 5,
+            "splitRestored": 0,
+            "alive12": 4,
+            "matured12": 5,
+            "alive60": 2,
+            "matured60": 5,
+            "overflow": 0,
+            "popularFunnel": {
+              "cityChecks": 1406,
+              "political": 0,
+              "captureGrace": 0,
+              "cooldown": 0,
+              "capacity": 0,
+              "populationScans": 0,
+              "validUsers": 0,
+              "identityBlocked": 0,
+              "geographyBlocked": 0,
+              "discontentBlocked": 0,
+              "supporters": 0,
+              "noSupport": 0,
+              "candidates": 0,
+              "priorityBlocked": 0,
+              "draws": 0,
+              "expectedHits": 0,
+              "hits": 0,
+              "misses": 0,
+              "historicalSelected": 0,
+              "founderRestored": 0,
+              "failures": 0,
+              "successes": 0
+            },
+            "popularFailures": {},
+            "spatial": {
+              "invalidPosition": 0,
+              "unowned": 0,
+              "foreign": 1,
+              "otherCity": 26,
+              "otherDistrict": 131,
+              "disconnected": 0,
+              "outsideLegacy": 148,
+              "recoveredDistrict": 17,
+              "emptyLegacyArea": 0,
+              "emptyDistrict": 0,
+              "referenceMismatch": 0,
+              "referenceWithOwnedPosition": 0,
+              "arcadePosition": 194,
+              "logicalPosition": 0,
+              "staleRegistryPosition": 192
+            },
+            "restored": 0,
+            "worldMonth": 1200,
+            "insufficient12": 0,
+            "insufficient60": 0
+          },
+          "militaryRoyalOverlap": 0,
+          "politicalMilitaryBindings": 0,
+          "duplicatePopulationIds": 0,
+          "currentMilitaryByRegime": [
+            {
+              "factionId": "秦",
+              "factionType": "KINGDOM",
+              "stage": "STATE",
+              "rank": "KING",
+              "population": 36,
+              "commands": 0
+            },
+            {
+              "factionId": "燕",
+              "factionType": "KINGDOM",
+              "stage": "STATE",
+              "rank": "KING",
+              "population": 43,
+              "commands": 0
+            },
+            {
+              "factionId": "齐",
+              "factionType": "KINGDOM",
+              "stage": "STATE",
+              "rank": "KING",
+              "population": 41,
+              "commands": 0
+            },
+            {
+              "factionId": "大梁义军",
+              "factionType": "SPLIT",
+              "stage": "PROVISIONAL",
+              "rank": "LEADER",
+              "population": 13,
+              "commands": 0
+            }
+          ],
+          "meanActiveStates": 3.6458333333333335,
+          "meanEndedStateLifetimeMonths": 205.25,
+          "militarySplits": 1,
+          "formationOwnershipConflicts": 0,
+          "residentFounders": 5,
+          "residentLiveBindings": 1,
+          "residentIdentityConflicts": 0,
+          "strictSaveValid": true,
+          "elapsedMs": 21779.70000001788,
+          "heapBytes": 67743498
+        },
+        "lives": [
+          {
+            "id": "秦-ruler-1",
+            "kind": "INITIAL",
+            "bornMonth": -240,
+            "accessionMonth": 0,
+            "accessionAge": 20,
+            "scheduledDeathMonth": 528,
+            "deathMonth": 528,
+            "deathReason": "去世",
+            "endMonth": 528,
+            "status": "dead",
+            "observedMonths": 1200,
+            "tenureMonths": 528
+          },
+          {
+            "id": "秦-ruler-4",
+            "kind": "SUCCESSOR",
+            "bornMonth": -21,
+            "accessionMonth": 528,
+            "accessionAge": 45.75,
+            "scheduledDeathMonth": 531,
+            "deathMonth": 531,
+            "deathReason": "去世",
+            "endMonth": 531,
+            "status": "dead",
+            "observedMonths": 672,
+            "tenureMonths": 3
+          },
+          {
+            "id": "秦-ruler-37",
+            "kind": "SUCCESSOR",
+            "bornMonth": 235,
+            "accessionMonth": 531,
+            "accessionAge": 24.666666666666668,
+            "scheduledDeathMonth": 1243,
+            "status": "ruling",
+            "observedMonths": 669,
+            "tenureMonths": 669
+          },
+          {
+            "id": "赵-ruler-5",
+            "kind": "INITIAL",
+            "bornMonth": -432,
+            "accessionMonth": 0,
+            "accessionAge": 36,
+            "scheduledDeathMonth": 264,
+            "deathMonth": 264,
+            "deathReason": "去世",
+            "endMonth": 264,
+            "status": "dead",
+            "observedMonths": 1200,
+            "tenureMonths": 264
+          },
+          {
+            "id": "赵-ruler-30",
+            "kind": "SUCCESSOR",
+            "bornMonth": -71,
+            "accessionMonth": 264,
+            "accessionAge": 27.916666666666668,
+            "scheduledDeathMonth": 709,
+            "endMonth": 431,
+            "status": "politically-ended",
+            "observedMonths": 936,
+            "tenureMonths": 167
+          },
+          {
+            "id": "燕-ruler-8",
+            "kind": "INITIAL",
+            "bornMonth": -264,
+            "accessionMonth": 0,
+            "accessionAge": 22,
+            "scheduledDeathMonth": 720,
+            "deathMonth": 720,
+            "deathReason": "去世",
+            "endMonth": 720,
+            "status": "dead",
+            "observedMonths": 1200,
+            "tenureMonths": 720
+          },
+          {
+            "id": "燕-ruler-11",
+            "kind": "SUCCESSOR",
+            "bornMonth": -42,
+            "accessionMonth": 720,
+            "accessionAge": 63.5,
+            "scheduledDeathMonth": 954,
+            "deathMonth": 954,
+            "deathReason": "去世",
+            "endMonth": 954,
+            "status": "dead",
+            "observedMonths": 480,
+            "tenureMonths": 234
+          },
+          {
+            "id": "燕-ruler-54",
+            "kind": "SUCCESSOR",
+            "bornMonth": 269,
+            "accessionMonth": 954,
+            "accessionAge": 57.083333333333336,
+            "scheduledDeathMonth": 1001,
+            "deathMonth": 1001,
+            "deathReason": "去世",
+            "endMonth": 1001,
+            "status": "dead",
+            "observedMonths": 246,
+            "tenureMonths": 47
+          },
+          {
+            "id": "燕-ruler-61",
+            "kind": "SUCCESSOR",
+            "bornMonth": 633,
+            "accessionMonth": 1001,
+            "accessionAge": 30.666666666666668,
+            "scheduledDeathMonth": 1353,
+            "status": "ruling",
+            "observedMonths": 199,
+            "tenureMonths": 199
+          },
+          {
+            "id": "齐-ruler-12",
+            "kind": "INITIAL",
+            "bornMonth": -504,
+            "accessionMonth": 0,
+            "accessionAge": 42,
+            "scheduledDeathMonth": 312,
+            "deathMonth": 312,
+            "deathReason": "去世",
+            "endMonth": 312,
+            "status": "dead",
+            "observedMonths": 1200,
+            "tenureMonths": 312
+          },
+          {
+            "id": "齐-ruler-28",
+            "kind": "SUCCESSOR",
+            "bornMonth": -76,
+            "accessionMonth": 312,
+            "accessionAge": 32.333333333333336,
+            "scheduledDeathMonth": 812,
+            "deathMonth": 812,
+            "deathReason": "去世",
+            "endMonth": 812,
+            "status": "dead",
+            "observedMonths": 888,
+            "tenureMonths": 500
+          },
+          {
+            "id": "齐-ruler-33",
+            "kind": "SUCCESSOR",
+            "bornMonth": 140,
+            "accessionMonth": 812,
+            "accessionAge": 56,
+            "scheduledDeathMonth": 1136,
+            "deathMonth": 1136,
+            "deathReason": "去世",
+            "endMonth": 1136,
+            "status": "dead",
+            "observedMonths": 388,
+            "tenureMonths": 324
+          },
+          {
+            "id": "齐-ruler-49",
+            "kind": "SUCCESSOR",
+            "bornMonth": 489,
+            "accessionMonth": 1136,
+            "accessionAge": 53.916666666666664,
+            "scheduledDeathMonth": 1341,
+            "status": "ruling",
+            "observedMonths": 64,
+            "tenureMonths": 64
+          },
+          {
+            "id": "魏-ruler-15",
+            "kind": "INITIAL",
+            "bornMonth": -216,
+            "accessionMonth": 0,
+            "accessionAge": 18,
+            "scheduledDeathMonth": 528,
+            "endMonth": 425,
+            "status": "politically-ended",
+            "observedMonths": 1200,
+            "tenureMonths": 425
+          },
+          {
+            "id": "韩-ruler-16",
+            "kind": "INITIAL",
+            "bornMonth": -312,
+            "accessionMonth": 0,
+            "accessionAge": 26,
+            "scheduledDeathMonth": 516,
+            "endMonth": 266,
+            "status": "politically-ended",
+            "observedMonths": 1200,
+            "tenureMonths": 266
+          },
+          {
+            "id": "楚-ruler-19",
+            "kind": "INITIAL",
+            "bornMonth": -384,
+            "accessionMonth": 0,
+            "accessionAge": 32,
+            "scheduledDeathMonth": 300,
+            "deathMonth": 125,
+            "deathReason": "被俘处死",
+            "endMonth": 125,
+            "status": "dead",
+            "observedMonths": 1200,
+            "tenureMonths": 125
+          },
+          {
+            "id": "楚-ruler-22",
+            "kind": "SUCCESSOR",
+            "bornMonth": -160,
+            "accessionMonth": 125,
+            "accessionAge": 23.75,
+            "scheduledDeathMonth": 548,
+            "endMonth": 389,
+            "status": "politically-ended",
+            "observedMonths": 1075,
+            "tenureMonths": 264
+          },
+          {
+            "id": "开明义军-ruler-43",
+            "personId": "resident-开明义军-1050980879--590",
+            "kind": "RESIDENT_FOUNDER",
+            "bornMonth": -590,
+            "accessionMonth": 660,
+            "accessionAge": 104.16666666666667,
+            "scheduledDeathMonth": 663,
+            "deathMonth": 663,
+            "deathReason": "去世",
+            "endMonth": 663,
+            "status": "dead",
+            "observedMonths": 540,
+            "tenureMonths": 3
+          },
+          {
+            "id": "开明义军-ruler-44",
+            "kind": "SUCCESSOR",
+            "bornMonth": -187,
+            "accessionMonth": 663,
+            "accessionAge": 70.83333333333333,
+            "scheduledDeathMonth": 677,
+            "deathMonth": 677,
+            "deathReason": "去世",
+            "endMonth": 677,
+            "status": "dead",
+            "observedMonths": 537,
+            "tenureMonths": 14
+          },
+          {
+            "id": "开明义军-ruler-45",
+            "kind": "SUCCESSOR",
+            "bornMonth": 293,
+            "accessionMonth": 677,
+            "accessionAge": 32,
+            "scheduledDeathMonth": 1289,
+            "endMonth": 682,
+            "status": "politically-ended",
+            "observedMonths": 523,
+            "tenureMonths": 5
+          },
+          {
+            "id": "郢义军-ruler-52",
+            "personId": "resident-郢义军-1306530511--76",
+            "kind": "RESIDENT_FOUNDER",
+            "bornMonth": -76,
+            "accessionMonth": 900,
+            "accessionAge": 81.33333333333333,
+            "scheduledDeathMonth": 956,
+            "deathMonth": 925,
+            "deathReason": "战死",
+            "endMonth": 908,
+            "status": "dead",
+            "observedMonths": 300,
+            "tenureMonths": 8
+          },
+          {
+            "id": "郢东义军-ruler-55",
+            "personId": "military-person-9",
+            "kind": "MILITARY_FOUNDER",
+            "bornMonth": 201,
+            "accessionMonth": 912,
+            "accessionAge": 59.25,
+            "scheduledDeathMonth": 1296,
+            "endMonth": 924,
+            "status": "politically-ended",
+            "observedMonths": 288,
+            "tenureMonths": 12
+          },
+          {
+            "id": "大梁义军-ruler-57",
+            "personId": "resident-大梁义军-1306530635-473",
+            "kind": "RESIDENT_FOUNDER",
+            "bornMonth": 473,
+            "accessionMonth": 936,
+            "accessionAge": 38.583333333333336,
+            "scheduledDeathMonth": 1471,
+            "status": "ruling",
+            "observedMonths": 264,
+            "tenureMonths": 264
+          },
+          {
+            "id": "郢西义军-ruler-59",
+            "personId": "resident-郢西义军-1306530480--143",
+            "kind": "RESIDENT_FOUNDER",
+            "bornMonth": -143,
+            "accessionMonth": 948,
+            "accessionAge": 90.91666666666667,
+            "scheduledDeathMonth": 972,
+            "deathMonth": 972,
+            "deathReason": "去世",
+            "endMonth": 972,
+            "status": "dead",
+            "observedMonths": 252,
+            "tenureMonths": 24
+          },
+          {
+            "id": "郢西义军-ruler-60",
+            "kind": "SUCCESSOR",
+            "bornMonth": 207,
+            "accessionMonth": 972,
+            "accessionAge": 63.75,
+            "scheduledDeathMonth": 1047,
+            "endMonth": 1037,
+            "status": "politically-ended",
+            "observedMonths": 228,
+            "tenureMonths": 65
+          }
+        ]
+      }
+    ]
   }
 ]

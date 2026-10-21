@@ -13416,178 +13416,178 @@
   },
   "candidate": {
     "hundredYear": {
-      "seeds": 13,
+      "seeds": 24,
       "groups": {
         "RESIDENT_FOUNDER": {
-          "count": 95,
+          "count": 203,
           "accessionAge": {
-            "mean": 73.00701754385967,
-            "median": 68.5,
-            "p90": 115.58333333333333,
+            "mean": 69.86412151067323,
+            "median": 64.91666666666667,
+            "p90": 108.5,
             "max": 142.91666666666666
           },
-          "naturalDeaths": 78,
+          "naturalDeaths": 162,
           "exact12MonthNaturalDeaths": 2,
           "exact12MonthNaturalReignDeaths": 2,
           "naturalWithin12Months": {
-            "fullyObserved": 93,
-            "naturalDeaths": 24,
-            "ratio": 0.25806451612903225
+            "fullyObserved": 199,
+            "naturalDeaths": 42,
+            "ratio": 0.21105527638190955
           },
           "naturalWithin24Months": {
-            "fullyObserved": 91,
-            "naturalDeaths": 31,
-            "ratio": 0.34065934065934067
+            "fullyObserved": 196,
+            "naturalDeaths": 62,
+            "ratio": 0.3163265306122449
           },
-          "meanCompletedTenureMonths": 18.516129032258064,
-          "ongoingTenures": 2,
+          "meanCompletedTenureMonths": 27.025510204081634,
+          "ongoingTenures": 7,
           "completedTenureBins": {
-            "0-12": 45,
-            "13-24": 30,
-            "25-36": 6,
-            "37-60": 7,
+            "0-12": 93,
+            "13-24": 61,
+            "25-36": 9,
+            "37-60": 19,
+            "61-Infinity": 14
+          },
+          "endStatuses": {
+            "dead": 169,
+            "politically-ended": 27,
+            "ruling": 7
+          },
+          "naturalDeathDuringReign": 73,
+          "naturalDeathAfterPoliticalEnd": 89,
+          "otherRecordedDeaths": 7,
+          "politicalEndWithoutDeath": 27
+        },
+        "MILITARY_FOUNDER": {
+          "count": 26,
+          "accessionAge": {
+            "mean": 55.416666666666664,
+            "median": 57.833333333333336,
+            "p90": 66.16666666666667,
+            "max": 67.83333333333333
+          },
+          "naturalDeaths": 17,
+          "exact12MonthNaturalDeaths": 0,
+          "exact12MonthNaturalReignDeaths": 0,
+          "naturalWithin12Months": {
+            "fullyObserved": 26,
+            "naturalDeaths": 0,
+            "ratio": 0
+          },
+          "naturalWithin24Months": {
+            "fullyObserved": 26,
+            "naturalDeaths": 0,
+            "ratio": 0
+          },
+          "meanCompletedTenureMonths": 52,
+          "ongoingTenures": 4,
+          "completedTenureBins": {
+            "0-12": 7,
+            "13-24": 9,
+            "25-36": 1,
+            "37-60": 0,
             "61-Infinity": 5
           },
           "endStatuses": {
-            "dead": 83,
-            "politically-ended": 10,
-            "ruling": 2
-          },
-          "naturalDeathDuringReign": 36,
-          "naturalDeathAfterPoliticalEnd": 42,
-          "otherRecordedDeaths": 5,
-          "politicalEndWithoutDeath": 10
-        },
-        "MILITARY_FOUNDER": {
-          "count": 10,
-          "accessionAge": {
-            "mean": 51.458333333333336,
-            "median": 55.916666666666664,
-            "p90": 63.166666666666664,
-            "max": 63.166666666666664
-          },
-          "naturalDeaths": 6,
-          "exact12MonthNaturalDeaths": 0,
-          "exact12MonthNaturalReignDeaths": 0,
-          "naturalWithin12Months": {
-            "fullyObserved": 10,
-            "naturalDeaths": 0,
-            "ratio": 0
-          },
-          "naturalWithin24Months": {
-            "fullyObserved": 10,
-            "naturalDeaths": 0,
-            "ratio": 0
-          },
-          "meanCompletedTenureMonths": 69.375,
-          "ongoingTenures": 2,
-          "completedTenureBins": {
-            "0-12": 4,
-            "13-24": 2,
-            "25-36": 0,
-            "37-60": 0,
-            "61-Infinity": 2
-          },
-          "endStatuses": {
-            "dead": 6,
-            "politically-ended": 2,
-            "ruling": 2
+            "dead": 17,
+            "politically-ended": 5,
+            "ruling": 4
           },
           "naturalDeathDuringReign": 0,
-          "naturalDeathAfterPoliticalEnd": 6,
+          "naturalDeathAfterPoliticalEnd": 17,
           "otherRecordedDeaths": 0,
-          "politicalEndWithoutDeath": 2
+          "politicalEndWithoutDeath": 5
         },
         "INITIAL": {
-          "count": 91,
+          "count": 168,
           "accessionAge": {
-            "mean": 30.483516483516482,
-            "median": 31,
-            "p90": 40,
+            "mean": 29.803571428571427,
+            "median": 29,
+            "p90": 39,
             "max": 42
           },
-          "naturalDeaths": 60,
+          "naturalDeaths": 103,
           "exact12MonthNaturalDeaths": 0,
           "exact12MonthNaturalReignDeaths": 0,
           "naturalWithin12Months": {
-            "fullyObserved": 91,
+            "fullyObserved": 168,
             "naturalDeaths": 0,
             "ratio": 0
           },
           "naturalWithin24Months": {
-            "fullyObserved": 91,
+            "fullyObserved": 168,
             "naturalDeaths": 0,
             "ratio": 0
           },
-          "meanCompletedTenureMonths": 363.54945054945057,
+          "meanCompletedTenureMonths": 358.4642857142857,
           "ongoingTenures": 0,
           "completedTenureBins": {
             "0-12": 0,
             "13-24": 0,
-            "25-36": 0,
-            "37-60": 2,
-            "61-Infinity": 89
+            "25-36": 1,
+            "37-60": 3,
+            "61-Infinity": 164
           },
           "endStatuses": {
-            "dead": 66,
-            "politically-ended": 25
+            "dead": 120,
+            "politically-ended": 48
           },
-          "naturalDeathDuringReign": 57,
+          "naturalDeathDuringReign": 100,
           "naturalDeathAfterPoliticalEnd": 3,
-          "otherRecordedDeaths": 6,
-          "politicalEndWithoutDeath": 25
+          "otherRecordedDeaths": 17,
+          "politicalEndWithoutDeath": 48
         },
         "SUCCESSOR": {
-          "count": 180,
+          "count": 334,
           "accessionAge": {
-            "mean": 41.508796296296296,
-            "median": 40.916666666666664,
-            "p90": 57.666666666666664,
-            "max": 76.41666666666667
+            "mean": 41.708083832335305,
+            "median": 41.25,
+            "p90": 58.083333333333336,
+            "max": 82.41666666666667
           },
-          "naturalDeaths": 86,
-          "exact12MonthNaturalDeaths": 0,
-          "exact12MonthNaturalReignDeaths": 0,
+          "naturalDeaths": 152,
+          "exact12MonthNaturalDeaths": 1,
+          "exact12MonthNaturalReignDeaths": 1,
           "naturalWithin12Months": {
-            "fullyObserved": 176,
-            "naturalDeaths": 0,
-            "ratio": 0
+            "fullyObserved": 329,
+            "naturalDeaths": 3,
+            "ratio": 0.00911854103343465
           },
           "naturalWithin24Months": {
-            "fullyObserved": 173,
-            "naturalDeaths": 1,
-            "ratio": 0.005780346820809248
+            "fullyObserved": 324,
+            "naturalDeaths": 4,
+            "ratio": 0.012345679012345678
           },
-          "meanCompletedTenureMonths": 205.27007299270073,
-          "ongoingTenures": 43,
+          "meanCompletedTenureMonths": 190.22393822393823,
+          "ongoingTenures": 75,
           "completedTenureBins": {
-            "0-12": 14,
-            "13-24": 9,
-            "25-36": 5,
-            "37-60": 11,
-            "61-Infinity": 98
+            "0-12": 30,
+            "13-24": 17,
+            "25-36": 13,
+            "37-60": 19,
+            "61-Infinity": 180
           },
           "endStatuses": {
-            "politically-ended": 48,
-            "dead": 88,
-            "ruling": 42,
-            "exiled": 1,
+            "politically-ended": 98,
+            "dead": 160,
+            "ruling": 72,
+            "exiled": 3,
             "abdicated": 1
           },
-          "naturalDeathDuringReign": 83,
+          "naturalDeathDuringReign": 149,
           "naturalDeathAfterPoliticalEnd": 3,
-          "otherRecordedDeaths": 2,
-          "politicalEndWithoutDeath": 49
+          "otherRecordedDeaths": 8,
+          "politicalEndWithoutDeath": 99
         }
       },
-      "oldExpiredLifeSamples": 53,
+      "oldExpiredLifeSamples": 97,
       "balance": {
-        "meanPopulation": 115.46153846153847,
-        "warDeaths": 3563,
-        "splits": 105,
-        "militarySplits": 10,
-        "restorations": 27,
-        "extinctions": 148,
+        "meanPopulation": 115.95833333333333,
+        "warDeaths": 6479,
+        "splits": 229,
+        "militarySplits": 26,
+        "restorations": 64,
+        "extinctions": 308,
         "unifications": 0,
         "populationUnexplained": 0,
         "identityConflicts": 0
@@ -19162,6 +19162,4589 @@
             "strictSaveValid": true,
             "elapsedMs": 26638.899999976158,
             "heapBytes": 65962371
+          },
+          "oldExpiredLifeSamples": 3
+        },
+        {
+          "seed": "regional-14",
+          "groups": {
+            "RESIDENT_FOUNDER": {
+              "count": 18,
+              "accessionAge": {
+                "mean": 74.54166666666666,
+                "median": 70.16666666666667,
+                "p90": 108.5,
+                "max": 136
+              },
+              "naturalDeaths": 13,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 18,
+                "naturalDeaths": 5,
+                "ratio": 0.2777777777777778
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 18,
+                "naturalDeaths": 7,
+                "ratio": 0.3888888888888889
+              },
+              "meanCompletedTenureMonths": 28.61111111111111,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 7,
+                "13-24": 5,
+                "25-36": 1,
+                "37-60": 3,
+                "61-Infinity": 2
+              },
+              "endStatuses": {
+                "dead": 13,
+                "politically-ended": 5
+              },
+              "naturalDeathDuringReign": 7,
+              "naturalDeathAfterPoliticalEnd": 6,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 5
+            },
+            "MILITARY_FOUNDER": {
+              "count": 2,
+              "accessionAge": {
+                "mean": 63.875,
+                "median": 67.83333333333333,
+                "p90": 67.83333333333333,
+                "max": 67.83333333333333
+              },
+              "naturalDeaths": 2,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 2,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 2,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 12.5,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 1,
+                "13-24": 1,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 0
+              },
+              "endStatuses": {
+                "dead": 2
+              },
+              "naturalDeathDuringReign": 0,
+              "naturalDeathAfterPoliticalEnd": 2,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 0
+            },
+            "INITIAL": {
+              "count": 7,
+              "accessionAge": {
+                "mean": 28.571428571428573,
+                "median": 28,
+                "p90": 34,
+                "max": 34
+              },
+              "naturalDeaths": 4,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 420.42857142857144,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 0,
+                "13-24": 0,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 7
+              },
+              "endStatuses": {
+                "dead": 5,
+                "politically-ended": 2
+              },
+              "naturalDeathDuringReign": 4,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 1,
+              "politicalEndWithoutDeath": 2
+            },
+            "SUCCESSOR": {
+              "count": 21,
+              "accessionAge": {
+                "mean": 43.43253968253968,
+                "median": 39.75,
+                "p90": 66.5,
+                "max": 82.41666666666667
+              },
+              "naturalDeaths": 8,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 21,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 21,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 108.63157894736842,
+              "ongoingTenures": 2,
+              "completedTenureBins": {
+                "0-12": 3,
+                "13-24": 2,
+                "25-36": 2,
+                "37-60": 3,
+                "61-Infinity": 9
+              },
+              "endStatuses": {
+                "dead": 10,
+                "politically-ended": 9,
+                "ruling": 2
+              },
+              "naturalDeathDuringReign": 8,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 2,
+              "politicalEndWithoutDeath": 9
+            }
+          },
+          "metrics": {
+            "month": 1200,
+            "worldPopulation": 85,
+            "populationUnexplained": 0,
+            "naturalGrowth": 338,
+            "warDeaths": 244,
+            "activeStates": 2,
+            "historicalStates": 27,
+            "cities": 13,
+            "captures": 122,
+            "recoveries": 16,
+            "siegeCityMonths": 1943,
+            "capturesPer100SiegeCityMonths": 6.278950077200205,
+            "formationSizeSamples": {
+              "2": 22,
+              "3": 461,
+              "4": 271,
+              "5": 125,
+              "6": 315,
+              "7": 112,
+              "8": 277,
+              "9": 203,
+              "10": 485,
+              "11": 254,
+              "12": 687
+            },
+            "factionCommandSamples": {
+              "0": 1927,
+              "1": 1250,
+              "2": 981
+            },
+            "meanFormationSize": 8.014009962640099,
+            "appointments": 20,
+            "offices": {
+              "pijiang": 20,
+              "jiangjun": 13,
+              "shangjiangjun": 7,
+              "promotions": 20,
+              "meanServiceMonths": 160.5,
+              "currentOffices": [
+                "JIANGJUN",
+                "PIJIANG"
+              ],
+              "naturalDeaths": 5,
+              "ageRetirements": 8,
+              "highOfficeMerits": [
+                {
+                  "serviceMonths": 132,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 132,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 300,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 156,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 180,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 180,
+                  "verifiedMerits": 3
+                }
+              ],
+              "activeFormationSizes": [
+                8,
+                12
+              ]
+            },
+            "promotions": [
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 132
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 132
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 300
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 156
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 108
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 180
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 84
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 180
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              }
+            ],
+            "meanServiceMonths": 160.5,
+            "matureEnded": 12,
+            "matureEndedNeverPromoted": 0,
+            "politicalCandidateChecks": 235,
+            "militaryPoliticalEvents": 0,
+            "depositions": 0,
+            "usurpations": 0,
+            "extinctions": 24,
+            "unifications": 0,
+            "splits": 20,
+            "restorations": 12,
+            "rebellions": 0,
+            "classicRebellions": 0,
+            "frontierRebellions": 0,
+            "canonicalSha256": "83b360e1d409768a900d9463d31e8ef4f124bca35e176e7a98c72540abfd4095",
+            "baseFactsSha256": "8880e24f5b64c3a35782647c5feff895bab047773c312c98150481370411ff96",
+            "monthlyExposure": {
+              "cityMonths": 13677,
+              "politicalCityMonths": 1,
+              "supporters": 6,
+              "identityBlocked": 4,
+              "geographyBlocked": 42,
+              "discontentBlocked": 2
+            },
+            "issuingRulerGrants": 39,
+            "worldRandomPosition": 6613,
+            "regional": {
+              "cityChecks": 1138,
+              "politicalCities": 1,
+              "loyaltyBlocked": 879,
+              "stabilityBlocked": 146,
+              "capacityBlocked": 0,
+              "identityBlocked": 169,
+              "validOrdinary": 2058,
+              "discontentBlocked": 107,
+              "geographyBlocked": 1731,
+              "supporters": 220,
+              "noSupport": 4,
+              "draws": 29,
+              "drawFailed": 29,
+              "executionFailed": 3,
+              "popular": 0,
+              "split": 20,
+              "territorialReturns": 0,
+              "splitChecks": 123,
+              "splitPolitical": 38,
+              "splitRestored": 11,
+              "alive12": 17,
+              "matured12": 20,
+              "alive60": 2,
+              "matured60": 18,
+              "overflow": 0,
+              "popularFunnel": {
+                "cityChecks": 1138,
+                "political": 1,
+                "captureGrace": 0,
+                "cooldown": 0,
+                "capacity": 0,
+                "populationScans": 1,
+                "validUsers": 50,
+                "identityBlocked": 4,
+                "geographyBlocked": 41,
+                "discontentBlocked": 2,
+                "supporters": 7,
+                "noSupport": 0,
+                "candidates": 1,
+                "priorityBlocked": 0,
+                "draws": 1,
+                "expectedHits": 0.017053842857142853,
+                "hits": 0,
+                "misses": 1,
+                "historicalSelected": 0,
+                "founderRestored": 0,
+                "failures": 0,
+                "successes": 0
+              },
+              "popularFailures": {},
+              "spatial": {
+                "invalidPosition": 0,
+                "unowned": 0,
+                "foreign": 6,
+                "otherCity": 175,
+                "otherDistrict": 1496,
+                "disconnected": 54,
+                "outsideLegacy": 1784,
+                "recoveredDistrict": 234,
+                "emptyLegacyArea": 0,
+                "emptyDistrict": 0,
+                "referenceMismatch": 0,
+                "referenceWithOwnedPosition": 0,
+                "arcadePosition": 2058,
+                "logicalPosition": 0,
+                "staleRegistryPosition": 2042
+              },
+              "restored": 11,
+              "worldMonth": 1200,
+              "insufficient12": 0,
+              "insufficient60": 2
+            },
+            "militaryRoyalOverlap": 0,
+            "politicalMilitaryBindings": 0,
+            "duplicatePopulationIds": 0,
+            "currentMilitaryByRegime": [
+              {
+                "factionId": "魏",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 48,
+                "commands": 1
+              },
+              {
+                "factionId": "楚",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 37,
+                "commands": 1
+              }
+            ],
+            "meanActiveStates": 3.465,
+            "meanEndedStateLifetimeMonths": 113.5,
+            "militarySplits": 2,
+            "formationOwnershipConflicts": 0,
+            "residentFounders": 20,
+            "residentLiveBindings": 3,
+            "residentIdentityConflicts": 0,
+            "strictSaveValid": true,
+            "elapsedMs": 30600.09999999404,
+            "heapBytes": 79857366
+          },
+          "oldExpiredLifeSamples": 10
+        },
+        {
+          "seed": "regional-15",
+          "groups": {
+            "RESIDENT_FOUNDER": {
+              "count": 20,
+              "accessionAge": {
+                "mean": 70.46666666666668,
+                "median": 69,
+                "p90": 99,
+                "max": 138.58333333333334
+              },
+              "naturalDeaths": 16,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 19,
+                "naturalDeaths": 2,
+                "ratio": 0.10526315789473684
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 19,
+                "naturalDeaths": 7,
+                "ratio": 0.3684210526315789
+              },
+              "meanCompletedTenureMonths": 18.842105263157894,
+              "ongoingTenures": 1,
+              "completedTenureBins": {
+                "0-12": 7,
+                "13-24": 9,
+                "25-36": 0,
+                "37-60": 3,
+                "61-Infinity": 0
+              },
+              "endStatuses": {
+                "dead": 16,
+                "politically-ended": 3,
+                "ruling": 1
+              },
+              "naturalDeathDuringReign": 8,
+              "naturalDeathAfterPoliticalEnd": 8,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 3
+            },
+            "MILITARY_FOUNDER": {
+              "count": 1,
+              "accessionAge": {
+                "mean": 57.833333333333336,
+                "median": 57.833333333333336,
+                "p90": 57.833333333333336,
+                "max": 57.833333333333336
+              },
+              "naturalDeaths": 1,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 1,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 1,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 17,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 0,
+                "13-24": 1,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 0
+              },
+              "endStatuses": {
+                "dead": 1
+              },
+              "naturalDeathDuringReign": 0,
+              "naturalDeathAfterPoliticalEnd": 1,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 0
+            },
+            "INITIAL": {
+              "count": 7,
+              "accessionAge": {
+                "mean": 28.285714285714285,
+                "median": 28,
+                "p90": 41,
+                "max": 41
+              },
+              "naturalDeaths": 4,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 424.14285714285717,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 0,
+                "13-24": 0,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 7
+              },
+              "endStatuses": {
+                "dead": 4,
+                "politically-ended": 3
+              },
+              "naturalDeathDuringReign": 4,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 3
+            },
+            "SUCCESSOR": {
+              "count": 16,
+              "accessionAge": {
+                "mean": 44.947916666666664,
+                "median": 49.083333333333336,
+                "p90": 58.5,
+                "max": 70
+              },
+              "naturalDeaths": 4,
+              "exact12MonthNaturalDeaths": 1,
+              "exact12MonthNaturalReignDeaths": 1,
+              "naturalWithin12Months": {
+                "fullyObserved": 16,
+                "naturalDeaths": 1,
+                "ratio": 0.0625
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 16,
+                "naturalDeaths": 1,
+                "ratio": 0.0625
+              },
+              "meanCompletedTenureMonths": 147.92857142857142,
+              "ongoingTenures": 2,
+              "completedTenureBins": {
+                "0-12": 3,
+                "13-24": 0,
+                "25-36": 1,
+                "37-60": 2,
+                "61-Infinity": 8
+              },
+              "endStatuses": {
+                "politically-ended": 9,
+                "dead": 5,
+                "ruling": 2
+              },
+              "naturalDeathDuringReign": 4,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 1,
+              "politicalEndWithoutDeath": 9
+            }
+          },
+          "metrics": {
+            "month": 1200,
+            "worldPopulation": 119,
+            "populationUnexplained": 0,
+            "naturalGrowth": 375,
+            "warDeaths": 223,
+            "activeStates": 3,
+            "historicalStates": 28,
+            "cities": 12,
+            "captures": 85,
+            "recoveries": 5,
+            "siegeCityMonths": 1557,
+            "capturesPer100SiegeCityMonths": 5.459216441875402,
+            "formationSizeSamples": {
+              "3": 50,
+              "4": 4,
+              "5": 68,
+              "6": 199,
+              "7": 322,
+              "8": 135,
+              "9": 134,
+              "10": 79,
+              "11": 164,
+              "12": 337
+            },
+            "factionCommandSamples": {
+              "0": 2935,
+              "1": 1178,
+              "2": 157
+            },
+            "meanFormationSize": 8.631367292225201,
+            "appointments": 10,
+            "offices": {
+              "pijiang": 10,
+              "jiangjun": 4,
+              "shangjiangjun": 3,
+              "promotions": 7,
+              "meanServiceMonths": 149,
+              "currentOffices": [
+                "SHANGJIANGJUN",
+                "PIJIANG"
+              ],
+              "naturalDeaths": 5,
+              "ageRetirements": 4,
+              "highOfficeMerits": [
+                {
+                  "serviceMonths": 132,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 204,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 144,
+                  "verifiedMerits": 3
+                }
+              ],
+              "activeFormationSizes": [
+                8,
+                12
+              ]
+            },
+            "promotions": [
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 84
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 132
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 204
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 144
+              }
+            ],
+            "meanServiceMonths": 149,
+            "matureEnded": 4,
+            "matureEndedNeverPromoted": 1,
+            "politicalCandidateChecks": 106,
+            "militaryPoliticalEvents": 0,
+            "depositions": 0,
+            "usurpations": 0,
+            "extinctions": 25,
+            "unifications": 0,
+            "splits": 21,
+            "restorations": 7,
+            "rebellions": 0,
+            "classicRebellions": 0,
+            "frontierRebellions": 0,
+            "canonicalSha256": "ddaa636b5aeb75f4446b59ebf072b8ff40dc29b536e08710a5c8813411760717",
+            "baseFactsSha256": "75a12d14fcb44420d09c840de3da7e354fbade5cf98a1d9ff54511ba4450b7f6",
+            "monthlyExposure": {
+              "cityMonths": 13594,
+              "politicalCityMonths": 0,
+              "supporters": 0,
+              "identityBlocked": 0,
+              "geographyBlocked": 0,
+              "discontentBlocked": 0
+            },
+            "issuingRulerGrants": 16,
+            "worldRandomPosition": 6418,
+            "regional": {
+              "cityChecks": 1131,
+              "politicalCities": 0,
+              "loyaltyBlocked": 968,
+              "stabilityBlocked": 92,
+              "capacityBlocked": 0,
+              "identityBlocked": 93,
+              "validOrdinary": 1983,
+              "discontentBlocked": 126,
+              "geographyBlocked": 1760,
+              "supporters": 97,
+              "noSupport": 6,
+              "draws": 5,
+              "drawFailed": 5,
+              "executionFailed": 0,
+              "popular": 0,
+              "split": 21,
+              "territorialReturns": 0,
+              "splitChecks": 119,
+              "splitPolitical": 34,
+              "splitRestored": 7,
+              "alive12": 16,
+              "matured12": 20,
+              "alive60": 4,
+              "matured60": 19,
+              "overflow": 0,
+              "popularFunnel": {
+                "cityChecks": 1131,
+                "political": 0,
+                "captureGrace": 0,
+                "cooldown": 0,
+                "capacity": 0,
+                "populationScans": 0,
+                "validUsers": 0,
+                "identityBlocked": 0,
+                "geographyBlocked": 0,
+                "discontentBlocked": 0,
+                "supporters": 0,
+                "noSupport": 0,
+                "candidates": 0,
+                "priorityBlocked": 0,
+                "draws": 0,
+                "expectedHits": 0,
+                "hits": 0,
+                "misses": 0,
+                "historicalSelected": 0,
+                "founderRestored": 0,
+                "failures": 0,
+                "successes": 0
+              },
+              "popularFailures": {},
+              "spatial": {
+                "invalidPosition": 0,
+                "unowned": 0,
+                "foreign": 8,
+                "otherCity": 195,
+                "otherDistrict": 1526,
+                "disconnected": 31,
+                "outsideLegacy": 1699,
+                "recoveredDistrict": 144,
+                "emptyLegacyArea": 0,
+                "emptyDistrict": 0,
+                "referenceMismatch": 0,
+                "referenceWithOwnedPosition": 0,
+                "arcadePosition": 1983,
+                "logicalPosition": 0,
+                "staleRegistryPosition": 1964
+              },
+              "restored": 7,
+              "worldMonth": 1200,
+              "insufficient12": 1,
+              "insufficient60": 2
+            },
+            "militaryRoyalOverlap": 0,
+            "politicalMilitaryBindings": 0,
+            "duplicatePopulationIds": 0,
+            "currentMilitaryByRegime": [
+              {
+                "factionId": "燕",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "EMPEROR",
+                "population": 69,
+                "commands": 2
+              },
+              {
+                "factionId": "齐",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 49,
+                "commands": 0
+              },
+              {
+                "factionId": "临淄义军",
+                "factionType": "SPLIT",
+                "stage": "PROVISIONAL",
+                "rank": "LEADER",
+                "population": 1,
+                "commands": 0
+              }
+            ],
+            "meanActiveStates": 3.558333333333333,
+            "meanEndedStateLifetimeMonths": 140.56,
+            "militarySplits": 1,
+            "formationOwnershipConflicts": 0,
+            "residentFounders": 21,
+            "residentLiveBindings": 2,
+            "residentIdentityConflicts": 0,
+            "strictSaveValid": true,
+            "elapsedMs": 29864.90000000596,
+            "heapBytes": 85048741
+          },
+          "oldExpiredLifeSamples": 9
+        },
+        {
+          "seed": "regional-16",
+          "groups": {
+            "RESIDENT_FOUNDER": {
+              "count": 8,
+              "accessionAge": {
+                "mean": 69.4375,
+                "median": 74.66666666666667,
+                "p90": 111,
+                "max": 111
+              },
+              "naturalDeaths": 8,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 8,
+                "naturalDeaths": 2,
+                "ratio": 0.25
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 8,
+                "naturalDeaths": 3,
+                "ratio": 0.375
+              },
+              "meanCompletedTenureMonths": 43.875,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 3,
+                "13-24": 3,
+                "25-36": 0,
+                "37-60": 1,
+                "61-Infinity": 1
+              },
+              "endStatuses": {
+                "dead": 8
+              },
+              "naturalDeathDuringReign": 5,
+              "naturalDeathAfterPoliticalEnd": 3,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 0
+            },
+            "MILITARY_FOUNDER": {
+              "count": 1,
+              "accessionAge": {
+                "mean": 61,
+                "median": 61,
+                "p90": 61,
+                "max": 61
+              },
+              "naturalDeaths": 1,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 1,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 1,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 13,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 0,
+                "13-24": 1,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 0
+              },
+              "endStatuses": {
+                "dead": 1
+              },
+              "naturalDeathDuringReign": 0,
+              "naturalDeathAfterPoliticalEnd": 1,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 0
+            },
+            "INITIAL": {
+              "count": 7,
+              "accessionAge": {
+                "mean": 28.142857142857142,
+                "median": 28,
+                "p90": 34,
+                "max": 34
+              },
+              "naturalDeaths": 3,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 330.57142857142856,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 0,
+                "13-24": 0,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 7
+              },
+              "endStatuses": {
+                "politically-ended": 3,
+                "dead": 4
+              },
+              "naturalDeathDuringReign": 3,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 1,
+              "politicalEndWithoutDeath": 3
+            },
+            "SUCCESSOR": {
+              "count": 15,
+              "accessionAge": {
+                "mean": 41.461111111111116,
+                "median": 44.333333333333336,
+                "p90": 57.333333333333336,
+                "max": 73.25
+              },
+              "naturalDeaths": 6,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 15,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 15,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 144.9090909090909,
+              "ongoingTenures": 4,
+              "completedTenureBins": {
+                "0-12": 1,
+                "13-24": 1,
+                "25-36": 0,
+                "37-60": 1,
+                "61-Infinity": 8
+              },
+              "endStatuses": {
+                "politically-ended": 4,
+                "dead": 7,
+                "ruling": 4
+              },
+              "naturalDeathDuringReign": 6,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 1,
+              "politicalEndWithoutDeath": 4
+            }
+          },
+          "metrics": {
+            "month": 1200,
+            "worldPopulation": 115,
+            "populationUnexplained": 0,
+            "naturalGrowth": 354,
+            "warDeaths": 275,
+            "activeStates": 4,
+            "historicalStates": 16,
+            "cities": 15,
+            "captures": 101,
+            "recoveries": 13,
+            "siegeCityMonths": 1880,
+            "capturesPer100SiegeCityMonths": 5.372340425531915,
+            "formationSizeSamples": {
+              "4": 149,
+              "5": 234,
+              "6": 3,
+              "7": 17,
+              "8": 285,
+              "9": 281,
+              "10": 85,
+              "11": 164,
+              "12": 546
+            },
+            "factionCommandSamples": {
+              "0": 2196,
+              "1": 1194,
+              "2": 285
+            },
+            "meanFormationSize": 9.023809523809524,
+            "appointments": 11,
+            "offices": {
+              "pijiang": 11,
+              "jiangjun": 9,
+              "shangjiangjun": 2,
+              "promotions": 11,
+              "meanServiceMonths": 160.1818181818182,
+              "currentOffices": [
+                "JIANGJUN",
+                "JIANGJUN"
+              ],
+              "naturalDeaths": 2,
+              "ageRetirements": 3,
+              "highOfficeMerits": [
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 144,
+                  "verifiedMerits": 3
+                }
+              ],
+              "activeFormationSizes": [
+                4,
+                5
+              ]
+            },
+            "promotions": [
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 168
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 96
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 144
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 84
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              }
+            ],
+            "meanServiceMonths": 160.1818181818182,
+            "matureEnded": 7,
+            "matureEndedNeverPromoted": 0,
+            "politicalCandidateChecks": 96,
+            "militaryPoliticalEvents": 0,
+            "depositions": 0,
+            "usurpations": 1,
+            "extinctions": 12,
+            "unifications": 0,
+            "splits": 9,
+            "restorations": 0,
+            "rebellions": 0,
+            "classicRebellions": 0,
+            "frontierRebellions": 0,
+            "canonicalSha256": "1e9b718cbb5416920758a3902b7b7ad6f1a3e89ea1e131edcb612828ed2c3054",
+            "baseFactsSha256": "527785aafa4bd7b33aec88897e328115f11e5e85712637af9f79ac98566d272b",
+            "monthlyExposure": {
+              "cityMonths": 14398,
+              "politicalCityMonths": 0,
+              "supporters": 0,
+              "identityBlocked": 0,
+              "geographyBlocked": 0,
+              "discontentBlocked": 0
+            },
+            "issuingRulerGrants": 18,
+            "worldRandomPosition": 5958,
+            "regional": {
+              "cityChecks": 1198,
+              "politicalCities": 0,
+              "loyaltyBlocked": 1031,
+              "stabilityBlocked": 110,
+              "capacityBlocked": 0,
+              "identityBlocked": 27,
+              "validOrdinary": 551,
+              "discontentBlocked": 38,
+              "geographyBlocked": 477,
+              "supporters": 36,
+              "noSupport": 8,
+              "draws": 0,
+              "drawFailed": 0,
+              "executionFailed": 0,
+              "popular": 0,
+              "split": 9,
+              "territorialReturns": 0,
+              "splitChecks": 169,
+              "splitPolitical": 17,
+              "splitRestored": 0,
+              "alive12": 7,
+              "matured12": 9,
+              "alive60": 4,
+              "matured60": 9,
+              "overflow": 0,
+              "popularFunnel": {
+                "cityChecks": 1198,
+                "political": 0,
+                "captureGrace": 0,
+                "cooldown": 0,
+                "capacity": 0,
+                "populationScans": 0,
+                "validUsers": 0,
+                "identityBlocked": 0,
+                "geographyBlocked": 0,
+                "discontentBlocked": 0,
+                "supporters": 0,
+                "noSupport": 0,
+                "candidates": 0,
+                "priorityBlocked": 0,
+                "draws": 0,
+                "expectedHits": 0,
+                "hits": 0,
+                "misses": 0,
+                "historicalSelected": 0,
+                "founderRestored": 0,
+                "failures": 0,
+                "successes": 0
+              },
+              "popularFailures": {},
+              "spatial": {
+                "invalidPosition": 0,
+                "unowned": 0,
+                "foreign": 1,
+                "otherCity": 56,
+                "otherDistrict": 419,
+                "disconnected": 1,
+                "outsideLegacy": 470,
+                "recoveredDistrict": 53,
+                "emptyLegacyArea": 0,
+                "emptyDistrict": 0,
+                "referenceMismatch": 0,
+                "referenceWithOwnedPosition": 0,
+                "arcadePosition": 551,
+                "logicalPosition": 0,
+                "staleRegistryPosition": 548
+              },
+              "restored": 0,
+              "worldMonth": 1200,
+              "insufficient12": 0,
+              "insufficient60": 0
+            },
+            "militaryRoyalOverlap": 0,
+            "politicalMilitaryBindings": 0,
+            "duplicatePopulationIds": 0,
+            "currentMilitaryByRegime": [
+              {
+                "factionId": "燕",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 53,
+                "commands": 0
+              },
+              {
+                "factionId": "楚",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 33,
+                "commands": 0
+              },
+              {
+                "factionId": "邯郸东义军",
+                "factionType": "SPLIT",
+                "stage": "PROVISIONAL",
+                "rank": "LEADER",
+                "population": 11,
+                "commands": 1
+              },
+              {
+                "factionId": "鄣义军",
+                "factionType": "SPLIT",
+                "stage": "PROVISIONAL",
+                "rank": "LEADER",
+                "population": 18,
+                "commands": 1
+              }
+            ],
+            "meanActiveStates": 3.0625,
+            "meanEndedStateLifetimeMonths": 170,
+            "militarySplits": 1,
+            "formationOwnershipConflicts": 0,
+            "residentFounders": 9,
+            "residentLiveBindings": 0,
+            "residentIdentityConflicts": 0,
+            "strictSaveValid": true,
+            "elapsedMs": 28622.30000001192,
+            "heapBytes": 61024772
+          },
+          "oldExpiredLifeSamples": 5
+        },
+        {
+          "seed": "regional-17",
+          "groups": {
+            "RESIDENT_FOUNDER": {
+              "count": 7,
+              "accessionAge": {
+                "mean": 65.53571428571429,
+                "median": 64.16666666666667,
+                "p90": 97.5,
+                "max": 97.5
+              },
+              "naturalDeaths": 6,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 76.16666666666667,
+              "ongoingTenures": 1,
+              "completedTenureBins": {
+                "0-12": 0,
+                "13-24": 1,
+                "25-36": 1,
+                "37-60": 2,
+                "61-Infinity": 2
+              },
+              "endStatuses": {
+                "dead": 6,
+                "ruling": 1
+              },
+              "naturalDeathDuringReign": 2,
+              "naturalDeathAfterPoliticalEnd": 4,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 0
+            },
+            "MILITARY_FOUNDER": {
+              "count": 3,
+              "accessionAge": {
+                "mean": 56.055555555555564,
+                "median": 55.833333333333336,
+                "p90": 56.75,
+                "max": 56.75
+              },
+              "naturalDeaths": 1,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 3,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 3,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 114,
+              "ongoingTenures": 2,
+              "completedTenureBins": {
+                "0-12": 0,
+                "13-24": 0,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 1
+              },
+              "endStatuses": {
+                "dead": 1,
+                "ruling": 2
+              },
+              "naturalDeathDuringReign": 0,
+              "naturalDeathAfterPoliticalEnd": 1,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 0
+            },
+            "INITIAL": {
+              "count": 7,
+              "accessionAge": {
+                "mean": 30.428571428571427,
+                "median": 28,
+                "p90": 37,
+                "max": 37
+              },
+              "naturalDeaths": 3,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 326.42857142857144,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 0,
+                "13-24": 0,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 7
+              },
+              "endStatuses": {
+                "dead": 4,
+                "politically-ended": 3
+              },
+              "naturalDeathDuringReign": 3,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 1,
+              "politicalEndWithoutDeath": 3
+            },
+            "SUCCESSOR": {
+              "count": 9,
+              "accessionAge": {
+                "mean": 42.39814814814815,
+                "median": 47.583333333333336,
+                "p90": 61,
+                "max": 61
+              },
+              "naturalDeaths": 4,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 9,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 9,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 215.57142857142858,
+              "ongoingTenures": 2,
+              "completedTenureBins": {
+                "0-12": 0,
+                "13-24": 1,
+                "25-36": 1,
+                "37-60": 1,
+                "61-Infinity": 4
+              },
+              "endStatuses": {
+                "dead": 4,
+                "ruling": 2,
+                "politically-ended": 3
+              },
+              "naturalDeathDuringReign": 4,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 3
+            }
+          },
+          "metrics": {
+            "month": 1200,
+            "worldPopulation": 106,
+            "populationUnexplained": 0,
+            "naturalGrowth": 380,
+            "warDeaths": 285,
+            "activeStates": 5,
+            "historicalStates": 17,
+            "cities": 15,
+            "captures": 99,
+            "recoveries": 14,
+            "siegeCityMonths": 1863,
+            "capturesPer100SiegeCityMonths": 5.314009661835748,
+            "formationSizeSamples": {
+              "2": 120,
+              "3": 247,
+              "5": 25,
+              "6": 6,
+              "7": 39,
+              "8": 80,
+              "9": 56,
+              "10": 179,
+              "11": 238,
+              "12": 408
+            },
+            "factionCommandSamples": {
+              "0": 2725,
+              "1": 1024,
+              "2": 187
+            },
+            "meanFormationSize": 8.485693848354792,
+            "appointments": 12,
+            "offices": {
+              "pijiang": 12,
+              "jiangjun": 6,
+              "shangjiangjun": 4,
+              "promotions": 10,
+              "meanServiceMonths": 116.41666666666667,
+              "currentOffices": [
+                "JIANGJUN"
+              ],
+              "naturalDeaths": 2,
+              "ageRetirements": 3,
+              "highOfficeMerits": [
+                {
+                  "serviceMonths": 192,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 204,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                }
+              ],
+              "activeFormationSizes": [
+                10
+              ]
+            },
+            "promotions": [
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 72
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 192
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 108
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 204
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 144
+              }
+            ],
+            "meanServiceMonths": 116.41666666666667,
+            "matureEnded": 6,
+            "matureEndedNeverPromoted": 1,
+            "politicalCandidateChecks": 57,
+            "militaryPoliticalEvents": 0,
+            "depositions": 0,
+            "usurpations": 0,
+            "extinctions": 12,
+            "unifications": 0,
+            "splits": 10,
+            "restorations": 1,
+            "rebellions": 0,
+            "classicRebellions": 0,
+            "frontierRebellions": 0,
+            "canonicalSha256": "3b589b282aabab8c1bbb77edb76c3c850c5707301b96046090deaddc00be5830",
+            "baseFactsSha256": "39fe3fff3db2980e87f0fb9641f5322dd6ce52f0a1c67eacac01093a6306b6f5",
+            "monthlyExposure": {
+              "cityMonths": 14700,
+              "politicalCityMonths": 0,
+              "supporters": 0,
+              "identityBlocked": 0,
+              "geographyBlocked": 0,
+              "discontentBlocked": 0
+            },
+            "issuingRulerGrants": 14,
+            "worldRandomPosition": 6188,
+            "regional": {
+              "cityChecks": 1223,
+              "politicalCities": 0,
+              "loyaltyBlocked": 1013,
+              "stabilityBlocked": 97,
+              "capacityBlocked": 0,
+              "identityBlocked": 27,
+              "validOrdinary": 665,
+              "discontentBlocked": 39,
+              "geographyBlocked": 547,
+              "supporters": 79,
+              "noSupport": 2,
+              "draws": 0,
+              "drawFailed": 0,
+              "executionFailed": 0,
+              "popular": 0,
+              "split": 10,
+              "territorialReturns": 0,
+              "splitChecks": 161,
+              "splitPolitical": 13,
+              "splitRestored": 1,
+              "alive12": 10,
+              "matured12": 10,
+              "alive60": 7,
+              "matured60": 10,
+              "overflow": 0,
+              "popularFunnel": {
+                "cityChecks": 1223,
+                "political": 0,
+                "captureGrace": 0,
+                "cooldown": 0,
+                "capacity": 0,
+                "populationScans": 0,
+                "validUsers": 0,
+                "identityBlocked": 0,
+                "geographyBlocked": 0,
+                "discontentBlocked": 0,
+                "supporters": 0,
+                "noSupport": 0,
+                "candidates": 0,
+                "priorityBlocked": 0,
+                "draws": 0,
+                "expectedHits": 0,
+                "hits": 0,
+                "misses": 0,
+                "historicalSelected": 0,
+                "founderRestored": 0,
+                "failures": 0,
+                "successes": 0
+              },
+              "popularFailures": {},
+              "spatial": {
+                "invalidPosition": 0,
+                "unowned": 0,
+                "foreign": 3,
+                "otherCity": 73,
+                "otherDistrict": 467,
+                "disconnected": 4,
+                "outsideLegacy": 556,
+                "recoveredDistrict": 85,
+                "emptyLegacyArea": 0,
+                "emptyDistrict": 0,
+                "referenceMismatch": 0,
+                "referenceWithOwnedPosition": 0,
+                "arcadePosition": 665,
+                "logicalPosition": 0,
+                "staleRegistryPosition": 662
+              },
+              "restored": 1,
+              "worldMonth": 1200,
+              "insufficient12": 0,
+              "insufficient60": 0
+            },
+            "militaryRoyalOverlap": 0,
+            "politicalMilitaryBindings": 2,
+            "duplicatePopulationIds": 0,
+            "currentMilitaryByRegime": [
+              {
+                "factionId": "秦",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 35,
+                "commands": 0
+              },
+              {
+                "factionId": "魏",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 34,
+                "commands": 0
+              },
+              {
+                "factionId": "邯郸北义军",
+                "factionType": "SPLIT",
+                "stage": "PROVISIONAL",
+                "rank": "LEADER",
+                "population": 19,
+                "commands": 1
+              },
+              {
+                "factionId": "盱眙义军",
+                "factionType": "SPLIT",
+                "stage": "PROVISIONAL",
+                "rank": "LEADER",
+                "population": 11,
+                "commands": 0
+              },
+              {
+                "factionId": "新郑东义军",
+                "factionType": "SPLIT",
+                "stage": "PROVISIONAL",
+                "rank": "LEADER",
+                "population": 7,
+                "commands": 0
+              }
+            ],
+            "meanActiveStates": 3.28,
+            "meanEndedStateLifetimeMonths": 208.91666666666666,
+            "militarySplits": 3,
+            "formationOwnershipConflicts": 0,
+            "residentFounders": 10,
+            "residentLiveBindings": 3,
+            "residentIdentityConflicts": 0,
+            "strictSaveValid": true,
+            "elapsedMs": 27730.90000000596,
+            "heapBytes": 93971162
+          },
+          "oldExpiredLifeSamples": 3
+        },
+        {
+          "seed": "regional-18",
+          "groups": {
+            "RESIDENT_FOUNDER": {
+              "count": 4,
+              "accessionAge": {
+                "mean": 69.75,
+                "median": 73,
+                "p90": 124.08333333333333,
+                "max": 124.08333333333333
+              },
+              "naturalDeaths": 3,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 4,
+                "naturalDeaths": 2,
+                "ratio": 0.5
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 4,
+                "naturalDeaths": 2,
+                "ratio": 0.5
+              },
+              "meanCompletedTenureMonths": 6.25,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 3,
+                "13-24": 1,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 0
+              },
+              "endStatuses": {
+                "dead": 3,
+                "politically-ended": 1
+              },
+              "naturalDeathDuringReign": 2,
+              "naturalDeathAfterPoliticalEnd": 1,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 1
+            },
+            "MILITARY_FOUNDER": {
+              "count": 1,
+              "accessionAge": {
+                "mean": 66.16666666666667,
+                "median": 66.16666666666667,
+                "p90": 66.16666666666667,
+                "max": 66.16666666666667
+              },
+              "naturalDeaths": 1,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 1,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 1,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 8,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 1,
+                "13-24": 0,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 0
+              },
+              "endStatuses": {
+                "dead": 1
+              },
+              "naturalDeathDuringReign": 0,
+              "naturalDeathAfterPoliticalEnd": 1,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 0
+            },
+            "INITIAL": {
+              "count": 7,
+              "accessionAge": {
+                "mean": 31.428571428571427,
+                "median": 34,
+                "p90": 41,
+                "max": 41
+              },
+              "naturalDeaths": 3,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 340,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 0,
+                "13-24": 0,
+                "25-36": 0,
+                "37-60": 1,
+                "61-Infinity": 6
+              },
+              "endStatuses": {
+                "dead": 4,
+                "politically-ended": 3
+              },
+              "naturalDeathDuringReign": 3,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 1,
+              "politicalEndWithoutDeath": 3
+            },
+            "SUCCESSOR": {
+              "count": 12,
+              "accessionAge": {
+                "mean": 41.34722222222222,
+                "median": 41.25,
+                "p90": 49.25,
+                "max": 55.833333333333336
+              },
+              "naturalDeaths": 7,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 12,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 12,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 223,
+              "ongoingTenures": 3,
+              "completedTenureBins": {
+                "0-12": 0,
+                "13-24": 0,
+                "25-36": 1,
+                "37-60": 0,
+                "61-Infinity": 8
+              },
+              "endStatuses": {
+                "dead": 7,
+                "ruling": 3,
+                "politically-ended": 2
+              },
+              "naturalDeathDuringReign": 7,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 2
+            }
+          },
+          "metrics": {
+            "month": 1200,
+            "worldPopulation": 108,
+            "populationUnexplained": 0,
+            "naturalGrowth": 360,
+            "warDeaths": 314,
+            "activeStates": 3,
+            "historicalStates": 12,
+            "cities": 17,
+            "captures": 101,
+            "recoveries": 15,
+            "siegeCityMonths": 1994,
+            "capturesPer100SiegeCityMonths": 5.0651955867602805,
+            "formationSizeSamples": {
+              "3": 246,
+              "5": 24,
+              "6": 37,
+              "7": 140,
+              "8": 127,
+              "9": 256,
+              "10": 148,
+              "11": 501,
+              "12": 658
+            },
+            "factionCommandSamples": {
+              "0": 2141,
+              "1": 1561,
+              "2": 288
+            },
+            "meanFormationSize": 9.483855872718765,
+            "appointments": 18,
+            "offices": {
+              "pijiang": 18,
+              "jiangjun": 10,
+              "shangjiangjun": 3,
+              "promotions": 13,
+              "meanServiceMonths": 118.61111111111111,
+              "currentOffices": [
+                "JIANGJUN",
+                "PIJIANG"
+              ],
+              "naturalDeaths": 4,
+              "ageRetirements": 8,
+              "highOfficeMerits": [
+                {
+                  "serviceMonths": 348,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 132,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                }
+              ],
+              "activeFormationSizes": [
+                10,
+                12
+              ]
+            },
+            "promotions": [
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 108
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 348
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 72
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 84
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 72
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 132
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 96
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              }
+            ],
+            "meanServiceMonths": 118.61111111111111,
+            "matureEnded": 11,
+            "matureEndedNeverPromoted": 2,
+            "politicalCandidateChecks": 123,
+            "militaryPoliticalEvents": 0,
+            "depositions": 0,
+            "usurpations": 0,
+            "extinctions": 9,
+            "unifications": 0,
+            "splits": 5,
+            "restorations": 0,
+            "rebellions": 0,
+            "classicRebellions": 0,
+            "frontierRebellions": 0,
+            "canonicalSha256": "20c7393dfc290d5d12aa53bcf2c139f447b7c4abdec6a3399cffbc42f4e12992",
+            "baseFactsSha256": "7bf1d628c10e020bcb0da97ebd07c3981e622d5d6fe05747acaa531adc96e762",
+            "monthlyExposure": {
+              "cityMonths": 14362,
+              "politicalCityMonths": 0,
+              "supporters": 0,
+              "identityBlocked": 0,
+              "geographyBlocked": 0,
+              "discontentBlocked": 0
+            },
+            "issuingRulerGrants": 30,
+            "worldRandomPosition": 5917,
+            "regional": {
+              "cityChecks": 1194,
+              "politicalCities": 0,
+              "loyaltyBlocked": 1015,
+              "stabilityBlocked": 79,
+              "capacityBlocked": 0,
+              "identityBlocked": 38,
+              "validOrdinary": 578,
+              "discontentBlocked": 21,
+              "geographyBlocked": 539,
+              "supporters": 18,
+              "noSupport": 7,
+              "draws": 3,
+              "drawFailed": 3,
+              "executionFailed": 0,
+              "popular": 0,
+              "split": 5,
+              "territorialReturns": 0,
+              "splitChecks": 172,
+              "splitPolitical": 12,
+              "splitRestored": 0,
+              "alive12": 3,
+              "matured12": 5,
+              "alive60": 1,
+              "matured60": 5,
+              "overflow": 0,
+              "popularFunnel": {
+                "cityChecks": 1194,
+                "political": 0,
+                "captureGrace": 0,
+                "cooldown": 0,
+                "capacity": 0,
+                "populationScans": 0,
+                "validUsers": 0,
+                "identityBlocked": 0,
+                "geographyBlocked": 0,
+                "discontentBlocked": 0,
+                "supporters": 0,
+                "noSupport": 0,
+                "candidates": 0,
+                "priorityBlocked": 0,
+                "draws": 0,
+                "expectedHits": 0,
+                "hits": 0,
+                "misses": 0,
+                "historicalSelected": 0,
+                "founderRestored": 0,
+                "failures": 0,
+                "successes": 0
+              },
+              "popularFailures": {},
+              "spatial": {
+                "invalidPosition": 0,
+                "unowned": 0,
+                "foreign": 7,
+                "otherCity": 63,
+                "otherDistrict": 434,
+                "disconnected": 35,
+                "outsideLegacy": 481,
+                "recoveredDistrict": 13,
+                "emptyLegacyArea": 0,
+                "emptyDistrict": 0,
+                "referenceMismatch": 0,
+                "referenceWithOwnedPosition": 0,
+                "arcadePosition": 578,
+                "logicalPosition": 0,
+                "staleRegistryPosition": 577
+              },
+              "restored": 0,
+              "worldMonth": 1200,
+              "insufficient12": 0,
+              "insufficient60": 0
+            },
+            "militaryRoyalOverlap": 0,
+            "politicalMilitaryBindings": 0,
+            "duplicatePopulationIds": 0,
+            "currentMilitaryByRegime": [
+              {
+                "factionId": "秦",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 37,
+                "commands": 1
+              },
+              {
+                "factionId": "燕",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 44,
+                "commands": 1
+              },
+              {
+                "factionId": "楚",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 27,
+                "commands": 0
+              }
+            ],
+            "meanActiveStates": 3.325,
+            "meanEndedStateLifetimeMonths": 139.11111111111111,
+            "militarySplits": 1,
+            "formationOwnershipConflicts": 0,
+            "residentFounders": 5,
+            "residentLiveBindings": 0,
+            "residentIdentityConflicts": 0,
+            "strictSaveValid": true,
+            "elapsedMs": 30623.30000001192,
+            "heapBytes": 72897153
+          },
+          "oldExpiredLifeSamples": 2
+        },
+        {
+          "seed": "regional-19",
+          "groups": {
+            "RESIDENT_FOUNDER": {
+              "count": 14,
+              "accessionAge": {
+                "mean": 55.39285714285713,
+                "median": 53.583333333333336,
+                "p90": 85,
+                "max": 88.75
+              },
+              "naturalDeaths": 13,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 14,
+                "naturalDeaths": 2,
+                "ratio": 0.14285714285714285
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 14,
+                "naturalDeaths": 3,
+                "ratio": 0.21428571428571427
+              },
+              "meanCompletedTenureMonths": 50.785714285714285,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 9,
+                "13-24": 3,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 2
+              },
+              "endStatuses": {
+                "dead": 13,
+                "politically-ended": 1
+              },
+              "naturalDeathDuringReign": 3,
+              "naturalDeathAfterPoliticalEnd": 10,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 1
+            },
+            "MILITARY_FOUNDER": {
+              "count": 2,
+              "accessionAge": {
+                "mean": 46.25,
+                "median": 53,
+                "p90": 53,
+                "max": 53
+              },
+              "naturalDeaths": 1,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 2,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 2,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 65.5,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 0,
+                "13-24": 1,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 1
+              },
+              "endStatuses": {
+                "dead": 1,
+                "politically-ended": 1
+              },
+              "naturalDeathDuringReign": 0,
+              "naturalDeathAfterPoliticalEnd": 1,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 1
+            },
+            "INITIAL": {
+              "count": 7,
+              "accessionAge": {
+                "mean": 26.857142857142858,
+                "median": 27,
+                "p90": 30,
+                "max": 30
+              },
+              "naturalDeaths": 5,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 352.14285714285717,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 0,
+                "13-24": 0,
+                "25-36": 1,
+                "37-60": 0,
+                "61-Infinity": 6
+              },
+              "endStatuses": {
+                "dead": 6,
+                "politically-ended": 1
+              },
+              "naturalDeathDuringReign": 5,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 1,
+              "politicalEndWithoutDeath": 1
+            },
+            "SUCCESSOR": {
+              "count": 16,
+              "accessionAge": {
+                "mean": 41.86458333333333,
+                "median": 43.583333333333336,
+                "p90": 57,
+                "max": 61.416666666666664
+              },
+              "naturalDeaths": 7,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 16,
+                "naturalDeaths": 1,
+                "ratio": 0.0625
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 14,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 145.36363636363637,
+              "ongoingTenures": 5,
+              "completedTenureBins": {
+                "0-12": 2,
+                "13-24": 1,
+                "25-36": 1,
+                "37-60": 0,
+                "61-Infinity": 7
+              },
+              "endStatuses": {
+                "politically-ended": 4,
+                "dead": 7,
+                "ruling": 4,
+                "exiled": 1
+              },
+              "naturalDeathDuringReign": 7,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 4
+            }
+          },
+          "metrics": {
+            "month": 1200,
+            "worldPopulation": 113,
+            "populationUnexplained": 0,
+            "naturalGrowth": 362,
+            "warDeaths": 261,
+            "activeStates": 4,
+            "historicalStates": 23,
+            "cities": 12,
+            "captures": 108,
+            "recoveries": 14,
+            "siegeCityMonths": 1836,
+            "capturesPer100SiegeCityMonths": 5.88235294117647,
+            "formationSizeSamples": {
+              "2": 209,
+              "3": 97,
+              "4": 7,
+              "5": 493,
+              "6": 7,
+              "7": 36,
+              "8": 205,
+              "9": 87,
+              "10": 345,
+              "11": 237,
+              "12": 528
+            },
+            "factionCommandSamples": {
+              "0": 2396,
+              "1": 1361,
+              "2": 445
+            },
+            "meanFormationSize": 8.135051088405154,
+            "appointments": 18,
+            "offices": {
+              "pijiang": 18,
+              "jiangjun": 10,
+              "shangjiangjun": 4,
+              "promotions": 14,
+              "meanServiceMonths": 124.88888888888889,
+              "currentOffices": [
+                "JIANGJUN",
+                "PIJIANG",
+                "PIJIANG"
+              ],
+              "naturalDeaths": 2,
+              "ageRetirements": 5,
+              "highOfficeMerits": [
+                {
+                  "serviceMonths": 192,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 228,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 216,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 300,
+                  "verifiedMerits": 3
+                }
+              ],
+              "activeFormationSizes": [
+                2,
+                10,
+                12
+              ]
+            },
+            "promotions": [
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 72
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 84
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 192
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 180
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 228
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 144
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 216
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 72
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 300
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 84
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 108
+              }
+            ],
+            "meanServiceMonths": 124.88888888888889,
+            "matureEnded": 10,
+            "matureEndedNeverPromoted": 1,
+            "politicalCandidateChecks": 94,
+            "militaryPoliticalEvents": 0,
+            "depositions": 0,
+            "usurpations": 0,
+            "extinctions": 18,
+            "unifications": 0,
+            "splits": 16,
+            "restorations": 5,
+            "rebellions": 0,
+            "classicRebellions": 0,
+            "frontierRebellions": 0,
+            "canonicalSha256": "9c7ee020e70ed2d93889d6eac8aa56c0bd520cc64624fb09ebf5f4a2d2e4324d",
+            "baseFactsSha256": "76583f466c686927a08084bf375f265e9c249fa5ccd438f747991f974186f940",
+            "monthlyExposure": {
+              "cityMonths": 12878,
+              "politicalCityMonths": 0,
+              "supporters": 0,
+              "identityBlocked": 0,
+              "geographyBlocked": 0,
+              "discontentBlocked": 0
+            },
+            "issuingRulerGrants": 25,
+            "worldRandomPosition": 6205,
+            "regional": {
+              "cityChecks": 1071,
+              "politicalCities": 0,
+              "loyaltyBlocked": 865,
+              "stabilityBlocked": 103,
+              "capacityBlocked": 0,
+              "identityBlocked": 61,
+              "validOrdinary": 1049,
+              "discontentBlocked": 126,
+              "geographyBlocked": 847,
+              "supporters": 76,
+              "noSupport": 2,
+              "draws": 29,
+              "drawFailed": 29,
+              "executionFailed": 0,
+              "popular": 0,
+              "split": 16,
+              "territorialReturns": 0,
+              "splitChecks": 131,
+              "splitPolitical": 23,
+              "splitRestored": 5,
+              "alive12": 10,
+              "matured12": 16,
+              "alive60": 3,
+              "matured60": 15,
+              "overflow": 0,
+              "popularFunnel": {
+                "cityChecks": 1071,
+                "political": 0,
+                "captureGrace": 0,
+                "cooldown": 0,
+                "capacity": 0,
+                "populationScans": 0,
+                "validUsers": 0,
+                "identityBlocked": 0,
+                "geographyBlocked": 0,
+                "discontentBlocked": 0,
+                "supporters": 0,
+                "noSupport": 0,
+                "candidates": 0,
+                "priorityBlocked": 0,
+                "draws": 0,
+                "expectedHits": 0,
+                "hits": 0,
+                "misses": 0,
+                "historicalSelected": 0,
+                "founderRestored": 0,
+                "failures": 0,
+                "successes": 0
+              },
+              "popularFailures": {},
+              "spatial": {
+                "invalidPosition": 0,
+                "unowned": 0,
+                "foreign": 7,
+                "otherCity": 87,
+                "otherDistrict": 745,
+                "disconnected": 8,
+                "outsideLegacy": 885,
+                "recoveredDistrict": 132,
+                "emptyLegacyArea": 0,
+                "emptyDistrict": 0,
+                "referenceMismatch": 0,
+                "referenceWithOwnedPosition": 0,
+                "arcadePosition": 1049,
+                "logicalPosition": 0,
+                "staleRegistryPosition": 1036
+              },
+              "restored": 5,
+              "worldMonth": 1200,
+              "insufficient12": 0,
+              "insufficient60": 1
+            },
+            "militaryRoyalOverlap": 0,
+            "politicalMilitaryBindings": 0,
+            "duplicatePopulationIds": 0,
+            "currentMilitaryByRegime": [
+              {
+                "factionId": "燕",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 43,
+                "commands": 0
+              },
+              {
+                "factionId": "魏",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 49,
+                "commands": 1
+              },
+              {
+                "factionId": "临淄义军",
+                "factionType": "SPLIT",
+                "stage": "PROVISIONAL",
+                "rank": "LEADER",
+                "population": 20,
+                "commands": 2
+              },
+              {
+                "factionId": "临淄东义军",
+                "factionType": "SPLIT",
+                "stage": "PROVISIONAL",
+                "rank": "LEADER",
+                "population": 1,
+                "commands": 0
+              }
+            ],
+            "meanActiveStates": 3.5016666666666665,
+            "meanEndedStateLifetimeMonths": 96.83333333333333,
+            "militarySplits": 2,
+            "formationOwnershipConflicts": 0,
+            "residentFounders": 16,
+            "residentLiveBindings": 0,
+            "residentIdentityConflicts": 0,
+            "strictSaveValid": true,
+            "elapsedMs": 30226.59999999404,
+            "heapBytes": 74454924
+          },
+          "oldExpiredLifeSamples": 3
+        },
+        {
+          "seed": "regional-20",
+          "groups": {
+            "RESIDENT_FOUNDER": {
+              "count": 8,
+              "accessionAge": {
+                "mean": 59.01041666666667,
+                "median": 51.666666666666664,
+                "p90": 138,
+                "max": 138
+              },
+              "naturalDeaths": 4,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 8,
+                "naturalDeaths": 1,
+                "ratio": 0.125
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 8,
+                "naturalDeaths": 1,
+                "ratio": 0.125
+              },
+              "meanCompletedTenureMonths": 12.571428571428571,
+              "ongoingTenures": 1,
+              "completedTenureBins": {
+                "0-12": 4,
+                "13-24": 2,
+                "25-36": 1,
+                "37-60": 0,
+                "61-Infinity": 0
+              },
+              "endStatuses": {
+                "dead": 5,
+                "politically-ended": 2,
+                "ruling": 1
+              },
+              "naturalDeathDuringReign": 1,
+              "naturalDeathAfterPoliticalEnd": 3,
+              "otherRecordedDeaths": 1,
+              "politicalEndWithoutDeath": 2
+            },
+            "MILITARY_FOUNDER": {
+              "count": 1,
+              "accessionAge": {
+                "mean": 65.08333333333333,
+                "median": 65.08333333333333,
+                "p90": 65.08333333333333,
+                "max": 65.08333333333333
+              },
+              "naturalDeaths": 0,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 1,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 1,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 17,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 0,
+                "13-24": 1,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 0
+              },
+              "endStatuses": {
+                "politically-ended": 1
+              },
+              "naturalDeathDuringReign": 0,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 1
+            },
+            "INITIAL": {
+              "count": 7,
+              "accessionAge": {
+                "mean": 30.857142857142858,
+                "median": 34,
+                "p90": 37,
+                "max": 37
+              },
+              "naturalDeaths": 5,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 330,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 0,
+                "13-24": 0,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 7
+              },
+              "endStatuses": {
+                "dead": 6,
+                "politically-ended": 1
+              },
+              "naturalDeathDuringReign": 5,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 1,
+              "politicalEndWithoutDeath": 1
+            },
+            "SUCCESSOR": {
+              "count": 12,
+              "accessionAge": {
+                "mean": 40.423611111111114,
+                "median": 46.166666666666664,
+                "p90": 63.583333333333336,
+                "max": 65.33333333333333
+              },
+              "naturalDeaths": 7,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 12,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 12,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 225,
+              "ongoingTenures": 3,
+              "completedTenureBins": {
+                "0-12": 1,
+                "13-24": 0,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 8
+              },
+              "endStatuses": {
+                "dead": 7,
+                "ruling": 3,
+                "politically-ended": 2
+              },
+              "naturalDeathDuringReign": 7,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 2
+            }
+          },
+          "metrics": {
+            "month": 1200,
+            "worldPopulation": 118,
+            "populationUnexplained": 0,
+            "naturalGrowth": 380,
+            "warDeaths": 334,
+            "activeStates": 4,
+            "historicalStates": 16,
+            "cities": 18,
+            "captures": 96,
+            "recoveries": 20,
+            "siegeCityMonths": 2142,
+            "capturesPer100SiegeCityMonths": 4.481792717086835,
+            "formationSizeSamples": {
+              "6": 10,
+              "8": 259,
+              "9": 133,
+              "10": 260,
+              "11": 430,
+              "12": 496
+            },
+            "factionCommandSamples": {
+              "0": 3073,
+              "1": 1132,
+              "2": 228
+            },
+            "meanFormationSize": 10.460327455919396,
+            "appointments": 13,
+            "offices": {
+              "pijiang": 13,
+              "jiangjun": 8,
+              "shangjiangjun": 4,
+              "promotions": 12,
+              "meanServiceMonths": 122.15384615384616,
+              "currentOffices": [],
+              "naturalDeaths": 2,
+              "ageRetirements": 8,
+              "highOfficeMerits": [
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 300,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 144,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 180,
+                  "verifiedMerits": 3
+                }
+              ],
+              "activeFormationSizes": []
+            },
+            "promotions": [
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 144
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 300
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 72
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 144
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 180
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              }
+            ],
+            "meanServiceMonths": 122.15384615384616,
+            "matureEnded": 10,
+            "matureEndedNeverPromoted": 2,
+            "politicalCandidateChecks": 105,
+            "militaryPoliticalEvents": 0,
+            "depositions": 0,
+            "usurpations": 0,
+            "extinctions": 12,
+            "unifications": 0,
+            "splits": 9,
+            "restorations": 1,
+            "rebellions": 0,
+            "classicRebellions": 0,
+            "frontierRebellions": 0,
+            "canonicalSha256": "020f148ccde61a0e9f7db7c22b9e7c9a66469858364c07a21e391180f030f2c6",
+            "baseFactsSha256": "05d6feb841c72e5b1f851dfd4e86a0d70edce510ef2a3f3110c875a77b724519",
+            "monthlyExposure": {
+              "cityMonths": 16012,
+              "politicalCityMonths": 0,
+              "supporters": 0,
+              "identityBlocked": 0,
+              "geographyBlocked": 0,
+              "discontentBlocked": 0
+            },
+            "issuingRulerGrants": 25,
+            "worldRandomPosition": 6561,
+            "regional": {
+              "cityChecks": 1332,
+              "politicalCities": 0,
+              "loyaltyBlocked": 1205,
+              "stabilityBlocked": 34,
+              "capacityBlocked": 0,
+              "identityBlocked": 37,
+              "validOrdinary": 479,
+              "discontentBlocked": 32,
+              "geographyBlocked": 424,
+              "supporters": 23,
+              "noSupport": 2,
+              "draws": 0,
+              "drawFailed": 0,
+              "executionFailed": 0,
+              "popular": 0,
+              "split": 9,
+              "territorialReturns": 0,
+              "splitChecks": 162,
+              "splitPolitical": 12,
+              "splitRestored": 1,
+              "alive12": 5,
+              "matured12": 9,
+              "alive60": 0,
+              "matured60": 6,
+              "overflow": 0,
+              "popularFunnel": {
+                "cityChecks": 1332,
+                "political": 0,
+                "captureGrace": 0,
+                "cooldown": 0,
+                "capacity": 0,
+                "populationScans": 0,
+                "validUsers": 0,
+                "identityBlocked": 0,
+                "geographyBlocked": 0,
+                "discontentBlocked": 0,
+                "supporters": 0,
+                "noSupport": 0,
+                "candidates": 0,
+                "priorityBlocked": 0,
+                "draws": 0,
+                "expectedHits": 0,
+                "hits": 0,
+                "misses": 0,
+                "historicalSelected": 0,
+                "founderRestored": 0,
+                "failures": 0,
+                "successes": 0
+              },
+              "popularFailures": {},
+              "spatial": {
+                "invalidPosition": 0,
+                "unowned": 0,
+                "foreign": 2,
+                "otherCity": 53,
+                "otherDistrict": 363,
+                "disconnected": 6,
+                "outsideLegacy": 396,
+                "recoveredDistrict": 28,
+                "emptyLegacyArea": 0,
+                "emptyDistrict": 0,
+                "referenceMismatch": 0,
+                "referenceWithOwnedPosition": 0,
+                "arcadePosition": 479,
+                "logicalPosition": 0,
+                "staleRegistryPosition": 475
+              },
+              "restored": 1,
+              "worldMonth": 1200,
+              "insufficient12": 0,
+              "insufficient60": 3
+            },
+            "militaryRoyalOverlap": 0,
+            "politicalMilitaryBindings": 0,
+            "duplicatePopulationIds": 0,
+            "currentMilitaryByRegime": [
+              {
+                "factionId": "秦",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 40,
+                "commands": 0
+              },
+              {
+                "factionId": "燕",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 35,
+                "commands": 0
+              },
+              {
+                "factionId": "魏",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 39,
+                "commands": 0
+              },
+              {
+                "factionId": "番禺义军",
+                "factionType": "SPLIT",
+                "stage": "PROVISIONAL",
+                "rank": "LEADER",
+                "population": 4,
+                "commands": 0
+              }
+            ],
+            "meanActiveStates": 3.694166666666667,
+            "meanEndedStateLifetimeMonths": 168.83333333333334,
+            "militarySplits": 1,
+            "formationOwnershipConflicts": 0,
+            "residentFounders": 9,
+            "residentLiveBindings": 2,
+            "residentIdentityConflicts": 0,
+            "strictSaveValid": true,
+            "elapsedMs": 32843.30000001192,
+            "heapBytes": 59231638
+          },
+          "oldExpiredLifeSamples": 1
+        },
+        {
+          "seed": "regional-21",
+          "groups": {
+            "RESIDENT_FOUNDER": {
+              "count": 10,
+              "accessionAge": {
+                "mean": 57.21666666666666,
+                "median": 54.833333333333336,
+                "p90": 103.5,
+                "max": 103.5
+              },
+              "naturalDeaths": 8,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 10,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 10,
+                "naturalDeaths": 1,
+                "ratio": 0.1
+              },
+              "meanCompletedTenureMonths": 15.9,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 7,
+                "13-24": 1,
+                "25-36": 0,
+                "37-60": 2,
+                "61-Infinity": 0
+              },
+              "endStatuses": {
+                "dead": 8,
+                "politically-ended": 2
+              },
+              "naturalDeathDuringReign": 0,
+              "naturalDeathAfterPoliticalEnd": 8,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 2
+            },
+            "MILITARY_FOUNDER": {
+              "count": 0,
+              "accessionAge": {
+                "mean": null,
+                "median": null,
+                "p90": null,
+                "max": 0
+              },
+              "naturalDeaths": 0,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 0,
+                "naturalDeaths": 0,
+                "ratio": null
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 0,
+                "naturalDeaths": 0,
+                "ratio": null
+              },
+              "meanCompletedTenureMonths": null,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 0,
+                "13-24": 0,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 0
+              },
+              "endStatuses": {},
+              "naturalDeathDuringReign": 0,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 0
+            },
+            "INITIAL": {
+              "count": 7,
+              "accessionAge": {
+                "mean": 27.857142857142858,
+                "median": 23,
+                "p90": 41,
+                "max": 41
+              },
+              "naturalDeaths": 4,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 370.42857142857144,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 0,
+                "13-24": 0,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 7
+              },
+              "endStatuses": {
+                "dead": 5,
+                "politically-ended": 2
+              },
+              "naturalDeathDuringReign": 4,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 1,
+              "politicalEndWithoutDeath": 2
+            },
+            "SUCCESSOR": {
+              "count": 12,
+              "accessionAge": {
+                "mean": 43.40972222222222,
+                "median": 45.083333333333336,
+                "p90": 51.75,
+                "max": 58.916666666666664
+              },
+              "naturalDeaths": 8,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 12,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 12,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 288,
+              "ongoingTenures": 3,
+              "completedTenureBins": {
+                "0-12": 1,
+                "13-24": 0,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 8
+              },
+              "endStatuses": {
+                "dead": 8,
+                "ruling": 3,
+                "politically-ended": 1
+              },
+              "naturalDeathDuringReign": 8,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 1
+            }
+          },
+          "metrics": {
+            "month": 1200,
+            "worldPopulation": 129,
+            "populationUnexplained": 0,
+            "naturalGrowth": 350,
+            "warDeaths": 269,
+            "activeStates": 3,
+            "historicalStates": 17,
+            "cities": 16,
+            "captures": 97,
+            "recoveries": 21,
+            "siegeCityMonths": 1931,
+            "capturesPer100SiegeCityMonths": 5.023303987571206,
+            "formationSizeSamples": {
+              "8": 138,
+              "9": 149,
+              "10": 366,
+              "11": 398,
+              "12": 690
+            },
+            "factionCommandSamples": {
+              "0": 2793,
+              "1": 1115,
+              "2": 313
+            },
+            "meanFormationSize": 10.777139574956921,
+            "appointments": 13,
+            "offices": {
+              "pijiang": 13,
+              "jiangjun": 10,
+              "shangjiangjun": 3,
+              "promotions": 13,
+              "meanServiceMonths": 133.76923076923077,
+              "currentOffices": [
+                "JIANGJUN",
+                "PIJIANG"
+              ],
+              "naturalDeaths": 2,
+              "ageRetirements": 7,
+              "highOfficeMerits": [
+                {
+                  "serviceMonths": 132,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 216,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 168,
+                  "verifiedMerits": 3
+                }
+              ],
+              "activeFormationSizes": [
+                9,
+                10
+              ]
+            },
+            "promotions": [
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 132
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 108
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 216
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 168
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              }
+            ],
+            "meanServiceMonths": 133.76923076923077,
+            "matureEnded": 9,
+            "matureEndedNeverPromoted": 0,
+            "politicalCandidateChecks": 124,
+            "militaryPoliticalEvents": 0,
+            "depositions": 0,
+            "usurpations": 0,
+            "extinctions": 14,
+            "unifications": 0,
+            "splits": 10,
+            "restorations": 2,
+            "rebellions": 0,
+            "classicRebellions": 0,
+            "frontierRebellions": 0,
+            "canonicalSha256": "40aee43304fd7b8c95dc670a7e6e68f8f13da4ddebd306ea19e83b8cc9957aa9",
+            "baseFactsSha256": "478ab878e9e63a560d93fedd49c6a908549001d8bd9066b6ce13549ec5f44374",
+            "monthlyExposure": {
+              "cityMonths": 15086,
+              "politicalCityMonths": 6,
+              "supporters": 22,
+              "identityBlocked": 12,
+              "geographyBlocked": 173,
+              "discontentBlocked": 45
+            },
+            "issuingRulerGrants": 26,
+            "worldRandomPosition": 6302,
+            "regional": {
+              "cityChecks": 1255,
+              "politicalCities": 1,
+              "loyaltyBlocked": 1034,
+              "stabilityBlocked": 58,
+              "capacityBlocked": 0,
+              "identityBlocked": 49,
+              "validOrdinary": 698,
+              "discontentBlocked": 74,
+              "geographyBlocked": 575,
+              "supporters": 49,
+              "noSupport": 3,
+              "draws": 11,
+              "drawFailed": 11,
+              "executionFailed": 1,
+              "popular": 0,
+              "split": 10,
+              "territorialReturns": 0,
+              "splitChecks": 161,
+              "splitPolitical": 16,
+              "splitRestored": 2,
+              "alive12": 4,
+              "matured12": 10,
+              "alive60": 0,
+              "matured60": 10,
+              "overflow": 0,
+              "popularFunnel": {
+                "cityChecks": 1255,
+                "political": 1,
+                "captureGrace": 0,
+                "cooldown": 0,
+                "capacity": 0,
+                "populationScans": 1,
+                "validUsers": 40,
+                "identityBlocked": 2,
+                "geographyBlocked": 30,
+                "discontentBlocked": 6,
+                "supporters": 4,
+                "noSupport": 0,
+                "candidates": 1,
+                "priorityBlocked": 0,
+                "draws": 1,
+                "expectedHits": 0.030085714285714285,
+                "hits": 0,
+                "misses": 1,
+                "historicalSelected": 0,
+                "founderRestored": 0,
+                "failures": 0,
+                "successes": 0
+              },
+              "popularFailures": {},
+              "spatial": {
+                "invalidPosition": 0,
+                "unowned": 0,
+                "foreign": 2,
+                "otherCity": 57,
+                "otherDistrict": 516,
+                "disconnected": 0,
+                "outsideLegacy": 599,
+                "recoveredDistrict": 83,
+                "emptyLegacyArea": 0,
+                "emptyDistrict": 0,
+                "referenceMismatch": 0,
+                "referenceWithOwnedPosition": 0,
+                "arcadePosition": 698,
+                "logicalPosition": 0,
+                "staleRegistryPosition": 691
+              },
+              "restored": 2,
+              "worldMonth": 1200,
+              "insufficient12": 0,
+              "insufficient60": 0
+            },
+            "militaryRoyalOverlap": 0,
+            "politicalMilitaryBindings": 0,
+            "duplicatePopulationIds": 0,
+            "currentMilitaryByRegime": [
+              {
+                "factionId": "秦",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 34,
+                "commands": 0
+              },
+              {
+                "factionId": "燕",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 37,
+                "commands": 1
+              },
+              {
+                "factionId": "楚",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 58,
+                "commands": 1
+              }
+            ],
+            "meanActiveStates": 3.5175,
+            "meanEndedStateLifetimeMonths": 149,
+            "militarySplits": 0,
+            "formationOwnershipConflicts": 0,
+            "residentFounders": 10,
+            "residentLiveBindings": 0,
+            "residentIdentityConflicts": 0,
+            "strictSaveValid": true,
+            "elapsedMs": 25231.80000001192,
+            "heapBytes": 88514381
+          },
+          "oldExpiredLifeSamples": 2
+        },
+        {
+          "seed": "regional-22",
+          "groups": {
+            "RESIDENT_FOUNDER": {
+              "count": 12,
+              "accessionAge": {
+                "mean": 56.36805555555555,
+                "median": 55.75,
+                "p90": 94.25,
+                "max": 101.91666666666667
+              },
+              "naturalDeaths": 9,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 12,
+                "naturalDeaths": 1,
+                "ratio": 0.08333333333333333
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 12,
+                "naturalDeaths": 4,
+                "ratio": 0.3333333333333333
+              },
+              "meanCompletedTenureMonths": 72.75,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 4,
+                "13-24": 5,
+                "25-36": 0,
+                "37-60": 1,
+                "61-Infinity": 2
+              },
+              "endStatuses": {
+                "dead": 9,
+                "politically-ended": 3
+              },
+              "naturalDeathDuringReign": 5,
+              "naturalDeathAfterPoliticalEnd": 4,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 3
+            },
+            "MILITARY_FOUNDER": {
+              "count": 4,
+              "accessionAge": {
+                "mean": 57.125,
+                "median": 65.75,
+                "p90": 67.66666666666667,
+                "max": 67.66666666666667
+              },
+              "naturalDeaths": 4,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 4,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 4,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 63,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 0,
+                "13-24": 2,
+                "25-36": 1,
+                "37-60": 0,
+                "61-Infinity": 1
+              },
+              "endStatuses": {
+                "dead": 4
+              },
+              "naturalDeathDuringReign": 0,
+              "naturalDeathAfterPoliticalEnd": 4,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 0
+            },
+            "INITIAL": {
+              "count": 7,
+              "accessionAge": {
+                "mean": 28,
+                "median": 29,
+                "p90": 37,
+                "max": 37
+              },
+              "naturalDeaths": 5,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 349.7142857142857,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 0,
+                "13-24": 0,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 7
+              },
+              "endStatuses": {
+                "dead": 6,
+                "politically-ended": 1
+              },
+              "naturalDeathDuringReign": 5,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 1,
+              "politicalEndWithoutDeath": 1
+            },
+            "SUCCESSOR": {
+              "count": 16,
+              "accessionAge": {
+                "mean": 39.442708333333336,
+                "median": 41.25,
+                "p90": 62.25,
+                "max": 62.583333333333336
+              },
+              "naturalDeaths": 4,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 16,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 16,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 156,
+              "ongoingTenures": 3,
+              "completedTenureBins": {
+                "0-12": 2,
+                "13-24": 1,
+                "25-36": 2,
+                "37-60": 0,
+                "61-Infinity": 8
+              },
+              "endStatuses": {
+                "dead": 6,
+                "politically-ended": 7,
+                "ruling": 2,
+                "exiled": 1
+              },
+              "naturalDeathDuringReign": 4,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 2,
+              "politicalEndWithoutDeath": 7
+            }
+          },
+          "metrics": {
+            "month": 1200,
+            "worldPopulation": 125,
+            "populationUnexplained": 0,
+            "naturalGrowth": 355,
+            "warDeaths": 224,
+            "activeStates": 2,
+            "historicalStates": 23,
+            "cities": 10,
+            "captures": 111,
+            "recoveries": 12,
+            "siegeCityMonths": 1852,
+            "capturesPer100SiegeCityMonths": 5.993520518358531,
+            "formationSizeSamples": {
+              "2": 305,
+              "3": 128,
+              "4": 151,
+              "5": 106,
+              "6": 55,
+              "7": 173,
+              "8": 349,
+              "9": 313,
+              "10": 267,
+              "11": 223,
+              "12": 398
+            },
+            "factionCommandSamples": {
+              "0": 2699,
+              "1": 730,
+              "2": 869
+            },
+            "meanFormationSize": 7.770259319286872,
+            "appointments": 16,
+            "offices": {
+              "pijiang": 16,
+              "jiangjun": 10,
+              "shangjiangjun": 4,
+              "promotions": 14,
+              "meanServiceMonths": 154.125,
+              "currentOffices": [
+                "JIANGJUN",
+                "PIJIANG"
+              ],
+              "naturalDeaths": 8,
+              "ageRetirements": 4,
+              "highOfficeMerits": [
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 132,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 168,
+                  "verifiedMerits": 3
+                }
+              ],
+              "activeFormationSizes": [
+                12,
+                12
+              ]
+            },
+            "promotions": [
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 72
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 72
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 168
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 72
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 132
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 84
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 84
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 168
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              }
+            ],
+            "meanServiceMonths": 154.125,
+            "matureEnded": 10,
+            "matureEndedNeverPromoted": 1,
+            "politicalCandidateChecks": 119,
+            "militaryPoliticalEvents": 0,
+            "depositions": 0,
+            "usurpations": 0,
+            "extinctions": 19,
+            "unifications": 0,
+            "splits": 16,
+            "restorations": 9,
+            "rebellions": 0,
+            "classicRebellions": 0,
+            "frontierRebellions": 0,
+            "canonicalSha256": "bb55d97981d9bd5b5f5ab78b2a38d5fc67df7d67c357d11da4059827177bc52e",
+            "baseFactsSha256": "92413ea6a9369add900196c3fbfbaa049b483857f648073ba8f09f0eb03acf36",
+            "monthlyExposure": {
+              "cityMonths": 11745,
+              "politicalCityMonths": 0,
+              "supporters": 0,
+              "identityBlocked": 0,
+              "geographyBlocked": 0,
+              "discontentBlocked": 0
+            },
+            "issuingRulerGrants": 22,
+            "worldRandomPosition": 6227,
+            "regional": {
+              "cityChecks": 973,
+              "politicalCities": 0,
+              "loyaltyBlocked": 759,
+              "stabilityBlocked": 131,
+              "capacityBlocked": 0,
+              "identityBlocked": 95,
+              "validOrdinary": 872,
+              "discontentBlocked": 28,
+              "geographyBlocked": 724,
+              "supporters": 120,
+              "noSupport": 1,
+              "draws": 41,
+              "drawFailed": 40,
+              "executionFailed": 0,
+              "popular": 0,
+              "split": 16,
+              "territorialReturns": 0,
+              "splitChecks": 120,
+              "splitPolitical": 25,
+              "splitRestored": 8,
+              "alive12": 14,
+              "matured12": 16,
+              "alive60": 3,
+              "matured60": 16,
+              "overflow": 0,
+              "popularFunnel": {
+                "cityChecks": 973,
+                "political": 0,
+                "captureGrace": 0,
+                "cooldown": 0,
+                "capacity": 0,
+                "populationScans": 0,
+                "validUsers": 0,
+                "identityBlocked": 0,
+                "geographyBlocked": 0,
+                "discontentBlocked": 0,
+                "supporters": 0,
+                "noSupport": 0,
+                "candidates": 0,
+                "priorityBlocked": 0,
+                "draws": 0,
+                "expectedHits": 0,
+                "hits": 0,
+                "misses": 0,
+                "historicalSelected": 0,
+                "founderRestored": 0,
+                "failures": 0,
+                "successes": 0
+              },
+              "popularFailures": {},
+              "spatial": {
+                "invalidPosition": 0,
+                "unowned": 0,
+                "foreign": 8,
+                "otherCity": 74,
+                "otherDistrict": 626,
+                "disconnected": 16,
+                "outsideLegacy": 756,
+                "recoveredDistrict": 114,
+                "emptyLegacyArea": 0,
+                "emptyDistrict": 0,
+                "referenceMismatch": 0,
+                "referenceWithOwnedPosition": 0,
+                "arcadePosition": 872,
+                "logicalPosition": 0,
+                "staleRegistryPosition": 861
+              },
+              "restored": 9,
+              "worldMonth": 1200,
+              "insufficient12": 0,
+              "insufficient60": 0
+            },
+            "militaryRoyalOverlap": 0,
+            "politicalMilitaryBindings": 0,
+            "duplicatePopulationIds": 0,
+            "currentMilitaryByRegime": [
+              {
+                "factionId": "燕",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 74,
+                "commands": 0
+              },
+              {
+                "factionId": "大梁东义军",
+                "factionType": "SPLIT",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 51,
+                "commands": 2
+              }
+            ],
+            "meanActiveStates": 3.5816666666666666,
+            "meanEndedStateLifetimeMonths": 157.75,
+            "militarySplits": 4,
+            "formationOwnershipConflicts": 0,
+            "residentFounders": 16,
+            "residentLiveBindings": 1,
+            "residentIdentityConflicts": 0,
+            "strictSaveValid": true,
+            "elapsedMs": 29225.90000000596,
+            "heapBytes": 94529037
+          },
+          "oldExpiredLifeSamples": 3
+        },
+        {
+          "seed": "regional-23",
+          "groups": {
+            "RESIDENT_FOUNDER": {
+              "count": 3,
+              "accessionAge": {
+                "mean": 130.41666666666666,
+                "median": 130,
+                "p90": 134,
+                "max": 134
+              },
+              "naturalDeaths": 2,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 2,
+                "naturalDeaths": 2,
+                "ratio": 1
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 1,
+                "naturalDeaths": 1,
+                "ratio": 1
+              },
+              "meanCompletedTenureMonths": 1.5,
+              "ongoingTenures": 1,
+              "completedTenureBins": {
+                "0-12": 2,
+                "13-24": 0,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 0
+              },
+              "endStatuses": {
+                "dead": 2,
+                "ruling": 1
+              },
+              "naturalDeathDuringReign": 2,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 0
+            },
+            "MILITARY_FOUNDER": {
+              "count": 0,
+              "accessionAge": {
+                "mean": null,
+                "median": null,
+                "p90": null,
+                "max": 0
+              },
+              "naturalDeaths": 0,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 0,
+                "naturalDeaths": 0,
+                "ratio": null
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 0,
+                "naturalDeaths": 0,
+                "ratio": null
+              },
+              "meanCompletedTenureMonths": null,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 0,
+                "13-24": 0,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 0
+              },
+              "endStatuses": {},
+              "naturalDeathDuringReign": 0,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 0
+            },
+            "INITIAL": {
+              "count": 7,
+              "accessionAge": {
+                "mean": 30.571428571428573,
+                "median": 30,
+                "p90": 42,
+                "max": 42
+              },
+              "naturalDeaths": 3,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 256,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 0,
+                "13-24": 0,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 7
+              },
+              "endStatuses": {
+                "dead": 5,
+                "politically-ended": 2
+              },
+              "naturalDeathDuringReign": 3,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 2,
+              "politicalEndWithoutDeath": 2
+            },
+            "SUCCESSOR": {
+              "count": 12,
+              "accessionAge": {
+                "mean": 36.57638888888889,
+                "median": 43.416666666666664,
+                "p90": 58.166666666666664,
+                "max": 71.58333333333333
+              },
+              "naturalDeaths": 5,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 11,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 11,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 203.4,
+              "ongoingTenures": 2,
+              "completedTenureBins": {
+                "0-12": 1,
+                "13-24": 1,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 8
+              },
+              "endStatuses": {
+                "dead": 5,
+                "ruling": 2,
+                "politically-ended": 5
+              },
+              "naturalDeathDuringReign": 5,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 5
+            }
+          },
+          "metrics": {
+            "month": 1200,
+            "worldPopulation": 131,
+            "populationUnexplained": 0,
+            "naturalGrowth": 249,
+            "warDeaths": 190,
+            "activeStates": 3,
+            "historicalStates": 10,
+            "cities": 14,
+            "captures": 53,
+            "recoveries": 7,
+            "siegeCityMonths": 1214,
+            "capturesPer100SiegeCityMonths": 4.365733113673806,
+            "formationSizeSamples": {
+              "3": 41,
+              "4": 268,
+              "5": 100,
+              "6": 20,
+              "7": 46,
+              "8": 661,
+              "9": 182,
+              "10": 389,
+              "11": 498,
+              "12": 238
+            },
+            "factionCommandSamples": {
+              "0": 994,
+              "1": 1241,
+              "2": 601
+            },
+            "meanFormationSize": 8.713467048710601,
+            "appointments": 13,
+            "offices": {
+              "pijiang": 13,
+              "jiangjun": 7,
+              "shangjiangjun": 4,
+              "promotions": 11,
+              "meanServiceMonths": 187.76923076923077,
+              "currentOffices": [
+                "JIANGJUN",
+                "PIJIANG"
+              ],
+              "naturalDeaths": 6,
+              "ageRetirements": 8,
+              "highOfficeMerits": [
+                {
+                  "serviceMonths": 324,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 204,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 120,
+                  "verifiedMerits": 3
+                },
+                {
+                  "serviceMonths": 192,
+                  "verifiedMerits": 3
+                }
+              ],
+              "activeFormationSizes": [
+                9,
+                11
+              ]
+            },
+            "promotions": [
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 324
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 204
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 132
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 192
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              }
+            ],
+            "meanServiceMonths": 187.76923076923077,
+            "matureEnded": 9,
+            "matureEndedNeverPromoted": 3,
+            "politicalCandidateChecks": 170,
+            "militaryPoliticalEvents": 0,
+            "depositions": 0,
+            "usurpations": 0,
+            "extinctions": 7,
+            "unifications": 0,
+            "splits": 3,
+            "restorations": 0,
+            "rebellions": 0,
+            "classicRebellions": 0,
+            "frontierRebellions": 0,
+            "canonicalSha256": "fc05c7d2ccca9c76a5c9d3883e118ec71104b63429e367ef470fde9813348cc9",
+            "baseFactsSha256": "55b354fc068cbea91c444756a976c2e608f6a181fb21dc30e63ee6adc521b247",
+            "monthlyExposure": {
+              "cityMonths": 11695,
+              "politicalCityMonths": 0,
+              "supporters": 0,
+              "identityBlocked": 0,
+              "geographyBlocked": 0,
+              "discontentBlocked": 0
+            },
+            "issuingRulerGrants": 24,
+            "worldRandomPosition": 5069,
+            "regional": {
+              "cityChecks": 974,
+              "politicalCities": 0,
+              "loyaltyBlocked": 828,
+              "stabilityBlocked": 20,
+              "capacityBlocked": 0,
+              "identityBlocked": 7,
+              "validOrdinary": 191,
+              "discontentBlocked": 6,
+              "geographyBlocked": 172,
+              "supporters": 13,
+              "noSupport": 0,
+              "draws": 0,
+              "drawFailed": 0,
+              "executionFailed": 0,
+              "popular": 0,
+              "split": 3,
+              "territorialReturns": 0,
+              "splitChecks": 147,
+              "splitPolitical": 3,
+              "splitRestored": 0,
+              "alive12": 1,
+              "matured12": 2,
+              "alive60": 1,
+              "matured60": 1,
+              "overflow": 0,
+              "popularFunnel": {
+                "cityChecks": 974,
+                "political": 0,
+                "captureGrace": 0,
+                "cooldown": 0,
+                "capacity": 0,
+                "populationScans": 0,
+                "validUsers": 0,
+                "identityBlocked": 0,
+                "geographyBlocked": 0,
+                "discontentBlocked": 0,
+                "supporters": 0,
+                "noSupport": 0,
+                "candidates": 0,
+                "priorityBlocked": 0,
+                "draws": 0,
+                "expectedHits": 0,
+                "hits": 0,
+                "misses": 0,
+                "historicalSelected": 0,
+                "founderRestored": 0,
+                "failures": 0,
+                "successes": 0
+              },
+              "popularFailures": {},
+              "spatial": {
+                "invalidPosition": 0,
+                "unowned": 0,
+                "foreign": 0,
+                "otherCity": 16,
+                "otherDistrict": 156,
+                "disconnected": 0,
+                "outsideLegacy": 169,
+                "recoveredDistrict": 13,
+                "emptyLegacyArea": 0,
+                "emptyDistrict": 0,
+                "referenceMismatch": 0,
+                "referenceWithOwnedPosition": 0,
+                "arcadePosition": 191,
+                "logicalPosition": 0,
+                "staleRegistryPosition": 189
+              },
+              "restored": 0,
+              "worldMonth": 1200,
+              "insufficient12": 1,
+              "insufficient60": 2
+            },
+            "militaryRoyalOverlap": 0,
+            "politicalMilitaryBindings": 0,
+            "duplicatePopulationIds": 0,
+            "currentMilitaryByRegime": [
+              {
+                "factionId": "秦",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 64,
+                "commands": 0
+              },
+              {
+                "factionId": "魏",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 63,
+                "commands": 2
+              },
+              {
+                "factionId": "临淄东义军",
+                "factionType": "SPLIT",
+                "stage": "PROVISIONAL",
+                "rank": "LEADER",
+                "population": 4,
+                "commands": 0
+              }
+            ],
+            "meanActiveStates": 2.3633333333333333,
+            "meanEndedStateLifetimeMonths": 259.14285714285717,
+            "militarySplits": 0,
+            "formationOwnershipConflicts": 0,
+            "residentFounders": 3,
+            "residentLiveBindings": 1,
+            "residentIdentityConflicts": 0,
+            "strictSaveValid": true,
+            "elapsedMs": 27189.90000000596,
+            "heapBytes": 82197401
+          },
+          "oldExpiredLifeSamples": 3
+        },
+        {
+          "seed": "regional-24",
+          "groups": {
+            "RESIDENT_FOUNDER": {
+              "count": 4,
+              "accessionAge": {
+                "mean": 78.75,
+                "median": 90.91666666666667,
+                "p90": 104.16666666666667,
+                "max": 104.16666666666667
+              },
+              "naturalDeaths": 2,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 4,
+                "naturalDeaths": 1,
+                "ratio": 0.25
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 4,
+                "naturalDeaths": 2,
+                "ratio": 0.5
+              },
+              "meanCompletedTenureMonths": 11.666666666666666,
+              "ongoingTenures": 1,
+              "completedTenureBins": {
+                "0-12": 2,
+                "13-24": 1,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 0
+              },
+              "endStatuses": {
+                "dead": 3,
+                "ruling": 1
+              },
+              "naturalDeathDuringReign": 2,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 1,
+              "politicalEndWithoutDeath": 0
+            },
+            "MILITARY_FOUNDER": {
+              "count": 1,
+              "accessionAge": {
+                "mean": 59.25,
+                "median": 59.25,
+                "p90": 59.25,
+                "max": 59.25
+              },
+              "naturalDeaths": 0,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 1,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 1,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 12,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 1,
+                "13-24": 0,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 0
+              },
+              "endStatuses": {
+                "politically-ended": 1
+              },
+              "naturalDeathDuringReign": 0,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 1
+            },
+            "INITIAL": {
+              "count": 7,
+              "accessionAge": {
+                "mean": 28,
+                "median": 26,
+                "p90": 42,
+                "max": 42
+              },
+              "naturalDeaths": 4,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 7,
+                "naturalDeaths": 0,
+                "ratio": 0
+              },
+              "meanCompletedTenureMonths": 377.14285714285717,
+              "ongoingTenures": 0,
+              "completedTenureBins": {
+                "0-12": 0,
+                "13-24": 0,
+                "25-36": 0,
+                "37-60": 0,
+                "61-Infinity": 7
+              },
+              "endStatuses": {
+                "dead": 5,
+                "politically-ended": 2
+              },
+              "naturalDeathDuringReign": 4,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 1,
+              "politicalEndWithoutDeath": 2
+            },
+            "SUCCESSOR": {
+              "count": 13,
+              "accessionAge": {
+                "mean": 44.782051282051285,
+                "median": 45.75,
+                "p90": 63.75,
+                "max": 70.83333333333333
+              },
+              "naturalDeaths": 6,
+              "exact12MonthNaturalDeaths": 0,
+              "exact12MonthNaturalReignDeaths": 0,
+              "naturalWithin12Months": {
+                "fullyObserved": 13,
+                "naturalDeaths": 1,
+                "ratio": 0.07692307692307693
+              },
+              "naturalWithin24Months": {
+                "fullyObserved": 13,
+                "naturalDeaths": 2,
+                "ratio": 0.15384615384615385
+              },
+              "meanCompletedTenureMonths": 162.3,
+              "ongoingTenures": 3,
+              "completedTenureBins": {
+                "0-12": 2,
+                "13-24": 1,
+                "25-36": 0,
+                "37-60": 1,
+                "61-Infinity": 6
+              },
+              "endStatuses": {
+                "dead": 6,
+                "ruling": 3,
+                "politically-ended": 4
+              },
+              "naturalDeathDuringReign": 6,
+              "naturalDeathAfterPoliticalEnd": 0,
+              "otherRecordedDeaths": 0,
+              "politicalEndWithoutDeath": 4
+            }
+          },
+          "metrics": {
+            "month": 1200,
+            "worldPopulation": 133,
+            "populationUnexplained": 0,
+            "naturalGrowth": 391,
+            "warDeaths": 297,
+            "activeStates": 4,
+            "historicalStates": 12,
+            "cities": 18,
+            "captures": 112,
+            "recoveries": 16,
+            "siegeCityMonths": 1772,
+            "capturesPer100SiegeCityMonths": 6.320541760722348,
+            "formationSizeSamples": {
+              "4": 10,
+              "8": 107,
+              "9": 144,
+              "10": 75,
+              "11": 434,
+              "12": 306
+            },
+            "factionCommandSamples": {
+              "0": 3657,
+              "1": 360,
+              "2": 358
+            },
+            "meanFormationSize": 10.58364312267658,
+            "appointments": 11,
+            "offices": {
+              "pijiang": 11,
+              "jiangjun": 5,
+              "shangjiangjun": 1,
+              "promotions": 6,
+              "meanServiceMonths": 97.81818181818181,
+              "currentOffices": [],
+              "naturalDeaths": 1,
+              "ageRetirements": 2,
+              "highOfficeMerits": [
+                {
+                  "serviceMonths": 300,
+                  "verifiedMerits": 3
+                }
+              ],
+              "activeFormationSizes": []
+            },
+            "promotions": [
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "SHANGJIANGJUN",
+                "waitMonths": 300
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 120
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              },
+              {
+                "office": "JIANGJUN",
+                "waitMonths": 60
+              }
+            ],
+            "meanServiceMonths": 97.81818181818181,
+            "matureEnded": 6,
+            "matureEndedNeverPromoted": 1,
+            "politicalCandidateChecks": 72,
+            "militaryPoliticalEvents": 0,
+            "depositions": 0,
+            "usurpations": 0,
+            "extinctions": 8,
+            "unifications": 0,
+            "splits": 5,
+            "restorations": 0,
+            "rebellions": 0,
+            "classicRebellions": 0,
+            "frontierRebellions": 0,
+            "canonicalSha256": "312ea7a92ba117a3d69aa66dd23bd5fef5ed1984ced3824f6d7d2fdd8d3c5fe8",
+            "baseFactsSha256": "37daf9f1da4a2bb6a35f96d2ba14893c109f9b203045855982fa1d0e794e9346",
+            "monthlyExposure": {
+              "cityMonths": 16883,
+              "politicalCityMonths": 0,
+              "supporters": 0,
+              "identityBlocked": 0,
+              "geographyBlocked": 0,
+              "discontentBlocked": 0
+            },
+            "issuingRulerGrants": 15,
+            "worldRandomPosition": 6440,
+            "regional": {
+              "cityChecks": 1406,
+              "politicalCities": 0,
+              "loyaltyBlocked": 1221,
+              "stabilityBlocked": 97,
+              "capacityBlocked": 0,
+              "identityBlocked": 12,
+              "validOrdinary": 194,
+              "discontentBlocked": 20,
+              "geographyBlocked": 158,
+              "supporters": 16,
+              "noSupport": 0,
+              "draws": 0,
+              "drawFailed": 0,
+              "executionFailed": 0,
+              "popular": 0,
+              "split": 5,
+              "territorialReturns": 0,
+              "splitChecks": 206,
+              "splitPolitical": 5,
+              "splitRestored": 0,
+              "alive12": 4,
+              "matured12": 5,
+              "alive60": 2,
+              "matured60": 5,
+              "overflow": 0,
+              "popularFunnel": {
+                "cityChecks": 1406,
+                "political": 0,
+                "captureGrace": 0,
+                "cooldown": 0,
+                "capacity": 0,
+                "populationScans": 0,
+                "validUsers": 0,
+                "identityBlocked": 0,
+                "geographyBlocked": 0,
+                "discontentBlocked": 0,
+                "supporters": 0,
+                "noSupport": 0,
+                "candidates": 0,
+                "priorityBlocked": 0,
+                "draws": 0,
+                "expectedHits": 0,
+                "hits": 0,
+                "misses": 0,
+                "historicalSelected": 0,
+                "founderRestored": 0,
+                "failures": 0,
+                "successes": 0
+              },
+              "popularFailures": {},
+              "spatial": {
+                "invalidPosition": 0,
+                "unowned": 0,
+                "foreign": 1,
+                "otherCity": 26,
+                "otherDistrict": 131,
+                "disconnected": 0,
+                "outsideLegacy": 148,
+                "recoveredDistrict": 17,
+                "emptyLegacyArea": 0,
+                "emptyDistrict": 0,
+                "referenceMismatch": 0,
+                "referenceWithOwnedPosition": 0,
+                "arcadePosition": 194,
+                "logicalPosition": 0,
+                "staleRegistryPosition": 192
+              },
+              "restored": 0,
+              "worldMonth": 1200,
+              "insufficient12": 0,
+              "insufficient60": 0
+            },
+            "militaryRoyalOverlap": 0,
+            "politicalMilitaryBindings": 0,
+            "duplicatePopulationIds": 0,
+            "currentMilitaryByRegime": [
+              {
+                "factionId": "秦",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 36,
+                "commands": 0
+              },
+              {
+                "factionId": "燕",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 43,
+                "commands": 0
+              },
+              {
+                "factionId": "齐",
+                "factionType": "KINGDOM",
+                "stage": "STATE",
+                "rank": "KING",
+                "population": 41,
+                "commands": 0
+              },
+              {
+                "factionId": "大梁义军",
+                "factionType": "SPLIT",
+                "stage": "PROVISIONAL",
+                "rank": "LEADER",
+                "population": 13,
+                "commands": 0
+              }
+            ],
+            "meanActiveStates": 3.6458333333333335,
+            "meanEndedStateLifetimeMonths": 205.25,
+            "militarySplits": 1,
+            "formationOwnershipConflicts": 0,
+            "residentFounders": 5,
+            "residentLiveBindings": 1,
+            "residentIdentityConflicts": 0,
+            "strictSaveValid": true,
+            "elapsedMs": 21779.70000001788,
+            "heapBytes": 67743498
           },
           "oldExpiredLifeSamples": 3
         }

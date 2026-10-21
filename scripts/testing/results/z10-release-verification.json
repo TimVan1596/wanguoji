@@ -1,0 +1,80 @@
+{
+  "appVersion": "v0.99931z10",
+  "packageVersion": "0.99.176",
+  "saveSchemaVersion": 20,
+  "baselineHead": "32360f21fc269b6b90a19f1906ff6d8eb0bdd7bb",
+  "seeds100Years": 24,
+  "seeds200Years": 6,
+  "baselineCanonicalAndRngMatches": 30,
+  "productionPairMatches": [
+    {
+      "month": 1200,
+      "canonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "month": 2400,
+      "canonicalEqual": true,
+      "rngEqual": true
+    }
+  ],
+  "coreMilitaryAndArchiveInteractionChecks": 58,
+  "coreResidentChecks": {
+    "popular": 39,
+    "split": 32
+  },
+  "siegeChecks": 24,
+  "archive500": {
+    "seed": "archive-z10-500",
+    "years": 500,
+    "results": [
+      {
+        "month": 2400,
+        "people": 25,
+        "countryPeople": 10,
+        "records": 645,
+        "allRecordsPresent": true,
+        "noNestedScroll": true,
+        "personReadableRecords": 24,
+        "publicPersonRecords": 8,
+        "renderMs": 8.690000000596047,
+        "htmlBytes": 83193,
+        "heapBytes": 74944361,
+        "strictSaveValid": true
+      },
+      {
+        "month": 6000,
+        "people": 78,
+        "countryPeople": 25,
+        "records": 1657,
+        "allRecordsPresent": true,
+        "noNestedScroll": true,
+        "personReadableRecords": 24,
+        "publicPersonRecords": 8,
+        "renderMs": 41.00999999940395,
+        "htmlBytes": 213407,
+        "heapBytes": 79446429,
+        "strictSaveValid": true
+      }
+    ],
+    "deterministic12MonthContinuation": true
+  },
+  "tests": {
+    "files": 252,
+    "tests": 1983,
+    "passed": true
+  },
+  "builds": [
+    "pnpm build",
+    "pnpm desktop:build",
+    "pnpm desktop:renderer-debug-build"
+  ],
+  "schemaReason": "No new persisted field. Resident naturalDeathMonth is frozen on creation and hydration preserves the existing plan. Old slots not migrated or overwritten. New world required for this Gate.",
+  "limitations": [
+    "No general ordinary-resident natural mortality introduced; very old living ordinary residents still exist.",
+    "Political termination and short polity survival remain possible and are not counted as biological deaths.",
+    "Identical lifespan draw count/bounds do not imply identical later histories.",
+    "Chrome layout and human interaction acceptance pending."
+  ],
+  "manualChromeGate": "WAITING_USER"
+}
