@@ -12885,7 +12885,7 @@
         "meanServiceMonths": 138.27272727272728,
         "matureEnded": 4,
         "matureEndedNeverPromoted": 1,
-        "politicalCandidateChecks": 106,
+        "politicalCandidateChecks": 57,
         "militaryPoliticalEvents": 0,
         "depositions": 0,
         "usurpations": 0,
@@ -13010,8 +13010,8 @@
         "residentLiveBindings": 2,
         "residentIdentityConflicts": 0,
         "strictSaveValid": true,
-        "elapsedMs": 25194.699999999255,
-        "heapBytes": 87158546
+        "elapsedMs": 24742,
+        "heapBytes": 78146347
       },
       {
         "royalMilitary": {
@@ -13245,7 +13245,7 @@
         "meanServiceMonths": 166.5185185185185,
         "matureEnded": 17,
         "matureEndedNeverPromoted": 1,
-        "politicalCandidateChecks": 294,
+        "politicalCandidateChecks": 243,
         "militaryPoliticalEvents": 0,
         "depositions": 0,
         "usurpations": 0,
@@ -13386,8 +13386,8 @@
         "residentLiveBindings": 0,
         "residentIdentityConflicts": 0,
         "strictSaveValid": true,
-        "elapsedMs": 51509.90000000037,
-        "heapBytes": 94851023
+        "elapsedMs": 54076.699999999255,
+        "heapBytes": 96929188
       }
     ]
   },
@@ -29475,7 +29475,7 @@
         "meanServiceMonths": 128.69230769230768,
         "matureEnded": 8,
         "matureEndedNeverPromoted": 1,
-        "politicalCandidateChecks": 116,
+        "politicalCandidateChecks": 109,
         "militaryPoliticalEvents": 0,
         "depositions": 0,
         "usurpations": 0,
@@ -29608,8 +29608,8 @@
         "residentLiveBindings": 2,
         "residentIdentityConflicts": 0,
         "strictSaveValid": true,
-        "elapsedMs": 30113,
-        "heapBytes": 62168355
+        "elapsedMs": 31982.5,
+        "heapBytes": 84276643
       },
       {
         "royalMilitary": {
@@ -29821,7 +29821,7 @@
         "meanServiceMonths": 109.58620689655173,
         "matureEnded": 19,
         "matureEndedNeverPromoted": 3,
-        "politicalCandidateChecks": 166,
+        "politicalCandidateChecks": 159,
         "militaryPoliticalEvents": 0,
         "depositions": 0,
         "usurpations": 0,
@@ -29962,8 +29962,8 @@
         "residentLiveBindings": 1,
         "residentIdentityConflicts": 0,
         "strictSaveValid": true,
-        "elapsedMs": 65417.59999999963,
-        "heapBytes": 90025266
+        "elapsedMs": 77495.59999999963,
+        "heapBytes": 71279841
       }
     ]
   }

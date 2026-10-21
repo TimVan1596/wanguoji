@@ -52,12 +52,36 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
    check(r.status==="dead"&&p.status==="DEAD"&&r.deathMonth===month+1&&p.deathMonth===month+1&&!t.getUserById(identity.sourceUserId),"royal natural schedule closes both archives and the body on the same month");strict();
   }
   {
+   const {t,r,p}=restore(),command=p.appointments[0].commandId;
+   const clock=(m:number)=>(core.simulator as any).clock.importState({worldMonth:m,elapsedMs:0,running:false});
+   clock(month+60);
+   const targets=core.allCities.filter(c=>c.ownerTeam!==t).slice(0,5);
+   check(targets.length===5,"controlled merit scenario has five real enemy cities");
+   for(const target of targets.slice(0,2))target.capture(t,month+60,undefined,command,personId);
+   const formation=Military.getFormation(command)!,size=formation.memberUnitIds.length;
+   (Military as any).advanceOffices(month+60,core.teams);
+   check(p.appointments[0].officeHistory?.at(-1)?.office==="JIANGJUN"&&p.capturedEventIds.length===2,"five years and two real City.capture results promote the royal to general");
+   clock(month+61);for(const target of targets.slice(2))target.capture(t,month+61,undefined,command,personId);
+   clock(month+120);(Military as any).advanceOffices(month+120,core.teams);
+   check(p.appointments[0].officeHistory?.at(-1)?.office==="SHANGJIANGJUN"&&formation.memberUnitIds.length===size,"three new actual victories and ten years grant senior office without adding troops");
+   check(r.reignOrdinal===undefined&&!r.chronicle,"pre-accession victories create no ruler reign or personal royal campaign score");strict();
+   Military.endPersonCommands(personId,month+120,"DISMISSED");
+   check(p.status==="RETIRED"&&formation.status==="DISBANDED"&&r.deathMonth===undefined,"dismissal ends command without ending the royal's life");strict();
+  }
+  {
+   const {t,r,p}=restore();t.markExiled(month);Dynasty.markExiled(t,month);Military.update(month,core.teams,core.allCities);
+   check(p.status==="RETIRED"&&r.deathMonth===undefined&&Military.getFormations().every(f=>f.commanderPersonId!==personId||f.status==="DISBANDED"),"exile ends real military office without killing royal kin");
+   t.markExtinct(month);Dynasty.markExtinct(t,month);
+   check(r.status==="kin"&&r.deathMonth===undefined,"political termination removes succession eligibility without manufacturing a death");
+   (core.simulator as any).clock.importState({worldMonth:death!,elapsedMs:0,running:false});Dynasty.update(death!,core.teams);
+   check(r.status as string==="dead"&&r.deathMonth===death&&p.deathMonth===death,"terminated country's royal military person retains the one natural life clock");
+  }
+  {
    const {t,d,r,p}=restore(),current=Dynasty.getCurrentRuler(t.name)!;
    // Legitimate heir designation is a test setup; the production consume/succeed path selects him.
    d.designatedHeirId=r.id;d.designatedSinceMonth=month;d.heirIds=[r.id];r.status="heir";
    current.naturalDeathYear=month+1;current.plannedEndYear=month+1;
    core.setWorldRunning(true);step();core.setWorldRunning(false);
-   console.info("[CoreTest] accession",JSON.stringify({wanted:r.id,current:Dynasty.getCurrentRuler(t.name)?.id,role:t.rulerUser?.role,historical:t.rulerUser?.historicalPersonId,person:p}));
    check(Dynasty.getCurrentRuler(t.name)===r&&t.rulerUser?.historicalPersonId===personId&&p.politicalRulerId===r.id,"legal succession converts the same royal User into the ruler");
    check(p.status==="RETIRED"&&Military.getFormations().every(f=>f.commanderPersonId!==personId||f.status==="DISBANDED")&&r.parentId===parent&&r.bornYear===birth&&r.naturalDeathYear===death,"accession closes old commands and preserves kin and life");
    check(preAccessionMilitary(r,Military.getPeople(),Military.getFormations(),History.getEvents())?.person.personId===personId,"ruler biography resolves the same pre-accession military person");strict();

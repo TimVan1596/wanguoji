@@ -1,0 +1,37 @@
+[
+  {
+    "seed": "royal-military-z11",
+    "checks": [
+      "real adult kin candidate exists",
+      "history failure rolls back real enlistment",
+      "failed enlistment restores canonical state and sequences",
+      "real royal enlistment succeeds",
+      "one audited real body commands existing people",
+      "birth, kinship and existing lifespan are preserved",
+      "duplicate enlistment refused",
+      "V21 rejects broken royal life/body references",
+      "V21 rejects broken royal life/body references",
+      "V21 rejects broken royal life/body references",
+      "royal military V21 twelve-month continuation is deterministic",
+      "resaved world loads again without another person",
+      "royal combat casualty uses real User destruction",
+      "battle death closes royal succession, military life and command",
+      "royal natural schedule closes both archives and the body on the same month",
+      "controlled merit scenario has five real enemy cities",
+      "five years and two real City.capture results promote the royal to general",
+      "three new actual victories and ten years grant senior office without adding troops",
+      "pre-accession victories create no ruler reign or personal royal campaign score",
+      "dismissal ends command without ending the royal's life",
+      "exile ends real military office without killing royal kin",
+      "political termination removes succession eligibility without manufacturing a death",
+      "terminated country's royal military person retains the one natural life clock",
+      "legal succession converts the same royal User into the ruler",
+      "accession closes old commands and preserves kin and life",
+      "ruler biography resolves the same pre-accession military person"
+    ],
+    "month": 0,
+    "personId": "military-person-1",
+    "royalRulerId": "赵-ruler-5",
+    "saveSchemaVersion": 21
+  }
+]
