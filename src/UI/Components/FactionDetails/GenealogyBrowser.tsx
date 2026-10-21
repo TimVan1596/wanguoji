@@ -6,7 +6,7 @@ import History from "../../../History/WorldHistory";
 import {buildRoyalArchiveGenealogy,royalMilitaryArchive,royalMilitaryOfficeLabel} from "../../../Politics/RoyalArchiveIdentity";
 import {deriveGenealogyNodePresentations} from "./GenealogyNodePresentation";
 import {GenealogyPersonCard} from "./GenealogyPersonCard";
-import {indexGenealogy,genealogyWindow} from "./genealogyWindow";
+import {indexGenealogy,genealogyWindow,layoutGenealogy} from "./genealogyWindow";
 import {usePersonArchiveNavigation} from "./PersonArchiveNavigation";
 import {clampGenealogyScale,getGenealogyFitScale} from "./genealogyViewport";
 import PersonLifeDates from "./PersonLifeDates";
@@ -30,6 +30,7 @@ export default function GenealogyBrowser({open,onClose,dynasty,team,worldMonth,t
  useEffect(()=>{if(open&&data)locate(targetId??dynasty?.currentRulerId??data.index.keys().next().value??"");},[open,targetId,team.name]);
  useEffect(()=>{if(open)canvas.current?.querySelector<HTMLElement>('[data-genealogy-focused="true"]')?.scrollIntoView({block:"center",inline:"nearest"});},[open,focus]);
  const rows=data?genealogyWindow(data.index,focus,expanded):[];
+ const layout=layoutGenealogy(rows);
  const allMatches=data&&(query||browse)?[...data.index.values()].filter(n=>`${n.ruler.houseName}${n.ruler.givenName} ${n.ruler.id}`.includes(query)):[];
  const matches=allMatches.slice(searchOffset,searchOffset+30);
  const person=selected?data?.index.get(selected)?.ruler:undefined,service=person?data?.military.get(person.id):undefined;
@@ -46,20 +47,19 @@ export default function GenealogyBrowser({open,onClose,dynasty,team,worldMonth,t
   <Typography fontSize="0.75rem">完整收录{data?.index.size??0}人，当前分支显示{rows.length}人。检索覆盖全部历史人物；点击“查看此支”浏览其他支系。</Typography>
   </DialogTitle>
   <DialogContent ref={viewport} sx={{overflow:"auto",minHeight:0}}>
-   {person&&<Box data-genealogy-person={person.id} sx={{position:"sticky",top:0,zIndex:2,background:"var(--gg-panel)",mb:1,p:1,border:"1px solid var(--gg-border)"}}><Typography fontWeight="bold">王室身份：{person.houseName.replace(/氏$/,"")+person.givenName}</Typography><Typography fontSize="0.75rem">永久ID：{person.id}</Typography><Typography fontSize="0.75rem">{person.parentId&&data?.index.get(person.parentId)?"父系："+data.index.get(person.parentId)!.ruler.houseName.replace(/氏$/,"")+data.index.get(person.parentId)!.ruler.givenName:person.parentId?"父系档案断链":"父系未载"}</Typography>{service&&<Typography fontSize="0.75rem">{royalMilitaryOfficeLabel(service,worldMonth)}</Typography>}<PersonLifeDates bornMonth={person.bornYear} deathMonth={person.deathMonth}/><Typography>{formatRulerLifeAge(person,worldMonth,false,team.status!=="EXTINCT")}</Typography>
+   {person&&<Box data-genealogy-person={person.id} component="details" sx={{background:"var(--gg-panel)",mb:1,p:1,border:"1px solid var(--gg-border)"}}><summary>人物资料（点击展开／收起）</summary><Typography fontWeight="bold">王室身份：{person.houseName.replace(/氏$/,"")+person.givenName}</Typography><Typography fontSize="0.75rem">永久ID：{person.id}</Typography><Typography fontSize="0.75rem">{person.parentId&&data?.index.get(person.parentId)?"父系："+data.index.get(person.parentId)!.ruler.houseName.replace(/氏$/,"")+data.index.get(person.parentId)!.ruler.givenName:person.parentId?"父系档案断链":"父系未载"}</Typography>{service&&<Typography fontSize="0.75rem">{royalMilitaryOfficeLabel(service,worldMonth)}</Typography>}<PersonLifeDates bornMonth={person.bornYear} deathMonth={person.deathMonth}/><Typography>{formatRulerLifeAge(person,worldMonth,false,team.status!=="EXTINCT")}</Typography>
     {person.accessionYear!==undefined&&<Typography>政治任期：{formatWorldDate(person.accessionYear)}—{person.endYear===undefined?"今":formatWorldDate(person.endYear)}</Typography>}
     {service?.appointments.map(a=><Typography key={a.commandId}>军职任期：{formatWorldDate(a.startMonth)}—{a.endMonth===undefined?"今":formatWorldDate(a.endMonth)}</Typography>)}
     {person.reignOrdinal!==undefined&&<Button onClick={()=>{onClose("EXPLICIT");nav.open({kind:"RULER",factionId:dynasty!.factionId,id:person.id});}}>查看王室本纪</Button>}
     {service&&<Button onClick={()=>{onClose("EXPLICIT");nav.open({kind:"MILITARY",factionId:dynasty!.factionId,id:service.personId});}}>查看军旅档案</Button>}
    </Box>}
-   <Box ref={canvas} role="tree" sx={{transform:`scale(${scale})`,transformOrigin:"top left",width:Math.min(1000,1000/scale)}}>
-    {rows.map(({node,depth,ancestor})=>{const r=node.ruler,p=data?.military.get(r.id),parent=r.parentId&&data?.index.get(r.parentId);return <Box role="treeitem" key={r.id} data-ruler-id={r.id} data-genealogy-focused={r.id===focus?"true":undefined} sx={{ml:Math.min(depth,6)*2,my:.7,pl:1,borderLeft:parent?"1px solid var(--gg-border)":undefined}}>
-     <button type="button" style={{border:0,padding:0,background:"none",textAlign:"left",cursor:"pointer"}} onClick={()=>setSelected(r.id)} aria-label={`查看${r.houseName.replace(/氏$/,"")+r.givenName}王室身份`}><GenealogyPersonCard ruler={r} displayName={r.houseName.replace(/氏$/,"")+r.givenName} presentation={data?.presentations.get(r.id)} worldMonth={worldMonth} managedLife={team.status!=="EXTINCT"}/></button>
+   <Box ref={canvas} role="tree" sx={{transform:`scale(${scale})`,transformOrigin:"top left",position:"relative",width:layout.width,height:layout.height}}>
+    <svg aria-hidden="true" width={layout.width} height={layout.height} style={{position:"absolute",inset:0,pointerEvents:"none"}}>{rows.map(({node})=>{const a=node.ruler.parentId&&layout.positions.get(node.ruler.parentId),b=layout.positions.get(node.ruler.id)!;return a?<path key={node.ruler.id} data-parent-id={node.ruler.parentId} data-child-id={node.ruler.id} d={`M ${a.x} ${a.y+180} V ${b.y-20} H ${b.x} V ${b.y}`} fill="none" stroke="var(--gg-text-muted)"/>:null;})}</svg>
+    {rows.map(({node,depth,ancestor})=>{const r=node.ruler,p=data?.military.get(r.id),parent=r.parentId&&data?.index.get(r.parentId);return <Box role="treeitem" key={r.id} data-ruler-id={r.id} data-genealogy-focused={r.id===focus?"true":undefined} sx={{position:"absolute",left:layout.positions.get(r.id)!.x-95,top:layout.positions.get(r.id)!.y,width:190,textAlign:"center",outline:r.id===focus?"2px solid var(--gg-accent)":undefined,borderRadius:1}}>
+     <button type="button" style={{border:0,padding:0,background:"none",textAlign:"center",cursor:"pointer"}} onClick={()=>setSelected(r.id)} aria-label={`查看${r.houseName.replace(/氏$/,"")+r.givenName}王室身份`}><GenealogyPersonCard ruler={r} displayName={r.houseName.replace(/氏$/,"")+r.givenName} presentation={data?.presentations.get(r.id)} worldMonth={worldMonth} managedLife={team.status!=="EXTINCT"}/></button>
      {p&&<Typography fontSize="0.75rem">{royalMilitaryOfficeLabel(p,worldMonth)} · {p.status==="DEAD"?"已故":p.status==="ACTIVE"?"现役":"已离任"}</Typography>}
-     <Typography fontSize="0.72rem">{parent?`父系：${parent.ruler.houseName.replace(/氏$/,"")+parent.ruler.givenName}`:r.parentId?"父系档案断链":"父系未载"}</Typography>
      <Button size="small" onClick={()=>locate(r.id)}>查看此支</Button>
      {!ancestor&&node.children.length>0&&<Button size="small" aria-expanded={expanded.has(r.id)} onClick={()=>setExpanded(s=>{const next=new Set(s);next.has(r.id)?next.delete(r.id):next.add(r.id);return next;})}>{expanded.has(r.id)?"收起":"展开子支"}（{node.children.length}）</Button>}
-     {p&&<Button size="small" onClick={()=>{onClose("EXPLICIT");nav.open({kind:"MILITARY",factionId:dynasty!.factionId,id:p.personId});}}>查看军旅档案</Button>}
     </Box>;})}
    </Box>
 

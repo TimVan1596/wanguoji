@@ -78,6 +78,11 @@ export async function checkGenealogyRendering(core:Core,check:(ok:unknown,label:
    const rows=document.querySelectorAll('[role="treeitem"]'),elapsed=performance.now()-start;
    check(rows.length<=150&&rows.length>0,size+" "+shape+": actual React tree mounts bounded nodes");
    check(Array.from(rows).some(r=>r.getAttribute("data-ruler-id")===target),size+" "+shape+": requested permanent ID is mounted");
+   for(const edge of document.querySelectorAll('path[data-parent-id]')){
+    const parent=document.querySelector<HTMLElement>(`[data-ruler-id="${edge.getAttribute('data-parent-id')}"]`)!,child=document.querySelector<HTMLElement>(`[data-ruler-id="${edge.getAttribute('data-child-id')}"]`)!;
+    check(parent.getBoundingClientRect().top<child.getBoundingClientRect().top,size+" "+shape+": real parent DOM is above child");
+   }
+   check(document.querySelector('[role="tree"]')!.getBoundingClientRect().width<=2000,size+" "+shape+": bounded tree canvas width");
    const locate=Array.from(document.querySelectorAll("button")).find(b=>b.textContent==="定位当今君主")!;flushSync(()=>locate.click());
    check(Array.from(document.querySelectorAll('[data-ruler-id]')).some(r=>r.getAttribute("data-ruler-id")==="bench-"+(size-1)),size+" "+shape+": current-ruler control locates tail");
    samples.push({size,shape,mountedNodes:rows.length,mountMs:elapsed,heapDelta:(performance as any).memory?.usedJSHeapSize-heapBefore});
