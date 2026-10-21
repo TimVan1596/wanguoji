@@ -59,6 +59,7 @@ import { getUnrelatedSuccessorRelation } from "./DynastySuccessionIdentity";
 import { cultureGivenNamePools, deriveNameCulture, hanGivenNamePool } from "./NameCulture";
 import {
   createNaturalDeathMonth,
+  createSurvivingResidentDeathMonth,
   deriveHeirBirthMonth,
   isNaturallyDeadByMonth,
 } from "./RulerLifespanRules";
@@ -1034,9 +1035,10 @@ class DynastyRegistryStore {
       RULER_MAX_AGE_AT_ACCESSION
     ) : 0;
     const bornYear = residentBornMonth ?? accessionYear - yearsToMonths(accessionAge);
-    const sampledDeathMonth = establishedMilitary?.naturalDeathMonth ?? createNaturalDeathMonth(bornYear, (max) => worldRandom.pickIndex(max));
-    // Residents were already alive before acquiring a scheduled life. Never backdate their death.
-    const naturalDeathYear = residentBornMonth === undefined ? sampledDeathMonth : Math.max(accessionYear + 12, sampledDeathMonth);
+    if(establishedMilitary&&establishedMilitary.naturalDeathMonth<=accessionYear)throw new Error("Military founder has no surviving life schedule");
+    const naturalDeathYear = establishedMilitary?.naturalDeathMonth ?? (residentBornMonth === undefined
+      ? createNaturalDeathMonth(bornYear,max=>worldRandom.pickIndex(max))
+      : createSurvivingResidentDeathMonth(bornYear,accessionYear,max=>worldRandom.pickIndex(max)));
     const recentNames =
       this.dynasties
         .get(team.name)

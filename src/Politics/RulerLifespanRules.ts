@@ -30,6 +30,35 @@ export function getAgeAtMonth(birthMonth: number, month: number) {
   return Math.max(0, Math.floor((month - birthMonth) / 12));
 }
 
+/** Conditional on this resident being demonstrably alive now. Up to age 85 the
+ * original lifespan-band mass is spread over months. Its last 5% is an open,
+ * increasing-hazard old-age tail, so even residents older than the old maximum
+ * have a defined remaining life. No accession-relative minimum term. */
+export function createSurvivingResidentDeathMonth(birthMonth:number,currentMonth:number,roll:(max:number)=>number){
+  const age=Math.max(0,currentMonth-birthMonth),tailStart=85*12;
+  const survival=(a:number)=>{
+    if(a>=tailStart)return .05*Math.exp(-2.5*Math.expm1((a-tailStart)/120));
+    let mass=.05,previous=0;
+    for(const band of RULER_LIFESPAN_BANDS.slice(0,3)){
+      const low=band.minAgeYears*12,high=(band.maxAgeYears+1)*12;
+      mass+=(band.maxRoll-previous)/100*Math.max(0,Math.min(1,(high-Math.max(a,low))/(high-low)));
+      previous=band.maxRoll;
+    }
+    return mass;
+  };
+  // Invert the conditional survival without subtracting tiny old-age probabilities.
+  const u=(roll(0x1000000)+.5)/0x1000000;
+  if(age>=tailStart){
+    const delta=120*Math.log1p(-Math.log(u)/2.5*Math.exp(-(age-tailStart)/120));
+    return currentMonth+Math.max(1,Math.ceil(delta));
+  }
+  const target=survival(age)*u;
+  let low=age,high=tailStart;
+  if(target<.05)high=tailStart+120*Math.log1p(-Math.log(target/.05)/2.5);
+  else for(let i=0;i<50;i++){const mid=(low+high)/2;if(survival(mid)>target)low=mid;else high=mid;}
+  return birthMonth+Math.max(age+1,Math.ceil(high));
+}
+
 export function deriveHeirBirthMonth(
   parentBirthMonth: number,
   currentMonth: number,
