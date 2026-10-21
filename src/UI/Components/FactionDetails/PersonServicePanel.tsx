@@ -17,7 +17,7 @@ const countryAt=(id:string,month:number)=>{const t=Game.Core?.teams.find(t=>t.na
 const style={border:0,padding:0,background:"none",color:"inherit",font:"inherit",textDecoration:"underline",cursor:"pointer"} as const;
 export function RulerServicePanel({ruler,factionId,month}:{ruler:Ruler;factionId:string;month:number}){
  const nav=usePersonArchiveNavigation(),people=Military.getPeople(),events=History.getEvents();
- const earlier=preAccessionMilitary(ruler,people,Military.getFormations(),events);
+ const earlier=preAccessionMilitary(ruler,people,Military.getFormations(),events,{factions:new Map((Game.Core?.teams??[]).map(t=>[t.name,t]))});
  const rows=personServiceLinks(factionId,[ruler],people,Military.getFormations(),events,month);
  return <>
   {earlier&&<ChronicleSection title="早年与登位前经历">

@@ -16,6 +16,11 @@ export function militaryMilestones(person:MilitaryPerson,entries:MilitaryChronic
     if(type==="military-order-issued")return [{...entry,text:`${name}奉命以${event?.cityName??"城邑"}为进军目标。`}];
     if(type==="military-appointment"&&entries.some(e=>e.commandId===entry.commandId&&e.worldMonth===entry.worldMonth&&e.source.startsWith("military-office-granted")))return [];
     let text=entry.text;
+    if(type==="empire-split"&&event){
+      const faction=event.actorFactionId&&context.factions?.get(event.actorFactionId);
+      const polity=faction?getHistoricalFactionIdentity({...faction,displayName:event.actorFactionId!},entry.worldMonth).name:undefined;
+      text=`${name}率旧部于${event.cityName??event.metadata?.splitCoreCityName??"当地"}起事，脱离${event.metadata?.leaderOriginalFactionName??event.targetFactionId}${polity?`，建立${polity}`:""}，成为首领。`;
+    }
     if(entry.victory&&event)text=`${formatMilitaryVictorySource(event,{...context,people:[person],events})??entry.text.replace(/。$/,"")}。`;
     if(type==="military-office-granted"){
       const grant=person.appointments.flatMap(a=>a.officeHistory??[]).find(g=>g.eventId===entry.eventId);

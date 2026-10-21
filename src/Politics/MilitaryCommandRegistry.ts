@@ -178,7 +178,7 @@ export class MilitaryCommandRegistryStore {
         personId: user.militaryPersonId, unitId, liveBindingVerified: Boolean(liveBindingVerified) };
     });
     const relevantFactions = [...new Set(people.filter(p => p.factionId === team.name && p.status === "ACTIVE").flatMap(p => p.appointments.map(a => a.factionId)))];
-    return deriveMilitaryPoliticalInfluence({ factionId: team.name, status: team.status, identityStage: team.identityStage, worldMonth, people, formations: this.getFormations(), users,
+    return deriveMilitaryPoliticalInfluence({ factionId: team.name, status: team.status, identityStage: team.identityStage, worldMonth, people:people.filter(p=>!p.royalIdentity), formations: this.getFormations(), users,
       events: [...new Map(relevantFactions.flatMap(id => this.eventReader(id)).map(e => [e.id, e])).values()] });
   }
 

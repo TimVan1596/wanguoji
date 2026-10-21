@@ -178,7 +178,7 @@ class DynastyRegistryStore {
       dynasties: [...this.dynasties.values()].map((dynasty) => ({
         ...dynasty,
         houseEpochs: dynasty.houseEpochs?.map((epoch) => ({ ...epoch })),
-        rulers: dynasty.rulers.map((ruler) => ({ ...ruler, residentIdentity:ruler.residentIdentity?structuredClone(ruler.residentIdentity):undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
+        rulers: dynasty.rulers.map((ruler) => ({ ...ruler, militaryIdentity:ruler.militaryIdentity?{...ruler.militaryIdentity}:undefined, residentIdentity:ruler.residentIdentity?structuredClone(ruler.residentIdentity):undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
         heirIds: [...dynasty.heirIds],
       })),
       sequence: this.sequence,
@@ -198,7 +198,7 @@ class DynastyRegistryStore {
     this.dynasties = new Map(state.dynasties.map((dynasty) => [dynasty.factionId, {
       ...dynasty,
       houseEpochs: dynasty.houseEpochs?.map((epoch) => ({ ...epoch })),
-      rulers: dynasty.rulers.map((ruler) => ({ ...ruler, residentIdentity:ruler.residentIdentity?structuredClone(ruler.residentIdentity):undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
+      rulers: dynasty.rulers.map((ruler) => ({ ...ruler, militaryIdentity:ruler.militaryIdentity?{...ruler.militaryIdentity}:undefined, residentIdentity:ruler.residentIdentity?structuredClone(ruler.residentIdentity):undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
       heirIds: [...dynasty.heirIds],
     }]));
     this.sequence = state.sequence;
@@ -303,7 +303,7 @@ class DynastyRegistryStore {
       MilitaryCommandRegistry.getPeople().filter(p=>p.factionId===team.name&&p.status==="ACTIVE").length >= 2 ||
       MilitaryCommandRegistry.getFormations().filter(f=>f.factionId===team.name&&f.status==="ACTIVE").length >= 2 ||
       members.length < 1 || members.length > 11 || new Set(members).size !== members.length ||
-      members.some(u=>u.team!==team||u.isDestroyed||u.role!=="NORMAL"||u.rulerId||u.player.rulerId||!u.player.logicalUnitId||MilitaryCommandRegistry.isAssigned(u.player.logicalUnitId))) return false;
+      members.some(u=>!team.users.has(u)||u.team!==team||u.isDestroyed||u.role!=="NORMAL"||u.rulerId||u.player.rulerId||!u.player.logicalUnitId||MilitaryCommandRegistry.isAssigned(u.player.logicalUnitId))) return false;
     const ruler = this.get(team.name)!.rulers.find(r=>r.id===candidate.rulerId)!;
     const personId = MilitaryCommandRegistry.nextPersonId(), sourceUserId = getRulerUserId(ruler.id), sourceUserLabel = this.getRulerPersonalName(ruler);
     const militaryBefore=MilitaryCommandRegistry.snapshotTransaction(), historyBefore=WorldHistory.exportState();
