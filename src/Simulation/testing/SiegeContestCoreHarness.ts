@@ -42,6 +42,7 @@ export async function runSiegeContestCore(seed:string,candidate=false){
    check(siegeParticipants(multi.city,multi.owner,core,32,false).length===0,`${logical}: third-party attacker is never a defender`);
    multi.city.capture(multi.attack,multi.m);check(!(multi.city as any).siegeContacts.size&&!multi.city.underSiege,`${logical}: capture clears old contacts`);
   }
+  check(JSON.stringify(damage.filter(r=>!r.logical).map(({logical,...r})=>r))===JSON.stringify(damage.filter(r=>r.logical).map(({logical,...r})=>r)), 'Phaser and logical authorities settle identical verified force scenarios');
   hydrateWorldSave(core,structuredClone(base));const month=core.simulator!.year,city=core.allCities.find(c=>c.ownerTeam&&!c.isInCaptureGrace(month))!,attacker=core.teams.find(t=>t!==city.ownerTeam&&Diplomacy.canAttack(t.name,city.ownerFactionId,month))!;
   city.registerSiegeContact(attacker,month);const pending=exportWorldSave(core);check(validateWorldSave(pending).valid,'pending real siege contact is valid JSON DTO');
   hydrateWorldSave(core,structuredClone(pending));check(diffCanonicalWorldSave(pending,exportWorldSave(core)).matched,'pending siege survives hydration without duplicate events');
