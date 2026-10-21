@@ -6,7 +6,7 @@ import { hasRecordedRulerDeath } from "../../../Politics/RulerLifeState";
 import { getRulerTerminalRole } from "../../../History/PoliticalTerminalChronicle";
 
 export type GenealogyRole = "当前君主" | "储君" | "势力创始" | "正式开国" | "称帝" | "篡朝开统" | "宗室废立继位" | "被宗室废黜" | "复国" | "末代承统" | "合邦退位" | "纳土退位";
-export type GenealogyTheme = "neutral" | "current" | "heir" | "foundation" | "usurpation" | "restoration" | "terminal";
+export type GenealogyTheme = "neutral" | "monarch" | "current" | "heir" | "foundation" | "usurpation" | "restoration" | "terminal";
 export interface GenealogyNodePresentation {
   roles: GenealogyRole[];
   labels: GenealogyRole[];
@@ -81,7 +81,7 @@ export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: Hous
     const roles = order.filter(role => proof.some(e => e.role === role));
     const theme: GenealogyTheme = roles.includes("当前君主") ? "current" : roles.includes("储君") ? "heir" :
       roles.includes("篡朝开统") ? "usurpation" : roles.some(x => ["正式开国", "称帝", "势力创始"].includes(x)) ? "foundation" :
-      roles.includes("复国") ? "restoration" : roles.some(x => ["末代承统", "合邦退位", "纳土退位"].includes(x)) ? "terminal" : "neutral";
+      roles.includes("复国") ? "restoration" : roles.some(x => ["末代承统", "合邦退位", "纳土退位"].includes(x)) ? "terminal" : r.reignOrdinal!==undefined&&r.accessionYear!==undefined ? "monarch" : "neutral";
     const details = [...roles, r.reignOrdinal !== undefined ? `第${r.reignOrdinal}代` : "宗室成员",
       dynasty.heirIds.includes(r.id) && !roles.includes("储君") ? "宗室候选" : "",
       r.displacedByUsurpationMonth !== undefined ? "旧朝宗亲" : "", r.endReason ?? "",
@@ -97,6 +97,7 @@ export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: Hous
 /** Restrained palette: ordinary nodes remain neutral; bloodline edges keep their existing style. */
 export const genealogyThemeStyles: Record<GenealogyTheme, { borderColor: string; backgroundColor: string; color: string }> = {
   neutral: { borderColor: "var(--gg-border)", backgroundColor: "var(--gg-panel)", color: "var(--gg-text)" },
+  monarch: {borderColor:"#9d917a",backgroundColor:"#f5f2eb",color:"#665c49"},
   current: { borderColor: "#9b731d", backgroundColor: "#fff3cf", color: "#63470d" },
   heir: { borderColor: "#587c92", backgroundColor: "#edf5f9", color: "#35556b" },
   foundation: { borderColor: "#ad9460", backgroundColor: "#faf4e6", color: "#6e5729" },

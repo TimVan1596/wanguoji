@@ -3,6 +3,7 @@ import type {PersonArchiveTarget} from "./PersonArchiveTarget";
 export type {PersonArchiveTarget} from "./PersonArchiveTarget";
 export const PersonArchiveNavigation=createContext<{
  open:(target:PersonArchiveTarget)=>void;
+ genealogyTarget?:PersonArchiveTarget&{serial:number};
  militaryTarget?:PersonArchiveTarget&{serial:number};
  consume:()=>void;
 }>({open:()=>{},consume:()=>{}});

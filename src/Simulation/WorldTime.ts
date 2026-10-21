@@ -5,11 +5,12 @@ export function getWorldYear(worldMonth: number) {
 }
 
 export function getWorldMonth(worldMonth: number) {
-  return (worldMonth % MONTHS_PER_YEAR) + 1;
+  return ((worldMonth % MONTHS_PER_YEAR) + MONTHS_PER_YEAR) % MONTHS_PER_YEAR + 1;
 }
 
 export function formatWorldDate(worldMonth: number) {
-  return `${getWorldYear(worldMonth)}年${getWorldMonth(worldMonth)}月`;
+  const year=getWorldYear(worldMonth);
+  return `${year<0?`纪元前${-year}`:year}年${getWorldMonth(worldMonth)}月`;
 }
 
 export function yearsToMonths(years: number) {
