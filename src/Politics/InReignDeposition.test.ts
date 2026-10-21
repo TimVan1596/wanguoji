@@ -90,3 +90,14 @@ it("records deterministic per-seed claimant distributions separately from the un
  });
  console.info("[DepositionSelection] "+JSON.stringify(rows));
 });
+
+it("accepts only a real adult nephew when sons and the brother are dead or underage",()=>{
+ const root=ruler({id:"root",status:"dead",deathMonth:0,deathReason:"去世"});
+ const king=ruler({id:"king",parentId:root.id,status:"ruling",accessionYear:0});
+ const brother=ruler({id:"brother",parentId:root.id,status:"dead",deathMonth:1,deathReason:"去世"});
+ const nephew=ruler({id:"nephew",parentId:brother.id,bornYear:-300});
+ const minor=ruler({id:"minor",parentId:king.id,bornYear:0});
+ const deadSon=ruler({id:"dead-son",parentId:king.id,status:"dead",deathMonth:1,deathReason:"去世"});
+ const legal=selectDepositionCandidates({currentRuler:king,rulers:[root,king,brother,nephew,minor,deadSon],houseName:king.houseName,worldMonth:108});
+ expect(legal.map(c=>[c.ruler.id,c.relation])).toEqual([["nephew","NEPHEW"]]);
+});

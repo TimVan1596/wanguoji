@@ -1,0 +1,317 @@
+{
+  "scope": "24 fixed local selection seeds x 1000 conditional successful coups in a controlled real-kin fixture, NOT natural political frequency",
+  "rows": [
+    {
+      "seed": "claimant-1",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "DIRECT_CHILD": 500,
+        "SIBLING": 500
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    },
+    {
+      "seed": "claimant-2",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "SIBLING": 492,
+        "DIRECT_CHILD": 508
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    },
+    {
+      "seed": "claimant-3",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "SIBLING": 460,
+        "DIRECT_CHILD": 540
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    },
+    {
+      "seed": "claimant-4",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "SIBLING": 478,
+        "DIRECT_CHILD": 522
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    },
+    {
+      "seed": "claimant-5",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "DIRECT_CHILD": 481,
+        "SIBLING": 519
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    },
+    {
+      "seed": "claimant-6",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "DIRECT_CHILD": 528,
+        "SIBLING": 472
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    },
+    {
+      "seed": "claimant-7",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "SIBLING": 509,
+        "DIRECT_CHILD": 491
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    },
+    {
+      "seed": "claimant-8",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "SIBLING": 488,
+        "DIRECT_CHILD": 512
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    },
+    {
+      "seed": "claimant-9",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "SIBLING": 486,
+        "DIRECT_CHILD": 514
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    },
+    {
+      "seed": "claimant-10",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "SIBLING": 466,
+        "DIRECT_CHILD": 534
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    },
+    {
+      "seed": "claimant-11",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "DIRECT_CHILD": 509,
+        "SIBLING": 491
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    },
+    {
+      "seed": "claimant-12",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "DIRECT_CHILD": 509,
+        "SIBLING": 491
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    },
+    {
+      "seed": "claimant-13",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "SIBLING": 521,
+        "DIRECT_CHILD": 479
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    },
+    {
+      "seed": "claimant-14",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "SIBLING": 480,
+        "DIRECT_CHILD": 520
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    },
+    {
+      "seed": "claimant-15",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "SIBLING": 504,
+        "DIRECT_CHILD": 496
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    },
+    {
+      "seed": "claimant-16",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "DIRECT_CHILD": 520,
+        "SIBLING": 480
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    },
+    {
+      "seed": "claimant-17",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "SIBLING": 485,
+        "DIRECT_CHILD": 515
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    },
+    {
+      "seed": "claimant-18",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "SIBLING": 497,
+        "DIRECT_CHILD": 503
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    },
+    {
+      "seed": "claimant-19",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "DIRECT_CHILD": 517,
+        "SIBLING": 483
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    },
+    {
+      "seed": "claimant-20",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "DIRECT_CHILD": 520,
+        "SIBLING": 480
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    },
+    {
+      "seed": "claimant-21",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "DIRECT_CHILD": 522,
+        "SIBLING": 478
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    },
+    {
+      "seed": "claimant-22",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "SIBLING": 491,
+        "DIRECT_CHILD": 509
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    },
+    {
+      "seed": "claimant-23",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "SIBLING": 503,
+        "DIRECT_CHILD": 497
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    },
+    {
+      "seed": "claimant-24",
+      "conditionalSuccesses": 1000,
+      "old": {
+        "DIRECT_CHILD": 1000
+      },
+      "candidate": {
+        "DIRECT_CHILD": 495,
+        "SIBLING": 505
+      },
+      "probability": 0.005,
+      "randomDraws": 1000
+    }
+  ]
+}
