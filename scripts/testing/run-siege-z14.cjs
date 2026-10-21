@@ -29,6 +29,26 @@ if(name==='C'||name==='C2')edit('src/Politics/MilitaryCommandRegistry.ts',s=>{
  return replace(s,'user.player.logicalUnitId && user.role === "NORMAL"','!reserved.has(user) && user.player.logicalUnitId && user.role === "NORMAL"');
 });
 if(name==='B3'||name==='B3v2')edit('src/Politics/MilitaryCommandRegistry.ts',s=>replace(s,'MAX_FORMATION_UNITS = 12','MAX_FORMATION_UNITS = 3'));
+if(['R4','R6'].includes(name))edit('src/Politics/MilitaryCommandRegistry.ts',s=>{
+ s='import Game from "../Game/Game";\n'+s;
+ s=replace(s,'availableUnits.slice(0, MAX_FORMATION_UNITS - 1)','availableUnits.slice(0, 2)');
+ s=replace(s,'.slice(0, MAX_FORMATION_UNITS);','.slice(0, 3);');
+ return replace(s,'if(grant)this.grantOffice(person,appointment,grant);',`if(grant){
+  this.grantOffice(person,appointment,grant);
+  const core=Game.Core,limit=${name==='R4'?4:6};
+  const commander=core?.logicalUnitRegistry.getEntry(user.player.logicalUnitId!);
+  if(core&&team&&commander){const pos=(e:any)=>core.logicalGameplayAuthority?{x:e.state.logicalX,y:e.state.logicalY}:e.player;
+   const center=pos(commander);
+   for(const u of [...team.users].sort((a,b)=>a.id-b.id)){
+    if(formation.memberUnitIds.length>=limit)break;
+    const id=u.player.logicalUnitId,e=id&&core.logicalUnitRegistry.getEntry(id);
+    if(!id||!e||e.player!==u.player||!e.state.alive||e.state.factionId!==team.name||e.state.userId!==u.id||u.team!==team||u.role!=="NORMAL"||u.rulerId||u.isDestroyed||!u.player.active||u.player.parent||u.player.children?.length||this.isUnitAssigned(id))continue;
+    const position=pos(e);if(Math.hypot(position.x-center.x,position.y-center.y)>64)continue;
+    formation.memberUnitIds.push(id);
+   }
+  }
+ }`);
+});
 const config=path.join(root,'z14.vite.config.ts');fs.writeFileSync(config,`import configure from './vite.config';export default env=>({...configure(env),optimizeDeps:{include:['react','react-dom','react-dom/client','react-dom/server']},cacheDir:'.vite-z14'});`);
 const log=fs.openSync(path.join(os.tmpdir(),'siege-z14-'+name+'-'+port+'.log'),'w');
 const server=spawn(process.execPath,[path.join(repo,'node_modules/vite/bin/vite.js'),'--config',config,'--host','127.0.0.1','--port',String(port),'--strictPort'],{cwd:root,stdio:['ignore',log,log]});

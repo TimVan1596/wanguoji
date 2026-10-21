@@ -82,6 +82,10 @@ export async function checkGenealogyRendering(core:Core,check:(ok:unknown,label:
     const parent=document.querySelector<HTMLElement>(`[data-ruler-id="${edge.getAttribute('data-parent-id')}"]`)!,child=document.querySelector<HTMLElement>(`[data-ruler-id="${edge.getAttribute('data-child-id')}"]`)!;
     check(parent.getBoundingClientRect().top<child.getBoundingClientRect().top,size+" "+shape+": real parent DOM is above child");
    }
+   const siblingGroups=new Map<string,HTMLElement[]>();for(const edge of Array.from(document.querySelectorAll('path[data-parent-id]'))){const id=edge.getAttribute('data-parent-id')!,child=document.querySelector<HTMLElement>(`[data-ruler-id="${edge.getAttribute('data-child-id')}"]`)!;siblingGroups.set(id,[...(siblingGroups.get(id)??[]),child]);}
+   for(const siblings of siblingGroups.values())if(siblings.length>1){const a=siblings[0].getBoundingClientRect(),b=siblings[1].getBoundingClientRect();check(a.top===b.top&&a.left!==b.left,size+" "+shape+": actual sibling DOM shares a horizontal generation");}
+   const focused=document.querySelector<HTMLElement>('[data-genealogy-focused="true"]')!,visible=focused.closest('.MuiDialogContent-root')!.getBoundingClientRect(),rect=focused.getBoundingClientRect();
+   check(rect.bottom>visible.top&&rect.top<visible.bottom&&rect.right>visible.left&&rect.left<visible.right,size+" "+shape+": focused real node is inside the visible viewport");
    check(document.querySelector('[role="tree"]')!.getBoundingClientRect().width<=2000,size+" "+shape+": bounded tree canvas width");
    const locate=Array.from(document.querySelectorAll("button")).find(b=>b.textContent==="定位当今君主")!;flushSync(()=>locate.click());
    check(Array.from(document.querySelectorAll('[data-ruler-id]')).some(r=>r.getAttribute("data-ruler-id")==="bench-"+(size-1)),size+" "+shape+": current-ruler control locates tail");
