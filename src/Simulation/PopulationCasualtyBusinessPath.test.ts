@@ -198,7 +198,7 @@ describe("production casualty business path", () => {
     expect(context).toBeDefined();
     const rngBefore = worldRandom.exportState();
 
-    core.allCities=[{id:context!.triggerCityId,ownerFactionId:defender.name,block:{x:32,y:64,team:defender},fortifiedCells:[]}];
+    core.allCities=[{id:context!.triggerCityId,ownerFactionId:defender.name,block:{x:32,y:64,team:defender},fortifiedCells:[{x:64,y:64,team:defender}]}];
     const removed = defender.removeOneUser("SIEGE_LOSS", { ...context!, damageSource: "CITY_SIEGE" });
 
     expect(core.handleRulerCombatDeath).toHaveBeenCalledTimes(1);

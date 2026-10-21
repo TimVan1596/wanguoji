@@ -1,6 +1,8 @@
 // Frozen real production sources; no runtime balancing switches or second simulator.
 const fs=require('node:fs'),os=require('node:os'),path=require('node:path');
 const repo=process.cwd(),base=fs.mkdtempSync(path.join(os.tmpdir(),'wanguoji-z9-'));
+const baselineHead='c1a63421c11a0d0e11e783c5d01fe36273d30281';
+const {execFileSync}=require('node:child_process');
 const cases=['baseline','A','B','C','BC','R','BCR'];
 for(const [i,name] of cases.entries()){
  const root=path.join(base,name);fs.mkdirSync(root,{recursive:true});
@@ -9,6 +11,9 @@ for(const [i,name] of cases.entries()){
  for(const f of ['package.json','index.html','tsconfig.json','vite.config.ts'])fs.copyFileSync(path.join(repo,f),path.join(root,f));
  for(const f of ['public','node_modules'])fs.symlinkSync(path.join(repo,f),path.join(root,f),'junction');
  const edit=(file,fn)=>{const p=path.join(root,file);fs.writeFileSync(p,fn(fs.readFileSync(p,'utf8')));};
+ // Always restore z8's gameplay inputs, even when this script is rerun after release edits.
+ for(const f of ['src/Components/City.ts','src/Components/Team.ts','src/config/simulation.ts','src/Simulation/PopulationCasualtyGeography.ts','src/Politics/MilitaryCommandRegistry.ts'])
+  fs.writeFileSync(path.join(root,f),execFileSync('git',['show',`${baselineHead}:${f}`]));
  edit('vite.config.ts',s=>s.replace('base: getViteBase(mode),','base: getViteBase(mode),\n cacheDir: ".vite-experiment-cache",'));
  if(name.includes('B'))edit('src/config/simulation.ts',s=>s.replace('CITY_CAPTURED_DEFENSE_RATIO = 0.35','CITY_CAPTURED_DEFENSE_RATIO = 0.5'));
  if(name.includes('C'))edit('src/Components/Team.ts',s=>s.replace('...ordered.filter(c => !local.has(c.user))','...(damageSource === "CITY_SIEGE" ? [] : ordered.filter(c => !local.has(c.user)))'));
@@ -21,5 +26,5 @@ for(const [i,name] of cases.entries()){
   return s.replace('    this.defense -= siegeDamage;','    if(siegeDamage<=0)return;\n    this.defense -= siegeDamage;');
  });
 }
-const manifest={baselineHead:require('node:child_process').execSync('git rev-parse HEAD',{encoding:'utf8'}).trim(),base,cases:cases.map((name,i)=>({name,root:path.join(base,name),port:5200+i}))};
+const manifest={baselineHead,measurementHead:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),base,cases:cases.map((name,i)=>({name,root:path.join(base,name),port:5200+i}))};
 fs.writeFileSync('siege-experiments.local',JSON.stringify(manifest,null,2));process.stdout.write(JSON.stringify(manifest,null,2));

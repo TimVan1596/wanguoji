@@ -1,0 +1,33 @@
+[
+  {
+    "seed": "siege-defense-z9",
+    "checks": [
+      "false: distant population is not local",
+      "false: no local victim means no distant death",
+      "false: empty battlefield conserves population",
+      "false: real bound local resident qualifies",
+      "false: local death occurs once; empty attempt did not consume cooldown",
+      "false: same person cannot die twice",
+      "false: real capture grants only the configured wall buffer",
+      "false: existing capture grace neither stacks contacts nor resets walls",
+      "false: continued real siege remains capable of damaging walls",
+      "false: actual diplomatic truce clears siege",
+      "false: actual siege breach still captures a city exactly once",
+      "true: distant population is not local",
+      "true: no local victim means no distant death",
+      "true: empty battlefield conserves population",
+      "true: real bound local resident qualifies",
+      "true: local death occurs once; empty attempt did not consume cooldown",
+      "true: same person cannot die twice",
+      "true: real capture grants only the configured wall buffer",
+      "true: existing capture grace neither stacks contacts nor resets walls",
+      "true: continued real siege remains capable of damaging walls",
+      "true: actual diplomatic truce clears siege",
+      "true: actual siege breach still captures a city exactly once",
+      "twelve real months resume deterministically",
+      "second save can be loaded without canonical changes"
+    ],
+    "saveSchemaVersion": 20,
+    "deterministic12MonthContinuation": true
+  }
+]

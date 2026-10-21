@@ -42,6 +42,7 @@ export const CITY_CAPITAL_DEFENSE_BONUS = 2;
 export const CITY_DEVELOPMENT_TERRITORY_STEP = 12;
 export const CITY_DEVELOPMENT_SCORE_THRESHOLDS = [0, 18, 35, 65, 100];
 export const CITY_REPAIR_INTERVAL_MONTHS = 9;
+// Wall buffer only, not new garrison population or extra invulnerability months.
 export const CITY_CAPTURED_DEFENSE_RATIO = 0.5;
 export const CITY_CAPTURE_GRACE_MONTHS = 3;
 export const CITY_INITIAL_LOYALTY = 90;

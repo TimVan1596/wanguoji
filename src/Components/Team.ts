@@ -230,7 +230,13 @@ export default class Team {
     // A malformed/ambiguous identity must not fall back to Set iteration order.
     if (!ordered) return undefined;
     const local = getVerifiedLocalCasualtyUsers(this, context.triggerCityId, Game.Core, Game.BlockSize);
-    const prioritized = [...ordered.filter(c => local.has(c.user)), ...(damageSource === "CITY_SIEGE" ? [] : ordered.filter(c => !local.has(c.user)))];
+      // A city siege cannot spend a distant person's life. An empty/protected local
+      // pool causes no casualty and consumes no national loss cooldown; wall damage
+      // is settled independently by City. Other loss sources retain their own scope.
+      const prioritized = [
+        ...ordered.filter(c => local.has(c.user)),
+        ...(damageSource === "CITY_SIEGE" ? [] : ordered.filter(c => !local.has(c.user))),
+      ];
     for (const { user } of prioritized) {
       if (user.destroyUser(false, {
         cause,

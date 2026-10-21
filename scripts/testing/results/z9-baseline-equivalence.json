@@ -1,0 +1,74 @@
+[
+  {
+    "seed": "regional-1",
+    "month": 1200,
+    "canonicalEqual": true,
+    "rngEqual": true
+  },
+  {
+    "seed": "regional-1",
+    "month": 2400,
+    "canonicalEqual": true,
+    "rngEqual": true
+  },
+  {
+    "seed": "regional-2",
+    "month": 1200,
+    "canonicalEqual": true,
+    "rngEqual": true
+  },
+  {
+    "seed": "regional-2",
+    "month": 2400,
+    "canonicalEqual": true,
+    "rngEqual": true
+  },
+  {
+    "seed": "regional-3",
+    "month": 1200,
+    "canonicalEqual": true,
+    "rngEqual": true
+  },
+  {
+    "seed": "regional-3",
+    "month": 2400,
+    "canonicalEqual": true,
+    "rngEqual": true
+  },
+  {
+    "seed": "regional-4",
+    "month": 1200,
+    "canonicalEqual": true,
+    "rngEqual": true
+  },
+  {
+    "seed": "regional-4",
+    "month": 2400,
+    "canonicalEqual": true,
+    "rngEqual": true
+  },
+  {
+    "seed": "regional-5",
+    "month": 1200,
+    "canonicalEqual": true,
+    "rngEqual": true
+  },
+  {
+    "seed": "regional-5",
+    "month": 2400,
+    "canonicalEqual": true,
+    "rngEqual": true
+  },
+  {
+    "seed": "regional-6",
+    "month": 1200,
+    "canonicalEqual": true,
+    "rngEqual": true
+  },
+  {
+    "seed": "regional-6",
+    "month": 2400,
+    "canonicalEqual": true,
+    "rngEqual": true
+  }
+]
