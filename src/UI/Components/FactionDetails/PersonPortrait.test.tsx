@@ -17,6 +17,20 @@ describe("lightweight identity portrait",()=>{
   const html=renderToStaticMarkup(<Portrait personId="person"/>);
   expect(html).not.toContain("<image");expect(html).not.toContain("http");
  });
+ it("keeps the same face through every real office and flag transition while distinguishing uniforms",()=>{
+  const before=worldRandom.exportState(),faces=new Set<string>(),uniforms=new Set<string>();
+  for(const role of ["LEADER","KING","EMPEROR","PIJIANG","JIANGJUN","SHANGJIANGJUN"] as const){
+   const html=renderToStaticMarkup(<Portrait personId="same-person" age={40} role={role} color={0x224477}/>);
+   faces.add(html.match(/<path data-face="true"[^>]*>/)![0]);uniforms.add(html);
+   expect(html).toContain(`data-portrait-role="${role}"`);
+  }
+  expect(faces.size).toBe(1);expect(uniforms.size).toBe(6);expect(worldRandom.exportState()).toEqual(before);
+  expect(renderToStaticMarkup(<Portrait personId="same-person" age={80} deceased/>)).toContain('data-deceased="true"');
+ });
+ it("produces distinct immutable facial detail combinations without generating new people",()=>{
+  const shapes=new Set(Array.from({length:100},(_,i)=>{const {seed:_seed,stage:_stage,robe:_robe,...face}=portraitTraits(`person-${i}`,40);return JSON.stringify(face);}));
+  expect(shapes.size).toBeGreaterThan(90);
+ });
 });
 
 vi.mock("react/jsx-dev-runtime",async()=>{

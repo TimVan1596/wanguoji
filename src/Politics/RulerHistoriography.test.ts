@@ -803,11 +803,11 @@ describe("evidence-grounded ruler historiography", () => {
     ]);
   });
 
-  it("does not alter the e2 combat, playback, or save-schema baseline", () => {
+  it("preserves siege interval, playback and schema while using the verified post-capture ratio", () => {
     expect(CITY_BASE_MAX_DEFENSE).toBe(5);
     expect(CITY_SIEGE_DAMAGE_INTERVAL_MONTHS).toBe(2);
     expect(CITY_SIEGE_DAMAGE_PER_TICK).toBe(1);
-    expect(CITY_CAPTURED_DEFENSE_RATIO).toBe(0.35);
+    expect(CITY_CAPTURED_DEFENSE_RATIO).toBe(0.5);
     expect(FORTIFIED_ZONE_TIERS.map(({ minDefense, maxDefense }) => [minDefense, maxDefense])).toEqual([
       [1, 6], [7, 8], [9, 10], [11, 99],
     ]);

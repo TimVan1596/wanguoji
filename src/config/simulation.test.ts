@@ -18,12 +18,12 @@ describe("simulation display config", () => {
     expect(CITY_CAPITAL_LABEL_FONT_SIZE - CITY_LABEL_FONT_SIZE).toBeLessThanOrEqual(1);
   });
 
-  it("raises only the base defense number while preserving the e1 siege and capture values", () => {
+  it("preserves base, siege interval and repair values while applying the verified post-capture recovery ratio", () => {
     expect(CITY_BASE_MAX_DEFENSE).toBe(5);
     expect(CITY_CAPITAL_DEFENSE_BONUS).toBe(2);
     expect(CITY_SIEGE_DAMAGE_INTERVAL_MONTHS).toBe(2);
     expect(CITY_SIEGE_DAMAGE_PER_TICK).toBe(1);
-    expect(CITY_CAPTURED_DEFENSE_RATIO).toBe(0.35);
+    expect(CITY_CAPTURED_DEFENSE_RATIO).toBe(0.5);
     expect(CITY_REPAIR_INTERVAL_MONTHS).toBe(9);
     expect(CITY_CAPTURE_GRACE_MONTHS).toBe(3);
     const maxDefense = (development: number, capital = false) =>

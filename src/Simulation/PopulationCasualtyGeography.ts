@@ -12,12 +12,12 @@ export function getVerifiedLocalCasualtyUsers(team: Team, triggerCityId: string 
     .map(b => `${Math.round(b.x/blockSize)},${Math.round(b.y/blockSize)}`));
   for (const user of team.users) {
     if (user.team !== team || user.isDestroyed || !user.player?.active) continue;
-    let x: number | undefined, y: number | undefined;
-    if (core?.logicalGameplayAuthority) {
-      const entry = user.player.logicalUnitId ? core.logicalUnitRegistry.getEntry(user.player.logicalUnitId) : undefined;
-      if (entry?.player !== user.player || !entry?.state.alive || entry.state.userId !== user.id || entry.state.factionId !== team.name) continue;
-      x = entry.state.logicalX; y = entry.state.logicalY;
-    } else { x = user.player.x; y = user.player.y; }
+    const player=user.player,unitId=player.logicalUnitId;
+    const entry=unitId?core?.logicalUnitRegistry?.getEntry(unitId):undefined;
+    if(!entry||entry.player!==player||!entry.state.alive||entry.state.unitId!==unitId||
+      entry.state.userId!==user.id||entry.state.factionId!==team.name||player.user!==user||player.team!==team)continue;
+    const x=core?.logicalGameplayAuthority?entry.state.logicalX:player.x;
+    const y=core?.logicalGameplayAuthority?entry.state.logicalY:player.y;
     if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
     const grid = getLogicalGridCoordinate(x!,y!,blockSize);
     if (cells.has(`${grid.gridX},${grid.gridY}`)) result.add(user);

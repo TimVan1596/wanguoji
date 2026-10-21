@@ -122,10 +122,11 @@ describe("production casualty business path", () => {
     });
     const city: any = Object.assign(Object.create(City.prototype), {
       id: context!.triggerCityId, name: "北城", ownerFactionId: defender.name, defense: 20, maxDefense: 20,
-      block: { x: 1024, y: 1024, updateCityDisplay: vi.fn() }, siegeDamageRemainder: 0, lastSiegeDamageYear: -1,
+      block: { x: 32, y: 64, team:defender, city:undefined, updateCityDisplay: vi.fn() }, siegeDamageRemainder: 0, lastSiegeDamageYear: -1,
       lastSiegeDevastationYear: 12, devastation: 0, lastCapturedYear: undefined,
       siegeContacts: new Map([[attacker.name, { team: attacker, count: 3, year: 12 }]]),
     });
+    city.block.city=city;city.fortifiedCells=[city.block];core.allCities=[city];
     vi.spyOn(city, "refreshZoneVisual").mockImplementation(() => {});
     vi.spyOn(Diplomacy, "canAttack").mockReturnValue(true);
     vi.spyOn(FactionEffects, "getSiegeMultiplier").mockReturnValue(1);
@@ -147,7 +148,7 @@ describe("production casualty business path", () => {
         victimMilitaryPersonId: personId, victimPosition: { x: victim.id * 32, y: 64, source: "LOGICAL" },
         populationBefore: 6, populationAfter: 5, destroyed: true },
     }]);
-    expect(audit.getRecentSignificant()[0].casualty?.victimPosition?.x).not.toBe(city.block.x);
+    expect(audit.getRecentSignificant()[0].casualty?.victimPosition?.x).toBe(city.block.x);
     const person=MilitaryCommandRegistry.getPeople()[0];
     const biography=composeMilitaryBiography(person,MilitaryCommandRegistry.getChronicle(person,12),"defender");
     expect(biography.ending).toContain("战乱中去世");
@@ -197,6 +198,7 @@ describe("production casualty business path", () => {
     expect(context).toBeDefined();
     const rngBefore = worldRandom.exportState();
 
+    core.allCities=[{id:context!.triggerCityId,ownerFactionId:defender.name,block:{x:32,y:64,team:defender},fortifiedCells:[]}];
     const removed = defender.removeOneUser("SIEGE_LOSS", { ...context!, damageSource: "CITY_SIEGE" });
 
     expect(core.handleRulerCombatDeath).toHaveBeenCalledTimes(1);
@@ -369,4 +371,13 @@ it("real Block restoration preserves a saved non-home capital-zone cell through 
   block.restoreCanonicalState({owner:defender,isHome,hp:999,city,isCityCenter:false});
   expect(block.isHome).toBe(isHome);expect(block.city).toBe(city);expect(block.hp).toBe(5);expect(block.isCityCenter).toBe(false);
  }
+});
+
+it("a city with no verified local resident cannot kill a distant person or consume a national casualty cooldown",()=>{
+ const {defender,users,removedUsers,audit}=setup();
+ core.allCities=[{id:"far-city",ownerFactionId:defender.name,block:{x:1024,y:1024,team:defender},fortifiedCells:[]}];
+ core.simulator.recordWartimePopulationLoss=vi.fn();const rng=worldRandom.exportState();
+ for(let month=12;month<24;month++)expect(defender.removeOneUser("SIEGE_LOSS",{month,damageSource:"CITY_SIEGE",triggerCityId:"far-city"})).toBeUndefined();
+ expect(defender.users.size).toBe(users.length);expect(removedUsers).toEqual([]);expect(audit.getRecentSignificant()).toHaveLength(0);
+ expect(core.simulator.recordWartimePopulationLoss).not.toHaveBeenCalled();expect(worldRandom.exportState()).toEqual(rng);
 });
