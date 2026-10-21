@@ -409,3 +409,10 @@ it("V17 validates persisted national casualty budgets and bounded migration sett
   const old={...s,saveSchemaVersion:16},before=JSON.stringify(old);
   expect(validateWorldSave(old)).toEqual({valid:false,errors:["该存档版本已不受支持，请创建新世界。"]});expect(JSON.stringify(old)).toBe(before);
 });
+
+it("rejects V20 before hydration without rewriting the old save",()=>{
+ const old={...fixture(),saveSchemaVersion:20},before=JSON.stringify(old);
+ expect(validateWorldSave(old).valid).toBe(false);
+ expect(validateWorldSave(old).errors).toContain("该存档版本已不受支持，请创建新世界。");
+ expect(JSON.stringify(old)).toBe(before);
+});

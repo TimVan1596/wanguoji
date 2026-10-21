@@ -16,7 +16,7 @@ import {exportWorldSave} from "../../Persistence/WorldSaveExporter";
 export async function checkPersonArchiveInteraction(core:Core,factionId:string,personId:string,check:(ok:unknown,label:string)=>void){
  const ruler=Dynasty.getCurrentRuler(factionId)!,person=Military.getPerson(personId)!,month=core.simulator!.year;
  const early=preAccessionMilitary(ruler,Military.getPeople(),Military.getFormations(),History.getEvents());
- check(early&&early.entries.length>0&&early.entries.every(e=>e.worldMonth<ruler.accessionYear!),"shared person has real pre-accession military evidence without post-accession credit");
+ check(early&&early.entries.length>0&&early.entries.every(e=>e.worldMonth<ruler.accessionYear!||e.worldMonth===ruler.accessionYear&&e.source.startsWith("empire-split")&&!e.victory),"shared person has verified early career plus its non-victory founding boundary, without post-accession battle credit");
  const host=document.createElement("div");host.style.width="350px";document.body.append(host);const root=createRoot(host);
  const pause=()=>new Promise(r=>setTimeout(r,40));
  const before=exportWorldSave(core),rng=JSON.stringify(random.exportState());
@@ -27,7 +27,7 @@ export async function checkPersonArchiveInteraction(core:Core,factionId:string,p
   const heading=portrait.closest("button")!.nextElementSibling as HTMLButtonElement;
   flushSync(()=>heading.click());await pause();
   check(host.textContent?.includes("早年与登位前经历"),"opening real ruler details mounts verified early military history");
-  const earlyLink=Array.from(host.querySelectorAll("button")).find(b=>b.textContent==="查看起事前完整军旅档案")!;
+  const earlyLink=Array.from(host.querySelectorAll("button")).find(b=>b.textContent==="查看登位前完整军旅档案")!;
   flushSync(()=>earlyLink.click());await pause();await pause();
   check(store.getState().root.selectedFactionName===ruler.residentIdentity!.sourceFactionId&&store.getState().root.factionDetailTab==="military","stable ID navigation changes country and military tab together");
   const militaryHeading=host.querySelector(`svg[data-person-id="${personId}"]`)!.closest("button")!.nextElementSibling;

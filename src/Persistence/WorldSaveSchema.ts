@@ -238,10 +238,10 @@ export function createEmptyWorldSaveV21(): WorldSaveV21 {
 /** Generic current-format type retained for persistence service signatures. */
 export type WorldSaveV1 = WorldSaveV21;
 export const createEmptyWorldSaveV1 = createEmptyWorldSaveV21;
-/** @deprecated Current schema is V20; alias retained for test fixture source compatibility only. */
+/** @deprecated Current schema is V21; alias retained for test fixture source compatibility only. */
 export type WorldSaveV14 = WorldSaveV21;
 export type RulerSaveV14 = RulerSaveV17;
-/** @deprecated Current schema is V20; alias retained for test fixture source compatibility only. */
+/** @deprecated Current schema is V21; alias retained for test fixture source compatibility only. */
 export const createEmptyWorldSaveV14 = createEmptyWorldSaveV21;
 
 export function canonicalWorldSaveProjection(save: WorldSaveV1) {
@@ -329,12 +329,12 @@ function simplifyDiffValue(value: unknown): unknown {
 
 export type RulerSaveV1 = RulerSaveV17;
 
-/** Source aliases only: these denote V20 DTOs and do not enable reading older files. */
+/** Source aliases only: these denote V21 DTOs and do not enable reading older files. */
 export type WorldSaveV15 = WorldSaveV21;
 export type RulerSaveV15 = RulerSaveV17;
 export const createEmptyWorldSaveV15 = createEmptyWorldSaveV21;
 
-/** Source aliases denote the current V20 DTO; old V16 files are rejected, not migrated. */
+/** Source aliases denote the current V21 DTO; old V16 files are rejected, not migrated. */
 export type WorldSaveV16 = WorldSaveV21;
 export type RulerSaveV16 = RulerSaveV17;
 export const createEmptyWorldSaveV16 = createEmptyWorldSaveV21;
