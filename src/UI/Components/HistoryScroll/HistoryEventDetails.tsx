@@ -1,3 +1,4 @@
+import {standaloneFactionMention} from "../../../History/HistoryFactionMentions";
 import {useContext} from "react";
 import {MentionContext,FactionMention} from "./HistoryFactionNavigation";
 import DepositionSelectionDetails from "../DepositionSelectionDetails";
@@ -167,9 +168,11 @@ export function EventText({
     return <>{text}</>;
   }
   const pattern = new RegExp(`(${[...new Set(names)].sort((a,b)=>b.length-a.length).map(escapeRegExp).join("|")})`, "g");
+  let offset=0;
   return (
     <>
       {text.split(pattern).map((part, index) => {
+        const start=offset;offset+=part.length;
         if(mentions.protectedNames.includes(part))return part;
         const team = teamByName.get(part);
         if (team) {
@@ -178,7 +181,7 @@ export function EventText({
               key={`${part}-${index}`}
               name={part}
               color={team.color}
-              id={mentions.ids.get(part)}
+              id={standaloneFactionMention(text,start,part.length)?mentions.ids.get(part):undefined}
             />
           );
         }

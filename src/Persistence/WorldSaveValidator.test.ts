@@ -122,6 +122,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     const save = fixture();
     expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(22);
     expect(save.saveSchemaVersion).toBe(22);
+    expect(validateWorldSave({...save,saveSchemaVersion:21}).valid).toBe(false);
     expect(save.diplomacy).toEqual({ relations: [], pairMemories: [], lastEvaluationMonth: -1 });
     expect(save.worldRandom).toMatchObject({ algorithm: "mulberry32-v1", seed: expect.any(String), state: expect.any(Number), position: 0 });
   });

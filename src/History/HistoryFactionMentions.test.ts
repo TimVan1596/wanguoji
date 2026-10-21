@@ -1,5 +1,5 @@
 import {expect,it} from "vitest";
-import {historyFactionMentions,historyProtectedNames} from "./HistoryFactionMentions";
+import {historyFactionMentions,historyProtectedNames,standaloneFactionMention} from "./HistoryFactionMentions";
 import type {WorldEvent} from "./WorldHistory";
 const f=(id:string,names:Array<[string,number,number?]>)=>({name:id,color:0,displayName:names.at(-1)![0],nameHistory:names.map(([name,startMonth,endMonth])=>({name,startMonth,endMonth}))});
 const factions=new Map([["old-id",f("old-id",[["北义军",0,19],["赵",20,59],["新赵",60]])],["other-id",f("other-id",[["赵",0]])]]);
@@ -20,4 +20,10 @@ it("refuses two same-name states, city collisions and unknown references",()=>{
 it("protects full personal names without treating arbitrary text labels as faction references",()=>{
  const event=e({metadata:{rulerName:"赵惟修",previousRulerName:"赵珩",leaderName:"北义军使者",unrelatedLabel:"other-id"}});
  expect(historyProtectedNames(event)).toEqual(["赵惟修","赵珩","北义军使者"]);expect(historyFactionMentions(event,factions,[]).get("赵")).toBeUndefined();
+});
+
+it("never links unlabelled person substrings while keeping explicit narrative mentions",()=>{
+ expect(standaloneFactionMention("赵惟修攻城",0,1)).toBe(false);expect(standaloneFactionMention("北义军使者来朝",0,3)).toBe(false);
+ expect(standaloneFactionMention("赵攻陷魏都",0,1)).toBe(true);expect(standaloneFactionMention("归附赵",2,1)).toBe(false);
+ expect(standaloneFactionMention("赵国攻城",0,1)).toBe(true);expect(standaloneFactionMention("向赵进军",1,1)).toBe(false);
 });

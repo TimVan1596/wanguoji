@@ -100,6 +100,9 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
    evaluation.royalMilitaryClaims=Military.getRoyalDepositionClaims(t,coupMonth,evaluation.candidates.map(c=>c.ruler),core.logicalUnitRegistry);
    check(evaluation.royalMilitaryClaims.length===1,"verified own royal command receives bounded advantage from real capture");
    check(evaluation.candidates.length>=2,"real dynasty has competing adult legal kin");
+   const binding=core.logicalUnitRegistry.getEntry(evaluation.royalMilitaryClaims[0].participant.commanderUnitId)!;
+   const previousFaction=binding.state.factionId;binding.state.factionId="invalid-foreign-binding";
+   check(Military.getRoyalDepositionClaims(t,coupMonth,evaluation.candidates.map(c=>c.ruler),core.logicalUnitRegistry).length===0,"real logical-unit identity mismatch removes own command advantage");binding.state.factionId=previousFaction;
    const unweighted={...evaluation,royalMilitaryClaims:[]};
    const roll=Array.from({length:1000},(_,i)=>evaluation.probability*(i+.5)/1000).find(value=>chooseDepositionClaimant(evaluation,coupMonth,value)?.claimant.ruler.id===r.id&&chooseDepositionClaimant(unweighted,coupMonth,value)?.claimant.ruler.id!==r.id);
    check(roll!==undefined,"same original coup draw changes claimant only because of verified bounded royal command");
@@ -107,12 +110,14 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
    const force=()=>{let first=true;worldRandom.next=()=>{const actual=originalNext.call(worldRandom);if(first){first=false;return roll!;}return actual;};};
    force();History.addRulerDeposed=function(...args:Parameters<typeof writer>){writer.apply(this,args);throw new Error("injected royal deposition failure");};
    try{(Dynasty as any).evaluateInReignDeposition(t,d,old,coupMonth);}finally{History.addRulerDeposed=writer;worldRandom.next=originalNext;}
-   const failed=strict(),expected=structuredClone(checkpoint);expected.dynasties.find(d=>d.factionId===t.name)!.lastDepositionAttemptMonth=coupMonth;failed.worldRandom=expected.worldRandom;
+   const failed=strict(),expected=structuredClone(checkpoint);
+   check(failed.worldRandom.position===checkpoint.worldRandom.position+1,"failed weighted coup consumes exactly the one existing political draw");expected.dynasties.find(d=>d.factionId===t.name)!.lastDepositionAttemptMonth=coupMonth;failed.worldRandom=expected.worldRandom;
    check(diffCanonicalWorldSave(expected,failed).matched,"failed deposition restores the royal's military authority, User role and formation");
    hydrateWorldSave(core,JSON.parse(JSON.stringify(checkpoint)));
    const liveTeam=core.teams.find(x=>x.name===t.name)!,liveDynasty=Dynasty.get(t.name)!;
    force();try{(Dynasty as any).evaluateInReignDeposition(liveTeam,liveDynasty,Dynasty.getCurrentRuler(t.name)!,coupMonth);}finally{worldRandom.next=originalNext;}
    check(Dynasty.getCurrentRuler(t.name)?.id===r.id&&Military.getPerson(personId)?.status==="RETIRED"&&liveTeam.rulerUser?.historicalPersonId===personId,"successful legal deposition converts the same serving royal and ends old command");const selectedSave=strict();
+   check(selectedSave.worldRandom.position===checkpoint.worldRandom.position+1,"successful weighted coup consumes exactly the one existing political draw");
    const event=History.getEvents().find(e=>e.type==="ruler-deposed"&&e.metadata?.nextRulerId===r.id)!;
    check(JSON.parse(String(event.metadata!.depositionSelection)).candidates.some((c:any)=>c.ownMilitary?.rulerId===r.id),"successful transaction freezes own military evidence");
    for(const mutate of [(e:any)=>e.candidates.find((c:any)=>c.ownMilitary).ownMilitary.members[0].bornMonth--,(e:any)=>e.candidates.find((c:any)=>c.ownMilitary).ownMilitary.office="SHANGJIANGJUN",(e:any)=>e.candidates.find((c:any)=>c.ownMilitary).ownMilitary.victories[0].cityId="invented"]){
@@ -149,6 +154,6 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
    core.setWorldRunning(true);step();core.setWorldRunning(false);
    check(living.status as string==="dead"&&living.deathMonth===death&&living.endYear===month+1&&Military.getPerson(personId)?.deathMonth===death,"loaded terminal person reaches natural death while preserving the original political end");strict();
   }
-  return {seed,checks,month,personId,royalRulerId:ruler.id,saveSchemaVersion:21};
+  return {seed,checks,month,personId,royalRulerId:ruler.id,saveSchemaVersion:strict().saveSchemaVersion};
  } finally {game.destroy(true);}
 }
