@@ -1,4 +1,5 @@
 import PortraitSummary from "./PortraitSummary";
+import {resolvePersonArchiveTarget} from "./PersonArchiveTarget";
 import {PersonArchiveNavigation,usePersonArchiveNavigation,type PersonArchiveTarget} from "./PersonArchiveNavigation";
 import {RulerServicePanel,MilitaryServicePanel} from "./PersonServicePanel";
 import {royalPortraitContext,militaryPortraitContext} from "./PortraitPresentation";
@@ -156,16 +157,15 @@ export default function FactionDetails() {
   const [militaryTarget,setMilitaryTarget]=useState<(PersonArchiveTarget&{serial:number})|undefined>();
   const navigationSequence=useRef(0),navigationDispatch=useDispatch();
   const openPerson=(target:PersonArchiveTarget)=>{
-    if(!teams.some(t=>t.name===target.factionId))return;
+    const resolved=resolvePersonArchiveTarget(target,teams,DynastyRegistry.getAll(),MilitaryCommandRegistry.getPeople());
+    if(!resolved)return;
     if(target.kind==="RULER"){
-      if(!DynastyRegistry.get(target.factionId)?.rulers.some(r=>r.id===target.id&&r.reignOrdinal!==undefined))return;
       setRulerDetailId(target.id);setMilitaryTarget(undefined);
     }else{
-      if(!MilitaryCommandRegistry.getPerson(target.id)?.appointments.some(a=>a.factionId===target.factionId))return;
       setMilitaryTarget({...target,serial:++navigationSequence.current});
     }
     navigationDispatch(setSelectedFactionName(target.factionId));
-    navigationDispatch(setFactionDetailTab(target.kind==="RULER"?"house":"military"));
+    navigationDispatch(setFactionDetailTab(resolved.tab));
   };
 
   useEffect(() => WorldHistory.subscribeRevision(setHistoryRevision), []);

@@ -47,7 +47,11 @@ export function createSurvivingResidentDeathMonth(birthMonth:number,currentMonth
     return mass;
   };
   // Invert the conditional survival without subtracting tiny old-age probabilities.
-  const u=(roll(0x1000000)+.5)/0x1000000;
+  // Reuse the original sampler's two meaningful draw bounds. Together they form
+  // a stratified lifetime quantile; changing identity does not add/remove a draw.
+  const ticket=roll(100),band=RULER_LIFESPAN_BANDS.find(b=>ticket<b.maxRoll)!;
+  const span=band.maxAgeYears-band.minAgeYears+1;
+  const u=1-(ticket+(roll(span)+.5)/span)/100;
   if(age>=tailStart){
     const delta=120*Math.log1p(-Math.log(u)/2.5*Math.exp(-(age-tailStart)/120));
     return currentMonth+Math.max(1,Math.ceil(delta));

@@ -7,13 +7,16 @@ import {deriveMilitaryChronicle} from "./MilitaryChronicle";
 /** Half-open political/appointment intervals; overlap is not personal patronage. */
 export function personServiceLinks(factionId:string,rulers:Ruler[],people:MilitaryPerson[],formations:MilitaryFormation[],events:WorldEvent[],month:number){
  const byId=new Map(events.map(e=>[e.id,e]));
- return people.flatMap(person=>{
+ return people.filter(p=>p.appointments.some(a=>a.factionId===factionId)).flatMap(person=>{
   const victories=deriveMilitaryCareer(person,formations,events,month).capturedEventIds.map(id=>byId.get(id)!);
   return person.appointments.filter(a=>a.factionId===factionId).flatMap(a=>rulers.flatMap(r=>{
    if(r.accessionYear===undefined||r.reignOrdinal===undefined)return [];
    const start=Math.max(a.startMonth,r.accessionYear),end=Math.min(a.endMonth??month+1,r.endYear??month+1,month+1);
    if(start>=end)return [];
-   const grants=(a.officeHistory??[]).filter(g=>g.month>=start&&g.month<end).map(g=>byId.get(g.eventId)).filter(e=>e?.rulerId===r.id&&e.actorFactionId===factionId&&e.metadata?.personId===person.personId&&e.metadata?.commandId===a.commandId);
+   const grants=(a.officeHistory??[]).filter(g=>g.month>=start&&g.month<end).flatMap(g=>{
+    const e=byId.get(g.eventId);
+    return e?.type==="military-office-granted"&&(e.monthIndex??e.year)===g.month&&e.metadata?.office===g.office&&e.rulerId===r.id&&e.actorFactionId===factionId&&e.metadata?.personId===person.personId&&e.metadata?.commandId===a.commandId?[e]:[];
+   });
    const history=a.officeHistory??[];
    const offices=[...history.filter(g=>g.month<=start).slice(-1),...history.filter(g=>g.month>start&&g.month<end)];
    return [{factionId,personId:person.personId,rulerId:r.id,startMonth:start,endMonth:end-1,

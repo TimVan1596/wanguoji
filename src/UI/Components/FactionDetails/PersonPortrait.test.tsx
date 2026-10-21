@@ -31,6 +31,14 @@ describe("lightweight identity portrait",()=>{
   const shapes=new Set(Array.from({length:100},(_,i)=>{const {seed:_seed,stage:_stage,robe:_robe,...face}=portraitTraits(`person-${i}`,40);return JSON.stringify(face);}));
   expect(shapes.size).toBeGreaterThan(90);
  });
+ it("retains full color and the same frozen face after death, with stable varied expressions",()=>{
+  const alive=renderToStaticMarkup(<Portrait personId="same-person" age={80}/>),dead=renderToStaticMarkup(<Portrait personId="same-person" age={80} deceased/>);
+  expect(dead).not.toMatch(/saturate|grayscale|filter:/);
+  expect(dead.match(/<path data-face="true"[^>]*>/)?.[0]).toBe(alive.match(/<path data-face="true"[^>]*>/)?.[0]);
+  expect(renderToStaticMarkup(<Portrait personId="same-person" age={80} deceased size={112}/>)).toContain('width="112"');
+  const mouths=new Set(Array.from({length:100},(_,i)=>renderToStaticMarkup(<Portrait personId={`expression-${i}`} age={40}/>).match(/M27 47q5[^\"]+/)?.[0]));
+  expect(mouths.size).toBeGreaterThanOrEqual(3);
+ });
 });
 
 vi.mock("react/jsx-dev-runtime",async()=>{

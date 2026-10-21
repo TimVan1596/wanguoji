@@ -1,0 +1,11 @@
+const fs=require('node:fs'),path=require('node:path'),{spawn}=require('node:child_process'),repo=process.cwd();
+const out=fs.openSync('person-core-z10.log','w');
+const server=spawn(process.execPath,['node_modules/vite/bin/vite.js','--host','127.0.0.1','--port','5222','--strictPort'],{windowsHide:true,stdio:['ignore',out,out]});
+(async()=>{try{
+ for(let n=0;n<100;n++){try{if((await fetch('http://127.0.0.1:5222')).ok)break;}catch{}await new Promise(r=>setTimeout(r,200));}
+ for(const [suite,seed,years]of [['military-secession','military-secession-z7',100],['resident-founder','resident-z6',100],['character-archive','archive-z10-500',500],['siege-defense','siege-defense-z10',100]]){
+  const env={...process.env,WANGUOJI_CORE_URL:'http://127.0.0.1:5222/?debug=1&avatarRenderer=plain',WANGUOJI_CORE_SUITE:suite,WANGUOJI_CORE_SEEDS:seed,WANGUOJI_CORE_YEARS:String(years),WANGUOJI_CORE_OUTPUT:path.join(repo,`scripts/testing/results/${suite}-z10.json`)};
+  delete env.ELECTRON_RUN_AS_NODE;delete env.WANGUOJI_CORE_LONG_SEEDS;
+  await new Promise((resolve,reject)=>{const p=spawn(path.join(repo,'node_modules/electron/dist/electron.exe'),['scripts/testing/natural-core-runner.cjs'],{env,windowsHide:true,stdio:['ignore',out,out]});p.on('error',reject);p.on('exit',code=>code===0?resolve():reject(Error(`${suite} exited ${code}`)));});
+ }
+}finally{server.kill();fs.closeSync(out);}})().catch(e=>{console.error(e);process.exitCode=1;});

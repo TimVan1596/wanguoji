@@ -15,6 +15,7 @@ import {diffCanonicalWorldSave,canonicalWorldSaveProjection} from "../../Persist
 import {validateWorldSave} from "../../Persistence/WorldSaveValidator";
 import PersonChronicleLayout from "../../UI/Components/FactionDetails/PersonChronicleLayout";
 import {formatHistoryEventTitle} from "../../History/HistoryRenderRules";
+import {checkPersonArchiveInteraction} from "./PersonArchiveInteractionHarness";
 
 /** Controlled crisis after a real naturally appointed military career; never a natural frequency claim. */
 export async function runMilitarySecessionCore(seed="military-secession-z7"){
@@ -74,6 +75,7 @@ export async function runMilitarySecessionCore(seed="military-secession-z7"){
   const text=formatHistoryEventTitle(founding[0],new Map(core.teams.map(t=>[t.name,t])));
   check(text.includes(sourceName)&&text.includes(`${follow.length}名旧部`)&&text.includes("首任首领")&&!text.includes("首任君主"),"history reads actual old office, followers, polity and political leadership");
   check(Military.getChronicle(person,month,parent.name).some(e=>e.eventId===founding[0].id&&!e.victory),"old-country military biography records secession without inventing a capture");
+  await checkPersonArchiveInteraction(core,split.team.name,personId,check);
   const save=strict();
   for(const mutate of [(s:any)=>s.registries.militaryCommandRegistry.people.find((p:any)=>p.personId===personId).politicalRulerId="wrong",(s:any)=>{const r=s.dynasties.find((d:any)=>d.factionId===split.team.name).rulers.find((r:any)=>r.residentIdentity?.personId===personId);r.naturalDeathMonth++;},(s:any)=>s.registries.militaryCommandRegistry.people.find((p:any)=>p.personId===personId).status="ACTIVE"]){const bad=structuredClone(save);mutate(bad);check(!validateWorldSave(bad).valid,"V20 refuses incompatible political/military life or simultaneous military authority");}
   const resume=()=>{hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return strict();};

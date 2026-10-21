@@ -1,5 +1,6 @@
 import {createContext,useContext} from "react";
-export type PersonArchiveTarget={kind:"RULER"|"MILITARY";factionId:string;id:string};
+import type {PersonArchiveTarget} from "./PersonArchiveTarget";
+export type {PersonArchiveTarget} from "./PersonArchiveTarget";
 export const PersonArchiveNavigation=createContext<{
  open:(target:PersonArchiveTarget)=>void;
  militaryTarget?:PersonArchiveTarget&{serial:number};

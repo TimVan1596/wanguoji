@@ -3,9 +3,9 @@ import {personServiceLinks,preAccessionMilitary} from "./PersonServiceLinks";
 import type {Ruler} from "./Dynasty";
 import type {MilitaryPerson,MilitaryFormation} from "./MilitaryCommandRegistry";
 import type {WorldEvent} from "../History/WorldHistory";
-const person={personId:"p",sourceUserId:1,name:"source",bornMonth:-300,status:"RETIRED",politicalRulerId:"new",capturedEventIds:[],appointments:[{factionId:"old",commandId:"c",startMonth:10,endMonth:40,endReason:"TRANSFERRED",officeHistory:[{office:"PIJIANG",month:10,eventId:"g"},{office:"JIANGJUN",month:22,eventId:"promote"}]}]} as MilitaryPerson;
+const person={personId:"p",sourceUserId:1,name:"source",personalName:"李景",factionId:"new",bornMonth:-300,status:"RETIRED",politicalRulerId:"new",capturedEventIds:[],appointments:[{factionId:"old",commandId:"c",startMonth:10,endMonth:40,endReason:"TRANSFERRED",officeHistory:[{office:"PIJIANG",month:10,eventId:"g",captureEventIds:[],serviceMonths:0},{office:"JIANGJUN",month:22,eventId:"promote",captureEventIds:[],serviceMonths:12}]}]} as MilitaryPerson;
 const rulers=[{id:"a",accessionYear:0,endYear:20,reignOrdinal:1},{id:"b",accessionYear:20,reignOrdinal:2}] as Ruler[];
-const grant={id:"g",type:"military-office-granted",year:10,actorFactionId:"old",rulerId:"a",metadata:{personId:"p",commandId:"c",office:"PIJIANG",previousOffice:"NONE"}} as WorldEvent;
+const grant={id:"g",category:"politics",title:"真实授职",importance:"major",type:"military-office-granted",year:10,actorFactionId:"old",rulerId:"a",metadata:{personId:"p",commandId:"c",office:"PIJIANG",previousOffice:"NONE"}} as WorldEvent;
 it("partitions service between real historical rulers and never uses a foreign current monarch",()=>{
  const rows=personServiceLinks("old",rulers,[person],[],[grant],50);
  expect(rows.map(r=>[r.rulerId,r.startMonth,r.endMonth])).toEqual([["a",10,19],["b",20,39]]);
