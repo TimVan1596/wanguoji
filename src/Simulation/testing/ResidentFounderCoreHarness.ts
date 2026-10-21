@@ -1,3 +1,4 @@
+import {CURRENT_SAVE_SCHEMA_VERSION} from "../../Persistence/WorldSaveSchema";
 import worldRandom from "../WorldRandom";
 import WorldExiles from "../WorldExiles";
 import {getRulerHistoricalEvents} from "../../Politics/RulerChronicle";
@@ -14,7 +15,7 @@ import {validateWorldSave} from "../../Persistence/WorldSaveValidator";
 import {diffCanonicalWorldSave} from "../../Persistence/WorldSaveSchema";
 import {SIMULATION_FIXED_STEP_MS} from "../SimulationDriver";
 
-/** Real User/Player, city, founding, royal lifecycle and V20 transactions, not a second simulator. */
+/** Real User/Player, city, founding, royal lifecycle and V21 transactions, not a second simulator. */
 export async function runResidentFounderCore(seed="resident-z6"){
  const results=[];
  for(const kind of ["popular","split"]){
@@ -58,7 +59,7 @@ export async function runResidentFounderCore(seed="resident-z6"){
    check(core.teams.flatMap(t=>[...t.users]).length===before&&!parent.users.has(u)&&created.users.has(u),"founding conserves world population with no extra royal avatar");
    check(Military.getPeople().every(p=>p.sourceUserId!==u.id),"founder is not duplicated as a military person");
    const save=strict();
-   for(const mutate of [(s:any)=>{s.users.find((x:any)=>x.historicalPersonId===i.personId).bornMonth--;},(s:any)=>{s.dynasties.find((d:any)=>d.factionId===created.name).rulers[0].residentIdentity.sourceUserId++;},(s:any)=>{s.users.push({...s.users.find((x:any)=>x.historicalPersonId===i.personId),userId:987654321});}]){const bad=structuredClone(save);mutate(bad);check(!validateWorldSave(bad).valid,"strict V20 rejects broken or duplicate resident identity");}
+   for(const mutate of [(s:any)=>{s.users.find((x:any)=>x.historicalPersonId===i.personId).bornMonth--;},(s:any)=>{s.dynasties.find((d:any)=>d.factionId===created.name).rulers[0].residentIdentity.sourceUserId++;},(s:any)=>{s.users.push({...s.users.find((x:any)=>x.historicalPersonId===i.personId),userId:987654321});}]){const bad=structuredClone(save);mutate(bad);check(!validateWorldSave(bad).valid,"strict V21 rejects broken or duplicate resident identity");}
    check(!validateWorldSave({...save,saveSchemaVersion:19}).valid,"V19 is explicitly unsupported without rewriting the old file");
    // Map detachment/restoration is not biological death; retain real political/city facts.
    created.markExiled(0);Dynasty.markExiled(created,0);
@@ -77,11 +78,11 @@ export async function runResidentFounderCore(seed="resident-z6"){
    check(History.getEvents().filter(e=>e.type==="ruler-succession"&&e.metadata?.previousRulerId===r.id&&e.metadata?.reason==="combat").length===1&&!created.users.has(restored),"duplicate death notification cannot kill or succeed the same founder twice");
    const resume=()=>{hydrateWorldSave(core,JSON.parse(JSON.stringify(actualSave)));core.setWorldRunning(true);for(let m=0;m<12;m++)step();core.setWorldRunning(false);return strict();};
    const first=resume(),second=resume();
-   check(diffCanonicalWorldSave(first,second).matched,"two V20 hydrations continue identically for twelve production months");
+   check(diffCanonicalWorldSave(first,second).matched,"two V21 hydrations continue identically for twelve production months");
    const sr=(second.dynasties.find(d=>d.factionId===created.name)!.rulers as any[]).find(x=>x.rulerId===r.id);
    check(sr.residentIdentity.personId===i.personId&&sr.bornMonth===u.bornMonth,"saved founder retains permanent identity after twelve months");
    hydrateWorldSave(core,JSON.parse(JSON.stringify(first)));
-   check(diffCanonicalWorldSave(first,strict()).matched,"a second-generation V20 save reads again without identity or life changes");
+   check(diffCanonicalWorldSave(first,strict()).matched,"a second-generation V21 save reads again without identity or life changes");
    if(kind==="popular"){
      hydrateWorldSave(core,JSON.parse(JSON.stringify(actualSave)));
      const polity=core.teams.find(t=>t.name===created.name)!,oldParent=core.teams.find(t=>t.name===parent.name)!,town=polity.cities[0],firstKing=Dynasty.getCurrentRuler(polity.name)!;
@@ -118,7 +119,7 @@ export async function runResidentFounderCore(seed="resident-z6"){
    check(person.deathMonth===undefined,"actual frozen resident lifespan remains alive before its due month");
    Dynasty.update(scheduled,core.teams);
    check(person.status as string==="dead"&&person.deathMonth===scheduled&&!liveTeam.rulerUser,"ended founder's actual sampled life expires once and cannot be restored");
-   results.push({kind,checks,sourceUserId:i.sourceUserId,personId:i.personId,rulerId:r.id,populationBefore:before,populationAfterFounding:before,saveSchemaVersion:20});
+   results.push({kind,checks,sourceUserId:i.sourceUserId,personId:i.personId,rulerId:r.id,populationBefore:before,populationAfterFounding:before,saveSchemaVersion:CURRENT_SAVE_SCHEMA_VERSION});
   }finally{game.destroy(true);(game as any).runDestroy?.();}
  }
  return {seed,scope:"controlled real Core/Phaser production founding and lifecycle",results};

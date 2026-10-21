@@ -1,3 +1,4 @@
+import {CURRENT_SAVE_SCHEMA_VERSION} from "../../Persistence/WorldSaveSchema";
 import {createRoot} from "react-dom/client";
 import {flushSync} from "react-dom";
 import {createNaturalCore} from "./NaturalCoreHarness";
@@ -77,10 +78,10 @@ export async function runMilitarySecessionCore(seed="military-secession-z7"){
   check(Military.getChronicle(person,month,parent.name).some(e=>e.eventId===founding[0].id&&!e.victory),"old-country military biography records secession without inventing a capture");
   await checkPersonArchiveInteraction(core,split.team.name,personId,check);
   const save=strict();
-  for(const mutate of [(s:any)=>s.registries.militaryCommandRegistry.people.find((p:any)=>p.personId===personId).politicalRulerId="wrong",(s:any)=>{const r=s.dynasties.find((d:any)=>d.factionId===split.team.name).rulers.find((r:any)=>r.residentIdentity?.personId===personId);r.naturalDeathMonth++;},(s:any)=>s.registries.militaryCommandRegistry.people.find((p:any)=>p.personId===personId).status="ACTIVE"]){const bad=structuredClone(save);mutate(bad);check(!validateWorldSave(bad).valid,"V20 refuses incompatible political/military life or simultaneous military authority");}
+  for(const mutate of [(s:any)=>s.registries.militaryCommandRegistry.people.find((p:any)=>p.personId===personId).politicalRulerId="wrong",(s:any)=>{const r=s.dynasties.find((d:any)=>d.factionId===split.team.name).rulers.find((r:any)=>r.residentIdentity?.personId===personId);r.naturalDeathMonth++;},(s:any)=>s.registries.militaryCommandRegistry.people.find((p:any)=>p.personId===personId).status="ACTIVE"]){const bad=structuredClone(save);mutate(bad);check(!validateWorldSave(bad).valid,"V21 refuses incompatible political/military life or simultaneous military authority");}
   const resume=()=>{hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return strict();};
-  const first=resume(),second=resume();check(diffCanonicalWorldSave(first,second).matched,"V20 source military and royal identity resume deterministically for twelve real months");
-  hydrateWorldSave(core,JSON.parse(JSON.stringify(first)));check(diffCanonicalWorldSave(first,strict()).matched,"resaved V20 snapshot reads again without duplicating the leader");
+  const first=resume(),second=resume();check(diffCanonicalWorldSave(first,second).matched,"V21 source military and royal identity resume deterministically for twelve real months");
+  hydrateWorldSave(core,JSON.parse(JSON.stringify(first)));check(diffCanonicalWorldSave(first,strict()).matched,"resaved V21 snapshot reads again without duplicating the leader");
   core.setWorldRunning(true);while(Military.getPerson(personId)?.status!=="DEAD"&&core.simulator!.year<=deathSchedule+12)step();core.setWorldRunning(false);
   const final=Military.getPerson(personId)!,royal=Dynasty.findResidentPerson(personId)!;
   check(final.status==="DEAD"&&final.deathMonth===royal.deathMonth,"actual subsequent royal death closes the same military person's life");
@@ -95,6 +96,6 @@ export async function runMilitarySecessionCore(seed="military-secession-z7"){
   flushSync(()=>host.querySelector("button")!.click());check(host.querySelectorAll("section p").length===8,"one click collapses and unmounts omitted rows");
   render(6);check(host.querySelectorAll("section p").length===6&&!host.querySelector("button"),"six readable records show completely with no unnecessary expansion button");
   check(JSON.stringify(worldRandom.exportState())===rng&&History.getEvents().length===history,"reading expansion consumes no RNG and creates no history");root.unmount();host.remove();
-  return {seed,checks,naturalCareerMonth:month,personId,rulerId:ruler.id,oldOffice:ruler.residentIdentity!.military!.office,followingUnits:follow.length,originalUnits:originalIds.length,worldPopulationBefore:total,worldPopulationAfter:total,saveSchemaVersion:20};
+  return {seed,checks,naturalCareerMonth:month,personId,rulerId:ruler.id,oldOffice:ruler.residentIdentity!.military!.office,followingUnits:follow.length,originalUnits:originalIds.length,worldPopulationBefore:total,worldPopulationAfter:total,saveSchemaVersion:CURRENT_SAVE_SCHEMA_VERSION};
  }finally{game.destroy(true);}
 }
