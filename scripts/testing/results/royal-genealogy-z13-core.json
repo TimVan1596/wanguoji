@@ -114,43 +114,54 @@
         "size": 150,
         "shape": "deep",
         "mountedNodes": 9,
-        "mountMs": 28.700000000186265,
-        "heapDelta": 0
+        "mountMs": 487.09999999962747,
+        "heapDelta": 5615549
       },
       {
         "size": 150,
         "shape": "wide",
         "mountedNodes": 150,
-        "mountMs": 102.19999999925494,
-        "heapDelta": 5407185
+        "mountMs": 94.40000000037253,
+        "heapDelta": -59576
       },
       {
         "size": 1000,
         "shape": "deep",
         "mountedNodes": 9,
-        "mountMs": 32.40000000037253,
-        "heapDelta": -6841918
+        "mountMs": 30,
+        "heapDelta": 0
       },
       {
         "size": 1000,
         "shape": "wide",
         "mountedNodes": 150,
-        "mountMs": 116.79999999981374,
-        "heapDelta": -25962
+        "mountMs": 82.09999999962747,
+        "heapDelta": 3950120
       },
       {
         "size": 10000,
         "shape": "deep",
         "mountedNodes": 9,
-        "mountMs": 68.1000000005588,
-        "heapDelta": 36013662
+        "mountMs": 48.80000000074506,
+        "heapDelta": 35139108
       },
       {
         "size": 10000,
         "shape": "wide",
         "mountedNodes": 150,
-        "mountMs": 142.90000000037253,
-        "heapDelta": -12781284
+        "mountMs": 107.59999999962747,
+        "heapDelta": -17374084
+      }
+    ],
+    "shortAppointmentAudits": [
+      {
+        "personId": "military-person-3",
+        "commandId": "military-command-3",
+        "month": 36,
+        "reason": "DEATH",
+        "deathCause": "BATTLE_DEATH",
+        "accession": false,
+        "endEvents": 1
       }
     ],
     "month": 36,

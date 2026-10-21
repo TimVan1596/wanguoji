@@ -1,0 +1,414 @@
+{
+  "baselineHead": "4180762a0724c1f948bbcab1ca0461cece4bf687",
+  "appVersion": "v0.99931z13",
+  "packageVersion": "0.99.179",
+  "saveSchemaVersion": 22,
+  "hundredYears": {
+    "worlds": 24,
+    "month": 1200,
+    "nodes": 1098,
+    "royalMilitaryExpected": 35,
+    "royalMilitaryIncluded": 35,
+    "duplicateNodes": 0,
+    "birthConflicts": 0,
+    "populationUnexplained": 0,
+    "allSavesValid": true
+  },
+  "twoHundredYears": {
+    "worlds": 6,
+    "month": 2400,
+    "nodes": 557,
+    "royalMilitaryExpected": 21,
+    "royalMilitaryIncluded": 21,
+    "duplicateNodes": 0,
+    "birthConflicts": 0,
+    "populationUnexplained": 0,
+    "allSavesValid": true
+  },
+  "fiveHundredYears": {
+    "worlds": 1,
+    "month": 6000,
+    "nodes": 244,
+    "royalMilitaryExpected": 8,
+    "royalMilitaryIncluded": 8,
+    "duplicateNodes": 0,
+    "birthConflicts": 0,
+    "populationUnexplained": 0,
+    "allSavesValid": true
+  },
+  "pairedCheckpoints": [
+    {
+      "seed": "regional-1",
+      "month": 1200,
+      "baselineCanonical": "01f7dbe6490125518a3d711ce0048e2f8671afdd23df0d50c4713a0e5cae79f2",
+      "candidateCanonical": "01f7dbe6490125518a3d711ce0048e2f8671afdd23df0d50c4713a0e5cae79f2",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-1",
+      "month": 2400,
+      "baselineCanonical": "974645aeeb5d1348fda3a280b0bdc6a007d8b815315d3b80835da2a28a42aea9",
+      "candidateCanonical": "974645aeeb5d1348fda3a280b0bdc6a007d8b815315d3b80835da2a28a42aea9",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-2",
+      "month": 1200,
+      "baselineCanonical": "40cbc176f05fd6c8330c612277f94016e86d603bdb72c454411f8c93f7269b8d",
+      "candidateCanonical": "40cbc176f05fd6c8330c612277f94016e86d603bdb72c454411f8c93f7269b8d",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-2",
+      "month": 2400,
+      "baselineCanonical": "0a31c990de738c66c8b10cab9c5c2405ede46cc37a815781ac148b6f7dcde198",
+      "candidateCanonical": "0a31c990de738c66c8b10cab9c5c2405ede46cc37a815781ac148b6f7dcde198",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-3",
+      "month": 1200,
+      "baselineCanonical": "dfbcbda24148ac8bf520c57db2a6f3b1a2f7bece26c7b35af1ff31f8a5e59c6a",
+      "candidateCanonical": "dfbcbda24148ac8bf520c57db2a6f3b1a2f7bece26c7b35af1ff31f8a5e59c6a",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-3",
+      "month": 2400,
+      "baselineCanonical": "70617604ee098e8317d0c6eef4d43cde6a7decf9524d502a83659c4769354b4d",
+      "candidateCanonical": "70617604ee098e8317d0c6eef4d43cde6a7decf9524d502a83659c4769354b4d",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-4",
+      "month": 1200,
+      "baselineCanonical": "277f72a872606c1f419e000651533215af6f282dc1fd9e0f167c7b8482480a1a",
+      "candidateCanonical": "277f72a872606c1f419e000651533215af6f282dc1fd9e0f167c7b8482480a1a",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-4",
+      "month": 2400,
+      "baselineCanonical": "5bef07671272e93a6f6e29cfcbaff5e59f7d9b574f74959f4bad49f30c53397d",
+      "candidateCanonical": "5bef07671272e93a6f6e29cfcbaff5e59f7d9b574f74959f4bad49f30c53397d",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-5",
+      "month": 1200,
+      "baselineCanonical": "7d9118ebb7ad5fc3ae3c430b10945c980c58183f79562aee85206ec041758445",
+      "candidateCanonical": "7d9118ebb7ad5fc3ae3c430b10945c980c58183f79562aee85206ec041758445",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-5",
+      "month": 2400,
+      "baselineCanonical": "ec92df87598287c22979850a1c57b240c60ffdd418fb19b18d9fcc9544726cdb",
+      "candidateCanonical": "ec92df87598287c22979850a1c57b240c60ffdd418fb19b18d9fcc9544726cdb",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-6",
+      "month": 1200,
+      "baselineCanonical": "e8b354b8c00b70057556e1b14f13924aa3295c614014e66cbf2c93d4fd4137e9",
+      "candidateCanonical": "e8b354b8c00b70057556e1b14f13924aa3295c614014e66cbf2c93d4fd4137e9",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-6",
+      "month": 2400,
+      "baselineCanonical": "3431f17834a843846cbceaebfa9874f8dae2efbac741105d37f50387f4f49e79",
+      "candidateCanonical": "3431f17834a843846cbceaebfa9874f8dae2efbac741105d37f50387f4f49e79",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-7",
+      "month": 1200,
+      "baselineCanonical": "0f5c32f52606fc6d3a7bc6f9c6945758af04424e762a03eb0ce78d057a4942f0",
+      "candidateCanonical": "0f5c32f52606fc6d3a7bc6f9c6945758af04424e762a03eb0ce78d057a4942f0",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-8",
+      "month": 1200,
+      "baselineCanonical": "8d306b29f9c043d11ab789603fb826477ab4252d8b490a9c3f7b81edc583f1ee",
+      "candidateCanonical": "8d306b29f9c043d11ab789603fb826477ab4252d8b490a9c3f7b81edc583f1ee",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-9",
+      "month": 1200,
+      "baselineCanonical": "d4478e1712e710effdf602b20adc735c3cb00f5d9a3e8c38f974d8fecaa8cfd5",
+      "candidateCanonical": "d4478e1712e710effdf602b20adc735c3cb00f5d9a3e8c38f974d8fecaa8cfd5",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-10",
+      "month": 1200,
+      "baselineCanonical": "be15e2b115a1e35e7a99870b787249bcf10c7f1a9a5bdcd148001d33e1c5d918",
+      "candidateCanonical": "be15e2b115a1e35e7a99870b787249bcf10c7f1a9a5bdcd148001d33e1c5d918",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-11",
+      "month": 1200,
+      "baselineCanonical": "67fc928c2bbd3e1c1c6fdc02333e72d8bc9df87e4cad0bfb1eacb185083f4889",
+      "candidateCanonical": "67fc928c2bbd3e1c1c6fdc02333e72d8bc9df87e4cad0bfb1eacb185083f4889",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-12",
+      "month": 1200,
+      "baselineCanonical": "27e0c95673c6735dabdb44a323d4a94a2dafda9d6a22c1654e92fd431ac2e2e8",
+      "candidateCanonical": "27e0c95673c6735dabdb44a323d4a94a2dafda9d6a22c1654e92fd431ac2e2e8",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-13",
+      "month": 1200,
+      "baselineCanonical": "fcad27ecb664cab65ffaeb55632dfe3800de2486ff38dd5a20a0be535697d906",
+      "candidateCanonical": "fcad27ecb664cab65ffaeb55632dfe3800de2486ff38dd5a20a0be535697d906",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-14",
+      "month": 1200,
+      "baselineCanonical": "228bb38f662e202a43deaf80ebfba84f67197cfd1a3dbdcf0c239e0de52e653c",
+      "candidateCanonical": "228bb38f662e202a43deaf80ebfba84f67197cfd1a3dbdcf0c239e0de52e653c",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-15",
+      "month": 1200,
+      "baselineCanonical": "bcd9de3d1b40c059f4dd8543730953897ce1ae90a820152ddeb625708ce39d4e",
+      "candidateCanonical": "bcd9de3d1b40c059f4dd8543730953897ce1ae90a820152ddeb625708ce39d4e",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-16",
+      "month": 1200,
+      "baselineCanonical": "647bfe4b5a35fc7b9d00abda6423a6552e70c62706dbd098bea802b48481fb1d",
+      "candidateCanonical": "647bfe4b5a35fc7b9d00abda6423a6552e70c62706dbd098bea802b48481fb1d",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-17",
+      "month": 1200,
+      "baselineCanonical": "41fd2f183db24122c1e3d1427d851d2eb50865874763e33a2ef114e1c0d3f9e2",
+      "candidateCanonical": "41fd2f183db24122c1e3d1427d851d2eb50865874763e33a2ef114e1c0d3f9e2",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-18",
+      "month": 1200,
+      "baselineCanonical": "19af5cad51b75623c87880a11e710e6e2bdea820d0ecb309328edee889cd25ff",
+      "candidateCanonical": "19af5cad51b75623c87880a11e710e6e2bdea820d0ecb309328edee889cd25ff",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-19",
+      "month": 1200,
+      "baselineCanonical": "8aac83ab4f39f177fb203a29f88f138ab072da4a461faea06e0a913e34cdade7",
+      "candidateCanonical": "8aac83ab4f39f177fb203a29f88f138ab072da4a461faea06e0a913e34cdade7",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-20",
+      "month": 1200,
+      "baselineCanonical": "1956db0e014b092e4cbe608e532bdc03ed1cd23c1ca18951e18d0017787ee644",
+      "candidateCanonical": "1956db0e014b092e4cbe608e532bdc03ed1cd23c1ca18951e18d0017787ee644",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-21",
+      "month": 1200,
+      "baselineCanonical": "4b337100a9e4937bf6c58ada670909eed597c0ac3e5278a6e241c5db64100bf0",
+      "candidateCanonical": "4b337100a9e4937bf6c58ada670909eed597c0ac3e5278a6e241c5db64100bf0",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-22",
+      "month": 1200,
+      "baselineCanonical": "bfacb414f307a553785e8fe55c7a64f4eb13ce14ba007651f57e7907894287e6",
+      "candidateCanonical": "bfacb414f307a553785e8fe55c7a64f4eb13ce14ba007651f57e7907894287e6",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-23",
+      "month": 1200,
+      "baselineCanonical": "680836d22c6402d41d8ae81bfa5ec5bb5592e81918d432bba9431593b85dc92c",
+      "candidateCanonical": "680836d22c6402d41d8ae81bfa5ec5bb5592e81918d432bba9431593b85dc92c",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "regional-24",
+      "month": 1200,
+      "baselineCanonical": "a75d54f48818025c047ea6437f5d10880675a541de636202064e9755186b00f3",
+      "candidateCanonical": "a75d54f48818025c047ea6437f5d10880675a541de636202064e9755186b00f3",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "archive-z10-500",
+      "month": 1200,
+      "baselineCanonical": "9b678b92842421f321724fd904bba64afbc880973bcbe3b87aa65d9bc33258c9",
+      "candidateCanonical": "9b678b92842421f321724fd904bba64afbc880973bcbe3b87aa65d9bc33258c9",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "archive-z10-500",
+      "month": 2400,
+      "baselineCanonical": "9ad70db8dfbcfcef54f458fd4e3627a4e5c6b24476fe16466e36592727493329",
+      "candidateCanonical": "9ad70db8dfbcfcef54f458fd4e3627a4e5c6b24476fe16466e36592727493329",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "archive-z10-500",
+      "month": 3600,
+      "baselineCanonical": "f510d1634729e0c534bc9d616b07422f6761022d53c84386c9594e14f02a0f72",
+      "candidateCanonical": "f510d1634729e0c534bc9d616b07422f6761022d53c84386c9594e14f02a0f72",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "archive-z10-500",
+      "month": 4800,
+      "baselineCanonical": "13d879891344e2fc806d04f8882dfc9f500f21f4a717a22b265b12b8cb6a797d",
+      "candidateCanonical": "13d879891344e2fc806d04f8882dfc9f500f21f4a717a22b265b12b8cb6a797d",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    },
+    {
+      "seed": "archive-z10-500",
+      "month": 6000,
+      "baselineCanonical": "2cda5f2837adb26273baeec531c55f675ae6a2758b6a3169ce1ee22bbbe9187d",
+      "candidateCanonical": "2cda5f2837adb26273baeec531c55f675ae6a2758b6a3169ce1ee22bbbe9187d",
+      "canonicalEqual": true,
+      "rngPositionEqual": true
+    }
+  ],
+  "allCanonicalFactsAndRngEqual": true,
+  "shortAppointments": [
+    {
+      "seed": "regional-5",
+      "personId": "military-person-20",
+      "commandId": "military-command-20",
+      "month": 1932,
+      "reason": "DEATH",
+      "deathCause": "SIEGE_LOSS",
+      "accession": false,
+      "endEvents": 1
+    },
+    {
+      "seed": "regional-6",
+      "personId": "military-person-34",
+      "commandId": "military-command-34",
+      "month": 2232,
+      "reason": "DEATH",
+      "deathCause": "SIEGE_LOSS",
+      "accession": false,
+      "endEvents": 1
+    },
+    {
+      "seed": "regional-7",
+      "personId": "military-person-13",
+      "commandId": "military-command-13",
+      "month": 864,
+      "reason": "TRANSFERRED",
+      "accession": false,
+      "endEvents": 1
+    }
+  ],
+  "controlledCoreChecks": 106,
+  "actualReactRendering": [
+    {
+      "size": 150,
+      "shape": "deep",
+      "mountedNodes": 9,
+      "mountMs": 487.09999999962747,
+      "heapDelta": 5615549
+    },
+    {
+      "size": 150,
+      "shape": "wide",
+      "mountedNodes": 150,
+      "mountMs": 94.40000000037253,
+      "heapDelta": -59576
+    },
+    {
+      "size": 1000,
+      "shape": "deep",
+      "mountedNodes": 9,
+      "mountMs": 30,
+      "heapDelta": 0
+    },
+    {
+      "size": 1000,
+      "shape": "wide",
+      "mountedNodes": 150,
+      "mountMs": 82.09999999962747,
+      "heapDelta": 3950120
+    },
+    {
+      "size": 10000,
+      "shape": "deep",
+      "mountedNodes": 9,
+      "mountMs": 48.80000000074506,
+      "heapDelta": 35139108
+    },
+    {
+      "size": 10000,
+      "shape": "wide",
+      "mountedNodes": 150,
+      "mountMs": 107.59999999962747,
+      "heapDelta": -17374084
+    }
+  ],
+  "controlledShortAppointmentAudits": [
+    {
+      "personId": "military-person-3",
+      "commandId": "military-command-3",
+      "month": 36,
+      "reason": "DEATH",
+      "deathCause": "BATTLE_DEATH",
+      "accession": false,
+      "endEvents": 1
+    }
+  ],
+  "limits": [
+    "Node counts include political figures, verified military royalty and required recorded ancestors. Display inclusion never changes the legal candidate pool.",
+    "Size fixtures measure actual React deep/wide rendering, not a second simulator. Natural-world metrics use the real Core/Phaser path.",
+    "Performance timings and heap deltas depend on load and garbage collection; Chrome visual acceptance remains pending."
+  ]
+}
