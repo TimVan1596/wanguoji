@@ -1,3 +1,4 @@
+import {validDepositionSelection} from "./DepositionSelectionValidation";
 import {validateMilitarySecessions} from "./MilitarySecessionValidation";
 import {validateResidentIdentities} from "./ResidentIdentityValidation";
 import {validateMilitaryOfficeAuthorities,validateMilitaryBattleNames} from "./MilitaryOfficeAuthorityValidation";
@@ -392,6 +393,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
           const newRuler = ownerRulers.find((r: any) => r.rulerId === newId);
           const runtimeRulers = ownerRulers.map((r: any) => ({ ...r,
             id: r.rulerId, bornYear: r.bornMonth, accessionYear: r.accessionMonth }));
+          if(!validDepositionSelection(meta.depositionSelection,runtimeRulers as any,oldId,newId,Number(month))) errors.push("invalid deposition candidate selection evidence");
           const actualKinship = oldRuler && newRuler
             ? getRecordedKinRelation(runtimeRulers.find((r: any) => r.rulerId === newId)!, runtimeRulers.find((r: any) => r.rulerId === oldId)!, runtimeRulers)
             : undefined;

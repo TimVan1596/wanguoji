@@ -1,3 +1,4 @@
+import PersonPortrait from "../../UI/Components/FactionDetails/PersonPortrait";
 import PersonMilestones from "../../UI/Components/FactionDetails/PersonMilestones";
 import {militaryMilestones,selectMilitaryMilestones} from "../../UI/Components/FactionDetails/PersonChroniclePresentation";
 import {diffCanonicalWorldSave} from "../../Persistence/WorldSaveSchema";
@@ -32,12 +33,13 @@ export async function runCharacterArchivePerformance(seed:string,years=500){
       for(let i=0;i<10;i++)html=renderToStaticMarkup(<>
         <PersonMilestones title="真实将领纪事" total={personRows.all.length} selected={personRows.selected.map(e=>({id:e.eventId,content:<p data-person-event={e.eventId}>{e.text}</p>}))} all={()=>personRows.all.map(e=>({id:e.eventId,content:<p data-person-event={e.eventId}>{e.text}</p>}))}/>
         <HistoricalEventArchive title="真实长局记录" defaultOpen entries={records.map(e=>({id:e.id,content:<p data-event-id={e.id}>{e.title}</p>}))}/>
-        {archive.visiblePeople.map(p=><PersonArchiveCard key={p.personId} heading={p.personalName} expanded={false} onSelect={()=>{}}/>)}
+        {archive.visiblePeople.map(p=><PersonArchiveCard key={p.personId} heading={<><PersonPortrait personId={p.personId} age={p.deathMonth!==undefined?Math.max(0,Math.floor((p.deathMonth-p.bornMonth)/12)):undefined}/>{p.personalName}</>} expanded={false} onSelect={()=>{}}/>)}
       </>);
-      const renderMs=(performance.now()-before)/10,node=document.createElement("div");node.innerHTML=html;
+      const renderMs=(performance.now()-before)/10;if(renderMs>500)throw new Error(`500-year shared portrait/archive render exceeded 500ms: ${renderMs}`);const node=document.createElement("div");node.innerHTML=html;
       if(node.querySelectorAll("p[data-person-event]").length!==Math.min(8,personRows.all.length))throw new Error("Long-world public summary count or lazy mounting is incorrect");
       if(node.querySelectorAll("p[data-event-id]").length!==records.length||node.querySelectorAll("button[aria-expanded]").length!==archive.visiblePeople.length+(personRows.all.length>8?1:0)||/上一页|下一页|加载更多|查看下一批/.test(html))throw new Error("Archive omitted content or retained pagination");
       if(node.querySelector('[style*="max-height"], [style*="overflow-y"], [style*="overflow: auto"], [style*="overflow: hidden"]'))throw new Error("Character records still contain a nested scrolling or clipped region");
+      if(node.querySelectorAll("svg[data-person-id]").length!==archive.visiblePeople.length)throw new Error("Missing identity portraits in long-world archive");
       if(JSON.stringify(worldRandom.exportState())!==rng||events.length!==WorldHistory.getEvents().length)throw new Error("Presentation mutated the world");
       core.setWorldRunning(false);const save=exportWorldSave(core);if(!validateWorldSave(save).valid)throw new Error("Invalid long-world snapshot");
       results.push({month:m,people:people.length,countryPeople:archive.visiblePeople.length,records:records.length,allRecordsPresent:true,noNestedScroll:true,personReadableRecords:personRows.all.length,publicPersonRecords:Math.min(8,personRows.all.length),renderMs,htmlBytes:html.length,heapBytes:(performance as any).memory?.usedJSHeapSize,strictSaveValid:true});

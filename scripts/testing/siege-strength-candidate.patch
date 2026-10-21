@@ -1,0 +1,75 @@
+diff --git a/src/Components/City.ts b/src/Components/City.ts
+index 4c8e7eb..95c67cb 100644
+--- a/src/Components/City.ts
++++ b/src/Components/City.ts
+@@ -1,3 +1,5 @@
++import {siegeParticipants} from "../Simulation/SiegeParticipants";
++import {siegePressure} from "../Simulation/SiegeStrength";
+ import WorldExiles from "../Simulation/WorldExiles";
+ import { measurePhase, type MonthlyPhaseProfiler } from "../Simulation/MonthlyPhaseProfiler";
+ import {
+@@ -789,7 +791,8 @@ export default class City {
+     const contacts = [...this.siegeContacts.values()].filter(
+       (contact) => year - contact.year <= 1 && Boolean(this.ownerTeam) && Diplomacy.canAttack(contact.team.name, this.ownerTeam!.name, year)
+     );
+-    const mainAttacker = contacts.sort((a, b) => b.count - a.count)[0];
++    const forces = contacts.map(contact => ({...contact, strength: siegeParticipants(this, contact.team, Game.Core, Game.BlockSize, true).length}));
++    const mainAttacker = forces.filter(c=>c.strength>0).sort((a,b)=>b.strength-a.strength||a.team.name.localeCompare(b.team.name))[0];
+     const mainCommand = mainAttacker?.commandContributions?.slice().sort((a, b) => b.count - a.count || a.commandId.localeCompare(b.commandId))[0];
+     this.underSiege = Boolean(mainAttacker);
+     this.attackingFactionId = mainAttacker?.team.name;
+@@ -798,6 +801,9 @@ export default class City {
+     if (!mainAttacker) {
+       return;
+     }
++    const defenders = siegeParticipants(this, this.ownerTeam!, Game.Core, Game.BlockSize, false);
++    const pressure = siegePressure(mainAttacker.strength, defenders.length, this.maxDefense);
++    if (pressure <= 0) return; // A genuine stalemate: no invented damage or population loss.
+     if (
+       this.lastSiegeDevastationYear < 0 ||
+       year - this.lastSiegeDevastationYear >= CITY_SIEGE_DEVASTATION_INTERVAL_MONTHS
+@@ -820,17 +826,19 @@ export default class City {
+     }
+     this.lastSiegeDamageYear = year;
+     const rawSiegeDamage =
+-      CITY_SIEGE_DAMAGE_PER_TICK *
++      CITY_SIEGE_DAMAGE_PER_TICK * pressure *
+         FactionEffects.getSiegeMultiplier(mainAttacker.team.name) +
+       this.siegeDamageRemainder;
+-    const siegeDamage = Math.max(1, Math.floor(rawSiegeDamage));
++    const siegeDamage = Math.floor(rawSiegeDamage);
+     this.siegeDamageRemainder = rawSiegeDamage - siegeDamage;
+-    this.defense -= siegeDamage;
++    if (siegeDamage <= 0) return;
++    this.defense = Math.max(0, this.defense - siegeDamage);
+     this.ownerTeam?.removeOneUser("SIEGE_LOSS", {
+       month: year,
+       damageSource: "CITY_SIEGE",
+       triggerCityId: this.id,
+       context: `围城损失触发城市：${this.id}`,
++      localOnly: true,
+     });
+     this.block.updateCityDisplay();
+     if (this.defense <= 0) {
+diff --git a/src/Components/Team.ts b/src/Components/Team.ts
+index 92aeede..d2525e5 100644
+--- a/src/Components/Team.ts
++++ b/src/Components/Team.ts
+@@ -210,7 +210,7 @@ export default class Team {
+ 
+   removeOneUser(
+     cause: "SIEGE_LOSS" | "BATTLE_DEATH" = "SIEGE_LOSS",
+-    context: Pick<PopulationMutationContext, "month" | "context" | "damageSource" | "triggerCityId"> = {}
++    context: Pick<PopulationMutationContext, "month" | "context" | "damageSource" | "triggerCityId"> & {localOnly?: boolean} = {}
+   ) {
+     const worldMonth = context.month ?? Game.Core?.simulator?.year ?? 0;
+     const damageSource = context.damageSource ?? "UNSPECIFIED";
+@@ -230,7 +230,7 @@ export default class Team {
+     // A malformed/ambiguous identity must not fall back to Set iteration order.
+     if (!ordered) return undefined;
+     const local = getVerifiedLocalCasualtyUsers(this, context.triggerCityId, Game.Core, Game.BlockSize);
+-    const prioritized = [...ordered.filter(c => local.has(c.user)), ...ordered.filter(c => !local.has(c.user))];
++    const prioritized = [...ordered.filter(c => local.has(c.user)), ...(context.localOnly ? [] : ordered.filter(c => !local.has(c.user)))];
+     for (const { user } of prioritized) {
+       if (user.destroyUser(false, {
+         cause,

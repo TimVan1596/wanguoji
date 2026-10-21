@@ -43,7 +43,7 @@ export function formatMilitaryVictorySource(event: WorldEvent,context:MilitaryHi
   const subject=`${actor}${office?MILITARY_OFFICE_NAMES[office]:"将领"}${m.commanderPersonalName}所部`;
   const city=event.cityName??"城邑";
   if(event.type==="city-recovered")return `${subject}参与收复${defender?`${defender}所据的`:""}${m.founderCapital===1?"故都":m.wasCapital===1?"都城":""}${city}`;
-  return `${subject}参与攻取${defender}${m.wasCapital===1?(defender?"都":"敌都"):defender?"城":""}${city}`;
+  return `${subject}参与攻克${defender}${m.wasCapital===1?(defender?"都":"敌都"):defender?"城":""}${city}`;
 }
 
 export function formatRulerMilitaryEvent(event: WorldEvent, ruler: { accessionYear: number; endYear?: number }, factionId: string, worldMonth: number,context:MilitaryHistoryContext={}) {

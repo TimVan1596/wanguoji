@@ -1,7 +1,7 @@
 // Launch an isolated Electron session for real Core simulation metrics; no visual acceptance or screenshots.
 const {app,BrowserWindow}=require('electron');
 const fs=require('node:fs');
-app.setPath('userData',fs.mkdtempSync('/tmp/wanguoji-core-'));
+app.setPath('userData',fs.mkdtempSync(require('node:path').join(require('node:os').tmpdir(),'wanguoji-core-')));
 app.commandLine.appendSwitch('disable-background-timer-throttling');
 app.commandLine.appendSwitch('disable-renderer-backgrounding');
 app.on('window-all-closed',()=>{});
@@ -10,10 +10,12 @@ app.whenReady().then(async()=>{
  try{
   const seeds=(process.env.WANGUOJI_CORE_SEEDS||'regional-1').split(',');
   for(const seed of seeds){
+   process.stderr.write(`[CoreTest] starting ${seed}\n`);
    const win=new BrowserWindow({show:false,webPreferences:{backgroundThrottling:false,partition:`natural-core-${seed}-${process.pid}`}});
-   win.webContents.on('console-message',(_e,_l,message)=>{if(message.includes('Error')||message.startsWith('[CoreTest]'))process.stderr.write(message+'\n');});
+   win.webContents.on('console-message',(_e,_l,message)=>{process.stderr.write(String(message)+'\n');});
    await win.loadURL(process.env.WANGUOJI_CORE_URL||'http://localhost:5197/?debug=1&avatarRenderer=plain');
    const years=(process.env.WANGUOJI_CORE_LONG_SEEDS||'').split(',').includes(seed)?Number(process.env.WANGUOJI_CORE_LONG_YEARS||200):Number(process.env.WANGUOJI_CORE_YEARS||100);
+   const deposition=process.env.WANGUOJI_CORE_SUITE==='deposition';
    const secession=process.env.WANGUOJI_CORE_SUITE==='military-secession';
    const resident=process.env.WANGUOJI_CORE_SUITE==='resident-founder';
    const identity=process.env.WANGUOJI_CORE_SUITE==='rebel-military-identity';
@@ -21,7 +23,8 @@ app.whenReady().then(async()=>{
    const balance=process.env.WANGUOJI_CORE_SUITE==='military-balance';
    const military=process.env.WANGUOJI_CORE_SUITE==='military-overlay';
    const calibration=process.env.WANGUOJI_CORE_SUITE==='military-office-calibration';
-   const invocation=secession?`const h=await import('/src/Simulation/testing/MilitarySecessionCoreHarness.tsx');return h.runMilitarySecessionCore(${JSON.stringify(seed)});`:resident?`const h=await import('/src/Simulation/testing/ResidentFounderCoreHarness.ts');return h.runResidentFounderCore(${JSON.stringify(seed)});`:identity?`const h=await import('/src/Simulation/testing/RebelMilitaryIdentityHarness.ts');return h.runRebelMilitaryIdentity(${JSON.stringify(seed)});`:archive?`const h=await import('/src/Simulation/testing/CharacterArchivePerformanceHarness.tsx');return h.runCharacterArchivePerformance(${JSON.stringify(seed)},${years});`:balance?`const h=await import('/src/Simulation/testing/MilitaryBalanceHarness.ts');return h.runMilitaryBalance(${JSON.stringify(seed)},${years},${process.env.WANGUOJI_CORE_INCLUDE_SNAPSHOT==='1'});`:calibration?`const h=await import('/src/Simulation/testing/MilitaryOfficeCalibrationHarness.ts');return h.runMilitaryOfficeCalibration(${JSON.stringify(seed)},${Number(process.env.WANGUOJI_CORE_YEARS||200)});`:military?`const h=await import('/src/Simulation/testing/MilitaryOverlayCoreHarness.ts');return h.runMilitaryOverlayCore(${JSON.stringify(seed)});`:`const h=await import('/src/Simulation/testing/NaturalCoreHarness.ts');return h.runNaturalCore(${JSON.stringify(seed)},${Number(process.env.WANGUOJI_CORE_YEARS||100)});`;
+   const invocation=deposition?`const h=await import('/src/Simulation/testing/DepositionCoreHarness.ts');return h.runDepositionCore(${JSON.stringify(seed)});`:secession?`const h=await import('/src/Simulation/testing/MilitarySecessionCoreHarness.tsx');return h.runMilitarySecessionCore(${JSON.stringify(seed)});`:resident?`const h=await import('/src/Simulation/testing/ResidentFounderCoreHarness.ts');return h.runResidentFounderCore(${JSON.stringify(seed)});`:identity?`const h=await import('/src/Simulation/testing/RebelMilitaryIdentityHarness.ts');return h.runRebelMilitaryIdentity(${JSON.stringify(seed)});`:archive?`const h=await import('/src/Simulation/testing/CharacterArchivePerformanceHarness.tsx');return h.runCharacterArchivePerformance(${JSON.stringify(seed)},${years});`:balance?`const h=await import('/src/Simulation/testing/MilitaryBalanceHarness.ts');return h.runMilitaryBalance(${JSON.stringify(seed)},${years},${process.env.WANGUOJI_CORE_INCLUDE_SNAPSHOT==='1'});`:calibration?`const h=await import('/src/Simulation/testing/MilitaryOfficeCalibrationHarness.ts');return h.runMilitaryOfficeCalibration(${JSON.stringify(seed)},${Number(process.env.WANGUOJI_CORE_YEARS||200)});`:military?`const h=await import('/src/Simulation/testing/MilitaryOverlayCoreHarness.ts');return h.runMilitaryOverlayCore(${JSON.stringify(seed)});`:`const h=await import('/src/Simulation/testing/NaturalCoreHarness.ts');return h.runNaturalCore(${JSON.stringify(seed)},${Number(process.env.WANGUOJI_CORE_YEARS||100)});`;
+   process.stderr.write('[CoreTest] page loaded, invoking harness\n');
    const result=await win.webContents.executeJavaScript(`(async()=>{${invocation}})()`);
    results.push(result);if(process.env.WANGUOJI_CORE_OUTPUT)fs.writeFileSync(process.env.WANGUOJI_CORE_OUTPUT,JSON.stringify(results,null,2));
    process.stdout.write(JSON.stringify(result)+'\n');win.destroy();

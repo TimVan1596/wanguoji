@@ -1,3 +1,4 @@
+import {siegeParticipants} from "../SiegeParticipants";
 import {assessPopularSupport,hasPopularPoliticalCrisis} from "../PopularRebellionSupport";
 import {createNaturalCore} from "./NaturalCoreHarness";
 import Military from "../../Politics/MilitaryCommandRegistry";
@@ -32,6 +33,11 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
   const {core,game}=await createNaturalCore(seed),started=performance.now();
   const original=(City.prototype as any).updateSiege;
   let siegeCityMonths=0,contactMonth=-1;
+  const forceSamples:Record<string,number>={};let localSiegeDeaths=0;
+  const episodes:any[]=[],open=new Map<string,any>(),annual:any[]=[];
+  const rawContact=City.prototype.registerSiegeContact;
+  let contactCalls=0;
+  City.prototype.registerSiegeContact=function(...args:Parameters<typeof rawContact>){contactCalls++;return rawContact.apply(this,args);};
   const seen=new Set<string>(),sizeSamples:Record<string,number>={},factionCommandSamples:Record<string,number>={};
   let politicalCandidateChecks=0,activeFormationSamples=0,totalFormationMembers=0,activeStateMonthSum=0;
   (City.prototype as any).updateSiege=function(month:number,...args:unknown[]){
@@ -39,7 +45,18 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
     if(this.ownerTeam&&[...this.siegeContacts.values()].some((c:any)=>month-c.year<=1&&Diplomacy.canAttack(c.team.name,this.ownerTeam.name,month))&&!seen.has(this.id)){
       seen.add(this.id);siegeCityMonths++;
     }
-    return original.call(this,month,...args);
+    const owner=this.ownerFactionId,before=this.defense;
+    const contactRows=[...this.siegeContacts.values()] as any[];
+    const localDefenders=this.ownerTeam?siegeParticipants(this,this.ownerTeam,core,32,false).length:0;
+    const populationBefore=core.teams.reduce((n,t)=>n+t.users.size,0);
+    for(const c of contactRows){const attackers=siegeParticipants(this,c.team,core,32,true).length;const key=`${attackers}:${localDefenders}:${this.defense}:${this.maxDefense}`;forceSamples[key]=(forceSamples[key]??0)+1;}
+    const result=original.call(this,month,...args);
+    localSiegeDeaths+=Math.max(0,populationBefore-core.teams.reduce((n,t)=>n+t.users.size,0));
+    let e=open.get(this.id);
+    if(this.underSiege&&!e){e={cityId:this.id,owner,startMonth:month,capital:this.isCapital,contactCalls:0,damage:0};open.set(this.id,e);}
+    if(e){e.contactCalls+=contactRows.reduce((n,c)=>n+c.count,0);e.damage+=Math.max(0,before-this.defense);
+      if(this.ownerFactionId!==owner||!this.underSiege||this.destroyed){episodes.push({...e,endMonth:month,durationMonths:month-e.startMonth+1,result:this.ownerFactionId!==owner?'CAPTURED':this.destroyed?'DESTROYED':'CONTACT_ENDED'});open.delete(this.id);}}
+    return result;
   };
   const checkpoints:any[]=[],monthlyExposure={cityMonths:0,politicalCityMonths:0,supporters:0,identityBlocked:0,geographyBlocked:0,discontentBlocked:0};
   try{
@@ -50,6 +67,7 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
         if(city.destroyed)continue;monthlyExposure.cityMonths++;
         if(hasPopularPoliticalCrisis(city,m,core.totalCells)){const p=assessPopularSupport(city,m);monthlyExposure.politicalCityMonths++;monthlyExposure.supporters+=p.users.length;monthlyExposure.identityBlocked+=p.identityBlocked;monthlyExposure.geographyBlocked+=p.outsideArea;monthlyExposure.discontentBlocked+=p.discontentBlocked;}
       }
+      if(m%12===0)annual.push({month:m,maxTerritoryShare:Math.max(0,...core.teams.map(t=>t.blocks.getLength()/core.totalCells)),activeStates:core.teams.filter(t=>t.status==="ACTIVE").length});
       activeStateMonthSum+=core.teams.filter(t=>t.status==="ACTIVE").length;
       const formations=Military.getFormations().filter(f=>f.status==="ACTIVE");
       for(const f of formations){sizeSamples[f.memberUnitIds.length]=(sizeSamples[f.memberUnitIds.length]??0)+1;activeFormationSamples++;totalFormationMembers+=f.memberUnitIds.length;}
@@ -98,6 +116,6 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
       }
       if(m%120===0)await new Promise(r=>setTimeout(r,0));
     }
-    return {seed,years,mode:"real Arcade Core / default warring states",denominator:"hostile-contact city-months entering real City.updateSiege; capture frequency, not battle win probability",checkpoints};
-  }finally{(City.prototype as any).updateSiege=original;game.destroy(true);}
+    return {seed,years,contactCalls,forceSamples,localSiegeDeaths,depositionRelations:WorldHistory.getEvents().filter(e=>e.type==="ruler-deposed").map(e=>({month:e.monthIndex??e.year,metadata:e.metadata})),episodes,ongoingEpisodes:[...open.values()],annual,unificationMonths:WorldHistory.getEvents().filter(e=>e.type==="world-unification").map(e=>e.monthIndex??e.year),mode:"real Arcade Core / default warring states",denominator:"hostile-contact city-months entering real City.updateSiege; capture frequency, not battle win probability",checkpoints};
+  }finally{City.prototype.registerSiegeContact=rawContact;(City.prototype as any).updateSiege=original;game.destroy(true);}
 }

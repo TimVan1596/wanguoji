@@ -43,7 +43,7 @@ export function composeMilitaryBiography(person:MilitaryPerson,entries:MilitaryC
   const ending=person.status==="DEAD"&&person.deathMonth!==undefined
     ? `${formatWorldDate(person.deathMonth)}${person.deathCause==="NATURAL_DEATH"?"自然去世":person.deathCause==="SIEGE_LOSS"?"在战乱中去世":person.deathCause==="BATTLE_DEATH"?"在战乱中去世":"去世"}。`
     : person.status!=="ACTIVE"&&person.appointments.at(-1)?.endReason==="AGE_RETIREMENT"?"年老退职。":undefined;
-  const assessment=victories.length?"其所部曾参与攻取城邑，军旅功业见于任内战事。"
+  const assessment=victories.length?"其所部曾参与攻克城邑，军旅功业见于任内战事。"
     : entries.some(e=>e.source.startsWith("military-order-issued"))?"曾受命出征，尚未见所部攻城之功。":"军旅事迹所载尚少。";
   return {life,ending,assessment,victories,voice:person.status==="DEAD"&&victories.length>=2?"其名留于军旅，所部之功见于城邑得失。":undefined};
 }

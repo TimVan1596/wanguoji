@@ -1,3 +1,4 @@
+import DepositionSelectionDetails from "../DepositionSelectionDetails";
 import { Box, Typography } from "@mui/material";
 import type { WorldEvent } from "../../../History/WorldHistory";
 import type { RootState } from "../../../store";
@@ -81,6 +82,7 @@ export function EventDetails({
   }
   return (
     <>
+      <DepositionSelectionDetails event={event}/>
       {getMilitaryParticipationDetails(event).length>0 && <details onClick={e=>e.stopPropagation()} style={{overflowWrap:"anywhere",fontSize:"0.75rem"}}><summary>史料依据（军事参与）</summary>{getMilitaryParticipationDetails(event).map((line,i)=><Typography key={i} fontSize="0.75rem">{line}</Typography>)}</details>}
       {lines.map((line) => (
         <Typography key={line} fontSize="0.82rem" sx={{ opacity: 0.82 }}>

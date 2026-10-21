@@ -9,7 +9,7 @@ import { MilitaryPoliticalDiagnostics } from "./MilitaryPoliticalDiagnostics";
 export const DEPOSITION_EVALUATION_INTERVAL_MONTHS = 12;
 export const DEPOSITION_COOLDOWN_MONTHS = 60;
 export const DEPOSITION_EVIDENCE_WINDOW_MONTHS = 36;
-export const DEPOSITION_MAX_CANDIDATES = 2;
+
 
 export type DepositionRiskGroup = "CONSERVATIVE" | "CONTROL";
 export interface DepositionCrisisEvidence {
@@ -23,7 +23,13 @@ export interface DepositionCandidate {
   ruler: Ruler;
   relation: NonNullable<ReturnType<typeof getRecordedKinRelation>>;
 }
+export interface DepositionSelectionEvidence {
+  version:1; candidates:Array<{rulerId:string;name:string;relation:DepositionCandidate["relation"];bornMonth:number;weight:number}>;
+  conditionalRoll:number; maturityFactor:number; roll:number; probability:number; selectedRulerId:string;
+  crisisEventIds:string[]; supporterPersonId?:string;
+}
 export interface DepositionEvaluation {
+  selection?:DepositionSelectionEvidence;
   eligible: boolean;
   blockers: string[];
   candidates: DepositionCandidate[];
@@ -83,7 +89,7 @@ export function selectDepositionCandidates({
     return relation && relation !== "COLLATERAL_KIN" ? [{ ruler, relation }] : [];
   }).sort((a, b) => relationPriority.indexOf(a.relation) - relationPriority.indexOf(b.relation) ||
     a.ruler.bornYear - b.ruler.bornYear || a.ruler.id.localeCompare(b.ruler.id))
-    .slice(0, DEPOSITION_MAX_CANDIDATES);
+    ;
 }
 
 export function evaluateDepositionOpportunity({
@@ -169,4 +175,26 @@ export class InReignDepositionDiagnostics {
         blockers: [...row.blockers], candidateIds: [...row.candidateIds], evidenceIds: [...row.evidenceIds] })),
       chineseSummary: `宗室废立诊断（本次观察）\n实际观察：${elapsedYears.toFixed(2)}年\n已观察在国正式政权：${this.totals.activePolities}次\n现存成年宗室候选：${this.totals.existingAdultKinCandidates}人次\n完整资格通过：${this.totals.qualifiedChecks}次\n实际抽签：${this.totals.drawAttempts}次\n抽签失败：${this.totals.failures}次\n实际废立：${this.totals.successes}次\n冷却阻断：${this.totals.cooldownBlocked}次\n条件期望废立：${this.totals.expectedSuccesses.toFixed(3)}次` };
   }
+}
+
+/** Successful-coup conditional roll is uniform on [0,1); no second political lottery.
+ * Military support is for the coup, not fabricated kin-specific allegiance. It only
+ * increases the weight of established adulthood under a real military-backed crisis. */
+export function chooseDepositionClaimant(evaluation: DepositionEvaluation, worldMonth: number, roll: number): {claimant:DepositionCandidate;evidence:DepositionSelectionEvidence}|undefined {
+  if (!evaluation.eligible || !(roll >= 0 && roll < evaluation.probability)) return undefined;
+  const maturityFactor = Math.min(3, evaluation.evidence.length) * .15 + (evaluation.militaryParticipant ? .25 : 0);
+  const legitimacy: Record<string,number> = {DIRECT_CHILD:1.35,GRANDCHILD:1.2,SIBLING:1.25,NEPHEW:1,UNCLE:1.1,COUSIN:1};
+  const candidates = evaluation.candidates.map(c=>{
+    const ageMonths = worldMonth-c.ruler.bornYear;
+    const maturity = Math.max(0,Math.min(1,(ageMonths-192)/168));
+    return {rulerId:c.ruler.id,name:`${c.ruler.houseName.replace(/氏$/,"")}${c.ruler.givenName}`,relation:c.relation,bornMonth:c.ruler.bornYear,
+      weight:legitimacy[c.relation]+maturity*maturityFactor};
+  }).sort((a,b)=>a.rulerId.localeCompare(b.rulerId));
+  if (!candidates.length) return undefined;
+  const conditionalRoll = roll/evaluation.probability;
+  let remaining = conditionalRoll*candidates.reduce((n,c)=>n+c.weight,0);
+  const picked = candidates.find(c=>(remaining-=c.weight)<0)??candidates.at(-1)!;
+  return {claimant:evaluation.candidates.find(c=>c.ruler.id===picked.rulerId)!,
+    evidence:{version:1,candidates,conditionalRoll,maturityFactor,roll,probability:evaluation.probability,selectedRulerId:picked.rulerId,
+      crisisEventIds:evaluation.evidence.map(e=>e.eventId),supporterPersonId:evaluation.militaryParticipant?.personId}};
 }

@@ -51,8 +51,16 @@ it("uses only actual death for lifetime age and freezes politically ended/retire
   const ruler = { bornYear: 0, endYear: 528, status: "politically-ended" as const };
   expect(formatRulerLifeAge(ruler, 1200)).toBe("政治任期终结时44岁 · 生死未载");
   expect(formatRulerLifeAge(ruler, 2400)).toBe(formatRulerLifeAge(ruler, 1200));
-  expect(formatRulerLifeAge({ ...ruler, status: "abdicated" }, 1200)).toBe("退位时44岁");
+  expect(formatRulerLifeAge({ ...ruler, status: "abdicated" }, 1200)).toBe("退位时44岁 · 生死未载");
   expect(formatRulerLifeAge({ ...ruler, status: "dead", deathMonth: 600, deathReason: "去世" }, 1200)).toBe("享年50岁");
   expect(formatRulerLifeAge({ ...ruler, status: "dead" }, 1200)).not.toContain("享年");
   expect(formatRulerLifeAge({ ...ruler, status: "dead", endYear: undefined }, 1200)).toBe("生死未载 · 终结年龄未载");
+});
+
+it("managed former rulers keep aging until their one real death, never at political end",()=>{
+ const r={bornYear:0,endYear:480,status:"deposed" as const,naturalDeathYear:960};
+ expect(formatRulerLifeAge(r,600)).toBe("当前年龄50岁");
+ expect(formatRulerLifeAge(r,612)).toBe("当前年龄51岁");
+ expect(formatRulerLifeAge({...r,status:"dead",deathMonth:700,deathReason:"自然去世"},800)).toBe("享年58岁");
+ expect(formatRulerLifeAge({...r,status:"abdicated"},600,true)).toBe("当前年龄50岁");
 });

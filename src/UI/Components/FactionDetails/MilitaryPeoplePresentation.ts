@@ -37,7 +37,7 @@ export function describeMilitaryAppointmentEnd(reason?: string) {
 
 export function describeMilitaryAge(person: MilitaryPerson, worldMonth: number, verifiedLive: boolean) {
   const age = Math.floor(Math.max(0, (person.deathMonth ?? worldMonth) - person.bornMonth) / 12);
-  return person.status === "DEAD" ? `享年 ${age} 岁` : verifiedLive ? `年龄 ${age} 岁` : `生死未载`;
+  return person.status === "DEAD" ? Number.isSafeInteger(person.deathMonth) && person.deathMonth! <= worldMonth ? `享年 ${age} 岁` : "生死未载" : verifiedLive ? `年龄 ${age} 岁` : `生死未载`;
 }
 
 

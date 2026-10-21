@@ -13,7 +13,7 @@ it("one battle uses historical countries and frozen contemporary office in milit
   const e=battle("b",70);e.metadata.commanderOffice="JIANGJUN";
   const person:any={personId:"p",appointments:[{commandId:"c",factionId:"attacker",startMonth:0,officeHistory:[{office:"SHANGJIANGJUN",month:150}]}]};
   const ctx={factions,people:[person]},text=formatMilitaryVictorySource(e,ctx)!;
-  expect(text).toBe("秦将军鲍成所部参与攻取魏都睢阳");expect(text).not.toMatch(/汉|晋|上将军|亲征/);
+  expect(text).toBe("秦将军鲍成所部参与攻克魏都睢阳");expect(text).not.toMatch(/汉|晋|上将军|亲征/);
   expect(formatRulerMilitaryEvent(e,{accessionYear:0,endYear:99},"attacker",200,ctx)).toBe(`其治下，${text}`);
   const world=formatHistoryEventTitle(e,factions);expect(world).toBe(text);expect(world.match(/睢阳/g)).toHaveLength(1);
   expect(formatRulerMilitaryEvent(e,{accessionYear:0},"defender",200,ctx)).toBeUndefined();
@@ -29,8 +29,8 @@ it("recovery and unknown defenders/capital status use only recorded facts",()=>{
   const e=battle("recover",70,{type:"city-recovered"});e.metadata.founderCapital=1;
   expect(formatMilitaryVictorySource(e,{factions})).toBe("秦将领鲍成所部参与收复魏所据的故都睢阳");
   delete e.targetFactionId;e.type="city-captured";e.metadata.wasCapital=undefined;
-  expect(formatMilitaryVictorySource(e,{factions})).toBe("秦将领鲍成所部参与攻取睢阳");
-  e.previousOwnerFactionId="defender";e.targetFactionId="conflicting";expect(formatMilitaryVictorySource(e,{factions})).toBe("秦将领鲍成所部参与攻取睢阳");
+  expect(formatMilitaryVictorySource(e,{factions})).toBe("秦将领鲍成所部参与攻克睢阳");
+  e.previousOwnerFactionId="defender";e.targetFactionId="conflicting";expect(formatMilitaryVictorySource(e,{factions})).toBe("秦将领鲍成所部参与攻克睢阳");
   delete e.metadata.commanderPersonId;expect(formatMilitaryVictorySource(e,{factions})).toBeUndefined();
 });
 function authorityFixture(){
@@ -65,7 +65,7 @@ it("frozen issuer and opposing-country names survive a later rename within the s
   const save=createEmptyWorldSaveV18();save.world.worldMonth=100;save.factions=[{...f.team,factionId:"秦"}];save.dynasties=[{...f.dynasty,rulers:[exportRulerSave(f.ruler)]}];save.worldHistory.events=[grant];
   expect(grant.metadata?.authorizingRulerTitle).toBe("秦王嬴文");expect(validateMilitaryOfficeAuthorities(save)).toEqual([]);
   const capture=battle("boundary",100);capture.metadata.attackerNameAtEvent="秦";capture.metadata.defenderNameAtEvent="魏";
-  expect(formatMilitaryVictorySource(capture,{factions})).toBe("秦将领鲍成所部参与攻取魏都睢阳");
+  expect(formatMilitaryVictorySource(capture,{factions})).toBe("秦将领鲍成所部参与攻克魏都睢阳");
   save.factions=[...factions.values()].map((v:any)=>({...v,factionId:v.name,identityStage:"STATE",stateFoundedMonth:0}));save.worldHistory.events=[capture];
   expect(validateMilitaryBattleNames(save)).toEqual([]);
   capture.metadata.defenderNameAtEvent="不存在的政权";expect(validateMilitaryBattleNames(save)).not.toEqual([]);

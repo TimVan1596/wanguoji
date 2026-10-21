@@ -69,7 +69,7 @@ import {
   selectActiveDynasticCandidateIds,
   selectRecordedDynasticSuccessor,
 } from "./DynasticCandidateRules";
-import { evaluateDepositionOpportunity, InReignDepositionDiagnostics, type DepositionEvaluation, type DepositionRiskGroup } from "./InReignDeposition";
+import { chooseDepositionClaimant, evaluateDepositionOpportunity, InReignDepositionDiagnostics, type DepositionEvaluation, type DepositionRiskGroup } from "./InReignDeposition";
 import type { RecordedKinRelation } from "./DynasticCandidateRules";
 
 export type RulerStatus = "ruling" | "exiled" | "heir" | "kin" | "dead" | "abdicated" | "politically-ended" | "deposed";
@@ -788,7 +788,9 @@ class DynastyRegistryStore {
       this.depositionDiagnostics.observe(team.name, worldMonth, evaluation, team.status === "ACTIVE" && team.identityStage === "STATE", "FAILURE");
       return;
     }
-    const claimant = evaluation.candidates[0];
+    const selection = chooseDepositionClaimant(evaluation,worldMonth,roll);
+    const claimant = selection?.claimant;
+    if (selection) evaluation.selection = selection.evidence;
     if (!claimant || !this.commitDeposition(team, dynasty, current, claimant.ruler, claimant.relation, worldMonth, evaluation)) {
       this.depositionDiagnostics.observe(team.name, worldMonth, evaluation, team.status === "ACTIVE" && team.identityStage === "STATE", "FAILURE");
       return;
@@ -817,6 +819,10 @@ class DynastyRegistryStore {
     const previousUserRulerId = previousRulerUser?.rulerId;
     const previousPlayerRole = previousRulerUser?.player.role;
     const previousPlayerRulerId = previousRulerUser?.player.rulerId;
+    const historyBefore = WorldHistory.exportState();
+    const unitRegistry = Game.Core?.logicalUnitRegistry;
+    const unitsBefore = unitRegistry?.getEntries?.().map(e=>({...e,state:{...e.state}}));
+    const unitSequenceBefore = unitRegistry?.exportState?.().nextUnitSequence;
     const candidateStatuses = dynasty.rulers.map((ruler) => [ruler.id, ruler.status] as const);
     const monthSnapshot = createRulerSnapshot(team, worldMonth);
     const nextChronicle = createRulerChronicle(monthSnapshot);
@@ -869,6 +875,14 @@ class DynastyRegistryStore {
       // let a tied heir designation introduce a second, unrelated RNG draw.
       this.refreshDesignatedHeir(dynasty, successor, worldMonth, () => 0);
 
+    const eventId = WorldHistory.addRulerDeposed(worldMonth, team.name, team.displayName, predecessor, successor, relation,
+      evaluation.evidence.map(({ eventId: id }) => id), { depositionSelection: JSON.stringify(evaluation.selection), ...captureAccessionCapital(team, worldMonth, successor.id, predecessor.id),
+        ...(evaluation.militaryParticipant ? militaryParticipationMetadata("DEPOSITION", team.name, worldMonth, evaluation.militaryParticipant,
+          evaluation.evidence.map(e => e.eventId), evaluation.baselineProbability ?? evaluation.probability, evaluation.probability, evaluation.militaryRoll,
+          { stability: getFactionStability(team) ?? 100, cityCount: team.cities.length }, WorldHistory.getEventsForFaction(team.name)) : {}) });
+    if (predecessor.chronicle) predecessor.chronicle.notableEventIds.push(eventId);
+    successor.chronicle!.notableEventIds.push(eventId);
+
       // The old monarch remains a living person: remove only the political role/crown,
       // and keep the existing population unit instead of silently destroying it.
       if (team.rulerUser?.rulerId === predecessor.id) {
@@ -884,8 +898,11 @@ class DynastyRegistryStore {
         (!successorShouldHaveUnit && team.rulerUser)) throw new Error("deposition runtime invariant failed");
 
     } catch {
+      for(const key of Object.keys(predecessor))delete (predecessor as any)[key];
+      for(const key of Object.keys(successor))delete (successor as any)[key];
       Object.assign(predecessor, previousState.predecessor);
       Object.assign(successor, previousState.successor);
+      WorldHistory.importState(historyBefore);
       dynasty.currentRulerId = previousState.currentRulerId;
       dynasty.heirIds = previousState.heirIds;
       dynasty.designatedHeirId = previousState.designatedHeirId;
@@ -898,16 +915,10 @@ class DynastyRegistryStore {
         previousRulerUser.player.setRole(previousPlayerRole!, previousPlayerRulerId);
         team.rulerUser = previousRulerUser;
       }
+      if(unitsBefore&&unitSequenceBefore!==undefined)unitRegistry!.importState(unitSequenceBefore,unitsBefore as Array<{state: import("../Simulation/LogicalUnitState").LogicalUnitState;player: import("../Components/Player").default}>);
       this.ensureRulerUnit(team);
       return false;
     }
-    const eventId = WorldHistory.addRulerDeposed(worldMonth, team.name, team.displayName, predecessor, successor, relation,
-      evaluation.evidence.map(({ eventId: id }) => id), { ...captureAccessionCapital(team, worldMonth, successor.id, predecessor.id),
-        ...(evaluation.militaryParticipant ? militaryParticipationMetadata("DEPOSITION", team.name, worldMonth, evaluation.militaryParticipant,
-          evaluation.evidence.map(e => e.eventId), evaluation.baselineProbability ?? evaluation.probability, evaluation.probability, evaluation.militaryRoll,
-          { stability: getFactionStability(team) ?? 100, cityCount: team.cities.length }, WorldHistory.getEventsForFaction(team.name)) : {}) });
-    if (predecessor.chronicle) predecessor.chronicle.notableEventIds.push(eventId);
-    successor.chronicle!.notableEventIds.push(eventId);
     return true;
   }
 

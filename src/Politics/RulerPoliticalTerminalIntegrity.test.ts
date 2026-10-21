@@ -275,3 +275,23 @@ describe("authoritative V13 political termination and actual death", () => {
     expect(records.some(e => e.id === "longest-life")).toBe(false);
   });
 });
+
+it("failed final deposition history write restores offices, kin statuses and history sequence without killing the old ruler",()=>{
+ const {team,ruler,heir}=fixture("ACTIVE",true);heir.bornYear=-240;
+ team.cities=[{id:"capital",name:"都"}];team.stability=30;
+ const unit:any={role:"RULER",rulerId:ruler.id,player:{role:"RULER",rulerId:ruler.id,setRole(role:string,id?:string){this.role=role;this.rulerId=id;}}};
+ team.rulerUser=unit;team.users.add(unit);
+ const dynasty=DynastyRegistry.get(team.name)!;
+ vi.spyOn(DynastyRegistry,"ensureRulerUnit").mockImplementation(()=>undefined);
+ WorldHistory.addCapitalFallen(1,"魏",team.name,team.name,"旧都","capital",true,10,undefined,undefined,"siege-1");
+ const people=JSON.stringify(dynasty.rulers),history=WorldHistory.exportState(),heirs=[...dynasty.heirIds];
+ const writer=WorldHistory.addRulerDeposed.bind(WorldHistory);
+ vi.spyOn(WorldHistory,"addRulerDeposed").mockImplementation((...args)=>{writer(...args);throw new Error("injected after historical mutation");});
+ const roll=vi.spyOn(worldRandom,"next").mockReturnValue(0);
+ (DynastyRegistry as any).evaluateInReignDeposition(team,dynasty,ruler,12);
+ expect(roll).toHaveBeenCalledTimes(1);expect(JSON.stringify(dynasty.rulers)).toBe(people);
+ expect(dynasty.heirIds).toEqual(heirs);expect(dynasty.currentRulerId).toBe(ruler.id);
+ expect(WorldHistory.exportState()).toEqual(history);expect(team.rulerUser).toBe(unit);
+ expect(unit.role).toBe("RULER");expect(ruler.deathMonth).toBeUndefined();
+ expect(dynasty.lastDepositionAttemptMonth).toBe(12);
+});
