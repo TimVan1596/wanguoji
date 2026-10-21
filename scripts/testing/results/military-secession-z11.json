@@ -48,11 +48,11 @@
       "archive navigation does not rewrite users",
       "archive navigation does not rewrite cities",
       "archive navigation does not rewrite worldHistory",
-      "V20 refuses incompatible political/military life or simultaneous military authority",
-      "V20 refuses incompatible political/military life or simultaneous military authority",
-      "V20 refuses incompatible political/military life or simultaneous military authority",
-      "V20 source military and royal identity resume deterministically for twelve real months",
-      "resaved V20 snapshot reads again without duplicating the leader",
+      "V21 refuses incompatible political/military life or simultaneous military authority",
+      "V21 refuses incompatible political/military life or simultaneous military authority",
+      "V21 refuses incompatible political/military life or simultaneous military authority",
+      "V21 source military and royal identity resume deterministically for twelve real months",
+      "resaved V21 snapshot reads again without duplicating the leader",
       "actual subsequent royal death closes the same military person's life",
       "one death record and no live body or command survive the linked person's death",
       "collapsed public summary mounts eight rows and no hidden full/audit DOM",
@@ -69,6 +69,6 @@
     "originalUnits": 12,
     "worldPopulationBefore": 72,
     "worldPopulationAfter": 72,
-    "saveSchemaVersion": 20
+    "saveSchemaVersion": 21
   }
 ]

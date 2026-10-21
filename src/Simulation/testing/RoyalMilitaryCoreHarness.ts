@@ -1,3 +1,4 @@
+import {checkRoyalArchiveInteraction} from "./RoyalArchiveInteractionHarness";
 import {evaluateDepositionOpportunity,chooseDepositionClaimant} from "../../Politics/InReignDeposition";
 import {getFactionStability} from "../../Components/City";
 import worldRandom from "../WorldRandom";
@@ -37,6 +38,7 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
   check(user&&user.player.active&&user.matchesMilitaryLife(person)&&team.users.size===count+1,"one audited real body commands existing people");
   check(ruler.bornYear===birth&&ruler.naturalDeathYear===death&&ruler.parentId===parent&&person.royalIdentity?.naturalDeathMonth===death,"birth, kinship and existing lifespan are preserved");
   check(!Dynasty.enlistRoyalMilitary(candidate,team,month,members()),"duplicate enlistment refused");
+  await checkRoyalArchiveInteraction(core,team.name,personId,check);
   const save=strict();
   for(const mutate of [(s:any)=>s.registries.militaryCommandRegistry.people.find((p:any)=>p.personId===personId).royalIdentity.naturalDeathMonth++, (s:any)=>s.dynasties.find((d:any)=>d.factionId===team!.name).rulers.find((r:any)=>r.rulerId===ruler.id).militaryIdentity.sourceUserId++, (s:any)=>s.users.push({...s.users.find((u:any)=>u.militaryPersonId===personId),userId:123})]){const bad=structuredClone(save);mutate(bad);check(!validateWorldSave(bad).valid,"V21 rejects broken royal life/body references");}
   const resume=()=>{hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return strict();};
@@ -108,6 +110,14 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
    check(Dynasty.getCurrentRuler(t.name)===r&&t.rulerUser?.historicalPersonId===personId&&p.politicalRulerId===r.id,"legal succession converts the same royal User into the ruler");
    check(p.status==="RETIRED"&&Military.getFormations().every(f=>f.commanderPersonId!==personId||f.status==="DISBANDED")&&r.parentId===parent&&r.bornYear===birth&&r.naturalDeathYear===death,"accession closes old commands and preserves kin and life");
    check(preAccessionMilitary(r,Military.getPeople(),Military.getFormations(),History.getEvents())?.person.personId===personId,"ruler biography resolves the same pre-accession military person");strict();
+   const enemy=core.teams.find(e=>e!==t&&e.status==="ACTIVE")!;
+   // Controlled administrative terminal transaction, not a claim of natural union eligibility.
+   (core.simulator as any).mergeFaction({absorbedFaction:t,absorbingFaction:enemy},month+1);
+   const former=enemy.getUserById(identity.sourceUserId)!;
+   check(r.status as string==="abdicated"&&former.role==="NORMAL"&&r.deathMonth===undefined,"administrative termination preserves the former royal's real living body");
+   (core.simulator as any).clock.importState({worldMonth:month+2,elapsedMs:0,running:false});
+   check(former.destroyUser(false,{cause:"BATTLE_DEATH",month:month+2,damageSource:"HOSTILE_HOME_OCCUPATION"}),"former ruler's actual body can subsequently die in war");
+   check(r.endYear===month+1&&r.politicalEndYear===month+1&&r.endReason==="合邦退位"&&r.deathMonth===month+2&&r.chronicle?.endSnapshot?.month===month+1&&r.chronicle.deathCause==="战死","later death preserves the earlier political end and terminal reign snapshot");strict();
   }
   return {seed,checks,month,personId,royalRulerId:ruler.id,saveSchemaVersion:21};
  } finally {game.destroy(true);}

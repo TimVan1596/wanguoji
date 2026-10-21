@@ -32,6 +32,8 @@ async function fingerprint(snapshot: ReturnType<typeof exportWorldSave>,baseFact
 
 /** Instrument the real City transaction, never substitute combat or its RNG. Test-session aggregates only. */
 export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=false){
+  const royalOffers=new Map<string,number>(),readRoyal=(Dynasty as any).getRoyalMilitaryCandidates;
+  if(readRoyal)(Dynasty as any).getRoyalMilitaryCandidates=function(...args:any[]){const rows=readRoyal.apply(this,args);for(const r of rows)if(!royalOffers.has(r.rulerId))royalOffers.set(r.rulerId,args[1]);return rows;};
   const {core,game}=await createNaturalCore(seed),started=performance.now();
   const original=(City.prototype as any).updateSiege;
   let siegeCityMonths=0,contactMonth=-1;
@@ -99,7 +101,7 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
         const count=(type:string)=>events.filter(e=>e.type===type).length;
         const royalPeople=people.filter(p=>p.royalIdentity),royals=Dynasty.getAll().flatMap(d=>d.rulers).filter(r=>r.militaryIdentity);
         const ordinary=core.teams.flatMap(t=>[...t.users]).filter(u=>u.role==="NORMAL"&&!u.militaryPersonId&&!u.historicalPersonId),ages=ordinary.map(u=>Math.floor((m-u.bornMonth)/12));
-        checkpoints.push({royalMilitary:{candidatePeople:royalCandidates.size,enlisted:royalPeople.length,victories:royalPeople.reduce((n,p)=>n+p.capturedEventIds.length,0),promotions:royalPeople.flatMap(p=>p.appointments.flatMap(a=>(a.officeHistory??[]).filter(g=>g.office!=="PIJIANG"))).length,
+        checkpoints.push({royalMilitary:{candidatePeople:[...royalOffers.values()].filter(at=>at<=m).length,adultKinObserved:royalCandidates.size,enlisted:royalPeople.length,victories:royalPeople.reduce((n,p)=>n+p.capturedEventIds.length,0),promotions:royalPeople.flatMap(p=>p.appointments.flatMap(a=>(a.officeHistory??[]).filter(g=>g.office!=="PIJIANG"))).length,
           battleDeaths:royalPeople.filter(p=>["BATTLE_DEATH","SIEGE_LOSS"].includes(p.deathCause??"")).length,naturalDeaths:royalPeople.filter(p=>p.deathCause==="NATURAL_DEATH").length,accessions:royals.filter(r=>r.reignOrdinal!==undefined).length,
           identityConflicts:royalPeople.filter(p=>{const r=royals.find(r=>r.id===p.royalIdentity!.rulerId);return !r||r.militaryIdentity?.personId!==p.personId||r.deathMonth!==p.deathMonth||r.naturalDeathYear!==p.royalIdentity!.naturalDeathMonth;}).length,
           duplicateActiveMembers:formations.flatMap(f=>f.memberUnitIds).length-new Set(formations.flatMap(f=>f.memberUnitIds)).size},
@@ -125,11 +127,11 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
           formationOwnershipConflicts:formations.filter(f=>f.memberUnitIds.some(id=>!core.teams.find(t=>t.name===f.factionId)?.users.has(core.teams.flatMap(t=>[...t.users]).find(u=>u.player.logicalUnitId===id)!))).length,
           residentFounders:snapshot.dynasties.flatMap(d=>(d.rulers as any[]).filter(r=>r.residentIdentity)).length,
           residentLiveBindings:snapshot.users.filter(u=>u.historicalPersonId).length,
-          residentIdentityConflicts:(()=>{const rs=snapshot.dynasties.flatMap(d=>(d.rulers as any[]).filter(r=>r.residentIdentity));const ids=rs.map(r=>r.residentIdentity.personId);return ids.length-new Set(ids).size+snapshot.users.filter(u=>u.historicalPersonId&&!rs.some(r=>r.residentIdentity.personId===u.historicalPersonId&&r.residentIdentity.sourceUserId===u.userId&&r.bornMonth===u.bornMonth&&r.deathMonth===undefined)).length;})(),
+          residentIdentityConflicts:(()=>{const rs=snapshot.dynasties.flatMap(d=>(d.rulers as any[]).filter(r=>r.residentIdentity));const ids=rs.map(r=>r.residentIdentity.personId);return ids.length-new Set(ids).size+snapshot.users.filter(u=>u.historicalPersonId&&!royals.some(r=>r.militaryIdentity?.personId===u.historicalPersonId)&&!rs.some(r=>r.residentIdentity.personId===u.historicalPersonId&&r.residentIdentity.sourceUserId===u.userId&&r.bornMonth===u.bornMonth&&r.deathMonth===undefined)).length;})(),
           strictSaveValid:true,elapsedMs:performance.now()-started,heapBytes:(performance as any).memory?.usedJSHeapSize});
       }
       if(m%120===0)await new Promise(r=>setTimeout(r,0));
     }
     return {seed,years,contactCalls,forceSamples,localSiegeDeaths,depositionRelations:WorldHistory.getEvents().filter(e=>e.type==="ruler-deposed").map(e=>({month:e.monthIndex??e.year,metadata:e.metadata})),episodes,ongoingEpisodes:[...open.values()],annual,unificationMonths:WorldHistory.getEvents().filter(e=>e.type==="world-unification").map(e=>e.monthIndex??e.year),mode:"real Arcade Core / default warring states",denominator:"hostile-contact city-months entering real City.updateSiege; capture frequency, not battle win probability",checkpoints};
-  }finally{City.prototype.registerSiegeContact=rawContact;(City.prototype as any).updateSiege=original;game.destroy(true);}
+  }finally{if(readRoyal)(Dynasty as any).getRoyalMilitaryCandidates=readRoyal;City.prototype.registerSiegeContact=rawContact;(City.prototype as any).updateSiege=original;game.destroy(true);}
 }

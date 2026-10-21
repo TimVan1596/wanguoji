@@ -9,6 +9,11 @@
       "one audited real body commands existing people",
       "birth, kinship and existing lifespan are preserved",
       "duplicate enlistment refused",
+      "royal page shows the actual unenthroned serving person",
+      "royal-to-military navigation opens the same real identity and recorded parentage",
+      "military page provides the matching royal archive link",
+      "reverse navigation finds the unenthroned royal without inventing a reign",
+      "royal archive reading changes no identity, history, command or random state",
       "V21 rejects broken royal life/body references",
       "V21 rejects broken royal life/body references",
       "V21 rejects broken royal life/body references",
@@ -31,7 +36,10 @@
       "successful legal deposition converts the same serving royal and ends old command",
       "legal succession converts the same royal User into the ruler",
       "accession closes old commands and preserves kin and life",
-      "ruler biography resolves the same pre-accession military person"
+      "ruler biography resolves the same pre-accession military person",
+      "administrative termination preserves the former royal's real living body",
+      "former ruler's actual body can subsequently die in war",
+      "later death preserves the earlier political end and terminal reign snapshot"
     ],
     "month": 0,
     "personId": "military-person-1",

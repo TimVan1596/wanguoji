@@ -335,8 +335,14 @@ class DynastyRegistryStore {
   recordRoyalMilitaryBattleDeath(personId: string, month: number) {
     const ruler = this.findRoyalMilitaryPerson(personId);
     if (!ruler || hasRecordedRulerDeath(ruler) || ruler.status === "ruling" || ruler.status === "exiled") return;
-    ruler.status = "dead"; ruler.deathMonth = month; ruler.deathReason = "战死"; ruler.endYear=month; ruler.politicalEndYear=month; ruler.endReason="战死";
+    ruler.status = "dead"; ruler.deathMonth = month; ruler.deathReason = "战死";
+    if (ruler.endYear === undefined) { ruler.endYear=month; ruler.politicalEndYear=month; ruler.endReason="战死"; }
     const dynasty = this.getAll().find(d => d.rulers.includes(ruler))!;
+    if(ruler.chronicle){
+      ruler.chronicle.deathCause=ruler.deathReason;
+      const team=Game.Core?.teams.find(t=>t.name===dynasty.factionId);
+      if(team)finalizeRulerPosthumousNames(ruler,dynasty.rulers,team,month);
+    }
     dynasty.heirIds = dynasty.heirIds.filter(id => id !== ruler.id);
     if (dynasty.designatedHeirId === ruler.id) { dynasty.designatedHeirId = undefined; dynasty.designatedSinceMonth = undefined; }
     WorldHistory.addRulerDied(month, dynasty.factionId, this.getRulerPersonalName(ruler), {rulerId:ruler.id, deathReason:ruler.deathReason, age:Math.floor((month-ruler.bornYear)/12)});
