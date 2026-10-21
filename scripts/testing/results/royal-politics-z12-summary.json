@@ -1,0 +1,1534 @@
+{
+  "replay": [
+    {
+      "label": "baseline",
+      "seed": "regional-1",
+      "month": 1200,
+      "initialCanonicalSha256": "29aa870a3eb4b2f98081d8cbc2d6780b4ece1b2451bbd9978391cae9f77d5ef6",
+      "finalCanonicalSha256": "29aa870a3eb4b2f98081d8cbc2d6780b4ece1b2451bbd9978391cae9f77d5ef6",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-1",
+      "month": 2400,
+      "initialCanonicalSha256": "c7f0d2c4725371c2b4e65dc51cea4a51ea7d13cd0a4c3c60b4c9fc00ef0aad21",
+      "finalCanonicalSha256": "c7f0d2c4725371c2b4e65dc51cea4a51ea7d13cd0a4c3c60b4c9fc00ef0aad21",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-2",
+      "month": 1200,
+      "initialCanonicalSha256": "acf94d7f99b89c965c74d9f74e7ac1f4f79bcae2e25663cc93f0a346ed45648f",
+      "finalCanonicalSha256": "acf94d7f99b89c965c74d9f74e7ac1f4f79bcae2e25663cc93f0a346ed45648f",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-2",
+      "month": 2400,
+      "initialCanonicalSha256": "4e74ecad39600b18b77d1cf0d6336150797b06151986bb46e1af13ea3ea51205",
+      "finalCanonicalSha256": "4e74ecad39600b18b77d1cf0d6336150797b06151986bb46e1af13ea3ea51205",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-3",
+      "month": 1200,
+      "initialCanonicalSha256": "3a12478cec4822176c4507cfbb53494d987d2bbf6ba9fe1b2df8fc476ad0030b",
+      "finalCanonicalSha256": "3a12478cec4822176c4507cfbb53494d987d2bbf6ba9fe1b2df8fc476ad0030b",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-3",
+      "month": 2400,
+      "initialCanonicalSha256": "5e753054070a09d9999f789b5c960e8507fed2a525b973c91bafd9d30ec213a6",
+      "finalCanonicalSha256": "5e753054070a09d9999f789b5c960e8507fed2a525b973c91bafd9d30ec213a6",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-4",
+      "month": 1200,
+      "initialCanonicalSha256": "7055c27bbcd805fc35b73b4e63f75892d87b6c15b24d0f476e55188c5ffe4650",
+      "finalCanonicalSha256": "7055c27bbcd805fc35b73b4e63f75892d87b6c15b24d0f476e55188c5ffe4650",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-4",
+      "month": 2400,
+      "initialCanonicalSha256": "287d970806a7e23caa7823c3ce417c87b6c085e12d63ce361f452b7002db9c73",
+      "finalCanonicalSha256": "287d970806a7e23caa7823c3ce417c87b6c085e12d63ce361f452b7002db9c73",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-5",
+      "month": 1200,
+      "initialCanonicalSha256": "b1b1bcdd6cd5b340877d4842f3a3e414107fc772d98023ea5db286a44433a3ce",
+      "finalCanonicalSha256": "b1b1bcdd6cd5b340877d4842f3a3e414107fc772d98023ea5db286a44433a3ce",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-5",
+      "month": 2400,
+      "initialCanonicalSha256": "ef89f30fcb3f305d7398091df93a43d1ea50a318dbe53084c00c439b16ed6ef7",
+      "finalCanonicalSha256": "ef89f30fcb3f305d7398091df93a43d1ea50a318dbe53084c00c439b16ed6ef7",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-6",
+      "month": 1200,
+      "initialCanonicalSha256": "57338863234189a043afee3d38f468c4f0ed15d71505afc56f814a4b2a6225ea",
+      "finalCanonicalSha256": "57338863234189a043afee3d38f468c4f0ed15d71505afc56f814a4b2a6225ea",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-6",
+      "month": 2400,
+      "initialCanonicalSha256": "4089e0440bd2059d56c61d1b217e6bc9816c631026a54159092a44483fed6cc6",
+      "finalCanonicalSha256": "4089e0440bd2059d56c61d1b217e6bc9816c631026a54159092a44483fed6cc6",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-7",
+      "month": 1200,
+      "initialCanonicalSha256": "5661730f61946b531db66872f8ddfe80019a1fd74083f365630cd02b202234b7",
+      "finalCanonicalSha256": "5661730f61946b531db66872f8ddfe80019a1fd74083f365630cd02b202234b7",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-8",
+      "month": 1200,
+      "initialCanonicalSha256": "8c52be8c95618c9bc0488c349edd0180d6d64d44e0ebcea244191f95ca57daae",
+      "finalCanonicalSha256": "8c52be8c95618c9bc0488c349edd0180d6d64d44e0ebcea244191f95ca57daae",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-9",
+      "month": 1200,
+      "initialCanonicalSha256": "bd06d1ccd0bb000f751de79d0ddb37e022d02c9ccc7f69bd0a325325d37ea8e8",
+      "finalCanonicalSha256": "bd06d1ccd0bb000f751de79d0ddb37e022d02c9ccc7f69bd0a325325d37ea8e8",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-10",
+      "month": 1200,
+      "initialCanonicalSha256": "56e191d87bba40d494f09664dcdec1f5ef9abe3ee7699179649f57ce876dca50",
+      "finalCanonicalSha256": "56e191d87bba40d494f09664dcdec1f5ef9abe3ee7699179649f57ce876dca50",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-11",
+      "month": 1200,
+      "initialCanonicalSha256": "ff919fa1aaf7498cef2b522d0af08a9d19c060fec8b132a1dff3e9ffdca96235",
+      "finalCanonicalSha256": "ff919fa1aaf7498cef2b522d0af08a9d19c060fec8b132a1dff3e9ffdca96235",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-12",
+      "month": 1200,
+      "initialCanonicalSha256": "9a93514325a6952dbec19b1d33add8da85c41815247bcb84446c6ef339c188f8",
+      "finalCanonicalSha256": "9a93514325a6952dbec19b1d33add8da85c41815247bcb84446c6ef339c188f8",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-13",
+      "month": 1200,
+      "initialCanonicalSha256": "33a9e7d63487e06d6c004bb6d35d2f8a35bfb8a24c6a11dda681d18e5252622e",
+      "finalCanonicalSha256": "33a9e7d63487e06d6c004bb6d35d2f8a35bfb8a24c6a11dda681d18e5252622e",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-14",
+      "month": 1200,
+      "initialCanonicalSha256": "e14bfc65d7cb9dfbd7710480d7a582417d1b16ae5e4fd06881876d8ead769276",
+      "finalCanonicalSha256": "e14bfc65d7cb9dfbd7710480d7a582417d1b16ae5e4fd06881876d8ead769276",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-15",
+      "month": 1200,
+      "initialCanonicalSha256": "9a10f6e06bca013490575b59d529af7bc0c27fe10c4f7bd0a9ac6b5904444e4f",
+      "finalCanonicalSha256": "9a10f6e06bca013490575b59d529af7bc0c27fe10c4f7bd0a9ac6b5904444e4f",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-16",
+      "month": 1200,
+      "initialCanonicalSha256": "afa1ddcdc89eed73dcb3ff6fad365932d17fa9fd2596f2a449568a4103d57fa4",
+      "finalCanonicalSha256": "afa1ddcdc89eed73dcb3ff6fad365932d17fa9fd2596f2a449568a4103d57fa4",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-17",
+      "month": 1200,
+      "initialCanonicalSha256": "810fed879eb15f8a70f4ea3a46c19f3906a756bc2d60e440bf43358a76187054",
+      "finalCanonicalSha256": "810fed879eb15f8a70f4ea3a46c19f3906a756bc2d60e440bf43358a76187054",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-18",
+      "month": 1200,
+      "initialCanonicalSha256": "ad4d3381d3c8176439f4b342b243427546de1444c6d42b749d27a4e894e19b1b",
+      "finalCanonicalSha256": "ad4d3381d3c8176439f4b342b243427546de1444c6d42b749d27a4e894e19b1b",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-19",
+      "month": 1200,
+      "initialCanonicalSha256": "bfc6ff12adacdc84db31521a758af7fc276bf3cf68ad985207443d2141279e4f",
+      "finalCanonicalSha256": "bfc6ff12adacdc84db31521a758af7fc276bf3cf68ad985207443d2141279e4f",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-20",
+      "month": 1200,
+      "initialCanonicalSha256": "f03f426dc7551a6ceeeeb676cdaaa200c49c9e246fc84edd11b3e4552ca568e0",
+      "finalCanonicalSha256": "f03f426dc7551a6ceeeeb676cdaaa200c49c9e246fc84edd11b3e4552ca568e0",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-21",
+      "month": 1200,
+      "initialCanonicalSha256": "e75dd40f3d80e9d1a117ac21c03ba5837a9d96e4036fd2cde7002773f9eae099",
+      "finalCanonicalSha256": "e75dd40f3d80e9d1a117ac21c03ba5837a9d96e4036fd2cde7002773f9eae099",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-22",
+      "month": 1200,
+      "initialCanonicalSha256": "f9021ab38d17eecb1cd4c74f213555c458058361422a4fb4ae6a07e379e24014",
+      "finalCanonicalSha256": "f9021ab38d17eecb1cd4c74f213555c458058361422a4fb4ae6a07e379e24014",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-23",
+      "month": 1200,
+      "initialCanonicalSha256": "f66b0c53617bafa5ee8eb5ddc9e87771ad2916c70ad03544aacdd6aa17c78d8b",
+      "finalCanonicalSha256": "f66b0c53617bafa5ee8eb5ddc9e87771ad2916c70ad03544aacdd6aa17c78d8b",
+      "matched": true
+    },
+    {
+      "label": "baseline",
+      "seed": "regional-24",
+      "month": 1200,
+      "initialCanonicalSha256": "f6f94033793a15c3dae9aa4e096fde0be7f9757760233dce745cf2b5aa4dbd73",
+      "finalCanonicalSha256": "f6f94033793a15c3dae9aa4e096fde0be7f9757760233dce745cf2b5aa4dbd73",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-1",
+      "month": 1200,
+      "initialCanonicalSha256": "01f7dbe6490125518a3d711ce0048e2f8671afdd23df0d50c4713a0e5cae79f2",
+      "finalCanonicalSha256": "01f7dbe6490125518a3d711ce0048e2f8671afdd23df0d50c4713a0e5cae79f2",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-1",
+      "month": 2400,
+      "initialCanonicalSha256": "974645aeeb5d1348fda3a280b0bdc6a007d8b815315d3b80835da2a28a42aea9",
+      "finalCanonicalSha256": "974645aeeb5d1348fda3a280b0bdc6a007d8b815315d3b80835da2a28a42aea9",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-2",
+      "month": 1200,
+      "initialCanonicalSha256": "40cbc176f05fd6c8330c612277f94016e86d603bdb72c454411f8c93f7269b8d",
+      "finalCanonicalSha256": "40cbc176f05fd6c8330c612277f94016e86d603bdb72c454411f8c93f7269b8d",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-2",
+      "month": 2400,
+      "initialCanonicalSha256": "0a31c990de738c66c8b10cab9c5c2405ede46cc37a815781ac148b6f7dcde198",
+      "finalCanonicalSha256": "0a31c990de738c66c8b10cab9c5c2405ede46cc37a815781ac148b6f7dcde198",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-3",
+      "month": 1200,
+      "initialCanonicalSha256": "dfbcbda24148ac8bf520c57db2a6f3b1a2f7bece26c7b35af1ff31f8a5e59c6a",
+      "finalCanonicalSha256": "dfbcbda24148ac8bf520c57db2a6f3b1a2f7bece26c7b35af1ff31f8a5e59c6a",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-3",
+      "month": 2400,
+      "initialCanonicalSha256": "70617604ee098e8317d0c6eef4d43cde6a7decf9524d502a83659c4769354b4d",
+      "finalCanonicalSha256": "70617604ee098e8317d0c6eef4d43cde6a7decf9524d502a83659c4769354b4d",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-4",
+      "month": 1200,
+      "initialCanonicalSha256": "277f72a872606c1f419e000651533215af6f282dc1fd9e0f167c7b8482480a1a",
+      "finalCanonicalSha256": "277f72a872606c1f419e000651533215af6f282dc1fd9e0f167c7b8482480a1a",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-4",
+      "month": 2400,
+      "initialCanonicalSha256": "5bef07671272e93a6f6e29cfcbaff5e59f7d9b574f74959f4bad49f30c53397d",
+      "finalCanonicalSha256": "5bef07671272e93a6f6e29cfcbaff5e59f7d9b574f74959f4bad49f30c53397d",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-5",
+      "month": 1200,
+      "initialCanonicalSha256": "7d9118ebb7ad5fc3ae3c430b10945c980c58183f79562aee85206ec041758445",
+      "finalCanonicalSha256": "7d9118ebb7ad5fc3ae3c430b10945c980c58183f79562aee85206ec041758445",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-5",
+      "month": 2400,
+      "initialCanonicalSha256": "ec92df87598287c22979850a1c57b240c60ffdd418fb19b18d9fcc9544726cdb",
+      "finalCanonicalSha256": "ec92df87598287c22979850a1c57b240c60ffdd418fb19b18d9fcc9544726cdb",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-6",
+      "month": 1200,
+      "initialCanonicalSha256": "e8b354b8c00b70057556e1b14f13924aa3295c614014e66cbf2c93d4fd4137e9",
+      "finalCanonicalSha256": "e8b354b8c00b70057556e1b14f13924aa3295c614014e66cbf2c93d4fd4137e9",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-6",
+      "month": 2400,
+      "initialCanonicalSha256": "3431f17834a843846cbceaebfa9874f8dae2efbac741105d37f50387f4f49e79",
+      "finalCanonicalSha256": "3431f17834a843846cbceaebfa9874f8dae2efbac741105d37f50387f4f49e79",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-7",
+      "month": 1200,
+      "initialCanonicalSha256": "0f5c32f52606fc6d3a7bc6f9c6945758af04424e762a03eb0ce78d057a4942f0",
+      "finalCanonicalSha256": "0f5c32f52606fc6d3a7bc6f9c6945758af04424e762a03eb0ce78d057a4942f0",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-8",
+      "month": 1200,
+      "initialCanonicalSha256": "8d306b29f9c043d11ab789603fb826477ab4252d8b490a9c3f7b81edc583f1ee",
+      "finalCanonicalSha256": "8d306b29f9c043d11ab789603fb826477ab4252d8b490a9c3f7b81edc583f1ee",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-9",
+      "month": 1200,
+      "initialCanonicalSha256": "d4478e1712e710effdf602b20adc735c3cb00f5d9a3e8c38f974d8fecaa8cfd5",
+      "finalCanonicalSha256": "d4478e1712e710effdf602b20adc735c3cb00f5d9a3e8c38f974d8fecaa8cfd5",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-10",
+      "month": 1200,
+      "initialCanonicalSha256": "be15e2b115a1e35e7a99870b787249bcf10c7f1a9a5bdcd148001d33e1c5d918",
+      "finalCanonicalSha256": "be15e2b115a1e35e7a99870b787249bcf10c7f1a9a5bdcd148001d33e1c5d918",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-11",
+      "month": 1200,
+      "initialCanonicalSha256": "67fc928c2bbd3e1c1c6fdc02333e72d8bc9df87e4cad0bfb1eacb185083f4889",
+      "finalCanonicalSha256": "67fc928c2bbd3e1c1c6fdc02333e72d8bc9df87e4cad0bfb1eacb185083f4889",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-12",
+      "month": 1200,
+      "initialCanonicalSha256": "27e0c95673c6735dabdb44a323d4a94a2dafda9d6a22c1654e92fd431ac2e2e8",
+      "finalCanonicalSha256": "27e0c95673c6735dabdb44a323d4a94a2dafda9d6a22c1654e92fd431ac2e2e8",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-13",
+      "month": 1200,
+      "initialCanonicalSha256": "fcad27ecb664cab65ffaeb55632dfe3800de2486ff38dd5a20a0be535697d906",
+      "finalCanonicalSha256": "fcad27ecb664cab65ffaeb55632dfe3800de2486ff38dd5a20a0be535697d906",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-14",
+      "month": 1200,
+      "initialCanonicalSha256": "228bb38f662e202a43deaf80ebfba84f67197cfd1a3dbdcf0c239e0de52e653c",
+      "finalCanonicalSha256": "228bb38f662e202a43deaf80ebfba84f67197cfd1a3dbdcf0c239e0de52e653c",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-15",
+      "month": 1200,
+      "initialCanonicalSha256": "bcd9de3d1b40c059f4dd8543730953897ce1ae90a820152ddeb625708ce39d4e",
+      "finalCanonicalSha256": "bcd9de3d1b40c059f4dd8543730953897ce1ae90a820152ddeb625708ce39d4e",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-16",
+      "month": 1200,
+      "initialCanonicalSha256": "647bfe4b5a35fc7b9d00abda6423a6552e70c62706dbd098bea802b48481fb1d",
+      "finalCanonicalSha256": "647bfe4b5a35fc7b9d00abda6423a6552e70c62706dbd098bea802b48481fb1d",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-17",
+      "month": 1200,
+      "initialCanonicalSha256": "41fd2f183db24122c1e3d1427d851d2eb50865874763e33a2ef114e1c0d3f9e2",
+      "finalCanonicalSha256": "41fd2f183db24122c1e3d1427d851d2eb50865874763e33a2ef114e1c0d3f9e2",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-18",
+      "month": 1200,
+      "initialCanonicalSha256": "19af5cad51b75623c87880a11e710e6e2bdea820d0ecb309328edee889cd25ff",
+      "finalCanonicalSha256": "19af5cad51b75623c87880a11e710e6e2bdea820d0ecb309328edee889cd25ff",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-19",
+      "month": 1200,
+      "initialCanonicalSha256": "8aac83ab4f39f177fb203a29f88f138ab072da4a461faea06e0a913e34cdade7",
+      "finalCanonicalSha256": "8aac83ab4f39f177fb203a29f88f138ab072da4a461faea06e0a913e34cdade7",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-20",
+      "month": 1200,
+      "initialCanonicalSha256": "1956db0e014b092e4cbe608e532bdc03ed1cd23c1ca18951e18d0017787ee644",
+      "finalCanonicalSha256": "1956db0e014b092e4cbe608e532bdc03ed1cd23c1ca18951e18d0017787ee644",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-21",
+      "month": 1200,
+      "initialCanonicalSha256": "4b337100a9e4937bf6c58ada670909eed597c0ac3e5278a6e241c5db64100bf0",
+      "finalCanonicalSha256": "4b337100a9e4937bf6c58ada670909eed597c0ac3e5278a6e241c5db64100bf0",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-22",
+      "month": 1200,
+      "initialCanonicalSha256": "bfacb414f307a553785e8fe55c7a64f4eb13ce14ba007651f57e7907894287e6",
+      "finalCanonicalSha256": "bfacb414f307a553785e8fe55c7a64f4eb13ce14ba007651f57e7907894287e6",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-23",
+      "month": 1200,
+      "initialCanonicalSha256": "680836d22c6402d41d8ae81bfa5ec5bb5592e81918d432bba9431593b85dc92c",
+      "finalCanonicalSha256": "680836d22c6402d41d8ae81bfa5ec5bb5592e81918d432bba9431593b85dc92c",
+      "matched": true
+    },
+    {
+      "label": "candidate",
+      "seed": "regional-24",
+      "month": 1200,
+      "initialCanonicalSha256": "a75d54f48818025c047ea6437f5d10880675a541de636202064e9755186b00f3",
+      "finalCanonicalSha256": "a75d54f48818025c047ea6437f5d10880675a541de636202064e9755186b00f3",
+      "matched": true
+    }
+  ],
+  "naturalWeightedExamples": [
+    {
+      "seed": "regional-20",
+      "month": 420,
+      "selectedRulerId": "魏-ruler-18",
+      "unweightedRulerId": "魏-ruler-29",
+      "changed": true,
+      "selection": {
+        "version": 2,
+        "candidates": [
+          {
+            "baseWeight": 1.8,
+            "militaryAdvantage": 0,
+            "rulerId": "魏-ruler-12",
+            "name": "魏甫",
+            "relation": "DIRECT_CHILD",
+            "bornMonth": -124,
+            "weight": 1.8
+          },
+          {
+            "baseWeight": 1.8,
+            "militaryAdvantage": 0,
+            "rulerId": "魏-ruler-17",
+            "name": "魏彦康",
+            "relation": "DIRECT_CHILD",
+            "bornMonth": 46,
+            "weight": 1.8
+          },
+          {
+            "baseWeight": 1.45,
+            "militaryAdvantage": 0.25,
+            "ownMilitary": {
+              "rulerId": "魏-ruler-18",
+              "participant": {
+                "personId": "military-person-3",
+                "sourceUserId": 1898289692,
+                "name": "魏守泰",
+                "personalName": "魏守泰",
+                "bornMonth": -22,
+                "factionId": "魏",
+                "commandId": "military-command-3",
+                "commanderUnitId": "unit-203",
+                "memberUnitIds": [
+                  "unit-119",
+                  "unit-134",
+                  "unit-137",
+                  "unit-144",
+                  "unit-155",
+                  "unit-162",
+                  "unit-203",
+                  "unit-37",
+                  "unit-39",
+                  "unit-40",
+                  "unit-78"
+                ],
+                "unitCount": 11,
+                "serviceMonths": 156,
+                "capturedEventIds": [
+                  "capital-fallen-311-魏-燕-蓟-46",
+                  "capital-fallen-392-魏-赵-邯郸-67",
+                  "city-captured-285-魏-临淄-36",
+                  "city-captured-385-魏-咸阳-65",
+                  "city-recovered-323-魏-大梁-54"
+                ],
+                "strength": 3
+              },
+              "office": "JIANGJUN",
+              "officeEventId": "military-office-military-command-3-JIANGJUN",
+              "appointmentEventId": "military-appointment-military-command-3",
+              "members": [
+                {
+                  "unitId": "unit-119",
+                  "userId": 1359921365,
+                  "name": "魏-014",
+                  "bornMonth": -281,
+                  "factionId": "魏"
+                },
+                {
+                  "unitId": "unit-134",
+                  "userId": 1359921366,
+                  "name": "魏-015",
+                  "bornMonth": -504,
+                  "factionId": "魏"
+                },
+                {
+                  "unitId": "unit-137",
+                  "userId": 1359921367,
+                  "name": "魏-016",
+                  "bornMonth": -582,
+                  "factionId": "魏"
+                },
+                {
+                  "unitId": "unit-144",
+                  "userId": 1359921369,
+                  "name": "魏-018",
+                  "bornMonth": -294,
+                  "factionId": "魏"
+                },
+                {
+                  "unitId": "unit-155",
+                  "userId": 1359921392,
+                  "name": "魏-020",
+                  "bornMonth": -339,
+                  "factionId": "魏"
+                },
+                {
+                  "unitId": "unit-162",
+                  "userId": 1359921393,
+                  "name": "魏-021",
+                  "bornMonth": -194,
+                  "factionId": "魏"
+                },
+                {
+                  "unitId": "unit-203",
+                  "userId": 1898289692,
+                  "name": "魏守泰",
+                  "bornMonth": -22,
+                  "factionId": "魏"
+                },
+                {
+                  "unitId": "unit-37",
+                  "userId": 1359921332,
+                  "name": "魏-002",
+                  "bornMonth": -329,
+                  "factionId": "魏"
+                },
+                {
+                  "unitId": "unit-39",
+                  "userId": 1359921334,
+                  "name": "魏-004",
+                  "bornMonth": -610,
+                  "factionId": "魏"
+                },
+                {
+                  "unitId": "unit-40",
+                  "userId": 1359921335,
+                  "name": "魏-005",
+                  "bornMonth": -664,
+                  "factionId": "魏"
+                },
+                {
+                  "unitId": "unit-78",
+                  "userId": 1359921361,
+                  "name": "魏-010",
+                  "bornMonth": -586,
+                  "factionId": "魏"
+                }
+              ],
+              "victories": [
+                {
+                  "eventId": "city-captured-285-魏-临淄-36",
+                  "cityId": "city-齐-临淄",
+                  "month": 285
+                },
+                {
+                  "eventId": "capital-fallen-311-魏-燕-蓟-46",
+                  "cityId": "city-燕-蓟",
+                  "month": 311
+                }
+              ],
+              "advantage": 0.25
+            },
+            "rulerId": "魏-ruler-18",
+            "name": "魏守泰",
+            "relation": "NEPHEW",
+            "bornMonth": -22,
+            "weight": 1.8125
+          },
+          {
+            "baseWeight": 1.8,
+            "militaryAdvantage": 0,
+            "rulerId": "魏-ruler-29",
+            "name": "魏令谦",
+            "relation": "DIRECT_CHILD",
+            "bornMonth": -45,
+            "weight": 1.8
+          }
+        ],
+        "conditionalRoll": 0.7437256785730522,
+        "maturityFactor": 0.44999999999999996,
+        "roll": 0.011155885178595781,
+        "probability": 0.015,
+        "selectedRulerId": "魏-ruler-18",
+        "crisisEventIds": [
+          "city-captured-391-燕-临淄-66",
+          "city-revolt-396-郢-69",
+          "city-captured-397-赵-新郑-72",
+          "capital-fallen-410-赵-魏-蓟-79",
+          "city-captured-413-赵-大梁-81"
+        ]
+      }
+    }
+  ],
+  "baselineHead": "a2e7f3d76b8487f10585ebd96afc35c3f3ccd7f5",
+  "cohort": {
+    "seeds": [
+      "regional-1",
+      "regional-2",
+      "regional-3",
+      "regional-4",
+      "regional-5",
+      "regional-6",
+      "regional-7",
+      "regional-8",
+      "regional-9",
+      "regional-10",
+      "regional-11",
+      "regional-12",
+      "regional-13",
+      "regional-14",
+      "regional-15",
+      "regional-16",
+      "regional-17",
+      "regional-18",
+      "regional-19",
+      "regional-20",
+      "regional-21",
+      "regional-22",
+      "regional-23",
+      "regional-24"
+    ],
+    "hundredYearWorlds": 24,
+    "twoHundredYearWorlds": 6
+  },
+  "mechanism": {
+    "minimumAdvantage": 0.15,
+    "maximumAdvantage": 0.25,
+    "distinctCityCap": 2,
+    "extraSelectionDraws": 0,
+    "normalSuccessionChanged": false,
+    "depositionSuccessChanceChanged": false
+  },
+  "hundredYears": {
+    "baseline": {
+      "worlds": 24,
+      "month": 1200,
+      "totals": {
+        "worldPopulation": 2873,
+        "captures": 2391,
+        "recoveries": 349,
+        "extinctions": 307,
+        "restorations": 55,
+        "splits": 226,
+        "militarySplits": 19,
+        "rebellions": 0,
+        "depositions": 4,
+        "militaryPoliticalEvents": 2,
+        "unifications": 0,
+        "normalRoyalSuccessions": 301
+      },
+      "meanPopulation": 119.70833333333333,
+      "meanLargestAnnualTerritory": 0.41862312925170064,
+      "qualifiedChecks": 291,
+      "drawAttempts": 291,
+      "ordinaryGeneralAssistedDepositions": 2,
+      "royalMilitaryAccessions": 5,
+      "normalRoyalMilitaryAccessions": 5,
+      "royalCommandCrises": null,
+      "weightedSelections": 0,
+      "changedSelections": 0,
+      "integrity": {
+        "populationUnexplained": 0,
+        "royalIdentityConflicts": 0,
+        "duplicateFormationMembers": 0,
+        "ownershipConflicts": 0,
+        "duplicatePopulationIds": 0,
+        "residentIdentityConflicts": 0,
+        "allSavesValid": true
+      },
+      "ordinaryResidents": {
+        "population": 2726,
+        "over70": 0.46221570066030815,
+        "over90": 0.26962582538517976,
+        "over100": 0.21019809244314014,
+        "maxAge": 161
+      }
+    },
+    "candidate": {
+      "worlds": 24,
+      "month": 1200,
+      "totals": {
+        "worldPopulation": 2867,
+        "captures": 2350,
+        "recoveries": 341,
+        "extinctions": 309,
+        "restorations": 55,
+        "splits": 225,
+        "militarySplits": 18,
+        "rebellions": 0,
+        "depositions": 3,
+        "militaryPoliticalEvents": 1,
+        "unifications": 0,
+        "normalRoyalSuccessions": 298
+      },
+      "meanPopulation": 119.45833333333333,
+      "meanLargestAnnualTerritory": 0.4199146258503401,
+      "qualifiedChecks": 284,
+      "drawAttempts": 284,
+      "ordinaryGeneralAssistedDepositions": 1,
+      "royalMilitaryAccessions": 7,
+      "normalRoyalMilitaryAccessions": 6,
+      "royalCommandCrises": 10,
+      "weightedSelections": 1,
+      "changedSelections": 1,
+      "integrity": {
+        "populationUnexplained": 0,
+        "royalIdentityConflicts": 0,
+        "duplicateFormationMembers": 0,
+        "ownershipConflicts": 0,
+        "duplicatePopulationIds": 0,
+        "residentIdentityConflicts": 0,
+        "allSavesValid": true
+      },
+      "ordinaryResidents": {
+        "population": 2721,
+        "over70": 0.4663726571113561,
+        "over90": 0.2723263506063947,
+        "over100": 0.21242190371187064,
+        "maxAge": 161
+      }
+    }
+  },
+  "twoHundredYears": {
+    "baseline": {
+      "worlds": 6,
+      "month": 2400,
+      "totals": {
+        "worldPopulation": 632,
+        "captures": 1381,
+        "recoveries": 191,
+        "extinctions": 238,
+        "restorations": 19,
+        "splits": 214,
+        "militarySplits": 12,
+        "rebellions": 5,
+        "depositions": 1,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 153
+      },
+      "meanPopulation": 105.33333333333333,
+      "meanLargestAnnualTerritory": 0.44000816326530606,
+      "qualifiedChecks": 90,
+      "drawAttempts": 90,
+      "ordinaryGeneralAssistedDepositions": 0,
+      "royalMilitaryAccessions": 3,
+      "normalRoyalMilitaryAccessions": 3,
+      "royalCommandCrises": null,
+      "weightedSelections": 0,
+      "changedSelections": 0,
+      "integrity": {
+        "populationUnexplained": 0,
+        "royalIdentityConflicts": 0,
+        "duplicateFormationMembers": 0,
+        "ownershipConflicts": 0,
+        "duplicatePopulationIds": 0,
+        "residentIdentityConflicts": 0,
+        "allSavesValid": true
+      },
+      "ordinaryResidents": {
+        "population": 581,
+        "over70": 0.3855421686746988,
+        "over90": 0.20654044750430292,
+        "over100": 0.153184165232358,
+        "maxAge": 255
+      }
+    },
+    "candidate": {
+      "worlds": 6,
+      "month": 2400,
+      "totals": {
+        "worldPopulation": 632,
+        "captures": 1381,
+        "recoveries": 191,
+        "extinctions": 238,
+        "restorations": 19,
+        "splits": 214,
+        "militarySplits": 12,
+        "rebellions": 5,
+        "depositions": 1,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 153
+      },
+      "meanPopulation": 105.33333333333333,
+      "meanLargestAnnualTerritory": 0.44000816326530606,
+      "qualifiedChecks": 90,
+      "drawAttempts": 90,
+      "ordinaryGeneralAssistedDepositions": 0,
+      "royalMilitaryAccessions": 3,
+      "normalRoyalMilitaryAccessions": 3,
+      "royalCommandCrises": 6,
+      "weightedSelections": 0,
+      "changedSelections": 0,
+      "integrity": {
+        "populationUnexplained": 0,
+        "royalIdentityConflicts": 0,
+        "duplicateFormationMembers": 0,
+        "ownershipConflicts": 0,
+        "duplicatePopulationIds": 0,
+        "residentIdentityConflicts": 0,
+        "allSavesValid": true
+      },
+      "ordinaryResidents": {
+        "population": 581,
+        "over70": 0.3855421686746988,
+        "over90": 0.20654044750430292,
+        "over100": 0.153184165232358,
+        "maxAge": 255
+      }
+    }
+  },
+  "comparisons": [
+    {
+      "seed": "regional-1",
+      "month": 1200,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-1",
+      "month": 2400,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-2",
+      "month": 1200,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-2",
+      "month": 2400,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-3",
+      "month": 1200,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-3",
+      "month": 2400,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-4",
+      "month": 1200,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-4",
+      "month": 2400,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-5",
+      "month": 1200,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-5",
+      "month": 2400,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-6",
+      "month": 1200,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-6",
+      "month": 2400,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-7",
+      "month": 1200,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-8",
+      "month": 1200,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-9",
+      "month": 1200,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-10",
+      "month": 1200,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-11",
+      "month": 1200,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-12",
+      "month": 1200,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-13",
+      "month": 1200,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-14",
+      "month": 1200,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-15",
+      "month": 1200,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-16",
+      "month": 1200,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-17",
+      "month": 1200,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-18",
+      "month": 1200,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-19",
+      "month": 1200,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-20",
+      "month": 1200,
+      "metricsEqual": false,
+      "rngPositionEqual": false,
+      "qualifiedChecksEqual": false,
+      "deltas": {
+        "worldPopulation": -6,
+        "captures": -41,
+        "recoveries": -8,
+        "extinctions": 2,
+        "restorations": 0,
+        "splits": -1,
+        "militarySplits": -1,
+        "rebellions": 0,
+        "depositions": -1,
+        "militaryPoliticalEvents": -1,
+        "unifications": 0,
+        "normalRoyalSuccessions": -3
+      }
+    },
+    {
+      "seed": "regional-21",
+      "month": 1200,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-22",
+      "month": 1200,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-23",
+      "month": 1200,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    },
+    {
+      "seed": "regional-24",
+      "month": 1200,
+      "metricsEqual": true,
+      "rngPositionEqual": true,
+      "qualifiedChecksEqual": true,
+      "deltas": {
+        "worldPopulation": 0,
+        "captures": 0,
+        "recoveries": 0,
+        "extinctions": 0,
+        "restorations": 0,
+        "splits": 0,
+        "militarySplits": 0,
+        "rebellions": 0,
+        "depositions": 0,
+        "militaryPoliticalEvents": 0,
+        "unifications": 0,
+        "normalRoyalSuccessions": 0
+      }
+    }
+  ],
+  "caveats": [
+    "Natural weighted-success events may be absent; controlled real Core transactions, not mathematical selection alone, verify the political closure.",
+    "Baseline royal-command crisis counter is null because z11 did not implement this counter. Zero weighted selections in z11 means no such mechanic.",
+    "Metrics/RNG-position equality is not a claim that V21 and V22 JSON or all historical evidence are byte-identical.",
+    "Ordinary resident mortality is unchanged and requires separate population calibration."
+  ]
+}
