@@ -322,7 +322,7 @@ class DynastyRegistryStore {
       const created=user || Team.GetUserById(sourceUserId);
       if(created?.historicalPersonId===personId) created.destroyUser(true,{cause:"RULER_LIFECYCLE",month,deferPopulationAudit:true});
       delete ruler.militaryIdentity;
-      MilitaryCommandRegistry.rollbackTransaction(militaryBefore); WorldHistory.importState(historyBefore); worldRandom.importState(randomBefore);
+      MilitaryCommandRegistry.rollbackTransaction(militaryBefore); WorldHistory.importState(historyBefore); worldRandom.restore(randomBefore);
       if(registry&&entries&&sequence!==undefined)registry.importState(sequence,entries as any);
       return false;
     }
@@ -335,7 +335,7 @@ class DynastyRegistryStore {
   recordRoyalMilitaryBattleDeath(personId: string, month: number) {
     const ruler = this.findRoyalMilitaryPerson(personId);
     if (!ruler || hasRecordedRulerDeath(ruler) || ruler.status === "ruling" || ruler.status === "exiled") return;
-    ruler.status = "dead"; ruler.deathMonth = month; ruler.deathReason = "战死";
+    ruler.status = "dead"; ruler.deathMonth = month; ruler.deathReason = "战死"; ruler.endYear=month; ruler.politicalEndYear=month; ruler.endReason="战死";
     const dynasty = this.getAll().find(d => d.rulers.includes(ruler))!;
     dynasty.heirIds = dynasty.heirIds.filter(id => id !== ruler.id);
     if (dynasty.designatedHeirId === ruler.id) { dynasty.designatedHeirId = undefined; dynasty.designatedSinceMonth = undefined; }
@@ -355,7 +355,7 @@ class DynastyRegistryStore {
       const archivedDynasty = this.get(team.name);
       if (archivedDynasty) {
         this.archiveNaturallyDeadDeposedRulers(team, archivedDynasty, year);
-        this.archiveNaturallyDeadHeirs(archivedDynasty, year);
+        this.archiveNaturallyDeadHeirs(archivedDynasty, year, true);
       }
     });
     teams.filter((team) => shouldDynastyContinue(team.status)).forEach((team) => {
@@ -1342,8 +1342,9 @@ class DynastyRegistryStore {
     dynasty.designatedSinceMonth = undefined;
   }
 
-  private archiveNaturallyDeadHeirs(dynasty: Dynasty, year: number) {
+  private archiveNaturallyDeadHeirs(dynasty: Dynasty, year: number, militaryOnly = false) {
     dynasty.rulers.forEach((heir) => {
+      if (militaryOnly && !heir.militaryIdentity) return;
       if (
         heir.status === "dead" ||
         heir.status !== "heir" && heir.status !== "kin" ||

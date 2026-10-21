@@ -54,9 +54,10 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
   {
    const {t,d,r,p}=restore(),current=Dynasty.getCurrentRuler(t.name)!;
    // Legitimate heir designation is a test setup; the production consume/succeed path selects him.
-   d.designatedHeirId=r.id;d.designatedSinceMonth=month;d.heirIds=[r.id,...d.heirIds.filter(id=>id!==r.id)];r.status="heir";
+   d.designatedHeirId=r.id;d.designatedSinceMonth=month;d.heirIds=[r.id];r.status="heir";
    current.naturalDeathYear=month+1;current.plannedEndYear=month+1;
    core.setWorldRunning(true);step();core.setWorldRunning(false);
+   console.info("[CoreTest] accession",JSON.stringify({wanted:r.id,current:Dynasty.getCurrentRuler(t.name)?.id,role:t.rulerUser?.role,historical:t.rulerUser?.historicalPersonId,person:p}));
    check(Dynasty.getCurrentRuler(t.name)===r&&t.rulerUser?.historicalPersonId===personId&&p.politicalRulerId===r.id,"legal succession converts the same royal User into the ruler");
    check(p.status==="RETIRED"&&Military.getFormations().every(f=>f.commanderPersonId!==personId||f.status==="DISBANDED")&&r.parentId===parent&&r.bornYear===birth&&r.naturalDeathYear===death,"accession closes old commands and preserves kin and life");
    check(preAccessionMilitary(r,Military.getPeople(),Military.getFormations(),History.getEvents())?.person.personId===personId,"ruler biography resolves the same pre-accession military person");strict();

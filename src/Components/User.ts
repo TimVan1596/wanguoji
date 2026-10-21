@@ -186,7 +186,7 @@ export default class User {
     this.destroyed = true;
     MilitaryCommandRegistry.onUserDestroyed(this, populationMutation.month ?? Game.Core?.simulator?.year ?? 0, populationMutation.cause);
     const removedFromPopulation = team.users.delete(this);
-    Game.Core?.simulator?.recordPopulationMutation(team, before, team.users.size, {
+    if (!populationMutation.deferPopulationAudit) Game.Core?.simulator?.recordPopulationMutation(team, before, team.users.size, {
       ...populationMutation,
       casualty: removedFromPopulation && populationMutation.damageSource ? casualty : undefined,
     });

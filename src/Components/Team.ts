@@ -200,7 +200,7 @@ export default class Team {
     if (role === "RULER") {
       this.rulerUser = user;
     }
-    Game.Core?.simulator?.recordPopulationMutation(this, populationBefore, this.users.size, populationMutation);
+    if (!populationMutation.deferPopulationAudit) Game.Core?.simulator?.recordPopulationMutation(this, populationBefore, this.users.size, populationMutation);
     return user;
   }
 

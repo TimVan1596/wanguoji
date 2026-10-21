@@ -1,3 +1,5 @@
+import Dynasty from "../../Politics/Dynasty";
+import {getRecordedKinRelation} from "../../Politics/DynasticCandidateRules";
 import {siegeParticipants} from "../SiegeParticipants";
 import {assessPopularSupport,hasPopularPoliticalCrisis} from "../PopularRebellionSupport";
 import {createNaturalCore} from "./NaturalCoreHarness";
@@ -58,6 +60,7 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
       if(this.ownerFactionId!==owner||!this.underSiege||this.destroyed){episodes.push({...e,endMonth:month,durationMonths:month-e.startMonth+1,result:this.ownerFactionId!==owner?'CAPTURED':this.destroyed?'DESTROYED':'CONTACT_ENDED'});open.delete(this.id);}}
     return result;
   };
+  const royalCandidates=new Set<string>();
   const checkpoints:any[]=[],monthlyExposure={cityMonths:0,politicalCityMonths:0,supporters:0,identityBlocked:0,geographyBlocked:0,discontentBlocked:0};
   try{
     for(let m=1;m<=years*12;m++){
@@ -66,6 +69,10 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
       for(const city of core.allCities){
         if(city.destroyed)continue;monthlyExposure.cityMonths++;
         if(hasPopularPoliticalCrisis(city,m,core.totalCells)){const p=assessPopularSupport(city,m);monthlyExposure.politicalCityMonths++;monthlyExposure.supporters+=p.users.length;monthlyExposure.identityBlocked+=p.identityBlocked;monthlyExposure.geographyBlocked+=p.outsideArea;monthlyExposure.discontentBlocked+=p.discontentBlocked;}
+      }
+      if(m%12===0) for(const t of core.teams.filter(t=>t.status==="ACTIVE"&&t.identityStage==="STATE")){
+        const d=Dynasty.get(t.name),current=Dynasty.getCurrentRuler(t.name);
+        if(d&&current) for(const r of d.rulers)if(r.reignOrdinal===undefined&&(r.status==="heir"||r.status==="kin")&&m-r.bornYear>=216&&m-r.bornYear<65*12&&(r.naturalDeathYear??0)>m&&getRecordedKinRelation(r,current,d.rulers))royalCandidates.add(r.id);
       }
       if(m%12===0)annual.push({month:m,maxTerritoryShare:Math.max(0,...core.teams.map(t=>t.blocks.getLength()/core.totalCells)),activeStates:core.teams.filter(t=>t.status==="ACTIVE").length});
       activeStateMonthSum+=core.teams.filter(t=>t.status==="ACTIVE").length;
@@ -90,7 +97,14 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
         if(!validation.valid)throw new Error(`Invalid natural snapshot: ${validation.errors.join("; ")}`);
         if(p?.unexplainedWorldDifference!==0)throw new Error("Unexplained population difference");
         const count=(type:string)=>events.filter(e=>e.type===type).length;
-        checkpoints.push({month:m,worldPopulation:p?.closingWorldPopulation,populationUnexplained:p?.unexplainedWorldDifference,
+        const royalPeople=people.filter(p=>p.royalIdentity),royals=Dynasty.getAll().flatMap(d=>d.rulers).filter(r=>r.militaryIdentity);
+        const ordinary=core.teams.flatMap(t=>[...t.users]).filter(u=>u.role==="NORMAL"&&!u.militaryPersonId&&!u.historicalPersonId),ages=ordinary.map(u=>Math.floor((m-u.bornMonth)/12));
+        checkpoints.push({royalMilitary:{candidatePeople:royalCandidates.size,enlisted:royalPeople.length,victories:royalPeople.reduce((n,p)=>n+p.capturedEventIds.length,0),promotions:royalPeople.flatMap(p=>p.appointments.flatMap(a=>(a.officeHistory??[]).filter(g=>g.office!=="PIJIANG"))).length,
+          battleDeaths:royalPeople.filter(p=>["BATTLE_DEATH","SIEGE_LOSS"].includes(p.deathCause??"")).length,naturalDeaths:royalPeople.filter(p=>p.deathCause==="NATURAL_DEATH").length,accessions:royals.filter(r=>r.reignOrdinal!==undefined).length,
+          identityConflicts:royalPeople.filter(p=>{const r=royals.find(r=>r.id===p.royalIdentity!.rulerId);return !r||r.militaryIdentity?.personId!==p.personId||r.deathMonth!==p.deathMonth||r.naturalDeathYear!==p.royalIdentity!.naturalDeathMonth;}).length,
+          duplicateActiveMembers:formations.flatMap(f=>f.memberUnitIds).length-new Set(formations.flatMap(f=>f.memberUnitIds)).size},
+          ordinaryResidentAges:{population:ages.length,mean:ages.length?ages.reduce((n,a)=>n+a,0)/ages.length:0,over70:ages.filter(a=>a>=70).length,over90:ages.filter(a=>a>=90).length,over100:ages.filter(a=>a>=100).length,over120:ages.filter(a=>a>=120).length,over150:ages.filter(a=>a>=150).length,max:Math.max(0,...ages)},
+          month:m,worldPopulation:p?.closingWorldPopulation,populationUnexplained:p?.unexplainedWorldDifference,
           naturalGrowth:p?.totals.naturalGrowth,warDeaths:p?.totals.warDeaths,activeStates:core.teams.filter(t=>t.status==="ACTIVE").length,historicalStates:core.teams.length,cities:core.allCities.length,
           captures:battles.length,recoveries:count("city-recovered"),siegeCityMonths,capturesPer100SiegeCityMonths:siegeCityMonths?battles.length/siegeCityMonths*100:0,
           formationSizeSamples:{...sizeSamples},factionCommandSamples:{...factionCommandSamples},meanFormationSize:activeFormationSamples?totalFormationMembers/activeFormationSamples:0,
