@@ -36,3 +36,11 @@ it.each([150,1000,10000])("indexes and locally windows all %s historical nodes i
  const idx=indexGenealogy(buildRoyalArchiveGenealogy({rulers,currentRulerId:`r${size-1}`,heirIds:[]} as any,[],[]));expect(idx.size).toBe(size);
  const rows=genealogyWindow(idx,`r${size-1}`,new Set());expect(rows.length).toBeLessThanOrEqual(150);expect(rows.at(-1)?.node.ruler.id).toBe(`r${size-1}`);
 });
+it("labels a real military founder only with the same persistent person and founding transaction",()=>{
+ const {p,events}=fixture();delete p.royalIdentity;p.politicalRulerId="founder";
+ const r:any={id:"founder",houseName:"李氏",givenName:"继",bornYear:p.bornMonth,status:"ruling",accessionYear:24,residentIdentity:{personId:p.personId,sourceUserId:p.sourceUserId,bornMonth:p.bornMonth,military:{personId:p.personId}}};
+ const d:any={factionId:"rebel",rulers:[r],currentRulerId:r.id};
+ expect(militaryIdentityLabels(p,[d],events,24)).toEqual(["现任君主"]);
+ events.push({id:"split",type:"empire-split",year:24,actorFactionId:"rebel",metadata:{militaryPersonId:p.personId}});
+ expect(militaryIdentityLabels(p,[d],events,24)).toContain("义军创立者");p.politicalRulerId="same-name";expect(militaryIdentityLabels(p,[d],events,24)).toEqual([]);
+});

@@ -27,16 +27,14 @@ describe("genealogy card and integration structure", () => {
     expect(html).toContain('data-genealogy-theme="neutral"'); expect(html).toContain("宗室成员");
     expect(html).toContain("max-width:230px"); expect(html).toContain("overflow-wrap:anywhere");
   });
-  it("batch queries only while open, memoizes factual changes, and keeps existing recursive parent lines and controls", () => {
-    const source = readFileSync(new URL("./index.tsx", import.meta.url), "utf8");
-    const dialog = source.slice(source.indexOf("function GenealogyDialog"), source.indexOf("function RulerBiography"));
-    expect(dialog).toContain("open && dynasty ? deriveGenealogyNodePresentations");
-    expect(dialog).toContain("WorldHistory.getEventsForFaction(team.name)");
-    expect(dialog).toContain("[open, revision, worldMonth, presentationStamp, team.name]");
-    const recursion = dialog.slice(dialog.indexOf("function GenealogyTreeNode"));
-    expect(recursion).not.toContain("WorldHistory"); expect(recursion).toContain("presentations={presentations}");
-    expect(recursion).toContain("node.children.map"); expect(recursion).toContain("borderLeft");
-    expect(dialog).toContain("适应窗口"); expect(dialog).toContain("定位当今君主"); expect(dialog).toContain('"ESCAPE"');
+  it("queries on demand, caches facts, bounds React rendering and retains real parent lines and controls",()=>{
+    const dialog=readFileSync(new URL("./GenealogyBrowser.tsx",import.meta.url),"utf8");
+    const window=readFileSync(new URL("./genealogyWindow.ts",import.meta.url),"utf8");
+    expect(dialog).toContain('events=open?History.getEvents():[]');expect(dialog).toContain('if(!open||!dynasty)return undefined');
+    expect(dialog).toContain('[open,stamp,worldMonth,team.name]');expect(dialog).toContain('genealogyWindow(data.index,focus,expanded)');
+    expect(window).toContain('GENEALOGY_WINDOW_LIMIT=150');expect(dialog).not.toContain('<GenealogyTreeNode');
+    expect(dialog).toContain('borderLeft:parent?');expect(dialog).toContain('r.parentId');
+    expect(dialog).toContain('适应窗口');expect(dialog).toContain('定位当今君主');expect(dialog).toContain('"ESCAPE"');
     expect(dialog).not.toContain('endReason === "彻底灭亡"');
   });
 });

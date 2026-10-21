@@ -46,6 +46,12 @@ export default function GenealogyBrowser({open,onClose,dynasty,team,worldMonth,t
   <Typography fontSize="0.75rem">完整收录{data?.index.size??0}人，当前分支显示{rows.length}人。检索覆盖全部历史人物；点击“查看此支”浏览其他支系。</Typography>
   </DialogTitle>
   <DialogContent ref={viewport} sx={{overflow:"auto",minHeight:0}}>
+   {person&&<Box data-genealogy-person={person.id} sx={{position:"sticky",top:0,zIndex:2,background:"var(--gg-panel)",mb:1,p:1,border:"1px solid var(--gg-border)"}}><Typography fontWeight="bold">王室身份：{person.houseName.replace(/氏$/,"")+person.givenName}</Typography><Typography fontSize="0.75rem">永久ID：{person.id}</Typography><PersonLifeDates bornMonth={person.bornYear} deathMonth={person.deathMonth}/><Typography>{formatRulerLifeAge(person,worldMonth,false,team.status!=="EXTINCT")}</Typography>
+    {person.accessionYear!==undefined&&<Typography>政治任期：{formatWorldDate(person.accessionYear)}—{person.endYear===undefined?"今":formatWorldDate(person.endYear)}</Typography>}
+    {service?.appointments.map(a=><Typography key={a.commandId}>军职任期：{formatWorldDate(a.startMonth)}—{a.endMonth===undefined?"今":formatWorldDate(a.endMonth)}</Typography>)}
+    {person.reignOrdinal!==undefined&&<Button onClick={()=>{onClose("EXPLICIT");nav.open({kind:"RULER",factionId:dynasty!.factionId,id:person.id});}}>查看王室本纪</Button>}
+    {service&&<Button onClick={()=>{onClose("EXPLICIT");nav.open({kind:"MILITARY",factionId:dynasty!.factionId,id:service.personId});}}>查看军旅档案</Button>}
+   </Box>}
    <Box ref={canvas} role="tree" sx={{transform:`scale(${scale})`,transformOrigin:"top left",width:Math.min(1000,1000/scale)}}>
     {rows.map(({node,depth,ancestor})=>{const r=node.ruler,p=data?.military.get(r.id),parent=r.parentId&&data?.index.get(r.parentId);return <Box role="treeitem" key={r.id} data-ruler-id={r.id} data-genealogy-focused={r.id===focus?"true":undefined} sx={{ml:Math.min(depth,6)*2,my:.7,pl:1,borderLeft:parent?"1px solid var(--gg-border)":undefined}}>
      <button type="button" style={{border:0,padding:0,background:"none",textAlign:"left",cursor:"pointer"}} onClick={()=>setSelected(r.id)} aria-label={`查看${r.houseName.replace(/氏$/,"")+r.givenName}王室身份`}><GenealogyPersonCard ruler={r} displayName={r.houseName.replace(/氏$/,"")+r.givenName} presentation={data?.presentations.get(r.id)} worldMonth={worldMonth} managedLife={team.status!=="EXTINCT"}/></button>
@@ -56,12 +62,7 @@ export default function GenealogyBrowser({open,onClose,dynasty,team,worldMonth,t
      {p&&<Button size="small" onClick={()=>{onClose("EXPLICIT");nav.open({kind:"MILITARY",factionId:dynasty!.factionId,id:p.personId});}}>查看军旅档案</Button>}
     </Box>;})}
    </Box>
-   {person&&<Box data-genealogy-person={person.id} sx={{mt:2,p:1,border:"1px solid var(--gg-border)"}}><Typography fontWeight="bold">王室身份：{person.houseName.replace(/氏$/,"")+person.givenName}</Typography><Typography fontSize="0.75rem">永久ID：{person.id}</Typography><PersonLifeDates bornMonth={person.bornYear} deathMonth={person.deathMonth}/><Typography>{formatRulerLifeAge(person,worldMonth,false,team.status!=="EXTINCT")}</Typography>
-    {person.accessionYear!==undefined&&<Typography>政治任期：{formatWorldDate(person.accessionYear)}—{person.endYear===undefined?"今":formatWorldDate(person.endYear)}</Typography>}
-    {service?.appointments.map(a=><Typography key={a.commandId}>军职任期：{formatWorldDate(a.startMonth)}—{a.endMonth===undefined?"今":formatWorldDate(a.endMonth)}</Typography>)}
-    {person.reignOrdinal!==undefined&&<Button onClick={()=>{onClose("EXPLICIT");nav.open({kind:"RULER",factionId:dynasty!.factionId,id:person.id});}}>查看王室本纪</Button>}
-    {service&&<Button onClick={()=>{onClose("EXPLICIT");nav.open({kind:"MILITARY",factionId:dynasty!.factionId,id:service.personId});}}>查看军旅档案</Button>}
-   </Box>}
+
   </DialogContent>
  </Dialog>;
 }
