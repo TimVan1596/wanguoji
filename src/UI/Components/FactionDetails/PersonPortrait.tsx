@@ -8,15 +8,15 @@ export function portraitTraits(personId:string,age?:number){
   face:13+seed%6,jaw:(seed>>>4)%4,hair:(seed>>>7)%3,eyes:8+(seed>>>10)%5,brow:(seed>>>13)%3,nose:2+(seed>>>16)%3,mouth:(seed>>>19)%3,mole:(seed>>>22)%4===0};
 }
 /** Decorative SVG lives inside the existing accessible archive control, never a second dialog. */
-export default function PersonPortrait({personId,age,role="UNKNOWN",color,deceased=false}:{personId:string;age?:number;role?:PortraitRole;color?:number;deceased?:boolean}){
+export default function PersonPortrait({personId,age,role="UNKNOWN",color,deceased=false,size=48}:{personId:string;age?:number;role?:PortraitRole;color?:number;deceased?:boolean;size?:number}){
  const t=portraitTraits(personId,age),elder=t.stage==="elder",mature=t.stage==="mature",young=t.stage==="young";
  const military=["PIJIANG","JIANGJUN","SHANGJIANGJUN"].includes(role),imperial=role==="EMPEROR",royal=imperial||role==="KING";
  const flag=color===undefined?"#9a9181":`#${(color>>>0).toString(16).padStart(6,"0").slice(-6)}`;
  const robe=imperial?"#6e421b":role==="KING"?"#56383d":military?"#43565c":role==="LEADER"?"#766951":t.robe;
  const hair=elder?"#c7c3ba":mature?"#797571":"#303633",rx=young?t.face-1:t.face,eye=t.eyes/2;
  const face=`M${32-rx} 27 Q${30-rx} 13 32 12 Q${34+rx} 13 ${32+rx} 27 L${32+rx-t.jaw} 42 Q${41-t.jaw} ${55-t.jaw} 32 ${55-t.jaw} Q${23+t.jaw} ${55-t.jaw} ${32-rx+t.jaw} 42 Z`;
- return <svg aria-hidden="true" focusable="false" width="48" height="60" viewBox="0 0 64 80" data-person-id={personId} data-age-stage={t.stage} data-portrait-role={role} data-deceased={deceased||undefined}
-  style={{float:"left",marginRight:8,borderRadius:8,flexShrink:0,background:"#e9e1d2",filter:deceased?"saturate(.25)":undefined}}>
+ return <svg aria-hidden="true" focusable="false" width={size} height={size*1.25} viewBox="0 0 64 80" data-person-id={personId} data-age-stage={t.stage} data-portrait-role={role} data-deceased={deceased||undefined}
+  style={{float:"left",marginRight:8,borderRadius:8,flexShrink:0,background:"#e9e1d2"}}>
   <rect width="64" height="80" fill={flag}/><rect width="64" height="80" fill="#f7efde" opacity=".78"/>
   <path d="M0 10L64 74M-12 10L52 74M12 10L76 74" stroke={flag} strokeWidth="4" opacity=".28"/>
   <path d="M5 80Q7 56 24 54H40Q57 56 59 80" fill={robe}/>
@@ -33,8 +33,8 @@ export default function PersonPortrait({personId,age,role="UNKNOWN",color,deceas
   {role==="KING"&&<><path d="M23 17L24 7H40L41 17Z" fill="#443d32" stroke="#bd9b55"/><path d="M24 10H40M28 7V15M36 7V15" stroke="#c9ad68"/></>}
   {imperial&&<><path d="M23 17V9H41V17" fill="#393632"/><path d="M17 7H47V12H17Z" fill="#343a37" stroke="#d6b15b"/>{[20,26,32,38,44].map(x=><path key={x} d={`M${x} 12V${19+(x%3)}m-1 0h2`} stroke="#d4bc7a" strokeWidth="1.3"/>)}</>}
   <path d={`M${28-eye} ${30+t.brow}l6 ${-t.brow}M${36+eye} ${30+t.brow}l-6 ${-t.brow}`} stroke="#48433b" strokeWidth="1.7"/>
-  <path d={`M${30-eye} 35h3M${31+eye} 35h3`} stroke="#343b38" strokeWidth={t.brow===2?2:1.4}/>
-  <path d={`M32 35l-${t.nose} 7h${t.nose+2}M27 47q5 ${t.mouth} 10 0`} fill="none" stroke="#916b56" strokeWidth="1.1"/>
+  <path d={`M${30-eye} 35q1.5 ${((t.seed>>>26)%3)-1} 3 0M${31+eye} 35q1.5 ${((t.seed>>>26)%3)-1} 3 0`} fill="none" stroke="#343b38" strokeWidth={t.brow===2?2:1.4}/>
+  <path d={`M32 35l-${t.nose} 7h${t.nose+2}M27 47q5 ${((t.seed>>>28)%5)-2} 10 0`} fill="none" stroke="#916b56" strokeWidth="1.1"/>
   {t.mole&&<circle cx="41" cy="43" r=".8" fill="#805e49"/>}
   {(mature||elder)&&<path d="M19 36l4 2M41 38l4-2M23 44l-1 4M42 44l1 4" stroke="#ab826b" fill="none"/>}
   {deceased&&<path d="M0 1H64M0 79H64" stroke="#706e68" strokeWidth="3"/>}
