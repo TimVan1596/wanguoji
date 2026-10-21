@@ -1,4 +1,4 @@
-// Real Core cohorts. Frozen z10 source or the current tree; no substituted simulation.
+// Real Core cohorts. Explicit frozen baseline or current tree, with identical read-only instrumentation.
 const fs=require('node:fs'),path=require('node:path'),os=require('node:os');
 const {spawn,execFileSync}=require('node:child_process');
 const repo=process.cwd(),baseline=process.argv.includes('--baseline'),label=baseline?'baseline':'candidate',port=baseline?5224:5223;
@@ -7,7 +7,7 @@ let server;
 (async()=>{try{
  if(baseline){
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'wanguoji-z10-'));
-  const archive=execFileSync('git',['archive','ecf5b6a168bafc4b5df000152f0b788c968e713e'],{maxBuffer:512*1024*1024});
+  const archive=execFileSync('git',['archive',process.env.WANGUOJI_COHORT_BASELINE||'ecf5b6a168bafc4b5df000152f0b788c968e713e'],{maxBuffer:512*1024*1024});
   execFileSync('tar',['-x','-C',root],{input:archive});
   fs.symlinkSync(path.join(repo,'node_modules'),path.join(root,'node_modules'),'junction');
   // Identical read-only instrumentation observes both production versions.

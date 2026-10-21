@@ -462,6 +462,7 @@ export default class City {
     });
     this.claimFortifiedZone(newOwner);
     this.refreshZoneVisual();
+    MilitaryCommandRegistry.clearObsoleteCityTarget?.(this.id,newOwner.name);
     return true;
   }
 

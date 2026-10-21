@@ -27,3 +27,27 @@ export async function checkRoyalArchiveInteraction(core:Core,factionId:string,pe
  const after=exportWorldSave(core);
  check(JSON.stringify(random.exportState())===rng&&["dynasties","registries","users","worldHistory"].every(k=>JSON.stringify((before as any)[k])===JSON.stringify((after as any)[k])),"royal archive reading changes no identity, history, command or random state");
 }
+
+/** Real React/MUI/Redux interaction; no map or visual claims. */
+export async function checkHistoryFactionNavigation(core:Core,check:(ok:unknown,label:string)=>void){
+ const {HistoryFactionNavigation,MentionContext}=await import("../../UI/Components/HistoryScroll/HistoryFactionNavigation");
+ const {EventText}=await import("../../UI/Components/HistoryScroll/HistoryEventDetails");
+ const {historyFactionMentions}=await import("../../History/HistoryFactionMentions");
+ const target=core.teams[0],id=target.name,alias="历史旧国号",view=new Map([[id,{...target,displayName:alias,nameHistory:[{name:alias,startMonth:0}]} as typeof target]]);
+ const event:any={id:"link-test",year:0,type:"faction-extinct",targetFactionId:id};
+ const ids=historyFactionMentions(event,view,[]),textTeams=new Map([[alias,view.get(id)!]]);
+ const host=document.createElement("div");document.body.append(host);const root=createRoot(host),before=JSON.stringify(exportWorldSave(core));
+ let toggles=0,renders=0;const Sibling=()=>{renders++;return null;};
+ try{
+  flushSync(()=>root.render(<Provider store={store}><HistoryFactionNavigation factions={view}><Sibling/><MentionContext.Provider value={{ids,protectedNames:["历史旧国号使者"]}}><div onClick={()=>toggles++}><EventText text={`${alias}灭亡；历史旧国号使者`} teamByName={textTeams} factionNames={[alias]} cityNames={[]}/></div></MentionContext.Provider></HistoryFactionNavigation></Provider>));
+  check(host.querySelectorAll("button").length===1&&host.querySelector("button")?.tabIndex===0,"only unambiguous faction phrase is a keyboard-focusable button; person substring stays plain");
+  for(const [label,tab]of [["势力概览","overview"],["王室","house"],["军政人物","military"]]){
+   const count=renders;flushSync(()=>host.querySelector("button")!.click());await new Promise(r=>setTimeout(r,30));
+   check(toggles===0&&renders===count,"opening one shared faction menu preserves card expansion and sibling render boundary");
+   const item=Array.from(document.querySelectorAll<HTMLElement>('[role="menuitem"]')).find(e=>e.textContent===label)!;
+   check(!!item,`history faction menu offers ${label}`);flushSync(()=>item.click());
+   check(store.getState().root.selectedFactionName===id&&store.getState().root.factionDetailTab===tab&&store.getState().root.rightPanelTab==="faction",`history ${alias} routes by original faction ID to ${tab}`);
+  }
+  check(JSON.stringify(exportWorldSave(core))===before,"history navigation does not alter canonical world or RNG");
+ }finally{flushSync(()=>root.unmount());host.remove();}
+}

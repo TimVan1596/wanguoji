@@ -148,6 +148,7 @@ export class InReignDepositionDiagnostics {
   private readonly recent: Array<{ factionId: string; month: number; blockers: string[]; candidateIds: string[]; evidenceIds: string[]; probability: number }> = [];
   private empty() {
     return { observedChecks: 0, activePolities: 0, existingAdultKinCandidates: 0, qualifiedChecks: 0,
+      royalCommandCrises:0,royalCommandCandidateChecks:0,royalWeightedSelections:0,royalChangedSelections:0,
       drawAttempts: 0, failures: 0, successes: 0, cooldownBlocked: 0, expectedSuccesses: 0 };
   }
   reset(worldMonth = 0) { this.sessionStartMonth = worldMonth; this.totals = this.empty(); this.recent.length = 0; this.military.reset(); }
@@ -159,6 +160,12 @@ export class InReignDepositionDiagnostics {
     this.totals.existingAdultKinCandidates += evaluation.candidates.length;
     if (evaluation.blockers.includes("COOLDOWN")) this.totals.cooldownBlocked++;
     if (evaluation.eligible) this.totals.qualifiedChecks++;
+    if(evaluation.eligible&&evaluation.royalMilitaryClaims?.length){this.totals.royalCommandCrises++;this.totals.royalCommandCandidateChecks+=evaluation.royalMilitaryClaims.length;}
+    if(outcome==="SUCCESS"&&evaluation.selection){
+      if(evaluation.selection.candidates.some(c=>c.ownMilitary))this.totals.royalWeightedSelections++;
+      const original=chooseDepositionClaimant({...evaluation,royalMilitaryClaims:[]},worldMonth,evaluation.selection.roll);
+      if(original?.claimant.ruler.id!==evaluation.selection.selectedRulerId)this.totals.royalChangedSelections++;
+    }
     if (outcome === "SUCCESS") this.totals.successes++;
     if (outcome === "FAILURE") this.totals.failures++;
     if (evaluation.eligible) {

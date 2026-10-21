@@ -31,7 +31,7 @@ describe("WorldSave workflow", () => {
     repository.put = async (slot, record) => {
       expect(getWorldSavePhaseDiagnostics().phase).toBe("write");
       expect(record.save).toEqual(save);
-      expect(record.save.saveSchemaVersion).toBe(21);
+      expect(record.save.saveSchemaVersion).toBe(22);
       return put(slot, record);
     };
     const runtime = { started: true, running: true, speed: 4, catchingUp: () => false,

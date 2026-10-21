@@ -1,3 +1,5 @@
+import type {WorldEvent} from "../History/WorldHistory";
+import type {RulerSaveV17} from "./WorldSaveSchema";
 import type {WorldSaveV1} from "./WorldSaveSchema";
 import {royalCommandAdvantage} from "../Politics/RoyalDepositionMilitary";
 import {deriveMilitaryCareer} from "../Politics/MilitaryCareerEvidence";
@@ -8,13 +10,13 @@ export function validRoyalDepositionMilitary(save:WorldSaveV1,event:any):boolean
   const selection=JSON.parse(event.metadata.depositionSelection);
   if(selection.version!==2)return true;
   const month=event.monthIndex??event.year,faction=event.actorFactionId;
-  const registry=save.registries.militaryCommandRegistry,events=save.worldHistory.events;
-  const rulerRecords=save.dynasties.find(d=>d.factionId===faction)?.rulers??[];
+  const registry=save.registries.militaryCommandRegistry,events=save.worldHistory.events as WorldEvent[];
+  const rulerRecords=(save.dynasties.find(d=>d.factionId===faction)?.rulers??[]) as RulerSaveV17[];
   const claimedUnits=new Set<string>(),claimedUsers=new Set<number>();
   for(const candidate of selection.candidates){
    const proof=candidate.ownMilitary;if(!proof)continue;
    const r=rulerRecords.find(r=>r.rulerId===candidate.rulerId),i=r?.militaryIdentity,p=registry.people.find(p=>p.personId===i?.personId),part=proof.participant;
-   if(!r||!i||!p||proof.rulerId!==r.rulerId||p.royalIdentity?.rulerId!==r.rulerId||p.royalIdentity.factionId!==faction||p.bornMonth!==r.bornMonth||month-r.bornMonth<216||
+   if(!r||!i||!p||proof.rulerId!==r.rulerId||p.royalIdentity?.rulerId!==r.rulerId||p.royalIdentity?.factionId!==faction||p.bornMonth!==r.bornMonth||month-r.bornMonth<216||
     i.enteredMonth>month||r.deathMonth!==undefined&&r.deathMonth<=month||p.deathMonth!==undefined&&p.deathMonth<=month||
     !part||part.personId!==p.personId||part.sourceUserId!==p.sourceUserId||part.name!==p.name||part.personalName!==p.personalName||part.bornMonth!==p.bornMonth||part.factionId!==faction)return false;
    const f=registry.formations.find(f=>f.commandId===part.commandId),a=p.appointments.find(a=>a.commandId===part.commandId&&a.factionId===faction&&a.startMonth<=month&&(a.endMonth===undefined||a.endMonth>=month));

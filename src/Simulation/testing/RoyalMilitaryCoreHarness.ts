@@ -1,6 +1,6 @@
 import {formatRulerLifeAge} from "../../UI/Components/FactionDetails/RoyalPresentation";
-import {checkRoyalArchiveInteraction} from "./RoyalArchiveInteractionHarness";
-import {evaluateDepositionOpportunity,chooseDepositionClaimant} from "../../Politics/InReignDeposition";
+import {checkRoyalArchiveInteraction,checkHistoryFactionNavigation} from "./RoyalArchiveInteractionHarness";
+import {evaluateDepositionOpportunity,chooseDepositionClaimant,selectDepositionCandidates} from "../../Politics/InReignDeposition";
 import {getFactionStability} from "../../Components/City";
 import worldRandom from "../WorldRandom";
 import {createNaturalCore} from "./NaturalCoreHarness";
@@ -21,8 +21,13 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
  const step=()=>{const before=core.simulator!.year;for(let i=0;i<30;i++)(core as any).advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit("postupdate");if(core.simulator!.year!==before+1)throw new Error("Clock stalled");};
  const strict=()=>{const s=exportWorldSave(core),v=validateWorldSave(s);if(!v.valid)throw new Error(v.errors.join("; "));return s;};
  try {
-  let team=core.teams.find(t=>Dynasty.getRoyalMilitaryCandidates(t,0).length>0);
-  for(let m=0;!team&&m<600;m++){step();team=core.teams.find(t=>Military.getPeople().filter(p=>p.status==="ACTIVE"&&p.factionId===t.name).length<2&&Dynasty.getRoyalMilitaryCandidates(t,core.simulator!.year).length>0);}
+  const eligibleTeam=(t:typeof core.teams[number],m:number)=>{
+   const d=Dynasty.get(t.name),current=Dynasty.getCurrentRuler(t.name);
+   return m%12===0&&!!d&&!!current&&Dynasty.getRoyalMilitaryCandidates(t,m).length>0&&Military.getPeople().filter(p=>p.status==="ACTIVE"&&p.factionId===t.name).length<2&&
+    selectDepositionCandidates({currentRuler:current,rulers:d.rulers,houseName:d.houseName,worldMonth:m+24}).length>=2;
+  };
+  let team=core.teams.find(t=>eligibleTeam(t,0));
+  for(let m=0;!team&&m<600;m++){step();team=core.teams.find(t=>eligibleTeam(t,core.simulator!.year));}
   check(team,"real adult kin candidate exists");if(!team)throw new Error("No royal candidate");
   core.setWorldRunning(false);const month=core.simulator!.year,candidate=Dynasty.getRoyalMilitaryCandidates(team,month)[0];
   const dynasty=Dynasty.get(team.name)!,ruler=dynasty.rulers.find(r=>r.id===candidate.rulerId)!;
@@ -40,10 +45,11 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
   check(ruler.bornYear===birth&&ruler.naturalDeathYear===death&&ruler.parentId===parent&&person.royalIdentity?.naturalDeathMonth===death,"birth, kinship and existing lifespan are preserved");
   check(!Dynasty.enlistRoyalMilitary(candidate,team,month,members()),"duplicate enlistment refused");
   await checkRoyalArchiveInteraction(core,team.name,personId,check);
+  await checkHistoryFactionNavigation(core,check);
   const save=strict();
-  for(const mutate of [(s:any)=>s.registries.militaryCommandRegistry.people.find((p:any)=>p.personId===personId).royalIdentity.naturalDeathMonth++, (s:any)=>s.dynasties.find((d:any)=>d.factionId===team!.name).rulers.find((r:any)=>r.rulerId===ruler.id).militaryIdentity.sourceUserId++, (s:any)=>s.users.push({...s.users.find((u:any)=>u.militaryPersonId===personId),userId:123})]){const bad=structuredClone(save);mutate(bad);check(!validateWorldSave(bad).valid,"V21 rejects broken royal life/body references");}
+  for(const mutate of [(s:any)=>s.registries.militaryCommandRegistry.people.find((p:any)=>p.personId===personId).royalIdentity.naturalDeathMonth++, (s:any)=>s.dynasties.find((d:any)=>d.factionId===team!.name).rulers.find((r:any)=>r.rulerId===ruler.id).militaryIdentity.sourceUserId++, (s:any)=>s.users.push({...s.users.find((u:any)=>u.militaryPersonId===personId),userId:123})]){const bad=structuredClone(save);mutate(bad);check(!validateWorldSave(bad).valid,"V22 rejects broken royal life/body references");}
   const resume=()=>{hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return strict();};
-  const first=resume(),second=resume();check(diffCanonicalWorldSave(first,second).matched,"royal military V21 twelve-month continuation is deterministic");
+  const first=resume(),second=resume();check(diffCanonicalWorldSave(first,second).matched,"royal military V22 twelve-month continuation is deterministic");
   hydrateWorldSave(core,JSON.parse(JSON.stringify(first)));check(diffCanonicalWorldSave(first,strict()).matched,"resaved world loads again without another person");
   // Replay separate branches from the same valid career checkpoint.
   const restore=()=>{hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));return {t:core.teams.find(t=>t.name===team!.name)!,d:Dynasty.get(team!.name)!,r:Dynasty.get(team!.name)!.rulers.find(r=>r.id===candidate.rulerId)!,p:Military.getPerson(personId)!};};
@@ -110,7 +116,7 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
    const event=History.getEvents().find(e=>e.type==="ruler-deposed"&&e.metadata?.nextRulerId===r.id)!;
    check(JSON.parse(String(event.metadata!.depositionSelection)).candidates.some((c:any)=>c.ownMilitary?.rulerId===r.id),"successful transaction freezes own military evidence");
    for(const mutate of [(e:any)=>e.candidates.find((c:any)=>c.ownMilitary).ownMilitary.members[0].bornMonth--,(e:any)=>e.candidates.find((c:any)=>c.ownMilitary).ownMilitary.office="SHANGJIANGJUN",(e:any)=>e.candidates.find((c:any)=>c.ownMilitary).ownMilitary.victories[0].cityId="invented"]){
-    const bad=structuredClone(selectedSave),raw=bad.worldHistory.events.find(e=>e.id===event.id)!;const data=JSON.parse(String(raw.metadata!.depositionSelection));mutate(data);raw.metadata!.depositionSelection=JSON.stringify(data);check(!validateWorldSave(bad).valid,"save rejects forged royal command selection evidence");
+    const bad=structuredClone(selectedSave),raw=(bad.worldHistory.events as typeof event[]).find(e=>e.id===event.id)!;const data=JSON.parse(String(raw.metadata!.depositionSelection));mutate(data);raw.metadata!.depositionSelection=JSON.stringify(data);check(!validateWorldSave(bad).valid,"save rejects forged royal command selection evidence");
    }
    const continueFrom=()=>{hydrateWorldSave(core,JSON.parse(JSON.stringify(selectedSave)));core.setWorldRunning(true);for(let n=0;n<12;n++)step();core.setWorldRunning(false);return strict();};
    const continued=continueFrom();check(diffCanonicalWorldSave(continued,continueFrom()).matched,"weighted deposition save resumes twelve months deterministically");hydrateWorldSave(core,JSON.parse(JSON.stringify(continued)));check(diffCanonicalWorldSave(continued,strict()).matched,"weighted selection proof survives second save and load");

@@ -1019,7 +1019,7 @@ function DynastyTree({
 }) {
   const livingCandidates = (dynasty?.heirIds ?? [])
     .map((id) => rulers.find((ruler) => ruler.id === id))
-    .filter((ruler): ruler is Ruler => Boolean(ruler && ruler.status === "heir"));
+    .filter((ruler): ruler is Ruler => Boolean(ruler && ruler.status === "heir" && ruler.deathMonth === undefined && ruler.deathReason === undefined));
   const designatedHeir = livingCandidates.find((candidate) => candidate.id === dynasty?.designatedHeirId);
   const otherCandidates = livingCandidates.filter((candidate) => candidate.id !== dynasty?.designatedHeirId);
   const formalRulers = getFormalRulers(rulers);

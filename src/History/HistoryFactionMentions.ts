@@ -12,5 +12,5 @@ export function historyFactionMentions(event:WorldEvent,factions:Map<string,Hist
 }
 /** Long personal names suppress substring links, including a one-character state matching a surname. */
 export function historyProtectedNames(event:WorldEvent){
- return [...new Set([event.rulerName,...Object.entries(event.metadata??{}).filter(([key])=>/rulerName|personName|personalName|commanderName|heirName|leaderName/i.test(key)).map(([,v])=>v)].filter((v):v is string=>typeof v==="string"&&v.length>1))];
+ return [...new Set([...Object.entries(event.metadata??{}).filter(([key])=>/rulerName|personName|personalName|commanderName|heirName|leaderName/i.test(key)).map(([,v])=>v)].filter((v):v is string=>typeof v==="string"&&v.length>1))];
 }
