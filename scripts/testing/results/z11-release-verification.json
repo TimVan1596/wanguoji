@@ -1,0 +1,64 @@
+{
+  "appVersion": "v0.99931z11",
+  "packageVersion": "0.99.177",
+  "saveSchemaVersion": 21,
+  "baselineHead": "ecf5b6a168bafc4b5df000152f0b788c968e713e",
+  "productionSourceSha256": "3108ccb766697fdff2403e5b9fb09e8d0a57aa60f24978999017d44c5c6890e7",
+  "hashedProductionFiles": 356,
+  "hashDefinition": "sorted src .ts/.tsx excluding test files and testing directories; path, NUL, bytes, NUL",
+  "tests": {
+    "command": "VITEST_MAX_THREADS=2 VITEST_MIN_THREADS=1 pnpm test",
+    "files": 253,
+    "tests": 1989,
+    "exitCode": 0,
+    "testTimeoutsUnchanged": true
+  },
+  "builds": [
+    {
+      "command": "pnpm build",
+      "exitCode": 0
+    },
+    {
+      "command": "pnpm desktop:build",
+      "exitCode": 0
+    },
+    {
+      "command": "pnpm desktop:renderer-debug-build",
+      "exitCode": 0
+    }
+  ],
+  "royalCoreChecks": 41,
+  "residentCoreChecks": {
+    "popular": 39,
+    "split": 32
+  },
+  "militarySecessionChecks": 58,
+  "siegeChecks": 24,
+  "archiveYears": 500,
+  "archiveStrictSaveValid": true,
+  "archiveDeterministic12MonthContinuation": true,
+  "royalSaveLoadDeterministic12MonthsAndSecondLoad": true,
+  "terminalPersonSaveLoadLifeAndAgeChecked": true,
+  "naturalCohorts": {
+    "seeds100Years": 24,
+    "seeds200Years": 6,
+    "finalSourceRecheckSeeds": 13,
+    "canonicalAndRngRecheckMatches": 19,
+    "populationAndIdentityInvariantsPassed": true
+  },
+  "ordinaryResidentMortalityIntroduced": false,
+  "militaryCaps": [
+    2,
+    2,
+    12
+  ],
+  "proxyVerified": "http://127.0.0.1:7892 returned HTTP 200 from GitHub",
+  "limitations": [
+    "No population-wide ordinary natural mortality or birth/replacement system.",
+    "New real royal bodies and candidate selection change future RNG paths; no claim of unchanged political balance.",
+    "No royal secession or military endorsement of deposition/revolution in this release.",
+    "Controlled administrative-terminal test exercises the production transaction, not natural union eligibility.",
+    "No automated screenshot or Chrome visual acceptance."
+  ],
+  "manualChromeGate": "WAITING_USER"
+}

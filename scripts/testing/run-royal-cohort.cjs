@@ -2,7 +2,7 @@
 const fs=require('node:fs'),path=require('node:path'),os=require('node:os');
 const {spawn,execFileSync}=require('node:child_process');
 const repo=process.cwd(),baseline=process.argv.includes('--baseline'),label=baseline?'baseline':'candidate',port=baseline?5224:5223;
-const log=fs.openSync(path.join(os.tmpdir(),`wanguoji-royal-${label}.log`),'w');
+const log=fs.openSync(path.join(os.tmpdir(),`wanguoji-royal-${label}${process.env.WANGUOJI_COHORT_OUTPUT?"-recheck":""}.log`),'w');
 let server;
 (async()=>{try{
  if(baseline){

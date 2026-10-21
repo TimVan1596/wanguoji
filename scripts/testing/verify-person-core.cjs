@@ -1,5 +1,5 @@
 const fs=require('node:fs'),path=require('node:path'),{spawn}=require('node:child_process'),repo=process.cwd();
-const label=process.env.WANGUOJI_VERIFY_LABEL||'z10';
+const label=process.env.WANGUOJI_VERIFY_LABEL||'z11';
 const out=fs.openSync(path.join(require('node:os').tmpdir(),`wanguoji-person-core-${label}.log`),'w');
 const server=spawn(process.execPath,['node_modules/vite/bin/vite.js','--host','127.0.0.1','--port','5222','--strictPort'],{windowsHide:true,stdio:['ignore',out,out]});
 (async()=>{try{
