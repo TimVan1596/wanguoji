@@ -106,9 +106,11 @@ export async function runResidentFounderCore(seed="resident-z6"){
    const liveTeam=core.teams.find(t=>t.name===created.name)!,person=Dynasty.getCurrentRuler(created.name)!;
    liveTeam.markExtinct(0);Dynasty.markExtinct(liveTeam,0);
    check(person.status==="politically-ended"&&person.deathMonth===undefined,"polity termination is not person death");
-   person.naturalDeathYear=12;person.plannedEndYear=12; // Deterministic due-life boundary, not production probability changes.
-   Dynasty.update(12,core.teams);
-   check(person.status as string==="dead"&&person.deathMonth===12&&!liveTeam.rulerUser,"ended founder's single life expires and cannot be restored");
+   const scheduled=person.naturalDeathYear!;
+   Dynasty.update(scheduled-1,core.teams);
+   check(person.deathMonth===undefined,"actual frozen resident lifespan remains alive before its due month");
+   Dynasty.update(scheduled,core.teams);
+   check(person.status as string==="dead"&&person.deathMonth===scheduled&&!liveTeam.rulerUser,"ended founder's actual sampled life expires once and cannot be restored");
    results.push({kind,checks,sourceUserId:i.sourceUserId,personId:i.personId,rulerId:r.id,populationBefore:before,populationAfterFounding:before,saveSchemaVersion:20});
   }finally{game.destroy(true);(game as any).runDestroy?.();}
  }

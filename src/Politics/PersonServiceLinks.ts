@@ -24,7 +24,7 @@ export function personServiceLinks(factionId:string,rulers:Ruler[],people:Milita
 }
 
 export function preAccessionMilitary(ruler:Ruler,people:MilitaryPerson[],formations:MilitaryFormation[],events:WorldEvent[]){
- const id=ruler.residentIdentity,person=id?.military?people.find(p=>p.personId===id.personId&&p.politicalRulerId===ruler.id&&p.bornMonth===ruler.bornYear&&id.bornMonth===p.bornMonth):undefined;
+ const id=ruler.residentIdentity,person=id?.military?people.find(p=>p.personId===id.personId&&id.military!.personId===p.personId&&p.sourceUserId===id.sourceUserId&&p.name===id.sourceUserLabel&&p.politicalRulerId===ruler.id&&p.bornMonth===ruler.bornYear&&id.bornMonth===p.bornMonth&&p.appointments.some(a=>a.commandId===id.military!.commandId&&a.factionId===id.sourceFactionId&&a.endMonth===id.foundedMonth&&a.endReason==="TRANSFERRED")):undefined;
  if(!person||ruler.accessionYear===undefined)return undefined;
  const entries=deriveMilitaryChronicle(person,formations,events,ruler.accessionYear).filter(e=>e.worldMonth<ruler.accessionYear!);
  return {person,entries,representative:[...new Map([...entries.slice(0,2),...entries.filter(e=>e.victory).slice(-1),...entries.slice(-2)].map(e=>[e.eventId,e])).values()].sort((a,b)=>a.worldMonth-b.worldMonth).slice(0,5)};

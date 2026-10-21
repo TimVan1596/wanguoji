@@ -2,7 +2,7 @@ import {runMilitaryBalance} from "./MilitaryBalanceHarness";
 import Dynasty from "../../Politics/Dynasty";
 import random from "../WorldRandom";
 import {RULER_LIFESPAN_BANDS} from "../../Politics/RulerLifespanRules";
-import type {WorldSaveV20} from "../../Persistence/WorldSaveSchema";
+import type {WorldSaveV20,RulerSaveV17} from "../../Persistence/WorldSaveSchema";
 
 /** Observes actual ruler creation and snapshots; never substitutes life or population rules. */
 export async function runFounderLife(seed:string,years=100){
@@ -24,7 +24,7 @@ export async function runFounderLife(seed:string,years=100){
  try{
   const balance=await runMilitaryBalance(seed,years,true);
   const checkpoints=balance.checkpoints.map(c=>{
-   const s=c.snapshot as WorldSaveV20,rulers=s.dynasties.flatMap(d=>d.rulers).filter(r=>r.accessionMonth!==undefined);
+   const s=c.snapshot as WorldSaveV20,rulers=s.dynasties.flatMap(d=>d.rulers as RulerSaveV17[]).filter(r=>r.accessionMonth!==undefined);
    const lives=rulers.map(r=>({id:r.rulerId,personId:r.residentIdentity?.personId,
     kind:r.residentIdentity?(r.residentIdentity.military?"MILITARY_FOUNDER":"RESIDENT_FOUNDER"):r.accessionMonth===0?"INITIAL":"SUCCESSOR",
     bornMonth:r.bornMonth,accessionMonth:r.accessionMonth,accessionAge:(r.accessionMonth!-r.bornMonth)/12,

@@ -17,7 +17,7 @@ export function RulerServicePanel({ruler,factionId,month}:{ruler:Ruler;factionId
  const rows=personServiceLinks(factionId,[ruler],people,Military.getFormations(),events,month);
  return <>
   {earlier&&<ChronicleSection title="早年与登位前经历">
-   {earlier.representative.map(e=><Typography key={e.eventId} fontSize="0.82rem">{formatWorldDate(e.worldMonth)} · {e.text}</Typography>)}
+   {earlier.representative.map(e=><Typography key={e.eventId} fontSize="0.82rem">{formatWorldDate(e.worldMonth)} · {e.factionId} · {e.text}</Typography>)}
    <button type="button" style={style} onClick={()=>nav.open({kind:"MILITARY",factionId:ruler.residentIdentity!.sourceFactionId,id:earlier.person.personId})}>查看起事前完整军旅档案</button>
   </ChronicleSection>}
   {rows.length>0&&<ChronicleSection title="任内军政人物"><Typography fontSize="0.74rem">以下为任期交集，不等于君主亲自任命。</Typography>
@@ -29,7 +29,7 @@ export function MilitaryServicePanel({personId,month}:{personId:string;month:num
  const nav=usePersonArchiveNavigation(),person=Military.getPerson(personId);if(!person)return null;
  const rows=Dynasty.getAll().flatMap(d=>personServiceLinks(d.factionId,d.rulers,[person],Military.getFormations(),History.getEvents(),month));
  return rows.length>0?<ChronicleSection title="历任所事君主"><Typography fontSize="0.74rem">按真实任职与在位交集排列；仅有原始授职事件时注明本人授职。</Typography>
-  <ServiceRows rows={rows} ruler label={id=>{const r=Dynasty.getAll().flatMap(d=>d.rulers).find(r=>r.id===id)!;return r.houseName+r.givenName;}} onOpen={(id,factionId)=>nav.open({kind:"RULER",id,factionId})}/>
+  <ServiceRows rows={rows} ruler label={id=>{const r=Dynasty.getAll().flatMap(d=>d.rulers).find(r=>r.id===id)!;return r.houseName.replace(/氏$/," ").trim()+r.givenName;}} onOpen={(id,factionId)=>nav.open({kind:"RULER",id,factionId})}/>
  </ChronicleSection>:null;
 }
 function ServiceRows({rows,label,onOpen,ruler=false}:{rows:ReturnType<typeof personServiceLinks>;label:(id:string)=>string;onOpen:(id:string,faction:string)=>void;ruler?:boolean}){
