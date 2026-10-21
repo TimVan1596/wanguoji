@@ -1,4 +1,5 @@
 import {runMilitaryBalance} from "./MilitaryBalanceHarness";
+import Military from "../../Politics/MilitaryCommandRegistry";
 import City from "../../Components/City";
 import Team from "../../Components/Team";
 import Game from "../../Game/Game";
@@ -17,6 +18,7 @@ export async function runSiegeTurnover(seed:string,years=100){
  let cityMonths=0,devastationSum=0,damage=0,localLoss=0,nationalFallbackLoss=0,noVictim=0;
  let listener:(()=>void)|undefined,scene:Phaser.Scene|undefined;
  const checkpoints:any[]=[];
+ let capitalSamples=0,capitalLocalTotal=0,capitalUnassignedTotal=0,emptyCapitalSamples=0,lastStrongholdLosses=0;
  const quantile=(xs:number[],p:number)=>{const a=xs.slice().sort((a,b)=>a-b);return a.length?a[Math.ceil((a.length-1)*p)]:0;};
  const collect=(month:number)=>{
   const counts=[...cities.values()].map(c=>c.captureCount);
@@ -28,13 +30,16 @@ export async function runSiegeTurnover(seed:string,years=100){
   checkpoints.push({month,cityMonths,meanDevastation:cityMonths?devastationSum/cityMonths:0,damage,
    localLoss,nationalFallbackLoss,noEligibleVictim:noVictim,recaptureWindows:windows,
    cumulativeTransfers:{median:quantile(counts,.5),p90:quantile(counts,.9),max:Math.max(0,...counts)},
+   capitalDefense:{samples:capitalSamples,meanLocal:capitalSamples?capitalLocalTotal/capitalSamples:0,meanUnassignedLocal:capitalSamples?capitalUnassignedTotal/capitalSamples:0,emptyRatio:capitalSamples?emptyCapitalSamples/capitalSamples:0},lastStrongholdLosses,
    cities:[...cities.values()],completedEpisodes:episodes.filter(e=>e.endMonth<=month),ongoingEpisodes:[...open.values()].map(e=>({...e})),strength:{...strength}});
  };
- const watch=()=>{if(listener||!Game.Core?.scene)return;scene=Game.Core.scene;listener=()=>{const m=Game.Core.simulator!.year;if(m>0&&(m%1200===0||m===years*12)&&!checkpoints.some(c=>c.month===m))collect(m);};scene.sys.events.on("postupdate",listener);};
+ const watch=()=>{if(listener||!Game.Core?.scene)return;scene=Game.Core.scene;listener=()=>{const m=Game.Core.simulator!.year;
+  const core=Game.Core;for(const team of core.teams){const cap=team.capitalCity;if(team.status!=="ACTIVE"||!cap||cap.destroyed)continue;const locals=siegeParticipants(cap,team,core,Game.BlockSize,false),assigned=new Set(Military.getFormations().filter(f=>f.status==="ACTIVE").flatMap(f=>f.memberUnitIds));capitalSamples++;capitalLocalTotal+=locals.length;capitalUnassignedTotal+=locals.filter(u=>!assigned.has(u.player.logicalUnitId??"")).length;if(!locals.length)emptyCapitalSamples++;}
+if(m>0&&(m%1200===0||m===years*12)&&!checkpoints.some(c=>c.month===m))collect(m);};scene.sys.events.on("postupdate",listener);};
  const transfer=(city:City,month:number,kind:string,owner:string,before:number)=>{
   if(city.ownerFactionId!==owner)transfers.push({cityId:city.id,month,kind,from:owner,to:city.ownerFactionId,defenseBefore:before,defenseAfter:city.defense});
  };
- City.prototype.capture=function(...args:Parameters<typeof capture>){const owner=this.ownerFactionId,before=this.defense;const result=capture.apply(this,args);transfer(this,args[1],"CAPTURE",owner,before);return result;};
+ City.prototype.capture=function(...args:Parameters<typeof capture>){const owner=this.ownerFactionId,before=this.defense,last=this.ownerTeam?.cities.length===1;const result=capture.apply(this,args);if(last&&this.ownerFactionId!==owner)lastStrongholdLosses++;transfer(this,args[1],"CAPTURE",owner,before);return result;};
  City.prototype.revoltTo=function(...args:Parameters<typeof revolt>){const owner=this.ownerFactionId,before=this.defense;const result=revolt.apply(this,args);transfer(this,args[1],"REVOLT",owner,before);return result;};
  City.prototype.updateDefense=function(...args:Parameters<typeof update>){watch();const result=update.apply(this,args);cityMonths++;devastationSum+=this.devastation;
   cities.set(this.id,{id:this.id,name:this.name,captureCount:this.captureCount,devastation:this.devastation,maxDevastation:Math.max(cities.get(this.id)?.maxDevastation??0,this.devastation),defense:this.defense,maxDefense:this.maxDefense,destroyed:this.destroyed});return result;};

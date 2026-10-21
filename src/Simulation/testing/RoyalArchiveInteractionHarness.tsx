@@ -78,7 +78,7 @@ export async function checkGenealogyRendering(core:Core,check:(ok:unknown,label:
    const rows=document.querySelectorAll('[role="treeitem"]'),elapsed=performance.now()-start;
    check(rows.length<=150&&rows.length>0,size+" "+shape+": actual React tree mounts bounded nodes");
    check(Array.from(rows).some(r=>r.getAttribute("data-ruler-id")===target),size+" "+shape+": requested permanent ID is mounted");
-   for(const edge of document.querySelectorAll('path[data-parent-id]')){
+   for(const edge of Array.from(document.querySelectorAll('path[data-parent-id]'))){
     const parent=document.querySelector<HTMLElement>(`[data-ruler-id="${edge.getAttribute('data-parent-id')}"]`)!,child=document.querySelector<HTMLElement>(`[data-ruler-id="${edge.getAttribute('data-child-id')}"]`)!;
     check(parent.getBoundingClientRect().top<child.getBoundingClientRect().top,size+" "+shape+": real parent DOM is above child");
    }
