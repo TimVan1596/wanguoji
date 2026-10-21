@@ -1,0 +1,67 @@
+{
+  "appVersion": "v0.99931z9",
+  "packageVersion": "0.99.175",
+  "saveSchemaVersion": 20,
+  "released": [
+    "B: captured/revolted wall ratio .35 -> .50",
+    "C: verified local-only siege mortality, independent of wall damage"
+  ],
+  "notReleased": [
+    "A: nearby force candidate; insufficient full-panel balance evidence",
+    "R: initial three-unit commands; military splits fell to zero in four-seed screen",
+    "Recruitment growth: not implemented",
+    "Full effective-force resistance, credited defensive victories, long-term extreme turnover cure: not implemented"
+  ],
+  "baselineCheckpointsMatchingZ8": 12,
+  "productionPairedCheckpointsMatchingFrozenBC": 2,
+  "coreDefenseChecks": 24,
+  "militarySecessionChecks": 43,
+  "longArchive": {
+    "seed": "archive-z9-500",
+    "years": 500,
+    "results": [
+      {
+        "month": 2400,
+        "people": 33,
+        "countryPeople": 11,
+        "records": 608,
+        "allRecordsPresent": true,
+        "noNestedScroll": true,
+        "personReadableRecords": 20,
+        "publicPersonRecords": 8,
+        "renderMs": 6.3,
+        "htmlBytes": 79517,
+        "heapBytes": 84939362,
+        "strictSaveValid": true
+      },
+      {
+        "month": 6000,
+        "people": 81,
+        "countryPeople": 26,
+        "records": 1574,
+        "allRecordsPresent": true,
+        "noNestedScroll": true,
+        "personReadableRecords": 20,
+        "publicPersonRecords": 8,
+        "renderMs": 20.17000000178814,
+        "htmlBytes": 202600,
+        "heapBytes": 66902591,
+        "strictSaveValid": true
+      }
+    ],
+    "deterministic12MonthContinuation": true
+  },
+  "allPanelSavePopulationAndIdentityChecksPassed": true,
+  "tests": {
+    "files": 249,
+    "tests": 1968,
+    "passed": true
+  },
+  "builds": [
+    "pnpm build",
+    "pnpm desktop:build",
+    "pnpm desktop:renderer-debug-build"
+  ],
+  "manualChromeGate": "WAITING_USER",
+  "experimentContinuation": "BC first five seeds preserved; renderer HMR interrupted seed 6 without result; seeds 6..24 rerun on same frozen source and independent seed worlds. No completed adverse seed excluded."
+}
