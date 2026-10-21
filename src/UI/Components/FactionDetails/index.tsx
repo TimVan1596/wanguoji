@@ -678,6 +678,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
       const portraitContext=militaryPortraitContext(person,factionId,politicalTeam,worldMonth);
       const linked=linkedRulers.get(person.personId);
       const identityLabels=militaryIdentityLabels(person,DynastyRegistry.getAll(),WorldHistory.getEvents(),worldMonth);
+      const identityBadges=identityLabels.map(label=>label==="宗室将领"&&person.royalIdentity?<button key={label} type="button" style={{border:0,background:"none",font:"inherit",color:"inherit",textDecoration:"underline",cursor:"pointer"}} onClick={event=>{event.stopPropagation();navigation.open({kind:"GENEALOGY",factionId:person.royalIdentity!.factionId,id:person.royalIdentity!.rulerId});}}>{label}</button>:<span key={label}>{label} · </span>);
       const ageText=linked?formatRulerLifeAge(linked,worldMonth):describeMilitaryAge(person,worldMonth,liveIds.has(person.personId));
       const portraitAge=linked?rulerPortraitAge(linked,worldMonth):person.status==="DEAD"&&person.deathMonth!==undefined?Math.max(0,Math.floor((person.deathMonth-person.bornMonth)/12)):liveIds.has(person.personId)?Math.max(0,Math.floor((worldMonth-person.bornMonth)/12)):undefined;
       return <PersonArchiveCard key={person.personId} index={index} active={current} expanded={resolvedSelection.expandedIds.includes(person.personId)}
@@ -708,7 +709,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
             title={<MilitaryPersonIdentityHeader person={person} country={`${politicalFactionById.get(person.factionId)?.displayName ?? person.factionId}${politicalFactionById.get(person.factionId)?.identityStage === "STATE" ? "国" : ""}`} />}
             identity={<>
               <PersonLifeDates bornMonth={person.bornMonth} deathMonth={person.deathMonth}/>
-              <Typography fontSize="0.76rem">{identityLabels.join(" · ")}</Typography>
+              <Typography fontSize="0.76rem">{identityBadges}</Typography>
               <Typography fontSize="0.86rem" fontWeight="bold">{describeMilitaryOffice(person,factionId).replace("（本国历史最高职务）","")}</Typography>
               {portraitContext.historical&&<Typography fontSize="0.74rem" color="var(--gg-text-muted)">肖像服饰与旗色取本国任职末期，非其后来外国身份。</Typography>}
             {person.factionId!==factionId&&<Typography fontSize="0.78rem">曾在本国任职，后已转属。</Typography>}

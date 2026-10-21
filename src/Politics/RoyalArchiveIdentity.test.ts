@@ -41,6 +41,6 @@ it("labels a real military founder only with the same persistent person and foun
  const r:any={id:"founder",houseName:"李氏",givenName:"继",bornYear:p.bornMonth,status:"ruling",accessionYear:24,residentIdentity:{personId:p.personId,sourceUserId:p.sourceUserId,bornMonth:p.bornMonth,military:{personId:p.personId}}};
  const d:any={factionId:"rebel",rulers:[r],currentRulerId:r.id};
  expect(militaryIdentityLabels(p,[d],events,24)).toEqual(["现任君主"]);
- events.push({id:"split",type:"empire-split",year:24,actorFactionId:"rebel",metadata:{militaryPersonId:p.personId}});
+ events.push({id:"split",type:"empire-split",year:24,actorFactionId:"rebel",metadata:{militaryPersonId:p.personId,foundingRulerId:r.id}});
  expect(militaryIdentityLabels(p,[d],events,24)).toContain("义军创立者");p.politicalRulerId="same-name";expect(militaryIdentityLabels(p,[d],events,24)).toEqual([]);
 });

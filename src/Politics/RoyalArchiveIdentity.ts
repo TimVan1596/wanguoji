@@ -37,7 +37,7 @@ export function militaryIdentityLabels(person:MilitaryPerson,dynasties:readonly 
   labels.push(political.d.currentRulerId===political.r.id&&["ruling","exiled"].includes(political.r.status)?"现任君主":"曾任君主");
   if(person.royalIdentity)labels.push("后来继位");
   const source=political.r.residentIdentity;
-  if(source?.military&&events.some(e=>e.type==="empire-split"&&e.actorFactionId===political.d.factionId&&e.metadata?.militaryPersonId===person.personId))labels.push("义军创立者");
+  if(source?.military?.personId===person.personId&&source.bornMonth===person.bornMonth&&events.some(e=>e.type==="empire-split"&&e.actorFactionId===political.d.factionId&&e.metadata?.militaryPersonId===person.personId&&e.metadata?.foundingRulerId===political.r.id))labels.push("义军创立者");
  }
  return labels;
 }

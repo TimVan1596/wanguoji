@@ -1,3 +1,4 @@
+import {formatWorldDate} from "../WorldTime";
 import {createRoot} from "react-dom/client";
 import {flushSync} from "react-dom";
 import {Provider} from "react-redux";
@@ -21,11 +22,16 @@ export async function checkRoyalArchiveInteraction(core:Core,factionId:string,pe
   check(store.getState().root.factionDetailTab==="military"&&host.textContent?.includes("宗室身份：")&&host.textContent.includes("之子"),"royal-to-military navigation opens the same real identity and recorded parentage");
   const reverse=Array.from(host.querySelectorAll("button")).find(b=>b.textContent==="查看王室与亲属宗谱")!;
   check(reverse,"military page provides the matching royal archive link");
-  flushSync(()=>reverse.click());await pause();
+  const badge=Array.from(host.querySelectorAll("button")).find(b=>b.textContent==="宗室将领")!;check(badge,"real royal badge is an actionable genealogy entry");
+  const {default:MilitaryBefore}=await import("../../Politics/MilitaryCommandRegistry");
+  const birthday="出生："+formatWorldDate(MilitaryBefore.getPerson(personId)!.bornMonth);
+  check(host.textContent?.includes(birthday),"military identity shows the actual canonical birth month");
+  flushSync(()=>badge.click());await pause();
   const {default:Military}=await import("../../Politics/MilitaryCommandRegistry");
   const royalId=Military.getPerson(personId)!.royalIdentity!.rulerId;
   const focus=Array.from(document.querySelectorAll('[data-ruler-id]')).find(n=>n.getAttribute("data-ruler-id")===royalId);
   check(store.getState().root.factionDetailTab==="house"&&focus,"reverse navigation focuses the actual unenthroned royal in genealogy");
+  check(document.querySelector("[data-genealogy-person]")?.textContent?.includes(birthday),"genealogy and military birth months agree after direct navigation");
   check(focus?.querySelector('[data-genealogy-theme="neutral"]'),"military-only royal remains neutral in actual tree");
   const close=Array.from(document.querySelectorAll("button")).find(b=>b.textContent==="关闭")!;flushSync(()=>close.click());await pause();
  }finally{flushSync(()=>root.unmount());host.remove();}
