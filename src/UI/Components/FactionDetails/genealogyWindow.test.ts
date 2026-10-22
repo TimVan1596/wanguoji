@@ -63,3 +63,21 @@ it('keeps wide collateral accessible through compact branch controls without a n
  const first=genealogyWindow(index,'father',new Set(['father'])),next=genealogyWindow(index,'father',new Set(['father']),new Map([['father',10]]));
  expect(first.some(r=>r.node.ruler.id==='child-0')).toBe(true);expect(next.some(r=>r.node.ruler.id==='child-10')).toBe(true);expect(next.some(r=>r.node.ruler.id==='child-0')).toBe(false);expect(index.size).toBe(31);
 });
+
+it('opens verified military collateral and its true ancestors without opening ordinary descendants',()=>{
+ const father=node('father'),king=node('king','father'),uncle=node('uncle','father'),soldier=node('soldier','uncle'),child=node('child','soldier');king.ruler.reignOrdinal=2;soldier.ruler.militaryIdentity={} as any;father.children=[king,uncle];uncle.children=[soldier];soldier.children=[child];
+ const index=indexGenealogy([father]),rows=genealogyWindow(index,'king',new Set(),new Map(),new Set(['soldier'])),ids=rows.map(r=>r.node.ruler.id),layout=layoutGenealogy(rows);
+ expect(ids).toEqual(expect.arrayContaining(['father','king','uncle','soldier']));expect(ids).not.toContain('child');expect(layout.parents.get('soldier')).toBe('uncle');expect(layout.parents.get('uncle')).toBe('father');
+ expect(genealogyWindow(index,'king',new Set()).map(r=>r.node.ruler.id)).not.toContain('soldier');
+});
+it('bounds default military expansion while keeping the royal trunk and every recorded identity accessible',()=>{
+ const father=node('father'),king=node('king','father');king.ruler.reignOrdinal=2;father.children=[king,...Array.from({length:1000},(_,i)=>node('soldier-'+i,'father'))];const index=indexGenealogy([father]),military=new Set(father.children.slice(1).map(n=>n.ruler.id));
+ const rows=genealogyWindow(index,'king',new Set(),new Map(),military);expect(rows.length).toBeLessThanOrEqual(66);expect(rows.some(r=>r.node.ruler.id==='king')).toBe(true);expect(index.size).toBe(1002);
+ expect(genealogyWindow(index,'soldier-999',new Set(),new Map(),military).some(r=>r.node.ruler.id==='soldier-999')).toBe(true);
+});
+it('bounds a ten-thousand-person military-only deep branch without repeatedly walking every ancestor',()=>{
+ const root=node('father');let current=root;const military=new Set<string>();
+ for(let i=1;i<10000;i++){const child=node('military-'+i,current.ruler.id);child.ruler.militaryIdentity={} as any;current.children=[child];current=child;military.add(child.ruler.id);}
+ const index=indexGenealogy([root]),rows=genealogyWindow(index,'father',new Set(),new Map(),military);
+ expect(index.size).toBe(10000);expect(rows).toHaveLength(65);expect(rows.at(-1)?.node.ruler.id).toBe('military-64');
+});

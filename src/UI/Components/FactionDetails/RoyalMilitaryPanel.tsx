@@ -29,11 +29,16 @@ export function RoyalMilitaryPanel({ruler,month,onGenealogy}:{ruler:Ruler;month:
  </Box>;
 }
 const ROSTER_ROW_HEIGHT=88;
+const localActive=(p:ReturnType<typeof Military.getPeople>[number],factionId:string)=>p.status==="ACTIVE"&&p.factionId===factionId&&p.appointments.some(a=>a.factionId===factionId&&a.endMonth===undefined);
+/** Local service status is separate from active service after transfer abroad. */
+export function sortRoyalMilitaryRows(rows:Array<[string,ReturnType<typeof Military.getPeople>[number]]>,factionId:string){
+ const lastEnd=(p:ReturnType<typeof Military.getPeople>[number])=>Math.max(-1,...p.appointments.filter(a=>a.factionId===factionId).map(a=>a.endMonth??-1));
+ return [...rows].sort((a,b)=>Number(localActive(b[1],factionId))-Number(localActive(a[1],factionId))||lastEnd(b[1])-lastEnd(a[1])||a[0].localeCompare(b[0]));
+}
 export function RoyalMilitaryRoster({rulers,month,onGenealogy,factionId}:{rulers:Ruler[];factionId:string;month:number;onGenealogy?:(id?:string)=>void}){
  const [expanded,setExpanded]=useState(false),people=royalMilitaryArchive({factionId,rulers},Military.getPeople(),History.getEvents());
- const lastEnd=(p:ReturnType<typeof Military.getPeople>[number])=>Math.max(-1,...p.appointments.filter(a=>a.factionId===factionId).map(a=>a.endMonth??-1));
- const rows=[...people].sort((a,b)=>Number(b[1].status==="ACTIVE")-Number(a[1].status==="ACTIVE")||lastEnd(b[1])-lastEnd(a[1])||a[0].localeCompare(b[0]));
- const active=rows.filter(([,p])=>p.status==="ACTIVE").length;
+ const rows=sortRoyalMilitaryRows([...people],factionId);
+ const active=rows.filter(([,p])=>localActive(p,factionId)).length;
  return <Box sx={{my:1}} data-royal-military-roster>
   <Box component="button" type="button" aria-expanded={expanded} disabled={!rows.length} onClick={()=>setExpanded(v=>!v)} sx={{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%',p:0,border:0,background:'none',font:'inherit',color:'inherit',cursor:'pointer',textAlign:'left'}}>
    <Typography component="span" fontWeight="bold" fontSize=".85rem">宗室军旅：累计{rows.length}人 · 现役{active}人 · 历任{rows.length-active}人</Typography><span aria-hidden="true">{expanded?'▾':'▸'}</span>
@@ -41,7 +46,7 @@ export function RoyalMilitaryRoster({rulers,month,onGenealogy,factionId}:{rulers
   {expanded&&<RoyalMilitaryList rows={rows} rulers={rulers} month={month} factionId={factionId} onGenealogy={onGenealogy}/>}
  </Box>;
 }
-function RoyalMilitaryList({rows,rulers,month,factionId,onGenealogy}:{rows:Array<[string,ReturnType<typeof Military.getPeople>[number]]>;rulers:Ruler[];month:number;factionId:string;onGenealogy?:(id?:string)=>void}){
+export function RoyalMilitaryList({rows,rulers,month,factionId,onGenealogy}:{rows:Array<[string,ReturnType<typeof Military.getPeople>[number]]>;rulers:Ruler[];month:number;factionId:string;onGenealogy?:(id?:string)=>void}){
  const nav=usePersonArchiveNavigation(),host=useRef<HTMLDivElement>(null),[range,setRange]=useState({start:0,end:12});
  useLayoutEffect(()=>{
   const element=host.current;if(!element)return;let parent=element.parentElement;
@@ -61,7 +66,7 @@ function RoyalMilitaryList({rows,rulers,month,factionId,onGenealogy}:{rows:Array
    const victories=deriveMilitaryCareer(p,Military.getFormations(),events,month).capturedEventIds.filter(id=>byEvent.get(id)?.actorFactionId===factionId).length;
    return <Box key={id} role="listitem" aria-setsize={rows.length} aria-posinset={range.start+i+1} data-royal-military-person={p.personId} sx={{position:'absolute',top:(range.start+i)*ROSTER_ROW_HEIGHT,height:ROSTER_ROW_HEIGHT,width:'100%',boxSizing:'border-box',py:.75}}>
     <Box sx={{display:'flex',justifyContent:'space-between',gap:1}}><button type="button" style={buttonStyle} onClick={()=>nav.open({kind:'MILITARY',factionId,id:p.personId})}>{p.personalName}</button>{onGenealogy&&<button type="button" style={buttonStyle} onClick={()=>onGenealogy(id)}>宗谱</button>}</Box>
-    <Typography sx={line}>{parent?`${parent.houseName.replace(/氏$/,'')}${parent.givenName}之子 · `:''}{p.status==='ACTIVE'?'现役':p.status==='DEAD'?'已故':'已离任'}{r?.reignOrdinal!==undefined?' · 后来继位':''} · {royalMilitaryOfficeLabel(p,month)}</Typography>
+    <Typography sx={line}>{parent?`${parent.houseName.replace(/氏$/,'')}${parent.givenName}之子 · `:''}{localActive(p,factionId)?'现役':p.status==='DEAD'?'已故':'已离任'}{r?.reignOrdinal!==undefined?' · 后来继位':''} · {royalMilitaryOfficeLabel(p,month)}</Typography>
     <Typography sx={line}>{appointments.length?`${formatWorldDate(appointments[0].startMonth)}—${appointments.at(-1)?.endMonth===undefined?'今':formatWorldDate(appointments.at(-1)!.endMonth!)}`:'任期未载'} · 本国所部参与取城{victories}次</Typography>
     {p.deathMonth!==undefined&&<Typography sx={line}>死亡：{formatWorldDate(p.deathMonth)}</Typography>}
    </Box>;

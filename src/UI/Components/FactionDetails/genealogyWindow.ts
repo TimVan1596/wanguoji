@@ -24,10 +24,17 @@ export function genealogyWindow(index:ReadonlyMap<string,PoliticalGenealogyNode>
  for(const n of index.values())if(n.ruler.reignOrdinal!==undefined||n.ruler.status==='heir')include(n.ruler.id,required);
  include(focusId,required);include(focusId,focusPath);
  const royalRequired=new Set(required),distance=new Map<string,number>();
- const pathToTrunk=(id:string)=>{const path:string[]=[];while(index.has(id)&&!required.has(id)){path.push(id);const p=parents.get(id);if(!p)break;id=p;}return path;};
- for(const id of militaryIds)distance.set(id,pathToTrunk(id).length);
+ // Cache ancestor distances: many military relatives may share a very deep branch.
+ for(const start of militaryIds){let id=start;const path:string[]=[];
+  while(index.has(id)&&!royalRequired.has(id)&&!distance.has(id)){path.push(id);const p=parents.get(id);if(!p){id='';break;}id=p;}
+  let depth=distance.get(id)??0;for(let i=path.length-1;i>=0;i--)distance.set(path[i],++depth);
+ }
  let budget=64;
- for(const id of [...militaryIds].sort((a,b)=>(distance.get(a)??0)-(distance.get(b)??0)||a.localeCompare(b))){const path=pathToTrunk(id);if(path.length>budget)continue;for(const p of path)required.add(p);budget-=path.length;}
+ for(const start of [...militaryIds].sort((a,b)=>(distance.get(a)??0)-(distance.get(b)??0)||a.localeCompare(b))){
+  if(!budget)break;let id=start;const path:string[]=[];
+  while(index.has(id)&&!required.has(id)&&path.length<=budget){path.push(id);const p=parents.get(id);if(!p)break;id=p;}
+  if(path.length>budget)continue;for(const p of path)required.add(p);budget-=path.length;
+ }
 
  const rows:GenealogyRow[]=[],stack=roots.slice().reverse().map(node=>({node,depth:0}));
  while(stack.length){const {node,depth}=stack.pop()!;

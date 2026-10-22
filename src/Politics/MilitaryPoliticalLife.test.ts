@@ -38,3 +38,7 @@ it('keeps an actual military resident founder as the contemporary leader rather 
  expect(militaryPoliticalLife(p,[d],events,factions,300)?.entry.text).toBe('秦继继任秦首领。');
  r.residentIdentity.sourceUserId++;expect(militaryPoliticalLife(p,[d],events,factions,300)).toBeUndefined();
 });
+it('retains the real accession after a later deposition without changing the former military term',()=>{
+ const {r,p,d,events,factions}=fixture();r.status='deposed';r.endYear=250;events.push({id:'later-deposition',type:'ruler-deposed',year:250,actorFactionId:'qin',metadata:{previousRulerId:r.id,nextRulerId:'other'}});
+ const fact=militaryPoliticalLife(p,[d],events,factions,300)!;expect(fact.entry.worldMonth).toBe(100);expect(fact.entry.text).toBe('秦继继位为秦王。');expect(p.appointments[0].endMonth).toBe(100);
+});

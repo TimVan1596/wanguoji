@@ -16,6 +16,12 @@ export async function checkRoyalArchiveInteraction(core:Core,factionId:string,pe
  const before=exportWorldSave(core),rng=JSON.stringify(random.exportState());
  try{
   flushSync(()=>{store.dispatch(setTeams([...core.teams]));store.dispatch(setWorldYear(core.simulator!.year));store.dispatch(setSelectedFactionName(factionId));store.dispatch(setFactionDetailTab("house"));root.render(<Provider store={store}><FactionDetails/></Provider>);});
+  const summary=host.querySelector<HTMLButtonElement>('[data-royal-military-roster] button[aria-expanded]')!;
+  check(summary&&summary.getAttribute('aria-expanded')==='false'&&!host.querySelector('[data-royal-military-roster] [data-royal-military-person]'),'royal military defaults to exactly the collapsed summary without person shortcuts');
+  flushSync(()=>summary.click());await pause();
+  check(summary.getAttribute('aria-expanded')==='true'&&host.querySelector('[data-royal-military-roster] [role="list"]'),'one summary click exposes the real roster without pagination or an inner scroller');
+  flushSync(()=>summary.click());check(!host.querySelector('[data-royal-military-roster] [role="list"]'),'second summary click unmounts all roster rows');
+  flushSync(()=>summary.click());await pause();
   const card=host.querySelector(`[data-royal-military-person="${personId}"]`);
   check(card&&host.textContent?.includes("宗室军旅：累计"),"royal summary retains a direct archive entry for the serving person");
   flushSync(()=>(card!.querySelector("button") as HTMLButtonElement).click());await pause();await pause();
@@ -97,6 +103,22 @@ export async function checkGenealogyRendering(core:Core,check:(ok:unknown,label:
    document.querySelector('[role="dialog"]')!.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true}));check(closeSource==="ESCAPE","ESC reaches the existing close action");
    flushSync(()=>root.render(<></>));await new Promise(r=>setTimeout(r,10));
   }
+  // Display-only size fixtures reuse a real verified person's presentation data;
+  // no fixture is inserted into a simulation registry or asserted as historical fact.
+  const [{RoyalMilitaryList},{default:MilitaryRoster}]=await Promise.all([import('../../UI/Components/FactionDetails/RoyalMilitaryPanel'),import('../../Politics/MilitaryCommandRegistry')]);
+  const source=MilitaryRoster.getPeople().find(p=>p.royalIdentity)!;
+  check(source,'roster rendering benchmark starts from an actual military royal');
+  for(const size of [150,1000,10000]){
+   const rows:Array<[string,typeof source]>=Array.from({length:size},(_,i)=>['display-'+i,{...source,personId:'display-'+i}]);
+   const start=performance.now();
+   flushSync(()=>root.render(<Provider store={store}><div data-main-sidebar style={{height:300,overflowY:'auto'}}><RoyalMilitaryList rows={rows} rulers={[]} month={core.simulator!.year} factionId={source.royalIdentity!.factionId}/></div></Provider>));
+   await new Promise(r=>setTimeout(r,30));const sidebar=host.querySelector<HTMLElement>('[data-main-sidebar]')!,list=sidebar.querySelector<HTMLElement>('[role="list"]')!;
+   check(sidebar.querySelectorAll('[role="listitem"]').length<=80&&getComputedStyle(list).overflowY!=='auto'&&getComputedStyle(list).overflowY!=='scroll',size+': real roster renderer uses bounded rows and only the main sidebar scroll');
+   sidebar.scrollTop=sidebar.scrollHeight;sidebar.dispatchEvent(new Event('scroll'));await new Promise(r=>setTimeout(r,50));
+   check(sidebar.querySelector(`[data-royal-military-person="display-${size-1}"]`),size+': main sidebar scrolling reaches the last real-renderer row without paging');
+   samples.push({size,shape:'military-roster',mountedNodes:sidebar.querySelectorAll('[role="listitem"]').length,mountAndScrollMs:performance.now()-start});
+   flushSync(()=>root.render(<></>));
+  }
   for(const size of [150,1000,10000])for(const shape of ["deep","wide"]){
    const rulers=Array.from({length:size},(_,i)=>({id:"bench-"+i,houseName:"测氏",givenName:"宗"+i,bornYear:i-10000,naturalDeathYear:20000,status:"dead",deathMonth:i+100,deathReason:"去世",accessionYear:i,reignOrdinal:i+1,parentId:i?"bench-"+(shape==="deep"?i-1:0):undefined}));
    const dynasty:any={factionId:"render-bench",houseName:"测氏",rulers,heirIds:[],currentRulerId:"bench-"+(size-1)};
@@ -135,8 +157,10 @@ export async function checkRoyalGenealogyRecord(core:Core,factionId:string,perso
  const d=Dynasty.get(factionId)!,p=Military.getPerson(personId)!,r=d.rulers.find(r=>r.id===p.royalIdentity!.rulerId)!;
  const host=document.createElement("div");document.body.append(host);const root=createRoot(host);
  try{
-  flushSync(()=>root.render(<Provider store={store}><Browser open onClose={()=>{}} dynasty={d} team={core.teams.find(t=>t.name===factionId)!} worldMonth={core.simulator!.year} targetId={r.id}/></Provider>));
+  flushSync(()=>root.render(<Provider store={store}><Browser open onClose={()=>{}} dynasty={d} team={core.teams.find(t=>t.name===factionId)!} worldMonth={core.simulator!.year}/></Provider>));
   await new Promise(resolve=>setTimeout(resolve,20));
+  check(document.querySelector(`[data-ruler-id="${r.id}"]`),p.status+': verified military royal is visible by default without target navigation');
+  if(r.parentId)check(document.querySelector(`path[data-child-id="${r.id}"][data-parent-id="${r.parentId}"]`),'default military collateral keeps the true parent connector');
   const nodes=Array.from(document.querySelectorAll('[data-ruler-id]')).filter(n=>n.getAttribute("data-ruler-id")===r.id);
   check(nodes.length===1,p.status+": actual genealogy retains one permanent royal node");
   flushSync(()=>(nodes[0].querySelector("[data-genealogy-card]") as HTMLButtonElement).click());

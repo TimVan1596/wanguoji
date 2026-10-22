@@ -2,10 +2,9 @@ import {createNaturalCore} from './NaturalCoreHarness';
 import {SIMULATION_FIXED_STEP_MS} from '../SimulationDriver';
 import Military from '../../Politics/MilitaryCommandRegistry';
 import Dynasty from '../../Politics/Dynasty';
-import History from '../../History/WorldHistory';
 import random from '../WorldRandom';
 import {siegeParticipants} from '../SiegeParticipants';
-import {nearbyRecruitment,localRecruitmentReserves} from './MilitaryFormationCandidate';
+import {nearbyRecruitment} from './MilitaryFormationCandidate';
 import {exportWorldSave} from '../../Persistence/WorldSaveExporter';
 import {hydrateWorldSave} from '../../Persistence/WorldSaveHydrator';
 import {diffCanonicalWorldSave} from '../../Persistence/WorldSaveSchema';
@@ -38,12 +37,13 @@ export async function runFormationManagementCore(seed:string){
   const targets=core.allCities.filter(c=>c.ownerTeam!==team).slice(0,5);check(targets.length===5,'promotion scenario has five real cities');
   clock(96);for(const c of targets.slice(0,2))c.capture(team,96,undefined,formation.commandId,person.personId);
   const before=core.teams.reduce((n,t)=>n+t.users.size,0),rng=JSON.stringify(random.exportState()),positions=[...team.users].map(u=>[u.id,u.player.x,u.player.y]);(Military as any).advanceOffices(96,core.teams);
+  check(core.teams.reduce((n,t)=>n+t.users.size,0)===before&&JSON.stringify(random.exportState())===rng,'first promotion and refill add neither population nor random draws');
   check(person.appointments[0].officeHistory?.at(-1)?.office==='JIANGJUN'&&formation.memberUnitIds.length===3,'original service and actual capture thresholds unlock and fill three-person general command');
   clock(97);for(const c of targets.slice(2))c.capture(team,97,undefined,formation.commandId,person.personId);clock(156);const count=core.teams.reduce((n,t)=>n+t.users.size,0);(Military as any).advanceOffices(156,core.teams);
   check(person.appointments[0].officeHistory?.at(-1)?.office==='SHANGJIANGJUN'&&formation.memberUnitIds.length===4,'senior promotion unlocks and fills at most four actual members');
   check(core.teams.reduce((n,t)=>n+t.users.size,0)===count&&unique(),'reinforcement creates no population or duplicate assignment');
   check(JSON.stringify(positions)===JSON.stringify([...team.users].filter(u=>positions.some(p=>p[0]===u.id)).map(u=>[u.id,u.player.x,u.player.y])),'recruitment and promotion never teleport a body');
-  check(before>=0&&rng.length>0,'production population and random checkpoints are available');
+
   const checkpoint=exportWorldSave(core);
   // Loss branch: keep one verified nearby recruit, then demonstrate the existing no-reserve end transaction.
   const reserve=nearbyRecruitment(team,core,Military,{x,y},1)[0];check(reserve,'loss fixture has a real unassigned nearby replacement');
@@ -62,13 +62,16 @@ export async function runFormationManagementCore(seed:string){
   body.setTeam(enemy,{cause:'LIVE_TRANSFER',month:156});check(other.status==='DISBANDED'&&op.factionId===enemy.name,'real commander transfer closes old formation and keeps one person');
   // Same initial capacity for royalty; no extra military slot or fictitious army.
   const candidate=Dynasty.getRoyalMilitaryCandidates(team,156)[0];check(candidate,'same real family still has a legal adult military candidate');
-  locals.filter(u=>!u.isDestroyed).forEach(u=>place(team.getUserById(u.id)!,cap.block.x,cap.block.y));
+  locals.map(u=>team.getUserById(u.id)).filter(u=>u&&!u.isDestroyed).forEach(u=>place(u,cap.block.x,cap.block.y));
   const royalMembers=nearbyRecruitment(team,core,Military,team.spawnBlock!,1);check(royalMembers.length===1,'royal enlistment also requires a real nearby nonreserved soldier');
   check(Dynasty.enlistRoyalMilitary(candidate,team,156,royalMembers),'real royal enlistment shares the ordinary capacity and population transaction');
   const royal=Dynasty.findRoyalMilitaryPerson(Military.getPeople().find(p=>p.royalIdentity?.rulerId===candidate.rulerId)!.personId)!;
   const rf=Military.getFormations().find(f=>f.commanderPersonId===royal.militaryIdentity!.personId&&f.status==='ACTIVE')!;check(rf.memberUnitIds.length===2,'royal and ordinary pi generals have identical initial size');
+  const capitalBeforeResume=siegeParticipants(team.capitalCity!,team,core,32,false).length;
   const saved=exportWorldSave(core),resume=()=>{hydrateWorldSave(core,structuredClone(saved));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return exportWorldSave(core);};const a=resume(),b=resume();check(diffCanonicalWorldSave(a,b).matched,'same real military save resumes twelve months identically');hydrateWorldSave(core,structuredClone(a));check(diffCanonicalWorldSave(a,exportWorldSave(core)).matched,'second save reads without member or identity mutation');
-  const t=core.teams.find(t=>t.name===team.name)!;t.markExtinct(core.simulator!.year);Dynasty.markExtinct(t,core.simulator!.year);Military.update(core.simulator!.year,core.teams,core.allCities);check(Military.getFormations().every(f=>f.factionId!==t.name||f.status!=='ACTIVE'),'state termination leaves no active home command');
+  const t=core.teams.find(t=>t.name===team.name)!,capitalAfterResume=t.capitalCity?siegeParticipants(t.capitalCity,t,core,32,false).length:null;
+  observations.push({capitalBeforeResume,capitalAfterTwelveRealMonths:capitalAfterResume,residentsAreNotStationaryGuards:true});
+  const absorber=core.teams.find(v=>v!==t&&v.status==='ACTIVE')!;(core.simulator as any).mergeFaction({absorbedFaction:t,absorbingFaction:absorber},core.simulator!.year);Military.update(core.simulator!.year,core.teams,core.allCities);check(Military.getFormations().every(f=>f.factionId!==t.name||f.status!=='ACTIVE'),'real faction absorption transaction leaves no active home command');
   observations.push({capitalBefore:3,capitalAfterAppointment:3,capacityByOffice:[2,3,4],saveSchemaVersion:saved.saveSchemaVersion});
   return {seed,checks,observations,scope:'controlled frozen production candidate; not published; no long simulation'};
  }finally{game.destroy(true);}

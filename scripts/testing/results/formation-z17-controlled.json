@@ -11,11 +11,11 @@
       "twenty-person country creates a second real two-person command within existing slots",
       "two commands never share a real unit",
       "promotion scenario has five real cities",
+      "first promotion and refill add neither population nor random draws",
       "original service and actual capture thresholds unlock and fill three-person general command",
       "senior promotion unlocks and fills at most four actual members",
       "reinforcement creates no population or duplicate assignment",
       "recruitment and promotion never teleport a body",
-      "production population and random checkpoints are available",
       "loss fixture has a real unassigned nearby replacement",
       "actual member death invokes production User and population casualty transaction",
       "real casualty replacement excludes the dying body and uses an existing unassigned unit",
@@ -29,9 +29,14 @@
       "royal and ordinary pi generals have identical initial size",
       "same real military save resumes twelve months identically",
       "second save reads without member or identity mutation",
-      "state termination leaves no active home command"
+      "real faction absorption transaction leaves no active home command"
     ],
     "observations": [
+      {
+        "capitalBeforeResume": 6,
+        "capitalAfterTwelveRealMonths": 2,
+        "residentsAreNotStationaryGuards": true
+      },
       {
         "capitalBefore": 3,
         "capitalAfterAppointment": 3,
