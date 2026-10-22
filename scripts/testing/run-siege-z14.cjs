@@ -6,7 +6,8 @@ const edit=(f,fn)=>{const p=path.join(root,f);fs.writeFileSync(p,fn(fs.readFileS
 const replace=(s,a,b)=>{if(!s.includes(a))throw Error('Missing production anchor: '+a);return s.replace(a,b);};
 execFileSync('tar',['-x','-C',root],{input:execFileSync('git',['archive',head],{maxBuffer:512*1024*1024})});
 fs.symlinkSync(path.join(repo,'node_modules'),path.join(root,'node_modules'),'junction');
-for(const f of ['SiegeTurnoverHarness.ts','MilitaryBalanceHarness.ts','SiegeContestCoreHarness.ts'])fs.copyFileSync(path.join(repo,'src/Simulation/testing',f),path.join(root,'src/Simulation/testing',f));
+for(const f of ['SiegeTurnoverHarness.ts','MilitaryBalanceHarness.ts','SiegeContestCoreHarness.ts','RoyalIdentityReplay.ts'])fs.copyFileSync(path.join(repo,'src/Simulation/testing',f),path.join(root,'src/Simulation/testing',f));
+if(process.env.Z15_IDENTITY_FIX==='1')for(const f of ['src/Politics/Dynasty.ts','src/Components/User.ts'])fs.copyFileSync(path.join(repo,f),path.join(root,f));
 if(name!=='A'){
  edit('src/Components/City.ts',s=>{
   s='import {siegeParticipants} from "../Simulation/SiegeParticipants";\n'+s;

@@ -332,9 +332,19 @@ class DynastyRegistryStore {
     return this.getAll().flatMap(d => d.rulers).find(r => r.militaryIdentity?.personId === personId);
   }
 
-  recordRoyalMilitaryBattleDeath(personId: string, month: number) {
+  recordRoyalMilitaryBattleDeath(personId: string, month: number, cause: "BATTLE_DEATH" | "SIEGE_LOSS" = "BATTLE_DEATH") {
     const ruler = this.findRoyalMilitaryPerson(personId);
-    if (!ruler || hasRecordedRulerDeath(ruler) || ruler.status === "ruling" || ruler.status === "exiled") return;
+    if (!ruler || hasRecordedRulerDeath(ruler)) return;
+    const owner = this.getAll().find(d => d.rulers.includes(ruler))!;
+    const team = Game.Core?.teams.find(t => t.name === owner.factionId);
+    // A transferred body may be NORMAL abroad while its permanent identity still
+    // holds an exiled crown. The casualty has already been accepted by User;
+    // complete the same existing succession transaction in the historical polity.
+    if ((ruler.status === "ruling" || ruler.status === "exiled") && owner.currentRulerId === ruler.id && team && shouldDynastyContinue(team.status)) {
+      if (team.rulerUser?.historicalPersonId === personId) team.rulerUser = undefined;
+      this.succeedRuler(team, owner, ruler, month, "combat", cause);
+      return;
+    }
     ruler.status = "dead"; ruler.deathMonth = month; ruler.deathReason = "战死";
     if (ruler.endYear === undefined) { ruler.endYear=month; ruler.politicalEndYear=month; ruler.endReason="战死"; }
     const dynasty = this.getAll().find(d => d.rulers.includes(ruler))!;
@@ -572,7 +582,8 @@ class DynastyRegistryStore {
     dynasty: Dynasty,
     predecessor: Ruler,
     year: number,
-    reason: "natural" | "combat" | "captured"
+    reason: "natural" | "combat" | "captured",
+    combatCause: "BATTLE_DEATH" | "SIEGE_LOSS" = "BATTLE_DEATH"
   ) {
     if(predecessor.residentIdentity){
       const u=Team.GetUserById(predecessor.residentIdentity.sourceUserId);
@@ -581,7 +592,7 @@ class DynastyRegistryStore {
     if (predecessor.militaryIdentity) {
       const i = predecessor.militaryIdentity, u = Team.GetUserById(i.sourceUserId);
       if (reason !== "combat" && u?.historicalPersonId === i.personId) u.destroyUser(true,{cause:"RULER_LIFECYCLE",month:year});
-      MilitaryCommandRegistry.mirrorPoliticalDeath(i.personId,predecessor.id,year,reason === "natural" ? "NATURAL_DEATH" : reason === "captured" ? "CAPTURED" : "BATTLE_DEATH");
+      MilitaryCommandRegistry.mirrorPoliticalDeath(i.personId,predecessor.id,year,reason === "natural" ? "NATURAL_DEATH" : reason === "captured" ? "CAPTURED" : combatCause);
     }
     predecessor.status = "dead";
     predecessor.regimeNameAtEnd = team.displayName;

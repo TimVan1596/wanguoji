@@ -181,8 +181,8 @@ export default class User {
       : undefined;
     if(this.historicalPersonId && ["SIEGE_LOSS","BATTLE_DEATH"].includes(populationMutation.cause))
       DynastyRegistry.recordResidentEntityDeath(this.historicalPersonId,populationMutation.month??core?.simulator?.year??0);
-    if (this.historicalPersonId && ["SIEGE_LOSS","BATTLE_DEATH"].includes(populationMutation.cause))
-      DynastyRegistry.recordRoyalMilitaryBattleDeath(this.historicalPersonId,populationMutation.month??core?.simulator?.year??0);
+    if (this.historicalPersonId && verifiedMilitaryPersonId === this.historicalPersonId && (populationMutation.cause === "SIEGE_LOSS" || populationMutation.cause === "BATTLE_DEATH"))
+      DynastyRegistry.recordRoyalMilitaryBattleDeath(this.historicalPersonId,populationMutation.month??core?.simulator?.year??0,populationMutation.cause);
     this.destroyed = true;
     MilitaryCommandRegistry.onUserDestroyed(this, populationMutation.month ?? Game.Core?.simulator?.year ?? 0, populationMutation.cause);
     const removedFromPopulation = team.users.delete(this);
