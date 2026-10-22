@@ -11,10 +11,12 @@ if(name!=='A'){
  edit('src/Components/City.ts',s=>{
   s='import {siegeParticipants} from "../Simulation/SiegeParticipants";\n'+s;
   s=replace(s,'const mainAttacker = contacts.sort((a, b) => b.count - a.count)[0];',`const mainAttacker = contacts.map(c=>({...c, strength:siegeParticipants(this,c.team,Game.Core,Game.BlockSize,true).length})).filter(c=>c.strength>0&&!c.team.isDie).sort((a,b)=>b.strength-a.strength||a.team.name.localeCompare(b.team.name))[0];`);
-  s=replace(s,'    if (\n      this.lastSiegeDevastationYear < 0 ||',`    const defenders=siegeParticipants(this,this.ownerTeam!,Game.Core,Game.BlockSize,false).length;
+  const pressure=`    const defenders=siegeParticipants(this,this.ownerTeam!,Game.Core,Game.BlockSize,false).length;
     const pressure=mainAttacker.strength<2||mainAttacker.strength*2<=defenders?0:Math.min(1.5,mainAttacker.strength/(defenders+1));
-    if(pressure===0)return;
-    if (\n      this.lastSiegeDevastationYear < 0 ||`);
+    if(pressure===0)return;\n`;
+  // Original B/C/B3 are retained solely to reproduce the rejected devastation loophole.
+  if(['B','C','B3'].includes(name))s=replace(s,'    const rawSiegeDamage =',pressure+'    const rawSiegeDamage =');
+  else s=replace(s,'    if (\n      this.lastSiegeDevastationYear < 0 ||',pressure+'    if (\n      this.lastSiegeDevastationYear < 0 ||');
   s=replace(s,'CITY_SIEGE_DAMAGE_PER_TICK *','CITY_SIEGE_DAMAGE_PER_TICK * pressure *');
   s=replace(s,'const siegeDamage = Math.max(1, Math.floor(rawSiegeDamage));','const siegeDamage = Math.floor(rawSiegeDamage);');
   return replace(s,'    this.defense -= siegeDamage;','    if(siegeDamage<=0)return;\n    this.defense -= siegeDamage;');

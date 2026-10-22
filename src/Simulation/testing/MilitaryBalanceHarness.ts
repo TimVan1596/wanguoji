@@ -94,7 +94,7 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
         const matureEnded=ended.filter(a=>a.endMonth!-a.startMonth>=60);
         const p=core.getPopulationSummary();
         core.setWorldRunning(false);
-        const snapshot=exportWorldSave(core),validation=validateWorldSave(snapshot);
+        const snapshot=(()=>{try{return exportWorldSave(core);}catch(error){throw Error(JSON.stringify({seed,month:m,error:String(error),royalLinks:Military.getPeople().filter(p=>p.royalIdentity).map(p=>({personId:p.personId,royalIdentity:p.royalIdentity,status:p.status,bornMonth:p.bornMonth,owners:Dynasty.getAll().flatMap(d=>d.rulers.filter(r=>r.militaryIdentity?.personId===p.personId).map(r=>({factionId:d.factionId,rulerId:r.id,bornMonth:r.bornYear,deathMonth:r.deathMonth,militaryIdentity:r.militaryIdentity})))}))}));}})(),validation=validateWorldSave(snapshot);
         const canonicalSha256 = await fingerprint(snapshot),baseFactsSha256=await fingerprint(snapshot,true);
         core.setWorldRunning(true);
         if(!validation.valid)throw new Error(`Invalid natural snapshot: ${validation.errors.join("; ")}`);

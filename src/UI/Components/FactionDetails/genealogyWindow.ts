@@ -29,13 +29,13 @@ export function genealogyWindow(index:ReadonlyMap<string,PoliticalGenealogyNode>
 /** Flat DOM with top-down coordinates and parent links; no recursive React hierarchy. */
 export function layoutGenealogy(rows:ReturnType<typeof genealogyWindow>){
  const byId=new Map(rows.map(r=>[r.node.ruler.id,r]));
- const children=new Map<string,string[]>();
- for(const row of rows){const p=row.node.ruler.parentId;if(p&&byId.has(p)){const ids=children.get(p)??[];ids.push(row.node.ruler.id);children.set(p,ids);}}
+ const children=new Map<string,string[]>(),parents=new Map<string,string>();
+ for(const row of rows){const p=row.node.ruler.parentId;if(p&&byId.has(p)&&byId.get(p)!.depth<row.depth){parents.set(row.node.ruler.id,p);const ids=children.get(p)??[];ids.push(row.node.ruler.id);children.set(p,ids);}}
  const widths=new Map<string,number>(),positions=new Map<string,{x:number;y:number}>();
  const ordered=rows.slice().sort((a,b)=>b.depth-a.depth);
  for(const r of ordered)widths.set(r.node.ruler.id,Math.max(1,(children.get(r.node.ruler.id)??[]).reduce((n,id)=>n+widths.get(id)!,0)));
- const roots=rows.filter(r=>!r.node.ruler.parentId||!byId.has(r.node.ruler.parentId));
+ const roots=rows.filter(r=>!parents.has(r.node.ruler.id));
  let offset=0;const stack=roots.map(r=>{const item={id:r.node.ruler.id,left:offset};offset+=widths.get(item.id)!;return item;});
  while(stack.length){const {id,left}=stack.pop()!,r=byId.get(id)!;positions.set(id,{x:(left+widths.get(id)!/2)*210,y:r.depth*230});let childLeft=left;for(const child of children.get(id)??[]){stack.push({id:child,left:childLeft});childLeft+=widths.get(child)!;}}
- return {positions,width:Math.max(210,offset*210),height:(Math.max(0,...rows.map(r=>r.depth))+1)*230};
+ return {positions,parents,width:Math.max(210,offset*210),height:(Math.max(0,...rows.map(r=>r.depth))+1)*230};
 }

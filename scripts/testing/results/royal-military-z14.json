@@ -39,6 +39,7 @@
       "150 deep: real parent DOM is above child",
       "150 deep: real parent DOM is above child",
       "150 deep: real parent DOM is above child",
+      "150 deep: focused real node is inside the visible viewport",
       "150 deep: bounded tree canvas width",
       "150 deep: current-ruler control locates tail",
       "150 deep: closing removes genealogy nodes",
@@ -49,6 +50,8 @@
       "150 wide: real parent DOM is above child",
       "150 wide: real parent DOM is above child",
       "150 wide: real parent DOM is above child",
+      "150 wide: actual sibling DOM shares a horizontal generation",
+      "150 wide: focused real node is inside the visible viewport",
       "150 wide: bounded tree canvas width",
       "150 wide: current-ruler control locates tail",
       "150 wide: closing removes genealogy nodes",
@@ -62,6 +65,7 @@
       "1000 deep: real parent DOM is above child",
       "1000 deep: real parent DOM is above child",
       "1000 deep: real parent DOM is above child",
+      "1000 deep: focused real node is inside the visible viewport",
       "1000 deep: bounded tree canvas width",
       "1000 deep: current-ruler control locates tail",
       "1000 deep: closing removes genealogy nodes",
@@ -72,6 +76,8 @@
       "1000 wide: real parent DOM is above child",
       "1000 wide: real parent DOM is above child",
       "1000 wide: real parent DOM is above child",
+      "1000 wide: actual sibling DOM shares a horizontal generation",
+      "1000 wide: focused real node is inside the visible viewport",
       "1000 wide: bounded tree canvas width",
       "1000 wide: current-ruler control locates tail",
       "1000 wide: closing removes genealogy nodes",
@@ -85,6 +91,7 @@
       "10000 deep: real parent DOM is above child",
       "10000 deep: real parent DOM is above child",
       "10000 deep: real parent DOM is above child",
+      "10000 deep: focused real node is inside the visible viewport",
       "10000 deep: bounded tree canvas width",
       "10000 deep: current-ruler control locates tail",
       "10000 deep: closing removes genealogy nodes",
@@ -95,6 +102,8 @@
       "10000 wide: real parent DOM is above child",
       "10000 wide: real parent DOM is above child",
       "10000 wide: real parent DOM is above child",
+      "10000 wide: actual sibling DOM shares a horizontal generation",
+      "10000 wide: focused real node is inside the visible viewport",
       "10000 wide: bounded tree canvas width",
       "10000 wide: current-ruler control locates tail",
       "10000 wide: closing removes genealogy nodes",
@@ -159,43 +168,43 @@
         "size": 150,
         "shape": "deep",
         "mountedNodes": 9,
-        "mountMs": 36,
-        "heapDelta": 0
+        "mountMs": 40.19999999925494,
+        "heapDelta": -11431275
       },
       {
         "size": 150,
         "shape": "wide",
         "mountedNodes": 6,
-        "mountMs": 32,
-        "heapDelta": 0
+        "mountMs": 34.79999999888241,
+        "heapDelta": 4478637
       },
       {
         "size": 1000,
         "shape": "deep",
         "mountedNodes": 9,
-        "mountMs": 35.40000000037253,
-        "heapDelta": 0
+        "mountMs": 37,
+        "heapDelta": -5174058
       },
       {
         "size": 1000,
         "shape": "wide",
         "mountedNodes": 6,
-        "mountMs": 48.30000000074506,
-        "heapDelta": 6910307
+        "mountMs": 39,
+        "heapDelta": 7052619
       },
       {
         "size": 10000,
         "shape": "deep",
         "mountedNodes": 9,
-        "mountMs": 86.60000000149012,
-        "heapDelta": 933352
+        "mountMs": 89,
+        "heapDelta": 18283560
       },
       {
         "size": 10000,
         "shape": "wide",
         "mountedNodes": 6,
-        "mountMs": 83.09999999962747,
-        "heapDelta": 15725500
+        "mountMs": 79.59999999962747,
+        "heapDelta": 9568884
       }
     ],
     "shortAppointmentAudits": [

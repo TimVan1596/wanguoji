@@ -17,6 +17,15 @@ export async function runSiegeTurnover(seed:string,years=100){
  const episodes:any[]=[],open=new Map<string,any>(),strength:Record<string,number>={};
  let cityMonths=0,devastationSum=0,damage=0,localLoss=0,nationalFallbackLoss=0,noVictim=0;
  let listener:(()=>void)|undefined,scene:Phaser.Scene|undefined;
+ const recruitment:any[]=[],appoint=(Military as any).appoint;
+ (Military as any).appoint=function(...args:any[]){
+  const [user,factionId,month,memberIds]=args,team=user.team,core=Game.Core,cap=team.capitalCity;
+  const local=new Set(cap?siegeParticipants(cap,team,core,Game.BlockSize,false).map(u=>u.player.logicalUnitId):[]);
+  const positions=new Map([...team.users].map((u:any)=>[u.player.logicalUnitId,{x:u.player.x,y:u.player.y,userId:u.id}]));
+  const before=new Set(Military.getFormations().map(f=>f.commandId)),result=appoint.apply(this,args);
+  if(result){const created=Military.getFormations().find(f=>!before.has(f.commandId));recruitment.push({month,factionId,commandId:created?.commandId,population:team.users.size,memberCount:memberIds.length,fractionOfNationalPopulation:memberIds.length/team.users.size,capitalLocalBefore:local.size,capitalLocalsRecruited:memberIds.filter((id:string)=>local.has(id)).length,sources:memberIds.map((id:string)=>({unitId:id,...positions.get(id)})),noPositionChange:memberIds.every((id:string)=>{const p=positions.get(id),u=[...team.users].find((u:any)=>u.player.logicalUnitId===id) as any;return p&&u&&u.player.x===p.x&&u.player.y===p.y;})});}
+  return result;
+ };
  const checkpoints:any[]=[];
  let capitalSamples=0,capitalLocalTotal=0,capitalUnassignedTotal=0,emptyCapitalSamples=0,lastStrongholdLosses=0;
  const quantile=(xs:number[],p:number)=>{const a=xs.slice().sort((a,b)=>a-b);return a.length?a[Math.ceil((a.length-1)*p)]:0;};
@@ -63,9 +72,9 @@ if(m>0&&(m%1200===0||m===years*12)&&!checkpoints.some(c=>c.month===m))collect(m)
  };
  try{
   const balance=await runMilitaryBalance(seed,years);
-  return {seed,years,scope:"real Core/Phaser; capture/revolt ownership transactions; right-censored retake windows excluded",balance,transfers,checkpoints};
+  return {seed,years,recruitment,scope:"real Core/Phaser; capture/revolt ownership transactions; right-censored retake windows excluded",balance,transfers,checkpoints};
  }finally{
-  City.prototype.capture=capture;City.prototype.revoltTo=revolt;City.prototype.updateDefense=update;(City.prototype as any).updateSiege=siege;Team.prototype.removeOneUser=casualty;
+  (Military as any).appoint=appoint;City.prototype.capture=capture;City.prototype.revoltTo=revolt;City.prototype.updateDefense=update;(City.prototype as any).updateSiege=siege;Team.prototype.removeOneUser=casualty;
   if(listener)scene?.sys.events.off("postupdate",listener);
  }
 }

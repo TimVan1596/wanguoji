@@ -1,0 +1,2960 @@
+[
+  {
+    "seed": "regional-1",
+    "years": 20,
+    "recruitment": [
+      {
+        "month": 36,
+        "factionId": "燕",
+        "commandId": "military-command-1",
+        "population": 12,
+        "memberCount": 11,
+        "fractionOfNationalPopulation": 0.9166666666666666,
+        "capitalLocalBefore": 3,
+        "capitalLocalsRecruited": 3,
+        "sources": [
+          {
+            "unitId": "unit-78",
+            "x": 832,
+            "y": 160,
+            "userId": 1819173671
+          },
+          {
+            "unitId": "unit-22",
+            "x": 917.9777667235142,
+            "y": 170.4460815047432,
+            "userId": 1143909945
+          },
+          {
+            "unitId": "unit-23",
+            "x": 967.9279434258774,
+            "y": 48.70454085143117,
+            "userId": 1143909946
+          },
+          {
+            "unitId": "unit-24",
+            "x": 690.2846076258038,
+            "y": 120.06879100894275,
+            "userId": 1143909947
+          },
+          {
+            "unitId": "unit-25",
+            "x": 892.7661418418753,
+            "y": 219.91151644733966,
+            "userId": 1143909948
+          },
+          {
+            "unitId": "unit-26",
+            "x": 1028.9403484071768,
+            "y": 176.04913206301794,
+            "userId": 1143909949
+          },
+          {
+            "unitId": "unit-27",
+            "x": 1027.2780502773217,
+            "y": 183.16146848035325,
+            "userId": 1143909950
+          },
+          {
+            "unitId": "unit-28",
+            "x": 766.3994976112094,
+            "y": 89.72359610403,
+            "userId": 1143909951
+          },
+          {
+            "unitId": "unit-62",
+            "x": 1013.1971451760011,
+            "y": 234.35375301343473,
+            "userId": 1143909952
+          },
+          {
+            "unitId": "unit-68",
+            "x": 846.5907453564671,
+            "y": 141.70864513626967,
+            "userId": 1143909953
+          },
+          {
+            "unitId": "unit-77",
+            "x": 1031.6180193684565,
+            "y": 63.451895149979876,
+            "userId": 1143909975
+          }
+        ],
+        "noPositionChange": true
+      },
+      {
+        "month": 36,
+        "factionId": "魏",
+        "commandId": "military-command-2",
+        "population": 10,
+        "memberCount": 9,
+        "fractionOfNationalPopulation": 0.9,
+        "capitalLocalBefore": 1,
+        "capitalLocalsRecruited": 1,
+        "sources": [
+          {
+            "unitId": "unit-36",
+            "x": 569.4313956874227,
+            "y": 482.826708074544,
+            "userId": 1359921331
+          },
+          {
+            "unitId": "unit-37",
+            "x": 482.8721875826488,
+            "y": 486.0374798479563,
+            "userId": 1359921332
+          },
+          {
+            "unitId": "unit-38",
+            "x": 548.860903655637,
+            "y": 327.16387581850734,
+            "userId": 1359921333
+          },
+          {
+            "unitId": "unit-40",
+            "x": 670.3388967538324,
+            "y": 487.2087646505448,
+            "userId": 1359921335
+          },
+          {
+            "unitId": "unit-41",
+            "x": 347.98415538133406,
+            "y": 410.78400837648644,
+            "userId": 1359921336
+          },
+          {
+            "unitId": "unit-42",
+            "x": 707.6954862734304,
+            "y": 286.8022877448992,
+            "userId": 1359921337
+          },
+          {
+            "unitId": "unit-66",
+            "x": 654.7300709510596,
+            "y": 347.45384827722177,
+            "userId": 1359921338
+          },
+          {
+            "unitId": "unit-71",
+            "x": 708.5950880150677,
+            "y": 508.010592771233,
+            "userId": 1359921339
+          },
+          {
+            "unitId": "unit-74",
+            "x": 748.6417645730327,
+            "y": 401.8209089222734,
+            "userId": 1359921361
+          }
+        ],
+        "noPositionChange": true
+      },
+      {
+        "month": 48,
+        "factionId": "秦",
+        "commandId": "military-command-3",
+        "population": 15,
+        "memberCount": 12,
+        "fractionOfNationalPopulation": 0.8,
+        "capitalLocalBefore": 0,
+        "capitalLocalsRecruited": 0,
+        "sources": [
+          {
+            "unitId": "unit-10",
+            "x": 219.6876049385532,
+            "y": 749.8688226716323,
+            "userId": 1050980812
+          },
+          {
+            "unitId": "unit-8",
+            "x": 118.53798825354163,
+            "y": 478.67708403366737,
+            "userId": 1050980810
+          },
+          {
+            "unitId": "unit-9",
+            "x": 33.390822449051015,
+            "y": 193.23353711857249,
+            "userId": 1050980811
+          },
+          {
+            "unitId": "unit-11",
+            "x": 83.07708234598198,
+            "y": 413.3845598819844,
+            "userId": 1050980813
+          },
+          {
+            "unitId": "unit-12",
+            "x": 151.35154418498774,
+            "y": 744.600716961297,
+            "userId": 1050980814
+          },
+          {
+            "unitId": "unit-13",
+            "x": 107.22800856363162,
+            "y": 698.7009068354561,
+            "userId": 1050980815
+          },
+          {
+            "unitId": "unit-14",
+            "x": 249.60000000000002,
+            "y": 429.18721072127266,
+            "userId": 1050980816
+          },
+          {
+            "unitId": "unit-60",
+            "x": 99.9481033902567,
+            "y": 196.0801164518983,
+            "userId": 1050980817
+          },
+          {
+            "unitId": "unit-64",
+            "x": 75.00307882429395,
+            "y": 640.9533111988005,
+            "userId": 1050980818
+          },
+          {
+            "unitId": "unit-70",
+            "x": 14.683669191636724,
+            "y": 283.1995307472544,
+            "userId": 1050980840
+          },
+          {
+            "unitId": "unit-75",
+            "x": 187.75099236634503,
+            "y": 587.4900472798495,
+            "userId": 1050980841
+          },
+          {
+            "unitId": "unit-79",
+            "x": 14.632618395170647,
+            "y": 744.2131607256678,
+            "userId": 1050980842
+          }
+        ],
+        "noPositionChange": true
+      },
+      {
+        "month": 72,
+        "factionId": "魏",
+        "commandId": "military-command-4",
+        "population": 12,
+        "memberCount": 2,
+        "fractionOfNationalPopulation": 0.16666666666666666,
+        "capitalLocalBefore": 0,
+        "capitalLocalsRecruited": 0,
+        "sources": [
+          {
+            "unitId": "unit-86",
+            "x": 860.3742054325638,
+            "y": 31.125574797317526,
+            "userId": 1359921362
+          },
+          {
+            "unitId": "unit-58",
+            "x": 795.9844997759835,
+            "y": 306.2074641331231,
+            "userId": 1380083168
+          }
+        ],
+        "noPositionChange": true
+      },
+      {
+        "month": 204,
+        "factionId": "秦",
+        "commandId": "military-command-5",
+        "population": 51,
+        "memberCount": 12,
+        "fractionOfNationalPopulation": 0.23529411764705882,
+        "capitalLocalBefore": 0,
+        "capitalLocalsRecruited": 0,
+        "sources": [
+          {
+            "unitId": "unit-117",
+            "x": 60.939853782890545,
+            "y": 132.69319735822012,
+            "userId": 1050980872
+          },
+          {
+            "unitId": "unit-84",
+            "x": 207.26863038694685,
+            "y": 138.20288939788082,
+            "userId": 1050980843
+          },
+          {
+            "unitId": "unit-87",
+            "x": 426.0491440016231,
+            "y": 688.4219973833652,
+            "userId": 1050980844
+          },
+          {
+            "unitId": "unit-96",
+            "x": 136.93188408756893,
+            "y": 365.53545965580554,
+            "userId": 1050980845
+          },
+          {
+            "unitId": "unit-97",
+            "x": 252.6667998702664,
+            "y": 335.67865836111775,
+            "userId": 1050980846
+          },
+          {
+            "unitId": "unit-101",
+            "x": 285.1022598168257,
+            "y": 205.5639668172334,
+            "userId": 1050980847
+          },
+          {
+            "unitId": "unit-106",
+            "x": 116.69411689869469,
+            "y": 825.5705897758546,
+            "userId": 1050980848
+          },
+          {
+            "unitId": "unit-114",
+            "x": 277.7791132681406,
+            "y": 907.1111475693206,
+            "userId": 1050980849
+          },
+          {
+            "unitId": "unit-120",
+            "x": 59.75604340454829,
+            "y": 997.2829650542552,
+            "userId": 1050980873
+          },
+          {
+            "unitId": "unit-122",
+            "x": 293.4758889102063,
+            "y": 495.60227757830984,
+            "userId": 1050980874
+          },
+          {
+            "unitId": "unit-128",
+            "x": 74.21978504549458,
+            "y": 320.5055315803442,
+            "userId": 1050980875
+          },
+          {
+            "unitId": "unit-130",
+            "x": 63.761423721014324,
+            "y": 206.74693942261317,
+            "userId": 1050980876
+          }
+        ],
+        "noPositionChange": true
+      },
+      {
+        "month": 240,
+        "factionId": "燕",
+        "commandId": "military-command-6",
+        "population": 40,
+        "memberCount": 12,
+        "fractionOfNationalPopulation": 0.3,
+        "capitalLocalBefore": 0,
+        "capitalLocalsRecruited": 0,
+        "sources": [
+          {
+            "unitId": "unit-188",
+            "x": 588.3260761109307,
+            "y": 222.57843583449585,
+            "userId": 1143910046
+          },
+          {
+            "unitId": "unit-82",
+            "x": 563.1670889990036,
+            "y": 979.6221174889594,
+            "userId": 1143909976
+          },
+          {
+            "unitId": "unit-103",
+            "x": 612.4602971272851,
+            "y": 805.5375566979613,
+            "userId": 1143909979
+          },
+          {
+            "unitId": "unit-110",
+            "x": 650.2616978199171,
+            "y": 188.8958929302863,
+            "userId": 1143909981
+          },
+          {
+            "unitId": "unit-112",
+            "x": 1071.8203704745451,
+            "y": 178.97597688578597,
+            "userId": 1143909982
+          },
+          {
+            "unitId": "unit-113",
+            "x": 711.3221008005595,
+            "y": 427.9549358174005,
+            "userId": 1143909983
+          },
+          {
+            "unitId": "unit-118",
+            "x": 627.7259066867915,
+            "y": 18.697329032305575,
+            "userId": 1143909984
+          },
+          {
+            "unitId": "unit-134",
+            "x": 956.6101027592866,
+            "y": 61.34866473843526,
+            "userId": 1143910006
+          },
+          {
+            "unitId": "unit-137",
+            "x": 493.8575720986647,
+            "y": 174.74211924410233,
+            "userId": 1143910007
+          },
+          {
+            "unitId": "unit-141",
+            "x": 1035.729056756074,
+            "y": 198.64682854468242,
+            "userId": 1143910008
+          },
+          {
+            "unitId": "unit-142",
+            "x": 615.4556228204057,
+            "y": 1062.194101099782,
+            "userId": 1143910009
+          },
+          {
+            "unitId": "unit-148",
+            "x": 513.372288558724,
+            "y": 331.486402346001,
+            "userId": 1143910010
+          }
+        ],
+        "noPositionChange": true
+      }
+    ],
+    "scope": "real Core/Phaser; capture/revolt ownership transactions; right-censored retake windows excluded",
+    "balance": {
+      "seed": "regional-1",
+      "years": 20,
+      "contactCalls": 2495,
+      "forceSamples": {
+        "0:4:8:8": 1,
+        "0:0:7:8": 1,
+        "0:2:8:9": 1,
+        "0:0:8:9": 10,
+        "0:0:7:9": 6,
+        "2:0:7:9": 3,
+        "0:1:7:9": 4,
+        "1:0:6:9": 3,
+        "0:1:9:9": 2,
+        "0:1:6:9": 3,
+        "1:0:5:9": 6,
+        "2:0:8:9": 1,
+        "2:0:5:9": 4,
+        "1:0:4:9": 12,
+        "0:0:6:9": 8,
+        "0:0:4:9": 5,
+        "2:0:3:9": 3,
+        "1:1:3:9": 1,
+        "1:1:8:9": 2,
+        "0:0:2:9": 3,
+        "1:1:1:9": 1,
+        "0:2:1:9": 1,
+        "1:0:7:9": 2,
+        "6:0:7:9": 1,
+        "2:1:6:9": 3,
+        "1:1:6:9": 4,
+        "1:0:9:9": 2,
+        "2:1:5:9": 2,
+        "1:0:8:9": 3,
+        "1:1:4:9": 1,
+        "5:0:4:9": 1,
+        "1:1:7:9": 7,
+        "3:0:3:9": 2,
+        "4:0:4:9": 2,
+        "4:0:6:9": 2,
+        "3:0:2:9": 2,
+        "3:0:6:9": 1,
+        "2:0:2:9": 3,
+        "5:0:1:9": 1,
+        "2:1:1:9": 2,
+        "3:1:4:9": 2,
+        "2:1:4:7": 1,
+        "4:1:3:9": 2,
+        "2:1:4:9": 1,
+        "0:0:4:7": 1,
+        "1:0:3:9": 3,
+        "3:0:3:7": 1,
+        "0:0:9:9": 5,
+        "0:2:3:9": 1,
+        "1:0:2:7": 1,
+        "1:1:2:9": 1,
+        "1:0:3:7": 1,
+        "2:0:2:7": 1,
+        "1:0:2:9": 2,
+        "0:0:2:7": 3,
+        "4:0:1:7": 1,
+        "5:0:1:7": 1,
+        "2:3:1:9": 1,
+        "2:2:6:9": 1,
+        "3:0:8:9": 3,
+        "5:0:7:9": 1,
+        "0:0:3:7": 1,
+        "5:0:6:9": 3,
+        "0:0:1:7": 2,
+        "3:1:3:10": 1,
+        "0:0:5:9": 5,
+        "6:0:5:9": 3,
+        "2:1:3:10": 1,
+        "2:0:5:8": 1,
+        "0:0:3:8": 5,
+        "2:1:4:8": 1,
+        "0:0:2:8": 5,
+        "0:0:3:9": 7,
+        "1:2:4:8": 1,
+        "2:0:3:8": 2,
+        "0:0:1:8": 2,
+        "1:0:4:8": 2,
+        "2:0:4:8": 1,
+        "1:0:3:8": 3,
+        "6:0:3:8": 1,
+        "0:0:1:9": 2,
+        "4:0:3:8": 1,
+        "5:0:2:8": 2,
+        "0:3:4:8": 1,
+        "0:0:10:10": 3,
+        "0:0:9:10": 3,
+        "3:0:9:10": 1,
+        "2:0:9:10": 2,
+        "5:1:9:10": 1,
+        "0:1:9:10": 1,
+        "5:0:8:10": 1,
+        "0:0:8:10": 2,
+        "3:0:8:10": 3,
+        "2:0:7:10": 1,
+        "0:0:7:10": 1,
+        "3:1:7:10": 1,
+        "0:1:7:10": 3,
+        "5:0:6:10": 2,
+        "0:0:6:10": 3,
+        "2:0:6:10": 1,
+        "0:0:5:10": 6,
+        "6:0:5:10": 1,
+        "4:0:5:10": 1,
+        "2:0:5:10": 2,
+        "3:0:4:10": 2,
+        "0:0:4:10": 4,
+        "6:0:4:10": 1,
+        "1:0:2:8": 2,
+        "3:0:3:10": 3,
+        "0:0:3:10": 2,
+        "7:0:3:10": 1,
+        "7:0:2:10": 1,
+        "0:0:2:10": 5,
+        "4:0:2:10": 1,
+        "1:0:1:8": 3,
+        "3:0:2:10": 2,
+        "2:0:1:8": 1,
+        "5:0:2:10": 1,
+        "5:0:1:10": 1,
+        "0:0:1:10": 4,
+        "4:0:1:10": 1,
+        "0:1:4:8": 1,
+        "0:1:3:8": 1,
+        "0:0:6:8": 1,
+        "1:3:7:9": 1,
+        "0:1:5:8": 1,
+        "0:0:5:8": 1,
+        "0:0:4:8": 3,
+        "0:1:5:9": 2,
+        "0:2:5:8": 1,
+        "0:1:8:9": 1,
+        "1:1:3:8": 1,
+        "0:3:7:9": 1,
+        "2:0:4:9": 1,
+        "0:2:6:9": 1,
+        "3:0:1:9": 1,
+        "1:0:1:9": 2,
+        "2:0:8:8": 1,
+        "3:1:2:9": 1,
+        "6:0:7:8": 1,
+        "2:1:9:10": 1,
+        "0:1:8:10": 2,
+        "0:2:7:10": 1,
+        "0:1:6:10": 1,
+        "1:1:6:10": 2,
+        "2:0:4:10": 1,
+        "2:0:3:10": 1,
+        "0:1:3:10": 1,
+        "1:0:3:10": 2,
+        "1:0:2:10": 1,
+        "2:2:8:10": 1,
+        "1:0:5:10": 2,
+        "1:1:7:10": 1,
+        "4:1:7:10": 1,
+        "0:1:4:10": 1,
+        "3:0:6:10": 2,
+        "0:2:4:10": 1,
+        "4:0:7:9": 1,
+        "1:1:5:10": 1,
+        "1:1:3:10": 1,
+        "0:2:2:10": 1,
+        "2:2:4:10": 1,
+        "4:0:5:9": 3,
+        "1:2:5:10": 1,
+        "3:0:4:9": 1,
+        "3:0:5:9": 1,
+        "2:0:2:10": 1,
+        "4:0:3:9": 1,
+        "1:2:4:9": 1,
+        "2:0:1:10": 2,
+        "4:0:2:9": 2,
+        "4:0:1:9": 1,
+        "6:1:3:9": 1,
+        "1:0:10:10": 1,
+        "2:1:10:10": 1,
+        "2:0:1:9": 1,
+        "2:2:2:9": 1,
+        "0:7:2:9": 1,
+        "4:0:9:10": 1,
+        "1:2:7:10": 1
+      },
+      "localSiegeDeaths": 82,
+      "depositionRelations": [],
+      "episodes": [
+        {
+          "cityId": "city-魏-大梁",
+          "owner": "魏",
+          "startMonth": 1,
+          "capital": true,
+          "contactCalls": 1,
+          "damage": 1,
+          "endMonth": 2,
+          "durationMonths": 2,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-魏-大梁",
+          "owner": "魏",
+          "startMonth": 5,
+          "capital": true,
+          "contactCalls": 1,
+          "damage": 1,
+          "endMonth": 6,
+          "durationMonths": 2,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-楚-郢",
+          "owner": "楚",
+          "startMonth": 15,
+          "capital": true,
+          "contactCalls": 3,
+          "damage": 1,
+          "endMonth": 16,
+          "durationMonths": 2,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-韩-新郑",
+          "owner": "韩",
+          "startMonth": 16,
+          "capital": true,
+          "contactCalls": 1,
+          "damage": 1,
+          "endMonth": 17,
+          "durationMonths": 2,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-楚-郢",
+          "owner": "楚",
+          "startMonth": 17,
+          "capital": true,
+          "contactCalls": 1,
+          "damage": 1,
+          "endMonth": 18,
+          "durationMonths": 2,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-韩-新郑",
+          "owner": "韩",
+          "startMonth": 19,
+          "capital": true,
+          "contactCalls": 1,
+          "damage": 1,
+          "endMonth": 20,
+          "durationMonths": 2,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-楚-郢",
+          "owner": "楚",
+          "startMonth": 21,
+          "capital": true,
+          "contactCalls": 1,
+          "damage": 1,
+          "endMonth": 22,
+          "durationMonths": 2,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-赵-邯郸",
+          "owner": "赵",
+          "startMonth": 23,
+          "capital": true,
+          "contactCalls": 1,
+          "damage": 1,
+          "endMonth": 24,
+          "durationMonths": 2,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-赵-邯郸",
+          "owner": "赵",
+          "startMonth": 25,
+          "capital": true,
+          "contactCalls": 2,
+          "damage": 1,
+          "endMonth": 27,
+          "durationMonths": 3,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-楚-郢",
+          "owner": "楚",
+          "startMonth": 26,
+          "capital": true,
+          "contactCalls": 2,
+          "damage": 1,
+          "endMonth": 27,
+          "durationMonths": 2,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-韩-新郑",
+          "owner": "韩",
+          "startMonth": 21,
+          "capital": true,
+          "contactCalls": 33,
+          "damage": 6,
+          "endMonth": 32,
+          "durationMonths": 12,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-赵-邯郸",
+          "owner": "赵",
+          "startMonth": 32,
+          "capital": true,
+          "contactCalls": 1,
+          "damage": 1,
+          "endMonth": 33,
+          "durationMonths": 2,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-楚-郢",
+          "owner": "楚",
+          "startMonth": 33,
+          "capital": true,
+          "contactCalls": 1,
+          "damage": 1,
+          "endMonth": 34,
+          "durationMonths": 2,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-韩-新郑",
+          "owner": "韩",
+          "startMonth": 33,
+          "capital": true,
+          "contactCalls": 6,
+          "damage": 1,
+          "endMonth": 35,
+          "durationMonths": 3,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-赵-邯郸",
+          "owner": "赵",
+          "startMonth": 36,
+          "capital": true,
+          "contactCalls": 124,
+          "damage": 8,
+          "endMonth": 52,
+          "durationMonths": 17,
+          "result": "CAPTURED"
+        },
+        {
+          "cityId": "city-韩-新郑",
+          "owner": "魏",
+          "startMonth": 53,
+          "capital": false,
+          "contactCalls": 1,
+          "damage": 1,
+          "endMonth": 54,
+          "durationMonths": 2,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-韩-新郑",
+          "owner": "魏",
+          "startMonth": 55,
+          "capital": false,
+          "contactCalls": 1,
+          "damage": 1,
+          "endMonth": 56,
+          "durationMonths": 2,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-韩-新郑",
+          "owner": "魏",
+          "startMonth": 58,
+          "capital": false,
+          "contactCalls": 3,
+          "damage": 1,
+          "endMonth": 60,
+          "durationMonths": 3,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-赵-邯郸",
+          "owner": "魏",
+          "startMonth": 56,
+          "capital": false,
+          "contactCalls": 41,
+          "damage": 2,
+          "endMonth": 60,
+          "durationMonths": 5,
+          "result": "CAPTURED"
+        },
+        {
+          "cityId": "city-齐-临淄",
+          "owner": "齐",
+          "startMonth": 41,
+          "capital": true,
+          "contactCalls": 180,
+          "damage": 10,
+          "endMonth": 61,
+          "durationMonths": 21,
+          "result": "CAPTURED"
+        },
+        {
+          "cityId": "city-魏-大梁",
+          "owner": "魏",
+          "startMonth": 59,
+          "capital": true,
+          "contactCalls": 2,
+          "damage": 1,
+          "endMonth": 61,
+          "durationMonths": 3,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-韩-新郑",
+          "owner": "魏",
+          "startMonth": 66,
+          "capital": false,
+          "contactCalls": 5,
+          "damage": 2,
+          "endMonth": 70,
+          "durationMonths": 5,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-燕-蓟",
+          "owner": "燕",
+          "startMonth": 57,
+          "capital": true,
+          "contactCalls": 138,
+          "damage": 8,
+          "endMonth": 72,
+          "durationMonths": 16,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-韩-新郑",
+          "owner": "燕",
+          "startMonth": 75,
+          "capital": false,
+          "contactCalls": 13,
+          "damage": 2,
+          "endMonth": 79,
+          "durationMonths": 5,
+          "result": "CAPTURED"
+        },
+        {
+          "cityId": "city-魏-大梁",
+          "owner": "魏",
+          "startMonth": 63,
+          "capital": true,
+          "contactCalls": 292,
+          "damage": 9,
+          "endMonth": 81,
+          "durationMonths": 19,
+          "result": "CAPTURED"
+        },
+        {
+          "cityId": "city-赵-邯郸",
+          "owner": "秦",
+          "startMonth": 75,
+          "capital": false,
+          "contactCalls": 74,
+          "damage": 5,
+          "endMonth": 84,
+          "durationMonths": 10,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-韩-新郑",
+          "owner": "秦",
+          "startMonth": 84,
+          "capital": false,
+          "contactCalls": 1,
+          "damage": 1,
+          "endMonth": 85,
+          "durationMonths": 2,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "燕-city-96-2",
+          "owner": "燕",
+          "startMonth": 100,
+          "capital": false,
+          "contactCalls": 6,
+          "damage": 2,
+          "endMonth": 103,
+          "durationMonths": 4,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "燕-city-96-2",
+          "owner": "燕",
+          "startMonth": 105,
+          "capital": false,
+          "contactCalls": 2,
+          "damage": 1,
+          "endMonth": 106,
+          "durationMonths": 2,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "燕-city-96-2",
+          "owner": "燕",
+          "startMonth": 108,
+          "capital": false,
+          "contactCalls": 3,
+          "damage": 1,
+          "endMonth": 110,
+          "durationMonths": 3,
+          "result": "CAPTURED"
+        },
+        {
+          "cityId": "city-楚-郢",
+          "owner": "楚",
+          "startMonth": 88,
+          "capital": true,
+          "contactCalls": 409,
+          "damage": 12,
+          "endMonth": 112,
+          "durationMonths": 25,
+          "result": "CAPTURED"
+        },
+        {
+          "cityId": "燕-city-96-2",
+          "owner": "楚",
+          "startMonth": 117,
+          "capital": false,
+          "contactCalls": 13,
+          "damage": 2,
+          "endMonth": 120,
+          "durationMonths": 4,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-魏-大梁",
+          "owner": "秦",
+          "startMonth": 133,
+          "capital": false,
+          "contactCalls": 7,
+          "damage": 1,
+          "endMonth": 135,
+          "durationMonths": 3,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-楚-郢",
+          "owner": "燕",
+          "startMonth": 133,
+          "capital": false,
+          "contactCalls": 5,
+          "damage": 2,
+          "endMonth": 137,
+          "durationMonths": 5,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-赵-邯郸",
+          "owner": "秦",
+          "startMonth": 134,
+          "capital": false,
+          "contactCalls": 5,
+          "damage": 2,
+          "endMonth": 138,
+          "durationMonths": 5,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-赵-邯郸",
+          "owner": "秦",
+          "startMonth": 141,
+          "capital": false,
+          "contactCalls": 3,
+          "damage": 1,
+          "endMonth": 143,
+          "durationMonths": 3,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-韩-新郑",
+          "owner": "秦",
+          "startMonth": 142,
+          "capital": false,
+          "contactCalls": 3,
+          "damage": 2,
+          "endMonth": 145,
+          "durationMonths": 4,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-赵-邯郸",
+          "owner": "秦",
+          "startMonth": 146,
+          "capital": false,
+          "contactCalls": 2,
+          "damage": 1,
+          "endMonth": 147,
+          "durationMonths": 2,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-韩-新郑",
+          "owner": "秦",
+          "startMonth": 146,
+          "capital": false,
+          "contactCalls": 6,
+          "damage": 2,
+          "endMonth": 149,
+          "durationMonths": 4,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-赵-邯郸",
+          "owner": "秦",
+          "startMonth": 149,
+          "capital": false,
+          "contactCalls": 3,
+          "damage": 2,
+          "endMonth": 152,
+          "durationMonths": 4,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-韩-新郑",
+          "owner": "秦",
+          "startMonth": 151,
+          "capital": false,
+          "contactCalls": 4,
+          "damage": 1,
+          "endMonth": 152,
+          "durationMonths": 2,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-魏-大梁",
+          "owner": "秦",
+          "startMonth": 136,
+          "capital": false,
+          "contactCalls": 186,
+          "damage": 8,
+          "endMonth": 152,
+          "durationMonths": 17,
+          "result": "CAPTURED"
+        },
+        {
+          "cityId": "燕-city-96-2",
+          "owner": "楚",
+          "startMonth": 142,
+          "capital": false,
+          "contactCalls": 79,
+          "damage": 5,
+          "endMonth": 152,
+          "durationMonths": 11,
+          "result": "CAPTURED"
+        },
+        {
+          "cityId": "city-韩-新郑",
+          "owner": "秦",
+          "startMonth": 153,
+          "capital": false,
+          "contactCalls": 3,
+          "damage": 1,
+          "endMonth": 154,
+          "durationMonths": 2,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-赵-邯郸",
+          "owner": "秦",
+          "startMonth": 154,
+          "capital": false,
+          "contactCalls": 6,
+          "damage": 1,
+          "endMonth": 156,
+          "durationMonths": 3,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-齐-临淄",
+          "owner": "燕",
+          "startMonth": 154,
+          "capital": false,
+          "contactCalls": 10,
+          "damage": 1,
+          "endMonth": 156,
+          "durationMonths": 3,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-韩-新郑",
+          "owner": "秦",
+          "startMonth": 161,
+          "capital": false,
+          "contactCalls": 1,
+          "damage": 1,
+          "endMonth": 162,
+          "durationMonths": 2,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-韩-新郑",
+          "owner": "秦",
+          "startMonth": 163,
+          "capital": false,
+          "contactCalls": 1,
+          "damage": 1,
+          "endMonth": 164,
+          "durationMonths": 2,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-韩-新郑",
+          "owner": "秦",
+          "startMonth": 167,
+          "capital": false,
+          "contactCalls": 3,
+          "damage": 2,
+          "endMonth": 170,
+          "durationMonths": 4,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-韩-新郑",
+          "owner": "秦",
+          "startMonth": 184,
+          "capital": false,
+          "contactCalls": 2,
+          "damage": 1,
+          "endMonth": 185,
+          "durationMonths": 2,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "楚-city-72-1",
+          "owner": "楚",
+          "startMonth": 164,
+          "capital": true,
+          "contactCalls": 191,
+          "damage": 11,
+          "endMonth": 186,
+          "durationMonths": 23,
+          "result": "CAPTURED"
+        },
+        {
+          "cityId": "city-韩-新郑",
+          "owner": "秦",
+          "startMonth": 205,
+          "capital": false,
+          "contactCalls": 12,
+          "damage": 3,
+          "endMonth": 210,
+          "durationMonths": 6,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-韩-新郑",
+          "owner": "秦",
+          "startMonth": 211,
+          "capital": false,
+          "contactCalls": 18,
+          "damage": 1,
+          "endMonth": 213,
+          "durationMonths": 3,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-赵-邯郸",
+          "owner": "秦",
+          "startMonth": 206,
+          "capital": false,
+          "contactCalls": 147,
+          "damage": 8,
+          "endMonth": 222,
+          "durationMonths": 17,
+          "result": "CAPTURED"
+        },
+        {
+          "cityId": "city-齐-临淄",
+          "owner": "燕",
+          "startMonth": 206,
+          "capital": false,
+          "contactCalls": 193,
+          "damage": 10,
+          "endMonth": 226,
+          "durationMonths": 21,
+          "result": "CAPTURED"
+        },
+        {
+          "cityId": "燕-city-96-2",
+          "owner": "秦",
+          "startMonth": 224,
+          "capital": false,
+          "contactCalls": 4,
+          "damage": 2,
+          "endMonth": 227,
+          "durationMonths": 4,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "city-魏-大梁",
+          "owner": "燕",
+          "startMonth": 209,
+          "capital": false,
+          "contactCalls": 161,
+          "damage": 10,
+          "endMonth": 228,
+          "durationMonths": 20,
+          "result": "CONTACT_ENDED"
+        },
+        {
+          "cityId": "燕-city-96-2",
+          "owner": "秦",
+          "startMonth": 228,
+          "capital": false,
+          "contactCalls": 10,
+          "damage": 2,
+          "endMonth": 232,
+          "durationMonths": 5,
+          "result": "CONTACT_ENDED"
+        }
+      ],
+      "ongoingEpisodes": [],
+      "annual": [
+        {
+          "month": 12,
+          "maxTerritoryShare": 0.11020408163265306,
+          "activeStates": 7
+        },
+        {
+          "month": 24,
+          "maxTerritoryShare": 0.1510204081632653,
+          "activeStates": 7
+        },
+        {
+          "month": 36,
+          "maxTerritoryShare": 0.1526530612244898,
+          "activeStates": 6
+        },
+        {
+          "month": 48,
+          "maxTerritoryShare": 0.18122448979591838,
+          "activeStates": 6
+        },
+        {
+          "month": 60,
+          "maxTerritoryShare": 0.283265306122449,
+          "activeStates": 5
+        },
+        {
+          "month": 72,
+          "maxTerritoryShare": 0.3142857142857143,
+          "activeStates": 4
+        },
+        {
+          "month": 84,
+          "maxTerritoryShare": 0.29714285714285715,
+          "activeStates": 3
+        },
+        {
+          "month": 96,
+          "maxTerritoryShare": 0.34285714285714286,
+          "activeStates": 3
+        },
+        {
+          "month": 108,
+          "maxTerritoryShare": 0.34938775510204084,
+          "activeStates": 3
+        },
+        {
+          "month": 120,
+          "maxTerritoryShare": 0.3404081632653061,
+          "activeStates": 3
+        },
+        {
+          "month": 132,
+          "maxTerritoryShare": 0.3616326530612245,
+          "activeStates": 3
+        },
+        {
+          "month": 144,
+          "maxTerritoryShare": 0.39755102040816326,
+          "activeStates": 3
+        },
+        {
+          "month": 156,
+          "maxTerritoryShare": 0.4057142857142857,
+          "activeStates": 3
+        },
+        {
+          "month": 168,
+          "maxTerritoryShare": 0.4359183673469388,
+          "activeStates": 3
+        },
+        {
+          "month": 180,
+          "maxTerritoryShare": 0.4293877551020408,
+          "activeStates": 3
+        },
+        {
+          "month": 192,
+          "maxTerritoryShare": 0.4669387755102041,
+          "activeStates": 2
+        },
+        {
+          "month": 204,
+          "maxTerritoryShare": 0.5330612244897959,
+          "activeStates": 2
+        },
+        {
+          "month": 216,
+          "maxTerritoryShare": 0.5795918367346938,
+          "activeStates": 3
+        },
+        {
+          "month": 228,
+          "maxTerritoryShare": 0.5518367346938775,
+          "activeStates": 3
+        },
+        {
+          "month": 240,
+          "maxTerritoryShare": 0.5844897959183674,
+          "activeStates": 3
+        }
+      ],
+      "unificationMonths": [],
+      "mode": "real Arcade Core / default warring states",
+      "denominator": "hostile-contact city-months entering real City.updateSiege; capture frequency, not battle win probability",
+      "checkpoints": [
+        {
+          "genealogyArchive": {
+            "nodes": 19,
+            "royalMilitaryExpected": 1,
+            "royalMilitaryIncluded": 1,
+            "birthConflicts": 0,
+            "duplicateNodes": 0,
+            "shortAppointments": []
+          },
+          "normalRoyalSuccessions": 1,
+          "depositionDiagnostics": {
+            "observedChecks": 128,
+            "activePolities": 75,
+            "existingAdultKinCandidates": 50,
+            "qualifiedChecks": 1,
+            "royalCommandCrises": 1,
+            "royalCommandCandidateChecks": 1,
+            "royalWeightedSelections": 0,
+            "royalChangedSelections": 0,
+            "drawAttempts": 1,
+            "failures": 1,
+            "successes": 0,
+            "cooldownBlocked": 4,
+            "expectedSuccesses": 0.005,
+            "elapsedYears": 20,
+            "military": {
+              "checks": 128,
+              "crisisChecks": 38,
+              "eligibleActorChecks": 18,
+              "identityBlocked": 0,
+              "riskChanged": 0,
+              "draws": 0,
+              "baselineExpected": 0.005,
+              "finalExpected": 0.005,
+              "militarySuccesses": 0,
+              "militaryFailures": 0,
+              "nonMilitarySuccesses": 0,
+              "chineseSummary": "真实军权政治参与（本次会话，读档重置；非独立国家数）\n政治检查：128次；真实危机检查：38次\n符合军事资格：18人次；军权身份阻断：0人次\n风险实际改变：0次；资格放宽：0次\n军事参与单次抽签：0次（不按将领人数叠加）\n同批抽签原基线条件期望：0.0050；新规则条件期望：0.0050\n军事参与成功：0次；未成功：0次\n无军事参与的政治转型：0次\n区分宗室内部废立与异姓易代；本版未实现将领本人篡位。"
+            },
+            "expectedSuccessesPer100Years": 0.025,
+            "actualSuccessesPer100Years": 0,
+            "recent": [
+              {
+                "factionId": "楚",
+                "month": 240,
+                "blockers": [
+                  "NO_RECENT_REAL_CRISIS",
+                  "NO_EXISTING_ADULT_KIN"
+                ],
+                "candidateIds": [],
+                "evidenceIds": [],
+                "probability": 0
+              },
+              {
+                "factionId": "韩",
+                "month": 240,
+                "blockers": [
+                  "NOT_ACTIVE_STATE",
+                  "NO_LIVING_RULER",
+                  "NO_CITY",
+                  "NO_CURRENT_VULNERABILITY",
+                  "NO_RECENT_REAL_CRISIS",
+                  "NO_EXISTING_ADULT_KIN"
+                ],
+                "candidateIds": [],
+                "evidenceIds": [],
+                "probability": 0
+              },
+              {
+                "factionId": "魏",
+                "month": 240,
+                "blockers": [
+                  "NOT_ACTIVE_STATE",
+                  "NO_LIVING_RULER",
+                  "NO_CITY",
+                  "NO_CURRENT_VULNERABILITY",
+                  "NO_RECENT_REAL_CRISIS",
+                  "NO_EXISTING_ADULT_KIN"
+                ],
+                "candidateIds": [],
+                "evidenceIds": [],
+                "probability": 0
+              },
+              {
+                "factionId": "燕",
+                "month": 240,
+                "blockers": [
+                  "NO_CURRENT_VULNERABILITY"
+                ],
+                "candidateIds": [
+                  "燕-ruler-7",
+                  "燕-ruler-15",
+                  "燕-ruler-6",
+                  "燕-ruler-16"
+                ],
+                "evidenceIds": [
+                  "city-captured-226-秦-临淄-49"
+                ],
+                "probability": 0.005
+              },
+              {
+                "factionId": "赵",
+                "month": 240,
+                "blockers": [
+                  "NOT_ACTIVE_STATE",
+                  "NO_LIVING_RULER",
+                  "NO_CITY",
+                  "NO_CURRENT_VULNERABILITY",
+                  "NO_RECENT_REAL_CRISIS",
+                  "NO_EXISTING_ADULT_KIN"
+                ],
+                "candidateIds": [],
+                "evidenceIds": [],
+                "probability": 0
+              },
+              {
+                "factionId": "秦",
+                "month": 240,
+                "blockers": [
+                  "NO_CURRENT_VULNERABILITY"
+                ],
+                "candidateIds": [
+                  "秦-ruler-2",
+                  "秦-ruler-14",
+                  "秦-ruler-18"
+                ],
+                "evidenceIds": [
+                  "city-revolt-216-永浦-45",
+                  "city-captured-222-燕-邯郸-48"
+                ],
+                "probability": 0.01
+              },
+              {
+                "factionId": "楚",
+                "month": 228,
+                "blockers": [
+                  "NO_RECENT_REAL_CRISIS",
+                  "NO_EXISTING_ADULT_KIN"
+                ],
+                "candidateIds": [],
+                "evidenceIds": [],
+                "probability": 0
+              },
+              {
+                "factionId": "韩",
+                "month": 228,
+                "blockers": [
+                  "NOT_ACTIVE_STATE",
+                  "NO_LIVING_RULER",
+                  "NO_CITY",
+                  "NO_CURRENT_VULNERABILITY",
+                  "NO_RECENT_REAL_CRISIS",
+                  "NO_EXISTING_ADULT_KIN"
+                ],
+                "candidateIds": [],
+                "evidenceIds": [],
+                "probability": 0
+              },
+              {
+                "factionId": "魏",
+                "month": 228,
+                "blockers": [
+                  "NOT_ACTIVE_STATE",
+                  "NO_LIVING_RULER",
+                  "NO_CITY",
+                  "NO_CURRENT_VULNERABILITY",
+                  "NO_RECENT_REAL_CRISIS",
+                  "NO_EXISTING_ADULT_KIN"
+                ],
+                "candidateIds": [],
+                "evidenceIds": [],
+                "probability": 0
+              },
+              {
+                "factionId": "燕",
+                "month": 228,
+                "blockers": [
+                  "NO_CURRENT_VULNERABILITY"
+                ],
+                "candidateIds": [
+                  "燕-ruler-7",
+                  "燕-ruler-15",
+                  "燕-ruler-6",
+                  "燕-ruler-16"
+                ],
+                "evidenceIds": [
+                  "city-captured-226-秦-临淄-49"
+                ],
+                "probability": 0.005
+              },
+              {
+                "factionId": "赵",
+                "month": 228,
+                "blockers": [
+                  "NOT_ACTIVE_STATE",
+                  "NO_LIVING_RULER",
+                  "NO_CITY",
+                  "NO_CURRENT_VULNERABILITY",
+                  "NO_RECENT_REAL_CRISIS",
+                  "NO_EXISTING_ADULT_KIN"
+                ],
+                "candidateIds": [],
+                "evidenceIds": [],
+                "probability": 0
+              },
+              {
+                "factionId": "秦",
+                "month": 228,
+                "blockers": [
+                  "NO_CURRENT_VULNERABILITY"
+                ],
+                "candidateIds": [
+                  "秦-ruler-2",
+                  "秦-ruler-14"
+                ],
+                "evidenceIds": [
+                  "city-revolt-216-永浦-45",
+                  "city-captured-222-燕-邯郸-48"
+                ],
+                "probability": 0.01
+              },
+              {
+                "factionId": "楚",
+                "month": 216,
+                "blockers": [
+                  "NO_EXISTING_ADULT_KIN"
+                ],
+                "candidateIds": [],
+                "evidenceIds": [
+                  "capital-fallen-186-秦-楚-永浦-41"
+                ],
+                "probability": 0.005
+              },
+              {
+                "factionId": "韩",
+                "month": 216,
+                "blockers": [
+                  "NOT_ACTIVE_STATE",
+                  "NO_LIVING_RULER",
+                  "NO_CITY",
+                  "NO_CURRENT_VULNERABILITY",
+                  "NO_RECENT_REAL_CRISIS",
+                  "NO_EXISTING_ADULT_KIN"
+                ],
+                "candidateIds": [],
+                "evidenceIds": [],
+                "probability": 0
+              },
+              {
+                "factionId": "魏",
+                "month": 216,
+                "blockers": [
+                  "NOT_ACTIVE_STATE",
+                  "NO_LIVING_RULER",
+                  "NO_CITY",
+                  "NO_CURRENT_VULNERABILITY",
+                  "NO_RECENT_REAL_CRISIS",
+                  "NO_EXISTING_ADULT_KIN"
+                ],
+                "candidateIds": [],
+                "evidenceIds": [],
+                "probability": 0
+              },
+              {
+                "factionId": "燕",
+                "month": 216,
+                "blockers": [
+                  "NO_CURRENT_VULNERABILITY",
+                  "NO_RECENT_REAL_CRISIS"
+                ],
+                "candidateIds": [
+                  "燕-ruler-7",
+                  "燕-ruler-15",
+                  "燕-ruler-6",
+                  "燕-ruler-16"
+                ],
+                "evidenceIds": [],
+                "probability": 0
+              },
+              {
+                "factionId": "赵",
+                "month": 216,
+                "blockers": [
+                  "NOT_ACTIVE_STATE",
+                  "NO_LIVING_RULER",
+                  "NO_CITY",
+                  "NO_CURRENT_VULNERABILITY",
+                  "NO_RECENT_REAL_CRISIS",
+                  "NO_EXISTING_ADULT_KIN"
+                ],
+                "candidateIds": [],
+                "evidenceIds": [],
+                "probability": 0
+              },
+              {
+                "factionId": "秦",
+                "month": 216,
+                "blockers": [
+                  "NO_CURRENT_VULNERABILITY"
+                ],
+                "candidateIds": [
+                  "秦-ruler-2"
+                ],
+                "evidenceIds": [
+                  "city-revolt-216-永浦-45"
+                ],
+                "probability": 0.005
+              },
+              {
+                "factionId": "楚",
+                "month": 204,
+                "blockers": [
+                  "NOT_ACTIVE_STATE",
+                  "NO_LIVING_RULER",
+                  "NO_CITY",
+                  "NO_CURRENT_VULNERABILITY",
+                  "NO_EXISTING_ADULT_KIN"
+                ],
+                "candidateIds": [],
+                "evidenceIds": [
+                  "capital-fallen-186-秦-楚-永浦-41"
+                ],
+                "probability": 0.005
+              },
+              {
+                "factionId": "韩",
+                "month": 204,
+                "blockers": [
+                  "NOT_ACTIVE_STATE",
+                  "NO_LIVING_RULER",
+                  "NO_CITY",
+                  "NO_CURRENT_VULNERABILITY",
+                  "NO_RECENT_REAL_CRISIS",
+                  "NO_EXISTING_ADULT_KIN"
+                ],
+                "candidateIds": [],
+                "evidenceIds": [],
+                "probability": 0
+              }
+            ],
+            "chineseSummary": "宗室废立诊断（本次观察）\n实际观察：20.00年\n已观察在国正式政权：75次\n现存成年宗室候选：50人次\n完整资格通过：1次\n实际抽签：1次\n抽签失败：1次\n实际废立：0次\n冷却阻断：4次\n条件期望废立：0.005次"
+          },
+          "royalMilitary": {
+            "normalAccessions": 0,
+            "candidatePeople": 5,
+            "adultKinObserved": 5,
+            "enlisted": 1,
+            "victories": 5,
+            "promotions": 2,
+            "battleDeaths": 0,
+            "naturalDeaths": 0,
+            "accessions": 0,
+            "identityConflicts": 0,
+            "duplicateActiveMembers": 0
+          },
+          "ordinaryResidentAges": {
+            "population": 99,
+            "mean": 49.60606060606061,
+            "over70": 10,
+            "over90": 0,
+            "over100": 0,
+            "over120": 0,
+            "over150": 0,
+            "max": 81
+          },
+          "month": 240,
+          "worldPopulation": 108,
+          "populationUnexplained": 0,
+          "naturalGrowth": 112,
+          "warDeaths": 39,
+          "activeStates": 3,
+          "historicalStates": 7,
+          "cities": 10,
+          "captures": 14,
+          "recoveries": 0,
+          "siegeCityMonths": 321,
+          "capturesPer100SiegeCityMonths": 4.361370716510903,
+          "formationSizeSamples": {
+            "2": 9,
+            "9": 178,
+            "10": 69,
+            "11": 202,
+            "12": 32
+          },
+          "factionCommandSamples": {
+            "0": 473,
+            "1": 396,
+            "2": 47
+          },
+          "meanFormationSize": 10.03265306122449,
+          "appointments": 6,
+          "offices": {
+            "pijiang": 6,
+            "jiangjun": 2,
+            "shangjiangjun": 2,
+            "promotions": 4,
+            "meanServiceMonths": 81,
+            "currentOffices": [
+              "SHANGJIANGJUN",
+              "SHANGJIANGJUN",
+              "PIJIANG",
+              "PIJIANG"
+            ],
+            "naturalDeaths": 0,
+            "ageRetirements": 0,
+            "highOfficeMerits": [
+              {
+                "serviceMonths": 192,
+                "verifiedMerits": 3
+              },
+              {
+                "serviceMonths": 180,
+                "verifiedMerits": 3
+              }
+            ],
+            "activeFormationSizes": [
+              9,
+              9,
+              9,
+              12
+            ]
+          },
+          "promotions": [
+            {
+              "office": "JIANGJUN",
+              "waitMonths": 60
+            },
+            {
+              "office": "SHANGJIANGJUN",
+              "waitMonths": 192
+            },
+            {
+              "office": "JIANGJUN",
+              "waitMonths": 60
+            },
+            {
+              "office": "SHANGJIANGJUN",
+              "waitMonths": 180
+            }
+          ],
+          "meanServiceMonths": 81,
+          "matureEnded": 0,
+          "matureEndedNeverPromoted": 0,
+          "politicalCandidateChecks": 18,
+          "militaryPoliticalEvents": 0,
+          "depositions": 0,
+          "usurpations": 0,
+          "extinctions": 0,
+          "unifications": 0,
+          "splits": 0,
+          "restorations": 1,
+          "rebellions": 0,
+          "classicRebellions": 0,
+          "frontierRebellions": 0,
+          "canonicalSha256": "78fb128c2b53e745acf88978668cc7a2905858afb7d7d1eec3696c9da4ccf4ef",
+          "baseFactsSha256": "82a8cc4d124acd7fc1e67d719b2c25ad112265b960c7f33cd1f2cdf5b84ba389",
+          "monthlyExposure": {
+            "cityMonths": 2163,
+            "politicalCityMonths": 0,
+            "supporters": 0,
+            "identityBlocked": 0,
+            "geographyBlocked": 0,
+            "discontentBlocked": 0
+          },
+          "issuingRulerGrants": 10,
+          "worldRandomPosition": 1359,
+          "regional": {
+            "cityChecks": 180,
+            "politicalCities": 0,
+            "loyaltyBlocked": 180,
+            "stabilityBlocked": 0,
+            "capacityBlocked": 0,
+            "identityBlocked": 5,
+            "validOrdinary": 45,
+            "discontentBlocked": 0,
+            "geographyBlocked": 45,
+            "supporters": 0,
+            "noSupport": 0,
+            "draws": 0,
+            "drawFailed": 0,
+            "executionFailed": 0,
+            "popular": 0,
+            "split": 0,
+            "territorialReturns": 0,
+            "splitChecks": 21,
+            "splitPolitical": 1,
+            "splitRestored": 1,
+            "alive12": 0,
+            "matured12": 0,
+            "alive60": 0,
+            "matured60": 0,
+            "overflow": 0,
+            "popularFunnel": {
+              "cityChecks": 180,
+              "political": 0,
+              "captureGrace": 0,
+              "cooldown": 0,
+              "capacity": 0,
+              "populationScans": 0,
+              "validUsers": 0,
+              "identityBlocked": 0,
+              "geographyBlocked": 0,
+              "discontentBlocked": 0,
+              "supporters": 0,
+              "noSupport": 0,
+              "candidates": 0,
+              "priorityBlocked": 0,
+              "draws": 0,
+              "expectedHits": 0,
+              "hits": 0,
+              "misses": 0,
+              "historicalSelected": 0,
+              "founderRestored": 0,
+              "failures": 0,
+              "successes": 0
+            },
+            "popularFailures": {},
+            "spatial": {
+              "invalidPosition": 0,
+              "unowned": 0,
+              "foreign": 0,
+              "otherCity": 4,
+              "otherDistrict": 41,
+              "disconnected": 0,
+              "outsideLegacy": 41,
+              "recoveredDistrict": 0,
+              "emptyLegacyArea": 0,
+              "emptyDistrict": 0,
+              "referenceMismatch": 0,
+              "referenceWithOwnedPosition": 0,
+              "arcadePosition": 45,
+              "logicalPosition": 0,
+              "staleRegistryPosition": 45
+            },
+            "restored": 1,
+            "worldMonth": 240,
+            "insufficient12": 0,
+            "insufficient60": 0
+          },
+          "militaryRoyalOverlap": 0,
+          "politicalMilitaryBindings": 1,
+          "duplicatePopulationIds": 0,
+          "currentMilitaryByRegime": [
+            {
+              "factionId": "秦",
+              "factionType": "KINGDOM",
+              "stage": "STATE",
+              "rank": "KING",
+              "population": 55,
+              "commands": 2
+            },
+            {
+              "factionId": "燕",
+              "factionType": "KINGDOM",
+              "stage": "STATE",
+              "rank": "KING",
+              "population": 40,
+              "commands": 2
+            },
+            {
+              "factionId": "楚",
+              "factionType": "KINGDOM",
+              "stage": "STATE",
+              "rank": "KING",
+              "population": 13,
+              "commands": 0
+            }
+          ],
+          "meanActiveStates": 3.816666666666667,
+          "meanEndedStateLifetimeMonths": 0,
+          "militarySplits": 0,
+          "formationOwnershipConflicts": 0,
+          "residentFounders": 0,
+          "residentLiveBindings": 1,
+          "residentIdentityConflicts": 0,
+          "strictSaveValid": true,
+          "elapsedMs": 8423,
+          "heapBytes": 67699946
+        }
+      ]
+    },
+    "transfers": [
+      {
+        "cityId": "city-韩-新郑",
+        "month": 36,
+        "kind": "CAPTURE",
+        "from": "韩",
+        "to": "魏",
+        "defenseBefore": 0,
+        "defenseAfter": 3
+      },
+      {
+        "cityId": "city-赵-邯郸",
+        "month": 52,
+        "kind": "CAPTURE",
+        "from": "赵",
+        "to": "魏",
+        "defenseBefore": 0,
+        "defenseAfter": 3
+      },
+      {
+        "cityId": "city-赵-邯郸",
+        "month": 60,
+        "kind": "CAPTURE",
+        "from": "魏",
+        "to": "秦",
+        "defenseBefore": 0,
+        "defenseAfter": 4
+      },
+      {
+        "cityId": "city-齐-临淄",
+        "month": 61,
+        "kind": "CAPTURE",
+        "from": "齐",
+        "to": "燕",
+        "defenseBefore": 0,
+        "defenseAfter": 3
+      },
+      {
+        "cityId": "city-韩-新郑",
+        "month": 71,
+        "kind": "CAPTURE",
+        "from": "魏",
+        "to": "燕",
+        "defenseBefore": 0,
+        "defenseAfter": 3
+      },
+      {
+        "cityId": "city-韩-新郑",
+        "month": 79,
+        "kind": "CAPTURE",
+        "from": "燕",
+        "to": "秦",
+        "defenseBefore": 0,
+        "defenseAfter": 4
+      },
+      {
+        "cityId": "city-魏-大梁",
+        "month": 81,
+        "kind": "CAPTURE",
+        "from": "魏",
+        "to": "秦",
+        "defenseBefore": 0,
+        "defenseAfter": 4
+      },
+      {
+        "cityId": "燕-city-96-2",
+        "month": 110,
+        "kind": "CAPTURE",
+        "from": "燕",
+        "to": "楚",
+        "defenseBefore": 0,
+        "defenseAfter": 4
+      },
+      {
+        "cityId": "city-楚-郢",
+        "month": 112,
+        "kind": "CAPTURE",
+        "from": "楚",
+        "to": "燕",
+        "defenseBefore": 0,
+        "defenseAfter": 4
+      },
+      {
+        "cityId": "city-魏-大梁",
+        "month": 152,
+        "kind": "CAPTURE",
+        "from": "秦",
+        "to": "燕",
+        "defenseBefore": 0,
+        "defenseAfter": 4
+      },
+      {
+        "cityId": "燕-city-96-2",
+        "month": 152,
+        "kind": "CAPTURE",
+        "from": "楚",
+        "to": "秦",
+        "defenseBefore": 0,
+        "defenseAfter": 4
+      },
+      {
+        "cityId": "楚-city-72-1",
+        "month": 186,
+        "kind": "CAPTURE",
+        "from": "楚",
+        "to": "秦",
+        "defenseBefore": 0,
+        "defenseAfter": 4
+      },
+      {
+        "cityId": "楚-city-72-1",
+        "month": 216,
+        "kind": "REVOLT",
+        "from": "秦",
+        "to": "楚",
+        "defenseBefore": 7,
+        "defenseAfter": 3
+      },
+      {
+        "cityId": "city-赵-邯郸",
+        "month": 222,
+        "kind": "CAPTURE",
+        "from": "秦",
+        "to": "燕",
+        "defenseBefore": 0,
+        "defenseAfter": 4
+      },
+      {
+        "cityId": "city-齐-临淄",
+        "month": 226,
+        "kind": "CAPTURE",
+        "from": "燕",
+        "to": "秦",
+        "defenseBefore": 0,
+        "defenseAfter": 5
+      }
+    ],
+    "checkpoints": [
+      {
+        "month": 240,
+        "cityMonths": 2167,
+        "meanDevastation": 15.028610982925704,
+        "damage": 170,
+        "localLoss": 39,
+        "nationalFallbackLoss": 0,
+        "noEligibleVictim": 145,
+        "recaptureWindows": {
+          "12": {
+            "fullyObservedCaptures": 14,
+            "recaptured": 2,
+            "ratio": 0.14285714285714285
+          },
+          "24": {
+            "fullyObservedCaptures": 12,
+            "recaptured": 2,
+            "ratio": 0.16666666666666666
+          },
+          "60": {
+            "fullyObservedCaptures": 11,
+            "recaptured": 4,
+            "ratio": 0.36363636363636365
+          },
+          "120": {
+            "fullyObservedCaptures": 9,
+            "recaptured": 5,
+            "ratio": 0.5555555555555556
+          }
+        },
+        "cumulativeTransfers": {
+          "median": 2,
+          "p90": 3,
+          "max": 3
+        },
+        "capitalDefense": {
+          "samples": 916,
+          "meanLocal": 0.8286026200873362,
+          "meanUnassignedLocal": 0.7838427947598253,
+          "emptyRatio": 0.48034934497816595
+        },
+        "lastStrongholdLosses": 5,
+        "cities": [
+          {
+            "id": "city-秦-咸阳",
+            "name": "咸阳",
+            "captureCount": 0,
+            "devastation": 0,
+            "maxDevastation": 0,
+            "defense": 12,
+            "maxDefense": 12,
+            "destroyed": false
+          },
+          {
+            "id": "city-赵-邯郸",
+            "name": "邯郸",
+            "captureCount": 3,
+            "devastation": 50,
+            "maxDevastation": 52,
+            "defense": 6,
+            "maxDefense": 9,
+            "destroyed": false
+          },
+          {
+            "id": "city-燕-蓟",
+            "name": "蓟",
+            "captureCount": 0,
+            "devastation": 0,
+            "maxDevastation": 4,
+            "defense": 11,
+            "maxDefense": 11,
+            "destroyed": false
+          },
+          {
+            "id": "city-齐-临淄",
+            "name": "临淄",
+            "captureCount": 2,
+            "devastation": 23,
+            "maxDevastation": 24,
+            "defense": 6,
+            "maxDefense": 10,
+            "destroyed": false
+          },
+          {
+            "id": "city-魏-大梁",
+            "name": "大梁",
+            "captureCount": 2,
+            "devastation": 33,
+            "maxDevastation": 36,
+            "defense": 2,
+            "maxDefense": 9,
+            "destroyed": false
+          },
+          {
+            "id": "city-韩-新郑",
+            "name": "新郑",
+            "captureCount": 3,
+            "devastation": 63,
+            "maxDevastation": 66,
+            "defense": 5,
+            "maxDefense": 10,
+            "destroyed": false
+          },
+          {
+            "id": "city-楚-郢",
+            "name": "郢",
+            "captureCount": 1,
+            "devastation": 13,
+            "maxDevastation": 22,
+            "defense": 9,
+            "maxDefense": 9,
+            "destroyed": false
+          },
+          {
+            "id": "秦-city-72-0",
+            "name": "犍为郡",
+            "captureCount": 0,
+            "devastation": 0,
+            "maxDevastation": 0,
+            "defense": 10,
+            "maxDefense": 10,
+            "destroyed": false
+          },
+          {
+            "id": "楚-city-72-1",
+            "name": "永浦",
+            "captureCount": 2,
+            "devastation": 11,
+            "maxDevastation": 16,
+            "defense": 5,
+            "maxDefense": 9,
+            "destroyed": false
+          },
+          {
+            "id": "燕-city-96-2",
+            "name": "丹徒",
+            "captureCount": 2,
+            "devastation": 35,
+            "maxDevastation": 39,
+            "defense": 8,
+            "maxDefense": 10,
+            "destroyed": false
+          }
+        ],
+        "completedEpisodes": [
+          {
+            "cityId": "city-魏-大梁",
+            "startMonth": 1,
+            "owner": "魏",
+            "attacker": "韩",
+            "endMonth": 2,
+            "durationMonths": 2,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-魏-大梁",
+            "startMonth": 5,
+            "owner": "魏",
+            "attacker": "韩",
+            "endMonth": 6,
+            "durationMonths": 2,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-楚-郢",
+            "startMonth": 15,
+            "owner": "楚",
+            "attacker": "韩",
+            "endMonth": 16,
+            "durationMonths": 2,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-韩-新郑",
+            "startMonth": 16,
+            "owner": "韩",
+            "attacker": "魏",
+            "endMonth": 17,
+            "durationMonths": 2,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-楚-郢",
+            "startMonth": 17,
+            "owner": "楚",
+            "attacker": "韩",
+            "endMonth": 18,
+            "durationMonths": 2,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-韩-新郑",
+            "startMonth": 19,
+            "owner": "韩",
+            "attacker": "魏",
+            "endMonth": 20,
+            "durationMonths": 2,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-楚-郢",
+            "startMonth": 21,
+            "owner": "楚",
+            "attacker": "韩",
+            "endMonth": 22,
+            "durationMonths": 2,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-赵-邯郸",
+            "startMonth": 23,
+            "owner": "赵",
+            "attacker": "魏",
+            "endMonth": 24,
+            "durationMonths": 2,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-赵-邯郸",
+            "startMonth": 25,
+            "owner": "赵",
+            "attacker": "魏",
+            "endMonth": 27,
+            "durationMonths": 3,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-楚-郢",
+            "startMonth": 26,
+            "owner": "楚",
+            "attacker": "韩",
+            "endMonth": 27,
+            "durationMonths": 2,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-韩-新郑",
+            "startMonth": 21,
+            "owner": "韩",
+            "attacker": "魏",
+            "endMonth": 32,
+            "durationMonths": 12,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-赵-邯郸",
+            "startMonth": 32,
+            "owner": "赵",
+            "attacker": "魏",
+            "endMonth": 33,
+            "durationMonths": 2,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-楚-郢",
+            "startMonth": 33,
+            "owner": "楚",
+            "attacker": "韩",
+            "endMonth": 34,
+            "durationMonths": 2,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-韩-新郑",
+            "startMonth": 33,
+            "owner": "韩",
+            "attacker": "魏",
+            "endMonth": 35,
+            "durationMonths": 3,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-韩-新郑",
+            "startMonth": 36,
+            "owner": "韩",
+            "attacker": "魏",
+            "endMonth": 36,
+            "durationMonths": 1,
+            "reason": "CAPTURED"
+          },
+          {
+            "cityId": "city-赵-邯郸",
+            "startMonth": 36,
+            "owner": "赵",
+            "attacker": "魏",
+            "endMonth": 52,
+            "durationMonths": 17,
+            "reason": "CAPTURED"
+          },
+          {
+            "cityId": "city-韩-新郑",
+            "startMonth": 53,
+            "owner": "魏",
+            "attacker": "楚",
+            "endMonth": 54,
+            "durationMonths": 2,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-韩-新郑",
+            "startMonth": 55,
+            "owner": "魏",
+            "attacker": "齐",
+            "endMonth": 56,
+            "durationMonths": 2,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-韩-新郑",
+            "startMonth": 58,
+            "owner": "魏",
+            "attacker": "楚",
+            "endMonth": 60,
+            "durationMonths": 3,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-赵-邯郸",
+            "startMonth": 56,
+            "owner": "魏",
+            "attacker": "秦",
+            "endMonth": 60,
+            "durationMonths": 5,
+            "reason": "CAPTURED"
+          },
+          {
+            "cityId": "city-齐-临淄",
+            "startMonth": 41,
+            "owner": "齐",
+            "attacker": "燕",
+            "endMonth": 61,
+            "durationMonths": 21,
+            "reason": "CAPTURED"
+          },
+          {
+            "cityId": "city-魏-大梁",
+            "startMonth": 59,
+            "owner": "魏",
+            "attacker": "齐",
+            "endMonth": 61,
+            "durationMonths": 3,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-韩-新郑",
+            "startMonth": 66,
+            "owner": "魏",
+            "attacker": "秦",
+            "endMonth": 70,
+            "durationMonths": 5,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-韩-新郑",
+            "startMonth": 71,
+            "owner": "魏",
+            "attacker": "燕",
+            "endMonth": 71,
+            "durationMonths": 1,
+            "reason": "CAPTURED"
+          },
+          {
+            "cityId": "city-燕-蓟",
+            "startMonth": 57,
+            "owner": "燕",
+            "attacker": "魏",
+            "endMonth": 72,
+            "durationMonths": 16,
+            "reason": "DIPLOMACY_OR_POLITICAL_END"
+          },
+          {
+            "cityId": "city-韩-新郑",
+            "startMonth": 75,
+            "owner": "燕",
+            "attacker": "秦",
+            "endMonth": 79,
+            "durationMonths": 5,
+            "reason": "CAPTURED"
+          },
+          {
+            "cityId": "city-魏-大梁",
+            "startMonth": 63,
+            "owner": "魏",
+            "attacker": "秦",
+            "endMonth": 81,
+            "durationMonths": 19,
+            "reason": "CAPTURED"
+          },
+          {
+            "cityId": "city-赵-邯郸",
+            "startMonth": 75,
+            "owner": "秦",
+            "attacker": "魏",
+            "endMonth": 84,
+            "durationMonths": 10,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-韩-新郑",
+            "startMonth": 84,
+            "owner": "秦",
+            "attacker": "楚",
+            "endMonth": 85,
+            "durationMonths": 2,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "燕-city-96-2",
+            "startMonth": 100,
+            "owner": "燕",
+            "attacker": "楚",
+            "endMonth": 103,
+            "durationMonths": 4,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "燕-city-96-2",
+            "startMonth": 105,
+            "owner": "燕",
+            "attacker": "楚",
+            "endMonth": 106,
+            "durationMonths": 2,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "燕-city-96-2",
+            "startMonth": 108,
+            "owner": "燕",
+            "attacker": "楚",
+            "endMonth": 110,
+            "durationMonths": 3,
+            "reason": "CAPTURED"
+          },
+          {
+            "cityId": "city-楚-郢",
+            "startMonth": 88,
+            "owner": "楚",
+            "attacker": "燕",
+            "endMonth": 112,
+            "durationMonths": 25,
+            "reason": "CAPTURED"
+          },
+          {
+            "cityId": "燕-city-96-2",
+            "startMonth": 117,
+            "owner": "楚",
+            "attacker": "燕",
+            "endMonth": 120,
+            "durationMonths": 4,
+            "reason": "DIPLOMACY_OR_POLITICAL_END"
+          },
+          {
+            "cityId": "city-魏-大梁",
+            "startMonth": 133,
+            "owner": "秦",
+            "attacker": "燕",
+            "endMonth": 135,
+            "durationMonths": 3,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-楚-郢",
+            "startMonth": 133,
+            "owner": "燕",
+            "attacker": "秦",
+            "endMonth": 137,
+            "durationMonths": 5,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-赵-邯郸",
+            "startMonth": 134,
+            "owner": "秦",
+            "attacker": "燕",
+            "endMonth": 138,
+            "durationMonths": 5,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-赵-邯郸",
+            "startMonth": 141,
+            "owner": "秦",
+            "attacker": "燕",
+            "endMonth": 143,
+            "durationMonths": 3,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-韩-新郑",
+            "startMonth": 142,
+            "owner": "秦",
+            "attacker": "燕",
+            "endMonth": 145,
+            "durationMonths": 4,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-赵-邯郸",
+            "startMonth": 146,
+            "owner": "秦",
+            "attacker": "燕",
+            "endMonth": 147,
+            "durationMonths": 2,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-韩-新郑",
+            "startMonth": 146,
+            "owner": "秦",
+            "attacker": "燕",
+            "endMonth": 149,
+            "durationMonths": 4,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-赵-邯郸",
+            "startMonth": 149,
+            "owner": "秦",
+            "attacker": "燕",
+            "endMonth": 152,
+            "durationMonths": 4,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-韩-新郑",
+            "startMonth": 151,
+            "owner": "秦",
+            "attacker": "燕",
+            "endMonth": 152,
+            "durationMonths": 2,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-魏-大梁",
+            "startMonth": 136,
+            "owner": "秦",
+            "attacker": "燕",
+            "endMonth": 152,
+            "durationMonths": 17,
+            "reason": "CAPTURED"
+          },
+          {
+            "cityId": "燕-city-96-2",
+            "startMonth": 142,
+            "owner": "楚",
+            "attacker": "秦",
+            "endMonth": 152,
+            "durationMonths": 11,
+            "reason": "CAPTURED"
+          },
+          {
+            "cityId": "city-韩-新郑",
+            "startMonth": 153,
+            "owner": "秦",
+            "attacker": "燕",
+            "endMonth": 154,
+            "durationMonths": 2,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-赵-邯郸",
+            "startMonth": 154,
+            "owner": "秦",
+            "attacker": "燕",
+            "endMonth": 156,
+            "durationMonths": 3,
+            "reason": "DIPLOMACY_OR_POLITICAL_END"
+          },
+          {
+            "cityId": "city-齐-临淄",
+            "startMonth": 154,
+            "owner": "燕",
+            "attacker": "秦",
+            "endMonth": 156,
+            "durationMonths": 3,
+            "reason": "DIPLOMACY_OR_POLITICAL_END"
+          },
+          {
+            "cityId": "city-韩-新郑",
+            "startMonth": 161,
+            "owner": "秦",
+            "attacker": "楚",
+            "endMonth": 162,
+            "durationMonths": 2,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-韩-新郑",
+            "startMonth": 163,
+            "owner": "秦",
+            "attacker": "楚",
+            "endMonth": 164,
+            "durationMonths": 2,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-韩-新郑",
+            "startMonth": 167,
+            "owner": "秦",
+            "attacker": "楚",
+            "endMonth": 170,
+            "durationMonths": 4,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-韩-新郑",
+            "startMonth": 184,
+            "owner": "秦",
+            "attacker": "楚",
+            "endMonth": 185,
+            "durationMonths": 2,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "楚-city-72-1",
+            "startMonth": 164,
+            "owner": "楚",
+            "attacker": "秦",
+            "endMonth": 186,
+            "durationMonths": 23,
+            "reason": "CAPTURED"
+          },
+          {
+            "cityId": "city-韩-新郑",
+            "startMonth": 205,
+            "owner": "秦",
+            "attacker": "燕",
+            "endMonth": 210,
+            "durationMonths": 6,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-韩-新郑",
+            "startMonth": 211,
+            "owner": "秦",
+            "attacker": "燕",
+            "endMonth": 213,
+            "durationMonths": 3,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-赵-邯郸",
+            "startMonth": 206,
+            "owner": "秦",
+            "attacker": "燕",
+            "endMonth": 222,
+            "durationMonths": 17,
+            "reason": "CAPTURED"
+          },
+          {
+            "cityId": "city-齐-临淄",
+            "startMonth": 206,
+            "owner": "燕",
+            "attacker": "秦",
+            "endMonth": 226,
+            "durationMonths": 21,
+            "reason": "CAPTURED"
+          },
+          {
+            "cityId": "燕-city-96-2",
+            "startMonth": 224,
+            "owner": "秦",
+            "attacker": "楚",
+            "endMonth": 227,
+            "durationMonths": 4,
+            "reason": "NO_VALID_CONTACT"
+          },
+          {
+            "cityId": "city-魏-大梁",
+            "startMonth": 209,
+            "owner": "燕",
+            "attacker": "秦",
+            "endMonth": 228,
+            "durationMonths": 20,
+            "reason": "DIPLOMACY_OR_POLITICAL_END"
+          },
+          {
+            "cityId": "燕-city-96-2",
+            "startMonth": 228,
+            "owner": "秦",
+            "attacker": "楚",
+            "endMonth": 232,
+            "durationMonths": 5,
+            "reason": "NO_VALID_CONTACT"
+          }
+        ],
+        "ongoingEpisodes": [],
+        "strength": {
+          "0:4:8:8": 1,
+          "0:0:7:8": 1,
+          "0:2:8:9": 1,
+          "0:0:8:9": 10,
+          "0:0:7:9": 6,
+          "2:0:7:9": 3,
+          "0:1:7:9": 4,
+          "1:0:6:9": 3,
+          "0:1:9:9": 2,
+          "0:1:6:9": 3,
+          "1:0:5:9": 6,
+          "2:0:8:9": 1,
+          "2:0:5:9": 4,
+          "1:0:4:9": 12,
+          "0:0:6:9": 8,
+          "0:0:4:9": 5,
+          "2:0:3:9": 3,
+          "1:1:3:9": 1,
+          "1:1:8:9": 2,
+          "0:0:2:9": 3,
+          "1:1:1:9": 1,
+          "0:2:1:9": 1,
+          "1:0:7:9": 2,
+          "6:0:7:9": 1,
+          "2:1:6:9": 3,
+          "1:1:6:9": 4,
+          "1:0:9:9": 2,
+          "2:1:5:9": 2,
+          "1:0:8:9": 3,
+          "1:1:4:9": 1,
+          "5:0:4:9": 1,
+          "1:1:7:9": 7,
+          "3:0:3:9": 2,
+          "4:0:4:9": 2,
+          "4:0:6:9": 2,
+          "3:0:2:9": 2,
+          "3:0:6:9": 1,
+          "2:0:2:9": 3,
+          "5:0:1:9": 1,
+          "2:1:1:9": 2,
+          "3:1:4:9": 2,
+          "2:1:4:7": 1,
+          "4:1:3:9": 2,
+          "2:1:4:9": 1,
+          "0:0:4:7": 1,
+          "1:0:3:9": 3,
+          "3:0:3:7": 1,
+          "0:0:9:9": 5,
+          "0:2:3:9": 1,
+          "1:0:2:7": 1,
+          "1:1:2:9": 1,
+          "1:0:3:7": 1,
+          "2:0:2:7": 1,
+          "1:0:2:9": 2,
+          "0:0:2:7": 3,
+          "4:0:1:7": 1,
+          "5:0:1:7": 1,
+          "2:3:1:9": 1,
+          "2:2:6:9": 1,
+          "3:0:8:9": 3,
+          "5:0:7:9": 1,
+          "0:0:3:7": 1,
+          "5:0:6:9": 3,
+          "0:0:1:7": 2,
+          "3:1:3:10": 1,
+          "0:0:5:9": 5,
+          "6:0:5:9": 3,
+          "2:1:3:10": 1,
+          "2:0:5:8": 1,
+          "0:0:3:8": 5,
+          "2:1:4:8": 1,
+          "0:0:2:8": 5,
+          "0:0:3:9": 7,
+          "1:2:4:8": 1,
+          "2:0:3:8": 2,
+          "0:0:1:8": 2,
+          "1:0:4:8": 2,
+          "2:0:4:8": 1,
+          "1:0:3:8": 3,
+          "6:0:3:8": 1,
+          "0:0:1:9": 2,
+          "4:0:3:8": 1,
+          "5:0:2:8": 2,
+          "0:3:4:8": 1,
+          "0:0:10:10": 3,
+          "0:0:9:10": 3,
+          "3:0:9:10": 1,
+          "2:0:9:10": 2,
+          "5:1:9:10": 1,
+          "0:1:9:10": 1,
+          "5:0:8:10": 1,
+          "0:0:8:10": 2,
+          "3:0:8:10": 3,
+          "2:0:7:10": 1,
+          "0:0:7:10": 1,
+          "3:1:7:10": 1,
+          "0:1:7:10": 3,
+          "5:0:6:10": 2,
+          "0:0:6:10": 3,
+          "2:0:6:10": 1,
+          "0:0:5:10": 6,
+          "6:0:5:10": 1,
+          "4:0:5:10": 1,
+          "2:0:5:10": 2,
+          "3:0:4:10": 2,
+          "0:0:4:10": 4,
+          "6:0:4:10": 1,
+          "1:0:2:8": 2,
+          "3:0:3:10": 3,
+          "0:0:3:10": 2,
+          "7:0:3:10": 1,
+          "7:0:2:10": 1,
+          "0:0:2:10": 5,
+          "4:0:2:10": 1,
+          "1:0:1:8": 3,
+          "3:0:2:10": 2,
+          "2:0:1:8": 1,
+          "5:0:2:10": 1,
+          "5:0:1:10": 1,
+          "0:0:1:10": 4,
+          "4:0:1:10": 1,
+          "0:1:4:8": 1,
+          "0:1:3:8": 1,
+          "0:0:6:8": 1,
+          "1:3:7:9": 1,
+          "0:1:5:8": 1,
+          "0:0:5:8": 1,
+          "0:0:4:8": 3,
+          "0:1:5:9": 2,
+          "0:2:5:8": 1,
+          "0:1:8:9": 1,
+          "1:1:3:8": 1,
+          "0:3:7:9": 1,
+          "2:0:4:9": 1,
+          "0:2:6:9": 1,
+          "3:0:1:9": 1,
+          "1:0:1:9": 2,
+          "2:0:8:8": 1,
+          "3:1:2:9": 1,
+          "6:0:7:8": 1,
+          "2:1:9:10": 1,
+          "0:1:8:10": 2,
+          "0:2:7:10": 1,
+          "0:1:6:10": 1,
+          "1:1:6:10": 2,
+          "2:0:4:10": 1,
+          "2:0:3:10": 1,
+          "0:1:3:10": 1,
+          "1:0:3:10": 2,
+          "1:0:2:10": 1,
+          "2:2:8:10": 1,
+          "1:0:5:10": 2,
+          "1:1:7:10": 1,
+          "4:1:7:10": 1,
+          "0:1:4:10": 1,
+          "3:0:6:10": 2,
+          "0:2:4:10": 1,
+          "4:0:7:9": 1,
+          "1:1:5:10": 1,
+          "1:1:3:10": 1,
+          "0:2:2:10": 1,
+          "2:2:4:10": 1,
+          "4:0:5:9": 3,
+          "1:2:5:10": 1,
+          "3:0:4:9": 1,
+          "3:0:5:9": 1,
+          "2:0:2:10": 1,
+          "4:0:3:9": 1,
+          "1:2:4:9": 1,
+          "2:0:1:10": 2,
+          "4:0:2:9": 2,
+          "4:0:1:9": 1,
+          "6:1:3:9": 1,
+          "1:0:10:10": 1,
+          "2:1:10:10": 1,
+          "2:0:1:9": 1,
+          "2:2:2:9": 1,
+          "0:7:2:9": 1,
+          "4:0:9:10": 1,
+          "1:2:7:10": 1
+        }
+      }
+    ]
+  }
+]
