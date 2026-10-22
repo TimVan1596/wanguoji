@@ -1,3 +1,4 @@
+import {militaryPoliticalLife} from "../../../Politics/MilitaryPoliticalLife";
 import GenealogyBrowser from "./GenealogyBrowser";
 import PersonLifeDates from "./PersonLifeDates";
 import {militaryIdentityLabels} from "../../../Politics/RoyalArchiveIdentity";
@@ -673,7 +674,8 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
       const highest=localAppointments.flatMap(a=>a.officeHistory??[]).sort((a,b)=>MILITARY_OFFICES.indexOf(b.office)-MILITARY_OFFICES.indexOf(a.office))[0];
       const entries=MilitaryCommandRegistry.getChronicle(person,worldMonth,factionId);
       const localEvents=WorldHistory.getEventsForFaction(factionId);
-      const allMilestones=militaryMilestones(person,entries,localEvents,{factions:politicalFactionById});
+      const politicalLife=militaryPoliticalLife(person,DynastyRegistry.getAll(),WorldHistory.getEvents(),politicalFactionById,worldMonth);
+      const allMilestones=[...militaryMilestones(person,entries,localEvents,{factions:politicalFactionById}),...(politicalLife?[politicalLife.entry]:[])].sort((a,b)=>a.worldMonth-b.worldMonth||a.eventId.localeCompare(b.eventId));
       const milestones=selectMilitaryMilestones(allMilestones,localEvents,8);
       const portraitContext=militaryPortraitContext(person,factionId,politicalTeam,worldMonth);
       const linked=linkedRulers.get(person.personId);

@@ -1,3 +1,4 @@
+import {militaryPoliticalLife} from "../../../Politics/MilitaryPoliticalLife";
 import {MilitaryRoyalOrigin} from "./RoyalMilitaryPanel";
 import Game from "../../../Game/Game";
 import {getFactionDisplayNameAtMonth} from "../../../Simulation/FactionIdentity";
@@ -32,7 +33,8 @@ export function RulerServicePanel({ruler,factionId,month}:{ruler:Ruler;factionId
 export function MilitaryServicePanel({personId,month}:{personId:string;month:number}){
  const nav=usePersonArchiveNavigation(),person=Military.getPerson(personId);if(!person)return null;
  const rows=Dynasty.getAll().filter(d=>person.appointments.some(a=>a.factionId===d.factionId)).flatMap(d=>personServiceLinks(d.factionId,d.rulers,[person],Military.getFormations(),History.getEvents(),month));
- return <><MilitaryRoyalOrigin personId={personId}/>{rows.length>0?<ChronicleSection title="历任所事君主"><Typography fontSize="0.74rem">按真实任职与在位交集排列；仅有原始授职事件时注明本人授职。</Typography>
+ const politicalLife=militaryPoliticalLife(person,Dynasty.getAll(),History.getEvents(),new Map((Game.Core?.teams??[]).map(t=>[t.name,t])),month);
+ return <><MilitaryRoyalOrigin personId={personId}/>{politicalLife&&<ChronicleSection title="政治生涯转折"><Typography fontSize=".8rem">{formatWorldDate(politicalLife.entry.worldMonth)} · {politicalLife.entry.text}</Typography><button type="button" style={style} onClick={()=>nav.open({kind:"RULER",factionId:politicalLife.factionId,id:politicalLife.rulerId})}>查看对应王室本纪</button></ChronicleSection>}{rows.length>0?<ChronicleSection title="历任所事君主"><Typography fontSize="0.74rem">按真实任职与在位交集排列；仅有原始授职事件时注明本人授职。</Typography>
   <ServiceRows rows={rows} ruler label={id=>{const r=Dynasty.getAll().flatMap(d=>d.rulers).find(r=>r.id===id)!;return r.houseName.replace(/氏$/,"")+r.givenName;}} onOpen={(id,factionId)=>nav.open({kind:"RULER",id,factionId})}/>
  </ChronicleSection>:null}</>;
 }

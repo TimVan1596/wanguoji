@@ -31,9 +31,9 @@ describe("genealogy card and integration structure", () => {
     const dialog=readFileSync(new URL("./GenealogyBrowser.tsx",import.meta.url),"utf8");
     const window=readFileSync(new URL("./genealogyWindow.ts",import.meta.url),"utf8");
     expect(dialog).toContain('events=open?History.getEvents():[]');expect(dialog).toContain('if(!open||!dynasty)return undefined');
-    expect(dialog).toContain('[open,stamp,worldMonth,team.name]');expect(dialog).toContain('genealogyWindow(data.index,focus,expanded)');
+    expect(dialog).toContain('[open,stamp,worldMonth,team.name]');expect(dialog).toContain('genealogyWindow(data.index,focus,expanded,branchOffsets)');
     expect(window).toContain('GENEALOGY_WINDOW_LIMIT=150');expect(dialog).not.toContain('<GenealogyTreeNode');
-    expect(dialog).toContain('data-parent-id={e.parentId}');expect(dialog).toContain('layout.positions.get(r.id)');expect(dialog).toContain('visibleGenealogyRows(rows,layout,view,focus)');expect(dialog).toContain('data-y1={e.y1}');expect(dialog).not.toContain('查看此支');expect(dialog).not.toContain('浏览全部人物');expect(dialog).toContain('<svg');expect(dialog).not.toContain('ml:Math.min(depth');
+    expect(dialog).toContain('data-parent-id={e.parentId}');expect(dialog).toContain('layout.positions.get(r.id)');expect(dialog).toContain('visibleGenealogyRows(rows,layout,view,focus)');expect(dialog).toContain('data-y1={e.y1}');expect(dialog).not.toContain('查看此支');expect(dialog).not.toContain('浏览全部人物');expect(dialog).not.toContain('查找人物');expect(dialog).not.toContain('TextField');expect(dialog).not.toContain('setQuery');expect(dialog).toContain('<svg');expect(dialog).not.toContain('ml:Math.min(depth');
     expect(dialog).toContain('适应窗口');expect(dialog).toContain('定位当今君主');expect(dialog).toContain("'ESCAPE'");
     expect(dialog).not.toContain('endReason === "彻底灭亡"');
   });

@@ -8,7 +8,7 @@ import {validateWorldSave} from '../../Persistence/WorldSaveValidator';
 import {diffCanonicalWorldSave} from '../../Persistence/WorldSaveSchema';
 
 /** Real bodies and logical registry, production City settlement; candidate code runs in frozen copies. */
-export async function runSiegeContestCore(seed:string,candidate=false){
+export async function runSiegeContestCore(seed:string,candidate=false,profile?:string){
  const {core,game}=await createNaturalCore(seed),checks:string[]=[],damage:any[]=[];
  const check=(ok:unknown,label:string)=>{if(!ok)throw Error(label);checks.push(label);};
  const step=()=>{for(let n=0;n<30;n++)(core as any).advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit('postupdate');};
@@ -18,15 +18,21 @@ export async function runSiegeContestCore(seed:string,candidate=false){
    const scenario=(a:number,d:number)=>{
     hydrateWorldSave(core,structuredClone(base));core.logicalGameplayAuthority=logical;
     const m=core.simulator!.year,city=core.allCities.find(c=>c.ownerTeam&&c.ownerTeam.users.size>=8&&!c.isInCaptureGrace(m))!;
-    const owner=city.ownerTeam!,attack=core.teams.find(t=>t!==owner&&t.users.size>=3&&Diplomacy.canAttack(t.name,owner.name,m))!;
+    const owner=city.ownerTeam!,attack=core.teams.find(t=>t!==owner&&t.users.size>=6&&Diplomacy.canAttack(t.name,owner.name,m))!;
     const place=(u:any,x:number,y:number)=>{u.player.setPosition(x,y);u.player.body.reset(x,y);const state=core.logicalUnitRegistry.getEntry(u.player.logicalUnitId)!.state;state.logicalX=x;state.logicalY=y;};
     for(const t of core.teams)for(const u of t.users)place(u,-1024,-1024);
-    [...attack.users].slice(0,a).forEach(u=>place(u,city.block.x,city.block.y));[...owner.users].slice(0,d).forEach(u=>place(u,city.block.x,city.block.y));
+    [...attack.users].sort((a,b)=>Number(a.role==="RULER")-Number(b.role==="RULER")).slice(0,a).forEach(u=>place(u,city.block.x,city.block.y));[...owner.users].slice(0,d).forEach(u=>place(u,city.block.x,city.block.y));
     check(siegeParticipants(city,attack,core,32,true).length===a,`${logical}/${a}/${d}: unique real attackers`);
     check(siegeParticipants(city,owner,core,32,false).length===d,`${logical}/${a}/${d}: only owner units defend`);
     const devastation=city.devastation,wall=city.defense;for(let i=0;i<100;i++)city.registerSiegeContact(attack,m);(city as any).updateSiege(m);
-    const loss=wall-city.defense;damage.push({logical,attackers:a,defenders:d,damage:loss});return {city,attack,owner,m,place,loss,devastationChange:city.devastation-devastation};
+    const loss=wall-city.defense;damage.push({logical,attackers:a,defenders:d,damage:loss,cityId:city.id,attacker:attack.name,defender:owner.name,month:m,wallBefore:wall,wallAfter:city.defense,underSiege:city.underSiege,attackerPositions:siegeParticipants(city,attack,core,32,true).map(u=>({unitId:u.player.logicalUnitId,x:logical?core.logicalUnitRegistry.getEntry(u.player.logicalUnitId!)!.state.logicalX:u.player.x,y:logical?core.logicalUnitRegistry.getEntry(u.player.logicalUnitId!)!.state.logicalY:u.player.y}))});return {city,attack,owner,m,place,loss,devastationChange:city.devastation-devastation};
    };
+   if(profile){
+    const a=scenario(2,0),aLoss=a.loss,b=scenario(2,2);check(candidate?b.loss<aLoss:b.loss===aLoss,`${logical}: 2v2 real local defense changes actual wall loss`);
+    const c=scenario(4,1),strong=c.loss+(c.city as any).siegeDamageRemainder,d=scenario(4,4);check(candidate?strong>d.loss+(d.city as any).siegeDamageRemainder:c.loss===d.loss,`${logical}: 4v1 has greater realized pressure than 4v4`);
+    const dead=scenario(2,0);for(const u of siegeParticipants(dead.city,dead.attack,core,32,true))u.destroyUser(false,{cause:"BATTLE_DEATH",month:dead.m,damageSource:"HOSTILE_HOME_OCCUPATION"});
+    dead.city.registerSiegeContact(dead.attack,dead.m);const wall=dead.city.defense;(dead.city as any).updateSiege(dead.m);check(candidate?!dead.city.underSiege&&dead.city.defense===wall:dead.city.underSiege,`${logical}: dead real attackers cannot leave effective ghost pressure`);
+   }
    const single=scenario(1,0);check(candidate?single.loss===0:single.loss>0,`${logical}: single attacker ${candidate?'cannot freely damage':'baseline fixed damage'}`);
    if(candidate)check(single.devastationChange===0,`${logical}: insufficient pressure cannot freely devastate a city`);
    const open=scenario(3,0),openLoss=open.loss;check(openLoss>0,`${logical}: advantage can damage undefended walls`);
@@ -42,7 +48,7 @@ export async function runSiegeContestCore(seed:string,candidate=false){
    check(siegeParticipants(multi.city,multi.owner,core,32,false).length===0,`${logical}: third-party attacker is never a defender`);
    multi.city.capture(multi.attack,multi.m);check(!(multi.city as any).siegeContacts.size&&!multi.city.underSiege,`${logical}: capture clears old contacts`);
   }
-  check(JSON.stringify(damage.filter(r=>!r.logical).map(({logical,...r})=>r))===JSON.stringify(damage.filter(r=>r.logical).map(({logical,...r})=>r)), 'Phaser and logical authorities settle identical verified force scenarios');
+  check(JSON.stringify(damage.filter(r=>!r.logical).map(r=>({attackers:r.attackers,defenders:r.defenders,damage:r.damage})))===JSON.stringify(damage.filter(r=>r.logical).map(r=>({attackers:r.attackers,defenders:r.defenders,damage:r.damage}))), 'Phaser and logical authorities settle identical verified force scenarios');
   hydrateWorldSave(core,structuredClone(base));const month=core.simulator!.year,city=core.allCities.find(c=>c.ownerTeam&&!c.isInCaptureGrace(month))!,attacker=core.teams.find(t=>t!==city.ownerTeam&&Diplomacy.canAttack(t.name,city.ownerFactionId,month))!;
   city.registerSiegeContact(attacker,month);const pending=exportWorldSave(core);check(validateWorldSave(pending).valid,'pending real siege contact is valid JSON DTO');
   hydrateWorldSave(core,structuredClone(pending));check(diffCanonicalWorldSave(pending,exportWorldSave(core)).matched,'pending siege survives hydration without duplicate events');

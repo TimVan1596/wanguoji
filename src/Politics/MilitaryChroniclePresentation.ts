@@ -44,7 +44,7 @@ export function selectMilitaryMilestones(entries:MilitaryChronicleEntry[],events
   const candidates=entries.filter(e=>!(e.source.startsWith("military-command-ended")&&byId.get(e.eventId)?.metadata?.endReason==="DEATH"&&entries.some(d=>d.worldMonth===e.worldMonth&&d.source.startsWith("military-person-died"))));
   return selectChronicleHighlights(candidates,limit,e=>{
     const event=byId.get(e.eventId),type=event?.type??e.source.split(" · ")[0];
-    const priority=type==="military-person-died"?1200:e===firstGrant?1100:type==="ruler-deposed"||type==="dynasty-usurped"||type==="empire-split"?1000:
+    const priority=type==="military-person-died"?1200:e===firstGrant?1100:type==="ruler-deposed"||type==="dynasty-usurped"||type==="empire-split"||type==="ruler-acceded"||type==="ruler-succession"?1000:
       type==="military-office-granted"?950:type==="military-command-ended"?900:e.victory&&event?.metadata?.wasCapital===1?700:
       e.victory&&type==="city-recovered"?650:e.victory?400:200;
     return {id:e.eventId,month:e.worldMonth,priority,cityId:e.victory?event?.cityId:undefined};

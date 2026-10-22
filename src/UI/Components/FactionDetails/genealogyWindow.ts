@@ -13,7 +13,7 @@ export function indexGenealogy(roots:readonly PoliticalGenealogyNode[]){
 export interface GenealogyRow {node:PoliticalGenealogyNode;depth:number;ancestor:boolean;hiddenChildren:number;}
 /** All monarchs and their recorded ancestors stay in the layout. Only wide parallel
  * branches are grouped; targeting one opens its original path, without recentering the tree. */
-export function genealogyWindow(index:ReadonlyMap<string,PoliticalGenealogyNode>,focusId:string,expanded:ReadonlySet<string>){
+export function genealogyWindow(index:ReadonlyMap<string,PoliticalGenealogyNode>,focusId:string,expanded:ReadonlySet<string>,branchOffsets:ReadonlyMap<string,number>=new Map()){
  const parents=new Map<string,string>(),roots:PoliticalGenealogyNode[]=[],visited=new Set<string>();
  const childIds=new Set([...index.values()].flatMap(n=>n.children.filter(c=>c.ruler.parentId===n.ruler.id).map(c=>c.ruler.id)));
  const attach=(root:PoliticalGenealogyNode)=>{if(visited.has(root.ruler.id))return;roots.push(root);visited.add(root.ruler.id);const stack=[root];while(stack.length){const n=stack.pop()!;for(const c of n.children){if(c.ruler.parentId!==n.ruler.id||visited.has(c.ruler.id))continue;parents.set(c.ruler.id,n.ruler.id);visited.add(c.ruler.id);stack.push(c);}}};
@@ -29,7 +29,8 @@ export function genealogyWindow(index:ReadonlyMap<string,PoliticalGenealogyNode>
   const opened=expanded.has(node.ruler.id)||(!node.ruler.militaryIdentity&&children.length===1);
   const requested=children.filter(c=>required.has(c.ruler.id)||opened);
   // Real worlds rarely reach this breadth. Keep the continuous royal path and a compact sibling group.
-  const selected=requested.length>10?requested.slice().sort((a,b)=>Number(focusPath.has(b.ruler.id))-Number(focusPath.has(a.ruler.id))).slice(0,10):requested;
+  const offset=branchOffsets.get(node.ruler.id)??0,ordered=offset?[...requested.slice(offset),...requested.slice(0,offset)]:requested;
+  const selected=requested.length>10?ordered.slice().sort((a,b)=>Number(focusPath.has(b.ruler.id))-Number(focusPath.has(a.ruler.id))).slice(0,10):requested;
   rows.push({node,depth,ancestor:focusPath.has(node.ruler.id)&&node.ruler.id!==focusId,hiddenChildren:children.length-selected.length});
   for(let i=selected.length-1;i>=0;i--)stack.push({node:selected[i],depth:depth+1});
  }
