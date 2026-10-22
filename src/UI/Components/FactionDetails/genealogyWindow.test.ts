@@ -57,3 +57,9 @@ describe('bounded top-down genealogy',()=>{
   const rows=genealogyWindow(index,'root',new Set());expect(rows.map(r=>r.node.ruler.id)).toEqual(['root']);expect(layoutGenealogy(rows).positions.size).toBe(1);
  });
 });
+
+it('keeps wide collateral accessible through compact branch controls without a name search',()=>{
+ const root=node('father');root.children=Array.from({length:30},(_,i)=>node('child-'+i,'father'));const index=indexGenealogy([root]);
+ const first=genealogyWindow(index,'father',new Set(['father'])),next=genealogyWindow(index,'father',new Set(['father']),new Map([['father',10]]));
+ expect(first.some(r=>r.node.ruler.id==='child-0')).toBe(true);expect(next.some(r=>r.node.ruler.id==='child-10')).toBe(true);expect(next.some(r=>r.node.ruler.id==='child-0')).toBe(false);expect(index.size).toBe(31);
+});

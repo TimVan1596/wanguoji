@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import {militaryPoliticalLife} from './MilitaryPoliticalLife';
+import {militaryPoliticalLife,appendMilitaryPoliticalLife} from './MilitaryPoliticalLife';
 import {selectMilitaryMilestones} from './MilitaryChroniclePresentation';
 function fixture(){
  const r:any={id:'son',bornYear:-240,naturalDeathYear:800,accessionYear:100,reignOrdinal:2,militaryIdentity:{personId:'p',sourceUserId:1,sourceUserLabel:'原名',enteredMonth:0}};
@@ -24,4 +24,10 @@ it('uses recorded historical rank when a source event has no explicit title',()=
 it('does not backdate later accession into an earlier dismissal',()=>{
  const {p,d,events,factions}=fixture();p.appointments[0].endMonth=40;const result=militaryPoliticalLife(p,[d],events,factions,300)!;
  expect(result.entry.worldMonth).toBe(100);expect(result.entry.text).not.toContain('结束');
+});
+
+it('keeps one event entry when political participation and accession share a source event',()=>{
+ const {p,d,events,factions}=fixture(),life=militaryPoliticalLife(p,[d],events,factions,300)!;
+ const prior={...life.entry,text:'秦继参与既有宗室废立。'},merged=appendMilitaryPoliticalLife([prior],life);
+ expect(merged).toHaveLength(1);expect(merged[0].eventId).toBe('s');expect(merged[0].text).toBe('秦继参与既有宗室废立。秦继继位为秦王。');expect(prior.text).toBe('秦继参与既有宗室废立。');
 });

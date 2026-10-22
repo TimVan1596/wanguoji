@@ -22,3 +22,10 @@ export function militaryPoliticalLife(person:MilitaryPerson,dynasties:readonly D
  const entry:MilitaryChronicleEntry={eventId:accession.id,worldMonth:at,factionId:d.factionId,text,source:accession.type+' · '+accession.id,victory:false};
  return {rulerId:r.id,factionId:d.factionId,entry};
 }
+
+/** One source event remains one visible entry even if the person both participates and accedes. */
+export function appendMilitaryPoliticalLife(entries:MilitaryChronicleEntry[],life:ReturnType<typeof militaryPoliticalLife>){
+ if(!life)return entries;
+ const previous=entries.find(e=>e.eventId===life.entry.eventId);
+ return [...entries.filter(e=>e.eventId!==life.entry.eventId),{...life.entry,text:(previous?previous.text:'')+life.entry.text}].sort((a,b)=>a.worldMonth-b.worldMonth||a.eventId.localeCompare(b.eventId));
+}
