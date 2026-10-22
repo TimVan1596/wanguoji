@@ -1,4 +1,87 @@
 {
+  "releaseVerification": {
+    "unitTests": 2053,
+    "testFiles": 260,
+    "royalCoreAndReactChecks": 160,
+    "officialSiegeCoreChecks": 45,
+    "actualGenealogyDOMRendering": [
+      {
+        "size": 150,
+        "shape": "deep",
+        "mountedNodes": 9,
+        "mountMs": 25.5,
+        "heapDelta": 0
+      },
+      {
+        "size": 150,
+        "shape": "wide",
+        "mountedNodes": 6,
+        "mountMs": 26,
+        "heapDelta": -4505252
+      },
+      {
+        "size": 1000,
+        "shape": "deep",
+        "mountedNodes": 9,
+        "mountMs": 28.799999998882413,
+        "heapDelta": 0
+      },
+      {
+        "size": 1000,
+        "shape": "wide",
+        "mountedNodes": 6,
+        "mountMs": 26.90000000037253,
+        "heapDelta": 0
+      },
+      {
+        "size": 10000,
+        "shape": "deep",
+        "mountedNodes": 9,
+        "mountMs": 43.59999999962747,
+        "heapDelta": 12757224
+      },
+      {
+        "size": 10000,
+        "shape": "wide",
+        "mountedNodes": 6,
+        "mountMs": 41.19999999925494,
+        "heapDelta": 31895784
+      }
+    ],
+    "currentProductionReplay": [
+      {
+        "seed": "regional-1",
+        "month": 1200,
+        "canonicalEqual": true,
+        "rngEqual": true,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-1",
+        "month": 2400,
+        "canonicalEqual": true,
+        "rngEqual": true,
+        "strictSaveValid": true
+      }
+    ],
+    "unchangedGameplaySources": true,
+    "unchangedPaths": [
+      "src/Components/City.ts",
+      "src/Politics/MilitaryCommandRegistry.ts",
+      "src/config/simulation.ts",
+      "src/Simulation/SiegeParticipants.ts",
+      "src/Simulation/LogicalSimulationCore.ts",
+      "src/Persistence/WorldSaveSchema.ts",
+      "src/Persistence/RoyalMilitaryValidation.ts"
+    ],
+    "builds": [
+      "web",
+      "desktop",
+      "desktop-debug"
+    ],
+    "saveSchemaVersion": 22,
+    "manualChromeGate": "pending"
+  },
   "releaseDecision": {
     "released": "bounded top-down genealogy UI only",
     "siegeFormulaChanged": false,
@@ -14951,7 +15034,7 @@
       }
     }
   },
-  "baselineMatches": 30,
+  "baselineMatches": 35,
   "recruitment": {
     "A": [
       {
