@@ -57,15 +57,23 @@ export function layoutGenealogy(rows:GenealogyRow[],heights:ReadonlyMap<string,n
   offsets.set(id,placement.map(p=>({...p,x:p.x-center})));branchDepth.set(id,deepest+1);
   contours.set(id,{left:-GENEALOGY_CARD_WIDTH/2,right:GENEALOGY_CARD_WIDTH/2,shift:0,next:combined?shift(combined,-center):undefined});
  }
- const roots=rows.filter(r=>!parents.has(r.node.ruler.id));let forest:Contour|undefined;
- const stack:Array<{id:string;x:number}>=[];
- for(const r of roots){const c=contours.get(r.node.ruler.id)!,x=forest?separation(forest,c):0;stack.push({id:r.node.ruler.id,x});forest=forest?merge(forest,c,x):c;}
- let min=0,max=GENEALOGY_CARD_WIDTH,c=forest,dx=0;while(c){dx+=c.shift;min=Math.min(min,c.left+dx);max=Math.max(max,c.right+dx);c=c.next;}
- while(stack.length){const {id,x}=stack.pop()!,r=byId.get(id)!;positions.set(id,{x:x-min+10,y:ys.get(r.depth)!,height:heights.get(id)??genealogyCardHeight(true,false,false)});for(const child of offsets.get(id)??[])stack.push({id:child.id,x:x+child.x});}
+ const roots=rows.filter(r=>!parents.has(r.node.ruler.id));
+ // Unrelated recorded families are separate trees, not an indefinitely wide generation.
+ const stack:Array<{id:string;x:number;y:number}>=[];let width=1,totalHeight=0;
+ for(const r of roots){
+  let c:Contour|undefined=contours.get(r.node.ruler.id)!,dx=0,min=Infinity,max=-Infinity;
+  while(c){dx+=c.shift;min=Math.min(min,c.left+dx);max=Math.max(max,c.right+dx);c=c.next;}
+  const lastDepth=branchDepth.get(r.node.ruler.id)!-1,height=ys.get(lastDepth)!+levels.get(lastDepth)!;
+  stack.push({id:r.node.ruler.id,x:10-min,y:totalHeight});width=Math.max(width,max-min+20);totalHeight+=height+GENEALOGY_GENERATION_GAP;
+ }
+ while(stack.length){const {id,x,y}=stack.pop()!,r=byId.get(id)!;positions.set(id,{x,y:y+ys.get(r.depth)!,height:heights.get(id)??genealogyCardHeight(true,false,false)});for(const child of offsets.get(id)??[])stack.push({id:child.id,x:x+child.x,y});}
  const edges=rows.flatMap(row=>{const id=row.node.ruler.id,parentId=parents.get(id);if(!parentId)return [];const a=positions.get(parentId)!,b=positions.get(id)!,joint=b.y-GENEALOGY_GENERATION_GAP/2;return [{parentId,childId:id,x1:a.x,y1:a.y+a.height,x2:b.x,y2:b.y,joint,path:`M ${a.x} ${a.y+a.height} V ${joint} H ${b.x} V ${b.y}`}];});
- return {positions,parents,edges,width:max-min+20,height:Math.max(1,bottom-GENEALOGY_GENERATION_GAP)};
+ return {positions,parents,edges,width,height:Math.max(1,totalHeight-GENEALOGY_GENERATION_GAP)};
 }
-export function visibleGenealogyRows(rows:GenealogyRow[],layout:ReturnType<typeof layoutGenealogy>,view:{left:number;top:number;width:number;height:number}){
+export function visibleGenealogyRows(rows:GenealogyRow[],layout:ReturnType<typeof layoutGenealogy>,view:{left:number;top:number;width:number;height:number},focusId?:string){
  const margin=100;
- return rows.filter(r=>{const p=layout.positions.get(r.node.ruler.id)!;return p.y+p.height>=view.top-margin&&p.y<=view.top+view.height+margin&&p.x+80>=view.left-margin&&p.x-80<=view.left+view.width+margin;}).slice(0,GENEALOGY_WINDOW_LIMIT);
+ const visible=rows.filter(r=>{const p=layout.positions.get(r.node.ruler.id)!;return p.y+p.height>=view.top-margin&&p.y<=view.top+view.height+margin&&p.x+80>=view.left-margin&&p.x-80<=view.left+view.width+margin;});
+ if(visible.length<=GENEALOGY_WINDOW_LIMIT)return visible;
+ const distance=(r:GenealogyRow)=>{const p=layout.positions.get(r.node.ruler.id)!;return Math.abs(p.y+p.height/2-view.top-view.height/2);};
+ return visible.sort((a,b)=>Number(b.node.ruler.id===focusId)-Number(a.node.ruler.id===focusId)||distance(a)-distance(b)).slice(0,GENEALOGY_WINDOW_LIMIT);
 }

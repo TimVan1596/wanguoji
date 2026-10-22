@@ -1,7 +1,7 @@
 import {expect,it} from "vitest";
 import {royalMilitaryArchive,buildRoyalArchiveGenealogy,royalMilitaryOfficeLabel,militaryIdentityLabels} from "./RoyalArchiveIdentity";
 import {deriveGenealogyNodePresentations} from "../UI/Components/FactionDetails/GenealogyNodePresentation";
-import {indexGenealogy,genealogyWindow} from "../UI/Components/FactionDetails/genealogyWindow";
+import {indexGenealogy,genealogyWindow,layoutGenealogy,visibleGenealogyRows} from "../UI/Components/FactionDetails/genealogyWindow";
 import random from "../Simulation/WorldRandom";
 function fixture(){
  const parent:any={id:"king",houseName:"秦氏",givenName:"平",bornYear:-600,naturalDeathYear:900,status:"ruling",reignOrdinal:1,accessionYear:0};
@@ -34,7 +34,7 @@ it("uses actual time-specific offices and monarch themes above neutral military 
 it.each([150,1000,10000])("indexes and locally windows all %s historical nodes iteratively",size=>{
  const rulers:any[]=Array.from({length:size},(_,i)=>({id:`r${i}`,parentId:i?`r${i-1}`:undefined,reignOrdinal:i+1,bornYear:i,accessionYear:i,houseName:"秦氏",givenName:"继"}));
  const idx=indexGenealogy(buildRoyalArchiveGenealogy({rulers,currentRulerId:`r${size-1}`,heirIds:[]} as any,[],[]));expect(idx.size).toBe(size);
- const rows=genealogyWindow(idx,`r${size-1}`,new Set());expect(rows.length).toBeLessThanOrEqual(150);expect(rows.at(-1)?.node.ruler.id).toBe(`r${size-1}`);
+ const rows=genealogyWindow(idx,`r${size-1}`,new Set());expect(rows.length).toBe(size);expect(rows.at(-1)?.node.ruler.id).toBe(`r${size-1}`);const layout=layoutGenealogy(rows),tail=layout.positions.get(`r${size-1}`)!;const visible=visibleGenealogyRows(rows,layout,{left:0,top:tail.y-300,width:1000,height:600});expect(visible.length).toBeLessThanOrEqual(150);expect(visible.some(row=>row.node.ruler.id===`r${size-1}`)).toBe(true);
 });
 it("labels a real military founder only with the same persistent person and founding transaction",()=>{
  const {p,events}=fixture();delete p.royalIdentity;p.politicalRulerId="founder";

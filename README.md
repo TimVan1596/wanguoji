@@ -147,7 +147,7 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
-- 当前 APP **v0.99931z14** / package **0.99.180** / WorldSave **V22**。z13已获用户最终人工PASS。本版恢复父上子下、同辈并列及真实父子连线的有界宗谱，保留军旅宗室收录、检索与定点导航，人物资料默认折叠。真实攻守、留编及缩编候选未通过完整安全门，未发布；正式围城公式、2将／2编组／12单位及政治人口规则不变。等待本轮独立人工Chrome Gate。以下旧版本验收条目为历史记录，不代表当前schema。
+- 当前 APP **v0.99931z15** / package **0.99.181** / WorldSave **V22**。z14已获用户最终人工PASS。本版恢复连续君主主干的紧凑上下宗谱、边界连接线与折叠旁系，保留军旅宗室及跨页定位；修复转属后的流亡君主实际战死时王室与军政生命记录分歧。未发布新围城、缩编、补员或本土留守规则，仍为2将／2编组／12单位。等待本轮独立人工Chrome Gate。以下旧版本验收条目为历史记录，不代表当前schema。
 
 - v0.99931n人工Gate已PASS，真实长局自然发生至少11次同王统宗室废立。当前v0.99931n1修复连续废立后的V14生命周期校验，并完善君主即离位叙述与史评，等待[人工Gate](docs/RulerDepositionLifecycleClosureN1.md)。
 - v0.99929a 修复政治终结历史身份、退位年龄与双方君主大事记。[Political Terminal Chronicle Gate](docs/PoliticalTerminalChronicleClosure.md)已由用户完成人工PASS。

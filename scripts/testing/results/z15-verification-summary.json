@@ -1,0 +1,825 @@
+{
+  "scope": "z15 official production; no siege/formation candidate adopted",
+  "baseline": "z13 production cohort, previously also fingerprint-matched by z14 official production",
+  "worlds100": {
+    "worlds": 24,
+    "totals": {
+      "worldPopulation": 2867,
+      "captures": 2350,
+      "promotions": 298,
+      "extinctions": 309,
+      "restorations": 55,
+      "splits": 225,
+      "militarySplits": 18,
+      "depositions": 3,
+      "unifications": 0
+    },
+    "meanActiveStates": 3.4246527777777778,
+    "meanMaxTerritoryShare": 0.4199146258503401,
+    "royalMilitaryExpected": 35,
+    "royalMilitaryIncluded": 35
+  },
+  "worlds200": {
+    "worlds": 6,
+    "totals": {
+      "worldPopulation": 632,
+      "captures": 1381,
+      "promotions": 173,
+      "extinctions": 238,
+      "restorations": 19,
+      "splits": 214,
+      "militarySplits": 12,
+      "depositions": 1,
+      "unifications": 0
+    },
+    "meanActiveStates": 3.435763888888889,
+    "meanMaxTerritoryShare": 0.44000816326530606,
+    "royalMilitaryExpected": 21,
+    "royalMilitaryIncluded": 21
+  },
+  "world500": {
+    "worlds": 1,
+    "totals": {
+      "worldPopulation": 105,
+      "captures": 634,
+      "promotions": 73,
+      "extinctions": 123,
+      "restorations": 20,
+      "splits": 120,
+      "militarySplits": 7,
+      "depositions": 0,
+      "unifications": 0
+    },
+    "meanActiveStates": 3.4426666666666668,
+    "meanMaxTerritoryShare": 0.4736342857142855,
+    "royalMilitaryExpected": 8,
+    "royalMilitaryIncluded": 8
+  },
+  "canonicalAndRngMatchingCheckpoints": 35,
+  "checkpoints": [
+    {
+      "seed": "regional-1",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "01f7dbe6490125518a3d711ce0048e2f8671afdd23df0d50c4713a0e5cae79f2",
+      "worldRandomPosition": 6135,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 44,
+        "royalMilitaryExpected": 2,
+        "royalMilitaryIncluded": 2,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-1",
+      "month": 2400,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "974645aeeb5d1348fda3a280b0bdc6a007d8b815315d3b80835da2a28a42aea9",
+      "worldRandomPosition": 13285,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 118,
+        "royalMilitaryExpected": 3,
+        "royalMilitaryIncluded": 3,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-2",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "40cbc176f05fd6c8330c612277f94016e86d603bdb72c454411f8c93f7269b8d",
+      "worldRandomPosition": 6337,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 49,
+        "royalMilitaryExpected": 2,
+        "royalMilitaryIncluded": 2,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-2",
+      "month": 2400,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "0a31c990de738c66c8b10cab9c5c2405ede46cc37a815781ac148b6f7dcde198",
+      "worldRandomPosition": 13112,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 107,
+        "royalMilitaryExpected": 2,
+        "royalMilitaryIncluded": 2,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-3",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "dfbcbda24148ac8bf520c57db2a6f3b1a2f7bece26c7b35af1ff31f8a5e59c6a",
+      "worldRandomPosition": 5745,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 41,
+        "royalMilitaryExpected": 1,
+        "royalMilitaryIncluded": 1,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-3",
+      "month": 2400,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "70617604ee098e8317d0c6eef4d43cde6a7decf9524d502a83659c4769354b4d",
+      "worldRandomPosition": 12463,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 84,
+        "royalMilitaryExpected": 4,
+        "royalMilitaryIncluded": 4,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-4",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "277f72a872606c1f419e000651533215af6f282dc1fd9e0f167c7b8482480a1a",
+      "worldRandomPosition": 6392,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 39,
+        "royalMilitaryExpected": 0,
+        "royalMilitaryIncluded": 0,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-4",
+      "month": 2400,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "5bef07671272e93a6f6e29cfcbaff5e59f7d9b574f74959f4bad49f30c53397d",
+      "worldRandomPosition": 13124,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 66,
+        "royalMilitaryExpected": 2,
+        "royalMilitaryIncluded": 2,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-5",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "7d9118ebb7ad5fc3ae3c430b10945c980c58183f79562aee85206ec041758445",
+      "worldRandomPosition": 6011,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 45,
+        "royalMilitaryExpected": 2,
+        "royalMilitaryIncluded": 2,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-5",
+      "month": 2400,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "ec92df87598287c22979850a1c57b240c60ffdd418fb19b18d9fcc9544726cdb",
+      "worldRandomPosition": 12376,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 87,
+        "royalMilitaryExpected": 4,
+        "royalMilitaryIncluded": 4,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": [
+          {
+            "personId": "military-person-20",
+            "commandId": "military-command-20",
+            "month": 1932,
+            "reason": "DEATH",
+            "deathCause": "SIEGE_LOSS",
+            "accession": false,
+            "endEvents": 1
+          }
+        ]
+      }
+    },
+    {
+      "seed": "regional-6",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "e8b354b8c00b70057556e1b14f13924aa3295c614014e66cbf2c93d4fd4137e9",
+      "worldRandomPosition": 6056,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 48,
+        "royalMilitaryExpected": 2,
+        "royalMilitaryIncluded": 2,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-6",
+      "month": 2400,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "3431f17834a843846cbceaebfa9874f8dae2efbac741105d37f50387f4f49e79",
+      "worldRandomPosition": 12689,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 95,
+        "royalMilitaryExpected": 6,
+        "royalMilitaryIncluded": 6,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": [
+          {
+            "personId": "military-person-34",
+            "commandId": "military-command-34",
+            "month": 2232,
+            "reason": "DEATH",
+            "deathCause": "SIEGE_LOSS",
+            "accession": false,
+            "endEvents": 1
+          }
+        ]
+      }
+    },
+    {
+      "seed": "regional-7",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "0f5c32f52606fc6d3a7bc6f9c6945758af04424e762a03eb0ce78d057a4942f0",
+      "worldRandomPosition": 6841,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 56,
+        "royalMilitaryExpected": 1,
+        "royalMilitaryIncluded": 1,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": [
+          {
+            "personId": "military-person-13",
+            "commandId": "military-command-13",
+            "month": 864,
+            "reason": "TRANSFERRED",
+            "accession": false,
+            "endEvents": 1
+          }
+        ]
+      }
+    },
+    {
+      "seed": "regional-8",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "8d306b29f9c043d11ab789603fb826477ab4252d8b490a9c3f7b81edc583f1ee",
+      "worldRandomPosition": 6063,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 39,
+        "royalMilitaryExpected": 1,
+        "royalMilitaryIncluded": 1,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-9",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "d4478e1712e710effdf602b20adc735c3cb00f5d9a3e8c38f974d8fecaa8cfd5",
+      "worldRandomPosition": 6717,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 48,
+        "royalMilitaryExpected": 0,
+        "royalMilitaryIncluded": 0,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-10",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "be15e2b115a1e35e7a99870b787249bcf10c7f1a9a5bdcd148001d33e1c5d918",
+      "worldRandomPosition": 6583,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 40,
+        "royalMilitaryExpected": 1,
+        "royalMilitaryIncluded": 1,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-11",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "67fc928c2bbd3e1c1c6fdc02333e72d8bc9df87e4cad0bfb1eacb185083f4889",
+      "worldRandomPosition": 6326,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 49,
+        "royalMilitaryExpected": 1,
+        "royalMilitaryIncluded": 1,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-12",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "27e0c95673c6735dabdb44a323d4a94a2dafda9d6a22c1654e92fd431ac2e2e8",
+      "worldRandomPosition": 5364,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 52,
+        "royalMilitaryExpected": 2,
+        "royalMilitaryIncluded": 2,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-13",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "fcad27ecb664cab65ffaeb55632dfe3800de2486ff38dd5a20a0be535697d906",
+      "worldRandomPosition": 5686,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 43,
+        "royalMilitaryExpected": 2,
+        "royalMilitaryIncluded": 2,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-14",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "228bb38f662e202a43deaf80ebfba84f67197cfd1a3dbdcf0c239e0de52e653c",
+      "worldRandomPosition": 6293,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 41,
+        "royalMilitaryExpected": 1,
+        "royalMilitaryIncluded": 1,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-15",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "bcd9de3d1b40c059f4dd8543730953897ce1ae90a820152ddeb625708ce39d4e",
+      "worldRandomPosition": 6068,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 43,
+        "royalMilitaryExpected": 2,
+        "royalMilitaryIncluded": 2,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-16",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "647bfe4b5a35fc7b9d00abda6423a6552e70c62706dbd098bea802b48481fb1d",
+      "worldRandomPosition": 5971,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 43,
+        "royalMilitaryExpected": 1,
+        "royalMilitaryIncluded": 1,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-17",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "41fd2f183db24122c1e3d1427d851d2eb50865874763e33a2ef114e1c0d3f9e2",
+      "worldRandomPosition": 6442,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 51,
+        "royalMilitaryExpected": 2,
+        "royalMilitaryIncluded": 2,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-18",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "19af5cad51b75623c87880a11e710e6e2bdea820d0ecb309328edee889cd25ff",
+      "worldRandomPosition": 5749,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 50,
+        "royalMilitaryExpected": 2,
+        "royalMilitaryIncluded": 2,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-19",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "8aac83ab4f39f177fb203a29f88f138ab072da4a461faea06e0a913e34cdade7",
+      "worldRandomPosition": 6558,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 58,
+        "royalMilitaryExpected": 2,
+        "royalMilitaryIncluded": 2,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-20",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "1956db0e014b092e4cbe608e532bdc03ed1cd23c1ca18951e18d0017787ee644",
+      "worldRandomPosition": 6458,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 45,
+        "royalMilitaryExpected": 2,
+        "royalMilitaryIncluded": 2,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-21",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "4b337100a9e4937bf6c58ada670909eed597c0ac3e5278a6e241c5db64100bf0",
+      "worldRandomPosition": 6252,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 46,
+        "royalMilitaryExpected": 3,
+        "royalMilitaryIncluded": 3,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-22",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "bfacb414f307a553785e8fe55c7a64f4eb13ce14ba007651f57e7907894287e6",
+      "worldRandomPosition": 6363,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 58,
+        "royalMilitaryExpected": 1,
+        "royalMilitaryIncluded": 1,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-23",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "680836d22c6402d41d8ae81bfa5ec5bb5592e81918d432bba9431593b85dc92c",
+      "worldRandomPosition": 5230,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 30,
+        "royalMilitaryExpected": 0,
+        "royalMilitaryIncluded": 0,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "regional-24",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "a75d54f48818025c047ea6437f5d10880675a541de636202064e9755186b00f3",
+      "worldRandomPosition": 6289,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 40,
+        "royalMilitaryExpected": 2,
+        "royalMilitaryIncluded": 2,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "archive-z10-500",
+      "month": 1200,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "9b678b92842421f321724fd904bba64afbc880973bcbe3b87aa65d9bc33258c9",
+      "worldRandomPosition": 6258,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 44,
+        "royalMilitaryExpected": 1,
+        "royalMilitaryIncluded": 1,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "archive-z10-500",
+      "month": 2400,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "9ad70db8dfbcfcef54f458fd4e3627a4e5c6b24476fe16466e36592727493329",
+      "worldRandomPosition": 12723,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 79,
+        "royalMilitaryExpected": 2,
+        "royalMilitaryIncluded": 2,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "archive-z10-500",
+      "month": 3600,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "f510d1634729e0c534bc9d616b07422f6761022d53c84386c9594e14f02a0f72",
+      "worldRandomPosition": 19480,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 128,
+        "royalMilitaryExpected": 3,
+        "royalMilitaryIncluded": 3,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "archive-z10-500",
+      "month": 4800,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "13d879891344e2fc806d04f8882dfc9f500f21f4a717a22b265b12b8cb6a797d",
+      "worldRandomPosition": 26004,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 180,
+        "royalMilitaryExpected": 5,
+        "royalMilitaryIncluded": 5,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    },
+    {
+      "seed": "archive-z10-500",
+      "month": 6000,
+      "canonicalIdentical": true,
+      "rngIdentical": true,
+      "canonicalSha256": "2cda5f2837adb26273baeec531c55f675ae6a2758b6a3169ce1ee22bbbe9187d",
+      "worldRandomPosition": 32678,
+      "strictSaveValid": true,
+      "populationUnexplained": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "genealogy": {
+        "nodes": 244,
+        "royalMilitaryExpected": 8,
+        "royalMilitaryIncluded": 8,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      }
+    }
+  ]
+}

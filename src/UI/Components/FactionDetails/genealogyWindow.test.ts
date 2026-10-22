@@ -1,5 +1,5 @@
 import {describe,it,expect} from "vitest";
-import {indexGenealogy,genealogyWindow,layoutGenealogy} from "./genealogyWindow";
+import {indexGenealogy,genealogyWindow,layoutGenealogy,visibleGenealogyRows} from "./genealogyWindow";
 import type {PoliticalGenealogyNode} from "../../../Politics/DynasticCandidateRules";
 const node=(id:string,parentId?:string):PoliticalGenealogyNode=>({ruler:{id,parentId,reignOrdinal:id==='father'?1:undefined} as any,children:[]});
 describe('bounded top-down genealogy',()=>{
@@ -8,6 +8,13 @@ describe('bounded top-down genealogy',()=>{
   const rows=genealogyWindow(indexGenealogy([father]),'a',new Set(['father'])),layout=layoutGenealogy(rows),p=layout.positions;
   expect(p.get('father')!.y).toBeLessThan(p.get('a')!.y);expect(p.get('a')!.y).toBe(p.get('b')!.y);expect(p.get('a')!.x).not.toBe(p.get('b')!.x);
   expect(p.get('father')!.x).toBe((p.get('a')!.x+p.get('b')!.x)/2);
+ });
+ it('connects variable card boundaries through one sibling fork and removes folded edges',()=>{
+  const father=node('father'),a=node('a','father'),b=node('b','father');father.children=[a,b];const index=indexGenealogy([father]);
+  const rows=genealogyWindow(index,'father',new Set(['father'])),layout=layoutGenealogy(rows,new Map([['father',130],['a',82],['b',114]]));
+  expect(layout.edges).toHaveLength(2);expect(new Set(layout.edges.map(e=>e.joint)).size).toBe(1);
+  for(const e of layout.edges){expect(e.y1).toBe(130);expect(e.y2).toBe(layout.positions.get(e.childId)!.y);}
+  const folded=layoutGenealogy(genealogyWindow(index,'father',new Set()));expect(folded.edges).toEqual([]);
  });
  it.each([150,1000,10000])('bounds actual canvas for %s wide recorded relatives without losing searchable IDs',size=>{
   const father=node('father');father.children=Array.from({length:size-1},(_,i)=>node('child-'+i,'father'));
@@ -28,6 +35,17 @@ describe('bounded top-down genealogy',()=>{
   const index=indexGenealogy([root]),rows=genealogyWindow(index,'k100',new Set([...index.keys()])),layout=layoutGenealogy(rows);
   expect(rows.length).toBe(201);expect(layout.width).toBeLessThan(800);
  });
+ it('keeps the requested person mounted when a very large viewport exceeds the DOM budget',()=>{
+  const roots=Array.from({length:1000},(_,i)=>node('root-'+i));const rows=genealogyWindow(indexGenealogy(roots),'root-999',new Set()),layout=layoutGenealogy(rows);
+  const visible=visibleGenealogyRows(rows,layout,{left:0,top:0,width:2000,height:layout.height},'root-999');
+  expect(visible).toHaveLength(150);expect(visible.some(r=>r.node.ruler.id==='root-999')).toBe(true);
+ });
+ it('stacks unrelated recorded roots without inventing kinship or an unlimited horizontal canvas',()=>{
+  const roots=Array.from({length:1000},(_,i)=>{const root=node('house-'+i);root.ruler.reignOrdinal=i+1;return root;});
+  const rows=genealogyWindow(indexGenealogy(roots),'house-999',new Set()),layout=layoutGenealogy(rows);
+  expect(rows.length).toBe(1000);expect(layout.edges).toEqual([]);expect(layout.width).toBeLessThan(500);
+  expect(layout.positions.get('house-999')!.y).not.toBe(layout.positions.get('house-0')!.y);
+ });
  it('keeps malformed cyclic evidence finite without drawing an upward parent edge',()=>{
   const a=node('a','b'),b=node('b','a');a.children=[b];b.children=[a];
   const rows=genealogyWindow(indexGenealogy([a]),'b',new Set(['b'])),layout=layoutGenealogy(rows);
@@ -35,7 +53,7 @@ describe('bounded top-down genealogy',()=>{
   for(const [child,parent]of layout.parents)expect(layout.positions.get(parent)!.y).toBeLessThan(layout.positions.get(child)!.y);
  });
  it('does not invent parent lines for detached relatives or expand unrequested descendants',()=>{
-  const root=node('root','missing'),child=node('child','root');root.children=[child];const index=indexGenealogy([root]);
+  const root=node('root','missing'),child=node('child','root');root.ruler.militaryIdentity={} as any;root.children=[child];const index=indexGenealogy([root]);
   const rows=genealogyWindow(index,'root',new Set());expect(rows.map(r=>r.node.ruler.id)).toEqual(['root']);expect(layoutGenealogy(rows).positions.size).toBe(1);
  });
 });

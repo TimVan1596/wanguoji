@@ -3,7 +3,7 @@
     "seed": "regional-18",
     "outcome": "fixed",
     "checks": [
-      "old failure must reproduce",
+      "original failed interval completes with consistent identities",
       "same save resumes twelve months identically",
       "second save loads without canonical mutation"
     ],

@@ -28,7 +28,7 @@ export async function runRoyalIdentityReplay(seed:string,expectFixed:boolean){
    if(expectFixed&&month%12===0){core.setWorldRunning(false);exportWorldSave(core);core.setWorldRunning(true);}
    if(month%120===0)await new Promise(r=>setTimeout(r,0));
   }
-  check(expectFixed,'old failure must reproduce');core.setWorldRunning(false);const save=exportWorldSave(core);
+  check(expectFixed,'original failed interval completes with consistent identities');core.setWorldRunning(false);const save=exportWorldSave(core);
   const resume=()=>{hydrateWorldSave(core,structuredClone(save));core.setWorldRunning(true);for(let n=0;n<12;n++)step();core.setWorldRunning(false);return exportWorldSave(core);};
   const a=resume(),b=resume();check(diffCanonicalWorldSave(a,b).matched,'same save resumes twelve months identically');hydrateWorldSave(core,structuredClone(a));check(diffCanonicalWorldSave(a,exportWorldSave(core)).matched,'second save loads without canonical mutation');
   return {seed,outcome:'fixed',checks,validatedMonths:1200,trace,saveSchemaVersion:save.saveSchemaVersion};

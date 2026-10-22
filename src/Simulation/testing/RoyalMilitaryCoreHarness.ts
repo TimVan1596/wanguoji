@@ -61,6 +61,13 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
    check(r.status==="dead"&&p.status==="DEAD"&&r.deathMonth===p.deathMonth&&!d.heirIds.includes(r.id)&&Military.getFormations().every(f=>f.commanderPersonId!==personId||f.status==="DISBANDED"),"battle death closes royal succession, military life and command");strict();await checkRoyalGenealogyRecord(core,t.name,personId,check);
   }
   {
+   const {t,r,p}=restore(),other=[...t.users].find(u=>u.id!==identity.sourceUserId&&u.role==="NORMAL"&&!u.militaryPersonId)!;
+   check(other,"identity forgery scenario uses a different real resident");
+   other.historicalPersonId=personId;other.militaryPersonId=personId;
+   check(other.destroyUser(false,{cause:"SIEGE_LOSS",month,damageSource:"CITY_SIEGE"}),"different real resident can die with stale copied archive references");
+   check(r.deathMonth===undefined&&p.status==="ACTIVE"&&p.deathMonth===undefined&&!!t.getUserById(identity.sourceUserId),"copied identity cannot kill the true royal or military person");strict();
+  }
+  {
    const {t,r,p}=restore();r.naturalDeathYear=month+1;r.plannedEndYear=month+1;p.royalIdentity!.naturalDeathMonth=month+1;
    core.setWorldRunning(true);step();core.setWorldRunning(false);
    check(r.status==="dead"&&p.status==="DEAD"&&r.deathMonth===month+1&&p.deathMonth===month+1&&!t.getUserById(identity.sourceUserId),"royal natural schedule closes both archives and the body on the same month");strict();
@@ -128,6 +135,21 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
    }
    const continueFrom=()=>{hydrateWorldSave(core,JSON.parse(JSON.stringify(selectedSave)));core.setWorldRunning(true);for(let n=0;n<12;n++)step();core.setWorldRunning(false);return strict();};
    const continued=continueFrom();check(diffCanonicalWorldSave(continued,continueFrom()).matched,"weighted deposition save resumes twelve months deterministically");hydrateWorldSave(core,JSON.parse(JSON.stringify(continued)));check(diffCanonicalWorldSave(continued,strict()).matched,"weighted selection proof survives second save and load");
+  }
+  {
+   const {t,d,r,p}=restore(),current=Dynasty.getCurrentRuler(t.name)!;
+   d.designatedHeirId=r.id;d.designatedSinceMonth=month;d.heirIds=[r.id];r.status="heir";
+   current.naturalDeathYear=month+1;current.plannedEndYear=month+1;
+   core.setWorldRunning(true);step();core.setWorldRunning(false);
+   const body=t.getUserById(identity.sourceUserId)!,enemy=core.teams.find(e=>e!==t&&e.status==="ACTIVE")!;
+   body.setTeam(enemy,{cause:"LIVE_TRANSFER",month:month+1});
+   for(const city of [...t.cities])city.capture(enemy,month+1);
+   check(r.status as string==="exiled"&&body.role==="NORMAL"&&d.currentRulerId===r.id,"transferred normal body still belongs to the same historical exiled monarch");
+   (core.simulator as any).clock.importState({worldMonth:month+2,elapsedMs:0,running:false});
+   check(body.destroyUser(false,{cause:"SIEGE_LOSS",month:month+2,damageSource:"CITY_SIEGE"}),"foreign normal body suffers a real siege casualty");
+   check(r.status as string==="dead"&&r.deathMonth===month+2&&p.deathMonth===r.deathMonth&&p.deathCause==="SIEGE_LOSS","foreign casualty closes both permanent life records on the same month and cause");
+   check(d.currentRulerId!==r.id&&r.bornYear===birth&&r.naturalDeathYear===death&&Military.getFormations().every(f=>f.commanderPersonId!==personId||f.status==="DISBANDED"),"original dynasty succeeds without reviving the transferred body or its former command");
+   const saved=strict();hydrateWorldSave(core,structuredClone(saved));check(diffCanonicalWorldSave(saved,strict()).matched,"foreign exiled monarch casualty survives strict save and load");
   }
   {
    const {t,d,r,p}=restore(),current=Dynasty.getCurrentRuler(t.name)!;

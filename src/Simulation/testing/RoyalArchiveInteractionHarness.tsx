@@ -31,6 +31,7 @@ export async function checkRoyalArchiveInteraction(core:Core,factionId:string,pe
   const royalId=Military.getPerson(personId)!.royalIdentity!.rulerId;
   const focus=Array.from(document.querySelectorAll('[data-ruler-id]')).find(n=>n.getAttribute("data-ruler-id")===royalId);
   check(store.getState().root.factionDetailTab==="house"&&focus,"reverse navigation focuses the actual unenthroned royal in genealogy");
+  flushSync(()=>(focus!.querySelector("[data-genealogy-card]") as HTMLButtonElement).click());
   check(document.querySelector("[data-genealogy-person]")?.textContent?.includes(birthday),"genealogy and military birth months agree after direct navigation");
   check(focus?.querySelector('[data-genealogy-theme="neutral"]'),"military-only royal remains neutral in actual tree");
   const close=Array.from(document.querySelectorAll("button")).find(b=>b.textContent==="关闭")!;flushSync(()=>close.click());await pause();
@@ -69,20 +70,51 @@ export async function checkGenealogyRendering(core:Core,check:(ok:unknown,label:
  const before=JSON.stringify(exportWorldSave(core)),samples:any[]=[];
  const host=document.createElement("div");document.body.append(host);const root=createRoot(host);
  try{
+  {
+   const rulers:any[]=Array.from({length:20},(_,i)=>({id:"trunk-"+i,houseName:"测氏",givenName:"宗"+i,bornYear:i-1000,status:i===19?"ruling":"dead",deathMonth:i===19?undefined:i+1,reignOrdinal:i+1,accessionYear:i,parentId:i?"trunk-"+(i-1):undefined}));
+   rulers.push(...["side-a","side-b"].map(id=>({id,houseName:"测氏",givenName:id,bornYear:-500,status:"kin",parentId:"trunk-0"})));
+   let closeSource="";
+   const dynasty:any={factionId:"simple-tree",rulers,heirIds:["side-a","side-b"],currentRulerId:"trunk-19"},team:any={...core.teams[0],name:"simple-tree"};
+   flushSync(()=>root.render(<Provider store={store}><Browser open onClose={source=>{closeSource=source;}} dynasty={dynasty} team={team} worldMonth={100}/></Provider>));await new Promise(r=>setTimeout(r,20));
+   check(document.querySelector('[data-ruler-id="trunk-0"]')&&!document.querySelector('[data-genealogy-person]'),"default tree opens at founder without a large selected-person panel");
+   const toggle=()=>Array.from(document.querySelectorAll("button")).find(b=>b.textContent?.includes("旁系"))!;
+   check(!document.querySelector('[data-ruler-id="side-a"]'),"ordinary collateral is folded beside the continuous royal trunk");
+   flushSync(()=>toggle().click());check(document.querySelector('[data-ruler-id="side-a"]')&&document.querySelector('path[data-child-id="side-a"]'),"expanding collateral mounts its true connected siblings");
+   flushSync(()=>toggle().click());check(!document.querySelector('[data-ruler-id="side-a"]')&&!document.querySelector('path[data-child-id="side-a"]'),"folding collateral removes its cards and connectors together");
+   const viewport=document.querySelector<HTMLElement>('.MuiDialogContent-root')!,seen=new Set<string>();
+   for(let y=0;y<=viewport.scrollHeight;y+=Math.max(100,viewport.clientHeight-100)){
+    viewport.scrollTo({top:y});await new Promise(r=>setTimeout(r,20));flushSync(()=>viewport.dispatchEvent(new Event("scroll")));
+    for(const n of Array.from(document.querySelectorAll('[data-ruler-id]')))seen.add(n.getAttribute("data-ruler-id")!);
+   }
+   check(rulers.slice(0,20).every(r=>seen.has(r.id)),"all twenty monarch generations remain naturally reachable by scrolling without branch buttons: "+JSON.stringify({missing:rulers.slice(0,20).filter(r=>!seen.has(r.id)).map(r=>r.id),height:viewport.clientHeight,scrollHeight:viewport.scrollHeight,scrollTop:viewport.scrollTop,seen:[...seen]}));
+   const fit=Array.from(document.querySelectorAll("button")).find(b=>b.textContent==="适应窗口")!;flushSync(()=>fit.click());check(viewport.scrollTop===0,"fit control returns to the tree origin even at unchanged scale");
+   const plus=Array.from(document.querySelectorAll("button")).find(b=>b.textContent==="＋")!;flushSync(()=>plus.click());
+   let connected=0;for(const edge of Array.from(document.querySelectorAll('path[data-parent-id]'))){
+    const parent=document.querySelector(`[data-ruler-id="${edge.getAttribute('data-parent-id')}"] [data-genealogy-card]`),child=document.querySelector(`[data-ruler-id="${edge.getAttribute('data-child-id')}"] [data-genealogy-card]`);if(!parent||!child)continue;
+    const bounds=parent.getBoundingClientRect(),ratio=bounds.width/160,tree=document.querySelector('[role="tree"]')!.getBoundingClientRect();
+    check(Math.abs(tree.top+Number(edge.getAttribute("data-y1"))*ratio-bounds.bottom)<1&&Math.abs(tree.top+Number(edge.getAttribute("data-y2"))*ratio-child.getBoundingClientRect().top)<1,"zoom preserves exact card and connector geometry");connected++;
+   }check(connected>0,"zoom check examines actual mounted parent-child connectors");
+   document.querySelector('[role="dialog"]')!.dispatchEvent(new KeyboardEvent("keydown",{key:"Escape",bubbles:true}));check(closeSource==="ESCAPE","ESC reaches the existing close action");
+   flushSync(()=>root.render(<></>));await new Promise(r=>setTimeout(r,10));
+  }
   for(const size of [150,1000,10000])for(const shape of ["deep","wide"]){
    const rulers=Array.from({length:size},(_,i)=>({id:"bench-"+i,houseName:"测氏",givenName:"宗"+i,bornYear:i-10000,naturalDeathYear:20000,status:"dead",deathMonth:i+100,deathReason:"去世",accessionYear:i,reignOrdinal:i+1,parentId:i?"bench-"+(shape==="deep"?i-1:0):undefined}));
    const dynasty:any={factionId:"render-bench",houseName:"测氏",rulers,heirIds:[],currentRulerId:"bench-"+(size-1)};
    const team:any={...core.teams[0],name:"render-bench",status:"EXTINCT"},target=shape==="wide"?"bench-0":"bench-"+(size-1);
    const heapBefore=(performance as any).memory?.usedJSHeapSize,start=performance.now();
    flushSync(()=>root.render(<Provider store={store}><Browser key={size+shape} open onClose={()=>{}} dynasty={dynasty} team={team} worldMonth={20000} targetId={target}/></Provider>));await new Promise(r=>setTimeout(r,20));
+   check(!document.querySelector('[role="dialog"] input')&&!document.querySelector('[role="dialog"]')?.textContent?.includes("查看此支")&&!document.querySelector('[role="dialog"]')?.textContent?.includes("浏览全部人物"),"default tree is simple, with secondary search closed");
    const rows=document.querySelectorAll('[role="treeitem"]'),elapsed=performance.now()-start;
    check(rows.length<=150&&rows.length>0,size+" "+shape+": actual React tree mounts bounded nodes");
    check(Array.from(rows).some(r=>r.getAttribute("data-ruler-id")===target),size+" "+shape+": requested permanent ID is mounted");
    for(const edge of Array.from(document.querySelectorAll('path[data-parent-id]'))){
     const parent=document.querySelector<HTMLElement>(`[data-ruler-id="${edge.getAttribute('data-parent-id')}"]`)!,child=document.querySelector<HTMLElement>(`[data-ruler-id="${edge.getAttribute('data-child-id')}"]`)!;
+    if(!parent||!child)continue;
+    const p=parent.querySelector("[data-genealogy-card]")!.getBoundingClientRect(),c=child.querySelector("[data-genealogy-card]")!.getBoundingClientRect(),tree=document.querySelector('[role="tree"]')!.getBoundingClientRect();
+    check(Math.abs(tree.top+Number(edge.getAttribute("data-y1"))-p.bottom)<1&&Math.abs(tree.top+Number(edge.getAttribute("data-y2"))-c.top)<1,size+" "+shape+": line touches actual card boundaries");
     check(parent.getBoundingClientRect().top<child.getBoundingClientRect().top,size+" "+shape+": real parent DOM is above child");
    }
-   const siblingGroups=new Map<string,HTMLElement[]>();for(const edge of Array.from(document.querySelectorAll('path[data-parent-id]'))){const id=edge.getAttribute('data-parent-id')!,child=document.querySelector<HTMLElement>(`[data-ruler-id="${edge.getAttribute('data-child-id')}"]`)!;siblingGroups.set(id,[...(siblingGroups.get(id)??[]),child]);}
+   const siblingGroups=new Map<string,HTMLElement[]>();for(const edge of Array.from(document.querySelectorAll('path[data-parent-id]'))){const id=edge.getAttribute('data-parent-id')!,child=document.querySelector<HTMLElement>(`[data-ruler-id="${edge.getAttribute('data-child-id')}"]`)!;if(child)siblingGroups.set(id,[...(siblingGroups.get(id)??[]),child]);}
    for(const siblings of siblingGroups.values())if(siblings.length>1){const a=siblings[0].getBoundingClientRect(),b=siblings[1].getBoundingClientRect();check(a.top===b.top&&a.left!==b.left,size+" "+shape+": actual sibling DOM shares a horizontal generation");}
    const focused=document.querySelector<HTMLElement>('[data-genealogy-focused="true"]')!,visible=focused.closest('.MuiDialogContent-root')!.getBoundingClientRect(),rect=focused.getBoundingClientRect();
    check(rect.bottom>visible.top&&rect.top<visible.bottom&&rect.right>visible.left&&rect.left<visible.right,size+" "+shape+": focused real node is inside the visible viewport");
@@ -107,6 +139,7 @@ export async function checkRoyalGenealogyRecord(core:Core,factionId:string,perso
   await new Promise(resolve=>setTimeout(resolve,20));
   const nodes=Array.from(document.querySelectorAll('[data-ruler-id]')).filter(n=>n.getAttribute("data-ruler-id")===r.id);
   check(nodes.length===1,p.status+": actual genealogy retains one permanent royal node");
+  flushSync(()=>(nodes[0].querySelector("[data-genealogy-card]") as HTMLButtonElement).click());
   check(document.querySelector('[data-genealogy-person]')?.textContent?.includes("出生："+formatWorldDate(p.bornMonth)),p.status+": genealogy retains original birth month");
   if(p.deathMonth!==undefined)check(document.querySelector('[data-genealogy-person]')?.textContent?.includes("死亡："+formatWorldDate(p.deathMonth)),"actual deceased royal genealogy shows the one death month");
   if(r.reignOrdinal!==undefined)check(!nodes[0].querySelector('[data-genealogy-theme="neutral"]'),"actual ascended royal uses a monarch theme on the one node");

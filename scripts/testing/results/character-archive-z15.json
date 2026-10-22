@@ -1,0 +1,51 @@
+[
+  {
+    "seed": "archive-z10-500",
+    "years": 500,
+    "results": [
+      {
+        "genealogyDOMChecks": [
+          "DEAD: actual genealogy retains one permanent royal node",
+          "DEAD: genealogy retains original birth month",
+          "actual deceased royal genealogy shows the one death month",
+          "ACTIVE: actual genealogy retains one permanent royal node",
+          "ACTIVE: genealogy retains original birth month"
+        ],
+        "month": 2400,
+        "people": 27,
+        "countryPeople": 10,
+        "records": 503,
+        "allRecordsPresent": true,
+        "noNestedScroll": true,
+        "personReadableRecords": 15,
+        "publicPersonRecords": 8,
+        "renderMs": 4.909999999776483,
+        "htmlBytes": 67358,
+        "heapBytes": 88082527,
+        "strictSaveValid": true
+      },
+      {
+        "genealogyDOMChecks": [
+          "DEAD: actual genealogy retains one permanent royal node",
+          "DEAD: genealogy retains original birth month",
+          "actual deceased royal genealogy shows the one death month",
+          "ACTIVE: actual genealogy retains one permanent royal node",
+          "ACTIVE: genealogy retains original birth month"
+        ],
+        "month": 6000,
+        "people": 79,
+        "countryPeople": 23,
+        "records": 1664,
+        "allRecordsPresent": true,
+        "noNestedScroll": true,
+        "personReadableRecords": 20,
+        "publicPersonRecords": 8,
+        "renderMs": 21.430000000074507,
+        "htmlBytes": 207965,
+        "heapBytes": 84675431,
+        "strictSaveValid": true
+      }
+    ],
+    "deterministic12MonthContinuation": true
+  }
+]
