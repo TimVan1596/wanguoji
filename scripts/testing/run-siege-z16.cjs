@@ -1,7 +1,8 @@
 // Only frozen production copies receive candidates. No release balance switch.
 const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),{execFileSync,spawn}=require('node:child_process');
 const repo=process.cwd(),name=process.argv[2]||'A',port=Number(process.env.Z16_PORT||5236),root=fs.mkdtempSync(path.join(os.tmpdir(),'wanguoji-z16-'+name+'-'));
-if(!['A','P','B','C'].includes(name))throw Error('Unknown candidate');
+if(!['A','P','Q','B','C'].includes(name))throw Error('Unknown candidate');
+if(name!=='A'&&/stage3|final/.test(process.env.Z16_SUFFIX||'')){const {gate}=require('./summarize-siege-z16.cjs'),level=/final/.test(process.env.Z16_SUFFIX)?3:2,result=gate(name,level);if(!result.pass)throw Error('Previous-stage safety gate rejected '+name+': '+JSON.stringify(result.failed??result));}
 execFileSync('tar',['-x','-C',root],{input:execFileSync('git',['archive','f22bd1c86da92a967a348d7c3b8e725331914d4b'],{maxBuffer:512*1024*1024})});fs.symlinkSync(path.join(repo,'node_modules'),path.join(root,'node_modules'),'junction');
 const replace=(s,a,b)=>{if(!s.includes(a))throw Error('Missing anchor: '+a);return s.replace(a,b);};
 const edit=(f,fn)=>{const p=path.join(root,f);fs.writeFileSync(p,fn(fs.readFileSync(p,'utf8')));};
@@ -18,6 +19,12 @@ if(name!=='A')edit('src/Components/City.ts',s=>{
     if(actualDamage===0)return;
     if (\n      this.lastSiegeDevastationYear < 0 ||`);
  s=replace(s,'mainAttacker?.commandContributions?.slice()',`mainAttacker?.commandContributions?.filter(c=>{const f=MilitaryCommandRegistry.getFormation(c.commandId);return f?.status==="ACTIVE"&&f.factionId===mainAttacker.team.name&&f.commanderPersonId===c.commanderPersonId&&siegeParticipants(this,mainAttacker.team,Game.Core,Game.BlockSize,true).some(u=>f.memberUnitIds.includes(u.player.logicalUnitId??""));}).slice()`);
+ if(name==='Q'){
+  s=replace(s,'const mainAttacker = contacts.map',`const localDefenders=this.ownerTeam?siegeParticipants(this,this.ownerTeam,Game.Core,Game.BlockSize,false).length:0;
+    const mainAttacker = contacts.map`);
+  s=replace(s,'c.strength>=2&&!c.team.isDie','(c.strength>=2||c.strength===1&&localDefenders===0)&&!c.team.isDie');
+  s=replace(s,'const pressure=Math.min(1.5,(mainAttacker.strength-1)/(1+defenders/2));','const pressure=mainAttacker.strength===1?.5:Math.min(1.5,(mainAttacker.strength-1)/(1+defenders/2));');
+ }
  const start=s.indexOf('    if (\n      !shouldApplySiegeDamage('),end=s.indexOf('    this.defense -= siegeDamage;',start);
  if(start<0||end<0)throw Error('Missing damage block');s=s.slice(0,start)+'    const siegeDamage=actualDamage;\n'+s.slice(end);return s;
 });

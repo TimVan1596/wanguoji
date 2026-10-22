@@ -1,5 +1,6 @@
 import {createNaturalCore} from './NaturalCoreHarness';
 import {SIMULATION_FIXED_STEP_MS} from '../SimulationDriver';
+import {CITY_SIEGE_DAMAGE_INTERVAL_MONTHS} from '../../config/simulation';
 import {siegeParticipants} from '../SiegeParticipants';
 import Diplomacy,{DiplomacySystem} from '../../Politics/Diplomacy';
 import Military from '../../Politics/MilitaryCommandRegistry';
@@ -25,8 +26,10 @@ export async function runSiegeContestCore(seed:string,candidate=false,profile?:s
     [...attack.users].sort((a,b)=>Number(a.role==="RULER")-Number(b.role==="RULER")).slice(0,a).forEach(u=>place(u,city.block.x,city.block.y));[...owner.users].slice(0,d).forEach(u=>place(u,city.block.x,city.block.y));
     check(siegeParticipants(city,attack,core,32,true).length===a,`${logical}/${a}/${d}: unique real attackers`);
     check(siegeParticipants(city,owner,core,32,false).length===d,`${logical}/${a}/${d}: only owner units defend`);
+    const positions=(t:typeof attack,attacking:boolean)=>siegeParticipants(city,t,core,32,attacking).map(u=>{const e=core.logicalUnitRegistry.getEntry(u.player.logicalUnitId!)!;return {unitId:e.state.unitId,x:logical?e.state.logicalX:u.player.x,y:logical?e.state.logicalY:u.player.y};});
+    const attackersBefore=positions(attack,true),defendersBefore=positions(owner,false);
     const devastation=city.devastation,wall=city.defense;for(let i=0;i<100;i++)city.registerSiegeContact(attack,m);(city as any).updateSiege(m);
-    const loss=wall-city.defense;damage.push({logical,attackers:a,defenders:d,damage:loss,cityId:city.id,attacker:attack.name,defender:owner.name,month:m,wallBefore:wall,wallAfter:city.defense,underSiege:city.underSiege,attackerPositions:siegeParticipants(city,attack,core,32,true).map(u=>({unitId:u.player.logicalUnitId,x:logical?core.logicalUnitRegistry.getEntry(u.player.logicalUnitId!)!.state.logicalX:u.player.x,y:logical?core.logicalUnitRegistry.getEntry(u.player.logicalUnitId!)!.state.logicalY:u.player.y}))});return {city,attack,owner,m,place,loss,devastationChange:city.devastation-devastation};
+    const loss=wall-city.defense;damage.push({logical,attackers:a,defenders:d,damage:loss,cityId:city.id,cityName:city.name,attacker:attack.name,defender:owner.name,month:m,wallBefore:wall,wallAfter:city.defense,underSiege:city.underSiege,attackerPositionsBefore:attackersBefore,defenderPositionsBefore:defendersBefore,hadRegisteredContact:true,reason:loss>0?'ACTUAL_WALL_LOSS':!city.underSiege?'NO_EFFECTIVE_CONTACT':city.lastSiegeDamageMonth===m?'FRACTION_ACCUMULATED':'TICK_NOT_DUE',captured:city.ownerFactionId!==owner.name,siegeEnded:!city.underSiege,attackerPositions:siegeParticipants(city,attack,core,32,true).map(u=>({unitId:u.player.logicalUnitId,x:logical?core.logicalUnitRegistry.getEntry(u.player.logicalUnitId!)!.state.logicalX:u.player.x,y:logical?core.logicalUnitRegistry.getEntry(u.player.logicalUnitId!)!.state.logicalY:u.player.y}))});return {city,attack,owner,m,place,loss,devastationChange:city.devastation-devastation};
    };
    if(profile){
     const a=scenario(2,0),aLoss=a.loss,b=scenario(2,2);check(candidate?b.loss<aLoss:b.loss===aLoss,`${logical}: 2v2 real local defense changes actual wall loss`);
@@ -47,6 +50,14 @@ export async function runSiegeContestCore(seed:string,candidate=false,profile?:s
    }
    const single=scenario(1,0);check(candidate?single.loss===0:single.loss>0,`${logical}: single attacker ${candidate?'cannot freely damage':'baseline fixed damage'}`);
    if(candidate)check(single.devastationChange===0,`${logical}: insufficient pressure cannot freely devastate a city`);
+   if(profile&&candidate){
+    const guarded=scenario(1,1);check(!guarded.city.underSiege&&guarded.loss===0,`${logical}: one attacker cannot reduce a genuinely defended city's wall`);
+    if(profile==='Q'){
+     const empty=scenario(1,0),wall=empty.city.defense,next=empty.m+CITY_SIEGE_DAMAGE_INTERVAL_MONTHS;
+     (core.simulator as any).clock.importState({worldMonth:next,elapsedMs:0,running:false});empty.city.registerSiegeContact(empty.attack,next);(empty.city as any).updateSiege(next);
+     check(empty.city.defense<wall,`${logical}: continued lone contact can slowly damage a genuinely empty city`);
+    }
+   }
    const open=scenario(3,0),openLoss=open.loss;check(openLoss>0,`${logical}: advantage can damage undefended walls`);
    const defended=scenario(3,3);check(candidate?defended.loss<openLoss:defended.loss===openLoss,`${logical}: defenders ${candidate?'reduce':'do not change baseline'} damage`);
    const blocked=scenario(3,8);check(candidate?blocked.loss===0:blocked.loss>0,`${logical}: enough verified defenders ${candidate?'block':'do not block baseline'} damage`);
@@ -62,7 +73,13 @@ export async function runSiegeContestCore(seed:string,candidate=false,profile?:s
   }
   check(JSON.stringify(damage.filter(r=>!r.logical).map(r=>({attackers:r.attackers,defenders:r.defenders,damage:r.damage})))===JSON.stringify(damage.filter(r=>r.logical).map(r=>({attackers:r.attackers,defenders:r.defenders,damage:r.damage}))), 'Phaser and logical authorities settle identical verified force scenarios');
   hydrateWorldSave(core,structuredClone(base));const month=core.simulator!.year,city=core.allCities.find(c=>c.ownerTeam&&!c.isInCaptureGrace(month))!,attacker=core.teams.find(t=>t!==city.ownerTeam&&Diplomacy.canAttack(t.name,city.ownerFactionId,month))!;
-  city.registerSiegeContact(attacker,month);const pending=exportWorldSave(core);check(validateWorldSave(pending).valid,'pending real siege contact is valid JSON DTO');
+  const placeSaved=(u:any,x:number,y:number)=>{u.player.setPosition(x,y);u.player.body.reset(x,y);const state=core.logicalUnitRegistry.getEntry(u.player.logicalUnitId)!.state;state.logicalX=x;state.logicalY=y;};
+  for(const u of city.ownerTeam!.users)placeSaved(u,0,0);
+  for(const u of [...city.ownerTeam!.users].slice(0,2))placeSaved(u,city.block.x,city.block.y);
+  for(const u of [...attacker.users].slice(0,2))placeSaved(u,city.block.x,city.block.y);
+  city.registerSiegeContact(attacker,month);(city as any).updateSiege(month);city.registerSiegeContact(attacker,month);
+  check(city.underSiege&&siegeParticipants(city,attacker,core,32,true).length>=2,'save fixture contains a genuine ongoing siege with real positioned attackers');
+  const pending=exportWorldSave(core);check(validateWorldSave(pending).valid,'pending real siege contact and fractional pressure are valid JSON DTO');
   hydrateWorldSave(core,structuredClone(pending));check(diffCanonicalWorldSave(pending,exportWorldSave(core)).matched,'pending siege survives hydration without duplicate events');
   const resume=()=>{hydrateWorldSave(core,structuredClone(pending));core.setWorldRunning(true);for(let n=0;n<12;n++)step();core.setWorldRunning(false);return exportWorldSave(core);};
   const a=resume(),b=resume();check(validateWorldSave(a).valid&&diffCanonicalWorldSave(a,b).matched,'twelve month real siege continuation deterministic');hydrateWorldSave(core,structuredClone(a));check(diffCanonicalWorldSave(a,exportWorldSave(core)).matched,'second save reads identically');
@@ -83,7 +100,7 @@ export async function runLightMilitaryCore(seed:string,profile:string){
   core.setWorldRunning(false);const month=core.simulator!.year;
   check(f.memberUnitIds.length===2,'first real appointment has exactly two existing people');
   const original=[...f.memberUnitIds],available=[...team.users].filter(v=>v.role==='NORMAL'&&!v.rulerId&&!Military.isAssigned(v.player.logicalUnitId!));check(available.length>=3,'scenario has real near and far unassigned residents');
-  const place=(v:typeof u,x:number,y:number)=>{v.player.setPosition(x,y);v.player.body.reset(x,y);const state=core.logicalUnitRegistry.getEntry(v.player.logicalUnitId!)!.state;state.logicalX=x;state.logicalY=y;};
+  const place=(v:any,x:number,y:number)=>{v.player.setPosition(x,y);v.player.body.reset(x,y);const state=core.logicalUnitRegistry.getEntry(v.player.logicalUnitId!)!.state;state.logicalX=x;state.logicalY=y;};
   // Test fixture positions; the production reinforcement transaction itself may never move a body.
   const x=team.capitalCity!.block.x+128,y=team.capitalCity!.block.y+128;place(u,x,y);for(let i=0;i<available.length;i++)place(available[i],i<2?x+16+i*16:x+200,y);
   const beforePositions=available.map(v=>[v.id,v.player.x,v.player.y]),targets=core.allCities.filter(c=>c.ownerTeam!==team).slice(0,5);check(targets.length===5,'five real cities support original merit promotion thresholds');
