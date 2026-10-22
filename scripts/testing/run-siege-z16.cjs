@@ -2,7 +2,11 @@
 const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),{execFileSync,spawn}=require('node:child_process');
 const repo=process.cwd(),name=process.argv[2]||'A',port=Number(process.env.Z16_PORT||5236),root=fs.mkdtempSync(path.join(os.tmpdir(),'wanguoji-z16-'+name+'-'));
 if(!['A','P','Q','B','C'].includes(name))throw Error('Unknown candidate');
-if(name!=='A'&&/stage3|final/.test(process.env.Z16_SUFFIX||'')){const {gate}=require('./summarize-siege-z16.cjs'),level=/final/.test(process.env.Z16_SUFFIX)?3:2,result=gate(name,level);if(!result.pass)throw Error('Previous-stage safety gate rejected '+name+': '+JSON.stringify(result.failed??result));}
+const suffix=process.env.Z16_SUFFIX||'',suite=process.env.Z16_SUITE||'siege-contest',seeds=(process.env.WANGUOJI_CORE_SEEDS||'siege-defense-z10').split(','),longSeeds=(process.env.WANGUOJI_CORE_LONG_SEEDS||'none').split(',');
+if(!['siege-contest','siege-turnover'].includes(suite))throw Error('Unsupported suite: use controlled siege-contest or staged siege-turnover');
+const maxYears=Math.max(...seeds.map(seed=>Number(longSeeds.includes(seed)?process.env.WANGUOJI_CORE_LONG_YEARS||200:process.env.WANGUOJI_CORE_YEARS||100)));
+if(!Number.isFinite(maxYears)||maxYears<=0)throw Error('Invalid requested duration');
+if(name!=='A'&&(/stage3|final/.test(suffix)||suite==='siege-turnover'&&(maxYears>50||seeds.length>4))){const {gate}=require('./summarize-siege-z16.cjs'),level=/final/.test(suffix)||maxYears>200||seeds.length>8?3:2,result=gate(name,level);if(!result.pass)throw Error('Previous-stage safety gate rejected '+name+': '+JSON.stringify(result.failed??result));}
 execFileSync('tar',['-x','-C',root],{input:execFileSync('git',['archive','f22bd1c86da92a967a348d7c3b8e725331914d4b'],{maxBuffer:512*1024*1024})});fs.symlinkSync(path.join(repo,'node_modules'),path.join(root,'node_modules'),'junction');
 const replace=(s,a,b)=>{if(!s.includes(a))throw Error('Missing anchor: '+a);return s.replace(a,b);};
 const edit=(f,fn)=>{const p=path.join(root,f);fs.writeFileSync(p,fn(fs.readFileSync(p,'utf8')));};
