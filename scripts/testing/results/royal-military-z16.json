@@ -231,43 +231,43 @@
         "size": 150,
         "shape": "deep",
         "mountedNodes": 5,
-        "mountMs": 34.899999998509884,
+        "mountMs": 26.899999998509884,
         "heapDelta": 0
       },
       {
         "size": 150,
         "shape": "wide",
         "mountedNodes": 7,
-        "mountMs": 35.70000000298023,
+        "mountMs": 26.699999999254942,
+        "heapDelta": 13904573
+      },
+      {
+        "size": 1000,
+        "shape": "deep",
+        "mountedNodes": 5,
+        "mountMs": 30.800000000745058,
         "heapDelta": 0
       },
       {
         "size": 1000,
-        "shape": "deep",
-        "mountedNodes": 5,
-        "mountMs": 43.899999998509884,
-        "heapDelta": 14950362
-      },
-      {
-        "size": 1000,
         "shape": "wide",
         "mountedNodes": 7,
-        "mountMs": 38.100000001490116,
-        "heapDelta": -5653008
+        "mountMs": 28.5,
+        "heapDelta": 0
       },
       {
         "size": 10000,
         "shape": "deep",
         "mountedNodes": 5,
-        "mountMs": 187.30000000074506,
-        "heapDelta": 38562431
+        "mountMs": 76.19999999925494,
+        "heapDelta": 24892070
       },
       {
         "size": 10000,
         "shape": "wide",
         "mountedNodes": 7,
-        "mountMs": 143.69999999925494,
-        "heapDelta": 9782930
+        "mountMs": 45.399999998509884,
+        "heapDelta": 6813709
       }
     ],
     "shortAppointmentAudits": [

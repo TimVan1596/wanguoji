@@ -38,6 +38,12 @@
         "emptyCapitalRatio": 0.43940128613429286,
         "meanLocalCapitalPopulation": 0.9609020898993454,
         "recapture24": 0.24642099681866383,
+        "recaptureWorldsWithFullObservation": 4,
+        "measuredCoreMsRange": [
+          9283.699999999255,
+          11261.39999999851
+        ],
+        "maxMeasuredHeapBytes": 87238499,
         "maxCityTransfers": 14,
         "meanDevastation": 31.123972045776608,
         "allInvariantsValid": true
@@ -59,6 +65,12 @@
         "emptyCapitalRatio": 0.38587625294928213,
         "meanLocalCapitalPopulation": 1.1219619975989563,
         "recapture24": 0.14355293399411045,
+        "recaptureWorldsWithFullObservation": 4,
+        "measuredCoreMsRange": [
+          13699.89999999851,
+          16852.400000002235
+        ],
+        "maxMeasuredHeapBytes": 97216610,
         "maxCityTransfers": 7,
         "meanDevastation": 16.81826202563077,
         "allInvariantsValid": true
@@ -97,6 +109,12 @@
         "emptyCapitalRatio": 0.43940128613429286,
         "meanLocalCapitalPopulation": 0.9609020898993454,
         "recapture24": 0.24642099681866383,
+        "recaptureWorldsWithFullObservation": 4,
+        "measuredCoreMsRange": [
+          9283.699999999255,
+          11261.39999999851
+        ],
+        "maxMeasuredHeapBytes": 87238499,
         "maxCityTransfers": 14,
         "meanDevastation": 31.123972045776608,
         "allInvariantsValid": true
@@ -118,6 +136,12 @@
         "emptyCapitalRatio": 0.35584016513101846,
         "meanLocalCapitalPopulation": 1.2142073676251053,
         "recapture24": 0.20125948930296755,
+        "recaptureWorldsWithFullObservation": 4,
+        "measuredCoreMsRange": [
+          8574.099999997765,
+          14286.699999999255
+        ],
+        "maxMeasuredHeapBytes": 102234950,
         "maxCityTransfers": 14,
         "meanDevastation": 13.423129498170152,
         "allInvariantsValid": true
@@ -159,6 +183,12 @@
         "emptyCapitalRatio": 0.43940128613429286,
         "meanLocalCapitalPopulation": 0.9609020898993454,
         "recapture24": 0.24642099681866383,
+        "recaptureWorldsWithFullObservation": 4,
+        "measuredCoreMsRange": [
+          9283.699999999255,
+          11261.39999999851
+        ],
+        "maxMeasuredHeapBytes": 87238499,
         "maxCityTransfers": 14,
         "meanDevastation": 31.123972045776608,
         "allInvariantsValid": true
@@ -180,6 +210,12 @@
         "emptyCapitalRatio": 0.33892531735333403,
         "meanLocalCapitalPopulation": 1.1532808073945189,
         "recapture24": 0.07797619047619048,
+        "recaptureWorldsWithFullObservation": 4,
+        "measuredCoreMsRange": [
+          15688.199999999255,
+          18871.699999999255
+        ],
+        "maxMeasuredHeapBytes": 104484745,
         "maxCityTransfers": 5,
         "meanDevastation": 12.351442847652246,
         "allInvariantsValid": true
@@ -221,6 +257,12 @@
         "emptyCapitalRatio": 0.43940128613429286,
         "meanLocalCapitalPopulation": 0.9609020898993454,
         "recapture24": 0.24642099681866383,
+        "recaptureWorldsWithFullObservation": 4,
+        "measuredCoreMsRange": [
+          9283.699999999255,
+          11261.39999999851
+        ],
+        "maxMeasuredHeapBytes": 87238499,
         "maxCityTransfers": 14,
         "meanDevastation": 31.123972045776608,
         "allInvariantsValid": true
@@ -242,6 +284,12 @@
         "emptyCapitalRatio": 0.29594880524343636,
         "meanLocalCapitalPopulation": 1.273811248601667,
         "recapture24": 0.019230769230769232,
+        "recaptureWorldsWithFullObservation": 4,
+        "measuredCoreMsRange": [
+          20264.70000000298,
+          27916.89999999851
+        ],
+        "maxMeasuredHeapBytes": 105055442,
         "maxCityTransfers": 5,
         "meanDevastation": 5.372660329038779,
         "allInvariantsValid": true
@@ -286,6 +334,12 @@
           "emptyCapitalRatio": 0.41959863815938936,
           "meanLocalCapitalPopulation": 1.0261106853475352,
           "recapture24": 0.2868529846475702,
+          "recaptureWorldsWithFullObservation": 8,
+          "measuredCoreMsRange": [
+            18628.39999999851,
+            43141.89999999851
+          ],
+          "maxMeasuredHeapBytes": 104386565,
           "maxCityTransfers": 33,
           "meanDevastation": 40.18171997550582,
           "allInvariantsValid": true
@@ -307,6 +361,12 @@
           "emptyCapitalRatio": 0.40792627764667605,
           "meanLocalCapitalPopulation": 1.096784461954679,
           "recapture24": 0.18406059802468208,
+          "recaptureWorldsWithFullObservation": 8,
+          "measuredCoreMsRange": [
+            25218.900000002235,
+            49675.39999999851
+          ],
+          "maxMeasuredHeapBytes": 99223873,
           "maxCityTransfers": 21,
           "meanDevastation": 27.815251338656182,
           "allInvariantsValid": true
@@ -346,6 +406,12 @@
           "emptyCapitalRatio": 0.4906908157597549,
           "meanLocalCapitalPopulation": 0.8942816106003324,
           "recapture24": 0.3254310344827586,
+          "recaptureWorldsWithFullObservation": 2,
+          "measuredCoreMsRange": [
+            41956.89999999851,
+            57136.59999999963
+          ],
+          "maxMeasuredHeapBytes": 83141039,
           "maxCityTransfers": 56,
           "meanDevastation": 42.523307686430485,
           "allInvariantsValid": true
@@ -367,6 +433,12 @@
           "emptyCapitalRatio": 0.4050289391126058,
           "meanLocalCapitalPopulation": 1.1406811955153873,
           "recapture24": 0.18560371517027863,
+          "recaptureWorldsWithFullObservation": 2,
+          "measuredCoreMsRange": [
+            63733.800000000745,
+            99448.30000000075
+          ],
+          "maxMeasuredHeapBytes": 107890541,
           "maxCityTransfers": 42,
           "meanDevastation": 37.412387351698996,
           "allInvariantsValid": true

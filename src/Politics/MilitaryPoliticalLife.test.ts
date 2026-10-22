@@ -31,3 +31,10 @@ it('keeps one event entry when political participation and accession share a sou
  const prior={...life.entry,text:'秦继参与既有宗室废立。'},merged=appendMilitaryPoliticalLife([prior],life);
  expect(merged).toHaveLength(1);expect(merged[0].eventId).toBe('s');expect(merged[0].text).toBe('秦继参与既有宗室废立。秦继继位为秦王。');expect(prior.text).toBe('秦继参与既有宗室废立。');
 });
+it('keeps an actual military resident founder as the contemporary leader rather than backfilling a later crown',()=>{
+ const {p,r,d,events,factions}=fixture();delete p.royalIdentity;delete r.militaryIdentity;r.residentIdentity={personId:'p',sourceUserId:1,bornMonth:-240,military:{personId:'p'}};
+ events[1]={id:'founding-accession',type:'ruler-acceded',year:100,actorFactionId:'qin',rulerId:r.id,metadata:{residentPersonId:'p',sourceUserId:1}};
+ const f=factions.get('qin');f.stateFoundedMonth=200;f.sovereigntyHistory=[{rank:'LEADER',startMonth:0,endMonth:200},{rank:'KING',startMonth:200,endMonth:250},{rank:'EMPEROR',startMonth:250}];
+ expect(militaryPoliticalLife(p,[d],events,factions,300)?.entry.text).toBe('秦继继任秦首领。');
+ r.residentIdentity.sourceUserId++;expect(militaryPoliticalLife(p,[d],events,factions,300)).toBeUndefined();
+});
