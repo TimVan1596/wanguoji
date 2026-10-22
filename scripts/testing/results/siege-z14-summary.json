@@ -1,4 +1,12 @@
 {
+  "releaseDecision": {
+    "released": "bounded top-down genealogy UI only",
+    "siegeFormulaChanged": false,
+    "formationCapChanged": false,
+    "localGarrisonReleased": false,
+    "experimentalCandidatesAdopted": [],
+    "reason": "All candidates failed at least one safety gate; B2 also failed strict royal/military save validation in regional-18."
+  },
   "historical246": {
     "source": "military-balance-z3.json",
     "scope": "Historical six 100-year / two 200-year worlds; different release mechanics, not interchangeable with current seeds",
@@ -59,7 +67,7 @@
       "reason": "Insufficient pressure still accumulated devastation in the initial placement of the gate; stopped, corrected, and restarted original seeds in v2 variants."
     }
   ],
-  "complete": {
+  "coverage": {
     "A": true,
     "B2": true,
     "C2": true,
@@ -67,6 +75,7 @@
     "R4-screen": true,
     "R6-screen": true
   },
+  "coverageMeaning": "Every predetermined seed accounted for, including explicit failed worlds; coverage is not a passing result.",
   "fiveHundred": {
     "A": {
       "aggregate": {
