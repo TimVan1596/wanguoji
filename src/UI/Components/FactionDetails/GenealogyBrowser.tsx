@@ -30,7 +30,7 @@ export default function GenealogyBrowser({open,onClose,dynasty,team,worldMonth,t
   const index=indexGenealogy(buildRoyalArchiveGenealogy(dynasty,people,events));
   return {index,military:royalMilitaryArchive(dynasty,people,events),presentations:deriveGenealogyNodePresentations(dynasty,team,events,worldMonth)};
  },[open,stamp,worldMonth,team.name]);
- const rows=useMemo(()=>data?genealogyWindow(data.index,focus,expanded,branchOffsets):[],[data,focus,expanded,branchOffsets]);
+ const rows=useMemo(()=>data?genealogyWindow(data.index,focus,expanded,branchOffsets,new Set(data.military.keys())):[],[data,focus,expanded,branchOffsets]);
  const heights=useMemo(()=>new Map(rows.map(({node})=>[node.ruler.id,genealogyCardHeight(true,!!data?.presentations.get(node.ruler.id)?.labels.length,!!data?.military.get(node.ruler.id))])),[rows,data]);
  const layout=useMemo(()=>layoutGenealogy(rows,heights),[rows,heights]);
  const visible=visibleGenealogyRows(rows,layout,view,focus),name=(r:{houseName:string;givenName:string})=>r.houseName.replace(/氏$/,'')+r.givenName;

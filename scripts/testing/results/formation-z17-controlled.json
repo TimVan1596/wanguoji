@@ -1,0 +1,48 @@
+[
+  {
+    "seed": "royal-military-z11",
+    "checks": [
+      "actual dynasty offers an adult royal under the existing rules",
+      "fixture uses exactly 10 real people through audited transfers",
+      "only three actual bodies occupy the capital defense area",
+      "ten-person country creates exactly one two-person production appointment",
+      "appointment does not move or remove the three capital residents",
+      "fixture uses exactly 20 real people through audited transfers",
+      "twenty-person country creates a second real two-person command within existing slots",
+      "two commands never share a real unit",
+      "promotion scenario has five real cities",
+      "original service and actual capture thresholds unlock and fill three-person general command",
+      "senior promotion unlocks and fills at most four actual members",
+      "reinforcement creates no population or duplicate assignment",
+      "recruitment and promotion never teleport a body",
+      "production population and random checkpoints are available",
+      "loss fixture has a real unassigned nearby replacement",
+      "actual member death invokes production User and population casualty transaction",
+      "real casualty replacement excludes the dying body and uses an existing unassigned unit",
+      "no eligible nearby population remains for refill",
+      "without real replacements the original minimum-size rule ends the command, never fabricates soldiers",
+      "retirement releases military ownership without deleting residents",
+      "real commander transfer closes old formation and keeps one person",
+      "same real family still has a legal adult military candidate",
+      "royal enlistment also requires a real nearby nonreserved soldier",
+      "real royal enlistment shares the ordinary capacity and population transaction",
+      "royal and ordinary pi generals have identical initial size",
+      "same real military save resumes twelve months identically",
+      "second save reads without member or identity mutation",
+      "state termination leaves no active home command"
+    ],
+    "observations": [
+      {
+        "capitalBefore": 3,
+        "capitalAfterAppointment": 3,
+        "capacityByOffice": [
+          2,
+          3,
+          4
+        ],
+        "saveSchemaVersion": 22
+      }
+    ],
+    "scope": "controlled frozen production candidate; not published; no long simulation"
+  }
+]
