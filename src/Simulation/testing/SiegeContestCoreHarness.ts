@@ -1,7 +1,8 @@
 import {createNaturalCore} from './NaturalCoreHarness';
 import {SIMULATION_FIXED_STEP_MS} from '../SimulationDriver';
 import {siegeParticipants} from '../SiegeParticipants';
-import Diplomacy from '../../Politics/Diplomacy';
+import Diplomacy,{DiplomacySystem} from '../../Politics/Diplomacy';
+import Military from '../../Politics/MilitaryCommandRegistry';
 import {exportWorldSave} from '../../Persistence/WorldSaveExporter';
 import {hydrateWorldSave} from '../../Persistence/WorldSaveHydrator';
 import {validateWorldSave} from '../../Persistence/WorldSaveValidator';
@@ -33,6 +34,17 @@ export async function runSiegeContestCore(seed:string,candidate=false,profile?:s
     const dead=scenario(2,0);for(const u of siegeParticipants(dead.city,dead.attack,core,32,true))u.destroyUser(false,{cause:"BATTLE_DEATH",month:dead.m,damageSource:"HOSTILE_HOME_OCCUPATION"});
     dead.city.registerSiegeContact(dead.attack,dead.m);const wall=dead.city.defense;(dead.city as any).updateSiege(dead.m);check(candidate?!dead.city.underSiege&&dead.city.defense===wall:dead.city.underSiege,`${logical}: dead real attackers cannot leave effective ghost pressure`);
    }
+   if(profile){
+    const truce=scenario(2,0),before=truce.city.defense;truce.city.registerSiegeContact(truce.attack,truce.m);
+    const diplomacy=new DiplomacySystem(Diplomacy,()=>core.allCities,()=>{});(diplomacy as any).form(truce.attack,truce.owner,"TRUCE",truce.m,{reason:"WAR_EXHAUSTION_TRUCE",recentBilateralCaptureCount:1,stabilityA:10,stabilityB:10});
+    (truce.city as any).updateSiege(truce.m);check(!truce.city.underSiege&&truce.city.defense===before,`${logical}: actual treaty transaction stops siege immediately`);
+    const ended=scenario(2,0),members=siegeParticipants(ended.city,ended.attack,core,32,true),commander=members[0];
+    check((Military as any).appoint(commander,ended.attack.name,ended.m,members.map(u=>u.player.logicalUnitId!)),`${logical}: controlled command uses real population and registry`);
+    const formation=Military.getFormations().find(f=>f.commanderPersonId===commander.militaryPersonId)!;
+    ended.city.registerSiegeContact(ended.attack,ended.m,undefined,formation.commandId,formation.commanderPersonId);Military.endPersonCommands(formation.commanderPersonId,ended.m,"DISMISSED");
+    for(const u of ended.attack.users)ended.place(u,-1024,-1024);const wall=ended.city.defense;(ended.city as any).updateSiege(ended.m);
+    check(formation.status==="DISBANDED"&&(candidate?!ended.city.underSiege&&ended.city.defense===wall:true),`${logical}: terminated command and departed members leave no ghost assault`);
+   }
    const single=scenario(1,0);check(candidate?single.loss===0:single.loss>0,`${logical}: single attacker ${candidate?'cannot freely damage':'baseline fixed damage'}`);
    if(candidate)check(single.devastationChange===0,`${logical}: insufficient pressure cannot freely devastate a city`);
    const open=scenario(3,0),openLoss=open.loss;check(openLoss>0,`${logical}: advantage can damage undefended walls`);
@@ -55,5 +67,41 @@ export async function runSiegeContestCore(seed:string,candidate=false,profile?:s
   const resume=()=>{hydrateWorldSave(core,structuredClone(pending));core.setWorldRunning(true);for(let n=0;n<12;n++)step();core.setWorldRunning(false);return exportWorldSave(core);};
   const a=resume(),b=resume();check(validateWorldSave(a).valid&&diffCanonicalWorldSave(a,b).matched,'twelve month real siege continuation deterministic');hydrateWorldSave(core,structuredClone(a));check(diffCanonicalWorldSave(a,exportWorldSave(core)).matched,'second save reads identically');
   return {seed,candidate,checks,damage,saveSchemaVersion:base.saveSchemaVersion};
+ }finally{game.destroy(true);}
+}
+
+/** Real appointment, promotion, nearby reinforcement and save transactions in frozen light candidates. */
+export async function runLightMilitaryCore(seed:string,profile:string){
+ const [{default:Military},{default:random}]=await Promise.all([import('../../Politics/MilitaryCommandRegistry'),import('../WorldRandom')]);
+ const {core,game}=await createNaturalCore(seed),checks:string[]=[];
+ const check=(v:unknown,s:string)=>{if(!v)throw Error(s);checks.push(s);};
+ const step=()=>{for(let n=0;n<30;n++)(core as any).advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit('postupdate');};
+ try{
+  let formation=Military.getFormations().find(f=>f.status==='ACTIVE');
+  for(let i=0;!formation&&i<240;i++){step();formation=Military.getFormations().find(f=>f.status==='ACTIVE');}
+  check(formation,'production yearly appointment creates a real light command');const f=formation!,p=Military.getPerson(f.commanderPersonId)!,team=core.teams.find(t=>t.name===f.factionId)!,u=team.getUserById(p.sourceUserId)!;
+  core.setWorldRunning(false);const month=core.simulator!.year;
+  check(f.memberUnitIds.length===2,'first real appointment has exactly two existing people');
+  const original=[...f.memberUnitIds],available=[...team.users].filter(v=>v.role==='NORMAL'&&!v.rulerId&&!Military.isAssigned(v.player.logicalUnitId!));check(available.length>=3,'scenario has real near and far unassigned residents');
+  const place=(v:typeof u,x:number,y:number)=>{v.player.setPosition(x,y);v.player.body.reset(x,y);const state=core.logicalUnitRegistry.getEntry(v.player.logicalUnitId!)!.state;state.logicalX=x;state.logicalY=y;};
+  // Test fixture positions; the production reinforcement transaction itself may never move a body.
+  const x=team.capitalCity!.block.x+128,y=team.capitalCity!.block.y+128;place(u,x,y);for(let i=0;i<available.length;i++)place(available[i],i<2?x+16+i*16:x+200,y);
+  const beforePositions=available.map(v=>[v.id,v.player.x,v.player.y]),targets=core.allCities.filter(c=>c.ownerTeam!==team).slice(0,5);check(targets.length===5,'five real cities support original merit promotion thresholds');
+  const clock=(m:number)=>(core.simulator as any).clock.importState({worldMonth:m,elapsedMs:0,running:false});clock(month+60);
+  for(const c of targets.slice(0,2))c.capture(team,month+60,undefined,f.commandId,p.personId);
+  const populationBeforePromotion=core.teams.reduce((n,t)=>n+t.users.size,0),rng=JSON.stringify(random.exportState());(Military as any).advanceOffices(month+60,core.teams);
+  check(p.appointments[0].officeHistory?.at(-1)?.office==='JIANGJUN','real captured cities and service time grant general');
+  check(f.memberUnitIds.length===(profile==='B'?4:3),'nearby existing recruits respect candidate office cap');
+  check(!f.memberUnitIds.includes(available[2].player.logicalUnitId!),'far resident is not remotely recruited');
+  check(JSON.stringify(beforePositions)===JSON.stringify(available.map(v=>[v.id,v.player.x,v.player.y])),'reinforcement never teleports a resident');
+  check(JSON.stringify(random.exportState())===rng,'refill adds no random draws');check(core.teams.reduce((n,t)=>n+t.users.size,0)===populationBeforePromotion,'first promotion and reinforcement create no population');
+  clock(month+61);for(const c of targets.slice(2))c.capture(team,month+61,undefined,f.commandId,p.personId);clock(month+120);const population=core.teams.reduce((n,t)=>n+t.users.size,0);(Military as any).advanceOffices(month+120,core.teams);
+  check(p.appointments[0].officeHistory?.at(-1)?.office==='SHANGJIANGJUN'&&f.memberUnitIds.length===4,'senior promotion unlocks at most four actual members');
+  check(original.every(id=>f.memberUnitIds.includes(id))&&new Set(Military.getFormations().filter(f=>f.status==='ACTIVE').flatMap(f=>f.memberUnitIds)).size===Military.getFormations().filter(f=>f.status==='ACTIVE').reduce((n,f)=>n+f.memberUnitIds.length,0),'no duplicated members across real commands');
+  check(core.teams.reduce((n,t)=>n+t.users.size,0)===population,'promotion and reinforcement create no population');
+  const saved=exportWorldSave(core);hydrateWorldSave(core,structuredClone(saved));check(diffCanonicalWorldSave(saved,exportWorldSave(core)).matched,'light formation and actual identities survive strict save and load');
+  const resume=()=>{hydrateWorldSave(core,structuredClone(saved));core.setWorldRunning(true);for(let n=0;n<12;n++)step();core.setWorldRunning(false);return exportWorldSave(core);};const a=resume(),b=resume();check(diffCanonicalWorldSave(a,b).matched,'light candidate resumes twelve months deterministically');hydrateWorldSave(core,structuredClone(a));check(diffCanonicalWorldSave(a,exportWorldSave(core)).matched,'light candidate second save reads identically');
+  Military.endPersonCommands(p.personId,core.simulator!.year,'DISMISSED');check(!Military.getFormations().some(v=>v.commanderPersonId===p.personId&&v.status==='ACTIVE'),'dismissal leaves no active command');
+  return {profile,checks,initialMembers:2,maximumMembers:4};
  }finally{game.destroy(true);}
 }

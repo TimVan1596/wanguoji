@@ -103,7 +103,7 @@ export async function checkGenealogyRendering(core:Core,check:(ok:unknown,label:
    const team:any={...core.teams[0],name:"render-bench",status:"EXTINCT"},target=shape==="wide"?"bench-0":"bench-"+(size-1);
    const heapBefore=(performance as any).memory?.usedJSHeapSize,start=performance.now();
    flushSync(()=>root.render(<Provider store={store}><Browser key={size+shape} open onClose={()=>{}} dynasty={dynasty} team={team} worldMonth={20000} targetId={target}/></Provider>));await new Promise(r=>setTimeout(r,20));
-   check(!document.querySelector('[role="dialog"] input')&&!document.querySelector('[role="dialog"]')?.textContent?.includes("查看此支")&&!document.querySelector('[role="dialog"]')?.textContent?.includes("浏览全部人物"),"default tree is simple, with secondary search closed");
+   check(!document.querySelector('[role="dialog"] input')&&!document.querySelector('[role="dialog"]')?.textContent?.includes('查找人物')&&!document.querySelector('[role="dialog"]')?.textContent?.includes("查看此支")&&!document.querySelector('[role="dialog"]')?.textContent?.includes("浏览全部人物"),"default tree is simple, with secondary search closed");
    const rows=document.querySelectorAll('[role="treeitem"]'),elapsed=performance.now()-start;
    check(rows.length<=150&&rows.length>0,size+" "+shape+": actual React tree mounts bounded nodes");
    check(Array.from(rows).some(r=>r.getAttribute("data-ruler-id")===target),size+" "+shape+": requested permanent ID is mounted");
@@ -144,4 +144,19 @@ export async function checkRoyalGenealogyRecord(core:Core,factionId:string,perso
   if(p.deathMonth!==undefined)check(document.querySelector('[data-genealogy-person]')?.textContent?.includes("死亡："+formatWorldDate(p.deathMonth)),"actual deceased royal genealogy shows the one death month");
   if(r.reignOrdinal!==undefined)check(!nodes[0].querySelector('[data-genealogy-theme="neutral"]'),"actual ascended royal uses a monarch theme on the one node");
  }finally{flushSync(()=>root.unmount());host.remove();}
+}
+
+export async function checkMilitaryAccessionNavigation(core:Core,factionId:string,personId:string,check:(ok:unknown,label:string)=>void){
+ const [{default:Military},{default:Dynasty},{default:History},{militaryPoliticalLife}]=await Promise.all([import('../../Politics/MilitaryCommandRegistry'),import('../../Politics/Dynasty'),import('../../History/WorldHistory'),import('../../Politics/MilitaryPoliticalLife')]);
+ const p=Military.getPerson(personId)!,fact=militaryPoliticalLife(p,Dynasty.getAll(),History.getEvents(),new Map(core.teams.map(t=>[t.name,t])),core.simulator!.year)!;
+ check(fact&&fact.rulerId===p.politicalRulerId,'actual accession transaction resolves the one permanent military/royal identity');
+ const before=JSON.stringify(exportWorldSave(core)),host=document.createElement('div');document.body.append(host);const root=createRoot(host);
+ try{
+  flushSync(()=>{store.dispatch(setTeams([...core.teams]));store.dispatch(setWorldYear(core.simulator!.year));store.dispatch(setSelectedFactionName(factionId));store.dispatch(setFactionDetailTab('military'));root.render(<Provider store={store}><FactionDetails/></Provider>);});
+  const heading=Array.from(host.querySelectorAll<HTMLButtonElement>('button[aria-expanded]')).find(b=>b.textContent?.includes(p.personalName!))!;check(heading,'former general is present in the real military list');if(heading.getAttribute('aria-expanded')!=='true')flushSync(()=>heading.click());
+  check(host.textContent?.includes(fact.entry.text)&&host.textContent.includes(formatWorldDate(fact.entry.worldMonth)),'military archive shows the actual accession month and historical polity title');
+  const link=Array.from(host.querySelectorAll('button')).find(b=>b.textContent==='查看对应王室本纪')!;check(link,'accession fact links to the real royal chronicle');flushSync(()=>link.click());await new Promise(r=>setTimeout(r,30));
+  check(store.getState().root.selectedFactionName===fact.factionId&&store.getState().root.factionDetailTab==='house','accession archive link opens the correct historical faction and royal tab');
+ }finally{flushSync(()=>root.unmount());host.remove();}
+ check(JSON.stringify(exportWorldSave(core))===before,'political life display and navigation consume no RNG or canonical state');
 }

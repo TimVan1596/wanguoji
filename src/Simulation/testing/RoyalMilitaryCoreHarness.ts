@@ -1,6 +1,6 @@
 import {genealogyArchiveMetrics} from "./GenealogyArchiveMetrics";
 import {formatRulerLifeAge} from "../../UI/Components/FactionDetails/RoyalPresentation";
-import {checkRoyalArchiveInteraction,checkHistoryFactionNavigation,checkGenealogyRendering,checkRoyalGenealogyRecord} from "./RoyalArchiveInteractionHarness";
+import {checkMilitaryAccessionNavigation,checkRoyalArchiveInteraction,checkHistoryFactionNavigation,checkGenealogyRendering,checkRoyalGenealogyRecord} from "./RoyalArchiveInteractionHarness";
 import {evaluateDepositionOpportunity,chooseDepositionClaimant,selectDepositionCandidates} from "../../Politics/InReignDeposition";
 import {getFactionStability} from "../../Components/City";
 import worldRandom from "../WorldRandom";
@@ -127,7 +127,7 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
    force();try{(Dynasty as any).evaluateInReignDeposition(liveTeam,liveDynasty,Dynasty.getCurrentRuler(t.name)!,coupMonth);}finally{worldRandom.next=originalNext;}
    check(Dynasty.getCurrentRuler(t.name)?.id===r.id&&Military.getPerson(personId)?.status==="RETIRED"&&liveTeam.rulerUser?.historicalPersonId===personId,"successful legal deposition converts the same serving royal and ends old command");const selectedSave=strict();
    check(selectedSave.worldRandom.position===checkpoint.worldRandom.position+1,"successful weighted coup consumes exactly the one existing political draw");
-   await checkRoyalGenealogyRecord(core,t.name,personId,check);
+   await checkRoyalGenealogyRecord(core,t.name,personId,check);await checkMilitaryAccessionNavigation(core,t.name,personId,check);
    const event=History.getEvents().find(e=>e.type==="ruler-deposed"&&e.metadata?.nextRulerId===r.id)!;
    check(JSON.parse(String(event.metadata!.depositionSelection)).candidates.some((c:any)=>c.ownMilitary?.rulerId===r.id),"successful transaction freezes own military evidence");
    for(const mutate of [(e:any)=>e.candidates.find((c:any)=>c.ownMilitary).ownMilitary.members[0].bornMonth--,(e:any)=>e.candidates.find((c:any)=>c.ownMilitary).ownMilitary.office="SHANGJIANGJUN",(e:any)=>e.candidates.find((c:any)=>c.ownMilitary).ownMilitary.victories[0].cityId="invented"]){
@@ -159,7 +159,7 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
    core.setWorldRunning(true);step();core.setWorldRunning(false);
    check(Dynasty.getCurrentRuler(t.name)===r&&t.rulerUser?.historicalPersonId===personId&&p.politicalRulerId===r.id,"legal succession converts the same royal User into the ruler");
    check(p.status==="RETIRED"&&Military.getFormations().every(f=>f.commanderPersonId!==personId||f.status==="DISBANDED")&&r.parentId===parent&&r.bornYear===birth&&r.naturalDeathYear===death,"accession closes old commands and preserves kin and life");
-   check(preAccessionMilitary(r,Military.getPeople(),Military.getFormations(),History.getEvents())?.person.personId===personId,"ruler biography resolves the same pre-accession military person");strict();await checkRoyalGenealogyRecord(core,t.name,personId,check);
+   check(preAccessionMilitary(r,Military.getPeople(),Military.getFormations(),History.getEvents())?.person.personId===personId,"ruler biography resolves the same pre-accession military person");strict();await checkRoyalGenealogyRecord(core,t.name,personId,check);await checkMilitaryAccessionNavigation(core,t.name,personId,check);
    const enemy=core.teams.find(e=>e!==t&&e.status==="ACTIVE")!;
    // Controlled administrative terminal transaction, not a claim of natural union eligibility.
    (core.simulator as any).mergeFaction({absorbedFaction:t,absorbingFaction:enemy},month+1);

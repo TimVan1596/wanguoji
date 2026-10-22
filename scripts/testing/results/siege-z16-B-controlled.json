@@ -1,0 +1,852 @@
+[
+  {
+    "seed": "siege-defense-z10",
+    "candidate": true,
+    "checks": [
+      "false/2/0: unique real attackers",
+      "false/2/0: only owner units defend",
+      "false/2/2: unique real attackers",
+      "false/2/2: only owner units defend",
+      "false: 2v2 real local defense changes actual wall loss",
+      "false/4/1: unique real attackers",
+      "false/4/1: only owner units defend",
+      "false/4/4: unique real attackers",
+      "false/4/4: only owner units defend",
+      "false: 4v1 has greater realized pressure than 4v4",
+      "false/2/0: unique real attackers",
+      "false/2/0: only owner units defend",
+      "false: dead real attackers cannot leave effective ghost pressure",
+      "false/2/0: unique real attackers",
+      "false/2/0: only owner units defend",
+      "false: actual treaty transaction stops siege immediately",
+      "false/2/0: unique real attackers",
+      "false/2/0: only owner units defend",
+      "false: controlled command uses real population and registry",
+      "false: terminated command and departed members leave no ghost assault",
+      "false/1/0: unique real attackers",
+      "false/1/0: only owner units defend",
+      "false: single attacker cannot freely damage",
+      "false: insufficient pressure cannot freely devastate a city",
+      "false/3/0: unique real attackers",
+      "false/3/0: only owner units defend",
+      "false: advantage can damage undefended walls",
+      "false/3/3: unique real attackers",
+      "false/3/3: only owner units defend",
+      "false: defenders reduce damage",
+      "false/3/8: unique real attackers",
+      "false/3/8: only owner units defend",
+      "false: enough verified defenders block damage",
+      "false/3/0: unique real attackers",
+      "false/3/0: only owner units defend",
+      "false: no-position contact cannot continue siege",
+      "false/3/0: unique real attackers",
+      "false/3/0: only owner units defend",
+      "false: real strongest faction determines attacker",
+      "false: third-party attacker is never a defender",
+      "false: capture clears old contacts",
+      "true/2/0: unique real attackers",
+      "true/2/0: only owner units defend",
+      "true/2/2: unique real attackers",
+      "true/2/2: only owner units defend",
+      "true: 2v2 real local defense changes actual wall loss",
+      "true/4/1: unique real attackers",
+      "true/4/1: only owner units defend",
+      "true/4/4: unique real attackers",
+      "true/4/4: only owner units defend",
+      "true: 4v1 has greater realized pressure than 4v4",
+      "true/2/0: unique real attackers",
+      "true/2/0: only owner units defend",
+      "true: dead real attackers cannot leave effective ghost pressure",
+      "true/2/0: unique real attackers",
+      "true/2/0: only owner units defend",
+      "true: actual treaty transaction stops siege immediately",
+      "true/2/0: unique real attackers",
+      "true/2/0: only owner units defend",
+      "true: controlled command uses real population and registry",
+      "true: terminated command and departed members leave no ghost assault",
+      "true/1/0: unique real attackers",
+      "true/1/0: only owner units defend",
+      "true: single attacker cannot freely damage",
+      "true: insufficient pressure cannot freely devastate a city",
+      "true/3/0: unique real attackers",
+      "true/3/0: only owner units defend",
+      "true: advantage can damage undefended walls",
+      "true/3/3: unique real attackers",
+      "true/3/3: only owner units defend",
+      "true: defenders reduce damage",
+      "true/3/8: unique real attackers",
+      "true/3/8: only owner units defend",
+      "true: enough verified defenders block damage",
+      "true/3/0: unique real attackers",
+      "true/3/0: only owner units defend",
+      "true: no-position contact cannot continue siege",
+      "true/3/0: unique real attackers",
+      "true/3/0: only owner units defend",
+      "true: real strongest faction determines attacker",
+      "true: third-party attacker is never a defender",
+      "true: capture clears old contacts",
+      "Phaser and logical authorities settle identical verified force scenarios",
+      "pending real siege contact is valid JSON DTO",
+      "pending siege survives hydration without duplicate events",
+      "twelve month real siege continuation deterministic",
+      "second save reads identically"
+    ],
+    "damage": [
+      {
+        "logical": false,
+        "attackers": 2,
+        "defenders": 0,
+        "damage": 1,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 8,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": false,
+        "attackers": 2,
+        "defenders": 2,
+        "damage": 0,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 9,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": false,
+        "attackers": 4,
+        "defenders": 1,
+        "damage": 1,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 8,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-17",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-18",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": false,
+        "attackers": 4,
+        "defenders": 4,
+        "damage": 1,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 8,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-17",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-18",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": false,
+        "attackers": 2,
+        "defenders": 0,
+        "damage": 1,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 8,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": false,
+        "attackers": 2,
+        "defenders": 0,
+        "damage": 1,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 8,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": false,
+        "attackers": 2,
+        "defenders": 0,
+        "damage": 1,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 8,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": false,
+        "attackers": 1,
+        "defenders": 0,
+        "damage": 0,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 9,
+        "underSiege": false,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": false,
+        "attackers": 3,
+        "defenders": 0,
+        "damage": 1,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 8,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-17",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": false,
+        "attackers": 3,
+        "defenders": 3,
+        "damage": 0,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 9,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-17",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": false,
+        "attackers": 3,
+        "defenders": 8,
+        "damage": 0,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 9,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-17",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": false,
+        "attackers": 3,
+        "defenders": 0,
+        "damage": 1,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 8,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-17",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": false,
+        "attackers": 3,
+        "defenders": 0,
+        "damage": 1,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 8,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-17",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": true,
+        "attackers": 2,
+        "defenders": 0,
+        "damage": 1,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 8,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": true,
+        "attackers": 2,
+        "defenders": 2,
+        "damage": 0,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 9,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": true,
+        "attackers": 4,
+        "defenders": 1,
+        "damage": 1,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 8,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-17",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-18",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": true,
+        "attackers": 4,
+        "defenders": 4,
+        "damage": 1,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 8,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-17",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-18",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": true,
+        "attackers": 2,
+        "defenders": 0,
+        "damage": 1,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 8,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": true,
+        "attackers": 2,
+        "defenders": 0,
+        "damage": 1,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 8,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": true,
+        "attackers": 2,
+        "defenders": 0,
+        "damage": 1,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 8,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": true,
+        "attackers": 1,
+        "defenders": 0,
+        "damage": 0,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 9,
+        "underSiege": false,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": true,
+        "attackers": 3,
+        "defenders": 0,
+        "damage": 1,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 8,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-17",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": true,
+        "attackers": 3,
+        "defenders": 3,
+        "damage": 0,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 9,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-17",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": true,
+        "attackers": 3,
+        "defenders": 8,
+        "damage": 0,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 9,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-17",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": true,
+        "attackers": 3,
+        "defenders": 0,
+        "damage": 1,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 8,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-17",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      },
+      {
+        "logical": true,
+        "attackers": 3,
+        "defenders": 0,
+        "damage": 1,
+        "cityId": "city-秦-咸阳",
+        "attacker": "赵",
+        "defender": "秦",
+        "month": 12,
+        "wallBefore": 9,
+        "wallAfter": 8,
+        "underSiege": true,
+        "attackerPositions": [
+          {
+            "unitId": "unit-15",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-16",
+            "x": 160,
+            "y": 512
+          },
+          {
+            "unitId": "unit-17",
+            "x": 160,
+            "y": 512
+          }
+        ]
+      }
+    ],
+    "saveSchemaVersion": 22,
+    "light": {
+      "profile": "B",
+      "checks": [
+        "production yearly appointment creates a real light command",
+        "first real appointment has exactly two existing people",
+        "scenario has real near and far unassigned residents",
+        "five real cities support original merit promotion thresholds",
+        "real captured cities and service time grant general",
+        "nearby existing recruits respect candidate office cap",
+        "far resident is not remotely recruited",
+        "reinforcement never teleports a resident",
+        "refill adds no random draws",
+        "first promotion and reinforcement create no population",
+        "senior promotion unlocks at most four actual members",
+        "no duplicated members across real commands",
+        "promotion and reinforcement create no population",
+        "light formation and actual identities survive strict save and load",
+        "light candidate resumes twelve months deterministically",
+        "light candidate second save reads identically",
+        "dismissal leaves no active command"
+      ],
+      "initialMembers": 2,
+      "maximumMembers": 4
+    }
+  }
+]
