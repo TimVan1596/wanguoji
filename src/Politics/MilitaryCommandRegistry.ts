@@ -415,6 +415,7 @@ export class MilitaryCommandRegistryStore {
       if((formation.retreatUntilMonth??-1)>worldMonth)continue;
       delete formation.retreatUntilMonth;
       const current = cities.find(city => city.id === formation.targetCityId);
+      if(current&&current.ownerFactionId!==formation.factionId&&!Diplomacy.canAttack(formation.factionId,current.ownerFactionId,worldMonth)){this.withdrawFromCity(formation.factionId,current.id,worldMonth);continue;}
       if (current && !current.destroyed && current.ownerFactionId !== formation.factionId && current.ownerTeam?.status === "ACTIVE" &&
         Diplomacy.canAttack(formation.factionId, current.ownerFactionId, worldMonth)) continue;
       if (formation.targetCityId) {
@@ -482,6 +483,11 @@ export class MilitaryCommandRegistryStore {
   steerActiveUnits(worldMonth: number, core: import("../Game/Core").default) {
     if (core.logicalGameplayAuthority) return;
     const cities=core.allCities;
+    const released=new Set(this.getFormations().filter(f=>f.status==="DISBANDED").flatMap(f=>f.memberUnitIds));
+    for(const team of core.teams)for(const u of team.users){const p=u.player,id=p.logicalUnitId,body=p.Body;
+      if(!id||!released.has(id)||this.isUnitAssigned(id)||u.isDestroyed||u.role!=="NORMAL"||!p.active||Math.hypot(body.velocity.x,body.velocity.y)>0.01)continue;
+      const home=team.capitalCity?.block;let dx=home?home.x-p.x:1,dy=home?home.y-p.y:0;if(Math.hypot(dx,dy)<1){dx=u.id%2?1:-1;dy=1;}const k=p.speed/Math.hypot(dx,dy);body.setVelocity(dx*k,dy*k);
+    }
     const cityById = new Map(core.allCities.map(city => [city.id, city]));
     for (const formation of this.formations.values()) {
       if (formation.status !== "ACTIVE") continue;
@@ -505,6 +511,11 @@ export class MilitaryCommandRegistryStore {
   }
 
   steerLogicalUnits(worldMonth: number, units: LogicalUnitState[], cities: City[]) {
+    const released=new Set(this.getFormations().filter(f=>f.status==="DISBANDED").flatMap(f=>f.memberUnitIds));
+    for(const u of units){if(!released.has(u.unitId)||this.isUnitAssigned(u.unitId)||!u.alive||u.role!=="NORMAL"||Math.hypot(u.logicalVX,u.logicalVY)>0.01)continue;
+      const home=cities.filter(c=>c.ownerFactionId===u.factionId&&!c.destroyed).sort((a,b)=>Number(b.isCapital)-Number(a.isCapital)||a.id.localeCompare(b.id))[0]?.block;
+      let dx=home?home.x-u.logicalX:1,dy=home?home.y-u.logicalY:0;if(Math.hypot(dx,dy)<1){dx=(u.userId??0)%2?1:-1;dy=1;}const k=u.speed/Math.hypot(dx,dy);u.logicalVX=dx*k;u.logicalVY=dy*k;
+    }
     const unitById = new Map(units.map(unit => [unit.unitId, unit]));
     const cityById = new Map(cities.map(city => [city.id, city]));
     for (const formation of this.formations.values()) {

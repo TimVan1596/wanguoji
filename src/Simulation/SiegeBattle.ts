@@ -4,5 +4,5 @@ export interface SiegeBattle {
  attackers:number;defenders:number;commandId?:string;personId?:string;
 }
 export function siegeWallPressure(attackers:number,defenders:number){
- return attackers<2?0:Math.min(1.5,attackers/2)/(1+defenders/2);
+ return attackers<2||attackers<=defenders?0:Math.min(1.5,attackers/2)/(1+defenders/2);
 }

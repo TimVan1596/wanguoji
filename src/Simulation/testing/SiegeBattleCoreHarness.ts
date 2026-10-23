@@ -1,3 +1,5 @@
+import Military from "../../Politics/MilitaryCommandRegistry";
+import Factions from "../FactionRegistry";
 import {createNaturalCore} from './NaturalCoreHarness';
 import {SIMULATION_FIXED_STEP_MS} from '../SimulationDriver';
 import {siegeParticipants} from '../SiegeParticipants';
@@ -48,6 +50,37 @@ export async function runSiegeBattleCore(seed='siege-defense-z10'){
     check(!s.city.underSiege&&s.city.defense===wall&&History.getEvents().some(e=>e.type==='siege-ended'&&e.metadata?.reason==='TRUCE'),`${logical}: actual treaty ends battle without a fictional victory`);
    }
   }
+  {
+   const s=scenario(2,0),commander=s.attackers.find(u=>(Military as any).isEligible(u,s.m))!;
+   check(commander,'actual local commander is eligible under original appointment rules');
+   check((Military as any).appoint(commander,s.attack.name,s.m,s.attackers.map(u=>u.player.logicalUnitId!)),'real two-body command for interruption test');
+   (Military as any).refreshOrders(s.m,[s.attack,s.owner],[s.city]);s.tick(0);const wall=s.city.defense;
+   Military.endPersonCommands(commander.militaryPersonId!,s.m+1,'DISMISSED');s.tick(1);
+   check(!s.city.siegeBattle&&s.city.defense===wall&&s.city.siegeRetryAfter[s.attack.name]>s.m+1,'real command end cancels old battle and blocks ghost restart');
+  }
+  // Same historical city really changes hands four times; neither close dates nor
+  // the general's tenure are substitutes for each individual recovery transaction.
+  {
+   hydrateWorldSave(core,structuredClone(base));const city=core.allCities.find(c=>c.name==='郢')!,home=city.ownerTeam!,enemy=core.teams.find(t=>t!==home&&t.status==='ACTIVE')!,m=core.simulator!.year;
+   const site=core.map!.blocks.flat().find(b=>b.team===home&&!b.city&&core.allCities.every(c=>Math.hypot(c.block.x-b.x,c.block.y-b.y)>160))!;
+   check(site,'real Chu land can support a second city before the old capital falls');Factions.foundCity(home,site,undefined,m);
+   const users=[...home.users].filter(u=>(Military as any).isEligible(u,m)).slice(0,2);check(users.length===2,'two real eligible Chu residents support the recovery case');
+   check((Military as any).appoint(users[0],home.name,m,users.map(u=>u.player.logicalUnitId!)),'actual Chu military appointment before repeated recovery');const p=Military.getPerson(users[0].militaryPersonId!)!;
+   for(let turn=0;turn<2;turn++){
+    const attackMonth=m+24+turn*36;clock(attackMonth-12);city.capture(enemy,attackMonth-12);
+    for(const t of core.teams)for(const u of t.users)place(u,-1024,-1024);for(const u of users)place(u,city.block.x,city.block.y);
+    (Military as any).refreshOrders(attackMonth,core.teams,[city]);city.defense=1;
+    for(let n=0;n<12&&city.ownerTeam!==home;n++){clock(attackMonth+n);city.updateDefense(attackMonth+n);}
+    check(city.ownerTeam===home,'actual production siege recovers Ying after a distinct enemy control interval');
+   }
+   const victories=p.capturedEventIds.map(id=>History.getEvents().find(e=>e.id===id)!).filter(e=>e.type==='city-recovered'&&e.cityId===city.id);
+   check(victories.length===2&&new Set(victories.map(e=>e.id)).size===2&&victories[0].year!==victories[1].year,'two Ying recoveries have distinct source IDs and actual dates');
+   check(city.history.filter(h=>h.type==='recovered'&&h.newOwnerFactionId===home.name).length===2,'both recoveries have corresponding real city ownership changes');
+   check(Military.getCareer(p,m+120).distinctCapturedCities===1&&Military.getCareer(p,m+120).verifiedCaptures===2,'two real recoveries preserve both facts but count one distinct city for bounded merit weighting');
+   exportWorldSave(core);
+  }
+  const comparable=(logical:boolean)=>results.filter(r=>r.logical===logical).map(({logical:_mode,...r})=>r);
+  check(JSON.stringify(comparable(false))===JSON.stringify(comparable(true)),'same real force fixtures settle identical results under Phaser and logical authority');
   const s=scenario(2,0);s.tick(0);const pending=exportWorldSave(core);
   const resume=()=>{hydrateWorldSave(core,structuredClone(pending));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return exportWorldSave(core);};
   const a=resume(),b=resume();check(diffCanonicalWorldSave(a,b).matched,'active V24 battle resumes twelve months identically');hydrateWorldSave(core,structuredClone(a));check(diffCanonicalWorldSave(a,exportWorldSave(core)).matched,'second battle save reads identically');

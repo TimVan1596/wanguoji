@@ -9,6 +9,7 @@ import { readMilitaryParticipation } from "./MilitaryPoliticalInfluence";
 
 export interface MilitaryChronicleEntry {
   eventId: string;
+  cityId?:string;
   worldMonth: number;
   factionId: string;
   commandId?: string;
@@ -99,7 +100,7 @@ export function deriveMilitaryChronicle(person: MilitaryPerson, formations: Mili
     } else if (served && political?.participant.personId === person.personId && political.participant.sourceUserId === person.sourceUserId) {
       text = `${name}统兵参与${political.kind === "DEPOSITION" ? "宗室废立" : "继统政治压力"}，军事参与者并非新君。`;
     }
-    if (text) entries.push({ eventId: e.id, worldMonth: month, factionId: secession?e.targetFactionId!:e.actorFactionId!, commandId: commandId || undefined, text,
+    if (text) entries.push({ eventId: e.id,cityId:e.cityId, worldMonth: month, factionId: secession?e.targetFactionId!:e.actorFactionId!, commandId: commandId || undefined, text,
       source: `${e.type} · ${e.id}`, victory });
   }
   return entries;

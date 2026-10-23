@@ -20,6 +20,8 @@ export function deriveMilitaryCareer(person: MilitaryPerson, formations: Militar
       month >= a.startMonth && month <= Math.min(a.endMonth ?? worldMonth, worldMonth) &&
       f.captures.some(c => c.eventId === id && c.cityId === e.cityId && c.month === month) ? [e] : [];
   });
+  const distinctCapturedCities=new Set(captures.map(e=>e.cityId)).size;
+  const distinctCapitalCities=new Set(captures.filter(e=>e.metadata?.wasCapital===1).map(e=>e.cityId)).size;
   const capitalCaptures = captures.filter(e => e.metadata?.wasCapital === 1).length;
   const ordinaryCaptures = captures.filter(e => e.metadata?.wasCapital === 0).length;
   const initialSizes = events.filter(e => e.type === "military-appointment" && e.metadata?.personId === person.personId &&
@@ -30,9 +32,9 @@ export function deriveMilitaryCareer(person: MilitaryPerson, formations: Militar
     ? commands.filter(f => f.status === "ACTIVE" && f.factionId === person.factionId && appointments.some(a => a.commandId === f.commandId && a.endMonth === undefined)) : [];
   const currentUnitCount = new Set(active.flatMap(f => f.memberUnitIds)).size;
   // Time alone contributes at most .35; combined appointment advantage is capped at 2x.
-  const weight = 1 + Math.min(.35, serviceMonths / 240 * .35) + Math.min(.5, captures.length * .1 + capitalCaptures * .05) + Math.min(.15, recordedCommandSize / 12 * .15);
+  const weight = 1 + Math.min(.35, serviceMonths / 240 * .35) + Math.min(.5, distinctCapturedCities * .1 + distinctCapitalCities * .05) + Math.min(.15, recordedCommandSize / 12 * .15);
   return { serviceMonths, appointmentCount: appointments.length, reappointments: Math.max(0, appointments.length - 1),
-    ordinaryCaptures, capitalCaptures, unclassifiedCaptures: captures.length - ordinaryCaptures - capitalCaptures, verifiedCaptures: captures.length,
+    ordinaryCaptures, capitalCaptures, distinctCapturedCities, unclassifiedCaptures: captures.length - ordinaryCaptures - capitalCaptures, verifiedCaptures: captures.length,
     capturedEventIds: captures.map(e => e.id), recordedCommandSize, currentUnitCount, hasActiveFormation: active.length > 0,
     ageRetired: person.status !== "ACTIVE" && appointments.at(-1)?.endReason === "AGE_RETIREMENT", dead: person.status === "DEAD",
     appointmentWeight: Math.min(2, weight), level: weight >= 1.7 ? "资深" : weight >= 1.2 ? "有经验" : "初历" };

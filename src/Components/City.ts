@@ -800,7 +800,7 @@ export default class City {
 
   private battleEvent(type:"siege-started"|"siege-ended"|"siege-defended",battle:SiegeBattle,month:number,reason?:string,defendingCommand?:{commandId:string;personId:string}){
     const attack=Game.Core?.teams.find(t=>t.name===battle.attackerId),owner=this.ownerTeam;
-    const title=type==="siege-started"?`${attack?.displayName??battle.attackerId}开始围攻${this.name}`:type==="siege-defended"?`${owner?.displayName??battle.defenderId}守住${this.name}`:`${attack?.displayName??battle.attackerId}结束对${this.name}的围攻`;
+    const title=type==="siege-started"?`${attack?.displayName??battle.attackerId}开始围攻${this.name}`:type==="siege-defended"?`${owner?.displayName??battle.defenderId}守住${this.name}`:`${attack?.displayName??battle.attackerId}${reason==="REPULSED"?"围攻受阻，撤离":"结束围攻"}${this.name}`;
     this.addHistory(month,type,title,{});
     WorldHistory.addEvent({id:`${type}-${battle.id}`,year:month,monthIndex:month,category:"war",type,title,description:type==="siege-ended"?`围攻历时${month-battle.startMonth+1}个月；${reason==="REPULSED"?"攻势受阻，撤围休整":reason==="CAPTURED"?"城市实际易主":reason==="TRUCE"?"停战结束交战":"实际接触或指挥中断"}。`:undefined,
       actorFactionId:type==="siege-defended"?battle.defenderId:battle.attackerId,targetFactionId:type==="siege-defended"?battle.attackerId:battle.defenderId,factionIds:[battle.attackerId,battle.defenderId],cityId:this.id,cityName:this.name,importance:"normal",
@@ -809,7 +809,7 @@ export default class City {
   private endBattle(month:number,reason:string){
     const b=this.siegeBattle;if(!b)return;
     this.battleEvent("siege-ended",b,month,reason);
-    if(reason==="REPULSED"){
+    if(reason==="REPULSED"||reason==="COMMAND_ENDED"){
       (this.siegeRetryAfter??={})[b.attackerId]=month+12;
       MilitaryCommandRegistry.withdrawFromCity(b.attackerId,this.id,month);
       if(reason==="REPULSED"&&this.ownerFactionId===b.defenderId&&this.ownerTeam){
@@ -826,7 +826,7 @@ export default class City {
     const rows=owner?(core?.teams??[]).filter(t=>t!==owner&&!t.isDie&&Diplomacy.canAttack(t.name,owner.name,year)&&this.canAssault(t.name,year))
       .map(team=>({team,units:siegeParticipants(this,team,core,Game.BlockSize,true)})).filter(r=>r.units.length>=2).sort((a,b)=>b.units.length-a.units.length||a.team.name.localeCompare(b.team.name)):[];
     const main=rows[0];this.siegeContacts.clear();
-    if(this.siegeBattle&&(!main||main.team.name!==this.siegeBattle.attackerId||owner?.name!==this.siegeBattle.defenderId))this.endBattle(year,owner&&!Diplomacy.canAttack(this.siegeBattle.attackerId,owner.name,year)?"TRUCE":"CONTACT_ENDED");
+    if(this.siegeBattle&&(!main||main.team.name!==this.siegeBattle.attackerId||owner?.name!==this.siegeBattle.defenderId))this.endBattle(year,owner&&!Diplomacy.canAttack(this.siegeBattle.attackerId,owner.name,year)?"TRUCE":this.siegeBattle.commandId&&MilitaryCommandRegistry.getFormation(this.siegeBattle.commandId)?.status!=="ACTIVE"?"COMMAND_ENDED":"CONTACT_ENDED");
     this.underSiege=!!main;this.attackingFactionId=main?.team.name;
     measurePhase(profile,"City.zone/visual refresh",()=>this.refreshZoneVisual());
     if(!main||!owner)return;
@@ -835,7 +835,7 @@ export default class City {
       .filter(f=>{const p=MilitaryCommandRegistry.getPerson(f.commanderPersonId),u=p&&main.team.getUserById(p.sourceUserId);return p?.status==="ACTIVE"&&u?.matchesMilitaryLife(p)&&unitIds.has(u.player.logicalUnitId!);})
       .sort((a,b)=>b.memberUnitIds.filter(id=>unitIds.has(id)).length-a.memberUnitIds.filter(id=>unitIds.has(id)).length||a.commandId.localeCompare(b.commandId));
     const command=commands[0];
-    if(this.siegeBattle?.commandId&&this.siegeBattle.commandId!==command?.commandId){this.endBattle(year,"CONTACT_ENDED");return;}
+    if(this.siegeBattle?.commandId&&this.siegeBattle.commandId!==command?.commandId){this.endBattle(year,"COMMAND_ENDED");return;}
     if(!this.siegeBattle){this.siegeBattle={id:`${this.id}-${this.captureCount}-${year}-${main.team.name}`,attackerId:main.team.name,defenderId:owner.name,startMonth:year,lastMonth:year-1,attackers:main.units.length,defenders:defenders.length,...(command?{commandId:command.commandId,personId:command.commanderPersonId}:{})};this.battleEvent("siege-started",this.siegeBattle,year);}
     const b=this.siegeBattle;if(b.lastMonth===year)return;b.lastMonth=year;b.attackers=main.units.length;b.defenders=defenders.length;
     // Contact evidence is renewed by real positions, not accumulated callbacks.
@@ -847,6 +847,7 @@ export default class City {
     }
     const remaining=siegeParticipants(this,main.team,core,Game.BlockSize,true);
     const currentDefenders=siegeParticipants(this,owner,core,Game.BlockSize,false);
+    b.attackers=remaining.length;b.defenders=currentDefenders.length;
     const pressure=siegeWallPressure(remaining.length,currentDefenders.length);
     if((duration>=4&&remaining.length<2)||(duration>=12&&defenders.length>=remaining.length)||duration>=36){this.endBattle(year,"REPULSED");this.refreshZoneVisual();return;}
     if(!shouldApplySiegeDamage(year,this.lastSiegeDamageYear,CITY_SIEGE_DAMAGE_INTERVAL_MONTHS))return;

@@ -1,3 +1,4 @@
+import ArchivedCities from "../ArchivedCities";
 import {genealogyArchiveMetrics} from "./GenealogyArchiveMetrics";
 import Dynasty from "../../Politics/Dynasty";
 import {getRecordedKinRelation} from "../../Politics/DynasticCandidateRules";
@@ -131,7 +132,7 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
             const capital=ended.filter(e=>e.metadata?.wasCapital===1),ordinary=ended.filter(e=>e.metadata?.wasCapital===0);
             const counts=(xs:typeof ended)=>({ended:xs.length,captured:xs.filter(e=>e.metadata?.reason==="CAPTURED").length,failed:xs.filter(e=>e.metadata?.reason==="REPULSED").length,withdrawn:xs.filter(e=>e.metadata?.reason!=="CAPTURED"&&e.metadata?.reason!=="REPULSED").length});
             const credited=people.flatMap(p=>p.capturedEventIds.map(id=>({person:p.personId,id}))),duplicateCredit=credited.length-new Set(credited.map(c=>c.id)).size;
-            const transferKeys=new Set(core.allCities.flatMap(c=>c.history.filter(h=>h.type==="captured"||h.type==="recovered").map(h=>`${h.year}:${c.id}:${h.newOwnerFactionId}`)));
+            const transferKeys=new Set([...core.allCities,...ArchivedCities.list()].flatMap(c=>c.history.filter(h=>h.type==="captured"||h.type==="recovered").map(h=>`${h.year}:${c.id}:${h.newOwnerFactionId}`)));
             const noTransfer=battles.filter(e=>!transferKeys.has(`${e.monthIndex??e.year}:${e.cityId}:${e.actorFactionId}`)).length;
             return {started:started.length,...counts(ended),meanDurationMonths:durations.length?durations.reduce((a,b)=>a+b,0)/durations.length:0,capital:counts(capital),ordinary:counts(ordinary),defended:events.filter(e=>e.type==="siege-defended").length,duplicateCredit,unattributedOwnershipChanges:noTransfer,capturesPerActiveStateYear:battles.length/(activeStateMonthSum/12),militaryDeaths:people.filter(p=>p.status==="DEAD").length,retirements:Military.getOfficeSummary(m).ageRetirements};})(),
           reinforcementTransactions,reinforcedUnits,initialFormationSizes:events.filter(e=>e.type==="military-appointment").map(e=>e.metadata?.unitCount),maximumFormationSize:Math.max(0,...Object.keys(sizeSamples).map(Number)),
