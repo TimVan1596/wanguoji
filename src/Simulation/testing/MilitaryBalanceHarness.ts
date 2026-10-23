@@ -4,7 +4,7 @@ import {getRecordedKinRelation} from "../../Politics/DynasticCandidateRules";
 import {siegeParticipants} from "../SiegeParticipants";
 import {assessPopularSupport,hasPopularPoliticalCrisis} from "../PopularRebellionSupport";
 import {createNaturalCore} from "./NaturalCoreHarness";
-import Military from "../../Politics/MilitaryCommandRegistry";
+import Military,{MAX_FORMATION_UNITS} from "../../Politics/MilitaryCommandRegistry";
 import {readMilitaryParticipation} from "../../Politics/MilitaryPoliticalInfluence";
 import City from "../../Components/City";
 import Diplomacy from "../../Politics/Diplomacy";
@@ -36,7 +36,12 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
   const royalOffers=new Map<string,number>(),readRoyal=(Dynasty as any).getRoyalMilitaryCandidates;
   if(readRoyal)(Dynasty as any).getRoyalMilitaryCandidates=function(...args:any[]){const rows=readRoyal.apply(this,args);for(const r of rows)if(!royalOffers.has(r.rulerId))royalOffers.set(r.rulerId,args[1]);return rows;};
   const {core,game}=await createNaturalCore(seed),started=performance.now();
-  const original=(City.prototype as any).updateSiege;
+  const original=(City.prototype as any).updateSiege,advanceOffices=(Military as any).advanceOffices;
+  let reinforcementTransactions=0,reinforcedUnits=0;
+  (Military as any).advanceOffices=function(...args:any[]){const before=new Map(Military.getFormations().map(f=>[f.commandId,new Set(f.memberUnitIds)])),result=advanceOffices.apply(this,args);
+    for(const f of Military.getFormations()){const prior=before.get(f.commandId);if(!prior)continue;const added=f.memberUnitIds.filter(id=>!prior.has(id)).length;if(added){reinforcementTransactions++;reinforcedUnits+=added;}}
+    return result;
+  };
   let siegeCityMonths=0,contactMonth=-1;
   const forceSamples:Record<string,number>={};let localSiegeDeaths=0;
   const episodes:any[]=[],open=new Map<string,any>(),annual:any[]=[];
@@ -80,6 +85,12 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
       if(m%12===0)annual.push({month:m,maxTerritoryShare:Math.max(0,...core.teams.map(t=>t.blocks.getLength()/core.totalCells)),activeStates:core.teams.filter(t=>t.status==="ACTIVE").length});
       activeStateMonthSum+=core.teams.filter(t=>t.status==="ACTIVE").length;
       const formations=Military.getFormations().filter(f=>f.status==="ACTIVE");
+      const ids=formations.flatMap(f=>f.memberUnitIds);
+      if(new Set(ids).size!==ids.length)throw Error('Duplicate active military member');
+      for(const f of formations){const p=Military.getPerson(f.commanderPersonId)!,office=p.appointments.find(a=>a.commandId===f.commandId)?.officeHistory?.at(-1)?.office;
+        const cap=MAX_FORMATION_UNITS===4?(office==='SHANGJIANGJUN'?4:office==='JIANGJUN'?3:2):MAX_FORMATION_UNITS;
+        if(f.memberUnitIds.length<2||f.memberUnitIds.length>cap)throw Error('Formation exceeds actual office capacity');
+      }
       for(const f of formations){sizeSamples[f.memberUnitIds.length]=(sizeSamples[f.memberUnitIds.length]??0)+1;activeFormationSamples++;totalFormationMembers+=f.memberUnitIds.length;}
       for(const t of core.teams.filter(t=>t.status==="ACTIVE")){
         const count=formations.filter(f=>f.factionId===t.name).length;factionCommandSamples[count]=(factionCommandSamples[count]??0)+1;
@@ -115,6 +126,7 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
           naturalGrowth:p?.totals.naturalGrowth,warDeaths:p?.totals.warDeaths,activeStates:core.teams.filter(t=>t.status==="ACTIVE").length,historicalStates:core.teams.length,cities:core.allCities.length,
           captures:battles.length,recoveries:count("city-recovered"),siegeCityMonths,capturesPer100SiegeCityMonths:siegeCityMonths?battles.length/siegeCityMonths*100:0,
           formationSizeSamples:{...sizeSamples},factionCommandSamples:{...factionCommandSamples},meanFormationSize:activeFormationSamples?totalFormationMembers/activeFormationSamples:0,
+          reinforcementTransactions,reinforcedUnits,initialFormationSizes:events.filter(e=>e.type==="military-appointment").map(e=>e.metadata?.unitCount),maximumFormationSize:Math.max(0,...Object.keys(sizeSamples).map(Number)),
           appointments:Military.getDiagnostics().appointments,offices:Military.getOfficeSummary(m),promotions,
           meanServiceMonths:Military.getOfficeSummary(m).meanServiceMonths,matureEnded:matureEnded.length,matureEndedNeverPromoted:matureEnded.filter(a=>(a.officeHistory?.length??0)<2).length,
           politicalCandidateChecks,militaryPoliticalEvents:events.filter(e=>readMilitaryParticipation(e)).length,depositions:count("ruler-deposed"),usurpations:count("dynasty-usurped"),
@@ -138,5 +150,5 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
       if(m%120===0)await new Promise(r=>setTimeout(r,0));
     }
     return {seed,years,contactCalls,forceSamples,localSiegeDeaths,depositionRelations:WorldHistory.getEvents().filter(e=>e.type==="ruler-deposed").map(e=>({month:e.monthIndex??e.year,metadata:e.metadata})),episodes,ongoingEpisodes:[...open.values()],annual,unificationMonths:WorldHistory.getEvents().filter(e=>e.type==="world-unification").map(e=>e.monthIndex??e.year),mode:"real Arcade Core / default warring states",denominator:"hostile-contact city-months entering real City.updateSiege; capture frequency, not battle win probability",checkpoints};
-  }finally{if(readRoyal)(Dynasty as any).getRoyalMilitaryCandidates=readRoyal;City.prototype.registerSiegeContact=rawContact;(City.prototype as any).updateSiege=original;game.destroy(true);}
+  }finally{if(readRoyal)(Dynasty as any).getRoyalMilitaryCandidates=readRoyal;(Military as any).advanceOffices=advanceOffices;City.prototype.registerSiegeContact=rawContact;(City.prototype as any).updateSiege=original;game.destroy(true);}
 }

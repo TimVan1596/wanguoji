@@ -189,3 +189,13 @@ it.each(["REBEL", "SPLIT", "KINGDOM"])("%s military command ends cleanly when it
   expect(person.appointments[0]).toMatchObject({factionId:team.name,endMonth:13,endReason:"FACTION_ENDED"});
   expect(events.some(e=>e.type==="military-command-ended")).toBe(true);expect(events.some(e=>e.type==="military-person-died")).toBe(false);
 });
+
+it('new junior appointments use exactly two people even with a large real pool, and reject oversized entry calls atomically',()=>{
+ const registry=new MilitaryCommandRegistryStore(),team:any={name:'qin',status:'ACTIVE',users:new Set(),cities:[]};
+ for(let i=1;i<=20;i++)team.users.add(user(i,team,'unit-'+i));
+ const draw=vi.spyOn(worldRandom,'next').mockReturnValue(0);registry.update(12,[team],[]);registry.update(24,[team],[]);draw.mockRestore();
+ expect(registry.getFormations().map(f=>f.memberUnitIds.length)).toEqual([2,2]);
+ expect(new Set(registry.getFormations().flatMap(f=>f.memberUnitIds)).size).toBe(4);expect(team.users.size).toBe(20);
+ const before=registry.exportState(),candidate=[...team.users][10];
+ expect((registry as any).appoint(candidate,'qin',36,['unit-11','unit-12','unit-13'])).toBe(false);expect(registry.exportState()).toEqual(before);
+});

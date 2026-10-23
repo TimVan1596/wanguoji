@@ -1,0 +1,54 @@
+[
+  {
+    "seed": "royal-military-z11",
+    "checks": [
+      "actual dynasty offers an adult royal under the existing rules",
+      "fixture uses exactly 10 real people through audited transfers",
+      "only three actual bodies occupy the capital defense area",
+      "ten-person country creates exactly one two-person production appointment",
+      "appointment does not move or remove the three capital residents",
+      "fixture uses exactly 20 real people through audited transfers",
+      "twenty-person country creates a second real two-person command within existing slots",
+      "two commands never share a real unit",
+      "promotion scenario has five real cities",
+      "without nearby available bodies the real promotion succeeds but never fills paper slots",
+      "first promotion and refill add neither population nor random draws",
+      "original service and actual capture thresholds unlock and fill three-person general command",
+      "senior promotion unlocks and fills at most four actual members",
+      "reinforcement creates no population or duplicate assignment",
+      "recruitment and promotion never teleport a body",
+      "loss fixture has a real unassigned nearby replacement",
+      "actual member death invokes production User and population casualty transaction",
+      "actual casualty reduces the army immediately and never automatically fills the lost body",
+      "no eligible nearby population remains for refill",
+      "without real replacements the original minimum-size rule ends the command, never fabricates soldiers",
+      "retirement releases military ownership without deleting residents",
+      "real commander transfer closes old formation and keeps one person",
+      "same real family still has a legal adult military candidate",
+      "royal enlistment requires exactly one existing real soldier beside the one original royal identity",
+      "real royal enlistment shares the ordinary capacity and population transaction",
+      "royal and ordinary pi generals have identical initial size",
+      "same real military save resumes twelve months identically",
+      "second save reads without member or identity mutation",
+      "real faction absorption transaction leaves no active home command"
+    ],
+    "observations": [
+      {
+        "capitalBeforeResume": 6,
+        "capitalAfterTwelveRealMonths": 2,
+        "residentsAreNotStationaryGuards": true
+      },
+      {
+        "capitalBefore": 3,
+        "capitalAfterAppointment": 3,
+        "capacityByOffice": [
+          2,
+          3,
+          4
+        ],
+        "saveSchemaVersion": 22
+      }
+    ],
+    "scope": "released production formation rules; controlled real Core and Phaser transactions"
+  }
+]

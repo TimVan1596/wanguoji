@@ -869,6 +869,12 @@ it.each(["DEPOSITION", "REVOLUTION"] as const)("真实军权→%s事务→同一
   const appointmentDraw = vi.spyOn(worldRandom, "next").mockReturnValue(0);
   MilitaryCommandRegistry.update(0, [team], []); MilitaryCommandRegistry.update(12, [team], []); appointmentDraw.mockRestore();
   expect(MilitaryCommandRegistry.getPeople()).toHaveLength(2);
+  // The new two-body junior commands qualify through a recorded capture, not
+  // the old twelve-body service-only route. Political thresholds stay unchanged.
+  for(const formation of MilitaryCommandRegistry.getFormations()){
+    const victory=WorldHistory.addCityCaptured(24,"qin","enemy","qin","故都","active",false,false,7,undefined,undefined,undefined,formation.commandId,formation.commanderPersonId);
+    MilitaryCommandRegistry.recordCapture(formation.commandId,victory,"active",24);
+  }
   const qualified = MilitaryCommandRegistry.getPoliticalInfluence(team, 72, core.logicalUnitRegistry);
   expect(qualified.candidates).toHaveLength(2);
   expect([...team.users].every((u: any) => u instanceof User)).toBe(true);
@@ -903,7 +909,7 @@ it.each(["DEPOSITION", "REVOLUTION"] as const)("真实军权→%s事务→同一
   const event = WorldHistory.getEvents().find(e => e.type === (kind === "DEPOSITION" ? "ruler-deposed" : "dynasty-usurped"))!;
   const participation = readMilitaryParticipation(event)!;
   expect(participation).toMatchObject({ kind, factionId: "qin", worldMonth: 72, crisisEventIds: [crisisId],
-    participant: { personId: qualified.candidates[0].personId, unitCount: 12 } });
+    participant: { personId: qualified.candidates[0].personId, unitCount: 2 } });
   expect(participation.roll).toBeGreaterThanOrEqual(participation.baselineChance);
   expect(participation.roll).toBeLessThan(participation.finalChance);
   expect(MilitaryCommandRegistry.exportState().formations).toEqual(formationsBefore);

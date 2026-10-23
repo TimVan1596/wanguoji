@@ -1,6 +1,7 @@
+import {nearbyMilitaryRecruits,type MilitaryRecruitmentContext} from "./MilitaryRecruitment";
 import {deriveRoyalDepositionMilitary} from "./RoyalDepositionMilitary";
 import type {Ruler} from "./Dynasty";
-import {getOfficePromotion,MILITARY_OFFICE_NAMES,type MilitaryOfficeGrant} from "./MilitaryOffice";
+import {getOfficePromotion,MILITARY_OFFICE_NAMES,MILITARY_FORMATION_CAPACITY,type MilitaryOfficeGrant} from "./MilitaryOffice";
 import { deriveMilitaryChronicle } from "./MilitaryChronicle";
 import { deriveMilitaryLifeSchedule } from "./MilitaryLifeRules";
 import { deriveNameCulture, generateMilitaryPersonalName } from "./NameCulture";
@@ -18,7 +19,7 @@ import type { WorldEvent } from "../History/WorldHistory";
 
 export const MAX_COMMANDERS_PER_FACTION = 2;
 export const MAX_FORMATIONS_PER_FACTION = 2;
-export const MAX_FORMATION_UNITS = 12;
+export const MAX_FORMATION_UNITS = 4;
 export const MIN_COMMANDER_AGE_MONTHS = 18 * 12;
 export const ANNUAL_APPOINTMENT_CHANCE = 0.05;
 
@@ -100,6 +101,8 @@ export function deriveUserBornMonth(userId: number, name: string, factionId: str
 }
 
 export class MilitaryCommandRegistryStore {
+  private recruitmentContext?:()=>MilitaryRecruitmentContext|undefined;
+  setRecruitmentContext(reader:()=>MilitaryRecruitmentContext|undefined){this.recruitmentContext=reader;}
   private royalService?: RoyalMilitaryService;
   setRoyalService(service: RoyalMilitaryService) { this.royalService = service; }
   private people = new Map<string, MilitaryPerson>();
@@ -250,12 +253,12 @@ export class MilitaryCommandRegistryStore {
       });
       const selected = selectMilitaryCandidate([...candidates.map(user => ({user, royal: undefined as RoyalMilitaryCandidate | undefined})), ...royals.map(royal => ({user: undefined as User | undefined, royal}))], [...weights, ...royals.map(() => 1)], worldRandom.next());
       if (selected.royal) {
-        if (this.royalService?.enlist(selected.royal, team, worldMonth, availableUnits.slice(0, MAX_FORMATION_UNITS - 1))) this.diagnostics.appointments++;
+        if (this.royalService?.enlist(selected.royal, team, worldMonth, availableUnits.slice(0, 1))) this.diagnostics.appointments++;
         this.refreshOrders(worldMonth, teams, cities);
         continue;
       }
       const candidate = selected.user!;
-      const members = [candidate, ...availableUnits.filter(user => user !== candidate)].slice(0, MAX_FORMATION_UNITS);
+      const members = [candidate, ...availableUnits.filter(user => user !== candidate)].slice(0, MILITARY_FORMATION_CAPACITY.PIJIANG);
       if (members.length < 2 || !candidate.player.logicalUnitId) { this.diagnostics.unitBlocked++; continue; }
       if (this.appoint(candidate, team.name, worldMonth, members.map(user => user.player.logicalUnitId!))) this.diagnostics.appointments++;
       this.refreshOrders(worldMonth, teams, cities);
@@ -308,6 +311,8 @@ export class MilitaryCommandRegistryStore {
   }
 
   private appoint(user: User, factionId: string, worldMonth: number, memberUnitIds: string[], royalIdentity?: RoyalMilitaryLink) {
+    if(memberUnitIds.length!==MILITARY_FORMATION_CAPACITY.PIJIANG||new Set(memberUnitIds).size!==memberUnitIds.length||!memberUnitIds.includes(user.player.logicalUnitId??"")||factionId!==user.team.name||
+      memberUnitIds.some(id=>this.isUnitAssigned(id)||![...user.team.users].some(u=>u.team===user.team&&!u.isDestroyed&&u.role==="NORMAL"&&!u.rulerId&&!u.player.rulerId&&u.player.active&&u.player.logicalUnitId===id)))return false;
     let person = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
     if (person?.status === "DEAD" || !this.isEligible(user, worldMonth)) return false;
     if (person?.status === "RETIRED") this.diagnostics.reappointments++;
@@ -354,6 +359,11 @@ export class MilitaryCommandRegistryStore {
       if(!user?.matchesMilitaryLife?.(person)||!appointment||!formation||formation.status!=="ACTIVE"||formation.commanderPersonId!==person.personId||formation.factionId!==person.factionId||formation.memberUnitIds.length<2||!formation.memberUnitIds.includes(user.player.logicalUnitId??""))continue;
       const grant=getOfficePromotion(appointment,this.getChronicle(person,month,person.factionId),month);
       if(grant)this.grantOffice(person,appointment,grant);
+      // Annual opportunities also allow a previously unfilled promotion to recruit
+      // when a real resident later reaches the commander's assembly area.
+      const context=this.recruitmentContext?.(),office=appointment.officeHistory?.at(-1)?.office??"PIJIANG";
+      if(context){for(const recruit of nearbyMilitaryRecruits(team!,user,id=>this.isUnitAssigned(id),context,MILITARY_FORMATION_CAPACITY[office]-formation.memberUnitIds.length))formation.memberUnitIds.push(recruit.player.logicalUnitId!);}
+
     }
   }
 

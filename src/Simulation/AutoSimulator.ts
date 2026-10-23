@@ -65,6 +65,7 @@ export default class AutoSimulator {
   private sessionStartMonth = 0;
   private stepPerformance = new RollingStepPerformance();
   constructor(private readonly transitionDiagnosticsEnabled=debugProfileEnabled) {
+    MilitaryCommandRegistry.setRecruitmentContext(()=>Game.Core?{registry:Game.Core.logicalUnitRegistry,logical:Game.Core.logicalGameplayAuthority}:undefined);
     MilitaryCommandRegistry.setEventWriter(event => {
       const team=event.type==="military-office-granted"?Game.Core?.teams.find(t=>t.name===event.actorFactionId):undefined;
       return WorldHistory.addEvent(freezeMilitaryOfficeAuthority(event,team,team?DynastyRegistry.get(team.name):undefined));

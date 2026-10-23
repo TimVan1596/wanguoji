@@ -1,4 +1,4 @@
-import {MILITARY_OFFICES} from "../Politics/MilitaryOffice";
+import {MILITARY_OFFICES,MILITARY_FORMATION_CAPACITY} from "../Politics/MilitaryOffice";
 import {validateMilitaryOffices} from "./MilitaryOfficeValidation";
 import { deriveMilitaryLifeSchedule } from "../Politics/MilitaryLifeRules";
 import { MAX_COMMANDERS_PER_FACTION, MAX_FORMATION_UNITS, type MilitaryCommandState } from "../Politics/MilitaryCommandRegistry";
@@ -127,6 +127,8 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
     if (formation.memberUnitIds.length < 2 || formation.memberUnitIds.length > MAX_FORMATION_UNITS || new Set(formation.memberUnitIds).size !== formation.memberUnitIds.length) errors.push(`active formation size is invalid: ${formation.commandId}`);
     const appointment = person?.appointments.find((item: any) => item.commandId === formation.commandId && item.endMonth === undefined);
     if (!person || person.status !== "ACTIVE" || person.factionId !== formation.factionId || !appointment || appointment.factionId !== formation.factionId) errors.push(`active formation has no matching appointment: ${formation.commandId}`);
+    const office=appointment?.officeHistory?.at(-1)?.office;
+    if(office&&MILITARY_OFFICES.includes(office)&&formation.memberUnitIds.length>MILITARY_FORMATION_CAPACITY[office as keyof typeof MILITARY_FORMATION_CAPACITY])errors.push(`active formation exceeds office capacity (incompatible old military rules): ${formation.commandId}`);
     const commanderUser = person && userById.get(String(person.sourceUserId));
     for (const unitId of formation.memberUnitIds) {
       const key = String(unitId); const unit = unitById.get(key);

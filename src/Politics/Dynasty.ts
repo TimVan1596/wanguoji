@@ -302,7 +302,7 @@ class DynastyRegistryStore {
     if (candidate.factionId !== team.name || !this.getRoyalMilitaryCandidates(team,month).some(c => c.rulerId === candidate.rulerId) ||
       MilitaryCommandRegistry.getPeople().filter(p=>p.factionId===team.name&&p.status==="ACTIVE").length >= 2 ||
       MilitaryCommandRegistry.getFormations().filter(f=>f.factionId===team.name&&f.status==="ACTIVE").length >= 2 ||
-      members.length < 1 || members.length > 11 || new Set(members).size !== members.length ||
+      members.length !== 1 || new Set(members).size !== members.length ||
       members.some(u=>!team.users.has(u)||u.team!==team||u.isDestroyed||u.role!=="NORMAL"||u.rulerId||u.player.rulerId||!u.player.logicalUnitId||MilitaryCommandRegistry.isAssigned(u.player.logicalUnitId))) return false;
     const ruler = this.get(team.name)!.rulers.find(r=>r.id===candidate.rulerId)!;
     const personId = MilitaryCommandRegistry.nextPersonId(), sourceUserId = getRulerUserId(ruler.id), sourceUserLabel = this.getRulerPersonalName(ruler);

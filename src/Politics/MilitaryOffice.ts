@@ -4,6 +4,7 @@ export const MILITARY_OFFICES=["PIJIANG","JIANGJUN","SHANGJIANGJUN"] as const;
 export type MilitaryOffice=typeof MILITARY_OFFICES[number];
 export interface MilitaryOfficeGrant {office:MilitaryOffice;month:number;eventId:string;serviceMonths:number;captureEventIds:string[];}
 export const MILITARY_OFFICE_NAMES:Record<MilitaryOffice,string>={PIJIANG:"裨将",JIANGJUN:"将军",SHANGJIANGJUN:"上将军"};
+export const MILITARY_FORMATION_CAPACITY:Record<MilitaryOffice,number>={PIJIANG:2,JIANGJUN:3,SHANGJIANGJUN:4};
 export const MILITARY_OFFICE_RULES={JIANGJUN:{serviceMonths:60,captures:2,intervalMonths:0},SHANGJIANGJUN:{serviceMonths:120,captures:3,intervalMonths:36}};
 /** Only the current country's current appointment is eligible; the same victory is never spent twice. */
 export function getOfficePromotion(appointment:MilitaryAppointment,entries:MilitaryChronicleEntry[],month:number){

@@ -656,7 +656,13 @@ describe("s真实旧地人口响应→复国事务",()=>{
     }
     f.logical.importState(4,entries as any);
     const {default:military}=await import("../Politics/MilitaryCommandRegistry");
-    (military as any).appoint(added[0],"owner",400,["unit-2","unit-1","unit-3"]);
+    (military as any).appoint(added[0],"owner",400,["unit-2","unit-1"]);
+    // This fixture tests transfer from an established three-body general command.
+    const p=military.getPeople()[0],formation=military.getFormations()[0];
+    const victories=[410,420].map(month=>WorldHistory.addCityCaptured(month,"owner","old","owner",f.city.name,f.city.id,false,false,7,undefined,undefined,undefined,formation.commandId,p.personId));
+    victories.forEach((id,i)=>military.recordCapture(formation.commandId,id,f.city.id,410+i*10));
+    (military as any).grantOffice(p,p.appointments[0],{office:"JIANGJUN",month:460,serviceMonths:60,captureEventIds:victories});
+    formation.memberUnitIds.push("unit-3");
     return {...f,military,commander:added[0]};
   }
   it("s1真实普通编组成员可合法转属，指挥官仍在原国且编组至少保留两人",async()=>{
