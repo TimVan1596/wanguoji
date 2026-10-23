@@ -55,7 +55,6 @@ function fixture(seed:number, population=10, cityCount=1) {
       claimFortifiedZone(owner:any){block.claimForTeam(owner);},setCapital(value:boolean){this.isCapital=value;},});
     block.city=c;return c;
   });
-  for(const c of team.cities)attachSiegeFixtureUnits(core,enemy,c.block.x,c.block.y);
   const audit=new PopulationTransitionAudit(),populationSystem=new Population(),eventSystem=new Events();
   const totals:Record<string,number>={};
   core.simulator={year:0,recordPopulationMutation(t:any,b:number,a:number,m:any){totals[m.cause]=(totals[m.cause]??0)+(a-b);audit.record(t,b,a,m);},
@@ -156,6 +155,7 @@ it("an active land-holding zero-population country can recover; an exiled countr
 it("three simultaneous sieges share a persisted national casualty clock; defense keeps progressing",()=>{
   vi.spyOn(BattlePressure,"siegeWallPressure").mockReturnValue(1);
   const f=fixture(3,6,3), before=f.team.users.size;
+  for(const c of f.team.cities)attachSiegeFixtureUnits(core,f.enemy,c.block.x,c.block.y);f.audit.reset(0,core.teams);
   core.simulator.year=1;
   for(const city of f.team.cities){city.siegeContacts=new Map([[f.enemy.name,{team:f.enemy,count:3,year:1}]]);city.updateSiege(1);}
   expect(f.team.cities.map((c:any)=>c.defense)).toEqual([99999,99999,99999]);
@@ -232,7 +232,7 @@ it.each(["rebellion","split"])("%s requires existing legal ordinary supporters a
 
 it("actual siege casualty, capital loss/capture and peaceful recovery stay distinct and reconcile",()=>{
   vi.spyOn(BattlePressure,"siegeWallPressure").mockReturnValue(1);
-  const f=fixture(8,6,2);core.simulator.year=1;
+  const f=fixture(8,6,2);for(const c of f.team.cities)attachSiegeFixtureUnits(core,f.enemy,c.block.x,c.block.y);f.audit.reset(0,core.teams);core.simulator.year=1;
   const city=f.team.cities[0];city.defense=1;city.siegeContacts=new Map([[f.enemy.name,{team:f.enemy,count:3,year:1}]]);
   city.updateSiege(1);
   expect(city.ownerFactionId).toBe(f.enemy.name);expect(f.team.users.size).toBe(5);expect(f.team.cities).toHaveLength(1);

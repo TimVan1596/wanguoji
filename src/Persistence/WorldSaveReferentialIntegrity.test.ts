@@ -1316,7 +1316,7 @@ it.each(["siege-recovery", "split", "popular", "arcade-popular"])("regional %s: 
     expect(exportWorldSave(core)).toEqual(snapshot);
     const resumed=continueWorld();expect(resumed).toEqual(uninterrupted);
     for(const identity of identities){const live=resumed.users.find(u=>u.userId===identity.id);if(scenario!=="siege-recovery"){expect(live?.bornMonth).toBe(identity.bornMonth);expect(live?.sourceFactionId).toBe("qin");}}
-    if(scenario==="siege-recovery")expect(resumed.populationSystem.wartimeLossMonths.qin).toBe(1);
+    if(scenario==="siege-recovery")expect(resumed.populationSystem.wartimeLossMonths.qin).toBe(3);
     else {
       const {default:RealCore}=await vi.importActual<typeof import("../Game/Core")>("../Game/Core");
       const {default:Registry}=await import("../Simulation/FactionRegistry");

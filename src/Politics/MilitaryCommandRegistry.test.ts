@@ -46,7 +46,7 @@ describe("persistent military command registry", () => {
     qin.users.add(commander); qin.users.add(member);
     const registerSiegeContact = vi.fn();
     const farCity: any = { id: "a-wei-city", ownerFactionId: "wei", ownerTeam: wei, block: { x: 512, y: 0 }, registerSiegeContact };
-    const city: any = { id: "z-wei-capital", ownerFactionId: "wei", ownerTeam: wei, block: { x: 32, y: 0 }, registerSiegeContact };
+    const city: any = { id: "z-wei-capital", ownerFactionId: "wei", ownerTeam: wei, block: { x: 64, y: 0 }, registerSiegeContact };
 
     registry.update(12, [qin, wei], [farCity, city]);
     draw.mockRestore();

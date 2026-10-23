@@ -123,7 +123,7 @@ describe("production casualty business path", () => {
       personSequence: 2, commandSequence: 2, lastEvaluationMonth: 0,
     });
     const city: any = Object.assign(Object.create(City.prototype), {
-      id: context!.triggerCityId, name: "北城", ownerFactionId: defender.name, defense: 20, maxDefense: 20,
+      id: context!.triggerCityId, name: "北城",history:[],captureCount:0, ownerFactionId: defender.name, defense: 20, maxDefense: 20,
       block: { x: 32, y: 64, team:defender, city:undefined, updateCityDisplay: vi.fn() }, siegeDamageRemainder: 0, lastSiegeDamageYear: -1,
       lastSiegeDevastationYear: 12, devastation: 0, lastCapturedYear: undefined,
       siegeContacts: new Map([[attacker.name, { team: attacker, count: 3, year: 12 }]]),

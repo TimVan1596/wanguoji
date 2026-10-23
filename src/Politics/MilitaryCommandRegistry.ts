@@ -1,3 +1,4 @@
+import {isSiegePosition} from "../Simulation/SiegeParticipants";
 import {nearbyMilitaryRecruits,type MilitaryRecruitmentContext} from "./MilitaryRecruitment";
 import {deriveRoyalDepositionMilitary} from "./RoyalDepositionMilitary";
 import type {Ruler} from "./Dynasty";
@@ -493,7 +494,7 @@ export class MilitaryCommandRegistryStore {
         if (!player?.active || entry?.state.factionId !== formation.factionId) continue;
         const dx = target.block.x - player.x; const dy = target.block.y - player.y; const length = Math.hypot(dx, dy);
         const body = player.Body;
-        if(length<=24){body.setVelocity(0,0);continue;}
+        if(retreat?length<=32:isSiegePosition(target,player.x,player.y,32,true)){body.setVelocity(0,0);continue;}
         const desiredX = dx / length * player.speed; const desiredY = dy / length * player.speed;
         if (Math.abs(body.velocity.x - desiredX) + Math.abs(body.velocity.y - desiredY) > 0.5) this.diagnostics.unitsSteered++;
         const vx = body.velocity.x * 0.92 + desiredX * 0.08; const vy = body.velocity.y * 0.92 + desiredY * 0.08;
@@ -515,7 +516,7 @@ export class MilitaryCommandRegistryStore {
         const unit = unitById.get(unitId);
         if (!unit?.alive || unit.factionId !== formation.factionId) continue;
         const dx = target.block.x - unit.logicalX; const dy = target.block.y - unit.logicalY; const length = Math.hypot(dx, dy);
-        if(length<=24){unit.logicalVX=0;unit.logicalVY=0;continue;}
+        if(retreat?length<=32:isSiegePosition(target,unit.logicalX,unit.logicalY,32,true)){unit.logicalVX=0;unit.logicalVY=0;continue;}
         const desiredX = dx / length * unit.speed; const desiredY = dy / length * unit.speed;
         if (Math.abs(unit.logicalVX - desiredX) + Math.abs(unit.logicalVY - desiredY) > 0.5) this.diagnostics.unitsSteered++;
         const vx = unit.logicalVX * 0.92 + desiredX * 0.08; const vy = unit.logicalVY * 0.92 + desiredY * 0.08;
