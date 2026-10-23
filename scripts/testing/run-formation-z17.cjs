@@ -3,7 +3,7 @@ const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),{exe
 const repo=process.cwd(),root=fs.mkdtempSync(path.join(os.tmpdir(),'wanguoji-z17-formation-')),port=5241;
 if(process.env.WANGUOJI_CORE_YEARS||process.env.WANGUOJI_CORE_LONG_YEARS)throw Error('Controlled stage A only; no long simulation launch');
 execFileSync('tar',['-x','-C',root],{input:execFileSync('git',['archive','d50efc99d90e7c872467c7cffca453771dd9d3ee'],{maxBuffer:512*1024*1024})});fs.symlinkSync(path.join(repo,'node_modules'),path.join(root,'node_modules'),'junction');
-for(const f of ['MilitaryFormationCandidate.ts','FormationManagementCoreHarness.ts'])fs.copyFileSync(path.join(repo,'src/Simulation/testing',f),path.join(root,'src/Simulation/testing',f));
+for(const f of ['MilitaryFormationCandidate.ts','FormationManagementCoreHarness.ts'])fs.writeFileSync(path.join(root,'src/Simulation/testing',f),execFileSync('git',['show','45268ea1a8496413c86a1d80a84200588a66d9f8:src/Simulation/testing/'+f]));
 const replace=(s,a,b)=>{if(!s.includes(a))throw Error('Missing production anchor: '+a);return s.replace(a,b);};
 const registry=path.join(root,'src/Politics/MilitaryCommandRegistry.ts');let s=fs.readFileSync(registry,'utf8');
 s='import Game from "../Game/Game";\nimport {initialLightMembers,nearbyRecruitment,reinforceLightFormation} from "../Simulation/testing/MilitaryFormationCandidate";\n'+s;

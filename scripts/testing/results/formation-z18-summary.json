@@ -1,0 +1,451 @@
+{
+  "design": "PIJIANG 2 / JIANGJUN up to 3 / SHANGJIANGJUN up to 4, including commander",
+  "saveSchemaVersion": 23,
+  "baseline": {
+    "source": "scripts/testing/results/siege-z16-A-stage2.json",
+    "reuseReason": "same unchanged formal 12-body siege/military rules through z17; reused recorded regional-1..4 fifty-year cohort to avoid redundant old simulations"
+  },
+  "old50": {
+    "seeds": [
+      {
+        "seed": "regional-1",
+        "years": 50,
+        "meanFormationSize": 9.409915356711004,
+        "maximumFormationSize": 12,
+        "initialSizeHistogram": {
+          "11": 1,
+          "9": 1,
+          "12": 3,
+          "2": 1
+        },
+        "appointments": 6,
+        "promotions": 4,
+        "reinforcementTransactions": 0,
+        "reinforcedUnits": 0,
+        "meanServiceMonths": 137.83333333333334,
+        "captures": 24,
+        "activeStates": 2,
+        "meanActiveStates": 2.9683333333333333,
+        "population": 126,
+        "splits": 2,
+        "extinctions": 6,
+        "restorations": 2,
+        "unifications": 0,
+        "conflicts": {
+          "populationUnexplained": 0,
+          "militaryRoyalOverlap": 0,
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0,
+          "royalIdentityConflicts": 0,
+          "duplicateActiveMembers": 0
+        },
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-2",
+        "years": 50,
+        "meanFormationSize": 10.653846153846153,
+        "maximumFormationSize": 12,
+        "initialSizeHistogram": {
+          "12": 7
+        },
+        "appointments": 7,
+        "promotions": 8,
+        "reinforcementTransactions": 0,
+        "reinforcedUnits": 0,
+        "meanServiceMonths": 152.14285714285714,
+        "captures": 47,
+        "activeStates": 3,
+        "meanActiveStates": 3.77,
+        "population": 111,
+        "splits": 4,
+        "extinctions": 7,
+        "restorations": 2,
+        "unifications": 0,
+        "conflicts": {
+          "populationUnexplained": 0,
+          "militaryRoyalOverlap": 0,
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0,
+          "royalIdentityConflicts": 0,
+          "duplicateActiveMembers": 0
+        },
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-3",
+        "years": 50,
+        "meanFormationSize": 8.716723549488055,
+        "maximumFormationSize": 12,
+        "initialSizeHistogram": {
+          "7": 1,
+          "12": 7
+        },
+        "appointments": 8,
+        "promotions": 9,
+        "reinforcementTransactions": 0,
+        "reinforcedUnits": 0,
+        "meanServiceMonths": 183,
+        "captures": 44,
+        "activeStates": 2,
+        "meanActiveStates": 3.2983333333333333,
+        "population": 120,
+        "splits": 2,
+        "extinctions": 5,
+        "restorations": 4,
+        "unifications": 0,
+        "conflicts": {
+          "populationUnexplained": 0,
+          "militaryRoyalOverlap": 0,
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0,
+          "royalIdentityConflicts": 0,
+          "duplicateActiveMembers": 0
+        },
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-4",
+        "years": 50,
+        "meanFormationSize": 10.261171032357472,
+        "maximumFormationSize": 12,
+        "initialSizeHistogram": {
+          "12": 7
+        },
+        "appointments": 7,
+        "promotions": 8,
+        "reinforcementTransactions": 0,
+        "reinforcedUnits": 0,
+        "meanServiceMonths": 185.28571428571428,
+        "captures": 46,
+        "activeStates": 3,
+        "meanActiveStates": 3.9,
+        "population": 135,
+        "splits": 3,
+        "extinctions": 6,
+        "restorations": 0,
+        "unifications": 0,
+        "conflicts": {
+          "populationUnexplained": 0,
+          "militaryRoyalOverlap": 0,
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0,
+          "royalIdentityConflicts": 0,
+          "duplicateActiveMembers": 0
+        },
+        "strictSaveValid": true
+      }
+    ],
+    "pooled": {
+      "meanFormationSize": 9.713917525773196,
+      "maximumFormationSize": 12,
+      "appointments": 28,
+      "promotions": 29,
+      "reinforcementTransactions": 0,
+      "reinforcedUnits": 0,
+      "meanServiceMonths": 166.17857142857142,
+      "captures": 161,
+      "meanActiveStates": 3.484166666666667,
+      "splits": 11,
+      "extinctions": 24
+    }
+  },
+  "new50": {
+    "seeds": [
+      {
+        "seed": "regional-1",
+        "years": 50,
+        "meanFormationSize": 2.1218057921635434,
+        "maximumFormationSize": 3,
+        "initialSizeHistogram": {
+          "2": 10
+        },
+        "appointments": 10,
+        "promotions": 4,
+        "reinforcementTransactions": 3,
+        "reinforcedUnits": 3,
+        "meanServiceMonths": 117.2,
+        "captures": 46,
+        "activeStates": 4,
+        "meanActiveStates": 4.6,
+        "population": 121,
+        "splits": 0,
+        "extinctions": 2,
+        "restorations": 0,
+        "unifications": 0,
+        "conflicts": {
+          "populationUnexplained": 0,
+          "militaryRoyalOverlap": 0,
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0,
+          "royalIdentityConflicts": 0,
+          "duplicateActiveMembers": 0
+        },
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-2",
+        "years": 50,
+        "meanFormationSize": 2.2925851703406814,
+        "maximumFormationSize": 4,
+        "initialSizeHistogram": {
+          "2": 8
+        },
+        "appointments": 8,
+        "promotions": 2,
+        "reinforcementTransactions": 2,
+        "reinforcedUnits": 2,
+        "meanServiceMonths": 62.125,
+        "captures": 58,
+        "activeStates": 5,
+        "meanActiveStates": 5.218333333333334,
+        "population": 143,
+        "splits": 0,
+        "extinctions": 2,
+        "restorations": 0,
+        "unifications": 0,
+        "conflicts": {
+          "populationUnexplained": 0,
+          "militaryRoyalOverlap": 0,
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0,
+          "royalIdentityConflicts": 0,
+          "duplicateActiveMembers": 0
+        },
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-3",
+        "years": 50,
+        "meanFormationSize": 2.305263157894737,
+        "maximumFormationSize": 4,
+        "initialSizeHistogram": {
+          "2": 11
+        },
+        "appointments": 11,
+        "promotions": 4,
+        "reinforcementTransactions": 5,
+        "reinforcedUnits": 5,
+        "meanServiceMonths": 94.81818181818181,
+        "captures": 34,
+        "activeStates": 3,
+        "meanActiveStates": 3.756666666666667,
+        "population": 140,
+        "splits": 0,
+        "extinctions": 4,
+        "restorations": 0,
+        "unifications": 0,
+        "conflicts": {
+          "populationUnexplained": 0,
+          "militaryRoyalOverlap": 0,
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0,
+          "royalIdentityConflicts": 0,
+          "duplicateActiveMembers": 0
+        },
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-4",
+        "years": 50,
+        "meanFormationSize": 2.4902506963788302,
+        "maximumFormationSize": 4,
+        "initialSizeHistogram": {
+          "2": 7
+        },
+        "appointments": 7,
+        "promotions": 5,
+        "reinforcementTransactions": 5,
+        "reinforcedUnits": 5,
+        "meanServiceMonths": 102.42857142857143,
+        "captures": 56,
+        "activeStates": 3,
+        "meanActiveStates": 4.283333333333333,
+        "population": 103,
+        "splits": 0,
+        "extinctions": 3,
+        "restorations": 0,
+        "unifications": 0,
+        "conflicts": {
+          "populationUnexplained": 0,
+          "militaryRoyalOverlap": 0,
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0,
+          "royalIdentityConflicts": 0,
+          "duplicateActiveMembers": 0
+        },
+        "strictSaveValid": true
+      }
+    ],
+    "pooled": {
+      "meanFormationSize": 2.279394644935972,
+      "maximumFormationSize": 4,
+      "appointments": 36,
+      "promotions": 15,
+      "reinforcementTransactions": 15,
+      "reinforcedUnits": 15,
+      "meanServiceMonths": 95.25,
+      "captures": 194,
+      "meanActiveStates": 4.464583333333334,
+      "splits": 0,
+      "extinctions": 11
+    }
+  },
+  "new100": {
+    "seeds": [
+      {
+        "seed": "regional-1",
+        "years": 100,
+        "meanFormationSize": 2.2941176470588234,
+        "maximumFormationSize": 4,
+        "initialSizeHistogram": {
+          "2": 16
+        },
+        "appointments": 16,
+        "promotions": 9,
+        "reinforcementTransactions": 10,
+        "reinforcedUnits": 10,
+        "meanServiceMonths": 138.125,
+        "captures": 102,
+        "activeStates": 3,
+        "meanActiveStates": 3.9625,
+        "population": 133,
+        "splits": 0,
+        "extinctions": 4,
+        "restorations": 0,
+        "unifications": 0,
+        "conflicts": {
+          "populationUnexplained": 0,
+          "militaryRoyalOverlap": 0,
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0,
+          "royalIdentityConflicts": 0,
+          "duplicateActiveMembers": 0
+        },
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-2",
+        "years": 100,
+        "meanFormationSize": 2.485884907709012,
+        "maximumFormationSize": 4,
+        "initialSizeHistogram": {
+          "2": 17
+        },
+        "appointments": 17,
+        "promotions": 9,
+        "reinforcementTransactions": 7,
+        "reinforcedUnits": 7,
+        "meanServiceMonths": 108.3529411764706,
+        "captures": 142,
+        "activeStates": 4,
+        "meanActiveStates": 4.83,
+        "population": 124,
+        "splits": 0,
+        "extinctions": 2,
+        "restorations": 0,
+        "unifications": 0,
+        "conflicts": {
+          "populationUnexplained": 0,
+          "militaryRoyalOverlap": 0,
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0,
+          "royalIdentityConflicts": 0,
+          "duplicateActiveMembers": 0
+        },
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-3",
+        "years": 100,
+        "meanFormationSize": 2.4929817099106764,
+        "maximumFormationSize": 4,
+        "initialSizeHistogram": {
+          "2": 16
+        },
+        "appointments": 16,
+        "promotions": 10,
+        "reinforcementTransactions": 15,
+        "reinforcedUnits": 15,
+        "meanServiceMonths": 146.9375,
+        "captures": 80,
+        "activeStates": 4,
+        "meanActiveStates": 3.4908333333333332,
+        "population": 123,
+        "splits": 5,
+        "extinctions": 9,
+        "restorations": 0,
+        "unifications": 0,
+        "conflicts": {
+          "populationUnexplained": 0,
+          "militaryRoyalOverlap": 0,
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0,
+          "royalIdentityConflicts": 0,
+          "duplicateActiveMembers": 0
+        },
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-4",
+        "years": 100,
+        "meanFormationSize": 2.3333333333333335,
+        "maximumFormationSize": 4,
+        "initialSizeHistogram": {
+          "2": 11
+        },
+        "appointments": 11,
+        "promotions": 10,
+        "reinforcementTransactions": 11,
+        "reinforcedUnits": 11,
+        "meanServiceMonths": 131.45454545454547,
+        "captures": 124,
+        "activeStates": 4,
+        "meanActiveStates": 4.1325,
+        "population": 123,
+        "splits": 1,
+        "extinctions": 3,
+        "restorations": 1,
+        "unifications": 0,
+        "conflicts": {
+          "populationUnexplained": 0,
+          "militaryRoyalOverlap": 0,
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0,
+          "royalIdentityConflicts": 0,
+          "duplicateActiveMembers": 0
+        },
+        "strictSaveValid": true
+      }
+    ],
+    "pooled": {
+      "meanFormationSize": 2.405911581093133,
+      "maximumFormationSize": 4,
+      "appointments": 60,
+      "promotions": 38,
+      "reinforcementTransactions": 43,
+      "reinforcedUnits": 43,
+      "meanServiceMonths": 130.81666666666666,
+      "captures": 448,
+      "meanActiveStates": 4.103958333333333,
+      "splits": 6,
+      "extinctions": 18
+    }
+  },
+  "decision": "publish reduced formation rules; no new siege formula, garrison, political probability or withdrawal event",
+  "safety": "all monthly office-capacity and duplicate-member assertions passed; checkpoint identity/population conflicts all zero; history divergence is allowed by the requested design",
+  "simulationRunSaveSchemaVersion": 22,
+  "schemaNote": "Cohorts used the same released military rules before the schema-only upgrade to V23; runtime rules and RNG unchanged. V23 real Core save/load/repeated twelve-month continuation verified separately. Old V22 slots remain protected by existing schema guards."
+}

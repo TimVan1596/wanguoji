@@ -114,7 +114,10 @@ export async function checkGenealogyRendering(core:Core,check:(ok:unknown,label:
    flushSync(()=>root.render(<Provider store={store}><div data-main-sidebar style={{height:300,overflowY:'auto'}}><RoyalMilitaryList rows={rows} rulers={[]} month={core.simulator!.year} factionId={source.royalIdentity!.factionId}/></div></Provider>));
    await new Promise(r=>setTimeout(r,30));const sidebar=host.querySelector<HTMLElement>('[data-main-sidebar]')!,list=sidebar.querySelector<HTMLElement>('[role="list"]')!;
    check(sidebar.querySelectorAll('[role="listitem"]').length<=80&&getComputedStyle(list).overflowY!=='auto'&&getComputedStyle(list).overflowY!=='scroll',size+': real roster renderer uses bounded rows and only the main sidebar scroll');
-   sidebar.scrollTop=sidebar.scrollHeight;sidebar.dispatchEvent(new Event('scroll'));await new Promise(r=>setTimeout(r,50));
+   sidebar.scrollTop=sidebar.scrollHeight;sidebar.dispatchEvent(new Event('scroll'));
+   // Scroll virtualization settles on requestAnimationFrame; wait for its actual
+   // DOM result instead of assuming a heavily loaded test machine renders in 50ms.
+   for(let frame=0;frame<40&&!sidebar.querySelector(`[data-royal-military-person="display-${size-1}"]`);frame++)await new Promise(r=>setTimeout(r,25));
    check(sidebar.querySelector(`[data-royal-military-person="display-${size-1}"]`),size+': main sidebar scrolling reaches the last real-renderer row without paging');
    samples.push({size,shape:'military-roster',mountedNodes:sidebar.querySelectorAll('[role="listitem"]').length,mountAndScrollMs:performance.now()-start});
    flushSync(()=>root.render(<></>));

@@ -120,8 +120,8 @@ describe("WorldSaveV1 validation and JSON contract", () => {
   });
   it("uses schema V10 and persists alliance/merge fields plus the deterministic random stream", () => {
     const save = fixture();
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(22);
-    expect(save.saveSchemaVersion).toBe(22);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(23);
+    expect(save.saveSchemaVersion).toBe(23);
     expect(validateWorldSave({...save,saveSchemaVersion:21}).valid).toBe(false);
     expect(save.diplomacy).toEqual({ relations: [], pairMemories: [], lastEvaluationMonth: -1 });
     expect(save.worldRandom).toMatchObject({ algorithm: "mulberry32-v1", seed: expect.any(String), state: expect.any(Number), position: 0 });
@@ -240,7 +240,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     expect(loaded.dynasties[0]).toMatchObject({ designatedHeirId: "qin-ruler-2", designatedSinceMonth: 36 });
     expect(loaded.dynasties[0].rulers[2]).toMatchObject({ parentId: "qin-ruler-2", relationType: "DIRECT_CHILD" });
     expect(loaded.dynasties[0].rulers[3]).toMatchObject({ rulerId: "qin-ruler-4", bornMonth: -200, status: "kin", parentId: "qin-ruler-1" });
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(22);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(23);
   });
 
   it("rejects a dynasty candidate list above the runtime bound", () => {
@@ -306,6 +306,18 @@ describe("WorldSaveV1 validation and JSON contract", () => {
       expect(validateWorldSave(conflicting).valid).toBe(false);
       const errors=validateMilitaryCommandState(conflicting.registries.militaryCommandRegistry,conflicting.users,conflicting.units,conflicting.cities,new Set(["qin","wei"]),42,conflicting.worldHistory);
       expect(errors).toContain(royalBinding==="user"?"active military person has no matching live User: military-person-1":"active formation references invalid member unit: unit-2");
+    }
+    for(const size of [3,5]){
+      const oversized=structuredClone(save),formation=oversized.registries.militaryCommandRegistry.formations[0];
+      for(let i=formation.memberUnitIds.length;i<size;i++){
+        const unitId=`extra-unit-${i}`,userId=100+i;
+        oversized.users.push({...oversized.users.find((u:any)=>u.userId===9),userId,playerUnitId:unitId});
+        oversized.units.push({...oversized.units.find((u:any)=>u.unitId==='unit-3'),unitId,userId});formation.memberUnitIds.push(unitId);
+      }
+      const before=JSON.stringify(oversized),errors=validateMilitaryCommandState(oversized.registries.militaryCommandRegistry,oversized.users,oversized.units,oversized.cities,new Set(['qin','wei']),42,oversized.worldHistory);
+      expect(errors).toContain('active formation exceeds office capacity (incompatible old military rules): military-command-1');
+      if(size===5)expect(errors).toContain('active formation size is invalid: military-command-1');
+      expect(JSON.stringify(oversized)).toBe(before); // rejecting an old slot never rewrites it
     }
     const royalMember=structuredClone(save);royalMember.users.find((u:any)=>u.userId===9).rulerId="qin-ruler-1";
     expect(validateMilitaryCommandState(royalMember.registries.militaryCommandRegistry,royalMember.users,royalMember.units,royalMember.cities,new Set(["qin","wei"]),42,royalMember.worldHistory)).toContain("active formation references invalid member unit: unit-3");

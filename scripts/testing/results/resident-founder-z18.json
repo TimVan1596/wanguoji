@@ -51,7 +51,7 @@
         "rulerId": "咸阳义军-ruler-16",
         "populationBefore": 56,
         "populationAfterFounding": 56,
-        "saveSchemaVersion": 22
+        "saveSchemaVersion": 23
       },
       {
         "kind": "split",
@@ -94,7 +94,7 @@
         "rulerId": "咸阳义军-ruler-13",
         "populationBefore": 56,
         "populationAfterFounding": 56,
-        "saveSchemaVersion": 22
+        "saveSchemaVersion": 23
       }
     ]
   }

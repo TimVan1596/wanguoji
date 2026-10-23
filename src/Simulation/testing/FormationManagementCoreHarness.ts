@@ -3,6 +3,7 @@ import {SIMULATION_FIXED_STEP_MS} from '../SimulationDriver';
 import Military from '../../Politics/MilitaryCommandRegistry';
 import Dynasty from '../../Politics/Dynasty';
 import random from '../WorldRandom';
+import {deriveMilitaryLifeSchedule} from '../../Politics/MilitaryLifeRules';
 import {siegeParticipants} from '../SiegeParticipants';
 import {nearbyMilitaryRecruits} from '../../Politics/MilitaryRecruitment';
 import {exportWorldSave} from '../../Persistence/WorldSaveExporter';
@@ -81,6 +82,16 @@ export async function runFormationManagementCore(seed:string){
   observations.push({capitalBeforeResume,capitalAfterTwelveRealMonths:capitalAfterResume,residentsAreNotStationaryGuards:true});
   const absorber=core.teams.find(v=>v!==t&&v.status==='ACTIVE')!;(core.simulator as any).mergeFaction({absorbedFaction:t,absorbingFaction:absorber},core.simulator!.year);Military.update(core.simulator!.year,core.teams,core.allCities);check(Military.getFormations().every(f=>f.factionId!==t.name||f.status!=='ACTIVE'),'real faction absorption transaction leaves no active home command');
   observations.push({capitalBefore:3,capitalAfterAppointment:3,capacityByOffice:[2,3,4],saveSchemaVersion:saved.saveSchemaVersion});
+  for(const ending of ['retirement','natural-death','battle-death']){
+   hydrateWorldSave(core,structuredClone(checkpoint));const cp=Military.getPerson(person.personId)!,ct=core.teams.find(t=>t.name===cp.factionId)!,body=ct.getUserById(cp.sourceUserId)!,life=deriveMilitaryLifeSchedule(cp),population=ct.users.size;
+   const dueMonth=Math.ceil((ending==='retirement'?life.retirementMonth:life.naturalDeathMonth)/12)*12,expectedDeaths=ending==='battle-death'?1:Military.getPeople().filter(p=>p.factionId===ct.name&&p.status!=='DEAD'&&!p.royalIdentity&&!p.politicalRulerId&&dueMonth>=deriveMilitaryLifeSchedule(p).naturalDeathMonth&&ct.getUserById(p.sourceUserId)?.matchesMilitaryLife(p)).length;
+   if(ending==='battle-death')body.destroyUser(false,{cause:'BATTLE_DEATH',month:156,damageSource:'HOSTILE_HOME_OCCUPATION'});
+   else {clock(dueMonth);(Military as any).advanceLifecycles(dueMonth,core.teams);}
+   observations.push({ending,month:ending==='battle-death'?156:dueMonth,populationBefore:population,populationAfter:ct.users.size,expectedDeaths});
+   check(ending==='retirement'?cp.status==='RETIRED'&&ct.users.size===population-expectedDeaths:cp.status==='DEAD'&&!ct.getUserById(cp.sourceUserId)&&ct.users.size===population-expectedDeaths,ending+': original real military life transaction preserves the exact population delta');
+   check(Military.getFormations().every(f=>f.commanderPersonId!==cp.personId||f.status==='DISBANDED'),ending+': the original command ends without a ghost formation');
+   const ended=exportWorldSave(core);hydrateWorldSave(core,structuredClone(ended));check(diffCanonicalWorldSave(ended,exportWorldSave(core)).matched,ending+': actual life and command end survive a strict second read');
+  }
   return {seed,checks,observations,scope:'released production formation rules; controlled real Core and Phaser transactions'};
  }finally{game.destroy(true);}
 }
