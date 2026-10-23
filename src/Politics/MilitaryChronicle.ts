@@ -88,6 +88,9 @@ export function deriveMilitaryChronicle(person: MilitaryPerson, formations: Mili
         if(grant)text=`${name}${m.previousOffice==="NONE"?"获授":"晋任"}${MILITARY_OFFICE_NAMES[grant.office]}；据本次任职${grant.serviceMonths}个月${grant.captureEventIds.length?`及${grant.captureEventIds.length}条核验战果`:""}。`;
       }
       if (served && e.type === "military-appointment" && month === appointment?.startMonth) text = `${name}获任${e.actorFactionId}军事指挥官。`;
+      if(served&&e.type==="siege-defended")text=`${name}所部参与守住${e.cityName??e.cityId}，实际围攻者受阻撤离。`;
+      if(served&&e.type==="siege-started")text=`${name}所部开始围攻${e.cityName??e.cityId}。`;
+      if(served&&e.type==="siege-ended")text=`${name}所部${m.reason==="CAPTURED"?"围攻结束，城市易主":m.reason==="REPULSED"?"攻势受阻，撤围休整":m.reason==="TRUCE"?"因停战结束围攻":"因实际接触或指挥中断结束围攻"}（${e.cityName??e.cityId}）。`;
       if (served && e.type === "military-order-issued") text = `${name}所属编组接令以${e.cityName ?? e.cityId}为目标；军令不代表攻陷。`;
       if (served && e.type === "military-command-ended" && month === appointment?.endMonth && m.endReason === appointment.endReason)
         text = m.endReason === "AGE_RETIREMENT" ? `${name}年老退役。` : `${name}结束在${e.actorFactionId}的军事任职。`;

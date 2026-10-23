@@ -24,7 +24,7 @@ export type PopulationTransitionCause =
   | "INITIALIZATION"
   | "UNATTRIBUTED";
 
-export type PopulationDamageSource = "CITY_SIEGE" | "HOSTILE_HOME_OCCUPATION" | "MILITARY_LIFESPAN" | "UNSPECIFIED";
+export type PopulationDamageSource = "CITY_SIEGE" | "SIEGE_ASSAULT" | "HOSTILE_HOME_OCCUPATION" | "MILITARY_LIFESPAN" | "UNSPECIFIED";
 
 export interface PopulationCasualtyEvidence {
   victimUserId: number;

@@ -1,3 +1,5 @@
+import {attachSiegeFixtureUnits} from "./testing/SiegeFixtureUnits";
+import * as BattlePressure from "./SiegeBattle";
 import {composeMilitaryBiography} from "../Politics/PersonBiography";
 import { afterAll, beforeAll, afterEach, describe, expect, it, vi } from "vitest";
 import { PopulationTransitionAudit } from "./PopulationTransitionAudit";
@@ -130,6 +132,11 @@ describe("production casualty business path", () => {
     vi.spyOn(city, "refreshZoneVisual").mockImplementation(() => {});
     vi.spyOn(Diplomacy, "canAttack").mockReturnValue(true);
     vi.spyOn(FactionEffects, "getSiegeMultiplier").mockReturnValue(1);
+    attachSiegeFixtureUnits(core,attacker,city.block.x,city.block.y);
+    // This test isolates casualty identity and cooldown; force/resistance is covered
+    // by the production Core battle suite and SiegeBattle unit tests.
+    vi.spyOn(BattlePressure,'siegeWallPressure').mockReturnValue(1);
+    audit.reset(0,[defender,attacker]);
     const rngBefore = worldRandom.exportState();
 
     (city as any).updateSiege(12);

@@ -118,6 +118,7 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
             capture.month >= a.startMonth && capture.month <= (a.endMonth ?? worldMonth)))) errors.push(`military capture outside actual service: ${formation.commandId}`);
     }
     if (new Set(formation.captures.map((c: any) => c?.eventId)).size !== formation.captures.length) errors.push(`duplicate military capture: ${formation.commandId}`);
+    if(formation.retreatUntilMonth!==undefined&&(!month(formation.retreatUntilMonth)||formation.retreatUntilMonth<0||formation.targetCityId!==undefined||formation.status!=="ACTIVE"))errors.push(`invalid military retreat state: ${formation.commandId}`);
     if (formation.status !== "ACTIVE") {
       if (formation.targetCityId !== undefined || formation.orderStartMonth !== undefined) errors.push(`disbanded formation retains active order: ${formation.commandId}`);
       continue;

@@ -117,6 +117,7 @@ export default function CityDetails() {
           "无"
         )}
       </Typography>
+      {city.siegeBattle&&<Typography fontSize=".82rem">本地攻方{city.siegeBattle.attackers}人 · 守方{city.siegeBattle.defenders}人 · 自{formatWorldDate(city.siegeBattle.startMonth)}围攻</Typography>}
       <Typography sx={{ mt: 1 }} fontWeight="bold">
         城市历史
       </Typography>

@@ -1,3 +1,4 @@
+import {validateSiegeBattles} from "./SiegeBattleValidation";
 import {validRoyalDepositionMilitary} from "./RoyalDepositionMilitaryValidation";
 import {validateRoyalMilitaryIdentities} from "./RoyalMilitaryValidation";
 import {validDepositionSelection} from "./DepositionSelectionValidation";
@@ -41,6 +42,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
 
   const factions = array(save.factions, "factions", errors);
   const cities = array(save.cities, "cities", errors);
+  if(Array.isArray(save.cities)&&Array.isArray(save.factions))errors.push(...validateSiegeBattles(save));
   const users = array(save.users, "users", errors);
   const units = array(save.units, "units", errors);
   const dynasties = array(save.dynasties, "dynasties", errors);

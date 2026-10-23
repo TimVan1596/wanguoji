@@ -139,7 +139,7 @@ describe("unified factual chronicle", () => {
   it("remains deterministic after V13 ruler round-trip without mutating canonical input/history or RNG", () => {
     const c = fixture(); build(c); const before = JSON.stringify(c), rng = worldRandom.exportState(); const first = buildUnifiedFactionChronicle(c);
     const restored = { ...c, dynasty: { ...c.dynasty, rulers: c.dynasty.rulers.map(r => importRulerSave(exportRulerSave(r))) } };
-    expect(buildUnifiedFactionChronicle(restored)).toEqual(first); expect(JSON.stringify(c)).toBe(before); expect(worldRandom.exportState()).toEqual(rng); expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(23);
+    expect(buildUnifiedFactionChronicle(restored)).toEqual(first); expect(JSON.stringify(c)).toBe(before); expect(worldRandom.exportState()).toEqual(rng); expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(24);
   });
 });
 

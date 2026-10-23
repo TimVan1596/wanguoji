@@ -1,3 +1,4 @@
+import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
 import CircleMaskImage from "phaser3-rex-plugins/plugins/circlemaskimage";
 import Game from "../Game/Game";
 import { store } from "../store";
@@ -310,6 +311,8 @@ export default class Player extends Phaser.GameObjects.Container {
   }
 
   update(): void {
+    const command=this.user?.militaryPersonId?MilitaryCommandRegistry.getPerson(this.user.militaryPersonId):undefined;
+    this.factionRing.setStrokeStyle(command?.status==="ACTIVE"?4:2,this.team.color,0.85);
     this.createOrUpdateLine();
   }
 

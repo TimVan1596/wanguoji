@@ -1,3 +1,4 @@
+import {attachSiegeFixtureUnits} from "../Simulation/testing/SiegeFixtureUnits";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const { core } = vi.hoisted(() => ({ core: {} as any }));
 vi.mock("../Game/Game", () => ({ default: { Core: core, BlockSize: 32 } }));
@@ -19,7 +20,7 @@ function fixture() {
     claimForTeam(team: any) { this.team = team; }, updateCityDisplay: vi.fn(),
   })));
   const owners = ["A", "B", "C"].map(name => ({ name, displayName: name, status: "ACTIVE", origin: {},
-    cities: [] as any[], capitalCity: {} as any, markActive: vi.fn(), chooseCapitalCandidate: () => undefined,
+    users:new Set<any>(),cities: [] as any[], capitalCity: {} as any, markActive: vi.fn(), chooseCapitalCandidate: () => undefined,
     removeOneUser: vi.fn(),
     addCity(city: any) { this.cities.push(city); }, removeCity(city: any) { this.cities = this.cities.filter(c => c !== city); },
   }));
@@ -28,6 +29,7 @@ function fixture() {
     captureCount: 0, history: [], fortifiedCells: [], siegeContacts: new Map(), lastRepairYear: 0, lastLoyaltyYear: 0 });
   owners[0].cities = [city, ...Array.from({ length: 5 }, (_, i) => ({ id: `other-${i}` }))];
   Object.assign(core, { teams: owners, map: { blocks, getBlock: (x: number, y: number) => blocks[x]?.[y] }, registerCityInteraction: vi.fn(), unregisterCityInteraction: vi.fn(), handleFactionExtinction: vi.fn() });
+  attachSiegeFixtureUnits(core,owners[1] as any,96,96);
   vi.spyOn(city, "refreshZoneVisual").mockImplementation(() => {});
   vi.spyOn(city, "calculateMaxDefense").mockReturnValue(12);
   city.rebuildFortifiedZone();

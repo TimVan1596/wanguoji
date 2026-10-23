@@ -72,6 +72,7 @@ export interface MilitaryFormation {
   status: "ACTIVE" | "DISBANDED";
   targetCityId?: string;
   orderStartMonth?: number;
+  retreatUntilMonth?:number;
   captures: Array<{ eventId: string; cityId: string; month: number }>;
 }
 
@@ -394,7 +395,7 @@ export class MilitaryCommandRegistryStore {
     if (formation.status !== "ACTIVE") return;
     this.diagnostics.releasedFormations++;
     if (reason === "AGE_RETIREMENT") this.diagnostics.ageRetirements++;
-    formation.status = "DISBANDED"; formation.targetCityId = undefined; formation.orderStartMonth = undefined;
+    formation.status = "DISBANDED"; delete formation.retreatUntilMonth; formation.targetCityId = undefined; formation.orderStartMonth = undefined;
     const person = this.people.get(formation.commanderPersonId);
     const appointment = person?.appointments.find(item => item.commandId === formation.commandId && item.endMonth === undefined);
     if (appointment) { appointment.endMonth = worldMonth; appointment.endReason = reason; }
@@ -404,9 +405,14 @@ export class MilitaryCommandRegistryStore {
       actorFactionId: formation.factionId, metadata: { personId: person.personId, sourceUserId: person.sourceUserId, personalName: person.personalName, commandId: formation.commandId, endReason: reason }, importance: "normal" });
   }
 
+  withdrawFromCity(factionId:string,cityId:string,month:number){
+    for(const f of this.formations.values())if(f.status==="ACTIVE"&&f.factionId===factionId&&f.targetCityId===cityId){f.retreatUntilMonth=month+12;f.targetCityId=undefined;f.orderStartMonth=undefined;}
+  }
   private refreshOrders(worldMonth: number, teams: Team[], cities: City[]) {
     for (const formation of this.formations.values()) {
       if (formation.status !== "ACTIVE") continue;
+      if((formation.retreatUntilMonth??-1)>worldMonth)continue;
+      delete formation.retreatUntilMonth;
       const current = cities.find(city => city.id === formation.targetCityId);
       if (current && !current.destroyed && current.ownerFactionId !== formation.factionId && current.ownerTeam?.status === "ACTIVE" &&
         Diplomacy.canAttack(formation.factionId, current.ownerFactionId, worldMonth)) continue;
@@ -474,18 +480,20 @@ export class MilitaryCommandRegistryStore {
 
   steerActiveUnits(worldMonth: number, core: import("../Game/Core").default) {
     if (core.logicalGameplayAuthority) return;
+    const cities=core.allCities;
     const cityById = new Map(core.allCities.map(city => [city.id, city]));
     for (const formation of this.formations.values()) {
-      if (formation.status !== "ACTIVE" || !formation.targetCityId) continue;
-      const target = cityById.get(formation.targetCityId);
-      if (!target || target.destroyed || target.ownerFactionId === formation.factionId || !Diplomacy.canAttack(formation.factionId, target.ownerFactionId, worldMonth)) continue;
+      if (formation.status !== "ACTIVE") continue;
+      const retreat=(formation.retreatUntilMonth??-1)>worldMonth;
+      const target = retreat?cities.filter(c=>c.ownerFactionId===formation.factionId&&!c.destroyed).sort((a,b)=>Number(b.isCapital)-Number(a.isCapital)||a.id.localeCompare(b.id))[0]:cityById.get(formation.targetCityId??"");
+      if (!target || target.destroyed || (!retreat&&(target.ownerFactionId === formation.factionId || !Diplomacy.canAttack(formation.factionId, target.ownerFactionId, worldMonth)))) continue;
       for (const unitId of formation.memberUnitIds) {
         const entry = core.logicalUnitRegistry.getEntry(unitId);
         const player = entry?.player;
         if (!player?.active || entry?.state.factionId !== formation.factionId) continue;
         const dx = target.block.x - player.x; const dy = target.block.y - player.y; const length = Math.hypot(dx, dy);
-        if (length < 1) continue;
         const body = player.Body;
+        if(length<=24){body.setVelocity(0,0);continue;}
         const desiredX = dx / length * player.speed; const desiredY = dy / length * player.speed;
         if (Math.abs(body.velocity.x - desiredX) + Math.abs(body.velocity.y - desiredY) > 0.5) this.diagnostics.unitsSteered++;
         const vx = body.velocity.x * 0.92 + desiredX * 0.08; const vy = body.velocity.y * 0.92 + desiredY * 0.08;
@@ -499,14 +507,15 @@ export class MilitaryCommandRegistryStore {
     const unitById = new Map(units.map(unit => [unit.unitId, unit]));
     const cityById = new Map(cities.map(city => [city.id, city]));
     for (const formation of this.formations.values()) {
-      if (formation.status !== "ACTIVE" || !formation.targetCityId) continue;
-      const target = cityById.get(formation.targetCityId);
-      if (!target || target.destroyed || target.ownerFactionId === formation.factionId || !Diplomacy.canAttack(formation.factionId, target.ownerFactionId, worldMonth)) continue;
+      if (formation.status !== "ACTIVE") continue;
+      const retreat=(formation.retreatUntilMonth??-1)>worldMonth;
+      const target = retreat?cities.filter(c=>c.ownerFactionId===formation.factionId&&!c.destroyed).sort((a,b)=>Number(b.isCapital)-Number(a.isCapital)||a.id.localeCompare(b.id))[0]:cityById.get(formation.targetCityId??"");
+      if (!target || target.destroyed || (!retreat&&(target.ownerFactionId === formation.factionId || !Diplomacy.canAttack(formation.factionId, target.ownerFactionId, worldMonth)))) continue;
       for (const unitId of formation.memberUnitIds) {
         const unit = unitById.get(unitId);
         if (!unit?.alive || unit.factionId !== formation.factionId) continue;
         const dx = target.block.x - unit.logicalX; const dy = target.block.y - unit.logicalY; const length = Math.hypot(dx, dy);
-        if (length < 1) continue;
+        if(length<=24){unit.logicalVX=0;unit.logicalVY=0;continue;}
         const desiredX = dx / length * unit.speed; const desiredY = dy / length * unit.speed;
         if (Math.abs(unit.logicalVX - desiredX) + Math.abs(unit.logicalVY - desiredY) > 0.5) this.diagnostics.unitsSteered++;
         const vx = unit.logicalVX * 0.92 + desiredX * 0.08; const vy = unit.logicalVY * 0.92 + desiredY * 0.08;

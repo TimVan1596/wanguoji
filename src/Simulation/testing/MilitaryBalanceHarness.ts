@@ -126,6 +126,14 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
           naturalGrowth:p?.totals.naturalGrowth,warDeaths:p?.totals.warDeaths,activeStates:core.teams.filter(t=>t.status==="ACTIVE").length,historicalStates:core.teams.length,cities:core.allCities.length,
           captures:battles.length,recoveries:count("city-recovered"),siegeCityMonths,capturesPer100SiegeCityMonths:siegeCityMonths?battles.length/siegeCityMonths*100:0,
           formationSizeSamples:{...sizeSamples},factionCommandSamples:{...factionCommandSamples},meanFormationSize:activeFormationSamples?totalFormationMembers/activeFormationSamples:0,
+          siegeResults:(()=>{const ended=events.filter(e=>e.type==="siege-ended"),started=events.filter(e=>e.type==="siege-started");
+            const durations=ended.map(e=>(e.monthIndex??e.year)-Number(e.metadata?.startMonth)+1);
+            const capital=ended.filter(e=>e.metadata?.wasCapital===1),ordinary=ended.filter(e=>e.metadata?.wasCapital===0);
+            const counts=(xs:typeof ended)=>({ended:xs.length,captured:xs.filter(e=>e.metadata?.reason==="CAPTURED").length,failed:xs.filter(e=>e.metadata?.reason==="REPULSED").length,withdrawn:xs.filter(e=>e.metadata?.reason!=="CAPTURED"&&e.metadata?.reason!=="REPULSED").length});
+            const credited=people.flatMap(p=>p.capturedEventIds.map(id=>({person:p.personId,id}))),duplicateCredit=credited.length-new Set(credited.map(c=>c.id)).size;
+            const transferKeys=new Set(core.allCities.flatMap(c=>c.history.filter(h=>h.type==="captured"||h.type==="recovered").map(h=>`${h.year}:${c.id}:${h.newOwnerFactionId}`)));
+            const noTransfer=battles.filter(e=>!transferKeys.has(`${e.monthIndex??e.year}:${e.cityId}:${e.actorFactionId}`)).length;
+            return {started:started.length,...counts(ended),meanDurationMonths:durations.length?durations.reduce((a,b)=>a+b,0)/durations.length:0,capital:counts(capital),ordinary:counts(ordinary),defended:events.filter(e=>e.type==="siege-defended").length,duplicateCredit,unattributedOwnershipChanges:noTransfer,capturesPerActiveStateYear:battles.length/(activeStateMonthSum/12),militaryDeaths:people.filter(p=>p.status==="DEAD").length,retirements:Military.getOfficeSummary(m).ageRetirements};})(),
           reinforcementTransactions,reinforcedUnits,initialFormationSizes:events.filter(e=>e.type==="military-appointment").map(e=>e.metadata?.unitCount),maximumFormationSize:Math.max(0,...Object.keys(sizeSamples).map(Number)),
           appointments:Military.getDiagnostics().appointments,offices:Military.getOfficeSummary(m),promotions,
           meanServiceMonths:Military.getOfficeSummary(m).meanServiceMonths,matureEnded:matureEnded.length,matureEndedNeverPromoted:matureEnded.filter(a=>(a.officeHistory?.length??0)<2).length,

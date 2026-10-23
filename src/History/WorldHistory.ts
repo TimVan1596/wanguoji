@@ -69,7 +69,8 @@ export type WorldEventType =
   | "military-appointment"
   | "military-order-issued"
   | "military-command-ended"
-  | "military-person-died";
+  | "military-person-died"
+  | "siege-started" | "siege-ended" | "siege-defended";
 
 export type WorldEventCategory = "war" | "politics" | "disaster" | "god";
 
