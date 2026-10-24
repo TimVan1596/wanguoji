@@ -10,7 +10,7 @@ export function portraitTraits(personId:string,age?:number){
 /** Decorative SVG lives inside the existing accessible archive control, never a second dialog. */
 export default function PersonPortrait({personId,age,role="UNKNOWN",color,deceased=false,size=48}:{personId:string;age?:number;role?:PortraitRole;color?:number;deceased?:boolean;size?:number}){
  const t=portraitTraits(personId,age),elder=t.stage==="elder",mature=t.stage==="mature",young=t.stage==="young";
- const military=["PIJIANG","JIANGJUN","SHANGJIANGJUN"].includes(role),imperial=role==="EMPEROR",royal=imperial||role==="KING";
+ const military=["XIAOWEI","PIJIANG","JIANGJUN","SHANGJIANGJUN"].includes(role),imperial=role==="EMPEROR",royal=imperial||role==="KING";
  const flag=color===undefined?"#9a9181":`#${(color>>>0).toString(16).padStart(6,"0").slice(-6)}`;
  const robe=imperial?"#6e421b":role==="KING"?"#56383d":military?"#43565c":role==="LEADER"?"#766951":t.robe;
  const hair=elder?"#c7c3ba":mature?"#797571":"#303633",rx=young?t.face-1:t.face,eye=t.eyes/2;

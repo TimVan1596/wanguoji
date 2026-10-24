@@ -89,8 +89,8 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
       const ids=formations.flatMap(f=>f.memberUnitIds);
       if(new Set(ids).size!==ids.length)throw Error('Duplicate active military member');
       for(const f of formations){const p=Military.getPerson(f.commanderPersonId)!,office=p.appointments.find(a=>a.commandId===f.commandId)?.officeHistory?.at(-1)?.office;
-        const cap=MAX_FORMATION_UNITS===4?(office==='SHANGJIANGJUN'?4:office==='JIANGJUN'?3:2):MAX_FORMATION_UNITS;
-        if(f.memberUnitIds.length<2||f.memberUnitIds.length>cap)throw Error('Formation exceeds actual office capacity');
+        const cap=MAX_FORMATION_UNITS===4?(office==='SHANGJIANGJUN'?4:office==='JIANGJUN'?3:office==='PIJIANG'?2:1):MAX_FORMATION_UNITS;
+        if(f.memberUnitIds.length<1||f.memberUnitIds.length>cap)throw Error('Formation exceeds actual office capacity');
       }
       for(const f of formations){sizeSamples[f.memberUnitIds.length]=(sizeSamples[f.memberUnitIds.length]??0)+1;activeFormationSamples++;totalFormationMembers+=f.memberUnitIds.length;}
       for(const t of core.teams.filter(t=>t.status==="ACTIVE")){
@@ -101,7 +101,7 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
         const events=WorldHistory.getEvents(),people=Military.getPeople();
         const captures=events.filter(e=>["city-captured","city-recovered","capital-fallen"].includes(e.type));
         const battles=[...new Map(captures.map(e=>[`${e.monthIndex??e.year}:${e.cityId}:${e.actorFactionId}`,e])).values()];
-        const promotions=people.flatMap(p=>p.appointments.flatMap(a=>(a.officeHistory??[]).filter(g=>g.office!=="PIJIANG").map(g=>({office:g.office,waitMonths:g.month-a.startMonth}))));
+        const promotions=people.flatMap(p=>p.appointments.flatMap(a=>(a.officeHistory??[]).filter(g=>g.office!=="XIAOWEI").map(g=>({office:g.office,waitMonths:g.month-a.startMonth}))));
         const ended=people.flatMap(p=>p.appointments.filter(a=>a.endMonth!==undefined));
         const matureEnded=ended.filter(a=>a.endMonth!-a.startMonth>=60);
         const p=core.getPopulationSummary();
@@ -118,7 +118,7 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
           const prior=d.rulers.find(p=>p.id===r.predecessorId);
           return r.accessionYear!==undefined&&r.accessionCause!=="DEPOSITION"&&!!prior&&r.houseName===prior.houseName&&!!getRecordedKinRelation(r,prior,d.rulers);
         }));
-        checkpoints.push({genealogyArchive:genealogyArchiveMetrics(),normalRoyalSuccessions:normalRoyalSuccessions.length,depositionDiagnostics:Dynasty.getInReignDepositionDiagnostics(m),royalMilitary:{normalAccessions:normalRoyalSuccessions.filter(r=>r.militaryIdentity).length,candidatePeople:[...royalOffers.values()].filter(at=>at<=m).length,adultKinObserved:royalCandidates.size,enlisted:royalPeople.length,victories:royalPeople.reduce((n,p)=>n+p.capturedEventIds.length,0),promotions:royalPeople.flatMap(p=>p.appointments.flatMap(a=>(a.officeHistory??[]).filter(g=>g.office!=="PIJIANG"))).length,
+        checkpoints.push({genealogyArchive:genealogyArchiveMetrics(),normalRoyalSuccessions:normalRoyalSuccessions.length,depositionDiagnostics:Dynasty.getInReignDepositionDiagnostics(m),royalMilitary:{normalAccessions:normalRoyalSuccessions.filter(r=>r.militaryIdentity).length,candidatePeople:[...royalOffers.values()].filter(at=>at<=m).length,adultKinObserved:royalCandidates.size,enlisted:royalPeople.length,victories:royalPeople.reduce((n,p)=>n+p.capturedEventIds.length,0),promotions:royalPeople.flatMap(p=>p.appointments.flatMap(a=>(a.officeHistory??[]).filter(g=>g.office!=="XIAOWEI"))).length,
           battleDeaths:royalPeople.filter(p=>["BATTLE_DEATH","SIEGE_LOSS"].includes(p.deathCause??"")).length,naturalDeaths:royalPeople.filter(p=>p.deathCause==="NATURAL_DEATH").length,accessions:royals.filter(r=>r.reignOrdinal!==undefined).length,
           identityConflicts:royalPeople.filter(p=>{const r=royals.find(r=>r.id===p.royalIdentity!.rulerId);return !r||r.militaryIdentity?.personId!==p.personId||r.deathMonth!==p.deathMonth||r.naturalDeathYear!==p.royalIdentity!.naturalDeathMonth;}).length,
           duplicateActiveMembers:formations.flatMap(f=>f.memberUnitIds).length-new Set(formations.flatMap(f=>f.memberUnitIds)).size},

@@ -200,7 +200,7 @@ export class MilitaryCommandRegistryStore {
     const people=this.getPeople(),appointments=people.flatMap(p=>p.appointments),grants=appointments.flatMap(a=>a.officeHistory??[]);
     const count=(office:MilitaryOfficeGrant["office"])=>grants.filter(g=>g.office===office).length;
     const active=people.filter(p=>p.status==="ACTIVE").flatMap(p=>p.appointments.filter(a=>a.endMonth===undefined&&a.factionId===p.factionId));
-    return {pijiang:count("PIJIANG"),jiangjun:count("JIANGJUN"),shangjiangjun:count("SHANGJIANGJUN"),promotions:grants.filter(g=>g.office!=="PIJIANG").length,
+    return {xiaowei:count("XIAOWEI"),pijiang:count("PIJIANG"),jiangjun:count("JIANGJUN"),shangjiangjun:count("SHANGJIANGJUN"),promotions:grants.filter(g=>g.office!=="XIAOWEI").length,
       meanServiceMonths:appointments.length?appointments.reduce((n,a)=>n+Math.max(0,(a.endMonth??worldMonth)-a.startMonth),0)/appointments.length:0,
       currentOffices:active.map(a=>a.officeHistory?.at(-1)?.office),naturalDeaths:people.filter(p=>p.deathCause==="NATURAL_DEATH").length,
       ageRetirements:appointments.filter(a=>a.endReason==="AGE_RETIREMENT").length,
@@ -236,7 +236,7 @@ export class MilitaryCommandRegistryStore {
     if (!annual) return;
     this.advanceOffices(worldMonth,teams);
     for (const team of teams) {
-      if (team.status !== "ACTIVE" || team.users.size < 2) continue;
+      if (team.status !== "ACTIVE") continue;
       const activeCount = [...this.people.values()].filter(p => p.status === "ACTIVE" && p.factionId === team.name).length;
       const activeFormations = [...this.formations.values()].filter(f => f.status === "ACTIVE" && f.factionId === team.name).length;
       if (activeCount >= MAX_COMMANDERS_PER_FACTION || activeFormations >= MAX_FORMATIONS_PER_FACTION) { this.diagnostics.capBlocked++; continue; }
@@ -246,7 +246,7 @@ export class MilitaryCommandRegistryStore {
       if (!candidates.length && !royals.length) continue;
       const availableUnits = [...team.users].filter(user => user.player.logicalUnitId && user.role === "NORMAL" && !user.rulerId && !user.player.rulerId &&
         !this.isUnitAssigned(user.player.logicalUnitId) && user.team === team).sort((a, b) => a.id - b.id || a.name.localeCompare(b.name));
-      if (availableUnits.length < 2) { this.diagnostics.unitBlocked++; continue; }
+      if (!availableUnits.length && !royals.length) { this.diagnostics.unitBlocked++; continue; }
       this.diagnostics.eligible += candidates.length;
       if (worldRandom.next() >= ANNUAL_APPOINTMENT_CHANCE) continue;
       const weights = candidates.map(user => {
@@ -255,13 +255,13 @@ export class MilitaryCommandRegistryStore {
       });
       const selected = selectMilitaryCandidate([...candidates.map(user => ({user, royal: undefined as RoyalMilitaryCandidate | undefined})), ...royals.map(royal => ({user: undefined as User | undefined, royal}))], [...weights, ...royals.map(() => 1)], worldRandom.next());
       if (selected.royal) {
-        if (this.royalService?.enlist(selected.royal, team, worldMonth, availableUnits.slice(0, 1))) this.diagnostics.appointments++;
+        if (this.royalService?.enlist(selected.royal, team, worldMonth, [])) this.diagnostics.appointments++;
         this.refreshOrders(worldMonth, teams, cities);
         continue;
       }
       const candidate = selected.user!;
-      const members = [candidate, ...availableUnits.filter(user => user !== candidate)].slice(0, MILITARY_FORMATION_CAPACITY.PIJIANG);
-      if (members.length < 2 || !candidate.player.logicalUnitId) { this.diagnostics.unitBlocked++; continue; }
+      const members = [candidate, ...availableUnits.filter(user => user !== candidate)].slice(0, MILITARY_FORMATION_CAPACITY.XIAOWEI);
+      if (members.length < 1 || !candidate.player.logicalUnitId) { this.diagnostics.unitBlocked++; continue; }
       if (this.appoint(candidate, team.name, worldMonth, members.map(user => user.player.logicalUnitId!))) this.diagnostics.appointments++;
       this.refreshOrders(worldMonth, teams, cities);
     }
@@ -313,7 +313,7 @@ export class MilitaryCommandRegistryStore {
   }
 
   private appoint(user: User, factionId: string, worldMonth: number, memberUnitIds: string[], royalIdentity?: RoyalMilitaryLink) {
-    if(memberUnitIds.length!==MILITARY_FORMATION_CAPACITY.PIJIANG||new Set(memberUnitIds).size!==memberUnitIds.length||!memberUnitIds.includes(user.player.logicalUnitId??"")||factionId!==user.team.name||
+    if(memberUnitIds.length!==MILITARY_FORMATION_CAPACITY.XIAOWEI||new Set(memberUnitIds).size!==memberUnitIds.length||!memberUnitIds.includes(user.player.logicalUnitId??"")||factionId!==user.team.name||
       memberUnitIds.some(id=>this.isUnitAssigned(id)||![...user.team.users].some(u=>u.team===user.team&&!u.isDestroyed&&u.role==="NORMAL"&&!u.rulerId&&!u.player.rulerId&&u.player.active&&u.player.logicalUnitId===id)))return false;
     let person = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
     if (person?.status === "DEAD" || !this.isEligible(user, worldMonth)) return false;
@@ -337,7 +337,7 @@ export class MilitaryCommandRegistryStore {
       category: "politics", type: "military-appointment", title: `${factionId}任命${getMilitaryPersonDisplayName(person)}为军事指挥者`,
       description: royalIdentity ? `${getMilitaryPersonDisplayName(person)}以原王室身份首次从军，建立一个真实人口单位，与${memberUnitIds.length-1}名既有部众组成军队。` : `${getMilitaryPersonDisplayName(person)}由既有人口任职，指挥${memberUnitIds.length}个现存单位。`, factionIds: [factionId], actorFactionId: factionId,
       metadata: { personId, sourceUserId: person.sourceUserId, personalName: person.personalName, commandId, unitCount: memberUnitIds.length, ...(royalIdentity ? {royalRulerId:royalIdentity.rulerId,populationDelta:1} : {}) }, importance: "normal" });
-    this.grantOffice(person,person.appointments.at(-1)!,{office:"PIJIANG",month:worldMonth,serviceMonths:0,captureEventIds:[]});
+    this.grantOffice(person,person.appointments.at(-1)!,{office:"XIAOWEI",month:worldMonth,serviceMonths:0,captureEventIds:[]});
     return true;
   }
 
@@ -358,12 +358,12 @@ export class MilitaryCommandRegistryStore {
       const user=team&&[...team.users].find(u=>u.militaryPersonId===person.personId&&u.id===person.sourceUserId);
       const appointment=person.appointments.find(a=>a.factionId===person.factionId&&a.endMonth===undefined);
       const formation=appointment&&this.formations.get(appointment.commandId);
-      if(!user?.matchesMilitaryLife?.(person)||!appointment||!formation||formation.status!=="ACTIVE"||formation.commanderPersonId!==person.personId||formation.factionId!==person.factionId||formation.memberUnitIds.length<2||!formation.memberUnitIds.includes(user.player.logicalUnitId??""))continue;
+      if(!user?.matchesMilitaryLife?.(person)||!appointment||!formation||formation.status!=="ACTIVE"||formation.commanderPersonId!==person.personId||formation.factionId!==person.factionId||formation.memberUnitIds.length<1||!formation.memberUnitIds.includes(user.player.logicalUnitId??""))continue;
       const grant=getOfficePromotion(appointment,this.getChronicle(person,month,person.factionId),month);
       if(grant)this.grantOffice(person,appointment,grant);
       // Annual opportunities also allow a previously unfilled promotion to recruit
       // when a real resident later reaches the commander's assembly area.
-      const context=this.recruitmentContext?.(),office=appointment.officeHistory?.at(-1)?.office??"PIJIANG";
+      const context=this.recruitmentContext?.(),office=appointment.officeHistory?.at(-1)?.office??"XIAOWEI";
       if(context){for(const recruit of nearbyMilitaryRecruits(team!,user,id=>this.isUnitAssigned(id),context,MILITARY_FORMATION_CAPACITY[office]-formation.memberUnitIds.length))formation.memberUnitIds.push(recruit.player.logicalUnitId!);}
 
     }
@@ -388,7 +388,7 @@ export class MilitaryCommandRegistryStore {
         return Boolean(user && user.player.active);
       });
       if (!formation.memberUnitIds.includes(commander.player.logicalUnitId)) formation.memberUnitIds.unshift(commander.player.logicalUnitId);
-      if (formation.memberUnitIds.length < 2) this.endFormation(formation, worldMonth, "DISMISSED");
+      if (formation.memberUnitIds.length < 1) this.endFormation(formation, worldMonth, "DISMISSED");
     }
   }
 
@@ -563,7 +563,7 @@ export class MilitaryCommandRegistryStore {
       if (person && formation.commanderPersonId === person.personId) this.endFormation(formation, worldMonth, "TRANSFERRED");
       else {
         formation.memberUnitIds = formation.memberUnitIds.filter(id => id !== unitId);
-        if (formation.memberUnitIds.length < 2) this.endFormation(formation, worldMonth, "DISMISSED");
+        if (formation.memberUnitIds.length < 1) this.endFormation(formation, worldMonth, "DISMISSED");
       }
     }
     if (person && person.status !== "DEAD") person.factionId = nextFactionId;
@@ -579,7 +579,7 @@ export class MilitaryCommandRegistryStore {
       if (person && formation.commanderPersonId === person.personId) this.endFormation(formation, worldMonth, death ? "DEATH" : "DISMISSED");
       else {
         formation.memberUnitIds = formation.memberUnitIds.filter(id => id !== unitId);
-        if (formation.memberUnitIds.length < 2) this.endFormation(formation, worldMonth, "DISMISSED");
+        if (formation.memberUnitIds.length < 1) this.endFormation(formation, worldMonth, "DISMISSED");
       }
     }
     if (!person || person.status === "DEAD") return;

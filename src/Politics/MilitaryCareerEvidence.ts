@@ -26,7 +26,7 @@ export function deriveMilitaryCareer(person: MilitaryPerson, formations: Militar
   const ordinaryCaptures = captures.filter(e => e.metadata?.wasCapital === 0).length;
   const initialSizes = events.filter(e => e.type === "military-appointment" && e.metadata?.personId === person.personId &&
     appointments.some(a => a.commandId === e.metadata?.commandId && a.factionId === e.actorFactionId && a.startMonth === (e.monthIndex ?? e.year)))
-    .map(e => Number(e.metadata?.unitCount)).filter(n => Number.isSafeInteger(n) && n >= 2 && n <= 12);
+    .map(e => Number(e.metadata?.unitCount)).filter(n => Number.isSafeInteger(n) && n >= 1 && n <= 4);
   const recordedCommandSize = Math.max(0, ...initialSizes);
   const active = person.status === "ACTIVE"
     ? commands.filter(f => f.status === "ACTIVE" && f.factionId === person.factionId && appointments.some(a => a.commandId === f.commandId && a.endMonth === undefined)) : [];

@@ -23,7 +23,7 @@ describe("persistent military command registry", () => {
     expect(formation.targetCityId).toBe("target");
     registry.clearObsoleteCityTarget("target","third-country");expect(formation.targetCityId).toBe("target");
     registry.clearObsoleteCityTarget("target","qin");expect(formation.targetCityId).toBeUndefined();expect(formation.orderStartMonth).toBeUndefined();
-    expect(worldRandom.exportState()).toEqual(before);expect(formation.status).toBe("ACTIVE");expect(formation.memberUnitIds).toEqual(["unit-1","unit-2"]);
+    expect(worldRandom.exportState()).toEqual(before);expect(formation.status).toBe("ACTIVE");expect(formation.memberUnitIds).toEqual(["unit-1"]);
   });
 
   it("derives adult birth months without consuming the world random stream", () => {
@@ -55,13 +55,13 @@ describe("persistent military command registry", () => {
     const [formation] = registry.getFormations();
     expect(person).toMatchObject({ sourceUserId: 1, name: "人口1", bornMonth: -300, status: "ACTIVE" });
     expect(commander.militaryPersonId).toBe(person.personId);
-    expect(formation).toMatchObject({ factionId: "qin", commanderPersonId: person.personId, memberUnitIds: ["unit-1", "unit-2"], targetCityId: "z-wei-capital" });
+    expect(formation).toMatchObject({ factionId: "qin", commanderPersonId: person.personId, memberUnitIds: ["unit-1"], targetCityId: "z-wei-capital" });
     expect(events.filter(event => event.type === "military-appointment")).toHaveLength(1);
     expect(events.filter(event => event.type === "military-order-issued")).toHaveLength(1);
     expect(events.find(event => event.type === "military-order-issued").metadata.meritInfluenced).toBe(0);
     expect(registry.getDiagnostics()).toMatchObject({ candidates: 2, eligible: 2, appointments: 1, activeCommanders: 1, activeFormations: 1, orders: 1 });
 
-    const units: any[] = ["unit-1", "unit-2"].map(unitId => ({ unitId, factionId: "qin", logicalX: 0,
+    const units: any[] = ["unit-1"].map(unitId => ({ unitId, factionId: "qin", logicalX: 0,
       logicalY: 0, logicalVX: 0, logicalVY: 0, alive: true, currentGridX: 0, currentGridY: 0, radius: 1, speed: 32, role: "NORMAL" }));
     registry.steerLogicalUnits(12, units, [farCity, city]);
     expect(units.every(unit => unit.logicalVX === 32 && unit.logicalVY === 0)).toBe(true);
@@ -75,8 +75,8 @@ describe("persistent military command registry", () => {
     const contactResult = applyLogicalOccupation({ units, movementResults: moved,
       context: { getTeam: factionId => factionId === "qin" ? qin : wei,
         getBlock: gridX => gridX === 1 ? { city, team: wei } as any : { team: qin } as any, getWorldMonth: () => 12 } });
-    expect(contactResult.siegeContacts).toBe(2);
-    expect(registerSiegeContact).toHaveBeenCalledTimes(2);
+    expect(contactResult.siegeContacts).toBe(1);
+    expect(registerSiegeContact).toHaveBeenCalledTimes(1);
     expect(registerSiegeContact).toHaveBeenCalledWith(qin, 12, undefined, formation.commandId, person.personId);
     registry.recordCommandSiegeContact(formation.commandId, person.personId, farCity.id);
     registry.recordCommandSiegeContact(formation.commandId, person.personId, city.id);
@@ -111,8 +111,8 @@ describe("persistent military command registry", () => {
     registry.update(12, [qin, wei], [{ id: "city", ownerFactionId: "wei", ownerTeam: wei, block: { x: 1, y: 1 } } as any]);
     registry.onUserTransfer(member, "wei", 13);
     expect(registry.getFormations()[0].memberUnitIds).toEqual(["unit-1"]);
-    expect(registry.getFormations()[0].status).toBe("DISBANDED");
-    expect(registry.getPeople()[0].status).toBe("RETIRED");
+    expect(registry.getFormations()[0].status).toBe("ACTIVE");
+    expect(registry.getPeople()[0].status).toBe("ACTIVE");
     expect(registry.getPeople()[0].deathMonth).toBeUndefined();
   });
 
@@ -143,7 +143,7 @@ it.each(["user","player"])("blocks a NORMAL unit retaining a %s royal identity f
   team.users.add(royal);team.users.add(ordinary);
   const draw=vi.spyOn(worldRandom,"next").mockReturnValue(0);
   registry.update(12,[team],[]);
-  expect(registry.getPeople()).toEqual([]);expect(registry.getFormations()).toEqual([]);expect(draw).not.toHaveBeenCalled();
+  expect(registry.getPeople().map(p=>p.sourceUserId)).toEqual([ordinary.id]);expect(registry.getFormations()[0].memberUnitIds).toEqual([ordinary.player.logicalUnitId]);expect(royal.militaryPersonId).toBeUndefined();
 });
 it("revokes a formation if its commander acquires an incompatible royal binding, without recording death",()=>{
   const registry=new MilitaryCommandRegistryStore(),team:any={name:"qin",status:"ACTIVE",users:new Set(),cities:[]};
@@ -182,20 +182,20 @@ it.each(["REBEL", "SPLIT", "KINGDOM"])("%s military command ends cleanly when it
   const events:any[] = []; registry.setEventWriter(e=>{events.push(e);return e.id;});
   vi.spyOn(worldRandom,"next").mockReturnValue(0); registry.update(12,[team],[]);
   const person=registry.getPeople()[0],formation=registry.getFormations()[0];
-  expect(person.appointments[0].officeHistory?.[0].office).toBe("PIJIANG");
-  expect(formation.memberUnitIds).toEqual(["unit-1","unit-2"]); expect(team.users.size).toBe(2);
+  expect(person.appointments[0].officeHistory?.[0].office).toBe("XIAOWEI");
+  expect(formation.memberUnitIds).toEqual(["unit-1"]); expect(team.users.size).toBe(2);
   team.status="EXTINCT"; registry.update(13,[team],[]);
   expect(formation.status).toBe("DISBANDED"); expect(person.status).toBe("RETIRED"); expect(person.deathMonth).toBeUndefined();
   expect(person.appointments[0]).toMatchObject({factionId:team.name,endMonth:13,endReason:"FACTION_ENDED"});
   expect(events.some(e=>e.type==="military-command-ended")).toBe(true);expect(events.some(e=>e.type==="military-person-died")).toBe(false);
 });
 
-it('new junior appointments use exactly two people even with a large real pool, and reject oversized entry calls atomically',()=>{
+it('new junior appointments use exactly one person even with a large real pool, and reject oversized entry calls atomically',()=>{
  const registry=new MilitaryCommandRegistryStore(),team:any={name:'qin',status:'ACTIVE',users:new Set(),cities:[]};
  for(let i=1;i<=20;i++)team.users.add(user(i,team,'unit-'+i));
  const draw=vi.spyOn(worldRandom,'next').mockReturnValue(0);registry.update(12,[team],[]);registry.update(24,[team],[]);draw.mockRestore();
- expect(registry.getFormations().map(f=>f.memberUnitIds.length)).toEqual([2,2]);
- expect(new Set(registry.getFormations().flatMap(f=>f.memberUnitIds)).size).toBe(4);expect(team.users.size).toBe(20);
+ expect(registry.getFormations().map(f=>f.memberUnitIds.length)).toEqual([1,1]);
+ expect(new Set(registry.getFormations().flatMap(f=>f.memberUnitIds)).size).toBe(2);expect(team.users.size).toBe(20);
  const before=registry.exportState(),candidate=[...team.users][10];
  expect((registry as any).appoint(candidate,'qin',36,['unit-11','unit-12','unit-13'])).toBe(false);expect(registry.exportState()).toEqual(before);
 });

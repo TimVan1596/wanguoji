@@ -28,13 +28,13 @@ export async function runSiegeBattleCore(seed='siege-defense-z10'){
    return {city,owner,attack,attackers,defenders,m,tick};
   };
   for(const logical of [false,true]){
-   for(const [a,d]of [[2,0],[2,2],[4,1],[4,4]]){
+   for(const [a,d]of [[1,0],[1,1],[2,0],[2,2],[4,1],[4,4]]){
     const s=scenario(a,d,logical),before=s.city.defense;
     for(let n=0;n<=36&&s.city.ownerTeam===s.owner;n++){s.tick(n);if(History.getEvents().some(e=>e.type==='siege-ended'&&e.cityId===s.city.id&&e.year>=s.m))break;}
     const end=History.getEvents().filter(e=>e.type==='siege-ended'&&e.cityId===s.city.id&&e.year>=s.m).at(-1)!;
     console.info('[BattleResult]',JSON.stringify({logical,a,d,before,defense:s.city.defense,end,endOwner:s.city.ownerFactionId,owner:s.owner.name,attack:s.attack.name,battle:s.city.siegeBattle}));
     check(end,`${logical}/${a}/${d}: battle reaches a real capture or end`);
-    if(d===0)check(s.city.ownerTeam===s.attack,`${logical}: two real attackers can take an undefended city over actual months`);
+    if(d===0)check(s.city.ownerTeam===s.attack,`${logical}: real attackers can take an undefended city over actual months`);
     if(a===d)check(s.city.ownerTeam===s.owner&&end.metadata?.reason==='REPULSED',`${logical}: equal local defenders resist and end the assault`);
     results.push({logical,a,d,before,endMonth:end.year,result:end.metadata?.reason,captured:s.city.ownerTeam===s.attack});
     check(!s.city.siegeBattle,`${logical}/${a}/${d}: concluded battle leaves no active siege state`);
@@ -53,7 +53,7 @@ export async function runSiegeBattleCore(seed='siege-defense-z10'){
   for(const ending of ['DISMISSED','BATTLE_DEATH']){
    const s=scenario(2,0),commander=s.attackers.find(u=>(Military as any).isEligible(u,s.m))!;
    check(commander,'actual local commander is eligible under original appointment rules');
-   check((Military as any).appoint(commander,s.attack.name,s.m,s.attackers.map(u=>u.player.logicalUnitId!)),'real two-body command for interruption test');
+   check((Military as any).appoint(commander,s.attack.name,s.m,[commander.player.logicalUnitId!]),'real two-body command for interruption test');
    (Military as any).refreshOrders(s.m,[s.attack,s.owner],[s.city]);s.tick(0);const wall=s.city.defense;
    if(ending==='BATTLE_DEATH')commander.destroyUser(false,{cause:'BATTLE_DEATH',month:s.m+1,damageSource:'SIEGE_ASSAULT',triggerCityId:s.city.id});else Military.endPersonCommands(commander.militaryPersonId!,s.m+1,'DISMISSED');s.tick(1);
    check(!s.city.siegeBattle&&s.city.defense===wall&&s.city.siegeRetryAfter[s.attack.name]>s.m+1,ending+': real command end cancels old battle and blocks ghost restart');
@@ -62,10 +62,10 @@ export async function runSiegeBattleCore(seed='siege-defense-z10'){
    const s=scenario(2,4),commander=s.defenders.find(u=>(Military as any).isEligible(u,s.m))!;
    check(commander,'real local defensive commander satisfies original eligibility');
    const members=[commander,...s.defenders.filter(u=>u!==commander)].slice(0,2);
-   check((Military as any).appoint(commander,s.owner.name,s.m,members.map(u=>u.player.logicalUnitId!)),'actual home formation, no virtual garrison');
-   for(let n=0;n<=4;n++)s.tick(n);
+   check((Military as any).appoint(commander,s.owner.name,s.m,[commander.player.logicalUnitId!]),'actual home formation, no virtual garrison');
+   for(let n=0;n<=12&&!History.getEvents().some(e=>e.type==='siege-defended'&&e.metadata?.personId===commander.militaryPersonId);n++)s.tick(n);
    const defended=History.getEvents().find(e=>e.type==='siege-defended'&&e.metadata?.personId===commander.militaryPersonId);
-   check(defended&&Military.getChronicle(Military.getPerson(commander.militaryPersonId!)!,s.m+4,s.owner.name).some(e=>e.eventId===defended.id&&!e.victory),'verified local defensive general receives a defense chronicle, never a city-capture merit');
+   check(defended&&Military.getChronicle(Military.getPerson(commander.militaryPersonId!)!,s.m+12,s.owner.name).some(e=>e.eventId===defended.id&&!e.victory),'verified local defensive general receives a defense chronicle, never a city-capture merit');
   }
   {
    const s=scenario(4,0),third=core.teams.find(t=>t!==s.attack&&t!==s.owner&&Diplomacy.canAttack(t.name,s.owner.name,s.m))!;
@@ -80,7 +80,7 @@ export async function runSiegeBattleCore(seed='siege-defense-z10'){
    const site=core.map!.blocks.flat().find(b=>b.team===home&&!b.city&&core.allCities.every(c=>Math.hypot(c.block.x-b.x,c.block.y-b.y)>160))!;
    check(site,'real Chu land can support a second city before the old capital falls');Factions.foundCity(home,site,undefined,m);
    const users=[...home.users].filter(u=>(Military as any).isEligible(u,m)).slice(0,2);check(users.length===2,'two real eligible Chu residents support the recovery case');
-   check((Military as any).appoint(users[0],home.name,m,users.map(u=>u.player.logicalUnitId!)),'actual Chu military appointment before repeated recovery');const p=Military.getPerson(users[0].militaryPersonId!)!;
+   check((Military as any).appoint(users[0],home.name,m,[users[0].player.logicalUnitId!]),'actual Chu military appointment before repeated recovery');const p=Military.getPerson(users[0].militaryPersonId!)!;
    for(let turn=0;turn<2;turn++){
     const attackMonth=m+24+turn*36;clock(attackMonth-12);city.capture(enemy,attackMonth-12);
     for(const t of core.teams)for(const u of t.users)place(u,-1024,-1024);for(const u of users)place(u,city.block.x,city.block.y);

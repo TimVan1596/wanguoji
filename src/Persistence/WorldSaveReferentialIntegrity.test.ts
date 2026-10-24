@@ -6,10 +6,12 @@ import { setFixtureLifetimeRecords } from "./testing/FactionLifetimeFixture";
 import { afterEach, describe, expect, it, vi } from "vitest";
 const { game } = vi.hoisted(() => ({ game: { Core: undefined as any, BlockSize: 32 } }));
 vi.mock("../Game/Game", () => ({ default: game }));
-vi.mock("../Components/Block", () => ({ default: class {} }));
+vi.mock("../Components/Block", () => ({ default: class {
+  static GetUserById(){return undefined;}} }));
 vi.mock("../Components/MessageToast",()=>({MessageToast:class{}}));
 // Render-only player adapter. User life, political registries and persistence stay real.
 vi.mock("../Components/Player", () => ({ default: class {
+  static GetUserById(){return undefined;}
   logicalUnitId?: string; user: any; role="NORMAL"; rulerId?: string; active=true; children:any[]=[]; movement:any={vx:0,vy:0,speed:150,radius:16,scale:1,speedCoefficient:0,sizeCoefficient:0,alive:true,role:"NORMAL",children:[]};
   constructor(_scene:unknown, public x:number,public y:number,public team:any) {}
   setTeam(team:any){this.team=team;}
@@ -19,15 +21,20 @@ vi.mock("../Components/Player", () => ({ default: class {
   applyHydratedMovementState(state:any){this.movement={...state};Object.assign(this,state);}
   exportMovementState(unitId:string){return {...this.movement,x:this.x,y:this.y,unitId,factionId:this.team.name,userId:this.user?.id};}
 } }));
-vi.mock("../Components/Slaves", () => ({ default: class { npcs=new Map(); children={size:0,each(){}}; dispose(){} reset(){} } }));
+vi.mock("../Components/Slaves", () => ({ default: class {
+  static GetUserById(){return undefined;} npcs=new Map(); children={size:0,each(){}}; dispose(){} reset(){} } }));
 vi.mock("../Components/User", async () => await vi.importActual("../Components/User"));
-vi.mock("../Components/Npc", () => ({ default: class {} }));
-vi.mock("../Components/Farms", () => ({ default: class { npcs=new Map(); init(){} setDie(){} exportState(){return {configs:[],timers:[]};} importState(){} } }));
+vi.mock("../Components/Npc", () => ({ default: class {
+  static GetUserById(){return undefined;}} }));
+vi.mock("../Components/Farms", () => ({ default: class {
+  static GetUserById(){return undefined;} npcs=new Map(); init(){} setDie(){} exportState(){return {configs:[],timers:[]};} importState(){} } }));
 vi.mock("../Components/Team", () => ({ default: class {
+  static GetUserById(){return undefined;}
   static hydrate(_scene: unknown, state: any) { return { ...state, name: state.factionId, cities: [], users: new Set(), farms: { npcs: new Map(), init() {} },
     addCity(city: any) { this.cities.push(city as never); }, exportState: () => structuredClone(state) }; }
 } }));
 vi.mock("../Components/City", () => ({ getFactionStability: () => 80, default: class {
+  static GetUserById(){return undefined;}
   static hydrate(state: any, block: any) { return { ...state, id: state.cityId, block, fortifiedCells: [],
     rebuildRuntimeVisuals() {}, exportState: () => structuredClone(state) }; }
 } }));
@@ -81,7 +88,7 @@ function target(width = 3) {
   const core: any = { teams: ["old teams"], units: ["old units"], oldCities: ["old cities"], scene: { renderer: { width: width * 32, height: 32 },
     physics: { world: { pause() {} } }, time: {}, tweens: { pauseAll() {} } },
     backgroundProgression: { isCatchingUp: () => false }, simulationDriver: { exportState: () => ({ accumulatorMs: 0 }), importState() {} },
-    logicalUnitRegistry: { importState() {}, getAliveUnits: () => [], exportState: () => ({ nextUnitSequence: 1 }) },
+    logicalUnitRegistry: { importState() {}, getAliveUnits: () => [], getEntries:()=>[], exportState: () => ({ nextUnitSequence: 1 }) },
     simulator: { exportState: () => sim, importState: (state: any) => { sim = { ...state, running: false }; }, rebaseProfilerLatches() {}, setRunning() {}, getCurrentPhase: () => "fragmented" },
     setHydrationStage(stage: string) { this.stage = stage; }, setHydrationRepairs(repairs: any) { this.repairs = repairs; },
     setHydratedFactionShells(teams: any) { this.teams = teams; }, resetDeterminismDiagnostics() {}, installHydratedTeams() {}, setSimulationSpeed() {}, notifyDesktopHeartbeat() {},
@@ -232,6 +239,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     vi.spyOn(monthlyRuntime.populationTransitionAudit, "reconcile").mockImplementation(() => undefined);
     vi.spyOn(monthlyRuntime.diplomacy, "update").mockImplementation(() => undefined);
     vi.spyOn(DynastyRegistry, "update").mockImplementation(() => undefined);
+    vi.spyOn(DynastyRegistry,"getRoyalMilitaryCandidates").mockReturnValue([]);
     vi.spyOn(WorldEra, "observe").mockImplementation(() => undefined);
     vi.spyOn(FactionSnapshots, "observe").mockImplementation(() => undefined);
     vi.spyOn(WorldHistory, "observeWorld").mockImplementation(() => undefined);
@@ -321,7 +329,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     const career = MilitaryCommandRegistry.getCareer(commander, 120);
     expect(career).toMatchObject({ serviceMonths: 12, capitalCaptures: 1, currentUnitCount: 0 });
     (core.simulator as any).clock.importState({ worldMonth: 120, elapsedMs: 0, running: false });
-    const save = exportWorldSave(core); expect(save.saveSchemaVersion).toBe(24);
+    const save = exportWorldSave(core); expect(save.saveSchemaVersion).toBe(25);
     expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
     const rng = worldRandom.exportState(); hydrateWorldSave(core, JSON.parse(JSON.stringify(save)));
     expect(exportWorldSave(core)).toEqual(save); expect(worldRandom.exportState()).toEqual(rng);
@@ -357,7 +365,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     core.simulator = new AutoSimulator(true); core.simulator.startWorld(ts, 7, {}); core.simulator.setRunning(false);
     // Runtime objects are Phaser adapters; politics, simulator startup, exporter, validator and hydrator are real.
     const before = exportWorldSave(core, { createdAt: "2026-10-11T00:00:00Z" });
-    expect(before.saveSchemaVersion).toBe(24); expect(before.dynasties).toHaveLength(7);
+    expect(before.saveSchemaVersion).toBe(25); expect(before.dynasties).toHaveLength(7);
     expect((before.worldHistory.events as WorldEvent[]).filter(e => e.type === "ruler-acceded").map(e => e.metadata?.capitalCityName).sort())
       .toEqual(cities.map(c => c.name).sort());
     expect(before.dynasties.some(d => (d.rulers as RulerSaveV14[]).length > 2)).toBe(true);
@@ -521,7 +529,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
     const core = target(); hydrateWorldSave(core, save); const first = exportWorldSave(core);
     expect(first.dynasties[0].rulers).toEqual(save.dynasties[0].rulers);
-    expect(first.saveSchemaVersion).toBe(24); expect(worldRandom.exportState()).toEqual(save.worldRandom);
+    expect(first.saveSchemaVersion).toBe(25); expect(worldRandom.exportState()).toEqual(save.worldRandom);
     hydrateWorldSave(core, JSON.parse(JSON.stringify(first))); expect(exportWorldSave(core)).toEqual(first);
   });
   it("V15 restores archived military people and ended formations without reappointing or drawing RNG", () => {
@@ -608,7 +616,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
     const core = target(); hydrateWorldSave(core, JSON.parse(JSON.stringify(save)));
     const restored = exportWorldSave(core);
-    expect(restored.saveSchemaVersion).toBe(24);
+    expect(restored.saveSchemaVersion).toBe(25);
     expect(restored.dynasties[0]).toMatchObject({ currentRulerId: "final", lastDepositionAttemptMonth: 36 });
     expect(restored.dynasties[0].rulers).toMatchObject([
       { rulerId: "predecessor", status: "deposed", endMonth: 12, endReason: "被废" },
@@ -693,7 +701,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     setFixtureLifetimeRecords(save);
     const rng=save.worldRandom,core=target();
     expect(validateWorldSave(save)).toEqual({valid:true,errors:[]});hydrateWorldSave(core,save);
-    const first=exportWorldSave(core);expect(first.saveSchemaVersion).toBe(24);
+    const first=exportWorldSave(core);expect(first.saveSchemaVersion).toBe(25);
     expect(first.factions[0]).toMatchObject({terminationReason:"SUBMITTED",terminationTargetFactionId:"wei",terminationMonth:36});
     expect(first.cities[0].ownerFactionId).toBe("wei");expect(first.blocks.every(b=>b.ownerFactionId === "wei")).toBe(true);
     expect((first.dynasties[0].rulers as any[])[0]).toMatchObject({status:"abdicated",endReason:"纳土退位",politicalEndMonth:36});
@@ -802,7 +810,7 @@ it("V15完整水合保留轻度保护输入、18月时钟和单次RNG续跑，�
   save.worldRemnants=[{factionId:"old",population:12,extinctMonth:6000}];
   WorldHistory.reset(); WorldHistory.addFactionExiled(6000,"old","田续",12); save.worldHistory=WorldHistory.exportState();
   setFixtureLifetimeRecords(save);
-  expect(save.saveSchemaVersion).toBe(24);
+  expect(save.saveSchemaVersion).toBe(25);
   const encoded=JSON.parse(JSON.stringify(save));
   expect(validateWorldSave(encoded)).toEqual({valid:true,errors:[]});
   const core=target(); hydrateWorldSave(core,encoded);
@@ -909,7 +917,7 @@ it.each(["DEPOSITION", "REVOLUTION"] as const)("真实军权→%s事务→同一
   const event = WorldHistory.getEvents().find(e => e.type === (kind === "DEPOSITION" ? "ruler-deposed" : "dynasty-usurped"))!;
   const participation = readMilitaryParticipation(event)!;
   expect(participation).toMatchObject({ kind, factionId: "qin", worldMonth: 72, crisisEventIds: [crisisId],
-    participant: { personId: qualified.candidates[0].personId, unitCount: 2 } });
+    participant: { personId: qualified.candidates[0].personId, unitCount: 1 } });
   expect(participation.roll).toBeGreaterThanOrEqual(participation.baselineChance);
   expect(participation.roll).toBeLessThan(participation.finalChance);
   expect(MilitaryCommandRegistry.exportState().formations).toEqual(formationsBefore);
@@ -1110,43 +1118,35 @@ it.each(["ordinary", "capital", "recovery", "office"])("x真实User→任命军�
     const king = DynastyRegistry.getCurrentRuler("qin")!;
     expect(getRulerHistoricalEvents(WorldHistory.getEvents(), { ...king, accessionYear: 0 }, "qin", 1, []).map(e => e.id)).toContain(victory.id);
     const royal = formatRulerMilitaryEvent(victory, { accessionYear: 0 }, "qin", 1)!;
-    expect(royal).toContain(`其治下，秦裨将${person.personalName}所部参与`); expect(royal).not.toContain("亲征");
+    expect(royal).toContain(`秦校尉${person.personalName}所部参战`); expect(royal).not.toContain("亲征");
     expect(formatRulerMilitaryEvent(victory, { accessionYear: 2 }, "qin", 3)).toBeUndefined();
     expect(formatRulerMilitaryEvent(victory, { accessionYear: 0 }, "wei", 1)).toBeUndefined();
     let snapshotMonth=1;
     if(kind==="office"){
-      expect(person.appointments[0].officeHistory?.map(g=>g.office)).toEqual(["PIJIANG"]);
-      for(const month of [24,84,96,108]){
-        RealCity.prototype.capture.call(city,wei,month-1);
-        MilitaryCommandRegistry.update(month-1,core.teams,core.allCities);
-        RealCity.prototype.capture.call(city,qin,month,undefined,formation.commandId,person.personId);
-        MilitaryCommandRegistry.update(month,core.teams,core.allCities);
-        if(month===24){
-          expect(person.appointments[0].officeHistory).toHaveLength(1); // merit without required tenure
-          MilitaryCommandRegistry.update(60,core.teams,core.allCities);
-          expect(person.appointments[0].officeHistory?.map(g=>g.office)).toEqual(["PIJIANG","JIANGJUN"]);
-          MilitaryCommandRegistry.update(60,core.teams,core.allCities);
-          expect(person.appointments[0].officeHistory).toHaveLength(2); // same annual check cannot repeat a grant
-        }
+      expect(person.appointments[0].officeHistory?.map(g=>g.office)).toEqual(["XIAOWEI"]);
+      for(const month of [24,60,84,96,108]){
+        RealCity.prototype.capture.call(city,wei,month-1);MilitaryCommandRegistry.update(month-1,core.teams,core.allCities);
+        RealCity.prototype.capture.call(city,qin,month,undefined,formation.commandId,person.personId);MilitaryCommandRegistry.update(month,core.teams,core.allCities);
+        if(month===24){expect(person.appointments[0].officeHistory?.map(g=>g.office)).toEqual(["XIAOWEI","PIJIANG"]);MilitaryCommandRegistry.update(24,core.teams,core.allCities);expect(person.appointments[0].officeHistory).toHaveLength(2);}
       }
       MilitaryCommandRegistry.update(120,core.teams,core.allCities);
       snapshotMonth=120;chronicle=MilitaryCommandRegistry.getChronicle(person,snapshotMonth);
-      expect(person.appointments[0].officeHistory?.map(g=>g.office)).toEqual(["PIJIANG","JIANGJUN","SHANGJIANGJUN"]);
-      expect(chronicle.filter(e=>e.victory)).toHaveLength(5);
-      expect(victory.metadata?.commanderOffice).toBe("PIJIANG");
-      expect(formatRulerMilitaryEvent(victory,{accessionYear:0},"qin",120)).toContain(`秦裨将${person.personalName}`);
+      expect(person.appointments[0].officeHistory?.map(g=>g.office)).toEqual(["XIAOWEI","PIJIANG","JIANGJUN","SHANGJIANGJUN"]);
+      expect(chronicle.filter(e=>e.victory)).toHaveLength(6);
+      expect(victory.metadata?.commanderOffice).toBe("XIAOWEI");
+      expect(formatRulerMilitaryEvent(victory,{accessionYear:0},"qin",120)).toContain(`秦校尉${person.personalName}`);
       const later=WorldHistory.getEvents().find(e=>e.metadata?.commanderPersonId===person.personId&&e.type==="city-captured"&&(e.monthIndex??e.year)===84)!;
       expect(later.metadata?.commanderOffice).toBe("JIANGJUN");
       expect(formatRulerMilitaryEvent(later,{accessionYear:0},"qin",120)).toContain(`秦将军${person.personalName}`);
       const grants=person.appointments[0].officeHistory!;
-      expect(new Set(grants.flatMap(g=>g.captureEventIds)).size).toBe(5);
-      expect(chronicle.filter(e=>e.source.startsWith("military-office-granted"))).toHaveLength(3);
+      expect(new Set(grants.flatMap(g=>g.captureEventIds)).size).toBe(6);
+      expect(chronicle.filter(e=>e.source.startsWith("military-office-granted"))).toHaveLength(4);
       expect(chronicle.some(e=>e.text.includes("晋任上将军"))).toBe(true);
     }
     // Complete the following production order refresh before exporting the now-friendly target.
     MilitaryCommandRegistry.update(snapshotMonth, core.teams, core.allCities);
     core.simulator.exportState().clock.worldMonth = snapshotMonth;
-    const snapshot = exportWorldSave(core); expect(snapshot.saveSchemaVersion).toBe(24);
+    const snapshot = exportWorldSave(core); expect(snapshot.saveSchemaVersion).toBe(25);
     expect(validateWorldSave(snapshot)).toEqual({ valid: true, errors: [] });
     const rng = worldRandom.exportState();
     hydrateWorldSave(core, JSON.parse(JSON.stringify(snapshot)));
@@ -1310,7 +1310,7 @@ it.each(["siege-recovery", "split", "popular", "arcade-popular"])("regional %s: 
     vi.spyOn(events as any,"pickFaction").mockReturnValue(core.teams[0]);
     (events as any).triggerRandomEvent(month,core.teams,3);
     const snapshot=exportWorldSave(core);expect(validateWorldSave(snapshot)).toEqual({valid:true,errors:[]});
-    expect(snapshot.saveSchemaVersion).toBe(24);
+    expect(snapshot.saveSchemaVersion).toBe(25);
     const continueWorld=()=>{for(let m=month+1;m<=month+36;m++){sim.year=m;events.settlePopulationEffects(m,core.teams);pop.update(m,core.teams,team=>events.getPopulationGrowthMultiplier(team));}baseExport().clock.worldMonth=month+36;return exportWorldSave(core);};
     const uninterrupted=continueWorld();hydrateWorldSave(core,JSON.parse(JSON.stringify(snapshot)));
     expect(exportWorldSave(core)).toEqual(snapshot);

@@ -41,10 +41,10 @@ export function formatMilitaryVictorySource(event: WorldEvent,context:MilitaryHi
     const office=getMilitaryOfficeAtEvent(event,context),actor=typeof m.attackerNameAtEvent==="string"&&m.attackerNameAtEvent.trim()?m.attackerNameAtEvent:country(event.actorFactionId);
   const defenderId=event.previousOwnerFactionId&&event.targetFactionId&&event.previousOwnerFactionId!==event.targetFactionId?undefined:event.previousOwnerFactionId??event.targetFactionId;
   const defender=defenderId?(typeof m.defenderNameAtEvent==="string"&&m.defenderNameAtEvent.trim()?m.defenderNameAtEvent:country(defenderId)):"";
-  const subject=`${actor}${office?MILITARY_OFFICE_NAMES[office]:"将领"}${m.commanderPersonalName}所部`;
+  const participant=`${actor}${office?MILITARY_OFFICE_NAMES[office]:"将领"}${m.commanderPersonalName}所部参战`;
   const city=event.cityName??"城邑";
-  if(event.type==="city-recovered")return `${subject}参与收复${defender?`${defender}所据的`:""}${m.founderCapital===1?"故都":m.wasCapital===1?"都城":""}${city}`;
-  return `${subject}参与攻克${defender}${m.wasCapital===1?(defender?"都":"敌都"):defender?"城":""}${city}`;
+  if(event.type==="city-recovered")return `${actor}收复${defender?`${defender}所据的`:""}${m.founderCapital===1?"故都":m.wasCapital===1?"都城":""}${city}，${participant}`;
+  return `${actor}攻克${defender}${m.wasCapital===1?(defender?"都":"敌都"):defender?"城":""}${city}，${participant}`;
 }
 
 export function formatRulerMilitaryEvent(event: WorldEvent, ruler: { accessionYear: number; endYear?: number }, factionId: string, worldMonth: number,context:MilitaryHistoryContext={}) {

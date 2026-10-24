@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import type City from "../../../Components/City";
 import Game from "../../../Game/Game";
 import { colorToString } from "../../../paid/theme";
+import WorldHistory from "../../../History/WorldHistory";
+import {importantCityHistory} from "../../../History/CityHistoryPresentation";
 import ArchivedCities from "../../../Simulation/ArchivedCities";
 import { selectCityFromList } from "../../../Simulation/CitySelection";
 import {
@@ -18,6 +20,7 @@ import { setSelectedCityId } from "../../../store/rootSlice";
 
 export default function CityDetails() {
   const dispatch = useDispatch();
+  const [detailCityId,setDetailCityId]=useState<string>();
   const [filter, setFilter] = useState<CityListFilter>("all");
   const selectedCityId = useSelector(
     (state: RootState) => state.root.selectedCityId
@@ -121,8 +124,9 @@ export default function CityDetails() {
       <Typography sx={{ mt: 1 }} fontWeight="bold">
         城市历史
       </Typography>
-      <Box sx={{ maxHeight: "8rem", overflowY: "auto" }}>
-        {[...city.history]
+      <Button size="small" onClick={()=>setDetailCityId(detailCityId===city.id?undefined:city.id)}>{detailCityId===city.id?"收起详细记录":"查看全部记录（含短暂接触）"}</Button>
+      <Box>
+        {[...(detailCityId===city.id?city.history:importantCityHistory(city.history,WorldHistory.getEvents(),city.id))]
           .sort((a, b) => b.year - a.year)
           .map((event, index) => (
             <Typography key={`${event.year}-${event.type}-${index}`} fontSize="0.85rem">

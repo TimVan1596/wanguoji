@@ -1,22 +1,22 @@
 import type {MilitaryAppointment,MilitaryPerson} from "./MilitaryCommandRegistry";
 import type {MilitaryChronicleEntry} from "./MilitaryChronicle";
-export const MILITARY_OFFICES=["PIJIANG","JIANGJUN","SHANGJIANGJUN"] as const;
+export const MILITARY_OFFICES=["XIAOWEI","PIJIANG","JIANGJUN","SHANGJIANGJUN"] as const;
 export type MilitaryOffice=typeof MILITARY_OFFICES[number];
 export interface MilitaryOfficeGrant {office:MilitaryOffice;month:number;eventId:string;serviceMonths:number;captureEventIds:string[];}
-export const MILITARY_OFFICE_NAMES:Record<MilitaryOffice,string>={PIJIANG:"裨将",JIANGJUN:"将军",SHANGJIANGJUN:"上将军"};
-export const MILITARY_FORMATION_CAPACITY:Record<MilitaryOffice,number>={PIJIANG:2,JIANGJUN:3,SHANGJIANGJUN:4};
-export const MILITARY_OFFICE_RULES={JIANGJUN:{serviceMonths:60,captures:2,intervalMonths:0},SHANGJIANGJUN:{serviceMonths:120,captures:3,intervalMonths:36}};
+export const MILITARY_OFFICE_NAMES:Record<MilitaryOffice,string>={XIAOWEI:"校尉",PIJIANG:"裨将",JIANGJUN:"将军",SHANGJIANGJUN:"上将军"};
+export const MILITARY_FORMATION_CAPACITY:Record<MilitaryOffice,number>={XIAOWEI:1,PIJIANG:2,JIANGJUN:3,SHANGJIANGJUN:4};
+export const MILITARY_OFFICE_RULES={PIJIANG:{serviceMonths:24,captures:1,intervalMonths:0},JIANGJUN:{serviceMonths:60,captures:2,intervalMonths:0},SHANGJIANGJUN:{serviceMonths:120,captures:3,intervalMonths:36}};
 /** Only the current country's current appointment is eligible; the same victory is never spent twice. */
 export function getOfficePromotion(appointment:MilitaryAppointment,entries:MilitaryChronicleEntry[],month:number){
   const grants=appointment.officeHistory??[],previous=grants.at(-1);
   if(!previous||appointment.endMonth!==undefined)return undefined;
   const next=MILITARY_OFFICES[MILITARY_OFFICES.indexOf(previous.office)+1];
-  if(!next||next==="PIJIANG")return undefined;
+  if(!next||next==="XIAOWEI")return undefined;
   const rule=MILITARY_OFFICE_RULES[next],serviceMonths=month-appointment.startMonth;
   if(serviceMonths<rule.serviceMonths||month-previous.month<rule.intervalMonths)return undefined;
   const used=new Set(grants.flatMap(g=>g.captureEventIds));
-  const victories=entries.filter(e=>e.victory&&e.commandId===appointment.commandId&&e.factionId===appointment.factionId&&e.worldMonth<=month&&e.worldMonth>=appointment.startMonth&&
-    (next!=="SHANGJIANGJUN"||e.worldMonth>previous.month)&&!used.has(e.eventId));
+  const victories=[...new Map(entries.filter(e=>e.victory&&e.commandId===appointment.commandId&&e.factionId===appointment.factionId&&e.worldMonth<=month&&e.worldMonth>=appointment.startMonth&&
+    (next!=="SHANGJIANGJUN"||e.worldMonth>previous.month)&&!used.has(e.eventId)).map(e=>[e.eventId,e])).values()];
   if(victories.length<rule.captures)return undefined;
   return {office:next,month,serviceMonths,captureEventIds:victories.slice(0,rule.captures).map(e=>e.eventId)};
 }

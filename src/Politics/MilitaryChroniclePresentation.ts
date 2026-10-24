@@ -27,7 +27,7 @@ export function militaryMilestones(person:MilitaryPerson,entries:MilitaryChronic
       if(grant){
         const faction=context.factions?.get(entry.factionId),country=faction?getHistoricalFactionIdentity({...faction,displayName:entry.factionId},entry.worldMonth).name:entry.factionId;
         const issuer=event?.rulerId&&typeof event.metadata?.authorizingRulerTitle==="string"?event.metadata.authorizingRulerTitle:undefined;
-        text=grant.office==="PIJIANG"?`${issuer?`${issuer}在位时，${name}获授`:`${country}授${name}为`}${MILITARY_OFFICE_NAMES[grant.office]}。`:`${issuer?`${issuer}在位时，${name}`:`${name}于${country}`}晋为${MILITARY_OFFICE_NAMES[grant.office]}。`;
+        text=person.appointments.some(a=>a.officeHistory?.[0]?.eventId===entry.eventId)?`${issuer?`${issuer}在位时，${name}获授`:`${country}授${name}为`}${MILITARY_OFFICE_NAMES[grant.office]}。`:`${issuer?`${issuer}在位时，${name}`:`${name}于${country}`}晋为${MILITARY_OFFICE_NAMES[grant.office]}。`;
       }
     }
     if(type==="military-person-died")text=`${name}${person.deathCause==="NATURAL_DEATH"?"自然去世":person.deathCause==="SIEGE_LOSS"?"在战乱中去世":person.deathCause==="BATTLE_DEATH"?"在战乱中去世":"去世"}。`;

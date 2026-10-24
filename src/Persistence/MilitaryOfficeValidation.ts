@@ -8,7 +8,7 @@ export function validateMilitaryOffices(state:MilitaryCommandState,events:any[],
   for(const p of state.people){
     if(!Array.isArray(p?.appointments))continue;
     const histories=p.appointments.map(a=>a?.officeHistory);
-    if(histories.some(h=>!Array.isArray(h)||!h.length||h.length>3||h.some(g=>!g||!MILITARY_OFFICES.includes(g.office)||!Number.isSafeInteger(g.month)||!Number.isSafeInteger(g.serviceMonths)||typeof g.eventId!=="string"||!Array.isArray(g.captureEventIds)||g.captureEventIds.some(id=>typeof id!=="string")))){
+    if(histories.some(h=>!Array.isArray(h)||!h.length||h.length>MILITARY_OFFICES.length||h.some(g=>!g||!MILITARY_OFFICES.includes(g.office)||!Number.isSafeInteger(g.month)||!Number.isSafeInteger(g.serviceMonths)||typeof g.eventId!=="string"||!Array.isArray(g.captureEventIds)||g.captureEventIds.some(id=>typeof id!=="string")))){
       errors.push(`military office history shape invalid: ${p.personId}`);continue;
     }
     const entries=deriveMilitaryChronicle(p,state.formations,events,worldMonth);
@@ -21,7 +21,7 @@ export function validateMilitaryOffices(state:MilitaryCommandState,events:any[],
           (event.monthIndex??event.year)!==g.month||m?.personId!==p.personId||m.commandId!==a.commandId||m.sourceUserId!==p.sourceUserId||m.personalName!==p.personalName||m.office!==g.office||m.previousOffice!==(previous?.office??"NONE")||m.serviceMonths!==g.serviceMonths||m.captureEventIds!==JSON.stringify(g.captureEventIds))errors.push(`military office event/reference invalid: ${g.eventId}`);
         referenced.add(g.eventId);
         if(index===0){if(g.month!==a.startMonth||g.captureEventIds.length!==0)errors.push("initial military office must match appointment");continue;}
-        const rule=MILITARY_OFFICE_RULES[g.office as "JIANGJUN"|"SHANGJIANGJUN"];
+        const rule=MILITARY_OFFICE_RULES[g.office as keyof typeof MILITARY_OFFICE_RULES];
         const eligible=new Set(entries.filter(e=>e.victory&&e.commandId===a.commandId&&e.factionId===a.factionId&&e.worldMonth<=g.month&&e.worldMonth>=a.startMonth&&
           (g.office!=="SHANGJIANGJUN"||e.worldMonth>(previous?.month??Infinity))).map(e=>e.eventId));
         if(g.month%12!==0||!rule||!previous||g.serviceMonths<rule.serviceMonths||g.month-previous.month<rule.intervalMonths||g.captureEventIds.length!==rule.captures||new Set(g.captureEventIds).size!==g.captureEventIds.length||g.captureEventIds.some(id=>used.has(id)||!eligible.has(id)))errors.push(`military office lacks verified merit/service: ${g.eventId}`);

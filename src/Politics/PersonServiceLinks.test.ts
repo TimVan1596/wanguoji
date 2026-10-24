@@ -38,7 +38,7 @@ it("projects 庄德恭's appointment, office, orders and verified capture throug
  const before=JSON.stringify({p,events,formation,ruler});
  const projected=preAccessionMilitary(ruler,[p],[formation],events)!;
  expect(projected.entries.map(e=>e.eventId)).toEqual(["office","capture"]);
- expect(projected.representative.map(e=>e.text)).toEqual(["赵授庄德恭为裨将。","赵裨将庄德恭所部参与攻克郑城新郑。"]);
+ expect(projected.representative.map(e=>e.text)).toEqual(["赵授庄德恭为裨将。","赵攻克郑城新郑，赵裨将庄德恭所部参战。"]);
  expect(projected.representative.map(e=>e.text).join("")).not.toMatch(/0个月|军令|编组|审计|亲征/);
  expect(JSON.stringify({p,events,formation,ruler})).toBe(before);
 });

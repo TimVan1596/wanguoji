@@ -120,8 +120,8 @@ describe("WorldSaveV1 validation and JSON contract", () => {
   });
   it("uses schema V10 and persists alliance/merge fields plus the deterministic random stream", () => {
     const save = fixture();
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(24);
-    expect(save.saveSchemaVersion).toBe(24);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(25);
+    expect(save.saveSchemaVersion).toBe(25);
     expect(validateWorldSave({...save,saveSchemaVersion:21}).valid).toBe(false);
     expect(save.diplomacy).toEqual({ relations: [], pairMemories: [], lastEvaluationMonth: -1 });
     expect(save.worldRandom).toMatchObject({ algorithm: "mulberry32-v1", seed: expect.any(String), state: expect.any(Number), position: 0 });
@@ -240,7 +240,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     expect(loaded.dynasties[0]).toMatchObject({ designatedHeirId: "qin-ruler-2", designatedSinceMonth: 36 });
     expect(loaded.dynasties[0].rulers[2]).toMatchObject({ parentId: "qin-ruler-2", relationType: "DIRECT_CHILD" });
     expect(loaded.dynasties[0].rulers[3]).toMatchObject({ rulerId: "qin-ruler-4", bornMonth: -200, status: "kin", parentId: "qin-ruler-1" });
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(24);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(25);
   });
 
   it("rejects a dynasty candidate list above the runtime bound", () => {
@@ -293,7 +293,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     save.registries.militaryCommandRegistry = {
       people: [{ personId: "military-person-1", sourceUserId: 8, personalName: "李承远", name: "指挥者", bornMonth: -300, factionId: "qin", status: "ACTIVE",
         appointments: [{ factionId: "qin", startMonth: 12, commandId: "military-command-1" }], capturedEventIds: [eventId] }],
-      formations: [{ commandId: "military-command-1", factionId: "qin", commanderPersonId: "military-person-1", memberUnitIds: ["unit-2", "unit-3"],
+      formations: [{ commandId: "military-command-1", factionId: "qin", commanderPersonId: "military-person-1", memberUnitIds: ["unit-2"],
         createdMonth: 12, status: "ACTIVE", targetCityId: "wei-city", orderStartMonth: 12, captures: [{ eventId, cityId: "wei-city", month: 24 }] }],
       personSequence: 2, commandSequence: 2, lastEvaluationMonth: 12,
     };

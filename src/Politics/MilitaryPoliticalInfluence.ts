@@ -46,7 +46,7 @@ export function deriveMilitaryPoliticalInfluence(input: {
     if (!f || f.factionId !== factionId || !p.appointments.some(a => a.commandId === f.commandId && a.factionId === factionId && a.startMonth <= worldMonth && a.endMonth === undefined)) { block(p.personId, "NO_ACTIVE_COMMAND"); continue; }
     const members = [...new Set(f.memberUnitIds)].filter(id => users.filter(member => member.unitId === id && member.liveBindingVerified && member.factionId === factionId).length === 1 &&
       formations.filter(other => other.status === "ACTIVE" && other.memberUnitIds.includes(id)).length === 1).sort();
-    if (members.length < 2 || members.length > 12 || !members.includes(u.unitId)) { block(p.personId, "NO_VALID_MEMBERS"); continue; }
+    if (members.length < 1 || members.length > 4 || !members.includes(u.unitId)) { block(p.personId, "NO_VALID_MEMBERS"); continue; }
     const career = deriveMilitaryCareer(p, formations, events, worldMonth);
     const experience = militaryPoliticalStrength(career.serviceMonths, members.length, career.verifiedCaptures);
     if (!experience.eligible) { block(p.personId, "INSUFFICIENT_CAREER"); continue; }

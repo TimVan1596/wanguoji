@@ -17,7 +17,7 @@ export function RoyalMilitaryPanel({ruler,month,onGenealogy}:{ruler:Ruler;month:
  if(!p||p.royalIdentity?.rulerId!==ruler.id)return null;
  const d=Dynasty.get(p.royalIdentity.factionId),current=d?.rulers.find(r=>r.id===d.currentRulerId),parent=d?.rulers.find(r=>r.id===ruler.parentId);
  const appointments=p.appointments.filter(a=>a.factionId===p.royalIdentity!.factionId),career=deriveMilitaryCareer(p,Military.getFormations(),History.getEvents(),month);
- const rank={PIJIANG:0,JIANGJUN:1,SHANGJIANGJUN:2};
+ const rank={XIAOWEI:0,PIJIANG:1,JIANGJUN:2,SHANGJIANGJUN:3};
  const highest=appointments.flatMap(a=>a.officeHistory??[]).sort((a,b)=>rank[b.office]-rank[a.office])[0];
  return <Box sx={{fontSize:"0.8rem",my:.5}} data-royal-military-person={p.personId}>
   <PersonLifeDates bornMonth={p.bornMonth} deathMonth={p.deathMonth}/><Typography fontSize="0.8rem">{p.personalName} · {ruler.reignOrdinal!==undefined?"已继位":"宗室军旅"} · {p.status==="ACTIVE"?"现役":p.status==="DEAD"?"已故":"已离任"}</Typography>

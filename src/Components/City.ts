@@ -826,7 +826,7 @@ export default class City {
   private updateSiege(year:number,profile?:MonthlyPhaseProfiler){
     const owner=this.ownerTeam,core=Game.Core;
     const rows=owner?(core?.teams??[]).filter(t=>t!==owner&&!t.isDie&&Diplomacy.canAttack(t.name,owner.name,year)&&this.canAssault(t.name,year))
-      .map(team=>({team,units:siegeParticipants(this,team,core,Game.BlockSize,true)})).filter(r=>r.units.length>=2).sort((a,b)=>b.units.length-a.units.length||a.team.name.localeCompare(b.team.name)):[];
+      .map(team=>({team,units:siegeParticipants(this,team,core,Game.BlockSize,true)})).filter(r=>r.units.length>=1).sort((a,b)=>b.units.length-a.units.length||a.team.name.localeCompare(b.team.name)):[];
     const main=rows[0];this.siegeContacts.clear();
     if(this.siegeBattle&&(!main||main.team.name!==this.siegeBattle.attackerId||owner?.name!==this.siegeBattle.defenderId))this.endBattle(year,owner&&!Diplomacy.canAttack(this.siegeBattle.attackerId,owner.name,year)?"TRUCE":this.siegeBattle.commandId&&MilitaryCommandRegistry.getFormation(this.siegeBattle.commandId)?.status!=="ACTIVE"?"COMMAND_ENDED":"CONTACT_ENDED");
     this.underSiege=!!main;this.attackingFactionId=main?.team.name;
@@ -851,7 +851,7 @@ export default class City {
     const currentDefenders=siegeParticipants(this,owner,core,Game.BlockSize,false);
     b.attackers=remaining.length;b.defenders=currentDefenders.length;
     const pressure=siegeWallPressure(remaining.length,currentDefenders.length);
-    if((duration>=4&&remaining.length<2)||(duration>=12&&defenders.length>=remaining.length)||duration>=36){this.endBattle(year,"REPULSED");this.refreshZoneVisual();return;}
+    if((duration>=4&&remaining.length<1)||(duration>=12&&defenders.length>=remaining.length)||duration>=36){this.endBattle(year,"REPULSED");this.refreshZoneVisual();return;}
     if(!shouldApplySiegeDamage(year,this.lastSiegeDamageYear,CITY_SIEGE_DAMAGE_INTERVAL_MONTHS))return;
     this.lastSiegeDamageYear=year;
     const raw=pressure*CITY_SIEGE_DAMAGE_PER_TICK*FactionEffects.getSiegeMultiplier(main.team.name)+this.siegeDamageRemainder;

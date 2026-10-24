@@ -29,7 +29,7 @@ export function validateMilitaryPoliticalParticipation(save: WorldSaveV1): strin
           person.sourceUserId !== s.sourceUserId || person.name !== s.name || (s.personalName !== undefined && person.personalName !== s.personalName) || person.bornMonth !== s.bornMonth || s.factionId !== record.factionId ||
           person.deathMonth !== undefined && (person.deathMonth < at || person.deathMonth === at &&
             !after.some(e => e.type === "military-person-died" && e.metadata?.personId === person.personId && (e.monthIndex ?? e.year) === at)) || at >= deriveMilitaryLifeSchedule(person).retirementMonth ||
-          !Number.isSafeInteger(s.unitCount) || s.unitCount < 2 || s.unitCount > 12 || s.memberUnitIds.length !== s.unitCount ||
+          !Number.isSafeInteger(s.unitCount) || s.unitCount < 1 || s.unitCount > 4 || s.memberUnitIds.length !== s.unitCount ||
           new Set(s.memberUnitIds).size !== s.unitCount || !s.memberUnitIds.every(id => typeof id === "string" && id.length > 0) || !s.memberUnitIds.includes(s.commanderUnitId) ||
           !political || !Number.isFinite(political.stability) || political.stability < 0 || political.stability > 100 || !Number.isSafeInteger(political.cityCount) || political.cityCount < 1 ||
           !Array.isArray(s.capturedEventIds) || record.crisisEventIds.some(id => typeof id !== "string") || new Set(record.crisisEventIds).size !== record.crisisEventIds.length ||

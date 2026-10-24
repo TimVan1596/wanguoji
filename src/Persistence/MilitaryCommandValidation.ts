@@ -125,7 +125,7 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
     }
     activeFormations.set(formation.factionId, (activeFormations.get(formation.factionId) ?? 0) + 1);
     activeCommanders.set(formation.factionId, (activeCommanders.get(formation.factionId) ?? 0) + 1);
-    if (formation.memberUnitIds.length < 2 || formation.memberUnitIds.length > MAX_FORMATION_UNITS || new Set(formation.memberUnitIds).size !== formation.memberUnitIds.length) errors.push(`active formation size is invalid: ${formation.commandId}`);
+    if (formation.memberUnitIds.length < 1 || formation.memberUnitIds.length > MAX_FORMATION_UNITS || new Set(formation.memberUnitIds).size !== formation.memberUnitIds.length) errors.push(`active formation size is invalid: ${formation.commandId}`);
     const appointment = person?.appointments.find((item: any) => item.commandId === formation.commandId && item.endMonth === undefined);
     if (!person || person.status !== "ACTIVE" || person.factionId !== formation.factionId || !appointment || appointment.factionId !== formation.factionId) errors.push(`active formation has no matching appointment: ${formation.commandId}`);
     const office=appointment?.officeHistory?.at(-1)?.office;

@@ -3,7 +3,7 @@ import type {MilitaryPerson} from "../../../Politics/MilitaryCommandRegistry";
 import {getFactionColorAtMonth,type FactionColorHistoryEntry} from "../../../Simulation/FactionColorHistory";
 import type {SovereigntyHistoryEntry} from "../../../Simulation/FactionIdentity";
 import {hasRecordedRulerDeath} from "../../../Politics/RulerLifeState";
-export type PortraitRole="LEADER"|"KING"|"EMPEROR"|"PIJIANG"|"JIANGJUN"|"SHANGJIANGJUN"|"UNKNOWN";
+export type PortraitRole="LEADER"|"KING"|"EMPEROR"|"XIAOWEI"|"PIJIANG"|"JIANGJUN"|"SHANGJIANGJUN"|"UNKNOWN";
 interface PortraitFaction {color:number;colorHistory?:FactionColorHistoryEntry[];sovereigntyHistory?:SovereigntyHistoryEntry[];identityStage?:string;stateFoundedMonth?:number;sovereigntyRank?:string;}
 /** Ended offices use their final pre-transition month, not the succeeding dynasty's colors. */
 export function royalPortraitContext(ruler:Pick<Ruler,"accessionYear"|"endYear"|"deathMonth"|"deathReason"|"bornYear">,faction:PortraitFaction,worldMonth:number){

@@ -37,7 +37,7 @@ app.whenReady().then(async()=>{
     if(mainFrame&&!inPlace)reject(Error(`Test page navigated during ${seed}; rerun this predetermined seed after dependency optimization`));
    }));
    let result;
-   try{result=await Promise.race([win.webContents.executeJavaScript(`(async()=>{${call}})()`),navigationFailure]);}
+   try{result=await Promise.race([win.webContents.executeJavaScript(`(async()=>{${call}})().catch(error=>{console.error(error.stack||String(error));throw error;})`),navigationFailure]);}
    catch(error){if(process.env.WANGUOJI_CORE_KEEP_FAILURES!=='1')throw error;result={seed,years,failed:true,error:String(error.stack||error)};}
 
    results.push(result);if(process.env.WANGUOJI_CORE_OUTPUT)fs.writeFileSync(process.env.WANGUOJI_CORE_OUTPUT,JSON.stringify(results,null,2));

@@ -1,3 +1,4 @@
+import Factions from '../FactionRegistry';
 import {createNaturalCore} from './NaturalCoreHarness';
 import {SIMULATION_FIXED_STEP_MS} from '../SimulationDriver';
 import Military from '../../Politics/MilitaryCommandRegistry';
@@ -29,24 +30,25 @@ export async function runFormationManagementCore(seed:string){
    [...team.users].filter(u=>!locals.includes(u)&&u.role==='NORMAL').forEach((u,i)=>place(u,cap.block.x+160+(i%3)*8,cap.block.y+160));
   };arrange();check(siegeParticipants(cap,team,core,32,false).length===3,'only three actual bodies occupy the capital defense area');
   const appoint=(month:number)=>{clock(month);const original=random.next;random.next=()=>{original.call(random);return 0;};try{Military.update(month,[team],core.allCities);}finally{random.next=original;}};
-  appoint(36);let active=Military.getFormations().filter(f=>f.factionId===team.name&&f.status==='ACTIVE');check(active.length===1&&active[0].memberUnitIds.length===2,'ten-person country creates exactly one two-person production appointment');
+  appoint(36);let active=Military.getFormations().filter(f=>f.factionId===team.name&&f.status==='ACTIVE');check(active.length===1&&active[0].memberUnitIds.length===1,'ten-person country creates exactly one single-person production appointment');
   check(siegeParticipants(cap,team,core,32,false).length===3,'appointment does not move or remove the three capital residents');
   const formation=active[0],person=Military.getPerson(formation.commanderPersonId)!,commander=team.getUserById(person.sourceUserId)!;
-  sized(20);arrange();appoint(48);active=Military.getFormations().filter(f=>f.factionId===team.name&&f.status==='ACTIVE');check(active.length===2&&active.every(f=>f.memberUnitIds.length===2),'twenty-person country creates a second real two-person command within existing slots');
+  sized(20);arrange();appoint(48);active=Military.getFormations().filter(f=>f.factionId===team.name&&f.status==='ACTIVE');check(active.length===2&&active.every(f=>f.memberUnitIds.length===1),'twenty-person country creates a second real single-person command within existing slots');
   const unique=()=>{const ids=Military.getFormations().filter(f=>f.status==='ACTIVE').flatMap(f=>f.memberUnitIds);return ids.length===new Set(ids).size;};check(unique(),'two commands never share a real unit');
   const x=cap.block.x+160,y=cap.block.y+160;place(commander,x,y);
-  const targets=core.allCities.filter(c=>c.ownerTeam!==team).slice(0,5);check(targets.length===5,'promotion scenario has five real cities');
+  const preserve=core.teams.find(t=>t!==team&&t.status==='ACTIVE')!;const site=core.map!.blocks.flat().find(b=>b.team===preserve&&!b.city&&core.allCities.every(c=>Math.hypot(c.block.x-b.x,c.block.y-b.y)>160))!;check(site,'actual enemy land permits a spare city so promotion fixtures do not conquer the whole world');Factions.foundCity(preserve,site,undefined,48);
+  const targets=core.allCities.filter(c=>c.ownerTeam!==team&&c.block!==site).slice(0,6);check(targets.length===6,'promotion scenario has six real cities');
   clock(96);for(const c of targets.slice(0,2))c.capture(team,96,undefined,formation.commandId,person.personId);
   const displaced=[...team.users].filter(u=>!Military.isAssigned(u.player.logicalUnitId!)).map(u=>({u,x:u.player.x,y:u.player.y}));
   for(const {u} of displaced)place(u,-1024,-1024);
   (Military as any).advanceOffices(96,core.teams);
-  check(person.appointments[0].officeHistory?.at(-1)?.office==='JIANGJUN'&&formation.memberUnitIds.length===2,'without nearby available bodies the real promotion succeeds but never fills paper slots');
+  check(person.appointments[0].officeHistory?.at(-1)?.office==='PIJIANG'&&formation.memberUnitIds.length===1,'without nearby available bodies the real promotion succeeds but never fills paper slots');
   for(const {u,x,y} of displaced)place(u,x,y);clock(108);
   const before=core.teams.reduce((n,t)=>n+t.users.size,0),rng=JSON.stringify(random.exportState()),positions=[...team.users].map(u=>[u.id,u.player.x,u.player.y]);(Military as any).advanceOffices(108,core.teams);
   check(core.teams.reduce((n,t)=>n+t.users.size,0)===before&&JSON.stringify(random.exportState())===rng,'first promotion and refill add neither population nor random draws');
-  check(person.appointments[0].officeHistory?.at(-1)?.office==='JIANGJUN'&&formation.memberUnitIds.length===3,'original service and actual capture thresholds unlock and fill three-person general command');
+  check(person.appointments[0].officeHistory?.at(-1)?.office==='PIJIANG'&&formation.memberUnitIds.length===2,'original service and actual capture thresholds unlock and fill two-person junior command');
   const filled=[...formation.memberUnitIds];(Military as any).advanceOffices(108,core.teams);check(JSON.stringify(filled)===JSON.stringify(formation.memberUnitIds),'a full command never enlists the same body twice on another opportunity');
-  clock(109);for(const c of targets.slice(2))c.capture(team,109,undefined,formation.commandId,person.personId);clock(156);const count=core.teams.reduce((n,t)=>n+t.users.size,0);(Military as any).advanceOffices(156,core.teams);
+  clock(109);targets[2].capture(team,109,undefined,formation.commandId,person.personId);clock(120);(Military as any).advanceOffices(120,core.teams);check(person.appointments[0].officeHistory?.at(-1)?.office==='JIANGJUN'&&formation.memberUnitIds.length===3,'verified second promotion fills at most three real people');clock(121);for(const c of targets.slice(3))c.capture(team,121,undefined,formation.commandId,person.personId);clock(156);const count=core.teams.reduce((n,t)=>n+t.users.size,0);(Military as any).advanceOffices(156,core.teams);
   check(person.appointments[0].officeHistory?.at(-1)?.office==='SHANGJIANGJUN'&&formation.memberUnitIds.length===4,'senior promotion unlocks and fills at most four actual members');
   check(core.teams.reduce((n,t)=>n+t.users.size,0)===count&&unique(),'reinforcement creates no population or duplicate assignment');
   check(JSON.stringify(positions)===JSON.stringify([...team.users].filter(u=>positions.some(p=>p[0]===u.id)).map(u=>[u.id,u.player.x,u.player.y])),'recruitment and promotion never teleport a body');
@@ -63,7 +65,9 @@ export async function runFormationManagementCore(seed:string){
   for(const u of team.users)if(!Military.isAssigned(u.player.logicalUnitId!))place(u,0,0);
   const noReserve=nearbyMilitaryRecruits(team,commander,id=>Military.isAssigned(id),{registry:core.logicalUnitRegistry,logical:core.logicalGameplayAuthority},3);check(noReserve.length===0,'no eligible nearby population remains for refill');
   while(formation.status==='ACTIVE'&&formation.memberUnitIds.length>1){const v=[...team.users].find(u=>u!==commander&&formation.memberUnitIds.includes(u.player.logicalUnitId!))!;v.destroyUser(false,{cause:'BATTLE_DEATH',month:156,damageSource:'HOSTILE_HOME_OCCUPATION'});}
-  check(formation.status==='DISBANDED'&&person.status==='RETIRED','without real replacements the original minimum-size rule ends the command, never fabricates soldiers');
+  check(formation.status==='ACTIVE'&&formation.memberUnitIds.length===1,'surviving commander remains a valid single-person formation after real losses');
+  commander.destroyUser(false,{cause:'BATTLE_DEATH',month:156,damageSource:'HOSTILE_HOME_OCCUPATION'});
+  check(formation.status==='DISBANDED'&&person.status==='DEAD','without real replacements the original minimum-size rule ends the command, never fabricates soldiers');
   hydrateWorldSave(core,structuredClone(checkpoint));team=core.teams.find(t=>t.name===team.name)!;
   const f=Military.getFormation(formation.commandId)!,p=Military.getPerson(person.personId)!;
   const pop=team.users.size;Military.endPersonCommands(p.personId,156,'DISMISSED');check(f.status==='DISBANDED'&&team.users.size===pop,'retirement releases military ownership without deleting residents');
@@ -73,15 +77,15 @@ export async function runFormationManagementCore(seed:string){
   const candidate=Dynasty.getRoyalMilitaryCandidates(team,156)[0];check(candidate,'same real family still has a legal adult military candidate');
   locals.map(u=>team.getUserById(u.id)).filter(u=>u&&!u.isDestroyed).forEach(u=>place(u,cap.block.x,cap.block.y));
   const royalMembers=[...team.users].filter(u=>u.role==='NORMAL'&&!u.rulerId&&!Military.isAssigned(u.player.logicalUnitId!)).slice(0,1);check(royalMembers.length===1,'royal enlistment requires exactly one existing real soldier beside the one original royal identity');
-  check(Dynasty.enlistRoyalMilitary(candidate,team,156,royalMembers),'real royal enlistment shares the ordinary capacity and population transaction');
+  check(Dynasty.enlistRoyalMilitary(candidate,team,156,[]),'real royal enlistment shares the ordinary capacity and population transaction');
   const royal=Dynasty.findRoyalMilitaryPerson(Military.getPeople().find(p=>p.royalIdentity?.rulerId===candidate.rulerId)!.personId)!;
-  const rf=Military.getFormations().find(f=>f.commanderPersonId===royal.militaryIdentity!.personId&&f.status==='ACTIVE')!;check(rf.memberUnitIds.length===2,'royal and ordinary pi generals have identical initial size');
+  const rf=Military.getFormations().find(f=>f.commanderPersonId===royal.militaryIdentity!.personId&&f.status==='ACTIVE')!;check(rf.memberUnitIds.length===1,'royal and ordinary colonels have identical initial size');
   const capitalBeforeResume=siegeParticipants(team.capitalCity!,team,core,32,false).length;
   const saved=exportWorldSave(core),resume=()=>{hydrateWorldSave(core,structuredClone(saved));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return exportWorldSave(core);};const a=resume(),b=resume();check(diffCanonicalWorldSave(a,b).matched,'same real military save resumes twelve months identically');hydrateWorldSave(core,structuredClone(a));check(diffCanonicalWorldSave(a,exportWorldSave(core)).matched,'second save reads without member or identity mutation');
   const t=core.teams.find(t=>t.name===team.name)!,capitalAfterResume=t.capitalCity?siegeParticipants(t.capitalCity,t,core,32,false).length:null;
   observations.push({capitalBeforeResume,capitalAfterTwelveRealMonths:capitalAfterResume,residentsAreNotStationaryGuards:true});
   const absorber=core.teams.find(v=>v!==t&&v.status==='ACTIVE')!;(core.simulator as any).mergeFaction({absorbedFaction:t,absorbingFaction:absorber},core.simulator!.year);Military.update(core.simulator!.year,core.teams,core.allCities);check(Military.getFormations().every(f=>f.factionId!==t.name||f.status!=='ACTIVE'),'real faction absorption transaction leaves no active home command');
-  observations.push({capitalBefore:3,capitalAfterAppointment:3,capacityByOffice:[2,3,4],saveSchemaVersion:saved.saveSchemaVersion});
+  observations.push({capitalBefore:3,capitalAfterAppointment:3,capacityByOffice:[1,2,3,4],saveSchemaVersion:saved.saveSchemaVersion});
   for(const ending of ['retirement','natural-death','battle-death']){
    hydrateWorldSave(core,structuredClone(checkpoint));const cp=Military.getPerson(person.personId)!,ct=core.teams.find(t=>t.name===cp.factionId)!,body=ct.getUserById(cp.sourceUserId)!,life=deriveMilitaryLifeSchedule(cp),population=ct.users.size;
    const dueMonth=Math.ceil((ending==='retirement'?life.retirementMonth:life.naturalDeathMonth)/12)*12,expectedDeaths=ending==='battle-death'?1:Military.getPeople().filter(p=>p.factionId===ct.name&&p.status!=='DEAD'&&!p.royalIdentity&&!p.politicalRulerId&&dueMonth>=deriveMilitaryLifeSchedule(p).naturalDeathMonth&&ct.getUserById(p.sourceUserId)?.matchesMilitaryLife(p)).length;
