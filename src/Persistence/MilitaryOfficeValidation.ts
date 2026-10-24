@@ -22,7 +22,7 @@ export function validateMilitaryOffices(state:MilitaryCommandState,events:any[],
         referenced.add(g.eventId);
         if(index===0){if(g.month!==a.startMonth||g.captureEventIds.length!==0||g.promotionBasis!==undefined||g.activityEventIds!==undefined)errors.push("initial military office must match appointment");continue;}
         const before=entries.filter(e=>e.worldMonth<g.month||e.worldMonth===g.month&&(order.get(e.eventId)??Infinity)<(order.get(g.eventId)??-1));
-        const expected=getOfficePromotion({...a,officeHistory:a.officeHistory!.slice(0,index)},before,g.month);
+        const expected=getOfficePromotion({...a,endMonth:undefined,officeHistory:a.officeHistory!.slice(0,index)},before,g.month);
         if(g.month%12!==0||!previous||g.month<=previous.month||!expected||g.office!==expected.office||g.promotionBasis!==expected.promotionBasis||!Array.isArray(g.activityEventIds)||
           JSON.stringify(g.captureEventIds)!==JSON.stringify(expected.captureEventIds)||JSON.stringify(g.activityEventIds)!==JSON.stringify(expected.activityEventIds)||
           m?.promotionBasis!==g.promotionBasis||m.activityEventIds!==JSON.stringify(g.activityEventIds)||g.captureEventIds.some(id=>used.has(id)))errors.push(`military office lacks verified merit/service: ${g.eventId}`);

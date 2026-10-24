@@ -177,7 +177,7 @@ describe("formal military offices use production careers and canonical history",
     f.registry.update(72,[f.team,f.enemy],[f.city]);expect(f.person.appointments[0].officeHistory).toHaveLength(2); // one unused result is insufficient
     f.capture(false,80);f.registry.update(84,[f.team,f.enemy],[f.city]);expect(describeMilitaryOffice(f.person,"qin")).toBe("现任将军");
     const before=worldRandom.exportState();f.registry.update(84,[f.team,f.enemy],[f.city]);expect(worldRandom.exportState()).toEqual(before);
-    f.capture(false,96);f.capture(false,108);f.registry.update(132,[f.team,f.enemy],[f.city]);expect(f.person.appointments[0].officeHistory).toHaveLength(3);
+    f.registry.update(132,[f.team,f.enemy],[f.city]);expect(f.person.appointments[0].officeHistory).toHaveLength(3);
     f.capture(true,140);f.registry.update(141,[f.team,f.enemy],[f.city]);expect(f.person.appointments[0].officeHistory).toHaveLength(3);
     f.registry.update(144,[f.team,f.enemy],[f.city]);
     const grants=f.person.appointments[0].officeHistory!;

@@ -1,6 +1,6 @@
 import type {MilitaryPerson,MilitaryFormation} from './MilitaryCommandRegistry';
 import type {WorldEvent} from '../History/WorldHistory';
-export interface MilitaryActivity {eventId:string;cityId:string;worldMonth:number;kind:'CAPTURE'|'SIEGE'|'DEFENSE';}
+export interface MilitaryActivity {eventId:string;cityId:string;commandId:string;factionId:string;worldMonth:number;kind:'CAPTURE'|'SIEGE'|'DEFENSE';}
 /** Evidence projection only. Orders and repeated short contacts never earn experience. */
 export function deriveMilitaryActivities(person:MilitaryPerson,formations:MilitaryFormation[],events:readonly WorldEvent[],month:number,captures:readonly string[]){
  const verified=new Set(captures),starts=new Map<string,WorldEvent[]>(),ends=new Map<string,WorldEvent[]>();
@@ -16,12 +16,12 @@ export function deriveMilitaryActivities(person:MilitaryPerson,formations:Milita
    if(ss.length!==1||ee.length!==1)continue;
    const start=ss[0],end=ee[0],duration=(end.monthIndex??end.year)-(start.monthIndex??start.year)+1;
    if(start.cityId!==e.cityId||end.cityId!==e.cityId||start.actorFactionId!==end.actorFactionId||start.targetFactionId!==end.targetFactionId||(start.monthIndex??start.year)<a.startMonth||(end.monthIndex??end.year)>at||!Number.isSafeInteger(duration)||duration<1)continue;
-   if(e.type==='siege-ended'&&duration>=6&&start.actorFactionId===a.factionId&&start.metadata?.commandId===command&&start.metadata.personId===person.personId&&Number(start.metadata.attackers)>=1&&Number(m.attackers)>=1)kind='SIEGE';
+   if(e.type==='siege-ended'&&m.reason!=='CAPTURED'&&duration>=6&&start.actorFactionId===a.factionId&&start.metadata?.commandId===command&&start.metadata.personId===person.personId&&Number(start.metadata.attackers)>=1&&Number(m.attackers)>=1)kind='SIEGE';
    if(e.type==='siege-defended'&&e.actorFactionId===end.targetFactionId&&e.targetFactionId===end.actorFactionId&&end.metadata?.reason==='REPULSED'&&Number(m.defenders)>0&&Number(end.metadata.defenders)>0)kind='DEFENSE';
   }
   // One location per appointment, regardless of repeated attacks or monthly contacts.
   const key=JSON.stringify([command,e.cityId]);
-  if(kind&&!seen.has(key)){seen.add(key);activities.push({eventId:e.id,cityId:e.cityId,worldMonth:at,kind});}
+  if(kind&&!seen.has(key)){seen.add(key);activities.push({eventId:e.id,cityId:e.cityId,commandId:command,factionId:a.factionId,worldMonth:at,kind});}
  }
  return activities;
 }

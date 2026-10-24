@@ -1,0 +1,42 @@
+[
+  {
+    "seed": "royal-military-z11",
+    "checks": [
+      "real User starts one legal colonel appointment",
+      "production hostile order has a real city target",
+      "continuous real siege produces one activity, never seven monthly merits",
+      "an interrupted siege never invents a capture",
+      "three-year actual siege evidence promotes a legal colonel",
+      "promotion without assembled reserves never creates soldiers",
+      "removing original contact evidence invalidates the claimed activity promotion",
+      "activity basis and original events survive strict hydration",
+      "production hostile order has a real city target",
+      "continuous real siege produces one activity, never seven monthly merits",
+      "an interrupted siege never invents a capture",
+      "three-year actual siege evidence promotes a legal colonel",
+      "promotion without assembled reserves never creates soldiers",
+      "removing original contact evidence invalidates the claimed activity promotion",
+      "activity basis and original events survive strict hydration",
+      "two-year new colonel never promotes merely on an order",
+      "five-year continued legal service promotes without pretending to have war victories",
+      "service promotion fills only actual nearby available people",
+      "promotion and recruitment preserve population and RNG",
+      "same-month repeated office evaluation never duplicates the grant",
+      "service-only promotion never manufactures military political qualification",
+      "public biography truthfully identifies service promotion",
+      "same promotion save resumes twelve months identically",
+      "second read preserves the promotion evidence and actual members",
+      "service promotion can recruit an existing actual resident",
+      "two-year new colonel never promotes merely on an order",
+      "five-year continued legal service promotes without pretending to have war victories",
+      "service promotion fills only actual nearby available people",
+      "promotion and recruitment preserve population and RNG",
+      "same-month repeated office evaluation never duplicates the grant",
+      "service-only promotion never manufactures military political qualification",
+      "public biography truthfully identifies service promotion",
+      "same promotion save resumes twelve months identically",
+      "second read preserves the promotion evidence and actual members"
+    ],
+    "scope": "production city contact, office, recruits, politics and save; no new combat or political probabilities"
+  }
+]

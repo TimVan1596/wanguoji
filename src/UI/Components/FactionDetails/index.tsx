@@ -722,7 +722,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
             allMilestones={()=>allMilestones.map(entry=>({id:entry.eventId,content:<Typography fontSize="0.82rem">{formatWorldDate(entry.worldMonth)} · {entry.text}</Typography>}))}
             milestones={milestones.map(entry=>({id:entry.eventId,content:<Typography fontSize="0.82rem">{formatWorldDate(entry.worldMonth)} · {entry.text}</Typography>}))}
             assessment={[bio.assessment]} voice={bio.voice}
-            governance={<ChronicleSection title="军功与任职"><Typography fontSize="0.82rem">本国历任军职{formatWorldDuration(getMilitaryLocalServiceMonths(person,factionId,worldMonth))}；任内，所部参与取城{bio.victories.length}次；可追溯军旅活动{career.activities.filter(e=>person.appointments.some(a=>a.factionId===factionId&&a.startMonth<=e.worldMonth&&e.worldMonth<=(a.endMonth??worldMonth))).length}处。</Typography></ChronicleSection>}
+            governance={<ChronicleSection title="军功与任职"><Typography fontSize="0.82rem">本国历任军职{formatWorldDuration(getMilitaryLocalServiceMonths(person,factionId,worldMonth))}；任内，所部参与取城{bio.victories.length}次；可追溯军旅活动{career.activities.filter(e=>e.factionId===factionId).length}处。</Typography></ChronicleSection>}
             evidence={<>
               <Typography fontSize="0.75rem">人物：{person.personId} / User {person.sourceUserId} / 原人口标签：{person.name}</Typography>
               <Typography fontSize="0.75rem">{describeMilitaryNameEvidence(person)}</Typography>

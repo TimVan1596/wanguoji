@@ -30,7 +30,7 @@ export function militaryMilestones(person:MilitaryPerson,entries:MilitaryChronic
         text=person.appointments.some(a=>a.officeHistory?.[0]?.eventId===entry.eventId)?`${issuer?`${issuer}在位时，${name}获授`:`${country}授${name}为`}${MILITARY_OFFICE_NAMES[grant.office]}。`:`${issuer?`${issuer}在位时，${name}`:`${name}于${country}`}晋为${MILITARY_OFFICE_NAMES[grant.office]}。`;
         if(grant.promotionBasis){
           const basis=grant.promotionBasis==='SERVICE'?'依服役资历':grant.promotionBasis==='ACTIVITY'?'因实际军旅经历':'凭实际取城战功';
-          text=`${name}${basis}晋为${MILITARY_OFFICE_NAMES[grant.office]}。`;
+          text=`${issuer?`${issuer}在位时，${name}`:`${name}于${country}`}${basis}晋为${MILITARY_OFFICE_NAMES[grant.office]}。`;
         }
       }
     }

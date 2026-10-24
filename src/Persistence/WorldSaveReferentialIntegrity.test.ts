@@ -1132,7 +1132,7 @@ it.each(["ordinary", "capital", "recovery", "office"])("x真实User→任命军�
       }
       MilitaryCommandRegistry.update(120,core.teams,core.allCities);
       snapshotMonth=120;chronicle=MilitaryCommandRegistry.getChronicle(person,snapshotMonth);
-      expect(person.appointments[0].officeHistory?.map(g=>g.office)).toEqual(["XIAOWEI","PIJIANG","JIANGJUN","SHANGJIANGJUN"]);
+      expect(person.appointments[0].officeHistory?.map(g=>g.office)).toEqual(["XIAOWEI","PIJIANG","JIANGJUN"]);
       expect(chronicle.filter(e=>e.victory)).toHaveLength(6);
       expect(victory.metadata?.commanderOffice).toBe("XIAOWEI");
       expect(formatRulerMilitaryEvent(victory,{accessionYear:0},"qin",120)).toContain(`秦校尉${person.personalName}`);
@@ -1140,9 +1140,9 @@ it.each(["ordinary", "capital", "recovery", "office"])("x真实User→任命军�
       expect(later.metadata?.commanderOffice).toBe("JIANGJUN");
       expect(formatRulerMilitaryEvent(later,{accessionYear:0},"qin",120)).toContain(`秦将军${person.personalName}`);
       const grants=person.appointments[0].officeHistory!;
-      expect(new Set(grants.flatMap(g=>g.captureEventIds)).size).toBe(4);
-      expect(chronicle.filter(e=>e.source.startsWith("military-office-granted"))).toHaveLength(4);
-      expect(chronicle.some(e=>e.text.includes("晋任上将军"))).toBe(true);
+      expect(new Set(grants.flatMap(g=>g.captureEventIds)).size).toBe(2);
+      expect(chronicle.filter(e=>e.source.startsWith("military-office-granted"))).toHaveLength(3);
+      expect(chronicle.some(e=>e.text.includes("晋任上将军"))).toBe(false);
     }
     // Complete the following production order refresh before exporting the now-friendly target.
     MilitaryCommandRegistry.update(snapshotMonth, core.teams, core.allCities);
