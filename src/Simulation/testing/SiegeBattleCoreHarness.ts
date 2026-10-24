@@ -50,13 +50,28 @@ export async function runSiegeBattleCore(seed='siege-defense-z10'){
     check(!s.city.underSiege&&s.city.defense===wall&&History.getEvents().some(e=>e.type==='siege-ended'&&e.metadata?.reason==='TRUCE'),`${logical}: actual treaty ends battle without a fictional victory`);
    }
   }
-  {
+  for(const ending of ['DISMISSED','BATTLE_DEATH']){
    const s=scenario(2,0),commander=s.attackers.find(u=>(Military as any).isEligible(u,s.m))!;
    check(commander,'actual local commander is eligible under original appointment rules');
    check((Military as any).appoint(commander,s.attack.name,s.m,s.attackers.map(u=>u.player.logicalUnitId!)),'real two-body command for interruption test');
    (Military as any).refreshOrders(s.m,[s.attack,s.owner],[s.city]);s.tick(0);const wall=s.city.defense;
-   Military.endPersonCommands(commander.militaryPersonId!,s.m+1,'DISMISSED');s.tick(1);
-   check(!s.city.siegeBattle&&s.city.defense===wall&&s.city.siegeRetryAfter[s.attack.name]>s.m+1,'real command end cancels old battle and blocks ghost restart');
+   if(ending==='BATTLE_DEATH')commander.destroyUser(false,{cause:'BATTLE_DEATH',month:s.m+1,damageSource:'SIEGE_ASSAULT',triggerCityId:s.city.id});else Military.endPersonCommands(commander.militaryPersonId!,s.m+1,'DISMISSED');s.tick(1);
+   check(!s.city.siegeBattle&&s.city.defense===wall&&s.city.siegeRetryAfter[s.attack.name]>s.m+1,ending+': real command end cancels old battle and blocks ghost restart');
+  }
+  {
+   const s=scenario(2,4),commander=s.defenders.find(u=>(Military as any).isEligible(u,s.m))!;
+   check(commander,'real local defensive commander satisfies original eligibility');
+   const members=[commander,...s.defenders.filter(u=>u!==commander)].slice(0,2);
+   check((Military as any).appoint(commander,s.owner.name,s.m,members.map(u=>u.player.logicalUnitId!)),'actual home formation, no virtual garrison');
+   for(let n=0;n<=4;n++)s.tick(n);
+   const defended=History.getEvents().find(e=>e.type==='siege-defended'&&e.metadata?.personId===commander.militaryPersonId);
+   check(defended&&Military.getChronicle(Military.getPerson(commander.militaryPersonId!)!,s.m+4,s.owner.name).some(e=>e.eventId===defended.id&&!e.victory),'verified local defensive general receives a defense chronicle, never a city-capture merit');
+  }
+  {
+   const s=scenario(4,0),third=core.teams.find(t=>t!==s.attack&&t!==s.owner&&Diplomacy.canAttack(t.name,s.owner.name,s.m))!;
+   for(const u of [...third.users].slice(0,2))place(u,s.city.block.x,s.city.block.y);
+   for(let n=0;n<500;n++)s.city.registerSiegeContact(third,s.m);s.tick(0);
+   check(s.city.attackingFactionId===s.attack.name,'two hostile countries are counted separately; repeated callbacks cannot override real force counts');
   }
   // Same historical city really changes hands four times; neither close dates nor
   // the general's tenure are substitutes for each individual recovery transaction.

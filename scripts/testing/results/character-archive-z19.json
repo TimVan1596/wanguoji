@@ -1,0 +1,33 @@
+[
+  {
+    "seed": "archive-z10-500",
+    "years": 100,
+    "results": [
+      {
+        "genealogyDOMChecks": [
+          "ACTIVE: verified military royal is visible by default without target navigation",
+          "default military collateral keeps the true parent connector",
+          "ACTIVE: actual genealogy retains one permanent royal node",
+          "ACTIVE: genealogy retains original birth month",
+          "ACTIVE: verified military royal is visible by default without target navigation",
+          "default military collateral keeps the true parent connector",
+          "ACTIVE: actual genealogy retains one permanent royal node",
+          "ACTIVE: genealogy retains original birth month"
+        ],
+        "month": 1200,
+        "people": 33,
+        "countryPeople": 7,
+        "records": 357,
+        "allRecordsPresent": true,
+        "noNestedScroll": true,
+        "personReadableRecords": 23,
+        "publicPersonRecords": 8,
+        "renderMs": 6.829999999701977,
+        "htmlBytes": 46394,
+        "heapBytes": 75955169,
+        "strictSaveValid": true
+      }
+    ],
+    "deterministic12MonthContinuation": true
+  }
+]

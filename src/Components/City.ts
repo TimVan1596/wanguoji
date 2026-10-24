@@ -273,6 +273,8 @@ export default class City {
   }
 
   clearSiegeContactBetween(factionAId: string, factionBId: string) {
+    const battle=this.siegeBattle;
+    if(battle&&((battle.attackerId===factionAId&&battle.defenderId===factionBId)||(battle.attackerId===factionBId&&battle.defenderId===factionAId)))this.endBattle(Math.max(Game.Core?.simulator?.year??battle.lastMonth,battle.lastMonth),"TRUCE");
     const removedA = this.siegeContacts.delete(factionAId);
     const removedB = this.siegeContacts.delete(factionBId);
     const removed = removedA || removedB;

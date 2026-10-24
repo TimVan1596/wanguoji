@@ -53,6 +53,10 @@ export async function runSiegeDefenseCore(seed="siege-defense-z9") {
       hydrateWorldSave(core,structuredClone(base));core.logicalGameplayAuthority=logical;
       const mature=core.allCities.find(c=>!c.destroyed&&c.ownerTeam&&!c.isInCaptureGrace(month))!;
       const assault=core.teams.find(t=>t!==mature.ownerTeam&&t.status==="ACTIVE"&&Diplomacy.canAttack(t.name,mature.ownerFactionId,month))!;
+      const deploy=(city:typeof mature,team:typeof assault)=>{
+        for(const t of core.teams)for(const u of t.users)place(u,-1024,-1024);
+        for(const u of [...team.users].sort((a,b)=>Number(a.role==='RULER')-Number(b.role==='RULER')).slice(0,4))place(u,city.block.x,city.block.y);
+      };deploy(mature,assault);
       const wall=mature.defense;mature.registerSiegeContact(assault,month);(mature as any).updateSiege(month);
       check(mature.underSiege&&mature.defense<wall,`${logical}: continued real siege remains capable of damaging walls`);
       mature.registerSiegeContact(assault,month);
@@ -62,6 +66,7 @@ export async function runSiegeDefenseCore(seed="siege-defense-z9") {
       hydrateWorldSave(core,structuredClone(base));core.logicalGameplayAuthority=logical;
       const breach=core.allCities.find(c=>!c.destroyed&&c.ownerTeam&&!c.isInCaptureGrace(month))!;
       const victor=core.teams.find(t=>t!==breach.ownerTeam&&t.status==="ACTIVE"&&Diplomacy.canAttack(t.name,breach.ownerFactionId,month))!;
+      deploy(breach,victor);
       const count=breach.captureCount;breach.defense=1;(breach as any).lastSiegeDamageYear=-1;
       breach.registerSiegeContact(victor,month);(breach as any).updateSiege(month);
       check(breach.ownerTeam===victor&&breach.captureCount===count+1,`${logical}: actual siege breach still captures a city exactly once`);
