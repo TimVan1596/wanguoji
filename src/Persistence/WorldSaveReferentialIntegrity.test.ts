@@ -1127,7 +1127,8 @@ it.each(["ordinary", "capital", "recovery", "office"])("x真实User→任命军�
       for(const month of [24,60,84,96,108]){
         RealCity.prototype.capture.call(city,wei,month-1);MilitaryCommandRegistry.update(month-1,core.teams,core.allCities);
         RealCity.prototype.capture.call(city,qin,month,undefined,formation.commandId,person.personId);MilitaryCommandRegistry.update(month,core.teams,core.allCities);
-        if(month===24){expect(person.appointments[0].officeHistory?.map(g=>g.office)).toEqual(["XIAOWEI","PIJIANG"]);MilitaryCommandRegistry.update(24,core.teams,core.allCities);expect(person.appointments[0].officeHistory).toHaveLength(2);}
+        if(month===60)MilitaryCommandRegistry.update(72,core.teams,core.allCities);
+        if(month===24){MilitaryCommandRegistry.update(36,core.teams,core.allCities);expect(person.appointments[0].officeHistory?.map(g=>g.office)).toEqual(["XIAOWEI","PIJIANG"]);MilitaryCommandRegistry.update(36,core.teams,core.allCities);expect(person.appointments[0].officeHistory).toHaveLength(2);}
       }
       MilitaryCommandRegistry.update(120,core.teams,core.allCities);
       snapshotMonth=120;chronicle=MilitaryCommandRegistry.getChronicle(person,snapshotMonth);
@@ -1139,7 +1140,7 @@ it.each(["ordinary", "capital", "recovery", "office"])("x真实User→任命军�
       expect(later.metadata?.commanderOffice).toBe("JIANGJUN");
       expect(formatRulerMilitaryEvent(later,{accessionYear:0},"qin",120)).toContain(`秦将军${person.personalName}`);
       const grants=person.appointments[0].officeHistory!;
-      expect(new Set(grants.flatMap(g=>g.captureEventIds)).size).toBe(6);
+      expect(new Set(grants.flatMap(g=>g.captureEventIds)).size).toBe(4);
       expect(chronicle.filter(e=>e.source.startsWith("military-office-granted"))).toHaveLength(4);
       expect(chronicle.some(e=>e.text.includes("晋任上将军"))).toBe(true);
     }

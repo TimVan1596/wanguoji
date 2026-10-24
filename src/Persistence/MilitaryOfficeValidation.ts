@@ -21,7 +21,7 @@ export function validateMilitaryOffices(state:MilitaryCommandState,events:any[],
           (event.monthIndex??event.year)!==g.month||m?.personId!==p.personId||m.commandId!==a.commandId||m.sourceUserId!==p.sourceUserId||m.personalName!==p.personalName||m.office!==g.office||m.previousOffice!==(previous?.office??"NONE")||m.serviceMonths!==g.serviceMonths||m.captureEventIds!==JSON.stringify(g.captureEventIds))errors.push(`military office event/reference invalid: ${g.eventId}`);
         referenced.add(g.eventId);
         if(index===0){if(g.month!==a.startMonth||g.captureEventIds.length!==0||g.promotionBasis!==undefined||g.activityEventIds!==undefined)errors.push("initial military office must match appointment");continue;}
-        const before=entries.filter(e=>(order.get(e.eventId)??Infinity)<(order.get(g.eventId)??-1));
+        const before=entries.filter(e=>e.worldMonth<g.month||e.worldMonth===g.month&&(order.get(e.eventId)??Infinity)<(order.get(g.eventId)??-1));
         const expected=getOfficePromotion({...a,officeHistory:a.officeHistory!.slice(0,index)},before,g.month);
         if(g.month%12!==0||!previous||g.month<=previous.month||!expected||g.office!==expected.office||g.promotionBasis!==expected.promotionBasis||!Array.isArray(g.activityEventIds)||
           JSON.stringify(g.captureEventIds)!==JSON.stringify(expected.captureEventIds)||JSON.stringify(g.activityEventIds)!==JSON.stringify(expected.activityEventIds)||

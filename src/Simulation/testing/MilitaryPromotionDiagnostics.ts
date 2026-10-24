@@ -1,0 +1,14 @@
+import type {MilitaryPerson,MilitaryFormation} from '../../Politics/MilitaryCommandRegistry';
+import type {WorldEvent} from '../../History/WorldHistory';
+/** Read-only per-person sampling, shared by frozen old and current production runs. */
+export function militaryPromotionDiagnostics(people:MilitaryPerson[],formations:MilitaryFormation[],events:WorldEvent[],month:number){
+ const byId=new Map(events.map(e=>[e.id,e]));
+ const rows=people.flatMap(p=>p.appointments.map(a=>{
+  const grants=a.officeHistory??[],junior=grants.find(g=>g.office==='PIJIANG'),end=Math.min(a.endMonth??month,p.deathMonth??month,month),f=formations.find(f=>f.commandId===a.commandId);
+  const victories=[...new Set(p.capturedEventIds)].map(id=>byId.get(id)).filter((e):e is WorldEvent=>!!e&&e.actorFactionId===a.factionId&&e.metadata?.commandId===a.commandId&&e.metadata.commanderPersonId===p.personId&&!!f?.captures.some(c=>c.eventId===e.id&&c.cityId===e.cityId&&c.month===(e.monthIndex??e.year))&&(e.monthIndex??e.year)>=a.startMonth&&(e.monthIndex??e.year)<=end);
+  const starts=events.filter(e=>e.type==='siege-started'&&e.actorFactionId===a.factionId&&e.metadata?.commandId===a.commandId&&e.metadata.personId===p.personId&&(e.monthIndex??e.year)>=a.startMonth&&(e.monthIndex??e.year)<=end);
+  return {personId:p.personId,royal:!!p.royalIdentity,commandId:a.commandId,factionId:a.factionId,startMonth:a.startMonth,endMonth:a.endMonth,endReason:a.endReason??'ACTIVE',serviceMonths:end-a.startMonth,juniorMonths:(junior?.month??end)-a.startMonth,promotedToJunior:!!junior,highestOffice:grants.at(-1)?.office,verifiedCaptures:victories.length,actualSieges:new Set(starts.map(e=>e.metadata?.battleId??e.id)).size,promotions:grants.slice(1).map(g=>({office:g.office,month:g.month,ageMonths:g.month-p.bornMonth,basis:(g as any).promotionBasis??'CAPTURE',captureEventIds:g.captureEventIds,activityEventIds:(g as any).activityEventIds??[]}))};
+ }));
+ const count=(pred:(r:typeof rows[number])=>boolean)=>rows.filter(pred).length;
+ return {people:people.length,appointments:rows.length,promotedPeople:new Set(rows.filter(r=>r.promotedToJunior).map(r=>r.personId)).size,promotedAppointments:count(r=>r.promotedToJunior),unpromotedAtLeast36:count(r=>!r.promotedToJunior&&r.serviceMonths>=36),unpromotedAtLeast60:count(r=>!r.promotedToJunior&&r.serviceMonths>=60),unpromotedAtLeast120:count(r=>!r.promotedToJunior&&r.serviceMonths>=120),activeUnpromotedAtLeast60:count(r=>!r.promotedToJunior&&r.endReason==='ACTIVE'&&r.serviceMonths>=60),unpromotedService24WithoutCapture:count(r=>!r.promotedToJunior&&r.serviceMonths>=24&&!r.verifiedCaptures),endedByReason:Object.fromEntries([...new Set(rows.map(r=>r.endReason))].map(reason=>[reason,count(r=>r.endReason===reason)])),royal:{appointments:count(r=>r.royal),promoted:count(r=>r.royal&&r.promotedToJunior)},ordinary:{appointments:count(r=>!r.royal),promoted:count(r=>!r.royal&&r.promotedToJunior)},rows};
+}

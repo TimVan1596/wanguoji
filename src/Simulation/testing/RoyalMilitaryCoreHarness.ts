@@ -75,14 +75,14 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
   {
    const {t,r,p}=restore(),command=p.appointments[0].commandId;
    const clock=(m:number)=>(core.simulator as any).clock.importState({worldMonth:m,elapsedMs:0,running:false});
-   clock(month+60);
+   clock(month+72);
    const targets=core.allCities.filter(c=>c.ownerTeam!==t).slice(0,6);
    check(targets.length===6,"controlled merit scenario has five real enemy cities");
-   clock(month+24);targets[0].capture(t,month+24,undefined,command,personId);clock(month+24);(Military as any).advanceOffices(month+24,core.teams);check(p.appointments[0].officeHistory?.at(-1)?.office==="PIJIANG","two years and one real victory promote royal colonel to junior general");clock(month+60);for(const target of targets.slice(1,3))target.capture(t,month+60,undefined,command,personId);
+   clock(month+36);targets[0].capture(t,month+36,undefined,command,personId);clock(month+36);(Military as any).advanceOffices(month+36,core.teams);check(p.appointments[0].officeHistory?.at(-1)?.office==="PIJIANG","three years and one real victory promote royal colonel to junior general");clock(month+72);for(const target of targets.slice(1,3))target.capture(t,month+72,undefined,command,personId);
    const formation=Military.getFormation(command)!,size=formation.memberUnitIds.length;
-   (Military as any).advanceOffices(month+60,core.teams);
-   check(p.appointments[0].officeHistory?.at(-1)?.office==="JIANGJUN"&&p.capturedEventIds.length===3,"five years and two real City.capture results promote the royal to general");
-   clock(month+61);for(const target of targets.slice(3))target.capture(t,month+61,undefined,command,personId);
+   (Military as any).advanceOffices(month+72,core.teams);
+   check(p.appointments[0].officeHistory?.at(-1)?.office==="JIANGJUN"&&p.capturedEventIds.length===3,"six years and actual City.capture results promote the royal to general");
+   clock(month+73);for(const target of targets.slice(3))target.capture(t,month+73,undefined,command,personId);
    clock(month+120);(Military as any).advanceOffices(month+120,core.teams);
    check(p.appointments[0].officeHistory?.at(-1)?.office==="SHANGJIANGJUN"&&formation.memberUnitIds.length>=size&&formation.memberUnitIds.length<=4,"three new actual victories and ten years grant senior office within its real four-body capacity");
    check(r.reignOrdinal===undefined&&!r.chronicle,"pre-accession victories create no ruler reign or personal royal campaign score");strict();
