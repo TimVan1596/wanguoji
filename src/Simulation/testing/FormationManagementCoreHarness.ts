@@ -92,6 +92,19 @@ export async function runFormationManagementCore(seed:string){
    check(Military.getFormations().every(f=>f.commanderPersonId!==cp.personId||f.status==='DISBANDED'),ending+': the original command ends without a ghost formation');
    const ended=exportWorldSave(core);hydrateWorldSave(core,structuredClone(ended));check(diffCanonicalWorldSave(ended,exportWorldSave(core)).matched,ending+': actual life and command end survive a strict second read');
   }
+  hydrateWorldSave(core,structuredClone(checkpoint));
+  const withdrawing=Military.getFormation(formation.commandId)!,home=core.teams.find(t=>t.name===withdrawing.factionId)!,target=core.allCities.find(c=>c.ownerTeam!==home)!;
+  withdrawing.targetCityId=target.id;
+  const retreatPopulation=home.users.size,retreatRng=JSON.stringify(random.exportState());
+  Military.withdrawFromCity(home.name,target.id,156);
+  check(!withdrawing.targetCityId&&withdrawing.retreatUntilMonth===168,'real withdrawal clears the hostile target and persists twelve months of homeward rest');
+  check(home.users.size===retreatPopulation&&JSON.stringify(random.exportState())===retreatRng,'withdrawal creates neither residents nor extra random draws');
+  const retreatSave=exportWorldSave(core);
+  const resumeRetreat=()=>{hydrateWorldSave(core,structuredClone(retreatSave));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return exportWorldSave(core);};
+  const retreatA=resumeRetreat(),retreatB=resumeRetreat();
+  check(diffCanonicalWorldSave(retreatA,retreatB).matched,'saved homeward withdrawal resumes twelve real months deterministically');
+  hydrateWorldSave(core,structuredClone(retreatA));
+  check(diffCanonicalWorldSave(retreatA,exportWorldSave(core)).matched,'withdrawal continuation survives a second read without mutation');
   return {seed,checks,observations,scope:'released production formation rules; controlled real Core and Phaser transactions'};
  }finally{game.destroy(true);}
 }

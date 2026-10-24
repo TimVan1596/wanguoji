@@ -1,0 +1,1033 @@
+{
+  "productionSha256": "48700dfb94b4f3e3783ad1005659851448073f7ce783b0b1f74c3913ad01e67c",
+  "comparison100": {
+    "z18": {
+      "seeds": [
+        "regional-1",
+        "regional-2",
+        "regional-3",
+        "regional-4"
+      ],
+      "yearsEach": 100,
+      "captures": 448,
+      "capturesPerActiveStateYear": 0.27290725417533884,
+      "meanFormationSize": 2.405911581093133,
+      "maximumFormationSize": 4,
+      "initialFormationSizes": [
+        2
+      ],
+      "appointments": 60,
+      "promotions": 38,
+      "reinforcementTransactions": 43,
+      "reinforcedUnits": 43,
+      "meanServiceMonths": 130.81666666666666,
+      "meanActiveStates": 4.103958333333333,
+      "finalActiveStates": [
+        3,
+        4,
+        4,
+        4
+      ],
+      "worldPopulation": [
+        133,
+        124,
+        123,
+        123
+      ],
+      "warDeaths": 1251,
+      "extinctions": 18,
+      "restorations": 1,
+      "splits": 6,
+      "unifications": 0,
+      "siegeResults": null,
+      "invariants": {
+        "maximumPopulationUnexplained": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "royalMilitaryIdentityConflicts": 0,
+        "duplicateActiveMilitaryMembers": 0,
+        "genealogyBirthConflicts": 0,
+        "strictSaveValid": true
+      },
+      "perSeed": [
+        {
+          "seed": "regional-1",
+          "captures": 102,
+          "promotions": 9,
+          "reinforcedUnits": 10,
+          "warDeaths": 302,
+          "population": 133,
+          "activeStates": 3,
+          "extinctions": 4,
+          "splits": 0,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-2",
+          "captures": 142,
+          "promotions": 9,
+          "reinforcedUnits": 7,
+          "warDeaths": 320,
+          "population": 124,
+          "activeStates": 4,
+          "extinctions": 2,
+          "splits": 0,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-3",
+          "captures": 80,
+          "promotions": 10,
+          "reinforcedUnits": 15,
+          "warDeaths": 272,
+          "population": 123,
+          "activeStates": 4,
+          "extinctions": 9,
+          "splits": 5,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-4",
+          "captures": 124,
+          "promotions": 10,
+          "reinforcedUnits": 11,
+          "warDeaths": 357,
+          "population": 123,
+          "activeStates": 4,
+          "extinctions": 3,
+          "splits": 1,
+          "strictSaveValid": true
+        }
+      ]
+    },
+    "z19": {
+      "seeds": [
+        "regional-1",
+        "regional-2",
+        "regional-3",
+        "regional-4"
+      ],
+      "yearsEach": 100,
+      "captures": 147,
+      "capturesPerActiveStateYear": 0.07822269522415858,
+      "meanFormationSize": 2.3801893663510563,
+      "maximumFormationSize": 4,
+      "initialFormationSizes": [
+        2
+      ],
+      "appointments": 89,
+      "promotions": 24,
+      "reinforcementTransactions": 35,
+      "reinforcedUnits": 37,
+      "meanServiceMonths": 92.50561797752809,
+      "meanActiveStates": 4.698124999999999,
+      "finalActiveStates": [
+        3,
+        5,
+        4,
+        4
+      ],
+      "worldPopulation": [
+        157,
+        183,
+        177,
+        182
+      ],
+      "warDeaths": 448,
+      "extinctions": 14,
+      "restorations": 0,
+      "splits": 3,
+      "unifications": 0,
+      "siegeResults": {
+        "started": 1665,
+        "ended": 1660,
+        "captured": 147,
+        "failed": 57,
+        "withdrawn": 1456,
+        "defended": 57,
+        "duplicateCredit": 0,
+        "unattributedOwnershipChanges": 0,
+        "militaryDeaths": 73,
+        "retirements": 28,
+        "capital": {
+          "ended": 476,
+          "captured": 35,
+          "failed": 47,
+          "withdrawn": 394
+        },
+        "ordinary": {
+          "ended": 1184,
+          "captured": 112,
+          "failed": 10,
+          "withdrawn": 1062
+        },
+        "meanDurationMonths": 3.3481927710843373
+      },
+      "invariants": {
+        "maximumPopulationUnexplained": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "royalMilitaryIdentityConflicts": 0,
+        "duplicateActiveMilitaryMembers": 0,
+        "genealogyBirthConflicts": 0,
+        "strictSaveValid": true
+      },
+      "perSeed": [
+        {
+          "seed": "regional-1",
+          "captures": 45,
+          "promotions": 9,
+          "reinforcedUnits": 13,
+          "warDeaths": 131,
+          "population": 157,
+          "activeStates": 3,
+          "extinctions": 5,
+          "splits": 2,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-2",
+          "captures": 36,
+          "promotions": 4,
+          "reinforcedUnits": 6,
+          "warDeaths": 100,
+          "population": 183,
+          "activeStates": 5,
+          "extinctions": 2,
+          "splits": 0,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-3",
+          "captures": 23,
+          "promotions": 4,
+          "reinforcedUnits": 6,
+          "warDeaths": 100,
+          "population": 177,
+          "activeStates": 4,
+          "extinctions": 3,
+          "splits": 0,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-4",
+          "captures": 43,
+          "promotions": 7,
+          "reinforcedUnits": 12,
+          "warDeaths": 117,
+          "population": 182,
+          "activeStates": 4,
+          "extinctions": 4,
+          "splits": 1,
+          "strictSaveValid": true
+        }
+      ]
+    }
+  },
+  "all16HundredYears": {
+    "seeds": [
+      "regional-1",
+      "regional-2",
+      "regional-3",
+      "regional-4",
+      "regional-5",
+      "regional-6",
+      "regional-7",
+      "regional-8",
+      "regional-9",
+      "regional-10",
+      "regional-11",
+      "regional-12",
+      "regional-13",
+      "regional-14",
+      "regional-15",
+      "regional-16"
+    ],
+    "yearsEach": 100,
+    "captures": 481,
+    "capturesPerActiveStateYear": 0.05867940832613227,
+    "meanFormationSize": 2.281196955593276,
+    "maximumFormationSize": 4,
+    "initialFormationSizes": [
+      2
+    ],
+    "appointments": 391,
+    "promotions": 71,
+    "reinforcementTransactions": 99,
+    "reinforcedUnits": 104,
+    "meanServiceMonths": 93.36061381074168,
+    "meanActiveStates": 5.123177083333333,
+    "finalActiveStates": [
+      3,
+      5,
+      4,
+      4,
+      4,
+      3,
+      4,
+      6,
+      3,
+      5,
+      5,
+      5,
+      5,
+      5,
+      4,
+      6
+    ],
+    "worldPopulation": [
+      157,
+      183,
+      177,
+      182,
+      180,
+      177,
+      177,
+      208,
+      178,
+      183,
+      193,
+      200,
+      189,
+      187,
+      178,
+      188
+    ],
+    "warDeaths": 1739,
+    "extinctions": 44,
+    "restorations": 1,
+    "splits": 7,
+    "unifications": 0,
+    "siegeResults": {
+      "started": 6353,
+      "ended": 6339,
+      "captured": 481,
+      "failed": 286,
+      "withdrawn": 5572,
+      "defended": 286,
+      "duplicateCredit": 0,
+      "unattributedOwnershipChanges": 0,
+      "militaryDeaths": 276,
+      "retirements": 96,
+      "capital": {
+        "ended": 2193,
+        "captured": 115,
+        "failed": 201,
+        "withdrawn": 1877
+      },
+      "ordinary": {
+        "ended": 4146,
+        "captured": 366,
+        "failed": 85,
+        "withdrawn": 3695
+      },
+      "meanDurationMonths": 3.394699479413157
+    },
+    "invariants": {
+      "maximumPopulationUnexplained": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "residentIdentityConflicts": 0,
+      "royalMilitaryIdentityConflicts": 0,
+      "duplicateActiveMilitaryMembers": 0,
+      "genealogyBirthConflicts": 0,
+      "strictSaveValid": true
+    },
+    "perSeed": [
+      {
+        "seed": "regional-1",
+        "captures": 45,
+        "promotions": 9,
+        "reinforcedUnits": 13,
+        "warDeaths": 131,
+        "population": 157,
+        "activeStates": 3,
+        "extinctions": 5,
+        "splits": 2,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-2",
+        "captures": 36,
+        "promotions": 4,
+        "reinforcedUnits": 6,
+        "warDeaths": 100,
+        "population": 183,
+        "activeStates": 5,
+        "extinctions": 2,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-3",
+        "captures": 23,
+        "promotions": 4,
+        "reinforcedUnits": 6,
+        "warDeaths": 100,
+        "population": 177,
+        "activeStates": 4,
+        "extinctions": 3,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-4",
+        "captures": 43,
+        "promotions": 7,
+        "reinforcedUnits": 12,
+        "warDeaths": 117,
+        "population": 182,
+        "activeStates": 4,
+        "extinctions": 4,
+        "splits": 1,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-5",
+        "captures": 36,
+        "promotions": 6,
+        "reinforcedUnits": 9,
+        "warDeaths": 126,
+        "population": 180,
+        "activeStates": 4,
+        "extinctions": 3,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-6",
+        "captures": 31,
+        "promotions": 5,
+        "reinforcedUnits": 9,
+        "warDeaths": 111,
+        "population": 177,
+        "activeStates": 3,
+        "extinctions": 6,
+        "splits": 2,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-7",
+        "captures": 23,
+        "promotions": 3,
+        "reinforcedUnits": 3,
+        "warDeaths": 103,
+        "population": 177,
+        "activeStates": 4,
+        "extinctions": 3,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-8",
+        "captures": 26,
+        "promotions": 2,
+        "reinforcedUnits": 2,
+        "warDeaths": 62,
+        "population": 208,
+        "activeStates": 6,
+        "extinctions": 1,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-9",
+        "captures": 27,
+        "promotions": 7,
+        "reinforcedUnits": 10,
+        "warDeaths": 101,
+        "population": 178,
+        "activeStates": 3,
+        "extinctions": 4,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-10",
+        "captures": 24,
+        "promotions": 3,
+        "reinforcedUnits": 3,
+        "warDeaths": 95,
+        "population": 183,
+        "activeStates": 5,
+        "extinctions": 2,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-11",
+        "captures": 35,
+        "promotions": 4,
+        "reinforcedUnits": 4,
+        "warDeaths": 112,
+        "population": 193,
+        "activeStates": 5,
+        "extinctions": 3,
+        "splits": 1,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-12",
+        "captures": 17,
+        "promotions": 3,
+        "reinforcedUnits": 4,
+        "warDeaths": 90,
+        "population": 200,
+        "activeStates": 5,
+        "extinctions": 2,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-13",
+        "captures": 41,
+        "promotions": 5,
+        "reinforcedUnits": 7,
+        "warDeaths": 126,
+        "population": 189,
+        "activeStates": 5,
+        "extinctions": 2,
+        "splits": 1,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-14",
+        "captures": 18,
+        "promotions": 2,
+        "reinforcedUnits": 2,
+        "warDeaths": 96,
+        "population": 187,
+        "activeStates": 5,
+        "extinctions": 0,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-15",
+        "captures": 37,
+        "promotions": 6,
+        "reinforcedUnits": 13,
+        "warDeaths": 146,
+        "population": 178,
+        "activeStates": 4,
+        "extinctions": 3,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-16",
+        "captures": 19,
+        "promotions": 1,
+        "reinforcedUnits": 1,
+        "warDeaths": 123,
+        "population": 188,
+        "activeStates": 6,
+        "extinctions": 1,
+        "splits": 0,
+        "strictSaveValid": true
+      }
+    ]
+  },
+  "additional12HundredYears": {
+    "seeds": [
+      "regional-5",
+      "regional-6",
+      "regional-7",
+      "regional-8",
+      "regional-9",
+      "regional-10",
+      "regional-11",
+      "regional-12",
+      "regional-13",
+      "regional-14",
+      "regional-15",
+      "regional-16"
+    ],
+    "yearsEach": 100,
+    "captures": 334,
+    "capturesPerActiveStateYear": 0.052866225235444646,
+    "meanFormationSize": 2.252368495475113,
+    "maximumFormationSize": 4,
+    "initialFormationSizes": [
+      2
+    ],
+    "appointments": 302,
+    "promotions": 47,
+    "reinforcementTransactions": 64,
+    "reinforcedUnits": 67,
+    "meanServiceMonths": 93.61258278145695,
+    "meanActiveStates": 5.264861111111111,
+    "finalActiveStates": [
+      4,
+      3,
+      4,
+      6,
+      3,
+      5,
+      5,
+      5,
+      5,
+      5,
+      4,
+      6
+    ],
+    "worldPopulation": [
+      180,
+      177,
+      177,
+      208,
+      178,
+      183,
+      193,
+      200,
+      189,
+      187,
+      178,
+      188
+    ],
+    "warDeaths": 1291,
+    "extinctions": 30,
+    "restorations": 1,
+    "splits": 4,
+    "unifications": 0,
+    "siegeResults": {
+      "started": 4688,
+      "ended": 4679,
+      "captured": 334,
+      "failed": 229,
+      "withdrawn": 4116,
+      "defended": 229,
+      "duplicateCredit": 0,
+      "unattributedOwnershipChanges": 0,
+      "militaryDeaths": 203,
+      "retirements": 68,
+      "capital": {
+        "ended": 1717,
+        "captured": 80,
+        "failed": 154,
+        "withdrawn": 1483
+      },
+      "ordinary": {
+        "ended": 2962,
+        "captured": 254,
+        "failed": 75,
+        "withdrawn": 2633
+      },
+      "meanDurationMonths": 3.4111989741397735
+    },
+    "invariants": {
+      "maximumPopulationUnexplained": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "residentIdentityConflicts": 0,
+      "royalMilitaryIdentityConflicts": 0,
+      "duplicateActiveMilitaryMembers": 0,
+      "genealogyBirthConflicts": 0,
+      "strictSaveValid": true
+    },
+    "perSeed": [
+      {
+        "seed": "regional-5",
+        "captures": 36,
+        "promotions": 6,
+        "reinforcedUnits": 9,
+        "warDeaths": 126,
+        "population": 180,
+        "activeStates": 4,
+        "extinctions": 3,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-6",
+        "captures": 31,
+        "promotions": 5,
+        "reinforcedUnits": 9,
+        "warDeaths": 111,
+        "population": 177,
+        "activeStates": 3,
+        "extinctions": 6,
+        "splits": 2,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-7",
+        "captures": 23,
+        "promotions": 3,
+        "reinforcedUnits": 3,
+        "warDeaths": 103,
+        "population": 177,
+        "activeStates": 4,
+        "extinctions": 3,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-8",
+        "captures": 26,
+        "promotions": 2,
+        "reinforcedUnits": 2,
+        "warDeaths": 62,
+        "population": 208,
+        "activeStates": 6,
+        "extinctions": 1,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-9",
+        "captures": 27,
+        "promotions": 7,
+        "reinforcedUnits": 10,
+        "warDeaths": 101,
+        "population": 178,
+        "activeStates": 3,
+        "extinctions": 4,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-10",
+        "captures": 24,
+        "promotions": 3,
+        "reinforcedUnits": 3,
+        "warDeaths": 95,
+        "population": 183,
+        "activeStates": 5,
+        "extinctions": 2,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-11",
+        "captures": 35,
+        "promotions": 4,
+        "reinforcedUnits": 4,
+        "warDeaths": 112,
+        "population": 193,
+        "activeStates": 5,
+        "extinctions": 3,
+        "splits": 1,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-12",
+        "captures": 17,
+        "promotions": 3,
+        "reinforcedUnits": 4,
+        "warDeaths": 90,
+        "population": 200,
+        "activeStates": 5,
+        "extinctions": 2,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-13",
+        "captures": 41,
+        "promotions": 5,
+        "reinforcedUnits": 7,
+        "warDeaths": 126,
+        "population": 189,
+        "activeStates": 5,
+        "extinctions": 2,
+        "splits": 1,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-14",
+        "captures": 18,
+        "promotions": 2,
+        "reinforcedUnits": 2,
+        "warDeaths": 96,
+        "population": 187,
+        "activeStates": 5,
+        "extinctions": 0,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-15",
+        "captures": 37,
+        "promotions": 6,
+        "reinforcedUnits": 13,
+        "warDeaths": 146,
+        "population": 178,
+        "activeStates": 4,
+        "extinctions": 3,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-16",
+        "captures": 19,
+        "promotions": 1,
+        "reinforcedUnits": 1,
+        "warDeaths": 123,
+        "population": 188,
+        "activeStates": 6,
+        "extinctions": 1,
+        "splits": 0,
+        "strictSaveValid": true
+      }
+    ]
+  },
+  "limitations": [
+    "Four paired seeds are descriptive observations, not statistical significance or a causal claim for any single parameter.",
+    "withdrawn includes real contact interruption, treaty, command ending and control change; it is not synonymous with a verified military retreat or defeat.",
+    "Original Jing Hou save was not supplied; two distinct actual recoveries of Ying were validated through controlled production transactions instead."
+  ],
+  "excludedDrafts": {
+    "military-balance-z19-initial50.json": "failed deployment; zero captures; rejected",
+    "military-balance-z19-50.json": "intermediate deployment, excluded",
+    "military-balance-z19-deployment50.json": "pre-final defense/rollback changes, excluded",
+    "military-balance-z19-100.json": "mutable worktree preliminary run, excluded",
+    "military-balance-z19-pre-rollback-fix100.json": "pre-atomic-rollback fix, excluded"
+  },
+  "verification": {
+    "unitFiles": 263,
+    "unitTests": 2099,
+    "coreChecks": {
+      "siegeBattle": 66,
+      "formationManagement": 44,
+      "royalMilitaryDOM": 243,
+      "militaryOverlay": 31,
+      "militarySecession": 59,
+      "residentFounder": 71,
+      "siegeDefense": 24
+    },
+    "characterArchiveYears": 100,
+    "characterArchiveDeterministic12Months": true,
+    "webBuild": true,
+    "desktopBuild": true,
+    "debugBuild": true
+  },
+  "comparison50": {
+    "z18": {
+      "seeds": [
+        "regional-1",
+        "regional-2",
+        "regional-3",
+        "regional-4"
+      ],
+      "yearsEach": 50,
+      "captures": 194,
+      "capturesPerActiveStateYear": 0.21726551563229118,
+      "meanFormationSize": 2.279394644935972,
+      "maximumFormationSize": 4,
+      "initialFormationSizes": [
+        2
+      ],
+      "appointments": 36,
+      "promotions": 15,
+      "reinforcementTransactions": 15,
+      "reinforcedUnits": 15,
+      "meanServiceMonths": 95.25,
+      "meanActiveStates": 4.464583333333334,
+      "finalActiveStates": [
+        4,
+        5,
+        3,
+        3
+      ],
+      "worldPopulation": [
+        121,
+        143,
+        140,
+        103
+      ],
+      "warDeaths": 579,
+      "extinctions": 11,
+      "restorations": 0,
+      "splits": 0,
+      "unifications": 0,
+      "siegeResults": null,
+      "invariants": {
+        "maximumPopulationUnexplained": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "royalMilitaryIdentityConflicts": 0,
+        "duplicateActiveMilitaryMembers": 0,
+        "genealogyBirthConflicts": 0,
+        "strictSaveValid": true
+      },
+      "perSeed": [
+        {
+          "seed": "regional-1",
+          "captures": 46,
+          "promotions": 4,
+          "reinforcedUnits": 3,
+          "warDeaths": 154,
+          "population": 121,
+          "activeStates": 4,
+          "extinctions": 2,
+          "splits": 0,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-2",
+          "captures": 58,
+          "promotions": 2,
+          "reinforcedUnits": 2,
+          "warDeaths": 139,
+          "population": 143,
+          "activeStates": 5,
+          "extinctions": 2,
+          "splits": 0,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-3",
+          "captures": 34,
+          "promotions": 4,
+          "reinforcedUnits": 5,
+          "warDeaths": 124,
+          "population": 140,
+          "activeStates": 3,
+          "extinctions": 4,
+          "splits": 0,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-4",
+          "captures": 56,
+          "promotions": 5,
+          "reinforcedUnits": 5,
+          "warDeaths": 162,
+          "population": 103,
+          "activeStates": 3,
+          "extinctions": 3,
+          "splits": 0,
+          "strictSaveValid": true
+        }
+      ]
+    },
+    "z19": {
+      "seeds": [
+        "regional-1",
+        "regional-2",
+        "regional-3",
+        "regional-4"
+      ],
+      "yearsEach": 50,
+      "captures": 98,
+      "capturesPerActiveStateYear": 0.09609413302827258,
+      "meanFormationSize": 2.3527573529411763,
+      "maximumFormationSize": 4,
+      "initialFormationSizes": [
+        2
+      ],
+      "appointments": 56,
+      "promotions": 19,
+      "reinforcementTransactions": 29,
+      "reinforcedUnits": 30,
+      "meanServiceMonths": 97.01785714285714,
+      "meanActiveStates": 5.099166666666667,
+      "finalActiveStates": [
+        5,
+        5,
+        4,
+        4
+      ],
+      "worldPopulation": [
+        168,
+        180,
+        177,
+        162
+      ],
+      "warDeaths": 265,
+      "extinctions": 8,
+      "restorations": 0,
+      "splits": 0,
+      "unifications": 0,
+      "siegeResults": {
+        "started": 761,
+        "ended": 755,
+        "captured": 98,
+        "failed": 41,
+        "withdrawn": 616,
+        "defended": 41,
+        "duplicateCredit": 0,
+        "unattributedOwnershipChanges": 0,
+        "militaryDeaths": 29,
+        "retirements": 16,
+        "capital": {
+          "ended": 240,
+          "captured": 24,
+          "failed": 34,
+          "withdrawn": 182
+        },
+        "ordinary": {
+          "ended": 515,
+          "captured": 74,
+          "failed": 7,
+          "withdrawn": 434
+        },
+        "meanDurationMonths": 3.852980132450331
+      },
+      "invariants": {
+        "maximumPopulationUnexplained": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "royalMilitaryIdentityConflicts": 0,
+        "duplicateActiveMilitaryMembers": 0,
+        "genealogyBirthConflicts": 0,
+        "strictSaveValid": true
+      },
+      "perSeed": [
+        {
+          "seed": "regional-1",
+          "captures": 32,
+          "promotions": 7,
+          "reinforcedUnits": 10,
+          "warDeaths": 85,
+          "population": 168,
+          "activeStates": 5,
+          "extinctions": 1,
+          "splits": 0,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-2",
+          "captures": 24,
+          "promotions": 3,
+          "reinforcedUnits": 5,
+          "warDeaths": 58,
+          "population": 180,
+          "activeStates": 5,
+          "extinctions": 2,
+          "splits": 0,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-3",
+          "captures": 17,
+          "promotions": 3,
+          "reinforcedUnits": 5,
+          "warDeaths": 54,
+          "population": 177,
+          "activeStates": 4,
+          "extinctions": 2,
+          "splits": 0,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-4",
+          "captures": 25,
+          "promotions": 6,
+          "reinforcedUnits": 10,
+          "warDeaths": 68,
+          "population": 162,
+          "activeStates": 4,
+          "extinctions": 3,
+          "splits": 0,
+          "strictSaveValid": true
+        }
+      ]
+    }
+  }
+}

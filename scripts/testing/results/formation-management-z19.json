@@ -41,7 +41,11 @@
       "natural-death: actual life and command end survive a strict second read",
       "battle-death: original real military life transaction preserves the exact population delta",
       "battle-death: the original command ends without a ghost formation",
-      "battle-death: actual life and command end survive a strict second read"
+      "battle-death: actual life and command end survive a strict second read",
+      "real withdrawal clears the hostile target and persists twelve months of homeward rest",
+      "withdrawal creates neither residents nor extra random draws",
+      "saved homeward withdrawal resumes twelve real months deterministically",
+      "withdrawal continuation survives a second read without mutation"
     ],
     "observations": [
       {
