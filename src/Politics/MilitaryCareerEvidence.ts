@@ -1,3 +1,4 @@
+import {deriveMilitaryActivities} from "./MilitaryExperience";
 import type { MilitaryPerson, MilitaryFormation } from "./MilitaryCommandRegistry";
 import type { WorldEvent } from "../History/WorldHistory";
 
@@ -33,7 +34,7 @@ export function deriveMilitaryCareer(person: MilitaryPerson, formations: Militar
   const currentUnitCount = new Set(active.flatMap(f => f.memberUnitIds)).size;
   // Time alone contributes at most .35; combined appointment advantage is capped at 2x.
   const weight = 1 + Math.min(.35, serviceMonths / 240 * .35) + Math.min(.5, distinctCapturedCities * .1 + distinctCapitalCities * .05) + Math.min(.15, recordedCommandSize / 12 * .15);
-  return { serviceMonths, appointmentCount: appointments.length, reappointments: Math.max(0, appointments.length - 1),
+  return { activities:deriveMilitaryActivities(person,formations,events,worldMonth,captures.map(e=>e.id)),serviceMonths, appointmentCount: appointments.length, reappointments: Math.max(0, appointments.length - 1),
     ordinaryCaptures, capitalCaptures, distinctCapturedCities, unclassifiedCaptures: captures.length - ordinaryCaptures - capitalCaptures, verifiedCaptures: captures.length,
     capturedEventIds: captures.map(e => e.id), recordedCommandSize, currentUnitCount, hasActiveFormation: active.length > 0,
     ageRetired: person.status !== "ACTIVE" && appointments.at(-1)?.endReason === "AGE_RETIREMENT", dead: person.status === "DEAD",

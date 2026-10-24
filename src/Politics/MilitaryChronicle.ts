@@ -16,6 +16,7 @@ export interface MilitaryChronicleEntry {
   text: string;
   source: string;
   victory: boolean;
+  activityKind?:import("./MilitaryExperience").MilitaryActivity["kind"];
 }
 
 /** Frozen at event creation after validating the live command. No current-map inference. */
@@ -56,7 +57,7 @@ export function formatRulerMilitaryEvent(event: WorldEvent, ruler: { accessionYe
 
 /** One projection of the existing events. No new history facts or military score. */
 export function deriveMilitaryChronicle(person: MilitaryPerson, formations: MilitaryFormation[], events: WorldEvent[], worldMonth: number, factionId?: string) {
-  const captures = new Set(deriveMilitaryCareer(person, formations, events, worldMonth).capturedEventIds);
+  const career=deriveMilitaryCareer(person,formations,events,worldMonth),captures=new Set(career.capturedEventIds),activities=new Map(career.activities.map(a=>[a.eventId,a.kind]));
   const byId = new Map(events.map(e => [e.id, e]));
   const groups = new Set<string>();
   const entries: MilitaryChronicleEntry[] = [];
@@ -101,7 +102,7 @@ export function deriveMilitaryChronicle(person: MilitaryPerson, formations: Mili
       text = `${name}统兵参与${political.kind === "DEPOSITION" ? "宗室废立" : "继统政治压力"}，军事参与者并非新君。`;
     }
     if (text) entries.push({ eventId: e.id,cityId:e.cityId, worldMonth: month, factionId: secession?e.targetFactionId!:e.actorFactionId!, commandId: commandId || undefined, text,
-      source: `${e.type} · ${e.id}`, victory });
+      source: `${e.type} · ${e.id}`, activityKind:activities.get(e.id),victory });
   }
   return entries;
 }
