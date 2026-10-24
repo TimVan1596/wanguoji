@@ -28,6 +28,10 @@ export function militaryMilestones(person:MilitaryPerson,entries:MilitaryChronic
         const faction=context.factions?.get(entry.factionId),country=faction?getHistoricalFactionIdentity({...faction,displayName:entry.factionId},entry.worldMonth).name:entry.factionId;
         const issuer=event?.rulerId&&typeof event.metadata?.authorizingRulerTitle==="string"?event.metadata.authorizingRulerTitle:undefined;
         text=person.appointments.some(a=>a.officeHistory?.[0]?.eventId===entry.eventId)?`${issuer?`${issuer}在位时，${name}获授`:`${country}授${name}为`}${MILITARY_OFFICE_NAMES[grant.office]}。`:`${issuer?`${issuer}在位时，${name}`:`${name}于${country}`}晋为${MILITARY_OFFICE_NAMES[grant.office]}。`;
+        if(grant.promotionBasis){
+          const basis=grant.promotionBasis==='SERVICE'?'依服役资历':grant.promotionBasis==='ACTIVITY'?'因实际军旅经历':'凭实际取城战功';
+          text=`${name}${basis}晋为${MILITARY_OFFICE_NAMES[grant.office]}。`;
+        }
       }
     }
     if(type==="military-person-died")text=`${name}${person.deathCause==="NATURAL_DEATH"?"自然去世":person.deathCause==="SIEGE_LOSS"?"在战乱中去世":person.deathCause==="BATTLE_DEATH"?"在战乱中去世":"去世"}。`;
