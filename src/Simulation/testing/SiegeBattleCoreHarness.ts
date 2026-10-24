@@ -1,3 +1,4 @@
+import {checkCityHistoryInteraction} from "./RoyalArchiveInteractionHarness";
 import Military from "../../Politics/MilitaryCommandRegistry";
 import Factions from "../FactionRegistry";
 import {createNaturalCore} from './NaturalCoreHarness';
@@ -43,6 +44,7 @@ export async function runSiegeBattleCore(seed='siege-defense-z10'){
     const s=scenario(2,0,logical);s.tick(0);const wall=s.city.defense;for(const u of s.attackers)place(u,-1024,-1024);s.tick(1);
     check(!s.city.underSiege&&s.city.defense===wall,`${logical}: departed actual attackers stop damage and record contact ending`);
     check(History.getEvents().some(e=>e.type==='siege-ended'&&e.metadata?.reason==='CONTACT_ENDED'),`${logical}: withdrawal source is real lost contact`);
+    if(!logical)await checkCityHistoryInteraction(core,s.city,check);
    }
    {
     const s=scenario(2,0,logical);s.tick(0);const wall=s.city.defense;
@@ -61,7 +63,6 @@ export async function runSiegeBattleCore(seed='siege-defense-z10'){
   {
    const s=scenario(2,4),commander=s.defenders.find(u=>(Military as any).isEligible(u,s.m))!;
    check(commander,'real local defensive commander satisfies original eligibility');
-   const members=[commander,...s.defenders.filter(u=>u!==commander)].slice(0,2);
    check((Military as any).appoint(commander,s.owner.name,s.m,[commander.player.logicalUnitId!]),'actual home formation, no virtual garrison');
    for(let n=0;n<=12&&!History.getEvents().some(e=>e.type==='siege-defended'&&e.metadata?.personId===commander.militaryPersonId);n++)s.tick(n);
    const defended=History.getEvents().find(e=>e.type==='siege-defended'&&e.metadata?.personId===commander.militaryPersonId);

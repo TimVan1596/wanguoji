@@ -1,14 +1,15 @@
 // Freeze the real working production source once: no hot reloads, candidates or alternative simulator.
 const fs=require('node:fs'),path=require('node:path'),os=require('node:os'),crypto=require('node:crypto'),{spawn}=require('node:child_process');
-const repo=process.cwd(),root=fs.mkdtempSync(path.join(os.tmpdir(),'wanguoji-battle-z19-')),port=5230;
+const label=process.env.WANGUOJI_COHORT_LABEL||'z19';
+const repo=process.cwd(),root=fs.mkdtempSync(path.join(os.tmpdir(),'wanguoji-battle-'+label+'-')),port=5230;
 for(const name of ['src','public','index.html','vite.config.ts','tsconfig.json','package.json'])fs.cpSync(path.join(repo,name),path.join(root,name),{recursive:true});
 fs.mkdirSync(path.join(root,'desktop'));fs.copyFileSync(path.join(repo,'desktop/DesktopSecurity.ts'),path.join(root,'desktop/DesktopSecurity.ts'));
 fs.symlinkSync(path.join(repo,'node_modules'),path.join(root,'node_modules'),'dir');
 const source=[];function scan(dir){for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,entry.name);if(entry.isDirectory())scan(p);else if(/\.tsx?$/.test(p)&&!p.includes('.test.')&&!p.includes('/testing/'))source.push(p);}}scan(path.join(root,'src'));
 const hash=crypto.createHash('sha256');for(const p of source.sort()){hash.update(path.relative(root,p));hash.update(fs.readFileSync(p));}
 const years=process.argv.includes('--50')?50:100;
-const seeds=Array.from({length:years===50?4:16},(_,i)=>'regional-'+(i+1)),out=path.join(repo,`scripts/testing/results/military-balance-z19-final${years}.json`);
-const manifest=path.join(repo,`scripts/testing/results/battle-z19-source${years===50?'50':''}.json`),productionSha256=hash.digest('hex');
+const seeds=Array.from({length:years===50?4:(label==='z20'?8:16)},(_,i)=>'regional-'+(i+1)),out=path.join(repo,`scripts/testing/results/military-balance-${label}-final${years}.json`);
+const manifest=path.join(repo,`scripts/testing/results/battle-${label}-source${years===50?'50':''}.json`),productionSha256=hash.digest('hex');
 if(fs.existsSync(out)){const prior=JSON.parse(fs.readFileSync(manifest));if(prior.productionSha256!==productionSha256)throw Error('Cannot resume results from different production source');}
 fs.writeFileSync(manifest,JSON.stringify({productionSha256,seeds,years,scope:years===50?'real frozen production Core; original four paired seeds; no candidate rule patches':'real frozen production Core; original four + twelve additional fixed seeds; no candidate rule patches'},null,2));
 fs.writeFileSync(path.join(root,'frozen.vite.config.ts'),"import configure from './vite.config';export default env=>{const c=configure(env);return {...c,optimizeDeps:{include:['react','react-dom','react-dom/client','react-dom/server']},server:{...c.server,hmr:false,watch:{ignored:['**/*']}},cacheDir:'.vite-battle-z19'}};");

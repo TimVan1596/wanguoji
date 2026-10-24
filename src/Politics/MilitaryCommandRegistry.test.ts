@@ -143,7 +143,7 @@ it.each(["user","player"])("blocks a NORMAL unit retaining a %s royal identity f
   team.users.add(royal);team.users.add(ordinary);
   const draw=vi.spyOn(worldRandom,"next").mockReturnValue(0);
   registry.update(12,[team],[]);
-  expect(registry.getPeople().map(p=>p.sourceUserId)).toEqual([ordinary.id]);expect(registry.getFormations()[0].memberUnitIds).toEqual([ordinary.player.logicalUnitId]);expect(royal.militaryPersonId).toBeUndefined();
+  expect(registry.getPeople().map(p=>p.sourceUserId)).toEqual([ordinary.id]);expect(registry.getFormations()[0].memberUnitIds).toEqual([ordinary.player.logicalUnitId]);expect(royal.militaryPersonId).toBeUndefined();expect(draw).toHaveBeenCalledTimes(2);
 });
 it("revokes a formation if its commander acquires an incompatible royal binding, without recording death",()=>{
   const registry=new MilitaryCommandRegistryStore(),team:any={name:"qin",status:"ACTIVE",users:new Set(),cities:[]};

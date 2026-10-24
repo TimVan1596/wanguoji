@@ -1,0 +1,763 @@
+{
+  "productionSha256": "10ad4d73c0915ba40b00f748612c1f4b674a3d616cbfcc5128e1fb55f53451bf",
+  "comparison50": {
+    "z19": {
+      "offices": {
+        "xiaowei": 0,
+        "pijiang": 56,
+        "jiangjun": 15,
+        "shangjiangjun": 4
+      },
+      "singleCommanderBattles": 0,
+      "singleCommanderCaptures": 0,
+      "seeds": [
+        "regional-1",
+        "regional-2",
+        "regional-3",
+        "regional-4"
+      ],
+      "yearsEach": 50,
+      "captures": 98,
+      "capturesPerActiveStateYear": 0.09609413302827258,
+      "meanFormationSize": 2.3527573529411763,
+      "maximumFormationSize": 4,
+      "initialFormationSizes": [
+        2
+      ],
+      "appointments": 56,
+      "promotions": 19,
+      "reinforcementTransactions": 29,
+      "reinforcedUnits": 30,
+      "meanServiceMonths": 97.01785714285714,
+      "meanActiveStates": 5.099166666666667,
+      "finalActiveStates": [
+        5,
+        5,
+        4,
+        4
+      ],
+      "worldPopulation": [
+        168,
+        180,
+        177,
+        162
+      ],
+      "warDeaths": 265,
+      "extinctions": 8,
+      "restorations": 0,
+      "splits": 0,
+      "unifications": 0,
+      "siegeResults": {
+        "started": 761,
+        "ended": 755,
+        "captured": 98,
+        "failed": 41,
+        "withdrawn": 616,
+        "defended": 41,
+        "duplicateCredit": 0,
+        "unattributedOwnershipChanges": 0,
+        "militaryDeaths": 29,
+        "retirements": 16,
+        "capital": {
+          "ended": 240,
+          "captured": 24,
+          "failed": 34,
+          "withdrawn": 182
+        },
+        "ordinary": {
+          "ended": 515,
+          "captured": 74,
+          "failed": 7,
+          "withdrawn": 434
+        },
+        "meanDurationMonths": 3.852980132450331
+      },
+      "invariants": {
+        "maximumPopulationUnexplained": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "royalMilitaryIdentityConflicts": 0,
+        "duplicateActiveMilitaryMembers": 0,
+        "genealogyBirthConflicts": 0,
+        "strictSaveValid": true
+      },
+      "perSeed": [
+        {
+          "seed": "regional-1",
+          "captures": 32,
+          "promotions": 7,
+          "reinforcedUnits": 10,
+          "warDeaths": 85,
+          "population": 168,
+          "activeStates": 5,
+          "extinctions": 1,
+          "splits": 0,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-2",
+          "captures": 24,
+          "promotions": 3,
+          "reinforcedUnits": 5,
+          "warDeaths": 58,
+          "population": 180,
+          "activeStates": 5,
+          "extinctions": 2,
+          "splits": 0,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-3",
+          "captures": 17,
+          "promotions": 3,
+          "reinforcedUnits": 5,
+          "warDeaths": 54,
+          "population": 177,
+          "activeStates": 4,
+          "extinctions": 2,
+          "splits": 0,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-4",
+          "captures": 25,
+          "promotions": 6,
+          "reinforcedUnits": 10,
+          "warDeaths": 68,
+          "population": 162,
+          "activeStates": 4,
+          "extinctions": 3,
+          "splits": 0,
+          "strictSaveValid": true
+        }
+      ]
+    },
+    "z20": {
+      "offices": {
+        "xiaowei": 54,
+        "pijiang": 9,
+        "jiangjun": 1,
+        "shangjiangjun": 1
+      },
+      "singleCommanderBattles": 56,
+      "singleCommanderCaptures": 2,
+      "seeds": [
+        "regional-1",
+        "regional-2",
+        "regional-3",
+        "regional-4"
+      ],
+      "yearsEach": 50,
+      "captures": 38,
+      "capturesPerActiveStateYear": 0.029864431200471546,
+      "meanFormationSize": 1.3451671417465665,
+      "maximumFormationSize": 4,
+      "initialFormationSizes": [
+        1
+      ],
+      "appointments": 54,
+      "promotions": 11,
+      "reinforcementTransactions": 12,
+      "reinforcedUnits": 12,
+      "meanServiceMonths": 71.31481481481481,
+      "meanActiveStates": 6.3620833333333335,
+      "finalActiveStates": [
+        6,
+        7,
+        5,
+        6
+      ],
+      "worldPopulation": [
+        182,
+        197,
+        182,
+        177
+      ],
+      "warDeaths": 182,
+      "extinctions": 4,
+      "restorations": 4,
+      "splits": 3,
+      "unifications": 0,
+      "siegeResults": {
+        "started": 1795,
+        "ended": 1786,
+        "captured": 38,
+        "failed": 79,
+        "withdrawn": 1669,
+        "defended": 79,
+        "duplicateCredit": 0,
+        "unattributedOwnershipChanges": 0,
+        "militaryDeaths": 42,
+        "retirements": 3,
+        "capital": {
+          "ended": 913,
+          "captured": 17,
+          "failed": 49,
+          "withdrawn": 847
+        },
+        "ordinary": {
+          "ended": 873,
+          "captured": 21,
+          "failed": 30,
+          "withdrawn": 822
+        },
+        "meanDurationMonths": 3.1265397536394177
+      },
+      "invariants": {
+        "maximumPopulationUnexplained": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "royalMilitaryIdentityConflicts": 0,
+        "duplicateActiveMilitaryMembers": 0,
+        "genealogyBirthConflicts": 0,
+        "strictSaveValid": true
+      },
+      "perSeed": [
+        {
+          "seed": "regional-1",
+          "captures": 3,
+          "promotions": 2,
+          "reinforcedUnits": 3,
+          "warDeaths": 40,
+          "population": 182,
+          "activeStates": 6,
+          "extinctions": 0,
+          "splits": 0,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-2",
+          "captures": 7,
+          "promotions": 2,
+          "reinforcedUnits": 2,
+          "warDeaths": 50,
+          "population": 197,
+          "activeStates": 7,
+          "extinctions": 0,
+          "splits": 0,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-3",
+          "captures": 10,
+          "promotions": 3,
+          "reinforcedUnits": 3,
+          "warDeaths": 38,
+          "population": 182,
+          "activeStates": 5,
+          "extinctions": 1,
+          "splits": 0,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-4",
+          "captures": 18,
+          "promotions": 4,
+          "reinforcedUnits": 4,
+          "warDeaths": 54,
+          "population": 177,
+          "activeStates": 6,
+          "extinctions": 3,
+          "splits": 3,
+          "strictSaveValid": true
+        }
+      ]
+    }
+  },
+  "comparison100": {
+    "z19": {
+      "offices": {
+        "xiaowei": 0,
+        "pijiang": 89,
+        "jiangjun": 18,
+        "shangjiangjun": 6
+      },
+      "singleCommanderBattles": 0,
+      "singleCommanderCaptures": 0,
+      "seeds": [
+        "regional-1",
+        "regional-2",
+        "regional-3",
+        "regional-4"
+      ],
+      "yearsEach": 100,
+      "captures": 147,
+      "capturesPerActiveStateYear": 0.07822269522415858,
+      "meanFormationSize": 2.3801893663510563,
+      "maximumFormationSize": 4,
+      "initialFormationSizes": [
+        2
+      ],
+      "appointments": 89,
+      "promotions": 24,
+      "reinforcementTransactions": 35,
+      "reinforcedUnits": 37,
+      "meanServiceMonths": 92.50561797752809,
+      "meanActiveStates": 4.698124999999999,
+      "finalActiveStates": [
+        3,
+        5,
+        4,
+        4
+      ],
+      "worldPopulation": [
+        157,
+        183,
+        177,
+        182
+      ],
+      "warDeaths": 448,
+      "extinctions": 14,
+      "restorations": 0,
+      "splits": 3,
+      "unifications": 0,
+      "siegeResults": {
+        "started": 1665,
+        "ended": 1660,
+        "captured": 147,
+        "failed": 57,
+        "withdrawn": 1456,
+        "defended": 57,
+        "duplicateCredit": 0,
+        "unattributedOwnershipChanges": 0,
+        "militaryDeaths": 73,
+        "retirements": 28,
+        "capital": {
+          "ended": 476,
+          "captured": 35,
+          "failed": 47,
+          "withdrawn": 394
+        },
+        "ordinary": {
+          "ended": 1184,
+          "captured": 112,
+          "failed": 10,
+          "withdrawn": 1062
+        },
+        "meanDurationMonths": 3.3481927710843373
+      },
+      "invariants": {
+        "maximumPopulationUnexplained": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "royalMilitaryIdentityConflicts": 0,
+        "duplicateActiveMilitaryMembers": 0,
+        "genealogyBirthConflicts": 0,
+        "strictSaveValid": true
+      },
+      "perSeed": [
+        {
+          "seed": "regional-1",
+          "captures": 45,
+          "promotions": 9,
+          "reinforcedUnits": 13,
+          "warDeaths": 131,
+          "population": 157,
+          "activeStates": 3,
+          "extinctions": 5,
+          "splits": 2,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-2",
+          "captures": 36,
+          "promotions": 4,
+          "reinforcedUnits": 6,
+          "warDeaths": 100,
+          "population": 183,
+          "activeStates": 5,
+          "extinctions": 2,
+          "splits": 0,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-3",
+          "captures": 23,
+          "promotions": 4,
+          "reinforcedUnits": 6,
+          "warDeaths": 100,
+          "population": 177,
+          "activeStates": 4,
+          "extinctions": 3,
+          "splits": 0,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-4",
+          "captures": 43,
+          "promotions": 7,
+          "reinforcedUnits": 12,
+          "warDeaths": 117,
+          "population": 182,
+          "activeStates": 4,
+          "extinctions": 4,
+          "splits": 1,
+          "strictSaveValid": true
+        }
+      ]
+    },
+    "z20": {
+      "offices": {
+        "xiaowei": 100,
+        "pijiang": 15,
+        "jiangjun": 3,
+        "shangjiangjun": 2
+      },
+      "singleCommanderBattles": 105,
+      "singleCommanderCaptures": 3,
+      "seeds": [
+        "regional-1",
+        "regional-2",
+        "regional-3",
+        "regional-4"
+      ],
+      "yearsEach": 100,
+      "captures": 73,
+      "capturesPerActiveStateYear": 0.030663679641556984,
+      "meanFormationSize": 1.3505388542257515,
+      "maximumFormationSize": 4,
+      "initialFormationSizes": [
+        1
+      ],
+      "appointments": 100,
+      "promotions": 20,
+      "reinforcementTransactions": 29,
+      "reinforcedUnits": 29,
+      "meanServiceMonths": 70.49,
+      "meanActiveStates": 5.951666666666667,
+      "finalActiveStates": [
+        5,
+        7,
+        5,
+        5
+      ],
+      "worldPopulation": [
+        189,
+        203,
+        185,
+        189
+      ],
+      "warDeaths": 371,
+      "extinctions": 9,
+      "restorations": 4,
+      "splits": 3,
+      "unifications": 0,
+      "siegeResults": {
+        "started": 3778,
+        "ended": 3770,
+        "captured": 73,
+        "failed": 147,
+        "withdrawn": 3550,
+        "defended": 147,
+        "duplicateCredit": 0,
+        "unattributedOwnershipChanges": 0,
+        "militaryDeaths": 92,
+        "retirements": 12,
+        "capital": {
+          "ended": 1523,
+          "captured": 26,
+          "failed": 84,
+          "withdrawn": 1413
+        },
+        "ordinary": {
+          "ended": 2247,
+          "captured": 47,
+          "failed": 63,
+          "withdrawn": 2137
+        },
+        "meanDurationMonths": 3.0811671087533155
+      },
+      "invariants": {
+        "maximumPopulationUnexplained": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "royalMilitaryIdentityConflicts": 0,
+        "duplicateActiveMilitaryMembers": 0,
+        "genealogyBirthConflicts": 0,
+        "strictSaveValid": true
+      },
+      "perSeed": [
+        {
+          "seed": "regional-1",
+          "captures": 21,
+          "promotions": 7,
+          "reinforcedUnits": 12,
+          "warDeaths": 94,
+          "population": 189,
+          "activeStates": 5,
+          "extinctions": 2,
+          "splits": 0,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-2",
+          "captures": 14,
+          "promotions": 4,
+          "reinforcedUnits": 6,
+          "warDeaths": 97,
+          "population": 203,
+          "activeStates": 7,
+          "extinctions": 0,
+          "splits": 0,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-3",
+          "captures": 12,
+          "promotions": 4,
+          "reinforcedUnits": 6,
+          "warDeaths": 78,
+          "population": 185,
+          "activeStates": 5,
+          "extinctions": 2,
+          "splits": 0,
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-4",
+          "captures": 26,
+          "promotions": 5,
+          "reinforcedUnits": 5,
+          "warDeaths": 102,
+          "population": 189,
+          "activeStates": 5,
+          "extinctions": 5,
+          "splits": 3,
+          "strictSaveValid": true
+        }
+      ]
+    }
+  },
+  "all8HundredYears": {
+    "offices": {
+      "xiaowei": 214,
+      "pijiang": 26,
+      "jiangjun": 4,
+      "shangjiangjun": 2
+    },
+    "singleCommanderBattles": 216,
+    "singleCommanderCaptures": 4,
+    "seeds": [
+      "regional-1",
+      "regional-2",
+      "regional-3",
+      "regional-4",
+      "regional-5",
+      "regional-6",
+      "regional-7",
+      "regional-8"
+    ],
+    "yearsEach": 100,
+    "captures": 113,
+    "capturesPerActiveStateYear": 0.022767339948622376,
+    "meanFormationSize": 1.2492757929139122,
+    "maximumFormationSize": 4,
+    "initialFormationSizes": [
+      1
+    ],
+    "appointments": 214,
+    "promotions": 32,
+    "reinforcementTransactions": 47,
+    "reinforcedUnits": 47,
+    "meanServiceMonths": 62.86915887850467,
+    "meanActiveStates": 6.204062500000001,
+    "finalActiveStates": [
+      5,
+      7,
+      5,
+      5,
+      5,
+      7,
+      7,
+      5
+    ],
+    "worldPopulation": [
+      189,
+      203,
+      185,
+      189,
+      198,
+      201,
+      209,
+      174
+    ],
+    "warDeaths": 852,
+    "extinctions": 12,
+    "restorations": 4,
+    "splits": 3,
+    "unifications": 0,
+    "siegeResults": {
+      "started": 8537,
+      "ended": 8516,
+      "captured": 113,
+      "failed": 368,
+      "withdrawn": 8035,
+      "defended": 368,
+      "duplicateCredit": 0,
+      "unattributedOwnershipChanges": 0,
+      "militaryDeaths": 196,
+      "retirements": 26,
+      "capital": {
+        "ended": 3930,
+        "captured": 38,
+        "failed": 219,
+        "withdrawn": 3673
+      },
+      "ordinary": {
+        "ended": 4586,
+        "captured": 75,
+        "failed": 149,
+        "withdrawn": 4362
+      },
+      "meanDurationMonths": 3.023602630342884
+    },
+    "invariants": {
+      "maximumPopulationUnexplained": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "residentIdentityConflicts": 0,
+      "royalMilitaryIdentityConflicts": 0,
+      "duplicateActiveMilitaryMembers": 0,
+      "genealogyBirthConflicts": 0,
+      "strictSaveValid": true
+    },
+    "perSeed": [
+      {
+        "seed": "regional-1",
+        "captures": 21,
+        "promotions": 7,
+        "reinforcedUnits": 12,
+        "warDeaths": 94,
+        "population": 189,
+        "activeStates": 5,
+        "extinctions": 2,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-2",
+        "captures": 14,
+        "promotions": 4,
+        "reinforcedUnits": 6,
+        "warDeaths": 97,
+        "population": 203,
+        "activeStates": 7,
+        "extinctions": 0,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-3",
+        "captures": 12,
+        "promotions": 4,
+        "reinforcedUnits": 6,
+        "warDeaths": 78,
+        "population": 185,
+        "activeStates": 5,
+        "extinctions": 2,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-4",
+        "captures": 26,
+        "promotions": 5,
+        "reinforcedUnits": 5,
+        "warDeaths": 102,
+        "population": 189,
+        "activeStates": 5,
+        "extinctions": 5,
+        "splits": 3,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-5",
+        "captures": 7,
+        "promotions": 2,
+        "reinforcedUnits": 4,
+        "warDeaths": 107,
+        "population": 198,
+        "activeStates": 5,
+        "extinctions": 2,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-6",
+        "captures": 8,
+        "promotions": 2,
+        "reinforcedUnits": 3,
+        "warDeaths": 127,
+        "population": 201,
+        "activeStates": 7,
+        "extinctions": 0,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-7",
+        "captures": 8,
+        "promotions": 1,
+        "reinforcedUnits": 1,
+        "warDeaths": 103,
+        "population": 209,
+        "activeStates": 7,
+        "extinctions": 0,
+        "splits": 0,
+        "strictSaveValid": true
+      },
+      {
+        "seed": "regional-8",
+        "captures": 17,
+        "promotions": 7,
+        "reinforcedUnits": 10,
+        "warDeaths": 144,
+        "population": 174,
+        "activeStates": 5,
+        "extinctions": 1,
+        "splits": 0,
+        "strictSaveValid": true
+      }
+    ]
+  },
+  "promotionRules": {
+    "PIJIANG": {
+      "serviceMonths": 24,
+      "unusedCaptures": 1
+    },
+    "JIANGJUN": {
+      "serviceMonths": 60,
+      "unusedCaptures": 2
+    },
+    "SHANGJIANGJUN": {
+      "serviceMonths": 120,
+      "monthsAfterGeneral": 36,
+      "newUnusedCapturesAfterGeneral": 3
+    }
+  },
+  "verification": {
+    "unitFiles": 265,
+    "unitTests": 2105,
+    "coreChecks": {
+      "siegeBattleAndCityDOM": 87,
+      "formationManagement": 46,
+      "singleArcadeMovementAndOverlay": 33,
+      "royalMilitaryAndDOM": 244,
+      "militarySecession": 60,
+      "residentFounder": 71,
+      "siegeDefense": 24
+    },
+    "saveSchema": 25
+  },
+  "limitations": [
+    "Rank counts are cumulative office grants, not simultaneous living generals.",
+    "withdrawn includes actual contact, treaty, command or control interruption, not necessarily a commanded retreat.",
+    "Four paired seeds are descriptive observations, not statistical significance.",
+    "No new siege formula: the z19 equation is unchanged except that a real single attacker can participate; one attacker exerts half the undefended pressure of two.",
+    "No new political opportunity or probability. A lone officer cannot supply the existing military secession transaction with imaginary followers."
+  ]
+}

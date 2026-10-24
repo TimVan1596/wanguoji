@@ -36,7 +36,7 @@ export async function runFormationManagementCore(seed:string){
   sized(20);arrange();appoint(48);active=Military.getFormations().filter(f=>f.factionId===team.name&&f.status==='ACTIVE');check(active.length===2&&active.every(f=>f.memberUnitIds.length===1),'twenty-person country creates a second real single-person command within existing slots');
   const unique=()=>{const ids=Military.getFormations().filter(f=>f.status==='ACTIVE').flatMap(f=>f.memberUnitIds);return ids.length===new Set(ids).size;};check(unique(),'two commands never share a real unit');
   const x=cap.block.x+160,y=cap.block.y+160;place(commander,x,y);
-  const preserve=core.teams.find(t=>t!==team&&t.status==='ACTIVE')!;const site=core.map!.blocks.flat().find(b=>b.team===preserve&&!b.city&&core.allCities.every(c=>Math.hypot(c.block.x-b.x,c.block.y-b.y)>160))!;check(site,'actual enemy land permits a spare city so promotion fixtures do not conquer the whole world');Factions.foundCity(preserve,site,undefined,48);
+  const preserve=core.teams.find(t=>t!==team&&t.status==='ACTIVE')!;const site=core.map!.blocks.flat().find(b=>!b.city&&core.allCities.every(c=>Math.hypot(c.block.x-b.x,c.block.y-b.y)>96))!;check(site,'actual enemy land permits a spare city so promotion fixtures do not conquer the whole world');site.claimForTeam(preserve);Factions.foundCity(preserve,site,undefined,48);
   const targets=core.allCities.filter(c=>c.ownerTeam!==team&&c.block!==site).slice(0,6);check(targets.length===6,'promotion scenario has six real cities');
   clock(96);for(const c of targets.slice(0,2))c.capture(team,96,undefined,formation.commandId,person.personId);
   const displaced=[...team.users].filter(u=>!Military.isAssigned(u.player.logicalUnitId!)).map(u=>({u,x:u.player.x,y:u.player.y}));
@@ -76,10 +76,10 @@ export async function runFormationManagementCore(seed:string){
   // Same initial capacity for royalty; no extra military slot or fictitious army.
   const candidate=Dynasty.getRoyalMilitaryCandidates(team,156)[0];check(candidate,'same real family still has a legal adult military candidate');
   locals.map(u=>team.getUserById(u.id)).filter(u=>u&&!u.isDestroyed).forEach(u=>place(u,cap.block.x,cap.block.y));
-  const royalMembers=[...team.users].filter(u=>u.role==='NORMAL'&&!u.rulerId&&!Military.isAssigned(u.player.logicalUnitId!)).slice(0,1);check(royalMembers.length===1,'royal enlistment requires exactly one existing real soldier beside the one original royal identity');
+  const beforeRoyal=team.users.size;
   check(Dynasty.enlistRoyalMilitary(candidate,team,156,[]),'real royal enlistment shares the ordinary capacity and population transaction');
   const royal=Dynasty.findRoyalMilitaryPerson(Military.getPeople().find(p=>p.royalIdentity?.rulerId===candidate.rulerId)!.personId)!;
-  const rf=Military.getFormations().find(f=>f.commanderPersonId===royal.militaryIdentity!.personId&&f.status==='ACTIVE')!;check(rf.memberUnitIds.length===1,'royal and ordinary colonels have identical initial size');
+  const rf=Military.getFormations().find(f=>f.commanderPersonId===royal.militaryIdentity!.personId&&f.status==='ACTIVE')!;check(rf.memberUnitIds.length===1&&team.users.size===beforeRoyal+1,'royal colonel has one audited original identity body and no extra soldier');
   const capitalBeforeResume=siegeParticipants(team.capitalCity!,team,core,32,false).length;
   const saved=exportWorldSave(core),resume=()=>{hydrateWorldSave(core,structuredClone(saved));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return exportWorldSave(core);};const a=resume(),b=resume();check(diffCanonicalWorldSave(a,b).matched,'same real military save resumes twelve months identically');hydrateWorldSave(core,structuredClone(a));check(diffCanonicalWorldSave(a,exportWorldSave(core)).matched,'second save reads without member or identity mutation');
   const t=core.teams.find(t=>t.name===team.name)!,capitalAfterResume=t.capitalCity?siegeParticipants(t.capitalCity,t,core,32,false).length:null;

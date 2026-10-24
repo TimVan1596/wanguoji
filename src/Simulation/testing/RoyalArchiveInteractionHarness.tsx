@@ -3,7 +3,7 @@ import {createRoot} from "react-dom/client";
 import {flushSync} from "react-dom";
 import {Provider} from "react-redux";
 import {store} from "../../store";
-import {setTeams,setWorldYear,setSelectedFactionName,setFactionDetailTab} from "../../store/rootSlice";
+import {setSelectedCityId,setTeams,setWorldYear,setSelectedFactionName,setFactionDetailTab} from "../../store/rootSlice";
 import FactionDetails from "../../UI/Components/FactionDetails";
 import type Core from "../../Game/Core";
 import {exportWorldSave} from "../../Persistence/WorldSaveExporter";
@@ -186,4 +186,20 @@ export async function checkMilitaryAccessionNavigation(core:Core,factionId:strin
   check(store.getState().root.selectedFactionName===fact.factionId&&store.getState().root.factionDetailTab==='house','accession archive link opens the correct historical faction and royal tab');
  }finally{flushSync(()=>root.unmount());host.remove();}
  check(JSON.stringify(exportWorldSave(core))===before,'political life display and navigation consume no RNG or canonical state');
+}
+
+/** Mount the actual city panel; assert folding only, never visual acceptance. */
+export async function checkCityHistoryInteraction(core:Core,city:import("../../Components/City").default,check:(ok:unknown,label:string)=>void){
+ const {default:CityDetails}=await import("../../UI/Components/CityDetails");
+ const host=document.createElement("div");document.body.append(host);const root=createRoot(host),before=JSON.stringify(exportWorldSave(core));
+ const title=city.history.find(e=>e.type==='siege-started')!.title;
+ try{
+  flushSync(()=>{store.dispatch(setTeams([...core.teams]));store.dispatch(setWorldYear(core.simulator!.year));store.dispatch(setSelectedCityId(city.id));root.render(<Provider store={store}><CityDetails/></Provider>);});
+  check(!host.textContent?.includes(title),'actual city DOM folds a proven short contact by default');
+  const expand=Array.from(host.querySelectorAll('button')).find(b=>b.textContent?.includes('查看全部记录'))!;check(expand,'city panel retains an accessible full-record button');flushSync(()=>expand.click());
+  check(host.textContent?.includes(title),'full city records reveal the original real siege start');
+  const collapse=Array.from(host.querySelectorAll('button')).find(b=>b.textContent==='收起详细记录')!;flushSync(()=>collapse.click());
+  check(!host.textContent?.includes(title),'closing details restores the important city history view');
+ }finally{flushSync(()=>root.unmount());host.remove();store.dispatch(setSelectedCityId(undefined));}
+ check(JSON.stringify(exportWorldSave(core))===before,'city history DOM interactions do not mutate evidence, population or RNG');
 }

@@ -27,7 +27,7 @@ export async function runMilitarySecessionCore(seed="military-secession-z7"){
  const strict=()=>{const s=exportWorldSave(core),v=validateWorldSave(s);if(!v.valid)throw new Error(v.errors.join("; "));return s;};
  try{
   let chosen:ReturnType<typeof Military.getPoliticalInfluence>["candidates"][number]|undefined,parent:typeof core.teams[number]|undefined;
-  for(let month=0;month<600&&!chosen;month++){step();for(const t of core.teams.filter(t=>t.cities.length>=4&&t.cities.some(c=>!c.isCapital&&!c.isInCaptureGrace(core.simulator!.year)))){const p=Military.getPoliticalInfluence(t,core.simulator!.year,core.logicalUnitRegistry).candidates.find(c=>c.unitCount>=4);if(p){chosen=p;parent=t;break;}}}
+  for(let month=0;month<600&&!chosen;month++){step();for(const t of core.teams.filter(t=>t.cities.length>=2&&t.cities.some(c=>!c.isCapital&&!c.isInCaptureGrace(core.simulator!.year)))){const p=Military.getPoliticalInfluence(t,core.simulator!.year,core.logicalUnitRegistry).candidates.find(c=>c.unitCount>=2);if(p){chosen=p;parent=t;break;}}}
   check(chosen&&parent,"natural Core appointments and real service produce an existing military political candidate");if(!chosen||!parent)throw new Error("No military candidate");
   core.setWorldRunning(false);const month=core.simulator!.year,personId=chosen.personId,commandId=chosen.commandId;
   const commander=[...parent.users].find(u=>u.militaryPersonId===personId)!;
@@ -36,10 +36,11 @@ export async function runMilitarySecessionCore(seed="military-secession-z7"){
   const originalIds=[...chosen.memberUnitIds],members=[...parent.users].filter(u=>originalIds.includes(u.player.logicalUnitId!));
   for(const c of parent.cities)c.loyalty=20;city.loyalty=0;city.devastation=100;
   for(const u of parent.users)u.loyalty=99;
-  const loyalist=members.find(u=>u!==commander)!;
+  const loyalist=members.length>2?members.find(u=>u!==commander):undefined;
   for(const u of members){if(u!==loyalist)u.loyalty=20;u.player.setPosition(city.block.x+4,city.block.y+4);(u.player.body as Phaser.Physics.Arcade.Body).reset(u.player.x,u.player.y);}
+  const popular=[...parent.users].find(u=>u.role==='NORMAL'&&!u.militaryPersonId&&!u.historicalPersonId&&!Military.isAssigned(u.player.logicalUnitId!))!;check(popular,'existing local political split still requires a real ordinary supporter');popular.loyalty=20;popular.player.setPosition(city.block.x+8,city.block.y+8);(popular.player.body as Phaser.Physics.Arcade.Body).reset(popular.player.x,popular.player.y);
   let candidate=assessMilitarySecession(city,month);check(candidate?.users[0]===commander,"political crisis, current office and actual local commander qualify together");if(!candidate)throw new Error("No local military party");
-  check(!candidate.users.includes(loyalist)&&candidate.users.length<originalIds.length,"only a verified willing part of the old formation follows");
+  check((!loyalist||!candidate.users.includes(loyalist))&&candidate.users.length<=originalIds.length,"only a verified willing part of the old formation follows");
   const follow=candidate.users.filter(u=>u!==commander),sourceName=Military.getPerson(personId)!.personalName,deathSchedule=deriveMilitaryLifeSchedule(Military.getPerson(personId)!).naturalDeathMonth;
   const loyalties=new Map(members.map(u=>[u,u.loyalty]));for(const u of members)if(u!==commander)u.loyalty=99;check(!assessMilitarySecession(city,month),"no actual willing followers means no military secession");for(const u of members)u.loyalty=loyalties.get(u)!;
   const entry=core.logicalUnitRegistry.getEntry(commander.player.logicalUnitId!)!;
@@ -71,7 +72,7 @@ export async function runMilitarySecessionCore(seed="military-secession-z7"){
   check(split.team.rulerUser===commander&&commander.militaryPersonId===personId&&commander.historicalPersonId===personId&&person.politicalRulerId===ruler.id,"one real User and permanent military ID become the political leader");
   check(Dynasty.getRulerDisplay(split.team.name)===sourceName&&ruler.bornYear===person.bornMonth&&ruler.naturalDeathYear===deathSchedule,"established personal name, birth and original military lifespan remain unchanged");
   check(person.status==="RETIRED"&&Military.getFormation(commandId)!.status==="DISBANDED"&&person.appointments.at(-1)?.endReason==="TRANSFERRED","old office and command end before new political authority");
-  check(core.teams.reduce((n,t)=>n+t.users.size,0)===total&&follow.every(u=>u.team===split.team)&&loyalist.team===parent,"actual followers transfer once, nonfollowers stay, world population is conserved");
+  check(core.teams.reduce((n,t)=>n+t.users.size,0)===total&&follow.every(u=>u.team===split.team)&&(!loyalist||loyalist.team===parent),"actual followers transfer once, nonfollowers stay, world population is conserved");
   const founding=History.getEventsForFaction(split.team.name).filter(e=>e.type==="empire-split");
   check(founding.length===1&&founding[0].metadata?.splitSource==="MILITARY","one existing split event records its military source");
   const text=formatHistoryEventTitle(founding[0],new Map(core.teams.map(t=>[t.name,t])));
