@@ -2,7 +2,7 @@ import {Box,Typography} from '@mui/material';
 import Military from '../../../Politics/MilitaryCommandRegistry';
 import History from '../../../History/WorldHistory';
 import Game from '../../../Game/Game';
-import {meritRoster,nobleLabel,NOBLE_NAMES} from '../../../Politics/MilitaryNobility';
+import {meritRoster,NOBLE_NAMES,NOBLE_RANKS} from '../../../Politics/MilitaryNobility';
 import {describeMilitaryOffice} from '../../../Politics/MilitaryOffice';
 import {getMilitaryPersonDisplayName} from '../../../Politics/MilitaryPersonIdentity';
 import {militaryPortraitContext} from './PortraitPresentation';
@@ -16,14 +16,14 @@ export default function MeritRoll({factionId,month,onOpen}:{factionId:string;mon
  const people=Military.getPeople(),events=History.getEvents(),byId=new Map(events.map(e=>[e.id,e])),team=Game.Core?.teams.find(t=>t.name===factionId);
  const top=meritRoster(people,Military.getFormations(),events,factionId,month).slice(0,3),grants=people.flatMap(person=>(person.nobilityHistory??[]).filter(g=>g.factionId===factionId&&g.month<=month).map(grant=>({person,grant}))).sort((a,b)=>b.grant.month-a.grant.month||a.grant.eventId.localeCompare(b.grant.eventId));
  return <Box data-merit-roll sx={{display:'grid',gap:1}}>
-  <Typography fontWeight='bold'>当朝三杰</Typography><Typography fontSize='.76rem'>按本国历史战果动态排序；排行榜不授予爵位。</Typography>
+  <Typography fontWeight='bold'>历代三杰</Typography><Typography fontSize='.76rem'>按重要攻城、不同取城、真实守城及服役资历排序；普通围城经历不单独入选，排行榜不授予爵位。</Typography>
   {!top.length&&<Typography fontSize='.8rem'>尚无可核验的功臣事迹。</Typography>}
-  {top.map(({person:p,merits:m})=>{const representative=m.captureEventIds.map(id=>byId.get(id)).find(e=>e?.cityId&&m.importantCityIds.includes(e.cityId))??byId.get(m.captureEventIds[0]);return <Box key={p.personId} data-merit-person={p.personId} sx={{border:'1px solid var(--gg-border)',p:1,borderRadius:1}}>
+  {top.map(({person:p,merits:m})=>{const representative=m.captureEventIds.map(id=>byId.get(id)).find(e=>e?.cityId&&m.importantCityIds.includes(e.cityId))??byId.get(m.captureEventIds[0])??byId.get(m.defenseEventIds[0]);const highest=(p.nobilityHistory??[]).filter(g=>g.factionId===factionId&&g.month<=month).sort((a,b)=>NOBLE_RANKS.indexOf(b.rank)-NOBLE_RANKS.indexOf(a.rank))[0];return <Box key={p.personId} data-merit-person={p.personId} sx={{border:'1px solid var(--gg-border)',p:1,borderRadius:1}}>
    <PersonPortrait personId={p.personId} age={Math.max(0,Math.floor(((p.deathMonth??month)-p.bornMonth)/12))} {...militaryPortraitContext(p,factionId,team,month)}/>
    <button type='button' style={button} onClick={()=>onOpen(p.personId)}>{getMilitaryPersonDisplayName(p)}</button>
-   <Typography fontSize='.8rem'>{describeMilitaryOffice(p,factionId)}{nobleLabel(p,factionId,month)?` · 历史受封：${nobleLabel(p,factionId,month)}`:''}</Typography>
-   <Typography fontSize='.78rem'>本国服役{formatWorldDuration(m.serviceMonths)} · 取城{m.captures}次（{m.cityIds.length}城） · 重要战果城邑{m.importantCityIds.length}座</Typography>
-   {representative&&<Typography fontSize='.78rem'>代表战果：{representative.cityName} · {formatWorldDate(representative.monthIndex??representative.year)}</Typography>}
+   <Typography fontSize='.8rem'>{describeMilitaryOffice(p,factionId)}{highest?` · 历史最高受封：${highest.countryName}${NOBLE_NAMES[highest.rank]}`:''}</Typography>
+   <Typography fontSize='.78rem'>本国服役{formatWorldDuration(m.serviceMonths)}{m.cityIds.length>0?` · 攻克／收复${m.cityIds.length}座不同城邑（取城${m.captures}次）`:''}{m.importantCityIds.length>0?` · 重要攻城${m.importantCityIds.length}城`:''}{m.defendedCityIds.length>0?` · 真实守住${m.defendedCityIds.length}城`:''}{m.siegeEventIds.length>0?` · 长期围城经历${m.siegeEventIds.length}处`:''}</Typography>
+   {representative&&<Typography fontSize='.78rem'>代表事迹：{representative.type==='siege-defended'?'守住':'攻克／收复'}{representative.cityName} · {formatWorldDate(representative.monthIndex??representative.year)}</Typography>}
    <PersonLifeDates bornMonth={p.bornMonth} deathMonth={p.deathMonth}/>
   </Box>;})}
   <Typography fontWeight='bold'>历代封爵记录</Typography>{!grants.length&&<Typography fontSize='.8rem'>尚无正式册封。</Typography>}

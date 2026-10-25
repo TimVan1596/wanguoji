@@ -9,7 +9,7 @@ import {MILITARY_FORMATION_CAPACITY} from '../Politics/MilitaryOffice';
 /** Validate the original eligible-candidate snapshot, not today's changed unit roster. */
 export function validNoblePoliticalSelection(s:MilitaryPoliticalParticipant,save:WorldSaveV1,before:WorldEvent[],at:number,factionId:string,dy:Dynasty,previousRulerId:string){
  const scope=nobleEpochForRuler(dy,previousRulerId)?.foundingRulerId,ids=new Set(before.map(e=>e.id)),state=save.registries.militaryCommandRegistry;
- const grantFor=(p:typeof state.people[number])=>scope?currentNobleGrant({...p,nobilityHistory:p.nobilityHistory?.filter(g=>ids.has(g.eventId))},factionId,at,scope):undefined;
+ const grantFor=(p:typeof state.people[number])=>scope?currentNobleGrant({...p,honorHistory:p.honorHistory?.filter(h=>ids.has(h.eventId)),nobilityHistory:p.nobilityHistory?.filter(g=>ids.has(g.eventId))},factionId,at,scope):undefined;
  const selected=state.people.find(p=>p.personId===s.personId),proof=s.nobleSelection;
  if(!proof)return !s.nobility&&s.basePoliticalWeight===undefined&&s.finalPoliticalWeight===undefined&&(!ENABLE_NOBILITY_POLITICAL_WEIGHT||!selected||!grantFor(selected));
  if(!ENABLE_NOBILITY_POLITICAL_WEIGHT||!scope||proof.scopeFounderId!==scope||!Array.isArray(proof.candidates)||!proof.candidates.length||proof.candidates.length>2)return false;

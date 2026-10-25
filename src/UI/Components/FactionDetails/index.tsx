@@ -1,3 +1,4 @@
+import {militaryPosthumousLabel} from '../../../Politics/MilitaryHonors';
 import {militaryPoliticalLife,appendMilitaryPoliticalLife} from "../../../Politics/MilitaryPoliticalLife";
 import GenealogyBrowser from "./GenealogyBrowser";
 import PersonLifeDates from "./PersonLifeDates";
@@ -683,8 +684,9 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
       const politicalLife=militaryPoliticalLife(person,DynastyRegistry.getAll(),WorldHistory.getEvents(),politicalFactionById,worldMonth);
       const allMilestones=appendMilitaryPoliticalLife(militaryMilestones(person,entries,localEvents,{factions:politicalFactionById}),politicalLife);
       const milestones=selectMilitaryMilestones(allMilestones,localEvents,8);
-      const portraitContext=militaryPortraitContext(person,factionId,politicalTeam,worldMonth);
       const linked=linkedRulers.get(person.personId);
+      const royalTeam=linked&&Game.Core?.teams.find(t=>DynastyRegistry.get(t.name)?.rulers.some(r=>r.id===linked.id));
+      const portraitContext=linked&&linked.accessionYear!==undefined&&linked.accessionYear<=worldMonth&&royalTeam?royalPortraitContext(linked,royalTeam,worldMonth):militaryPortraitContext(person,factionId,politicalTeam,worldMonth);
       const identityLabels=militaryIdentityLabels(person,DynastyRegistry.getAll(),WorldHistory.getEvents(),worldMonth);
       const identityBadges=identityLabels.map(label=>label==="宗室将领"&&person.royalIdentity?<button key={label} type="button" style={{border:0,background:"none",font:"inherit",color:"inherit",textDecoration:"underline",cursor:"pointer"}} onClick={event=>{event.stopPropagation();navigation.open({kind:"GENEALOGY",factionId:person.royalIdentity!.factionId,id:person.royalIdentity!.rulerId});}}>{label}</button>:<span key={label}>{label} · </span>);
       const ageText=linked?formatRulerLifeAge(linked,worldMonth):describeMilitaryAge(person,worldMonth,liveIds.has(person.personId));
@@ -695,7 +697,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
         portrait={<PortraitSummary portrait={{personId:person.personId,age:portraitAge,...portraitContext}} name={getMilitaryPersonDisplayName(person)} lines={[...identityLabels,politicalTeam?getFactionDisplayNameAtMonth(politicalTeam,portraitContext.month):factionId,ageText,describeMilitaryOffice(person,factionId),first?`${formatWorldDate(first.startMonth)}—${last?.endMonth===undefined?"今":formatWorldDate(last.endMonth)}`:""]} onFull={()=>{if(!resolvedSelection.expandedIds.includes(person.personId))setSelection(toggleMilitaryPerson(resolvedSelection,person.personId,current));}}/>}
         heading={<>
           <Typography fontSize="0.92rem" sx={{display:"flow-root"}} fontWeight={current?"bold":600}>{current?"● ":""}{getMilitaryPersonDisplayName(person)} · <Box component="span" sx={{fontSize:"0.76rem",fontWeight:400,color:"var(--gg-text-muted)"}}>{ageText}</Box> · {current?"现役":person.status==="ACTIVE"&&person.factionId!==factionId?"已转属":describeMilitaryStatus(person)}</Typography>
-          <Typography fontSize="0.76rem">{[...identityLabels,nobleLabel(person,factionId,worldMonth)].filter(Boolean).join(" · ")}</Typography>
+          <Typography fontSize="0.76rem">{[...identityLabels,nobleLabel(person,factionId,worldMonth),militaryPosthumousLabel(person,factionId,worldMonth)].filter(Boolean).join(" · ")}</Typography>
           <Typography fontSize="0.82rem" color="var(--gg-text-muted)">{politicalTeam?.displayName??factionId} · {highest?`最高任${MILITARY_OFFICE_NAMES[highest.office]}`:"军职未载"}</Typography>
           <Typography fontSize="0.8rem" color="var(--gg-text-muted)">{first?`${formatWorldDate(first.startMonth)}—${last?.endMonth===undefined?(current?"今":"止期未载"):formatWorldDate(last.endMonth)}`:"任期未载"} · 所部参与取城{entries.filter(e=>e.victory).length}次</Typography>
         </>}

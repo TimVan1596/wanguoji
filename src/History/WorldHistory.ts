@@ -66,6 +66,8 @@ export type WorldEventType =
   | "faction-merged"
   | "faction-submitted"
   | "military-ennobled"
+  | "military-posthumous"
+  | "military-title-revoked"
   | "military-office-granted"
   | "military-appointment"
   | "military-order-issued"

@@ -1,3 +1,4 @@
+import {currentNobleGrant} from '../../../Politics/MilitaryNobility';
 import type {Ruler} from "../../../Politics/Dynasty";
 import type {MilitaryPerson} from "../../../Politics/MilitaryCommandRegistry";
 import {getFactionColorAtMonth,type FactionColorHistoryEntry} from "../../../Simulation/FactionColorHistory";
@@ -18,6 +19,6 @@ export function militaryPortraitContext(person:MilitaryPerson,factionId:string,f
  const month=Math.min(worldMonth,person.deathMonth??worldMonth,appointment?.endMonth===undefined?worldMonth:Math.max(appointment.startMonth,appointment.endMonth-1));
  const office=appointment?.officeHistory?.filter(g=>g.month<=month).at(-1)?.office;
  const role:PortraitRole=office??"UNKNOWN";
- return {role,color:faction?getFactionColorAtMonth(faction,month):undefined,deceased:person.status==="DEAD"&&person.deathMonth!==undefined,month,
+ return {nobleRank:currentNobleGrant(person,factionId,worldMonth)?.rank,royalKin:!!person.royalIdentity,role,color:faction?getFactionColorAtMonth(faction,month):undefined,deceased:person.status==="DEAD"&&person.deathMonth!==undefined,month,
   historical:appointment?.endMonth!==undefined||person.factionId!==factionId};
 }

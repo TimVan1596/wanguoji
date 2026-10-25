@@ -19,11 +19,12 @@ export function deriveNobleMerits(p:MilitaryPerson,formations:MilitaryFormation[
  const captures=events.filter(e=>ids.has(e.id)).sort((a,b)=>(a.monthIndex??a.year)-(b.monthIndex??b.year)||a.id.localeCompare(b.id));
  const cities=new Map<string,WorldEvent>(),important=new Map<string,string>();
  for(const e of captures){if(e.cityId&&!cities.has(e.cityId))cities.set(e.cityId,e);if(e.cityId&&(e.metadata?.wasCapital===1||e.type==='city-recovered'&&e.metadata?.founderCapital===1&&e.founderFactionId===factionId))if(!important.has(e.cityId))important.set(e.cityId,e.id);}
- return {serviceMonths:career.serviceMonths,captureEventIds:[...cities.values()].map(e=>e.id),cityIds:[...cities.keys()],importantCityIds:[...important.keys()].sort(),importantEventIds:[...important.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(e=>e[1]),captures:captures.length,activities:career.activities.length};
+ const defenses=career.activities.filter(a=>a.kind==='DEFENSE'),sieges=career.activities.filter(a=>a.kind==='SIEGE');
+ return {defenseEventIds:defenses.map(a=>a.eventId),defendedCityIds:[...new Set(defenses.map(a=>a.cityId))],siegeEventIds:sieges.map(a=>a.eventId),serviceMonths:career.serviceMonths,captureEventIds:[...cities.values()].map(e=>e.id),cityIds:[...cities.keys()],importantCityIds:[...important.keys()].sort(),importantEventIds:[...important.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(e=>e[1]),captures:captures.length,activities:career.activities.length};
 }
 export function nobleEpoch(d:Pick<Dynasty,'houseEpochs'>|undefined,month:number){return d?.houseEpochs?.find(e=>e.startMonth<=month&&month<=(e.endMonth??Infinity));}
 export function currentNobleGrant(p:MilitaryPerson,factionId:string,month:number,epochFounderId?:string){
- return (p.nobilityHistory??[]).filter(g=>g.factionId===factionId&&g.month<=month&&(!epochFounderId||g.epochFounderId===epochFounderId)).sort((a,b)=>NOBLE_RANKS.indexOf(b.rank)-NOBLE_RANKS.indexOf(a.rank)||b.month-a.month)[0];
+ return (p.nobilityHistory??[]).filter(g=>g.factionId===factionId&&g.month<=month&&!(p.honorHistory??[]).some(h=>h.kind==='REVOKED'&&h.month<=month&&h.factionId===g.factionId&&h.epochFounderId===g.epochFounderId)&&(!epochFounderId||g.epochFounderId===epochFounderId)).sort((a,b)=>NOBLE_RANKS.indexOf(b.rank)-NOBLE_RANKS.indexOf(a.rank)||b.month-a.month)[0];
 }
 export function nobleLabel(p:MilitaryPerson,factionId:string,month=Infinity){const g=currentNobleGrant(p,factionId,month);return g?`${g.countryName} · ${NOBLE_NAMES[g.rank]}`:'';}
 /** No randomness, population, office promotion or city ownership mutation. */
@@ -33,6 +34,7 @@ export function nextNobleGrant(p:MilitaryPerson,formations:MilitaryFormation[],e
  if(!ruler||!epoch||ruler.status!=='ruling'||ruler.accessionYear===undefined||ruler.accessionYear>month||ruler.endYear!==undefined||ruler.deathMonth!==undefined||ruler.naturalDeathYear!==undefined&&ruler.naturalDeathYear<=month||!['KING','EMPEROR'].includes(team.sovereigntyRank))return;
  const a=p.appointments.find(a=>a.factionId===team.name&&a.endMonth===undefined&&a.startMonth<=month),office=a?.officeHistory?.filter(g=>g.month<=month).at(-1)?.office;
  if(!a||!office||!formations.some(f=>f.commandId===a.commandId&&f.commanderPersonId===p.personId&&f.factionId===team.name&&f.status==='ACTIVE'))return;
+ if((p.honorHistory??[]).some(h=>h.kind==='REVOKED'&&h.factionId===team.name&&h.epochFounderId===epoch.foundingRulerId))return;
  const previous=currentNobleGrant(p,team.name,month,epoch.foundingRulerId),rank=NOBLE_RANKS[previous?NOBLE_RANKS.indexOf(previous.rank)+1:0];if(!rank)return;
  const merits=deriveNobleMerits(p,formations,events,team.name,month),rule=NOBLE_RULES[rank];
  if(merits.serviceMonths<rule.serviceMonths||merits.cityIds.length<rule.cities||merits.importantCityIds.length<rule.importantCities)return;
@@ -41,7 +43,7 @@ export function nextNobleGrant(p:MilitaryPerson,formations:MilitaryFormation[],e
 export function nobleChronicle(g:NobleGrant){return `${g.rulerTitle}因${g.personalName}累有军功，${g.previousRank==='NONE'?'封其':'进封其'}为${NOBLE_NAMES[g.rank]}。`;}
 /** Dynamic archive ranking only: it never confers or removes a title. */
 export function meritRoster(people:MilitaryPerson[],formations:MilitaryFormation[],events:WorldEvent[],factionId:string,month:number){
- return people.filter(p=>p.appointments.some(a=>a.factionId===factionId)).map(p=>({person:p,merits:deriveNobleMerits(p,formations,events,factionId,month)})).filter(r=>r.merits.cityIds.length>0||r.merits.activities>0).sort((a,b)=>b.merits.importantCityIds.length-a.merits.importantCityIds.length||b.merits.cityIds.length-a.merits.cityIds.length||b.merits.serviceMonths-a.merits.serviceMonths||b.merits.activities-a.merits.activities||a.person.personId.localeCompare(b.person.personId));
+ return people.filter(p=>p.appointments.some(a=>a.factionId===factionId)).map(p=>({person:p,merits:deriveNobleMerits(p,formations,events,factionId,month)})).filter(r=>r.merits.cityIds.length>0||r.merits.defendedCityIds.length>0).sort((a,b)=>b.merits.importantCityIds.length-a.merits.importantCityIds.length||b.merits.cityIds.length-a.merits.cityIds.length||b.merits.defendedCityIds.length-a.merits.defendedCityIds.length||b.merits.serviceMonths-a.merits.serviceMonths||b.merits.activities-a.merits.activities||a.person.personId.localeCompare(b.person.personId));
 }
 /** Reign ordinals resolve same-month house changes without guessing bloodlines or surnames. */
 export function nobleEpochForRuler(d:Dynasty|undefined,rulerId:string|null){

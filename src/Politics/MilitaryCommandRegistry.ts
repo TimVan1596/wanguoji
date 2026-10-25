@@ -1,3 +1,4 @@
+import {nextMilitaryHonors,militaryHonorText,type MilitaryHonor} from './MilitaryHonors';
 import {nextNobleGrant,nobleChronicle,type NobleGrant} from "./MilitaryNobility";
 import type {Dynasty} from "./Dynasty";
 import {isSiegePosition} from "../Simulation/SiegeParticipants";
@@ -51,6 +52,7 @@ export interface RoyalMilitaryService {
 }
 export interface MilitaryPerson {
   nobilityHistory?:NobleGrant[];
+  honorHistory?:MilitaryHonor[];
   royalIdentity?: RoyalMilitaryLink;
   /** Same person now holds a political office; the linked Ruler owns this one life. */
   politicalRulerId?:string;
@@ -371,6 +373,18 @@ export class MilitaryCommandRegistryStore {
         const written=this.eventWriter({id:grant.eventId,year:month,monthIndex:month,type:'military-ennobled',category:'politics',actorFactionId:team.name,factionIds:[team.name],rulerId:grant.rulerId,title:nobleChronicle(grant),importance:'major',metadata:{personId:person.personId,sourceUserId:person.sourceUserId,commandId:grant.commandId,rank:grant.rank,nobility:JSON.stringify(grant)}});
         if(written!==grant.eventId||!this.eventReader(team.name).some(e=>e.id===grant.eventId))throw new Error("Noble history was not recorded");
       }catch{if(prior)person.nobilityHistory=prior;else delete person.nobilityHistory;WorldHistory.importState(history);}
+    }
+  }
+
+  updateHonors(month:number,teams:Team[],dynasties:Dynasty[]){
+    if(month%12!==0||!this.eventWriter)return;
+    for(const p of this.people.values())for(const honor of nextMilitaryHonors(p,this.getFormations(),WorldHistory.getEvents(),month,teams,dynasties)){
+      const prior=p.honorHistory?structuredClone(p.honorHistory):undefined,history=WorldHistory.exportState();
+      try{
+        (p.honorHistory??=[]).push(honor);
+        const id=this.eventWriter({id:honor.eventId,year:month,monthIndex:month,type:honor.kind==='REVOKED'?'military-title-revoked':'military-posthumous',category:'politics',actorFactionId:honor.factionId,factionIds:[honor.factionId],rulerId:honor.rulerId,title:militaryHonorText(honor),importance:'major',metadata:{personId:p.personId,honor:JSON.stringify(honor)}});
+        if(id!==honor.eventId||!this.eventReader(honor.factionId).some(e=>e.id===id))throw Error('Honor not recorded');
+      }catch{if(prior)p.honorHistory=prior;else delete p.honorHistory;WorldHistory.importState(history);}
     }
   }
 
