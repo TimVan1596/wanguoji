@@ -16,7 +16,7 @@ fs.symlinkSync(path.join(repo,'node_modules'),path.join(root,'node_modules'),'di
 const source=[];function scan(dir){for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,entry.name);if(entry.isDirectory())scan(p);else if(/\.tsx?$/.test(p)&&!p.includes('.test.')&&!p.includes('/testing/'))source.push(p);}}scan(path.join(root,'src'));
 const hash=crypto.createHash('sha256');for(const p of source.sort()){hash.update(path.relative(root,p));hash.update(fs.readFileSync(p));}
 const years=process.argv.includes('--50')?50:100;
-const seeds=Array.from({length:years===50?4:(['z20','z21','z22'].includes(label)?8:16)},(_,i)=>'regional-'+(i+1)),out=path.join(repo,`scripts/testing/results/military-balance-${label}-final${years}.json`);
+const seeds=Array.from({length:years===50?4:(label==='z23'?6:['z20','z21','z22'].includes(label)?8:16)},(_,i)=>'regional-'+(i+1)),out=path.join(repo,`scripts/testing/results/military-balance-${label}-final${years}.json`);
 const manifest=path.join(repo,`scripts/testing/results/battle-${label}-source${years===50?'50':''}.json`),productionSha256=hash.digest('hex');
 if(fs.existsSync(out)){const prior=JSON.parse(fs.readFileSync(manifest));if(prior.productionSha256!==productionSha256)throw Error('Cannot resume results from different production source');}
 fs.writeFileSync(manifest,JSON.stringify({productionSha256,seeds,years,noblePoliticalWeight:process.env.WANGUOJI_NOBLE_POLITICS!=='0',scope:`real frozen production Core; ${seeds.length} fixed seeds; noble political weight ${process.env.WANGUOJI_NOBLE_POLITICS==='0'?'disabled for paired comparison':'enabled'}; no other rule patches`},null,2));

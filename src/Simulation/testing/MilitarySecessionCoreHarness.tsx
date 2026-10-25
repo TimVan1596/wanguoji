@@ -33,7 +33,7 @@ export async function runMilitarySecessionCore(seed="military-secession-z7"){
   core.setWorldRunning(false);let month=core.simulator!.year;const personId=chosen.personId,commandId=chosen.commandId;
   const commander=[...parent.users].find(u=>u.militaryPersonId===personId)!;
   const victoryCities=core.allCities.filter(c=>c.ownerTeam&&c.ownerTeam!==parent).slice(0,2);
-  for(const c of victoryCities){commander.player.setPosition(c.block.x,c.block.y);commander.player.body.reset(c.block.x,c.block.y);c.capture(parent,month,undefined,commandId,personId);}
+  for(const c of victoryCities){commander.player.setPosition(c.block.x,c.block.y);(commander.player.body as Phaser.Physics.Arcade.Body).reset(c.block.x,c.block.y);c.capture(parent,month,undefined,commandId,personId);}
   Military.updateNobility(month,core.teams,Dynasty.getAll());
   const oldTitle=currentNobleGrant(Military.getPerson(personId)!,parent.name,month);check(oldTitle,'actual serving general has a real sovereign grant before rebellion');
   month+=12;(core.simulator as any).clock.importState({worldMonth:month,elapsedMs:0,running:false});
