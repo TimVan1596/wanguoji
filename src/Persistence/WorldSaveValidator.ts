@@ -2,6 +2,7 @@ import {validateSiegeBattles} from "./SiegeBattleValidation";
 import {validRoyalDepositionMilitary} from "./RoyalDepositionMilitaryValidation";
 import {validateRoyalMilitaryIdentities} from "./RoyalMilitaryValidation";
 import {validDepositionSelection} from "./DepositionSelectionValidation";
+import {validateMilitaryNobility} from "./MilitaryNobilityValidation";
 import {validateMilitarySecessions} from "./MilitarySecessionValidation";
 import {validateResidentIdentities} from "./ResidentIdentityValidation";
 import {validateMilitaryOfficeAuthorities,validateMilitaryBattleNames} from "./MilitaryOfficeAuthorityValidation";
@@ -479,6 +480,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
     users, units, cities, factionIds, Number(save.world?.worldMonth),
     isPlainRecord(save.worldHistory) ? save.worldHistory : { events: [] }
   ));
+  if (!errors.length) errors.push(...validateMilitaryNobility(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateMilitaryPoliticalParticipation(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateMilitaryOfficeAuthorities(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateMilitaryBattleNames(save as WorldSaveV1));

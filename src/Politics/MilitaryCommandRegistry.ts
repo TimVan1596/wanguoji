@@ -1,3 +1,5 @@
+import {nextNobleGrant,nobleChronicle,type NobleGrant} from "./MilitaryNobility";
+import type {Dynasty} from "./Dynasty";
 import {isSiegePosition} from "../Simulation/SiegeParticipants";
 import {nearbyMilitaryRecruits,type MilitaryRecruitmentContext} from "./MilitaryRecruitment";
 import {deriveRoyalDepositionMilitary} from "./RoyalDepositionMilitary";
@@ -47,6 +49,7 @@ export interface RoyalMilitaryService {
   eligible(user: User, month: number): boolean;
 }
 export interface MilitaryPerson {
+  nobilityHistory?:NobleGrant[];
   royalIdentity?: RoyalMilitaryLink;
   /** Same person now holds a political office; the linked Ruler owns this one life. */
   politicalRulerId?:string;
@@ -349,6 +352,22 @@ export class MilitaryCommandRegistryStore {
       title:`${appointment.factionId}${previous?"晋任":"授予"}${getMilitaryPersonDisplayName(person)}${MILITARY_OFFICE_NAMES[grant.office]}`,
       description:`据本次真实任职${grant.serviceMonths}个月及${grant.captureEventIds.length}条核验战果授职。`,actorFactionId:appointment.factionId,factionIds:[appointment.factionId],importance:"normal",
       metadata:{personId:person.personId,sourceUserId:person.sourceUserId,personalName:person.personalName,commandId:appointment.commandId,previousOffice:previous?.office??"NONE",office:grant.office,serviceMonths:grant.serviceMonths,captureEventIds:JSON.stringify(grant.captureEventIds),...(grant.promotionBasis?{promotionBasis:grant.promotionBasis,activityEventIds:JSON.stringify(grant.activityEventIds??[])}:{})}});
+  }
+
+  updateNobility(month:number,teams:Team[],dynasties:Dynasty[]){
+    if(month%12!==0||!this.eventWriter)return;
+    for(const person of this.people.values()){
+      const team=teams.find(t=>t.name===person.factionId),dy=dynasties.find(d=>d.factionId===person.factionId),user=team?.getUserById(person.sourceUserId);
+      if(!team||!dy||!user?.matchesMilitaryLife(person)||user.role!=="NORMAL"||user.rulerId||user.player.rulerId||!user.player.logicalUnitId)continue;
+      const active=this.getFormations().filter(f=>f.commanderPersonId===person.personId&&f.status==='ACTIVE');
+      if(active.length!==1||!active[0].memberUnitIds.includes(user.player.logicalUnitId))continue;
+      const grant=nextNobleGrant(person,this.getFormations(),this.eventReader(team.name),month,team,dy);if(!grant)continue;
+      const prior=person.nobilityHistory?structuredClone(person.nobilityHistory):undefined,history=WorldHistory.exportState();
+      try{
+        (person.nobilityHistory??=[]).push(grant);
+        this.eventWriter({id:grant.eventId,year:month,monthIndex:month,type:'military-ennobled',category:'politics',actorFactionId:team.name,factionIds:[team.name],rulerId:grant.rulerId,title:nobleChronicle(grant),importance:'major',metadata:{personId:person.personId,sourceUserId:person.sourceUserId,commandId:grant.commandId,rank:grant.rank,nobility:JSON.stringify(grant)}});
+      }catch{if(prior)person.nobilityHistory=prior;else delete person.nobilityHistory;WorldHistory.importState(history);}
+    }
   }
 
   private advanceOffices(month:number,teams:Team[]){

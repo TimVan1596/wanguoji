@@ -1,3 +1,4 @@
+import {NobleHistory} from "./MeritRoll";
 import {useLayoutEffect,useRef,useState} from "react";
 import {royalMilitaryArchive,royalMilitaryOfficeLabel} from "../../../Politics/RoyalArchiveIdentity";
 import PersonLifeDates from "./PersonLifeDates";
@@ -24,6 +25,7 @@ export function RoyalMilitaryPanel({ruler,month,onGenealogy}:{ruler:Ruler;month:
   <Typography fontSize="0.76rem">{parent?`${parent.houseName.replace(/氏$/,"")}${parent.givenName}之子`:""}{current&&current.id!==ruler.id&&d?` · ${formatRecordedKinship(ruler,current,d.rulers)}`:""}</Typography>
   {highest&&<Typography fontSize="0.76rem">最高实际军职：{MILITARY_OFFICE_NAMES[highest.office]} · 本国所部参与取城{career.capturedEventIds.filter(id=>History.getEvents().find(e=>e.id===id)?.actorFactionId===p.royalIdentity!.factionId).length}次</Typography>}
   {appointments.map(a=><Typography key={a.commandId} fontSize="0.76rem">{formatWorldDate(a.startMonth)}—{a.endMonth===undefined?"今":formatWorldDate(a.endMonth)} · {a.officeHistory?.map(g=>MILITARY_OFFICE_NAMES[g.office]).join(" → ")}</Typography>)}
+  <NobleHistory person={p} month={month}/>
   <button type="button" style={buttonStyle} onClick={()=>nav.open({kind:"MILITARY",factionId:p.appointments[0].factionId,id:p.personId})}>查看真实军旅档案</button>
   {onGenealogy&&<> · <button type="button" style={buttonStyle} onClick={onGenealogy}>查看亲属宗谱</button></>}
  </Box>;

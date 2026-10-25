@@ -1,3 +1,4 @@
+import {nobleChronicle} from "./MilitaryNobility";
 import {getHistoricalFactionIdentity} from "../History/HistoricalFactionIdentity";
 import type {HistoryFactionLike} from "../History/HistoryRenderRules";
 import {MILITARY_OFFICES,MILITARY_OFFICE_NAMES} from "./MilitaryOffice";
@@ -85,6 +86,7 @@ export function deriveMilitaryChronicle(person: MilitaryPerson, formations: Mili
       victory = true;
       text = `作为${e.actorFactionId}军事指挥官，${name}所属编组参与${e.type === "city-recovered" ? "收复" : "攻陷"}${e.cityName ?? e.cityId}${m.wasCapital === 1 ? "（当时敌都）" : m.wasCapital === 0 ? "（普通城市）" : "（当时都城属性未记录）"}。`;
     } else if (m.personId === person.personId) {
+      if(e.type==="military-ennobled"){const grant=person.nobilityHistory?.find(g=>g.eventId===e.id&&g.month===month&&g.factionId===e.actorFactionId);if(grant)text=nobleChronicle(grant);}
       if(served&&e.type==="military-office-granted"){
         const grant=appointment?.officeHistory?.find(g=>g.eventId===e.id&&g.month===month&&g.office===m.office);
         if(grant)text=`${name}${m.previousOffice==="NONE"?"获授":"晋任"}${MILITARY_OFFICE_NAMES[grant.office]}；据本次任职${grant.serviceMonths}个月${grant.captureEventIds.length?`及${grant.captureEventIds.length}条核验战果`:""}。`;
