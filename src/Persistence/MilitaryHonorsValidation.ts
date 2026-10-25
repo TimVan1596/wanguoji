@@ -1,4 +1,5 @@
 import type {WorldSaveV1} from './WorldSaveSchema';
+import type {Dynasty} from '../Politics/Dynasty';
 import type {WorldEvent} from '../History/WorldHistory';
 import {importRulerSave} from './RulerSaveProjection';
 import {nextMilitaryHonors,militaryHonorText} from '../Politics/MilitaryHonors';
@@ -6,7 +7,7 @@ import {getSovereigntyRankAtMonth} from '../Simulation/FactionIdentity';
 /** Reconstruct the formal act from only the facts that preceded it, including the then-living issuer. */
 export function validateMilitaryHonors(save:WorldSaveV1){
  const errors:string[]=[],events=save.worldHistory.events as WorldEvent[],byId=new Map(events.map((e,i)=>[e.id,{e,i}])),used=new Set<string>(),state=save.registries.militaryCommandRegistry;
- const dynasties=save.dynasties.map(d=>({...d,rulers:(d.rulers as any[]).map(importRulerSave)}));
+ const dynasties=save.dynasties.map(d=>({...d,rulers:(d.rulers as any[]).map(importRulerSave)})) as unknown as Dynasty[];
  for(const p of state.people){
   if(p.honorHistory===undefined)continue;if(!Array.isArray(p.honorHistory)){errors.push('invalid military honor history');continue;}
   let last=-1;

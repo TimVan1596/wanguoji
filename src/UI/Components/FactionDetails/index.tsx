@@ -686,7 +686,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
       const milestones=selectMilitaryMilestones(allMilestones,localEvents,8);
       const linked=linkedRulers.get(person.personId);
       const royalTeam=linked&&Game.Core?.teams.find(t=>DynastyRegistry.get(t.name)?.rulers.some(r=>r.id===linked.id));
-      const portraitContext=linked&&linked.accessionYear!==undefined&&linked.accessionYear<=worldMonth&&royalTeam?royalPortraitContext(linked,royalTeam,worldMonth):militaryPortraitContext(person,factionId,politicalTeam,worldMonth);
+      const portraitContext=linked&&linked.accessionYear!==undefined&&linked.accessionYear<=worldMonth&&royalTeam?{...royalPortraitContext(linked,royalTeam,worldMonth),historical:true}:militaryPortraitContext(person,factionId,politicalTeam,worldMonth);
       const identityLabels=militaryIdentityLabels(person,DynastyRegistry.getAll(),WorldHistory.getEvents(),worldMonth);
       const identityBadges=identityLabels.map(label=>label==="宗室将领"&&person.royalIdentity?<button key={label} type="button" style={{border:0,background:"none",font:"inherit",color:"inherit",textDecoration:"underline",cursor:"pointer"}} onClick={event=>{event.stopPropagation();navigation.open({kind:"GENEALOGY",factionId:person.royalIdentity!.factionId,id:person.royalIdentity!.rulerId});}}>{label}</button>:<span key={label}>{label} · </span>);
       const ageText=linked?formatRulerLifeAge(linked,worldMonth):describeMilitaryAge(person,worldMonth,liveIds.has(person.personId));

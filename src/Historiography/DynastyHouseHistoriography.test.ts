@@ -142,7 +142,7 @@ describe("political house epoch assessment", () => {
     restored.dynasty.rulers = c.dynasty.rulers.map(r => importRulerSave(JSON.parse(JSON.stringify(exportRulerSave(r)))));
     expect(deriveHouseAssessments(restored)).toEqual(expected); expect(deriveHouseAssessments(c)).toEqual(expected);
     expect(JSON.stringify(c.dynasty)).toBe(before); expect(JSON.stringify(c.events)).toBe(history); expect(worldRandom.exportState()).toEqual(rng);
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(27);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(28);
   });
   it("keeps 100 phases and 20k indexed events bounded without rendering or storing another event database", () => {
     const c = fixture(); c.worldMonth = 10000;
