@@ -1,0 +1,80 @@
+import {createNaturalCore} from './NaturalCoreHarness';
+import Military from '../../Politics/MilitaryCommandRegistry';
+import Dynasty from '../../Politics/Dynasty';
+import History from '../../History/WorldHistory';
+import random from '../WorldRandom';
+import Factions from '../FactionRegistry';
+import {evaluateDepositionOpportunity,chooseDepositionClaimant,selectDepositionCandidates} from '../../Politics/InReignDeposition';
+import {getFactionStability} from '../../Components/City';
+import {nobleLabel,meritRoster} from '../../Politics/MilitaryNobility';
+import {deriveMilitaryLifeSchedule} from '../../Politics/MilitaryLifeRules';
+import {preAccessionMilitary} from '../../Politics/PersonServiceLinks';
+import {exportWorldSave} from '../../Persistence/WorldSaveExporter';
+import {hydrateWorldSave} from '../../Persistence/WorldSaveHydrator';
+import {validateWorldSave} from '../../Persistence/WorldSaveValidator';
+import {diffCanonicalWorldSave} from '../../Persistence/WorldSaveSchema';
+import {SIMULATION_FIXED_STEP_MS} from '../SimulationDriver';
+export async function runMilitaryNobilityCore(seed:string){
+ const {core,game}=await createNaturalCore(seed),checks:string[]=[];
+ const check=(v:unknown,s:string)=>{if(!v)throw Error(s);checks.push(s);};
+ const clock=(m:number)=>(core.simulator as any).clock.importState({worldMonth:m,elapsedMs:0,running:false});
+ const place=(u:any,x:number,y:number)=>{u.player.setPosition(x,y);u.player.body.reset(x,y);const s=core.logicalUnitRegistry.getEntry(u.player.logicalUnitId)!.state;s.logicalX=x;s.logicalY=y;};
+ const step=()=>{for(let i=0;i<30;i++)(core as any).advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit('postupdate');};
+ const strict=()=>exportWorldSave(core),population=()=>core.teams.reduce((n,t)=>n+t.users.size,0);
+ try{
+  clock(36);core.setWorldRunning(false);
+  const home=core.teams.find(t=>{const d=Dynasty.get(t.name),r=Dynasty.getCurrentRuler(t.name);return t.identityStage==='STATE'&&r&&r.naturalDeathYear!>360&&d&&selectDepositionCandidates({currentRuler:r,rulers:d.rulers,houseName:d.houseName,worldMonth:216}).length>=2&&[...t.users].filter(u=>(Military as any).isEligible(u,36)).length>=2;});check(home,'actual formal country has a living sovereign and real adult military candidates');if(!home)throw Error('No fixture country');
+  const factionId=home.name,users=[...home.users].filter(u=>(Military as any).isEligible(u,36)).sort((a,b)=>b.bornMonth-a.bornMonth).slice(0,2);for(const u of users)check((Military as any).appoint(u,home.name,36,[u.player.logicalUnitId!]),'actual resident forms one legal colonel command');
+  const ids=users.map(u=>u.militaryPersonId!),commands=ids.map(id=>Military.getPerson(id)!.appointments[0].commandId),enemy=core.teams.find(t=>t!==home&&t.status==='ACTIVE')!;
+  const site=core.map!.blocks.flat().find(b=>!b.city&&core.allCities.every(c=>Math.hypot(c.block.x-b.x,c.block.y-b.y)>96))!;check(site,'real terrain supports a spare enemy city');site.claimForTeam(enemy);Factions.foundCity(enemy,site,undefined,36);
+  Military.updateNobility(36,core.teams,Dynasty.getAll());check(!Military.getPerson(ids[0])!.nobilityHistory,'no verified captures means no title');
+  const towns=core.allCities.filter(c=>c.ownerTeam!==home&&c.block!==site).slice(0,6);check(towns.length===6,'controlled war uses six different real cities');
+  for(const [i,c]of towns.entries()){clock(60+i*12);place(users[0],c.block.x,c.block.y);c.capture(home,60+i*12,undefined,commands[0],ids[0]);}
+  for(const [i,c]of towns.slice(0,2).entries()){clock(168+i*12);c.capture(enemy,168+i*12);clock(180+i*12);place(users[1],c.block.x,c.block.y);c.capture(home,180+i*12,undefined,commands[1],ids[1]);}
+  clock(216);const base=strict();
+  const restore=(save=base)=>{hydrateWorldSave(core,structuredClone(save));return {t:core.teams.find(t=>t.name===factionId)!,d:Dynasty.get(factionId)!,p:Military.getPerson(ids[0])!,q:Military.getPerson(ids[1])!};};
+  // Isolated issuer failure: the real history writer appends then throws.
+  const writer=History.addEvent,before=strict();History.addEvent=function(e){const id=writer.call(this,e);if(e.type==='military-ennobled')throw Error('injected after-write failure');return id;};
+  try{Military.updateNobility(216,core.teams,Dynasty.getAll());}finally{History.addEvent=writer;}
+  check(diffCanonicalWorldSave(before,strict()).matched,'failed ennoblement rolls back its records and history without population or RNG change');
+  const pop=population(),rng=JSON.stringify(random.exportState()),sizes=Military.getFormations().map(f=>f.memberUnitIds.length);Military.updateNobility(216,core.teams,Dynasty.getAll());
+  check(Military.getPerson(ids[0])!.nobilityHistory?.[0].rank==='BO','current real sovereign grants a baronage for six actual captured cities');Military.updateNobility(216,core.teams,Dynasty.getAll());check(Military.getPerson(ids[0])!.nobilityHistory!.length===1,'same month never skips multiple noble ranks');
+  for(const m of [228,240]){clock(m);Military.updateNobility(m,core.teams,Dynasty.getAll());}
+  const p=Military.getPerson(ids[0])!,grants=p.nobilityHistory!;check(grants.map(g=>g.rank).join(',')==='BO,HOU,GONG','long service and distinct important city results legitimately reach all three ranks');
+  check(pop===population()&&rng===JSON.stringify(random.exportState())&&JSON.stringify(sizes)===JSON.stringify(Military.getFormations().map(f=>f.memberUnitIds.length)),'noble grants change neither bodies, capacity, membership nor RNG');
+  check(Military.getChronicle(p,240).filter(e=>e.source.startsWith('military-ennobled')).length===3,'each real grant appears once in the military chronicle');check(Military.getChronicle(p,120).every(e=>!e.text.includes('爵')),'future peerage never backfills an earlier campaign');
+  const saved=strict();for(const mutate of [(s:any)=>s.registries.militaryCommandRegistry.people.find((x:any)=>x.personId===ids[0]).nobilityHistory[0].rulerId='fake',(s:any)=>s.registries.militaryCommandRegistry.people.find((x:any)=>x.personId===ids[0]).nobilityHistory[0].cityIds.push('fake'),(s:any)=>s.registries.militaryCommandRegistry.people.find((x:any)=>x.personId===ids[0]).nobilityHistory.push({...grants[0]})]){const bad=structuredClone(saved);mutate(bad);check(!validateWorldSave(bad).valid,'strict save rejects invented monarch, merit or duplicate title');}
+  const record=JSON.stringify(grants);meritRoster(Military.getPeople().reverse(),Military.getFormations(),History.getEvents(),factionId,240);check(JSON.stringify(p.nobilityHistory)===record,'dynamic merit ranking cannot delete or rewrite a formal grant');
+  const resume=()=>{hydrateWorldSave(core,structuredClone(saved));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return strict();};const a=resume(),b=resume();check(diffCanonicalWorldSave(a,b).matched,'ennobled army save resumes twelve real months identically');hydrateWorldSave(core,structuredClone(a));check(diffCanonicalWorldSave(a,strict()).matched,'second read preserves the same people, titles and army');
+  for(const ending of ['retire','battle','natural','transfer']){
+   const {t,p}=restore(saved),body=t.getUserById(p.sourceUserId)!,titles=JSON.stringify(p.nobilityHistory);
+   if(ending==='retire')Military.endPersonCommands(p.personId,240,'AGE_RETIREMENT');
+   if(ending==='battle')body.destroyUser(false,{cause:'BATTLE_DEATH',month:240,damageSource:'HOSTILE_HOME_OCCUPATION'});
+   if(ending==='natural'){const due=Math.ceil(deriveMilitaryLifeSchedule(p).naturalDeathMonth/12)*12;clock(due);(Military as any).advanceLifecycles(due,core.teams);}
+   if(ending==='transfer'){const e=core.teams.find(x=>x!==t&&x.status==='ACTIVE')!;body.setTeam(e,{cause:'LIVE_TRANSFER',month:240});check(!nobleLabel(p,e.name,240),'old-country peerage never becomes a new-country peerage');}
+   check(JSON.stringify(p.nobilityHistory)===titles&&Military.getFormations().every(f=>f.commanderPersonId!==p.personId||f.status==='DISBANDED'),'life or identity ending retains peerage history and releases the real command');strict();
+  }
+  // Same actual army strength; title affects participant selection only, never the monarch pool or the original roll.
+  {
+   const {t,d,p,q}=restore();Military.endPersonCommands(p.personId,216,'DISMISSED');Military.updateNobility(216,core.teams,Dynasty.getAll());check(q.nobilityHistory?.at(-1)?.rank==='BO'&&!p.nobilityHistory,'retired officer receives no new living service grant');
+   check((Military as any).appoint(t.getUserById(p.sourceUserId),t.name,216,[t.getUserById(p.sourceUserId)!.player.logicalUnitId!]),'real veteran reappointment keeps the same permanent person');
+   const influence=Military.getPoliticalInfluence(t,216,core.logicalUnitRegistry),plain=Military.getPoliticalInfluence(t,216,core.logicalUnitRegistry,false,false);check(influence.candidates[0].personId===q.personId&&plain.candidates[0].personId===p.personId,'bounded verified peerage changes a real participant choice among equal base strengths');
+   check(influence.candidates.every(c=>(c.finalPoliticalWeight??c.strength)<=c.strength*1.15),'noble standing has a strict fifteen-percent ceiling');
+   const king=Dynasty.getCurrentRuler(t.name)!,peace=evaluateDepositionOpportunity({factionId:t.name,status:t.status,identityStage:t.identityStage,cityCount:t.cities.length,stability:80,currentRuler:king,rulers:d.rulers,houseName:d.houseName,worldMonth:216,events:[],military:influence});check(!peace.militaryParticipant,'a title and an army do not create a crisis or a coup');
+   const e=core.teams.find(x=>x!==t&&x.status==='ACTIVE')!;t.capitalCity!.capture(e,216);t.capitalCity!.capture(e,216);for(const city of t.cities)city.loyalty=20;const crisis=strict(),results:any[]=[];
+   for(const enabled of [false,true]){
+    hydrateWorldSave(core,structuredClone(crisis));const team=core.teams.find(x=>x.name===factionId)!,dy=Dynasty.get(factionId)!,current=Dynasty.getCurrentRuler(factionId)!,get=Military.getPoliticalInfluence,next=random.next;let calls=0;
+    if(!enabled)Military.getPoliticalInfluence=function(...args){return get.call(this,args[0],args[1],args[2],args[3],false);};
+    const evaluation=evaluateDepositionOpportunity({factionId,status:team.status,identityStage:team.identityStage,cityCount:team.cities.length,stability:getFactionStability(team),currentRuler:current,rulers:dy.rulers,houseName:dy.houseName,worldMonth:216,events:History.getEvents(),military:Military.getPoliticalInfluence(team,216,core.logicalUnitRegistry)});check(evaluation.eligible&&evaluation.militaryParticipant,'real capital losses create an existing military-backed deposition opportunity');
+    random.next=function(){const actual=next.call(random);return calls++===0?evaluation.probability*.75:actual;};
+    try{(Dynasty as any).evaluateInReignDeposition(team,dy,current,216);}finally{random.next=next;Military.getPoliticalInfluence=get;}
+    const event=History.getEvents().find(x=>x.type==='ruler-deposed'&&x.year===216)!;check(event,'actual existing deposition production transaction succeeds');const proof=JSON.parse(String(event.metadata?.militaryParticipation));
+    check(proof.participant.personId===(enabled?ids[1]:ids[0]),'actual political event records its chosen real participant, distinct from the legal successor');
+    if(enabled){check(proof.participant.nobleSelection.candidates.length===2,'political event preserves original candidates, ranks, troop identities and base/final weights');strict();}
+    results.push({enabled,calls,probability:evaluation.probability,rng:random.exportState(),newRuler:dy.currentRulerId});
+   }
+   check(results[0].calls===results[1].calls&&results[0].probability===results[1].probability&&JSON.stringify(results[0].rng)===JSON.stringify(results[1].rng)&&results[0].newRuler===results[1].newRuler,'noble choice changes neither crisis probability, extra RNG calls nor legal monarch selection');
+  }
+  return {seed,checks,scope:'actual existing User, City.capture, monarch, ennoblement, military political and save transactions'};
+ }finally{game.destroy(true);}
+}
