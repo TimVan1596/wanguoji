@@ -1,3 +1,4 @@
+import {currentNobleGrant,NOBLE_RANKS,type NobleRank,NOBLE_NAMES} from "./MilitaryNobility";
 import type { MilitaryPerson, MilitaryFormation } from "./MilitaryCommandRegistry";
 import type { WorldEvent } from "../History/WorldHistory";
 import { deriveMilitaryCareer } from "./MilitaryCareerEvidence";
@@ -9,7 +10,10 @@ export interface MilitaryPoliticalUser {
   userId: number; name: string; bornMonth: number; factionId: string; personId?: string;
   unitId?: string; liveBindingVerified: boolean;
 }
+export const ENABLE_NOBILITY_POLITICAL_WEIGHT = true;
 export interface MilitaryPoliticalParticipant {
+  nobility?:{eventId:string;rank:NobleRank;countryName:string};basePoliticalWeight?:number;finalPoliticalWeight?:number;
+  nobleSelection?:{scopeFounderId:string;candidates:Array<Omit<MilitaryPoliticalParticipant,"nobleSelection">>};
   personId: string; sourceUserId: number; name: string; personalName?: string; bornMonth: number; factionId: string;
   commandId: string; commanderUnitId: string; memberUnitIds: string[]; unitCount: number;
   serviceMonths: number; capturedEventIds: string[]; strength: number;
@@ -25,7 +29,7 @@ export function militaryPoliticalStrength(serviceMonths: number, unitCount: numb
 /** Pure qualification. Runtime supplies verified User/player/logical-unit bindings, not UI state. */
 export function deriveMilitaryPoliticalInfluence(input: {
   factionId: string; status: string; identityStage: string; worldMonth: number; people: MilitaryPerson[]; formations: MilitaryFormation[];
-  users: MilitaryPoliticalUser[]; events: WorldEvent[];
+  users: MilitaryPoliticalUser[]; events: WorldEvent[];nobleEpochFounderId?:string;
 }): MilitaryPoliticalEvidence {
   const { factionId, worldMonth, people, formations, users, events } = input;
   const candidates: MilitaryPoliticalParticipant[] = [], blocked: MilitaryPoliticalEvidence["blocked"] = [];
@@ -55,9 +59,20 @@ export function deriveMilitaryPoliticalInfluence(input: {
       serviceMonths: career.serviceMonths, capturedEventIds: career.capturedEventIds.slice().sort(),
       strength: experience.strength });
   }
+  if(ENABLE_NOBILITY_POLITICAL_WEIGHT&&input.nobleEpochFounderId){
+    for(const c of candidates){const p=people.find(p=>p.personId===c.personId)!,g=currentNobleGrant(p,factionId,worldMonth,input.nobleEpochFounderId);if(g&&events.some(e=>e.id===g.eventId&&e.type==='military-ennobled'&&e.metadata?.nobility===JSON.stringify(g)))c.nobility={eventId:g.eventId,rank:g.rank,countryName:g.countryName};}
+    if(candidates.some(c=>c.nobility)){
+      for(const c of candidates){c.basePoliticalWeight=c.strength;c.finalPoliticalWeight=c.strength*(1+(c.nobility?(NOBLE_RANKS.indexOf(c.nobility.rank)+1)*.05:0));}
+      candidates.sort(compareMilitaryStanding);
+      const snapshot=structuredClone(candidates);for(const c of candidates)c.nobleSelection={scopeFounderId:input.nobleEpochFounderId,candidates:snapshot};
+      return {candidates,blocked,identityBlocked:blocked.filter(b=>b.reason.includes('IDENTITY')).length};
+    }
+  }
   candidates.sort((a, b) => b.strength - a.strength || b.capturedEventIds.length - a.capturedEventIds.length || b.serviceMonths - a.serviceMonths || a.personId.localeCompare(b.personId));
   return { candidates, blocked, identityBlocked: blocked.filter(b => b.reason.includes("IDENTITY")).length };
 }
+
+export function compareMilitaryStanding(a:MilitaryPoliticalParticipant,b:MilitaryPoliticalParticipant){return (b.finalPoliticalWeight??b.strength)-(a.finalPoliticalWeight??a.strength)||b.capturedEventIds.length-a.capturedEventIds.length||b.serviceMonths-a.serviceMonths||a.personId.localeCompare(b.personId);}
 
 export interface MilitaryPoliticalParticipation {
   version: 1; kind: "DEPOSITION" | "REVOLUTION"; factionId: string; worldMonth: number;
@@ -101,6 +116,7 @@ export function getMilitaryParticipationDetails(event: WorldEvent) {
   return p ? [formatMilitaryParticipation(event)!, `人物 ${p.participant.personId} / User ${p.participant.sourceUserId} / 国家 ${p.factionId}`,
     `前君：${event.metadata?.previousRulerName ?? event.metadata?.predecessorRulerName ?? event.metadata?.previousRulerTitle ?? "未记录"}；新君：${event.metadata?.nextRulerName ?? event.metadata?.newRulerName ?? "未记录"}`,
     p.kind === "DEPOSITION" ? "此事是同王统宗室废立，原君主当时仍存活，王统、国号与旗色未变；后续生死另据本人记录。" : `此事是异姓易代，前君${event.metadata?.successionReason === "combat" ? "战死" : event.metadata?.successionReason === "captured" ? "被俘处死" : "去世"}；${event.metadata?.oldHouseName ?? "旧王统"} → ${event.metadata?.newHouseName ?? "新王统"}；国号${event.metadata?.oldStateName ?? "未记录"} → ${event.metadata?.newStateName ?? "未记录"}；${event.metadata?.oldColor === event.metadata?.newColor ? "旗色未变" : "旗色改变"}。`,
+    ...(p.participant.nobleSelection?[`本次比较${p.participant.nobleSelection.candidates.length}名合格军政人物；爵位仅有限影响同等基础军权下的参与者选择，不增加成功抽签。`,...p.participant.nobleSelection.candidates.map(c=>`${c.personalName??c.name}：基础${c.basePoliticalWeight} → 最终${c.finalPoliticalWeight}${c.nobility?`（${c.nobility.countryName}${NOBLE_NAMES[c.nobility.rank]}）`:""}`)]:[]),
     `核验任职 ${p.participant.serviceMonths}个月；核验攻城 ${p.participant.capturedEventIds.length}次；活动成员 ${p.participant.memberUnitIds.join("、")}`,
     `危机证据：${p.crisisFacts.map(f => `${formatWorldDate(f.worldMonth)} ${f.title}（${f.eventId}）`).join("；") || "前君真实暴力死亡与继统政治脆弱性"}`,
     `同次单抽签风险 ${(p.baselineChance * 100).toFixed(2)}% → ${(p.finalChance * 100).toFixed(2)}%；${p.roll >= p.baselineChance ? "本次落在新增压力区间" : "军事压力已加入，原基线亦可命中"}`] : [];

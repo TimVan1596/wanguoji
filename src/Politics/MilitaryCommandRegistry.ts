@@ -44,6 +44,7 @@ export interface RoyalMilitaryLink {
 }
 export interface RoyalMilitaryCandidate { rulerId: string; factionId: string }
 export interface RoyalMilitaryService {
+  nobleEpoch?(factionId:string,month:number):string|undefined;
   candidates(team: Team, month: number): RoyalMilitaryCandidate[];
   enlist(candidate: RoyalMilitaryCandidate, team: Team, month: number, members: User[]): boolean;
   eligible(user: User, month: number): boolean;
@@ -192,11 +193,11 @@ export class MilitaryCommandRegistryStore {
     return deriveRoyalDepositionMilitary({factionId:team.name,month:worldMonth,rulers,people:this.getPeople(),formations:this.getFormations(),users:this.politicalUsers(team,logicalRegistry),events:this.eventReader(team.name),influence:this.getPoliticalInfluence(team,worldMonth,logicalRegistry,true)});
   }
 
-  getPoliticalInfluence(team: Team, worldMonth: number, logicalRegistry?: Pick<import("../Simulation/LogicalUnitRegistry").default, "getEntry">, includeRoyal=false) {
+  getPoliticalInfluence(team: Team, worldMonth: number, logicalRegistry?: Pick<import("../Simulation/LogicalUnitRegistry").default, "getEntry">, includeRoyal=false, nobleStanding=true) {
     const people=this.getPeople(),users=this.politicalUsers(team,logicalRegistry);
     const relevantFactions = [...new Set(people.filter(p => p.factionId === team.name && p.status === "ACTIVE").flatMap(p => p.appointments.map(a => a.factionId)))];
     return deriveMilitaryPoliticalInfluence({ factionId: team.name, status: team.status, identityStage: team.identityStage, worldMonth, people:includeRoyal?people:people.filter(p=>!p.royalIdentity), formations: this.getFormations(), users,
-      events: [...new Map(relevantFactions.flatMap(id => this.eventReader(id)).map(e => [e.id, e])).values()] });
+      events: [...new Map(relevantFactions.flatMap(id => this.eventReader(id)).map(e => [e.id, e])).values()],nobleEpochFounderId:nobleStanding&&!includeRoyal?this.royalService?.nobleEpoch?.(team.name,worldMonth):undefined });
   }
 
   getOfficeSummary(worldMonth:number){

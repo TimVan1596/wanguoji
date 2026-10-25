@@ -23,7 +23,7 @@ export function assessMilitarySecession(city:City,month:number):{users:User[];ev
   const gx=Math.floor(x/Game.BlockSize),gy=Math.floor(y/Game.BlockSize);
   return core.map!.blocks[gx]?.[gy]?.team===owner&&districts.district.get(`${gx},${gy}`)===city.id&&u.loyalty-localPoliticalPressure(city,month)<50;
  };
- for(const candidate of Military.getPoliticalInfluence(owner,month,core.logicalUnitRegistry).candidates){
+ for(const candidate of Military.getPoliticalInfluence(owner,month,core.logicalUnitRegistry,false,false).candidates){
   const person=Military.getPerson(candidate.personId),formation=Military.getFormation(candidate.commandId);
   const commander=[...owner.users].find(u=>u.id===candidate.sourceUserId&&u.militaryPersonId===candidate.personId);
   if(!person||person.royalIdentity||!formation||!commander||!commander.matchesMilitaryLife(person)||!local(commander)||!splitEstablishedPersonalName(person.personalName))continue;

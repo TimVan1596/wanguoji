@@ -5,6 +5,7 @@ import { derivePoliticalSuccessionShocks } from "./PoliticalSuccessionCrisis";
 import { planInitialRoyalHousehold } from "./InitialRoyalHousehold";
 import { hasRecordedRulerDeath, type RulerDeathReason } from "./RulerLifeState";
 import { CurrentRulerLookup } from "./CurrentRulerLookup";
+import {nobleEpochForRuler} from "./MilitaryNobility";
 import { beginHouseEpoch, evaluateDynasticRevolution, getRevolutionEligibility, type DynastyHouseEpoch, type RevolutionContext } from "./DynasticRevolution";
 import { RevolutionGateDiagnostics } from "./RevolutionGateDiagnostics";
 import { createStateName } from "../Simulation/StateNameGenerator";
@@ -1535,6 +1536,7 @@ function getRulerUserId(rulerId: string) {
 
 const DynastyRegistry = new DynastyRegistryStore();
 MilitaryCommandRegistry.setRoyalService({
+  nobleEpoch:(factionId)=>{const d=DynastyRegistry.get(factionId);return nobleEpochForRuler(d,d?.currentRulerId??null)?.foundingRulerId;},
   candidates:(team,month)=>DynastyRegistry.getRoyalMilitaryCandidates(team,month),
   enlist:(candidate,team,month,members)=>DynastyRegistry.enlistRoyalMilitary(candidate,team,month,members),
   eligible:(user,month)=>DynastyRegistry.isRoyalMilitaryEligible(user,month),
