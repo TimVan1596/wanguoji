@@ -32,3 +32,7 @@ it('ordinary transfer is never rebellion, and effective revoked titles cannot su
  const x=fixture();x.capture('1');x.capture('2');const g=x.award();x.p.factionId='b';x.p.status='RETIRED';expect(x.propose()).toEqual([]);
  x.p.honorHistory=[{kind:'REVOKED',month:252,factionId:'a',epochFounderId:g.epochFounderId}];expect(currentNobleGrant(x.p,'a',240)).toEqual(g);expect(currentNobleGrant(x.p,'a',252)).toBeUndefined();expect(x.p.nobilityHistory).toEqual([g]);
 });
+it.each([1,2])('uses %s distinct important city results for a noncombat posthumous evaluation',important=>{
+ const x=fixture();for(let i=0;i<4;i++)x.capture('c'+i,'c'+i,i<important);x.award(180);x.award(192);x.dead();x.p.deathCause='NATURAL_DEATH';x.e.at(-1).metadata.deathCause='NATURAL_DEATH';
+ expect(x.propose()[0]).toMatchObject({kind:'POSTHUMOUS',epithet:important===1?'武襄':'武毅',reason:'DISTINGUISHED_SERVICE',rank:'HOU'});
+});

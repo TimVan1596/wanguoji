@@ -1,0 +1,548 @@
+{
+  "scope": "frozen real Core; checkpoint refusal classification is not an annual rejection log; only existing verified military secession triggers revocation",
+  "cohort50": {
+    "years": 50,
+    "seeds": 4,
+    "posthumous": 3,
+    "epithets": {
+      "武烈": 3,
+      "武毅": 0,
+      "武襄": 0
+    },
+    "revocations": 0,
+    "titledSecessions": 0,
+    "deceasedByHighestHistoricalRank": {
+      "BO": 2,
+      "HOU": 1,
+      "GONG": 0
+    },
+    "unhonoredTitledAtCheckpoint": {},
+    "deadWithoutFormalTitle": 45,
+    "allStrict": true,
+    "invariants": {
+      "populationUnexplained": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "residentIdentityConflicts": 0
+    },
+    "maximumFormationSize": 4,
+    "captures": 56,
+    "militaryPoliticalEvents": 0,
+    "perSeed": [
+      {
+        "seed": "regional-1",
+        "posthumous": 1,
+        "revocations": 0,
+        "worldPopulation": 189,
+        "worldRandomPosition": 3282,
+        "canonicalSha256": "c2ae4dcc080eca83e301e26e649f44dbbeb667620230d86efa26d13889206167",
+        "strict": true
+      },
+      {
+        "seed": "regional-2",
+        "posthumous": 0,
+        "revocations": 0,
+        "worldPopulation": 183,
+        "worldRandomPosition": 3560,
+        "canonicalSha256": "4d8499cf821dbc121cf0f2f5dccca84b79591aede3dc9e80981f11b5a156857b",
+        "strict": true
+      },
+      {
+        "seed": "regional-3",
+        "posthumous": 2,
+        "revocations": 0,
+        "worldPopulation": 185,
+        "worldRandomPosition": 3438,
+        "canonicalSha256": "2a8b46fa7a5ad56cd1a96fd3dd23c8a00727ee113ee82d4e043f38aee582163b",
+        "strict": true
+      },
+      {
+        "seed": "regional-4",
+        "posthumous": 0,
+        "revocations": 0,
+        "worldPopulation": 176,
+        "worldRandomPosition": 3434,
+        "canonicalSha256": "62bc626c35ca911a3cb759b3825ed9b73e91fbc602b26549257f6874c7ca6f1c",
+        "strict": true
+      }
+    ],
+    "honors": [
+      {
+        "factionId": "魏",
+        "countryName": "魏",
+        "epochFounderId": "魏-ruler-9",
+        "rulerId": "魏-ruler-17",
+        "rulerTitle": "魏王魏礼",
+        "eventId": "military-posthumous-military-person-3",
+        "kind": "POSTHUMOUS",
+        "personId": "military-person-3",
+        "personalName": "房彦澄",
+        "month": 456,
+        "grantEventId": "military-noble-military-person-3-魏-魏-ruler-9-HOU",
+        "rank": "HOU",
+        "sourceEventId": "military-person-death-military-person-3-453",
+        "deathMonth": 453,
+        "epithet": "武烈",
+        "reason": "BATTLE_SERVICE",
+        "meritEventIds": [
+          "capital-fallen-217-魏-韩-新郑-19",
+          "capital-fallen-248-魏-楚-郢-23",
+          "city-captured-316-魏-清邑-34",
+          "capital-fallen-410-魏-燕-蓟-41"
+        ]
+      },
+      {
+        "factionId": "楚",
+        "countryName": "楚",
+        "epochFounderId": "楚-ruler-14",
+        "rulerId": "楚-ruler-14",
+        "rulerTitle": "楚王熊伯佑",
+        "eventId": "military-posthumous-military-person-2",
+        "kind": "POSTHUMOUS",
+        "personId": "military-person-2",
+        "personalName": "谢融",
+        "month": 300,
+        "grantEventId": "military-noble-military-person-2-楚-楚-ruler-14-BO",
+        "rank": "BO",
+        "sourceEventId": "military-person-death-military-person-2-296",
+        "deathMonth": 296,
+        "epithet": "武烈",
+        "reason": "BATTLE_SERVICE",
+        "meritEventIds": [
+          "capital-fallen-106-楚-韩-新郑-18",
+          "city-captured-243-楚-川津-28",
+          "capital-fallen-268-楚-齐-临淄-33"
+        ]
+      },
+      {
+        "factionId": "齐",
+        "countryName": "齐",
+        "epochFounderId": "齐-ruler-9",
+        "rulerId": "齐-ruler-22",
+        "rulerTitle": "齐王田珪",
+        "eventId": "military-posthumous-military-person-10",
+        "kind": "POSTHUMOUS",
+        "personId": "military-person-10",
+        "personalName": "王泰",
+        "month": 528,
+        "grantEventId": "military-noble-military-person-10-齐-齐-ruler-9-BO",
+        "rank": "BO",
+        "sourceEventId": "military-person-death-military-person-10-527",
+        "deathMonth": 527,
+        "epithet": "武烈",
+        "reason": "BATTLE_SERVICE",
+        "meritEventIds": [
+          "city-captured-478-齐-原武-65",
+          "capital-fallen-500-齐-楚-郢-72"
+        ]
+      }
+    ]
+  },
+  "cohort100": {
+    "years": 100,
+    "seeds": 6,
+    "posthumous": 12,
+    "epithets": {
+      "武烈": 7,
+      "武毅": 5,
+      "武襄": 0
+    },
+    "revocations": 1,
+    "titledSecessions": 1,
+    "deceasedByHighestHistoricalRank": {
+      "BO": 12,
+      "HOU": 4,
+      "GONG": 3
+    },
+    "unhonoredTitledAtCheckpoint": {
+      "INSUFFICIENT_DISTINGUISHED_MERIT": 6,
+      "FORMER_SOVEREIGN": 1
+    },
+    "deadWithoutFormalTitle": 132,
+    "allStrict": true,
+    "invariants": {
+      "populationUnexplained": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "residentIdentityConflicts": 0
+    },
+    "maximumFormationSize": 4,
+    "captures": 170,
+    "militaryPoliticalEvents": 1,
+    "perSeed": [
+      {
+        "seed": "regional-1",
+        "posthumous": 2,
+        "revocations": 0,
+        "worldPopulation": 169,
+        "worldRandomPosition": 6547,
+        "canonicalSha256": "8e253e671e46c16476a29aa2db88de69ade2100b57b552fdec9e8f18b2530109",
+        "strict": true
+      },
+      {
+        "seed": "regional-2",
+        "posthumous": 2,
+        "revocations": 0,
+        "worldPopulation": 200,
+        "worldRandomPosition": 6470,
+        "canonicalSha256": "2fdc92fbd4450e640ed18f4f44d13b267d11e2776e9e6a62caebe38919d7a384",
+        "strict": true
+      },
+      {
+        "seed": "regional-3",
+        "posthumous": 2,
+        "revocations": 1,
+        "worldPopulation": 185,
+        "worldRandomPosition": 6408,
+        "canonicalSha256": "3a780fc5b28e029cc96fe9c8dbf765b798e4ff6928d07062ecb505ecbc326b48",
+        "strict": true
+      },
+      {
+        "seed": "regional-4",
+        "posthumous": 3,
+        "revocations": 0,
+        "worldPopulation": 155,
+        "worldRandomPosition": 6423,
+        "canonicalSha256": "3d7dc724290680c08667f12f701a1257df8011f48a0c05cbfe921aba28b149f7",
+        "strict": true
+      },
+      {
+        "seed": "regional-5",
+        "posthumous": 2,
+        "revocations": 0,
+        "worldPopulation": 175,
+        "worldRandomPosition": 5981,
+        "canonicalSha256": "34b5a2cab5eee9a5adbd69102d4ed8373d57547ce398a889e2949adb6f8e9c6e",
+        "strict": true
+      },
+      {
+        "seed": "regional-6",
+        "posthumous": 1,
+        "revocations": 0,
+        "worldPopulation": 200,
+        "worldRandomPosition": 6253,
+        "canonicalSha256": "aefa1b347c5b129f05aaf50e5d9985535d3a436043c42db3202f9de6efdf03c2",
+        "strict": true
+      }
+    ],
+    "honors": [
+      {
+        "factionId": "魏",
+        "countryName": "魏",
+        "epochFounderId": "魏-ruler-9",
+        "rulerId": "魏-ruler-17",
+        "rulerTitle": "魏王魏礼",
+        "eventId": "military-posthumous-military-person-3",
+        "kind": "POSTHUMOUS",
+        "personId": "military-person-3",
+        "personalName": "房彦澄",
+        "month": 456,
+        "grantEventId": "military-noble-military-person-3-魏-魏-ruler-9-HOU",
+        "rank": "HOU",
+        "sourceEventId": "military-person-death-military-person-3-453",
+        "deathMonth": 453,
+        "epithet": "武烈",
+        "reason": "BATTLE_SERVICE",
+        "meritEventIds": [
+          "capital-fallen-217-魏-韩-新郑-19",
+          "capital-fallen-248-魏-楚-郢-23",
+          "city-captured-316-魏-清邑-34",
+          "capital-fallen-410-魏-燕-蓟-41"
+        ]
+      },
+      {
+        "factionId": "齐",
+        "countryName": "齐",
+        "epochFounderId": "齐-ruler-8",
+        "rulerId": "齐-ruler-36",
+        "rulerTitle": "齐王田成",
+        "eventId": "military-posthumous-military-person-18",
+        "kind": "POSTHUMOUS",
+        "personId": "military-person-18",
+        "personalName": "纪礼",
+        "month": 1032,
+        "grantEventId": "military-noble-military-person-18-齐-齐-ruler-8-GONG",
+        "rank": "GONG",
+        "sourceEventId": "military-person-death-military-person-18-1032",
+        "deathMonth": 1032,
+        "epithet": "武毅",
+        "reason": "DISTINGUISHED_SERVICE",
+        "meritEventIds": [
+          "city-captured-644-齐-大梁-63",
+          "city-captured-661-齐-新郑-66",
+          "capital-fallen-692-齐-魏-郢-67",
+          "city-recovered-725-齐-清邑-72",
+          "city-captured-748-齐-蓟-77",
+          "capital-fallen-788-齐-燕-阳翟-83",
+          "capital-fallen-814-齐-赵-邯郸-89",
+          "city-captured-833-齐-姑臧-92"
+        ]
+      },
+      {
+        "factionId": "楚",
+        "countryName": "楚",
+        "epochFounderId": "楚-ruler-13",
+        "rulerId": "楚-ruler-31",
+        "rulerTitle": "楚王熊绍宽",
+        "eventId": "military-posthumous-military-person-6",
+        "kind": "POSTHUMOUS",
+        "personId": "military-person-6",
+        "personalName": "季暄",
+        "month": 720,
+        "grantEventId": "military-noble-military-person-6-楚-楚-ruler-13-GONG",
+        "rank": "GONG",
+        "sourceEventId": "military-person-death-military-person-6-720",
+        "deathMonth": 720,
+        "epithet": "武毅",
+        "reason": "DISTINGUISHED_SERVICE",
+        "meritEventIds": [
+          "city-captured-278-楚-琅琊-28",
+          "capital-fallen-297-楚-韩-新郑-30",
+          "city-captured-385-楚-河州-43",
+          "capital-fallen-427-楚-韩-关中-47",
+          "city-captured-442-楚-龙渊-53",
+          "capital-fallen-527-楚-魏-大梁-65"
+        ]
+      },
+      {
+        "factionId": "楚",
+        "countryName": "楚",
+        "epochFounderId": "楚-ruler-13",
+        "rulerId": "楚-ruler-31",
+        "rulerTitle": "楚王熊绍宽",
+        "eventId": "military-posthumous-military-person-19",
+        "kind": "POSTHUMOUS",
+        "personId": "military-person-19",
+        "personalName": "潘克和",
+        "month": 912,
+        "grantEventId": "military-noble-military-person-19-楚-楚-ruler-13-BO",
+        "rank": "BO",
+        "sourceEventId": "military-person-death-military-person-19-910",
+        "deathMonth": 910,
+        "epithet": "武烈",
+        "reason": "BATTLE_SERVICE",
+        "meritEventIds": [
+          "city-captured-850-楚-临川-94",
+          "city-captured-886-楚-河州-103"
+        ]
+      },
+      {
+        "factionId": "楚",
+        "countryName": "楚",
+        "epochFounderId": "楚-ruler-14",
+        "rulerId": "楚-ruler-14",
+        "rulerTitle": "楚王熊伯佑",
+        "eventId": "military-posthumous-military-person-2",
+        "kind": "POSTHUMOUS",
+        "personId": "military-person-2",
+        "personalName": "谢融",
+        "month": 300,
+        "grantEventId": "military-noble-military-person-2-楚-楚-ruler-14-BO",
+        "rank": "BO",
+        "sourceEventId": "military-person-death-military-person-2-296",
+        "deathMonth": 296,
+        "epithet": "武烈",
+        "reason": "BATTLE_SERVICE",
+        "meritEventIds": [
+          "capital-fallen-106-楚-韩-新郑-18",
+          "city-captured-243-楚-川津-28",
+          "capital-fallen-268-楚-齐-临淄-33"
+        ]
+      },
+      {
+        "factionId": "齐",
+        "countryName": "齐",
+        "epochFounderId": "齐-ruler-9",
+        "rulerId": "齐-ruler-22",
+        "rulerTitle": "齐王田珪",
+        "eventId": "military-posthumous-military-person-10",
+        "kind": "POSTHUMOUS",
+        "personId": "military-person-10",
+        "personalName": "王泰",
+        "month": 528,
+        "grantEventId": "military-noble-military-person-10-齐-齐-ruler-9-BO",
+        "rank": "BO",
+        "sourceEventId": "military-person-death-military-person-10-527",
+        "deathMonth": 527,
+        "epithet": "武烈",
+        "reason": "BATTLE_SERVICE",
+        "meritEventIds": [
+          "city-captured-478-齐-原武-65",
+          "capital-fallen-500-齐-楚-郢-72"
+        ]
+      },
+      {
+        "factionId": "齐",
+        "countryName": "齐",
+        "epochFounderId": "齐-ruler-9",
+        "rulerId": "齐-ruler-22",
+        "rulerTitle": "齐王田珪",
+        "eventId": "military-revocation-military-noble-military-person-11-齐-齐-ruler-9-HOU",
+        "kind": "REVOKED",
+        "personId": "military-person-11",
+        "personalName": "程绍甫",
+        "month": 672,
+        "grantEventId": "military-noble-military-person-11-齐-齐-ruler-9-HOU",
+        "rank": "HOU",
+        "sourceEventId": "empire-split-672-齐-邯郸东义军-102",
+        "reason": "VERIFIED_SECESSION",
+        "meritEventIds": []
+      },
+      {
+        "factionId": "楚",
+        "countryName": "楚",
+        "epochFounderId": "楚-ruler-16",
+        "rulerId": "楚-ruler-44",
+        "rulerTitle": "楚王熊承仁",
+        "eventId": "military-posthumous-military-person-11",
+        "kind": "POSTHUMOUS",
+        "personId": "military-person-11",
+        "personalName": "田允佑",
+        "month": 876,
+        "grantEventId": "military-noble-military-person-11-楚-楚-ruler-16-HOU",
+        "rank": "HOU",
+        "sourceEventId": "military-person-death-military-person-11-876",
+        "deathMonth": 876,
+        "epithet": "武毅",
+        "reason": "DISTINGUISHED_SERVICE",
+        "meritEventIds": [
+          "city-captured-465-楚-耀州-55",
+          "capital-fallen-475-楚-韩-新郑-57",
+          "capital-fallen-530-楚-韩-平原-61",
+          "capital-fallen-545-楚-魏-大梁-68",
+          "capital-fallen-673-楚-齐-定门-82",
+          "capital-fallen-702-楚-齐-耀州-86"
+        ]
+      },
+      {
+        "factionId": "魏",
+        "countryName": "魏",
+        "epochFounderId": "魏-ruler-11",
+        "rulerId": "魏-ruler-49",
+        "rulerTitle": "魏王魏甫",
+        "eventId": "military-posthumous-military-person-19",
+        "kind": "POSTHUMOUS",
+        "personId": "military-person-19",
+        "personalName": "邢克和",
+        "month": 768,
+        "grantEventId": "military-noble-military-person-19-魏-魏-ruler-11-BO",
+        "rank": "BO",
+        "sourceEventId": "military-person-death-military-person-19-758",
+        "deathMonth": 758,
+        "epithet": "武烈",
+        "reason": "BATTLE_SERVICE",
+        "meritEventIds": [
+          "city-captured-664-魏-临淄-80",
+          "city-captured-738-魏-宁朔-96"
+        ]
+      },
+      {
+        "factionId": "魏",
+        "countryName": "魏",
+        "epochFounderId": "魏-ruler-11",
+        "rulerId": "魏-ruler-67",
+        "rulerTitle": "魏王魏怀泰",
+        "eventId": "military-posthumous-military-person-24",
+        "kind": "POSTHUMOUS",
+        "personId": "military-person-24",
+        "personalName": "魏德礼",
+        "month": 1128,
+        "grantEventId": "military-noble-military-person-24-魏-魏-ruler-11-HOU",
+        "rank": "HOU",
+        "sourceEventId": "military-person-death-military-person-24-1124",
+        "deathMonth": 1124,
+        "epithet": "武毅",
+        "reason": "DISTINGUISHED_SERVICE",
+        "meritEventIds": [
+          "city-captured-858-魏-上庸-116",
+          "city-captured-888-魏-新郑-119",
+          "capital-fallen-967-魏-燕-蓟-130",
+          "city-captured-1089-魏-平原-149",
+          "city-recovered-1102-魏-大梁-151"
+        ]
+      },
+      {
+        "factionId": "燕",
+        "countryName": "燕",
+        "epochFounderId": "燕-ruler-3",
+        "rulerId": "燕-ruler-18",
+        "rulerTitle": "燕王姬仲绍",
+        "eventId": "military-posthumous-military-person-2",
+        "kind": "POSTHUMOUS",
+        "personId": "military-person-2",
+        "personalName": "古璠",
+        "month": 612,
+        "grantEventId": "military-noble-military-person-2-燕-燕-ruler-3-GONG",
+        "rank": "GONG",
+        "sourceEventId": "military-person-death-military-person-2-612",
+        "deathMonth": 612,
+        "epithet": "武毅",
+        "reason": "DISTINGUISHED_SERVICE",
+        "meritEventIds": [
+          "capital-fallen-114-燕-赵-邯郸-11",
+          "capital-fallen-255-燕-齐-临淄-31",
+          "capital-fallen-305-燕-齐-曲阳-35",
+          "city-captured-332-燕-宜春-44",
+          "city-captured-355-燕-钟离-49",
+          "capital-fallen-455-燕-韩-新郑-55"
+        ]
+      },
+      {
+        "factionId": "魏",
+        "countryName": "魏",
+        "epochFounderId": "魏-ruler-8",
+        "rulerId": "魏-ruler-9",
+        "rulerTitle": "魏王魏克义",
+        "eventId": "military-posthumous-military-person-11",
+        "kind": "POSTHUMOUS",
+        "personId": "military-person-11",
+        "personalName": "沈骥",
+        "month": 732,
+        "grantEventId": "military-noble-military-person-11-魏-魏-ruler-8-BO",
+        "rank": "BO",
+        "sourceEventId": "military-person-death-military-person-11-725",
+        "deathMonth": 725,
+        "epithet": "武烈",
+        "reason": "BATTLE_SERVICE",
+        "meritEventIds": [
+          "capital-fallen-605-魏-新郑义军-新郑-71",
+          "city-captured-678-魏-邯郸-80"
+        ]
+      },
+      {
+        "factionId": "齐",
+        "countryName": "齐",
+        "epochFounderId": "齐-ruler-6",
+        "rulerId": "齐-ruler-8",
+        "rulerTitle": "齐王田世绍",
+        "eventId": "military-posthumous-military-person-3",
+        "kind": "POSTHUMOUS",
+        "personId": "military-person-3",
+        "personalName": "褚克济",
+        "month": 240,
+        "grantEventId": "military-noble-military-person-3-齐-齐-ruler-6-BO",
+        "rank": "BO",
+        "sourceEventId": "military-person-death-military-person-3-234",
+        "deathMonth": 234,
+        "epithet": "武烈",
+        "reason": "BATTLE_SERVICE",
+        "meritEventIds": [
+          "capital-fallen-156-齐-魏-大梁-23",
+          "capital-fallen-189-齐-韩-新郑-26"
+        ]
+      }
+    ]
+  },
+  "productionSha256": "a5bb8c6b16d1168c6962bb2927b077e90fa9cee9826ad17b00ed475b9377afd9",
+  "verification": {
+    "unitFiles": 268,
+    "unitTests": 2144,
+    "realCorePhaserDOMChecks": 672,
+    "webBuild": true,
+    "desktopBuild": true,
+    "debugBuild": true,
+    "protectedV27Slots": true,
+    "twelveMonthDeterministicRepeatAndSecondRead": true,
+    "manualChromeGate": "pending"
+  }
+}

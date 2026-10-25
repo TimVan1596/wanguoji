@@ -147,7 +147,7 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
-- 当前 APP **v0.99931z22** / package **0.99.188** / WorldSave **V27**。z21已获用户人工Gate PASS。真实君主可按本国服役、不同城市取城及重要战果正式授予伯、侯、公；爵位与四级军职分离，不增加兵额或封地。军政人物新增动态功臣录及可追溯册封纪事；爵位仅在既有政治危机和有效军权下有限影响参与者选择，不新增抽签或继承资格。保留军额、晋升门槛及z19攻守。V27拒绝旧V26并保留旧槽位，请新建世界；等待本轮人工Chrome Gate。
+- 当前 APP **v0.99931z23** / package **0.99.189** / WorldSave **V28**。z22已获用户人工Gate PASS。功臣录改为“历代三杰”，分别展示核验攻城、守城及军旅经历，不用普通军令或短接触凑数。突出受爵功臣死亡后可由合法君主正式追谥；已核验的军事割据可由仍在国的原王统君主正式追夺旧爵，保留全部原始授爵史。爵位冠服与历史年月、生效及追夺状态一致；不改军职晋升、军额、攻守、人口或外交规则。V28拒绝旧V27并保留旧槽位，请新建世界；等待本轮人工Chrome Gate。
 
 - v0.99931n人工Gate已PASS，真实长局自然发生至少11次同王统宗室废立。当前v0.99931n1修复连续废立后的V14生命周期校验，并完善君主即离位叙述与史评，等待[人工Gate](docs/RulerDepositionLifecycleClosureN1.md)。
 - v0.99929a 修复政治终结历史身份、退位年龄与双方君主大事记。[Political Terminal Chronicle Gate](docs/PoliticalTerminalChronicleClosure.md)已由用户完成人工PASS。
