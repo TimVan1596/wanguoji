@@ -360,6 +360,8 @@ export class MilitaryCommandRegistryStore {
     for(const person of this.people.values()){
       const team=teams.find(t=>t.name===person.factionId),dy=dynasties.find(d=>d.factionId===person.factionId),user=team?.getUserById(person.sourceUserId);
       if(month>=deriveMilitaryLifeSchedule(person).retirementMonth||!team||!dy||!user?.matchesMilitaryLife(person)||user.role!=="NORMAL"||user.rulerId||user.player.rulerId||!user.player.logicalUnitId)continue;
+      const binding=this.recruitmentContext?.()?.registry.getEntry(user.player.logicalUnitId),state=binding?.state;
+      if(!binding||binding.player!==user.player||!state?.alive||state.userId!==user.id||state.unitId!==user.player.logicalUnitId||state.factionId!==team.name||state.role!=='NORMAL'||state.rulerId||user.player.user!==user||user.player.team!==team||!user.player.active||user.player.parent||user.player.children?.length)continue;
       const active=this.getFormations().filter(f=>f.commanderPersonId===person.personId&&f.status==='ACTIVE');
       if(active.length!==1||!active[0].memberUnitIds.includes(user.player.logicalUnitId))continue;
       const grant=nextNobleGrant(person,this.getFormations(),this.eventReader(team.name),month,team,dy);if(!grant)continue;
