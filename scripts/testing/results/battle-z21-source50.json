@@ -1,0 +1,11 @@
+{
+  "productionSha256": "7b3502bf10d8a852caa47b138d5aea3a2c2e310868180325f138986eb2c282fc",
+  "seeds": [
+    "regional-1",
+    "regional-2",
+    "regional-3",
+    "regional-4"
+  ],
+  "years": 50,
+  "scope": "real frozen production Core; original four paired seeds; no candidate rule patches"
+}

@@ -24,6 +24,8 @@
       "same-month repeated office evaluation never duplicates the grant",
       "service-only promotion never manufactures military political qualification",
       "public biography truthfully identifies service promotion",
+      "same-month evidence regression has an existing actual military target",
+      "a later same-month real capture cannot backfill an earlier service promotion with war merit",
       "same promotion save resumes twelve months identically",
       "second read preserves the promotion evidence and actual members",
       "service promotion can recruit an existing actual resident",

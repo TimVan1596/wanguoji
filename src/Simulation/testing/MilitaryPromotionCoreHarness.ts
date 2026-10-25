@@ -43,6 +43,10 @@ export async function runMilitaryPromotionCore(seed:string){
    const count=p.appointments[0].officeHistory!.length;(Military as any).advanceOffices(96,core.teams);check(p.appointments[0].officeHistory!.length===count,'same-month repeated office evaluation never duplicates the grant');
    check(!Military.getPoliticalInfluence(team,96,core.logicalUnitRegistry).candidates.some(c=>c.personId===id),'service-only promotion never manufactures military political qualification');
    const rows=militaryMilestones(p,Military.getChronicle(p,96),History.getEvents());check(rows.some(e=>e.eventId===grant.eventId&&e.text.includes('依服役资历')&&!e.text.includes('战功')),'public biography truthfully identifies service promotion');
+   if(!reserve){
+    const target=core.allCities.find(c=>c.id===f.targetCityId)!;check(target,'same-month evidence regression has an existing actual military target');place(user,target.block.x,target.block.y);target.capture(team,96,undefined,f.commandId,p.personId);
+    const at=exportWorldSave(core);check(grant.promotionBasis==='SERVICE'&&validateWorldSave(at).valid,'a later same-month real capture cannot backfill an earlier service promotion with war merit');
+   }
    const saved=exportWorldSave(core),resume=()=>{hydrateWorldSave(core,structuredClone(saved));core.setWorldRunning(true);for(let n=0;n<12;n++)step();core.setWorldRunning(false);return exportWorldSave(core);};const a=resume(),b=resume();check(diffCanonicalWorldSave(a,b).matched,'same promotion save resumes twelve months identically');hydrateWorldSave(core,structuredClone(a));check(diffCanonicalWorldSave(a,exportWorldSave(core)).matched,'second read preserves the promotion evidence and actual members');
   }
   return {seed,checks,scope:'production city contact, office, recruits, politics and save; no new combat or political probabilities'};
