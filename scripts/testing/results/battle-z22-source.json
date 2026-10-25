@@ -12,5 +12,5 @@
   ],
   "years": 100,
   "noblePoliticalWeight": true,
-  "scope": "real frozen production Core; original four + twelve additional fixed seeds; no candidate rule patches"
+  "scope": "real frozen production Core; 8 fixed seeds; noble political weight enabled; no other rule patches"
 }

@@ -1,0 +1,378 @@
+{
+  "scope": "real frozen Core; paired political choice only; no new random draws or probabilities",
+  "cohort50": {
+    "seeds": 4,
+    "rankCounts": {
+      "BO": 9,
+      "HOU": 3,
+      "GONG": 1
+    },
+    "titledPeople": 9,
+    "captures": 56,
+    "militaryPoliticalEvents": 0,
+    "depositions": 1,
+    "usurpations": 0,
+    "militarySplits": 0,
+    "allStrict": true,
+    "invariantTotals": {
+      "populationUnexplained": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "residentIdentityConflicts": 0
+    },
+    "perSeed": [
+      {
+        "seed": "regional-1",
+        "ranks": {
+          "BO": 2,
+          "HOU": 1,
+          "GONG": 0
+        },
+        "titledPeople": 2,
+        "captures": 13,
+        "worldPopulation": 189,
+        "worldRandomPosition": 3282,
+        "strict": true
+      },
+      {
+        "seed": "regional-2",
+        "ranks": {
+          "BO": 1,
+          "HOU": 1,
+          "GONG": 1
+        },
+        "titledPeople": 1,
+        "captures": 13,
+        "worldPopulation": 183,
+        "worldRandomPosition": 3560,
+        "strict": true
+      },
+      {
+        "seed": "regional-3",
+        "ranks": {
+          "BO": 4,
+          "HOU": 0,
+          "GONG": 0
+        },
+        "titledPeople": 4,
+        "captures": 20,
+        "worldPopulation": 185,
+        "worldRandomPosition": 3438,
+        "strict": true
+      },
+      {
+        "seed": "regional-4",
+        "ranks": {
+          "BO": 2,
+          "HOU": 1,
+          "GONG": 0
+        },
+        "titledPeople": 2,
+        "captures": 10,
+        "worldPopulation": 176,
+        "worldRandomPosition": 3434,
+        "strict": true
+      }
+    ],
+    "grantMerits": {
+      "BO": {
+        "count": 9,
+        "distinctCityRange": [
+          2,
+          2
+        ],
+        "serviceMonthRange": [
+          60,
+          276
+        ]
+      },
+      "HOU": {
+        "count": 3,
+        "distinctCityRange": [
+          4,
+          4
+        ],
+        "serviceMonthRange": [
+          156,
+          312
+        ]
+      },
+      "GONG": {
+        "count": 1,
+        "distinctCityRange": [
+          6,
+          6
+        ],
+        "serviceMonthRange": [
+          348,
+          348
+        ]
+      }
+    }
+  },
+  "cohort100": {
+    "seeds": 8,
+    "rankCounts": {
+      "BO": 25,
+      "HOU": 11,
+      "GONG": 3
+    },
+    "titledPeople": 25,
+    "captures": 206,
+    "militaryPoliticalEvents": 1,
+    "depositions": 2,
+    "usurpations": 1,
+    "militarySplits": 1,
+    "allStrict": true,
+    "invariantTotals": {
+      "populationUnexplained": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "residentIdentityConflicts": 0
+    },
+    "perSeed": [
+      {
+        "seed": "regional-1",
+        "ranks": {
+          "BO": 4,
+          "HOU": 3,
+          "GONG": 1
+        },
+        "titledPeople": 4,
+        "captures": 34,
+        "worldPopulation": 169,
+        "worldRandomPosition": 6547,
+        "strict": true
+      },
+      {
+        "seed": "regional-2",
+        "ranks": {
+          "BO": 2,
+          "HOU": 1,
+          "GONG": 1
+        },
+        "titledPeople": 2,
+        "captures": 26,
+        "worldPopulation": 200,
+        "worldRandomPosition": 6470,
+        "strict": true
+      },
+      {
+        "seed": "regional-3",
+        "ranks": {
+          "BO": 4,
+          "HOU": 1,
+          "GONG": 0
+        },
+        "titledPeople": 4,
+        "captures": 29,
+        "worldPopulation": 185,
+        "worldRandomPosition": 6408,
+        "strict": true
+      },
+      {
+        "seed": "regional-4",
+        "ranks": {
+          "BO": 5,
+          "HOU": 3,
+          "GONG": 0
+        },
+        "titledPeople": 5,
+        "captures": 33,
+        "worldPopulation": 155,
+        "worldRandomPosition": 6423,
+        "strict": true
+      },
+      {
+        "seed": "regional-5",
+        "ranks": {
+          "BO": 4,
+          "HOU": 2,
+          "GONG": 1
+        },
+        "titledPeople": 4,
+        "captures": 27,
+        "worldPopulation": 175,
+        "worldRandomPosition": 5981,
+        "strict": true
+      },
+      {
+        "seed": "regional-6",
+        "ranks": {
+          "BO": 3,
+          "HOU": 0,
+          "GONG": 0
+        },
+        "titledPeople": 3,
+        "captures": 21,
+        "worldPopulation": 200,
+        "worldRandomPosition": 6253,
+        "strict": true
+      },
+      {
+        "seed": "regional-7",
+        "ranks": {
+          "BO": 1,
+          "HOU": 0,
+          "GONG": 0
+        },
+        "titledPeople": 1,
+        "captures": 24,
+        "worldPopulation": 193,
+        "worldRandomPosition": 6765,
+        "strict": true
+      },
+      {
+        "seed": "regional-8",
+        "ranks": {
+          "BO": 2,
+          "HOU": 1,
+          "GONG": 0
+        },
+        "titledPeople": 2,
+        "captures": 12,
+        "worldPopulation": 203,
+        "worldRandomPosition": 5624,
+        "strict": true
+      }
+    ],
+    "grantMerits": {
+      "BO": {
+        "count": 25,
+        "distinctCityRange": [
+          2,
+          2
+        ],
+        "serviceMonthRange": [
+          60,
+          276
+        ]
+      },
+      "HOU": {
+        "count": 11,
+        "distinctCityRange": [
+          4,
+          4
+        ],
+        "serviceMonthRange": [
+          156,
+          324
+        ]
+      },
+      "GONG": {
+        "count": 3,
+        "distinctCityRange": [
+          6,
+          6
+        ],
+        "serviceMonthRange": [
+          252,
+          384
+        ]
+      }
+    }
+  },
+  "paired50": [
+    {
+      "seed": "regional-1",
+      "canonicalEqual": true,
+      "rngEqual": true,
+      "eligible": [
+        39,
+        39
+      ],
+      "draws": [
+        6,
+        6
+      ],
+      "militaryDraws": [
+        0,
+        0
+      ],
+      "depositions": [
+        0,
+        0
+      ],
+      "militarySuccesses": [
+        0,
+        0
+      ]
+    },
+    {
+      "seed": "regional-2",
+      "canonicalEqual": true,
+      "rngEqual": true,
+      "eligible": [
+        26,
+        26
+      ],
+      "draws": [
+        8,
+        8
+      ],
+      "militaryDraws": [
+        0,
+        0
+      ],
+      "depositions": [
+        0,
+        0
+      ],
+      "militarySuccesses": [
+        0,
+        0
+      ]
+    },
+    {
+      "seed": "regional-3",
+      "canonicalEqual": true,
+      "rngEqual": true,
+      "eligible": [
+        42,
+        42
+      ],
+      "draws": [
+        8,
+        8
+      ],
+      "militaryDraws": [
+        0,
+        0
+      ],
+      "depositions": [
+        1,
+        1
+      ],
+      "militarySuccesses": [
+        0,
+        0
+      ]
+    },
+    {
+      "seed": "regional-4",
+      "canonicalEqual": true,
+      "rngEqual": true,
+      "eligible": [
+        34,
+        34
+      ],
+      "draws": [
+        7,
+        7
+      ],
+      "militaryDraws": [
+        0,
+        0
+      ],
+      "depositions": [
+        0,
+        0
+      ],
+      "militarySuccesses": [
+        0,
+        0
+      ]
+    }
+  ],
+  "naturalPoliticalEvidence": "No title-induced successful political choice was observed in the four paired worlds; actual production deposition transaction tested deterministically."
+}
