@@ -41,6 +41,13 @@ describe("lightweight identity portrait",()=>{
  });
 });
 
+it("distinguishes three real peerages without changing face or replacing military rank",()=>{
+ const faces=new Set<string>(),insignia=new Set<string>(),before=worldRandom.exportState();
+ for(const nobleRank of ['BO','HOU','GONG'] as const){const html=renderToStaticMarkup(<Portrait personId="fixed" role="JIANGJUN" nobleRank={nobleRank} royalKin/>);faces.add(html.match(/<path data-face="true"[^>]*>/)![0]);insignia.add(html);expect(html).toContain(`data-noble-insignia="${nobleRank}"`);expect(html).toContain('data-portrait-role="JIANGJUN"');expect(html).toContain('data-royal-kin="true"');}
+ expect(faces.size).toBe(1);expect(insignia.size).toBe(3);expect(worldRandom.exportState()).toEqual(before);
+ expect(renderToStaticMarkup(<Portrait personId="fixed" role="KING" nobleRank="GONG"/>)).not.toContain('data-noble-insignia');
+});
+
 vi.mock("react/jsx-dev-runtime",async()=>{
  const r=await vi.importActual<typeof import("react")>("react");
  return {jsxDEV:(type:React.ElementType,props:Record<string,unknown>,key?:string)=>r.createElement(type,{...props,key}),Fragment:r.Fragment};

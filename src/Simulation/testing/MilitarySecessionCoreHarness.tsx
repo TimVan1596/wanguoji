@@ -1,3 +1,4 @@
+import {currentNobleGrant} from '../../Politics/MilitaryNobility';
 import {militaryIdentityLabels} from "../../Politics/RoyalArchiveIdentity";
 import {CURRENT_SAVE_SCHEMA_VERSION} from "../../Persistence/WorldSaveSchema";
 import {createRoot} from "react-dom/client";
@@ -27,10 +28,14 @@ export async function runMilitarySecessionCore(seed="military-secession-z7"){
  const strict=()=>{const s=exportWorldSave(core),v=validateWorldSave(s);if(!v.valid)throw new Error(v.errors.join("; "));return s;};
  try{
   let chosen:ReturnType<typeof Military.getPoliticalInfluence>["candidates"][number]|undefined,parent:typeof core.teams[number]|undefined;
-  for(let month=0;month<600&&!chosen;month++){step();for(const t of core.teams.filter(t=>t.cities.length>=2&&t.cities.some(c=>!c.isCapital&&!c.isInCaptureGrace(core.simulator!.year)))){const p=Military.getPoliticalInfluence(t,core.simulator!.year,core.logicalUnitRegistry).candidates.find(c=>c.unitCount>=2);if(p){chosen=p;parent=t;break;}}}
+  for(let month=0;month<600&&!chosen;month++){step();for(const t of core.teams.filter(t=>t.cities.length>=2&&t.cities.some(c=>!c.isCapital&&!c.isInCaptureGrace(core.simulator!.year)))){const p=Military.getPoliticalInfluence(t,core.simulator!.year,core.logicalUnitRegistry).candidates.find(c=>c.unitCount>=2&&c.serviceMonths>=60&&core.simulator!.year%12===0);if(p){chosen=p;parent=t;break;}}}
   check(chosen&&parent,"natural Core appointments and real service produce an existing military political candidate");if(!chosen||!parent)throw new Error("No military candidate");
   core.setWorldRunning(false);const month=core.simulator!.year,personId=chosen.personId,commandId=chosen.commandId;
   const commander=[...parent.users].find(u=>u.militaryPersonId===personId)!;
+  const victoryCities=core.allCities.filter(c=>c.ownerTeam&&c.ownerTeam!==parent).slice(0,2);
+  for(const c of victoryCities){commander.player.setPosition(c.block.x,c.block.y);commander.player.body.reset(c.block.x,c.block.y);c.capture(parent,month,undefined,commandId,personId);}
+  Military.updateNobility(month,core.teams,Dynasty.getAll());
+  const oldTitle=currentNobleGrant(Military.getPerson(personId)!,parent.name,month);check(oldTitle,'actual serving general has a real sovereign grant before rebellion');
   while(parent.cities.length<4){const site=core.map!.blocks.flat().find(b=>(b.team===parent||!b.team)&&!b.city&&core.allCities.every(c=>Math.hypot(c.block.x-b.x,c.block.y-b.y)>160));if(!site)throw new Error("No free city site");Factions.foundCity(parent,site,undefined,month);}
   const city=parent.cities.find(c=>!c.isCapital&&!c.isInCaptureGrace(month))!,secondCity=parent.cities.find(c=>c!==city&&!c.isCapital)!;
   const originalIds=[...chosen.memberUnitIds],members=[...parent.users].filter(u=>originalIds.includes(u.player.logicalUnitId!));
@@ -80,6 +85,12 @@ export async function runMilitarySecessionCore(seed="military-secession-z7"){
   check(Military.getChronicle(person,month,parent.name).some(e=>e.eventId===founding[0].id&&!e.victory),"old-country military biography records secession without inventing a capture");
   await checkPersonArchiveInteraction(core,split.team.name,personId,check);
   check(militaryIdentityLabels(Military.getPerson(personId)!,Dynasty.getAll(),History.getEvents(),month).includes("义军创立者"),"real founding transaction supplies composite military founder identity");
+  const titleBefore=strict(),writeHonor=History.addEvent;History.addEvent=function(e){const id=writeHonor.call(this,e);if(e.type==='military-title-revoked')throw Error('injected revocation failure');return id;};
+  try{Military.updateHonors(month,core.teams,Dynasty.getAll());}finally{History.addEvent=writeHonor;}
+  check(diffCanonicalWorldSave(titleBefore,strict()).matched&&person.politicalRulerId===ruler.id,'revocation failure rolls back only its own act, never half-reverts a committed rebellion');
+  const honorRng=JSON.stringify(worldRandom.exportState());Military.updateHonors(month,core.teams,Dynasty.getAll());Military.updateHonors(month,core.teams,Dynasty.getAll());
+  check(person.honorHistory?.filter(h=>h.kind==='REVOKED').length===1&&!currentNobleGrant(person,parent.name,month)&&person.nobilityHistory?.some(g=>g.eventId===oldTitle!.eventId),'real source sovereign revokes once after actual rebellion, retaining all original grants');
+  check(JSON.stringify(worldRandom.exportState())===honorRng&&core.teams.reduce((n,t)=>n+t.users.size,0)===total,'revocation changes no military bodies, sovereign, population or random draws');
   const save=strict();
   for(const mutate of [(s:any)=>s.registries.militaryCommandRegistry.people.find((p:any)=>p.personId===personId).politicalRulerId="wrong",(s:any)=>{const r=s.dynasties.find((d:any)=>d.factionId===split.team.name).rulers.find((r:any)=>r.residentIdentity?.personId===personId);r.naturalDeathMonth++;},(s:any)=>s.registries.militaryCommandRegistry.people.find((p:any)=>p.personId===personId).status="ACTIVE"]){const bad=structuredClone(save);mutate(bad);check(!validateWorldSave(bad).valid,"V21 refuses incompatible political/military life or simultaneous military authority");}
   const resume=()=>{hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return strict();};

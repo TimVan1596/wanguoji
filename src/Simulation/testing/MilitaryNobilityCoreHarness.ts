@@ -1,3 +1,4 @@
+import {nextMilitaryHonors} from '../../Politics/MilitaryHonors';
 import {checkMeritRollInteraction} from './RoyalArchiveInteractionHarness';
 import {createNaturalCore} from './NaturalCoreHarness';
 import Military from '../../Politics/MilitaryCommandRegistry';
@@ -48,12 +49,27 @@ export async function runMilitaryNobilityCore(seed:string){
   const saved=strict();for(const mutate of [(s:any)=>s.registries.militaryCommandRegistry.people.find((x:any)=>x.personId===ids[0]).nobilityHistory[0].rulerId='fake',(s:any)=>s.registries.militaryCommandRegistry.people.find((x:any)=>x.personId===ids[0]).nobilityHistory[0].cityIds.push('fake'),(s:any)=>s.registries.militaryCommandRegistry.people.find((x:any)=>x.personId===ids[0]).nobilityHistory.push({...grants[0]})]){const bad=structuredClone(saved);mutate(bad);check(!validateWorldSave(bad).valid,'strict save rejects invented monarch, merit or duplicate title');}
   const record=JSON.stringify(grants);meritRoster(Military.getPeople().reverse(),Military.getFormations(),History.getEvents(),factionId,240);check(JSON.stringify(p.nobilityHistory)===record,'dynamic merit ranking cannot delete or rewrite a formal grant');
   const resume=()=>{hydrateWorldSave(core,structuredClone(saved));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return strict();};const a=resume(),b=resume();check(diffCanonicalWorldSave(a,b).matched,'ennobled army save resumes twelve real months identically');hydrateWorldSave(core,structuredClone(a));check(diffCanonicalWorldSave(a,strict()).matched,'second read preserves the same people, titles and army');
+  // Formal posthumous evaluation uses the actual death transaction, never age or a fabricated death.
+  {
+   const {t,p}=restore(saved),body=t.getUserById(p.sourceUserId)!;body.destroyUser(false,{cause:'BATTLE_DEATH',month:240,damageSource:'HOSTILE_HOME_OCCUPATION'});clock(252);
+   const dead=strict(),history=History.addEvent;
+   check(nextMilitaryHonors(p,Military.getFormations(),History.getEvents(),252,core.teams.map(x=>x===t?{...x,status:'EXILED'}:x),Dynasty.getAll()).length===0,'no lawful authority means no invented posthumous act');
+   History.addEvent=function(e){const id=history.call(this,e);if(e.type==='military-posthumous')throw Error('injected honor write failure');return id;};
+   try{Military.updateHonors(252,core.teams,Dynasty.getAll());}finally{History.addEvent=history;}
+   check(diffCanonicalWorldSave(dead,strict()).matched,'failed posthumous act rolls back honor and original history atomically');
+   const beforePop=population(),beforeRandom=JSON.stringify(random.exportState());Military.updateHonors(252,core.teams,Dynasty.getAll());const h=p.honorHistory?.[0];
+   check(h?.kind==='POSTHUMOUS'&&h.epithet==='武烈'&&h.deathMonth===240&&h.month===252,'real dead decorated veteran receives one formal evidence-backed posthumous title');
+   Military.updateHonors(252,core.teams,Dynasty.getAll());check(p.honorHistory?.length===1&&p.deathMonth===240&&population()===beforePop&&JSON.stringify(random.exportState())===beforeRandom,'repeated honor opportunity changes neither life, people, army nor RNG');
+   check(Military.getChronicle(p,252).some(e=>e.eventId===h!.eventId)&&!Military.getChronicle(p,239).some(e=>e.text.includes('武烈')),'posthumous act is readable after death and never backfilled into a living campaign');
+   const honored=strict();for(const edit of [(s:any)=>s.registries.militaryCommandRegistry.people.find((p:any)=>p.personId===ids[0]).honorHistory[0].month=228,(s:any)=>s.registries.militaryCommandRegistry.people.find((p:any)=>p.personId===ids[0]).honorHistory[0].epithet='文忠']){const bad=structuredClone(honored);edit(bad);check(!validateWorldSave(bad).valid,'strict save rejects invented posthumous date or evaluation');}
+   const continuation=()=>{hydrateWorldSave(core,structuredClone(honored));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return strict();};const x=continuation(),y=continuation();check(diffCanonicalWorldSave(x,y).matched,'formal posthumous identity resumes twelve months deterministically');hydrateWorldSave(core,structuredClone(x));check(diffCanonicalWorldSave(x,strict()).matched,'second read retains the same formal posthumous record');
+  }
   for(const ending of ['retire','battle','natural','transfer']){
    const {t,p}=restore(saved),body=t.getUserById(p.sourceUserId)!,titles=JSON.stringify(p.nobilityHistory);
    if(ending==='retire'){const due=Math.ceil(deriveMilitaryLifeSchedule(p).retirementMonth/12)*12;clock(due);(Military as any).advanceLifecycles(due,core.teams);}
    if(ending==='battle')body.destroyUser(false,{cause:'BATTLE_DEATH',month:240,damageSource:'HOSTILE_HOME_OCCUPATION'});
    if(ending==='natural'){const due=Math.ceil(deriveMilitaryLifeSchedule(p).naturalDeathMonth/12)*12;clock(due);(Military as any).advanceLifecycles(due,core.teams);}
-   if(ending==='transfer'){const e=core.teams.find(x=>x!==t&&x.status==='ACTIVE')!;body.setTeam(e,{cause:'LIVE_TRANSFER',month:240});check(!nobleLabel(p,e.name,240),'old-country peerage never becomes a new-country peerage');}
+   if(ending==='transfer'){const e=core.teams.find(x=>x!==t&&x.status==='ACTIVE')!;body.setTeam(e,{cause:'LIVE_TRANSFER',month:240});check(!nobleLabel(p,e.name,240),'old-country peerage never becomes a new-country peerage');Military.updateHonors(240,core.teams,Dynasty.getAll());check(!p.honorHistory,'ordinary transfer is not a verified rebellion and never causes revocation');}
    check(JSON.stringify(p.nobilityHistory)===titles&&Military.getFormations().every(f=>f.commanderPersonId!==p.personId||f.status==='DISBANDED'),'life or identity ending retains peerage history and releases the real command');strict();
   }
   // A real royal receives the same title, then enters the existing legal deposition succession.
