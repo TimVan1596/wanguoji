@@ -217,3 +217,16 @@ export async function checkMeritRollInteraction(core:Core,factionId:string,check
  }finally{flushSync(()=>root.unmount());host.remove();}
  check(JSON.stringify(exportWorldSave(core))===before,'merit DOM navigation changes no history, people, army, population or RNG');
 }
+
+export async function checkDefenseMeritInteraction(factionId:string,personId:string,month:number,check:(ok:unknown,label:string)=>void){
+ const {default:MeritRoll}=await import('../../UI/Components/FactionDetails/MeritRoll');
+ const {default:History}=await import('../../History/WorldHistory');
+ const before=JSON.stringify(History.exportState()),rng=JSON.stringify(random.exportState()),host=document.createElement('div');document.body.append(host);const root=createRoot(host);let opened='';
+ try{
+  flushSync(()=>root.render(<MeritRoll factionId={factionId} month={month} onOpen={id=>{opened=id;}}/>));
+  const card=host.querySelector(`[data-merit-person="${personId}"]`);
+  check(card&&host.textContent?.includes('历代三杰')&&card.textContent?.includes('守住')&&!card.textContent?.includes('取城0次'),'actual zero-capture defender card explains defense instead of empty attack totals');
+  flushSync(()=>(card!.querySelector('button') as HTMLButtonElement).click());check(opened===personId,'defensive hero name targets the same permanent military person');
+ }finally{flushSync(()=>root.unmount());host.remove();}
+ check(JSON.stringify(History.exportState())===before&&JSON.stringify(random.exportState())===rng,'historical hero rendering changes no source evidence or RNG');
+}

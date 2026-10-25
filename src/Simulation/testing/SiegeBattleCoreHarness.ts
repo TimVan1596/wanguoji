@@ -1,5 +1,5 @@
 import {deriveNobleMerits,meritRoster} from '../../Politics/MilitaryNobility';
-import {checkCityHistoryInteraction} from "./RoyalArchiveInteractionHarness";
+import {checkCityHistoryInteraction,checkDefenseMeritInteraction} from "./RoyalArchiveInteractionHarness";
 import Military from "../../Politics/MilitaryCommandRegistry";
 import Factions from "../FactionRegistry";
 import {createNaturalCore} from './NaturalCoreHarness';
@@ -69,6 +69,7 @@ export async function runSiegeBattleCore(seed='siege-defense-z10'){
    const defended=History.getEvents().find(e=>e.type==='siege-defended'&&e.metadata?.personId===commander.militaryPersonId);
    check(defended&&Military.getChronicle(Military.getPerson(commander.militaryPersonId!)!,s.m+12,s.owner.name).some(e=>e.eventId===defended.id&&!e.victory),'verified local defensive general receives a defense chronicle, never a city-capture merit');
    const p=Military.getPerson(commander.militaryPersonId!)!,merits=deriveNobleMerits(p,Military.getFormations(),History.getEvents(),s.owner.name,s.m+12);check(merits.defendedCityIds.includes(s.city.id)&&merits.cityIds.length===0&&meritRoster([p],Military.getFormations(),History.getEvents(),s.owner.name,s.m+12).length===1,'real zero-capture defender enters the historical merit roster with verified defense evidence');
+   await checkDefenseMeritInteraction(s.owner.name,p.personId,s.m+12,check);
   }
   {
    const s=scenario(4,0),third=core.teams.find(t=>t!==s.attack&&t!==s.owner&&Diplomacy.canAttack(t.name,s.owner.name,s.m))!;

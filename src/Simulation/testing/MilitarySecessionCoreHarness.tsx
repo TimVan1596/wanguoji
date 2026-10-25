@@ -28,14 +28,15 @@ export async function runMilitarySecessionCore(seed="military-secession-z7"){
  const strict=()=>{const s=exportWorldSave(core),v=validateWorldSave(s);if(!v.valid)throw new Error(v.errors.join("; "));return s;};
  try{
   let chosen:ReturnType<typeof Military.getPoliticalInfluence>["candidates"][number]|undefined,parent:typeof core.teams[number]|undefined;
-  for(let month=0;month<600&&!chosen;month++){step();for(const t of core.teams.filter(t=>t.cities.length>=2&&t.cities.some(c=>!c.isCapital&&!c.isInCaptureGrace(core.simulator!.year)))){const p=Military.getPoliticalInfluence(t,core.simulator!.year,core.logicalUnitRegistry).candidates.find(c=>c.unitCount>=2&&c.serviceMonths>=60&&core.simulator!.year%12===0);if(p){chosen=p;parent=t;break;}}}
+  for(let month=0;month<600&&!chosen;month++){step();for(const t of core.teams.filter(t=>t.cities.length>=2&&t.cities.some(c=>!c.isCapital&&!c.isInCaptureGrace(core.simulator!.year)))){const p=Military.getPoliticalInfluence(t,core.simulator!.year,core.logicalUnitRegistry).candidates.find(c=>c.unitCount>=2&&c.serviceMonths>=60&&core.simulator!.year%12===0&&(Dynasty.getCurrentRuler(t.name)?.naturalDeathYear??0)>core.simulator!.year+24&&deriveMilitaryLifeSchedule(Military.getPerson(c.personId)!).retirementMonth>core.simulator!.year+24);if(p){chosen=p;parent=t;break;}}}
   check(chosen&&parent,"natural Core appointments and real service produce an existing military political candidate");if(!chosen||!parent)throw new Error("No military candidate");
-  core.setWorldRunning(false);const month=core.simulator!.year,personId=chosen.personId,commandId=chosen.commandId;
+  core.setWorldRunning(false);let month=core.simulator!.year;const personId=chosen.personId,commandId=chosen.commandId;
   const commander=[...parent.users].find(u=>u.militaryPersonId===personId)!;
   const victoryCities=core.allCities.filter(c=>c.ownerTeam&&c.ownerTeam!==parent).slice(0,2);
   for(const c of victoryCities){commander.player.setPosition(c.block.x,c.block.y);commander.player.body.reset(c.block.x,c.block.y);c.capture(parent,month,undefined,commandId,personId);}
   Military.updateNobility(month,core.teams,Dynasty.getAll());
   const oldTitle=currentNobleGrant(Military.getPerson(personId)!,parent.name,month);check(oldTitle,'actual serving general has a real sovereign grant before rebellion');
+  month+=12;(core.simulator as any).clock.importState({worldMonth:month,elapsedMs:0,running:false});
   while(parent.cities.length<4){const site=core.map!.blocks.flat().find(b=>(b.team===parent||!b.team)&&!b.city&&core.allCities.every(c=>Math.hypot(c.block.x-b.x,c.block.y-b.y)>160));if(!site)throw new Error("No free city site");Factions.foundCity(parent,site,undefined,month);}
   const city=parent.cities.find(c=>!c.isCapital&&!c.isInCaptureGrace(month))!,secondCity=parent.cities.find(c=>c!==city&&!c.isCapital)!;
   const originalIds=[...chosen.memberUnitIds],members=[...parent.users].filter(u=>originalIds.includes(u.player.logicalUnitId!));
