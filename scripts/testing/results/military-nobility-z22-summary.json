@@ -374,5 +374,16 @@
       ]
     }
   ],
-  "naturalPoliticalEvidence": "No title-induced successful political choice was observed in the four paired worlds; actual production deposition transaction tested deterministically."
+  "naturalPoliticalEvidence": "No title-induced successful political choice was observed in the four paired worlds; actual production deposition transaction tested deterministically.",
+  "verification": {
+    "unitFiles": 267,
+    "unitTests": 2125,
+    "productionCorePhaserDOMChecks": 652,
+    "webBuild": true,
+    "desktopBuild": true,
+    "debugBuild": true,
+    "deterministic12MonthRepeatAndSecondRead": true,
+    "manualChromeGate": "pending",
+    "transientParallelTestFailure": "6 timeouts and 1 assertion; affected 114 and full 2125 tests passed after simulations ended, without code or threshold changes"
+  }
 }
