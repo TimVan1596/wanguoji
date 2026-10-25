@@ -109,3 +109,9 @@ it("retains existing political hard conditions for two-member commands without m
   i.identityStage="PROVISIONAL";expect(deriveMilitaryPoliticalInfluence(i).candidates).toEqual([]);
   expect(worldRandom.exportState()).toEqual(before);
 });
+it('revoked titles lose only their existing noble selection increment, without extra RNG or new eligibility',()=>{
+ const i=fixture(),p=i.people[0],g:any={eventId:'grant',factionId:'qin',epochFounderId:'old',rank:'HOU',month:60,countryName:'秦'};p.nobilityHistory=[g];i.events.push({...crisis,id:'grant',type:'military-ennobled',year:60,metadata:{nobility:JSON.stringify(g)}});i.nobleEpochFounderId='old';
+ const rng=worldRandom.exportState(),honored=deriveMilitaryPoliticalInfluence(i).candidates[0];expect(honored.finalPoliticalWeight).toBe(honored.strength*1.1);
+ p.honorHistory=[{kind:'REVOKED',factionId:'qin',epochFounderId:'old',month:72} as any];const lost=deriveMilitaryPoliticalInfluence(i).candidates[0];expect(lost.strength).toBe(honored.strength);expect(lost.nobility).toBeUndefined();expect(lost.finalPoliticalWeight).toBeUndefined();expect(worldRandom.exportState()).toEqual(rng);
+ p.status='DEAD';p.deathMonth=72;expect(deriveMilitaryPoliticalInfluence(i).candidates).toEqual([]);
+});

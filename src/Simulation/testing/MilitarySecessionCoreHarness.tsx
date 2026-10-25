@@ -1,3 +1,4 @@
+import {nextMilitaryHonors} from '../../Politics/MilitaryHonors';
 import {currentNobleGrant} from '../../Politics/MilitaryNobility';
 import {militaryIdentityLabels} from "../../Politics/RoyalArchiveIdentity";
 import {CURRENT_SAVE_SCHEMA_VERSION} from "../../Persistence/WorldSaveSchema";
@@ -86,6 +87,7 @@ export async function runMilitarySecessionCore(seed="military-secession-z7"){
   check(Military.getChronicle(person,month,parent.name).some(e=>e.eventId===founding[0].id&&!e.victory),"old-country military biography records secession without inventing a capture");
   await checkPersonArchiveInteraction(core,split.team.name,personId,check);
   check(militaryIdentityLabels(Military.getPerson(personId)!,Dynasty.getAll(),History.getEvents(),month).includes("义军创立者"),"real founding transaction supplies composite military founder identity");
+  check(nextMilitaryHonors({...person,nobilityHistory:[]},Military.getFormations(),History.getEvents(),month,core.teams,Dynasty.getAll()).length===0,'verified rebellion without an original grant cannot cause a fabricated revocation');
   const titleBefore=strict(),writeHonor=History.addEvent;History.addEvent=function(e){const id=writeHonor.call(this,e);if(e.type==='military-title-revoked')throw Error('injected revocation failure');return id;};
   try{Military.updateHonors(month,core.teams,Dynasty.getAll());}finally{History.addEvent=writeHonor;}
   check(diffCanonicalWorldSave(titleBefore,strict()).matched&&person.politicalRulerId===ruler.id,'revocation failure rolls back only its own act, never half-reverts a committed rebellion');
@@ -99,6 +101,7 @@ export async function runMilitarySecessionCore(seed="military-secession-z7"){
   hydrateWorldSave(core,JSON.parse(JSON.stringify(first)));check(diffCanonicalWorldSave(first,strict()).matched,"resaved V21 snapshot reads again without duplicating the leader");
   core.setWorldRunning(true);while(Military.getPerson(personId)?.status!=="DEAD"&&core.simulator!.year<=deathSchedule+12)step();core.setWorldRunning(false);
   const final=Military.getPerson(personId)!,royal=Dynasty.findResidentPerson(personId)!;
+  check(!final.honorHistory?.some(h=>h.kind==='POSTHUMOUS'),'later sovereign retains only its independent monarch posthumous system');
   check(final.status==="DEAD"&&final.deathMonth===royal.deathMonth,"actual subsequent royal death closes the same military person's life");
   check(History.getEvents().filter(e=>e.type==="military-person-died"&&e.metadata?.personId===personId).length===1&&!core.teams.some(t=>[...t.users].some(u=>u.militaryPersonId===personId)),"one death record and no live body or command survive the linked person's death");strict();
   // Real DOM interaction is structural only, never visual acceptance or a fabricated world history.
