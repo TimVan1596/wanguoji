@@ -1,4 +1,4 @@
-import {NobleHistory} from "./MeritRoll";
+import {NobleHistory} from "./NobleHistory";
 import {useLayoutEffect,useRef,useState} from "react";
 import {royalMilitaryArchive,royalMilitaryOfficeLabel} from "../../../Politics/RoyalArchiveIdentity";
 import PersonLifeDates from "./PersonLifeDates";

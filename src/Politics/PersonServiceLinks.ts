@@ -32,7 +32,7 @@ export function preAccessionMilitary(ruler:Ruler,people:MilitaryPerson[],formati
  const royal=ruler.militaryIdentity;
  const person=founder??(royal?people.find(p=>p.personId===royal.personId&&p.royalIdentity?.rulerId===ruler.id&&p.sourceUserId===royal.sourceUserId&&p.name===royal.sourceUserLabel&&p.bornMonth===ruler.bornYear&&p.politicalRulerId===ruler.id):undefined);
  if(!person||ruler.accessionYear===undefined)return undefined;
- const raw=deriveMilitaryChronicle(person,formations,events,ruler.accessionYear).filter(e=>e.worldMonth<ruler.accessionYear!||e.worldMonth===ruler.accessionYear&&e.source.startsWith("empire-split"));
+ const raw=deriveMilitaryChronicle(person,formations,events,ruler.accessionYear).filter(e=>e.worldMonth<ruler.accessionYear!||e.worldMonth===ruler.accessionYear&&(e.source.startsWith("empire-split")||e.source.startsWith("military-ennobled")));
  const entries=militaryMilestones(person,raw,events,context);
  const representative=selectMilitaryMilestones(entries,events,5);
  return {person,entries,representative};

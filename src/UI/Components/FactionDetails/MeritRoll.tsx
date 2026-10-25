@@ -2,19 +2,15 @@ import {Box,Typography} from '@mui/material';
 import Military from '../../../Politics/MilitaryCommandRegistry';
 import History from '../../../History/WorldHistory';
 import Game from '../../../Game/Game';
-import {meritRoster,nobleLabel,nobleChronicle,NOBLE_NAMES} from '../../../Politics/MilitaryNobility';
+import {meritRoster,nobleLabel,NOBLE_NAMES} from '../../../Politics/MilitaryNobility';
 import {describeMilitaryOffice} from '../../../Politics/MilitaryOffice';
-import type {MilitaryPerson} from '../../../Politics/MilitaryCommandRegistry';
 import {getMilitaryPersonDisplayName} from '../../../Politics/MilitaryPersonIdentity';
 import {militaryPortraitContext} from './PortraitPresentation';
 import PersonPortrait from './PersonPortrait';
 import PersonLifeDates from './PersonLifeDates';
 import {formatWorldDate,formatWorldDuration} from '../../../Simulation/WorldTime';
 const button={border:0,background:'none',color:'inherit',font:'inherit',padding:0,textDecoration:'underline',cursor:'pointer'} as const;
-export function NobleHistory({person,factionId,month}:{person:MilitaryPerson;factionId?:string;month:number}){
- const grants=(person.nobilityHistory??[]).filter(g=>(!factionId||g.factionId===factionId)&&g.month<=month);
- return grants.length?<Box sx={{my:.5}}><Typography fontSize='.8rem' fontWeight='bold'>正式封爵</Typography>{grants.map(g=><Typography key={g.eventId} fontSize='.78rem'>{formatWorldDate(g.month)} · {g.countryName} · {nobleChronicle(g)}</Typography>)}</Box>:null;
-}
+export {NobleHistory} from "./NobleHistory";
 /** A changing top three is an archive view, never a simulation award or an office. */
 export default function MeritRoll({factionId,month,onOpen}:{factionId:string;month:number;onOpen:(id:string)=>void}){
  const people=Military.getPeople(),events=History.getEvents(),byId=new Map(events.map(e=>[e.id,e])),team=Game.Core?.teams.find(t=>t.name===factionId);
