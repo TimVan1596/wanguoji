@@ -1,3 +1,4 @@
+import {checkMeritRollInteraction} from './RoyalArchiveInteractionHarness';
 import {createNaturalCore} from './NaturalCoreHarness';
 import Military from '../../Politics/MilitaryCommandRegistry';
 import Dynasty from '../../Politics/Dynasty';
@@ -43,16 +44,36 @@ export async function runMilitaryNobilityCore(seed:string){
   const p=Military.getPerson(ids[0])!,grants=p.nobilityHistory!;check(grants.map(g=>g.rank).join(',')==='BO,HOU,GONG','long service and distinct important city results legitimately reach all three ranks');
   check(pop===population()&&rng===JSON.stringify(random.exportState())&&JSON.stringify(sizes)===JSON.stringify(Military.getFormations().map(f=>f.memberUnitIds.length)),'noble grants change neither bodies, capacity, membership nor RNG');
   check(Military.getChronicle(p,240).filter(e=>e.source.startsWith('military-ennobled')).length===3,'each real grant appears once in the military chronicle');check(Military.getChronicle(p,120).every(e=>!e.text.includes('爵')),'future peerage never backfills an earlier campaign');
+  await checkMeritRollInteraction(core,factionId,check);
   const saved=strict();for(const mutate of [(s:any)=>s.registries.militaryCommandRegistry.people.find((x:any)=>x.personId===ids[0]).nobilityHistory[0].rulerId='fake',(s:any)=>s.registries.militaryCommandRegistry.people.find((x:any)=>x.personId===ids[0]).nobilityHistory[0].cityIds.push('fake'),(s:any)=>s.registries.militaryCommandRegistry.people.find((x:any)=>x.personId===ids[0]).nobilityHistory.push({...grants[0]})]){const bad=structuredClone(saved);mutate(bad);check(!validateWorldSave(bad).valid,'strict save rejects invented monarch, merit or duplicate title');}
   const record=JSON.stringify(grants);meritRoster(Military.getPeople().reverse(),Military.getFormations(),History.getEvents(),factionId,240);check(JSON.stringify(p.nobilityHistory)===record,'dynamic merit ranking cannot delete or rewrite a formal grant');
   const resume=()=>{hydrateWorldSave(core,structuredClone(saved));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return strict();};const a=resume(),b=resume();check(diffCanonicalWorldSave(a,b).matched,'ennobled army save resumes twelve real months identically');hydrateWorldSave(core,structuredClone(a));check(diffCanonicalWorldSave(a,strict()).matched,'second read preserves the same people, titles and army');
   for(const ending of ['retire','battle','natural','transfer']){
    const {t,p}=restore(saved),body=t.getUserById(p.sourceUserId)!,titles=JSON.stringify(p.nobilityHistory);
-   if(ending==='retire')Military.endPersonCommands(p.personId,240,'AGE_RETIREMENT');
+   if(ending==='retire'){const due=Math.ceil(deriveMilitaryLifeSchedule(p).retirementMonth/12)*12;clock(due);(Military as any).advanceLifecycles(due,core.teams);}
    if(ending==='battle')body.destroyUser(false,{cause:'BATTLE_DEATH',month:240,damageSource:'HOSTILE_HOME_OCCUPATION'});
    if(ending==='natural'){const due=Math.ceil(deriveMilitaryLifeSchedule(p).naturalDeathMonth/12)*12;clock(due);(Military as any).advanceLifecycles(due,core.teams);}
    if(ending==='transfer'){const e=core.teams.find(x=>x!==t&&x.status==='ACTIVE')!;body.setTeam(e,{cause:'LIVE_TRANSFER',month:240});check(!nobleLabel(p,e.name,240),'old-country peerage never becomes a new-country peerage');}
    check(JSON.stringify(p.nobilityHistory)===titles&&Military.getFormations().every(f=>f.commanderPersonId!==p.personId||f.status==='DISBANDED'),'life or identity ending retains peerage history and releases the real command');strict();
+  }
+  // A real royal receives the same title, then enters the existing legal deposition succession.
+  {
+   const {t,d}=restore();Military.endPersonCommands(ids[1],216,'DISMISSED');
+   const current=Dynasty.getCurrentRuler(t.name)!,legal=selectDepositionCandidates({currentRuler:current,rulers:d.rulers,houseName:d.houseName,worldMonth:288});
+   const candidate=Dynasty.getRoyalMilitaryCandidates(t,216).filter(c=>legal.some(x=>x.ruler.id===c.rulerId)).find(c=>{const r=d.rulers.find(r=>r.id===c.rulerId)!;return r.naturalDeathYear!>336&&r.bornYear>216-480;});check(candidate,'real adult kin has a legal political identity and existing lifespan');if(!candidate)throw Error('No royal candidate');
+   const royal=d.rulers.find(r=>r.id===candidate.rulerId)!,birth=royal.bornYear,parent=royal.parentId,life=royal.naturalDeathYear,bodyCount=population();check(Dynasty.enlistRoyalMilitary(candidate,t,216,[]),'actual royal bridge creates its unique one-person command');
+   const rp=Military.getPerson(royal.militaryIdentity!.personId)!,rf=Military.getFormations().find(f=>f.commanderPersonId===rp.personId&&f.status==='ACTIVE')!,u=t.getUserById(rp.sourceUserId)!;
+   check(population()===bodyCount+1&&royal.bornYear===birth&&royal.parentId===parent&&royal.naturalDeathYear===life,'royal entry preserves one life and audits only its one original identity body');
+   const en=core.teams.find(x=>x!==t&&x.status==='ACTIVE')!;
+   for(const [i,c]of towns.slice(0,2).map(c=>core.allCities.find(x=>x.id===c.id)!).entries()){clock(228+i*12);c.capture(en,228+i*12);clock(240+i*12);place(u,c.block.x,c.block.y);c.capture(t,240+i*12,undefined,rf.commandId,rp.personId);}
+   clock(276);Military.updateNobility(276,core.teams,Dynasty.getAll());const title=rp.nobilityHistory?.[0];check(title?.rank==='BO'&&title.rulerId===current.id,'real royal officer receives a formal baronage from the same current sovereign');strict();
+   clock(288);t.capitalCity!.capture(en,288);t.capitalCity!.capture(en,288);for(const c of t.cities)c.loyalty=20;
+   const evaluation=evaluateDepositionOpportunity({factionId:t.name,status:t.status,identityStage:t.identityStage,cityCount:t.cities.length,stability:getFactionStability(t),currentRuler:current,rulers:d.rulers,houseName:d.houseName,worldMonth:288,events:History.getEvents(),military:Military.getPoliticalInfluence(t,288,core.logicalUnitRegistry)});
+   evaluation.royalMilitaryClaims=Military.getRoyalDepositionClaims(t,288,evaluation.candidates.map(c=>c.ruler),core.logicalUnitRegistry);
+   const choice=Array.from({length:1000},(_,i)=>chooseDepositionClaimant(evaluation,288,evaluation.probability*(i+.5)/1000)).find(x=>x?.claimant.ruler.id===royal.id);check(evaluation.eligible&&choice,'the existing lawful claimant selection can choose this actual royal');if(!choice)throw Error('No legal choice');evaluation.selection=choice.evidence;evaluation.militaryRoll=choice.evidence.roll;
+   check((Dynasty as any).commitDeposition(t,d,current,royal,choice.claimant.relation,288,evaluation),'existing royal political transaction succeeds without a new title-driven inheritance rule');
+   check(rp.politicalRulerId===royal.id&&rp.nobilityHistory?.[0].eventId===title!.eventId&&rp.bornMonth===birth&&royal.parentId===parent&&royal.naturalDeathYear===life,'accession preserves the original peerage, person, parent and lifespan');
+   check(preAccessionMilitary(royal,Military.getPeople(),Military.getFormations(),History.getEvents())?.entries.some(e=>e.eventId===title!.eventId),'formal peerage is retained in the pre-accession military life');strict();
   }
   // Same actual army strength; title affects participant selection only, never the monarch pool or the original roll.
   {
@@ -70,7 +91,7 @@ export async function runMilitaryNobilityCore(seed:string){
     try{(Dynasty as any).evaluateInReignDeposition(team,dy,current,216);}finally{random.next=next;Military.getPoliticalInfluence=get;}
     const event=History.getEvents().find(x=>x.type==='ruler-deposed'&&x.year===216)!;check(event,'actual existing deposition production transaction succeeds');const proof=JSON.parse(String(event.metadata?.militaryParticipation));
     check(proof.participant.personId===(enabled?ids[1]:ids[0]),'actual political event records its chosen real participant, distinct from the legal successor');
-    if(enabled){check(proof.participant.nobleSelection.candidates.length===2,'political event preserves original candidates, ranks, troop identities and base/final weights');strict();}
+    if(enabled){check(proof.participant.nobleSelection.candidates.length===2,'political event preserves original candidates, ranks, troop identities and base/final weights');const verified=strict();for(const field of ['finalPoliticalWeight','basePoliticalWeight']){const bad=structuredClone(verified),entry=(bad.worldHistory.events as import("../../History/WorldHistory").WorldEvent[]).find(x=>x.id===event.id)!;const forged=JSON.parse(String(entry.metadata!.militaryParticipation));forged.participant.nobleSelection.candidates[0][field]+=1;entry.metadata!.militaryParticipation=JSON.stringify(forged);check(!validateWorldSave(bad).valid,'strict political save rejects forged candidate weights');}}
     results.push({enabled,calls,probability:evaluation.probability,rng:random.exportState(),newRuler:dy.currentRulerId});
    }
    check(results[0].calls===results[1].calls&&results[0].probability===results[1].probability&&JSON.stringify(results[0].rng)===JSON.stringify(results[1].rng)&&results[0].newRuler===results[1].newRuler,'noble choice changes neither crisis probability, extra RNG calls nor legal monarch selection');

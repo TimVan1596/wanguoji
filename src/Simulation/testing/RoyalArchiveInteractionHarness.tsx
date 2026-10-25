@@ -203,3 +203,17 @@ export async function checkCityHistoryInteraction(core:Core,city:import("../../C
  }finally{flushSync(()=>root.unmount());host.remove();store.dispatch(setSelectedCityId(undefined));}
  check(JSON.stringify(exportWorldSave(core))===before,'city history DOM interactions do not mutate evidence, population or RNG');
 }
+
+/** The real merit tab opens the existing identity archive without awarding anything. */
+export async function checkMeritRollInteraction(core:Core,factionId:string,check:(ok:unknown,label:string)=>void){
+ const host=document.createElement('div');document.body.append(host);const root=createRoot(host),before=JSON.stringify(exportWorldSave(core));
+ const pause=()=>new Promise(r=>setTimeout(r,40));
+ try{
+  flushSync(()=>{store.dispatch(setTeams([...core.teams]));store.dispatch(setWorldYear(core.simulator!.year));store.dispatch(setSelectedFactionName(factionId));store.dispatch(setFactionDetailTab('military'));root.render(<Provider store={store}><FactionDetails/></Provider>);});await pause();
+  const tab=Array.from(host.querySelectorAll('button')).find(b=>b.textContent==='功臣录');check(tab,'existing military panel offers a merit archive');flushSync(()=>tab!.click());await pause();
+  const cards=host.querySelectorAll('[data-merit-person]');check(cards.length>0&&cards.length<=3&&host.textContent?.includes('历代封爵记录'),'actual merit DOM bounds the dynamic top three and retains formal grants');
+  const id=cards[0].getAttribute('data-merit-person')!,name=cards[0].querySelector('button')!.textContent;flushSync(()=>(cards[0].querySelector('button') as HTMLButtonElement).click());await pause();
+  check(!host.querySelector('[data-merit-roll]')&&host.textContent?.includes(name!)&&store.getState().root.factionDetailTab==='military','merit name opens the same existing military person archive: '+id);
+ }finally{flushSync(()=>root.unmount());host.remove();}
+ check(JSON.stringify(exportWorldSave(core))===before,'merit DOM navigation changes no history, people, army, population or RNG');
+}
