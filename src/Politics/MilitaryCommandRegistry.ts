@@ -359,14 +359,15 @@ export class MilitaryCommandRegistryStore {
     if(month%12!==0||!this.eventWriter)return;
     for(const person of this.people.values()){
       const team=teams.find(t=>t.name===person.factionId),dy=dynasties.find(d=>d.factionId===person.factionId),user=team?.getUserById(person.sourceUserId);
-      if(!team||!dy||!user?.matchesMilitaryLife(person)||user.role!=="NORMAL"||user.rulerId||user.player.rulerId||!user.player.logicalUnitId)continue;
+      if(month>=deriveMilitaryLifeSchedule(person).retirementMonth||!team||!dy||!user?.matchesMilitaryLife(person)||user.role!=="NORMAL"||user.rulerId||user.player.rulerId||!user.player.logicalUnitId)continue;
       const active=this.getFormations().filter(f=>f.commanderPersonId===person.personId&&f.status==='ACTIVE');
       if(active.length!==1||!active[0].memberUnitIds.includes(user.player.logicalUnitId))continue;
       const grant=nextNobleGrant(person,this.getFormations(),this.eventReader(team.name),month,team,dy);if(!grant)continue;
       const prior=person.nobilityHistory?structuredClone(person.nobilityHistory):undefined,history=WorldHistory.exportState();
       try{
         (person.nobilityHistory??=[]).push(grant);
-        this.eventWriter({id:grant.eventId,year:month,monthIndex:month,type:'military-ennobled',category:'politics',actorFactionId:team.name,factionIds:[team.name],rulerId:grant.rulerId,title:nobleChronicle(grant),importance:'major',metadata:{personId:person.personId,sourceUserId:person.sourceUserId,commandId:grant.commandId,rank:grant.rank,nobility:JSON.stringify(grant)}});
+        const written=this.eventWriter({id:grant.eventId,year:month,monthIndex:month,type:'military-ennobled',category:'politics',actorFactionId:team.name,factionIds:[team.name],rulerId:grant.rulerId,title:nobleChronicle(grant),importance:'major',metadata:{personId:person.personId,sourceUserId:person.sourceUserId,commandId:grant.commandId,rank:grant.rank,nobility:JSON.stringify(grant)}});
+        if(written!==grant.eventId||!this.eventReader(team.name).some(e=>e.id===grant.eventId))throw new Error("Noble history was not recorded");
       }catch{if(prior)person.nobilityHistory=prior;else delete person.nobilityHistory;WorldHistory.importState(history);}
     }
   }
