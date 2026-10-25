@@ -1,7 +1,7 @@
 // Freeze the real working production source once: no hot reloads, candidates or alternative simulator.
 const fs=require('node:fs'),path=require('node:path'),os=require('node:os'),crypto=require('node:crypto'),{spawn,execFileSync}=require('node:child_process');
 const label=process.env.WANGUOJI_COHORT_LABEL||'z19';
-const repo=process.cwd(),root=fs.mkdtempSync(path.join(os.tmpdir(),'wanguoji-battle-'+label+'-')),port=5230;
+const repo=process.cwd(),root=fs.mkdtempSync(path.join(os.tmpdir(),'wanguoji-battle-'+label+'-')),port=Number(process.env.WANGUOJI_COHORT_PORT||5230);
 const ref=process.env.WANGUOJI_COHORT_REF;
 if(ref){
  const tar=fs.openSync(path.join(root,'source.tar'),'w');try{execFileSync('git',['archive',ref,'src','public','index.html','vite.config.ts','tsconfig.json','package.json','desktop/DesktopSecurity.ts'],{cwd:repo,stdio:['ignore',tar,'pipe']});}finally{fs.closeSync(tar);}execFileSync('tar',['-xf',path.join(root,'source.tar'),'-C',root]);

@@ -22,3 +22,13 @@ it('keeps old-country labels and dynamic ranking from conferring or deleting gra
  const x=fixture();x.capture('a','a');x.capture('b','b',24,true);x.p.nobilityHistory=[nextNobleGrant(x.p,x.f,x.events,60,x.team,x.d)];const before=JSON.stringify(x);
  expect(nobleLabel(x.p,'chu',120)).toBe('');expect(nobleLabel(x.p,'qin',120)).toContain('伯爵');expect(meritRoster([x.p],x.f,x.events,'qin',120)[0].person.personId).toBe('p');expect(JSON.stringify(x)).toBe(before);
 });
+it('uses the actual successor after a sovereign death and rejects the expired authority',()=>{
+ const x=fixture();x.capture('a','a');x.capture('b','b');x.d.rulers[0].naturalDeathYear=60;
+ expect(nextNobleGrant(x.p,x.f,x.events,60,x.team,x.d)).toBeUndefined();
+ x.d.rulers[0].status='dead';x.d.rulers.push({...x.d.rulers[0],id:'successor',givenName:'明',status:'ruling',accessionYear:60,reignOrdinal:2,naturalDeathYear:1000});x.d.currentRulerId='successor';
+ expect(nextNobleGrant(x.p,x.f,x.events,60,x.team,x.d)).toMatchObject({rulerId:'successor',rulerTitle:'秦王嬴明',epochFounderId:'r'});
+});
+it('does not create a new-country grant from old-country military results',()=>{
+ const x=fixture();x.capture('a','a');x.capture('b','b');x.p.factionId='chu';x.p.appointments.push({factionId:'chu',startMonth:48,commandId:'new',officeHistory:[{office:'XIAOWEI',month:48}]});x.f.push({...x.f[0],commandId:'new',factionId:'chu',captures:[]});
+ expect(deriveNobleMerits(x.p,x.f,x.events,'chu',120).cityIds).toHaveLength(0);
+});

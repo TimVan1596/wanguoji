@@ -1,0 +1,16 @@
+{
+  "productionSha256": "229d799991422f764c0888a75d0a2f80f50bad02a36b492ddc4beda51e6580f1",
+  "seeds": [
+    "regional-1",
+    "regional-2",
+    "regional-3",
+    "regional-4",
+    "regional-5",
+    "regional-6",
+    "regional-7",
+    "regional-8"
+  ],
+  "years": 100,
+  "noblePoliticalWeight": true,
+  "scope": "real frozen production Core; original four + twelve additional fixed seeds; no candidate rule patches"
+}
