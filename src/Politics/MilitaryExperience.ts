@@ -2,7 +2,7 @@ import type {MilitaryPerson,MilitaryFormation} from './MilitaryCommandRegistry';
 import type {WorldEvent} from '../History/WorldHistory';
 export interface MilitaryActivity {eventId:string;cityId:string;commandId:string;factionId:string;worldMonth:number;kind:'CAPTURE'|'SIEGE'|'DEFENSE';}
 /** Evidence projection only. Orders and repeated short contacts never earn experience. */
-export function deriveMilitaryActivities(person:MilitaryPerson,formations:MilitaryFormation[],events:readonly WorldEvent[],month:number,captures:readonly string[]){
+export function deriveMilitaryActivities(person:MilitaryPerson,formations:MilitaryFormation[],events:readonly WorldEvent[],month:number,captures:readonly string[],separateKinds=false){
  const verified=new Set(captures),starts=new Map<string,WorldEvent[]>(),ends=new Map<string,WorldEvent[]>();
  for(const e of events){const id=e.metadata?.battleId;if(typeof id!=='string')continue;const map=e.type==='siege-started'?starts:e.type==='siege-ended'?ends:undefined;if(map)map.set(id,[...(map.get(id)??[]),e]);}
  const activities:MilitaryActivity[]=[],seen=new Set<string>();
@@ -20,7 +20,7 @@ export function deriveMilitaryActivities(person:MilitaryPerson,formations:Milita
    if(e.type==='siege-defended'&&e.actorFactionId===end.targetFactionId&&e.targetFactionId===end.actorFactionId&&end.metadata?.reason==='REPULSED'&&Number(m.defenders)>0&&Number(end.metadata.defenders)>0)kind='DEFENSE';
   }
   // One location per appointment, regardless of repeated attacks or monthly contacts.
-  const key=JSON.stringify([command,e.cityId]);
+  const key=JSON.stringify(separateKinds?[command,e.cityId,kind]:[command,e.cityId]);
   if(kind&&!seen.has(key)){seen.add(key);activities.push({eventId:e.id,cityId:e.cityId,commandId:command,factionId:a.factionId,worldMonth:at,kind});}
  }
  return activities;

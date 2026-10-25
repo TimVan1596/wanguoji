@@ -1,3 +1,4 @@
+import {deriveMilitaryActivities} from './MilitaryExperience';
 import type {MilitaryPerson,MilitaryFormation} from './MilitaryCommandRegistry';
 import type {Dynasty} from './Dynasty';
 import type {WorldEvent} from '../History/WorldHistory';
@@ -19,7 +20,8 @@ export function deriveNobleMerits(p:MilitaryPerson,formations:MilitaryFormation[
  const captures=events.filter(e=>ids.has(e.id)).sort((a,b)=>(a.monthIndex??a.year)-(b.monthIndex??b.year)||a.id.localeCompare(b.id));
  const cities=new Map<string,WorldEvent>(),important=new Map<string,string>();
  for(const e of captures){if(e.cityId&&!cities.has(e.cityId))cities.set(e.cityId,e);if(e.cityId&&(e.metadata?.wasCapital===1||e.type==='city-recovered'&&e.metadata?.founderCapital===1&&e.founderFactionId===factionId))if(!important.has(e.cityId))important.set(e.cityId,e.id);}
- const defenses=career.activities.filter(a=>a.kind==='DEFENSE'),sieges=career.activities.filter(a=>a.kind==='SIEGE');
+ // Honor cards distinguish real attack and defense; promotion keeps its original one-location rule.
+ const achievements=deriveMilitaryActivities(local,formations,events,month,career.capturedEventIds,true),defenses=achievements.filter(a=>a.kind==='DEFENSE'),sieges=achievements.filter(a=>a.kind==='SIEGE');
  return {defenseEventIds:defenses.map(a=>a.eventId),defendedCityIds:[...new Set(defenses.map(a=>a.cityId))],siegeEventIds:sieges.map(a=>a.eventId),serviceMonths:career.serviceMonths,captureEventIds:[...cities.values()].map(e=>e.id),cityIds:[...cities.keys()],importantCityIds:[...important.keys()].sort(),importantEventIds:[...important.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(e=>e[1]),captures:captures.length,activities:career.activities.length};
 }
 export function nobleEpoch(d:Pick<Dynasty,'houseEpochs'>|undefined,month:number){return d?.houseEpochs?.find(e=>e.startMonth<=month&&month<=(e.endMonth??Infinity));}

@@ -20,3 +20,8 @@ it('a defence requires a real matching repulse with local defenders and the righ
  const d:any={id:'defended',type:'siege-defended',year:8,cityId:'city',actorFactionId:'a',targetFactionId:'d',metadata:{battleId:'defence',personId:'p',commandId:'f',defenders:2}};
  expect(deriveMilitaryActivities(p,f,[...e,d],100,[])).toEqual([{eventId:'defended',cityId:'city',commandId:'f',factionId:'a',worldMonth:8,kind:'DEFENSE'}]);e[1].metadata.reason='CONTACT_ENDED';expect(deriveMilitaryActivities(p,f,[...e,d],100,[])).toEqual([]);
 });
+it('read-only honors can distinguish recapture and defense at one city without changing promotion experience',()=>{
+ const e=siege('defence',12,20,{reason:'REPULSED',defenders:2});for(const x of e){x.actorFactionId='d';x.targetFactionId='a';}
+ const win:any={id:'capture',type:'city-captured',year:1,cityId:'city',actorFactionId:'a',metadata:{commandId:'f'}},def:any={id:'def',type:'siege-defended',year:20,cityId:'city',actorFactionId:'a',targetFactionId:'d',metadata:{battleId:'defence',commandId:'f',personId:'p',defenders:2}},events=[win,...e,def];
+ expect(deriveMilitaryActivities(p,f,events,100,['capture']).map(a=>a.kind)).toEqual(['CAPTURE']);expect(deriveMilitaryActivities(p,f,events,100,['capture'],true).map(a=>a.kind)).toEqual(['CAPTURE','DEFENSE']);
+});
