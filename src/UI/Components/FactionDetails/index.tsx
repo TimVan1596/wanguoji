@@ -674,7 +674,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
     </Typography>
 
     <Typography fontSize="0.78rem" color="var(--gg-text-muted)">现役在前；历任人物按最近一次本国离任年月排列。</Typography>
-    {!people.length && <Typography fontSize="0.86rem" color="var(--gg-text-muted)">本国尚无将领任职。</Typography>}
+    {!people.length && <Typography fontSize="0.86rem" color="var(--gg-text-muted)">本势力尚无将领任职；需有合格的真实居民，并经过既有年度任命机会，短期存续或兵员不足时可能暂无人选。</Typography>}
     {visiblePeople.map((person,index) => {
       const localAppointments=person.appointments.filter(a=>a.factionId===factionId);
       const first=localAppointments[0],last=localAppointments.at(-1),current=currentPeople.includes(person);

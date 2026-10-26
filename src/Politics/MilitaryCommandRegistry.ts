@@ -122,7 +122,7 @@ export class MilitaryCommandRegistryStore {
   private longRangeOrderSamples = new Map<string, number>();
   private eventWriter?: (event: Omit<WorldEvent, "id"> & { id: string }) => string;
   private eventReader: (factionId: string) => WorldEvent[] = factionId => WorldHistory.getEventsForFaction(factionId);
-  private diagnostics = { candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
+  private diagnostics = { provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
     unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
 
   reset() {
@@ -130,7 +130,7 @@ export class MilitaryCommandRegistryStore {
     this.lastEvaluationMonth = -1;
     this.lastArrivalTargetByCommand.clear();
     this.longRangeOrderSamples.clear();
-    this.diagnostics = { candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
+    this.diagnostics = { provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
       unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
   }
 
@@ -152,7 +152,7 @@ export class MilitaryCommandRegistryStore {
     this.lastEvaluationMonth = state.lastEvaluationMonth;
     this.lastArrivalTargetByCommand.clear();
     this.longRangeOrderSamples.clear();
-    this.diagnostics = { candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
+    this.diagnostics = { provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
       unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
   }
 
@@ -243,18 +243,20 @@ export class MilitaryCommandRegistryStore {
     this.advanceOffices(worldMonth,teams);
     for (const team of teams) {
       if (team.status !== "ACTIVE") continue;
+      const provisional=team.identityStage!=="STATE";if(provisional)this.diagnostics.provisionalChecks++;
       const activeCount = [...this.people.values()].filter(p => p.status === "ACTIVE" && p.factionId === team.name).length;
       const activeFormations = [...this.formations.values()].filter(f => f.status === "ACTIVE" && f.factionId === team.name).length;
-      if (activeCount >= MAX_COMMANDERS_PER_FACTION || activeFormations >= MAX_FORMATIONS_PER_FACTION) { this.diagnostics.capBlocked++; continue; }
+      if (activeCount >= MAX_COMMANDERS_PER_FACTION || activeFormations >= MAX_FORMATIONS_PER_FACTION) { this.diagnostics.capBlocked++;if(provisional)this.diagnostics.provisionalCapacityBlocked++; continue; }
       const candidates = [...team.users].filter(user => this.isEligible(user, worldMonth)).sort((a, b) => a.id - b.id || a.name.localeCompare(b.name));
       this.diagnostics.candidates += candidates.length;
       const royals = this.royalService?.candidates(team, worldMonth) ?? [];
-      if (!candidates.length && !royals.length) continue;
+      if (!candidates.length && !royals.length) {if(provisional)this.diagnostics.provisionalNoCandidate++;continue;}
       const availableUnits = [...team.users].filter(user => user.player.logicalUnitId && user.role === "NORMAL" && !user.rulerId && !user.player.rulerId &&
         !this.isUnitAssigned(user.player.logicalUnitId) && user.team === team).sort((a, b) => a.id - b.id || a.name.localeCompare(b.name));
       if (!availableUnits.length && !royals.length) { this.diagnostics.unitBlocked++; continue; }
       this.diagnostics.eligible += candidates.length;
-      if (worldRandom.next() >= ANNUAL_APPOINTMENT_CHANCE) continue;
+      if(provisional)this.diagnostics.provisionalDraws++;
+      if (worldRandom.next() >= ANNUAL_APPOINTMENT_CHANCE) {if(provisional)this.diagnostics.provisionalMisses++;continue;}
       const weights = candidates.map(user => {
         const person = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
         return person ? this.getCareer(person, worldMonth).appointmentWeight : 1;
@@ -268,7 +270,7 @@ export class MilitaryCommandRegistryStore {
       const candidate = selected.user!;
       const members = [candidate, ...availableUnits.filter(user => user !== candidate)].slice(0, MILITARY_FORMATION_CAPACITY.XIAOWEI);
       if (members.length < 1 || !candidate.player.logicalUnitId) { this.diagnostics.unitBlocked++; continue; }
-      if (this.appoint(candidate, team.name, worldMonth, members.map(user => user.player.logicalUnitId!))) this.diagnostics.appointments++;
+      if (this.appoint(candidate, team.name, worldMonth, members.map(user => user.player.logicalUnitId!))) {this.diagnostics.appointments++;if(provisional)this.diagnostics.provisionalAppointments++;}
       this.refreshOrders(worldMonth, teams, cities);
     }
   }

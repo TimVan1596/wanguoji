@@ -1,3 +1,4 @@
+import {deriveMilitaryActivities} from './MilitaryExperience';
 import {militaryHonorText} from './MilitaryHonors';
 import {nobleChronicle} from "./MilitaryNobility";
 import {getHistoricalFactionIdentity} from "../History/HistoricalFactionIdentity";
@@ -60,6 +61,7 @@ export function formatRulerMilitaryEvent(event: WorldEvent, ruler: { accessionYe
 /** One projection of the existing events. No new history facts or military score. */
 export function deriveMilitaryChronicle(person: MilitaryPerson, formations: MilitaryFormation[], events: WorldEvent[], worldMonth: number, factionId?: string) {
   const career=deriveMilitaryCareer(person,formations,events,worldMonth),captures=new Set(career.capturedEventIds),activities=new Map(career.activities.map(a=>[a.eventId,a.kind]));
+  const defenseIds=new Set(deriveMilitaryActivities(person,formations,events,worldMonth,career.capturedEventIds,true).filter(a=>a.kind==='DEFENSE').map(a=>a.eventId));
   const byId = new Map(events.map(e => [e.id, e]));
   const groups = new Set<string>();
   const entries: MilitaryChronicleEntry[] = [];
@@ -94,7 +96,7 @@ export function deriveMilitaryChronicle(person: MilitaryPerson, formations: Mili
         if(grant)text=`${name}${m.previousOffice==="NONE"?"获授":"晋任"}${MILITARY_OFFICE_NAMES[grant.office]}；据本次任职${grant.serviceMonths}个月${grant.captureEventIds.length?`及${grant.captureEventIds.length}条核验战果`:""}。`;
       }
       if (served && e.type === "military-appointment" && month === appointment?.startMonth) text = `${name}获任${e.actorFactionId}军事指挥官。`;
-      if(served&&e.type==="siege-defended")text=`${name}所部参与守住${e.cityName??e.cityId}，实际围攻者受阻撤离。`;
+      if(served&&e.type==="siege-defended"&&defenseIds.has(e.id))text=`${name}所部参与守住${e.cityName??e.cityId}，实际围攻者受阻撤离。`;
       if(served&&e.type==="siege-started")text=`${name}所部开始围攻${e.cityName??e.cityId}。`;
       if(served&&e.type==="siege-ended")text=`${name}所部${m.reason==="CAPTURED"?"围攻结束，城市易主":m.reason==="REPULSED"?"攻势受阻，撤围休整":m.reason==="TRUCE"?"因停战结束围攻":"因实际接触或指挥中断结束围攻"}（${e.cityName??e.cityId}）。`;
       if (served && e.type === "military-order-issued") text = `${name}所属编组接令以${e.cityName ?? e.cityId}为目标；军令不代表攻陷。`;
