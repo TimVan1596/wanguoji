@@ -1,3 +1,4 @@
+import {evaluatePopularPoliticalCrisis} from '../Simulation/PopularPoliticalCrisis';
 import type {WorldSaveV1} from "./WorldSaveSchema";
 /** V19 resident founders have one permanent life record and at most one live map entity. */
 export function validateResidentIdentities(save:WorldSaveV1):string[]{
@@ -10,6 +11,15 @@ export function validateResidentIdentities(save:WorldSaveV1):string[]{
     const c=eventById.get(e.metadata.captureEventId);
     if(!c||!["city-captured","city-recovered","capital-fallen"].includes(c.type)||c.actorFactionId!==e.actorFactionId||c.cityId!==e.cityId||(c.monthIndex??c.year)!==(e.monthIndex??e.year)||e.metadata.remnantPopulation!==0)errors.push("military restoration lacks matching capture evidence");
   }
+  for(const [index,e]of events.entries())if(e.metadata?.popularCrisisFacts!==undefined){try{
+   const f=JSON.parse(e.metadata.popularCrisisFacts),at=e.monthIndex??e.year;
+   if(!['rebel-faction-founded','frontier-faction-founded'].includes(e.type)||f.worldMonth!==at||!['loyalty','devastation','stability'].every(k=>Number.isFinite(f[k])&&f[k]>=0&&f[k]<=100)||!Number.isSafeInteger(f.captureCount)||f.captureCount<0||!Number.isFinite(f.strain)||f.strain<0||f.lastCapturedMonth!==undefined&&(!Number.isSafeInteger(f.lastCapturedMonth)||f.lastCapturedMonth>at||f.lastCapturedMonth<0))throw Error();
+   const crisis=evaluatePopularPoliticalCrisis(f);if(!crisis.eligible||e.metadata.popularCrisisReason!==crisis.reason)throw Error();
+   if(crisis.reason!=='ORIGINAL_CRISIS'){
+    const captures=events.slice(0,index).filter(x=>x.cityId===e.cityId&&['city-captured','city-recovered','capital-fallen'].includes(x.type));
+    if(!captures.some(x=>(x.monthIndex??x.year)===f.lastCapturedMonth)||crisis.reason==='REPEATED_OCCUPATION'&&new Set(captures.map(x=>JSON.stringify([x.monthIndex??x.year,x.actorFactionId,x.previousOwnerFactionId??x.targetFactionId]))).size<2)throw Error();
+   }
+  }catch{errors.push('ordinary founding crisis facts lack valid dated evidence');}}
   const factions=new Map(save.factions.filter(record).map(f=>[f.factionId,f]));
   const cities=new Set([...save.cities.filter(record).map(c=>c.cityId),...(Array.isArray(save.registries?.archivedCities)?save.registries.archivedCities:[]).map((c:any)=>c?.cityId??c?.id)]);
   for(const d of save.dynasties)for(const r of (Array.isArray(d?.rulers)?d.rulers:[]) as any[]){

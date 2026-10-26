@@ -19,7 +19,7 @@ vi.mock("../store", () => ({ store: { getState: () => ({ root: {} }), dispatch: 
 vi.mock("../Politics/Dynasty", () => ({ default: new Proxy({}, { get: () => vi.fn() }) }));
 let Lifetime:any, Team:any, User:any, City:any, Population:any, History:any, Military:any, Effects:any, Diplomacy:any, Events:any, Factions:any, AutoSim:any, Submission:any;
 beforeAll(async()=>{
-  class Group { children={size:0,entries:[] as any[]}; add(v:any){this.children.entries.push(v);this.children.size++;} remove(v:any){this.children.entries=this.children.entries.filter(x=>x!==v);this.children.size=this.children.entries.length;} }
+  class Group { children={size:0,entries:[] as any[]}; getChildren(){return this.children.entries;} clear(){this.children.entries=[];this.children.size=0;} add(v:any){this.children.entries.push(v);this.children.size++;} remove(v:any){this.children.entries=this.children.entries.filter(x=>x!==v);this.children.size=this.children.entries.length;} }
   vi.stubGlobal("Phaser",{GameObjects:{Rectangle:class{},Group},Math:{Clamp:(n:number,a:number,b:number)=>Math.max(a,Math.min(b,n))},Display:{Align:{In:{Center(){}}},Color:{HSLToColor:()=>({color:12345})}}});
   Lifetime=(await import("./FactionLifetimeRecord")).default;
   Team=(await import("../Components/Team")).default; User=(await import("../Components/User")).default;

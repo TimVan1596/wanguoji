@@ -11,8 +11,10 @@ export class RegionalRebellionAudit {
   accountSpatial(value:ReturnType<typeof emptyPopularSpatialCounts>){for(const k of Object.keys(this.spatial) as Array<keyof typeof this.spatial>)this.spatial[k]+=value[k];}
   survival={popular:{matured12:0,alive12:0,matured60:0,alive60:0},split:{matured12:0,alive12:0,matured60:0,alive60:0}};
   private pending:Array<{id:string;month:number;active:boolean;observed12:boolean;kind:"popular"|"split"}>=[];
+  private checkedCities=new Set<string>();
+  cityChecked(id:string){if(this.checkedCities.size<4096)this.checkedCities.add(id);}
   month=0;
-  reset(month:number){this.counts=new RegionalRebellionAudit().counts;this.spatial=emptyPopularSpatialCounts();this.pending=[];this.survival=new RegionalRebellionAudit().survival;this.month=month;this.popularFunnel=new RegionalRebellionAudit().popularFunnel;this.popularFailures={};}
+  reset(month:number){this.checkedCities.clear();this.counts=new RegionalRebellionAudit().counts;this.spatial=emptyPopularSpatialCounts();this.pending=[];this.survival=new RegionalRebellionAudit().survival;this.month=month;this.popularFunnel=new RegionalRebellionAudit().popularFunnel;this.popularFailures={};}
   observe(month:number,teams:Team[]){
     this.month=month;const active=new Set(teams.filter(t=>t.status==="ACTIVE").map(t=>t.name));
     for(const p of this.pending){p.active&&=active.has(p.id);if(!p.observed12&&month-p.month>=12){p.observed12=true;this.counts.matured12++;this.survival[p.kind].matured12++;if(p.active){this.counts.alive12++;this.survival[p.kind].alive12++;}}
@@ -20,10 +22,10 @@ export class RegionalRebellionAudit {
     this.pending=this.pending.filter(p=>month-p.month<60);
   }
   created(team:Team,month:number,kind:"popular"|"split"){this.counts[kind]++;if(this.pending.length<256)this.pending.push({id:team.name,month,active:true,observed12:false,kind});else this.counts.overflow++;}
-  snapshot(restored=0){return {...this.counts,survival:structuredClone(this.survival),popularFunnel:{...this.popularFunnel},popularFailures:{...this.popularFailures},spatial:{...this.spatial},restored:restored+this.counts.splitRestored,worldMonth:this.month,insufficient12:this.pending.filter(p=>!p.observed12).length,insufficient60:this.pending.length};}
+  snapshot(restored=0){return {...this.counts,distinctCheckedCities:this.checkedCities.size,cityTrackingCapacity:4096,survival:structuredClone(this.survival),popularFunnel:{...this.popularFunnel},popularFailures:{...this.popularFailures},spatial:{...this.spatial},restored:restored+this.counts.splitRestored,worldMonth:this.month,insufficient12:this.pending.filter(p=>!p.observed12).length,insufficient60:this.pending.length};}
   summary(restored=0){const c=this.snapshot(restored);return [
     "地方叛乱与帝国分裂（本次会话，读档重置；检查/候选均为累计人次或城次，非独立数量）",
-    `实际城市检查${c.cityChecks}；民变城市政治资格通过${c.politicalCities}；城市忠诚不足以形成危机${c.loyaltyBlocked}；国家稳定度阻断${c.stabilityBlocked}；势力数量上限阻断${c.capacityBlocked}`,
+    `实际城市检查${c.cityChecks}城次（涉及${c.distinctCheckedCities}座，跟踪上限4096）；民变城市政治资格通过${c.politicalCities}；城市忠诚不足以形成危机${c.loyaltyBlocked}；国家稳定度阻断${c.stabilityBlocked}；势力数量上限阻断${c.capacityBlocked}`,
     `有效普通User ${c.validOrdinary}人次；身份阻断${c.identityBlocked}；地理位置阻断${c.geographyBlocked}；个人及地方不满不足${c.discontentBlocked}；合格本地支持者${c.supporters}人次；无真实支持者${c.noSupport}次`,
     `权威位置：Arcade实际Player ${this.spatial.arcadePosition}；逻辑模式 ${this.spatial.logicalPosition}；Arcade位置与旧注册坐标相差一格以上${this.spatial.staleRegistryPosition}`,
     `空间阻断：非法/越界${this.spatial.invalidPosition}；无主地块${this.spatial.unowned}；敌国地块${this.spatial.foreign}；另一座本国城市${this.spatial.otherCity}；另一城市辖区${this.spatial.otherDistrict}；本国孤立地块无可达辖城${this.spatial.disconnected}`,

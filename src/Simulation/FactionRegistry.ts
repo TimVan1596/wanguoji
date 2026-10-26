@@ -1,6 +1,6 @@
 import {captureMilitarySplitRollback} from "./MilitarySplitRollback";
 import {assessMilitarySecession,type MilitarySecessionEvidence} from "./MilitarySecession";
-import { assessPopularSupport, hasPopularPoliticalCrisis } from "./PopularRebellionSupport";
+import { assessPopularSupport, hasPopularPoliticalCrisis,popularPoliticalCrisis } from "./PopularRebellionSupport";
 import { calculateImperialStrain } from "./ImperialStrain";
 import { destroyRuntimeGroupAtSafeBoundary } from "./RuntimeGroupDisposal";
 import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
@@ -206,6 +206,7 @@ class FactionRegistryStore {
     const dynastyBefore=DynastyRegistry.exportState(),historyBefore=WorldHistory.exportState(),lifetimeBefore=FactionLifetimeRecords.exportState();
     const leader=users[0];
     const beforeOwner=owner.users.size,beforeNew=team.users.size;
+    const ownerUsers=[...owner.users],ownerPlayers=owner.players.getChildren().slice();
     const militaryBefore=MilitaryCommandRegistry.snapshotTransaction();
     try {
       for (const user of users) {
@@ -229,6 +230,8 @@ class FactionRegistryStore {
     if(historyBefore)WorldHistory.importState(historyBefore);
     for (const user of users) if (user.team === team) user.setTeam(owner, { cause, month, context: "建势人口转属回退", deferPopulationAudit:true });
     Game.Core?.rollbackRuntimeTeam?.(team);
+    // A failed transfer must not reorder the old population: traversal order can affect later RNG.
+    owner.users.clear();ownerUsers.forEach(u=>owner.users.add(u));owner.players.clear(false,false);ownerPlayers.forEach(p=>owner.players.add(p));
     FactionLifetimeRecords.importState(lifetimeBefore);
     MilitaryCommandRegistry.rollbackTransaction(militaryBefore);
     if(historyBefore)WorldHistory.importState(historyBefore);
@@ -248,6 +251,9 @@ class FactionRegistryStore {
     if (!options.godDriven && (!hasPopularPoliticalCrisis(city,year,core.totalCells) || city.isInCaptureGrace(year))) {this.lastFoundingFailure="政治危机或占领保护资格失效";return undefined;}
     const candidates = assessPopularSupport(city, year).users.filter(u=>!this.foundingTransactions.has(u));
     if (!candidates.length && !options.godDriven) {this.lastFoundingFailure="没有合法本地支持者";return undefined;}
+    const crisis=options.godDriven?undefined:popularPoliticalCrisis(city,year,core.totalCells);
+    const explanations:Record<string,string>={ORIGINAL_CRISIS:'当地低忠诚与政治危机并存。',SEVERE_WAR_DAMAGE:'严重战乱破坏后，当地低忠诚尚未恢复。',REPEATED_OCCUPATION:'城邑反复易手，战乱破坏与低忠诚并存。',UNRESOLVED_POSTWAR_CRISIS:'战后两年以上当地仍低忠诚，所属国家亦不稳定。'};
+    const crisisMetadata=crisis?{popularCrisisReason:crisis.reason,popularCrisisDescription:explanations[crisis.reason],popularCrisisFacts:JSON.stringify({loyalty:city.loyalty,devastation:city.devastation,captureCount:city.captureCount,lastCapturedMonth:city.lastCapturedYear,worldMonth:year,stability:getFactionStability(previousOwner)??100,strain:city.loyalty<=18?calculateImperialStrain(previousOwner,core.totalCells):0})}:{};
     const targetPopulation = worldRandom.int(REBEL_INITIAL_POPULATION_MIN, REBEL_INITIAL_POPULATION_MAX);
     const lowLoyaltyUsers = candidates.slice(0, targetPopulation);
 
@@ -292,7 +298,7 @@ class FactionRegistryStore {
     team.setOrigin({ ...team.origin, foundingRulerId: DynastyRegistry.getCurrentRuler(team.name)?.id });
     const external = options.godDriven ? this.spawnMembers(team, Math.max(0, targetPopulation-lowLoyaltyUsers.length), "Rebel", year,
       { cause: "GOD_ACTION", month: year, context: "神力建势的特殊外源人口，非转属" }) : 0;
-    const populationSource = { transferredPopulation: lowLoyaltyUsers.length, externalPopulation: external, ...this.getFoundingMetadata(team) };
+    const populationSource = { ...crisisMetadata,transferredPopulation: lowLoyaltyUsers.length, externalPopulation: external, ...this.getFoundingMetadata(team) };
     const historyGroupId = getFoundingHistoryGroupId(team.name, year);
 
     if (factionType === "FRONTIER") {

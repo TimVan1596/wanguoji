@@ -1,0 +1,2409 @@
+[
+  {
+    "seed": "regional-1",
+    "results": [
+      {
+        "target": 100,
+        "populationAtStart": 95,
+        "populationAtEnd": 98,
+        "speed": 1,
+        "worldMonth": 48,
+        "averageFPS": 59.06164974427497,
+        "frame": {
+          "renderFrameCount": 178,
+          "frameDeltaMs": {
+            "current": 21.700000002980232,
+            "average": 16.931460674224276,
+            "p95": 24.900000005960464,
+            "max": 44.80000001192093
+          },
+          "longFrames": {
+            "over25ms": 8,
+            "over33ms": 2,
+            "over50ms": 0,
+            "over100ms": 0
+          },
+          "simulationStepsPerFrame": {
+            "average": 0.9943820224719101,
+            "max": 2
+          },
+          "fixedStepCpuMs": {
+            "average": 1.542696629096283,
+            "p95": 4
+          },
+          "presentationCpuMs": {
+            "average": 0.13089887689003785,
+            "p95": 0.3999999910593033
+          },
+          "sampleCount": 178,
+          "rollingWindowCapacity": 300,
+          "statisticsWindow": "rolling 300 frames (or available samples)",
+          "longFrameCounterWindow": "session cumulative since hydration/reset",
+          "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback"
+        },
+        "attribution": {
+          "enabled": true,
+          "timings": {
+            "Core CPU": {
+              "sampleCount": 178,
+              "averageMs": 1.6735955059863208,
+              "p95Ms": 4.0999999940395355,
+              "maxMs": 15.699999988079071
+            },
+            "fixed simulation CPU": {
+              "sampleCount": 178,
+              "averageMs": 1.542696629096283,
+              "p95Ms": 4,
+              "maxMs": 15.5
+            },
+            "manual Arcade physics step": {
+              "sampleCount": 178,
+              "averageMs": 1.3646067420250914,
+              "p95Ms": 3.2999999970197678,
+              "maxMs": 15.200000002980232
+            },
+            "logical simulation step": {
+              "sampleCount": 178,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "AutoSimulator.advance": {
+              "sampleCount": 178,
+              "averageMs": 0.11292134811369221,
+              "p95Ms": 0.09999999403953552,
+              "maxMs": 10.199999988079071
+            },
+            "determinism checkpoint": {
+              "sampleCount": 178,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "LogicalUnitRegistry.syncVisuals": {
+              "sampleCount": 178,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "faction labels": {
+              "sampleCount": 178,
+              "averageMs": 0.011797752775503009,
+              "p95Ms": 0,
+              "maxMs": 1.9000000059604645
+            },
+            "faction focus": {
+              "sampleCount": 178,
+              "averageMs": 0.008988764095172453,
+              "p95Ms": 0.09999999403953552,
+              "maxMs": 0.29999999701976776
+            },
+            "player presentation updates": {
+              "sampleCount": 178,
+              "averageMs": 0.01741573021987851,
+              "p95Ms": 0.10000000894069672,
+              "maxMs": 0.20000000298023224
+            },
+            "block presentation updates": {
+              "sampleCount": 178,
+              "averageMs": 0.059550562433982164,
+              "p95Ms": 0.20000000298023224,
+              "maxMs": 0.30000001192092896
+            },
+            "validateWorldStateInDev": {
+              "sampleCount": 178,
+              "averageMs": 0.0022471910447217107,
+              "p95Ms": 0,
+              "maxMs": 0.10000000894069672
+            },
+            "history publish/notify": {
+              "sampleCount": 178,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "history UI query derivation": {
+              "sampleCount": 178,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "presentation CPU": {
+              "sampleCount": 178,
+              "averageMs": 0.10561797801363335,
+              "p95Ms": 0.29999999701976776,
+              "maxMs": 2.4000000059604645
+            },
+            "frame delta": {
+              "sampleCount": 178,
+              "averageMs": 16.931460674224276,
+              "p95Ms": 24.900000005960464,
+              "maxMs": 44.80000001192093
+            },
+            "unattributed frame time": {
+              "sampleCount": 178,
+              "averageMs": 15.257865168237954,
+              "p95Ms": 22.099999994039536,
+              "maxMs": 40.70000001788139
+            }
+          },
+          "statisticsWindow": "rolling 300 frames (or available samples)",
+          "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback",
+          "interpretation": "Nested phases overlap; unattributed = max(0, frame delta - current Core CPU), includes frame pacing/render/React/GC; not measured renderer CPU."
+        },
+        "phases": {
+          "WorldEventSystem.update": {
+            "sampleCount": 6,
+            "averageMs": 0.16666666915019354,
+            "p95Ms": 0.5,
+            "maxMs": 0.5
+          },
+          "DiplomacySystem.update": {
+            "sampleCount": 6,
+            "averageMs": 0.016666668156782787,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "MilitaryCommandRegistry.update": {
+            "sampleCount": 6,
+            "averageMs": 0.06666666269302368,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.09999999403953552
+          },
+          "WorldEra.observe": {
+            "sampleCount": 6,
+            "averageMs": 0.03333333134651184,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.09999999403953552
+          },
+          "PopulationSystem.update": {
+            "sampleCount": 6,
+            "averageMs": 0.6333333353201548,
+            "p95Ms": 2.4000000059604645,
+            "maxMs": 2.4000000059604645
+          },
+          "aggregate City.updateDefense": {
+            "sampleCount": 6,
+            "averageMs": 1.866666667163372,
+            "p95Ms": 6.299999997019768,
+            "maxMs": 6.299999997019768
+          },
+          "City.updateLoyalty": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "City.updateSiege": {
+            "sampleCount": 6,
+            "averageMs": 1.8500000014901161,
+            "p95Ms": 6.299999997019768,
+            "maxMs": 6.299999997019768
+          },
+          "City.updateDevastation": {
+            "sampleCount": 6,
+            "averageMs": 0.01666666567325592,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.09999999403953552
+          },
+          "City.calculateMaxDefense/development": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "City.zone/visual refresh": {
+            "sampleCount": 6,
+            "averageMs": 0.15000000099341074,
+            "p95Ms": 0.4000000059604645,
+            "maxMs": 0.4000000059604645
+          },
+          "Population.active faction scan": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Population.capacity": {
+            "sampleCount": 6,
+            "averageMs": 0.01666666567325592,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.09999999403953552
+          },
+          "Population.growth context": {
+            "sampleCount": 6,
+            "averageMs": 0.016666668156782787,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "Population.spawn/runtime creation": {
+            "sampleCount": 6,
+            "averageMs": 0.5833333333333334,
+            "p95Ms": 2.4000000059604645,
+            "maxMs": 2.4000000059604645
+          },
+          "Population.user id lookup": {
+            "sampleCount": 6,
+            "averageMs": 0.049999999503294625,
+            "p95Ms": 0.20000000298023224,
+            "maxMs": 0.20000000298023224
+          },
+          "Population.makeUser": {
+            "sampleCount": 6,
+            "averageMs": 0.5166666681567827,
+            "p95Ms": 2.2000000029802322,
+            "maxMs": 2.2000000029802322
+          },
+          "WorldEvent.expired effects": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.observeWorldGoal": {
+            "sampleCount": 6,
+            "averageMs": 0.033333333830038704,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "WorldEvent.checkStateFormation": {
+            "sampleCount": 6,
+            "averageMs": 0.033333336313565574,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "WorldEvent.applyProvisionalDissolutionPressure": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.checkEmperorProclamation": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.checkRestorations": {
+            "sampleCount": 6,
+            "averageMs": 0.01666666567325592,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.09999999403953552
+          },
+          "WorldEvent.checkEmpireSplit": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.checkCityFounding": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.triggerRandomEvent": {
+            "sampleCount": 6,
+            "averageMs": 0.06666666517655055,
+            "p95Ms": 0.3999999910593033,
+            "maxMs": 0.3999999910593033
+          },
+          "FactionEffects.update": {
+            "sampleCount": 6,
+            "averageMs": 0.01666666567325592,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.09999999403953552
+          },
+          "DynastyRegistry.update": {
+            "sampleCount": 6,
+            "averageMs": 0.15000000099341074,
+            "p95Ms": 0.20000000298023224,
+            "maxMs": 0.20000000298023224
+          },
+          "Military honors": {
+            "sampleCount": 6,
+            "averageMs": 0.01666666567325592,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.09999999403953552
+          },
+          "Military nobility": {
+            "sampleCount": 6,
+            "averageMs": 0.016666668156782787,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "WorldExiles.update": {
+            "sampleCount": 6,
+            "averageMs": 0.01666666567325592,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.09999999403953552
+          },
+          "FactionSnapshots.observe": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldHistory.observeWorld": {
+            "sampleCount": 6,
+            "averageMs": 0.033333336313565574,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "debug/LongRun diagnostics": {
+            "sampleCount": 6,
+            "averageMs": 0.01666666567325592,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.09999999403953552
+          },
+          "total fixed/month step": {
+            "sampleCount": 6,
+            "averageMs": 3.149999998509884,
+            "p95Ms": 10,
+            "maxMs": 10
+          },
+          "calculateTerritoryMetrics (all callers)": {
+            "sampleCount": 300,
+            "averageMs": 0.002333333343267441,
+            "p95Ms": 0,
+            "maxMs": 0.10000000894069672
+          }
+        },
+        "entities": {
+          "logicalUsers": 98,
+          "rootPlayers": 98,
+          "playerChildren": 0,
+          "activePhaserPlayers": 98,
+          "missingTextureKeys": [],
+          "playerTree": {
+            "rootCount": 98,
+            "reachablePlayerCount": 98,
+            "childEdgeCount": 0,
+            "maxDepth": 0,
+            "revisitCount": 0
+          },
+          "avatarRendererMode": "plain",
+          "noFaceSource": "SVG",
+          "noFaceTextureExists": true,
+          "starTextureExists": true,
+          "rendererType": "Canvas"
+        },
+        "scope": "actual offscreen Electron Canvas loop; no React sidebar mounted; not user Chrome FPS"
+      },
+      {
+        "target": 100,
+        "populationAtStart": 95,
+        "populationAtEnd": 106,
+        "speed": 4,
+        "worldMonth": 48,
+        "averageFPS": 59.676612768794804,
+        "frame": {
+          "renderFrameCount": 179,
+          "frameDeltaMs": {
+            "current": 17.700000002980232,
+            "average": 16.756983240223462,
+            "p95": 21.599999994039536,
+            "max": 46.79999999701977
+          },
+          "longFrames": {
+            "over25ms": 3,
+            "over33ms": 1,
+            "over50ms": 0,
+            "over100ms": 0
+          },
+          "simulationStepsPerFrame": {
+            "average": 3.910614525139665,
+            "max": 5
+          },
+          "fixedStepCpuMs": {
+            "average": 3.4469273738854422,
+            "p95": 7.5
+          },
+          "presentationCpuMs": {
+            "average": 0.13407821270673634,
+            "p95": 0.29999999701976776
+          },
+          "sampleCount": 179,
+          "rollingWindowCapacity": 300,
+          "statisticsWindow": "rolling 300 frames (or available samples)",
+          "longFrameCounterWindow": "session cumulative since hydration/reset",
+          "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback"
+        },
+        "attribution": {
+          "enabled": true,
+          "timings": {
+            "Core CPU": {
+              "sampleCount": 179,
+              "averageMs": 3.5810055865921786,
+              "p95Ms": 7.699999988079071,
+              "maxMs": 33.5
+            },
+            "fixed simulation CPU": {
+              "sampleCount": 179,
+              "averageMs": 3.4469273738854422,
+              "p95Ms": 7.5,
+              "maxMs": 32.69999998807907
+            },
+            "manual Arcade physics step": {
+              "sampleCount": 179,
+              "averageMs": 2.9005586585685528,
+              "p95Ms": 5.699999988079071,
+              "maxMs": 9.299999997019768
+            },
+            "logical simulation step": {
+              "sampleCount": 179,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "AutoSimulator.advance": {
+              "sampleCount": 179,
+              "averageMs": 0.4391061453013447,
+              "p95Ms": 1.2999999970197678,
+              "maxMs": 29.600000008940697
+            },
+            "determinism checkpoint": {
+              "sampleCount": 179,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "LogicalUnitRegistry.syncVisuals": {
+              "sampleCount": 179,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "faction labels": {
+              "sampleCount": 179,
+              "averageMs": 0.011173184274295188,
+              "p95Ms": 0,
+              "maxMs": 1
+            },
+            "faction focus": {
+              "sampleCount": 179,
+              "averageMs": 0.011173184191048478,
+              "p95Ms": 0.09999999403953552,
+              "maxMs": 0.19999998807907104
+            },
+            "player presentation updates": {
+              "sampleCount": 179,
+              "averageMs": 0.008938547619228257,
+              "p95Ms": 0.09999999403953552,
+              "maxMs": 0.20000000298023224
+            },
+            "block presentation updates": {
+              "sampleCount": 179,
+              "averageMs": 0.06312849193644923,
+              "p95Ms": 0.20000000298023224,
+              "maxMs": 0.30000001192092896
+            },
+            "validateWorldStateInDev": {
+              "sampleCount": 179,
+              "averageMs": 0.00502793316068596,
+              "p95Ms": 0,
+              "maxMs": 0.4000000059604645
+            },
+            "history publish/notify": {
+              "sampleCount": 179,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "history UI query derivation": {
+              "sampleCount": 179,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "presentation CPU": {
+              "sampleCount": 179,
+              "averageMs": 0.10055865938437052,
+              "p95Ms": 0.20000000298023224,
+              "maxMs": 1.0999999940395355
+            },
+            "frame delta": {
+              "sampleCount": 179,
+              "averageMs": 16.756983240223462,
+              "p95Ms": 21.599999994039536,
+              "maxMs": 46.79999999701977
+            },
+            "unattributed frame time": {
+              "sampleCount": 179,
+              "averageMs": 13.342458100458764,
+              "p95Ms": 17.00000001490116,
+              "maxMs": 44.29999999701977
+            }
+          },
+          "statisticsWindow": "rolling 300 frames (or available samples)",
+          "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback",
+          "interpretation": "Nested phases overlap; unattributed = max(0, frame delta - current Core CPU), includes frame pacing/render/React/GC; not measured renderer CPU."
+        },
+        "phases": {
+          "WorldEventSystem.update": {
+            "sampleCount": 26,
+            "averageMs": 0.2538461536169052,
+            "p95Ms": 0.20000000298023224,
+            "maxMs": 4.199999988079071
+          },
+          "DiplomacySystem.update": {
+            "sampleCount": 26,
+            "averageMs": 1.561538461309213,
+            "p95Ms": 20,
+            "maxMs": 20.599999994039536
+          },
+          "MilitaryCommandRegistry.update": {
+            "sampleCount": 26,
+            "averageMs": 0.08846153720067097,
+            "p95Ms": 0.7999999970197678,
+            "maxMs": 0.9000000059604645
+          },
+          "WorldEra.observe": {
+            "sampleCount": 26,
+            "averageMs": 0.03461538599087642,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "PopulationSystem.update": {
+            "sampleCount": 26,
+            "averageMs": 0.1807692303107335,
+            "p95Ms": 0.699999988079071,
+            "maxMs": 0.699999988079071
+          },
+          "aggregate City.updateDefense": {
+            "sampleCount": 26,
+            "averageMs": 0.5730769238792933,
+            "p95Ms": 0.800000011920929,
+            "maxMs": 1
+          },
+          "City.updateLoyalty": {
+            "sampleCount": 26,
+            "averageMs": 0.007692307233810425,
+            "p95Ms": 0,
+            "maxMs": 0.19999998807907104
+          },
+          "City.updateSiege": {
+            "sampleCount": 26,
+            "averageMs": 0.48076923134235233,
+            "p95Ms": 0.7999999970197678,
+            "maxMs": 0.800000011920929
+          },
+          "City.updateDevastation": {
+            "sampleCount": 26,
+            "averageMs": 0.003846154190026797,
+            "p95Ms": 0,
+            "maxMs": 0.10000000894069672
+          },
+          "City.calculateMaxDefense/development": {
+            "sampleCount": 26,
+            "averageMs": 0.011538461996958805,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "City.zone/visual refresh": {
+            "sampleCount": 26,
+            "averageMs": 0.13846153708604667,
+            "p95Ms": 0.29999999701976776,
+            "maxMs": 0.30000001192092896
+          },
+          "Population.active faction scan": {
+            "sampleCount": 26,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Population.capacity": {
+            "sampleCount": 26,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Population.growth context": {
+            "sampleCount": 26,
+            "averageMs": 0.019230770377012398,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "Population.spawn/runtime creation": {
+            "sampleCount": 26,
+            "averageMs": 0.14230769127607346,
+            "p95Ms": 0.5999999940395355,
+            "maxMs": 0.699999988079071
+          },
+          "Population.user id lookup": {
+            "sampleCount": 26,
+            "averageMs": 0.011538461423837222,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.10000000894069672
+          },
+          "Population.makeUser": {
+            "sampleCount": 26,
+            "averageMs": 0.13076922985223624,
+            "p95Ms": 0.5999999940395355,
+            "maxMs": 0.699999988079071
+          },
+          "WorldEvent.expired effects": {
+            "sampleCount": 26,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.observeWorldGoal": {
+            "sampleCount": 26,
+            "averageMs": 0.023076922847674444,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "WorldEvent.checkStateFormation": {
+            "sampleCount": 26,
+            "averageMs": 0.02692307589145807,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.10000000894069672
+          },
+          "WorldEvent.applyProvisionalDissolutionPressure": {
+            "sampleCount": 26,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.checkEmperorProclamation": {
+            "sampleCount": 26,
+            "averageMs": 0.019230769803890817,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "WorldEvent.checkRestorations": {
+            "sampleCount": 26,
+            "averageMs": 0.011538461996958805,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "WorldEvent.checkEmpireSplit": {
+            "sampleCount": 26,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.checkCityFounding": {
+            "sampleCount": 26,
+            "averageMs": 0.15769230746305907,
+            "p95Ms": 0,
+            "maxMs": 4.0999999940395355
+          },
+          "WorldEvent.triggerRandomEvent": {
+            "sampleCount": 26,
+            "averageMs": 0.003846154190026797,
+            "p95Ms": 0,
+            "maxMs": 0.10000000894069672
+          },
+          "FactionEffects.update": {
+            "sampleCount": 26,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "DynastyRegistry.update": {
+            "sampleCount": 26,
+            "averageMs": 0.1384615388054114,
+            "p95Ms": 0.30000001192092896,
+            "maxMs": 1.2000000029802322
+          },
+          "Military honors": {
+            "sampleCount": 26,
+            "averageMs": 0.0038461536169052124,
+            "p95Ms": 0,
+            "maxMs": 0.09999999403953552
+          },
+          "Military nobility": {
+            "sampleCount": 26,
+            "averageMs": 0.003846154190026797,
+            "p95Ms": 0,
+            "maxMs": 0.10000000894069672
+          },
+          "WorldExiles.update": {
+            "sampleCount": 26,
+            "averageMs": 0.011538461423837222,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.10000000894069672
+          },
+          "FactionSnapshots.observe": {
+            "sampleCount": 26,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldHistory.observeWorld": {
+            "sampleCount": 26,
+            "averageMs": 0.0038461536169052124,
+            "p95Ms": 0,
+            "maxMs": 0.09999999403953552
+          },
+          "debug/LongRun diagnostics": {
+            "sampleCount": 26,
+            "averageMs": 0.015384616186985603,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "total fixed/month step": {
+            "sampleCount": 26,
+            "averageMs": 3.0807692299668608,
+            "p95Ms": 24.099999994039536,
+            "maxMs": 29.5
+          },
+          "PeacefulReunification candidate scan": {
+            "sampleCount": 2,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "StrategicUnion candidate scan": {
+            "sampleCount": 2,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "debug/StrategicUnion blocker diagnostics": {
+            "sampleCount": 2,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "PeacefulSubmission.update": {
+            "sampleCount": 2,
+            "averageMs": 1.6499999985098839,
+            "p95Ms": 1.7999999970197678,
+            "maxMs": 1.7999999970197678
+          },
+          "calculateTerritoryMetrics (all callers)": {
+            "sampleCount": 300,
+            "averageMs": 0.0003333333631356557,
+            "p95Ms": 0,
+            "maxMs": 0.10000000894069672
+          }
+        },
+        "entities": {
+          "logicalUsers": 106,
+          "rootPlayers": 106,
+          "playerChildren": 0,
+          "activePhaserPlayers": 106,
+          "missingTextureKeys": [],
+          "playerTree": {
+            "rootCount": 106,
+            "reachablePlayerCount": 106,
+            "childEdgeCount": 0,
+            "maxDepth": 0,
+            "revisitCount": 0
+          },
+          "avatarRendererMode": "plain",
+          "noFaceSource": "SVG",
+          "noFaceTextureExists": true,
+          "starTextureExists": true,
+          "rendererType": "Canvas"
+        },
+        "scope": "actual offscreen Electron Canvas loop; no React sidebar mounted; not user Chrome FPS"
+      },
+      {
+        "target": 150,
+        "populationAtStart": 144,
+        "populationAtEnd": 150,
+        "speed": 1,
+        "worldMonth": 144,
+        "averageFPS": 59.609044590111125,
+        "frame": {
+          "renderFrameCount": 179,
+          "frameDeltaMs": {
+            "current": 18.700000002980232,
+            "average": 16.775977653664583,
+            "p95": 18.700000002980232,
+            "max": 45.099999994039536
+          },
+          "longFrames": {
+            "over25ms": 1,
+            "over33ms": 1,
+            "over50ms": 0,
+            "over100ms": 0
+          },
+          "simulationStepsPerFrame": {
+            "average": 0.9832402234636871,
+            "max": 1
+          },
+          "fixedStepCpuMs": {
+            "average": 1.3564245811554307,
+            "p95": 2.7999999970197678
+          },
+          "presentationCpuMs": {
+            "average": 0.11061452454028849,
+            "p95": 0.20000000298023224
+          },
+          "sampleCount": 179,
+          "rollingWindowCapacity": 300,
+          "statisticsWindow": "rolling 300 frames (or available samples)",
+          "longFrameCounterWindow": "session cumulative since hydration/reset",
+          "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback"
+        },
+        "attribution": {
+          "enabled": true,
+          "timings": {
+            "Core CPU": {
+              "sampleCount": 179,
+              "averageMs": 1.4670391056957193,
+              "p95Ms": 3,
+              "maxMs": 6.5
+            },
+            "fixed simulation CPU": {
+              "sampleCount": 179,
+              "averageMs": 1.3564245811554307,
+              "p95Ms": 2.7999999970197678,
+              "maxMs": 6.399999991059303
+            },
+            "manual Arcade physics step": {
+              "sampleCount": 179,
+              "averageMs": 1.2072625700488437,
+              "p95Ms": 1.800000011920929,
+              "maxMs": 6.299999997019768
+            },
+            "logical simulation step": {
+              "sampleCount": 179,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "AutoSimulator.advance": {
+              "sampleCount": 179,
+              "averageMs": 0.06480446940693775,
+              "p95Ms": 0,
+              "maxMs": 4.200000002980232
+            },
+            "determinism checkpoint": {
+              "sampleCount": 179,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "LogicalUnitRegistry.syncVisuals": {
+              "sampleCount": 179,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "faction labels": {
+              "sampleCount": 179,
+              "averageMs": 0.0033519552739638856,
+              "p95Ms": 0,
+              "maxMs": 0.5
+            },
+            "faction focus": {
+              "sampleCount": 179,
+              "averageMs": 0.004469273726367418,
+              "p95Ms": 0,
+              "maxMs": 0.29999999701976776
+            },
+            "player presentation updates": {
+              "sampleCount": 179,
+              "averageMs": 0.023463687583720885,
+              "p95Ms": 0.10000000894069672,
+              "maxMs": 0.20000000298023224
+            },
+            "block presentation updates": {
+              "sampleCount": 179,
+              "averageMs": 0.05474860275257899,
+              "p95Ms": 0.19999998807907104,
+              "maxMs": 0.5
+            },
+            "validateWorldStateInDev": {
+              "sampleCount": 179,
+              "averageMs": 0.003910614375295586,
+              "p95Ms": 0,
+              "maxMs": 0.29999999701976776
+            },
+            "history publish/notify": {
+              "sampleCount": 179,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "history UI query derivation": {
+              "sampleCount": 179,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "presentation CPU": {
+              "sampleCount": 179,
+              "averageMs": 0.09217877069998054,
+              "p95Ms": 0.20000000298023224,
+              "maxMs": 0.7999999970197678
+            },
+            "frame delta": {
+              "sampleCount": 179,
+              "averageMs": 16.775977653664583,
+              "p95Ms": 18.700000002980232,
+              "maxMs": 45.099999994039536
+            },
+            "unattributed frame time": {
+              "sampleCount": 179,
+              "averageMs": 15.308938547968864,
+              "p95Ms": 17.400000005960464,
+              "maxMs": 41.29999999701977
+            }
+          },
+          "statisticsWindow": "rolling 300 frames (or available samples)",
+          "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback",
+          "interpretation": "Nested phases overlap; unattributed = max(0, frame delta - current Core CPU), includes frame pacing/render/React/GC; not measured renderer CPU."
+        },
+        "phases": {
+          "WorldEventSystem.update": {
+            "sampleCount": 6,
+            "averageMs": 0.08333333084980647,
+            "p95Ms": 0.20000000298023224,
+            "maxMs": 0.20000000298023224
+          },
+          "DiplomacySystem.update": {
+            "sampleCount": 6,
+            "averageMs": 0.016666668156782787,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "MilitaryCommandRegistry.update": {
+            "sampleCount": 6,
+            "averageMs": 0.01666666567325592,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.09999999403953552
+          },
+          "WorldEra.observe": {
+            "sampleCount": 6,
+            "averageMs": 0.016666668156782787,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "PopulationSystem.update": {
+            "sampleCount": 6,
+            "averageMs": 0.38333333283662796,
+            "p95Ms": 0.8999999910593033,
+            "maxMs": 0.8999999910593033
+          },
+          "aggregate City.updateDefense": {
+            "sampleCount": 6,
+            "averageMs": 0.9666666686534882,
+            "p95Ms": 2.1000000089406967,
+            "maxMs": 2.1000000089406967
+          },
+          "City.updateLoyalty": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "City.updateSiege": {
+            "sampleCount": 6,
+            "averageMs": 0.850000003973643,
+            "p95Ms": 1.6000000089406967,
+            "maxMs": 1.6000000089406967
+          },
+          "City.updateDevastation": {
+            "sampleCount": 6,
+            "averageMs": 0.01666666567325592,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.09999999403953552
+          },
+          "City.calculateMaxDefense/development": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "City.zone/visual refresh": {
+            "sampleCount": 6,
+            "averageMs": 0.14999999602635702,
+            "p95Ms": 0.29999998211860657,
+            "maxMs": 0.29999998211860657
+          },
+          "Population.active faction scan": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Population.capacity": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Population.growth context": {
+            "sampleCount": 6,
+            "averageMs": 0.050000001986821495,
+            "p95Ms": 0.20000000298023224,
+            "maxMs": 0.20000000298023224
+          },
+          "Population.spawn/runtime creation": {
+            "sampleCount": 6,
+            "averageMs": 0.3333333308498065,
+            "p95Ms": 0.8999999910593033,
+            "maxMs": 0.8999999910593033
+          },
+          "Population.user id lookup": {
+            "sampleCount": 6,
+            "averageMs": 0.06666666517655055,
+            "p95Ms": 0.29999999701976776,
+            "maxMs": 0.29999999701976776
+          },
+          "Population.makeUser": {
+            "sampleCount": 6,
+            "averageMs": 0.23333333432674408,
+            "p95Ms": 0.6000000089406967,
+            "maxMs": 0.6000000089406967
+          },
+          "WorldEvent.expired effects": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.observeWorldGoal": {
+            "sampleCount": 6,
+            "averageMs": 0.01666666567325592,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.09999999403953552
+          },
+          "WorldEvent.checkStateFormation": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.applyProvisionalDissolutionPressure": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.checkEmperorProclamation": {
+            "sampleCount": 6,
+            "averageMs": 0.01666666567325592,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.09999999403953552
+          },
+          "WorldEvent.checkRestorations": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.checkEmpireSplit": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.checkCityFounding": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.triggerRandomEvent": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "FactionEffects.update": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "DynastyRegistry.update": {
+            "sampleCount": 6,
+            "averageMs": 0.23333333184321722,
+            "p95Ms": 0.5999999940395355,
+            "maxMs": 0.5999999940395355
+          },
+          "Military honors": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Military nobility": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldExiles.update": {
+            "sampleCount": 6,
+            "averageMs": 0.016666668156782787,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "FactionSnapshots.observe": {
+            "sampleCount": 6,
+            "averageMs": 0.01666666567325592,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.09999999403953552
+          },
+          "WorldHistory.observeWorld": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "debug/LongRun diagnostics": {
+            "sampleCount": 6,
+            "averageMs": 0.050000001986821495,
+            "p95Ms": 0.20000000298023224,
+            "maxMs": 0.20000000298023224
+          },
+          "total fixed/month step": {
+            "sampleCount": 6,
+            "averageMs": 1.866666667163372,
+            "p95Ms": 4.200000002980232,
+            "maxMs": 4.200000002980232
+          },
+          "calculateTerritoryMetrics (all callers)": {
+            "sampleCount": 300,
+            "averageMs": 0.0009999999900658924,
+            "p95Ms": 0,
+            "maxMs": 0.10000000894069672
+          }
+        },
+        "entities": {
+          "logicalUsers": 150,
+          "rootPlayers": 150,
+          "playerChildren": 0,
+          "activePhaserPlayers": 150,
+          "missingTextureKeys": [],
+          "playerTree": {
+            "rootCount": 150,
+            "reachablePlayerCount": 150,
+            "childEdgeCount": 0,
+            "maxDepth": 0,
+            "revisitCount": 0
+          },
+          "avatarRendererMode": "plain",
+          "noFaceSource": "SVG",
+          "noFaceTextureExists": true,
+          "starTextureExists": true,
+          "rendererType": "Canvas"
+        },
+        "scope": "actual offscreen Electron Canvas loop; no React sidebar mounted; not user Chrome FPS"
+      },
+      {
+        "target": 150,
+        "populationAtStart": 144,
+        "populationAtEnd": 163,
+        "speed": 4,
+        "worldMonth": 144,
+        "averageFPS": 59.67180507210343,
+        "frame": {
+          "renderFrameCount": 180,
+          "frameDeltaMs": {
+            "current": 16.600000008940697,
+            "average": 16.758333333333333,
+            "p95": 18.599999994039536,
+            "max": 38.099999994039536
+          },
+          "longFrames": {
+            "over25ms": 3,
+            "over33ms": 2,
+            "over50ms": 0,
+            "over100ms": 0
+          },
+          "simulationStepsPerFrame": {
+            "average": 3.9611111111111112,
+            "max": 5
+          },
+          "fixedStepCpuMs": {
+            "average": 3.947222221808301,
+            "p95": 4.700000002980232
+          },
+          "presentationCpuMs": {
+            "average": 0.10277777835726738,
+            "p95": 0.20000000298023224
+          },
+          "sampleCount": 180,
+          "rollingWindowCapacity": 300,
+          "statisticsWindow": "rolling 300 frames (or available samples)",
+          "longFrameCounterWindow": "session cumulative since hydration/reset",
+          "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback"
+        },
+        "attribution": {
+          "enabled": true,
+          "timings": {
+            "Core CPU": {
+              "sampleCount": 180,
+              "averageMs": 4.050000000165569,
+              "p95Ms": 4.9000000059604645,
+              "maxMs": 33.400000005960464
+            },
+            "fixed simulation CPU": {
+              "sampleCount": 180,
+              "averageMs": 3.947222221808301,
+              "p95Ms": 4.700000002980232,
+              "maxMs": 32.599999994039536
+            },
+            "manual Arcade physics step": {
+              "sampleCount": 180,
+              "averageMs": 3.4244444442292052,
+              "p95Ms": 4.0999999940395355,
+              "maxMs": 10.099999994039536
+            },
+            "logical simulation step": {
+              "sampleCount": 180,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "AutoSimulator.advance": {
+              "sampleCount": 180,
+              "averageMs": 0.4316666663520866,
+              "p95Ms": 1.0999999940395355,
+              "maxMs": 29.200000002980232
+            },
+            "determinism checkpoint": {
+              "sampleCount": 180,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "LogicalUnitRegistry.syncVisuals": {
+              "sampleCount": 180,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "faction labels": {
+              "sampleCount": 180,
+              "averageMs": 0.00888888877299097,
+              "p95Ms": 0,
+              "maxMs": 0.4000000059604645
+            },
+            "faction focus": {
+              "sampleCount": 180,
+              "averageMs": 0.010555555837021934,
+              "p95Ms": 0.10000000894069672,
+              "maxMs": 0.20000000298023224
+            },
+            "player presentation updates": {
+              "sampleCount": 180,
+              "averageMs": 0.023888889369037415,
+              "p95Ms": 0.10000000894069672,
+              "maxMs": 0.20000000298023224
+            },
+            "block presentation updates": {
+              "sampleCount": 180,
+              "averageMs": 0.0400000001821253,
+              "p95Ms": 0.10000000894069672,
+              "maxMs": 0.20000000298023224
+            },
+            "validateWorldStateInDev": {
+              "sampleCount": 180,
+              "averageMs": 0.004444444427887598,
+              "p95Ms": 0,
+              "maxMs": 0.30000001192092896
+            },
+            "history publish/notify": {
+              "sampleCount": 180,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "history UI query derivation": {
+              "sampleCount": 180,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "presentation CPU": {
+              "sampleCount": 180,
+              "averageMs": 0.08666666737861103,
+              "p95Ms": 0.20000000298023224,
+              "maxMs": 0.5
+            },
+            "frame delta": {
+              "sampleCount": 180,
+              "averageMs": 16.758333333333333,
+              "p95Ms": 18.599999994039536,
+              "maxMs": 38.099999994039536
+            },
+            "unattributed frame time": {
+              "sampleCount": 180,
+              "averageMs": 12.879444444262319,
+              "p95Ms": 14.400000005960464,
+              "maxMs": 34.69999998807907
+            }
+          },
+          "statisticsWindow": "rolling 300 frames (or available samples)",
+          "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback",
+          "interpretation": "Nested phases overlap; unattributed = max(0, frame delta - current Core CPU), includes frame pacing/render/React/GC; not measured renderer CPU."
+        },
+        "phases": {
+          "WorldEventSystem.update": {
+            "sampleCount": 27,
+            "averageMs": 0.20370370204801913,
+            "p95Ms": 0.3999999910593033,
+            "maxMs": 4.100000008940697
+          },
+          "DiplomacySystem.update": {
+            "sampleCount": 27,
+            "averageMs": 1.4814814809295866,
+            "p95Ms": 19.099999994039536,
+            "maxMs": 20.700000002980232
+          },
+          "MilitaryCommandRegistry.update": {
+            "sampleCount": 27,
+            "averageMs": 0.10740740762816535,
+            "p95Ms": 1,
+            "maxMs": 1.0999999940395355
+          },
+          "WorldEra.observe": {
+            "sampleCount": 27,
+            "averageMs": 0.014814814483677899,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.10000000894069672
+          },
+          "PopulationSystem.update": {
+            "sampleCount": 27,
+            "averageMs": 0.12592592559478902,
+            "p95Ms": 0.30000001192092896,
+            "maxMs": 0.3999999910593033
+          },
+          "aggregate City.updateDefense": {
+            "sampleCount": 27,
+            "averageMs": 0.5592592606941859,
+            "p95Ms": 1,
+            "maxMs": 1.2999999970197678
+          },
+          "City.updateLoyalty": {
+            "sampleCount": 27,
+            "averageMs": 0.003703704034840619,
+            "p95Ms": 0,
+            "maxMs": 0.10000000894069672
+          },
+          "City.updateSiege": {
+            "sampleCount": 27,
+            "averageMs": 0.47777777910232544,
+            "p95Ms": 0.800000011920929,
+            "maxMs": 0.9999999850988388
+          },
+          "City.updateDevastation": {
+            "sampleCount": 27,
+            "averageMs": 0.011111111552626998,
+            "p95Ms": 0,
+            "maxMs": 0.30000001192092896
+          },
+          "City.calculateMaxDefense/development": {
+            "sampleCount": 27,
+            "averageMs": 0.014814813931783041,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.09999999403953552
+          },
+          "City.zone/visual refresh": {
+            "sampleCount": 27,
+            "averageMs": 0.15925925914888028,
+            "p95Ms": 0.3999999910593033,
+            "maxMs": 0.4999999850988388
+          },
+          "Population.active faction scan": {
+            "sampleCount": 27,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Population.capacity": {
+            "sampleCount": 27,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Population.growth context": {
+            "sampleCount": 27,
+            "averageMs": 0.029629630623040377,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "Population.spawn/runtime creation": {
+            "sampleCount": 27,
+            "averageMs": 0.08518518341912164,
+            "p95Ms": 0.29999999701976776,
+            "maxMs": 0.3999999910593033
+          },
+          "Population.user id lookup": {
+            "sampleCount": 27,
+            "averageMs": 0.0037037034829457602,
+            "p95Ms": 0,
+            "maxMs": 0.09999999403953552
+          },
+          "Population.makeUser": {
+            "sampleCount": 27,
+            "averageMs": 0.07777777645323011,
+            "p95Ms": 0.29999999701976776,
+            "maxMs": 0.29999999701976776
+          },
+          "WorldEvent.expired effects": {
+            "sampleCount": 27,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.observeWorldGoal": {
+            "sampleCount": 27,
+            "averageMs": 0.01111111100073214,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.10000000894069672
+          },
+          "WorldEvent.checkStateFormation": {
+            "sampleCount": 27,
+            "averageMs": 0.02222222089767456,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.19999998807907104
+          },
+          "WorldEvent.applyProvisionalDissolutionPressure": {
+            "sampleCount": 27,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.checkEmperorProclamation": {
+            "sampleCount": 27,
+            "averageMs": 0.0037037034829457602,
+            "p95Ms": 0,
+            "maxMs": 0.09999999403953552
+          },
+          "WorldEvent.checkRestorations": {
+            "sampleCount": 27,
+            "averageMs": 0.0037037034829457602,
+            "p95Ms": 0,
+            "maxMs": 0.09999999403953552
+          },
+          "WorldEvent.checkEmpireSplit": {
+            "sampleCount": 27,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.checkCityFounding": {
+            "sampleCount": 27,
+            "averageMs": 0.15185185218298877,
+            "p95Ms": 0,
+            "maxMs": 4.100000008940697
+          },
+          "WorldEvent.triggerRandomEvent": {
+            "sampleCount": 27,
+            "averageMs": 0.01111111100073214,
+            "p95Ms": 0,
+            "maxMs": 0.29999999701976776
+          },
+          "FactionEffects.update": {
+            "sampleCount": 27,
+            "averageMs": 0.0037037034829457602,
+            "p95Ms": 0,
+            "maxMs": 0.09999999403953552
+          },
+          "DynastyRegistry.update": {
+            "sampleCount": 27,
+            "averageMs": 0.21481481360064614,
+            "p95Ms": 0.7000000029802322,
+            "maxMs": 2.2999999970197678
+          },
+          "Military honors": {
+            "sampleCount": 27,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Military nobility": {
+            "sampleCount": 27,
+            "averageMs": 0.022222222553359136,
+            "p95Ms": 0.20000000298023224,
+            "maxMs": 0.30000001192092896
+          },
+          "WorldExiles.update": {
+            "sampleCount": 27,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "FactionSnapshots.observe": {
+            "sampleCount": 27,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldHistory.observeWorld": {
+            "sampleCount": 27,
+            "averageMs": 0.0037037034829457602,
+            "p95Ms": 0,
+            "maxMs": 0.09999999403953552
+          },
+          "debug/LongRun diagnostics": {
+            "sampleCount": 27,
+            "averageMs": 0.02222222200146428,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "total fixed/month step": {
+            "sampleCount": 27,
+            "averageMs": 2.9148148132695093,
+            "p95Ms": 25,
+            "maxMs": 29.100000008940697
+          },
+          "PeacefulReunification candidate scan": {
+            "sampleCount": 2,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "StrategicUnion candidate scan": {
+            "sampleCount": 2,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "debug/StrategicUnion blocker diagnostics": {
+            "sampleCount": 2,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "PeacefulSubmission.update": {
+            "sampleCount": 2,
+            "averageMs": 1.6000000014901161,
+            "p95Ms": 1.6000000089406967,
+            "maxMs": 1.6000000089406967
+          },
+          "calculateTerritoryMetrics (all callers)": {
+            "sampleCount": 300,
+            "averageMs": 0.0013333333532015482,
+            "p95Ms": 0,
+            "maxMs": 0.10000000894069672
+          }
+        },
+        "entities": {
+          "logicalUsers": 163,
+          "rootPlayers": 163,
+          "playerChildren": 0,
+          "activePhaserPlayers": 163,
+          "missingTextureKeys": [],
+          "playerTree": {
+            "rootCount": 163,
+            "reachablePlayerCount": 163,
+            "childEdgeCount": 0,
+            "maxDepth": 0,
+            "revisitCount": 0
+          },
+          "avatarRendererMode": "plain",
+          "noFaceSource": "SVG",
+          "noFaceTextureExists": true,
+          "starTextureExists": true,
+          "rendererType": "Canvas"
+        },
+        "scope": "actual offscreen Electron Canvas loop; no React sidebar mounted; not user Chrome FPS"
+      },
+      {
+        "target": 200,
+        "populationAtStart": 190,
+        "populationAtEnd": 191,
+        "speed": 1,
+        "worldMonth": 540,
+        "averageFPS": 60.004000266744065,
+        "frame": {
+          "renderFrameCount": 180,
+          "frameDeltaMs": {
+            "current": 16.599999994039536,
+            "average": 16.665555555538997,
+            "p95": 18.5,
+            "max": 20.200000002980232
+          },
+          "longFrames": {
+            "over25ms": 0,
+            "over33ms": 0,
+            "over50ms": 0,
+            "over100ms": 0
+          },
+          "simulationStepsPerFrame": {
+            "average": 0.9944444444444445,
+            "max": 1
+          },
+          "fixedStepCpuMs": {
+            "average": 1.31000000031458,
+            "p95": 1.5999999940395355
+          },
+          "presentationCpuMs": {
+            "average": 0.08555555583702193,
+            "p95": 0.20000000298023224
+          },
+          "sampleCount": 180,
+          "rollingWindowCapacity": 300,
+          "statisticsWindow": "rolling 300 frames (or available samples)",
+          "longFrameCounterWindow": "session cumulative since hydration/reset",
+          "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback"
+        },
+        "attribution": {
+          "enabled": true,
+          "timings": {
+            "Core CPU": {
+              "sampleCount": 180,
+              "averageMs": 1.395555556151602,
+              "p95Ms": 1.7000000029802322,
+              "maxMs": 3.1000000089406967
+            },
+            "fixed simulation CPU": {
+              "sampleCount": 180,
+              "averageMs": 1.31000000031458,
+              "p95Ms": 1.5999999940395355,
+              "maxMs": 3
+            },
+            "manual Arcade physics step": {
+              "sampleCount": 180,
+              "averageMs": 1.191666667163372,
+              "p95Ms": 1.4000000059604645,
+              "maxMs": 2.3999999910593033
+            },
+            "logical simulation step": {
+              "sampleCount": 180,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "AutoSimulator.advance": {
+              "sampleCount": 180,
+              "averageMs": 0.04055555545621448,
+              "p95Ms": 0,
+              "maxMs": 1.699999988079071
+            },
+            "determinism checkpoint": {
+              "sampleCount": 180,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "LogicalUnitRegistry.syncVisuals": {
+              "sampleCount": 180,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "faction labels": {
+              "sampleCount": 180,
+              "averageMs": 0.004444444510671827,
+              "p95Ms": 0,
+              "maxMs": 0.5
+            },
+            "faction focus": {
+              "sampleCount": 180,
+              "averageMs": 0.003333333217435413,
+              "p95Ms": 0,
+              "maxMs": 0.10000000894069672
+            },
+            "player presentation updates": {
+              "sampleCount": 180,
+              "averageMs": 0.020000000132454766,
+              "p95Ms": 0.10000000894069672,
+              "maxMs": 0.20000000298023224
+            },
+            "block presentation updates": {
+              "sampleCount": 180,
+              "averageMs": 0.04555555565489663,
+              "p95Ms": 0.10000000894069672,
+              "maxMs": 0.20000000298023224
+            },
+            "validateWorldStateInDev": {
+              "sampleCount": 180,
+              "averageMs": 0.0022222222553359137,
+              "p95Ms": 0,
+              "maxMs": 0.10000000894069672
+            },
+            "history publish/notify": {
+              "sampleCount": 180,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "history UI query derivation": {
+              "sampleCount": 180,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "presentation CPU": {
+              "sampleCount": 180,
+              "averageMs": 0.07500000024835268,
+              "p95Ms": 0.20000000298023224,
+              "maxMs": 0.699999988079071
+            },
+            "frame delta": {
+              "sampleCount": 180,
+              "averageMs": 16.665555555538997,
+              "p95Ms": 18.5,
+              "maxMs": 20.200000002980232
+            },
+            "unattributed frame time": {
+              "sampleCount": 180,
+              "averageMs": 15.269999999387396,
+              "p95Ms": 16.599999994039536,
+              "maxMs": 18.700000002980232
+            }
+          },
+          "statisticsWindow": "rolling 300 frames (or available samples)",
+          "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback",
+          "interpretation": "Nested phases overlap; unattributed = max(0, frame delta - current Core CPU), includes frame pacing/render/React/GC; not measured renderer CPU."
+        },
+        "phases": {
+          "WorldEventSystem.update": {
+            "sampleCount": 6,
+            "averageMs": 0.06666666517655055,
+            "p95Ms": 0.20000000298023224,
+            "maxMs": 0.20000000298023224
+          },
+          "DiplomacySystem.update": {
+            "sampleCount": 6,
+            "averageMs": 0.01666666567325592,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.09999999403953552
+          },
+          "MilitaryCommandRegistry.update": {
+            "sampleCount": 6,
+            "averageMs": 0.033333333830038704,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "WorldEra.observe": {
+            "sampleCount": 6,
+            "averageMs": 0.01666666567325592,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.09999999403953552
+          },
+          "PopulationSystem.update": {
+            "sampleCount": 6,
+            "averageMs": 0.06666666766007741,
+            "p95Ms": 0.29999999701976776,
+            "maxMs": 0.29999999701976776
+          },
+          "aggregate City.updateDefense": {
+            "sampleCount": 6,
+            "averageMs": 0.6999999980131785,
+            "p95Ms": 1.2000000029802322,
+            "maxMs": 1.2000000029802322
+          },
+          "City.updateLoyalty": {
+            "sampleCount": 6,
+            "averageMs": 0.01666666567325592,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.09999999403953552
+          },
+          "City.updateSiege": {
+            "sampleCount": 6,
+            "averageMs": 0.5499999970197678,
+            "p95Ms": 0.6000000089406967,
+            "maxMs": 0.6000000089406967
+          },
+          "City.updateDevastation": {
+            "sampleCount": 6,
+            "averageMs": 0.016666668156782787,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "City.calculateMaxDefense/development": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "City.zone/visual refresh": {
+            "sampleCount": 6,
+            "averageMs": 0.16666666666666666,
+            "p95Ms": 0.29999999701976776,
+            "maxMs": 0.29999999701976776
+          },
+          "Population.active faction scan": {
+            "sampleCount": 6,
+            "averageMs": 0.01666666567325592,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.09999999403953552
+          },
+          "Population.capacity": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Population.growth context": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Population.spawn/runtime creation": {
+            "sampleCount": 6,
+            "averageMs": 0.033333333830038704,
+            "p95Ms": 0.20000000298023224,
+            "maxMs": 0.20000000298023224
+          },
+          "Population.user id lookup": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Population.makeUser": {
+            "sampleCount": 6,
+            "averageMs": 0.033333333830038704,
+            "p95Ms": 0.20000000298023224,
+            "maxMs": 0.20000000298023224
+          },
+          "WorldEvent.expired effects": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.observeWorldGoal": {
+            "sampleCount": 6,
+            "averageMs": 0.033333333830038704,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "WorldEvent.checkStateFormation": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.applyProvisionalDissolutionPressure": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.checkEmperorProclamation": {
+            "sampleCount": 6,
+            "averageMs": 0.03333333134651184,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.09999999403953552
+          },
+          "WorldEvent.checkRestorations": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.checkEmpireSplit": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.checkCityFounding": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.triggerRandomEvent": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "FactionEffects.update": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "DynastyRegistry.update": {
+            "sampleCount": 6,
+            "averageMs": 0.13333334028720856,
+            "p95Ms": 0.20000000298023224,
+            "maxMs": 0.20000000298023224
+          },
+          "Military honors": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Military nobility": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldExiles.update": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "FactionSnapshots.observe": {
+            "sampleCount": 6,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldHistory.observeWorld": {
+            "sampleCount": 6,
+            "averageMs": 0.01666666567325592,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.09999999403953552
+          },
+          "debug/LongRun diagnostics": {
+            "sampleCount": 6,
+            "averageMs": 0.049999999503294625,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "total fixed/month step": {
+            "sampleCount": 6,
+            "averageMs": 1.133333332836628,
+            "p95Ms": 1.5999999940395355,
+            "maxMs": 1.5999999940395355
+          },
+          "calculateTerritoryMetrics (all callers)": {
+            "sampleCount": 300,
+            "averageMs": 0.0006666666766007741,
+            "p95Ms": 0,
+            "maxMs": 0.10000000894069672
+          }
+        },
+        "entities": {
+          "logicalUsers": 191,
+          "rootPlayers": 191,
+          "playerChildren": 0,
+          "activePhaserPlayers": 191,
+          "missingTextureKeys": [],
+          "playerTree": {
+            "rootCount": 191,
+            "reachablePlayerCount": 191,
+            "childEdgeCount": 0,
+            "maxDepth": 0,
+            "revisitCount": 0
+          },
+          "avatarRendererMode": "plain",
+          "noFaceSource": "SVG",
+          "noFaceTextureExists": true,
+          "starTextureExists": true,
+          "rendererType": "Canvas"
+        },
+        "scope": "actual offscreen Electron Canvas loop; no React sidebar mounted; not user Chrome FPS"
+      },
+      {
+        "target": 200,
+        "populationAtStart": 190,
+        "populationAtEnd": 189,
+        "speed": 4,
+        "worldMonth": 540,
+        "averageFPS": 60.01600426774512,
+        "frame": {
+          "renderFrameCount": 180,
+          "frameDeltaMs": {
+            "current": 16.700000002980232,
+            "average": 16.66222222223878,
+            "p95": 18.600000008940697,
+            "max": 26.200000002980232
+          },
+          "longFrames": {
+            "over25ms": 1,
+            "over33ms": 0,
+            "over50ms": 0,
+            "over100ms": 0
+          },
+          "simulationStepsPerFrame": {
+            "average": 3.938888888888889,
+            "max": 5
+          },
+          "fixedStepCpuMs": {
+            "average": 4.162222222238779,
+            "p95": 5.299999997019768
+          },
+          "presentationCpuMs": {
+            "average": 0.10111111187272602,
+            "p95": 0.20000000298023224
+          },
+          "sampleCount": 180,
+          "rollingWindowCapacity": 300,
+          "statisticsWindow": "rolling 300 frames (or available samples)",
+          "longFrameCounterWindow": "session cumulative since hydration/reset",
+          "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback"
+        },
+        "attribution": {
+          "enabled": true,
+          "timings": {
+            "Core CPU": {
+              "sampleCount": 180,
+              "averageMs": 4.263333334111505,
+              "p95Ms": 5.4000000059604645,
+              "maxMs": 23
+            },
+            "fixed simulation CPU": {
+              "sampleCount": 180,
+              "averageMs": 4.162222222238779,
+              "p95Ms": 5.299999997019768,
+              "maxMs": 22.299999997019768
+            },
+            "manual Arcade physics step": {
+              "sampleCount": 180,
+              "averageMs": 3.733333333498902,
+              "p95Ms": 4.5,
+              "maxMs": 7.000000014901161
+            },
+            "logical simulation step": {
+              "sampleCount": 180,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "AutoSimulator.advance": {
+              "sampleCount": 180,
+              "averageMs": 0.2955555555721124,
+              "p95Ms": 1,
+              "maxMs": 18
+            },
+            "determinism checkpoint": {
+              "sampleCount": 180,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "LogicalUnitRegistry.syncVisuals": {
+              "sampleCount": 180,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "faction labels": {
+              "sampleCount": 180,
+              "averageMs": 0.008888888938559426,
+              "p95Ms": 0,
+              "maxMs": 0.5
+            },
+            "faction focus": {
+              "sampleCount": 180,
+              "averageMs": 0.009999999817874696,
+              "p95Ms": 0.09999999403953552,
+              "maxMs": 0.19999998807907104
+            },
+            "player presentation updates": {
+              "sampleCount": 180,
+              "averageMs": 0.023333333681027094,
+              "p95Ms": 0.10000000894069672,
+              "maxMs": 0.10000000894069672
+            },
+            "block presentation updates": {
+              "sampleCount": 180,
+              "averageMs": 0.038888889137241575,
+              "p95Ms": 0.10000000894069672,
+              "maxMs": 0.20000000298023224
+            },
+            "validateWorldStateInDev": {
+              "sampleCount": 180,
+              "averageMs": 0.0027777778605620066,
+              "p95Ms": 0,
+              "maxMs": 0.20000000298023224
+            },
+            "history publish/notify": {
+              "sampleCount": 180,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "history UI query derivation": {
+              "sampleCount": 180,
+              "averageMs": 0,
+              "p95Ms": 0,
+              "maxMs": 0
+            },
+            "presentation CPU": {
+              "sampleCount": 180,
+              "averageMs": 0.08555555608537461,
+              "p95Ms": 0.20000000298023224,
+              "maxMs": 0.5
+            },
+            "frame delta": {
+              "sampleCount": 180,
+              "averageMs": 16.66222222223878,
+              "p95Ms": 18.600000008940697,
+              "maxMs": 26.200000002980232
+            },
+            "unattributed frame time": {
+              "sampleCount": 180,
+              "averageMs": 12.453333332555161,
+              "p95Ms": 14.700000002980232,
+              "maxMs": 21.600000008940697
+            }
+          },
+          "statisticsWindow": "rolling 300 frames (or available samples)",
+          "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback",
+          "interpretation": "Nested phases overlap; unattributed = max(0, frame delta - current Core CPU), includes frame pacing/render/React/GC; not measured renderer CPU."
+        },
+        "phases": {
+          "WorldEventSystem.update": {
+            "sampleCount": 27,
+            "averageMs": 0.04814814693397946,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "DiplomacySystem.update": {
+            "sampleCount": 27,
+            "averageMs": 0.7666666667770456,
+            "p95Ms": 9.200000002980232,
+            "maxMs": 11.400000005960464
+          },
+          "MilitaryCommandRegistry.update": {
+            "sampleCount": 27,
+            "averageMs": 0.17407407418445306,
+            "p95Ms": 1.6000000089406967,
+            "maxMs": 2.0999999940395355
+          },
+          "WorldEra.observe": {
+            "sampleCount": 27,
+            "averageMs": 0.014814814483677899,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.10000000894069672
+          },
+          "PopulationSystem.update": {
+            "sampleCount": 27,
+            "averageMs": 0.04444444510671827,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.29999999701976776
+          },
+          "aggregate City.updateDefense": {
+            "sampleCount": 27,
+            "averageMs": 0.6111111111111112,
+            "p95Ms": 1.1000000089406967,
+            "maxMs": 1.2000000029802322
+          },
+          "City.updateLoyalty": {
+            "sampleCount": 27,
+            "averageMs": 0.011111112104521858,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.20000001788139343
+          },
+          "City.updateSiege": {
+            "sampleCount": 27,
+            "averageMs": 0.5074074058621018,
+            "p95Ms": 0.7999999970197678,
+            "maxMs": 1.2000000029802322
+          },
+          "City.updateDevastation": {
+            "sampleCount": 27,
+            "averageMs": 0.0074074069658915205,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.09999999403953552
+          },
+          "City.calculateMaxDefense/development": {
+            "sampleCount": 27,
+            "averageMs": 0.011111111552626998,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.20000001788139343
+          },
+          "City.zone/visual refresh": {
+            "sampleCount": 27,
+            "averageMs": 0.1111111127667957,
+            "p95Ms": 0.29999999701976776,
+            "maxMs": 0.30000002682209015
+          },
+          "Population.active faction scan": {
+            "sampleCount": 27,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Population.capacity": {
+            "sampleCount": 27,
+            "averageMs": 0.003703704034840619,
+            "p95Ms": 0,
+            "maxMs": 0.10000000894069672
+          },
+          "Population.growth context": {
+            "sampleCount": 27,
+            "averageMs": 0.011111112104521858,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "Population.spawn/runtime creation": {
+            "sampleCount": 27,
+            "averageMs": 0.01111111100073214,
+            "p95Ms": 0,
+            "maxMs": 0.29999999701976776
+          },
+          "Population.user id lookup": {
+            "sampleCount": 27,
+            "averageMs": 0.0037037034829457602,
+            "p95Ms": 0,
+            "maxMs": 0.09999999403953552
+          },
+          "Population.makeUser": {
+            "sampleCount": 27,
+            "averageMs": 0.007407407517786379,
+            "p95Ms": 0,
+            "maxMs": 0.20000000298023224
+          },
+          "WorldEvent.expired effects": {
+            "sampleCount": 27,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.observeWorldGoal": {
+            "sampleCount": 27,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.checkStateFormation": {
+            "sampleCount": 27,
+            "averageMs": 0.02222222200146428,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "WorldEvent.applyProvisionalDissolutionPressure": {
+            "sampleCount": 27,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.checkEmperorProclamation": {
+            "sampleCount": 27,
+            "averageMs": 0.01111111044883728,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.09999999403953552
+          },
+          "WorldEvent.checkRestorations": {
+            "sampleCount": 27,
+            "averageMs": 0.0037037034829457602,
+            "p95Ms": 0,
+            "maxMs": 0.09999999403953552
+          },
+          "WorldEvent.checkEmpireSplit": {
+            "sampleCount": 27,
+            "averageMs": 0.003703704034840619,
+            "p95Ms": 0,
+            "maxMs": 0.10000000894069672
+          },
+          "WorldEvent.checkCityFounding": {
+            "sampleCount": 27,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.triggerRandomEvent": {
+            "sampleCount": 27,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "FactionEffects.update": {
+            "sampleCount": 27,
+            "averageMs": 0.0037037034829457602,
+            "p95Ms": 0,
+            "maxMs": 0.09999999403953552
+          },
+          "DynastyRegistry.update": {
+            "sampleCount": 27,
+            "averageMs": 0.16666666721856152,
+            "p95Ms": 0.5,
+            "maxMs": 1
+          },
+          "Military honors": {
+            "sampleCount": 27,
+            "averageMs": 0.02222222200146428,
+            "p95Ms": 0.29999999701976776,
+            "maxMs": 0.29999999701976776
+          },
+          "Military nobility": {
+            "sampleCount": 27,
+            "averageMs": 0.05555555555555555,
+            "p95Ms": 0.4000000059604645,
+            "maxMs": 1.0999999940395355
+          },
+          "WorldExiles.update": {
+            "sampleCount": 27,
+            "averageMs": 0.011111111552626998,
+            "p95Ms": 0.10000000894069672,
+            "maxMs": 0.10000000894069672
+          },
+          "FactionSnapshots.observe": {
+            "sampleCount": 27,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldHistory.observeWorld": {
+            "sampleCount": 27,
+            "averageMs": 0.0037037034829457602,
+            "p95Ms": 0,
+            "maxMs": 0.09999999403953552
+          },
+          "debug/LongRun diagnostics": {
+            "sampleCount": 27,
+            "averageMs": 0.018518517966623658,
+            "p95Ms": 0.09999999403953552,
+            "maxMs": 0.10000000894069672
+          },
+          "total fixed/month step": {
+            "sampleCount": 27,
+            "averageMs": 2.051851851520715,
+            "p95Ms": 13.799999997019768,
+            "maxMs": 17.900000005960464
+          },
+          "PeacefulReunification candidate scan": {
+            "sampleCount": 2,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "StrategicUnion candidate scan": {
+            "sampleCount": 2,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "debug/StrategicUnion blocker diagnostics": {
+            "sampleCount": 2,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "PeacefulSubmission.update": {
+            "sampleCount": 2,
+            "averageMs": 1.0500000044703484,
+            "p95Ms": 1.1000000089406967,
+            "maxMs": 1.1000000089406967
+          },
+          "calculateTerritoryMetrics (all callers)": {
+            "sampleCount": 300,
+            "averageMs": 0.0010000000397364299,
+            "p95Ms": 0,
+            "maxMs": 0.10000000894069672
+          }
+        },
+        "entities": {
+          "logicalUsers": 189,
+          "rootPlayers": 189,
+          "playerChildren": 0,
+          "activePhaserPlayers": 189,
+          "missingTextureKeys": [],
+          "playerTree": {
+            "rootCount": 189,
+            "reachablePlayerCount": 189,
+            "childEdgeCount": 0,
+            "maxDepth": 0,
+            "revisitCount": 0
+          },
+          "avatarRendererMode": "plain",
+          "noFaceSource": "SVG",
+          "noFaceTextureExists": true,
+          "starTextureExists": true,
+          "rendererType": "Canvas"
+        },
+        "scope": "actual offscreen Electron Canvas loop; no React sidebar mounted; not user Chrome FPS"
+      }
+    ],
+    "missing": [],
+    "scope": "natural first fifty-year checkpoints; sampled population band ±12; real Phaser loop 3.5 seconds per speed, no screenshots"
+  }
+]

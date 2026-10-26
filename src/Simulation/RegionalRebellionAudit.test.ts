@@ -15,3 +15,8 @@ it("keeps the ordinary-popular funnel separate from splits and resets all sessio
   expect(a.snapshot().popularFunnel.successes).toBe(0);expect(a.snapshot().split).toBe(1);expect(a.summary()).toContain("不含帝国分裂");
   a.reset(120);expect(a.snapshot().popularFunnel.political).toBe(0);expect(a.snapshot().popularFailures).toEqual({});
 });
+it('keeps ordinary and imperial survival separate and reports unique inspected cities without affecting outcomes',()=>{
+ const a=new RegionalRebellionAudit();a.cityChecked('c');a.cityChecked('c');a.created({name:'ordinary'} as any,0,'popular');a.created({name:'imperial'} as any,0,'split');
+ a.observe(12,[{name:'ordinary',status:'ACTIVE'},{name:'imperial',status:'ACTIVE'}] as any);a.observe(24,[{name:'imperial',status:'ACTIVE'}] as any);a.observe(60,[{name:'imperial',status:'ACTIVE'}] as any);
+ expect(a.snapshot()).toMatchObject({distinctCheckedCities:1,survival:{popular:{alive12:1,alive60:0,matured60:1},split:{alive12:1,alive60:1,matured60:1}}});a.reset(100);expect(a.snapshot().distinctCheckedCities).toBe(0);
+});

@@ -1216,6 +1216,8 @@ it.each(["siege-recovery", "split", "popular", "arcade-popular"])("regional %s: 
   const { default: Population } = await import("../Simulation/PopulationSystem");
   const { PopulationTransitionAudit } = await import("../Simulation/PopulationTransitionAudit");
   class Group {
+    getChildren(){return this.children.entries;}
+    clear(){this.children.entries=[];this.children.size=0;}
     children = { size: 0, entries: [] as any[] };
     add(v:any) { if(!this.children.entries.includes(v))this.children.entries.push(v);this.children.size=this.children.entries.length; }
     remove(v:any) { this.children.entries=this.children.entries.filter(e=>e!==v);this.children.size=this.children.entries.length; }

@@ -813,7 +813,7 @@ export default class WorldEventSystem {
       if (city.destroyed) continue;
       diagnostics.cityChecks++;
       const rd=this.regional.counts;rd.cityChecks++;
-      const pf=this.regional.popularFunnel;pf.cityChecks++;
+      const pf=this.regional.popularFunnel;pf.cityChecks++;this.regional.cityChecked(city.id);
       const politicalBeforeFilters=hasPopularPoliticalCrisis(city,year,Game.Core?.totalCells??1);
       if(politicalBeforeFilters)pf.political++;else {const reason=popularPoliticalCrisis(city,year,Game.Core?.totalCells??1).reason;if(reason==="LOYALTY")pf.loyaltyBlocked++;else pf.crisisBlocked++;}
       const owner = city.ownerTeam;
@@ -959,10 +959,10 @@ export default class WorldEventSystem {
         ...(originalPath ? [{chance,legacyChance:chance,local:false,restoration:founder?.status==="EXILED" && FactionRegistry.canRestoreFaction(founder,year),value:{historical:undefined as typeof historical[number]|undefined}}] : []),
         ...historical.map(row=>({chance:row.chance,legacyChance:row.legacyAvailable ? row.legacyChance! : 0,local:Boolean(row.supporter),resourceBacked:true,restoration:true,value:{historical:row as typeof historical[number]|undefined}})),
       ];
-      const riskDistribution=getLocalResponseDrawDistribution(slots,warTornPath?.03:.09);
+      const riskDistribution=getLocalResponseDrawDistribution(slots,warTornPath&&!popularSlot?.03:.09);
       // Same opportunity/state, previous resource policy. Observation only; no draw.
       const baselineDistribution=getLocalResponseDrawDistribution(slots.map(slot=>({ ...slot, resourceBacked:false,
-        chance:slot.local ? slot.chance : slot.legacyChance })),warTornPath?.03:.09);
+        chance:slot.local ? slot.chance : slot.legacyChance })),warTornPath&&!popularSlot?.03:.09);
       diagnostics.baselineExpectedRestorations += baselineDistribution.probabilities.reduce((sum,p,i)=>sum+(slots[i].restoration?p:0),0);
       if(riskDistribution.extraChance>baselineDistribution.extraChance) diagnostics.resourceResponseChecks++;
       const expectedRestoration=riskDistribution.probabilities.reduce((sum,p,i)=>sum+(slots[i].restoration?p:0),0);
@@ -985,7 +985,7 @@ export default class WorldEventSystem {
         if(local.recentOpportunities.length>3) local.recentOpportunities.shift();
       }
       if (historical.length) {
-        const selected = selectLocalResponseOpportunity(slots,draw,warTornPath?.03:.09);
+        const selected = selectLocalResponseOpportunity(slots,draw,warTornPath&&!popularSlot?.03:.09);
         if (!selected) {rd.drawFailed++;if(popularSlot)pf.misses++;continue;}
         const row = selected.historical;
         if (row) {
@@ -1017,9 +1017,9 @@ export default class WorldEventSystem {
           diagnostics.failures++; this.restorationBlock("执行未成功"); continue;
         }
         // The selected legacy slot retains its original execution chain and random draw.
-      } else if (draw > chance) {rd.drawFailed++;if(popularSlot)pf.misses++;continue;}
+      } else if (draw > (popularSlot?(riskDistribution.probabilities[0]??0):chance)) {rd.drawFailed++;if(popularSlot)pf.misses++;continue;}
       if(popularSlot)pf.hits++;
-      if (warTornPath || !founder) continue;
+      if ((warTornPath&&!newPopular) || !founder) continue;
 
       if (!founder.isDie && !newPopular) {
         if (city.revoltTo(founder, year)) {

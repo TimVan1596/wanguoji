@@ -1,0 +1,27 @@
+[
+  {
+    "seed": "royal-military-z11",
+    "checks": [
+      "fresh real occupation cannot immediately use the new crisis path",
+      "mature repeated occupation has real local resident support without loyalty rewriting",
+      "ordinary candidate reaches exactly its original shared political lottery and can fail",
+      "new reachable crisis still obeys the real founding transaction failure",
+      "founding failure restores population, identity, city, country and history except attempted original RNG: {\"matched\":true,\"differenceCount\":0,\"differences\":[],\"subsystemCounts\":{\"world\":0,\"factions\":0,\"blocks\":0,\"cities\":0,\"users\":0,\"units\":0,\"dynasties\":0,\"worldHistory\":0,\"worldEra\":0,\"factionLifetime\":0,\"factionSnapshots\":0,\"worldRemnants\":0,\"worldExiles\":0,\"factionEffects\":0,\"populationSystem\":0,\"registries\":0,\"worldEventSystem\":0,\"diplomacy\":0,\"metadata\":0}}",
+      "the original production city check can found a real ordinary rebellion: {\"calls\":15,\"owner\":\"云中义军\",\"old\":\"赵\",\"kind\":\"REBEL\",\"loyalty\":35,\"devastation\":56,\"funnel\":{\"cityChecks\":13,\"political\":2,\"loyaltyBlocked\":11,\"crisisBlocked\":0,\"captureGrace\":0,\"cooldown\":0,\"capacity\":0,\"populationScans\":2,\"validUsers\":14,\"identityBlocked\":2,\"geographyBlocked\":8,\"discontentBlocked\":3,\"supporters\":3,\"noSupport\":0,\"candidates\":2,\"priorityBlocked\":0,\"draws\":2,\"expectedHits\":0.10959999999999999,\"hits\":1,\"misses\":1,\"historicalSelected\":0,\"founderRestored\":0,\"failures\":0,\"successes\":1}}",
+      "founder and supporters transfer once, with no new leader body or formal kingdom privilege",
+      "new ordinary political path resumes twelve real months deterministically",
+      "resaved ordinary founder reads again with the same unique identity",
+      "controlled defense has a real living sovereign, kin and a sufficiently young resident",
+      "real defender begins as an ordinary one-person colonel",
+      "production battle actually repulses attackers and grants no city capture",
+      "eight-year two-body defender gains real political eligibility with original promotion and nearby recruitment",
+      "real defender assessment recognizes defense without inventing a capture",
+      "new defensive qualification creates no independent peaceful coup",
+      "real capital losses create the original court political opportunity for the defender",
+      "existing single political transaction persists the actual defender evidence",
+      "existing local secession qualification accepts the same verified defender, with actual willing followers",
+      "real defensive general secession preserves one identity and population, ending the original command"
+    ],
+    "scope": "controlled actual ordinary failure/success, resident rollback, defensive court participation and military secession; not a natural frequency estimate"
+  }
+]

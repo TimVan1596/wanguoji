@@ -1,3 +1,11 @@
+import {createElement,Profiler} from 'react';
+import {createRoot} from 'react-dom/client';
+import {flushSync} from 'react-dom';
+import {Provider} from 'react-redux';
+import {store} from '../../store';
+import {setTeams,setWorldYear,setSelectedFactionName,setFactionDetailTab} from '../../store/rootSlice';
+import FactionDetails from '../../UI/Components/FactionDetails';
+import Military from '../../Politics/MilitaryCommandRegistry';
 import {createNaturalCore} from './NaturalCoreHarness';
 import {exportWorldSave} from '../../Persistence/WorldSaveExporter';
 import {hydrateWorldSave} from '../../Persistence/WorldSaveHydrator';
@@ -13,13 +21,17 @@ export async function runRuntimePopulationPerformance(seed='regional-1'){
    if(m===600)break;for(let i=0;i<30;i++)(core as any).advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit('postupdate');if(m%120===0)await new Promise(r=>setTimeout(r,0));
   }
   core.setWorldRunning(false);
-  for(const [target,save]of snapshots)for(const speed of [1,4]){
-   hydrateWorldSave(core,structuredClone(save));core.simulator!.setSpeed(speed);core.setWorldRunning(true);
+  for(const [target,save]of snapshots)for(const speed of [1,4])for(const sidebar of target===200?[false,true]:[false]){
+   hydrateWorldSave(core,structuredClone(save));
+   const host=document.createElement('div');document.body.append(host);const root=createRoot(host);let commits:number[]=[];
+   if(sidebar){const team=[...core.teams].sort((a,b)=>Military.getPeople().filter(p=>p.appointments.some(x=>x.factionId===b.name)).length-Military.getPeople().filter(p=>p.appointments.some(x=>x.factionId===a.name)).length)[0];flushSync(()=>{store.dispatch(setTeams([...core.teams]));store.dispatch(setWorldYear(core.simulator!.year));store.dispatch(setSelectedFactionName(team.name));store.dispatch(setFactionDetailTab('military'));root.render(createElement(Provider,{store,children:createElement(Profiler,{id:'actual-military-sidebar',onRender:(_id,_phase,duration)=>{commits.push(duration);},children:createElement(FactionDetails)})}));});}
+   core.simulator!.setSpeed(speed);core.setWorldRunning(true);
    game.loop.start(game.loop.callback);await new Promise(r=>setTimeout(r,500));
-   (core as any).runtimePerformance.reset();frameAttribution.reset();
+   (core as any).runtimePerformance.reset();frameAttribution.reset();commits=[];
    await new Promise(r=>setTimeout(r,3000));game.loop.stop();core.setWorldRunning(false);
    const frame=(core as any).runtimePerformance.snapshot(),attribution=frameAttribution.snapshot(),phases=core.getStepPerformanceDiagnostics();
-   results.push({target,populationAtStart:save.users.length,populationAtEnd:population(),speed,worldMonth:save.world.worldMonth,averageFPS:frame.frameDeltaMs.average?1000/frame.frameDeltaMs.average:null,frame,attribution,phases,entities:core.getRuntimeUnitDiagnostics(),scope:'actual offscreen Electron Canvas loop; no React sidebar mounted; not user Chrome FPS'});
+   results.push({sidebar:sidebar?'military':'none',react:{commits:commits.length,totalActualDurationMs:commits.reduce((n,x)=>n+x,0),maxActualDurationMs:Math.max(0,...commits)},target,populationAtStart:save.users.length,populationAtEnd:population(),speed,worldMonth:save.world.worldMonth,averageFPS:frame.frameDeltaMs.average?1000/frame.frameDeltaMs.average:null,frame,attribution,phases,entities:core.getRuntimeUnitDiagnostics(),scope:'actual offscreen Electron Canvas loop; React Profiler only for the explicit military sidebar case; not user Chrome FPS or GPU render CPU'});
+   flushSync(()=>root.unmount());host.remove();
   }
   return {seed,results,missing:[100,150,200].filter(n=>!snapshots.has(n)),scope:'natural first fifty-year checkpoints; sampled population band ±12; real Phaser loop 3.5 seconds per speed, no screenshots'};
  }finally{game.loop.stop();game.destroy(true);}
