@@ -115,3 +115,9 @@ it('revoked titles lose only their existing noble selection increment, without e
  p.honorHistory=[{kind:'REVOKED',factionId:'qin',epochFounderId:'old',month:72} as any];const lost=deriveMilitaryPoliticalInfluence(i).candidates[0];expect(lost.strength).toBe(honored.strength);expect(lost.nobility).toBeUndefined();expect(lost.finalPoliticalWeight).toBeUndefined();expect(worldRandom.exportState()).toEqual(rng);
  p.status='DEAD';p.deathMonth=72;expect(deriveMilitaryPoliticalInfluence(i).candidates).toEqual([]);
 });
+it('qualifies a two-body same-country eight-year defender, never orders or unverified repulses',()=>{
+ const i=fixture();i.worldMonth=96;i.users=i.users.slice(0,2);i.formations[0].memberUnitIds=['unit-1','unit-2'];const p=i.people[0];
+ const ev:any[]=[{id:'s',type:'siege-started',year:80,cityId:'x',actorFactionId:'enemy',targetFactionId:'qin',metadata:{battleId:'battle'}},{id:'e',type:'siege-ended',year:86,cityId:'x',actorFactionId:'enemy',targetFactionId:'qin',metadata:{battleId:'battle',reason:'REPULSED',defenders:2}},{id:'d',type:'siege-defended',year:86,cityId:'x',actorFactionId:'qin',targetFactionId:'enemy',metadata:{battleId:'battle',personId:p.personId,commandId:i.formations[0].commandId,defenders:2}}];
+ i.events=ev;expect(deriveMilitaryPoliticalInfluence(i).candidates[0]).toMatchObject({unitCount:2,defenseEventIds:['d'],capturedEventIds:[]});
+ i.worldMonth=95;expect(deriveMilitaryPoliticalInfluence(i).candidates).toEqual([]);i.worldMonth=96;ev[1].metadata.reason='CONTACT_ENDED';expect(deriveMilitaryPoliticalInfluence(i).candidates).toEqual([]);ev[1].metadata.reason='REPULSED';ev[2].metadata.commandId='someone-else';expect(deriveMilitaryPoliticalInfluence(i).candidates).toEqual([]);
+});

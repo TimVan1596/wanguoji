@@ -842,7 +842,7 @@ export default class WorldEventSystem {
       if (!politicalBeforeFilters && warTornPath && !warEvidence?.eligible) {
         local.cityBlocked += localHistoryCount; this.restorationBlock("忠诚度高于叛乱门槛且无战乱旧地机会"); continue;
       }
-      if (warTornPath) diagnostics.warTornCityChecks++; else diagnostics.lowLoyaltyCityChecks++;
+      if (warTornPath&&warEvidence?.eligible) diagnostics.warTornCityChecks++; else if(!warTornPath) diagnostics.lowLoyaltyCityChecks++;
       const cityBlocks: string[] = [];
       if (city.isInCaptureGrace(year)) {cityBlocks.push("占领保护期");if(politicalBeforeFilters)pf.captureGrace++;}
       const lastRebellionYear = this.cityRebellionYears[city.id];
