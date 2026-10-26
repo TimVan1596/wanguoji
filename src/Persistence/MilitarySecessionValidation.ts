@@ -1,3 +1,4 @@
+import {militaryPoliticalDefense} from '../Politics/MilitaryPoliticalInfluence';
 import type {WorldSaveV1} from "./WorldSaveSchema";
 import {deriveMilitaryLifeSchedule} from "../Politics/MilitaryLifeRules";
 import {deriveMilitaryCareer} from "../Politics/MilitaryCareerEvidence";
@@ -36,8 +37,8 @@ export function validateMilitarySecessions(save:WorldSaveV1){
     units.add(u?.unitId);users.add(u?.userId);
    }
    if(e.participants[0]?.userId!==p!.sourceUserId||e.participants[0]?.bornMonth!==p!.bornMonth||e.participants[0]?.name!==p!.name)valid=false;
-   try{const career=deriveMilitaryCareer(p!,state.formations,events,e.worldMonth);
-   if(career.serviceMonths!==e.serviceMonths||!Array.isArray(e.capturedEventIds)||JSON.stringify([...career.capturedEventIds].sort())!==JSON.stringify([...e.capturedEventIds].sort())||!militaryPoliticalStrength(e.serviceMonths,e.originalMemberUnitIds.length,e.capturedEventIds.length).eligible)valid=false;}catch{valid=false;}
+   try{const career=deriveMilitaryCareer(p!,state.formations,events,e.worldMonth),defense=militaryPoliticalDefense(p!,state.formations,events,e.worldMonth,i.sourceFactionId);
+   if(career.serviceMonths!==e.serviceMonths||!Array.isArray(e.capturedEventIds)||JSON.stringify([...career.capturedEventIds].sort())!==JSON.stringify([...e.capturedEventIds].sort())||JSON.stringify(e.defenseEventIds??[])!==JSON.stringify(defense.eventIds)||!militaryPoliticalStrength(e.serviceMonths,e.originalMemberUnitIds.length,e.capturedEventIds.length,defense.eventIds.length,defense.localServiceMonths).eligible)valid=false;}catch{valid=false;}
    const founding=events.filter(x=>x.type==="empire-split"&&x.metadata?.foundingRulerId===r.rulerId);
    if(founding.length!==1||founding[0].metadata?.militaryPersonId!==p!.personId||founding[0].metadata?.militarySplitEvidence!==JSON.stringify(e)||founding[0].metadata?.transferredPopulation!==e.participants.length||founding[0].metadata?.externalPopulation!==0||founding[0].targetFactionId!==i.sourceFactionId)valid=false;
   }

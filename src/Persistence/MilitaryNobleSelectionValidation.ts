@@ -1,3 +1,4 @@
+import {militaryPoliticalDefense} from '../Politics/MilitaryPoliticalInfluence';
 import type {WorldSaveV1} from './WorldSaveSchema';
 import type {WorldEvent} from '../History/WorldHistory';
 import type {Dynasty} from '../Politics/Dynasty';
@@ -20,8 +21,8 @@ export function validNoblePoliticalSelection(s:MilitaryPoliticalParticipant,save
   const office=a.officeHistory?.filter(g=>g.month<=at&&ids.has(g.eventId)).at(-1)?.office;
   if(!office||!Array.isArray(q.memberUnitIds)||q.unitCount!==q.memberUnitIds.length||q.unitCount<1||q.unitCount>MILITARY_FORMATION_CAPACITY[office]||!q.memberUnitIds.includes(q.commanderUnitId)||q.memberUnitIds.some(id=>typeof id!=='string'||!id||units.has(id))||new Set(q.memberUnitIds).size!==q.unitCount)return false;
   people.add(p.personId);q.memberUnitIds.forEach(id=>units.add(id));
-  const career=deriveMilitaryCareer(p,state.formations,before,at),strength=militaryPoliticalStrength(career.serviceMonths,q.unitCount,career.verifiedCaptures),g=grantFor(p),weight=q.strength*(1+(g?(NOBLE_RANKS.indexOf(g.rank)+1)*.05:0));
-  if(!strength.eligible||q.strength!==strength.strength||q.serviceMonths!==career.serviceMonths||JSON.stringify(q.capturedEventIds)!==JSON.stringify(career.capturedEventIds.slice().sort())||q.basePoliticalWeight!==q.strength||q.finalPoliticalWeight!==weight||JSON.stringify(q.nobility)!==JSON.stringify(g?{eventId:g.eventId,rank:g.rank,countryName:g.countryName}:undefined))return false;
+  const career=deriveMilitaryCareer(p,state.formations,before,at),defense=militaryPoliticalDefense(p,state.formations,before,at,factionId),strength=militaryPoliticalStrength(career.serviceMonths,q.unitCount,career.verifiedCaptures,defense.eventIds.length,defense.localServiceMonths),g=grantFor(p),weight=q.strength*(1+(g?(NOBLE_RANKS.indexOf(g.rank)+1)*.05:0));
+  if(JSON.stringify(q.defenseEventIds??[])!==JSON.stringify(defense.eventIds)||!strength.eligible||q.strength!==strength.strength||q.serviceMonths!==career.serviceMonths||JSON.stringify(q.capturedEventIds)!==JSON.stringify(career.capturedEventIds.slice().sort())||q.basePoliticalWeight!==q.strength||q.finalPoliticalWeight!==weight||JSON.stringify(q.nobility)!==JSON.stringify(g?{eventId:g.eventId,rank:g.rank,countryName:g.countryName}:undefined))return false;
  }
  const ordered=[...proof.candidates].sort(compareMilitaryStanding),first=ordered[0];
  const {nobleSelection:_,...participant}=s;

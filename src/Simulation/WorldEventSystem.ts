@@ -1,5 +1,5 @@
 import {RegionalRebellionAudit} from "./RegionalRebellionAudit";
-import {assessPopularSupport,hasPopularPoliticalCrisis} from "./PopularRebellionSupport";
+import {assessPopularSupport,hasPopularPoliticalCrisis,popularPoliticalCrisis} from "./PopularRebellionSupport";
 import { getPopulationCapacity } from "./PopulationSystem";
 import { getLocalRestorationClaimant, assessLocalRestorationPopulation } from "./LocalRestorationSupport";
 import { deriveRestorationTenureEvidence } from "./RestorationTenureEvidence";
@@ -815,7 +815,7 @@ export default class WorldEventSystem {
       const rd=this.regional.counts;rd.cityChecks++;
       const pf=this.regional.popularFunnel;pf.cityChecks++;
       const politicalBeforeFilters=hasPopularPoliticalCrisis(city,year,Game.Core?.totalCells??1);
-      if(politicalBeforeFilters)pf.political++;
+      if(politicalBeforeFilters)pf.political++;else {const reason=popularPoliticalCrisis(city,year,Game.Core?.totalCells??1).reason;if(reason==="LOYALTY")pf.loyaltyBlocked++;else pf.crisisBlocked++;}
       const owner = city.ownerTeam;
       const founder = city.founderTeam;
       if (!owner) continue;
@@ -832,14 +832,14 @@ export default class WorldEventSystem {
         this.observeLocal("users",population.observedUnitIds);
       }
       const warTornPath = city.loyalty > REBELLION_LOYALTY_THRESHOLD;
-      if (warTornPath && (city.loyalty >= 40 || city.devastation < 70)) {
+      if (!politicalBeforeFilters && warTornPath && (city.loyalty >= 40 || city.devastation < 70)) {
         rd.loyaltyBlocked++;local.cityBlocked += localHistoryCount; this.restorationBlock("忠诚度高于叛乱门槛且无战乱旧地机会"); continue;
       }
       const ownerStability = getFactionStability(owner) ?? 100;
       // High-loyalty cities never enter the original revolt/new-rebel path.
       const warEvidence = warTornPath && city.loyalty < 40 && city.devastation >= 70
         ? getWarTornCityEvidence(city, year, ownerStability) : undefined;
-      if (warTornPath && !warEvidence?.eligible) {
+      if (!politicalBeforeFilters && warTornPath && !warEvidence?.eligible) {
         local.cityBlocked += localHistoryCount; this.restorationBlock("忠诚度高于叛乱门槛且无战乱旧地机会"); continue;
       }
       if (warTornPath) diagnostics.warTornCityChecks++; else diagnostics.lowLoyaltyCityChecks++;
@@ -851,7 +851,7 @@ export default class WorldEventSystem {
 
       const historical: Array<{ team: Team; basis: RestorationBasis; heldMonths: number; chance: number; legacyChance?:number; legacyAvailable?:boolean; supporter?: User }> = [];
       let localUsers: User[] | undefined;
-      if (exiled.length) {
+      if (exiled.length && (!warTornPath||warEvidence?.eligible)) {
         if (!rules) this.restorationBlock("城市历史不足或矛盾");
         for (const rule of rules ?? []) {
           const team = teamsById.get(rule.factionId);
@@ -883,13 +883,13 @@ export default class WorldEventSystem {
           if (basis === "FORMER_CAPITAL") diagnostics.capitalEligible++; else diagnostics.longRuleEligible++;
         }
       }
-      const populationSupport = !warTornPath ? assessPopularSupport(city,year) : undefined;
+      const populationSupport = !warTornPath||politicalBeforeFilters ? assessPopularSupport(city,year) : undefined;
       if(populationSupport){this.regional.accountSpatial(populationSupport.spatial);rd.validOrdinary+=populationSupport.validOrdinary;rd.identityBlocked+=populationSupport.identityBlocked;
         rd.geographyBlocked+=populationSupport.outsideArea;rd.discontentBlocked+=populationSupport.discontentBlocked;rd.supporters+=populationSupport.users.length;}
       const stableBlocked=!hasPopularPoliticalCrisis(city,year,Game.Core?.totalCells ?? 1);
       const capacityBlocked=(Game.Core?.teams ?? teams).filter(t=>!t.isDie).length>=MAX_ACTIVE_FACTIONS;
       if(stableBlocked)rd.stabilityBlocked++;if(capacityBlocked)rd.capacityBlocked++;
-      const cityPolitical=!warTornPath&&city.loyalty<=REBEL_LOYALTY_THRESHOLD_V095&&!stableBlocked;
+      const cityPolitical=politicalBeforeFilters;
       if(cityPolitical)rd.politicalCities++;
       if(cityPolitical&&!populationSupport?.users.length)rd.noSupport++;
       if(cityPolitical&&populationSupport){
@@ -900,11 +900,11 @@ export default class WorldEventSystem {
       const newPopular=cityPolitical&&!capacityBlocked&&Boolean(populationSupport?.users.length);
       if(newPopular)pf.candidates++;
       // Own-founded cities can form a popular polity; former-owner restoration retains its original priority/slot.
-      const originalPath = !warTornPath && (Boolean(founder && city.ownerFactionId !== city.founderFactionId)||(newPopular && historical.length===0)) && !historical.some(row => row.team === founder && row.supporter);
+      const originalPath = ((!warTornPath&&Boolean(founder && city.ownerFactionId !== city.founderFactionId))||(newPopular && historical.length===0)) && !historical.some(row => row.team === founder && row.supporter);
       const popularSlot=newPopular&&originalPath;
       if(newPopular&&!originalPath)pf.priorityBlocked++;
       if (!originalPath && !historical.length) continue;
-      const loyaltyPressure = warTornPath ? 0 :
+      const loyaltyPressure = popularSlot&&city.loyalty>REBELLION_LOYALTY_THRESHOLD ? Math.max(0,(45-city.loyalty)/45) : warTornPath ? 0 :
         (REBELLION_LOYALTY_THRESHOLD - city.loyalty) /
         REBELLION_LOYALTY_THRESHOLD;
       const instabilityBonus = (100 - ownerStability) / 100;

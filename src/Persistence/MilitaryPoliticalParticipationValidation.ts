@@ -1,3 +1,4 @@
+import {militaryPoliticalDefense} from '../Politics/MilitaryPoliticalInfluence';
 import {validNoblePoliticalSelection} from "./MilitaryNobleSelectionValidation";
 import type { WorldSaveV1 } from "./WorldSaveSchema";
 import type { WorldEvent } from "../History/WorldHistory";
@@ -38,8 +39,8 @@ export function validateMilitaryPoliticalParticipation(save: WorldSaveV1): strin
       if (record.crisisFacts.length !== record.crisisEventIds.length || record.crisisFacts.some(f => !record.crisisEventIds.includes(f.eventId) ||
         !before.some(e => e.id === f.eventId && e.title === f.title && (e.monthIndex ?? e.year) === f.worldMonth))) { fail(); continue; }
       const career = deriveMilitaryCareer(person, state.formations, before, at);
-      const strength = militaryPoliticalStrength(career.serviceMonths, s.unitCount, career.verifiedCaptures);
-      if (!strength.eligible || s.strength !== strength.strength || s.serviceMonths !== career.serviceMonths ||
+      const defense=militaryPoliticalDefense(person,state.formations,before,at,record.factionId),strength = militaryPoliticalStrength(career.serviceMonths, s.unitCount, career.verifiedCaptures,defense.eventIds.length,defense.localServiceMonths);
+      if (JSON.stringify(s.defenseEventIds??[])!==JSON.stringify(defense.eventIds)||!strength.eligible || s.strength !== strength.strength || s.serviceMonths !== career.serviceMonths ||
           JSON.stringify([...s.capturedEventIds].sort()) !== JSON.stringify([...career.capturedEventIds].sort())) { fail(); continue; }
       const dynasty = save.dynasties.find(d => d.factionId === record.factionId)!;
       const rulers = (dynasty.rulers as Parameters<typeof importRulerSave>[0][]).map(importRulerSave);

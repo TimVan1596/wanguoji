@@ -1,3 +1,4 @@
+import {deriveMilitaryActivities} from './MilitaryExperience';
 import {currentNobleGrant,NOBLE_RANKS,type NobleRank,NOBLE_NAMES} from "./MilitaryNobility";
 import type { MilitaryPerson, MilitaryFormation } from "./MilitaryCommandRegistry";
 import type { WorldEvent } from "../History/WorldHistory";
@@ -16,16 +17,23 @@ export interface MilitaryPoliticalParticipant {
   nobleSelection?:{scopeFounderId:string;candidates:Array<Omit<MilitaryPoliticalParticipant,"nobleSelection">>};
   personId: string; sourceUserId: number; name: string; personalName?: string; bornMonth: number; factionId: string;
   commandId: string; commanderUnitId: string; memberUnitIds: string[]; unitCount: number;
-  serviceMonths: number; capturedEventIds: string[]; strength: number;
+  serviceMonths: number; capturedEventIds: string[]; defenseEventIds?:string[]; strength: number;
 }
 export interface MilitaryPoliticalEvidence {
   candidates: MilitaryPoliticalParticipant[]; blocked: Array<{ personId: string; reason: string }>; identityBlocked: number;
 }
-export function militaryPoliticalStrength(serviceMonths: number, unitCount: number, victories: number) {
-  return { eligible: serviceMonths >= 60 && unitCount >= 4 || serviceMonths >= 12 && victories > 0,
+export function militaryPoliticalStrength(serviceMonths: number, unitCount: number, victories: number,defenses=0,localServiceMonths=serviceMonths) {
+  return { eligible: serviceMonths >= 60 && unitCount >= 4 || serviceMonths >= 12 && victories > 0 || localServiceMonths>=96&&unitCount>=2&&defenses>0,
     strength: Math.min(3, Math.max(1, Math.floor(serviceMonths / 60) + Math.floor(unitCount / 4) + Math.min(2, victories))) };
 }
 
+/** Only same-country defense with an actual repulse and bound command; orders and failed sieges do not qualify. */
+export function militaryPoliticalDefense(p:MilitaryPerson,formations:MilitaryFormation[],events:WorldEvent[],month:number,factionId:string){
+ const local={...p,appointments:p.appointments.filter(a=>a.factionId===factionId)};
+ const spans=local.appointments.map(a=>[a.startMonth,Math.min(a.endMonth??month,p.deathMonth??month,month)]).filter(([a,b])=>a<=b).sort((a,b)=>a[0]-b[0]);let service=0,end=-Infinity;
+ for(const [a,b]of spans){service+=Math.max(0,b-Math.max(a,end));end=Math.max(end,b);}
+ return {localServiceMonths:service,eventIds:deriveMilitaryActivities(local,formations,events,month,[],true).filter(a=>a.kind==='DEFENSE').map(a=>a.eventId).sort()};
+}
 /** Pure qualification. Runtime supplies verified User/player/logical-unit bindings, not UI state. */
 export function deriveMilitaryPoliticalInfluence(input: {
   factionId: string; status: string; identityStage: string; worldMonth: number; people: MilitaryPerson[]; formations: MilitaryFormation[];
@@ -52,12 +60,13 @@ export function deriveMilitaryPoliticalInfluence(input: {
       formations.filter(other => other.status === "ACTIVE" && other.memberUnitIds.includes(id)).length === 1).sort();
     if (members.length < 1 || members.length > 4 || !members.includes(u.unitId)) { block(p.personId, "NO_VALID_MEMBERS"); continue; }
     const career = deriveMilitaryCareer(p, formations, events, worldMonth);
-    const experience = militaryPoliticalStrength(career.serviceMonths, members.length, career.verifiedCaptures);
+    const defense=militaryPoliticalDefense(p,formations,events,worldMonth,factionId);
+    const experience = militaryPoliticalStrength(career.serviceMonths, members.length, career.verifiedCaptures,defense.eventIds.length,defense.localServiceMonths);
     if (!experience.eligible) { block(p.personId, "INSUFFICIENT_CAREER"); continue; }
     candidates.push({ personId: p.personId, sourceUserId: p.sourceUserId, name: p.name, personalName: p.personalName, bornMonth: p.bornMonth, factionId,
       commandId: f.commandId, commanderUnitId: u.unitId, memberUnitIds: members, unitCount: members.length,
       serviceMonths: career.serviceMonths, capturedEventIds: career.capturedEventIds.slice().sort(),
-      strength: experience.strength });
+      ...(defense.eventIds.length?{defenseEventIds:defense.eventIds}:{}),strength: experience.strength });
   }
   if(ENABLE_NOBILITY_POLITICAL_WEIGHT&&input.nobleEpochFounderId){
     for(const c of candidates){const p=people.find(p=>p.personId===c.personId)!,g=currentNobleGrant(p,factionId,worldMonth,input.nobleEpochFounderId);if(g&&events.some(e=>e.id===g.eventId&&e.type==='military-ennobled'&&e.metadata?.nobility===JSON.stringify(g)))c.nobility={eventId:g.eventId,rank:g.rank,countryName:g.countryName};}

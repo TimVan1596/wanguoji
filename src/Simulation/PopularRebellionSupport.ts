@@ -65,9 +65,18 @@ export function assessPopularSupport(city: City, month: number) {
   return result;
 }
 
-/** A single collapsed province need not drag the entire country's mean below 55.
- * The exception needs extreme local disaffection plus actual destruction or imperial strain. */
-export function hasPopularPoliticalCrisis(city:City,_month:number,totalCells:number){
-  const owner=city.ownerTeam;if(!owner||!city.block||owner.status!=="ACTIVE"||city.destroyed||city.loyalty>REBEL_LOYALTY_THRESHOLD_V095)return false;
-  return (getFactionStability(owner)??100)<=REBEL_OWNER_STABILITY_THRESHOLD_V095 || city.loyalty<=REBEL_LOYALTY_THRESHOLD && (city.devastation>=70||calculateImperialStrain(owner,totalCells)>=EMPIRE_SPLIT_STRAIN_THRESHOLD);
+export function popularPoliticalCrisis(city:City,month:number,totalCells:number){
+ const owner=city.ownerTeam;
+ if(!owner||!city.block||owner.status!=="ACTIVE"||city.destroyed)return {eligible:false,reason:"INVALID_CITY"};
+ const stability=getFactionStability(owner)??100,loyalty=city.loyalty;
+ if(loyalty<=REBEL_LOYALTY_THRESHOLD_V095&&(stability<=REBEL_OWNER_STABILITY_THRESHOLD_V095||loyalty<=REBEL_LOYALTY_THRESHOLD&&(city.devastation>=70||calculateImperialStrain(owner,totalCells)>=EMPIRE_SPLIT_STRAIN_THRESHOLD)))return {eligible:true,reason:"ORIGINAL_CRISIS"};
+ if(loyalty>40)return {eligible:false,reason:"LOYALTY"};
+ const since=city.lastCapturedYear===undefined?undefined:month-city.lastCapturedYear;
+ // An actual postwar grievance, not every newly occupied or merely disloyal city.
+ if(since===undefined||since<12)return {eligible:false,reason:"NO_MATURE_WAR_GRIEVANCE"};
+ if(city.devastation>=70)return {eligible:true,reason:"SEVERE_WAR_DAMAGE"};
+ if(city.captureCount>=2&&city.devastation>=50)return {eligible:true,reason:"REPEATED_OCCUPATION"};
+ if(since>=24&&city.devastation>=35&&stability<=60)return {eligible:true,reason:"UNRESOLVED_POSTWAR_CRISIS"};
+ return {eligible:false,reason:"NO_POLITICAL_CRISIS"};
 }
+export function hasPopularPoliticalCrisis(city:City,month:number,totalCells:number){return popularPoliticalCrisis(city,month,totalCells).eligible;}
