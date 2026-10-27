@@ -1,3 +1,10 @@
+import {createElement} from 'react';
+import {createRoot} from 'react-dom/client';
+import {flushSync} from 'react-dom';
+import {Provider} from 'react-redux';
+import {store} from '../../store';
+import {setTeams,setWorldYear,setSelectedFactionName,setFactionDetailTab} from '../../store/rootSlice';
+import FactionDetails from '../../UI/Components/FactionDetails';
 import {validateWorldSave} from '../../Persistence/WorldSaveValidator';
 import {createNaturalCore} from './NaturalCoreHarness';
 import Factions from '../FactionRegistry';
@@ -39,6 +46,11 @@ export async function runRegionalPoliticsCore(seed='royal-military-z11'){
   const bodies=pop();clock(36);calls=0;random.next=function(){const actual=next.call(random);return calls++===0?0:actual;};try{events.checkRestorations(36,core.teams);}finally{random.next=next;}
   const polity=town.ownerTeam!;check(polity!==enemy&&polity.factionType==='REBEL'&&events.getRegionalRebellionSnapshot().popularFunnel.successes===1,'the original production city check can found a real ordinary rebellion');
   check(pop()===bodies&&supporters.includes(polity.rulerUser!)&&polity.identityStage==='PROVISIONAL','founder and supporters transfer once, with no new leader body or formal kingdom privilege');
+  const host=document.createElement('div');document.body.append(host);const root=createRoot(host);
+  try{flushSync(()=>{store.dispatch(setTeams([...core.teams]));store.dispatch(setWorldYear(36));store.dispatch(setSelectedFactionName(polity.name));store.dispatch(setFactionDetailTab('military'));root.render(createElement(Provider,{store,children:createElement(FactionDetails)}));});
+    check([...host.querySelectorAll('button')].some(b=>b.textContent==='军政人物'),'real provisional rebel detail exposes the existing military tab');
+    check(host.textContent?.includes('本势力尚无将领任职')&&host.textContent.includes('真实居民'),'empty rebel military archive explains actual resident and annual appointment requirements');
+  }finally{flushSync(()=>root.unmount());host.remove();}
   const save=strict();{const bad:any=structuredClone(save),e=bad.worldHistory.events.find((e:any)=>e.type==='rebel-faction-founded'&&e.actorFactionId===polity.name);const f=JSON.parse(e.metadata.popularCrisisFacts);f.devastation=0;e.metadata.popularCrisisFacts=JSON.stringify(f);check(!validateWorldSave(bad).valid,'strict save rejects a fabricated mature-war crisis');}
   const resume=()=>{core.setWorldRunning(false);hydrateWorldSave(core,structuredClone(save));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return strict();};const a=resume(),b=resume();check(diffCanonicalWorldSave(a,b).matched,'new ordinary political path resumes twelve real months deterministically');hydrateWorldSave(core,structuredClone(a));check(diffCanonicalWorldSave(a,strict()).matched,'resaved ordinary founder reads again with the same unique identity');
   // A real zero-capture defender, legal promotion/recruitment, then the existing political transactions.
