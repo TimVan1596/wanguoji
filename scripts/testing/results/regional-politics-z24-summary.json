@@ -1,0 +1,692 @@
+{
+  "version": "v0.99931z24",
+  "package": "0.99.190",
+  "worldSave": 29,
+  "pairedBaseline": {
+    "file": "military-balance-z23-z24-baseline-final50.json",
+    "seeds": [
+      "regional-1",
+      "regional-2",
+      "regional-3",
+      "regional-4"
+    ],
+    "years": 50,
+    "totals": {
+      "captures": 56,
+      "extinctions": 3,
+      "restorations": 0,
+      "splits": 0,
+      "militarySplits": 0,
+      "politicalCandidateChecks": 144,
+      "militaryPoliticalEvents": 0,
+      "unifications": 0
+    },
+    "meanFinalPopulation": 183.25,
+    "meanFinalActiveStates": 5.75,
+    "meanActiveStates": 6.3412500000000005,
+    "meanLargestTerritoryShare": 0.20759591836734687,
+    "maximumFormationSize": 4,
+    "allCheckpointsValid": true,
+    "invariantTotals": {
+      "populationUnexplained": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "residentIdentityConflicts": 0
+    },
+    "funnel": {
+      "cityChecks": 2714,
+      "political": 0,
+      "captureGrace": 0,
+      "cooldown": 0,
+      "capacity": 0,
+      "populationScans": 0,
+      "validUsers": 0,
+      "identityBlocked": 0,
+      "geographyBlocked": 0,
+      "discontentBlocked": 0,
+      "supporters": 0,
+      "noSupport": 0,
+      "candidates": 0,
+      "priorityBlocked": 0,
+      "draws": 0,
+      "expectedHits": 0,
+      "hits": 0,
+      "misses": 0,
+      "historicalSelected": 0,
+      "founderRestored": 0,
+      "failures": 0,
+      "successes": 0
+    },
+    "perSeed": [
+      {
+        "seed": "regional-1",
+        "population": 189,
+        "activeStates": 6,
+        "captures": 13,
+        "ordinaryRebellions": 0,
+        "militaryPoliticalEvents": 0
+      },
+      {
+        "seed": "regional-2",
+        "population": 183,
+        "activeStates": 6,
+        "captures": 13,
+        "ordinaryRebellions": 0,
+        "militaryPoliticalEvents": 0
+      },
+      {
+        "seed": "regional-3",
+        "population": 185,
+        "activeStates": 6,
+        "captures": 20,
+        "ordinaryRebellions": 0,
+        "militaryPoliticalEvents": 0
+      },
+      {
+        "seed": "regional-4",
+        "population": 176,
+        "activeStates": 5,
+        "captures": 10,
+        "ordinaryRebellions": 0,
+        "militaryPoliticalEvents": 0
+      }
+    ]
+  },
+  "pairedCurrent": {
+    "file": "military-balance-z24-final50.json",
+    "seeds": [
+      "regional-1",
+      "regional-2",
+      "regional-3",
+      "regional-4"
+    ],
+    "years": 50,
+    "totals": {
+      "captures": 55,
+      "extinctions": 3,
+      "restorations": 2,
+      "splits": 0,
+      "militarySplits": 0,
+      "politicalCandidateChecks": 142,
+      "militaryPoliticalEvents": 0,
+      "unifications": 0
+    },
+    "meanFinalPopulation": 183.0,
+    "meanFinalActiveStates": 5.75,
+    "meanActiveStates": 6.37125,
+    "meanLargestTerritoryShare": 0.20275102040816315,
+    "maximumFormationSize": 4,
+    "allCheckpointsValid": true,
+    "invariantTotals": {
+      "populationUnexplained": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "residentIdentityConflicts": 0
+    },
+    "funnel": {
+      "cityChecks": 2704,
+      "political": 50,
+      "loyaltyBlocked": 2457,
+      "crisisBlocked": 197,
+      "captureGrace": 0,
+      "cooldown": 0,
+      "capacity": 0,
+      "populationScans": 50,
+      "validUsers": 1397,
+      "identityBlocked": 95,
+      "geographyBlocked": 1096,
+      "discontentBlocked": 173,
+      "supporters": 128,
+      "noSupport": 13,
+      "candidates": 37,
+      "priorityBlocked": 0,
+      "draws": 37,
+      "expectedHits": 1.2549671199999999,
+      "hits": 2,
+      "misses": 35,
+      "historicalSelected": 0,
+      "founderRestored": 2,
+      "failures": 0,
+      "successes": 0
+    },
+    "perSeed": [
+      {
+        "seed": "regional-1",
+        "population": 163,
+        "activeStates": 5,
+        "captures": 20,
+        "ordinaryRebellions": 0,
+        "militaryPoliticalEvents": 0
+      },
+      {
+        "seed": "regional-2",
+        "population": 182,
+        "activeStates": 6,
+        "captures": 14,
+        "ordinaryRebellions": 0,
+        "militaryPoliticalEvents": 0
+      },
+      {
+        "seed": "regional-3",
+        "population": 200,
+        "activeStates": 6,
+        "captures": 17,
+        "ordinaryRebellions": 0,
+        "militaryPoliticalEvents": 0
+      },
+      {
+        "seed": "regional-4",
+        "population": 187,
+        "activeStates": 6,
+        "captures": 4,
+        "ordinaryRebellions": 0,
+        "militaryPoliticalEvents": 0
+      }
+    ]
+  },
+  "extendedCurrent": {
+    "file": "military-balance-z24-final100.json",
+    "seeds": [
+      "regional-1",
+      "regional-2",
+      "regional-3",
+      "regional-4",
+      "regional-5",
+      "regional-6"
+    ],
+    "years": 100,
+    "totals": {
+      "captures": 159,
+      "extinctions": 13,
+      "restorations": 2,
+      "splits": 1,
+      "militarySplits": 0,
+      "politicalCandidateChecks": 304,
+      "militaryPoliticalEvents": 1,
+      "unifications": 0
+    },
+    "meanFinalPopulation": 184.83333333333334,
+    "meanFinalActiveStates": 5.5,
+    "meanActiveStates": 5.992361111111111,
+    "meanLargestTerritoryShare": 0.227048979591837,
+    "maximumFormationSize": 4,
+    "allCheckpointsValid": true,
+    "invariantTotals": {
+      "populationUnexplained": 0,
+      "duplicatePopulationIds": 0,
+      "formationOwnershipConflicts": 0,
+      "residentIdentityConflicts": 0
+    },
+    "funnel": {
+      "cityChecks": 9108,
+      "political": 204,
+      "loyaltyBlocked": 8259,
+      "crisisBlocked": 645,
+      "captureGrace": 0,
+      "cooldown": 10,
+      "capacity": 0,
+      "populationScans": 194,
+      "validUsers": 4944,
+      "identityBlocked": 382,
+      "geographyBlocked": 3760,
+      "discontentBlocked": 697,
+      "supporters": 487,
+      "noSupport": 42,
+      "candidates": 152,
+      "priorityBlocked": 0,
+      "draws": 152,
+      "expectedHits": 6.108442969999999,
+      "hits": 7,
+      "misses": 145,
+      "historicalSelected": 0,
+      "founderRestored": 2,
+      "failures": 0,
+      "successes": 5
+    },
+    "perSeed": [
+      {
+        "seed": "regional-1",
+        "population": 194,
+        "activeStates": 5,
+        "captures": 31,
+        "ordinaryRebellions": 0,
+        "militaryPoliticalEvents": 0
+      },
+      {
+        "seed": "regional-2",
+        "population": 177,
+        "activeStates": 6,
+        "captures": 33,
+        "ordinaryRebellions": 2,
+        "militaryPoliticalEvents": 0
+      },
+      {
+        "seed": "regional-3",
+        "population": 201,
+        "activeStates": 6,
+        "captures": 28,
+        "ordinaryRebellions": 0,
+        "militaryPoliticalEvents": 0
+      },
+      {
+        "seed": "regional-4",
+        "population": 164,
+        "activeStates": 5,
+        "captures": 17,
+        "ordinaryRebellions": 0,
+        "militaryPoliticalEvents": 0
+      },
+      {
+        "seed": "regional-5",
+        "population": 176,
+        "activeStates": 4,
+        "captures": 17,
+        "ordinaryRebellions": 0,
+        "militaryPoliticalEvents": 0
+      },
+      {
+        "seed": "regional-6",
+        "population": 197,
+        "activeStates": 7,
+        "captures": 33,
+        "ordinaryRebellions": 3,
+        "militaryPoliticalEvents": 1
+      }
+    ]
+  },
+  "ordinarySurvival": {
+    "matured12": 5,
+    "alive12": 5,
+    "matured60": 5,
+    "alive60": 4
+  },
+  "provisionalAppointments": {
+    "provisionalChecks": 60,
+    "provisionalNoCandidate": 4,
+    "provisionalCapacityBlocked": 0,
+    "provisionalDraws": 56,
+    "provisionalMisses": 54,
+    "provisionalAppointments": 2
+  },
+  "performance": [
+    {
+      "file": "runtime-population-z23-performance-final50.json",
+      "seed": "regional-1",
+      "populationStart": 95,
+      "populationEnd": 98,
+      "speed": 1,
+      "sidebar": "none",
+      "fps": 59.06164974427497,
+      "frameP95Ms": 24.900000005960464,
+      "fixedCpuMs": 1.542696629096283,
+      "physicsCpuMs": 1.3646067420250914,
+      "presentationCpuMs": 0.10561797801363335,
+      "physics": null,
+      "react": null
+    },
+    {
+      "file": "runtime-population-z23-performance-final50.json",
+      "seed": "regional-1",
+      "populationStart": 95,
+      "populationEnd": 106,
+      "speed": 4,
+      "sidebar": "none",
+      "fps": 59.676612768794804,
+      "frameP95Ms": 21.599999994039536,
+      "fixedCpuMs": 3.4469273738854422,
+      "physicsCpuMs": 2.9005586585685528,
+      "presentationCpuMs": 0.10055865938437052,
+      "physics": null,
+      "react": null
+    },
+    {
+      "file": "runtime-population-z23-performance-final50.json",
+      "seed": "regional-1",
+      "populationStart": 144,
+      "populationEnd": 150,
+      "speed": 1,
+      "sidebar": "none",
+      "fps": 59.609044590111125,
+      "frameP95Ms": 18.700000002980232,
+      "fixedCpuMs": 1.3564245811554307,
+      "physicsCpuMs": 1.2072625700488437,
+      "presentationCpuMs": 0.09217877069998054,
+      "physics": null,
+      "react": null
+    },
+    {
+      "file": "runtime-population-z23-performance-final50.json",
+      "seed": "regional-1",
+      "populationStart": 144,
+      "populationEnd": 163,
+      "speed": 4,
+      "sidebar": "none",
+      "fps": 59.67180507210343,
+      "frameP95Ms": 18.599999994039536,
+      "fixedCpuMs": 3.947222221808301,
+      "physicsCpuMs": 3.4244444442292052,
+      "presentationCpuMs": 0.08666666737861103,
+      "physics": null,
+      "react": null
+    },
+    {
+      "file": "runtime-population-z23-performance-final50.json",
+      "seed": "regional-1",
+      "populationStart": 190,
+      "populationEnd": 191,
+      "speed": 1,
+      "sidebar": "none",
+      "fps": 60.004000266744065,
+      "frameP95Ms": 18.5,
+      "fixedCpuMs": 1.31000000031458,
+      "physicsCpuMs": 1.191666667163372,
+      "presentationCpuMs": 0.07500000024835268,
+      "physics": null,
+      "react": null
+    },
+    {
+      "file": "runtime-population-z23-performance-final50.json",
+      "seed": "regional-1",
+      "populationStart": 190,
+      "populationEnd": 189,
+      "speed": 4,
+      "sidebar": "none",
+      "fps": 60.01600426774512,
+      "frameP95Ms": 18.600000008940697,
+      "fixedCpuMs": 4.162222222238779,
+      "physicsCpuMs": 3.733333333498902,
+      "presentationCpuMs": 0.08555555608537461,
+      "physics": null,
+      "react": null
+    },
+    {
+      "file": "runtime-population-z24-performance-final50.json",
+      "seed": "regional-1",
+      "populationStart": 95,
+      "populationEnd": 98,
+      "speed": 1,
+      "sidebar": "none",
+      "fps": 60.06607267988821,
+      "frameP95Ms": 17.599999994039536,
+      "fixedCpuMs": 0.8322222225368023,
+      "physicsCpuMs": 0.7522222224209044,
+      "presentationCpuMs": 0.05722222129503886,
+      "physics": {
+        "dynamicBodies": 98,
+        "staticBodies": 1225,
+        "activeColliders": 112,
+        "occupationCallbacks": 545,
+        "goalObservationCalls": 545,
+        "goalObservationCpuMs": 17
+      },
+      "react": {
+        "commits": 0,
+        "totalActualDurationMs": 0,
+        "maxActualDurationMs": 0
+      }
+    },
+    {
+      "file": "runtime-population-z24-performance-final50.json",
+      "seed": "regional-1",
+      "populationStart": 95,
+      "populationEnd": 108,
+      "speed": 4,
+      "sidebar": "none",
+      "fps": 59.9695182558549,
+      "frameP95Ms": 18.200000002980232,
+      "fixedCpuMs": 2.8635359114210908,
+      "physicsCpuMs": 2.4209944753192407,
+      "presentationCpuMs": 0.08895027662179747,
+      "physics": {
+        "dynamicBodies": 108,
+        "staticBodies": 1225,
+        "activeColliders": 122,
+        "occupationCallbacks": 2386,
+        "goalObservationCalls": 2386,
+        "goalObservationCpuMs": 34.600000113248825
+      },
+      "react": {
+        "commits": 0,
+        "totalActualDurationMs": 0,
+        "maxActualDurationMs": 0
+      }
+    },
+    {
+      "file": "runtime-population-z24-performance-final50.json",
+      "seed": "regional-1",
+      "populationStart": 144,
+      "populationEnd": 150,
+      "speed": 1,
+      "sidebar": "none",
+      "fps": 60.00530433617635,
+      "frameP95Ms": 18.299999997019768,
+      "fixedCpuMs": 1.0756906076689452,
+      "physicsCpuMs": 0.970165745741096,
+      "presentationCpuMs": 0.06795580075919957,
+      "physics": {
+        "dynamicBodies": 150,
+        "staticBodies": 1225,
+        "activeColliders": 164,
+        "occupationCallbacks": 810,
+        "goalObservationCalls": 810,
+        "goalObservationCpuMs": 17.199999943375587
+      },
+      "react": {
+        "commits": 0,
+        "totalActualDurationMs": 0,
+        "maxActualDurationMs": 0
+      }
+    },
+    {
+      "file": "runtime-population-z24-performance-final50.json",
+      "seed": "regional-1",
+      "populationStart": 144,
+      "populationEnd": 148,
+      "speed": 1,
+      "sidebar": "military",
+      "fps": 59.563423399381904,
+      "frameP95Ms": 34.79999999701977,
+      "fixedCpuMs": 1.0486033513892297,
+      "physicsCpuMs": 0.9452513959154737,
+      "presentationCpuMs": 0.11005586693739758,
+      "physics": {
+        "dynamicBodies": 148,
+        "staticBodies": 1225,
+        "activeColliders": 162,
+        "occupationCallbacks": 742,
+        "goalObservationCalls": 742,
+        "goalObservationCpuMs": 19.19999986886978
+      },
+      "react": {
+        "commits": 20,
+        "totalActualDurationMs": 84.30000001192093,
+        "maxActualDurationMs": 5.5
+      }
+    },
+    {
+      "file": "runtime-population-z24-performance-final50.json",
+      "seed": "regional-1",
+      "populationStart": 144,
+      "populationEnd": 163,
+      "speed": 4,
+      "sidebar": "none",
+      "fps": 59.669826957324965,
+      "frameP95Ms": 19.900000005960464,
+      "fixedCpuMs": 4.165555556366841,
+      "physicsCpuMs": 3.6044444447590247,
+      "presentationCpuMs": 0.10055555510852072,
+      "physics": {
+        "dynamicBodies": 163,
+        "staticBodies": 1225,
+        "activeColliders": 177,
+        "occupationCallbacks": 3374,
+        "goalObservationCalls": 3374,
+        "goalObservationCpuMs": 50.6000000089407
+      },
+      "react": {
+        "commits": 0,
+        "totalActualDurationMs": 0,
+        "maxActualDurationMs": 0
+      }
+    },
+    {
+      "file": "runtime-population-z24-performance-final50.json",
+      "seed": "regional-1",
+      "populationStart": 144,
+      "populationEnd": 162,
+      "speed": 4,
+      "sidebar": "military",
+      "fps": 55.734050226160214,
+      "frameP95Ms": 38.29999999701977,
+      "fixedCpuMs": 4.108235293889747,
+      "physicsCpuMs": 3.521764705461614,
+      "presentationCpuMs": 0.13764705982278375,
+      "physics": {
+        "dynamicBodies": 162,
+        "staticBodies": 1225,
+        "activeColliders": 176,
+        "occupationCallbacks": 3012,
+        "goalObservationCalls": 3012,
+        "goalObservationCpuMs": 44.90000011026859
+      },
+      "react": {
+        "commits": 44,
+        "totalActualDurationMs": 159.29999989271164,
+        "maxActualDurationMs": 4.299999997019768
+      }
+    },
+    {
+      "file": "runtime-population-z24-performance-200-final50.json",
+      "seed": "regional-3",
+      "populationStart": 192,
+      "populationEnd": 191,
+      "speed": 1,
+      "sidebar": "none",
+      "fps": 60.002000066847714,
+      "frameP95Ms": 17.700000002980232,
+      "fixedCpuMs": 1.3166666666666667,
+      "physicsCpuMs": 1.1822222227023707,
+      "presentationCpuMs": 0.0544444444278876,
+      "physics": {
+        "dynamicBodies": 191,
+        "staticBodies": 1225,
+        "activeColliders": 203,
+        "occupationCallbacks": 1322,
+        "goalObservationCalls": 1322,
+        "goalObservationCpuMs": 24.19999995827675
+      },
+      "react": {
+        "commits": 0,
+        "totalActualDurationMs": 0,
+        "maxActualDurationMs": 0
+      }
+    },
+    {
+      "file": "runtime-population-z24-performance-200-final50.json",
+      "seed": "regional-3",
+      "populationStart": 192,
+      "populationEnd": 190,
+      "speed": 1,
+      "sidebar": "military",
+      "fps": 58.052247022377806,
+      "frameP95Ms": 39,
+      "fixedCpuMs": 1.0672413786423618,
+      "physicsCpuMs": 0.9637931033797648,
+      "presentationCpuMs": 0.07873563280050781,
+      "physics": {
+        "dynamicBodies": 190,
+        "staticBodies": 1225,
+        "activeColliders": 202,
+        "occupationCallbacks": 1069,
+        "goalObservationCalls": 1069,
+        "goalObservationCpuMs": 19.500000074505806
+      },
+      "react": {
+        "commits": 18,
+        "totalActualDurationMs": 105.8999999910593,
+        "maxActualDurationMs": 7.700000017881393
+      }
+    },
+    {
+      "file": "runtime-population-z24-performance-200-final50.json",
+      "seed": "regional-3",
+      "populationStart": 192,
+      "populationEnd": 191,
+      "speed": 4,
+      "sidebar": "none",
+      "fps": 59.99800006678365,
+      "frameP95Ms": 18,
+      "fixedCpuMs": 4.470000000132455,
+      "physicsCpuMs": 3.9538888888226613,
+      "presentationCpuMs": 0.0861111113594638,
+      "physics": {
+        "dynamicBodies": 191,
+        "staticBodies": 1225,
+        "activeColliders": 203,
+        "occupationCallbacks": 4675,
+        "goalObservationCalls": 4675,
+        "goalObservationCpuMs": 59.39999994635582
+      },
+      "react": {
+        "commits": 0,
+        "totalActualDurationMs": 0,
+        "maxActualDurationMs": 0
+      }
+    },
+    {
+      "file": "runtime-population-z24-performance-200-final50.json",
+      "seed": "regional-3",
+      "populationStart": 192,
+      "populationEnd": 193,
+      "speed": 4,
+      "sidebar": "military",
+      "fps": 52.89431055561662,
+      "frameP95Ms": 41.099999994039536,
+      "fixedCpuMs": 4.196249999571592,
+      "physicsCpuMs": 3.7799999991431834,
+      "presentationCpuMs": 0.10937500037252904,
+      "physics": {
+        "dynamicBodies": 193,
+        "staticBodies": 1225,
+        "activeColliders": 205,
+        "occupationCallbacks": 4045,
+        "goalObservationCalls": 4045,
+        "goalObservationCpuMs": 51.8999999165535
+      },
+      "react": {
+        "commits": 48,
+        "totalActualDurationMs": 237.10000003874302,
+        "maxActualDurationMs": 5.799999997019768
+      }
+    }
+  ],
+  "limitations": [
+    "Four paired fifty-year seeds are descriptive, not proof of statistically balanced occurrence. Six extended seeds selected before seeing results; no political probabilities increased to produce samples.",
+    "Natural military political event at regional-6 month228 used existing capture eligibility, not proof of natural use of the new defensive-veteran path. New path verified by actual controlled production court and secession transactions.",
+    "Offscreen Electron Canvas real loop, 0.5s warmup +3s timing, ±12 natural population bands; not user Chrome FPS/GPU renderer CPU or human visual acceptance.",
+    "Earlier transient uninstrumented regional-1 ~144 population4x no-sidebar observation had FPS39.30/p95 59.8ms/fixedCPU12.60ms/physics11.51ms. That preliminary file was superseded during instrumentation; retained here as an observation, not a source-backed paired measurement. Later samples varied substantially; no production performance optimization published.",
+    "Regional-6 validation repair replay only. Other five already-valid seeds retained; battle-z24-source.json records source hashes and exact sole production-file difference."
+  ],
+  "verification": {
+    "vitestFiles": 269,
+    "vitestTests": 2158,
+    "corePhaserDomChecks": 696,
+    "web": "PASS",
+    "desktop": "PASS",
+    "debug": "PASS",
+    "naturalRegional6Continuation": {
+      "months": 12,
+      "deterministic": true,
+      "secondRead": true
+    }
+  },
+  "unmodified": [
+    "siege/defense formulas",
+    "military promotion",
+    "1/2/3/4 capacities and2/2 cap",
+    "population growth",
+    "diplomacy",
+    "independent political lotteries"
+  ],
+  "performanceOptimizationPublished": false
+}

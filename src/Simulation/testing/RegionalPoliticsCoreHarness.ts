@@ -48,7 +48,7 @@ export async function runRegionalPoliticsCore(seed='royal-military-z11'){
   check(pop()===bodies&&supporters.includes(polity.rulerUser!)&&polity.identityStage==='PROVISIONAL','founder and supporters transfer once, with no new leader body or formal kingdom privilege');
   const host=document.createElement('div');document.body.append(host);const root=createRoot(host);
   try{flushSync(()=>{store.dispatch(setTeams([...core.teams]));store.dispatch(setWorldYear(36));store.dispatch(setSelectedFactionName(polity.name));store.dispatch(setFactionDetailTab('military'));root.render(createElement(Provider,{store,children:createElement(FactionDetails)}));});
-    check([...host.querySelectorAll('button')].some(b=>b.textContent==='军政人物'),'real provisional rebel detail exposes the existing military tab');
+    check(Array.from(host.querySelectorAll('button')).some(b=>b.textContent==='军政人物'),'real provisional rebel detail exposes the existing military tab');
     check(host.textContent?.includes('本势力尚无将领任职')&&host.textContent.includes('真实居民'),'empty rebel military archive explains actual resident and annual appointment requirements');
   }finally{flushSync(()=>root.unmount());host.remove();}
   const save=strict();{const bad:any=structuredClone(save),e=bad.worldHistory.events.find((e:any)=>e.type==='rebel-faction-founded'&&e.actorFactionId===polity.name);const f=JSON.parse(e.metadata.popularCrisisFacts);f.devastation=0;e.metadata.popularCrisisFacts=JSON.stringify(f);check(!validateWorldSave(bad).valid,'strict save rejects a fabricated mature-war crisis');}
