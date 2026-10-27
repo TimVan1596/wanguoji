@@ -16,7 +16,13 @@ export function validateResidentIdentities(save:WorldSaveV1):string[]{
    if(!['rebel-faction-founded','frontier-faction-founded'].includes(e.type)||f.worldMonth!==at||!['loyalty','devastation','stability'].every(k=>Number.isFinite(f[k])&&f[k]>=0&&f[k]<=100)||!Number.isSafeInteger(f.captureCount)||f.captureCount<0||!Number.isFinite(f.strain)||f.strain<0||f.lastCapturedMonth!==undefined&&(!Number.isSafeInteger(f.lastCapturedMonth)||f.lastCapturedMonth>at||f.lastCapturedMonth<0))throw Error();
    const crisis=evaluatePopularPoliticalCrisis(f);if(!crisis.eligible||e.metadata.popularCrisisReason!==crisis.reason)throw Error();
    if(crisis.reason!=='ORIGINAL_CRISIS'){
-    const captures=events.slice(0,index).filter(x=>x.cityId===e.cityId&&['city-captured','city-recovered','capital-fallen'].includes(x.type));
+    // City.revoltTo updates the same canonical captureCount/lastCapturedYear as capture.
+    // Political ownership changes are evidence of occupation, not military victories.
+    const factionIds=new Set(save.factions.filter(record).map(f=>f.factionId));
+    const captures=events.slice(0,index).filter(x=>x.cityId===e.cityId&&(x.monthIndex??x.year)<=at&&
+      (['city-captured','city-recovered','capital-fallen'].includes(x.type)||
+       x.type==='city-revolt'&&['FOUNDING','SPLIT','RESTORATION','RETURN'].includes(x.metadata?.revoltOrigin)&&
+       factionIds.has(x.actorFactionId)&&factionIds.has(x.targetFactionId)&&x.actorFactionId!==x.targetFactionId));
     if(!captures.some(x=>(x.monthIndex??x.year)===f.lastCapturedMonth)||crisis.reason==='REPEATED_OCCUPATION'&&new Set(captures.map(x=>JSON.stringify([x.monthIndex??x.year,x.actorFactionId,x.previousOwnerFactionId??x.targetFactionId]))).size<2)throw Error();
    }
   }catch{errors.push('ordinary founding crisis facts lack valid dated evidence');}}

@@ -13,6 +13,7 @@ import City from "../../Components/City";
 import Diplomacy from "../../Politics/Diplomacy";
 import WorldHistory from "../../History/WorldHistory";
 import {exportWorldSave} from "../../Persistence/WorldSaveExporter";
+import {hydrateWorldSave} from "../../Persistence/WorldSaveHydrator";
 import {validateWorldSave} from "../../Persistence/WorldSaveValidator";
 import {canonicalWorldSaveProjection} from "../../Persistence/WorldSaveSchema";
 import {SIMULATION_FIXED_STEP_MS} from "../SimulationDriver";
@@ -35,7 +36,7 @@ async function fingerprint(snapshot: ReturnType<typeof exportWorldSave>,baseFact
 }
 
 /** Instrument the real City transaction, never substitute combat or its RNG. Test-session aggregates only. */
-export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=false){
+export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=false,verifyContinuation=false){
   const royalOffers=new Map<string,number>(),readRoyal=(Dynasty as any).getRoyalMilitaryCandidates;
   if(readRoyal)(Dynasty as any).getRoyalMilitaryCandidates=function(...args:any[]){const rows=readRoyal.apply(this,args);for(const r of rows)if(!royalOffers.has(r.rulerId))royalOffers.set(r.rulerId,args[1]);return rows;};
   const {core,game}=await createNaturalCore(seed),started=performance.now();
@@ -108,7 +109,7 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
         const matureEnded=ended.filter(a=>a.endMonth!-a.startMonth>=60);
         const p=core.getPopulationSummary();
         core.setWorldRunning(false);
-        const snapshot=(()=>{try{return exportWorldSave(core);}catch(error){throw Error(JSON.stringify({seed,month:m,error:String(error),popularFoundings:WorldHistory.getEvents().filter(e=>e.metadata?.popularCrisisFacts).map(e=>({event:e,transfers:WorldHistory.getEvents().filter(x=>x.cityId===e.cityId).map(x=>({id:x.id,type:x.type,month:x.monthIndex??x.year,actor:x.actorFactionId,target:x.targetFactionId})),city:core.allCities.find(c=>c.id===e.cityId)?.history})),royalLinks:Military.getPeople().filter(p=>p.royalIdentity).map(p=>({person:structuredClone(p),formations:Military.getFormations().filter(f=>f.commanderPersonId===p.personId),bindings:core.teams.flatMap(t=>[...t.users]).filter(u=>u.militaryPersonId===p.personId||u.historicalPersonId===p.personId).map(u=>({userId:u.id,factionId:u.team.name,role:u.role,rulerId:u.rulerId,bornMonth:u.bornMonth,unitId:u.player.logicalUnitId})),owners:Dynasty.getAll().flatMap(d=>d.rulers.filter(r=>r.militaryIdentity?.personId===p.personId).map(r=>({factionId:d.factionId,ruler:structuredClone(r)})))}))}));}})(),validation=validateWorldSave(snapshot);
+        const snapshot=(()=>{try{return exportWorldSave(core);}catch(error){throw Error(JSON.stringify({seed,month:m,error:String(error),popularFoundings:WorldHistory.getEvents().filter(e=>e.metadata?.popularCrisisFacts).map(e=>({event:e,transfers:WorldHistory.getEvents().filter(x=>x.cityId===e.cityId&&["city-captured","city-recovered","capital-fallen","city-revolt"].includes(x.type)).map(x=>({id:x.id,type:x.type,month:x.monthIndex??x.year,actor:x.actorFactionId,target:x.targetFactionId}))})),royalLinks:Military.getPeople().filter(p=>p.royalIdentity).map(p=>({person:structuredClone(p),formations:Military.getFormations().filter(f=>f.commanderPersonId===p.personId),bindings:core.teams.flatMap(t=>[...t.users]).filter(u=>u.militaryPersonId===p.personId||u.historicalPersonId===p.personId).map(u=>({userId:u.id,factionId:u.team.name,role:u.role,rulerId:u.rulerId,bornMonth:u.bornMonth,unitId:u.player.logicalUnitId})),owners:Dynasty.getAll().flatMap(d=>d.rulers.filter(r=>r.militaryIdentity?.personId===p.personId).map(r=>({factionId:d.factionId,ruler:structuredClone(r)})))}))}));}})(),validation=validateWorldSave(snapshot);
         const canonicalSha256 = await fingerprint(snapshot),baseFactsSha256=await fingerprint(snapshot,true);
         core.setWorldRunning(true);
         if(!validation.valid)throw new Error(`Invalid natural snapshot: ${validation.errors.join("; ")}`);
@@ -160,6 +161,17 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
       }
       if(m%120===0)await new Promise(r=>setTimeout(r,0));
     }
-    return {seed,years,contactCalls,forceSamples,localSiegeDeaths,depositionRelations:WorldHistory.getEvents().filter(e=>e.type==="ruler-deposed").map(e=>({month:e.monthIndex??e.year,metadata:e.metadata})),episodes,ongoingEpisodes:[...open.values()],annual,unificationMonths:WorldHistory.getEvents().filter(e=>e.type==="world-unification").map(e=>e.monthIndex??e.year),mode:"real Arcade Core / default warring states",denominator:"hostile-contact city-months entering real City.updateSiege; capture frequency, not battle win probability",checkpoints};
+    let continuation:undefined|{months:number;deterministic:boolean;secondRead:boolean};
+    if(verifyContinuation){
+      core.setWorldRunning(false);const saved=exportWorldSave(core);
+      const resume=async()=>{core.setWorldRunning(false);hydrateWorldSave(core,structuredClone(saved));core.setWorldRunning(true);
+        for(let m=0;m<12;m++){for(let n=0;n<30;n++)(core as any).advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit("postupdate");}
+        core.setWorldRunning(false);return exportWorldSave(core);};
+      const a=await resume(),b=await resume();const deterministic=await fingerprint(a)===await fingerprint(b);
+      hydrateWorldSave(core,structuredClone(a));const secondRead=await fingerprint(a)===await fingerprint(exportWorldSave(core));
+      if(!deterministic||!secondRead)throw Error("natural checkpoint continuation mismatch");
+      continuation={months:12,deterministic,secondRead};
+    }
+    return {seed,years,continuation,contactCalls,forceSamples,localSiegeDeaths,depositionRelations:WorldHistory.getEvents().filter(e=>e.type==="ruler-deposed").map(e=>({month:e.monthIndex??e.year,metadata:e.metadata})),episodes,ongoingEpisodes:[...open.values()],annual,unificationMonths:WorldHistory.getEvents().filter(e=>e.type==="world-unification").map(e=>e.monthIndex??e.year),mode:"real Arcade Core / default warring states",denominator:"hostile-contact city-months entering real City.updateSiege; capture frequency, not battle win probability",checkpoints};
   }finally{if(readRoyal)(Dynasty as any).getRoyalMilitaryCandidates=readRoyal;(Military as any).advanceOffices=advanceOffices;City.prototype.registerSiegeContact=rawContact;(City.prototype as any).updateSiege=original;game.destroy(true);}
 }

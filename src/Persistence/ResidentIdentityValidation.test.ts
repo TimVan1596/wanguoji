@@ -30,3 +30,16 @@ it("defers malformed base records to the primary validator without throwing",()=
  const s=fixture();s.users.push(null as any);s.factions.push(null as any);s.cities.push(null as any);(s.worldHistory.events as any[]).unshift(null);
  expect(()=>validateResidentIdentities(s)).not.toThrow();
 });
+
+it("regional-6: repeated occupation includes a real dated political transfer, without treating it as a military victory",()=>{
+ const s=fixture();s.world.worldMonth=684;
+ const events=s.worldHistory.events as any[];
+ events.push({id:"capture",type:"city-captured",cityId:"city",year:631,actorFactionId:"parent",targetFactionId:"rebel"},
+ {id:"revolt",type:"city-revolt",cityId:"city",year:648,actorFactionId:"rebel",targetFactionId:"parent",metadata:{revoltOrigin:"FOUNDING"}},
+ {id:"founding",type:"rebel-faction-founded",cityId:"city",year:684,metadata:{popularCrisisReason:"REPEATED_OCCUPATION",popularCrisisFacts:JSON.stringify({loyalty:30,devastation:57,captureCount:5,lastCapturedMonth:648,worldMonth:684,stability:30,strain:0})}});
+ expect(validateResidentIdentities(s)).toEqual([]);
+ for(const patch of [{targetFactionId:"rebel"},{actorFactionId:"unknown"},{year:685},{metadata:{revoltOrigin:"FAKE"}}]){
+  const bad=structuredClone(s);Object.assign((bad.worldHistory.events as any[]).find(e=>e.id==="revolt"),patch);
+  expect(validateResidentIdentities(bad)).toContain("ordinary founding crisis facts lack valid dated evidence");
+ }
+});

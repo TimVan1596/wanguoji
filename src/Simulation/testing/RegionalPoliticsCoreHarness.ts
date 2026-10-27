@@ -26,8 +26,8 @@ export async function runRegionalPoliticsCore(seed='royal-military-z11'){
   core.setWorldRunning(false);const initial=strict();
   // Actual foreign occupation starts at loyalty 35; repeated real transfers cause damage.
   const home=core.teams[0],enemy=core.teams[1],town=site(home);site(home);
-  for(const [m,owner]of [[0,enemy],[6,home],[12,enemy]] as const){clock(m);town.capture(owner,m);}
-  clock(13);check(town.loyalty===35&&town.captureCount===3&&town.devastation>=50&&!hasPopularPoliticalCrisis(town,13,core.totalCells),'fresh real occupation cannot immediately use the new crisis path');
+  for(const [m,owner]of [[0,enemy],[3,home],[6,enemy],[9,home],[12,enemy]] as const){clock(m);if(m===12)town.revoltTo(owner,m);else town.capture(owner,m);}
+  clock(13);check(town.loyalty===35&&town.captureCount===5&&town.devastation>=50&&!hasPopularPoliticalCrisis(town,13,core.totalCells),'fresh real occupation cannot immediately use the new crisis path');
   clock(24);const supporters=[...enemy.users].filter(u=>u.role==='NORMAL'&&!u.militaryPersonId).slice(0,3);for(const u of supporters)place(u,town.block.x,town.block.y);
   check(hasPopularPoliticalCrisis(town,24,core.totalCells)&&assessPopularSupport(town,24).users.length>0,'mature repeated occupation has real local resident support without loyalty rewriting');
   const events=(core.simulator as any).events,next=random.next;let calls=0;random.next=function(){next.call(random);calls++;return .999999;};
