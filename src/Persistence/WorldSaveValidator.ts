@@ -1,3 +1,4 @@
+import {validateMilitaryAppanages} from './MilitaryAppanageValidation';
 import {validateMilitaryHonors} from './MilitaryHonorsValidation';
 import {validateSiegeBattles} from "./SiegeBattleValidation";
 import {validRoyalDepositionMilitary} from "./RoyalDepositionMilitaryValidation";
@@ -483,6 +484,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   ));
   if (!errors.length) errors.push(...validateMilitaryNobility(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateMilitaryHonors(save as WorldSaveV1));
+  if (!errors.length) errors.push(...validateMilitaryAppanages(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateMilitaryPoliticalParticipation(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateMilitaryOfficeAuthorities(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateMilitaryBattleNames(save as WorldSaveV1));
