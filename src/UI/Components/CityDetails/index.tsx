@@ -4,7 +4,6 @@ import {useEffect,useState} from 'react';
 import {useDispatch,useSelector} from 'react-redux';
 import type City from '../../../Components/City';
 import Game from '../../../Game/Game';
-import {colorToString} from '../../../paid/theme';
 import WorldHistory from '../../../History/WorldHistory';
 import {importantCityHistory} from '../../../History/CityHistoryPresentation';
 import ArchivedCities,{type ArchivedCity} from '../../../Simulation/ArchivedCities';
@@ -25,8 +24,8 @@ function CityProfile({city,archived,teams,month}:{city?:City;archived?:ArchivedC
  const dispatch=useDispatch(),[tab,setTab]=useState<'overview'|'defense'|'appanages'>('overview'),[complete,setComplete]=useState(false),[,setRevision]=useState(WorldHistory.getRevision());
  useEffect(()=>WorldHistory.subscribeRevision(setRevision),[]);
  const id=city?.id??archived!.id,name=city?.name??archived!.name,foundedMonth=city?.foundedYear??archived!.foundedMonth,founderId=city?.founderFactionId??archived!.founderFactionId;
- const byFaction=new Map(teams.map(t=>[t.name,t])),history=city?.history??archived!.history,attacker=teams.find(t=>t.name===city?.attackingFactionId);
- const facts:Array<[string,string|number]>=[['归属',city?.ownerTeam?.displayName??getCityHistoricalFactionName(byFaction,archived!.lastOwnerFactionId,archived!.destroyedMonth)],['建立',formatWorldDate(foundedMonth)],['易手',`${city?.captureCount??archived!.captureCount}次`]];
+ const byFaction=new Map(teams.map(t=>[t.name,t])),history=(city?.history??archived!.history).filter(e=>e.year<=month),attacker=teams.find(t=>t.name===city?.attackingFactionId);
+ const facts:Array<[string,string|number]>=[['归属',city?(city.ownerTeam?.displayName??city.ownerFactionId):getCityHistoricalFactionName(byFaction,archived!.lastOwnerFactionId,archived!.destroyedMonth)],['建立',formatWorldDate(foundedMonth)],['易手',`${city?.captureCount??archived!.captureCount}次`]];
  if(city)facts.push(['城防',`${city.defense} / ${city.maxDefense}`],['忠诚',city.loyalty],['破坏度',`${city.devastation} / 100`],['状态',city.loyaltyStatus]);
  else facts.push(['毁灭',formatWorldDate(archived!.destroyedMonth)]);
  return <Box data-city-profile={id} data-archive-scroll sx={{height:'100%',overflowY:'auto',boxSizing:'border-box',p:1,minWidth:0,overflowWrap:'anywhere'}}>
@@ -126,25 +125,6 @@ function CityList({
           </Box>
         ))}
       </Box>
-    </Box>
-  );
-}
-
-function FactionName({ name, color }: { name: string; color?: number }) {
-  return (
-    <Box component="span" sx={{ display: "inline-flex", alignItems: "center", gap: 0.5 }}>
-      {color !== undefined ? (
-        <Box
-          component="span"
-          sx={{
-            width: "0.75rem",
-            height: "0.75rem",
-            backgroundColor: colorToString(color),
-            border: "1px solid #00000055",
-          }}
-        />
-      ) : null}
-      {name}
     </Box>
   );
 }

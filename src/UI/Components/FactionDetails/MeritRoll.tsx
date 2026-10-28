@@ -1,3 +1,6 @@
+import {useDispatch} from 'react-redux';
+import {setSelectedCityId,setRightPanelTab} from '../../../store/rootSlice';
+import {cityAppanageHistory,prepareAppanageHistory} from '../../../History/CityAppanageHistory';
 import {useMemo} from 'react';
 import MilitaryArchiveWindow from './MilitaryArchiveWindow';
 import Dynasty from '../../../Politics/Dynasty';
@@ -16,11 +19,14 @@ const button={border:0,background:'none',color:'inherit',font:'inherit',padding:
 export {NobleHistory} from "./NobleHistory";
 /** A changing top three is an archive view, never a simulation award or an office. */
 export default function MeritRoll({factionId,month,onOpen}:{factionId:string;month:number;onOpen:(id:string)=>void}){
+ const dispatch=useDispatch();
  const projection=useMemo(()=>createMeritRosterProjection(),[]);
  const {byId,top,grants,grantById,rulersById,rulerOwners}=useMemo(()=>{const people=Military.getPeople(),events=History.getEvents();
   const top=projection.get(people,Military.getFormations(),events,factionId,month).slice(0,3),grants=people.flatMap(person=>(person.nobilityHistory??[]).filter(g=>g.factionId===factionId&&g.month<=month).map(grant=>({person,grant}))).sort((a,b)=>b.grant.month-a.grant.month||a.grant.eventId.localeCompare(b.grant.eventId));
   const dynasties=Dynasty.getAll();return {byId:projection.eventsById(),top,grants,grantById:new Map(grants.map(g=>[g.grant.eventId,g])),rulersById:new Map(dynasties.flatMap(d=>d.rulers.map(r=>[r.id,r] as const))),rulerOwners:new Map(dynasties.flatMap(d=>d.rulers.map(r=>[r.id,d.factionId] as const)))};
  },[factionId,month,History.getRevision(),projection]);
+ const prepared=useMemo(()=>prepareAppanageHistory(History.getRecordedEvents()),[History.getRevision()]);
+ const appanages=useMemo(()=>{if(!top.some(({person})=>person.appanageHistory?.length))return new Map();return new Map(top.map(({person})=>[person.personId,[...new Set((person.appanageHistory??[]).filter(a=>a.factionId===factionId&&a.month<=month).map(a=>a.cityId))].flatMap(cityId=>cityAppanageHistory(cityId,[person],prepared.events,month,prepared).relations.filter(r=>r.grant.record.factionId===factionId))]));},[top,factionId,month,prepared]);
  const team=Game.Core?.teams.find(t=>t.name===factionId);
 
  return <Box data-merit-roll sx={{display:'grid',gap:1}}>
@@ -32,6 +38,7 @@ export default function MeritRoll({factionId,month,onOpen}:{factionId:string;mon
    <Typography fontSize='.8rem'>{describeMilitaryOffice(p,factionId)}{highest?` · 历史最高受封：${highest.countryName}${NOBLE_NAMES[highest.rank]}`:''}</Typography>
    <Typography fontSize='.78rem'>本国服役{formatWorldDuration(m.serviceMonths)}{m.cityIds.length>0?` · 攻克／收复${m.cityIds.length}座不同城邑（取城${m.captures}次）`:''}{m.importantCityIds.length>0?` · 重要攻城${m.importantCityIds.length}城`:''}{m.defendedCityIds.length>0?` · 真实守住${m.defendedCityIds.length}城`:''}{m.siegeEventIds.length>0?` · 长期围城经历${m.siegeEventIds.length}处`:''}</Typography>
    {representative&&<Typography fontSize='.78rem'>代表事迹：{representative.type==='siege-defended'?'守住':'攻克／收复'}{representative.cityName} · {formatWorldDate(representative.monthIndex??representative.year)}</Typography>}
+   {(appanages.get(p.personId)??[]).map(r=><Typography key={r.grant.record.eventId} fontSize='.78rem'>{r.state==='ENDED'?'曾食邑':r.state==='LOST'?'食邑（失地）':'食邑'}：<button type='button' style={button} onClick={()=>{dispatch(setSelectedCityId(r.grant.record.cityId));dispatch(setRightPanelTab('city'));}}>{r.grant.record.cityName}</button></Typography>)}
    <PersonLifeDates bornMonth={p.bornMonth} deathMonth={p.deathMonth}/>
   </Box>;})}
   <Typography fontWeight='bold'>历代封爵记录</Typography>{!grants.length&&<Typography fontSize='.8rem'>尚无正式册封。</Typography>}

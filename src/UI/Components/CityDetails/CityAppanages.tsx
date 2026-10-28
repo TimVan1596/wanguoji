@@ -17,7 +17,11 @@ const link={background:'none',border:0,color:'inherit',font:'inherit',padding:0,
 export default function CityAppanages({cityId}:{cityId:string}){
  const [revision,setRevision]=useState(()=>History.getRevision()),month=useSelector((s:RootState)=>s.root.worldMonth);
  useEffect(()=>History.subscribeRevision(setRevision),[]);
- const facts=useMemo(()=>cityAppanageHistory(cityId,Military.getPeople(),History.getRecordedEvents(),month),[cityId,month,revision]),byId=new Map(facts.relations.map(r=>[r.grant.record.eventId,r]));
+ const facts=useMemo(()=>cityAppanageHistory(cityId,Military.getPeople(),History.getRecordedEvents(),month),[cityId,month,revision]);
+ return <AppanageCards cityId={cityId} month={month} facts={facts}/>;
+}
+export function AppanageCards({cityId,month,facts}:{cityId:string;month:number;facts:ReturnType<typeof cityAppanageHistory>}){
+ const byId=new Map(facts.relations.map(r=>[r.grant.record.eventId,r]));
  return <Box data-city-appanages={cityId} sx={{display:'grid',gap:.75,minWidth:0}}>
   <Typography fontSize='.75rem' color='var(--gg-text-muted)'>授邑{facts.grants}次 · 受封{facts.people}人 · 当前{facts.current.length?'有有效食邑':'无有效食邑'}</Typography>
   {!facts.relations.length&&<Typography fontSize='.82rem'>尚无正式授邑记录。</Typography>}
