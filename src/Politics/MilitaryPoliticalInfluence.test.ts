@@ -121,3 +121,11 @@ it('qualifies a two-body same-country eight-year defender, never orders or unver
  i.events=ev;expect(deriveMilitaryPoliticalInfluence(i).candidates[0]).toMatchObject({unitCount:2,defenseEventIds:['d'],capturedEventIds:[]});
  i.worldMonth=95;expect(deriveMilitaryPoliticalInfluence(i).candidates).toEqual([]);i.worldMonth=96;ev[1].metadata.reason='CONTACT_ENDED';expect(deriveMilitaryPoliticalInfluence(i).candidates).toEqual([]);ev[1].metadata.reason='REPULSED';ev[2].metadata.commandId='someone-else';expect(deriveMilitaryPoliticalInfluence(i).candidates).toEqual([]);
 });
+
+it('formats the Yan deposition weights and the one original risk draw without changing stored evidence or RNG',async()=>{
+ const {getMilitaryParticipationDetails,formatMilitaryParticipation}=await import('./MilitaryPoliticalInfluence');
+ const participant={personId:'cui',sourceUserId:17,name:'崔慎',personalName:'崔慎',commandId:'cui-command',unitCount:3,memberUnitIds:['u1','u2','u3'],capturedEventIds:['capture1','capture2'],serviceMonths:144,nobleSelection:{candidates:[{personId:'cui',name:'崔慎',basePoliticalWeight:3,finalPoliticalWeight:3*1.05,nobility:{rank:'BO',countryName:'燕'}}]}};
+ const event:any={id:'yan-196',type:'ruler-deposed',year:2352,monthIndex:2352,actorFactionId:'yan',metadata:{previousRulerName:'姬桓',nextRulerName:'姬仲温',militaryParticipation:JSON.stringify({version:1,kind:'DEPOSITION',factionId:'yan',worldMonth:2352,participant,crisisFacts:[],crisisEventIds:[],baselineChance:.01,finalChance:.0175,roll:.015})}};
+ const raw=JSON.stringify(event),rng=worldRandom.exportState(),text=getMilitaryParticipationDetails(event).join('\n');
+ expect(text).toContain('军权权重 3.00 → 3.15（燕伯爵）');expect(text).toContain('1.00% → 1.75%');expect(text).toContain('军事压力增加0.75个百分点');expect(text).toContain('不增加成功抽签');expect(text).not.toContain('0000000004');expect(formatMilitaryParticipation(event)).toContain('军事参与者并非新君');expect(JSON.stringify(event)).toBe(raw);expect(worldRandom.exportState()).toEqual(rng);
+});
