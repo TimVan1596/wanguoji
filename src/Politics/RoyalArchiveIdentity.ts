@@ -29,10 +29,11 @@ export function royalMilitaryOfficeLabel(person:MilitaryPerson,month:number,fact
 }
 export function militaryIdentityLabels(person:MilitaryPerson,dynasties:readonly Dynasty[],events:readonly WorldEvent[],month:number){
  const labels:string[]=[];
+ if(!person.royalIdentity&&!person.politicalRulerId)return labels;
  const origin=person.royalIdentity&&dynasties.find(d=>d.factionId===person.royalIdentity!.factionId);
  if(origin&&royalMilitaryArchive(origin,[person],events).has(person.royalIdentity!.rulerId))labels.push("宗室将领");
- const political=dynasties.flatMap(d=>d.rulers.map(r=>({d,r}))).find(({r})=>r.id===person.politicalRulerId&&r.bornYear===person.bornMonth&&
-  (r.militaryIdentity?.personId===person.personId||r.residentIdentity?.personId===person.personId&&r.residentIdentity.sourceUserId===person.sourceUserId));
+ const political=person.politicalRulerId?dynasties.flatMap(d=>d.rulers.map(r=>({d,r}))).find(({r})=>r.id===person.politicalRulerId&&r.bornYear===person.bornMonth&&
+  (r.militaryIdentity?.personId===person.personId||r.residentIdentity?.personId===person.personId&&r.residentIdentity.sourceUserId===person.sourceUserId)):undefined;
  if(political&&political.r.accessionYear!==undefined&&political.r.accessionYear<=month){
   labels.push(political.d.currentRulerId===political.r.id&&["ruling","exiled"].includes(political.r.status)?"现任君主":"曾任君主");
   if(person.royalIdentity)labels.push("后来继位");

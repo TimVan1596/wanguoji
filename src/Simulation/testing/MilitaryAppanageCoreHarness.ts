@@ -1,3 +1,4 @@
+import {checkMilitaryProjectionCache} from './MilitaryArchiveCoreHarness';
 import Military from '../../Politics/MilitaryCommandRegistry';
 import History from '../../History/WorldHistory';
 import Dynasty from '../../Politics/Dynasty';
@@ -20,9 +21,9 @@ export async function checkMilitaryAppanages(core:any,original:WorldSaveV1,id:st
  check(diffCanonicalWorldSave(before,strict()).matched,'failed real appanage grant restores the entire record and original history');
  const rng=JSON.stringify(random.exportState()),population=core.teams.reduce((n:number,t:any)=>n+t.users.size,0),army=JSON.stringify(Military.getFormations());update(240);const g=p.appanageHistory?.[0];
  check(g?.kind==='GRANTED'&&g.personId===p.personId&&p.nobilityHistory?.some(n=>n.eventId===g.nobleGrantEventId),'actual decorated officer receives a distinct formal appanage from a living sovereign');if(!g)throw Error('No estate fixture');
- const city=core.allCities.find((c:any)=>c.id===g.cityId)!;check(city.ownerFactionId===g.factionId&&p.nobilityHistory!.some(n=>n.cityIds.includes(city.id)),'estate is a real currently owned city with this person’s own verified capture');
+ let city=core.allCities.find((c:any)=>c.id===g.cityId)!;check(city.ownerFactionId===g.factionId&&p.nobilityHistory!.some(n=>n.cityIds.includes(city.id)),'estate is a real currently owned city with this person’s own verified capture');
  check(JSON.stringify(random.exportState())===rng&&population===core.teams.reduce((n:number,t:any)=>n+t.users.size,0)&&army===JSON.stringify(Military.getFormations()),'appanage changes no population, military units, command, ownership or RNG');
- const granted=strict();update(240);check(diffCanonicalWorldSave(granted,strict()).matched,'same-month settlement cannot duplicate a grant or create a second exclusive estate');
+ const granted=strict();await checkMilitaryProjectionCache(core,granted,id,check);p=Military.getPerson(id)!;city=core.allCities.find((c:any)=>c.id===g.cityId)!;update(240);check(diffCanonicalWorldSave(granted,strict()).matched,'same-month settlement cannot duplicate a grant or create a second exclusive estate');
  const ps=Military.getPeople().flatMap(p=>p.appanageHistory?.filter(a=>a.kind==='GRANTED')??[]);check(new Set(ps.map(a=>[a.factionId,a.epochFounderId,a.cityId].join('|'))).size===ps.length,'same royal house cannot assign conflicting exclusive estates');
  for(const field of ['cityId','rulerId','sourceEventId','meritEventId','nobleGrantEventId']){const bad:any=structuredClone(granted),record=bad.registries.militaryCommandRegistry.people.find((x:any)=>x.personId===id).appanageHistory[0];record[field]='fabricated';const e=bad.worldHistory.events.find((e:any)=>e.id===record.eventId);e.metadata.appanage=JSON.stringify(record);check(!validateWorldSave(bad).valid,'strict appanage proof rejects forged '+field);}
  const home=core.teams.find((t:any)=>t.name===g.factionId)!,enemy=core.teams.find((t:any)=>t!==home&&t.status==='ACTIVE')!;

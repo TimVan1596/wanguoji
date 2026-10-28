@@ -22,6 +22,14 @@ export function verifiedMilitarySecessions(p:MilitaryPerson,events:WorldEvent[],
   }catch{return false;}
  });
 }
+/** Cheap necessary conditions only. Terminal honors and impossible acts need no full historical scan. */
+export function mayReceiveMilitaryHonor(p:MilitaryPerson,month=Infinity){
+ const grants=(p.nobilityHistory??[]).filter(g=>g.month<=month);
+ if(!grants.some(g=>!(p.honorHistory??[]).some(h=>h.kind==='REVOKED'&&h.month<=month&&h.factionId===g.factionId&&h.epochFounderId===g.epochFounderId)))return false;
+ if(p.politicalRulerId)return true; // Only a real political founder can have verified military secession.
+ if(p.status!=='DEAD'||p.deathMonth===undefined||p.honorHistory?.some(h=>h.kind==='POSTHUMOUS')||p.capturedEventIds.length<2)return false;
+ return p.deathCause==='BATTLE_DEATH'||grants.some(g=>g.rank!=='BO');
+}
 export function nextMilitaryHonors(p:MilitaryPerson,formations:MilitaryFormation[],events:WorldEvent[],month:number,teams:any[],dynasties:Dynasty[]):MilitaryHonor[]{
  if(month%12!==0)return [];
  const honors:MilitaryHonor[]=[],splits=verifiedMilitarySecessions(p,events,dynasties,month);

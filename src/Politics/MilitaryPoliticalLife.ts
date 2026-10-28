@@ -9,6 +9,7 @@ import {getRulerTitleAtMonth} from './RulerTitleRules';
 
 /** Read-only bridge. A title alone, a shared name, or a military participation event is never accession proof. */
 export function militaryPoliticalLife(person:MilitaryPerson,dynasties:readonly Dynasty[],events:readonly WorldEvent[],factions:ReadonlyMap<string,HistoryFactionLike>,month:number){
+ if(!person.politicalRulerId)return undefined;
  const linked=dynasties.flatMap(d=>d.rulers.map(r=>({d,r}))).find(({d,r})=>r.id===person.politicalRulerId&&r.bornYear===person.bornMonth&&
   (r.militaryIdentity?.personId===person.personId&&royalMilitaryArchive(d,[person],events).has(r.id)||r.residentIdentity?.personId===person.personId&&r.residentIdentity.sourceUserId===person.sourceUserId&&r.residentIdentity.bornMonth===person.bornMonth&&r.residentIdentity.military?.personId===person.personId));
  if(!linked||linked.r.accessionYear===undefined||linked.r.accessionYear>month)return undefined;

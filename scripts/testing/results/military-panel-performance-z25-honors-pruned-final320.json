@@ -1,0 +1,17 @@
+[
+  {
+    "seed": "regional-3",
+    "years": 320,
+    "worldMonth": 3840,
+    "settlement": {
+      "months": 12,
+      "annualHonorMs": [
+        0.10000000894069672
+      ],
+      "canonicalExcludingVersionAndAppanages": "0ba68c0926d02e0b236ae2ff2a1c2c4834adf7bdac4b4a497ada861fd1521cda",
+      "worldRandomPosition": 19008
+    },
+    "factsUnchangedOnHydration": true,
+    "scope": "same natural 320-year fixture; actual twelve-month production settlement; no GUI timing"
+  }
+]

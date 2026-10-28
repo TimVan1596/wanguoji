@@ -1,0 +1,45 @@
+[
+  {
+    "seed": "regional-3",
+    "years": 320,
+    "settlement": {
+      "months": 12,
+      "annualHonorMs": [
+        0.09999999403953552
+      ],
+      "canonicalExcludingVersionAndAppanages": "0ba68c0926d02e0b236ae2ff2a1c2c4834adf7bdac4b4a497ada861fd1521cda",
+      "worldRandomPosition": 19008
+    },
+    "fixtureSchema": 29,
+    "benchmarkSchema": 30,
+    "factsUnchangedOnHydration": true,
+    "factionId": "魏",
+    "worldMonth": 3840,
+    "population": 183,
+    "worldPeople": 111,
+    "localPeople": 22,
+    "worldEvents": 9434,
+    "enterMs": 74.20000000298023,
+    "firstExpandMs": 25.799999997019768,
+    "collapsedChronicleCalls": 0,
+    "eventReads": 135,
+    "initialDom": 440,
+    "frame": [
+      {
+        "sidebar": true,
+        "averageFPS": 43.92628310989197,
+        "p95FrameMs": 55.70000000298023
+      },
+      {
+        "sidebar": false,
+        "averageFPS": 56.336161187531914,
+        "p95FrameMs": 38.599999994039536
+      }
+    ],
+    "react": {
+      "commits": 57,
+      "totalMs": 850.7999999672174
+    },
+    "scope": "actual natural Core world; same snapshot for paired UI measurements; offscreen Electron timings, not human Chrome acceptance"
+  }
+]

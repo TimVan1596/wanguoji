@@ -1,6 +1,7 @@
+import {createMilitaryArchiveIndex} from './MilitaryArchiveIndex';
+import MilitaryDetailProjection from './MilitaryDetailProjection';
 import MilitaryArchiveWindow from './MilitaryArchiveWindow';
 import {militaryPosthumousLabel} from '../../../Politics/MilitaryHonors';
-import {militaryPoliticalLife,appendMilitaryPoliticalLife} from "../../../Politics/MilitaryPoliticalLife";
 import GenealogyBrowser from "./GenealogyBrowser";
 import PersonLifeDates from "./PersonLifeDates";
 import {militaryIdentityLabels} from "../../../Politics/RoyalArchiveIdentity";
@@ -15,12 +16,11 @@ import DepositionSelectionDetails from "../DepositionSelectionDetails";
 import MeritRoll,{NobleHistory} from "./MeritRoll";
 import {nobleLabel} from "../../../Politics/MilitaryNobility";
 import PersonArchiveCard from "./PersonArchiveCard";
-import {militaryMilestones,selectMilitaryMilestones} from "./PersonChroniclePresentation";
 import {MILITARY_OFFICES,MILITARY_OFFICE_NAMES} from "../../../Politics/MilitaryOffice";
 import {describeMilitaryNameEvidence} from "../../../Politics/MilitaryPersonIdentity";
 import {describeMilitaryOffice} from "../../../Politics/MilitaryOffice";
 import PersonChronicleLayout, {ChronicleSection} from "./PersonChronicleLayout";
-import {composeRulerBiography,composeMilitaryBiography} from "../../../Politics/PersonBiography";
+import {composeRulerBiography} from "../../../Politics/PersonBiography";
 import {reconcileMilitaryPersonSelection,toggleMilitaryPerson,type MilitaryPersonSelection} from "./MilitaryPersonSelection";
 import {resolveMilitaryCommandView} from "../../../Game/MilitaryCommandOverlay";
 import MilitaryPersonIdentityHeader from "./MilitaryPersonIdentityHeader";
@@ -634,8 +634,8 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
   const people = sortMilitaryPeople(MilitaryCommandRegistry.getPeople().filter(person => person.factionId === factionId || person.appointments.some(appointment => appointment.factionId === factionId)),factionId);
   const formations = MilitaryCommandRegistry.getFormations();
   const archiveEvents=useMemo(()=>WorldHistory.getEvents(),[worldMonth,WorldHistory.getRevision()]);
+  const eventIndex=useMemo(()=>createMilitaryArchiveIndex(archiveEvents),[archiveEvents]);
   const archiveDynasties=useMemo(()=>DynastyRegistry.getAll(),[worldMonth,WorldHistory.getRevision()]);
-  const localArchiveEvents=useMemo(()=>archiveEvents.filter(e=>e.factionIds?.includes(factionId)||e.actorFactionId===factionId||e.targetFactionId===factionId),[archiveEvents,factionId]);
   const usersByPerson=new Map((Game.Core?.teams??[]).flatMap(t=>[...t.users]).filter(u=>u.militaryPersonId).map(u=>[u.militaryPersonId!,u]));
   const rulerOwners=new Map(archiveDynasties.flatMap(d=>d.rulers.map(r=>[r.id,d.factionId] as const)));
   const linkedRulers=new Map(archiveDynasties.flatMap(d=>d.rulers).filter(r=>r.residentIdentity||r.militaryIdentity).map(r=>[r.militaryIdentity?.personId??r.residentIdentity!.personId,r]));
@@ -704,24 +704,16 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
           <Typography fontSize="0.8rem" color="var(--gg-text-muted)">{first?`${formatWorldDate(first.startMonth)}—${last?.endMonth===undefined?(current?"今":"止期未载"):formatWorldDate(last.endMonth)}`:"任期未载"} · 军旅纪事展开查看</Typography>
         </>}
       >
-        {expanded && (() => {
-      const entries=MilitaryCommandRegistry.getChronicle(person,worldMonth,factionId);
-      const localEvents=localArchiveEvents;
-      const politicalLife=militaryPoliticalLife(person,archiveDynasties,archiveEvents,politicalFactionById,worldMonth);
-      const allMilestones=appendMilitaryPoliticalLife(militaryMilestones(person,entries,localEvents,{factions:politicalFactionById}),politicalLife);
-      const milestones=selectMilitaryMilestones(allMilestones,localEvents,8);
-
+        {expanded && <MilitaryDetailProjection person={person} factionId={factionId} month={worldMonth} events={archiveEvents} eventIndex={eventIndex} dynasties={archiveDynasties} formations={formations} factions={politicalFactionById}>{({entries,allMilestones,milestones,career,bio})=>{
           const formation = getMilitaryLocalFormation(person,factionId,formations);
           const activeUser = [...(Game.Core?.teams.find(team => team.name === person.factionId)?.users ?? [])]
             .find(user => user.militaryPersonId === person.personId);
           const linkedRuler = linked;
           const personAge = linkedRuler ? formatRulerLifeAge(linkedRuler,worldMonth) : describeMilitaryAge(person,worldMonth,Boolean(activeUser?.matchesMilitaryLife(person)));
           const lastAppointment = localAppointments.at(-1);
-          const career = MilitaryCommandRegistry.getCareer(person, worldMonth);
           const politicalEvents = MilitaryCommandRegistry.getPoliticalEvents(person);
           const politicalCandidate = militaryPolitics?.candidates.find(p => p.personId === person.personId);
           const orderEvidence = formation ? MilitaryCommandRegistry.getOrderEvidence(formation) : undefined;
-          const bio=composeMilitaryBiography(person,entries,factionId);
           const view=formation&&Game.Core?resolveMilitaryCommandView(Game.Core,formation.commandId):undefined;
           return <PersonChronicleLayout
             title={<MilitaryPersonIdentityHeader person={person} country={`${politicalFactionById.get(person.factionId)?.displayName ?? person.factionId}${politicalFactionById.get(person.factionId)?.identityStage === "STATE" ? "国" : ""}`} />}
@@ -773,7 +765,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
               <Typography fontSize="0.82rem">统兵{view.members.length}人 · {view.target?`奉命进军${view.target.name}`:"暂未奉进攻军令。"}</Typography>
             </ChronicleSection>}
           </PersonChronicleLayout>;
-        })()}
+        }}</MilitaryDetailProjection>}
       </PersonArchiveCard>;
     }}</MilitaryArchiveWindow>
 

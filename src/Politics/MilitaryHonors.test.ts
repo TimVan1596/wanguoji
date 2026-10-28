@@ -1,6 +1,6 @@
 import {expect,it} from 'vitest';
 import {currentNobleGrant,deriveNobleMerits,meritRoster,nextNobleGrant} from './MilitaryNobility';
-import {nextMilitaryHonors} from './MilitaryHonors';
+import {mayReceiveMilitaryHonor,nextMilitaryHonors} from './MilitaryHonors';
 const fixture=()=>{
  const p:any={personId:'p',sourceUserId:1,bornMonth:-300,name:'user',personalName:'景厚',status:'ACTIVE',factionId:'a',appointments:[{factionId:'a',commandId:'f',startMonth:0,officeHistory:[{office:'SHANGJIANGJUN',month:0}]}],capturedEventIds:[]};
  const f:any[]=[{commandId:'f',commanderPersonId:'p',factionId:'a',status:'ACTIVE',memberUnitIds:['u'],captures:[]}],e:any[]=[],t:any={name:'a',displayName:'齐',status:'ACTIVE',identityStage:'STATE',stateFoundedMonth:0,sovereigntyRank:'KING',nameHistory:[{name:'齐',startMonth:0}]},d:any={factionId:'a',currentRulerId:'r',houseEpochs:[{houseName:'田氏',startMonth:0,foundingRulerId:'r'}],rulers:[{id:'r',houseName:'田氏',givenName:'明',status:'ruling',accessionYear:0,reignOrdinal:1,naturalDeathYear:1000}]};
@@ -21,7 +21,7 @@ it('projects real zero-capture defense separately and keeps deterministic rankin
  const before=JSON.stringify(x.p);expect(meritRoster([x.p],x.f,x.e,'a',30)).toEqual(meritRoster([x.p],x.f,x.e,'a',30));expect(JSON.stringify(x.p)).toBe(before);
 });
 it('formally evaluates only an actual dead decorated combat veteran, once',()=>{
- const x=fixture();x.capture('1');x.capture('2');x.award();expect(x.propose()).toEqual([]);x.dead();const before=JSON.stringify(x),h=x.propose()[0];expect(h).toMatchObject({kind:'POSTHUMOUS',epithet:'武烈',rulerId:'r',deathMonth:240,month:252});expect(JSON.stringify(x)).toBe(before);x.p.honorHistory=[h];expect(x.propose()).toEqual([]);expect(x.propose(228)).toEqual([]);
+ const x=fixture();x.capture('1');x.capture('2');x.award();expect(mayReceiveMilitaryHonor(x.p,252)).toBe(false);expect(x.propose()).toEqual([]);x.dead();expect(mayReceiveMilitaryHonor(x.p,252)).toBe(true);const before=JSON.stringify(x),h=x.propose()[0];expect(h).toMatchObject({kind:'POSTHUMOUS',epithet:'武烈',rulerId:'r',deathMonth:240,month:252});expect(JSON.stringify(x)).toBe(before);x.p.honorHistory=[h];expect(mayReceiveMilitaryHonor(x.p,252)).toBe(false);expect(x.propose()).toEqual([]);expect(x.propose(228)).toEqual([]);
 });
 it.each(['no-title','no-merit','no-death','no-king','exiled','former-king','new-dynasty'])('rejects unsupported posthumous %s',kind=>{
  const x=fixture();x.capture('1');x.capture('2');x.award();x.dead();
@@ -34,5 +34,12 @@ it('ordinary transfer is never rebellion, and effective revoked titles cannot su
 });
 it.each([1,2])('uses %s distinct important city results for a noncombat posthumous evaluation',important=>{
  const x=fixture();for(let i=0;i<4;i++)x.capture('c'+i,'c'+i,i<important);x.award(180);x.award(192);x.dead();x.p.deathCause='NATURAL_DEATH';x.e.at(-1).metadata.deathCause='NATURAL_DEATH';
- expect(x.propose()[0]).toMatchObject({kind:'POSTHUMOUS',epithet:important===1?'武襄':'武毅',reason:'DISTINGUISHED_SERVICE',rank:'HOU'});
+ expect(mayReceiveMilitaryHonor(x.p,252)).toBe(true);expect(x.propose()[0]).toMatchObject({kind:'POSTHUMOUS',epithet:important===1?'武襄':'武毅',reason:'DISTINGUISHED_SERVICE',rank:'HOU'});
+});
+
+it('honor prefilter keeps unresolved political revocations, and respects the original award/revocation date',()=>{
+ const x=fixture();x.capture('1');x.capture('2');const g=x.award();x.p.politicalRulerId='real-founder';
+ expect(mayReceiveMilitaryHonor(x.p,179)).toBe(false);expect(mayReceiveMilitaryHonor(x.p,240)).toBe(true);
+ x.p.honorHistory=[{kind:'REVOKED',month:252,factionId:'a',epochFounderId:g.epochFounderId}];
+ expect(mayReceiveMilitaryHonor(x.p,240)).toBe(true);expect(mayReceiveMilitaryHonor(x.p,252)).toBe(false);
 });

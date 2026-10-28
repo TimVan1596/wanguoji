@@ -1,7 +1,7 @@
 import {appanageChanges,appanageText,OWNERSHIP_EVENTS,type MilitaryAppanage} from './MilitaryAppanage';
 import {honorAuthority} from './MilitaryHonors';
 import {currentNobleGrant} from './MilitaryNobility';
-import {nextMilitaryHonors,militaryHonorText,type MilitaryHonor} from './MilitaryHonors';
+import {mayReceiveMilitaryHonor,nextMilitaryHonors,militaryHonorText,type MilitaryHonor} from './MilitaryHonors';
 import {nextNobleGrant,nobleChronicle,type NobleGrant} from "./MilitaryNobility";
 import type {Dynasty} from "./Dynasty";
 import {isSiegePosition} from "../Simulation/SiegeParticipants";
@@ -386,8 +386,8 @@ export class MilitaryCommandRegistryStore {
     if(month%12!==0||!this.eventWriter)return;
     const formations=this.getFormations(),events=WorldHistory.getEvents();
     for(const p of this.people.values()){
-      // Every honor requires an existing formal grant; avoid scanning the world for unennobled veterans.
-      if(!p.nobilityHistory?.length)continue;
+      // Necessary conditions only: do not repeatedly scan history for impossible or completed honors.
+      if(!mayReceiveMilitaryHonor(p,month))continue;
       for(const honor of nextMilitaryHonors(p,formations,events,month,teams,dynasties)){
       const prior=p.honorHistory?structuredClone(p.honorHistory):undefined,history=WorldHistory.exportState();
       try{
