@@ -7,21 +7,39 @@ import History from '../../../History/WorldHistory';
 import Military from '../../../Politics/MilitaryCommandRegistry';
 import Dynasty from '../../../Politics/Dynasty';
 import {cityAppanageHistory} from '../../../History/CityAppanageHistory';
-import {appanageText} from '../../../Politics/MilitaryAppanage';
 import {NOBLE_NAMES} from '../../../Politics/MilitaryNobility';
 import {formatWorldDate} from '../../../Simulation/WorldTime';
 import {resolvePersonArchiveTarget} from '../FactionDetails/PersonArchiveTarget';
 import MilitaryArchiveWindow from '../FactionDetails/MilitaryArchiveWindow';
+import PersonPortrait from '../FactionDetails/PersonPortrait';
+import {appanageStatus,appanageSummary,appanageTimelineLabel,appanagePortrait,type AppanageRelation} from './AppanagePresentation';
+const link={background:'none',border:0,color:'inherit',font:'inherit',padding:0,cursor:'pointer'} as const;
 export default function CityAppanages({cityId}:{cityId:string}){
- const [open,setOpen]=useState(false),[revision,setRevision]=useState(()=>History.getRevision()),dispatch=useDispatch(),month=useSelector((s:RootState)=>s.root.worldMonth),teams=useSelector((s:RootState)=>s.root.teams);
+ const [revision,setRevision]=useState(()=>History.getRevision()),month=useSelector((s:RootState)=>s.root.worldMonth);
  useEffect(()=>History.subscribeRevision(setRevision),[]);
- const facts=useMemo(()=>cityAppanageHistory(cityId,Military.getPeople(),History.getRecordedEvents(),month),[cityId,month,revision]);
- const byId=new Map(facts.entries.map(e=>[e.record.eventId,e]));
- return <Box data-city-appanages={cityId} sx={{mt:1}}><button type='button' aria-expanded={open} onClick={()=>setOpen(v=>!v)} style={{background:'none',border:0,color:'inherit',font:'inherit',padding:0,cursor:'pointer'}}>历代封邑：授邑{facts.grants}次 · 受封{facts.people}人 · 当前{facts.current.length?'有有效食邑':'无有效食邑'} {open?'▴':'▾'}</button>
- {open&&<><Typography fontSize='.76rem'>名义食邑，不改变城市归属、人口、城防及军权；进爵不重复计为授邑。</Typography>{!facts.entries.length&&<Typography fontSize='.8rem'>尚无可核验的正式食邑记录。</Typography>}
- <MilitaryArchiveWindow ids={facts.entries.map(e=>e.record.eventId)} estimateHeight={100} maxRows={32}>{id=>{const {person,record:a,rank}=byId.get(id)!;return <Box sx={{py:.7}} data-appanage-event={id}>
-  <Typography fontSize='.8rem'>{formatWorldDate(a.month)} · <button type='button' style={{border:0,background:'none',color:'inherit',font:'inherit',padding:0,textDecoration:'underline',cursor:'pointer'}} onClick={()=>{const target={kind:'MILITARY' as const,factionId:a.factionId,id:person.personId};if(!resolvePersonArchiveTarget(target,teams,Dynasty.getAll(),Military.getPeople()))return;dispatch(setPersonArchiveRequest(target));dispatch(setSelectedFactionName(a.factionId));dispatch(setFactionDetailTab('military'));dispatch(setRightPanelTab('faction'));}}>{person.personalName}</button> · 当时{NOBLE_NAMES[rank]}</Typography>
-  <Typography fontSize='.78rem'>{appanageText(a)}</Typography><Typography fontSize='.74rem'>授封国：{a.countryName} · 授封君主：{a.rulerTitle}</Typography>
- </Box>;}}</MilitaryArchiveWindow></>}
+ const facts=useMemo(()=>cityAppanageHistory(cityId,Military.getPeople(),History.getRecordedEvents(),month),[cityId,month,revision]),byId=new Map(facts.relations.map(r=>[r.grant.record.eventId,r]));
+ return <Box data-city-appanages={cityId} sx={{display:'grid',gap:.75,minWidth:0}}>
+  <Typography fontSize='.75rem' color='var(--gg-text-muted)'>授邑{facts.grants}次 · 受封{facts.people}人 · 当前{facts.current.length?'有有效食邑':'无有效食邑'}</Typography>
+  {!facts.relations.length&&<Typography fontSize='.82rem'>尚无正式授邑记录。</Typography>}
+  <MilitaryArchiveWindow ids={facts.relations.map(r=>r.grant.record.eventId)} estimateHeight={142} maxRows={24}>{id=><AppanageCard relation={byId.get(id)!} month={month}/>}</MilitaryArchiveWindow>
+ </Box>;
+}
+function AppanageCard({relation:r,month}:{relation:AppanageRelation;month:number}){
+ const [open,setOpen]=useState(false),teams=useSelector((s:RootState)=>s.root.teams),dispatch=useDispatch(),{person,record:a}=r.grant;
+ const portrait=appanagePortrait(person,a,teams.find(t=>t.name===a.factionId),month),summary=appanageSummary(r);
+ const openPerson=(e:React.MouseEvent)=>{e.stopPropagation();const target={kind:'MILITARY' as const,factionId:a.factionId,id:person.personId};if(!resolvePersonArchiveTarget(target,teams,Dynasty.getAll(),Military.getPeople()))return;dispatch(setPersonArchiveRequest(target));dispatch(setSelectedFactionName(a.factionId));dispatch(setFactionDetailTab('military'));dispatch(setRightPanelTab('faction'));};
+ return <Box component='article' data-appanage-grant={a.eventId} onClick={()=>setOpen(v=>!v)} sx={{my:.5,p:1,border:'1px solid var(--gg-border)',borderLeft:`3px solid ${portrait.color===undefined?'var(--gg-border)':'#'+portrait.color.toString(16).padStart(6,'0')}`,borderRadius:1,minWidth:0,overflowWrap:'anywhere'}}>
+  <Box sx={{display:'flex',gap:.6,alignItems:'flex-start',minWidth:0}}>
+   <button type='button' style={{...link,flexShrink:0}} aria-label={`查看${person.personalName}军政档案`} onClick={openPerson}><PersonPortrait {...portrait} size={34}/></button>
+   <Box sx={{flex:1,minWidth:0}}>
+    <Box sx={{display:'flex',alignItems:'baseline',gap:.5,flexWrap:'wrap'}}><button type='button' style={{...link,fontWeight:600,fontSize:'.88rem',textAlign:'left'}} onClick={openPerson}>{person.personalName}</button><Typography component='span' fontSize='.7rem' color='var(--gg-text-muted)'>{appanageStatus(r)}</Typography></Box>
+    <Typography fontSize='.78rem'>{a.countryName} · {NOBLE_NAMES[a.rank]}</Typography>
+    <Typography fontSize='.75rem'>{formatWorldDate(a.month)}—{r.endMonth===undefined?'今':formatWorldDate(r.endMonth)}</Typography>
+    <Typography fontSize='.75rem'>授封：{a.rulerTitle}</Typography>
+    {summary&&<Typography fontSize='.74rem' color='var(--gg-text-muted)'>{summary}</Typography>}
+   </Box>
+   <button type='button' style={{...link,padding:'0 2px',flexShrink:0}} aria-label={`${open?'收起':'展开'}${person.personalName}封邑经历`} aria-expanded={open} onClick={e=>{e.stopPropagation();setOpen(v=>!v);}}>{open?'▴':'▾'}</button>
+  </Box>
+  {open&&<Box sx={{mt:.8,pt:.6,borderTop:'1px solid var(--gg-border)',display:'grid',gap:.4}}>{r.timeline.map(e=><Typography key={e.record.eventId} data-appanage-event={e.record.eventId} fontSize='.75rem'>{formatWorldDate(e.record.month)} · {appanageTimelineLabel(e.record)}{e.record.kind==='GRANTED'||e.record.kind==='ENDED'?` · ${NOBLE_NAMES[e.rank]}`:''}</Typography>)}</Box>}
  </Box>;
 }

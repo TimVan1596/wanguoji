@@ -1,151 +1,52 @@
 import CityAppanages from './CityAppanages';
-import { Box, Button, Typography } from "@mui/material";
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import type City from "../../../Components/City";
-import Game from "../../../Game/Game";
-import { colorToString } from "../../../paid/theme";
-import WorldHistory from "../../../History/WorldHistory";
-import {importantCityHistory} from "../../../History/CityHistoryPresentation";
-import ArchivedCities from "../../../Simulation/ArchivedCities";
-import { selectCityFromList } from "../../../Simulation/CitySelection";
-import {
-  CityListFilter,
-  getVisibleCities,
-} from "../../../Simulation/CityListRules";
-import { formatWorldDate } from "../../../Simulation/WorldTime";
-import DynastyRegistry from "../../../Politics/Dynasty";
-import { formatCityHistoryEvent, getCityHistoricalFactionName } from "../../../History/CityHistoryFormatter";
-import { RootState } from "../../../store";
-import { setSelectedCityId } from "../../../store/rootSlice";
+import {Box,Button,Typography} from '@mui/material';
+import {useEffect,useState} from 'react';
+import {useDispatch,useSelector} from 'react-redux';
+import type City from '../../../Components/City';
+import Game from '../../../Game/Game';
+import {colorToString} from '../../../paid/theme';
+import WorldHistory from '../../../History/WorldHistory';
+import {importantCityHistory} from '../../../History/CityHistoryPresentation';
+import ArchivedCities,{type ArchivedCity} from '../../../Simulation/ArchivedCities';
+import {selectCityFromList} from '../../../Simulation/CitySelection';
+import {CityListFilter,getVisibleCities} from '../../../Simulation/CityListRules';
+import {formatWorldDate} from '../../../Simulation/WorldTime';
+import DynastyRegistry from '../../../Politics/Dynasty';
+import {formatCityHistoryEvent,getCityHistoricalFactionName} from '../../../History/CityHistoryFormatter';
+import {RootState} from '../../../store';
+import {setSelectedCityId} from '../../../store/rootSlice';
 
-export default function CityDetails() {
-  const dispatch = useDispatch();
-  const [detailCityId,setDetailCityId]=useState<string>();
-  const [filter, setFilter] = useState<CityListFilter>("all");
-  const selectedCityId = useSelector(
-    (state: RootState) => state.root.selectedCityId
-  );
-  const teams = useSelector((state: RootState) => state.root.teams);
-  const cities = teams.flatMap((team) => team.cities);
-  const city = cities.find((item) => item.id === selectedCityId);
-  const archivedCity = selectedCityId
-    ? ArchivedCities.get(selectedCityId)
-    : undefined;
-  if (!city) {
-    if (archivedCity) {
-      const founderTeam = teams.find((team) => team.name === archivedCity.founderFactionId);
-      const lastOwnerTeam = teams.find((team) => team.name === archivedCity.lastOwnerFactionId);
-      return (
-        <Box data-archive-scroll sx={{ p: 1, height:"100%",boxSizing:"border-box",overflowY:"auto",borderTop: "1px solid #00000022" }}>
-          <Button size="small" onClick={() => dispatch(setSelectedCityId(undefined))}>
-            ← 返回城市列表
-          </Button>
-          <Typography fontWeight="bold">城市档案：{archivedCity.name}</Typography>
-          <Typography fontSize="0.9rem">
-            原属：{founderTeam?.displayName ?? archivedCity.founderFactionId}
-          </Typography>
-          <Typography fontSize="0.9rem">
-            最后归属：{lastOwnerTeam?.displayName ?? archivedCity.lastOwnerFactionId}
-          </Typography>
-          <Typography fontSize="0.9rem">
-            建立：{formatWorldDate(archivedCity.foundedMonth)}
-          </Typography>
-          <Typography fontSize="0.9rem">
-            毁灭：{formatWorldDate(archivedCity.destroyedMonth)}
-          </Typography>
-          <Typography fontSize="0.9rem">
-            易手：{archivedCity.captureCount} 次
-          </Typography>
-          <CityAppanages key={archivedCity.id} cityId={archivedCity.id}/>
-        </Box>
-      );
-    }
-    return <CityList cities={cities} filter={filter} onFilterChange={setFilter} />;
-  }
-
-  const owner = city.ownerTeam;
-  const founder = city.founderTeam;
-  const attacker = teams.find((team) => team.name === city.attackingFactionId);
-  const factionById = new Map(teams.map((team) => [team.name, team]));
-  const founderAtFounding = getCityHistoricalFactionName(factionById, city.founderFactionId, city.foundedYear);
-
-  return (
-    <Box data-archive-scroll sx={{ p: 1, height:"100%",boxSizing:"border-box",overflowY:"auto",borderTop: "1px solid #00000022" }}>
-      <Button size="small" onClick={() => dispatch(setSelectedCityId(undefined))}>
-        ← 返回城市列表
-      </Button>
-      <Typography fontWeight="bold" variant="h6">
-        {city.isCapital ? "★ " : "● "}
-        {city.name}
-      </Typography>
-      <Typography fontSize="0.9rem">
-        当前归属：
-        <FactionName name={owner?.displayName ?? "无"} color={owner?.color} />
-      </Typography>
-      <Typography fontSize="0.9rem">
-        原始归属：
-        <FactionName name={founderAtFounding || city.founderFactionId} color={founder?.color} />
-        {founder && founderAtFounding !== founder.displayName ? `（后为${founder.displayName}）` : ""}
-      </Typography>
-      <Typography fontSize="0.9rem">
-        城市身份：{city.isCapital ? "首都" : "普通城市"}
-      </Typography>
-      <Typography fontSize="0.9rem">
-        城防：{city.defense} / {city.maxDefense}
-      </Typography>
-      <Typography fontSize="0.9rem">
-        城市防御区：{city.fortifiedCells.length} 格
-      </Typography>
-      <Typography fontSize="0.9rem">
-        忠诚：{city.loyalty}
-      </Typography>
-      <Typography fontSize="0.9rem">
-        破坏度：{city.devastation} / 100
-      </Typography>
-      <Typography fontSize="0.9rem">
-        状态：{city.loyaltyStatus}
-      </Typography>
-      <Typography fontSize="0.9rem">
-        建立：{formatWorldDate(city.foundedYear)}
-      </Typography>
-      <Typography fontSize="0.9rem">易手：{city.captureCount} 次</Typography>
-      <Typography fontSize="0.9rem">
-        围攻：
-        {city.underSiege && attacker ? (
-          <>
-            正在被
-            <FactionName name={attacker.displayName} color={attacker.color} />
-            围攻
-          </>
-        ) : (
-          "无"
-        )}
-      </Typography>
-      {city.siegeBattle&&<Typography fontSize=".82rem">本地攻方{city.siegeBattle.attackers}人 · 守方{city.siegeBattle.defenders}人 · 自{formatWorldDate(city.siegeBattle.startMonth)}围攻</Typography>}
-      <CityAppanages key={city.id} cityId={city.id}/>
-      <Typography sx={{ mt: 1 }} fontWeight="bold">
-        城市历史
-      </Typography>
-      <Button size="small" onClick={()=>setDetailCityId(detailCityId===city.id?undefined:city.id)}>{detailCityId===city.id?"收起详细记录":"查看全部记录（含短暂接触）"}</Button>
-      <Box>
-        {[...(detailCityId===city.id?city.history:importantCityHistory(city.history,WorldHistory.getEvents(),city.id))]
-          .sort((a, b) => b.year - a.year)
-          .map((event, index) => (
-            <Typography key={`${event.year}-${event.type}-${index}`} fontSize="0.85rem">
-              {formatWorldDate(event.year)} {formatCityHistoryEvent(
-                event,
-                { name: city.name, founderFactionId: city.founderFactionId, foundedMonth: city.foundedYear },
-                factionById,
-                event.rulerId && event.newOwnerFactionId
-                  ? DynastyRegistry.getRulerHistoricalTitle(event.rulerId, event.newOwnerFactionId, event.year)
-                  : undefined
-              )}
-            </Typography>
-          ))}
-      </Box>
-    </Box>
-  );
+export default function CityDetails(){
+ const [filter,setFilter]=useState<CityListFilter>('all'),selectedCityId=useSelector((s:RootState)=>s.root.selectedCityId),teams=useSelector((s:RootState)=>s.root.teams),month=useSelector((s:RootState)=>s.root.worldMonth);
+ const cities=teams.flatMap(t=>t.cities),city=cities.find(c=>c.id===selectedCityId),archived=selectedCityId?ArchivedCities.get(selectedCityId):undefined;
+ return city||archived?<CityProfile key={selectedCityId} city={city} archived={archived} teams={teams} month={month}/>:<CityList cities={cities} filter={filter} onFilterChange={setFilter}/>;
+}
+function CityProfile({city,archived,teams,month}:{city?:City;archived?:ArchivedCity;teams:RootState['root']['teams'];month:number}){
+ const dispatch=useDispatch(),[tab,setTab]=useState<'overview'|'defense'|'appanages'>('overview'),[complete,setComplete]=useState(false),[,setRevision]=useState(WorldHistory.getRevision());
+ useEffect(()=>WorldHistory.subscribeRevision(setRevision),[]);
+ const id=city?.id??archived!.id,name=city?.name??archived!.name,foundedMonth=city?.foundedYear??archived!.foundedMonth,founderId=city?.founderFactionId??archived!.founderFactionId;
+ const byFaction=new Map(teams.map(t=>[t.name,t])),history=city?.history??archived!.history,attacker=teams.find(t=>t.name===city?.attackingFactionId);
+ const facts:Array<[string,string|number]>=[['归属',city?.ownerTeam?.displayName??getCityHistoricalFactionName(byFaction,archived!.lastOwnerFactionId,archived!.destroyedMonth)],['建立',formatWorldDate(foundedMonth)],['易手',`${city?.captureCount??archived!.captureCount}次`]];
+ if(city)facts.push(['城防',`${city.defense} / ${city.maxDefense}`],['忠诚',city.loyalty],['破坏度',`${city.devastation} / 100`],['状态',city.loyaltyStatus]);
+ else facts.push(['毁灭',formatWorldDate(archived!.destroyedMonth)]);
+ return <Box data-city-profile={id} data-archive-scroll sx={{height:'100%',overflowY:'auto',boxSizing:'border-box',p:1,minWidth:0,overflowWrap:'anywhere'}}>
+  <Button size='small' onClick={()=>dispatch(setSelectedCityId(undefined))}>← 城市列表</Button>
+  <Typography variant='h6' fontWeight='bold' fontSize='1rem'>{city?.isCapital?'★ ':''}{city?'':'城市档案：'}{name}{!city&&<Typography component='span' fontSize='.72rem' color='var(--gg-text-muted)'> · 已毁灭</Typography>}</Typography>
+  <Box role='tablist' aria-label='城市资料' sx={{display:'grid',gridTemplateColumns:'repeat(3,minmax(0,1fr))',gap:.5,my:1}}>
+   {([['overview','概况'],['defense','攻防'],['appanages','封邑']] as const).map(([value,label])=><Button key={value} role='tab' aria-selected={tab===value} size='small' variant={tab===value?'contained':'outlined'} sx={{minWidth:0,px:.5}} onClick={()=>setTab(value)}>{label}</Button>)}
+  </Box>
+  {tab==='overview'&&<Box role='tabpanel' aria-label='概况' sx={{display:'grid',gap:.65}}>
+   {facts.map(([label,value])=><Box key={label} sx={{display:'grid',gridTemplateColumns:'4em minmax(0,1fr)',gap:.7,fontSize:'.84rem'}}><Box color='var(--gg-text-muted)'>{label}</Box><Box>{value}</Box></Box>)}
+   <Typography fontSize='.78rem' color='var(--gg-text-muted)'>初属：{getCityHistoricalFactionName(byFaction,founderId,foundedMonth)}</Typography>
+   {city&&<Typography fontSize='.78rem' color='var(--gg-text-muted)'>{city.isCapital?'首都':'普通城市'} · 防御区{city.fortifiedCells.length}格</Typography>}
+  </Box>}
+  {tab==='defense'&&<Box role='tabpanel' aria-label='攻防'>
+   {city?.siegeBattle?<Typography fontSize='.82rem'>{attacker?.displayName??city.siegeBattle.attackerId}围攻 · 攻方{city.siegeBattle.attackers}人／守方{city.siegeBattle.defenders}人 · 自{formatWorldDate(city.siegeBattle.startMonth)}</Typography>:<Typography fontSize='.82rem'>{city?'当前无有效围城':'城池已毁，以下为历史记录'}</Typography>}
+   <Box sx={{display:'flex',justifyContent:'space-between',alignItems:'center',mt:1}}><Typography fontSize='.86rem' fontWeight='bold'>攻防与沿革</Typography><Button size='small' onClick={()=>setComplete(v=>!v)}>{complete?'精选记录':'完整记录'}</Button></Box>
+   {[...(complete?history:importantCityHistory(history,WorldHistory.getEvents(),id))].sort((a,b)=>b.year-a.year).map((e,i)=><Typography key={`${e.year}-${e.type}-${i}`} fontSize='.79rem' sx={{py:.5,borderBottom:'1px solid var(--gg-border)'}}>{formatWorldDate(e.year)} · {formatCityHistoryEvent(e,{name,founderFactionId:founderId,foundedMonth},byFaction,e.rulerId&&e.newOwnerFactionId?DynastyRegistry.getRulerHistoricalTitle(e.rulerId,e.newOwnerFactionId,e.year):undefined)}</Typography>)}
+  </Box>}
+  {tab==='appanages'&&<Box role='tabpanel' aria-label='封邑'><CityAppanages key={id} cityId={id}/></Box>}
+ </Box>;
 }
 
 function CityList({

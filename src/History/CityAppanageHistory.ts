@@ -1,9 +1,16 @@
 import type {MilitaryPerson} from '../Politics/MilitaryCommandRegistry';
 import {appanageChanges,type MilitaryAppanage} from '../Politics/MilitaryAppanage';
 import type {WorldEvent} from './WorldHistory';
+/** One shared read index, retaining original transaction order for loss/recovery ties. */
+export function prepareAppanageHistory(events:WorldEvent[]){
+ const byId=new Map(events.map((event,index)=>[event.id,{event,index}])),cities=new Map<string,WorldEvent[]>(),persons=new Map<string,WorldEvent[]>(),rulers=new Map<string,WorldEvent[]>(),states=new Map<string,WorldEvent[]>();
+ const add=(map:Map<string,WorldEvent[]>,id:unknown,e:WorldEvent)=>{if(typeof id!=='string')return;const rows=map.get(id)??[];rows.push(e);map.set(id,rows);};
+ for(const e of events){add(cities,e.cityId,e);add(persons,e.metadata?.personId,e);for(const id of new Set([e.rulerId,e.metadata?.nextRulerId]))add(rulers,id,e);if(['dynasty-usurped','faction-exiled','faction-extinct','faction-submitted','faction-merged'].includes(e.type))for(const id of new Set([e.actorFactionId,e.targetFactionId]))add(states,id,e);}
+ return {events,byId,related(person:MilitaryPerson,record:MilitaryAppanage){return [...new Set([...(cities.get(record.cityId)??[]),...(persons.get(person.personId)??[]),...(rulers.get(person.politicalRulerId??'')??[]),...(rulers.get(person.royalIdentity?.rulerId??'')??[]),...(states.get(record.factionId)??[])])].sort((a,b)=>byId.get(a.id)!.index-byId.get(b.id)!.index);}};
+}
 /** Read-only cityId projection. A title promotion is not another appanage grant. */
-export function cityAppanageHistory(cityId:string,people:MilitaryPerson[],events:WorldEvent[],month:number){
- const byId=new Map(events.map((event,index)=>[event.id,{event,index}])),seen=new Set<string>();
+export function cityAppanageHistory(cityId:string,people:MilitaryPerson[],events:WorldEvent[],month:number,prepared=prepareAppanageHistory(events)){
+ const byId=prepared.byId,seen=new Set<string>();
  const entries:Array<{person:MilitaryPerson;record:MilitaryAppanage;rank:MilitaryAppanage['rank'];sourceOrder:number;recordOrder:number}>=[];
  for(const person of people){
   const records=(person.appanageHistory??[]).filter(a=>a.cityId===cityId&&a.month<=month&&a.personId===person.personId).filter(a=>{const e=byId.get(a.eventId)?.event;return e?.type==='military-appanage'&&e.actorFactionId===a.factionId&&e.cityId===cityId&&e.metadata?.personId===person.personId&&e.metadata?.appanage===JSON.stringify(a)&&(e.monthIndex??e.year)===a.month;});
@@ -18,6 +25,7 @@ export function cityAppanageHistory(cityId:string,people:MilitaryPerson[],events
  }
  entries.sort((a,b)=>a.record.month-b.record.month||a.sourceOrder-b.sourceOrder||a.recordOrder-b.recordOrder);
  const grants=entries.filter(e=>e.record.kind==='GRANTED'),latest=new Map<string,typeof entries[number]>();for(const e of entries)latest.set(e.record.grantEventId,e);
- const current=[...latest.values()].filter(e=>{const last=appanageChanges(e.person,e.record,events,month).at(-1)??e.record;return last.kind==='GRANTED'||last.kind==='RESTORED';});
- return {entries,grants:grants.length,people:new Set(grants.map(g=>g.person.personId)).size,current};
+ const relations=grants.map(grant=>{const timeline=entries.filter(e=>e.record.grantEventId===grant.record.eventId),lastEntry=latest.get(grant.record.eventId)!,last=appanageChanges(grant.person,lastEntry.record,prepared.related(grant.person,lastEntry.record),month).at(-1)??lastEntry.record;return {grant,timeline,last,state:last.kind==='ENDED'?'ENDED' as const:last.kind==='LOST'?'LOST' as const:'ACTIVE' as const,endMonth:last.kind==='ENDED'?last.month:undefined};});
+ const current=relations.filter(r=>r.state==='ACTIVE').map(r=>latest.get(r.grant.record.eventId)!);
+ return {entries,relations,grants:grants.length,people:new Set(grants.map(g=>g.person.personId)).size,current};
 }
