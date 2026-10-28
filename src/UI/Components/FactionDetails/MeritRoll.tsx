@@ -26,7 +26,7 @@ export default function MeritRoll({factionId,month,onOpen}:{factionId:string;mon
   const dynasties=Dynasty.getAll();return {byId:projection.eventsById(),top,grants,grantById:new Map(grants.map(g=>[g.grant.eventId,g])),rulersById:new Map(dynasties.flatMap(d=>d.rulers.map(r=>[r.id,r] as const))),rulerOwners:new Map(dynasties.flatMap(d=>d.rulers.map(r=>[r.id,d.factionId] as const)))};
  },[factionId,month,History.getRevision(),projection]);
  const prepared=useMemo(()=>prepareAppanageHistory(History.getRecordedEvents()),[History.getRevision()]);
- const appanages=useMemo(()=>{if(!top.some(({person})=>person.appanageHistory?.length))return new Map();return new Map(top.map(({person})=>[person.personId,[...new Set((person.appanageHistory??[]).filter(a=>a.factionId===factionId&&a.month<=month).map(a=>a.cityId))].flatMap(cityId=>cityAppanageHistory(cityId,[person],prepared.events,month,prepared).relations.filter(r=>r.grant.record.factionId===factionId))]));},[top,factionId,month,prepared]);
+ const appanages=useMemo(()=>{if(!top.some(({person})=>person.appanageHistory?.length))return new Map<string,ReturnType<typeof cityAppanageHistory>['relations']>();return new Map(top.map(({person})=>[person.personId,[...new Set((person.appanageHistory??[]).filter(a=>a.factionId===factionId&&a.month<=month).map(a=>a.cityId))].flatMap(cityId=>cityAppanageHistory(cityId,[person],prepared.events,month,prepared).relations.filter(r=>r.grant.record.factionId===factionId))]));},[top,factionId,month,prepared]);
  const team=Game.Core?.teams.find(t=>t.name===factionId);
 
  return <Box data-merit-roll sx={{display:'grid',gap:1}}>
