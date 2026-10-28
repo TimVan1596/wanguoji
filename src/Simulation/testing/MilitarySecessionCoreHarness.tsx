@@ -36,6 +36,8 @@ export async function runMilitarySecessionCore(seed="military-secession-z7"){
   const victoryCities=core.allCities.filter(c=>c.ownerTeam&&c.ownerTeam!==parent).slice(0,2);
   for(const c of victoryCities){commander.player.setPosition(c.block.x,c.block.y);(commander.player.body as Phaser.Physics.Arcade.Body).reset(c.block.x,c.block.y);c.capture(parent,month,undefined,commandId,personId);}
   Military.updateNobility(month,core.teams,Dynasty.getAll());
+  Military.updateAppanages(month,core.teams,Dynasty.getAll(),core.allCities);
+  const oldEstate=Military.getPerson(personId)?.appanageHistory?.at(-1);check(oldEstate,'real future secessionist initially holds an evidence-backed old-country estate');
   const oldTitle=currentNobleGrant(Military.getPerson(personId)!,parent.name,month);check(oldTitle,'actual serving general has a real sovereign grant before rebellion');
   month+=12;(core.simulator as any).clock.importState({worldMonth:month,elapsedMs:0,running:false});
   while(parent.cities.length<4){const site=core.map!.blocks.flat().find(b=>(b.team===parent||!b.team)&&!b.city&&core.allCities.every(c=>Math.hypot(c.block.x-b.x,c.block.y-b.y)>160));if(!site)throw new Error("No free city site");Factions.foundCity(parent,site,undefined,month);}
@@ -94,6 +96,7 @@ export async function runMilitarySecessionCore(seed="military-secession-z7"){
   const honorRng=JSON.stringify(worldRandom.exportState());Military.updateHonors(month,core.teams,Dynasty.getAll());Military.updateHonors(month,core.teams,Dynasty.getAll());
   check(person.honorHistory?.filter(h=>h.kind==='REVOKED').length===1&&!currentNobleGrant(person,parent.name,month)&&person.nobilityHistory?.some(g=>g.eventId===oldTitle!.eventId),'real source sovereign revokes once after actual rebellion, retaining all original grants');
   check(JSON.stringify(worldRandom.exportState())===honorRng&&core.teams.reduce((n,t)=>n+t.users.size,0)===total,'revocation changes no military bodies, sovereign, population or random draws');
+  Military.updateAppanages(month,core.teams,Dynasty.getAll(),core.allCities);check(person.appanageHistory?.at(-1)?.kind==='ENDED'&&person.appanageHistory.some(a=>a.eventId===oldEstate!.eventId),'actual secession and old-title revocation end the estate without deleting its original grant or creating foreign ownership');
   const save=strict();
   for(const mutate of [(s:any)=>s.registries.militaryCommandRegistry.people.find((p:any)=>p.personId===personId).politicalRulerId="wrong",(s:any)=>{const r=s.dynasties.find((d:any)=>d.factionId===split.team.name).rulers.find((r:any)=>r.residentIdentity?.personId===personId);r.naturalDeathMonth++;},(s:any)=>s.registries.militaryCommandRegistry.people.find((p:any)=>p.personId===personId).status="ACTIVE"]){const bad=structuredClone(save);mutate(bad);check(!validateWorldSave(bad).valid,"V21 refuses incompatible political/military life or simultaneous military authority");}
   const resume=()=>{hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return strict();};
