@@ -1,3 +1,4 @@
+import {checkCityAppanageView} from './CityAppanageCoreHarness';
 import {checkMilitaryProjectionCache} from './MilitaryArchiveCoreHarness';
 import Military from '../../Politics/MilitaryCommandRegistry';
 import History from '../../History/WorldHistory';
@@ -10,6 +11,7 @@ import {diffCanonicalWorldSave,type WorldSaveV1} from '../../Persistence/WorldSa
 export async function checkMilitaryAppanages(core:any,original:WorldSaveV1,id:string,check:(v:unknown,s:string)=>void,initial:WorldSaveV1){
  const clock=(m:number)=>core.simulator.clock.importState({worldMonth:m,elapsedMs:0,running:false}),strict=()=>exportWorldSave(core),update=(m:number)=>Military.updateAppanages(m,core.teams,Dynasty.getAll(),core.allCities);
  const restore=(save:WorldSaveV1)=>{core.setWorldRunning(false);hydrateWorldSave(core,structuredClone(save));return Military.getPerson(id)!;};
+ await checkCityAppanageView(core,initial,id,check);
  let p=restore(initial);clock(216);Military.updateNobility(216,core.teams,Dynasty.getAll());update(216);const first=p.appanageHistory?.[0];
  for(const m of [228,240]){clock(m);Military.updateNobility(m,core.teams,Dynasty.getAll());update(m);}
  check(first&&p.nobilityHistory?.at(-1)?.rank==='GONG'&&p.appanageHistory?.length===1&&p.appanageHistory[0].cityId===first.cityId,'real baron-to-marquis-to-duke promotions preserve one original appanage without duplicate grants');strict();

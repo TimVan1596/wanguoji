@@ -22,8 +22,9 @@ function PersonPortrait({personId,age,role="UNKNOWN",color,deceased=false,size=4
   <path d="M0 10L64 74M-12 10L52 74M12 10L76 74" stroke={flag} strokeWidth="4" opacity=".28"/>
   <path d="M5 80Q7 56 24 54H40Q57 56 59 80" fill={robe}/>
   {(royal||role==="SHANGJIANGJUN")&&<path d="M20 55L10 80H3Q7 60 20 55M44 55L54 80H61Q57 60 44 55" fill={imperial?"#b49345":role==="KING"?"#9d7756":"#7a3e37"}/>}
-  {military&&<><path d="M20 56L32 66L44 56L47 80H17Z" fill="#727e7a" stroke="#263c40"/><path d="M20 68H44M19 73H45M24 63V80M32 66V80M40 63V80" stroke="#c4c7b4" strokeWidth="1"/></>}
+  {military&&<><path d="M20 56L32 66L44 56L47 80H17Z" fill={role==="XIAOWEI"?"#52645c":role==="PIJIANG"?"#7b6960":"#727e7a"} stroke="#263c40"/><path d={role==="XIAOWEI"?"M21 72H43":"M20 68H44M19 73H45M24 63V80M32 66V80M40 63V80"} stroke="#c4c7b4" strokeWidth="1"/></>}
   <path d="M24 54L32 66L40 54M32 66V80" fill="none" stroke={royal?"#d9bc70":"#d6cbb9"} strokeWidth={royal?3:2}/>
+  {role==="PIJIANG"&&<path data-office-insignia="PIJIANG" d="M15 59L12 67L22 64M49 59L52 67L42 64" fill="#7b6960" stroke="#c6b48e"/>}
   {role==="JIANGJUN"&&<path d="M15 59L10 69L22 66M49 59L54 69L42 66" fill="#485e6c" stroke="#d2b986"/>}
   {role==="SHANGJIANGJUN"&&<path d="M12 59L8 71L24 65M52 59L56 71L40 65M29 71L32 68L35 71L32 75Z" fill="#c5ac6d" stroke="#6d542f"/>}
   {imperial&&<path d="M25 71L29 74L25 78M39 71L35 74L39 78" stroke="#d9b760" fill="none"/>}

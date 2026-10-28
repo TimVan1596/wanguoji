@@ -1,3 +1,4 @@
+import CityAppanages from './CityAppanages';
 import { Box, Button, Typography } from "@mui/material";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -36,7 +37,7 @@ export default function CityDetails() {
       const founderTeam = teams.find((team) => team.name === archivedCity.founderFactionId);
       const lastOwnerTeam = teams.find((team) => team.name === archivedCity.lastOwnerFactionId);
       return (
-        <Box sx={{ p: 1, borderTop: "1px solid #00000022" }}>
+        <Box data-archive-scroll sx={{ p: 1, height:"100%",boxSizing:"border-box",overflowY:"auto",borderTop: "1px solid #00000022" }}>
           <Button size="small" onClick={() => dispatch(setSelectedCityId(undefined))}>
             ← 返回城市列表
           </Button>
@@ -56,6 +57,7 @@ export default function CityDetails() {
           <Typography fontSize="0.9rem">
             易手：{archivedCity.captureCount} 次
           </Typography>
+          <CityAppanages key={archivedCity.id} cityId={archivedCity.id}/>
         </Box>
       );
     }
@@ -69,7 +71,7 @@ export default function CityDetails() {
   const founderAtFounding = getCityHistoricalFactionName(factionById, city.founderFactionId, city.foundedYear);
 
   return (
-    <Box sx={{ p: 1, borderTop: "1px solid #00000022" }}>
+    <Box data-archive-scroll sx={{ p: 1, height:"100%",boxSizing:"border-box",overflowY:"auto",borderTop: "1px solid #00000022" }}>
       <Button size="small" onClick={() => dispatch(setSelectedCityId(undefined))}>
         ← 返回城市列表
       </Button>
@@ -121,6 +123,7 @@ export default function CityDetails() {
         )}
       </Typography>
       {city.siegeBattle&&<Typography fontSize=".82rem">本地攻方{city.siegeBattle.attackers}人 · 守方{city.siegeBattle.defenders}人 · 自{formatWorldDate(city.siegeBattle.startMonth)}围攻</Typography>}
+      <CityAppanages key={city.id} cityId={city.id}/>
       <Typography sx={{ mt: 1 }} fontWeight="bold">
         城市历史
       </Typography>

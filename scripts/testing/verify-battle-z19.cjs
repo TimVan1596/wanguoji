@@ -6,7 +6,7 @@ const ref=process.env.WANGUOJI_COHORT_REF;
 if(ref){
  const tar=fs.openSync(path.join(root,'source.tar'),'w');try{execFileSync('git',['archive',ref,'src','public','index.html','vite.config.ts','tsconfig.json','package.json','desktop/DesktopSecurity.ts'],{cwd:repo,stdio:['ignore',tar,'pipe']});}finally{fs.closeSync(tar);}execFileSync('tar',['-xf',path.join(root,'source.tar'),'-C',root]);
  // Only read-only sampling overlays; the old simulation modules remain byte-for-byte at ref.
- for(const name of ['MilitaryBalanceHarness.ts','MilitaryPromotionDiagnostics.ts','MilitaryNobilityDiagnostics.ts','RuntimePopulationPerformanceHarness.ts','MilitaryPanelPerformanceHarness.tsx','MeritRollPerformanceHarness.tsx'])fs.copyFileSync(path.join(repo,'src/Simulation/testing',name),path.join(root,'src/Simulation/testing',name));
+ for(const name of ['MilitaryBalanceHarness.ts','MilitaryPromotionDiagnostics.ts','MilitaryNobilityDiagnostics.ts','RuntimePopulationPerformanceHarness.ts','MilitaryPanelPerformanceHarness.tsx','MeritRollPerformanceHarness.tsx','MeritScaleCoreHarness.tsx','MeritScaleFixture.ts'])fs.copyFileSync(path.join(repo,'src/Simulation/testing',name),path.join(root,'src/Simulation/testing',name));
 }else{
  for(const name of ['src','public','index.html','vite.config.ts','tsconfig.json','package.json'])fs.cpSync(path.join(repo,name),path.join(root,name),{recursive:true});
  fs.mkdirSync(path.join(root,'desktop'));fs.copyFileSync(path.join(repo,'desktop/DesktopSecurity.ts'),path.join(root,'desktop/DesktopSecurity.ts'));

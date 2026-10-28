@@ -1,3 +1,4 @@
+import type {PersonArchiveTarget} from '../UI/Components/FactionDetails/PersonArchiveTarget';
 import { createSlice } from "@reduxjs/toolkit";
 import Team from "../Components/Team";
 import { WorldPhase } from "../Simulation/WorldPhase";
@@ -15,6 +16,7 @@ export interface WorldResult {
 }
 
 export interface RootDataState {
+  personArchiveRequest?:PersonArchiveTarget;
   teams: Team[];
   winTeam: Team | undefined;
   worldResult: WorldResult | undefined;
@@ -106,6 +108,7 @@ export const rootSlice = createSlice({
     setSimulationSpeed(state, action) {
       state.simulationSpeed = action.payload;
     },
+    setPersonArchiveRequest(state,action){state.personArchiveRequest=action.payload;},
     setSelectedFactionName(state, action) {
       state.selectedFactionName = action.payload;
     },
@@ -147,6 +150,7 @@ export const {
   setWorldPhase,
   setSimulationSpeed,
   setSelectedFactionName,
+  setPersonArchiveRequest,
   setSelectedCityId,
   setRightPanelTab,
   setFactionDetailTab,

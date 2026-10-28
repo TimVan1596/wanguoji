@@ -23,7 +23,7 @@ import WorldEra from "../Simulation/WorldEra";
 import WorldExiles from "../Simulation/WorldExiles";
 import WorldRemnants from "../Simulation/WorldRemnants";
 import { validateWorldState } from "../Simulation/WorldInvariant";
-import { setWorldPhase } from "../store/rootSlice";
+import { setPersonArchiveRequest,setWorldPhase } from "../store/rootSlice";
 import { store } from "../store";
 import { CURRENT_SAVE_SCHEMA_VERSION, WorldSaveV1 } from "./WorldSaveSchema";
 import { validateWorldSave } from "./WorldSaveValidator";
@@ -150,6 +150,7 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
     populationSystem: save.populationSystem as ReturnType<PopulationSystem["exportState"]>,
     worldEventSystem: save.worldEventSystem as ReturnType<NonNullable<Core["simulator"]>["exportState"]>["worldEventSystem"],
   }, teams);
+  store.dispatch(setPersonArchiveRequest(undefined));
   core.resetDeterminismDiagnostics(save.world.clock.worldMonth, snapshotBoundary.clockElapsedMs);
   worldRandom.restore(save.worldRandom);
   core.simulator!.setRunning(false);

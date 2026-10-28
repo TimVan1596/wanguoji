@@ -120,6 +120,7 @@ import {
 import { RootState } from "../../../store";
 import {
   setFactionDetailTab,
+  setPersonArchiveRequest,
   setSelectedFactionName,
 } from "../../../store/rootSlice";
 import formatNumber from "../../../utils/formatNumber";
@@ -148,6 +149,7 @@ export default function FactionDetails() {
   const selectedFactionName = useSelector(
     (state: RootState) => state.root.selectedFactionName
   );
+  const externalRequest=useSelector((state:RootState)=>state.root.personArchiveRequest);
   const [factionListFilter, setFactionListFilter] =
     useState<FactionListFilter>("all");
   const [historicalFactionSort, setHistoricalFactionSort] =
@@ -171,6 +173,7 @@ export default function FactionDetails() {
     navigationDispatch(setFactionDetailTab(resolved.tab));
   };
 
+  useEffect(()=>{if(externalRequest){openPerson(externalRequest);navigationDispatch(setPersonArchiveRequest(undefined));}},[externalRequest]);
   useEffect(() => WorldHistory.subscribeRevision(setHistoryRevision), []);
   const team = teams.find((item) => item.name === selectedFactionName);
   // Complete archive is intentional here: biographies and faction narratives may need
