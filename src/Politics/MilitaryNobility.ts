@@ -65,7 +65,7 @@ export function createMeritRosterProjection(){
   if(scope!==factionId||people.some(p=>records.has(p.personId)&&records.get(p.personId)!.person!==p)){records.clear();scope=factionId;}
   // Event objects are immutable within a world; reset/hydration creates new objects even for identical IDs.
   const same=sourceEvents===events||sourceEvents?.length===events.length&&sourceEvents.every((e,i)=>e===events[i]);
-  if(!same||!index){index=createMilitaryEvidenceIndex(events,formations);sourceEvents=events;stats.indexBuilds++;}
+  if(!same||!index){index=createMilitaryEvidenceIndex(events,formations);sourceEvents=events.slice();stats.indexBuilds++;}
   else { // Formation ownership/member facts can change without an appended historical event.
    index.formsByPerson.clear();for(const f of formations){const rows=index.formsByPerson.get(f.commanderPersonId)??[];rows.push(f);index.formsByPerson.set(f.commanderPersonId,rows);}
   }
