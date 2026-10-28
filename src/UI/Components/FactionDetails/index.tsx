@@ -635,7 +635,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
   const formations = MilitaryCommandRegistry.getFormations();
   const archiveEvents=useMemo(()=>WorldHistory.getEvents(),[worldMonth,WorldHistory.getRevision()]);
   const archiveDynasties=useMemo(()=>DynastyRegistry.getAll(),[worldMonth,WorldHistory.getRevision()]);
-  const localArchiveEvents=useMemo(()=>archiveEvents.filter(e=>e.factionIds.includes(factionId)||e.actorFactionId===factionId||e.targetFactionId===factionId),[archiveEvents,factionId]);
+  const localArchiveEvents=useMemo(()=>archiveEvents.filter(e=>e.factionIds?.includes(factionId)||e.actorFactionId===factionId||e.targetFactionId===factionId),[archiveEvents,factionId]);
   const usersByPerson=new Map((Game.Core?.teams??[]).flatMap(t=>[...t.users]).filter(u=>u.militaryPersonId).map(u=>[u.militaryPersonId!,u]));
   const linkedRulers=new Map(archiveDynasties.flatMap(d=>d.rulers).filter(r=>r.residentIdentity||r.militaryIdentity).map(r=>[r.militaryIdentity?.personId??r.residentIdentity!.personId,r]));
   const liveIds=new Set(people.filter(p=>usersByPerson.get(p.personId)?.matchesMilitaryLife(p)).map(p=>p.personId));

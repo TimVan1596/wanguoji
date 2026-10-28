@@ -17,19 +17,20 @@ export function appanageText(a:MilitaryAppanage){
 export function appanageEndReason(g:MilitaryAppanage,p:MilitaryPerson,e:WorldEvent){
  const m=e.metadata??{},pid=m.personId===p.personId;
  if(e.type==='military-person-died'&&pid)return 'DEATH';
- if(e.type==='military-appointment-ended'&&pid&&m.endReason==='TRANSFERRED'&&e.actorFactionId===g.factionId)return 'TRANSFER';
+ if(e.type==='military-command-ended'&&pid&&m.endReason==='TRANSFERRED'&&e.actorFactionId===g.factionId)return 'TRANSFER';
  if(e.type==='military-title-revoked'&&pid){try{const h=JSON.parse(String(m.honor));if(h.factionId===g.factionId&&h.epochFounderId===g.epochFounderId)return 'TITLE_REVOKED';}catch{}}
  const ruler=p.politicalRulerId??p.royalIdentity?.rulerId;
  if(ruler&&(e.type==='ruler-acceded'&&e.rulerId===ruler||['ruler-succession','ruler-deposed'].includes(e.type)&&m.nextRulerId===ruler||e.type==='dynasty-usurped'&&e.rulerId===ruler))return 'ACCESSION';
  if(e.type==='dynasty-usurped'&&e.actorFactionId===g.factionId)return 'DYNASTY_ENDED';
  if(['faction-exiled','faction-extinct','faction-submitted','faction-merged'].includes(e.type)&&e.targetFactionId===g.factionId)return 'STATE_ENDED';
  if(e.type==='city-destroyed'&&e.cityId===g.cityId)return 'CITY_DESTROYED';
+ return undefined;
 }
 /** Replay genuine ownership and life facts after the formal grant, including multiple changes in one month. */
 export function appanageChanges(p:MilitaryPerson,last:MilitaryAppanage,events:WorldEvent[],month:number){
  if(last.kind==='ENDED')return [];
  const start=events.findIndex(e=>e.id===(last.kind==='GRANTED'?last.eventId:last.sourceEventId));if(start<0)return [];
- let state=last.kind;const result:MilitaryAppanage[]=[];
+ let state:MilitaryAppanage['kind']=last.kind;const result:MilitaryAppanage[]=[];
  for(const e of events.slice(start+1)){
   const at=e.monthIndex??e.year;if(at>month)continue;let kind:MilitaryAppanage['kind']|undefined,reason=appanageEndReason(last,p,e);
   if(reason)kind='ENDED';
