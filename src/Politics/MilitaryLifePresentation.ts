@@ -30,7 +30,7 @@ export function militaryLifePairs(events:readonly WorldEvent[]):MilitaryLifePair
  }
  return pairs;
 }
-export function mergeMilitaryLifeEvents(events:WorldEvent[]){
+export function mergeMilitaryLifeEvents(events:WorldEvent[]):WorldEvent[]{
  const pairs=militaryLifePairs(events),bySource=new Map(pairs.flatMap(p=>[[p.anchor.id,p],[p.other.id,p]] as const)),emitted=new Set<MilitaryLifePair>();
- return events.flatMap(e=>{const p=bySource.get(e.id);if(!p)return [e];if(emitted.has(p))return [];emitted.add(p);return [{...p.anchor,id:`history-military-${p.anchor.id}`,title:p.text,description:undefined,importance:p.anchor.importance==='major'||p.other.importance==='major'?'major':p.anchor.importance,cityId:p.anchor.cityId??p.other.cityId,cityName:p.anchor.cityName??p.other.cityName,metadata:{...p.anchor.metadata,historyNarrativeKind:'MILITARY_LIFE',sourceEventIds:[p.anchor.id,p.other.id].join(',')}}];});
+ return events.flatMap<WorldEvent>(e=>{const p=bySource.get(e.id);if(!p)return [e];if(emitted.has(p))return [];emitted.add(p);return [{...p.anchor,id:`history-military-${p.anchor.id}`,title:p.text,description:undefined,importance:p.anchor.importance==='major'||p.other.importance==='major'?'major':p.anchor.importance,cityId:p.anchor.cityId??p.other.cityId,cityName:p.anchor.cityName??p.other.cityName,metadata:{...p.anchor.metadata,historyNarrativeKind:'MILITARY_LIFE',sourceEventIds:[p.anchor.id,p.other.id].join(',')}}];});
 }

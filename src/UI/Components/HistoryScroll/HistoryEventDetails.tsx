@@ -1,3 +1,4 @@
+import {formatWorldDate} from '../../../Simulation/WorldTime';
 import {standaloneFactionMention} from "../../../History/HistoryFactionMentions";
 import {useContext} from "react";
 import {MentionContext,FactionMention} from "./HistoryFactionNavigation";
@@ -85,7 +86,7 @@ export function EventDetails({
   }
   return (
     <>
-      {event.metadata?.historyNarrativeKind==='MILITARY_LIFE'&&<details onClick={e=>e.stopPropagation()} style={{fontSize:'.75rem',overflowWrap:'anywhere'}}><summary>原始史事（两条）</summary>{WorldHistory.getEvents().filter(e=>String(event.metadata?.sourceEventIds).split(',').includes(e.id)).map(e=><Typography key={e.id} fontSize='.75rem'>{e.title} · 事件 {e.id}</Typography>)}</details>}
+      {event.metadata?.historyNarrativeKind==='MILITARY_LIFE'&&<details onClick={e=>e.stopPropagation()} style={{fontSize:'.75rem',overflowWrap:'anywhere'}}><summary>原始史事（两条）</summary>{WorldHistory.getEvents().filter(e=>String(event.metadata?.sourceEventIds).split(',').includes(e.id)).map(e=><Typography key={e.id} fontSize='.75rem'>{formatWorldDate(e.monthIndex??e.year)} · {e.title}{e.type==='military-person-died'&&typeof e.metadata?.deathCause==='string'?` · 死亡原因 ${e.metadata.deathCause}`:''} · 事件 {e.id}</Typography>)}</details>}
       <DepositionSelectionDetails event={event}/>
       {getMilitaryParticipationDetails(event).length>0 && <details onClick={e=>e.stopPropagation()} style={{overflowWrap:"anywhere",fontSize:"0.75rem"}}><summary>史料依据（军事参与）</summary>{getMilitaryParticipationDetails(event).map((line,i)=><Typography key={i} fontSize="0.75rem">{line}</Typography>)}</details>}
       {lines.map((line) => (

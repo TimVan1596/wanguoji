@@ -230,7 +230,7 @@ describe("formal military offices use production careers and canonical history",
     expect(describeMilitaryOffice(f.person,"wei")).toBe("原任校尉（本国历史最高职务）");
     expect(f.person.appointments[0].officeHistory).toEqual(old);
     expect(f.registry.getFormations().filter(a=>a.commanderPersonId===f.person.personId).every(a=>a.status==="DISBANDED")).toBe(true);
-    expect(f.registry.getChronicle(f.person,145,"wei").some(e=>e.text.includes("去世"))).toBe(true);
+    expect(f.registry.getChronicle(f.person,145,"wei").some(e=>e.source.startsWith("military-person-died")&&e.text.includes("战死"))).toBe(true);
   });
   it("age retirement ends current authority and preserves the actual granted office",()=>{
     const f=ready(),month=Math.ceil(deriveMilitaryLifeSchedule(f.person).retirementMonth/12)*12;

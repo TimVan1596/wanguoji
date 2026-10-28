@@ -77,7 +77,7 @@ describe("evidence based military biography", () => {
       event("death", "military-person-died", retirementMonth + 12, "黄", { personId: "p", deathCause: "BATTLE_DEATH" }));
     const rows = deriveMilitaryChronicle(f.person, f.formations, f.events, retirementMonth + 12);
     expect(rows.map(r => r.eventId)).toEqual(["appoint", "transfer", "retire", "death"]);
-    expect(rows[2].text).toContain("年老退役"); expect(rows[3].text).toContain("去世");
+    expect(rows[2].text).toContain("年老退役"); expect(rows[3].text).toContain("战死");
     expect(rows.every(r => !r.victory && r.text.includes("李承远"))).toBe(true);
   });
 });

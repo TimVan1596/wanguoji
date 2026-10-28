@@ -155,7 +155,7 @@ export function formatHistoryEventTitle(
   rulersById?: Map<string, Ruler>
 ) {
   if(event.metadata?.historyNarrativeKind==='MILITARY_LIFE')return event.title;
-  if(event.type==='military-person-died'&&typeof event.metadata?.personalName==='string')return `${event.metadata.personalName}${militaryDeathWording(typeof event.metadata.deathCause==='string'?event.metadata.deathCause:undefined)}。`;
+  if(event.type==='military-person-died'&&typeof event.metadata?.personalName==='string'&&typeof event.metadata.deathCause==='string')return `${event.metadata.personalName}${militaryDeathWording(typeof event.metadata.deathCause==='string'?event.metadata.deathCause:undefined)}。`;
   const title = formatMilitaryHistoryIdentity({ ...event, title: formatHistoryEventTitleBase(event, factionById, rulersById) });
   const capital = formatAccessionCapital(event);
   const military = formatMilitaryParticipation(event);

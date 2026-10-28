@@ -18,5 +18,5 @@ it("leads with the recorded name and country; raw identity evidence remains in c
 });
 it("uses the existing unverified-name explanation and preserves deceased identity",()=>{
   const html=renderToStaticMarkup(<MilitaryPersonIdentityHeader person={{...person,personalName:"",status:"DEAD"}} country="燕国"/>);
-  expect(html).toContain("姓名未核验的指挥者");expect(html).toContain("燕国已故");expect(html).not.toContain("李承远");
+  expect(html).toContain("姓名未核验的指挥者");expect(html).toContain("燕国生死未载");expect(html).not.toContain("李承远");
 });
