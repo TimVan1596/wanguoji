@@ -396,6 +396,7 @@ export default class AutoSimulator {
       this.measure("DynastyRegistry.update", () => DynastyRegistry.update(this.clock.year, teams));
       this.measure("Military honors",()=>MilitaryCommandRegistry.updateHonors(this.clock.year,teams,DynastyRegistry.getAll()));
       this.measure("Military nobility",()=>MilitaryCommandRegistry.updateNobility(this.clock.year,teams,DynastyRegistry.getAll()));
+      this.measure("Military appanages",()=>MilitaryCommandRegistry.updateAppanages(this.clock.year,teams,DynastyRegistry.getAll(),Game.Core?.allCities??[]));
       this.measure("WorldExiles.update", () => WorldExiles.update(this.clock.year, teams));
       this.populationTransitionAudit.reconcile(this.clock.year, Game.Core?.teams ?? teams);
       FactionLifetimeRecords.observeWorld(this.clock.year, teams, totalCells);

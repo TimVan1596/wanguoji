@@ -1,3 +1,4 @@
+import {appanageText} from './MilitaryAppanage';
 import {deriveMilitaryActivities} from './MilitaryExperience';
 import {militaryHonorText} from './MilitaryHonors';
 import {nobleChronicle} from "./MilitaryNobility";
@@ -90,6 +91,7 @@ export function deriveMilitaryChronicle(person: MilitaryPerson, formations: Mili
       text = `作为${e.actorFactionId}军事指挥官，${name}所属编组参与${e.type === "city-recovered" ? "收复" : "攻陷"}${e.cityName ?? e.cityId}${m.wasCapital === 1 ? "（当时敌都）" : m.wasCapital === 0 ? "（普通城市）" : "（当时都城属性未记录）"}。`;
     } else if (m.personId === person.personId) {
       if(["military-posthumous","military-title-revoked"].includes(e.type)){const h=person.honorHistory?.find(h=>h.eventId===e.id&&h.month===month&&h.factionId===e.actorFactionId);if(h)text=militaryHonorText(h);}
+      if(e.type==="military-appanage"){const a=person.appanageHistory?.find(a=>a.eventId===e.id&&a.month===month);if(a)text=appanageText(a);}
       if(e.type==="military-ennobled"){const grant=person.nobilityHistory?.find(g=>g.eventId===e.id&&g.month===month&&g.factionId===e.actorFactionId);if(grant)text=nobleChronicle(grant);}
       if(served&&e.type==="military-office-granted"){
         const grant=appointment?.officeHistory?.find(g=>g.eventId===e.id&&g.month===month&&g.office===m.office);

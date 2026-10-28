@@ -68,6 +68,7 @@ export type WorldEventType =
   | "military-ennobled"
   | "military-posthumous"
   | "military-title-revoked"
+  | "military-appanage"
   | "military-office-granted"
   | "military-appointment"
   | "military-order-issued"

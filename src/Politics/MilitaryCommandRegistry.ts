@@ -1,3 +1,6 @@
+import {appanageChanges,appanageText,OWNERSHIP_EVENTS,type MilitaryAppanage} from './MilitaryAppanage';
+import {honorAuthority} from './MilitaryHonors';
+import {currentNobleGrant} from './MilitaryNobility';
 import {nextMilitaryHonors,militaryHonorText,type MilitaryHonor} from './MilitaryHonors';
 import {nextNobleGrant,nobleChronicle,type NobleGrant} from "./MilitaryNobility";
 import type {Dynasty} from "./Dynasty";
@@ -51,6 +54,7 @@ export interface RoyalMilitaryService {
   eligible(user: User, month: number): boolean;
 }
 export interface MilitaryPerson {
+  appanageHistory?:MilitaryAppanage[];
   nobilityHistory?:NobleGrant[];
   honorHistory?:MilitaryHonor[];
   royalIdentity?: RoyalMilitaryLink;
@@ -392,6 +396,34 @@ export class MilitaryCommandRegistryStore {
         if(id!==honor.eventId||!this.eventReader(honor.factionId).some(e=>e.id===id))throw Error('Honor not recorded');
       }catch{if(prior)p.honorHistory=prior;else delete p.honorHistory;WorldHistory.importState(history);}
     }
+    }
+  }
+
+  updateAppanages(month:number,teams:Team[],dynasties:Dynasty[],cities:City[]){
+    if(!this.eventWriter)return;
+    let events=WorldHistory.getEvents().reverse();
+    const write=(p:MilitaryPerson,record:MilitaryAppanage)=>{
+      const previous=p.appanageHistory?structuredClone(p.appanageHistory):undefined,history=WorldHistory.exportState();
+      try{(p.appanageHistory??=[]).push(record);const id=this.eventWriter!({id:record.eventId,year:record.month,monthIndex:record.month,type:'military-appanage',category:'politics',actorFactionId:record.factionId,factionIds:[record.factionId],cityId:record.cityId,cityName:record.cityName,rulerId:record.kind==='GRANTED'?record.rulerId:undefined,title:appanageText(record),importance:record.kind==='GRANTED'?'major':'normal',metadata:{personId:p.personId,appanage:JSON.stringify(record)}});
+        if(id!==record.eventId||!this.eventReader(record.factionId).some(e=>e.id===id))throw Error('Appanage event not recorded');events=WorldHistory.getEvents().reverse();return true;
+      }catch{if(previous)p.appanageHistory=previous;else delete p.appanageHistory;WorldHistory.importState(history);return false;}
+    };
+    for(const p of this.people.values()){
+      const last=p.appanageHistory?.at(-1);if(last)for(const change of appanageChanges(p,last,events,month))if(!write(p,change))break;
+    }
+    if(month%12!==0)return;
+    const reserved=new Set(this.getPeople().flatMap(p=>{const a=p.appanageHistory?.at(-1);return a&&a.kind!=='ENDED'?[JSON.stringify([a.factionId,a.epochFounderId,a.cityId])]:[];}));
+    for(const p of this.people.values()){
+      if(!p.nobilityHistory?.length||p.deathMonth!==undefined||p.politicalRulerId)continue;
+      const t=teams.find(t=>t.name===p.factionId),d=dynasties.find(d=>d.factionId===p.factionId),authority=honorAuthority(t,d,month);if(!authority)continue;
+      const noble=currentNobleGrant(p,p.factionId,month,authority.epochFounderId);
+      if(!noble||p.appanageHistory?.some(a=>a.factionId===p.factionId&&a.epochFounderId===authority.epochFounderId))continue;
+      const city=cities.filter(c=>!c.destroyed&&c.ownerFactionId===p.factionId&&noble.cityIds.includes(c.id)&&!reserved.has(JSON.stringify([p.factionId,authority.epochFounderId,c.id]))).sort((a,b)=>a.id.localeCompare(b.id))[0];if(!city)continue;
+      const source=events.filter(e=>e.cityId===city.id&&OWNERSHIP_EVENTS.includes(e.type)&&(e.monthIndex??e.year)<=month).at(-1),merit=noble.captureEventIds.map(id=>events.find(e=>e.id===id)).find(e=>e?.cityId===city.id);
+      if(!source||source.actorFactionId!==p.factionId||!merit)continue;
+      const id=`military-appanage-${p.personId}-${authority.epochFounderId}`;
+      const record:MilitaryAppanage={...authority,eventId:id,grantEventId:id,kind:'GRANTED',month,personId:p.personId,personalName:p.personalName,cityId:city.id,cityName:city.name,nobleGrantEventId:noble.eventId,rank:noble.rank,meritEventId:merit.id,sourceEventId:source.id};
+      if(write(p,record))reserved.add(JSON.stringify([p.factionId,authority.epochFounderId,city.id]));
     }
   }
 
