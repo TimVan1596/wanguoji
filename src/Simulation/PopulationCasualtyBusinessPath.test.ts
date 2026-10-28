@@ -279,7 +279,7 @@ describe("real military User retirement, mortality and succession", () => {
     expect(f.history.getEvents().filter(e => e.type === "military-person-died")).toHaveLength(1);
     expect(f.audit.getRecentSignificant().find(r => r.cause === "NATURAL_DEATH")).toMatchObject({ before: 6, after: 5, delta: -1,
       damageSource: "MILITARY_LIFESPAN", casualty: { victimUserId: victim.id, victimMilitaryPersonId: f.person.personId } });
-    expect(describeMilitaryStatus(f.person)).toBe("已故"); expect(describeMilitaryDeathCause(f.person.deathCause)).toBe("自然去世（NATURAL_DEATH）");
+    expect(describeMilitaryStatus(f.person)).toBe("自然去世"); expect(describeMilitaryDeathCause(f.person.deathCause)).toBe("自然去世（NATURAL_DEATH）");
     expect(MilitaryCommandRegistry.getDiagnostics()).toMatchObject({ naturalDeaths: 1, deaths: 1 });
     expect(f.users.slice(1).every(user => !user.isDestroyed)).toBe(true);
   });

@@ -60,3 +60,8 @@ it('distinguishes colonel cloth and deputy shoulder panels while preserving the 
  const face=colonel.match(/data-face="true" d="([^"]+)"/)?.[1];expect(face).toBeTruthy();expect(face).toEqual(deputy.match(/data-face="true" d="([^"]+)"/)?.[1]);
  for(const svg of [colonel,deputy]){expect(svg).toContain('data-noble-insignia="HOU"');expect(svg).toContain('data-royal-kin="true"');expect(svg).toContain('data-age-stage="elder"');}
 });
+it.each([34,48,112])('keeps distinct leader, royal and imperial regalia at %ipx while preserving the permanent face',size=>{
+ const faces=new Set<string>();
+ for(const role of ['LEADER','KING','EMPEROR'] as const){const html=renderToStaticMarkup(<Portrait personId='one-life' role={role} age={62} size={size} color={0x224466}/>);expect(html).toContain(`width="${size}"`);faces.add(html.match(/<path data-face="true"[^>]*>/)![0]);if(role==='LEADER')expect(html).not.toContain('data-sovereign-regalia');else{expect(html).toContain(`data-sovereign-regalia="${role}"`);expect(html).toContain(`data-sovereign-robe="${role}"`);expect(html).not.toContain('data-office-insignia');}}
+ expect(faces.size).toBe(1);
+});
