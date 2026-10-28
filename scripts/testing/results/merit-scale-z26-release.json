@@ -1,0 +1,267 @@
+[
+  {
+    "checks": [
+      "100: actual merit view retains all eligible candidates and exact top three",
+      "100: actual top-person control keeps the unique identity",
+      "100: rendering and ranking do not modify any source person or event",
+      "500: actual merit view retains all eligible candidates and exact top three",
+      "500: actual top-person control keeps the unique identity",
+      "500: rendering and ranking do not modify any source person or event",
+      "1000: actual merit view retains all eligible candidates and exact top three",
+      "1000: actual top-person control keeps the unique identity",
+      "1000: rendering and ranking do not modify any source person or event"
+    ],
+    "results": [
+      {
+        "count": 100,
+        "enterMs": 21.19999998807907,
+        "ranking12MonthMs": 4.400000020861626,
+        "dom": 66,
+        "top": [
+          {
+            "personId": "p-1",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [],
+              "serviceMonths": 40,
+              "captureEventIds": [
+                "capture-1-0"
+              ],
+              "cityIds": [
+                "town-1"
+              ],
+              "importantCityIds": [
+                "town-1"
+              ],
+              "importantEventIds": [
+                "capture-1-0"
+              ],
+              "captures": 2,
+              "activities": 1
+            }
+          },
+          {
+            "personId": "p-10",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [],
+              "serviceMonths": 40,
+              "captureEventIds": [
+                "capture-10-0"
+              ],
+              "cityIds": [
+                "town-10"
+              ],
+              "importantCityIds": [
+                "town-10"
+              ],
+              "importantEventIds": [
+                "capture-10-0"
+              ],
+              "captures": 2,
+              "activities": 1
+            }
+          },
+          {
+            "personId": "p-13",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [],
+              "serviceMonths": 40,
+              "captureEventIds": [
+                "capture-13-0"
+              ],
+              "cityIds": [
+                "town-13"
+              ],
+              "importantCityIds": [
+                "town-13"
+              ],
+              "importantEventIds": [
+                "capture-13-0"
+              ],
+              "captures": 2,
+              "activities": 1
+            }
+          }
+        ],
+        "cache": {
+          "indexBuilds": 1,
+          "evidenceEvaluations": 75,
+          "evidenceReuses": 900,
+          "cachedPeople": 75
+        }
+      },
+      {
+        "count": 500,
+        "enterMs": 7.800000011920929,
+        "ranking12MonthMs": 14.899999991059303,
+        "dom": 65,
+        "top": [
+          {
+            "personId": "p-1",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [],
+              "serviceMonths": 40,
+              "captureEventIds": [
+                "capture-1-0"
+              ],
+              "cityIds": [
+                "town-1"
+              ],
+              "importantCityIds": [
+                "town-1"
+              ],
+              "importantEventIds": [
+                "capture-1-0"
+              ],
+              "captures": 2,
+              "activities": 1
+            }
+          },
+          {
+            "personId": "p-10",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [],
+              "serviceMonths": 40,
+              "captureEventIds": [
+                "capture-10-0"
+              ],
+              "cityIds": [
+                "town-10"
+              ],
+              "importantCityIds": [
+                "town-10"
+              ],
+              "importantEventIds": [
+                "capture-10-0"
+              ],
+              "captures": 2,
+              "activities": 1
+            }
+          },
+          {
+            "personId": "p-103",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [],
+              "serviceMonths": 40,
+              "captureEventIds": [
+                "capture-103-0"
+              ],
+              "cityIds": [
+                "town-103"
+              ],
+              "importantCityIds": [
+                "town-103"
+              ],
+              "importantEventIds": [
+                "capture-103-0"
+              ],
+              "captures": 2,
+              "activities": 1
+            }
+          }
+        ],
+        "cache": {
+          "indexBuilds": 1,
+          "evidenceEvaluations": 375,
+          "evidenceReuses": 4500,
+          "cachedPeople": 375
+        }
+      },
+      {
+        "count": 1000,
+        "enterMs": 10.599999994039536,
+        "ranking12MonthMs": 28,
+        "dom": 65,
+        "top": [
+          {
+            "personId": "p-1",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [],
+              "serviceMonths": 40,
+              "captureEventIds": [
+                "capture-1-0"
+              ],
+              "cityIds": [
+                "town-1"
+              ],
+              "importantCityIds": [
+                "town-1"
+              ],
+              "importantEventIds": [
+                "capture-1-0"
+              ],
+              "captures": 2,
+              "activities": 1
+            }
+          },
+          {
+            "personId": "p-10",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [],
+              "serviceMonths": 40,
+              "captureEventIds": [
+                "capture-10-0"
+              ],
+              "cityIds": [
+                "town-10"
+              ],
+              "importantCityIds": [
+                "town-10"
+              ],
+              "importantEventIds": [
+                "capture-10-0"
+              ],
+              "captures": 2,
+              "activities": 1
+            }
+          },
+          {
+            "personId": "p-103",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [],
+              "serviceMonths": 40,
+              "captureEventIds": [
+                "capture-103-0"
+              ],
+              "cityIds": [
+                "town-103"
+              ],
+              "importantCityIds": [
+                "town-103"
+              ],
+              "importantEventIds": [
+                "capture-103-0"
+              ],
+              "captures": 2,
+              "activities": 1
+            }
+          }
+        ],
+        "cache": {
+          "indexBuilds": 1,
+          "evidenceEvaluations": 750,
+          "evidenceReuses": 9000,
+          "cachedPeople": 750
+        }
+      }
+    ],
+    "scope": "100/500/1000-person explicit evidence UI fixtures through the real MeritRoll and ranking API; not invented natural world persons or combat"
+  }
+]

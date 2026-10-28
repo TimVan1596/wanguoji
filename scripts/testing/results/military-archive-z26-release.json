@@ -1,0 +1,48 @@
+[
+  {
+    "checks": [
+      "100: actual initial DOM is bounded",
+      "100: last historical row accessible by outer sidebar scroll",
+      "100: direct archive target mounts the exact old person",
+      "100: target is actually in the viewport",
+      "100: lazy historical details expand",
+      "100: details unmount when collapsed",
+      "100: variable height and targeting retain the mount bound",
+      "500: actual initial DOM is bounded",
+      "500: last historical row accessible by outer sidebar scroll",
+      "500: direct archive target mounts the exact old person",
+      "500: target is actually in the viewport",
+      "500: lazy historical details expand",
+      "500: details unmount when collapsed",
+      "500: variable height and targeting retain the mount bound",
+      "1000: actual initial DOM is bounded",
+      "1000: last historical row accessible by outer sidebar scroll",
+      "1000: direct archive target mounts the exact old person",
+      "1000: target is actually in the viewport",
+      "1000: lazy historical details expand",
+      "1000: details unmount when collapsed",
+      "1000: variable height and targeting retain the mount bound"
+    ],
+    "metrics": [
+      {
+        "people": 100,
+        "enterIncluding80msWait": 90.69999998807907,
+        "rowsMounted": 12,
+        "dom": 63
+      },
+      {
+        "people": 500,
+        "enterIncluding80msWait": 89.79999999701977,
+        "rowsMounted": 12,
+        "dom": 63
+      },
+      {
+        "people": 1000,
+        "enterIncluding80msWait": 90.20000000298023,
+        "rowsMounted": 12,
+        "dom": 63
+      }
+    ],
+    "scope": "real React DOM virtual-list scale fixtures, not invented simulation persons; natural-world timings tested separately"
+  }
+]

@@ -1,5 +1,5 @@
-import type {MilitaryPerson,MilitaryFormation} from './MilitaryCommandRegistry';
-import type {WorldEvent} from '../History/WorldHistory';
+import type {MilitaryPerson,MilitaryFormation} from '../../Politics/MilitaryCommandRegistry';
+import type {WorldEvent} from '../../History/WorldHistory';
 /** UI load fixtures with explicit event evidence, not natural world residents. */
 export function fixture(n=12){
  const people:MilitaryPerson[]=[],formations:MilitaryFormation[]=[],events:WorldEvent[]=[];
