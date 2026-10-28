@@ -29,7 +29,7 @@ it("death and retirement narratives retain their distinct factual meanings witho
   const ending=composeMilitaryBiography(f.person,f.entries,"赵").ending!;
   expect(ending).toContain("战乱中去世");expect(ending).not.toMatch(/死守|守城|人口|城下|战伤/);
   const death:any={eventId:"death",worldMonth:24,source:"military-person-died · death",text:"去世",victory:false};
-  expect(militaryMilestones(f.person,[death],[])[0].text).toBe("赵彦在战乱中去世。");
+  expect(militaryMilestones(f.person,[death],[])[0].text).toBe("赵彦围城战乱中去世。");
 });
 it("the shared royal/military reader shows one closed detail entrance, with no per-milestone audit controls",()=>{
   const f=fixture(),milestones=militaryMilestones(f.person,f.entries,f.events);
