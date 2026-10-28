@@ -53,7 +53,7 @@ export function formatRulerAge(status: string, age: number) {
 }
 
 export function rulerPortraitAge(ruler: Pick<Ruler,"status"|"bornYear"|"deathMonth"|"deathReason"> & Partial<Pick<Ruler,"naturalDeathYear"|"residentIdentity"|"militaryIdentity">>, worldMonth:number, managedRoyalOffice=true) {
-  if(hasRecordedRulerDeath(ruler))return Math.max(0,Math.floor((ruler.deathMonth!-ruler.bornYear)/12));
+  if(hasRecordedRulerDeath(ruler))return Math.max(0,Math.floor((Math.min(worldMonth,ruler.deathMonth!)-ruler.bornYear)/12));
   const living=managedRoyalOffice&&["ruling","exiled","heir","kin"].includes(ruler.status)||
     (ruler.status==="deposed"||Boolean(ruler.residentIdentity||ruler.militaryIdentity))&&ruler.naturalDeathYear!==undefined&&worldMonth<ruler.naturalDeathYear;
   return living?Math.max(0,Math.floor((worldMonth-ruler.bornYear)/12)):undefined;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getHouseEpochHeading, getHouseEpochPresentation, getSignificantReignStats, formatRulerAge, formatRulerLifeAge } from "./RoyalPresentation";
+import { rulerPortraitAge, getHouseEpochHeading, getHouseEpochPresentation, getSignificantReignStats, formatRulerAge, formatRulerLifeAge } from "./RoyalPresentation";
 import type { DynastyHouseEpoch } from "../../../Politics/DynasticRevolution";
 
 const first: DynastyHouseEpoch = { houseName: "姬氏", startMonth: 0, foundingRulerId: "r1", startReason: "FOUNDING" };
@@ -70,3 +70,5 @@ it("does not infer survival from a stale kin status after its dynasty loses life
  expect(formatRulerLifeAge(kin,1200,false,false)).toContain("生死未载");
  expect(formatRulerLifeAge(kin,1200,false,false)).not.toContain("当前年龄");
 });
+
+it('caps historical portrait age at both the viewed date and the actual death, never a future lifespan',()=>{const r={status:'dead' as const,bornYear:-240,deathMonth:600,deathReason:'自然去世' as const};expect(rulerPortraitAge(r,120)).toBe(30);expect(rulerPortraitAge(r,1200)).toBe(70);});
