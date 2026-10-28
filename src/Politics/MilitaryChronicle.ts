@@ -1,3 +1,4 @@
+import {militaryDeathWording} from './MilitaryLifePresentation';
 import {appanageText} from './MilitaryAppanage';
 import {deriveMilitaryActivities} from './MilitaryExperience';
 import {militaryHonorText} from './MilitaryHonors';
@@ -105,7 +106,7 @@ export function deriveMilitaryChronicle(person: MilitaryPerson, formations: Mili
       if (served && e.type === "military-command-ended" && month === appointment?.endMonth && m.endReason === appointment.endReason)
         text = m.endReason === "AGE_RETIREMENT" ? `${name}年老退役。` : `${name}结束在${e.actorFactionId}的军事任职。`;
       if (e.type === "military-person-died" && person.status === "DEAD" && month === person.deathMonth && e.actorFactionId === person.factionId && m.deathCause === person.deathCause)
-        text = `${name}${person.deathCause === "NATURAL_DEATH" ? "自然去世" : "去世"}。`;
+        text = `${name}${militaryDeathWording(person.deathCause)}。`;
     } else if (served && political?.participant.personId === person.personId && political.participant.sourceUserId === person.sourceUserId) {
       text = `${name}统兵参与${political.kind === "DEPOSITION" ? "宗室废立" : "继统政治压力"}，军事参与者并非新君。`;
     }

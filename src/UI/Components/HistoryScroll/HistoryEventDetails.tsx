@@ -3,7 +3,7 @@ import {useContext} from "react";
 import {MentionContext,FactionMention} from "./HistoryFactionNavigation";
 import DepositionSelectionDetails from "../DepositionSelectionDetails";
 import { Box, Typography } from "@mui/material";
-import type { WorldEvent } from "../../../History/WorldHistory";
+import WorldHistory,{type WorldEvent} from "../../../History/WorldHistory";
 import type { RootState } from "../../../store";
 import { colorToString } from "../../../paid/theme";
 import { getMergedEventPresentation } from "../../../History/MergedEventPresentation";
@@ -85,6 +85,7 @@ export function EventDetails({
   }
   return (
     <>
+      {event.metadata?.historyNarrativeKind==='MILITARY_LIFE'&&<details onClick={e=>e.stopPropagation()} style={{fontSize:'.75rem',overflowWrap:'anywhere'}}><summary>原始史事（两条）</summary>{WorldHistory.getEvents().filter(e=>String(event.metadata?.sourceEventIds).split(',').includes(e.id)).map(e=><Typography key={e.id} fontSize='.75rem'>{e.title} · 事件 {e.id}</Typography>)}</details>}
       <DepositionSelectionDetails event={event}/>
       {getMilitaryParticipationDetails(event).length>0 && <details onClick={e=>e.stopPropagation()} style={{overflowWrap:"anywhere",fontSize:"0.75rem"}}><summary>史料依据（军事参与）</summary>{getMilitaryParticipationDetails(event).map((line,i)=><Typography key={i} fontSize="0.75rem">{line}</Typography>)}</details>}
       {lines.map((line) => (

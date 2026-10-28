@@ -1,3 +1,4 @@
+import {mergeMilitaryLifeEvents} from '../Politics/MilitaryLifePresentation';
 import type { WorldEvent } from "./WorldHistory";
 import { formatAccessionCapital } from "./AccessionCapitalContext";
 
@@ -147,7 +148,7 @@ export function groupHistoryNarratives(events: WorldEvent[]) {
         : createNarrativeEvent(group)
     );
   });
-  return displayEvents;
+  return mergeMilitaryLifeEvents(displayEvents);
 }
 
 function buildCapitalTransitionGroups(events: WorldEvent[], index: NarrativeIndex) {

@@ -153,6 +153,7 @@ export function formatHistoryEventTitle(
   factionById: Map<string, HistoryFactionLike>,
   rulersById?: Map<string, Ruler>
 ) {
+  if(event.metadata?.historyNarrativeKind==='MILITARY_LIFE')return event.title;
   const title = formatMilitaryHistoryIdentity({ ...event, title: formatHistoryEventTitleBase(event, factionById, rulersById) });
   const capital = formatAccessionCapital(event);
   const military = formatMilitaryParticipation(event);

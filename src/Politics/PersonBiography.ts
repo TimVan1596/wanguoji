@@ -1,3 +1,4 @@
+import {militaryDeathWording} from './MilitaryLifePresentation';
 import type {RulerHistoricalEvidence} from "./RulerHistoriography";
 import {summarizeRulerPoliticalFacts} from "./RulerPoliticalFacts";
 import type {MilitaryPerson} from "./MilitaryCommandRegistry";
@@ -41,7 +42,7 @@ export function composeMilitaryBiography(person:MilitaryPerson,entries:MilitaryC
   if(factions.length>1)life.push(person.factionId===factionId?"其军旅生涯曾有转属。":"后转属他国。");
   const victories=entries.filter(e=>e.victory);
   const ending=person.status==="DEAD"&&person.deathMonth!==undefined
-    ? `${formatWorldDate(person.deathMonth)}${person.deathCause==="NATURAL_DEATH"?"自然去世":person.deathCause==="SIEGE_LOSS"?"在战乱中去世":person.deathCause==="BATTLE_DEATH"?"在战乱中去世":"去世"}。`
+    ? `${formatWorldDate(person.deathMonth)}${militaryDeathWording(person.deathCause)}。`
     : person.status!=="ACTIVE"&&person.appointments.at(-1)?.endReason==="AGE_RETIREMENT"?"年老退职。":undefined;
   const defense=entries.filter(e=>e.source.startsWith("siege-defended"));
   const assessment=defense.length?`${defense.at(-1)!.text.replace(/。$/,"")}；${victories.length?"亦有参与取城之绩。":"虽未有取城之绩，亦有守土之功。"}`:victories.length?"其所部曾参与攻克城邑，军旅功业见于任内战事。"

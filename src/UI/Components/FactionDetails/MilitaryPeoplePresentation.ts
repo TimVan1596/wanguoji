@@ -1,3 +1,4 @@
+import {militaryDeathWording} from '../../../Politics/MilitaryLifePresentation';
 import type { MilitaryPerson,MilitaryFormation } from "../../../Politics/MilitaryCommandRegistry";
 
 
@@ -27,7 +28,7 @@ export function describeMilitaryDeathCause(cause?: string) {
 
 
 export function describeMilitaryStatus(person: MilitaryPerson) {
-  return person.status === "ACTIVE" ? "现役指挥官" : person.status === "DEAD" ? "已故" :
+  return person.status === "ACTIVE" ? "现役指挥官" : person.status === "DEAD" ? person.deathMonth===undefined?"生死未载":militaryDeathWording(person.deathCause) :
     person.appointments.at(-1)?.endReason === "AGE_RETIREMENT" ? "已退役（年老）" : "已离任";
 }
 export function describeMilitaryAppointmentEnd(reason?: string) {
