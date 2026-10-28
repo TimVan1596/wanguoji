@@ -147,7 +147,7 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
-- 当前 APP **v0.99931z24** / package **0.99.190** / WorldSave **V29**。z23已获用户人工Gate PASS。普通民变新增基于成熟战乱、反复失守及战后危机的资格入口，仍核验真实本地居民并复用原抽签；长期服役的实际守城将领可在既有危机中获得政治参与资格。守土史评、义军空档案及诊断同步完善；不改围城、军职晋升、1／2／3／4人编组、人口或外交规则。性能仅采样诊断，尚未发布运行优化。V29拒绝旧V28并保留旧槽位，请新建世界；等待本轮人工Chrome Gate。
+- 当前 APP **v0.99931z25** / package **0.99.191** / WorldSave **V30**。z24已获用户人工Gate PASS。军政档案使用主侧栏有界挂载，折叠列表不生成完整纪事，历史投影按原始事件与读取重建失效；荣誉年度结算跳过不可能或已完成的事务。现有军功爵位可由合法君主赐予真实自有城市的独占名义食邑，保留失地、恢复及终结来源，不改变城市、人口、军权或政治权重。V30拒绝旧V29并保留旧槽位，请新建世界；等待本轮人工Chrome Gate。
 
 - v0.99931n人工Gate已PASS，真实长局自然发生至少11次同王统宗室废立。当前v0.99931n1修复连续废立后的V14生命周期校验，并完善君主即离位叙述与史评，等待[人工Gate](docs/RulerDepositionLifecycleClosureN1.md)。
 - v0.99929a 修复政治终结历史身份、退位年龄与双方君主大事记。[Political Terminal Chronicle Gate](docs/PoliticalTerminalChronicleClosure.md)已由用户完成人工PASS。

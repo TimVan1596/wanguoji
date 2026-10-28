@@ -1,3 +1,4 @@
+import {memo} from 'react';
 import type {PortraitRole} from "./PortraitPresentation";
 /** Immutable identity controls face only; office, flag and age never re-roll it. */
 export function portraitTraits(personId:string,age?:number){
@@ -8,7 +9,7 @@ export function portraitTraits(personId:string,age?:number){
   face:13+seed%6,jaw:(seed>>>4)%4,hair:(seed>>>7)%3,eyes:8+(seed>>>10)%5,brow:(seed>>>13)%3,nose:2+(seed>>>16)%3,mouth:(seed>>>19)%3,mole:(seed>>>22)%4===0};
 }
 /** Decorative SVG lives inside the existing accessible archive control, never a second dialog. */
-export default function PersonPortrait({personId,age,role="UNKNOWN",color,deceased=false,size=48,nobleRank,royalKin=false}:{personId:string;age?:number;role?:PortraitRole;color?:number;deceased?:boolean;size?:number;nobleRank?:"BO"|"HOU"|"GONG";royalKin?:boolean}){
+function PersonPortrait({personId,age,role="UNKNOWN",color,deceased=false,size=48,nobleRank,royalKin=false}:{personId:string;age?:number;role?:PortraitRole;color?:number;deceased?:boolean;size?:number;nobleRank?:"BO"|"HOU"|"GONG";royalKin?:boolean}){
  const t=portraitTraits(personId,age),elder=t.stage==="elder",mature=t.stage==="mature",young=t.stage==="young";
  const military=["XIAOWEI","PIJIANG","JIANGJUN","SHANGJIANGJUN"].includes(role),imperial=role==="EMPEROR",royal=imperial||role==="KING";
  const flag=color===undefined?"#9a9181":`#${(color>>>0).toString(16).padStart(6,"0").slice(-6)}`;
@@ -42,3 +43,6 @@ export default function PersonPortrait({personId,age,role="UNKNOWN",color,deceas
   {deceased&&<path d="M0 1H64M0 79H64" stroke="#706e68" strokeWidth="3"/>}
  </svg>;
 }
+
+// Stable primitive identity/age/office props keep historical SVGs out of monthly redraw work.
+export default memo(PersonPortrait);

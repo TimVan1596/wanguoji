@@ -1,0 +1,268 @@
+{
+  "app": "v0.99931z25",
+  "package": "0.99.191",
+  "worldSave": 30,
+  "productionSha256": "9bd38d870b15250f9249c6483afe09480380879918c62e3bf9deb9c465b1b487",
+  "performance": {
+    "baseline": {
+      "seed": "regional-3",
+      "years": 320,
+      "factionId": "魏",
+      "worldMonth": 3840,
+      "population": 183,
+      "worldPeople": 111,
+      "localPeople": 22,
+      "worldEvents": 9434,
+      "enterMs": 346.59999999403954,
+      "firstExpandMs": 132.90000000596046,
+      "collapsedChronicleCalls": 44,
+      "eventReads": 960,
+      "initialDom": 609,
+      "frame": [
+        {
+          "sidebar": true,
+          "averageFPS": 14.844626245270012,
+          "p95FrameMs": 246.29999999701977
+        },
+        {
+          "sidebar": false,
+          "averageFPS": 46.490004648908446,
+          "p95FrameMs": 40.29999999701977
+        }
+      ],
+      "react": {
+        "commits": 17,
+        "totalMs": 1964.400000065565
+      },
+      "scope": "actual natural Core world; same snapshot for paired UI measurements; offscreen Electron timings, not human Chrome acceptance"
+    },
+    "final": {
+      "seed": "regional-3",
+      "years": 320,
+      "settlement": {
+        "months": 12,
+        "annualHonorMs": [
+          0.10000000894069672
+        ],
+        "canonicalExcludingVersionAndAppanages": "0ba68c0926d02e0b236ae2ff2a1c2c4834adf7bdac4b4a497ada861fd1521cda",
+        "worldRandomPosition": 19008
+      },
+      "fixtureSchema": 29,
+      "benchmarkSchema": 30,
+      "factsUnchangedOnHydration": true,
+      "factionId": "魏",
+      "worldMonth": 3840,
+      "population": 183,
+      "worldPeople": 111,
+      "localPeople": 22,
+      "worldEvents": 9434,
+      "enterMs": 63.69999998807907,
+      "firstExpandMs": 29.400000005960464,
+      "collapsedChronicleCalls": 0,
+      "eventReads": 144,
+      "initialDom": 440,
+      "frame": [
+        {
+          "sidebar": true,
+          "averageFPS": 45.17093461605956,
+          "p95FrameMs": 49.400000005960464
+        },
+        {
+          "sidebar": false,
+          "averageFPS": 54.898093359631815,
+          "p95FrameMs": 39.70000000298023
+        }
+      ],
+      "react": {
+        "commits": 60,
+        "totalMs": 636.0999999046326
+      },
+      "scope": "actual natural Core world; same snapshot for paired UI measurements; offscreen Electron timings, not human Chrome acceptance"
+    },
+    "sourceManifest": "battle-z25-panel-complete-source.json",
+    "allIntermediateMeasurements": [
+      "military-panel-performance-z25-honors-baseline-final320.json",
+      "military-panel-performance-z25-honors-final-final320.json",
+      "military-panel-performance-z25-honors-pruned-final320.json",
+      "military-panel-performance-z25-panel-baseline-final320.json",
+      "military-panel-performance-z25-panel-cached-final320.json",
+      "military-panel-performance-z25-panel-complete-final320.json",
+      "military-panel-performance-z25-panel-final-final320.json",
+      "military-panel-performance-z25-panel-optimized-final320.json",
+      "military-panel-performance-z25-panel-release-final320.json"
+    ],
+    "expandedPerson": {
+      "personId": "military-person-99",
+      "name": "阙克济",
+      "status": "DEAD",
+      "deathMonth": 3422
+    },
+    "frameTimingScope": "3-second offscreen Electron Canvas windows after 0.5-second warmup; monthly settlement CPU is measured separately; not user Chrome FPS/GPU time or statistical significance",
+    "initialDomScope": "entire selected faction sidebar, including header; list window contract limits military rows to24, grants to64",
+    "fixtureScope": "Natural regional-3 world generated once to month3840. For paired benchmarks only, V29 fixture label explicitly replaced with current DTO label; canonical facts verified unchanged. No player save migration is enabled.",
+    "annualHonors": {
+      "baseline": {
+        "months": 12,
+        "annualHonorMs": [
+          115.29999999701977
+        ],
+        "canonicalExcludingVersionAndAppanages": "0ba68c0926d02e0b236ae2ff2a1c2c4834adf7bdac4b4a497ada861fd1521cda",
+        "worldRandomPosition": 19008
+      },
+      "final": {
+        "months": 12,
+        "annualHonorMs": [
+          0.10000000894069672
+        ],
+        "canonicalExcludingVersionAndAppanages": "0ba68c0926d02e0b236ae2ff2a1c2c4834adf7bdac4b4a497ada861fd1521cda",
+        "worldRandomPosition": 19008
+      },
+      "sameCanonicalFactsExcludingNewAppanages": true,
+      "interpretation": "one real annual settlement within the same12-month continuation, not a p95 distribution"
+    }
+  },
+  "scaleDom": [
+    {
+      "checks": [
+        "100: actual initial DOM is bounded",
+        "100: last historical row accessible by outer sidebar scroll",
+        "100: direct archive target mounts the exact old person",
+        "100: target is actually in the viewport",
+        "100: lazy historical details expand",
+        "100: details unmount when collapsed",
+        "100: variable height and targeting retain the mount bound",
+        "500: actual initial DOM is bounded",
+        "500: last historical row accessible by outer sidebar scroll",
+        "500: direct archive target mounts the exact old person",
+        "500: target is actually in the viewport",
+        "500: lazy historical details expand",
+        "500: details unmount when collapsed",
+        "500: variable height and targeting retain the mount bound",
+        "1000: actual initial DOM is bounded",
+        "1000: last historical row accessible by outer sidebar scroll",
+        "1000: direct archive target mounts the exact old person",
+        "1000: target is actually in the viewport",
+        "1000: lazy historical details expand",
+        "1000: details unmount when collapsed",
+        "1000: variable height and targeting retain the mount bound"
+      ],
+      "metrics": [
+        {
+          "people": 100,
+          "enterIncluding80msWait": 94.09999999403954,
+          "rowsMounted": 12,
+          "dom": 63
+        },
+        {
+          "people": 500,
+          "enterIncluding80msWait": 86.20000000298023,
+          "rowsMounted": 12,
+          "dom": 63
+        },
+        {
+          "people": 1000,
+          "enterIncluding80msWait": 86.6000000089407,
+          "rowsMounted": 12,
+          "dom": 63
+        }
+      ],
+      "scope": "real React DOM virtual-list scale fixtures, not invented simulation persons; natural-world timings tested separately"
+    }
+  ],
+  "natural50": {
+    "seed": "regional-3",
+    "years": 50,
+    "appanages": {
+      "grants": 3,
+      "lost": 1,
+      "restored": 0,
+      "ended": 1,
+      "politicalEffects": 0
+    },
+    "titledPeople": 3,
+    "rankCounts": {
+      "BO": 3,
+      "HOU": 0,
+      "GONG": 0
+    },
+    "facts": {
+      "worldPopulation": 200,
+      "captures": 17,
+      "activeStates": 6,
+      "meanActiveStates": 6.175,
+      "extinctions": 1,
+      "restorations": 0,
+      "splits": 0,
+      "militarySplits": 0,
+      "rebellions": 0,
+      "worldRandomPosition": 3441,
+      "maximumFormationSize": 3,
+      "populationUnexplained": 0,
+      "duplicatePopulationIds": 0,
+      "residentIdentityConflicts": 0,
+      "formationOwnershipConflicts": 0
+    },
+    "matchingZ24Fields": {
+      "worldPopulation": true,
+      "captures": true,
+      "activeStates": true,
+      "extinctions": true,
+      "restorations": true,
+      "splits": true,
+      "worldRandomPosition": true
+    },
+    "continuation": {
+      "months": 12,
+      "deterministic": true,
+      "secondRead": true
+    },
+    "strictAllCheckpoints": true,
+    "meanLargestTerritoryShare": 0.20063673469387755,
+    "scope": "one natural fifty-year invariant check, not a political frequency calibration; appanage political weight is not implemented"
+  },
+  "appanageRules": {
+    "exclusiveWithinRoyalHouse": true,
+    "retirement": "retain personal nominal estate",
+    "loss": "lost control, title retained",
+    "recovery": "restore if original grant not ended; no new noble award",
+    "ended": "death/accession/transfer/revocation/house or in-country authority end/city destruction; no hereditary transfer or automatic reinstatement of ended grants",
+    "settlement": "monthly, preserves original transaction dates; pending canonical changes can be shown before settlement",
+    "politicalEffectsPublished": false,
+    "regrantOrChangeOfEstatePublished": false,
+    "taxPopulationCommandOwnershipEffects": false
+  },
+  "rebelEntry": "no production navigation bug reproduced; true provisional rebel with real one-unit commander and subsequent kingdom/empire transition tested",
+  "verification": {
+    "testFiles": 271,
+    "tests": 2165,
+    "corePhaserDomChecks": 769,
+    "coreFiles": {
+      "formation-management-z25-release.json": 46,
+      "military-archive-z25-release.json": 21,
+      "military-nobility-z25-release.json": 87,
+      "military-overlay-z25-release.json": 33,
+      "military-promotion-z25-release.json": 36,
+      "military-secession-z25-release.json": 68,
+      "rebel-military-identity-z25-release.json": 24,
+      "regional-politics-z25-release.json": 24,
+      "resident-founder-z25-release.json": 71,
+      "royal-military-z25-release.json": 244,
+      "siege-battle-z25-release.json": 91,
+      "siege-defense-z25-release.json": 24
+    },
+    "web": "PASS",
+    "desktop": "PASS",
+    "debug": "PASS",
+    "legacyV29Slots": "preserved and rejected; schema30 required"
+  },
+  "unchanged": [
+    "siege formulas",
+    "1/2/3/4 capacities and2 commanders/2formations",
+    "military promotion thresholds",
+    "ordinary rebellion base probability",
+    "political lotteries",
+    "population growth",
+    "diplomacy"
+  ],
+  "manualChromeGate": "PENDING; automated timings do not prove Chrome is stutter-free"
+}

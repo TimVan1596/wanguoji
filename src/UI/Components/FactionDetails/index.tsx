@@ -667,9 +667,11 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
 
   const politicalTeam = Game.Core?.teams.find(team => team.name === factionId);
   const politicalFactionById = new Map((Game.Core?.teams ?? []).map(team => [team.name, team]));
-  const militaryPolitics = politicalTeam && resolvedSelection.expandedIds.length ? MilitaryCommandRegistry.getPoliticalInfluence(politicalTeam, worldMonth, Game.Core?.logicalUnitRegistry) : undefined;
+  let politicsCache:ReturnType<typeof MilitaryCommandRegistry.getPoliticalInfluence>|undefined;
+  const readPolitics=()=>politicsCache??=(politicalTeam?MilitaryCommandRegistry.getPoliticalInfluence(politicalTeam,worldMonth,Game.Core?.logicalUnitRegistry):undefined);
   const diagnostics = MilitaryCommandRegistry.getDiagnostics();
-  const officeSummary=resolvedSelection.expandedIds.length?MilitaryCommandRegistry.getOfficeSummary(worldMonth):undefined;
+  let summaryCache:ReturnType<typeof MilitaryCommandRegistry.getOfficeSummary>|undefined;
+  const readSummary=()=>summaryCache??=MilitaryCommandRegistry.getOfficeSummary(worldMonth);
   const factionCommanders = people.filter(person => person.factionId === factionId && person.status === "ACTIVE").length;
   return <Box sx={{ display: "grid", gap: 1, mt: 0.5, minWidth: 0, overflowWrap: "anywhere" }}>
     <Box><button type="button" aria-pressed={archiveView==='people'} onClick={()=>setArchiveView('people')}>现役与历任</button> · <button type="button" aria-pressed={archiveView==='merit'} onClick={()=>setArchiveView('merit')}>功臣录</button></Box>
@@ -712,6 +714,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
           const personAge = linkedRuler ? formatRulerLifeAge(linkedRuler,worldMonth) : describeMilitaryAge(person,worldMonth,Boolean(activeUser?.matchesMilitaryLife(person)));
           const lastAppointment = localAppointments.at(-1);
           const politicalEvents = MilitaryCommandRegistry.getPoliticalEvents(person);
+          const militaryPolitics=readPolitics(),officeSummary=readSummary();
           const politicalCandidate = militaryPolitics?.candidates.find(p => p.personId === person.personId);
           const orderEvidence = formation ? MilitaryCommandRegistry.getOrderEvidence(formation) : undefined;
           const view=formation&&Game.Core?resolveMilitaryCommandView(Game.Core,formation.commandId):undefined;
