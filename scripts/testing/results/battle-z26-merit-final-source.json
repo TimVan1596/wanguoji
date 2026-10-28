@@ -1,0 +1,9 @@
+{
+  "productionSha256": "781b9dd4c4636f4ad5ae0329a8c6bed4cac5145e7d328c72a4af7ef341a42118",
+  "seeds": [
+    "regional-3"
+  ],
+  "years": 422,
+  "noblePoliticalWeight": true,
+  "scope": "real frozen production Core; 1 fixed seeds; noble political weight enabled; no other rule patches"
+}
