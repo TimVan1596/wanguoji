@@ -257,6 +257,9 @@ export class WorldHistoryStore {
 
   getEvents() { return this.orderedEvents.slice().reverse(); }
 
+  /** Transaction order, including same-month facts; distinct from the display-sorted archive. */
+  getRecordedEvents() { return this.events.slice(); }
+
   /** Copies only the requested window. Complete months and explicit narrative groups keep
    * capture/collapse chains intact at page boundaries, including retrospective records. */
   getEventWindow(options: { startMonth?: number; endMonth?: number; factionId?: string;

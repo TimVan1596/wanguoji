@@ -401,11 +401,11 @@ export class MilitaryCommandRegistryStore {
 
   updateAppanages(month:number,teams:Team[],dynasties:Dynasty[],cities:City[]){
     if(!this.eventWriter)return;
-    let events=WorldHistory.getEvents().reverse();
+    let events=WorldHistory.getRecordedEvents();
     const write=(p:MilitaryPerson,record:MilitaryAppanage)=>{
       const previous=p.appanageHistory?structuredClone(p.appanageHistory):undefined,history=WorldHistory.exportState();
       try{(p.appanageHistory??=[]).push(record);const id=this.eventWriter!({id:record.eventId,year:record.month,monthIndex:record.month,type:'military-appanage',category:'politics',actorFactionId:record.factionId,factionIds:[record.factionId],cityId:record.cityId,cityName:record.cityName,rulerId:record.kind==='GRANTED'?record.rulerId:undefined,title:appanageText(record),importance:record.kind==='GRANTED'?'major':'normal',metadata:{personId:p.personId,appanage:JSON.stringify(record)}});
-        if(id!==record.eventId||!this.eventReader(record.factionId).some(e=>e.id===id))throw Error('Appanage event not recorded');events=WorldHistory.getEvents().reverse();return true;
+        if(id!==record.eventId||!this.eventReader(record.factionId).some(e=>e.id===id))throw Error('Appanage event not recorded');events=WorldHistory.getRecordedEvents();return true;
       }catch{if(previous)p.appanageHistory=previous;else delete p.appanageHistory;WorldHistory.importState(history);return false;}
     };
     for(const p of this.people.values()){
