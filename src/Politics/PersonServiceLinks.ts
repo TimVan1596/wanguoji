@@ -1,3 +1,4 @@
+import {createMilitaryEvidenceIndex} from './MilitaryEvidenceIndex';
 import {militaryMilestones,selectMilitaryMilestones} from "./MilitaryChroniclePresentation";
 import type {Ruler} from "./Dynasty";
 import type {MilitaryPerson,MilitaryFormation} from "./MilitaryCommandRegistry";
@@ -8,8 +9,11 @@ import {type MilitaryHistoryContext,deriveMilitaryChronicle} from "./MilitaryChr
 /** Half-open political/appointment intervals; overlap is not personal patronage. */
 export function personServiceLinks(factionId:string,rulers:Ruler[],people:MilitaryPerson[],formations:MilitaryFormation[],events:WorldEvent[],month:number){
  const byId=new Map(events.map(e=>[e.id,e]));
- return people.filter(p=>p.appointments.some(a=>a.factionId===factionId)).flatMap(person=>{
-  const victories=deriveMilitaryCareer(person,formations,events,month).capturedEventIds.map(id=>byId.get(id)!);
+ const overlapping=people.filter(p=>p.appointments.some(a=>a.factionId===factionId&&rulers.some(r=>r.reignOrdinal!==undefined&&r.accessionYear!==undefined&&Math.max(a.startMonth,r.accessionYear)<Math.min(a.endMonth??month+1,r.endYear??month+1,month+1))));
+ if(!overlapping.length)return [];
+ const evidence=createMilitaryEvidenceIndex(events,formations);
+ return overlapping.flatMap(person=>{
+  const victories=deriveMilitaryCareer(person,formations,events,month,evidence).capturedEventIds.map(id=>byId.get(id)!);
   return person.appointments.filter(a=>a.factionId===factionId).flatMap(a=>rulers.flatMap(r=>{
    if(r.accessionYear===undefined||r.reignOrdinal===undefined)return [];
    const start=Math.max(a.startMonth,r.accessionYear),end=Math.min(a.endMonth??month+1,r.endYear??month+1,month+1);

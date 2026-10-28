@@ -196,6 +196,16 @@ export function getRulerHistoricalEvents(
   notableEventIds: string[],
   limit = 6
 ) {
+  return projectRulerHistoricalEvents(events,ruler,factionId,worldMonth,notableEventIds).select(limit);
+}
+
+export function projectRulerHistoricalEvents(
+  events: WorldEvent[],
+  ruler: TerminalChronicleRuler,
+  factionId: string,
+  worldMonth: number,
+  notableEventIds: string[]
+) {
   const endMonth = Math.min(ruler.endYear ?? worldMonth, worldMonth);
   const notable = new Set(notableEventIds);
   const sourceIds = (event: WorldEvent) =>
@@ -286,7 +296,7 @@ export function getRulerHistoricalEvents(
   }
   const ranked = [...grouped.values()]
     .sort((a, b) => score(b) - score(a) || (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year) || a.id.localeCompare(b.id))
-  return selectChronicleHighlights(ranked,limit,event=>{
+  const select=(limit:number)=>selectChronicleHighlights(ranked,limit,event=>{
     const month=event.monthIndex??event.year;
     const accession=month===ruler.accessionYear&&["ruler-acceded","ruler-succession","dynasty-usurped","ruler-deposed"].includes(event.type)&&
       (event.rulerId===ruler.id||event.metadata?.nextRulerId===ruler.id);
@@ -299,6 +309,7 @@ export function getRulerHistoricalEvents(
       cityId:military?event.cityId:undefined,
       diversityGroup:["city-revolt","rebel-faction-founded","frontier-faction-founded","empire-split"].includes(event.type)?"local-upheaval":undefined};
   },{start:ruler.accessionYear,end:endMonth});
+  return {select,get all(){return select(Infinity);}};
 }
 
 /** Capital-loss and recovery can use different political groups for the same capture.
