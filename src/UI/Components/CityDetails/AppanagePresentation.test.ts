@@ -19,3 +19,10 @@ it('shared city/person/state index retains exactly the full source lifecycle, in
  for(const p of x.people)for(const a of p.appanageHistory!)expect(appanageChanges(p,a,index.related(p,a),x.month)).toEqual(appanageChanges(p,a,x.events,x.month));
  const pending=structuredClone(x);pending.people[1].appanageHistory=pending.people[1].appanageHistory!.slice(0,1);const f=cityAppanageHistory(x.cityId,pending.people,pending.events,1660);expect(f.relations[1].state).toBe('LOST');expect(cityAppanageHistory(x.cityId,pending.people,pending.events,1680).relations[1]).toMatchObject({state:'ENDED',endMonth:1678});
 });
+it.each(['ACCESSION','TRANSFER','TITLE_REVOKED','DYNASTY_ENDED','STATE_ENDED','CITY_DESTROYED'])('keeps %s source facts when using the shared historical index',reason=>{
+ const x=daliangAppanageFixture(),p=x.people[1],grant=p.appanageHistory![0],month=grant.month+1;
+ p.appanageHistory=[grant];p.deathMonth=undefined;p.status='ACTIVE';p.royalIdentity={rulerId:'royal'} as any;
+ const facts:Record<string,any>={ACCESSION:{type:'ruler-succession',metadata:{nextRulerId:'royal'}},TRANSFER:{type:'military-command-ended',actorFactionId:grant.factionId,metadata:{personId:p.personId,endReason:'TRANSFERRED'}},TITLE_REVOKED:{type:'military-title-revoked',metadata:{personId:p.personId,honor:JSON.stringify({factionId:grant.factionId,epochFounderId:grant.epochFounderId})}},DYNASTY_ENDED:{type:'dynasty-usurped',actorFactionId:grant.factionId},STATE_ENDED:{type:'faction-exiled',targetFactionId:grant.factionId},CITY_DESTROYED:{type:'city-destroyed',cityId:grant.cityId}};
+ const events=[...x.events.filter(e=>(e.monthIndex??e.year)<=grant.month),{id:'end-source',year:month,monthIndex:month,...facts[reason]}],index=prepareAppanageHistory(events);
+ expect(appanageChanges(p,grant,index.related(p,grant),month)).toEqual(appanageChanges(p,grant,events,month));expect(cityAppanageHistory(x.cityId,[p],events,month,index).relations[0]).toMatchObject({state:'ENDED',endMonth:month,last:{reason}});
+});
