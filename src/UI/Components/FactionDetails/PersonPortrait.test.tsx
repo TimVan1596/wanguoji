@@ -57,6 +57,6 @@ it('distinguishes colonel cloth and deputy shoulder panels while preserving the 
  const render=(role:any)=>renderToStaticMarkup(<Portrait personId="same-stable-face" age={72} role={role} nobleRank="HOU" royalKin deceased/>);
  const colonel=render('XIAOWEI'),deputy=render('PIJIANG');
  expect(colonel).not.toContain('data-office-insignia');expect(deputy).toContain('data-office-insignia="PIJIANG"');
- expect(colonel.match(/data-face="true" d="([^"]+)"/)?.[1]).toEqual(deputy.match(/data-face="true" d="([^"]+)"/)?.[1]);
+ const face=colonel.match(/data-face="true" d="([^"]+)"/)?.[1];expect(face).toBeTruthy();expect(face).toEqual(deputy.match(/data-face="true" d="([^"]+)"/)?.[1]);
  for(const svg of [colonel,deputy]){expect(svg).toContain('data-noble-insignia="HOU"');expect(svg).toContain('data-royal-kin="true"');expect(svg).toContain('data-age-stage="elder"');}
 });
