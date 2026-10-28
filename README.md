@@ -147,7 +147,7 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
-- 当前 APP **v0.99931z26** / package **0.99.192** / WorldSave **V30**。z25已获用户人工Gate PASS。功臣录共享战役／事件／编组索引，缓存稳定历史战功并独立更新服役月份，保留原排名及完整封爵记录；城市详情新增默认收起的历代封邑，支持真实人物双向跳转及毁城档案。校尉与裨将小幅服饰区分，面容及原爵位标记不变。不修改模拟规则，V30存档可继续使用；等待本轮人工Chrome Gate。
+- 当前 APP **v0.99931z27** / package **0.99.193** / WorldSave **V30**。z26已获用户人工Gate PASS。城市详情分为概况、攻防、封邑；每次真实授邑聚合为人物卡片，保留原授封国旗色、爵位、君主及失地／恢复／终结时间线。功臣录补充真实食邑及城市跳转，军权政治详情规范数值精度。不改变模拟规则与存档结构，现有z25／z26 V30存档可继续使用；等待本轮人工Chrome Gate。
 
 - v0.99931n人工Gate已PASS，真实长局自然发生至少11次同王统宗室废立。当前v0.99931n1修复连续废立后的V14生命周期校验，并完善君主即离位叙述与史评，等待[人工Gate](docs/RulerDepositionLifecycleClosureN1.md)。
 - v0.99929a 修复政治终结历史身份、退位年龄与双方君主大事记。[Political Terminal Chronicle Gate](docs/PoliticalTerminalChronicleClosure.md)已由用户完成人工PASS。
