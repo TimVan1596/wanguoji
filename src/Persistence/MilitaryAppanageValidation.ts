@@ -26,7 +26,8 @@ export function validateMilitaryAppanages(save:WorldSaveV1){
     const ids=new Set(before.map(x=>x.id)),past={...p,honorHistory:p.honorHistory?.filter(h=>ids.has(h.eventId))},g=currentNobleGrant(past,a.factionId,a.month,a.epochFounderId),merit=byId.get(a.meritEventId),owner=before.filter(x=>x.cityId===a.cityId&&(OWNERSHIP_EVENTS.includes(x.type)||x.type==='city-destroyed')).at(-1);
     if(!g||g.eventId!==a.nobleGrantEventId||g.rank!==a.rank||!ids.has(g.eventId)||!g.cityIds.includes(a.cityId)||!g.captureEventIds.includes(a.meritEventId)||!merit||merit.i>=i||merit.e.cityId!==a.cityId||!owner||owner.id!==a.sourceEventId||owner.actorFactionId!==a.factionId||owner.type==='city-destroyed'||owner.cityName!==a.cityName||before.some(x=>x.type==='military-person-died'&&x.metadata?.personId===p.personId))throw Error();
     // Source grant binds the permanent person; a prior accession/transfer cannot receive a new ordinary food estate.
-    if(before.some(x=>x.type==='military-command-ended'&&x.metadata?.personId===p.personId&&x.metadata.endReason==='TRANSFERRED'&&(x.monthIndex??x.year)>=g.month)||before.some(x=>x.type==='ruler-acceded'&&(x.rulerId===p.politicalRulerId||x.rulerId===p.royalIdentity?.rulerId)))throw Error();
+    const service=before.filter(x=>['military-appointment','military-command-ended'].includes(x.type)&&x.metadata?.personId===p.personId).at(-1);
+    if(!service||service.actorFactionId!==a.factionId||service.metadata?.endReason==='TRANSFERRED'||before.some(x=>x.type==='ruler-acceded'&&(x.rulerId===p.politicalRulerId||x.rulerId===p.royalIdentity?.rulerId)))throw Error();
    }else{
     if(!last||last.kind==='ENDED')throw Error();
     const expected=appanageChanges(p,last,before,a.month)[0];if(!expected||JSON.stringify(expected)!==JSON.stringify(a)||e.rulerId!==undefined)throw Error();

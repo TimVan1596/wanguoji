@@ -417,7 +417,7 @@ export class MilitaryCommandRegistryStore {
       if(!p.nobilityHistory?.length||p.deathMonth!==undefined||p.politicalRulerId)continue;
       const t=teams.find(t=>t.name===p.factionId),d=dynasties.find(d=>d.factionId===p.factionId),authority=honorAuthority(t,d,month);if(!authority)continue;
       const noble=currentNobleGrant(p,p.factionId,month,authority.epochFounderId);
-      if(!noble||p.appanageHistory?.some(a=>a.factionId===p.factionId&&a.epochFounderId===authority.epochFounderId))continue;
+      if(!noble||p.appointments.at(-1)?.factionId!==p.factionId||p.appointments.at(-1)?.endReason==='TRANSFERRED'||p.appanageHistory?.some(a=>a.factionId===p.factionId&&a.epochFounderId===authority.epochFounderId))continue;
       const city=cities.filter(c=>!c.destroyed&&c.ownerFactionId===p.factionId&&noble.cityIds.includes(c.id)&&!reserved.has(JSON.stringify([p.factionId,authority.epochFounderId,c.id]))).sort((a,b)=>a.id.localeCompare(b.id))[0];if(!city)continue;
       const source=events.filter(e=>e.cityId===city.id&&OWNERSHIP_EVENTS.includes(e.type)&&(e.monthIndex??e.year)<=month).at(-1),merit=noble.captureEventIds.map(id=>events.find(e=>e.id===id)).find(e=>e?.cityId===city.id);
       if(!source||source.actorFactionId!==p.factionId||!merit)continue;
