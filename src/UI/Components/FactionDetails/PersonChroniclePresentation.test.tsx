@@ -57,3 +57,5 @@ it("collapsed historical cards do not mount biographies or their long record tre
   expect(mounts).toBe(1); expect(opened.match(/完整记录【/g)).toHaveLength(100); expect(opened).toContain("完整记录【99】");
   expect(opened).not.toMatch(/overflow-y|overflow:auto|overflow:hidden|max-height|上一页|下一页|加载更多/);
 });
+
+it('distinguishes verified monarch and royal-kin archive cards without adding a second navigation control',()=>{for(const identityTone of ['ruler','royal-kin'] as const){const html=renderToStaticMarkup(<PersonArchiveCard heading='同一个人' identityTone={identityTone} expanded={false} onSelect={()=>{}}/>);expect(html).toContain(`data-archive-identity="${identityTone}"`);expect(html.match(/<button /g)).toHaveLength(1);expect(html).toContain('aria-expanded="false"');}});

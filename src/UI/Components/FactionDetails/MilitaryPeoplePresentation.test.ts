@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { MilitaryPerson } from "../../../Politics/MilitaryCommandRegistry";
-import { describeMilitaryAge, describeMilitaryDeathCause, getMilitaryPersonRelevantMonth,getMilitaryArchive,getMilitaryLocalServiceMonths,getMilitaryLocalFormation, sortMilitaryPeople } from "./MilitaryPeoplePresentation";
+import { describeMilitaryStatus, describeMilitaryAge, describeMilitaryDeathCause, getMilitaryPersonRelevantMonth,getMilitaryArchive,getMilitaryLocalServiceMonths,getMilitaryLocalFormation, sortMilitaryPeople } from "./MilitaryPeoplePresentation";
 
 const person = (personId: string, status: MilitaryPerson["status"], startMonth: number, endMonth?: number, deathMonth?: number): MilitaryPerson => ({
   personId, sourceUserId: Number(personId.replace(/\\D/g, "")) || 1, name: personId, personalName: "李承远", bornMonth: -300,
@@ -59,3 +59,6 @@ it("a transferred person's current foreign army and foreign service months do no
   expect(getMilitaryLocalFormation(p,"qin",[f])).toBeUndefined();expect(getMilitaryLocalFormation(p,"wei",[f])).toBe(f);
   p.status="DEAD";p.deathMonth=60;expect(getMilitaryLocalServiceMonths(p,"wei",72)).toBe(30);expect(getMilitaryLocalFormation(p,"wei",[f])).toBeUndefined();
 });
+
+it.each([['NATURAL_DEATH','自然去世'],['BATTLE_DEATH','战死'],['SIEGE_LOSS','围城战乱中去世']])('distinguishes the recorded %s life outcome from retirement', (cause,label)=>{const p=person('1','DEAD',0,120,120);p.deathCause=cause as MilitaryPerson['deathCause'];expect(describeMilitaryStatus(p)).toBe(label);});
+it('does not turn dismissal or missing death evidence into an actual death',()=>{const p=person('1','RETIRED',0,120);expect(describeMilitaryStatus(p)).toBe('已离任');p.status='DEAD';expect(describeMilitaryStatus(p)).toBe('生死未载');});
