@@ -20,7 +20,7 @@ it('applies only titles effective at the viewed month, including after-service r
  expect(militaryPortraitContext(p,'old',faction,60)).toMatchObject({nobleRank:undefined,royalKin:true});expect(militaryPortraitContext(p,'old',faction,90)).toMatchObject({nobleRank:'HOU',role:'JIANGJUN'});expect(militaryPortraitContext(p,'old',faction,200)).toMatchObject({nobleRank:undefined,role:'JIANGJUN',month:99});expect(militaryPortraitContext(p,'foreign',faction,90).nobleRank).toBeUndefined();
 });
 it('never leaks a future imperial rank, flag or recorded death into the same monarch’s early reign',()=>{
- const r={bornYear:-300,accessionYear:0,endYear:120,deathMonth:120,deathReason:'自然去世'};
+ const r={bornYear:-300,accessionYear:0,endYear:120,deathMonth:120,deathReason:'自然去世' as const};
  expect(royalPortraitContext(r,faction,12)).toMatchObject({role:'LEADER',month:12,deceased:false,color:0xff0000});
  expect(royalPortraitContext(r,faction,36)).toMatchObject({role:'KING',month:36,deceased:false,color:0xff0000});
  expect(royalPortraitContext(r,faction,72)).toMatchObject({role:'EMPEROR',month:72,deceased:false,color:0xff0000});

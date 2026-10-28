@@ -728,7 +728,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
               <PersonLifeDates bornMonth={person.bornMonth} deathMonth={person.deathMonth}/>
               <Typography fontSize="0.76rem">{identityBadges}</Typography>
               <Typography fontSize="0.86rem" fontWeight="bold">{describeMilitaryOffice(person,factionId).replace("（本国历史最高职务）","")}</Typography>
-              {portraitContext.historical&&<Typography fontSize="0.74rem" color="var(--gg-text-muted)">肖像服饰与旗色取本国任职末期，非其后来外国身份。</Typography>}
+              {portraitContext.historical&&<Typography fontSize="0.74rem" color="var(--gg-text-muted)">{identityLabels.some(l=>l==='现任君主'||l==='曾任君主')?'肖像取其真实君主任期；早年军职另见军旅纪事。':'肖像服饰与旗色取本国任职末期，非其后来外国身份。'}</Typography>}
             {person.factionId!==factionId&&<Typography fontSize="0.78rem">曾在本国任职，后已转属。</Typography>}
               <Typography fontSize="0.76rem" color="var(--gg-text-muted)">{personAge} · 本国任职：{person.appointments.filter(a=>a.factionId===factionId).map(a=>`${formatWorldDate(a.startMonth)}—${a.endMonth===undefined?"今":formatWorldDate(a.endMonth)}`).join("；")}</Typography>
             </>}
