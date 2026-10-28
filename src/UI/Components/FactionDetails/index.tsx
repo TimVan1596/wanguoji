@@ -1,3 +1,4 @@
+import MilitaryArchiveWindow from './MilitaryArchiveWindow';
 import {militaryPosthumousLabel} from '../../../Politics/MilitaryHonors';
 import {militaryPoliticalLife,appendMilitaryPoliticalLife} from "../../../Politics/MilitaryPoliticalLife";
 import GenealogyBrowser from "./GenealogyBrowser";
@@ -394,7 +395,7 @@ function FactionProfile({
       : "义军政权";
 
   return (
-    <Box sx={{ p: 1.25, height: "100%", boxSizing: "border-box", overflowY: "auto" }}>
+    <Box data-faction-scroll sx={{ p: 1.25, height: "100%", boxSizing: "border-box", overflowY: "auto" }}>
       <Button
         size="small"
         onClick={() => dispatch(setSelectedFactionName(undefined))}
@@ -632,8 +633,10 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
   const navigation=usePersonArchiveNavigation();
   const people = sortMilitaryPeople(MilitaryCommandRegistry.getPeople().filter(person => person.factionId === factionId || person.appointments.some(appointment => appointment.factionId === factionId)),factionId);
   const formations = MilitaryCommandRegistry.getFormations();
+  const archiveEvents=useMemo(()=>WorldHistory.getEvents(),[worldMonth,WorldHistory.getRevision()]);
+  const archiveDynasties=useMemo(()=>DynastyRegistry.getAll(),[worldMonth,WorldHistory.getRevision()]);
   const usersByPerson=new Map((Game.Core?.teams??[]).flatMap(t=>[...t.users]).filter(u=>u.militaryPersonId).map(u=>[u.militaryPersonId!,u]));
-  const linkedRulers=new Map(DynastyRegistry.getAll().flatMap(d=>d.rulers).filter(r=>r.residentIdentity||r.militaryIdentity).map(r=>[r.militaryIdentity?.personId??r.residentIdentity!.personId,r]));
+  const linkedRulers=new Map(archiveDynasties.flatMap(d=>d.rulers).filter(r=>r.residentIdentity||r.militaryIdentity).map(r=>[r.militaryIdentity?.personId??r.residentIdentity!.personId,r]));
   const liveIds=new Set(people.filter(p=>usersByPerson.get(p.personId)?.matchesMilitaryLife(p)).map(p=>p.personId));
   const resolvedSelection=reconcileMilitaryPersonSelection(selection,factionId,people,formations,liveIds);
   if(resolvedSelection!==selection)setSelection(resolvedSelection);
@@ -662,9 +665,9 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
 
   const politicalTeam = Game.Core?.teams.find(team => team.name === factionId);
   const politicalFactionById = new Map((Game.Core?.teams ?? []).map(team => [team.name, team]));
-  const militaryPolitics = politicalTeam ? MilitaryCommandRegistry.getPoliticalInfluence(politicalTeam, worldMonth, Game.Core?.logicalUnitRegistry) : undefined;
+  const militaryPolitics = politicalTeam && resolvedSelection.expandedIds.length ? MilitaryCommandRegistry.getPoliticalInfluence(politicalTeam, worldMonth, Game.Core?.logicalUnitRegistry) : undefined;
   const diagnostics = MilitaryCommandRegistry.getDiagnostics();
-  const officeSummary=MilitaryCommandRegistry.getOfficeSummary(worldMonth);
+  const officeSummary=resolvedSelection.expandedIds.length?MilitaryCommandRegistry.getOfficeSummary(worldMonth):undefined;
   const factionCommanders = people.filter(person => person.factionId === factionId && person.status === "ACTIVE").length;
   return <Box sx={{ display: "grid", gap: 1, mt: 0.5, minWidth: 0, overflowWrap: "anywhere" }}>
     <Box><button type="button" aria-pressed={archiveView==='people'} onClick={()=>setArchiveView('people')}>现役与历任</button> · <button type="button" aria-pressed={archiveView==='merit'} onClick={()=>setArchiveView('merit')}>功臣录</button></Box>
@@ -675,19 +678,16 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
 
     <Typography fontSize="0.78rem" color="var(--gg-text-muted)">现役在前；历任人物按最近一次本国离任年月排列。</Typography>
     {!people.length && <Typography fontSize="0.86rem" color="var(--gg-text-muted)">本势力尚无将领任职；需有合格的真实居民，并经过既有年度任命机会，短期存续或兵员不足时可能暂无人选。</Typography>}
-    {visiblePeople.map((person,index) => {
+    <MilitaryArchiveWindow ids={visiblePeople.map(p=>p.personId)} targetId={navigation.militaryTarget?.id}>{(id,index) => {
+      const person=people.find(p=>p.personId===id)!;
+      const expanded=resolvedSelection.expandedIds.includes(id);
       const localAppointments=person.appointments.filter(a=>a.factionId===factionId);
       const first=localAppointments[0],last=localAppointments.at(-1),current=currentPeople.includes(person);
       const highest=localAppointments.flatMap(a=>a.officeHistory??[]).sort((a,b)=>MILITARY_OFFICES.indexOf(b.office)-MILITARY_OFFICES.indexOf(a.office))[0];
-      const entries=MilitaryCommandRegistry.getChronicle(person,worldMonth,factionId);
-      const localEvents=WorldHistory.getEventsForFaction(factionId);
-      const politicalLife=militaryPoliticalLife(person,DynastyRegistry.getAll(),WorldHistory.getEvents(),politicalFactionById,worldMonth);
-      const allMilestones=appendMilitaryPoliticalLife(militaryMilestones(person,entries,localEvents,{factions:politicalFactionById}),politicalLife);
-      const milestones=selectMilitaryMilestones(allMilestones,localEvents,8);
       const linked=linkedRulers.get(person.personId);
       const royalTeam=linked&&Game.Core?.teams.find(t=>DynastyRegistry.get(t.name)?.rulers.some(r=>r.id===linked.id));
       const portraitContext=linked&&linked.accessionYear!==undefined&&linked.accessionYear<=worldMonth&&royalTeam?{...royalPortraitContext(linked,royalTeam,worldMonth),historical:true}:militaryPortraitContext(person,factionId,politicalTeam,worldMonth);
-      const identityLabels=militaryIdentityLabels(person,DynastyRegistry.getAll(),WorldHistory.getEvents(),worldMonth);
+      const identityLabels=militaryIdentityLabels(person,archiveDynasties,archiveEvents,worldMonth);
       const identityBadges=identityLabels.map(label=>label==="宗室将领"&&person.royalIdentity?<button key={label} type="button" style={{border:0,background:"none",font:"inherit",color:"inherit",textDecoration:"underline",cursor:"pointer"}} onClick={event=>{event.stopPropagation();navigation.open({kind:"GENEALOGY",factionId:person.royalIdentity!.factionId,id:person.royalIdentity!.rulerId});}}>{label}</button>:<span key={label}>{label} · </span>);
       const ageText=linked?formatRulerLifeAge(linked,worldMonth):describeMilitaryAge(person,worldMonth,liveIds.has(person.personId));
       const portraitAge=linked?rulerPortraitAge(linked,worldMonth):person.status==="DEAD"&&person.deathMonth!==undefined?Math.max(0,Math.floor((person.deathMonth-person.bornMonth)/12)):liveIds.has(person.personId)?Math.max(0,Math.floor((worldMonth-person.bornMonth)/12)):undefined;
@@ -699,10 +699,16 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
           <Typography fontSize="0.92rem" sx={{display:"flow-root"}} fontWeight={current?"bold":600}>{current?"● ":""}{getMilitaryPersonDisplayName(person)} · <Box component="span" sx={{fontSize:"0.76rem",fontWeight:400,color:"var(--gg-text-muted)"}}>{ageText}</Box> · {current?"现役":person.status==="ACTIVE"&&person.factionId!==factionId?"已转属":describeMilitaryStatus(person)}</Typography>
           <Typography fontSize="0.76rem">{[...identityLabels,nobleLabel(person,factionId,worldMonth),militaryPosthumousLabel(person,factionId,worldMonth)].filter(Boolean).join(" · ")}</Typography>
           <Typography fontSize="0.82rem" color="var(--gg-text-muted)">{politicalTeam?.displayName??factionId} · {highest?`最高任${MILITARY_OFFICE_NAMES[highest.office]}`:"军职未载"}</Typography>
-          <Typography fontSize="0.8rem" color="var(--gg-text-muted)">{first?`${formatWorldDate(first.startMonth)}—${last?.endMonth===undefined?(current?"今":"止期未载"):formatWorldDate(last.endMonth)}`:"任期未载"} · 所部参与取城{entries.filter(e=>e.victory).length}次</Typography>
+          <Typography fontSize="0.8rem" color="var(--gg-text-muted)">{first?`${formatWorldDate(first.startMonth)}—${last?.endMonth===undefined?(current?"今":"止期未载"):formatWorldDate(last.endMonth)}`:"任期未载"} · 军旅纪事展开查看</Typography>
         </>}
       >
-        {resolvedSelection.expandedIds.includes(person.personId) && (() => {
+        {expanded && (() => {
+      const entries=MilitaryCommandRegistry.getChronicle(person,worldMonth,factionId);
+      const localEvents=WorldHistory.getEventsForFaction(factionId);
+      const politicalLife=militaryPoliticalLife(person,archiveDynasties,archiveEvents,politicalFactionById,worldMonth);
+      const allMilestones=appendMilitaryPoliticalLife(militaryMilestones(person,entries,localEvents,{factions:politicalFactionById}),politicalLife);
+      const milestones=selectMilitaryMilestones(allMilestones,localEvents,8);
+
           const formation = getMilitaryLocalFormation(person,factionId,formations);
           const activeUser = [...(Game.Core?.teams.find(team => team.name === person.factionId)?.users ?? [])]
             .find(user => user.militaryPersonId === person.personId);
@@ -736,7 +742,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
               <Typography fontSize="0.75rem">{describeMilitaryNameEvidence(person)}</Typography>
               <Box component="details" sx={{minWidth:0,overflowWrap:"anywhere"}}><summary>军事系统诊断</summary>
               <Typography fontSize="0.75rem">候选与资格数字是累计检查次数，不是独立人物数；正式军职提供同国任职史料参考，不单独增加政治风险或重复抽签。</Typography>
-              <Typography fontSize="0.76rem">军职档案累计授裨将{officeSummary.pijiang}次、将军{officeSummary.jiangjun}次、上将军{officeSummary.shangjiangjun}次；真实晋阶{officeSummary.promotions}次；平均任期{officeSummary.meanServiceMonths.toFixed(1)}个月；当前实授军职{officeSummary.currentOffices.length}人。职序为游戏世界抽象军职，不是统一历史官品；军职不改变统兵上限或政治抽签。</Typography>
+              <Typography fontSize="0.76rem">军职档案累计授裨将{officeSummary!.pijiang}次、将军{officeSummary!.jiangjun}次、上将军{officeSummary!.shangjiangjun}次；真实晋阶{officeSummary!.promotions}次；平均任期{officeSummary!.meanServiceMonths.toFixed(1)}个月；当前实授军职{officeSummary!.currentOffices.length}人。职序为游戏世界抽象军职，不是统一历史官品；军职不改变统兵上限或政治抽签。</Typography>
               <Typography fontSize="0.76rem" color="var(--gg-text-muted)">
                 全世界本次运行累计诊断：候选 {diagnostics.candidates} · 符合资格 {diagnostics.eligible} · 任命 {diagnostics.appointments} · 新命令 {diagnostics.orders} · 转向步进 {diagnostics.unitsSteered} · 到达目标城 {diagnostics.targetCityArrivals} · 围城接触 {diagnostics.commandedSiegeContacts} · 攻陷 {diagnostics.captures} · 目标失效 {diagnostics.invalidatedTargets} · 长期远距命令检查 {diagnostics.staleOrderChecks}
               </Typography>
@@ -767,7 +773,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
           </PersonChronicleLayout>;
         })()}
       </PersonArchiveCard>;
-    })}
+    }}</MilitaryArchiveWindow>
 
     </>}
   </Box>;
@@ -831,7 +837,7 @@ function FactionList({
   const archiveLabelById = useMemo(() => createFactionArchiveLabelMap(teams), [teams]);
   const activeRelations = Diplomacy.list(worldMonth);
   return (
-    <Box sx={{ p: 1.25, height: "100%", boxSizing: "border-box", overflowY: "auto" }}>
+    <Box data-faction-scroll sx={{ p: 1.25, height: "100%", boxSizing: "border-box", overflowY: "auto" }}>
       <Typography fontWeight="bold" variant="h6">
         天下势力
       </Typography>
