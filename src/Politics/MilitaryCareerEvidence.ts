@@ -1,16 +1,14 @@
+import type {MilitaryEvidenceIndex} from './MilitaryEvidenceIndex';
 import {deriveMilitaryActivities} from "./MilitaryExperience";
 import type { MilitaryPerson, MilitaryFormation } from "./MilitaryCommandRegistry";
 import type { WorldEvent } from "../History/WorldHistory";
 
 /** Pure projection: no diagnostic totals, inferred battles or random draws. */
-export function deriveMilitaryCareer(person: MilitaryPerson, formations: MilitaryFormation[], events: WorldEvent[], worldMonth: number) {
+export function deriveMilitaryCareer(person: MilitaryPerson, formations: MilitaryFormation[], events: WorldEvent[], worldMonth: number,index?:MilitaryEvidenceIndex) {
   const appointments = person.appointments.filter(a => a.startMonth <= worldMonth);
-  const intervals = appointments.map(a => [a.startMonth, Math.min(a.endMonth ?? worldMonth, person.deathMonth ?? worldMonth, worldMonth)])
-    .filter(([start, end]) => end >= start).sort((a, b) => a[0] - b[0]);
-  let serviceMonths = 0, end = -Infinity;
-  for (const [start, stop] of intervals) { serviceMonths += Math.max(0, stop - Math.max(start, end)); end = Math.max(end, stop); }
-  const commands = formations.filter(f => f.commanderPersonId === person.personId && appointments.some(a => a.commandId === f.commandId && a.factionId === f.factionId));
-  const byId = new Map(events.map(e => [e.id, e]));
+  const serviceMonths=militaryServiceMonths(person,worldMonth);
+  const commands = (index?.formsByPerson.get(person.personId)??formations).filter(f => f.commanderPersonId === person.personId && appointments.some(a => a.commandId === f.commandId && a.factionId === f.factionId));
+  const byId = index?.byId??new Map(events.map(e => [e.id, e]));
   const captures = [...new Set(person.capturedEventIds)].flatMap(id => {
     const e = byId.get(id), month = e?.monthIndex ?? e?.year ?? Infinity;
     const f = commands.find(f => f.commandId === e?.metadata?.commandId);
@@ -25,7 +23,7 @@ export function deriveMilitaryCareer(person: MilitaryPerson, formations: Militar
   const distinctCapitalCities=new Set(captures.filter(e=>e.metadata?.wasCapital===1).map(e=>e.cityId)).size;
   const capitalCaptures = captures.filter(e => e.metadata?.wasCapital === 1).length;
   const ordinaryCaptures = captures.filter(e => e.metadata?.wasCapital === 0).length;
-  const initialSizes = events.filter(e => e.type === "military-appointment" && e.metadata?.personId === person.personId &&
+  const initialSizes = (index?.byPerson.get(person.personId)??(index?[]:events)).filter(e => e.type === "military-appointment" && e.metadata?.personId === person.personId &&
     appointments.some(a => a.commandId === e.metadata?.commandId && a.factionId === e.actorFactionId && a.startMonth === (e.monthIndex ?? e.year)))
     .map(e => Number(e.metadata?.unitCount)).filter(n => Number.isSafeInteger(n) && n >= 1 && n <= 4);
   const recordedCommandSize = Math.max(0, ...initialSizes);
@@ -34,11 +32,21 @@ export function deriveMilitaryCareer(person: MilitaryPerson, formations: Militar
   const currentUnitCount = new Set(active.flatMap(f => f.memberUnitIds)).size;
   // Time alone contributes at most .35; combined appointment advantage is capped at 2x.
   const weight = 1 + Math.min(.35, serviceMonths / 240 * .35) + Math.min(.5, distinctCapturedCities * .1 + distinctCapitalCities * .05) + Math.min(.15, recordedCommandSize / 12 * .15);
-  return { activities:deriveMilitaryActivities(person,formations,events,worldMonth,captures.map(e=>e.id)),serviceMonths, appointmentCount: appointments.length, reappointments: Math.max(0, appointments.length - 1),
+  return { activities:deriveMilitaryActivities(person,formations,events,worldMonth,captures.map(e=>e.id),false,index),serviceMonths, appointmentCount: appointments.length, reappointments: Math.max(0, appointments.length - 1),
     ordinaryCaptures, capitalCaptures, distinctCapturedCities, unclassifiedCaptures: captures.length - ordinaryCaptures - capitalCaptures, verifiedCaptures: captures.length,
     capturedEventIds: captures.map(e => e.id), recordedCommandSize, currentUnitCount, hasActiveFormation: active.length > 0,
     ageRetired: person.status !== "ACTIVE" && appointments.at(-1)?.endReason === "AGE_RETIREMENT", dead: person.status === "DEAD",
     appointmentWeight: Math.min(2, weight), level: weight >= 1.7 ? "资深" : weight >= 1.2 ? "有经验" : "初历" };
+}
+
+/** Cheap changing service clock, independent of immutable battle evidence. */
+export function militaryServiceMonths(person:MilitaryPerson,worldMonth:number){
+ const appointments=person.appointments.filter(a=>a.startMonth<=worldMonth);
+  const intervals = appointments.map(a => [a.startMonth, Math.min(a.endMonth ?? worldMonth, person.deathMonth ?? worldMonth, worldMonth)])
+    .filter(([start, end]) => end >= start).sort((a, b) => a[0] - b[0]);
+  let serviceMonths = 0, end = -Infinity;
+  for (const [start, stop] of intervals) { serviceMonths += Math.max(0, stop - Math.max(start, end)); end = Math.max(end, stop); }
+  return serviceMonths;
 }
 
 /** Uses the existing selection draw. Caller supplies deterministically sorted candidates. */

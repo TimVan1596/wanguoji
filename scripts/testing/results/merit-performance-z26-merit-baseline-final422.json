@@ -1,0 +1,2117 @@
+[
+  {
+    "seed": "regional-3",
+    "years": 422,
+    "worldMonth": 5064,
+    "population": 196,
+    "worldPeople": 142,
+    "factionId": "魏",
+    "localPeople": 28,
+    "events": 12891,
+    "enterMs": 361.20000000298023,
+    "enterReactMs": 355.09999999403954,
+    "dom": 120,
+    "switchToPeopleMs": 31,
+    "calculations": [
+      {
+        "month": 5064,
+        "ms": 344,
+        "rows": [
+          {
+            "personId": "military-person-25",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-赵-邯郸-4-1344-魏"
+              ],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-1389-魏-邯郸-130",
+                "city-captured-1418-魏-汝阴-137",
+                "city-captured-1507-魏-临淄-144",
+                "capital-fallen-1532-魏-燕-蓟-149"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2",
+                "city-齐-临淄",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "city-赵-邯郸"
+              ],
+              "importantEventIds": [
+                "capital-fallen-1532-魏-燕-蓟-149",
+                "capital-fallen-1429-魏-邯郸义军-邯郸-138"
+              ],
+              "captures": 5,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-60",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [],
+              "serviceMonths": 204,
+              "captureEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "cityIds": [
+                "燕-city-96-2",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "燕-city-96-2"
+              ],
+              "importantEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "captures": 2,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-82",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-齐-city-1608-13-0-2779-魏"
+              ],
+              "serviceMonths": 276,
+              "captureEventIds": [
+                "city-captured-2809-魏-长阳-310",
+                "city-captured-2883-魏-川津-314",
+                "city-captured-3005-魏-琅琊-327",
+                "city-captured-3027-魏-郢-331"
+              ],
+              "cityIds": [
+                "齐-city-1608-13",
+                "齐-city-96-3",
+                "齐-city-336-9",
+                "city-楚-郢"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 4,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-6",
+            "merits": {
+              "defenseEventIds": [
+                "siege-defended-city-魏-大梁-0-569-秦"
+              ],
+              "defendedCityIds": [
+                "city-魏-大梁"
+              ],
+              "siegeEventIds": [],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-509-魏-邯郸-67",
+                "city-captured-551-魏-汝阴-70"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 2,
+              "activities": 3
+            }
+          },
+          {
+            "personId": "military-person-16",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-齐-临淄-4-903-魏"
+              ],
+              "serviceMonths": 104,
+              "captureEventIds": [
+                "city-captured-949-魏-新郑-103"
+              ],
+              "cityIds": [
+                "city-韩-新郑"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-63",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-燕-蓟-2-2088-魏"
+              ],
+              "serviceMonths": 73,
+              "captureEventIds": [
+                "city-captured-2122-魏-邯郸-247"
+              ],
+              "cityIds": [
+                "city-赵-邯郸"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          }
+        ]
+      },
+      {
+        "month": 5065,
+        "ms": 329.70000000298023,
+        "rows": [
+          {
+            "personId": "military-person-25",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-赵-邯郸-4-1344-魏"
+              ],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-1389-魏-邯郸-130",
+                "city-captured-1418-魏-汝阴-137",
+                "city-captured-1507-魏-临淄-144",
+                "capital-fallen-1532-魏-燕-蓟-149"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2",
+                "city-齐-临淄",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "city-赵-邯郸"
+              ],
+              "importantEventIds": [
+                "capital-fallen-1532-魏-燕-蓟-149",
+                "capital-fallen-1429-魏-邯郸义军-邯郸-138"
+              ],
+              "captures": 5,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-60",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [],
+              "serviceMonths": 204,
+              "captureEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "cityIds": [
+                "燕-city-96-2",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "燕-city-96-2"
+              ],
+              "importantEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "captures": 2,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-82",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-齐-city-1608-13-0-2779-魏"
+              ],
+              "serviceMonths": 276,
+              "captureEventIds": [
+                "city-captured-2809-魏-长阳-310",
+                "city-captured-2883-魏-川津-314",
+                "city-captured-3005-魏-琅琊-327",
+                "city-captured-3027-魏-郢-331"
+              ],
+              "cityIds": [
+                "齐-city-1608-13",
+                "齐-city-96-3",
+                "齐-city-336-9",
+                "city-楚-郢"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 4,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-6",
+            "merits": {
+              "defenseEventIds": [
+                "siege-defended-city-魏-大梁-0-569-秦"
+              ],
+              "defendedCityIds": [
+                "city-魏-大梁"
+              ],
+              "siegeEventIds": [],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-509-魏-邯郸-67",
+                "city-captured-551-魏-汝阴-70"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 2,
+              "activities": 3
+            }
+          },
+          {
+            "personId": "military-person-16",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-齐-临淄-4-903-魏"
+              ],
+              "serviceMonths": 104,
+              "captureEventIds": [
+                "city-captured-949-魏-新郑-103"
+              ],
+              "cityIds": [
+                "city-韩-新郑"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-63",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-燕-蓟-2-2088-魏"
+              ],
+              "serviceMonths": 73,
+              "captureEventIds": [
+                "city-captured-2122-魏-邯郸-247"
+              ],
+              "cityIds": [
+                "city-赵-邯郸"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          }
+        ]
+      },
+      {
+        "month": 5066,
+        "ms": 346.79999999701977,
+        "rows": [
+          {
+            "personId": "military-person-25",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-赵-邯郸-4-1344-魏"
+              ],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-1389-魏-邯郸-130",
+                "city-captured-1418-魏-汝阴-137",
+                "city-captured-1507-魏-临淄-144",
+                "capital-fallen-1532-魏-燕-蓟-149"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2",
+                "city-齐-临淄",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "city-赵-邯郸"
+              ],
+              "importantEventIds": [
+                "capital-fallen-1532-魏-燕-蓟-149",
+                "capital-fallen-1429-魏-邯郸义军-邯郸-138"
+              ],
+              "captures": 5,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-60",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [],
+              "serviceMonths": 204,
+              "captureEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "cityIds": [
+                "燕-city-96-2",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "燕-city-96-2"
+              ],
+              "importantEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "captures": 2,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-82",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-齐-city-1608-13-0-2779-魏"
+              ],
+              "serviceMonths": 276,
+              "captureEventIds": [
+                "city-captured-2809-魏-长阳-310",
+                "city-captured-2883-魏-川津-314",
+                "city-captured-3005-魏-琅琊-327",
+                "city-captured-3027-魏-郢-331"
+              ],
+              "cityIds": [
+                "齐-city-1608-13",
+                "齐-city-96-3",
+                "齐-city-336-9",
+                "city-楚-郢"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 4,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-6",
+            "merits": {
+              "defenseEventIds": [
+                "siege-defended-city-魏-大梁-0-569-秦"
+              ],
+              "defendedCityIds": [
+                "city-魏-大梁"
+              ],
+              "siegeEventIds": [],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-509-魏-邯郸-67",
+                "city-captured-551-魏-汝阴-70"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 2,
+              "activities": 3
+            }
+          },
+          {
+            "personId": "military-person-16",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-齐-临淄-4-903-魏"
+              ],
+              "serviceMonths": 104,
+              "captureEventIds": [
+                "city-captured-949-魏-新郑-103"
+              ],
+              "cityIds": [
+                "city-韩-新郑"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-63",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-燕-蓟-2-2088-魏"
+              ],
+              "serviceMonths": 73,
+              "captureEventIds": [
+                "city-captured-2122-魏-邯郸-247"
+              ],
+              "cityIds": [
+                "city-赵-邯郸"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          }
+        ]
+      },
+      {
+        "month": 5067,
+        "ms": 334.09999999403954,
+        "rows": [
+          {
+            "personId": "military-person-25",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-赵-邯郸-4-1344-魏"
+              ],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-1389-魏-邯郸-130",
+                "city-captured-1418-魏-汝阴-137",
+                "city-captured-1507-魏-临淄-144",
+                "capital-fallen-1532-魏-燕-蓟-149"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2",
+                "city-齐-临淄",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "city-赵-邯郸"
+              ],
+              "importantEventIds": [
+                "capital-fallen-1532-魏-燕-蓟-149",
+                "capital-fallen-1429-魏-邯郸义军-邯郸-138"
+              ],
+              "captures": 5,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-60",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [],
+              "serviceMonths": 204,
+              "captureEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "cityIds": [
+                "燕-city-96-2",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "燕-city-96-2"
+              ],
+              "importantEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "captures": 2,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-82",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-齐-city-1608-13-0-2779-魏"
+              ],
+              "serviceMonths": 276,
+              "captureEventIds": [
+                "city-captured-2809-魏-长阳-310",
+                "city-captured-2883-魏-川津-314",
+                "city-captured-3005-魏-琅琊-327",
+                "city-captured-3027-魏-郢-331"
+              ],
+              "cityIds": [
+                "齐-city-1608-13",
+                "齐-city-96-3",
+                "齐-city-336-9",
+                "city-楚-郢"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 4,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-6",
+            "merits": {
+              "defenseEventIds": [
+                "siege-defended-city-魏-大梁-0-569-秦"
+              ],
+              "defendedCityIds": [
+                "city-魏-大梁"
+              ],
+              "siegeEventIds": [],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-509-魏-邯郸-67",
+                "city-captured-551-魏-汝阴-70"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 2,
+              "activities": 3
+            }
+          },
+          {
+            "personId": "military-person-16",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-齐-临淄-4-903-魏"
+              ],
+              "serviceMonths": 104,
+              "captureEventIds": [
+                "city-captured-949-魏-新郑-103"
+              ],
+              "cityIds": [
+                "city-韩-新郑"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-63",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-燕-蓟-2-2088-魏"
+              ],
+              "serviceMonths": 73,
+              "captureEventIds": [
+                "city-captured-2122-魏-邯郸-247"
+              ],
+              "cityIds": [
+                "city-赵-邯郸"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          }
+        ]
+      },
+      {
+        "month": 5068,
+        "ms": 324.79999999701977,
+        "rows": [
+          {
+            "personId": "military-person-25",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-赵-邯郸-4-1344-魏"
+              ],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-1389-魏-邯郸-130",
+                "city-captured-1418-魏-汝阴-137",
+                "city-captured-1507-魏-临淄-144",
+                "capital-fallen-1532-魏-燕-蓟-149"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2",
+                "city-齐-临淄",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "city-赵-邯郸"
+              ],
+              "importantEventIds": [
+                "capital-fallen-1532-魏-燕-蓟-149",
+                "capital-fallen-1429-魏-邯郸义军-邯郸-138"
+              ],
+              "captures": 5,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-60",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [],
+              "serviceMonths": 204,
+              "captureEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "cityIds": [
+                "燕-city-96-2",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "燕-city-96-2"
+              ],
+              "importantEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "captures": 2,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-82",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-齐-city-1608-13-0-2779-魏"
+              ],
+              "serviceMonths": 276,
+              "captureEventIds": [
+                "city-captured-2809-魏-长阳-310",
+                "city-captured-2883-魏-川津-314",
+                "city-captured-3005-魏-琅琊-327",
+                "city-captured-3027-魏-郢-331"
+              ],
+              "cityIds": [
+                "齐-city-1608-13",
+                "齐-city-96-3",
+                "齐-city-336-9",
+                "city-楚-郢"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 4,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-6",
+            "merits": {
+              "defenseEventIds": [
+                "siege-defended-city-魏-大梁-0-569-秦"
+              ],
+              "defendedCityIds": [
+                "city-魏-大梁"
+              ],
+              "siegeEventIds": [],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-509-魏-邯郸-67",
+                "city-captured-551-魏-汝阴-70"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 2,
+              "activities": 3
+            }
+          },
+          {
+            "personId": "military-person-16",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-齐-临淄-4-903-魏"
+              ],
+              "serviceMonths": 104,
+              "captureEventIds": [
+                "city-captured-949-魏-新郑-103"
+              ],
+              "cityIds": [
+                "city-韩-新郑"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-63",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-燕-蓟-2-2088-魏"
+              ],
+              "serviceMonths": 73,
+              "captureEventIds": [
+                "city-captured-2122-魏-邯郸-247"
+              ],
+              "cityIds": [
+                "city-赵-邯郸"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          }
+        ]
+      },
+      {
+        "month": 5069,
+        "ms": 324.79999999701977,
+        "rows": [
+          {
+            "personId": "military-person-25",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-赵-邯郸-4-1344-魏"
+              ],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-1389-魏-邯郸-130",
+                "city-captured-1418-魏-汝阴-137",
+                "city-captured-1507-魏-临淄-144",
+                "capital-fallen-1532-魏-燕-蓟-149"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2",
+                "city-齐-临淄",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "city-赵-邯郸"
+              ],
+              "importantEventIds": [
+                "capital-fallen-1532-魏-燕-蓟-149",
+                "capital-fallen-1429-魏-邯郸义军-邯郸-138"
+              ],
+              "captures": 5,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-60",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [],
+              "serviceMonths": 204,
+              "captureEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "cityIds": [
+                "燕-city-96-2",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "燕-city-96-2"
+              ],
+              "importantEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "captures": 2,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-82",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-齐-city-1608-13-0-2779-魏"
+              ],
+              "serviceMonths": 276,
+              "captureEventIds": [
+                "city-captured-2809-魏-长阳-310",
+                "city-captured-2883-魏-川津-314",
+                "city-captured-3005-魏-琅琊-327",
+                "city-captured-3027-魏-郢-331"
+              ],
+              "cityIds": [
+                "齐-city-1608-13",
+                "齐-city-96-3",
+                "齐-city-336-9",
+                "city-楚-郢"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 4,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-6",
+            "merits": {
+              "defenseEventIds": [
+                "siege-defended-city-魏-大梁-0-569-秦"
+              ],
+              "defendedCityIds": [
+                "city-魏-大梁"
+              ],
+              "siegeEventIds": [],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-509-魏-邯郸-67",
+                "city-captured-551-魏-汝阴-70"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 2,
+              "activities": 3
+            }
+          },
+          {
+            "personId": "military-person-16",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-齐-临淄-4-903-魏"
+              ],
+              "serviceMonths": 104,
+              "captureEventIds": [
+                "city-captured-949-魏-新郑-103"
+              ],
+              "cityIds": [
+                "city-韩-新郑"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-63",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-燕-蓟-2-2088-魏"
+              ],
+              "serviceMonths": 73,
+              "captureEventIds": [
+                "city-captured-2122-魏-邯郸-247"
+              ],
+              "cityIds": [
+                "city-赵-邯郸"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          }
+        ]
+      },
+      {
+        "month": 5070,
+        "ms": 331.20000000298023,
+        "rows": [
+          {
+            "personId": "military-person-25",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-赵-邯郸-4-1344-魏"
+              ],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-1389-魏-邯郸-130",
+                "city-captured-1418-魏-汝阴-137",
+                "city-captured-1507-魏-临淄-144",
+                "capital-fallen-1532-魏-燕-蓟-149"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2",
+                "city-齐-临淄",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "city-赵-邯郸"
+              ],
+              "importantEventIds": [
+                "capital-fallen-1532-魏-燕-蓟-149",
+                "capital-fallen-1429-魏-邯郸义军-邯郸-138"
+              ],
+              "captures": 5,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-60",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [],
+              "serviceMonths": 204,
+              "captureEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "cityIds": [
+                "燕-city-96-2",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "燕-city-96-2"
+              ],
+              "importantEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "captures": 2,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-82",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-齐-city-1608-13-0-2779-魏"
+              ],
+              "serviceMonths": 276,
+              "captureEventIds": [
+                "city-captured-2809-魏-长阳-310",
+                "city-captured-2883-魏-川津-314",
+                "city-captured-3005-魏-琅琊-327",
+                "city-captured-3027-魏-郢-331"
+              ],
+              "cityIds": [
+                "齐-city-1608-13",
+                "齐-city-96-3",
+                "齐-city-336-9",
+                "city-楚-郢"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 4,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-6",
+            "merits": {
+              "defenseEventIds": [
+                "siege-defended-city-魏-大梁-0-569-秦"
+              ],
+              "defendedCityIds": [
+                "city-魏-大梁"
+              ],
+              "siegeEventIds": [],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-509-魏-邯郸-67",
+                "city-captured-551-魏-汝阴-70"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 2,
+              "activities": 3
+            }
+          },
+          {
+            "personId": "military-person-16",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-齐-临淄-4-903-魏"
+              ],
+              "serviceMonths": 104,
+              "captureEventIds": [
+                "city-captured-949-魏-新郑-103"
+              ],
+              "cityIds": [
+                "city-韩-新郑"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-63",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-燕-蓟-2-2088-魏"
+              ],
+              "serviceMonths": 73,
+              "captureEventIds": [
+                "city-captured-2122-魏-邯郸-247"
+              ],
+              "cityIds": [
+                "city-赵-邯郸"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          }
+        ]
+      },
+      {
+        "month": 5071,
+        "ms": 326.40000000596046,
+        "rows": [
+          {
+            "personId": "military-person-25",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-赵-邯郸-4-1344-魏"
+              ],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-1389-魏-邯郸-130",
+                "city-captured-1418-魏-汝阴-137",
+                "city-captured-1507-魏-临淄-144",
+                "capital-fallen-1532-魏-燕-蓟-149"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2",
+                "city-齐-临淄",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "city-赵-邯郸"
+              ],
+              "importantEventIds": [
+                "capital-fallen-1532-魏-燕-蓟-149",
+                "capital-fallen-1429-魏-邯郸义军-邯郸-138"
+              ],
+              "captures": 5,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-60",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [],
+              "serviceMonths": 204,
+              "captureEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "cityIds": [
+                "燕-city-96-2",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "燕-city-96-2"
+              ],
+              "importantEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "captures": 2,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-82",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-齐-city-1608-13-0-2779-魏"
+              ],
+              "serviceMonths": 276,
+              "captureEventIds": [
+                "city-captured-2809-魏-长阳-310",
+                "city-captured-2883-魏-川津-314",
+                "city-captured-3005-魏-琅琊-327",
+                "city-captured-3027-魏-郢-331"
+              ],
+              "cityIds": [
+                "齐-city-1608-13",
+                "齐-city-96-3",
+                "齐-city-336-9",
+                "city-楚-郢"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 4,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-6",
+            "merits": {
+              "defenseEventIds": [
+                "siege-defended-city-魏-大梁-0-569-秦"
+              ],
+              "defendedCityIds": [
+                "city-魏-大梁"
+              ],
+              "siegeEventIds": [],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-509-魏-邯郸-67",
+                "city-captured-551-魏-汝阴-70"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 2,
+              "activities": 3
+            }
+          },
+          {
+            "personId": "military-person-16",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-齐-临淄-4-903-魏"
+              ],
+              "serviceMonths": 104,
+              "captureEventIds": [
+                "city-captured-949-魏-新郑-103"
+              ],
+              "cityIds": [
+                "city-韩-新郑"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-63",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-燕-蓟-2-2088-魏"
+              ],
+              "serviceMonths": 73,
+              "captureEventIds": [
+                "city-captured-2122-魏-邯郸-247"
+              ],
+              "cityIds": [
+                "city-赵-邯郸"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          }
+        ]
+      },
+      {
+        "month": 5072,
+        "ms": 330.1000000089407,
+        "rows": [
+          {
+            "personId": "military-person-25",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-赵-邯郸-4-1344-魏"
+              ],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-1389-魏-邯郸-130",
+                "city-captured-1418-魏-汝阴-137",
+                "city-captured-1507-魏-临淄-144",
+                "capital-fallen-1532-魏-燕-蓟-149"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2",
+                "city-齐-临淄",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "city-赵-邯郸"
+              ],
+              "importantEventIds": [
+                "capital-fallen-1532-魏-燕-蓟-149",
+                "capital-fallen-1429-魏-邯郸义军-邯郸-138"
+              ],
+              "captures": 5,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-60",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [],
+              "serviceMonths": 204,
+              "captureEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "cityIds": [
+                "燕-city-96-2",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "燕-city-96-2"
+              ],
+              "importantEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "captures": 2,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-82",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-齐-city-1608-13-0-2779-魏"
+              ],
+              "serviceMonths": 276,
+              "captureEventIds": [
+                "city-captured-2809-魏-长阳-310",
+                "city-captured-2883-魏-川津-314",
+                "city-captured-3005-魏-琅琊-327",
+                "city-captured-3027-魏-郢-331"
+              ],
+              "cityIds": [
+                "齐-city-1608-13",
+                "齐-city-96-3",
+                "齐-city-336-9",
+                "city-楚-郢"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 4,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-6",
+            "merits": {
+              "defenseEventIds": [
+                "siege-defended-city-魏-大梁-0-569-秦"
+              ],
+              "defendedCityIds": [
+                "city-魏-大梁"
+              ],
+              "siegeEventIds": [],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-509-魏-邯郸-67",
+                "city-captured-551-魏-汝阴-70"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 2,
+              "activities": 3
+            }
+          },
+          {
+            "personId": "military-person-16",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-齐-临淄-4-903-魏"
+              ],
+              "serviceMonths": 104,
+              "captureEventIds": [
+                "city-captured-949-魏-新郑-103"
+              ],
+              "cityIds": [
+                "city-韩-新郑"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-63",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-燕-蓟-2-2088-魏"
+              ],
+              "serviceMonths": 73,
+              "captureEventIds": [
+                "city-captured-2122-魏-邯郸-247"
+              ],
+              "cityIds": [
+                "city-赵-邯郸"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          }
+        ]
+      },
+      {
+        "month": 5073,
+        "ms": 327.8999999910593,
+        "rows": [
+          {
+            "personId": "military-person-25",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-赵-邯郸-4-1344-魏"
+              ],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-1389-魏-邯郸-130",
+                "city-captured-1418-魏-汝阴-137",
+                "city-captured-1507-魏-临淄-144",
+                "capital-fallen-1532-魏-燕-蓟-149"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2",
+                "city-齐-临淄",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "city-赵-邯郸"
+              ],
+              "importantEventIds": [
+                "capital-fallen-1532-魏-燕-蓟-149",
+                "capital-fallen-1429-魏-邯郸义军-邯郸-138"
+              ],
+              "captures": 5,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-60",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [],
+              "serviceMonths": 204,
+              "captureEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "cityIds": [
+                "燕-city-96-2",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "燕-city-96-2"
+              ],
+              "importantEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "captures": 2,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-82",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-齐-city-1608-13-0-2779-魏"
+              ],
+              "serviceMonths": 276,
+              "captureEventIds": [
+                "city-captured-2809-魏-长阳-310",
+                "city-captured-2883-魏-川津-314",
+                "city-captured-3005-魏-琅琊-327",
+                "city-captured-3027-魏-郢-331"
+              ],
+              "cityIds": [
+                "齐-city-1608-13",
+                "齐-city-96-3",
+                "齐-city-336-9",
+                "city-楚-郢"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 4,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-6",
+            "merits": {
+              "defenseEventIds": [
+                "siege-defended-city-魏-大梁-0-569-秦"
+              ],
+              "defendedCityIds": [
+                "city-魏-大梁"
+              ],
+              "siegeEventIds": [],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-509-魏-邯郸-67",
+                "city-captured-551-魏-汝阴-70"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 2,
+              "activities": 3
+            }
+          },
+          {
+            "personId": "military-person-16",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-齐-临淄-4-903-魏"
+              ],
+              "serviceMonths": 104,
+              "captureEventIds": [
+                "city-captured-949-魏-新郑-103"
+              ],
+              "cityIds": [
+                "city-韩-新郑"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-63",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-燕-蓟-2-2088-魏"
+              ],
+              "serviceMonths": 73,
+              "captureEventIds": [
+                "city-captured-2122-魏-邯郸-247"
+              ],
+              "cityIds": [
+                "city-赵-邯郸"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          }
+        ]
+      },
+      {
+        "month": 5074,
+        "ms": 330.40000000596046,
+        "rows": [
+          {
+            "personId": "military-person-25",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-赵-邯郸-4-1344-魏"
+              ],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-1389-魏-邯郸-130",
+                "city-captured-1418-魏-汝阴-137",
+                "city-captured-1507-魏-临淄-144",
+                "capital-fallen-1532-魏-燕-蓟-149"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2",
+                "city-齐-临淄",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "city-赵-邯郸"
+              ],
+              "importantEventIds": [
+                "capital-fallen-1532-魏-燕-蓟-149",
+                "capital-fallen-1429-魏-邯郸义军-邯郸-138"
+              ],
+              "captures": 5,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-60",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [],
+              "serviceMonths": 204,
+              "captureEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "cityIds": [
+                "燕-city-96-2",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "燕-city-96-2"
+              ],
+              "importantEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "captures": 2,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-82",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-齐-city-1608-13-0-2779-魏"
+              ],
+              "serviceMonths": 276,
+              "captureEventIds": [
+                "city-captured-2809-魏-长阳-310",
+                "city-captured-2883-魏-川津-314",
+                "city-captured-3005-魏-琅琊-327",
+                "city-captured-3027-魏-郢-331"
+              ],
+              "cityIds": [
+                "齐-city-1608-13",
+                "齐-city-96-3",
+                "齐-city-336-9",
+                "city-楚-郢"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 4,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-6",
+            "merits": {
+              "defenseEventIds": [
+                "siege-defended-city-魏-大梁-0-569-秦"
+              ],
+              "defendedCityIds": [
+                "city-魏-大梁"
+              ],
+              "siegeEventIds": [],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-509-魏-邯郸-67",
+                "city-captured-551-魏-汝阴-70"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 2,
+              "activities": 3
+            }
+          },
+          {
+            "personId": "military-person-16",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-齐-临淄-4-903-魏"
+              ],
+              "serviceMonths": 104,
+              "captureEventIds": [
+                "city-captured-949-魏-新郑-103"
+              ],
+              "cityIds": [
+                "city-韩-新郑"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-63",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-燕-蓟-2-2088-魏"
+              ],
+              "serviceMonths": 73,
+              "captureEventIds": [
+                "city-captured-2122-魏-邯郸-247"
+              ],
+              "cityIds": [
+                "city-赵-邯郸"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          }
+        ]
+      },
+      {
+        "month": 5075,
+        "ms": 330.80000001192093,
+        "rows": [
+          {
+            "personId": "military-person-25",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-赵-邯郸-4-1344-魏"
+              ],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-1389-魏-邯郸-130",
+                "city-captured-1418-魏-汝阴-137",
+                "city-captured-1507-魏-临淄-144",
+                "capital-fallen-1532-魏-燕-蓟-149"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2",
+                "city-齐-临淄",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "city-赵-邯郸"
+              ],
+              "importantEventIds": [
+                "capital-fallen-1532-魏-燕-蓟-149",
+                "capital-fallen-1429-魏-邯郸义军-邯郸-138"
+              ],
+              "captures": 5,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-60",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [],
+              "serviceMonths": 204,
+              "captureEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "cityIds": [
+                "燕-city-96-2",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "燕-city-96-2"
+              ],
+              "importantEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "captures": 2,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-82",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-齐-city-1608-13-0-2779-魏"
+              ],
+              "serviceMonths": 276,
+              "captureEventIds": [
+                "city-captured-2809-魏-长阳-310",
+                "city-captured-2883-魏-川津-314",
+                "city-captured-3005-魏-琅琊-327",
+                "city-captured-3027-魏-郢-331"
+              ],
+              "cityIds": [
+                "齐-city-1608-13",
+                "齐-city-96-3",
+                "齐-city-336-9",
+                "city-楚-郢"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 4,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-6",
+            "merits": {
+              "defenseEventIds": [
+                "siege-defended-city-魏-大梁-0-569-秦"
+              ],
+              "defendedCityIds": [
+                "city-魏-大梁"
+              ],
+              "siegeEventIds": [],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-509-魏-邯郸-67",
+                "city-captured-551-魏-汝阴-70"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 2,
+              "activities": 3
+            }
+          },
+          {
+            "personId": "military-person-16",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-齐-临淄-4-903-魏"
+              ],
+              "serviceMonths": 104,
+              "captureEventIds": [
+                "city-captured-949-魏-新郑-103"
+              ],
+              "cityIds": [
+                "city-韩-新郑"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-63",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-燕-蓟-2-2088-魏"
+              ],
+              "serviceMonths": 73,
+              "captureEventIds": [
+                "city-captured-2122-魏-邯郸-247"
+              ],
+              "cityIds": [
+                "city-赵-邯郸"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          }
+        ]
+      },
+      {
+        "month": 5076,
+        "ms": 335.79999999701977,
+        "rows": [
+          {
+            "personId": "military-person-25",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-赵-邯郸-4-1344-魏"
+              ],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-1389-魏-邯郸-130",
+                "city-captured-1418-魏-汝阴-137",
+                "city-captured-1507-魏-临淄-144",
+                "capital-fallen-1532-魏-燕-蓟-149"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2",
+                "city-齐-临淄",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "city-赵-邯郸"
+              ],
+              "importantEventIds": [
+                "capital-fallen-1532-魏-燕-蓟-149",
+                "capital-fallen-1429-魏-邯郸义军-邯郸-138"
+              ],
+              "captures": 5,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-60",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [],
+              "serviceMonths": 204,
+              "captureEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "cityIds": [
+                "燕-city-96-2",
+                "city-燕-蓟"
+              ],
+              "importantCityIds": [
+                "city-燕-蓟",
+                "燕-city-96-2"
+              ],
+              "importantEventIds": [
+                "capital-fallen-2136-魏-燕-汝阴-250",
+                "capital-fallen-2169-魏-燕-蓟-257"
+              ],
+              "captures": 2,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-82",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-齐-city-1608-13-0-2779-魏"
+              ],
+              "serviceMonths": 276,
+              "captureEventIds": [
+                "city-captured-2809-魏-长阳-310",
+                "city-captured-2883-魏-川津-314",
+                "city-captured-3005-魏-琅琊-327",
+                "city-captured-3027-魏-郢-331"
+              ],
+              "cityIds": [
+                "齐-city-1608-13",
+                "齐-city-96-3",
+                "齐-city-336-9",
+                "city-楚-郢"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 4,
+              "activities": 4
+            }
+          },
+          {
+            "personId": "military-person-6",
+            "merits": {
+              "defenseEventIds": [
+                "siege-defended-city-魏-大梁-0-569-秦"
+              ],
+              "defendedCityIds": [
+                "city-魏-大梁"
+              ],
+              "siegeEventIds": [],
+              "serviceMonths": 288,
+              "captureEventIds": [
+                "city-captured-509-魏-邯郸-67",
+                "city-captured-551-魏-汝阴-70"
+              ],
+              "cityIds": [
+                "city-赵-邯郸",
+                "燕-city-96-2"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 2,
+              "activities": 3
+            }
+          },
+          {
+            "personId": "military-person-16",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-齐-临淄-4-903-魏"
+              ],
+              "serviceMonths": 104,
+              "captureEventIds": [
+                "city-captured-949-魏-新郑-103"
+              ],
+              "cityIds": [
+                "city-韩-新郑"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          },
+          {
+            "personId": "military-person-63",
+            "merits": {
+              "defenseEventIds": [],
+              "defendedCityIds": [],
+              "siegeEventIds": [
+                "siege-ended-city-燕-蓟-2-2088-魏"
+              ],
+              "serviceMonths": 73,
+              "captureEventIds": [
+                "city-captured-2122-魏-邯郸-247"
+              ],
+              "cityIds": [
+                "city-赵-邯郸"
+              ],
+              "importantCityIds": [],
+              "importantEventIds": [],
+              "captures": 1,
+              "activities": 2
+            }
+          }
+        ]
+      }
+    ],
+    "ranking12MonthMs": 3972.800000011921,
+    "simulation12MonthMs": 476,
+    "frames": [
+      {
+        "view": "功臣录",
+        "fps": 14.849524815249724,
+        "p95FrameMs": 305.90000000596046,
+        "dom": 125
+      },
+      {
+        "view": "现役与历任",
+        "fps": 46.87141499220578,
+        "p95FrameMs": 48,
+        "dom": 401
+      }
+    ],
+    "canonicalSha256": "4026b19ebf6db1928a7529d0aabb06d6ec166600669923e04d617bfb5a6c3c02",
+    "worldRandomPosition": 25009,
+    "scope": "one real natural long-world snapshot; React entry, ranking API, fixed monthly simulation and 4x offscreen Electron frames measured separately; not human Chrome acceptance"
+  }
+]

@@ -1,14 +1,15 @@
+import type {MilitaryEvidenceIndex} from './MilitaryEvidenceIndex';
 import type {MilitaryPerson,MilitaryFormation} from './MilitaryCommandRegistry';
 import type {WorldEvent} from '../History/WorldHistory';
 export interface MilitaryActivity {eventId:string;cityId:string;commandId:string;factionId:string;worldMonth:number;kind:'CAPTURE'|'SIEGE'|'DEFENSE';}
 /** Evidence projection only. Orders and repeated short contacts never earn experience. */
-export function deriveMilitaryActivities(person:MilitaryPerson,formations:MilitaryFormation[],events:readonly WorldEvent[],month:number,captures:readonly string[],separateKinds=false){
- const verified=new Set(captures),starts=new Map<string,WorldEvent[]>(),ends=new Map<string,WorldEvent[]>();
- for(const e of events){const id=e.metadata?.battleId;if(typeof id!=='string')continue;const map=e.type==='siege-started'?starts:e.type==='siege-ended'?ends:undefined;if(map)map.set(id,[...(map.get(id)??[]),e]);}
+export function deriveMilitaryActivities(person:MilitaryPerson,formations:MilitaryFormation[],events:readonly WorldEvent[],month:number,captures:readonly string[],separateKinds=false,index?:MilitaryEvidenceIndex){
+ const verified=new Set(captures),starts=index?.starts??new Map<string,WorldEvent[]>(),ends=index?.ends??new Map<string,WorldEvent[]>();
+ if(!index)for(const e of events){const id=e.metadata?.battleId;if(typeof id!=='string')continue;const map=e.type==='siege-started'?starts:e.type==='siege-ended'?ends:undefined;if(map)map.set(id,[...(map.get(id)??[]),e]);}
  const activities:MilitaryActivity[]=[],seen=new Set<string>();
- for(const e of [...events].sort((a,b)=>(a.monthIndex??a.year)-(b.monthIndex??b.year))){
+ for(const e of index?index.commandEvents(person):[...events].sort((a,b)=>(a.monthIndex??a.year)-(b.monthIndex??b.year))){
   const at=e.monthIndex??e.year,m=e.metadata??{},command=String(m.commandId??''),a=person.appointments.find(a=>a.commandId===command&&a.factionId===e.actorFactionId&&a.startMonth<=at&&at<=(a.endMonth??month));
-  if(!e.cityId||at>month||at>(person.deathMonth??month)||!a||!formations.some(f=>f.commandId===command&&f.commanderPersonId===person.personId&&f.factionId===a.factionId))continue;
+  if(!e.cityId||at>month||at>(person.deathMonth??month)||!a||!(index?.formsByPerson.get(person.personId)??formations).some(f=>f.commandId===command&&f.commanderPersonId===person.personId&&f.factionId===a.factionId))continue;
   let kind:MilitaryActivity['kind']|undefined;
   if(verified.has(e.id))kind='CAPTURE';
   else if(m.personId===person.personId&&typeof m.battleId==='string'){
