@@ -380,13 +380,18 @@ export class MilitaryCommandRegistryStore {
 
   updateHonors(month:number,teams:Team[],dynasties:Dynasty[]){
     if(month%12!==0||!this.eventWriter)return;
-    for(const p of this.people.values())for(const honor of nextMilitaryHonors(p,this.getFormations(),WorldHistory.getEvents(),month,teams,dynasties)){
+    const formations=this.getFormations(),events=WorldHistory.getEvents();
+    for(const p of this.people.values()){
+      // Every honor requires an existing formal grant; avoid scanning the world for unennobled veterans.
+      if(!p.nobilityHistory?.length)continue;
+      for(const honor of nextMilitaryHonors(p,formations,events,month,teams,dynasties)){
       const prior=p.honorHistory?structuredClone(p.honorHistory):undefined,history=WorldHistory.exportState();
       try{
         (p.honorHistory??=[]).push(honor);
         const id=this.eventWriter({id:honor.eventId,year:month,monthIndex:month,type:honor.kind==='REVOKED'?'military-title-revoked':'military-posthumous',category:'politics',actorFactionId:honor.factionId,factionIds:[honor.factionId],rulerId:honor.rulerId,title:militaryHonorText(honor),importance:'major',metadata:{personId:p.personId,honor:JSON.stringify(honor)}});
         if(id!==honor.eventId||!this.eventReader(honor.factionId).some(e=>e.id===id))throw Error('Honor not recorded');
       }catch{if(prior)p.honorHistory=prior;else delete p.honorHistory;WorldHistory.importState(history);}
+    }
     }
   }
 

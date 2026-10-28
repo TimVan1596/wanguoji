@@ -277,7 +277,7 @@ function FactionProfile({
   const dynasty = DynastyRegistry.get(team.name);
   const currentRuler = DynastyRegistry.getCurrentRuler(team.name);
   const submittedLastRuler = dynasty?.rulers.find(r => r.endReason === "纳土退位");
-  const currentRulerTenure = currentRuler?.accessionYear !== undefined
+  const currentRulerTenure = activeTab!=="military"&&currentRuler?.accessionYear !== undefined
     ? deriveRulerTenureEvidence(currentRuler, team.name, events, worldMonth)
     : undefined;
   const stability = getFactionStability(team);
@@ -299,7 +299,7 @@ function FactionProfile({
     [teams]
   );
   const archiveLabelById = useMemo(() => createFactionArchiveLabelMap(teams), [teams]);
-  const groupedEvents = useMemo(() => groupHistoryNarratives(events), [events]);
+  const groupedEvents = useMemo(() => activeTab==="power"?groupHistoryNarratives(events):[], [events,activeTab]);
   const majorEvents = useMemo(
     () => getFactionPowerChronicleEvents(groupedEvents, team.name, (id, month) => { const t = factionById.get(id); return t?.stateFoundedMonth !== undefined && t.stateFoundedMonth <= month; }),
     [groupedEvents, team.name, factionById]
@@ -635,6 +635,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
   const formations = MilitaryCommandRegistry.getFormations();
   const archiveEvents=useMemo(()=>WorldHistory.getEvents(),[worldMonth,WorldHistory.getRevision()]);
   const archiveDynasties=useMemo(()=>DynastyRegistry.getAll(),[worldMonth,WorldHistory.getRevision()]);
+  const localArchiveEvents=useMemo(()=>archiveEvents.filter(e=>e.factionIds.includes(factionId)||e.actorFactionId===factionId||e.targetFactionId===factionId),[archiveEvents,factionId]);
   const usersByPerson=new Map((Game.Core?.teams??[]).flatMap(t=>[...t.users]).filter(u=>u.militaryPersonId).map(u=>[u.militaryPersonId!,u]));
   const linkedRulers=new Map(archiveDynasties.flatMap(d=>d.rulers).filter(r=>r.residentIdentity||r.militaryIdentity).map(r=>[r.militaryIdentity?.personId??r.residentIdentity!.personId,r]));
   const liveIds=new Set(people.filter(p=>usersByPerson.get(p.personId)?.matchesMilitaryLife(p)).map(p=>p.personId));
@@ -704,7 +705,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
       >
         {expanded && (() => {
       const entries=MilitaryCommandRegistry.getChronicle(person,worldMonth,factionId);
-      const localEvents=WorldHistory.getEventsForFaction(factionId);
+      const localEvents=localArchiveEvents;
       const politicalLife=militaryPoliticalLife(person,archiveDynasties,archiveEvents,politicalFactionById,worldMonth);
       const allMilestones=appendMilitaryPoliticalLife(militaryMilestones(person,entries,localEvents,{factions:politicalFactionById}),politicalLife);
       const milestones=selectMilitaryMilestones(allMilestones,localEvents,8);
