@@ -1,0 +1,34 @@
+[
+  {
+    "seed": "regional-3",
+    "years": 320,
+    "factionId": "魏",
+    "worldMonth": 3840,
+    "population": 183,
+    "worldPeople": 111,
+    "localPeople": 22,
+    "worldEvents": 9434,
+    "enterMs": 346.59999999403954,
+    "firstExpandMs": 132.90000000596046,
+    "collapsedChronicleCalls": 44,
+    "eventReads": 960,
+    "initialDom": 609,
+    "frame": [
+      {
+        "sidebar": true,
+        "averageFPS": 14.844626245270012,
+        "p95FrameMs": 246.29999999701977
+      },
+      {
+        "sidebar": false,
+        "averageFPS": 46.490004648908446,
+        "p95FrameMs": 40.29999999701977
+      }
+    ],
+    "react": {
+      "commits": 17,
+      "totalMs": 1964.400000065565
+    },
+    "scope": "actual natural Core world; same snapshot for paired UI measurements; offscreen Electron timings, not human Chrome acceptance"
+  }
+]
