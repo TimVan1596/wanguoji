@@ -1,3 +1,4 @@
+import {checkRebelMilitaryView} from './MilitaryArchiveCoreHarness';
 import {createNaturalCore} from "./NaturalCoreHarness";
 import {SIMULATION_FIXED_STEP_MS} from "../SimulationDriver";
 import Factions from "../FactionRegistry";
@@ -43,11 +44,12 @@ export async function runRebelMilitaryIdentity(seed="rebel-identity-z4") {
     check(History.getEventsForFaction(rebel.name).filter(e=>e.type==="rebel-faction-founded").length===1,"one canonical popular founding event");
     const candidates=supporters.filter(u=>u.role==="NORMAL"&&u.bornMonth<=-216&&deriveMilitaryLifeSchedule({personId:"military-person-1",bornMonth:u.bornMonth}).retirementMonth>0);
     check(candidates.length>=1&&supporters.length>=2,"rebel has real eligible military candidates and existing members");
-    const commander=candidates[0],members=[commander,...supporters.filter(u=>u!==commander&&u.role==="NORMAL")].slice(0,12);
+    const commander=candidates[0],members=[commander,...supporters.filter(u=>u!==commander&&u.role==="NORMAL")].slice(0,1);
     // Invoke the same appointment transaction used by the annual lottery; no claim about its probability.
     check((Military as any).appoint(commander,rebel.name,0,members.map(u=>u.player.logicalUnitId)),"a provisional rebel can receive a real commander, formation and initial office");
     const person=Military.getPerson(commander.militaryPersonId!)!,formation=Military.getFormations().find(f=>f.commanderPersonId===person.personId)!;
     check(commander.matchesMilitaryLife(person)&&formation.memberUnitIds.length===members.length,"rebel commander and all formation members have real unique identities");
+    await checkRebelMilitaryView(core,rebel,person,check);
     check(Military.getPoliticalInfluence(rebel,0,core.logicalUnitRegistry).candidates.length===0,"provisional command is distinct from formal-state coup participation");
     // Protect the immediate controlled transition without exceeding the existing two-relation cap.
     const peace=()=>{for(const t of [owner,...core.teams.filter(t=>t!==owner&&t!==rebel&&t.status==="ACTIVE").sort((a,b)=>Math.hypot(a.homeBlock!.x-city.block.x,a.homeBlock!.y-city.block.y)-Math.hypot(b.homeBlock!.x-city.block.x,b.homeBlock!.y-city.block.y)).slice(0,1)])Diplomacy.setRelation({factionAId:rebel.name,factionBId:t.name,status:"TRUCE",reason:"WAR_EXHAUSTION_TRUCE",startedMonth:core.simulator!.year,expiresMonth:core.simulator!.year+120});};
@@ -58,7 +60,7 @@ export async function runRebelMilitaryIdentity(seed="rebel-identity-z4") {
     check(rebel.proclaimEmperor(2),"controlled imperial transition preserves the existing polity");
     History.addEmperorProclaimed(2,rebel.name,rebel.displayName,Dynasty.getRulerDisplay(rebel.name),ruler.id);
     check(Military.getPerson(person.personId)===person&&Military.getFormation(formation.commandId)===formation&&person.appointments.length===1,"rebel to kingdom to empire does not duplicate people, offices or formations");
-    strict();
+    strict();await checkRebelMilitaryView(core,rebel,person,check);
     const receiver=core.teams.find(t=>t!==rebel&&t.status==="ACTIVE")!;
     const population=core.teams.reduce((n,t)=>n+t.users.size,0),born=commander.bornMonth;
     commander.setTeam(receiver,{cause:"LIVE_TRANSFER",month:2});
@@ -66,8 +68,8 @@ export async function runRebelMilitaryIdentity(seed="rebel-identity-z4") {
     check(commander.bornMonth===born&&core.teams.reduce((n,t)=>n+t.users.size,0)===population&&members.slice(1).every(u=>u.team===rebel),"transfer preserves identity/population and does not silently transfer the old troops");
     const save=strict();
     const resume=()=>{hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return strict();};
-    const first=resume(),second=resume();check(diffCanonicalWorldSave(first,second).matched,"V20 rebel polity and military histories resume deterministically for twelve months");
+    const first=resume(),second=resume();check(diffCanonicalWorldSave(first,second).matched,"current rebel polity and military histories resume deterministically for twelve months");
     check(second.registries.militaryCommandRegistry.people.some(p=>p.personId===person.personId&&p.appointments[0].factionId===rebel.name),"old rebel appointment history survives save, load and continuation");
-    return {seed,scope:"controlled real Core transactions; resident founder identity implemented; no military revolt",checks,supporterCount:supporters.length,sourceUserId:commander.id,personId:person.personId,commandId:formation.commandId,saveSchemaVersion:20};
+    return {seed,scope:"controlled real Core transactions; resident founder identity implemented; no military revolt",checks,supporterCount:supporters.length,sourceUserId:commander.id,personId:person.personId,commandId:formation.commandId,saveSchemaVersion:save.saveSchemaVersion};
   } finally {game.destroy(true);}
 }

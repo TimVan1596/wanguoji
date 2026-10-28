@@ -1,3 +1,5 @@
+import {useMemo} from 'react';
+import MilitaryArchiveWindow from './MilitaryArchiveWindow';
 import Dynasty from '../../../Politics/Dynasty';
 import {Box,Typography} from '@mui/material';
 import Military from '../../../Politics/MilitaryCommandRegistry';
@@ -14,8 +16,11 @@ const button={border:0,background:'none',color:'inherit',font:'inherit',padding:
 export {NobleHistory} from "./NobleHistory";
 /** A changing top three is an archive view, never a simulation award or an office. */
 export default function MeritRoll({factionId,month,onOpen}:{factionId:string;month:number;onOpen:(id:string)=>void}){
- const people=Military.getPeople(),events=History.getEvents(),byId=new Map(events.map(e=>[e.id,e])),team=Game.Core?.teams.find(t=>t.name===factionId);
- const top=meritRoster(people,Military.getFormations(),events,factionId,month).slice(0,3),grants=people.flatMap(person=>(person.nobilityHistory??[]).filter(g=>g.factionId===factionId&&g.month<=month).map(grant=>({person,grant}))).sort((a,b)=>b.grant.month-a.grant.month||a.grant.eventId.localeCompare(b.grant.eventId));
+ const {byId,top,grants}=useMemo(()=>{const people=Military.getPeople(),events=History.getEvents();
+  return {people,events,byId:new Map(events.map(e=>[e.id,e])),top:meritRoster(people,Military.getFormations(),events,factionId,month).slice(0,3),grants:people.flatMap(person=>(person.nobilityHistory??[]).filter(g=>g.factionId===factionId&&g.month<=month).map(grant=>({person,grant}))).sort((a,b)=>b.grant.month-a.grant.month||a.grant.eventId.localeCompare(b.grant.eventId))};
+ },[factionId,month,History.getRevision()]);
+ const team=Game.Core?.teams.find(t=>t.name===factionId);
+
  return <Box data-merit-roll sx={{display:'grid',gap:1}}>
   <Typography fontWeight='bold'>历代三杰</Typography><Typography fontSize='.76rem'>按重要攻城、不同取城、真实守城及服役资历排序；普通围城经历不单独入选，排行榜不授予爵位。</Typography>
   {!top.length&&<Typography fontSize='.8rem'>尚无可核验的功臣事迹。</Typography>}
@@ -28,6 +33,6 @@ export default function MeritRoll({factionId,month,onOpen}:{factionId:string;mon
    <PersonLifeDates bornMonth={p.bornMonth} deathMonth={p.deathMonth}/>
   </Box>;})}
   <Typography fontWeight='bold'>历代封爵记录</Typography>{!grants.length&&<Typography fontSize='.8rem'>尚无正式册封。</Typography>}
-  {grants.map(({person:p,grant:g})=><Typography key={g.eventId} fontSize='.8rem'>{formatWorldDate(g.month)} · <button type='button' style={button} onClick={()=>onOpen(p.personId)}>{g.personalName}</button> · {g.countryName}{NOBLE_NAMES[g.rank]} · 授爵：{g.rulerTitle}</Typography>)}
+  <MilitaryArchiveWindow estimateHeight={32} maxRows={64} ids={grants.map(g=>g.grant.eventId)}>{id=>{const {person:p,grant:g}=grants.find(g=>g.grant.eventId===id)!;return <Typography key={g.eventId} fontSize='.8rem'>{formatWorldDate(g.month)} · <button type='button' style={button} onClick={()=>onOpen(p.personId)}>{g.personalName}</button> · {g.countryName}{NOBLE_NAMES[g.rank]} · 授爵：{g.rulerTitle}</Typography>;}}</MilitaryArchiveWindow>
  </Box>;
 }

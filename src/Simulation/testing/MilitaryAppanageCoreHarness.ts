@@ -6,10 +6,16 @@ import {exportWorldSave} from '../../Persistence/WorldSaveExporter';
 import {hydrateWorldSave} from '../../Persistence/WorldSaveHydrator';
 import {validateWorldSave} from '../../Persistence/WorldSaveValidator';
 import {diffCanonicalWorldSave,type WorldSaveV1} from '../../Persistence/WorldSaveSchema';
-export async function checkMilitaryAppanages(core:any,original:WorldSaveV1,id:string,check:(v:unknown,s:string)=>void){
+export async function checkMilitaryAppanages(core:any,original:WorldSaveV1,id:string,check:(v:unknown,s:string)=>void,initial:WorldSaveV1){
  const clock=(m:number)=>core.simulator.clock.importState({worldMonth:m,elapsedMs:0,running:false}),strict=()=>exportWorldSave(core),update=(m:number)=>Military.updateAppanages(m,core.teams,Dynasty.getAll(),core.allCities);
  const restore=(save:WorldSaveV1)=>{core.setWorldRunning(false);hydrateWorldSave(core,structuredClone(save));return Military.getPerson(id)!;};
- let p=restore(original);clock(240);const before=strict(),writer=History.addEvent;
+ let p=restore(initial);clock(216);Military.updateNobility(216,core.teams,Dynasty.getAll());update(216);const first=p.appanageHistory?.[0];
+ for(const m of [228,240]){clock(m);Military.updateNobility(m,core.teams,Dynasty.getAll());update(m);}
+ check(first&&p.nobilityHistory?.at(-1)?.rank==='GONG'&&p.appanageHistory?.length===1&&p.appanageHistory[0].cityId===first.cityId,'real baron-to-marquis-to-duke promotions preserve one original appanage without duplicate grants');strict();
+ p=restore(original);clock(240);const deniedCountry=core.teams.find((t:any)=>t.name===p.factionId)!,occupier=core.teams.find((t:any)=>t!==deniedCountry&&t.status==='ACTIVE')!;
+ for(const c of core.allCities.filter((c:any)=>p.nobilityHistory!.some(g=>g.cityIds.includes(c.id))))if(c.ownerTeam===deniedCountry)c.capture(occupier,240);update(240);
+ check(!p.appanageHistory?.length&&p.nobilityHistory?.at(-1)?.rank==='GONG','a real title remains valid when none of its merit cities are currently available as an estate');strict();
+ p=restore(original);clock(240);const before=strict(),writer=History.addEvent;
  History.addEvent=function(e){const result=writer.call(this,e);if(e.type==='military-appanage')throw Error('injected estate write failure');return result;};try{update(240);}finally{History.addEvent=writer;}
  check(diffCanonicalWorldSave(before,strict()).matched,'failed real appanage grant restores the entire record and original history');
  const rng=JSON.stringify(random.exportState()),population=core.teams.reduce((n:number,t:any)=>n+t.users.size,0),army=JSON.stringify(Military.getFormations());update(240);const g=p.appanageHistory?.[0];

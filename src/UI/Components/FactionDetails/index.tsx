@@ -637,6 +637,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
   const archiveDynasties=useMemo(()=>DynastyRegistry.getAll(),[worldMonth,WorldHistory.getRevision()]);
   const localArchiveEvents=useMemo(()=>archiveEvents.filter(e=>e.factionIds?.includes(factionId)||e.actorFactionId===factionId||e.targetFactionId===factionId),[archiveEvents,factionId]);
   const usersByPerson=new Map((Game.Core?.teams??[]).flatMap(t=>[...t.users]).filter(u=>u.militaryPersonId).map(u=>[u.militaryPersonId!,u]));
+  const rulerOwners=new Map(archiveDynasties.flatMap(d=>d.rulers.map(r=>[r.id,d.factionId] as const)));
   const linkedRulers=new Map(archiveDynasties.flatMap(d=>d.rulers).filter(r=>r.residentIdentity||r.militaryIdentity).map(r=>[r.militaryIdentity?.personId??r.residentIdentity!.personId,r]));
   const liveIds=new Set(people.filter(p=>usersByPerson.get(p.personId)?.matchesMilitaryLife(p)).map(p=>p.personId));
   const resolvedSelection=reconcileMilitaryPersonSelection(selection,factionId,people,formations,liveIds);
@@ -686,7 +687,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
       const first=localAppointments[0],last=localAppointments.at(-1),current=currentPeople.includes(person);
       const highest=localAppointments.flatMap(a=>a.officeHistory??[]).sort((a,b)=>MILITARY_OFFICES.indexOf(b.office)-MILITARY_OFFICES.indexOf(a.office))[0];
       const linked=linkedRulers.get(person.personId);
-      const royalTeam=linked&&Game.Core?.teams.find(t=>DynastyRegistry.get(t.name)?.rulers.some(r=>r.id===linked.id));
+      const royalTeam=linked&&Game.Core?.teams.find(t=>t.name===rulerOwners.get(linked.id));
       const portraitContext=linked&&linked.accessionYear!==undefined&&linked.accessionYear<=worldMonth&&royalTeam?{...royalPortraitContext(linked,royalTeam,worldMonth),historical:true}:militaryPortraitContext(person,factionId,politicalTeam,worldMonth);
       const identityLabels=militaryIdentityLabels(person,archiveDynasties,archiveEvents,worldMonth);
       const identityBadges=identityLabels.map(label=>label==="宗室将领"&&person.royalIdentity?<button key={label} type="button" style={{border:0,background:"none",font:"inherit",color:"inherit",textDecoration:"underline",cursor:"pointer"}} onClick={event=>{event.stopPropagation();navigation.open({kind:"GENEALOGY",factionId:person.royalIdentity!.factionId,id:person.royalIdentity!.rulerId});}}>{label}</button>:<span key={label}>{label} · </span>);

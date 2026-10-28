@@ -19,3 +19,14 @@ export async function runMilitaryArchiveCore(){
  }
  return {checks,metrics,scope:'real React DOM virtual-list scale fixtures, not invented simulation persons; natural-world timings tested separately'};
 }
+
+/** Real provisional polity / real appointed commander; never substitute a kingdom for this check. */
+export async function checkRebelMilitaryView(core:any,rebel:any,person:any,check:(v:unknown,s:string)=>void){
+ const {Provider}=await import('react-redux'),{store}=await import('../../store'),actions=await import('../../store/rootSlice'),{default:FactionDetails}=await import('../../UI/Components/FactionDetails');
+ const host=document.createElement('div');host.style.cssText='width:440px;height:800px';document.body.append(host);const root=createRoot(host);
+ try{flushSync(()=>{store.dispatch(actions.setTeams([...core.teams]));store.dispatch(actions.setWorldYear(core.simulator.year));store.dispatch(actions.setSelectedFactionName(rebel.name));store.dispatch(actions.setFactionDetailTab('overview'));root.render(<Provider store={store}><FactionDetails/></Provider>);});
+  const tab=Array.from(host.querySelectorAll<HTMLButtonElement>('button')).find(b=>b.textContent==='军政人物');check(tab,'actual rebel exposes the military navigation tab');flushSync(()=>tab!.click());
+  check(store.getState().root.selectedFactionName===rebel.name&&store.getState().root.factionDetailTab==='military','clicking rebel military retains the exact provisional faction ID');
+  check(host.textContent?.includes(person.personalName)&&host.textContent.includes('校尉')&&host.textContent.includes('统兵1人'),'real rebel archive displays its actual one-body colonel and service details');
+ }finally{flushSync(()=>root.unmount());host.remove();}
+}
