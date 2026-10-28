@@ -16,10 +16,10 @@ import {getMilitaryPersonDisplayName} from "../../../Politics/MilitaryPersonIden
 
 const countryAt=(id:string,month:number)=>{const t=Game.Core?.teams.find(t=>t.name===id);return t?getFactionDisplayNameAtMonth(t,month):id;};
 const style={border:0,padding:0,background:"none",color:"inherit",font:"inherit",textDecoration:"underline",cursor:"pointer"} as const;
-export function RulerServicePanel({ruler,factionId,month}:{ruler:Ruler;factionId:string;month:number}){
- const nav=usePersonArchiveNavigation(),people=Military.getPeople(),events=History.getEvents();
- const earlier=preAccessionMilitary(ruler,people,Military.getFormations(),events,{factions:new Map((Game.Core?.teams??[]).map(t=>[t.name,t]))});
- const rows=personServiceLinks(factionId,[ruler],people,Military.getFormations(),events,month);
+export function RulerServicePanel({ruler,factionId,month,reading}:{ruler:Ruler;factionId:string;month:number;reading?:{earlier:ReturnType<typeof preAccessionMilitary>;rows:ReturnType<typeof personServiceLinks>}}){
+ const nav=usePersonArchiveNavigation(),people=Military.getPeople(),events=reading?[]:History.getEvents();
+ const earlier=reading?reading.earlier:preAccessionMilitary(ruler,people,Military.getFormations(),events,{factions:new Map((Game.Core?.teams??[]).map(t=>[t.name,t]))});
+ const rows=reading?reading.rows:personServiceLinks(factionId,[ruler],people,Military.getFormations(),events,month);
  return <>
   {earlier&&<ChronicleSection title="早年与登位前经历">
    {earlier.representative.map(e=><Typography key={e.eventId} fontSize="0.82rem">{formatWorldDate(e.worldMonth)} · {countryAt(e.factionId,e.worldMonth)} · {e.text}</Typography>)}

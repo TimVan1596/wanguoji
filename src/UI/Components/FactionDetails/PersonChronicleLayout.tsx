@@ -7,7 +7,7 @@ export function ChronicleSection({title,children}:{title:string;children:ReactNo
 }
 export default function PersonChronicleLayout({title,identity,preBiography,biographyTitle,biography,milestoneTitle,milestones,milestoneTotal,allMilestones,personKey,governance,assessment,voice,evidence,children}:{
   title:ReactNode;identity?:ReactNode;preBiography?:ReactNode;biographyTitle:string;biography:string[];milestoneTitle:string;
-  milestones:Array<{id:string;content:ReactNode}>;milestoneTotal?:number;allMilestones?:()=>Array<{id:string;content:ReactNode}>;personKey?:string;governance?:ReactNode;assessment:string[];voice?:string;evidence:ReactNode;children?:ReactNode;
+  milestones:Array<{id:string;content:ReactNode}>;milestoneTotal?:number;allMilestones?:()=>Array<{id:string;content:ReactNode}>;personKey?:string;governance?:ReactNode;assessment:string[];voice?:string;evidence:ReactNode|(()=>ReactNode);children?:ReactNode;
 }){
   return <Box sx={{minWidth:0,overflowWrap:"anywhere"}}>
     {title}{identity}{preBiography}
@@ -20,4 +20,4 @@ export default function PersonChronicleLayout({title,identity,preBiography,biogr
   </Box>;
 }
 
-function LazyEvidence({evidence}:{evidence:ReactNode}){const [open,setOpen]=useState(false);return <details open={open} onToggle={e=>setOpen(e.currentTarget.open)} style={{marginTop:8,minWidth:0}}><summary>详细记录</summary>{open&&evidence}</details>;}
+function LazyEvidence({evidence}:{evidence:ReactNode|(()=>ReactNode)}){const [open,setOpen]=useState(false);return <details open={open} onToggle={e=>setOpen(e.currentTarget.open)} style={{marginTop:8,minWidth:0}}><summary>详细记录</summary>{open&&(typeof evidence==='function'?evidence():evidence)}</details>;}
