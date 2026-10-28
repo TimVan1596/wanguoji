@@ -1,3 +1,4 @@
+import {checkMilitaryLifeView} from './MilitaryLifeViewChecks';
 import {checkMilitaryAppanages} from './MilitaryAppanageCoreHarness';
 import {nextMilitaryHonors} from '../../Politics/MilitaryHonors';
 import {checkMeritRollInteraction} from './RoyalArchiveInteractionHarness';
@@ -50,6 +51,8 @@ export async function runMilitaryNobilityCore(seed:string){
   const saved=strict();await checkMilitaryAppanages(core,saved,ids[0],check,base);for(const mutate of [(s:any)=>s.registries.militaryCommandRegistry.people.find((x:any)=>x.personId===ids[0]).nobilityHistory[0].rulerId='fake',(s:any)=>s.registries.militaryCommandRegistry.people.find((x:any)=>x.personId===ids[0]).nobilityHistory[0].cityIds.push('fake'),(s:any)=>s.registries.militaryCommandRegistry.people.find((x:any)=>x.personId===ids[0]).nobilityHistory.push({...grants[0]})]){const bad=structuredClone(saved);mutate(bad);check(!validateWorldSave(bad).valid,'strict save rejects invented monarch, merit or duplicate title');}
   const record=JSON.stringify(grants);meritRoster(Military.getPeople().reverse(),Military.getFormations(),History.getEvents(),factionId,240);check(JSON.stringify(p.nobilityHistory)===record,'dynamic merit ranking cannot delete or rewrite a formal grant');
   const resume=()=>{hydrateWorldSave(core,structuredClone(saved));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return strict();};const a=resume(),b=resume();check(diffCanonicalWorldSave(a,b).matched,'ennobled army save resumes twelve real months identically');hydrateWorldSave(core,structuredClone(a));check(diffCanonicalWorldSave(a,strict()).matched,'second read preserves the same people, titles and army');
+  // Same-month battle death and legal posthumous act share one display while both real events survive.
+  {const {t,p}=restore(saved);t.getUserById(p.sourceUserId)!.destroyUser(false,{cause:'BATTLE_DEATH',month:240,damageSource:'HOSTILE_HOME_OCCUPATION'});clock(240);Military.updateHonors(240,core.teams,Dynasty.getAll());strict();checkMilitaryLifeView(core,p,240,'DEATH_POSTHUMOUS',check);}
   // Formal posthumous evaluation uses the actual death transaction, never age or a fabricated death.
   {
    const {t,p}=restore(saved),body=t.getUserById(p.sourceUserId)!;body.destroyUser(false,{cause:'BATTLE_DEATH',month:240,damageSource:'HOSTILE_HOME_OCCUPATION'});clock(252);

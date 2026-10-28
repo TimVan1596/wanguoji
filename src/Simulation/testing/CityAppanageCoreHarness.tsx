@@ -1,3 +1,4 @@
+import {checkMilitaryLifeView} from './MilitaryLifeViewChecks';
 import {AppanageCards} from '../../UI/Components/CityDetails/CityAppanages';
 import {daliangAppanageFixture} from './CityAppanageViewFixture';
 import {createRoot} from 'react-dom/client';
@@ -21,7 +22,7 @@ export async function checkCityAppanageView(core:any,initial:any,id:string,check
   const body=home.getUserById(p.sourceUserId)!;body.player.setPosition(city.block.x,city.block.y);body.player.body.reset(city.block.x,city.block.y);core.logicalUnitRegistry.getEntry(body.player.logicalUnitId).state.logicalX=city.block.x;core.logicalUnitRegistry.getEntry(body.player.logicalUnitId).state.logicalY=city.block.y;
   city.capture(home,216,undefined,p.appointments[0].commandId,p.personId);
   const oldCities=p.capturedEventIds.map(event=>History.getEvents().find(e=>e.id===event)?.cityId);for(const c of core.allCities.filter((c:any)=>c!==city&&c.ownerTeam===home&&oldCities.includes(c.id)))c.capture(enemy,216);
-  Military.updateNobility(216,core.teams,Dynasty.getAll());update(216);check(p.appanageHistory?.[0]?.cityId===city.id,'real sovereign grants the only currently owned merit city, using its true ID');clock(228);Military.updateNobility(228,core.teams,Dynasty.getAll());update(228);exportWorldSave(core);
+  Military.updateNobility(216,core.teams,Dynasty.getAll());update(216);check(p.appanageHistory?.[0]?.cityId===city.id,'real sovereign grants the only currently owned merit city, using its true ID');checkMilitaryLifeView(core,p,216,'GRANT_APPANAGE',check);clock(228);Military.updateNobility(228,core.teams,Dynasty.getAll());update(228);exportWorldSave(core);
   const refresh=(m:number)=>flushSync(()=>{store.dispatch(setTeams([...core.teams]));store.dispatch(setWorldYear(m));});
   flushSync(()=>{refresh(228);store.dispatch(setSelectedCityId(city.id));store.dispatch(setRightPanelTab('city'));root.render(<Provider store={store}><RightSlider onReturnToMenu={()=>{}} onSave={async()=>''} onSaveGame={()=>{}} onManageSaves={()=>{}} onSettings={()=>{}} saving={false}/></Provider>);});
   const openTab=()=>{const b=host.querySelector<HTMLButtonElement>('[role="tab"][aria-selected="false"]:last-child');if(b?.textContent==='封邑')flushSync(()=>b.click());};
