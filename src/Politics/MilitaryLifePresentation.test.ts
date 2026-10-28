@@ -1,3 +1,4 @@
+import {isFeaturedHistoryEvent} from '../History/HistorySignificanceRules';
 import {expect,it} from 'vitest';
 import {militaryLifePairs,militaryDeathWording} from './MilitaryLifePresentation';
 import {groupHistoryNarratives} from '../History/HistoryNarrativeGrouper';
@@ -21,7 +22,7 @@ it.each(['person','month','ruler','epoch','reference','rank'])('does not merge m
 });
 it.each(['NATURAL_DEATH','BATTLE_DEATH','SIEGE_LOSS',undefined])('uses actual %s death evidence, never the epithet, for the same-month posthumous narrative',cause=>{
  const x=fixture(),death:any={id:'death',type:'military-person-died',year:2880,actorFactionId:'wei',metadata:{personId:'yang',deathCause:cause}},honor={eventId:'honor',kind:'POSTHUMOUS',personId:'yang',personalName:'杨世睦',factionId:'wei',countryName:'魏',epochFounderId:'house',rulerId:'wei-king',rulerTitle:'魏王魏景良',month:2880,deathMonth:2880,grantEventId:'noble',rank:'BO',sourceEventId:'death',epithet:'武烈'};
- const events=[x.events[0],death,x.e(honor,'military-posthumous','honor')],pair=militaryLifePairs(events)[0];expect(pair.text).toBe(`杨世睦${militaryDeathWording(cause)}，同月获魏王魏景良追谥“武烈”。`);expect(groupHistoryNarratives(events)).toHaveLength(2);
+ const events=[x.events[0],death,{...x.e(honor,'military-posthumous','honor'),importance:'major'}],pair=militaryLifePairs(events)[0];expect(pair.text).toBe(`杨世睦${militaryDeathWording(cause)}，同月获魏王魏景良追谥“武烈”。`);expect(groupHistoryNarratives(events)).toHaveLength(2);expect(isFeaturedHistoryEvent(groupHistoryNarratives(events.slice(1))[0])).toBe(true);expect(militaryLifePairs(events.slice(1))[0]?.text).toBe(pair.text);
  const rows=events.slice(1).map(e=>({eventId:e.id,worldMonth:e.year,factionId:'wei',text:e.title,source:e.type+' · '+e.id,victory:false}));expect(militaryMilestones({personId:'yang',personalName:'杨世睦',name:'杨世睦',deathCause:cause} as any,rows,events)[0].text).toBe(pair.text);
  honor.month+=12;events[2]=x.e(honor,'military-posthumous','honor');expect(militaryLifePairs(events)).toEqual([]);honor.month-=12;honor.sourceEventId='unrelated';events[2]=x.e(honor,'military-posthumous','honor');expect(militaryLifePairs(events)).toEqual([]);
 });

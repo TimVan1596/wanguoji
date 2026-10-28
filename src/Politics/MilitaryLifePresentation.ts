@@ -20,10 +20,11 @@ export function militaryLifePairs(events:readonly WorldEvent[]):MilitaryLifePair
    pairs.push({anchor:n,other:e,kind:'GRANT_APPANAGE',text:`${g.rulerTitle}以军功${g.previousRank==='NONE'?'封':'进封'}${g.personalName}为${NOBLE_NAMES[g.rank]}，并赐${a.cityName}为食邑。`});used.add(n.id);
   }
   if(e.type==='military-posthumous'){
+   // Authority is frozen by the committed honor transaction. Its older peerage may be outside a bounded history page.
    const h=read<MilitaryHonor>(e.metadata?.honor),death=h&&byId.get(h.sourceEventId),grant=h&&byId.get(h.grantEventId),g=grant&&read<NobleGrant>(grant.metadata?.nobility);
-   if(!h||!death||!g||h.kind!=='POSTHUMOUS'||h.eventId!==e.id||!h.epithet||!h.rulerTitle||!h.rulerId||e.rulerId!==h.rulerId||h.month!==month(e)||
+   if(!h||!death||h.kind!=='POSTHUMOUS'||h.eventId!==e.id||!h.epithet||!h.rulerTitle||!h.rulerId||e.rulerId!==h.rulerId||h.month!==month(e)||
     death.type!=='military-person-died'||month(death)!==month(e)||h.deathMonth!==month(death)||death.metadata?.personId!==h.personId||e.metadata?.personId!==h.personId||
-    e.actorFactionId!==h.factionId||death.actorFactionId!==h.factionId||g.personId!==h.personId||g.factionId!==h.factionId||g.epochFounderId!==h.epochFounderId||grant!.type!=='military-ennobled'||g.month>month(death)||used.has(death.id))continue;
+    e.actorFactionId!==h.factionId||death.actorFactionId!==h.factionId||(grant&&(!g||g.eventId!==grant.id||g.personId!==h.personId||g.factionId!==h.factionId||g.epochFounderId!==h.epochFounderId||grant.type!=='military-ennobled'||g.month>month(death)))||used.has(death.id))continue;
    pairs.push({anchor:death,other:e,kind:'DEATH_POSTHUMOUS',text:`${h.personalName}${militaryDeathWording(typeof death.metadata?.deathCause==='string'?death.metadata.deathCause:undefined)}，同月获${h.rulerTitle}追谥“${h.epithet}”。`});used.add(death.id);
   }
  }
@@ -31,5 +32,5 @@ export function militaryLifePairs(events:readonly WorldEvent[]):MilitaryLifePair
 }
 export function mergeMilitaryLifeEvents(events:WorldEvent[]){
  const pairs=militaryLifePairs(events),bySource=new Map(pairs.flatMap(p=>[[p.anchor.id,p],[p.other.id,p]] as const)),emitted=new Set<MilitaryLifePair>();
- return events.flatMap(e=>{const p=bySource.get(e.id);if(!p)return [e];if(emitted.has(p))return [];emitted.add(p);return [{...p.anchor,id:`history-military-${p.anchor.id}`,title:p.text,description:undefined,metadata:{...p.anchor.metadata,historyNarrativeKind:'MILITARY_LIFE',sourceEventIds:[p.anchor.id,p.other.id].join(',')}}];});
+ return events.flatMap(e=>{const p=bySource.get(e.id);if(!p)return [e];if(emitted.has(p))return [];emitted.add(p);return [{...p.anchor,id:`history-military-${p.anchor.id}`,title:p.text,description:undefined,importance:p.anchor.importance==='major'||p.other.importance==='major'?'major':p.anchor.importance,cityId:p.anchor.cityId??p.other.cityId,cityName:p.anchor.cityName??p.other.cityName,metadata:{...p.anchor.metadata,historyNarrativeKind:'MILITARY_LIFE',sourceEventIds:[p.anchor.id,p.other.id].join(',')}}];});
 }
