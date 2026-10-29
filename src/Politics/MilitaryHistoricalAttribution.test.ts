@@ -50,7 +50,7 @@ it("the simulation writer freezes the actual issuing ruler; later death, success
   expect(validateMilitaryOfficeAuthorities(save)).toEqual([]);
   const person:any={personId:"p",name:"tag",personalName:"鲍成",appointments:[{officeHistory:[{eventId:"grant",office:"PIJIANG"}]}]};
   const rows=militaryMilestones(person,[{eventId:"grant",worldMonth:12,factionId:"秦",source:"military-office-granted · grant",text:"source",victory:false}], [e]);
-  expect(rows[0].text).toBe("秦王嬴文在位时，鲍成获授裨将。");expect(worldRandom.exportState()).toEqual(rng);
+  expect(rows[0].text).toBe("鲍成始任秦裨将，时秦王嬴文在位。");expect(worldRandom.exportState()).toEqual(rng);
   const bad=structuredClone(save);(bad.worldHistory.events as any[])[0].rulerId="next";expect(validateMilitaryOfficeAuthorities(bad)).not.toEqual([]);
 });
 it.each(["dead","exiled","foreign","provisional"])("does not invent a %s ruler as the issuing authority",kind=>{

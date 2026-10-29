@@ -63,7 +63,7 @@ export async function runMilitaryOverlayCore(seed="military-overlay-z"){
   const fullEntries=Military.getChronicle(person,core.simulator!.year,person.factionId);
   const reading=militaryMilestones(person,fullEntries,WorldHistory.getEventsForFaction(person.factionId));
   check(fullEntries.some(e=>e.source.startsWith("military-order-issued"))&&!reading.some(e=>e.source.startsWith("military-order-issued")),"ordinary orders retained in the archive but omitted from public milestones");
-  check(reading.some(e=>e.text.includes("授校尉"))&&!reading.some(e=>e.text.includes("据本次任职")),"formal initial office is readable without zero-month audit wording");
+  check(reading.some(e=>e.text.includes("始任")&&e.text.includes("校尉"))&&!reading.some(e=>e.text.includes("据本次任职")),"formal initial office is readable without zero-month audit wording");
   const archive=getMilitaryArchive(factionPeople,person.factionId,Military.getFormations(),liveIds);
   check(archive.currentPeople.some(p=>p.personId===person.personId)&&archive.visiblePeople.includes(person),"real living commander remains visible in the chronological archive");
   const bio=composeMilitaryBiography(person,Military.getChronicle(person,core.simulator!.year,person.factionId),person.factionId);
