@@ -24,7 +24,7 @@ export function createRoyalReadingProjection(){
  const rows=new Map<string,{owner:Ruler;key:string;refs:WorldEvent[];value:ReturnType<typeof build>}>();let builds=0,hits=0;
  return {get(a:RoyalReadingInput){
   const r=a.ruler,end=Math.min(a.worldMonth,Math.max(r.endYear??a.worldMonth,r.deathMonth??-Infinity)),scope=JSON.stringify([a.team.name,r.id]);
-  const refs=a.allEvents.filter(e=>(e.monthIndex??e.year)<=end),localRefs=a.events.filter(e=>(e.monthIndex??e.year)<=end);
+  const localRefs=a.events.filter(e=>(e.monthIndex??e.year)<=end),refs=[...a.allEvents.filter(e=>(e.monthIndex??e.year)<=end),...localRefs];
   const people=a.people.filter(p=>p.personId===(r.militaryIdentity?.personId??r.residentIdentity?.personId)||p.appointments.some(x=>x.factionId===a.team.name&&x.startMonth<=end&&(x.endMonth??end)>=r.accessionYear));
   const personIds=new Set(people.map(p=>p.personId));
   const family=a.rulers.filter(x=>x.bornYear<=end||x.accessionYear!==undefined).map(x=>({id:x.id,parentId:x.parentId,houseName:x.houseName,givenName:x.givenName,bornYear:x.bornYear,accessionYear:x.accessionYear,reignOrdinal:x.reignOrdinal,deathMonth:x.deathMonth,deathReason:x.deathReason,relationType:x.relationType}));

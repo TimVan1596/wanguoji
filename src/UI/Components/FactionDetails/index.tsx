@@ -94,11 +94,6 @@ import {
   getFactionRegimeBadge,
   getFactionRegimeWeight,
 } from "../../../Simulation/FactionDisplayRules";
-import {
-  getRulerHistoricalEvents,
-  getRulerDiplomaticEvents,
-} from "../../../Politics/RulerChronicle";
-import { deriveRulerAssessment } from "../../../Politics/RulerHistoriography";
 import { deriveRulerTenureEvidence } from "../../../Politics/RulerTenureEvidence";
 import { getFormalRulers, isFormalRulerRecord } from "../../../Politics/RulerPresentationRules";
 import {

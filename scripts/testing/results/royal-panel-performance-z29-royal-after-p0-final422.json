@@ -1,0 +1,2755 @@
+[
+  {
+    "seed": "regional-3",
+    "worldMonth": 5064,
+    "population": 196,
+    "eventCount": 12891,
+    "factionId": "魏",
+    "rulerId": "魏-ruler-235",
+    "rulerName": "魏氏襄",
+    "collapsedEnterMs": 43.70000000298023,
+    "expandMs": 60.69999998807907,
+    "expandReactMs": 38.20000000298023,
+    "expandedDom": 539,
+    "projected": [
+      {
+        "month": 5064,
+        "ms": 14.599999994039536,
+        "evidence": {
+          "trajectory": {
+            "accessionTerritory": 0.17877551020408164,
+            "peakTerritory": 0.2522448979591837,
+            "endTerritory": 0.19918367346938776,
+            "accessionToPeakGain": 0.07346938775510206,
+            "peakToEndRetreat": 0.053061224489795944,
+            "accessionToEndDelta": 0.020408163265306117,
+            "peakPopulation": 45,
+            "populationPeakRetreat": 11,
+            "citiesLost": 1,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "stateLosses": 0,
+            "restorations": 0,
+            "capitalLosses": 0,
+            "nationalCityCaptures": 1,
+            "nationalCapitalCaptures": 0,
+            "majorExpansion": false,
+            "majorTerritoryRetreat": false,
+            "majorPopulationRetreat": false,
+            "expandedThenRetreated": false,
+            "expandedAndRetained": false,
+            "inheritedDecline": false,
+            "stableTrajectoryEligible": true,
+            "quietStewardshipEligible": true,
+            "recoveredAfterWarfare": false
+          },
+          "rulerId": "魏-ruler-235",
+          "factionId": "魏",
+          "accessionAge": 18,
+          "finalAge": 81,
+          "hasRecordedDeath": true,
+          "reignMonths": 745,
+          "tenure": {
+            "totalTenureMonths": 745,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "exileEpisodeCount": 0,
+            "exiledAtAccession": false,
+            "lostStateDuringTenure": false,
+            "restoredDuringTenure": false,
+            "restorationCount": 0,
+            "restoredActiveRuleMonths": 0,
+            "stateLossCount": 0,
+            "diedInExile": false,
+            "extinctInExile": false,
+            "restoredExileMonths": 0
+          },
+          "isFinalized": true,
+          "rulerStatus": "dead",
+          "deathMonth": 4477,
+          "deathReason": "去世",
+          "foundedFaction": false,
+          "foundedState": false,
+          "formalStateAtReignEnd": true,
+          "proclaimedEmperor": false,
+          "completedUnification": false,
+          "restorationCount": 0,
+          "observedPeakCityCount": 3,
+          "startPopulation": 35,
+          "endPopulation": 34,
+          "peakPopulation": 45,
+          "startTerritory": 0.17877551020408164,
+          "endTerritory": 0.19918367346938776,
+          "peakTerritory": 0.2522448979591837,
+          "startCityCount": 3,
+          "endCityCount": 3,
+          "startStability": 77,
+          "endStability": 86,
+          "personalCityCaptures": 0,
+          "citiesLost": 1,
+          "rebellions": 0,
+          "deathCause": "去世",
+          "endReason": "去世",
+          "forcedCapitalRelocationsDuringReign": 0,
+          "directlyAttributedCapitalRelocations": 0,
+          "factionsDestroyedByFactionDuringReign": 0,
+          "factionsDestroyedDirectlyAttributedToRuler": 0,
+          "predeceasedHeirCount": 2,
+          "territorialPeakRetreat": 0.053061224489795944,
+          "territorialPeakGain": 0.07346938775510206,
+          "populationPeakRetreat": 11,
+          "populationPeakGain": 10,
+          "territoryDelta": 0.020408163265306117,
+          "populationDelta": -1,
+          "cityDelta": 0,
+          "stabilityDelta": 9,
+          "stableGovernanceEligible": true,
+          "longStableReign": true,
+          "governanceCost": false,
+          "accessionCrisis": false,
+          "terminalCollapse": false,
+          "roles": [
+            "STEWARD"
+          ],
+          "politicalFacts": [
+            {
+              "eventId": "city-captured-4330-秦-太原郡-436",
+              "month": 4330,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "participantRole": "RECEIVER",
+              "affectedFactionId": "魏",
+              "cityId": "赵-city-1608-11",
+              "cityName": "太原郡",
+              "wasCapital": false,
+              "militaryRole": "DEFENDER",
+              "outcome": "本国失去城市",
+              "suitableForAssessment": true
+            },
+            {
+              "eventId": "city-captured-4199-魏-钱塘-425",
+              "month": 4199,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "affectedFactionId": "秦",
+              "cityId": "赵-city-120-4",
+              "cityName": "钱塘",
+              "wasCapital": false,
+              "militaryRole": "ATTACKER",
+              "outcome": "任内本国攻占城市",
+              "suitableForAssessment": true
+            }
+          ]
+        },
+        "full": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "selected": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "diplomacy": [],
+        "service": [
+          {
+            "factionId": "魏",
+            "personId": "military-person-116",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 3996,
+            "endMonth": 4015,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-116-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-119",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4068,
+            "endMonth": 4093,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-119-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-120",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4116,
+            "endMonth": 4134,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-120-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-125",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4356,
+            "endMonth": 4361,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-125-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          }
+        ]
+      },
+      {
+        "month": 5065,
+        "ms": 1.699999988079071,
+        "evidence": {
+          "trajectory": {
+            "accessionTerritory": 0.17877551020408164,
+            "peakTerritory": 0.2522448979591837,
+            "endTerritory": 0.19918367346938776,
+            "accessionToPeakGain": 0.07346938775510206,
+            "peakToEndRetreat": 0.053061224489795944,
+            "accessionToEndDelta": 0.020408163265306117,
+            "peakPopulation": 45,
+            "populationPeakRetreat": 11,
+            "citiesLost": 1,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "stateLosses": 0,
+            "restorations": 0,
+            "capitalLosses": 0,
+            "nationalCityCaptures": 1,
+            "nationalCapitalCaptures": 0,
+            "majorExpansion": false,
+            "majorTerritoryRetreat": false,
+            "majorPopulationRetreat": false,
+            "expandedThenRetreated": false,
+            "expandedAndRetained": false,
+            "inheritedDecline": false,
+            "stableTrajectoryEligible": true,
+            "quietStewardshipEligible": true,
+            "recoveredAfterWarfare": false
+          },
+          "rulerId": "魏-ruler-235",
+          "factionId": "魏",
+          "accessionAge": 18,
+          "finalAge": 81,
+          "hasRecordedDeath": true,
+          "reignMonths": 745,
+          "tenure": {
+            "totalTenureMonths": 745,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "exileEpisodeCount": 0,
+            "exiledAtAccession": false,
+            "lostStateDuringTenure": false,
+            "restoredDuringTenure": false,
+            "restorationCount": 0,
+            "restoredActiveRuleMonths": 0,
+            "stateLossCount": 0,
+            "diedInExile": false,
+            "extinctInExile": false,
+            "restoredExileMonths": 0
+          },
+          "isFinalized": true,
+          "rulerStatus": "dead",
+          "deathMonth": 4477,
+          "deathReason": "去世",
+          "foundedFaction": false,
+          "foundedState": false,
+          "formalStateAtReignEnd": true,
+          "proclaimedEmperor": false,
+          "completedUnification": false,
+          "restorationCount": 0,
+          "observedPeakCityCount": 3,
+          "startPopulation": 35,
+          "endPopulation": 34,
+          "peakPopulation": 45,
+          "startTerritory": 0.17877551020408164,
+          "endTerritory": 0.19918367346938776,
+          "peakTerritory": 0.2522448979591837,
+          "startCityCount": 3,
+          "endCityCount": 3,
+          "startStability": 77,
+          "endStability": 86,
+          "personalCityCaptures": 0,
+          "citiesLost": 1,
+          "rebellions": 0,
+          "deathCause": "去世",
+          "endReason": "去世",
+          "forcedCapitalRelocationsDuringReign": 0,
+          "directlyAttributedCapitalRelocations": 0,
+          "factionsDestroyedByFactionDuringReign": 0,
+          "factionsDestroyedDirectlyAttributedToRuler": 0,
+          "predeceasedHeirCount": 2,
+          "territorialPeakRetreat": 0.053061224489795944,
+          "territorialPeakGain": 0.07346938775510206,
+          "populationPeakRetreat": 11,
+          "populationPeakGain": 10,
+          "territoryDelta": 0.020408163265306117,
+          "populationDelta": -1,
+          "cityDelta": 0,
+          "stabilityDelta": 9,
+          "stableGovernanceEligible": true,
+          "longStableReign": true,
+          "governanceCost": false,
+          "accessionCrisis": false,
+          "terminalCollapse": false,
+          "roles": [
+            "STEWARD"
+          ],
+          "politicalFacts": [
+            {
+              "eventId": "city-captured-4330-秦-太原郡-436",
+              "month": 4330,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "participantRole": "RECEIVER",
+              "affectedFactionId": "魏",
+              "cityId": "赵-city-1608-11",
+              "cityName": "太原郡",
+              "wasCapital": false,
+              "militaryRole": "DEFENDER",
+              "outcome": "本国失去城市",
+              "suitableForAssessment": true
+            },
+            {
+              "eventId": "city-captured-4199-魏-钱塘-425",
+              "month": 4199,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "affectedFactionId": "秦",
+              "cityId": "赵-city-120-4",
+              "cityName": "钱塘",
+              "wasCapital": false,
+              "militaryRole": "ATTACKER",
+              "outcome": "任内本国攻占城市",
+              "suitableForAssessment": true
+            }
+          ]
+        },
+        "full": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "selected": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "diplomacy": [],
+        "service": [
+          {
+            "factionId": "魏",
+            "personId": "military-person-116",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 3996,
+            "endMonth": 4015,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-116-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-119",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4068,
+            "endMonth": 4093,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-119-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-120",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4116,
+            "endMonth": 4134,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-120-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-125",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4356,
+            "endMonth": 4361,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-125-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          }
+        ]
+      },
+      {
+        "month": 5066,
+        "ms": 1.7000000029802322,
+        "evidence": {
+          "trajectory": {
+            "accessionTerritory": 0.17877551020408164,
+            "peakTerritory": 0.2522448979591837,
+            "endTerritory": 0.19918367346938776,
+            "accessionToPeakGain": 0.07346938775510206,
+            "peakToEndRetreat": 0.053061224489795944,
+            "accessionToEndDelta": 0.020408163265306117,
+            "peakPopulation": 45,
+            "populationPeakRetreat": 11,
+            "citiesLost": 1,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "stateLosses": 0,
+            "restorations": 0,
+            "capitalLosses": 0,
+            "nationalCityCaptures": 1,
+            "nationalCapitalCaptures": 0,
+            "majorExpansion": false,
+            "majorTerritoryRetreat": false,
+            "majorPopulationRetreat": false,
+            "expandedThenRetreated": false,
+            "expandedAndRetained": false,
+            "inheritedDecline": false,
+            "stableTrajectoryEligible": true,
+            "quietStewardshipEligible": true,
+            "recoveredAfterWarfare": false
+          },
+          "rulerId": "魏-ruler-235",
+          "factionId": "魏",
+          "accessionAge": 18,
+          "finalAge": 81,
+          "hasRecordedDeath": true,
+          "reignMonths": 745,
+          "tenure": {
+            "totalTenureMonths": 745,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "exileEpisodeCount": 0,
+            "exiledAtAccession": false,
+            "lostStateDuringTenure": false,
+            "restoredDuringTenure": false,
+            "restorationCount": 0,
+            "restoredActiveRuleMonths": 0,
+            "stateLossCount": 0,
+            "diedInExile": false,
+            "extinctInExile": false,
+            "restoredExileMonths": 0
+          },
+          "isFinalized": true,
+          "rulerStatus": "dead",
+          "deathMonth": 4477,
+          "deathReason": "去世",
+          "foundedFaction": false,
+          "foundedState": false,
+          "formalStateAtReignEnd": true,
+          "proclaimedEmperor": false,
+          "completedUnification": false,
+          "restorationCount": 0,
+          "observedPeakCityCount": 3,
+          "startPopulation": 35,
+          "endPopulation": 34,
+          "peakPopulation": 45,
+          "startTerritory": 0.17877551020408164,
+          "endTerritory": 0.19918367346938776,
+          "peakTerritory": 0.2522448979591837,
+          "startCityCount": 3,
+          "endCityCount": 3,
+          "startStability": 77,
+          "endStability": 86,
+          "personalCityCaptures": 0,
+          "citiesLost": 1,
+          "rebellions": 0,
+          "deathCause": "去世",
+          "endReason": "去世",
+          "forcedCapitalRelocationsDuringReign": 0,
+          "directlyAttributedCapitalRelocations": 0,
+          "factionsDestroyedByFactionDuringReign": 0,
+          "factionsDestroyedDirectlyAttributedToRuler": 0,
+          "predeceasedHeirCount": 2,
+          "territorialPeakRetreat": 0.053061224489795944,
+          "territorialPeakGain": 0.07346938775510206,
+          "populationPeakRetreat": 11,
+          "populationPeakGain": 10,
+          "territoryDelta": 0.020408163265306117,
+          "populationDelta": -1,
+          "cityDelta": 0,
+          "stabilityDelta": 9,
+          "stableGovernanceEligible": true,
+          "longStableReign": true,
+          "governanceCost": false,
+          "accessionCrisis": false,
+          "terminalCollapse": false,
+          "roles": [
+            "STEWARD"
+          ],
+          "politicalFacts": [
+            {
+              "eventId": "city-captured-4330-秦-太原郡-436",
+              "month": 4330,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "participantRole": "RECEIVER",
+              "affectedFactionId": "魏",
+              "cityId": "赵-city-1608-11",
+              "cityName": "太原郡",
+              "wasCapital": false,
+              "militaryRole": "DEFENDER",
+              "outcome": "本国失去城市",
+              "suitableForAssessment": true
+            },
+            {
+              "eventId": "city-captured-4199-魏-钱塘-425",
+              "month": 4199,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "affectedFactionId": "秦",
+              "cityId": "赵-city-120-4",
+              "cityName": "钱塘",
+              "wasCapital": false,
+              "militaryRole": "ATTACKER",
+              "outcome": "任内本国攻占城市",
+              "suitableForAssessment": true
+            }
+          ]
+        },
+        "full": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "selected": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "diplomacy": [],
+        "service": [
+          {
+            "factionId": "魏",
+            "personId": "military-person-116",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 3996,
+            "endMonth": 4015,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-116-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-119",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4068,
+            "endMonth": 4093,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-119-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-120",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4116,
+            "endMonth": 4134,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-120-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-125",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4356,
+            "endMonth": 4361,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-125-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          }
+        ]
+      },
+      {
+        "month": 5067,
+        "ms": 1.5,
+        "evidence": {
+          "trajectory": {
+            "accessionTerritory": 0.17877551020408164,
+            "peakTerritory": 0.2522448979591837,
+            "endTerritory": 0.19918367346938776,
+            "accessionToPeakGain": 0.07346938775510206,
+            "peakToEndRetreat": 0.053061224489795944,
+            "accessionToEndDelta": 0.020408163265306117,
+            "peakPopulation": 45,
+            "populationPeakRetreat": 11,
+            "citiesLost": 1,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "stateLosses": 0,
+            "restorations": 0,
+            "capitalLosses": 0,
+            "nationalCityCaptures": 1,
+            "nationalCapitalCaptures": 0,
+            "majorExpansion": false,
+            "majorTerritoryRetreat": false,
+            "majorPopulationRetreat": false,
+            "expandedThenRetreated": false,
+            "expandedAndRetained": false,
+            "inheritedDecline": false,
+            "stableTrajectoryEligible": true,
+            "quietStewardshipEligible": true,
+            "recoveredAfterWarfare": false
+          },
+          "rulerId": "魏-ruler-235",
+          "factionId": "魏",
+          "accessionAge": 18,
+          "finalAge": 81,
+          "hasRecordedDeath": true,
+          "reignMonths": 745,
+          "tenure": {
+            "totalTenureMonths": 745,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "exileEpisodeCount": 0,
+            "exiledAtAccession": false,
+            "lostStateDuringTenure": false,
+            "restoredDuringTenure": false,
+            "restorationCount": 0,
+            "restoredActiveRuleMonths": 0,
+            "stateLossCount": 0,
+            "diedInExile": false,
+            "extinctInExile": false,
+            "restoredExileMonths": 0
+          },
+          "isFinalized": true,
+          "rulerStatus": "dead",
+          "deathMonth": 4477,
+          "deathReason": "去世",
+          "foundedFaction": false,
+          "foundedState": false,
+          "formalStateAtReignEnd": true,
+          "proclaimedEmperor": false,
+          "completedUnification": false,
+          "restorationCount": 0,
+          "observedPeakCityCount": 3,
+          "startPopulation": 35,
+          "endPopulation": 34,
+          "peakPopulation": 45,
+          "startTerritory": 0.17877551020408164,
+          "endTerritory": 0.19918367346938776,
+          "peakTerritory": 0.2522448979591837,
+          "startCityCount": 3,
+          "endCityCount": 3,
+          "startStability": 77,
+          "endStability": 86,
+          "personalCityCaptures": 0,
+          "citiesLost": 1,
+          "rebellions": 0,
+          "deathCause": "去世",
+          "endReason": "去世",
+          "forcedCapitalRelocationsDuringReign": 0,
+          "directlyAttributedCapitalRelocations": 0,
+          "factionsDestroyedByFactionDuringReign": 0,
+          "factionsDestroyedDirectlyAttributedToRuler": 0,
+          "predeceasedHeirCount": 2,
+          "territorialPeakRetreat": 0.053061224489795944,
+          "territorialPeakGain": 0.07346938775510206,
+          "populationPeakRetreat": 11,
+          "populationPeakGain": 10,
+          "territoryDelta": 0.020408163265306117,
+          "populationDelta": -1,
+          "cityDelta": 0,
+          "stabilityDelta": 9,
+          "stableGovernanceEligible": true,
+          "longStableReign": true,
+          "governanceCost": false,
+          "accessionCrisis": false,
+          "terminalCollapse": false,
+          "roles": [
+            "STEWARD"
+          ],
+          "politicalFacts": [
+            {
+              "eventId": "city-captured-4330-秦-太原郡-436",
+              "month": 4330,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "participantRole": "RECEIVER",
+              "affectedFactionId": "魏",
+              "cityId": "赵-city-1608-11",
+              "cityName": "太原郡",
+              "wasCapital": false,
+              "militaryRole": "DEFENDER",
+              "outcome": "本国失去城市",
+              "suitableForAssessment": true
+            },
+            {
+              "eventId": "city-captured-4199-魏-钱塘-425",
+              "month": 4199,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "affectedFactionId": "秦",
+              "cityId": "赵-city-120-4",
+              "cityName": "钱塘",
+              "wasCapital": false,
+              "militaryRole": "ATTACKER",
+              "outcome": "任内本国攻占城市",
+              "suitableForAssessment": true
+            }
+          ]
+        },
+        "full": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "selected": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "diplomacy": [],
+        "service": [
+          {
+            "factionId": "魏",
+            "personId": "military-person-116",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 3996,
+            "endMonth": 4015,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-116-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-119",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4068,
+            "endMonth": 4093,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-119-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-120",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4116,
+            "endMonth": 4134,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-120-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-125",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4356,
+            "endMonth": 4361,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-125-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          }
+        ]
+      },
+      {
+        "month": 5068,
+        "ms": 1.5,
+        "evidence": {
+          "trajectory": {
+            "accessionTerritory": 0.17877551020408164,
+            "peakTerritory": 0.2522448979591837,
+            "endTerritory": 0.19918367346938776,
+            "accessionToPeakGain": 0.07346938775510206,
+            "peakToEndRetreat": 0.053061224489795944,
+            "accessionToEndDelta": 0.020408163265306117,
+            "peakPopulation": 45,
+            "populationPeakRetreat": 11,
+            "citiesLost": 1,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "stateLosses": 0,
+            "restorations": 0,
+            "capitalLosses": 0,
+            "nationalCityCaptures": 1,
+            "nationalCapitalCaptures": 0,
+            "majorExpansion": false,
+            "majorTerritoryRetreat": false,
+            "majorPopulationRetreat": false,
+            "expandedThenRetreated": false,
+            "expandedAndRetained": false,
+            "inheritedDecline": false,
+            "stableTrajectoryEligible": true,
+            "quietStewardshipEligible": true,
+            "recoveredAfterWarfare": false
+          },
+          "rulerId": "魏-ruler-235",
+          "factionId": "魏",
+          "accessionAge": 18,
+          "finalAge": 81,
+          "hasRecordedDeath": true,
+          "reignMonths": 745,
+          "tenure": {
+            "totalTenureMonths": 745,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "exileEpisodeCount": 0,
+            "exiledAtAccession": false,
+            "lostStateDuringTenure": false,
+            "restoredDuringTenure": false,
+            "restorationCount": 0,
+            "restoredActiveRuleMonths": 0,
+            "stateLossCount": 0,
+            "diedInExile": false,
+            "extinctInExile": false,
+            "restoredExileMonths": 0
+          },
+          "isFinalized": true,
+          "rulerStatus": "dead",
+          "deathMonth": 4477,
+          "deathReason": "去世",
+          "foundedFaction": false,
+          "foundedState": false,
+          "formalStateAtReignEnd": true,
+          "proclaimedEmperor": false,
+          "completedUnification": false,
+          "restorationCount": 0,
+          "observedPeakCityCount": 3,
+          "startPopulation": 35,
+          "endPopulation": 34,
+          "peakPopulation": 45,
+          "startTerritory": 0.17877551020408164,
+          "endTerritory": 0.19918367346938776,
+          "peakTerritory": 0.2522448979591837,
+          "startCityCount": 3,
+          "endCityCount": 3,
+          "startStability": 77,
+          "endStability": 86,
+          "personalCityCaptures": 0,
+          "citiesLost": 1,
+          "rebellions": 0,
+          "deathCause": "去世",
+          "endReason": "去世",
+          "forcedCapitalRelocationsDuringReign": 0,
+          "directlyAttributedCapitalRelocations": 0,
+          "factionsDestroyedByFactionDuringReign": 0,
+          "factionsDestroyedDirectlyAttributedToRuler": 0,
+          "predeceasedHeirCount": 2,
+          "territorialPeakRetreat": 0.053061224489795944,
+          "territorialPeakGain": 0.07346938775510206,
+          "populationPeakRetreat": 11,
+          "populationPeakGain": 10,
+          "territoryDelta": 0.020408163265306117,
+          "populationDelta": -1,
+          "cityDelta": 0,
+          "stabilityDelta": 9,
+          "stableGovernanceEligible": true,
+          "longStableReign": true,
+          "governanceCost": false,
+          "accessionCrisis": false,
+          "terminalCollapse": false,
+          "roles": [
+            "STEWARD"
+          ],
+          "politicalFacts": [
+            {
+              "eventId": "city-captured-4330-秦-太原郡-436",
+              "month": 4330,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "participantRole": "RECEIVER",
+              "affectedFactionId": "魏",
+              "cityId": "赵-city-1608-11",
+              "cityName": "太原郡",
+              "wasCapital": false,
+              "militaryRole": "DEFENDER",
+              "outcome": "本国失去城市",
+              "suitableForAssessment": true
+            },
+            {
+              "eventId": "city-captured-4199-魏-钱塘-425",
+              "month": 4199,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "affectedFactionId": "秦",
+              "cityId": "赵-city-120-4",
+              "cityName": "钱塘",
+              "wasCapital": false,
+              "militaryRole": "ATTACKER",
+              "outcome": "任内本国攻占城市",
+              "suitableForAssessment": true
+            }
+          ]
+        },
+        "full": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "selected": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "diplomacy": [],
+        "service": [
+          {
+            "factionId": "魏",
+            "personId": "military-person-116",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 3996,
+            "endMonth": 4015,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-116-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-119",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4068,
+            "endMonth": 4093,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-119-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-120",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4116,
+            "endMonth": 4134,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-120-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-125",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4356,
+            "endMonth": 4361,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-125-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          }
+        ]
+      },
+      {
+        "month": 5069,
+        "ms": 1.4000000059604645,
+        "evidence": {
+          "trajectory": {
+            "accessionTerritory": 0.17877551020408164,
+            "peakTerritory": 0.2522448979591837,
+            "endTerritory": 0.19918367346938776,
+            "accessionToPeakGain": 0.07346938775510206,
+            "peakToEndRetreat": 0.053061224489795944,
+            "accessionToEndDelta": 0.020408163265306117,
+            "peakPopulation": 45,
+            "populationPeakRetreat": 11,
+            "citiesLost": 1,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "stateLosses": 0,
+            "restorations": 0,
+            "capitalLosses": 0,
+            "nationalCityCaptures": 1,
+            "nationalCapitalCaptures": 0,
+            "majorExpansion": false,
+            "majorTerritoryRetreat": false,
+            "majorPopulationRetreat": false,
+            "expandedThenRetreated": false,
+            "expandedAndRetained": false,
+            "inheritedDecline": false,
+            "stableTrajectoryEligible": true,
+            "quietStewardshipEligible": true,
+            "recoveredAfterWarfare": false
+          },
+          "rulerId": "魏-ruler-235",
+          "factionId": "魏",
+          "accessionAge": 18,
+          "finalAge": 81,
+          "hasRecordedDeath": true,
+          "reignMonths": 745,
+          "tenure": {
+            "totalTenureMonths": 745,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "exileEpisodeCount": 0,
+            "exiledAtAccession": false,
+            "lostStateDuringTenure": false,
+            "restoredDuringTenure": false,
+            "restorationCount": 0,
+            "restoredActiveRuleMonths": 0,
+            "stateLossCount": 0,
+            "diedInExile": false,
+            "extinctInExile": false,
+            "restoredExileMonths": 0
+          },
+          "isFinalized": true,
+          "rulerStatus": "dead",
+          "deathMonth": 4477,
+          "deathReason": "去世",
+          "foundedFaction": false,
+          "foundedState": false,
+          "formalStateAtReignEnd": true,
+          "proclaimedEmperor": false,
+          "completedUnification": false,
+          "restorationCount": 0,
+          "observedPeakCityCount": 3,
+          "startPopulation": 35,
+          "endPopulation": 34,
+          "peakPopulation": 45,
+          "startTerritory": 0.17877551020408164,
+          "endTerritory": 0.19918367346938776,
+          "peakTerritory": 0.2522448979591837,
+          "startCityCount": 3,
+          "endCityCount": 3,
+          "startStability": 77,
+          "endStability": 86,
+          "personalCityCaptures": 0,
+          "citiesLost": 1,
+          "rebellions": 0,
+          "deathCause": "去世",
+          "endReason": "去世",
+          "forcedCapitalRelocationsDuringReign": 0,
+          "directlyAttributedCapitalRelocations": 0,
+          "factionsDestroyedByFactionDuringReign": 0,
+          "factionsDestroyedDirectlyAttributedToRuler": 0,
+          "predeceasedHeirCount": 2,
+          "territorialPeakRetreat": 0.053061224489795944,
+          "territorialPeakGain": 0.07346938775510206,
+          "populationPeakRetreat": 11,
+          "populationPeakGain": 10,
+          "territoryDelta": 0.020408163265306117,
+          "populationDelta": -1,
+          "cityDelta": 0,
+          "stabilityDelta": 9,
+          "stableGovernanceEligible": true,
+          "longStableReign": true,
+          "governanceCost": false,
+          "accessionCrisis": false,
+          "terminalCollapse": false,
+          "roles": [
+            "STEWARD"
+          ],
+          "politicalFacts": [
+            {
+              "eventId": "city-captured-4330-秦-太原郡-436",
+              "month": 4330,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "participantRole": "RECEIVER",
+              "affectedFactionId": "魏",
+              "cityId": "赵-city-1608-11",
+              "cityName": "太原郡",
+              "wasCapital": false,
+              "militaryRole": "DEFENDER",
+              "outcome": "本国失去城市",
+              "suitableForAssessment": true
+            },
+            {
+              "eventId": "city-captured-4199-魏-钱塘-425",
+              "month": 4199,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "affectedFactionId": "秦",
+              "cityId": "赵-city-120-4",
+              "cityName": "钱塘",
+              "wasCapital": false,
+              "militaryRole": "ATTACKER",
+              "outcome": "任内本国攻占城市",
+              "suitableForAssessment": true
+            }
+          ]
+        },
+        "full": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "selected": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "diplomacy": [],
+        "service": [
+          {
+            "factionId": "魏",
+            "personId": "military-person-116",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 3996,
+            "endMonth": 4015,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-116-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-119",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4068,
+            "endMonth": 4093,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-119-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-120",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4116,
+            "endMonth": 4134,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-120-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-125",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4356,
+            "endMonth": 4361,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-125-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          }
+        ]
+      },
+      {
+        "month": 5070,
+        "ms": 1.2000000029802322,
+        "evidence": {
+          "trajectory": {
+            "accessionTerritory": 0.17877551020408164,
+            "peakTerritory": 0.2522448979591837,
+            "endTerritory": 0.19918367346938776,
+            "accessionToPeakGain": 0.07346938775510206,
+            "peakToEndRetreat": 0.053061224489795944,
+            "accessionToEndDelta": 0.020408163265306117,
+            "peakPopulation": 45,
+            "populationPeakRetreat": 11,
+            "citiesLost": 1,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "stateLosses": 0,
+            "restorations": 0,
+            "capitalLosses": 0,
+            "nationalCityCaptures": 1,
+            "nationalCapitalCaptures": 0,
+            "majorExpansion": false,
+            "majorTerritoryRetreat": false,
+            "majorPopulationRetreat": false,
+            "expandedThenRetreated": false,
+            "expandedAndRetained": false,
+            "inheritedDecline": false,
+            "stableTrajectoryEligible": true,
+            "quietStewardshipEligible": true,
+            "recoveredAfterWarfare": false
+          },
+          "rulerId": "魏-ruler-235",
+          "factionId": "魏",
+          "accessionAge": 18,
+          "finalAge": 81,
+          "hasRecordedDeath": true,
+          "reignMonths": 745,
+          "tenure": {
+            "totalTenureMonths": 745,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "exileEpisodeCount": 0,
+            "exiledAtAccession": false,
+            "lostStateDuringTenure": false,
+            "restoredDuringTenure": false,
+            "restorationCount": 0,
+            "restoredActiveRuleMonths": 0,
+            "stateLossCount": 0,
+            "diedInExile": false,
+            "extinctInExile": false,
+            "restoredExileMonths": 0
+          },
+          "isFinalized": true,
+          "rulerStatus": "dead",
+          "deathMonth": 4477,
+          "deathReason": "去世",
+          "foundedFaction": false,
+          "foundedState": false,
+          "formalStateAtReignEnd": true,
+          "proclaimedEmperor": false,
+          "completedUnification": false,
+          "restorationCount": 0,
+          "observedPeakCityCount": 3,
+          "startPopulation": 35,
+          "endPopulation": 34,
+          "peakPopulation": 45,
+          "startTerritory": 0.17877551020408164,
+          "endTerritory": 0.19918367346938776,
+          "peakTerritory": 0.2522448979591837,
+          "startCityCount": 3,
+          "endCityCount": 3,
+          "startStability": 77,
+          "endStability": 86,
+          "personalCityCaptures": 0,
+          "citiesLost": 1,
+          "rebellions": 0,
+          "deathCause": "去世",
+          "endReason": "去世",
+          "forcedCapitalRelocationsDuringReign": 0,
+          "directlyAttributedCapitalRelocations": 0,
+          "factionsDestroyedByFactionDuringReign": 0,
+          "factionsDestroyedDirectlyAttributedToRuler": 0,
+          "predeceasedHeirCount": 2,
+          "territorialPeakRetreat": 0.053061224489795944,
+          "territorialPeakGain": 0.07346938775510206,
+          "populationPeakRetreat": 11,
+          "populationPeakGain": 10,
+          "territoryDelta": 0.020408163265306117,
+          "populationDelta": -1,
+          "cityDelta": 0,
+          "stabilityDelta": 9,
+          "stableGovernanceEligible": true,
+          "longStableReign": true,
+          "governanceCost": false,
+          "accessionCrisis": false,
+          "terminalCollapse": false,
+          "roles": [
+            "STEWARD"
+          ],
+          "politicalFacts": [
+            {
+              "eventId": "city-captured-4330-秦-太原郡-436",
+              "month": 4330,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "participantRole": "RECEIVER",
+              "affectedFactionId": "魏",
+              "cityId": "赵-city-1608-11",
+              "cityName": "太原郡",
+              "wasCapital": false,
+              "militaryRole": "DEFENDER",
+              "outcome": "本国失去城市",
+              "suitableForAssessment": true
+            },
+            {
+              "eventId": "city-captured-4199-魏-钱塘-425",
+              "month": 4199,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "affectedFactionId": "秦",
+              "cityId": "赵-city-120-4",
+              "cityName": "钱塘",
+              "wasCapital": false,
+              "militaryRole": "ATTACKER",
+              "outcome": "任内本国攻占城市",
+              "suitableForAssessment": true
+            }
+          ]
+        },
+        "full": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "selected": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "diplomacy": [],
+        "service": [
+          {
+            "factionId": "魏",
+            "personId": "military-person-116",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 3996,
+            "endMonth": 4015,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-116-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-119",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4068,
+            "endMonth": 4093,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-119-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-120",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4116,
+            "endMonth": 4134,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-120-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-125",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4356,
+            "endMonth": 4361,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-125-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          }
+        ]
+      },
+      {
+        "month": 5071,
+        "ms": 1.5,
+        "evidence": {
+          "trajectory": {
+            "accessionTerritory": 0.17877551020408164,
+            "peakTerritory": 0.2522448979591837,
+            "endTerritory": 0.19918367346938776,
+            "accessionToPeakGain": 0.07346938775510206,
+            "peakToEndRetreat": 0.053061224489795944,
+            "accessionToEndDelta": 0.020408163265306117,
+            "peakPopulation": 45,
+            "populationPeakRetreat": 11,
+            "citiesLost": 1,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "stateLosses": 0,
+            "restorations": 0,
+            "capitalLosses": 0,
+            "nationalCityCaptures": 1,
+            "nationalCapitalCaptures": 0,
+            "majorExpansion": false,
+            "majorTerritoryRetreat": false,
+            "majorPopulationRetreat": false,
+            "expandedThenRetreated": false,
+            "expandedAndRetained": false,
+            "inheritedDecline": false,
+            "stableTrajectoryEligible": true,
+            "quietStewardshipEligible": true,
+            "recoveredAfterWarfare": false
+          },
+          "rulerId": "魏-ruler-235",
+          "factionId": "魏",
+          "accessionAge": 18,
+          "finalAge": 81,
+          "hasRecordedDeath": true,
+          "reignMonths": 745,
+          "tenure": {
+            "totalTenureMonths": 745,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "exileEpisodeCount": 0,
+            "exiledAtAccession": false,
+            "lostStateDuringTenure": false,
+            "restoredDuringTenure": false,
+            "restorationCount": 0,
+            "restoredActiveRuleMonths": 0,
+            "stateLossCount": 0,
+            "diedInExile": false,
+            "extinctInExile": false,
+            "restoredExileMonths": 0
+          },
+          "isFinalized": true,
+          "rulerStatus": "dead",
+          "deathMonth": 4477,
+          "deathReason": "去世",
+          "foundedFaction": false,
+          "foundedState": false,
+          "formalStateAtReignEnd": true,
+          "proclaimedEmperor": false,
+          "completedUnification": false,
+          "restorationCount": 0,
+          "observedPeakCityCount": 3,
+          "startPopulation": 35,
+          "endPopulation": 34,
+          "peakPopulation": 45,
+          "startTerritory": 0.17877551020408164,
+          "endTerritory": 0.19918367346938776,
+          "peakTerritory": 0.2522448979591837,
+          "startCityCount": 3,
+          "endCityCount": 3,
+          "startStability": 77,
+          "endStability": 86,
+          "personalCityCaptures": 0,
+          "citiesLost": 1,
+          "rebellions": 0,
+          "deathCause": "去世",
+          "endReason": "去世",
+          "forcedCapitalRelocationsDuringReign": 0,
+          "directlyAttributedCapitalRelocations": 0,
+          "factionsDestroyedByFactionDuringReign": 0,
+          "factionsDestroyedDirectlyAttributedToRuler": 0,
+          "predeceasedHeirCount": 2,
+          "territorialPeakRetreat": 0.053061224489795944,
+          "territorialPeakGain": 0.07346938775510206,
+          "populationPeakRetreat": 11,
+          "populationPeakGain": 10,
+          "territoryDelta": 0.020408163265306117,
+          "populationDelta": -1,
+          "cityDelta": 0,
+          "stabilityDelta": 9,
+          "stableGovernanceEligible": true,
+          "longStableReign": true,
+          "governanceCost": false,
+          "accessionCrisis": false,
+          "terminalCollapse": false,
+          "roles": [
+            "STEWARD"
+          ],
+          "politicalFacts": [
+            {
+              "eventId": "city-captured-4330-秦-太原郡-436",
+              "month": 4330,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "participantRole": "RECEIVER",
+              "affectedFactionId": "魏",
+              "cityId": "赵-city-1608-11",
+              "cityName": "太原郡",
+              "wasCapital": false,
+              "militaryRole": "DEFENDER",
+              "outcome": "本国失去城市",
+              "suitableForAssessment": true
+            },
+            {
+              "eventId": "city-captured-4199-魏-钱塘-425",
+              "month": 4199,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "affectedFactionId": "秦",
+              "cityId": "赵-city-120-4",
+              "cityName": "钱塘",
+              "wasCapital": false,
+              "militaryRole": "ATTACKER",
+              "outcome": "任内本国攻占城市",
+              "suitableForAssessment": true
+            }
+          ]
+        },
+        "full": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "selected": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "diplomacy": [],
+        "service": [
+          {
+            "factionId": "魏",
+            "personId": "military-person-116",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 3996,
+            "endMonth": 4015,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-116-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-119",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4068,
+            "endMonth": 4093,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-119-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-120",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4116,
+            "endMonth": 4134,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-120-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-125",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4356,
+            "endMonth": 4361,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-125-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          }
+        ]
+      },
+      {
+        "month": 5072,
+        "ms": 1.2000000029802322,
+        "evidence": {
+          "trajectory": {
+            "accessionTerritory": 0.17877551020408164,
+            "peakTerritory": 0.2522448979591837,
+            "endTerritory": 0.19918367346938776,
+            "accessionToPeakGain": 0.07346938775510206,
+            "peakToEndRetreat": 0.053061224489795944,
+            "accessionToEndDelta": 0.020408163265306117,
+            "peakPopulation": 45,
+            "populationPeakRetreat": 11,
+            "citiesLost": 1,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "stateLosses": 0,
+            "restorations": 0,
+            "capitalLosses": 0,
+            "nationalCityCaptures": 1,
+            "nationalCapitalCaptures": 0,
+            "majorExpansion": false,
+            "majorTerritoryRetreat": false,
+            "majorPopulationRetreat": false,
+            "expandedThenRetreated": false,
+            "expandedAndRetained": false,
+            "inheritedDecline": false,
+            "stableTrajectoryEligible": true,
+            "quietStewardshipEligible": true,
+            "recoveredAfterWarfare": false
+          },
+          "rulerId": "魏-ruler-235",
+          "factionId": "魏",
+          "accessionAge": 18,
+          "finalAge": 81,
+          "hasRecordedDeath": true,
+          "reignMonths": 745,
+          "tenure": {
+            "totalTenureMonths": 745,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "exileEpisodeCount": 0,
+            "exiledAtAccession": false,
+            "lostStateDuringTenure": false,
+            "restoredDuringTenure": false,
+            "restorationCount": 0,
+            "restoredActiveRuleMonths": 0,
+            "stateLossCount": 0,
+            "diedInExile": false,
+            "extinctInExile": false,
+            "restoredExileMonths": 0
+          },
+          "isFinalized": true,
+          "rulerStatus": "dead",
+          "deathMonth": 4477,
+          "deathReason": "去世",
+          "foundedFaction": false,
+          "foundedState": false,
+          "formalStateAtReignEnd": true,
+          "proclaimedEmperor": false,
+          "completedUnification": false,
+          "restorationCount": 0,
+          "observedPeakCityCount": 3,
+          "startPopulation": 35,
+          "endPopulation": 34,
+          "peakPopulation": 45,
+          "startTerritory": 0.17877551020408164,
+          "endTerritory": 0.19918367346938776,
+          "peakTerritory": 0.2522448979591837,
+          "startCityCount": 3,
+          "endCityCount": 3,
+          "startStability": 77,
+          "endStability": 86,
+          "personalCityCaptures": 0,
+          "citiesLost": 1,
+          "rebellions": 0,
+          "deathCause": "去世",
+          "endReason": "去世",
+          "forcedCapitalRelocationsDuringReign": 0,
+          "directlyAttributedCapitalRelocations": 0,
+          "factionsDestroyedByFactionDuringReign": 0,
+          "factionsDestroyedDirectlyAttributedToRuler": 0,
+          "predeceasedHeirCount": 2,
+          "territorialPeakRetreat": 0.053061224489795944,
+          "territorialPeakGain": 0.07346938775510206,
+          "populationPeakRetreat": 11,
+          "populationPeakGain": 10,
+          "territoryDelta": 0.020408163265306117,
+          "populationDelta": -1,
+          "cityDelta": 0,
+          "stabilityDelta": 9,
+          "stableGovernanceEligible": true,
+          "longStableReign": true,
+          "governanceCost": false,
+          "accessionCrisis": false,
+          "terminalCollapse": false,
+          "roles": [
+            "STEWARD"
+          ],
+          "politicalFacts": [
+            {
+              "eventId": "city-captured-4330-秦-太原郡-436",
+              "month": 4330,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "participantRole": "RECEIVER",
+              "affectedFactionId": "魏",
+              "cityId": "赵-city-1608-11",
+              "cityName": "太原郡",
+              "wasCapital": false,
+              "militaryRole": "DEFENDER",
+              "outcome": "本国失去城市",
+              "suitableForAssessment": true
+            },
+            {
+              "eventId": "city-captured-4199-魏-钱塘-425",
+              "month": 4199,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "affectedFactionId": "秦",
+              "cityId": "赵-city-120-4",
+              "cityName": "钱塘",
+              "wasCapital": false,
+              "militaryRole": "ATTACKER",
+              "outcome": "任内本国攻占城市",
+              "suitableForAssessment": true
+            }
+          ]
+        },
+        "full": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "selected": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "diplomacy": [],
+        "service": [
+          {
+            "factionId": "魏",
+            "personId": "military-person-116",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 3996,
+            "endMonth": 4015,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-116-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-119",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4068,
+            "endMonth": 4093,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-119-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-120",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4116,
+            "endMonth": 4134,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-120-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-125",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4356,
+            "endMonth": 4361,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-125-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          }
+        ]
+      },
+      {
+        "month": 5073,
+        "ms": 1.3999999910593033,
+        "evidence": {
+          "trajectory": {
+            "accessionTerritory": 0.17877551020408164,
+            "peakTerritory": 0.2522448979591837,
+            "endTerritory": 0.19918367346938776,
+            "accessionToPeakGain": 0.07346938775510206,
+            "peakToEndRetreat": 0.053061224489795944,
+            "accessionToEndDelta": 0.020408163265306117,
+            "peakPopulation": 45,
+            "populationPeakRetreat": 11,
+            "citiesLost": 1,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "stateLosses": 0,
+            "restorations": 0,
+            "capitalLosses": 0,
+            "nationalCityCaptures": 1,
+            "nationalCapitalCaptures": 0,
+            "majorExpansion": false,
+            "majorTerritoryRetreat": false,
+            "majorPopulationRetreat": false,
+            "expandedThenRetreated": false,
+            "expandedAndRetained": false,
+            "inheritedDecline": false,
+            "stableTrajectoryEligible": true,
+            "quietStewardshipEligible": true,
+            "recoveredAfterWarfare": false
+          },
+          "rulerId": "魏-ruler-235",
+          "factionId": "魏",
+          "accessionAge": 18,
+          "finalAge": 81,
+          "hasRecordedDeath": true,
+          "reignMonths": 745,
+          "tenure": {
+            "totalTenureMonths": 745,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "exileEpisodeCount": 0,
+            "exiledAtAccession": false,
+            "lostStateDuringTenure": false,
+            "restoredDuringTenure": false,
+            "restorationCount": 0,
+            "restoredActiveRuleMonths": 0,
+            "stateLossCount": 0,
+            "diedInExile": false,
+            "extinctInExile": false,
+            "restoredExileMonths": 0
+          },
+          "isFinalized": true,
+          "rulerStatus": "dead",
+          "deathMonth": 4477,
+          "deathReason": "去世",
+          "foundedFaction": false,
+          "foundedState": false,
+          "formalStateAtReignEnd": true,
+          "proclaimedEmperor": false,
+          "completedUnification": false,
+          "restorationCount": 0,
+          "observedPeakCityCount": 3,
+          "startPopulation": 35,
+          "endPopulation": 34,
+          "peakPopulation": 45,
+          "startTerritory": 0.17877551020408164,
+          "endTerritory": 0.19918367346938776,
+          "peakTerritory": 0.2522448979591837,
+          "startCityCount": 3,
+          "endCityCount": 3,
+          "startStability": 77,
+          "endStability": 86,
+          "personalCityCaptures": 0,
+          "citiesLost": 1,
+          "rebellions": 0,
+          "deathCause": "去世",
+          "endReason": "去世",
+          "forcedCapitalRelocationsDuringReign": 0,
+          "directlyAttributedCapitalRelocations": 0,
+          "factionsDestroyedByFactionDuringReign": 0,
+          "factionsDestroyedDirectlyAttributedToRuler": 0,
+          "predeceasedHeirCount": 2,
+          "territorialPeakRetreat": 0.053061224489795944,
+          "territorialPeakGain": 0.07346938775510206,
+          "populationPeakRetreat": 11,
+          "populationPeakGain": 10,
+          "territoryDelta": 0.020408163265306117,
+          "populationDelta": -1,
+          "cityDelta": 0,
+          "stabilityDelta": 9,
+          "stableGovernanceEligible": true,
+          "longStableReign": true,
+          "governanceCost": false,
+          "accessionCrisis": false,
+          "terminalCollapse": false,
+          "roles": [
+            "STEWARD"
+          ],
+          "politicalFacts": [
+            {
+              "eventId": "city-captured-4330-秦-太原郡-436",
+              "month": 4330,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "participantRole": "RECEIVER",
+              "affectedFactionId": "魏",
+              "cityId": "赵-city-1608-11",
+              "cityName": "太原郡",
+              "wasCapital": false,
+              "militaryRole": "DEFENDER",
+              "outcome": "本国失去城市",
+              "suitableForAssessment": true
+            },
+            {
+              "eventId": "city-captured-4199-魏-钱塘-425",
+              "month": 4199,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "affectedFactionId": "秦",
+              "cityId": "赵-city-120-4",
+              "cityName": "钱塘",
+              "wasCapital": false,
+              "militaryRole": "ATTACKER",
+              "outcome": "任内本国攻占城市",
+              "suitableForAssessment": true
+            }
+          ]
+        },
+        "full": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "selected": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "diplomacy": [],
+        "service": [
+          {
+            "factionId": "魏",
+            "personId": "military-person-116",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 3996,
+            "endMonth": 4015,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-116-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-119",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4068,
+            "endMonth": 4093,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-119-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-120",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4116,
+            "endMonth": 4134,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-120-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-125",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4356,
+            "endMonth": 4361,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-125-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          }
+        ]
+      },
+      {
+        "month": 5074,
+        "ms": 1.2000000029802322,
+        "evidence": {
+          "trajectory": {
+            "accessionTerritory": 0.17877551020408164,
+            "peakTerritory": 0.2522448979591837,
+            "endTerritory": 0.19918367346938776,
+            "accessionToPeakGain": 0.07346938775510206,
+            "peakToEndRetreat": 0.053061224489795944,
+            "accessionToEndDelta": 0.020408163265306117,
+            "peakPopulation": 45,
+            "populationPeakRetreat": 11,
+            "citiesLost": 1,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "stateLosses": 0,
+            "restorations": 0,
+            "capitalLosses": 0,
+            "nationalCityCaptures": 1,
+            "nationalCapitalCaptures": 0,
+            "majorExpansion": false,
+            "majorTerritoryRetreat": false,
+            "majorPopulationRetreat": false,
+            "expandedThenRetreated": false,
+            "expandedAndRetained": false,
+            "inheritedDecline": false,
+            "stableTrajectoryEligible": true,
+            "quietStewardshipEligible": true,
+            "recoveredAfterWarfare": false
+          },
+          "rulerId": "魏-ruler-235",
+          "factionId": "魏",
+          "accessionAge": 18,
+          "finalAge": 81,
+          "hasRecordedDeath": true,
+          "reignMonths": 745,
+          "tenure": {
+            "totalTenureMonths": 745,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "exileEpisodeCount": 0,
+            "exiledAtAccession": false,
+            "lostStateDuringTenure": false,
+            "restoredDuringTenure": false,
+            "restorationCount": 0,
+            "restoredActiveRuleMonths": 0,
+            "stateLossCount": 0,
+            "diedInExile": false,
+            "extinctInExile": false,
+            "restoredExileMonths": 0
+          },
+          "isFinalized": true,
+          "rulerStatus": "dead",
+          "deathMonth": 4477,
+          "deathReason": "去世",
+          "foundedFaction": false,
+          "foundedState": false,
+          "formalStateAtReignEnd": true,
+          "proclaimedEmperor": false,
+          "completedUnification": false,
+          "restorationCount": 0,
+          "observedPeakCityCount": 3,
+          "startPopulation": 35,
+          "endPopulation": 34,
+          "peakPopulation": 45,
+          "startTerritory": 0.17877551020408164,
+          "endTerritory": 0.19918367346938776,
+          "peakTerritory": 0.2522448979591837,
+          "startCityCount": 3,
+          "endCityCount": 3,
+          "startStability": 77,
+          "endStability": 86,
+          "personalCityCaptures": 0,
+          "citiesLost": 1,
+          "rebellions": 0,
+          "deathCause": "去世",
+          "endReason": "去世",
+          "forcedCapitalRelocationsDuringReign": 0,
+          "directlyAttributedCapitalRelocations": 0,
+          "factionsDestroyedByFactionDuringReign": 0,
+          "factionsDestroyedDirectlyAttributedToRuler": 0,
+          "predeceasedHeirCount": 2,
+          "territorialPeakRetreat": 0.053061224489795944,
+          "territorialPeakGain": 0.07346938775510206,
+          "populationPeakRetreat": 11,
+          "populationPeakGain": 10,
+          "territoryDelta": 0.020408163265306117,
+          "populationDelta": -1,
+          "cityDelta": 0,
+          "stabilityDelta": 9,
+          "stableGovernanceEligible": true,
+          "longStableReign": true,
+          "governanceCost": false,
+          "accessionCrisis": false,
+          "terminalCollapse": false,
+          "roles": [
+            "STEWARD"
+          ],
+          "politicalFacts": [
+            {
+              "eventId": "city-captured-4330-秦-太原郡-436",
+              "month": 4330,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "participantRole": "RECEIVER",
+              "affectedFactionId": "魏",
+              "cityId": "赵-city-1608-11",
+              "cityName": "太原郡",
+              "wasCapital": false,
+              "militaryRole": "DEFENDER",
+              "outcome": "本国失去城市",
+              "suitableForAssessment": true
+            },
+            {
+              "eventId": "city-captured-4199-魏-钱塘-425",
+              "month": 4199,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "affectedFactionId": "秦",
+              "cityId": "赵-city-120-4",
+              "cityName": "钱塘",
+              "wasCapital": false,
+              "militaryRole": "ATTACKER",
+              "outcome": "任内本国攻占城市",
+              "suitableForAssessment": true
+            }
+          ]
+        },
+        "full": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "selected": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "diplomacy": [],
+        "service": [
+          {
+            "factionId": "魏",
+            "personId": "military-person-116",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 3996,
+            "endMonth": 4015,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-116-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-119",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4068,
+            "endMonth": 4093,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-119-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-120",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4116,
+            "endMonth": 4134,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-120-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-125",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4356,
+            "endMonth": 4361,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-125-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          }
+        ]
+      },
+      {
+        "month": 5075,
+        "ms": 1.2999999970197678,
+        "evidence": {
+          "trajectory": {
+            "accessionTerritory": 0.17877551020408164,
+            "peakTerritory": 0.2522448979591837,
+            "endTerritory": 0.19918367346938776,
+            "accessionToPeakGain": 0.07346938775510206,
+            "peakToEndRetreat": 0.053061224489795944,
+            "accessionToEndDelta": 0.020408163265306117,
+            "peakPopulation": 45,
+            "populationPeakRetreat": 11,
+            "citiesLost": 1,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "stateLosses": 0,
+            "restorations": 0,
+            "capitalLosses": 0,
+            "nationalCityCaptures": 1,
+            "nationalCapitalCaptures": 0,
+            "majorExpansion": false,
+            "majorTerritoryRetreat": false,
+            "majorPopulationRetreat": false,
+            "expandedThenRetreated": false,
+            "expandedAndRetained": false,
+            "inheritedDecline": false,
+            "stableTrajectoryEligible": true,
+            "quietStewardshipEligible": true,
+            "recoveredAfterWarfare": false
+          },
+          "rulerId": "魏-ruler-235",
+          "factionId": "魏",
+          "accessionAge": 18,
+          "finalAge": 81,
+          "hasRecordedDeath": true,
+          "reignMonths": 745,
+          "tenure": {
+            "totalTenureMonths": 745,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "exileEpisodeCount": 0,
+            "exiledAtAccession": false,
+            "lostStateDuringTenure": false,
+            "restoredDuringTenure": false,
+            "restorationCount": 0,
+            "restoredActiveRuleMonths": 0,
+            "stateLossCount": 0,
+            "diedInExile": false,
+            "extinctInExile": false,
+            "restoredExileMonths": 0
+          },
+          "isFinalized": true,
+          "rulerStatus": "dead",
+          "deathMonth": 4477,
+          "deathReason": "去世",
+          "foundedFaction": false,
+          "foundedState": false,
+          "formalStateAtReignEnd": true,
+          "proclaimedEmperor": false,
+          "completedUnification": false,
+          "restorationCount": 0,
+          "observedPeakCityCount": 3,
+          "startPopulation": 35,
+          "endPopulation": 34,
+          "peakPopulation": 45,
+          "startTerritory": 0.17877551020408164,
+          "endTerritory": 0.19918367346938776,
+          "peakTerritory": 0.2522448979591837,
+          "startCityCount": 3,
+          "endCityCount": 3,
+          "startStability": 77,
+          "endStability": 86,
+          "personalCityCaptures": 0,
+          "citiesLost": 1,
+          "rebellions": 0,
+          "deathCause": "去世",
+          "endReason": "去世",
+          "forcedCapitalRelocationsDuringReign": 0,
+          "directlyAttributedCapitalRelocations": 0,
+          "factionsDestroyedByFactionDuringReign": 0,
+          "factionsDestroyedDirectlyAttributedToRuler": 0,
+          "predeceasedHeirCount": 2,
+          "territorialPeakRetreat": 0.053061224489795944,
+          "territorialPeakGain": 0.07346938775510206,
+          "populationPeakRetreat": 11,
+          "populationPeakGain": 10,
+          "territoryDelta": 0.020408163265306117,
+          "populationDelta": -1,
+          "cityDelta": 0,
+          "stabilityDelta": 9,
+          "stableGovernanceEligible": true,
+          "longStableReign": true,
+          "governanceCost": false,
+          "accessionCrisis": false,
+          "terminalCollapse": false,
+          "roles": [
+            "STEWARD"
+          ],
+          "politicalFacts": [
+            {
+              "eventId": "city-captured-4330-秦-太原郡-436",
+              "month": 4330,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "participantRole": "RECEIVER",
+              "affectedFactionId": "魏",
+              "cityId": "赵-city-1608-11",
+              "cityName": "太原郡",
+              "wasCapital": false,
+              "militaryRole": "DEFENDER",
+              "outcome": "本国失去城市",
+              "suitableForAssessment": true
+            },
+            {
+              "eventId": "city-captured-4199-魏-钱塘-425",
+              "month": 4199,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "affectedFactionId": "秦",
+              "cityId": "赵-city-120-4",
+              "cityName": "钱塘",
+              "wasCapital": false,
+              "militaryRole": "ATTACKER",
+              "outcome": "任内本国攻占城市",
+              "suitableForAssessment": true
+            }
+          ]
+        },
+        "full": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "selected": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "diplomacy": [],
+        "service": [
+          {
+            "factionId": "魏",
+            "personId": "military-person-116",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 3996,
+            "endMonth": 4015,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-116-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-119",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4068,
+            "endMonth": 4093,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-119-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-120",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4116,
+            "endMonth": 4134,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-120-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-125",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4356,
+            "endMonth": 4361,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-125-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          }
+        ]
+      },
+      {
+        "month": 5076,
+        "ms": 1.2000000029802322,
+        "evidence": {
+          "trajectory": {
+            "accessionTerritory": 0.17877551020408164,
+            "peakTerritory": 0.2522448979591837,
+            "endTerritory": 0.19918367346938776,
+            "accessionToPeakGain": 0.07346938775510206,
+            "peakToEndRetreat": 0.053061224489795944,
+            "accessionToEndDelta": 0.020408163265306117,
+            "peakPopulation": 45,
+            "populationPeakRetreat": 11,
+            "citiesLost": 1,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "stateLosses": 0,
+            "restorations": 0,
+            "capitalLosses": 0,
+            "nationalCityCaptures": 1,
+            "nationalCapitalCaptures": 0,
+            "majorExpansion": false,
+            "majorTerritoryRetreat": false,
+            "majorPopulationRetreat": false,
+            "expandedThenRetreated": false,
+            "expandedAndRetained": false,
+            "inheritedDecline": false,
+            "stableTrajectoryEligible": true,
+            "quietStewardshipEligible": true,
+            "recoveredAfterWarfare": false
+          },
+          "rulerId": "魏-ruler-235",
+          "factionId": "魏",
+          "accessionAge": 18,
+          "finalAge": 81,
+          "hasRecordedDeath": true,
+          "reignMonths": 745,
+          "tenure": {
+            "totalTenureMonths": 745,
+            "activeRuleMonths": 745,
+            "exileMonths": 0,
+            "exileEpisodeCount": 0,
+            "exiledAtAccession": false,
+            "lostStateDuringTenure": false,
+            "restoredDuringTenure": false,
+            "restorationCount": 0,
+            "restoredActiveRuleMonths": 0,
+            "stateLossCount": 0,
+            "diedInExile": false,
+            "extinctInExile": false,
+            "restoredExileMonths": 0
+          },
+          "isFinalized": true,
+          "rulerStatus": "dead",
+          "deathMonth": 4477,
+          "deathReason": "去世",
+          "foundedFaction": false,
+          "foundedState": false,
+          "formalStateAtReignEnd": true,
+          "proclaimedEmperor": false,
+          "completedUnification": false,
+          "restorationCount": 0,
+          "observedPeakCityCount": 3,
+          "startPopulation": 35,
+          "endPopulation": 34,
+          "peakPopulation": 45,
+          "startTerritory": 0.17877551020408164,
+          "endTerritory": 0.19918367346938776,
+          "peakTerritory": 0.2522448979591837,
+          "startCityCount": 3,
+          "endCityCount": 3,
+          "startStability": 77,
+          "endStability": 86,
+          "personalCityCaptures": 0,
+          "citiesLost": 1,
+          "rebellions": 0,
+          "deathCause": "去世",
+          "endReason": "去世",
+          "forcedCapitalRelocationsDuringReign": 0,
+          "directlyAttributedCapitalRelocations": 0,
+          "factionsDestroyedByFactionDuringReign": 0,
+          "factionsDestroyedDirectlyAttributedToRuler": 0,
+          "predeceasedHeirCount": 2,
+          "territorialPeakRetreat": 0.053061224489795944,
+          "territorialPeakGain": 0.07346938775510206,
+          "populationPeakRetreat": 11,
+          "populationPeakGain": 10,
+          "territoryDelta": 0.020408163265306117,
+          "populationDelta": -1,
+          "cityDelta": 0,
+          "stabilityDelta": 9,
+          "stableGovernanceEligible": true,
+          "longStableReign": true,
+          "governanceCost": false,
+          "accessionCrisis": false,
+          "terminalCollapse": false,
+          "roles": [
+            "STEWARD"
+          ],
+          "politicalFacts": [
+            {
+              "eventId": "city-captured-4330-秦-太原郡-436",
+              "month": 4330,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "participantRole": "RECEIVER",
+              "affectedFactionId": "魏",
+              "cityId": "赵-city-1608-11",
+              "cityName": "太原郡",
+              "wasCapital": false,
+              "militaryRole": "DEFENDER",
+              "outcome": "本国失去城市",
+              "suitableForAssessment": true
+            },
+            {
+              "eventId": "city-captured-4199-魏-钱塘-425",
+              "month": 4199,
+              "factionId": "魏",
+              "role": "IN_TENURE",
+              "type": "city-captured",
+              "confidence": "TENURE",
+              "affectedFactionId": "秦",
+              "cityId": "赵-city-120-4",
+              "cityName": "钱塘",
+              "wasCapital": false,
+              "militaryRole": "ATTACKER",
+              "outcome": "任内本国攻占城市",
+              "suitableForAssessment": true
+            }
+          ]
+        },
+        "full": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "selected": [
+          "ruler-succession-3732-魏-魏允远-魏襄-395",
+          "city-captured-4199-魏-钱塘-425",
+          "city-captured-4330-秦-太原郡-436",
+          "ruler-succession-4477-魏-魏襄-魏景诚-443"
+        ],
+        "diplomacy": [],
+        "service": [
+          {
+            "factionId": "魏",
+            "personId": "military-person-116",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 3996,
+            "endMonth": 4015,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-116-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-119",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4068,
+            "endMonth": 4093,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-119-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-120",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4116,
+            "endMonth": 4134,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-120-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          },
+          {
+            "factionId": "魏",
+            "personId": "military-person-125",
+            "rulerId": "魏-ruler-235",
+            "startMonth": 4356,
+            "endMonth": 4361,
+            "offices": [
+              "XIAOWEI"
+            ],
+            "personalGrantEventIds": [
+              "military-office-military-command-125-XIAOWEI"
+            ],
+            "victoryEventIds": []
+          }
+        ]
+      }
+    ],
+    "projection12MonthMs": 16.799999997019768,
+    "updates12MonthMs": 249.6999999731779,
+    "simulation12MonthMs": 554.8999999910593,
+    "phases": [
+      {
+        "phase": "collapsed",
+        "fps": 44.16175065093485,
+        "p95FrameMs": 47.70000000298023,
+        "fixedStepCpuMs": {
+          "average": 5.291044775896998,
+          "p95": 8.400000005960464
+        },
+        "presentationCpuMs": {
+          "average": 0.09776119365176159,
+          "p95": 0.20000000298023224
+        },
+        "reactMs": 595.1000000536442,
+        "longTasks": [
+          58
+        ],
+        "dom": 494
+      },
+      {
+        "phase": "expanded",
+        "fps": 42.1649043055976,
+        "p95FrameMs": 55.5,
+        "fixedStepCpuMs": {
+          "average": 5.875000000116415,
+          "p95": 11.599999994039536
+        },
+        "presentationCpuMs": {
+          "average": 0.10859374969732016,
+          "p95": 0.20000000298023224
+        },
+        "reactMs": 683.899999961257,
+        "longTasks": [
+          54
+        ],
+        "dom": 546
+      },
+      {
+        "phase": "collapsed-again",
+        "collapseMs": 17.200000002980232,
+        "fps": 45.21302927282788,
+        "p95FrameMs": 51.099999994039536,
+        "fixedStepCpuMs": {
+          "average": 6.301459854754218,
+          "p95": 10.299999997019768
+        },
+        "presentationCpuMs": {
+          "average": 0.11824817487793247,
+          "p95": 0.29999999701976776
+        },
+        "reactMs": 682.5000000447035,
+        "longTasks": [
+          55
+        ],
+        "dom": 494
+      }
+    ],
+    "canonicalSha256": "a55794617ec329031bedef75a1f0850beafaf880ceb7430b3d6050d4487525fe",
+    "worldRandomPosition": 25008,
+    "continuation": {
+      "months": 12,
+      "deterministic": true,
+      "secondRead": true
+    },
+    "cache": {
+      "builds": 1,
+      "hits": 12,
+      "entries": 1
+    },
+    "scope": "same V30 world and ended monarch; actual React entry/control, direct projection API, fixed Core CPU, 4x offscreen frame sampling and long-task observations are separate; not Chrome human acceptance"
+  }
+]
