@@ -147,7 +147,7 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
-- 当前 APP **v0.99931z29** / package **0.99.195** / WorldSave **V31**。z28已获用户人工Gate PASS。王室史料共享投影、已结束君主有界缓存及详细档案按需挂载；本纪与君臣履历采用有证据的史书式阅读文本。已有宫廷危机的合格军事参与者按实际军职获得有限选择权重，保留原资格、成功概率和抽签；封邑地方政治加权暂缓。V31保存军职来源及候选权重证据，保留并拒绝读取旧V30槽位，请新建V31世界；等待本轮人工Chrome Gate。
+- 当前 APP **v0.99931z30** / package **0.99.196** / WorldSave **V32**。z29已获用户最终人工Gate PASS。真实当地军权可在原年度城市政治机会命中后接续起事，保留地方危机、独立居民支持、军队追随者、保护期和冷却，不新增独立抽签。新增君主册封本纪、同月继位归因、精简食邑阅读、叛离身份与“政变与分裂”等筛选。四种子50年自然军事割据仍为0，不能宣称频率提高；地方军职／爵位／食邑排序暂缓。V32拒绝旧槽位但保留原档，请新建V32世界；等待本轮人工Chrome Gate。
 
 - v0.99931n人工Gate已PASS，真实长局自然发生至少11次同王统宗室废立。当前v0.99931n1修复连续废立后的V14生命周期校验，并完善君主即离位叙述与史评，等待[人工Gate](docs/RulerDepositionLifecycleClosureN1.md)。
 - v0.99929a 修复政治终结历史身份、退位年龄与双方君主大事记。[Political Terminal Chronicle Gate](docs/PoliticalTerminalChronicleClosure.md)已由用户完成人工PASS。

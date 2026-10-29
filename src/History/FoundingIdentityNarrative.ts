@@ -11,7 +11,7 @@ export function formatFoundingIdentity(event:WorldEvent,newFactionName:string,vi
  if(m.splitSource==="MILITARY"&&typeof m.militarySplitEvidence==="string"){
   try{const e=JSON.parse(m.militarySplitEvidence);const office=MILITARY_OFFICE_NAMES[e.office as keyof typeof MILITARY_OFFICE_NAMES]??"将领";
    if(e.personId===m.leaderPersonId&&e.personalName===name&&Array.isArray(e.participants)&&e.participants.length>=2)
-    return viewFactionId===event.targetFactionId?`原${source}${office}${name}举兵叛离，于${city}率${e.participants.length-1}名旧部另立${newFactionName}。`:`${source}${office}${name}在地方政治危机中率${e.participants.length-1}名旧部于${city}起事，脱离原政权，建立${newFactionName}，成为其${title}。`;
+    return viewFactionId!==undefined&&viewFactionId===event.targetFactionId?`原${source}${office}${name}举兵叛离，于${city}率${e.participants.length-1}名旧部另立${newFactionName}。`:`${source}${office}${name}在地方政治危机中率${e.participants.length-1}名旧部于${city}起事，脱离原政权，建立${newFactionName}，成为其${title}。`;
   }catch{/* Missing evidence falls back to the established founding facts. */}
  }
  return `${name}原为${source}居民，于${city}参与起事，随居民转属建立${newFactionName}，成为其${title}；${city}为起事据点。`;

@@ -906,8 +906,6 @@ export default class WorldEventSystem {
       const popularSlot=newPopular&&originalPath;
       if(newPopular&&!originalPath)pf.priorityBlocked++;
       const militaryParty=popularSlot&&historical.length===0&&founder?.status!=='EXILED'&&owner.cities.length>=2?assessMilitarySecession(city,year):undefined;
-      const militarySlot=Boolean(militaryParty&&populationSupport?.users.some(u=>!militaryParty.users.includes(u)));
-      if(militarySlot)rd.militaryQualifiedSlots++;
       if (!originalPath && !historical.length) continue;
       const loyaltyPressure = popularSlot&&city.loyalty>REBELLION_LOYALTY_THRESHOLD ? Math.max(0,(45-city.loyalty)/45) : warTornPath ? 0 :
         (REBELLION_LOYALTY_THRESHOLD - city.loyalty) /
@@ -935,6 +933,9 @@ export default class WorldEventSystem {
         FactionEffects.getRebellionRiskMultiplier(owner.name) *
         cycleMultiplier;
       const chance = city.ownerFactionId===city.founderFactionId ? Math.min(.09,baseChance) : baseChance;
+      // Legacy foreign-city opportunities may exceed 9%; they keep their original ordinary path.
+      const militarySlot=Boolean(chance>0&&chance<=.09&&militaryParty&&populationSupport?.users.some(u=>!militaryParty.users.includes(u)));
+      if(militarySlot)rd.militaryQualifiedSlots++;
       if (originalPath && founder?.status === "EXILED") {
         diagnostics.founderCandidates++;
         if (FactionRegistry.canRestoreFaction(founder, year)) { diagnostics.eligibleChecks++; diagnostics.founderEligible++; }
@@ -1069,6 +1070,7 @@ export default class WorldEventSystem {
         this.regional.popularFailures[reason]=(this.regional.popularFailures[reason]??0)+1;
       }
     }
+    return undefined;
   }
 
   private checkEmpireSplit(year: number, teams: Team[], totalCells: number,excludedCityId?:string) {
