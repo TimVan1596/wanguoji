@@ -302,8 +302,9 @@ export default class WorldEventSystem {
     measurePhase(profile, "WorldEvent.checkStateFormation", () => this.checkStateFormation(year, teams, totalCells));
     measurePhase(profile, "WorldEvent.applyProvisionalDissolutionPressure", () => this.applyProvisionalDissolutionPressure(year, teams, totalCells));
     measurePhase(profile, "WorldEvent.checkEmperorProclamation", () => this.checkEmperorProclamation(year, teams, totalCells));
-    measurePhase(profile, "WorldEvent.checkRestorations", () => this.checkRestorations(year, teams));
-    measurePhase(profile, "WorldEvent.checkEmpireSplit", () => this.checkEmpireSplit(year, teams, totalCells));
+    let attemptedMilitaryCityId:string|undefined;
+    measurePhase(profile, "WorldEvent.checkRestorations", () => {attemptedMilitaryCityId=this.checkRestorations(year, teams);});
+    measurePhase(profile, "WorldEvent.checkEmpireSplit", () => this.checkEmpireSplit(year, teams, totalCells,attemptedMilitaryCityId));
     measurePhase(profile, "WorldEvent.checkCityFounding", () => this.checkCityFounding(year, teams));
     if (year < this.nextEventYear) {
       return;
@@ -1058,7 +1059,7 @@ export default class WorldEventSystem {
           const created=FactionRegistry.createSplitFaction(owner,[city],year,undefined,{chance:riskDistribution.probabilities[0]??0,roll:draw,lastRebellionMonth:this.cityRebellionYears[city.id]});
           if(created){rd.militaryFoundings++;pf.successes++;this.regional.created(created.team,year,"popular");this.cityRebellionYears[city.id]=year;return;}
           // Failed military transactions do not fall through to a second founding attempt.
-          rd.militaryFailures++;rd.executionFailed++;pf.failures++;continue;
+          rd.militaryFailures++;rd.executionFailed++;pf.failures++;return city.id;
         }
         const frontier = isFrontierCity(city) && worldRandom.next() <= FRONTIER_REBELLION_CHANCE;
         const created=FactionRegistry.createRebelFaction({city,year,factionType:frontier?"FRONTIER":"REBEL"});
@@ -1070,7 +1071,7 @@ export default class WorldEventSystem {
     }
   }
 
-  private checkEmpireSplit(year: number, teams: Team[], totalCells: number) {
+  private checkEmpireSplit(year: number, teams: Team[], totalCells: number,excludedCityId?:string) {
     if (year - this.lastEmpireSplitCheckYear < EMPIRE_SPLIT_CHECK_INTERVAL_MONTHS) {
       return;
     }
@@ -1096,7 +1097,7 @@ export default class WorldEventSystem {
           this.getCycleImperialStrainMultiplier(team, year, teams, totalCells)
       );
       const lowCities = team.cities.filter(
-        (city) => city.loyalty <= EMPIRE_SPLIT_LOW_LOYALTY
+        (city) => city.id!==excludedCityId&&city.loyalty <= EMPIRE_SPLIT_LOW_LOYALTY
       );
       if (
         lowCities.length === 0 ||

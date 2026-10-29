@@ -15,9 +15,9 @@ describe("portrait historical office and color",()=>{
   expect(militaryPortraitContext(p,"foreign",faction,200)).toMatchObject({role:"SHANGJIANGJUN",color:0x0000ff,historical:false});
  });
 });
-it('applies only titles effective at the viewed month, including after-service revocation',()=>{
+it('applies only titles effective at the viewed month, preserving the pre-departure title despite a later formal revocation',()=>{
  const p:any={personId:'p',status:'RETIRED',factionId:'foreign',royalIdentity:{rulerId:'real'},appointments:[{factionId:'old',startMonth:0,endMonth:100,officeHistory:[{office:'JIANGJUN',month:0}]}],nobilityHistory:[{eventId:'g',factionId:'old',epochFounderId:'king',rank:'HOU',month:72}],honorHistory:[{kind:'REVOKED',factionId:'old',epochFounderId:'king',month:120}]};
- expect(militaryPortraitContext(p,'old',faction,60)).toMatchObject({nobleRank:undefined,royalKin:true});expect(militaryPortraitContext(p,'old',faction,90)).toMatchObject({nobleRank:'HOU',role:'JIANGJUN'});expect(militaryPortraitContext(p,'old',faction,200)).toMatchObject({nobleRank:undefined,role:'JIANGJUN',month:99});expect(militaryPortraitContext(p,'foreign',faction,90).nobleRank).toBeUndefined();
+ expect(militaryPortraitContext(p,'old',faction,60)).toMatchObject({nobleRank:undefined,royalKin:true});expect(militaryPortraitContext(p,'old',faction,90)).toMatchObject({nobleRank:'HOU',role:'JIANGJUN'});expect(militaryPortraitContext(p,'old',faction,200)).toMatchObject({nobleRank:'HOU',role:'JIANGJUN',month:99});expect(militaryPortraitContext(p,'foreign',faction,90).nobleRank).toBeUndefined();
 });
 it('never leaks a future imperial rank, flag or recorded death into the same monarch’s early reign',()=>{
  const r={bornYear:-300,accessionYear:0,endYear:120,deathMonth:120,deathReason:'自然去世' as const};

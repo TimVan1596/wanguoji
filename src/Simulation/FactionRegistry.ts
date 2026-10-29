@@ -358,7 +358,7 @@ class FactionRegistryStore {
       military.evidence.localCrisis={...localOpportunity,reason:popularPoliticalCrisis(coreCity,year,core.totalCells).reason,
         facts:{loyalty:coreCity.loyalty,devastation:coreCity.devastation,captureCount:coreCity.captureCount,lastCapturedMonth:coreCity.lastCapturedYear,worldMonth:year,stability:getFactionStability(previousOwner)??100,strain:coreCity.loyalty<=18?calculateImperialStrain(previousOwner,core.totalCells):0},
         sourceCityCount:previousOwner.cities.length,activeFactionCount:core.teams.filter(t=>!t.isDie).length,
-        supporter:{userId:supporter.id,bornMonth:supporter.bornMonth,unitId:p.logicalUnitId!,x:core.logicalGameplayAuthority?s.logicalX:p.x,y:core.logicalGameplayAuthority?s.logicalY:p.y,loyalty:supporter.loyalty}};
+        supporter:{userId:supporter.id,bornMonth:supporter.bornMonth,unitId:p.logicalUnitId!,x:core.logicalGameplayAuthority?s.logicalX:p.x,y:core.logicalGameplayAuthority?s.logicalY:p.y,loyalty:supporter.loyalty,positionSource:core.logicalGameplayAuthority?"LOGICAL":"PHASER",districtCityId:coreCity.id,ownedFactionId:previousOwner.name}};
     }
     const lowLoyaltyUsers = military?.users??candidates.slice(0,targetPopulation!);
     const name = createRebelFactionName(coreCity, "REBEL", this.getExistingNames());

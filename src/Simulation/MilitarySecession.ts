@@ -11,7 +11,7 @@ export interface LocalMilitaryOpportunity {
 }
 export interface MilitarySecessionEvidence {
  entryKind:'EMPIRE_SPLIT'|'LOCAL_CRISIS';
- localCrisis?:{facts:import('./PopularPoliticalCrisis').PopularCrisisFacts;reason:string;chance:number;roll:number;lastRebellionMonth?:number;sourceCityCount:number;activeFactionCount:number;supporter:{userId:number;bornMonth:number;unitId:string;x:number;y:number;loyalty:number}};
+ localCrisis?:{facts:import('./PopularPoliticalCrisis').PopularCrisisFacts;reason:string;chance:number;roll:number;lastRebellionMonth?:number;sourceCityCount:number;activeFactionCount:number;supporter:{userId:number;bornMonth:number;unitId:string;x:number;y:number;loyalty:number;positionSource:"PHASER"|"LOGICAL";districtCityId:string;ownedFactionId:string}};
  personId:string; commandId:string; sourceFactionId:string; sourceFactionName:string; personalName:string;
  office:string; serviceMonths:number; capturedEventIds:string[]; defenseEventIds?:string[]; worldMonth:number; cityId:string; originalMemberUnitIds:string[];
  participants:Array<{userId:number;name:string;bornMonth:number;unitId:string;x:number;y:number;positionSource:"PHASER"|"LOGICAL";districtCityId:string;ownedFactionId:string}>;

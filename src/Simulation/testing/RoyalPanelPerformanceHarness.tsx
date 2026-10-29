@@ -25,7 +25,7 @@ export async function runRoyalPanelPerformance(seed:string,input:ReturnType<type
   core.setWorldRunning(false);const inputSchemaVersion=Number(input.saveSchemaVersion),fixture=structuredClone(input),inputHeaderAdjustedForTest=inputSchemaVersion!==CURRENT_SAVE_SCHEMA_VERSION;
   // Test-only reuse of the identical historical world after the new political evidence schema.
   // No player-slot migration and no historical fact conversion: only the external format stamp changes.
-  if(inputHeaderAdjustedForTest){if(inputSchemaVersion!==30||Number(CURRENT_SAVE_SCHEMA_VERSION)!==31)throw Error('Unsupported profiling fixture schema');fixture.saveSchemaVersion=CURRENT_SAVE_SCHEMA_VERSION;}
+  if(inputHeaderAdjustedForTest){if(![30,31].includes(inputSchemaVersion)||Number(CURRENT_SAVE_SCHEMA_VERSION)!==32)throw Error('Unsupported profiling fixture schema');fixture.saveSchemaVersion=CURRENT_SAVE_SCHEMA_VERSION;}
   hydrateWorldSave(core,fixture);const saved=exportWorldSave(core),events=History.getEvents();
   const choices=Dynasty.getAll().flatMap(d=>d.rulers.filter(r=>r.chronicle&&r.accessionYear!==undefined&&r.endYear!==undefined&&r.deathMonth!==undefined).map(r=>({r,factionId:d.factionId,score:events.filter(e=>(e.monthIndex??e.year)>=r.accessionYear!&&(e.monthIndex??e.year)<=r.endYear!).length}))).sort((a,b)=>b.score-a.score||a.r.id.localeCompare(b.r.id));
   const chosen=choices[0];if(!chosen)throw Error('No ended historical monarch in this common snapshot');const factionId=chosen.factionId,rulerId=chosen.r.id;

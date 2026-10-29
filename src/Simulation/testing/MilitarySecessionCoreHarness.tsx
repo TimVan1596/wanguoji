@@ -42,6 +42,14 @@ export async function runMilitarySecessionCore(seed="military-secession-z7",loca
   month+=12;(core.simulator as any).clock.importState({worldMonth:month,elapsedMs:0,running:false});
   while(parent.cities.length<4){const site=core.map!.blocks.flat().find(b=>(b.team===parent||!b.team)&&!b.city&&core.allCities.every(c=>Math.hypot(c.block.x-b.x,c.block.y-b.y)>160));if(!site)throw new Error("No free city site");Factions.foundCity(parent,site,undefined,month);}
   const city=parent.cities.find(c=>!c.isCapital&&!c.isInCaptureGrace(month))!,secondCity=parent.cities.find(c=>c!==city&&!c.isCapital)!;
+  if(local){
+   for(const u of parent.users)if(u.role==='NORMAL'&&!u.militaryPersonId&&!u.historicalPersonId&&!Military.isAssigned(u.player.logicalUnitId!)){
+    u.player.setPosition(commander.player.x+8,commander.player.y+8);(u.player.body as Phaser.Physics.Arcade.Body).reset(u.player.x,u.player.y);
+   }
+   (Military as any).advanceOffices(month,core.teams);
+   chosen=Military.getPoliticalInfluence(parent,month,core.logicalUnitRegistry).candidates.find(c=>c.personId===personId)!;
+   check(chosen&&chosen.unitCount>=3,'real earned promotion recruits existing nearby residents into a three-body command for partial-following verification');
+  }
   const originalIds=[...chosen.memberUnitIds],members=[...parent.users].filter(u=>originalIds.includes(u.player.logicalUnitId!));
   for(const c of parent.cities)c.loyalty=20;city.loyalty=0;city.devastation=100;
   for(const u of parent.users)u.loyalty=99;
@@ -50,6 +58,7 @@ export async function runMilitarySecessionCore(seed="military-secession-z7",loca
   const popular=[...parent.users].find(u=>u.role==='NORMAL'&&!u.militaryPersonId&&!u.historicalPersonId&&!Military.isAssigned(u.player.logicalUnitId!))!;check(popular,'existing local political split still requires a real ordinary supporter');popular.loyalty=20;popular.player.setPosition(city.block.x+8,city.block.y+8);(popular.player.body as Phaser.Physics.Arcade.Body).reset(popular.player.x,popular.player.y);
   let candidate=assessMilitarySecession(city,month);check(candidate?.users[0]===commander,"political crisis, current office and actual local commander qualify together");if(!candidate)throw new Error("No local military party");
   check((!loyalist||!candidate.users.includes(loyalist))&&candidate.users.length<=originalIds.length,"only a verified willing part of the old formation follows");
+  if(local)check(Boolean(loyalist)&&!candidate.users.includes(loyalist!),'a real member of the same command refuses to follow while another actual member follows');
   const follow=candidate.users.filter(u=>u!==commander),sourceName=Military.getPerson(personId)!.personalName,deathSchedule=deriveMilitaryLifeSchedule(Military.getPerson(personId)!).naturalDeathMonth;
   const loyalties=new Map(members.map(u=>[u,u.loyalty]));for(const u of members)if(u!==commander)u.loyalty=99;check(!assessMilitarySecession(city,month),"no actual willing followers means no military secession");for(const u of members)u.loyalty=loyalties.get(u)!;
   const entry=core.logicalUnitRegistry.getEntry(commander.player.logicalUnitId!)!;
