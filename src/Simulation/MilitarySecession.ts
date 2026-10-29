@@ -12,7 +12,7 @@ export interface MilitarySecessionEvidence {
  participants:Array<{userId:number;name:string;bornMonth:number;unitId:string;x:number;y:number;positionSource:"PHASER"|"LOGICAL";districtCityId:string;ownedFactionId:string}>;
 }
 /** Source substitution within an already eligible split. No lottery, new opportunity or extra population. */
-export function assessMilitarySecession(city:City,month:number):{users:User[];evidence:MilitarySecessionEvidence}|undefined{
+export function assessMilitarySecession(city:City,month:number, observe?:(reason:string)=>void):{users:User[];evidence:MilitarySecessionEvidence}|undefined{
  const core=Game.Core,owner=city.ownerTeam;if(!core?.map||!owner)return;
  const districts=buildPopularDistricts(owner,core.map,Game.BlockSize);
  const local=(u:User)=>{
@@ -23,15 +23,20 @@ export function assessMilitarySecession(city:City,month:number):{users:User[];ev
   const gx=Math.floor(x/Game.BlockSize),gy=Math.floor(y/Game.BlockSize);
   return core.map!.blocks[gx]?.[gy]?.team===owner&&districts.district.get(`${gx},${gy}`)===city.id&&u.loyalty-localPoliticalPressure(city,month)<50;
  };
- for(const candidate of Military.getPoliticalInfluence(owner,month,core.logicalUnitRegistry,false,false).candidates){
+ const influence=Military.getPoliticalInfluence(owner,month,core.logicalUnitRegistry,false,false);
+ for(const b of influence.blocked)observe?.(b.reason);
+ if(!influence.candidates.length)observe?.("NO_QUALIFIED_COMMAND");
+ for(const candidate of influence.candidates){
   const person=Military.getPerson(candidate.personId),formation=Military.getFormation(candidate.commandId);
   const commander=[...owner.users].find(u=>u.id===candidate.sourceUserId&&u.militaryPersonId===candidate.personId);
-  if(!person||person.royalIdentity||!formation||!commander||!commander.matchesMilitaryLife(person)||!local(commander)||!splitEstablishedPersonalName(person.personalName))continue;
+  if(!person||person.royalIdentity||!formation||!commander||!commander.matchesMilitaryLife(person)||!splitEstablishedPersonalName(person.personalName)){observe?.("IDENTITY_OR_ROYAL");continue;}
+  if(!local(commander)){observe?.("COMMANDER_NOT_LOCAL_OR_WILLING");continue;}
   if(formation.memberUnitIds.length!==candidate.memberUnitIds.length||formation.memberUnitIds.some(id=>!candidate.memberUnitIds.includes(id)))continue;
   const office=Military.getCaptureOffice(formation.commandId,person.personId,owner.name,month);if(!office)continue;
   const followers=[...owner.users].filter(u=>u!==commander&&!u.militaryPersonId&&formation.memberUnitIds.includes(u.player.logicalUnitId??"")&&local(u))
    .sort((a,b)=>a.loyalty-b.loyalty||a.id-b.id||a.bornMonth-b.bornMonth).slice(0,Math.max(1,Math.floor((candidate.memberUnitIds.length-1)/2)));
-  if(!followers.length)continue;
+  if(!followers.length){observe?.("NO_LOCAL_FOLLOWERS");continue;}
+  observe?.("QUALIFIED_LOCAL_PARTY");
   const users=[commander,...followers];
   return {users,evidence:{personId:person.personId,commandId:formation.commandId,sourceFactionId:owner.name,sourceFactionName:owner.displayName,
    personalName:person.personalName,office,serviceMonths:candidate.serviceMonths,...(candidate.defenseEventIds?{defenseEventIds:candidate.defenseEventIds}:{}),capturedEventIds:[...candidate.capturedEventIds],worldMonth:month,cityId:city.id,originalMemberUnitIds:[...candidate.memberUnitIds],

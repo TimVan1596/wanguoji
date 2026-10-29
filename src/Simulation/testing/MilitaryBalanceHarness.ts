@@ -1,3 +1,4 @@
+import {assessMilitarySecession} from "../MilitarySecession";
 import {militaryPromotionDiagnostics} from "./MilitaryPromotionDiagnostics";
 import {militaryNobilityDiagnostics} from "./MilitaryNobilityDiagnostics";
 import ArchivedCities from "../ArchivedCities";
@@ -53,6 +54,7 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
   let contactCalls=0;
   City.prototype.registerSiegeContact=function(...args:Parameters<typeof rawContact>){contactCalls++;return rawContact.apply(this,args);};
   const seen=new Set<string>(),sizeSamples:Record<string,number>={},factionCommandSamples:Record<string,number>={};
+  const militaryLocalFunnel:Record<string,number>={};
   let politicalCandidateChecks=0,activeFormationSamples=0,totalFormationMembers=0,activeStateMonthSum=0;
   (City.prototype as any).updateSiege=function(month:number,...args:unknown[]){
     if(contactMonth!==month){seen.clear();contactMonth=month;}
@@ -85,6 +87,13 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
       if(m%12===0) for(const t of core.teams.filter(t=>t.status==="ACTIVE"&&t.identityStage==="STATE")){
         const d=Dynasty.get(t.name),current=Dynasty.getCurrentRuler(t.name);
         if(d&&current) for(const r of d.rulers)if(r.reignOrdinal===undefined&&(r.status==="heir"||r.status==="kin")&&m-r.bornYear>=216&&m-r.bornYear<65*12&&(r.naturalDeathYear??0)>m&&getRecordedKinRelation(r,current,d.rulers))royalCandidates.add(r.id);
+      }
+      if(m%12===0)for(const city of core.allCities.filter(c=>!c.destroyed)){
+        const count=(k:string)=>militaryLocalFunnel[k]=(militaryLocalFunnel[k]??0)+1;count('cityChecks');
+        if(!hasPopularPoliticalCrisis(city,m,core.totalCells)){count('NO_POLITICAL_CRISIS');continue;}
+        count('POLITICAL_CRISIS');if(city.isInCaptureGrace(m)){count('CAPTURE_GRACE');continue;}
+        if((city.ownerTeam?.cities.length??0)<4)count('BELOW_OLD_EMPIRE_CITY_MIN');
+        assessMilitarySecession(city,m,count);
       }
       if(m%12===0)annual.push({month:m,maxTerritoryShare:Math.max(0,...core.teams.map(t=>t.blocks.getLength()/core.totalCells)),activeStates:core.teams.filter(t=>t.status==="ACTIVE").length});
       activeStateMonthSum+=core.teams.filter(t=>t.status==="ACTIVE").length;
@@ -141,7 +150,7 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
           reinforcementTransactions,reinforcedUnits,initialFormationSizes:events.filter(e=>e.type==="military-appointment").map(e=>e.metadata?.unitCount),maximumFormationSize:Math.max(0,...Object.keys(sizeSamples).map(Number)),
           appointments:Military.getDiagnostics().appointments,offices:Military.getOfficeSummary(m),promotions,
           meanServiceMonths:Military.getOfficeSummary(m).meanServiceMonths,matureEnded:matureEnded.length,matureEndedNeverPromoted:matureEnded.filter(a=>(a.officeHistory?.length??0)<2).length,
-          politicalCandidateChecks,militaryPoliticalEvents:events.filter(e=>readMilitaryParticipation(e)).length,depositions:count("ruler-deposed"),usurpations:count("dynasty-usurped"),
+          militaryLocalFunnel:{...militaryLocalFunnel},politicalCandidateChecks,militaryPoliticalEvents:events.filter(e=>readMilitaryParticipation(e)).length,depositions:count("ruler-deposed"),usurpations:count("dynasty-usurped"),
           extinctions:count("faction-extinct"),unifications:count("world-unification"),splits:count("empire-split"),restorations:count("faction-restored"),rebellions:count("rebel-faction-founded")+count("frontier-faction-founded"),classicRebellions:count("rebel-faction-founded"),frontierRebellions:count("frontier-faction-founded"),
           ...(includeSnapshot?{snapshot}:{}),canonicalSha256,baseFactsSha256,monthlyExposure:{...monthlyExposure},issuingRulerGrants:events.filter(e=>e.type==="military-office-granted"&&e.rulerId&&e.metadata?.authorizingRulerTitle).length, worldRandomPosition:snapshot.worldRandom.position,
           regional:(core.simulator as any).events.getRegionalRebellionSnapshot(),
