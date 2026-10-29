@@ -11,7 +11,7 @@ it('groups browsing without conflating exact event types and preserves legacy fi
 it('pages political founding groups once while retaining their canonical sources',()=>{
  const store=new WorldHistoryStore();
  for(let i=0;i<5;i++){
-  store.addEvent({id:'revolt'+i,type:'city-revolt',year:i,category:'politics',actorFactionId:'new'+i,targetFactionId:'old',factionIds:['old','new'+i],historyGroupId:'g'+i,title:'城邑起事'});
+  store.addEvent({id:'revolt'+i,type:'city-revolt',year:i,category:'politics',actorFactionId:'new'+i,targetFactionId:'old',factionIds:['old','new'+i],historyGroupId:'g'+i,title:'城邑起事',importance:'normal'});
   store.addEvent({id:'split'+i,type:'empire-split',year:i,category:'politics',actorFactionId:'new'+i,targetFactionId:'old',factionIds:['old','new'+i],historyGroupId:'g'+i,title:'真实军事割据',importance:'major'});
  }
  const before=store.exportState(),page=queryHistoryPage(store,{visibleCount:3,filter:'featured',eventTypeFilter:'revolution'});

@@ -65,6 +65,13 @@ export async function runMilitarySecessionCore(seed="military-secession-z7",loca
    for(const c of parent.cities)c.loyalty=c===city?0:100;
    check(!Factions.createSplitFaction(parent,[city],month,0),'local crisis alone cannot bypass the old imperial strain gate');
    const opportunity={chance:.09,roll:.01};
+   const political=(core.simulator as any).events,beforePolitical=political.exportState(),savedLoyalty=new Map(core.allCities.map(c=>[c,c.loyalty]));
+   for(const c of core.allCities)c.loyalty=c===city?0:100;
+   const produce=Factions.createSplitFaction,popularProducer=Factions.createRebelFaction,next=worldRandom.next;let draws=0,attempts=0;
+   Factions.createSplitFaction=function(...args:Parameters<typeof produce>){attempts++;check(args[0]===parent&&args[1][0]===city&&args[4]?.roll===0&&args[4].chance>0,'the real annual city path passes its one original draw and exact local target');return undefined;};
+   Factions.createRebelFaction=()=>{throw Error('Military opportunity fell through to ordinary founding');};worldRandom.next=()=>{draws++;return 0;};
+   try{political.checkRestorations(month,core.teams);}finally{Factions.createSplitFaction=produce;Factions.createRebelFaction=popularProducer;worldRandom.next=next;political.importState(beforePolitical);for(const [c,l]of savedLoyalty)c.loyalty=l;}
+   check(attempts===1&&draws===1,'one annual political opportunity gets one shared draw and no second founding attempt after failure');
    city.loyalty=100;check(!Factions.createSplitFaction(parent,[city],month,0,opportunity),'local army and estate cannot create a crisis in a quiet city');city.loyalty=0;
    check(!Factions.createSplitFaction(parent,[city],month,0,{chance:.09,roll:.5}),'a missed original city draw cannot create a military state');
    check(!Factions.createSplitFaction(parent,[city],month,0,{...opportunity,lastRebellionMonth:month-1}),'the original city cooldown blocks military founding too');
