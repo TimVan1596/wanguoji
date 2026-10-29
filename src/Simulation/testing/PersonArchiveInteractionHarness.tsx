@@ -27,6 +27,12 @@ export async function checkPersonArchiveInteraction(core:Core,factionId:string,p
   const heading=portrait.closest("button")!.nextElementSibling as HTMLButtonElement;
   flushSync(()=>heading.click());await pause();
   check(host.textContent?.includes("早年与登位前经历"),"opening real ruler details mounts verified early military history");
+  check(!host.querySelector('[data-royal-evidence]'),'closed royal details construct no complete evidence document');
+  const detail=Array.from(host.querySelectorAll('summary')).find(s=>s.textContent==='详细记录')!;flushSync(()=>detail.click());await pause();
+  check(host.querySelector('[data-royal-evidence]')&&!host.querySelector('[data-royal-source-event]'),'opening evidence does not eagerly mount nested raw event archives');
+  const raw=Array.from(host.querySelectorAll('[data-royal-evidence] summary')).find(s=>s.textContent?.startsWith('任期国家原始事件')) as HTMLElement;flushSync(()=>raw.click());await pause();
+  check(host.querySelector('[data-royal-source-event]'),'explicitly opening the complete source archive exposes its original event IDs');
+  flushSync(()=>detail.click());await pause();check(!host.querySelector('[data-royal-evidence]'),'closing evidence releases all raw records while keeping the public biography');
   const earlyLink=Array.from(host.querySelectorAll("button")).find(b=>b.textContent==="查看登位前完整军旅档案")!;
   flushSync(()=>earlyLink.click());await pause();await pause();
   check(store.getState().root.selectedFactionName===ruler.residentIdentity!.sourceFactionId&&store.getState().root.factionDetailTab==="military","stable ID navigation changes country and military tab together");

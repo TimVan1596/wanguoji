@@ -1188,7 +1188,7 @@ function RulerBiography({
         <Typography fontSize="0.82rem">本人参战取城{bio.stats.personalCityCaptures}次；治下军队取城{bio.stats.nationalCityCaptures}次、攻取敌都{bio.stats.nationalCapitalCaptures}次。</Typography>
       </ChronicleSection>}
       assessment={bio.assessment} voice={bio.voice}
-      evidence={()=> <>
+      evidence={()=> <Box data-royal-evidence>
         {fullMilestoneEvents.filter(e=>e.type==="ruler-deposed").map(e=><DepositionSelectionDetails key={e.id} event={e}/>)}
         <Typography fontSize="0.78rem">即位年龄{Math.floor(monthsToYears(ruler.accessionYear-ruler.bornYear))}岁；{formatRulerLifeAge(ruler,worldMonth,false,team.status!=="EXTINCT")}</Typography>
         {posthumousLines.map(line=><Typography key={line} fontSize="0.78rem">{line}</Typography>)}
@@ -1203,10 +1203,10 @@ function RulerBiography({
           <HistoricalEvidence eventId={event.id} source={event.type}/>
         </>}))}/>
         <HistoricalEventArchive title="任期国家原始事件（不全属个人事迹）" totalCount={reading.reignEvents.length} entries={()=>reading.reignEvents.map(event=>({id:event.id,content:<>
-          <Typography fontSize="0.78rem">{formatChronicleDate(event.monthIndex??event.year)}，{textFor(event)}</Typography>
+          <Typography data-royal-source-event={event.id} fontSize="0.78rem">{formatChronicleDate(event.monthIndex??event.year)}，{textFor(event)}</Typography>
           <HistoricalEvidence eventId={event.id} source={event.type}/>
         </>}))}/>
-      </>}
+      </Box>}
     />
   </Box>;
 }

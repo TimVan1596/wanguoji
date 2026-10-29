@@ -11,7 +11,7 @@ function remainedCapital(e:WorldEvent,events:readonly WorldEvent[]){
   return typeof city==='string'?[{month:x.monthIndex??x.year,city}]:[];
  }).sort((a,b)=>b.month-a.month);
  if(!prior.length||prior[0].city!==id||new Set(prior.filter(x=>x.month===prior[0].month).map(x=>x.city)).size!==1)return false;
- return !events.some(x=>{const month=x.monthIndex??x.year;return month>prior[0].month&&month<=at&&(x.type==='capital-relocated'&&x.actorFactionId===faction||['capital-fallen','faction-exiled','faction-extinct','faction-submitted','faction-merged'].includes(x.type)&&x.targetFactionId===faction||x.type==='city-destroyed'&&x.cityId===id);});
+ return !events.some(x=>{const month=x.monthIndex??x.year;return month>prior[0].month&&month<=at&&(x.type==='capital-relocated'&&x.actorFactionId===faction||['capital-fallen','faction-exiled','faction-extinct','faction-submitted','faction-merged'].includes(x.type)&&(x.targetFactionId===faction||['faction-submitted','faction-merged'].includes(x.type)&&x.actorFactionId===faction)||['city-captured','city-revolt','city-destroyed'].includes(x.type)&&x.cityId===id&&x.actorFactionId!==faction);});
 }
 /** Reading only: precise dates, identities, event IDs and the audit text remain untouched. */
 export function chronicleReadingText(e:WorldEvent,base:string,events:readonly WorldEvent[]){

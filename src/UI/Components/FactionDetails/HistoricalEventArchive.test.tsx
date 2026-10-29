@@ -28,3 +28,4 @@ it("retains all 5000 records and the last important event without a second click
   const html=renderToStaticMarkup(<HistoricalEventArchive title="长局纪年" defaultOpen entries={Array.from({length:5000},(_,i)=>({id:`e${i}`,content:<p>长局【{i}】</p>}))}/>);
   expect(html.match(/长局【/g)).toHaveLength(5000);expect(html).toContain("长局【4999】");expect(html).not.toMatch(/上一页|下一页|加载更多|查看下一批|max-height|overflow-y|overflow:auto|overflow:hidden/);
 });
+it('does not construct callback-provided records until the document is actually opened',()=>{let calls=0;const rows=()=>{calls++;return [{id:'one',content:<p>真实完整资料</p>}];};const closed=renderToStaticMarkup(<HistoricalEventArchive title='原始资料' totalCount={1} entries={rows}/>);expect(calls).toBe(0);expect(closed).toContain('原始资料（1条）');expect(closed).not.toContain('真实完整资料');expect(renderToStaticMarkup(<HistoricalEventArchive title='原始资料' totalCount={1} entries={rows} defaultOpen/>)).toContain('真实完整资料');expect(calls).toBe(1);});

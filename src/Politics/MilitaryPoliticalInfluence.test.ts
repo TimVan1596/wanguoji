@@ -129,3 +129,18 @@ it('formats the Yan deposition weights and the one original risk draw without ch
  const raw=JSON.stringify(event),rng=worldRandom.exportState(),text=getMilitaryParticipationDetails(event).join('\n');
  expect(text).toContain('军权权重 3.00 → 3.15（燕伯爵）');expect(text).toContain('1.00% → 1.75%');expect(text).toContain('军事压力增加0.75个百分点');expect(text).toContain('不增加成功抽签');expect(text).not.toContain('0000000004');expect(formatMilitaryParticipation(event)).toContain('军事参与者并非新君');expect(JSON.stringify(event)).toBe(raw);expect(worldRandom.exportState()).toEqual(rng);
 });
+
+it.each([['XIAOWEI',1,0],['PIJIANG',2,.03],['JIANGJUN',3,.06],['SHANGJIANGJUN',4,.10]] as const)('uses verified %s office with its actual source and bounded choice bonus',async(office,count,bonus)=>{
+ const {militaryParticipationMetadata,readMilitaryParticipation}=await import('./MilitaryPoliticalInfluence');
+ const i=fixture(),p=i.people[0],f=i.formations[0];i.worldMonth=240;i.nobleEpochFounderId='epoch';f.memberUnitIds=f.memberUnitIds.slice(0,count);i.users=i.users.slice(0,count);
+ p.appointments[0].officeHistory=[{office,month:0,eventId:'office',serviceMonths:0,captureEventIds:[]}];p.capturedEventIds=['victory'];f.captures=[{eventId:'victory',cityId:'c',month:60}];
+ i.events.push({id:'appointment',type:'military-appointment',year:0,actorFactionId:'qin',metadata:{personId:p.personId,commandId:f.commandId}} as any,{id:'office',type:'military-office-granted',year:0,actorFactionId:'qin',metadata:{personId:p.personId,commandId:f.commandId,office}} as any,{id:'victory',type:'city-captured',year:60,actorFactionId:'qin',targetFactionId:'enemy',cityId:'c',metadata:{personId:p.personId,commanderPersonId:p.personId,commandId:f.commandId}} as any);
+ const before=worldRandom.exportState(),c=deriveMilitaryPoliticalInfluence(i).candidates[0];expect(c.strength).toBe(3);expect(c.officeStanding).toEqual({office,eventId:'office',appointmentEventId:'appointment'});expect(c.finalPoliticalWeight).toBeCloseTo(3*(1+bonus));expect(c.nobleSelection?.candidates).toHaveLength(1);
+ const metadata=militaryParticipationMetadata('DEPOSITION','qin',240,c,[],.01,.0175,.015,{stability:20,cityCount:1},[]);expect(readMilitaryParticipation({type:'ruler-deposed',actorFactionId:'qin',year:240,metadata} as any)?.version).toBe(2);expect(worldRandom.exportState()).toEqual(before);
+ i.events.find(e=>e.id==='office')!.metadata!.commandId='foreign';expect(deriveMilitaryPoliticalInfluence(i).candidates[0].officeStanding).toBeUndefined();
+ p.status='RETIRED';expect(deriveMilitaryPoliticalInfluence(i).candidates).toHaveLength(0);
+});
+it('keeps rank/nobility selection bonuses below the next base-strength tier, without widening eligibility or crisis risk',()=>{
+ for(let strength=1;strength<3;strength++)expect(strength*1.25).toBeLessThan(strength+1);
+ const i=fixture(),before=deriveMilitaryPoliticalInfluence(i);(i.people[0] as any).appanageHistory=[{kind:'GRANTED',cityId:'distant',personId:i.people[0].personId}];expect(deriveMilitaryPoliticalInfluence(i)).toEqual(before);
+});
