@@ -652,5 +652,25 @@
         "insufficient60": 0
       }
     }
-  ]
+  ],
+  "validation": {
+    "appVersion": "v0.99931z30",
+    "packageVersion": "0.99.196",
+    "saveSchemaVersion": 32,
+    "unitTests": {
+      "files": 279,
+      "tests": 2228,
+      "passed": true,
+      "threadLimit": 2
+    },
+    "controlledCoreDOMChecks": 339,
+    "royalCache": {
+      "builds": 1,
+      "hits": 12,
+      "entries": 1
+    },
+    "manualChrome": "PENDING",
+    "localSelectionWeights": "DEFERRED: complete local candidate evidence is not frozen",
+    "independentRebellionLotteryAdded": false
+  }
 }

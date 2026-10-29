@@ -208,7 +208,8 @@ export function projectRulerHistoricalEvents(
   ruler: TerminalChronicleRuler,
   factionId: string,
   worldMonth: number,
-  notableEventIds: string[]
+  notableEventIds: string[],
+  royalGrantPersonIds:ReadonlySet<string>=new Set()
 ) {
   const endMonth = Math.min(ruler.endYear ?? worldMonth, worldMonth);
   const notable = new Set(notableEventIds);
@@ -264,6 +265,8 @@ export function projectRulerHistoricalEvents(
     );
     if (usurpation) linkedSuccession.set(succession.id, usurpation.id);
   }
+  const honorRanks=new Map(candidates.filter(isRulerHonorEvent).map(e=>[e.id,rulerHonorEvidence(e,ruler.id,factionId)?.rank]));
+  const honorRank=(e:WorldEvent)=>honorRanks.get(e.id)??sourceIds(e).map(id=>honorRanks.get(id)).find(Boolean);
   const score = (event: WorldEvent) => {
     const direct =
       event.rulerId === ruler.id ||
@@ -272,8 +275,8 @@ export function projectRulerHistoricalEvents(
       event.metadata?.nextRulerId === ruler.id;
     const isSignatory = event.metadata?.signatoryARulerId === ruler.id || event.metadata?.signatoryBRulerId === ruler.id;
     return (
-      isRulerHonorEvent(event)?(event.type==="military-ennobled"?(rulerHonorEvidence(event,ruler.id,factionId)?.rank==="BO"?35:60):55):RULER_EVENT_PRIORITIES[event.type] ?? 40
-    ) + (direct || isSignatory ? 20 : 0) + (notable.has(event.id) ? 15 : 0) + (event.importance === "major" ? 5 : 0) +
+      isRulerHonorEvent(event)?(event.type==="military-ennobled"?(honorRank(event)==="BO"?35:60):55):RULER_EVENT_PRIORITIES[event.type] ?? 40
+    ) + (isRulerHonorEvent(event)&&royalGrantPersonIds.has(String(event.metadata?.personId))?25:0) + (direct || isSignatory ? 20 : 0) + (notable.has(event.id) ? 15 : 0) + (event.importance === "major" ? 5 : 0) +
       (event.type === "city-recovered" && event.metadata?.wasCapital === 1 ? 30 : 0);
   };
   // Recovering an occupied enemy capital also emits the defender's capital-loss

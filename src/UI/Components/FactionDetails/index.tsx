@@ -725,7 +725,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
             identity={<>
               <PersonLifeDates bornMonth={person.bornMonth} deathMonth={person.deathMonth}/>
               <Typography fontSize="0.76rem">{identityBadges}</Typography>
-              {linkedRuler&&rulerOwners.get(linkedRuler.id)&&<button type="button" onClick={()=>navigation.open({kind:'RULER',factionId:rulerOwners.get(linkedRuler.id)!,id:linkedRuler.id})}>查看新政权本纪</button>}
+              {linkedRuler&&linkedRuler.accessionYear!==undefined&&linkedRuler.accessionYear<=worldMonth&&rulerOwners.get(linkedRuler.id)&&<button type="button" onClick={()=>navigation.open({kind:'RULER',factionId:rulerOwners.get(linkedRuler.id)!,id:linkedRuler.id})}>{secession?'查看新政权本纪':'查看君主本纪'}</button>}
               <Typography fontSize="0.86rem" fontWeight="bold">{describeMilitaryOffice(person,factionId).replace("（本国历史最高职务）","")}</Typography>
               {portraitContext.historical&&<Typography fontSize="0.74rem" color="var(--gg-text-muted)">{identityLabels.some(l=>l==='现任君主'||l==='曾任君主')?'肖像取其真实君主任期；早年军职另见军旅纪事。':'肖像服饰与旗色取本国任职末期，非其后来外国身份。'}</Typography>}
             {person.factionId!==factionId&&<Typography fontSize="0.78rem">曾在本国任职，后已转属。</Typography>}

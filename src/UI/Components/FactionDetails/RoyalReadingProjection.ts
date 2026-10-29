@@ -10,7 +10,7 @@ export interface RoyalReadingInput {
  events:WorldEvent[];allEvents:WorldEvent[];worldMonth:number;people:MilitaryPerson[];formations:MilitaryFormation[];factions:NonNullable<MilitaryHistoryContext['factions']>;
 }
 function build(a:RoyalReadingInput){
- const {ruler,team,events,worldMonth}=a,plan=projectRulerHistoricalEvents(events,ruler,team.name,worldMonth,ruler.chronicle.notableEventIds);
+ const {ruler,team,events,worldMonth}=a,plan=projectRulerHistoricalEvents(events,ruler,team.name,worldMonth,ruler.chronicle.notableEventIds,new Set(a.people.filter(p=>p.royalIdentity?.factionId===team.name).map(p=>p.personId)));
  let diplomacy:WorldEvent[]|undefined,reignEvents:WorldEvent[]|undefined;
  return {evidence:deriveRulerAssessment({ruler,dynasty:{rulers:a.rulers},faction:team,events,worldMonth}).evidence,full:plan.all,selected:plan.select(8),
   service:personServiceLinks(team.name,[ruler],a.people,a.formations,a.allEvents,worldMonth),earlier:preAccessionMilitary(ruler,a.people,a.formations,a.allEvents,{factions:a.factions}),

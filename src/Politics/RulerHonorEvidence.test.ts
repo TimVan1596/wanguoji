@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import {getRulerHistoricalEvents} from './RulerChronicle';
+import {getRulerHistoricalEvents,projectRulerHistoricalEvents} from './RulerChronicle';
 import {rulerHonorEvidence} from './RulerHonorEvidence';
 import {appanageReadingText} from './MilitaryAppanage';
 import {formatRulerMilitaryEvent} from './MilitaryChronicle';
@@ -41,4 +41,12 @@ it('separates estate loss, restoration and each actual termination cause without
  expect(appanageReadingText({...a,kind:'ENDED',reason:'CITY_DESTROYED'})).toBe('江陵城废毁，食邑终止。');
  expect(appanageReadingText({...a,kind:'ENDED',reason:'DEATH'})).toBe('熊昱去世，江陵食邑终止。');
  expect(appanageReadingText({...a,kind:'ENDED',reason:'TRANSFER'})).not.toContain('夺爵');
+});
+
+it('prioritizes important peerages over an earlier merged barony, and only explicitly verified royal recipients get kin priority',()=>{
+ const bo=grant('bo',10,'BO'),hou=grant('hou',30,'HOU');
+ const g=JSON.parse(bo.metadata.nobility),estate:any={id:'estate',type:'military-appanage',year:10,actorFactionId:'chu',factionIds:['chu'],rulerId:'issuer',cityId:'jiangling',metadata:{personId:'recipient',appanage:JSON.stringify({...g,kind:'GRANTED',eventId:'estate',grantEventId:'estate',nobleGrantEventId:'bo',cityId:'jiangling',cityName:'江陵'})}};
+ expect(getRulerHistoricalEvents([bo,estate,hou],ruler,'chu',100,[],1)[0].id).toBe('hou');
+ const earlier=grant('earlier',20,'HOU'),royal=grant('royal',21,'HOU');royal.metadata.personId='verified-royal';const p=JSON.parse(royal.metadata.nobility);p.personId='verified-royal';royal.metadata.nobility=JSON.stringify(p);
+ expect(projectRulerHistoricalEvents([earlier,royal],ruler,'chu',100,[],new Set(['verified-royal'])).select(1)[0].id).toBe('royal');
 });
