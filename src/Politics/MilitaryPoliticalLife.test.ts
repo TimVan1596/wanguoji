@@ -35,7 +35,7 @@ it('keeps an actual military resident founder as the contemporary leader rather 
  const {p,r,d,events,factions}=fixture();delete p.royalIdentity;delete r.militaryIdentity;r.residentIdentity={personId:'p',sourceUserId:1,bornMonth:-240,military:{personId:'p'}};
  events[1]={id:'founding-accession',type:'ruler-acceded',year:100,actorFactionId:'qin',rulerId:r.id,metadata:{residentPersonId:'p',sourceUserId:1}};
  const f=factions.get('qin');f.stateFoundedMonth=200;f.sovereigntyHistory=[{rank:'LEADER',startMonth:0,endMonth:200},{rank:'KING',startMonth:200,endMonth:250},{rank:'EMPEROR',startMonth:250}];
- expect(militaryPoliticalLife(p,[d],events,factions,300)?.entry.text).toBe('秦继继任秦首领。');
+ expect(militaryPoliticalLife(p,[d],events,factions,300)?.entry.text).toBe('秦继为秦创立者、首任首领。');
  r.residentIdentity.sourceUserId++;expect(militaryPoliticalLife(p,[d],events,factions,300)).toBeUndefined();
 });
 it('retains the real accession after a later deposition without changing the former military term',()=>{

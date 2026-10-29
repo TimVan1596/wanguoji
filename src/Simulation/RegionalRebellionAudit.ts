@@ -2,7 +2,7 @@ import {emptyPopularSpatialCounts} from "./PopularDistricts";
 import type Team from "../Components/Team";
 /** Session-only bounded observations. Never consulted for eligibility or random decisions. */
 export class RegionalRebellionAudit {
-  counts={cityChecks:0,politicalCities:0,loyaltyBlocked:0,stabilityBlocked:0,capacityBlocked:0,identityBlocked:0,
+  counts={militaryQualifiedSlots:0,militarySharedDraws:0,militarySharedExpected:0,militarySharedHits:0,militaryFoundings:0,militaryFailures:0,cityChecks:0,politicalCities:0,loyaltyBlocked:0,stabilityBlocked:0,capacityBlocked:0,identityBlocked:0,
     validOrdinary:0,discontentBlocked:0,geographyBlocked:0,supporters:0,noSupport:0,draws:0,drawFailed:0,executionFailed:0,
     popular:0,split:0,territorialReturns:0,splitChecks:0,splitPolitical:0,splitRestored:0,alive12:0,matured12:0,alive60:0,matured60:0,overflow:0};
   popularFunnel={cityChecks:0,political:0,loyaltyBlocked:0,crisisBlocked:0,captureGrace:0,cooldown:0,capacity:0,populationScans:0,validUsers:0,identityBlocked:0,geographyBlocked:0,discontentBlocked:0,supporters:0,noSupport:0,candidates:0,priorityBlocked:0,draws:0,expectedHits:0,hits:0,misses:0,historicalSelected:0,founderRestored:0,failures:0,successes:0};
@@ -33,10 +33,11 @@ export class RegionalRebellionAudit {
     `逻辑身份引用不符${this.spatial.referenceMismatch}（其中位置可解析且在本国地块${this.spatial.referenceWithOwnedPosition}，仍不作为合法响应者）；辖区只说明当前控制联系，不证明籍贯或居住史。`,
     `普通民变独立漏斗（年度抽查城次，非每月/独立城市；不含帝国分裂）：检查${c.popularFunnel.cityChecks}；忠诚阻断${c.popularFunnel.loyaltyBlocked}；无成熟政治危机${c.popularFunnel.crisisBlocked}；政治危机${c.popularFunnel.political}；占领保护${c.popularFunnel.captureGrace}；冷却${c.popularFunnel.cooldown}；势力上限${c.popularFunnel.capacity}；真实居民${c.popularFunnel.validUsers}人次；身份阻断${c.popularFunnel.identityBlocked}；空间阻断${c.popularFunnel.geographyBlocked}；不满不足${c.popularFunnel.discontentBlocked}；支持者${c.popularFunnel.supporters}；候选${c.popularFunnel.candidates}`,
     `民变候选共享抽签${c.popularFunnel.draws}，累计命中期望${c.popularFunnel.expectedHits.toFixed(2)}；命中原入口${c.popularFunnel.hits}；未命中${c.popularFunnel.misses}；旧国优先阻断${c.popularFunnel.priorityBlocked}；抽中历史复国${c.popularFunnel.historicalSelected}；建城者复国${c.popularFunnel.founderRestored}；新建势${c.popularFunnel.successes}；执行失败${c.popularFunnel.failures}${Object.keys(this.popularFailures).length?`（${Object.entries(this.popularFailures).map(([k,v])=>`${k}：${v}`).join("；")}）`:""}`,
+    `军权地方机会（共享民变原抽签）：合格${c.militaryQualifiedSlots}城次；共享抽签${c.militarySharedDraws}，命中期望${c.militarySharedExpected.toFixed(2)}；命中${c.militarySharedHits}；军事建势${c.militaryFoundings}；事务失败${c.militaryFailures}。不是逐将领抽签，食邑不产生部队。`,
     `真正城市政治抽签${c.draws}（包括原复国共享抽签，非额外民变抽签）；未命中${c.drawFailed}；新建势执行失败${c.executionFailed}`,
     `帝国候选检查${c.splitChecks}；分裂政治资格通过${c.splitPolitical}；民众叛乱成功${c.popular}；帝国分裂成功${c.split}；原历史势力恢复${c.restored}；旧建城者在国、纯城市归还${c.territorialReturns}`,
     `新建政权连续在国：12月${c.alive12}/${c.matured12}，随访不足${c.insufficient12}；60月${c.alive60}/${c.matured60}，随访不足${c.insufficient60}；随访容量256，未跟踪${c.overflow}`,
     `普通民变连续在国：12月${c.survival.popular.alive12}/${c.survival.popular.matured12}；60月${c.survival.popular.alive60}/${c.survival.popular.matured60}；帝国分裂分别为${c.survival.split.alive12}/${c.survival.split.matured12}、${c.survival.split.alive60}/${c.survival.split.matured60}。`,
-    "个人忠诚保持原值；起事意愿由真实城域危机派生，军政人物不作为民变领袖。"
+    "个人忠诚保持原值；起事意愿由真实城域危机派生，军政人物须另经真实军权、当地追随者和独立居民支持核验，才可接续同一地方机会。"
   ].join("\n");}
 }

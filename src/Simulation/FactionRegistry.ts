@@ -1,5 +1,5 @@
 import {captureMilitarySplitRollback} from "./MilitarySplitRollback";
-import {assessMilitarySecession,type MilitarySecessionEvidence} from "./MilitarySecession";
+import {assessMilitarySecession,type LocalMilitaryOpportunity,type MilitarySecessionEvidence} from "./MilitarySecession";
 import { assessPopularSupport, hasPopularPoliticalCrisis,popularPoliticalCrisis } from "./PopularRebellionSupport";
 import { calculateImperialStrain } from "./ImperialStrain";
 import { destroyRuntimeGroupAtSafeBoundary } from "./RuntimeGroupDisposal";
@@ -22,6 +22,7 @@ import { canRestoreExiledFaction } from "../Politics/ExileRules";
 import WorldExiles from "./WorldExiles";
 import WorldRemnants from "./WorldRemnants";
 import {
+  MAX_ACTIVE_FACTIONS, REBELLION_CITY_COOLDOWN_MONTHS,
   EMPIRE_SPLIT_MIN_CITIES, EMPIRE_SPLIT_LOW_LOYALTY, EMPIRE_SPLIT_STABILITY_THRESHOLD, EMPIRE_SPLIT_STRAIN_THRESHOLD,
   REBEL_INITIAL_POPULATION_MAX,
   REBEL_INITIAL_POPULATION_MIN,
@@ -331,20 +332,34 @@ class FactionRegistryStore {
     return team;
   }
 
-  createSplitFaction(previousOwner: Team, cities: City[], year: number, politicalStrain = calculateImperialStrain(previousOwner,Game.Core?.totalCells ?? 1)) {
+  createSplitFaction(previousOwner: Team, cities: City[], year: number, politicalStrain = calculateImperialStrain(previousOwner,Game.Core?.totalCells ?? 1), localOpportunity?:LocalMilitaryOpportunity) {
     const core = Game.Core;
     const coreCity = cities[0];
     if (!core?.map || !coreCity || !previousOwner) {
       return undefined;
     }
     if (previousOwner.status !== "ACTIVE" || coreCity.destroyed || cities.some(c => c.ownerFactionId !== previousOwner.name || c.destroyed)) return undefined;
-    if (previousOwner.cities.length < EMPIRE_SPLIT_MIN_CITIES || coreCity.loyalty > EMPIRE_SPLIT_LOW_LOYALTY ||
+    if(core.teams.filter(t=>!t.isDie).length>=MAX_ACTIVE_FACTIONS)return undefined;
+    if(localOpportunity){
+      if(cities.length!==1||previousOwner.cities.length<2||!hasPopularPoliticalCrisis(coreCity,year,core.totalCells)||coreCity.isInCaptureGrace(year)||
+        !Number.isFinite(localOpportunity.chance)||localOpportunity.chance<=0||localOpportunity.chance>.09||!Number.isFinite(localOpportunity.roll)||localOpportunity.roll<0||localOpportunity.roll>localOpportunity.chance||
+        localOpportunity.lastRebellionMonth!==undefined&&(!Number.isSafeInteger(localOpportunity.lastRebellionMonth)||year-localOpportunity.lastRebellionMonth<REBELLION_CITY_COOLDOWN_MONTHS))return undefined;
+    }else if (previousOwner.cities.length < EMPIRE_SPLIT_MIN_CITIES || coreCity.loyalty > EMPIRE_SPLIT_LOW_LOYALTY ||
       ((getFactionStability(previousOwner) ?? 100) >= EMPIRE_SPLIT_STABILITY_THRESHOLD && politicalStrain < EMPIRE_SPLIT_STRAIN_THRESHOLD) || coreCity.isInCaptureGrace(year)) return undefined;
     const candidates = assessPopularSupport(coreCity, year).users.filter(u=>!this.foundingTransactions.has(u));
     if (!candidates.length) return undefined;
-    const targetPopulation=worldRandom.int(REBEL_INITIAL_POPULATION_MIN,REBEL_INITIAL_POPULATION_MAX);
     const military=assessMilitarySecession(coreCity,year);
-    const lowLoyaltyUsers = military?.users??candidates.slice(0,targetPopulation);
+    if(localOpportunity&&!military)return undefined;
+    if(localOpportunity&&military){
+      const supporter=candidates.find(u=>!military.users.includes(u));if(!supporter)return undefined;
+      const p=supporter.player,s=core.logicalUnitRegistry.getEntry(p.logicalUnitId!)!.state;
+      military.evidence.entryKind='LOCAL_CRISIS';
+      military.evidence.localCrisis={...localOpportunity,reason:popularPoliticalCrisis(coreCity,year,core.totalCells).reason,
+        facts:{loyalty:coreCity.loyalty,devastation:coreCity.devastation,captureCount:coreCity.captureCount,lastCapturedMonth:coreCity.lastCapturedYear,worldMonth:year,stability:getFactionStability(previousOwner)??100,strain:coreCity.loyalty<=18?calculateImperialStrain(previousOwner,core.totalCells):0},
+        sourceCityCount:previousOwner.cities.length,activeFactionCount:core.teams.filter(t=>!t.isDie).length,
+        supporter:{userId:supporter.id,bornMonth:supporter.bornMonth,unitId:p.logicalUnitId!,x:core.logicalGameplayAuthority?s.logicalX:p.x,y:core.logicalGameplayAuthority?s.logicalY:p.y,loyalty:supporter.loyalty}};
+    }
+    const lowLoyaltyUsers = military?.users??candidates.slice(0,worldRandom.int(REBEL_INITIAL_POPULATION_MIN,REBEL_INITIAL_POPULATION_MAX));
     const name = createRebelFactionName(coreCity, "REBEL", this.getExistingNames());
     const color = this.createRebelColor();
     const team = new Team(

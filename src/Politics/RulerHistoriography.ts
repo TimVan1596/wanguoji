@@ -1,3 +1,4 @@
+import {militaryReignRelation} from "./RulerMilitaryBoundary";
 import { deriveRulerReignTrajectory, type RulerReignTrajectory } from "./RulerReignTrajectory";
 import { normalizeRulerPoliticalFacts, summarizeRulerPoliticalFacts } from "./RulerPoliticalFacts";
 import { hasRecordedRulerDeath } from "./RulerLifeState";
@@ -176,6 +177,7 @@ function deriveRulerEvidence(
   const tenure = deriveRulerTenureEvidence(ruler, faction.name, events, worldMonth);
   const inReign = (event: WorldEvent) => {
     const month = event.monthIndex ?? event.year;
+    if(['city-captured','city-recovered','capital-fallen'].includes(event.type)&&militaryReignRelation(event,{...ruler,accessionYear:accessionMonth},faction.name,events)!=='DURING')return false;
     return month >= accessionMonth && month <= endMonth && (!includeRecoveredCaptures || month <= worldMonth);
   };
   const directToRuler = (event: WorldEvent) =>

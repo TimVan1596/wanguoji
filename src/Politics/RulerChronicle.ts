@@ -1,3 +1,6 @@
+import {isRulerHonorEvent,rulerHonorEvidence} from "./RulerHonorEvidence";
+import {mergeMilitaryLifeEvents} from "./MilitaryLifePresentation";
+import {militaryReignRelation} from "./RulerMilitaryBoundary";
 import { selectChronicleHighlights } from "./ChronicleHighlights";
 import { getRulerTerminalRole, isPoliticalTerminalEvent, type TerminalChronicleRuler } from "../History/PoliticalTerminalChronicle";
 import type { WorldEvent } from "../History/WorldHistory";
@@ -103,6 +106,7 @@ export function buildRulerTags(evidence: RulerHistoricalEvidence) {
 }
 
 const RULER_EVENT_TYPES = new Set<WorldEvent["type"]>([
+  "military-ennobled", "military-appanage", "military-title-revoked", "military-posthumous",
   "heir-died",
   "ruler-died",
   "dynasty-line-ended",
@@ -217,6 +221,8 @@ export function projectRulerHistoricalEvents(
     if (month < ruler.accessionYear || month > endMonth && !(event.type==="ruler-died"&&month<=worldMonth&&(event.rulerId===ruler.id||event.metadata?.rulerId===ruler.id)) || !RULER_EVENT_TYPES.has(event.type)) {
       return false;
     }
+    if(isRulerHonorEvent(event))return Boolean(rulerHonorEvidence(event,ruler.id,factionId));
+    if(['city-captured','city-recovered','capital-fallen'].includes(event.type)&&['BEFORE','AFTER'].includes(militaryReignRelation(event,ruler,factionId,events)))return false;
     if (DIPLOMATIC_TYPES.has(event.type) && !isCoreDiplomaticEvent(event, events)) return false;
     if (isPoliticalTerminalEvent(event)) return getRulerTerminalRole(event, ruler, factionId) !== undefined;
     if (!isRulerPoliticalEventRelevant(event, ruler.id, factionId)) return false;
@@ -266,7 +272,7 @@ export function projectRulerHistoricalEvents(
       event.metadata?.nextRulerId === ruler.id;
     const isSignatory = event.metadata?.signatoryARulerId === ruler.id || event.metadata?.signatoryBRulerId === ruler.id;
     return (
-      RULER_EVENT_PRIORITIES[event.type] ?? 40
+      isRulerHonorEvent(event)?(event.type==="military-ennobled"?(rulerHonorEvidence(event,ruler.id,factionId)?.rank==="BO"?35:60):55):RULER_EVENT_PRIORITIES[event.type] ?? 40
     ) + (direct || isSignatory ? 20 : 0) + (notable.has(event.id) ? 15 : 0) + (event.importance === "major" ? 5 : 0) +
       (event.type === "city-recovered" && event.metadata?.wasCapital === 1 ? 30 : 0);
   };
@@ -277,7 +283,7 @@ export function projectRulerHistoricalEvents(
   const recoveryIds = new Map(candidates.filter(e => e.type === "city-recovered" && militaryCityKey(e))
     .map(e => [militaryCityKey(e), e.id]));
   const grouped = new Map<string, WorldEvent>();
-  for (const event of candidates) {
+  for (const event of mergeMilitaryLifeEvents(candidates)) {
     const recovery = ["capital-fallen", "city-recovered"].includes(event.type) ? recoveryIds.get(militaryCityKey(event)) : undefined;
     const key = recovery ? `recovery:${recovery}` : linkedSuccession.has(event.id)
       ? `usurpation:${linkedSuccession.get(event.id)}`
@@ -307,7 +313,7 @@ export function projectRulerHistoricalEvents(
     const capital=event.type==="capital-fallen"||event.metadata?.wasCapital===1;
     return {id:event.id,month,priority:score(event)+(accession||ending?1000:personal?500:turning?400:capital||event.type==="capital-relocated"||DIPLOMATIC_TYPES.has(event.type)?200:0),
       cityId:military?event.cityId:undefined,
-      diversityGroup:["city-revolt","rebel-faction-founded","frontier-faction-founded","empire-split"].includes(event.type)?"local-upheaval":undefined};
+      diversityGroup:isRulerHonorEvent(event)?"honors":["city-revolt","rebel-faction-founded","frontier-faction-founded","empire-split"].includes(event.type)?"local-upheaval":undefined};
   },{start:ruler.accessionYear,end:endMonth});
   return {select,get all(){return select(Infinity);}};
 }

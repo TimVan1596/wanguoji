@@ -22,7 +22,7 @@ import {formatHistoryEventTitle} from "../../History/HistoryRenderRules";
 import {checkPersonArchiveInteraction} from "./PersonArchiveInteractionHarness";
 
 /** Controlled crisis after a real naturally appointed military career; never a natural frequency claim. */
-export async function runMilitarySecessionCore(seed="military-secession-z7"){
+export async function runMilitarySecessionCore(seed="military-secession-z7",local=false){
  const {core,game}=await createNaturalCore(seed),checks:string[]=[];
  const check=(yes:unknown,label:string)=>{if(!yes)throw new Error(label);checks.push(label);if(checks.length%5===0)console.info(`[CoreTest] ${checks.length}: ${label}`);};
  const step=()=>{const before=core.simulator!.year;for(let n=0;n<30;n++)(core as any).advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit("postupdate");if(core.simulator!.year===before)throw new Error(`Core clock stopped at ${before}; last check: ${checks[checks.length-1]}`);};
@@ -61,8 +61,17 @@ export async function runMilitarySecessionCore(seed="military-secession-z7"){
   check(Boolean(assessMilitarySecession(city,month)),"Arcade uses live Player positions instead of stale registered coordinates");
   city.loyalty=100;check(!Factions.createSplitFaction(parent,[city],month,100),"stable core city cannot create a military polity");city.loyalty=0;
   const projection=(s:ReturnType<typeof strict>)=>{const c=canonicalWorldSaveProjection(s);return {...c,worldRandom:undefined};};
+  if(local){
+   for(const c of parent.cities)c.loyalty=c===city?0:100;
+   check(!Factions.createSplitFaction(parent,[city],month,0),'local crisis alone cannot bypass the old imperial strain gate');
+   const opportunity={chance:.09,roll:.01};
+   city.loyalty=100;check(!Factions.createSplitFaction(parent,[city],month,0,opportunity),'local army and estate cannot create a crisis in a quiet city');city.loyalty=0;
+   check(!Factions.createSplitFaction(parent,[city],month,0,{chance:.09,roll:.5}),'a missed original city draw cannot create a military state');
+   check(!Factions.createSplitFaction(parent,[city],month,0,{...opportunity,lastRebellionMonth:month-1}),'the original city cooldown blocks military founding too');
+   const willing=popular.loyalty;popular.loyalty=99;check(!Factions.createSplitFaction(parent,[city],month,0,opportunity),'an army needs an independent local ordinary supporter');popular.loyalty=willing;
+  }
+  const create=(cities=[city])=>Factions.createSplitFaction(parent!,cities,month,local?0:100,local?{chance:.09,roll:.01}:undefined);
   const before=strict(),baseline=JSON.stringify(projection(before)),oldTeams=core.teams.length;
-  const create=(cities=[city])=>Factions.createSplitFaction(parent!,cities,month,100);
   const verifyRollback=()=>{const actual=projection(strict()),diff=diffCanonicalWorldSave(JSON.parse(baseline),actual as any);if(!diff.matched)console.error("Error Rollback diff",JSON.stringify(diff));check(diff.matched,"failed transaction restores complete canonical world except attempted RNG draws");check(Military.getPerson(personId)!.status==="ACTIVE"&&Military.getFormation(commandId)!.status==="ACTIVE"&&commander.team===parent&&commander.role==="NORMAL"&&!commander.historicalPersonId&&core.teams.length===oldTeams,"rollback restores command, people, faction registration and live roles");};
   const initialize=Dynasty.initializeFaction;
   Dynasty.initializeFaction=function(...args:Parameters<typeof initialize>){if(args[3]?.origin.military)throw new Error("injected military ruler initialization failure");return initialize.apply(this,args);};
@@ -98,6 +107,11 @@ export async function runMilitarySecessionCore(seed="military-secession-z7"){
   check(JSON.stringify(worldRandom.exportState())===honorRng&&core.teams.reduce((n,t)=>n+t.users.size,0)===total,'revocation changes no military bodies, sovereign, population or random draws');
   Military.updateAppanages(month,core.teams,Dynasty.getAll(),core.allCities);check(person.appanageHistory?.at(-1)?.kind==='ENDED'&&person.appanageHistory.some(a=>a.eventId===oldEstate!.eventId),'actual secession and old-title revocation end the estate without deleting its original grant or creating foreign ownership');
   const save=strict();
+  check(ruler.residentIdentity!.military!.entryKind===(local?'LOCAL_CRISIS':'EMPIRE_SPLIT'),'founding retains its actual political entry, separate from the military source');
+  if(local)for(const mutate of [(e:any)=>e.localCrisis.roll=.99,(e:any)=>e.localCrisis.facts.loyalty=100,(e:any)=>e.localCrisis.supporter.unitId=e.originalMemberUnitIds[0],(e:any)=>delete e.localCrisis]){
+   const bad=structuredClone(save),r=bad.dynasties.flatMap(d=>d.rulers).find((r:any)=>r.rulerId===ruler.id)! as any;mutate(r.residentIdentity.military);check(!validateWorldSave(bad).valid,'strict V32 refuses forged local crisis, draw or supporter evidence');
+  }
+
   for(const mutate of [(s:any)=>s.registries.militaryCommandRegistry.people.find((p:any)=>p.personId===personId).politicalRulerId="wrong",(s:any)=>{const r=s.dynasties.find((d:any)=>d.factionId===split.team.name).rulers.find((r:any)=>r.residentIdentity?.personId===personId);r.naturalDeathMonth++;},(s:any)=>s.registries.militaryCommandRegistry.people.find((p:any)=>p.personId===personId).status="ACTIVE"]){const bad=structuredClone(save);mutate(bad);check(!validateWorldSave(bad).valid,"V21 refuses incompatible political/military life or simultaneous military authority");}
   const resume=()=>{hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return strict();};
   const first=resume(),second=resume();check(diffCanonicalWorldSave(first,second).matched,"V21 source military and royal identity resume deterministically for twelve real months");

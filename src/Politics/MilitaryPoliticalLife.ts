@@ -19,7 +19,8 @@ export function militaryPoliticalLife(person:MilitaryPerson,dynasties:readonly D
  const f=factions.get(d.factionId);if(!accession||!f)return undefined;
  const title=typeof accession.metadata?.rulerPoliticalTitle==='string'&&['首领','王','帝'].includes(accession.metadata.rulerPoliticalTitle)?accession.metadata.rulerPoliticalTitle:getRulerTitleAtMonth({...f,sovereigntyRank:f.sovereigntyRank as any},at);
  const country=getFactionDisplayNameAtMonth({name:f.name,displayName:f.name,nameHistory:f.nameHistory??[]},at),name=person.personalName??person.name;
- const text=`${name}${title==='首领'?'继任':'继位为'}${country}${title==='首领'?'首领':title==='王'?'王':'皇帝'}。`;
+ const founder=r.residentIdentity?.military?.personId===person.personId;
+ const text=founder?`${name}为${country}创立者、首任首领。`:`${name}${title==='首领'?'继任':'继位为'}${country}${title==='首领'?'首领':title==='王'?'王':'皇帝'}。`;
  const entry:MilitaryChronicleEntry={eventId:accession.id,worldMonth:at,factionId:d.factionId,text,source:accession.type+' · '+accession.id,victory:false};
  return {rulerId:r.id,factionId:d.factionId,entry};
 }

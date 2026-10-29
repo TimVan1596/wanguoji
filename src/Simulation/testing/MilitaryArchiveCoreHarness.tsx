@@ -39,6 +39,6 @@ export async function checkMilitaryProjectionCache(core:any,saved:any,id:string,
  try{render(saved.world.worldMonth);const once=calls;render(saved.world.worldMonth+1);check(calls===once,'closed historical projection survives monthly UI refresh without scanning its complete career again');
   hydrateWorldSave(core,structuredClone(retired));person=Military.getPerson(id)!;render(saved.world.worldMonth);check(calls===once+1,'hydration with identical IDs and values still invalidates the old historical cache');
   const g=person.appanageHistory![0],city=core.allCities.find((c:any)=>c.id===g.cityId)!,enemy=core.teams.find((t:any)=>t.name!==g.factionId&&t.status==='ACTIVE')!;const at=saved.world.worldMonth+1;core.simulator.clock.importState({worldMonth:at,elapsedMs:0,running:false});city.capture(enemy,at);Military.updateAppanages(at,core.teams,Dynasty.getAll(),core.allCities);render(at);
-  check(calls===once+2&&host.textContent?.includes('食邑失地'),'a real new ownership/appanage fact invalidates the cache and appears immediately in the person’s history');
+  check(calls===once+2&&host.textContent?.includes('食邑失效'),'a real new ownership/appanage fact invalidates the cache and appears immediately in the person’s history');
  }finally{Military.getChronicle=method;flushSync(()=>root.unmount());host.remove();hydrateWorldSave(core,structuredClone(saved));}
 }

@@ -1,3 +1,5 @@
+import {evaluatePopularPoliticalCrisis} from "../Simulation/PopularPoliticalCrisis";
+import {MAX_ACTIVE_FACTIONS,REBELLION_CITY_COOLDOWN_MONTHS} from "../config/simulation";
 import {militaryPoliticalDefense} from '../Politics/MilitaryPoliticalInfluence';
 import type {WorldSaveV1} from "./WorldSaveSchema";
 import {deriveMilitaryLifeSchedule} from "../Politics/MilitaryLifeRules";
@@ -31,6 +33,22 @@ export function validateMilitarySecessions(save:WorldSaveV1){
    e.originalMemberUnitIds.length===f.memberUnitIds.length&&e.originalMemberUnitIds.every((id:string)=>f.memberUnitIds.includes(id))&&
    e.participants.length>=2&&e.participants.length<=1+Math.max(1,Math.floor((e.originalMemberUnitIds.length-1)/2)));
   if(valid){
+   if(!['EMPIRE_SPLIT','LOCAL_CRISIS'].includes(e.entryKind))valid=false;
+   if(e.entryKind==='EMPIRE_SPLIT'&&e.localCrisis!==undefined)valid=false;
+   if(e.entryKind==='LOCAL_CRISIS'){
+    const c=e.localCrisis,facts=c?.facts,u=c?.supporter;
+    if(!object(c)||!object(facts)||!object(u)||facts.worldMonth!==i.foundedMonth||
+      !['loyalty','devastation','stability','strain'].every(k=>Number.isFinite(facts[k])&&facts[k]>=0&&facts[k]<=100)||
+      !Number.isSafeInteger(facts.captureCount)||facts.captureCount<0||facts.lastCapturedMonth!==undefined&&(!Number.isSafeInteger(facts.lastCapturedMonth)||facts.lastCapturedMonth>i.foundedMonth)||
+      !evaluatePopularPoliticalCrisis(facts).eligible||evaluatePopularPoliticalCrisis(facts).reason!==c.reason||
+      !Number.isFinite(c.chance)||c.chance<=0||c.chance>.09||!Number.isFinite(c.roll)||c.roll<0||c.roll>c.chance||
+      c.lastRebellionMonth!==undefined&&(!Number.isSafeInteger(c.lastRebellionMonth)||i.foundedMonth-c.lastRebellionMonth<REBELLION_CITY_COOLDOWN_MONTHS)||
+      !Number.isSafeInteger(c.sourceCityCount)||c.sourceCityCount<2||!Number.isSafeInteger(c.activeFactionCount)||c.activeFactionCount<1||c.activeFactionCount>=MAX_ACTIVE_FACTIONS||
+      !Number.isSafeInteger(u.userId)||!Number.isSafeInteger(u.bornMonth)||u.bornMonth>i.foundedMonth||typeof u.unitId!=='string'||!u.unitId||e.originalMemberUnitIds.includes(u.unitId)||e.participants.some((p:any)=>p.userId===u.userId)||
+      !Number.isFinite(u.x)||!Number.isFinite(u.y)||u.x<0||u.y<0||!Number.isFinite(u.loyalty)||u.loyalty<0||u.loyalty>100||
+      u.loyalty-Math.min(45,Math.max(0,50-facts.loyalty)*.8+Math.max(0,Math.min(100,facts.devastation))*.15+(facts.lastCapturedMonth!==undefined&&i.foundedMonth-facts.lastCapturedMonth<24?8:0))>=50)valid=false;
+   }
+
    const units=new Set(),users=new Set();
    for(const u of e.participants){
     if(!object(u)||!Number.isSafeInteger(u.userId)||typeof u.name!=="string"||!Number.isSafeInteger(u.bornMonth)||u.bornMonth>e.worldMonth||typeof u.unitId!=="string"||units.has(u.unitId)||users.has(u.userId)||!e.originalMemberUnitIds.includes(u.unitId)||!Number.isFinite(u.x)||!Number.isFinite(u.y)||u.x<0||u.y<0||!["PHASER","LOGICAL"].includes(u.positionSource)||u.districtCityId!==i.cityId||u.ownedFactionId!==i.sourceFactionId)valid=false;

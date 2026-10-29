@@ -19,7 +19,8 @@ export function queryHistoryPage(store: WorldHistoryStore, options: {
       const window = store.getEventWindow({ ...options, limit: 200, beforeIndex,
         predicate: (event) => getFilteredHistoryEvents([event],
           options.filter === "featured" ? "all" : options.filter, options.factionId).length > 0
-          && (!isolatedSubtype || matchesMajorEventFilter(event, options.eventTypeFilter)) });
+          && (!isolatedSubtype || matchesMajorEventFilter(event, options.eventTypeFilter) || Boolean(event.historyGroupId)&&
+            ['founding','revolution'].includes(options.eventTypeFilter??'')&&['city-revolt','ruler-acceded','ruler-succession','god-rebellion','god-restoration'].includes(event.type)) });
       const grouped = groupHistoryNarratives(window.events);
       const display = options.filter === "featured"
         ? getFilteredHistoryEvents(grouped, "featured", options.factionId) : grouped;

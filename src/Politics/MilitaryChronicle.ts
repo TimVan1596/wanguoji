@@ -1,5 +1,6 @@
+import {militaryReignRelation} from "./RulerMilitaryBoundary";
 import {militaryDeathWording} from './MilitaryLifePresentation';
-import {appanageText} from './MilitaryAppanage';
+import {appanageReadingText} from './MilitaryAppanage';
 import {deriveMilitaryActivities} from './MilitaryExperience';
 import {militaryHonorText} from './MilitaryHonors';
 import {nobleChronicle} from "./MilitaryNobility";
@@ -53,11 +54,12 @@ export function formatMilitaryVictorySource(event: WorldEvent,context:MilitaryHi
   return `${actor}攻克${defender}${m.wasCapital===1?(defender?"都":"敌都"):defender?"城":""}${city}，${participant}`;
 }
 
-export function formatRulerMilitaryEvent(event: WorldEvent, ruler: { accessionYear: number; endYear?: number }, factionId: string, worldMonth: number,context:MilitaryHistoryContext={}) {
+export function formatRulerMilitaryEvent(event: WorldEvent, ruler: { id?:string; accessionYear: number; endYear?: number }, factionId: string, worldMonth: number,context:MilitaryHistoryContext={}) {
   const month = event.monthIndex ?? event.year;
   if (event.actorFactionId !== factionId || month < ruler.accessionYear || month > Math.min(ruler.endYear ?? worldMonth, worldMonth)) return undefined;
   const source = formatMilitaryVictorySource(event,context);
-  return source ? `其治下，${source}` : undefined;
+  const relation=militaryReignRelation(event,ruler,factionId,context.events);
+  return source ? relation==='BEFORE'?`即位前，${source}`:relation==='AFTER'?`离任后，${source}`:relation==='UNCERTAIN'?`与君位更替同月，${source}`:`其治下，${source}` : undefined;
 }
 
 /** One projection of the existing events. No new history facts or military score. */
@@ -92,7 +94,7 @@ export function deriveMilitaryChronicle(person: MilitaryPerson, formations: Mili
       text = `作为${e.actorFactionId}军事指挥官，${name}所属编组参与${e.type === "city-recovered" ? "收复" : "攻陷"}${e.cityName ?? e.cityId}${m.wasCapital === 1 ? "（当时敌都）" : m.wasCapital === 0 ? "（普通城市）" : "（当时都城属性未记录）"}。`;
     } else if (m.personId === person.personId) {
       if(["military-posthumous","military-title-revoked"].includes(e.type)){const h=person.honorHistory?.find(h=>h.eventId===e.id&&h.month===month&&h.factionId===e.actorFactionId);if(h)text=militaryHonorText(h);}
-      if(e.type==="military-appanage"){const a=person.appanageHistory?.find(a=>a.eventId===e.id&&a.month===month);if(a)text=appanageText(a);}
+      if(e.type==="military-appanage"){const a=person.appanageHistory?.find(a=>a.eventId===e.id&&a.month===month);if(a)text=appanageReadingText(a);}
       if(e.type==="military-ennobled"){const grant=person.nobilityHistory?.find(g=>g.eventId===e.id&&g.month===month&&g.factionId===e.actorFactionId);if(grant)text=nobleChronicle(grant);}
       if(served&&e.type==="military-office-granted"){
         const grant=appointment?.officeHistory?.find(g=>g.eventId===e.id&&g.month===month&&g.office===m.office);

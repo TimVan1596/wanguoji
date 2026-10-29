@@ -43,3 +43,12 @@ export function appanageChanges(p:MilitaryPerson,last:MilitaryAppanage,events:Wo
  }
  return result;
 }
+
+/** Reading text is derived separately so original event wording and audit evidence remain intact. */
+export function appanageReadingText(a:MilitaryAppanage){
+ if(a.kind==='GRANTED')return `${a.rulerTitle}赐${a.personalName}${a.cityName}为食邑。`;
+ if(a.kind==='LOST')return `${a.cityName}失于他国，食邑失效。`;
+ if(a.kind==='RESTORED')return `${a.cityName}重归${a.countryName}，食邑恢复。`;
+ const reasons:Record<string,string>={DEATH:`${a.personalName}去世`,ACCESSION:`${a.personalName}登位`,TRANSFER:`${a.personalName}转属他国`,TITLE_REVOKED:'旧爵被正式追夺',DYNASTY_ENDED:'原王统终结',STATE_ENDED:'原政权失去在国权力',CITY_DESTROYED:`${a.cityName}城废毁`};
+ return `${reasons[a.reason??'']??'原身份终结'}，${a.reason==='CITY_DESTROYED'?'':a.cityName}食邑终止。`;
+}

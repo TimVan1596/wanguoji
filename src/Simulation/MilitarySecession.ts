@@ -6,7 +6,12 @@ import {buildPopularDistricts} from "./PopularDistricts";
 import {localPoliticalPressure} from "./PopularRebellionSupport";
 import {splitEstablishedPersonalName} from "../Politics/NameCulture";
 
+export interface LocalMilitaryOpportunity {
+ chance:number;roll:number;lastRebellionMonth?:number;
+}
 export interface MilitarySecessionEvidence {
+ entryKind:'EMPIRE_SPLIT'|'LOCAL_CRISIS';
+ localCrisis?:{facts:import('./PopularPoliticalCrisis').PopularCrisisFacts;reason:string;chance:number;roll:number;lastRebellionMonth?:number;sourceCityCount:number;activeFactionCount:number;supporter:{userId:number;bornMonth:number;unitId:string;x:number;y:number;loyalty:number}};
  personId:string; commandId:string; sourceFactionId:string; sourceFactionName:string; personalName:string;
  office:string; serviceMonths:number; capturedEventIds:string[]; defenseEventIds?:string[]; worldMonth:number; cityId:string; originalMemberUnitIds:string[];
  participants:Array<{userId:number;name:string;bornMonth:number;unitId:string;x:number;y:number;positionSource:"PHASER"|"LOGICAL";districtCityId:string;ownedFactionId:string}>;
@@ -38,7 +43,7 @@ export function assessMilitarySecession(city:City,month:number, observe?:(reason
   if(!followers.length){observe?.("NO_LOCAL_FOLLOWERS");continue;}
   observe?.("QUALIFIED_LOCAL_PARTY");
   const users=[commander,...followers];
-  return {users,evidence:{personId:person.personId,commandId:formation.commandId,sourceFactionId:owner.name,sourceFactionName:owner.displayName,
+  return {users,evidence:{entryKind:'EMPIRE_SPLIT',personId:person.personId,commandId:formation.commandId,sourceFactionId:owner.name,sourceFactionName:owner.displayName,
    personalName:person.personalName,office,serviceMonths:candidate.serviceMonths,...(candidate.defenseEventIds?{defenseEventIds:candidate.defenseEventIds}:{}),capturedEventIds:[...candidate.capturedEventIds],worldMonth:month,cityId:city.id,originalMemberUnitIds:[...candidate.memberUnitIds],
    participants:users.map(u=>{const s=core.logicalUnitRegistry.getEntry(u.player.logicalUnitId!)!.state;return {userId:u.id,name:u.name,bornMonth:u.bornMonth,unitId:u.player.logicalUnitId!,
      x:core.logicalGameplayAuthority?s.logicalX:u.player.x,y:core.logicalGameplayAuthority?s.logicalY:u.player.y,positionSource:core.logicalGameplayAuthority?"LOGICAL":"PHASER",districtCityId:city.id,ownedFactionId:owner.name};})}};
