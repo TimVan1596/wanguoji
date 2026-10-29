@@ -1,3 +1,4 @@
+import {checkOfficePoliticalChoice} from './MilitaryOfficePoliticalCoreChecks';
 import {checkMilitaryLifeView} from './MilitaryLifeViewChecks';
 import {checkMilitaryAppanages} from './MilitaryAppanageCoreHarness';
 import {nextMilitaryHonors} from '../../Politics/MilitaryHonors';
@@ -37,6 +38,7 @@ export async function runMilitaryNobilityCore(seed:string){
   for(const [i,c]of towns.slice(0,2).entries()){clock(168+i*12);c.capture(enemy,168+i*12);clock(180+i*12);place(users[1],c.block.x,c.block.y);c.capture(home,180+i*12,undefined,commands[1],ids[1]);}
   clock(216);const base=strict();
   const restore=(save=base)=>{hydrateWorldSave(core,structuredClone(save));return {t:core.teams.find(t=>t.name===factionId)!,d:Dynasty.get(factionId)!,p:Military.getPerson(ids[0])!,q:Military.getPerson(ids[1])!};};
+  checkOfficePoliticalChoice(core,base,ids,factionId,check);
   // Isolated issuer failure: the real history writer appends then throws.
   const writer=History.addEvent,before=strict();History.addEvent=function(e){const id=writer.call(this,e);if(e.type==='military-ennobled')throw Error('injected after-write failure');return id;};
   try{Military.updateNobility(216,core.teams,Dynasty.getAll());}finally{History.addEvent=writer;}
@@ -100,7 +102,7 @@ export async function runMilitaryNobilityCore(seed:string){
    const {t,d,p,q}=restore();Military.endPersonCommands(p.personId,216,'DISMISSED');Military.updateNobility(216,core.teams,Dynasty.getAll());check(q.nobilityHistory?.at(-1)?.rank==='BO'&&!p.nobilityHistory,'retired officer receives no new living service grant');
    check((Military as any).appoint(t.getUserById(p.sourceUserId),t.name,216,[t.getUserById(p.sourceUserId)!.player.logicalUnitId!]),'real veteran reappointment keeps the same permanent person');
    const influence=Military.getPoliticalInfluence(t,216,core.logicalUnitRegistry),plain=Military.getPoliticalInfluence(t,216,core.logicalUnitRegistry,false,false);check(influence.candidates[0].personId===q.personId&&plain.candidates[0].personId===p.personId,'bounded verified peerage changes a real participant choice among equal base strengths');
-   check(influence.candidates.every(c=>(c.finalPoliticalWeight??c.strength)<=c.strength*1.15),'noble standing has a strict fifteen-percent ceiling');
+   check(influence.candidates.every(c=>(c.finalPoliticalWeight??c.strength)-(c.basePoliticalWeight??c.strength)<=c.strength*.15+1e-12),'noble contribution retains its separate fifteen-percent ceiling');check(influence.candidates.every(c=>(c.finalPoliticalWeight??c.strength)<=c.strength*1.25+1e-12),'office and noble contributions have an additive twenty-five-percent ceiling');
    const king=Dynasty.getCurrentRuler(t.name)!,peace=evaluateDepositionOpportunity({factionId:t.name,status:t.status,identityStage:t.identityStage,cityCount:t.cities.length,stability:80,currentRuler:king,rulers:d.rulers,houseName:d.houseName,worldMonth:216,events:[],military:influence});check(!peace.militaryParticipant,'a title and an army do not create a crisis or a coup');
    const e=core.teams.find(x=>x!==t&&x.status==='ACTIVE')!;t.capitalCity!.capture(e,216);t.capitalCity!.capture(e,216);for(const city of t.cities)city.loyalty=20;const crisis=strict(),results:any[]=[];
    for(const enabled of [false,true]){

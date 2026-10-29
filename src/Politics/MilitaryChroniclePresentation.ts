@@ -31,11 +31,10 @@ export function militaryMilestones(person:MilitaryPerson,entries:MilitaryChronic
       if(grant){
         const faction=context.factions?.get(entry.factionId),country=faction?getHistoricalFactionIdentity({...faction,displayName:entry.factionId},entry.worldMonth).name:entry.factionId;
         const issuer=event?.rulerId&&typeof event.metadata?.authorizingRulerTitle==="string"?event.metadata.authorizingRulerTitle:undefined;
-        text=person.appointments.some(a=>a.officeHistory?.[0]?.eventId===entry.eventId)?`${issuer?`${issuer}在位时，${name}获授`:`${country}授${name}为`}${MILITARY_OFFICE_NAMES[grant.office]}。`:`${issuer?`${issuer}在位时，${name}`:`${name}于${country}`}晋为${MILITARY_OFFICE_NAMES[grant.office]}。`;
-        if(grant.promotionBasis){
-          const basis=grant.promotionBasis==='SERVICE'?'依服役资历':grant.promotionBasis==='ACTIVITY'?'因实际军旅经历':'凭实际取城战功';
-          text=`${issuer?`${issuer}在位时，${name}`:`${name}于${country}`}${basis}晋为${MILITARY_OFFICE_NAMES[grant.office]}。`;
-        }
+        const initial=person.appointments.some(a=>a.officeHistory?.[0]?.eventId===entry.eventId);
+        const basis=grant.promotionBasis==='SERVICE'?'依服役资历，':grant.promotionBasis==='ACTIVITY'?'因实际军旅经历，':grant.promotionBasis==='CAPTURE'?'以取城之功，':'';
+        text=`${name}${initial?'始任':basis+'晋任'}${country}${MILITARY_OFFICE_NAMES[grant.office]}${issuer?`，时${issuer}在位`:''}。`;
+
       }
     }
     if(type==="military-person-died")text=`${name}${militaryDeathWording(person.deathCause)}。`;

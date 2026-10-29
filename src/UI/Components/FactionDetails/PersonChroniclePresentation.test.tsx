@@ -18,7 +18,7 @@ it("keeps canonical orders and evidence intact while the public milestones show 
   const f=fixture(),before=JSON.stringify(f),rng=worldRandom.exportState();
   const rows=militaryMilestones(f.person,f.entries,f.events);
   expect(rows.map(e=>e.eventId)).toEqual(["grant","capture"]);
-  expect(rows.map(e=>e.text)).toEqual(["赵授赵彦为裨将。","赵攻克齐都临淄，赵将领赵彦所部参战。"]);
+  expect(rows.map(e=>e.text)).toEqual(["赵彦始任赵裨将。","赵攻克齐都临淄，赵将领赵彦所部参战。"]);
   expect(rows.map(e=>e.text).join("")).not.toMatch(/核验|编组|不代表|0个月|亲自|亲征/);
   expect(JSON.stringify(f)).toBe(before);expect(worldRandom.exportState()).toEqual(rng);
   f.events[2].importance="major";

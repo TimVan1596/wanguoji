@@ -46,7 +46,7 @@ export function validateMilitaryPoliticalParticipation(save: WorldSaveV1): strin
       const rulers = (dynasty.rulers as Parameters<typeof importRulerSave>[0][]).map(importRulerSave);
       const previous = rulers.find(r => r.id === event.metadata?.previousRulerId)!;
       if (!previous) { fail(); continue; }
-      if(!validNoblePoliticalSelection(s,save,before,at,record.factionId,{...dynasty,rulers} as any,previous.id)){fail();continue;}
+      if(!validNoblePoliticalSelection(s,save,before,at,record.factionId,{...dynasty,rulers} as any,previous.id,record.version)){fail();continue;}
       if (record.kind === "DEPOSITION") {
         const evidence = getRecentDepositionEvidence(record.factionId, before.filter(e => record.crisisEventIds.includes(e.id)), at);
         const baseline = Math.min(.015, .005 + Math.max(0, evidence.length - 1) * .005);

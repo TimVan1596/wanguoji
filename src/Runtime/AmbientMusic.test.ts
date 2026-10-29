@@ -192,7 +192,7 @@ describe("Ambient Music I", () => {
 
   it("shows the imported runtime version and keeps music preferences outside WorldSave", () => {
     expect(getSettingsVersionLabel()).toBe(`当前版本：${APP_VERSION}`);
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(30);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(31);
   });
 
   it("resolves bundled music under the current Web/Desktop asset base", () => {

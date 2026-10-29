@@ -1,3 +1,4 @@
+import {formatChronicleDate,chronicleReadingText} from '../../../History/ChronicleReading';
 import {createRoyalReadingProjection} from './RoyalReadingProjection';
 import {createMilitaryArchiveIndex} from './MilitaryArchiveIndex';
 import MilitaryDetailProjection from './MilitaryDetailProjection';
@@ -1163,7 +1164,7 @@ function RulerBiography({
   const parent=rulers.find(p=>p.id===ruler.parentId),predecessor=rulers.find(p=>p.id===ruler.predecessorId);
   const title=hasRecordedRulerDeath(ruler)&&ruler.endYear!==undefined&&(ruler.templeName||ruler.posthumousEpithet)?formatPosthumousRulerName(ruler,team,ruler.endYear):formatRulerName(ruler);
   const posthumousLines=hasRecordedRulerDeath(ruler)?getPosthumousLabelLines(ruler,team,ruler.endYear??worldMonth):[];
-  const textFor=(event:WorldEvent)=>(formatRulerMilitaryEvent(event,ruler,team.name,worldMonth,{factions:factionById,people:MilitaryCommandRegistry.getPeople(),events})??formatRulerTerminalEvent(event,ruler,team.name,factionById)??formatRulerDiplomacyEvent(event,factionById,ruler.id)??formatFactionHistoryEvent(event,team.name,factionById)??formatHistoryEventTitle(event,factionById)).replace(/所属编组/g,"所部");
+  const textFor=(event:WorldEvent)=>chronicleReadingText(event,(formatRulerMilitaryEvent(event,ruler,team.name,worldMonth,{factions:factionById,people:MilitaryCommandRegistry.getPeople(),events})??formatRulerTerminalEvent(event,ruler,team.name,factionById)??formatRulerDiplomacyEvent(event,factionById,ruler.id)??formatFactionHistoryEvent(event,team.name,factionById)??formatHistoryEventTitle(event,factionById)),events);
   return <Box sx={{border:"1px solid var(--gg-border)",borderRadius:"var(--gg-radius)",p:1,background:"var(--gg-panel)"}}>
     <PersonChronicleLayout title={<><Typography fontWeight="bold">{title}</Typography><Typography fontSize="0.76rem" color="var(--gg-text-muted)">{formatRulerLifeAge(ruler,worldMonth,false,team.status!=="EXTINCT")}</Typography></>}
       identity={<ChronicleSection title="身份与王统">
@@ -1174,9 +1175,9 @@ function RulerBiography({
       </ChronicleSection>}
       preBiography={<RulerServicePanel reading={{earlier:reading.earlier,rows:reading.service}} ruler={ruler} factionId={team.name} month={worldMonth}/> }
       biographyTitle="生平本纪" biography={ruler.residentIdentity?[`${formatWorldDate(ruler.residentIdentity.foundedMonth)}，${ruler.residentIdentity.military?`原任${ruler.residentIdentity.sourceFactionName}${MILITARY_OFFICE_NAMES[ruler.residentIdentity.military.office as keyof typeof MILITARY_OFFICE_NAMES]??"将领"}，率${ruler.residentIdentity.military.participants.length-1}名旧部`:`原为${ruler.residentIdentity.sourceFactionName}居民` }，于${ruler.residentIdentity.cityName}参与起事，脱离原政权并成为新势力首领。`,...bio.life]:bio.life} milestoneTitle="重大纪年" milestoneTotal={fullMilestoneEvents.length} personKey={ruler.id}
-      allMilestones={()=>fullMilestoneEvents.map(event=>({id:event.id,content:<Typography fontSize="0.82rem">{formatWorldDate(event.monthIndex??event.year)} · {textFor(event)}</Typography>}))}
+      allMilestones={()=>fullMilestoneEvents.map(event=>({id:event.id,content:<Typography fontSize="0.82rem">{formatChronicleDate(event.monthIndex??event.year)}，{textFor(event)}</Typography>}))}
       milestones={milestoneEvents.map(event=>({id:event.id,content:<>
-        <Typography fontSize="0.82rem">{formatWorldDate(event.monthIndex??event.year)} · {textFor(event)}</Typography>
+        <Typography fontSize="0.82rem">{formatChronicleDate(event.monthIndex??event.year)}，{textFor(event)}</Typography>
 
       </>}))}
       governance={<ChronicleSection title="治世与国势">
@@ -1202,7 +1203,7 @@ function RulerBiography({
           <HistoricalEvidence eventId={event.id} source={event.type}/>
         </>}))}/>
         <HistoricalEventArchive title="任期国家原始事件（不全属个人事迹）" totalCount={reading.reignEvents.length} entries={()=>reading.reignEvents.map(event=>({id:event.id,content:<>
-          <Typography fontSize="0.78rem">{formatWorldDate(event.monthIndex??event.year)} · {textFor(event)}</Typography>
+          <Typography fontSize="0.78rem">{formatChronicleDate(event.monthIndex??event.year)}，{textFor(event)}</Typography>
           <HistoricalEvidence eventId={event.id} source={event.type}/>
         </>}))}/>
       </>}
