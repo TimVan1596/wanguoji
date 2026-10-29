@@ -348,6 +348,7 @@ class FactionRegistryStore {
       ((getFactionStability(previousOwner) ?? 100) >= EMPIRE_SPLIT_STABILITY_THRESHOLD && politicalStrain < EMPIRE_SPLIT_STRAIN_THRESHOLD) || coreCity.isInCaptureGrace(year)) return undefined;
     const candidates = assessPopularSupport(coreCity, year).users.filter(u=>!this.foundingTransactions.has(u));
     if (!candidates.length) return undefined;
+    const targetPopulation=localOpportunity?undefined:worldRandom.int(REBEL_INITIAL_POPULATION_MIN,REBEL_INITIAL_POPULATION_MAX);
     const military=assessMilitarySecession(coreCity,year);
     if(localOpportunity&&!military)return undefined;
     if(localOpportunity&&military){
@@ -359,7 +360,7 @@ class FactionRegistryStore {
         sourceCityCount:previousOwner.cities.length,activeFactionCount:core.teams.filter(t=>!t.isDie).length,
         supporter:{userId:supporter.id,bornMonth:supporter.bornMonth,unitId:p.logicalUnitId!,x:core.logicalGameplayAuthority?s.logicalX:p.x,y:core.logicalGameplayAuthority?s.logicalY:p.y,loyalty:supporter.loyalty}};
     }
-    const lowLoyaltyUsers = military?.users??candidates.slice(0,worldRandom.int(REBEL_INITIAL_POPULATION_MIN,REBEL_INITIAL_POPULATION_MAX));
+    const lowLoyaltyUsers = military?.users??candidates.slice(0,targetPopulation!);
     const name = createRebelFactionName(coreCity, "REBEL", this.getExistingNames());
     const color = this.createRebelColor();
     const team = new Team(

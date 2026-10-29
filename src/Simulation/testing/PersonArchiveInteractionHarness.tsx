@@ -28,7 +28,8 @@ export async function checkPersonArchiveInteraction(core:Core,factionId:string,p
   flushSync(()=>heading.click());await pause();
   check(host.textContent?.includes("早年与登位前经历"),"opening real ruler details mounts verified early military history");
   check(!host.querySelector('[data-royal-evidence]'),'closed royal details construct no complete evidence document');
-  const detail=Array.from(host.querySelectorAll('summary')).find(s=>s.textContent==='详细记录')!;flushSync(()=>detail.click());await pause();
+  const detail=Array.from(host.querySelectorAll('summary')).find(s=>s.textContent==='详细记录')!;flushSync(()=>detail.click());
+  for(let i=0;i<40&&!host.querySelector('[data-royal-evidence]');i++)await pause();
   check(host.querySelector('[data-royal-evidence]')&&!host.querySelector('[data-royal-source-event]'),'opening evidence does not eagerly mount nested raw event archives');
   const raw=Array.from(host.querySelectorAll('[data-royal-evidence] summary')).find(s=>s.textContent?.startsWith('任期国家原始事件')) as HTMLElement;flushSync(()=>raw.click());await pause();
   check(host.querySelector('[data-royal-source-event]'),'explicitly opening the complete source archive exposes its original event IDs');
