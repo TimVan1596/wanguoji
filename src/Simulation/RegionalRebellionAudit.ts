@@ -6,6 +6,8 @@ export class RegionalRebellionAudit {
     validOrdinary:0,discontentBlocked:0,geographyBlocked:0,supporters:0,noSupport:0,draws:0,drawFailed:0,executionFailed:0,
     popular:0,split:0,territorialReturns:0,splitChecks:0,splitPolitical:0,splitRestored:0,alive12:0,matured12:0,alive60:0,matured60:0,overflow:0};
   popularFunnel={cityChecks:0,political:0,loyaltyBlocked:0,crisisBlocked:0,captureGrace:0,cooldown:0,capacity:0,populationScans:0,validUsers:0,identityBlocked:0,geographyBlocked:0,discontentBlocked:0,supporters:0,noSupport:0,candidates:0,priorityBlocked:0,draws:0,expectedHits:0,hits:0,misses:0,historicalSelected:0,founderRestored:0,failures:0,successes:0};
+  militaryFunnel:Record<string,number>={};
+  militaryStep(reason:string){this.militaryFunnel[reason]=(this.militaryFunnel[reason]??0)+1;}
   popularFailures:Record<string,number>={};
   spatial=emptyPopularSpatialCounts();
   accountSpatial(value:ReturnType<typeof emptyPopularSpatialCounts>){for(const k of Object.keys(this.spatial) as Array<keyof typeof this.spatial>)this.spatial[k]+=value[k];}
@@ -14,7 +16,7 @@ export class RegionalRebellionAudit {
   private checkedCities=new Set<string>();
   cityChecked(id:string){if(this.checkedCities.size<4096)this.checkedCities.add(id);}
   month=0;
-  reset(month:number){this.checkedCities.clear();this.counts=new RegionalRebellionAudit().counts;this.spatial=emptyPopularSpatialCounts();this.pending=[];this.survival=new RegionalRebellionAudit().survival;this.month=month;this.popularFunnel=new RegionalRebellionAudit().popularFunnel;this.popularFailures={};}
+  reset(month:number){this.militaryFunnel={};this.checkedCities.clear();this.counts=new RegionalRebellionAudit().counts;this.spatial=emptyPopularSpatialCounts();this.pending=[];this.survival=new RegionalRebellionAudit().survival;this.month=month;this.popularFunnel=new RegionalRebellionAudit().popularFunnel;this.popularFailures={};}
   observe(month:number,teams:Team[]){
     this.month=month;const active=new Set(teams.filter(t=>t.status==="ACTIVE").map(t=>t.name));
     for(const p of this.pending){p.active&&=active.has(p.id);if(!p.observed12&&month-p.month>=12){p.observed12=true;this.counts.matured12++;this.survival[p.kind].matured12++;if(p.active){this.counts.alive12++;this.survival[p.kind].alive12++;}}
@@ -22,7 +24,7 @@ export class RegionalRebellionAudit {
     this.pending=this.pending.filter(p=>month-p.month<60);
   }
   created(team:Team,month:number,kind:"popular"|"split"){this.counts[kind]++;if(this.pending.length<256)this.pending.push({id:team.name,month,active:true,observed12:false,kind});else this.counts.overflow++;}
-  snapshot(restored=0){return {...this.counts,distinctCheckedCities:this.checkedCities.size,cityTrackingCapacity:4096,survival:structuredClone(this.survival),popularFunnel:{...this.popularFunnel},popularFailures:{...this.popularFailures},spatial:{...this.spatial},restored:restored+this.counts.splitRestored,worldMonth:this.month,insufficient12:this.pending.filter(p=>!p.observed12).length,insufficient60:this.pending.length};}
+  snapshot(restored=0){return {...this.counts,militaryFunnel:{...this.militaryFunnel},distinctCheckedCities:this.checkedCities.size,cityTrackingCapacity:4096,survival:structuredClone(this.survival),popularFunnel:{...this.popularFunnel},popularFailures:{...this.popularFailures},spatial:{...this.spatial},restored:restored+this.counts.splitRestored,worldMonth:this.month,insufficient12:this.pending.filter(p=>!p.observed12).length,insufficient60:this.pending.length};}
   summary(restored=0){const c=this.snapshot(restored);return [
     "地方叛乱与帝国分裂（本次会话，读档重置；检查/候选均为累计人次或城次，非独立数量）",
     `实际城市检查${c.cityChecks}城次（涉及${c.distinctCheckedCities}座，跟踪上限4096）；民变城市政治资格通过${c.politicalCities}；城市忠诚不足以形成危机${c.loyaltyBlocked}；国家稳定度阻断${c.stabilityBlocked}；势力数量上限阻断${c.capacityBlocked}`,
@@ -33,6 +35,7 @@ export class RegionalRebellionAudit {
     `逻辑身份引用不符${this.spatial.referenceMismatch}（其中位置可解析且在本国地块${this.spatial.referenceWithOwnedPosition}，仍不作为合法响应者）；辖区只说明当前控制联系，不证明籍贯或居住史。`,
     `普通民变独立漏斗（年度抽查城次，非每月/独立城市；不含帝国分裂）：检查${c.popularFunnel.cityChecks}；忠诚阻断${c.popularFunnel.loyaltyBlocked}；无成熟政治危机${c.popularFunnel.crisisBlocked}；政治危机${c.popularFunnel.political}；占领保护${c.popularFunnel.captureGrace}；冷却${c.popularFunnel.cooldown}；势力上限${c.popularFunnel.capacity}；真实居民${c.popularFunnel.validUsers}人次；身份阻断${c.popularFunnel.identityBlocked}；空间阻断${c.popularFunnel.geographyBlocked}；不满不足${c.popularFunnel.discontentBlocked}；支持者${c.popularFunnel.supporters}；候选${c.popularFunnel.candidates}`,
     `民变候选共享抽签${c.popularFunnel.draws}，累计命中期望${c.popularFunnel.expectedHits.toFixed(2)}；命中原入口${c.popularFunnel.hits}；未命中${c.popularFunnel.misses}；旧国优先阻断${c.popularFunnel.priorityBlocked}；抽中历史复国${c.popularFunnel.historicalSelected}；建城者复国${c.popularFunnel.founderRestored}；新建势${c.popularFunnel.successes}；执行失败${c.popularFunnel.failures}${Object.keys(this.popularFailures).length?`（${Object.entries(this.popularFailures).map(([k,v])=>`${k}：${v}`).join("；")}）`:""}`,
+    `军人生产漏斗（城次／候选人次可重叠）：${Object.entries(this.militaryFunnel).map(([k,v])=>`${k} ${v}`).join("；")}`,
     `军权地方机会（共享民变原抽签）：合格${c.militaryQualifiedSlots}城次；共享抽签${c.militarySharedDraws}，命中期望${c.militarySharedExpected.toFixed(2)}；命中${c.militarySharedHits}；军事建势${c.militaryFoundings}；事务失败${c.militaryFailures}。不是逐将领抽签，食邑不产生部队。`,
     `真正城市政治抽签${c.draws}（包括原复国共享抽签，非额外民变抽签）；未命中${c.drawFailed}；新建势执行失败${c.executionFailed}`,
     `帝国候选检查${c.splitChecks}；分裂政治资格通过${c.splitPolitical}；民众叛乱成功${c.popular}；帝国分裂成功${c.split}；原历史势力恢复${c.restored}；旧建城者在国、纯城市归还${c.territorialReturns}`,

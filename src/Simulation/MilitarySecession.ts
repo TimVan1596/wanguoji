@@ -32,6 +32,7 @@ export function assessMilitarySecession(city:City,month:number, observe?:(reason
  for(const b of influence.blocked)observe?.(b.reason);
  if(!influence.candidates.length)observe?.("NO_QUALIFIED_COMMAND");
  for(const candidate of influence.candidates){
+  observe?.("VALID_MILITARY_COMMAND");
   const person=Military.getPerson(candidate.personId),formation=Military.getFormation(candidate.commandId);
   const commander=[...owner.users].find(u=>u.id===candidate.sourceUserId&&u.militaryPersonId===candidate.personId);
   if(!person||person.royalIdentity||!formation||!commander||!commander.matchesMilitaryLife(person)||!splitEstablishedPersonalName(person.personalName)){observe?.("IDENTITY_OR_ROYAL");continue;}

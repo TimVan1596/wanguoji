@@ -821,6 +821,14 @@ export default class WorldEventSystem {
       const owner = city.ownerTeam;
       const founder = city.founderTeam;
       if (!owner) continue;
+      this.regional.militaryStep('CITY_CHECK');
+      if(politicalBeforeFilters){
+        this.regional.militaryStep('POLITICAL_CRISIS');
+        assessMilitarySecession(city,year,r=>this.regional.militaryStep(r));
+        if(owner.cities.length<2)this.regional.militaryStep('ONE_CITY');
+        if(!assessPopularSupport(city,year).users.length)this.regional.militaryStep('NO_OTHER_SUPPORT');
+        if(founder?.status==='EXILED')this.regional.militaryStep(FactionRegistry.canRestoreFaction(founder,year)?'FOUNDER_RESTORABLE':'FOUNDER_EXILED_NOT_RESTORABLE');
+      }else this.regional.militaryStep('NO_CRISIS');
       const rules = exiled.length ? deriveHistoricalCityRules(city, year, formalMonths) : undefined;
       const localHistoryCount = (rules ?? []).filter(r => zeroRemnantExiles.some(t => t.name === r.factionId) && getHistoricalRestorationBasis(r)).length;
       local.candidateChecks += zeroRemnantExiles.length;
