@@ -2948,5 +2948,24 @@
       "commandId": "military-command-1",
       "saveSchemaVersion": 34
     }
-  ]
+  ],
+  "releaseVerification": {
+    "APP": "v0.99931z32",
+    "package": "0.99.198",
+    "WorldSave": 34,
+    "unitTests": {
+      "command": "VITEST_MAX_THREADS=2 VITEST_MIN_THREADS=1 pnpm test",
+      "files": 284,
+      "passed": 2239,
+      "failed": 0
+    },
+    "builds": {
+      "pnpm build": "PASS",
+      "pnpm desktop:build": "PASS",
+      "pnpm desktop:renderer-debug-build": "PASS"
+    },
+    "oldV33Rejected": true,
+    "humanChromeGate": "PENDING; visual and 4x experience require user; do not start z33",
+    "coreSupportTransaction": "PASS: existing legal claims, source office and User, failure rollback, frozen political evidence validation, canonical hydration, deterministic 12 month continuation and second read"
+  }
 }
