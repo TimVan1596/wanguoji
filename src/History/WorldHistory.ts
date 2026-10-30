@@ -1,3 +1,4 @@
+import {formatPoliticalEvent} from "../Politics/PoliticalEventNarrative";
 import {metadataFactionReferences} from "./HistoricalLabelMetadata";
 import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
 import { frameAttribution } from "../Simulation/FrameAttribution";
@@ -349,6 +350,7 @@ export class WorldHistoryStore {
   }
 
   addEvent(event: WorldEvent) {
+    const politicalText=formatPoliticalEvent(event);if(politicalText)event={...event,description:politicalText};
     const normalizedEvent = { ...event, monthIndex: event.monthIndex ?? event.year,
       metadata: event.metadata ? { ...event.metadata } : undefined };
     this.events.push(normalizedEvent);

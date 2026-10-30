@@ -1,3 +1,4 @@
+import PoliticalCrisisDetails from "../PoliticalCrisisDetails";
 import MilitaryDispositionPanel from "./MilitaryDispositionPanel";
 import {rebelFounderCommand} from "../../../Politics/RebelCommandIdentity";
 import {formatChronicleDate,chronicleReadingText} from '../../../History/ChronicleReading';
@@ -1197,7 +1198,7 @@ function RulerBiography({
       </ChronicleSection>}
       assessment={bio.assessment} voice={bio.voice}
       evidence={()=> <Box data-royal-evidence>
-        {fullMilestoneEvents.filter(e=>e.type==="ruler-deposed").map(e=><DepositionSelectionDetails key={e.id} event={e}/>)}
+        {fullMilestoneEvents.filter(e=>["ruler-deposed","dynasty-usurped"].includes(e.type)).map(e=><div key={e.id}><PoliticalCrisisDetails event={e}/><DepositionSelectionDetails event={e}/></div>)}
         <Typography fontSize="0.78rem">即位年龄{Math.floor(monthsToYears(ruler.accessionYear-ruler.bornYear))}岁；{formatRulerLifeAge(ruler,worldMonth,false,team.status!=="EXTINCT")}</Typography>
         {posthumousLines.map(line=><Typography key={line} fontSize="0.78rem">{line}</Typography>)}
         {ruler.residentIdentity&&<Typography fontSize="0.78rem">居民身份：{ruler.residentIdentity.personId}；原User {ruler.residentIdentity.sourceUserId} / {ruler.residentIdentity.sourceUserLabel}；出生{formatWorldDate(ruler.residentIdentity.bornMonth)}</Typography>}

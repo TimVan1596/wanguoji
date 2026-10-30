@@ -79,7 +79,7 @@ describe("verified genealogy identity and restrained hierarchy", () => {
     for (let i = 0; i < 150; i++) expect(result.get(`ordinary${i}`)!.theme).toBe("neutral");
     expect(genealogyThemeStyles.neutral.borderColor).toBe("var(--gg-border)");
     const reload = { ...d, rulers: d.rulers.map(r => importRulerSave(exportRulerSave(r))) };
-    expect([...derive(reload, faction, events, 500)]).toEqual([...result]); expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(34);
+    expect([...derive(reload, faction, events, 500)]).toEqual([...result]); expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(35);
     expect(JSON.stringify([d, events])).toBe(before); expect(random.exportState()).toEqual(rng);
     expect(JSON.stringify(buildPoliticalGenealogy(d.rulers, d.currentRulerId, d.designatedHeirId, d.heirIds))).toBe(graph);
     for (const scale of [.5, 1, 1.5]) expect(getGenealogyCanvasLayout(1200, 800, 600, 400, scale).width).toBe(Math.max(600, 1200 * scale));

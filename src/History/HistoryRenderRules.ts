@@ -1,3 +1,4 @@
+import {formatPoliticalEvent} from "../Politics/PoliticalEventNarrative";
 import {militaryDeathWording} from '../Politics/MilitaryLifePresentation';
 import {formatFoundingIdentity} from "./FoundingIdentityNarrative";
 import {metadataFactionReferences} from "./HistoricalLabelMetadata";
@@ -187,6 +188,7 @@ function formatHistoryEventTitleBase(
       : `${oldName}正式建国，定国号“${newName}”。`;
   }
   if (event.type === "dynasty-usurped") {
+    const political=formatPoliticalEvent(event);if(political)return political;
     const oldName = stringMeta(event, "oldStateName") || name(event.actorFactionId);
     const newName = stringMeta(event, "newStateName");
     const newRuler = stringMeta(event, "newRulerName") || historicalRulerName(event, name, factionById, rulersById);
@@ -195,6 +197,7 @@ function formatHistoryEventTitleBase(
     return `${oldName}国易代：${rulerClause}${newName && oldName !== newName ? `，改国号为${newName}` : ""}。`;
   }
   if (event.type === "ruler-deposed") {
+    const political=formatPoliticalEvent(event);if(political)return political;
     const oldName = stringMeta(event, "previousRulerName") || "前君";
     const newName = stringMeta(event, "nextRulerName") || "宗室";
     const relationCode = stringMeta(event, "relation") ?? "";
@@ -429,6 +432,7 @@ export function formatHistoryEventDescription(
   if (merged) return merged.description;
   if (event.type === "faction-submitted") return undefined;
   // Diplomatic titles already show recorded term/expiry; details expose the evidence.
+  if(formatPoliticalEvent(event))return undefined;
   // Also applies to old V10 descriptions without rewriting the canonical event.
   if (event.metadata && formatRulerDiplomacyEvent(event, factionById) !== undefined) return undefined;
   const month = event.monthIndex ?? event.year;

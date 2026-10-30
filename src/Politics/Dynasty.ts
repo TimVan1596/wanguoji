@@ -1,3 +1,5 @@
+import {capturePoliticalCrisis,politicalCapital} from "./PoliticalEventNarrative";
+import {verifiedPoliticalOffice} from "./MilitaryPoliticalInfluence";
 import {splitEstablishedPersonalName} from "./NameCulture";
 import {deriveMilitaryLifeSchedule} from "./MilitaryLifeRules";
 import type {MilitarySecessionEvidence} from "../Simulation/MilitarySecession";
@@ -730,6 +732,7 @@ class DynastyRegistryStore {
           revolution.observedPoliticalShocks.map(s => s.eventId), revolution.baselineChance, revolution.chance, revolution.rollResult,
           { stability: revolutionContext.stability, cityCount: revolutionContext.cityCount, riskTier: revolution.riskTier }, WorldHistory.getEventsForFaction(team.name)) : {}),
         ...captureAccessionCapital(team, year, nextRuler.id, predecessor.id),
+        politicalCrisis:JSON.stringify(capturePoliticalCrisis({kind:'REVOLUTION',factionId:team.name,worldMonth:year,countryName:oldStateName,cityCount:revolutionContext.cityCount,stability:revolutionContext.stability,...politicalCapital(captureAccessionCapital(team,year,nextRuler.id,predecessor.id)),successorBornMonth:nextRuler.bornYear},revolution.observedPoliticalShocks.map(s=>s.eventId),revolutionContext.sourceEvents??[])),
         oldHouseName, newHouseName: dynasty.houseName, predecessorRulerId: predecessor.id,
         predecessorRulerName: this.getRulerPersonalName(predecessor), previousRulerTitle,
         displacedSuccessorId: legitimateSuccessor.id, displacedSuccessorName: this.getRulerPersonalName(legitimateSuccessor),
@@ -949,6 +952,11 @@ class DynastyRegistryStore {
     const candidateStatuses = dynasty.rulers.map((ruler) => [ruler.id, ruler.status] as const);
     const monthSnapshot = createRulerSnapshot(team, worldMonth);
     const nextChronicle = createRulerChronicle(monthSnapshot);
+    const successorPerson=successor.militaryIdentity?MilitaryCommandRegistry.getPerson(successor.militaryIdentity.personId):undefined;
+    const successorAppointment=successorPerson?.appointments.filter(a=>a.factionId===team.name&&a.startMonth<=worldMonth&&(a.endMonth??worldMonth)>=worldMonth).at(-1);
+    const successorOffice=successorPerson&&successorAppointment?verifiedPoliticalOffice(successorPerson,successorAppointment.commandId,team.name,worldMonth,WorldHistory.getEventsForFaction(team.name)):undefined;
+    const politicalCrisis=capturePoliticalCrisis({kind:'DEPOSITION',factionId:team.name,worldMonth,countryName:team.displayName,cityCount:team.cities.length,stability:getFactionStability(team)??100,...politicalCapital(captureAccessionCapital(team,worldMonth,successor.id,predecessor.id)),successorBornMonth:successor.bornYear,
+      ...(successorPerson&&successorAppointment&&successorOffice?{successorOffice:{personId:successorPerson.personId,commandId:successorAppointment.commandId,office:successorOffice.office,eventId:successorOffice.eventId}}:{})},evaluation.evidence.map(e=>e.eventId),WorldHistory.getEventsForFaction(team.name));
     try {
       predecessor.status = "deposed";
       predecessor.endYear = worldMonth;
@@ -999,7 +1007,7 @@ class DynastyRegistryStore {
       this.refreshDesignatedHeir(dynasty, successor, worldMonth, () => 0);
 
     const eventId = WorldHistory.addRulerDeposed(worldMonth, team.name, team.displayName, predecessor, successor, relation,
-      evaluation.evidence.map(({ eventId: id }) => id), { depositionSelection: JSON.stringify(evaluation.selection), ...captureAccessionCapital(team, worldMonth, successor.id, predecessor.id),
+      evaluation.evidence.map(({ eventId: id }) => id), { politicalCrisis:JSON.stringify(politicalCrisis), depositionSelection: JSON.stringify(evaluation.selection), ...captureAccessionCapital(team, worldMonth, successor.id, predecessor.id),
         ...(evaluation.militaryParticipant ? militaryParticipationMetadata("DEPOSITION", team.name, worldMonth, evaluation.militaryParticipant,
           evaluation.evidence.map(e => e.eventId), evaluation.baselineProbability ?? evaluation.probability, evaluation.probability, evaluation.militaryRoll,
           { stability: getFactionStability(team) ?? 100, cityCount: team.cities.length }, WorldHistory.getEventsForFaction(team.name)) : {}) });
@@ -1423,12 +1431,13 @@ class DynastyRegistryStore {
 
   private revolutionContext(team: Team, dynasty: Dynasty, predecessor: Ruler, successor: Ruler | undefined,
     year: number, reason: "natural" | "combat" | "captured"): RevolutionContext {
-    return { worldMonth: year, identityStage: team.identityStage, status: team.status,
+    const sourceEvents=predecessor.status==='dead'&&predecessor.deathMonth===year?WorldHistory.getEventsForFaction(team.name):[];
+    return { sourceEvents,worldMonth: year, identityStage: team.identityStage, status: team.status,
       stability: getFactionStability(team) ?? 100, cityCount: team.cities.length,
       predecessor, successor, successionReason: reason, factionId: team.name,
       // Candidate previews do not scan historical evidence or create political opportunities.
       politicalShocks: predecessor.status === "dead" && predecessor.deathMonth === year
-        ? derivePoliticalSuccessionShocks(team.name, predecessor, year, WorldHistory.getEventsForFaction(team.name)) : [],
+        ? derivePoliticalSuccessionShocks(team.name, predecessor, year, sourceEvents) : [],
       military: predecessor.status === "dead" && predecessor.deathMonth === year ? MilitaryCommandRegistry.getPoliticalInfluence(team, year, Game.Core?.logicalUnitRegistry) : undefined,
       previousSuccessionMonths: dynasty.rulers.filter((ruler) => ruler.predecessorId && ruler.accessionYear !== undefined)
         .map((ruler) => ruler.accessionYear!) };

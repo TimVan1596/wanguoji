@@ -1,3 +1,4 @@
+import {formatPoliticalEvent,politicalCauseText} from "./PoliticalEventNarrative";
 import {militaryReignRelation} from "./RulerMilitaryBoundary";
 import { deriveRulerReignTrajectory, type RulerReignTrajectory } from "./RulerReignTrajectory";
 import { normalizeRulerPoliticalFacts, summarizeRulerPoliticalFacts } from "./RulerPoliticalFacts";
@@ -95,6 +96,7 @@ export interface RulerHistoricalEvidence {
 }
 
 export interface RulerPoliticalFact {
+  politicalCause?:string; politicalNarrative?:string;
   eventId: string;
   historyGroupId?: string;
   month: number;
@@ -332,6 +334,7 @@ function deriveRulerEvidence(
     const metadata = event.metadata ?? {};
     return [{ eventId: event.id, historyGroupId: event.historyGroupId, month, factionId: faction.name, rulerId: direct || subject ? ruler.id : undefined,
       role, type: event.type, confidence: direct || subject ? "DIRECT" : "TENURE", participantRole, usurpationRole,
+      politicalCause:politicalCauseText(event),politicalNarrative:formatPoliticalEvent(event),
       depositionRole, relatedRulerId, relatedRulerName, recordedKinRelation,
       oldHouseName: typeof metadata.oldHouseName === "string" ? metadata.oldHouseName : undefined,
       newHouseName: typeof metadata.newHouseName === "string" ? metadata.newHouseName : undefined,
@@ -639,9 +642,9 @@ function composeLegacyRulerAssessment(evidence: RulerHistoricalEvidence): RulerA
       ? `，国号由${usurpation.oldStateName}改为${usurpation.newStateName}` : "";
     lines.push(`${livingPrefix}其以篡朝方式夺取王统，${newHouse}取代${replacedHouse}${displaced}${nameChange}。`);
   } else if (deposition?.depositionRole === "DEPOSED_RULER") {
-    lines.push(`${livingPrefix}其在位末期被宗室${deposition.relatedRulerName ?? "成员"}废黜；废位本身不证明其失地或其他危局就是废立原因。`);
+    if(deposition.politicalNarrative)lines.push(deposition.politicalNarrative);else lines.push(`${livingPrefix}其在位末期被宗室${deposition.relatedRulerName ?? "成员"}废黜；废位本身不证明其失地或其他危局就是废立原因。`);
   } else if (deposition?.depositionRole === "DEPOSING_SUCCESSOR") {
-    lines.push(`${livingPrefix}其在前君仍在世时经宗室废立取得君位；这一政治身份与其后任内治绩应分别考察。`);
+    if(deposition.politicalNarrative)lines.push(deposition.politicalNarrative);else lines.push(`${livingPrefix}其在前君仍在世时经宗室废立取得君位；这一政治身份与其后任内治绩应分别考察。`);
   } else if (evidence.foundedState) {
     lines.push(`${livingPrefix}${agePrefix}其开创之功在于正式建国${evidence.foundedStateName ? evidence.foundedStateName === "王" ? "、确立王国的统治基础" : `、奠定${evidence.foundedStateName}国统` : "，使政权成为正式国家"}。`);
   } else if (evidence.foundedFaction) {
@@ -888,6 +891,7 @@ export function composeHistorianVoice(evidence: RulerHistoricalEvidence): string
     const ending = laterDeath && evidence.deathMonth !== undefined
       ? `，于${formatWorldDate(evidence.deathMonth)}真实去世`
       : "";
+    if(deposition.politicalCause)return `${deposition.politicalCause}其在位末期遭宗室废立${ending}；废位后的生命结局仍据本人记录。`;
     return `其在位末期遭宗室废立，废位后${laterDeath ? "仍继续生存，后来才有真实死亡记录" : "的生死依实际记录另行判断"}；${outcome}${ending}。王位易手与国势变化均可考，但不足以证明前者由后者造成。`;
   }
   if (deposition?.depositionRole === "DEPOSING_SUCCESSOR") {

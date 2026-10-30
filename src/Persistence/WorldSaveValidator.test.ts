@@ -81,7 +81,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     delete missing.dynasties[0].houseEpochs;
     expect(validateWorldSave(missing).errors).toContain("faction.colorHistory must be non-empty");
     expect(validateWorldSave(missing).errors).toContain("dynasty.houseEpochs must be non-empty");
-    for (const old of [33, 13, 9, 8, 7, 6, 1]) expect(validateWorldSave({ ...parsed, saveSchemaVersion: old }).errors).toContain("该存档版本已不受支持，请创建新世界。");
+    for (const old of [34, 33, 13, 9, 8, 7, 6, 1]) expect(validateWorldSave({ ...parsed, saveSchemaVersion: old }).errors).toContain("该存档版本已不受支持，请创建新世界。");
     parsed.dynasties[0].houseEpochs[1].displacedSuccessorId = "missing";
     expect(validateWorldSave(parsed).valid).toBe(false);
     parsed.dynasties[0].houseEpochs[1].displacedSuccessorId = "heir";
@@ -120,8 +120,8 @@ describe("WorldSaveV1 validation and JSON contract", () => {
   });
   it("uses schema V10 and persists alliance/merge fields plus the deterministic random stream", () => {
     const save = fixture();
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(34);
-    expect(save.saveSchemaVersion).toBe(34);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(35);
+    expect(save.saveSchemaVersion).toBe(35);
     expect(validateWorldSave({...save,saveSchemaVersion:21}).valid).toBe(false);expect(validateWorldSave({...save,saveSchemaVersion:30}).valid).toBe(false);
     expect(save.diplomacy).toEqual({ relations: [], pairMemories: [], lastEvaluationMonth: -1 });
     expect(save.worldRandom).toMatchObject({ algorithm: "mulberry32-v1", seed: expect.any(String), state: expect.any(Number), position: 0 });
@@ -240,7 +240,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     expect(loaded.dynasties[0]).toMatchObject({ designatedHeirId: "qin-ruler-2", designatedSinceMonth: 36 });
     expect(loaded.dynasties[0].rulers[2]).toMatchObject({ parentId: "qin-ruler-2", relationType: "DIRECT_CHILD" });
     expect(loaded.dynasties[0].rulers[3]).toMatchObject({ rulerId: "qin-ruler-4", bornMonth: -200, status: "kin", parentId: "qin-ruler-1" });
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(34);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(35);
   });
 
   it("rejects a dynasty candidate list above the runtime bound", () => {

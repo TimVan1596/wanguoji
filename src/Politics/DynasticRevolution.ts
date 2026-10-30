@@ -16,6 +16,8 @@ export interface DynastyHouseEpoch {
 }
 
 export interface RevolutionContext {
+  /** Transient indexed source view shared with the event writer, never a save field. */
+  sourceEvents?:readonly import("../History/WorldHistory").WorldEvent[];
   worldMonth: number; identityStage: string; status: string; stability: number; cityCount: number;
   predecessor: Ruler; successor?: Ruler; successionReason: "natural" | "combat" | "captured";
   previousSuccessionMonths: number[];
