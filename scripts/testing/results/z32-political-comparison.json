@@ -1,0 +1,4676 @@
+{
+  "scope": "Paired real Phaser/Core; 2 seeds x 50 years, one seed x 100 years. The 100-year regional-3 extends the same 50-year sample; do not add them as independent worlds. All samples use unchanged population/siege/office promotion rules.",
+  "baseline": "9a1c31fde38225eacc2108d265606f774016f17b",
+  "schema": 34,
+  "newIndependentLottery": false,
+  "conclusion": "Observed rates unchanged in this small cohort. No natural palace support/deposition/usurpation observed; controlled real transactions verify those effects. Candidate checks count observations, not distinct people. Military founding increments the shared popular entry success counter; count its source event once.",
+  "runs": [
+    {
+      "worldPopulation": 137,
+      "peakWorldPopulation": 153,
+      "populationTotals": {
+        "net": 81,
+        "naturalGrowth": 170,
+        "external": 5,
+        "warDeaths": 31,
+        "naturalDeaths": 69,
+        "ordinaryNaturalDeaths": 67,
+        "militaryNaturalDeaths": 2,
+        "transferIn": 7,
+        "transferOut": 7,
+        "special": 15,
+        "otherNet": -9,
+        "unattributed": 0
+      },
+      "populationUnexplained": 0,
+      "politicalCandidateChecks": 10,
+      "militarySplits": 0,
+      "rebellions": 0,
+      "depositions": 0,
+      "usurpations": 0,
+      "militaryPoliticalEvents": 0,
+      "meanActiveStates": 6.513333333333334,
+      "meanEndedStateLifetimeMonths": 549,
+      "formationOwnershipConflicts": 0,
+      "militaryRoyalOverlap": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "strictSaveValid": true,
+      "regional": {
+        "militaryQualifiedSlots": 0,
+        "militarySharedDraws": 0,
+        "militarySharedExpected": 0,
+        "militarySharedHits": 0,
+        "militaryFoundings": 0,
+        "militaryFailures": 0,
+        "cityChecks": 694,
+        "politicalCities": 6,
+        "loyaltyBlocked": 688,
+        "stabilityBlocked": 0,
+        "capacityBlocked": 0,
+        "identityBlocked": 19,
+        "validOrdinary": 136,
+        "discontentBlocked": 17,
+        "geographyBlocked": 108,
+        "supporters": 11,
+        "noSupport": 1,
+        "draws": 5,
+        "drawFailed": 5,
+        "executionFailed": 0,
+        "popular": 0,
+        "split": 0,
+        "territorialReturns": 0,
+        "splitChecks": 27,
+        "splitPolitical": 0,
+        "splitRestored": 0,
+        "alive12": 0,
+        "matured12": 0,
+        "alive60": 0,
+        "matured60": 0,
+        "overflow": 0,
+        "militaryFunnel": {
+          "CITY_CHECK": 694,
+          "NO_CRISIS": 688,
+          "NOT_ACTIVE": 47,
+          "VALID_MILITARY_COMMAND": 4,
+          "SERVING_COMMANDER": 4,
+          "LOCAL_COMMANDER": 1,
+          "QUALIFIED_LOCAL_PARTY": 1,
+          "ARMED_CITY_CRISIS": 21,
+          "POLITICAL_CRISIS": 6,
+          "FOUNDER_RESTORABLE": 6,
+          "COMMANDER_OTHER_DISTRICT": 3,
+          "COMMANDER_NOT_LOCAL_OR_WILLING": 3,
+          "RETIREMENT_AGE": 1,
+          "NO_QUALIFIED_COMMAND": 17,
+          "NO_OTHER_SUPPORT": 1,
+          "INSUFFICIENT_CAREER": 5
+        },
+        "distinctCheckedCities": 17,
+        "cityTrackingCapacity": 4096,
+        "survival": {
+          "popular": {
+            "matured12": 0,
+            "alive12": 0,
+            "matured60": 0,
+            "alive60": 0
+          },
+          "split": {
+            "matured12": 0,
+            "alive12": 0,
+            "matured60": 0,
+            "alive60": 0
+          }
+        },
+        "popularFunnel": {
+          "cityChecks": 694,
+          "political": 6,
+          "loyaltyBlocked": 661,
+          "crisisBlocked": 27,
+          "captureGrace": 0,
+          "cooldown": 0,
+          "capacity": 0,
+          "populationScans": 6,
+          "validUsers": 136,
+          "identityBlocked": 19,
+          "geographyBlocked": 108,
+          "discontentBlocked": 17,
+          "supporters": 11,
+          "noSupport": 1,
+          "candidates": 5,
+          "priorityBlocked": 0,
+          "draws": 5,
+          "expectedHits": 0.12932942,
+          "hits": 0,
+          "misses": 5,
+          "historicalSelected": 0,
+          "founderRestored": 0,
+          "failures": 0,
+          "successes": 0
+        },
+        "popularFailures": {},
+        "spatial": {
+          "invalidPosition": 0,
+          "unowned": 0,
+          "foreign": 0,
+          "otherCity": 17,
+          "otherDistrict": 91,
+          "disconnected": 0,
+          "outsideLegacy": 109,
+          "recoveredDistrict": 18,
+          "emptyLegacyArea": 0,
+          "emptyDistrict": 0,
+          "referenceMismatch": 0,
+          "referenceWithOwnedPosition": 0,
+          "arcadePosition": 136,
+          "logicalPosition": 0,
+          "staleRegistryPosition": 131
+        },
+        "restored": 0,
+        "worldMonth": 600,
+        "insufficient12": 0,
+        "insufficient60": 0
+      },
+      "naturalMilitarySources": [],
+      "depositionDiagnostics": {
+        "observedChecks": 338,
+        "activePolities": 318,
+        "existingAdultKinCandidates": 686,
+        "qualifiedChecks": 4,
+        "royalCommandCrises": 0,
+        "royalCommandCandidateChecks": 0,
+        "royalWeightedSelections": 0,
+        "royalChangedSelections": 0,
+        "drawAttempts": 4,
+        "failures": 4,
+        "successes": 0,
+        "cooldownBlocked": 16,
+        "expectedSuccesses": 0.02,
+        "elapsedYears": 50,
+        "military": {
+          "checks": 338,
+          "crisisChecks": 17,
+          "eligibleActorChecks": 9,
+          "identityBlocked": 0,
+          "riskChanged": 0,
+          "draws": 0,
+          "baselineExpected": 0.02,
+          "finalExpected": 0.02,
+          "militarySuccesses": 0,
+          "militaryFailures": 0,
+          "nonMilitarySuccesses": 0,
+          "chineseSummary": "真实军权政治参与（本次会话，读档重置；非独立国家数）\n政治检查：338次；真实危机检查：17次\n符合军事资格：9人次；军权身份阻断：0人次\n风险实际改变：0次；资格放宽：0次\n军事参与单次抽签：0次（不按将领人数叠加）\n同批抽签原基线条件期望：0.0200；新规则条件期望：0.0200\n军事参与成功：0次；未成功：0次\n无军事参与的政治转型：0次\n区分宗室内部废立与异姓易代；本版未实现将领本人篡位。"
+        },
+        "expectedSuccessesPer100Years": 0.04,
+        "actualSuccessesPer100Years": 0,
+        "recent": [
+          {
+            "factionId": "楚",
+            "month": 600,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "楚-ruler-27",
+              "楚-ruler-42",
+              "楚-ruler-18",
+              "楚-ruler-13"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "韩",
+            "month": 600,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "韩-ruler-38",
+              "韩-ruler-41",
+              "韩-ruler-36"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "齐",
+            "month": 600,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "齐-ruler-21",
+              "齐-ruler-16",
+              "齐-ruler-32",
+              "齐-ruler-37"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "燕",
+            "month": 600,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "燕-ruler-44",
+              "燕-ruler-43",
+              "燕-ruler-22",
+              "燕-ruler-23"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "赵",
+            "month": 600,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "赵-ruler-31",
+              "赵-ruler-39",
+              "赵-ruler-20",
+              "赵-ruler-28"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "秦",
+            "month": 600,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "秦-ruler-34",
+              "秦-ruler-19",
+              "秦-ruler-14"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "楚",
+            "month": 588,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "楚-ruler-27",
+              "楚-ruler-42",
+              "楚-ruler-18",
+              "楚-ruler-13"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "韩",
+            "month": 588,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "韩-ruler-38",
+              "韩-ruler-41",
+              "韩-ruler-36"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "齐",
+            "month": 588,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "齐-ruler-21",
+              "齐-ruler-16",
+              "齐-ruler-32",
+              "齐-ruler-37"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "燕",
+            "month": 588,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "燕-ruler-44",
+              "燕-ruler-43",
+              "燕-ruler-22",
+              "燕-ruler-23"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "赵",
+            "month": 588,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "赵-ruler-31",
+              "赵-ruler-39",
+              "赵-ruler-20",
+              "赵-ruler-28"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "秦",
+            "month": 588,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "秦-ruler-34",
+              "秦-ruler-19",
+              "秦-ruler-14"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "楚",
+            "month": 576,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "楚-ruler-27",
+              "楚-ruler-42",
+              "楚-ruler-18",
+              "楚-ruler-13"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "韩",
+            "month": 576,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "韩-ruler-38",
+              "韩-ruler-41",
+              "韩-ruler-36"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "齐",
+            "month": 576,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "齐-ruler-21",
+              "齐-ruler-16",
+              "齐-ruler-32",
+              "齐-ruler-37"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "燕",
+            "month": 576,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "燕-ruler-44",
+              "燕-ruler-43",
+              "燕-ruler-22",
+              "燕-ruler-23"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "赵",
+            "month": 576,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "赵-ruler-31",
+              "赵-ruler-39",
+              "赵-ruler-20",
+              "赵-ruler-28"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "秦",
+            "month": 576,
+            "blockers": [
+              "COOLDOWN",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "秦-ruler-34",
+              "秦-ruler-19",
+              "秦-ruler-14"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "楚",
+            "month": 564,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "楚-ruler-27",
+              "楚-ruler-42",
+              "楚-ruler-18",
+              "楚-ruler-13"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "韩",
+            "month": 564,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "韩-ruler-38",
+              "韩-ruler-41",
+              "韩-ruler-36"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          }
+        ],
+        "chineseSummary": "宗室废立诊断（本次观察）\n实际观察：50.00年\n已观察在国正式政权：318次\n现存成年宗室候选：686人次\n完整资格通过：4次\n实际抽签：4次\n抽签失败：4次\n实际废立：0次\n冷却阻断：16次\n条件期望废立：0.020次"
+      },
+      "baseFactsSha256": "0fa9e19d7c918fd9e7251bf1ca4cc08a509084b20f9102d1be0236c3dd9361b4",
+      "canonicalSha256": "0bd1006115634b085f20f47b3b9053ee56ae2fe2678920a6a3cb88f38de70f5a",
+      "worldRandomPosition": 3676,
+      "cohort": "z31 baseline",
+      "seed": "regional-1",
+      "years": 50,
+      "elapsedMs": 13815.59999999404,
+      "continuation": null,
+      "activeStates": 6,
+      "minimumActiveStatePopulation": 17,
+      "nonMilitarySplits": 0,
+      "populationAnnual": [
+        {
+          "month": 12,
+          "total": 62
+        },
+        {
+          "month": 24,
+          "total": 76
+        },
+        {
+          "month": 36,
+          "total": 81
+        },
+        {
+          "month": 48,
+          "total": 95
+        },
+        {
+          "month": 60,
+          "total": 102
+        },
+        {
+          "month": 72,
+          "total": 106
+        },
+        {
+          "month": 84,
+          "total": 110
+        },
+        {
+          "month": 96,
+          "total": 120
+        },
+        {
+          "month": 108,
+          "total": 124
+        },
+        {
+          "month": 120,
+          "total": 127
+        },
+        {
+          "month": 132,
+          "total": 132
+        },
+        {
+          "month": 144,
+          "total": 133
+        },
+        {
+          "month": 156,
+          "total": 140
+        },
+        {
+          "month": 168,
+          "total": 146
+        },
+        {
+          "month": 180,
+          "total": 150
+        },
+        {
+          "month": 192,
+          "total": 151
+        },
+        {
+          "month": 204,
+          "total": 152
+        },
+        {
+          "month": 216,
+          "total": 152
+        },
+        {
+          "month": 228,
+          "total": 152
+        },
+        {
+          "month": 240,
+          "total": 152
+        },
+        {
+          "month": 252,
+          "total": 150
+        },
+        {
+          "month": 264,
+          "total": 148
+        },
+        {
+          "month": 276,
+          "total": 147
+        },
+        {
+          "month": 288,
+          "total": 143
+        },
+        {
+          "month": 300,
+          "total": 140
+        },
+        {
+          "month": 312,
+          "total": 135
+        },
+        {
+          "month": 324,
+          "total": 137
+        },
+        {
+          "month": 336,
+          "total": 136
+        },
+        {
+          "month": 348,
+          "total": 138
+        },
+        {
+          "month": 360,
+          "total": 140
+        },
+        {
+          "month": 372,
+          "total": 140
+        },
+        {
+          "month": 384,
+          "total": 140
+        },
+        {
+          "month": 396,
+          "total": 138
+        },
+        {
+          "month": 408,
+          "total": 138
+        },
+        {
+          "month": 420,
+          "total": 141
+        },
+        {
+          "month": 432,
+          "total": 142
+        },
+        {
+          "month": 444,
+          "total": 143
+        },
+        {
+          "month": 456,
+          "total": 140
+        },
+        {
+          "month": 468,
+          "total": 139
+        },
+        {
+          "month": 480,
+          "total": 140
+        },
+        {
+          "month": 492,
+          "total": 138
+        },
+        {
+          "month": 504,
+          "total": 136
+        },
+        {
+          "month": 516,
+          "total": 139
+        },
+        {
+          "month": 528,
+          "total": 139
+        },
+        {
+          "month": 540,
+          "total": 138
+        },
+        {
+          "month": 552,
+          "total": 136
+        },
+        {
+          "month": 564,
+          "total": 139
+        },
+        {
+          "month": 576,
+          "total": 137
+        },
+        {
+          "month": 588,
+          "total": 139
+        },
+        {
+          "month": 600,
+          "total": 137
+        }
+      ],
+      "independentEvents": {
+        "ordinaryFoundings": 0,
+        "militarySecessions": 0,
+        "militaryPalaceParticipation": 0,
+        "explicitClaimSupport": 0,
+        "personalMilitaryUsurpations": 0
+      }
+    },
+    {
+      "worldPopulation": 142,
+      "peakWorldPopulation": 149,
+      "populationTotals": {
+        "net": 86,
+        "naturalGrowth": 175,
+        "external": 26,
+        "warDeaths": 42,
+        "naturalDeaths": 55,
+        "ordinaryNaturalDeaths": 54,
+        "militaryNaturalDeaths": 1,
+        "transferIn": 12,
+        "transferOut": 12,
+        "special": 25,
+        "otherNet": -43,
+        "unattributed": 0
+      },
+      "populationUnexplained": 0,
+      "politicalCandidateChecks": 23,
+      "militarySplits": 0,
+      "rebellions": 0,
+      "depositions": 0,
+      "usurpations": 0,
+      "militaryPoliticalEvents": 0,
+      "meanActiveStates": 5.4,
+      "meanEndedStateLifetimeMonths": 444,
+      "formationOwnershipConflicts": 0,
+      "militaryRoyalOverlap": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "strictSaveValid": true,
+      "regional": {
+        "militaryQualifiedSlots": 0,
+        "militarySharedDraws": 0,
+        "militarySharedExpected": 0,
+        "militarySharedHits": 0,
+        "militaryFoundings": 0,
+        "militaryFailures": 0,
+        "cityChecks": 656,
+        "politicalCities": 0,
+        "loyaltyBlocked": 656,
+        "stabilityBlocked": 0,
+        "capacityBlocked": 0,
+        "identityBlocked": 3,
+        "validOrdinary": 47,
+        "discontentBlocked": 2,
+        "geographyBlocked": 44,
+        "supporters": 1,
+        "noSupport": 0,
+        "draws": 0,
+        "drawFailed": 0,
+        "executionFailed": 0,
+        "popular": 0,
+        "split": 1,
+        "territorialReturns": 0,
+        "splitChecks": 44,
+        "splitPolitical": 1,
+        "splitRestored": 0,
+        "alive12": 1,
+        "matured12": 1,
+        "alive60": 1,
+        "matured60": 1,
+        "overflow": 0,
+        "militaryFunnel": {
+          "CITY_CHECK": 656,
+          "NO_CRISIS": 656
+        },
+        "distinctCheckedCities": 16,
+        "cityTrackingCapacity": 4096,
+        "survival": {
+          "popular": {
+            "matured12": 0,
+            "alive12": 0,
+            "matured60": 0,
+            "alive60": 0
+          },
+          "split": {
+            "matured12": 1,
+            "alive12": 1,
+            "matured60": 1,
+            "alive60": 1
+          }
+        },
+        "popularFunnel": {
+          "cityChecks": 656,
+          "political": 0,
+          "loyaltyBlocked": 568,
+          "crisisBlocked": 88,
+          "captureGrace": 0,
+          "cooldown": 0,
+          "capacity": 0,
+          "populationScans": 0,
+          "validUsers": 0,
+          "identityBlocked": 0,
+          "geographyBlocked": 0,
+          "discontentBlocked": 0,
+          "supporters": 0,
+          "noSupport": 0,
+          "candidates": 0,
+          "priorityBlocked": 0,
+          "draws": 0,
+          "expectedHits": 0,
+          "hits": 0,
+          "misses": 0,
+          "historicalSelected": 0,
+          "founderRestored": 0,
+          "failures": 0,
+          "successes": 0
+        },
+        "popularFailures": {},
+        "spatial": {
+          "invalidPosition": 0,
+          "unowned": 0,
+          "foreign": 0,
+          "otherCity": 6,
+          "otherDistrict": 38,
+          "disconnected": 0,
+          "outsideLegacy": 41,
+          "recoveredDistrict": 3,
+          "emptyLegacyArea": 0,
+          "emptyDistrict": 0,
+          "referenceMismatch": 0,
+          "referenceWithOwnedPosition": 0,
+          "arcadePosition": 47,
+          "logicalPosition": 0,
+          "staleRegistryPosition": 45
+        },
+        "restored": 0,
+        "worldMonth": 600,
+        "insufficient12": 0,
+        "insufficient60": 0
+      },
+      "naturalMilitarySources": [],
+      "depositionDiagnostics": {
+        "observedChecks": 337,
+        "activePolities": 244,
+        "existingAdultKinCandidates": 560,
+        "qualifiedChecks": 6,
+        "royalCommandCrises": 0,
+        "royalCommandCandidateChecks": 0,
+        "royalWeightedSelections": 0,
+        "royalChangedSelections": 0,
+        "drawAttempts": 6,
+        "failures": 6,
+        "successes": 0,
+        "cooldownBlocked": 23,
+        "expectedSuccesses": 0.030000000000000002,
+        "elapsedYears": 50,
+        "military": {
+          "checks": 337,
+          "crisisChecks": 38,
+          "eligibleActorChecks": 23,
+          "identityBlocked": 0,
+          "riskChanged": 0,
+          "draws": 0,
+          "baselineExpected": 0.030000000000000002,
+          "finalExpected": 0.030000000000000002,
+          "militarySuccesses": 0,
+          "militaryFailures": 0,
+          "nonMilitarySuccesses": 0,
+          "chineseSummary": "真实军权政治参与（本次会话，读档重置；非独立国家数）\n政治检查：337次；真实危机检查：38次\n符合军事资格：23人次；军权身份阻断：0人次\n风险实际改变：0次；资格放宽：0次\n军事参与单次抽签：0次（不按将领人数叠加）\n同批抽签原基线条件期望：0.0300；新规则条件期望：0.0300\n军事参与成功：0次；未成功：0次\n无军事参与的政治转型：0次\n区分宗室内部废立与异姓易代；本版未实现将领本人篡位。"
+        },
+        "expectedSuccessesPer100Years": 0.06000000000000001,
+        "actualSuccessesPer100Years": 0,
+        "recent": [
+          {
+            "factionId": "蓟义军",
+            "month": 600,
+            "blockers": [
+              "NOT_FORMAL_STATE",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "楚",
+            "month": 600,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY"
+            ],
+            "candidateIds": [
+              "楚-ruler-40",
+              "楚-ruler-23",
+              "楚-ruler-18"
+            ],
+            "evidenceIds": [
+              "city-captured-582-赵-阳翟-91"
+            ],
+            "probability": 0.005
+          },
+          {
+            "factionId": "齐",
+            "month": 600,
+            "blockers": [
+              "NOT_ACTIVE_STATE",
+              "NO_LIVING_RULER",
+              "NO_CITY",
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "燕",
+            "month": 600,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "燕-ruler-29",
+              "燕-ruler-8",
+              "燕-ruler-21"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "赵",
+            "month": 600,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "赵-ruler-27",
+              "赵-ruler-34",
+              "赵-ruler-24",
+              "赵-ruler-28"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "秦",
+            "month": 600,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "秦-ruler-36",
+              "秦-ruler-35",
+              "秦-ruler-20"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "蓟义军",
+            "month": 588,
+            "blockers": [
+              "NOT_FORMAL_STATE",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "楚",
+            "month": 588,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY"
+            ],
+            "candidateIds": [
+              "楚-ruler-40",
+              "楚-ruler-23",
+              "楚-ruler-18"
+            ],
+            "evidenceIds": [
+              "city-captured-582-赵-阳翟-91"
+            ],
+            "probability": 0.005
+          },
+          {
+            "factionId": "齐",
+            "month": 588,
+            "blockers": [
+              "NOT_ACTIVE_STATE",
+              "NO_LIVING_RULER",
+              "NO_CITY",
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "燕",
+            "month": 588,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "燕-ruler-29",
+              "燕-ruler-8",
+              "燕-ruler-21"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "赵",
+            "month": 588,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "赵-ruler-27",
+              "赵-ruler-34",
+              "赵-ruler-24",
+              "赵-ruler-28"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "秦",
+            "month": 588,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "秦-ruler-36",
+              "秦-ruler-35",
+              "秦-ruler-20"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "蓟义军",
+            "month": 576,
+            "blockers": [
+              "NOT_FORMAL_STATE",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "楚",
+            "month": 576,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "楚-ruler-40",
+              "楚-ruler-23",
+              "楚-ruler-18"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "齐",
+            "month": 576,
+            "blockers": [
+              "NOT_ACTIVE_STATE",
+              "NO_LIVING_RULER",
+              "NO_CITY",
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "赵",
+            "month": 576,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "赵-ruler-27",
+              "赵-ruler-34",
+              "赵-ruler-24",
+              "赵-ruler-28"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "秦",
+            "month": 576,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "秦-ruler-36",
+              "秦-ruler-35",
+              "秦-ruler-20"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "蓟义军",
+            "month": 564,
+            "blockers": [
+              "NOT_FORMAL_STATE",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "楚",
+            "month": 564,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "楚-ruler-23",
+              "楚-ruler-18"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "齐",
+            "month": 564,
+            "blockers": [
+              "NOT_ACTIVE_STATE",
+              "NO_LIVING_RULER",
+              "NO_CITY",
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          }
+        ],
+        "chineseSummary": "宗室废立诊断（本次观察）\n实际观察：50.00年\n已观察在国正式政权：244次\n现存成年宗室候选：560人次\n完整资格通过：6次\n实际抽签：6次\n抽签失败：6次\n实际废立：0次\n冷却阻断：23次\n条件期望废立：0.030次"
+      },
+      "baseFactsSha256": "a9a295058226ee0609119199d3811c602fbc0f80653460afe62ef2edbc515d2e",
+      "canonicalSha256": "ef7a66d8eb0f4959855c4a63116731b069a7f66a83d3e891ace9d86171ef85b5",
+      "worldRandomPosition": 3769,
+      "cohort": "z31 baseline",
+      "seed": "regional-3",
+      "years": 50,
+      "elapsedMs": 13947.09999999404,
+      "continuation": null,
+      "activeStates": 5,
+      "minimumActiveStatePopulation": 11,
+      "nonMilitarySplits": 1,
+      "populationAnnual": [
+        {
+          "month": 12,
+          "total": 64
+        },
+        {
+          "month": 24,
+          "total": 70
+        },
+        {
+          "month": 36,
+          "total": 78
+        },
+        {
+          "month": 48,
+          "total": 95
+        },
+        {
+          "month": 60,
+          "total": 107
+        },
+        {
+          "month": 72,
+          "total": 115
+        },
+        {
+          "month": 84,
+          "total": 118
+        },
+        {
+          "month": 96,
+          "total": 128
+        },
+        {
+          "month": 108,
+          "total": 122
+        },
+        {
+          "month": 120,
+          "total": 128
+        },
+        {
+          "month": 132,
+          "total": 132
+        },
+        {
+          "month": 144,
+          "total": 135
+        },
+        {
+          "month": 156,
+          "total": 137
+        },
+        {
+          "month": 168,
+          "total": 140
+        },
+        {
+          "month": 180,
+          "total": 143
+        },
+        {
+          "month": 192,
+          "total": 147
+        },
+        {
+          "month": 204,
+          "total": 136
+        },
+        {
+          "month": 216,
+          "total": 137
+        },
+        {
+          "month": 228,
+          "total": 139
+        },
+        {
+          "month": 240,
+          "total": 143
+        },
+        {
+          "month": 252,
+          "total": 146
+        },
+        {
+          "month": 264,
+          "total": 144
+        },
+        {
+          "month": 276,
+          "total": 145
+        },
+        {
+          "month": 288,
+          "total": 148
+        },
+        {
+          "month": 300,
+          "total": 128
+        },
+        {
+          "month": 312,
+          "total": 123
+        },
+        {
+          "month": 324,
+          "total": 128
+        },
+        {
+          "month": 336,
+          "total": 127
+        },
+        {
+          "month": 348,
+          "total": 130
+        },
+        {
+          "month": 360,
+          "total": 134
+        },
+        {
+          "month": 372,
+          "total": 135
+        },
+        {
+          "month": 384,
+          "total": 135
+        },
+        {
+          "month": 396,
+          "total": 138
+        },
+        {
+          "month": 408,
+          "total": 139
+        },
+        {
+          "month": 420,
+          "total": 142
+        },
+        {
+          "month": 432,
+          "total": 145
+        },
+        {
+          "month": 444,
+          "total": 141
+        },
+        {
+          "month": 456,
+          "total": 140
+        },
+        {
+          "month": 468,
+          "total": 142
+        },
+        {
+          "month": 480,
+          "total": 142
+        },
+        {
+          "month": 492,
+          "total": 142
+        },
+        {
+          "month": 504,
+          "total": 145
+        },
+        {
+          "month": 516,
+          "total": 141
+        },
+        {
+          "month": 528,
+          "total": 137
+        },
+        {
+          "month": 540,
+          "total": 137
+        },
+        {
+          "month": 552,
+          "total": 135
+        },
+        {
+          "month": 564,
+          "total": 136
+        },
+        {
+          "month": 576,
+          "total": 139
+        },
+        {
+          "month": 588,
+          "total": 139
+        },
+        {
+          "month": 600,
+          "total": 142
+        }
+      ],
+      "independentEvents": {
+        "ordinaryFoundings": 0,
+        "militarySecessions": 0,
+        "militaryPalaceParticipation": 0,
+        "explicitClaimSupport": 0,
+        "personalMilitaryUsurpations": 0
+      }
+    },
+    {
+      "worldPopulation": 136,
+      "peakWorldPopulation": 151,
+      "populationTotals": {
+        "net": 80,
+        "naturalGrowth": 302,
+        "external": 41,
+        "warDeaths": 70,
+        "naturalDeaths": 185,
+        "ordinaryNaturalDeaths": 181,
+        "militaryNaturalDeaths": 4,
+        "transferIn": 20,
+        "transferOut": 20,
+        "special": 45,
+        "otherNet": -53,
+        "unattributed": 0
+      },
+      "populationUnexplained": 0,
+      "politicalCandidateChecks": 49,
+      "militarySplits": 1,
+      "rebellions": 0,
+      "depositions": 0,
+      "usurpations": 0,
+      "militaryPoliticalEvents": 0,
+      "meanActiveStates": 5.038333333333333,
+      "meanEndedStateLifetimeMonths": 387,
+      "formationOwnershipConflicts": 0,
+      "militaryRoyalOverlap": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "strictSaveValid": true,
+      "regional": {
+        "militaryQualifiedSlots": 1,
+        "militarySharedDraws": 1,
+        "militarySharedExpected": 0.06,
+        "militarySharedHits": 1,
+        "militaryFoundings": 1,
+        "militaryFailures": 0,
+        "cityChecks": 1459,
+        "politicalCities": 15,
+        "loyaltyBlocked": 1441,
+        "stabilityBlocked": 1,
+        "capacityBlocked": 0,
+        "identityBlocked": 32,
+        "validOrdinary": 306,
+        "discontentBlocked": 24,
+        "geographyBlocked": 273,
+        "supporters": 9,
+        "noSupport": 10,
+        "draws": 5,
+        "drawFailed": 4,
+        "executionFailed": 0,
+        "popular": 1,
+        "split": 1,
+        "territorialReturns": 0,
+        "splitChecks": 125,
+        "splitPolitical": 1,
+        "splitRestored": 0,
+        "alive12": 2,
+        "matured12": 2,
+        "alive60": 1,
+        "matured60": 2,
+        "overflow": 0,
+        "militaryFunnel": {
+          "CITY_CHECK": 1459,
+          "NO_CRISIS": 1442,
+          "NOT_ACTIVE": 84,
+          "NO_QUALIFIED_COMMAND": 23,
+          "ARMED_CITY_CRISIS": 35,
+          "POLITICAL_CRISIS": 17,
+          "INSUFFICIENT_CAREER": 9,
+          "NO_OTHER_SUPPORT": 11,
+          "VALID_MILITARY_COMMAND": 12,
+          "SERVING_COMMANDER": 12,
+          "COMMANDER_OTHER_DISTRICT": 11,
+          "COMMANDER_NOT_LOCAL_OR_WILLING": 11,
+          "LOCAL_COMMANDER": 1,
+          "QUALIFIED_LOCAL_PARTY": 1,
+          "NOT_FORMAL_ACTIVE_STATE": 3,
+          "ONE_CITY": 3,
+          "RETIREMENT_AGE": 1
+        },
+        "distinctCheckedCities": 18,
+        "cityTrackingCapacity": 4096,
+        "survival": {
+          "popular": {
+            "matured12": 1,
+            "alive12": 1,
+            "matured60": 1,
+            "alive60": 0
+          },
+          "split": {
+            "matured12": 1,
+            "alive12": 1,
+            "matured60": 1,
+            "alive60": 1
+          }
+        },
+        "popularFunnel": {
+          "cityChecks": 1459,
+          "political": 17,
+          "loyaltyBlocked": 1304,
+          "crisisBlocked": 138,
+          "captureGrace": 0,
+          "cooldown": 2,
+          "capacity": 0,
+          "populationScans": 15,
+          "validUsers": 259,
+          "identityBlocked": 29,
+          "geographyBlocked": 229,
+          "discontentBlocked": 22,
+          "supporters": 8,
+          "noSupport": 10,
+          "candidates": 5,
+          "priorityBlocked": 0,
+          "draws": 5,
+          "expectedHits": 0.256054,
+          "hits": 1,
+          "misses": 4,
+          "historicalSelected": 0,
+          "founderRestored": 0,
+          "failures": 0,
+          "successes": 1
+        },
+        "popularFailures": {},
+        "spatial": {
+          "invalidPosition": 0,
+          "unowned": 0,
+          "foreign": 3,
+          "otherCity": 36,
+          "otherDistrict": 208,
+          "disconnected": 26,
+          "outsideLegacy": 263,
+          "recoveredDistrict": 29,
+          "emptyLegacyArea": 0,
+          "emptyDistrict": 0,
+          "referenceMismatch": 0,
+          "referenceWithOwnedPosition": 0,
+          "arcadePosition": 306,
+          "logicalPosition": 0,
+          "staleRegistryPosition": 295
+        },
+        "restored": 0,
+        "worldMonth": 1200,
+        "insufficient12": 0,
+        "insufficient60": 0
+      },
+      "naturalMilitarySources": [
+        {
+          "id": "empire-split-996-燕-龟兹义军-136",
+          "month": 996,
+          "actor": "龟兹义军",
+          "target": "燕",
+          "metadata": {
+            "transferredPopulation": 2,
+            "externalPopulation": 0,
+            "foundingIdentityStage": "PROVISIONAL",
+            "foundingSovereigntyRank": "LEADER",
+            "leaderPersonId": "military-person-19",
+            "leaderSourceUserId": 1143910041,
+            "leaderBornMonth": 322,
+            "leaderOriginalFactionId": "燕",
+            "leaderOriginalFactionName": "燕",
+            "leaderSourceCityId": "秦-city-312-6",
+            "leaderSourceCityName": "龟兹",
+            "leaderPreviousRole": "MILITARY",
+            "splitSource": "MILITARY",
+            "militaryPersonId": "military-person-19",
+            "militarySplitEvidence": "{\"entryKind\":\"LOCAL_CRISIS\",\"personId\":\"military-person-19\",\"commandId\":\"military-command-19\",\"sourceFactionId\":\"燕\",\"sourceFactionName\":\"燕\",\"personalName\":\"连任\",\"office\":\"PIJIANG\",\"serviceMonths\":132,\"localCareerEventIds\":[\"city-captured-867-燕-龙渊-116\"],\"capturedEventIds\":[\"city-captured-867-燕-龙渊-116\"],\"worldMonth\":996,\"cityId\":\"秦-city-312-6\",\"originalMemberUnitIds\":[\"unit-257\",\"unit-285\"],\"participants\":[{\"userId\":1143910041,\"name\":\"燕-034\",\"bornMonth\":322,\"loyalty\":80,\"unitId\":\"unit-285\",\"x\":160.47360925250254,\"y\":700.674562785495,\"positionSource\":\"PHASER\",\"districtCityId\":\"秦-city-312-6\",\"ownedFactionId\":\"燕\"},{\"userId\":1022840770,\"name\":\"Migrant-燕-498-0047\",\"bornMonth\":270,\"loyalty\":95,\"unitId\":\"unit-257\",\"x\":88.05534116172065,\"y\":685.4224778632296,\"positionSource\":\"PHASER\",\"districtCityId\":\"秦-city-312-6\",\"ownedFactionId\":\"燕\"}],\"localCrisis\":{\"chance\":0.06,\"roll\":0.05190122872591019,\"sourceEventId\":\"siege-ended-燕-city-336-7-1-993-燕\",\"reason\":\"MILITARY_POSTWAR_CRISIS\",\"supporterKind\":\"RESIDENT\",\"facts\":{\"underSiege\":false,\"lastSiegeDamageMonth\":-1,\"loyalty\":35,\"devastation\":96,\"captureCount\":5,\"lastCapturedMonth\":987,\"worldMonth\":996,\"stability\":40,\"strain\":0},\"sourceCityCount\":2,\"activeFactionCount\":4,\"supporter\":{\"userId\":1143910040,\"bornMonth\":309,\"unitId\":\"unit-271\",\"x\":145.720165240215,\"y\":821.586374698128,\"loyalty\":57,\"positionSource\":\"PHASER\",\"districtCityId\":\"秦-city-312-6\",\"ownedFactionId\":\"燕\"}}}",
+            "splitCityCount": 1,
+            "parentFactionId": "燕",
+            "foundingCityNames": "龟兹",
+            "foundingCityIds": "秦-city-312-6",
+            "foundingRulerName": "连任",
+            "foundingRulerId": "龟兹义军-ruler-59",
+            "splitCoreCityId": "秦-city-312-6",
+            "splitCoreCityName": "龟兹"
+          }
+        }
+      ],
+      "depositionDiagnostics": {
+        "observedChecks": 591,
+        "activePolities": 473,
+        "existingAdultKinCandidates": 1377,
+        "qualifiedChecks": 12,
+        "royalCommandCrises": 0,
+        "royalCommandCandidateChecks": 0,
+        "royalWeightedSelections": 0,
+        "royalChangedSelections": 0,
+        "drawAttempts": 12,
+        "failures": 12,
+        "successes": 0,
+        "cooldownBlocked": 47,
+        "expectedSuccesses": 0.05999999999999999,
+        "elapsedYears": 100,
+        "military": {
+          "checks": 591,
+          "crisisChecks": 83,
+          "eligibleActorChecks": 49,
+          "identityBlocked": 0,
+          "riskChanged": 0,
+          "draws": 0,
+          "baselineExpected": 0.05999999999999999,
+          "finalExpected": 0.05999999999999999,
+          "militarySuccesses": 0,
+          "militaryFailures": 0,
+          "nonMilitarySuccesses": 0,
+          "chineseSummary": "真实军权政治参与（本次会话，读档重置；非独立国家数）\n政治检查：591次；真实危机检查：83次\n符合军事资格：49人次；军权身份阻断：0人次\n风险实际改变：0次；资格放宽：0次\n军事参与单次抽签：0次（不按将领人数叠加）\n同批抽签原基线条件期望：0.0600；新规则条件期望：0.0600\n军事参与成功：0次；未成功：0次\n无军事参与的政治转型：0次\n区分宗室内部废立与异姓易代；本版未实现将领本人篡位。"
+        },
+        "expectedSuccessesPer100Years": 0.05999999999999999,
+        "actualSuccessesPer100Years": 0,
+        "recent": [
+          {
+            "factionId": "蓟义军",
+            "month": 1200,
+            "blockers": [
+              "NOT_ACTIVE_STATE",
+              "NO_LIVING_RULER",
+              "NO_CITY",
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "楚",
+            "month": 1200,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "楚-ruler-52",
+              "楚-ruler-58",
+              "楚-ruler-61",
+              "楚-ruler-63"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "燕",
+            "month": 1200,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "赵",
+            "month": 1200,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "赵-ruler-56",
+              "赵-ruler-55",
+              "赵-ruler-57",
+              "赵-ruler-49"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "秦",
+            "month": 1200,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "秦-ruler-54",
+              "秦-ruler-62",
+              "秦-ruler-53",
+              "秦-ruler-38"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "蓟义军",
+            "month": 1188,
+            "blockers": [
+              "NOT_ACTIVE_STATE",
+              "NO_LIVING_RULER",
+              "NO_CITY",
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "楚",
+            "month": 1188,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "楚-ruler-52",
+              "楚-ruler-58",
+              "楚-ruler-61",
+              "楚-ruler-63"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "燕",
+            "month": 1188,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "赵",
+            "month": 1188,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY"
+            ],
+            "candidateIds": [
+              "赵-ruler-56",
+              "赵-ruler-55",
+              "赵-ruler-57",
+              "赵-ruler-49"
+            ],
+            "evidenceIds": [
+              "city-captured-1163-燕-阳翟-157"
+            ],
+            "probability": 0.005
+          },
+          {
+            "factionId": "秦",
+            "month": 1188,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "秦-ruler-54",
+              "秦-ruler-62",
+              "秦-ruler-53",
+              "秦-ruler-38"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "蓟义军",
+            "month": 1176,
+            "blockers": [
+              "NOT_ACTIVE_STATE",
+              "NO_LIVING_RULER",
+              "NO_CITY",
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "楚",
+            "month": 1176,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "楚-ruler-52",
+              "楚-ruler-58",
+              "楚-ruler-61",
+              "楚-ruler-63"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "燕",
+            "month": 1176,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "赵",
+            "month": 1176,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY"
+            ],
+            "candidateIds": [
+              "赵-ruler-56",
+              "赵-ruler-55",
+              "赵-ruler-57",
+              "赵-ruler-49"
+            ],
+            "evidenceIds": [
+              "city-captured-1163-燕-阳翟-157"
+            ],
+            "probability": 0.005
+          },
+          {
+            "factionId": "秦",
+            "month": 1176,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "秦-ruler-54",
+              "秦-ruler-62",
+              "秦-ruler-53",
+              "秦-ruler-38"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "蓟义军",
+            "month": 1164,
+            "blockers": [
+              "NOT_ACTIVE_STATE",
+              "NO_LIVING_RULER",
+              "NO_CITY",
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "楚",
+            "month": 1164,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "楚-ruler-52",
+              "楚-ruler-58",
+              "楚-ruler-61",
+              "楚-ruler-63"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "燕",
+            "month": 1164,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "赵",
+            "month": 1164,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY"
+            ],
+            "candidateIds": [
+              "赵-ruler-56",
+              "赵-ruler-55",
+              "赵-ruler-57",
+              "赵-ruler-49"
+            ],
+            "evidenceIds": [
+              "city-captured-1163-燕-阳翟-157"
+            ],
+            "probability": 0.005
+          },
+          {
+            "factionId": "秦",
+            "month": 1164,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "秦-ruler-54",
+              "秦-ruler-62",
+              "秦-ruler-53",
+              "秦-ruler-38"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          }
+        ],
+        "chineseSummary": "宗室废立诊断（本次观察）\n实际观察：100.00年\n已观察在国正式政权：473次\n现存成年宗室候选：1377人次\n完整资格通过：12次\n实际抽签：12次\n抽签失败：12次\n实际废立：0次\n冷却阻断：47次\n条件期望废立：0.060次"
+      },
+      "baseFactsSha256": "91762516b0e9958e20bf64fb6547f03ed2129e020f91334a879a846f0415e0ea",
+      "canonicalSha256": "4da1b725c698e6f8cbe89e950346602fafd5d2487e633b39006a71b560d74545",
+      "worldRandomPosition": 7083,
+      "cohort": "z31 baseline",
+      "seed": "regional-3",
+      "years": 100,
+      "elapsedMs": 32621.70000001788,
+      "continuation": null,
+      "activeStates": 4,
+      "minimumActiveStatePopulation": 14,
+      "nonMilitarySplits": 1,
+      "populationAnnual": [
+        {
+          "month": 12,
+          "total": 64
+        },
+        {
+          "month": 24,
+          "total": 70
+        },
+        {
+          "month": 36,
+          "total": 78
+        },
+        {
+          "month": 48,
+          "total": 95
+        },
+        {
+          "month": 60,
+          "total": 107
+        },
+        {
+          "month": 72,
+          "total": 115
+        },
+        {
+          "month": 84,
+          "total": 118
+        },
+        {
+          "month": 96,
+          "total": 128
+        },
+        {
+          "month": 108,
+          "total": 122
+        },
+        {
+          "month": 120,
+          "total": 128
+        },
+        {
+          "month": 132,
+          "total": 132
+        },
+        {
+          "month": 144,
+          "total": 135
+        },
+        {
+          "month": 156,
+          "total": 137
+        },
+        {
+          "month": 168,
+          "total": 140
+        },
+        {
+          "month": 180,
+          "total": 143
+        },
+        {
+          "month": 192,
+          "total": 147
+        },
+        {
+          "month": 204,
+          "total": 136
+        },
+        {
+          "month": 216,
+          "total": 137
+        },
+        {
+          "month": 228,
+          "total": 139
+        },
+        {
+          "month": 240,
+          "total": 143
+        },
+        {
+          "month": 252,
+          "total": 146
+        },
+        {
+          "month": 264,
+          "total": 144
+        },
+        {
+          "month": 276,
+          "total": 145
+        },
+        {
+          "month": 288,
+          "total": 148
+        },
+        {
+          "month": 300,
+          "total": 128
+        },
+        {
+          "month": 312,
+          "total": 123
+        },
+        {
+          "month": 324,
+          "total": 128
+        },
+        {
+          "month": 336,
+          "total": 127
+        },
+        {
+          "month": 348,
+          "total": 130
+        },
+        {
+          "month": 360,
+          "total": 134
+        },
+        {
+          "month": 372,
+          "total": 135
+        },
+        {
+          "month": 384,
+          "total": 135
+        },
+        {
+          "month": 396,
+          "total": 138
+        },
+        {
+          "month": 408,
+          "total": 139
+        },
+        {
+          "month": 420,
+          "total": 142
+        },
+        {
+          "month": 432,
+          "total": 145
+        },
+        {
+          "month": 444,
+          "total": 141
+        },
+        {
+          "month": 456,
+          "total": 140
+        },
+        {
+          "month": 468,
+          "total": 142
+        },
+        {
+          "month": 480,
+          "total": 142
+        },
+        {
+          "month": 492,
+          "total": 142
+        },
+        {
+          "month": 504,
+          "total": 145
+        },
+        {
+          "month": 516,
+          "total": 141
+        },
+        {
+          "month": 528,
+          "total": 137
+        },
+        {
+          "month": 540,
+          "total": 137
+        },
+        {
+          "month": 552,
+          "total": 135
+        },
+        {
+          "month": 564,
+          "total": 136
+        },
+        {
+          "month": 576,
+          "total": 139
+        },
+        {
+          "month": 588,
+          "total": 139
+        },
+        {
+          "month": 600,
+          "total": 142
+        },
+        {
+          "month": 612,
+          "total": 142
+        },
+        {
+          "month": 624,
+          "total": 140
+        },
+        {
+          "month": 636,
+          "total": 143
+        },
+        {
+          "month": 648,
+          "total": 147
+        },
+        {
+          "month": 660,
+          "total": 146
+        },
+        {
+          "month": 672,
+          "total": 147
+        },
+        {
+          "month": 684,
+          "total": 145
+        },
+        {
+          "month": 696,
+          "total": 147
+        },
+        {
+          "month": 708,
+          "total": 149
+        },
+        {
+          "month": 720,
+          "total": 149
+        },
+        {
+          "month": 732,
+          "total": 146
+        },
+        {
+          "month": 744,
+          "total": 149
+        },
+        {
+          "month": 756,
+          "total": 144
+        },
+        {
+          "month": 768,
+          "total": 139
+        },
+        {
+          "month": 780,
+          "total": 133
+        },
+        {
+          "month": 792,
+          "total": 134
+        },
+        {
+          "month": 804,
+          "total": 130
+        },
+        {
+          "month": 816,
+          "total": 130
+        },
+        {
+          "month": 828,
+          "total": 127
+        },
+        {
+          "month": 840,
+          "total": 126
+        },
+        {
+          "month": 852,
+          "total": 124
+        },
+        {
+          "month": 864,
+          "total": 128
+        },
+        {
+          "month": 876,
+          "total": 125
+        },
+        {
+          "month": 888,
+          "total": 123
+        },
+        {
+          "month": 900,
+          "total": 120
+        },
+        {
+          "month": 912,
+          "total": 130
+        },
+        {
+          "month": 924,
+          "total": 132
+        },
+        {
+          "month": 936,
+          "total": 131
+        },
+        {
+          "month": 948,
+          "total": 129
+        },
+        {
+          "month": 960,
+          "total": 126
+        },
+        {
+          "month": 972,
+          "total": 116
+        },
+        {
+          "month": 984,
+          "total": 118
+        },
+        {
+          "month": 996,
+          "total": 119
+        },
+        {
+          "month": 1008,
+          "total": 121
+        },
+        {
+          "month": 1020,
+          "total": 126
+        },
+        {
+          "month": 1032,
+          "total": 129
+        },
+        {
+          "month": 1044,
+          "total": 128
+        },
+        {
+          "month": 1056,
+          "total": 129
+        },
+        {
+          "month": 1068,
+          "total": 131
+        },
+        {
+          "month": 1080,
+          "total": 129
+        },
+        {
+          "month": 1092,
+          "total": 126
+        },
+        {
+          "month": 1104,
+          "total": 126
+        },
+        {
+          "month": 1116,
+          "total": 127
+        },
+        {
+          "month": 1128,
+          "total": 124
+        },
+        {
+          "month": 1140,
+          "total": 125
+        },
+        {
+          "month": 1152,
+          "total": 129
+        },
+        {
+          "month": 1164,
+          "total": 136
+        },
+        {
+          "month": 1176,
+          "total": 135
+        },
+        {
+          "month": 1188,
+          "total": 134
+        },
+        {
+          "month": 1200,
+          "total": 136
+        }
+      ],
+      "independentEvents": {
+        "ordinaryFoundings": 0,
+        "militarySecessions": 1,
+        "militaryPalaceParticipation": 0,
+        "explicitClaimSupport": 0,
+        "personalMilitaryUsurpations": 0
+      }
+    },
+    {
+      "worldPopulation": 137,
+      "peakWorldPopulation": 153,
+      "populationTotals": {
+        "net": 81,
+        "naturalGrowth": 170,
+        "external": 5,
+        "warDeaths": 31,
+        "naturalDeaths": 69,
+        "ordinaryNaturalDeaths": 67,
+        "militaryNaturalDeaths": 2,
+        "transferIn": 7,
+        "transferOut": 7,
+        "special": 15,
+        "otherNet": -9,
+        "unattributed": 0
+      },
+      "populationUnexplained": 0,
+      "politicalCandidateChecks": 10,
+      "militarySplits": 0,
+      "rebellions": 0,
+      "depositions": 0,
+      "usurpations": 0,
+      "militaryPoliticalEvents": 0,
+      "meanActiveStates": 6.513333333333334,
+      "meanEndedStateLifetimeMonths": 549,
+      "formationOwnershipConflicts": 0,
+      "militaryRoyalOverlap": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "strictSaveValid": true,
+      "regional": {
+        "militaryQualifiedSlots": 0,
+        "militarySharedDraws": 0,
+        "militarySharedExpected": 0,
+        "militarySharedHits": 0,
+        "militaryFoundings": 0,
+        "militaryFailures": 0,
+        "cityChecks": 694,
+        "politicalCities": 6,
+        "loyaltyBlocked": 688,
+        "stabilityBlocked": 0,
+        "capacityBlocked": 0,
+        "identityBlocked": 19,
+        "validOrdinary": 136,
+        "discontentBlocked": 17,
+        "geographyBlocked": 108,
+        "supporters": 11,
+        "noSupport": 1,
+        "draws": 5,
+        "drawFailed": 5,
+        "executionFailed": 0,
+        "popular": 0,
+        "split": 0,
+        "territorialReturns": 0,
+        "splitChecks": 27,
+        "splitPolitical": 0,
+        "splitRestored": 0,
+        "alive12": 0,
+        "matured12": 0,
+        "alive60": 0,
+        "matured60": 0,
+        "overflow": 0,
+        "militaryFunnel": {
+          "CITY_CHECK": 694,
+          "NO_CRISIS": 688,
+          "NOT_ACTIVE": 47,
+          "VALID_MILITARY_COMMAND": 4,
+          "SERVING_COMMANDER": 4,
+          "LOCAL_COMMANDER": 1,
+          "QUALIFIED_LOCAL_PARTY": 1,
+          "ARMED_CITY_CRISIS": 21,
+          "POLITICAL_CRISIS": 6,
+          "FOUNDER_RESTORABLE": 6,
+          "COMMANDER_OTHER_DISTRICT": 3,
+          "COMMANDER_NOT_LOCAL_OR_WILLING": 3,
+          "RETIREMENT_AGE": 1,
+          "NO_QUALIFIED_COMMAND": 17,
+          "NO_OTHER_SUPPORT": 1,
+          "INSUFFICIENT_CAREER": 5
+        },
+        "distinctCheckedCities": 17,
+        "cityTrackingCapacity": 4096,
+        "survival": {
+          "popular": {
+            "matured12": 0,
+            "alive12": 0,
+            "matured60": 0,
+            "alive60": 0
+          },
+          "split": {
+            "matured12": 0,
+            "alive12": 0,
+            "matured60": 0,
+            "alive60": 0
+          }
+        },
+        "popularFunnel": {
+          "cityChecks": 694,
+          "political": 6,
+          "loyaltyBlocked": 661,
+          "crisisBlocked": 27,
+          "captureGrace": 0,
+          "cooldown": 0,
+          "capacity": 0,
+          "populationScans": 6,
+          "validUsers": 136,
+          "identityBlocked": 19,
+          "geographyBlocked": 108,
+          "discontentBlocked": 17,
+          "supporters": 11,
+          "noSupport": 1,
+          "candidates": 5,
+          "priorityBlocked": 0,
+          "draws": 5,
+          "expectedHits": 0.12932942,
+          "hits": 0,
+          "misses": 5,
+          "historicalSelected": 0,
+          "founderRestored": 0,
+          "failures": 0,
+          "successes": 0
+        },
+        "popularFailures": {},
+        "spatial": {
+          "invalidPosition": 0,
+          "unowned": 0,
+          "foreign": 0,
+          "otherCity": 17,
+          "otherDistrict": 91,
+          "disconnected": 0,
+          "outsideLegacy": 109,
+          "recoveredDistrict": 18,
+          "emptyLegacyArea": 0,
+          "emptyDistrict": 0,
+          "referenceMismatch": 0,
+          "referenceWithOwnedPosition": 0,
+          "arcadePosition": 136,
+          "logicalPosition": 0,
+          "staleRegistryPosition": 131
+        },
+        "restored": 0,
+        "worldMonth": 600,
+        "insufficient12": 0,
+        "insufficient60": 0
+      },
+      "naturalMilitarySources": [],
+      "depositionDiagnostics": {
+        "observedChecks": 338,
+        "activePolities": 318,
+        "existingAdultKinCandidates": 686,
+        "qualifiedChecks": 4,
+        "royalCommandCrises": 0,
+        "royalCommandCandidateChecks": 0,
+        "royalWeightedSelections": 0,
+        "royalChangedSelections": 0,
+        "drawAttempts": 4,
+        "failures": 4,
+        "successes": 0,
+        "cooldownBlocked": 16,
+        "expectedSuccesses": 0.02,
+        "elapsedYears": 50,
+        "military": {
+          "checks": 338,
+          "crisisChecks": 17,
+          "eligibleActorChecks": 9,
+          "identityBlocked": 0,
+          "riskChanged": 0,
+          "draws": 0,
+          "baselineExpected": 0.02,
+          "finalExpected": 0.02,
+          "militarySuccesses": 0,
+          "militaryFailures": 0,
+          "nonMilitarySuccesses": 0,
+          "blockers": {
+            "INSUFFICIENT_CAREER": 58,
+            "NOT_ACTIVE": 206,
+            "NOT_FORMAL_ACTIVE_STATE": 40
+          },
+          "chineseSummary": "真实军权政治参与（本次会话，读档重置；非独立国家数）\n政治检查：338次；真实危机检查：17次\n符合军事资格：9人次；军权身份阻断：0人次；维持原王统：0人次\n风险实际改变：0次；资格放宽：0次\n军事参与单次抽签：0次（不按将领人数叠加）\n同批抽签原基线条件期望：0.0200；新规则条件期望：0.0200\n军事参与成功：0次；未成功：0次\n无军事参与的政治转型：0次\n区分宗室内部废立与异姓易代；本版未实现将领本人篡位。"
+        },
+        "expectedSuccessesPer100Years": 0.04,
+        "actualSuccessesPer100Years": 0,
+        "recent": [
+          {
+            "factionId": "楚",
+            "month": 600,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "楚-ruler-27",
+              "楚-ruler-42",
+              "楚-ruler-18",
+              "楚-ruler-13"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "韩",
+            "month": 600,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "韩-ruler-38",
+              "韩-ruler-41",
+              "韩-ruler-36"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "齐",
+            "month": 600,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "齐-ruler-21",
+              "齐-ruler-16",
+              "齐-ruler-32",
+              "齐-ruler-37"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "燕",
+            "month": 600,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "燕-ruler-44",
+              "燕-ruler-43",
+              "燕-ruler-22",
+              "燕-ruler-23"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "赵",
+            "month": 600,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "赵-ruler-31",
+              "赵-ruler-39",
+              "赵-ruler-20",
+              "赵-ruler-28"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "秦",
+            "month": 600,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "秦-ruler-34",
+              "秦-ruler-19",
+              "秦-ruler-14"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "楚",
+            "month": 588,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "楚-ruler-27",
+              "楚-ruler-42",
+              "楚-ruler-18",
+              "楚-ruler-13"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "韩",
+            "month": 588,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "韩-ruler-38",
+              "韩-ruler-41",
+              "韩-ruler-36"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "齐",
+            "month": 588,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "齐-ruler-21",
+              "齐-ruler-16",
+              "齐-ruler-32",
+              "齐-ruler-37"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "燕",
+            "month": 588,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "燕-ruler-44",
+              "燕-ruler-43",
+              "燕-ruler-22",
+              "燕-ruler-23"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "赵",
+            "month": 588,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "赵-ruler-31",
+              "赵-ruler-39",
+              "赵-ruler-20",
+              "赵-ruler-28"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "秦",
+            "month": 588,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "秦-ruler-34",
+              "秦-ruler-19",
+              "秦-ruler-14"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "楚",
+            "month": 576,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "楚-ruler-27",
+              "楚-ruler-42",
+              "楚-ruler-18",
+              "楚-ruler-13"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "韩",
+            "month": 576,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "韩-ruler-38",
+              "韩-ruler-41",
+              "韩-ruler-36"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "齐",
+            "month": 576,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "齐-ruler-21",
+              "齐-ruler-16",
+              "齐-ruler-32",
+              "齐-ruler-37"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "燕",
+            "month": 576,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "燕-ruler-44",
+              "燕-ruler-43",
+              "燕-ruler-22",
+              "燕-ruler-23"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "赵",
+            "month": 576,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "赵-ruler-31",
+              "赵-ruler-39",
+              "赵-ruler-20",
+              "赵-ruler-28"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "秦",
+            "month": 576,
+            "blockers": [
+              "COOLDOWN",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "秦-ruler-34",
+              "秦-ruler-19",
+              "秦-ruler-14"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "楚",
+            "month": 564,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "楚-ruler-27",
+              "楚-ruler-42",
+              "楚-ruler-18",
+              "楚-ruler-13"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "韩",
+            "month": 564,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "韩-ruler-38",
+              "韩-ruler-41",
+              "韩-ruler-36"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          }
+        ],
+        "chineseSummary": "宗室废立诊断（本次观察）\n实际观察：50.00年\n已观察在国正式政权：318次\n现存成年宗室候选：686人次\n完整资格通过：4次\n实际抽签：4次\n抽签失败：4次\n实际废立：0次\n冷却阻断：16次\n条件期望废立：0.020次"
+      },
+      "baseFactsSha256": "32e7888ae8763ed516af0cd08e0699f8b97ed879984dac07db90c3013dab7633",
+      "canonicalSha256": "75a05eb36b23c7bd350505c470e69dd1ebfa7351cfac6a2a45e4004a0ddf8cec",
+      "worldRandomPosition": 3676,
+      "cohort": "z32",
+      "seed": "regional-1",
+      "years": 50,
+      "elapsedMs": 21266.90000000596,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "activeStates": 6,
+      "minimumActiveStatePopulation": 17,
+      "nonMilitarySplits": 0,
+      "populationAnnual": [
+        {
+          "month": 12,
+          "total": 62
+        },
+        {
+          "month": 24,
+          "total": 76
+        },
+        {
+          "month": 36,
+          "total": 81
+        },
+        {
+          "month": 48,
+          "total": 95
+        },
+        {
+          "month": 60,
+          "total": 102
+        },
+        {
+          "month": 72,
+          "total": 106
+        },
+        {
+          "month": 84,
+          "total": 110
+        },
+        {
+          "month": 96,
+          "total": 120
+        },
+        {
+          "month": 108,
+          "total": 124
+        },
+        {
+          "month": 120,
+          "total": 127
+        },
+        {
+          "month": 132,
+          "total": 132
+        },
+        {
+          "month": 144,
+          "total": 133
+        },
+        {
+          "month": 156,
+          "total": 140
+        },
+        {
+          "month": 168,
+          "total": 146
+        },
+        {
+          "month": 180,
+          "total": 150
+        },
+        {
+          "month": 192,
+          "total": 151
+        },
+        {
+          "month": 204,
+          "total": 152
+        },
+        {
+          "month": 216,
+          "total": 152
+        },
+        {
+          "month": 228,
+          "total": 152
+        },
+        {
+          "month": 240,
+          "total": 152
+        },
+        {
+          "month": 252,
+          "total": 150
+        },
+        {
+          "month": 264,
+          "total": 148
+        },
+        {
+          "month": 276,
+          "total": 147
+        },
+        {
+          "month": 288,
+          "total": 143
+        },
+        {
+          "month": 300,
+          "total": 140
+        },
+        {
+          "month": 312,
+          "total": 135
+        },
+        {
+          "month": 324,
+          "total": 137
+        },
+        {
+          "month": 336,
+          "total": 136
+        },
+        {
+          "month": 348,
+          "total": 138
+        },
+        {
+          "month": 360,
+          "total": 140
+        },
+        {
+          "month": 372,
+          "total": 140
+        },
+        {
+          "month": 384,
+          "total": 140
+        },
+        {
+          "month": 396,
+          "total": 138
+        },
+        {
+          "month": 408,
+          "total": 138
+        },
+        {
+          "month": 420,
+          "total": 141
+        },
+        {
+          "month": 432,
+          "total": 142
+        },
+        {
+          "month": 444,
+          "total": 143
+        },
+        {
+          "month": 456,
+          "total": 140
+        },
+        {
+          "month": 468,
+          "total": 139
+        },
+        {
+          "month": 480,
+          "total": 140
+        },
+        {
+          "month": 492,
+          "total": 138
+        },
+        {
+          "month": 504,
+          "total": 136
+        },
+        {
+          "month": 516,
+          "total": 139
+        },
+        {
+          "month": 528,
+          "total": 139
+        },
+        {
+          "month": 540,
+          "total": 138
+        },
+        {
+          "month": 552,
+          "total": 136
+        },
+        {
+          "month": 564,
+          "total": 139
+        },
+        {
+          "month": 576,
+          "total": 137
+        },
+        {
+          "month": 588,
+          "total": 139
+        },
+        {
+          "month": 600,
+          "total": 137
+        }
+      ],
+      "independentEvents": {
+        "ordinaryFoundings": 0,
+        "militarySecessions": 0,
+        "militaryPalaceParticipation": 0,
+        "explicitClaimSupport": 0,
+        "personalMilitaryUsurpations": 0
+      }
+    },
+    {
+      "worldPopulation": 142,
+      "peakWorldPopulation": 149,
+      "populationTotals": {
+        "net": 86,
+        "naturalGrowth": 175,
+        "external": 26,
+        "warDeaths": 42,
+        "naturalDeaths": 55,
+        "ordinaryNaturalDeaths": 54,
+        "militaryNaturalDeaths": 1,
+        "transferIn": 12,
+        "transferOut": 12,
+        "special": 25,
+        "otherNet": -43,
+        "unattributed": 0
+      },
+      "populationUnexplained": 0,
+      "politicalCandidateChecks": 3,
+      "militarySplits": 0,
+      "rebellions": 0,
+      "depositions": 0,
+      "usurpations": 0,
+      "militaryPoliticalEvents": 0,
+      "meanActiveStates": 5.4,
+      "meanEndedStateLifetimeMonths": 444,
+      "formationOwnershipConflicts": 0,
+      "militaryRoyalOverlap": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "strictSaveValid": true,
+      "regional": {
+        "militaryQualifiedSlots": 0,
+        "militarySharedDraws": 0,
+        "militarySharedExpected": 0,
+        "militarySharedHits": 0,
+        "militaryFoundings": 0,
+        "militaryFailures": 0,
+        "cityChecks": 656,
+        "politicalCities": 0,
+        "loyaltyBlocked": 656,
+        "stabilityBlocked": 0,
+        "capacityBlocked": 0,
+        "identityBlocked": 3,
+        "validOrdinary": 47,
+        "discontentBlocked": 2,
+        "geographyBlocked": 44,
+        "supporters": 1,
+        "noSupport": 0,
+        "draws": 0,
+        "drawFailed": 0,
+        "executionFailed": 0,
+        "popular": 0,
+        "split": 1,
+        "territorialReturns": 0,
+        "splitChecks": 44,
+        "splitPolitical": 1,
+        "splitRestored": 0,
+        "alive12": 1,
+        "matured12": 1,
+        "alive60": 1,
+        "matured60": 1,
+        "overflow": 0,
+        "militaryFunnel": {
+          "CITY_CHECK": 656,
+          "NO_CRISIS": 656
+        },
+        "distinctCheckedCities": 16,
+        "cityTrackingCapacity": 4096,
+        "survival": {
+          "popular": {
+            "matured12": 0,
+            "alive12": 0,
+            "matured60": 0,
+            "alive60": 0
+          },
+          "split": {
+            "matured12": 1,
+            "alive12": 1,
+            "matured60": 1,
+            "alive60": 1
+          }
+        },
+        "popularFunnel": {
+          "cityChecks": 656,
+          "political": 0,
+          "loyaltyBlocked": 568,
+          "crisisBlocked": 88,
+          "captureGrace": 0,
+          "cooldown": 0,
+          "capacity": 0,
+          "populationScans": 0,
+          "validUsers": 0,
+          "identityBlocked": 0,
+          "geographyBlocked": 0,
+          "discontentBlocked": 0,
+          "supporters": 0,
+          "noSupport": 0,
+          "candidates": 0,
+          "priorityBlocked": 0,
+          "draws": 0,
+          "expectedHits": 0,
+          "hits": 0,
+          "misses": 0,
+          "historicalSelected": 0,
+          "founderRestored": 0,
+          "failures": 0,
+          "successes": 0
+        },
+        "popularFailures": {},
+        "spatial": {
+          "invalidPosition": 0,
+          "unowned": 0,
+          "foreign": 0,
+          "otherCity": 6,
+          "otherDistrict": 38,
+          "disconnected": 0,
+          "outsideLegacy": 41,
+          "recoveredDistrict": 3,
+          "emptyLegacyArea": 0,
+          "emptyDistrict": 0,
+          "referenceMismatch": 0,
+          "referenceWithOwnedPosition": 0,
+          "arcadePosition": 47,
+          "logicalPosition": 0,
+          "staleRegistryPosition": 45
+        },
+        "restored": 0,
+        "worldMonth": 600,
+        "insufficient12": 0,
+        "insufficient60": 0
+      },
+      "naturalMilitarySources": [],
+      "depositionDiagnostics": {
+        "observedChecks": 337,
+        "activePolities": 244,
+        "existingAdultKinCandidates": 560,
+        "qualifiedChecks": 6,
+        "royalCommandCrises": 0,
+        "royalCommandCandidateChecks": 0,
+        "royalWeightedSelections": 0,
+        "royalChangedSelections": 0,
+        "drawAttempts": 6,
+        "failures": 6,
+        "successes": 0,
+        "cooldownBlocked": 23,
+        "expectedSuccesses": 0.030000000000000002,
+        "elapsedYears": 50,
+        "military": {
+          "checks": 337,
+          "crisisChecks": 38,
+          "eligibleActorChecks": 3,
+          "identityBlocked": 0,
+          "riskChanged": 0,
+          "draws": 0,
+          "baselineExpected": 0.030000000000000002,
+          "finalExpected": 0.030000000000000002,
+          "militarySuccesses": 0,
+          "militaryFailures": 0,
+          "nonMilitarySuccesses": 0,
+          "blockers": {
+            "INSUFFICIENT_CAREER": 43,
+            "NOT_ACTIVE": 214,
+            "NOT_FORMAL_ACTIVE_STATE": 65,
+            "SUPPORTS_CONTINUITY": 20
+          },
+          "chineseSummary": "真实军权政治参与（本次会话，读档重置；非独立国家数）\n政治检查：337次；真实危机检查：38次\n符合军事资格：3人次；军权身份阻断：0人次；维持原王统：20人次\n风险实际改变：0次；资格放宽：0次\n军事参与单次抽签：0次（不按将领人数叠加）\n同批抽签原基线条件期望：0.0300；新规则条件期望：0.0300\n军事参与成功：0次；未成功：0次\n无军事参与的政治转型：0次\n区分宗室内部废立与异姓易代；本版未实现将领本人篡位。"
+        },
+        "expectedSuccessesPer100Years": 0.06000000000000001,
+        "actualSuccessesPer100Years": 0,
+        "recent": [
+          {
+            "factionId": "蓟义军",
+            "month": 600,
+            "blockers": [
+              "NOT_FORMAL_STATE",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "楚",
+            "month": 600,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY"
+            ],
+            "candidateIds": [
+              "楚-ruler-40",
+              "楚-ruler-23",
+              "楚-ruler-18"
+            ],
+            "evidenceIds": [
+              "city-captured-582-赵-阳翟-91"
+            ],
+            "probability": 0.005
+          },
+          {
+            "factionId": "齐",
+            "month": 600,
+            "blockers": [
+              "NOT_ACTIVE_STATE",
+              "NO_LIVING_RULER",
+              "NO_CITY",
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "燕",
+            "month": 600,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "燕-ruler-29",
+              "燕-ruler-8",
+              "燕-ruler-21"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "赵",
+            "month": 600,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "赵-ruler-27",
+              "赵-ruler-34",
+              "赵-ruler-24",
+              "赵-ruler-28"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "秦",
+            "month": 600,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "秦-ruler-36",
+              "秦-ruler-35",
+              "秦-ruler-20"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "蓟义军",
+            "month": 588,
+            "blockers": [
+              "NOT_FORMAL_STATE",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "楚",
+            "month": 588,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY"
+            ],
+            "candidateIds": [
+              "楚-ruler-40",
+              "楚-ruler-23",
+              "楚-ruler-18"
+            ],
+            "evidenceIds": [
+              "city-captured-582-赵-阳翟-91"
+            ],
+            "probability": 0.005
+          },
+          {
+            "factionId": "齐",
+            "month": 588,
+            "blockers": [
+              "NOT_ACTIVE_STATE",
+              "NO_LIVING_RULER",
+              "NO_CITY",
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "燕",
+            "month": 588,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "燕-ruler-29",
+              "燕-ruler-8",
+              "燕-ruler-21"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "赵",
+            "month": 588,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "赵-ruler-27",
+              "赵-ruler-34",
+              "赵-ruler-24",
+              "赵-ruler-28"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "秦",
+            "month": 588,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "秦-ruler-36",
+              "秦-ruler-35",
+              "秦-ruler-20"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "蓟义军",
+            "month": 576,
+            "blockers": [
+              "NOT_FORMAL_STATE",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "楚",
+            "month": 576,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "楚-ruler-40",
+              "楚-ruler-23",
+              "楚-ruler-18"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "齐",
+            "month": 576,
+            "blockers": [
+              "NOT_ACTIVE_STATE",
+              "NO_LIVING_RULER",
+              "NO_CITY",
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "赵",
+            "month": 576,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "赵-ruler-27",
+              "赵-ruler-34",
+              "赵-ruler-24",
+              "赵-ruler-28"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "秦",
+            "month": 576,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "秦-ruler-36",
+              "秦-ruler-35",
+              "秦-ruler-20"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "蓟义军",
+            "month": 564,
+            "blockers": [
+              "NOT_FORMAL_STATE",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "楚",
+            "month": 564,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "楚-ruler-23",
+              "楚-ruler-18"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "齐",
+            "month": 564,
+            "blockers": [
+              "NOT_ACTIVE_STATE",
+              "NO_LIVING_RULER",
+              "NO_CITY",
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          }
+        ],
+        "chineseSummary": "宗室废立诊断（本次观察）\n实际观察：50.00年\n已观察在国正式政权：244次\n现存成年宗室候选：560人次\n完整资格通过：6次\n实际抽签：6次\n抽签失败：6次\n实际废立：0次\n冷却阻断：23次\n条件期望废立：0.030次"
+      },
+      "baseFactsSha256": "76404064485c11e7a56689b79e75a24124cafcf2d115878574d6bdf1a3234de6",
+      "canonicalSha256": "5b72c553a61b66f29c68d391cdc68ea6700466dd58a749d43ba1628a6c3e3bac",
+      "worldRandomPosition": 3769,
+      "cohort": "z32",
+      "seed": "regional-3",
+      "years": 50,
+      "elapsedMs": 19018.90000000596,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "activeStates": 5,
+      "minimumActiveStatePopulation": 11,
+      "nonMilitarySplits": 1,
+      "populationAnnual": [
+        {
+          "month": 12,
+          "total": 64
+        },
+        {
+          "month": 24,
+          "total": 70
+        },
+        {
+          "month": 36,
+          "total": 78
+        },
+        {
+          "month": 48,
+          "total": 95
+        },
+        {
+          "month": 60,
+          "total": 107
+        },
+        {
+          "month": 72,
+          "total": 115
+        },
+        {
+          "month": 84,
+          "total": 118
+        },
+        {
+          "month": 96,
+          "total": 128
+        },
+        {
+          "month": 108,
+          "total": 122
+        },
+        {
+          "month": 120,
+          "total": 128
+        },
+        {
+          "month": 132,
+          "total": 132
+        },
+        {
+          "month": 144,
+          "total": 135
+        },
+        {
+          "month": 156,
+          "total": 137
+        },
+        {
+          "month": 168,
+          "total": 140
+        },
+        {
+          "month": 180,
+          "total": 143
+        },
+        {
+          "month": 192,
+          "total": 147
+        },
+        {
+          "month": 204,
+          "total": 136
+        },
+        {
+          "month": 216,
+          "total": 137
+        },
+        {
+          "month": 228,
+          "total": 139
+        },
+        {
+          "month": 240,
+          "total": 143
+        },
+        {
+          "month": 252,
+          "total": 146
+        },
+        {
+          "month": 264,
+          "total": 144
+        },
+        {
+          "month": 276,
+          "total": 145
+        },
+        {
+          "month": 288,
+          "total": 148
+        },
+        {
+          "month": 300,
+          "total": 128
+        },
+        {
+          "month": 312,
+          "total": 123
+        },
+        {
+          "month": 324,
+          "total": 128
+        },
+        {
+          "month": 336,
+          "total": 127
+        },
+        {
+          "month": 348,
+          "total": 130
+        },
+        {
+          "month": 360,
+          "total": 134
+        },
+        {
+          "month": 372,
+          "total": 135
+        },
+        {
+          "month": 384,
+          "total": 135
+        },
+        {
+          "month": 396,
+          "total": 138
+        },
+        {
+          "month": 408,
+          "total": 139
+        },
+        {
+          "month": 420,
+          "total": 142
+        },
+        {
+          "month": 432,
+          "total": 145
+        },
+        {
+          "month": 444,
+          "total": 141
+        },
+        {
+          "month": 456,
+          "total": 140
+        },
+        {
+          "month": 468,
+          "total": 142
+        },
+        {
+          "month": 480,
+          "total": 142
+        },
+        {
+          "month": 492,
+          "total": 142
+        },
+        {
+          "month": 504,
+          "total": 145
+        },
+        {
+          "month": 516,
+          "total": 141
+        },
+        {
+          "month": 528,
+          "total": 137
+        },
+        {
+          "month": 540,
+          "total": 137
+        },
+        {
+          "month": 552,
+          "total": 135
+        },
+        {
+          "month": 564,
+          "total": 136
+        },
+        {
+          "month": 576,
+          "total": 139
+        },
+        {
+          "month": 588,
+          "total": 139
+        },
+        {
+          "month": 600,
+          "total": 142
+        }
+      ],
+      "independentEvents": {
+        "ordinaryFoundings": 0,
+        "militarySecessions": 0,
+        "militaryPalaceParticipation": 0,
+        "explicitClaimSupport": 0,
+        "personalMilitaryUsurpations": 0
+      }
+    },
+    {
+      "worldPopulation": 136,
+      "peakWorldPopulation": 151,
+      "populationTotals": {
+        "net": 80,
+        "naturalGrowth": 302,
+        "external": 41,
+        "warDeaths": 70,
+        "naturalDeaths": 185,
+        "ordinaryNaturalDeaths": 181,
+        "militaryNaturalDeaths": 4,
+        "transferIn": 20,
+        "transferOut": 20,
+        "special": 45,
+        "otherNet": -53,
+        "unattributed": 0
+      },
+      "populationUnexplained": 0,
+      "politicalCandidateChecks": 3,
+      "militarySplits": 1,
+      "rebellions": 0,
+      "depositions": 0,
+      "usurpations": 0,
+      "militaryPoliticalEvents": 0,
+      "meanActiveStates": 5.038333333333333,
+      "meanEndedStateLifetimeMonths": 387,
+      "formationOwnershipConflicts": 0,
+      "militaryRoyalOverlap": 0,
+      "residentIdentityConflicts": 0,
+      "duplicatePopulationIds": 0,
+      "strictSaveValid": true,
+      "regional": {
+        "militaryQualifiedSlots": 1,
+        "militarySharedDraws": 1,
+        "militarySharedExpected": 0.06,
+        "militarySharedHits": 1,
+        "militaryFoundings": 1,
+        "militaryFailures": 0,
+        "cityChecks": 1459,
+        "politicalCities": 15,
+        "loyaltyBlocked": 1441,
+        "stabilityBlocked": 1,
+        "capacityBlocked": 0,
+        "identityBlocked": 32,
+        "validOrdinary": 306,
+        "discontentBlocked": 24,
+        "geographyBlocked": 273,
+        "supporters": 9,
+        "noSupport": 10,
+        "draws": 5,
+        "drawFailed": 4,
+        "executionFailed": 0,
+        "popular": 1,
+        "split": 1,
+        "territorialReturns": 0,
+        "splitChecks": 125,
+        "splitPolitical": 1,
+        "splitRestored": 0,
+        "alive12": 2,
+        "matured12": 2,
+        "alive60": 1,
+        "matured60": 2,
+        "overflow": 0,
+        "militaryFunnel": {
+          "CITY_CHECK": 1459,
+          "NO_CRISIS": 1442,
+          "NOT_ACTIVE": 84,
+          "NO_QUALIFIED_COMMAND": 23,
+          "ARMED_CITY_CRISIS": 35,
+          "POLITICAL_CRISIS": 17,
+          "INSUFFICIENT_CAREER": 9,
+          "NO_OTHER_SUPPORT": 11,
+          "VALID_MILITARY_COMMAND": 12,
+          "SERVING_COMMANDER": 12,
+          "COMMANDER_OTHER_DISTRICT": 11,
+          "COMMANDER_NOT_LOCAL_OR_WILLING": 11,
+          "LOCAL_COMMANDER": 1,
+          "QUALIFIED_LOCAL_PARTY": 1,
+          "NOT_FORMAL_ACTIVE_STATE": 3,
+          "ONE_CITY": 3,
+          "RETIREMENT_AGE": 1
+        },
+        "distinctCheckedCities": 18,
+        "cityTrackingCapacity": 4096,
+        "survival": {
+          "popular": {
+            "matured12": 1,
+            "alive12": 1,
+            "matured60": 1,
+            "alive60": 0
+          },
+          "split": {
+            "matured12": 1,
+            "alive12": 1,
+            "matured60": 1,
+            "alive60": 1
+          }
+        },
+        "popularFunnel": {
+          "cityChecks": 1459,
+          "political": 17,
+          "loyaltyBlocked": 1304,
+          "crisisBlocked": 138,
+          "captureGrace": 0,
+          "cooldown": 2,
+          "capacity": 0,
+          "populationScans": 15,
+          "validUsers": 259,
+          "identityBlocked": 29,
+          "geographyBlocked": 229,
+          "discontentBlocked": 22,
+          "supporters": 8,
+          "noSupport": 10,
+          "candidates": 5,
+          "priorityBlocked": 0,
+          "draws": 5,
+          "expectedHits": 0.256054,
+          "hits": 1,
+          "misses": 4,
+          "historicalSelected": 0,
+          "founderRestored": 0,
+          "failures": 0,
+          "successes": 1
+        },
+        "popularFailures": {},
+        "spatial": {
+          "invalidPosition": 0,
+          "unowned": 0,
+          "foreign": 3,
+          "otherCity": 36,
+          "otherDistrict": 208,
+          "disconnected": 26,
+          "outsideLegacy": 263,
+          "recoveredDistrict": 29,
+          "emptyLegacyArea": 0,
+          "emptyDistrict": 0,
+          "referenceMismatch": 0,
+          "referenceWithOwnedPosition": 0,
+          "arcadePosition": 306,
+          "logicalPosition": 0,
+          "staleRegistryPosition": 295
+        },
+        "restored": 0,
+        "worldMonth": 1200,
+        "insufficient12": 0,
+        "insufficient60": 0
+      },
+      "naturalMilitarySources": [
+        {
+          "id": "empire-split-996-燕-龟兹义军-136",
+          "month": 996,
+          "actor": "龟兹义军",
+          "target": "燕",
+          "metadata": {
+            "transferredPopulation": 2,
+            "externalPopulation": 0,
+            "foundingIdentityStage": "PROVISIONAL",
+            "foundingSovereigntyRank": "LEADER",
+            "leaderPersonId": "military-person-19",
+            "leaderSourceUserId": 1143910041,
+            "leaderBornMonth": 322,
+            "leaderOriginalFactionId": "燕",
+            "leaderOriginalFactionName": "燕",
+            "leaderSourceCityId": "秦-city-312-6",
+            "leaderSourceCityName": "龟兹",
+            "leaderPreviousRole": "MILITARY",
+            "splitSource": "MILITARY",
+            "militaryPersonId": "military-person-19",
+            "militarySplitEvidence": "{\"disposition\":{\"version\":1,\"ambition\":40,\"loyalty\":80,\"prestige\":3,\"responseThreshold\":73,\"contestWeight\":1.05},\"entryKind\":\"LOCAL_CRISIS\",\"personId\":\"military-person-19\",\"commandId\":\"military-command-19\",\"sourceFactionId\":\"燕\",\"sourceFactionName\":\"燕\",\"personalName\":\"连任\",\"office\":\"PIJIANG\",\"serviceMonths\":132,\"localCareerEventIds\":[\"city-captured-867-燕-龙渊-116\"],\"capturedEventIds\":[\"city-captured-867-燕-龙渊-116\"],\"worldMonth\":996,\"cityId\":\"秦-city-312-6\",\"originalMemberUnitIds\":[\"unit-257\",\"unit-285\"],\"participants\":[{\"userId\":1143910041,\"name\":\"燕-034\",\"bornMonth\":322,\"loyalty\":80,\"unitId\":\"unit-285\",\"x\":160.47360925250254,\"y\":700.674562785495,\"positionSource\":\"PHASER\",\"districtCityId\":\"秦-city-312-6\",\"ownedFactionId\":\"燕\"},{\"userId\":1022840770,\"name\":\"Migrant-燕-498-0047\",\"bornMonth\":270,\"loyalty\":95,\"unitId\":\"unit-257\",\"x\":88.05534116172065,\"y\":685.4224778632296,\"positionSource\":\"PHASER\",\"districtCityId\":\"秦-city-312-6\",\"ownedFactionId\":\"燕\"}],\"localCrisis\":{\"chance\":0.06,\"roll\":0.05190122872591019,\"sourceEventId\":\"siege-ended-燕-city-336-7-1-993-燕\",\"reason\":\"MILITARY_POSTWAR_CRISIS\",\"supporterKind\":\"RESIDENT\",\"facts\":{\"underSiege\":false,\"lastSiegeDamageMonth\":-1,\"loyalty\":35,\"devastation\":96,\"captureCount\":5,\"lastCapturedMonth\":987,\"worldMonth\":996,\"stability\":40,\"strain\":0},\"sourceCityCount\":2,\"activeFactionCount\":4,\"supporter\":{\"userId\":1143910040,\"bornMonth\":309,\"unitId\":\"unit-271\",\"x\":145.720165240215,\"y\":821.586374698128,\"loyalty\":57,\"positionSource\":\"PHASER\",\"districtCityId\":\"秦-city-312-6\",\"ownedFactionId\":\"燕\"}}}",
+            "splitCityCount": 1,
+            "parentFactionId": "燕",
+            "foundingCityNames": "龟兹",
+            "foundingCityIds": "秦-city-312-6",
+            "foundingRulerName": "连任",
+            "foundingRulerId": "龟兹义军-ruler-59",
+            "splitCoreCityId": "秦-city-312-6",
+            "splitCoreCityName": "龟兹"
+          }
+        }
+      ],
+      "depositionDiagnostics": {
+        "observedChecks": 591,
+        "activePolities": 473,
+        "existingAdultKinCandidates": 1377,
+        "qualifiedChecks": 12,
+        "royalCommandCrises": 0,
+        "royalCommandCandidateChecks": 0,
+        "royalWeightedSelections": 0,
+        "royalChangedSelections": 0,
+        "drawAttempts": 12,
+        "failures": 12,
+        "successes": 0,
+        "cooldownBlocked": 47,
+        "expectedSuccesses": 0.05999999999999999,
+        "elapsedYears": 100,
+        "military": {
+          "checks": 591,
+          "crisisChecks": 83,
+          "eligibleActorChecks": 3,
+          "identityBlocked": 0,
+          "riskChanged": 0,
+          "draws": 0,
+          "baselineExpected": 0.05999999999999999,
+          "finalExpected": 0.05999999999999999,
+          "militarySuccesses": 0,
+          "militaryFailures": 0,
+          "nonMilitarySuccesses": 0,
+          "blockers": {
+            "INSUFFICIENT_CAREER": 88,
+            "NOT_ACTIVE": 879,
+            "NOT_FORMAL_ACTIVE_STATE": 90,
+            "SUPPORTS_CONTINUITY": 46
+          },
+          "chineseSummary": "真实军权政治参与（本次会话，读档重置；非独立国家数）\n政治检查：591次；真实危机检查：83次\n符合军事资格：3人次；军权身份阻断：0人次；维持原王统：46人次\n风险实际改变：0次；资格放宽：0次\n军事参与单次抽签：0次（不按将领人数叠加）\n同批抽签原基线条件期望：0.0600；新规则条件期望：0.0600\n军事参与成功：0次；未成功：0次\n无军事参与的政治转型：0次\n区分宗室内部废立与异姓易代；本版未实现将领本人篡位。"
+        },
+        "expectedSuccessesPer100Years": 0.05999999999999999,
+        "actualSuccessesPer100Years": 0,
+        "recent": [
+          {
+            "factionId": "蓟义军",
+            "month": 1200,
+            "blockers": [
+              "NOT_ACTIVE_STATE",
+              "NO_LIVING_RULER",
+              "NO_CITY",
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "楚",
+            "month": 1200,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "楚-ruler-52",
+              "楚-ruler-58",
+              "楚-ruler-61",
+              "楚-ruler-63"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "燕",
+            "month": 1200,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "赵",
+            "month": 1200,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "赵-ruler-56",
+              "赵-ruler-55",
+              "赵-ruler-57",
+              "赵-ruler-49"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "秦",
+            "month": 1200,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "秦-ruler-54",
+              "秦-ruler-62",
+              "秦-ruler-53",
+              "秦-ruler-38"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "蓟义军",
+            "month": 1188,
+            "blockers": [
+              "NOT_ACTIVE_STATE",
+              "NO_LIVING_RULER",
+              "NO_CITY",
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "楚",
+            "month": 1188,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "楚-ruler-52",
+              "楚-ruler-58",
+              "楚-ruler-61",
+              "楚-ruler-63"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "燕",
+            "month": 1188,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "赵",
+            "month": 1188,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY"
+            ],
+            "candidateIds": [
+              "赵-ruler-56",
+              "赵-ruler-55",
+              "赵-ruler-57",
+              "赵-ruler-49"
+            ],
+            "evidenceIds": [
+              "city-captured-1163-燕-阳翟-157"
+            ],
+            "probability": 0.005
+          },
+          {
+            "factionId": "秦",
+            "month": 1188,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "秦-ruler-54",
+              "秦-ruler-62",
+              "秦-ruler-53",
+              "秦-ruler-38"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "蓟义军",
+            "month": 1176,
+            "blockers": [
+              "NOT_ACTIVE_STATE",
+              "NO_LIVING_RULER",
+              "NO_CITY",
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "楚",
+            "month": 1176,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "楚-ruler-52",
+              "楚-ruler-58",
+              "楚-ruler-61",
+              "楚-ruler-63"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "燕",
+            "month": 1176,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "赵",
+            "month": 1176,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY"
+            ],
+            "candidateIds": [
+              "赵-ruler-56",
+              "赵-ruler-55",
+              "赵-ruler-57",
+              "赵-ruler-49"
+            ],
+            "evidenceIds": [
+              "city-captured-1163-燕-阳翟-157"
+            ],
+            "probability": 0.005
+          },
+          {
+            "factionId": "秦",
+            "month": 1176,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "秦-ruler-54",
+              "秦-ruler-62",
+              "秦-ruler-53",
+              "秦-ruler-38"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "蓟义军",
+            "month": 1164,
+            "blockers": [
+              "NOT_ACTIVE_STATE",
+              "NO_LIVING_RULER",
+              "NO_CITY",
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "楚",
+            "month": 1164,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "楚-ruler-52",
+              "楚-ruler-58",
+              "楚-ruler-61",
+              "楚-ruler-63"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "燕",
+            "month": 1164,
+            "blockers": [
+              "NO_RECENT_REAL_CRISIS",
+              "NO_EXISTING_ADULT_KIN"
+            ],
+            "candidateIds": [],
+            "evidenceIds": [],
+            "probability": 0
+          },
+          {
+            "factionId": "赵",
+            "month": 1164,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY"
+            ],
+            "candidateIds": [
+              "赵-ruler-56",
+              "赵-ruler-55",
+              "赵-ruler-57",
+              "赵-ruler-49"
+            ],
+            "evidenceIds": [
+              "city-captured-1163-燕-阳翟-157"
+            ],
+            "probability": 0.005
+          },
+          {
+            "factionId": "秦",
+            "month": 1164,
+            "blockers": [
+              "NO_CURRENT_VULNERABILITY",
+              "NO_RECENT_REAL_CRISIS"
+            ],
+            "candidateIds": [
+              "秦-ruler-54",
+              "秦-ruler-62",
+              "秦-ruler-53",
+              "秦-ruler-38"
+            ],
+            "evidenceIds": [],
+            "probability": 0
+          }
+        ],
+        "chineseSummary": "宗室废立诊断（本次观察）\n实际观察：100.00年\n已观察在国正式政权：473次\n现存成年宗室候选：1377人次\n完整资格通过：12次\n实际抽签：12次\n抽签失败：12次\n实际废立：0次\n冷却阻断：47次\n条件期望废立：0.060次"
+      },
+      "baseFactsSha256": "ed88520b991cdcd87148bccd2d516981fff38a9a0b5414d329a703cb2dd85bf9",
+      "canonicalSha256": "9084649ee80866942c13985ee3b74b82c988f45cdbafa8e0966cfd8f158c6502",
+      "worldRandomPosition": 7083,
+      "cohort": "z32",
+      "seed": "regional-3",
+      "years": 100,
+      "elapsedMs": 31899.899999976158,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "activeStates": 4,
+      "minimumActiveStatePopulation": 14,
+      "nonMilitarySplits": 1,
+      "populationAnnual": [
+        {
+          "month": 12,
+          "total": 64
+        },
+        {
+          "month": 24,
+          "total": 70
+        },
+        {
+          "month": 36,
+          "total": 78
+        },
+        {
+          "month": 48,
+          "total": 95
+        },
+        {
+          "month": 60,
+          "total": 107
+        },
+        {
+          "month": 72,
+          "total": 115
+        },
+        {
+          "month": 84,
+          "total": 118
+        },
+        {
+          "month": 96,
+          "total": 128
+        },
+        {
+          "month": 108,
+          "total": 122
+        },
+        {
+          "month": 120,
+          "total": 128
+        },
+        {
+          "month": 132,
+          "total": 132
+        },
+        {
+          "month": 144,
+          "total": 135
+        },
+        {
+          "month": 156,
+          "total": 137
+        },
+        {
+          "month": 168,
+          "total": 140
+        },
+        {
+          "month": 180,
+          "total": 143
+        },
+        {
+          "month": 192,
+          "total": 147
+        },
+        {
+          "month": 204,
+          "total": 136
+        },
+        {
+          "month": 216,
+          "total": 137
+        },
+        {
+          "month": 228,
+          "total": 139
+        },
+        {
+          "month": 240,
+          "total": 143
+        },
+        {
+          "month": 252,
+          "total": 146
+        },
+        {
+          "month": 264,
+          "total": 144
+        },
+        {
+          "month": 276,
+          "total": 145
+        },
+        {
+          "month": 288,
+          "total": 148
+        },
+        {
+          "month": 300,
+          "total": 128
+        },
+        {
+          "month": 312,
+          "total": 123
+        },
+        {
+          "month": 324,
+          "total": 128
+        },
+        {
+          "month": 336,
+          "total": 127
+        },
+        {
+          "month": 348,
+          "total": 130
+        },
+        {
+          "month": 360,
+          "total": 134
+        },
+        {
+          "month": 372,
+          "total": 135
+        },
+        {
+          "month": 384,
+          "total": 135
+        },
+        {
+          "month": 396,
+          "total": 138
+        },
+        {
+          "month": 408,
+          "total": 139
+        },
+        {
+          "month": 420,
+          "total": 142
+        },
+        {
+          "month": 432,
+          "total": 145
+        },
+        {
+          "month": 444,
+          "total": 141
+        },
+        {
+          "month": 456,
+          "total": 140
+        },
+        {
+          "month": 468,
+          "total": 142
+        },
+        {
+          "month": 480,
+          "total": 142
+        },
+        {
+          "month": 492,
+          "total": 142
+        },
+        {
+          "month": 504,
+          "total": 145
+        },
+        {
+          "month": 516,
+          "total": 141
+        },
+        {
+          "month": 528,
+          "total": 137
+        },
+        {
+          "month": 540,
+          "total": 137
+        },
+        {
+          "month": 552,
+          "total": 135
+        },
+        {
+          "month": 564,
+          "total": 136
+        },
+        {
+          "month": 576,
+          "total": 139
+        },
+        {
+          "month": 588,
+          "total": 139
+        },
+        {
+          "month": 600,
+          "total": 142
+        },
+        {
+          "month": 612,
+          "total": 142
+        },
+        {
+          "month": 624,
+          "total": 140
+        },
+        {
+          "month": 636,
+          "total": 143
+        },
+        {
+          "month": 648,
+          "total": 147
+        },
+        {
+          "month": 660,
+          "total": 146
+        },
+        {
+          "month": 672,
+          "total": 147
+        },
+        {
+          "month": 684,
+          "total": 145
+        },
+        {
+          "month": 696,
+          "total": 147
+        },
+        {
+          "month": 708,
+          "total": 149
+        },
+        {
+          "month": 720,
+          "total": 149
+        },
+        {
+          "month": 732,
+          "total": 146
+        },
+        {
+          "month": 744,
+          "total": 149
+        },
+        {
+          "month": 756,
+          "total": 144
+        },
+        {
+          "month": 768,
+          "total": 139
+        },
+        {
+          "month": 780,
+          "total": 133
+        },
+        {
+          "month": 792,
+          "total": 134
+        },
+        {
+          "month": 804,
+          "total": 130
+        },
+        {
+          "month": 816,
+          "total": 130
+        },
+        {
+          "month": 828,
+          "total": 127
+        },
+        {
+          "month": 840,
+          "total": 126
+        },
+        {
+          "month": 852,
+          "total": 124
+        },
+        {
+          "month": 864,
+          "total": 128
+        },
+        {
+          "month": 876,
+          "total": 125
+        },
+        {
+          "month": 888,
+          "total": 123
+        },
+        {
+          "month": 900,
+          "total": 120
+        },
+        {
+          "month": 912,
+          "total": 130
+        },
+        {
+          "month": 924,
+          "total": 132
+        },
+        {
+          "month": 936,
+          "total": 131
+        },
+        {
+          "month": 948,
+          "total": 129
+        },
+        {
+          "month": 960,
+          "total": 126
+        },
+        {
+          "month": 972,
+          "total": 116
+        },
+        {
+          "month": 984,
+          "total": 118
+        },
+        {
+          "month": 996,
+          "total": 119
+        },
+        {
+          "month": 1008,
+          "total": 121
+        },
+        {
+          "month": 1020,
+          "total": 126
+        },
+        {
+          "month": 1032,
+          "total": 129
+        },
+        {
+          "month": 1044,
+          "total": 128
+        },
+        {
+          "month": 1056,
+          "total": 129
+        },
+        {
+          "month": 1068,
+          "total": 131
+        },
+        {
+          "month": 1080,
+          "total": 129
+        },
+        {
+          "month": 1092,
+          "total": 126
+        },
+        {
+          "month": 1104,
+          "total": 126
+        },
+        {
+          "month": 1116,
+          "total": 127
+        },
+        {
+          "month": 1128,
+          "total": 124
+        },
+        {
+          "month": 1140,
+          "total": 125
+        },
+        {
+          "month": 1152,
+          "total": 129
+        },
+        {
+          "month": 1164,
+          "total": 136
+        },
+        {
+          "month": 1176,
+          "total": 135
+        },
+        {
+          "month": 1188,
+          "total": 134
+        },
+        {
+          "month": 1200,
+          "total": 136
+        }
+      ],
+      "independentEvents": {
+        "ordinaryFoundings": 0,
+        "militarySecessions": 1,
+        "militaryPalaceParticipation": 0,
+        "explicitClaimSupport": 0,
+        "personalMilitaryUsurpations": 0
+      }
+    }
+  ]
+}

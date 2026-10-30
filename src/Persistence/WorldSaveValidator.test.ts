@@ -81,7 +81,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     delete missing.dynasties[0].houseEpochs;
     expect(validateWorldSave(missing).errors).toContain("faction.colorHistory must be non-empty");
     expect(validateWorldSave(missing).errors).toContain("dynasty.houseEpochs must be non-empty");
-    for (const old of [13, 9, 8, 7, 6, 1]) expect(validateWorldSave({ ...parsed, saveSchemaVersion: old }).errors).toContain("该存档版本已不受支持，请创建新世界。");
+    for (const old of [33, 13, 9, 8, 7, 6, 1]) expect(validateWorldSave({ ...parsed, saveSchemaVersion: old }).errors).toContain("该存档版本已不受支持，请创建新世界。");
     parsed.dynasties[0].houseEpochs[1].displacedSuccessorId = "missing";
     expect(validateWorldSave(parsed).valid).toBe(false);
     parsed.dynasties[0].houseEpochs[1].displacedSuccessorId = "heir";

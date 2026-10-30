@@ -7,7 +7,7 @@ import {getFactionStability} from '../../Components/City';
 import {exportWorldSave} from '../../Persistence/WorldSaveExporter';
 import {hydrateWorldSave} from '../../Persistence/WorldSaveHydrator';
 import {validateWorldSave} from '../../Persistence/WorldSaveValidator';
-import {canonicalWorldSaveProjection} from '../../Persistence/WorldSaveSchema';
+import {diffCanonicalWorldSave} from '../../Persistence/WorldSaveSchema';
 
 /** Same genuine two-officer/court world as the noble regression. No synthetic persons or claims. */
 export function checkMilitaryDisposition(core:any,base:ReturnType<typeof exportWorldSave>,ids:string[],factionId:string,check:(v:unknown,s:string)=>void){
@@ -46,7 +46,8 @@ export function checkMilitaryDisposition(core:any,base:ReturnType<typeof exportW
    row.metadata!.depositionSelection=JSON.stringify(selection);row.metadata!.militaryParticipation=JSON.stringify(participation);
    check(!validateWorldSave(bad).valid,`strict world rejects forged political ${edit}`);
   }
-  const canonical=canonicalWorldSaveProjection(saved);hydrateWorldSave(core,JSON.parse(JSON.stringify(saved)));
-  check(JSON.stringify(canonicalWorldSaveProjection(exportWorldSave(core)))===JSON.stringify(canonical),'support, personality, life and identity survive canonical hydration unchanged');
+  hydrateWorldSave(core,JSON.parse(JSON.stringify(saved)));
+  const differences=diffCanonicalWorldSave(saved,exportWorldSave(core));
+  check(differences.matched,`support, personality, life and identity survive canonical hydration unchanged: ${JSON.stringify(differences.differences.slice(0,8))}`);
  }finally{hydrateWorldSave(core,structuredClone(base));}
 }

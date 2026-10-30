@@ -1,3 +1,4 @@
+import {validMilitaryDisposition} from "../Politics/MilitaryPoliticalDisposition";
 import {validMilitaryClaimSupport} from "../Politics/MilitaryClaimSupport";
 import {readMilitaryParticipation} from "../Politics/MilitaryPoliticalInfluence";
 import type {WorldEvent} from "../History/WorldHistory";
@@ -40,6 +41,7 @@ export function validRoyalDepositionMilitary(save:WorldSaveV1,event:any):boolean
     if(user&&(user.name!==member.name||user.bornMonth!==member.bornMonth))return false;
    }
    const career=deriveMilitaryCareer(p,registry.formations,events,month);
+   if(part.disposition!==undefined&&(!validMilitaryDisposition(part.disposition,p.personId,p.bornMonth,part.strength)||part.politicalSelectionWeight!==part.strength*part.disposition.contestWeight))return false;
    if(part.serviceMonths!==career.serviceMonths||JSON.stringify(part.capturedEventIds)!==JSON.stringify(career.capturedEventIds.slice().sort())||!Array.isArray(proof.victories)||proof.victories.length<1||proof.victories.length>2||new Set(proof.victories.map((v:any)=>v.cityId)).size!==proof.victories.length)return false;
    for(const v of proof.victories){
     const victory=events.find(e=>e.id===v.eventId);
