@@ -36,19 +36,21 @@ export function formatPoliticalEvent(event:WorldEvent):string|undefined {
  const cause=politicalCauseText(event)??'';
  if(event.type==='ruler-deposed'){
   let support='';
-  try{const selected=JSON.parse(String(m.depositionSelection)),p=JSON.parse(String(m.militaryParticipation??'null'))?.participant;
-   if(selected.support&&p&&selected.support.personId===p.personId){const v=selected.support;support=`${p.officeStanding?MILITARY_OFFICE_NAMES[p.officeStanding.office as MilitaryOffice]:'将领'}${v.name}统兵支持${v.rulerName}，${v.rulerId===m.nextRulerId?'所支持者获位':'终由另一宗室获位'}。`;}
+  try{const selected=JSON.parse(String(m.depositionSelection??'null')),p=JSON.parse(String(m.militaryParticipation??'null'))?.participant;
+   if(selected?.support&&p&&selected.support.personId===p.personId){const v=selected.support;support=`${p.officeStanding?MILITARY_OFFICE_NAMES[p.officeStanding.office as MilitaryOffice]:'将领'}${v.name}统兵支持${v.rulerName}，${v.rulerId===m.nextRulerId?'所支持者获位':'终由另一宗室获位'}。`;}
    else if(p)support=`将领${p.personalName??p.name}统兵参与废立。`;
   }catch{/* No support is inferred from rank or victory. */}
   const age=Math.floor((s.worldMonth-s.successorBornMonth)/12),office=s.successorOffice?`，此前任${MILITARY_OFFICE_NAMES[s.successorOffice.office]}`:'';
-  return `${cause}${m.previousRulerName}被废，${kin[String(m.relation)]??'宗室'}${m.nextRulerName}继位，时年${age}岁${office}。${support}王统、国号与旗色未改${s.capitalCityName?`，国都仍在${s.capitalCityName}`:''}。`;
+  return `${s.countryName}国宗室废立。${cause}${m.previousRulerName}被废，${kin[String(m.relation)]??'宗室'}${m.nextRulerName}继位，时年${age}岁${office}。${support}王统、国号与旗色未改${s.capitalCityName?`，国都仍在${s.capitalCityName}`:''}。`;
  }
  if(event.type==='dynasty-usurped'){
   const death=m.successionReason==='combat'?'战死':m.successionReason==='captured'?'被俘处死':'去世';
   const age=typeof m.displacedSuccessorAge==='number'?`（时年${m.displacedSuccessorAge}岁）`:'';
   const name=m.newRulerName??m.newHouseName;
   const otherCauses=formatRevolutionEvidence(String(m.vulnerabilityEvidence??'').split(',').filter(k=>!['ONE_CITY_REMAINING','FEW_CITIES_REMAINING','LOW_FACTION_STABILITY','POLITICAL_VULNERABILITY','PREDECESSOR_COMBAT_DEATH','PREDECESSOR_CAPTURED',...s.facts.map(f=>f.capital?'RECENT_CAPITAL_LOSS':f.type==='empire-split'?'RECENT_EMPIRE_SPLIT':'')].includes(k)));
-  return `${cause}${otherCauses?`${otherCauses}。`:''}${m.predecessorRulerName}${death}，原定由${m.displacedSuccessorName}${age}承统，继统之际${name}夺取王统，${m.oldHouseName}改为${m.newHouseName}${m.oldStateName!==m.newStateName?`，国号由${m.oldStateName}改为${m.newStateName}`:''}。${s.capitalCityName?`当时国都在${s.capitalCityName}。`:''}`;
+  let military='';try{const p=JSON.parse(String(m.militaryParticipation??'null'))?.participant;if(p)military=`${p.officeStanding?MILITARY_OFFICE_NAMES[p.officeStanding.office as MilitaryOffice]:'将领'}${p.personalName??p.name}统兵参与继统之争，获位者为${name}。`;}catch{/* No invented command. */}
+  const colors=typeof m.oldColor==='number'&&typeof m.newColor==='number'?(m.oldColor!==m.newColor?'并易帜。':'旗色未改。'):'';
+  return `${s.countryName}国易代。${cause}${otherCauses?`${otherCauses}。`:''}${m.predecessorRulerName}${death}，原定由${m.displacedSuccessorName}${age}承统，继统之际${name}夺取王统，${m.oldHouseName}改为${m.newHouseName}${m.oldStateName!==m.newStateName?`，国号由${m.oldStateName}改为${m.newStateName}`:''}。${military}${colors}${s.capitalCityName?`国都仍在${s.capitalCityName}。`:''}`;
  }
  return undefined;
 }

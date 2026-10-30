@@ -156,6 +156,7 @@ export function formatHistoryEventTitle(
   rulersById?: Map<string, Ruler>
 ) {
   if(event.metadata?.historyNarrativeKind==='MILITARY_LIFE')return event.title;
+  const political=formatPoliticalEvent(event);if(political)return political;
   if(event.type==='military-person-died'&&typeof event.metadata?.personalName==='string'&&typeof event.metadata.deathCause==='string')return `${event.metadata.personalName}${militaryDeathWording(typeof event.metadata.deathCause==='string'?event.metadata.deathCause:undefined)}。`;
   const title = formatMilitaryHistoryIdentity({ ...event, title: formatHistoryEventTitleBase(event, factionById, rulersById) });
   const capital = formatAccessionCapital(event);
@@ -188,7 +189,6 @@ function formatHistoryEventTitleBase(
       : `${oldName}正式建国，定国号“${newName}”。`;
   }
   if (event.type === "dynasty-usurped") {
-    const political=formatPoliticalEvent(event);if(political)return political;
     const oldName = stringMeta(event, "oldStateName") || name(event.actorFactionId);
     const newName = stringMeta(event, "newStateName");
     const newRuler = stringMeta(event, "newRulerName") || historicalRulerName(event, name, factionById, rulersById);
@@ -197,7 +197,6 @@ function formatHistoryEventTitleBase(
     return `${oldName}国易代：${rulerClause}${newName && oldName !== newName ? `，改国号为${newName}` : ""}。`;
   }
   if (event.type === "ruler-deposed") {
-    const political=formatPoliticalEvent(event);if(political)return political;
     const oldName = stringMeta(event, "previousRulerName") || "前君";
     const newName = stringMeta(event, "nextRulerName") || "宗室";
     const relationCode = stringMeta(event, "relation") ?? "";

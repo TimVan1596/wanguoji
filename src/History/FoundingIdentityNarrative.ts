@@ -24,3 +24,17 @@ export function formatFoundingIdentity(event:WorldEvent,newFactionName:string,vi
  }
  return `${name}原为${source}居民，于${city}参与起事，随居民转属建立${newFactionName}，成为其${title}；${city}为起事据点。`;
 }
+
+/** Exact event-time observations, kept out of narrative prose. No present-day registry lookup. */
+export function militarySecessionDetails(event:WorldEvent):string[]{
+ const m=event.metadata;if(m?.splitSource!=='MILITARY'||typeof m.militarySplitEvidence!=='string')return [];
+ try{const e=JSON.parse(m.militarySplitEvidence);if(e.personId!==m.leaderPersonId||!Array.isArray(e.participants))return [];
+  const c=e.localCrisis,f=c?.facts;
+  return [`永久人物 ${e.personId} · 原军令编组 ${e.commandId} · 事变月 ${e.worldMonth}`,
+   ...(e.disposition?[`当时忠诚 ${e.disposition.loyalty} · 野心 ${e.disposition.ambition} · 军权威望 ${e.disposition.prestige} · 响应阈值 ${e.disposition.responseThreshold}`]:[]),
+   ...(f?[`危机来源 ${c.reason} · 原事件 ${c.sourceEventId??'未另记'} · 地方忠诚 ${f.loyalty} · 战乱创伤 ${f.devastation} · 国家稳定 ${f.stability}`,
+    `同次政治机会：概率 ${c.chance} · 抽签 ${c.roll} · 支持者 ${c.supporter.userId}（${c.supporterKind==='COMMAND_FOLLOWER'?'旧部':'当地居民'}），单位 ${c.supporter.unitId}`]:[]),
+   ...e.participants.map((u:any)=>`实际转属 User ${u.userId} · 出生月 ${u.bornMonth} · 单位 ${u.unitId} · 当时忠诚 ${u.loyalty??'未记录'} · 地点 ${u.x},${u.y}（${u.positionSource}）`),
+   `军事活动依据 ${(e.localCareerEventIds??e.capturedEventIds??[]).join('、')||'见任职记录'}`];
+ }catch{return [];}
+}
