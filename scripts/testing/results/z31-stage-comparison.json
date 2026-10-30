@@ -39244,6 +39244,16 @@
       "desktop",
       "desktop-debug"
     ],
-    "manualChrome": "PENDING"
+    "manualChrome": "PENDING",
+    "commands": [
+      "VITEST_MAX_THREADS=2 VITEST_MIN_THREADS=1 pnpm test",
+      "pnpm build",
+      "pnpm desktop:build",
+      "pnpm desktop:renderer-debug-build"
+    ],
+    "implementationHeadBeforeFinalVerificationCommit": "54edaaadfa0adc6022ecb1fcd9f5fe8080b2f06f",
+    "presentationSourceSHA256": {
+      "src/UI/Components/FactionDetails/index.tsx": "9705e127058df7462b8a9c8b381e314594da13de9e0129b6ae37a15ade576dd9"
+    }
   }
 }
