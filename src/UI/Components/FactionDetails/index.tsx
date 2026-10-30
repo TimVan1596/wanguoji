@@ -673,7 +673,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
   const diagnostics = MilitaryCommandRegistry.getDiagnostics();
   let summaryCache:ReturnType<typeof MilitaryCommandRegistry.getOfficeSummary>|undefined;
   const readSummary=()=>summaryCache??=MilitaryCommandRegistry.getOfficeSummary(worldMonth);
-  const politicalLeader=politicalTeam?.status==="ACTIVE"&&politicalTeam.identityStage!=="STATE"?DynastyRegistry.getCurrentRuler(factionId):undefined;
+  const politicalLeader=politicalTeam?.status==="ACTIVE"&&politicalTeam.identityStage!=="STATE"&&["REBEL","FRONTIER","SPLIT"].includes(politicalTeam.origin?.type??"")?DynastyRegistry.getCurrentRuler(factionId):undefined;
   const factionCommanders = people.filter(person => person.factionId === factionId && person.status === "ACTIVE").length;
   return <Box sx={{ display: "grid", gap: 1, mt: 0.5, minWidth: 0, overflowWrap: "anywhere" }}>
     {politicalLeader&&<Typography fontSize="0.8rem">义军统辖：{formatRulerName(politicalLeader)} · 本国现役将领{factionCommanders}人；统帅称谓与正式军职分开，本人亲征须另有真实参战证据。</Typography>}
