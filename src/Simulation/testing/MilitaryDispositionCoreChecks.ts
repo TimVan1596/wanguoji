@@ -1,3 +1,4 @@
+import {SIMULATION_FIXED_STEP_MS} from "../SimulationDriver";
 import Military from '../../Politics/MilitaryCommandRegistry';
 import Dynasty from '../../Politics/Dynasty';
 import History from '../../History/WorldHistory';
@@ -29,6 +30,12 @@ export function checkMilitaryDisposition(core:any,base:ReturnType<typeof exportW
   const choice=chooseDepositionClaimant(evaluation,month,evaluation.probability*.73);
   check(evaluation.eligible&&choice?.evidence.support?.personId===p.personId,'real capital-loss crisis produces a named support decision among already legal kin');if(!choice)throw Error('No legal political support');
   evaluation.selection=choice.evidence;evaluation.militaryRoll=choice.evidence.roll;
+  const beforeFailure=exportWorldSave(core),write=History.addEvent;
+  History.addEvent=function(e){const id=write.call(this,e);if(e.type==='ruler-deposed')throw Error('injected political-support history write failure');return id;};
+  let failed=false;
+  try{failed=!(Dynasty as any).commitDeposition(team,dy,king,choice.claimant.ruler,choice.claimant.relation,month,evaluation);}finally{History.addEvent=write;}
+  const afterFailure=exportWorldSave(core);afterFailure.worldRandom=beforeFailure.worldRandom;
+  check(failed&&diffCanonicalWorldSave(beforeFailure,afterFailure).matched,'failed real support transaction restores the complete canonical world except attempted RNG consumption');
   const bodyIds=new Set(core.teams.flatMap((t:any)=>[...t.users]).map((u:any)=>u.id));
   const count=core.teams.reduce((n:number,t:any)=>n+t.users.size,0),commands=Military.getFormations().filter(f=>f.status==='ACTIVE').length;
   check((Dynasty as any).commitDeposition(team,dy,king,choice.claimant.ruler,choice.claimant.relation,month,evaluation),'existing authoritative deposition transaction commits the selected legal ruler');
@@ -49,5 +56,7 @@ export function checkMilitaryDisposition(core:any,base:ReturnType<typeof exportW
   hydrateWorldSave(core,JSON.parse(JSON.stringify(saved)));
   const differences=diffCanonicalWorldSave(saved,exportWorldSave(core));
   check(differences.matched,`support, personality, life and identity survive canonical hydration unchanged: ${JSON.stringify(differences.differences.slice(0,8))}`);
+  const resume=()=>{hydrateWorldSave(core,structuredClone(saved));core.setWorldRunning(true);for(let m=0;m<12;m++){for(let n=0;n<30;n++)core.advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit('postupdate');}core.setWorldRunning(false);const s=exportWorldSave(core);check(validateWorldSave(s).valid,'political support world remains strictly valid after twelve real months');return s;};
+  const first=resume(),second=resume();check(diffCanonicalWorldSave(first,second).matched,'political support save resumes twelve months deterministically');hydrateWorldSave(core,structuredClone(first));check(diffCanonicalWorldSave(first,exportWorldSave(core)).matched,'political support continued save reads again with no duplicated identity or history');
  }finally{hydrateWorldSave(core,structuredClone(base));}
 }
