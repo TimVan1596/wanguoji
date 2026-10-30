@@ -1,3 +1,4 @@
+import Diplomacy from "../../Politics/Diplomacy";
 import {nextMilitaryHonors} from '../../Politics/MilitaryHonors';
 import {currentNobleGrant} from '../../Politics/MilitaryNobility';
 import {militaryIdentityLabels} from "../../Politics/RoyalArchiveIdentity";
@@ -22,7 +23,7 @@ import {formatHistoryEventTitle} from "../../History/HistoryRenderRules";
 import {checkPersonArchiveInteraction} from "./PersonArchiveInteractionHarness";
 
 /** Controlled crisis after a real naturally appointed military career; never a natural frequency claim. */
-export async function runMilitarySecessionCore(seed="military-secession-z7",local=false){
+export async function runMilitarySecessionCore(seed="military-secession-z7",local=false,siege=false){
  const {core,game}=await createNaturalCore(seed),checks:string[]=[];
  const check=(yes:unknown,label:string)=>{if(!yes)throw new Error(label);checks.push(label);if(checks.length%5===0)console.info(`[CoreTest] ${checks.length}: ${label}`);};
  const step=()=>{const before=core.simulator!.year;for(let n=0;n<30;n++)(core as any).advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit("postupdate");if(core.simulator!.year===before)throw new Error(`Core clock stopped at ${before}; last check: ${checks[checks.length-1]}`);};
@@ -55,12 +56,16 @@ export async function runMilitarySecessionCore(seed="military-secession-z7",loca
   for(const u of parent.users)u.loyalty=99;
   const loyalist=members.length>2?members.find(u=>u!==commander):undefined;
   for(const u of members){if(u!==loyalist)u.loyalty=20;u.player.setPosition(city.block.x+4,city.block.y+4);(u.player.body as Phaser.Physics.Arcade.Body).reset(u.player.x,u.player.y);}
+  if(loyalist){loyalist.player.setPosition(secondCity.block.x+4,secondCity.block.y+4);(loyalist.player.body as Phaser.Physics.Arcade.Body).reset(loyalist.player.x,loyalist.player.y);}
   const popular=[...parent.users].find(u=>u.role==='NORMAL'&&!u.militaryPersonId&&!u.historicalPersonId&&!Military.isAssigned(u.player.logicalUnitId!))!;check(popular,'existing local political split still requires a real ordinary supporter');popular.loyalty=20;popular.player.setPosition(city.block.x+8,city.block.y+8);(popular.player.body as Phaser.Physics.Arcade.Body).reset(popular.player.x,popular.player.y);
   let candidate=assessMilitarySecession(city,month);check(candidate?.users[0]===commander,"political crisis, current office and actual local commander qualify together");if(!candidate)throw new Error("No local military party");
   check((!loyalist||!candidate.users.includes(loyalist))&&candidate.users.length<=originalIds.length,"only a verified willing part of the old formation follows");
-  if(local)check(Boolean(loyalist)&&!candidate.users.includes(loyalist!),'a real member of the same command refuses to follow while another actual member follows');
+  if(local)check(Boolean(loyalist)&&!candidate.users.includes(loyalist!),'a member of the same command remains in another lawful district while the actual local member follows');
   const follow=candidate.users.filter(u=>u!==commander),sourceName=Military.getPerson(personId)!.personalName,deathSchedule=deriveMilitaryLifeSchedule(Military.getPerson(personId)!).naturalDeathMonth;
-  const loyalties=new Map(members.map(u=>[u,u.loyalty]));for(const u of members)if(u!==commander)u.loyalty=99;check(!assessMilitarySecession(city,month),"no actual willing followers means no military secession");for(const u of members)u.loyalty=loyalties.get(u)!;
+  const positions=new Map(members.map(u=>[u,{x:u.player.x,y:u.player.y}]));
+  for(const u of members)if(u!==commander){u.player.setPosition(secondCity.block.x+4,secondCity.block.y+4);(u.player.body as Phaser.Physics.Arcade.Body).reset(u.player.x,u.player.y);}
+  check(!assessMilitarySecession(city,month),"no actual local followers means no military secession");
+  for(const [u,p]of positions){u.player.setPosition(p.x,p.y);(u.player.body as Phaser.Physics.Arcade.Body).reset(p.x,p.y);}
   const entry=core.logicalUnitRegistry.getEntry(commander.player.logicalUnitId!)!;
   core.logicalGameplayAuthority=true;entry.state.logicalX=-9999;entry.state.logicalY=-9999;
   check(!assessMilitarySecession(city,month),"logical mode rejects a valid-looking Player whose authoritative location is illegal");
@@ -86,7 +91,15 @@ export async function runMilitarySecessionCore(seed="military-secession-z7",loca
    check(!Factions.createSplitFaction(parent,[city],month,0,{...opportunity,lastRebellionMonth:month-1}),'the original city cooldown blocks military founding too');
    popular.loyalty=99;check(Boolean(assessMilitarySecession(city,month)),'a real local ordinary formation member can supply military support without an unrelated civilian');
   }
-  const create=(cities=[city])=>Factions.createSplitFaction(parent!,cities,month,local?0:100,local?{chance:.09,roll:.01}:undefined);
+  if(siege){
+   const enemy=core.teams.find(t=>t!==parent&&t.status==='ACTIVE'&&Diplomacy.canAttack(t.name,parent!.name,month)&&t.users.size>=8)!;
+   check(enemy,'a real hostile state with actual population exists for the siege crisis gate');
+   for(const u of enemy.users){u.player.setPosition(city.block.x+8,city.block.y+8);(u.player.body as Phaser.Physics.Arcade.Body).reset(u.player.x,u.player.y);}
+   city.defense=city.maxDefense;city.loyalty=75;(city as any).updateSiege(month);
+   check(city.ownerTeam===parent&&city.underSiege&&city.lastSiegeDamageMonth===month&&Boolean(city.siegeBattle),'real local hostile bodies create a currently damaged production siege without taking the city');
+   check(Boolean(assessMilitarySecession(city,month)),'the real serving local military party remains valid during the actual siege');
+  }
+  const create=(cities=[city])=>Factions.createSplitFaction(parent!,cities,month,local?0:100,local?{chance:siege?.06:.09,roll:.01}:undefined);
   const before=strict(),baseline=JSON.stringify(projection(before)),oldTeams=core.teams.length;
   const verifyRollback=()=>{const actual=projection(strict()),diff=diffCanonicalWorldSave(JSON.parse(baseline),actual as any);if(!diff.matched)console.error("Error Rollback diff",JSON.stringify(diff));check(diff.matched,"failed transaction restores complete canonical world except attempted RNG draws");check(Military.getPerson(personId)!.status==="ACTIVE"&&Military.getFormation(commandId)!.status==="ACTIVE"&&commander.team===parent&&commander.role==="NORMAL"&&!commander.historicalPersonId&&core.teams.length===oldTeams,"rollback restores command, people, faction registration and live roles");};
   const initialize=Dynasty.initializeFaction;
@@ -123,8 +136,9 @@ export async function runMilitarySecessionCore(seed="military-secession-z7",loca
   check(JSON.stringify(worldRandom.exportState())===honorRng&&core.teams.reduce((n,t)=>n+t.users.size,0)===total,'revocation changes no military bodies, sovereign, population or random draws');
   Military.updateAppanages(month,core.teams,Dynasty.getAll(),core.allCities);check(person.appanageHistory?.at(-1)?.kind==='ENDED'&&person.appanageHistory.some(a=>a.eventId===oldEstate!.eventId),'actual secession and old-title revocation end the estate without deleting its original grant or creating foreign ownership');
   const save=strict();
+  if(siege)check(ruler.residentIdentity!.military!.localCrisis?.reason==='MILITARY_SIEGE_CRISIS','active siege founding retains its pre-transaction source even after the transfer closes the battle');
   check(ruler.residentIdentity!.military!.entryKind===(local?'LOCAL_CRISIS':'EMPIRE_SPLIT'),'founding retains its actual political entry, separate from the military source');
-  if(local)for(const mutate of [(e:any)=>delete e.localCareerEventIds,(e:any)=>e.localCrisis.roll=.99,(e:any)=>e.localCrisis.facts.loyalty=100,(e:any)=>e.localCrisis.supporter.unitId=e.originalMemberUnitIds[0],(e:any)=>delete e.localCrisis]){
+  if(local)for(const mutate of [(e:any)=>e.localCrisis.facts.underSiege='fake',(e:any)=>delete e.localCareerEventIds,(e:any)=>e.localCrisis.roll=.99,(e:any)=>e.localCrisis.facts.loyalty=100,(e:any)=>e.localCrisis.supporter.unitId=e.originalMemberUnitIds[0],(e:any)=>delete e.localCrisis]){
    const bad=structuredClone(save),r=bad.dynasties.flatMap(d=>d.rulers).find((r:any)=>r.rulerId===ruler.id)! as any;mutate(r.residentIdentity.military);check(!validateWorldSave(bad).valid,'strict V32 refuses forged local crisis, draw or supporter evidence');
   }
 

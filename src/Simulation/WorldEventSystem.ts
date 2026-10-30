@@ -820,7 +820,7 @@ export default class WorldEventSystem {
       const pf=this.regional.popularFunnel;pf.cityChecks++;this.regional.cityChecked(city.id);
       const ordinaryCrisis=hasPopularPoliticalCrisis(city,year,Game.Core?.totalCells??1);
       const armedCrisis=city.ownerTeam?militaryLocalCrisis(popularCrisisFacts(city,year,Game.Core?.totalCells??1)).eligible:false;
-      const rawMilitaryParty=armedCrisis?assessMilitarySecession(city,year):undefined;
+      const rawMilitaryParty=armedCrisis?assessMilitarySecession(city,year,r=>this.regional.militaryStep(r)):undefined;
       const politicalBeforeFilters=ordinaryCrisis||Boolean(rawMilitaryParty);
       if(armedCrisis)this.regional.militaryStep('ARMED_CITY_CRISIS');
       if(politicalBeforeFilters)pf.political++;else {const reason=popularPoliticalCrisis(city,year,Game.Core?.totalCells??1).reason;if(reason==="LOYALTY")pf.loyaltyBlocked++;else pf.crisisBlocked++;}
@@ -830,7 +830,6 @@ export default class WorldEventSystem {
       this.regional.militaryStep('CITY_CHECK');
       if(politicalBeforeFilters){
         this.regional.militaryStep('POLITICAL_CRISIS');
-        assessMilitarySecession(city,year,r=>this.regional.militaryStep(r));
         if(owner.cities.length<2)this.regional.militaryStep('ONE_CITY');
         if(!assessPopularSupport(city,year).users.length)this.regional.militaryStep('NO_OTHER_SUPPORT');
         if(founder?.status==='EXILED')this.regional.militaryStep(FactionRegistry.canRestoreFaction(founder,year)?'FOUNDER_RESTORABLE':'FOUNDER_EXILED_NOT_RESTORABLE');

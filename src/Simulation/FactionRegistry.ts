@@ -357,7 +357,7 @@ class FactionRegistryStore {
       const resident=candidates.find(u=>!military.users.includes(u)),supporter=resident??military.users[1];if(!supporter)return undefined;
       const p=supporter.player,s=core.logicalUnitRegistry.getEntry(p.logicalUnitId!)!.state;
       military.evidence.entryKind='LOCAL_CRISIS';
-      military.evidence.localCrisis={...localOpportunity,reason:militaryLocalCrisis(popularCrisisFacts(coreCity,year,core.totalCells)).reason,supporterKind:resident?"RESIDENT":"COMMAND_FOLLOWER",
+      military.evidence.localCrisis={...localOpportunity,sourceEventId:WorldHistory.getRecordedEvents().at(-1)?.id,reason:militaryLocalCrisis(popularCrisisFacts(coreCity,year,core.totalCells)).reason,supporterKind:resident?"RESIDENT":"COMMAND_FOLLOWER",
         facts:popularCrisisFacts(coreCity,year,core.totalCells),
         sourceCityCount:previousOwner.cities.length,activeFactionCount:core.teams.filter(t=>!t.isDie).length,
         supporter:{userId:supporter.id,bornMonth:supporter.bornMonth,unitId:p.logicalUnitId!,x:core.logicalGameplayAuthority?s.logicalX:p.x,y:core.logicalGameplayAuthority?s.logicalY:p.y,loyalty:supporter.loyalty,positionSource:core.logicalGameplayAuthority?"LOGICAL":"PHASER",districtCityId:coreCity.id,ownedFactionId:previousOwner.name}};

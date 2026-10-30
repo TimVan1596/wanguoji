@@ -6,6 +6,7 @@ import { formatRevolutionEvidence } from "../Politics/DynasticRevolution";
 export function getRevolutionEventDetails(event: WorldEvent) {
   if (event.type !== "dynasty-usurped" || !event.metadata) return [];
   const m = event.metadata, lines: string[] = [];
+  if(!Object.keys(m).length)return [];
   const text = (label: string, value: unknown) => { if (typeof value === "string" && value) lines.push(`${label}：${value}`); };
   text("前君", m.previousRulerTitle ?? m.predecessorRulerName);
   text("前君结局", m.successionReason === "combat" ? "战死" : m.successionReason === "captured" ? "被俘处死" : m.successionReason === "natural" ? "去世" : undefined);
