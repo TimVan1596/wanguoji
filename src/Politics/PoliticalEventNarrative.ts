@@ -20,11 +20,12 @@ export function capturePoliticalCrisis(input:Omit<PoliticalCrisisSnapshot,'versi
  return {version:1,...input,facts};
 }
 export function readPoliticalCrisis(event:WorldEvent):PoliticalCrisisSnapshot|undefined {
+ if(typeof event.metadata?.politicalCrisis!=='string')return;
  try{const s=JSON.parse(String(event.metadata?.politicalCrisis));return s?.version===1&&s.factionId===event.actorFactionId&&s.worldMonth===(event.monthIndex??event.year)&&Array.isArray(s.facts)?s:undefined;}catch{return;}
 }
 export function politicalCauseText(event:WorldEvent):string|undefined {
  const s=readPoliticalCrisis(event);if(!s)return;
- const facts=s.facts.map(f=>`${formatWorldDate(f.worldMonth)}${f.cityName??'本国'}${f.capital?'失都':f.type==='city-revolt'?'发生城市叛乱':f.type==='empire-split'?'发生重大分裂':f.type==='city-captured'?'失守':'发生政治冲击'}`);
+ const facts=[...s.facts].sort((a,b)=>a.worldMonth-b.worldMonth||a.eventId.localeCompare(b.eventId)).map(f=>`${formatWorldDate(f.worldMonth)}${f.cityName??'本国'}${f.capital?'失都':f.type==='city-revolt'?'发生城市叛乱':f.type==='empire-split'?'发生重大分裂':f.type==='city-captured'?'失守':'发生政治冲击'}`);
  const scale=s.cityCount===1?'当时仅余一城':`当时国有${s.cityCount}城`;
  const mood=s.stability>=70?'民心尚稳':s.stability<=40?'国中不稳':'国势未稳';
  return `${facts.length?`${facts.join('；')}。`:''}${scale}，${mood}。`;

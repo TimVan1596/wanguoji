@@ -110,7 +110,7 @@ describe("live Dynasty → immutable history → restored presentation", () => {
     DynastyRegistry.update(12, [team]);
     const event = WorldHistory.getEvents().find(e => e.type === "ruler-deposed")!;
     expect(event.metadata).toMatchObject({ previousRulerId: "old", nextRulerId: "next", capitalCityName: "大梁", accessionMonth: 12 });
-    expect(formatHistoryEventTitle(event, new Map())).toContain("继位时国都：大梁");
+    expect(formatHistoryEventTitle(event, new Map())).toContain("国都仍在大梁");
     expect(WorldHistory.getEventTypeCount("ruler-succession")).toBe(0);
     expect(WorldHistory.getEventTypeCount("ruler-deposed")).toBe(1);
   });

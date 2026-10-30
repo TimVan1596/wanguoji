@@ -17,6 +17,13 @@ it('uses dated original city and political snapshots, collapses two views of one
  expect(JSON.stringify(e)).toBe(before);expect(random.exportState()).toEqual(rng);
  const round=JSON.parse(JSON.stringify(e));expect(formatPoliticalEvent(round)).toBe(text);
 });
+it('reads multiple political shocks in chronological order while retaining original evidence order',()=>{
+ const e=event(),s=JSON.parse(e.metadata.politicalCrisis);
+ s.facts.push({eventId:'earlier',worldMonth:90,type:'city-revolt',cityName:'旧邑',capital:false,groupId:'earlier'});e.metadata.politicalCrisis=JSON.stringify(s);
+ const before=JSON.stringify(e),text=formatPoliticalEvent(e)!;
+ expect(text.indexOf('旧邑发生城市叛乱')).toBeLessThan(text.indexOf('临淄失都'));
+ expect(JSON.stringify(e)).toBe(before);
+});
 it('separates a real supporter from the winner, including an unsuccessful endorsement',()=>{
  const e=event();e.metadata.militaryParticipation=JSON.stringify({participant:{personId:'officer',personalName:'程远',officeStanding:{office:'JIANGJUN'}}});
  e.metadata.depositionSelection=JSON.stringify({support:{personId:'officer',name:'程远',rulerName:'田昭',rulerId:'loser'}});
@@ -29,6 +36,13 @@ it('allows the lower weighted real adult claimant to accede without changing the
  const rng=random.exportState(),choice=chooseDepositionClaimant(evaluation,108,.00999)!;
  expect(choice.claimant.ruler.id).toBe('b');expect(choice.evidence.candidates.find(c=>c.rulerId==='b')!.weight).toBeLessThan(choice.evidence.candidates.find(c=>c.rulerId==='a')!.weight);
  expect(choice.evidence.support).toBeUndefined();expect(random.exportState()).toEqual(rng);
+});
+it('distinguishes succession crisis from stable public sentiment and military pressure from personal usurpation',()=>{
+ const snapshot=capturePoliticalCrisis({kind:'REVOLUTION',factionId:'wei',countryName:'魏',worldMonth:1817,cityCount:1,stability:93,successorBornMonth:1500},[],[]);
+ const e:any={type:'dynasty-usurped',actorFactionId:'wei',year:1817,metadata:{politicalCrisis:JSON.stringify(snapshot),predecessorRulerName:'魏济',displacedSuccessorName:'魏秉康',displacedSuccessorAge:82,successionReason:'natural',newRulerName:'王元仁',oldHouseName:'魏氏',newHouseName:'王氏',oldStateName:'魏',newStateName:'辅',oldColor:1,newColor:2,vulnerabilityEvidence:'RECENT_SUCCESSION_CHAIN,ONE_CITY_REMAINING'}};
+ const text=formatPoliticalEvent(e)!;expect(text).toContain('民心尚稳');expect(text).toContain('近期连续换君');expect(text).toContain('魏秉康（时年82岁）');expect(text).toContain('王元仁夺取王统');expect(text).toContain('并易帜');expect(text).not.toMatch(/将军|率军|统兵|拥立/);
+ e.metadata.militaryParticipation=JSON.stringify({participant:{personId:'supporter',personalName:'程远',officeStanding:{office:'JIANGJUN'}}});
+ expect(formatPoliticalEvent(e)).toContain('将军程远统兵参与继统之争，获位者为王元仁');expect(formatPoliticalEvent(e)).not.toContain('程远夺取王统');
 });
 it('records a cautious actual secessionist from frozen siege/follower evidence without backdating confiscation or motives',()=>{
  const e:any={type:'empire-split',year:456,targetFactionId:'yan',metadata:{foundingRulerName:'齐允清',leaderSourceCityName:'新郑',leaderOriginalFactionName:'燕',leaderPersonId:'officer',foundingIdentityStage:'PROVISIONAL',splitSource:'MILITARY',militarySplitEvidence:JSON.stringify({personId:'officer',personalName:'齐允清',office:'SHANGJIANGJUN',participants:[{},{}],disposition:{ambition:20,loyalty:30},localCrisis:{reason:'MILITARY_SIEGE_CRISIS',supporterKind:'COMMAND_FOLLOWER',facts:{underSiege:true,lastSiegeDamageMonth:455}}})}};
