@@ -12,7 +12,7 @@ export function depositionSelectionLines(event: WorldEvent): string[] {
     return [valid.length===1?"当时仅一名合法成年宗室，无候选竞争。":`当时比较${valid.length}名真实成年宗室；按亲缘合法性及危机下成年资历加权，非固定嫡系或旁系优先。`,
       ...valid.map((c:any)=>`${c.rulerId===s.selectedRulerId?"继位者":"候选"}：${c.name}（前君之${relation[c.relation]}），条件选择权重 ${(100*c.weight/total).toFixed(1)}%。`),
       ...valid.filter((c:any)=>c.ownMilitary&&c.militaryAdvantage>0).map((c:any)=>`${c.name}时任${({XIAOWEI:"校尉",PIJIANG:"裨将",JIANGJUN:"将军",SHANGJIANGJUN:"上将军"} as Record<string,string>)[c.ownMilitary.office]}，掌有经核验的本国军队（${c.ownMilitary.members.length}人），在继位者选择中获得${(c.militaryAdvantage*100).toFixed(0)}%的有限权重加成；不代表军队拥立。`),
-      s.supporterPersonId?"另有将领以真实军权参与本次废立；不表示其支持某位候选宗室。":"未记录普通将领施压参与本次废立。",
+      s.support?`${s.support.name}以实际军权支持${s.support.rulerName}（${s.support.basis==='KINSHIP'?'亲缘优先':'成年资历优先'}）；${s.support.rulerId===s.selectedRulerId?'所支持者继位':'最终由另一合法候选人继位'}。`:s.supporterPersonId?"另有将领以真实军权参与本次废立；不表示其支持某位候选宗室。":"未记录普通将领施压参与本次废立。",
       "继任选择复用本次废立成功抽签，不另行抽签；不改变正常继承顺序。"];
   }catch{return [];}
 }

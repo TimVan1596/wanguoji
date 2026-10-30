@@ -1,3 +1,4 @@
+import {militaryDisposition, type MilitaryDisposition} from "../Politics/MilitaryPoliticalDisposition";
 import History from "../History/WorldHistory";
 import {deriveMilitaryCareer} from "../Politics/MilitaryCareerEvidence";
 import Game from "../Game/Game";
@@ -12,6 +13,7 @@ export interface LocalMilitaryOpportunity {
  chance:number;roll:number;lastRebellionMonth?:number;
 }
 export interface MilitarySecessionEvidence {
+ disposition?:MilitaryDisposition;
  entryKind:'EMPIRE_SPLIT'|'LOCAL_CRISIS';
  localCrisis?:{facts:import('./MilitaryLocalRules').MilitaryLocalCrisisFacts;sourceEventId?:string;reason:string;chance:number;roll:number;lastRebellionMonth?:number;sourceCityCount:number;activeFactionCount:number;supporterKind?:"RESIDENT"|"COMMAND_FOLLOWER";supporter:{userId:number;bornMonth:number;unitId:string;x:number;y:number;loyalty:number;positionSource:"PHASER"|"LOGICAL";districtCityId:string;ownedFactionId:string}};
  personId:string; commandId:string; sourceFactionId:string; sourceFactionName:string; personalName:string;
@@ -22,7 +24,7 @@ export interface MilitarySecessionEvidence {
 export function assessMilitarySecession(city:City,month:number, observe?:(reason:string)=>void):{users:User[];evidence:MilitarySecessionEvidence}|undefined{
  const core=Game.Core,owner=city.ownerTeam;if(!core?.map||!owner)return;
  const districts=buildPopularDistricts(owner,core.map,Game.BlockSize);
- const local=(u:User,report?:(reason:string)=>void)=>{
+ const local=(u:User,report?:(reason:string)=>void,threshold=75)=>{
   const blocked=(reason:string)=>{report?.(reason);return false;};
   const p=u.player,id=p?.logicalUnitId,e=id?core.logicalUnitRegistry.getEntry(id):undefined,s=e?.state;
   if(!id||!e||e.player!==p||!s?.alive||s.userId!==u.id||s.factionId!==owner.name||s.unitId!==id||s.role!=="NORMAL"||s.rulerId||u.isDestroyed||u.role!=="NORMAL"||u.rulerId||u.historicalPersonId||u.team!==owner||p.parent||p.children?.length||u.slaveGroup?.npcs?.size||u.slaveGroup?.children?.size||p.user!==u||p.team!==owner||!p.active||p.role!=="NORMAL"||p.rulerId)return blocked("IDENTITY");
@@ -31,7 +33,7 @@ export function assessMilitarySecession(city:City,month:number, observe?:(reason
   const gx=Math.floor(x/Game.BlockSize),gy=Math.floor(y/Game.BlockSize);
   if(core.map!.blocks[gx]?.[gy]?.team!==owner)return blocked('FOREIGN_TERRITORY');
   if(districts.district.get(`${gx},${gy}`)!==city.id)return blocked('OTHER_DISTRICT');
-  if(u.loyalty-localPoliticalPressure(city,month)>=75)return blocked('PERSONAL_WILLINGNESS');
+  if(u.loyalty-localPoliticalPressure(city,month)>=threshold)return blocked('PERSONAL_WILLINGNESS');
   return true;
  };
  const influence=Military.getPoliticalInfluence(owner,month,core.logicalUnitRegistry,false,false,true);
@@ -43,7 +45,8 @@ export function assessMilitarySecession(city:City,month:number, observe?:(reason
   const commander=[...owner.users].find(u=>u.id===candidate.sourceUserId&&u.militaryPersonId===candidate.personId);
   if(!person||person.royalIdentity||!formation||!commander||!commander.matchesMilitaryLife(person)||!splitEstablishedPersonalName(person.personalName)){observe?.("IDENTITY_OR_ROYAL");continue;}
   observe?.("SERVING_COMMANDER");
-  if(!local(commander,r=>observe?.("COMMANDER_"+r))){observe?.("COMMANDER_NOT_LOCAL_OR_WILLING");continue;}
+  const disposition=militaryDisposition(person.personId,person.bornMonth,commander.loyalty,candidate.strength);
+  if(!local(commander,r=>observe?.("COMMANDER_"+r),disposition.responseThreshold)){observe?.("COMMANDER_NOT_LOCAL_OR_WILLING");continue;}
   if(formation.memberUnitIds.length!==candidate.memberUnitIds.length||formation.memberUnitIds.some(id=>!candidate.memberUnitIds.includes(id)))continue;
   observe?.("LOCAL_COMMANDER");
   const office=Military.getCaptureOffice(formation.commandId,person.personId,owner.name,month);if(!office)continue;
@@ -52,7 +55,7 @@ export function assessMilitarySecession(city:City,month:number, observe?:(reason
   if(!followers.length){observe?.("NO_LOCAL_FOLLOWERS");continue;}
   observe?.("QUALIFIED_LOCAL_PARTY");
   const users=[commander,...followers];
-  return {users,evidence:{entryKind:'EMPIRE_SPLIT',personId:person.personId,commandId:formation.commandId,sourceFactionId:owner.name,sourceFactionName:owner.displayName,
+  return {users,evidence:{disposition,entryKind:'EMPIRE_SPLIT',personId:person.personId,commandId:formation.commandId,sourceFactionId:owner.name,sourceFactionName:owner.displayName,
    personalName:person.personalName,office,serviceMonths:candidate.serviceMonths,localCareerEventIds:deriveMilitaryCareer(person,Military.getFormations(),History.getEventsForFaction(owner.name),month).activities.filter(a=>a.factionId===owner.name).map(a=>a.eventId).sort(),...(candidate.defenseEventIds?{defenseEventIds:candidate.defenseEventIds}:{}),capturedEventIds:[...candidate.capturedEventIds],worldMonth:month,cityId:city.id,originalMemberUnitIds:[...candidate.memberUnitIds],
    participants:users.map(u=>{const s=core.logicalUnitRegistry.getEntry(u.player.logicalUnitId!)!.state;return {userId:u.id,name:u.name,bornMonth:u.bornMonth,loyalty:u.loyalty,unitId:u.player.logicalUnitId!,
      x:core.logicalGameplayAuthority?s.logicalX:u.player.x,y:core.logicalGameplayAuthority?s.logicalY:u.player.y,positionSource:core.logicalGameplayAuthority?"LOGICAL":"PHASER",districtCityId:city.id,ownedFactionId:owner.name};})}};

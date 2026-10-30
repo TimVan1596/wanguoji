@@ -1,3 +1,5 @@
+import {validMilitaryClaimSupport} from "../Politics/MilitaryClaimSupport";
+import {readMilitaryParticipation} from "../Politics/MilitaryPoliticalInfluence";
 import type {WorldEvent} from "../History/WorldHistory";
 import type {RulerSaveV17} from "./WorldSaveSchema";
 import type {WorldSaveV1} from "./WorldSaveSchema";
@@ -8,7 +10,11 @@ import {deriveMilitaryCareer} from "../Politics/MilitaryCareerEvidence";
 export function validRoyalDepositionMilitary(save:WorldSaveV1,event:any):boolean {
  try {
   const selection=JSON.parse(event.metadata.depositionSelection);
-  if(selection.version!==2)return true;
+  if(selection.version<2)return true;
+  if(selection.version===3){
+   const support=selection.support,participant=readMilitaryParticipation(event)?.participant;
+   if(!support||!participant||support.personId!==participant.personId||support.name!==(participant.personalName??participant.name)||JSON.stringify(support.disposition)!==JSON.stringify(participant.disposition)||!validMilitaryClaimSupport(support,selection.candidates,participant.bornMonth))return false;
+  }
   const month=event.monthIndex??event.year,faction=event.actorFactionId;
   const registry=save.registries.militaryCommandRegistry,events=save.worldHistory.events as WorldEvent[];
   const rulerRecords=(save.dynasties.find(d=>d.factionId===faction)?.rulers??[]) as RulerSaveV17[];

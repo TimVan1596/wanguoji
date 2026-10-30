@@ -1,3 +1,4 @@
+import MilitaryDispositionPanel from "./MilitaryDispositionPanel";
 import {rebelFounderCommand} from "../../../Politics/RebelCommandIdentity";
 import {formatChronicleDate,chronicleReadingText} from '../../../History/ChronicleReading';
 import {createRoyalReadingProjection} from './RoyalReadingProjection';
@@ -734,7 +735,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
             {person.factionId!==factionId&&<Typography fontSize="0.78rem">曾在本国任职，后已转属。</Typography>}
               <Typography fontSize="0.76rem" color="var(--gg-text-muted)">{personAge} · 本国任职：{person.appointments.filter(a=>a.factionId===factionId).map(a=>`${formatWorldDate(a.startMonth)}—${a.endMonth===undefined?"今":formatWorldDate(a.endMonth)}`).join("；")}</Typography>
             </>}
-            preBiography={<MilitaryServicePanel personId={person.personId} month={worldMonth}/> }
+            preBiography={<><MilitaryDispositionPanel personId={person.personId} bornMonth={person.bornMonth} loyalty={current&&activeUser?.matchesMilitaryLife(person)?activeUser.loyalty:undefined} unitCount={view?.members.length??0} prestige={politicalCandidate?.finalPoliticalWeight??politicalCandidate?.strength}/><MilitaryServicePanel personId={person.personId} month={worldMonth}/></>}
             biographyTitle="生平" biography={bio.life} milestoneTitle="军旅纪事" milestoneTotal={allMilestones.length} personKey={person.personId}
             allMilestones={()=>allMilestones.map(entry=>({id:entry.eventId,content:<Typography fontSize="0.82rem">{formatWorldDate(entry.worldMonth)} · {entry.text}</Typography>}))}
             milestones={milestones.map(entry=>({id:entry.eventId,content:<Typography fontSize="0.82rem">{formatWorldDate(entry.worldMonth)} · {entry.text}</Typography>}))}

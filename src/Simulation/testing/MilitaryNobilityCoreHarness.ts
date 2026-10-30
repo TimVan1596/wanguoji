@@ -1,3 +1,5 @@
+import {checkMilitaryDisposition} from "./MilitaryDispositionCoreChecks";
+import {militaryAmbition} from "../../Politics/MilitaryPoliticalDisposition";
 import {checkOfficePoliticalChoice} from './MilitaryOfficePoliticalCoreChecks';
 import {checkMilitaryLifeView} from './MilitaryLifeViewChecks';
 import {checkMilitaryAppanages} from './MilitaryAppanageCoreHarness';
@@ -36,9 +38,13 @@ export async function runMilitaryNobilityCore(seed:string){
   const towns=core.allCities.filter(c=>c.ownerTeam!==home&&c.block!==site).slice(0,6);check(towns.length===6,'controlled war uses six different real cities');
   for(const [i,c]of towns.entries()){clock(60+i*12);place(users[0],c.block.x,c.block.y);c.capture(home,60+i*12,undefined,commands[0],ids[0]);}
   for(const [i,c]of towns.slice(0,2).entries()){clock(168+i*12);c.capture(enemy,168+i*12);clock(180+i*12);place(users[1],c.block.x,c.block.y);c.capture(home,180+i*12,undefined,commands[1],ids[1]);}
+  // Equal willingness/contest multipliers isolate the existing title and office regressions.
+  const minimumAmbition=Math.min(...ids.map(id=>militaryAmbition(id,Military.getPerson(id)!.bornMonth)));
+  for(const u of users){const p=Military.getPerson(u.militaryPersonId!)!;u.loyalty=militaryAmbition(p.personId,p.bornMonth)-minimumAmbition;}
   clock(216);const base=strict();
   const restore=(save=base)=>{hydrateWorldSave(core,structuredClone(save));return {t:core.teams.find(t=>t.name===factionId)!,d:Dynasty.get(factionId)!,p:Military.getPerson(ids[0])!,q:Military.getPerson(ids[1])!};};
   checkOfficePoliticalChoice(core,base,ids,factionId,check);
+  checkMilitaryDisposition(core,base,ids,factionId,check);
   // Isolated issuer failure: the real history writer appends then throws.
   const writer=History.addEvent,before=strict();History.addEvent=function(e){const id=writer.call(this,e);if(e.type==='military-ennobled')throw Error('injected after-write failure');return id;};
   try{Military.updateNobility(216,core.teams,Dynasty.getAll());}finally{History.addEvent=writer;}

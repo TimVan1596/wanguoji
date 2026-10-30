@@ -1,3 +1,4 @@
+import {validMilitaryDisposition} from "../Politics/MilitaryPoliticalDisposition";
 import {militaryLocalCrisis,localMilitaryCareer} from "../Simulation/MilitaryLocalRules";
 import {CITY_CAPTURE_GRACE_MONTHS,MAX_ACTIVE_FACTIONS,REBELLION_CITY_COOLDOWN_MONTHS} from "../config/simulation";
 import {militaryPoliticalDefense} from '../Politics/MilitaryPoliticalInfluence';
@@ -61,11 +62,12 @@ export function validateMilitarySecessions(save:WorldSaveV1){
    for(const u of e.participants){
     if(!object(u)){valid=false;continue;}
     if(!object(u)||!Number.isSafeInteger(u.userId)||typeof u.name!=="string"||!Number.isSafeInteger(u.bornMonth)||u.bornMonth>e.worldMonth||typeof u.unitId!=="string"||units.has(u.unitId)||users.has(u.userId)||!e.originalMemberUnitIds.includes(u.unitId)||!Number.isFinite(u.x)||!Number.isFinite(u.y)||u.x<0||u.y<0||!["PHASER","LOGICAL"].includes(u.positionSource)||u.districtCityId!==i.cityId||u.ownedFactionId!==i.sourceFactionId)valid=false;
-    if(e.entryKind==='LOCAL_CRISIS'&&(!object(e.localCrisis)||!object(e.localCrisis.facts)||!Number.isFinite(u.loyalty)||u.loyalty<0||u.loyalty>100||u.loyalty-Math.min(45,Math.max(0,50-e.localCrisis.facts.loyalty)*.8+e.localCrisis.facts.devastation*.15+(e.localCrisis.facts.lastCapturedMonth!==undefined&&e.worldMonth-e.localCrisis.facts.lastCapturedMonth<24?8:0))>=75))valid=false;
+    if(e.entryKind==='LOCAL_CRISIS'&&(!object(e.localCrisis)||!object(e.localCrisis.facts)||!Number.isFinite(u.loyalty)||u.loyalty<0||u.loyalty>100||u.loyalty-Math.min(45,Math.max(0,50-e.localCrisis.facts.loyalty)*.8+e.localCrisis.facts.devastation*.15+(e.localCrisis.facts.lastCapturedMonth!==undefined&&e.worldMonth-e.localCrisis.facts.lastCapturedMonth<24?8:0))>=(u===e.participants[0]?e.disposition?.responseThreshold??75:75)))valid=false;
     units.add(u?.unitId);users.add(u?.userId);
    }
    if(e.participants[0]?.userId!==p!.sourceUserId||e.participants[0]?.bornMonth!==p!.bornMonth||e.participants[0]?.name!==p!.name)valid=false;
    try{const career=deriveMilitaryCareer(p!,state.formations,events,e.worldMonth),defense=militaryPoliticalDefense(p!,state.formations,events,e.worldMonth,i.sourceFactionId);
+   if(!validMilitaryDisposition(e.disposition,p!.personId,p!.bornMonth,militaryPoliticalStrength(career.serviceMonths,e.originalMemberUnitIds.length,career.verifiedCaptures,defense.eventIds.length,defense.localServiceMonths).strength)||e.disposition?.loyalty!==e.participants[0]?.loyalty)valid=false;
    if(career.serviceMonths!==e.serviceMonths||!Array.isArray(e.capturedEventIds)||JSON.stringify([...career.capturedEventIds].sort())!==JSON.stringify([...e.capturedEventIds].sort())||JSON.stringify(e.defenseEventIds??[])!==JSON.stringify(defense.eventIds)||!(e.localCareerEventIds?JSON.stringify(e.localCareerEventIds)===JSON.stringify(career.activities.filter(x=>x.factionId===i.sourceFactionId).map(x=>x.eventId).sort())&&localMilitaryCareer(e.worldMonth-a!.startMonth,e.originalMemberUnitIds.length,e.localCareerEventIds.length,e.capturedEventIds.length,defense.eventIds.length):militaryPoliticalStrength(e.serviceMonths,e.originalMemberUnitIds.length,e.capturedEventIds.length,defense.eventIds.length,defense.localServiceMonths).eligible))valid=false;}catch{valid=false;}
    const founding=events.filter(x=>x.type==="empire-split"&&x.metadata?.foundingRulerId===r.rulerId);
    if(founding.length!==1||founding[0].metadata?.militaryPersonId!==p!.personId||founding[0].metadata?.militarySplitEvidence!==JSON.stringify(e)||founding[0].metadata?.transferredPopulation!==e.participants.length||founding[0].metadata?.externalPopulation!==0||founding[0].targetFactionId!==i.sourceFactionId)valid=false;

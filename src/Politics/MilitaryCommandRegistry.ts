@@ -192,7 +192,7 @@ export class MilitaryCommandRegistryStore {
         entry?.player === user.player && entry.state.alive && entry.state.userId === user.id && entry.state.factionId === team.name &&
         entry.state.unitId === unitId && entry.state.role === "NORMAL" && (!person || Boolean(user.matchesMilitaryLife?.(person)));
       return { userId: user.id, name: user.name, bornMonth: user.bornMonth, factionId: user.team.name,
-        personId: user.militaryPersonId, unitId, liveBindingVerified: Boolean(liveBindingVerified) };
+        loyalty:user.loyalty, personId: user.militaryPersonId, unitId, liveBindingVerified: Boolean(liveBindingVerified) };
     });
   }
 
@@ -203,7 +203,7 @@ export class MilitaryCommandRegistryStore {
   getPoliticalInfluence(team: Team, worldMonth: number, logicalRegistry?: Pick<import("../Simulation/LogicalUnitRegistry").default, "getEntry">, includeRoyal=false, nobleStanding=true,localSecession=false) {
     const people=this.getPeople(),users=this.politicalUsers(team,logicalRegistry);
     const relevantFactions = [...new Set(people.filter(p => p.factionId === team.name && p.status === "ACTIVE").flatMap(p => p.appointments.map(a => a.factionId)))];
-    return deriveMilitaryPoliticalInfluence({ localSecession,factionId: team.name, status: team.status, identityStage: team.identityStage, worldMonth, people:includeRoyal?people:people.filter(p=>!p.royalIdentity), formations: this.getFormations(), users,
+    return deriveMilitaryPoliticalInfluence({ royalClaims:includeRoyal, localSecession,factionId: team.name, status: team.status, identityStage: team.identityStage, worldMonth, people:includeRoyal?people:people.filter(p=>!p.royalIdentity), formations: this.getFormations(), users,
       events: [...new Map(relevantFactions.flatMap(id => this.eventReader(id)).map(e => [e.id, e])).values()],nobleEpochFounderId:nobleStanding&&!includeRoyal?this.royalService?.nobleEpoch?.(team.name,worldMonth):undefined });
   }
 

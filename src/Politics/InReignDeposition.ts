@@ -1,3 +1,4 @@
+import {chooseMilitaryClaimSupport,type MilitaryClaimSupport} from "./MilitaryClaimSupport";
 import type {RoyalDepositionMilitaryEvidence} from "./RoyalDepositionMilitary";
 import type { WorldEvent } from "../History/WorldHistory";
 import type { Ruler } from "./Dynasty";
@@ -25,7 +26,7 @@ export interface DepositionCandidate {
   relation: NonNullable<ReturnType<typeof getRecordedKinRelation>>;
 }
 export interface DepositionSelectionEvidence {
-  version:1|2; candidates:Array<{rulerId:string;name:string;relation:DepositionCandidate["relation"];bornMonth:number;weight:number;baseWeight?:number;militaryAdvantage?:number;ownMilitary?:RoyalDepositionMilitaryEvidence}>;
+  version:1|2|3; support?:MilitaryClaimSupport; candidates:Array<{rulerId:string;name:string;relation:DepositionCandidate["relation"];bornMonth:number;weight:number;supportBonus?:number;baseWeight?:number;militaryAdvantage?:number;ownMilitary?:RoyalDepositionMilitaryEvidence}>;
   conditionalRoll:number; maturityFactor:number; roll:number; probability:number; selectedRulerId:string;
   crisisEventIds:string[]; supporterPersonId?:string;
 }
@@ -187,8 +188,7 @@ export class InReignDepositionDiagnostics {
 }
 
 /** Successful-coup conditional roll is uniform on [0,1); no second political lottery.
- * Military support is for the coup, not fabricated kin-specific allegiance. It only
- * increases the weight of established adulthood under a real military-backed crisis. */
+ * Political support compares only the existing legal candidates and is frozen before selection. */
 export function chooseDepositionClaimant(evaluation: DepositionEvaluation, worldMonth: number, roll: number): {claimant:DepositionCandidate;evidence:DepositionSelectionEvidence}|undefined {
   if (!evaluation.eligible || !(roll >= 0 && roll < evaluation.probability)) return undefined;
   const maturityFactor = Math.min(3, evaluation.evidence.length) * .15 + (evaluation.militaryParticipant ? .25 : 0);
@@ -203,10 +203,13 @@ export function chooseDepositionClaimant(evaluation: DepositionEvaluation, world
       weight:baseWeight*(1+militaryAdvantage)};
   }).sort((a,b)=>a.rulerId.localeCompare(b.rulerId));
   if (!candidates.length) return undefined;
+  const participant=evaluation.militaryParticipant;
+  const support=participant?.disposition?chooseMilitaryClaimSupport(candidates,participant.personId,participant.personalName??participant.name,participant.disposition):undefined;
+  if(support)for(const c of candidates){const bonus=c.rulerId===support.rulerId?support.bonus:0;Object.assign(c,{supportBonus:bonus,weight:c.weight*(1+bonus)});}
   const conditionalRoll = roll/evaluation.probability;
   let remaining = conditionalRoll*candidates.reduce((n,c)=>n+c.weight,0);
   const picked = candidates.find(c=>(remaining-=c.weight)<0)??candidates.at(-1)!;
   return {claimant:evaluation.candidates.find(c=>c.ruler.id===picked.rulerId)!,
-    evidence:{version:2,candidates,conditionalRoll,maturityFactor,roll,probability:evaluation.probability,selectedRulerId:picked.rulerId,
+    evidence:{version:support?3:2,...(support?{support}:{}),candidates,conditionalRoll,maturityFactor,roll,probability:evaluation.probability,selectedRulerId:picked.rulerId,
       crisisEventIds:evaluation.evidence.map(e=>e.eventId),supporterPersonId:evaluation.militaryParticipant?.personId}};
 }
