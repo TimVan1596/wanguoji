@@ -1,3 +1,4 @@
+import {residentNaturalDeathMonth} from "./ResidentLife";
 import {attachSiegeFixtureUnits} from "./testing/SiegeFixtureUnits";
 import * as BattlePressure from "./SiegeBattle";
 import {composeMilitaryBiography} from "../Politics/PersonBiography";
@@ -314,11 +315,17 @@ describe("real military User retirement, mortality and succession", () => {
     expect(MilitaryCommandRegistry.getDiagnostics().naturalDeaths).toBe(0);
     expect(f.history.getEvents().filter(e => e.type === "military-person-died")).toHaveLength(1);
   });
-  it("does not accept a natural-death request before the actual lifespan or for ordinary population", () => {
+  it("keeps military life protected while an ordinary resident dies only at its stable life boundary", () => {
     const f = militaryLifeFixture();
     expect(f.users[0].destroyUser(false, { cause: "NATURAL_DEATH", month: 12 })).toBe(false);
-    expect(f.users[1].destroyUser(false, { cause: "NATURAL_DEATH", month: 1200 })).toBe(false);
-    expect(f.defender.users.size).toBe(6); expect(f.person.status).toBe("ACTIVE");
+    const u=f.users[1],end=residentNaturalDeathMonth(u.id,u.bornMonth);
+    expect(u.destroyUser(false,{cause:'NATURAL_DEATH',month:end-1,damageSource:'RESIDENT_LIFESPAN'})).toBe(false);
+    expect(u.destroyUser(false,{cause:'NATURAL_DEATH',month:end,damageSource:'RESIDENT_LIFESPAN'})).toBe(true);
+    expect(u.destroyUser(false,{cause:'NATURAL_DEATH',month:end,damageSource:'RESIDENT_LIFESPAN'})).toBe(false);
+    expect(f.registry.getEntry(u.player.logicalUnitId!)).toBeUndefined();
+    expect(MilitaryCommandRegistry.getFormations().filter(f=>f.status==='ACTIVE').some(f=>f.memberUnitIds.includes(u.player.logicalUnitId!))).toBe(false);
+    expect(f.audit.getSummary(undefined,[f.defender,f.attacker]).totals).toMatchObject({ordinaryNaturalDeaths:1,warDeaths:0});
+    expect(f.defender.users.size).toBe(5); expect(f.person.status).toBe("ACTIVE");
     expect(f.history.getEvents().filter(e => e.type === "military-person-died")).toHaveLength(0);
   });
   it("releases both capped formations as their real commanders age without deleting ordinary members", () => {

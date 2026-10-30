@@ -1,3 +1,5 @@
+import {militaryLocalCrisis} from "./MilitaryLocalRules";
+import {popularCrisisFacts} from "./PopularRebellionSupport";
 import {assessMilitarySecession} from "./MilitarySecession";
 import {RegionalRebellionAudit} from "./RegionalRebellionAudit";
 import {assessPopularSupport,hasPopularPoliticalCrisis,popularPoliticalCrisis} from "./PopularRebellionSupport";
@@ -816,7 +818,11 @@ export default class WorldEventSystem {
       diagnostics.cityChecks++;
       const rd=this.regional.counts;rd.cityChecks++;
       const pf=this.regional.popularFunnel;pf.cityChecks++;this.regional.cityChecked(city.id);
-      const politicalBeforeFilters=hasPopularPoliticalCrisis(city,year,Game.Core?.totalCells??1);
+      const ordinaryCrisis=hasPopularPoliticalCrisis(city,year,Game.Core?.totalCells??1);
+      const armedCrisis=city.ownerTeam?militaryLocalCrisis(popularCrisisFacts(city,year,Game.Core?.totalCells??1)).eligible:false;
+      const rawMilitaryParty=armedCrisis?assessMilitarySecession(city,year):undefined;
+      const politicalBeforeFilters=ordinaryCrisis||Boolean(rawMilitaryParty);
+      if(armedCrisis)this.regional.militaryStep('ARMED_CITY_CRISIS');
       if(politicalBeforeFilters)pf.political++;else {const reason=popularPoliticalCrisis(city,year,Game.Core?.totalCells??1).reason;if(reason==="LOYALTY")pf.loyaltyBlocked++;else pf.crisisBlocked++;}
       const owner = city.ownerTeam;
       const founder = city.founderTeam;
@@ -907,15 +913,16 @@ export default class WorldEventSystem {
         pf.discontentBlocked+=populationSupport.discontentBlocked;pf.supporters+=populationSupport.users.length;if(!populationSupport.users.length)pf.noSupport++;
         if(capacityBlocked)pf.capacity++;
       }
-      const newPopular=cityPolitical&&!capacityBlocked&&Boolean(populationSupport?.users.length);
+      const eligibleMilitaryParty=rawMilitaryParty&&owner.cities.length>=2&&historical.length===0&&(!founder||!FactionRegistry.canRestoreFaction(founder,year))?rawMilitaryParty:undefined;
+      const newPopular=cityPolitical&&!capacityBlocked&&(ordinaryCrisis&&Boolean(populationSupport?.users.length)||Boolean(eligibleMilitaryParty));
       if(newPopular)pf.candidates++;
       // Own-founded cities can form a popular polity; former-owner restoration retains its original priority/slot.
       const originalPath = ((!warTornPath&&Boolean(founder && city.ownerFactionId !== city.founderFactionId))||(newPopular && historical.length===0)) && !historical.some(row => row.team === founder && row.supporter);
       const popularSlot=newPopular&&originalPath;
       if(newPopular&&!originalPath)pf.priorityBlocked++;
-      const militaryParty=popularSlot&&historical.length===0&&founder?.status!=='EXILED'&&owner.cities.length>=2?assessMilitarySecession(city,year):undefined;
+      const militaryParty=popularSlot?eligibleMilitaryParty:undefined;
       if (!originalPath && !historical.length) continue;
-      const loyaltyPressure = popularSlot&&city.loyalty>REBELLION_LOYALTY_THRESHOLD ? Math.max(0,(45-city.loyalty)/45) : warTornPath ? 0 :
+      const loyaltyPressure = !ordinaryCrisis&&militaryParty?Math.min(1,(100-city.loyalty)/100+city.devastation/200):popularSlot&&city.loyalty>REBELLION_LOYALTY_THRESHOLD ? Math.max(0,((ordinaryCrisis?45:65)-city.loyalty)/(ordinaryCrisis?45:65)) : warTornPath ? 0 :
         (REBELLION_LOYALTY_THRESHOLD - city.loyalty) /
         REBELLION_LOYALTY_THRESHOLD;
       const instabilityBonus = (100 - ownerStability) / 100;
@@ -940,9 +947,9 @@ export default class WorldEventSystem {
         restorationWeight *
         FactionEffects.getRebellionRiskMultiplier(owner.name) *
         cycleMultiplier;
-      const chance = city.ownerFactionId===city.founderFactionId ? Math.min(.09,baseChance) : baseChance;
+      const chance = !ordinaryCrisis?Math.min(.06,baseChance):city.ownerFactionId===city.founderFactionId ? Math.min(.09,baseChance) : baseChance;
       // Legacy foreign-city opportunities may exceed 9%; they keep their original ordinary path.
-      const militarySlot=Boolean(chance>0&&chance<=.09&&militaryParty&&populationSupport?.users.some(u=>!militaryParty.users.includes(u)));
+      const militarySlot=Boolean(chance>0&&chance<=.09&&militaryParty);
       if(militarySlot)rd.militaryQualifiedSlots++;
       if (originalPath && founder?.status === "EXILED") {
         diagnostics.founderCandidates++;
@@ -1070,6 +1077,7 @@ export default class WorldEventSystem {
           // Failed military transactions do not fall through to a second founding attempt.
           rd.militaryFailures++;rd.executionFailed++;pf.failures++;return city.id;
         }
+        if(!ordinaryCrisis)continue;
         const frontier = isFrontierCity(city) && worldRandom.next() <= FRONTIER_REBELLION_CHANCE;
         const created=FactionRegistry.createRebelFaction({city,year,factionType:frontier?"FRONTIER":"REBEL"});
         if(created){pf.successes++;this.regional.created(created,year,"popular");this.cityRebellionYears[city.id]=year;return;}

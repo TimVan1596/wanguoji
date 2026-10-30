@@ -1,3 +1,4 @@
+import {residentNaturalDeathMonth,ordinaryLifeEligible} from "../Simulation/ResidentLife";
 import {appanageChanges,appanageText,OWNERSHIP_EVENTS,type MilitaryAppanage} from './MilitaryAppanage';
 import {honorAuthority} from './MilitaryHonors';
 import {currentNobleGrant} from './MilitaryNobility';
@@ -199,10 +200,10 @@ export class MilitaryCommandRegistryStore {
     return deriveRoyalDepositionMilitary({factionId:team.name,month:worldMonth,rulers,people:this.getPeople(),formations:this.getFormations(),users:this.politicalUsers(team,logicalRegistry),events:this.eventReader(team.name),influence:this.getPoliticalInfluence(team,worldMonth,logicalRegistry,true)});
   }
 
-  getPoliticalInfluence(team: Team, worldMonth: number, logicalRegistry?: Pick<import("../Simulation/LogicalUnitRegistry").default, "getEntry">, includeRoyal=false, nobleStanding=true) {
+  getPoliticalInfluence(team: Team, worldMonth: number, logicalRegistry?: Pick<import("../Simulation/LogicalUnitRegistry").default, "getEntry">, includeRoyal=false, nobleStanding=true,localSecession=false) {
     const people=this.getPeople(),users=this.politicalUsers(team,logicalRegistry);
     const relevantFactions = [...new Set(people.filter(p => p.factionId === team.name && p.status === "ACTIVE").flatMap(p => p.appointments.map(a => a.factionId)))];
-    return deriveMilitaryPoliticalInfluence({ factionId: team.name, status: team.status, identityStage: team.identityStage, worldMonth, people:includeRoyal?people:people.filter(p=>!p.royalIdentity), formations: this.getFormations(), users,
+    return deriveMilitaryPoliticalInfluence({ localSecession,factionId: team.name, status: team.status, identityStage: team.identityStage, worldMonth, people:includeRoyal?people:people.filter(p=>!p.royalIdentity), formations: this.getFormations(), users,
       events: [...new Map(relevantFactions.flatMap(id => this.eventReader(id)).map(e => [e.id, e])).values()],nobleEpochFounderId:nobleStanding&&!includeRoyal?this.royalService?.nobleEpoch?.(team.name,worldMonth):undefined });
   }
 
@@ -648,7 +649,7 @@ export class MilitaryCommandRegistryStore {
   onUserDestroyed(user: User, worldMonth: number, cause: string) {
     const record = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
     const person = record?.sourceUserId === user.id && record.bornMonth === user.bornMonth && record.name === user.name && record.factionId === user.team.name ? record : undefined;
-    if (cause === "NATURAL_DEATH" && (!person || (!person.royalIdentity && worldMonth % 12 !== 0) || worldMonth < deriveMilitaryLifeSchedule(person).naturalDeathMonth)) return;
+    if (cause === "NATURAL_DEATH" && !(ordinaryLifeEligible({...user,isDestroyed:false})&&worldMonth>=residentNaturalDeathMonth(user.id,user.bornMonth)) && (!person || (!person.royalIdentity && worldMonth % 12 !== 0) || worldMonth < deriveMilitaryLifeSchedule(person).naturalDeathMonth)) return;
     const death = cause === "SIEGE_LOSS" || cause === "BATTLE_DEATH" || cause === "NATURAL_DEATH";
     const unitId = user.player.logicalUnitId;
     if (unitId) for (const formation of this.formations.values()) if (formation.status === "ACTIVE" && formation.memberUnitIds.includes(unitId)) {

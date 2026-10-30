@@ -1,3 +1,4 @@
+import {rebelFounderCommand} from "../../../Politics/RebelCommandIdentity";
 import {formatChronicleDate,chronicleReadingText} from '../../../History/ChronicleReading';
 import {createRoyalReadingProjection} from './RoyalReadingProjection';
 import {createMilitaryArchiveIndex} from './MilitaryArchiveIndex';
@@ -672,8 +673,10 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
   const diagnostics = MilitaryCommandRegistry.getDiagnostics();
   let summaryCache:ReturnType<typeof MilitaryCommandRegistry.getOfficeSummary>|undefined;
   const readSummary=()=>summaryCache??=MilitaryCommandRegistry.getOfficeSummary(worldMonth);
+  const politicalLeader=politicalTeam?.status==="ACTIVE"&&politicalTeam.identityStage!=="STATE"?DynastyRegistry.getCurrentRuler(factionId):undefined;
   const factionCommanders = people.filter(person => person.factionId === factionId && person.status === "ACTIVE").length;
   return <Box sx={{ display: "grid", gap: 1, mt: 0.5, minWidth: 0, overflowWrap: "anywhere" }}>
+    {politicalLeader&&<Typography fontSize="0.8rem">义军统辖：{formatRulerName(politicalLeader)} · 本国现役将领{factionCommanders}人；统帅称谓与正式军职分开，本人亲征须另有真实参战证据。</Typography>}
     <Box><button type="button" aria-pressed={archiveView==='people'} onClick={()=>setArchiveView('people')}>现役与历任</button> · <button type="button" aria-pressed={archiveView==='merit'} onClick={()=>setArchiveView('merit')}>功臣录</button></Box>
     {archiveView==='merit'?<MeritRoll factionId={factionId} month={worldMonth} onOpen={id=>{setArchiveView('people');navigation.open({kind:'MILITARY',factionId,id});}}/>:<>
     <Typography fontSize="0.78rem" color="var(--gg-text-muted)">
@@ -1161,6 +1164,7 @@ function RulerBiography({
   factionById: Map<string, RootState["root"]["teams"][number]>;
 }) {
   const reading=readingCache.get({ruler,rulers,team,events,allEvents:events,worldMonth,people:MilitaryCommandRegistry.getPeople(),formations:MilitaryCommandRegistry.getFormations(),factions:factionById});
+  const founderCommand=rebelFounderCommand(ruler,team,events,worldMonth);
   const evidence=reading.evidence,bio=composeRulerBiography(evidence,formatRulerName(ruler),ruler.accessionYear),fullMilestoneEvents=reading.full,milestoneEvents=reading.selected;
   const start=ruler.chronicle.accessionSnapshot,end=ruler.chronicle.endSnapshot??ruler.chronicle.latestSnapshot??start;
   const parent=rulers.find(p=>p.id===ruler.parentId),predecessor=rulers.find(p=>p.id===ruler.predecessorId);
@@ -1171,6 +1175,7 @@ function RulerBiography({
     <PersonChronicleLayout title={<><Typography fontWeight="bold">{title}</Typography><Typography fontSize="0.76rem" color="var(--gg-text-muted)">{formatRulerLifeAge(ruler,worldMonth,false,team.status!=="EXTINCT")}</Typography></>}
       identity={<ChronicleSection title="身份与王统">
         <PersonLifeDates bornMonth={ruler.bornYear} deathMonth={ruler.deathMonth}/>
+        {founderCommand&&<Typography fontSize="0.82rem">{founderCommand.label} · 政治统辖身份，正式军职及本人参战另据军旅档案。</Typography>}
         <Typography fontSize="0.82rem">{ruler.houseName} · {ruler.reignOrdinal?`第${ruler.reignOrdinal}代君主 · `:""}{formatWorldDate(ruler.accessionYear)}—{ruler.endYear===undefined?"今":formatWorldDate(ruler.endYear)}</Typography>
         <Typography fontSize="0.82rem">{predecessor&&["DIRECT_CHILD","GRANDCHILD","SIBLING","NEPHEW","UNCLE","COUSIN","COLLATERAL_KIN"].includes(ruler.relationType??"")?formatRecordedSuccessionKinship(ruler,predecessor,rulers):formatRulerRelation(ruler.relationType,team.identityStage,Boolean(parent),Boolean(ruler.chronicle.foundedStateName))}</Typography>
         <Typography fontSize="0.82rem">世系：{formatRulerLineage(ruler.relationType,parent?formatRulerRowName(parent,team):undefined,team.identityStage,Boolean(ruler.chronicle.foundedStateName))}</Typography>

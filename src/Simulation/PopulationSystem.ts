@@ -1,3 +1,4 @@
+import {residentNaturalDeathMonth,ordinaryLifeEligible,worldRecoveryMultiplier} from "./ResidentLife";
 import WorldHistory from "../History/WorldHistory";
 import { getEffectivePopulationCapacity, getPopulationRecoveryContext, wartimePopulationLossInterval } from "./PopulationRecoveryRules";
 import { measurePhase, type MonthlyPhaseProfiler } from "./MonthlyPhaseProfiler";
@@ -71,6 +72,9 @@ export default class PopulationSystem {
     const previousMonth = this.lastGrowthMonth;
     this.lastGrowthMonth = worldMonth;
 
+    // Stable identity plans, not repeated mortality draws. Existing military/royal life writers retain authority.
+    for(const team of teams)for(const user of [...team.users])if(ordinaryLifeEligible(user)&&worldMonth>=residentNaturalDeathMonth(user.id,user.bornMonth))
+      user.destroyUser(false,{cause:'NATURAL_DEATH',month:worldMonth,damageSource:'RESIDENT_LIFESPAN',context:`普通居民 User ${user.id}，出生月${user.bornMonth}，寿终月${residentNaturalDeathMonth(user.id,user.bornMonth)}`});
     const recentEvents = WorldHistory.getEventsBetween?.(Math.max(0, worldMonth - 24), worldMonth) ?? [];
     const aliveTeams = measurePhase(profile, "Population.active faction scan", () => teams.filter((team) => team.status === "ACTIVE" && !team.isDie));
     aliveTeams.forEach((team) => {
@@ -91,7 +95,7 @@ export default class PopulationSystem {
         const current = this.getPopulation(team);
         if (current >= capacity) return;
         const roomRatio = (capacity - current) / capacity;
-        const chance = Math.min(.85, BASE_GROWTH_CHANCE * roomRatio * (current <= 0 ? .65 : 1) * context.multiplier * effect);
+        const chance = Math.min(.85, BASE_GROWTH_CHANCE * roomRatio * (current <= 0 ? .65 : 1) * context.multiplier * effect * worldRecoveryMultiplier(teams.reduce((n,t)=>n+t.users.size,0)));
         if (worldRandom.next() < chance) {
           measurePhase(profile, "Population.spawn/runtime creation", () => this.spawn(team, undefined, false, { cause: "NATURAL_GROWTH", month: worldMonth, context: context.state }, profile));
         }

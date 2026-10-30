@@ -165,7 +165,7 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
             population:t.users.size,commands:formations.filter(f=>f.factionId===t.name).length})),
           meanActiveStates:activeStateMonthSum/m,
           meanEndedStateLifetimeMonths:(()=>{const ts=core.teams.filter(t=>t.status==="EXTINCT");return ts.length?ts.reduce((sum,t)=>sum+Math.max(0,(t.extinctionYear??m)-t.firstFoundedYear),0)/ts.length:0;})(),
-          militarySplits:events.filter(e=>e.type==="empire-split"&&e.metadata?.splitSource==="MILITARY").length,
+          naturalMilitarySources:events.filter(e=>e.type==="empire-split"&&e.metadata?.splitSource==="MILITARY").map(e=>({id:e.id,month:e.monthIndex??e.year,actor:e.actorFactionId,target:e.targetFactionId,metadata:e.metadata})),militarySplits:events.filter(e=>e.type==="empire-split"&&e.metadata?.splitSource==="MILITARY").length,
           formationOwnershipConflicts:formations.filter(f=>f.memberUnitIds.some(id=>!core.teams.find(t=>t.name===f.factionId)?.users.has(core.teams.flatMap(t=>[...t.users]).find(u=>u.player.logicalUnitId===id)!))).length,
           appanages:{grants:Military.getPeople().flatMap(p=>p.appanageHistory??[]).filter(a=>a.kind==='GRANTED').length,lost:Military.getPeople().flatMap(p=>p.appanageHistory??[]).filter(a=>a.kind==='LOST').length,restored:Military.getPeople().flatMap(p=>p.appanageHistory??[]).filter(a=>a.kind==='RESTORED').length,ended:Military.getPeople().flatMap(p=>p.appanageHistory??[]).filter(a=>a.kind==='ENDED').length,politicalEffects:0},
           residentFounders:snapshot.dynasties.flatMap(d=>(d.rulers as any[]).filter(r=>r.residentIdentity)).length,

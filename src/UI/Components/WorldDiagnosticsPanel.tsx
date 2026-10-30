@@ -581,8 +581,8 @@ function WorldDiagnosticsPanelContent() {
           "本次会话数据；读取存档后重置。触发城市与受损者位置分开记录，位置不证明参战。",
           "世界口径：所有国家真实User（包括君主地图单位）；不含匿名残部池或未上图王室人物。转属只改变国家归属。",
           populationSummary ? `世界期初${populationSummary.openingWorldPopulation}→期末${populationSummary.closingWorldPopulation}；普通人口${populationSummary.ordinaryUsers}、君主地图单位${populationSummary.rulerMapUsers}；在国${populationSummary.activeUsers}、流亡${populationSummary.exiledUsers}、其他状态${populationSummary.inactiveUsers}` : "",
-          populationSummary ? `会话来源：自然恢复+${populationSummary.totals.naturalGrowth}；外来+${populationSummary.totals.external}；特殊+${populationSummary.totals.special}；战争−${populationSummary.totals.warDeaths}；自然死亡−${populationSummary.totals.naturalDeaths}；转入+${populationSummary.totals.transferIn}/转出−${populationSummary.totals.transferOut}；王室地图单位/残部池/离散等其他净额${populationSummary.totals.otherNet}；未归因${populationSummary.totals.unattributed}；未解释世界差额${populationSummary.unexplainedWorldDifference}` : "",
-          "近期分项仅保留12个月；详细记录最多240条。",
+          populationSummary ? `会话来源：自然恢复+${populationSummary.totals.naturalGrowth}；外来+${populationSummary.totals.external}；特殊+${populationSummary.totals.special}；战争−${populationSummary.totals.warDeaths}；自然死亡−${populationSummary.totals.naturalDeaths}（普通${populationSummary.totals.ordinaryNaturalDeaths}／军政${populationSummary.totals.militaryNaturalDeaths}）；转入+${populationSummary.totals.transferIn}/转出−${populationSummary.totals.transferOut}；王室地图单位/残部池/离散等其他净额${populationSummary.totals.otherNet}；未归因${populationSummary.totals.unattributed}；未解释世界差额${populationSummary.unexplainedWorldDifference}` : "",
+          "自然恢复是成年居民增员，不等同于婴儿出生；王室地图单位的增减另列，不与自然死亡混计。普通居民按固定身份寿命退出，军政／王室使用各自生命计划。近期分项仅保留12个月；详细记录最多240条。",
           populationTransitions.length
           ? populationTransitions.map((entry) => {
             const related = entry.relatedFactionId

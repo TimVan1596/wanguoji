@@ -1,3 +1,4 @@
+import {residentNaturalDeathMonth,ordinaryLifeEligible} from "../Simulation/ResidentLife";
 import DynastyRegistry from "../Politics/Dynasty";
 import { deriveMilitaryLifeSchedule } from "../Politics/MilitaryLifeRules";
 import Game from "../Game/Game";
@@ -137,7 +138,8 @@ export default class User {
     if (populationMutation.cause === "NATURAL_DEATH") {
       const person = this.militaryPersonId ? MilitaryCommandRegistry.getPerson(this.militaryPersonId) : undefined;
       const month = populationMutation.month;
-      if (!person || month === undefined || (!person.royalIdentity && month % 12 !== 0) || month < deriveMilitaryLifeSchedule(person).naturalDeathMonth || !this.matchesMilitaryLife(person)) return false;
+      if(!this.militaryPersonId){if(month===undefined||!ordinaryLifeEligible(this)||month<residentNaturalDeathMonth(this.id,this.bornMonth))return false;}
+      else if (!person || month === undefined || (!person.royalIdentity && month % 12 !== 0) || month < deriveMilitaryLifeSchedule(person).naturalDeathMonth || !this.matchesMilitaryLife(person)) return false;
     }
     if (this.role === "RULER" && !silentRulerDeath) {
       const shouldDestroy = Game.Core?.handleRulerCombatDeath(this) ?? true;

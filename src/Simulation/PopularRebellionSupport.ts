@@ -69,6 +69,10 @@ export function assessPopularSupport(city: City, month: number) {
 export function popularPoliticalCrisis(city:City,month:number,totalCells:number){
  const owner=city.ownerTeam;
  if(!owner||!city.block||owner.status!=="ACTIVE"||city.destroyed)return {eligible:false,reason:"INVALID_CITY"};
- return evaluatePopularPoliticalCrisis({loyalty:city.loyalty,devastation:city.devastation,captureCount:city.captureCount,lastCapturedMonth:city.lastCapturedYear,worldMonth:month,stability:getFactionStability(owner)??100,strain:city.loyalty<=REBEL_LOYALTY_THRESHOLD?calculateImperialStrain(owner,totalCells):0});
+ return evaluatePopularPoliticalCrisis(popularCrisisFacts(city,month,totalCells));
+}
+export function popularCrisisFacts(city:City,month:number,totalCells:number){
+ const owner=city.ownerTeam!;
+ return {underSiege:city.underSiege,battleId:city.siegeBattle?.id,lastSiegeDamageMonth:city.lastSiegeDamageMonth,loyalty:city.loyalty,devastation:city.devastation,captureCount:city.captureCount,lastCapturedMonth:city.lastCapturedYear,worldMonth:month,stability:getFactionStability(owner)??100,strain:city.loyalty<=REBEL_LOYALTY_THRESHOLD?calculateImperialStrain(owner,totalCells):0};
 }
 export function hasPopularPoliticalCrisis(city:City,month:number,totalCells:number){return popularPoliticalCrisis(city,month,totalCells).eligible;}

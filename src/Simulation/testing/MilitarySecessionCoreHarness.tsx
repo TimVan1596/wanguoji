@@ -84,7 +84,7 @@ export async function runMilitarySecessionCore(seed="military-secession-z7",loca
    city.loyalty=100;check(!Factions.createSplitFaction(parent,[city],month,0,opportunity),'local army and estate cannot create a crisis in a quiet city');city.loyalty=0;
    check(!Factions.createSplitFaction(parent,[city],month,0,{chance:.09,roll:.5}),'a missed original city draw cannot create a military state');
    check(!Factions.createSplitFaction(parent,[city],month,0,{...opportunity,lastRebellionMonth:month-1}),'the original city cooldown blocks military founding too');
-   const willing=popular.loyalty;popular.loyalty=99;check(!Factions.createSplitFaction(parent,[city],month,0,opportunity),'an army needs an independent local ordinary supporter');popular.loyalty=willing;
+   popular.loyalty=99;check(Boolean(assessMilitarySecession(city,month)),'a real local ordinary formation member can supply military support without an unrelated civilian');
   }
   const create=(cities=[city])=>Factions.createSplitFaction(parent!,cities,month,local?0:100,local?{chance:.09,roll:.01}:undefined);
   const before=strict(),baseline=JSON.stringify(projection(before)),oldTeams=core.teams.length;
@@ -124,7 +124,7 @@ export async function runMilitarySecessionCore(seed="military-secession-z7",loca
   Military.updateAppanages(month,core.teams,Dynasty.getAll(),core.allCities);check(person.appanageHistory?.at(-1)?.kind==='ENDED'&&person.appanageHistory.some(a=>a.eventId===oldEstate!.eventId),'actual secession and old-title revocation end the estate without deleting its original grant or creating foreign ownership');
   const save=strict();
   check(ruler.residentIdentity!.military!.entryKind===(local?'LOCAL_CRISIS':'EMPIRE_SPLIT'),'founding retains its actual political entry, separate from the military source');
-  if(local)for(const mutate of [(e:any)=>e.localCrisis.roll=.99,(e:any)=>e.localCrisis.facts.loyalty=100,(e:any)=>e.localCrisis.supporter.unitId=e.originalMemberUnitIds[0],(e:any)=>delete e.localCrisis]){
+  if(local)for(const mutate of [(e:any)=>delete e.localCareerEventIds,(e:any)=>e.localCrisis.roll=.99,(e:any)=>e.localCrisis.facts.loyalty=100,(e:any)=>e.localCrisis.supporter.unitId=e.originalMemberUnitIds[0],(e:any)=>delete e.localCrisis]){
    const bad=structuredClone(save),r=bad.dynasties.flatMap(d=>d.rulers).find((r:any)=>r.rulerId===ruler.id)! as any;mutate(r.residentIdentity.military);check(!validateWorldSave(bad).valid,'strict V32 refuses forged local crisis, draw or supporter evidence');
   }
 

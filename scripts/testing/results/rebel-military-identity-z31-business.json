@@ -1,0 +1,37 @@
+[
+  {
+    "seed": "rebel-identity-z4",
+    "scope": "controlled real Core transactions; resident founder identity implemented; no military revolt",
+    "checks": [
+      "controlled setup has an unoccupied valid city site",
+      "real ordinary Users with valid local Player/registry bindings support the crisis",
+      "actual popular transaction creates a polity and transfers its city",
+      "supporter Users transfer once, retaining their original objects and birth identities",
+      "founder is the same real transferred resident with a permanent royal life",
+      "resident founder and ordinary transfer conserve population without an extra royal avatar",
+      "one canonical popular founding event",
+      "rebel has real eligible military candidates and existing members",
+      "a provisional rebel can receive a real commander, formation and initial office",
+      "rebel commander and all formation members have real unique identities",
+      "actual rebel exposes the military navigation tab",
+      "clicking rebel military retains the exact provisional faction ID",
+      "real rebel archive displays its actual one-body colonel and service details",
+      "provisional command is distinct from formal-state coup participation",
+      "controlled formal-state transition uses the existing polity",
+      "controlled imperial transition preserves the existing polity",
+      "rebel to kingdom to empire does not duplicate people, offices or formations",
+      "actual rebel exposes the military navigation tab",
+      "clicking rebel military retains the exact provisional faction ID",
+      "real rebel archive displays its actual one-body colonel and service details",
+      "real commander transfer ends old command; it is NOT a military revolt or a second army",
+      "transfer preserves identity/population and does not silently transfer the old troops",
+      "current rebel polity and military histories resume deterministically for twelve months",
+      "old rebel appointment history survives save, load and continuation"
+    ],
+    "supporterCount": 3,
+    "sourceUserId": 1050980811,
+    "personId": "military-person-1",
+    "commandId": "military-command-1",
+    "saveSchemaVersion": 33
+  }
+]

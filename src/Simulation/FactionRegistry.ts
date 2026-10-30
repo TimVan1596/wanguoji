@@ -1,3 +1,5 @@
+import {militaryLocalCrisis} from "./MilitaryLocalRules";
+import {popularCrisisFacts} from "./PopularRebellionSupport";
 import {captureMilitarySplitRollback} from "./MilitarySplitRollback";
 import {assessMilitarySecession,type LocalMilitaryOpportunity,type MilitarySecessionEvidence} from "./MilitarySecession";
 import { assessPopularSupport, hasPopularPoliticalCrisis,popularPoliticalCrisis } from "./PopularRebellionSupport";
@@ -341,22 +343,22 @@ class FactionRegistryStore {
     if (previousOwner.status !== "ACTIVE" || coreCity.destroyed || cities.some(c => c.ownerFactionId !== previousOwner.name || c.destroyed)) return undefined;
     if(core.teams.filter(t=>!t.isDie).length>=MAX_ACTIVE_FACTIONS)return undefined;
     if(localOpportunity){
-      if(cities.length!==1||previousOwner.cities.length<2||!hasPopularPoliticalCrisis(coreCity,year,core.totalCells)||coreCity.isInCaptureGrace(year)||
+      if(cities.length!==1||previousOwner.cities.length<2||!militaryLocalCrisis(popularCrisisFacts(coreCity,year,core.totalCells)).eligible||coreCity.isInCaptureGrace(year)||
         !Number.isFinite(localOpportunity.chance)||localOpportunity.chance<=0||localOpportunity.chance>.09||!Number.isFinite(localOpportunity.roll)||localOpportunity.roll<0||localOpportunity.roll>localOpportunity.chance||
         localOpportunity.lastRebellionMonth!==undefined&&(!Number.isSafeInteger(localOpportunity.lastRebellionMonth)||year-localOpportunity.lastRebellionMonth<REBELLION_CITY_COOLDOWN_MONTHS))return undefined;
     }else if (previousOwner.cities.length < EMPIRE_SPLIT_MIN_CITIES || coreCity.loyalty > EMPIRE_SPLIT_LOW_LOYALTY ||
       ((getFactionStability(previousOwner) ?? 100) >= EMPIRE_SPLIT_STABILITY_THRESHOLD && politicalStrain < EMPIRE_SPLIT_STRAIN_THRESHOLD) || coreCity.isInCaptureGrace(year)) return undefined;
     const candidates = assessPopularSupport(coreCity, year).users.filter(u=>!this.foundingTransactions.has(u));
-    if (!candidates.length) return undefined;
+    if (!candidates.length&&!localOpportunity) return undefined;
     const targetPopulation=localOpportunity?undefined:worldRandom.int(REBEL_INITIAL_POPULATION_MIN,REBEL_INITIAL_POPULATION_MAX);
     const military=assessMilitarySecession(coreCity,year);
     if(localOpportunity&&!military)return undefined;
     if(localOpportunity&&military){
-      const supporter=candidates.find(u=>!military.users.includes(u));if(!supporter)return undefined;
+      const resident=candidates.find(u=>!military.users.includes(u)),supporter=resident??military.users[1];if(!supporter)return undefined;
       const p=supporter.player,s=core.logicalUnitRegistry.getEntry(p.logicalUnitId!)!.state;
       military.evidence.entryKind='LOCAL_CRISIS';
-      military.evidence.localCrisis={...localOpportunity,reason:popularPoliticalCrisis(coreCity,year,core.totalCells).reason,
-        facts:{loyalty:coreCity.loyalty,devastation:coreCity.devastation,captureCount:coreCity.captureCount,lastCapturedMonth:coreCity.lastCapturedYear,worldMonth:year,stability:getFactionStability(previousOwner)??100,strain:coreCity.loyalty<=18?calculateImperialStrain(previousOwner,core.totalCells):0},
+      military.evidence.localCrisis={...localOpportunity,reason:militaryLocalCrisis(popularCrisisFacts(coreCity,year,core.totalCells)).reason,supporterKind:resident?"RESIDENT":"COMMAND_FOLLOWER",
+        facts:popularCrisisFacts(coreCity,year,core.totalCells),
         sourceCityCount:previousOwner.cities.length,activeFactionCount:core.teams.filter(t=>!t.isDie).length,
         supporter:{userId:supporter.id,bornMonth:supporter.bornMonth,unitId:p.logicalUnitId!,x:core.logicalGameplayAuthority?s.logicalX:p.x,y:core.logicalGameplayAuthority?s.logicalY:p.y,loyalty:supporter.loyalty,positionSource:core.logicalGameplayAuthority?"LOGICAL":"PHASER",districtCityId:coreCity.id,ownedFactionId:previousOwner.name}};
     }

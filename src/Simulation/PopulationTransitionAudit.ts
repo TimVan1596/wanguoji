@@ -24,7 +24,7 @@ export type PopulationTransitionCause =
   | "INITIALIZATION"
   | "UNATTRIBUTED";
 
-export type PopulationDamageSource = "CITY_SIEGE" | "SIEGE_ASSAULT" | "HOSTILE_HOME_OCCUPATION" | "MILITARY_LIFESPAN" | "UNSPECIFIED";
+export type PopulationDamageSource = "CITY_SIEGE" | "SIEGE_ASSAULT" | "HOSTILE_HOME_OCCUPATION" | "MILITARY_LIFESPAN" | "RESIDENT_LIFESPAN" | "UNSPECIFIED";
 
 export interface PopulationCasualtyEvidence {
   victimUserId: number;
@@ -67,17 +67,17 @@ type TeamPopulation = Pick<Team, "name" | "displayName"> & { users: { size: numb
 const MAX_RECENT_TRANSITIONS = 240;
 
 export function emptyPopulationTotals() {
-  return { net: 0, naturalGrowth: 0, external: 0, warDeaths: 0, naturalDeaths: 0, transferIn: 0, transferOut: 0, special: 0, otherNet: 0, unattributed: 0 };
+  return { net: 0, naturalGrowth: 0, external: 0, warDeaths: 0, naturalDeaths: 0, ordinaryNaturalDeaths:0, militaryNaturalDeaths:0, transferIn: 0, transferOut: 0, special: 0, otherNet: 0, unattributed: 0 };
 }
 type PopulationTotals = ReturnType<typeof emptyPopulationTotals>;
 const TRANSFERS = new Set<PopulationTransitionCause>(["REBELLION_TRANSFER", "EMPIRE_SPLIT_TRANSFER", "SURRENDER_TRANSFER", "CONQUEST_TRANSFER", "FACTION_MERGER", "FACTION_SUBMISSION", "LIVE_TRANSFER"]);
-function addPopulationTotal(total: PopulationTotals, row: Pick<PopulationTransitionRecord, "delta" | "cause" | "relatedFactionId">) {
+function addPopulationTotal(total: PopulationTotals, row: Pick<PopulationTransitionRecord, "delta" | "cause" | "relatedFactionId" | "damageSource">) {
   const d = row.delta; total.net += d;
   if (TRANSFERS.has(row.cause) || row.cause === "RESTORATION" && row.relatedFactionId) { if (d > 0) total.transferIn += d; else total.transferOut -= d; }
   else if (row.cause === "NATURAL_GROWTH" && d > 0) total.naturalGrowth += d;
   else if (["IMMIGRATION", "LIVE_JOIN"].includes(row.cause) && d > 0) total.external += d;
   else if (["SIEGE_LOSS", "BATTLE_DEATH"].includes(row.cause) && d < 0) total.warDeaths -= d;
-  else if (row.cause === "NATURAL_DEATH" && d < 0) total.naturalDeaths -= d;
+  else if (row.cause === "NATURAL_DEATH" && d < 0) {total.naturalDeaths-=d;if(row.damageSource==='RESIDENT_LIFESPAN')total.ordinaryNaturalDeaths-=d;else if(row.damageSource==='MILITARY_LIFESPAN')total.militaryNaturalDeaths-=d;}
   else if (["SPECIAL_EVENT", "RANDOM_EVENT"].includes(row.cause) && d > 0) total.special += d;
   else if (row.cause === "UNATTRIBUTED") total.unattributed += d;
   else total.otherNet += d;
@@ -122,7 +122,7 @@ export class PopulationTransitionAudit {
   ) {
     if (!this.active || before === after) return;
     const month = metadata.month ?? this.lastReconciledMonth;
-    this.account({ month, factionId: team.name, delta: after - before, cause: metadata.cause, relatedFactionId: metadata.relatedFactionId });
+    this.account({ month, factionId: team.name, delta: after - before, cause: metadata.cause, relatedFactionId: metadata.relatedFactionId,damageSource:metadata.damageSource });
     const causeContext = metadata.cause === "SIEGE_LOSS" ? metadata.context ?? "" : "";
     // A successful casualty has its own row so that the victim identity and exact
     // population delta cannot be merged into an anonymous aggregate.
@@ -202,7 +202,7 @@ export class PopulationTransitionAudit {
     return this.getRecentSignificant();
   }
 
-  private account(row: Pick<PopulationTransitionRecord, "month" | "factionId" | "delta" | "cause" | "relatedFactionId">) {
+  private account(row: Pick<PopulationTransitionRecord, "month" | "factionId" | "delta" | "cause" | "relatedFactionId" | "damageSource">) {
     addPopulationTotal(this.totals, row);
     this.latestMonth = Math.max(this.latestMonth, row.month);
     for (const month of this.monthly.keys()) if (month < this.latestMonth - 11) this.monthly.delete(month);

@@ -10,6 +10,8 @@ export function getRevolutionEventDetails(event: WorldEvent) {
   text("前君", m.previousRulerTitle ?? m.predecessorRulerName);
   text("前君结局", m.successionReason === "combat" ? "战死" : m.successionReason === "captured" ? "被俘处死" : m.successionReason === "natural" ? "去世" : undefined);
   if (typeof m.stability === "number") lines.push(`当时稳定度：${m.stability}`);
+  if(typeof m.stability==='number'&&m.stability>60)lines.push('民心稳定度与王统继承危机分别核验；高稳定度不自动排除有来源的继承危机。');
+  lines.push(typeof m.militaryParticipation==='string'?'军事参与者须另查军权来源，参与废立／易代不等于本人登基。':'本条未记录军权参与证据，不据此推断新君曾任将领或率军。');
   text("危机证据", formatRevolutionEvidence(String(m.vulnerabilityEvidence ?? "").split(",")));
   text("旧王统", m.oldHouseName); text("新王统", m.newHouseName);
   text("被排除合法继承人", m.displacedSuccessorName);

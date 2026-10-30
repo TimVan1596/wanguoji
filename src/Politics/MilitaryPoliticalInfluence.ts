@@ -1,3 +1,4 @@
+import {localMilitaryCareer} from "../Simulation/MilitaryLocalRules";
 import {MILITARY_OFFICE_NAMES,MILITARY_FORMATION_CAPACITY,type MilitaryOffice} from './MilitaryOffice';
 import {deriveMilitaryActivities} from './MilitaryExperience';
 import {currentNobleGrant,NOBLE_RANKS,type NobleRank,NOBLE_NAMES} from "./MilitaryNobility";
@@ -48,7 +49,7 @@ export function militaryPoliticalDefense(p:MilitaryPerson,formations:MilitaryFor
 }
 /** Pure qualification. Runtime supplies verified User/player/logical-unit bindings, not UI state. */
 export function deriveMilitaryPoliticalInfluence(input: {
-  factionId: string; status: string; identityStage: string; worldMonth: number; people: MilitaryPerson[]; formations: MilitaryFormation[];
+  localSecession?:boolean; factionId: string; status: string; identityStage: string; worldMonth: number; people: MilitaryPerson[]; formations: MilitaryFormation[];
   users: MilitaryPoliticalUser[]; events: WorldEvent[];nobleEpochFounderId?:string;
 }): MilitaryPoliticalEvidence {
   const { factionId, worldMonth, people, formations, users, events } = input;
@@ -74,7 +75,9 @@ export function deriveMilitaryPoliticalInfluence(input: {
     const career = deriveMilitaryCareer(p, formations, events, worldMonth);
     const defense=militaryPoliticalDefense(p,formations,events,worldMonth,factionId);
     const experience = militaryPoliticalStrength(career.serviceMonths, members.length, career.verifiedCaptures,defense.eventIds.length,defense.localServiceMonths);
-    if (!experience.eligible) { block(p.personId, "INSUFFICIENT_CAREER"); continue; }
+    const appointment=p.appointments.find(a=>a.commandId===f.commandId&&a.endMonth===undefined)!;
+    const eligible=input.localSecession?localMilitaryCareer(worldMonth-appointment.startMonth,members.length,career.activities.filter(a=>a.factionId===factionId).length,career.verifiedCaptures,defense.eventIds.length):experience.eligible;
+    if (!eligible) { block(p.personId, "INSUFFICIENT_CAREER"); continue; }
     candidates.push({ personId: p.personId, sourceUserId: p.sourceUserId, name: p.name, personalName: p.personalName, bornMonth: p.bornMonth, factionId,
       commandId: f.commandId, commanderUnitId: u.unitId, memberUnitIds: members, unitCount: members.length,
       serviceMonths: career.serviceMonths, capturedEventIds: career.capturedEventIds.slice().sort(),
