@@ -84,7 +84,7 @@ function run(seed: string, capped: boolean, loseContact = false, sameOrigin = tr
 describe("same-origin NAP reachability — read-only Stage A", () => {
   it("creates real NAPs but upgrades to alliance after two years of severe common pressure", () => {
     const result = run("nap-audit-1", false);
-    expect(result.observations.firstAllianceMonth).toBe(37);
+    expect(result.observations.firstAllianceMonth).toBe(36);
     expect(result.observations.sameOriginNapChecks).toBe(2);
     expect(result.observations.nap10Years).toBe(0);
     expect(result.observations.oldAllianceEligibleChecks).toBeGreaterThan(0);

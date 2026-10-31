@@ -2,7 +2,7 @@ import {planRoyalHonor,royalHonorText,royalHonorCandidateClaims,type RoyalHonor}
 import {beginPoliticalMutation} from '../Simulation/PoliticalMutationScope';
 import {validateMilitaryUsurpers} from "../Persistence/MilitaryUsurperValidation";
 import {exportRulerSave} from "../Persistence/RulerSaveProjection";
-import {selectMilitaryUsurper,militaryUsurperIdentity,type MilitaryUsurperIdentity} from "./MilitaryUsurpation";
+import {selectMilitaryUsurper,auditMilitaryUsurpers,militaryUsurperIdentity,type MilitaryUsurperIdentity} from "./MilitaryUsurpation";
 import {politicalEffect} from "../Simulation/PoliticalMutationScope";
 import {successionTransaction} from "./SuccessionTransaction";
 import {capturePoliticalCrisis,politicalCapital} from "./PoliticalEventNarrative";
@@ -665,6 +665,7 @@ class DynastyRegistryStore {
     if (!successor && team.status === "ACTIVE" && team.cities.length > 0) {
       const knownDynasties = this.getAll();
       const candidate=revolution.usurpation&&legitimateSuccessor?selectMilitaryUsurper(revolutionContext.military?.candidates??[],MilitaryCommandRegistry.getPeople(),oldHouseName):undefined;
+      if(revolution.usurpation){const audit=auditMilitaryUsurpers(revolutionContext.military?.candidates??[],MilitaryCommandRegistry.getPeople(),oldHouseName);politicalEffect(()=>this.revolutionGateDiagnostics.recordPersonalCandidates(audit,candidate?.personId));}
       const person=candidate?MilitaryCommandRegistry.getPerson(candidate.personId):undefined,user=person?team.getUserById(person.sourceUserId):undefined,personal=person&&splitEstablishedPersonalName(person.personalName);
       if(candidate&&(!person||!user||!user.matchesMilitaryLife(person)||!personal))throw Error('Usurper live identity changed before accession');
       const newHouse = personal?.houseName??createSuccessorDynastyHouseName({

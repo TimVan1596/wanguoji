@@ -1,3 +1,4 @@
+import {cityEventReferences} from './CityEventReferences';
 import {politicalEffect} from "../Simulation/PoliticalMutationScope";
 import {formatPoliticalEvent} from "../Politics/PoliticalEventNarrative";
 import {metadataFactionReferences} from "./HistoricalLabelMetadata";
@@ -186,6 +187,7 @@ export class WorldHistoryStore {
   private pendingEvents: WorldEvent[] = [];
   private resetPending = false;
   private eventsByFactionId = new Map<string, WorldEvent[]>();
+  private eventsByCityId = new Map<string, WorldEvent[]>();
   private emitted = new Set<string>();
   private listeners = new Set<Listener>();
   private batchDepth = 0;
@@ -212,7 +214,7 @@ export class WorldHistoryStore {
     this.uiEventsByFactionId.clear();
     this.resetPending = true;
     this.pendingEvents = [];
-    this.eventsByFactionId.clear();
+    this.eventsByFactionId.clear();this.eventsByCityId.clear();
     this.eventTypeCounts.clear();
     this.emitted.clear();
     this.populationLeader = undefined;
@@ -308,7 +310,7 @@ export class WorldHistoryStore {
 
   snapshotPoliticalTransaction(){return {state:this.exportState(),events:[...this.events],pending:[...this.pendingEvents],reset:this.resetPending,revision:this.revision,dirty:this.batchDirty};}
   rollbackPoliticalTransaction(s:ReturnType<WorldHistoryStore['snapshotPoliticalTransaction']>){
-    this.importState(s.state);this.events=s.events;this.orderedEvents=[];this.groupOldestMonth.clear();this.uiEventsByFactionId.clear();this.eventsByFactionId.clear();this.eventTypeCounts.clear();this.events.forEach(e=>this.indexEvent(e));
+    this.importState(s.state);this.events=s.events;this.orderedEvents=[];this.groupOldestMonth.clear();this.uiEventsByFactionId.clear();this.eventsByFactionId.clear();this.eventsByCityId.clear();this.eventTypeCounts.clear();this.events.forEach(e=>this.indexEvent(e));
     this.pendingEvents=s.pending;this.resetPending=s.reset;this.revision=s.revision;this.batchDirty=s.dirty;
   }
 
@@ -334,7 +336,7 @@ export class WorldHistoryStore {
     this.uiEventsByFactionId.clear();
     this.resetPending = true;
     this.pendingEvents = [];
-    this.eventsByFactionId.clear();
+    this.eventsByFactionId.clear();this.eventsByCityId.clear();
     this.eventTypeCounts.clear();
     this.events.forEach((event) => this.indexEvent(event));
     this.emitted = new Set(state.emittedKeys);
@@ -375,7 +377,10 @@ export class WorldHistoryStore {
     else events.splice(lowerBoundMonth(events, month), 0, event);
   }
 
+  getEventsForCity(cityId:string){return (this.eventsByCityId.get(cityId)??[]).slice();}
+
   private indexEvent(event: WorldEvent) {
+    for(const id of cityEventReferences(event).keys()){const rows=this.eventsByCityId.get(id)??[];rows.push(event);this.eventsByCityId.set(id,rows);}
     this.eventTypeCounts.set(event.type, (this.eventTypeCounts.get(event.type) ?? 0) + 1);
     this.insertOrdered(this.orderedEvents, event);
     if (event.historyGroupId) this.groupOldestMonth.set(event.historyGroupId,

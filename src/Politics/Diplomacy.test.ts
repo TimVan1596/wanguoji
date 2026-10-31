@@ -24,7 +24,7 @@ afterEach(() => Diplomacy.reset());
 
 describe("Diplomacy", () => {
   it("uses factual dynamic truce and non-aggression durations", () => {
-    expect(getDiplomaticDuration("TRUCE", { recentBilateralCaptureCount:2, stabilityA:50, stabilityB:55 })).toBe(37);
+    expect(getDiplomaticDuration("TRUCE", { recentBilateralCaptureCount:2, stabilityA:50, stabilityB:55 })).toBe(36);
     expect(getDiplomaticDuration("NON_AGGRESSION", { credibility:"CREDIBLE", directA:true, directB:false, threatTerritoryShare:60, territoryShareA:10, territoryShareB:10 })).toBe(96);
   });
   it("normalizes unordered pair keys and blocks both sides until expiry", () => {

@@ -11,7 +11,7 @@ export function GenealogyPersonCard({ ruler, displayName, presentation, worldMon
 }) {
   const theme = presentation?.theme ?? "neutral";
   const honor=ruler.royalHonors?.filter(g=>g.month<=(worldMonth??Infinity)).at(-1);
-  const kinLine=honor?`${ROYAL_HONOR_NAMES[honor.rank]}${ruler.accessionYear!==undefined?' · 登位前':''}`:'宗室';
+  const kinLine=honor?(presentation?.details.find(line=>line.startsWith(ROYAL_HONOR_NAMES[honor.rank]))??`${ROYAL_HONOR_NAMES[honor.rank]}（历史荣衔）`):'宗室';
   if(compact){
     const line={overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"};
     return <Box data-genealogy-theme={theme} title={[displayName,...presentation?.details??[],militaryLabel].filter(Boolean).join(" · ")} sx={{border:"1px solid",...genealogyThemeStyles[theme],borderRadius:"var(--gg-radius)",boxSizing:"border-box",width:GENEALOGY_CARD_WIDTH,height:genealogyCardHeight(worldMonth!==undefined,!!presentation?.labels.length,!!militaryLabel),px:"8px",py:"6px",textAlign:"center"}}>
@@ -29,7 +29,7 @@ export function GenealogyPersonCard({ ruler, displayName, presentation, worldMon
     {worldMonth!==undefined&&<Typography fontSize="0.75rem">{formatRulerLifeAge(ruler,worldMonth,false,managedLife)}</Typography>}
     {presentation?.labels.length ? <Typography fontSize="0.72rem" sx={{ mt: 0.2 }}>{presentation.labels.join(" · ")}</Typography> : null}
     <Typography fontSize="0.68rem" color="var(--gg-text-muted)">
-      {ruler.reignOrdinal !== undefined ? `第${ruler.reignOrdinal}代` : presentation?.roles.includes("储君") ? "继承候选" : kinLine}
+      {ruler.reignOrdinal !== undefined ? `第${ruler.reignOrdinal}代` : presentation?.roles.includes("储君") ? "继承候选" : honor?kinLine:"宗室成员"}
       {ruler.status === "exiled" ? " · 流亡承统" : ruler.status === "politically-ended" ? " · 生死未载" : ruler.status === "deposed" ? " · 在位时被废，生存未终" : ""}
     </Typography>
   </Box>;

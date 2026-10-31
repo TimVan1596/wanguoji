@@ -16,7 +16,7 @@ describe("ruler lifespan rules", () => {
     const roll = (max: number) => (rolls.shift() ?? 0) % max;
     const deathMonth = createNaturalDeathMonth(0, roll);
     expect(deathMonth).toBe(58 * 12);
-    expect(deathMonth - 55 * 12).toBe(37);
+    expect(deathMonth - 55 * 12).toBe(36);
     expect(deathMonth - 57 * 12).toBe(12);
   });
 

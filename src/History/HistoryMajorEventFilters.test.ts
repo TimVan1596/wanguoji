@@ -3,7 +3,7 @@ import {matchesMajorEventFilter as matches,VISIBLE_MAJOR_EVENT_FILTERS,normalize
 import {WorldHistoryStore} from './WorldHistory';
 import {queryHistoryPage} from './HistoryPageQuery';
 it('groups browsing without conflating exact event types and preserves legacy filter keys',()=>{
- expect(VISIBLE_MAJOR_EVENT_FILTERS.map(x=>x.label)).toEqual(['全部大事','建国与复国','称帝','政变与分裂','亡国','归附与合邦']);
+ expect(VISIBLE_MAJOR_EVENT_FILTERS.map(x=>x.label)).toEqual(['全部大事','册封','建国与复国','称帝','政变与分裂','亡国','归附与合邦']);
  for(const type of ['dynasty-usurped','ruler-deposed','empire-split','rebel-faction-founded','frontier-faction-founded'])expect(matches({type} as any,'revolution')).toBe(true);
  expect(matches({type:'faction-restored'} as any,'founding')).toBe(true);expect(matches({type:'faction-merged'} as any,'submission')).toBe(true);
  expect(matches({type:'empire-split'} as any,'founding')).toBe(false);expect(normalizeVisibleMajorEventFilter('restoration')).toBe('founding');

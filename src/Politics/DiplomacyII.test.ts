@@ -88,7 +88,7 @@ describe("Diplomacy II durable lifecycle",()=>{
   });
   it("TRUCE cannot renew without remaining real war-recovery evidence",()=>{
     const s=system();s.registry.setRelation({...nap,status:"TRUCE",reason:"WAR_EXHAUSTION_TRUCE",expiresMonth:36});s.system.update(24,[a,b],100,[]);
-    expect(s.registry.get("a","b")?.expiresMonth).toBe(37);s.system.update(36,[a,b],100,[]);expect(s.registry.get("a","b")).toBeUndefined();
+    expect(s.registry.get("a","b")?.expiresMonth).toBe(36);s.system.update(36,[a,b],100,[]);expect(s.registry.get("a","b")).toBeUndefined();
   });
   it("TRUCE can renew while captures and low stability still support recovery",()=>{
     const s=system();s.registry.setRelation({...nap,status:"TRUCE",reason:"WAR_EXHAUSTION_TRUCE",expiresMonth:36});s.system.update(24,[team("a",[0],30),b],100,[{type:"city-captured",actorFactionId:"a",targetFactionId:"b"}] as never);

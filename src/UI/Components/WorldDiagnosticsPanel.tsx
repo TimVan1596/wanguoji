@@ -433,6 +433,7 @@ function WorldDiagnosticsPanelContent() {
         <summary>篡朝诊断</summary>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 11 }}>{provisionalRulers.revolution.cumulativeGate.chineseSummary}</Typography>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 11 }}>{provisionalRulers.revolution.cumulativeGate.military.chineseSummary}</Typography>
+        <Typography fontSize='.75rem'>已成功易姓中：有合格军人 {provisionalRulers.revolution.cumulativeGate.personalCandidateSelection.withEligibleMilitary} 次；军人本人登基 {provisionalRulers.revolution.cumulativeGate.personalCandidateSelection.personalAccessions} 次；普通新王统 {provisionalRulers.revolution.cumulativeGate.personalCandidateSelection.generatedAccessions} 次。阻断：{stableStringify(provisionalRulers.revolution.cumulativeGate.personalCandidateSelection.blocked)}</Typography>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(provisionalRulers.revolution)}</Typography>
       </details>
       <details>

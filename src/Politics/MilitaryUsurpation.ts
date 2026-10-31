@@ -24,3 +24,16 @@ export function militaryUsurperIdentity(candidate:MilitaryPoliticalParticipant,p
  return {version:1,personId:person.personId,sourceUserId:person.sourceUserId,sourceUserLabel:person.name,bornMonth:person.bornMonth,naturalDeathMonth:deriveMilitaryLifeSchedule(person).naturalDeathMonth,
   factionId:candidate.factionId,accessionMonth:month,predecessorRulerId:predecessorId,displacedSuccessorId:displacedId,commandId:candidate.commandId,office:office.office,officeEventId:office.eventId,appointmentEventId:office.appointmentEventId,opportunity:{...opportunity},participant:structuredClone(candidate)};
 }
+
+/** Diagnostic denominator: candidates inside an already successful usurpation, never all generals/months. */
+export function auditMilitaryUsurpers(candidates:readonly MilitaryPoliticalParticipant[],people:readonly MilitaryPerson[],oldHouseName:string){
+ const blocked:Record<string,number>={},eligible:string[]=[];
+ for(const c of candidates){
+  if(selectMilitaryUsurper([c],people,oldHouseName)){eligible.push(c.personId);continue;}
+  const p=people.find(p=>p.personId===c.personId),name=p&&splitEstablishedPersonalName(p.personalName);
+  const reason=!p?'MISSING_PERSON':p.status!=='ACTIVE'||p.deathMonth!==undefined?'NOT_ACTIVE':p.royalIdentity?'ROYAL_KIN':p.politicalRulerId?'ALREADY_RULER':!name?'UNVERIFIED_NAME':name.houseName===oldHouseName?'SAME_HOUSE':c.unitCount<2?'INSUFFICIENT_UNITS':c.serviceMonths<60?'INSUFFICIENT_SERVICE':c.strength<2?'INSUFFICIENT_AUTHORITY':!c.capturedEventIds.length?'NO_VERIFIED_CAPTURE':!c.officeStanding?'NO_CURRENT_OFFICE':'DISPOSITION_NOT_WILLING';
+  blocked[reason]=(blocked[reason]??0)+1;
+ }
+ if(!candidates.length)blocked.NO_COURT_CANDIDATES=1;
+ return {candidateCount:candidates.length,eligible,blocked};
+}
