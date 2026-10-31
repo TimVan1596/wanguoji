@@ -25,11 +25,11 @@ export function createRoyalReadingProjection(){
  return {get(a:RoyalReadingInput){
   const r=a.ruler,end=Math.min(a.worldMonth,Math.max(r.endYear??a.worldMonth,r.deathMonth??-Infinity)),scope=JSON.stringify([a.team.name,r.id]);
   const localRefs=a.events.filter(e=>(e.monthIndex??e.year)<=end),refs=[...a.allEvents.filter(e=>(e.monthIndex??e.year)<=end),...localRefs];
-  const people=a.people.filter(p=>p.personId===(r.militaryIdentity?.personId??r.residentIdentity?.personId)||p.appointments.some(x=>x.factionId===a.team.name&&x.startMonth<=end&&(x.endMonth??end)>=r.accessionYear));
+  const people=a.people.filter(p=>p.personId===(r.militaryUsurperIdentity?.personId??r.militaryIdentity?.personId??r.residentIdentity?.personId)||p.appointments.some(x=>x.factionId===a.team.name&&x.startMonth<=end&&(x.endMonth??end)>=r.accessionYear));
   const personIds=new Set(people.map(p=>p.personId));
   const family=a.rulers.filter(x=>x.bornYear<=end||x.accessionYear!==undefined).map(x=>({id:x.id,parentId:x.parentId,houseName:x.houseName,givenName:x.givenName,bornYear:x.bornYear,accessionYear:x.accessionYear,reignOrdinal:x.reignOrdinal,endYear:x.endYear,endReason:x.endReason,status:x.status,accessionCause:x.accessionCause,predecessorId:x.predecessorId,deathMonth:x.deathMonth,deathReason:x.deathReason,relationType:x.relationType}));
   const forms=a.formations.filter(f=>personIds.has(f.commanderPersonId)).map(f=>({commandId:f.commandId,factionId:f.factionId,commanderPersonId:f.commanderPersonId,captures:f.captures.filter(c=>c.month<=end)}));
-  const key=JSON.stringify([r,family,a.team.name,a.team.origin,a.team.stateFoundedMonth,end,people,forms,localRefs.map(e=>e.id),r.militaryIdentity||r.residentIdentity?.military?[...a.factions].map(([id,f])=>[id,f.displayName,f.nameHistory,f.stateFoundedMonth,f.sovereigntyHistory,f.colorHistory]):null]);
+  const key=JSON.stringify([r,family,a.team.name,a.team.origin,a.team.stateFoundedMonth,end,people,forms,localRefs.map(e=>e.id),r.militaryUsurperIdentity||r.militaryIdentity||r.residentIdentity?.military?[...a.factions].map(([id,f])=>[id,f.displayName,f.nameHistory,f.stateFoundedMonth,f.sovereigntyHistory,f.colorHistory]):null]);
   const old=rows.get(scope);if(old&&old.owner===r&&old.key===key&&old.refs.length===refs.length&&refs.every((e,i)=>e===old.refs[i])){hits++;rows.delete(scope);rows.set(scope,old);return old.value;}
   builds++;const value=build(a);rows.delete(scope);rows.set(scope,{owner:r,key,refs,value});if(rows.size>24)rows.delete(rows.keys().next().value!);return value;
  },diagnostics(){return {builds,hits,entries:rows.size};}};
