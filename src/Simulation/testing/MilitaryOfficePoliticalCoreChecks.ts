@@ -1,3 +1,4 @@
+import {checkMilitaryUsurper} from "./MilitaryUsurperCoreChecks";
 import Military from '../../Politics/MilitaryCommandRegistry';
 import Dynasty from '../../Politics/Dynasty';
 import History from '../../History/WorldHistory';
@@ -18,6 +19,7 @@ export function checkOfficePoliticalChoice(core:any,base:ReturnType<typeof expor
   const enemy=core.teams.find((x:any)=>x!==t&&x.status==='ACTIVE')!,body=t.getUserById(q.sourceUserId)!,towns=t.cities.filter((c:any)=>!c.isCapital).slice(0,2);
   for(const [i,c] of towns.entries()){const m=252+i*12;clock(m);c.capture(enemy,m);body.player.setPosition(c.block.x,c.block.y);body.player.body.reset(c.block.x,c.block.y);const s=core.logicalUnitRegistry.getEntry(body.player.logicalUnitId).state;s.logicalX=c.block.x;s.logicalY=c.block.y;c.capture(t,m,undefined,a.commandId,q.personId);}
   promote(276);check(a.officeHistory?.at(-1)?.office==='SHANGJIANGJUN','real second commander reaches marshal through production promotion, without changing promotion rules');
+  checkMilitaryUsurper(core,exportWorldSave(core),factionId,q.personId,check);
   const modern=Military.getPoliticalInfluence(t,276,core.logicalUnitRegistry),plain=Military.getPoliticalInfluence(t,276,core.logicalUnitRegistry,false,false);
   check(modern.candidates[0]?.personId===ids[1]&&plain.candidates[0]?.personId===ids[0],'verified marshal outranks the colonel among equal base strengths, before any noble award');
   check(modern.candidates.every(c=>c.strength===plain.candidates.find(p=>p.personId===c.personId)!.strength),'office standing does not change military eligibility or the crisis-risk strength');

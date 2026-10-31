@@ -45,9 +45,9 @@ it('distinguishes succession crisis from stable public sentiment and military pr
  expect(formatPoliticalEvent(e)).toContain('将军程远统兵参与继统之争，获位者为王元仁');expect(formatPoliticalEvent(e)).not.toContain('程远夺取王统');
 });
 it('records a cautious actual secessionist from frozen siege/follower evidence without backdating confiscation or motives',()=>{
- const e:any={type:'empire-split',year:456,targetFactionId:'yan',metadata:{foundingRulerName:'齐允清',leaderSourceCityName:'新郑',leaderOriginalFactionName:'燕',leaderPersonId:'officer',foundingIdentityStage:'PROVISIONAL',splitSource:'MILITARY',militarySplitEvidence:JSON.stringify({personId:'officer',personalName:'齐允清',office:'SHANGJIANGJUN',participants:[{},{}],disposition:{ambition:20,loyalty:30},localCrisis:{reason:'MILITARY_SIEGE_CRISIS',supporterKind:'COMMAND_FOLLOWER',facts:{underSiege:true,lastSiegeDamageMonth:455}}})}};
+ const e:any={type:'empire-split',year:456,targetFactionId:'yan',metadata:{foundingRulerName:'齐允清',leaderSourceCityName:'新郑',leaderOriginalFactionName:'燕',leaderPersonId:'officer',foundingIdentityStage:'PROVISIONAL',splitSource:'MILITARY',militarySplitEvidence:JSON.stringify({personId:'officer',personalName:'齐允清',office:'SHANGJIANGJUN',participants:[{},{}],disposition:{ambition:20,loyalty:30},localCrisis:{crisisSourceEventIds:['real-city-siege'],reason:'MILITARY_SIEGE_CRISIS',supporterKind:'COMMAND_FOLLOWER',facts:{underSiege:true,lastSiegeDamageMonth:455}}})}};
  const text=formatFoundingIdentity(e,'新郑义军')!;
- expect(text).toContain('新郑正遭围攻');expect(text).toContain('燕上将军齐允清');expect(text).toContain('率1名旧部');expect(text).toContain('谨慎、忠诚较低');expect(text).toContain('当地响应者即随行旧部');expect(text).toContain('旧任随起事终止');
+ expect(text).toContain('新郑正遭围攻');expect(text).toContain('燕上将军齐允清');expect(text).toContain('率1名旧部');expect(text).not.toMatch(/谨慎|忠诚|原编组|旧任随起事/);
  expect(text).not.toMatch(/野心勃勃|被迫|愤恨|夺爵.*起事|食邑.*起事|绝不会/);
- expect(formatFoundingIdentity(e,'新郑义军','yan')).toContain('举兵叛离');
+ expect(formatFoundingIdentity(e,'新郑义军','yan')).toContain('叛离燕国');
 });

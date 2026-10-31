@@ -149,7 +149,7 @@ export default class LogicalUnitRegistry {
   }
 
   snapshotPoliticalTransaction(){return {next:this.nextUnitId,entries:[...this.units].map(([id,e])=>[id,{...e,state:{...e.state}}] as const)};}
-  rollbackPoliticalTransaction(s:ReturnType<LogicalUnitRegistry['snapshotPoliticalTransaction']>){this.nextUnitId=s.next;this.units=new Map(s.entries);}
+  rollbackPoliticalTransaction(s:ReturnType<LogicalUnitRegistry['snapshotPoliticalTransaction']>){this.nextUnitId=s.next;this.units=new Map(s.entries);for(const [id,e] of s.entries)if(e.player)e.player.logicalUnitId=id;}
 
   importState(nextUnitSequence: number, entries: Array<{ state: LogicalUnitState; player: Player; user?: User }>) {
     this.units.clear();
