@@ -18,6 +18,12 @@ export function militaryNarrativeLinks(person:MilitaryPerson,events:readonly Wor
     for(const end of events)if(end.type==='military-command-ended'&&end.metadata?.personId===person.personId&&end.metadata.commandId===proof.commandId&&end.metadata.endReason==='TRANSFERRED'&&end.actorFactionId===proof.sourceFactionId&&month(end)===month(e)&&person.appointments.some(a=>a.commandId===proof.commandId&&a.factionId===proof.sourceFactionId&&a.endMonth===month(e)&&a.endReason==='TRANSFERRED'))hide(e.id,end.id);
   }
   if(e.type==='dynasty-usurped'&&m.militaryUsurperPersonId===person.personId&&e.rulerId===person.politicalRulerId){const proof=read(m.militaryUsurperIdentity);for(const end of events)if(proof?.personId===person.personId&&end.type==='military-command-ended'&&end.metadata?.personId===person.personId&&end.metadata.commandId===proof.commandId&&end.metadata.endReason==='DISMISSED'&&month(end)===month(e))hide(e.id,end.id);}
+  if(e.type==='court-coup-result'&&m.outcome==='FAILED'&&m.personId===person.personId&&typeof m.courtCoupEventId==='string'){
+   const attempt=byId.get(m.courtCoupEventId),proof=read(attempt?.metadata?.courtCoup);
+   if(attempt?.type==='court-coup-attempt'&&proof?.participant.personId===person.personId&&proof.outcomeEventId===e.id&&proof.outcome==='FAILED'&&proof.consequence==='DISMISSED'&&proof.participant.commandId===m.commandId&&attempt.actorFactionId===e.actorFactionId&&month(attempt)===month(e)){
+    for(const end of events)if(end.type==='military-command-ended'&&end.actorFactionId===e.actorFactionId&&end.metadata?.personId===person.personId&&end.metadata.commandId===m.commandId&&end.metadata.courtCoupEventId===attempt.id&&end.metadata.endReason==='DISMISSED'&&month(end)===month(e)&&person.appointments.some(a=>a.commandId===m.commandId&&a.factionId===e.actorFactionId&&a.endMonth===month(e)&&a.endReason==='DISMISSED'))hide(e.id,end.id);
+   }
+  }
   if(e.type==='military-person-died'&&m.personId===person.personId){
    for(const end of events)if(end.type==='military-command-ended'&&end.metadata?.personId===person.personId&&end.metadata.endReason==='DEATH'&&end.actorFactionId===e.actorFactionId&&month(end)===month(e)&&person.appointments.some(a=>a.commandId===end.metadata?.commandId&&a.factionId===e.actorFactionId&&a.endMonth===month(e)&&a.endReason==='DEATH'))hide(e.id,end.id);
    for(const other of events){

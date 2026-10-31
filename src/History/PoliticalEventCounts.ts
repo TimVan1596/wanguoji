@@ -9,5 +9,5 @@ export function politicalEventCounts(events:readonly WorldEvent[]){
   try{const m=e.metadata,i=JSON.parse(String(m?.militaryUsurperIdentity));return typeof m?.militaryUsurperPersonId==='string'&&i.personId===m.militaryUsurperPersonId&&i.accessionMonth===(e.monthIndex??e.year)&&i.factionId===e.actorFactionId;}catch{return false;}
  });
  const depositions=unique.filter(e=>e.type==='ruler-deposed');
- return {ordinaryFoundings:countFoundings(false),militarySecessions:countFoundings(true),depositions:depositions.length,militarySupportedDepositions:depositions.filter(e=>readMilitaryParticipation(e)).length,nonMilitaryUsurpations:coups.length-militaryCoups.length,personalMilitaryUsurpations:militaryCoups.length};
+ return {ordinaryFoundings:countFoundings(false),militarySecessions:countFoundings(true),depositions:depositions.length,militarySupportedDepositions:depositions.filter(e=>readMilitaryParticipation(e)||unique.some(result=>result.type==='court-coup-result'&&result.metadata?.outcome==='SUCCESS'&&result.metadata.depositionEventId===e.id&&unique.some(attempt=>attempt.type==='court-coup-attempt'&&attempt.id===result.metadata?.courtCoupEventId&&attempt.metadata?.personId===result.metadata.personId))).length,nonMilitaryUsurpations:coups.length-militaryCoups.length,personalMilitaryUsurpations:militaryCoups.length};
 }

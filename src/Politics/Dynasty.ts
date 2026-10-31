@@ -915,8 +915,8 @@ class DynastyRegistryStore {
     const acts=WorldHistory.getRecordedEvents().filter(e=>e.type==='court-coup-attempt');
     const results=WorldHistory.getRecordedEvents().filter(e=>e.type==='court-coup-result');
     const successes=results.filter(e=>e.metadata?.outcome==='SUCCESS').length;
-    return {qualifiedInstigatorOpportunities:this.courtInstigatorChecks,attempts:acts.length,successes,failures:results.length-successes,
-      summary:`宫廷拥立企图 ${acts.length}次；成功 ${successes}次，失败 ${results.length-successes}次。失败处罚为实际免职；拥立者不等于继位者。`};
+    return {qualificationScope:'SESSION_SINCE_LOAD',eventScope:'RECORDED_WORLD_HISTORY',qualifiedInstigatorOpportunities:this.courtInstigatorChecks,attempts:acts.length,successes,failures:results.length-successes,
+      summary:`本次会话合格发起机会 ${this.courtInstigatorChecks}次。已记录宫廷拥立企图 ${acts.length}次；成功 ${successes}次，失败 ${results.length-successes}次。失败处罚为实际免职；拥立者不等于继位者。`};
   }
 
   getInReignDepositionDiagnostics(worldMonth: number) {
@@ -1002,15 +1002,17 @@ class DynastyRegistryStore {
         outcome,outcomeEventId,consequence:outcome==='SUCCESS'?'DEPOSITION':'DISMISSED'};
       const actorName=actor.personalName??actor.name,office=actor.officeStanding?.office;
       const who=`${team.displayName}${office?MILITARY_OFFICE_NAMES[office]:''}${actorName}`;
-      const facts=evaluation.evidence.map(e=>{const source=WorldHistory.getEventsForFaction(team.name).find(s=>s.id===e.eventId);return `${formatWorldDate(e.month)}${source?.cityName??''}${e.description}`;}).join('、');
+      const facts=evaluation.evidence.map(e=>{const source=WorldHistory.getEventsForFaction(team.name).find(s=>s.id===e.eventId);return `${formatWorldDate(e.month)}${source?.title??e.description}`;}).join('；');
       WorldHistory.addEvent({id:eventId,year:month,type:'court-coup-attempt',category:'politics',importance:'major',actorFactionId:team.name,factionIds:[team.name],rulerId:current.id,
         title:`${facts}后，${who}谋废${royalName(current)}，欲拥立宗室${royalName(target)}。`,metadata:{courtCoup:JSON.stringify(record),personId:actor.personId,commandId:actor.commandId,targetRulerId:target.id,previousRulerId:current.id}});
       if(outcome==='SUCCESS'){
         evaluation.selection=choice.evidence;
         if(!this.commitDeposition(team,dynasty,current,target,choice.claimant.relation,month,evaluation))throw Error('Coup succession failed');
       }else MilitaryCommandRegistry.endPersonCommands(actor.personId,month,'DISMISSED',eventId);
+      const depositionEventId=outcome==='SUCCESS'?WorldHistory.getEventsForFaction(team.name).find(e=>e.type==='ruler-deposed'&&(e.monthIndex??e.year)===month&&e.metadata?.previousRulerId===current.id&&e.rulerId===target.id)?.id:undefined;
+      if(outcome==='SUCCESS'&&!depositionEventId)throw Error('Missing actual deposition result');
       WorldHistory.addEvent({id:outcomeEventId,year:month,type:'court-coup-result',category:'politics',importance:'major',actorFactionId:team.name,factionIds:[team.name],rulerId:outcome==='SUCCESS'?target.id:current.id,
-        title:outcome==='SUCCESS'?`${actorName}拥立${royalName(target)}事成，${royalName(current)}被废。`:`${actorName}拥立之谋败，军职被免；${royalName(current)}仍在位。`,metadata:{courtCoupEventId:eventId,personId:actor.personId,commandId:actor.commandId,targetRulerId:target.id,outcome}});
+        title:outcome==='SUCCESS'?`${actorName}拥立${royalName(target)}事成，${royalName(current)}被废。`:`${actorName}拥立之谋败，军职被免；${royalName(current)}仍在位。`,metadata:{courtCoupEventId:eventId,...(depositionEventId?{depositionEventId}:{}),personId:actor.personId,commandId:actor.commandId,targetRulerId:target.id,outcome}});
       politicalEffect(()=>this.depositionDiagnostics.observe(team.name,month,evaluation,true,outcome==='SUCCESS'?'SUCCESS':'FAILURE'));
     });}catch(error){console.warn('[CourtCoup] rolled back',error);}
   }
