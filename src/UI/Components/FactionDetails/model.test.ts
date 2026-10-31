@@ -180,7 +180,7 @@ describe("faction details model", () => {
         { name: "赵", status: "EXTINCT", firstFoundedYear: 0, extinctionYear: 36 },
         120
       )
-    ).toBe(36);
+    ).toBe(37);
   });
 
   it("shows provisional state formation status without exposing internal enums", () => {

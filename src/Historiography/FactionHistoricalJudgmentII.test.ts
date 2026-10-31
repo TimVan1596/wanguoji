@@ -96,7 +96,7 @@ describe('personalized judgments from factual chains, not random synonym variant
     const store = new WorldHistoryStore(); c.events.forEach(e => store.addEvent(e));
     const restoredStore = new WorldHistoryStore(); restoredStore.importState(store.exportState());
     const restored: FactionHistoryContext = { ...JSON.parse(raw), factions: new Map([...c.factions].map(([id, f]) => [id, JSON.parse(JSON.stringify(f))])), events: restoredStore.getEventsForFaction(c.faction.name) };
-    expect(assess(restored)).toEqual(assess(c)); expect(worldRandom.exportState()).toEqual(rng); expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(36);
+    expect(assess(restored)).toEqual(assess(c)); expect(worldRandom.exportState()).toEqual(rng); expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(37);
     expect(JSON.stringify({ faction: c.faction, dynasty: c.dynasty, lifetime: c.lifetime, totalWorldBlocks: c.totalWorldBlocks, events: c.events })).toBe(raw);
   });
   it('living relatives do not preserve a polity after both political resources reach zero', () => {
