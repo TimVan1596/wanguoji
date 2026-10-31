@@ -5,7 +5,7 @@ import {describeMilitaryStatus} from "./MilitaryPeoplePresentation";
 
 export default function MilitaryPersonIdentityHeader({person,country,politicalLabel}:{person:MilitaryPerson;country:string;politicalLabel?:string}){
   return <>
-    <Typography fontWeight="bold" fontSize="0.9rem">{getMilitaryPersonDisplayName(person)} · {country}{politicalLabel?' · '+politicalLabel:describeMilitaryStatus(person)}</Typography>
+    <Typography fontWeight="bold" fontSize="0.9rem">{getMilitaryPersonDisplayName(person)} · {country}{' · '+(politicalLabel??describeMilitaryStatus(person))}</Typography>
 
   </>;
 }

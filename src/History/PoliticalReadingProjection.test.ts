@@ -2,7 +2,7 @@ import {it,expect} from 'vitest';
 import {mergePoliticalReading} from './PoliticalReadingProjection';
 import {projectRulerHistoricalEvents} from '../Politics/RulerChronicle';
 const e=(id:string,type:string,m:any={},extra:any={}):any=>({id,type,year:120,actorFactionId:'rebel',factionIds:['rebel'],importance:'major',metadata:m,...extra});
-function founding(military=false){return [e('accession','ruler-acceded',{accessionIdentityStage:'PROVISIONAL',nextRulerId:'r',provisionalSeatCityId:'city'},{rulerId:'r'}),e('found','empire-split',{foundingIdentityStage:'PROVISIONAL',leaderPersonId:'p',foundingRulerId:'r',leaderSourceCityId:'city',splitSource:military?'MILITARY':'RESIDENT'},{targetFactionId:'old'})];}
+function founding(military=false){return [e('accession','ruler-acceded',{accessionIdentityStage:'PROVISIONAL',residentPersonId:'p',foundingCityId:'city',nextRulerId:'r',provisionalSeatCityId:'city'},{rulerId:'r'}),e('found','empire-split',{foundingIdentityStage:'PROVISIONAL',leaderPersonId:'p',foundingRulerId:'r',leaderSourceCityId:'city',splitSource:military?'MILITARY':'RESIDENT'},{targetFactionId:'old'})];}
 it.each([false,true])('merges the original first founder identity (%s) in both world and royal reading, retaining exact source IDs',military=>{
  const events=founding(military),before=JSON.stringify(events),rows=mergePoliticalReading(events);
  expect(rows.map(x=>x.id)).toEqual(['found']);expect(rows[0].metadata!.sourceEventIds).toBe('found,accession');

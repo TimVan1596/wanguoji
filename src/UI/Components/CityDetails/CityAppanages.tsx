@@ -20,7 +20,8 @@ const link={background:'none',border:0,color:'inherit',font:'inherit',padding:0,
 export default function CityAppanages({cityId}:{cityId:string}){
  const [revision,setRevision]=useState(()=>History.getRevision()),month=useSelector((s:RootState)=>s.root.worldMonth);
  useEffect(()=>History.subscribeRevision(setRevision),[]);
- const prepared=useMemo(()=>prepareAppanageHistory(History.getRecordedEvents()),[revision]);
+ const eventCount=History.getEventCount();
+ const prepared=useMemo(()=>prepareAppanageHistory(History.getRecordedEvents()),[revision,eventCount]);
  const facts=useMemo(()=>cityAppanageHistory(cityId,Military.getPeople(),prepared.events,month,prepared),[cityId,month,prepared]);
  return <AppanageCards cityId={cityId} month={month} facts={facts}/>;
 }

@@ -1,3 +1,6 @@
+import {projectRulerHistoricalEvents} from '../../Politics/RulerChronicle';
+import {militaryMilestones} from '../../Politics/MilitaryChroniclePresentation';
+import {mergePoliticalReading} from '../../History/PoliticalReadingProjection';
 import {localPoliticalPressure} from "../PopularRebellionSupport";
 import Diplomacy from "../../Politics/Diplomacy";
 import {nextMilitaryHonors} from '../../Politics/MilitaryHonors';
@@ -134,6 +137,13 @@ export async function runMilitarySecessionCore(seed="military-secession-z7",loca
   const text=formatHistoryEventTitle(founding[0],new Map(core.teams.map(t=>[t.name,t])));
   check(text.includes(sourceName)&&text.includes(`${follow.length}名旧部`)&&text.includes("自任首领")&&!text.includes("首任君主")&&!/政治取向|旧任随|编组解散/.test(text),"history reads actual old office, followers, polity and political leadership");
   check(Military.getChronicle(person,month,parent.name).some(e=>e.eventId===founding[0].id&&!e.victory),"old-country military biography records secession without inventing a capture");
+  const sources=History.getRecordedEvents(),royalReading=projectRulerHistoricalEvents(sources,ruler as any,split.team.name,month,ruler.chronicle?.notableEventIds??[]).all;
+  check(royalReading.some(e=>e.id===founding[0].id&&e.metadata?.politicalReadingKind==='FOUNDING')&&!royalReading.some(e=>e.type==='ruler-acceded'&&e.rulerId===ruler.id),'actual military founder has one founding chronicle instead of inheriting a nonexistent previous leader');
+  const beforeReading=JSON.stringify({history:History.exportState(),rng:worldRandom.exportState(),person}),oldReading=militaryMilestones(person,Military.getChronicle(person,month,parent.name),sources);
+  check(oldReading.some(e=>e.eventId===founding[0].id)&&!oldReading.some(e=>e.commandId===commandId&&e.source.startsWith('military-command-ended')),'real split metadata pairs the original command end even when the split has no top-level cityId');
+  check(mergePoliticalReading(sources).some(e=>e.id===founding[0].id&&String(e.metadata?.sourceEventIds).includes('ruler-acceded')),'world reading retains the same first-founder source relationship');
+  check(JSON.stringify({history:History.exportState(),rng:worldRandom.exportState(),person})===beforeReading,'reading projections change neither canonical facts nor RNG');
+
   await checkPersonArchiveInteraction(core,split.team.name,personId,check);
   check(militaryIdentityLabels(Military.getPerson(personId)!,Dynasty.getAll(),History.getEvents(),month).includes("义军创立者"),"real founding transaction supplies composite military founder identity");
   check(nextMilitaryHonors({...person,nobilityHistory:[]},Military.getFormations(),History.getEvents(),month,core.teams,Dynasty.getAll()).length===0,'verified rebellion without an original grant cannot cause a fabricated revocation');
