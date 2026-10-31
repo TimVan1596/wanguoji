@@ -312,3 +312,5 @@ describe("terminal target identity at the political end", () => {
     expect(JSON.stringify({ team, target })).toBe(before);
   });
 });
+
+it('shows the actual de-facto twenty-four-month path rather than ordinary twelve-month qualification',()=>{const lines=buildStateFormationStatusLines({name:'frontier',factionType:'FRONTIER',identityStage:'PROVISIONAL',status:'ACTIVE',currentActiveSinceYear:0,stateFormationEligibleSinceMonth:1200,stateFormationEligibilityKind:'DE_FACTO',cities:[{id:'a'},{id:'b'},{id:'c'}]},1218,52,true);expect(lines).toContain('建国条件：稳定度 52/50');expect(lines).toContain('政治整合中：18/24个月');});
