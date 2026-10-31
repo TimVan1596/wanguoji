@@ -16,7 +16,7 @@ export interface HonorFaction {name:string;status:string;identityStage:string;so
 export const royalName=(r:Ruler)=>r.houseName.replace(/氏$/,'')+r.givenName;
 /** Historical life checks do not reuse today's role to rewrite an earlier title. */
 export function livingRoyalAt(r:Ruler,month:number){return r.bornYear<=month&&(r.deathMonth===undefined||r.deathMonth>month)&&(r.naturalDeathYear??r.plannedEndYear??Infinity)>month;}
-export function effectiveRoyalHonor(r:Ruler,d:Pick<Dynasty,'houseEpochs'>,month:number,sovereigntyRank?:string){
+export function effectiveRoyalHonor(r:Ruler,d:Pick<Dynasty,'houseEpochs'>,month:number,_sovereigntyRank?:string){
  if(!livingRoyalAt(r,month)||r.accessionYear!==undefined&&r.accessionYear<=month)return;
  return r.royalHonors?.filter(g=>g.month<=month&&g.recipientRulerId===r.id&&g.houseName===r.houseName&&d.houseEpochs?.some(e=>e.foundingRulerId===g.epochFounderId&&e.startMonth<=month&&(e.endMonth===undefined||month<e.endMonth))).sort((a,b)=>Number(b.rank==='ZHENGUOGONG')-Number(a.rank==='ZHENGUOGONG')||b.month-a.month)[0];
 }

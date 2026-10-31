@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   formFactionState,
+  observeFormationPath,
   getStateFormationBlockers,
   getSovereigntyRankAtMonth,
   initializeFactionIdentity,
@@ -136,11 +137,24 @@ describe("faction identity", () => {
     expect(faction.name).toBe("rebel_17");
   });
 
-  it("does not evaluate frontier factions for state formation in this patch", () => {
-    const faction = rebel({ factionType: "FRONTIER" });
-    observeStateFormationEligibility(faction, 120, 90, true);
-    expect(faction.stateFormationEligibleSinceMonth).toBeUndefined();
-    expect(formFactionState(faction, "阳", 132)).toBe(false);
+  it.each(["FRONTIER", "REBEL", "SPLIT"])("forms %s only after its continuous qualifying period", factionType => {
+    const faction = rebel({factionType}),id=faction.name;
+    expect(observeFormationPath(faction,60,true,false)).toBe(false);
+    expect(observeFormationPath(faction,71,true,false)).toBe(false);
+    expect(observeFormationPath(faction,72,true,false)).toBe(true);
+    expect(formFactionState(faction,"阳",72)).toBe(true);
+    expect(faction).toMatchObject({name:id,identityStage:"STATE",sovereigntyRank:"KING",stateFoundedMonth:72});
+    expect(formFactionState(faction,"另名",73)).toBe(false);
+  });
+  it("resets interruptions and prevents borrowing the other path's continuous months",()=>{
+    const f=rebel({factionType:"FRONTIER"});
+    observeFormationPath(f,60,true,true);expect(observeFormationPath(f,71,false,false)).toBe(false);
+    expect(f.stateFormationEligibleSinceMonth).toBeUndefined();
+    observeFormationPath(f,72,false,true);expect(observeFormationPath(f,84,false,true)).toBe(false);
+    expect(observeFormationPath(f,96,false,true)).toBe(true);
+    expect(observeFormationPath(f,96,true,true)).toBe(false);
+    const copy=JSON.parse(JSON.stringify(f));expect(observeFormationPath(copy,107,true,true)).toBe(false);
+    expect(observeFormationPath(copy,108,true,true)).toBe(true);
   });
 
   it("does not proclaim emperor until stricter king eligibility is held for sixty months", () => {
