@@ -18,3 +18,12 @@ it('merges final-city dissolution and its observer confirmation but keeps a mult
  expect(mergePoliticalReading([d,e('restored','faction-restored'),x])).toHaveLength(3);
  expect(mergePoliticalReading([{...d,type:'faction-exiled'},x])).toHaveLength(2);
 });
+
+it('recognizes the real final-city and world-observer records in reverse display order without changing either original',async()=>{
+ const {WorldHistoryStore}=await import('./WorldHistory');const {groupHistoryNarratives}=await import('./HistoryNarrativeGrouper');
+ const {formatHistoryEventTitle}=await import('./HistoryRenderRules');const history=new WorldHistoryStore();
+ history.addFactionDissolved(1268,'天水义军',{isFinalCityCapture:1,cityId:'last',cityName:'天水'},'last-city');history.addFactionExtinct(1268,'天水义军');
+ const before=JSON.stringify(history.exportState()),rows=groupHistoryNarratives(history.getEvents());expect(rows).toHaveLength(1);
+ expect(formatHistoryEventTitle(rows[0],new Map())).toContain('失去最后据点，王统随之断绝，政权终结');
+ expect(rows[0].metadata?.sourceEventIds?.toString().split(',')).toHaveLength(2);expect(JSON.stringify(history.exportState())).toBe(before);
+});

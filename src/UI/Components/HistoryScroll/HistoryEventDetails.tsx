@@ -2,7 +2,7 @@ import {militarySecessionDetails} from "../../../History/FoundingIdentityNarrati
 import PoliticalCrisisDetails from "../PoliticalCrisisDetails";
 import {formatWorldDate} from '../../../Simulation/WorldTime';
 import {standaloneFactionMention} from "../../../History/HistoryFactionMentions";
-import {useContext} from "react";
+import {useContext,useState} from "react";
 import {MentionContext,FactionMention} from "./HistoryFactionNavigation";
 import DepositionSelectionDetails from "../DepositionSelectionDetails";
 import { Box, Typography } from "@mui/material";
@@ -88,7 +88,7 @@ export function EventDetails({
   }
   return (
     <>
-      {event.metadata?.historyNarrativeKind==='MILITARY_LIFE'&&<details onClick={e=>e.stopPropagation()} style={{fontSize:'.75rem',overflowWrap:'anywhere'}}><summary>原始史事（两条）</summary>{WorldHistory.getEvents().filter(e=>String(event.metadata?.sourceEventIds).split(',').includes(e.id)).map(e=><Typography key={e.id} fontSize='.75rem'>{formatWorldDate(e.monthIndex??e.year)} · {e.title}{e.type==='military-person-died'&&typeof e.metadata?.deathCause==='string'?` · 死亡原因 ${e.metadata.deathCause}`:''} · 事件 {e.id}</Typography>)}</details>}
+      <OriginalHistorySources event={event}/>
       <PoliticalCrisisDetails event={event}/>
       {getRevolutionEventDetails(event).length>0&&<details onClick={e=>e.stopPropagation()} style={{fontSize:'.75rem',overflowWrap:'anywhere'}}><summary>史料依据（易姓）</summary>{getRevolutionEventDetails(event).map((line,i)=><Typography key={i} fontSize=".75rem">{line}</Typography>)}</details>}
       {militarySecessionDetails(event).length>0&&<details onClick={e=>e.stopPropagation()} style={{fontSize:'.75rem',overflowWrap:'anywhere'}}><summary>史料依据（军人起事）</summary>{militarySecessionDetails(event).map((line,i)=><Typography key={i} fontSize=".75rem">{line}</Typography>)}</details>}
@@ -218,4 +218,10 @@ function CityToken({ name }: { name: string }) {
 
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function OriginalHistorySources({event}:{event:WorldEvent}){
+ const [open,setOpen]=useState(false),ids=typeof event.metadata?.sourceEventIds==='string'?event.metadata.sourceEventIds.split(','):[];
+ if(ids.length<2)return null;
+ return <details onClick={e=>e.stopPropagation()} onToggle={e=>setOpen(e.currentTarget.open)} style={{fontSize:'.75rem',overflowWrap:'anywhere'}}><summary>原始史事（{ids.length}条）</summary>{open&&WorldHistory.getRecordedEvents().filter(e=>ids.includes(e.id)).map(e=><Typography key={e.id} fontSize='.75rem'>{formatWorldDate(e.monthIndex??e.year)} · {e.title} · 事件 {e.id}{typeof e.metadata?.personId==='string'?` · 人物 ${e.metadata.personId}`:''}{typeof e.metadata?.deathCause==='string'?` · 死亡原因 ${e.metadata.deathCause}`:''}</Typography>)}</details>;
 }
