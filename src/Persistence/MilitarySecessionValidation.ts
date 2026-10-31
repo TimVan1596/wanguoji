@@ -1,3 +1,4 @@
+import {militaryCrisisSourceIds} from "../Simulation/MilitaryCrisisSources";
 import {validMilitaryDisposition} from "../Politics/MilitaryPoliticalDisposition";
 import {militaryLocalCrisis,localMilitaryCareer} from "../Simulation/MilitaryLocalRules";
 import {CITY_CAPTURE_GRACE_MONTHS,MAX_ACTIVE_FACTIONS,REBELLION_CITY_COOLDOWN_MONTHS} from "../config/simulation";
@@ -48,13 +49,16 @@ export function validateMilitarySecessions(save:WorldSaveV1){
       !Number.isSafeInteger(u.userId)||!Number.isSafeInteger(u.bornMonth)||u.bornMonth>i.foundedMonth||u.ownedFactionId!==i.sourceFactionId||u.districtCityId!==i.cityId||!['PHASER','LOGICAL'].includes(u.positionSource)||typeof u.unitId!=='string'||!u.unitId||!['RESIDENT','COMMAND_FOLLOWER'].includes(c.supporterKind)||c.supporterKind==='RESIDENT'&&(e.originalMemberUnitIds.includes(u.unitId)||e.participants.some((p:any)=>p.userId===u.userId))||c.supporterKind==='COMMAND_FOLLOWER'&&!e.participants.slice(1).some((p:any)=>p.userId===u.userId&&p.bornMonth===u.bornMonth&&p.unitId===u.unitId&&p.x===u.x&&p.y===u.y)||
       !Number.isFinite(u.x)||!Number.isFinite(u.y)||u.x<0||u.y<0||u.x>=save.world.map.widthCells*save.world.map.blockSize||u.y>=save.world.map.heightCells*save.world.map.blockSize||!Number.isFinite(u.loyalty)||u.loyalty<0||u.loyalty>100||
       u.loyalty-Math.min(45,Math.max(0,50-facts.loyalty)*.8+Math.max(0,Math.min(100,facts.devastation))*.15+(facts.lastCapturedMonth!==undefined&&i.foundedMonth-facts.lastCapturedMonth<24?8:0))>=(c.supporterKind==='COMMAND_FOLLOWER'?75:50))valid=false;
+    if(facts){const foundingIndex=events.findIndex(x=>x.type==='empire-split'&&x.metadata?.foundingRulerId===r.rulerId),boundary=events.findIndex(x=>x.id===c.historyBoundaryEventId),prior=events.slice(0,boundary+1);
+     if(boundary<0||boundary>=foundingIndex||!Array.isArray(c.crisisSourceEventIds)||JSON.stringify(c.crisisSourceEventIds)!==JSON.stringify(militaryCrisisSourceIds(prior,i.cityId,i.sourceFactionId,facts)))valid=false;
+    }
     if(facts&&c.reason==='MILITARY_SIEGE_CRISIS'){
-     const index=events.findIndex(x=>x.type==='empire-split'&&x.metadata?.foundingRulerId===r.rulerId),source=events.findIndex(x=>x.id===c.sourceEventId),prior=events.slice(0,source+1);
+     const index=events.findIndex(x=>x.type==='empire-split'&&x.metadata?.foundingRulerId===r.rulerId),source=events.findIndex(x=>x.id===c.historyBoundaryEventId),prior=events.slice(0,source+1);
      if(source<0||source>=index)valid=false;
      if(!prior.some(x=>x.type==='siege-started'&&x.cityId===i.cityId&&x.targetFactionId===i.sourceFactionId&&x.metadata?.battleId===facts.battleId)||prior.some(x=>x.type==='siege-ended'&&x.metadata?.battleId===facts.battleId))valid=false;
     }else if(facts&&c.reason!=='ORIGINAL_CRISIS'){
      const index=events.findIndex(x=>x.type==='empire-split'&&x.metadata?.foundingRulerId===r.rulerId),prior=events.slice(0,index).filter(x=>x.cityId===i.cityId&&['city-captured','city-recovered','capital-fallen','city-revolt'].includes(x.type));
-     if(!prior.some(x=>(x.monthIndex??x.year)===facts.lastCapturedMonth))valid=false;
+     if(!prior.some(x=>x.actorFactionId===i.sourceFactionId&&(x.monthIndex??x.year)===facts.lastCapturedMonth))valid=false;
     }
    }
 

@@ -15,7 +15,7 @@ export interface LocalMilitaryOpportunity {
 export interface MilitarySecessionEvidence {
  disposition?:MilitaryDisposition;
  entryKind:'EMPIRE_SPLIT'|'LOCAL_CRISIS';
- localCrisis?:{facts:import('./MilitaryLocalRules').MilitaryLocalCrisisFacts;sourceEventId?:string;reason:string;chance:number;roll:number;lastRebellionMonth?:number;sourceCityCount:number;activeFactionCount:number;supporterKind?:"RESIDENT"|"COMMAND_FOLLOWER";supporter:{userId:number;bornMonth:number;unitId:string;x:number;y:number;loyalty:number;positionSource:"PHASER"|"LOGICAL";districtCityId:string;ownedFactionId:string}};
+ localCrisis?:{facts:import('./MilitaryLocalRules').MilitaryLocalCrisisFacts;historyBoundaryEventId?:string;crisisSourceEventIds:string[];reason:string;chance:number;roll:number;lastRebellionMonth?:number;sourceCityCount:number;activeFactionCount:number;supporterKind?:"RESIDENT"|"COMMAND_FOLLOWER";supporter:{userId:number;bornMonth:number;unitId:string;x:number;y:number;loyalty:number;positionSource:"PHASER"|"LOGICAL";districtCityId:string;ownedFactionId:string}};
  personId:string; commandId:string; sourceFactionId:string; sourceFactionName:string; personalName:string;
  office:string; serviceMonths:number; localCareerEventIds?:string[]; capturedEventIds:string[]; defenseEventIds?:string[]; worldMonth:number; cityId:string; originalMemberUnitIds:string[];
  participants:Array<{userId:number;name:string;bornMonth:number;loyalty?:number;unitId:string;x:number;y:number;positionSource:"PHASER"|"LOGICAL";districtCityId:string;ownedFactionId:string}>;

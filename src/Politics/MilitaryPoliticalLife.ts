@@ -22,12 +22,14 @@ export function militaryPoliticalLife(person:MilitaryPerson,dynasties:readonly D
  const founder=r.residentIdentity?.military?.personId===person.personId;
  const text=founder?`${name}为${country}创立者、首任首领。`:`${name}${title==='首领'?'继任':'继位为'}${country}${title==='首领'?'首领':title==='王'?'王':'皇帝'}。`;
  const entry:MilitaryChronicleEntry={eventId:accession.id,worldMonth:at,factionId:d.factionId,text,source:accession.type+' · '+accession.id,victory:false};
- return {rulerId:r.id,factionId:d.factionId,entry};
+ const founding=founder?events.find(e=>e.type==='empire-split'&&e.metadata?.militaryPersonId===person.personId&&e.metadata?.foundingRulerId===r.id&&e.actorFactionId===d.factionId&&(e.monthIndex??e.year)===r.residentIdentity?.foundedMonth):undefined;
+ return {rulerId:r.id,factionId:d.factionId,entry,foundingEventId:founding?.id};
 }
 
 /** One source event remains one visible entry even if the person both participates and accedes. */
 export function appendMilitaryPoliticalLife(entries:MilitaryChronicleEntry[],life:ReturnType<typeof militaryPoliticalLife>){
  if(!life)return entries;
+ if(life.foundingEventId&&entries.some(e=>e.eventId===life.foundingEventId))return entries.map(e=>e.eventId===life.foundingEventId?{...e,sourceEventIds:[...(e.sourceEventIds??[e.eventId]),life.entry.eventId]}:e);
  const previous=entries.find(e=>e.eventId===life.entry.eventId);
  return [...entries.filter(e=>e.eventId!==life.entry.eventId),{...life.entry,text:(previous?previous.text:'')+life.entry.text}].sort((a,b)=>a.worldMonth-b.worldMonth||a.eventId.localeCompare(b.eventId));
 }

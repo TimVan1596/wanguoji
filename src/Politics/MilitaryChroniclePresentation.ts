@@ -1,3 +1,5 @@
+import {militaryNarrativeLinks} from "./MilitaryNarrativeLinks";
+import {formatFoundingIdentity} from "../History/FoundingIdentityNarrative";
 import {militaryLifePairs,militaryDeathWording} from './MilitaryLifePresentation';
 import type {MilitaryPerson} from "./MilitaryCommandRegistry";
 import {selectChronicleHighlights} from "./ChronicleHighlights";
@@ -12,18 +14,20 @@ import {MILITARY_OFFICE_NAMES} from "./MilitaryOffice";
 export function militaryMilestones(person:MilitaryPerson,entries:MilitaryChronicleEntry[],events:WorldEvent[],context:MilitaryHistoryContext={}){
   const byId=new Map(events.map(e=>[e.id,e])),name=getMilitaryPersonDisplayName(person);
   const available=new Set(entries.map(e=>e.eventId)),pairs=militaryLifePairs(events).filter(p=>available.has(p.anchor.id)&&available.has(p.other.id)),merged=new Map(pairs.map(p=>[p.anchor.id,p])),hidden=new Set(pairs.map(p=>p.other.id));
-  return entries.filter(e=>!hidden.has(e.eventId)).filter(e=>!(e.source.startsWith("military-command-ended")&&byId.get(e.eventId)?.metadata?.endReason==="DEATH"&&entries.some(d=>d.worldMonth===e.worldMonth&&d.source.startsWith("military-person-died")))).flatMap(entry=>{
+  const links=militaryNarrativeLinks(person,events);
+  return entries.filter(e=>!hidden.has(e.eventId)&&!links.hidden.has(e.eventId)).flatMap(original=>{
+    const entry={...original,sourceEventIds:[original.eventId,...(links.sources.get(original.eventId)??[])]};
     const type=entry.source.split(" · ")[0],event=byId.get(entry.eventId);
     if(type==="military-order-issued"&&event?.importance!=="major")return [];
     if(type==="military-order-issued")return [{...entry,text:`${name}奉命以${event?.cityName??"城邑"}为进军目标。`}];
     if(type==="military-appointment"&&entries.some(e=>e.commandId===entry.commandId&&e.worldMonth===entry.worldMonth&&e.source.startsWith("military-office-granted")))return [];
     const pair=merged.get(entry.eventId);
-    if(pair)return [{...entry,text:pair.text,source:entry.source+' / '+pair.other.id}];
+    if(pair)return [{...entry,text:pair.text,source:entry.source+' / '+pair.other.id,sourceEventIds:[...entry.sourceEventIds,pair.other.id]}];
     let text=entry.text;
     if(type==="empire-split"&&event){
       const faction=event.actorFactionId&&context.factions?.get(event.actorFactionId);
       const polity=faction?getHistoricalFactionIdentity({...faction,displayName:event.actorFactionId!},entry.worldMonth).name:undefined;
-      text=`${name}率旧部于${event.cityName??event.metadata?.splitCoreCityName??"当地"}起事，脱离${event.metadata?.leaderOriginalFactionName??event.targetFactionId}${polity?`，建立${polity}`:""}，成为首领。`;
+      text=formatFoundingIdentity(event,polity??event.actorFactionId??"义军",entry.factionId)??entry.text;
     }
     if(entry.victory&&event)text=`${formatMilitaryVictorySource(event,{...context,people:[person],events})??entry.text.replace(/。$/,"")}。`;
     if(type==="military-office-granted"){

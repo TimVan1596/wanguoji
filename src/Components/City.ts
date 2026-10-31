@@ -294,7 +294,9 @@ export default class City {
 
     const restoredFromExile=newOwner.status==="EXILED";
     const previousOwnerName = oldOwner.name;
-    const namesAtEvent={attacker:newOwner.displayName,defender:oldOwner.displayName};
+    const battle=this.siegeBattle;
+    const namesAtEvent={attacker:newOwner.displayName,defender:oldOwner.displayName,
+      ...(battle&&battle.attackerId===newOwner.name&&battle.defenderId===oldOwner.name&&battle.commandId===commandId&&battle.personId===commanderPersonId?{battleId:battle.id,siegeEndedEventId:`siege-ended-${battle.id}`}:{})};
     const wasCapital = this.isCapital;
     const recovered = newOwner.name === this.founderFactionId;
     const cityDefenseBefore = this.defense;
@@ -804,9 +806,10 @@ export default class City {
     const attack=Game.Core?.teams.find(t=>t.name===battle.attackerId),owner=this.ownerTeam;
     const title=type==="siege-started"?`${attack?.displayName??battle.attackerId}开始围攻${this.name}`:type==="siege-defended"?`${owner?.displayName??battle.defenderId}守住${this.name}`:`${attack?.displayName??battle.attackerId}${reason==="REPULSED"?"围攻受阻，撤离":"结束围攻"}${this.name}`;
     this.addHistory(month,type,title,{});
+    const commandEnd=type==='siege-ended'&&reason==='COMMAND_ENDED'&&battle.commandId?WorldHistory.getEventsForFaction(battle.attackerId).find(e=>e.type==='military-command-ended'&&e.metadata?.commandId===battle.commandId&&e.metadata?.personId===battle.personId&&e.metadata?.endReason==='DEATH'&&(e.monthIndex??e.year)<=month):undefined;
     WorldHistory.addEvent({id:`${type}-${battle.id}`,year:month,monthIndex:month,category:"war",type,title,description:type==="siege-ended"?`围攻历时${month-battle.startMonth+1}个月；${reason==="REPULSED"?"攻势受阻，撤围休整":reason==="CAPTURED"?"城市实际易主":reason==="TRUCE"?"停战结束交战":"实际接触或指挥中断"}。`:undefined,
       actorFactionId:type==="siege-defended"?battle.defenderId:battle.attackerId,targetFactionId:type==="siege-defended"?battle.attackerId:battle.defenderId,factionIds:[battle.attackerId,battle.defenderId],cityId:this.id,cityName:this.name,importance:"normal",
-      metadata:{battleId:battle.id,startMonth:battle.startMonth,reason:reason??"CONTACT",attackers:battle.attackers,defenders:battle.defenders,wasCapital:this.isCapital?1:0,...(type!=="siege-defended"&&battle.commandId?{commandId:battle.commandId,personId:battle.personId}:defendingCommand??{})}});
+      metadata:{commandEndEventId:commandEnd?.id,battleId:battle.id,startMonth:battle.startMonth,reason:reason??"CONTACT",attackers:battle.attackers,defenders:battle.defenders,wasCapital:this.isCapital?1:0,...(type!=="siege-defended"&&battle.commandId?{commandId:battle.commandId,personId:battle.personId}:defendingCommand??{})}});
   }
   private endBattle(month:number,reason:string){
     const b=this.siegeBattle;if(!b)return;

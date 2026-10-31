@@ -15,6 +15,7 @@ import { readMilitaryParticipation } from "./MilitaryPoliticalInfluence";
 
 export interface MilitaryChronicleEntry {
   eventId: string;
+  sourceEventIds?:string[];
   cityId?:string;
   worldMonth: number;
   factionId: string;

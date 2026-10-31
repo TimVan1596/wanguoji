@@ -11,7 +11,7 @@ import {nobleEpochForRuler} from "./MilitaryNobility";
 import { beginHouseEpoch, evaluateDynasticRevolution, getRevolutionEligibility, type DynastyHouseEpoch, type RevolutionContext } from "./DynasticRevolution";
 import { RevolutionGateDiagnostics } from "./RevolutionGateDiagnostics";
 import { createStateName } from "../Simulation/StateNameGenerator";
-import { renameFactionDisplayName } from "../Simulation/FactionIdentity";
+import { getFactionDisplayNameAtMonth,renameFactionDisplayName } from "../Simulation/FactionIdentity";
 import Team from "../Components/Team";
 import { getFactionStability } from "../Components/City";
 import Game from "../Game/Game";
@@ -1073,7 +1073,10 @@ class DynastyRegistryStore {
         ruler.chronicle.deathCause = ruler.deathReason;
         finalizeRulerPosthumousNames(ruler, dynasty.rulers, team, worldMonth);
       }
-      WorldHistory.addRulerDied(worldMonth, team.name, this.getRulerTitle(team, ruler, worldMonth), {
+      const ended=ruler.endYear!==undefined&&ruler.endYear<=worldMonth;
+      const formerTitle=ended?`故${ruler.regimeNameAtEnd??getFactionDisplayNameAtMonth(team,ruler.endYear!)}${getRulerTitleAtMonth(team,ruler.endYear!)}${this.getRulerPersonalName(ruler)}`:undefined;
+      WorldHistory.addRulerDied(worldMonth, team.name, formerTitle??this.getRulerTitle(team, ruler, worldMonth), {
+        formerRuler:ended?1:undefined,officeEndMonth:ended?ruler.endYear:undefined,rulerNameAtDeath:formerTitle,
         rulerId: ruler.id, deathReason: ruler.deathReason, age: Math.floor(monthsToYears(worldMonth - ruler.bornYear)),
       });
     });

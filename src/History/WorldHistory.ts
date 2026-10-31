@@ -624,7 +624,7 @@ export class WorldHistoryStore {
     historyGroupId?: string,
     commandId?: string,
     commanderPersonId?: string,
-    namesAtEvent?: {attacker:string;defender:string}
+    namesAtEvent?: {attacker:string;defender:string;battleId?:string;siegeEndedEventId?:string}
   ) {
     return this.addEvent({
       id: `city-captured-${year}-${attackerName}-${cityName}-${this.sequence++}`,
@@ -658,6 +658,7 @@ export class WorldHistoryStore {
         cityDefenseBefore,
         commandId,
         commanderPersonId,
+        battleId:namesAtEvent?.battleId,siegeEndedEventId:namesAtEvent?.siegeEndedEventId,
         attackerNameAtEvent:namesAtEvent?.attacker,
         defenderNameAtEvent:namesAtEvent?.defender,
         commanderPersonalName: MilitaryCommandRegistry.getCaptureIdentity(commandId, commanderPersonId, attackerName, year),
@@ -682,7 +683,7 @@ export class WorldHistoryStore {
     commandId?: string,
     commanderPersonId?: string,
     wasCapital?: boolean,
-    namesAtEvent?: {attacker:string;defender:string}
+    namesAtEvent?: {attacker:string;defender:string;battleId?:string;siegeEndedEventId?:string}
   ) {
     return this.addEvent({
       id: `city-recovered-${year}-${teamName}-${cityName}-${this.sequence++}`,
@@ -709,6 +710,7 @@ export class WorldHistoryStore {
         cityDefenseBefore,
         commandId,
         commanderPersonId,
+        battleId:namesAtEvent?.battleId,siegeEndedEventId:namesAtEvent?.siegeEndedEventId,
         attackerNameAtEvent:namesAtEvent?.attacker,
         defenderNameAtEvent:namesAtEvent?.defender,
         commanderPersonalName: MilitaryCommandRegistry.getCaptureIdentity(commandId, commanderPersonId, teamName, year),
@@ -733,7 +735,7 @@ export class WorldHistoryStore {
     historyGroupId?: string,
     commandId?: string,
     commanderPersonId?: string,
-    namesAtEvent?: {attacker:string;defender:string}
+    namesAtEvent?: {attacker:string;defender:string;battleId?:string;siegeEndedEventId?:string}
   ) {
     return this.addEvent({
       id: `capital-fallen-${year}-${attackerName}-${defenderName}-${cityName}-${this.sequence++}`,
@@ -765,6 +767,7 @@ export class WorldHistoryStore {
         cityDefenseBefore,
         commandId,
         commanderPersonId,
+        battleId:namesAtEvent?.battleId,siegeEndedEventId:namesAtEvent?.siegeEndedEventId,
         attackerNameAtEvent:namesAtEvent?.attacker,
         defenderNameAtEvent:namesAtEvent?.defender,
         commanderPersonalName: MilitaryCommandRegistry.getCaptureIdentity(commandId, commanderPersonId, attackerName, year),
