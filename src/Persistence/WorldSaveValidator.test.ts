@@ -429,3 +429,5 @@ it("rejects V20 before hydration without rewriting the old save",()=>{
  expect(validateWorldSave(old).errors).toContain("该存档版本已不受支持，请创建新世界。");
  expect(JSON.stringify(old)).toBe(before);
 });
+
+it.each([null,{},'invalid',[null],[42]])('rejects malformed faction containers or records without throwing during formation-progress validation: %j',factions=>{const save=fixture();const invalid={...save,factions};expect(()=>validateWorldSave(invalid)).not.toThrow();expect(validateWorldSave(invalid).valid).toBe(false);});

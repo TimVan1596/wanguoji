@@ -496,7 +496,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   if (!errors.length) errors.push(...validateMilitaryNarrativeLinks(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateMilitaryOfficeAuthorities(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateMilitaryBattleNames(save as WorldSaveV1));
-  for (const faction of save.factions ?? []) {
+  if (!errors.length) for (const faction of factions) {
     const kind = faction.stateFormationEligibilityKind;
     if (kind !== undefined && kind !== "ORDINARY" && kind !== "DE_FACTO") errors.push("invalid state formation path");
     const since=faction.stateFormationEligibleSinceMonth;
