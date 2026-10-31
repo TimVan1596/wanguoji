@@ -1,3 +1,4 @@
+import {validateRoyalHonors} from './RoyalHonorValidation';
 import {validateMilitaryNarrativeLinks} from "./MilitaryNarrativeLinkValidation";
 import {validateMilitaryUsurpers} from "./MilitaryUsurperValidation";
 import {validatePoliticalCrises} from "./PoliticalCrisisValidation";
@@ -494,6 +495,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   if (!errors.length) errors.push(...validateMilitaryNarrativeLinks(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateMilitaryOfficeAuthorities(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateMilitaryBattleNames(save as WorldSaveV1));
+  if (!errors.length) errors.push(...validateRoyalHonors(save as WorldSaveV1));
   return { valid: errors.length === 0, errors };
 }
 

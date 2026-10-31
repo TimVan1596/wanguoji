@@ -1,3 +1,5 @@
+import {planRoyalHonor,royalHonorText,type RoyalHonor} from './RoyalHonors';
+import {beginPoliticalMutation} from '../Simulation/PoliticalMutationScope';
 import {validateMilitaryUsurpers} from "../Persistence/MilitaryUsurperValidation";
 import {exportRulerSave} from "../Persistence/RulerSaveProjection";
 import {selectMilitaryUsurper,militaryUsurperIdentity,type MilitaryUsurperIdentity} from "./MilitaryUsurpation";
@@ -106,6 +108,7 @@ export interface RoyalMilitaryIdentity {
   personId: string; sourceUserId: number; sourceUserLabel: string; enteredMonth: number;
 }
 export interface Ruler {
+  royalHonors?:RoyalHonor[];
   militaryUsurperIdentity?:MilitaryUsurperIdentity;
   militaryIdentity?: RoyalMilitaryIdentity;
   /** Permanent resident identity; this record owns its life even when no map entity exists. */
@@ -187,7 +190,7 @@ class DynastyRegistryStore {
       dynasties: [...this.dynasties.values()].map((dynasty) => ({
         ...dynasty,
         houseEpochs: dynasty.houseEpochs?.map((epoch) => ({ ...epoch })),
-        rulers: dynasty.rulers.map((ruler) => ({ ...ruler, militaryIdentity:ruler.militaryIdentity?{...ruler.militaryIdentity}:undefined, militaryUsurperIdentity:ruler.militaryUsurperIdentity?structuredClone(ruler.militaryUsurperIdentity):undefined,residentIdentity:ruler.residentIdentity?structuredClone(ruler.residentIdentity):undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
+        rulers: dynasty.rulers.map((ruler) => ({ ...ruler, royalHonors:ruler.royalHonors?structuredClone(ruler.royalHonors):undefined,militaryIdentity:ruler.militaryIdentity?{...ruler.militaryIdentity}:undefined, militaryUsurperIdentity:ruler.militaryUsurperIdentity?structuredClone(ruler.militaryUsurperIdentity):undefined,residentIdentity:ruler.residentIdentity?structuredClone(ruler.residentIdentity):undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
         heirIds: [...dynasty.heirIds],
       })),
       sequence: this.sequence,
@@ -213,7 +216,7 @@ class DynastyRegistryStore {
     this.dynasties = new Map(state.dynasties.map((dynasty) => [dynasty.factionId, {
       ...dynasty,
       houseEpochs: dynasty.houseEpochs?.map((epoch) => ({ ...epoch })),
-      rulers: dynasty.rulers.map((ruler) => ({ ...ruler, militaryIdentity:ruler.militaryIdentity?{...ruler.militaryIdentity}:undefined, militaryUsurperIdentity:ruler.militaryUsurperIdentity?structuredClone(ruler.militaryUsurperIdentity):undefined,residentIdentity:ruler.residentIdentity?structuredClone(ruler.residentIdentity):undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
+      rulers: dynasty.rulers.map((ruler) => ({ ...ruler, royalHonors:ruler.royalHonors?structuredClone(ruler.royalHonors):undefined,militaryIdentity:ruler.militaryIdentity?{...ruler.militaryIdentity}:undefined, militaryUsurperIdentity:ruler.militaryUsurperIdentity?structuredClone(ruler.militaryUsurperIdentity):undefined,residentIdentity:ruler.residentIdentity?structuredClone(ruler.residentIdentity):undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
       heirIds: [...dynasty.heirIds],
     }]));
     this.sequence = state.sequence;
@@ -408,11 +411,21 @@ class DynastyRegistryStore {
           this.ensureActiveHeir(team, dynasty, year);
         }
         this.ensureRulerUnit(team);
-        if (dynasty && ruler) this.evaluateInReignDeposition(team, dynasty, ruler, year);
+        if (dynasty && ruler) {this.evaluateInReignDeposition(team, dynasty, ruler, year);this.grantRoyalHonor(team,year);}
         return;
       }
       this.succeedRuler(team, dynasty, ruler, year, "natural");
     });
+  }
+
+  grantRoyalHonor(team:Team,month:number){
+    const dynasty=this.get(team.name);if(!dynasty)return;
+    const grant=planRoyalHonor({faction:team,dynasty,month,countryName:getFactionDisplayNameAtMonth(team,month),issuerTitle:this.getRulerTitleDisplay(team.name,month),people:MilitaryCommandRegistry.getPeople(),formations:MilitaryCommandRegistry.getFormations(),events:WorldHistory.getEventsForFaction(team.name)});
+    if(!grant)return;
+    const recipient=dynasty.rulers.find(r=>r.id===grant.recipientRulerId)!,old=recipient.royalHonors,history=WorldHistory.snapshotPoliticalTransaction(),rng=worldRandom.exportState(),scope=beginPoliticalMutation();
+    try{recipient.royalHonors=[...(old??[]),grant];WorldHistory.addEvent({id:grant.eventId,year:month,type:'royal-honor-granted',category:'politics',importance:'major',actorFactionId:team.name,factionIds:[team.name],rulerId:grant.issuerRulerId,title:royalHonorText(grant),metadata:{recipientRulerId:grant.recipientRulerId,royalHonor:JSON.stringify(grant)}});}
+    catch{scope.cancel();recipient.royalHonors=old;const restoring=beginPoliticalMutation();WorldHistory.rollbackPoliticalTransaction(history);worldRandom.restore(rng);restoring.finishRollback();return;}
+    scope.commit();return grant;
   }
 
   markExiled(team: Team, year: number) {
