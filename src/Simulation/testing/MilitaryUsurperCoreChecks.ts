@@ -1,3 +1,8 @@
+import React from 'react';
+import {createRoot} from 'react-dom/client';
+import {flushSync} from 'react-dom';
+import {RulerServicePanel,MilitaryServicePanel} from '../../UI/Components/FactionDetails/PersonServicePanel';
+import {PersonArchiveNavigation} from '../../UI/Components/FactionDetails/PersonArchiveNavigation';
 import Military from '../../Politics/MilitaryCommandRegistry';
 import Dynasty from '../../Politics/Dynasty';
 import History from '../../History/WorldHistory';
@@ -36,6 +41,13 @@ export function checkMilitaryUsurper(core:any,base:ReturnType<typeof exportWorld
    check(Military.getFormations().filter(f=>f.commanderPersonId===p.personId&&f.status==='ACTIVE').length===0&&p.appointments.every(a=>a.endMonth!==undefined),'all old commands end at accession and no duplicate army is created');
    check(core.teams.reduce((n:number,t:any)=>n+t.users.size,0)===beforeCount-(before.users.some(x=>x.rulerId===old.id)?1:0),'only the actual old monarch map lifecycle changes population; the usurper is never respawned');
    check(preAccessionMilitary(king,Military.getPeople(),Military.getFormations(),History.getEvents())?.person.personId===p.personId,'new monarch retains a direct link to the same earlier military career');
+   const host=document.createElement('div');document.body.append(host);const root=createRoot(host),targets:any[]=[],nav={open:(v:any)=>targets.push(v),consume:()=>{},consumeGenealogy:()=>{}};
+   try{
+    flushSync(()=>root.render(React.createElement(PersonArchiveNavigation.Provider,{value:nav},React.createElement(RulerServicePanel,{ruler:king,factionId,month:base.world.worldMonth,reading:{earlier:preAccessionMilitary(king,Military.getPeople(),Military.getFormations(),History.getEvents()),rows:[]}}))));
+    flushSync(()=>host.querySelector('button')!.click());check(targets[targets.length-1]?.kind==='MILITARY'&&targets[targets.length-1]?.id===p.personId&&targets[targets.length-1]?.factionId===factionId,'actual React new-monarch archive opens the same non-kin military person');
+    flushSync(()=>root.render(React.createElement(PersonArchiveNavigation.Provider,{value:nav},React.createElement(MilitaryServicePanel,{personId:p.personId,month:base.world.worldMonth}))));
+    const back=[...host.querySelectorAll('button')].find(b=>b.textContent==='查看对应王室本纪');check(back,'actual React earlier military archive exposes the new royal identity');flushSync(()=>back!.click());check(targets[targets.length-1]?.kind==='RULER'&&targets[targets.length-1]?.id===king.id,'military-to-royal navigation resolves the same actual new monarch');
+   }finally{root.unmount();host.remove();}
    const saved=exportWorldSave(core);check(validateWorldSave(saved).valid,'strict full save accepts genuine non-royal usurpation');
    for(const edit of ['bornMonth','personId','sourceUserId','commandId','naturalDeathMonth']){const bad=structuredClone(saved),r=bad.dynasties.flatMap(d=>d.rulers as any[]).find(r=>r.rulerId===king.id)!;r.militaryUsurperIdentity[edit]=typeof r.militaryUsurperIdentity[edit]==='number'?r.militaryUsurperIdentity[edit]+1:'forged';check(!validateWorldSave(bad).valid,`strict save refuses forged usurper ${edit}`);}
    return saved;
@@ -44,5 +56,12 @@ export function checkMilitaryUsurper(core:any,base:ReturnType<typeof exportWorld
   const saved=run()!;
   const resume=()=>{hydrateWorldSave(core,structuredClone(saved));core.setWorldRunning(true);for(let m=0;m<12;m++){for(let n=0;n<30;n++)core.advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit('postupdate');}core.setWorldRunning(false);return exportWorldSave(core);};
   const a=resume(),b=resume();check(diffCanonicalWorldSave(a,b).matched,'non-royal usurper save resumes twelve months deterministically');hydrateWorldSave(core,structuredClone(a));check(diffCanonicalWorldSave(a,exportWorldSave(core)).matched,'continued usurper world reads again without identity or army drift');
+  // One lifecycle check, not an expansion of rare-event natural sampling.
+  core.setWorldRunning(true);const deadline=Military.getPerson(commanderId)!.bornMonth+95*12+12;
+  while(Military.getPerson(commanderId)?.status!=='DEAD'&&core.simulator.year<=deadline){for(let n=0;n<30;n++)core.advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit('postupdate');}
+  core.setWorldRunning(false);const dead=Military.getPerson(commanderId)!,royal=Dynasty.getAll().flatMap(d=>d.rulers).find(r=>r.militaryUsurperIdentity?.personId===commanderId)!;
+  check(dead.status==='DEAD'&&dead.deathMonth===royal.deathMonth&&History.getEvents().filter(e=>e.type==='military-person-died'&&e.metadata?.personId===commanderId).length===1,'independent power holder keeps one life and exactly one actual death after accession');
+  check(!core.teams.some((t:any)=>[...t.users].some((u:any)=>u.militaryPersonId===commanderId)),'dead usurper leaves no duplicate map body or military authority');const terminal=exportWorldSave(core);hydrateWorldSave(core,structuredClone(terminal));check(diffCanonicalWorldSave(terminal,exportWorldSave(core)).matched,'strict post-death save reads without changing the ended ruler or permanent military identity');
+
  }finally{hydrateWorldSave(core,structuredClone(base));}
 }

@@ -132,7 +132,7 @@ export async function runMilitarySecessionCore(seed="military-secession-z7",loca
   const founding=History.getEventsForFaction(split.team.name).filter(e=>e.type==="empire-split");
   check(founding.length===1&&founding[0].metadata?.splitSource==="MILITARY","one existing split event records its military source");
   const text=formatHistoryEventTitle(founding[0],new Map(core.teams.map(t=>[t.name,t])));
-  check(text.includes(sourceName)&&text.includes(`${follow.length}名旧部`)&&text.includes("首任首领")&&!text.includes("首任君主"),"history reads actual old office, followers, polity and political leadership");
+  check(text.includes(sourceName)&&text.includes(`${follow.length}名旧部`)&&text.includes("自任首领")&&!text.includes("首任君主")&&!/政治取向|旧任随|编组解散/.test(text),"history reads actual old office, followers, polity and political leadership");
   check(Military.getChronicle(person,month,parent.name).some(e=>e.eventId===founding[0].id&&!e.victory),"old-country military biography records secession without inventing a capture");
   await checkPersonArchiveInteraction(core,split.team.name,personId,check);
   check(militaryIdentityLabels(Military.getPerson(personId)!,Dynasty.getAll(),History.getEvents(),month).includes("义军创立者"),"real founding transaction supplies composite military founder identity");

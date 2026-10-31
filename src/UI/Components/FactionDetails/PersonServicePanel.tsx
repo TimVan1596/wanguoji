@@ -25,7 +25,7 @@ export function RulerServicePanel({ruler,factionId,month,reading}:{ruler:Ruler;f
  return <>
   {earlier&&<ChronicleSection title="早年与登位前经历">
    {earlier.representative.map(e=><Typography key={e.eventId} fontSize="0.82rem">{formatChronicleDate(e.worldMonth)}，{e.text}</Typography>)}
-   <button type="button" style={style} onClick={()=>nav.open({kind:"MILITARY",factionId:ruler.residentIdentity?.sourceFactionId??earlier.person.royalIdentity!.factionId,id:earlier.person.personId})}>查看登位前完整军旅档案</button>
+   <button type="button" style={style} onClick={()=>nav.open({kind:"MILITARY",factionId:ruler.militaryUsurperIdentity?.factionId??ruler.residentIdentity?.sourceFactionId??earlier.person.royalIdentity!.factionId,id:earlier.person.personId})}>查看登位前完整军旅档案</button>
   </ChronicleSection>}
   {rows.length>0&&<ChronicleSection title="任内军政人物">
    <ServiceRows rows={rows} label={id=>getMilitaryPersonDisplayName(people.find(p=>p.personId===id)!)} onOpen={id=>nav.open({kind:"MILITARY",factionId,id})}/>

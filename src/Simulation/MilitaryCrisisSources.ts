@@ -11,8 +11,8 @@ export function militaryCrisisSourceIds(events:readonly WorldEvent[],cityId:stri
    const lm=later.monthIndex??later.year;if(lm<at||lm>facts.worldMonth)continue;
    if(later.cityId===cityId&&['city-captured','city-recovered','capital-fallen','city-revolt'].includes(later.type)&&later.actorFactionId!==owner)return false;
    const m=later.metadata;
-   if(later.type==='faction-merged'&&m?.absorbedFactionId===owner&&typeof m.absorbingFactionId==='string')owner=m.absorbingFactionId;
-   if(later.type==='faction-submitted'&&m?.submittedFactionId===owner&&typeof m.receivingFactionId==='string')owner=m.receivingFactionId;
+   if(later.type==='faction-merged'&&m?.absorbedFactionId===owner&&m&&typeof m.absorbingFactionId==='string')owner=m.absorbingFactionId;
+   if(later.type==='faction-submitted'&&m?.submittedFactionId===owner&&m&&typeof m.receivingFactionId==='string')owner=m.receivingFactionId;
   }
   return owner===factionId;
  }).map(e=>e.id);

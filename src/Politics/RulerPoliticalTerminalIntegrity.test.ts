@@ -1,7 +1,7 @@
 import { beforeEach, afterEach, describe, expect, it, vi } from "vitest";
 const { game } = vi.hoisted(() => ({ game: { Core: undefined as any, BlockSize: 32 } }));
 vi.mock("../Game/Game", () => ({ default: game }));
-vi.mock("../Components/Team", () => ({ default: class {} }));
+vi.mock("../Components/Team", () => ({ default: class { static GetUserById() { return undefined; } } }));
 vi.mock("../Components/Block", () => ({ default: class {} }));
 vi.mock("../Components/Player", () => ({ default: class {} }));
 vi.mock("../Components/User", () => ({ default: class {} }));
@@ -13,6 +13,7 @@ vi.mock("../Components/City", () => ({ getFactionStability: (team: any) => team.
 import { store } from "../store";
 import { setWorldStarted } from "../store/rootSlice";
 import Core from "../Game/Core";
+import Military from "./MilitaryCommandRegistry";
 import DynastyRegistry, { type Ruler } from "./Dynasty";
 import { createRulerChronicle } from "./RulerChronicle";
 import worldRandom from "../Simulation/WorldRandom";
@@ -294,4 +295,16 @@ it("failed final deposition history write restores offices, kin statuses and his
  expect(WorldHistory.exportState()).toEqual(history);expect(team.rulerUser).toBe(unit);
  expect(unit.role).toBe("RULER");expect(ruler.deathMonth).toBeUndefined();
  expect(dynasty.lastDepositionAttemptMonth).toBe(12);
+});
+
+it("a real-person monarch outlives its polity and dies once with a former title",()=>{
+ const {team,ruler}=fixture();ruler.militaryUsurperIdentity={personId:'power-holder',sourceUserId:7} as any;
+ const mirrored=vi.spyOn(Military,'mirrorPoliticalDeath').mockImplementation(()=>{});
+ team.markExtinct(120);DynastyRegistry.markExtinct(team,120);DynastyRegistry.update(599,[team]);
+ expect(ruler.status).toBe('politically-ended');expect(ruler.deathMonth).toBeUndefined();
+ DynastyRegistry.update(600,[team]);DynastyRegistry.update(601,[team]);
+ expect(ruler).toMatchObject({status:'dead',endYear:120,politicalEndYear:120,deathMonth:600});
+ const deaths=WorldHistory.getEvents().filter(e=>e.type==='ruler-died'&&e.rulerId===ruler.id);
+ expect(deaths).toHaveLength(1);expect(deaths[0].metadata).toMatchObject({formerRuler:1,officeEndMonth:120});
+ expect(deaths[0].metadata?.rulerNameAtDeath).toMatch(/^故.*张平$/);expect(deaths[0].title).toContain('故');expect(mirrored).toHaveBeenCalledTimes(1);
 });
