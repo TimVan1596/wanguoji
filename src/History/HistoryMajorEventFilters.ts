@@ -1,13 +1,14 @@
 import type { WorldEvent } from "./WorldHistory";
 
 export const MAJOR_EVENT_FILTERS = [
-  { value: "all", label: "全部大事" }, { value: "founding", label: "建国与复国" },
+  { value: "all", label: "全部大事" }, { value: "honors", label: "册封" }, { value: "founding", label: "建国与复国" },
   { value: "emperor", label: "称帝" }, { value: "revolution", label: "政变与分裂" },
   { value: "restoration", label: "复国" }, { value: "extinction", label: "亡国" },
   { value: "submission", label: "归附与合邦" }, { value: "merge", label: "合邦" }, { value: "era", label: "时代" },
 ] as const;
 export type MajorEventFilter = typeof MAJOR_EVENT_FILTERS[number]["value"];
 const TYPES: Record<Exclude<MajorEventFilter, "all">, readonly WorldEvent["type"][]> = {
+  honors:["royal-honor-granted","military-ennobled","military-posthumous","military-title-revoked"],
   founding: ["state-founded", "faction-restored", "dynasty-restored"], emperor: ["emperor-proclaimed"], revolution: ["dynasty-usurped", "ruler-deposed", "empire-split", "rebel-faction-founded", "frontier-faction-founded"],
   restoration: ["faction-restored", "dynasty-restored"], extinction: ["faction-exiled", "faction-extinct"],
   submission: ["faction-submitted", "faction-merged"], merge: ["faction-merged"], era: ["world-era-started", "world-unification", "world-hegemony", "world-fractured"],

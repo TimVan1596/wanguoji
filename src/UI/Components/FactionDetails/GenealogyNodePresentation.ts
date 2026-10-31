@@ -1,3 +1,4 @@
+import {royalHonorLabel} from './RoyalHonorPanel';
 import { formatRulerLifeAge } from "./RoyalPresentation";
 import type { Dynasty, Ruler } from "../../../Politics/Dynasty";
 import type { WorldEvent } from "../../../History/WorldHistory";
@@ -82,7 +83,7 @@ export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: Hous
     const theme: GenealogyTheme = roles.includes("当前君主") ? "current" : roles.includes("储君") ? "heir" :
       roles.includes("篡朝开统") ? "usurpation" : roles.some(x => ["正式开国", "称帝", "势力创始"].includes(x)) ? "foundation" :
       roles.includes("复国") ? "restoration" : roles.some(x => ["末代承统", "合邦退位", "纳土退位"].includes(x)) ? "terminal" : r.reignOrdinal!==undefined&&r.accessionYear!==undefined ? "monarch" : "neutral";
-    const details = [...roles, r.reignOrdinal !== undefined ? `第${r.reignOrdinal}代` : "宗室成员",
+    const details = [...roles, royalHonorLabel(r,dynasty,worldMonth,faction.status), r.reignOrdinal !== undefined ? `第${r.reignOrdinal}代` : "宗室成员",
       dynasty.heirIds.includes(r.id) && !roles.includes("储君") ? "宗室候选" : "",
       r.displacedByUsurpationMonth !== undefined ? "旧朝宗亲" : "", r.endReason ?? "",
       formatRulerLifeAge(r, worldMonth),

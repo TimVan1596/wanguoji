@@ -41,3 +41,11 @@ export function planRoyalHonor(input:{faction:HonorFaction;dynasty:Dynasty;month
  return {version:1,eventId:`royal-honor-${f.name}-${c.r.id}-${epoch.foundingRulerId}-${rank}`,factionId:f.name,epochFounderId:epoch.foundingRulerId,houseName:d.houseName,month:m,recipientRulerId:c.r.id,recipientName:royalName(c.r),bornMonth:c.r.bornYear,issuerRulerId:issuer.id,issuerName:royalName(issuer),issuerTitle:input.issuerTitle,countryName:input.countryName,rank,sovereigntyRank:f.sovereigntyRank as 'KING'|'EMPEROR',relation:c.relation,basis:c.merits.length?'MILITARY_MERIT':'KIN_SENIORITY',meritEventIds:c.merits};
 }
 export function royalHonorText(g:RoyalHonor){return `${g.issuerTitle}${g.basis==='MILITARY_MERIT'?'以军功':'以宗亲资望'}授${g.recipientName}${ROYAL_HONOR_NAMES[g.rank]}之号。`;}
+
+export interface RoyalHonorClaim {rulerId:string;eventId:string;rank:RoyalHonor['rank'];epochFounderId:string;advantage:number;}
+export const ROYAL_HONOR_ADVANTAGE={FENGJUN:.06,QINWANG:.10} as const;
+export function royalHonorCandidateClaims(d:Pick<Dynasty,'rulers'|'houseEpochs'>,month:number,rank?:string):RoyalHonorClaim[]{
+ return d.rulers.flatMap(r=>{const g=effectiveRoyalHonor(r,d,month,rank);return g?[{rulerId:r.id,eventId:g.eventId,rank:g.rank,epochFounderId:g.epochFounderId,advantage:ROYAL_HONOR_ADVANTAGE[g.rank]}]:[];});
+}
+/** Relative candidate advantage capped at 50%, including real command and actual supporter. */
+export const combinedRoyalCandidateWeight=(base:number,military:number,honor:number,support=0)=>base*Math.min(1.5,(1+military+honor)*(1+support));

@@ -11,7 +11,7 @@ import {exportWorldSave} from '../../Persistence/WorldSaveExporter';
 import {diffCanonicalWorldSave} from '../../Persistence/WorldSaveSchema';
 import {EventDetails} from '../../UI/Components/HistoryScroll/HistoryEventDetails';
 /** Uses actual already committed award/death transactions; never creates a historical fact. */
-export function checkMilitaryLifeView(core:any,person:MilitaryPerson,month:number,kind:'GRANT_APPANAGE'|'DEATH_POSTHUMOUS',check:(v:unknown,s:string)=>void){
+export async function checkMilitaryLifeView(core:any,person:MilitaryPerson,month:number,kind:'GRANT_APPANAGE'|'DEATH_POSTHUMOUS',check:(v:unknown,s:string)=>void){
  const before=exportWorldSave(core),events=History.getRecordedEvents(),pair=militaryLifePairs(events).find(p=>p.kind===kind&&p.anchor.metadata?.personId===person.personId)!;
  check(pair,`${kind}: actual production transactions have matching permanent identity and source references`);
  const grouped=groupHistoryNarratives(events),display=grouped.find(e=>e.metadata?.sourceEventIds===[pair.anchor.id,pair.other.id].join(','))!;
@@ -21,7 +21,7 @@ export function checkMilitaryLifeView(core:any,person:MilitaryPerson,month:numbe
  const host=document.createElement('div');document.body.append(host);const root=createRoot(host);
  try{flushSync(()=>root.render(<Provider store={store}><EventDetails event={display} teamByName={new Map(core.teams.map((t:any)=>[t.name,t]))} factionNames={[]} cityNames={[]}/></Provider>));
   const detail=host.querySelector('details')!;check(detail?.open===false&&!host.textContent?.includes(pair.anchor.id),`${kind}: original sources remain lazy behind the closed evidence control`);
-  flushSync(()=>{detail.open=true;detail.dispatchEvent(new Event('toggle',{bubbles:true}));});
+  detail.open=true;await new Promise(resolve=>setTimeout(resolve,20));flushSync(()=>{});
   check(host.textContent?.includes(pair.anchor.id)&&host.textContent.includes(pair.other.id),`${kind}: expanding real React evidence retrieves both original source records`);
  }finally{flushSync(()=>root.unmount());host.remove();}
  check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,`${kind}: both readers preserve canonical facts and RNG`);

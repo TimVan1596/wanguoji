@@ -1,4 +1,4 @@
-import {planRoyalHonor,royalHonorText,type RoyalHonor} from './RoyalHonors';
+import {planRoyalHonor,royalHonorText,royalHonorCandidateClaims,type RoyalHonor} from './RoyalHonors';
 import {beginPoliticalMutation} from '../Simulation/PoliticalMutationScope';
 import {validateMilitaryUsurpers} from "../Persistence/MilitaryUsurperValidation";
 import {exportRulerSave} from "../Persistence/RulerSaveProjection";
@@ -949,6 +949,7 @@ class DynastyRegistryStore {
       this.depositionDiagnostics.observe(team.name, worldMonth, evaluation, team.status === "ACTIVE" && team.identityStage === "STATE", "FAILURE");
       return;
     }
+    evaluation.royalHonorClaims=royalHonorCandidateClaims(dynasty,worldMonth,team.sovereigntyRank);
     const selection = chooseDepositionClaimant(evaluation,worldMonth,roll);
     const claimant = selection?.claimant;
     if (selection) evaluation.selection = selection.evidence;
@@ -971,7 +972,7 @@ class DynastyRegistryStore {
     if (evaluation.militaryParticipant && !MilitaryCommandRegistry.getPoliticalInfluence(team, worldMonth, Game.Core?.logicalUnitRegistry).candidates.some(p =>
       JSON.stringify(p) === JSON.stringify(evaluation.militaryParticipant))) return false;
     if(evaluation.selection&&evaluation.selection.version>=2){
-      const verified={...evaluation,royalMilitaryClaims:MilitaryCommandRegistry.getRoyalDepositionClaims(team,worldMonth,evaluation.candidates.map(c=>c.ruler),Game.Core?.logicalUnitRegistry)};
+      const verified={...evaluation,royalHonorClaims:royalHonorCandidateClaims(dynasty,worldMonth,team.sovereigntyRank),royalMilitaryClaims:MilitaryCommandRegistry.getRoyalDepositionClaims(team,worldMonth,evaluation.candidates.map(c=>c.ruler),Game.Core?.logicalUnitRegistry)};
       const expected=chooseDepositionClaimant(verified,worldMonth,evaluation.selection.roll);
       if(!expected||expected.claimant.ruler.id!==successor.id||JSON.stringify(expected.evidence)!==JSON.stringify(evaluation.selection))return false;
     }

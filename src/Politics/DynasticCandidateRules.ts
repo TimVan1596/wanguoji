@@ -253,7 +253,7 @@ function collectPoliticalGenealogyRulers(
 ) {
   const byId = new Map(rulers.map((ruler) => [ruler.id, ruler]));
   const included = new Set(rulers
-    .filter((ruler) => ruler.displacedByUsurpationMonth !== undefined || ruler.reignOrdinal !== undefined || ruler.id === currentRulerId || ruler.id === designatedHeirId || candidateIds.includes(ruler.id))
+    .filter((ruler) => ruler.royalHonors?.length || ruler.displacedByUsurpationMonth !== undefined || ruler.reignOrdinal !== undefined || ruler.id === currentRulerId || ruler.id === designatedHeirId || candidateIds.includes(ruler.id))
     .map((ruler) => ruler.id));
   const pending = [...included];
   while (pending.length) {

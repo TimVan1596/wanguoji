@@ -4,6 +4,7 @@ import { getFactionEventRelation } from "./FactionEventRelation";
 export type HistorySignificance = "MINOR" | "NORMAL" | "MAJOR" | "LANDMARK";
 
 const MAJOR_POLITICAL_TYPES = new Set<WorldEvent["type"]>([
+  "royal-honor-granted",
   "dynasty-usurped",
   "ruler-deposed",
   "world-born",

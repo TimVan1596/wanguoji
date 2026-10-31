@@ -3,7 +3,7 @@ import type {WorldSaveV1,RulerSaveV17} from './WorldSaveSchema';
 import type {WorldEvent} from '../History/WorldHistory';
 import {importRulerSave} from './RulerSaveProjection';
 import {getRecordedKinRelation} from '../Politics/DynasticCandidateRules';
-import {royalHonorText,royalHonorMerits,royalName,type RoyalHonor} from '../Politics/RoyalHonors';
+import {effectiveRoyalHonor,ROYAL_HONOR_ADVANTAGE,royalHonorText,royalHonorMerits,royalName,type RoyalHonor} from '../Politics/RoyalHonors';
 import {formatRulerTitleAtMonth} from '../Politics/RulerTitleRules';
 const at=(e:WorldEvent)=>e.monthIndex??e.year;
 /** Audits frozen grants against real kin, sovereign office and prior canonical sources. */
@@ -36,5 +36,27 @@ export function validateRoyalHonors(save:WorldSaveV1):string[]{
   }catch(e){errors.push(`invalid royal honor: ${String(g?.eventId)} (${String(e)})`);}}
  }
  for(const e of events)if(e.type==='royal-honor-granted'&&!seen.has(e.id))errors.push('unbound royal honor event');
+ if(!errors.length)errors.push(...validHonorSelections(save));
+ return errors;
+}
+
+function validHonorSelections(save:WorldSaveV1):string[]{
+ const errors:string[]=[],events=save.worldHistory.events as WorldEvent[],positions=new Map(events.map((e,i)=>[e.id,i]));
+ for(const [index,event] of events.entries())if(event.type==='ruler-deposed'&&typeof event.metadata?.depositionSelection==='string')try{
+  const selection=JSON.parse(event.metadata.depositionSelection),d=save.dynasties.find(d=>d.factionId===event.actorFactionId)!,f=save.factions.find(f=>f.factionId===d.factionId)!,month=at(event),prior=events.slice(0,index);
+  const epochs=(d.houseEpochs as Dynasty['houseEpochs'])?.map(e=>({...e,endMonth:e.endMonth===month&&!prior.some(p=>p.type==='dynasty-usurped'&&p.actorFactionId===d.factionId&&at(p)===month)?undefined:e.endMonth}));
+  const imperial=(f.sovereigntyHistory as Array<{rank:string;startMonth:number}>).filter(h=>h.startMonth<=month&&(h.rank!=='EMPEROR'||prior.some(p=>p.type==='emperor-proclaimed'&&p.actorFactionId===d.factionId&&at(p)<=month))).sort((a,b)=>a.startMonth-b.startMonth).at(-1)?.rank??'KING';
+  let hasHonor=false;
+  for(const candidate of selection.candidates){
+   const r=importRulerSave((d.rulers as RulerSaveV17[]).find(r=>r.rulerId===candidate.rulerId)!);
+   r.royalHonors=r.royalHonors?.filter(g=>(positions.get(g.eventId)??Infinity)<index);
+   if(r.accessionYear===month)r.accessionYear=undefined;
+   if(r.deathMonth===month&&!prior.some(p=>['ruler-died','heir-died'].includes(p.type)&&(p.rulerId===r.id||p.metadata?.rulerId===r.id)))r.deathMonth=undefined;
+   const g=effectiveRoyalHonor(r,{houseEpochs:epochs},month,imperial),proof=g?{eventId:g.eventId,rank:g.rank,epochFounderId:g.epochFounderId}:undefined;
+   hasHonor||=!!g;
+   if(JSON.stringify(proof)!==JSON.stringify(candidate.royalHonor)||g&&candidate.honorAdvantage!==ROYAL_HONOR_ADVANTAGE[g.rank])throw Error('actual prior honor does not match candidate advantage');
+  }
+  if((selection.version===4)!==hasHonor)throw Error('honor selection version or sources');
+ }catch(e){errors.push(`invalid royal honor selection ${event.id}: ${String(e)}`);}
  return errors;
 }

@@ -1,4 +1,4 @@
-import {checkRoyalHonors} from './RoyalHonorCoreChecks';
+import {checkRoyalHonors,checkRoyalHonorCompetition} from './RoyalHonorCoreChecks';
 import {checkSuccessionRollback} from "./SuccessionRollbackCoreChecks";
 import {checkMilitaryDisposition} from "./MilitaryDispositionCoreChecks";
 import {militaryAmbition} from "../../Politics/MilitaryPoliticalDisposition";
@@ -43,7 +43,7 @@ export async function runMilitaryNobilityCore(seed:string){
   // Equal willingness/contest multipliers isolate the existing title and office regressions.
   const minimumAmbition=Math.min(...ids.map(id=>militaryAmbition(id,Military.getPerson(id)!.bornMonth)));
   for(const u of users){const p=Military.getPerson(u.militaryPersonId!)!;u.loyalty=militaryAmbition(p.personId,p.bornMonth)-minimumAmbition;}
-  clock(216);const base=strict();checkRoyalHonors(core,base,check);
+  clock(216);const base=strict();checkRoyalHonors(core,base,check);checkRoyalHonorCompetition(core,base,check);
   const restore=(save=base)=>{hydrateWorldSave(core,structuredClone(save));return {t:core.teams.find(t=>t.name===factionId)!,d:Dynasty.get(factionId)!,p:Military.getPerson(ids[0])!,q:Military.getPerson(ids[1])!};};
   checkSuccessionRollback(core,base,factionId,check);
   checkOfficePoliticalChoice(core,base,ids,factionId,check);
@@ -63,7 +63,7 @@ export async function runMilitaryNobilityCore(seed:string){
   const record=JSON.stringify(grants);meritRoster(Military.getPeople().reverse(),Military.getFormations(),History.getEvents(),factionId,240);check(JSON.stringify(p.nobilityHistory)===record,'dynamic merit ranking cannot delete or rewrite a formal grant');
   const resume=()=>{hydrateWorldSave(core,structuredClone(saved));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return strict();};const a=resume(),b=resume();check(diffCanonicalWorldSave(a,b).matched,'ennobled army save resumes twelve real months identically');hydrateWorldSave(core,structuredClone(a));check(diffCanonicalWorldSave(a,strict()).matched,'second read preserves the same people, titles and army');
   // Same-month battle death and legal posthumous act share one display while both real events survive.
-  {const {t,p}=restore(saved);t.getUserById(p.sourceUserId)!.destroyUser(false,{cause:'BATTLE_DEATH',month:240,damageSource:'HOSTILE_HOME_OCCUPATION'});clock(240);Military.updateHonors(240,core.teams,Dynasty.getAll());strict();checkMilitaryLifeView(core,p,240,'DEATH_POSTHUMOUS',check);}
+  {const {t,p}=restore(saved);t.getUserById(p.sourceUserId)!.destroyUser(false,{cause:'BATTLE_DEATH',month:240,damageSource:'HOSTILE_HOME_OCCUPATION'});clock(240);Military.updateHonors(240,core.teams,Dynasty.getAll());strict();await checkMilitaryLifeView(core,p,240,'DEATH_POSTHUMOUS',check);}
   // Formal posthumous evaluation uses the actual death transaction, never age or a fabricated death.
   {
    const {t,p}=restore(saved),body=t.getUserById(p.sourceUserId)!;body.destroyUser(false,{cause:'BATTLE_DEATH',month:240,damageSource:'HOSTILE_HOME_OCCUPATION'});clock(252);

@@ -12,7 +12,7 @@ export function validRoyalDepositionMilitary(save:WorldSaveV1,event:any):boolean
  try {
   const selection=JSON.parse(event.metadata.depositionSelection);
   if(selection.version<2)return true;
-  if(selection.version===3){
+  if(selection.version===3||selection.version===4&&selection.support){
    const support=selection.support,participant=readMilitaryParticipation(event)?.participant;
    if(!support||!participant||support.personId!==participant.personId||support.name!==(participant.personalName??participant.name)||JSON.stringify(support.disposition)!==JSON.stringify(participant.disposition)||!validMilitaryClaimSupport(support,selection.candidates,participant.bornMonth))return false;
   }
