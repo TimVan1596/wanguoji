@@ -909,6 +909,14 @@ class DynastyRegistryStore {
     );
   }
 
+  getCourtCoupDiagnostics(){
+    const acts=WorldHistory.getRecordedEvents().filter(e=>e.type==='court-coup-attempt');
+    const results=WorldHistory.getRecordedEvents().filter(e=>e.type==='court-coup-result');
+    const successes=results.filter(e=>e.metadata?.outcome==='SUCCESS').length;
+    return {attempts:acts.length,successes,failures:results.length-successes,
+      summary:`宫廷拥立企图 ${acts.length}次；成功 ${successes}次，失败 ${results.length-successes}次。失败处罚为实际免职；拥立者不等于继位者。`};
+  }
+
   getInReignDepositionDiagnostics(worldMonth: number) {
     return this.depositionDiagnostics.snapshot(worldMonth);
   }

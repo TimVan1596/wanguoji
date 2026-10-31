@@ -106,6 +106,7 @@ function WorldDiagnosticsPanelContent() {
       ...summarizeProvisionalRulers(dynasties, factions),
       revolution: DynastyRegistry.getRevolutionDiagnostics(teams, worldMonth),
       deposition: DynastyRegistry.getInReignDepositionDiagnostics(worldMonth),
+      courtCoups: DynastyRegistry.getCourtCoupDiagnostics(),
       byAccessionRank: summarizeRulersByAccessionRank(dynasties, factions),
       session: DynastyRegistry.getProvisionalSessionDiagnostics(factions),
       recent: summarizeProvisionalRulers(dynasties, factions, { completedSinceMonth: Math.max(0, worldMonth - 1200) }),
@@ -437,7 +438,8 @@ function WorldDiagnosticsPanelContent() {
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(provisionalRulers.revolution)}</Typography>
       </details>
       <details>
-        <summary>宗室废立诊断</summary>
+        <summary>宗室废立与拥立企图</summary>
+        <Typography fontSize={12}>{provisionalRulers.courtCoups.summary}</Typography>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 11 }}>{provisionalRulers.deposition.chineseSummary}</Typography>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 11 }}>{provisionalRulers.deposition.military.chineseSummary}</Typography>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(provisionalRulers.deposition)}</Typography>
