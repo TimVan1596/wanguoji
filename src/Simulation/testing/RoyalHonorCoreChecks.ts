@@ -24,6 +24,7 @@ function prepareMeritoriousRoyal(core:any,base:ReturnType<typeof exportWorldSave
  }
  check(team,'an existing adult royal can serve under a real living sovereign');
  core.simulator.clock.importState({worldMonth:month,elapsedMs:0,running:false});
+ for(const p of Military.getPeople().filter(p=>p.factionId===team.name&&p.status==='ACTIVE').slice(1))Military.endPersonCommands(p.personId,month,'DISMISSED');
  check(Dynasty.enlistRoyalMilitary(candidate,team,month,[]),'actual royal enlistment establishes its single audited military body');
  const r=Dynasty.get(team.name)!.rulers.find(r=>r.id===candidate.rulerId)!,p=Military.getPerson(r.militaryIdentity!.personId)!,command=p.appointments.at(-1)!.commandId;
  check(!planRoyalHonor({faction:team,dynasty:Dynasty.get(team.name)!,month,countryName:team.displayName,issuerTitle:Dynasty.getRulerTitleDisplay(team.name,month),people:Military.getPeople(),formations:Military.getFormations(),events:History.getEventsForFaction(team.name)}),'real military office alone never qualifies without a verified victory');

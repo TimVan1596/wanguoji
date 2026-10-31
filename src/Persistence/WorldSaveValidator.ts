@@ -495,6 +495,11 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   if (!errors.length) errors.push(...validateMilitaryNarrativeLinks(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateMilitaryOfficeAuthorities(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateMilitaryBattleNames(save as WorldSaveV1));
+  for (const faction of save.factions ?? []) {
+    const kind = faction.stateFormationEligibilityKind;
+    if (kind !== undefined && kind !== "ORDINARY" && kind !== "DE_FACTO") errors.push("invalid state formation path");
+    if (kind !== undefined && (typeof faction.stateFormationEligibleSinceMonth !== "number" || faction.identityStage !== "PROVISIONAL")) errors.push("invalid state formation progress");
+  }
   if (!errors.length) errors.push(...validateRoyalHonors(save as WorldSaveV1));
   return { valid: errors.length === 0, errors };
 }
