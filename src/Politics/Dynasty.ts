@@ -1,3 +1,5 @@
+import {politicalEffect} from "../Simulation/PoliticalMutationScope";
+import {successionTransaction} from "./SuccessionTransaction";
 import {capturePoliticalCrisis,politicalCapital} from "./PoliticalEventNarrative";
 import {verifiedPoliticalOffice} from "./MilitaryPoliticalInfluence";
 import {splitEstablishedPersonalName} from "./NameCulture";
@@ -194,6 +196,12 @@ class DynastyRegistryStore {
 
   getProvisionalSessionDiagnostics(factions: Map<string, ProvisionalFactionRecord>) {
     return this.provisionalDiagnosticsSession.summarize(this.listForDiagnostics(), factions);
+  }
+
+  snapshotSuccessionTransaction(){return {state:structuredClone(this.exportState()),owners:new Map([...this.dynasties].map(([id,d])=>[id,{d,rulers:new Map(d.rulers.map(r=>[r.id,r]))}])),checks:this.revolutionChecks};}
+  rollbackSuccessionTransaction(s:ReturnType<DynastyRegistryStore['snapshotSuccessionTransaction']>){
+    this.dynasties.clear();for(const old of s.state.dynasties){const owner=s.owners.get(old.factionId)!;for(const key of Object.keys(owner.d))delete (owner.d as any)[key];Object.assign(owner.d,structuredClone(old),{rulers:old.rulers.map(data=>{const r=owner.rulers.get(data.id)!;for(const key of Object.keys(r))delete (r as any)[key];Object.assign(r,structuredClone(data));return r;})});this.dynasties.set(old.factionId,owner.d);}
+    this.sequence=s.state.sequence;this.revolutionChecks=s.checks;this.currentRulerLookup.reset();
   }
 
   importState(state: ReturnType<DynastyRegistryStore["exportState"]>, diagnosticsStartMonth = 0) {
@@ -564,6 +572,7 @@ class DynastyRegistryStore {
       dynasty.lastRulerBattleDeathYear === undefined
         ? undefined
         : year - dynasty.lastRulerBattleDeathYear;
+    const hazardRuler=structuredClone(ruler),hazardRandom=worldRandom.exportState();
     if (!checkRulerBattleHazard(ruler, year, {
       reignMonths: year - (ruler.accessionYear ?? year),
       monthsSinceLastBattleDeath,
@@ -574,13 +583,13 @@ class DynastyRegistryStore {
     })) {
       return false;
     }
-    dynasty.lastRulerBattleDeathYear = year;
-    team.rulerUser = undefined;
-    this.succeedRuler(team, dynasty, ruler, year, "combat");
-    return true;
+    try{return successionTransaction(team,this,()=>{dynasty.lastRulerBattleDeathYear=year;team.rulerUser=undefined;this.succeedRuler(team,dynasty,ruler,year,'combat');return true;});}
+    catch(error){for(const key of Object.keys(ruler))delete (ruler as any)[key];Object.assign(ruler,hazardRuler);worldRandom.restore(hazardRandom);throw error;}
   }
 
-  private succeedRuler(
+  private succeedRuler(...args:Parameters<DynastyRegistryStore['succeedRulerBody']>){return successionTransaction(args[0],this,()=>this.succeedRulerBody(...args));}
+
+  private succeedRulerBody(
     team: Team,
     dynasty: Dynasty,
     predecessor: Ruler,
@@ -623,7 +632,7 @@ class DynastyRegistryStore {
     const legitimateSuccessor = successor;
     const revolutionContext = this.revolutionContext(team, dynasty, predecessor, successor, year, reason);
     const revolution = evaluateDynasticRevolution(revolutionContext);
-    this.revolutionGateDiagnostics.record(team.name, oldStateName, revolutionContext, revolution);
+    politicalEffect(()=>this.revolutionGateDiagnostics.record(team.name, oldStateName, revolutionContext, revolution));
     this.revolutionChecks = [{ factionId: team.name, worldMonth: year, blockers: revolution.blockers },
       ...this.revolutionChecks.filter((item) => item.factionId !== team.name)].slice(0, 5);
     if (revolution.usurpation) {
@@ -790,7 +799,8 @@ class DynastyRegistryStore {
     this.ensureRulerUnit(team);
   }
 
-  resolveCapturedRuler(team: Team, conqueror: Team, year: number) {
+  resolveCapturedRuler(team: Team, conqueror: Team, year: number) {return successionTransaction(team,this,()=>this.resolveCapturedRulerBody(team,conqueror,year));}
+  private resolveCapturedRulerBody(team: Team, conqueror: Team, year: number) {
     const dynasty = this.dynasties.get(team.name);
     const ruler = dynasty ? this.getCurrentRuler(team.name) : undefined;
     if (!dynasty || !ruler || (ruler.status !== "ruling" && ruler.status !== "exiled") || team.status === "EXTINCT") {

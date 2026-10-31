@@ -1,3 +1,4 @@
+import {politicalCleanup} from "../Simulation/PoliticalMutationScope";
 import {residentNaturalDeathMonth,ordinaryLifeEligible} from "../Simulation/ResidentLife";
 import DynastyRegistry from "../Politics/Dynasty";
 import { deriveMilitaryLifeSchedule } from "../Politics/MilitaryLifeRules";
@@ -133,6 +134,9 @@ export default class User {
       entry.state.userId === this.id && entry.state.factionId === this.team.name && entry.state.role === "NORMAL";
   }
 
+  capturePoliticalState(){return {destroyed:this.destroyed,role:this.role,rulerId:this.rulerId,historicalPersonId:this.historicalPersonId,militaryPersonId:this.militaryPersonId};}
+  restorePoliticalState(s:ReturnType<User['capturePoliticalState']>){this.destroyed=s.destroyed;this.role=s.role;this.rulerId=s.rulerId;this.historicalPersonId=s.historicalPersonId;this.militaryPersonId=s.militaryPersonId;}
+
   destroyUser(silentRulerDeath = false, populationMutation: PopulationMutationContext = { cause: "UNATTRIBUTED" }) {
     if (this.destroyed) return false;
     if (populationMutation.cause === "NATURAL_DEATH") {
@@ -197,8 +201,7 @@ export default class User {
     }
     Game.Core?.recordUserDeathForDiagnostics();
     Game.Core?.logicalUnitRegistry.unregisterUser(this);
-    this.slaveGroup.dispose();
-    this.player.destroyPlayerTree();
+    politicalCleanup(()=>{this.slaveGroup.dispose();this.player.destroyPlayerTree();});
     return true;
   }
 }

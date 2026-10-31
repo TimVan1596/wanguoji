@@ -1,3 +1,4 @@
+import {politicalEffect} from "./PoliticalMutationScope";
 import {freezeMilitaryOfficeAuthority} from "../Politics/MilitaryOfficeAuthority";
 import { PoliticalTransitionObservations } from "./PoliticalTransitionObservations";
 import { diagnosePeacefulReunificationCandidates } from "./PeacefulReunificationSystem";
@@ -212,10 +213,10 @@ export default class AutoSimulator {
   getPopulationClimateMultiplier(team: Team) { return this.events.getPopulationGrowthMultiplier(team); }
 
   recordPopulationMutation(team: Team, before: number, after: number, metadata: PopulationMutationContext) {
-    this.populationTransitionAudit.record(team, before, after, {
+    politicalEffect(()=>this.populationTransitionAudit.record(team, before, after, {
       ...metadata,
       month: metadata.month ?? this.clock.year,
-    });
+    }));
   }
 
   getPopulationTransitionDiagnostics() {

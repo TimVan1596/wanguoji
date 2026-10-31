@@ -1,3 +1,4 @@
+import {politicalEffect} from "../Simulation/PoliticalMutationScope";
 import {formatPoliticalEvent} from "../Politics/PoliticalEventNarrative";
 import {metadataFactionReferences} from "./HistoricalLabelMetadata";
 import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
@@ -356,7 +357,7 @@ export class WorldHistoryStore {
     this.events.push(normalizedEvent);
     this.indexEvent(normalizedEvent);
     this.pendingEvents.push(normalizedEvent);
-    this.notify();
+    politicalEffect(()=>this.notify());
     return event.id;
   }
 
