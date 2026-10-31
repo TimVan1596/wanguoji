@@ -88,6 +88,7 @@ export function initializeFactionIdentity(
     },
   ];
   faction.stateFormationEligibleSinceMonth = undefined;
+  faction.stateFormationEligibilityKind = undefined;
   faction.stateFoundedMonth = faction.identityStage === "STATE" ? startMonth : undefined;
   faction.emperorEligibleSinceMonth = undefined;
   faction.proclaimedEmperorMonth = undefined;

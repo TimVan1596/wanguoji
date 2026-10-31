@@ -155,6 +155,11 @@ export function getMilitaryPoliticalEvents(events: WorldEvent[], personId: strin
 }
 
 export function getMilitaryParticipationDetails(event: WorldEvent) {
+  if(['court-coup-attempt','court-coup-result'].includes(event.type)){
+    if(event.type==='court-coup-result')return [event.title,`原始企图 ${event.metadata?.courtCoupEventId}；人物 ${event.metadata?.personId}；编组 ${event.metadata?.commandId}`];
+    try{const r=JSON.parse(String(event.metadata?.courtCoup));return [event.title,`发起者 ${r.participant.personId} / User ${r.participant.sourceUserId} / 编组 ${r.participant.commandId}`,`目标：废 ${r.previousRulerId}，拥立 ${r.targetRulerId}；实际统兵${r.participant.unitCount}人`,`危机来源 ${r.crisisEventIds.join('、')}`,`当时忠诚 ${r.participant.disposition.loyalty}，野心 ${r.participant.disposition.ambition}；同次共享机会：企图阈值 ${(r.attemptProbability*100).toFixed(1)}%，原成功阈值 ${(r.successProbability*100).toFixed(2)}%，抽签 ${r.roll}`,`结果依据 ${r.outcomeEventId}`];}catch{return ['政治史料格式异常，请检查原始记录'];}
+  }
+
   const p = readMilitaryParticipation(event);
   return p ? [formatMilitaryParticipation(event)!, `人物 ${p.participant.personId} / User ${p.participant.sourceUserId} / 国家 ${p.factionId}`,
     `前君：${event.metadata?.previousRulerName ?? event.metadata?.predecessorRulerName ?? event.metadata?.previousRulerTitle ?? "未记录"}；新君：${event.metadata?.nextRulerName ?? event.metadata?.newRulerName ?? "未记录"}`,

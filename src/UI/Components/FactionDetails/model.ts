@@ -14,6 +14,7 @@ import {
   STATE_FORMATION_MIN_STABILITY,
   STATE_FORMATION_REQUIRED_MONTHS,
   DE_FACTO_STATE_REQUIRED_MONTHS,
+  DE_FACTO_STATE_MIN_ACTIVE_MONTHS, DE_FACTO_STATE_MIN_CITIES, DE_FACTO_STATE_MIN_STABILITY,
 } from "../../../Simulation/FactionIdentity";
 import { EMPEROR_EFFECTIVE_STABILITY_BONUS } from "../../../Simulation/SovereigntyModifiers";
 
@@ -314,18 +315,20 @@ export function buildStateFormationStatusLines(
   );
   const cityCount = team.cities?.length ?? 0;
   const safeStability = stability ?? 0;
+  const deFacto=team.stateFormationEligibilityKind==="DE_FACTO";
+  const monthsNeeded=deFacto?DE_FACTO_STATE_MIN_ACTIVE_MONTHS:STATE_FORMATION_MIN_ACTIVE_MONTHS,citiesNeeded=deFacto?DE_FACTO_STATE_MIN_CITIES:STATE_FORMATION_MIN_CITIES,stabilityNeeded=deFacto?DE_FACTO_STATE_MIN_STABILITY:STATE_FORMATION_MIN_STABILITY;
   const lines = [
-    `建国条件：存续 ${Math.min(activeMonths, STATE_FORMATION_MIN_ACTIVE_MONTHS)}/${STATE_FORMATION_MIN_ACTIVE_MONTHS}个月`,
-    `建国条件：城市 ${Math.min(cityCount, STATE_FORMATION_MIN_CITIES)}/${STATE_FORMATION_MIN_CITIES}`,
-    `建国条件：稳定度 ${safeStability}/${STATE_FORMATION_MIN_STABILITY}`,
+    `建国条件：存续 ${Math.min(activeMonths, monthsNeeded)}/${monthsNeeded}个月`,
+    `建国条件：城市 ${Math.min(cityCount, citiesNeeded)}/${citiesNeeded}`,
+    `建国条件：稳定度 ${safeStability}/${stabilityNeeded}`,
   ];
   if (!hasFormalRuler) {
     lines.push("建国条件：正式君主 —");
   }
   if (
-    activeMonths >= STATE_FORMATION_MIN_ACTIVE_MONTHS &&
-    cityCount >= STATE_FORMATION_MIN_CITIES &&
-    safeStability >= STATE_FORMATION_MIN_STABILITY &&
+    activeMonths >= monthsNeeded &&
+    cityCount >= citiesNeeded &&
+    safeStability >= stabilityNeeded &&
     hasFormalRuler &&
     team.stateFormationEligibleSinceMonth !== undefined
   ) {

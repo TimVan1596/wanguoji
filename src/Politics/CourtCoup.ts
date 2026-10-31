@@ -13,7 +13,7 @@ export function selectCourtInstigator(e:DepositionEvaluation,people:readonly Mil
 }
 export interface CourtCoupRecord {
  version:1;factionId:string;month:number;previousRulerId:string;targetRulerId:string;
- participant:MilitaryPoliticalParticipant;crisisEventIds:string[];stability:number;cityCount:number;
+ participant:MilitaryPoliticalParticipant;successPressure?:MilitaryPoliticalParticipant;crisisEventIds:string[];stability:number;cityCount:number;
  policy:CourtAttemptPolicy;attemptProbability:number;successProbability:number;roll:number;
  outcome:'SUCCESS'|'FAILED';outcomeEventId:string;consequence:'DEPOSITION'|'DISMISSED';
 }

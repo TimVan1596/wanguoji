@@ -323,8 +323,8 @@ export class MilitaryCommandRegistryStore {
     return true;
   }
   nextPersonId() { return `military-person-${this.personSequence}`; }
-  endPersonCommands(personId: string, month: number, reason: MilitaryAppointment["endReason"]) {
-    for (const formation of this.formations.values()) if (formation.commanderPersonId === personId) this.endFormation(formation, month, reason);
+  endPersonCommands(personId: string, month: number, reason: MilitaryAppointment["endReason"], courtCoupEventId?:string) {
+    for (const formation of this.formations.values()) if (formation.commanderPersonId === personId) this.endFormation(formation, month, reason, courtCoupEventId);
   }
 
   private appoint(user: User, factionId: string, worldMonth: number, memberUnitIds: string[], royalIdentity?: RoyalMilitaryLink) {
@@ -471,7 +471,7 @@ export class MilitaryCommandRegistryStore {
     }
   }
 
-  private endFormation(formation: MilitaryFormation, worldMonth: number, reason: MilitaryAppointment["endReason"]) {
+  private endFormation(formation: MilitaryFormation, worldMonth: number, reason: MilitaryAppointment["endReason"], courtCoupEventId?:string) {
     if (formation.status !== "ACTIVE") return;
     this.diagnostics.releasedFormations++;
     if (reason === "AGE_RETIREMENT") this.diagnostics.ageRetirements++;
@@ -482,7 +482,7 @@ export class MilitaryCommandRegistryStore {
     if (person && person.status !== "DEAD") person.status = "RETIRED";
     if (person) this.eventWriter?.({ id: `military-command-ended-${formation.commandId}`, year: worldMonth, monthIndex: worldMonth,
       category: "politics", type: "military-command-ended", title: reason === "AGE_RETIREMENT" ? `${getMilitaryPersonDisplayName(person)}年老退役` : `${getMilitaryPersonDisplayName(person)}结束军事任职`, factionIds: [formation.factionId],
-      actorFactionId: formation.factionId, metadata: { personId: person.personId, sourceUserId: person.sourceUserId, personalName: person.personalName, commandId: formation.commandId, endReason: reason }, importance: "normal" });
+      actorFactionId: formation.factionId, metadata: { personId: person.personId, sourceUserId: person.sourceUserId, personalName: person.personalName, commandId: formation.commandId, endReason: reason, ...(courtCoupEventId?{courtCoupEventId}:{}) }, importance: "normal" });
   }
 
   withdrawFromCity(factionId:string,cityId:string,month:number){
