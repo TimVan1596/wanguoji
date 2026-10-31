@@ -164,18 +164,8 @@ export function observeStateFormationEligibility(
   stability: number,
   hasFormalRuler: boolean
 ) {
-  if (!isStateFormationEligible(faction, monthIndex, stability, hasFormalRuler)) {
-    faction.stateFormationEligibleSinceMonth = undefined;
-    return false;
-  }
-  if (faction.stateFormationEligibleSinceMonth === undefined) {
-    faction.stateFormationEligibleSinceMonth = monthIndex;
-    return false;
-  }
-  return (
-    monthIndex - faction.stateFormationEligibleSinceMonth >=
-    STATE_FORMATION_REQUIRED_MONTHS
-  );
+  return observeFormationPath(faction, monthIndex,
+    isStateFormationEligible(faction, monthIndex, stability, hasFormalRuler), false);
 }
 
 /** Separate continuous windows: switching paths cannot borrow a shorter qualification period. */
