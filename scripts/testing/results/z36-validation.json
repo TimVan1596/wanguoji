@@ -14,7 +14,7 @@
   ],
   "notPublished": [
     "city-name princely fiefs or private land",
-    "new tombstone-style compound peerage layout",
+    "additional tombstone-style visual rearrangement; existing separate name/rank/epithet presentation retained",
     "new political draws, higher usurpation probabilities or 7:3 target",
     "explicitly excluded larger attribute/government/inheritance systems"
   ],
@@ -1063,12 +1063,22 @@
   ],
   "limits": "Two seeds x 50 years show real honor grants, no natural deposition or usurpation. Real controlled Core transactions prove bounded competition and identity safety, not a higher natural rate. Blocker counts overlap; successful-opportunity military denominator is zero, so troop qualification cannot be identified as the natural bottleneck.",
   "validation": {
-    "unitTests": "pending final output",
+    "unitTests": {
+      "passed": true,
+      "files": 298,
+      "tests": 2304
+    },
     "coreChecks": 345,
-    "builds": "pending final output",
+    "builds": {
+      "web": "PASS",
+      "desktop": "PASS",
+      "desktopDebug": "PASS",
+      "notes": "Renderer assets, debug source maps and bundled music verified; existing Vite large-chunk advisory remains."
+    },
     "saveLoad": "Strict V37 kingdom and imperial grants, real honored deposition, deterministic twelve-month continuation and second read; forged issuer/person/birth/rank/epoch/title reference rejected. V36 slots rejected without migration.",
     "rollback": "Injected royal-honor write failure restores dynasty/history/RNG; original usurpation/deposition and permanent military/royal identity regressions passed.",
     "performance": "City index survives import/reset/rollback; 100/300 history rows keep initial DOM bounded to 12 and full list windowed. Long estate summaries remain collapsed; 1-5 relations mount only compact cards.",
-    "manualChromeGate": "Pending user; no CLI visual acceptance claimed."
+    "manualChromeGate": "Pending user; no CLI visual acceptance claimed.",
+    "historicalTiming": "Issuer references in heir-death events are distinguished from actual heirId; same-month royal military death and national renaming are validated by canonical source order. Future national names cannot be backfilled into grant text."
   }
 }
