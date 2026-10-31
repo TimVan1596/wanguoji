@@ -58,7 +58,7 @@ export function validateMilitarySecessions(save:WorldSaveV1){
      if(!prior.some(x=>x.type==='siege-started'&&x.cityId===i.cityId&&x.targetFactionId===i.sourceFactionId&&x.metadata?.battleId===facts.battleId)||prior.some(x=>x.type==='siege-ended'&&x.metadata?.battleId===facts.battleId))valid=false;
     }else if(facts&&c.reason!=='ORIGINAL_CRISIS'){
      const index=events.findIndex(x=>x.type==='empire-split'&&x.metadata?.foundingRulerId===r.rulerId),prior=events.slice(0,index).filter(x=>x.cityId===i.cityId&&['city-captured','city-recovered','capital-fallen','city-revolt'].includes(x.type));
-     if(!prior.some(x=>x.actorFactionId===i.sourceFactionId&&(x.monthIndex??x.year)===facts.lastCapturedMonth))valid=false;
+     if(!prior.some(x=>(x.monthIndex??x.year)===facts.lastCapturedMonth)||!c.crisisSourceEventIds?.length)valid=false;
     }
    }
 

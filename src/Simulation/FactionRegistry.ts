@@ -359,7 +359,7 @@ class FactionRegistryStore {
       const p=supporter.player,s=core.logicalUnitRegistry.getEntry(p.logicalUnitId!)!.state;
       military.evidence.entryKind='LOCAL_CRISIS';
       const facts=popularCrisisFacts(coreCity,year,core.totalCells);
-      military.evidence.localCrisis={...localOpportunity,historyBoundaryEventId:WorldHistory.getRecordedEvents().at(-1)?.id,crisisSourceEventIds:militaryCrisisSourceIds(WorldHistory.getEventsForFaction(previousOwner.name),coreCity.id,previousOwner.name,facts),reason:militaryLocalCrisis(popularCrisisFacts(coreCity,year,core.totalCells)).reason,supporterKind:resident?"RESIDENT":"COMMAND_FOLLOWER",
+      military.evidence.localCrisis={...localOpportunity,historyBoundaryEventId:WorldHistory.getRecordedEvents().at(-1)?.id,crisisSourceEventIds:militaryCrisisSourceIds(WorldHistory.getRecordedEvents(),coreCity.id,previousOwner.name,facts),reason:militaryLocalCrisis(popularCrisisFacts(coreCity,year,core.totalCells)).reason,supporterKind:resident?"RESIDENT":"COMMAND_FOLLOWER",
         facts,
         sourceCityCount:previousOwner.cities.length,activeFactionCount:core.teams.filter(t=>!t.isDie).length,
         supporter:{userId:supporter.id,bornMonth:supporter.bornMonth,unitId:p.logicalUnitId!,x:core.logicalGameplayAuthority?s.logicalX:p.x,y:core.logicalGameplayAuthority?s.logicalY:p.y,loyalty:supporter.loyalty,positionSource:core.logicalGameplayAuthority?"LOGICAL":"PHASER",districtCityId:coreCity.id,ownedFactionId:previousOwner.name}};

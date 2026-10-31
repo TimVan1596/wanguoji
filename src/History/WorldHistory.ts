@@ -305,6 +305,12 @@ export class WorldHistoryStore {
     };
   }
 
+  snapshotPoliticalTransaction(){return {state:this.exportState(),events:[...this.events],pending:[...this.pendingEvents],reset:this.resetPending,revision:this.revision,dirty:this.batchDirty};}
+  rollbackPoliticalTransaction(s:ReturnType<WorldHistoryStore['snapshotPoliticalTransaction']>){
+    this.importState(s.state);this.events=s.events;this.orderedEvents=[];this.groupOldestMonth.clear();this.uiEventsByFactionId.clear();this.eventsByFactionId.clear();this.eventTypeCounts.clear();this.events.forEach(e=>this.indexEvent(e));
+    this.pendingEvents=s.pending;this.resetPending=s.reset;this.revision=s.revision;this.batchDirty=s.dirty;
+  }
+
   importState(state: {
     events: Array<Omit<WorldEvent, "year"> & { monthIndex: number }>;
     emittedKeys: string[];
@@ -338,7 +344,7 @@ export class WorldHistoryStore {
     this.extinctFactions = new Set(state.extinctFactionIds);
     this.sequence = state.sequence;
     this.unificationCount = state.unificationCount;
-    this.notify();
+    politicalEffect(()=>this.notify());
   }
 
   getEventsForFaction(factionId: string) {

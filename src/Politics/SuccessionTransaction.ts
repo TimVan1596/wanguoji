@@ -12,7 +12,7 @@ import {beginPoliticalMutation,politicalMutationActive} from '../Simulation/Poli
 export function successionTransaction<T>(team:Team,store:Pick<typeof Dynasty,'snapshotSuccessionTransaction'|'rollbackSuccessionTransaction'>,work:()=>T):T {
  const core=Game.Core;
  if(politicalMutationActive()||!core?.logicalUnitRegistry||!team.players?.getChildren)return work();
- const dynasty=store.snapshotSuccessionTransaction(),military=Military.snapshotTransaction(),history=History.exportState(),effects=Effects.exportState(),rng=random.exportState();
+ const dynasty=store.snapshotSuccessionTransaction(),military=Military.snapshotTransaction(),history=History.snapshotPoliticalTransaction(),effects=Effects.exportState(),rng=random.exportState();
  const teams=core.teams.map(t=>({t,users:[...t.users],players:t.players.getChildren().slice(),rulerUser:t.rulerUser,
   displayName:t.displayName,houseName:t.houseName,color:t.color,colorHistory:structuredClone(t.colorHistory),nameHistory:structuredClone(t.nameHistory)}));
  const users=teams.flatMap(s=>s.users.map(u=>({u,state:u.capturePoliticalState()})));
@@ -23,9 +23,10 @@ export function successionTransaction<T>(team:Team,store:Pick<typeof Dynasty,'sn
  try{result=work();}
  catch(error){
   scope.cancel();
+  const restoring=beginPoliticalMutation();
   const original=new Set(users.map(x=>x.u));
   for(const t of core.teams)for(const u of [...t.users])if(!original.has(u))u.destroyUser(true,{cause:'RULER_LIFECYCLE',deferPopulationAudit:true});
-  store.rollbackSuccessionTransaction(dynasty);Military.rollbackTransaction(military);History.importState(history);Effects.importState(effects);
+  store.rollbackSuccessionTransaction(dynasty);Military.rollbackTransaction(military,true);History.rollbackPoliticalTransaction(history);Effects.importState(effects);
   for(const x of users)x.u.restorePoliticalState(x.state);
   for(const x of teams){Object.assign(x.t,{displayName:x.displayName,houseName:x.houseName,color:x.color,colorHistory:x.colorHistory,nameHistory:x.nameHistory,rulerUser:x.rulerUser});x.t.users.clear();x.users.forEach(u=>x.t.users.add(u));x.t.players.clear(false,false);x.players.forEach(p=>x.t.players.add(p));
    for(const block of x.t.blocks.getChildren() as any[])block.setFillStyle?.(x.color);
@@ -34,6 +35,7 @@ export function successionTransaction<T>(team:Team,store:Pick<typeof Dynasty,'sn
   }
   for(const x of players){x.p.applyHydratedMovementState(x.state);if(!x.crown&&x.p.crownMarker){x.p.crownMarker.destroy();x.p.crownMarker=undefined;}}
   registry.rollbackPoliticalTransaction(units);random.restore(rng);
+  restoring.finishRollback();
   throw error;
  }
  scope.commit();return result;

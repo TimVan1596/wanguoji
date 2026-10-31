@@ -6,5 +6,5 @@ export function politicalEffect(work:()=>void){if(active)active.effects.push(wor
 export function beginPoliticalMutation(){
  if(active)throw Error('Nested political mutation owner');
  const scope={cleanup:[] as Array<()=>void>,effects:[] as Array<()=>void>};active=scope;
- return {commit(){active=undefined;scope.cleanup.forEach(f=>f());scope.effects.forEach(f=>f());},cancel(){active=undefined;}};
+ return {commit(){active=undefined;scope.cleanup.forEach(f=>f());scope.effects.forEach(f=>f());},cancel(){active=undefined;},finishRollback(){active=undefined;scope.cleanup.forEach(f=>f());}};
 }

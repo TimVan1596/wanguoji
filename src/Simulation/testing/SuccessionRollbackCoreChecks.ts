@@ -22,6 +22,9 @@ export function checkSuccessionRollback(core:any,base:ReturnType<typeof exportWo
    check(Dynasty.getCurrentRuler(factionId)===old&&t.rulerUser===body&&(!body||!body.isDestroyed&&body.player.active&&body.player.scene)&&players.length===t.players.getChildren().length&&players.every((p:any,i:number)=>p===t.players.getChildren()[i]),'rollback keeps original User, ruler and Arcade objects and their iteration order');
    check(JSON.stringify(core.simulator.getPopulationTransitionDiagnostics())===audit,'failed succession creates no population-audit transition');
   }
+  hydrateWorldSave(core,structuredClone(base));const t=core.teams.find((x:any)=>x.name===factionId)!,oldHouse=Dynasty.get(factionId)!.houseName,next=random.next;for(const c of t.cities)c.loyalty=20;random.next=()=>{next.call(random);return 0;};
+  try{Dynasty.resolveCapturedRuler(t,core.teams.find((x:any)=>x!==t&&x.status==='ACTIVE')!,base.world.worldMonth);}finally{random.next=next;}
+  check(!Dynasty.getCurrentRuler(factionId)?.militaryUsurperIdentity&&Dynasty.get(factionId)!.houseName!==oldHouse,'no qualified power holder preserves the original generated non-military usurpation path');exportWorldSave(core);
   hydrateWorldSave(core,structuredClone(base));check(Military.getFormations().every(f=>f.status==='ACTIVE'||f.status==='DISBANDED'),'rollback leaves no orphan command state');
  }finally{hydrateWorldSave(core,structuredClone(base));}
 }
