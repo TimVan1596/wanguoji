@@ -1,3 +1,4 @@
+import RoyalHonorPanel from './RoyalHonorPanel';
 import {useEffect,useLayoutEffect,useMemo,useRef,useState} from "react";
 import {Box,Button,Dialog,DialogTitle,DialogContent,Typography} from "@mui/material";
 import type {Dynasty} from "../../../Politics/Dynasty";
@@ -56,7 +57,7 @@ export default function GenealogyBrowser({open,onClose,dynasty,team,worldMonth,t
   {person&&<Box data-genealogy-person={person.id} sx={{mx:2,mb:1,p:1,border:'1px solid var(--gg-border)',flexShrink:0,}}>
    <Box sx={{display:'flex',justifyContent:'space-between'}}><Typography fontWeight="bold">王室身份：{name(person)}</Typography><Button size="small" onClick={()=>setSelected(undefined)}>收起资料</Button></Box>
    <Typography fontSize=".75rem">{person.parentId&&data?.index.get(person.parentId)?'父系：'+name(data.index.get(person.parentId)!.ruler):person.parentId?'父系档案未载':'父系未载'} · {formatRulerLifeAge(person,worldMonth,false,team.status!=='EXTINCT')}</Typography>
-   <PersonLifeDates bornMonth={person.bornYear} deathMonth={person.deathMonth}/>
+   <PersonLifeDates bornMonth={person.bornYear} deathMonth={person.deathMonth}/><RoyalHonorPanel ruler={person} month={worldMonth}/>
    {person.accessionYear!==undefined&&<Typography fontSize=".75rem">政治任期：{formatWorldDate(person.accessionYear)}—{person.endYear===undefined?'今':formatWorldDate(person.endYear)}</Typography>}
    {service&&<Typography fontSize=".75rem">{royalMilitaryOfficeLabel(service,worldMonth)}</Typography>}
    {service?.appointments.slice(-1).map(a=><Typography fontSize=".75rem" key={a.commandId}>军职任期：{formatWorldDate(a.startMonth)}—{a.endMonth===undefined?'今':formatWorldDate(a.endMonth)}</Typography>)}

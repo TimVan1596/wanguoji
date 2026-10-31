@@ -1,3 +1,4 @@
+import RoyalHonorPanel from './RoyalHonorPanel';
 import {NobleHistory} from "./NobleHistory";
 import {useLayoutEffect,useRef,useState} from "react";
 import {royalMilitaryArchive,royalMilitaryOfficeLabel} from "../../../Politics/RoyalArchiveIdentity";
@@ -75,10 +76,10 @@ export function RoyalMilitaryList({rows,rulers,month,factionId,onGenealogy}:{row
   })}
  </Box>;
 }
-export function MilitaryRoyalOrigin({personId}:{personId:string}){
+export function MilitaryRoyalOrigin({personId,month}:{personId:string;month:number}){
  const nav=usePersonArchiveNavigation(),p=Military.getPerson(personId),link=p?.royalIdentity;
  if(!link)return null;
  const d=Dynasty.get(link.factionId),r=d?.rulers.find(r=>r.id===link.rulerId&&r.militaryIdentity?.personId===personId),parent=d?.rulers.find(parent=>parent.id===r?.parentId);
  if(!r)return null;
- return <Box sx={{fontSize:"0.8rem",my:.5}}>宗室身份：{r.houseName.replace(/氏$/,"")+r.givenName}{parent?`，${parent.houseName.replace(/氏$/,"")+parent.givenName}之子`:""} · {r.reignOrdinal!==undefined?"后来继位":"尚无登位记录"} · <button type="button" style={buttonStyle} onClick={()=>nav.open({kind:"GENEALOGY",factionId:link.factionId,id:r.id})}>查看王室与亲属宗谱</button></Box>;
+ return <Box sx={{fontSize:"0.8rem",my:.5}}>宗室身份：{r.houseName.replace(/氏$/,"")+r.givenName}{parent?`，${parent.houseName.replace(/氏$/,"")+parent.givenName}之子`:""} · {r.reignOrdinal!==undefined?"后来继位":"尚无登位记录"} · <button type="button" style={buttonStyle} onClick={()=>nav.open({kind:"GENEALOGY",factionId:link.factionId,id:r.id})}>查看王室与亲属宗谱</button><RoyalHonorPanel ruler={r} month={month}/></Box>;
 }
