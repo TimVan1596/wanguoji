@@ -16,7 +16,7 @@ export function formatFoundingIdentity(event:WorldEvent,newFactionName:string,vi
     const hasLocalSources=Array.isArray(c?.crisisSourceEventIds)&&c.crisisSourceEventIds.length>0;
     const crisis=hasLocalSources&&c?.reason==='MILITARY_SIEGE_CRISIS'&&f?.underSiege?`${city}正遭围攻，城防受损。`:hasLocalSources&&typeof f?.lastCapturedMonth==='number'&&f.devastation>=35?`此前${formatWorldDate(f.lastCapturedMonth)}${city}易手，起事时城中仍有战乱创伤。`:'';
     const support=c?.supporterKind==='RESIDENT'?'当地有人响应。':'';
-    const result=viewFactionId!==undefined&&viewFactionId===event.targetFactionId?`原${source}${office}${name}率${e.participants.length-1}名旧部于${city}举兵，叛离${source}国，另立${newFactionName}。`:`${source}${office}${name}率${e.participants.length-1}名旧部于${city}举兵，脱离${source}国，建立${newFactionName}，自任${title==='首任首领'?'首领':title==='首任国君'?'国君':'皇帝'}。`;
+    const result=viewFactionId!==undefined&&viewFactionId===event.targetFactionId?`原${source}${office}${name}率${e.participants.length-1}名旧部于${city}举兵，叛离${source}国，另立${newFactionName}，自任${title==='首任首领'?'首领':title==='首任国君'?'国君':'皇帝'}。`:`${source}${office}${name}率${e.participants.length-1}名旧部于${city}举兵，脱离${source}国，建立${newFactionName}，自任${title==='首任首领'?'首领':title==='首任国君'?'国君':'皇帝'}。`;
     return `${crisis}${result}${support}`;
    }
   }catch{/* Missing evidence falls back to the established founding facts. */}

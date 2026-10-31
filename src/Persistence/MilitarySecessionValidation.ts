@@ -50,7 +50,7 @@ export function validateMilitarySecessions(save:WorldSaveV1){
       !Number.isFinite(u.x)||!Number.isFinite(u.y)||u.x<0||u.y<0||u.x>=save.world.map.widthCells*save.world.map.blockSize||u.y>=save.world.map.heightCells*save.world.map.blockSize||!Number.isFinite(u.loyalty)||u.loyalty<0||u.loyalty>100||
       u.loyalty-Math.min(45,Math.max(0,50-facts.loyalty)*.8+Math.max(0,Math.min(100,facts.devastation))*.15+(facts.lastCapturedMonth!==undefined&&i.foundedMonth-facts.lastCapturedMonth<24?8:0))>=(c.supporterKind==='COMMAND_FOLLOWER'?75:50))valid=false;
     if(facts){const foundingIndex=events.findIndex(x=>x.type==='empire-split'&&x.metadata?.foundingRulerId===r.rulerId),boundary=events.findIndex(x=>x.id===c.historyBoundaryEventId),prior=events.slice(0,boundary+1);
-     if(boundary<0||boundary>=foundingIndex||!Array.isArray(c.crisisSourceEventIds)||JSON.stringify(c.crisisSourceEventIds)!==JSON.stringify(militaryCrisisSourceIds(prior,i.cityId,i.sourceFactionId,facts)))valid=false;
+     if(boundary<0||boundary>=foundingIndex||(events[boundary].monthIndex??events[boundary].year)>i.foundedMonth||!Array.isArray(c.crisisSourceEventIds)||JSON.stringify(c.crisisSourceEventIds)!==JSON.stringify(militaryCrisisSourceIds(prior,i.cityId,i.sourceFactionId,facts)))valid=false;
     }
     if(facts&&c.reason==='MILITARY_SIEGE_CRISIS'){
      const index=events.findIndex(x=>x.type==='empire-split'&&x.metadata?.foundingRulerId===r.rulerId),source=events.findIndex(x=>x.id===c.historyBoundaryEventId),prior=events.slice(0,source+1);

@@ -304,7 +304,7 @@ it("a real-person monarch outlives its polity and dies once with a former title"
  expect(ruler.status).toBe('politically-ended');expect(ruler.deathMonth).toBeUndefined();
  DynastyRegistry.update(600,[team]);DynastyRegistry.update(601,[team]);
  expect(ruler).toMatchObject({status:'dead',endYear:120,politicalEndYear:120,deathMonth:600});
- const deaths=WorldHistory.getEvents().filter(e=>e.type==='ruler-died'&&e.rulerId===ruler.id);
+ const deaths=WorldHistory.getEvents().filter(e=>e.type==='ruler-died'&&e.metadata?.rulerId===ruler.id);
  expect(deaths).toHaveLength(1);expect(deaths[0].metadata).toMatchObject({formerRuler:1,officeEndMonth:120});
  expect(deaths[0].metadata?.rulerNameAtDeath).toMatch(/^故.*张平$/);expect(deaths[0].title).toContain('故');expect(mirrored).toHaveBeenCalledTimes(1);
 });

@@ -147,7 +147,7 @@ export async function runMilitarySecessionCore(seed="military-secession-z7",loca
   const save=strict();
   if(siege)check(ruler.residentIdentity!.military!.localCrisis?.reason==='MILITARY_SIEGE_CRISIS','active siege founding retains its pre-transaction source even after the transfer closes the battle');
   check(ruler.residentIdentity!.military!.entryKind===(local?'LOCAL_CRISIS':'EMPIRE_SPLIT'),'founding retains its actual political entry, separate from the military source');
-  if(local)for(const mutate of [(e:any)=>e.localCrisis.facts.underSiege='fake',(e:any)=>delete e.localCareerEventIds,(e:any)=>e.localCrisis.roll=.99,(e:any)=>e.localCrisis.facts.loyalty=100,(e:any)=>e.localCrisis.supporter.unitId=e.originalMemberUnitIds[0],(e:any)=>delete e.localCrisis]){
+  if(local)for(const mutate of [(e:any)=>e.localCrisis.facts.underSiege='fake',(e:any)=>delete e.localCareerEventIds,(e:any)=>e.localCrisis.roll=.99,(e:any)=>e.localCrisis.facts.loyalty=100,(e:any)=>e.localCrisis.supporter.unitId=e.originalMemberUnitIds[0],(e:any)=>e.localCrisis.crisisSourceEventIds=['unrelated-city-event'],(e:any)=>e.localCrisis.historyBoundaryEventId='future-or-missing-boundary',(e:any)=>delete e.localCrisis]){
    const bad=structuredClone(save),r=bad.dynasties.flatMap(d=>d.rulers).find((r:any)=>r.rulerId===ruler.id)! as any;mutate(r.residentIdentity.military);check(!validateWorldSave(bad).valid,'strict V32 refuses forged local crisis, draw or supporter evidence');
   }
 
