@@ -68,7 +68,7 @@ export type WorldEventType =
   | "alliance-expired"
   | "faction-merged"
   | "faction-submitted"
-  | "royal-honor-granted"
+  | "court-coup-attempt" | "court-coup-result" | "royal-honor-granted"
   | "military-ennobled"
   | "military-posthumous"
   | "military-title-revoked"
