@@ -18,3 +18,4 @@ it('pages political founding groups once while retaining their canonical sources
  expect(page.events).toHaveLength(3);expect(page.hasMore).toBe(true);expect(new Set(page.events.map(e=>e.id)).size).toBe(3);
  expect(store.exportState()).toEqual(before);
 });
+it('honor browsing retains a verified merged death/posthumous act without including ordinary deaths',()=>{expect(matches({type:'royal-honor-granted'} as any,'honors')).toBe(true);expect(matches({type:'military-person-died',metadata:{historyNarrativeKind:'MILITARY_LIFE'}} as any,'honors')).toBe(true);expect(matches({type:'military-person-died'} as any,'honors')).toBe(false);});

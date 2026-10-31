@@ -5,13 +5,14 @@ import {cityEventReferences} from './CityEventReferences';
 export {cityEventReferences} from './CityEventReferences';
 const coreTypes=new Set(['city-founded','city-captured','city-recovered','capital-fallen','city-revolt','rebel-faction-founded','frontier-faction-founded','empire-split','capital-relocated','city-destroyed','state-founded','emperor-proclaimed','ruler-acceded','ruler-succession','faction-dissolved','faction-extinct']);
 export function cityChronicle(cityId:string,events:readonly WorldEvent[],month:number){
+ const order=new Map(events.map((e,i)=>[e.id,i]));
  const local=events.filter(e=>(e.monthIndex??e.year)<=month&&cityEventReferences(e).has(cityId)&&coreTypes.has(e.type));
  const founding=local.filter(e=>['empire-split','rebel-faction-founded','frontier-faction-founded'].includes(e.type));
  const rows=mergePoliticalReading(local).filter(e=>{
   if(e.type!=='city-revolt'||!e.historyGroupId)return true;
   return !founding.some(f=>f.historyGroupId===e.historyGroupId&&f.actorFactionId===e.actorFactionId&&(f.monthIndex??f.year)===(e.monthIndex??e.year)&&String(f.metadata?.foundingCityIds??f.metadata?.leaderSourceCityId??'').split(',').includes(cityId));
  });
- return rows.sort((a,b)=>(b.monthIndex??b.year)-(a.monthIndex??a.year)||b.id.localeCompare(a.id));
+ return rows.sort((a,b)=>(b.monthIndex??b.year)-(a.monthIndex??a.year)||(order.get(b.id)??0)-(order.get(a.id)??0));
 }
 export function cityChronicleText(e:WorldEvent,cityId:string,factions:Map<string,HistoryFactionLike>){
  const m=e.metadata??{},role=cityEventReferences(e).get(cityId),at=e.monthIndex??e.year,name=(id?:string)=>resolveFactionHistoricalName(factions,id,at);
