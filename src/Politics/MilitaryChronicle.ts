@@ -84,7 +84,8 @@ export function deriveMilitaryChronicle(person: MilitaryPerson, formations: Mili
     const served = Boolean(appointment && formation);
     let text: string | undefined;
     let victory = false;
-    if(secession&&person.appointments.some(a=>a.commandId===(()=>{try{return JSON.parse(String(e.metadata?.militarySplitEvidence)).commandId;}catch{return "";}})()&&a.factionId===e.targetFactionId&&a.endMonth===month&&a.endReason==="TRANSFERRED")){
+    if(['court-coup-attempt','court-coup-result'].includes(e.type)&&m.personId===person.personId){text=e.title;
+    }else if(secession&&person.appointments.some(a=>a.commandId===(()=>{try{return JSON.parse(String(e.metadata?.militarySplitEvidence)).commandId;}catch{return "";}})()&&a.factionId===e.targetFactionId&&a.endMonth===month&&a.endReason==="TRANSFERRED")){
       let count=0;try{count=JSON.parse(String(e.metadata?.militarySplitEvidence)).participants.length-1;}catch{}
       text=`${name}率${count}名旧部于${e.cityName??e.metadata?.splitCoreCityName??"当地"}起事，脱离${e.metadata?.leaderOriginalFactionName??e.targetFactionId}，建立${e.actorFactionId}并成为首领。`;
     } else if(e.type==='dynasty-usurped'&&e.metadata?.militaryUsurperPersonId===person.personId&&e.rulerId===person.politicalRulerId){text=`${name}夺取旧王统，建立新王统。`;

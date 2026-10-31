@@ -150,7 +150,7 @@ export function formatMilitaryParticipation(event: WorldEvent) {
   return p ? `${getMilitaryPersonDisplayName(p.participant)}${p.participant.officeStanding?`以${MILITARY_OFFICE_NAMES[p.participant.officeStanding.office]}身份`:""}统兵参与${p.kind === "DEPOSITION" ? "王室废立" : "继统政治压力"}（当时${p.participant.unitCount}人；${event.metadata?.militaryUsurperPersonId===p.participant.personId?"本人建立新王统":"军事参与者并非新君"}）${support?`；${support}`:""}` : undefined;
 }
 export function getMilitaryPoliticalEvents(events: WorldEvent[], personId: string) {
-  return events.filter(e => readMilitaryParticipation(e)?.participant.personId === personId)
+  return events.filter(e => readMilitaryParticipation(e)?.participant.personId === personId || ["court-coup-attempt","court-coup-result"].includes(e.type)&&e.metadata?.personId===personId)
     .sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year) || a.id.localeCompare(b.id));
 }
 

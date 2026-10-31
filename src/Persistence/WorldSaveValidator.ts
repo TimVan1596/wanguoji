@@ -1,3 +1,4 @@
+import {validateCourtCoups} from './CourtCoupValidation';
 import {validateRoyalHonors} from './RoyalHonorValidation';
 import {validateMilitaryNarrativeLinks} from "./MilitaryNarrativeLinkValidation";
 import {validateMilitaryUsurpers} from "./MilitaryUsurperValidation";
@@ -501,6 +502,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
     if (kind !== undefined && (typeof faction.stateFormationEligibleSinceMonth !== "number" || faction.identityStage !== "PROVISIONAL")) errors.push("invalid state formation progress");
   }
   if (!errors.length) errors.push(...validateRoyalHonors(save as WorldSaveV1));
+  if (!errors.length) errors.push(...validateCourtCoups(save as WorldSaveV1));
   return { valid: errors.length === 0, errors };
 }
 

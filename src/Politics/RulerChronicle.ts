@@ -124,6 +124,7 @@ const RULER_EVENT_TYPES = new Set<WorldEvent["type"]>([
   "ruler-succession",
   "ruler-acceded",
   "royal-honor-granted",
+  "court-coup-attempt", "court-coup-result",
   "ruler-deposed",
   "faction-extinct",
   "faction-merged",
@@ -225,6 +226,7 @@ export function projectRulerHistoricalEvents(
     if (month < ruler.accessionYear || month > endMonth && !(event.type==="ruler-died"&&month<=worldMonth&&(event.rulerId===ruler.id||event.metadata?.rulerId===ruler.id)) || !RULER_EVENT_TYPES.has(event.type)) {
       return false;
     }
+    if(event.type==='court-coup-attempt'||event.type==='court-coup-result')return event.actorFactionId===factionId&&(event.rulerId===ruler.id||event.metadata?.targetRulerId===ruler.id||event.metadata?.previousRulerId===ruler.id);
     if(event.type==='royal-honor-granted')return event.actorFactionId===factionId&&(event.rulerId===ruler.id||event.metadata?.recipientRulerId===ruler.id);
     if(isRulerHonorEvent(event))return Boolean(rulerHonorEvidence(event,ruler.id,factionId));
     if(['city-captured','city-recovered','capital-fallen'].includes(event.type)&&['BEFORE','AFTER'].includes(militaryReignRelation(event,ruler,factionId,events)))return false;
