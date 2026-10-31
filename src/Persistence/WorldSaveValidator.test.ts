@@ -430,4 +430,4 @@ it("rejects V20 before hydration without rewriting the old save",()=>{
  expect(JSON.stringify(old)).toBe(before);
 });
 
-it.each([null,{},'invalid',[null],[42]])('rejects malformed faction containers or records without throwing during formation-progress validation: %j',factions=>{const save=fixture();const invalid={...save,factions};expect(()=>validateWorldSave(invalid)).not.toThrow();expect(validateWorldSave(invalid).valid).toBe(false);});
+it.each([null,{},'invalid',[null],[42]].map(factions=>({factions})))('rejects malformed faction containers or records without throwing during formation-progress validation: %j',({factions})=>{const save=fixture();const invalid={...save,factions};expect(()=>validateWorldSave(invalid)).not.toThrow();expect(validateWorldSave(invalid).valid).toBe(false);});

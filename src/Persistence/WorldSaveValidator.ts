@@ -49,6 +49,9 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   }
 
   const factions = array(save.factions, "factions", errors);
+  if (!Array.isArray(save.factions) || save.factions.some(f => !isPlainRecord(f))) {
+    return {valid:false,errors:[...errors,"factions must contain only objects"]};
+  }
   const cities = array(save.cities, "cities", errors);
   if(Array.isArray(save.cities)&&Array.isArray(save.factions))errors.push(...validateSiegeBattles(save));
   const users = array(save.users, "users", errors);
