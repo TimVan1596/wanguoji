@@ -24,7 +24,7 @@ export function checkCourtCoups(core:any,base:ReturnType<typeof exportWorldSave>
   evaluation.royalMilitaryClaims=Military.getRoyalDepositionClaims(team,month,evaluation.candidates.map(c=>c.ruler),core.logicalUnitRegistry);
   const actor=selectCourtInstigator(evaluation,Military.getPeople());check(evaluation.eligible&&actor,'real damaged court with a willing active commander qualifies for one shared attempt');
   const start=exportWorldSave(core);let v=validateWorldSave(start);check(v.valid,`pre-attempt strict save: ${v.errors.join(';')}`);
-  const invoke=(roll:number)=>{const t=core.teams.find((t:any)=>t.name===factionId),writer=random.next;let draws=0;random.next=()=>{const caller=new Error().stack?.split('\n')[2]??'';if(!caller.includes('WorldRandom.int'))draws++;else console.info('[Coup RNG] entity initialization',caller);writer.call(random);return roll;};try{(Dynasty as any).evaluateInReignDeposition(t,Dynasty.get(factionId),Dynasty.getCurrentRuler(factionId),month);}finally{random.next=writer;}return draws;};
+  const invoke=(roll:number)=>{const t=core.teams.find((t:any)=>t.name===factionId),writer=random.next;let draws=0;random.next=()=>{const caller=new Error().stack?.split('\n')[2]??'';if(caller.includes('/src/Politics/Dynasty.ts'))draws++;writer.call(random);return roll;};try{(Dynasty as any).evaluateInReignDeposition(t,Dynasty.get(factionId),Dynasty.getCurrentRuler(factionId),month);}finally{random.next=writer;}return draws;};
   for(const roll of [.07,0]){
    hydrateWorldSave(core,structuredClone(start));const before=exportWorldSave(core),writer=History.addEvent;
    History.addEvent=function(e){const id=writer.call(this,e);if(e.type==='court-coup-result')throw Error('injected final coup write');return id;};

@@ -185,6 +185,7 @@ class DynastyRegistryStore {
     this.revolutionChecks = [];
     this.revolutionGateDiagnostics.reset();
     this.depositionDiagnostics.reset();
+    this.courtInstigatorChecks=0;this.courtAttemptPolicy="MEDIUM";
     this.depositionRiskGroup = "CONSERVATIVE";
     this.provisionalDiagnosticsSession.reset([]);
   }
@@ -227,6 +228,7 @@ class DynastyRegistryStore {
     this.revolutionChecks = [];
     this.revolutionGateDiagnostics.reset(diagnosticsStartMonth);
     this.depositionDiagnostics.reset(diagnosticsStartMonth);
+    this.courtInstigatorChecks=0;
     this.provisionalDiagnosticsSession.reset(this.listForDiagnostics());
   }
 
@@ -913,7 +915,7 @@ class DynastyRegistryStore {
     const acts=WorldHistory.getRecordedEvents().filter(e=>e.type==='court-coup-attempt');
     const results=WorldHistory.getRecordedEvents().filter(e=>e.type==='court-coup-result');
     const successes=results.filter(e=>e.metadata?.outcome==='SUCCESS').length;
-    return {attempts:acts.length,successes,failures:results.length-successes,
+    return {qualifiedInstigatorOpportunities:this.courtInstigatorChecks,attempts:acts.length,successes,failures:results.length-successes,
       summary:`宫廷拥立企图 ${acts.length}次；成功 ${successes}次，失败 ${results.length-successes}次。失败处罚为实际免职；拥立者不等于继位者。`};
   }
 
@@ -926,6 +928,7 @@ class DynastyRegistryStore {
     this.depositionRiskGroup = riskGroup;
   }
 
+  private courtInstigatorChecks=0;
   private courtAttemptPolicy:CourtAttemptPolicy='MEDIUM';
   setCourtAttemptPolicyForSimulation(policy:CourtAttemptPolicy){this.courtAttemptPolicy=policy;}
 
@@ -958,6 +961,7 @@ class DynastyRegistryStore {
     evaluation.royalMilitaryClaims=MilitaryCommandRegistry.getRoyalDepositionClaims(team,worldMonth,evaluation.candidates.map(c=>c.ruler),Game.Core?.logicalUnitRegistry);
     const instigator=selectCourtInstigator(evaluation,MilitaryCommandRegistry.getPeople());
     if(instigator){
+      this.courtInstigatorChecks++;
       this.evaluateCourtAttempt(team,dynasty,current,worldMonth,evaluation,instigator);
       return;
     }
