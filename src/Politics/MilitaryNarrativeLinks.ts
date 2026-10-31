@@ -14,8 +14,8 @@ export function militaryNarrativeLinks(person:MilitaryPerson,events:readonly Wor
   }
   if(e.type==='empire-split'&&m.militaryPersonId===person.personId&&m.foundingRulerId===person.politicalRulerId){
    const proof=read(m.militarySplitEvidence);
-   if(proof?.personId===person.personId&&proof.worldMonth===month(e)&&proof.cityId===e.cityId&&proof.sourceFactionId===e.targetFactionId)
-    for(const end of events)if(end.type==='military-command-ended'&&end.metadata?.personId===person.personId&&end.metadata.commandId===proof.commandId&&end.metadata.endReason==='TRANSFERRED'&&end.actorFactionId===proof.sourceFactionId&&month(end)===month(e))hide(e.id,end.id);
+   if(proof?.personId===person.personId&&proof.worldMonth===month(e)&&proof.cityId===(e.cityId??m.leaderSourceCityId??m.splitCoreCityId)&&proof.sourceFactionId===e.targetFactionId)
+    for(const end of events)if(end.type==='military-command-ended'&&end.metadata?.personId===person.personId&&end.metadata.commandId===proof.commandId&&end.metadata.endReason==='TRANSFERRED'&&end.actorFactionId===proof.sourceFactionId&&month(end)===month(e)&&person.appointments.some(a=>a.commandId===proof.commandId&&a.factionId===proof.sourceFactionId&&a.endMonth===month(e)&&a.endReason==='TRANSFERRED'))hide(e.id,end.id);
   }
   if(e.type==='dynasty-usurped'&&m.militaryUsurperPersonId===person.personId&&e.rulerId===person.politicalRulerId){const proof=read(m.militaryUsurperIdentity);for(const end of events)if(proof?.personId===person.personId&&end.type==='military-command-ended'&&end.metadata?.personId===person.personId&&end.metadata.commandId===proof.commandId&&end.metadata.endReason==='DISMISSED'&&month(end)===month(e))hide(e.id,end.id);}
   if(e.type==='military-person-died'&&m.personId===person.personId){

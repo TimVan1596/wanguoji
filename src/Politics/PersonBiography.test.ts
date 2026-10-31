@@ -75,3 +75,9 @@ it("both biographies use the shared component and royal evidence receives canoni
   expect(source).not.toContain("events={groupedEvents}");expect(source).toContain("原始任期累计（未改写）");
   const c=context();expect(getRulerHistoricalEvents(c.events,c.ruler as any,"秦",120,[])).toEqual([]);
 });
+
+it('verified siege participation is distinct from a capture and never determines a later battle-death location',()=>{
+ const p:any={personalName:'成明仁',personId:'p',name:'p',status:'DEAD',deathCause:'BATTLE_DEATH',deathMonth:3576,appointments:[]};
+ const bio=composeMilitaryBiography(p,[{eventId:'siege',source:'siege-started · siege',cityId:'ying',worldMonth:3480,text:'所部围攻郢',victory:false,factionId:'chu'}],'chu');
+ expect(bio.assessment).toContain('围攻');expect(bio.assessment).toContain('未有取城');expect(bio.ending).toContain('战死');expect(bio.ending).not.toContain('郢');
+});

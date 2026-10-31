@@ -21,7 +21,7 @@ export function formatFoundingIdentity(event:WorldEvent,newFactionName:string,vi
    }
   }catch{/* Missing evidence falls back to the established founding facts. */}
  }
- return `${name}原为${source}居民，于${city}参与起事，随居民转属建立${newFactionName}，成为其${title}。`;
+ return `${name}于${city}起事，建立${newFactionName}，自任${title==='首任首领'?'首领':title==='首任国君'?'国君':'皇帝'}。`;
 }
 
 /** Exact event-time observations, kept out of narrative prose. No present-day registry lookup. */

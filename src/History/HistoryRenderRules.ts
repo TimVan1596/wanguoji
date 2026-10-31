@@ -155,6 +155,7 @@ export function formatHistoryEventTitle(
   factionById: Map<string, HistoryFactionLike>,
   rulersById?: Map<string, Ruler>
 ) {
+  if(event.metadata?.politicalReadingKind==='FINAL_END')return `${resolveFactionHistoricalName(factionById,event.targetFactionId??event.actorFactionId,event.monthIndex??event.year)}失去最后据点，王统随之断绝，政权终结。`;
   if(event.metadata?.historyNarrativeKind==='MILITARY_LIFE')return event.title;
   const political=formatPoliticalEvent(event);if(political)return political;
   if(event.type==='military-person-died'&&typeof event.metadata?.personalName==='string'&&typeof event.metadata.deathCause==='string')return `${event.metadata.personalName}${militaryDeathWording(typeof event.metadata.deathCause==='string'?event.metadata.deathCause:undefined)}。`;

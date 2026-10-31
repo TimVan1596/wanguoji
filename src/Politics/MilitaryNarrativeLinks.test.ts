@@ -13,9 +13,11 @@ it('shows one real capture and retains its exact siege source, without hiding an
 });
 it('merges real founding, old command end and first chief identity by permanent IDs',()=>{
  const end=event('leave','military-command-ended',{personId:'p',commandId:'cmd',endReason:'TRANSFERRED'}),split=event('split','empire-split',{militaryPersonId:'p',foundingRulerId:'king',militarySplitEvidence:JSON.stringify({personId:'p',personalName:'范弼',office:'PIJIANG',participants:[{userId:1},{userId:2}],commandId:'cmd',worldMonth:20,cityId:'city',sourceFactionId:'wei'}),leaderPersonId:'p',leaderOriginalFactionName:'魏',leaderSourceCityName:'南郑',foundingRulerName:'范弼',splitSource:'MILITARY'},{actorFactionId:'new',targetFactionId:'wei'});
- const projected=militaryMilestones(person,entries([end,split]),[end,split]);expect(projected.map(e=>e.eventId)).toEqual(['split']);expect(projected[0].text).toContain('裨将范弼率1名旧部');expect(projected[0].text).toContain('自任首领');
+ const founder={...person,appointments:[{commandId:'cmd',factionId:'wei',startMonth:0,endMonth:20,endReason:'TRANSFERRED'}]};delete split.cityId;split.metadata.leaderSourceCityId='city';
+ const projected=militaryMilestones(founder,entries([end,split]),[end,split]);expect(projected.map(e=>e.eventId)).toEqual(['split']);expect(projected[0].text).toContain('裨将范弼率1名旧部');expect(projected[0].text).toContain('自任首领');
  const life:any={rulerId:'king',factionId:'new',foundingEventId:'split',entry:{...entries([split])[0],eventId:'accession',text:'first chief'}};
  const combined=appendMilitaryPoliticalLife(projected,life);expect(combined).toHaveLength(1);expect(combined[0].sourceEventIds).toEqual(['split','leave','accession']);expect(combined[0].text).not.toContain('first chief');
+ expect(militaryNarrativeLinks(founder,[{...end,metadata:{...end.metadata,endReason:'DISMISSED'}},split]).hidden.has('leave')).toBe(false);
  split.metadata.foundingRulerId='another';expect(militaryNarrativeLinks(person,[end,split]).hidden.has('leave')).toBe(false);
 });
 it('keeps death/posthumous as the visible event and hides only causally linked cleanup',()=>{

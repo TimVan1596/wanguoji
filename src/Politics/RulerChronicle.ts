@@ -1,3 +1,4 @@
+import {mergePoliticalReading} from '../History/PoliticalReadingProjection';
 import {isRulerHonorEvent,rulerHonorEvidence} from "./RulerHonorEvidence";
 import {mergeMilitaryLifeEvents} from "./MilitaryLifePresentation";
 import {militaryReignRelation} from "./RulerMilitaryBoundary";
@@ -211,6 +212,7 @@ export function projectRulerHistoricalEvents(
   notableEventIds: string[],
   royalGrantPersonIds:ReadonlySet<string>=new Set()
 ) {
+  events=mergePoliticalReading(events);
   const endMonth = Math.min(ruler.endYear ?? worldMonth, worldMonth);
   const notable = new Set(notableEventIds);
   const sourceIds = (event: WorldEvent) =>
@@ -226,8 +228,9 @@ export function projectRulerHistoricalEvents(
     if(['city-captured','city-recovered','capital-fallen'].includes(event.type)&&['BEFORE','AFTER'].includes(militaryReignRelation(event,ruler,factionId,events)))return false;
     if (DIPLOMATIC_TYPES.has(event.type) && !isCoreDiplomaticEvent(event, events)) return false;
     if (isPoliticalTerminalEvent(event)) return getRulerTerminalRole(event, ruler, factionId) !== undefined;
-    if (!isRulerPoliticalEventRelevant(event, ruler.id, factionId)) return false;
+    if (!isRulerPoliticalEventRelevant(event, ruler.id, factionId)&&!(event.metadata?.politicalReadingKind==='FOUNDING'&&event.metadata.foundingRulerId===ruler.id&&event.actorFactionId===factionId)) return false;
     const direct =
+      event.metadata?.politicalReadingKind==='FOUNDING'&&event.metadata.foundingRulerId===ruler.id ||
       event.rulerId === ruler.id ||
       event.metadata?.rulerId === ruler.id ||
       event.metadata?.previousRulerId === ruler.id ||

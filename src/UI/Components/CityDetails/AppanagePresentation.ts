@@ -1,3 +1,4 @@
+import {appanageEffectiveWindows} from '../../../History/AppanageCareer';
 import type {cityAppanageHistory} from '../../../History/CityAppanageHistory';
 import type {MilitaryPerson} from '../../../Politics/MilitaryCommandRegistry';
 import type {MilitaryAppanage} from '../../../Politics/MilitaryAppanage';
@@ -16,5 +17,18 @@ export function appanageSummary(r:AppanageRelation){
 export function appanagePortrait(person:MilitaryPerson,a:MilitaryAppanage,faction:{color:number;colorHistory?:FactionColorHistoryEntry[]}|undefined,worldMonth:number){
  const appt=person.appointments.filter(x=>x.factionId===a.factionId&&x.startMonth<=a.month).sort((x,y)=>x.startMonth-y.startMonth).at(-1);
  const office=appt?.officeHistory?.filter(g=>g.month<=a.month).at(-1)?.office;
- return {personId:person.personId,age:Math.max(0,Math.floor((a.month-person.bornMonth)/12)),role:(office??'UNKNOWN') as PortraitRole,nobleRank:a.rank,royalKin:!!person.royalIdentity,color:faction?getFactionColorAtMonth(faction,a.month):undefined,deceased:person.deathMonth!==undefined&&person.deathMonth<=worldMonth};
+ return {personId:person.personId,age:Math.max(0,Math.floor((a.month-person.bornMonth)/12)),role:(office??'UNKNOWN') as PortraitRole,nobleRank:a.rank,royalKin:!!person.royalIdentity,color:faction?getFactionColorAtMonth(faction,a.month):undefined,deceased:person.deathMonth!==undefined&&person.deathMonth<=a.month&&person.deathMonth<=worldMonth};
+}
+
+/** Ended/lost estates freeze at the last valid transaction, not a later foreign career. */
+export function appanageLatestPortrait(r:AppanageRelation,faction:Parameters<typeof appanagePortrait>[2],month:number,index:import('../../../History/CityAppanageHistory').AppanageHistoryIndex){
+ const windows=appanageEffectiveWindows(r,index,month),last=windows.at(-1),a=r.grant.record,p=r.grant.person;
+ if(!last)return {...appanagePortrait(p,a,faction,a.month),month:a.month,rank:a.rank};
+ const at=last.endMonth,order=last.endOrder;
+ const before=(id:string,m:number)=>m<=at&&(index.byId.get(id)?.index??Infinity)<order;
+ const appointment=p.appointments.filter(ap=>ap.factionId===a.factionId&&ap.startMonth<=at).at(-1);
+ const office=appointment?.officeHistory?.filter(g=>before(g.eventId,g.month)).at(-1)?.office;
+ const grant=p.nobilityHistory?.filter(g=>g.factionId===a.factionId&&g.epochFounderId===a.epochFounderId&&before(g.eventId,g.month)&&index.byId.get(g.eventId)?.event.metadata?.nobility===JSON.stringify(g)).at(-1);
+ const colorMonth=Number.isFinite(order)?Math.max(a.month,at-1):at;
+ return {personId:p.personId,age:Math.max(0,Math.floor((at-p.bornMonth)/12)),role:(office??'UNKNOWN') as PortraitRole,nobleRank:grant?.rank??a.rank,royalKin:!!p.royalIdentity,color:faction?getFactionColorAtMonth(faction,colorMonth):undefined,deceased:false,month:at,rank:grant?.rank??a.rank};
 }

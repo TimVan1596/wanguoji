@@ -12,7 +12,7 @@ it('groups Daliang’s six real lifecycle records into two grant relations with 
 it('keeps the original portrait office, title and flag despite later promotion, accession or foreign service',()=>{
  const x=daliangAppanageFixture(),p=x.people[1],a=p.appanageHistory![0];p.appointments[0].officeHistory!.push({office:'SHANGJIANGJUN',month:1600,eventId:'later',serviceMonths:88,captureEventIds:[]});p.politicalRulerId='later-king';p.factionId='foreign';
  const portrait=appanagePortrait(p,a,{color:0x00ff00,colorHistory:[{color:0xff0000,startMonth:0,endMonth:1599,reason:'START'},{color:0x00ff00,startMonth:1600,reason:'CHANGE'}]},1680);
- expect(portrait).toMatchObject({personId:p.personId,role:'PIJIANG',nobleRank:'BO',color:0xff0000,age:30,deceased:true});
+ expect(portrait).toMatchObject({personId:p.personId,role:'PIJIANG',nobleRank:'BO',color:0xff0000,age:30,deceased:false});
 });
 it('shared city/person/state index retains exactly the full source lifecycle, including pending death and recovery',()=>{
  const x=daliangAppanageFixture(),index=prepareAppanageHistory(x.events);

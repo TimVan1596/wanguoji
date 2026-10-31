@@ -1,3 +1,4 @@
+import {mergePoliticalReading,isFirstFoundingAccession} from './PoliticalReadingProjection';
 import {mergeMilitaryLifeEvents} from '../Politics/MilitaryLifePresentation';
 import type { WorldEvent } from "./WorldHistory";
 import { formatAccessionCapital } from "./AccessionCapitalContext";
@@ -97,6 +98,7 @@ function indexNarrativeCandidates(events: WorldEvent[]) {
 type NarrativeIndex = ReturnType<typeof indexNarrativeCandidates>;
 
 export function groupHistoryNarratives(events: WorldEvent[]) {
+  events=mergePoliticalReading(events);
   const index = indexNarrativeCandidates(events);
   const groups = buildCollapseGroups(events, index);
   const foundingGroups = buildFoundingGroups(events, index);
@@ -253,7 +255,7 @@ function createNarrativeEvent(group: CollapseGroup): WorldEvent {
   const headline = conquerorFactionId
     ? `${conquerorFactionId}灭${group.factionId}`
     : `${group.factionId}亡国`;
-  const sourceEventIds = group.events.map((event) => event.id).join(",");
+  const sourceEventIds = [...new Set(group.events.flatMap(event=>[event.id,...(typeof event.metadata?.sourceEventIds==='string'?event.metadata.sourceEventIds.split(','):[])]))].join(",");
   return {
     ...group.collapseEvent,
     id: `history-collapse-${group.key}-${group.events.length}`,
@@ -336,7 +338,7 @@ function createFoundingNarrativeEvent(group: FoundingGroup): WorldEvent {
     getMetadataString(group.foundingEvent, "parentFactionId") ??
     group.foundingEvent.targetFactionId ??
     group.events.find((event) => event.targetFactionId)?.targetFactionId;
-  const sourceEventIds = group.events.map((event) => event.id).join(",");
+  const sourceEventIds = [...new Set(group.events.flatMap(event=>[event.id,...(typeof event.metadata?.sourceEventIds==='string'?event.metadata.sourceEventIds.split(','):[])]))].join(",");
   return {
     ...group.foundingEvent,
     id: `history-founding-${group.key}-${group.events.length}`,
@@ -389,7 +391,7 @@ function buildRestorationGroups(events: WorldEvent[], index: NarrativeIndex) {
 
 function createRestorationNarrativeEvent(group: RestorationGroup): WorldEvent {
   const city = group.events.find((event) => event.cityName)?.cityName;
-  const sourceEventIds = group.events.map((event) => event.id).join(",");
+  const sourceEventIds = [...new Set(group.events.flatMap(event=>[event.id,...(typeof event.metadata?.sourceEventIds==='string'?event.metadata.sourceEventIds.split(','):[])]))].join(",");
   return {
     ...group.restorationEvent,
     id: `history-restoration-${group.key}-${group.events.length}`,
@@ -479,6 +481,8 @@ function belongsToCollapseGroup(
   month: number,
   factionId: string
 ) {
+  if(event.id!==collapseEvent.id&&['faction-dissolved','faction-extinct','faction-exiled'].includes(event.type)&&['faction-dissolved','faction-extinct','faction-exiled'].includes(collapseEvent.type)&&(!event.historyGroupId||event.historyGroupId!==collapseEvent.historyGroupId))return false;
+  if (getEventMonth(event)!==month || (collapseEvent.historyGroupId&&event.historyGroupId&&event.historyGroupId!==collapseEvent.historyGroupId)) return false;
   if (collapseEvent.historyGroupId && event.historyGroupId === collapseEvent.historyGroupId) {
     return COLLAPSIBLE_TYPES.has(event.type) && belongsToCollapseFaction(event, factionId);
   }
@@ -522,6 +526,7 @@ function belongsToFoundingGroup(
   month: number,
   factionId: string
 ) {
+  if (["ruler-acceded","ruler-succession"].includes(event.type)&&foundingEvent.metadata?.leaderPersonId) return isFirstFoundingAccession(foundingEvent,event);
   if (foundingEvent.historyGroupId && event.historyGroupId === foundingEvent.historyGroupId) {
     return FOUNDING_CHAIN_TYPES.has(event.type);
   }

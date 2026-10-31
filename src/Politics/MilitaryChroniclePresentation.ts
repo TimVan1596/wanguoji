@@ -21,6 +21,7 @@ export function militaryMilestones(person:MilitaryPerson,entries:MilitaryChronic
     if(type==="military-order-issued"&&event?.importance!=="major")return [];
     if(type==="military-order-issued")return [{...entry,text:`${name}奉命以${event?.cityName??"城邑"}为进军目标。`}];
     if(type==="military-appointment"&&entries.some(e=>e.commandId===entry.commandId&&e.worldMonth===entry.worldMonth&&e.source.startsWith("military-office-granted")))return [];
+    if(type==='military-appanage'&&person.appanageHistory?.find(a=>a.eventId===entry.eventId)?.kind!=='GRANTED')return [];
     const pair=merged.get(entry.eventId);
     if(pair)return [{...entry,text:pair.text,source:entry.source+' / '+pair.other.id,sourceEventIds:[...entry.sourceEventIds,pair.other.id]}];
     let text=entry.text;

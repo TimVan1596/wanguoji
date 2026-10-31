@@ -6,7 +6,7 @@ const facts={foundingRulerName:"邓庭宣",leaderSourceCityName:"咸阳",leaderO
 describe("frozen founding identity narrative",()=>{
  it("uses frozen resident origin and an uprising seat rather than a formal capital or restoration",()=>{
   const text=formatFoundingIdentity(event(facts),"咸阳义军")!;
-  expect(text).toContain("原为楚居民");expect(text).toContain("首任首领");expect(text).toContain("于咸阳参与起事");expect(text).not.toContain("为起事据点");expect(text).not.toMatch(/首任君主|重新归附|正式国都/);
+  expect(text).toBe("邓庭宣于咸阳起事，建立咸阳义军，自任首领。");expect(facts.leaderOriginalFactionName).toBe("楚");expect(text).not.toContain("为起事据点");expect(text).not.toMatch(/首任君主|重新归附|正式国都/);
  });
  it("reads original office and actual partial followers, without later military or personal motives",()=>{
   const evidence={personId:"person-1",personalName:"邓庭宣",office:"JIANGJUN",participants:[{userId:1},{userId:2},{userId:3}]};
