@@ -13,6 +13,7 @@ import {
   STATE_FORMATION_MIN_CITIES,
   STATE_FORMATION_MIN_STABILITY,
   STATE_FORMATION_REQUIRED_MONTHS,
+  DE_FACTO_STATE_REQUIRED_MONTHS,
 } from "../../../Simulation/FactionIdentity";
 import { EMPEROR_EFFECTIVE_STABILITY_BONUS } from "../../../Simulation/SovereigntyModifiers";
 
@@ -31,6 +32,7 @@ export interface FactionDetailsTeamLike {
   restorationYears?: number[];
   stateFoundedMonth?: number;
   stateFormationEligibleSinceMonth?: number;
+  stateFormationEligibilityKind?: "ORDINARY" | "DE_FACTO";
   sovereigntyRank?: string;
   emperorEligibleSinceMonth?: number;
   proclaimedEmperorMonth?: number;
@@ -331,8 +333,9 @@ export function buildStateFormationStatusLines(
       0,
       worldMonth - team.stateFormationEligibleSinceMonth
     );
+    const required=team.stateFormationEligibilityKind==="DE_FACTO"?DE_FACTO_STATE_REQUIRED_MONTHS:STATE_FORMATION_REQUIRED_MONTHS;
     lines.push(
-      `政治整合中：${Math.min(integratingMonths, STATE_FORMATION_REQUIRED_MONTHS)}/${STATE_FORMATION_REQUIRED_MONTHS}个月`
+      `政治整合中：${Math.min(integratingMonths, required)}/${required}个月`
     );
   }
   return lines;

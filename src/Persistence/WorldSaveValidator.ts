@@ -499,7 +499,8 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   for (const faction of save.factions ?? []) {
     const kind = faction.stateFormationEligibilityKind;
     if (kind !== undefined && kind !== "ORDINARY" && kind !== "DE_FACTO") errors.push("invalid state formation path");
-    if (kind !== undefined && (typeof faction.stateFormationEligibleSinceMonth !== "number" || faction.identityStage !== "PROVISIONAL")) errors.push("invalid state formation progress");
+    const since=faction.stateFormationEligibleSinceMonth;
+    if ((kind!==undefined)!==(since!==undefined)||since!==undefined&&(!Number.isSafeInteger(since)||Number(since)<Number(faction.currentActiveSinceMonth)||Number(since)>Number(save.world?.worldMonth)||faction.identityStage!=="PROVISIONAL")) errors.push("invalid state formation progress");
   }
   if (!errors.length) errors.push(...validateRoyalHonors(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateCourtCoups(save as WorldSaveV1));
