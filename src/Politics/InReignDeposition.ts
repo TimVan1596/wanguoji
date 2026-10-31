@@ -195,13 +195,13 @@ export function chooseDepositionClaimant(evaluation: DepositionEvaluation, world
   if (!evaluation.eligible || !(roll >= 0 && roll < evaluation.probability)) return undefined;
   const maturityFactor = Math.min(3, evaluation.evidence.length) * .15 + (evaluation.militaryParticipant ? .25 : 0);
   const legitimacy: Record<string,number> = {DIRECT_CHILD:1.35,GRANDCHILD:1.2,SIBLING:1.25,NEPHEW:1,UNCLE:1.1,COUSIN:1};
-  const titled=evaluation.candidates.some(c=>evaluation.royalHonorClaims?.some(g=>g.rulerId===c.ruler.id));
+  const titled=evaluation.candidates.some(c=>evaluation.royalMilitaryClaims?.some(m=>m.rulerId===c.ruler.id)&&evaluation.royalHonorClaims?.some(g=>g.rulerId===c.ruler.id));
   const candidates = evaluation.candidates.map(c=>{
     const ageMonths = worldMonth-c.ruler.bornYear;
     const maturity = Math.max(0,Math.min(1,(ageMonths-192)/168));
     const baseWeight=legitimacy[c.relation]+maturity*maturityFactor;
     const ownMilitary=evaluation.royalMilitaryClaims?.find(m=>m.rulerId===c.ruler.id);
-    const militaryAdvantage=ownMilitary?.advantage??0,claim=evaluation.royalHonorClaims?.find(g=>g.rulerId===c.ruler.id),honorAdvantage=claim?.advantage??0;
+    const militaryAdvantage=ownMilitary?.advantage??0,claim=ownMilitary&&evaluation.royalHonorClaims?.find(g=>g.rulerId===c.ruler.id),honorAdvantage=claim?.advantage??0;
     return {baseWeight,militaryAdvantage,...(titled?{honorAdvantage,...(claim?{royalHonor:{eventId:claim.eventId,rank:claim.rank,epochFounderId:claim.epochFounderId}}:{})}:{}),...(ownMilitary?{ownMilitary:structuredClone(ownMilitary)}:{}),rulerId:c.ruler.id,name:`${c.ruler.houseName.replace(/氏$/,"")}${c.ruler.givenName}`,relation:c.relation,bornMonth:c.ruler.bornYear,
       weight:titled?combinedRoyalCandidateWeight(baseWeight,militaryAdvantage,honorAdvantage):baseWeight*(1+militaryAdvantage)};
   }).sort((a,b)=>a.rulerId.localeCompare(b.rulerId));

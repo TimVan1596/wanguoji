@@ -58,7 +58,7 @@ function validHonorSelections(save:WorldSaveV1):string[]{
    if(prior.some(p=>p.type==='heir-died'&&p.metadata?.heirId===r.id||p.type==='ruler-died'&&(p.rulerId===r.id||p.metadata?.rulerId===r.id)||p.type==='military-person-died'&&r.militaryIdentity?.personId&&p.metadata?.personId===r.militaryIdentity.personId))throw Error('candidate already dead before selection');
    if(r.accessionYear===month)r.accessionYear=undefined;
    if(r.deathMonth===month&&!prior.some(p=>p.type==='ruler-died'&&(p.rulerId===r.id||p.metadata?.rulerId===r.id)||p.type==='heir-died'&&p.metadata?.heirId===r.id))r.deathMonth=undefined;
-   const g=effectiveRoyalHonor(r,{houseEpochs:epochs},month,imperial),proof=g?{eventId:g.eventId,rank:g.rank,epochFounderId:g.epochFounderId}:undefined;
+   const g=candidate.ownMilitary?effectiveRoyalHonor(r,{houseEpochs:epochs},month,imperial):undefined,proof=g?{eventId:g.eventId,rank:g.rank,epochFounderId:g.epochFounderId}:undefined;
    hasHonor||=!!g;
    if(JSON.stringify(proof)!==JSON.stringify(candidate.royalHonor)||g&&candidate.honorAdvantage!==ROYAL_HONOR_ADVANTAGE[g.rank])throw Error('actual prior honor does not match candidate advantage');
   }

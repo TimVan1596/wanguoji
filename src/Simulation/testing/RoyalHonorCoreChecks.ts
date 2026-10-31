@@ -1,3 +1,4 @@
+import Factions from '../FactionRegistry';
 import React from 'react';
 import {createRoot} from 'react-dom/client';
 import {flushSync} from 'react-dom';
@@ -29,6 +30,7 @@ function prepareMeritoriousRoyal(core:any,base:ReturnType<typeof exportWorldSave
  const r=Dynasty.get(team.name)!.rulers.find(r=>r.id===candidate.rulerId)!,p=Military.getPerson(r.militaryIdentity!.personId)!,command=p.appointments.at(-1)!.commandId;
  check(!planRoyalHonor({faction:team,dynasty:Dynasty.get(team.name)!,month,countryName:team.displayName,issuerTitle:Dynasty.getRulerTitleDisplay(team.name,month),people:Military.getPeople(),formations:Military.getFormations(),events:History.getEventsForFaction(team.name)}),'real military office alone never qualifies without a verified victory');
  const city=core.allCities.find((c:any)=>c.ownerTeam!==team&&!c.destroyed)!;
+ if(city.ownerTeam.cities.length===1){const site=core.map.blocks.flat().find((b:any)=>!b.city&&core.allCities.every((c:any)=>Math.hypot(c.block.x-b.x,c.block.y-b.y)>96));check(site,'a distinct real spare city preserves the opposing polity');site.claimForTeam(city.ownerTeam);Factions.foundCity(city.ownerTeam,site,undefined,month);}
  month+=1;core.simulator.clock.importState({worldMonth:month,elapsedMs:0,running:false});city.capture(team,month,undefined,command,p.personId);
  month=Math.ceil((month+1)/12)*12;core.simulator.clock.importState({worldMonth:month,elapsedMs:0,running:false});
  check(planRoyalHonor({faction:team,dynasty:Dynasty.get(team.name)!,month,countryName:team.displayName,issuerTitle:Dynasty.getRulerTitleDisplay(team.name,month),people:Military.getPeople(),formations:Military.getFormations(),events:History.getEventsForFaction(team.name)}),'only a real royal commander with a source-linked captured city qualifies');

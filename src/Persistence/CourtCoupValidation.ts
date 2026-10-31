@@ -1,3 +1,4 @@
+import type {RulerSaveV17} from './WorldSaveSchema';
 import type {WorldSaveV1} from './WorldSaveSchema';
 import type {WorldEvent} from '../History/WorldHistory';
 import type {CourtCoupRecord} from '../Politics/CourtCoup';
@@ -14,7 +15,7 @@ export function validateCourtCoups(save:WorldSaveV1):string[]{
  const errors:string[]=[],events=save.worldHistory.events as WorldEvent[],bound=new Set<string>();
  for(const [i,e] of events.entries())if(e.type==='court-coup-attempt')try{
   const r=JSON.parse(String(e.metadata?.courtCoup)) as CourtCoupRecord,c=r.participant,m=at(e),prior=events.slice(0,i),later=events.slice(i+1);
-  const d=save.dynasties.find(d=>d.factionId===r.factionId),rulers=d?.rulers.map(importRulerSave)??[],king=rulers.find(x=>x.id===r.previousRulerId),target=rulers.find(x=>x.id===r.targetRulerId),state=save.registries.militaryCommandRegistry,p=state.people.find(p=>p.personId===c.personId),f=state.formations.find(f=>f.commandId===c.commandId);
+  const d=save.dynasties.find(d=>d.factionId===r.factionId),rulers=d?(d.rulers as RulerSaveV17[]).map(importRulerSave):[],king=rulers.find(x=>x.id===r.previousRulerId),target=rulers.find(x=>x.id===r.targetRulerId),state=save.registries.militaryCommandRegistry,p=state.people.find(p=>p.personId===c.personId),f=state.formations.find(f=>f.commandId===c.commandId);
   const result=later.find(x=>x.id===r.outcomeEventId),outcomes=later.filter(x=>x.type==='court-coup-result'&&x.metadata?.courtCoupEventId===e.id);
   if(r.version!==1||r.month!==m||m%12!==0||e.id!==`court-coup-${r.factionId}-${m}`||r.outcomeEventId!==`${e.id}-result`||e.actorFactionId!==r.factionId||e.rulerId!==r.previousRulerId||e.metadata?.personId!==c.personId||e.metadata?.targetRulerId!==r.targetRulerId||!result||outcomes.length!==1||result!==outcomes[0]||at(result)!==m||result.actorFactionId!==r.factionId||result.metadata?.outcome!==r.outcome||result.metadata?.personId!==c.personId||result.metadata?.targetRulerId!==target?.id)throw Error('bound opportunity/result');
   if(!king||!target||king.id===target.id||king.accessionYear===undefined||king.accessionYear>m||king.endYear!==undefined&&king.endYear<m||king.deathMonth!==undefined&&king.deathMonth<m||!getRecordedKinRelation(target,king,rulers)||getRecordedKinRelation(target,king,rulers)==='COLLATERAL_KIN'||king.houseName!==target.houseName||m-target.bornYear<192||target.deathMonth!==undefined&&target.deathMonth<m||(target.naturalDeathYear??Infinity)<=m||target.accessionYear!==undefined&&target.accessionYear<m)throw Error('living monarch and legal kin target');
