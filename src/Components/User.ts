@@ -1,4 +1,4 @@
-import {politicalCleanup} from "../Simulation/PoliticalMutationScope";
+import {politicalCleanup,politicalEffect} from "../Simulation/PoliticalMutationScope";
 import {residentNaturalDeathMonth,ordinaryLifeEligible} from "../Simulation/ResidentLife";
 import DynastyRegistry from "../Politics/Dynasty";
 import { deriveMilitaryLifeSchedule } from "../Politics/MilitaryLifeRules";
@@ -199,7 +199,7 @@ export default class User {
     if (team.rulerUser === this) {
       team.rulerUser = undefined;
     }
-    Game.Core?.recordUserDeathForDiagnostics();
+    politicalEffect(()=>Game.Core?.recordUserDeathForDiagnostics());
     Game.Core?.logicalUnitRegistry.unregisterUser(this);
     politicalCleanup(()=>{this.slaveGroup.dispose();this.player.destroyPlayerTree();});
     return true;

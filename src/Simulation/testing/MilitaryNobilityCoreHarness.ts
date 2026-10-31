@@ -1,3 +1,4 @@
+import {checkSuccessionRollback} from "./SuccessionRollbackCoreChecks";
 import {checkMilitaryDisposition} from "./MilitaryDispositionCoreChecks";
 import {militaryAmbition} from "../../Politics/MilitaryPoliticalDisposition";
 import {checkOfficePoliticalChoice} from './MilitaryOfficePoliticalCoreChecks';
@@ -43,6 +44,7 @@ export async function runMilitaryNobilityCore(seed:string){
   for(const u of users){const p=Military.getPerson(u.militaryPersonId!)!;u.loyalty=militaryAmbition(p.personId,p.bornMonth)-minimumAmbition;}
   clock(216);const base=strict();
   const restore=(save=base)=>{hydrateWorldSave(core,structuredClone(save));return {t:core.teams.find(t=>t.name===factionId)!,d:Dynasty.get(factionId)!,p:Military.getPerson(ids[0])!,q:Military.getPerson(ids[1])!};};
+  checkSuccessionRollback(core,base,factionId,check);
   checkOfficePoliticalChoice(core,base,ids,factionId,check);
   checkMilitaryDisposition(core,base,ids,factionId,check);
   // Isolated issuer failure: the real history writer appends then throws.

@@ -17,7 +17,7 @@ export function successionTransaction<T>(team:Team,store:Pick<typeof Dynasty,'sn
   displayName:t.displayName,houseName:t.houseName,color:t.color,colorHistory:structuredClone(t.colorHistory),nameHistory:structuredClone(t.nameHistory)}));
  const users=teams.flatMap(s=>s.users.map(u=>({u,state:u.capturePoliticalState()})));
  const players=teams.flatMap(s=>s.players).filter(p=>typeof (p as any).exportMovementState==='function').map(p=>({p:p as import('../Components/Player').default,state:(p as import('../Components/Player').default).exportMovementState((p as import('../Components/Player').default).logicalUnitId??''),crown:!!(p as import('../Components/Player').default).crownMarker}));
- const registry=core.logicalUnitRegistry,sequence=registry.exportState().nextUnitSequence,units=registry.getEntries().map(e=>({state:{...e.state},player:e.player,user:e.player?.user}));
+ const registry=core.logicalUnitRegistry,units=registry.snapshotPoliticalTransaction();
  const scope=beginPoliticalMutation();
  let result:T;
  try{result=work();}
@@ -33,7 +33,7 @@ export function successionTransaction<T>(team:Team,store:Pick<typeof Dynasty,'sn
    x.t.cities.forEach(c=>c.refreshZoneVisual());
   }
   for(const x of players){x.p.applyHydratedMovementState(x.state);if(!x.crown&&x.p.crownMarker){x.p.crownMarker.destroy();x.p.crownMarker=undefined;}}
-  registry.importState(sequence,units);random.restore(rng);
+  registry.rollbackPoliticalTransaction(units);random.restore(rng);
   throw error;
  }
  scope.commit();return result;
