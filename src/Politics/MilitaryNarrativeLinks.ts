@@ -17,6 +17,7 @@ export function militaryNarrativeLinks(person:MilitaryPerson,events:readonly Wor
    if(proof?.personId===person.personId&&proof.worldMonth===month(e)&&proof.cityId===e.cityId&&proof.sourceFactionId===e.targetFactionId)
     for(const end of events)if(end.type==='military-command-ended'&&end.metadata?.personId===person.personId&&end.metadata.commandId===proof.commandId&&end.metadata.endReason==='TRANSFERRED'&&end.actorFactionId===proof.sourceFactionId&&month(end)===month(e))hide(e.id,end.id);
   }
+  if(e.type==='dynasty-usurped'&&m.militaryUsurperPersonId===person.personId&&e.rulerId===person.politicalRulerId){const proof=read(m.militaryUsurperIdentity);for(const end of events)if(proof?.personId===person.personId&&end.type==='military-command-ended'&&end.metadata?.personId===person.personId&&end.metadata.commandId===proof.commandId&&end.metadata.endReason==='DISMISSED'&&month(end)===month(e))hide(e.id,end.id);}
   if(e.type==='military-person-died'&&m.personId===person.personId){
    for(const end of events)if(end.type==='military-command-ended'&&end.metadata?.personId===person.personId&&end.metadata.endReason==='DEATH'&&end.actorFactionId===e.actorFactionId&&month(end)===month(e)&&person.appointments.some(a=>a.commandId===end.metadata?.commandId&&a.factionId===e.actorFactionId&&a.endMonth===month(e)&&a.endReason==='DEATH'))hide(e.id,end.id);
    for(const other of events){

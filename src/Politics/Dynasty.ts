@@ -1,3 +1,5 @@
+import {validateMilitaryUsurpers} from "../Persistence/MilitaryUsurperValidation";
+import {exportRulerSave} from "../Persistence/RulerSaveProjection";
 import {selectMilitaryUsurper,militaryUsurperIdentity,type MilitaryUsurperIdentity} from "./MilitaryUsurpation";
 import {politicalEffect} from "../Simulation/PoliticalMutationScope";
 import {successionTransaction} from "./SuccessionTransaction";
@@ -666,7 +668,7 @@ class DynastyRegistryStore {
         revolution.usurpation ? "USURPER" : getUnrelatedSuccessorRelation(team.identityStage)
       );
       if(person&&candidate&&user&&legitimateSuccessor){
-        successor.relationType='USURPER';successor.militaryUsurperIdentity=militaryUsurperIdentity(candidate,person,year,predecessor.id,legitimateSuccessor.id);
+        successor.relationType='USURPER';successor.militaryUsurperIdentity=militaryUsurperIdentity(candidate,person,year,predecessor.id,legitimateSuccessor.id,{roll:revolution.rollResult!,chance:revolution.chance,baselineChance:revolution.baselineChance});
         MilitaryCommandRegistry.endPersonCommands(person.personId,year,'DISMISSED');person.politicalRulerId=successor.id;user.historicalPersonId=person.personId;
       }
       dynasty.houseName = newHouse;
@@ -807,6 +809,10 @@ class DynastyRegistryStore {
     );
     this.ensureActiveHeir(team, dynasty, year);
     this.ensureRulerUnit(team);
+    if(nextRuler.militaryUsurperIdentity){
+      const errors=validateMilitaryUsurpers({world:{worldMonth:year},dynasties:this.exportState().dynasties.map(d=>({...d,rulers:d.rulers.map(exportRulerSave)})),registries:{militaryCommandRegistry:MilitaryCommandRegistry.exportState()},worldHistory:WorldHistory.exportState(),users:(Game.Core?.teams??[team]).flatMap(t=>[...t.users].map(u=>({userId:u.id,name:u.name,bornMonth:u.bornMonth,factionId:t.name,role:u.role,rulerId:u.rulerId,militaryPersonId:u.militaryPersonId,historicalPersonId:u.historicalPersonId})))} as any);
+      if(errors.length)throw Error(errors.join('; '));
+    }
   }
 
   resolveCapturedRuler(team: Team, conqueror: Team, year: number) {return successionTransaction(team,this,()=>this.resolveCapturedRulerBody(team,conqueror,year));}

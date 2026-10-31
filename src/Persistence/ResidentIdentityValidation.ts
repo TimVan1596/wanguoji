@@ -46,6 +46,6 @@ export function validateResidentIdentities(save:WorldSaveV1):string[]{
     const accession=events.find((e:any)=>e.type==="ruler-acceded"&&e.rulerId===r.rulerId);
     if(!accession||accession.metadata?.residentPersonId!==i.personId||accession.metadata?.sourceUserId!==i.sourceUserId||accession.metadata?.sourceFactionId!==i.sourceFactionId||accession.metadata?.foundingCityId!==i.cityId)errors.push("resident founder lacks canonical accession evidence");
   }
-  for(const u of users)if(u.historicalPersonId!==undefined&&!people.has(String(u.historicalPersonId))&&!save.dynasties.some(d=>Array.isArray(d?.rulers)&&d.rulers.some(r=>r?.militaryIdentity?.personId===u.historicalPersonId)))errors.push("unknown resident historicalPersonId");
+  for(const u of users)if(u.historicalPersonId!==undefined&&!people.has(String(u.historicalPersonId))&&!save.dynasties.some(d=>Array.isArray(d?.rulers)&&d.rulers.some(r=>(r?.militaryIdentity?.personId===u.historicalPersonId||r?.militaryUsurperIdentity?.personId===u.historicalPersonId))))errors.push("unknown resident historicalPersonId");
   return errors;
 }

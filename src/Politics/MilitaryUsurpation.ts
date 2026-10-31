@@ -9,7 +9,7 @@ export interface MilitaryUsurperIdentity {
  version:1;personId:string;sourceUserId:number;sourceUserLabel:string;bornMonth:number;naturalDeathMonth:number;
  factionId:string;accessionMonth:number;predecessorRulerId:string;displacedSuccessorId:string;
  commandId:string;office:MilitaryOffice;officeEventId:string;appointmentEventId:string;
- participant:MilitaryPoliticalParticipant;
+ opportunity:{roll:number;chance:number;baselineChance:number};participant:MilitaryPoliticalParticipant;
 }
 /** Deterministic competition AFTER the original successful usurpation roll. No independent draw. */
 export function selectMilitaryUsurper(candidates:readonly MilitaryPoliticalParticipant[],people:readonly MilitaryPerson[],oldHouseName:string){
@@ -19,8 +19,8 @@ export function selectMilitaryUsurper(candidates:readonly MilitaryPoliticalParti
    c.unitCount>=2&&c.serviceMonths>=60&&c.strength>=2&&c.capturedEventIds.length>0&&c.officeStanding&&d&&d.ambition>d.loyalty;
  });
 }
-export function militaryUsurperIdentity(candidate:MilitaryPoliticalParticipant,person:MilitaryPerson,month:number,predecessorId:string,displacedId:string):MilitaryUsurperIdentity {
+export function militaryUsurperIdentity(candidate:MilitaryPoliticalParticipant,person:MilitaryPerson,month:number,predecessorId:string,displacedId:string,opportunity:MilitaryUsurperIdentity['opportunity']):MilitaryUsurperIdentity {
  const office=candidate.officeStanding;if(!office)throw Error('Usurper has no verified real office');
  return {version:1,personId:person.personId,sourceUserId:person.sourceUserId,sourceUserLabel:person.name,bornMonth:person.bornMonth,naturalDeathMonth:deriveMilitaryLifeSchedule(person).naturalDeathMonth,
-  factionId:candidate.factionId,accessionMonth:month,predecessorRulerId:predecessorId,displacedSuccessorId:displacedId,commandId:candidate.commandId,office:office.office,officeEventId:office.eventId,appointmentEventId:office.appointmentEventId,participant:structuredClone(candidate)};
+  factionId:candidate.factionId,accessionMonth:month,predecessorRulerId:predecessorId,displacedSuccessorId:displacedId,commandId:candidate.commandId,office:office.office,officeEventId:office.eventId,appointmentEventId:office.appointmentEventId,opportunity:{...opportunity},participant:structuredClone(candidate)};
 }

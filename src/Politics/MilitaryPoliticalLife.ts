@@ -11,7 +11,7 @@ import {getRulerTitleAtMonth} from './RulerTitleRules';
 export function militaryPoliticalLife(person:MilitaryPerson,dynasties:readonly Dynasty[],events:readonly WorldEvent[],factions:ReadonlyMap<string,HistoryFactionLike>,month:number){
  if(!person.politicalRulerId)return undefined;
  const linked=dynasties.flatMap(d=>d.rulers.map(r=>({d,r}))).find(({d,r})=>r.id===person.politicalRulerId&&r.bornYear===person.bornMonth&&
-  (r.militaryIdentity?.personId===person.personId&&royalMilitaryArchive(d,[person],events).has(r.id)||r.residentIdentity?.personId===person.personId&&r.residentIdentity.sourceUserId===person.sourceUserId&&r.residentIdentity.bornMonth===person.bornMonth&&r.residentIdentity.military?.personId===person.personId));
+  (r.militaryUsurperIdentity?.personId===person.personId&&r.militaryUsurperIdentity.sourceUserId===person.sourceUserId||r.militaryIdentity?.personId===person.personId&&royalMilitaryArchive(d,[person],events).has(r.id)||r.residentIdentity?.personId===person.personId&&r.residentIdentity.sourceUserId===person.sourceUserId&&r.residentIdentity.bornMonth===person.bornMonth&&r.residentIdentity.military?.personId===person.personId));
  if(!linked||linked.r.accessionYear===undefined||linked.r.accessionYear>month)return undefined;
  const {d,r}=linked,at=r.accessionYear!;
  const accession=events.find(e=>(e.monthIndex??e.year)===at&&e.actorFactionId===d.factionId&&
@@ -20,10 +20,10 @@ export function militaryPoliticalLife(person:MilitaryPerson,dynasties:readonly D
  const title=typeof accession.metadata?.rulerPoliticalTitle==='string'&&['首领','王','帝'].includes(accession.metadata.rulerPoliticalTitle)?accession.metadata.rulerPoliticalTitle:getRulerTitleAtMonth({...f,sovereigntyRank:f.sovereigntyRank as any},at);
  const country=getFactionDisplayNameAtMonth({name:f.name,displayName:f.name,nameHistory:f.nameHistory??[]},at),name=person.personalName??person.name;
  const founder=r.residentIdentity?.military?.personId===person.personId;
- const text=founder?`${name}为${country}创立者、首任首领。`:`${name}${title==='首领'?'继任':'继位为'}${country}${title==='首领'?'首领':title==='王'?'王':'皇帝'}。`;
+ const text=r.militaryUsurperIdentity?`${name}夺取王统，成为${country}新王统开统之君。`:founder?`${name}为${country}创立者、首任首领。`:`${name}${title==='首领'?'继任':'继位为'}${country}${title==='首领'?'首领':title==='王'?'王':'皇帝'}。`;
  const entry:MilitaryChronicleEntry={eventId:accession.id,worldMonth:at,factionId:d.factionId,text,source:accession.type+' · '+accession.id,victory:false};
  const founding=founder?events.find(e=>e.type==='empire-split'&&e.metadata?.militaryPersonId===person.personId&&e.metadata?.foundingRulerId===r.id&&e.actorFactionId===d.factionId&&(e.monthIndex??e.year)===r.residentIdentity?.foundedMonth):undefined;
- return {rulerId:r.id,factionId:d.factionId,entry,foundingEventId:founding?.id};
+ return {rulerId:r.id,factionId:d.factionId,entry,realUsurper:!!r.militaryUsurperIdentity,foundingEventId:founding?.id};
 }
 
 /** One source event remains one visible entry even if the person both participates and accedes. */
@@ -31,5 +31,6 @@ export function appendMilitaryPoliticalLife(entries:MilitaryChronicleEntry[],lif
  if(!life)return entries;
  if(life.foundingEventId&&entries.some(e=>e.eventId===life.foundingEventId))return entries.map(e=>e.eventId===life.foundingEventId?{...e,sourceEventIds:[...(e.sourceEventIds??[e.eventId]),life.entry.eventId]}:e);
  const previous=entries.find(e=>e.eventId===life.entry.eventId);
+ if(previous&&life.realUsurper)return entries;
  return [...entries.filter(e=>e.eventId!==life.entry.eventId),{...life.entry,text:(previous?previous.text:'')+life.entry.text}].sort((a,b)=>a.worldMonth-b.worldMonth||a.eventId.localeCompare(b.eventId));
 }

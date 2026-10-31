@@ -33,10 +33,11 @@ export function militaryIdentityLabels(person:MilitaryPerson,dynasties:readonly 
  const origin=person.royalIdentity&&dynasties.find(d=>d.factionId===person.royalIdentity!.factionId);
  if(origin&&royalMilitaryArchive(origin,[person],events).has(person.royalIdentity!.rulerId))labels.push("宗室将领");
  const political=person.politicalRulerId?dynasties.flatMap(d=>d.rulers.map(r=>({d,r}))).find(({r})=>r.id===person.politicalRulerId&&r.bornYear===person.bornMonth&&
-  (r.militaryIdentity?.personId===person.personId||r.residentIdentity?.personId===person.personId&&r.residentIdentity.sourceUserId===person.sourceUserId)):undefined;
+  (r.militaryIdentity?.personId===person.personId||r.militaryUsurperIdentity?.personId===person.personId||r.residentIdentity?.personId===person.personId&&r.residentIdentity.sourceUserId===person.sourceUserId)):undefined;
  if(political&&political.r.accessionYear!==undefined&&political.r.accessionYear<=month){
   labels.push(political.d.currentRulerId===political.r.id&&(political.r.deathMonth===undefined||political.r.deathMonth>month)&&["ruling","exiled"].includes(political.r.status)?"现任君主":"曾任君主");
   if(person.royalIdentity)labels.push("后来继位");
+  if(political.r.militaryUsurperIdentity?.personId===person.personId)labels.push("易姓开统");
   const source=political.r.residentIdentity;
   if(source?.military?.personId===person.personId&&source.bornMonth===person.bornMonth&&events.some(e=>e.type==="empire-split"&&e.actorFactionId===political.d.factionId&&e.metadata?.militaryPersonId===person.personId&&e.metadata?.foundingRulerId===political.r.id))labels.push("义军创立者");
  }

@@ -47,11 +47,12 @@ export function formatPoliticalEvent(event:WorldEvent):string|undefined {
  if(event.type==='dynasty-usurped'){
   const death=m.successionReason==='combat'?'战死':m.successionReason==='captured'?'被俘处死':'去世';
   const age=typeof m.displacedSuccessorAge==='number'?`（时年${m.displacedSuccessorAge}岁）`:'';
+  let previousOffice='';try{const i=JSON.parse(String(m.militaryUsurperIdentity??'null'));if(i?.personId===m.militaryUsurperPersonId&&MILITARY_OFFICE_NAMES[i.office as MilitaryOffice])previousOffice=`原${m.oldStateName}${MILITARY_OFFICE_NAMES[i.office as MilitaryOffice]}`;}catch{/* No fictional military past. */}
   const name=m.newRulerName??m.newHouseName;
   const otherCauses=formatRevolutionEvidence(String(m.vulnerabilityEvidence??'').split(',').filter(k=>!['ONE_CITY_REMAINING','FEW_CITIES_REMAINING','LOW_FACTION_STABILITY','POLITICAL_VULNERABILITY','PREDECESSOR_COMBAT_DEATH','PREDECESSOR_CAPTURED',...s.facts.map(f=>f.capital?'RECENT_CAPITAL_LOSS':f.type==='empire-split'?'RECENT_EMPIRE_SPLIT':'')].includes(k)));
   let military='';try{const p=JSON.parse(String(m.militaryParticipation??'null'))?.participant;if(p)military=`${p.officeStanding?MILITARY_OFFICE_NAMES[p.officeStanding.office as MilitaryOffice]:'将领'}${p.personalName??p.name}统兵参与继统之争，获位者为${name}。`;}catch{/* No invented command. */}
   const colors=typeof m.oldColor==='number'&&typeof m.newColor==='number'?(m.oldColor!==m.newColor?'并易帜。':'旗色未改。'):'';
-  return `${s.countryName}国易代。${cause}${otherCauses?`${otherCauses}。`:''}${m.predecessorRulerName}${death}，原定由${m.displacedSuccessorName}${age}承统，继统之际${name}夺取王统，${m.oldHouseName}改为${m.newHouseName}${m.oldStateName!==m.newStateName?`，国号由${m.oldStateName}改为${m.newStateName}`:''}。${military}${colors}${s.capitalCityName?`国都仍在${s.capitalCityName}。`:''}`;
+  return `${s.countryName}国易代。${cause}${otherCauses?`${otherCauses}。`:''}${m.predecessorRulerName}${death}，原定由${m.displacedSuccessorName}${age}承统，继统之际${previousOffice}${name}夺取王统，${m.oldHouseName}改为${m.newHouseName}${m.oldStateName!==m.newStateName?`，国号由${m.oldStateName}改为${m.newStateName}`:''}。${military}${colors}${s.capitalCityName?`国都仍在${s.capitalCityName}。`:''}`;
  }
  return undefined;
 }

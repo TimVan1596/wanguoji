@@ -34,9 +34,10 @@ export function personServiceLinks(factionId:string,rulers:Ruler[],people:Milita
 export function preAccessionMilitary(ruler:Ruler,people:MilitaryPerson[],formations:MilitaryFormation[],events:WorldEvent[],context:MilitaryHistoryContext={}){
  const id=ruler.residentIdentity,founder=id?.military?people.find(p=>p.personId===id.personId&&id.military!.personId===p.personId&&p.sourceUserId===id.sourceUserId&&p.name===id.sourceUserLabel&&p.politicalRulerId===ruler.id&&p.bornMonth===ruler.bornYear&&id.bornMonth===p.bornMonth&&p.appointments.some(a=>a.commandId===id.military!.commandId&&a.factionId===id.sourceFactionId&&a.endMonth===id.foundedMonth&&a.endReason==="TRANSFERRED")):undefined;
  const royal=ruler.militaryIdentity;
- const person=founder??(royal?people.find(p=>p.personId===royal.personId&&p.royalIdentity?.rulerId===ruler.id&&p.sourceUserId===royal.sourceUserId&&p.name===royal.sourceUserLabel&&p.bornMonth===ruler.bornYear&&p.politicalRulerId===ruler.id):undefined);
+ const usurper=ruler.militaryUsurperIdentity,officer=usurper?people.find(p=>p.personId===usurper.personId&&p.sourceUserId===usurper.sourceUserId&&p.bornMonth===ruler.bornYear&&p.politicalRulerId===ruler.id):undefined;
+ const person=officer??founder??(royal?people.find(p=>p.personId===royal.personId&&p.royalIdentity?.rulerId===ruler.id&&p.sourceUserId===royal.sourceUserId&&p.name===royal.sourceUserLabel&&p.bornMonth===ruler.bornYear&&p.politicalRulerId===ruler.id):undefined);
  if(!person||ruler.accessionYear===undefined)return undefined;
- const raw=deriveMilitaryChronicle(person,formations,events,ruler.accessionYear).filter(e=>e.worldMonth<ruler.accessionYear!||e.worldMonth===ruler.accessionYear&&(e.source.startsWith("empire-split")||e.source.startsWith("military-ennobled")));
+ const raw=deriveMilitaryChronicle(person,formations,events,ruler.accessionYear).filter(e=>e.worldMonth<ruler.accessionYear!||e.worldMonth===ruler.accessionYear&&(e.source.startsWith("empire-split")||e.source.startsWith("dynasty-usurped")||e.source.startsWith("military-ennobled")));
  const entries=militaryMilestones(person,raw,events,context);
  const representative=selectMilitaryMilestones(entries,events,5);
  return {person,entries,representative};
