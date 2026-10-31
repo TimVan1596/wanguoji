@@ -23,7 +23,7 @@ export function militaryNarrativeLinks(person:MilitaryPerson,events:readonly Wor
     const a=other.type==='military-appanage'?read(other.metadata?.appanage):undefined;
     if(a?.kind==='ENDED'&&a.reason==='DEATH'&&a.sourceEventId===e.id&&a.personId===person.personId&&a.eventId===other.id&&other.metadata?.personId===person.personId&&a.month===month(other))hide(e.id,other.id);
     const end=typeof other.metadata?.commandEndEventId==='string'?byId.get(other.metadata.commandEndEventId):undefined;
-    if(other.type==='siege-ended'&&other.metadata?.reason==='COMMAND_ENDED'&&end?.type==='military-command-ended'&&end.metadata?.personId===person.personId&&end.metadata.endReason==='DEATH'&&end.metadata.commandId===other.metadata.commandId&&month(end)===month(e)&&month(other)>=month(e)&&other.metadata.personId===person.personId&&other.actorFactionId===e.actorFactionId)hide(e.id,other.id);
+    if(other.type==='siege-ended'&&(other.metadata?.reason==='COMMAND_ENDED'||other.metadata?.reason==='REPULSED'&&other.metadata?.attackers===0)&&end?.type==='military-command-ended'&&end.metadata?.personId===person.personId&&end.metadata.endReason==='DEATH'&&end.metadata.commandId===other.metadata.commandId&&month(end)===month(e)&&month(other)>=month(e)&&other.metadata.personId===person.personId&&other.actorFactionId===e.actorFactionId)hide(e.id,other.id);
    }
   }
  }

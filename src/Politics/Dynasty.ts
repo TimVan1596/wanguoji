@@ -1,3 +1,4 @@
+import {selectMilitaryUsurper,militaryUsurperIdentity,type MilitaryUsurperIdentity} from "./MilitaryUsurpation";
 import {politicalEffect} from "../Simulation/PoliticalMutationScope";
 import {successionTransaction} from "./SuccessionTransaction";
 import {capturePoliticalCrisis,politicalCapital} from "./PoliticalEventNarrative";
@@ -103,6 +104,7 @@ export interface RoyalMilitaryIdentity {
   personId: string; sourceUserId: number; sourceUserLabel: string; enteredMonth: number;
 }
 export interface Ruler {
+  militaryUsurperIdentity?:MilitaryUsurperIdentity;
   militaryIdentity?: RoyalMilitaryIdentity;
   /** Permanent resident identity; this record owns its life even when no map entity exists. */
   residentIdentity?: ResidentFounderIdentity;
@@ -183,7 +185,7 @@ class DynastyRegistryStore {
       dynasties: [...this.dynasties.values()].map((dynasty) => ({
         ...dynasty,
         houseEpochs: dynasty.houseEpochs?.map((epoch) => ({ ...epoch })),
-        rulers: dynasty.rulers.map((ruler) => ({ ...ruler, militaryIdentity:ruler.militaryIdentity?{...ruler.militaryIdentity}:undefined, residentIdentity:ruler.residentIdentity?structuredClone(ruler.residentIdentity):undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
+        rulers: dynasty.rulers.map((ruler) => ({ ...ruler, militaryIdentity:ruler.militaryIdentity?{...ruler.militaryIdentity}:undefined, militaryUsurperIdentity:ruler.militaryUsurperIdentity?structuredClone(ruler.militaryUsurperIdentity):undefined,residentIdentity:ruler.residentIdentity?structuredClone(ruler.residentIdentity):undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
         heirIds: [...dynasty.heirIds],
       })),
       sequence: this.sequence,
@@ -209,7 +211,7 @@ class DynastyRegistryStore {
     this.dynasties = new Map(state.dynasties.map((dynasty) => [dynasty.factionId, {
       ...dynasty,
       houseEpochs: dynasty.houseEpochs?.map((epoch) => ({ ...epoch })),
-      rulers: dynasty.rulers.map((ruler) => ({ ...ruler, militaryIdentity:ruler.militaryIdentity?{...ruler.militaryIdentity}:undefined, residentIdentity:ruler.residentIdentity?structuredClone(ruler.residentIdentity):undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
+      rulers: dynasty.rulers.map((ruler) => ({ ...ruler, militaryIdentity:ruler.militaryIdentity?{...ruler.militaryIdentity}:undefined, militaryUsurperIdentity:ruler.militaryUsurperIdentity?structuredClone(ruler.militaryUsurperIdentity):undefined,residentIdentity:ruler.residentIdentity?structuredClone(ruler.residentIdentity):undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
       heirIds: [...dynasty.heirIds],
     }]));
     this.sequence = state.sequence;
@@ -340,7 +342,7 @@ class DynastyRegistryStore {
   }
 
   findRoyalMilitaryPerson(personId: string) {
-    return this.getAll().flatMap(d => d.rulers).find(r => r.militaryIdentity?.personId === personId);
+    return this.getAll().flatMap(d => d.rulers).find(r => r.militaryIdentity?.personId === personId||r.militaryUsurperIdentity?.personId===personId);
   }
 
   recordRoyalMilitaryBattleDeath(personId: string, month: number, cause: "BATTLE_DEATH" | "SIEGE_LOSS" = "BATTLE_DEATH") {
@@ -601,8 +603,8 @@ class DynastyRegistryStore {
       const u=Team.GetUserById(predecessor.residentIdentity.sourceUserId);
       if(u?.historicalPersonId===predecessor.residentIdentity.personId&&reason!=="combat")u.destroyUser(true,{cause:"RULER_LIFECYCLE",month:year,context:"唯一人物生命结束，移除其地图实体"});
     }
-    if (predecessor.militaryIdentity) {
-      const i = predecessor.militaryIdentity, u = Team.GetUserById(i.sourceUserId);
+    if (predecessor.militaryIdentity||predecessor.militaryUsurperIdentity) {
+      const i = predecessor.militaryUsurperIdentity??predecessor.militaryIdentity!, u = Team.GetUserById(i.sourceUserId);
       if (reason !== "combat" && u?.historicalPersonId === i.personId) u.destroyUser(true,{cause:"RULER_LIFECYCLE",month:year});
       MilitaryCommandRegistry.mirrorPoliticalDeath(i.personId,predecessor.id,year,reason === "natural" ? "NATURAL_DEATH" : reason === "captured" ? "CAPTURED" : combatCause);
     }
@@ -647,12 +649,15 @@ class DynastyRegistryStore {
     }
     if (!successor && team.status === "ACTIVE" && team.cities.length > 0) {
       const knownDynasties = this.getAll();
-      const newHouse = createSuccessorDynastyHouseName({
+      const candidate=revolution.usurpation&&legitimateSuccessor?selectMilitaryUsurper(revolutionContext.military?.candidates??[],MilitaryCommandRegistry.getPeople(),oldHouseName):undefined;
+      const person=candidate?MilitaryCommandRegistry.getPerson(candidate.personId):undefined,user=person?team.getUserById(person.sourceUserId):undefined,personal=person&&splitEstablishedPersonalName(person.personalName);
+      if(candidate&&(!person||!user||!user.matchesMilitaryLife(person)||!personal))throw Error('Usurper live identity changed before accession');
+      const newHouse = personal?.houseName??createSuccessorDynastyHouseName({
         factionType: team.factionType,
         existingHouseNames: knownDynasties.flatMap((item) => item.rulers.map((ruler) => ruler.houseName)),
         recentHouseNames: dynasty.rulers.slice(-8).map((item) => item.houseName),
       });
-      successor = this.createHeir(
+      successor = person&&candidate&&personal?this.createFormalRuler(team,newHouse,year,undefined,predecessor.id,person.bornMonth,{givenName:personal.givenName,naturalDeathMonth:deriveMilitaryLifeSchedule(person).naturalDeathMonth}):this.createHeir(
         team,
         newHouse,
         year,
@@ -660,6 +665,10 @@ class DynastyRegistryStore {
         predecessor.id,
         revolution.usurpation ? "USURPER" : getUnrelatedSuccessorRelation(team.identityStage)
       );
+      if(person&&candidate&&user&&legitimateSuccessor){
+        successor.relationType='USURPER';successor.militaryUsurperIdentity=militaryUsurperIdentity(candidate,person,year,predecessor.id,legitimateSuccessor.id);
+        MilitaryCommandRegistry.endPersonCommands(person.personId,year,'DISMISSED');person.politicalRulerId=successor.id;user.historicalPersonId=person.personId;
+      }
       dynasty.houseName = newHouse;
       dynasty.rulers.push(successor);
       team.houseName = newHouse;
@@ -742,6 +751,7 @@ class DynastyRegistryStore {
           { stability: revolutionContext.stability, cityCount: revolutionContext.cityCount, riskTier: revolution.riskTier }, WorldHistory.getEventsForFaction(team.name)) : {}),
         ...captureAccessionCapital(team, year, nextRuler.id, predecessor.id),
         politicalCrisis:JSON.stringify(capturePoliticalCrisis({kind:'REVOLUTION',factionId:team.name,worldMonth:year,countryName:oldStateName,cityCount:revolutionContext.cityCount,stability:revolutionContext.stability,...politicalCapital(captureAccessionCapital(team,year,nextRuler.id,predecessor.id)),successorBornMonth:nextRuler.bornYear},revolution.observedPoliticalShocks.map(s=>s.eventId),revolutionContext.sourceEvents??[])),
+        ...(nextRuler.militaryUsurperIdentity?{militaryUsurperIdentity:JSON.stringify(nextRuler.militaryUsurperIdentity),militaryUsurperPersonId:nextRuler.militaryUsurperIdentity.personId}:{}),
         oldHouseName, newHouseName: dynasty.houseName, predecessorRulerId: predecessor.id,
         predecessorRulerName: this.getRulerPersonalName(predecessor), previousRulerTitle,
         displacedSuccessorId: legitimateSuccessor.id, displacedSuccessorName: this.getRulerPersonalName(legitimateSuccessor),
@@ -849,6 +859,10 @@ class DynastyRegistryStore {
         Game.Core?.logicalUnitRegistry.updateRole(existing.player.logicalUnitId, "RULER", ruler.id); team.rulerUser = existing;
         return;
       }
+    }
+    if(ruler.militaryUsurperIdentity){const i=ruler.militaryUsurperIdentity,u=Team.GetUserById(i.sourceUserId);
+      if(!u||u.historicalPersonId!==i.personId||u.militaryPersonId!==i.personId||u.bornMonth!==ruler.bornYear||u.team!==team)throw Error('Missing unique usurper body');
+      u.role='RULER';u.rulerId=ruler.id;u.player.setRole('RULER',ruler.id,true);Game.Core?.logicalUnitRegistry.updateRole(u.player.logicalUnitId,'RULER',ruler.id);team.rulerUser=u;return;
     }
     if(ruler.residentIdentity){
       const existing=Team.GetUserById(ruler.residentIdentity.sourceUserId);
@@ -1067,15 +1081,16 @@ class DynastyRegistryStore {
 
   private archiveNaturallyDeadDeposedRulers(team: Team, dynasty: Dynasty, worldMonth: number) {
     dynasty.rulers.forEach((ruler) => {
-      if ((ruler.status !== "deposed" && !((ruler.residentIdentity || ruler.militaryIdentity) && ["politically-ended","abdicated","kin"].includes(ruler.status))) || ruler.reignOrdinal === undefined || hasRecordedRulerDeath(ruler) ||
+      if ((ruler.status !== "deposed" && !((ruler.residentIdentity || ruler.militaryIdentity||ruler.militaryUsurperIdentity) && ["politically-ended","abdicated","kin"].includes(ruler.status))) || ruler.reignOrdinal === undefined || hasRecordedRulerDeath(ruler) ||
         !isNaturallyDeadByMonth(ruler.naturalDeathYear ?? ruler.plannedEndYear, worldMonth)) return;
       ruler.status = "dead";
       ruler.deathMonth = worldMonth;
       ruler.deathReason = "自然去世";
-      if (ruler.militaryIdentity) {
-        MilitaryCommandRegistry.mirrorPoliticalDeath(ruler.militaryIdentity.personId,ruler.id,worldMonth,"NATURAL_DEATH");
-        const u = Team.GetUserById(ruler.militaryIdentity.sourceUserId);
-        if (u?.historicalPersonId === ruler.militaryIdentity.personId) u.destroyUser(true,{cause:"RULER_LIFECYCLE",month:worldMonth});
+      if (ruler.militaryIdentity||ruler.militaryUsurperIdentity) {
+        const identity=ruler.militaryUsurperIdentity??ruler.militaryIdentity!;
+        MilitaryCommandRegistry.mirrorPoliticalDeath(identity.personId,ruler.id,worldMonth,"NATURAL_DEATH");
+        const u = Team.GetUserById(identity.sourceUserId);
+        if (u?.historicalPersonId === (ruler.militaryUsurperIdentity??ruler.militaryIdentity)!.personId) u.destroyUser(true,{cause:"RULER_LIFECYCLE",month:worldMonth});
       }
       if(ruler.residentIdentity?.military)MilitaryCommandRegistry.mirrorPoliticalDeath(ruler.residentIdentity.military.personId,ruler.id,worldMonth,"NATURAL_DEATH");
       if(ruler.residentIdentity){const u=Team.GetUserById(ruler.residentIdentity.sourceUserId);if(u?.historicalPersonId===ruler.residentIdentity.personId)u.destroyUser(true,{cause:"RULER_LIFECYCLE",month:worldMonth,context:"人物自然死亡，移除其唯一地图实体"});}
