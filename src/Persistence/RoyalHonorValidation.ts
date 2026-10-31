@@ -1,3 +1,4 @@
+import type {Dynasty} from '../Politics/Dynasty';
 import type {WorldSaveV1,RulerSaveV17} from './WorldSaveSchema';
 import type {WorldEvent} from '../History/WorldHistory';
 import {importRulerSave} from './RulerSaveProjection';
@@ -13,7 +14,7 @@ export function validateRoyalHonors(save:WorldSaveV1):string[]{
   const grants:RoyalHonor[]=[];
   for(const r of rulers){if(r.royalHonors!==undefined&&!Array.isArray(r.royalHonors)){errors.push('invalid royal honor list');continue;}grants.push(...(r.royalHonors??[]));}
   for(const owner of rulers)for(const g of Array.isArray(owner.royalHonors)?owner.royalHonors:[]){try{
-   const recipient=rulers.find(r=>r.id===g.recipientRulerId),issuer=rulers.find(r=>r.id===g.issuerRulerId),source=byId.get(g.eventId),m=g.month,epoch=d.houseEpochs?.find(e=>e.foundingRulerId===g.epochFounderId),prior=events.slice(0,source?.index??0);
+   const recipient=rulers.find(r=>r.id===g.recipientRulerId),issuer=rulers.find(r=>r.id===g.issuerRulerId),source=byId.get(g.eventId),m=g.month,epoch=(d.houseEpochs as Dynasty['houseEpochs'])?.find(e=>e.foundingRulerId===g.epochFounderId),prior=events.slice(0,source?.index??0);
    if(!f||!recipient||!issuer||!source||g.version!==1||owner!==recipient||seen.has(g.eventId)||g.factionId!==d.factionId||!Number.isSafeInteger(m)||m<0||m>save.world.worldMonth||m%12!==0||g.eventId!==`royal-honor-${g.factionId}-${g.recipientRulerId}-${g.epochFounderId}-${g.rank}`||!['FENGJUN','QINWANG'].includes(g.rank)||g.sovereigntyRank!==(g.rank==='QINWANG'?'EMPEROR':'KING')||source.e.type!=='royal-honor-granted'||source.e.actorFactionId!==d.factionId||source.e.rulerId!==issuer.id||source.e.metadata?.recipientRulerId!==recipient.id||source.e.metadata.royalHonor!==JSON.stringify(g)||at(source.e)!==m||source.e.title!==royalHonorText(g))throw Error('source or grant identity');
    seen.add(g.eventId);
    const endedBefore=(id:string)=>prior.some(e=>['ruler-succession','ruler-deposed'].includes(e.type)&&e.metadata?.previousRulerId===id||e.type==='dynasty-usurped'&&e.metadata?.predecessorRulerId===id||['ruler-died','ruler-captured','heir-died'].includes(e.type)&&(e.rulerId===id||e.metadata?.rulerId===id));

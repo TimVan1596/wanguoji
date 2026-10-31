@@ -20,7 +20,9 @@ export function checkMilitaryLifeView(core:any,person:MilitaryPerson,month:numbe
  check(chronicle.some(e=>e.eventId===pair.anchor.id&&e.text===pair.text)&&!chronicle.some(e=>e.eventId===pair.other.id),`${kind}: military archive uses exactly the same merged wording`);
  const host=document.createElement('div');document.body.append(host);const root=createRoot(host);
  try{flushSync(()=>root.render(<Provider store={store}><EventDetails event={display} teamByName={new Map(core.teams.map((t:any)=>[t.name,t]))} factionNames={[]} cityNames={[]}/></Provider>));
-  check(host.textContent?.includes(pair.anchor.id)&&host.textContent.includes(pair.other.id)&&host.querySelector('details')?.open===false,`${kind}: real React evidence keeps both independent source records under a closed detail control`);
+  const detail=host.querySelector('details')!;check(detail?.open===false&&!host.textContent?.includes(pair.anchor.id),`${kind}: original sources remain lazy behind the closed evidence control`);
+  flushSync(()=>{detail.open=true;detail.dispatchEvent(new Event('toggle',{bubbles:true}));});
+  check(host.textContent?.includes(pair.anchor.id)&&host.textContent.includes(pair.other.id),`${kind}: expanding real React evidence retrieves both original source records`);
  }finally{flushSync(()=>root.unmount());host.remove();}
  check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,`${kind}: both readers preserve canonical facts and RNG`);
 }
