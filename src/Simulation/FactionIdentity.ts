@@ -24,6 +24,7 @@ export interface FactionIdentityState {
   status: FactionStatus;
   currentActiveSinceYear: number;
   stateFormationEligibleSinceMonth?: number;
+  stateFormationEligibilityKind?: "ORDINARY" | "DE_FACTO";
   stateFoundedMonth?: number;
   sovereigntyRank: SovereigntyRank;
   sovereigntyHistory: SovereigntyHistoryEntry[];
@@ -132,7 +133,7 @@ export function canEvaluateStateFormation(
   faction: Pick<FactionIdentityState, "factionType" | "identityStage">
 ) {
   return (
-    (faction.factionType === "REBEL" || faction.factionType === "SPLIT") &&
+    (["REBEL", "SPLIT", "FRONTIER"].includes(faction.factionType)) &&
     faction.identityStage === "PROVISIONAL"
   );
 }
@@ -174,6 +175,22 @@ export function observeStateFormationEligibility(
     monthIndex - faction.stateFormationEligibleSinceMonth >=
     STATE_FORMATION_REQUIRED_MONTHS
   );
+}
+
+/** Separate continuous windows: switching paths cannot borrow a shorter qualification period. */
+export function observeFormationPath(faction: FactionIdentityState, month: number, ordinary: boolean, deFacto: boolean) {
+  const kind = ordinary ? "ORDINARY" : deFacto ? "DE_FACTO" : undefined;
+  if (!kind) {
+    faction.stateFormationEligibleSinceMonth = undefined;
+    faction.stateFormationEligibilityKind = undefined;
+    return false;
+  }
+  if (faction.stateFormationEligibilityKind !== kind || faction.stateFormationEligibleSinceMonth === undefined) {
+    faction.stateFormationEligibilityKind = kind;
+    faction.stateFormationEligibleSinceMonth = month;
+    return false;
+  }
+  return month - faction.stateFormationEligibleSinceMonth >= (kind === "ORDINARY" ? STATE_FORMATION_REQUIRED_MONTHS : DE_FACTO_STATE_REQUIRED_MONTHS);
 }
 
 export function isDeFactoStateFormationEligible(
@@ -292,6 +309,7 @@ export function formFactionState(
   faction.stateFoundedMonth = monthIndex;
   setSovereigntyRank(faction, "KING", monthIndex);
   faction.stateFormationEligibleSinceMonth = undefined;
+  faction.stateFormationEligibilityKind = undefined;
   return true;
 }
 

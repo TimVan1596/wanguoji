@@ -1,9 +1,10 @@
+import {verifiedPoliticalOffice} from '../Politics/MilitaryPoliticalInfluence';
 import type {Dynasty} from '../Politics/Dynasty';
 import type {WorldSaveV1,RulerSaveV17} from './WorldSaveSchema';
 import type {WorldEvent} from '../History/WorldHistory';
 import {importRulerSave} from './RulerSaveProjection';
 import {getRecordedKinRelation} from '../Politics/DynasticCandidateRules';
-import {effectiveRoyalHonor,ROYAL_HONOR_ADVANTAGE,royalHonorText,royalHonorMerits,royalName,type RoyalHonor} from '../Politics/RoyalHonors';
+import {effectiveRoyalHonor,ROYAL_HONOR_ADVANTAGE,royalHonorText,royalHonorMerits,royalMeritRank,royalName,type RoyalHonor} from '../Politics/RoyalHonors';
 import {formatRulerTitleAtMonth} from '../Politics/RulerTitleRules';
 const at=(e:WorldEvent)=>e.monthIndex??e.year;
 /** Audits frozen grants against real kin, sovereign office and prior canonical sources. */
@@ -15,7 +16,7 @@ export function validateRoyalHonors(save:WorldSaveV1):string[]{
   for(const r of rulers){if(r.royalHonors!==undefined&&!Array.isArray(r.royalHonors)){errors.push('invalid royal honor list');continue;}grants.push(...(r.royalHonors??[]));}
   for(const owner of rulers)for(const g of Array.isArray(owner.royalHonors)?owner.royalHonors:[]){try{
    const recipient=rulers.find(r=>r.id===g.recipientRulerId),issuer=rulers.find(r=>r.id===g.issuerRulerId),source=byId.get(g.eventId),m=g.month,epoch=(d.houseEpochs as Dynasty['houseEpochs'])?.find(e=>e.foundingRulerId===g.epochFounderId),prior=events.slice(0,source?.index??0);
-   if(!f||!recipient||!issuer||!source||g.version!==1||owner!==recipient||seen.has(g.eventId)||g.factionId!==d.factionId||!Number.isSafeInteger(m)||m<0||m>save.world.worldMonth||m%12!==0||g.eventId!==`royal-honor-${g.factionId}-${g.recipientRulerId}-${g.epochFounderId}-${g.rank}`||!['FENGJUN','QINWANG'].includes(g.rank)||g.sovereigntyRank!==(g.rank==='QINWANG'?'EMPEROR':'KING')||source.e.type!=='royal-honor-granted'||source.e.actorFactionId!==d.factionId||source.e.rulerId!==issuer.id||source.e.metadata?.recipientRulerId!==recipient.id||source.e.metadata.royalHonor!==JSON.stringify(g)||at(source.e)!==m||source.e.title!==royalHonorText(g))throw Error('source or grant identity');
+   if(!f||!recipient||!issuer||!source||g.version!==2||owner!==recipient||seen.has(g.eventId)||g.factionId!==d.factionId||!Number.isSafeInteger(m)||m<0||m>save.world.worldMonth||m%12!==0||g.eventId!==`royal-honor-${g.factionId}-${g.recipientRulerId}-${g.epochFounderId}-${g.rank}`||!['WUANJUN','ZHENGUOGONG'].includes(g.rank)||!['KING','EMPEROR'].includes(g.sovereigntyRank)||source.e.type!=='royal-honor-granted'||source.e.actorFactionId!==d.factionId||source.e.rulerId!==issuer.id||source.e.metadata?.recipientRulerId!==recipient.id||source.e.metadata.royalHonor!==JSON.stringify(g)||at(source.e)!==m||source.e.title!==royalHonorText(g))throw Error('source or grant identity');
    seen.add(g.eventId);
    const endedBefore=(id:string)=>prior.some(e=>['ruler-succession','ruler-deposed'].includes(e.type)&&e.metadata?.previousRulerId===id||e.type==='dynasty-usurped'&&e.metadata?.predecessorRulerId===id||['ruler-died','ruler-captured'].includes(e.type)&&(e.rulerId===id||e.metadata?.rulerId===id)||e.type==='heir-died'&&e.metadata?.heirId===id||e.type==='military-person-died'&&e.metadata?.personId===rulers.find(r=>r.id===id)?.militaryIdentity?.personId);
    if(!epoch||epoch.startMonth>m||epoch.endMonth!==undefined&&epoch.endMonth<m||g.houseName!==recipient.houseName||g.houseName!==issuer.houseName||g.houseName!==epoch.houseName||issuer.id===recipient.id||issuer.accessionYear===undefined||m-issuer.accessionYear<12||issuer.endYear!==undefined&&issuer.endYear<m||issuer.deathMonth!==undefined&&issuer.deathMonth<m||endedBefore(issuer.id)||f.stateFoundedMonth===undefined||f.stateFoundedMonth>m||m-recipient.bornYear<288||g.bornMonth!==recipient.bornYear||recipient.deathMonth!==undefined&&recipient.deathMonth<m||(recipient.naturalDeathYear??recipient.plannedEndYear??Infinity)<=m||recipient.accessionYear!==undefined&&recipient.accessionYear<m||endedBefore(recipient.id)||g.recipientName!==royalName(recipient)||g.issuerName!==royalName(issuer)||!g.relation||g.relation==='COLLATERAL_KIN'||getRecordedKinRelation(recipient,issuer,rulers)!==g.relation)throw Error('real kin, life or office');
@@ -24,17 +25,19 @@ export function validateRoyalHonors(save:WorldSaveV1):string[]{
    if(terminal&&terminal.type!=='faction-restored')throw Error('not in-country');
    const histories=f.sovereigntyHistory as Array<{rank:string;startMonth:number}>;
    const rank=histories.filter(h=>h.startMonth<m||h.startMonth===m&&(h.rank!=='EMPEROR'||prior.some(e=>e.type==='emperor-proclaimed'&&e.actorFactionId===d.factionId&&at(e)===m))).sort((a,b)=>a.startMonth-b.startMonth).at(-1)?.rank??'KING';
-   if(rank!==g.sovereigntyRank||g.rank==='QINWANG'&&!prior.some(e=>e.type==='emperor-proclaimed'&&e.actorFactionId===d.factionId))throw Error('sovereign rank');
+   if(rank!==g.sovereigntyRank)throw Error('sovereign rank');
    const namedAtGrant=f.nameHistory.some(h=>h.name===g.countryName&&Number(h.startMonth)<=m&&(h.endMonth===undefined||Number(h.endMonth)>=m));
    const changes=events.flatMap((e,i)=>e.type==='dynasty-usurped'&&e.actorFactionId===d.factionId&&at(e)===m&&typeof e.metadata?.oldStateName==='string'&&typeof e.metadata.newStateName==='string'?[{i,oldName:e.metadata.oldStateName,newName:e.metadata.newStateName}]:[]),beforeName=changes.filter(c=>c.i<source.index).at(-1)?.newName,afterName=changes.find(c=>c.i>source.index)?.oldName,provenName=beforeName??afterName;
    if(!(provenName===undefined?namedAtGrant:provenName===g.countryName)||g.issuerTitle!==formatRulerTitleAtMonth({name:d.factionId,displayName:g.countryName,nameHistory:[{name:g.countryName,startMonth:0}],identityStage:'STATE',stateFoundedMonth:f.stateFoundedMonth,sovereigntyRank:g.sovereigntyRank,sovereigntyHistory:[{rank:g.sovereigntyRank,startMonth:f.stateFoundedMonth}]},g.issuerName,m))throw Error('event-time names');
    const earlier=grants.filter(h=>(byId.get(h.eventId)?.index??Infinity)<source.index);
    if(earlier.some(h=>m-h.month<36)||earlier.some(h=>h.recipientRulerId===g.recipientRulerId&&h.epochFounderId===g.epochFounderId&&h.rank===g.rank))throw Error('cooldown or repeated title');
    const occupied=new Set(earlier.filter(h=>h.epochFounderId===g.epochFounderId).filter(h=>{const r=rulers.find(r=>r.id===h.recipientRulerId)!;return (r.deathMonth===undefined||r.deathMonth>=m)&&(r.naturalDeathYear??r.plannedEndYear??Infinity)>m&&(r.accessionYear===undefined||r.accessionYear>=m)&&!endedBefore(r.id);}).map(h=>h.recipientRulerId));
-   if(!occupied.has(recipient.id)&&occupied.size>=(g.rank==='QINWANG'?4:2))throw Error('title capacity');
+   if(!occupied.has(recipient.id)&&occupied.size>=(g.sovereigntyRank==='EMPEROR'?4:2))throw Error('title capacity');
    if(!Array.isArray(g.meritEventIds)||new Set(g.meritEventIds).size!==g.meritEventIds.length||g.meritEventIds.some(id=>(byId.get(id)?.index??Infinity)>=source.index))throw Error('military source order');
    const merits=royalHonorMerits(recipient,save.registries.militaryCommandRegistry.people,save.registries.militaryCommandRegistry.formations,prior,m,d.factionId);
-   if(!['KIN_SENIORITY','MILITARY_MERIT'].includes(g.basis)||g.basis==='MILITARY_MERIT'&&(!g.meritEventIds.length||JSON.stringify(merits)!==JSON.stringify(g.meritEventIds))||g.basis==='KIN_SENIORITY'&&(g.meritEventIds.length>0||merits.length>0))throw Error('grant reason');
+   if(g.basis!=='MILITARY_MERIT'||!g.meritEventIds.length||JSON.stringify(merits)!==JSON.stringify(g.meritEventIds)||royalMeritRank(merits,prior)!==g.rank)throw Error('grant reason');
+   const p=save.registries.militaryCommandRegistry.people.find(p=>p.personId===recipient.militaryIdentity?.personId);
+   if(!p||p.deathMonth!==undefined&&p.deathMonth<m||!p.appointments.some(a=>a.factionId===d.factionId&&a.startMonth<=m&&(a.endMonth??m)>=m&&verifiedPoliticalOffice(p,a.commandId,d.factionId,m,prior)))throw Error('real military office');
   }catch(e){errors.push(`invalid royal honor: ${String(g?.eventId)} (${String(e)})`);}}
  }
  for(const e of events)if(e.type==='royal-honor-granted'&&!seen.has(e.id))errors.push('unbound royal honor event');

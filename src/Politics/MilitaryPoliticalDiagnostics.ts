@@ -18,6 +18,6 @@ export class MilitaryPoliticalDiagnostics {
   }
   snapshot() {
     const t = this.totals;
-    return { ...t, blockers:{...this.blockers}, chineseSummary: `真实军权政治参与（本次会话，读档重置；非独立国家数）\n政治检查：${t.checks}次；真实危机检查：${t.crisisChecks}次\n符合军事资格：${t.eligibleActorChecks}人次；军权身份阻断：${t.identityBlocked}人次；维持原王统：${this.blockers.SUPPORTS_CONTINUITY??0}人次\n风险实际改变：${t.riskChanged}次；资格放宽：0次\n军事参与单次抽签：${t.draws}次（不按将领人数叠加）\n同批抽签原基线条件期望：${t.baselineExpected.toFixed(4)}；新规则条件期望：${t.finalExpected.toFixed(4)}\n军事参与成功：${t.militarySuccesses}次；未成功：${t.militaryFailures}次\n无军事参与的政治转型：${t.nonMilitarySuccesses}次\n区分宗室内部废立与异姓易代；本版未实现将领本人篡位。` };
+    return { ...t, blockers:{...this.blockers}, chineseSummary: `真实军权政治参与（本次会话，读档重置；非独立国家数）\n政治检查：${t.checks}次；真实危机检查：${t.crisisChecks}次\n符合军事资格：${t.eligibleActorChecks}人次；军权身份阻断：${t.identityBlocked}人次；维持原王统：${this.blockers.SUPPORTS_CONTINUITY??0}人次\n风险实际改变：${t.riskChanged}次；资格放宽：0次\n军事参与单次抽签：${t.draws}次（不按将领人数叠加）\n同批抽签原基线条件期望：${t.baselineExpected.toFixed(4)}；新规则条件期望：${t.finalExpected.toFixed(4)}\n军事参与成功：${t.militarySuccesses}次；未成功：${t.militaryFailures}次\n无军事参与的政治转型：${t.nonMilitarySuccesses}次\n区分宗室内部废立与异姓易代；已支持合格真实军人在成功易姓机会中本人建立新王统；不代表现役将领可随时独立夺位。` };
   }
 }

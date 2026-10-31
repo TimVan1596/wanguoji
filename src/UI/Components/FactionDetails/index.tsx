@@ -394,7 +394,7 @@ function FactionProfile({
       : team.factionType === "SPLIT"
       ? "分裂政权"
       : team.factionType === "FRONTIER"
-      ? "边境军"
+      ? "边地义军"
       : "义军政权";
 
   return (

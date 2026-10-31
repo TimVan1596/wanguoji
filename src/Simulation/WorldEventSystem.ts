@@ -1,3 +1,5 @@
+import {beginPoliticalMutation} from "./PoliticalMutationScope";
+import {observeFormationPath} from "./FactionIdentity";
 import {militaryLocalCrisis} from "./MilitaryLocalRules";
 import {popularCrisisFacts} from "./PopularRebellionSupport";
 import {assessMilitarySecession} from "./MilitarySecession";
@@ -555,50 +557,32 @@ export default class WorldEventSystem {
       const territoryShare = getFactionTerritoryMetric(calculateTerritoryMetrics(teams, totalCells), team.name).controlledTerritoryShare;
       const deFacto = isDeFactoStateFormationEligible(team, year, this.cycleDiagnostics.fragmentationAge, territoryShare, stability, hasFormalRuler);
       const ordinary = isStateFormationEligible(team, year, stability, hasFormalRuler);
-      if (!ordinary && !deFacto) {
-        team.stateFormationEligibleSinceMonth = undefined;
-        return;
+      if (!observeFormationPath(team, year, ordinary, deFacto)) return;
+      const fields = {displayName: team.displayName, identityStage: team.identityStage,
+        stateFoundedMonth: team.stateFoundedMonth, sovereigntyRank: team.sovereigntyRank,
+        sovereigntyHistory: structuredClone(team.sovereigntyHistory), nameHistory: structuredClone(team.nameHistory),
+        stateFormationEligibleSinceMonth: team.stateFormationEligibleSinceMonth,
+        stateFormationEligibilityKind: team.stateFormationEligibilityKind, joinCommand: [...team.joinCommand]};
+      const randomBefore = worldRandom.exportState(), historyBefore = WorldHistory.snapshotPoliticalTransaction();
+      const dynastyBefore = DynastyRegistry.snapshotSuccessionTransaction(), scope = beginPoliticalMutation();
+      try {
+        const stateName = createStateName({capitalName: team.capitalCity?.name ?? team.capital,
+          founderCityName: team.cities[0]?.name, houseName: team.houseName}, activeStateNames, historicalStateNames, max => worldRandom.pickIndex(max));
+        if (!team.formState(stateName, year)) throw Error("State formation rejected");
+        const eventId = WorldHistory.addStateFounded(year, team.name, fields.displayName, stateName,
+          currentRuler ? DynastyRegistry.getRulerDisplay(team.name) : undefined, currentRuler?.id,
+          team.capitalCity?.id, team.capitalCity?.name);
+        DynastyRegistry.recordStateFounded(team.name, stateName, year, eventId);
+        activeStateNames.push(stateName);
+        historicalStateNames.push(stateName);
+      } catch {
+        scope.cancel(); Object.assign(team, fields);
+        const restoring = beginPoliticalMutation();
+        DynastyRegistry.rollbackSuccessionTransaction(dynastyBefore);
+        WorldHistory.rollbackPoliticalTransaction(historyBefore); worldRandom.restore(randomBefore);
+        restoring.finishRollback(); return;
       }
-      team.stateFormationEligibleSinceMonth ??= year;
-      const requiredMonths = ordinary ? 12 : 24;
-      if (year - team.stateFormationEligibleSinceMonth >= requiredMonths) {
-          const oldDisplayName = team.displayName;
-          const stateName = createStateName({ capitalName: team.capitalCity?.name ?? team.capital, founderCityName: team.cities[0]?.name, houseName: team.houseName }, activeStateNames, historicalStateNames, (max) => worldRandom.pickIndex(max));
-          if (team.formState(stateName, year)) {
-            activeStateNames.push(stateName);
-            historicalStateNames.push(stateName);
-            const eventId = WorldHistory.addStateFounded(year, team.name, oldDisplayName, stateName, currentRuler ? DynastyRegistry.getRulerDisplay(team.name) : undefined, currentRuler?.id, team.capitalCity?.id, team.capitalCity?.name);
-            DynastyRegistry.recordStateFounded(team.name, stateName, year, eventId);
-          }
-        return;
-      }
-      const oldDisplayName = team.displayName;
-      const stateName = createStateName(
-        {
-          capitalName: team.capitalCity?.name ?? team.capital,
-          founderCityName: team.cities[0]?.name,
-          houseName: team.houseName,
-        },
-        activeStateNames,
-        historicalStateNames,
-        (max) => worldRandom.pickIndex(max)
-      );
-      if (!team.formState(stateName, year)) {
-        return;
-      }
-      activeStateNames.push(stateName);
-      historicalStateNames.push(stateName);
-      const eventId = WorldHistory.addStateFounded(
-        year,
-        team.name,
-        oldDisplayName,
-        stateName,
-        currentRuler ? DynastyRegistry.getRulerDisplay(team.name) : undefined,
-        currentRuler?.id,
-        team.capitalCity?.id,
-        team.capitalCity?.name
-      );
-      DynastyRegistry.recordStateFounded(team.name, stateName, year, eventId);
+      scope.commit();
     });
   }
 

@@ -53,6 +53,7 @@ export default class Team {
   public nameHistory: FactionNameHistoryEntry[] = [];
   public origin: FactionOrigin;
   public stateFormationEligibleSinceMonth: number | undefined;
+  public stateFormationEligibilityKind?: "ORDINARY" | "DE_FACTO";
   public stateFoundedMonth: number | undefined;
   public emperorEligibleSinceMonth: number | undefined;
   public proclaimedEmperorMonth: number | undefined;
@@ -132,6 +133,7 @@ export default class Team {
     team.nameHistory = (state.nameHistory ?? []).map((entry: object) => ({ ...entry }));
     team.origin = { ...state.origin, foundingCityIds: state.origin?.foundingCityIds ? [...state.origin.foundingCityIds] : undefined };
     team.stateFormationEligibleSinceMonth = state.stateFormationEligibleSinceMonth;
+    team.stateFormationEligibilityKind = state.stateFormationEligibilityKind;
     team.stateFoundedMonth = state.stateFoundedMonth;
     team.emperorEligibleSinceMonth = state.emperorEligibleSinceMonth;
     team.proclaimedEmperorMonth = state.proclaimedEmperorMonth;
@@ -476,6 +478,7 @@ export default class Team {
       sovereigntyRank: this.sovereigntyRank,
       sovereigntyHistory: this.sovereigntyHistory.map((entry) => ({ ...entry })),
       stateFormationEligibleSinceMonth: this.stateFormationEligibleSinceMonth,
+      stateFormationEligibilityKind: this.stateFormationEligibilityKind,
       stateFoundedMonth: this.stateFoundedMonth,
       emperorEligibleSinceMonth: this.emperorEligibleSinceMonth,
       proclaimedEmperorMonth: this.proclaimedEmperorMonth,

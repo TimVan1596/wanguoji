@@ -473,7 +473,7 @@ function formatProgressDuration(value: number, target: number) {
 
 function formatIdentityStage(factionType?: string) {
   if (factionType === "FRONTIER") {
-    return "边境军";
+    return "边地义军";
   }
   if (factionType === "SPLIT") {
     return "分裂政权";
