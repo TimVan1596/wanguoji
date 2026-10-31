@@ -1220,8 +1220,17 @@
   ],
   "statisticalLimits": "Two seeds x 50 years have one resident founding, no natural military founding, deposition or usurpation. Controlled real production scenarios demonstrate safety and availability, not an improved natural rate. Event counters are independent canonical acts; city checks, qualification counts and shared draws have different denominators. Save fingerprints differ because schema and causal source metadata differ, not because measured gameplay trajectories diverged.",
   "verification": {
-    "fullUnitTests": "pending final output",
-    "builds": "pending final output",
+    "fullUnitTests": {
+      "passed": true,
+      "files": 289,
+      "tests": 2253
+    },
+    "builds": {
+      "web": "PASS",
+      "desktop": "PASS",
+      "desktopDebug": "PASS",
+      "notes": "Existing Vite chunk-size advisory only; renderer assets, debug source maps and bundled music checks passed."
+    },
     "saveLoad": "strict full saves, twelve-month deterministic continuation, second read, actual linked-person terminal life tested",
     "failureInjection": "original captured/usurpation/succession writes; real usurper command-end/usurpation/succession/identity-validation; whole canonical DTO including RNG equal after rollback; live User and Arcade references/order preserved",
     "manualChromeGate": "pending user, no visual acceptance claimed"
