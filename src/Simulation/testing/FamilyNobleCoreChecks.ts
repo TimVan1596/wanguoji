@@ -1,3 +1,4 @@
+import {familyMemberNobleLabel} from '../../UI/Components/FactionDetails/FamilyNoblePanel';
 import Military from '../../Politics/MilitaryCommandRegistry';
 import Dynasty from '../../Politics/Dynasty';
 import History from '../../History/WorldHistory';
@@ -27,8 +28,12 @@ export function checkFamilyNobleCore(core:any,factionId:string,childId:number,ch
   const f=family(),a=f.nobleSuccession?.at(-1),child=[...team().users].find((u:any)=>u.id===childId) as any;
   check(a?.kind==='SUCCEEDED'&&a.rank==='BO'&&f.members.find(m=>m.memberId===a.holderMemberId)?.sourceUserId===childId,'real marquis founder death leads to one direct-child baron inheritance');
   check(!child.militaryPersonId&&child.role==='NORMAL'&&Military.getPeople().length===people&&JSON.stringify(Military.getFormations())===formations&&core.teams.reduce((n:number,t:any)=>n+t.users.size,0)===pop,'ordinary resident inherits only a title, without military identity, troops, population or royal office');
+  check(familyMemberNobleLabel(f,f.members.find(m=>m.memberId===a!.holderMemberId)!,240)==='袭伯爵','family UI reads the real inherited baronage separately from a civilian military status');
   const saved=exportWorldSave(core),v=validateWorldSave(saved);check(v.valid,`strict hereditary title save: ${v.errors.join(';')}`);update();check(diffCanonicalWorldSave(saved,exportWorldSave(core)).matched,'same monthly title update is idempotent');
   for(const field of ['rank','holderMemberId','previousRank','step','sourceGrantEventId']){const bad=structuredClone(saved),f=bad.registries.militaryCommandRegistry.families!.find(f=>f.factionId===factionId)!,a=f.nobleSuccession![0];if(field==='step')a.step++;else (a as any)[field]='forged';check(!validateWorldSave(bad).valid,`strict inheritance rejects forged ${field}`);}
+  hydrateWorldSave(core,structuredClone(saved));const heir=[...team().users].find((u:any)=>u.id===childId) as any;check(heir.destroyUser(false,{cause:'BATTLE_DEATH',month:240}),'actual civilian heir can die later in the same month');update();
+  const same=exportWorldSave(core),sv=validateWorldSave(same);check(sv.valid&&family().nobleSuccession?.at(-1)?.reason==='NO_HEIR',`same-month later heir death closes its title without invalidating earlier living inheritance: ${sv.errors.join(';')}`);
+  const final=family().nobleSuccession!.length;update();check(family().nobleSuccession!.length===final,'a broken chain does not seek newly generated children or recreate its title');
   const resume=()=>{hydrateWorldSave(core,structuredClone(saved));core.setWorldRunning(true);for(let m=0;m<12;m++){for(let i=0;i<30;i++)core.advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit('postupdate');}core.setWorldRunning(false);return exportWorldSave(core);};
   const x=resume(),y=resume();check(validateWorldSave(x).valid&&diffCanonicalWorldSave(x,y).matched,'real inheritance deterministically continues twelve months without duplicate titles or changed RNG');hydrateWorldSave(core,structuredClone(x));check(diffCanonicalWorldSave(x,exportWorldSave(core)).matched,'second read preserves actual inherited civilian identity and title chain');
  }finally{hydrateWorldSave(core,structuredClone(original));}

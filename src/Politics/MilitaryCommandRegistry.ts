@@ -1,4 +1,4 @@
-import {createFamilyNobleContext,planFamilyNobleTransition,familyNobleText} from './FamilyNobleSuccession';
+import {createFamilyNobleContext,planFamilyNobleTransition,familyNobleText,familyResidenceAt} from './FamilyNobleSuccession';
 import {emptyFamilyRecruitmentDiagnostics,familyRecruitmentExposure} from './FamilyRecruitmentDiagnostics';
 import {familyFounderSource,makeMilitaryFamily,familyAppointmentWeight,type MilitaryFamily} from './MilitaryFamily';
 import {politicalMutationActive,beginPoliticalMutation} from '../Simulation/PoliticalMutationScope';
@@ -473,7 +473,11 @@ export class MilitaryCommandRegistryStore {
     if(!this.eventWriter||!this.families.length)return;
     for(const original of [...this.families]){
       const f=this.families.find(f=>f.familyId===original.familyId)!;
-      const context=createFamilyNobleContext(month,this.families,this.getPeople(),this.eventReader(f.factionId),dynasties);
+      const last=f.nobleSuccession?.at(-1);if(last?.kind==='ENDED')continue;
+      const holder=f.members.find(m=>m.memberId===(last?.holderMemberId??f.members[0].memberId))!,p=holder.militaryPersonId?this.people.get(holder.militaryPersonId):undefined,t=teams.find(t=>t.name===f.factionId),dy=dynasties.find(d=>d.factionId===f.factionId),epoch=dy?.houseEpochs?.find(e=>e.foundingRulerId===f.epochFounderId);
+      const needsReview=(holder.deathMonth??Infinity)<=month||(holder.exitMonth??Infinity)<=month||familyResidenceAt(f,holder,month)!==f.factionId||p?.politicalRulerId||p?.politicalHistory?.some(a=>a.kind==='COURT_BAN'&&a.severity==='FORFEITURE'&&a.month<=month)||!last&&p?.honorHistory?.some(h=>h.kind==='REVOKED'&&h.month<=month)||t?.status!=='ACTIVE'||(epoch?.endMonth??Infinity)<=month;
+      if(!needsReview)continue;
+      const context=createFamilyNobleContext(month,[f],this.getPeople(),this.eventReader(f.factionId),dynasties);
       const act=planFamilyNobleTransition(f,context);if(!act)continue;
       // Never turn an absent or mismatched living resident into an heir by inference.
       if(act.kind==='SUCCEEDED'){

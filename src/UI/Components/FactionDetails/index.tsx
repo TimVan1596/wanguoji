@@ -1,3 +1,4 @@
+import {FamilyTitleBadge} from './FamilyNoblePanel';
 import MilitaryFamilyBrowser from './MilitaryFamilyBrowser';
 import {associatedMilitaryFamilies} from './militaryFamilyTree';
 import {militaryCourtLabels} from '../../../Politics/MilitaryCourtStanding';
@@ -719,7 +720,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
         heading={<>
           <Typography fontSize="0.92rem" sx={{display:"flow-root"}} fontWeight={current?"bold":600}>{current?"● ":""}{royalHonor?.primary??getMilitaryPersonDisplayName(person)} · <Box component="span" sx={{fontSize:"0.76rem",fontWeight:400,color:"var(--gg-text-muted)"}}>{ageText}</Box> · {current?"现役":person.status==="ACTIVE"&&person.factionId!==factionId?"已转属":describeMilitaryStatus(person)}</Typography>
           <Typography fontSize="0.76rem">{[royalHonor?.secondary,...identityLabels,honorTitle.text].filter(Boolean).join(" · ")}</Typography>
-          <Typography fontSize="0.82rem" color="var(--gg-text-muted)">{politicalTeam?.displayName??factionId} · {highest?`最高任${MILITARY_OFFICE_NAMES[highest.office]}`:"军职未载"}</Typography>
+          <FamilyTitleBadge personId={person.personId} factionId={factionId} month={worldMonth}/><Typography fontSize="0.82rem" color="var(--gg-text-muted)">{politicalTeam?.displayName??factionId} · {highest?`最高任${MILITARY_OFFICE_NAMES[highest.office]}`:"军职未载"}</Typography>
           <Typography fontSize="0.8rem" color="var(--gg-text-muted)">{first?`${formatWorldDate(first.startMonth)}—${last?.endMonth===undefined?(current?"今":"止期未载"):formatWorldDate(last.endMonth)}`:"任期未载"} · 军旅纪事展开查看</Typography>
         </>}
       >
