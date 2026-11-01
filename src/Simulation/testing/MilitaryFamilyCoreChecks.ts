@@ -33,7 +33,12 @@ export function checkMilitaryFamilies(core:any,base:ReturnType<typeof exportWorl
   check(link.member.parentMemberId===link.family.members[0].memberId&&link.member.bornMonth===child.bornMonth&&child.name===link.member.name&&core.teams.reduce((n:number,t:any)=>n+t.users.size,0)===count+1&&Military.getPeople().length===people,'family relation is new-entry sourced, not an extra resident or an automatic military person');
   check(familyAppointmentWeight(link.family,link.member,factionId,epoch,240)===1.1,'the same eligible child receives bounded ten-percent first appointment weight');
   for(const p of Military.getPeople().filter(p=>p.factionId===factionId&&p.status==='ACTIVE'&&p.personId!==family.founderPersonId))Military.endPersonCommands(p.personId,240,'DISMISSED');
-  check((Military as any).isEligible(child,240)&&(Military as any).appoint(child,factionId,240,[child.player.logicalUnitId]),'adult child passes normal real military appointment with its own single existing unit');
+  check((Military as any).isEligible(child,240),'adult child passes every existing military entry condition');
+  const candidates=[...team().users].filter((u:any)=>(Military as any).isEligible(u,240)).sort((a:any,b:any)=>a.id-b.id||a.name.localeCompare(b.name)) as any[];
+  const weights=candidates.map(u=>{const p=u.militaryPersonId&&Military.getPerson(u.militaryPersonId),l=Military.getFamilyMember(u.id,u.bornMonth);return p?Military.getCareer(p,240).appointmentWeight:familyAppointmentWeight(l?.family,l?.member,factionId,epoch,240);});
+  const royals=(Military as any).royalService?.candidates(team(),240)??[],index=candidates.indexOf(child),weightRoll=(weights.slice(0,index).reduce((n,w)=>n+w,0)+weights[index]/2)/(weights.reduce((n,w)=>n+w,0)+royals.length),next=random.next;let calls=0;
+  random.next=()=>{next.call(random);return calls++===0?0:weightRoll;};try{Military.update(240,[team()],core.allCities);}finally{random.next=next;}
+  check(calls===2&&child.militaryPersonId,'existing annual shared appointment draw selects the real child through its bounded family weight');
   check(Military.getPerson(child.militaryPersonId)!.personalName===child.name&&Military.getPerson(family.founderPersonId)!.status==='ACTIVE'&&link.member.militaryPersonId===child.militaryPersonId,'father and son serve simultaneously with distinct real military IDs and continuous births');
   check(!Military.getPerson(child.militaryPersonId)!.nobilityHistory&&Military.getFormations().find(f=>f.commanderPersonId===child.militaryPersonId)!.memberUnitIds.length===1,'descendant inherits no peerage, captures or extra troops');
   const save=strict();

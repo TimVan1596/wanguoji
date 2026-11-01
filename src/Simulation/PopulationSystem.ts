@@ -87,6 +87,7 @@ export default class PopulationSystem {
     aliveTeams.forEach((team) => {
       const { population, capacity } = measurePhase(profile, "Population.capacity", () => ({ population: this.getPopulation(team), capacity: this.getCapacity(team) }));
       if (population >= capacity) {
+        Military.observeFamilyPopulationCapacity(team.name,worldMonth);
         return;
       }
 
