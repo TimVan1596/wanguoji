@@ -1,3 +1,4 @@
+import {checkCourtFates} from './CourtFateCoreChecks';
 import {checkCourtCoups} from './CourtCoupCoreChecks';
 import {checkStateFormationCore} from './StateFormationCoreChecks';
 import {checkRoyalHonors,checkRoyalHonorCompetition,checkRoyalCourtAttempt} from './RoyalHonorCoreChecks';
@@ -45,7 +46,7 @@ export async function runMilitaryNobilityCore(seed:string){
   // Equal willingness/contest multipliers isolate the existing title and office regressions.
   const minimumAmbition=Math.min(...ids.map(id=>militaryAmbition(id,Military.getPerson(id)!.bornMonth)));
   for(const u of users){const p=Military.getPerson(u.militaryPersonId!)!;u.loyalty=militaryAmbition(p.personId,p.bornMonth)-minimumAmbition;}
-  clock(216);const base=strict();checkStateFormationCore(core,base,check);checkRoyalHonors(core,base,check);checkRoyalHonorCompetition(core,base,check);checkCourtCoups(core,base,factionId,check);checkRoyalCourtAttempt(core,base,check);
+  clock(216);const base=strict();checkStateFormationCore(core,base,check);checkRoyalHonors(core,base,check);checkRoyalHonorCompetition(core,base,check);checkCourtCoups(core,base,factionId,check);checkCourtFates(core,base,factionId,check);checkRoyalCourtAttempt(core,base,check);
   const restore=(save=base)=>{hydrateWorldSave(core,structuredClone(save));return {t:core.teams.find(t=>t.name===factionId)!,d:Dynasty.get(factionId)!,p:Military.getPerson(ids[0])!,q:Military.getPerson(ids[1])!};};
   checkSuccessionRollback(core,base,factionId,check);
   checkOfficePoliticalChoice(core,base,ids,factionId,check);
