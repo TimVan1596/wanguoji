@@ -1,3 +1,5 @@
+import {royalHonorHeading} from '../../../Politics/RoyalHonorPresentation';
+import type {Dynasty,Ruler} from '../../../Politics/Dynasty';
 import {appanageEffectiveWindows} from '../../../History/AppanageCareer';
 import type {cityAppanageHistory} from '../../../History/CityAppanageHistory';
 import type {MilitaryPerson} from '../../../Politics/MilitaryCommandRegistry';
@@ -31,4 +33,9 @@ export function appanageLatestPortrait(r:AppanageRelation,faction:Parameters<typ
  const grant=p.nobilityHistory?.filter(g=>g.factionId===a.factionId&&g.epochFounderId===a.epochFounderId&&before(g.eventId,g.month)&&index.byId.get(g.eventId)?.event.metadata?.nobility===JSON.stringify(g)).at(-1);
  const colorMonth=Number.isFinite(order)?Math.max(a.month,at-1):at;
  return {personId:p.personId,age:Math.max(0,Math.floor((at-p.bornMonth)/12)),role:(office??'UNKNOWN') as PortraitRole,nobleRank:grant?.rank??a.rank,royalKin:!!p.royalIdentity,color:faction?getFactionColorAtMonth(faction,colorMonth):undefined,deceased:false,month:at,rank:grant?.rank??a.rank};
+}
+
+export function appanageRoyalHonor(r:AppanageRelation,index:import('../../../History/CityAppanageHistory').AppanageHistoryIndex,month:number,royal:Ruler|undefined,house:Dynasty|undefined,initial=false){
+ const a=r.grant.record,last=appanageEffectiveWindows(r,index,month).at(-1),at=initial?a.month:last?.endMonth??a.month,order=initial?r.grant.recordOrder+1:last?.endOrder??Infinity;
+ return royalHonorHeading(royal,house,at,{factionId:a.factionId,epochFounderId:a.epochFounderId,statusMonth:Number.isFinite(order)?at-1:at,before:g=>g.month<at||g.month===at&&(index.byId.get(g.eventId)?.index??Infinity)<order});
 }

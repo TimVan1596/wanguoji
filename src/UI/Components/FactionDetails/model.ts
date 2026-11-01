@@ -482,12 +482,12 @@ function formatIdentityStage(factionType?: string) {
     return "义军";
   }
   if (factionType === "SPLIT") {
-    return "分裂政权";
+    return "义军";
   }
   if (factionType === "KINGDOM") {
     return "正式国家";
   }
-  return "义军政权";
+  return "义军";
 }
 
 export function buildRestorationMemoryLines(evidence: RestorationTenureEvidence, input: {

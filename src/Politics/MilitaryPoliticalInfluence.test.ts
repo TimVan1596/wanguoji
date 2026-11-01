@@ -144,3 +144,12 @@ it('keeps rank/nobility selection bonuses below the next base-strength tier, wit
  for(let strength=1;strength<3;strength++)expect(strength*1.25).toBeLessThan(strength+1);
  const i=fixture(),before=deriveMilitaryPoliticalInfluence(i);(i.people[0] as any).appanageHistory=[{kind:'GRANTED',cityId:'distant',personId:i.people[0].personId}];expect(deriveMilitaryPoliticalInfluence(i)).toEqual(before);
 });
+
+it('court attempts admit a verified two-person serving command without inventing capture merits or relaxing legacy political qualification',()=>{
+ const x=fixture(),p=x.people[0];x.formations[0].memberUnitIds=['unit-1','unit-2'];x.users=x.users.slice(0,2);x.users[0].loyalty=50;
+ p.appointments[0].officeHistory=[{office:'PIJIANG',month:60,eventId:'office',serviceMonths:60,captureEventIds:[]}];
+ x.events=[{id:'appointment',year:0,type:'military-appointment',actorFactionId:'qin',metadata:{personId:p.personId,commandId:'military-command-1'}},{id:'office',year:60,type:'military-office-granted',actorFactionId:'qin',metadata:{personId:p.personId,commandId:'military-command-1',office:'PIJIANG'}}] as any;
+ const before=JSON.stringify(x),rng=worldRandom.exportState();expect(deriveMilitaryPoliticalInfluence(x).candidates).toEqual([]);
+ expect(deriveMilitaryPoliticalInfluence({...x,courtAttempt:true,royalClaims:true}).candidates[0]).toMatchObject({unitCount:2,capturedEventIds:[],officeStanding:{eventId:'office'}});
+ x.formations[0].memberUnitIds.push('missing');expect(deriveMilitaryPoliticalInfluence({...x,courtAttempt:true}).candidates).toEqual([]);x.formations[0].memberUnitIds.pop();expect(JSON.stringify(x)).toBe(before);expect(worldRandom.exportState()).toEqual(rng);
+});

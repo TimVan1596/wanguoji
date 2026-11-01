@@ -392,11 +392,7 @@ function FactionProfile({
       ? team.sovereigntyRank === "EMPEROR"
         ? "帝国"
         : "王国"
-      : team.factionType === "SPLIT"
-      ? "分裂政权"
-      : team.factionType === "FRONTIER"
-      ? "义军"
-      : "义军政权";
+      : "义军";
 
   return (
     <Box data-faction-scroll sx={{ p: 1.25, height: "100%", boxSizing: "border-box", overflowY: "auto" }}>

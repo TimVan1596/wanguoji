@@ -1,5 +1,3 @@
-import {appanageEffectiveWindows as importWindows} from '../../../History/AppanageCareer';
-import {royalHonorHeading} from '../../../Politics/RoyalHonorPresentation';
 import {appanageCareer} from '../../../History/AppanageCareer';
 import type {AppanageHistoryIndex} from '../../../History/CityAppanageHistory';
 import PersonMilestones from '../FactionDetails/PersonMilestones';
@@ -17,7 +15,7 @@ import {formatWorldDate} from '../../../Simulation/WorldTime';
 import {resolvePersonArchiveTarget} from '../FactionDetails/PersonArchiveTarget';
 import MilitaryArchiveWindow from '../FactionDetails/MilitaryArchiveWindow';
 import PersonPortrait from '../FactionDetails/PersonPortrait';
-import {appanageStatus,appanageSummary,appanageTimelineLabel,appanagePortrait,appanageLatestPortrait,type AppanageRelation} from './AppanagePresentation';
+import {appanageRoyalHonor,appanageStatus,appanageSummary,appanageTimelineLabel,appanagePortrait,appanageLatestPortrait,type AppanageRelation} from './AppanagePresentation';
 const link={background:'none',border:0,color:'inherit',font:'inherit',padding:0,cursor:'pointer'} as const;
 export default function CityAppanages({cityId}:{cityId:string}){
  const [revision,setRevision]=useState(()=>History.getRevision()),month=useSelector((s:RootState)=>s.root.worldMonth);
@@ -39,9 +37,7 @@ function AppanageCard({relation:r,month,index}:{relation:AppanageRelation;month:
  const [open,setOpen]=useState(false),teams=useSelector((s:RootState)=>s.root.teams),dispatch=useDispatch(),{person,record:a}=r.grant;
  const faction=teams.find(t=>t.name===a.factionId),portrait=appanageLatestPortrait(r,faction,month,index),summary=appanageSummary(r);
  const royalHouse=Dynasty.get(a.factionId),royal=royalHouse?.rulers.find(q=>q.militaryIdentity?.personId===person.personId);
- const windows=importWindows(r,index,month),window=windows.at(-1);
- const headingAt=(at:number,order=Infinity)=>royalHonorHeading(royal,royalHouse,at,{factionId:a.factionId,epochFounderId:a.epochFounderId,statusMonth:Number.isFinite(order)?at-1:at,before:g=>g.month<at||g.month===at&&(index.byId.get(g.eventId)?.index??Infinity)<order});
- const heading=headingAt(portrait.month,window?.endOrder??Infinity);
+ const heading=appanageRoyalHonor(r,index,month,royal,royalHouse);
  const career=useMemo(()=>open?appanageCareer(r,index,Military.getFormations(),month):undefined,[open,r,index,month]);
  const openPerson=(e:React.MouseEvent)=>{e.stopPropagation();const target={kind:'MILITARY' as const,factionId:a.factionId,id:person.personId};if(!resolvePersonArchiveTarget(target,teams,Dynasty.getAll(),Military.getPeople()))return;dispatch(setPersonArchiveRequest(target));dispatch(setSelectedFactionName(a.factionId));dispatch(setFactionDetailTab('military'));dispatch(setRightPanelTab('faction'));};
  return <Box component='article' data-appanage-grant={a.eventId} onClick={()=>setOpen(v=>!v)} sx={{my:.5,p:1,border:'1px solid var(--gg-border)',borderLeft:`3px solid ${portrait.color===undefined?'var(--gg-border)':'#'+portrait.color.toString(16).padStart(6,'0')}`,borderRadius:1,minWidth:0,overflowWrap:'anywhere'}}>
@@ -50,6 +46,7 @@ function AppanageCard({relation:r,month,index}:{relation:AppanageRelation;month:
    <Box sx={{flex:1,minWidth:0}}>
     <Box sx={{display:'flex',alignItems:'baseline',gap:.5,flexWrap:'wrap'}}><button type='button' style={{...link,fontWeight:600,fontSize:'.88rem',textAlign:'left'}} onClick={openPerson}>{heading?.primary??person.personalName}</button><Typography component='span' fontSize='.7rem' color='var(--gg-text-muted)'>{appanageStatus(r)}</Typography></Box>
     {heading?.secondary&&<Typography fontSize='.74rem'>{heading.secondary}</Typography>}
+    {heading&&<Typography fontSize='.74rem'>荣衔授于{formatWorldDate(heading.grant.month)}</Typography>}
     <Typography fontSize='.78rem'>{a.countryName} · {NOBLE_NAMES[portrait.rank]} · {r.state==='ACTIVE'?'有效期内':'末次有效时'}</Typography>
     <Typography fontSize='.75rem'>{formatWorldDate(a.month)}—{r.endMonth===undefined?'今':formatWorldDate(r.endMonth)}</Typography>
     <Typography fontSize='.75rem'>授封：{a.rulerTitle}</Typography>
@@ -57,7 +54,7 @@ function AppanageCard({relation:r,month,index}:{relation:AppanageRelation;month:
    </Box>
    <button type='button' style={{...link,padding:'0 2px',flexShrink:0}} aria-label={`${open?'收起':'展开'}${person.personalName}封邑经历`} aria-expanded={open} onClick={e=>{e.stopPropagation();setOpen(v=>!v);}}>{open?'▴':'▾'}</button>
   </Box>
-  {open&&<Box sx={{mt:.8,pt:.6,borderTop:'1px solid var(--gg-border)',display:'grid',gap:.4}}><details><summary>受封时</summary><PersonPortrait {...appanagePortrait(person,a,faction,a.month)} size={40}/><Typography fontSize='.75rem'>{headingAt(a.month,r.grant.recordOrder+1)?.text??person.personalName}</Typography><Typography fontSize='.75rem'>{formatWorldDate(a.month)} · {a.countryName} · {NOBLE_NAMES[a.rank]}</Typography></details>{r.timeline.map(e=><Typography key={e.record.eventId} data-appanage-event={e.record.eventId} fontSize='.75rem'>{formatWorldDate(e.record.month)} · {appanageTimelineLabel(e.record)}{e.record.kind==='GRANTED'||e.record.kind==='ENDED'?` · ${NOBLE_NAMES[e.rank]}`:''}</Typography>)}{career&&career.entries.length>0&&<><Typography fontSize='.72rem' color='var(--gg-text-muted)'>以下为人物受封期间的经历，战事地点各据原记录。</Typography><PersonMilestones title='受封期间的军旅与荣誉' total={career.entries.length} selected={career.entries.slice(0,8).map(e=>({id:e.eventId,content:<Typography fontSize='.75rem'>{formatWorldDate(e.worldMonth)} · {e.text}</Typography>}))} all={()=>career.entries.map(e=>({id:e.eventId,content:<Typography fontSize='.75rem'>{formatWorldDate(e.worldMonth)} · {e.text}</Typography>}))}/><details><summary>史料考证</summary>{career.windows.map((w,i)=><Typography key={i} fontSize='.72rem'>有效阶段：{formatWorldDate(w.startMonth)}—{formatWorldDate(w.endMonth)}</Typography>)}{career.entries.map(e=><Typography key={e.eventId} fontSize='.72rem'>人物 {person.personId} · 来源 {(e.sourceEventIds??[e.eventId]).join('、')}</Typography>)}</details></>}</Box>}
+  {open&&<Box sx={{mt:.8,pt:.6,borderTop:'1px solid var(--gg-border)',display:'grid',gap:.4}}><details><summary>受封时</summary><PersonPortrait {...appanagePortrait(person,a,faction,a.month)} size={40}/><Typography fontSize='.75rem'>{appanageRoyalHonor(r,index,month,royal,royalHouse,true)?.text??person.personalName}</Typography><Typography fontSize='.75rem'>{formatWorldDate(a.month)} · {a.countryName} · {NOBLE_NAMES[a.rank]}</Typography></details>{r.timeline.map(e=><Typography key={e.record.eventId} data-appanage-event={e.record.eventId} fontSize='.75rem'>{formatWorldDate(e.record.month)} · {appanageTimelineLabel(e.record)}{e.record.kind==='GRANTED'||e.record.kind==='ENDED'?` · ${NOBLE_NAMES[e.rank]}`:''}</Typography>)}{career&&career.entries.length>0&&<><Typography fontSize='.72rem' color='var(--gg-text-muted)'>以下为人物受封期间的经历，战事地点各据原记录。</Typography><PersonMilestones title='受封期间的军旅与荣誉' total={career.entries.length} selected={career.entries.slice(0,8).map(e=>({id:e.eventId,content:<Typography fontSize='.75rem'>{formatWorldDate(e.worldMonth)} · {e.text}</Typography>}))} all={()=>career.entries.map(e=>({id:e.eventId,content:<Typography fontSize='.75rem'>{formatWorldDate(e.worldMonth)} · {e.text}</Typography>}))}/><details><summary>史料考证</summary>{career.windows.map((w,i)=><Typography key={i} fontSize='.72rem'>有效阶段：{formatWorldDate(w.startMonth)}—{formatWorldDate(w.endMonth)}</Typography>)}{career.entries.map(e=><Typography key={e.eventId} fontSize='.72rem'>人物 {person.personId} · 来源 {(e.sourceEventIds??[e.eventId]).join('、')}</Typography>)}</details></>}</Box>}
  </Box>;
 }
 

@@ -438,8 +438,10 @@ function WorldDiagnosticsPanelContent() {
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(provisionalRulers.revolution)}</Typography>
       </details>
       <details>
-        <summary>宗室废立与拥立企图</summary>
+        <summary>宫廷政治</summary>
         <Typography fontSize={12}>{provisionalRulers.courtCoups.summary}</Typography>
+        <Typography fontSize='.75rem'>有合法宗室目标 {provisionalRulers.courtCoups.funnel.legalTarget} 次；通过结构性门槛后有实际军权 {provisionalRulers.courtCoups.funnel.command} 次，其中愿意参与 {provisionalRulers.courtCoups.funnel.willing} 次；事务执行失败 {provisionalRulers.courtCoups.funnel.transactionFailures} 次。</Typography>
+        <details><summary>企图资格阻断（会话统计）</summary><Typography fontSize='.7rem'>国家年度检查阻断：{stableStringify(provisionalRulers.courtCoups.funnel.blockers)}；军人检查阻断（人次）：{stableStringify(provisionalRulers.courtCoups.funnel.armyBlockers)}</Typography></details>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 11 }}>{provisionalRulers.deposition.chineseSummary}</Typography>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 11 }}>{provisionalRulers.deposition.military.chineseSummary}</Typography>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{stableStringify(provisionalRulers.deposition)}</Typography>
