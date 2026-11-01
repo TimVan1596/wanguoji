@@ -1,0 +1,667 @@
+{
+  "scope": "Frozen real Phaser Core; four paired fixed seeds for 100 years; controlled fixtures are not natural samples",
+  "baselineHead": "c470ca2d03cc51b1aa1e5eae84844f0ee4a4c5a4",
+  "naturalComparison": [
+    {
+      "version": "z38",
+      "worlds": [
+        {
+          "seed": "regional-1",
+          "years": 100,
+          "population": 139,
+          "peakPopulation": 153,
+          "populationUnattributed": 0,
+          "populationTotals": {
+            "net": 83,
+            "naturalGrowth": 334,
+            "external": 15,
+            "warDeaths": 84,
+            "naturalDeaths": 186,
+            "ordinaryNaturalDeaths": 182,
+            "militaryNaturalDeaths": 4,
+            "transferIn": 34,
+            "transferOut": 34,
+            "special": 45,
+            "otherNet": -41,
+            "unattributed": 0
+          },
+          "activeStates": 8,
+          "meanEndedStateLifetimeMonths": 320.5,
+          "normalSuccessions": 22,
+          "courtFunnel": {
+            "annual": 573,
+            "crisis": 74,
+            "legalTarget": 74,
+            "command": 10,
+            "willing": 3,
+            "qualified": 3,
+            "originalEligible": 15,
+            "transactionFailures": 0,
+            "blockers": {
+              "NO_RECENT_REAL_CRISIS": 499,
+              "NO_EXISTING_ADULT_KIN": 84,
+              "NO_CURRENT_VULNERABILITY": 197,
+              "COOLDOWN": 60
+            },
+            "armyBlockers": {
+              "NOT_ACTIVE": 93,
+              "INSUFFICIENT_CAREER": 4
+            },
+            "scope": "SESSION_SINCE_LOAD",
+            "denominator": "annual formal country opportunities; army blockers count person checks within eligible structural opportunities"
+          },
+          "courtEvents": {
+            "qualifiedInstigatorOpportunities": 3,
+            "attempts": 0,
+            "successes": 0,
+            "failures": 0
+          },
+          "politicalEvents": {
+            "ordinaryFoundings": 4,
+            "militarySecessions": 0,
+            "depositions": 0,
+            "militarySupportedDepositions": 0,
+            "nonMilitaryUsurpations": 0,
+            "personalMilitaryUsurpations": 0,
+            "militaryPalaceParticipation": 0,
+            "explicitClaimSupport": 0
+          },
+          "duplicatePopulationIds": 0,
+          "duplicateHistoryIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0,
+          "strictSaveValid": true,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "royalHonorGrants": 4
+        },
+        {
+          "seed": "regional-2",
+          "years": 100,
+          "population": 108,
+          "peakPopulation": 156,
+          "populationUnattributed": 0,
+          "populationTotals": {
+            "net": 52,
+            "naturalGrowth": 309,
+            "external": 30,
+            "warDeaths": 70,
+            "naturalDeaths": 195,
+            "ordinaryNaturalDeaths": 193,
+            "militaryNaturalDeaths": 2,
+            "transferIn": 10,
+            "transferOut": 10,
+            "special": 10,
+            "otherNet": -32,
+            "unattributed": 0
+          },
+          "activeStates": 4,
+          "meanEndedStateLifetimeMonths": 776,
+          "normalSuccessions": 18,
+          "courtFunnel": {
+            "annual": 627,
+            "crisis": 33,
+            "legalTarget": 33,
+            "command": 11,
+            "willing": 3,
+            "qualified": 3,
+            "originalEligible": 7,
+            "transactionFailures": 0,
+            "blockers": {
+              "NO_RECENT_REAL_CRISIS": 594,
+              "NO_EXISTING_ADULT_KIN": 76,
+              "NO_CURRENT_VULNERABILITY": 223,
+              "COOLDOWN": 24
+            },
+            "armyBlockers": {
+              "NOT_ACTIVE": 51,
+              "INSUFFICIENT_CAREER": 6
+            },
+            "scope": "SESSION_SINCE_LOAD",
+            "denominator": "annual formal country opportunities; army blockers count person checks within eligible structural opportunities"
+          },
+          "courtEvents": {
+            "qualifiedInstigatorOpportunities": 3,
+            "attempts": 0,
+            "successes": 0,
+            "failures": 0
+          },
+          "politicalEvents": {
+            "ordinaryFoundings": 0,
+            "militarySecessions": 0,
+            "depositions": 0,
+            "militarySupportedDepositions": 0,
+            "nonMilitaryUsurpations": 0,
+            "personalMilitaryUsurpations": 0,
+            "militaryPalaceParticipation": 0,
+            "explicitClaimSupport": 0
+          },
+          "duplicatePopulationIds": 0,
+          "duplicateHistoryIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0,
+          "strictSaveValid": true,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "royalHonorGrants": 1
+        },
+        {
+          "seed": "regional-3",
+          "years": 100,
+          "population": 140,
+          "peakPopulation": 149,
+          "populationUnattributed": 0,
+          "populationTotals": {
+            "net": 84,
+            "naturalGrowth": 291,
+            "external": 51,
+            "warDeaths": 65,
+            "naturalDeaths": 188,
+            "ordinaryNaturalDeaths": 185,
+            "militaryNaturalDeaths": 3,
+            "transferIn": 12,
+            "transferOut": 12,
+            "special": 35,
+            "otherNet": -40,
+            "unattributed": 0
+          },
+          "activeStates": 5,
+          "meanEndedStateLifetimeMonths": 500.6666666666667,
+          "normalSuccessions": 18,
+          "courtFunnel": {
+            "annual": 492,
+            "crisis": 51,
+            "legalTarget": 51,
+            "command": 3,
+            "willing": 0,
+            "qualified": 0,
+            "originalEligible": 9,
+            "transactionFailures": 0,
+            "blockers": {
+              "NO_RECENT_REAL_CRISIS": 441,
+              "NO_EXISTING_ADULT_KIN": 50,
+              "NO_CURRENT_VULNERABILITY": 175,
+              "COOLDOWN": 33
+            },
+            "armyBlockers": {
+              "NOT_ACTIVE": 66,
+              "INSUFFICIENT_CAREER": 1
+            },
+            "scope": "SESSION_SINCE_LOAD",
+            "denominator": "annual formal country opportunities; army blockers count person checks within eligible structural opportunities"
+          },
+          "courtEvents": {
+            "qualifiedInstigatorOpportunities": 0,
+            "attempts": 0,
+            "successes": 0,
+            "failures": 0
+          },
+          "politicalEvents": {
+            "ordinaryFoundings": 1,
+            "militarySecessions": 0,
+            "depositions": 0,
+            "militarySupportedDepositions": 0,
+            "nonMilitaryUsurpations": 0,
+            "personalMilitaryUsurpations": 0,
+            "militaryPalaceParticipation": 0,
+            "explicitClaimSupport": 0
+          },
+          "duplicatePopulationIds": 0,
+          "duplicateHistoryIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0,
+          "strictSaveValid": true,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "royalHonorGrants": 0
+        },
+        {
+          "seed": "regional-4",
+          "years": 100,
+          "population": 130,
+          "peakPopulation": 148,
+          "populationUnattributed": 0,
+          "populationTotals": {
+            "net": 74,
+            "naturalGrowth": 323,
+            "external": 14,
+            "warDeaths": 82,
+            "naturalDeaths": 171,
+            "ordinaryNaturalDeaths": 166,
+            "militaryNaturalDeaths": 5,
+            "transferIn": 19,
+            "transferOut": 19,
+            "special": 25,
+            "otherNet": -35,
+            "unattributed": 0
+          },
+          "activeStates": 4,
+          "meanEndedStateLifetimeMonths": 554.75,
+          "normalSuccessions": 20,
+          "courtFunnel": {
+            "annual": 520,
+            "crisis": 42,
+            "legalTarget": 42,
+            "command": 4,
+            "willing": 4,
+            "qualified": 4,
+            "originalEligible": 8,
+            "transactionFailures": 0,
+            "blockers": {
+              "NO_RECENT_REAL_CRISIS": 478,
+              "NO_EXISTING_ADULT_KIN": 43,
+              "NO_CURRENT_VULNERABILITY": 194,
+              "COOLDOWN": 44
+            },
+            "armyBlockers": {
+              "NOT_ACTIVE": 51,
+              "INSUFFICIENT_CAREER": 1
+            },
+            "scope": "SESSION_SINCE_LOAD",
+            "denominator": "annual formal country opportunities; army blockers count person checks within eligible structural opportunities"
+          },
+          "courtEvents": {
+            "qualifiedInstigatorOpportunities": 4,
+            "attempts": 0,
+            "successes": 0,
+            "failures": 0
+          },
+          "politicalEvents": {
+            "ordinaryFoundings": 1,
+            "militarySecessions": 0,
+            "depositions": 0,
+            "militarySupportedDepositions": 0,
+            "nonMilitaryUsurpations": 0,
+            "personalMilitaryUsurpations": 0,
+            "militaryPalaceParticipation": 0,
+            "explicitClaimSupport": 0
+          },
+          "duplicatePopulationIds": 0,
+          "duplicateHistoryIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0,
+          "strictSaveValid": true,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "royalHonorGrants": 0
+        }
+      ]
+    },
+    {
+      "version": "z39",
+      "worlds": [
+        {
+          "seed": "regional-1",
+          "years": 100,
+          "population": 139,
+          "peakPopulation": 153,
+          "populationUnattributed": 0,
+          "populationTotals": {
+            "net": 83,
+            "naturalGrowth": 334,
+            "external": 15,
+            "warDeaths": 84,
+            "naturalDeaths": 186,
+            "ordinaryNaturalDeaths": 182,
+            "militaryNaturalDeaths": 4,
+            "transferIn": 34,
+            "transferOut": 34,
+            "special": 45,
+            "otherNet": -41,
+            "unattributed": 0
+          },
+          "activeStates": 8,
+          "meanEndedStateLifetimeMonths": 320.5,
+          "normalSuccessions": 22,
+          "courtFunnel": {
+            "draws": 3,
+            "noAttempt": 3,
+            "attempts": 0,
+            "successes": 0,
+            "failures": 0,
+            "annual": 573,
+            "crisis": 74,
+            "legalTarget": 74,
+            "command": 10,
+            "willing": 3,
+            "qualified": 3,
+            "originalEligible": 15,
+            "transactionFailures": 0,
+            "blockers": {
+              "NO_RECENT_REAL_CRISIS": 499,
+              "NO_EXISTING_ADULT_KIN": 84,
+              "NO_CURRENT_VULNERABILITY": 197,
+              "COOLDOWN": 60
+            },
+            "armyBlockers": {
+              "NOT_ACTIVE": 93,
+              "INSUFFICIENT_CAREER": 4
+            },
+            "scope": "SESSION_SINCE_LOAD",
+            "denominator": "annual formal country opportunities; army blockers count person checks within eligible structural opportunities"
+          },
+          "courtEvents": {
+            "qualifiedInstigatorOpportunities": 3,
+            "attempts": 0,
+            "successes": 0,
+            "failures": 0
+          },
+          "politicalEvents": {
+            "ordinaryFoundings": 4,
+            "militarySecessions": 0,
+            "depositions": 0,
+            "militarySupportedDepositions": 0,
+            "nonMilitaryUsurpations": 0,
+            "personalMilitaryUsurpations": 0,
+            "militaryPalaceParticipation": 0,
+            "explicitClaimSupport": 0
+          },
+          "duplicatePopulationIds": 0,
+          "duplicateHistoryIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0,
+          "strictSaveValid": true,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "royalHonorGrants": 3
+        },
+        {
+          "seed": "regional-2",
+          "years": 100,
+          "population": 108,
+          "peakPopulation": 156,
+          "populationUnattributed": 0,
+          "populationTotals": {
+            "net": 52,
+            "naturalGrowth": 309,
+            "external": 30,
+            "warDeaths": 70,
+            "naturalDeaths": 195,
+            "ordinaryNaturalDeaths": 193,
+            "militaryNaturalDeaths": 2,
+            "transferIn": 10,
+            "transferOut": 10,
+            "special": 10,
+            "otherNet": -32,
+            "unattributed": 0
+          },
+          "activeStates": 4,
+          "meanEndedStateLifetimeMonths": 776,
+          "normalSuccessions": 18,
+          "courtFunnel": {
+            "draws": 3,
+            "noAttempt": 3,
+            "attempts": 0,
+            "successes": 0,
+            "failures": 0,
+            "annual": 627,
+            "crisis": 33,
+            "legalTarget": 33,
+            "command": 11,
+            "willing": 3,
+            "qualified": 3,
+            "originalEligible": 7,
+            "transactionFailures": 0,
+            "blockers": {
+              "NO_RECENT_REAL_CRISIS": 594,
+              "NO_EXISTING_ADULT_KIN": 76,
+              "NO_CURRENT_VULNERABILITY": 223,
+              "COOLDOWN": 24
+            },
+            "armyBlockers": {
+              "NOT_ACTIVE": 51,
+              "INSUFFICIENT_CAREER": 6
+            },
+            "scope": "SESSION_SINCE_LOAD",
+            "denominator": "annual formal country opportunities; army blockers count person checks within eligible structural opportunities"
+          },
+          "courtEvents": {
+            "qualifiedInstigatorOpportunities": 3,
+            "attempts": 0,
+            "successes": 0,
+            "failures": 0
+          },
+          "politicalEvents": {
+            "ordinaryFoundings": 0,
+            "militarySecessions": 0,
+            "depositions": 0,
+            "militarySupportedDepositions": 0,
+            "nonMilitaryUsurpations": 0,
+            "personalMilitaryUsurpations": 0,
+            "militaryPalaceParticipation": 0,
+            "explicitClaimSupport": 0
+          },
+          "duplicatePopulationIds": 0,
+          "duplicateHistoryIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0,
+          "strictSaveValid": true,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "royalHonorGrants": 1
+        },
+        {
+          "seed": "regional-3",
+          "years": 100,
+          "population": 140,
+          "peakPopulation": 149,
+          "populationUnattributed": 0,
+          "populationTotals": {
+            "net": 84,
+            "naturalGrowth": 291,
+            "external": 51,
+            "warDeaths": 65,
+            "naturalDeaths": 188,
+            "ordinaryNaturalDeaths": 185,
+            "militaryNaturalDeaths": 3,
+            "transferIn": 12,
+            "transferOut": 12,
+            "special": 35,
+            "otherNet": -40,
+            "unattributed": 0
+          },
+          "activeStates": 5,
+          "meanEndedStateLifetimeMonths": 500.6666666666667,
+          "normalSuccessions": 18,
+          "courtFunnel": {
+            "draws": 0,
+            "noAttempt": 0,
+            "attempts": 0,
+            "successes": 0,
+            "failures": 0,
+            "annual": 492,
+            "crisis": 51,
+            "legalTarget": 51,
+            "command": 3,
+            "willing": 0,
+            "qualified": 0,
+            "originalEligible": 9,
+            "transactionFailures": 0,
+            "blockers": {
+              "NO_RECENT_REAL_CRISIS": 441,
+              "NO_EXISTING_ADULT_KIN": 50,
+              "NO_CURRENT_VULNERABILITY": 175,
+              "COOLDOWN": 33
+            },
+            "armyBlockers": {
+              "NOT_ACTIVE": 66,
+              "INSUFFICIENT_CAREER": 1
+            },
+            "scope": "SESSION_SINCE_LOAD",
+            "denominator": "annual formal country opportunities; army blockers count person checks within eligible structural opportunities"
+          },
+          "courtEvents": {
+            "qualifiedInstigatorOpportunities": 0,
+            "attempts": 0,
+            "successes": 0,
+            "failures": 0
+          },
+          "politicalEvents": {
+            "ordinaryFoundings": 1,
+            "militarySecessions": 0,
+            "depositions": 0,
+            "militarySupportedDepositions": 0,
+            "nonMilitaryUsurpations": 0,
+            "personalMilitaryUsurpations": 0,
+            "militaryPalaceParticipation": 0,
+            "explicitClaimSupport": 0
+          },
+          "duplicatePopulationIds": 0,
+          "duplicateHistoryIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0,
+          "strictSaveValid": true,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "royalHonorGrants": 0
+        },
+        {
+          "seed": "regional-4",
+          "years": 100,
+          "population": 130,
+          "peakPopulation": 148,
+          "populationUnattributed": 0,
+          "populationTotals": {
+            "net": 74,
+            "naturalGrowth": 323,
+            "external": 14,
+            "warDeaths": 82,
+            "naturalDeaths": 171,
+            "ordinaryNaturalDeaths": 166,
+            "militaryNaturalDeaths": 5,
+            "transferIn": 19,
+            "transferOut": 19,
+            "special": 25,
+            "otherNet": -35,
+            "unattributed": 0
+          },
+          "activeStates": 4,
+          "meanEndedStateLifetimeMonths": 554.75,
+          "normalSuccessions": 20,
+          "courtFunnel": {
+            "draws": 4,
+            "noAttempt": 4,
+            "attempts": 0,
+            "successes": 0,
+            "failures": 0,
+            "annual": 520,
+            "crisis": 42,
+            "legalTarget": 42,
+            "command": 4,
+            "willing": 4,
+            "qualified": 4,
+            "originalEligible": 8,
+            "transactionFailures": 0,
+            "blockers": {
+              "NO_RECENT_REAL_CRISIS": 478,
+              "NO_EXISTING_ADULT_KIN": 43,
+              "NO_CURRENT_VULNERABILITY": 194,
+              "COOLDOWN": 44
+            },
+            "armyBlockers": {
+              "NOT_ACTIVE": 51,
+              "INSUFFICIENT_CAREER": 1
+            },
+            "scope": "SESSION_SINCE_LOAD",
+            "denominator": "annual formal country opportunities; army blockers count person checks within eligible structural opportunities"
+          },
+          "courtEvents": {
+            "qualifiedInstigatorOpportunities": 4,
+            "attempts": 0,
+            "successes": 0,
+            "failures": 0
+          },
+          "politicalEvents": {
+            "ordinaryFoundings": 1,
+            "militarySecessions": 0,
+            "depositions": 0,
+            "militarySupportedDepositions": 0,
+            "nonMilitaryUsurpations": 0,
+            "personalMilitaryUsurpations": 0,
+            "militaryPalaceParticipation": 0,
+            "explicitClaimSupport": 0
+          },
+          "duplicatePopulationIds": 0,
+          "duplicateHistoryIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0,
+          "strictSaveValid": true,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "royalHonorGrants": 0
+        }
+      ]
+    }
+  ],
+  "conditionalPolicyComparison": {
+    "scope": "Controlled participant, 10000 evenly spaced shared quantiles; no world RNG consumption",
+    "oldSpontaneousProbability": 0.01,
+    "attemptProbability": 0.224,
+    "LOW": {
+      "conditionalSuccess": 0.1392,
+      "attempts": 2240,
+      "wins": 312
+    },
+    "MEDIUM": {
+      "conditionalSuccess": 0.232,
+      "attempts": 2240,
+      "wins": 520
+    },
+    "HIGH": {
+      "conditionalSuccess": 0.3248,
+      "attempts": 2240,
+      "wins": 728
+    },
+    "officialPolicy": "MEDIUM",
+    "officialConditionalBounds": [
+      0.06,
+      0.6
+    ]
+  },
+  "coreCheckCount": 352,
+  "notes": [
+    "Natural qualified opportunities 10 in both versions; attempts, successes and failures 0 in both. No natural success-rate improvement has been demonstrated.",
+    "Final follow-up edits tighten the same transaction validation, freeze the immutable royal creation sequence, include loyalty in rollback and adjust reading/UI; no additional attempt draw or attempt probability was introduced.",
+    "Failed coup revocation, execution and in-reign direct military usurpation are not published.",
+    "Successful supporters gain exactly one sourced court-service act and up to 8 actual User loyalty; self-accession receives no supporter reward."
+  ],
+  "verification": {
+    "vitest": {
+      "files": 303,
+      "tests": 2358,
+      "passed": true
+    },
+    "coreAndReact": {
+      "checks": 352,
+      "passed": true
+    },
+    "schema": 40,
+    "saveContinuationMonths": 12,
+    "allFourPairedSeedsStrictlySaved": true,
+    "manualChromeGate": "WAITING_FOR_USER"
+  }
+}

@@ -42,7 +42,7 @@ export function planRoyalHonor(input:{faction:HonorFaction;dynasty:Dynasty;month
  const eligible=d.rulers.flatMap(r=>{
   const relation=getRecordedKinRelation(r,issuer,d.rulers),merits=royalHonorMerits(r,input.people,input.formations,input.events,m,f.name);
   const proposed=royalMeritRank(merits,input.events),person=r.militaryIdentity&&input.people.find(p=>p.personId===r.militaryIdentity?.personId),appointment=person?.appointments.find(a=>a.factionId===f.name&&a.startMonth<=m&&a.endMonth===undefined);
-  const noble=person&&currentNobleGrant(person,f.name,m,epoch.foundingRulerId),rank=proposed==='ZHENGUOGONG'&&noble?.rank!=='GONG'?'WUANJUN':proposed;
+  const noble=person&&currentNobleGrant(person,f.name,m,epoch.foundingRulerId),rank=proposed==='ZHENGUOGONG'&&!(noble?.rank==='GONG'&&input.events.some(e=>e.id===noble.eventId&&e.type==='military-ennobled'&&e.metadata?.nobility===JSON.stringify(noble)))?'WUANJUN':proposed;
   if(!rank||!person||person.status!=='ACTIVE'||person.deathMonth!==undefined||person.factionId!==f.name||!appointment||!verifiedPoliticalOffice(person,appointment.commandId,f.name,m,input.events))return [];
   if(r.id===issuer.id||r.houseName!==d.houseName||!['heir','kin'].includes(r.status)||r.accessionYear!==undefined||r.reignOrdinal!==undefined||!livingRoyalAt(r,m)||m-r.bornYear<288||!relation||relation==='COLLATERAL_KIN'||r.royalHonors?.some(g=>g.epochFounderId===epoch.foundingRulerId&&g.rank===rank))return [];
   const active=effectiveRoyalHonor(r,d,m,f.sovereigntyRank),occupied=d.rulers.filter(q=>effectiveRoyalHonor(q,d,m,f.sovereigntyRank)).length;

@@ -11,6 +11,7 @@ export function royalHonorHeading(r:Ruler|undefined,d:Pick<Dynasty,'houseEpochs'
  const inactive=options.status!==undefined&&options.status!=='ACTIVE';
  const deceased=r.deathMonth!==undefined&&r.deathMonth<=statusMonth;
  const person=options.person,revoked=g.rank==='ZHENGUOGONG'&&(options.revoked?.(g)||person?.honorHistory?.some(h=>h.kind==='REVOKED'&&h.factionId===g.factionId&&h.epochFounderId===g.epochFounderId&&h.month<=month));
+ const departed=person?.appointments.some(a=>a.factionId===g.factionId&&a.endReason==='TRANSFERRED'&&a.endMonth!==undefined&&a.endMonth<=statusMonth);
  const text=`${g.countryName} · ${ROYAL_HONOR_NAMES[g.rank]} · ${g.recipientName}`;
- return {grant:g,text,primary:!accessed&&!ended&&!inactive&&!revoked?(options.local?`${ROYAL_HONOR_NAMES[g.rank]} · ${g.recipientName}`:text):undefined,secondary:revoked?`旧荣衔：${text}（旧爵已追夺）`:accessed?`登位前：${text}`:ended?`旧朝荣衔：${text}`:inactive?`流亡荣衔：${text}`:deceased?'生前荣衔':undefined};
+ return {grant:g,text,primary:!accessed&&!ended&&!inactive&&!revoked&&!departed?(options.local?`${ROYAL_HONOR_NAMES[g.rank]} · ${g.recipientName}`:text):undefined,secondary:revoked?`旧荣衔：${text}（旧爵已追夺）`:departed?`旧国荣衔：${text}`:accessed?`登位前：${text}`:ended?`旧朝荣衔：${text}`:inactive?`流亡荣衔：${text}`:deceased?'生前荣衔':undefined};
 }

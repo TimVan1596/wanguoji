@@ -1,3 +1,4 @@
+import {currentNobleGrant} from '../../../Politics/MilitaryNobility';
 import {royalHonorHeading} from '../../../Politics/RoyalHonorPresentation';
 import RoyalHonorPanel from './RoyalHonorPanel';
 import {militaryHonorPresentation} from '../../../Politics/MilitaryHonorPresentation';
@@ -694,7 +695,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
       const royalTeam=linked&&Game.Core?.teams.find(t=>t.name===rulerOwners.get(linked.id));
       const oldTitleRevoked=person.honorHistory?.some(h=>h.kind==='REVOKED'&&h.factionId===factionId&&h.month<=worldMonth);
       const portraitContext=linked&&linked.accessionYear!==undefined&&linked.accessionYear<=worldMonth&&royalTeam&&royalTeam.name===factionId?{...royalPortraitContext(linked,royalTeam,worldMonth),historical:true}:militaryPortraitContext(person,factionId,politicalTeam,worldMonth);
-      if(oldTitleRevoked&&'nobleRank' in portraitContext)delete (portraitContext as {nobleRank?:string}).nobleRank;
+      if(oldTitleRevoked&&'nobleRank' in portraitContext){const grant=currentNobleGrant(person,factionId,worldMonth);if(grant)portraitContext.nobleRank=grant.rank;else delete (portraitContext as {nobleRank?:string}).nobleRank;}
       const secession=archiveDynasties.flatMap(d=>d.rulers.map(r=>({d,r}))).find(({r})=>r.residentIdentity?.military?.personId===person.personId&&r.residentIdentity.sourceFactionId===factionId&&r.residentIdentity.foundedMonth<=worldMonth&&archiveEvents.some(e=>e.type==='empire-split'&&e.metadata?.militaryPersonId===person.personId&&e.metadata?.foundingRulerId===r.id));
       const identityLabels=[...militaryIdentityLabels(person,archiveDynasties,archiveEvents,worldMonth),...(secession?[`已叛离${secession.r.residentIdentity!.sourceFactionName}`,...(person.honorHistory?.some(h=>h.kind==='REVOKED'&&h.factionId===factionId&&h.month<=worldMonth&&archiveEvents.some(e=>e.id===h.eventId&&e.type==='military-title-revoked'))?['旧爵已追夺']:[])]:[])];
       const honorTitle=militaryHonorPresentation(person,factionId,worldMonth,eventIndex.byId);
