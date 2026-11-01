@@ -1,4 +1,3 @@
-import {militaryCourtLabels} from './MilitaryCourtStanding';
 import {militaryDeathWording} from './MilitaryLifePresentation';
 import type {RulerHistoricalEvidence} from "./RulerHistoriography";
 import {summarizeRulerPoliticalFacts} from "./RulerPoliticalFacts";
@@ -35,7 +34,7 @@ export function composeRulerBiography(e:RulerHistoricalEvidence,name:string,acce
   return {life,assessment:assessment.slice(0,3),voice,stats};
 }
 
-export function composeMilitaryBiography(person:MilitaryPerson,entries:MilitaryChronicleEntry[],factionId:string){
+export function composeMilitaryBiography(person:MilitaryPerson,entries:MilitaryChronicleEntry[],factionId:string,worldMonth=Infinity){
   const name=getMilitaryPersonDisplayName(person),appointments=person.appointments.filter(a=>a.factionId===factionId);
   const life:string[]=[];
   if(appointments.length)life.push(`${name}于${formatWorldDate(appointments[0].startMonth)}始任本国军职。`);
@@ -49,6 +48,7 @@ export function composeMilitaryBiography(person:MilitaryPerson,entries:MilitaryC
   const defense=entries.filter(e=>e.source.startsWith("siege-defended"));
   const assessment=defense.length?`${defense.at(-1)!.text.replace(/。$/,"")}；${victories.length?"亦有参与取城之绩。":"虽未有取城之绩，亦有守土之功。"}`:victories.length?"其所部曾参与攻克城邑，军旅功业见于任内战事。"
     : sieges.length?`曾参与围攻${[...new Set(sieges.map(e=>e.cityId).filter(Boolean))].length?'城邑':''}，未有取城战果。`: entries.some(e=>e.source.startsWith("military-order-issued"))?"曾受命出征，尚未见所部攻城之功。":"军旅事迹所载尚少。";
-  const political=militaryCourtLabels(person,factionId,person.deathMonth??Infinity).join('；');
-  return {life,ending,assessment:assessment+(political?`其政治经历为：${political}。`:''),victories,voice:person.status==="DEAD"&&victories.length>=2?"其名留于军旅，所部之功见于城邑得失。":undefined};
+  const cutoff=Math.min(worldMonth,person.deathMonth??worldMonth),acts=person.politicalHistory?.filter(a=>a.factionId===factionId&&a.month<=cutoff)??[],ban=acts.find(a=>a.kind==='COURT_BAN'),pardoned=ban&&acts.some(a=>a.kind==='COURT_PARDONED'&&a.banEventId===ban.eventId),revoked=person.honorHistory?.find(h=>h.kind==='REVOKED'&&h.reason==='COURT_COUP_FAILED'&&h.factionId===factionId&&h.month<=cutoff);
+  const political=ban?`后谋废君主，事败罢官并受禁仕之罚${revoked?'，其爵位亦被正式追夺':''}。${pardoned?'其后获新君赦免，准其复仕。':''}`:'';
+  return {life,ending,assessment:assessment+political,victories,voice:person.status==="DEAD"&&victories.length>=2?"其名留于军旅，所部之功见于城邑得失。":undefined};
 }

@@ -3,6 +3,7 @@ import type {WorldEvent} from '../History/WorldHistory';
 import type {Dynasty} from '../Politics/Dynasty';
 import {importRulerSave} from './RulerSaveProjection';
 import {planCourtBan,planCourtPardon,militaryCourtText,unresolvedCourtBans} from '../Politics/MilitaryCourtStanding';
+import {nextMilitaryHonors} from '../Politics/MilitaryHonors';
 import {nobleEpochForRuler} from '../Politics/MilitaryNobility';
 const at=(e:WorldEvent)=>e.monthIndex??e.year;
 /** Audit each act against preceding sources, then prohibit appointments made under an unresolved ban. */
@@ -22,6 +23,10 @@ export function validateMilitaryCourt(save:WorldSaveV1){
    const expected=act.kind==='COURT_BAN'&&attempt&&result?planCourtBan(past,team,dy,attempt,result):act.kind==='COURT_PARDONED'?planCourtPardon(past,team,dy,act.month,before,act.stability):undefined;
    if(JSON.stringify(expected)!==JSON.stringify(act)||e.type!=='military-court-sanction'||at(e)!==act.month||e.actorFactionId!==act.factionId||e.rulerId!==act.rulerId||e.metadata?.personId!==p.personId||e.metadata?.courtAct!==JSON.stringify(act)||e.title!==militaryCourtText(act))throw Error('unproven act');
    if(act.kind==='COURT_BAN'&&!before.some(e=>e.type==='military-command-ended'&&e.metadata?.personId===p.personId&&e.metadata?.courtCoupEventId===act.courtCoupEventId&&e.metadata?.endReason==='DISMISSED'))throw Error('no actual dismissal');
+   if(act.kind==='COURT_BAN'){
+    const through=events.slice(0,i+1),priorPerson={...past,politicalHistory:[...(past.politicalHistory??[]),act],honorHistory:p.honorHistory?.filter(h=>ids.has(h.eventId)),nobilityHistory:p.nobilityHistory?.filter(g=>ids.has(g.eventId))};
+    for(const required of nextMilitaryHonors(priorPerson,save.registries.militaryCommandRegistry.formations,through,act.month,[team],[dy]))if(required.reason==='COURT_COUP_FAILED'&&!p.honorHistory?.some(h=>JSON.stringify(h)===JSON.stringify(required)))throw Error('required formal forfeiture missing');
+   }
    used.add(act.eventId);last=act.month;
   }catch(error){errors.push(`invalid military court act ${act?.eventId}: ${String(error)}`);}
   for(const a of p.appointments){const ref=byId.get(`military-appointment-${a.commandId}`);if(!ref)continue;const beforeIds=new Set(events.slice(0,ref.i).map(e=>e.id)),d=save.dynasties.find(d=>d.factionId===a.factionId);if(!d)continue;const rulers=(d.rulers as Parameters<typeof importRulerSave>[0][]).map(importRulerSave),king=rulers.filter(r=>r.accessionYear!==undefined&&r.accessionYear<=a.startMonth&&(r.endYear??Infinity)>=a.startMonth).sort((a,b)=>(b.reignOrdinal??0)-(a.reignOrdinal??0))[0],epoch=king&&nobleEpochForRuler({...d,rulers} as Dynasty,king.id);

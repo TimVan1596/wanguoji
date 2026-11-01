@@ -10,7 +10,7 @@ import {militaryMilestones,selectMilitaryMilestones} from './PersonChroniclePres
 function project(person:MilitaryPerson,factionId:string,month:number,events:WorldEvent[],dynasties:Dynasty[],factions:Map<string,Team>){
  const entries=Military.getChronicle(person,month,factionId),local=events.filter(e=>e.actorFactionId===factionId||e.targetFactionId===factionId||e.factionIds?.includes(factionId));
  const life=militaryPoliticalLife(person,dynasties,events,factions,month),allMilestones=appendMilitaryPoliticalLife(militaryMilestones(person,entries,local,{factions}),life);
- return {entries,allMilestones,milestones:selectMilitaryMilestones(allMilestones,local,8),career:Military.getCareer(person,month),bio:composeMilitaryBiography(person,entries,factionId)};
+ return {entries,allMilestones,milestones:selectMilitaryMilestones(allMilestones,local,8),career:Military.getCareer(person,month),bio:composeMilitaryBiography(person,entries,factionId,month)};
 }
 /** UI-only cache. Live bindings/commands, ages and diagnostics remain outside this historical projection. */
 export default function MilitaryDetailProjection({person,factionId,month,events,dynasties,formations,factions,children,eventIndex}:{person:MilitaryPerson;factionId:string;month:number;events:WorldEvent[];eventIndex?:ReturnType<typeof createMilitaryArchiveIndex>;dynasties:Dynasty[];formations:MilitaryFormation[];factions:Map<string,Team>;children:(p:ReturnType<typeof project>)=>ReactNode}){
