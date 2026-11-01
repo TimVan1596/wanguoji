@@ -740,7 +740,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
             title={<MilitaryPersonIdentityHeader honor={royalHonor} person={person} politicalLabel={secession?identityLabels.find(l=>l.startsWith('已叛离')):courtLabels[0]??identityLabels.find(l=>l==='现任君主'||l==='曾任君主')} country={`${politicalFactionById.get(person.factionId)?.displayName ?? person.factionId}${politicalFactionById.get(person.factionId)?.identityStage === "STATE" ? "国" : ""}`} />}
             identity={<>
               <PersonLifeDates bornMonth={person.bornMonth} deathMonth={person.deathMonth}/>
-              <Typography fontSize="0.76rem">{identityBadges}</Typography><Typography fontSize=".8rem">{honorTitle.text}</Typography>
+              <Typography fontSize="0.76rem">{identityBadges}</Typography><Typography fontSize=".8rem">{honorTitle.text}</Typography><FamilyTitleBadge personId={person.personId} factionId={factionId} month={worldMonth}/>
               {linkedRuler&&linkedRuler.accessionYear!==undefined&&linkedRuler.accessionYear<=worldMonth&&rulerOwners.get(linkedRuler.id)&&<button type="button" onClick={()=>navigation.open({kind:'RULER',factionId:rulerOwners.get(linkedRuler.id)!,id:linkedRuler.id})}>{secession?'查看新政权本纪':'查看君主本纪'}</button>}
               <Typography fontSize="0.86rem" fontWeight="bold">{describeMilitaryOffice(person,factionId).replace("（本国历史最高职务）","")}</Typography>
 

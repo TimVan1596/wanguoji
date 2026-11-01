@@ -1,4 +1,4 @@
-import {createFamilyNobleContext,planFamilyNobleTransition,familyNobleText,familyResidenceAt} from './FamilyNobleSuccession';
+import {createFamilyNobleContext,planFamilyNobleTransition,familyNobleText,familyResidenceAt,eligibleFamilyNobleHeirs} from './FamilyNobleSuccession';
 import {emptyFamilyRecruitmentDiagnostics,familyRecruitmentExposure} from './FamilyRecruitmentDiagnostics';
 import {familyFounderSource,makeMilitaryFamily,familyAppointmentWeight,type MilitaryFamily} from './MilitaryFamily';
 import {politicalMutationActive,beginPoliticalMutation} from '../Simulation/PoliticalMutationScope';
@@ -149,7 +149,7 @@ export class MilitaryCommandRegistryStore {
   private longRangeOrderSamples = new Map<string, number>();
   private eventWriter?: (event: Omit<WorldEvent, "id"> & { id: string }) => string;
   private eventReader: (factionId: string) => WorldEvent[] = factionId => WorldHistory.getEventsForFaction(factionId);
-  private diagnostics = { familyTitleFailures:0,familyAppointmentFailures:0,familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
+  private diagnostics = { familyLifeFailures:0,familyTitleIdentityRejected:0,familyTitleCandidateChecks:0,familyTitleRejectedCandidates:0,familyTitleFailures:0,familyAppointmentFailures:0,familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
     unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
 
   reset() {
@@ -159,7 +159,7 @@ export class MilitaryCommandRegistryStore {
     this.lastEvaluationMonth = -1;
     this.lastArrivalTargetByCommand.clear();
     this.longRangeOrderSamples.clear();
-    this.diagnostics = { familyTitleFailures:0,familyAppointmentFailures:0,familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
+    this.diagnostics = { familyLifeFailures:0,familyTitleIdentityRejected:0,familyTitleCandidateChecks:0,familyTitleRejectedCandidates:0,familyTitleFailures:0,familyAppointmentFailures:0,familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
       unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
   }
 
@@ -183,7 +183,7 @@ export class MilitaryCommandRegistryStore {
     this.lastEvaluationMonth = state.lastEvaluationMonth;
     this.lastArrivalTargetByCommand.clear();
     this.longRangeOrderSamples.clear();
-    this.diagnostics = { familyTitleFailures:0,familyAppointmentFailures:0,familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
+    this.diagnostics = { familyLifeFailures:0,familyTitleIdentityRejected:0,familyTitleCandidateChecks:0,familyTitleRejectedCandidates:0,familyTitleFailures:0,familyAppointmentFailures:0,familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
       unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
   }
 
@@ -195,7 +195,7 @@ export class MilitaryCommandRegistryStore {
   mirrorPoliticalDeath(personId:string,rulerId:string,month:number,cause:string){
     const p=this.people.get(personId);if(!p||(p.politicalRulerId!==rulerId&&p.royalIdentity?.rulerId!==rulerId)||p.status==="DEAD")return;
     if(p.status==="ACTIVE")throw new Error("Political person still has military command");
-    const link=this.getFamilyMember(p.sourceUserId,p.bornMonth);if(link){link.member.deathMonth=month;link.member.deathCause=cause;}
+    const link=this.getFamilyMember(p.sourceUserId,p.bornMonth);if(link){link.member.deathHistoryIndex=WorldHistory.getEventCount();link.member.deathMonth=month;link.member.deathCause=cause;}
     p.status="DEAD";p.deathMonth=month;p.deathCause=cause;this.diagnostics.deaths++;
     if(cause==="NATURAL_DEATH")this.diagnostics.naturalDeaths++;
     this.eventWriter?.({id:`military-person-death-${p.personId}-${month}`,year:month,monthIndex:month,type:"military-person-died",category:"politics",actorFactionId:p.factionId,factionIds:[p.factionId],title:`${p.personalName}去世`,metadata:{personId:p.personId,sourceUserId:p.sourceUserId,personalName:p.personalName,deathCause:cause,politicalRulerId:rulerId},importance:"normal"});
@@ -385,6 +385,7 @@ export class MilitaryCommandRegistryStore {
     for (const formation of this.formations.values()) if (formation.commanderPersonId === personId) this.endFormation(formation, month, reason, courtCoupEventId);
   }
 
+  familyDeathTransaction(user:User,work:()=>boolean){try{return this.familyTransaction(user.team,work);}catch{this.diagnostics.familyLifeFailures++;return false;}}
   private familyTransaction<T>(team:Team,work:()=>T):T{
     if(politicalMutationActive())return work();
     if(!this.royalService?.transaction)throw Error('Missing canonical family transaction');
@@ -482,7 +483,7 @@ export class MilitaryCommandRegistryStore {
       // Never turn an absent or mismatched living resident into an heir by inference.
       if(act.kind==='SUCCEEDED'){
         const heir=f.members.find(m=>m.memberId===act.holderMemberId)!,bindings=teams.flatMap(t=>[...t.users]).filter(u=>u.id===heir.sourceUserId&&u.bornMonth===heir.bornMonth);
-        const u=bindings[0];if(bindings.length!==1||!u||u.isDestroyed||u.team.name!==f.factionId||u.role!=='NORMAL'||u.rulerId||!u.player.active||u.player.user!==u||!u.team.users.has(u))continue;
+        const u=bindings[0];if(bindings.length!==1||!u||u.isDestroyed||u.team.name!==f.factionId||u.role!=='NORMAL'||u.rulerId||!u.player.logicalUnitId||u.player.role!=='NORMAL'||u.player.rulerId||u.player.team!==u.team||!u.player.active||u.player.user!==u||!u.team.users.has(u)){this.diagnostics.familyTitleIdentityRejected++;continue;}
       }
       const before=this.snapshotTransaction(),history=WorldHistory.snapshotPoliticalTransaction(),rng=worldRandom.exportState(),scope=beginPoliticalMutation();
       try{
@@ -497,6 +498,10 @@ export class MilitaryCommandRegistryStore {
         if(!this.eventReader(f.factionId).some(e=>e.id===act.eventId))throw Error('Family title event not committed');
       }catch{scope.cancel();this.rollbackTransaction(before,true);const restore=beginPoliticalMutation();WorldHistory.rollbackPoliticalTransaction(history);worldRandom.restore(rng);restore.finishRollback();this.diagnostics.familyTitleFailures++;continue;}
       scope.commit();
+      if(['DEATH','NO_HEIR'].includes(act.reason)){
+        const children=f.members.filter(m=>m.parentMemberId===act.previousMemberId&&m.enteredMonth<=month),eligible=eligibleFamilyNobleHeirs(f,act.previousMemberId,context);
+        this.diagnostics.familyTitleCandidateChecks+=children.length;this.diagnostics.familyTitleRejectedCandidates+=children.length-eligible.length;
+      }
     }
   }
   commitFamilyTitle(familyId:string,act:import('./FamilyNobleSuccession').FamilyNobleAct){const f=this.families.find(f=>f.familyId===familyId);if(!f||f.nobleSuccession?.some(a=>a.eventId===act.eventId))throw Error('Duplicate family succession');(f.nobleSuccession??=[]).push(structuredClone(act));}
@@ -820,6 +825,11 @@ export class MilitaryCommandRegistryStore {
         formation.memberUnitIds = formation.memberUnitIds.filter(id => id !== unitId);
         if (formation.memberUnitIds.length < 1) this.endFormation(formation, worldMonth, "DISMISSED");
       }
+    }
+    if(relative&&death&&!user.militaryPersonId){
+      const m=relative.member,f=relative.family,id=`${f.familyId}-${m.memberId}-death`;
+      m.deathHistoryIndex=WorldHistory.getEventCount();
+      if(!this.eventWriter||this.eventWriter({id,year:worldMonth,monthIndex:worldMonth,type:'family-member-died',category:'politics',importance:'normal',actorFactionId:f.factionId,factionIds:[f.factionId],title:`${m.name}卒。`,metadata:{familyId:f.familyId,memberId:m.memberId,sourceUserId:m.sourceUserId,bornMonth:m.bornMonth,deathCause:cause}})!==id||!this.eventReader(f.factionId).some(e=>e.id===id))throw Error('Family resident death source not committed');
     }
     if (!person || person.status === "DEAD") return;
     if (death) {

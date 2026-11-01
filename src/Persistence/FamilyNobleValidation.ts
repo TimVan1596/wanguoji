@@ -8,12 +8,13 @@ export function validateFamilyNobility(save:WorldSaveV1){
  const errors:string[]=[],events=save.worldHistory.events as WorldEvent[],state=save.registries.militaryCommandRegistry,positions=new Map(events.map((e,i)=>[e.id,i])),bound=new Set<string>();
  const dynasties=save.dynasties.map(d=>({factionId:String(d.factionId),houseEpochs:d.houseEpochs as import('../Politics/DynasticRevolution').DynastyHouseEpoch[]|undefined,rulers:(d.rulers as RulerSaveV17[]).map(importRulerSave)}));
  for(const f of state.families??[])try{
-  if(f.nobleSuccession!==undefined&&!Array.isArray(f.nobleSuccession))throw Error('title chain must be an array');
+  if(f.nobleSuccession!==undefined&&(!Array.isArray(f.nobleSuccession)||f.nobleSuccession.length>5))throw Error('title chain must be an array');
   for(const member of f.members){
    for(const field of ['deathHistoryIndex','exitHistoryIndex'] as const){const v=member[field];if(v!==undefined&&(!Number.isSafeInteger(v)||v<0||v>events.length))throw Error('invalid life evidence boundary');}
+   if(member.deathMonth!==undefined){const own=events.findIndex(e=>e.type==='family-member-died'&&e.metadata?.familyId===f.familyId&&e.metadata?.memberId===member.memberId),mil=events.findIndex(e=>e.type==='military-person-died'&&e.metadata?.personId===member.militaryPersonId&&at(e)===member.deathMonth),source=member.militaryPersonId?mil:own;if(member.deathHistoryIndex===undefined||source<0||member.deathHistoryIndex>source||!member.militaryPersonId&&member.deathHistoryIndex!==own)throw Error('missing contemporaneous actual death boundary');}
    if(member.factionHistory!==undefined&&!Array.isArray(member.factionHistory))throw Error('invalid family residence history');
    let previousMonth=member.enteredMonth,previousIndex=-1,previousFaction=f.factionId;
-   for(const h of member.factionHistory??[]){if(!Number.isSafeInteger(h.month)||h.month<previousMonth||h.month>save.world.worldMonth||!Number.isSafeInteger(h.eventIndex)||h.eventIndex<previousIndex||h.eventIndex>events.length||h.factionId===previousFaction||!save.factions.some(t=>t.factionId===h.factionId))throw Error('invalid actual population transfer');previousMonth=h.month;previousIndex=h.eventIndex;previousFaction=h.factionId;}
+   for(const h of member.factionHistory??[]){if(!Number.isSafeInteger(h.month)||h.month<previousMonth||h.month>save.world.worldMonth||h.month>(member.deathMonth??Infinity)||!Number.isSafeInteger(h.eventIndex)||h.eventIndex<previousIndex||h.eventIndex>events.length||h.factionId===previousFaction||!save.factions.some(t=>t.factionId===h.factionId))throw Error('invalid actual population transfer');previousMonth=h.month;previousIndex=h.eventIndex;previousFaction=h.factionId;}
    const u=save.users.find(u=>u.userId===member.sourceUserId&&u.bornMonth===member.bornMonth);if(u&&u.factionId!==familyResidenceAt(f,member,save.world.worldMonth))throw Error('family residence differs from original User');
   }
   const prefix:NonNullable<typeof f.nobleSuccession>=[];let previousPosition=-1;
@@ -29,7 +30,7 @@ export function validateFamilyNobility(save:WorldSaveV1){
  for(const e of events){if(['family-title-succeeded','family-title-ended'].includes(e.type)&&!bound.has(e.id))errors.push(`orphan family title ${e.id}`);
  if(e.type==='family-member-died'){
   const f=state.families?.find(f=>f.familyId===e.metadata?.familyId),m=f?.members.find(m=>m.memberId===e.metadata?.memberId);
-  if(!f||!m||!bound.has(e.id)||e.id!==`${f.familyId}-${m.memberId}-death`||m.deathMonth!==at(e)||e.metadata?.sourceUserId!==m.sourceUserId||e.metadata?.bornMonth!==m.bornMonth||e.metadata?.deathCause!==m.deathCause)errors.push(`invalid family death source ${e.id}`);
+  if(!f||!m||e.id!==`${f.familyId}-${m.memberId}-death`||m.deathMonth!==at(e)||e.metadata?.sourceUserId!==m.sourceUserId||e.metadata?.bornMonth!==m.bornMonth||e.metadata?.deathCause!==m.deathCause)errors.push(`invalid family death source ${e.id}`);
  }}
  return errors;
 }

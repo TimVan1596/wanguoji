@@ -1,4 +1,4 @@
-import {politicalCleanup,politicalEffect} from "../Simulation/PoliticalMutationScope";
+import {politicalCleanup,politicalEffect,politicalMutationActive} from "../Simulation/PoliticalMutationScope";
 import {residentNaturalDeathMonth,ordinaryLifeEligible} from "../Simulation/ResidentLife";
 import DynastyRegistry from "../Politics/Dynasty";
 import { deriveMilitaryLifeSchedule } from "../Politics/MilitaryLifeRules";
@@ -139,7 +139,7 @@ export default class User {
   capturePoliticalState(){return {loyalty:this.loyalty,destroyed:this.destroyed,role:this.role,rulerId:this.rulerId,historicalPersonId:this.historicalPersonId,militaryPersonId:this.militaryPersonId};}
   restorePoliticalState(s:ReturnType<User['capturePoliticalState']>){this.loyalty=s.loyalty;this.destroyed=s.destroyed;this.role=s.role;this.rulerId=s.rulerId;this.historicalPersonId=s.historicalPersonId;this.militaryPersonId=s.militaryPersonId;}
 
-  destroyUser(silentRulerDeath = false, populationMutation: PopulationMutationContext = { cause: "UNATTRIBUTED" }) {
+  destroyUser(silentRulerDeath = false, populationMutation: PopulationMutationContext = { cause: "UNATTRIBUTED" }): boolean {
     if (this.destroyed) return false;
     if (populationMutation.cause === "NATURAL_DEATH") {
       const person = this.militaryPersonId ? MilitaryCommandRegistry.getPerson(this.militaryPersonId) : undefined;
@@ -147,6 +147,7 @@ export default class User {
       if(!this.militaryPersonId){if(month===undefined||!ordinaryLifeEligible(this)||month<residentNaturalDeathMonth(this.id,this.bornMonth))return false;}
       else if (!person || month === undefined || (!person.royalIdentity && month % 12 !== 0) || month < deriveMilitaryLifeSchedule(person).naturalDeathMonth || !this.matchesMilitaryLife(person)) return false;
     }
+    if(!politicalMutationActive()&&MilitaryCommandRegistry.getFamilyMember(this.id,this.bornMonth))return MilitaryCommandRegistry.familyDeathTransaction(this,()=>this.destroyUser(silentRulerDeath,populationMutation));
     if (this.role === "RULER" && !silentRulerDeath) {
       const shouldDestroy = Game.Core?.handleRulerCombatDeath(this) ?? true;
       if (!shouldDestroy) {
