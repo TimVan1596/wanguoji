@@ -29,7 +29,9 @@ export function mergeCourtCoupReading(events:readonly WorldEvent[]){
   const revocation=events.find(x=>x.type==='military-title-revoked'&&at(x)===at(e)&&x.metadata?.personId===r.participant.personId&&(()=>{try{const h=JSON.parse(String(x.metadata?.honor));return h.reason==='COURT_COUP_FAILED'&&h.sourceEventId===result.id;}catch{return false;}})());
   for(const extra of [ban,revocation])if(extra){sources.push(extra);hidden.add(extra.id);}
   const forfeiture=revocation?(()=>{try{return ({BO:'伯爵',HOU:'侯爵',GONG:'公爵'} as Record<string,string>)[JSON.parse(String(revocation.metadata?.honor)).rank];}catch{return;}})():undefined;
-  const text=courtCoupText(r)+(ban?`${r.participant.personalName??r.participant.name}被禁仕${forfeiture?`，${forfeiture}亦遭追夺`:''}。`:'')+(service?'新君录其为拥立功臣。':'');replaced.set(e.id,{...e,title:text,description:text,metadata:{...e.metadata,courtReadingKind:'COURT_COUP',...(service?{courtServiceEventId:service.id}:{}),sourceEventIds:sources.map(x=>x.id).join(',')}});
+  const reward=children.get(e.id)?.find(x=>x.type==='court-reward-granted'&&x.metadata?.personId===r.participant.personId&&at(x)===at(e)&&x.rulerId===r.targetRulerId),noble=reward&&byId.get(String(reward.metadata?.nobleGrantEventId));
+  for(const extra of [reward,noble])if(extra){sources.push(extra);hidden.add(extra.id);}
+  const text=courtCoupText(r)+(ban?`${r.participant.personalName??r.participant.name}被禁仕${forfeiture?`，${forfeiture}亦遭追夺`:''}。`:'')+(service?'新君录其为拥立功臣。':'')+(reward?reward.title:'');replaced.set(e.id,{...e,title:text,description:text,metadata:{...e.metadata,courtReadingKind:'COURT_COUP',...(service?{courtServiceEventId:service.id}:{}),sourceEventIds:sources.map(x=>x.id).join(',')}});
  }
  const output:WorldEvent[]=[];for(const e of events)if(!hidden.has(e.id))output.push(replaced.get(e.id)??e);return output;
 }

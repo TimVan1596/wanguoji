@@ -402,14 +402,15 @@ export class MilitaryCommandRegistryStore {
     if(!politicalMutationActive()||service.type!=='court-service-granted'||service.rulerId!==dy.currentRulerId||service.metadata?.personId!==person.personId||service.actorFactionId!==team.name)throw Error('Invalid court reward authority');
     const grant=this.eligibleNobleGrant(person,month,team,dy);if(!grant)return;
     this.recordNoble(person,grant,service.id);
-    this.eventWriter!({id:`${service.id}-peerage`,year:month,type:'court-reward-granted',category:'politics',importance:'major',actorFactionId:team.name,factionIds:[team.name],rulerId:grant.rulerId,title:`${grant.rulerTitle}以${person.personalName}拥立有功，依其军功资历${grant.previousRank==='NONE'?'封':'进封'}为${({BO:'伯爵',HOU:'侯爵',GONG:'公爵'} as const)[grant.rank]}。`,metadata:{personId:person.personId,courtCoupEventId:service.metadata.courtCoupEventId,courtServiceEventId:service.id,nobleGrantEventId:grant.eventId,previousRank:grant.previousRank,rank:grant.rank}});
+    const rewardId=this.eventWriter!({id:`${service.id}-peerage`,year:month,type:'court-reward-granted',category:'politics',importance:'major',actorFactionId:team.name,factionIds:[team.name],rulerId:grant.rulerId,title:`${grant.rulerTitle}以${person.personalName}拥立有功，依其军功资历${grant.previousRank==='NONE'?'封':'进封'}为${({BO:'伯爵',HOU:'侯爵',GONG:'公爵'} as const)[grant.rank]}。`,metadata:{personId:person.personId,courtCoupEventId:service.metadata.courtCoupEventId,courtServiceEventId:service.id,nobleGrantEventId:grant.eventId,previousRank:grant.previousRank,rank:grant.rank}});
+    if(rewardId!==`${service.id}-peerage`||!this.eventReader(team.name).some(e=>e.id===rewardId))throw Error('Court reward not recorded');
   }
 
   recordCourtAct(p:MilitaryPerson,act:MilitaryCourtAct){
     if(!politicalMutationActive()||!this.eventWriter||p.politicalHistory?.some(a=>a.eventId===act.eventId))throw Error('Court act requires one owned transaction');
     (p.politicalHistory??=[]).push(act);
     const id=this.eventWriter({id:act.eventId,year:act.month,type:'military-court-sanction',category:'politics',importance:'major',actorFactionId:act.factionId,factionIds:[act.factionId],rulerId:act.rulerId,title:militaryCourtText(act),metadata:{personId:p.personId,courtCoupEventId:act.courtCoupEventId,courtAct:JSON.stringify(act)}});
-    if(id!==act.eventId)throw Error('Court act missing');
+    if(id!==act.eventId||!this.eventReader(act.factionId).some(e=>e.id===id))throw Error('Court act missing');
   }
   applyCourtFailure(p:MilitaryPerson,team:Team,dy:Dynasty,attempt:WorldEvent,result:WorldEvent){
     const act=planCourtBan(p,team,dy,attempt,result);if(!act)throw Error('Invalid court punishment');this.recordCourtAct(p,act);
