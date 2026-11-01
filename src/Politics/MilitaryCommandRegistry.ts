@@ -813,7 +813,7 @@ export class MilitaryCommandRegistryStore {
 
   onUserDestroyed(user: User, worldMonth: number, cause: string) {
     const relative=this.getFamilyMember(user.id,user.bornMonth);
-    if(relative){relative.member.exitHistoryIndex=WorldHistory.getEventCount();relative.member.exitMonth=worldMonth;relative.member.exitCause=cause;if(['SIEGE_LOSS','BATTLE_DEATH','NATURAL_DEATH'].includes(cause)){relative.member.deathHistoryIndex=WorldHistory.getEventCount();relative.member.deathMonth=worldMonth;relative.member.deathCause=cause;}}
+    if(relative){relative.member.exitHistoryIndex=WorldHistory.getEventCount();relative.member.exitMonth=worldMonth;relative.member.exitCause=cause;if(['SIEGE_LOSS','BATTLE_DEATH','NATURAL_DEATH'].includes(cause)){if(relative.member.deathMonth!==worldMonth||relative.member.deathHistoryIndex===undefined)relative.member.deathHistoryIndex=WorldHistory.getEventCount();relative.member.deathMonth=worldMonth;relative.member.deathCause=cause;}}
     const record = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
     const person = record?.sourceUserId === user.id && record.bornMonth === user.bornMonth && record.name === user.name && record.factionId === user.team.name ? record : undefined;
     if (cause === "NATURAL_DEATH" && !(ordinaryLifeEligible({...user,isDestroyed:false})&&worldMonth>=residentNaturalDeathMonth(user.id,user.bornMonth)) && (!person || (!person.royalIdentity && worldMonth % 12 !== 0) || worldMonth < deriveMilitaryLifeSchedule(person).naturalDeathMonth)) return;
