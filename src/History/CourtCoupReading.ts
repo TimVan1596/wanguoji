@@ -3,7 +3,7 @@ import type {CourtCoupRecord} from '../Politics/CourtCoup';
 import {MILITARY_OFFICE_NAMES} from '../Politics/MilitaryOffice';
 export function readCourtCoup(e:WorldEvent):CourtCoupRecord|undefined {try{const r=JSON.parse(String(e.metadata?.courtCoup));return r?.version===3&&r.factionId===e.actorFactionId?r:undefined;}catch{return;}}
 export function courtCoupAttemptText(r:CourtCoupRecord){
- const f=r.crisisFacts.at(-1),cause=f?.cityName?`${f.countryLabel}${f.type==='capital-fallen'?'失都':'失'}${f.cityName}后，`:'';
+ const f=r.crisisFacts.at(-1),cause=f?.cityName?(f.type==='capital-fallen'?`${f.countryLabel}都城${f.cityName}失守后，`:f.type==='city-revolt'?`${f.cityName}发生叛乱后，`:`${f.countryLabel}失${f.cityName}后，`):f?.type==='empire-split'?`${f.countryLabel}分裂之际，`:'';
  const kin:Record<string,string>={DIRECT_CHILD:'其子',GRANDCHILD:'其孙',SIBLING:r.target.bornMonth>r.previousRulerBornMonth?'其弟':r.target.bornMonth<r.previousRulerBornMonth?'其兄':'其兄弟',NEPHEW:'其侄',UNCLE:'其叔伯',COUSIN:'其堂亲'};
  const who=`${cause?'':r.countryLabel}${MILITARY_OFFICE_NAMES[r.participant.officeStanding!.office]}${r.participant.personalName??r.participant.name}`;
  return `${cause}${who}谋废${r.previousRulerTitle}，欲拥立${kin[r.target.relation]??'宗室成员'}${r.target.name}。`;
@@ -25,7 +25,7 @@ export function mergeCourtCoupReading(events:readonly WorldEvent[]){
   for(const x of children.get(e.id)??[])if(x.type==='military-command-ended'&&x.metadata?.courtCoupEventId===e.id&&x.metadata.personId===r.participant.personId&&x.metadata.commandId===r.participant.commandId&&x.metadata.endReason==='DISMISSED'&&x.actorFactionId===e.actorFactionId&&at(x)===at(e))sources.push(x);
   for(const x of sources)if(x!==e)hidden.add(x.id);
   const service=children.get(e.id)?.find(x=>x.type==='court-service-granted'&&x.metadata?.courtCoupEventId===e.id&&x.metadata?.courtResultEventId===result.id&&x.metadata?.personId===r.participant.personId&&x.rulerId===r.targetRulerId&&at(x)===at(e));if(service){sources.push(service);hidden.add(service.id);}
-  const text=courtCoupText(r)+(service?'新君录其为拥立功臣。':'');replaced.set(e.id,{...e,title:text,description:text,metadata:{...e.metadata,courtReadingKind:'COURT_COUP',sourceEventIds:sources.map(x=>x.id).join(',')}});
+  const text=courtCoupText(r)+(service?'新君录其为拥立功臣。':'');replaced.set(e.id,{...e,title:text,description:text,metadata:{...e.metadata,courtReadingKind:'COURT_COUP',...(service?{courtServiceEventId:service.id}:{}),sourceEventIds:sources.map(x=>x.id).join(',')}});
  }
  const output:WorldEvent[]=[];for(const e of events)if(!hidden.has(e.id))output.push(replaced.get(e.id)??e);return output;
 }

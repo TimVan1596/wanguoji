@@ -134,8 +134,8 @@ export default class User {
       entry.state.userId === this.id && entry.state.factionId === this.team.name && entry.state.role === "NORMAL";
   }
 
-  capturePoliticalState(){return {destroyed:this.destroyed,role:this.role,rulerId:this.rulerId,historicalPersonId:this.historicalPersonId,militaryPersonId:this.militaryPersonId};}
-  restorePoliticalState(s:ReturnType<User['capturePoliticalState']>){this.destroyed=s.destroyed;this.role=s.role;this.rulerId=s.rulerId;this.historicalPersonId=s.historicalPersonId;this.militaryPersonId=s.militaryPersonId;}
+  capturePoliticalState(){return {loyalty:this.loyalty,destroyed:this.destroyed,role:this.role,rulerId:this.rulerId,historicalPersonId:this.historicalPersonId,militaryPersonId:this.militaryPersonId};}
+  restorePoliticalState(s:ReturnType<User['capturePoliticalState']>){this.loyalty=s.loyalty;this.destroyed=s.destroyed;this.role=s.role;this.rulerId=s.rulerId;this.historicalPersonId=s.historicalPersonId;this.militaryPersonId=s.militaryPersonId;}
 
   destroyUser(silentRulerDeath = false, populationMutation: PopulationMutationContext = { cause: "UNATTRIBUTED" }) {
     if (this.destroyed) return false;

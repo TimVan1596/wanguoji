@@ -3,7 +3,7 @@ import {getRecordedKinRelation} from '../Politics/DynasticCandidateRules';
 import {chooseMilitaryClaimSupport} from '../Politics/MilitaryClaimSupport';
 import {formatRulerTitleAtMonth,type FactionTitleState} from '../Politics/RulerTitleRules';
 import {getRegimeStyleNameAtMonth} from '../Simulation/RegimeStyle';
-import {getFactionDisplayNameAtMonth} from '../Simulation/FactionIdentity';
+import {getFactionDisplayNameAtMonth,type FactionNameHistoryEntry} from '../Simulation/FactionIdentity';
 import {MILITARY_FORMATION_CAPACITY} from '../Politics/MilitaryOffice';
 import {deriveMilitaryLifeSchedule} from '../Politics/MilitaryLifeRules';
 import type {RulerSaveV17} from './WorldSaveSchema';
@@ -43,7 +43,7 @@ export function validateCourtCoups(save:WorldSaveV1):string[]{
   const historicalKin=rulers.filter(x=>x.id!==king.id&&(x.politicalStartYear??-Infinity)<=m&&x.houseName===king.houseName&&m-x.bornYear>=192&&(x.naturalDeathYear??Infinity)>m&&!(x.accessionYear!==undefined&&x.accessionYear<m)&&!(x.deathMonth!==undefined&&x.deathMonth<m)&&!prior.some(y=>y.type==='heir-died'&&y.metadata?.heirId===x.id||['ruler-died','ruler-captured'].includes(y.type)&&y.rulerId===x.id||x.militaryIdentity&&y.type==='military-person-died'&&y.metadata?.personId===x.militaryIdentity.personId)).flatMap(x=>{const rel=getRecordedKinRelation(x,king,rulers);return rel&&rel!=='COLLATERAL_KIN'?[{rulerId:x.id,name:x.houseName.replace(/氏$/,'')+x.givenName,bornMonth:x.bornYear,relation:rel}]:[];});
   const own=p.royalIdentity&&historicalKin.find(x=>x.rulerId===p.royalIdentity!.rulerId),choice=own&&c.disposition.ambition>=c.disposition.loyalty?{...own,basis:'SELF'}:(()=>{const support=chooseMilitaryClaimSupport(historicalKin,c.personId,c.personalName??c.name,c.disposition!);return support?{...historicalKin.find(x=>x.rulerId===support.rulerId)!,basis:support.basis}:undefined;})();
   if(JSON.stringify(choice)!==JSON.stringify(r.target))throw Error('actual political target choice');
-  const identity={...country,name:country.factionId,identityStage:country.identityStage as 'STATE'|'PROVISIONAL',nameHistory:country.nameHistory as NonNullable<FactionTitleState['nameHistory']>,sovereigntyHistory:country.sovereigntyHistory as NonNullable<FactionTitleState['sovereigntyHistory']>,sovereigntyRank:country.sovereigntyRank as NonNullable<FactionTitleState['sovereigntyRank']>};
+  const identity={...country,name:country.factionId,identityStage:country.identityStage as 'STATE'|'PROVISIONAL',nameHistory:country.nameHistory as unknown as FactionNameHistoryEntry[],sovereigntyHistory:country.sovereigntyHistory as NonNullable<FactionTitleState['sovereigntyHistory']>,sovereigntyRank:country.sovereigntyRank as NonNullable<FactionTitleState['sovereigntyRank']>};
   if(r.countryName!==getFactionDisplayNameAtMonth(identity,m)||r.countryLabel!==getRegimeStyleNameAtMonth(identity,m)||r.previousRulerTitle!==formatRulerTitleAtMonth(identity,king.houseName.replace(/氏$/,'')+king.givenName,m)||JSON.stringify(r.crisisFacts)!==JSON.stringify(crisis.map(f=>{const source=prior.find(e=>e.id===f.eventId);return {eventId:f.eventId,month:f.month,type:f.type,cityId:source?.cityId,cityName:source?.cityName,countryLabel:getRegimeStyleNameAtMonth(identity,f.month)};})))throw Error('frozen historical names or crisis sources');
   const oldVulnerability=r.stability<=40||r.cityCount<=2;
   if(JSON.stringify(r.depositionBlockers)!==JSON.stringify(oldVulnerability?[]:['NO_CURRENT_VULNERABILITY']))throw Error('original gate audit');
@@ -53,6 +53,7 @@ export function validateCourtCoups(save:WorldSaveV1):string[]{
   if(r.outcome==='FAILED'){
    if(result.rulerId!==king.id||!later.some(x=>x.type==='military-command-ended'&&at(x)===m&&x.metadata?.commandId===c.commandId&&x.metadata?.personId===p.personId&&x.metadata?.endReason==='DISMISSED'&&x.metadata?.courtCoupEventId===e.id)||a.endMonth!==m||a.endReason!=='DISMISSED'||f.status!=='DISBANDED'||later.some(x=>x.type==='ruler-deposed'&&at(x)===m&&x.metadata?.previousRulerId===king.id))throw Error('actual failed consequence');
   }else if(result.rulerId!==target.id||!later.some(x=>x.id===result.metadata?.depositionEventId&&x.type==='ruler-deposed'&&at(x)===m&&x.actorFactionId===r.factionId&&x.rulerId===target.id&&x.metadata?.previousRulerId===king.id)||king.endYear!==m||king.endReason!=='被废'||target.accessionYear!==m)throw Error('actual successful succession');
+  if(r.outcome==='SUCCESS'&&target.militaryIdentity?.personId!==p.personId&&later.filter(x=>x.type==='court-service-granted'&&x.metadata?.courtCoupEventId===e.id).length!==1)throw Error('missing actual supporter reward');
   bound.add(result.id);
  }catch(error){errors.push(`invalid court coup ${e.id}: ${String(error)}`);}
  for(const e of events)if(e.type==='court-coup-result'&&!bound.has(e.id))errors.push(`unbound court coup result ${e.id}`);

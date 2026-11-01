@@ -22,6 +22,7 @@ const order: GenealogyRole[] = ["当前君主", "储君", "宗室废立继位", 
 /** A single indexed faction window; no mutation, bloodline changes or per-node history searches. */
 export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: HouseHistoricalFaction,
   events: readonly WorldEvent[], worldMonth: number): Map<string, GenealogyNodePresentation> {
+  const revoked=new Map<string,number>();for(const e of events)if(e.type==='military-title-revoked')try{const h=JSON.parse(String(e.metadata?.honor)),key=`${h.personId}/${h.factionId}/${h.epochFounderId}`;revoked.set(key,Math.min(revoked.get(key)??Infinity,h.month));}catch{}
   const byId = new Map(dynasty.rulers.map(r => [r.id, r]));
   const evidence = new Map(dynasty.rulers.map(r => [r.id, [] as GenealogyNodePresentation["evidence"]]));
   const add = (r: Ruler | undefined, role: GenealogyRole, source: string) => {
@@ -92,7 +93,7 @@ export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: Hous
       r.status === "kin" && r.accessionYear === undefined ? "未曾承统" : "",
       byId.get(dynasty.currentRulerId ?? "")?.parentId === r.id ? "当今君主的父辈" : "",
       r.status === "politically-ended" ? "生死未载" : r.status === "exiled" ? "流亡承统" : r.status === "deposed" ? "被宗室废黜" : ""].filter(Boolean);
-    return [r.id, {honor:royalHonorHeading(r,dynasty,worldMonth,{factionId:dynasty.factionId,status:faction.status}), roles, labels: roles.slice(0, 2), theme, details, evidence: proof,
+    return [r.id, {honor:royalHonorHeading(r,dynasty,worldMonth,{revoked:g=>(revoked.get(`${r.militaryIdentity?.personId}/${g.factionId}/${g.epochFounderId}`)??Infinity)<=worldMonth,factionId:dynasty.factionId,status:faction.status}), roles, labels: roles.slice(0, 2), theme, details, evidence: proof,
       hasPosthumousTitle: hasRecordedRulerDeath(r) && Boolean(r.templeName || r.posthumousEpithet) }];
   }));
 }

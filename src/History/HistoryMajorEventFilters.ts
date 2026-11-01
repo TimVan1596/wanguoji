@@ -8,14 +8,14 @@ export const MAJOR_EVENT_FILTERS = [
 ] as const;
 export type MajorEventFilter = typeof MAJOR_EVENT_FILTERS[number]["value"];
 const TYPES: Record<Exclude<MajorEventFilter, "all">, readonly WorldEvent["type"][]> = {
-  honors:["royal-honor-granted","military-ennobled","military-posthumous","military-title-revoked"],
+  honors:["court-service-granted","royal-honor-granted","military-ennobled","military-posthumous","military-title-revoked"],
   founding: ["state-founded", "faction-restored", "dynasty-restored"], emperor: ["emperor-proclaimed"], revolution: ["dynasty-usurped", "ruler-deposed", "court-coup-attempt", "court-coup-result", "empire-split", "rebel-faction-founded", "frontier-faction-founded"],
   restoration: ["faction-restored", "dynasty-restored"], extinction: ["faction-exiled", "faction-extinct"],
   submission: ["faction-submitted", "faction-merged"], merge: ["faction-merged"], era: ["world-era-started", "world-unification", "world-hegemony", "world-fractured"],
 };
 /** Presentation over existing narrative anchors, not a second significance rule. */
 export function matchesMajorEventFilter(event: WorldEvent, filter: MajorEventFilter = "all") {
-  return filter === "all" || TYPES[filter].includes(event.type) || filter==='honors'&&event.type==='military-person-died'&&event.metadata?.historyNarrativeKind==='MILITARY_LIFE';
+  return filter === "all" || filter==='honors'&&event.metadata?.courtReadingKind==='COURT_COUP'&&typeof event.metadata?.courtServiceEventId==='string' || TYPES[filter].includes(event.type) || filter==='honors'&&event.type==='military-person-died'&&event.metadata?.historyNarrativeKind==='MILITARY_LIFE';
 }
 export const DIPLOMACY_EVENT_TYPES: readonly WorldEvent["type"][] = [
   "truce-signed", "non-aggression-signed", "alliance-signed", "treaty-expired", "alliance-expired", "relation-renewed",
