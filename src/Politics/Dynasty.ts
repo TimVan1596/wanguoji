@@ -1720,6 +1720,7 @@ function getRulerUserId(rulerId: string) {
 
 const DynastyRegistry = new DynastyRegistryStore();
 MilitaryCommandRegistry.setRoyalService({
+  transaction:(team,work)=>successionTransaction(team,DynastyRegistry,work),
   nobleEpoch:(factionId)=>{const d=DynastyRegistry.get(factionId);return nobleEpochForRuler(d,d?.currentRulerId??null)?.foundingRulerId;},
   candidates:(team,month)=>DynastyRegistry.getRoyalMilitaryCandidates(team,month),
   enlist:(candidate,team,month,members)=>DynastyRegistry.enlistRoyalMilitary(candidate,team,month,members),

@@ -52,6 +52,7 @@ export interface RoyalMilitaryLink {
 }
 export interface RoyalMilitaryCandidate { rulerId: string; factionId: string }
 export interface RoyalMilitaryService {
+  transaction?:<T>(team:Team,work:()=>T)=>T;
   nobleEpoch?(factionId:string,month:number):string|undefined;
   candidates(team: Team, month: number): RoyalMilitaryCandidate[];
   enlist(candidate: RoyalMilitaryCandidate, team: Team, month: number, members: User[]): boolean;
@@ -144,7 +145,7 @@ export class MilitaryCommandRegistryStore {
   private longRangeOrderSamples = new Map<string, number>();
   private eventWriter?: (event: Omit<WorldEvent, "id"> & { id: string }) => string;
   private eventReader: (factionId: string) => WorldEvent[] = factionId => WorldHistory.getEventsForFaction(factionId);
-  private diagnostics = { familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
+  private diagnostics = { familyAppointmentFailures:0,familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
     unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
 
   reset() {
@@ -153,7 +154,7 @@ export class MilitaryCommandRegistryStore {
     this.lastEvaluationMonth = -1;
     this.lastArrivalTargetByCommand.clear();
     this.longRangeOrderSamples.clear();
-    this.diagnostics = { familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
+    this.diagnostics = { familyAppointmentFailures:0,familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
       unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
   }
 
@@ -176,7 +177,7 @@ export class MilitaryCommandRegistryStore {
     this.lastEvaluationMonth = state.lastEvaluationMonth;
     this.lastArrivalTargetByCommand.clear();
     this.longRangeOrderSamples.clear();
-    this.diagnostics = { familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
+    this.diagnostics = { familyAppointmentFailures:0,familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
       unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
   }
 
@@ -297,8 +298,9 @@ export class MilitaryCommandRegistryStore {
       if (!availableUnits.length && !royals.length) { this.diagnostics.unitBlocked++; continue; }
       this.diagnostics.eligible += candidates.length;
       this.diagnostics.familyCandidateChecks+=candidates.filter(u=>{const link=this.getFamilyMember(u.id,u.bornMonth);return familyAppointmentWeight(link?.family,link?.member,team.name,this.royalService?.nobleEpoch?.(team.name,worldMonth),worldMonth)>1;}).length;
+      const attempt=()=>{
       if(provisional)this.diagnostics.provisionalDraws++;
-      if (worldRandom.next() >= ANNUAL_APPOINTMENT_CHANCE) {if(provisional)this.diagnostics.provisionalMisses++;continue;}
+      if (worldRandom.next() >= ANNUAL_APPOINTMENT_CHANCE) {if(provisional)this.diagnostics.provisionalMisses++;return;}
       const weights = candidates.map(user => {
         const person = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
         const link=this.getFamilyMember(user.id,user.bornMonth);
@@ -308,13 +310,17 @@ export class MilitaryCommandRegistryStore {
       if (selected.royal) {
         if (this.royalService?.enlist(selected.royal, team, worldMonth, [])) this.diagnostics.appointments++;
         this.refreshOrders(worldMonth, teams, cities);
-        continue;
+        return;
       }
       const candidate = selected.user!;
       const members = [candidate, ...availableUnits.filter(user => user !== candidate)].slice(0, MILITARY_FORMATION_CAPACITY.XIAOWEI);
-      if (members.length < 1 || !candidate.player.logicalUnitId) { this.diagnostics.unitBlocked++; continue; }
+      if (members.length < 1 || !candidate.player.logicalUnitId) { this.diagnostics.unitBlocked++; return; }
       if (this.appoint(candidate, team.name, worldMonth, members.map(user => user.player.logicalUnitId!))) {this.diagnostics.appointments++;if(provisional)this.diagnostics.provisionalAppointments++;}
       this.refreshOrders(worldMonth, teams, cities);
+      };
+      if(candidates.some(u=>u.familyMemberId)){
+        try{this.familyTransaction(team,attempt);}catch(error){this.diagnostics.familyAppointmentFailures++;console.warn('[MilitaryFamily] appointment opportunity rolled back',error);}
+      }else attempt();
     }
   }
 
@@ -364,7 +370,15 @@ export class MilitaryCommandRegistryStore {
     for (const formation of this.formations.values()) if (formation.commanderPersonId === personId) this.endFormation(formation, month, reason, courtCoupEventId);
   }
 
+  private familyTransaction<T>(team:Team,work:()=>T):T{
+    if(politicalMutationActive())return work();
+    if(!this.royalService?.transaction)throw Error('Missing canonical family transaction');
+    return this.royalService.transaction(team,work);
+  }
   private appoint(user: User, factionId: string, worldMonth: number, memberUnitIds: string[], royalIdentity?: RoyalMilitaryLink) {
+    return user.familyMemberId?this.familyTransaction(user.team,()=>this.appointBody(user,factionId,worldMonth,memberUnitIds,royalIdentity)):this.appointBody(user,factionId,worldMonth,memberUnitIds,royalIdentity);
+  }
+  private appointBody(user: User, factionId: string, worldMonth: number, memberUnitIds: string[], royalIdentity?: RoyalMilitaryLink) {
     if(memberUnitIds.length!==MILITARY_FORMATION_CAPACITY.XIAOWEI||new Set(memberUnitIds).size!==memberUnitIds.length||!memberUnitIds.includes(user.player.logicalUnitId??"")||factionId!==user.team.name||
       memberUnitIds.some(id=>this.isUnitAssigned(id)||![...user.team.users].some(u=>u.team===user.team&&!u.isDestroyed&&u.role==="NORMAL"&&!u.rulerId&&!u.player.rulerId&&u.player.active&&u.player.logicalUnitId===id)))return false;
     let person = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
