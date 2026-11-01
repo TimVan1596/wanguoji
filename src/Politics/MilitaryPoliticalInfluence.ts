@@ -52,7 +52,7 @@ export function militaryPoliticalDefense(p:MilitaryPerson,formations:MilitaryFor
 }
 /** Pure qualification. Runtime supplies verified User/player/logical-unit bindings, not UI state. */
 export function deriveMilitaryPoliticalInfluence(input: {
-  royalClaims?:boolean; localSecession?:boolean; factionId: string; status: string; identityStage: string; worldMonth: number; people: MilitaryPerson[]; formations: MilitaryFormation[];
+  courtAttempt?:boolean; royalClaims?:boolean; localSecession?:boolean; factionId: string; status: string; identityStage: string; worldMonth: number; people: MilitaryPerson[]; formations: MilitaryFormation[];
   users: MilitaryPoliticalUser[]; events: WorldEvent[];nobleEpochFounderId?:string;
 }): MilitaryPoliticalEvidence {
   const { factionId, worldMonth, people, formations, users, events } = input;
@@ -75,11 +75,12 @@ export function deriveMilitaryPoliticalInfluence(input: {
     const members = [...new Set(f.memberUnitIds)].filter(id => users.filter(member => member.unitId === id && member.liveBindingVerified && member.factionId === factionId).length === 1 &&
       formations.filter(other => other.status === "ACTIVE" && other.memberUnitIds.includes(id)).length === 1).sort();
     if (members.length < 1 || members.length > 4 || !members.includes(u.unitId)) { block(p.personId, "NO_VALID_MEMBERS"); continue; }
+    if(input.courtAttempt&&f.memberUnitIds.length!==members.length){block(p.personId,"INVALID_COMMAND_ROSTER");continue;}
     const career = deriveMilitaryCareer(p, formations, events, worldMonth);
     const defense=militaryPoliticalDefense(p,formations,events,worldMonth,factionId);
     const experience = militaryPoliticalStrength(career.serviceMonths, members.length, career.verifiedCaptures,defense.eventIds.length,defense.localServiceMonths);
     const appointment=p.appointments.find(a=>a.commandId===f.commandId&&a.endMonth===undefined)!;
-    const eligible=input.localSecession?localMilitaryCareer(worldMonth-appointment.startMonth,members.length,career.activities.filter(a=>a.factionId===factionId).length,career.verifiedCaptures,defense.eventIds.length):experience.eligible;
+    const eligible=input.localSecession?localMilitaryCareer(worldMonth-appointment.startMonth,members.length,career.activities.filter(a=>a.factionId===factionId).length,career.verifiedCaptures,defense.eventIds.length):experience.eligible||Boolean(input.courtAttempt&&career.serviceMonths>=12&&members.length>=2);
     if (!eligible) { block(p.personId, "INSUFFICIENT_CAREER"); continue; }
     candidates.push({ personId: p.personId, sourceUserId: p.sourceUserId, name: p.name, personalName: p.personalName, bornMonth: p.bornMonth, factionId,
       commandId: f.commandId, commanderUnitId: u.unitId, memberUnitIds: members, unitCount: members.length,
@@ -95,6 +96,13 @@ export function deriveMilitaryPoliticalInfluence(input: {
     }
   };
   const filterContinuity=()=>{if(!input.localSecession&&!input.royalClaims)for(let i=candidates.length-1;i>=0;i--){const c=candidates[i];if(c.disposition&&!willingCourtParticipant(c.disposition)){block(c.personId,'SUPPORTS_CONTINUITY');candidates.splice(i,1);}}};
+  if(input.courtAttempt){
+    for(let i=candidates.length-1;i>=0;i--){const c=candidates[i],p=people.find(p=>p.personId===c.personId)!,office=verifiedPoliticalOffice(p,c.commandId,factionId,worldMonth,events);
+      if(!office||c.unitCount>MILITARY_FORMATION_CAPACITY[office.office]){block(c.personId,'NO_CURRENT_OFFICE');candidates.splice(i,1);}else c.officeStanding=office;
+    }
+    candidates.forEach(applyDisposition);candidates.sort(compareMilitaryStanding);
+    return {candidates,blocked,identityBlocked:blocked.filter(b=>b.reason.includes('IDENTITY')).length};
+  }
   if(input.nobleEpochFounderId){
     for(const c of candidates){const p=people.find(p=>p.personId===c.personId)!,office=verifiedPoliticalOffice(p,c.commandId,factionId,worldMonth,events);
       if(office&&c.unitCount<=MILITARY_FORMATION_CAPACITY[office.office])c.officeStanding=office;

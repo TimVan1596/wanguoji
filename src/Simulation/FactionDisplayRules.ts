@@ -28,9 +28,9 @@ export function getFactionRegimeBadge(team: FactionDisplayTeamLike) {
     return team.sovereigntyRank === "EMPEROR" ? "帝国" : "王国";
   }
   if (team.factionType === "FRONTIER") {
-    return "边地义军";
+    return "义军";
   }
-  return "临时政权";
+  return "义军";
 }
 
 export function getFactionRegimeWeight(team: FactionDisplayTeamLike) {

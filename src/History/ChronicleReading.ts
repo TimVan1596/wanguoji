@@ -1,3 +1,4 @@
+import {formatPoliticalEvent,readPoliticalCrisis} from '../Politics/PoliticalEventNarrative';
 import type {WorldEvent} from './WorldHistory';
 import {formatAccessionCapital,ACCESSION_EVENT_TYPES} from './AccessionCapitalContext';
 import {formatWorldDate} from '../Simulation/WorldTime';
@@ -18,7 +19,9 @@ export function chronicleReadingText(e:WorldEvent,base:string,events:readonly Wo
  const capital=formatAccessionCapital(e),m=e.metadata??{};
  let text=base.split(' · ').filter(x=>x!==capital).join('，').replace(/[。；，]+$/,'').replace(/所属编组/g,'所部');
  if(e.type==='ruler-succession'&&typeof m.nextRulerName==='string')text=text.replace(`${m.nextRulerName}继位`,`${m.nextRulerName}嗣位`);
- if(ACCESSION_EVENT_TYPES.includes(e.type)){
+ const political=formatPoliticalEvent(e),snapshot=readPoliticalCrisis(e);
+ const alreadyRendered=political!==undefined&&base===political&&snapshot?.capitalCityId===m.capitalCityId&&snapshot?.capitalCityName===m.capitalCityName&&Boolean(snapshot?.capitalCityName);
+ if(ACCESSION_EVENT_TYPES.includes(e.type)&&!alreadyRendered){
   if(m.accessionCapitalVersion===1&&m.accessionCapitalState==='CAPITAL'&&m.capitalControlled===1&&m.accessionFactionId===e.actorFactionId&&m.accessionMonth===(e.monthIndex??e.year)&&typeof m.capitalCityId==='string'&&typeof m.capitalCityName==='string')text+=`，${remainedCapital(e,events)?'仍都':'都'}${m.capitalCityName}`;
   else if(m.accessionCapitalState==='EXILED')text+='，时无实际国都';
   else if(m.accessionCapitalState==='PROVISIONAL'&&typeof m.provisionalSeatCityName==='string')text+=`，治${m.provisionalSeatCityName}`;

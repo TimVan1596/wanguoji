@@ -11,21 +11,21 @@ export function GenealogyPersonCard({ ruler, displayName, presentation, worldMon
 }) {
   const theme = presentation?.theme ?? "neutral";
   const honor=ruler.royalHonors?.filter(g=>g.month<=(worldMonth??Infinity)).at(-1);
-  const kinLine=honor?(presentation?.details.find(line=>line.startsWith(ROYAL_HONOR_NAMES[honor.rank]))??`${ROYAL_HONOR_NAMES[honor.rank]}（历史荣衔）`):'宗室';
+  const kinLine=presentation?.honor?.secondary??(honor?(presentation?.details.find(line=>line.startsWith(ROYAL_HONOR_NAMES[honor.rank]))??`${ROYAL_HONOR_NAMES[honor.rank]}（历史荣衔）`):'宗室');
   if(compact){
     const line={overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"};
     return <Box data-genealogy-theme={theme} title={[displayName,...presentation?.details??[],militaryLabel].filter(Boolean).join(" · ")} sx={{border:"1px solid",...genealogyThemeStyles[theme],borderRadius:"var(--gg-radius)",boxSizing:"border-box",width:GENEALOGY_CARD_WIDTH,height:genealogyCardHeight(worldMonth!==undefined,!!presentation?.labels.length,!!militaryLabel),px:"8px",py:"6px",textAlign:"center"}}>
-      <Typography sx={{...line,fontSize:13,lineHeight:"20px",fontWeight:theme==='neutral'?400:700}}>{displayName}</Typography>
+      <Typography sx={{...line,fontSize:13,lineHeight:"20px",fontWeight:theme==='neutral'?400:700}}>{presentation?.honor?.primary??displayName}</Typography>
       {worldMonth!==undefined&&<Typography sx={{...line,fontSize:11,lineHeight:"16px"}}>{formatRulerLifeAge(ruler,worldMonth,false,managedLife)}</Typography>}
       {presentation?.labels.length?<Typography sx={{...line,fontSize:11,lineHeight:"16px"}}>{presentation.labels.join(" · ")}</Typography>:null}
-      <Typography sx={{...line,fontSize:11,lineHeight:"16px"}}>{ruler.reignOrdinal!==undefined?`第${ruler.reignOrdinal}代`:kinLine}{ruler.status==='dead'?" · 已故":""}</Typography>
+      <Typography sx={{...line,fontSize:11,lineHeight:"16px"}}>{ruler.reignOrdinal!==undefined?kinLine!=='宗室'?kinLine:`第${ruler.reignOrdinal}代`:kinLine}{ruler.status==='dead'?" · 已故":""}</Typography>
       {militaryLabel&&<Typography sx={{...line,fontSize:11,lineHeight:"16px"}}>{militaryLabel}</Typography>}
     </Box>;
   }
   return <Box data-genealogy-theme={theme} title={presentation?.details.join(" · ")}
     sx={{ border: "1px solid", ...genealogyThemeStyles[theme], borderRadius: "var(--gg-radius)", px: 1,
       py: 0.6, minWidth: 100, maxWidth: 230, overflowWrap: "anywhere" }}>
-    <Typography fontSize="0.83rem" fontWeight={theme === "neutral" ? 400 : 700}>{displayName}</Typography>
+    <Typography fontSize="0.83rem" fontWeight={theme === "neutral" ? 400 : 700}>{presentation?.honor?.primary??displayName}</Typography>
     {worldMonth!==undefined&&<Typography fontSize="0.75rem">{formatRulerLifeAge(ruler,worldMonth,false,managedLife)}</Typography>}
     {presentation?.labels.length ? <Typography fontSize="0.72rem" sx={{ mt: 0.2 }}>{presentation.labels.join(" · ")}</Typography> : null}
     <Typography fontSize="0.68rem" color="var(--gg-text-muted)">

@@ -1,3 +1,4 @@
+import {royalHonorHeading} from '../../../Politics/RoyalHonorPresentation';
 import {royalHonorLabel} from './RoyalHonorPanel';
 import { formatRulerLifeAge } from "./RoyalPresentation";
 import type { Dynasty, Ruler } from "../../../Politics/Dynasty";
@@ -9,6 +10,7 @@ import { getRulerTerminalRole } from "../../../History/PoliticalTerminalChronicl
 export type GenealogyRole = "当前君主" | "储君" | "势力创始" | "正式开国" | "称帝" | "篡朝开统" | "宗室废立继位" | "被宗室废黜" | "复国" | "末代承统" | "合邦退位" | "纳土退位";
 export type GenealogyTheme = "neutral" | "monarch" | "current" | "heir" | "foundation" | "usurpation" | "restoration" | "terminal";
 export interface GenealogyNodePresentation {
+  honor?:ReturnType<typeof royalHonorHeading>;
   roles: GenealogyRole[];
   labels: GenealogyRole[];
   theme: GenealogyTheme;
@@ -90,7 +92,7 @@ export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: Hous
       r.status === "kin" && r.accessionYear === undefined ? "未曾承统" : "",
       byId.get(dynasty.currentRulerId ?? "")?.parentId === r.id ? "当今君主的父辈" : "",
       r.status === "politically-ended" ? "生死未载" : r.status === "exiled" ? "流亡承统" : r.status === "deposed" ? "被宗室废黜" : ""].filter(Boolean);
-    return [r.id, { roles, labels: roles.slice(0, 2), theme, details, evidence: proof,
+    return [r.id, {honor:royalHonorHeading(r,dynasty,worldMonth,{factionId:dynasty.factionId,status:faction.status}), roles, labels: roles.slice(0, 2), theme, details, evidence: proof,
       hasPosthumousTitle: hasRecordedRulerDeath(r) && Boolean(r.templeName || r.posthumousEpithet) }];
   }));
 }

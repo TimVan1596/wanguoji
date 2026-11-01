@@ -1,7 +1,8 @@
+import {CourtPoliticsFunnel} from './CourtPoliticsFunnel';
 import {royalName} from './RoyalHonors';
 import {MILITARY_OFFICE_NAMES} from './MilitaryOffice';
 import {formatWorldDate} from '../Simulation/WorldTime';
-import {selectCourtInstigator,courtAttemptOutcome,COURT_ATTEMPT_PARAMETERS,type CourtAttemptPolicy,type CourtCoupRecord} from './CourtCoup';
+import {selectCourtInstigator,courtAttemptOutcome,courtAttemptEligible,courtAttemptChance,type CourtAttemptPolicy,type CourtCoupRecord} from './CourtCoup';
 import {planRoyalHonor,royalHonorText,royalHonorCandidateClaims,type RoyalHonor} from './RoyalHonors';
 import {beginPoliticalMutation} from '../Simulation/PoliticalMutationScope';
 import {validateMilitaryUsurpers} from "../Persistence/MilitaryUsurperValidation";
@@ -185,7 +186,7 @@ class DynastyRegistryStore {
     this.revolutionChecks = [];
     this.revolutionGateDiagnostics.reset();
     this.depositionDiagnostics.reset();
-    this.courtInstigatorChecks=0;this.courtAttemptPolicy="MEDIUM";
+    this.courtInstigatorChecks=0;this.courtFunnel.reset();this.courtAttemptPolicy="MEDIUM";
     this.depositionRiskGroup = "CONSERVATIVE";
     this.provisionalDiagnosticsSession.reset([]);
   }
@@ -228,7 +229,7 @@ class DynastyRegistryStore {
     this.revolutionChecks = [];
     this.revolutionGateDiagnostics.reset(diagnosticsStartMonth);
     this.depositionDiagnostics.reset(diagnosticsStartMonth);
-    this.courtInstigatorChecks=0;
+    this.courtInstigatorChecks=0;this.courtFunnel.reset();
     this.provisionalDiagnosticsSession.reset(this.listForDiagnostics());
   }
 
@@ -915,8 +916,8 @@ class DynastyRegistryStore {
     const acts=WorldHistory.getRecordedEvents().filter(e=>e.type==='court-coup-attempt');
     const results=WorldHistory.getRecordedEvents().filter(e=>e.type==='court-coup-result');
     const successes=results.filter(e=>e.metadata?.outcome==='SUCCESS').length;
-    return {qualificationScope:'SESSION_SINCE_LOAD',eventScope:'RECORDED_WORLD_HISTORY',qualifiedInstigatorOpportunities:this.courtInstigatorChecks,attempts:acts.length,successes,failures:results.length-successes,
-      summary:`本次会话合格发起机会 ${this.courtInstigatorChecks}次。已记录宫廷拥立企图 ${acts.length}次；成功 ${successes}次，失败 ${results.length-successes}次。失败处罚为实际免职；拥立者不等于继位者。`};
+    return {funnel:this.courtFunnel.snapshot(),qualificationScope:'SESSION_SINCE_LOAD',eventScope:'RECORDED_WORLD_HISTORY',qualifiedInstigatorOpportunities:this.courtInstigatorChecks,attempts:acts.length,successes,failures:results.length-successes,
+      summary:`本次会话：年度国家检查${this.courtFunnel.annual}次，真实危机${this.courtFunnel.crisis}次，合格发起机会 ${this.courtInstigatorChecks}次。已记录宫廷拥立企图 ${acts.length}次；成功 ${successes}次，失败 ${results.length-successes}次。失败处罚为实际免职；拥立者不等于继位者。`};
   }
 
   getInReignDepositionDiagnostics(worldMonth: number) {
@@ -928,6 +929,7 @@ class DynastyRegistryStore {
     this.depositionRiskGroup = riskGroup;
   }
 
+  private courtFunnel=new CourtPoliticsFunnel();
   private courtInstigatorChecks=0;
   private courtAttemptPolicy:CourtAttemptPolicy='MEDIUM';
   setCourtAttemptPolicyForSimulation(policy:CourtAttemptPolicy){this.courtAttemptPolicy=policy;}
@@ -950,21 +952,12 @@ class DynastyRegistryStore {
       events: recentEvents, riskGroup: this.depositionRiskGroup,
       military: MilitaryCommandRegistry.getPoliticalInfluence(team, worldMonth, Game.Core?.logicalUnitRegistry),
     });
-    if (evaluation.blockers.includes("COOLDOWN")) {
-      this.depositionDiagnostics.observe(team.name, worldMonth, evaluation, team.status === "ACTIVE" && team.identityStage === "STATE", "COOLDOWN");
-      return;
-    }
-    if (!evaluation.eligible) {
-      this.depositionDiagnostics.observe(team.name, worldMonth, evaluation, team.status === "ACTIVE" && team.identityStage === "STATE");
-      return;
-    }
-    evaluation.royalMilitaryClaims=MilitaryCommandRegistry.getRoyalDepositionClaims(team,worldMonth,evaluation.candidates.map(c=>c.ruler),Game.Core?.logicalUnitRegistry);
-    const instigator=selectCourtInstigator(evaluation,MilitaryCommandRegistry.getPeople());
-    if(instigator){
-      this.courtInstigatorChecks++;
-      this.evaluateCourtAttempt(team,dynasty,current,worldMonth,evaluation,instigator);
-      return;
-    }
+    const courtInfluence=courtAttemptEligible(evaluation)?MilitaryCommandRegistry.getCourtAttemptInfluence(team,worldMonth,Game.Core?.logicalUnitRegistry):undefined;
+    const instigator=selectCourtInstigator(evaluation,MilitaryCommandRegistry.getPeople(),courtInfluence);
+    if(evaluation.eligible)evaluation.royalMilitaryClaims=MilitaryCommandRegistry.getRoyalDepositionClaims(team,worldMonth,evaluation.candidates.map(c=>c.ruler),Game.Core?.logicalUnitRegistry);
+    this.courtFunnel.observe(evaluation,courtInfluence,Boolean(instigator),team.status==='ACTIVE'&&team.identityStage==='STATE');
+    if(instigator){this.courtInstigatorChecks++;this.evaluateCourtAttempt(team,dynasty,current,worldMonth,evaluation,instigator);return;}
+    if(!evaluation.eligible){this.depositionDiagnostics.observe(team.name,worldMonth,evaluation,team.status==='ACTIVE'&&team.identityStage==='STATE',evaluation.blockers.includes('COOLDOWN')?'COOLDOWN':undefined);return;}
     // Exactly one canonical roll per qualified annual boundary. Diagnostics do not touch RNG.
     dynasty.lastDepositionAttemptMonth = worldMonth;
     const roll = worldRandom.next();
@@ -993,12 +986,12 @@ class DynastyRegistryStore {
       if(!outcome){this.depositionDiagnostics.observe(team.name,month,evaluation,true,'FAILURE');return;}
       evaluation.royalHonorClaims=royalHonorCandidateClaims(dynasty,month,team.sovereigntyRank);
       // Actual success keeps the original conditional selection and original successful roll.
-      const choice=chooseDepositionClaimant(evaluation,month,outcome==='SUCCESS'?roll:0);
+      const choice=chooseDepositionClaimant(outcome==='SUCCESS'?evaluation:{...evaluation,eligible:true},month,outcome==='SUCCESS'?roll:0);
       if(!choice)throw Error('No legal coup target');
       const target=choice.claimant.ruler,eventId=`court-coup-${team.name}-${month}`,outcomeEventId=`${eventId}-result`;
-      const record:CourtCoupRecord={version:1,factionId:team.name,month,previousRulerId:current.id,targetRulerId:target.id,
-        participant:structuredClone(actor),...(evaluation.militaryParticipant?{successPressure:structuredClone(evaluation.militaryParticipant)}:{}),crisisEventIds:evaluation.evidence.map(e=>e.eventId),stability:getFactionStability(team)??100,cityCount:team.cities.length,
-        policy:this.courtAttemptPolicy,attemptProbability:COURT_ATTEMPT_PARAMETERS[this.courtAttemptPolicy],successProbability:evaluation.probability,roll,
+      const record:CourtCoupRecord={version:2,successEligible:evaluation.eligible,depositionBlockers:[...evaluation.blockers],factionId:team.name,month,previousRulerId:current.id,targetRulerId:target.id,
+        members:actor.memberUnitIds.map(unitId=>{const u=[...team.users].find(u=>u.player.logicalUnitId===unitId);if(!u||u.isDestroyed||u.team!==team)throw Error('Invalid court command member');return {unitId,userId:u.id,bornMonth:u.bornMonth,factionId:team.name};}),participant:structuredClone(actor),...(evaluation.militaryParticipant?{successPressure:structuredClone(evaluation.militaryParticipant)}:{}),crisisEventIds:evaluation.evidence.map(e=>e.eventId),stability:getFactionStability(team)??100,cityCount:team.cities.length,
+        policy:this.courtAttemptPolicy,attemptProbability:courtAttemptChance(actor,this.courtAttemptPolicy),successProbability:evaluation.eligible?evaluation.probability:0,roll,
         outcome,outcomeEventId,consequence:outcome==='SUCCESS'?'DEPOSITION':'DISMISSED'};
       const actorName=actor.personalName??actor.name,office=actor.officeStanding?.office;
       const who=`${team.displayName}${office?MILITARY_OFFICE_NAMES[office]:''}${actorName}`;
@@ -1014,7 +1007,7 @@ class DynastyRegistryStore {
       WorldHistory.addEvent({id:outcomeEventId,year:month,type:'court-coup-result',category:'politics',importance:'major',actorFactionId:team.name,factionIds:[team.name],rulerId:outcome==='SUCCESS'?target.id:current.id,
         title:outcome==='SUCCESS'?`${actorName}拥立${royalName(target)}事成，${royalName(current)}被废。`:`${actorName}拥立之谋败，军职被免；${royalName(current)}仍在位。`,metadata:{courtCoupEventId:eventId,...(depositionEventId?{depositionEventId}:{}),personId:actor.personId,commandId:actor.commandId,targetRulerId:target.id,outcome}});
       politicalEffect(()=>this.depositionDiagnostics.observe(team.name,month,evaluation,true,outcome==='SUCCESS'?'SUCCESS':'FAILURE'));
-    });}catch(error){console.warn('[CourtCoup] rolled back',error);}
+    });}catch(error){this.courtFunnel.transactionFailures++;console.warn('[CourtCoup] rolled back',error);}
   }
 
   private commitDeposition(team: Team, dynasty: Dynasty, predecessor: Ruler, successor: Ruler,

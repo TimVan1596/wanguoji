@@ -209,6 +209,10 @@ export class MilitaryCommandRegistryStore {
       events: [...new Map(relevantFactions.flatMap(id => this.eventReader(id)).map(e => [e.id, e])).values()],nobleEpochFounderId:nobleStanding&&!includeRoyal?this.royalService?.nobleEpoch?.(team.name,worldMonth):undefined });
   }
 
+  getCourtAttemptInfluence(team:Team,month:number,logicalRegistry?:Pick<import('../Simulation/LogicalUnitRegistry').default,'getEntry'>){
+    return deriveMilitaryPoliticalInfluence({courtAttempt:true,royalClaims:true,factionId:team.name,status:team.status,identityStage:team.identityStage,worldMonth:month,people:this.getPeople(),formations:this.getFormations(),users:this.politicalUsers(team,logicalRegistry),events:this.eventReader(team.name)});
+  }
+
   getOfficeSummary(worldMonth:number){
     const people=this.getPeople(),appointments=people.flatMap(p=>p.appointments),grants=appointments.flatMap(a=>a.officeHistory??[]);
     const count=(office:MilitaryOfficeGrant["office"])=>grants.filter(g=>g.office===office).length;
