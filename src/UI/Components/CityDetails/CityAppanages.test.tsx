@@ -3,10 +3,10 @@ import {it,expect,vi} from 'vitest';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {daliangAppanageFixture} from '../../../Simulation/testing/CityAppanageViewFixture';
 import {Provider} from 'react-redux';
-const mock=vi.hoisted(()=>({month:500,people:[] as any[],history:vi.fn(()=>{throw Error('closed city must not read complete history');})}));
+const mock=vi.hoisted(()=>({house:undefined as any,month:500,people:[] as any[],history:vi.fn(()=>{throw Error('closed city must not read complete history');})}));
 vi.mock('../../../History/WorldHistory',()=>({default:{getRevision:()=>1,getEventCount:()=>1,getRecordedEvents:mock.history}}));
 vi.mock('../../../Politics/MilitaryCommandRegistry',()=>({default:{getPeople:()=>mock.people,getFormations:()=>[]}}));
-vi.mock('../../../Politics/Dynasty',()=>({default:{getAll:()=>[]}}));
+vi.mock('../../../Politics/Dynasty',()=>({default:{getAll:()=>[],get:()=>mock.house}}));
 vi.mock('react/jsx-dev-runtime',async()=>{const r=await vi.importActual<typeof import('react')>('react');return {jsxDEV:(type:React.ElementType,props:Record<string,unknown>,key?:string)=>r.createElement(type,{...props,key}),Fragment:r.Fragment};});
 import {CityAppanageSection} from './CityAppanages';
 const store:any={getState:()=>({root:{worldMonth:mock.month,teams:[]}}),subscribe:()=>()=>{},dispatch:()=>{}};
@@ -22,3 +22,5 @@ it('one to five verified estate relations mount their cards automatically while 
  const html=renderToStaticMarkup(<Provider store={store}><CityAppanageSection cityId={x.cityId}/></Provider>);
  expect(html).toContain('aria-expanded="true"');expect(html.match(/data-appanage-grant=/g)).toHaveLength(2);expect(html).not.toContain('data-appanage-event');
 });
+
+it('shows the real royal honor at the last effective estate period and excludes later accession and higher honor',()=>{const x=daliangAppanageFixture(),p=x.people[1],a=p.appanageHistory![0];const g:any={eventId:'royal-honor',month:1600,rank:'WUANJUN',factionId:a.factionId,epochFounderId:a.epochFounderId,recipientRulerId:'royal',recipientName:p.personalName,countryName:a.countryName};mock.house={houseEpochs:[{foundingRulerId:a.epochFounderId,startMonth:0,endMonth:1680}],rulers:[{id:'royal',militaryIdentity:{personId:p.personId},accessionYear:1680,royalHonors:[g,{...g,eventId:'future-honor',month:1680,rank:'ZHENGUOGONG'}]}]};x.events.push({id:g.eventId,year:1600,type:'royal-honor-granted'} as any);x.events.sort((a,b)=>(a.monthIndex??a.year)-(b.monthIndex??b.year));mock.people=x.people;mock.month=x.month;mock.history.mockImplementation(()=>x.events as never);const html=renderToStaticMarkup(<Provider store={store}><CityAppanageSection cityId={x.cityId}/></Provider>);expect(html).toContain('武安君');expect(html).not.toContain('镇国公');expect(html).not.toContain('登位前');expect(html).not.toContain('data-appanage-event');mock.house=undefined;});

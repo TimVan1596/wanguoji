@@ -15,7 +15,7 @@ describe("faction display rules", () => {
         identityStage: "PROVISIONAL",
         factionType: "REBEL",
       })
-    ).toBe("临时政权");
+    ).toBe("义军");
     expect(
       getFactionListDisplayName(
         {
@@ -52,7 +52,7 @@ describe("faction display rules", () => {
       )
     ).toEqual({
       displayName: "新郑义军",
-      badge: "临时",
+      badge: "义军",
       rulerTitle: "首领韩安",
       prestigeWeight: 0,
     });
@@ -110,3 +110,5 @@ describe("faction display rules", () => {
     ).toEqual(["王", "帝"]);
   });
 });
+
+it.each(['REBEL','FRONTIER','SPLIT'])('keeps %s as an internal source while sharing the player-facing provisional category',factionType=>{expect(getFactionRegimeBadge({factionType,identityStage:'PROVISIONAL'})).toBe('义军');expect(getFactionRegimeBadge({factionType,identityStage:'STATE',sovereigntyRank:'KING'})).toBe('王国');});
