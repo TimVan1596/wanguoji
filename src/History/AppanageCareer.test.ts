@@ -30,3 +30,11 @@ it('uses source order for same-month loss and recovery and keeps uncommitted lif
  const index=prepareAppanageHistory(es),r=cityAppanageHistory(f.x.cityId,[f.p],es,1660,index).relations[0],windows=appanageEffectiveWindows(r,index,1660);
  expect(windows.map(w=>[w.startMonth,w.endMonth])).toEqual([[1536,1656],[1656,1660]]);expect(windows[0].endOrder).toBeLessThan(windows[1].startOrder);
 });
+
+it('special royal honors follow only valid estate windows and canonical same-month source order',async()=>{
+ const {appanageRoyalHonor}=await import('../UI/Components/CityDetails/AppanagePresentation');const f=fixture(),royal:any={id:'royal',bornYear:f.p.bornMonth,accessionYear:1680,royalHonors:[]},house:any={houseEpochs:[{foundingRulerId:f.a.epochFounderId,startMonth:0,endMonth:1680}]};
+ const grant=(id:string,month:number,rank:string)=>({eventId:id,month,rank,factionId:f.a.factionId,epochFounderId:f.a.epochFounderId,recipientRulerId:'royal',recipientName:f.p.personalName,countryName:f.a.countryName});
+ royal.royalHonors=[grant('wuan',1600,'WUANJUN'),grant('future',1680,'ZHENGUOGONG')];f.x.events.push({id:'wuan',type:'royal-honor-granted',year:1600} as any,{id:'future',type:'royal-honor-granted',year:1680} as any);f.x.events.sort((a,b)=>(a.monthIndex??a.year)-(b.monthIndex??b.year));const index=prepareAppanageHistory(f.x.events);
+ expect(appanageRoyalHonor(f.r,index,2000,royal,house,true)).toBeUndefined();expect(appanageRoyalHonor(f.r,index,2000,royal,house)?.primary).toContain('武安君');expect(appanageRoyalHonor(f.r,index,3000,royal,house)).toEqual(appanageRoyalHonor(f.r,index,2000,royal,house));
+ const lossGrant=grant('loss-month-later',1656,'ZHENGUOGONG');royal.royalHonors.push(lossGrant);const loss=f.x.events.find(e=>e.id==='ying-loss')!,same=f.x.events.filter(e=>(e.monthIndex??e.year)<=1656);same.push({id:lossGrant.eventId,type:'royal-honor-granted',year:1656} as any);const lostIndex=prepareAppanageHistory(same),lost=cityAppanageHistory(f.x.cityId,f.x.people,same,1660,lostIndex).relations[1];expect(lost.last.cityId).toBe(loss.cityId);expect(appanageRoyalHonor(lost,lostIndex,1660,royal,house)?.primary).toContain('武安君');
+});
