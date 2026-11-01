@@ -22,7 +22,7 @@ export function validateMilitaryFamilies(save:WorldSaveV1){
     if(m.source!=='NATURAL_GROWTH'||!parent||parent.enteredMonth>=m.enteredMonth||m.generation!==parent.generation+1||m.bornMonth-parent.bornMonth<18*12||m.bornMonth-parent.bornMonth>55*12||(parent.deathMonth??Infinity)<=m.bornMonth)throw Error('invalid parent or cyclic genealogy');
    }
    const military=m.militaryPersonId?state.people.find(p=>p.personId===m.militaryPersonId):undefined;
-   if(m.militaryPersonId&&(!military||military.sourceUserId!==m.sourceUserId||military.bornMonth!==m.bornMonth||military.personalName!==m.name||military.deathMonth!==undefined&&m.deathMonth!==military.deathMonth))throw Error('family military identity mismatch');
+   if(m.militaryPersonId&&(!military||military.sourceUserId!==m.sourceUserId||military.bornMonth!==m.bornMonth||military.personalName!==m.name||m.generation>0&&(military.appointments[0]?.startMonth??-Infinity)<m.enteredMonth||military.deathMonth!==undefined&&m.deathMonth!==military.deathMonth))throw Error('family military identity mismatch');
    if(military)for(const [i,appointment] of military.appointments.entries()){
     const e=events.find(e=>e.id===`military-appointment-${appointment.commandId}`);
     if(!e||e.metadata?.familyId!==f.familyId||e.metadata?.familyMemberId!==m.memberId)continue;
