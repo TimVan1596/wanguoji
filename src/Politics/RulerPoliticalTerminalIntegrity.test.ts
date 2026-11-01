@@ -308,3 +308,21 @@ it("a real-person monarch outlives its polity and dies once with a former title"
  expect(deaths).toHaveLength(1);expect(deaths[0].metadata).toMatchObject({formerRuler:1,officeEndMonth:120});
  expect(deaths[0].metadata?.rulerNameAtDeath).toMatch(/^故.*张平$/);expect(deaths[0].title).toContain('故');expect(mirrored).toHaveBeenCalledTimes(1);
 });
+
+it.each(['other-kin','new-house','exile-vacancy'] as const)('formal SELF disability survives the actual natural succession boundary: %s',mode=>{
+ const {team,ruler,heir}=fixture(mode==='exile-vacancy'?'EXILED':'ACTIVE',true),dy=DynastyRegistry.get(team.name)!;
+ ruler.naturalDeathYear=120;heir.bornYear=-240;
+ heir.successionHistory=[{eventId:'royal-ban',kind:'DISQUALIFIED',month:12,factionId:team.name,epochFounderId:ruler.id,rulerId:heir.id,militaryPersonId:'military-person-1',issuerRulerId:ruler.id,courtCoupEventId:'self-coup',sourceEventId:'self-result'}];
+ heir.status='kin';dy.heirIds=[];delete dy.designatedHeirId;delete dy.designatedSinceMonth;
+ if(mode!=='exile-vacancy')team.cities=[{id:'capital',name:'都'}];
+ if(mode==='other-kin')dy.rulers.push({id:'other-child',houseName:'张氏',givenName:'安',bornYear:-200,parentId:ruler.id,naturalDeathYear:700,status:'heir'}),dy.heirIds.push('other-child');
+ DynastyRegistry.update(120,[team]);
+ const next=DynastyRegistry.getCurrentRuler(team.name);
+ expect(ruler.deathMonth).toBe(120);expect(next?.id).not.toBe(heir.id);expect(heir.deathMonth).toBeUndefined();expect(heir.successionHistory).toHaveLength(1);
+ if(mode==='other-kin')expect(next?.id).toBe('other-child');
+ if(mode==='new-house'){expect(next?.relationType).toBe('NEW_HOUSE');expect(next?.parentId).toBeUndefined();expect(next?.houseName).not.toBe('张氏');}
+ if(mode==='exile-vacancy'){
+  expect(next).toBeUndefined();expect(team.status).toBe('EXILED');expect(dy.successionVacancyMonth).toBe(120);expect(DynastyRegistry.hasClaimantAtMonth(team.name,120)).toBe(false);
+  expect(WorldHistory.getEvents().some(e=>e.type==='dynasty-line-ended')).toBe(false);const count=dy.rulers.length;DynastyRegistry.update(121,[team]);expect(dy.rulers).toHaveLength(count);
+ }
+});

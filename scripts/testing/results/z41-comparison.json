@@ -1,0 +1,572 @@
+{
+  "baselineHead": "2fa786d16b2836980f94077ad54da990fbf61a04",
+  "app": "v0.99931z41",
+  "package": "0.99.207",
+  "worldSave": 42,
+  "scope": "Real Phaser Core; paired four fixed seeds × 100 years; rare controlled fixtures are reported separately.",
+  "denominators": {
+    "familyCandidateChecks": "eligible weighted descendant-person / annual appointment checks, repeated people counted again; not draws or distinct people",
+    "familyAgeBlocked": "descendant-person / annual checks outside original entry age/retirement eligibility",
+    "familyCapBlocked": "otherwise ready descendant-person / annual checks blocked by original national commander/formation cap",
+    "familyPopulationBlocked": "country-month recovery checks already at original population capacity in a current-epoch family country",
+    "familyIdentityBlocked": "descendant-person / annual checks failing role, identity or body eligibility",
+    "familyUnitBlocked": "descendant-person / annual checks whose real unit already belongs to a formation"
+  },
+  "samplingNotes": [
+    "No natural court coup, SELF sanction or restoration in these 400 world-years. No forced samples or rate tuning.",
+    "Two actual families have descendants; zero natural descendant appointments or two-generation service. Fixed production annual selection verifies father and son serving simultaneously, not a natural frequency claim.",
+    "One verification-only repeat collected requested blocker denominators; family histories and outcome metrics match the first candidate pass.",
+    "Historical lifecycle identity refusals are 95 in regional-4 on both z40 and z41; they are attempts on unverifiable historical bodies, not duplicate people or strict-save conflicts.",
+    "Post-simulation hardening adds atomic family notification rollback, royal epoch validation and SELF result wording; no observed family branch renewed merit or reached the renewal-window extension. Covered by final targeted production tests."
+  ],
+  "rows": [
+    {
+      "seed": "regional-1",
+      "years": 100,
+      "z40": {
+        "worldPopulation": 139,
+        "peakWorldPopulation": 153,
+        "activeStates": 8,
+        "historicalStates": 11,
+        "populationUnexplained": 0,
+        "duplicatePopulationIds": 0,
+        "duplicateHistoryIds": 0,
+        "normalRoyalSuccessions": 22,
+        "politicalEvents": {
+          "ordinaryFoundings": 4,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        },
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "royalMilitaryIdentityConflicts": 0,
+        "duplicateActiveMembers": 0,
+        "historicalLifecycleIdentityRefusals": 0,
+        "courtAttempts": 0
+      },
+      "z41": {
+        "worldPopulation": 139,
+        "peakWorldPopulation": 153,
+        "activeStates": 8,
+        "historicalStates": 11,
+        "populationUnexplained": 0,
+        "duplicatePopulationIds": 0,
+        "duplicateHistoryIds": 0,
+        "normalRoyalSuccessions": 22,
+        "politicalEvents": {
+          "ordinaryFoundings": 4,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        },
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "royalMilitaryIdentityConflicts": 0,
+        "duplicateActiveMembers": 0,
+        "historicalLifecycleIdentityRefusals": 0,
+        "courtAttempts": 0
+      },
+      "families": {
+        "count": 0,
+        "withDescendants": 0,
+        "members": 0,
+        "twoGenerationService": 0,
+        "entryAppointments": 0,
+        "families": []
+      },
+      "familySessionChecks": {
+        "familyAgeBlocked": 0,
+        "familyCapBlocked": 0,
+        "familyIdentityBlocked": 0,
+        "familyUnitBlocked": 0,
+        "familyPopulationBlocked": 0,
+        "familyCandidateChecks": 0
+      }
+    },
+    {
+      "seed": "regional-2",
+      "years": 100,
+      "z40": {
+        "worldPopulation": 108,
+        "peakWorldPopulation": 156,
+        "activeStates": 4,
+        "historicalStates": 7,
+        "populationUnexplained": 0,
+        "duplicatePopulationIds": 0,
+        "duplicateHistoryIds": 0,
+        "normalRoyalSuccessions": 18,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        },
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "royalMilitaryIdentityConflicts": 0,
+        "duplicateActiveMembers": 0,
+        "historicalLifecycleIdentityRefusals": 0,
+        "courtAttempts": 0
+      },
+      "z41": {
+        "worldPopulation": 108,
+        "peakWorldPopulation": 156,
+        "activeStates": 4,
+        "historicalStates": 7,
+        "populationUnexplained": 0,
+        "duplicatePopulationIds": 0,
+        "duplicateHistoryIds": 0,
+        "normalRoyalSuccessions": 18,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        },
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "royalMilitaryIdentityConflicts": 0,
+        "duplicateActiveMembers": 0,
+        "historicalLifecycleIdentityRefusals": 0,
+        "courtAttempts": 0
+      },
+      "families": {
+        "count": 0,
+        "withDescendants": 0,
+        "members": 0,
+        "twoGenerationService": 0,
+        "entryAppointments": 0,
+        "families": []
+      },
+      "familySessionChecks": {
+        "familyAgeBlocked": 0,
+        "familyCapBlocked": 0,
+        "familyIdentityBlocked": 0,
+        "familyUnitBlocked": 0,
+        "familyPopulationBlocked": 0,
+        "familyCandidateChecks": 0
+      }
+    },
+    {
+      "seed": "regional-3",
+      "years": 100,
+      "z40": {
+        "worldPopulation": 140,
+        "peakWorldPopulation": 149,
+        "activeStates": 5,
+        "historicalStates": 8,
+        "populationUnexplained": 0,
+        "duplicatePopulationIds": 0,
+        "duplicateHistoryIds": 0,
+        "normalRoyalSuccessions": 18,
+        "politicalEvents": {
+          "ordinaryFoundings": 1,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        },
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "royalMilitaryIdentityConflicts": 0,
+        "duplicateActiveMembers": 0,
+        "historicalLifecycleIdentityRefusals": 0,
+        "courtAttempts": 0
+      },
+      "z41": {
+        "worldPopulation": 140,
+        "peakWorldPopulation": 149,
+        "activeStates": 5,
+        "historicalStates": 8,
+        "populationUnexplained": 0,
+        "duplicatePopulationIds": 0,
+        "duplicateHistoryIds": 0,
+        "normalRoyalSuccessions": 18,
+        "politicalEvents": {
+          "ordinaryFoundings": 1,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        },
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "royalMilitaryIdentityConflicts": 0,
+        "duplicateActiveMembers": 0,
+        "historicalLifecycleIdentityRefusals": 0,
+        "courtAttempts": 0
+      },
+      "families": {
+        "count": 1,
+        "withDescendants": 1,
+        "members": 13,
+        "twoGenerationService": 0,
+        "entryAppointments": 0,
+        "families": [
+          {
+            "familyId": "military-family-military-person-2-楚-ruler-14",
+            "surname": "谢",
+            "founderPersonId": "military-person-2",
+            "factionId": "楚",
+            "epochFounderId": "楚-ruler-14",
+            "foundedMonth": 300,
+            "sourceEventId": "military-noble-military-person-2-楚-楚-ruler-14-HOU",
+            "members": [
+              {
+                "memberId": "family-member-1433913158--507",
+                "sourceUserId": 1433913158,
+                "name": "谢融",
+                "bornMonth": -507,
+                "generation": 0,
+                "enteredMonth": 300,
+                "source": "FOUNDER",
+                "militaryPersonId": "military-person-2",
+                "exitMonth": 528,
+                "exitCause": "NATURAL_DEATH",
+                "deathMonth": 528,
+                "deathCause": "NATURAL_DEATH"
+              },
+              {
+                "memberId": "family-member-1433913250--2",
+                "sourceUserId": 1433913250,
+                "name": "谢怀诚",
+                "bornMonth": -2,
+                "generation": 1,
+                "parentMemberId": "family-member-1433913158--507",
+                "enteredMonth": 317,
+                "source": "NATURAL_GROWTH",
+                "exitMonth": 1023,
+                "exitCause": "NATURAL_DEATH",
+                "deathMonth": 1023,
+                "deathCause": "NATURAL_DEATH"
+              },
+              {
+                "memberId": "family-member-1433913251--284",
+                "sourceUserId": 1433913251,
+                "name": "谢致宣",
+                "bornMonth": -284,
+                "generation": 1,
+                "parentMemberId": "family-member-1433913158--507",
+                "enteredMonth": 326,
+                "source": "NATURAL_GROWTH",
+                "exitMonth": 673,
+                "exitCause": "NATURAL_DEATH",
+                "deathMonth": 673,
+                "deathCause": "NATURAL_DEATH"
+              },
+              {
+                "memberId": "family-member-1433913276--49",
+                "sourceUserId": 1433913276,
+                "name": "谢怀衡",
+                "bornMonth": -49,
+                "generation": 2,
+                "parentMemberId": "family-member-1433913251--284",
+                "enteredMonth": 359,
+                "source": "NATURAL_GROWTH",
+                "exitMonth": 1080,
+                "exitCause": "NATURAL_DEATH",
+                "deathMonth": 1080,
+                "deathCause": "NATURAL_DEATH"
+              },
+              {
+                "memberId": "family-member-1433913282-74",
+                "sourceUserId": 1433913282,
+                "name": "谢文卿",
+                "bornMonth": 74,
+                "generation": 2,
+                "parentMemberId": "family-member-1433913251--284",
+                "enteredMonth": 382,
+                "source": "NATURAL_GROWTH",
+                "exitMonth": 1119,
+                "exitCause": "NATURAL_DEATH",
+                "deathMonth": 1119,
+                "deathCause": "NATURAL_DEATH"
+              },
+              {
+                "memberId": "family-member-1433913310-204",
+                "sourceUserId": 1433913310,
+                "name": "谢敬忠",
+                "bornMonth": 204,
+                "generation": 3,
+                "parentMemberId": "family-member-1433913276--49",
+                "enteredMonth": 501,
+                "source": "NATURAL_GROWTH",
+                "exitMonth": 1094,
+                "exitCause": "SIEGE_LOSS",
+                "deathMonth": 1094,
+                "deathCause": "SIEGE_LOSS"
+              },
+              {
+                "memberId": "family-member-1433913335-365",
+                "sourceUserId": 1433913335,
+                "name": "谢季礼",
+                "bornMonth": 365,
+                "generation": 3,
+                "parentMemberId": "family-member-1433913282-74",
+                "enteredMonth": 589,
+                "source": "NATURAL_GROWTH"
+              },
+              {
+                "memberId": "family-member-1433913372-284",
+                "sourceUserId": 1433913372,
+                "name": "谢修卿",
+                "bornMonth": 284,
+                "generation": 3,
+                "parentMemberId": "family-member-1433913276--49",
+                "enteredMonth": 847,
+                "source": "NATURAL_GROWTH"
+              },
+              {
+                "memberId": "family-member-1433913373-518",
+                "sourceUserId": 1433913373,
+                "name": "谢孟之",
+                "bornMonth": 518,
+                "generation": 2,
+                "parentMemberId": "family-member-1433913250--2",
+                "enteredMonth": 865,
+                "source": "NATURAL_GROWTH",
+                "exitMonth": 1061,
+                "exitCause": "SIEGE_LOSS",
+                "deathMonth": 1061,
+                "deathCause": "SIEGE_LOSS"
+              },
+              {
+                "memberId": "family-member-1433913400-412",
+                "sourceUserId": 1433913400,
+                "name": "谢敬宣",
+                "bornMonth": 412,
+                "generation": 2,
+                "parentMemberId": "family-member-1433913250--2",
+                "enteredMonth": 1039,
+                "source": "NATURAL_GROWTH"
+              },
+              {
+                "memberId": "family-member-1433913402-422",
+                "sourceUserId": 1433913402,
+                "name": "谢思宁",
+                "bornMonth": 422,
+                "generation": 4,
+                "parentMemberId": "family-member-1433913310-204",
+                "enteredMonth": 1093,
+                "source": "NATURAL_GROWTH"
+              },
+              {
+                "memberId": "family-member-1433913428-712",
+                "sourceUserId": 1433913428,
+                "name": "谢思清",
+                "bornMonth": 712,
+                "generation": 3,
+                "parentMemberId": "family-member-1433913282-74",
+                "enteredMonth": 1153,
+                "source": "NATURAL_GROWTH"
+              },
+              {
+                "memberId": "family-member-1433913432-933",
+                "sourceUserId": 1433913432,
+                "name": "谢惟平",
+                "bornMonth": 933,
+                "generation": 4,
+                "parentMemberId": "family-member-1433913428-712",
+                "enteredMonth": 1195,
+                "source": "NATURAL_GROWTH"
+              }
+            ]
+          }
+        ]
+      },
+      "familySessionChecks": {
+        "familyAgeBlocked": 73,
+        "familyCapBlocked": 0,
+        "familyIdentityBlocked": 0,
+        "familyUnitBlocked": 0,
+        "familyPopulationBlocked": 0,
+        "familyCandidateChecks": 176
+      }
+    },
+    {
+      "seed": "regional-4",
+      "years": 100,
+      "z40": {
+        "worldPopulation": 130,
+        "peakWorldPopulation": 148,
+        "activeStates": 4,
+        "historicalStates": 8,
+        "populationUnexplained": 0,
+        "duplicatePopulationIds": 0,
+        "duplicateHistoryIds": 0,
+        "normalRoyalSuccessions": 20,
+        "politicalEvents": {
+          "ordinaryFoundings": 1,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        },
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "royalMilitaryIdentityConflicts": 0,
+        "duplicateActiveMembers": 0,
+        "historicalLifecycleIdentityRefusals": 95,
+        "courtAttempts": 0
+      },
+      "z41": {
+        "worldPopulation": 130,
+        "peakWorldPopulation": 148,
+        "activeStates": 4,
+        "historicalStates": 8,
+        "populationUnexplained": 0,
+        "duplicatePopulationIds": 0,
+        "duplicateHistoryIds": 0,
+        "normalRoyalSuccessions": 20,
+        "politicalEvents": {
+          "ordinaryFoundings": 1,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        },
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "royalMilitaryIdentityConflicts": 0,
+        "duplicateActiveMembers": 0,
+        "historicalLifecycleIdentityRefusals": 95,
+        "courtAttempts": 0
+      },
+      "families": {
+        "count": 1,
+        "withDescendants": 1,
+        "members": 5,
+        "twoGenerationService": 0,
+        "entryAppointments": 0,
+        "families": [
+          {
+            "familyId": "military-family-military-person-11-燕-ruler-6",
+            "surname": "康",
+            "founderPersonId": "military-person-11",
+            "factionId": "燕",
+            "epochFounderId": "燕-ruler-6",
+            "foundedMonth": 708,
+            "sourceEventId": "military-noble-military-person-11-燕-燕-ruler-6-HOU",
+            "members": [
+              {
+                "memberId": "family-member-1143910070-113",
+                "sourceUserId": 1143910070,
+                "name": "康璞",
+                "bornMonth": 113,
+                "generation": 0,
+                "enteredMonth": 708,
+                "source": "FOUNDER",
+                "militaryPersonId": "military-person-11",
+                "exitMonth": 1092,
+                "exitCause": "NATURAL_DEATH",
+                "deathMonth": 1092,
+                "deathCause": "NATURAL_DEATH"
+              },
+              {
+                "memberId": "family-member-1143910100-365",
+                "sourceUserId": 1143910100,
+                "name": "康修宽",
+                "bornMonth": 365,
+                "generation": 1,
+                "parentMemberId": "family-member-1143910070-113",
+                "enteredMonth": 733,
+                "source": "NATURAL_GROWTH"
+              },
+              {
+                "memberId": "family-member-1143910105-541",
+                "sourceUserId": 1143910105,
+                "name": "康子仁",
+                "bornMonth": 541,
+                "generation": 1,
+                "parentMemberId": "family-member-1143910070-113",
+                "enteredMonth": 812,
+                "source": "NATURAL_GROWTH"
+              },
+              {
+                "memberId": "family-member-1143910170-772",
+                "sourceUserId": 1143910170,
+                "name": "康子康",
+                "bornMonth": 772,
+                "generation": 2,
+                "parentMemberId": "family-member-1143910105-541",
+                "enteredMonth": 1072,
+                "source": "NATURAL_GROWTH"
+              },
+              {
+                "memberId": "family-member-1143910196-762",
+                "sourceUserId": 1143910196,
+                "name": "康明之",
+                "bornMonth": 762,
+                "generation": 2,
+                "parentMemberId": "family-member-1143910100-365",
+                "enteredMonth": 1186,
+                "source": "NATURAL_GROWTH"
+              }
+            ]
+          }
+        ]
+      },
+      "familySessionChecks": {
+        "familyAgeBlocked": 0,
+        "familyCapBlocked": 40,
+        "familyIdentityBlocked": 0,
+        "familyUnitBlocked": 0,
+        "familyPopulationBlocked": 0,
+        "familyCandidateChecks": 45
+      }
+    }
+  ]
+}

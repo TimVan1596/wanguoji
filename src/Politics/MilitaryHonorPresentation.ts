@@ -9,5 +9,5 @@ export function militaryHonorPresentation(p:MilitaryPerson,factionId:string,mont
  const revoked=(p.honorHistory??[]).some(h=>h.kind==='REVOKED'&&h.epochFounderId===grant.epochFounderId&&h.factionId===factionId&&h.personId===p.personId&&valid(h,'military-title-revoked','honor'));
  const posthumous=(p.honorHistory??[]).find(h=>h.kind==='POSTHUMOUS'&&h.personId===p.personId&&h.factionId===factionId&&h.deathMonth===p.deathMonth&&p.deathMonth!==undefined&&p.deathMonth<=month&&h.month>=p.deathMonth&&h.epithet&&valid(h,'military-posthumous','honor')&&grants.some(g=>g.eventId===h.grantEventId)&&byId.get(h.sourceEventId)?.metadata?.personId===p.personId&&byId.get(h.sourceEventId)?.type==='military-person-died');
  const title=`${grant.countryName}国${NOBLE_NAMES[grant.rank]}`;
- return {grant,revoked,epithet:posthumous?.epithet,text:[revoked?`旧爵${title} · 已追夺`:p.politicalRulerId?`曾受${title}`:p.deathMonth!==undefined&&p.deathMonth<=month?`去世时${title}`:title,posthumous?`谥${posthumous.epithet}`:''].filter(Boolean).join(' · ')};
+ return {grant,revoked,epithet:posthumous?.epithet,text:[revoked?`原${grant.countryName}${NOBLE_NAMES[grant.rank]} · 已追夺`:p.politicalRulerId?`曾受${title}`:p.deathMonth!==undefined&&p.deathMonth<=month?`去世时${title}`:title,posthumous?`谥${posthumous.epithet}`:''].filter(Boolean).join(' · ')};
 }
