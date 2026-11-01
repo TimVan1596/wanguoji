@@ -38,6 +38,7 @@ export function validateMilitaryFamilies(save:WorldSaveV1){
    if(!member||member.generation===0||!person||!source||renewed.has(member.memberId)||renewal.month<member.enteredMonth||renewal.month>save.world.worldMonth||!event||event.type!=='military-family-merit'||event.metadata?.sourceEventId!==source.id||(event.monthIndex??event.year)!==renewal.month||!familyFounderSource({...person,deathMonth:undefined,factionId:f.factionId},[source],f.factionId,f.epochFounderId,renewal.month))throw Error('invalid renewed family merit');renewed.add(member.memberId);
   }
  }catch(e){errors.push(`invalid military family ${f?.familyId}: ${String(e)}`);}
+ if(errors.length)return errors;
  for(const u of save.users)if(u.familyMemberId&&!families?.some(f=>f.members.some(m=>m.memberId===u.familyMemberId&&m.sourceUserId===u.userId&&m.bornMonth===u.bornMonth)))errors.push('orphan family resident');
  for(const e of events){
   if(e.type==='military-family-founded'&&!families?.some(f=>`${f.familyId}-founded`===e.id))errors.push('orphan family foundation');

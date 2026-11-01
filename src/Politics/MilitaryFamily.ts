@@ -52,5 +52,5 @@ export function familyAppointmentWeight(family:MilitaryFamily|undefined,member:M
 }
 export function familyStatus(f:MilitaryFamily,people:readonly MilitaryPerson[]){
  const descendants=f.members.filter(m=>m.generation>0),serving=descendants.filter(m=>m.militaryPersonId&&people.some(p=>p.personId===m.militaryPersonId&&p.status==='ACTIVE'));
- return serving.length?'后代在朝从军':descendants.some(m=>m.deathMonth===undefined)?'后代尚无现役军职':'暂无后继军政人物';
+ return serving.length?'后代仍有现役军人':descendants.some(m=>m.deathMonth===undefined)?'后代尚无现役军职':'暂无后继军政人物';
 }
