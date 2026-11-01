@@ -32,6 +32,6 @@ export function checkStateFormationCore(core:any,base:ReturnType<typeof exportWo
   at(month+12);check(resumed.identityStage==='STATE'&&resumed.sovereigntyRank==='KING'&&resumed.name===id&&JSON.stringify(resumed.origin)===origin,`${type} becomes a kingdom retaining ID and origin`);
   check(Dynasty.getCurrentRuler(id)!.id===ruler&&pop===core.teams.reduce((n:number,t:any)=>n+t.users.size,0),`${type} formalization creates no second ruler or residents`);
   const n=History.getEventsForFaction(id).filter(e=>e.type==='state-founded').length;at(month+13);check(n===1&&History.getEventsForFaction(id).filter(e=>e.type==='state-founded').length===1,`${type} formalization writes exactly one state event`);
-  const final=exportWorldSave(core);check(validateWorldSave(final).valid,`${type} kingdom passes strict V38 validation`);hydrateWorldSave(core,structuredClone(final));check(diffCanonicalWorldSave(final,exportWorldSave(core)).matched,`${type} formed state reads again without identity drift`);
+  const final=exportWorldSave(core);check(validateWorldSave(final).valid,`${type} kingdom passes strict current WorldSave validation`);hydrateWorldSave(core,structuredClone(final));check(diffCanonicalWorldSave(final,exportWorldSave(core)).matched,`${type} formed state reads again without identity drift`);
  }}finally{hydrateWorldSave(core,structuredClone(base));}
 }
