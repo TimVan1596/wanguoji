@@ -1,3 +1,4 @@
+import MilitaryFamilyBrowser from '../../UI/Components/FactionDetails/MilitaryFamilyBrowser';
 import React from 'react';
 import {createRoot} from 'react-dom/client';
 import {flushSync} from 'react-dom';
@@ -61,6 +62,17 @@ export async function checkMilitaryFamilies(core:any,base:ReturnType<typeof expo
     check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,'family rendering changes no population, service, kinship or RNG');
    }finally{root.unmount();host.remove();}
   }
+  {const before=strict(),host=document.createElement('div'),root=createRoot(host);document.body.append(host);
+   try{flushSync(()=>root.render(React.createElement(Provider,{store,children:React.createElement(MilitaryFamilyBrowser,{families:[link.family],worldMonth:240,onClose:()=>{}})})));
+    const dialog=document.querySelector('[role="dialog"]')!;check(dialog.textContent?.includes('功臣世家总谱')&&!dialog.querySelector('[role="tree"]'),'family browser initially mounts only an overview, not every family tree');
+    const open=[...dialog.querySelectorAll('button')].find(b=>b.textContent?.includes('始祖'))!;flushSync(()=>open.click());
+    check(dialog.querySelector('[role="tree"]')&&dialog.querySelector(`[data-family-parent="${link.member.parentMemberId}"][data-family-child="${link.member.memberId}"]`),'real family browser draws the saved father-son edge without synthesizing royal records');
+    const card=dialog.querySelector(`[data-family-member="${link.member.memberId}"] button`) as HTMLButtonElement;flushSync(()=>card.click());check(dialog.querySelector('[data-family-member-detail]')?.textContent?.includes(child.name),'actual descendant card opens its own identity and military link');
+    const fold=[...dialog.querySelectorAll('button')].find(b=>b.textContent==='收起子支')!;flushSync(()=>fold.click());check(!dialog.querySelector(`[data-family-member="${link.member.memberId}"]`),'branch collapse removes descendant cards from the mounted tree');
+    check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,'family total genealogy interaction preserves population, kinship, army, royal identities and RNG');
+   }finally{flushSync(()=>root.unmount());host.remove();}
+  }
+  {const before=strict();Dynasty.setPoliticalCalibrationForSimulation('MEDIUM');const saved=strict();hydrateWorldSave(core,structuredClone(saved));check(Dynasty.getPoliticalCalibration()==='MEDIUM','saved future political and family policy survives hydration');const bad=structuredClone(saved);delete bad.registries.dynastyPoliticalCalibration;check(!validateWorldSave(bad).valid,'strict current save cannot omit its future political policy');hydrateWorldSave(core,structuredClone(before));}
   const save=strict();
   for(const kind of ['parent','birth','loop','person','death']){const bad=structuredClone(save),f=bad.registries.militaryCommandRegistry.families!.find(f=>f.familyId===family.familyId)!,m=f.members.find(m=>m.generation===1)!;if(kind==='parent')m.parentMemberId='foreign';if(kind==='birth')m.bornMonth--;if(kind==='loop')f.members[0].parentMemberId=m.memberId;if(kind==='person')m.militaryPersonId=f.founderPersonId;if(kind==='death')m.deathMonth=240;check(!validateWorldSave(bad).valid,`strict family save rejects forged ${kind}`);}
   const resume=()=>{hydrateWorldSave(core,structuredClone(save));core.setWorldRunning(true);for(let m=0;m<12;m++){for(let n=0;n<30;n++)core.advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit('postupdate');}core.setWorldRunning(false);return strict();};const a=resume(),b=resume();check(diffCanonicalWorldSave(a,b).matched,'family relations and military appointments continue deterministically for twelve months');hydrateWorldSave(core,structuredClone(a));check(diffCanonicalWorldSave(a,exportWorldSave(core)).matched,'family second read preserves names, births, parent links, commands and RNG');

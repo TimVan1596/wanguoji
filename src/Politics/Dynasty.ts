@@ -981,24 +981,16 @@ class DynastyRegistryStore {
     this.courtFunnel.observe(evaluation,courtInfluence,Boolean(instigator),team.status==='ACTIVE'&&team.identityStage==='STATE',worldMonth);
     if(instigator){this.courtInstigatorChecks++;this.evaluateCourtAttempt(team,dynasty,current,worldMonth,evaluation,instigator);return;}
     if(!evaluation.eligible){this.depositionDiagnostics.observe(team.name,worldMonth,evaluation,team.status==='ACTIVE'&&team.identityStage==='STATE',evaluation.blockers.includes('COOLDOWN')?'COOLDOWN':undefined);return;}
-    // Exactly one canonical roll per qualified annual boundary. Diagnostics do not touch RNG.
-    if(POLITICAL_CALIBRATIONS[this.politicalCalibration].emptyDrawCooldown)dynasty.lastDepositionAttemptMonth = worldMonth;
-    const roll = worldRandom.next();
-    evaluation.militaryRoll = roll;
-    const succeeds = roll < evaluation.probability;
-    if (!succeeds) {
-      this.depositionDiagnostics.observe(team.name, worldMonth, evaluation, team.status === "ACTIVE" && team.identityStage === "STATE", "FAILURE");
-      return;
-    }
-    evaluation.royalHonorClaims=royalHonorCandidateClaims(dynasty,worldMonth,team.sovereigntyRank);
-    const selection = chooseDepositionClaimant(evaluation,worldMonth,roll);
-    const claimant = selection?.claimant;
-    if (selection) evaluation.selection = selection.evidence;
-    if (!claimant || !this.commitDeposition(team, dynasty, current, claimant.ruler, claimant.relation, worldMonth, evaluation)) {
-      this.depositionDiagnostics.observe(team.name, worldMonth, evaluation, team.status === "ACTIVE" && team.identityStage === "STATE", "EXECUTION_FAILURE");
-      return;
-    }
-    this.depositionDiagnostics.observe(team.name, worldMonth, evaluation, team.status === "ACTIVE" && team.identityStage === "STATE", "SUCCESS");
+    // One canonical opportunity. A failed write restores the draw as well as the handoff.
+    try{successionTransaction(team,this,()=>{
+      if(POLITICAL_CALIBRATIONS[this.politicalCalibration].emptyDrawCooldown)dynasty.lastDepositionAttemptMonth=worldMonth;
+      const roll=worldRandom.next();evaluation.militaryRoll=roll;
+      if(roll>=evaluation.probability){politicalEffect(()=>this.depositionDiagnostics.observe(team.name,worldMonth,evaluation,team.status==='ACTIVE'&&team.identityStage==='STATE','FAILURE'));return;}
+      evaluation.royalHonorClaims=royalHonorCandidateClaims(dynasty,worldMonth,team.sovereigntyRank);
+      const selection=chooseDepositionClaimant(evaluation,worldMonth,roll);if(selection)evaluation.selection=selection.evidence;
+      if(!selection?.claimant||!this.commitDeposition(team,dynasty,current,selection.claimant.ruler,selection.claimant.relation,worldMonth,evaluation))throw Error('Deposition opportunity transaction rejected');
+      politicalEffect(()=>this.depositionDiagnostics.observe(team.name,worldMonth,evaluation,team.status==='ACTIVE'&&team.identityStage==='STATE','SUCCESS'));
+    });}catch{this.depositionDiagnostics.observe(team.name,worldMonth,evaluation,team.status==='ACTIVE'&&team.identityStage==='STATE','EXECUTION_FAILURE');}
   }
 
   private courtSuccessPolicy:CourtSuccessPolicy='MEDIUM';

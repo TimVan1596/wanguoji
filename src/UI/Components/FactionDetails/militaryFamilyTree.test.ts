@@ -1,0 +1,9 @@
+import {describe,it,expect} from 'vitest';
+import {layoutMilitaryFamily,visibleFamilyNodes,associatedMilitaryFamilies} from './militaryFamilyTree';
+import type {MilitaryFamilyMember,MilitaryFamily} from '../../../Politics/MilitaryFamily';
+const m=(id:string,parent?:string):MilitaryFamilyMember=>({memberId:id,parentMemberId:parent,sourceUserId:Number(id),name:'同名',bornMonth:Number(id)*240,generation:parent?1:0,enteredMonth:1000,source:parent?'NATURAL_GROWTH':'FOUNDER'});
+describe('sourced nonroyal family tree',()=>{
+ it('connects only saved parent IDs, distinguishes same names and folds without deleting descendants',()=>{const members=[m('1'),m('2','1'),m('3','1'),m('4','2')],before=JSON.stringify(members),a=layoutMilitaryFamily(members),b=layoutMilitaryFamily(members,new Set(['2']));expect(a.edges.map(e=>[e.parentId,e.childId]).sort()).toEqual([['1','2'],['1','3'],['2','4']]);expect(b.nodes.map(n=>n.member.memberId)).not.toContain('4');expect(a.nodes.find(n=>n.member.memberId==='1')!.x).toBeGreaterThan(0);expect(JSON.stringify(members)).toBe(before);});
+ it('windows hundreds of cards and terminates safely for a malformed relation',()=>{const many=[m('1'),...Array.from({length:300},(_,i)=>m(String(i+2),'1'))],layout=layoutMilitaryFamily(many);expect(layout.nodes).toHaveLength(301);expect(visibleFamilyNodes(layout.nodes,{left:0,top:0,width:800,height:400},1).length).toBeLessThan(15);expect(layoutMilitaryFamily([m('1','2'),m('2','1')]).nodes).toHaveLength(0);});
+ it('keeps separate same-surname houses and includes real service abroad',()=>{const families=[{familyId:'a',surname:'甲',factionId:'old',members:[{...m('1'),militaryPersonId:'p'}]},{familyId:'b',surname:'甲',factionId:'other',members:[m('2')]}] as MilitaryFamily[];expect(associatedMilitaryFamilies(families,'new',[{personId:'p',appointments:[{factionId:'new'}]}]).map(f=>f.familyId)).toEqual(['a']);});
+});

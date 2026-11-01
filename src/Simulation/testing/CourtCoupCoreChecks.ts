@@ -29,6 +29,10 @@ export function checkCourtCoups(core:any,base:ReturnType<typeof exportWorldSave>
   const actor=selectCourtInstigator(evaluation,Military.getPeople(),Military.getCourtAttemptInfluence(team,month,core.logicalUnitRegistry));check(evaluation.eligible&&actor,'real damaged court with a willing active commander qualifies for one shared attempt');
   const start=exportWorldSave(core);let v=validateWorldSave(start);check(v.valid,`pre-attempt strict save: ${v.errors.join(';')}`);
   const invoke=(roll:number)=>{const t=core.teams.find((t:any)=>t.name===factionId),writer=random.next;let draws=0;random.next=()=>{const caller=new Error().stack?.split('\n')[2]??'';if(caller.includes('/src/Politics/Dynasty.ts'))draws++;writer.call(random);return roll;};try{(Dynasty as any).evaluateInReignDeposition(t,Dynasty.get(factionId),Dynasty.getCurrentRuler(factionId),month);}finally{random.next=writer;}return draws;};
+  if(Dynasty.getPoliticalCalibration()!=='BASELINE'){
+   const beforeCooldown=Dynasty.get(factionId)!.lastDepositionAttemptMonth;check(invoke(.999)===1,'calibrated empty opportunity still consumes exactly one shared draw');
+   check(Dynasty.get(factionId)!.lastDepositionAttemptMonth===beforeCooldown&&!History.getRecordedEvents().some(e=>e.type==='court-coup-attempt'),'an unstarted action creates no political history or five-year action cooldown');hydrateWorldSave(core,structuredClone(start));
+  }
   const failedRoll=courtAttemptChance(actor!)*.95;
   for(const [roll,failType] of [[failedRoll,'court-coup-result'],[0,'court-coup-result'],[0,'court-service-granted'],[0,'military-ennobled'],[0,'court-reward-granted']] as const){
    hydrateWorldSave(core,structuredClone(start));const before=exportWorldSave(core),writer=History.addEvent;

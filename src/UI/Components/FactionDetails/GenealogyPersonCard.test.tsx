@@ -27,6 +27,11 @@ describe("genealogy card and integration structure", () => {
     expect(html).toContain('data-genealogy-theme="neutral"'); expect(html).toContain("宗室成员");
     expect(html).toContain("max-width:230px"); expect(html).toContain("overflow-wrap:anywhere");
   });
+  it("shows a supplied real military identity without copying it to unrelated kin",()=>{
+    const p={...ruler,status:'kin' as const,reignOrdinal:undefined};
+    expect(renderToStaticMarkup(<GenealogyPersonCard ruler={p} displayName="宋景" militaryLabel="原任将军"/>)).toContain('宗室将领');
+    expect(renderToStaticMarkup(<GenealogyPersonCard ruler={p} displayName="宋景"/>)).not.toContain('将军');
+  });
   it("queries on demand, caches facts, bounds React rendering and retains real parent lines and controls",()=>{
     const dialog=readFileSync(new URL("./GenealogyBrowser.tsx",import.meta.url),"utf8");
     const window=readFileSync(new URL("./genealogyWindow.ts",import.meta.url),"utf8");
