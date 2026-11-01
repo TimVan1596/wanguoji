@@ -579,7 +579,7 @@
     "tests": {
       "files": 306,
       "passed": 2394,
-      "status": "FINAL_SERIAL_RECHECK_PENDING"
+      "status": "PASSED_FINAL_SERIAL_RUN"
     },
     "productionCoreAndReactChecks": 485,
     "strictWorldSave": 42,
@@ -597,6 +597,15 @@
       "deterministic": true,
       "secondRead": true
     },
-    "visualChromeGate": "PENDING_USER"
+    "visualChromeGate": "PENDING_USER",
+    "productionCoreStatus": "PASSED_FINAL_SOURCE",
+    "builds": {
+      "web": "PASSED",
+      "desktop": "PASSED",
+      "debug": "PASSED",
+      "desktopSourceMaps": 2,
+      "musicAssets": 4
+    },
+    "testNote": "One existing PeacefulSubmissionExecution case timed out at the unchanged 5000ms limit during concurrent natural simulation. With other verification jobs stopped, all 2394 tests passed in the full serial run; no timeout, assertion or identity check was weakened."
   }
 }
