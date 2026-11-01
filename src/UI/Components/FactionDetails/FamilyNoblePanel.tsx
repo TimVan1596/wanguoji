@@ -1,3 +1,4 @@
+import Dynasty from '../../../Politics/Dynasty';
 import {Typography} from '@mui/material';
 import Military from '../../../Politics/MilitaryCommandRegistry';
 import type {MilitaryFamily,MilitaryFamilyMember} from '../../../Politics/MilitaryFamily';
@@ -5,8 +6,10 @@ import {FAMILY_NOBLE_NAMES,familyNobleTitle,familyNobleText} from '../../../Poli
 import {NOBLE_NAMES,NOBLE_RANKS} from '../../../Politics/MilitaryNobility';
 import {formatWorldDate} from '../../../Simulation/WorldTime';
 import HistoricalEventArchive from './HistoricalEventArchive';
+/** Read-only link to an already-existing political identity, including civilian rebel founders. */
+export function familyRoyalMember(m:MilitaryFamilyMember,month:number){for(const d of Dynasty.getAll()){const r=d.rulers.find(r=>r.accessionYear!==undefined&&r.accessionYear<=month&&r.bornYear===m.bornMonth&&(r.residentIdentity?.sourceUserId===m.sourceUserId||m.militaryPersonId&&(r.militaryUsurperIdentity?.personId===m.militaryPersonId||r.militaryIdentity?.personId===m.militaryPersonId)));if(r)return {ruler:r,factionId:d.factionId};}return undefined;}
 export function familyMemberNobleLabel(f:MilitaryFamily,m:MilitaryFamilyMember,month:number){
- const title=familyNobleTitle(f,m,month);if(title)return `袭${title}`;
+ const title=familyNobleTitle(f,m,month),epoch=Dynasty.get(f.factionId)?.houseEpochs?.find(e=>e.foundingRulerId===f.epochFounderId);if(title&&!familyRoyalMember(m,month)&&(epoch?.endMonth??Infinity)>month)return `袭${title}`;
  const former=f.nobleSuccession?.filter(a=>a.month<=month&&a.kind==='SUCCEEDED'&&a.holderMemberId===m.memberId).at(-1);return former?.rank?`曾袭${FAMILY_NOBLE_NAMES[former.rank]}（已失效）`:undefined;
 }
 export function familyMemberMeritLabel(f:MilitaryFamily,m:MilitaryFamilyMember,month:number){const p=m.militaryPersonId?Military.getPerson(m.militaryPersonId):undefined,g=p?.nobilityHistory?.filter(g=>g.factionId===f.factionId&&g.month<=month).at(-1);if(!g)return;const revoked=p?.honorHistory?.some(h=>h.kind==='REVOKED'&&h.month<=month&&h.factionId===g.factionId&&h.epochFounderId===g.epochFounderId);return `本人曾封${NOBLE_NAMES[g.rank]}${revoked?' · 已追夺':''}`;}

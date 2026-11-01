@@ -1,4 +1,4 @@
-import FamilyNoblePanel,{familyMemberNobleLabel} from './FamilyNoblePanel';
+import FamilyNoblePanel,{familyMemberNobleLabel,familyRoyalMember} from './FamilyNoblePanel';
 import Game from '../../../Game/Game';
 import {useState} from 'react';
 import {Typography} from '@mui/material';
@@ -25,8 +25,8 @@ export default function MilitaryFamilyPanel({personId}:{personId:string}){
  };
  const timelineCount=1+family.members.filter(m=>m.parentMemberId).length+family.members.filter(m=>m.deathMonth!==undefined).length+family.members.filter(m=>m.generation>0&&m.militaryPersonId).length+(family.renewals?.length??0);
  const render=(m:typeof family.members[number])=>{
-  const p=people.find(p=>p.personId===m.militaryPersonId),parent=family.members.find(p=>p.memberId===m.parentMemberId);
-  return <Typography key={m.memberId} fontSize='.8rem'>{m.generation===0?'始祖':`第${m.generation+1}代`}：{p?<button type="button" onClick={()=>nav.open({kind:'MILITARY',factionId:p.appointments.at(-1)?.factionId??family.factionId,id:p.personId})}>{m.name}</button>:m.name}{parent?`，${parent.name}之子`:''} · 生于{formatWorldDate(m.bornMonth)} · {m.deathMonth!==undefined?`卒于${formatWorldDate(m.deathMonth)}`:m.exitMonth!==undefined?'生死未载':'在世'} · {p?(p.status==='ACTIVE'?'现役军政人物':'曾任军职'):'普通居民，尚无正式从军记录'} · {familyMemberNobleLabel(family,m,month)??'无承袭爵位'}</Typography>;
+  const p=people.find(p=>p.personId===m.militaryPersonId),parent=family.members.find(p=>p.memberId===m.parentMemberId),royal=familyRoyalMember(m,month);
+  return <Typography key={m.memberId} fontSize='.8rem'>{m.generation===0?'始祖':`第${m.generation+1}代`}：{royal?<button type="button" onClick={()=>nav.open({kind:'RULER',factionId:royal.factionId,id:royal.ruler.id})}>{m.name}</button>:p?<button type="button" onClick={()=>nav.open({kind:'MILITARY',factionId:p.appointments.at(-1)?.factionId??family.factionId,id:p.personId})}>{m.name}</button>:m.name}{parent?`，${parent.name}之子`:''} · 生于{formatWorldDate(m.bornMonth)} · {m.deathMonth!==undefined?`卒于${formatWorldDate(m.deathMonth)}`:m.exitMonth!==undefined?'生死未载':'在世'} · {royal?'已转入真实王室档案':p?(p.status==='ACTIVE'?'现役军政人物':'曾任军职'):'普通居民，尚无正式从军记录'} · {familyMemberNobleLabel(family,m,month)??'无承袭爵位'}</Typography>;
  };
  return <details open={open} data-military-family={family.familyId} onToggle={e=>setOpen(e.currentTarget.open)}><summary>家族与后代 · {family.surname}氏 · {familyStatus(family,people)}</summary>{open&&<><FamilyNoblePanel family={family} month={month}/>{family.members.slice(0,5).map(render)}{family.members.length>5&&<HistoricalEventArchive title="其他家族成员" totalCount={family.members.length-5} entries={()=>family.members.slice(5).map(m=>({id:m.memberId,content:render(m)}))}/>}
  <HistoricalEventArchive title="家族沿革" totalCount={timelineCount} entries={timeline}/>
