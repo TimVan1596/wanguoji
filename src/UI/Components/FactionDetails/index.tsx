@@ -1,3 +1,5 @@
+import MilitaryFamilyBrowser from './MilitaryFamilyBrowser';
+import {associatedMilitaryFamilies} from './militaryFamilyTree';
 import {militaryCourtLabels} from '../../../Politics/MilitaryCourtStanding';
 import {currentNobleGrant,nobleEpochForRuler} from '../../../Politics/MilitaryNobility';
 import {royalHonorHeading} from '../../../Politics/RoyalHonorPresentation';
@@ -630,6 +632,8 @@ function MilitaryPoliticalEventFacts({ event }: { event: WorldEvent }) {
 }
 
 function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; worldMonth: number }) {
+  const [familyBrowser,setFamilyBrowser]=useState(false);
+  const families=associatedMilitaryFamilies(MilitaryCommandRegistry.getFamilies(),factionId,MilitaryCommandRegistry.getPeople());
   const [archiveView,setArchiveView]=useState<"people"|"merit">("people");
   const [selection, setSelection] = useState<MilitaryPersonSelection>();
   const navigation=usePersonArchiveNavigation();
@@ -678,7 +682,8 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
   const factionCommanders = people.filter(person => person.factionId === factionId && person.status === "ACTIVE").length;
   return <Box sx={{ display: "grid", gap: 1, mt: 0.5, minWidth: 0, overflowWrap: "anywhere" }}>
     {politicalLeader&&<Typography fontSize="0.8rem">义军统辖：{formatRulerName(politicalLeader)} · 本国现役将领{factionCommanders}人；统帅称谓与正式军职分开，本人亲征须另有真实参战证据。</Typography>}
-    <Box><button type="button" aria-pressed={archiveView==='people'} onClick={()=>setArchiveView('people')}>现役与历任</button> · <button type="button" aria-pressed={archiveView==='merit'} onClick={()=>setArchiveView('merit')}>功臣录</button></Box>
+    <Box><button type="button" aria-pressed={archiveView==='people'} onClick={()=>setArchiveView('people')}>现役与历任</button> · <button type="button" aria-pressed={archiveView==='merit'} onClick={()=>setArchiveView('merit')}>功臣录</button> · <button type="button" onClick={()=>setFamilyBrowser(true)}>功臣世家（{families.length}）</button></Box>
+    {familyBrowser&&<MilitaryFamilyBrowser families={families} worldMonth={worldMonth} onClose={()=>setFamilyBrowser(false)}/>} 
     {archiveView==='merit'?<MeritRoll factionId={factionId} month={worldMonth} onOpen={id=>{setArchiveView('people');navigation.open({kind:'MILITARY',factionId,id});}}/>:<>
     <Typography fontSize="0.78rem" color="var(--gg-text-muted)">
       现役将领 {factionCommanders} 人 · 历任将领 {people.length} 人

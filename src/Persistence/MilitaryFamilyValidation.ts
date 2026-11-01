@@ -1,4 +1,4 @@
-import {calibrationOrBaseline} from '../Politics/PoliticalCalibration';
+import {calibrationOrBaseline,isPoliticalCalibration} from '../Politics/PoliticalCalibration';
 import {splitEstablishedPersonalName} from '../Politics/NameCulture';
 import type {WorldSaveV1} from './WorldSaveSchema';
 import type {WorldEvent} from '../History/WorldHistory';
@@ -28,6 +28,7 @@ export function validateMilitaryFamilies(save:WorldSaveV1){
     const e=events.find(e=>e.id===`military-appointment-${appointment.commandId}`);
     if(!e||e.metadata?.familyId!==f.familyId||e.metadata?.familyMemberId!==m.memberId)continue;
     const epoch=epochs?.find(ep=>ep.startMonth<=appointment.startMonth&&(ep.endMonth??Infinity)>=appointment.startMonth)?.foundingRulerId;
+    if(e.metadata?.politicalCalibration!==undefined&&!isPoliticalCalibration(e.metadata.politicalCalibration))throw Error('invalid family appointment policy');
     const expected=i===0?familyAppointmentWeight(f,{...m,militaryPersonId:undefined,deathMonth:undefined},appointment.factionId,epoch,appointment.startMonth,calibrationOrBaseline(e.metadata?.politicalCalibration)):1;
     if(e.metadata?.familyAppointmentWeight!==expected)throw Error('invalid family appointment advantage');
    }

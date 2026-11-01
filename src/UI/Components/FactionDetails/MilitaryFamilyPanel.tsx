@@ -28,5 +28,5 @@ export default function MilitaryFamilyPanel({personId}:{personId:string}){
  };
  return <details open={open} data-military-family={family.familyId} onToggle={e=>setOpen(e.currentTarget.open)}><summary>家族与后代 · {family.surname}氏 · {familyStatus(family,people)}</summary>{open&&<>{family.members.slice(0,5).map(render)}{family.members.length>5&&<HistoricalEventArchive title="其他家族成员" totalCount={family.members.length-5} entries={()=>family.members.slice(5).map(m=>({id:m.memberId,content:render(m)}))}/>}
  <HistoricalEventArchive title="家族沿革" totalCount={timelineCount} entries={timeline}/>
- <details><summary>家族来源</summary><Typography fontSize='.74rem'>立家于{formatWorldDate(family.foundedMonth)}；功劳来源 {family.sourceEventId}。亲缘登记于居民入籍时，不是当月出生。荫补仅限合法初任候选，子代10%、孙代5%，不授军队或爵位。</Typography></details></>}</details>;
+ <details><summary>家族来源</summary><Typography fontSize='.74rem'>立家于{formatWorldDate(family.foundedMonth)}；功劳来源 {family.sourceEventId}。亲缘登记于居民入籍时，不是当月出生。荫补仅限合法初任候选，按本世界保存的政策给予有限相对权重，不授军队或爵位。</Typography></details></>}</details>;
 }

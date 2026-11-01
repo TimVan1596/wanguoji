@@ -11,7 +11,7 @@ export class CourtPoliticsFunnel {
  reset(month=0){Object.assign(this,new CourtPoliticsFunnel());this.sessionStartMonth=month;this.lastMonth=month;}
  recordDraw(outcome:'SUCCESS'|'FAILED'|undefined,chance=0,conditional=0){this.draws++;this.expectedAttempts+=chance;this.expectedUnconditionalSuccesses+=chance*conditional;if(!outcome){this.noAttempt++;return;}this.expectedConditionalSuccesses+=conditional;this.attempts++;if(outcome==='SUCCESS')this.successes++;else this.failures++;}
  observe(e:DepositionEvaluation,army:MilitaryPoliticalEvidence|undefined,qualified:boolean,active:boolean,month=0){
-  this.lastMonth=Math.max(this.lastMonth,month);if(!active)return;this.annual++;if(e.evidence.length)this.crisis++;for(const fact of e.evidence)this.crisisIds.add(fact.groupId);
+  this.lastMonth=Math.max(this.lastMonth,month);if(!active)return;this.annual++;if(e.evidence.length)this.crisis++;for(const fact of e.evidence)this.crisisIds.add(fact.groupId??fact.eventId);
   if(e.evidence.length&&e.candidates.length)this.legalTarget++;
   if(army?.candidates.length)this.command++;if(army?.candidates.some(c=>c.disposition&&willingCourtParticipant(c.disposition)))this.willing++;
   if(qualified)this.qualified++;if(e.eligible)this.originalEligible++;

@@ -29,6 +29,7 @@ import {diffCanonicalWorldSave} from '../../Persistence/WorldSaveSchema';
 import {SIMULATION_FIXED_STEP_MS} from '../SimulationDriver';
 export async function runMilitaryNobilityCore(seed:string){
  const {core,game}=await createNaturalCore(seed),checks:string[]=[];
+ Dynasty.setPoliticalCalibrationForSimulation('BASELINE');
  const check=(v:unknown,s:string)=>{if(!v)throw Error(s);checks.push(s);};
  const clock=(m:number)=>(core.simulator as any).clock.importState({worldMonth:m,elapsedMs:0,running:false});
  const place=(u:any,x:number,y:number)=>{u.player.setPosition(x,y);u.player.body.reset(x,y);const s=core.logicalUnitRegistry.getEntry(u.player.logicalUnitId)!.state;s.logicalX=x;s.logicalY=y;};

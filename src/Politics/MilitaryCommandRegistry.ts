@@ -265,6 +265,12 @@ export class MilitaryCommandRegistryStore {
   getPeople() { return [...this.people.values()]; }
   getFormations() { return [...this.formations.values()]; }
   getFormation(commandId: string) { return this.formations.get(commandId); }
+  getFamilyAvailability(teams:readonly Team[],month:number){
+    const users=new Map(teams.flatMap(t=>[...t.users]).map(u=>[`${u.id}/${u.bornMonth}`,u]));
+    const descendants=this.families.flatMap(f=>f.members.filter(m=>m.generation>0).map(m=>({family:f,member:m}))),alive=descendants.filter(({member:m})=>m.deathMonth===undefined&&users.has(`${m.sourceUserId}/${m.bornMonth}`));
+    const adult=alive.filter(({member:m})=>month-m.bornMonth>=MIN_COMMANDER_AGE_MONTHS),eligible=adult.filter(({member:m})=>this.isEligible(users.get(`${m.sourceUserId}/${m.bornMonth}`)!,month,false));
+    return {scope:'CURRENT_MAP_SNAPSHOT',descendants:descendants.length,aliveOnMap:alive.length,adultOnMap:adult.length,individuallyEligible:eligible.length,eligibleWithVacancy:eligible.filter(({member:m})=>{const u=users.get(`${m.sourceUserId}/${m.bornMonth}`)!;return [...this.people.values()].filter(p=>p.status==='ACTIVE'&&p.factionId===u.team.name).length<MAX_COMMANDERS_PER_FACTION&&[...this.formations.values()].filter(f=>f.status==='ACTIVE'&&f.factionId===u.team.name).length<MAX_FORMATIONS_PER_FACTION;}).length};
+  }
   getDiagnostics() { return { ...this.diagnostics,familyRecruitment:structuredClone(this.familyRecruitment), activeCommanders: [...this.people.values()].filter(p => p.status === "ACTIVE").length,
     activeFormations: [...this.formations.values()].filter(f => f.status === "ACTIVE").length }; }
 
@@ -355,12 +361,12 @@ export class MilitaryCommandRegistryStore {
     }
   }
 
-  private isEligible(user: User, worldMonth: number) {
+  private isEligible(user: User, worldMonth: number, recordDiagnostics=true) {
     const person = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
     if(person?.politicalHistory?.length&&unresolvedCourtBans(person,user.team.name,worldMonth,this.royalService?.nobleEpoch?.(user.team.name,worldMonth)).length)return false;
     if (user.isDestroyed || person?.status === "DEAD" || (user.militaryPersonId && (!person || person.sourceUserId !== user.id || person.bornMonth !== user.bornMonth || person.name !== user.name || person.factionId !== user.team.name))) return false;
     if (worldMonth >= deriveMilitaryLifeSchedule(person ?? { personId: `military-person-${this.personSequence}`, bornMonth: user.bornMonth }).retirementMonth) {
-      this.diagnostics.ageBlocked++; return false;
+      if(recordDiagnostics)this.diagnostics.ageBlocked++; return false;
     }
     return (!user.historicalPersonId || Boolean(this.royalService?.eligible(user, worldMonth))) && user.role === "NORMAL" && !user.rulerId && !user.player.rulerId && user.team.status === "ACTIVE" && user.bornMonth <= worldMonth - MIN_COMMANDER_AGE_MONTHS &&
       Boolean(user.player.active && user.player.logicalUnitId) && !this.isUnitAssigned(user.player.logicalUnitId!) &&

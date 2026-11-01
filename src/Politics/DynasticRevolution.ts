@@ -91,7 +91,7 @@ function getBaseRevolutionChanceProfile(context: RevolutionContext, eligibility:
     const politicalRiskPercent = Math.min(policy.shockCap*100, policy.shockBase*100 + (distinctShockCount >= 2 ? 1 : 0) +
       (context.cityCount <= 2 ? 1 : 0) + (context.stability <= 45 ? 1 : 0) +
       (eligibility.crisis.level === "succession-instability" || eligibility.evidence.includes("MINOR_SUCCESSOR") ? 1 : 0));
-    return { chance: politicalRiskPercent / 100, baseChance: policy.shockBase, modifierChance: politicalRiskPercent/100-policy.shockBase,
+    return { chance: politicalRiskPercent / 100, baseChance: policy.shockBase, modifierChance: (politicalRiskPercent-policy.shockBase*100)/100,
       capped: politicalRiskPercent === policy.shockCap*100, riskMultiplier: 1 };
   }
   const modifierPercent = Object.entries(EVIDENCE_CHANCE_PERCENT)
