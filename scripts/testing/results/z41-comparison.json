@@ -16,7 +16,7 @@
     "No natural court coup, SELF sanction or restoration in these 400 world-years. No forced samples or rate tuning.",
     "Two actual families have descendants; zero natural descendant appointments or two-generation service. Fixed production annual selection verifies father and son serving simultaneously, not a natural frequency claim.",
     "Historical lifecycle identity refusals are 95 in regional-4 on both z40 and z41; they are attempts on unverifiable historical bodies, not duplicate people or strict-save conflicts.",
-    "Final frozen release was rechecked on the same four seeds after adding full descendant appointment rollback. Earlier instrumentation passes are not counted as extra independent samples. Final source fingerprint matches the released source tree."
+    "Final exact frozen release, including historical family User-ID reservation and full descendant appointment rollback, was rechecked on the same four seeds. Earlier instrumentation or safety-hardening passes are not additional independent samples. The actual final source fingerprint matches the simulation source tree."
   ],
   "rows": [
     {
@@ -572,13 +572,14 @@
       }
     }
   ],
-  "simulationSourceSHA256": "031ac2ed303ed8c5b86ec555e6d3b1ce6ff448dd8157d6a50d46b11b32098cf7",
-  "releaseSourceSHA256": "031ac2ed303ed8c5b86ec555e6d3b1ce6ff448dd8157d6a50d46b11b32098cf7",
+  "simulationSourceSHA256": "c39664a96c8460193bf7613b4e969cfe5e12cc69630ecaebc11305d862b21cb4",
+  "releaseSourceSHA256": "c39664a96c8460193bf7613b4e969cfe5e12cc69630ecaebc11305d862b21cb4",
   "releaseSourceMatchesSimulation": true,
   "verification": {
     "tests": {
       "files": 306,
-      "passed": 2393
+      "passed": 2394,
+      "status": "FINAL_SERIAL_RECHECK_PENDING"
     },
     "productionCoreAndReactChecks": 485,
     "strictWorldSave": 42,
@@ -588,7 +589,8 @@
       "family charter",
       "family resident registration",
       "original population source event",
-      "descendant appointment and office write"
+      "descendant appointment and office write",
+      "historical family User ID collision guard (targeted unit fixture)"
     ],
     "saveContinuation": {
       "months": 12,

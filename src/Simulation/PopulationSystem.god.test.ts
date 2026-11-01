@@ -1,3 +1,5 @@
+import Military from '../Politics/MilitaryCommandRegistry';
+import {getLocalUserId} from '../Live/LocalDanmaku';
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { gameCore } = vi.hoisted(() => ({ gameCore: { teams: [] as any[], logicalUnitRegistry: {} } }));
@@ -52,6 +54,12 @@ describe("God population intervention", () => {
     ]);
     expect(new Set([...team.users].map((user: any) => user.id)).size).toBe(4);
     expect(new Set([...team.users].map((user: any) => user.logicalUnitId)).size).toBe(4);
+  });
+
+  it("reserves historical family User IDs even after the old resident left the map",()=>{
+    const team=makeTeam();gameCore.teams=[team];
+    const reserved=getLocalUserId('God-燕-000001'),read=vi.spyOn(Military,'getFamilies').mockReturnValue([{members:[{sourceUserId:reserved}]}] as any);
+    try{const population=new PopulationSystem();expect(population.godAdd(team,1)).toBe(1);const user:any=[...team.users][0];expect(user.id).toBe(reserved+1);expect(user.name).toBe('God-燕-000001');expect(team.users.size).toBe(1);}finally{read.mockRestore();}
   });
 
   it("removes only NORMAL users in deterministic id/name order and preserves rulers", () => {

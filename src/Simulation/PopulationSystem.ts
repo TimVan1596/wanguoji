@@ -171,7 +171,7 @@ export default class PopulationSystem {
     }
     const id = measurePhase(profile, "Population.user id lookup", () => {
       let candidateId = getLocalUserId(name!);
-      while (Team.GetUserById(candidateId)) candidateId = candidateId >= 1999999999 ? 1000000000 : candidateId + 1;
+      while (Team.GetUserById(candidateId)||Military.getFamilies().some(f=>f.members.some(m=>m.sourceUserId===candidateId))) candidateId = candidateId >= 1999999999 ? 1000000000 : candidateId + 1;
       return candidateId;
     });
     const month=populationMutation.month??0,bornMonth=deriveUserBornMonth(id,name!,team.name,month);
