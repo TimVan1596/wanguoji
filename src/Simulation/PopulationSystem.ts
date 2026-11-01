@@ -1,3 +1,6 @@
+import Game from '../Game/Game';
+import {successionTransaction} from '../Politics/SuccessionTransaction';
+import {politicalEffect} from './PoliticalMutationScope';
 import Military,{deriveUserBornMonth} from '../Politics/MilitaryCommandRegistry';
 import Dynasty from '../Politics/Dynasty';
 import {nobleEpoch} from '../Politics/MilitaryNobility';
@@ -157,6 +160,7 @@ export default class PopulationSystem {
     profile?: MonthlyPhaseProfiler
   ) {
     if (team.isDie || (!bypassCapacity && this.getPopulation(team) >= this.getCapacity(team))) return undefined;
+    const previousCounters={...this.counters},previousRng=worldRandom.exportState();
     const teamKey = team.shortName ?? team.name;
     let name = forcedName;
     if (!name) {
@@ -171,18 +175,26 @@ export default class PopulationSystem {
     });
     const month=populationMutation.month??0,bornMonth=deriveUserBornMonth(id,name!,team.name,month);
     const familyPlan=populationMutation.cause==='NATURAL_GROWTH'?planFamilyPopulationEntry(Military.getFamilies(),team.name,nobleEpoch(Dynasty.get(team.name),month)?.foundingRulerId,id,bornMonth,month,String(worldRandom.exportState().seed)):undefined;
-    const user = measurePhase(profile, "Population.makeUser", () => team.makeUser(
+    const create = () => measurePhase(profile, "Population.makeUser", () => team.makeUser(
       id,
       familyPlan?.member.name??name!,
       resolvePublicAssetUrl("img/no-face.svg"),
       worldRandom.int(USER_NATURAL_LOYALTY_MIN, USER_NATURAL_LOYALTY_MAX),
       "NORMAL",
       undefined,
-      populationMutation,
+      familyPlan?{...populationMutation,deferPopulationAudit:true}:populationMutation,
       familyPlan?{bornMonth,familyMemberId:familyPlan.member.memberId}:undefined
     ));
     // The plan is pure and the member is committed only for this newly created real resident.
-    if (user) {if(familyPlan)Military.commitFamilyMember(familyPlan);return user;}
+    if(familyPlan){
+      try{return successionTransaction(team,Dynasty,()=>{
+        const before=team.users.size,user=create();if(!user)return undefined;
+        Military.commitFamilyMember(familyPlan);
+        politicalEffect(()=>{if(!populationMutation.deferPopulationAudit)Game.Core?.simulator?.recordPopulationMutation(team,before,team.users.size,populationMutation);});
+        return user;
+      });}catch(error){this.counters=previousCounters;worldRandom.restore(previousRng);console.warn('[MilitaryFamily] population entry rolled back',error);return undefined;}
+    }
+    const user=create();if(user)return user;
     // Legacy join-command routing remains the fallback for natural population.
     return Danmu.Apply(createLocalDanmu(name, team.name,
       worldRandom.int(USER_NATURAL_LOYALTY_MIN, USER_NATURAL_LOYALTY_MAX)), populationMutation);

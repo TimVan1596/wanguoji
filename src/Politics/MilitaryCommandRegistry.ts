@@ -155,7 +155,7 @@ export class MilitaryCommandRegistryStore {
   }
 
   exportState(): MilitaryCommandState {
-    return { families:structuredClone(this.families), people: [...this.people.values()].map(person => structuredClone(person)),
+    return { ...(this.families.length?{families:structuredClone(this.families)}:{}), people: [...this.people.values()].map(person => structuredClone(person)),
       formations: [...this.formations.values()].map(formation => structuredClone(formation)),
       personSequence: this.personSequence, commandSequence: this.commandSequence, lastEvaluationMonth: this.lastEvaluationMonth };
   }
@@ -179,6 +179,7 @@ export class MilitaryCommandRegistryStore {
   mirrorPoliticalDeath(personId:string,rulerId:string,month:number,cause:string){
     const p=this.people.get(personId);if(!p||(p.politicalRulerId!==rulerId&&p.royalIdentity?.rulerId!==rulerId)||p.status==="DEAD")return;
     if(p.status==="ACTIVE")throw new Error("Political person still has military command");
+    const link=this.getFamilyMember(p.sourceUserId,p.bornMonth);if(link){link.member.deathMonth=month;link.member.deathCause=cause;}
     p.status="DEAD";p.deathMonth=month;p.deathCause=cause;this.diagnostics.deaths++;
     if(cause==="NATURAL_DEATH")this.diagnostics.naturalDeaths++;
     this.eventWriter?.({id:`military-person-death-${p.personId}-${month}`,year:month,monthIndex:month,type:"military-person-died",category:"politics",actorFactionId:p.factionId,factionIds:[p.factionId],title:`${p.personalName}去世`,metadata:{personId:p.personId,sourceUserId:p.sourceUserId,personalName:p.personalName,deathCause:cause,politicalRulerId:rulerId},importance:"normal"});
@@ -361,7 +362,7 @@ export class MilitaryCommandRegistryStore {
       this.people.set(personId, person);
       user.militaryPersonId = personId;
     }
-    const familyLink=this.getFamilyMember(user.id,user.bornMonth);
+    const familyLink=this.getFamilyMember(user.id,user.bornMonth),familyWeight=familyAppointmentWeight(familyLink?.family,familyLink?.member,factionId,this.royalService?.nobleEpoch?.(factionId,worldMonth),worldMonth);
     if(familyLink){if(familyLink.member.name!==person.personalName)throw Error('Family military name mismatch');familyLink.member.militaryPersonId=person.personId;}
     person.factionId = factionId; person.status = "ACTIVE";
     person.appointments.push({ factionId, startMonth: worldMonth, commandId, officeHistory: [] });
@@ -370,7 +371,7 @@ export class MilitaryCommandRegistryStore {
     this.eventWriter?.({ id: `military-appointment-${commandId}`, year: worldMonth, monthIndex: worldMonth,
       category: "politics", type: "military-appointment", title: `${factionId}任命${getMilitaryPersonDisplayName(person)}为军事指挥者`,
       description: royalIdentity ? `${getMilitaryPersonDisplayName(person)}以原王室身份首次从军，建立一个真实人口单位，与${memberUnitIds.length-1}名既有部众组成军队。` : `${getMilitaryPersonDisplayName(person)}由既有人口任职，指挥${memberUnitIds.length}个现存单位。`, factionIds: [factionId], actorFactionId: factionId,
-      metadata: { personId, sourceUserId: person.sourceUserId, personalName: person.personalName, commandId, unitCount: memberUnitIds.length, ...(royalIdentity ? {royalRulerId:royalIdentity.rulerId,populationDelta:1} : {}) }, importance: "normal" });
+      metadata: { personId, sourceUserId: person.sourceUserId, personalName: person.personalName, commandId, unitCount: memberUnitIds.length, ...(familyLink?{familyId:familyLink.family.familyId,familyMemberId:familyLink.member.memberId,familyAppointmentWeight:familyWeight}:{}), ...(royalIdentity ? {royalRulerId:royalIdentity.rulerId,populationDelta:1} : {}) }, importance: "normal" });
     this.grantOffice(person,person.appointments.at(-1)!,{office:"XIAOWEI",month:worldMonth,serviceMonths:0,captureEventIds:[]});
     return true;
   }
@@ -707,7 +708,7 @@ export class MilitaryCommandRegistryStore {
 
   onUserDestroyed(user: User, worldMonth: number, cause: string) {
     const relative=this.getFamilyMember(user.id,user.bornMonth);
-    if(relative && ['SIEGE_LOSS','BATTLE_DEATH','NATURAL_DEATH','GOD_ACTION','RULER_LIFECYCLE'].includes(cause)){relative.member.deathMonth=worldMonth;relative.member.deathCause=cause;}
+    if(relative){relative.member.exitMonth=worldMonth;relative.member.exitCause=cause;if(['SIEGE_LOSS','BATTLE_DEATH','NATURAL_DEATH'].includes(cause)){relative.member.deathMonth=worldMonth;relative.member.deathCause=cause;}}
     const record = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
     const person = record?.sourceUserId === user.id && record.bornMonth === user.bornMonth && record.name === user.name && record.factionId === user.team.name ? record : undefined;
     if (cause === "NATURAL_DEATH" && !(ordinaryLifeEligible({...user,isDestroyed:false})&&worldMonth>=residentNaturalDeathMonth(user.id,user.bornMonth)) && (!person || (!person.royalIdentity && worldMonth % 12 !== 0) || worldMonth < deriveMilitaryLifeSchedule(person).naturalDeathMonth)) return;

@@ -5,7 +5,7 @@ import {splitEstablishedPersonalName,hanGivenNamePool} from './NameCulture';
 export interface MilitaryFamilyMember {
  memberId:string; sourceUserId:number; name:string; bornMonth:number; generation:number;
  parentMemberId?:string; enteredMonth:number; source:'FOUNDER'|'NATURAL_GROWTH';
- militaryPersonId?:string; deathMonth?:number; deathCause?:string;
+ militaryPersonId?:string; deathMonth?:number; deathCause?:string; exitMonth?:number; exitCause?:string;
 }
 export interface MilitaryFamily {
  familyId:string; surname:string; founderPersonId:string; factionId:string; epochFounderId:string;

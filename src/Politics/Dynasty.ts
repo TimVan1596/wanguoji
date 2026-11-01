@@ -1056,12 +1056,15 @@ class DynastyRegistryStore {
   restoreSuccessionEligibility(team:Team,rulerId:string,month:number){
     const dy=this.dynasties.get(team.name),target=dy?.rulers.find(r=>r.id===rulerId),issuer=dy?.rulers.find(r=>r.id===dy.currentRulerId);
     const ban=target&&unresolvedSuccessionAct(target,month);
-    if(!dy||!target||!issuer||!ban||issuer.id===target.id||month<ban.month+24||!(target.deathMonth===undefined && !isNaturallyDeadByMonth(target.naturalDeathYear??target.plannedEndYear,month)))return false;
-    try{successionTransaction(team,this,()=>this.recordSuccessionAct(team,dy,target,{...ban,eventId:`${ban.eventId}-restored`,kind:'RESTORED',month,issuerRulerId:issuer.id,sourceEventId:ban.eventId,restoresEventId:ban.eventId}));return true;}catch{return false;}
+    const victim=ban&&dy?.rulers.find(r=>r.id===ban.issuerRulerId),user=target?.militaryIdentity&&team.getUserById(target.militaryIdentity.sourceUserId);
+    const accession=issuer&&WorldHistory.getEventsForFaction(team.name).find(e=>['ruler-succession','ruler-deposed'].includes(e.type)&&(e.rulerId===issuer.id||e.metadata?.nextRulerId===issuer.id)&&(e.monthIndex??e.year)===issuer.accessionYear);
+    if(!dy||!target||!issuer||!ban||issuer.id===target.id||month<ban.month+60||!victim||victim.deathMonth===undefined||victim.deathMonth>month||!accession||!user||user.loyalty<75||(getFactionStability(team)??0)<75||month-(issuer.accessionYear??month)<24||!(target.deathMonth===undefined && !isNaturallyDeadByMonth(target.naturalDeathYear??target.plannedEndYear,month)))return false;
+    try{successionTransaction(team,this,()=>this.recordSuccessionAct(team,dy,target,{...ban,eventId:`${ban.eventId}-restored`,kind:'RESTORED',month,issuerRulerId:issuer.id,sourceEventId:ban.eventId,restoresEventId:ban.eventId,authorityEventId:accession.id}));return true;}catch{return false;}
   }
 
   private evaluateCourtPardon(team:Team,dy:Dynasty,month:number){
     if(month%12!==0)return;
+    for(const r of dy.rulers)if(unresolvedSuccessionAct(r,month)&&this.restoreSuccessionEligibility(team,r.id,month))break;
     for(const person of MilitaryCommandRegistry.getPeople().filter(p=>p.factionId===team.name&&p.politicalHistory?.length).sort((a,b)=>a.personId.localeCompare(b.personId))){
       const act=planCourtPardon(person,team,dy,month,WorldHistory.getEventsForFaction(team.name),getFactionStability(team)??100);if(!act)continue;
       const user=team.getUserById(person.sourceUserId);if(!user?.matchesMilitaryLife(person)||user.isDestroyed||user.role!=='NORMAL'||user.rulerId||user.team!==team)continue;

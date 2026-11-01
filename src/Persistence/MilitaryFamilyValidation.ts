@@ -23,7 +23,7 @@ export function validateMilitaryFamilies(save:WorldSaveV1){
    if(m.militaryPersonId&&(!military||military.sourceUserId!==m.sourceUserId||military.bornMonth!==m.bornMonth||military.personalName!==m.name||military.deathMonth!==undefined&&m.deathMonth!==military.deathMonth))throw Error('family military identity mismatch');
    const user=save.users.find(u=>u.userId===m.sourceUserId);
    if(user&&(user.bornMonth!==m.bornMonth||m.generation>0&&user.name!==m.name||m.deathMonth!==undefined||m.generation>0&&user.familyMemberId!==m.memberId))throw Error('family resident binding mismatch');
-   if(!user&&m.deathMonth===undefined&&!military?.politicalRulerId)throw Error('family member missing live population or death');
+   if(!user&&m.deathMonth===undefined&&m.exitMonth===undefined&&!military?.politicalRulerId)throw Error('family member missing live population or death');
   }
  }catch(e){errors.push(`invalid military family ${f?.familyId}: ${String(e)}`);}
  for(const u of save.users)if(u.familyMemberId&&!families?.some(f=>f.members.some(m=>m.memberId===u.familyMemberId&&m.sourceUserId===u.userId&&m.bornMonth===u.bornMonth)))errors.push('orphan family resident');

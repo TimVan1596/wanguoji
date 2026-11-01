@@ -1,0 +1,14 @@
+import {describe,it,expect} from 'vitest';
+import {makeMilitaryFamily,planFamilyPopulationEntry,familyAppointmentWeight,familyFounderSource} from './MilitaryFamily';
+const p:any={personId:'military-person-1',sourceUserId:123,personalName:'程维安',name:'魏-001',bornMonth:-600,factionId:'wei',nobilityHistory:[{eventId:'merit',rank:'HOU',epochFounderId:'epoch'}]};
+const event:any={id:'merit',year:12,type:'military-ennobled',actorFactionId:'wei',metadata:{personId:p.personId}};
+const family=()=>makeMilitaryFamily(p,'wei','epoch',24,event)!;
+describe('real population entry genealogy',()=>{
+ it('requires real nonroyal merit and creates one founder without a new User',()=>{expect(familyFounderSource(p,[event],'wei','epoch',24)).toBe(event);expect(familyFounderSource({...p,royalIdentity:{rulerId:'royal'}},[event],'wei','epoch',24)).toBeUndefined();expect(familyFounderSource({...p,nobilityHistory:[]},[event],'wei','epoch',24)).toBeUndefined();expect(family().members[0]).toMatchObject({sourceUserId:123,bornMonth:-600,generation:0});});
+ it('freezes real birth, original User key and plausible parent at entry without random draws',()=>{
+  const f=family();let plan;for(let id=100;id<500&&!plan;id++)plan=planFamilyPopulationEntry([f],'wei','epoch',id,-300,60,'seed');expect(plan).toBeDefined();expect(plan!.member.bornMonth).toBe(-300);expect(plan!.member.parentMemberId).toBe(f.members[0].memberId);expect(plan!.member.name.startsWith('程')).toBe(true);expect(planFamilyPopulationEntry([f],'wei','epoch',plan!.member.sourceUserId,-300,60,'seed')).toEqual(plan);expect(f.members).toHaveLength(1);
+ });
+ it.each([-500,100])('rejects impossible father age at child birth %s',born=>{expect(planFamilyPopulationEntry([family()],'wei','epoch',125,born,200,'seed')).toBeUndefined();});
+ it('does not attach foreign or previous-house families',()=>{expect(planFamilyPopulationEntry([family()],'chu','epoch',125,-300,60,'seed')).toBeUndefined();expect(planFamilyPopulationEntry([family()],'wei','new-house',125,-300,60,'seed')).toBeUndefined();});
+ it('bounded first-entry advantage decays and never grants rank, population or a command',()=>{const f=family(),m:any={generation:1,bornMonth:-300,enteredMonth:60};expect(familyAppointmentWeight(f,m,'wei','epoch',60)).toBe(1.1);expect(familyAppointmentWeight(f,{...m,generation:2},'wei','epoch',60)).toBe(1.05);expect(familyAppointmentWeight(f,{...m,generation:3},'wei','epoch',60)).toBe(1);expect(familyAppointmentWeight(f,{...m,militaryPersonId:'already-enlisted'},'wei','epoch',60)).toBe(1);expect(familyAppointmentWeight(f,m,'wei','other',60)).toBe(1);});
+});

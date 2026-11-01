@@ -108,10 +108,27 @@ export function checkRoyalCourtAttempt(core:any,base:ReturnType<typeof exportWor
   e.royalMilitaryClaims=Military.getRoyalDepositionClaims(team,month,e.candidates.map(c=>c.ruler),core.logicalUnitRegistry);e.royalHonorClaims=royalHonorCandidateClaims(d,month,team.sovereigntyRank);
   check(selectCourtInstigator(e,Military.getPeople())?.personId===personId,'the actual royal officer is the qualified instigator with real recruited followers');
   const roll=Array.from({length:100},(_,i)=>e.probability*(i+.5)/100).find(roll=>chooseDepositionClaimant(e,month,roll)?.claimant.ruler.id===r.id);check(roll!==undefined,'the existing weighted selection can genuinely select the royal instigator');
-  const pop=core.teams.reduce((n:number,t:any)=>n+t.users.size,0),born=u.bornMonth,userId=u.id,death=r.naturalDeathYear,writer=random.next;
-  let draws=0;random.next=()=>{draws++;writer.call(random);return roll!;};try{(Dynasty as any).evaluateInReignDeposition(team,d,old,month);}finally{random.next=writer;}
-  check(draws===1&&Dynasty.getCurrentRuler(team.name)?.id===r.id,'royal instigator wins the original one shared political draw');
-  check(team.rulerUser===u&&u.id===userId&&u.bornMonth===born&&r.naturalDeathYear===death&&pop===core.teams.reduce((n:number,t:any)=>n+t.users.size,0),'royal winner reuses the exact same body, birth, lifespan and population');
+  // A real SELF failure must have a separate royal disability, including a rollback journal.
+  const courtBase=exportWorldSave(core),invokeFailure=()=>{const next=random.next;random.next=()=>{next.call(random);return .14;};try{(Dynasty as any).evaluateInReignDeposition(core.teams.find((t:any)=>t.name===team.name),Dynasty.get(team.name),Dynasty.getCurrentRuler(team.name),month);}finally{random.next=next;}};
+  const add=History.addEvent;History.addEvent=function(ev){const id=add.call(this,ev);if(ev.type==='royal-succession-sanction')throw Error('injected royal disability write');return id;};
+  try{invokeFailure();}finally{History.addEvent=add;}
+  check(diffCanonicalWorldSave(courtBase,exportWorldSave(core)).matched,'SELF sanction write failure restores royal, military, population, source history and RNG');
+  invokeFailure();
+  {const d=Dynasty.get(team.name)!,royal=d.rulers.find(x=>x.id===r.id)!,acts=royal.successionHistory??[];
+   check(acts.length===1&&acts[0].kind==='DISQUALIFIED'&&!d.heirIds.includes(r.id)&&d.designatedHeirId!==r.id,'SELF failure formally excludes the real offender from normal and designated succession');
+   const read=validateWorldSave(exportWorldSave(core));check(read.valid,`SELF failed disability strictly saves: ${read.errors.join(';')}`);
+   const coup=History.getRecordedEvents().find(ev=>ev.type==='court-coup-attempt'&&(ev.monthIndex??ev.year)===month)!;
+   check(coup?.title.includes('图自立为王')&&!coup?.title.includes('欲拥立'),'SELF father/son political record narrates an attempt to rule, never endorsement of oneself');
+   check(!Dynasty.restoreSuccessionEligibility(core.teams.find((t:any)=>t.name===team.name),r.id,month),'same offended monarch does not silently restore a failed usurper');
+   const bad=exportWorldSave(core);(bad.dynasties.find(x=>x.factionId===team.name)!.rulers as any[]).find(x=>x.rulerId===r.id).successionHistory=[];
+   check(!validateWorldSave(bad).valid,'strict save rejects erasing the formal royal disability while its source survives');
+  }
+  hydrateWorldSave(core,structuredClone(courtBase));
+  const restoredTeam=core.teams.find((t:any)=>t.name===team.name),restoredD=Dynasty.get(team.name)!,restoredR=restoredD.rulers.find(x=>x.id===r.id)!;
+  const pop=core.teams.reduce((n:number,t:any)=>n+t.users.size,0),born=restoredR.bornYear,userId=restoredR.militaryIdentity!.sourceUserId,death=restoredR.naturalDeathYear,writer=random.next;
+  let draws=0;random.next=()=>{draws++;writer.call(random);return roll!;};try{(Dynasty as any).evaluateInReignDeposition(restoredTeam,restoredD,Dynasty.getCurrentRuler(restoredTeam.name),month);}finally{random.next=writer;}
+  check(draws===1&&Dynasty.getCurrentRuler(restoredTeam.name)?.id===restoredR.id,'royal instigator wins the original one shared political draw');
+  check(restoredTeam.rulerUser?.id===userId&&restoredTeam.rulerUser?.bornMonth===born&&restoredR.naturalDeathYear===death&&pop===core.teams.reduce((n:number,t:any)=>n+t.users.size,0),'royal winner reuses the exact same body, birth, lifespan and population');
   check(Military.getFormations().filter(f=>f.commanderPersonId===personId).every(f=>f.status==='DISBANDED'),'royal winner releases the former command without duplicating authority');
   const saved=exportWorldSave(core),v=validateWorldSave(saved);check(v.valid,`royal personal contest strictly saves: ${v.errors.join(';')}`);hydrateWorldSave(core,structuredClone(saved));check(diffCanonicalWorldSave(saved,exportWorldSave(core)).matched,'royal personal contest reads without identity drift');
  }finally{hydrateWorldSave(core,structuredClone(base));}
