@@ -38,7 +38,16 @@ export function planFamilyNobleTransition(f:MilitaryFamily,c:FamilyNobleContext)
  return {version:1,eventId:`${f.familyId}-succession-${step}`,familyId:f.familyId,factionId:f.factionId,epochFounderId:f.epochFounderId,month:c.month,kind:heir?'SUCCEEDED':'ENDED',reason,sourceGrantEventId:grant.eventId,previousEventId,previousMemberId:holder.memberId,previousRank,...(heir?{holderMemberId:heir.memberId,rank}:{}),step,sourceEventIds};
 }
 export function familyNobleTitle(f:MilitaryFamily,m:MilitaryFamilyMember,month:number){const a=f.nobleSuccession?.filter(a=>a.month<=month).at(-1);return a?.kind==='SUCCEEDED'&&a.holderMemberId===m.memberId&&familyMemberPresent(m,month)&&familyResidenceAt(f,m,month)===f.factionId&&a.rank?FAMILY_NOBLE_NAMES[a.rank]:undefined;}
-export function familyNobleText(f:MilitaryFamily,a:FamilyNobleAct){const old=f.members.find(m=>m.memberId===a.previousMemberId)!,heir=f.members.find(m=>m.memberId===a.holderMemberId);if(heir)return `${old.name}卒后，其子${heir.name}袭${FAMILY_NOBLE_NAMES[a.rank!]}。`;const reasons:Record<string,string>={NO_HEIR:'无合格在籍子嗣，爵位断袭',RANK_EXHAUSTED:'男爵世降已尽，爵位不再承袭',REVOKED:'原爵已正式追夺，承袭终止',FORFEITED:'本人因谋逆受重处分，承袭资格终止',FOREIGN:'持爵者已离开原国，旧朝承袭终止',POLITICAL_ACCESSION:'持爵者已登位，承袭终止',REGIME_ENDED:'原朝政治权威已终结，旧爵承袭失效',ENTITY_ENDED:'持爵者人口身份已终结，承袭终止'};return `${f.surname}氏${reasons[a.reason]??'承袭终止'}。`;}
+export function familyNobleText(f:MilitaryFamily,a:FamilyNobleAct){
+ const old=f.members.find(m=>m.memberId===a.previousMemberId)!,heir=f.members.find(m=>m.memberId===a.holderMemberId);
+ if(heir)return `${old.name}卒后，其子${heir.name}袭${FAMILY_NOBLE_NAMES[a.rank!]}。`;
+ if(a.reason==='NO_HEIR')return `${old.name}卒后，其爵无合格在籍子嗣接续，承袭链告终。`;
+ if(a.reason==='RANK_EXHAUSTED')return `男爵${old.name}卒，世降已尽，爵位不再承袭。`;
+ if(a.reason==='REGIME_ENDED')return `原朝政治权威已终结，${f.surname}氏旧爵承袭失效。`;
+ const reasons:Record<string,string>={REVOKED:'原爵已被正式追夺，相关承袭终止',FORFEITED:'因谋逆受重处分，承袭资格终止',FOREIGN:'已离开原国，旧朝承袭终止',POLITICAL_ACCESSION:'已登位，旧朝承袭终止',ENTITY_ENDED:'在籍身份终止，相关承袭终止'};
+ return `${old.name}${reasons[a.reason]??'承袭终止'}。`;
+}
+
 export function createFamilyNobleContext(month:number,families:readonly MilitaryFamily[],people:readonly MilitaryPerson[],events:readonly WorldEvent[],dynasties:readonly Pick<import('./Dynasty').Dynasty,'factionId'|'houseEpochs'|'rulers'>[]):FamilyNobleContext{
  const activeEpochs=new Set<string>(),politicalAccessions=new Map<string,number>();
  for(const d of dynasties){
