@@ -227,7 +227,7 @@ function escapeRegExp(value: string) {
 function OriginalHistorySources({event}:{event:WorldEvent}){
  const [open,setOpen]=useState(false),ids=typeof event.metadata?.sourceEventIds==='string'?event.metadata.sourceEventIds.split(','):[];
  if(ids.length<2)return null;
- return <details onClick={e=>e.stopPropagation()} onToggle={e=>setOpen(e.currentTarget.open)} style={{fontSize:'.75rem',overflowWrap:'anywhere'}}><summary>原始史事（{ids.length}条）</summary>{open&&WorldHistory.getRecordedEvents().filter(e=>ids.includes(e.id)).map(e=><Typography key={e.id} fontSize='.75rem'>{formatWorldDate(e.monthIndex??e.year)} · {e.title} · 事件 {e.id}{typeof e.metadata?.personId==='string'?` · 人物 ${e.metadata.personId}`:''}{typeof e.metadata?.deathCause==='string'?` · 死亡原因 ${e.metadata.deathCause}`:''}</Typography>)}</details>;
+ return <details onClick={e=>e.stopPropagation()} onToggle={e=>setOpen(e.currentTarget.open)} style={{fontSize:'.75rem',overflowWrap:'anywhere'}}><summary>原始史事（{ids.length}条）</summary>{open&&WorldHistory.getRecordedEvents().filter(e=>ids.includes(e.id)).map(e=><Typography key={e.id} fontSize='.75rem'>{formatWorldDate(e.monthIndex??e.year)} · {e.title} · 事件 {e.id}{typeof e.metadata?.personId==='string'?` · 人物 ${e.metadata.personId}`:''}{typeof e.metadata?.deathCause==='string'?` · 死亡原因 ${e.metadata.deathCause}`:''}{e.type==='court-service-granted'?` · 拥立封赏：忠诚 ${e.metadata?.loyaltyBefore} → ${e.metadata?.loyaltyAfter}`:''}</Typography>)}</details>;
 }
 
 function CourtPeople({event}:{event:WorldEvent}){
