@@ -37,5 +37,5 @@ export function appanageLatestPortrait(r:AppanageRelation,faction:Parameters<typ
 
 export function appanageRoyalHonor(r:AppanageRelation,index:import('../../../History/CityAppanageHistory').AppanageHistoryIndex,month:number,royal:Ruler|undefined,house:Dynasty|undefined,initial=false){
  const a=r.grant.record,last=appanageEffectiveWindows(r,index,month).at(-1),at=initial?a.month:last?.endMonth??a.month,order=initial?r.grant.recordOrder+1:last?.endOrder??Infinity;
- return royalHonorHeading(royal,house,at,{factionId:a.factionId,epochFounderId:a.epochFounderId,statusMonth:Number.isFinite(order)?at-1:at,before:g=>g.month<at||g.month===at&&(index.byId.get(g.eventId)?.index??Infinity)<order});
+ return royalHonorHeading(royal,house,at,{person:{...r.grant.person,honorHistory:r.grant.person.honorHistory?.filter(h=>h.month<at||h.month===at&&(index.byId.get(h.eventId)?.index??Infinity)<order)},factionId:a.factionId,epochFounderId:a.epochFounderId,statusMonth:Number.isFinite(order)?at-1:at,before:g=>g.month<at||g.month===at&&(index.byId.get(g.eventId)?.index??Infinity)<order});
 }

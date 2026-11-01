@@ -1,3 +1,4 @@
+import {currentNobleGrant} from './MilitaryNobility';
 import type {Dynasty,Ruler} from './Dynasty';
 import {getRecordedKinRelation,type RecordedKinRelation} from './DynasticCandidateRules';
 import type {WorldEvent} from '../History/WorldHistory';
@@ -6,7 +7,7 @@ import {verifiedPoliticalOffice} from './MilitaryPoliticalInfluence';
 import {deriveMilitaryCareer} from './MilitaryCareerEvidence';
 export const ROYAL_HONOR_NAMES={WUANJUN:'武安君',ZHENGUOGONG:'镇国公'} as const;
 export interface RoyalHonor {
- version:2;eventId:string;factionId:string;epochFounderId:string;houseName:string;month:number;
+ version:3;nobleGrantEventId?:string;eventId:string;factionId:string;epochFounderId:string;houseName:string;month:number;
  recipientRulerId:string;recipientName:string;bornMonth:number;
  issuerRulerId:string;issuerName:string;issuerTitle:string;countryName:string;
  rank:keyof typeof ROYAL_HONOR_NAMES;sovereigntyRank:'KING'|'EMPEROR';relation:RecordedKinRelation;
@@ -40,15 +41,16 @@ export function planRoyalHonor(input:{faction:HonorFaction;dynasty:Dynasty;month
  const cap=f.sovereigntyRank==='EMPEROR'?4:2;
  const eligible=d.rulers.flatMap(r=>{
   const relation=getRecordedKinRelation(r,issuer,d.rulers),merits=royalHonorMerits(r,input.people,input.formations,input.events,m,f.name);
-  const rank=royalMeritRank(merits,input.events),person=r.militaryIdentity&&input.people.find(p=>p.personId===r.militaryIdentity?.personId),appointment=person?.appointments.find(a=>a.factionId===f.name&&a.startMonth<=m&&a.endMonth===undefined);
+  const proposed=royalMeritRank(merits,input.events),person=r.militaryIdentity&&input.people.find(p=>p.personId===r.militaryIdentity?.personId),appointment=person?.appointments.find(a=>a.factionId===f.name&&a.startMonth<=m&&a.endMonth===undefined);
+  const noble=person&&currentNobleGrant(person,f.name,m,epoch.foundingRulerId),rank=proposed==='ZHENGUOGONG'&&noble?.rank!=='GONG'?'WUANJUN':proposed;
   if(!rank||!person||person.status!=='ACTIVE'||person.deathMonth!==undefined||person.factionId!==f.name||!appointment||!verifiedPoliticalOffice(person,appointment.commandId,f.name,m,input.events))return [];
   if(r.id===issuer.id||r.houseName!==d.houseName||!['heir','kin'].includes(r.status)||r.accessionYear!==undefined||r.reignOrdinal!==undefined||!livingRoyalAt(r,m)||m-r.bornYear<288||!relation||relation==='COLLATERAL_KIN'||r.royalHonors?.some(g=>g.epochFounderId===epoch.foundingRulerId&&g.rank===rank))return [];
   const active=effectiveRoyalHonor(r,d,m,f.sovereigntyRank),occupied=d.rulers.filter(q=>effectiveRoyalHonor(q,d,m,f.sovereigntyRank)).length;
   if(!active&&occupied>=cap)return [];
-  return [{r,relation,merits,rank}];
+  return [{r,relation,merits,rank,noble}];
  }).sort((a,b)=>b.merits.length-a.merits.length||a.r.bornYear-b.r.bornYear||a.r.id.localeCompare(b.r.id));
  const c=eligible[0];if(!c)return;const rank=c.rank;
- return {version:2,eventId:`royal-honor-${f.name}-${c.r.id}-${epoch.foundingRulerId}-${rank}`,factionId:f.name,epochFounderId:epoch.foundingRulerId,houseName:d.houseName,month:m,recipientRulerId:c.r.id,recipientName:royalName(c.r),bornMonth:c.r.bornYear,issuerRulerId:issuer.id,issuerName:royalName(issuer),issuerTitle:input.issuerTitle,countryName:input.countryName,rank,sovereigntyRank:f.sovereigntyRank as 'KING'|'EMPEROR',relation:c.relation,basis:'MILITARY_MERIT',meritEventIds:c.merits};
+ return {version:3,...(rank==='ZHENGUOGONG'?{nobleGrantEventId:c.noble!.eventId}:{}),eventId:`royal-honor-${f.name}-${c.r.id}-${epoch.foundingRulerId}-${rank}`,factionId:f.name,epochFounderId:epoch.foundingRulerId,houseName:d.houseName,month:m,recipientRulerId:c.r.id,recipientName:royalName(c.r),bornMonth:c.r.bornYear,issuerRulerId:issuer.id,issuerName:royalName(issuer),issuerTitle:input.issuerTitle,countryName:input.countryName,rank,sovereigntyRank:f.sovereigntyRank as 'KING'|'EMPEROR',relation:c.relation,basis:'MILITARY_MERIT',meritEventIds:c.merits};
 }
 export function royalHonorText(g:RoyalHonor){return `${g.issuerTitle}${g.rank==='ZHENGUOGONG'?'以累克城邑、攻取敌都之功':'以取城之功'}授${g.recipientName}${ROYAL_HONOR_NAMES[g.rank]}之号。`;}
 

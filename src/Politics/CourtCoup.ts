@@ -27,7 +27,7 @@ export interface CourtCoupRecord {
  outcome:'SUCCESS'|'FAILED';outcomeEventId:string;consequence:'DEPOSITION'|'DISMISSED';
 }
 
-export function courtAttemptOutcome(e:DepositionEvaluation,c:MilitaryPoliticalParticipant,roll:number,stability:number,target:CourtTarget,policy:CourtAttemptPolicy='MEDIUM',successPolicy:CourtSuccessPolicy='MEDIUM'){
- const a=courtAttemptChance(c,policy);if(!courtAttemptEligible(e)||!Number.isFinite(roll)||roll<0||roll>=a)return;
+export function courtAttemptOutcome(e:DepositionEvaluation,c:MilitaryPoliticalParticipant|undefined,roll:number,stability:number,target:CourtTarget,policy:CourtAttemptPolicy='MEDIUM',successPolicy:CourtSuccessPolicy='MEDIUM'){
+ if(!c)return;const a=courtAttemptChance(c,policy);if(!courtAttemptEligible(e)||!Number.isFinite(roll)||roll<0||roll>=a)return;
  return roll/a<courtSuccessChance(c,stability,e.evidence.length,target,successPolicy)?'SUCCESS' as const:'FAILED' as const;
 }

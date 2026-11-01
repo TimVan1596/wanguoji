@@ -1,3 +1,4 @@
+import {getRegimeStyleNameAtMonth} from '../Simulation/RegimeStyle';
 import {siegeParticipants} from "../Simulation/SiegeParticipants";
 import {siegeWallPressure,type SiegeBattle} from "../Simulation/SiegeBattle";
 import WorldExiles from "../Simulation/WorldExiles";
@@ -295,7 +296,7 @@ export default class City {
     const restoredFromExile=newOwner.status==="EXILED";
     const previousOwnerName = oldOwner.name;
     const battle=this.siegeBattle;
-    const namesAtEvent={attacker:newOwner.displayName,defender:oldOwner.displayName,
+    const namesAtEvent={attacker:newOwner.displayName,defender:oldOwner.displayName,attackerLabel:getRegimeStyleNameAtMonth(newOwner,year),defenderLabel:getRegimeStyleNameAtMonth(oldOwner,year),
       ...(battle&&battle.attackerId===newOwner.name&&battle.defenderId===oldOwner.name&&battle.commandId===commandId&&battle.personId===commanderPersonId?{battleId:battle.id,siegeEndedEventId:`siege-ended-${battle.id}`}:{})};
     const wasCapital = this.isCapital;
     const recovered = newOwner.name === this.founderFactionId;

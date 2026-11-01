@@ -2,7 +2,7 @@ import Dynasty from '../../Politics/Dynasty';
 import Military from '../../Politics/MilitaryCommandRegistry';
 import History from '../../History/WorldHistory';
 import random from '../WorldRandom';
-import {selectCourtInstigator} from '../../Politics/CourtCoup';
+import {selectCourtInstigator,courtAttemptChance} from '../../Politics/CourtCoup';
 import {evaluateDepositionOpportunity} from '../../Politics/InReignDeposition';
 import {getFactionStability} from '../../Components/City';
 import {exportWorldSave} from '../../Persistence/WorldSaveExporter';
@@ -25,18 +25,19 @@ export function checkCourtCoups(core:any,base:ReturnType<typeof exportWorldSave>
   const actor=selectCourtInstigator(evaluation,Military.getPeople(),Military.getCourtAttemptInfluence(team,month,core.logicalUnitRegistry));check(evaluation.eligible&&actor,'real damaged court with a willing active commander qualifies for one shared attempt');
   const start=exportWorldSave(core);let v=validateWorldSave(start);check(v.valid,`pre-attempt strict save: ${v.errors.join(';')}`);
   const invoke=(roll:number)=>{const t=core.teams.find((t:any)=>t.name===factionId),writer=random.next;let draws=0;random.next=()=>{const caller=new Error().stack?.split('\n')[2]??'';if(caller.includes('/src/Politics/Dynasty.ts'))draws++;writer.call(random);return roll;};try{(Dynasty as any).evaluateInReignDeposition(t,Dynasty.get(factionId),Dynasty.getCurrentRuler(factionId),month);}finally{random.next=writer;}return draws;};
-  for(const roll of [.07,0]){
+  const failedRoll=courtAttemptChance(actor!)*.95;
+  for(const [roll,failType] of [[failedRoll,'court-coup-result'],[0,'court-coup-result'],[0,'court-service-granted']] as const){
    hydrateWorldSave(core,structuredClone(start));const before=exportWorldSave(core),writer=History.addEvent;
-   History.addEvent=function(e){const id=writer.call(this,e);if(e.type==='court-coup-result')throw Error('injected final coup write');return id;};
+   History.addEvent=function(e){const id=writer.call(this,e);if(e.type===failType)throw Error('injected final coup write');return id;};
    try{invoke(roll);}finally{History.addEvent=writer;}
-   check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,`${roll===0?'success':'failed punishment'} final-write failure rolls back User, army, dynasty, history, IDs and RNG`);
+   check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,`${roll===0?'success':'failed punishment'} ${failType} write failure rolls back User, army, dynasty, history, IDs and RNG`);
   }
   const strong=structuredClone(start);for(const c of strong.cities)if(c.ownerFactionId===factionId)c.loyalty=85;
   hydrateWorldSave(core,strong);check(invoke(0)===1,'strong court still admits an actual attempt with one shared opportunity');
   const strongAttempt=History.getRecordedEvents().find(e=>e.type==='court-coup-attempt')!,strongRecord=JSON.parse(String(strongAttempt?.metadata?.courtCoup));
-  check(strongRecord.successEligible===false&&strongRecord.successProbability===0&&strongRecord.outcome==='FAILED'&&Dynasty.getCurrentRuler(factionId)?.id===king.id,'attempt eligibility never bypasses the independent formal deposition gate, even at roll zero');
-  check(validateWorldSave(exportWorldSave(core)).valid,'a failed challenge against a robust court strictly saves its independent success blockers');
-  for(const [roll,outcome] of [[.07,'FAILED'],[0,'SUCCESS']] as const){
+  check(strongRecord.successEligible===true&&strongRecord.depositionBlockers.includes('NO_CURRENT_VULNERABILITY')&&strongRecord.outcome==='SUCCESS'&&Dynasty.getCurrentRuler(factionId)?.id!==king.id,'a sourced military coup can win against a robust court while recording the rejected spontaneous-deposition gate');
+  check(validateWorldSave(exportWorldSave(core)).valid,'independent court success against a robust court strictly saves its legal sources');
+  for(const [roll,outcome] of [[failedRoll,'FAILED'],[0,'SUCCESS']] as const){
    hydrateWorldSave(core,structuredClone(start));const pop=core.teams.reduce((n:number,t:any)=>n+t.users.size,0),beforeIds=new Set(core.teams.flatMap((t:any)=>[...t.users].map((u:any)=>u.id))),beforeFormations=Military.getFormations().length;
    check(invoke(roll)===1,`${outcome} court action uses exactly the original one annual draw`);
    const events=History.getRecordedEvents(),attempt=events.find(e=>e.type==='court-coup-attempt'&&(e.monthIndex??e.year)===month)!;
@@ -44,6 +45,11 @@ export function checkCourtCoups(core:any,base:ReturnType<typeof exportWorldSave>
    const current=Dynasty.getCurrentRuler(factionId)!;
    if(outcome==='FAILED')check(current.id===king.id&&Military.getPerson(actor!.personId)?.appointments.some(a=>a.endMonth===month&&a.endReason==='DISMISSED')&&Military.getFormations().filter(f=>f.commanderPersonId===actor!.personId).every(f=>f.status==='DISBANDED'),'failure retains the monarch and actually removes the instigator command');
    else check(current.id!==king.id&&current.id!==actor!.personId&&Dynasty.get(factionId)!.rulers.find(r=>r.id===king.id)?.status==='deposed','success distinguishes living deposed king, legal successor and military supporter');
+   if(outcome==='SUCCESS'){
+    const rewards=events.filter(e=>e.type==='court-service-granted'&&e.metadata?.courtCoupEventId===attempt.id),supporter=core.teams.flatMap((t:any)=>[...t.users]).find((u:any)=>u.id===actor!.sourceUserId);
+    check(rewards.length===1&&rewards[0].rulerId===current.id&&supporter?.loyalty===Math.min(100,actor!.disposition!.loyalty+8),'actual supporter receives a single new-monarch sourced court service reward, changing real future loyalty');
+    const loyalty=supporter.loyalty;invoke(0);check(supporter.loyalty===loyalty&&History.getRecordedEvents().filter(e=>e.type==='court-service-granted'&&e.metadata?.courtCoupEventId===attempt.id).length===1,'same political service cannot award a second reward');
+   }
    const added=core.teams.flatMap((t:any)=>[...t.users]).filter((u:any)=>!beforeIds.has(u.id));
    check(added.every((u:any)=>outcome==='SUCCESS'&&u.role==='RULER'&&u.rulerId===current.id)&&added.length<=1&&pop+added.length===core.teams.reduce((n:number,t:any)=>n+t.users.size,0)&&Military.getFormations().length===beforeFormations,`${outcome} adds no ordinary residents or formations; only the existing legitimate royal may establish its one audited ruler body`);
    const saved=exportWorldSave(core);v=validateWorldSave(saved);check(v.valid,`${outcome} passes strict V38: ${v.errors.join(';')}`);

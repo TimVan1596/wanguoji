@@ -14,7 +14,8 @@ import {MILITARY_OFFICE_NAMES} from "./MilitaryOffice";
 /** Only changes the reading view. Full entries and canonical events remain available for audit and promotion. */
 export function militaryMilestones(person:MilitaryPerson,entries:MilitaryChronicleEntry[],events:WorldEvent[],context:MilitaryHistoryContext={}){
   const projected=mergeCourtCoupReading(events),shown=new Map(projected.map(e=>[e.id,e]));
-  entries=entries.filter(e=>!events.some(raw=>raw.id===e.eventId&&['court-coup-attempt','court-coup-result'].includes(raw.type))||shown.has(e.eventId)).map(e=>{const raw=shown.get(e.eventId);return raw?.metadata?.courtReadingKind==='COURT_COUP'?{...e,text:raw.title,sourceEventIds:String(raw.metadata.sourceEventIds).split(',')}:e;});
+  const courtHidden=new Set(projected.filter(e=>e.metadata?.courtReadingKind==='COURT_COUP').flatMap(e=>String(e.metadata!.sourceEventIds).split(',').filter(id=>id!==e.id)));
+  entries=entries.filter(e=>!courtHidden.has(e.eventId)).filter(e=>!events.some(raw=>raw.id===e.eventId&&['court-coup-attempt','court-coup-result'].includes(raw.type))||shown.has(e.eventId)).map(e=>{const raw=shown.get(e.eventId);return raw?.metadata?.courtReadingKind==='COURT_COUP'?{...e,text:raw.title,sourceEventIds:String(raw.metadata.sourceEventIds).split(',')}:e;});
   const byId=new Map(events.map(e=>[e.id,e])),name=getMilitaryPersonDisplayName(person);
   const available=new Set(entries.map(e=>e.eventId)),pairs=militaryLifePairs(events).filter(p=>available.has(p.anchor.id)&&available.has(p.other.id)),merged=new Map(pairs.map(p=>[p.anchor.id,p])),hidden=new Set(pairs.map(p=>p.other.id));
   const links=militaryNarrativeLinks(person,events);

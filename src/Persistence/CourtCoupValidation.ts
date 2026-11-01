@@ -1,6 +1,9 @@
 import {courtSuccessChance} from '../Politics/CourtCoupOutcome';
 import {getRecordedKinRelation} from '../Politics/DynasticCandidateRules';
-import {validNoblePoliticalSelection} from './MilitaryNobleSelectionValidation';
+import {chooseMilitaryClaimSupport} from '../Politics/MilitaryClaimSupport';
+import {formatRulerTitleAtMonth,type FactionTitleState} from '../Politics/RulerTitleRules';
+import {getRegimeStyleNameAtMonth} from '../Simulation/RegimeStyle';
+import {getFactionDisplayNameAtMonth} from '../Simulation/FactionIdentity';
 import {MILITARY_FORMATION_CAPACITY} from '../Politics/MilitaryOffice';
 import {deriveMilitaryLifeSchedule} from '../Politics/MilitaryLifeRules';
 import type {RulerSaveV17} from './WorldSaveSchema';
@@ -37,6 +40,11 @@ export function validateCourtCoups(save:WorldSaveV1):string[]{
   if(c.basePoliticalWeight!==undefined||c.finalPoliticalWeight!==undefined||c.nobility!==undefined||c.nobleSelection!==undefined||c.politicalSelectionWeight!==c.strength*c.disposition.contestWeight)throw Error('court command and disposition standing');
   if(!Array.isArray(r.members)||r.members.length!==c.unitCount||new Set(r.members.map(u=>u.unitId)).size!==c.unitCount||new Set(r.members.map(u=>u.userId)).size!==c.unitCount||r.members.some(u=>!c.memberUnitIds.includes(u.unitId)||!Number.isSafeInteger(u.userId)||!Number.isSafeInteger(u.bornMonth)||u.bornMonth>m||u.factionId!==r.factionId||u.unitId===c.commanderUnitId&&(u.userId!==p.sourceUserId||u.bornMonth!==p.bornMonth)||save.users.some(x=>x.userId===u.userId&&x.bornMonth!==u.bornMonth)))throw Error('frozen actual members');
   const legal=target&&getRecordedKinRelation(target,king,rulers);if(!r.successEligible||!legal||legal==='COLLATERAL_KIN'||r.target.rulerId!==target.id||r.target.name!==target.houseName.replace(/氏$/,'')+target.givenName||r.target.bornMonth!==target.bornYear||r.target.relation!==legal||r.previousRulerBornMonth!==king.bornYear)throw Error('independent legal court target');
+  const historicalKin=rulers.filter(x=>x.id!==king.id&&(x.politicalStartYear??-Infinity)<=m&&x.houseName===king.houseName&&m-x.bornYear>=192&&(x.naturalDeathYear??Infinity)>m&&!(x.accessionYear!==undefined&&x.accessionYear<m)&&!(x.deathMonth!==undefined&&x.deathMonth<m)&&!prior.some(y=>y.type==='heir-died'&&y.metadata?.heirId===x.id||['ruler-died','ruler-captured'].includes(y.type)&&y.rulerId===x.id||x.militaryIdentity&&y.type==='military-person-died'&&y.metadata?.personId===x.militaryIdentity.personId)).flatMap(x=>{const rel=getRecordedKinRelation(x,king,rulers);return rel&&rel!=='COLLATERAL_KIN'?[{rulerId:x.id,name:x.houseName.replace(/氏$/,'')+x.givenName,bornMonth:x.bornYear,relation:rel}]:[];});
+  const own=p.royalIdentity&&historicalKin.find(x=>x.rulerId===p.royalIdentity!.rulerId),choice=own&&c.disposition.ambition>=c.disposition.loyalty?{...own,basis:'SELF'}:(()=>{const support=chooseMilitaryClaimSupport(historicalKin,c.personId,c.personalName??c.name,c.disposition!);return support?{...historicalKin.find(x=>x.rulerId===support.rulerId)!,basis:support.basis}:undefined;})();
+  if(JSON.stringify(choice)!==JSON.stringify(r.target))throw Error('actual political target choice');
+  const identity={...country,name:country.factionId,identityStage:country.identityStage as 'STATE'|'PROVISIONAL',nameHistory:country.nameHistory as NonNullable<FactionTitleState['nameHistory']>,sovereigntyHistory:country.sovereigntyHistory as NonNullable<FactionTitleState['sovereigntyHistory']>,sovereigntyRank:country.sovereigntyRank as NonNullable<FactionTitleState['sovereigntyRank']>};
+  if(r.countryName!==getFactionDisplayNameAtMonth(identity,m)||r.countryLabel!==getRegimeStyleNameAtMonth(identity,m)||r.previousRulerTitle!==formatRulerTitleAtMonth(identity,king.houseName.replace(/氏$/,'')+king.givenName,m)||JSON.stringify(r.crisisFacts)!==JSON.stringify(crisis.map(f=>{const source=prior.find(e=>e.id===f.eventId);return {eventId:f.eventId,month:f.month,type:f.type,cityId:source?.cityId,cityName:source?.cityName,countryLabel:getRegimeStyleNameAtMonth(identity,f.month)};})))throw Error('frozen historical names or crisis sources');
   const oldVulnerability=r.stability<=40||r.cityCount<=2;
   if(JSON.stringify(r.depositionBlockers)!==JSON.stringify(oldVulnerability?[]:['NO_CURRENT_VULNERABILITY']))throw Error('original gate audit');
   if(!['LOW','MEDIUM','HIGH'].includes(r.successPolicy)||Math.abs(r.conditionalSuccessProbability-courtSuccessChance(c,r.stability,crisis.length,r.target,r.successPolicy))>1e-12||Math.abs(r.successProbability-r.attemptProbability*r.conditionalSuccessProbability)>1e-12)throw Error('independent conditional success');
@@ -48,5 +56,9 @@ export function validateCourtCoups(save:WorldSaveV1):string[]{
   bound.add(result.id);
  }catch(error){errors.push(`invalid court coup ${e.id}: ${String(error)}`);}
  for(const e of events)if(e.type==='court-coup-result'&&!bound.has(e.id))errors.push(`unbound court coup result ${e.id}`);
+ for(const e of events)if(e.type==='court-service-granted')try{
+  const meta=e.metadata!,attempt=events.find(x=>x.id===meta.courtCoupEventId),result=events.find(x=>x.id===meta.courtResultEventId),r=JSON.parse(String(attempt?.metadata?.courtCoup)) as CourtCoupRecord,p=save.registries.militaryCommandRegistry.people.find(p=>p.personId===meta.personId);
+  if(!attempt||!result||!p||r.outcome!=='SUCCESS'||r.participant.personId!==p.personId||r.targetRulerId===p.royalIdentity?.rulerId||e.id!==`${attempt.id}-service`||e.rulerId!==r.targetRulerId||meta.issuerRulerId!==r.targetRulerId||meta.sourceUserId!==p.sourceUserId||meta.bornMonth!==p.bornMonth||result.id!==r.outcomeEventId||at(e)!==r.month||e.actorFactionId!==r.factionId||events.indexOf(e)<=events.indexOf(result)||typeof meta.loyaltyBefore!=='number'||meta.loyaltyBefore!==r.participant.disposition?.loyalty||meta.loyaltyAfter!==Math.min(100,meta.loyaltyBefore+8)||events.filter(x=>x.type==='court-service-granted'&&x.metadata?.courtCoupEventId===attempt.id).length!==1)throw Error('invalid sourced supporter reward');
+ }catch(error){errors.push(`invalid court service ${e.id}: ${String(error)}`);}
  return errors;
 }

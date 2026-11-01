@@ -1,3 +1,6 @@
+import {readCourtCoup} from '../../../History/CourtCoupReading';
+import {useDispatch} from 'react-redux';
+import {setPersonArchiveRequest,setSelectedFactionName,setFactionDetailTab,setRightPanelTab} from '../../../store/rootSlice';
 import {militarySecessionDetails} from "../../../History/FoundingIdentityNarrative";
 import PoliticalCrisisDetails from "../PoliticalCrisisDetails";
 import {formatWorldDate} from '../../../Simulation/WorldTime';
@@ -88,6 +91,7 @@ export function EventDetails({
   }
   return (
     <>
+      <CourtPeople event={event}/>
       <OriginalHistorySources event={event}/>
       <PoliticalCrisisDetails event={event}/>
       {getRevolutionEventDetails(event).length>0&&<details onClick={e=>e.stopPropagation()} style={{fontSize:'.75rem',overflowWrap:'anywhere'}}><summary>史料依据（易姓）</summary>{getRevolutionEventDetails(event).map((line,i)=><Typography key={i} fontSize=".75rem">{line}</Typography>)}</details>}
@@ -224,4 +228,13 @@ function OriginalHistorySources({event}:{event:WorldEvent}){
  const [open,setOpen]=useState(false),ids=typeof event.metadata?.sourceEventIds==='string'?event.metadata.sourceEventIds.split(','):[];
  if(ids.length<2)return null;
  return <details onClick={e=>e.stopPropagation()} onToggle={e=>setOpen(e.currentTarget.open)} style={{fontSize:'.75rem',overflowWrap:'anywhere'}}><summary>原始史事（{ids.length}条）</summary>{open&&WorldHistory.getRecordedEvents().filter(e=>ids.includes(e.id)).map(e=><Typography key={e.id} fontSize='.75rem'>{formatWorldDate(e.monthIndex??e.year)} · {e.title} · 事件 {e.id}{typeof e.metadata?.personId==='string'?` · 人物 ${e.metadata.personId}`:''}{typeof e.metadata?.deathCause==='string'?` · 死亡原因 ${e.metadata.deathCause}`:''}</Typography>)}</details>;
+}
+
+function CourtPeople({event}:{event:WorldEvent}){
+ const r=readCourtCoup(event);return r?<CourtPeopleLinks r={r}/>:null;
+}
+function CourtPeopleLinks({r}:{r:NonNullable<ReturnType<typeof readCourtCoup>>}){
+ const dispatch=useDispatch();
+ const open=(kind:'MILITARY'|'GENEALOGY',id:string)=>{dispatch(setPersonArchiveRequest({kind,factionId:r.factionId,id}));dispatch(setSelectedFactionName(r.factionId));dispatch(setFactionDetailTab(kind==='MILITARY'?'military':'royal'));dispatch(setRightPanelTab('faction'));};
+ return <Box sx={{display:'flex',gap:1,fontSize:'.8rem'}}>{[{kind:'MILITARY' as const,id:r.participant.personId,label:r.participant.personalName??r.participant.name},{kind:'GENEALOGY' as const,id:r.previousRulerId,label:r.previousRulerTitle},{kind:'GENEALOGY' as const,id:r.targetRulerId,label:r.target.name}].map(p=><button key={p.id} type="button" onClick={e=>{e.stopPropagation();open(p.kind,p.id);}}>{p.label}</button>)}<details><summary>史料依据（宫廷）</summary>编组{r.participant.commandId}，实员{r.participant.unitCount}；忠诚{r.participant.disposition?.loyalty}，野心{r.participant.disposition?.ambition}；发起概率{(r.attemptProbability*100).toFixed(1)}%，发起后的成功概率{(r.conditionalSuccessProbability*100).toFixed(1)}%。<br/>{r.crisisEventIds.join('、')}</details></Box>;
 }

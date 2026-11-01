@@ -68,7 +68,7 @@ export type WorldEventType =
   | "alliance-expired"
   | "faction-merged"
   | "faction-submitted"
-  | "court-coup-attempt" | "court-coup-result" | "royal-honor-granted"
+  | "court-service-granted" | "court-coup-attempt" | "court-coup-result" | "royal-honor-granted"
   | "military-ennobled"
   | "military-posthumous"
   | "military-title-revoked"
@@ -637,7 +637,7 @@ export class WorldHistoryStore {
     historyGroupId?: string,
     commandId?: string,
     commanderPersonId?: string,
-    namesAtEvent?: {attacker:string;defender:string;battleId?:string;siegeEndedEventId?:string}
+    namesAtEvent?: {attacker:string;defender:string;attackerLabel?:string;defenderLabel?:string;battleId?:string;siegeEndedEventId?:string}
   ) {
     return this.addEvent({
       id: `city-captured-${year}-${attackerName}-${cityName}-${this.sequence++}`,
@@ -652,8 +652,9 @@ export class WorldHistoryStore {
         wasCapital,
         founderCapital,
         rulerName,
+        attackerLabel:namesAtEvent?.attackerLabel??namesAtEvent?.attacker,defenderLabel:namesAtEvent?.defenderLabel??namesAtEvent?.defender,
       }),
-      description: `${cityName}原由${previousOwnerName}控制。`,
+      description: `${cityName}原由${namesAtEvent?.defenderLabel??namesAtEvent?.defender??previousOwnerName}控制。`,
       factionIds: [attackerName, previousOwnerName],
       actorFactionId: attackerName,
       targetFactionId: previousOwnerName,
@@ -696,7 +697,7 @@ export class WorldHistoryStore {
     commandId?: string,
     commanderPersonId?: string,
     wasCapital?: boolean,
-    namesAtEvent?: {attacker:string;defender:string;battleId?:string;siegeEndedEventId?:string}
+    namesAtEvent?: {attacker:string;defender:string;attackerLabel?:string;defenderLabel?:string;battleId?:string;siegeEndedEventId?:string}
   ) {
     return this.addEvent({
       id: `city-recovered-${year}-${teamName}-${cityName}-${this.sequence++}`,
@@ -748,7 +749,7 @@ export class WorldHistoryStore {
     historyGroupId?: string,
     commandId?: string,
     commanderPersonId?: string,
-    namesAtEvent?: {attacker:string;defender:string;battleId?:string;siegeEndedEventId?:string}
+    namesAtEvent?: {attacker:string;defender:string;attackerLabel?:string;defenderLabel?:string;battleId?:string;siegeEndedEventId?:string}
   ) {
     return this.addEvent({
       id: `capital-fallen-${year}-${attackerName}-${defenderName}-${cityName}-${this.sequence++}`,
@@ -763,6 +764,7 @@ export class WorldHistoryStore {
         wasCapital,
         founderCapital: true,
         rulerName,
+        attackerLabel:namesAtEvent?.attackerLabel??namesAtEvent?.attacker,defenderLabel:namesAtEvent?.defenderLabel??namesAtEvent?.defender,
       }),
       factionIds: [attackerName, defenderName],
       actorFactionId: attackerName,
@@ -1669,7 +1671,7 @@ function buildCityCaptureTitle({
   cityName,
   wasCapital,
   founderCapital,
-  rulerName,
+  rulerName,attackerLabel,defenderLabel,
 }: {
   attackerName: string;
   previousOwnerName: string;
@@ -1677,17 +1679,17 @@ function buildCityCaptureTitle({
   cityName: string;
   wasCapital: boolean;
   founderCapital: boolean;
-  rulerName?: string;
+  rulerName?: string;attackerLabel?:string;defenderLabel?:string;
 }) {
+  const attacker=attackerLabel??attackerName,defender=defenderLabel??previousOwnerName;
+  const controlled=defenderLabel??`${previousOwnerName}国`,origin=founderCapital?`${founderFactionId}国故都`:`原属${founderFactionId}`;
   const prefix = rulerName ? `${rulerName}亲征，` : "";
   if (previousOwnerName === founderFactionId) {
-    return `${prefix}${attackerName}攻陷${founderFactionId}${
+    return `${prefix}${attacker}攻陷${defender}${
       wasCapital ? "都" : "城"
     }${cityName}`;
   }
-  return `${prefix}${attackerName}攻陷${previousOwnerName}国控制的${cityName}（${
-    founderCapital ? `${founderFactionId}国故都` : `原属${founderFactionId}`
-  }）`;
+  return `${prefix}${attacker}攻陷${controlled}控制的${cityName}（${origin}）`;
 }
 
 function isFullRulerTitle(value: string) {

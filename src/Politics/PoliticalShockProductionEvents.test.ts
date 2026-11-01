@@ -14,9 +14,9 @@ describe("production political shock event identities", () => {
   it("captures a real capital-loss event from City.capture with defender/attacker roles and city identity", () => {
     vi.stubGlobal("Phaser", { Math: { Clamp: (n: number, min: number, max: number) => Math.max(min, Math.min(max, n)) } });
     const reserve = { id: "reserve", name: "新都" };
-    const old: any = { name: "state", status: "ACTIVE", cities: [] as any[], removeCity(city: any) { this.cities = this.cities.filter((row: any) => row !== city); },
+    const old: any = { name: "state",displayName:"郸",nameHistory:[{name:"邯郸左义军",startMonth:0,endMonth:409},{name:"郸",startMonth:410}],identityStage:"STATE",stateFoundedMonth:410,sovereigntyRank:"KING",sovereigntyHistory:[{rank:"KING",startMonth:410}], status: "ACTIVE", cities: [] as any[], removeCity(city: any) { this.cities = this.cities.filter((row: any) => row !== city); },
       addCity(city: any) { this.cities.push(city); }, chooseCapitalCandidate: () => reserve, setCapitalCity() {} };
-    const attacker: any = { name: "enemy", status: "ACTIVE", cities: [], addCity(city: any) { this.cities.push(city); }, markActive() {} };
+    const attacker: any = { name: "enemy",displayName:"秦",nameHistory:[{name:"秦",startMonth:0}],identityStage:"STATE",stateFoundedMonth:0,sovereigntyRank:"KING",sovereigntyHistory:[{rank:"KING",startMonth:0}], status: "ACTIVE", cities: [], addCity(city: any) { this.cities.push(city); }, markActive() {} };
     const city: any = Object.assign(Object.create(City.prototype), { id: "capital-city", name: "故都", ownerFactionId: old.name,
       founderFactionId: old.name, isCapital: true, defense: 8, maxDefense: 10, devastation: 0, loyalty: 80, captureCount: 0,
       fortifiedCells: [], history: [{ year: 0, type: "capital-started", title: "建都" }], clearSiegeState() {},
@@ -27,6 +27,7 @@ describe("production political shock event identities", () => {
     const event = WorldHistory.getEvents().find(row => row.type === "capital-fallen");
     expect(event).toMatchObject({ targetFactionId: "state", previousOwnerFactionId: "state", actorFactionId: "enemy",
       cityId: "capital-city", cityName: "故都", metadata: { wasCapital: 1 } });
+    expect(event?.title).toContain("郸国");expect(event?.title).not.toContain("邯郸左义军");
     expect(derivePoliticalSuccessionShocks("state", { id: "old-ruler", accessionYear: 400 } as any, 600, [event!]))
       .toEqual([expect.objectContaining({ kind: "CAPITAL_LOSS", factionId: "state", month: 500, cityIds: ["capital-city"] })]);
   });

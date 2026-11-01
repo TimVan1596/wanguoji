@@ -19,7 +19,7 @@ function fixture() {
     clearCity(city: any) { if (this.city === city) { this.city = undefined; this.isCityCenter = false; this.isHome = false; } },
     claimForTeam(team: any) { this.team = team; }, updateCityDisplay: vi.fn(),
   })));
-  const owners = ["A", "B", "C"].map(name => ({ name, displayName: name, status: "ACTIVE", origin: {},
+  const owners = ["A", "B", "C"].map(name => ({ name, displayName: name,nameHistory:[{name,startMonth:0}],identityStage:"STATE",stateFoundedMonth:0,sovereigntyRank:"KING",sovereigntyHistory:[{rank:"KING",startMonth:0}], status: "ACTIVE", origin: {},
     users:new Set<any>(),cities: [] as any[], capitalCity: {} as any, markActive: vi.fn(), chooseCapitalCandidate: () => undefined,
     removeOneUser: vi.fn(),
     addCity(city: any) { this.cities.push(city); }, removeCity(city: any) { this.cities = this.cities.filter(c => c !== city); },
