@@ -1,3 +1,9 @@
+import React from 'react';
+import {createRoot} from 'react-dom/client';
+import {flushSync} from 'react-dom';
+import {Provider} from 'react-redux';
+import {store} from '../../store';
+import MeritRoll from '../../UI/Components/FactionDetails/MeritRoll';
 import Dynasty from '../../Politics/Dynasty';
 import Military from '../../Politics/MilitaryCommandRegistry';
 import History from '../../History/WorldHistory';
@@ -55,6 +61,7 @@ export function checkCourtFates(core:any,base:ReturnType<typeof exportWorldSave>
    const revocations=p.honorHistory?.filter(h=>h.reason==='COURT_COUP_FAILED')??[];
    check(revocations.length===(titled&&strong?1:0),`actual ${strong?'major':'limited'} command and ${titled?'verified peerage':'no peerage'} produce only the applicable formal punishment`);
    check(dy().rulers.find(r=>r.id===fixture.oldId)?.status==='ruling'&&dy().rulers.filter(r=>r.id!==fixture.oldId).every(r=>!r.deathMonth||r.deathMonth<252),'unilaterally named royal target is neither punished nor killed');
+   {const host=document.createElement('div'),root=createRoot(host),before=exportWorldSave(core);document.body.append(host);try{flushSync(()=>root.render(React.createElement(Provider,{store,children:React.createElement(MeritRoll,{factionId,month:252,onOpen:()=>{}})})));const card=host.querySelector(`[data-merit-person="${p.personId}"]`);check(card?.textContent?.includes('谋逆')&&(!revocations.length||card.textContent?.includes('追夺')),'actual React merit card retains real military achievements and clearly marks political disgrace and any formal forfeiture');check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,'political status rendering does not change canonical people, army, history or RNG');}finally{root.unmount();host.remove();}}
    const saved=read(),bad=structuredClone(saved);delete bad.registries.militaryCommandRegistry.people.find(x=>x.personId===p.personId)!.politicalHistory;check(!validateWorldSave(bad).valid,'strict save rejects a failed coup whose lasting sanction was erased');
    for(const field of ['victimRulerId','rulerId','epochFounderId','courtCoupEventId']){const corrupt=structuredClone(saved),person=corrupt.registries.militaryCommandRegistry.people.find(x=>x.personId===p.personId)!,a=person.politicalHistory![0] as any;a[field]='forged';const event=(corrupt.worldHistory.events as import('../../History/WorldHistory').WorldEvent[]).find(e=>e.id===a.eventId)!;event.metadata!.courtAct=JSON.stringify(a);check(!validateWorldSave(corrupt).valid,`court sanction rejects forged ${field} even if its stored JSON is rewritten`);}
    if(titled&&strong){const corrupt=structuredClone(saved),person=corrupt.registries.militaryCommandRegistry.people.find(x=>x.personId===p.personId)!;person.honorHistory=person.honorHistory?.filter(h=>h.reason!=='COURT_COUP_FAILED');corrupt.worldHistory.events=(corrupt.worldHistory.events as import('../../History/WorldHistory').WorldEvent[]).filter(e=>!(e.type==='military-title-revoked'&&e.metadata?.personId===p.personId));check(!validateWorldSave(corrupt).valid,'strict court save rejects erasing both the required revocation and its history');}

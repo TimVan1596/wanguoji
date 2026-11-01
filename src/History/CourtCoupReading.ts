@@ -8,8 +8,8 @@ export function courtCoupAttemptText(r:CourtCoupRecord){
  const who=`${cause?'':r.countryLabel}${MILITARY_OFFICE_NAMES[r.participant.officeStanding!.office]}${r.participant.personalName??r.participant.name}`;
  return `${cause}${who}谋废${r.previousRulerTitle}，欲拥立${kin[r.target.relation]??'宗室成员'}${r.target.name}。`;
 }
-export function courtCoupText(r:CourtCoupRecord){
- return `【${r.outcome==='SUCCESS'?'拥立得位':'拥立未遂'}】${courtCoupAttemptText(r)}${r.outcome==='SUCCESS'?`事成，${r.previousRulerTitle}被废，${r.target.name}承统。`:`事败，${r.participant.personalName??r.participant.name}被免军职，${r.previousRulerTitle}仍在位。`}`;
+export function courtCoupText(r:CourtCoupRecord,consequences:{banned?:boolean;forfeitedRank?:string}={}){
+ return `【${r.outcome==='SUCCESS'?'拥立得位':'拥立未遂'}】${courtCoupAttemptText(r)}${r.outcome==='SUCCESS'?`事成，${r.previousRulerTitle}被废，${r.target.name}承统。`:`事败，${r.participant.personalName??r.participant.name}被免军职${consequences.forfeitedRank?`、追夺${consequences.forfeitedRank}`:''}${consequences.banned?'，并禁仕':''}，${r.previousRulerTitle}仍在位。`}`;
 }
 /** Exact transaction graph; no same-month/name grouping, no canonical event deletion. */
 export function mergeCourtCoupReading(events:readonly WorldEvent[]){
@@ -31,7 +31,7 @@ export function mergeCourtCoupReading(events:readonly WorldEvent[]){
   const forfeiture=revocation?(()=>{try{return ({BO:'伯爵',HOU:'侯爵',GONG:'公爵'} as Record<string,string>)[JSON.parse(String(revocation.metadata?.honor)).rank];}catch{return;}})():undefined;
   const reward=children.get(e.id)?.find(x=>x.type==='court-reward-granted'&&x.actorFactionId===e.actorFactionId&&x.metadata?.personId===r.participant.personId&&at(x)===at(e)&&x.rulerId===r.targetRulerId),noble=reward&&byId.get(String(reward.metadata?.nobleGrantEventId));
   for(const extra of [reward,noble])if(extra){sources.push(extra);hidden.add(extra.id);}
-  const text=courtCoupText(r)+(ban?`${r.participant.personalName??r.participant.name}被禁仕${forfeiture?`，${forfeiture}亦遭追夺`:''}。`:'')+(service?'新君录其为拥立功臣。':'')+(reward?reward.title:'');replaced.set(e.id,{...e,title:text,description:text,metadata:{...e.metadata,courtReadingKind:'COURT_COUP',...(service?{courtServiceEventId:service.id}:{}),sourceEventIds:sources.map(x=>x.id).join(',')}});
+  const text=courtCoupText(r,{banned:!!ban,forfeitedRank:forfeiture})+(service?'新君录其为拥立功臣。':'')+(reward?reward.title:'');replaced.set(e.id,{...e,title:text,description:text,metadata:{...e.metadata,courtReadingKind:'COURT_COUP',...(revocation?{courtRevocationEventId:revocation.id}:{}),...(service?{courtServiceEventId:service.id}:{}),sourceEventIds:sources.map(x=>x.id).join(',')}});
  }
  const output:WorldEvent[]=[];for(const e of events)if(!hidden.has(e.id))output.push(replaced.get(e.id)??e);return output;
 }

@@ -15,7 +15,7 @@ const TYPES: Record<Exclude<MajorEventFilter, "all">, readonly WorldEvent["type"
 };
 /** Presentation over existing narrative anchors, not a second significance rule. */
 export function matchesMajorEventFilter(event: WorldEvent, filter: MajorEventFilter = "all") {
-  return filter === "all" || filter==='honors'&&event.metadata?.courtReadingKind==='COURT_COUP'&&typeof event.metadata?.courtServiceEventId==='string' || TYPES[filter].includes(event.type) || filter==='honors'&&event.type==='military-person-died'&&event.metadata?.historyNarrativeKind==='MILITARY_LIFE';
+  return filter === "all" || filter==='honors'&&event.metadata?.courtReadingKind==='COURT_COUP'&&(typeof event.metadata?.courtServiceEventId==='string'||typeof event.metadata?.courtRevocationEventId==='string') || TYPES[filter].includes(event.type) || filter==='honors'&&event.type==='military-person-died'&&event.metadata?.historyNarrativeKind==='MILITARY_LIFE';
 }
 export const DIPLOMACY_EVENT_TYPES: readonly WorldEvent["type"][] = [
   "truce-signed", "non-aggression-signed", "alliance-signed", "treaty-expired", "alliance-expired", "relation-renewed",

@@ -1,3 +1,4 @@
+import {deriveMilitaryLifeSchedule} from './MilitaryLifeRules';
 import type {MilitaryPerson} from './MilitaryCommandRegistry';
 import type {Dynasty} from './Dynasty';
 import type {CourtCoupRecord} from './CourtCoup';
@@ -25,7 +26,7 @@ export function planCourtBan(p:MilitaryPerson,team:any,dy:Dynasty,attempt:WorldE
 /** A stable new sovereign may pardon the real officer who once sought to enthrone him.
  * The victim must have truly lost political office or died; the named claimant is not deemed complicit. */
 export function planCourtPardon(p:MilitaryPerson,team:any,dy:Dynasty,month:number,events:readonly WorldEvent[],stability:number):MilitaryCourtAct|undefined{
- const a=honorAuthority(team,dy,month),king=dy.rulers.find(r=>r.id===dy.currentRulerId);if(!Number.isFinite(stability)||stability<55||stability>100||!a||!king||month%12!==0||month-(king.accessionYear??month)<12||p.status!=='RETIRED'||p.deathMonth!==undefined||p.politicalRulerId||p.factionId!==team.name)return;
+ const a=honorAuthority(team,dy,month),king=dy.rulers.find(r=>r.id===dy.currentRulerId);if(month>=deriveMilitaryLifeSchedule(p).naturalDeathMonth||!Number.isFinite(stability)||stability<55||stability>100||!a||!king||month%12!==0||month-(king.accessionYear??month)<12||p.status!=='RETIRED'||p.deathMonth!==undefined||p.politicalRulerId||p.factionId!==team.name)return;
  for(const ban of unresolvedCourtBans(p,team.name,month,a.epochFounderId)){
   const victim=dy.rulers.find(r=>r.id===ban.victimRulerId),attempt=events.find(e=>e.id===ban.courtCoupEventId);let record:CourtCoupRecord;try{record=JSON.parse(String(attempt?.metadata?.courtCoup));}catch{continue;}
   const death=events.find(e=>['ruler-died','heir-died','military-person-died'].includes(e.type)&&at(e)<=month&&(e.type==='military-person-died'?e.metadata?.personId===victim?.militaryIdentity?.personId:e.type==='heir-died'?e.metadata?.heirId===victim?.id:e.rulerId===victim?.id||e.metadata?.rulerId===victim?.id));

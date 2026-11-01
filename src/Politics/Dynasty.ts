@@ -189,7 +189,7 @@ class DynastyRegistryStore {
     this.revolutionChecks = [];
     this.revolutionGateDiagnostics.reset();
     this.depositionDiagnostics.reset();
-    this.courtInstigatorChecks=0;this.courtFunnel.reset();this.courtAttemptPolicy="MEDIUM";this.courtSuccessPolicy="MEDIUM";
+    this.courtInstigatorChecks=0;this.courtPardonFailures=0;this.courtFunnel.reset();this.courtAttemptPolicy="MEDIUM";this.courtSuccessPolicy="MEDIUM";
     this.depositionRiskGroup = "CONSERVATIVE";
     this.provisionalDiagnosticsSession.reset([]);
   }
@@ -232,7 +232,7 @@ class DynastyRegistryStore {
     this.revolutionChecks = [];
     this.revolutionGateDiagnostics.reset(diagnosticsStartMonth);
     this.depositionDiagnostics.reset(diagnosticsStartMonth);
-    this.courtInstigatorChecks=0;this.courtFunnel.reset();
+    this.courtInstigatorChecks=0;this.courtPardonFailures=0;this.courtFunnel.reset();
     this.provisionalDiagnosticsSession.reset(this.listForDiagnostics());
   }
 
@@ -917,12 +917,12 @@ class DynastyRegistryStore {
 
   getCourtCoupDiagnostics(){
     const all=WorldHistory.getRecordedEvents(),sanctions=all.filter(e=>e.type==='military-court-sanction');
-    const bans=sanctions.filter(e=>{try{return JSON.parse(String(e.metadata?.courtAct)).kind==='COURT_BAN';}catch{return false;}}).length,pardons=sanctions.length-bans,revocations=all.filter(e=>{try{return e.type==='military-title-revoked'&&JSON.parse(String(e.metadata?.honor)).reason==='COURT_COUP_FAILED';}catch{return false;}}).length,peerageRewards=all.filter(e=>e.type==='court-reward-granted').length;
+    const bans=sanctions.filter(e=>{try{return JSON.parse(String(e.metadata?.courtAct)).kind==='COURT_BAN';}catch{return false;}}).length,pardons=sanctions.filter(e=>{try{return JSON.parse(String(e.metadata?.courtAct)).kind==='COURT_PARDONED';}catch{return false;}}).length,revocations=all.filter(e=>{try{return e.type==='military-title-revoked'&&JSON.parse(String(e.metadata?.honor)).reason==='COURT_COUP_FAILED';}catch{return false;}}).length,peerageRewards=all.filter(e=>e.type==='court-reward-granted').length;
     const acts=all.filter(e=>e.type==='court-coup-attempt');
     const results=WorldHistory.getRecordedEvents().filter(e=>e.type==='court-coup-result');
     const successes=results.filter(e=>e.metadata?.outcome==='SUCCESS').length;
-    return {funnel:this.courtFunnel.snapshot(),qualificationScope:'SESSION_SINCE_LOAD',eventScope:'RECORDED_WORLD_HISTORY',qualifiedInstigatorOpportunities:this.courtInstigatorChecks,attempts:acts.length,successes,failures:results.length-successes,balanced:acts.length===results.length,dismissals:results.filter(e=>e.metadata?.outcome==='FAILED').length,bans,pardons,revocations,peerageRewards,executions:0,courtServiceAwards:WorldHistory.getRecordedEvents().filter(e=>e.type==='court-service-granted').length,
-      summary:`本次会话：年度国家检查${this.courtFunnel.annual}次，真实危机${this.courtFunnel.crisis}次，合格发起机会 ${this.courtInstigatorChecks}次。存档历史累计：宫廷拥立企图 ${acts.length}次；成功 ${successes}次，失败 ${results.length-successes}次。本次会话共享抽签${this.courtFunnel.draws}次，未发起${this.courtFunnel.noAttempt}次，已提交企图${this.courtFunnel.attempts}次（成功${this.courtFunnel.successes}、失败${this.courtFunnel.failures}）。执行失败并回滚${this.courtFunnel.transactionFailures}次。存档累计禁仕${bans}次、追夺${revocations}次、赦免${pardons}次、从龙爵赏${peerageRewards}次；处决未发布。拥立者不等于继位者。`};
+    return {funnel:this.courtFunnel.snapshot(),qualificationScope:'SESSION_SINCE_LOAD',eventScope:'RECORDED_WORLD_HISTORY',qualifiedInstigatorOpportunities:this.courtInstigatorChecks,attempts:acts.length,successes,failures:results.length-successes,balanced:acts.length===results.length,dismissals:results.filter(e=>e.metadata?.outcome==='FAILED').length,bans,pardons,revocations,peerageRewards,pardonTransactionFailures:this.courtPardonFailures,executions:0,courtServiceAwards:WorldHistory.getRecordedEvents().filter(e=>e.type==='court-service-granted').length,
+      summary:`本次会话：年度国家检查${this.courtFunnel.annual}次，真实危机${this.courtFunnel.crisis}次，合格发起机会 ${this.courtInstigatorChecks}次。存档历史累计：宫廷拥立企图 ${acts.length}次；成功 ${successes}次，失败 ${results.length-successes}次。本次会话共享抽签${this.courtFunnel.draws}次，未发起${this.courtFunnel.noAttempt}次，已提交企图${this.courtFunnel.attempts}次（成功${this.courtFunnel.successes}、失败${this.courtFunnel.failures}）。执行失败并回滚${this.courtFunnel.transactionFailures}次。存档累计禁仕${bans}次、追夺${revocations}次、赦免${pardons}次、从龙爵赏${peerageRewards}次；本次会话赦免事务回滚${this.courtPardonFailures}次。处决未发布。拥立者不等于继位者。`};
   }
 
   getInReignDepositionDiagnostics(worldMonth: number) {
@@ -936,6 +936,7 @@ class DynastyRegistryStore {
 
   private courtFunnel=new CourtPoliticsFunnel();
   private courtInstigatorChecks=0;
+  private courtPardonFailures=0;
   private courtAttemptPolicy:CourtAttemptPolicy='MEDIUM';
   setCourtAttemptPolicyForSimulation(policy:CourtAttemptPolicy){this.courtAttemptPolicy=policy;}
 
@@ -1026,7 +1027,7 @@ class DynastyRegistryStore {
     for(const person of MilitaryCommandRegistry.getPeople().filter(p=>p.factionId===team.name&&p.politicalHistory?.length).sort((a,b)=>a.personId.localeCompare(b.personId))){
       const act=planCourtPardon(person,team,dy,month,WorldHistory.getEventsForFaction(team.name),getFactionStability(team)??100);if(!act)continue;
       const user=team.getUserById(person.sourceUserId);if(!user?.matchesMilitaryLife(person)||user.isDestroyed||user.role!=='NORMAL'||user.rulerId||user.team!==team)continue;
-      try{successionTransaction(team,this,()=>MilitaryCommandRegistry.recordCourtAct(person,act));}catch(error){console.warn('[CourtPardon] rolled back',error);}break;
+      try{successionTransaction(team,this,()=>MilitaryCommandRegistry.recordCourtAct(person,act));}catch(error){this.courtPardonFailures++;console.warn('[CourtPardon] rolled back',error);}break;
     }
   }
 
