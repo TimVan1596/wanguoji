@@ -152,26 +152,29 @@ export class InReignDepositionDiagnostics {
   private empty() {
     return { observedChecks: 0, activePolities: 0, existingAdultKinCandidates: 0, qualifiedChecks: 0,
       royalCommandCrises:0,royalCommandCandidateChecks:0,royalWeightedSelections:0,royalChangedSelections:0,
-      drawAttempts: 0, failures: 0, successes: 0, cooldownBlocked: 0, expectedSuccesses: 0 };
+      drawAttempts: 0, failures: 0, successes: 0, executionFailures:0,sharedCourtOpportunities:0,cooldownBlocked: 0, expectedSuccesses: 0 };
   }
   reset(worldMonth = 0) { this.sessionStartMonth = worldMonth; this.totals = this.empty(); this.recent.length = 0; this.military.reset(); }
-  observe(factionId: string, worldMonth: number, evaluation: DepositionEvaluation, active: boolean, outcome?: "SUCCESS" | "FAILURE" | "COOLDOWN") {
+  observe(factionId: string, worldMonth: number, evaluation: DepositionEvaluation, active: boolean, outcome?: "SUCCESS" | "FAILURE" | "COOLDOWN" | "EXECUTION_FAILURE", source:"ORDINARY"|"COURT"="ORDINARY") {
+    const drew=source==="ORDINARY"&&evaluation.eligible&&["SUCCESS","FAILURE","EXECUTION_FAILURE"].includes(outcome??"");
     this.military.observe(evaluation.military, evaluation.evidence.length > 0, evaluation.eligible ? evaluation.baselineProbability ?? evaluation.probability : 0,
-      evaluation.eligible ? evaluation.probability : 0, evaluation.eligible, outcome === "SUCCESS");
+      evaluation.eligible ? evaluation.probability : 0, drew, drew&&outcome === "SUCCESS");
     this.totals.observedChecks++;
     if (active) this.totals.activePolities++;
     this.totals.existingAdultKinCandidates += evaluation.candidates.length;
     if (evaluation.blockers.includes("COOLDOWN")) this.totals.cooldownBlocked++;
     if (evaluation.eligible) this.totals.qualifiedChecks++;
     if(evaluation.eligible&&evaluation.royalMilitaryClaims?.length){this.totals.royalCommandCrises++;this.totals.royalCommandCandidateChecks+=evaluation.royalMilitaryClaims.length;}
-    if(outcome==="SUCCESS"&&evaluation.selection){
+    if(drew&&outcome==="SUCCESS"&&evaluation.selection){
       if(evaluation.selection.candidates.some(c=>c.ownMilitary))this.totals.royalWeightedSelections++;
       const original=chooseDepositionClaimant({...evaluation,royalMilitaryClaims:[]},worldMonth,evaluation.selection.roll);
       if(original?.claimant.ruler.id!==evaluation.selection.selectedRulerId)this.totals.royalChangedSelections++;
     }
-    if (outcome === "SUCCESS") this.totals.successes++;
-    if (outcome === "FAILURE") this.totals.failures++;
-    if (evaluation.eligible) {
+    if(source==="COURT"&&evaluation.eligible)this.totals.sharedCourtOpportunities++;
+    if (drew&&outcome === "SUCCESS") this.totals.successes++;
+    if (drew&&outcome === "FAILURE") this.totals.failures++;
+    if (drew&&outcome === "EXECUTION_FAILURE") this.totals.executionFailures++;
+    if (drew) {
       this.totals.drawAttempts++;
       this.totals.expectedSuccesses += evaluation.probability;
     }
@@ -182,10 +185,10 @@ export class InReignDepositionDiagnostics {
   snapshot(worldMonth: number) {
     const elapsedYears = Math.max(0, worldMonth - this.sessionStartMonth) / 12;
     const per100Years = (n: number) => elapsedYears > 0 ? n * 100 / elapsedYears : null;
-    return { ...this.totals, elapsedYears, military: this.military.snapshot(), expectedSuccessesPer100Years: per100Years(this.totals.expectedSuccesses),
+    return { ...this.totals,balanced:this.totals.drawAttempts===this.totals.successes+this.totals.failures+this.totals.executionFailures,scope:"SESSION_SINCE_LOAD", elapsedYears, military: this.military.snapshot(), expectedSuccessesPer100Years: per100Years(this.totals.expectedSuccesses),
       actualSuccessesPer100Years: per100Years(this.totals.successes), recent: this.recent.map(row => ({ ...row,
         blockers: [...row.blockers], candidateIds: [...row.candidateIds], evidenceIds: [...row.evidenceIds] })),
-      chineseSummary: `宗室废立诊断（本次观察）\n实际观察：${elapsedYears.toFixed(2)}年\n已观察在国正式政权：${this.totals.activePolities}次\n现存成年宗室候选：${this.totals.existingAdultKinCandidates}人次\n完整资格通过：${this.totals.qualifiedChecks}次\n实际抽签：${this.totals.drawAttempts}次\n抽签失败：${this.totals.failures}次\n实际废立：${this.totals.successes}次\n冷却阻断：${this.totals.cooldownBlocked}次\n条件期望废立：${this.totals.expectedSuccesses.toFixed(3)}次` };
+      chineseSummary: `宗室废立诊断（本次观察）\n实际观察：${elapsedYears.toFixed(2)}年\n已观察在国正式政权：${this.totals.activePolities}次\n现存成年宗室候选：${this.totals.existingAdultKinCandidates}人次\n完整资格通过：${this.totals.qualifiedChecks}次\n独立正式废立抽签：${this.totals.drawAttempts}次\n未命中：${this.totals.failures}\n执行失败并回滚：${this.totals.executionFailures}\n转交共享宫廷企图：${this.totals.sharedCourtOpportunities}次\n实际废立：${this.totals.successes}次\n冷却阻断：${this.totals.cooldownBlocked}次\n条件期望废立：${this.totals.expectedSuccesses.toFixed(3)}次` };
   }
 }
 

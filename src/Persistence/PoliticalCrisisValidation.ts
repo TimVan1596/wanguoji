@@ -20,7 +20,10 @@ export function validatePoliticalCrises(save:WorldSaveV1):string[]{
    let ids:string[];
    if(s.kind==='DEPOSITION'){
     ids=getRecentDepositionEvidence(s.factionId,before,s.worldMonth).map(e=>e.eventId);
-    if(!ids.length||ids.join(',')!==m.crisisEvidenceEventIds||!(s.stability<=40||s.cityCount<=2)||s.worldMonth%12!==0||s.worldMonth-next.bornYear<192)throw Error('deposition sources');
+    const court=typeof m.courtCoupEventId==='string'?before.find(x=>x.id===m.courtCoupEventId&&x.type==='court-coup-attempt'):undefined;
+    if(m.courtCoupEventId&&!court)throw Error('missing court source');
+    if(court){const record=JSON.parse(String(court.metadata?.courtCoup));if(record.version!==3||record.outcome!=='SUCCESS'||record.previousRulerId!==previous.id||record.targetRulerId!==next.id||record.stability!==s.stability||record.cityCount!==s.cityCount)throw Error('court handoff evidence');}
+    if(!ids.length||ids.join(',')!==m.crisisEvidenceEventIds||!court&&!(s.stability<=40||s.cityCount<=2)||s.worldMonth%12!==0||s.worldMonth-next.bornYear<192)throw Error('deposition sources');
    }else{
     const displaced=rulers.find(r=>r.id===m.displacedSuccessorId),shocks=derivePoliticalSuccessionShocks(s.factionId,previous,s.worldMonth,before);
     if(!displaced||!['natural','combat','captured'].includes(String(m.successionReason))||s.countryName!==m.oldStateName)throw Error('succession boundary');

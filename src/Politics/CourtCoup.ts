@@ -1,3 +1,4 @@
+import {courtSuccessChance,type CourtTarget,type CourtSuccessPolicy} from './CourtCoupOutcome';
 import type {DepositionEvaluation} from './InReignDeposition';
 import type {MilitaryPoliticalEvidence,MilitaryPoliticalParticipant} from './MilitaryPoliticalInfluence';
 import type {MilitaryPerson} from './MilitaryCommandRegistry';
@@ -20,12 +21,13 @@ export function selectCourtInstigator(e:DepositionEvaluation,people:readonly Mil
  .sort((a,b)=>(b.politicalSelectionWeight??b.strength)-(a.politicalSelectionWeight??a.strength)||a.personId.localeCompare(b.personId))[0];
 }
 export interface CourtCoupRecord {
- version:2;successEligible:boolean;depositionBlockers:string[];factionId:string;month:number;previousRulerId:string;targetRulerId:string;
+ version:3;target:CourtTarget;successPolicy:CourtSuccessPolicy;conditionalSuccessProbability:number;countryName:string;countryLabel:string;previousRulerTitle:string;previousRulerBornMonth:number;crisisFacts:Array<{eventId:string;month:number;type:string;cityId?:string;cityName?:string;countryLabel:string}>;successEligible:boolean;depositionBlockers:string[];factionId:string;month:number;previousRulerId:string;targetRulerId:string;
  members:Array<{unitId:string;userId:number;bornMonth:number;factionId:string}>;participant:MilitaryPoliticalParticipant;successPressure?:MilitaryPoliticalParticipant;crisisEventIds:string[];stability:number;cityCount:number;
  policy:CourtAttemptPolicy;attemptProbability:number;successProbability:number;roll:number;
  outcome:'SUCCESS'|'FAILED';outcomeEventId:string;consequence:'DEPOSITION'|'DISMISSED';
 }
-export function courtAttemptOutcome(e:DepositionEvaluation,actor:MilitaryPoliticalParticipant|undefined,roll:number,policy:CourtAttemptPolicy='MEDIUM'){
- if(!courtAttemptEligible(e)||!actor||!Number.isFinite(roll)||roll<0||roll>=courtAttemptChance(actor,policy))return;
- return e.eligible&&roll<e.probability?'SUCCESS' as const:'FAILED' as const;
+
+export function courtAttemptOutcome(e:DepositionEvaluation,c:MilitaryPoliticalParticipant,roll:number,stability:number,target:CourtTarget,policy:CourtAttemptPolicy='MEDIUM',successPolicy:CourtSuccessPolicy='MEDIUM'){
+ const a=courtAttemptChance(c,policy);if(!courtAttemptEligible(e)||!Number.isFinite(roll)||roll<0||roll>=a)return;
+ return roll/a<courtSuccessChance(c,stability,e.evidence.length,target,successPolicy)?'SUCCESS' as const:'FAILED' as const;
 }

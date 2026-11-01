@@ -1,3 +1,4 @@
+import {mergeCourtCoupReading} from '../History/CourtCoupReading';
 import {militaryNarrativeLinks} from "./MilitaryNarrativeLinks";
 import {formatFoundingIdentity} from "../History/FoundingIdentityNarrative";
 import {militaryLifePairs,militaryDeathWording} from './MilitaryLifePresentation';
@@ -12,11 +13,13 @@ import {MILITARY_OFFICE_NAMES} from "./MilitaryOffice";
 
 /** Only changes the reading view. Full entries and canonical events remain available for audit and promotion. */
 export function militaryMilestones(person:MilitaryPerson,entries:MilitaryChronicleEntry[],events:WorldEvent[],context:MilitaryHistoryContext={}){
+  const projected=mergeCourtCoupReading(events),shown=new Map(projected.map(e=>[e.id,e]));
+  entries=entries.filter(e=>!events.some(raw=>raw.id===e.eventId&&['court-coup-attempt','court-coup-result'].includes(raw.type))||shown.has(e.eventId)).map(e=>{const raw=shown.get(e.eventId);return raw?.metadata?.courtReadingKind==='COURT_COUP'?{...e,text:raw.title,sourceEventIds:String(raw.metadata.sourceEventIds).split(',')}:e;});
   const byId=new Map(events.map(e=>[e.id,e])),name=getMilitaryPersonDisplayName(person);
   const available=new Set(entries.map(e=>e.eventId)),pairs=militaryLifePairs(events).filter(p=>available.has(p.anchor.id)&&available.has(p.other.id)),merged=new Map(pairs.map(p=>[p.anchor.id,p])),hidden=new Set(pairs.map(p=>p.other.id));
   const links=militaryNarrativeLinks(person,events);
   return entries.filter(e=>!hidden.has(e.eventId)&&!links.hidden.has(e.eventId)).flatMap(original=>{
-    const entry={...original,sourceEventIds:[original.eventId,...(links.sources.get(original.eventId)??[])]};
+    const entry={...original,sourceEventIds:[...new Set([...(original.sourceEventIds??[original.eventId]),...(links.sources.get(original.eventId)??[])])]};
     const type=entry.source.split(" · ")[0],event=byId.get(entry.eventId);
     if(type==="military-order-issued"&&event?.importance!=="major")return [];
     if(type==="military-order-issued")return [{...entry,text:`${name}奉命以${event?.cityName??"城邑"}为进军目标。`}];

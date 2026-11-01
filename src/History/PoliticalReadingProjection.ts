@@ -1,3 +1,4 @@
+import {mergeCourtCoupReading} from './CourtCoupReading';
 import type {WorldEvent} from './WorldHistory';
 const month=(e:WorldEvent)=>e.monthIndex??e.year;
 const faction=(e:WorldEvent)=>e.targetFactionId??e.actorFactionId;
@@ -16,7 +17,8 @@ export function isFinalEndPair(d:WorldEvent,e:WorldEvent,events:readonly WorldEv
  return di>=0&&(ei>di||canonicalOrder)&&d.metadata?.isFinalCityCapture===1&&typeof d.metadata.cityId==='string'&&!e.historyGroupId&&!e.metadata&&events.filter(x=>x.type==='faction-dissolved'&&faction(x)===faction(d)&&month(x)===month(d)).length===1&&!events.some(x=>month(x)===month(d)&&['faction-exiled','faction-restored','dynasty-restored'].includes(x.type)&&(x.actorFactionId===faction(d)||x.targetFactionId===faction(d)));
 }
 /** UI-only companion projection. All original IDs remain in the source references. */
-export function mergePoliticalReading(events:readonly WorldEvent[]){
+export function mergePoliticalReading(input:readonly WorldEvent[]){
+ const events=mergeCourtCoupReading(input);
  const hidden=new Set<string>(),replacements=new Map<string,WorldEvent>(),foundings:WorldEvent[]=[],dissolutions:WorldEvent[]=[],buckets=new Map<string,WorldEvent[]>();
  for(const e of events){
   if(foundingTypes.has(e.type))foundings.push(e);if(e.type==='faction-dissolved')dissolutions.push(e);

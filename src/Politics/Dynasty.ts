@@ -1,8 +1,11 @@
+import {chooseCourtTarget,courtSuccessChance,type CourtSuccessPolicy} from './CourtCoupOutcome';
+import {courtAttemptOutcome} from './CourtCoup';
+import {getRegimeStyleNameAtMonth} from '../Simulation/RegimeStyle';
 import {CourtPoliticsFunnel} from './CourtPoliticsFunnel';
 import {royalName} from './RoyalHonors';
 import {MILITARY_OFFICE_NAMES} from './MilitaryOffice';
 import {formatWorldDate} from '../Simulation/WorldTime';
-import {selectCourtInstigator,courtAttemptOutcome,courtAttemptEligible,courtAttemptChance,type CourtAttemptPolicy,type CourtCoupRecord} from './CourtCoup';
+import {selectCourtInstigator,courtAttemptEligible,courtAttemptChance,type CourtAttemptPolicy,type CourtCoupRecord} from './CourtCoup';
 import {planRoyalHonor,royalHonorText,royalHonorCandidateClaims,type RoyalHonor} from './RoyalHonors';
 import {beginPoliticalMutation} from '../Simulation/PoliticalMutationScope';
 import {validateMilitaryUsurpers} from "../Persistence/MilitaryUsurperValidation";
@@ -972,26 +975,27 @@ class DynastyRegistryStore {
     const claimant = selection?.claimant;
     if (selection) evaluation.selection = selection.evidence;
     if (!claimant || !this.commitDeposition(team, dynasty, current, claimant.ruler, claimant.relation, worldMonth, evaluation)) {
-      this.depositionDiagnostics.observe(team.name, worldMonth, evaluation, team.status === "ACTIVE" && team.identityStage === "STATE", "FAILURE");
+      this.depositionDiagnostics.observe(team.name, worldMonth, evaluation, team.status === "ACTIVE" && team.identityStage === "STATE", "EXECUTION_FAILURE");
       return;
     }
     this.depositionDiagnostics.observe(team.name, worldMonth, evaluation, team.status === "ACTIVE" && team.identityStage === "STATE", "SUCCESS");
   }
 
+  private courtSuccessPolicy:CourtSuccessPolicy='MEDIUM';
+  setCourtSuccessPolicyForSimulation(p:CourtSuccessPolicy){this.courtSuccessPolicy=p;}
   private evaluateCourtAttempt(team:Team,dynasty:Dynasty,current:Ruler,month:number,evaluation:DepositionEvaluation,actor:import('./MilitaryPoliticalInfluence').MilitaryPoliticalParticipant){
     try {successionTransaction(team,this,()=>{
       dynasty.lastDepositionAttemptMonth=month;
-      const roll=worldRandom.next(),outcome=courtAttemptOutcome(evaluation,actor,roll,this.courtAttemptPolicy);
+      const person=MilitaryCommandRegistry.getPerson(actor.personId)!,goal=chooseCourtTarget(evaluation,actor,person);if(!goal)throw Error('Missing legal court goal');
+      const stability=getFactionStability(team)??100,roll=worldRandom.next(),outcome=courtAttemptOutcome(evaluation,actor,roll,stability,goal,this.courtAttemptPolicy,this.courtSuccessPolicy);
       evaluation.militaryRoll=roll;
-      if(!outcome){this.depositionDiagnostics.observe(team.name,month,evaluation,true,'FAILURE');return;}
+      if(!outcome){politicalEffect(()=>{this.courtFunnel.recordDraw(undefined);this.depositionDiagnostics.observe(team.name,month,evaluation,true,undefined,'COURT');});return;}
       evaluation.royalHonorClaims=royalHonorCandidateClaims(dynasty,month,team.sovereigntyRank);
-      // Actual success keeps the original conditional selection and original successful roll.
-      const choice=chooseDepositionClaimant(outcome==='SUCCESS'?evaluation:{...evaluation,eligible:true},month,outcome==='SUCCESS'?roll:0);
-      if(!choice)throw Error('No legal coup target');
-      const target=choice.claimant.ruler,eventId=`court-coup-${team.name}-${month}`,outcomeEventId=`${eventId}-result`;
-      const record:CourtCoupRecord={version:2,successEligible:evaluation.eligible,depositionBlockers:[...evaluation.blockers],factionId:team.name,month,previousRulerId:current.id,targetRulerId:target.id,
+      const target=dynasty.rulers.find(r=>r.id===goal.rulerId)!;if(!target)throw Error('Missing existing court target');
+      const eventId=`court-coup-${team.name}-${month}`,outcomeEventId=`${eventId}-result`;
+      const record:CourtCoupRecord={version:3,target:goal,successPolicy:this.courtSuccessPolicy,conditionalSuccessProbability:courtSuccessChance(actor,stability,evaluation.evidence.length,goal,this.courtSuccessPolicy),countryName:team.displayName,countryLabel:getRegimeStyleNameAtMonth(team,month),previousRulerTitle:this.getRulerTitle(team,current,month),previousRulerBornMonth:current.bornYear,crisisFacts:evaluation.evidence.map(f=>{const source=WorldHistory.getEventsForFaction(team.name).find(s=>s.id===f.eventId);return {eventId:f.eventId,month:f.month,type:f.type,cityId:source?.cityId,cityName:source?.cityName,countryLabel:getRegimeStyleNameAtMonth(team,f.month)};}),successEligible:true,depositionBlockers:[...evaluation.blockers],factionId:team.name,month,previousRulerId:current.id,targetRulerId:target.id,
         members:actor.memberUnitIds.map(unitId=>{const u=[...team.users].find(u=>u.player.logicalUnitId===unitId);if(!u||u.isDestroyed||u.team!==team)throw Error('Invalid court command member');return {unitId,userId:u.id,bornMonth:u.bornMonth,factionId:team.name};}),participant:structuredClone(actor),...(evaluation.militaryParticipant?{successPressure:structuredClone(evaluation.militaryParticipant)}:{}),crisisEventIds:evaluation.evidence.map(e=>e.eventId),stability:getFactionStability(team)??100,cityCount:team.cities.length,
-        policy:this.courtAttemptPolicy,attemptProbability:courtAttemptChance(actor,this.courtAttemptPolicy),successProbability:evaluation.eligible?evaluation.probability:0,roll,
+        policy:this.courtAttemptPolicy,attemptProbability:courtAttemptChance(actor,this.courtAttemptPolicy),successProbability:courtAttemptChance(actor,this.courtAttemptPolicy)*courtSuccessChance(actor,stability,evaluation.evidence.length,goal,this.courtSuccessPolicy),roll,
         outcome,outcomeEventId,consequence:outcome==='SUCCESS'?'DEPOSITION':'DISMISSED'};
       const actorName=actor.personalName??actor.name,office=actor.officeStanding?.office;
       const who=`${team.displayName}${office?MILITARY_OFFICE_NAMES[office]:''}${actorName}`;
@@ -999,21 +1003,20 @@ class DynastyRegistryStore {
       WorldHistory.addEvent({id:eventId,year:month,type:'court-coup-attempt',category:'politics',importance:'major',actorFactionId:team.name,factionIds:[team.name],rulerId:current.id,
         title:`${facts}后，${who}谋废${royalName(current)}，欲拥立宗室${royalName(target)}。`,metadata:{courtCoup:JSON.stringify(record),personId:actor.personId,commandId:actor.commandId,targetRulerId:target.id,previousRulerId:current.id}});
       if(outcome==='SUCCESS'){
-        evaluation.selection=choice.evidence;
-        if(!this.commitDeposition(team,dynasty,current,target,choice.claimant.relation,month,evaluation))throw Error('Coup succession failed');
+        if(!this.commitCourtDeposition(team,dynasty,current,target,month,evaluation,record))throw Error('Coup succession failed');
       }else MilitaryCommandRegistry.endPersonCommands(actor.personId,month,'DISMISSED',eventId);
       const depositionEventId=outcome==='SUCCESS'?WorldHistory.getEventsForFaction(team.name).find(e=>e.type==='ruler-deposed'&&(e.monthIndex??e.year)===month&&e.metadata?.previousRulerId===current.id&&e.rulerId===target.id)?.id:undefined;
       if(outcome==='SUCCESS'&&!depositionEventId)throw Error('Missing actual deposition result');
       WorldHistory.addEvent({id:outcomeEventId,year:month,type:'court-coup-result',category:'politics',importance:'major',actorFactionId:team.name,factionIds:[team.name],rulerId:outcome==='SUCCESS'?target.id:current.id,
         title:outcome==='SUCCESS'?`${actorName}拥立${royalName(target)}事成，${royalName(current)}被废。`:`${actorName}拥立之谋败，军职被免；${royalName(current)}仍在位。`,metadata:{courtCoupEventId:eventId,...(depositionEventId?{depositionEventId}:{}),personId:actor.personId,commandId:actor.commandId,targetRulerId:target.id,outcome}});
-      politicalEffect(()=>this.depositionDiagnostics.observe(team.name,month,evaluation,true,outcome==='SUCCESS'?'SUCCESS':'FAILURE'));
+      politicalEffect(()=>{this.courtFunnel.recordDraw(outcome);this.depositionDiagnostics.observe(team.name,month,evaluation,true,undefined,'COURT');});
     });}catch(error){this.courtFunnel.transactionFailures++;console.warn('[CourtCoup] rolled back',error);}
   }
 
   private commitDeposition(team: Team, dynasty: Dynasty, predecessor: Ruler, successor: Ruler,
     relation: RecordedKinRelation,
     worldMonth: number, evaluation: DepositionEvaluation) {
-    if (team.status !== "ACTIVE" || team.cities.length === 0 || dynasty.currentRulerId !== predecessor.id ||
+    if (!evaluation.eligible || team.status !== "ACTIVE" || team.cities.length === 0 || dynasty.currentRulerId !== predecessor.id ||
       predecessor.status !== "ruling" || hasRecordedRulerDeath(predecessor) ||
       successor.status !== "heir" && successor.status !== "kin" || successor.reignOrdinal !== undefined ||
       successor.houseName !== dynasty.houseName || !dynasty.rulers.includes(successor) ||
@@ -1026,6 +1029,20 @@ class DynastyRegistryStore {
       const expected=chooseDepositionClaimant(verified,worldMonth,evaluation.selection.roll);
       if(!expected||expected.claimant.ruler.id!==successor.id||JSON.stringify(expected.evidence)!==JSON.stringify(evaluation.selection))return false;
     }
+    return this.commitRoyalHandoff(team,dynasty,predecessor,successor,relation,worldMonth,evaluation);
+  }
+
+  private commitCourtDeposition(team:Team,dy:Dynasty,previous:Ruler,next:Ruler,month:number,e:DepositionEvaluation,record:CourtCoupRecord){
+    if(record.version!==3||record.outcome!=='SUCCESS'||record.previousRulerId!==previous.id||record.targetRulerId!==next.id||dy.currentRulerId!==previous.id||previous.status!=='ruling'||hasRecordedRulerDeath(previous)||!courtAttemptEligible(e)||!e.candidates.some(c=>c.ruler===next))return false;
+    const currentArmy=MilitaryCommandRegistry.getCourtAttemptInfluence(team,month,Game.Core?.logicalUnitRegistry),actor=currentArmy.candidates.find(c=>JSON.stringify(c)===JSON.stringify(record.participant)),person=MilitaryCommandRegistry.getPerson(record.participant.personId);
+    const target=actor&&person?chooseCourtTarget(e,actor,person):undefined;
+    if(!actor||!target||JSON.stringify(target)!==JSON.stringify(record.target)||courtAttemptOutcome(e,actor,record.roll,record.stability,target,record.policy,record.successPolicy)!=='SUCCESS')return false;
+    const relation=getRecordedKinRelation(next,previous,dy.rulers);if(!relation)return false;
+    return this.commitRoyalHandoff(team,dy,previous,next,relation,month,e,record);
+  }
+
+  /** Both source-specific validators enter here; this method creates no claimants or crisis facts. */
+  private commitRoyalHandoff(team:Team,dynasty:Dynasty,predecessor:Ruler,successor:Ruler,relation:RecordedKinRelation,worldMonth:number,evaluation:DepositionEvaluation,court?:CourtCoupRecord){
     const previousState = {
       predecessor: structuredClone(predecessor), successor: structuredClone(successor), currentRulerId: dynasty.currentRulerId,
       heirIds: [...dynasty.heirIds], designatedHeirId: dynasty.designatedHeirId,
@@ -1101,8 +1118,8 @@ class DynastyRegistryStore {
       this.refreshDesignatedHeir(dynasty, successor, worldMonth, () => 0);
 
     const eventId = WorldHistory.addRulerDeposed(worldMonth, team.name, team.displayName, predecessor, successor, relation,
-      evaluation.evidence.map(({ eventId: id }) => id), { politicalCrisis:JSON.stringify(politicalCrisis), depositionSelection: JSON.stringify(evaluation.selection), ...captureAccessionCapital(team, worldMonth, successor.id, predecessor.id),
-        ...(evaluation.militaryParticipant ? militaryParticipationMetadata("DEPOSITION", team.name, worldMonth, evaluation.militaryParticipant,
+      evaluation.evidence.map(({ eventId: id }) => id), { politicalCrisis:JSON.stringify(politicalCrisis), depositionSelection: court?undefined:JSON.stringify(evaluation.selection),courtCoupEventId:court?`court-coup-${team.name}-${worldMonth}`:undefined, ...captureAccessionCapital(team, worldMonth, successor.id, predecessor.id),
+        ...(!court&&evaluation.militaryParticipant ? militaryParticipationMetadata("DEPOSITION", team.name, worldMonth, evaluation.militaryParticipant,
           evaluation.evidence.map(e => e.eventId), evaluation.baselineProbability ?? evaluation.probability, evaluation.probability, evaluation.militaryRoll,
           { stability: getFactionStability(team) ?? 100, cityCount: team.cities.length }, WorldHistory.getEventsForFaction(team.name)) : {}) });
     if (predecessor.chronicle) predecessor.chronicle.notableEventIds.push(eventId);
