@@ -124,9 +124,13 @@ export class MilitaryCommandRegistryStore {
   private royalService?: RoyalMilitaryService;
   setRoyalService(service: RoyalMilitaryService) { this.royalService = service; }
   private families:MilitaryFamily[]=[];
+  private familyByResident?:Map<string,{family:MilitaryFamily;member:MilitaryFamily['members'][number]}>;
   getFamilies(){return this.families;}
-  commitFamilyMember(plan:{familyId:string;member:import('./MilitaryFamily').MilitaryFamilyMember}){const f=this.families.find(f=>f.familyId===plan.familyId);if(!f||this.families.some(f=>f.members.some(m=>m.sourceUserId===plan.member.sourceUserId)))throw Error('Duplicate family resident');f.members.push(structuredClone(plan.member));}
-  getFamilyMember(userId:number,bornMonth:number){for(const family of this.families){const member=family.members.find(m=>m.sourceUserId===userId&&m.bornMonth===bornMonth);if(member)return {family,member};}return undefined;}
+  commitFamilyMember(plan:{familyId:string;member:import('./MilitaryFamily').MilitaryFamilyMember}){const f=this.families.find(f=>f.familyId===plan.familyId);if(!f||this.families.some(f=>f.members.some(m=>m.sourceUserId===plan.member.sourceUserId)))throw Error('Duplicate family resident');f.members.push(structuredClone(plan.member));this.familyByResident=undefined;}
+  getFamilyMember(userId:number,bornMonth:number){
+    if(!this.familyByResident)this.familyByResident=new Map(this.families.flatMap(family=>family.members.map(member=>[`${member.sourceUserId}/${member.bornMonth}`,{family,member}] as const)));
+    return this.familyByResident.get(`${userId}/${bornMonth}`);
+  }
   private people = new Map<string, MilitaryPerson>();
   private formations = new Map<string, MilitaryFormation>();
   private personSequence = 1;
@@ -136,16 +140,16 @@ export class MilitaryCommandRegistryStore {
   private longRangeOrderSamples = new Map<string, number>();
   private eventWriter?: (event: Omit<WorldEvent, "id"> & { id: string }) => string;
   private eventReader: (factionId: string) => WorldEvent[] = factionId => WorldHistory.getEventsForFaction(factionId);
-  private diagnostics = { provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
+  private diagnostics = { familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
     unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
 
   reset() {
-    this.families=[];
+    this.families=[];this.familyByResident=undefined;
     this.people.clear(); this.formations.clear(); this.personSequence = 1; this.commandSequence = 1;
     this.lastEvaluationMonth = -1;
     this.lastArrivalTargetByCommand.clear();
     this.longRangeOrderSamples.clear();
-    this.diagnostics = { provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
+    this.diagnostics = { familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
       unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
   }
 
@@ -161,19 +165,20 @@ export class MilitaryCommandRegistryStore {
   }
 
   importState(state: MilitaryCommandState) {
-    this.families=structuredClone(state.families??[]);
+    this.families=structuredClone(state.families??[]);this.familyByResident=undefined;
     this.people = new Map(state.people.map(person => [person.personId, structuredClone(person)]));
     this.formations = new Map(state.formations.map(formation => [formation.commandId, structuredClone(formation)]));
     this.personSequence = state.personSequence; this.commandSequence = state.commandSequence;
     this.lastEvaluationMonth = state.lastEvaluationMonth;
     this.lastArrivalTargetByCommand.clear();
     this.longRangeOrderSamples.clear();
-    this.diagnostics = { provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
+    this.diagnostics = { familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
       unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
   }
 
   snapshotTransaction(){return {people:new Map(this.people),formations:new Map(this.formations),state:this.exportState(),diagnostics:{...this.diagnostics},arrivals:new Map(this.lastArrivalTargetByCommand),ranges:new Map(this.longRangeOrderSamples)};}
   rollbackTransaction(snapshot:ReturnType<MilitaryCommandRegistryStore["snapshotTransaction"]>,inPlace=false){
+    this.familyByResident=undefined;
     if(inPlace){this.families=structuredClone(snapshot.state.families??[]);this.people=new Map(snapshot.state.people.map(data=>{const p=snapshot.people.get(data.personId)!;for(const k of Object.keys(p))delete (p as any)[k];Object.assign(p,structuredClone(data));return [p.personId,p];}));this.formations=new Map(snapshot.state.formations.map(data=>{const f=snapshot.formations.get(data.commandId)!;for(const k of Object.keys(f))delete (f as any)[k];Object.assign(f,structuredClone(data));return [f.commandId,f];}));this.personSequence=snapshot.state.personSequence;this.commandSequence=snapshot.state.commandSequence;this.lastEvaluationMonth=snapshot.state.lastEvaluationMonth;}
     else this.importState(snapshot.state);this.diagnostics=snapshot.diagnostics;this.lastArrivalTargetByCommand=snapshot.arrivals;this.longRangeOrderSamples=snapshot.ranges;}
   mirrorPoliticalDeath(personId:string,rulerId:string,month:number,cause:string){
@@ -278,6 +283,7 @@ export class MilitaryCommandRegistryStore {
         !this.isUnitAssigned(user.player.logicalUnitId) && user.team === team).sort((a, b) => a.id - b.id || a.name.localeCompare(b.name));
       if (!availableUnits.length && !royals.length) { this.diagnostics.unitBlocked++; continue; }
       this.diagnostics.eligible += candidates.length;
+      this.diagnostics.familyCandidateChecks+=candidates.filter(u=>{const link=this.getFamilyMember(u.id,u.bornMonth);return familyAppointmentWeight(link?.family,link?.member,team.name,this.royalService?.nobleEpoch?.(team.name,worldMonth),worldMonth)>1;}).length;
       if(provisional)this.diagnostics.provisionalDraws++;
       if (worldRandom.next() >= ANNUAL_APPOINTMENT_CHANCE) {if(provisional)this.diagnostics.provisionalMisses++;continue;}
       const weights = candidates.map(user => {
@@ -414,10 +420,15 @@ export class MilitaryCommandRegistryStore {
     if(month%12!==0||!this.eventWriter)return;
     for(const p of this.people.values()){
       const team=teams.find(t=>t.name===p.factionId&&t.status==='ACTIVE'&&t.identityStage==='STATE'),dy=dynasties.find(d=>d.factionId===p.factionId),epoch=this.royalService?.nobleEpoch?.(p.factionId,month);
-      if(!team||!dy||!epoch||this.families.some(f=>f.members.some(m=>m.militaryPersonId===p.personId)))continue;
-      const source=familyFounderSource(p,this.eventReader(p.factionId),p.factionId,epoch,month),f=source&&makeMilitaryFamily(p,p.factionId,epoch,month,source);if(!f)continue;
+      if(!team||!dy||!epoch)continue;
+      const epochStart=dy.houseEpochs?.find(e=>e.foundingRulerId===epoch)?.startMonth??Infinity,source=familyFounderSource(p,this.eventReader(p.factionId).filter(e=>(e.monthIndex??e.year)>=epochStart),p.factionId,epoch,month);
+      const linked=this.families.find(f=>f.members.some(m=>m.militaryPersonId===p.personId));
+      if(linked){const member=linked.members.find(m=>m.militaryPersonId===p.personId)!;if(source&&member.generation>0&&linked.factionId===p.factionId&&linked.epochFounderId===epoch&&!linked.renewals?.some(r=>r.memberId===member.memberId)){
+        const history=WorldHistory.exportState();try{const id=`${linked.familyId}-${member.memberId}-merit`;this.eventWriter({id,year:month,type:'military-family-merit',category:'politics',importance:'normal',actorFactionId:team.name,factionIds:[team.name],title:`${p.personalName}自立功业，${linked.surname}氏家声复振。`,metadata:{familyId:linked.familyId,personId:p.personId,memberId:member.memberId,sourceEventId:source.id}});if(!this.eventReader(team.name).some(e=>e.id===id))throw Error('Family merit not recorded');(linked.renewals??=[]).push({memberId:member.memberId,month,sourceEventId:source.id});}catch{WorldHistory.importState(history);}
+      }continue;}
+      const f=source&&makeMilitaryFamily(p,p.factionId,epoch,month,source);if(!f)continue;
       const history=WorldHistory.exportState();
-      try{const id=`${f.familyId}-founded`;this.eventWriter({id,year:month,type:'military-family-founded',category:'politics',importance:'normal',actorFactionId:team.name,factionIds:[team.name],title:`${p.personalName}以功立家，${f.surname}氏功臣世家始见于记载。`,metadata:{familyId:f.familyId,personId:p.personId,sourceEventId:f.sourceEventId}});if(!this.eventReader(team.name).some(e=>e.id===id))throw Error('Family foundation not written');this.families.push(f);}catch{WorldHistory.importState(history);}
+      try{const id=`${f.familyId}-founded`;this.eventWriter({id,year:month,type:'military-family-founded',category:'politics',importance:'normal',actorFactionId:team.name,factionIds:[team.name],title:`${p.personalName}以功立家，${f.surname}氏功臣世家始见于记载。`,metadata:{familyId:f.familyId,personId:p.personId,sourceEventId:f.sourceEventId}});if(!this.eventReader(team.name).some(e=>e.id===id))throw Error('Family foundation not written');this.families.push(f);this.familyByResident=undefined;}catch{WorldHistory.importState(history);}
     }
   }
   rewardCourtService(person:MilitaryPerson,team:Team,dy:Dynasty,service:WorldEvent,month:number){

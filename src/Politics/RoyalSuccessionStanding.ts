@@ -3,7 +3,7 @@ import type { Ruler } from './Dynasty';
 export interface RoyalSuccessionAct {
   eventId: string; kind: 'DISQUALIFIED' | 'RESTORED'; month: number;
   factionId: string; rulerId: string; militaryPersonId: string; issuerRulerId: string;
-  courtCoupEventId: string; sourceEventId: string; restoresEventId?: string; authorityEventId?:string;
+  courtCoupEventId: string; sourceEventId: string; restoresEventId?: string; authorityEventId?:string; victimEndEventId?:string;
 }
 export function unresolvedSuccessionAct(ruler: Pick<Ruler,'successionHistory'>, month: number) {
   const acts = (ruler.successionHistory ?? []).filter(a => a.month <= month);

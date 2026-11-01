@@ -68,7 +68,7 @@ export type WorldEventType =
   | "alliance-expired"
   | "faction-merged"
   | "faction-submitted"
-  | "court-reward-granted" | "military-court-sanction" | "court-service-granted" | "court-coup-attempt" | "court-coup-result" | "royal-honor-granted" | "royal-succession-sanction" | "military-family-founded"
+  | "court-reward-granted" | "military-court-sanction" | "court-service-granted" | "court-coup-attempt" | "court-coup-result" | "royal-honor-granted" | "royal-succession-sanction" | "military-family-founded" | "military-family-merit" | "military-family-member-entered"
   | "military-ennobled"
   | "military-posthumous"
   | "military-title-revoked"

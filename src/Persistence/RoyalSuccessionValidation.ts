@@ -17,8 +17,8 @@ export function validateRoyalSuccessionStanding(save:WorldSaveV1){
     if(a.issuerRulerId!==record.previousRulerId||a.month!==record.month||source?.type!=='court-coup-result'||source.id!==record.outcomeEventId||source.metadata?.outcome!=='FAILED'||!p.politicalHistory?.some(b=>b.kind==='COURT_BAN'&&b.courtCoupEventId===attempt.id)||a.restoresEventId)throw Error('unproven self coup sanction');
    }else if(a.kind==='RESTORED'){
     const ban=r.successionHistory?.find(b=>b.eventId===a.restoresEventId&&b.kind==='DISQUALIFIED');
-    const authority=events.find(e=>e.id===a.authorityEventId),victim=ban&&(dy.rulers as RulerSaveV17[]).find(r=>r.rulerId===ban.issuerRulerId);
-    if(!authority||!['ruler-succession','ruler-deposed'].includes(authority.type)||(authority.rulerId!==a.issuerRulerId&&authority.metadata?.nextRulerId!==a.issuerRulerId)||!victim||victim.deathMonth===undefined||victim.deathMonth>a.month||!ban||ban.month+60>a.month||a.sourceEventId!==ban.eventId||r.successionHistory!.some(b=>b!==a&&b.kind==='RESTORED'&&b.restoresEventId===ban.eventId)||a.issuerRulerId===r.id)throw Error('unproven restoration');
+    const authority=events.find(e=>e.id===a.authorityEventId),victimEnd=events.find(e=>e.id===a.victimEndEventId),victim=ban&&(dy.rulers as RulerSaveV17[]).find(r=>r.rulerId===ban.issuerRulerId);
+    if(!authority||!['ruler-succession','ruler-deposed'].includes(authority.type)||(authority.rulerId!==a.issuerRulerId&&authority.metadata?.nextRulerId!==a.issuerRulerId)||!victim||!victimEnd||(victimEnd.monthIndex??victimEnd.year)>a.month||!(victimEnd.type==='ruler-deposed'&&victimEnd.metadata?.previousRulerId===victim.rulerId||victimEnd.type==='ruler-died'&&(victimEnd.rulerId===victim.rulerId||victimEnd.metadata?.rulerId===victim.rulerId))||!ban||ban.month+60>a.month||a.sourceEventId!==ban.eventId||r.successionHistory!.some(b=>b!==a&&b.kind==='RESTORED'&&b.restoresEventId===ban.eventId)||a.issuerRulerId===r.id)throw Error('unproven restoration');
    }else throw Error('unknown royal act');
    used.add(a.eventId);last=a.month;
   }catch(error){errors.push(`invalid royal succession act ${a?.eventId}: ${String(error)}`);}

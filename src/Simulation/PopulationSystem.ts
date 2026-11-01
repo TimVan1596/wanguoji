@@ -188,8 +188,9 @@ export default class PopulationSystem {
     // The plan is pure and the member is committed only for this newly created real resident.
     if(familyPlan){
       try{return successionTransaction(team,Dynasty,()=>{
-        const before=team.users.size,user=create();if(!user)return undefined;
+        const before=team.users.size,user=create();if(!user)throw Error('Family resident creation rejected');
         Military.commitFamilyMember(familyPlan);
+        WorldHistory.addEvent({id:`${familyPlan.member.memberId}-entered`,year:month,type:'military-family-member-entered',category:'politics',importance:'normal',actorFactionId:team.name,factionIds:[team.name],title:`${familyPlan.member.name}以功臣家族后代身份入籍。`,metadata:{familyId:familyPlan.familyId,memberId:familyPlan.member.memberId,sourceUserId:id,bornMonth,residentName:familyPlan.member.name,parentMemberId:familyPlan.member.parentMemberId!,populationCause:'NATURAL_GROWTH'}});
         politicalEffect(()=>{if(!populationMutation.deferPopulationAudit)Game.Core?.simulator?.recordPopulationMutation(team,before,team.users.size,populationMutation);});
         return user;
       });}catch(error){this.counters=previousCounters;worldRandom.restore(previousRng);console.warn('[MilitaryFamily] population entry rolled back',error);return undefined;}

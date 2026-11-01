@@ -9,7 +9,7 @@ export interface MilitaryFamilyMember {
 }
 export interface MilitaryFamily {
  familyId:string; surname:string; founderPersonId:string; factionId:string; epochFounderId:string;
- foundedMonth:number; sourceEventId:string; members:MilitaryFamilyMember[];
+ foundedMonth:number; sourceEventId:string; renewals?:Array<{memberId:string;month:number;sourceEventId:string}>; members:MilitaryFamilyMember[];
 }
 export const familyMemberId=(userId:number,bornMonth:number)=>`family-member-${userId}-${bornMonth}`;
 export function familyFounderSource(p:MilitaryPerson,events:readonly WorldEvent[],factionId:string,epoch:string,month:number){
@@ -27,7 +27,7 @@ function hash(s:string){let n=2166136261;for(const c of s)n=Math.imul(n^c.charCo
 /** Called only before first population entry. Birth is derived from the original population label, never re-aged. */
 export function planFamilyPopulationEntry(families:readonly MilitaryFamily[],factionId:string,epoch:string|undefined,userId:number,bornMonth:number,month:number,seed:string){
  const options=families.filter(f=>f.factionId===factionId&&f.epochFounderId===epoch&&f.foundedMonth<=month).flatMap(f=>f.members.filter(p=>
-  p.bornMonth+18*12<=bornMonth&&bornMonth<=p.bornMonth+55*12&&(p.deathMonth??Infinity)>bornMonth&&p.enteredMonth<month&&p.generation<4&&
+  p.bornMonth+18*12<=bornMonth&&bornMonth<=p.bornMonth+55*12&&(p.deathMonth??Infinity)>bornMonth&&(p.exitMonth??Infinity)>bornMonth&&p.enteredMonth<month&&p.generation<4&&
   f.members.filter(c=>c.parentMemberId===p.memberId).length<2&&
   !f.members.some(c=>c.parentMemberId===p.memberId&&Math.abs(c.bornMonth-bornMonth)<48)
  ).map(parent=>({family:f,parent}))).sort((a,b)=>a.family.familyId.localeCompare(b.family.familyId)||a.parent.memberId.localeCompare(b.parent.memberId));
@@ -40,7 +40,10 @@ export function planFamilyPopulationEntry(families:readonly MilitaryFamily[],fac
 /** First appointment only; inherited reputation never substitutes for eligibility, army or personal merit. */
 export function familyAppointmentWeight(family:MilitaryFamily|undefined,member:MilitaryFamilyMember|undefined,factionId:string,epoch:string|undefined,month:number){
  if(!family||!member||family.factionId!==factionId||family.epochFounderId!==epoch||member.deathMonth!==undefined||member.militaryPersonId||member.enteredMonth>month||month-member.bornMonth<18*12)return 1;
- return member.generation===1?1.10:member.generation===2?1.05:1;
+ let generations=member.generation,parent:MilitaryFamilyMember|undefined=member.parentMemberId?family.members.find(m=>m.memberId===member.parentMemberId):undefined;
+ const visited=new Set<string>();
+ while(parent){const ancestor=parent;if(visited.has(ancestor.memberId))return 1;visited.add(ancestor.memberId);if(family.renewals?.some(r=>r.memberId===ancestor.memberId&&r.month<=month)){generations=member.generation-ancestor.generation;break;}parent=ancestor.parentMemberId?family.members.find(m=>m.memberId===ancestor.parentMemberId):undefined;}
+ return generations===1?1.10:generations===2?1.05:1;
 }
 export function familyStatus(f:MilitaryFamily,people:readonly MilitaryPerson[]){
  const descendants=f.members.filter(m=>m.generation>0),serving=descendants.filter(m=>m.militaryPersonId&&people.some(p=>p.personId===m.militaryPersonId&&p.status==='ACTIVE'));

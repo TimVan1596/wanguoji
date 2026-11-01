@@ -124,7 +124,7 @@ const RULER_EVENT_TYPES = new Set<WorldEvent["type"]>([
   "ruler-succession",
   "ruler-acceded",
   "royal-honor-granted",
-  "court-coup-attempt", "court-coup-result", "military-court-sanction",
+  "court-coup-attempt", "court-coup-result", "military-court-sanction", "royal-succession-sanction",
   "ruler-deposed",
   "faction-extinct",
   "faction-merged",

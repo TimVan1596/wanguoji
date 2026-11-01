@@ -6,7 +6,7 @@ import {GenealogyPersonCard} from '../../UI/Components/FactionDetails/GenealogyP
 import {deriveGenealogyNodePresentations} from '../../UI/Components/FactionDetails/GenealogyNodePresentation';
 import {royalHonorHeading} from '../../Politics/RoyalHonorPresentation';
 import {militaryAmbition} from '../../Politics/MilitaryPoliticalDisposition';
-import {selectCourtInstigator} from '../../Politics/CourtCoup';
+import {selectCourtInstigator,courtAttemptChance} from '../../Politics/CourtCoup';
 import {evaluateDepositionOpportunity,chooseDepositionClaimant} from '../../Politics/InReignDeposition';
 import {royalHonorCandidateClaims} from '../../Politics/RoyalHonors';
 import {getFactionStability} from '../../Components/City';
@@ -109,7 +109,7 @@ export function checkRoyalCourtAttempt(core:any,base:ReturnType<typeof exportWor
   check(selectCourtInstigator(e,Military.getPeople())?.personId===personId,'the actual royal officer is the qualified instigator with real recruited followers');
   const roll=Array.from({length:100},(_,i)=>e.probability*(i+.5)/100).find(roll=>chooseDepositionClaimant(e,month,roll)?.claimant.ruler.id===r.id);check(roll!==undefined,'the existing weighted selection can genuinely select the royal instigator');
   // A real SELF failure must have a separate royal disability, including a rollback journal.
-  const courtBase=exportWorldSave(core),invokeFailure=()=>{const next=random.next;random.next=()=>{next.call(random);return .14;};try{(Dynasty as any).evaluateInReignDeposition(core.teams.find((t:any)=>t.name===team.name),Dynasty.get(team.name),Dynasty.getCurrentRuler(team.name),month);}finally{random.next=next;}};
+  const courtBase=exportWorldSave(core),invokeFailure=()=>{const next=random.next;random.next=()=>{next.call(random);return courtAttemptChance(selectCourtInstigator(e,Military.getPeople())!)*.99;};try{(Dynasty as any).evaluateInReignDeposition(core.teams.find((t:any)=>t.name===team.name),Dynasty.get(team.name),Dynasty.getCurrentRuler(team.name),month);}finally{random.next=next;}};
   const add=History.addEvent;History.addEvent=function(ev){const id=add.call(this,ev);if(ev.type==='royal-succession-sanction')throw Error('injected royal disability write');return id;};
   try{invokeFailure();}finally{History.addEvent=add;}
   check(diffCanonicalWorldSave(courtBase,exportWorldSave(core)).matched,'SELF sanction write failure restores royal, military, population, source history and RNG');
@@ -122,6 +122,21 @@ export function checkRoyalCourtAttempt(core:any,base:ReturnType<typeof exportWor
    check(!Dynasty.restoreSuccessionEligibility(core.teams.find((t:any)=>t.name===team.name),r.id,month),'same offended monarch does not silently restore a failed usurper');
    const bad=exportWorldSave(core);(bad.dynasties.find(x=>x.factionId===team.name)!.rulers as any[]).find(x=>x.rulerId===r.id).successionHistory=[];
    check(!validateWorldSave(bad).valid,'strict save rejects erasing the formal royal disability while its source survives');
+  }
+
+  // A separate later, legal deposition changes authority; it never turns the earlier failed attempt into success.
+  {const t=core.teams.find((t:any)=>t.name===team.name),d=Dynasty.get(t.name)!,king=Dynasty.getCurrentRuler(t.name)!,later=month+60,enemy=core.teams.find((t:any)=>t.name!==team.name&&t.status==='ACTIVE');
+   core.simulator.clock.importState({worldMonth:later-1,elapsedMs:0,running:false});t.capitalCity.capture(enemy,later-1);t.cities.forEach((c:any)=>c.loyalty=20);core.simulator.clock.importState({worldMonth:later,elapsedMs:0,running:false});
+   const nextEvaluation=evaluateDepositionOpportunity({factionId:t.name,status:t.status,identityStage:t.identityStage,cityCount:t.cities.length,stability:getFactionStability(t),currentRuler:king,rulers:d.rulers,houseName:d.houseName,worldMonth:later,events:History.getEventsForFaction(t.name)});
+   check(!nextEvaluation.candidates.some(c=>c.ruler.id===r.id),'a later real crisis still excludes the formally disqualified SELF actor');
+   const selection=chooseDepositionClaimant(nextEvaluation,later,0);check(nextEvaluation.eligible&&selection,'other actual lawful kin remain available for a later political handoff');nextEvaluation.selection=selection!.evidence;
+   check((Dynasty as any).commitDeposition(t,d,king,selection!.claimant.ruler,selection!.claimant.relation,later,nextEvaluation),'separate real deposition installs an existing eligible relative, not the barred claimant');
+   const restoreMonth=later+24;core.simulator.clock.importState({worldMonth:restoreMonth,elapsedMs:0,running:false});t.cities.forEach((c:any)=>c.loyalty=85);t.getUserById(r.militaryIdentity!.sourceUserId).loyalty=85;
+   const before=exportWorldSave(core),write=History.addEvent;History.addEvent=function(ev){const id=write.call(this,ev);if(ev.type==='royal-succession-sanction')throw Error('injected restoration write');return id;};try{check(!Dynasty.restoreSuccessionEligibility(t,r.id,restoreMonth),'injected royal restoration is rejected');}finally{History.addEvent=write;}
+   check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,'failed restoration retains the disability, source events and RNG');
+   check(Dynasty.restoreSuccessionEligibility(t,r.id,restoreMonth),'stable new legal authority explicitly restores succession eligibility with real prior handoff sources');
+   const person=Military.getPerson(personId)!;check(person.status==='RETIRED'&&person.politicalHistory?.some(a=>a.kind==='COURT_BAN')&&!Military.getFormations().some(f=>f.commanderPersonId===personId&&f.status==='ACTIVE'),'royal restoration does not restore the old office, command, peerage or military pardon');
+   const restored=exportWorldSave(core);hydrateWorldSave(core,structuredClone(restored));check(diffCanonicalWorldSave(restored,exportWorldSave(core)).matched,'formal restoration strictly round-trips without a new person');
   }
   hydrateWorldSave(core,structuredClone(courtBase));
   const restoredTeam=core.teams.find((t:any)=>t.name===team.name),restoredD=Dynasty.get(team.name)!,restoredR=restoredD.rulers.find(x=>x.id===r.id)!;

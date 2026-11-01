@@ -203,7 +203,7 @@ class DynastyRegistryStore {
       dynasties: [...this.dynasties.values()].map((dynasty) => ({
         ...dynasty,
         houseEpochs: dynasty.houseEpochs?.map((epoch) => ({ ...epoch })),
-        rulers: dynasty.rulers.map((ruler) => ({ ...ruler, royalHonors:ruler.royalHonors?structuredClone(ruler.royalHonors):undefined,militaryIdentity:ruler.militaryIdentity?{...ruler.militaryIdentity}:undefined, militaryUsurperIdentity:ruler.militaryUsurperIdentity?structuredClone(ruler.militaryUsurperIdentity):undefined,residentIdentity:ruler.residentIdentity?structuredClone(ruler.residentIdentity):undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
+        rulers: dynasty.rulers.map((ruler) => ({ ...ruler, successionHistory:ruler.successionHistory?structuredClone(ruler.successionHistory):undefined, royalHonors:ruler.royalHonors?structuredClone(ruler.royalHonors):undefined,militaryIdentity:ruler.militaryIdentity?{...ruler.militaryIdentity}:undefined, militaryUsurperIdentity:ruler.militaryUsurperIdentity?structuredClone(ruler.militaryUsurperIdentity):undefined,residentIdentity:ruler.residentIdentity?structuredClone(ruler.residentIdentity):undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
         heirIds: [...dynasty.heirIds],
       })),
       sequence: this.sequence,
@@ -229,7 +229,7 @@ class DynastyRegistryStore {
     this.dynasties = new Map(state.dynasties.map((dynasty) => [dynasty.factionId, {
       ...dynasty,
       houseEpochs: dynasty.houseEpochs?.map((epoch) => ({ ...epoch })),
-      rulers: dynasty.rulers.map((ruler) => ({ ...ruler, royalHonors:ruler.royalHonors?structuredClone(ruler.royalHonors):undefined,militaryIdentity:ruler.militaryIdentity?{...ruler.militaryIdentity}:undefined, militaryUsurperIdentity:ruler.militaryUsurperIdentity?structuredClone(ruler.militaryUsurperIdentity):undefined,residentIdentity:ruler.residentIdentity?structuredClone(ruler.residentIdentity):undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
+      rulers: dynasty.rulers.map((ruler) => ({ ...ruler, successionHistory:ruler.successionHistory?structuredClone(ruler.successionHistory):undefined, royalHonors:ruler.royalHonors?structuredClone(ruler.royalHonors):undefined,militaryIdentity:ruler.militaryIdentity?{...ruler.militaryIdentity}:undefined, militaryUsurperIdentity:ruler.militaryUsurperIdentity?structuredClone(ruler.militaryUsurperIdentity):undefined,residentIdentity:ruler.residentIdentity?structuredClone(ruler.residentIdentity):undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
       heirIds: [...dynasty.heirIds],
     }]));
     this.sequence = state.sequence;
@@ -554,7 +554,6 @@ class DynastyRegistryStore {
     if (current && (current.status === "ruling" || current.status === "exiled")) {
       return true;
     }
-    if(dynasty.successionVacancyMonth!==undefined && dynasty.rulers.some(r=>!maySucceed(r,Infinity)&&r.deathMonth===undefined))return true;
     return dynasty.heirIds.some((id) => {
       const heir = dynasty.rulers.find((ruler) => ruler.id === id);
       return Boolean(heir && heir.status === "heir");
@@ -568,7 +567,6 @@ class DynastyRegistryStore {
     const current = this.getCurrentRuler(factionId);
     if (current && (current.status === "ruling" || current.status === "exiled") &&
         !isNaturallyDeadByMonth(current.naturalDeathYear ?? current.plannedEndYear, worldMonth)) return true;
-    if(dynasty.successionVacancyMonth!==undefined && dynasty.rulers.some(r=>!maySucceed(r,worldMonth)&&r.deathMonth===undefined&&!isNaturallyDeadByMonth(r.naturalDeathYear??r.plannedEndYear,worldMonth)))return true;
     return dynasty.heirIds.some((id) => {
       const heir = dynasty.rulers.find((ruler) => ruler.id === id);
       return Boolean(heir && heir.status === "heir" &&
@@ -1058,8 +1056,9 @@ class DynastyRegistryStore {
     const ban=target&&unresolvedSuccessionAct(target,month);
     const victim=ban&&dy?.rulers.find(r=>r.id===ban.issuerRulerId),user=target?.militaryIdentity&&team.getUserById(target.militaryIdentity.sourceUserId);
     const accession=issuer&&WorldHistory.getEventsForFaction(team.name).find(e=>['ruler-succession','ruler-deposed'].includes(e.type)&&(e.rulerId===issuer.id||e.metadata?.nextRulerId===issuer.id)&&(e.monthIndex??e.year)===issuer.accessionYear);
-    if(!dy||!target||!issuer||!ban||issuer.id===target.id||month<ban.month+60||!victim||victim.deathMonth===undefined||victim.deathMonth>month||!accession||!user||user.loyalty<75||(getFactionStability(team)??0)<75||month-(issuer.accessionYear??month)<24||!(target.deathMonth===undefined && !isNaturallyDeadByMonth(target.naturalDeathYear??target.plannedEndYear,month)))return false;
-    try{successionTransaction(team,this,()=>this.recordSuccessionAct(team,dy,target,{...ban,eventId:`${ban.eventId}-restored`,kind:'RESTORED',month,issuerRulerId:issuer.id,sourceEventId:ban.eventId,restoresEventId:ban.eventId,authorityEventId:accession.id}));return true;}catch{return false;}
+    const victimEnd=victim&&WorldHistory.getEventsForFaction(team.name).find(e=>(e.monthIndex??e.year)<=month&&(e.type==='ruler-deposed'&&e.metadata?.previousRulerId===victim.id||e.type==='ruler-died'&&(e.rulerId===victim.id||e.metadata?.rulerId===victim.id)));
+    if(!dy||!target||!issuer||!ban||target.houseName!==dy.houseName||issuer.houseName!==target.houseName||issuer.id===target.id||month<ban.month+60||!victim||!victimEnd||!(victim.deathMonth!==undefined&&victim.deathMonth<=month||victim.endYear!==undefined&&victim.endYear<=month&&victim.status==='deposed')||!accession||!user||user.loyalty<75||(getFactionStability(team)??0)<75||month-(issuer.accessionYear??month)<24||!(target.deathMonth===undefined && !isNaturallyDeadByMonth(target.naturalDeathYear??target.plannedEndYear,month)))return false;
+    try{successionTransaction(team,this,()=>this.recordSuccessionAct(team,dy,target,{...ban,eventId:`${ban.eventId}-restored`,kind:'RESTORED',month,issuerRulerId:issuer.id,sourceEventId:ban.eventId,restoresEventId:ban.eventId,authorityEventId:accession.id,victimEndEventId:victimEnd.id}));return true;}catch{return false;}
   }
 
   private evaluateCourtPardon(team:Team,dy:Dynasty,month:number){
