@@ -1,3 +1,4 @@
+import {maySucceed} from './RoyalSuccessionStanding';
 import {combinedRoyalCandidateWeight,type RoyalHonorClaim} from './RoyalHonors';
 import {chooseMilitaryClaimSupport,type MilitaryClaimSupport} from "./MilitaryClaimSupport";
 import type {RoyalDepositionMilitaryEvidence} from "./RoyalDepositionMilitary";
@@ -84,7 +85,7 @@ export function selectDepositionCandidates({
   worldMonth: number;
 }): DepositionCandidate[] {
   return rulers.flatMap((ruler) => {
-    if (ruler.id === currentRuler.id || ruler.houseName !== houseName ||
+    if (!maySucceed(ruler,worldMonth) || ruler.id === currentRuler.id || ruler.houseName !== houseName ||
       (ruler.status !== "heir" && ruler.status !== "kin") || ruler.reignOrdinal !== undefined ||
       ruler.accessionYear !== undefined || ruler.chronicle !== undefined ||
       ruler.deathMonth !== undefined || ruler.deathReason !== undefined ||

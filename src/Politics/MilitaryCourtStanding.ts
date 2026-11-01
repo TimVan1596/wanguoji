@@ -41,5 +41,5 @@ export function militaryCourtText(a:MilitaryCourtAct){return a.kind==='COURT_BAN
 export function militaryCourtLabels(p:MilitaryPerson,factionId:string,month:number,epochFounderId?:string){
  const acts=p.politicalHistory?.filter(a=>a.factionId===factionId&&a.month<=month)??[];if(!acts.length)return [];
  const open=unresolvedCourtBans(p,factionId,month,epochFounderId),last=acts.at(-1)!;
- return [open.length?'因谋逆罢官 · 禁仕':last.kind==='COURT_PARDONED'?'曾因谋逆罢官 · 后获赦免':'曾因谋逆罢官',...((p.honorHistory??[]).filter(h=>h.kind==='REVOKED'&&h.reason==='COURT_COUP_FAILED'&&h.factionId===factionId&&h.month<=month).map(h=>`原${({BO:'伯爵',HOU:'侯爵',GONG:'公爵'} as const)[h.rank]} · 因谋逆已追夺`))];
+ return [open.length?'谋逆罢官 · 禁仕':last.kind==='COURT_PARDONED'?'曾因谋逆罢官 · 已获赦免':'曾因谋逆罢官'];
 }

@@ -1,3 +1,4 @@
+import {maySucceed} from './RoyalSuccessionStanding';
 import type { Ruler, RulerRelationType } from "./Dynasty";
 
 export const MAX_DYNASTIC_SUCCESSION_CANDIDATES = 6;
@@ -100,7 +101,7 @@ export function selectActiveDynasticCandidateIds({
 }): string[] {
   if (!currentRuler || cap <= 0) return [];
   const ranked = rulers.flatMap((ruler) => {
-    if (ruler.id === currentRuler.id || (ruler.status !== "heir" && ruler.status !== "kin") || ruler.houseName !== currentRuler.houseName || !isAlive(ruler, month)) return [];
+    if (!maySucceed(ruler,month) || ruler.id === currentRuler.id || (ruler.status !== "heir" && ruler.status !== "kin") || ruler.houseName !== currentRuler.houseName || !isAlive(ruler, month)) return [];
     const relation = getRecordedKinRelation(ruler, currentRuler, rulers);
     return relation && relation !== "COLLATERAL_KIN"
       ? [{ ruler, priority: eligibleRelationPriority[relation] }]
@@ -145,7 +146,7 @@ export function selectRecordedDynasticSuccessor({
 }): { ruler: Ruler; relationType: RecordedKinRelation } | undefined {
   const eligible = candidates.flatMap((candidate) => {
     if (
-      candidate.status !== "heir" ||
+      !maySucceed(candidate,month) || candidate.status !== "heir" ||
       candidate.houseName !== houseName ||
       !isAlive(candidate, month)
     ) return [];

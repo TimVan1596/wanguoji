@@ -1,3 +1,7 @@
+import Military,{deriveUserBornMonth} from '../Politics/MilitaryCommandRegistry';
+import Dynasty from '../Politics/Dynasty';
+import {nobleEpoch} from '../Politics/MilitaryNobility';
+import {planFamilyPopulationEntry} from '../Politics/MilitaryFamily';
 import {residentNaturalDeathMonth,ordinaryLifeEligible,worldRecoveryMultiplier} from "./ResidentLife";
 import WorldHistory from "../History/WorldHistory";
 import { getEffectivePopulationCapacity, getPopulationRecoveryContext, wartimePopulationLossInterval } from "./PopulationRecoveryRules";
@@ -165,16 +169,20 @@ export default class PopulationSystem {
       while (Team.GetUserById(candidateId)) candidateId = candidateId >= 1999999999 ? 1000000000 : candidateId + 1;
       return candidateId;
     });
+    const month=populationMutation.month??0,bornMonth=deriveUserBornMonth(id,name!,team.name,month);
+    const familyPlan=populationMutation.cause==='NATURAL_GROWTH'?planFamilyPopulationEntry(Military.getFamilies(),team.name,nobleEpoch(Dynasty.get(team.name),month)?.foundingRulerId,id,bornMonth,month,String(worldRandom.exportState().seed)):undefined;
     const user = measurePhase(profile, "Population.makeUser", () => team.makeUser(
       id,
-      name!,
+      familyPlan?.member.name??name!,
       resolvePublicAssetUrl("img/no-face.svg"),
       worldRandom.int(USER_NATURAL_LOYALTY_MIN, USER_NATURAL_LOYALTY_MAX),
       "NORMAL",
       undefined,
-      populationMutation
+      populationMutation,
+      familyPlan?{bornMonth,familyMemberId:familyPlan.member.memberId}:undefined
     ));
-    if (user) return user;
+    // The plan is pure and the member is committed only for this newly created real resident.
+    if (user) {if(familyPlan)Military.commitFamilyMember(familyPlan);return user;}
     // Legacy join-command routing remains the fallback for natural population.
     return Danmu.Apply(createLocalDanmu(name, team.name,
       worldRandom.int(USER_NATURAL_LOYALTY_MIN, USER_NATURAL_LOYALTY_MAX)), populationMutation);

@@ -18,6 +18,7 @@ export default class User {
   isFaceLoadDone = false;
   score = 0;
   private destroyed = false;
+  familyMemberId?: string;
   militaryPersonId?: string;
   historicalPersonId?: string;
   readonly bornMonth: number;
@@ -32,10 +33,11 @@ export default class User {
     public loyalty = 70,
     public role: PlayerRole = "NORMAL",
     public rulerId?: string,
-    options: { deferRuntime?: boolean; bornMonth?: number; historicalPersonId?: string; militaryPersonId?: string } = {}
+    options: { familyMemberId?:string; deferRuntime?: boolean; bornMonth?: number; historicalPersonId?: string; militaryPersonId?: string } = {}
   ) {
     const spawnMonth = Game.Core?.simulator?.year ?? 0;
     this.bornMonth = options.bornMonth ?? deriveUserBornMonth(id, name, team.name, spawnMonth);
+    this.familyMemberId=options.familyMemberId;
     this.militaryPersonId = options.militaryPersonId;
     this.historicalPersonId=options.historicalPersonId;
     this.sourceTeam = team;

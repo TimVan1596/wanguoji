@@ -117,6 +117,7 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
         face: user.face,
         playerUnitId: rootUnitId,
         bornMonth: user.bornMonth,
+        familyMemberId:user.familyMemberId,
         militaryPersonId: user.militaryPersonId,
         historicalPersonId:user.historicalPersonId,
         slaveUnits: [...user.slaveGroup.npcs.entries()].map(([npcKey, npc]) => addUnitTree(npc, undefined, "slave", npcKey)),
