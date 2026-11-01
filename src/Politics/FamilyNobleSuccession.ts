@@ -42,7 +42,7 @@ export function familyNobleText(f:MilitaryFamily,a:FamilyNobleAct){const old=f.m
 export function createFamilyNobleContext(month:number,families:readonly MilitaryFamily[],people:readonly MilitaryPerson[],events:readonly WorldEvent[],dynasties:readonly Pick<import('./Dynasty').Dynasty,'factionId'|'houseEpochs'|'rulers'>[]):FamilyNobleContext{
  const activeEpochs=new Set<string>(),politicalAccessions=new Map<string,number>();
  for(const d of dynasties){
-  const terminal=events.filter(e=>at(e)<=month&&(['faction-exiled','faction-extinct'].includes(e.type)?e.targetFactionId===d.factionId:e.actorFactionId===d.factionId)&&['faction-exiled','faction-extinct','faction-merged','faction-submitted','dynasty-line-ended','faction-restored','dynasty-restored'].includes(e.type)).at(-1);
+  const terminal=events.filter(e=>at(e)<=month&&(e.type==='faction-merged'?e.metadata?.absorbedFactionId===d.factionId:e.type==='faction-submitted'?e.metadata?.submittedFactionId===d.factionId:['faction-exiled','faction-extinct'].includes(e.type)?e.targetFactionId===d.factionId:e.actorFactionId===d.factionId)&&['faction-exiled','faction-extinct','faction-merged','faction-submitted','dynasty-line-ended','faction-restored','dynasty-restored'].includes(e.type)).at(-1);
   if(!terminal||['faction-restored','dynasty-restored'].includes(terminal.type))for(const ep of d.houseEpochs??[])if(ep.startMonth<=month&&(month<(ep.endMonth??Infinity)||ep.endMonth===month&&!events.some(e=>e.actorFactionId===d.factionId&&at(e)===month&&e.type==='dynasty-usurped')))activeEpochs.add(`${d.factionId}/${ep.foundingRulerId}`);
  }
  const rulers=dynasties.flatMap(d=>d.rulers);
