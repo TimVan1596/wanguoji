@@ -158,7 +158,7 @@ export function buildFactionIdentityLines(
     const parentName =
       resolveFactionNameAtMonthSafe(parent, foundedMonth) ?? origin.parentFactionId;
     lines.push(
-      `政权来源：${parentName ? `${parentName}分裂` : formatIdentityStage(team.factionType)}`
+      origin.type === "FRONTIER" ? `政权来源：边境起事${parentName ? ` · 原属${parentName}` : ""}` : `政权来源：${parentName ? `${parentName}分裂` : formatIdentityStage(team.factionType)}`
     );
     const firstName = team.nameHistory?.[0]?.name;
     if (firstName && firstName !== team.displayName) {
@@ -168,7 +168,7 @@ export function buildFactionIdentityLines(
       .map((id) => cityNameById.get(id))
       .filter(Boolean) as string[];
     if (cityNames.length > 0) {
-      lines.push(`发源：${cityNames.join("、")}`);
+      lines.push(`${origin.type === "FRONTIER" ? "起于边境城市" : "发源"}：${cityNames.join("、")}`);
     }
     const foundingRuler = origin.foundingRulerId
       ? rulerNameById.get(origin.foundingRulerId)
@@ -450,7 +450,7 @@ function buildOriginFactLines(
     .map((id) => cityNameById.get(id))
     .filter(Boolean) as string[];
   if (cityNames.length > 0) {
-    lines.push(`发源：${cityNames.join("、")}`);
+    lines.push(`${origin.type === "FRONTIER" ? "起于边境城市" : "发源"}：${cityNames.join("、")}`);
   }
   const foundingRuler = origin.foundingRulerId
     ? rulerNameById.get(origin.foundingRulerId)
