@@ -1,3 +1,4 @@
+import type {PoliticalCalibration} from '../../Politics/PoliticalCalibration';
 import {politicalEventCounts} from '../../History/PoliticalEventCounts';
 import {assessMilitarySecession} from "../MilitarySecession";
 import {militaryPromotionDiagnostics} from "./MilitaryPromotionDiagnostics";
@@ -38,11 +39,12 @@ async function fingerprint(snapshot: ReturnType<typeof exportWorldSave>,baseFact
 }
 
 /** Instrument the real City transaction, never substitute combat or its RNG. Test-session aggregates only. */
-export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=false,verifyContinuation=false,courtPolicy:'LOW'|'MEDIUM'|'HIGH'='MEDIUM'){
+export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=false,verifyContinuation=false,courtPolicy:'LOW'|'MEDIUM'|'HIGH'='MEDIUM',calibration?:PoliticalCalibration){
   const royalOffers=new Map<string,number>(),readRoyal=(Dynasty as any).getRoyalMilitaryCandidates;
   if(readRoyal)(Dynasty as any).getRoyalMilitaryCandidates=function(...args:any[]){const rows=readRoyal.apply(this,args);for(const r of rows)if(!royalOffers.has(r.rulerId))royalOffers.set(r.rulerId,args[1]);return rows;};
   const {core,game}=await createNaturalCore(seed),started=performance.now();
   Dynasty.setCourtAttemptPolicyForSimulation(courtPolicy);
+  if(calibration)Dynasty.setPoliticalCalibrationForSimulation(calibration);
   const original=(City.prototype as any).updateSiege,advanceOffices=(Military as any).advanceOffices;
   let reinforcementTransactions=0,reinforcedUnits=0;
   (Military as any).advanceOffices=function(...args:any[]){const before=new Map(Military.getFormations().map(f=>[f.commandId,new Set(f.memberUnitIds)])),result=advanceOffices.apply(this,args);
@@ -189,6 +191,6 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
       if(!deterministic||!secondRead)throw Error("natural checkpoint continuation mismatch");
       continuation={months:12,deterministic,secondRead};
     }
-    return {seed,years,continuation,contactCalls,forceSamples,localSiegeDeaths,depositionRelations:WorldHistory.getEvents().filter(e=>e.type==="ruler-deposed").map(e=>({month:e.monthIndex??e.year,metadata:e.metadata})),episodes,ongoingEpisodes:[...open.values()],annual,unificationMonths:WorldHistory.getEvents().filter(e=>e.type==="world-unification").map(e=>e.monthIndex??e.year),mode:"real Arcade Core / default warring states",denominator:"hostile-contact city-months entering real City.updateSiege; capture frequency, not battle win probability",checkpoints};
+    return {calibration:Dynasty.getPoliticalCalibration(),seed,years,continuation,contactCalls,forceSamples,localSiegeDeaths,depositionRelations:WorldHistory.getEvents().filter(e=>e.type==="ruler-deposed").map(e=>({month:e.monthIndex??e.year,metadata:e.metadata})),episodes,ongoingEpisodes:[...open.values()],annual,unificationMonths:WorldHistory.getEvents().filter(e=>e.type==="world-unification").map(e=>e.monthIndex??e.year),mode:"real Arcade Core / default warring states",denominator:"hostile-contact city-months entering real City.updateSiege; capture frequency, not battle win probability",checkpoints};
   }finally{if(readRoyal)(Dynasty as any).getRoyalMilitaryCandidates=readRoyal;(Military as any).advanceOffices=advanceOffices;City.prototype.registerSiegeContact=rawContact;(City.prototype as any).updateSiege=original;game.destroy(true);}
 }

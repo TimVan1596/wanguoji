@@ -21,7 +21,7 @@ export function selectCourtInstigator(e:DepositionEvaluation,people:readonly Mil
  .sort((a,b)=>(b.politicalSelectionWeight??b.strength)-(a.politicalSelectionWeight??a.strength)||a.personId.localeCompare(b.personId))[0];
 }
 export interface CourtCoupRecord {
- actorRulerId?:string;version:3;royalSequence:number;target:CourtTarget;successPolicy:CourtSuccessPolicy;conditionalSuccessProbability:number;countryName:string;countryLabel:string;previousRulerTitle:string;previousRulerBornMonth:number;crisisFacts:Array<{eventId:string;month:number;type:string;cityId?:string;cityName?:string;countryLabel:string}>;successEligible:boolean;depositionBlockers:string[];factionId:string;month:number;previousRulerId:string;targetRulerId:string;
+ calibration?:import('./PoliticalCalibration').PoliticalCalibration;actorRulerId?:string;version:3;royalSequence:number;target:CourtTarget;successPolicy:CourtSuccessPolicy;conditionalSuccessProbability:number;countryName:string;countryLabel:string;previousRulerTitle:string;previousRulerBornMonth:number;crisisFacts:Array<{eventId:string;month:number;type:string;cityId?:string;cityName?:string;countryLabel:string}>;successEligible:boolean;depositionBlockers:string[];factionId:string;month:number;previousRulerId:string;targetRulerId:string;
  members:Array<{unitId:string;userId:number;bornMonth:number;factionId:string}>;participant:MilitaryPoliticalParticipant;successPressure?:MilitaryPoliticalParticipant;crisisEventIds:string[];stability:number;cityCount:number;
  policy:CourtAttemptPolicy;attemptProbability:number;successProbability:number;roll:number;
  outcome:'SUCCESS'|'FAILED';outcomeEventId:string;consequence:'DEPOSITION'|'DISMISSED';

@@ -1,3 +1,4 @@
+import {calibrationOrBaseline,depositionVulnerability,isPoliticalCalibration} from '../Politics/PoliticalCalibration';
 import {maySucceed} from '../Politics/RoyalSuccessionStanding';
 import {courtSuccessChance} from '../Politics/CourtCoupOutcome';
 import {getRecordedKinRelation} from '../Politics/DynasticCandidateRules';
@@ -32,7 +33,8 @@ export function validateCourtCoups(save:WorldSaveV1):string[]{
   const terminal=prior.filter(x=>(['faction-exiled','faction-extinct','faction-dissolved'].includes(x.type)&&x.targetFactionId===r.factionId)||x.type==='faction-restored'&&x.actorFactionId===r.factionId).at(-1);
   if(terminal&&terminal.type!=='faction-restored')throw Error('state not active at attempt');
   if(prior.some(x=>x.type==='court-coup-attempt'&&x.actorFactionId===r.factionId&&m-at(x)<60))throw Error('country cooldown');
-  const crisis=getRecentDepositionEvidence(r.factionId,prior,m);
+  if(r.calibration!==undefined&&!isPoliticalCalibration(r.calibration))throw Error('unknown calibration');
+  const calibration=calibrationOrBaseline(r.calibration),crisis=getRecentDepositionEvidence(r.factionId,prior,m,calibration);
   if(!crisis.length||JSON.stringify(crisis.map(x=>x.eventId))!==JSON.stringify(r.crisisEventIds)||!Number.isFinite(r.stability)||r.stability<0||r.stability>100||!Number.isSafeInteger(r.cityCount)||r.cityCount<1)throw Error('real crisis and snapshot');
   if(!['LOW','MEDIUM','HIGH'].includes(r.policy)||Math.abs(r.attemptProbability-courtAttemptChance(c,r.policy))>1e-12||!Number.isFinite(r.roll)||r.roll<0||r.roll>=r.attemptProbability||!Number.isFinite(r.successProbability)||r.successProbability<0||r.successProbability>.15||!['SUCCESS','FAILED'].includes(r.outcome)||(r.roll<r.successProbability)!==(r.outcome==='SUCCESS')||r.consequence!==(r.outcome==='SUCCESS'?'DEPOSITION':'DISMISSED'))throw Error('shared lottery');
   const a=p?.appointments.find(a=>a.commandId===c.commandId&&a.factionId===r.factionId&&a.startMonth<=m&&(a.endMonth??m)>=m),office=p&&verifiedPoliticalOffice(p,c.commandId,r.factionId,m,prior);
@@ -50,7 +52,7 @@ export function validateCourtCoups(save:WorldSaveV1):string[]{
   if(JSON.stringify(choice)!==JSON.stringify(r.target))throw Error('actual political target choice');
   const identity={...country,name:country.factionId,identityStage:country.identityStage as 'STATE'|'PROVISIONAL',nameHistory:country.nameHistory as unknown as FactionNameHistoryEntry[],sovereigntyHistory:country.sovereigntyHistory as NonNullable<FactionTitleState['sovereigntyHistory']>,sovereigntyRank:country.sovereigntyRank as NonNullable<FactionTitleState['sovereigntyRank']>};
   if(r.countryName!==getFactionDisplayNameAtMonth(identity,m)||r.countryLabel!==getRegimeStyleNameAtMonth(identity,m)||r.previousRulerTitle!==formatRulerTitleAtMonth(identity,king.houseName.replace(/氏$/,'')+king.givenName,m)||JSON.stringify(r.crisisFacts)!==JSON.stringify(crisis.map(f=>{const source=prior.find(e=>e.id===f.eventId);return {eventId:f.eventId,month:f.month,type:f.type,cityId:source?.cityId,cityName:source?.cityName,countryLabel:getRegimeStyleNameAtMonth(identity,f.month)};})))throw Error('frozen historical names or crisis sources');
-  const oldVulnerability=r.stability<=40||r.cityCount<=2;
+  const oldVulnerability=depositionVulnerability(r.stability,r.cityCount,crisis.some(e=>e.type==='capital-fallen'||e.type==='empire-split'),calibration);
   if(JSON.stringify(r.depositionBlockers)!==JSON.stringify(oldVulnerability?[]:['NO_CURRENT_VULNERABILITY']))throw Error('original gate audit');
   if(!['LOW','MEDIUM','HIGH'].includes(r.successPolicy)||Math.abs(r.conditionalSuccessProbability-courtSuccessChance(c,r.stability,crisis.length,r.target,r.successPolicy))>1e-12||Math.abs(r.successProbability-r.attemptProbability*r.conditionalSuccessProbability)>1e-12)throw Error('independent conditional success');
   const career=deriveMilitaryCareer(p,state.formations,prior,m),def=militaryPoliticalDefense(p,state.formations,prior,m,r.factionId),strength=militaryPoliticalStrength(career.serviceMonths,c.unitCount,career.verifiedCaptures,def.eventIds.length,def.localServiceMonths);

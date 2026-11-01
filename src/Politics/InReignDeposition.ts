@@ -1,3 +1,4 @@
+import {POLITICAL_CALIBRATIONS,depositionVulnerability,type PoliticalCalibration} from './PoliticalCalibration';
 import {maySucceed} from './RoyalSuccessionStanding';
 import {combinedRoyalCandidateWeight,type RoyalHonorClaim} from './RoyalHonors';
 import {chooseMilitaryClaimSupport,type MilitaryClaimSupport} from "./MilitaryClaimSupport";
@@ -33,6 +34,7 @@ export interface DepositionSelectionEvidence {
   crisisEventIds:string[]; supporterPersonId?:string;
 }
 export interface DepositionEvaluation {
+  calibration?:PoliticalCalibration;
   selection?:DepositionSelectionEvidence;
   royalMilitaryClaims?:RoyalDepositionMilitaryEvidence[];
   royalHonorClaims?:RoyalHonorClaim[];
@@ -57,9 +59,9 @@ const relationPriority = ["DIRECT_CHILD", "GRANDCHILD", "SIBLING", "NEPHEW", "UN
 export function getRecentDepositionEvidence(
   factionId: string,
   events: readonly WorldEvent[],
-  worldMonth: number
+  worldMonth: number, calibration:PoliticalCalibration='BASELINE'
 ): DepositionCrisisEvidence[] {
-  const start = worldMonth - DEPOSITION_EVIDENCE_WINDOW_MONTHS;
+  const start = worldMonth - POLITICAL_CALIBRATIONS[calibration].evidenceMonths;
   const byGroup = new Map<string, DepositionCrisisEvidence>();
   for (const event of events) {
     const month = event.monthIndex ?? event.year;
@@ -100,8 +102,9 @@ export function selectDepositionCandidates({
 
 export function evaluateDepositionOpportunity({
   factionId, status, identityStage, cityCount, stability, currentRuler, rulers, houseName, worldMonth,
-  lastAttemptMonth, events, riskGroup = "CONSERVATIVE", military,
+  lastAttemptMonth, events, riskGroup = "CONSERVATIVE", military,calibration='BASELINE',
 }: {
+  calibration?:PoliticalCalibration;
   factionId: string;
   status: string;
   identityStage: string;
@@ -127,22 +130,23 @@ export function evaluateDepositionOpportunity({
   if (cityCount < 1) blockers.push("NO_CITY");
   if (worldMonth % DEPOSITION_EVALUATION_INTERVAL_MONTHS !== 0) blockers.push("NOT_EVALUATION_MONTH");
   if (lastAttemptMonth !== undefined && worldMonth - lastAttemptMonth < DEPOSITION_COOLDOWN_MONTHS) blockers.push("COOLDOWN");
-  const vulnerability = (stability !== undefined && stability <= 40) || (cityCount >= 1 && cityCount <= 2);
+  const evidence = getRecentDepositionEvidence(factionId, events, worldMonth,calibration);
+  const profile=POLITICAL_CALIBRATIONS[calibration];
+  const vulnerability = depositionVulnerability(stability,cityCount,evidence.some(e=>e.type==='capital-fallen'||e.type==='empire-split'),calibration);
   if (!vulnerability) blockers.push("NO_CURRENT_VULNERABILITY");
-  const evidence = getRecentDepositionEvidence(factionId, events, worldMonth);
   if (!evidence.length) blockers.push("NO_RECENT_REAL_CRISIS");
   const candidates = status === "ACTIVE" && identityStage === "STATE" && cityCount > 0 && activeOffice && ruler
     ? selectDepositionCandidates({ currentRuler: ruler, rulers, houseName, worldMonth })
     : [];
   if (!candidates.length) blockers.push("NO_EXISTING_ADULT_KIN");
-  const base = riskGroup === "CONTROL" ? 0.02 : 0.005;
-  const step = riskGroup === "CONTROL" ? 0.02 : 0.005;
-  const cap = riskGroup === "CONTROL" ? 0.06 : 0.015;
+  const base = riskGroup === "CONTROL" ? 0.02 : profile.depositionBase;
+  const step = riskGroup === "CONTROL" ? 0.02 : profile.depositionStep;
+  const cap = riskGroup === "CONTROL" ? 0.06 : profile.depositionCap;
   const baselineProbability = evidence.length ? Math.min(cap, base + Math.max(0, evidence.length - 1) * step) : 0;
   const strongCrisis = evidence.length >= 2 || evidence.some(e => e.type === "capital-fallen" || e.type === "empire-split") && stability !== undefined && stability <= 30;
   const militaryParticipant = blockers.length === 0 && strongCrisis && riskGroup === "CONSERVATIVE" ? military?.candidates[0] : undefined;
-  const probability = militaryParticipant ? Math.min(.03, baselineProbability + Math.min(.01, militaryParticipant.strength * .0025 + (evidence.length >= 3 ? .0025 : 0))) : baselineProbability;
-  return { eligible: blockers.length === 0, blockers, candidates, evidence, probability, vulnerability, baselineProbability, military, militaryParticipant };
+  const probability = militaryParticipant ? Math.min(profile.militaryCap, baselineProbability + Math.min(.01, militaryParticipant.strength * .0025 + (evidence.length >= 3 ? .0025 : 0))) : baselineProbability;
+  return { calibration,eligible: blockers.length === 0, blockers, candidates, evidence, probability, vulnerability, baselineProbability, military, militaryParticipant };
 }
 
 export class InReignDepositionDiagnostics {

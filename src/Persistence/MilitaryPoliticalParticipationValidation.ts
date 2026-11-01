@@ -1,3 +1,4 @@
+import {calibrationOrBaseline,POLITICAL_CALIBRATIONS,depositionVulnerability} from '../Politics/PoliticalCalibration';
 import {militaryPoliticalDefense} from '../Politics/MilitaryPoliticalInfluence';
 import {validNoblePoliticalSelection} from "./MilitaryNobleSelectionValidation";
 import type { WorldSaveV1 } from "./WorldSaveSchema";
@@ -48,11 +49,12 @@ export function validateMilitaryPoliticalParticipation(save: WorldSaveV1): strin
       if (!previous) { fail(); continue; }
       if(!validNoblePoliticalSelection(s,save,before,at,record.factionId,{...dynasty,rulers} as any,previous.id,record.version)){fail();continue;}
       if (record.kind === "DEPOSITION") {
-        const evidence = getRecentDepositionEvidence(record.factionId, before.filter(e => record.crisisEventIds.includes(e.id)), at);
-        const baseline = Math.min(.015, .005 + Math.max(0, evidence.length - 1) * .005);
+        const evidence = getRecentDepositionEvidence(record.factionId, before.filter(e => record.crisisEventIds.includes(e.id)), at,calibrationOrBaseline(event.metadata?.politicalCalibration));
+        const profile=calibrationOrBaseline(event.metadata?.politicalCalibration),p=POLITICAL_CALIBRATIONS[profile];
+        const baseline = Math.min(p.depositionCap, p.depositionBase + Math.max(0, evidence.length - 1) * p.depositionStep);
         const strong = evidence.length >= 2 || evidence.some(e => e.type === "capital-fallen" || e.type === "empire-split") && political.stability <= 30;
-        const chance = Math.min(.03, baseline + Math.min(.01, strength.strength * .0025 + (evidence.length >= 3 ? .0025 : 0)));
-        if (at % 12 !== 0 || !strong || !(political.stability <= 40 || political.cityCount <= 2) || evidence.length !== record.crisisEventIds.length ||
+        const chance = Math.min(p.militaryCap, baseline + Math.min(.01, strength.strength * .0025 + (evidence.length >= 3 ? .0025 : 0)));
+        if (at % 12 !== 0 || !strong || !depositionVulnerability(political.stability,political.cityCount,evidence.some(e=>e.type==='capital-fallen'||e.type==='empire-split'),profile) || evidence.length !== record.crisisEventIds.length ||
             previous.endReason !== "被废" || previous.endYear !== at || previous.deathMonth !== undefined && (previous.deathMonth < at || previous.deathMonth === at &&
               !after.some(e => e.type === "ruler-died" && e.metadata?.rulerId === previous.id && (e.monthIndex ?? e.year) === at)) ||
             !close(record.baselineChance, baseline) || !close(record.finalChance, chance)) fail();
@@ -60,7 +62,7 @@ export function validateMilitaryPoliticalParticipation(save: WorldSaveV1): strin
         const successor = rulers.find(r => r.id === event.metadata?.displacedSuccessorId);
         const reason = event.metadata?.successionReason;
         if (!successor || !["natural", "combat", "captured"].includes(String(reason)) || previous.deathMonth !== at) { fail(); continue; }
-        const context = { worldMonth: at, factionId: record.factionId, predecessor: previous, successor, identityStage: "STATE", status: "ACTIVE",
+        const context = { calibration:calibrationOrBaseline(event.metadata?.politicalCalibration),worldMonth: at, factionId: record.factionId, predecessor: previous, successor, identityStage: "STATE", status: "ACTIVE",
           stability: political.stability, cityCount: political.cityCount, successionReason: reason as "natural" | "combat" | "captured",
           previousSuccessionMonths: rulers.filter(r => r.predecessorId && r.accessionYear !== undefined && r.accessionYear <= at &&
             (r.accessionYear < at || (r.reignOrdinal ?? 0) <= (previous.reignOrdinal ?? 0))).map(r => r.accessionYear!),

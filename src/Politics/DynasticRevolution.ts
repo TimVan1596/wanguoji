@@ -1,3 +1,4 @@
+import {POLITICAL_CALIBRATIONS,type PoliticalCalibration} from './PoliticalCalibration';
 import { selectIndependentPoliticalShocks, type PoliticalSuccessionShock } from "./PoliticalSuccessionCrisis";
 import type { Ruler } from "./Dynasty";
 import { calculateSuccessionEffect } from "./SuccessionRules";
@@ -16,6 +17,7 @@ export interface DynastyHouseEpoch {
 }
 
 export interface RevolutionContext {
+  calibration?:PoliticalCalibration;
   /** Transient indexed source view shared with the event writer, never a save field. */
   sourceEvents?:readonly import("../History/WorldHistory").WorldEvent[];
   worldMonth: number; identityStage: string; status: string; stability: number; cityCount: number;
@@ -50,7 +52,7 @@ export function getRevolutionEligibility(context: RevolutionContext) {
   const vulnerabilityScore = (context.cityCount <= 2 ? 2 : context.cityCount <= 4 ? 1 : 0) +
     (context.stability <= 45 ? 2 : context.stability <= 60 ? 1 : 0) +
     (crisis.level === "succession-instability" ? 1 : 0) + (minorSuccessor ? 1 : 0);
-  const politicalExposure = (independentShocks.length > 0 || context.successionReason !== "natural") && vulnerabilityScore >= 2;
+  const politicalExposure = (independentShocks.length > 0 || context.successionReason !== "natural") && vulnerabilityScore >= POLITICAL_CALIBRATIONS[context.calibration??'BASELINE'].shockScore;
   const riskTier = crisis.level === "succession-crisis" ? "CRISIS" as const
     : compoundExposure ? (crisis.level === "succession-instability" ? "COMPOUND_INSTABILITY" as const : "COMPOUND_SHOCK" as const)
     : politicalExposure ? "POLITICAL_SHOCK" as const : "BLOCKED" as const;
@@ -70,7 +72,7 @@ export function getRevolutionEligibility(context: RevolutionContext) {
   // eligibility result; canonical history remains untouched.
   const normalizedEvidence = [...new Set(evidence)];
   return { blockers, evidence: normalizedEvidence, crisis, riskTier, politicalShocks: riskTier === "POLITICAL_SHOCK" ? independentShocks : [],
-    observedPoliticalShocks: independentShocks, politicalVulnerability: vulnerabilityScore >= 2, vulnerabilityScore };
+    observedPoliticalShocks: independentShocks, politicalVulnerability: vulnerabilityScore >= POLITICAL_CALIBRATIONS[context.calibration??'BASELINE'].shockScore, vulnerabilityScore };
 }
 
 const EVIDENCE_CHANCE_PERCENT: Readonly<Record<string, number>> = {
@@ -85,11 +87,12 @@ function getBaseRevolutionChanceProfile(context: RevolutionContext, eligibility:
   const basePercent = context.stability <= 30 ? 14 : context.stability <= 45 ? 10 : context.stability <= 60 ? 6 : 4;
   if (eligibility.riskTier === "POLITICAL_SHOCK") {
     const distinctShockCount = new Set(eligibility.politicalShocks.map(shock => shock.eventId)).size + (context.successionReason !== "natural" ? 1 : 0);
-    const politicalRiskPercent = Math.min(6, 2 + (distinctShockCount >= 2 ? 1 : 0) +
+    const policy=POLITICAL_CALIBRATIONS[context.calibration??'BASELINE'];
+    const politicalRiskPercent = Math.min(policy.shockCap*100, policy.shockBase*100 + (distinctShockCount >= 2 ? 1 : 0) +
       (context.cityCount <= 2 ? 1 : 0) + (context.stability <= 45 ? 1 : 0) +
       (eligibility.crisis.level === "succession-instability" || eligibility.evidence.includes("MINOR_SUCCESSOR") ? 1 : 0));
-    return { chance: politicalRiskPercent / 100, baseChance: .02, modifierChance: (politicalRiskPercent - 2) / 100,
-      capped: politicalRiskPercent === 6, riskMultiplier: 1 };
+    return { chance: politicalRiskPercent / 100, baseChance: policy.shockBase, modifierChance: politicalRiskPercent/100-policy.shockBase,
+      capped: politicalRiskPercent === policy.shockCap*100, riskMultiplier: 1 };
   }
   const modifierPercent = Object.entries(EVIDENCE_CHANCE_PERCENT)
     .reduce((total, [evidence, percent]) => total + (eligibility.evidence.includes(evidence) ? percent : 0), 0);
@@ -104,7 +107,7 @@ function getRevolutionChanceProfile(context: RevolutionContext, eligibility: Ret
   const base = getBaseRevolutionChanceProfile(context, eligibility);
   const candidate = base.chance > 0 && eligibility.politicalVulnerability &&
     (eligibility.observedPoliticalShocks.length > 0 || context.successionReason !== "natural") ? context.military?.candidates[0] : undefined;
-  const cap = eligibility.riskTier === "POLITICAL_SHOCK" ? .06 : .18 * base.riskMultiplier;
+  const cap = eligibility.riskTier === "POLITICAL_SHOCK" ? POLITICAL_CALIBRATIONS[context.calibration??'BASELINE'].shockCap : .18 * base.riskMultiplier;
   const chance = candidate ? Math.min(cap, base.chance + Math.min(3, candidate.strength) * .0025) : base.chance;
   return { ...base, chance, baselineChance: base.chance, militaryBonus: chance - base.chance,
     militaryParticipant: chance > base.chance ? candidate : undefined };

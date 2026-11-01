@@ -82,7 +82,7 @@ export function deriveMilitaryPoliticalInfluence(input: {
     const experience = militaryPoliticalStrength(career.serviceMonths, members.length, career.verifiedCaptures,defense.eventIds.length,defense.localServiceMonths);
     const appointment=p.appointments.find(a=>a.commandId===f.commandId&&a.endMonth===undefined)!;
     const eligible=input.localSecession?localMilitaryCareer(worldMonth-appointment.startMonth,members.length,career.activities.filter(a=>a.factionId===factionId).length,career.verifiedCaptures,defense.eventIds.length):experience.eligible||Boolean(input.courtAttempt&&career.serviceMonths>=12&&members.length>=2);
-    if (!eligible) { block(p.personId, "INSUFFICIENT_CAREER"); continue; }
+    if (!eligible) { block(p.personId, input.courtAttempt?(members.length<2?"COURT_COMMAND_TOO_SMALL":"COURT_SERVICE_TOO_SHORT"):"INSUFFICIENT_CAREER"); continue; }
     candidates.push({ personId: p.personId, sourceUserId: p.sourceUserId, name: p.name, personalName: p.personalName, bornMonth: p.bornMonth, factionId,
       commandId: f.commandId, commanderUnitId: u.unitId, memberUnitIds: members, unitCount: members.length,
       serviceMonths: career.serviceMonths, capturedEventIds: career.capturedEventIds.slice().sort(),

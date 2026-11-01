@@ -1,3 +1,4 @@
+import {calibrationOrBaseline,isPoliticalCalibration} from '../Politics/PoliticalCalibration';
 import {validateMilitaryFamilies} from './MilitaryFamilyValidation';
 import {validateRoyalSuccessionStanding} from './RoyalSuccessionValidation';
 import {validateMilitaryCourt} from './MilitaryCourtValidation';
@@ -34,6 +35,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   const errors: string[] = [];
   if (!isPlainRecord(value)) return { valid: false, errors: ["save must be a plain object"] };
   const save = value as Partial<WorldSaveV1>;
+  if(save.registries?.dynastyPoliticalCalibration!==undefined&&!isPoliticalCalibration(save.registries.dynastyPoliticalCalibration))errors.push('invalid saved political calibration');
   if (typeof save.saveSchemaVersion === "number" && save.saveSchemaVersion < CURRENT_SAVE_SCHEMA_VERSION) {
     return { valid: false, errors: ["该存档版本已不受支持，请创建新世界。"] };
   }
@@ -411,7 +413,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
           const newRuler = ownerRulers.find((r: any) => r.rulerId === newId);
           const runtimeRulers = ownerRulers.map((r: any) => ({ ...r,
             id: r.rulerId, bornYear: r.bornMonth, accessionYear: r.accessionMonth, naturalDeathYear:r.naturalDeathMonth, plannedEndYear:r.plannedEndMonth }));
-          if(!validDepositionSelection(meta.depositionSelection,runtimeRulers as any,oldId,newId,Number(month))) errors.push("invalid deposition candidate selection evidence");
+          if(!validDepositionSelection(meta.depositionSelection,runtimeRulers as any,oldId,newId,Number(month),calibrationOrBaseline(meta.politicalCalibration))) errors.push("invalid deposition candidate selection evidence");
           if(typeof meta.depositionSelection==="string")try{
             if(!validRoyalDepositionMilitary(save as unknown as WorldSaveV1,event))errors.push("invalid royal command selection evidence");
             const selection=JSON.parse(meta.depositionSelection);

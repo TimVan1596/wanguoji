@@ -1,3 +1,4 @@
+import {POLITICAL_CALIBRATIONS,type PoliticalCalibration} from './PoliticalCalibration';
 import type {MilitaryPerson} from './MilitaryCommandRegistry';
 import type {WorldEvent} from '../History/WorldHistory';
 import {splitEstablishedPersonalName,hanGivenNamePool} from './NameCulture';
@@ -45,10 +46,10 @@ export function familyGenerationsSinceMerit(family:MilitaryFamily,member:Militar
  return generations;
 }
 /** First appointment only; inherited reputation never substitutes for eligibility, army or personal merit. */
-export function familyAppointmentWeight(family:MilitaryFamily|undefined,member:MilitaryFamilyMember|undefined,factionId:string,epoch:string|undefined,month:number){
+export function familyAppointmentWeight(family:MilitaryFamily|undefined,member:MilitaryFamilyMember|undefined,factionId:string,epoch:string|undefined,month:number,calibration:PoliticalCalibration='BASELINE'){
  if(!family||!member||family.factionId!==factionId||family.epochFounderId!==epoch||member.deathMonth!==undefined||member.militaryPersonId||member.enteredMonth>month||month-member.bornMonth<18*12)return 1;
  const generations=familyGenerationsSinceMerit(family,member,month);
- return generations===1?1.10:generations===2?1.05:1;
+ const profile=POLITICAL_CALIBRATIONS[calibration];return generations===1?profile.familyChild:generations===2?profile.familyGrandchild:1;
 }
 export function familyStatus(f:MilitaryFamily,people:readonly MilitaryPerson[]){
  const descendants=f.members.filter(m=>m.generation>0),serving=descendants.filter(m=>m.militaryPersonId&&people.some(p=>p.personId===m.militaryPersonId&&p.status==='ACTIVE'));
