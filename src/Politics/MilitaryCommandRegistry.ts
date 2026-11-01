@@ -1,3 +1,4 @@
+import {createFamilyNobleContext,planFamilyNobleTransition,familyNobleText} from './FamilyNobleSuccession';
 import {emptyFamilyRecruitmentDiagnostics,familyRecruitmentExposure} from './FamilyRecruitmentDiagnostics';
 import {familyFounderSource,makeMilitaryFamily,familyAppointmentWeight,type MilitaryFamily} from './MilitaryFamily';
 import {politicalMutationActive,beginPoliticalMutation} from '../Simulation/PoliticalMutationScope';
@@ -148,7 +149,7 @@ export class MilitaryCommandRegistryStore {
   private longRangeOrderSamples = new Map<string, number>();
   private eventWriter?: (event: Omit<WorldEvent, "id"> & { id: string }) => string;
   private eventReader: (factionId: string) => WorldEvent[] = factionId => WorldHistory.getEventsForFaction(factionId);
-  private diagnostics = { familyAppointmentFailures:0,familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
+  private diagnostics = { familyTitleFailures:0,familyAppointmentFailures:0,familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
     unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
 
   reset() {
@@ -158,7 +159,7 @@ export class MilitaryCommandRegistryStore {
     this.lastEvaluationMonth = -1;
     this.lastArrivalTargetByCommand.clear();
     this.longRangeOrderSamples.clear();
-    this.diagnostics = { familyAppointmentFailures:0,familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
+    this.diagnostics = { familyTitleFailures:0,familyAppointmentFailures:0,familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
       unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
   }
 
@@ -182,7 +183,7 @@ export class MilitaryCommandRegistryStore {
     this.lastEvaluationMonth = state.lastEvaluationMonth;
     this.lastArrivalTargetByCommand.clear();
     this.longRangeOrderSamples.clear();
-    this.diagnostics = { familyAppointmentFailures:0,familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
+    this.diagnostics = { familyTitleFailures:0,familyAppointmentFailures:0,familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
       unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
   }
 
@@ -468,6 +469,33 @@ export class MilitaryCommandRegistryStore {
     }
     scope.commit();return true;
   }
+  updateFamilyTitles(month:number,teams:Team[],dynasties:Dynasty[]){
+    if(!this.eventWriter||!this.families.length)return;
+    for(const original of [...this.families]){
+      const f=this.families.find(f=>f.familyId===original.familyId)!;
+      const context=createFamilyNobleContext(month,this.families,this.getPeople(),this.eventReader(f.factionId),dynasties);
+      const act=planFamilyNobleTransition(f,context);if(!act)continue;
+      // Never turn an absent or mismatched living resident into an heir by inference.
+      if(act.kind==='SUCCEEDED'){
+        const heir=f.members.find(m=>m.memberId===act.holderMemberId)!,bindings=teams.flatMap(t=>[...t.users]).filter(u=>u.id===heir.sourceUserId&&u.bornMonth===heir.bornMonth);
+        const u=bindings[0];if(bindings.length!==1||!u||u.isDestroyed||u.team.name!==f.factionId||u.role!=='NORMAL'||u.rulerId||!u.player.active||u.player.user!==u||!u.team.users.has(u))continue;
+      }
+      const before=this.snapshotTransaction(),history=WorldHistory.snapshotPoliticalTransaction(),rng=worldRandom.exportState(),scope=beginPoliticalMutation();
+      try{
+        const previous=f.members.find(m=>m.memberId===act.previousMemberId)!;
+        for(const id of act.sourceEventIds)if(id===`${f.familyId}-${previous.memberId}-death`&&!this.eventReader(f.factionId).some(e=>e.id===id)){
+          if(previous.deathMonth===undefined||previous.deathMonth>month)throw Error('Missing real family death');
+          const e:WorldEvent={id,year:previous.deathMonth,monthIndex:previous.deathMonth,type:'family-member-died',category:'politics',importance:'normal',actorFactionId:f.factionId,factionIds:[f.factionId],title:`${previous.name}卒。`,metadata:{familyId:f.familyId,memberId:previous.memberId,sourceUserId:previous.sourceUserId,bornMonth:previous.bornMonth,deathCause:previous.deathCause}};
+          if(this.eventWriter(e)!==id||!this.eventReader(f.factionId).some(e=>e.id===id))throw Error('Family death history rejected');
+        }
+        if(this.eventWriter({id:act.eventId,year:month,monthIndex:month,type:act.kind==='SUCCEEDED'?'family-title-succeeded':'family-title-ended',category:'politics',importance:'major',actorFactionId:f.factionId,factionIds:[f.factionId],title:familyNobleText(f,act),metadata:{familyId:f.familyId,memberId:act.holderMemberId??act.previousMemberId,personId:f.members.find(m=>m.memberId===act.holderMemberId)?.militaryPersonId,familyNobleAct:JSON.stringify(act)}})!==act.eventId)throw Error('Family title history rejected');
+        this.commitFamilyTitle(f.familyId,act);
+        if(!this.eventReader(f.factionId).some(e=>e.id===act.eventId))throw Error('Family title event not committed');
+      }catch{scope.cancel();this.rollbackTransaction(before,true);const restore=beginPoliticalMutation();WorldHistory.rollbackPoliticalTransaction(history);worldRandom.restore(rng);restore.finishRollback();this.diagnostics.familyTitleFailures++;continue;}
+      scope.commit();
+    }
+  }
+  commitFamilyTitle(familyId:string,act:import('./FamilyNobleSuccession').FamilyNobleAct){const f=this.families.find(f=>f.familyId===familyId);if(!f||f.nobleSuccession?.some(a=>a.eventId===act.eventId))throw Error('Duplicate family succession');(f.nobleSuccession??=[]).push(structuredClone(act));}
   updateFamilies(month:number,teams:Team[],dynasties:Dynasty[]){
     if(month%12!==0||!this.eventWriter)return;
     for(const p of this.people.values()){
@@ -757,6 +785,7 @@ export class MilitaryCommandRegistryStore {
   }
 
   onUserTransfer(user: User, nextFactionId: string, worldMonth: number) {
+    const relative=this.getFamilyMember(user.id,user.bornMonth);if(relative)(relative.member.factionHistory??=[]).push({month:worldMonth,factionId:nextFactionId,eventIndex:WorldHistory.getEventCount()});
     const record = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
     // A stale or copied personId must never transfer another person's identity or office.
     const person = record?.sourceUserId === user.id && record.bornMonth === user.bornMonth &&
@@ -775,7 +804,7 @@ export class MilitaryCommandRegistryStore {
 
   onUserDestroyed(user: User, worldMonth: number, cause: string) {
     const relative=this.getFamilyMember(user.id,user.bornMonth);
-    if(relative){relative.member.exitMonth=worldMonth;relative.member.exitCause=cause;if(['SIEGE_LOSS','BATTLE_DEATH','NATURAL_DEATH'].includes(cause)){relative.member.deathMonth=worldMonth;relative.member.deathCause=cause;}}
+    if(relative){relative.member.exitHistoryIndex=WorldHistory.getEventCount();relative.member.exitMonth=worldMonth;relative.member.exitCause=cause;if(['SIEGE_LOSS','BATTLE_DEATH','NATURAL_DEATH'].includes(cause)){relative.member.deathHistoryIndex=WorldHistory.getEventCount();relative.member.deathMonth=worldMonth;relative.member.deathCause=cause;}}
     const record = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
     const person = record?.sourceUserId === user.id && record.bornMonth === user.bornMonth && record.name === user.name && record.factionId === user.team.name ? record : undefined;
     if (cause === "NATURAL_DEATH" && !(ordinaryLifeEligible({...user,isDestroyed:false})&&worldMonth>=residentNaturalDeathMonth(user.id,user.bornMonth)) && (!person || (!person.royalIdentity && worldMonth % 12 !== 0) || worldMonth < deriveMilitaryLifeSchedule(person).naturalDeathMonth)) return;

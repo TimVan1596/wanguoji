@@ -1,3 +1,4 @@
+import type {FamilyNobleAct} from './FamilyNobleSuccession';
 import {POLITICAL_CALIBRATIONS,type PoliticalCalibration} from './PoliticalCalibration';
 import type {MilitaryPerson} from './MilitaryCommandRegistry';
 import type {WorldEvent} from '../History/WorldHistory';
@@ -6,11 +7,12 @@ import {splitEstablishedPersonalName,hanGivenNamePool} from './NameCulture';
 export interface MilitaryFamilyMember {
  memberId:string; sourceUserId:number; name:string; bornMonth:number; generation:number;
  parentMemberId?:string; enteredMonth:number; source:'FOUNDER'|'NATURAL_GROWTH';
+ factionHistory?:Array<{month:number;factionId:string;eventIndex:number}>; deathHistoryIndex?:number; exitHistoryIndex?:number;
  militaryPersonId?:string; deathMonth?:number; deathCause?:string; exitMonth?:number; exitCause?:string;
 }
 export interface MilitaryFamily {
  familyId:string; surname:string; founderPersonId:string; factionId:string; epochFounderId:string;
- foundedMonth:number; sourceEventId:string; renewals?:Array<{memberId:string;month:number;sourceEventId:string}>; members:MilitaryFamilyMember[];
+ foundedMonth:number; sourceEventId:string; nobleSuccession?:FamilyNobleAct[]; renewals?:Array<{memberId:string;month:number;sourceEventId:string}>; members:MilitaryFamilyMember[];
 }
 export const familyMemberId=(userId:number,bornMonth:number)=>`family-member-${userId}-${bornMonth}`;
 export function familyFounderSource(p:MilitaryPerson,events:readonly WorldEvent[],factionId:string,epoch:string,month:number){

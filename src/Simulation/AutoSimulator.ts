@@ -404,6 +404,7 @@ export default class AutoSimulator {
       FactionLifetimeRecords.observeWorld(this.clock.year, teams, totalCells);
       this.measure("FactionSnapshots.observe", () => FactionSnapshots.observe(this.clock.year, teams, totalCells));
       this.measure("WorldHistory.observeWorld", () => WorldHistory.observeWorld(this.clock.year, teams, totalCells));
+      this.measure("Family noble succession",()=>MilitaryCommandRegistry.updateFamilyTitles(this.clock.year,teams,DynastyRegistry.getAll()));
       this.events.observeWorldGoal(this.clock.year, teams, totalCells);
       if (debugProfileEnabled) {
         this.measure("debug/LongRun diagnostics", () => {

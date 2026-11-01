@@ -1,3 +1,4 @@
+import {validateFamilyNobility} from './FamilyNobleValidation';
 import {calibrationOrBaseline,isPoliticalCalibration} from '../Politics/PoliticalCalibration';
 import {validateMilitaryFamilies} from './MilitaryFamilyValidation';
 import {validateRoyalSuccessionStanding} from './RoyalSuccessionValidation';
@@ -515,6 +516,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   if (!errors.length) errors.push(...validateMilitaryCourt(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateRoyalSuccessionStanding(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateMilitaryFamilies(save as WorldSaveV1));
+  if (!errors.length) errors.push(...validateFamilyNobility(save as WorldSaveV1));
   return { valid: errors.length === 0, errors };
 }
 
