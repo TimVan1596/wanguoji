@@ -25,7 +25,11 @@ export function mergeCourtCoupReading(events:readonly WorldEvent[]){
   for(const x of children.get(e.id)??[])if(x.type==='military-command-ended'&&x.metadata?.courtCoupEventId===e.id&&x.metadata.personId===r.participant.personId&&x.metadata.commandId===r.participant.commandId&&x.metadata.endReason==='DISMISSED'&&x.actorFactionId===e.actorFactionId&&at(x)===at(e))sources.push(x);
   for(const x of sources)if(x!==e)hidden.add(x.id);
   const service=children.get(e.id)?.find(x=>x.type==='court-service-granted'&&x.metadata?.courtCoupEventId===e.id&&x.metadata?.courtResultEventId===result.id&&x.metadata?.personId===r.participant.personId&&x.rulerId===r.targetRulerId&&at(x)===at(e));if(service){sources.push(service);hidden.add(service.id);}
-  const text=courtCoupText(r)+(service?'新君录其为拥立功臣。':'');replaced.set(e.id,{...e,title:text,description:text,metadata:{...e.metadata,courtReadingKind:'COURT_COUP',...(service?{courtServiceEventId:service.id}:{}),sourceEventIds:sources.map(x=>x.id).join(',')}});
+  const ban=children.get(e.id)?.find(x=>x.type==='military-court-sanction'&&at(x)===at(e)&&x.metadata?.personId===r.participant.personId);
+  const revocation=events.find(x=>x.type==='military-title-revoked'&&at(x)===at(e)&&x.metadata?.personId===r.participant.personId&&(()=>{try{const h=JSON.parse(String(x.metadata?.honor));return h.reason==='COURT_COUP_FAILED'&&h.sourceEventId===result.id;}catch{return false;}})());
+  for(const extra of [ban,revocation])if(extra){sources.push(extra);hidden.add(extra.id);}
+  const forfeiture=revocation?(()=>{try{return ({BO:'伯爵',HOU:'侯爵',GONG:'公爵'} as Record<string,string>)[JSON.parse(String(revocation.metadata?.honor)).rank];}catch{return;}})():undefined;
+  const text=courtCoupText(r)+(ban?`${r.participant.personalName??r.participant.name}被禁仕${forfeiture?`，${forfeiture}亦遭追夺`:''}。`:'')+(service?'新君录其为拥立功臣。':'');replaced.set(e.id,{...e,title:text,description:text,metadata:{...e.metadata,courtReadingKind:'COURT_COUP',...(service?{courtServiceEventId:service.id}:{}),sourceEventIds:sources.map(x=>x.id).join(',')}});
  }
  const output:WorldEvent[]=[];for(const e of events)if(!hidden.has(e.id))output.push(replaced.get(e.id)??e);return output;
 }

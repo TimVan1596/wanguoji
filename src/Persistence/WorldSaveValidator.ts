@@ -1,3 +1,4 @@
+import {validateMilitaryCourt} from './MilitaryCourtValidation';
 import {validateCourtCoups} from './CourtCoupValidation';
 import {validateRoyalHonors} from './RoyalHonorValidation';
 import {validateMilitaryNarrativeLinks} from "./MilitaryNarrativeLinkValidation";
@@ -507,6 +508,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   }
   if (!errors.length) errors.push(...validateRoyalHonors(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateCourtCoups(save as WorldSaveV1));
+  if (!errors.length) errors.push(...validateMilitaryCourt(save as WorldSaveV1));
   return { valid: errors.length === 0, errors };
 }
 

@@ -19,7 +19,7 @@ export function validateMilitaryHonors(save:WorldSaveV1){
    const life=before.filter(e=>['faction-exiled','faction-extinct','faction-restored','faction-submitted','faction-merged'].includes(e.type)&&(e.type==='faction-restored'?e.actorFactionId===h.factionId||e.targetFactionId===h.factionId:e.targetFactionId===h.factionId)).at(-1);if(life&&life.type!=='faction-restored')throw Error();
    const team={...f,name:f.factionId,status:'ACTIVE',identityStage:'STATE',sovereigntyRank:getSovereigntyRankAtMonth(f as any,h.month)};
    const dy={...d,currentRulerId:r.id,rulers:d.rulers.map(x=>x.id===r.id?{...x,status:'ruling' as const,endYear:undefined,deathMonth:undefined}:x)};
-   const past={...p,honorHistory:p.honorHistory.filter(x=>ids.has(x.eventId)),nobilityHistory:p.nobilityHistory?.filter(g=>ids.has(g.eventId))};
+   const past={...p,politicalHistory:p.politicalHistory?.filter(a=>ids.has(a.eventId)),honorHistory:p.honorHistory.filter(x=>ids.has(x.eventId)),nobilityHistory:p.nobilityHistory?.filter(g=>ids.has(g.eventId))};
    const candidates=nextMilitaryHonors(past,state.formations,before,h.month,[team],dynasties.map(x=>x.factionId===d.factionId?dy:x) as any);
    if(!candidates.some(c=>JSON.stringify(c)===JSON.stringify(h))||e.type!==(h.kind==='REVOKED'?'military-title-revoked':'military-posthumous')||e.actorFactionId!==h.factionId||e.rulerId!==h.rulerId||(e.monthIndex??e.year)!==h.month||e.metadata?.honor!==JSON.stringify(h)||e.title!==militaryHonorText(h))throw Error();
    used.add(h.eventId);last=h.month;

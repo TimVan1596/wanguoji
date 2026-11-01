@@ -1,4 +1,5 @@
-import {currentNobleGrant} from '../../../Politics/MilitaryNobility';
+import {militaryCourtLabels} from '../../../Politics/MilitaryCourtStanding';
+import {currentNobleGrant,nobleEpochForRuler} from '../../../Politics/MilitaryNobility';
 import {royalHonorHeading} from '../../../Politics/RoyalHonorPresentation';
 import RoyalHonorPanel from './RoyalHonorPanel';
 import {militaryHonorPresentation} from '../../../Politics/MilitaryHonorPresentation';
@@ -697,7 +698,8 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
       const portraitContext=linked&&linked.accessionYear!==undefined&&linked.accessionYear<=worldMonth&&royalTeam&&royalTeam.name===factionId?{...royalPortraitContext(linked,royalTeam,worldMonth),historical:true}:militaryPortraitContext(person,factionId,politicalTeam,worldMonth);
       if(oldTitleRevoked&&'nobleRank' in portraitContext){const grant=currentNobleGrant(person,factionId,worldMonth);if(grant)portraitContext.nobleRank=grant.rank;else delete (portraitContext as {nobleRank?:string}).nobleRank;}
       const secession=archiveDynasties.flatMap(d=>d.rulers.map(r=>({d,r}))).find(({r})=>r.residentIdentity?.military?.personId===person.personId&&r.residentIdentity.sourceFactionId===factionId&&r.residentIdentity.foundedMonth<=worldMonth&&archiveEvents.some(e=>e.type==='empire-split'&&e.metadata?.militaryPersonId===person.personId&&e.metadata?.foundingRulerId===r.id));
-      const identityLabels=[...militaryIdentityLabels(person,archiveDynasties,archiveEvents,worldMonth),...(secession?[`已叛离${secession.r.residentIdentity!.sourceFactionName}`,...(person.honorHistory?.some(h=>h.kind==='REVOKED'&&h.factionId===factionId&&h.month<=worldMonth&&archiveEvents.some(e=>e.id===h.eventId&&e.type==='military-title-revoked'))?['旧爵已追夺']:[])]:[])];
+      const localHouse=archiveDynasties.find(d=>d.factionId===factionId),courtLabels=militaryCourtLabels(person,factionId,worldMonth,nobleEpochForRuler(localHouse,localHouse?.currentRulerId??null)?.foundingRulerId??'ENDED');
+      const identityLabels=[...courtLabels,...militaryIdentityLabels(person,archiveDynasties,archiveEvents,worldMonth),...(secession?[`已叛离${secession.r.residentIdentity!.sourceFactionName}`,...(person.honorHistory?.some(h=>h.kind==='REVOKED'&&h.factionId===factionId&&h.month<=worldMonth&&archiveEvents.some(e=>e.id===h.eventId&&e.type==='military-title-revoked'))?['旧爵已追夺']:[])]:[])];
       const honorTitle=militaryHonorPresentation(person,factionId,worldMonth,eventIndex.byId);
       const royalOwner=person.royalIdentity?archiveDynasties.find(d=>d.factionId===person.royalIdentity!.factionId):undefined;
       const royalHonor=royalHonorHeading(linked,royalOwner,worldMonth,{local:true,person,factionId,status:politicalTeam?.status});
@@ -729,7 +731,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
           const orderEvidence = formation ? MilitaryCommandRegistry.getOrderEvidence(formation) : undefined;
           const view=formation&&Game.Core?resolveMilitaryCommandView(Game.Core,formation.commandId):undefined;
           return <PersonChronicleLayout
-            title={<MilitaryPersonIdentityHeader honor={royalHonor} person={person} politicalLabel={secession?identityLabels.find(l=>l.startsWith('已叛离')):identityLabels.find(l=>l==='现任君主'||l==='曾任君主')} country={`${politicalFactionById.get(person.factionId)?.displayName ?? person.factionId}${politicalFactionById.get(person.factionId)?.identityStage === "STATE" ? "国" : ""}`} />}
+            title={<MilitaryPersonIdentityHeader honor={royalHonor} person={person} politicalLabel={secession?identityLabels.find(l=>l.startsWith('已叛离')):courtLabels[0]??identityLabels.find(l=>l==='现任君主'||l==='曾任君主')} country={`${politicalFactionById.get(person.factionId)?.displayName ?? person.factionId}${politicalFactionById.get(person.factionId)?.identityStage === "STATE" ? "国" : ""}`} />}
             identity={<>
               <PersonLifeDates bornMonth={person.bornMonth} deathMonth={person.deathMonth}/>
               <Typography fontSize="0.76rem">{identityBadges}</Typography><Typography fontSize=".8rem">{honorTitle.text}</Typography>

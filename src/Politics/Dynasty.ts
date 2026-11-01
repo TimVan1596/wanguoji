@@ -1,3 +1,4 @@
+import {planCourtPardon} from './MilitaryCourtStanding';
 import {courtCoupAttemptText} from '../History/CourtCoupReading';
 import {chooseCourtTarget,courtSuccessChance,type CourtSuccessPolicy} from './CourtCoupOutcome';
 import {courtAttemptOutcome} from './CourtCoup';
@@ -420,7 +421,7 @@ class DynastyRegistryStore {
           this.ensureActiveHeir(team, dynasty, year);
         }
         this.ensureRulerUnit(team);
-        if (dynasty && ruler) {this.evaluateInReignDeposition(team, dynasty, ruler, year);this.grantRoyalHonor(team,year);}
+        if (dynasty && ruler) {this.evaluateInReignDeposition(team, dynasty, ruler, year);this.evaluateCourtPardon(team,dynasty,year);this.grantRoyalHonor(team,year);}
         return;
       }
       this.succeedRuler(team, dynasty, ruler, year, "natural");
@@ -1006,14 +1007,25 @@ class DynastyRegistryStore {
       if(outcome==='SUCCESS'&&!depositionEventId)throw Error('Missing actual deposition result');
       WorldHistory.addEvent({id:outcomeEventId,year:month,type:'court-coup-result',category:'politics',importance:'major',actorFactionId:team.name,factionIds:[team.name],rulerId:outcome==='SUCCESS'?target.id:current.id,
         title:outcome==='SUCCESS'?`${actorName}拥立${royalName(target)}事成，${royalName(current)}被废。`:`${actorName}拥立之谋败，军职被免；${royalName(current)}仍在位。`,metadata:{courtCoupEventId:eventId,...(depositionEventId?{depositionEventId}:{}),personId:actor.personId,commandId:actor.commandId,targetRulerId:target.id,outcome}});
+      if(outcome==='FAILED'){const attempt=WorldHistory.getEventsForFaction(team.name).find(e=>e.id===eventId)!,result=WorldHistory.getEventsForFaction(team.name).find(e=>e.id===outcomeEventId)!;MilitaryCommandRegistry.applyCourtFailure(person,team,dynasty,attempt,result);}
       if(outcome==='SUCCESS'&&target.militaryIdentity?.personId!==actor.personId){
         const supporter=Team.GetUserById(person.sourceUserId);if(!supporter||supporter.isDestroyed||supporter.team!==team||supporter.militaryPersonId!==person.personId)throw Error('Missing living supporter for court service');
         const before=supporter.loyalty,after=Math.min(100,before+8),rewardId=`${eventId}-service`;
         supporter.loyalty=after;
         WorldHistory.addEvent({id:rewardId,year:month,type:'court-service-granted',category:'politics',importance:'major',actorFactionId:team.name,factionIds:[team.name],rulerId:target.id,title:`${this.getRulerTitle(team,target,month)}以${actorName}拥立有功，录为拥立功臣。`,metadata:{courtCoupEventId:eventId,courtResultEventId:outcomeEventId,personId:person.personId,sourceUserId:person.sourceUserId,bornMonth:person.bornMonth,issuerRulerId:target.id,loyaltyBefore:before,loyaltyAfter:after}});
       }
+      if(outcome==='SUCCESS'&&target.militaryIdentity?.personId!==actor.personId){const service=WorldHistory.getEventsForFaction(team.name).find(e=>e.id===`${eventId}-service`)!;MilitaryCommandRegistry.rewardCourtService(person,team,dynasty,service,month);}
       politicalEffect(()=>{this.courtFunnel.recordDraw(outcome);this.depositionDiagnostics.observe(team.name,month,evaluation,true,undefined,'COURT');});
     });}catch(error){this.courtFunnel.transactionFailures++;console.warn('[CourtCoup] rolled back',error);}
+  }
+
+  private evaluateCourtPardon(team:Team,dy:Dynasty,month:number){
+    if(month%12!==0)return;
+    for(const person of MilitaryCommandRegistry.getPeople().filter(p=>p.factionId===team.name&&p.politicalHistory?.length).sort((a,b)=>a.personId.localeCompare(b.personId))){
+      const act=planCourtPardon(person,team,dy,month,WorldHistory.getEventsForFaction(team.name),getFactionStability(team)??100);if(!act)continue;
+      const user=team.getUserById(person.sourceUserId);if(!user?.matchesMilitaryLife(person)||user.isDestroyed||user.role!=='NORMAL'||user.rulerId||user.team!==team)continue;
+      try{successionTransaction(team,this,()=>MilitaryCommandRegistry.recordCourtAct(person,act));}catch(error){console.warn('[CourtPardon] rolled back',error);}break;
+    }
   }
 
   private commitDeposition(team: Team, dynasty: Dynasty, predecessor: Ruler, successor: Ruler,

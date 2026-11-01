@@ -1,3 +1,4 @@
+import {unresolvedCourtBans} from './MilitaryCourtStanding';
 import type {MilitaryPerson,MilitaryFormation} from './MilitaryCommandRegistry';
 import type {Dynasty} from './Dynasty';
 import type {WorldEvent} from '../History/WorldHistory';
@@ -7,7 +8,7 @@ import {formatRulerTitleAtMonth} from './RulerTitleRules';
 export interface MilitaryHonor {
  eventId:string;kind:'POSTHUMOUS'|'REVOKED';personId:string;personalName:string;factionId:string;countryName:string;epochFounderId:string;
  rulerId:string;rulerTitle:string;month:number;grantEventId:string;rank:NobleRank;sourceEventId:string;
- epithet?:'武烈'|'武毅'|'武襄';deathMonth?:number;reason:'BATTLE_SERVICE'|'DISTINGUISHED_SERVICE'|'VERIFIED_SECESSION';meritEventIds:string[];
+ epithet?:'武烈'|'武毅'|'武襄';deathMonth?:number;reason:'BATTLE_SERVICE'|'DISTINGUISHED_SERVICE'|'VERIFIED_SECESSION'|'COURT_COUP_FAILED';meritEventIds:string[];
 }
 export function honorAuthority(team:any,dy:Dynasty|undefined,month:number){
  const r=dy?.rulers.find(r=>r.id===dy.currentRulerId),epoch=nobleEpochForRuler(dy,dy?.currentRulerId??null);
@@ -39,17 +40,24 @@ export function nextMilitaryHonors(p:MilitaryPerson,formations:MilitaryFormation
   if(!grant||!events.some(x=>x.id===grant.eventId&&x.type==='military-ennobled'&&x.metadata?.nobility===JSON.stringify(grant))||grant.month>(e.monthIndex??e.year)||(p.honorHistory??[]).some(h=>h.kind==='REVOKED'&&h.factionId===factionId&&h.epochFounderId===grant.epochFounderId))continue;
   honors.push({...authority,eventId:`military-revocation-${grant.eventId}`,kind:'REVOKED',personId:p.personId,personalName:p.personalName,month,grantEventId:grant.eventId,rank:grant.rank,sourceEventId:e.id,reason:'VERIFIED_SECESSION',meritEventIds:[]});
  }
+ for(const ban of p.politicalHistory??[]){
+  if(ban.kind!=='COURT_BAN'||ban.severity!=='FORFEITURE'||ban.month!==month||!events.some(e=>e.id===ban.eventId&&e.metadata?.courtAct===JSON.stringify(ban)))continue;
+  const authority=honorAuthority(teams.find(t=>t.name===ban.factionId),dynasties.find(d=>d.factionId===ban.factionId),month),grant=currentNobleGrant(p,ban.factionId,month,ban.epochFounderId);
+  if(!authority||authority.rulerId!==ban.rulerId||authority.epochFounderId!==ban.epochFounderId||!grant||!events.some(e=>e.id===grant.eventId&&e.metadata?.nobility===JSON.stringify(grant)))continue;
+  honors.push({...authority,eventId:`military-revocation-${grant.eventId}`,kind:'REVOKED',personId:p.personId,personalName:p.personalName,month,grantEventId:grant.eventId,rank:grant.rank,sourceEventId:ban.courtResultEventId,reason:'COURT_COUP_FAILED',meritEventIds:[]});
+ }
  if(p.status!=='DEAD'||p.deathMonth===undefined||p.deathMonth>month||p.politicalRulerId||splits.length||(p.honorHistory??[]).some(h=>h.kind==='POSTHUMOUS'))return honors;
  const death=events.find(e=>e.type==='military-person-died'&&e.metadata?.personId===p.personId&&(e.monthIndex??e.year)===p.deathMonth&&e.metadata?.deathCause===p.deathCause);if(!death)return honors;
  const last=p.appointments.filter(a=>a.startMonth<=p.deathMonth!).at(-1);if(!last||last.factionId!==death.actorFactionId)return honors;
  // A former reigning royal belongs to the independent monarch posthumous system.
  if(p.royalIdentity&&dynasties.flatMap(d=>d.rulers).some(r=>r.id===p.royalIdentity!.rulerId&&r.reignOrdinal!==undefined))return honors;
  const factionId=last.factionId,authority=honorAuthority(teams.find(t=>t.name===factionId),dynasties.find(d=>d.factionId===factionId),month);if(!authority)return honors;
+ if(unresolvedCourtBans(p,factionId,month,authority.epochFounderId).length)return honors;
  const g=currentNobleGrant(p,factionId,p.deathMonth,authority.epochFounderId);if(!g||!events.some(e=>e.id===g.eventId&&e.type==='military-ennobled'&&e.metadata?.nobility===JSON.stringify(g))||!currentNobleGrant(p,factionId,month,authority.epochFounderId))return honors;
  const m=deriveNobleMerits(p,formations,events,factionId,p.deathMonth),battle=p.deathCause==='BATTLE_DEATH'&&last.endMonth===p.deathMonth;
  if(!(battle&&m.cityIds.length>=2&&m.serviceMonths>=60)&&!(g.rank!=='BO'&&m.cityIds.length>=4&&m.importantCityIds.length>=1&&m.serviceMonths>=120))return honors;
  honors.push({...authority,eventId:`military-posthumous-${p.personId}`,kind:'POSTHUMOUS',personId:p.personId,personalName:p.personalName,month,grantEventId:g.eventId,rank:g.rank,sourceEventId:death.id,deathMonth:p.deathMonth,epithet:battle?'武烈':m.importantCityIds.length>=2?'武毅':'武襄',reason:battle?'BATTLE_SERVICE':'DISTINGUISHED_SERVICE',meritEventIds:[...new Set([...m.captureEventIds,...m.importantEventIds])]});
  return honors;
 }
-export function militaryHonorText(h:MilitaryHonor){return h.kind==='REVOKED'?`${h.personalName}举兵割据后，${h.rulerTitle}追夺其${NOBLE_NAMES[h.rank]}。`:`${h.rulerTitle}以军功追谥故${NOBLE_NAMES[h.rank]}${h.personalName}为“${h.epithet}”。`;}
+export function militaryHonorText(h:MilitaryHonor){return h.kind==='REVOKED'?`${h.personalName}${h.reason==='COURT_COUP_FAILED'?'谋废事败后':'举兵割据后'}，${h.rulerTitle}追夺其${NOBLE_NAMES[h.rank]}。`:`${h.rulerTitle}以军功追谥故${NOBLE_NAMES[h.rank]}${h.personalName}为“${h.epithet}”。`;}
 export function militaryPosthumousLabel(p:MilitaryPerson,factionId:string,month:number){const h=p.honorHistory?.find(h=>h.kind==='POSTHUMOUS'&&h.factionId===factionId&&h.month<=month);return h?`谥${h.epithet}`:'';}
