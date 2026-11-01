@@ -1075,7 +1075,7 @@ function DynastyTree({
         <Box sx={{ p: 0.8, border: "1px solid var(--gg-border)", borderRadius: "var(--gg-radius)", background: "var(--gg-panel)" }}>
           <Typography fontWeight="bold" fontSize="0.86rem">储君</Typography>
           <Typography component="div" fontSize="0.84rem" sx={{display:"flow-root"}}>
-            <Box component="button" type="button" onClick={()=>onOpenFullGenealogy(designatedHeir.id)} aria-label="查看储君宗谱" sx={{p:0,border:0,background:"none",cursor:"pointer",color:"inherit",font:"inherit",textDecoration:"underline"}}>{formatRulerName(designatedHeir)}</Box> · {formatRulerLifeAge(designatedHeir,worldMonth,false,team.status!=="EXTINCT")} · {currentRulerId ? formatRecordedKinship(designatedHeir, rulers.find((ruler) => ruler.id === currentRulerId) ?? designatedHeir, rulers) : "关系未记录"}
+            <Box component="button" type="button" onClick={()=>onOpenFullGenealogy(designatedHeir.id)} aria-label="查看储君宗谱" sx={{p:0,border:0,background:"none",cursor:"pointer",color:"inherit",font:"inherit",textDecoration:"underline"}}>{royalHonorHeading(designatedHeir,dynasty,worldMonth,{factionId:team.name,status:team.status})?.primary??formatRulerName(designatedHeir)}</Box> · {formatRulerLifeAge(designatedHeir,worldMonth,false,team.status!=="EXTINCT")} · {currentRulerId ? formatRecordedKinship(designatedHeir, rulers.find((ruler) => ruler.id === currentRulerId) ?? designatedHeir, rulers) : "关系未记录"}
             {dynasty?.designatedSinceMonth !== undefined ? ` · 立储${formatWorldDuration(Math.max(0, worldMonth - dynasty.designatedSinceMonth))}` : ""}
           </Typography>
         </Box>
@@ -1086,7 +1086,7 @@ function DynastyTree({
           {otherCandidates.map((candidate) => {
             const current = rulers.find((ruler) => ruler.id === currentRulerId);
             return <Typography key={candidate.id} component="div" fontSize="0.84rem" sx={{display:"flow-root"}}>
-              <Box component="button" type="button" onClick={()=>onOpenFullGenealogy(candidate.id)} aria-label="查看宗室谱系" sx={{p:0,border:0,background:"none",cursor:"pointer",color:"inherit",font:"inherit",textDecoration:"underline"}}>{formatRulerName(candidate)}</Box> · {formatRulerLifeAge(candidate,worldMonth,false,team.status!=="EXTINCT")} · {current ? formatRecordedKinship(candidate, current, rulers) : "关系未记录"}
+              <Box component="button" type="button" onClick={()=>onOpenFullGenealogy(candidate.id)} aria-label="查看宗室谱系" sx={{p:0,border:0,background:"none",cursor:"pointer",color:"inherit",font:"inherit",textDecoration:"underline"}}>{royalHonorHeading(candidate,dynasty,worldMonth,{factionId:team.name,status:team.status})?.primary??formatRulerName(candidate)}</Box> · {formatRulerLifeAge(candidate,worldMonth,false,team.status!=="EXTINCT")} · {current ? formatRecordedKinship(candidate, current, rulers) : "关系未记录"}
               <RoyalHonorPanel ruler={candidate} month={worldMonth}/>
             </Typography>;
           })}
