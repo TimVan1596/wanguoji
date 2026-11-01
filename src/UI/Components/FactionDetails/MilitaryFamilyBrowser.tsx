@@ -18,7 +18,7 @@ import {FAMILY_CARD_HEIGHT,FAMILY_CARD_WIDTH,layoutMilitaryFamily,visibleFamilyN
 export default function MilitaryFamilyBrowser({families,worldMonth,onClose}:{families:readonly MilitaryFamily[];worldMonth:number;onClose:()=>void}){
  const nav=usePersonArchiveNavigation(),[familyId,setFamilyId]=useState<string>(),[memberId,setMemberId]=useState<string>(),[collapsed,setCollapsed]=useState(new Set<string>()),[scale,setScale]=useState(1),[view,setView]=useState({left:0,top:0,width:900,height:450}),[offset,setOffset]=useState(0),viewport=useRef<HTMLDivElement>(null);
  const family=families.find(f=>f.familyId===familyId),people=Military.getPeople(),byPerson=new Map(people.map(p=>[p.personId,p]));
- const layout=useMemo(()=>layoutMilitaryFamily(family?.members??[],collapsed),[family,collapsed]),visible=visibleFamilyNodes(layout.nodes,view,scale),selected=family?.members.find(m=>m.memberId===memberId),person=selected?.militaryPersonId?byPerson.get(selected.militaryPersonId):undefined;
+ const layout=useMemo(()=>layoutMilitaryFamily(family?.members??[],collapsed),[family,collapsed,WorldHistory.getRevision()]),visible=visibleFamilyNodes(layout.nodes,view,scale),selected=family?.members.find(m=>m.memberId===memberId),person=selected?.militaryPersonId?byPerson.get(selected.militaryPersonId):undefined;
  const source=useMemo(()=>family?WorldHistory.getEventsForFaction(family.factionId).find(e=>e.id===family.sourceEventId):undefined,[family]);
  const country=(id:string,month:number)=>{const t=Game.Core?.teams.find(t=>t.name===id);return t?getFactionDisplayNameAtMonth(t,month):id;};
  const read=()=>{const el=viewport.current;if(el)setView({left:el.scrollLeft,top:el.scrollTop,width:el.clientWidth||900,height:el.clientHeight||450});};
