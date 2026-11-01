@@ -232,7 +232,11 @@
           5
         ],
         "courtAttemptsPer100WorldYears": 0.0,
-        "meanWorldYearsPerAttempt": null
+        "meanWorldYearsPerAttempt": null,
+        "courtTargetTypes": {
+          "SELF": 0,
+          "SUPPORT_OTHER": 0
+        }
       },
       "worlds": [
         {
@@ -4799,8 +4803,6 @@
           "qualified": 61,
           "originalEligible": 234,
           "transactionFailures": 0,
-          "sessionStartMonth": 0,
-          "lastMonth": 9600,
           "blockers": {
             "NO_RECENT_REAL_CRISIS": 4197,
             "NO_EXISTING_ADULT_KIN": 518,
@@ -5024,7 +5026,11 @@
           6
         ],
         "courtAttemptsPer100WorldYears": 0.125,
-        "meanWorldYearsPerAttempt": 800.0
+        "meanWorldYearsPerAttempt": 800.0,
+        "courtTargetTypes": {
+          "SELF": 0,
+          "SUPPORT_OTHER": 1
+        }
       },
       "worlds": [
         {
@@ -9868,8 +9874,6 @@
           "qualified": 42,
           "originalEligible": 353,
           "transactionFailures": 0,
-          "sessionStartMonth": 0,
-          "lastMonth": 9600,
           "blockers": {
             "NO_RECENT_REAL_CRISIS": 4059,
             "NO_EXISTING_ADULT_KIN": 529,
@@ -10090,7 +10094,11 @@
           7
         ],
         "courtAttemptsPer100WorldYears": 0.875,
-        "meanWorldYearsPerAttempt": 114.28571428571429
+        "meanWorldYearsPerAttempt": 114.28571428571429,
+        "courtTargetTypes": {
+          "SELF": 4,
+          "SUPPORT_OTHER": 3
+        }
       },
       "worlds": [
         {
@@ -15491,8 +15499,6 @@
           "qualified": 35,
           "originalEligible": 393,
           "transactionFailures": 0,
-          "sessionStartMonth": 0,
-          "lastMonth": 9600,
           "blockers": {
             "NO_RECENT_REAL_CRISIS": 4103,
             "NO_EXISTING_ADULT_KIN": 470,
@@ -15714,7 +15720,11 @@
           7
         ],
         "courtAttemptsPer100WorldYears": 0.625,
-        "meanWorldYearsPerAttempt": 160.0
+        "meanWorldYearsPerAttempt": 160.0,
+        "courtTargetTypes": {
+          "SELF": 2,
+          "SUPPORT_OTHER": 3
+        }
       },
       "worlds": [
         {
@@ -20818,7 +20828,7 @@
     "reason": "atomic rollback boundary and UI refinements after frozen policy simulation; unchanged normal political evolution and RNG"
   },
   "controlledCore": {
-    "checks": 552,
+    "checks": 558,
     "source": "military-nobility-z42-core-final.json"
   },
   "limitations": [
@@ -20828,5 +20838,43 @@
     "political policies change subsequent RNG and candidate pools; same-pool family expected values isolate weight effect, one natural appointment alone does not prove causal frequency gain",
     "HIGH not selected: nine spontaneous depositions versus four MEDIUM; not claiming catastrophic instability",
     "family source/lifetimes/population/army capacities and 5% shared national appointment chance unchanged"
-  ]
+  ],
+  "verification": {
+    "unitTests": {
+      "files": 308,
+      "passed": 2403,
+      "command": "pnpm test",
+      "originalTimeoutsPreserved": true
+    },
+    "coreReactChecks": 558,
+    "strictSaveWorlds": 32,
+    "continuationMonthsPerWorld": 12,
+    "secondReads": 32,
+    "unexplainedPopulation": 0,
+    "duplicatePopulationIds": 0,
+    "duplicateHistoryEventIds": 0,
+    "formationOwnershipConflicts": 0,
+    "naturalCourtTransactionFailures": 0,
+    "builds": {
+      "web": "PASS",
+      "desktop": "PASS",
+      "desktopDebug": "PASS",
+      "desktopCompile": "PASS",
+      "assetsAndDebugSourceMaps": "PASS",
+      "execution": "sequential after final source changes",
+      "remainingWarning": "existing large bundle warning"
+    },
+    "visualGate": "WAITING_FOR_USER_CHROME",
+    "saveCompatibility": "V43; old slots retained and rejected, no silent conversion"
+  },
+  "releaseSourceSha256": {
+    "src/Politics/PoliticalCalibration.ts": "f73d51090908d7c4067c52d209cdf49faecab3559dad3ace7ad5d3a51f469228",
+    "src/Politics/Dynasty.ts": "3766a268e42d6c69856c71276325accfe3f0ae217347868768f03e11dc094225",
+    "src/Politics/InReignDeposition.ts": "8906c76dda908e2fed14e0a4edf24d61a1072e1ec75c9aca11308b4ee02a8c84",
+    "src/Politics/DynasticRevolution.ts": "8a60a32280308e7cf3f1944f5710cb085b3dc3ccf00af6a25dff22f79f9a70ac",
+    "src/Politics/MilitaryCommandRegistry.ts": "80f9cae0deaa92af9c62adc8fc532dd5b1763114fc19617d23bda42097f36928",
+    "src/Politics/MilitaryFamily.ts": "06beb32209e3f0086d5b6a7d65aa82c276cf6a7e2f846891a36c8895e49d8a48",
+    "src/UI/Components/FactionDetails/MilitaryFamilyBrowser.tsx": "79e85712396afe28d84313eab253e2f269d4f1735cafa5c638ad13a180eceb80",
+    "src/UI/Components/WorldDiagnosticsPanel.tsx": "6273d9a96468e402211627b98c0f903c6bf67f74d06c70104da8bece0b9f6d90"
+  }
 }
