@@ -1,3 +1,9 @@
+import React from 'react';
+import {createRoot} from 'react-dom/client';
+import {flushSync} from 'react-dom';
+import {Provider} from 'react-redux';
+import {store} from '../../store';
+import MilitaryFamilyPanel from '../../UI/Components/FactionDetails/MilitaryFamilyPanel';
 import Military,{deriveUserBornMonth} from '../../Politics/MilitaryCommandRegistry';
 import Dynasty from '../../Politics/Dynasty';
 import History from '../../History/WorldHistory';
@@ -11,7 +17,7 @@ import {validateWorldSave} from '../../Persistence/WorldSaveValidator';
 import {SIMULATION_FIXED_STEP_MS} from '../SimulationDriver';
 import {nobleEpoch} from '../../Politics/MilitaryNobility';
 /** All residents are produced by the actual population entry, all commands by the existing appointment. */
-export function checkMilitaryFamilies(core:any,base:ReturnType<typeof exportWorldSave>,factionId:string,check:(v:unknown,s:string)=>void){
+export async function checkMilitaryFamilies(core:any,base:ReturnType<typeof exportWorldSave>,factionId:string,check:(v:unknown,s:string)=>void){
  const clock=(m:number)=>core.simulator.clock.importState({worldMonth:m,elapsedMs:0,running:false}),team=()=>core.teams.find((t:any)=>t.name===factionId);
  const strict=()=>{const s=exportWorldSave(core),v=validateWorldSave(s);check(v.valid,`family strict save: ${v.errors.join(';')}`);return s;};
  try{
@@ -27,6 +33,8 @@ export function checkMilitaryFamilies(core:any,base:ReturnType<typeof exportWorl
   check(selected!==undefined,'real adult entry birth plan admits a plausible father and child without re-aging');population.counters[factionId]=selected!-1;
   const ready=strict(),commit=Military.commitFamilyMember;Military.commitFamilyMember=function(plan){commit.call(this,plan);throw Error('injected family resident commit');};try{population.spawn(team(),undefined,false,{cause:'NATURAL_GROWTH',month:240});}finally{Military.commitFamilyMember=commit;}
   check(diffCanonicalWorldSave(ready,exportWorldSave(core)).matched,'family population entry failure restores User, logical unit, family, counters, audit and RNG');
+  const historyWriter=History.addEvent;History.addEvent=function(e){const id=historyWriter.call(this,e);if(e.type==='military-family-member-entered')throw Error('injected population source write');return id;};try{population.spawn(team(),undefined,false,{cause:'NATURAL_GROWTH',month:240});}finally{History.addEvent=historyWriter;}
+  check(diffCanonicalWorldSave(ready,exportWorldSave(core)).matched,'family original population event failure restores the resident, genealogy, history and RNG together');
   const count=core.teams.reduce((n:number,t:any)=>n+t.users.size,0),people=Military.getPeople().length;
   const child=population.spawn(team(),undefined,false,{cause:'NATURAL_GROWTH',month:240});check(child&&child.familyMemberId,`actual natural population entry creates one named resident with frozen genealogy: result=${child?.name}/${child?.familyMemberId}; pop=${team().users.size}/${population.getCapacity(team())}; counter=${population.counters[factionId]}; expected=${selected}; families=${Military.getFamilies().length}`);
   const link=Military.getFamilyMember(child.id,child.bornMonth)!;
@@ -41,6 +49,14 @@ export function checkMilitaryFamilies(core:any,base:ReturnType<typeof exportWorl
   check(calls===2&&child.militaryPersonId,'existing annual shared appointment draw selects the real child through its bounded family weight');
   check(Military.getPerson(child.militaryPersonId)!.personalName===child.name&&Military.getPerson(family.founderPersonId)!.status==='ACTIVE'&&link.member.militaryPersonId===child.militaryPersonId,'father and son serve simultaneously with distinct real military IDs and continuous births');
   check(!Military.getPerson(child.militaryPersonId)!.nobilityHistory&&Military.getFormations().find(f=>f.commanderPersonId===child.militaryPersonId)!.memberUnitIds.length===1,'descendant inherits no peerage, captures or extra troops');
+  {const before=exportWorldSave(core),host=document.createElement('div'),root=createRoot(host);document.body.append(host);
+   try{flushSync(()=>root.render(React.createElement(Provider,{store,children:React.createElement(MilitaryFamilyPanel,{personId:family.founderPersonId})})));const details=host.querySelector('details')!;
+    check(!!details&&!host.querySelector('p'),'real React family section mounts no member cards before expansion');
+    flushSync(()=>{details.open=true;details.dispatchEvent(new Event('toggle',{bubbles:true}));});await new Promise(resolve=>setTimeout(resolve,0));flushSync(()=>{});
+    check(host.textContent?.includes(child.name)&&host.textContent?.includes('之子')&&host.textContent?.includes('现役军政人物'),`expanded React family presents the actual father and enlisted child: open=${details.open}, text=${host.textContent}`);
+    check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,'family rendering changes no population, service, kinship or RNG');
+   }finally{root.unmount();host.remove();}
+  }
   const save=strict();
   for(const kind of ['parent','birth','loop','person','death']){const bad=structuredClone(save),f=bad.registries.militaryCommandRegistry.families!.find(f=>f.familyId===family.familyId)!,m=f.members.find(m=>m.generation===1)!;if(kind==='parent')m.parentMemberId='foreign';if(kind==='birth')m.bornMonth--;if(kind==='loop')f.members[0].parentMemberId=m.memberId;if(kind==='person')m.militaryPersonId=f.founderPersonId;if(kind==='death')m.deathMonth=240;check(!validateWorldSave(bad).valid,`strict family save rejects forged ${kind}`);}
   const resume=()=>{hydrateWorldSave(core,structuredClone(save));core.setWorldRunning(true);for(let m=0;m<12;m++){for(let n=0;n<30;n++)core.advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit('postupdate');}core.setWorldRunning(false);return strict();};const a=resume(),b=resume();check(diffCanonicalWorldSave(a,b).matched,'family relations and military appointments continue deterministically for twelve months');hydrateWorldSave(core,structuredClone(a));check(diffCanonicalWorldSave(a,exportWorldSave(core)).matched,'family second read preserves names, births, parent links, commands and RNG');

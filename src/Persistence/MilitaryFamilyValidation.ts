@@ -14,7 +14,7 @@ export function validateMilitaryFamilies(save:WorldSaveV1){
   seen.add(f.familyId);
   const members=new Map(f.members.map(m=>[m.memberId,m]));if(members.size!==f.members.length)throw Error('duplicate family member');
   for(const m of f.members){
-   if(!Number.isSafeInteger(m.sourceUserId)||!Number.isSafeInteger(m.generation)||m.generation<0||m.generation>4||typeof m.name!=='string'||residentIds.has(m.sourceUserId)||m.memberId!==familyMemberId(m.sourceUserId,m.bornMonth)||!Number.isSafeInteger(m.bornMonth)||!Number.isSafeInteger(m.enteredMonth)||m.enteredMonth<f.foundedMonth||m.enteredMonth>save.world.worldMonth||m.enteredMonth-m.bornMonth<18*12||!m.name.startsWith(f.surname)||(m.deathMonth!==undefined&&(!Number.isSafeInteger(m.deathMonth)||m.deathMonth<m.enteredMonth||m.deathMonth>save.world.worldMonth)))throw Error('invalid member identity or life');
+   if(!Number.isSafeInteger(m.sourceUserId)||!Number.isSafeInteger(m.generation)||m.generation<0||typeof m.name!=='string'||residentIds.has(m.sourceUserId)||m.memberId!==familyMemberId(m.sourceUserId,m.bornMonth)||!Number.isSafeInteger(m.bornMonth)||!Number.isSafeInteger(m.enteredMonth)||m.enteredMonth<f.foundedMonth||m.enteredMonth>save.world.worldMonth||m.enteredMonth-m.bornMonth<18*12||!m.name.startsWith(f.surname)||(m.deathMonth!==undefined&&(!Number.isSafeInteger(m.deathMonth)||m.deathMonth<m.enteredMonth||m.deathMonth>save.world.worldMonth)))throw Error('invalid member identity or life');
    residentIds.add(m.sourceUserId);
    if(m.source==='FOUNDER'){if(m.parentMemberId||m.generation!==0||m.militaryPersonId!==p.personId||m.sourceUserId!==p.sourceUserId||m.bornMonth!==p.bornMonth||m.name!==p.personalName)throw Error('invalid founder');}
    else {const parent=m.parentMemberId?members.get(m.parentMemberId):undefined,entry=events.find(e=>e.id===`${m.memberId}-entered`);
@@ -39,6 +39,10 @@ export function validateMilitaryFamilies(save:WorldSaveV1){
   }
  }catch(e){errors.push(`invalid military family ${f?.familyId}: ${String(e)}`);}
  for(const u of save.users)if(u.familyMemberId&&!families?.some(f=>f.members.some(m=>m.memberId===u.familyMemberId&&m.sourceUserId===u.userId&&m.bornMonth===u.bornMonth)))errors.push('orphan family resident');
- for(const e of events)if(e.type==='military-family-founded'&&!families?.some(f=>`${f.familyId}-founded`===e.id))errors.push('orphan family foundation');
+ for(const e of events){
+  if(e.type==='military-family-founded'&&!families?.some(f=>`${f.familyId}-founded`===e.id))errors.push('orphan family foundation');
+  if(e.type==='military-family-member-entered'&&!families?.some(f=>f.members.some(m=>`${m.memberId}-entered`===e.id)))errors.push('orphan family population entry');
+  if(e.type==='military-family-merit'&&!families?.some(f=>f.renewals?.some(r=>`${f.familyId}-${r.memberId}-merit`===e.id)))errors.push('orphan renewed family merit');
+ }
  return errors;
 }

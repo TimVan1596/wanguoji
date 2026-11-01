@@ -11,7 +11,7 @@ export function courtCoupAttemptText(r:CourtCoupRecord){
  return `${cause}${who}谋废${r.previousRulerTitle}，欲拥立${kin[r.target.relation]??'宗室成员'}${r.target.name}。`;
 }
 export function courtCoupText(r:CourtCoupRecord,consequences:{banned?:boolean;forfeitedRank?:string;disinherited?:boolean}={}){
- return `【${isSelfCourtCoup(r)?(r.outcome==='SUCCESS'?'夺位得位':'夺位未遂'):(r.outcome==='SUCCESS'?'拥立得位':'拥立未遂')}】${courtCoupAttemptText(r)}${r.outcome==='SUCCESS'?`事成，${r.previousRulerTitle}被废，${r.target.name}承统。`:`事败，${r.participant.personalName??r.participant.name}被免军职${consequences.forfeitedRank?`、追夺${consequences.forfeitedRank}`:''}${consequences.banned?'，并禁仕':''}${consequences.disinherited?'，废除承统资格':''}，${r.previousRulerTitle}仍在位。`}`;
+ return `【${isSelfCourtCoup(r)?(r.outcome==='SUCCESS'?'夺位得位':'夺位未遂'):(r.outcome==='SUCCESS'?'拥立得位':'拥立未遂')}】${courtCoupAttemptText(r)}${r.outcome==='SUCCESS'?`事成，${r.previousRulerTitle}被废，${r.target.name}${isSelfCourtCoup(r)?'自立为王':'承统'}。`:`事败，${r.participant.personalName??r.participant.name}被免军职${consequences.forfeitedRank?`、追夺${consequences.forfeitedRank}`:''}${consequences.banned?'，并禁仕':''}${consequences.disinherited?'，废除承统资格':''}，${r.previousRulerTitle}仍在位。`}`;
 }
 /** Exact transaction graph; no same-month/name grouping, no canonical event deletion. */
 export function mergeCourtCoupReading(events:readonly WorldEvent[]){

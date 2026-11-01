@@ -2,7 +2,7 @@ import type { Ruler } from './Dynasty';
 /** Formal royal acts are independent of military bans. A change of monarch does not erase them. */
 export interface RoyalSuccessionAct {
   eventId: string; kind: 'DISQUALIFIED' | 'RESTORED'; month: number;
-  factionId: string; rulerId: string; militaryPersonId: string; issuerRulerId: string;
+  factionId: string; epochFounderId:string; rulerId: string; militaryPersonId: string; issuerRulerId: string;
   courtCoupEventId: string; sourceEventId: string; restoresEventId?: string; authorityEventId?:string; victimEndEventId?:string;
 }
 export function unresolvedSuccessionAct(ruler: Pick<Ruler,'successionHistory'>, month: number) {

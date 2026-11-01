@@ -1,5 +1,5 @@
 import {familyFounderSource,makeMilitaryFamily,familyAppointmentWeight,type MilitaryFamily} from './MilitaryFamily';
-import {politicalMutationActive} from '../Simulation/PoliticalMutationScope';
+import {politicalMutationActive,beginPoliticalMutation} from '../Simulation/PoliticalMutationScope';
 import {unresolvedCourtBans,planCourtBan,militaryCourtText,type MilitaryCourtAct} from './MilitaryCourtStanding';
 import {residentNaturalDeathMonth,ordinaryLifeEligible} from "../Simulation/ResidentLife";
 import {appanageChanges,appanageText,OWNERSHIP_EVENTS,type MilitaryAppanage} from './MilitaryAppanage';
@@ -429,19 +429,34 @@ export class MilitaryCommandRegistryStore {
       try{this.recordNoble(person,grant);}catch{if(prior)person.nobilityHistory=prior;else delete person.nobilityHistory;WorldHistory.importState(history);}
     }
   }
+  private commitFamilyHistory(event:WorldEvent,apply:()=>void){
+    const history=WorldHistory.snapshotPoliticalTransaction(),families=structuredClone(this.families),scope=beginPoliticalMutation();
+    try{
+      if(!this.eventWriter||this.eventWriter(event)!==event.id||!this.eventReader(event.actorFactionId!).some(e=>e.id===event.id))throw Error('Family history not recorded');
+      apply();this.familyByResident=undefined;
+    }catch{
+      scope.cancel();this.families=families;this.familyByResident=undefined;
+      const restoring=beginPoliticalMutation();WorldHistory.rollbackPoliticalTransaction(history);restoring.finishRollback();return false;
+    }
+    scope.commit();return true;
+  }
   updateFamilies(month:number,teams:Team[],dynasties:Dynasty[]){
     if(month%12!==0||!this.eventWriter)return;
     for(const p of this.people.values()){
       const team=teams.find(t=>t.name===p.factionId&&t.status==='ACTIVE'&&t.identityStage==='STATE'),dy=dynasties.find(d=>d.factionId===p.factionId),epoch=this.royalService?.nobleEpoch?.(p.factionId,month);
       if(!team||!dy||!epoch)continue;
-      const epochStart=dy.houseEpochs?.find(e=>e.foundingRulerId===epoch)?.startMonth??Infinity,source=familyFounderSource(p,this.eventReader(p.factionId).filter(e=>(e.monthIndex??e.year)>=epochStart),p.factionId,epoch,month);
+      const epochStart=dy.houseEpochs?.find(e=>e.foundingRulerId===epoch)?.startMonth??Infinity;
+      const source=familyFounderSource(p,this.eventReader(p.factionId).filter(e=>(e.monthIndex??e.year)>=epochStart),p.factionId,epoch,month);
       const linked=this.families.find(f=>f.members.some(m=>m.militaryPersonId===p.personId));
-      if(linked){const member=linked.members.find(m=>m.militaryPersonId===p.personId)!;if(source&&member.generation>0&&linked.factionId===p.factionId&&linked.epochFounderId===epoch&&!linked.renewals?.some(r=>r.memberId===member.memberId)){
-        const history=WorldHistory.exportState();try{const id=`${linked.familyId}-${member.memberId}-merit`;this.eventWriter({id,year:month,type:'military-family-merit',category:'politics',importance:'normal',actorFactionId:team.name,factionIds:[team.name],title:`${p.personalName}自立功业，${linked.surname}氏家声复振。`,metadata:{familyId:linked.familyId,personId:p.personId,memberId:member.memberId,sourceEventId:source.id}});if(!this.eventReader(team.name).some(e=>e.id===id))throw Error('Family merit not recorded');(linked.renewals??=[]).push({memberId:member.memberId,month,sourceEventId:source.id});}catch{WorldHistory.importState(history);}
-      }continue;}
+      if(linked){
+        const member=linked.members.find(m=>m.militaryPersonId===p.personId)!;
+        if(source&&member.generation>0&&linked.factionId===p.factionId&&linked.epochFounderId===epoch&&!linked.renewals?.some(r=>r.memberId===member.memberId)){
+          this.commitFamilyHistory({id:`${linked.familyId}-${member.memberId}-merit`,year:month,type:'military-family-merit',category:'politics',importance:'normal',actorFactionId:team.name,factionIds:[team.name],title:`${p.personalName}自立功业，${linked.surname}氏家声复振。`,metadata:{familyId:linked.familyId,personId:p.personId,memberId:member.memberId,sourceEventId:source.id}},()=>{(linked.renewals??=[]).push({memberId:member.memberId,month,sourceEventId:source.id});});
+        }
+        continue;
+      }
       const f=source&&makeMilitaryFamily(p,p.factionId,epoch,month,source);if(!f)continue;
-      const history=WorldHistory.exportState();
-      try{const id=`${f.familyId}-founded`;this.eventWriter({id,year:month,type:'military-family-founded',category:'politics',importance:'normal',actorFactionId:team.name,factionIds:[team.name],title:`${p.personalName}以功立家，${f.surname}氏功臣世家始见于记载。`,metadata:{familyId:f.familyId,personId:p.personId,sourceEventId:f.sourceEventId}});if(!this.eventReader(team.name).some(e=>e.id===id))throw Error('Family foundation not written');this.families.push(f);this.familyByResident=undefined;}catch{WorldHistory.importState(history);}
+      this.commitFamilyHistory({id:`${f.familyId}-founded`,year:month,type:'military-family-founded',category:'politics',importance:'normal',actorFactionId:team.name,factionIds:[team.name],title:`${p.personalName}以功立家，${f.surname}氏功臣世家始见于记载。`,metadata:{familyId:f.familyId,personId:p.personId,sourceEventId:f.sourceEventId}},()=>{this.families.push(f);});
     }
   }
   rewardCourtService(person:MilitaryPerson,team:Team,dy:Dynasty,service:WorldEvent,month:number){

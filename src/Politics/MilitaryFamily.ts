@@ -27,7 +27,7 @@ function hash(s:string){let n=2166136261;for(const c of s)n=Math.imul(n^c.charCo
 /** Called only before first population entry. Birth is derived from the original population label, never re-aged. */
 export function planFamilyPopulationEntry(families:readonly MilitaryFamily[],factionId:string,epoch:string|undefined,userId:number,bornMonth:number,month:number,seed:string){
  const options=families.filter(f=>f.factionId===factionId&&f.epochFounderId===epoch&&f.foundedMonth<=month).flatMap(f=>f.members.filter(p=>
-  p.bornMonth+18*12<=bornMonth&&bornMonth<=p.bornMonth+55*12&&(p.deathMonth??Infinity)>bornMonth&&(p.exitMonth??Infinity)>bornMonth&&p.enteredMonth<month&&p.generation<4&&
+  p.bornMonth+18*12<=bornMonth&&bornMonth<=p.bornMonth+55*12&&(p.deathMonth??Infinity)>bornMonth&&(p.exitMonth??Infinity)>bornMonth&&p.enteredMonth<month&&familyGenerationsSinceMerit(f,p,month)<4&&
   f.members.filter(c=>c.parentMemberId===p.memberId).length<2&&
   !f.members.some(c=>c.parentMemberId===p.memberId&&Math.abs(c.bornMonth-bornMonth)<48)
  ).map(parent=>({family:f,parent}))).sort((a,b)=>a.family.familyId.localeCompare(b.family.familyId)||a.parent.memberId.localeCompare(b.parent.memberId));
@@ -37,12 +37,17 @@ export function planFamilyPopulationEntry(families:readonly MilitaryFamily[],fac
  const member:MilitaryFamilyMember={memberId:familyMemberId(userId,bornMonth),sourceUserId:userId,name,bornMonth,generation:parent.generation+1,parentMemberId:parent.memberId,enteredMonth:month,source:'NATURAL_GROWTH'};
  return {familyId:family.familyId,member};
 }
+/** A new sourced achievement can renew only the actual descendant's branch. */
+export function familyGenerationsSinceMerit(family:MilitaryFamily,member:MilitaryFamilyMember,month:number){
+ let generations=member.generation,parent:MilitaryFamilyMember|undefined=member;
+ const visited=new Set<string>();
+ while(parent){const ancestor:MilitaryFamilyMember=parent;if(visited.has(ancestor.memberId))return Infinity;visited.add(ancestor.memberId);if(family.renewals?.some(r=>r.memberId===ancestor.memberId&&r.month<=month)){generations=member.generation-ancestor.generation;break;}parent=ancestor.parentMemberId?family.members.find(m=>m.memberId===ancestor.parentMemberId):undefined;}
+ return generations;
+}
 /** First appointment only; inherited reputation never substitutes for eligibility, army or personal merit. */
 export function familyAppointmentWeight(family:MilitaryFamily|undefined,member:MilitaryFamilyMember|undefined,factionId:string,epoch:string|undefined,month:number){
  if(!family||!member||family.factionId!==factionId||family.epochFounderId!==epoch||member.deathMonth!==undefined||member.militaryPersonId||member.enteredMonth>month||month-member.bornMonth<18*12)return 1;
- let generations=member.generation,parent:MilitaryFamilyMember|undefined=member.parentMemberId?family.members.find(m=>m.memberId===member.parentMemberId):undefined;
- const visited=new Set<string>();
- while(parent){const ancestor=parent;if(visited.has(ancestor.memberId))return 1;visited.add(ancestor.memberId);if(family.renewals?.some(r=>r.memberId===ancestor.memberId&&r.month<=month)){generations=member.generation-ancestor.generation;break;}parent=ancestor.parentMemberId?family.members.find(m=>m.memberId===ancestor.parentMemberId):undefined;}
+ const generations=familyGenerationsSinceMerit(family,member,month);
  return generations===1?1.10:generations===2?1.05:1;
 }
 export function familyStatus(f:MilitaryFamily,people:readonly MilitaryPerson[]){
