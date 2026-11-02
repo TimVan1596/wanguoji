@@ -1,0 +1,727 @@
+{
+  "baselineHead": "cb4307c919a34213cdb176a21cbde86866c07d71",
+  "versions": {
+    "app": "v0.99931z46",
+    "package": "0.99.212",
+    "worldSave": 45
+  },
+  "schemaChange": false,
+  "simulationRulesChanged": false,
+  "scope": "Read-only political standing, honor headings, sourced court awards, bounded milestones and genealogy presentation. No new punitive transaction or formal honor forfeiture.",
+  "worldYears": 800,
+  "allEightCanonicalStatesMatchZ45": true,
+  "fullStateHashExcludes": "application version / creation timestamp, as in the existing canonical comparator",
+  "measurement": "Eight original regional seeds at MEDIUM, 100 years each, strict save and deterministic twelve-month read/read. Regional-6/7/8 alone remeasured with full checkpoints to collect royal acts missing from the original readonly summary. Recheck hashes match their earlier runs; not eleven independent worlds. Other five have no SELF act source.",
+  "totals": {
+    "attempts": 7,
+    "successes": 0,
+    "failures": 7,
+    "dismissals": 7,
+    "bans": 7,
+    "pardons": 0,
+    "revocations": 2,
+    "peerageRewards": 0,
+    "courtServiceAwards": 0,
+    "pardonTransactionFailures": 0,
+    "DISMISSAL": 4,
+    "FORFEITURE": 3,
+    "successionDisqualifications": 4,
+    "successionRestorations": 0,
+    "formalDepositionCount": 4,
+    "usurpationCount": 0,
+    "newRoyalHonorRevocations": 0
+  },
+  "worlds": [
+    {
+      "seed": "regional-1",
+      "years": 100,
+      "canonicalSha256": "50dae42527b3860ecb668211ca0bda358a80d1c9f88ff0a0a8cfa66fe59a8acd",
+      "sameAsZ45": true,
+      "metrics": {
+        "worldPopulation": 135,
+        "peakWorldPopulation": 153,
+        "activeStates": 6,
+        "historicalStates": 7,
+        "captures": 20,
+        "recoveries": 5,
+        "normalRoyalSuccessions": 21,
+        "worldRandomPosition": 7142,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 2,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "court": {
+        "qualificationScope": "SESSION_SINCE_LOAD",
+        "eventScope": "RECORDED_WORLD_HISTORY",
+        "qualifiedInstigatorOpportunities": 11,
+        "attempts": 1,
+        "successes": 0,
+        "failures": 1,
+        "balanced": true,
+        "dismissals": 1,
+        "bans": 1,
+        "pardons": 0,
+        "revocations": 0,
+        "peerageRewards": 0,
+        "pardonTransactionFailures": 0,
+        "executions": 0,
+        "courtServiceAwards": 0
+      },
+      "severity": {
+        "DISMISSAL": 1,
+        "FORFEITURE": 0
+      },
+      "successionActs": [],
+      "formalDepositionCount": 2,
+      "usurpationCount": 0,
+      "royalHonorGrants": 1,
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "genealogyIntegrity": {
+        "nodes": 63,
+        "royalMilitaryExpected": 6,
+        "royalMilitaryIncluded": 6,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      },
+      "strictSave": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-2",
+      "years": 100,
+      "canonicalSha256": "0771d164fe8e139d1176be8ab4257afc14273ce9952a00ca885043ff064c8ddd",
+      "sameAsZ45": true,
+      "metrics": {
+        "worldPopulation": 130,
+        "peakWorldPopulation": 156,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 10,
+        "recoveries": 1,
+        "normalRoyalSuccessions": 19,
+        "worldRandomPosition": 7130,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "court": {
+        "qualificationScope": "SESSION_SINCE_LOAD",
+        "eventScope": "RECORDED_WORLD_HISTORY",
+        "qualifiedInstigatorOpportunities": 8,
+        "attempts": 0,
+        "successes": 0,
+        "failures": 0,
+        "balanced": true,
+        "dismissals": 0,
+        "bans": 0,
+        "pardons": 0,
+        "revocations": 0,
+        "peerageRewards": 0,
+        "pardonTransactionFailures": 0,
+        "executions": 0,
+        "courtServiceAwards": 0
+      },
+      "severity": {
+        "DISMISSAL": 0,
+        "FORFEITURE": 0
+      },
+      "successionActs": [],
+      "formalDepositionCount": 0,
+      "usurpationCount": 0,
+      "royalHonorGrants": 1,
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "genealogyIntegrity": {
+        "nodes": 55,
+        "royalMilitaryExpected": 4,
+        "royalMilitaryIncluded": 4,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      },
+      "strictSave": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-3",
+      "years": 100,
+      "canonicalSha256": "0531e77f4b16c24cc6b5be04b295028c16bf9bdcb6cab722145949c7a02af4c6",
+      "sameAsZ45": true,
+      "metrics": {
+        "worldPopulation": 137,
+        "peakWorldPopulation": 151,
+        "activeStates": 4,
+        "historicalStates": 8,
+        "captures": 28,
+        "recoveries": 2,
+        "normalRoyalSuccessions": 15,
+        "worldRandomPosition": 6823,
+        "politicalEvents": {
+          "ordinaryFoundings": 1,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "court": {
+        "qualificationScope": "SESSION_SINCE_LOAD",
+        "eventScope": "RECORDED_WORLD_HISTORY",
+        "qualifiedInstigatorOpportunities": 3,
+        "attempts": 0,
+        "successes": 0,
+        "failures": 0,
+        "balanced": true,
+        "dismissals": 0,
+        "bans": 0,
+        "pardons": 0,
+        "revocations": 0,
+        "peerageRewards": 0,
+        "pardonTransactionFailures": 0,
+        "executions": 0,
+        "courtServiceAwards": 0
+      },
+      "severity": {
+        "DISMISSAL": 0,
+        "FORFEITURE": 0
+      },
+      "successionActs": [],
+      "formalDepositionCount": 0,
+      "usurpationCount": 0,
+      "royalHonorGrants": 1,
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "genealogyIntegrity": {
+        "nodes": 40,
+        "royalMilitaryExpected": 2,
+        "royalMilitaryIncluded": 2,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      },
+      "strictSave": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-4",
+      "years": 100,
+      "canonicalSha256": "ae12a4ea1636e41451ef6e8eaace6a17f75bf517f6e4a13c6ea551684cbee0c6",
+      "sameAsZ45": true,
+      "metrics": {
+        "worldPopulation": 117,
+        "peakWorldPopulation": 148,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 15,
+        "recoveries": 3,
+        "normalRoyalSuccessions": 21,
+        "worldRandomPosition": 7039,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "court": {
+        "qualificationScope": "SESSION_SINCE_LOAD",
+        "eventScope": "RECORDED_WORLD_HISTORY",
+        "qualifiedInstigatorOpportunities": 0,
+        "attempts": 0,
+        "successes": 0,
+        "failures": 0,
+        "balanced": true,
+        "dismissals": 0,
+        "bans": 0,
+        "pardons": 0,
+        "revocations": 0,
+        "peerageRewards": 0,
+        "pardonTransactionFailures": 0,
+        "executions": 0,
+        "courtServiceAwards": 0
+      },
+      "severity": {
+        "DISMISSAL": 0,
+        "FORFEITURE": 0
+      },
+      "successionActs": [],
+      "formalDepositionCount": 0,
+      "usurpationCount": 0,
+      "royalHonorGrants": 0,
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "genealogyIntegrity": {
+        "nodes": 59,
+        "royalMilitaryExpected": 1,
+        "royalMilitaryIncluded": 1,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      },
+      "strictSave": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-5",
+      "years": 100,
+      "canonicalSha256": "769d0900354bc80fb42029c40da2dfc8ecbd09866cde218f7cd8033e071dfdae",
+      "sameAsZ45": true,
+      "metrics": {
+        "worldPopulation": 133,
+        "peakWorldPopulation": 154,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 19,
+        "recoveries": 1,
+        "normalRoyalSuccessions": 15,
+        "worldRandomPosition": 6860,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "court": {
+        "qualificationScope": "SESSION_SINCE_LOAD",
+        "eventScope": "RECORDED_WORLD_HISTORY",
+        "qualifiedInstigatorOpportunities": 2,
+        "attempts": 1,
+        "successes": 0,
+        "failures": 1,
+        "balanced": true,
+        "dismissals": 1,
+        "bans": 1,
+        "pardons": 0,
+        "revocations": 0,
+        "peerageRewards": 0,
+        "pardonTransactionFailures": 0,
+        "executions": 0,
+        "courtServiceAwards": 0
+      },
+      "severity": {
+        "DISMISSAL": 1,
+        "FORFEITURE": 0
+      },
+      "successionActs": [],
+      "formalDepositionCount": 0,
+      "usurpationCount": 0,
+      "royalHonorGrants": 0,
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "genealogyIntegrity": {
+        "nodes": 44,
+        "royalMilitaryExpected": 1,
+        "royalMilitaryIncluded": 1,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      },
+      "strictSave": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-6",
+      "years": 100,
+      "canonicalSha256": "40ceb3a2c4fa1cef02c3ab345669ef347f67dd3036f4aa2cc46915dfc1da7998",
+      "sameAsZ45": true,
+      "metrics": {
+        "worldPopulation": 133,
+        "peakWorldPopulation": 148,
+        "activeStates": 4,
+        "historicalStates": 7,
+        "captures": 18,
+        "recoveries": 3,
+        "normalRoyalSuccessions": 17,
+        "worldRandomPosition": 7161,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 1,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "court": {
+        "qualificationScope": "SESSION_SINCE_LOAD",
+        "eventScope": "RECORDED_WORLD_HISTORY",
+        "qualifiedInstigatorOpportunities": 1,
+        "attempts": 1,
+        "successes": 0,
+        "failures": 1,
+        "balanced": true,
+        "dismissals": 1,
+        "bans": 1,
+        "pardons": 0,
+        "revocations": 0,
+        "peerageRewards": 0,
+        "pardonTransactionFailures": 0,
+        "executions": 0,
+        "courtServiceAwards": 0
+      },
+      "severity": {
+        "DISMISSAL": 1,
+        "FORFEITURE": 0
+      },
+      "successionActs": [
+        {
+          "eventId": "court-coup-燕-996-succession",
+          "kind": "DISQUALIFIED",
+          "month": 996,
+          "removedDesignation": false,
+          "factionId": "燕",
+          "epochFounderId": "燕-ruler-5",
+          "rulerId": "燕-ruler-44",
+          "militaryPersonId": "military-person-23",
+          "issuerRulerId": "燕-ruler-35",
+          "courtCoupEventId": "court-coup-燕-996",
+          "sourceEventId": "court-coup-燕-996-result"
+        }
+      ],
+      "formalDepositionCount": 1,
+      "usurpationCount": 0,
+      "royalHonorGrants": 0,
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "genealogyIntegrity": {
+        "nodes": 49,
+        "royalMilitaryExpected": 3,
+        "royalMilitaryIncluded": 3,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      },
+      "strictSave": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-7",
+      "years": 100,
+      "canonicalSha256": "a7410998d4d53321b7daa3d2f43d904ef4eb4a97025372cd70d1459abddcd466",
+      "sameAsZ45": true,
+      "metrics": {
+        "worldPopulation": 137,
+        "peakWorldPopulation": 155,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 34,
+        "recoveries": 6,
+        "normalRoyalSuccessions": 22,
+        "worldRandomPosition": 7428,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "court": {
+        "qualificationScope": "SESSION_SINCE_LOAD",
+        "eventScope": "RECORDED_WORLD_HISTORY",
+        "qualifiedInstigatorOpportunities": 5,
+        "attempts": 2,
+        "successes": 0,
+        "failures": 2,
+        "balanced": true,
+        "dismissals": 2,
+        "bans": 2,
+        "pardons": 0,
+        "revocations": 0,
+        "peerageRewards": 0,
+        "pardonTransactionFailures": 0,
+        "executions": 0,
+        "courtServiceAwards": 0
+      },
+      "severity": {
+        "DISMISSAL": 1,
+        "FORFEITURE": 1
+      },
+      "successionActs": [
+        {
+          "eventId": "court-coup-秦-756-succession",
+          "kind": "DISQUALIFIED",
+          "month": 756,
+          "removedDesignation": true,
+          "factionId": "秦",
+          "epochFounderId": "秦-ruler-1",
+          "rulerId": "秦-ruler-50",
+          "militaryPersonId": "military-person-15",
+          "issuerRulerId": "秦-ruler-41",
+          "courtCoupEventId": "court-coup-秦-756",
+          "sourceEventId": "court-coup-秦-756-result"
+        },
+        {
+          "eventId": "court-coup-魏-1128-succession",
+          "kind": "DISQUALIFIED",
+          "month": 1128,
+          "removedDesignation": false,
+          "factionId": "魏",
+          "epochFounderId": "魏-ruler-10",
+          "rulerId": "魏-ruler-49",
+          "militaryPersonId": "military-person-21",
+          "issuerRulerId": "魏-ruler-72",
+          "courtCoupEventId": "court-coup-魏-1128",
+          "sourceEventId": "court-coup-魏-1128-result"
+        }
+      ],
+      "formalDepositionCount": 0,
+      "usurpationCount": 0,
+      "royalHonorGrants": 1,
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "genealogyIntegrity": {
+        "nodes": 63,
+        "royalMilitaryExpected": 10,
+        "royalMilitaryIncluded": 10,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      },
+      "strictSave": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-8",
+      "years": 100,
+      "canonicalSha256": "db416e3beadb656350b9b2a9b28571ed2d8f53aa9193ae81a36422a3d643710f",
+      "sameAsZ45": true,
+      "metrics": {
+        "worldPopulation": 141,
+        "peakWorldPopulation": 154,
+        "activeStates": 7,
+        "historicalStates": 8,
+        "captures": 28,
+        "recoveries": 4,
+        "normalRoyalSuccessions": 22,
+        "worldRandomPosition": 7496,
+        "politicalEvents": {
+          "ordinaryFoundings": 1,
+          "militarySecessions": 0,
+          "depositions": 1,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "court": {
+        "qualificationScope": "SESSION_SINCE_LOAD",
+        "eventScope": "RECORDED_WORLD_HISTORY",
+        "qualifiedInstigatorOpportunities": 12,
+        "attempts": 2,
+        "successes": 0,
+        "failures": 2,
+        "balanced": true,
+        "dismissals": 2,
+        "bans": 2,
+        "pardons": 0,
+        "revocations": 2,
+        "peerageRewards": 0,
+        "pardonTransactionFailures": 0,
+        "executions": 0,
+        "courtServiceAwards": 0
+      },
+      "severity": {
+        "DISMISSAL": 0,
+        "FORFEITURE": 2
+      },
+      "successionActs": [
+        {
+          "eventId": "court-coup-赵-804-succession",
+          "kind": "DISQUALIFIED",
+          "month": 804,
+          "removedDesignation": true,
+          "factionId": "赵",
+          "epochFounderId": "赵-ruler-3",
+          "rulerId": "赵-ruler-40",
+          "militaryPersonId": "military-person-10",
+          "issuerRulerId": "赵-ruler-31",
+          "courtCoupEventId": "court-coup-赵-804",
+          "sourceEventId": "court-coup-赵-804-result"
+        }
+      ],
+      "formalDepositionCount": 1,
+      "usurpationCount": 0,
+      "royalHonorGrants": 2,
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "genealogyIntegrity": {
+        "nodes": 60,
+        "royalMilitaryExpected": 3,
+        "royalMilitaryIncluded": 3,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      },
+      "strictSave": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    }
+  ],
+  "rulesPreserved": [
+    "court attempt and 6%-60% conditional success",
+    "deposition / usurpation / cooldown",
+    "sanction severity and original military title forfeiture",
+    "separate military pardon and royal restoration",
+    "population/life/army/siege/promotion",
+    "family genealogy and hereditary ranks",
+    "recruitment 5% and family weights 1.50/1.25"
+  ],
+  "notReleased": [
+    "formal royal honor revocation",
+    "new harsher punishment or punishment lottery",
+    "execution/exile/collective family punishment",
+    "new court reward beyond existing loyalty and eligible peerage"
+  ],
+  "honorSemantics": "A formally disqualified royal keeps the grant source as an old honor rather than the primary current identity. Military peerage forfeiture does not fabricate an independent royal honor forfeiture. A military pardon never restores royal succession standing; a royal restoration does not refund peerage or army.",
+  "highLoyaltyDiagnosis": {
+    "case": "User-provided 434-year Yan example, no source save supplied; not reproduced",
+    "unchangedRule": "personal loyalty - localPoliticalPressure < 55 + ambition*0.3 + prestige*2",
+    "illustrativeArithmetic": {
+      "loyalty": 95,
+      "ambition": 26,
+      "cityLoyalty": 36,
+      "devastation": 97,
+      "pressureWithoutRecentCapture": 25.75,
+      "pressureWithCaptureWithin24Months": 33.75,
+      "thresholdBeforePrestige": 62.8
+    },
+    "limitations": "Missing actual frozen prestige, capture timing, unit and supporter sources. A hypothetical arithmetic check is not the original event nor evidence of excessive frequency. Duties are created after committed founding and add no political draw."
+  },
+  "verification": {
+    "unitFiles": 312,
+    "unitTests": 2444,
+    "coreChecks": 609,
+    "typecheck": "PASS",
+    "webBuild": "PASS",
+    "desktopBuild": "PASS",
+    "debugBuild": "PASS",
+    "existingLargeBundleWarning": true,
+    "strictSave": "PASS",
+    "rollback": "PASS actual SELF sanction/restoration, court punishment/revocation, pardon and award transactions",
+    "continuation": "PASS same identities / twelve months / second read",
+    "humanGate": "WAITING_FOR_USER"
+  },
+  "sourceSha256": {
+    "src/Politics/RoyalHonorPresentation.ts": "57fe8ab76e48c5c2559619a5ac03e17a7abe7583b95a6477746e8ae25dcc610d",
+    "src/Politics/CourtServicePresentation.ts": "3ae9aa09d51b6391ae00d63b46302ed323e242a567ccbb6825804a6edd1f8b2d",
+    "src/Politics/MilitaryChroniclePresentation.ts": "bc766670ea7176e0f9b62abd1ef33f8be2d2114c5c40e9ef23e6ed0ff2a16320",
+    "src/UI/Components/FactionDetails/GenealogyNodePresentation.ts": "d4e292efb74fddf06961877fcf1903574f5099b97948ed8f55a48ab1de436631",
+    "src/Simulation/testing/CourtFateCoreChecks.ts": "9bd3ec47bbc9eca43aba8b270916df63afeaf674215bc745fbf492095e66b698",
+    "src/Simulation/testing/RoyalHonorCoreChecks.ts": "5f90543425c52add73a62e815682039e14e6a867014ccc217ab38a93bb5e6f88"
+  }
+}
