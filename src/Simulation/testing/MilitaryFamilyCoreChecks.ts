@@ -82,7 +82,10 @@ export async function checkMilitaryFamilies(core:any,base:ReturnType<typeof expo
     const card=dialog.querySelector(`[data-family-member="${link.member.memberId}"] button`) as HTMLButtonElement;flushSync(()=>card.click());check(dialog.querySelector('[data-family-member-detail]')?.textContent?.includes(child.name),'actual descendant card opens its own identity and military link');
     const complete=Array.from(dialog.querySelectorAll('button')).find(b=>b.textContent==='完整族谱')!;flushSync(()=>complete.click());check(dialog.querySelector(`[data-family-member="${link.member.memberId}"]`),'complete genealogy retains the same actual enlisted descendant');
     const trunk=Array.from(dialog.querySelectorAll('button')).find(b=>b.textContent==='主干')!;flushSync(()=>trunk.click());
-    const fold=Array.from(dialog.querySelectorAll('button')).find(b=>b.textContent==='收起子支')!;flushSync(()=>fold.click());check(!dialog.querySelector(`[data-family-member="${link.member.memberId}"]`),'branch collapse removes descendant cards from the mounted tree');
+    check(!Array.from(dialog.querySelectorAll('button')).some(b=>b.textContent==='收起子支'),'main shared view removes per-card branch-collapse buttons');
+    flushSync(()=>complete.click());const parent=dialog.querySelector(`[data-family-member="${link.member.parentMemberId}"] button`) as HTMLButtonElement;flushSync(()=>parent.click());
+    const fold=Array.from(dialog.querySelectorAll('button')).find(b=>b.textContent==='收起该支')!;check(!!fold,'full genealogy exposes branch control only in selected person details');flushSync(()=>fold.click());check(!dialog.querySelector(`[data-family-member="${link.member.memberId}"]`),'branch collapse removes descendant cards from the mounted tree');
+    check(dialog.querySelector('[data-shared-genealogy]')&&dialog.querySelector('[data-genealogy-toolbar]')&&Array.from(dialog.querySelectorAll('button')).some(b=>b.textContent==='适应窗口'),'actual family uses the shared royal geometry, viewport and toolbar');
     check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,'family total genealogy interaction preserves population, kinship, army, royal identities and RNG');
    }finally{flushSync(()=>root.unmount());host.remove();}
   }

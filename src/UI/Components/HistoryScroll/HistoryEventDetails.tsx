@@ -1,3 +1,4 @@
+import HistoryEntityNavigation from './HistoryEntityNavigation';
 import {readCourtCoup} from '../../../History/CourtCoupReading';
 import {useDispatch} from 'react-redux';
 import {setPersonArchiveRequest,setSelectedFactionName,setFactionDetailTab,setRightPanelTab} from '../../../store/rootSlice';
@@ -91,7 +92,7 @@ export function EventDetails({
   }
   return (
     <>
-      <CourtPeople event={event}/>
+      <CourtPeople event={event}/><HistoryEntityNavigation event={event}/>
       <OriginalHistorySources event={event}/>
       <PoliticalCrisisDetails event={event}/>
       {getRevolutionEventDetails(event).length>0&&<details onClick={e=>e.stopPropagation()} style={{fontSize:'.75rem',overflowWrap:'anywhere'}}><summary>史料依据（易姓）</summary>{getRevolutionEventDetails(event).map((line,i)=><Typography key={i} fontSize=".75rem">{line}</Typography>)}</details>}
