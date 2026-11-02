@@ -814,12 +814,28 @@
     },
     "builds": {
       "web": "PASS",
-      "desktop": "PENDING",
-      "debug": "PENDING"
+      "desktop": "PASS",
+      "debug": "PASS",
+      "desktopCompile": "PASS",
+      "assets": "PASS",
+      "debugSourceMaps": 2,
+      "warning": "existing large bundle warning"
     },
     "strictWorlds": 8,
     "deterministicTwelveMonthContinuations": 8,
     "secondReads": 8,
     "visualGate": "WAITING_FOR_USER_CHROME"
-  }
+  },
+  "sourceSha256": {
+    "src/Politics/FamilyNobleSuccession.ts": "76db9c94fa105beb6c6778ef7c0e3280f4d6ac49e80631b5044bf5c90d5933bd",
+    "src/Persistence/FamilyNobleValidation.ts": "feff6e29a3d9ca8e3420df3eda0ef2347539ddc9cb33275a7db93f1689a5844d",
+    "src/Politics/FamilyArchiveProjection.ts": "00b4404323f438fca5e2b737f38c7bbe7550fc0adf078fe88b7f6bee82f9fcc5",
+    "src/UI/Components/FactionDetails/MilitaryFamilyBrowser.tsx": "8e4af6a5f8ac40bc0538651b1b9ead8f10dcecb11c29d37925e466cdc43c741c",
+    "src/UI/Components/FactionDetails/FamilyNoblePanel.tsx": "9dd859196c76364bab1358e397da4072f9067870c191860a8aab4d800c31c69e",
+    "src/UI/Components/FactionDetails/FamilyArchiveSource.ts": "ec373d1d3b1859010606b6d0289753f9c8bfda9b7110cddb579ea2f410a0678a",
+    "src/UI/Components/FactionDetails/militaryFamilyTree.ts": "a5b3f2fe88f5c80848fd0bacb9e215e3ac68784f813416e06a36bc3f7082bf89",
+    "src/Simulation/testing/MilitaryBalanceHarness.ts": "9182f1e5097bc31f9f6325bba2bd42e39317fcecab0b33a32cb612770527604d",
+    "src/Simulation/testing/FamilyNobleDiagnostics.ts": "4b7d1da3920278c22bc872d8cd8a4572a9ed6fe41440db9192dd7f192e55c165"
+  },
+  "rawOutput": "Large temporary natural simulation output excluded from release tree; compact world hashes, counts and strict read/continuation results retained here."
 }
