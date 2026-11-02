@@ -10,6 +10,7 @@ export function familyNobleReading(event:WorldEvent,factions:ReadonlyMap<string,
  if(!act||typeof act!=='object'||Array.isArray(act))return;
  const month=event.monthIndex??event.year,f=factions.get(act.factionId);
  if(!f||act.eventId!==event.id||act.month!==month||act.factionId!==event.actorFactionId||!FAMILY_NOBLE_NAMES[act.previousRank])return;
- const identity=getHistoricalFactionIdentity(f,month),rank=getRulerTitleAtMonth({...f,sovereigntyRank:f.sovereigntyRank==='KING'||f.sovereigntyRank==='EMPEROR'||f.sovereigntyRank==='LEADER'?f.sovereigntyRank:undefined},month),country=identity.name+(rank==='王'?'国':rank==='帝'?'朝':'');
+ const nameMonth=act.reason==='REGIME_ENDED'&&f.nameHistory?.some(h=>h.startMonth===month&&f.nameHistory!.some(p=>p!==h&&p.endMonth===month))?month-1:month;
+ const identity=getHistoricalFactionIdentity(f,nameMonth),rank=getRulerTitleAtMonth({...f,sovereigntyRank:f.sovereigntyRank==='KING'||f.sovereigntyRank==='EMPEROR'||f.sovereigntyRank==='LEADER'?f.sovereigntyRank:undefined},nameMonth),country=identity.name+(rank==='王'?'国':rank==='帝'?'朝':'');
  return `${country}${['DEATH','NO_HEIR'].includes(act.reason)?FAMILY_NOBLE_NAMES[act.previousRank]:''}${event.title}`;
 }

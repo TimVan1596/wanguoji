@@ -1,3 +1,4 @@
+import {royalHonorCandidateClaims} from '../../Politics/RoyalHonors';
 import {genealogyArchiveMetrics} from "./GenealogyArchiveMetrics";
 import {formatRulerLifeAge} from "../../UI/Components/FactionDetails/RoyalPresentation";
 import {checkMilitaryAccessionNavigation,checkRoyalArchiveInteraction,checkHistoryFactionNavigation,checkGenealogyRendering,checkRoyalGenealogyRecord} from "./RoyalArchiveInteractionHarness";
@@ -104,7 +105,8 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
    (core.simulator as any).clock.importState({worldMonth:coupMonth,elapsedMs:0,running:false});
    town.capture(t,coupMonth,undefined,Military.getPerson(personId)!.appointments[0].commandId,personId);capital.capture(enemy,coupMonth);
    for(const city of t.cities)city.loyalty=20;
-   const evaluation=evaluateDepositionOpportunity({factionId:t.name,status:t.status,identityStage:t.identityStage,cityCount:t.cities.length,stability:getFactionStability(t),currentRuler:old,rulers:d.rulers,houseName:d.houseName,worldMonth:coupMonth,events:History.getEvents()});
+   const evaluation=evaluateDepositionOpportunity({factionId:t.name,status:t.status,identityStage:t.identityStage,cityCount:t.cities.length,stability:getFactionStability(t),currentRuler:old,rulers:d.rulers,houseName:d.houseName,worldMonth:coupMonth,events:History.getEvents(),calibration:Dynasty.getPoliticalCalibration(),military:Military.getPoliticalInfluence(t,coupMonth,core.logicalUnitRegistry)});
+   evaluation.royalHonorClaims=royalHonorCandidateClaims(d,coupMonth,t.sovereigntyRank);
    check(evaluation.eligible,"real capital loss creates a legal deposition opportunity");
    evaluation.royalMilitaryClaims=Military.getRoyalDepositionClaims(t,coupMonth,evaluation.candidates.map(c=>c.ruler),core.logicalUnitRegistry);
    check(evaluation.royalMilitaryClaims.length===1,"verified own royal command receives bounded advantage from real capture");
