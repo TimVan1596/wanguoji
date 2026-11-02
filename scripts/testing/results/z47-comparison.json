@@ -1,0 +1,557 @@
+{
+  "baselineHead": "5e069147aa35e12548fa187bcc7dd6553314f7bd",
+  "versions": {
+    "app": "v0.99931z47",
+    "package": "0.99.213",
+    "worldSave": 45
+  },
+  "schemaChange": false,
+  "worldYears": 800,
+  "allEightCanonicalStatesMatchZ46": true,
+  "canonicalComparator": "Same existing full-state canonical hash, excluding only application version and creation timestamp. Matching hash includes actual history, people, lifetimes, dynasties, families, titles, population, units and RNG.",
+  "sharedComponents": {
+    "genealogyLayout": "One nonrecursive contour layout; adapters provide IDs, actual parent IDs, depth and actual card heights. No Ruler conversions.",
+    "GenealogyTreeView": "One zoom, fit, center, location, resize/wheel cleanup, scroll geometry, edges, toolbar and 150-node DOM budget.",
+    "GenealogyCardFrame": "One compact card width, geometry and text theme container."
+  },
+  "royalAdapterPreserved": [
+    "original dynasty/kin sources",
+    "royal branch window and controls",
+    "royal military direct links",
+    "political disabilities and restored eligibility",
+    "real formal posthumous and temple names"
+  ],
+  "familyAdapter": [
+    "same main trunk and real parent bridges",
+    "complete saved genealogy still available",
+    "no per-card collapse buttons in main or full mode",
+    "full-mode branch controls in selected-person details",
+    "one-line overview; other facts in family evidence",
+    "civilian members never create military or royal identities"
+  ],
+  "historicalReading": [
+    "event-month faction and previous title rank added at read time, canonical text unchanged",
+    "same-month usurpation uses frozen oldStateName/previousRulerTitle for the preceding sovereign",
+    "title priority: actual monarch, sourced temple or epithet after recorded death, effective honor; disability overrides current-honor heading",
+    "source-ID links to actual factions, old/new family holders, ordinary family members, military/royal archives and live/archived cities",
+    "lazy navigation runtime import preserves standalone history rendering and original source-evidence control order"
+  ],
+  "notReleased": [
+    "extra court-service rewards",
+    "new offices/peerage/persons",
+    "multi-period hereditary revival",
+    "new political/population/war probabilities"
+  ],
+  "nextCourtServiceOption": "Future independent design: a source-bound, once-only political-service credential with limited effect inside an existing qualified appointment opportunity; no automatic rank, separate draw or invented military merit. Not implemented in z47.",
+  "coreFixtureCorrections": [
+    "pre-z46 military-only royal theme expectation now matches actual military theme",
+    "failed political write checks full canonical state and RNG restoration instead of the obsolete consume-a-draw expectation",
+    "controlled claimant prediction now uses the same persisted calibration and military evidence as production; success, unique-person, one-draw and forged-proof rejection checks retained"
+  ],
+  "verification": {
+    "unitFiles": 314,
+    "unitTests": 2453,
+    "core": {
+      "military-nobility-z47-release.json": 619,
+      "royal-military-z47-release.json": 244
+    },
+    "coreTotal": 863,
+    "webBuild": "PASS",
+    "desktopBuild": "PASS",
+    "debugBuild": "PASS",
+    "existingLargeBundleWarning": true,
+    "strictSave": "PASS",
+    "failureRollback": "PASS full state and RNG",
+    "twelveMonthReadResumeRead": "PASS every natural world and controlled production transactions",
+    "humanGate": "WAITING_FOR_USER"
+  },
+  "worlds": [
+    {
+      "seed": "regional-1",
+      "years": 100,
+      "sameAsZ46": true,
+      "canonicalSha256": "50dae42527b3860ecb668211ca0bda358a80d1c9f88ff0a0a8cfa66fe59a8acd",
+      "metrics": {
+        "worldPopulation": 135,
+        "peakWorldPopulation": 153,
+        "activeStates": 6,
+        "historicalStates": 7,
+        "captures": 20,
+        "recoveries": 5,
+        "normalRoyalSuccessions": 21,
+        "worldRandomPosition": 7142,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 2,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "family": {
+        "families": 0,
+        "members": 0,
+        "successions": 0,
+        "rankDrops": 0,
+        "ended": 0,
+        "civilianInheritances": 0,
+        "renewals": 0,
+        "twoGenerationService": 0
+      },
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "genealogy": {
+        "nodes": 63,
+        "royalMilitaryExpected": 6,
+        "royalMilitaryIncluded": 6,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "strictSave": true
+    },
+    {
+      "seed": "regional-2",
+      "years": 100,
+      "sameAsZ46": true,
+      "canonicalSha256": "0771d164fe8e139d1176be8ab4257afc14273ce9952a00ca885043ff064c8ddd",
+      "metrics": {
+        "worldPopulation": 130,
+        "peakWorldPopulation": 156,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 10,
+        "recoveries": 1,
+        "normalRoyalSuccessions": 19,
+        "worldRandomPosition": 7130,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "family": {
+        "families": 0,
+        "members": 0,
+        "successions": 0,
+        "rankDrops": 0,
+        "ended": 0,
+        "civilianInheritances": 0,
+        "renewals": 0,
+        "twoGenerationService": 0
+      },
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "genealogy": {
+        "nodes": 55,
+        "royalMilitaryExpected": 4,
+        "royalMilitaryIncluded": 4,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "strictSave": true
+    },
+    {
+      "seed": "regional-3",
+      "years": 100,
+      "sameAsZ46": true,
+      "canonicalSha256": "0531e77f4b16c24cc6b5be04b295028c16bf9bdcb6cab722145949c7a02af4c6",
+      "metrics": {
+        "worldPopulation": 137,
+        "peakWorldPopulation": 151,
+        "activeStates": 4,
+        "historicalStates": 8,
+        "captures": 28,
+        "recoveries": 2,
+        "normalRoyalSuccessions": 15,
+        "worldRandomPosition": 6823,
+        "politicalEvents": {
+          "ordinaryFoundings": 1,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "family": {
+        "families": 2,
+        "members": 9,
+        "successions": 3,
+        "rankDrops": 3,
+        "ended": 0,
+        "civilianInheritances": 3,
+        "renewals": 0,
+        "twoGenerationService": 0
+      },
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "genealogy": {
+        "nodes": 40,
+        "royalMilitaryExpected": 2,
+        "royalMilitaryIncluded": 2,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "strictSave": true
+    },
+    {
+      "seed": "regional-4",
+      "years": 100,
+      "sameAsZ46": true,
+      "canonicalSha256": "ae12a4ea1636e41451ef6e8eaace6a17f75bf517f6e4a13c6ea551684cbee0c6",
+      "metrics": {
+        "worldPopulation": 117,
+        "peakWorldPopulation": 148,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 15,
+        "recoveries": 3,
+        "normalRoyalSuccessions": 21,
+        "worldRandomPosition": 7039,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "family": {
+        "families": 1,
+        "members": 1,
+        "successions": 0,
+        "rankDrops": 0,
+        "ended": 0,
+        "civilianInheritances": 0,
+        "renewals": 0,
+        "twoGenerationService": 0
+      },
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "genealogy": {
+        "nodes": 59,
+        "royalMilitaryExpected": 1,
+        "royalMilitaryIncluded": 1,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "strictSave": true
+    },
+    {
+      "seed": "regional-5",
+      "years": 100,
+      "sameAsZ46": true,
+      "canonicalSha256": "769d0900354bc80fb42029c40da2dfc8ecbd09866cde218f7cd8033e071dfdae",
+      "metrics": {
+        "worldPopulation": 133,
+        "peakWorldPopulation": 154,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 19,
+        "recoveries": 1,
+        "normalRoyalSuccessions": 15,
+        "worldRandomPosition": 6860,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "family": {
+        "families": 0,
+        "members": 0,
+        "successions": 0,
+        "rankDrops": 0,
+        "ended": 0,
+        "civilianInheritances": 0,
+        "renewals": 0,
+        "twoGenerationService": 0
+      },
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "genealogy": {
+        "nodes": 44,
+        "royalMilitaryExpected": 1,
+        "royalMilitaryIncluded": 1,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "strictSave": true
+    },
+    {
+      "seed": "regional-6",
+      "years": 100,
+      "sameAsZ46": true,
+      "canonicalSha256": "40ceb3a2c4fa1cef02c3ab345669ef347f67dd3036f4aa2cc46915dfc1da7998",
+      "metrics": {
+        "worldPopulation": 133,
+        "peakWorldPopulation": 148,
+        "activeStates": 4,
+        "historicalStates": 7,
+        "captures": 18,
+        "recoveries": 3,
+        "normalRoyalSuccessions": 17,
+        "worldRandomPosition": 7161,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 1,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "family": {
+        "families": 1,
+        "members": 2,
+        "successions": 0,
+        "rankDrops": 0,
+        "ended": 0,
+        "civilianInheritances": 0,
+        "renewals": 0,
+        "twoGenerationService": 0
+      },
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "genealogy": {
+        "nodes": 49,
+        "royalMilitaryExpected": 3,
+        "royalMilitaryIncluded": 3,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "strictSave": true
+    },
+    {
+      "seed": "regional-7",
+      "years": 100,
+      "sameAsZ46": true,
+      "canonicalSha256": "a7410998d4d53321b7daa3d2f43d904ef4eb4a97025372cd70d1459abddcd466",
+      "metrics": {
+        "worldPopulation": 137,
+        "peakWorldPopulation": 155,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 34,
+        "recoveries": 6,
+        "normalRoyalSuccessions": 22,
+        "worldRandomPosition": 7428,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "family": {
+        "families": 2,
+        "members": 8,
+        "successions": 1,
+        "rankDrops": 1,
+        "ended": 0,
+        "civilianInheritances": 1,
+        "renewals": 0,
+        "twoGenerationService": 1
+      },
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "genealogy": {
+        "nodes": 63,
+        "royalMilitaryExpected": 10,
+        "royalMilitaryIncluded": 10,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "strictSave": true
+    },
+    {
+      "seed": "regional-8",
+      "years": 100,
+      "sameAsZ46": true,
+      "canonicalSha256": "db416e3beadb656350b9b2a9b28571ed2d8f53aa9193ae81a36422a3d643710f",
+      "metrics": {
+        "worldPopulation": 141,
+        "peakWorldPopulation": 154,
+        "activeStates": 7,
+        "historicalStates": 8,
+        "captures": 28,
+        "recoveries": 4,
+        "normalRoyalSuccessions": 22,
+        "worldRandomPosition": 7496,
+        "politicalEvents": {
+          "ordinaryFoundings": 1,
+          "militarySecessions": 0,
+          "depositions": 1,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "family": {
+        "families": 1,
+        "members": 3,
+        "successions": 0,
+        "rankDrops": 0,
+        "ended": 1,
+        "civilianInheritances": 0,
+        "renewals": 0,
+        "twoGenerationService": 0
+      },
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "genealogy": {
+        "nodes": 60,
+        "royalMilitaryExpected": 3,
+        "royalMilitaryIncluded": 3,
+        "birthConflicts": 0,
+        "duplicateNodes": 0,
+        "shortAppointments": []
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "strictSave": true
+    }
+  ],
+  "unchangedSimulationAndPersistenceSha256": {
+    "src/Politics/Dynasty.ts": "bfe694a47a128cc630a69324223b53eed894aca607089bb99af734e10e4c9f4e",
+    "src/Politics/MilitaryCommandRegistry.ts": "ef631b898aa072cf8e18a5a7f54867c8a6e452a7ec489860ef31c91275aad1dc",
+    "src/Politics/MilitaryFamily.ts": "5a57b9ac87f368661bd19b122d9119e6e591d65b747237d4279cefa4f0b9d083",
+    "src/Politics/FamilyNobleSuccession.ts": "76db9c94fa105beb6c6778ef7c0e3280f4d6ac49e80631b5044bf5c90d5933bd",
+    "src/Politics/MilitaryNobility.ts": "af036a3e9e6070dc3fc2346f1905f1b9a9ccf6698117c97871b2441baaf79866",
+    "src/Components/City.ts": "26fccfe300a50a6634af78bd75545c54970f4da8fe47c2339905e3163730f564",
+    "src/Components/User.ts": "f23d0322c5b942c9832d184d94b3e88a3ae0a08bdf93ed453e6b2dc45112f1d5",
+    "src/Components/Team.ts": "97fc980e1cacdfa91c2e3e7c25008149a4d4f88e4c550c5572731d4b4cad0143",
+    "src/Persistence/WorldSaveSchema.ts": "883c7f0b9aa958db872e6bfa8c28d6ee5a34a4474cb3cea8581311a0623d50c5",
+    "src/Persistence/WorldSaveValidator.ts": "38e1f01dc11567aa8e194bffde7735263af0ad74c3143e94e615ac8a05bdb25a"
+  },
+  "viewSourceSha256": {
+    "src/UI/Components/FactionDetails/genealogyLayout.ts": "85a474ad96868cc7773af13766ddb66c7cfdfeb2697d33e9385222a9acbad660",
+    "src/UI/Components/FactionDetails/GenealogyTreeView.tsx": "4965457b5f79c99db6ef8c2592a5ac0e4c8eed9065dc20c16fd518eeb6239527",
+    "src/UI/Components/FactionDetails/GenealogyCardFrame.tsx": "e2ed55d4b8396c0e0376fb5be63f7c4197927691b175d531a6f4e9b515992467",
+    "src/UI/Components/FactionDetails/GenealogyBrowser.tsx": "c75453c50c4fa5479a03d18d72f386f29591f2c50d9798597746a25b63cf444f",
+    "src/UI/Components/FactionDetails/MilitaryFamilyBrowser.tsx": "6d833701a42cfb739f8e32e5a1539644dd4360a028661d4d26f3061010ac7728",
+    "src/Politics/GenealogyRulerHeading.ts": "8b2398023eef057971796774cd8cd705f57262237cc4445f4642c4cbbb5d4a12",
+    "src/History/FamilyNobleReading.ts": "5004208d6ba86911fb76fa35a1f432ab7817b143a2486db9b233c802dc11d8e4",
+    "src/History/HistoryEntityLinks.ts": "16883869fbeee13c1d6cc61f44e33758a1ce1e63a2c65d9d1d9cbd52fdce2fbf",
+    "src/UI/Components/HistoryScroll/HistoryEntityNavigation.tsx": "cf5143195401d896fff934f95228ac6f52ffef8d79d4fa1afd57e96f74a0ed8b"
+  }
+}
