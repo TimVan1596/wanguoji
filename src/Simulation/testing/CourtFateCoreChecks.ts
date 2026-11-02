@@ -24,14 +24,14 @@ import {diffCanonicalWorldSave} from '../../Persistence/WorldSaveSchema';
 import {validateWorldSave} from '../../Persistence/WorldSaveValidator';
 import {SIMULATION_FIXED_STEP_MS} from '../SimulationDriver';
 /** Production identity, commands, court outcome, sanction and pardon. Controlled rolls are not natural samples. */
-export function checkCourtFates(core:any,base:ReturnType<typeof exportWorldSave>,factionId:string,check:(v:unknown,s:string)=>void){
+export function checkCourtFates(core:any,base:ReturnType<typeof exportWorldSave>,factionId:string,check:(v:unknown,s:string)=>void,untitledBase:ReturnType<typeof exportWorldSave>){
  const clock=(m:number)=>core.simulator.clock.importState({worldMonth:m,elapsedMs:0,running:false});
  const team=()=>core.teams.find((t:any)=>t.name===factionId),dy=()=>Dynasty.get(factionId)!,king=()=>Dynasty.getCurrentRuler(factionId)!;
  const read=()=>{const v=validateWorldSave(exportWorldSave(core));check(v.valid,`court fate strict save: ${v.errors.join(';')}`);return exportWorldSave(core);};
  const opportunity=(m:number)=>evaluateDepositionOpportunity({factionId,status:team().status,identityStage:team().identityStage,cityCount:team().cities.length,stability:getFactionStability(team()),currentRuler:king(),rulers:dy().rulers,houseName:dy().houseName,worldMonth:m,events:History.getEventsForFaction(factionId)});
  const invoke=(m:number,roll:number)=>{const writer=random.next;random.next=()=>{writer.call(random);return roll;};try{(Dynasty as any).evaluateInReignDeposition(team(),dy(),king(),m);}finally{random.next=writer;}};
- function prepare(titled:boolean,strong:boolean,pardonGoal=false){
-  hydrateWorldSave(core,structuredClone(base));clock(216);
+ function prepare(titled:boolean,strong:boolean,pardonGoal=false,noMilitaryMerits=false){
+  hydrateWorldSave(core,structuredClone(noMilitaryMerits?untitledBase:base));clock(216);
   const t=team(),pos=t.capitalCity.block;for(const u of t.users){u.player.setPosition(pos.x+2,pos.y+2);u.player.body.reset(u.player.x,u.player.y);u.loyalty=0;}
   (Military as any).advanceOffices(216,core.teams);if(titled)Military.updateNobility(216,core.teams,Dynasty.getAll());clock(228);if(titled)Military.updateNobility(228,core.teams,Dynasty.getAll());
   if(strong){clock(240);(Military as any).advanceOffices(240,core.teams);}
@@ -84,7 +84,7 @@ export function checkCourtFates(core:any,base:ReturnType<typeof exportWorldSave>
    invoke(276,0);check(courtServiceReadings(person,History.getRecordedEvents(),276).length===1,'successful real supporter has one source-bound award reading, not an invented promotion');check(person.appointments.at(-1)?.officeHistory?.at(-1)?.office==='SHANGJIANGJUN','court reward never invents an office beyond the actual highest military rank');read();
   }
   {
-   const f=prepare(false,true),id=f.actor.personId;
+   const f=prepare(false,true,false,true),id=f.actor.personId;
    for(const failure of ['court-peerage-granted','court-reward-granted']){
     hydrateWorldSave(core,structuredClone(f.start));const before=exportWorldSave(core),writer=History.addEvent;
     History.addEvent=function(e){const written=writer.call(this,e);if(e.type===failure)throw Error('injected political peerage write');return written;};
@@ -94,7 +94,7 @@ export function checkCourtFates(core:any,base:ReturnType<typeof exportWorldSave>
    hydrateWorldSave(core,structuredClone(f.start));const priorPeople=Military.getPeople().length,priorUnits=core.teams.reduce((n:number,t:any)=>n+t.users.size,0);invoke(252,0);
    const p=Military.getPerson(id)!,g=currentNobleGrant(p,factionId,252);
    check(g?.basis==='COURT'&&g.rank==='BO'&&g.captureEventIds.length===0&&g.serviceMonths===0,'a real untitled nonroyal supporter receives an independent foundational political BO without invented combat credit');
-   check(Military.getPeople().length===priorPeople&&core.teams.reduce((n:number,t:any)=>n+t.users.size,0)===priorUnits,'political award creates neither population nor military people');
+   check(Military.getPeople().length===priorPeople&&core.teams.reduce((n:number,t:any)=>n+t.users.size,0)===priorUnits,`political award creates neither population nor military people (${priorPeople}/${Military.getPeople().length}; ${priorUnits}/${core.teams.reduce((n:number,t:any)=>n+t.users.size,0)})`);
    check(courtServiceReadings(p,History.getRecordedEvents(),252).some(x=>x.text.includes('政治恩爵')),'actual political peerage appears in the supporter life reading');
    (Military as any).updateFamilies(252,core.teams);const family=Military.getFamilies().find(x=>x.founderPersonId===id);
    check(family&&family.sourceEventId===g?.courtServiceEventId,'the genuine court service establishes one family with a real political peerage source');

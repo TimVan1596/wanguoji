@@ -43,12 +43,13 @@ export async function runMilitaryNobilityCore(seed:string){
   const site=core.map!.blocks.flat().find(b=>!b.city&&core.allCities.every(c=>Math.hypot(c.block.x-b.x,c.block.y-b.y)>96))!;check(site,'real terrain supports a spare enemy city');site.claimForTeam(enemy);Factions.foundCity(enemy,site,undefined,36);
   Military.updateNobility(36,core.teams,Dynasty.getAll());check(!Military.getPerson(ids[0])!.nobilityHistory,'no verified captures means no title');
   const towns=core.allCities.filter(c=>c.ownerTeam!==home&&c.block!==site).slice(0,6);check(towns.length===6,'controlled war uses six different real cities');
-  for(const [i,c]of towns.entries()){clock(60+i*12);place(users[0],c.block.x,c.block.y);c.capture(home,60+i*12,undefined,commands[0],ids[0]);}
+  let untitledCourtBase:ReturnType<typeof strict>|undefined;
+  for(const [i,c]of towns.entries()){clock(60+i*12);place(users[0],c.block.x,c.block.y);c.capture(home,60+i*12,undefined,commands[0],ids[0]);if(i===0)untitledCourtBase=strict();}
   for(const [i,c]of towns.slice(0,2).entries()){clock(168+i*12);c.capture(enemy,168+i*12);clock(180+i*12);place(users[1],c.block.x,c.block.y);c.capture(home,180+i*12,undefined,commands[1],ids[1]);}
   // Equal willingness/contest multipliers isolate the existing title and office regressions.
   const minimumAmbition=Math.min(...ids.map(id=>militaryAmbition(id,Military.getPerson(id)!.bornMonth)));
   for(const u of users){const p=Military.getPerson(u.militaryPersonId!)!;u.loyalty=militaryAmbition(p.personId,p.bornMonth)-minimumAmbition;}
-  clock(216);const base=strict();checkStateFormationCore(core,base,check);checkRoyalHonors(core,base,check);checkRoyalHonorCompetition(core,base,check);checkCourtCoups(core,base,factionId,check);Dynasty.setPoliticalCalibrationForSimulation('MEDIUM');checkCourtCoups(core,exportWorldSave(core),factionId,check);hydrateWorldSave(core,structuredClone(base));checkCourtFates(core,base,factionId,check);checkRoyalCourtAttempt(core,base,check);await checkMilitaryFamilies(core,base,factionId,check);
+  clock(216);const base=strict();checkStateFormationCore(core,base,check);checkRoyalHonors(core,base,check);checkRoyalHonorCompetition(core,base,check);checkCourtCoups(core,base,factionId,check);Dynasty.setPoliticalCalibrationForSimulation('MEDIUM');checkCourtCoups(core,exportWorldSave(core),factionId,check);hydrateWorldSave(core,structuredClone(base));checkCourtFates(core,base,factionId,check,untitledCourtBase!);checkRoyalCourtAttempt(core,base,check);await checkMilitaryFamilies(core,base,factionId,check);
   const restore=(save=base)=>{hydrateWorldSave(core,structuredClone(save));return {t:core.teams.find(t=>t.name===factionId)!,d:Dynasty.get(factionId)!,p:Military.getPerson(ids[0])!,q:Military.getPerson(ids[1])!};};
   checkSuccessionRollback(core,base,factionId,check);
   checkOfficePoliticalChoice(core,base,ids,factionId,check);
