@@ -1,3 +1,4 @@
+import {hereditaryAppointmentWeight,hereditaryVacancyChance,type HereditaryRecruitmentPolicy} from './HereditaryRecruitment';
 import {insurgentLeaderIdentity,type InsurgentDuty} from './InsurgentCommand';
 import {createFamilyNobleContext,planFamilyNobleTransition,familyNobleText,familyResidenceAt,eligibleFamilyNobleHeirs} from './FamilyNobleSuccession';
 import {emptyFamilyRecruitmentDiagnostics,familyRecruitmentExposure} from './FamilyRecruitmentDiagnostics';
@@ -101,6 +102,7 @@ export interface MilitaryFormation {
 }
 
 export interface MilitaryCommandState {
+  hereditaryRecruitment?:HereditaryRecruitmentPolicy;
   leaderCommands?:MilitaryFormation[];
   families?: MilitaryFamily[];
   people: MilitaryPerson[];
@@ -147,6 +149,8 @@ export class MilitaryCommandRegistryStore {
     if(!this.familyByResident)this.familyByResident=new Map(this.families.flatMap(family=>family.members.map(member=>[`${member.sourceUserId}/${member.bornMonth}`,{family,member}] as const)));
     return this.familyByResident.get(`${userId}/${bornMonth}`);
   }
+  private hereditaryRecruitment:HereditaryRecruitmentPolicy='LOW';
+  setHereditaryRecruitmentForSimulation(policy:HereditaryRecruitmentPolicy){this.hereditaryRecruitment=policy;}
   private familyRecruitment=emptyFamilyRecruitmentDiagnostics();
   private people = new Map<string, MilitaryPerson>();
   private formations = new Map<string, MilitaryFormation>();
@@ -161,6 +165,7 @@ export class MilitaryCommandRegistryStore {
     unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
 
   reset() {
+    this.hereditaryRecruitment='LOW';
     this.familyRecruitment=emptyFamilyRecruitmentDiagnostics();
     this.families=[];this.familyByResident=undefined;
     this.people.clear(); this.formations.clear(); this.personSequence = 1; this.commandSequence = 1;
@@ -177,13 +182,14 @@ export class MilitaryCommandRegistryStore {
   }
 
   exportState(): MilitaryCommandState {
-    return { ...(this.families.length?{families:structuredClone(this.families)}:{}), people: [...this.people.values()].map(person => structuredClone(person)),
+    return { hereditaryRecruitment:this.hereditaryRecruitment,...(this.families.length?{families:structuredClone(this.families)}:{}), people: [...this.people.values()].map(person => structuredClone(person)),
       formations: [...this.formations.values()].filter(f=>!f.leaderDuty).map(formation => structuredClone(formation)),
       ...([...this.formations.values()].some(f=>f.leaderDuty)?{leaderCommands:[...this.formations.values()].filter(f=>f.leaderDuty).map(f=>structuredClone(f))}:{}),
       personSequence: this.personSequence, commandSequence: this.commandSequence, lastEvaluationMonth: this.lastEvaluationMonth };
   }
 
   importState(state: MilitaryCommandState) {
+    this.hereditaryRecruitment=state.hereditaryRecruitment??'BASELINE';
     this.familyRecruitment=emptyFamilyRecruitmentDiagnostics();
     this.families=structuredClone(state.families??[]);this.familyByResident=undefined;
     this.people = new Map(state.people.map(person => [person.personId, structuredClone(person)]));
@@ -198,6 +204,7 @@ export class MilitaryCommandRegistryStore {
 
   snapshotTransaction(){return {people:new Map(this.people),formations:new Map(this.formations),state:this.exportState(),familyRecruitment:structuredClone(this.familyRecruitment),diagnostics:{...this.diagnostics},arrivals:new Map(this.lastArrivalTargetByCommand),ranges:new Map(this.longRangeOrderSamples)};}
   rollbackTransaction(snapshot:ReturnType<MilitaryCommandRegistryStore["snapshotTransaction"]>,inPlace=false){
+    this.hereditaryRecruitment=snapshot.state.hereditaryRecruitment??'BASELINE';
     this.familyByResident=undefined;
     if(inPlace){this.families=structuredClone(snapshot.state.families??[]);this.people=new Map(snapshot.state.people.map(data=>{const p=snapshot.people.get(data.personId)!;for(const k of Object.keys(p))delete (p as any)[k];Object.assign(p,structuredClone(data));return [p.personId,p];}));this.formations=new Map(savedFormationRows(snapshot.state).map(data=>{const f=snapshot.formations.get(data.commandId)!;for(const k of Object.keys(f))delete (f as any)[k];Object.assign(f,structuredClone(data));return [f.commandId,f];}));this.personSequence=snapshot.state.personSequence;this.commandSequence=snapshot.state.commandSequence;this.lastEvaluationMonth=snapshot.state.lastEvaluationMonth;}
     else this.importState(snapshot.state);this.familyRecruitment=structuredClone(snapshot.familyRecruitment);this.diagnostics=snapshot.diagnostics;this.lastArrivalTargetByCommand=snapshot.arrivals;this.longRangeOrderSamples=snapshot.ranges;}
@@ -320,27 +327,33 @@ export class MilitaryCommandRegistryStore {
       if (!availableUnits.length && !royals.length) { this.diagnostics.unitBlocked++; continue; }
       this.diagnostics.eligible += candidates.length;
       this.diagnostics.familyCandidateChecks+=candidates.filter(u=>{const link=this.getFamilyMember(u.id,u.bornMonth);return familyAppointmentWeight(link?.family,link?.member,team.name,this.royalService?.nobleEpoch?.(team.name,worldMonth),worldMonth,this.royalService?.calibration?.())>1;}).length;
-      const getWeights=()=>candidates.map(user=>{const p=user.militaryPersonId?this.people.get(user.militaryPersonId):undefined,l=this.getFamilyMember(user.id,user.bornMonth);return p?this.getCareer(p,worldMonth).appointmentWeight:familyAppointmentWeight(l?.family,l?.member,team.name,this.royalService?.nobleEpoch?.(team.name,worldMonth),worldMonth,this.royalService?.calibration?.());});
+      const getWeights=()=>candidates.map(user=>{const p=user.militaryPersonId?this.people.get(user.militaryPersonId):undefined,l=this.getFamilyMember(user.id,user.bornMonth);return p?this.getCareer(p,worldMonth).appointmentWeight:hereditaryAppointmentWeight(l?.family,l?.member,team.name,epoch,worldMonth,familyAppointmentWeight(l?.family,l?.member,team.name,epoch,worldMonth,this.royalService?.calibration?.()),this.hereditaryRecruitment);});
       const familyRows=candidates.filter(u=>u.familyMemberId&&!u.militaryPersonId),preparedWeights=familyRows.length?getWeights():undefined;
+      const titleCandidates=candidates.filter(u=>{const l=this.getFamilyMember(u.id,u.bornMonth);return !u.militaryPersonId&&l&&l.family.epochFounderId===epoch&&l.family.factionId===team.name&&!!l.family.nobleSuccession?.some(a=>a.kind==='SUCCEEDED'&&a.holderMemberId===l.member.memberId)&&hereditaryAppointmentWeight(l.family,l.member,team.name,epoch,worldMonth,1,'LOW')>1;});
+      const vacancyChance=hereditaryVacancyChance(this.hereditaryRecruitment,!provisional&&titleCandidates.length>0);
       const exposure=preparedWeights?familyRecruitmentExposure(candidates.map((u,i)=>({id:u.familyMemberId??'',family:!!u.familyMemberId&&!u.militaryPersonId,weight:preparedWeights[i]})),royals.length,ANNUAL_APPOINTMENT_CHANCE):undefined;
+      if(exposure&&vacancyChance){exposure.expected+=vacancyChance;}
+      if(titleCandidates.length){this.familyRecruitment.titleCandidateChecks+=titleCandidates.length;this.familyRecruitment.titleVacancyOpportunities++;this.familyRecruitment.titleExpectedAppointments+=vacancyChance+(ANNUAL_APPOINTMENT_CHANCE*titleCandidates.reduce((n,u)=>n+(preparedWeights?.[candidates.indexOf(u)]??1),0)/(exposure?.totalWeight??1));}
       if(exposure){const d=this.familyRecruitment;d.opportunities++;d.qualifiedPersonChecks+=familyRows.length;d.expectedAppointments+=exposure.expected;d.baselineExpectedAppointments+=exposure.baselineExpected;d.weightSum+=exposure.familyWeight;for(const u of familyRows)if(d.distinctCandidateIds.length<4096&&!d.distinctCandidateIds.includes(u.familyMemberId!))d.distinctCandidateIds.push(u.familyMemberId!);d.recent.unshift({month:worldMonth,factionId:team.name,...exposure});d.recent.length=Math.min(20,d.recent.length);}
       let selectedFamily=false;
       const attempt=()=>{
       if(provisional)this.diagnostics.provisionalDraws++;
-      if (worldRandom.next() >= ANNUAL_APPOINTMENT_CHANCE) {if(provisional)this.diagnostics.provisionalMisses++;return;}
+      const opportunityRoll=worldRandom.next(),priority=opportunityRoll>=ANNUAL_APPOINTMENT_CHANCE;
+      if (opportunityRoll >= ANNUAL_APPOINTMENT_CHANCE+vacancyChance) {if(provisional)this.diagnostics.provisionalMisses++;return;}
       const weights=preparedWeights??getWeights();
       if(exposure){this.familyRecruitment.poolDraws++;this.familyRecruitment.conditionalExpectedSelections+=exposure.conditional;}
-      const selected = selectMilitaryCandidate([...candidates.map(user => ({user, royal: undefined as RoyalMilitaryCandidate | undefined})), ...royals.map(royal => ({user: undefined as User | undefined, royal}))], [...weights, ...royals.map(() => 1)], worldRandom.next());
+      const selected = priority?selectMilitaryCandidate(titleCandidates.map(user=>({user,royal:undefined as RoyalMilitaryCandidate|undefined})),titleCandidates.map(u=>weights[candidates.indexOf(u)]),worldRandom.next()):selectMilitaryCandidate([...candidates.map(user => ({user, royal: undefined as RoyalMilitaryCandidate | undefined})), ...royals.map(royal => ({user: undefined as User | undefined, royal}))], [...weights, ...royals.map(() => 1)], worldRandom.next());
       if (selected.royal) {
         if (this.royalService?.enlist(selected.royal, team, worldMonth, [])) this.diagnostics.appointments++;
         this.refreshOrders(worldMonth, teams, cities);
         return;
       }
       const candidate = selected.user!;
+      if(titleCandidates.includes(candidate))this.familyRecruitment.titleSelected++;
       selectedFamily=!!candidate.familyMemberId&&!candidate.militaryPersonId;if(selectedFamily)this.familyRecruitment.selected++;
       const members = [candidate, ...availableUnits.filter(user => user !== candidate)].slice(0, MILITARY_FORMATION_CAPACITY.XIAOWEI);
       if (members.length < 1 || !candidate.player.logicalUnitId) { this.diagnostics.unitBlocked++; return; }
-      if (this.appoint(candidate, team.name, worldMonth, members.map(user => user.player.logicalUnitId!))) {this.diagnostics.appointments++;if(selectedFamily)this.familyRecruitment.appointments++;if(provisional)this.diagnostics.provisionalAppointments++;}
+      if (this.appoint(candidate, team.name, worldMonth, members.map(user => user.player.logicalUnitId!))) {this.diagnostics.appointments++;if(selectedFamily)this.familyRecruitment.appointments++;if(titleCandidates.includes(candidate))this.familyRecruitment.titleAppointments++;if(provisional)this.diagnostics.provisionalAppointments++;}
       this.refreshOrders(worldMonth, teams, cities);
       };
       if(candidates.some(u=>u.familyMemberId)){
@@ -421,7 +434,7 @@ export class MilitaryCommandRegistryStore {
       this.people.set(personId, person);
       user.militaryPersonId = personId;
     }
-    const familyLink=this.getFamilyMember(user.id,user.bornMonth),familyWeight=familyAppointmentWeight(familyLink?.family,familyLink?.member,factionId,this.royalService?.nobleEpoch?.(factionId,worldMonth),worldMonth,this.royalService?.calibration?.());
+    const familyLink=this.getFamilyMember(user.id,user.bornMonth),familyWeight=hereditaryAppointmentWeight(familyLink?.family,familyLink?.member,factionId,this.royalService?.nobleEpoch?.(factionId,worldMonth),worldMonth,familyAppointmentWeight(familyLink?.family,familyLink?.member,factionId,this.royalService?.nobleEpoch?.(factionId,worldMonth),worldMonth,this.royalService?.calibration?.()),this.hereditaryRecruitment);
     if(familyLink){if(familyLink.member.name!==person.personalName)throw Error('Family military name mismatch');familyLink.member.militaryPersonId=person.personId;}
     person.factionId = factionId; person.status = "ACTIVE";
     person.appointments.push({ factionId, startMonth: worldMonth, commandId, officeHistory: [] });
@@ -430,7 +443,7 @@ export class MilitaryCommandRegistryStore {
     this.eventWriter?.({ id: `military-appointment-${commandId}`, year: worldMonth, monthIndex: worldMonth,
       category: "politics", type: "military-appointment", title: `${factionId}任命${getMilitaryPersonDisplayName(person)}为军事指挥者`,
       description: royalIdentity ? `${getMilitaryPersonDisplayName(person)}以原王室身份首次从军，建立一个真实人口单位，与${memberUnitIds.length-1}名既有部众组成军队。` : `${getMilitaryPersonDisplayName(person)}由既有人口任职，指挥${memberUnitIds.length}个现存单位。`, factionIds: [factionId], actorFactionId: factionId,
-      metadata: { personId, sourceUserId: person.sourceUserId, personalName: person.personalName, commandId, unitCount: memberUnitIds.length, ...(familyLink?{familyId:familyLink.family.familyId,familyMemberId:familyLink.member.memberId,familyAppointmentWeight:familyWeight,politicalCalibration:this.royalService?.calibration?.()??'BASELINE'}:{}), ...(royalIdentity ? {royalRulerId:royalIdentity.rulerId,populationDelta:1} : {}) }, importance: "normal" });
+      metadata: { personId, sourceUserId: person.sourceUserId, personalName: person.personalName, commandId, unitCount: memberUnitIds.length, ...(familyLink?{familyId:familyLink.family.familyId,familyMemberId:familyLink.member.memberId,familyAppointmentWeight:familyWeight,hereditaryRecruitment:this.hereditaryRecruitment,politicalCalibration:this.royalService?.calibration?.()??'BASELINE'}:{}), ...(royalIdentity ? {royalRulerId:royalIdentity.rulerId,populationDelta:1} : {}) }, importance: "normal" });
     this.grantOffice(person,person.appointments.at(-1)!,{office:"XIAOWEI",month:worldMonth,serviceMonths:0,captureEventIds:[]});
     return true;
   }
@@ -536,7 +549,9 @@ export class MilitaryCommandRegistryStore {
   }
   rewardCourtService(person:MilitaryPerson,team:Team,dy:Dynasty,service:WorldEvent,month:number){
     if(!politicalMutationActive()||service.type!=='court-service-granted'||service.rulerId!==dy.currentRulerId||service.metadata?.personId!==person.personId||service.actorFactionId!==team.name)throw Error('Invalid court reward authority');
-    const grant=courtNobleGrant(person,team,dy,service,month)??this.eligibleNobleGrant(person,month,team,dy);if(!grant)return;
+    const user=team.getUserById(person.sourceUserId),commands=this.getFormations().filter(f=>f.commanderPersonId===person.personId&&f.status==='ACTIVE'&&f.factionId===team.name);
+    if(!user||user.isDestroyed||user.militaryPersonId!==person.personId||user.bornMonth!==person.bornMonth||!user.player.active||commands.length!==1||!commands[0].memberUnitIds.includes(user.player.logicalUnitId??''))throw Error('Court award needs the real living supporter and exclusive command');
+    const grant=this.eligibleNobleGrant(person,month,team,dy)??(this.hereditaryRecruitment!=='BASELINE'?courtNobleGrant(person,team,dy,service,month):undefined);if(!grant)return;
     this.recordNoble(person,grant,service.id,String(service.metadata?.courtCoupEventId));
     const rewardId=this.eventWriter!({id:`${service.id}-peerage`,year:month,type:'court-reward-granted',category:'politics',importance:'major',actorFactionId:team.name,factionIds:[team.name],rulerId:grant.rulerId,title:grant.basis==='COURT'?nobleChronicle(grant):`${grant.rulerTitle}以${person.personalName}拥立有功，依其军功资历${grant.previousRank==='NONE'?'封':'进封'}为${({BO:'伯爵',HOU:'侯爵',GONG:'公爵'} as const)[grant.rank]}。`,metadata:{personId:person.personId,courtCoupEventId:service.metadata.courtCoupEventId,courtServiceEventId:service.id,nobleGrantEventId:grant.eventId,previousRank:grant.previousRank,rank:grant.rank}});
     if(rewardId!==`${service.id}-peerage`||!this.eventReader(team.name).some(e=>e.id===rewardId))throw Error('Court reward not recorded');

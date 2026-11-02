@@ -1,3 +1,4 @@
+import {isHereditaryRecruitmentPolicy} from '../Politics/HereditaryRecruitment';
 import {MILITARY_OFFICES,MILITARY_FORMATION_CAPACITY} from "../Politics/MilitaryOffice";
 import {validateMilitaryOffices} from "./MilitaryOfficeValidation";
 import { deriveMilitaryLifeSchedule } from "../Politics/MilitaryLifeRules";
@@ -14,6 +15,7 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
       !Number.isSafeInteger(state.lastEvaluationMonth) || Number(state.lastEvaluationMonth) < -1 || Number(state.lastEvaluationMonth) > worldMonth) {
     return ["militaryCommandRegistry has invalid state shape"];
   }
+  if(state.hereditaryRecruitment!==undefined&&!isHereditaryRecruitmentPolicy(state.hereditaryRecruitment))errors.push('invalid hereditary recruitment policy');
   const registry = state as unknown as MilitaryCommandState;
   const historyById = new Map<string, any>((Array.isArray(history?.events) ? history.events : [])
     .filter((e: unknown) => plain(e) && typeof e.id === "string").map((e: any) => [e.id, e]));

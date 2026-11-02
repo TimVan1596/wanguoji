@@ -1,3 +1,4 @@
+import type {HereditaryRecruitmentPolicy} from '../../Politics/HereditaryRecruitment';
 import {familyNobleDiagnostics} from './FamilyNobleDiagnostics';
 import type {PoliticalCalibration} from '../../Politics/PoliticalCalibration';
 import {politicalEventCounts} from '../../History/PoliticalEventCounts';
@@ -40,12 +41,13 @@ async function fingerprint(snapshot: ReturnType<typeof exportWorldSave>,baseFact
 }
 
 /** Instrument the real City transaction, never substitute combat or its RNG. Test-session aggregates only. */
-export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=false,verifyContinuation=false,courtPolicy:'LOW'|'MEDIUM'|'HIGH'='MEDIUM',calibration?:PoliticalCalibration){
+export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=false,verifyContinuation=false,courtPolicy:'LOW'|'MEDIUM'|'HIGH'='MEDIUM',calibration?:PoliticalCalibration,hereditaryRecruitment?:HereditaryRecruitmentPolicy){
   const royalOffers=new Map<string,number>(),readRoyal=(Dynasty as any).getRoyalMilitaryCandidates;
   if(readRoyal)(Dynasty as any).getRoyalMilitaryCandidates=function(...args:any[]){const rows=readRoyal.apply(this,args);for(const r of rows)if(!royalOffers.has(r.rulerId))royalOffers.set(r.rulerId,args[1]);return rows;};
   const {core,game}=await createNaturalCore(seed),started=performance.now();
   Dynasty.setCourtAttemptPolicyForSimulation(courtPolicy);
   if(calibration)Dynasty.setPoliticalCalibrationForSimulation(calibration);
+  if(hereditaryRecruitment)Military.setHereditaryRecruitmentForSimulation(hereditaryRecruitment);
   const original=(City.prototype as any).updateSiege,advanceOffices=(Military as any).advanceOffices;
   let reinforcementTransactions=0,reinforcedUnits=0;
   (Military as any).advanceOffices=function(...args:any[]){const before=new Map(Military.getFormations().map(f=>[f.commandId,new Set(f.memberUnitIds)])),result=advanceOffices.apply(this,args);

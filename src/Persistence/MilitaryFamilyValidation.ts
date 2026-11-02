@@ -1,3 +1,4 @@
+import {hereditaryAppointmentWeight,isHereditaryRecruitmentPolicy} from '../Politics/HereditaryRecruitment';
 import {calibrationOrBaseline,isPoliticalCalibration} from '../Politics/PoliticalCalibration';
 import {splitEstablishedPersonalName} from '../Politics/NameCulture';
 import type {WorldSaveV1} from './WorldSaveSchema';
@@ -29,7 +30,9 @@ export function validateMilitaryFamilies(save:WorldSaveV1){
     if(!e||e.metadata?.familyId!==f.familyId||e.metadata?.familyMemberId!==m.memberId)continue;
     const epoch=epochs?.find(ep=>ep.startMonth<=appointment.startMonth&&(ep.endMonth??Infinity)>=appointment.startMonth)?.foundingRulerId;
     if(e.metadata?.politicalCalibration!==undefined&&!isPoliticalCalibration(e.metadata.politicalCalibration))throw Error('invalid family appointment policy');
-    const expected=i===0?familyAppointmentWeight(f,{...m,militaryPersonId:undefined,deathMonth:undefined},appointment.factionId,epoch,appointment.startMonth,calibrationOrBaseline(e.metadata?.politicalCalibration)):1;
+    if(e.metadata?.hereditaryRecruitment!==undefined&&!isHereditaryRecruitmentPolicy(e.metadata.hereditaryRecruitment))throw Error('invalid hereditary appointment policy');
+    const baseWeight=i===0?familyAppointmentWeight(f,{...m,militaryPersonId:undefined,deathMonth:undefined},appointment.factionId,epoch,appointment.startMonth,calibrationOrBaseline(e.metadata?.politicalCalibration)):1;
+    const expected=i===0?hereditaryAppointmentWeight(f,{...m,militaryPersonId:undefined,deathMonth:undefined},appointment.factionId,epoch,appointment.startMonth,baseWeight,isHereditaryRecruitmentPolicy(e.metadata?.hereditaryRecruitment)?e.metadata.hereditaryRecruitment:'BASELINE'):1;
     if(e.metadata?.familyAppointmentWeight!==expected)throw Error('invalid family appointment advantage');
    }
    const user=save.users.find(u=>u.userId===m.sourceUserId);
