@@ -119,9 +119,9 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
    const force=()=>{let first=true;worldRandom.next=()=>{const actual=originalNext.call(worldRandom);if(first){first=false;return roll!;}return actual;};};
    force();History.addRulerDeposed=function(...args:Parameters<typeof writer>){writer.apply(this,args);throw new Error("injected royal deposition failure");};
    try{(Dynasty as any).evaluateInReignDeposition(t,d,old,coupMonth);}finally{History.addRulerDeposed=writer;worldRandom.next=originalNext;}
-   const failed=strict(),expected=structuredClone(checkpoint);
-   check(failed.worldRandom.position===checkpoint.worldRandom.position+1,"failed weighted coup consumes exactly the one existing political draw");expected.dynasties.find(d=>d.factionId===t.name)!.lastDepositionAttemptMonth=coupMonth;failed.worldRandom=expected.worldRandom;
-   check(diffCanonicalWorldSave(expected,failed).matched,"failed deposition restores the royal's military authority, User role and formation");
+   const failed=strict();
+   check(failed.worldRandom.position===checkpoint.worldRandom.position,"failed weighted political transaction restores its original RNG position");
+   check(diffCanonicalWorldSave(checkpoint,failed).matched,"failed deposition restores the entire canonical state, including royal military authority, User role, formation, cooldown and RNG");
    hydrateWorldSave(core,JSON.parse(JSON.stringify(checkpoint)));
    const liveTeam=core.teams.find(x=>x.name===t.name)!,liveDynasty=Dynasty.get(t.name)!;
    force();try{(Dynasty as any).evaluateInReignDeposition(liveTeam,liveDynasty,Dynasty.getCurrentRuler(t.name)!,coupMonth);}finally{worldRandom.next=originalNext;}
