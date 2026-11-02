@@ -127,6 +127,9 @@ export function deriveUserBornMonth(userId: number, name: string, factionId: str
   return spawnMonth - ageMonths - birthMonthOffset;
 }
 
+/** Preserve creation order across the two DTO command kinds. It determines history write order. */
+function savedFormationRows(state:MilitaryCommandState){const rows=[...state.formations,...(state.leaderCommands??[])];return state.leaderCommands?.length?rows.sort((a,b)=>Number(a.commandId.slice('military-command-'.length))-Number(b.commandId.slice('military-command-'.length))):rows;}
+
 export class MilitaryCommandRegistryStore {
   private recruitmentContext?:()=>MilitaryRecruitmentContext|undefined;
   setRecruitmentContext(reader:()=>MilitaryRecruitmentContext|undefined){this.recruitmentContext=reader;}
@@ -184,7 +187,7 @@ export class MilitaryCommandRegistryStore {
     this.familyRecruitment=emptyFamilyRecruitmentDiagnostics();
     this.families=structuredClone(state.families??[]);this.familyByResident=undefined;
     this.people = new Map(state.people.map(person => [person.personId, structuredClone(person)]));
-    this.formations = new Map([...state.formations,...(state.leaderCommands??[])].map(formation => [formation.commandId, structuredClone(formation)]));
+    this.formations = new Map(savedFormationRows(state).map(formation => [formation.commandId, structuredClone(formation)]));
     this.personSequence = state.personSequence; this.commandSequence = state.commandSequence;
     this.lastEvaluationMonth = state.lastEvaluationMonth;
     this.lastArrivalTargetByCommand.clear();
@@ -196,7 +199,7 @@ export class MilitaryCommandRegistryStore {
   snapshotTransaction(){return {people:new Map(this.people),formations:new Map(this.formations),state:this.exportState(),familyRecruitment:structuredClone(this.familyRecruitment),diagnostics:{...this.diagnostics},arrivals:new Map(this.lastArrivalTargetByCommand),ranges:new Map(this.longRangeOrderSamples)};}
   rollbackTransaction(snapshot:ReturnType<MilitaryCommandRegistryStore["snapshotTransaction"]>,inPlace=false){
     this.familyByResident=undefined;
-    if(inPlace){this.families=structuredClone(snapshot.state.families??[]);this.people=new Map(snapshot.state.people.map(data=>{const p=snapshot.people.get(data.personId)!;for(const k of Object.keys(p))delete (p as any)[k];Object.assign(p,structuredClone(data));return [p.personId,p];}));this.formations=new Map([...snapshot.state.formations,...(snapshot.state.leaderCommands??[])].map(data=>{const f=snapshot.formations.get(data.commandId)!;for(const k of Object.keys(f))delete (f as any)[k];Object.assign(f,structuredClone(data));return [f.commandId,f];}));this.personSequence=snapshot.state.personSequence;this.commandSequence=snapshot.state.commandSequence;this.lastEvaluationMonth=snapshot.state.lastEvaluationMonth;}
+    if(inPlace){this.families=structuredClone(snapshot.state.families??[]);this.people=new Map(snapshot.state.people.map(data=>{const p=snapshot.people.get(data.personId)!;for(const k of Object.keys(p))delete (p as any)[k];Object.assign(p,structuredClone(data));return [p.personId,p];}));this.formations=new Map(savedFormationRows(snapshot.state).map(data=>{const f=snapshot.formations.get(data.commandId)!;for(const k of Object.keys(f))delete (f as any)[k];Object.assign(f,structuredClone(data));return [f.commandId,f];}));this.personSequence=snapshot.state.personSequence;this.commandSequence=snapshot.state.commandSequence;this.lastEvaluationMonth=snapshot.state.lastEvaluationMonth;}
     else this.importState(snapshot.state);this.familyRecruitment=structuredClone(snapshot.familyRecruitment);this.diagnostics=snapshot.diagnostics;this.lastArrivalTargetByCommand=snapshot.arrivals;this.longRangeOrderSamples=snapshot.ranges;}
   mirrorPoliticalDeath(personId:string,rulerId:string,month:number,cause:string){
     const p=this.people.get(personId);if(!p||(p.politicalRulerId!==rulerId&&p.royalIdentity?.rulerId!==rulerId)||p.status==="DEAD")return;
