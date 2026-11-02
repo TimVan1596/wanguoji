@@ -686,7 +686,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
     <InsurgentCommandPanel factionId={factionId} month={worldMonth}/>
     {politicalLeader&&<Typography fontSize="0.8rem">政治首领：{formatRulerName(politicalLeader)} · 本国现役将领{factionCommanders}人；{formations.some(f=>f.factionId===factionId&&f.leaderDuty&&f.status==='ACTIVE')?'本人统帅编组见上方，职责与正式军职分列。':'本人暂无独立指挥编组。'}</Typography>}
     <Box><button type="button" aria-pressed={archiveView==='people'} onClick={()=>setArchiveView('people')}>现役与历任</button> · <button type="button" aria-pressed={archiveView==='merit'} onClick={()=>setArchiveView('merit')}>功臣录</button> · <button type="button" onClick={()=>setFamilyBrowser(true)}>功臣世家（{families.length}）</button></Box>
-    {familyBrowser&&<MilitaryFamilyBrowser families={families} worldMonth={worldMonth} onClose={()=>setFamilyBrowser(false)}/>} 
+    {familyBrowser&&<MilitaryFamilyBrowser key={factionId} families={families} worldMonth={worldMonth} onClose={()=>setFamilyBrowser(false)}/>} 
     {archiveView==='merit'?<MeritRoll factionId={factionId} month={worldMonth} onOpen={id=>{setArchiveView('people');navigation.open({kind:'MILITARY',factionId,id});}}/>:<>
     <Typography fontSize="0.78rem" color="var(--gg-text-muted)">
       现役将领 {factionCommanders} 人 · 历任将领 {people.length} 人
