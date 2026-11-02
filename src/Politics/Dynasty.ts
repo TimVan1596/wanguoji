@@ -1724,6 +1724,7 @@ function getRulerUserId(rulerId: string) {
 
 const DynastyRegistry = new DynastyRegistryStore();
 MilitaryCommandRegistry.setRoyalService({
+  unitPosition:(u)=>{const core=Game.Core,id=u.player.logicalUnitId,e=id&&core?.logicalUnitRegistry.getEntry(id);if(!e||e.player!==u.player||!e.state.alive||e.state.userId!==u.id||e.state.factionId!==u.team.name||e.state.role!==u.role||e.state.rulerId!==u.rulerId||u.player.team!==u.team||u.player.user!==u||u.player.parent||u.player.children?.length||u.slaveGroup?.npcs?.size||u.slaveGroup?.children?.size)return;const x=core!.logicalGameplayAuthority?e.state.logicalX:u.player.x,y=core!.logicalGameplayAuthority?e.state.logicalY:u.player.y;if(!Number.isFinite(x)||!Number.isFinite(y)||x<0||y<0)return;return {x,y,positionSource:core!.logicalGameplayAuthority?'LOGICAL':'PHASER'};},
   currentRuler:(id)=>{const d=DynastyRegistry.get(id);return d?.rulers.find(r=>r.id===d.currentRulerId);},
   transaction:(team,work)=>successionTransaction(team,DynastyRegistry,work),
   calibration:()=>DynastyRegistry.getPoliticalCalibration(),
