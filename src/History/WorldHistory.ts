@@ -71,7 +71,7 @@ export type WorldEventType =
   | "faction-submitted"
   | "family-title-succeeded" | "family-title-ended" | "family-member-died"
   | "court-reward-granted" | "military-court-sanction" | "court-service-granted" | "court-coup-attempt" | "court-coup-result" | "royal-honor-granted" | "royal-succession-sanction" | "military-family-founded" | "military-family-merit" | "military-family-member-entered"
-  | "military-ennobled"
+  | "court-peerage-granted" | "military-ennobled"
   | "military-posthumous"
   | "military-title-revoked"
   | "military-appanage"

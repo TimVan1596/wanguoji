@@ -9,7 +9,7 @@ import {appanageChanges,appanageText,OWNERSHIP_EVENTS,type MilitaryAppanage} fro
 import {honorAuthority} from './MilitaryHonors';
 import {currentNobleGrant} from './MilitaryNobility';
 import {mayReceiveMilitaryHonor,nextMilitaryHonors,militaryHonorText,type MilitaryHonor} from './MilitaryHonors';
-import {nextNobleGrant,nobleChronicle,type NobleGrant} from "./MilitaryNobility";
+import {nextNobleGrant,courtNobleGrant,nobleChronicle,type NobleGrant} from "./MilitaryNobility";
 import type {Dynasty} from "./Dynasty";
 import {isSiegePosition} from "../Simulation/SiegeParticipants";
 import {nearbyMilitaryRecruits,type MilitaryRecruitmentContext} from "./MilitaryRecruitment";
@@ -457,7 +457,7 @@ export class MilitaryCommandRegistryStore {
   private recordNoble(person:MilitaryPerson,grant:NobleGrant,courtServiceEventId?:string,courtCoupEventId?:string){
     if(!this.eventWriter)throw Error('Missing noble writer');
     (person.nobilityHistory??=[]).push(grant);
-    const written=this.eventWriter({id:grant.eventId,year:grant.month,monthIndex:grant.month,type:'military-ennobled',category:'politics',actorFactionId:grant.factionId,factionIds:[grant.factionId],rulerId:grant.rulerId,title:nobleChronicle(grant),importance:'major',metadata:{personId:person.personId,sourceUserId:person.sourceUserId,commandId:grant.commandId,rank:grant.rank,nobility:JSON.stringify(grant),...(courtServiceEventId?{courtServiceEventId,courtCoupEventId}:{})}});
+    const written=this.eventWriter({id:grant.eventId,year:grant.month,monthIndex:grant.month,type:grant.basis==='COURT'?'court-peerage-granted':'military-ennobled',category:'politics',actorFactionId:grant.factionId,factionIds:[grant.factionId],rulerId:grant.rulerId,title:nobleChronicle(grant),importance:'major',metadata:{personId:person.personId,sourceUserId:person.sourceUserId,commandId:grant.commandId,rank:grant.rank,nobility:JSON.stringify(grant),...(courtServiceEventId?{courtServiceEventId,courtCoupEventId}:{})}});
     if(written!==grant.eventId||!this.eventReader(grant.factionId).some(e=>e.id===grant.eventId))throw Error('Noble history was not recorded');
   }
   updateNobility(month:number,teams:Team[],dynasties:Dynasty[]){
@@ -536,9 +536,9 @@ export class MilitaryCommandRegistryStore {
   }
   rewardCourtService(person:MilitaryPerson,team:Team,dy:Dynasty,service:WorldEvent,month:number){
     if(!politicalMutationActive()||service.type!=='court-service-granted'||service.rulerId!==dy.currentRulerId||service.metadata?.personId!==person.personId||service.actorFactionId!==team.name)throw Error('Invalid court reward authority');
-    const grant=this.eligibleNobleGrant(person,month,team,dy);if(!grant)return;
+    const grant=courtNobleGrant(person,team,dy,service,month)??this.eligibleNobleGrant(person,month,team,dy);if(!grant)return;
     this.recordNoble(person,grant,service.id,String(service.metadata?.courtCoupEventId));
-    const rewardId=this.eventWriter!({id:`${service.id}-peerage`,year:month,type:'court-reward-granted',category:'politics',importance:'major',actorFactionId:team.name,factionIds:[team.name],rulerId:grant.rulerId,title:`${grant.rulerTitle}以${person.personalName}拥立有功，依其军功资历${grant.previousRank==='NONE'?'封':'进封'}为${({BO:'伯爵',HOU:'侯爵',GONG:'公爵'} as const)[grant.rank]}。`,metadata:{personId:person.personId,courtCoupEventId:service.metadata.courtCoupEventId,courtServiceEventId:service.id,nobleGrantEventId:grant.eventId,previousRank:grant.previousRank,rank:grant.rank}});
+    const rewardId=this.eventWriter!({id:`${service.id}-peerage`,year:month,type:'court-reward-granted',category:'politics',importance:'major',actorFactionId:team.name,factionIds:[team.name],rulerId:grant.rulerId,title:grant.basis==='COURT'?nobleChronicle(grant):`${grant.rulerTitle}以${person.personalName}拥立有功，依其军功资历${grant.previousRank==='NONE'?'封':'进封'}为${({BO:'伯爵',HOU:'侯爵',GONG:'公爵'} as const)[grant.rank]}。`,metadata:{personId:person.personId,courtCoupEventId:service.metadata.courtCoupEventId,courtServiceEventId:service.id,nobleGrantEventId:grant.eventId,previousRank:grant.previousRank,rank:grant.rank}});
     if(rewardId!==`${service.id}-peerage`||!this.eventReader(team.name).some(e=>e.id===rewardId))throw Error('Court reward not recorded');
   }
 

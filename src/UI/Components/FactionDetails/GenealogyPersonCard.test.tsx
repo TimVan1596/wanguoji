@@ -19,7 +19,7 @@ describe("genealogy card and integration structure", () => {
       details: ["正式开国", "称帝", "末代承统", "生死未载"], hasPosthumousTitle: false, evidence: [] };
     const html = renderToStaticMarkup(<GenealogyPersonCard ruler={ruler} displayName="宋景" presentation={p} />);
     expect(html).toContain('data-genealogy-theme="foundation"'); expect(html).toContain('title="正式开国 · 称帝 · 末代承统 · 生死未载"');
-    expect(html).toContain("正式开国 · 称帝"); expect(html).toContain("第18代"); expect(html).toContain("生死未载");
+    expect(html).toContain("正式开国 · 称帝"); expect(html).toContain("第18任君主"); expect(html).toContain("生死未载");
     expect(html).not.toMatch(/战死|享年|亡国/);
   });
   it("keeps ordinary kin quiet and wraps long historical names", () => {

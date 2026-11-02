@@ -16,6 +16,6 @@ export function genealogyRulerHeading(r:Ruler,source:Omit<FactionTitleState,'sov
  const oldRank=recordedTitle?.endsWith(`王${personal}`)?'王':recordedTitle?.endsWith(`帝${personal}`)?'帝':recordedTitle?.endsWith(`首领${personal}`)?'首领':undefined;
  const oldName=typeof boundary?.metadata?.oldStateName==='string'?boundary.metadata.oldStateName:undefined;
  const at=Math.min(month,r.endYear??month),country=oldName??getFactionDisplayNameAtMonth({...faction,displayName:faction.displayName??faction.name,nameHistory:faction.nameHistory?.map(h=>({...h,reason:h.reason??'historical'}))??[]},at),rank=oldRank??getRulerTitleAtMonth(faction,at);
- if(hasRecordedRulerDeath(r)&&r.deathMonth!<=month){const epithet=r.posthumousEpithet,style=r.templeName??(epithet?epithet+(/[王帝]$/.test(epithet)||rank==='首领'?'':rank):`故${rank}`);return `${country} · ${style} · ${personal}`;}
+ if(hasRecordedRulerDeath(r)&&r.deathMonth!<=month){const epithet=r.posthumousEpithet,style=r.templeName??(epithet?epithet+(/[王帝]$/.test(epithet)||rank==='首领'?'':rank):undefined);return style?`${country} · ${style} · ${personal}`:`${country} · ${personal}`;}
  return `${country} · ${r.endYear!==undefined&&r.endYear<=month?'原':''}${country}${rank} · ${personal}`;
 }

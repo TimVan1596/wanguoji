@@ -20,7 +20,7 @@ export function GenealogyPersonCard({ ruler, displayName, presentation, worldMon
       <Typography sx={{...line,fontSize:13,lineHeight:"20px",fontWeight:theme==='neutral'?400:700}}>{presentation?.heading??presentation?.honor?.primary??displayName}</Typography>
       {worldMonth!==undefined&&<Typography sx={{...line,fontSize:11,lineHeight:"16px"}}>{formatRulerLifeAge(ruler,worldMonth,false,managedLife)}</Typography>}
       {presentation?.labels.length?<Typography sx={{...line,fontSize:11,lineHeight:"16px"}}>{presentation.labels.join(" · ")}</Typography>:null}
-      <Typography sx={{...line,fontSize:11,lineHeight:"16px"}}>{posthumous??(ruler.reignOrdinal!==undefined?kinLine!=='宗室'?kinLine:`第${ruler.reignOrdinal}代`:kinLine)}{ruler.status==='dead'?" · 已故":""}</Typography>
+      <Typography sx={{...line,fontSize:11,lineHeight:"16px"}}>{posthumous??(ruler.reignOrdinal!==undefined?kinLine!=='宗室'?kinLine:`第${ruler.reignOrdinal}任君主`:kinLine)}{ruler.status==='dead'?" · 已故":""}</Typography>
       {militaryLabel&&<Typography sx={{...line,fontSize:11,lineHeight:"16px"}}>{militaryLabel}</Typography>}
     </GenealogyCardFrame>;
   }
@@ -33,7 +33,7 @@ export function GenealogyPersonCard({ ruler, displayName, presentation, worldMon
     {posthumous&&<Typography fontSize=".72rem">{posthumous}</Typography>}
     {militaryLabel&&<Typography fontSize="0.72rem">宗室将领 · {militaryLabel}</Typography>}
     <Typography fontSize="0.68rem" color="var(--gg-text-muted)">
-      {ruler.reignOrdinal !== undefined ? `第${ruler.reignOrdinal}代` : presentation?.roles.includes("储君") ? "继承候选" : honor?kinLine:"宗室成员"}
+      {ruler.reignOrdinal !== undefined ? `第${ruler.reignOrdinal}任君主` : presentation?.roles.includes("储君") ? "继承候选" : honor?kinLine:"宗室成员"}
       {ruler.status === "exiled" ? " · 流亡承统" : ruler.status === "politically-ended" ? " · 生死未载" : ruler.status === "deposed" ? " · 在位时被废，生存未终" : ""}
     </Typography>
   </Box>;

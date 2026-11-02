@@ -12,6 +12,8 @@ export type NobleRank=typeof NOBLE_RANKS[number];
 export const NOBLE_NAMES:Record<NobleRank,string>={BO:'伯爵',HOU:'侯爵',GONG:'公爵'};
 export const NOBLE_RULES={BO:{serviceMonths:60,cities:2,importantCities:0},HOU:{serviceMonths:120,cities:4,importantCities:1},GONG:{serviceMonths:180,cities:6,importantCities:2}};
 export interface NobleGrant {
+ /** Absent means personal military merit. COURT never carries capture credit. */
+ basis?:'COURT';courtServiceEventId?:string;courtCoupEventId?:string;
  eventId:string;personId:string;sourceUserId:number;bornMonth:number;personalName:string;factionId:string;countryName:string;
  epochFounderId:string;rulerId:string;rulerTitle:string;month:number;previousRank:NobleRank|'NONE';rank:NobleRank;
  commandId:string;office:MilitaryOffice;serviceMonths:number;captureEventIds:string[];cityIds:string[];importantCityIds:string[];importantEventIds:string[];
@@ -27,7 +29,7 @@ export function deriveNobleMerits(p:MilitaryPerson,formations:MilitaryFormation[
 }
 export function nobleEpoch(d:Pick<Dynasty,'houseEpochs'>|undefined,month:number){return d?.houseEpochs?.find(e=>e.startMonth<=month&&month<=(e.endMonth??Infinity));}
 export function currentNobleGrant(p:MilitaryPerson,factionId:string,month:number,epochFounderId?:string){
- return (p.nobilityHistory??[]).filter(g=>g.factionId===factionId&&g.month<=month&&!(p.honorHistory??[]).some(h=>h.kind==='REVOKED'&&h.month<=month&&h.factionId===g.factionId&&h.epochFounderId===g.epochFounderId)&&(!epochFounderId||g.epochFounderId===epochFounderId)).sort((a,b)=>NOBLE_RANKS.indexOf(b.rank)-NOBLE_RANKS.indexOf(a.rank)||b.month-a.month)[0];
+ return (p.nobilityHistory??[]).filter(g=>g.factionId===factionId&&g.month<=month&&!(p.honorHistory??[]).some(h=>h.kind==='REVOKED'&&h.month>=g.month&&h.month<=month&&h.factionId===g.factionId&&h.epochFounderId===g.epochFounderId)&&(!epochFounderId||g.epochFounderId===epochFounderId)).sort((a,b)=>NOBLE_RANKS.indexOf(b.rank)-NOBLE_RANKS.indexOf(a.rank)||b.month-a.month)[0];
 }
 export function nobleLabel(p:MilitaryPerson,factionId:string,month=Infinity){const g=currentNobleGrant(p,factionId,month);return g?`${g.countryName} · ${NOBLE_NAMES[g.rank]}`:'';}
 /** No randomness, population, office promotion or city ownership mutation. */
@@ -43,7 +45,7 @@ export function nextNobleGrant(p:MilitaryPerson,formations:MilitaryFormation[],e
  if(merits.serviceMonths<rule.serviceMonths||merits.cityIds.length<rule.cities||merits.importantCityIds.length<rule.importantCities)return;
  return {eventId:`military-noble-${p.personId}-${team.name}-${epoch.foundingRulerId}-${rank}`,personId:p.personId,sourceUserId:p.sourceUserId,bornMonth:p.bornMonth,personalName:p.personalName,factionId:team.name,countryName:getHistoricalFactionIdentity(team,month).name,epochFounderId:epoch.foundingRulerId,rulerId:ruler.id,rulerTitle:formatRulerTitleAtMonth(team,`${ruler.houseName.replace(/氏$/, '')}${ruler.givenName}`,month),month,previousRank:previous?.rank??'NONE',rank,commandId:a.commandId,office,serviceMonths:merits.serviceMonths,captureEventIds:merits.captureEventIds,cityIds:merits.cityIds,importantCityIds:merits.importantCityIds,importantEventIds:merits.importantEventIds};
 }
-export function nobleChronicle(g:NobleGrant){return `${g.rulerTitle}因${g.personalName}累有军功，${g.previousRank==='NONE'?'封其':'进封其'}为${NOBLE_NAMES[g.rank]}。`;}
+export function nobleChronicle(g:NobleGrant){if(g.basis==='COURT')return `${g.rulerTitle}以${g.personalName}拥立有功，赐伯爵，作为从龙政治恩爵；不计取城军功。`;return `${g.rulerTitle}因${g.personalName}累有军功，${g.previousRank==='NONE'?'封其':'进封其'}为${NOBLE_NAMES[g.rank]}。`;}
 /** Dynamic archive ranking only: it never confers or removes a title. */
 export function meritRoster(people:MilitaryPerson[],formations:MilitaryFormation[],events:WorldEvent[],factionId:string,month:number){
  return people.filter(p=>p.appointments.some(a=>a.factionId===factionId)).map(p=>({person:p,merits:deriveNobleMerits(p,formations,events,factionId,month)})).filter(r=>r.merits.cityIds.length>0||r.merits.defendedCityIds.length>0).sort(compareMeritRows);
@@ -80,4 +82,12 @@ export function createMeritRosterProjection(){
   }
   return rows.sort(compareMeritRows);
  }};
+}
+
+/** One real supporter, one committed service, one foundational title; no military merit is invented. */
+export function courtNobleGrant(p:MilitaryPerson,team:any,dy:Dynasty,service:WorldEvent,month:number):NobleGrant|undefined{
+ const a=p.appointments.find(a=>a.factionId===team.name&&a.endMonth===undefined&&a.startMonth<=month),office=a?.officeHistory?.filter(o=>o.month<=month).at(-1)?.office;
+ const r=dy.rulers.find(r=>r.id===dy.currentRulerId),epoch=nobleEpochForRuler(dy,dy.currentRulerId);
+ if(p.royalIdentity||p.politicalRulerId||p.status!=='ACTIVE'||p.deathMonth!==undefined||p.factionId!==team.name||team.status!=='ACTIVE'||team.identityStage!=='STATE'||!r||r.status!=='ruling'||r.endYear!==undefined||r.deathMonth!==undefined||!epoch||!a||!office||service.type!=='court-service-granted'||service.actorFactionId!==team.name||service.rulerId!==r.id||service.metadata?.personId!==p.personId||(service.monthIndex??service.year)!==month||typeof service.metadata?.courtCoupEventId!=='string'||currentNobleGrant(p,team.name,month,epoch.foundingRulerId)||(p.nobilityHistory??[]).some(g=>g.courtServiceEventId===service.id||g.month===month)||(p.honorHistory??[]).some(h=>h.kind==='REVOKED'&&h.month===month))return;
+ return {basis:'COURT',courtServiceEventId:service.id,courtCoupEventId:service.metadata.courtCoupEventId,eventId:`${service.id}-political-peerage`,personId:p.personId,sourceUserId:p.sourceUserId,bornMonth:p.bornMonth,personalName:p.personalName,factionId:team.name,countryName:getHistoricalFactionIdentity(team,month).name,epochFounderId:epoch.foundingRulerId,rulerId:r.id,rulerTitle:formatRulerTitleAtMonth(team,`${r.houseName.replace(/氏$/,'')}${r.givenName}`,month),month,previousRank:'NONE',rank:'BO',commandId:a.commandId,office,serviceMonths:0,captureEventIds:[],cityIds:[],importantCityIds:[],importantEventIds:[]};
 }

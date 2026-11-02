@@ -37,7 +37,7 @@ export function nextMilitaryHonors(p:MilitaryPerson,formations:MilitaryFormation
  for(const e of splits){
   const factionId=e.targetFactionId!,authority=honorAuthority(teams.find(t=>t.name===factionId),dynasties.find(d=>d.factionId===factionId),month);if(!authority)continue;
   const grant=currentNobleGrant(p,factionId,month,authority.epochFounderId);
-  if(!grant||!events.some(x=>x.id===grant.eventId&&x.type==='military-ennobled'&&x.metadata?.nobility===JSON.stringify(grant))||grant.month>(e.monthIndex??e.year)||(p.honorHistory??[]).some(h=>h.kind==='REVOKED'&&h.factionId===factionId&&h.epochFounderId===grant.epochFounderId))continue;
+  if(!grant||!events.some(x=>x.id===grant.eventId&&['military-ennobled','court-peerage-granted'].includes(x.type)&&x.metadata?.nobility===JSON.stringify(grant))||grant.month>(e.monthIndex??e.year)||(p.honorHistory??[]).some(h=>h.kind==='REVOKED'&&h.factionId===factionId&&h.epochFounderId===grant.epochFounderId))continue;
   honors.push({...authority,eventId:`military-revocation-${grant.eventId}`,kind:'REVOKED',personId:p.personId,personalName:p.personalName,month,grantEventId:grant.eventId,rank:grant.rank,sourceEventId:e.id,reason:'VERIFIED_SECESSION',meritEventIds:[]});
  }
  for(const ban of p.politicalHistory??[]){

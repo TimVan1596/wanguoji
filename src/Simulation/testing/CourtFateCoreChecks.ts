@@ -83,6 +83,24 @@ export function checkCourtFates(core:any,base:ReturnType<typeof exportWorldSave>
    check(person.appointments.at(-1)?.officeHistory?.at(-1)?.office==='SHANGJIANGJUN','real new capture and original promotion rules produce an actual highest-rank officer');
    invoke(276,0);check(courtServiceReadings(person,History.getRecordedEvents(),276).length===1,'successful real supporter has one source-bound award reading, not an invented promotion');check(person.appointments.at(-1)?.officeHistory?.at(-1)?.office==='SHANGJIANGJUN','court reward never invents an office beyond the actual highest military rank');read();
   }
+  {
+   const f=prepare(false,true),id=f.actor.personId;
+   for(const failure of ['court-peerage-granted','court-reward-granted']){
+    hydrateWorldSave(core,structuredClone(f.start));const before=exportWorldSave(core),writer=History.addEvent;
+    History.addEvent=function(e){const written=writer.call(this,e);if(e.type===failure)throw Error('injected political peerage write');return written;};
+    try{invoke(252,0);}finally{History.addEvent=writer;}
+    check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,`${failure} rolls back king, peerage, commands, history and RNG together`);
+   }
+   hydrateWorldSave(core,structuredClone(f.start));const priorPeople=Military.getPeople().length,priorUnits=core.teams.reduce((n:number,t:any)=>n+t.users.size,0);invoke(252,0);
+   const p=Military.getPerson(id)!,g=currentNobleGrant(p,factionId,252);
+   check(g?.basis==='COURT'&&g.rank==='BO'&&g.captureEventIds.length===0&&g.serviceMonths===0,'a real untitled nonroyal supporter receives an independent foundational political BO without invented combat credit');
+   check(Military.getPeople().length===priorPeople&&core.teams.reduce((n:number,t:any)=>n+t.users.size,0)===priorUnits,'political award creates neither population nor military people');
+   check(courtServiceReadings(p,History.getRecordedEvents(),252).some(x=>x.text.includes('政治恩爵')),'actual political peerage appears in the supporter life reading');
+   (Military as any).updateFamilies(252,core.teams);const family=Military.getFamilies().find(x=>x.founderPersonId===id);
+   check(family&&family.sourceEventId===g?.courtServiceEventId,'the genuine court service establishes one family with a real political peerage source');
+   const saved=read();hydrateWorldSave(core,structuredClone(saved));check(diffCanonicalWorldSave(saved,exportWorldSave(core)).matched,'political peerage reads without repeating the award');
+   for(const field of ['basis','courtServiceEventId','rank','serviceMonths']){const bad=structuredClone(saved),grant=bad.registries.militaryCommandRegistry.people.find(p=>p.personId===id)!.nobilityHistory!.find(g=>g.basis==='COURT')! as any;grant[field]=field==='rank'?'GONG':field==='serviceMonths'?60:'forged';const event=(bad.worldHistory.events as any[]).find(e=>e.id===grant.eventId);event.metadata.nobility=JSON.stringify(grant);check(!validateWorldSave(bad).valid,`political peerage rejects forged ${field} even with matching stored JSON`);}
+  }
   const fixture=prepare(true,false,true);invoke(252,courtAttemptChance(fixture.actor)*.95);let p=Military.getPerson(fixture.actor.personId)!,ban=p.politicalHistory![0],old=king(),targetId=JSON.parse(String(History.getRecordedEvents().find(e=>e.id===ban.courtCoupEventId)!.metadata?.courtCoup)).targetRulerId;
   check(!planCourtPardon(p,team(),dy(),264,History.getRecordedEvents(),85),'victim still reigning never silently pardons his own attacker');
   clock(312);let e=opportunity(312);check(e.eligible===false,'old crisis expiration cannot authorize a fabricated later handoff');

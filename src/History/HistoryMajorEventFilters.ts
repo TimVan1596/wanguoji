@@ -8,7 +8,7 @@ export const MAJOR_EVENT_FILTERS = [
 ] as const;
 export type MajorEventFilter = typeof MAJOR_EVENT_FILTERS[number]["value"];
 const TYPES: Record<Exclude<MajorEventFilter, "all">, readonly WorldEvent["type"][]> = {
-  honors:["family-title-succeeded","family-title-ended","court-reward-granted","court-service-granted","royal-honor-granted","military-ennobled","military-posthumous","military-title-revoked"],
+  honors:["family-title-succeeded","family-title-ended","court-reward-granted","court-service-granted","royal-honor-granted","court-peerage-granted","military-ennobled","military-posthumous","military-title-revoked"],
   founding: ["state-founded", "faction-restored", "dynasty-restored"], emperor: ["emperor-proclaimed"], revolution: ["dynasty-usurped", "ruler-deposed", "court-coup-attempt", "court-coup-result", "military-court-sanction", "royal-succession-sanction", "empire-split", "rebel-faction-founded", "frontier-faction-founded"],
   restoration: ["faction-restored", "dynasty-restored"], extinction: ["faction-exiled", "faction-extinct"],
   submission: ["faction-submitted", "faction-merged"], merge: ["faction-merged"], era: ["world-era-started", "world-unification", "world-hegemony", "world-fractured"],
