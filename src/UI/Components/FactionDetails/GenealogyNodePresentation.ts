@@ -1,3 +1,4 @@
+import {genealogyRulerHeading} from '../../../Politics/GenealogyRulerHeading';
 import {unresolvedSuccessionAct} from '../../../Politics/RoyalSuccessionStanding';
 import {royalHonorHeading} from '../../../Politics/RoyalHonorPresentation';
 import {royalHonorLabel} from './RoyalHonorPanel';
@@ -11,6 +12,7 @@ import { getRulerTerminalRole } from "../../../History/PoliticalTerminalChronicl
 export type GenealogyRole = "当前君主" | "储君" | "势力创始" | "正式开国" | "称帝" | "篡朝开统" | "宗室废立继位" | "被宗室废黜" | "复国" | "末代承统" | "合邦退位" | "纳土退位";
 export type GenealogyTheme = "neutral" | "monarch" | "current" | "heir" | "foundation" | "usurpation" | "restoration" | "terminal" | "disqualified" | "military";
 export interface GenealogyNodePresentation {
+  heading?:string;
   politicalLabel?:string;
   posthumousLabels?:string[];
   honor?:ReturnType<typeof royalHonorHeading>;
@@ -100,7 +102,7 @@ export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: Hous
       r.status === "kin" && r.accessionYear === undefined ? "未曾承统" : "",
       byId.get(dynasty.currentRulerId ?? "")?.parentId === r.id ? "当今君主的父辈" : "",
       r.status === "politically-ended" ? "生死未载" : r.status === "exiled" ? "流亡承统" : r.status === "deposed" ? "被宗室废黜" : ""].filter(Boolean);
-    return [r.id, {politicalLabel,posthumousLabels,honor:royalHonorHeading(r,dynasty,worldMonth,{revoked:g=>(revoked.get(`${r.militaryIdentity?.personId}/${g.factionId}/${g.epochFounderId}`)??Infinity)<=worldMonth,factionId:dynasty.factionId,status:faction.status}), roles, labels: (politicalLabel?[politicalLabel,...roles]:roles).slice(0,2), theme, details, evidence: proof,
+    return [r.id, {heading:genealogyRulerHeading(r,faction,worldMonth,royalHonorHeading(r,dynasty,worldMonth,{factionId:dynasty.factionId,status:faction.status})),politicalLabel,posthumousLabels,honor:royalHonorHeading(r,dynasty,worldMonth,{revoked:g=>(revoked.get(`${r.militaryIdentity?.personId}/${g.factionId}/${g.epochFounderId}`)??Infinity)<=worldMonth,factionId:dynasty.factionId,status:faction.status}), roles, labels: (politicalLabel?[politicalLabel,...roles]:roles).slice(0,2), theme, details, evidence: proof,
       hasPosthumousTitle: posthumousLabels.length>0 }];
   }));
 }
