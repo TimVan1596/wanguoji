@@ -82,7 +82,10 @@
           "insurgent strict save: ",
           "insurgent strict save: ",
           "leader commands continue deterministically twelve months including life and real combat",
-          "second read creates no duplicate commander or soldiers"
+          "second read creates no duplicate commander or soldiers",
+          "actual scheduled ruler death ends the same commander and map body without a duplicate life",
+          "same commander death cannot run twice",
+          "insurgent strict save: "
         ],
         "sourceUserId": 1050980811,
         "personId": "resident-咸阳义军-1050980811--643",
@@ -163,7 +166,10 @@
           "insurgent strict save: ",
           "insurgent strict save: ",
           "leader commands continue deterministically twelve months including life and real combat",
-          "second read creates no duplicate commander or soldiers"
+          "second read creates no duplicate commander or soldiers",
+          "actual scheduled ruler death ends the same commander and map body without a duplicate life",
+          "same commander death cannot run twice",
+          "insurgent strict save: "
         ],
         "sourceUserId": 1050980811,
         "personId": "resident-咸阳义军-1050980811--268",

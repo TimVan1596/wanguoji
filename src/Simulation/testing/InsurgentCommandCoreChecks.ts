@@ -1,3 +1,4 @@
+import Dynasty from '../../Politics/Dynasty';
 import {resolveMilitaryCommandView} from '../../Game/MilitaryCommandOverlay';
 import Diplomacy from '../../Politics/Diplomacy';
 import Military from '../../Politics/MilitaryCommandRegistry';
@@ -58,5 +59,7 @@ export function checkInsurgentCommands(core:any,factionId:string,check:(v:unknow
   hydrateWorldSave(core,structuredClone(saved));
   {const before=exportWorldSave(core),writer=History.addEvent,cmd=Military.getFormation(f.commandId)!;cmd.targetCityId=undefined;cmd.orderStartMonth=undefined;const ready=exportWorldSave(core);History.addEvent=function(e){const id=writer.call(this,e);if(e.type==='leader-command-order'){random.next();throw Error('injected order write');}return id;};try{(Military as any).refreshOrders(month,[team()],core.allCities);}finally{History.addEvent=writer;}check(diffCanonicalWorldSave(ready,exportWorldSave(core)).matched,'failed real order write restores target, registry, history and RNG');hydrateWorldSave(core,structuredClone(before));}
   const resume=()=>{hydrateWorldSave(core,structuredClone(saved));core.setWorldRunning(true);for(let m=0;m<12;m++){for(let n=0;n<30;n++)core.advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit('postupdate');}core.setWorldRunning(false);return strict();};const a=resume(),b=resume();check(diffCanonicalWorldSave(a,b).matched,'leader commands continue deterministically twelve months including life and real combat');hydrateWorldSave(core,structuredClone(a));check(diffCanonicalWorldSave(a,exportWorldSave(core)).matched,'second read creates no duplicate commander or soldiers');
+  hydrateWorldSave(core,structuredClone(saved));
+  {const ruler=Dynasty.getCurrentRuler(factionId)!,due=ruler.naturalDeathYear!,personId=f.commanderPersonId;core.simulator.clock.importState({worldMonth:due,elapsedMs:0,running:false});Dynasty.update(due,[team()]);check(ruler.deathMonth===due&&Military.getFormation(f.commandId)?.status==='DISBANDED'&&!core.teams.some((t:any)=>[...t.users].some((u:any)=>u.historicalPersonId===personId)),'actual scheduled ruler death ends the same commander and map body without a duplicate life');const count=History.getEvents().filter(e=>e.type==='ruler-died'&&e.rulerId===ruler.id).length;Dynasty.update(due,[team()]);check(History.getEvents().filter(e=>e.type==='ruler-died'&&e.rulerId===ruler.id).length===count,'same commander death cannot run twice');strict();}
  }finally{hydrateWorldSave(core,structuredClone(base));}
 }
