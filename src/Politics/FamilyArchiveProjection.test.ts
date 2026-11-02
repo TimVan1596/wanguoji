@@ -17,3 +17,11 @@ describe('one historical family reading source',()=>{
  it('keeps identity anomalies visible rather than inventing a reason',()=>{const {f,s,act}=fixture();delete f.members[1].deathMonth;expect(explainFamilyTitleEnd(f,act,s).text).toContain('不一致');});
  it('normalizes newest-first source order while respecting restoration after last-city loss',()=>{const {f,s}=fixture();const events=[...s.events,{id:'exile',year:91,type:'faction-exiled',targetFactionId:'home'},{id:'restore',year:95,type:'faction-restored',actorFactionId:'home'}] as any;expect([...createFamilyNobleContext(101,[f],s.people,events,s.dynasties).activeEpochs]).toEqual([...createFamilyNobleContext(101,[f],s.people,[...events].reverse(),s.dynasties).activeEpochs]);});
 });
+
+it('uses the same royal-linked life evidence for family counts and detail without treating lost office as death',()=>{
+ const {f,s}=fixture();f.members=f.members.slice(0,2);const child=f.members[1];delete child.deathMonth;child.exitMonth=90;child.exitCause='RULER_LIFECYCLE';
+ const ruler:any={id:'new-ruler',bornYear:child.bornMonth,accessionYear:30,endYear:90,status:'politically-ended',residentIdentity:{personId:'resident-new',sourceUserId:child.sourceUserId,bornMonth:child.bornMonth}};
+ s.dynasties=[...s.dynasties,{factionId:'new-country',rulers:[ruler],houseEpochs:[]} as any];s.events=[...s.events,{id:'new-founding',year:30,type:'rebel-faction-founded',actorFactionId:'new-country',rulerId:ruler.id} as any];
+ let p=projectFamilyArchive(f,s);expect(p.classification).toBe('HISTORICAL');expect(p.living).toBe(1);expect(p.rows.get(child.memberId)?.life).toBe('ALIVE');
+ ruler.deathMonth=90;ruler.status='dead';p=projectFamilyArchive(f,s);expect(p.classification).toBe('EXTINCT');expect(p.living).toBe(0);expect(p.rows.get(child.memberId)?.life).toBe('DEAD');
+});
