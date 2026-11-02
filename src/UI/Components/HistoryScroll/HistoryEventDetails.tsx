@@ -92,8 +92,8 @@ export function EventDetails({
   }
   return (
     <>
-      <CourtPeople event={event}/><HistoryEntityNavigation event={event}/>
-      <OriginalHistorySources event={event}/>
+      <CourtPeople event={event}/>
+      <OriginalHistorySources event={event}/><HistoryEntityNavigation event={event}/>
       <PoliticalCrisisDetails event={event}/>
       {getRevolutionEventDetails(event).length>0&&<details onClick={e=>e.stopPropagation()} style={{fontSize:'.75rem',overflowWrap:'anywhere'}}><summary>史料依据（易姓）</summary>{getRevolutionEventDetails(event).map((line,i)=><Typography key={i} fontSize=".75rem">{line}</Typography>)}</details>}
       {militarySecessionDetails(event).length>0&&<details onClick={e=>e.stopPropagation()} style={{fontSize:'.75rem',overflowWrap:'anywhere'}}><summary>史料依据（军人起事）</summary>{militarySecessionDetails(event).map((line,i)=><Typography key={i} fontSize=".75rem">{line}</Typography>)}</details>}

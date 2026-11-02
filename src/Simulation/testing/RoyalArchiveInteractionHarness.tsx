@@ -39,7 +39,7 @@ export async function checkRoyalArchiveInteraction(core:Core,factionId:string,pe
   check(store.getState().root.factionDetailTab==="house"&&focus,"reverse navigation focuses the actual unenthroned royal in genealogy");
   flushSync(()=>(focus!.querySelector("[data-genealogy-card]") as HTMLButtonElement).click());
   check(document.querySelector("[data-genealogy-person]")?.textContent?.includes(birthday),"genealogy and military birth months agree after direct navigation");
-  check(focus?.querySelector('[data-genealogy-theme="neutral"]'),"military-only royal remains neutral in actual tree");
+  check(focus?.querySelector('[data-genealogy-theme="military"]'),"actual royal officer has the restrained military theme without a crown");
   const close=Array.from(document.querySelectorAll("button")).find(b=>b.textContent==="关闭")!;flushSync(()=>close.click());await pause();
  }finally{flushSync(()=>root.unmount());host.remove();}
  const after=exportWorldSave(core);

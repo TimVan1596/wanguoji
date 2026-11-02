@@ -1,3 +1,8 @@
+import FactionDetails from '../../UI/Components/FactionDetails';
+import HistoryEntityNavigation from '../../UI/Components/HistoryScroll/HistoryEntityNavigation';
+import {historyEntityLinks} from '../../History/HistoryEntityLinks';
+import {formatHistoryEventTitle} from '../../History/HistoryRenderRules';
+import {setTeams,setWorldMonth,setSelectedFactionName,setPersonArchiveRequest} from '../../store/rootSlice';
 import React from 'react';
 import {createRoot} from 'react-dom/client';
 import {flushSync} from 'react-dom';
@@ -14,7 +19,7 @@ import {validateWorldSave} from '../../Persistence/WorldSaveValidator';
 import {diffCanonicalWorldSave} from '../../Persistence/WorldSaveSchema';
 import {SIMULATION_FIXED_STEP_MS} from '../SimulationDriver';
 /** Fork the already-created real military family and its actual natural-entry civilian child. */
-export function checkFamilyNobleCore(core:any,factionId:string,childId:number,check:(v:unknown,s:string)=>void){
+export async function checkFamilyNobleCore(core:any,factionId:string,childId:number,check:(v:unknown,s:string)=>void){
  const original=exportWorldSave(core),team=()=>core.teams.find((t:any)=>t.name===factionId),family=()=>Military.getFamilies().find(f=>f.factionId===factionId)!;
  const clock=(m:number)=>core.simulator.clock.importState({worldMonth:m,elapsedMs:0,running:false});
  const update=()=>Military.updateFamilyTitles(240,core.teams,Dynasty.getAll());
@@ -47,6 +52,16 @@ export function checkFamilyNobleCore(core:any,factionId:string,childId:number,ch
   check(a?.kind==='SUCCEEDED'&&a.rank==='BO'&&f.members.find(m=>m.memberId===a.holderMemberId)?.sourceUserId===childId,'real marquis founder death leads to one direct-child baron inheritance');
   check(!child.militaryPersonId&&child.role==='NORMAL'&&Military.getPeople().length===people&&JSON.stringify(Military.getFormations())===formations&&core.teams.reduce((n:number,t:any)=>n+t.users.size,0)===pop,'ordinary resident inherits only a title, without military identity, troops, population or royal office');
   check(familyMemberNobleLabel(f,f.members.find(m=>m.memberId===a!.holderMemberId)!,240)==='袭伯爵','family UI reads the real inherited baronage separately from a civilian military status');
+  {const before=exportWorldSave(core),event=History.getRecordedEvents().find(e=>e.id===a!.eventId)!,member=f.members.find(m=>m.memberId===a!.holderMemberId)!,links=historyEntityLinks(event,Military.getFamilies(),Military.getPeople(),Dynasty.getAll(),new Set(core.teams.map((t:any)=>t.name)));
+   check(links.some(l=>l.target.kind==='FAMILY'&&l.target.memberId===member.memberId)&&!links.some(l=>l.target.kind==='MILITARY'&&l.label.includes(member.name)),'ordinary inherited resident has a real family destination and no invented military archive');
+   check(formatHistoryEventTitle(event,new Map(core.teams.map((t:any)=>[t.name,t]))).includes(team().displayName),'actual hereditary history uses the historical faction name without rewriting canonical title');
+   const host=document.createElement('div'),root=createRoot(host);document.body.append(host);try{store.dispatch(setTeams(core.teams));store.dispatch(setWorldMonth({monthIndex:240,year:20}));store.dispatch(setSelectedFactionName(undefined));store.dispatch(setPersonArchiveRequest(undefined));flushSync(()=>root.render(React.createElement(Provider,{store,children:React.createElement(React.Fragment,null,React.createElement(HistoryEntityNavigation,{event}),React.createElement(FactionDetails))})));
+    for(let wait=0;wait<100&&!Array.from(host.querySelectorAll('button')).some(b=>b.textContent===`定位${member.name}`);wait++)await new Promise(resolve=>setTimeout(resolve,10));
+    const locate=Array.from(host.querySelectorAll('button')).find(b=>b.textContent===`定位${member.name}`)!;check(!!locate,'expanded actual hereditary event exposes its exact resident heir');flushSync(()=>locate.click());await new Promise(resolve=>setTimeout(resolve,180));flushSync(()=>{});
+    const dialog=document.querySelector('[role="dialog"]');check(dialog?.querySelector(`[data-family-member-detail="${member.memberId}"]`)&&dialog.querySelector('[data-shared-genealogy]'),'real history click crosses Redux faction navigation into the exact family tree and selected ordinary resident');check(!child.militaryPersonId&&Military.getPeople().length===people,'history navigation does not manufacture a military person');
+    const fit=Array.from(dialog!.querySelectorAll('button')).find(b=>b.textContent==='适应窗口')!;flushSync(()=>fit.click());const center=Array.from(dialog!.querySelectorAll('button')).find(b=>b.textContent==='定位始祖')!;flushSync(()=>center.click());check(dialog?.querySelector('[data-genealogy-focused]'),'shared viewport supports actual family fit and person location');check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,'history links, shared viewport and civilian detail leave all canonical identities, army and RNG unchanged');
+   }finally{flushSync(()=>root.unmount());host.remove();store.dispatch(setPersonArchiveRequest(undefined));}
+  }
   const saved=exportWorldSave(core),v=validateWorldSave(saved);check(v.valid,`strict hereditary title save: ${v.errors.join(';')}`);update();check(diffCanonicalWorldSave(saved,exportWorldSave(core)).matched,'same monthly title update is idempotent');
   {const before=exportWorldSave(core),heir=team().getUserById(childId),pop=core.teams.reduce((n:number,t:any)=>n+t.users.size,0);check((Military as any).appoint(heir,factionId,240,[heir.player.logicalUnitId]),'actual inherited civilian can later receive a normal first military appointment');const p=Military.getPerson(heir.militaryPersonId)!;check(p.appointments.at(-1)?.officeHistory?.at(-1)?.office==='XIAOWEI'&&p.capturedEventIds.length===0&&!p.nobilityHistory&&familyMemberNobleLabel(family(),family().members.find(m=>m.sourceUserId===childId)!,240)==='袭伯爵','inherited baronage grants no higher office, personal military title or ancestral battle credits');check(core.teams.reduce((n:number,t:any)=>n+t.users.size,0)===pop&&p.bornMonth===heir.bornMonth&&validateWorldSave(exportWorldSave(core)).valid,'civilian inheritance followed by real service preserves population, birth and strict family identity');hydrateWorldSave(core,structuredClone(before));}
   for(const field of ['rank','holderMemberId','previousRank','step','sourceGrantEventId','death-boundary']){const bad=structuredClone(saved),f=bad.registries.militaryCommandRegistry.families!.find(f=>f.factionId===factionId)!,a=f.nobleSuccession![0];if(field==='death-boundary')f.members.find(m=>m.memberId===a.previousMemberId)!.deathHistoryIndex=(bad.worldHistory.events as unknown[]).length;else if(field==='step')a.step++;else (a as any)[field]='forged';check(!validateWorldSave(bad).valid,`strict inheritance rejects forged ${field}`);}

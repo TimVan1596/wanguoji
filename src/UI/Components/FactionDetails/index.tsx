@@ -1071,7 +1071,7 @@ function DynastyTree({
   const designatedHeir = livingCandidates.find((candidate) => candidate.id === dynasty?.designatedHeirId);
   const otherCandidates = livingCandidates.filter((candidate) => candidate.id !== dynasty?.designatedHeirId);
   const formalRulers = getFormalRulers(rulers);
-  const archive = dynasty ? <UnifiedFactionChronicle key={team.name} dynasty={dynasty} faction={team} factions={factionById} worldMonth={worldMonth}
+  const archive = dynasty ? <UnifiedFactionChronicle key={`chronicle-${team.name}`} dynasty={dynasty} faction={team} factions={factionById} worldMonth={worldMonth}
     rulersForFaction={id => DynastyRegistry.get(id)?.rulers} /> : null;
   if (formalRulers.length === 0 && livingCandidates.length === 0) {
     return <Box sx={{ display: "grid", gap: 1 }}>{archive}
@@ -1110,7 +1110,7 @@ function DynastyTree({
         </Box>
       ) : null}
       {designatedHeir&&<RoyalHonorPanel ruler={designatedHeir} month={worldMonth}/>}
-      <RoyalMilitaryRoster key={team.name} factionId={team.name} rulers={rulers} month={worldMonth} onGenealogy={onOpenFullGenealogy}/>
+      <RoyalMilitaryRoster key={`military-roster-${team.name}`} factionId={team.name} rulers={rulers} month={worldMonth} onGenealogy={onOpenFullGenealogy}/>
       <Typography fontWeight="bold" fontSize="0.9rem">历代君主</Typography>
       <Box sx={{ display: "grid", gap: 0.5 }}>
         {orderedRulers.map((ruler, index) => {

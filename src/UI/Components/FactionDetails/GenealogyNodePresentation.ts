@@ -102,7 +102,8 @@ export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: Hous
       r.status === "kin" && r.accessionYear === undefined ? "未曾承统" : "",
       byId.get(dynasty.currentRulerId ?? "")?.parentId === r.id ? "当今君主的父辈" : "",
       r.status === "politically-ended" ? "生死未载" : r.status === "exiled" ? "流亡承统" : r.status === "deposed" ? "被宗室废黜" : ""].filter(Boolean);
-    return [r.id, {heading:genealogyRulerHeading(r,faction,worldMonth,royalHonorHeading(r,dynasty,worldMonth,{factionId:dynasty.factionId,status:faction.status})),politicalLabel,posthumousLabels,honor:royalHonorHeading(r,dynasty,worldMonth,{revoked:g=>(revoked.get(`${r.militaryIdentity?.personId}/${g.factionId}/${g.epochFounderId}`)??Infinity)<=worldMonth,factionId:dynasty.factionId,status:faction.status}), roles, labels: (politicalLabel?[politicalLabel,...roles]:roles).slice(0,2), theme, details, evidence: proof,
+    const honor=royalHonorHeading(r,dynasty,worldMonth,{revoked:g=>(revoked.get(`${r.militaryIdentity?.personId}/${g.factionId}/${g.epochFounderId}`)??Infinity)<=worldMonth,factionId:dynasty.factionId,status:faction.status});
+    return [r.id, {heading:genealogyRulerHeading(r,faction,worldMonth,honor),politicalLabel,posthumousLabels,honor, roles, labels: (politicalLabel?[politicalLabel,...roles]:roles).slice(0,2), theme, details, evidence: proof,
       hasPosthumousTitle: posthumousLabels.length>0 }];
   }));
 }

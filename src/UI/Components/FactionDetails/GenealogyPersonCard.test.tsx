@@ -37,9 +37,10 @@ describe("genealogy card and integration structure", () => {
     const window=readFileSync(new URL("./genealogyWindow.ts",import.meta.url),"utf8");
     expect(dialog).toContain('events=open?History.getEvents():[]');expect(dialog).toContain('if(!open||!dynasty)return undefined');
     expect(dialog).toContain('[open,stamp,worldMonth,team.name]');expect(dialog).toContain('genealogyWindow(data.index,focus,expanded,branchOffsets,new Set(data.military.keys()))');
-    expect(window).toContain('GENEALOGY_WINDOW_LIMIT=150');expect(dialog).not.toContain('<GenealogyTreeNode');
-    expect(dialog).toContain('data-parent-id={e.parentId}');expect(dialog).toContain('layout.positions.get(r.id)');expect(dialog).toContain('visibleGenealogyRows(rows,layout,view,focus)');expect(dialog).toContain('data-y1={e.y1}');expect(dialog).not.toContain('查看此支');expect(dialog).not.toContain('浏览全部人物');expect(dialog).not.toContain('查找人物');expect(dialog).not.toContain('TextField');expect(dialog).not.toContain('setQuery');expect(dialog).toContain('<svg');expect(dialog).not.toContain('ml:Math.min(depth');
-    expect(dialog).toContain('适应窗口');expect(dialog).toContain('定位当今君主');expect(dialog).toContain("'ESCAPE'");
+    const shared=readFileSync(new URL('./GenealogyTreeView.tsx',import.meta.url),'utf8'),layout=readFileSync(new URL('./genealogyLayout.ts',import.meta.url),'utf8'),family=readFileSync(new URL('./MilitaryFamilyBrowser.tsx',import.meta.url),'utf8');
+    expect(layout).toContain('GENEALOGY_WINDOW_LIMIT=150');expect(window).toContain('layoutGenealogyNodes');expect(dialog).toContain('<GenealogyTreeView');expect(family).toContain('<GenealogyTreeView');expect(family).not.toContain('收起子支');expect(dialog).not.toContain('<GenealogyTreeNode');
+    expect(shared).toContain('data-parent-id={e.parentId}');expect(dialog).toContain('layout.positions.get(r.id)');expect(shared).toContain('.slice(0,GENEALOGY_WINDOW_LIMIT)');expect(shared).toContain('data-y1={e.y1}');expect(dialog).not.toContain('查看此支');expect(dialog).not.toContain('浏览全部人物');expect(dialog).not.toContain('查找人物');expect(dialog).not.toContain('TextField');expect(dialog).not.toContain('setQuery');expect(shared).toContain('<svg');expect(dialog).not.toContain('ml:Math.min(depth');
+    expect(shared).toContain('适应窗口');expect(dialog).toContain('定位当今君主');expect(dialog).toContain("'ESCAPE'");
     expect(dialog).not.toContain('endReason === "彻底灭亡"');
   });
 });
