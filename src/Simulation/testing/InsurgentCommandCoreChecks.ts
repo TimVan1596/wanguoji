@@ -14,6 +14,7 @@ export function checkInsurgentCommands(core:any,factionId:string,check:(v:unknow
  const create=()=>{(Military as any).updateInsurgentCommands(month,[team()]);return Military.getFormations().find(f=>f.factionId===factionId&&f.leaderDuty);};
  const strict=()=>{const s=exportWorldSave(core),v=validateWorldSave(s);check(v.valid,`insurgent strict save: ${v.errors.join(';')}`);return s;};
  try{
+  {const t=team(),leader=t.rulerUser,receiver=core.teams.find((q:any)=>q!==t&&q.status==='ACTIVE')!,count=core.teams.reduce((n:number,q:any)=>n+q.users.size,0);for(const u of [...t.users] as any[])if(u!==leader)u.setTeam(receiver,{cause:'LIVE_TRANSFER',month});check(!create()&&!Military.getFormations().some(f=>f.factionId===factionId&&f.leaderDuty),'a real leader without responding residents receives no fictional troops or command');check(core.teams.reduce((n:number,q:any)=>n+q.users.size,0)===count,'absence of a command neither adds nor deletes actual population');strict();hydrateWorldSave(core,structuredClone(base));}
   for(const point of ['history','state']){
    hydrateWorldSave(core,structuredClone(base));const write=History.addEvent,commit=Military.commitInsurgentCommand;
    if(point==='history')History.addEvent=function(e){const id=write.call(this,e);if(e.type==='leader-command-started')throw Error('injected leader history');return id;};
