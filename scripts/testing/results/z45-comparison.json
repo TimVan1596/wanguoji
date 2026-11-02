@@ -1,0 +1,815 @@
+{
+  "baselineHead": "06d27aba98c29c8fdd45351572be22c79eb1a5cb",
+  "versions": {
+    "app": "v0.99931z45",
+    "package": "0.99.211",
+    "worldSave": 45
+  },
+  "worldYears": 800,
+  "fixedSeeds": [
+    "regional-1",
+    "regional-2",
+    "regional-3",
+    "regional-4",
+    "regional-5",
+    "regional-6",
+    "regional-7",
+    "regional-8"
+  ],
+  "method": "Same eight predeclared regional seeds and MEDIUM production Core path as z44; no probability calibration or seed selection. Full checkpoints strictly loaded and resumed twelve deterministic months with a second read.",
+  "measurementCorrection": "Original readonly collector counted only active duties. Regional-3 alone was replayed to recover its closed duty ledger; its full canonical hash exactly matched the earlier run. This is one remeasurement, not a ninth independent world. Other seven worlds had neither active duties nor ending events.",
+  "historicalTotals": {
+    "ordinaryResidentFoundings": 2,
+    "militarySecessions": 0,
+    "dutiesCreated": 1,
+    "originalMilitaryDuties": 0,
+    "dutyBattles": 0,
+    "dutyCaptures": 0,
+    "dutyEnds": 1,
+    "formalizations": 0,
+    "militaryFoundersNowSovereign": 0
+  },
+  "endpointSnapshot": {
+    "temporaryPolities": 2,
+    "withRealPoliticalLeader": 2,
+    "sameLeaderAndCommander": 0,
+    "differentMilitaryCommander": 0,
+    "withArmy": 0,
+    "withoutArmy": 2,
+    "activeDuties": 0
+  },
+  "snapshotCaveat": "Current political leader / same leader commander / different commander are endpoint snapshots, not independent founding events; same and different command relationships can coexist. Closed duties remain in the historical ledger.",
+  "worldsWithUnchangedReportedGameplayMetrics": 7,
+  "canonicalHashCaveat": "Schema44 and schema45 differ. Cross-version canonical hash equality is not asserted; comparison uses explicitly listed gameplay metrics and RNG position.",
+  "randomness": "No added independent RNG draws or changed probability parameters. Actual new command movement and event/command IDs may alter subsequent existing random consumption. Regional-3 position 6820 -> 6823; other seven positions unchanged.",
+  "rulesPreserved": [
+    "political probabilities and cooldowns",
+    "shared rebellion opportunity",
+    "population growth and lifetime",
+    "normal military office, promotion and capacities",
+    "two formations per polity, four units maximum",
+    "nobility and hereditary succession",
+    "family recruitment weights 1.50/1.25 and annual 5% shared opportunity"
+  ],
+  "notReleased": [
+    "universal personal command for non-resident or successor rulers",
+    "automatic military office for political leaders",
+    "automatic whole old-army transfer",
+    "multi-period hereditary revival",
+    "new recruitment weight"
+  ],
+  "limitations": [
+    "One natural resident-leader duty lasted eleven months and ended when its last follower died; no natural duty siege battle, capture or formalization.",
+    "Natural military secession count is zero; old-general command continuity and captures were verified through controlled real production transactions, not a natural rate estimate.",
+    "Importer creation-order restoration was additionally verified with uninterrupted-versus-hydrated twelve-month Core runs containing interleaved normal and insurgent commands.",
+    "Human Electron/Chrome layout and smoothness Gate remains pending."
+  ],
+  "verification": {
+    "unitFiles": 311,
+    "unitTests": 2439,
+    "coreChecks": {
+      "resident-founder-z45-core-final.json": 165,
+      "military-nobility-z45-core-final.json": 600,
+      "military-local-secession-z45-core-final.json": 145,
+      "rebel-military-identity-z45-core-final.json": 24
+    },
+    "coreTotal": 934,
+    "typecheck": "PASS",
+    "webBuild": "PASS",
+    "desktopBuild": "PASS",
+    "debugBuild": "PASS",
+    "existingLargeChunkWarning": true,
+    "strictSave": "PASS",
+    "rollback": "PASS including member death, transfer, command history/state/order write and RNG restoration",
+    "twelveMonthHydration": "PASS with second read and uninterrupted comparison",
+    "visualGate": "WAITING_FOR_USER"
+  },
+  "worlds": [
+    {
+      "seed": "regional-1",
+      "years": 100,
+      "z44": {
+        "worldPopulation": 135,
+        "peakWorldPopulation": 153,
+        "activeStates": 6,
+        "historicalStates": 7,
+        "captures": 20,
+        "recoveries": 5,
+        "normalRoyalSuccessions": 21,
+        "worldRandomPosition": 7142,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 2,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "z45": {
+        "worldPopulation": 135,
+        "peakWorldPopulation": 153,
+        "activeStates": 6,
+        "historicalStates": 7,
+        "captures": 20,
+        "recoveries": 5,
+        "normalRoyalSuccessions": 21,
+        "worldRandomPosition": 7142,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 2,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "changedMetrics": {},
+      "z44CanonicalSha256": "b3e4e7e20b51344552c57c647effa0e86f834fa9466419346df787ed3bbdcf81",
+      "z45CanonicalSha256": "50dae42527b3860ecb668211ca0bda358a80d1c9f88ff0a0a8cfa66fe59a8acd",
+      "insurgentCommands": {
+        "scope": "SAVED_UNIQUE_EVENTS_AND_CURRENT_POLITY_SNAPSHOT",
+        "ordinaryResidentFoundings": 0,
+        "militarySecessions": 0,
+        "temporaryPolities": 0,
+        "withRealPoliticalLeader": 0,
+        "sameLeaderAndCommander": 0,
+        "differentMilitaryCommander": 0,
+        "withArmy": 0,
+        "withoutArmy": 0,
+        "dutiesCreated": 0,
+        "activeDuties": 0,
+        "originalMilitaryDuties": 0,
+        "dutyBattles": 0,
+        "dutyCaptures": 0,
+        "dutyEnds": 0,
+        "formalizations": 0,
+        "militaryFoundersNowSovereign": 0,
+        "commands": []
+      },
+      "formationMaximum": 3,
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-2",
+      "years": 100,
+      "z44": {
+        "worldPopulation": 130,
+        "peakWorldPopulation": 156,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 10,
+        "recoveries": 1,
+        "normalRoyalSuccessions": 19,
+        "worldRandomPosition": 7130,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "z45": {
+        "worldPopulation": 130,
+        "peakWorldPopulation": 156,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 10,
+        "recoveries": 1,
+        "normalRoyalSuccessions": 19,
+        "worldRandomPosition": 7130,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "changedMetrics": {},
+      "z44CanonicalSha256": "17675278aed09b7f31384535a6a29d9d12b0806a632289af54e96af1a75d3454",
+      "z45CanonicalSha256": "0771d164fe8e139d1176be8ab4257afc14273ce9952a00ca885043ff064c8ddd",
+      "insurgentCommands": {
+        "scope": "SAVED_UNIQUE_EVENTS_AND_CURRENT_POLITY_SNAPSHOT",
+        "ordinaryResidentFoundings": 0,
+        "militarySecessions": 0,
+        "temporaryPolities": 0,
+        "withRealPoliticalLeader": 0,
+        "sameLeaderAndCommander": 0,
+        "differentMilitaryCommander": 0,
+        "withArmy": 0,
+        "withoutArmy": 0,
+        "dutiesCreated": 0,
+        "activeDuties": 0,
+        "originalMilitaryDuties": 0,
+        "dutyBattles": 0,
+        "dutyCaptures": 0,
+        "dutyEnds": 0,
+        "formalizations": 0,
+        "militaryFoundersNowSovereign": 0,
+        "commands": []
+      },
+      "formationMaximum": 4,
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-3",
+      "years": 100,
+      "z44": {
+        "worldPopulation": 136,
+        "peakWorldPopulation": 151,
+        "activeStates": 3,
+        "historicalStates": 8,
+        "captures": 29,
+        "recoveries": 2,
+        "normalRoyalSuccessions": 14,
+        "worldRandomPosition": 6820,
+        "politicalEvents": {
+          "ordinaryFoundings": 1,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "z45": {
+        "worldPopulation": 137,
+        "peakWorldPopulation": 151,
+        "activeStates": 4,
+        "historicalStates": 8,
+        "captures": 28,
+        "recoveries": 2,
+        "normalRoyalSuccessions": 15,
+        "worldRandomPosition": 6823,
+        "politicalEvents": {
+          "ordinaryFoundings": 1,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "changedMetrics": {
+        "worldPopulation": {
+          "z44": 136,
+          "z45": 137
+        },
+        "activeStates": {
+          "z44": 3,
+          "z45": 4
+        },
+        "captures": {
+          "z44": 29,
+          "z45": 28
+        },
+        "normalRoyalSuccessions": {
+          "z44": 14,
+          "z45": 15
+        },
+        "worldRandomPosition": {
+          "z44": 6820,
+          "z45": 6823
+        }
+      },
+      "z44CanonicalSha256": "c8ee463a0eb9243e8fb5a026b8398a50689b5226abab309505d8417a0c86a130",
+      "z45CanonicalSha256": "0531e77f4b16c24cc6b5be04b295028c16bf9bdcb6cab722145949c7a02af4c6",
+      "insurgentCommands": {
+        "measurementVersion": 2,
+        "scope": "SAVED_UNIQUE_EVENTS_AND_CURRENT_POLITY_SNAPSHOT",
+        "ordinaryResidentFoundings": 1,
+        "militarySecessions": 0,
+        "temporaryPolities": 1,
+        "withRealPoliticalLeader": 1,
+        "sameLeaderAndCommander": 0,
+        "differentMilitaryCommander": 0,
+        "withArmy": 0,
+        "withoutArmy": 1,
+        "dutiesCreated": 1,
+        "activeDuties": 0,
+        "originalMilitaryDuties": 0,
+        "dutyBattles": 0,
+        "dutyCaptures": 0,
+        "dutyEnds": 1,
+        "formalizations": 0,
+        "militaryFoundersNowSovereign": 0,
+        "commands": [
+          {
+            "commandId": "military-command-23",
+            "factionId": "临淄义军",
+            "commanderPersonId": "resident-临淄义军-1143910068-282",
+            "createdMonth": 1009,
+            "memberUnitIds": [
+              "unit-255"
+            ],
+            "status": "DISBANDED",
+            "captures": [],
+            "leaderDuty": {
+              "personId": "resident-临淄义军-1143910068-282",
+              "sourceUserId": 1143910068,
+              "bornMonth": 282,
+              "rulerId": "临淄义军-ruler-58",
+              "foundingEventId": "rebel-founded-1008-临淄义军-临淄-127",
+              "sourceFactionId": "燕",
+              "capacity": 2,
+              "initialMembers": [
+                {
+                  "unitId": "unit-255",
+                  "userId": 1143910068,
+                  "bornMonth": 282,
+                  "x": 846.9764948146326,
+                  "y": 551.3384617457817,
+                  "positionSource": "PHASER"
+                },
+                {
+                  "unitId": "unit-228",
+                  "userId": 1143910041,
+                  "bornMonth": 62,
+                  "x": 747.0235414198785,
+                  "y": 717.0461879899814,
+                  "positionSource": "PHASER"
+                }
+              ],
+              "endMonth": 1020,
+              "endReason": "NO_FOLLOWERS"
+            }
+          }
+        ]
+      },
+      "formationMaximum": 4,
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-4",
+      "years": 100,
+      "z44": {
+        "worldPopulation": 117,
+        "peakWorldPopulation": 148,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 15,
+        "recoveries": 3,
+        "normalRoyalSuccessions": 21,
+        "worldRandomPosition": 7039,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "z45": {
+        "worldPopulation": 117,
+        "peakWorldPopulation": 148,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 15,
+        "recoveries": 3,
+        "normalRoyalSuccessions": 21,
+        "worldRandomPosition": 7039,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "changedMetrics": {},
+      "z44CanonicalSha256": "8921bd6513c392bac7e425ecd6730aec6f44bf9879fdfd4568d10ff188edb9cf",
+      "z45CanonicalSha256": "ae12a4ea1636e41451ef6e8eaace6a17f75bf517f6e4a13c6ea551684cbee0c6",
+      "insurgentCommands": {
+        "scope": "SAVED_UNIQUE_EVENTS_AND_CURRENT_POLITY_SNAPSHOT",
+        "ordinaryResidentFoundings": 0,
+        "militarySecessions": 0,
+        "temporaryPolities": 0,
+        "withRealPoliticalLeader": 0,
+        "sameLeaderAndCommander": 0,
+        "differentMilitaryCommander": 0,
+        "withArmy": 0,
+        "withoutArmy": 0,
+        "dutiesCreated": 0,
+        "activeDuties": 0,
+        "originalMilitaryDuties": 0,
+        "dutyBattles": 0,
+        "dutyCaptures": 0,
+        "dutyEnds": 0,
+        "formalizations": 0,
+        "militaryFoundersNowSovereign": 0,
+        "commands": []
+      },
+      "formationMaximum": 4,
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-5",
+      "years": 100,
+      "z44": {
+        "worldPopulation": 133,
+        "peakWorldPopulation": 154,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 19,
+        "recoveries": 1,
+        "normalRoyalSuccessions": 15,
+        "worldRandomPosition": 6860,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "z45": {
+        "worldPopulation": 133,
+        "peakWorldPopulation": 154,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 19,
+        "recoveries": 1,
+        "normalRoyalSuccessions": 15,
+        "worldRandomPosition": 6860,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "changedMetrics": {},
+      "z44CanonicalSha256": "8f2f1436323812fc9df809a47df786a7214fec97c6077f6b29ddffe36ed8de03",
+      "z45CanonicalSha256": "769d0900354bc80fb42029c40da2dfc8ecbd09866cde218f7cd8033e071dfdae",
+      "insurgentCommands": {
+        "scope": "SAVED_UNIQUE_EVENTS_AND_CURRENT_POLITY_SNAPSHOT",
+        "ordinaryResidentFoundings": 0,
+        "militarySecessions": 0,
+        "temporaryPolities": 0,
+        "withRealPoliticalLeader": 0,
+        "sameLeaderAndCommander": 0,
+        "differentMilitaryCommander": 0,
+        "withArmy": 0,
+        "withoutArmy": 0,
+        "dutiesCreated": 0,
+        "activeDuties": 0,
+        "originalMilitaryDuties": 0,
+        "dutyBattles": 0,
+        "dutyCaptures": 0,
+        "dutyEnds": 0,
+        "formalizations": 0,
+        "militaryFoundersNowSovereign": 0,
+        "commands": []
+      },
+      "formationMaximum": 3,
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-6",
+      "years": 100,
+      "z44": {
+        "worldPopulation": 133,
+        "peakWorldPopulation": 148,
+        "activeStates": 4,
+        "historicalStates": 7,
+        "captures": 18,
+        "recoveries": 3,
+        "normalRoyalSuccessions": 17,
+        "worldRandomPosition": 7161,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 1,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "z45": {
+        "worldPopulation": 133,
+        "peakWorldPopulation": 148,
+        "activeStates": 4,
+        "historicalStates": 7,
+        "captures": 18,
+        "recoveries": 3,
+        "normalRoyalSuccessions": 17,
+        "worldRandomPosition": 7161,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 1,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "changedMetrics": {},
+      "z44CanonicalSha256": "ed7afcdf1a8005a0981bed83ce575c42385c1ff869b82585fd4d3f479725e3b4",
+      "z45CanonicalSha256": "40ceb3a2c4fa1cef02c3ab345669ef347f67dd3036f4aa2cc46915dfc1da7998",
+      "insurgentCommands": {
+        "scope": "SAVED_UNIQUE_EVENTS_AND_CURRENT_POLITY_SNAPSHOT",
+        "ordinaryResidentFoundings": 0,
+        "militarySecessions": 0,
+        "temporaryPolities": 0,
+        "withRealPoliticalLeader": 0,
+        "sameLeaderAndCommander": 0,
+        "differentMilitaryCommander": 0,
+        "withArmy": 0,
+        "withoutArmy": 0,
+        "dutiesCreated": 0,
+        "activeDuties": 0,
+        "originalMilitaryDuties": 0,
+        "dutyBattles": 0,
+        "dutyCaptures": 0,
+        "dutyEnds": 0,
+        "formalizations": 0,
+        "militaryFoundersNowSovereign": 0,
+        "commands": []
+      },
+      "formationMaximum": 4,
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-7",
+      "years": 100,
+      "z44": {
+        "worldPopulation": 137,
+        "peakWorldPopulation": 155,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 34,
+        "recoveries": 6,
+        "normalRoyalSuccessions": 22,
+        "worldRandomPosition": 7428,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "z45": {
+        "worldPopulation": 137,
+        "peakWorldPopulation": 155,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 34,
+        "recoveries": 6,
+        "normalRoyalSuccessions": 22,
+        "worldRandomPosition": 7428,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "changedMetrics": {},
+      "z44CanonicalSha256": "3fd54502e9db4d2243d828cb4ee5a91c666bd838f001597981ff470a66bf0a3e",
+      "z45CanonicalSha256": "a7410998d4d53321b7daa3d2f43d904ef4eb4a97025372cd70d1459abddcd466",
+      "insurgentCommands": {
+        "scope": "SAVED_UNIQUE_EVENTS_AND_CURRENT_POLITY_SNAPSHOT",
+        "ordinaryResidentFoundings": 0,
+        "militarySecessions": 0,
+        "temporaryPolities": 0,
+        "withRealPoliticalLeader": 0,
+        "sameLeaderAndCommander": 0,
+        "differentMilitaryCommander": 0,
+        "withArmy": 0,
+        "withoutArmy": 0,
+        "dutiesCreated": 0,
+        "activeDuties": 0,
+        "originalMilitaryDuties": 0,
+        "dutyBattles": 0,
+        "dutyCaptures": 0,
+        "dutyEnds": 0,
+        "formalizations": 0,
+        "militaryFoundersNowSovereign": 0,
+        "commands": []
+      },
+      "formationMaximum": 4,
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-8",
+      "years": 100,
+      "z44": {
+        "worldPopulation": 141,
+        "peakWorldPopulation": 154,
+        "activeStates": 7,
+        "historicalStates": 8,
+        "captures": 28,
+        "recoveries": 4,
+        "normalRoyalSuccessions": 22,
+        "worldRandomPosition": 7496,
+        "politicalEvents": {
+          "ordinaryFoundings": 1,
+          "militarySecessions": 0,
+          "depositions": 1,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "z45": {
+        "worldPopulation": 141,
+        "peakWorldPopulation": 154,
+        "activeStates": 7,
+        "historicalStates": 8,
+        "captures": 28,
+        "recoveries": 4,
+        "normalRoyalSuccessions": 22,
+        "worldRandomPosition": 7496,
+        "politicalEvents": {
+          "ordinaryFoundings": 1,
+          "militarySecessions": 0,
+          "depositions": 1,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "changedMetrics": {},
+      "z44CanonicalSha256": "43970dd7deaf04ebf83c841d89d55a2a57d0e8d8c61ea24e356e04f49987d532",
+      "z45CanonicalSha256": "db416e3beadb656350b9b2a9b28571ed2d8f53aa9193ae81a36422a3d643710f",
+      "insurgentCommands": {
+        "scope": "SAVED_UNIQUE_EVENTS_AND_CURRENT_POLITY_SNAPSHOT",
+        "ordinaryResidentFoundings": 1,
+        "militarySecessions": 0,
+        "temporaryPolities": 1,
+        "withRealPoliticalLeader": 1,
+        "sameLeaderAndCommander": 0,
+        "differentMilitaryCommander": 0,
+        "withArmy": 0,
+        "withoutArmy": 1,
+        "dutiesCreated": 0,
+        "activeDuties": 0,
+        "originalMilitaryDuties": 0,
+        "dutyBattles": 0,
+        "dutyCaptures": 0,
+        "dutyEnds": 0,
+        "formalizations": 0,
+        "militaryFoundersNowSovereign": 0,
+        "commands": []
+      },
+      "formationMaximum": 4,
+      "integrity": {
+        "populationUnexplained": 0,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "militaryRoyalOverlap": 0
+      },
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    }
+  ],
+  "sourceSha256": {
+    "src/Politics/InsurgentCommand.ts": "46cc76c4f5b16aeb32ce406c3f0f198b579dd1b8a5e18b6508b063bbc0fda856",
+    "src/Politics/MilitaryCommandRegistry.ts": "ef631b898aa072cf8e18a5a7f54867c8a6e452a7ec489860ef31c91275aad1dc",
+    "src/Persistence/InsurgentCommandValidation.ts": "659c942bee3781ff0066cfbc129f93c94eb7fbd1091e4fc3f31ab5f50816618a",
+    "src/UI/Components/FactionDetails/militaryFamilyTree.ts": "08adbd90d2af9633503836ebd0b269e7750fcf4db21abe50e70fb6bc952c8ced",
+    "src/Simulation/testing/InsurgentCommandCoreChecks.ts": "3cbc841228e5ac7e99cae53bee7ecf43fdc4a45fac79a1d0fe7c6af5ff1d9fcd"
+  }
+}
