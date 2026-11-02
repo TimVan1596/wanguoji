@@ -5,6 +5,8 @@ export const PersonArchiveNavigation=createContext<{
  open:(target:PersonArchiveTarget)=>void;
  consumeGenealogy:()=>void;
  genealogyTarget?:PersonArchiveTarget&{serial:number};
+ familyTarget?:PersonArchiveTarget&{serial:number};
+ consumeFamily?:()=>void;
  militaryTarget?:PersonArchiveTarget&{serial:number};
  consume:()=>void;
 }>({open:()=>{},consume:()=>{},consumeGenealogy:()=>{}});

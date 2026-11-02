@@ -1,3 +1,4 @@
+import {familyNobleReading} from './FamilyNobleReading';
 import {formatPoliticalEvent} from "../Politics/PoliticalEventNarrative";
 import {militaryDeathWording} from '../Politics/MilitaryLifePresentation';
 import {formatFoundingIdentity} from "./FoundingIdentityNarrative";
@@ -155,6 +156,7 @@ export function formatHistoryEventTitle(
   factionById: Map<string, HistoryFactionLike>,
   rulersById?: Map<string, Ruler>
 ) {
+  const family=familyNobleReading(event,factionById);if(family)return family;
   if(event.metadata?.courtReadingKind==='COURT_COUP')return event.title;
   if(event.metadata?.politicalReadingKind==='FINAL_END')return `${resolveFactionHistoricalName(factionById,event.targetFactionId??event.actorFactionId,event.monthIndex??event.year)}失去最后据点，王统随之断绝，政权终结。`;
   if(event.metadata?.historyNarrativeKind==='MILITARY_LIFE')return event.title;

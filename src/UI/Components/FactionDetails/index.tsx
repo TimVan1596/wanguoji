@@ -164,12 +164,14 @@ export default function FactionDetails() {
   const [historyRevision, setHistoryRevision] = useState(() => WorldHistory.getRevision());
   const [rulerDetailId, setRulerDetailId] = useState<string | undefined>();
   const [genealogyTarget,setGenealogyTarget]=useState<(PersonArchiveTarget&{serial:number})|undefined>();
+  const [familyTarget,setFamilyTarget]=useState<(PersonArchiveTarget&{serial:number})|undefined>();
   const [militaryTarget,setMilitaryTarget]=useState<(PersonArchiveTarget&{serial:number})|undefined>();
   const navigationSequence=useRef(0),navigationDispatch=useDispatch();
   const openPerson=(target:PersonArchiveTarget)=>{
-    const resolved=resolvePersonArchiveTarget(target,teams,DynastyRegistry.getAll(),MilitaryCommandRegistry.getPeople());
+    const resolved=resolvePersonArchiveTarget(target,teams,DynastyRegistry.getAll(),MilitaryCommandRegistry.getPeople(),MilitaryCommandRegistry.getFamilies());
     if(!resolved)return;
-    if(target.kind==="GENEALOGY"){
+    if(target.kind==='FAMILY'){setRulerDetailId(undefined);setMilitaryTarget(undefined);setGenealogyTarget(undefined);setFamilyTarget({...target,serial:++navigationSequence.current});
+    }else if(target.kind==="GENEALOGY"){
       setGenealogyTarget({...target,serial:++navigationSequence.current});
     }else if(target.kind==="RULER"){
       setRulerDetailId(target.id);setMilitaryTarget(undefined);
@@ -202,7 +204,7 @@ export default function FactionDetails() {
   }
 
   return (
-    <PersonArchiveNavigation.Provider value={{open:openPerson,militaryTarget,genealogyTarget,consumeGenealogy:()=>setGenealogyTarget(undefined),consume:()=>setMilitaryTarget(undefined)}}><FactionProfile
+    <PersonArchiveNavigation.Provider value={{open:openPerson,familyTarget,consumeFamily:()=>setFamilyTarget(undefined),militaryTarget,genealogyTarget,consumeGenealogy:()=>setGenealogyTarget(undefined),consume:()=>setMilitaryTarget(undefined)}}><FactionProfile
       team={team}
       teams={teams}
       worldMonth={worldMonth}
@@ -635,6 +637,7 @@ function MilitaryPoliticalEventFacts({ event }: { event: WorldEvent }) {
 
 function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; worldMonth: number }) {
   const [familyBrowser,setFamilyBrowser]=useState(false);
+  const [familyFocus,setFamilyFocus]=useState<(PersonArchiveTarget&{serial:number})|undefined>();
   const families=associatedMilitaryFamilies(MilitaryCommandRegistry.getFamilies(),factionId,MilitaryCommandRegistry.getPeople());
   const [archiveView,setArchiveView]=useState<"people"|"merit">("people");
   const [selection, setSelection] = useState<MilitaryPersonSelection>();
@@ -664,6 +667,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
     navigation.consume();
   },[navigation.militaryTarget?.serial,factionId,resolvedSelection.expandedIds.includes(navigation.militaryTarget?.id??"")]);
 
+  useEffect(()=>{const t=navigation.familyTarget;if(t?.factionId!==factionId)return;setFamilyFocus(t);setFamilyBrowser(true);navigation.consumeFamily?.();},[navigation.familyTarget?.serial,factionId]);
   const {currentPeople,visiblePeople}=getMilitaryArchive(people,factionId,formations,liveIds);
   const focusedPerson=people.find(p=>p.personId===resolvedSelection.focusedId);
   const focusedCommand=formations.find(f=>f.commanderPersonId===focusedPerson?.personId&&f.status==="ACTIVE"&&f.factionId===factionId)?.commandId;
@@ -685,8 +689,8 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
   return <Box sx={{ display: "grid", gap: 1, mt: 0.5, minWidth: 0, overflowWrap: "anywhere" }}>
     <InsurgentCommandPanel factionId={factionId} month={worldMonth}/>
     {politicalLeader&&<Typography fontSize="0.8rem">政治首领：{formatRulerName(politicalLeader)} · 本国现役将领{factionCommanders}人；{formations.some(f=>f.factionId===factionId&&f.leaderDuty&&f.status==='ACTIVE')?'本人统帅编组见上方，职责与正式军职分列。':'本人暂无独立指挥编组。'}</Typography>}
-    <Box><button type="button" aria-pressed={archiveView==='people'} onClick={()=>setArchiveView('people')}>现役与历任</button> · <button type="button" aria-pressed={archiveView==='merit'} onClick={()=>setArchiveView('merit')}>功臣录</button> · <button type="button" onClick={()=>setFamilyBrowser(true)}>功臣世家（{families.length}）</button></Box>
-    {familyBrowser&&<MilitaryFamilyBrowser key={factionId} families={families} worldMonth={worldMonth} onClose={()=>setFamilyBrowser(false)}/>} 
+    <Box><button type="button" aria-pressed={archiveView==='people'} onClick={()=>setArchiveView('people')}>现役与历任</button> · <button type="button" aria-pressed={archiveView==='merit'} onClick={()=>setArchiveView('merit')}>功臣录</button> · <button type="button" onClick={()=>{setFamilyFocus(undefined);setFamilyBrowser(true);}}>功臣世家（{families.length}）</button></Box>
+    {familyBrowser&&<MilitaryFamilyBrowser key={`${factionId}:${familyFocus?.serial??0}`} families={families} worldMonth={worldMonth} initialFamilyId={familyFocus?.id} initialMemberId={familyFocus?.memberId} onClose={()=>{setFamilyBrowser(false);setFamilyFocus(undefined);}}/>} 
     {archiveView==='merit'?<MeritRoll factionId={factionId} month={worldMonth} onOpen={id=>{setArchiveView('people');navigation.open({kind:'MILITARY',factionId,id});}}/>:<>
     <Typography fontSize="0.78rem" color="var(--gg-text-muted)">
       现役将领 {factionCommanders} 人 · 历任将领 {people.length} 人
