@@ -51,7 +51,7 @@ export function familyNobleText(f:MilitaryFamily,a:FamilyNobleAct){
 export function createFamilyNobleContext(month:number,families:readonly MilitaryFamily[],people:readonly MilitaryPerson[],events:readonly WorldEvent[],dynasties:readonly Pick<import('./Dynasty').Dynasty,'factionId'|'houseEpochs'|'rulers'>[]):FamilyNobleContext{
  const activeEpochs=new Set<string>(),politicalAccessions=new Map<string,number>();
  for(const d of dynasties){
-  const terminal=events.filter(e=>at(e)<=month&&(e.type==='faction-merged'?e.metadata?.absorbedFactionId===d.factionId:e.type==='faction-submitted'?e.metadata?.submittedFactionId===d.factionId:['faction-exiled','faction-extinct'].includes(e.type)?e.targetFactionId===d.factionId:e.actorFactionId===d.factionId)&&['faction-exiled','faction-extinct','faction-merged','faction-submitted','dynasty-line-ended','faction-restored','dynasty-restored'].includes(e.type)).at(-1);
+  const terminal=events.filter(e=>at(e)<=month&&(e.type==='faction-merged'?e.metadata?.absorbedFactionId===d.factionId:e.type==='faction-submitted'?e.metadata?.submittedFactionId===d.factionId:['faction-exiled','faction-extinct'].includes(e.type)?e.targetFactionId===d.factionId:e.actorFactionId===d.factionId)&&['faction-exiled','faction-extinct','faction-merged','faction-submitted','dynasty-line-ended','faction-restored','dynasty-restored'].includes(e.type)).sort((a,b)=>at(a)-at(b)).at(-1);
   if(!terminal||['faction-restored','dynasty-restored'].includes(terminal.type))for(const ep of d.houseEpochs??[])if(ep.startMonth<=month&&(month<(ep.endMonth??Infinity)||ep.endMonth===month&&!events.some(e=>e.actorFactionId===d.factionId&&at(e)===month&&(e.type==='dynasty-usurped'||['ruler-acceded','ruler-succession','ruler-deposed'].includes(e.type)&&d.houseEpochs?.some(next=>next.startMonth===month&&next.foundingRulerId!==ep.foundingRulerId&&(e.rulerId===next.foundingRulerId||e.metadata?.nextRulerId===next.foundingRulerId))))))activeEpochs.add(`${d.factionId}/${ep.foundingRulerId}`);
  }
  const rulers=dynasties.flatMap(d=>d.rulers);
@@ -61,7 +61,9 @@ export function createFamilyNobleContext(month:number,families:readonly Military
 }
 
 /** Same-month deaths and transfers after a title transaction cannot be read backwards into it. */
-export function familyAtEvidenceBoundary(f:MilitaryFamily,month:number,eventIndex:number){const copy=structuredClone(f);for(const m of copy.members){
+export function familyAtEvidenceBoundary(f:MilitaryFamily,month:number,eventIndex:number,events?:readonly WorldEvent[]){const copy=structuredClone(f);
+ if(events){const positions=new Map(events.map((e,i)=>[e.id,i]));copy.members=copy.members.filter(m=>m.enteredMonth<=month&&(positions.get(m.source==='FOUNDER'?`${f.familyId}-founded`:`${m.memberId}-entered`)??Infinity)<eventIndex);}
+for(const m of copy.members){
  m.factionHistory=m.factionHistory?.filter(h=>h.month<month||h.month===month&&h.eventIndex<=eventIndex);
  if(m.deathMonth===month&&(m.deathHistoryIndex??-1)>eventIndex){delete m.deathMonth;delete m.deathCause;}
  if(m.exitMonth===month&&(m.exitHistoryIndex??-1)>eventIndex){delete m.exitMonth;delete m.exitCause;}

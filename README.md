@@ -147,7 +147,7 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
-- 当前 APP **v0.99931z43** / package **0.99.209** / WorldSave **V44**。z42已获最终人工Electron／Chrome Gate PASS。功臣世家一族一条独立承袭链，真实死亡后由已登记、在世在籍的直接子嗣择一承袭并逐代降爵，公→侯→伯→子→男→无爵；不传军职、部队、食邑或城市。个人军功与承袭分列，家谱保留无爵成员和失效历史。八固定种子百年出现4次自然承袭及1次政治失效，与z42人口、政治、战争及RNG指标一致；自然样本有限，不保证第五代传承。V44严格存档，V43及更早槽位保留并拒绝误读，请新建世界运行 `pnpm desktop:start:debug` 人工验收。
+- 当前 APP **v0.99931z44** / package **0.99.210** / WorldSave **V44**。z43已获最终人工Gate PASS。功臣世家默认主干、可展开普通旁支与完整族谱，活跃世家和历史故家分列；军职、本人军功爵、家族承袭爵和家族代数分明，断袭可查当时子嗣及来源。不传军职、部队、食邑与城市；多期袭爵再兴未发布。无schema变更，可继续合格V44世界；旧版本槽位保留并拒绝误读。请运行 `pnpm desktop:start:debug` 完成人工验收。
 
 - v0.99931n人工Gate已PASS，真实长局自然发生至少11次同王统宗室废立。当前v0.99931n1修复连续废立后的V14生命周期校验，并完善君主即离位叙述与史评，等待[人工Gate](docs/RulerDepositionLifecycleClosureN1.md)。
 - v0.99929a 修复政治终结历史身份、退位年龄与双方君主大事记。[Political Terminal Chronicle Gate](docs/PoliticalTerminalChronicleClosure.md)已由用户完成人工PASS。

@@ -19,7 +19,7 @@ export function validateFamilyNobility(save:WorldSaveV1){
   }
   const prefix:NonNullable<typeof f.nobleSuccession>=[];let previousPosition=-1;
   for(const a of f.nobleSuccession??[]){const i=positions.get(a.eventId),e=i===undefined?undefined:events[i];if(i===undefined||i<=previousPosition||!e||a.month>save.world.worldMonth||a.month<f.foundedMonth||a.version!==1||a.step!==prefix.length+1||a.eventId!==`${f.familyId}-succession-${a.step}`)throw Error('invalid title sequence');
-   const historical=familyAtEvidenceBoundary({...f,nobleSuccession:prefix},a.month,i),prior=events.slice(0,i),c=createFamilyNobleContext(a.month,[historical],state.people,prior,dynasties),expected=planFamilyNobleTransition(historical,c);
+   const historical=familyAtEvidenceBoundary({...f,nobleSuccession:prefix},a.month,i,events),prior=events.slice(0,i),c=createFamilyNobleContext(a.month,[historical],state.people,prior,dynasties),expected=planFamilyNobleTransition(historical,c);
    if(!expected||JSON.stringify(expected)!==JSON.stringify(a))throw Error('title outcome differs from real prior grant, death, kinship, residence, politics or deterministic heir');
    if(e.type!==(a.kind==='SUCCEEDED'?'family-title-succeeded':'family-title-ended')||e.actorFactionId!==f.factionId||at(e)!==a.month||e.metadata?.familyId!==f.familyId||e.metadata?.familyNobleAct!==JSON.stringify(a)||e.title!==familyNobleText(f,a))throw Error('title history source mismatch');
    for(const id of a.sourceEventIds)if(!prior.some(e=>e.id===id))throw Error('missing prior title or death evidence');

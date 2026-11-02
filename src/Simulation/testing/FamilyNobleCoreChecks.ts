@@ -1,3 +1,9 @@
+import React from 'react';
+import {createRoot} from 'react-dom/client';
+import {flushSync} from 'react-dom';
+import {Provider} from 'react-redux';
+import {store} from '../../store';
+import MilitaryFamilyBrowser from '../../UI/Components/FactionDetails/MilitaryFamilyBrowser';
 import {familyMemberNobleLabel} from '../../UI/Components/FactionDetails/FamilyNoblePanel';
 import Military from '../../Politics/MilitaryCommandRegistry';
 import Dynasty from '../../Politics/Dynasty';
@@ -14,6 +20,19 @@ export function checkFamilyNobleCore(core:any,factionId:string,childId:number,ch
  const update=()=>Military.updateFamilyTitles(240,core.teams,Dynasty.getAll());
  try{
   update();check(!family().nobleSuccession?.length,'living founder neither retires his title nor gives an adult civilian child an early inheritance');
+  {const before=exportWorldSave(core),f=family(),member=f.members.find(m=>m.sourceUserId===childId)!,host=document.createElement('div'),root=createRoot(host);document.body.append(host);
+   try{flushSync(()=>root.render(React.createElement(Provider,{store,children:React.createElement(MilitaryFamilyBrowser,{families:[f],worldMonth:240,onClose:()=>{}})})));
+    const dialog=document.querySelector('[role="dialog"]')!,open=Array.from(dialog.querySelectorAll('button')).find(b=>b.textContent?.includes('始祖'))!;flushSync(()=>open.click());
+    check(!dialog.querySelector(`[data-family-member="${member.memberId}"]`)&&dialog.querySelector('[data-family-summary]'),'actual ordinary descendant is summarized by default without deleting the real family member');
+    const expand=Array.from(dialog.querySelectorAll('button')).find(b=>b.textContent==='展开普通旁支')!;flushSync(()=>expand.click());
+    check(dialog.querySelector(`[data-family-parent="${member.parentMemberId}"][data-family-child="${member.memberId}"]`)&&dialog.querySelector(`[data-family-member="${member.memberId}"]`)?.textContent?.includes(member.name),'expanding actual ordinary branch restores the original person and exact parent link');
+    const compact=Array.from(dialog.querySelectorAll('button')).find(b=>b.textContent==='收起普通旁支')!;flushSync(()=>compact.click());
+    check(!dialog.querySelector(`[data-family-member="${member.memberId}"]`),'ordinary branch can be compacted again independently of actual world records');
+    const complete=Array.from(dialog.querySelectorAll('button')).find(b=>b.textContent==='完整族谱')!;flushSync(()=>complete.click());
+    check(dialog.querySelector(`[data-family-member="${member.memberId}"]`)&&!dialog.querySelector(`[data-family-member="${member.memberId}"]`)?.textContent?.includes('无承袭爵位'),'complete genealogy shows the real civilian without repeated negative title labels');
+    check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,'trunk summaries, ordinary-branch expansion and complete genealogy leave canonical population, titles and RNG identical');
+   }finally{flushSync(()=>root.unmount());host.remove();}
+  }
   const father=Military.getPerson(family().founderPersonId)!,resident=[...team().users].find((u:any)=>u.id===father.sourceUserId) as any;
   {const before=exportWorldSave(core),writer=History.addEvent;History.addEvent=function(e){const id=writer.call(this,e);if(e.type==='military-person-died')throw Error('injected founder death write');return id;};let died:boolean;try{died=resident.destroyUser(false,{cause:'BATTLE_DEATH',month:240});}finally{History.addEvent=writer;}check(!died!&&diffCanonicalWorldSave(before,exportWorldSave(core)).matched,'founder death source failure restores the live original User, family life, army, population, history and RNG');}
   clock(240);check(resident.destroyUser(false,{cause:'BATTLE_DEATH',month:240}),'actual founder death commits through User and military command cleanup');
@@ -36,6 +55,16 @@ export function checkFamilyNobleCore(core:any,factionId:string,childId:number,ch
   {const before=exportWorldSave(core),writer=History.addEvent,u=team().getUserById(childId);History.addEvent=function(e){const id=writer.call(this,e);if(e.type==='family-member-died')throw Error('injected civilian heir death source');return id;};let died:boolean;try{died=u.destroyUser(false,{cause:'BATTLE_DEATH',month:240});}finally{History.addEvent=writer;}check(!died!&&diffCanonicalWorldSave(before,exportWorldSave(core)).matched,'ordinary titled resident death source failure restores life, title, population, actual map body and history');}
   hydrateWorldSave(core,structuredClone(saved));const heir=[...team().users].find((u:any)=>u.id===childId) as any;check(heir.destroyUser(false,{cause:'BATTLE_DEATH',month:240}),'actual civilian heir can die later in the same month');update();
   const same=exportWorldSave(core),sv=validateWorldSave(same);check(sv.valid&&family().nobleSuccession?.at(-1)?.reason==='NO_HEIR',`same-month later heir death closes its title without invalidating earlier living inheritance: ${sv.errors.join(';')}`);
+  {const before=exportWorldSave(core),host=document.createElement('div'),root=createRoot(host);document.body.append(host);
+   try{flushSync(()=>root.render(React.createElement(Provider,{store,children:React.createElement(MilitaryFamilyBrowser,{families:[family()],worldMonth:240,onClose:()=>{}})})));
+    const dialog=document.querySelector('[role="dialog"]')!;
+    check(!Array.from(dialog.querySelectorAll('button')).some(b=>b.textContent?.includes('始祖')),'actual extinct house leaves the default active overview without deleting its genealogy');
+    const history=Array.from(dialog.querySelectorAll('button')).find(b=>b.textContent==='历史故家')!;flushSync(()=>history.click());const open=Array.from(dialog.querySelectorAll('button')).find(b=>b.textContent?.includes('始祖'))!;check(!!open,'actual historic house remains discoverable from historical houses');flushSync(()=>open.click());
+    const cause=Array.from(dialog.querySelectorAll('summary')).find(n=>n.textContent==='查看断袭原因')!;flushSync(()=>{cause.parentElement!.setAttribute('open','');});
+    check(cause.parentElement?.textContent?.includes('没有已登记的直接子嗣'),'actual committed no-heir result explains the contemporaneous direct-child evidence');
+    check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,'historic-house classification and explanation do not change actual life, inheritance, family or RNG');
+   }finally{flushSync(()=>root.unmount());host.remove();}
+  }
   const final=family().nobleSuccession!.length;update();check(family().nobleSuccession!.length===final,'a broken chain does not seek newly generated children or recreate its title');
   const resume=()=>{hydrateWorldSave(core,structuredClone(saved));core.setWorldRunning(true);for(let m=0;m<12;m++){for(let i=0;i<30;i++)core.advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit('postupdate');}core.setWorldRunning(false);return exportWorldSave(core);};
   const x=resume(),y=resume();check(validateWorldSave(x).valid&&diffCanonicalWorldSave(x,y).matched,'real inheritance deterministically continues twelve months without duplicate titles or changed RNG');hydrateWorldSave(core,structuredClone(x));check(diffCanonicalWorldSave(x,exportWorldSave(core)).matched,'second read preserves actual inherited civilian identity and title chain');

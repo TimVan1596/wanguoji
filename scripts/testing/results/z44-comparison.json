@@ -1,0 +1,825 @@
+{
+  "baselineHead": "6050ec6a3c731762a81926366c4205abb8226e34",
+  "versions": {
+    "app": "v0.99931z44",
+    "package": "0.99.210",
+    "worldSave": 44
+  },
+  "baseline": "published z43 same eight fixed seeds; full canonical state excluding only application version and creation timestamp",
+  "worldYears": 800,
+  "seeds": [
+    "regional-1",
+    "regional-2",
+    "regional-3",
+    "regional-4",
+    "regional-5",
+    "regional-6",
+    "regional-7",
+    "regional-8"
+  ],
+  "inheritanceRules": "unchanged one sealed founder-sourced chain; oldest qualified registered direct child, one rank drop per actual succession; no representation; no armies, offices, appanages or extra recruitment weight inherited",
+  "readingChanges": [
+    "default trunk retains every true parent bridge",
+    "ordinary branches expand to original registered people",
+    "active / historical / known extinct classifications do not delete residents",
+    "personal grants, hereditary ranks, family generation and actual succession count separate",
+    "contemporaneous event boundary excludes later same-month population entries",
+    "latest faction terminal/restoration evidence selected by actual month"
+  ],
+  "newHereditaryPeriod": "NOT_RELEASED: V44 terminal chain is sealed, capped at five actions, and replayed against one founding grant. A later independent grant can renew real family prestige but cannot append an unversioned second hereditary period. No validator weakened.",
+  "schemaChange": false,
+  "totals": {
+    "families": 7,
+    "members": 26,
+    "withDescendants": 6,
+    "threeGenerationHouses": 3,
+    "successions": 4,
+    "rankDrops": 4,
+    "ended": 1,
+    "civilianInheritances": 4,
+    "renewals": 0,
+    "twoGenerationService": 1,
+    "heirCandidatePersonChecks": 7,
+    "heirRejectedPersonChecks": 1,
+    "identityRejectedOpportunities": 0,
+    "lifeTransactionFailures": 0,
+    "titleTransactionFailures": 0
+  },
+  "classificationAt100Years": {
+    "active": 6,
+    "historical": 1,
+    "extinct": 0,
+    "livingUntitledHouses": 1
+  },
+  "terminalReasons": {
+    "FORFEITED": 1
+  },
+  "allEightCanonicalStatesIdentical": true,
+  "politicalPopulationArmyAndRngParametersChanged": false,
+  "duplicateSimultaneousHolders": 0,
+  "duplicateHolderEvidence": "same full canonical title chains as z43; one holder per last SUCCEEDED act",
+  "worlds": [
+    {
+      "seed": "regional-1",
+      "years": 100,
+      "z43CanonicalSha256": "b3e4e7e20b51344552c57c647effa0e86f834fa9466419346df787ed3bbdcf81",
+      "z44CanonicalSha256": "b3e4e7e20b51344552c57c647effa0e86f834fa9466419346df787ed3bbdcf81",
+      "canonicalIdentical": true,
+      "metrics": {
+        "worldPopulation": 135,
+        "peakWorldPopulation": 153,
+        "activeStates": 6,
+        "historicalStates": 7,
+        "captures": 20,
+        "recoveries": 5,
+        "normalRoyalSuccessions": 21,
+        "worldRandomPosition": 7142,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 2,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "familyTitles": {
+        "archive": {
+          "active": 0,
+          "historical": 0,
+          "extinct": 0,
+          "livingUntitledHouses": 0,
+          "explanations": []
+        },
+        "scope": "CANONICAL_HISTORY_AND_SESSION_COUNTERS",
+        "families": 0,
+        "members": 0,
+        "generations": [
+          {
+            "generation": 2,
+            "people": 0
+          },
+          {
+            "generation": 3,
+            "people": 0
+          },
+          {
+            "generation": 4,
+            "people": 0
+          },
+          {
+            "generation": 5,
+            "people": 0
+          }
+        ],
+        "withDescendants": 0,
+        "threeGenerationHouses": 0,
+        "foundersDied": 0,
+        "founderMeritGrants": 0,
+        "successionOpportunities": 0,
+        "successions": 0,
+        "rankDrops": 0,
+        "ended": 0,
+        "terminalReasons": {},
+        "civilianInheritances": 0,
+        "renewals": 0,
+        "twoGenerationService": 0,
+        "currentlyEligibleChildren": 0,
+        "lifeTransactionFailures": 0,
+        "titleTransactionFailures": 0,
+        "heirCandidatePersonChecks": 0,
+        "heirRejectedPersonChecks": 0,
+        "identityRejectedOpportunities": 0
+      },
+      "integrity": {
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "populationUnexplained": 0
+      },
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-2",
+      "years": 100,
+      "z43CanonicalSha256": "17675278aed09b7f31384535a6a29d9d12b0806a632289af54e96af1a75d3454",
+      "z44CanonicalSha256": "17675278aed09b7f31384535a6a29d9d12b0806a632289af54e96af1a75d3454",
+      "canonicalIdentical": true,
+      "metrics": {
+        "worldPopulation": 130,
+        "peakWorldPopulation": 156,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 10,
+        "recoveries": 1,
+        "normalRoyalSuccessions": 19,
+        "worldRandomPosition": 7130,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "familyTitles": {
+        "archive": {
+          "active": 0,
+          "historical": 0,
+          "extinct": 0,
+          "livingUntitledHouses": 0,
+          "explanations": []
+        },
+        "scope": "CANONICAL_HISTORY_AND_SESSION_COUNTERS",
+        "families": 0,
+        "members": 0,
+        "generations": [
+          {
+            "generation": 2,
+            "people": 0
+          },
+          {
+            "generation": 3,
+            "people": 0
+          },
+          {
+            "generation": 4,
+            "people": 0
+          },
+          {
+            "generation": 5,
+            "people": 0
+          }
+        ],
+        "withDescendants": 0,
+        "threeGenerationHouses": 0,
+        "foundersDied": 0,
+        "founderMeritGrants": 0,
+        "successionOpportunities": 0,
+        "successions": 0,
+        "rankDrops": 0,
+        "ended": 0,
+        "terminalReasons": {},
+        "civilianInheritances": 0,
+        "renewals": 0,
+        "twoGenerationService": 0,
+        "currentlyEligibleChildren": 0,
+        "lifeTransactionFailures": 0,
+        "titleTransactionFailures": 0,
+        "heirCandidatePersonChecks": 0,
+        "heirRejectedPersonChecks": 0,
+        "identityRejectedOpportunities": 0
+      },
+      "integrity": {
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "populationUnexplained": 0
+      },
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-3",
+      "years": 100,
+      "z43CanonicalSha256": "c8ee463a0eb9243e8fb5a026b8398a50689b5226abab309505d8417a0c86a130",
+      "z44CanonicalSha256": "c8ee463a0eb9243e8fb5a026b8398a50689b5226abab309505d8417a0c86a130",
+      "canonicalIdentical": true,
+      "metrics": {
+        "worldPopulation": 136,
+        "peakWorldPopulation": 151,
+        "activeStates": 3,
+        "historicalStates": 8,
+        "captures": 29,
+        "recoveries": 2,
+        "normalRoyalSuccessions": 14,
+        "worldRandomPosition": 6820,
+        "politicalEvents": {
+          "ordinaryFoundings": 1,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "familyTitles": {
+        "archive": {
+          "active": 2,
+          "historical": 0,
+          "extinct": 0,
+          "livingUntitledHouses": 0,
+          "explanations": []
+        },
+        "scope": "CANONICAL_HISTORY_AND_SESSION_COUNTERS",
+        "families": 2,
+        "members": 12,
+        "generations": [
+          {
+            "generation": 2,
+            "people": 3
+          },
+          {
+            "generation": 3,
+            "people": 4
+          },
+          {
+            "generation": 4,
+            "people": 3
+          },
+          {
+            "generation": 5,
+            "people": 0
+          }
+        ],
+        "withDescendants": 2,
+        "threeGenerationHouses": 2,
+        "foundersDied": 2,
+        "founderMeritGrants": 4,
+        "successionOpportunities": 3,
+        "successions": 3,
+        "rankDrops": 3,
+        "ended": 0,
+        "terminalReasons": {},
+        "civilianInheritances": 3,
+        "renewals": 0,
+        "twoGenerationService": 0,
+        "currentlyEligibleChildren": 3,
+        "lifeTransactionFailures": 0,
+        "titleTransactionFailures": 0,
+        "heirCandidatePersonChecks": 5,
+        "heirRejectedPersonChecks": 1,
+        "identityRejectedOpportunities": 0
+      },
+      "integrity": {
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "populationUnexplained": 0
+      },
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-4",
+      "years": 100,
+      "z43CanonicalSha256": "8921bd6513c392bac7e425ecd6730aec6f44bf9879fdfd4568d10ff188edb9cf",
+      "z44CanonicalSha256": "8921bd6513c392bac7e425ecd6730aec6f44bf9879fdfd4568d10ff188edb9cf",
+      "canonicalIdentical": true,
+      "metrics": {
+        "worldPopulation": 117,
+        "peakWorldPopulation": 148,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 15,
+        "recoveries": 3,
+        "normalRoyalSuccessions": 21,
+        "worldRandomPosition": 7039,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "familyTitles": {
+        "archive": {
+          "active": 1,
+          "historical": 0,
+          "extinct": 0,
+          "livingUntitledHouses": 0,
+          "explanations": []
+        },
+        "scope": "CANONICAL_HISTORY_AND_SESSION_COUNTERS",
+        "families": 1,
+        "members": 1,
+        "generations": [
+          {
+            "generation": 2,
+            "people": 0
+          },
+          {
+            "generation": 3,
+            "people": 0
+          },
+          {
+            "generation": 4,
+            "people": 0
+          },
+          {
+            "generation": 5,
+            "people": 0
+          }
+        ],
+        "withDescendants": 0,
+        "threeGenerationHouses": 0,
+        "foundersDied": 0,
+        "founderMeritGrants": 2,
+        "successionOpportunities": 0,
+        "successions": 0,
+        "rankDrops": 0,
+        "ended": 0,
+        "terminalReasons": {},
+        "civilianInheritances": 0,
+        "renewals": 0,
+        "twoGenerationService": 0,
+        "currentlyEligibleChildren": 0,
+        "lifeTransactionFailures": 0,
+        "titleTransactionFailures": 0,
+        "heirCandidatePersonChecks": 0,
+        "heirRejectedPersonChecks": 0,
+        "identityRejectedOpportunities": 0
+      },
+      "integrity": {
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "populationUnexplained": 0
+      },
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-5",
+      "years": 100,
+      "z43CanonicalSha256": "8f2f1436323812fc9df809a47df786a7214fec97c6077f6b29ddffe36ed8de03",
+      "z44CanonicalSha256": "8f2f1436323812fc9df809a47df786a7214fec97c6077f6b29ddffe36ed8de03",
+      "canonicalIdentical": true,
+      "metrics": {
+        "worldPopulation": 133,
+        "peakWorldPopulation": 154,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 19,
+        "recoveries": 1,
+        "normalRoyalSuccessions": 15,
+        "worldRandomPosition": 6860,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "familyTitles": {
+        "archive": {
+          "active": 0,
+          "historical": 0,
+          "extinct": 0,
+          "livingUntitledHouses": 0,
+          "explanations": []
+        },
+        "scope": "CANONICAL_HISTORY_AND_SESSION_COUNTERS",
+        "families": 0,
+        "members": 0,
+        "generations": [
+          {
+            "generation": 2,
+            "people": 0
+          },
+          {
+            "generation": 3,
+            "people": 0
+          },
+          {
+            "generation": 4,
+            "people": 0
+          },
+          {
+            "generation": 5,
+            "people": 0
+          }
+        ],
+        "withDescendants": 0,
+        "threeGenerationHouses": 0,
+        "foundersDied": 0,
+        "founderMeritGrants": 0,
+        "successionOpportunities": 0,
+        "successions": 0,
+        "rankDrops": 0,
+        "ended": 0,
+        "terminalReasons": {},
+        "civilianInheritances": 0,
+        "renewals": 0,
+        "twoGenerationService": 0,
+        "currentlyEligibleChildren": 0,
+        "lifeTransactionFailures": 0,
+        "titleTransactionFailures": 0,
+        "heirCandidatePersonChecks": 0,
+        "heirRejectedPersonChecks": 0,
+        "identityRejectedOpportunities": 0
+      },
+      "integrity": {
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "populationUnexplained": 0
+      },
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-6",
+      "years": 100,
+      "z43CanonicalSha256": "ed7afcdf1a8005a0981bed83ce575c42385c1ff869b82585fd4d3f479725e3b4",
+      "z44CanonicalSha256": "ed7afcdf1a8005a0981bed83ce575c42385c1ff869b82585fd4d3f479725e3b4",
+      "canonicalIdentical": true,
+      "metrics": {
+        "worldPopulation": 133,
+        "peakWorldPopulation": 148,
+        "activeStates": 4,
+        "historicalStates": 7,
+        "captures": 18,
+        "recoveries": 3,
+        "normalRoyalSuccessions": 17,
+        "worldRandomPosition": 7161,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 1,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "familyTitles": {
+        "archive": {
+          "active": 1,
+          "historical": 0,
+          "extinct": 0,
+          "livingUntitledHouses": 0,
+          "explanations": []
+        },
+        "scope": "CANONICAL_HISTORY_AND_SESSION_COUNTERS",
+        "families": 1,
+        "members": 2,
+        "generations": [
+          {
+            "generation": 2,
+            "people": 1
+          },
+          {
+            "generation": 3,
+            "people": 0
+          },
+          {
+            "generation": 4,
+            "people": 0
+          },
+          {
+            "generation": 5,
+            "people": 0
+          }
+        ],
+        "withDescendants": 1,
+        "threeGenerationHouses": 0,
+        "foundersDied": 0,
+        "founderMeritGrants": 3,
+        "successionOpportunities": 0,
+        "successions": 0,
+        "rankDrops": 0,
+        "ended": 0,
+        "terminalReasons": {},
+        "civilianInheritances": 0,
+        "renewals": 0,
+        "twoGenerationService": 0,
+        "currentlyEligibleChildren": 0,
+        "lifeTransactionFailures": 0,
+        "titleTransactionFailures": 0,
+        "heirCandidatePersonChecks": 0,
+        "heirRejectedPersonChecks": 0,
+        "identityRejectedOpportunities": 0
+      },
+      "integrity": {
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "populationUnexplained": 0
+      },
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-7",
+      "years": 100,
+      "z43CanonicalSha256": "3fd54502e9db4d2243d828cb4ee5a91c666bd838f001597981ff470a66bf0a3e",
+      "z44CanonicalSha256": "3fd54502e9db4d2243d828cb4ee5a91c666bd838f001597981ff470a66bf0a3e",
+      "canonicalIdentical": true,
+      "metrics": {
+        "worldPopulation": 137,
+        "peakWorldPopulation": 155,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 34,
+        "recoveries": 6,
+        "normalRoyalSuccessions": 22,
+        "worldRandomPosition": 7428,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "familyTitles": {
+        "archive": {
+          "active": 2,
+          "historical": 0,
+          "extinct": 0,
+          "livingUntitledHouses": 0,
+          "explanations": []
+        },
+        "scope": "CANONICAL_HISTORY_AND_SESSION_COUNTERS",
+        "families": 2,
+        "members": 8,
+        "generations": [
+          {
+            "generation": 2,
+            "people": 3
+          },
+          {
+            "generation": 3,
+            "people": 3
+          },
+          {
+            "generation": 4,
+            "people": 0
+          },
+          {
+            "generation": 5,
+            "people": 0
+          }
+        ],
+        "withDescendants": 2,
+        "threeGenerationHouses": 1,
+        "foundersDied": 1,
+        "founderMeritGrants": 6,
+        "successionOpportunities": 1,
+        "successions": 1,
+        "rankDrops": 1,
+        "ended": 0,
+        "terminalReasons": {},
+        "civilianInheritances": 1,
+        "renewals": 0,
+        "twoGenerationService": 1,
+        "currentlyEligibleChildren": 3,
+        "lifeTransactionFailures": 0,
+        "titleTransactionFailures": 0,
+        "heirCandidatePersonChecks": 2,
+        "heirRejectedPersonChecks": 0,
+        "identityRejectedOpportunities": 0
+      },
+      "integrity": {
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "populationUnexplained": 0
+      },
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-8",
+      "years": 100,
+      "z43CanonicalSha256": "43970dd7deaf04ebf83c841d89d55a2a57d0e8d8c61ea24e356e04f49987d532",
+      "z44CanonicalSha256": "43970dd7deaf04ebf83c841d89d55a2a57d0e8d8c61ea24e356e04f49987d532",
+      "canonicalIdentical": true,
+      "metrics": {
+        "worldPopulation": 141,
+        "peakWorldPopulation": 154,
+        "activeStates": 7,
+        "historicalStates": 8,
+        "captures": 28,
+        "recoveries": 4,
+        "normalRoyalSuccessions": 22,
+        "worldRandomPosition": 7496,
+        "politicalEvents": {
+          "ordinaryFoundings": 1,
+          "militarySecessions": 0,
+          "depositions": 1,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "familyTitles": {
+        "archive": {
+          "active": 0,
+          "historical": 1,
+          "extinct": 0,
+          "livingUntitledHouses": 1,
+          "explanations": [
+            {
+              "eventId": "military-family-military-person-15-楚-ruler-15-succession-1",
+              "reason": "FORFEITED",
+              "text": "武修宣本人受到本朝正式谋逆重处分，相关承袭资格终止；不等于其他家族成员受罚。",
+              "children": [
+                {
+                  "memberId": "family-member-1433913281-536",
+                  "name": "武君远",
+                  "reason": "符合当时直接承袭资格"
+                }
+              ],
+              "grandchildren": 0,
+              "sourceEventIds": [
+                "military-noble-military-person-15-楚-楚-ruler-15-GONG",
+                "court-coup-楚-996-ban"
+              ]
+            }
+          ]
+        },
+        "scope": "CANONICAL_HISTORY_AND_SESSION_COUNTERS",
+        "families": 1,
+        "members": 3,
+        "generations": [
+          {
+            "generation": 2,
+            "people": 2
+          },
+          {
+            "generation": 3,
+            "people": 0
+          },
+          {
+            "generation": 4,
+            "people": 0
+          },
+          {
+            "generation": 5,
+            "people": 0
+          }
+        ],
+        "withDescendants": 1,
+        "threeGenerationHouses": 0,
+        "foundersDied": 1,
+        "founderMeritGrants": 3,
+        "successionOpportunities": 0,
+        "successions": 0,
+        "rankDrops": 0,
+        "ended": 1,
+        "terminalReasons": {
+          "FORFEITED": 1
+        },
+        "civilianInheritances": 0,
+        "renewals": 0,
+        "twoGenerationService": 0,
+        "currentlyEligibleChildren": 2,
+        "lifeTransactionFailures": 0,
+        "titleTransactionFailures": 0,
+        "heirCandidatePersonChecks": 0,
+        "heirRejectedPersonChecks": 0,
+        "identityRejectedOpportunities": 0
+      },
+      "integrity": {
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "populationUnexplained": 0
+      },
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    }
+  ],
+  "limitations": [
+    "No original Zhan family save supplied; individual reason cannot be established.",
+    "No natural NO_HEIR, RANK_EXHAUSTED or new-merit renewal in this cohort. Fixed scenes prove mechanisms, not their natural rates.",
+    "No multi-period hereditary revival or grandchild representation.",
+    "Chrome layout, visual readability and responsiveness await user inspection."
+  ],
+  "verification": {
+    "unitTests": {
+      "command": "VITEST_MAX_THREADS=2 VITEST_MIN_THREADS=1 pnpm test",
+      "files": 310,
+      "passed": 2422,
+      "originalTimeoutsAndAssertionsPreserved": true,
+      "priorFailures": "default parallel run had existing timeout and subsequent state-dependent failure; another run exceeded an existing restoration test timeout. Final bounded concurrency full run passed without changing tests or deadlines."
+    },
+    "coreReact": {
+      "checks": 593,
+      "result": "PASS",
+      "source": "military-nobility-z44-core.json",
+      "covers": [
+        "real civilian branch summary/expansion/full tree",
+        "historical house rediscovery and original no-heir explanation",
+        "identity and parent link preservation",
+        "same-month death and inheritance",
+        "strict save forging rejected",
+        "death/history/family state write failures roll back all canonical state",
+        "save/read/deterministic twelve months/read"
+      ]
+    },
+    "builds": {
+      "web": "PASS",
+      "desktop": "PENDING",
+      "debug": "PENDING"
+    },
+    "strictWorlds": 8,
+    "deterministicTwelveMonthContinuations": 8,
+    "secondReads": 8,
+    "visualGate": "WAITING_FOR_USER_CHROME"
+  }
+}
