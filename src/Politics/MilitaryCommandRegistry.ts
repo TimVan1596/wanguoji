@@ -1,3 +1,4 @@
+import {insurgentLeaderIdentity,type InsurgentDuty} from './InsurgentCommand';
 import {createFamilyNobleContext,planFamilyNobleTransition,familyNobleText,familyResidenceAt,eligibleFamilyNobleHeirs} from './FamilyNobleSuccession';
 import {emptyFamilyRecruitmentDiagnostics,familyRecruitmentExposure} from './FamilyRecruitmentDiagnostics';
 import {familyFounderSource,makeMilitaryFamily,familyAppointmentWeight,type MilitaryFamily} from './MilitaryFamily';
@@ -54,6 +55,7 @@ export interface RoyalMilitaryLink {
 }
 export interface RoyalMilitaryCandidate { rulerId: string; factionId: string }
 export interface RoyalMilitaryService {
+  currentRuler?:(factionId:string)=>Ruler|undefined;
   calibration?:()=>import('./PoliticalCalibration').PoliticalCalibration;
   transaction?:<T>(team:Team,work:()=>T)=>T;
   nobleEpoch?(factionId:string,month:number):string|undefined;
@@ -84,6 +86,7 @@ export interface MilitaryPerson {
 }
 
 export interface MilitaryFormation {
+  leaderDuty?:InsurgentDuty;
   commandId: string;
   factionId: string;
   commanderPersonId: string;
@@ -97,6 +100,7 @@ export interface MilitaryFormation {
 }
 
 export interface MilitaryCommandState {
+  leaderCommands?:MilitaryFormation[];
   families?: MilitaryFamily[];
   people: MilitaryPerson[];
   formations: MilitaryFormation[];
@@ -170,7 +174,8 @@ export class MilitaryCommandRegistryStore {
 
   exportState(): MilitaryCommandState {
     return { ...(this.families.length?{families:structuredClone(this.families)}:{}), people: [...this.people.values()].map(person => structuredClone(person)),
-      formations: [...this.formations.values()].map(formation => structuredClone(formation)),
+      formations: [...this.formations.values()].filter(f=>!f.leaderDuty).map(formation => structuredClone(formation)),
+      leaderCommands:[...this.formations.values()].filter(f=>f.leaderDuty).map(f=>structuredClone(f)),
       personSequence: this.personSequence, commandSequence: this.commandSequence, lastEvaluationMonth: this.lastEvaluationMonth };
   }
 
@@ -178,7 +183,7 @@ export class MilitaryCommandRegistryStore {
     this.familyRecruitment=emptyFamilyRecruitmentDiagnostics();
     this.families=structuredClone(state.families??[]);this.familyByResident=undefined;
     this.people = new Map(state.people.map(person => [person.personId, structuredClone(person)]));
-    this.formations = new Map(state.formations.map(formation => [formation.commandId, structuredClone(formation)]));
+    this.formations = new Map([...state.formations,...(state.leaderCommands??[])].map(formation => [formation.commandId, structuredClone(formation)]));
     this.personSequence = state.personSequence; this.commandSequence = state.commandSequence;
     this.lastEvaluationMonth = state.lastEvaluationMonth;
     this.lastArrivalTargetByCommand.clear();
@@ -190,7 +195,7 @@ export class MilitaryCommandRegistryStore {
   snapshotTransaction(){return {people:new Map(this.people),formations:new Map(this.formations),state:this.exportState(),familyRecruitment:structuredClone(this.familyRecruitment),diagnostics:{...this.diagnostics},arrivals:new Map(this.lastArrivalTargetByCommand),ranges:new Map(this.longRangeOrderSamples)};}
   rollbackTransaction(snapshot:ReturnType<MilitaryCommandRegistryStore["snapshotTransaction"]>,inPlace=false){
     this.familyByResident=undefined;
-    if(inPlace){this.families=structuredClone(snapshot.state.families??[]);this.people=new Map(snapshot.state.people.map(data=>{const p=snapshot.people.get(data.personId)!;for(const k of Object.keys(p))delete (p as any)[k];Object.assign(p,structuredClone(data));return [p.personId,p];}));this.formations=new Map(snapshot.state.formations.map(data=>{const f=snapshot.formations.get(data.commandId)!;for(const k of Object.keys(f))delete (f as any)[k];Object.assign(f,structuredClone(data));return [f.commandId,f];}));this.personSequence=snapshot.state.personSequence;this.commandSequence=snapshot.state.commandSequence;this.lastEvaluationMonth=snapshot.state.lastEvaluationMonth;}
+    if(inPlace){this.families=structuredClone(snapshot.state.families??[]);this.people=new Map(snapshot.state.people.map(data=>{const p=snapshot.people.get(data.personId)!;for(const k of Object.keys(p))delete (p as any)[k];Object.assign(p,structuredClone(data));return [p.personId,p];}));this.formations=new Map([...snapshot.state.formations,...(snapshot.state.leaderCommands??[])].map(data=>{const f=snapshot.formations.get(data.commandId)!;for(const k of Object.keys(f))delete (f as any)[k];Object.assign(f,structuredClone(data));return [f.commandId,f];}));this.personSequence=snapshot.state.personSequence;this.commandSequence=snapshot.state.commandSequence;this.lastEvaluationMonth=snapshot.state.lastEvaluationMonth;}
     else this.importState(snapshot.state);this.familyRecruitment=structuredClone(snapshot.familyRecruitment);this.diagnostics=snapshot.diagnostics;this.lastArrivalTargetByCommand=snapshot.arrivals;this.longRangeOrderSamples=snapshot.ranges;}
   mirrorPoliticalDeath(personId:string,rulerId:string,month:number,cause:string){
     const p=this.people.get(personId);if(!p||(p.politicalRulerId!==rulerId&&p.royalIdentity?.rulerId!==rulerId)||p.status==="DEAD")return;
@@ -282,6 +287,7 @@ export class MilitaryCommandRegistryStore {
       this.advanceLifecycles(worldMonth, teams);
     }
     this.reconcile(worldMonth, teams);
+    this.updateInsurgentCommands(worldMonth,teams);
     this.refreshOrders(worldMonth, teams, cities);
     this.observeLongRangeOrders(worldMonth, teams, cities);
     if (!annual) return;
@@ -618,6 +624,7 @@ export class MilitaryCommandRegistryStore {
     for (const formation of this.formations.values()) {
       if (formation.status !== "ACTIVE") continue;
       const team = teamById.get(formation.factionId);
+      if(formation.leaderDuty){const u=team&&this.commanderUser(formation,team);if(!u)this.endInsurgentCommand(formation,worldMonth,'AUTHORITY_ENDED');else{formation.memberUnitIds=formation.memberUnitIds.filter(id=>[...team!.users].some(m=>m.player.logicalUnitId===id&&!m.isDestroyed&&m.player.active));if(formation.memberUnitIds.length<2)this.endInsurgentCommand(formation,worldMonth,'NO_FOLLOWERS');else if(worldMonth>=deriveMilitaryLifeSchedule({personId:formation.commanderPersonId,bornMonth:formation.leaderDuty.bornMonth}).retirementMonth)this.endInsurgentCommand(formation,worldMonth,'AGE_RETIREMENT');}continue;}
       const person = this.people.get(formation.commanderPersonId);
       const commander = team && person ? [...team.users].find(user => user.id === person.sourceUserId && user.bornMonth === person.bornMonth && user.name === person.name && !user.isDestroyed && user.militaryPersonId === person.personId && user.role === "NORMAL" && !user.rulerId && !user.player.rulerId) : undefined;
       if (!team || team.status !== "ACTIVE" || !commander || !commander.player.logicalUnitId || person?.status !== "ACTIVE") {
@@ -629,12 +636,13 @@ export class MilitaryCommandRegistryStore {
         return Boolean(user && user.player.active);
       });
       if (!formation.memberUnitIds.includes(commander.player.logicalUnitId)) formation.memberUnitIds.unshift(commander.player.logicalUnitId);
-      if (formation.memberUnitIds.length < 1) this.endFormation(formation, worldMonth, "DISMISSED");
+      if(formation.leaderDuty&&formation.memberUnitIds.length<2)this.endInsurgentCommand(formation,worldMonth,'NO_FOLLOWERS');else if (formation.memberUnitIds.length < 1) this.endFormation(formation, worldMonth, "DISMISSED");
     }
   }
 
   private endFormation(formation: MilitaryFormation, worldMonth: number, reason: MilitaryAppointment["endReason"], courtCoupEventId?:string) {
     if (formation.status !== "ACTIVE") return;
+    if(formation.leaderDuty){this.endInsurgentCommand(formation,worldMonth,reason==='DEATH'?'BODY_REMOVED':reason==='TRANSFERRED'?'TRANSFERRED':'AUTHORITY_ENDED');return;}
     this.diagnostics.releasedFormations++;
     if (reason === "AGE_RETIREMENT") this.diagnostics.ageRetirements++;
     formation.status = "DISBANDED"; delete formation.retreatUntilMonth; formation.targetCityId = undefined; formation.orderStartMonth = undefined;
@@ -689,7 +697,7 @@ export class MilitaryCommandRegistryStore {
         formation.orderStartMonth = worldMonth;
         this.diagnostics.orders++;
         this.eventWriter?.({ id: `military-order-${formation.commandId}-${worldMonth}-${next.id}`, year: worldMonth, monthIndex: worldMonth,
-          type: "military-order-issued", category: "war", title: "军事编组确定目标", importance: "normal",
+          type: formation.leaderDuty?"leader-command-order":"military-order-issued", category: "war", title: "军事编组确定目标", importance: "normal",
           factionIds: [formation.factionId, next.ownerFactionId], actorFactionId: formation.factionId, targetFactionId: next.ownerFactionId,
           cityId: next.id, cityName: next.name, metadata: { commandId: formation.commandId, personId: formation.commanderPersonId, personalName: person?.personalName,
             meritInfluenced: next !== nearest ? 1 : 0, nearestCityId: nearest?.id, nearestDistance: center && nearest ? distance(nearest) : undefined,
@@ -778,6 +786,45 @@ export class MilitaryCommandRegistryStore {
     }
   }
 
+
+  commanderUser(f:MilitaryFormation,team:Team){
+    if(!f.leaderDuty){const p=this.people.get(f.commanderPersonId),u=p&&team.getUserById(p.sourceUserId);return p?.status==='ACTIVE'&&u?.matchesMilitaryLife(p)?u:undefined;}
+    const d=f.leaderDuty,r=this.royalService?.currentRuler?.(team.name),u=team.getUserById(d.sourceUserId),i=insurgentLeaderIdentity(r);
+    return f.status==='ACTIVE'&&team.status==='ACTIVE'&&i?.personId===d.personId&&r?.id===d.rulerId&&r.status==='ruling'&&r.deathMonth===undefined&&r.endYear===undefined&&u&&!u.isDestroyed&&u.role==='RULER'&&u.rulerId===r.id&&u.historicalPersonId===d.personId&&u.bornMonth===d.bornMonth&&u.player.active&&u.player.rulerId===r.id&&f.memberUnitIds.includes(u.player.logicalUnitId??'')?u:undefined;
+  }
+  private endInsurgentCommand(f:MilitaryFormation,month:number,reason:NonNullable<InsurgentDuty['endReason']>){
+    if(f.status!=='ACTIVE'||!f.leaderDuty)return;
+    const before=this.snapshotTransaction(),history=WorldHistory.snapshotPoliticalTransaction(),scope=beginPoliticalMutation();
+    try{
+    f.status='DISBANDED';delete f.targetCityId;delete f.orderStartMonth;delete f.retreatUntilMonth;f.leaderDuty.endMonth=month;f.leaderDuty.endReason=reason;
+    if(this.eventWriter?.({id:`leader-command-ended-${f.commandId}`,year:month,type:'leader-command-ended',category:'politics',importance:'normal',actorFactionId:f.factionId,factionIds:[f.factionId],title:'义军统帅结束直接指挥职责。',metadata:{commandId:f.commandId,rulerId:f.leaderDuty.rulerId,personId:f.commanderPersonId,reason}})!==`leader-command-ended-${f.commandId}`)throw Error('Leader command end not recorded');
+      scope.commit();
+    }catch(error){scope.cancel();this.rollbackTransaction(before,true);const restoring=beginPoliticalMutation();WorldHistory.rollbackPoliticalTransaction(history);restoring.finishRollback();throw error;}
+  }
+  commitInsurgentCommand(f:MilitaryFormation){if(!f.leaderDuty||this.formations.has(f.commandId))throw Error('Invalid leader command commit');this.formations.set(f.commandId,f);}
+  endInsurgentLeader(rulerId:string,month:number){for(const f of this.formations.values())if(f.leaderDuty?.rulerId===rulerId&&f.status==='ACTIVE')this.endInsurgentCommand(f,month,'AUTHORITY_ENDED');}
+  private updateInsurgentCommands(month:number,teams:Team[]){
+    if(!this.eventWriter)return;
+    for(const team of teams){
+      const r=this.royalService?.currentRuler?.(team.name),i=insurgentLeaderIdentity(r);
+      if(!r||!i||team.status!=='ACTIVE'||team.identityStage==='STATE'||r.status!=='ruling'||r.deathMonth!==undefined||r.endYear!==undefined||month-i.bornMonth<MIN_COMMANDER_AGE_MONTHS||month>=deriveMilitaryLifeSchedule({personId:i.personId,bornMonth:i.bornMonth}).retirementMonth||this.getFormations().some(f=>f.leaderDuty?.rulerId===r.id))continue;
+      const u=team.getUserById(i.sourceUserId),origin=r.residentIdentity!;
+      if(!u||u.role!=='RULER'||u.rulerId!==r.id||u.historicalPersonId!==i.personId||u.isDestroyed||u.bornMonth!==i.bornMonth||!u.player.active||!u.player.logicalUnitId||this.isUnitAssigned(u.player.logicalUnitId))continue;
+      const existing=this.getFormations().filter(f=>f.status==='ACTIVE'&&f.factionId===team.name);if(existing.length>=MAX_FORMATIONS_PER_FACTION)continue;
+      const founding=this.eventReader(team.name).find(e=>['rebel-faction-founded','frontier-faction-founded','empire-split'].includes(e.type)&&e.actorFactionId===team.name&&(e.metadata?.foundingRulerId===r.id||e.metadata?.residentPersonId===i.personId));if(!founding)continue;
+      const originMembers=origin.military?.participants.filter(p=>origin.military!.originalMemberUnitIds.includes(p.unitId)).map(p=>p.userId),capacity=origin.military?MILITARY_FORMATION_CAPACITY[origin.military.office as keyof typeof MILITARY_FORMATION_CAPACITY]:2;
+      if(!capacity||capacity<2)continue;
+      const followers=[...team.users].filter(p=>p!==u&&p.bornMonth<=month-MIN_COMMANDER_AGE_MONTHS&&p.role==='NORMAL'&&!p.rulerId&&!p.militaryPersonId&&!p.historicalPersonId&&!p.isDestroyed&&p.player.active&&p.player.logicalUnitId&&!this.isUnitAssigned(p.player.logicalUnitId)&&(!originMembers||originMembers.includes(p.id))&&Math.hypot(p.player.x-u.player.x,p.player.y-u.player.y)<=8*32).sort((a,b)=>a.id-b.id).slice(0,capacity-1);
+      if(!followers.length)continue;
+      try{this.familyTransaction(team,()=>{
+        const commandId=`military-command-${this.commandSequence++}`,members=[u,...followers],d:InsurgentDuty={...i,rulerId:r.id,foundingEventId:founding.id,sourceFactionId:origin.sourceFactionId,...(origin.military?{sourceCommandId:origin.military.commandId}:{}),capacity,initialMembers:members.map(m=>({unitId:m.player.logicalUnitId!,userId:m.id,bornMonth:m.bornMonth}))};
+        const f:MilitaryFormation={commandId,factionId:team.name,commanderPersonId:i.personId,createdMonth:month,memberUnitIds:members.map(m=>m.player.logicalUnitId!),status:'ACTIVE',captures:[],leaderDuty:d};
+        if(this.eventWriter?.({id:`leader-command-${commandId}`,year:month,type:'leader-command-started',category:'politics',importance:'normal',actorFactionId:team.name,factionIds:[team.name],rulerId:r.id,title:`${r.houseName.replace(/氏$/,'')}${r.givenName}亲领义军旧众。`,metadata:{commandId,personId:i.personId,leaderName:`${r.houseName.replace(/氏$/,'')}${r.givenName}`,duty:JSON.stringify(d),foundingEventId:founding.id}})!==`leader-command-${commandId}`)throw Error('Leader command start not recorded');
+        this.commitInsurgentCommand(f);
+      });}catch(error){console.warn('[InsurgentCommand] start rolled back',error);}
+    }
+  }
+
   getCommandForUnit(unitId: string) { return [...this.formations.values()].find(f => f.status === "ACTIVE" && f.memberUnitIds.includes(unitId)); }
   getPerson(personId: string) { return this.people.get(personId); }
 
@@ -802,10 +849,11 @@ export class MilitaryCommandRegistryStore {
     const unitId = user.player.logicalUnitId;
     if (unitId) for (const formation of this.formations.values()) {
       if (formation.status !== "ACTIVE" || !formation.memberUnitIds.includes(unitId)) continue;
-      if (person && formation.commanderPersonId === person.personId) this.endFormation(formation, worldMonth, "TRANSFERRED");
+      if(formation.leaderDuty?.sourceUserId===user.id)this.endInsurgentCommand(formation,worldMonth,'TRANSFERRED');
+      else if (person && formation.commanderPersonId === person.personId) this.endFormation(formation, worldMonth, "TRANSFERRED");
       else {
         formation.memberUnitIds = formation.memberUnitIds.filter(id => id !== unitId);
-        if (formation.memberUnitIds.length < 1) this.endFormation(formation, worldMonth, "DISMISSED");
+        if(formation.leaderDuty&&formation.memberUnitIds.length<2)this.endInsurgentCommand(formation,worldMonth,'NO_FOLLOWERS');else if (formation.memberUnitIds.length < 1) this.endFormation(formation, worldMonth, "DISMISSED");
       }
     }
     if (person && person.status !== "DEAD") person.factionId = nextFactionId;
@@ -820,10 +868,11 @@ export class MilitaryCommandRegistryStore {
     const death = cause === "SIEGE_LOSS" || cause === "BATTLE_DEATH" || cause === "NATURAL_DEATH";
     const unitId = user.player.logicalUnitId;
     if (unitId) for (const formation of this.formations.values()) if (formation.status === "ACTIVE" && formation.memberUnitIds.includes(unitId)) {
-      if (person && formation.commanderPersonId === person.personId) this.endFormation(formation, worldMonth, death ? "DEATH" : "DISMISSED");
+      if(formation.leaderDuty?.sourceUserId===user.id)this.endInsurgentCommand(formation,worldMonth,'BODY_REMOVED');
+      else if (person && formation.commanderPersonId === person.personId) this.endFormation(formation, worldMonth, death ? "DEATH" : "DISMISSED");
       else {
         formation.memberUnitIds = formation.memberUnitIds.filter(id => id !== unitId);
-        if (formation.memberUnitIds.length < 1) this.endFormation(formation, worldMonth, "DISMISSED");
+        if(formation.leaderDuty&&formation.memberUnitIds.length<2)this.endInsurgentCommand(formation,worldMonth,'NO_FOLLOWERS');else if (formation.memberUnitIds.length < 1) this.endFormation(formation, worldMonth, "DISMISSED");
       }
     }
     if(relative&&death&&!user.militaryPersonId){
@@ -841,9 +890,11 @@ export class MilitaryCommandRegistryStore {
     } else if (person.status === "ACTIVE") person.status = "RETIRED";
   }
 
+  getInsurgentCaptureIdentity(commandId:string|undefined,personId:string|undefined,factionId:string,month:number){const f=commandId&&this.formations.get(commandId);return f&&f.leaderDuty&&f.status==='ACTIVE'&&f.factionId===factionId&&f.commanderPersonId===personId&&f.createdMonth<=month?{name:this.eventReader(factionId).find(e=>e.id===`leader-command-${f.commandId}`)?.metadata?.leaderName as string|undefined,rulerId:f.leaderDuty.rulerId}:undefined;}
   getCaptureIdentity(commandId: string | undefined, personId: string | undefined, factionId: string, worldMonth: number) {
     const formation = commandId ? this.formations.get(commandId) : undefined;
     const person = personId ? this.people.get(personId) : undefined;
+    if(formation?.leaderDuty)return undefined;
     return formation?.status === "ACTIVE" && person?.status === "ACTIVE" && formation.commanderPersonId === person.personId &&
       formation.factionId === factionId && person.factionId === factionId && person.deathMonth === undefined &&
       person.appointments.some(a => a.commandId === commandId && a.factionId === factionId && a.startMonth <= worldMonth && a.endMonth === undefined)
@@ -866,6 +917,7 @@ export class MilitaryCommandRegistryStore {
     if (!commandId) return;
     const formation = this.formations.get(commandId);
     const person = formation ? this.people.get(formation.commanderPersonId) : undefined;
+    if(formation?.leaderDuty){if(formation.status==='ACTIVE'&&!formation.captures.some(c=>c.eventId===eventId)){formation.captures.push({eventId,cityId,month:worldMonth});this.diagnostics.captures++;}return;}
     if (!formation || formation.status !== "ACTIVE" || !person || person.status !== "ACTIVE" || (person.deathMonth !== undefined && worldMonth > person.deathMonth) || person.capturedEventIds.includes(eventId)) return;
     formation.captures.push({ eventId, cityId, month: worldMonth });
     person.capturedEventIds.push(eventId); this.diagnostics.captures++;

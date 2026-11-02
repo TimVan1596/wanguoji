@@ -23,14 +23,11 @@ export function checkFamilyNobleCore(core:any,factionId:string,childId:number,ch
   {const before=exportWorldSave(core),f=family(),member=f.members.find(m=>m.sourceUserId===childId)!,host=document.createElement('div'),root=createRoot(host);document.body.append(host);
    try{flushSync(()=>root.render(React.createElement(Provider,{store,children:React.createElement(MilitaryFamilyBrowser,{families:[f],worldMonth:240,onClose:()=>{}})})));
     const dialog=document.querySelector('[role="dialog"]')!,open=Array.from(dialog.querySelectorAll('button')).find(b=>b.textContent?.includes('始祖'))!;flushSync(()=>open.click());
-    check(!dialog.querySelector(`[data-family-member="${member.memberId}"]`)&&dialog.querySelector('[data-family-summary]'),'actual ordinary descendant is summarized by default without deleting the real family member');
-    const expand=Array.from(dialog.querySelectorAll('button')).find(b=>b.textContent==='展开普通旁支')!;flushSync(()=>expand.click());
-    check(dialog.querySelector(`[data-family-parent="${member.parentMemberId}"][data-family-child="${member.memberId}"]`)&&dialog.querySelector(`[data-family-member="${member.memberId}"]`)?.textContent?.includes(member.name),'expanding actual ordinary branch restores the original person and exact parent link');
-    const compact=Array.from(dialog.querySelectorAll('button')).find(b=>b.textContent==='收起普通旁支')!;flushSync(()=>compact.click());
-    check(!dialog.querySelector(`[data-family-member="${member.memberId}"]`),'ordinary branch can be compacted again independently of actual world records');
+    check(!dialog.querySelector(`[data-family-member="${member.memberId}"]`)&&!dialog.querySelector('[data-family-summary]'),'ordinary descendant is omitted from main view without a summary placeholder or population deletion');
+    check(!Array.from(dialog.querySelectorAll('button')).some(b=>b.textContent==='展开普通旁支'),'main family view has no ordinary-branch expansion button');
     const complete=Array.from(dialog.querySelectorAll('button')).find(b=>b.textContent==='完整族谱')!;flushSync(()=>complete.click());
     check(dialog.querySelector(`[data-family-member="${member.memberId}"]`)&&!dialog.querySelector(`[data-family-member="${member.memberId}"]`)?.textContent?.includes('无承袭爵位'),'complete genealogy shows the real civilian without repeated negative title labels');
-    check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,'trunk summaries, ordinary-branch expansion and complete genealogy leave canonical population, titles and RNG identical');
+    check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,'omitting ordinary branches and opening full genealogy leave canonical population, titles, parent IDs and RNG identical');
    }finally{flushSync(()=>root.unmount());host.remove();}
   }
   const father=Military.getPerson(family().founderPersonId)!,resident=[...team().users].find((u:any)=>u.id===father.sourceUserId) as any;

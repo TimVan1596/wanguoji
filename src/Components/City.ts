@@ -288,6 +288,7 @@ export default class City {
   }
 
   capture(newOwner: Team, year: number, rulerId?: string, commandId?: string, commanderPersonId?: string) {
+    const duty=commandId&&MilitaryCommandRegistry.getFormation(commandId);if(!rulerId&&duty&&duty.leaderDuty&&duty.status==='ACTIVE'&&duty.factionId===newOwner.name&&duty.commanderPersonId===commanderPersonId)rulerId=duty.leaderDuty.rulerId;
     const oldOwner = this.ownerTeam;
     if (!oldOwner || oldOwner === newOwner || newOwner.status==="EXTINCT") {
       return;
@@ -821,7 +822,7 @@ export default class City {
       if(reason==="REPULSED"&&this.ownerFactionId===b.defenderId&&this.ownerTeam){
         const defenders=siegeParticipants(this,this.ownerTeam,Game.Core,Game.BlockSize,false);
         const ids=new Set(defenders.map(u=>u.player.logicalUnitId));
-        const f=MilitaryCommandRegistry.getFormations().filter(f=>f.status==="ACTIVE"&&f.factionId===b.defenderId).sort((a,b)=>a.commandId.localeCompare(b.commandId)).find(f=>{const p=MilitaryCommandRegistry.getPerson(f.commanderPersonId),u=p&&this.ownerTeam?.getUserById(p.sourceUserId);return p?.status==="ACTIVE"&&u?.matchesMilitaryLife(p)&&ids.has(u.player.logicalUnitId);});
+        const f=MilitaryCommandRegistry.getFormations().filter(f=>f.status==="ACTIVE"&&f.factionId===b.defenderId).sort((a,b)=>a.commandId.localeCompare(b.commandId)).find(f=>{const u=this.ownerTeam&&MilitaryCommandRegistry.commanderUser(f,this.ownerTeam);return u&&ids.has(u.player.logicalUnitId!);});
         if(defenders.length)this.battleEvent("siege-defended",b,month,reason,f?{commandId:f.commandId,personId:f.commanderPersonId}:undefined);
       }
     }
@@ -838,7 +839,7 @@ export default class City {
     if(!main||!owner)return;
     const defenders=siegeParticipants(this,owner,core,Game.BlockSize,false),unitIds=new Set(main.units.map(u=>u.player.logicalUnitId!));
     const commands=MilitaryCommandRegistry.getFormations().filter(f=>f.status==="ACTIVE"&&f.factionId===main.team.name&&f.targetCityId===this.id&&f.memberUnitIds.some(id=>unitIds.has(id)))
-      .filter(f=>{const p=MilitaryCommandRegistry.getPerson(f.commanderPersonId),u=p&&main.team.getUserById(p.sourceUserId);return p?.status==="ACTIVE"&&u?.matchesMilitaryLife(p)&&unitIds.has(u.player.logicalUnitId!);})
+      .filter(f=>{const u=MilitaryCommandRegistry.commanderUser(f,main.team);return u&&unitIds.has(u.player.logicalUnitId!);})
       .sort((a,b)=>b.memberUnitIds.filter(id=>unitIds.has(id)).length-a.memberUnitIds.filter(id=>unitIds.has(id)).length||a.commandId.localeCompare(b.commandId));
     const command=commands[0];
     if(this.siegeBattle?.commandId&&this.siegeBattle.commandId!==command?.commandId){this.endBattle(year,"COMMAND_ENDED");return;}

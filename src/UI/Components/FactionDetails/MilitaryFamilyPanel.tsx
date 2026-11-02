@@ -1,14 +1,15 @@
 import FamilyNoblePanel,{familyMemberNobleLabel,familyRoyalMember} from './FamilyNoblePanel';
 import Game from '../../../Game/Game';
 import {useState} from 'react';
-import {Typography} from '@mui/material';
+import {Button,Typography} from '@mui/material';
 import Military from '../../../Politics/MilitaryCommandRegistry';
-import {familyStatus} from '../../../Politics/MilitaryFamily';
+import {familyArchive} from './FamilyArchiveSource';
+import MilitaryFamilyBrowser from './MilitaryFamilyBrowser';
 import {formatWorldDate} from '../../../Simulation/WorldTime';
 import {usePersonArchiveNavigation} from './PersonArchiveNavigation';
 import HistoricalEventArchive from './HistoricalEventArchive';
 export default function MilitaryFamilyPanel({personId}:{personId:string}){
- const [open,setOpen]=useState(false);
+ const [open,setOpen]=useState(false),[browserOpen,setBrowserOpen]=useState(false);
  const nav=usePersonArchiveNavigation(),family=Military.getFamilies().find(f=>f.members.some(m=>m.militaryPersonId===personId));
  if(!family)return null;
  const people=Military.getPeople(),month=Game.Core?.simulator?.year??0;
@@ -28,7 +29,8 @@ export default function MilitaryFamilyPanel({personId}:{personId:string}){
   const p=people.find(p=>p.personId===m.militaryPersonId),parent=family.members.find(p=>p.memberId===m.parentMemberId),royal=familyRoyalMember(m,month);
   return <Typography key={m.memberId} fontSize='.8rem'>{m.generation===0?'始祖':`第${m.generation+1}代`}：{royal?<button type="button" onClick={()=>nav.open({kind:'RULER',factionId:royal.factionId,id:royal.ruler.id})}>{m.name}</button>:p?<button type="button" onClick={()=>nav.open({kind:'MILITARY',factionId:p.appointments.at(-1)?.factionId??family.factionId,id:p.personId})}>{m.name}</button>:m.name}{parent?`，${parent.name}之子`:''} · 生于{formatWorldDate(m.bornMonth)} · {m.deathMonth!==undefined?`卒于${formatWorldDate(m.deathMonth)}`:m.exitMonth!==undefined?'生死未载':'在世'} · {royal?'已转入真实王室档案':p?(p.status==='ACTIVE'?'现役军政人物':'曾任军职'):'普通居民，尚无正式从军记录'} · {familyMemberNobleLabel(family,m,month)??'无承袭爵位'}</Typography>;
  };
- return <details open={open} data-military-family={family.familyId} onToggle={e=>setOpen(e.currentTarget.open)}><summary>家族与后代 · {family.surname}氏 · {familyStatus(family,people)}</summary>{open&&<><FamilyNoblePanel family={family} month={month}/>{family.members.slice(0,5).map(render)}{family.members.length>5&&<HistoricalEventArchive title="其他家族成员" totalCount={family.members.length-5} entries={()=>family.members.slice(5).map(m=>({id:m.memberId,content:render(m)}))}/>}
+ const archive=familyArchive(family,month);
+ return <><details open={open} data-military-family={family.familyId} onToggle={e=>setOpen(e.currentTarget.open)}><summary>家族与后代 · {family.surname}氏 · {archive.classification==='ACTIVE'?'当前活跃':archive.classification==='EXTINCT'?'全部成员已故':archive.living?'历史故家 · 仍有在世后代':'历史故家 · 生死未载'}</summary>{open&&<><Button size="small" onClick={()=>setBrowserOpen(true)}>查看{family.surname}氏总谱</Button><FamilyNoblePanel family={family} month={month}/>{family.members.slice(0,5).map(render)}{family.members.length>5&&<HistoricalEventArchive title="其他家族成员" totalCount={family.members.length-5} entries={()=>family.members.slice(5).map(m=>({id:m.memberId,content:render(m)}))}/>}
  <HistoricalEventArchive title="家族沿革" totalCount={timelineCount} entries={timeline}/>
- <details><summary>家族来源</summary><Typography fontSize='.74rem'>立家于{formatWorldDate(family.foundedMonth)}；功劳来源 {family.sourceEventId}。亲缘登记于居民入籍时，不是当月出生。荫补仅限合法初任候选，按本世界保存的政策给予有限相对权重，不授军队或爵位。</Typography></details></>}</details>;
+ <details><summary>家族来源</summary><Typography fontSize='.74rem'>立家于{formatWorldDate(family.foundedMonth)}；功劳来源 {family.sourceEventId}。亲缘登记于居民入籍时，不是当月出生。荫补仅限合法初任候选，按本世界保存的政策给予有限相对权重，不授军队或爵位。</Typography></details></>}</details>{browserOpen&&<MilitaryFamilyBrowser families={[family]} worldMonth={month} initialFamilyId={family.familyId} initialMemberId={family.members.find(m=>m.militaryPersonId===personId)?.memberId} onClose={()=>setBrowserOpen(false)}/>}</>;
 }

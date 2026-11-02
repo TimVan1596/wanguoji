@@ -1,3 +1,4 @@
+import InsurgentCommandPanel from './InsurgentCommandPanel';
 import MilitaryFamilyPanel from './MilitaryFamilyPanel';
 import HistoricalEventArchive from './HistoricalEventArchive';
 import {formatChronicleDate} from '../../../History/ChronicleReading';
@@ -24,6 +25,7 @@ export function RulerServicePanel({ruler,factionId,month,reading}:{ruler:Ruler;f
  const earlier=reading?reading.earlier:preAccessionMilitary(ruler,people,Military.getFormations(),events,{factions:new Map((Game.Core?.teams??[]).map(t=>[t.name,t]))});
  const rows=reading?reading.rows:personServiceLinks(factionId,[ruler],people,Military.getFormations(),events,month);
  return <>
+  <InsurgentCommandPanel factionId={factionId} rulerId={ruler.id} month={month}/>
   {earlier&&<ChronicleSection title="早年与登位前经历">
    {earlier.representative.map(e=><Typography key={e.eventId} fontSize="0.82rem">{formatChronicleDate(e.worldMonth)}，{e.text}</Typography>)}
    <button type="button" style={style} onClick={()=>nav.open({kind:"MILITARY",factionId:ruler.militaryUsurperIdentity?.factionId??ruler.residentIdentity?.sourceFactionId??earlier.person.royalIdentity!.factionId,id:earlier.person.personId})}>查看登位前完整军旅档案</button>
@@ -38,7 +40,7 @@ export function MilitaryServicePanel({personId,month}:{personId:string;month:num
  const rows=Dynasty.getAll().filter(d=>person.appointments.some(a=>a.factionId===d.factionId)).flatMap(d=>personServiceLinks(d.factionId,d.rulers,[person],Military.getFormations(),History.getEvents(),month));
  const command=Military.getFormations().find(f=>f.status==="ACTIVE"&&f.commanderPersonId===personId),target=command?.targetCityId&&Game.Core?.allCities.find(c=>c.id===command.targetCityId);
  const politicalLife=militaryPoliticalLife(person,Dynasty.getAll(),History.getEvents(),new Map((Game.Core?.teams??[]).map(t=>[t.name,t])),month);
- return <><MilitaryFamilyPanel personId={personId}/><MilitaryRoyalOrigin personId={personId} month={month}/>{command&&<Typography fontSize=".8rem">当前行动：{(command.retreatUntilMonth??-1)>month?`撤围回防，休整至${formatWorldDate(command.retreatUntilMonth!)}`:target?`${target.siegeBattle?.attackerId===command.factionId?"实际围攻":"向目标行军"}：${target.name}`:"暂无进军目标"}</Typography>}{politicalLife&&<ChronicleSection title="政治生涯转折"><Typography fontSize=".8rem">{formatWorldDate(politicalLife.entry.worldMonth)} · {politicalLife.entry.text}</Typography><button type="button" style={style} onClick={()=>nav.open({kind:"RULER",factionId:politicalLife.factionId,id:politicalLife.rulerId})}>查看对应王室本纪</button></ChronicleSection>}{rows.length>0?<ChronicleSection title="历任所事君主">
+ return <>{politicalLife?.foundingEventId&&<Typography fontSize=".8rem">叛离旧主 · 原军职已终止</Typography>}<MilitaryFamilyPanel personId={personId}/><MilitaryRoyalOrigin personId={personId} month={month}/>{command&&<Typography fontSize=".8rem">当前行动：{(command.retreatUntilMonth??-1)>month?`撤围回防，休整至${formatWorldDate(command.retreatUntilMonth!)}`:target?`${target.siegeBattle?.attackerId===command.factionId?"实际围攻":"向目标行军"}：${target.name}`:"暂无进军目标"}</Typography>}{politicalLife&&<ChronicleSection title="政治生涯转折"><Typography fontSize=".8rem">{formatWorldDate(politicalLife.entry.worldMonth)} · {politicalLife.entry.text}</Typography><button type="button" style={style} onClick={()=>nav.open({kind:"RULER",factionId:politicalLife.factionId,id:politicalLife.rulerId})}>查看对应王室本纪</button></ChronicleSection>}{rows.length>0?<ChronicleSection title="历任所事君主">
   <ServiceRows rows={rows} ruler label={id=>{const r=Dynasty.getAll().flatMap(d=>d.rulers).find(r=>r.id===id)!;return r.houseName.replace(/氏$/,"")+r.givenName;}} onOpen={(id,factionId)=>nav.open({kind:"RULER",id,factionId})}/>
  </ChronicleSection>:null}</>;
 }

@@ -1,3 +1,4 @@
+import {checkInsurgentCommands} from './InsurgentCommandCoreChecks';
 import {CURRENT_SAVE_SCHEMA_VERSION} from "../../Persistence/WorldSaveSchema";
 import worldRandom from "../WorldRandom";
 import WorldExiles from "../WorldExiles";
@@ -119,6 +120,7 @@ export async function runResidentFounderCore(seed="resident-z6"){
    check(person.deathMonth===undefined,"actual frozen resident lifespan remains alive before its due month");
    Dynasty.update(scheduled,core.teams);
    check(person.status as string==="dead"&&person.deathMonth===scheduled&&!liveTeam.rulerUser,"ended founder's actual sampled life expires once and cannot be restored");
+   hydrateWorldSave(core,structuredClone(save));checkInsurgentCommands(core,created.name,check);
    results.push({kind,checks,sourceUserId:i.sourceUserId,personId:i.personId,rulerId:r.id,populationBefore:before,populationAfterFounding:before,saveSchemaVersion:CURRENT_SAVE_SCHEMA_VERSION});
   }finally{game.destroy(true);(game as any).runDestroy?.();}
  }

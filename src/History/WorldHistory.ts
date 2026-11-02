@@ -18,6 +18,7 @@ import {
 import { formatWorldDate, formatWorldDuration } from "../Simulation/WorldTime";
 
 export type WorldEventType =
+  | "leader-command-started" | "leader-command-ended" | "leader-command-order"
   | "world-born"
   | "population-milestone"
   | "territory-milestone"
@@ -677,6 +678,8 @@ export class WorldHistoryStore {
         attackerNameAtEvent:namesAtEvent?.attacker,
         defenderNameAtEvent:namesAtEvent?.defender,
         commanderPersonalName: MilitaryCommandRegistry.getCaptureIdentity(commandId, commanderPersonId, attackerName, year),
+        leaderCommandName:MilitaryCommandRegistry.getInsurgentCaptureIdentity(commandId,commanderPersonId,attackerName,year)?.name,
+        leaderCommandRulerId:MilitaryCommandRegistry.getInsurgentCaptureIdentity(commandId,commanderPersonId,attackerName,year)?.rulerId,
         commanderOffice: MilitaryCommandRegistry.getCaptureOffice(commandId, commanderPersonId, attackerName, year),
       },
       historyGroupId,
@@ -729,6 +732,8 @@ export class WorldHistoryStore {
         attackerNameAtEvent:namesAtEvent?.attacker,
         defenderNameAtEvent:namesAtEvent?.defender,
         commanderPersonalName: MilitaryCommandRegistry.getCaptureIdentity(commandId, commanderPersonId, teamName, year),
+        leaderCommandName:MilitaryCommandRegistry.getInsurgentCaptureIdentity(commandId,commanderPersonId,teamName,year)?.name,
+        leaderCommandRulerId:MilitaryCommandRegistry.getInsurgentCaptureIdentity(commandId,commanderPersonId,teamName,year)?.rulerId,
         commanderOffice: MilitaryCommandRegistry.getCaptureOffice(commandId, commanderPersonId, teamName, year),
       },
       historyGroupId,
@@ -787,6 +792,8 @@ export class WorldHistoryStore {
         attackerNameAtEvent:namesAtEvent?.attacker,
         defenderNameAtEvent:namesAtEvent?.defender,
         commanderPersonalName: MilitaryCommandRegistry.getCaptureIdentity(commandId, commanderPersonId, attackerName, year),
+        leaderCommandName:MilitaryCommandRegistry.getInsurgentCaptureIdentity(commandId,commanderPersonId,attackerName,year)?.name,
+        leaderCommandRulerId:MilitaryCommandRegistry.getInsurgentCaptureIdentity(commandId,commanderPersonId,attackerName,year)?.rulerId,
         commanderOffice: MilitaryCommandRegistry.getCaptureOffice(commandId, commanderPersonId, attackerName, year),
       },
       historyGroupId,

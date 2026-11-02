@@ -1193,6 +1193,7 @@ class DynastyRegistryStore {
       if (team.rulerUser?.rulerId === predecessor.id) {
         team.rulerUser.role = "NORMAL";
         team.rulerUser.rulerId = undefined;
+        MilitaryCommandRegistry.endInsurgentLeader(predecessor.id,worldMonth);
         team.rulerUser.player.setRole("NORMAL", undefined);
         team.rulerUser = undefined;
       }
@@ -1723,6 +1724,7 @@ function getRulerUserId(rulerId: string) {
 
 const DynastyRegistry = new DynastyRegistryStore();
 MilitaryCommandRegistry.setRoyalService({
+  currentRuler:(id)=>{const d=DynastyRegistry.get(id);return d?.rulers.find(r=>r.id===d.currentRulerId);},
   transaction:(team,work)=>successionTransaction(team,DynastyRegistry,work),
   calibration:()=>DynastyRegistry.getPoliticalCalibration(),
   nobleEpoch:(factionId)=>{const d=DynastyRegistry.get(factionId);return nobleEpochForRuler(d,d?.currentRulerId??null)?.foundingRulerId;},

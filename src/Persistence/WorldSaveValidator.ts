@@ -1,3 +1,4 @@
+import {validateInsurgentCommands} from './InsurgentCommandValidation';
 import {validateFamilyNobility} from './FamilyNobleValidation';
 import {calibrationOrBaseline,isPoliticalCalibration} from '../Politics/PoliticalCalibration';
 import {validateMilitaryFamilies} from './MilitaryFamilyValidation';
@@ -496,6 +497,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
     users, units, cities, factionIds, Number(save.world?.worldMonth),
     isPlainRecord(save.worldHistory) ? save.worldHistory : { events: [] }
   ));
+  if (!errors.length) errors.push(...validateInsurgentCommands(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateMilitaryNobility(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateMilitaryHonors(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateMilitaryAppanages(save as WorldSaveV1));

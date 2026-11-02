@@ -1,6 +1,6 @@
 /** Validate JSON battle facts independently of Phaser collision callbacks. */
 export function validateSiegeBattles(save:any){
- const errors:string[]=[],factions=new Set((save.factions??[]).map((f:any)=>f?.factionId)),commands=new Map((Array.isArray(save.registries?.militaryCommandRegistry?.formations)?save.registries.militaryCommandRegistry.formations:[]).map((f:any)=>[f.commandId,f])),month=save.world?.worldMonth;
+ const errors:string[]=[],factions=new Set((save.factions??[]).map((f:any)=>f?.factionId)),commands=new Map((Array.isArray(save.registries?.militaryCommandRegistry?.formations)?[...save.registries.militaryCommandRegistry.formations,...(save.registries.militaryCommandRegistry.leaderCommands??[])]:[]).map((f:any)=>[f.commandId,f])),month=save.world?.worldMonth;
  for(const c of save.cities??[]){
   if(!c||typeof c!=="object"){errors.push("invalid battle city");continue;}
   const b=c.siegeBattle;

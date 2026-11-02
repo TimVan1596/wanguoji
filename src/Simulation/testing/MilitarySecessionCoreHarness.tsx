@@ -1,3 +1,4 @@
+import {checkInsurgentCommands} from './InsurgentCommandCoreChecks';
 import {projectRulerHistoricalEvents} from '../../Politics/RulerChronicle';
 import {militaryMilestones} from '../../Politics/MilitaryChroniclePresentation';
 import {mergePoliticalReading} from '../../History/PoliticalReadingProjection';
@@ -180,6 +181,7 @@ export async function runMilitarySecessionCore(seed="military-secession-z7",loca
   flushSync(()=>host.querySelector("button")!.click());check(host.querySelectorAll("section p").length===8,"one click collapses and unmounts omitted rows");
   render(6);check(host.querySelectorAll("section p").length===6&&!host.querySelector("button"),"six readable records show completely with no unnecessary expansion button");
   check(JSON.stringify(worldRandom.exportState())===rng&&History.getEvents().length===history,"reading expansion consumes no RNG and creates no history");root.unmount();host.remove();
+  hydrateWorldSave(core,structuredClone(save));checkInsurgentCommands(core,split.team.name,check);
   return {seed,checks,naturalCareerMonth:month,personId,rulerId:ruler.id,oldOffice:ruler.residentIdentity!.military!.office,followingUnits:follow.length,originalUnits:originalIds.length,worldPopulationBefore:total,worldPopulationAfter:total,saveSchemaVersion:CURRENT_SAVE_SCHEMA_VERSION};
  }finally{game.destroy(true);}
 }

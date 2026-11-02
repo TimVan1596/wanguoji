@@ -9,14 +9,20 @@ export function resolveMilitaryCommandView(core:Core,commandId:string){
   if(formation?.status!=="ACTIVE")return undefined;
   const person=Military.getPerson(formation.commanderPersonId);
   const team=formation&&core.teams.find(t=>t.name===formation.factionId&&t.status==="ACTIVE");
-  if(!person||person.status!=="ACTIVE"||person.factionId!==formation.factionId||!team)return undefined;
-  const commander=[...team.users].find(u=>!u.isDestroyed&&u.id===person.sourceUserId&&u.militaryPersonId===person.personId);
+  if(!team)return undefined;
   const month=core.simulator?.year??0;
-  if(!commander?.matchesMilitaryLife(person)||!person.appointments.some(a=>a.commandId===commandId&&a.factionId===team.name&&a.startMonth<=month&&a.endMonth===undefined))return undefined;
+  let commander:import("../Components/User").default|undefined;
+  if(formation.leaderDuty)commander=Military.commanderUser(formation,team);
+  else{if(!person||person.status!=="ACTIVE"||person.factionId!==formation.factionId)return undefined;
+   commander=[...team.users].find(u=>!u.isDestroyed&&u.id===person.sourceUserId&&u.militaryPersonId===person.personId);
+   if(!commander?.matchesMilitaryLife(person)||!person.appointments.some(a=>a.commandId===commandId&&a.factionId===team.name&&a.startMonth<=month&&a.endMonth===undefined))return undefined;
+  }
+  if(!commander)return undefined;
   const members=[...new Set(formation.memberUnitIds)].flatMap(id=>{
     const e=core.logicalUnitRegistry.getEntry(id),p=e?.player,s=e?.state,u=p?.user;
+    const leading=formation.leaderDuty&&u?.id===formation.leaderDuty.sourceUserId&&u===commander;
     if(!s?.alive||!p?.active||p.logicalUnitId!==id||s.unitId!==id||s.factionId!==team.name||p.team!==team||
-      !u||u.isDestroyed||u.team!==team||!team.users.has(u)||s.userId!==u.id||u.player!==p||s.role!=="NORMAL"||p.role!=="NORMAL"||u.role!=="NORMAL"||s.rulerId||p.rulerId||u.rulerId)return [];
+      !u||u.isDestroyed||u.team!==team||!team.users.has(u)||s.userId!==u.id||u.player!==p||(!leading&&(s.role!=="NORMAL"||p.role!=="NORMAL"||u.role!=="NORMAL"||s.rulerId||p.rulerId||u.rulerId))||(leading&&(s.role!=="RULER"||s.rulerId!==formation.leaderDuty!.rulerId||p.rulerId!==s.rulerId||u.rulerId!==s.rulerId)))return [];
     const x=core.logicalGameplayAuthority?s.logicalX:p.x,y=core.logicalGameplayAuthority?s.logicalY:p.y;
     return Number.isFinite(x)&&Number.isFinite(y)?[{unitId:id,x,y}]:[];
   });
