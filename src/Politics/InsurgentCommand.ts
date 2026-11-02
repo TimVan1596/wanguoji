@@ -1,5 +1,4 @@
 import type {Ruler} from './Dynasty';
-import type {MilitaryFormation} from './MilitaryCommandRegistry';
 export interface InsurgentDuty {
  rulerId:string;personId:string;sourceUserId:number;bornMonth:number;foundingEventId:string;
  sourceFactionId:string;sourceCommandId?:string;capacity:number;
@@ -8,4 +7,3 @@ export interface InsurgentDuty {
 }
 /** Permanent resident identity; never invent a MilitaryPerson for a political leader. */
 export function insurgentLeaderIdentity(r:Ruler|undefined){return r?.residentIdentity&&r.accessionYear!==undefined?{personId:r.residentIdentity.personId,sourceUserId:r.residentIdentity.sourceUserId,bornMonth:r.bornYear}:undefined;}
-export function insurgentDutyName(f:MilitaryFormation){return f.leaderDuty?'义军统帅':undefined;}
