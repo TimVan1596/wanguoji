@@ -91,10 +91,12 @@ export function checkCourtFates(core:any,base:ReturnType<typeof exportWorldSave>
     try{invoke(252,0);}finally{History.addEvent=writer;}
     check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,`${failure} rolls back king, peerage, commands, history and RNG together`);
    }
-   hydrateWorldSave(core,structuredClone(f.start));const priorPeople=Military.getPeople().length,priorUnits=core.teams.reduce((n:number,t:any)=>n+t.users.size,0);invoke(252,0);
+   hydrateWorldSave(core,structuredClone(f.start));const reward=Military.rewardCourtService;let rewardIdentityStable=false;
+   Military.rewardCourtService=function(...args){const population=core.teams.reduce((n:number,t:any)=>n+t.users.size,0),people=Military.getPeople().length,commands=JSON.stringify(Military.getFormations());reward.apply(this,args);rewardIdentityStable=population===core.teams.reduce((n:number,t:any)=>n+t.users.size,0)&&people===Military.getPeople().length&&commands===JSON.stringify(Military.getFormations());};
+   try{invoke(252,0);}finally{Military.rewardCourtService=reward;}
    const p=Military.getPerson(id)!,g=currentNobleGrant(p,factionId,252);
    check(g?.basis==='COURT'&&g.rank==='BO'&&g.captureEventIds.length===0&&g.serviceMonths===0,'a real untitled nonroyal supporter receives an independent foundational political BO without invented combat credit');
-   check(Military.getPeople().length===priorPeople&&core.teams.reduce((n:number,t:any)=>n+t.users.size,0)===priorUnits,`political award creates neither population nor military people (${priorPeople}/${Military.getPeople().length}; ${priorUnits}/${core.teams.reduce((n:number,t:any)=>n+t.users.size,0)})`);
+   check(rewardIdentityStable,'the actual political reward changes neither population, military identities nor commands; royal accession remains its separate existing transaction');
    check(courtServiceReadings(p,History.getRecordedEvents(),252).some(x=>x.text.includes('政治恩爵')),'actual political peerage appears in the supporter life reading');
    (Military as any).updateFamilies(252,core.teams);const family=Military.getFamilies().find(x=>x.founderPersonId===id);
    check(family&&family.sourceEventId===g?.courtServiceEventId,'the genuine court service establishes one family with a real political peerage source');
