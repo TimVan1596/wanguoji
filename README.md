@@ -147,7 +147,7 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
-- 当前 APP **v0.99931z44** / package **0.99.210** / WorldSave **V44**。z43已获最终人工Gate PASS。功臣世家默认主干、可展开普通旁支与完整族谱，活跃世家和历史故家分列；军职、本人军功爵、家族承袭爵和家族代数分明，断袭可查当时子嗣及来源。不传军职、部队、食邑与城市；多期袭爵再兴未发布。无schema变更，可继续合格V44世界；旧版本槽位保留并拒绝误读。请运行 `pnpm desktop:start:debug` 完成人工验收。
+- 当前 APP **v0.99931z45** / package **0.99.211** / WorldSave **V45**。z44已获人工Chrome Gate PASS。真实居民或军人建势首领可在现有人员、位置与编组名额合格时取得实际统帅职责，复用原移动与围城路径；不虚构军职、人口或军功。原将领只接续实际响应旧部；功臣谱主干省略普通旁支占位，保留必要父系桥梁和完整族谱，并支持人物档案直接跳转。V45持久化新指挥职责及战果来源，V44及更早槽位保留并拒绝误读，请新建世界，运行 `pnpm desktop:start:debug` 人工验收。
 
 - v0.99931n人工Gate已PASS，真实长局自然发生至少11次同王统宗室废立。当前v0.99931n1修复连续废立后的V14生命周期校验，并完善君主即离位叙述与史评，等待[人工Gate](docs/RulerDepositionLifecycleClosureN1.md)。
 - v0.99929a 修复政治终结历史身份、退位年龄与双方君主大事记。[Political Terminal Chronicle Gate](docs/PoliticalTerminalChronicleClosure.md)已由用户完成人工PASS。
