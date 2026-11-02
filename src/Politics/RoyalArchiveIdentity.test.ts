@@ -25,9 +25,9 @@ it.each(["birth","source","royal-id","life","event","foreign"])("rejects unverif
 it("does not invent fathers or merge a same-surname person into another dynasty",()=>{
  const {r,p,d,events}=fixture();delete r.parentId;const tree=buildRoyalArchiveGenealogy(d,[p],events);expect(tree.map(n=>n.ruler.id)).toContain("son");expect(tree.find(n=>n.ruler.id==="king")!.children).toEqual([]);
 });
-it("uses actual time-specific offices and monarch themes above neutral military identity",()=>{
+it("uses actual time-specific offices and monarch themes above the restrained military identity",()=>{
  const {r,p,d,events}=fixture(),f:any={name:"qin",status:"ACTIVE"};expect(royalMilitaryOfficeLabel(p,0)).toBe("现役裨将");expect(royalMilitaryOfficeLabel(p,72)).toBe("现役将军");p.status="RETIRED";expect(royalMilitaryOfficeLabel(p,72)).toBe("曾任将军");
- expect(deriveGenealogyNodePresentations(d,f,events,72).get(r.id)?.theme).toBe("neutral");r.reignOrdinal=2;r.accessionYear=60;r.status="deposed";expect(deriveGenealogyNodePresentations(d,f,events,72).get(r.id)?.theme).toBe("monarch");
+ expect(deriveGenealogyNodePresentations(d,f,events,72).get(r.id)?.theme).toBe("military");r.reignOrdinal=2;r.accessionYear=60;r.status="deposed";expect(deriveGenealogyNodePresentations(d,f,events,72).get(r.id)?.theme).toBe("monarch");
  p.politicalRulerId=r.id;expect(militaryIdentityLabels(p,[d],events,72)).toEqual(["宗室将领","曾任君主","后来继位"]);
  d.currentRulerId=r.id;r.status="ruling";expect(militaryIdentityLabels(p,[d],events,72)).toContain("现任君主");
 });
