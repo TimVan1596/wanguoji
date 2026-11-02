@@ -1,3 +1,5 @@
+import {PersonArchiveNavigation} from '../../UI/Components/FactionDetails/PersonArchiveNavigation';
+import type {PersonArchiveTarget} from '../../UI/Components/FactionDetails/PersonArchiveTarget';
 import {checkFamilyNobleCore} from './FamilyNobleCoreChecks';
 import MilitaryFamilyBrowser from '../../UI/Components/FactionDetails/MilitaryFamilyBrowser';
 import React from 'react';
@@ -56,11 +58,18 @@ export async function checkMilitaryFamilies(core:any,base:ReturnType<typeof expo
   check(calls===2&&child.militaryPersonId,'existing annual shared appointment draw selects the real child through its bounded family weight');
   check(Military.getPerson(child.militaryPersonId)!.personalName===child.name&&Military.getPerson(family.founderPersonId)!.status==='ACTIVE'&&link.member.militaryPersonId===child.militaryPersonId,'father and son serve simultaneously with distinct real military IDs and continuous births');
   check(!Military.getPerson(child.militaryPersonId)!.nobilityHistory&&Military.getFormations().find(f=>f.commanderPersonId===child.militaryPersonId)!.memberUnitIds.length===1,'descendant inherits no peerage, captures or extra troops');
-  {const before=exportWorldSave(core),host=document.createElement('div'),root=createRoot(host);document.body.append(host);
-   try{flushSync(()=>root.render(React.createElement(Provider,{store,children:React.createElement(MilitaryFamilyPanel,{personId:family.founderPersonId})})));const details=host.querySelector('details')!;
+  {let destination:PersonArchiveTarget|undefined;const before=exportWorldSave(core),host=document.createElement('div'),root=createRoot(host);document.body.append(host);
+   try{flushSync(()=>root.render(React.createElement(Provider,{store,children:React.createElement(PersonArchiveNavigation.Provider,{value:{open:t=>{destination=t;},consume:()=>{},consumeGenealogy:()=>{}},children:React.createElement(MilitaryFamilyPanel,{personId:family.founderPersonId})})})));const details=host.querySelector('details')!;
     check(!!details&&!host.querySelector('p'),'real React family section mounts no member cards before expansion');
     flushSync(()=>{details.open=true;details.dispatchEvent(new Event('toggle',{bubbles:true}));});await new Promise(resolve=>setTimeout(resolve,0));flushSync(()=>{});
     check(host.textContent?.includes(child.name)&&host.textContent?.includes('之子')&&host.textContent?.includes('现役军政人物'),`expanded React family presents the actual father and enlisted child: open=${details.open}, text=${host.textContent}`);
+    const openFamily=Array.from(host.querySelectorAll('button')).find(b=>b.textContent===`查看${family.surname}氏总谱`)!;check(!!openFamily,'actual military dossier has a direct sourced family browser entry');flushSync(()=>openFamily.click());
+    const dialog=document.querySelector('[role="dialog"]')!;
+    check(document.querySelectorAll('[role="dialog"]').length===1&&dialog.querySelector(`[data-family-member-detail="${link.member.parentMemberId}"]`),'direct family entry opens the specified real family focused on the current person in one modal');
+    const parentCard=dialog.querySelector(`[data-family-member="${link.member.parentMemberId}"]`)!;
+    const archive=Array.from(parentCard.querySelectorAll('button')).find(b=>b.textContent==='人物档案')!;check(!!archive,'real military tree card exposes its own direct military archive button');flushSync(()=>archive.click());
+    check(destination?.kind==='MILITARY'&&destination.id===family.founderPersonId&&destination.factionId===factionId,'family archive navigation targets the same permanent military identity and faction');
+    await new Promise(resolve=>setTimeout(resolve,250));check(document.querySelectorAll('[role="dialog"]').length===0,'opening the real military archive closes the family modal instead of stacking dialogs');
     check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,'family rendering changes no population, service, kinship or RNG');
    }finally{root.unmount();host.remove();}
   }

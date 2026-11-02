@@ -109,8 +109,8 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
       const formations=Military.getFormations().filter(f=>f.status==="ACTIVE");
       const ids=formations.flatMap(f=>f.memberUnitIds);
       if(new Set(ids).size!==ids.length)throw Error('Duplicate active military member');
-      for(const f of formations){const p=Military.getPerson(f.commanderPersonId)!,office=p.appointments.find(a=>a.commandId===f.commandId)?.officeHistory?.at(-1)?.office;
-        const cap=MAX_FORMATION_UNITS===4?(office==='SHANGJIANGJUN'?4:office==='JIANGJUN'?3:office==='PIJIANG'?2:1):MAX_FORMATION_UNITS;
+      for(const f of formations){const p=Military.getPerson(f.commanderPersonId);if(!f.leaderDuty&&!p)throw Error('Missing formal military commander');if(f.leaderDuty&&!Military.commanderUser(f,core.teams.find(t=>t.name===f.factionId)!))throw Error('Missing actual insurgent commander');const office=p?.appointments.find(a=>a.commandId===f.commandId)?.officeHistory?.at(-1)?.office;
+        const cap=f.leaderDuty?f.leaderDuty.capacity:MAX_FORMATION_UNITS===4?(office==='SHANGJIANGJUN'?4:office==='JIANGJUN'?3:office==='PIJIANG'?2:1):MAX_FORMATION_UNITS;
         if(f.memberUnitIds.length<1||f.memberUnitIds.length>cap)throw Error('Formation exceeds actual office capacity');
       }
       for(const f of formations){sizeSamples[f.memberUnitIds.length]=(sizeSamples[f.memberUnitIds.length]??0)+1;activeFormationSamples++;totalFormationMembers+=f.memberUnitIds.length;}
