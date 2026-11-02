@@ -658,9 +658,11 @@ export class MilitaryCommandRegistryStore {
   withdrawFromCity(factionId:string,cityId:string,month:number){
     for(const f of this.formations.values())if(f.status==="ACTIVE"&&f.factionId===factionId&&f.targetCityId===cityId){f.retreatUntilMonth=month+12;f.targetCityId=undefined;f.orderStartMonth=undefined;}
   }
-  private refreshOrders(worldMonth: number, teams: Team[], cities: City[]) {
+  private refreshOrders(worldMonth: number, teams: Team[], cities: City[],onlyCommandId?:string,insideDuty=false) {
     for (const formation of this.formations.values()) {
+      if(onlyCommandId&&formation.commandId!==onlyCommandId)continue;
       if (formation.status !== "ACTIVE") continue;
+      if(formation.leaderDuty&&!insideDuty){const team=teams.find(t=>t.name===formation.factionId);if(team)try{this.familyTransaction(team,()=>this.refreshOrders(worldMonth,teams,cities,formation.commandId,true));}catch(error){console.warn('[InsurgentCommand] order rolled back',error);}continue;}
       if((formation.retreatUntilMonth??-1)>worldMonth)continue;
       delete formation.retreatUntilMonth;
       const current = cities.find(city => city.id === formation.targetCityId);
@@ -787,6 +789,8 @@ export class MilitaryCommandRegistryStore {
   }
 
 
+  hasInsurgentUnit(user:User){return !!this.getCommandForUnit(user.player.logicalUnitId??'')?.leaderDuty;}
+  insurgentUserTransaction(user:User,work:()=>boolean,target?:Team){try{return this.familyTransaction(target??user.team,work);}catch(error){console.warn('[InsurgentCommand] life/transfer rolled back',error);return false;}}
   commanderUser(f:MilitaryFormation,team:Team){
     if(!f.leaderDuty){const p=this.people.get(f.commanderPersonId),u=p&&team.getUserById(p.sourceUserId);return p?.status==='ACTIVE'&&u?.matchesMilitaryLife(p)?u:undefined;}
     const d=f.leaderDuty,r=this.royalService?.currentRuler?.(team.name),u=team.getUserById(d.sourceUserId),i=insurgentLeaderIdentity(r);
@@ -794,12 +798,12 @@ export class MilitaryCommandRegistryStore {
   }
   private endInsurgentCommand(f:MilitaryFormation,month:number,reason:NonNullable<InsurgentDuty['endReason']>){
     if(f.status!=='ACTIVE'||!f.leaderDuty)return;
-    const before=this.snapshotTransaction(),history=WorldHistory.snapshotPoliticalTransaction(),scope=beginPoliticalMutation();
+    const before=this.snapshotTransaction(),history=WorldHistory.snapshotPoliticalTransaction(),rng=worldRandom.exportState(),scope=beginPoliticalMutation();
     try{
     f.status='DISBANDED';delete f.targetCityId;delete f.orderStartMonth;delete f.retreatUntilMonth;f.leaderDuty.endMonth=month;f.leaderDuty.endReason=reason;
     if(this.eventWriter?.({id:`leader-command-ended-${f.commandId}`,year:month,type:'leader-command-ended',category:'politics',importance:'normal',actorFactionId:f.factionId,factionIds:[f.factionId],title:'义军统帅结束直接指挥职责。',metadata:{commandId:f.commandId,rulerId:f.leaderDuty.rulerId,personId:f.commanderPersonId,reason}})!==`leader-command-ended-${f.commandId}`)throw Error('Leader command end not recorded');
       scope.commit();
-    }catch(error){scope.cancel();this.rollbackTransaction(before,true);const restoring=beginPoliticalMutation();WorldHistory.rollbackPoliticalTransaction(history);restoring.finishRollback();throw error;}
+    }catch(error){scope.cancel();this.rollbackTransaction(before,true);worldRandom.restore(rng);const restoring=beginPoliticalMutation();WorldHistory.rollbackPoliticalTransaction(history);restoring.finishRollback();throw error;}
   }
   commitInsurgentCommand(f:MilitaryFormation){if(!f.leaderDuty||this.formations.has(f.commandId))throw Error('Invalid leader command commit');this.formations.set(f.commandId,f);}
   endInsurgentLeader(rulerId:string,month:number){for(const f of this.formations.values())if(f.leaderDuty?.rulerId===rulerId&&f.status==='ACTIVE')this.endInsurgentCommand(f,month,'AUTHORITY_ENDED');}

@@ -18,6 +18,7 @@ export function resolveMilitaryCommandView(core:Core,commandId:string){
    if(!commander?.matchesMilitaryLife(person)||!person.appointments.some(a=>a.commandId===commandId&&a.factionId===team.name&&a.startMonth<=month&&a.endMonth===undefined))return undefined;
   }
   if(!commander)return undefined;
+  const commanderUnitId=commander.player.logicalUnitId;
   const members=[...new Set(formation.memberUnitIds)].flatMap(id=>{
     const e=core.logicalUnitRegistry.getEntry(id),p=e?.player,s=e?.state,u=p?.user;
     const leading=formation.leaderDuty&&u?.id===formation.leaderDuty.sourceUserId&&u===commander;
@@ -26,7 +27,7 @@ export function resolveMilitaryCommandView(core:Core,commandId:string){
     const x=core.logicalGameplayAuthority?s.logicalX:p.x,y=core.logicalGameplayAuthority?s.logicalY:p.y;
     return Number.isFinite(x)&&Number.isFinite(y)?[{unitId:id,x,y}]:[];
   });
-  if(!members.length||!members.some(m=>m.unitId===commander.player.logicalUnitId))return undefined;
+  if(!members.length||!members.some(m=>m.unitId===commanderUnitId))return undefined;
   const target=core.allCities.find(c=>c.id===formation.targetCityId&&!c.destroyed&&c.ownerFactionId!==team.name&&c.ownerTeam?.status==="ACTIVE"&&Diplomacy.canAttack(team.name,c.ownerFactionId,month));
   return {commandId,factionId:team.name,members,center:{x:members.reduce((n,m)=>n+m.x,0)/members.length,y:members.reduce((n,m)=>n+m.y,0)/members.length},
     target:target?{cityId:target.id,name:target.name,x:target.block.x+Game.BlockSize/2,y:target.block.y+Game.BlockSize/2}:undefined};

@@ -70,6 +70,7 @@ export default class User {
       if (!team.users.has(this)) team.users.add(this);
       return;
     }
+    if(!politicalMutationActive()&&MilitaryCommandRegistry.hasInsurgentUnit(this)){MilitaryCommandRegistry.insurgentUserTransaction(this,()=>{this.setTeam(team,populationMutation);return this.team===team;},team);return;}
     const previousTeam = this.team;
     if(this.historicalPersonId&&this.role==="RULER"){
       if(previousTeam.rulerUser===this)previousTeam.rulerUser=undefined;
@@ -147,6 +148,7 @@ export default class User {
       if(!this.militaryPersonId){if(month===undefined||!ordinaryLifeEligible(this)||month<residentNaturalDeathMonth(this.id,this.bornMonth))return false;}
       else if (!person || month === undefined || (!person.royalIdentity && month % 12 !== 0) || month < deriveMilitaryLifeSchedule(person).naturalDeathMonth || !this.matchesMilitaryLife(person)) return false;
     }
+    if(!politicalMutationActive()&&MilitaryCommandRegistry.hasInsurgentUnit(this))return MilitaryCommandRegistry.insurgentUserTransaction(this,()=>this.destroyUser(silentRulerDeath,populationMutation));
     if(!politicalMutationActive()&&MilitaryCommandRegistry.getFamilyMember(this.id,this.bornMonth))return MilitaryCommandRegistry.familyDeathTransaction(this,()=>this.destroyUser(silentRulerDeath,populationMutation));
     if (this.role === "RULER" && !silentRulerDeath) {
       const shouldDestroy = Game.Core?.handleRulerCombatDeath(this) ?? true;
