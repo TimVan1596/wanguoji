@@ -13,7 +13,7 @@ export const NOBLE_NAMES:Record<NobleRank,string>={BO:'伯爵',HOU:'侯爵',GONG
 export const NOBLE_RULES={BO:{serviceMonths:60,cities:2,importantCities:0},HOU:{serviceMonths:120,cities:4,importantCities:1},GONG:{serviceMonths:180,cities:6,importantCities:2}};
 export interface NobleGrant {
  /** Absent means personal military merit. COURT never carries capture credit. */
- basis?:'COURT';courtServiceEventId?:string;courtCoupEventId?:string;
+ basis?:'COURT'|'FOUNDING';courtServiceEventId?:string;courtCoupEventId?:string;foundingEventId?:string;foundingMeritEventIds?:string[];
  eventId:string;personId:string;sourceUserId:number;bornMonth:number;personalName:string;factionId:string;countryName:string;
  epochFounderId:string;rulerId:string;rulerTitle:string;month:number;previousRank:NobleRank|'NONE';rank:NobleRank;
  commandId:string;office:MilitaryOffice;serviceMonths:number;captureEventIds:string[];cityIds:string[];importantCityIds:string[];importantEventIds:string[];
@@ -45,7 +45,7 @@ export function nextNobleGrant(p:MilitaryPerson,formations:MilitaryFormation[],e
  if(merits.serviceMonths<rule.serviceMonths||merits.cityIds.length<rule.cities||merits.importantCityIds.length<rule.importantCities)return;
  return {eventId:`military-noble-${p.personId}-${team.name}-${epoch.foundingRulerId}-${rank}`,personId:p.personId,sourceUserId:p.sourceUserId,bornMonth:p.bornMonth,personalName:p.personalName,factionId:team.name,countryName:getHistoricalFactionIdentity(team,month).name,epochFounderId:epoch.foundingRulerId,rulerId:ruler.id,rulerTitle:formatRulerTitleAtMonth(team,`${ruler.houseName.replace(/氏$/, '')}${ruler.givenName}`,month),month,previousRank:previous?.rank??'NONE',rank,commandId:a.commandId,office,serviceMonths:merits.serviceMonths,captureEventIds:merits.captureEventIds,cityIds:merits.cityIds,importantCityIds:merits.importantCityIds,importantEventIds:merits.importantEventIds};
 }
-export function nobleChronicle(g:NobleGrant){if(g.basis==='COURT')return `${g.rulerTitle}以${g.personalName}拥立有功，赐伯爵，作为从龙政治恩爵；不计取城军功。`;return `${g.rulerTitle}因${g.personalName}累有军功，${g.previousRank==='NONE'?'封其':'进封其'}为${NOBLE_NAMES[g.rank]}。`;}
+export function nobleChronicle(g:NobleGrant){if(g.basis==='FOUNDING')return `${g.rulerTitle}以${g.personalName}建国前指挥取城有功，赐伯爵，作为开国政治恩爵。`;if(g.basis==='COURT')return `${g.rulerTitle}以${g.personalName}拥立有功，赐伯爵，作为从龙政治恩爵；不计取城军功。`;return `${g.rulerTitle}因${g.personalName}累有军功，${g.previousRank==='NONE'?'封其':'进封其'}为${NOBLE_NAMES[g.rank]}。`;}
 /** Dynamic archive ranking only: it never confers or removes a title. */
 export function meritRoster(people:MilitaryPerson[],formations:MilitaryFormation[],events:WorldEvent[],factionId:string,month:number){
  return people.filter(p=>p.appointments.some(a=>a.factionId===factionId)).map(p=>({person:p,merits:deriveNobleMerits(p,formations,events,factionId,month)})).filter(r=>r.merits.cityIds.length>0||r.merits.defendedCityIds.length>0).sort(compareMeritRows);

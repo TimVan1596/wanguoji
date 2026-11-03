@@ -1,3 +1,4 @@
+import {isFamilyFoundationPolicy} from '../Politics/FamilyFoundationPolicy';
 import {hereditaryAppointmentWeight,isHereditaryRecruitmentPolicy} from '../Politics/HereditaryRecruitment';
 import {calibrationOrBaseline,isPoliticalCalibration} from '../Politics/PoliticalCalibration';
 import {splitEstablishedPersonalName} from '../Politics/NameCulture';
@@ -11,8 +12,9 @@ export function validateMilitaryFamilies(save:WorldSaveV1){
   const p=state.people.find(p=>p.personId===f.founderPersonId),dy=save.dynasties.find(d=>d.factionId===f.factionId),epochs=dy?.houseEpochs as import('../Politics/DynasticRevolution').DynastyHouseEpoch[]|undefined;
   const source=events.find(e=>e.id===f.sourceEventId),foundation=events.find(e=>e.id===`${f.familyId}-founded`);
   if(!Number.isSafeInteger(f.foundedMonth)||f.foundedMonth<0||f.surname!==splitEstablishedPersonalName(p?.personalName??'')?.houseName.replace(/氏$/,'')||f.renewals!==undefined&&!Array.isArray(f.renewals)||seen.has(f.familyId)||f.familyId!==`military-family-${f.founderPersonId}-${f.epochFounderId}`||!p||p.deathMonth!==undefined&&p.deathMonth<=f.foundedMonth||p.royalIdentity||!source||!foundation||foundation.type!=='military-family-founded'||foundation.metadata?.sourceEventId!==f.sourceEventId||foundation.metadata?.personId!==p.personId||foundation.metadata?.familyId!==f.familyId||(foundation.monthIndex??foundation.year)!==f.foundedMonth||f.foundedMonth>save.world.worldMonth||!epochs?.some(e=>e.foundingRulerId===f.epochFounderId&&e.startMonth<=f.foundedMonth&&(e.endMonth??Infinity)>=f.foundedMonth)||!Array.isArray(f.members)||!f.members.length)throw Error('invalid family charter');
+  if(foundation.metadata?.familyFoundationPolicy!==undefined&&!isFamilyFoundationPolicy(foundation.metadata.familyFoundationPolicy))throw Error('invalid charter policy');
   // Replay eligibility at foundation, not the founder's later death or defection.
-  if(!familyFounderSource({...p,deathMonth:undefined,factionId:f.factionId,politicalRulerId:undefined},[source],f.factionId,f.epochFounderId,f.foundedMonth))throw Error('family lacks real merit');
+  if(!familyFounderSource({...p,deathMonth:undefined,factionId:f.factionId,politicalRulerId:undefined},[source],f.factionId,f.epochFounderId,f.foundedMonth,isFamilyFoundationPolicy(foundation.metadata?.familyFoundationPolicy)?foundation.metadata.familyFoundationPolicy:'Z48'))throw Error('family lacks real merit');
   seen.add(f.familyId);
   const members=new Map(f.members.map(m=>[m.memberId,m]));if(members.size!==f.members.length)throw Error('duplicate family member');
   for(const m of f.members){
@@ -40,7 +42,7 @@ export function validateMilitaryFamilies(save:WorldSaveV1){
    if(!user&&m.deathMonth===undefined&&m.exitMonth===undefined&&!military?.politicalRulerId)throw Error('family member missing live population or death');
   }
   const renewed=new Set<string>();for(const renewal of f.renewals??[]){const member=f.members.find(m=>m.memberId===renewal.memberId),person=member?.militaryPersonId&&state.people.find(p=>p.personId===member.militaryPersonId),source=events.find(e=>e.id===renewal.sourceEventId),event=events.find(e=>e.id===`${f.familyId}-${renewal.memberId}-merit`);
-   if(!member||member.generation===0||!person||!source||renewed.has(member.memberId)||renewal.month<member.enteredMonth||renewal.month>save.world.worldMonth||!event||event.type!=='military-family-merit'||event.metadata?.sourceEventId!==source.id||(event.monthIndex??event.year)!==renewal.month||!familyFounderSource({...person,deathMonth:undefined,factionId:f.factionId},[source],f.factionId,f.epochFounderId,renewal.month))throw Error('invalid renewed family merit');renewed.add(member.memberId);
+   if(!member||member.generation===0||!person||!source||renewed.has(member.memberId)||renewal.month<member.enteredMonth||renewal.month>save.world.worldMonth||!event||event.type!=='military-family-merit'||event.metadata?.sourceEventId!==source.id||(event.monthIndex??event.year)!==renewal.month||!familyFounderSource({...person,deathMonth:undefined,factionId:f.factionId},[source],f.factionId,f.epochFounderId,renewal.month,isFamilyFoundationPolicy(event.metadata?.familyFoundationPolicy)?event.metadata.familyFoundationPolicy:'Z48'))throw Error('invalid renewed family merit');renewed.add(member.memberId);
   }
  }catch(e){errors.push(`invalid military family ${f?.familyId}: ${String(e)}`);}
  if(errors.length)return errors;

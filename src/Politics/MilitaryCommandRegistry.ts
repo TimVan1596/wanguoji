@@ -1,3 +1,5 @@
+import {selectFoundingNobleGrant} from './FoundingNobility';
+import {type FamilyFoundationPolicy} from './FamilyFoundationPolicy';
 import {hereditaryAppointmentWeight,hereditaryVacancyChance,type HereditaryRecruitmentPolicy} from './HereditaryRecruitment';
 import {insurgentLeaderIdentity,type InsurgentDuty} from './InsurgentCommand';
 import {createFamilyNobleContext,planFamilyNobleTransition,familyNobleText,familyResidenceAt,eligibleFamilyNobleHeirs} from './FamilyNobleSuccession';
@@ -102,6 +104,7 @@ export interface MilitaryFormation {
 }
 
 export interface MilitaryCommandState {
+  familyFoundationPolicy?:FamilyFoundationPolicy;
   hereditaryRecruitment?:HereditaryRecruitmentPolicy;
   leaderCommands?:MilitaryFormation[];
   families?: MilitaryFamily[];
@@ -149,6 +152,8 @@ export class MilitaryCommandRegistryStore {
     if(!this.familyByResident)this.familyByResident=new Map(this.families.flatMap(family=>family.members.map(member=>[`${member.sourceUserId}/${member.bornMonth}`,{family,member}] as const)));
     return this.familyByResident.get(`${userId}/${bornMonth}`);
   }
+  private familyFoundationPolicy:FamilyFoundationPolicy='FOUNDING';
+  setFamilyFoundationPolicyForSimulation(policy:FamilyFoundationPolicy){this.familyFoundationPolicy=policy;}
   private hereditaryRecruitment:HereditaryRecruitmentPolicy='MEDIUM';
   setHereditaryRecruitmentForSimulation(policy:HereditaryRecruitmentPolicy){this.hereditaryRecruitment=policy;}
   private familyRecruitment=emptyFamilyRecruitmentDiagnostics();
@@ -165,6 +170,7 @@ export class MilitaryCommandRegistryStore {
     unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
 
   reset() {
+    this.familyFoundationPolicy='FOUNDING';
     this.hereditaryRecruitment='MEDIUM';
     this.familyRecruitment=emptyFamilyRecruitmentDiagnostics();
     this.families=[];this.familyByResident=undefined;
@@ -182,13 +188,14 @@ export class MilitaryCommandRegistryStore {
   }
 
   exportState(): MilitaryCommandState {
-    return { ...(this.hereditaryRecruitment!=='BASELINE'?{hereditaryRecruitment:this.hereditaryRecruitment}:{}),...(this.families.length?{families:structuredClone(this.families)}:{}), people: [...this.people.values()].map(person => structuredClone(person)),
+    return { ...(this.familyFoundationPolicy!=='Z48'?{familyFoundationPolicy:this.familyFoundationPolicy}:{}),...(this.hereditaryRecruitment!=='BASELINE'?{hereditaryRecruitment:this.hereditaryRecruitment}:{}),...(this.families.length?{families:structuredClone(this.families)}:{}), people: [...this.people.values()].map(person => structuredClone(person)),
       formations: [...this.formations.values()].filter(f=>!f.leaderDuty).map(formation => structuredClone(formation)),
       ...([...this.formations.values()].some(f=>f.leaderDuty)?{leaderCommands:[...this.formations.values()].filter(f=>f.leaderDuty).map(f=>structuredClone(f))}:{}),
       personSequence: this.personSequence, commandSequence: this.commandSequence, lastEvaluationMonth: this.lastEvaluationMonth };
   }
 
   importState(state: MilitaryCommandState) {
+    this.familyFoundationPolicy=state.familyFoundationPolicy??'Z48';
     this.hereditaryRecruitment=state.hereditaryRecruitment??'BASELINE';
     this.familyRecruitment=emptyFamilyRecruitmentDiagnostics();
     this.families=structuredClone(state.families??[]);this.familyByResident=undefined;
@@ -204,6 +211,7 @@ export class MilitaryCommandRegistryStore {
 
   snapshotTransaction(){return {people:new Map(this.people),formations:new Map(this.formations),state:this.exportState(),familyRecruitment:structuredClone(this.familyRecruitment),diagnostics:{...this.diagnostics},arrivals:new Map(this.lastArrivalTargetByCommand),ranges:new Map(this.longRangeOrderSamples)};}
   rollbackTransaction(snapshot:ReturnType<MilitaryCommandRegistryStore["snapshotTransaction"]>,inPlace=false){
+    this.familyFoundationPolicy=snapshot.state.familyFoundationPolicy??'Z48';
     this.hereditaryRecruitment=snapshot.state.hereditaryRecruitment??'BASELINE';
     this.familyByResident=undefined;
     if(inPlace){this.families=structuredClone(snapshot.state.families??[]);this.people=new Map(snapshot.state.people.map(data=>{const p=snapshot.people.get(data.personId)!;for(const k of Object.keys(p))delete (p as any)[k];Object.assign(p,structuredClone(data));return [p.personId,p];}));this.formations=new Map(savedFormationRows(snapshot.state).map(data=>{const f=snapshot.formations.get(data.commandId)!;for(const k of Object.keys(f))delete (f as any)[k];Object.assign(f,structuredClone(data));return [f.commandId,f];}));this.personSequence=snapshot.state.personSequence;this.commandSequence=snapshot.state.commandSequence;this.lastEvaluationMonth=snapshot.state.lastEvaluationMonth;}
@@ -471,7 +479,7 @@ export class MilitaryCommandRegistryStore {
     this.eventWriter?.({id:eventId,year:grant.month,monthIndex:grant.month,category:"politics",type:"military-office-granted",
       title:`${appointment.factionId}${previous?"晋任":"授予"}${getMilitaryPersonDisplayName(person)}${MILITARY_OFFICE_NAMES[grant.office]}`,
       description:`据本次真实任职${grant.serviceMonths}个月及${grant.captureEventIds.length}条核验战果授职。`,actorFactionId:appointment.factionId,factionIds:[appointment.factionId],importance:"normal",
-      metadata:{personId:person.personId,sourceUserId:person.sourceUserId,personalName:person.personalName,commandId:appointment.commandId,previousOffice:previous?.office??"NONE",office:grant.office,serviceMonths:grant.serviceMonths,captureEventIds:JSON.stringify(grant.captureEventIds),...(grant.promotionBasis?{promotionBasis:grant.promotionBasis,activityEventIds:JSON.stringify(grant.activityEventIds??[])}:{})}});
+      metadata:{...(grant.basis==='FOUNDING'?{foundingEventId:grant.foundingEventId}:{}),personId:person.personId,sourceUserId:person.sourceUserId,personalName:person.personalName,commandId:appointment.commandId,previousOffice:previous?.office??"NONE",office:grant.office,serviceMonths:grant.serviceMonths,captureEventIds:JSON.stringify(grant.captureEventIds),...(grant.promotionBasis?{promotionBasis:grant.promotionBasis,activityEventIds:JSON.stringify(grant.activityEventIds??[])}:{})}});
   }
 
   private eligibleNobleGrant(person:MilitaryPerson,month:number,team:Team,dy:Dynasty){
@@ -486,7 +494,7 @@ export class MilitaryCommandRegistryStore {
   private recordNoble(person:MilitaryPerson,grant:NobleGrant,courtServiceEventId?:string,courtCoupEventId?:string){
     if(!this.eventWriter)throw Error('Missing noble writer');
     (person.nobilityHistory??=[]).push(grant);
-    const written=this.eventWriter({id:grant.eventId,year:grant.month,monthIndex:grant.month,type:grant.basis==='COURT'?'court-peerage-granted':'military-ennobled',category:'politics',actorFactionId:grant.factionId,factionIds:[grant.factionId],rulerId:grant.rulerId,title:nobleChronicle(grant),importance:'major',metadata:{personId:person.personId,sourceUserId:person.sourceUserId,commandId:grant.commandId,rank:grant.rank,nobility:JSON.stringify(grant),...(courtServiceEventId?{courtServiceEventId,courtCoupEventId}:{})}});
+    const written=this.eventWriter({id:grant.eventId,year:grant.month,monthIndex:grant.month,type:grant.basis==='FOUNDING'?'founding-peerage-granted':grant.basis==='COURT'?'court-peerage-granted':'military-ennobled',category:'politics',actorFactionId:grant.factionId,factionIds:[grant.factionId],rulerId:grant.rulerId,title:nobleChronicle(grant),importance:'major',metadata:{personId:person.personId,sourceUserId:person.sourceUserId,commandId:grant.commandId,rank:grant.rank,nobility:JSON.stringify(grant),...(courtServiceEventId?{courtServiceEventId,courtCoupEventId}:{})}});
     if(written!==grant.eventId||!this.eventReader(grant.factionId).some(e=>e.id===grant.eventId))throw Error('Noble history was not recorded');
   }
   updateNobility(month:number,teams:Team[],dynasties:Dynasty[]){
@@ -496,6 +504,15 @@ export class MilitaryCommandRegistryStore {
       const grant=this.eligibleNobleGrant(person,month,team,dy);if(!grant)continue;
       const prior=person.nobilityHistory?structuredClone(person.nobilityHistory):undefined,history=WorldHistory.exportState();
       try{this.recordNoble(person,grant);}catch{if(prior)person.nobilityHistory=prior;else delete person.nobilityHistory;WorldHistory.importState(history);}
+    }
+  }
+  updateFoundingRewards(month:number,teams:Team[],dynasties:Dynasty[]){
+    if(month%12!==0||this.familyFoundationPolicy!=='FOUNDING'||!this.eventWriter)return;
+    for(const team of teams){const dy=dynasties.find(d=>d.factionId===team.name);if(!dy)continue;
+      const grant=selectFoundingNobleGrant(this.getPeople(),this.getFormations(),this.eventReader(team.name),month,team,dy);if(!grant)continue;
+      const person=this.people.get(grant.personId)!,user=team.getUserById(person.sourceUserId),command=this.formations.get(grant.commandId);
+      if(!user||user.isDestroyed||user.militaryPersonId!==person.personId||user.bornMonth!==person.bornMonth||user.team!==team||user.role!=='NORMAL'||user.rulerId||!user.player.active||!command?.memberUnitIds.includes(user.player.logicalUnitId??''))continue;
+      try{this.familyTransaction(team,()=>this.recordNoble(person,grant));}catch{ /* Keep the already-committed founding; the entire independent award rolls back. */ }
     }
   }
   private commitFamilyHistory(event:WorldEvent,apply:()=>void){
@@ -550,17 +567,17 @@ export class MilitaryCommandRegistryStore {
       const team=teams.find(t=>t.name===p.factionId&&t.status==='ACTIVE'&&t.identityStage==='STATE'),dy=dynasties.find(d=>d.factionId===p.factionId),epoch=this.royalService?.nobleEpoch?.(p.factionId,month);
       if(!team||!dy||!epoch)continue;
       const epochStart=dy.houseEpochs?.find(e=>e.foundingRulerId===epoch)?.startMonth??Infinity;
-      const source=familyFounderSource(p,this.eventReader(p.factionId).filter(e=>(e.monthIndex??e.year)>=epochStart),p.factionId,epoch,month);
+      const source=familyFounderSource(p,this.eventReader(p.factionId).filter(e=>(e.monthIndex??e.year)>=epochStart),p.factionId,epoch,month,this.familyFoundationPolicy);
       const linked=this.families.find(f=>f.members.some(m=>m.militaryPersonId===p.personId));
       if(linked){
         const member=linked.members.find(m=>m.militaryPersonId===p.personId)!;
         if(source&&member.generation>0&&linked.factionId===p.factionId&&linked.epochFounderId===epoch&&!linked.renewals?.some(r=>r.memberId===member.memberId)){
-          this.commitFamilyHistory({id:`${linked.familyId}-${member.memberId}-merit`,year:month,type:'military-family-merit',category:'politics',importance:'normal',actorFactionId:team.name,factionIds:[team.name],title:`${p.personalName}自立功业，${linked.surname}氏家声复振。`,metadata:{familyId:linked.familyId,personId:p.personId,memberId:member.memberId,sourceEventId:source.id}},()=>{(linked.renewals??=[]).push({memberId:member.memberId,month,sourceEventId:source.id});});
+          this.commitFamilyHistory({id:`${linked.familyId}-${member.memberId}-merit`,year:month,type:'military-family-merit',category:'politics',importance:'normal',actorFactionId:team.name,factionIds:[team.name],title:`${p.personalName}自立功业，${linked.surname}氏家声复振。`,metadata:{familyId:linked.familyId,personId:p.personId,memberId:member.memberId,sourceEventId:source.id,familyFoundationPolicy:this.familyFoundationPolicy}},()=>{(linked.renewals??=[]).push({memberId:member.memberId,month,sourceEventId:source.id});});
         }
         continue;
       }
       const f=source&&makeMilitaryFamily(p,p.factionId,epoch,month,source);if(!f)continue;
-      this.commitFamilyHistory({id:`${f.familyId}-founded`,year:month,type:'military-family-founded',category:'politics',importance:'normal',actorFactionId:team.name,factionIds:[team.name],title:`${p.personalName}以功立家，${f.surname}氏功臣世家始见于记载。`,metadata:{familyId:f.familyId,personId:p.personId,sourceEventId:f.sourceEventId}},()=>{this.families.push(f);});
+      this.commitFamilyHistory({id:`${f.familyId}-founded`,year:month,type:'military-family-founded',category:'politics',importance:'normal',actorFactionId:team.name,factionIds:[team.name],title:`${p.personalName}以功立家，${f.surname}氏功臣世家始见于记载。`,metadata:{familyId:f.familyId,personId:p.personId,sourceEventId:f.sourceEventId,familyFoundationPolicy:this.familyFoundationPolicy}},()=>{this.families.push(f);});
     }
   }
   rewardCourtService(person:MilitaryPerson,team:Team,dy:Dynasty,service:WorldEvent,month:number){

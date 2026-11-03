@@ -1,3 +1,4 @@
+import type {FamilyFoundationPolicy} from './FamilyFoundationPolicy';
 import type {FamilyNobleAct} from './FamilyNobleSuccession';
 import {POLITICAL_CALIBRATIONS,type PoliticalCalibration} from './PoliticalCalibration';
 import type {MilitaryPerson} from './MilitaryCommandRegistry';
@@ -15,10 +16,11 @@ export interface MilitaryFamily {
  foundedMonth:number; sourceEventId:string; nobleSuccession?:FamilyNobleAct[]; renewals?:Array<{memberId:string;month:number;sourceEventId:string}>; members:MilitaryFamilyMember[];
 }
 export const familyMemberId=(userId:number,bornMonth:number)=>`family-member-${userId}-${bornMonth}`;
-export function familyFounderSource(p:MilitaryPerson,events:readonly WorldEvent[],factionId:string,epoch:string,month:number){
+export function familyFounderSource(p:MilitaryPerson,events:readonly WorldEvent[],factionId:string,epoch:string,month:number,policy:FamilyFoundationPolicy='FOUNDING'){
  if(p.royalIdentity||p.politicalRulerId||p.deathMonth!==undefined||p.factionId!==factionId)return;
  return events.find(e=>(e.monthIndex??e.year)<=month&&e.actorFactionId===factionId&&e.metadata?.personId===p.personId&&
-  (e.type==='military-ennobled'&&p.nobilityHistory?.some(g=>g.eventId===e.id&&g.epochFounderId===epoch&&['HOU','GONG'].includes(g.rank))||
+  (e.type==='military-ennobled'&&p.nobilityHistory?.some(g=>g.eventId===e.id&&g.epochFounderId===epoch&&(policy==='Z48'?['HOU','GONG']:['BO','HOU','GONG']).includes(g.rank))||
+   policy==='FOUNDING'&&e.type==='founding-peerage-granted'&&p.nobilityHistory?.some(g=>g.eventId===e.id&&g.basis==='FOUNDING'&&g.epochFounderId===epoch)||
    e.type==='court-service-granted'&&e.rulerId&&e.metadata?.issuerRulerId===e.rulerId));
 }
 export function makeMilitaryFamily(p:MilitaryPerson,factionId:string,epoch:string,month:number,source:WorldEvent):MilitaryFamily|undefined{
