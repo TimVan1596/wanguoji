@@ -26,7 +26,7 @@ export function verifiedMilitarySecessions(p:MilitaryPerson,events:WorldEvent[],
 /** Cheap necessary conditions only. Terminal honors and impossible acts need no full historical scan. */
 export function mayReceiveMilitaryHonor(p:MilitaryPerson,month=Infinity){
  const grants=(p.nobilityHistory??[]).filter(g=>g.month<=month);
- if(!grants.some(g=>!(p.honorHistory??[]).some(h=>h.kind==='REVOKED'&&h.month<=month&&h.factionId===g.factionId&&h.epochFounderId===g.epochFounderId)))return false;
+ if(!grants.some(g=>!(p.honorHistory??[]).some(h=>h.kind==='REVOKED'&&h.month>=g.month&&h.month<=month&&h.factionId===g.factionId&&h.epochFounderId===g.epochFounderId)))return false;
  if(p.politicalRulerId)return true; // Only a real political founder can have verified military secession.
  if(p.status!=='DEAD'||p.deathMonth===undefined||p.honorHistory?.some(h=>h.kind==='POSTHUMOUS')||p.capturedEventIds.length<2)return false;
  return p.deathCause==='BATTLE_DEATH'||grants.some(g=>g.rank!=='BO');
@@ -37,7 +37,7 @@ export function nextMilitaryHonors(p:MilitaryPerson,formations:MilitaryFormation
  for(const e of splits){
   const factionId=e.targetFactionId!,authority=honorAuthority(teams.find(t=>t.name===factionId),dynasties.find(d=>d.factionId===factionId),month);if(!authority)continue;
   const grant=currentNobleGrant(p,factionId,month,authority.epochFounderId);
-  if(!grant||!events.some(x=>x.id===grant.eventId&&['military-ennobled','court-peerage-granted'].includes(x.type)&&x.metadata?.nobility===JSON.stringify(grant))||grant.month>(e.monthIndex??e.year)||(p.honorHistory??[]).some(h=>h.kind==='REVOKED'&&h.factionId===factionId&&h.epochFounderId===grant.epochFounderId))continue;
+  if(!grant||!events.some(x=>x.id===grant.eventId&&['military-ennobled','court-peerage-granted'].includes(x.type)&&x.metadata?.nobility===JSON.stringify(grant))||grant.month>(e.monthIndex??e.year)||(p.honorHistory??[]).some(h=>h.kind==='REVOKED'&&h.month>=grant.month&&h.factionId===factionId&&h.epochFounderId===grant.epochFounderId))continue;
   honors.push({...authority,eventId:`military-revocation-${grant.eventId}`,kind:'REVOKED',personId:p.personId,personalName:p.personalName,month,grantEventId:grant.eventId,rank:grant.rank,sourceEventId:e.id,reason:'VERIFIED_SECESSION',meritEventIds:[]});
  }
  for(const ban of p.politicalHistory??[]){

@@ -1,3 +1,4 @@
+import {checkPoliticalPeerageInheritance} from './PoliticalPeerageCoreChecks';
 import {militaryMilestones,selectMilitaryMilestones} from '../../Politics/MilitaryChroniclePresentation';
 import {courtServiceReadings} from '../../Politics/CourtServicePresentation';
 import React from 'react';
@@ -98,9 +99,10 @@ export function checkCourtFates(core:any,base:ReturnType<typeof exportWorldSave>
    check(g?.basis==='COURT'&&g.rank==='BO'&&g.captureEventIds.length===0&&g.serviceMonths===0,'a real untitled nonroyal supporter receives an independent foundational political BO without invented combat credit');
    check(rewardIdentityStable,'the actual political reward changes neither population, military identities nor commands; royal accession remains its separate existing transaction');
    check(courtServiceReadings(p,History.getRecordedEvents(),252).some(x=>x.text.includes('政治恩爵')),'actual political peerage appears in the supporter life reading');
-   (Military as any).updateFamilies(252,core.teams);const family=Military.getFamilies().find(x=>x.founderPersonId===id);
+   Military.updateFamilies(252,core.teams,Dynasty.getAll());const family=Military.getFamilies().find(x=>x.founderPersonId===id);
    check(family&&family.sourceEventId===g?.courtServiceEventId,'the genuine court service establishes one family with a real political peerage source');
-   const saved=read();hydrateWorldSave(core,structuredClone(saved));check(diffCanonicalWorldSave(saved,exportWorldSave(core)).matched,'political peerage reads without repeating the award');
+   const saved=read();checkPoliticalPeerageInheritance(core,factionId,id,check);hydrateWorldSave(core,structuredClone(saved));check(diffCanonicalWorldSave(saved,exportWorldSave(core)).matched,'political peerage reads without repeating the award');
+   {const missing=structuredClone(saved),p=missing.registries.militaryCommandRegistry.people.find(p=>p.personId===id)!;p.nobilityHistory=p.nobilityHistory?.filter(g=>g.basis!=='COURT');missing.worldHistory.events=(missing.worldHistory.events as any[]).filter(e=>e.id!==g!.eventId&&e.metadata?.nobleGrantEventId!==g!.eventId);check(!validateWorldSave(missing).valid,'erasing both the mandatory political title and all reward records cannot bypass source replay');}
    for(const field of ['basis','courtServiceEventId','rank','serviceMonths']){const bad=structuredClone(saved),grant=bad.registries.militaryCommandRegistry.people.find(p=>p.personId===id)!.nobilityHistory!.find(g=>g.basis==='COURT')! as any;grant[field]=field==='rank'?'GONG':field==='serviceMonths'?60:'forged';const event=(bad.worldHistory.events as any[]).find(e=>e.id===grant.eventId);event.metadata.nobility=JSON.stringify(grant);check(!validateWorldSave(bad).valid,`political peerage rejects forged ${field} even with matching stored JSON`);}
   }
   const fixture=prepare(true,false,true);invoke(252,courtAttemptChance(fixture.actor)*.95);let p=Military.getPerson(fixture.actor.personId)!,ban=p.politicalHistory![0],old=king(),targetId=JSON.parse(String(History.getRecordedEvents().find(e=>e.id===ban.courtCoupEventId)!.metadata?.courtCoup)).targetRulerId;

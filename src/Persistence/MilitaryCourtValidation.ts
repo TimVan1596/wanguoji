@@ -1,3 +1,4 @@
+import {currentNobleGrant,nobleEpochForRuler,nobleChronicle} from '../Politics/MilitaryNobility';
 import type {WorldSaveV1} from './WorldSaveSchema';
 import type {WorldEvent} from '../History/WorldHistory';
 import type {Dynasty} from '../Politics/Dynasty';
@@ -39,7 +40,15 @@ export function validateMilitaryCourt(save:WorldSaveV1){
  for(const e of events)if(e.type==='court-reward-granted')try{
   const m=e.metadata!,service=byId.get(String(m.courtServiceEventId)),grant=byId.get(String(m.nobleGrantEventId)),p=save.registries.militaryCommandRegistry.people.find(p=>p.personId===m.personId),g=p?.nobilityHistory?.find(g=>g.eventId===m.nobleGrantEventId);
   if(!service||!grant||!g||e.id!==`${service.e.id}-peerage`||service.e.type!=='court-service-granted'||grant.e.type!==(g.basis==='COURT'?'court-peerage-granted':'military-ennobled')||grant.e.metadata?.courtServiceEventId!==service.e.id||grant.e.metadata?.courtCoupEventId!==m.courtCoupEventId||e.actorFactionId!==g.factionId||service.e.actorFactionId!==g.factionId||e.rulerId!==g.rulerId||service.e.rulerId!==g.rulerId||m.courtCoupEventId!==service.e.metadata?.courtCoupEventId||m.previousRank!==g.previousRank||m.rank!==g.rank||at(e)!==g.month||at(service.e)!==g.month||service.i>=grant.i||grant.i>=byId.get(e.id)!.i)throw Error('unproven political peerage reward');
+  if(g.basis==='COURT'&&e.title!==nobleChronicle(g))throw Error('political peerage text differs from its actual source');
  }catch(error){errors.push(`invalid court reward ${e.id}: ${String(error)}`);}
+ for(const service of events)if(service.type==='court-service-granted'&&(save.registries.militaryCommandRegistry.hereditaryRecruitment??'BASELINE')!=='BASELINE')try{
+  const p=save.registries.militaryCommandRegistry.people.find(p=>p.personId===service.metadata?.personId),i=byId.get(service.id)!.i,ids=new Set(events.slice(0,i).map(e=>e.id)),d=save.dynasties.find(d=>d.factionId===service.actorFactionId),month=at(service);
+  if(!p||!d)throw Error('missing supporter');
+  const epoch=nobleEpochForRuler({...d,rulers:(d.rulers as any[]).map(importRulerSave)} as any,service.rulerId??null)?.foundingRulerId;
+  const past={...p,nobilityHistory:p.nobilityHistory?.filter(g=>ids.has(g.eventId)),honorHistory:p.honorHistory?.filter(h=>ids.has(h.eventId))};
+  if(!p.royalIdentity&&epoch&&!past.honorHistory?.some(h=>h.kind==='REVOKED'&&h.month===month)&&!currentNobleGrant(past,service.actorFactionId!,month,epoch)&&!events.some(e=>e.type==='court-reward-granted'&&e.metadata?.courtServiceEventId===service.id))throw Error('untitled actual supporter lacks mandatory sourced peerage');
+ }catch(error){errors.push(`missing court peerage ${service.id}: ${String(error)}`);}
  for(const e of events)if(e.type==='military-title-revoked')try{const h=JSON.parse(String(e.metadata?.honor));if(h.reason==='COURT_COUP_FAILED'&&!events.some(b=>b.id===e.metadata?.courtCoupEventId&&b.type==='court-coup-attempt'&&b.metadata?.personId===e.metadata?.personId&&h.sourceEventId===`${b.id}-result`))errors.push('unbound court forfeiture: '+e.id);}catch{}
  for(const e of events)if(['military-ennobled','court-peerage-granted'].includes(e.type)&&typeof e.metadata?.courtServiceEventId==='string'&&!events.some(x=>x.type==='court-reward-granted'&&x.metadata?.nobleGrantEventId===e.id&&x.metadata?.courtServiceEventId===e.metadata?.courtServiceEventId))errors.push('political peerage lacks reward source: '+e.id);
  return errors;
