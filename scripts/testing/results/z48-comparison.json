@@ -1,0 +1,321 @@
+{
+  "baselineHead": "d0efb426a95c4435aaf9419c0bc95413aaa34db3",
+  "versions": {
+    "app": "v0.99931z48",
+    "package": "0.99.214",
+    "worldSave": 46
+  },
+  "selectedPolicy": "MEDIUM",
+  "source": "actual isolated Electron Core; fixed initial seeds; not visual acceptance",
+  "independence": "100-year and 200-year cohorts reuse seeds; do not sum them as independent worlds",
+  "unpublished": [
+    "formal persistent reserve roster",
+    "multiple hereditary periods",
+    "automatic office or peerage promotion for every successful supporter"
+  ],
+  "profiles": {
+    "baseline": {
+      "worldYears": 800,
+      "worlds": 8,
+      "family": {
+        "families": 7,
+        "members": 23,
+        "withDescendants": 6,
+        "successions": 4,
+        "civilianInheritances": 4,
+        "ended": 1,
+        "renewals": 0,
+        "twoGenerationService": 1,
+        "threeGenerationService": 0
+      },
+      "recruitment": {
+        "opportunities": 177,
+        "qualifiedPersonChecks": 335,
+        "poolDraws": 8,
+        "selected": 1,
+        "appointments": 1,
+        "expectedAppointments": 0.8944675691051045,
+        "baselineExpectedAppointments": 0.6547745557206647,
+        "titleCandidateChecks": 64,
+        "titleVacancyOpportunities": 64,
+        "titleExpectedAppointments": 0.15459330468566812,
+        "titleSelected": 0,
+        "titleAppointments": 0,
+        "totalAppointments": 202,
+        "nonFamilyNonRoyalAppointments": 171,
+        "capacityBlocked": 1,
+        "ageBlocked": 34,
+        "identityBlocked": 0,
+        "executionFailures": 0
+      },
+      "court": {
+        "attempts": 7,
+        "successes": 0,
+        "failures": 7,
+        "services": 0,
+        "peerageRewards": 0,
+        "politicalPeerages": 0,
+        "politicalSourceSuccessions": 0,
+        "transactionFailures": 0
+      },
+      "worldPopulation": 1063,
+      "activeStates": 41,
+      "fullCommandSampleFraction": 0.032216724217720975,
+      "allIntegrityPassed": true,
+      "allTwelveMonthContinuationsAndSecondReadsPassed": true
+    },
+    "low": {
+      "worldYears": 800,
+      "worlds": 8,
+      "family": {
+        "families": 7,
+        "members": 23,
+        "withDescendants": 6,
+        "successions": 4,
+        "civilianInheritances": 4,
+        "ended": 1,
+        "renewals": 0,
+        "twoGenerationService": 1,
+        "threeGenerationService": 0
+      },
+      "recruitment": {
+        "opportunities": 177,
+        "qualifiedPersonChecks": 335,
+        "poolDraws": 8,
+        "selected": 1,
+        "appointments": 1,
+        "expectedAppointments": 0.9446062519581464,
+        "baselineExpectedAppointments": 0.6547745557206647,
+        "titleCandidateChecks": 64,
+        "titleVacancyOpportunities": 64,
+        "titleExpectedAppointments": 0.20808856304660125,
+        "titleSelected": 0,
+        "titleAppointments": 0,
+        "totalAppointments": 202,
+        "nonFamilyNonRoyalAppointments": 171,
+        "capacityBlocked": 1,
+        "ageBlocked": 34,
+        "identityBlocked": 0,
+        "executionFailures": 0
+      },
+      "court": {
+        "attempts": 7,
+        "successes": 0,
+        "failures": 7,
+        "services": 0,
+        "peerageRewards": 0,
+        "politicalPeerages": 0,
+        "politicalSourceSuccessions": 0,
+        "transactionFailures": 0
+      },
+      "worldPopulation": 1063,
+      "activeStates": 41,
+      "fullCommandSampleFraction": 0.032216724217720975,
+      "allIntegrityPassed": true,
+      "allTwelveMonthContinuationsAndSecondReadsPassed": true
+    },
+    "medium": {
+      "worldYears": 800,
+      "worlds": 8,
+      "family": {
+        "families": 7,
+        "members": 29,
+        "withDescendants": 5,
+        "successions": 5,
+        "civilianInheritances": 5,
+        "ended": 2,
+        "renewals": 0,
+        "twoGenerationService": 2,
+        "threeGenerationService": 0
+      },
+      "recruitment": {
+        "opportunities": 167,
+        "qualifiedPersonChecks": 353,
+        "poolDraws": 8,
+        "selected": 2,
+        "appointments": 2,
+        "expectedAppointments": 3.452070513191394,
+        "baselineExpectedAppointments": 0.6528070278458354,
+        "titleCandidateChecks": 27,
+        "titleVacancyOpportunities": 27,
+        "titleExpectedAppointments": 2.6499087779763077,
+        "titleSelected": 2,
+        "titleAppointments": 2,
+        "totalAppointments": 198,
+        "nonFamilyNonRoyalAppointments": 168,
+        "capacityBlocked": 1,
+        "ageBlocked": 47,
+        "identityBlocked": 0,
+        "executionFailures": 0
+      },
+      "court": {
+        "attempts": 8,
+        "successes": 1,
+        "failures": 7,
+        "services": 0,
+        "peerageRewards": 0,
+        "politicalPeerages": 0,
+        "politicalSourceSuccessions": 0,
+        "transactionFailures": 0
+      },
+      "worldPopulation": 1055,
+      "activeStates": 40,
+      "fullCommandSampleFraction": 0.0318098197860294,
+      "allIntegrityPassed": true,
+      "allTwelveMonthContinuationsAndSecondReadsPassed": true
+    },
+    "baseline-200": {
+      "worldYears": 800,
+      "worlds": 4,
+      "family": {
+        "families": 9,
+        "members": 76,
+        "withDescendants": 9,
+        "successions": 12,
+        "civilianInheritances": 12,
+        "ended": 6,
+        "renewals": 0,
+        "twoGenerationService": 1,
+        "threeGenerationService": 0
+      },
+      "recruitment": {
+        "opportunities": 499,
+        "qualifiedPersonChecks": 1324,
+        "poolDraws": 28,
+        "selected": 1,
+        "appointments": 1,
+        "expectedAppointments": 2.9373488074205856,
+        "baselineExpectedAppointments": 2.4731056212676035,
+        "titleCandidateChecks": 163,
+        "titleVacancyOpportunities": 163,
+        "titleExpectedAppointments": 0.37180154460901066,
+        "titleSelected": 0,
+        "titleAppointments": 0,
+        "totalAppointments": 196,
+        "nonFamilyNonRoyalAppointments": 162,
+        "capacityBlocked": 157,
+        "ageBlocked": 354,
+        "identityBlocked": 0,
+        "executionFailures": 0
+      },
+      "court": {
+        "attempts": 7,
+        "successes": 1,
+        "failures": 6,
+        "services": 1,
+        "peerageRewards": 0,
+        "politicalPeerages": 0,
+        "politicalSourceSuccessions": 0,
+        "transactionFailures": 0
+      },
+      "worldPopulation": 497,
+      "activeStates": 17,
+      "fullCommandSampleFraction": 0.049989465821378636,
+      "allIntegrityPassed": true,
+      "allTwelveMonthContinuationsAndSecondReadsPassed": true
+    },
+    "medium-200": {
+      "worldYears": 800,
+      "worlds": 4,
+      "family": {
+        "families": 10,
+        "members": 82,
+        "withDescendants": 8,
+        "successions": 11,
+        "civilianInheritances": 11,
+        "ended": 5,
+        "renewals": 0,
+        "twoGenerationService": 3,
+        "threeGenerationService": 0
+      },
+      "recruitment": {
+        "opportunities": 516,
+        "qualifiedPersonChecks": 1570,
+        "poolDraws": 27,
+        "selected": 3,
+        "appointments": 3,
+        "expectedAppointments": 8.833539430685796,
+        "baselineExpectedAppointments": 2.6026595086857363,
+        "titleCandidateChecks": 61,
+        "titleVacancyOpportunities": 61,
+        "titleExpectedAppointments": 5.983372379317215,
+        "titleSelected": 3,
+        "titleAppointments": 3,
+        "totalAppointments": 182,
+        "nonFamilyNonRoyalAppointments": 153,
+        "capacityBlocked": 137,
+        "ageBlocked": 493,
+        "identityBlocked": 0,
+        "executionFailures": 0
+      },
+      "court": {
+        "attempts": 7,
+        "successes": 3,
+        "failures": 4,
+        "services": 2,
+        "peerageRewards": 0,
+        "politicalPeerages": 0,
+        "politicalSourceSuccessions": 0,
+        "transactionFailures": 0
+      },
+      "worldPopulation": 506,
+      "activeStates": 14,
+      "fullCommandSampleFraction": 0.05370813156784344,
+      "allIntegrityPassed": true,
+      "allTwelveMonthContinuationsAndSecondReadsPassed": true
+    }
+  },
+  "baselinePublishedMetricsMatch": true,
+  "interpretation": {
+    "naturalImprovement": "Observed family appointments 1 -> 2 over eight paired 100-year worlds, and 1 -> 3 over four paired 200-year worlds; small counts do not establish a stable rate or historical realism.",
+    "politicalPeerage": "No new political peerage in natural cohorts. Successful supporter cases were already titled or royal; untitled nonroyal award/inheritance/appointment verified separately through production Core fixtures.",
+    "rng": "Peerage itself consumes no RNG. The national window uses the same annual opportunity roll; a newly hit window consumes its single real candidate-selection roll. Resulting commands can change later war, population, politics and RNG; those formulas are unchanged.",
+    "reserve": "Current inherited-title entry qualification is derived from real resident, title, age and vacancies. No formal persistent reserve queue or extra MilitaryPerson is created."
+  },
+  "verification": {
+    "commands": [
+      {
+        "command": "pnpm test",
+        "exitCode": 0,
+        "elapsedSeconds": 1019.21
+      },
+      {
+        "command": "pnpm exec tsc --noEmit",
+        "exitCode": 0,
+        "elapsedSeconds": 9.77
+      },
+      {
+        "command": "pnpm build",
+        "exitCode": 0,
+        "elapsedSeconds": 350.49
+      },
+      {
+        "command": "pnpm desktop:build",
+        "exitCode": 0,
+        "elapsedSeconds": 53.03
+      },
+      {
+        "command": "pnpm desktop:renderer-debug-build",
+        "exitCode": 0,
+        "elapsedSeconds": 424.63
+      }
+    ],
+    "tests": {
+      "files": 316,
+      "passed": 2462
+    },
+    "core": {
+      "military-nobility": {
+        "checks": 658,
+        "resultFile": "military-nobility-z48-final.json"
+      },
+      "royal-military": {
+        "checks": 244,
+        "resultFile": "royal-military-z48-final.json"
+      }
+    },
+    "strictSave": "all 32 natural runs and fixed production fixtures pass; prior V45 rejected",
+    "rollback": "political grant/reward, dynasty, family succession and bounded vacancy appointment writes restore full authority/RNG boundaries",
+    "manualGate": "PENDING_USER_ELECTRON_CHROME"
+  }
+}
