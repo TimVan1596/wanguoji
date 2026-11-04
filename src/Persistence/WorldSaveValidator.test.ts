@@ -23,8 +23,8 @@ function fixture() {
 }
 
 describe("WorldSaveV1 validation and JSON contract", () => {
-  it("rejects the previous V46 schema instead of reading political peerage as old military data", () => {
-    const save=fixture(); (save as any).saveSchemaVersion=46; expect(validateWorldSave(save).valid).toBe(false);
+  it("rejects the previous V47 schema instead of reading political peerage as old military data", () => {
+    const save=fixture(); (save as any).saveSchemaVersion=47; expect(validateWorldSave(save).valid).toBe(false);
   });
   it("V14 validates a living same-house deposition and later actual death as distinct months", () => {
     const save = fixture();
@@ -123,8 +123,8 @@ describe("WorldSaveV1 validation and JSON contract", () => {
   });
   it("uses schema V10 and persists alliance/merge fields plus the deterministic random stream", () => {
     const save = fixture();
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(47);
-    expect(save.saveSchemaVersion).toBe(47);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(48);
+    expect(save.saveSchemaVersion).toBe(48);
     expect(validateWorldSave({...save,saveSchemaVersion:21}).valid).toBe(false);expect(validateWorldSave({...save,saveSchemaVersion:30}).valid).toBe(false);
     expect(save.diplomacy).toEqual({ relations: [], pairMemories: [], lastEvaluationMonth: -1 });
     expect(save.worldRandom).toMatchObject({ algorithm: "mulberry32-v1", seed: expect.any(String), state: expect.any(Number), position: 0 });
@@ -243,7 +243,7 @@ describe("WorldSaveV1 validation and JSON contract", () => {
     expect(loaded.dynasties[0]).toMatchObject({ designatedHeirId: "qin-ruler-2", designatedSinceMonth: 36 });
     expect(loaded.dynasties[0].rulers[2]).toMatchObject({ parentId: "qin-ruler-2", relationType: "DIRECT_CHILD" });
     expect(loaded.dynasties[0].rulers[3]).toMatchObject({ rulerId: "qin-ruler-4", bornMonth: -200, status: "kin", parentId: "qin-ruler-1" });
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(47);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(48);
   });
 
   it("rejects a dynasty candidate list above the runtime bound", () => {

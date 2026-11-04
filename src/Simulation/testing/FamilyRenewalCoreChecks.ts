@@ -1,0 +1,42 @@
+import Military,{deriveUserBornMonth} from '../../Politics/MilitaryCommandRegistry';
+import Dynasty from '../../Politics/Dynasty';
+import History from '../../History/WorldHistory';
+import random from '../WorldRandom';
+import {getLocalUserId} from '../../Live/LocalDanmaku';
+import {planFamilyPopulationEntry} from '../../Politics/MilitaryFamily';
+import {explainFamilyTitleEnd} from '../../Politics/FamilyArchiveProjection';
+import {exportWorldSave} from '../../Persistence/WorldSaveExporter';
+import {hydrateWorldSave} from '../../Persistence/WorldSaveHydrator';
+import {validateWorldSave} from '../../Persistence/WorldSaveValidator';
+import {diffCanonicalWorldSave} from '../../Persistence/WorldSaveSchema';
+/** Existing real civilian creation; no preallocated child, invented User or overwritten birthday. */
+function descendant(core:any,familyId:string,parentId:string,month:number,check:(v:unknown,s:string)=>void){
+ const f=Military.getFamilies().find(f=>f.familyId===familyId)!,t=core.teams.find((t:any)=>t.name===f.factionId),population=core.simulator.population;
+ while(t.users.size>=population.getCapacity(t)){const u=[...t.users].find((u:any)=>u.role==='NORMAL'&&!u.militaryPersonId&&!Military.getCommandForUnit(u.player.logicalUnitId??'')) as any;if(!u)throw Error('No safe real population slot');u.destroyUser(false,{cause:'GOD_ACTION',month});}
+ let counter:number|undefined;
+ for(let n=Math.max(1,(population.counters[f.factionId]??0)+1);n<20000;n++){const label=`${t.shortName??t.name}-${String(n).padStart(3,'0')}`,id=getLocalUserId(label),born=deriveUserBornMonth(id,label,f.factionId,month);if(core.teams.some((t:any)=>t.getUserById(id))||Military.getPeople().some(p=>p.sourceUserId===id)||Military.getFamilies().some(f=>f.members.some(m=>m.sourceUserId===id)))continue;const plan=planFamilyPopulationEntry(Military.getFamilies(),f.factionId,f.epochFounderId,id,born,month,String(random.exportState().seed));if(plan?.familyId===familyId&&plan.member.parentMemberId===parentId){counter=n;break;}}
+ check(counter!==undefined,'a controlled actual natural-population entry can supply the specified legitimate direct child');if(counter===undefined)throw Error('No legitimate natural entry found');population.counters[f.factionId]=counter-1;return population.spawn(t,undefined,false,{cause:'NATURAL_GROWTH',month});
+}
+export function checkFamilyRenewalCore(core:any,heirId:number,factionId:string,check:(v:unknown,s:string)=>void){
+ const original=exportWorldSave(core),clock=(m:number)=>core.simulator.clock.importState({worldMonth:m,elapsedMs:0,running:false}),strict=()=>{const s=exportWorldSave(core),v=validateWorldSave(s);check(v.valid,`renewal/time strict save: ${v.errors.join(';')}`);return s;};
+ try{
+  Military.setFamilyNoblePolicyForSimulation('RENEWAL');const t=core.teams.find((t:any)=>t.name===factionId),u=t.getUserById(heirId),p=Military.getPerson(u.militaryPersonId)!,link=Military.getFamilyMember(u.id,u.bornMonth)!,familyId=link.family.familyId,memberId=link.member.memberId,base=p.appointments.at(-1)!.startMonth,command=p.appointments.at(-1)!.commandId,enemy=core.teams.find((e:any)=>e!==t&&e.status==='ACTIVE'),towns=t.cities.filter((c:any)=>c!==t.capitalCity&&!c.destroyed).slice(0,2);
+  check(towns.length===2,'renewal uses two pre-existing cities and their real military capture transactions');
+  for(const [i,c]of towns.entries()){const month=base+12*(i+1);clock(month);c.capture(enemy,month);u.player.setPosition(c.block.x,c.block.y);u.player.body.reset(u.player.x,u.player.y);const unit=core.logicalUnitRegistry.getEntry(u.player.logicalUnitId)!.state;unit.logicalX=c.block.x;unit.logicalY=c.block.y;c.capture(t,month,undefined,command,p.personId);}
+  clock(base+60);Military.updateNobility(base+60,core.teams,Dynasty.getAll());const g=p.nobilityHistory?.find(g=>g.rank==='BO');check(g,'the descendant earns its own military BO by actual service and personal captures');if(!g)throw Error('Real descendant military BO not eligible');
+  const childMonth=Math.max(base+72,Math.ceil((link.member.bornMonth+38*12)/12)*12);
+  const before=strict(),oldActs=JSON.stringify(link.family.nobleSuccession),writer=History.addEvent;
+  for(const mode of ['event','state']){const commit=Military.commitFamilyTitle;History.addEvent=function(e){const id=writer.call(this,e);if(mode==='event'&&e.type==='family-title-started')throw Error('injected renewal history');return id;};Military.commitFamilyTitle=function(...args){commit.apply(this,args);if(mode==='state'&&args[1].kind==='STARTED')throw Error('injected renewal state');};try{Military.updateFamilyTitles(base+60,core.teams,Dynasty.getAll());}finally{History.addEvent=writer;Military.commitFamilyTitle=commit;}check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,`${mode} failure rolls back the new hereditary period, source event, state, identities and RNG completely`);}
+  Military.updateFamilyTitles(base+60,core.teams,Dynasty.getAll());const f=Military.getFamilies().find(f=>f.familyId===familyId)!,a=f.nobleSuccession!.at(-1)!;
+  check(a.kind==='STARTED'&&a.period===2&&a.sourceGrantEventId===g.eventId&&a.rank==='BO'&&JSON.stringify(f.nobleSuccession!.slice(0,-1))===oldActs,'real personal BO replaces inherited ZI in one sourced second period without rewriting prior acts');
+  const opened=strict();Military.updateFamilyTitles(base+60,core.teams,Dynasty.getAll());check(diffCanonicalWorldSave(opened,exportWorldSave(core)).matched,'new period source cannot be consumed twice');
+  for(const altered of ['period','source','holder']){const forged=structuredClone(opened),act=forged.registries.militaryCommandRegistry.families!.find(f=>f.familyId===familyId)!.nobleSuccession!.at(-1)!;if(altered==='period')act.period=3;if(altered==='source')act.sourceGrantEventId=act.previousEventId;if(altered==='holder')act.holderMemberId=act.previousMemberId+'-fake';(forged.worldHistory.events as import('../../History/WorldHistory').WorldEvent[]).find(e=>e.id===act.eventId)!.metadata!.familyNobleAct=JSON.stringify(act);check(!validateWorldSave(forged).valid,`strict replay rejects forged new-period ${altered}, even when its history echo is altered`);}
+  // A child present before the death actually inherits from the second period.
+  clock(childMonth);const child=descendant(core,familyId,memberId,childMonth,check),pop=core.teams.reduce((n:number,t:any)=>n+t.users.size,0);check(u.destroyUser(false,{cause:'BATTLE_DEATH',month:childMonth}),'new-period root dies through the authoritative military/User transaction');Military.updateFamilyTitles(childMonth,core.teams,Dynasty.getAll());const inherited=Military.getFamilies().find(f=>f.familyId===familyId)!.nobleSuccession!.at(-1)!;
+  check(inherited.kind==='SUCCEEDED'&&inherited.period===2&&inherited.rank==='ZI'&&inherited.holderMemberId===child.familyMemberId&&!child.militaryPersonId&&core.teams.reduce((n:number,t:any)=>n+t.users.size,0)===pop-1,'second period legally descends BO to one real registered civilian ZI, without a military identity, extra army or extra population');strict();
+  // In a separate fork the same father has no registered child until after his death.
+  hydrateWorldSave(core,structuredClone(opened));clock(childMonth);core.teams.find((t:any)=>t.name===factionId).getUserById(heirId).destroyUser(false,{cause:'BATTLE_DEATH',month:childMonth});Military.updateFamilyTitles(childMonth,core.teams,Dynasty.getAll());const ended=Military.getFamilies().find(f=>f.familyId===familyId)!.nobleSuccession!.at(-1)!;check(ended.kind==='ENDED'&&ended.reason==='NO_HEIR','actual second-period death without a currently registered child ends the period');const sealed=JSON.stringify(ended);
+  clock(childMonth+12);const later=descendant(core,familyId,memberId,childMonth+12,check),f2=Military.getFamilies().find(f=>f.familyId===familyId)!,m=f2.members.find(m=>m.sourceUserId===later.id)!;Military.updateFamilyTitles(childMonth+12,core.teams,Dynasty.getAll());const x=explainFamilyTitleEnd(f2,ended,{month:childMonth+12,people:Military.getPeople(),events:History.getRecordedEvents(),dynasties:Dynasty.getAll()});
+  check(m.bornMonth<childMonth&&m.enteredMonth===childMonth+12&&JSON.stringify(f2.nobleSuccession!.at(-1))===sealed&&x.laterChildren.some(c=>c.memberId===m.memberId),'real later adult entry may preserve an earlier birthday and father, but cannot rewrite the completed inheritance; explanation names its actual entry month');strict();
+ }finally{hydrateWorldSave(core,structuredClone(original));}
+}

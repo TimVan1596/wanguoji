@@ -17,6 +17,7 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
     return ["militaryCommandRegistry has invalid state shape"];
   }
   if(state.hereditaryRecruitment!==undefined&&!isHereditaryRecruitmentPolicy(state.hereditaryRecruitment))errors.push('invalid hereditary recruitment policy');
+  if(state.familyNoblePolicy!==undefined&&!['SINGLE','RENEWAL'].includes(state.familyNoblePolicy))errors.push('invalid family noble policy');
   if(state.familyFoundationPolicy!==undefined&&!isFamilyFoundationPolicy(state.familyFoundationPolicy))errors.push('invalid family foundation policy');
   const registry = state as unknown as MilitaryCommandState;
   const historyById = new Map<string, any>((Array.isArray(history?.events) ? history.events : [])

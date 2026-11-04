@@ -6,21 +6,35 @@ export const FAMILY_NOBLE_RANKS=['NAN','ZI','BO','HOU','GONG'] as const;
 export type FamilyNobleRank=typeof FAMILY_NOBLE_RANKS[number];
 export const FAMILY_NOBLE_NAMES:Record<FamilyNobleRank,string>={NAN:'男爵',ZI:'子爵',BO:'伯爵',HOU:'侯爵',GONG:'公爵'};
 export interface FamilyNobleAct {
- version:1;eventId:string;familyId:string;factionId:string;epochFounderId:string;month:number;
- kind:'SUCCEEDED'|'ENDED';reason:'DEATH'|'NO_HEIR'|'RANK_EXHAUSTED'|'REVOKED'|'FORFEITED'|'FOREIGN'|'POLITICAL_ACCESSION'|'REGIME_ENDED'|'ENTITY_ENDED';
+ version:1|2;period?:number;eventId:string;familyId:string;factionId:string;epochFounderId:string;month:number;
+ kind:'STARTED'|'SUCCEEDED'|'ENDED';reason:'NEW_MERIT'|'DEATH'|'NO_HEIR'|'RANK_EXHAUSTED'|'REVOKED'|'FORFEITED'|'FOREIGN'|'POLITICAL_ACCESSION'|'REGIME_ENDED'|'ENTITY_ENDED';
  sourceGrantEventId:string;previousEventId:string;previousMemberId:string;previousRank:FamilyNobleRank;
  holderMemberId?:string;rank?:FamilyNobleRank;step:number;sourceEventIds:string[];
 }
-export interface FamilyNobleContext {month:number;people:readonly MilitaryPerson[];events:readonly WorldEvent[];activeEpochs:ReadonlySet<string>;politicalAccessions:ReadonlyMap<string,number>;}
+export interface FamilyNobleContext {renewable?:boolean;month:number;people:readonly MilitaryPerson[];events:readonly WorldEvent[];activeEpochs:ReadonlySet<string>;politicalAccessions:ReadonlyMap<string,number>;}
 const at=(e:WorldEvent)=>e.monthIndex??e.year;
 export function familyResidenceAt(f:MilitaryFamily,m:MilitaryFamilyMember,month:number){return m.factionHistory?.filter(h=>h.month<=month).at(-1)?.factionId??f.factionId;}
 export function familyMemberPresent(m:MilitaryFamilyMember,month:number){return m.enteredMonth<=month&&(m.deathMonth??Infinity)>month&&(m.exitMonth??Infinity)>month;}
 function memberForfeiture(m:MilitaryFamilyMember,f:MilitaryFamily,c:FamilyNobleContext){const p=c.people.find(p=>p.personId===m.militaryPersonId);return p?.politicalHistory?.filter(b=>b.kind==='COURT_BAN'&&b.severity==='FORFEITURE'&&b.factionId===f.factionId&&b.epochFounderId===f.epochFounderId&&b.month<=c.month).at(-1);}
 export function eligibleFamilyNobleHeirs(f:MilitaryFamily,parentId:string,c:FamilyNobleContext){return f.members.filter(m=>m.parentMemberId===parentId&&familyMemberPresent(m,c.month)&&familyResidenceAt(f,m,c.month)===f.factionId&&!memberForfeiture(m,f,c)&&(c.politicalAccessions.get(m.memberId)??Infinity)>c.month).sort((a,b)=>a.bornMonth-b.bornMonth||a.memberId.localeCompare(b.memberId));}
-/** One chain per family. New personal military grants never overwrite an inherited title. */
+/** One active main period; a distinct valid personal grant is the only source of a new period. */
+function planNewPeriod(f:MilitaryFamily,c:FamilyNobleContext,last:FamilyNobleAct):FamilyNobleAct|undefined{
+ if(!c.renewable||!c.activeEpochs.has(`${f.factionId}/${f.epochFounderId}`))return;
+ const used=new Set((f.nobleSuccession??[]).map(a=>a.sourceGrantEventId));
+ const candidates=f.members.flatMap(m=>{
+  if(m.generation===0||!m.militaryPersonId||!familyMemberPresent(m,c.month)||familyResidenceAt(f,m,c.month)!==f.factionId||memberForfeiture(m,f,c)||(c.politicalAccessions.get(m.memberId)??Infinity)<=c.month)return [];
+  if(last.kind!=='ENDED'&&last.holderMemberId!==m.memberId)return [];
+  const p=c.people.find(p=>p.personId===m.militaryPersonId),g=p&&currentNobleGrant(p,f.factionId,c.month,f.epochFounderId);
+  if(!g||used.has(g.eventId)||g.month<m.enteredMonth||!c.events.some(e=>e.id===g.eventId)||last.kind!=='ENDED'&&FAMILY_NOBLE_RANKS.indexOf(g.rank)<=FAMILY_NOBLE_RANKS.indexOf(last.rank!))return [];
+  return [{m,g}];
+ }).sort((a,b)=>FAMILY_NOBLE_RANKS.indexOf(b.g.rank)-FAMILY_NOBLE_RANKS.indexOf(a.g.rank)||a.g.month-b.g.month||a.m.memberId.localeCompare(b.m.memberId));
+ const chosen=candidates[0];if(!chosen)return;
+ const step=last.step+1;
+ return {version:2,period:(last.period??1)+1,eventId:`${f.familyId}-succession-${step}`,familyId:f.familyId,factionId:f.factionId,epochFounderId:f.epochFounderId,month:c.month,kind:'STARTED',reason:'NEW_MERIT',sourceGrantEventId:chosen.g.eventId,previousEventId:last.eventId,previousMemberId:last.holderMemberId??last.previousMemberId,previousRank:last.rank??last.previousRank,holderMemberId:chosen.m.memberId,rank:chosen.g.rank,step,sourceEventIds:[last.eventId,chosen.g.eventId]};
+}
 export function planFamilyNobleTransition(f:MilitaryFamily,c:FamilyNobleContext):FamilyNobleAct|undefined{
- const history=f.nobleSuccession?.filter(a=>a.month<=c.month)??[],last=history.at(-1);if(last?.kind==='ENDED')return;
- const founder=c.people.find(p=>p.personId===f.founderPersonId),grant=last?founder?.nobilityHistory?.find(g=>g.eventId===last.sourceGrantEventId):(founder?currentNobleGrant(founder,f.factionId,Math.min(c.month,founder.deathMonth??Infinity),f.epochFounderId):undefined)??founder?.nobilityHistory?.filter(g=>g.factionId===f.factionId&&g.epochFounderId===f.epochFounderId&&g.month<=Math.min(c.month,founder.deathMonth??Infinity)).sort((a,b)=>NOBLE_RANKS.indexOf(b.rank)-NOBLE_RANKS.indexOf(a.rank)||b.month-a.month)[0];
+ const history=f.nobleSuccession?.filter(a=>a.month<=c.month)??[],last=history.at(-1);if(last){const next=planNewPeriod(f,c,last);if(next)return next;if(last.kind==='ENDED')return;}
+ const founder=c.people.find(p=>p.personId===f.founderPersonId),grant=last?c.people.flatMap(p=>p.nobilityHistory??[]).find(g=>g.eventId===last.sourceGrantEventId):(founder?currentNobleGrant(founder,f.factionId,Math.min(c.month,founder.deathMonth??Infinity),f.epochFounderId):undefined)??founder?.nobilityHistory?.filter(g=>g.factionId===f.factionId&&g.epochFounderId===f.epochFounderId&&g.month<=Math.min(c.month,founder.deathMonth??Infinity)).sort((a,b)=>NOBLE_RANKS.indexOf(b.rank)-NOBLE_RANKS.indexOf(a.rank)||b.month-a.month)[0];
  if(!grant)return;
  const holder=f.members.find(m=>m.memberId===(last?.holderMemberId??f.members.find(m=>m.militaryPersonId===f.founderPersonId)?.memberId));if(!holder)return;
  const previousRank=last?.rank??grant.rank,previousEventId=last?.eventId??grant.eventId,sourceEventIds=[previousEventId],step=(last?.step??0)+1;
@@ -29,17 +43,18 @@ export function planFamilyNobleTransition(f:MilitaryFamily,c:FamilyNobleContext)
  else if(familyResidenceAt(f,holder,c.month)!==f.factionId)reason='FOREIGN';
  else if((c.politicalAccessions.get(holder.memberId)??Infinity)<=c.month)reason='POLITICAL_ACCESSION';
  else if(memberForfeiture(holder,f,c)&&memberForfeiture(holder,f,c)!.month>=(last?.month??grant.month)){reason='FORFEITED';sourceEventIds.push(memberForfeiture(holder,f,c)!.eventId);}
- else if(!last&&founder?.honorHistory?.some(h=>h.kind==='REVOKED'&&h.month>=grant.month&&h.factionId===f.factionId&&h.epochFounderId===f.epochFounderId&&h.month<=c.month)){reason='REVOKED';sourceEventIds.push(founder.honorHistory.find(h=>h.kind==='REVOKED'&&h.month>=grant.month&&h.factionId===f.factionId&&h.epochFounderId===f.epochFounderId&&h.month<=c.month)!.eventId);}
+ else if((!last||last.kind==='STARTED')&&c.people.find(p=>p.nobilityHistory?.some(g=>g.eventId===grant.eventId))?.honorHistory?.some(h=>h.kind==='REVOKED'&&h.month>=grant.month&&h.factionId===f.factionId&&h.epochFounderId===f.epochFounderId&&h.month<=c.month)){reason='REVOKED';sourceEventIds.push(c.people.find(p=>p.nobilityHistory?.some(g=>g.eventId===grant.eventId))!.honorHistory!.find(h=>h.kind==='REVOKED'&&h.month>=grant.month&&h.factionId===f.factionId&&h.epochFounderId===f.epochFounderId&&h.month<=c.month)!.eventId);}
  else if(holder.deathMonth!==undefined&&holder.deathMonth<=c.month){reason='DEATH';const death=c.events.find(e=>e.type==='military-person-died'&&e.metadata?.personId===holder.militaryPersonId&&at(e)===holder.deathMonth);sourceEventIds.push(death?.id??`${f.familyId}-${holder.memberId}-death`);}
  else if(holder.exitMonth!==undefined&&holder.exitMonth<=c.month)reason='ENTITY_ENDED';
  if(!reason)return;
  const rank=FAMILY_NOBLE_RANKS[FAMILY_NOBLE_RANKS.indexOf(previousRank)-1],heir=reason==='DEATH'&&rank?eligibleFamilyNobleHeirs(f,holder.memberId,c)[0]:undefined;
  if(reason==='DEATH'&&!heir)reason=rank?'NO_HEIR':'RANK_EXHAUSTED';
- return {version:1,eventId:`${f.familyId}-succession-${step}`,familyId:f.familyId,factionId:f.factionId,epochFounderId:f.epochFounderId,month:c.month,kind:heir?'SUCCEEDED':'ENDED',reason,sourceGrantEventId:grant.eventId,previousEventId,previousMemberId:holder.memberId,previousRank,...(heir?{holderMemberId:heir.memberId,rank}:{}),step,sourceEventIds};
+ return {version:last?.version===2?2:1,...(last?.period?{period:last.period}:{}),eventId:`${f.familyId}-succession-${step}`,familyId:f.familyId,factionId:f.factionId,epochFounderId:f.epochFounderId,month:c.month,kind:heir?'SUCCEEDED':'ENDED',reason,sourceGrantEventId:grant.eventId,previousEventId,previousMemberId:holder.memberId,previousRank,...(heir?{holderMemberId:heir.memberId,rank}:{}),step,sourceEventIds};
 }
-export function familyNobleTitle(f:MilitaryFamily,m:MilitaryFamilyMember,month:number){const a=f.nobleSuccession?.filter(a=>a.month<=month).at(-1);return a?.kind==='SUCCEEDED'&&a.holderMemberId===m.memberId&&familyMemberPresent(m,month)&&familyResidenceAt(f,m,month)===f.factionId&&a.rank?FAMILY_NOBLE_NAMES[a.rank]:undefined;}
+export function familyNobleTitle(f:MilitaryFamily,m:MilitaryFamilyMember,month:number){const a=f.nobleSuccession?.filter(a=>a.month<=month).at(-1);return a&&a.kind!=='ENDED'&&a.holderMemberId===m.memberId&&familyMemberPresent(m,month)&&familyResidenceAt(f,m,month)===f.factionId&&a.rank?FAMILY_NOBLE_NAMES[a.rank]:undefined;}
 export function familyNobleText(f:MilitaryFamily,a:FamilyNobleAct){
  const old=f.members.find(m=>m.memberId===a.previousMemberId)!,heir=f.members.find(m=>m.memberId===a.holderMemberId);
+ if(a.kind==='STARTED')return `${heir?.name??'原授爵者'}以本人新功所获${FAMILY_NOBLE_NAMES[a.rank!]}开立${f.surname}氏第${a.period}期爵位传承，旧期史实保留。`;
  if(heir)return `${old.name}卒后，其子${heir.name}袭${FAMILY_NOBLE_NAMES[a.rank!]}。`;
  if(a.reason==='NO_HEIR')return `${old.name}卒后，其爵无合格在籍子嗣接续，承袭链告终。`;
  if(a.reason==='RANK_EXHAUSTED')return `男爵${old.name}卒，世降已尽，爵位不再承袭。`;

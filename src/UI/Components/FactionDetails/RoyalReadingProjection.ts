@@ -1,3 +1,4 @@
+import {insurgentChronicle} from '../../../Politics/InsurgentChronicle';
 import type {Ruler} from '../../../Politics/Dynasty';
 import type {MilitaryPerson,MilitaryFormation} from '../../../Politics/MilitaryCommandRegistry';
 import type {WorldEvent} from '../../../History/WorldHistory';
@@ -11,8 +12,9 @@ export interface RoyalReadingInput {
 }
 function build(a:RoyalReadingInput){
  const {ruler,team,events,worldMonth}=a,plan=projectRulerHistoricalEvents(events,ruler,team.name,worldMonth,ruler.chronicle.notableEventIds,new Set(a.people.filter(p=>p.royalIdentity?.factionId===team.name).map(p=>p.personId)));
+ const duty=insurgentChronicle(ruler.id,a.formations,a.allEvents,worldMonth),full=[...new Map([...plan.all,...duty].map(e=>[e.id,e])).values()].sort((a,b)=>(a.monthIndex??a.year)-(b.monthIndex??b.year)),selected=[...new Map([...plan.select(8),...duty.filter(e=>e.type==='leader-command-started'||e.type==='leader-command-ended')].map(e=>[e.id,e])).values()].sort((a,b)=>(a.monthIndex??a.year)-(b.monthIndex??b.year));
  let diplomacy:WorldEvent[]|undefined,reignEvents:WorldEvent[]|undefined;
- return {evidence:deriveRulerAssessment({ruler,dynasty:{rulers:a.rulers},faction:team,events,worldMonth}).evidence,full:plan.all,selected:plan.select(8),
+ return {evidence:deriveRulerAssessment({ruler,dynasty:{rulers:a.rulers},faction:team,events,worldMonth}).evidence,full,selected:selected.slice(0,10),
   service:personServiceLinks(team.name,[ruler],a.people,a.formations,a.allEvents,worldMonth),earlier:preAccessionMilitary(ruler,a.people,a.formations,a.allEvents,{factions:a.factions}),
   get diplomacy(){return diplomacy??=getRulerDiplomaticEvents(events,ruler,team.name,worldMonth);},
   get reignEvents(){return reignEvents??=events.filter(e=>{const at=e.monthIndex??e.year;return at>=ruler.accessionYear&&at<=Math.min(ruler.endYear??worldMonth,worldMonth)&&(e.actorFactionId===team.name||e.targetFactionId===team.name||e.factionIds?.includes(team.name));});}};

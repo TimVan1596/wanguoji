@@ -104,6 +104,7 @@ export interface MilitaryFormation {
 }
 
 export interface MilitaryCommandState {
+  familyNoblePolicy?:'SINGLE'|'RENEWAL';
   familyFoundationPolicy?:FamilyFoundationPolicy;
   hereditaryRecruitment?:HereditaryRecruitmentPolicy;
   leaderCommands?:MilitaryFormation[];
@@ -152,6 +153,8 @@ export class MilitaryCommandRegistryStore {
     if(!this.familyByResident)this.familyByResident=new Map(this.families.flatMap(family=>family.members.map(member=>[`${member.sourceUserId}/${member.bornMonth}`,{family,member}] as const)));
     return this.familyByResident.get(`${userId}/${bornMonth}`);
   }
+  private familyNoblePolicy:'SINGLE'|'RENEWAL'='RENEWAL';
+  setFamilyNoblePolicyForSimulation(policy:'SINGLE'|'RENEWAL'){this.familyNoblePolicy=policy;}
   private familyFoundationPolicy:FamilyFoundationPolicy='FOUNDING';
   setFamilyFoundationPolicyForSimulation(policy:FamilyFoundationPolicy){this.familyFoundationPolicy=policy;}
   private hereditaryRecruitment:HereditaryRecruitmentPolicy='MEDIUM';
@@ -170,7 +173,7 @@ export class MilitaryCommandRegistryStore {
     unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
 
   reset() {
-    this.familyFoundationPolicy='FOUNDING';
+    this.familyNoblePolicy='RENEWAL';this.familyFoundationPolicy='FOUNDING';
     this.hereditaryRecruitment='MEDIUM';
     this.familyRecruitment=emptyFamilyRecruitmentDiagnostics();
     this.families=[];this.familyByResident=undefined;
@@ -188,14 +191,14 @@ export class MilitaryCommandRegistryStore {
   }
 
   exportState(): MilitaryCommandState {
-    return { ...(this.familyFoundationPolicy!=='Z48'?{familyFoundationPolicy:this.familyFoundationPolicy}:{}),...(this.hereditaryRecruitment!=='BASELINE'?{hereditaryRecruitment:this.hereditaryRecruitment}:{}),...(this.families.length?{families:structuredClone(this.families)}:{}), people: [...this.people.values()].map(person => structuredClone(person)),
+    return { ...(this.familyNoblePolicy==='RENEWAL'?{familyNoblePolicy:this.familyNoblePolicy}:{}),...(this.familyFoundationPolicy!=='Z48'?{familyFoundationPolicy:this.familyFoundationPolicy}:{}),...(this.hereditaryRecruitment!=='BASELINE'?{hereditaryRecruitment:this.hereditaryRecruitment}:{}),...(this.families.length?{families:structuredClone(this.families)}:{}), people: [...this.people.values()].map(person => structuredClone(person)),
       formations: [...this.formations.values()].filter(f=>!f.leaderDuty).map(formation => structuredClone(formation)),
       ...([...this.formations.values()].some(f=>f.leaderDuty)?{leaderCommands:[...this.formations.values()].filter(f=>f.leaderDuty).map(f=>structuredClone(f))}:{}),
       personSequence: this.personSequence, commandSequence: this.commandSequence, lastEvaluationMonth: this.lastEvaluationMonth };
   }
 
   importState(state: MilitaryCommandState) {
-    this.familyFoundationPolicy=state.familyFoundationPolicy??'Z48';
+    this.familyNoblePolicy=state.familyNoblePolicy??'SINGLE';this.familyFoundationPolicy=state.familyFoundationPolicy??'Z48';
     this.hereditaryRecruitment=state.hereditaryRecruitment??'BASELINE';
     this.familyRecruitment=emptyFamilyRecruitmentDiagnostics();
     this.families=structuredClone(state.families??[]);this.familyByResident=undefined;
@@ -211,7 +214,7 @@ export class MilitaryCommandRegistryStore {
 
   snapshotTransaction(){return {people:new Map(this.people),formations:new Map(this.formations),state:this.exportState(),familyRecruitment:structuredClone(this.familyRecruitment),diagnostics:{...this.diagnostics},arrivals:new Map(this.lastArrivalTargetByCommand),ranges:new Map(this.longRangeOrderSamples)};}
   rollbackTransaction(snapshot:ReturnType<MilitaryCommandRegistryStore["snapshotTransaction"]>,inPlace=false){
-    this.familyFoundationPolicy=snapshot.state.familyFoundationPolicy??'Z48';
+    this.familyNoblePolicy=snapshot.state.familyNoblePolicy??'SINGLE';this.familyFoundationPolicy=snapshot.state.familyFoundationPolicy??'Z48';
     this.hereditaryRecruitment=snapshot.state.hereditaryRecruitment??'BASELINE';
     this.familyByResident=undefined;
     if(inPlace){this.families=structuredClone(snapshot.state.families??[]);this.people=new Map(snapshot.state.people.map(data=>{const p=snapshot.people.get(data.personId)!;for(const k of Object.keys(p))delete (p as any)[k];Object.assign(p,structuredClone(data));return [p.personId,p];}));this.formations=new Map(savedFormationRows(snapshot.state).map(data=>{const f=snapshot.formations.get(data.commandId)!;for(const k of Object.keys(f))delete (f as any)[k];Object.assign(f,structuredClone(data));return [f.commandId,f];}));this.personSequence=snapshot.state.personSequence;this.commandSequence=snapshot.state.commandSequence;this.lastEvaluationMonth=snapshot.state.lastEvaluationMonth;}
@@ -534,14 +537,15 @@ export class MilitaryCommandRegistryStore {
     if(!this.eventWriter||!this.families.length)return;
     for(const original of [...this.families]){
       const f=this.families.find(f=>f.familyId===original.familyId)!;
-      const last=f.nobleSuccession?.at(-1);if(last?.kind==='ENDED')continue;
+      const last=f.nobleSuccession?.at(-1);if(last?.kind==='ENDED'&&this.familyNoblePolicy==='SINGLE')continue;
       const holder=f.members.find(m=>m.memberId===(last?.holderMemberId??f.members[0].memberId))!,p=holder.militaryPersonId?this.people.get(holder.militaryPersonId):undefined,t=teams.find(t=>t.name===f.factionId),dy=dynasties.find(d=>d.factionId===f.factionId),epoch=dy?.houseEpochs?.find(e=>e.foundingRulerId===f.epochFounderId);
-      const needsReview=(holder.deathMonth??Infinity)<=month||(holder.exitMonth??Infinity)<=month||familyResidenceAt(f,holder,month)!==f.factionId||p?.politicalRulerId||p?.politicalHistory?.some(a=>a.kind==='COURT_BAN'&&a.severity==='FORFEITURE'&&a.month<=month)||!last&&p?.honorHistory?.some(h=>h.kind==='REVOKED'&&h.month<=month)||t?.status!=='ACTIVE'||(epoch?.endMonth??Infinity)<=month;
+      const used=new Set(f.nobleSuccession?.map(a=>a.sourceGrantEventId)),canRenew=this.familyNoblePolicy==='RENEWAL'&&!!last&&f.members.some(m=>m.generation>0&&m.militaryPersonId&&m.deathMonth===undefined&&this.people.get(m.militaryPersonId)?.nobilityHistory?.some(g=>!used.has(g.eventId)));
+      const needsReview=canRenew||(holder.deathMonth??Infinity)<=month||(holder.exitMonth??Infinity)<=month||familyResidenceAt(f,holder,month)!==f.factionId||p?.politicalRulerId||p?.politicalHistory?.some(a=>a.kind==='COURT_BAN'&&a.severity==='FORFEITURE'&&a.month<=month)||!last&&p?.honorHistory?.some(h=>h.kind==='REVOKED'&&h.month<=month)||t?.status!=='ACTIVE'||(epoch?.endMonth??Infinity)<=month;
       if(!needsReview)continue;
-      const context=createFamilyNobleContext(month,[f],this.getPeople(),this.eventReader(f.factionId),dynasties);
+      const context={...createFamilyNobleContext(month,[f],this.getPeople(),WorldHistory.getRecordedEvents(),dynasties),renewable:this.familyNoblePolicy==='RENEWAL'};
       const act=planFamilyNobleTransition(f,context);if(!act)continue;
       // Never turn an absent or mismatched living resident into an heir by inference.
-      if(act.kind==='SUCCEEDED'){
+      if(act.kind!=='ENDED'){
         const heir=f.members.find(m=>m.memberId===act.holderMemberId)!,bindings=teams.flatMap(t=>[...t.users]).filter(u=>u.id===heir.sourceUserId&&u.bornMonth===heir.bornMonth);
         const u=bindings[0];if(bindings.length!==1||!u||u.isDestroyed||u.team.name!==f.factionId||u.role!=='NORMAL'||u.rulerId||!u.player.logicalUnitId||u.player.role!=='NORMAL'||u.player.rulerId||u.player.team!==u.team||!u.player.active||u.player.user!==u||!u.team.users.has(u)){this.diagnostics.familyTitleIdentityRejected++;continue;}
       }
@@ -553,7 +557,7 @@ export class MilitaryCommandRegistryStore {
           const e:WorldEvent={id,year:previous.deathMonth,monthIndex:previous.deathMonth,type:'family-member-died',category:'politics',importance:'normal',actorFactionId:f.factionId,factionIds:[f.factionId],title:`${previous.name}卒。`,metadata:{familyId:f.familyId,memberId:previous.memberId,sourceUserId:previous.sourceUserId,bornMonth:previous.bornMonth,deathCause:previous.deathCause}};
           if(this.eventWriter(e)!==id||!this.eventReader(f.factionId).some(e=>e.id===id))throw Error('Family death history rejected');
         }
-        if(this.eventWriter({id:act.eventId,year:month,monthIndex:month,type:act.kind==='SUCCEEDED'?'family-title-succeeded':'family-title-ended',category:'politics',importance:'major',actorFactionId:f.factionId,factionIds:[f.factionId],title:familyNobleText(f,act),metadata:{familyId:f.familyId,memberId:act.holderMemberId??act.previousMemberId,personId:f.members.find(m=>m.memberId===act.holderMemberId)?.militaryPersonId,familyNobleAct:JSON.stringify(act)}})!==act.eventId)throw Error('Family title history rejected');
+        if(this.eventWriter({id:act.eventId,year:month,monthIndex:month,type:act.kind==='STARTED'?'family-title-started':act.kind==='SUCCEEDED'?'family-title-succeeded':'family-title-ended',category:'politics',importance:'major',actorFactionId:f.factionId,factionIds:[f.factionId],title:familyNobleText(f,act),metadata:{familyId:f.familyId,memberId:act.holderMemberId??act.previousMemberId,personId:f.members.find(m=>m.memberId===act.holderMemberId)?.militaryPersonId,familyNobleAct:JSON.stringify(act),...(this.familyNoblePolicy==='RENEWAL'?{familyNoblePolicy:this.familyNoblePolicy}:{})}})!==act.eventId)throw Error('Family title history rejected');
         this.commitFamilyTitle(f.familyId,act);
         if(!this.eventReader(f.factionId).some(e=>e.id===act.eventId))throw Error('Family title event not committed');
       }catch{scope.cancel();this.rollbackTransaction(before,true);const restore=beginPoliticalMutation();WorldHistory.rollbackPoliticalTransaction(history);worldRandom.restore(rng);restore.finishRollback();this.diagnostics.familyTitleFailures++;continue;}

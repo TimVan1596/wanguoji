@@ -1,3 +1,5 @@
+import {deriveMilitaryLifeSchedule} from '../../Politics/MilitaryLifeRules';
+import {checkFamilyRenewalCore} from './FamilyRenewalCoreChecks';
 import Military,{deriveUserBornMonth} from '../../Politics/MilitaryCommandRegistry';
 import Dynasty from '../../Politics/Dynasty';
 import History from '../../History/WorldHistory';
@@ -19,8 +21,8 @@ export function checkPoliticalPeerageInheritance(core:any,factionId:string,perso
   clock(worldMonth);const t=team(),population=core.simulator.population,epoch=family().epochFounderId;
   while(t.users.size>=population.getCapacity(t)){const u=[...t.users].find((u:any)=>u.role==='NORMAL'&&!u.militaryPersonId&&!Military.getFormations().some(f=>f.status==='ACTIVE'&&f.memberUnitIds.includes(u.player.logicalUnitId??''))) as any;check(u,'existing civilian permits a controlled population-capacity fixture');u.destroyUser(false,{cause:'GOD_ACTION',month:worldMonth});}
   let counter:number|undefined;
-  for(let n=Math.max(1,(population.counters[factionId]??0)+1);n<5000;n++){const label=`${t.shortName??t.name}-${String(n).padStart(3,'0')}`,id=getLocalUserId(label),born=deriveUserBornMonth(id,label,factionId,worldMonth);if(core.teams.some((t:any)=>t.getUserById(id))||Military.getPeople().some(p=>p.sourceUserId===id)||Military.getFamilies().some(f=>f.members.some(m=>m.sourceUserId===id))||History.getRecordedEvents().some(e=>{try{return e.type==='court-coup-attempt'&&JSON.parse(String(e.metadata?.courtCoup)).members.some((u:any)=>u.userId===id);}catch{return false;}}))continue;const plan=planFamilyPopulationEntry(Military.getFamilies(),factionId,epoch,id,born,worldMonth,String(random.exportState().seed));if(plan?.familyId===family().familyId){counter=n;break;}}
-  check(counter!==undefined,'real population creation can register a plausible child of the formal peerage founder');population.counters[factionId]=counter!-1;
+  for(let n=Math.max(1,(population.counters[factionId]??0)+1);n<5000;n++){const label=`${t.shortName??t.name}-${String(n).padStart(3,'0')}`,id=getLocalUserId(label),born=deriveUserBornMonth(id,label,factionId,worldMonth);if(core.teams.some((t:any)=>t.getUserById(id))||Military.getPeople().some(p=>p.sourceUserId===id)||Military.getFamilies().some(f=>f.members.some(m=>m.sourceUserId===id))||History.getRecordedEvents().some(e=>{try{return e.type==='court-coup-attempt'&&JSON.parse(String(e.metadata?.courtCoup)).members.some((u:any)=>u.userId===id);}catch{return false;}}))continue;const plan=planFamilyPopulationEntry(Military.getFamilies(),factionId,epoch,id,born,worldMonth,String(random.exportState().seed));if(plan?.familyId===family().familyId&&deriveMilitaryLifeSchedule({personId:Military.nextPersonId(),bornMonth:born}).retirementMonth>worldMonth+72){counter=n;break;}}
+  check(counter!==undefined,`real population creation can register a plausible child of the formal peerage founder: ${JSON.stringify({worldMonth,members:family().members})}`);population.counters[factionId]=counter!-1;
   const beforePopulation=core.teams.reduce((n:number,t:any)=>n+t.users.size,0),child=population.spawn(t,undefined,false,{cause:'NATURAL_GROWTH',month:worldMonth});
   check(child?.familyMemberId&&core.teams.reduce((n:number,t:any)=>n+t.users.size,0)===beforePopulation+1&&!child.militaryPersonId,'one normal population entry supplies the real child, not an additional noble or soldier');
   strict();Military.updateFamilyTitles(worldMonth,core.teams,Dynasty.getAll());check(!family().nobleSuccession?.length,'living formally granted BO founder gives no premature inheritance');
@@ -51,6 +53,7 @@ export function checkPoliticalPeerageInheritance(core:any,factionId:string,perso
    const heir=team().getUserById(child.id),p=Military.getPerson(heir.militaryPersonId);
    check(calls===2&&p?.appointments.at(-1)?.officeHistory?.at(-1)?.office==='XIAOWEI'&&Military.getDiagnostics().familyRecruitment.titleAppointments===1,'one bounded national vacancy window selects one real titled civilian, then creates only its legitimate XIAOWEI command');strict();
   }
+  if(worldMonth===240)checkFamilyRenewalCore(core,child.id,factionId,check);
   hydrateWorldSave(core,structuredClone(saved));check(diffCanonicalWorldSave(saved,exportWorldSave(core)).matched,'formal grant source and unique civilian title read without another award');
   const resume=()=>{hydrateWorldSave(core,structuredClone(saved));core.setWorldRunning(true);for(let m=0;m<12;m++){for(let n=0;n<30;n++)core.advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit('postupdate');}core.setWorldRunning(false);return strict();};const a=resume(),b=resume();check(diffCanonicalWorldSave(a,b).matched,'formal peerage and descendant life resume twelve months deterministically');hydrateWorldSave(core,structuredClone(a));check(diffCanonicalWorldSave(a,exportWorldSave(core)).matched,'second read preserves political-source inheritance and the same original residents');
  }finally{hydrateWorldSave(core,structuredClone(original));}

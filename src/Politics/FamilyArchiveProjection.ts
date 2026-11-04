@@ -30,13 +30,14 @@ export function projectFamilyArchive(f:MilitaryFamily,s:FamilyArchiveSource){
 export type FamilyArchiveProjection=ReturnType<typeof projectFamilyArchive>;
 /** Reconstruct the decision from the saved event boundary, including death/transfer order. */
 export function explainFamilyTitleEnd(f:MilitaryFamily,a:FamilyNobleAct,s:FamilyArchiveSource){
- const index=s.events.findIndex(e=>e.id===a.eventId);if(index<0)return {text:'该次承袭处理的原始事件未找到，无法重建当时资格。',children:[] as Array<{memberId:string;name:string;reason:string}>,grandchildren:0,sourceEventIds:a.sourceEventIds};
+ const index=s.events.findIndex(e=>e.id===a.eventId);if(index<0)return {text:'该次承袭处理的原始事件未找到，无法重建当时资格。',children:[] as Array<{memberId:string;name:string;reason:string}>,grandchildren:0,laterChildren:[] as Array<{memberId:string;name:string;bornMonth:number;enteredMonth:number;entryEventId:string;parentDeathMonth?:number}>,sourceEventIds:a.sourceEventIds};
  const historical=familyAtEvidenceBoundary({...f,nobleSuccession:f.nobleSuccession?.filter(x=>s.events.findIndex(e=>e.id===x.eventId)<index)},a.month,index,s.events),prior=s.events.slice(0,index),context=createFamilyNobleContext(a.month,[historical],s.people,prior,s.dynasties),previous=historical.members.find(m=>m.memberId===a.previousMemberId),eligible=new Set(eligibleFamilyNobleHeirs(historical,a.previousMemberId,context).map(m=>m.memberId));
  const children=historical.members.filter(m=>m.parentMemberId===a.previousMemberId).map(m=>({memberId:m.memberId,name:m.name,reason:eligible.has(m.memberId)?'符合当时直接承袭资格':(m.deathMonth??Infinity)<=a.month?`已于${formatWorldDate(m.deathMonth!)}去世`:familyResidenceAt(historical,m,a.month)!==f.factionId?'当时已转属他国':!familyMemberPresent(m,a.month)?'当时已无可核验的在籍人口身份':context.politicalAccessions.has(m.memberId)?'此前已经登位': '有正式谋逆重处分，袭爵资格受限'}));
  const seen=new Set<string>();const descendants=(parentId:string):MilitaryFamilyMember[]=>{if(seen.has(parentId))return [];seen.add(parentId);const direct=historical.members.filter(m=>m.parentMemberId===parentId&&!seen.has(m.memberId));return direct.flatMap(m=>[m,...descendants(m.memberId)]);};
  const childIds=new Set(children.map(m=>m.memberId)),grandchildren=descendants(a.previousMemberId).filter(m=>!childIds.has(m.memberId)&&familyMemberPresent(m,a.month)&&familyResidenceAt(historical,m,a.month)===f.factionId).length;
  let text:string;
- if(a.reason==='NO_HEIR')text=children.length?`当次处理时，已登记${children.length}名直接子嗣：${children.map(m=>`${m.name}${m.reason==='符合当时直接承袭资格'?'具备资格':`（${m.reason}）`}`).join('、')}。`:'当次处理时，没有已登记的直接子嗣。';
+ const laterChildren=f.members.filter(m=>m.parentMemberId===a.previousMemberId&&m.enteredMonth<=s.month&&!historical.members.some(h=>h.memberId===m.memberId)).map(m=>({memberId:m.memberId,name:m.name,bornMonth:m.bornMonth,enteredMonth:m.enteredMonth,entryEventId:`${m.memberId}-entered`,parentDeathMonth:previous?.deathMonth}));
+ if(a.reason==='NO_HEIR')text=children.length?`当次处理时，已登记${children.length}名直接子嗣：${children.map(m=>`${m.name}${m.reason==='符合当时直接承袭资格'?'具备资格':`（${m.reason}）`}`).join('、')}。`:'当次处理时，没有已入籍、已登记的直接子嗣。';
  else if(a.reason==='RANK_EXHAUSTED')text=`${previous?.name??'原持爵者'}所持爵位已降至男爵，本次身故后世降耗尽；不是因为家族无人存续。`;
  else if(a.reason==='REGIME_ENDED')text='原爵所属国家或王统的政治权威已经终结，旧朝承袭失效；并不表示家族成员死亡。';
  else if(a.reason==='REVOKED')text='原始个人爵位已有正式追夺事件，不能继续作为承袭权源。';
@@ -45,9 +46,9 @@ export function explainFamilyTitleEnd(f:MilitaryFamily,a:FamilyNobleAct,s:Family
  else if(a.reason==='POLITICAL_ACCESSION')text=`${previous?.name??'原持爵者'}已正式登位，不再接续原爵。`;
  else if(a.reason==='ENTITY_ENDED')text='原持爵者的实际在籍身份已经终止；没有据此推断其死亡。';
  else text=`${previous?.name??'原持爵者'}实际死亡后，按出生顺序从符合资格的直接子嗣中择一，完成一次世降。`;
- if(a.reason==='NO_HEIR'&&eligible.size)return {text:'史料资格与断袭结果存在不一致，需核验原始事务；不据此推断家族无后。',children,grandchildren,sourceEventIds:a.sourceEventIds};
+ if(a.reason==='NO_HEIR'&&eligible.size)return {text:'史料资格与断袭结果存在不一致，需核验原始事务；不据此推断家族无后。',children,grandchildren,laterChildren,sourceEventIds:a.sourceEventIds};
  if(a.reason==='NO_HEIR')text+=grandchildren?`另有${grandchildren}名在世在籍的孙辈或更远后代；现行制度不允许代袭，故爵位终止，血脉仍可延续。`:'没有可接续的合格直接子嗣，承袭链终止；不据此判定家族绝嗣。';
- return {text,children,grandchildren,sourceEventIds:a.sourceEventIds};
+ return {text,children,grandchildren,laterChildren,sourceEventIds:a.sourceEventIds};
 }
 /** Research only: does not append to the sealed V44 chain or invent a new hereditary period. */
 export function familyRenewalCandidates(p:FamilyArchiveProjection){const end=p.acts.find(a=>a.kind==='ENDED');return end?[...p.rows.values()].filter(r=>r.member.generation>0&&r.life==='ALIVE'&&r.effectivePersonal&&['HOU','GONG'].includes(r.effectivePersonal.rank)&&r.effectivePersonal.month>end.month).map(r=>({memberId:r.member.memberId,sourceEventId:r.effectivePersonal!.eventId,rank:r.effectivePersonal!.rank})):[];}

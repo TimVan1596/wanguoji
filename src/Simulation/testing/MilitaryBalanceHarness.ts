@@ -44,13 +44,14 @@ async function fingerprint(snapshot: ReturnType<typeof exportWorldSave>,baseFact
 }
 
 /** Instrument the real City transaction, never substitute combat or its RNG. Test-session aggregates only. */
-export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=false,verifyContinuation=false,courtPolicy:'LOW'|'MEDIUM'|'HIGH'='MEDIUM',calibration?:PoliticalCalibration,hereditaryRecruitment?:HereditaryRecruitmentPolicy,familyFoundationPolicy?:FamilyFoundationPolicy){
+export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=false,verifyContinuation=false,courtPolicy:'LOW'|'MEDIUM'|'HIGH'='MEDIUM',calibration?:PoliticalCalibration,hereditaryRecruitment?:HereditaryRecruitmentPolicy,familyFoundationPolicy?:FamilyFoundationPolicy,familyNoblePolicy?:'SINGLE'|'RENEWAL'){
   const royalOffers=new Map<string,number>(),readRoyal=(Dynasty as any).getRoyalMilitaryCandidates;
   if(readRoyal)(Dynasty as any).getRoyalMilitaryCandidates=function(...args:any[]){const rows=readRoyal.apply(this,args);for(const r of rows)if(!royalOffers.has(r.rulerId))royalOffers.set(r.rulerId,args[1]);return rows;};
   const {core,game}=await createNaturalCore(seed),started=performance.now();
   Dynasty.setCourtAttemptPolicyForSimulation(courtPolicy);
   if(calibration)Dynasty.setPoliticalCalibrationForSimulation(calibration);
   if(hereditaryRecruitment)Military.setHereditaryRecruitmentForSimulation(hereditaryRecruitment);
+  if(familyNoblePolicy)Military.setFamilyNoblePolicyForSimulation(familyNoblePolicy);
   if(familyFoundationPolicy)Military.setFamilyFoundationPolicyForSimulation(familyFoundationPolicy);
   const familyTimings:number[]=[],updateFamilies=Military.updateFamilies;Military.updateFamilies=function(...args){const started=performance.now();try{return updateFamilies.apply(this,args);}finally{familyTimings.push(performance.now()-started);}};
   const original=(City.prototype as any).updateSiege,advanceOffices=(Military as any).advanceOffices;
