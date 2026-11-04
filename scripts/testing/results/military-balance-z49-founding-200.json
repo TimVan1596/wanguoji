@@ -1,0 +1,787 @@
+{
+  "format": "z49-production-measurement-1",
+  "profile": "founding-200",
+  "rawSha256": "569f456ed2f4950db9f626bea17da122d6e9d21e84b28d80cf71ce175008528e",
+  "aggregate": {
+    "worlds": 4,
+    "yearsPerWorld": 200,
+    "worldYears": 800,
+    "grantSources": {
+      "MILITARY_BO": 21,
+      "MILITARY_HOU": 9,
+      "MILITARY_GONG": 5,
+      "COURT": 1,
+      "FOUNDING": 0
+    },
+    "charterSources": {
+      "MILITARY_BO": 17,
+      "MILITARY_HOU": 0,
+      "MILITARY_GONG": 0,
+      "COURT": 1,
+      "FOUNDING": 0
+    },
+    "family": {
+      "families": 18,
+      "members": 122,
+      "livingMapMembers": 45,
+      "withDescendants": 15,
+      "foundersDied": 13,
+      "successions": 13,
+      "civilianInheritances": 13,
+      "ended": 14,
+      "renewals": 0,
+      "twoGenerationService": 7,
+      "secondGenerationOfficers": 5,
+      "thirdGenerationOfficers": 0,
+      "descendantPersonalGrants": 0
+    },
+    "successionRanks": {
+      "HOU": 3,
+      "BO": 4,
+      "ZI": 5,
+      "NAN": 1
+    },
+    "terminalReasons": {
+      "NO_HEIR": 8,
+      "FOREIGN": 3,
+      "FORFEITED": 1,
+      "REGIME_ENDED": 2
+    },
+    "recruitment": {
+      "opportunities": 756,
+      "qualifiedPersonChecks": 2165,
+      "poolDraws": 38,
+      "selected": 7,
+      "appointments": 7,
+      "expectedAppointments": 11.670876214107476,
+      "titleAppointments": 5,
+      "nonFamilyNonRoyalAppointments": 167,
+      "totalAppointments": 198,
+      "ageBlocked": 551,
+      "capacityBlocked": 114,
+      "identityBlocked": 0,
+      "executionFailures": 0
+    },
+    "worldPopulation": 541,
+    "activeStates": 21,
+    "fullCommandSampleFraction": 0.0359815200652233,
+    "performance": {
+      "meanSaveBytes": 3563475.25,
+      "maxSaveBytes": 3955057,
+      "meanProjectionMs": 22.02500000037253,
+      "maxProjectionMs": 31.5,
+      "meanSerializationMs": 12.899999999441206,
+      "maxUpdateMethodMs": 9.100000001490116,
+      "timingScope": "Actual endpoint JS timings; update calls include the existing monthly early return. Wall time/heap vary with host load."
+    },
+    "allIntegrityPassed": true,
+    "allTwelveMonthContinuationsAndSecondReadsPassed": true,
+    "secessionBoundary": {
+      "actualLateSameMonthCases": 1,
+      "rejectedPostCheckpointForgeries": 1
+    }
+  },
+  "worlds": [
+    {
+      "seed": "regional-1",
+      "years": 200,
+      "metrics": {
+        "worldPopulation": 136,
+        "peakWorldPopulation": 153,
+        "activeStates": 7,
+        "historicalStates": 12,
+        "captures": 68,
+        "recoveries": 11,
+        "normalRoyalSuccessions": 48,
+        "worldRandomPosition": 15087,
+        "politicalEvents": {
+          "ordinaryFoundings": 1,
+          "militarySecessions": 4,
+          "depositions": 5,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "canonicalSha256": "786c2877dfac4d7f220b493e4eb3bd3663581c4c9025709b9e5a5eaa2e8ac130",
+      "grantSources": {
+        "MILITARY_BO": 7,
+        "MILITARY_HOU": 2,
+        "MILITARY_GONG": 0,
+        "COURT": 0,
+        "FOUNDING": 0
+      },
+      "personalMilitaryBOIndividuals": 7,
+      "charterSources": {
+        "MILITARY_BO": 6,
+        "MILITARY_HOU": 0,
+        "MILITARY_GONG": 0,
+        "COURT": 0,
+        "FOUNDING": 0
+      },
+      "family": {
+        "families": 6,
+        "members": 33,
+        "livingMapMembers": 11,
+        "withDescendants": 5,
+        "foundersDied": 4,
+        "successions": 2,
+        "civilianInheritances": 2,
+        "ended": 6,
+        "terminalReasons": {
+          "NO_HEIR": 3,
+          "FOREIGN": 2,
+          "FORFEITED": 1
+        },
+        "renewals": 0,
+        "twoGenerationService": 3,
+        "secondGenerationOfficers": 3,
+        "thirdGenerationOfficers": 0,
+        "descendantPersonalGrants": 0,
+        "actualSuccessionRanks": {
+          "HOU": 0,
+          "BO": 1,
+          "ZI": 1,
+          "NAN": 0
+        },
+        "currentStatus": {
+          "active": 1,
+          "historical": 5,
+          "extinct": 0,
+          "livingUntitledHouses": 4,
+          "explanations": [
+            {
+              "eventId": "military-family-military-person-5-韩-ruler-11-succession-2",
+              "reason": "NO_HEIR",
+              "text": "当次处理时，没有已登记的直接子嗣。没有可接续的合格直接子嗣，承袭链终止；不据此判定家族绝嗣。",
+              "children": [],
+              "grandchildren": 0,
+              "sourceEventIds": [
+                "military-family-military-person-5-韩-ruler-11-succession-1",
+                "military-person-death-military-person-11-592"
+              ]
+            },
+            {
+              "eventId": "military-family-military-person-24-燕-ruler-4-succession-1",
+              "reason": "NO_HEIR",
+              "text": "当次处理时，没有已登记的直接子嗣。没有可接续的合格直接子嗣，承袭链终止；不据此判定家族绝嗣。",
+              "children": [],
+              "grandchildren": 0,
+              "sourceEventIds": [
+                "military-noble-military-person-24-燕-燕-ruler-4-BO",
+                "military-person-death-military-person-24-1118"
+              ]
+            },
+            {
+              "eventId": "military-family-military-person-26-秦-ruler-1-succession-2",
+              "reason": "NO_HEIR",
+              "text": "当次处理时，没有已登记的直接子嗣。没有可接续的合格直接子嗣，承袭链终止；不据此判定家族绝嗣。",
+              "children": [],
+              "grandchildren": 0,
+              "sourceEventIds": [
+                "military-family-military-person-26-秦-ruler-1-succession-1",
+                "military-person-death-military-person-40-1520"
+              ]
+            },
+            {
+              "eventId": "military-family-military-person-38-齐-ruler-8-succession-1",
+              "reason": "FOREIGN",
+              "text": "杨廷平当时已转属他国，原国承袭资格终止；后代与旧爵历史仍然保留。",
+              "children": [],
+              "grandchildren": 0,
+              "sourceEventIds": [
+                "military-noble-military-person-38-齐-齐-ruler-8-BO"
+              ]
+            },
+            {
+              "eventId": "military-family-military-person-58-燕-ruler-4-succession-1",
+              "reason": "FOREIGN",
+              "text": "裴君平当时已转属他国，原国承袭资格终止；后代与旧爵历史仍然保留。",
+              "children": [
+                {
+                  "memberId": "family-member-1143910908-1838",
+                  "name": "裴元昭",
+                  "reason": "符合当时直接承袭资格"
+                }
+              ],
+              "grandchildren": 0,
+              "sourceEventIds": [
+                "military-noble-military-person-58-燕-燕-ruler-4-BO"
+              ]
+            },
+            {
+              "eventId": "military-family-military-person-62-齐-ruler-8-succession-1",
+              "reason": "FORFEITED",
+              "text": "蒲世睦本人受到本朝正式谋逆重处分，相关承袭资格终止；不等于其他家族成员受罚。",
+              "children": [],
+              "grandchildren": 0,
+              "sourceEventIds": [
+                "military-noble-military-person-62-齐-齐-ruler-8-BO",
+                "court-coup-齐-2328-ban"
+              ]
+            }
+          ]
+        }
+      },
+      "performance": {
+        "projectionMs": 29.400000002235174,
+        "serializationMs": 13.799999997019768,
+        "saveBytes": 3955057,
+        "updateMethodCallsIncludingNonAnnualReturns": 2400,
+        "updateMethodTotalMs": 226.70000002905726,
+        "updateMethodMaxMs": 9.100000001490116,
+        "visibleTrunkMembers": 9,
+        "elapsedMs": 69482.69999999925,
+        "heapBytes": 118270564
+      },
+      "recruitment": {
+        "titleCandidateChecks": 8,
+        "titleVacancyOpportunities": 8,
+        "titleExpectedAppointments": 0.8141286430960344,
+        "titleSelected": 2,
+        "titleAppointments": 2,
+        "opportunities": 273,
+        "qualifiedPersonChecks": 473,
+        "poolDraws": 14,
+        "selected": 3,
+        "appointments": 3,
+        "rolledBackSelections": 0,
+        "executionFailures": 0,
+        "expectedAppointments": 2.582592289726599,
+        "baselineExpectedAppointments": 1.461701136426128,
+        "conditionalExpectedSelections": 3.494263898225709,
+        "weightSum": 596,
+        "distinctCandidates": 26,
+        "totalAppointments": 65,
+        "royalEnlisted": 12,
+        "nonFamilyNonRoyalAppointments": 50,
+        "ageBlocked": 100,
+        "capacityBlocked": 8,
+        "identityBlocked": 0
+      },
+      "politics": {
+        "attempts": 1,
+        "successes": 0,
+        "failures": 1,
+        "transactionFailures": 0
+      },
+      "fullCommandSamples": 296,
+      "commandObservationSamples": 16657,
+      "integrity": {
+        "strictSave": true,
+        "populationUnexplained": 0,
+        "duplicateHistory": 0,
+        "duplicatePopulation": 0,
+        "duplicateFamilies": 0,
+        "formationOwnershipConflicts": 0,
+        "royalIdentityConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "duplicateActiveRoyalMembers": 0
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "secessionBoundary": {
+        "actualLateSameMonthCases": 1,
+        "rejectedPostCheckpointForgeries": 1
+      }
+    },
+    {
+      "seed": "regional-2",
+      "years": 200,
+      "metrics": {
+        "worldPopulation": 138,
+        "peakWorldPopulation": 156,
+        "activeStates": 4,
+        "historicalStates": 7,
+        "captures": 35,
+        "recoveries": 5,
+        "normalRoyalSuccessions": 39,
+        "worldRandomPosition": 13959,
+        "politicalEvents": {
+          "ordinaryFoundings": 0,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "canonicalSha256": "dffa1f26f69ab45dfc582d7d2db5dd612661b42becd3d7b9cf6115b40b86a942",
+      "grantSources": {
+        "MILITARY_BO": 2,
+        "MILITARY_HOU": 2,
+        "MILITARY_GONG": 2,
+        "COURT": 0,
+        "FOUNDING": 0
+      },
+      "personalMilitaryBOIndividuals": 2,
+      "charterSources": {
+        "MILITARY_BO": 1,
+        "MILITARY_HOU": 0,
+        "MILITARY_GONG": 0,
+        "COURT": 0,
+        "FOUNDING": 0
+      },
+      "family": {
+        "families": 1,
+        "members": 5,
+        "livingMapMembers": 4,
+        "withDescendants": 1,
+        "foundersDied": 1,
+        "successions": 1,
+        "civilianInheritances": 1,
+        "ended": 0,
+        "terminalReasons": {},
+        "renewals": 0,
+        "twoGenerationService": 0,
+        "secondGenerationOfficers": 0,
+        "thirdGenerationOfficers": 0,
+        "descendantPersonalGrants": 0,
+        "actualSuccessionRanks": {
+          "HOU": 1,
+          "BO": 0,
+          "ZI": 0,
+          "NAN": 0
+        },
+        "currentStatus": {
+          "active": 1,
+          "historical": 0,
+          "extinct": 0,
+          "livingUntitledHouses": 0,
+          "explanations": []
+        }
+      },
+      "performance": {
+        "projectionMs": 4.099999997764826,
+        "serializationMs": 10.5,
+        "saveBytes": 3202283,
+        "updateMethodCallsIncludingNonAnnualReturns": 2400,
+        "updateMethodTotalMs": 224.10000000149012,
+        "updateMethodMaxMs": 6.099999997764826,
+        "visibleTrunkMembers": 2,
+        "elapsedMs": 70433.90000000224,
+        "heapBytes": 151433351
+      },
+      "recruitment": {
+        "titleCandidateChecks": 4,
+        "titleVacancyOpportunities": 4,
+        "titleExpectedAppointments": 0.3987218879607454,
+        "titleSelected": 0,
+        "titleAppointments": 0,
+        "opportunities": 39,
+        "qualifiedPersonChecks": 83,
+        "poolDraws": 0,
+        "selected": 0,
+        "appointments": 0,
+        "rolledBackSelections": 0,
+        "executionFailures": 0,
+        "expectedAppointments": 0.6157620757021397,
+        "baselineExpectedAppointments": 0.16790450240525207,
+        "conditionalExpectedSelections": 0,
+        "weightSum": 123,
+        "distinctCandidates": 4,
+        "totalAppointments": 36,
+        "royalEnlisted": 4,
+        "nonFamilyNonRoyalAppointments": 32,
+        "ageBlocked": 0,
+        "capacityBlocked": 0,
+        "identityBlocked": 0
+      },
+      "politics": {
+        "attempts": 0,
+        "successes": 0,
+        "failures": 0,
+        "transactionFailures": 0
+      },
+      "fullCommandSamples": 496,
+      "commandObservationSamples": 13176,
+      "integrity": {
+        "strictSave": true,
+        "populationUnexplained": 0,
+        "duplicateHistory": 0,
+        "duplicatePopulation": 0,
+        "duplicateFamilies": 0,
+        "formationOwnershipConflicts": 0,
+        "royalIdentityConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "duplicateActiveRoyalMembers": 0
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "secessionBoundary": {
+        "actualLateSameMonthCases": 0,
+        "rejectedPostCheckpointForgeries": 0
+      }
+    },
+    {
+      "seed": "regional-3",
+      "years": 200,
+      "metrics": {
+        "worldPopulation": 132,
+        "peakWorldPopulation": 151,
+        "activeStates": 5,
+        "historicalStates": 10,
+        "captures": 50,
+        "recoveries": 4,
+        "normalRoyalSuccessions": 34,
+        "worldRandomPosition": 14264,
+        "politicalEvents": {
+          "ordinaryFoundings": 2,
+          "militarySecessions": 1,
+          "depositions": 1,
+          "militarySupportedDepositions": 1,
+          "nonMilitaryUsurpations": 0,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "canonicalSha256": "ae6020d5209159fd50dbca7a80b051e5c42e28cb46b6a6c92e34c23c7fa7b54a",
+      "grantSources": {
+        "MILITARY_BO": 6,
+        "MILITARY_HOU": 2,
+        "MILITARY_GONG": 0,
+        "COURT": 1,
+        "FOUNDING": 0
+      },
+      "personalMilitaryBOIndividuals": 6,
+      "charterSources": {
+        "MILITARY_BO": 5,
+        "MILITARY_HOU": 0,
+        "MILITARY_GONG": 0,
+        "COURT": 1,
+        "FOUNDING": 0
+      },
+      "family": {
+        "families": 6,
+        "members": 47,
+        "livingMapMembers": 10,
+        "withDescendants": 5,
+        "foundersDied": 4,
+        "successions": 4,
+        "civilianInheritances": 4,
+        "ended": 5,
+        "terminalReasons": {
+          "NO_HEIR": 3,
+          "REGIME_ENDED": 1,
+          "FOREIGN": 1
+        },
+        "renewals": 0,
+        "twoGenerationService": 2,
+        "secondGenerationOfficers": 1,
+        "thirdGenerationOfficers": 0,
+        "descendantPersonalGrants": 0,
+        "actualSuccessionRanks": {
+          "HOU": 0,
+          "BO": 2,
+          "ZI": 2,
+          "NAN": 0
+        },
+        "currentStatus": {
+          "active": 1,
+          "historical": 4,
+          "extinct": 1,
+          "livingUntitledHouses": 3,
+          "explanations": [
+            {
+              "eventId": "military-family-military-person-5-魏-ruler-10-succession-3",
+              "reason": "NO_HEIR",
+              "text": "当次处理时，没有已登记的直接子嗣。没有可接续的合格直接子嗣，承袭链终止；不据此判定家族绝嗣。",
+              "children": [],
+              "grandchildren": 0,
+              "sourceEventIds": [
+                "military-family-military-person-5-魏-ruler-10-succession-2",
+                "military-family-military-person-5-魏-ruler-10-family-member-1359921426-301-death"
+              ]
+            },
+            {
+              "eventId": "military-family-military-person-7-秦-ruler-1-succession-1",
+              "reason": "REGIME_ENDED",
+              "text": "原爵所属国家或王统的政治权威已经终结，旧朝承袭失效；并不表示家族成员死亡。",
+              "children": [],
+              "grandchildren": 0,
+              "sourceEventIds": [
+                "military-noble-military-person-7-秦-秦-ruler-1-BO"
+              ]
+            },
+            {
+              "eventId": "military-family-military-person-9-楚-ruler-14-succession-2",
+              "reason": "NO_HEIR",
+              "text": "当次处理时，没有已登记的直接子嗣。没有可接续的合格直接子嗣，承袭链终止；不据此判定家族绝嗣。",
+              "children": [],
+              "grandchildren": 0,
+              "sourceEventIds": [
+                "military-family-military-person-9-楚-ruler-14-succession-1",
+                "military-person-death-military-person-18-752"
+              ]
+            },
+            {
+              "eventId": "military-family-military-person-19-楚-ruler-14-succession-1",
+              "reason": "NO_HEIR",
+              "text": "当次处理时，没有已登记的直接子嗣。没有可接续的合格直接子嗣，承袭链终止；不据此判定家族绝嗣。",
+              "children": [],
+              "grandchildren": 0,
+              "sourceEventIds": [
+                "court-coup-楚-864-service-political-peerage",
+                "military-person-death-military-person-19-937"
+              ]
+            },
+            {
+              "eventId": "military-family-military-person-38-天水义军-ruler-72-succession-1",
+              "reason": "FOREIGN",
+              "text": "费定当时已转属他国，原国承袭资格终止；后代与旧爵历史仍然保留。",
+              "children": [],
+              "grandchildren": 0,
+              "sourceEventIds": [
+                "military-noble-military-person-38-天水义军-天水义军-ruler-72-BO"
+              ]
+            }
+          ]
+        }
+      },
+      "performance": {
+        "projectionMs": 23.100000001490116,
+        "serializationMs": 11.399999998509884,
+        "saveBytes": 3588215,
+        "updateMethodCallsIncludingNonAnnualReturns": 2400,
+        "updateMethodTotalMs": 281.3999999985099,
+        "updateMethodMaxMs": 8.300000000745058,
+        "visibleTrunkMembers": 11,
+        "elapsedMs": 67854.80000000075,
+        "heapBytes": 119713508
+      },
+      "recruitment": {
+        "titleCandidateChecks": 17,
+        "titleVacancyOpportunities": 17,
+        "titleExpectedAppointments": 1.675419844273223,
+        "titleSelected": 1,
+        "titleAppointments": 1,
+        "opportunities": 295,
+        "qualifiedPersonChecks": 967,
+        "poolDraws": 17,
+        "selected": 2,
+        "appointments": 2,
+        "rolledBackSelections": 0,
+        "executionFailures": 0,
+        "expectedAppointments": 3.9478254177557726,
+        "baselineExpectedAppointments": 2.0307349089990567,
+        "conditionalExpectedSelections": 3.647579387513472,
+        "weightSum": 1157.5,
+        "distinctCandidates": 41,
+        "totalAppointments": 46,
+        "royalEnlisted": 6,
+        "nonFamilyNonRoyalAppointments": 38,
+        "ageBlocked": 312,
+        "capacityBlocked": 15,
+        "identityBlocked": 0
+      },
+      "politics": {
+        "attempts": 2,
+        "successes": 1,
+        "failures": 1,
+        "transactionFailures": 0
+      },
+      "fullCommandSamples": 225,
+      "commandObservationSamples": 11782,
+      "integrity": {
+        "strictSave": true,
+        "populationUnexplained": 0,
+        "duplicateHistory": 0,
+        "duplicatePopulation": 0,
+        "duplicateFamilies": 0,
+        "formationOwnershipConflicts": 0,
+        "royalIdentityConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "duplicateActiveRoyalMembers": 0
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "secessionBoundary": {
+        "actualLateSameMonthCases": 0,
+        "rejectedPostCheckpointForgeries": 0
+      }
+    },
+    {
+      "seed": "regional-4",
+      "years": 200,
+      "metrics": {
+        "worldPopulation": 135,
+        "peakWorldPopulation": 148,
+        "activeStates": 5,
+        "historicalStates": 14,
+        "captures": 62,
+        "recoveries": 7,
+        "normalRoyalSuccessions": 40,
+        "worldRandomPosition": 14473,
+        "politicalEvents": {
+          "ordinaryFoundings": 7,
+          "militarySecessions": 0,
+          "depositions": 0,
+          "militarySupportedDepositions": 0,
+          "nonMilitaryUsurpations": 1,
+          "personalMilitaryUsurpations": 0,
+          "militaryPalaceParticipation": 0,
+          "explicitClaimSupport": 0
+        }
+      },
+      "canonicalSha256": "10f43e818064c4edd24906bf663eac6abaab17aa72c55c402c5f3f230f143b63",
+      "grantSources": {
+        "MILITARY_BO": 6,
+        "MILITARY_HOU": 3,
+        "MILITARY_GONG": 3,
+        "COURT": 0,
+        "FOUNDING": 0
+      },
+      "personalMilitaryBOIndividuals": 6,
+      "charterSources": {
+        "MILITARY_BO": 5,
+        "MILITARY_HOU": 0,
+        "MILITARY_GONG": 0,
+        "COURT": 0,
+        "FOUNDING": 0
+      },
+      "family": {
+        "families": 5,
+        "members": 37,
+        "livingMapMembers": 20,
+        "withDescendants": 4,
+        "foundersDied": 4,
+        "successions": 6,
+        "civilianInheritances": 6,
+        "ended": 3,
+        "terminalReasons": {
+          "NO_HEIR": 2,
+          "REGIME_ENDED": 1
+        },
+        "renewals": 0,
+        "twoGenerationService": 2,
+        "secondGenerationOfficers": 1,
+        "thirdGenerationOfficers": 0,
+        "descendantPersonalGrants": 0,
+        "actualSuccessionRanks": {
+          "HOU": 2,
+          "BO": 1,
+          "ZI": 2,
+          "NAN": 1
+        },
+        "currentStatus": {
+          "active": 2,
+          "historical": 2,
+          "extinct": 1,
+          "livingUntitledHouses": 2,
+          "explanations": [
+            {
+              "eventId": "military-family-military-person-28-齐-ruler-8-succession-2",
+              "reason": "NO_HEIR",
+              "text": "当次处理时，没有已登记的直接子嗣。没有可接续的合格直接子嗣，承袭链终止；不据此判定家族绝嗣。",
+              "children": [],
+              "grandchildren": 0,
+              "sourceEventIds": [
+                "military-family-military-person-28-齐-ruler-8-succession-1",
+                "military-family-military-person-28-齐-ruler-8-family-member-1306530608-940-death"
+              ]
+            },
+            {
+              "eventId": "military-family-military-person-31-齐-ruler-8-succession-2",
+              "reason": "NO_HEIR",
+              "text": "当次处理时，没有已登记的直接子嗣。没有可接续的合格直接子嗣，承袭链终止；不据此判定家族绝嗣。",
+              "children": [],
+              "grandchildren": 0,
+              "sourceEventIds": [
+                "military-family-military-person-31-齐-ruler-8-succession-1",
+                "military-person-death-military-person-41-1784"
+              ]
+            },
+            {
+              "eventId": "military-family-military-person-45-魏-ruler-11-succession-1",
+              "reason": "REGIME_ENDED",
+              "text": "原爵所属国家或王统的政治权威已经终结，旧朝承袭失效；并不表示家族成员死亡。",
+              "children": [],
+              "grandchildren": 0,
+              "sourceEventIds": [
+                "military-noble-military-person-45-魏-魏-ruler-11-BO"
+              ]
+            }
+          ]
+        }
+      },
+      "performance": {
+        "projectionMs": 31.5,
+        "serializationMs": 15.900000002235174,
+        "saveBytes": 3508346,
+        "updateMethodCallsIncludingNonAnnualReturns": 2400,
+        "updateMethodTotalMs": 217.39999996870756,
+        "updateMethodMaxMs": 8.099999997764826,
+        "visibleTrunkMembers": 11,
+        "elapsedMs": 80567.89999999851,
+        "heapBytes": 111536404
+      },
+      "recruitment": {
+        "titleCandidateChecks": 34,
+        "titleVacancyOpportunities": 33,
+        "titleExpectedAppointments": 3.246942540203429,
+        "titleSelected": 2,
+        "titleAppointments": 2,
+        "opportunities": 149,
+        "qualifiedPersonChecks": 642,
+        "poolDraws": 7,
+        "selected": 2,
+        "appointments": 2,
+        "rolledBackSelections": 0,
+        "executionFailures": 0,
+        "expectedAppointments": 4.524696430922965,
+        "baselineExpectedAppointments": 1.1617701714724533,
+        "conditionalExpectedSelections": 2.8249695056644333,
+        "weightSum": 803.75,
+        "distinctCandidates": 31,
+        "totalAppointments": 51,
+        "royalEnlisted": 2,
+        "nonFamilyNonRoyalAppointments": 47,
+        "ageBlocked": 139,
+        "capacityBlocked": 91,
+        "identityBlocked": 0
+      },
+      "politics": {
+        "attempts": 1,
+        "successes": 0,
+        "failures": 1,
+        "transactionFailures": 0
+      },
+      "fullCommandSamples": 969,
+      "commandObservationSamples": 13580,
+      "integrity": {
+        "strictSave": true,
+        "populationUnexplained": 0,
+        "duplicateHistory": 0,
+        "duplicatePopulation": 0,
+        "duplicateFamilies": 0,
+        "formationOwnershipConflicts": 0,
+        "royalIdentityConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "duplicateActiveRoyalMembers": 0
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "secessionBoundary": {
+        "actualLateSameMonthCases": 0,
+        "rejectedPostCheckpointForgeries": 0
+      }
+    }
+  ]
+}

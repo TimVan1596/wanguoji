@@ -1,0 +1,468 @@
+{
+  "baselineHead": "239b42edf869c50b9a7ed77cbd3b491bc889b7d7",
+  "versions": {
+    "app": "v0.99931z49",
+    "package": "0.99.215",
+    "worldSave": 47
+  },
+  "selectedPolicy": "FOUNDING",
+  "appointmentPolicy": "z48 MEDIUM unchanged: 5% ordinary window and bounded 9.5% noble vacancy window, maximum one appointment per faction-year",
+  "sampling": "regional-1..8 each 100 years, and regional-1..4 each 200 years; longer cohorts overlap initial seeds, not independent additional worlds",
+  "unpublished": [
+    "multiple hereditary periods",
+    "automatic descendant birth, rank or army",
+    "formal reserve roster"
+  ],
+  "profiles": {
+    "z48": {
+      "worlds": 8,
+      "yearsPerWorld": 100,
+      "worldYears": 800,
+      "grantSources": {
+        "MILITARY_BO": 16,
+        "MILITARY_HOU": 8,
+        "MILITARY_GONG": 5,
+        "COURT": 0,
+        "FOUNDING": 0
+      },
+      "charterSources": {
+        "MILITARY_BO": 0,
+        "MILITARY_HOU": 7,
+        "MILITARY_GONG": 0,
+        "COURT": 0,
+        "FOUNDING": 0
+      },
+      "family": {
+        "families": 7,
+        "members": 29,
+        "livingMapMembers": 19,
+        "withDescendants": 5,
+        "foundersDied": 4,
+        "successions": 5,
+        "civilianInheritances": 5,
+        "ended": 2,
+        "renewals": 0,
+        "twoGenerationService": 2,
+        "secondGenerationOfficers": 2,
+        "thirdGenerationOfficers": 0,
+        "descendantPersonalGrants": 0
+      },
+      "successionRanks": {
+        "HOU": 1,
+        "BO": 3,
+        "ZI": 1,
+        "NAN": 0
+      },
+      "terminalReasons": {
+        "NO_HEIR": 1,
+        "FORFEITED": 1
+      },
+      "recruitment": {
+        "opportunities": 167,
+        "qualifiedPersonChecks": 353,
+        "poolDraws": 8,
+        "selected": 2,
+        "appointments": 2,
+        "expectedAppointments": 3.452070513191394,
+        "titleAppointments": 2,
+        "nonFamilyNonRoyalAppointments": 168,
+        "totalAppointments": 198,
+        "ageBlocked": 47,
+        "capacityBlocked": 1,
+        "identityBlocked": 0,
+        "executionFailures": 0
+      },
+      "worldPopulation": 1055,
+      "activeStates": 40,
+      "fullCommandSampleFraction": 0.0318098197860294,
+      "performance": {
+        "meanSaveBytes": 1613798.875,
+        "maxSaveBytes": 1906175,
+        "meanProjectionMs": 1.900000000372529,
+        "maxProjectionMs": 4.699999999254942,
+        "meanSerializationMs": 5.44999999855645,
+        "maxUpdateMethodMs": 3,
+        "timingScope": "Actual endpoint JS timings; update calls include the existing monthly early return. Wall time/heap vary with host load."
+      },
+      "allIntegrityPassed": true,
+      "allTwelveMonthContinuationsAndSecondReadsPassed": true,
+      "secessionBoundary": {
+        "actualLateSameMonthCases": 0,
+        "rejectedPostCheckpointForgeries": 0
+      }
+    },
+    "baron": {
+      "worlds": 8,
+      "yearsPerWorld": 100,
+      "worldYears": 800,
+      "grantSources": {
+        "MILITARY_BO": 17,
+        "MILITARY_HOU": 9,
+        "MILITARY_GONG": 5,
+        "COURT": 1,
+        "FOUNDING": 0
+      },
+      "charterSources": {
+        "MILITARY_BO": 13,
+        "MILITARY_HOU": 0,
+        "MILITARY_GONG": 0,
+        "COURT": 1,
+        "FOUNDING": 0
+      },
+      "family": {
+        "families": 14,
+        "members": 55,
+        "livingMapMembers": 29,
+        "withDescendants": 11,
+        "foundersDied": 9,
+        "successions": 7,
+        "civilianInheritances": 7,
+        "ended": 9,
+        "renewals": 0,
+        "twoGenerationService": 5,
+        "secondGenerationOfficers": 5,
+        "thirdGenerationOfficers": 0,
+        "descendantPersonalGrants": 0
+      },
+      "successionRanks": {
+        "HOU": 1,
+        "BO": 3,
+        "ZI": 3,
+        "NAN": 0
+      },
+      "terminalReasons": {
+        "NO_HEIR": 7,
+        "REGIME_ENDED": 1,
+        "FORFEITED": 1
+      },
+      "recruitment": {
+        "opportunities": 286,
+        "qualifiedPersonChecks": 564,
+        "poolDraws": 20,
+        "selected": 5,
+        "appointments": 5,
+        "expectedAppointments": 4.370719138392013,
+        "titleAppointments": 4,
+        "nonFamilyNonRoyalAppointments": 169,
+        "totalAppointments": 207,
+        "ageBlocked": 42,
+        "capacityBlocked": 38,
+        "identityBlocked": 0,
+        "executionFailures": 0
+      },
+      "worldPopulation": 1066,
+      "activeStates": 41,
+      "fullCommandSampleFraction": 0.03209438481327065,
+      "performance": {
+        "meanSaveBytes": 1684880.75,
+        "maxSaveBytes": 1906208,
+        "meanProjectionMs": 3.5000000004656613,
+        "maxProjectionMs": 9.300000000745058,
+        "meanSerializationMs": 5.599999999627471,
+        "maxUpdateMethodMs": 3.300000000745058,
+        "timingScope": "Actual endpoint JS timings; update calls include the existing monthly early return. Wall time/heap vary with host load."
+      },
+      "allIntegrityPassed": true,
+      "allTwelveMonthContinuationsAndSecondReadsPassed": true,
+      "secessionBoundary": {
+        "actualLateSameMonthCases": 0,
+        "rejectedPostCheckpointForgeries": 0
+      }
+    },
+    "founding": {
+      "worlds": 8,
+      "yearsPerWorld": 100,
+      "worldYears": 800,
+      "grantSources": {
+        "MILITARY_BO": 17,
+        "MILITARY_HOU": 9,
+        "MILITARY_GONG": 5,
+        "COURT": 1,
+        "FOUNDING": 0
+      },
+      "charterSources": {
+        "MILITARY_BO": 13,
+        "MILITARY_HOU": 0,
+        "MILITARY_GONG": 0,
+        "COURT": 1,
+        "FOUNDING": 0
+      },
+      "family": {
+        "families": 14,
+        "members": 55,
+        "livingMapMembers": 29,
+        "withDescendants": 11,
+        "foundersDied": 9,
+        "successions": 7,
+        "civilianInheritances": 7,
+        "ended": 9,
+        "renewals": 0,
+        "twoGenerationService": 5,
+        "secondGenerationOfficers": 5,
+        "thirdGenerationOfficers": 0,
+        "descendantPersonalGrants": 0
+      },
+      "successionRanks": {
+        "HOU": 1,
+        "BO": 3,
+        "ZI": 3,
+        "NAN": 0
+      },
+      "terminalReasons": {
+        "NO_HEIR": 7,
+        "REGIME_ENDED": 1,
+        "FORFEITED": 1
+      },
+      "recruitment": {
+        "opportunities": 286,
+        "qualifiedPersonChecks": 564,
+        "poolDraws": 20,
+        "selected": 5,
+        "appointments": 5,
+        "expectedAppointments": 4.370719138392013,
+        "titleAppointments": 4,
+        "nonFamilyNonRoyalAppointments": 169,
+        "totalAppointments": 207,
+        "ageBlocked": 42,
+        "capacityBlocked": 38,
+        "identityBlocked": 0,
+        "executionFailures": 0
+      },
+      "worldPopulation": 1066,
+      "activeStates": 41,
+      "fullCommandSampleFraction": 0.03209438481327065,
+      "performance": {
+        "meanSaveBytes": 1684889,
+        "maxSaveBytes": 1906217,
+        "meanProjectionMs": 3.549999999580905,
+        "maxProjectionMs": 9.399999998509884,
+        "meanSerializationMs": 5.525000000139698,
+        "maxUpdateMethodMs": 3.699999999254942,
+        "timingScope": "Actual endpoint JS timings; update calls include the existing monthly early return. Wall time/heap vary with host load."
+      },
+      "allIntegrityPassed": true,
+      "allTwelveMonthContinuationsAndSecondReadsPassed": true,
+      "secessionBoundary": {
+        "actualLateSameMonthCases": 0,
+        "rejectedPostCheckpointForgeries": 0
+      }
+    },
+    "z48-200": {
+      "worlds": 4,
+      "yearsPerWorld": 200,
+      "worldYears": 800,
+      "grantSources": {
+        "MILITARY_BO": 30,
+        "MILITARY_HOU": 12,
+        "MILITARY_GONG": 8,
+        "COURT": 0,
+        "FOUNDING": 0
+      },
+      "charterSources": {
+        "MILITARY_BO": 0,
+        "MILITARY_HOU": 9,
+        "MILITARY_GONG": 0,
+        "COURT": 1,
+        "FOUNDING": 0
+      },
+      "family": {
+        "families": 10,
+        "members": 82,
+        "livingMapMembers": 24,
+        "withDescendants": 8,
+        "foundersDied": 7,
+        "successions": 11,
+        "civilianInheritances": 11,
+        "ended": 5,
+        "renewals": 0,
+        "twoGenerationService": 3,
+        "secondGenerationOfficers": 2,
+        "thirdGenerationOfficers": 1,
+        "descendantPersonalGrants": 0
+      },
+      "successionRanks": {
+        "HOU": 3,
+        "BO": 4,
+        "ZI": 3,
+        "NAN": 1
+      },
+      "terminalReasons": {
+        "FORFEITED": 1,
+        "NO_HEIR": 4
+      },
+      "recruitment": {
+        "opportunities": 516,
+        "qualifiedPersonChecks": 1570,
+        "poolDraws": 27,
+        "selected": 3,
+        "appointments": 3,
+        "expectedAppointments": 8.833539430685796,
+        "titleAppointments": 3,
+        "nonFamilyNonRoyalAppointments": 153,
+        "totalAppointments": 182,
+        "ageBlocked": 493,
+        "capacityBlocked": 137,
+        "identityBlocked": 0,
+        "executionFailures": 0
+      },
+      "worldPopulation": 506,
+      "activeStates": 14,
+      "fullCommandSampleFraction": 0.05370813156784344,
+      "performance": {
+        "meanSaveBytes": 2992394.75,
+        "maxSaveBytes": 3500567,
+        "meanProjectionMs": 7.7999999998137355,
+        "maxProjectionMs": 13,
+        "meanSerializationMs": 9.024999999441206,
+        "maxUpdateMethodMs": 8.199999999254942,
+        "timingScope": "Actual endpoint JS timings; update calls include the existing monthly early return. Wall time/heap vary with host load."
+      },
+      "allIntegrityPassed": true,
+      "allTwelveMonthContinuationsAndSecondReadsPassed": true,
+      "secessionBoundary": {
+        "actualLateSameMonthCases": 0,
+        "rejectedPostCheckpointForgeries": 0
+      }
+    },
+    "founding-200": {
+      "worlds": 4,
+      "yearsPerWorld": 200,
+      "worldYears": 800,
+      "grantSources": {
+        "MILITARY_BO": 21,
+        "MILITARY_HOU": 9,
+        "MILITARY_GONG": 5,
+        "COURT": 1,
+        "FOUNDING": 0
+      },
+      "charterSources": {
+        "MILITARY_BO": 17,
+        "MILITARY_HOU": 0,
+        "MILITARY_GONG": 0,
+        "COURT": 1,
+        "FOUNDING": 0
+      },
+      "family": {
+        "families": 18,
+        "members": 122,
+        "livingMapMembers": 45,
+        "withDescendants": 15,
+        "foundersDied": 13,
+        "successions": 13,
+        "civilianInheritances": 13,
+        "ended": 14,
+        "renewals": 0,
+        "twoGenerationService": 7,
+        "secondGenerationOfficers": 5,
+        "thirdGenerationOfficers": 0,
+        "descendantPersonalGrants": 0
+      },
+      "successionRanks": {
+        "HOU": 3,
+        "BO": 4,
+        "ZI": 5,
+        "NAN": 1
+      },
+      "terminalReasons": {
+        "NO_HEIR": 8,
+        "FOREIGN": 3,
+        "FORFEITED": 1,
+        "REGIME_ENDED": 2
+      },
+      "recruitment": {
+        "opportunities": 756,
+        "qualifiedPersonChecks": 2165,
+        "poolDraws": 38,
+        "selected": 7,
+        "appointments": 7,
+        "expectedAppointments": 11.670876214107476,
+        "titleAppointments": 5,
+        "nonFamilyNonRoyalAppointments": 167,
+        "totalAppointments": 198,
+        "ageBlocked": 551,
+        "capacityBlocked": 114,
+        "identityBlocked": 0,
+        "executionFailures": 0
+      },
+      "worldPopulation": 541,
+      "activeStates": 21,
+      "fullCommandSampleFraction": 0.0359815200652233,
+      "performance": {
+        "meanSaveBytes": 3563475.25,
+        "maxSaveBytes": 3955057,
+        "meanProjectionMs": 22.02500000037253,
+        "maxProjectionMs": 31.5,
+        "meanSerializationMs": 12.899999999441206,
+        "maxUpdateMethodMs": 9.100000001490116,
+        "timingScope": "Actual endpoint JS timings; update calls include the existing monthly early return. Wall time/heap vary with host load."
+      },
+      "allIntegrityPassed": true,
+      "allTwelveMonthContinuationsAndSecondReadsPassed": true,
+      "secessionBoundary": {
+        "actualLateSameMonthCases": 1,
+        "rejectedPostCheckpointForgeries": 1
+      }
+    }
+  },
+  "baselineMatchesPublishedZ48": true,
+  "lateEvidenceFix": {
+    "originalFailedSeed": "regional-1, FOUNDING, 200 years",
+    "personId": "military-person-38",
+    "rulerId": "昆明义军-ruler-109",
+    "cause": "A siege-ended activity appended after the saved local-crisis checkpoint in the same month was included by full-history replay.",
+    "change": "Replay career/defense from the already-saved canonical checkpoint; retain all original events and all eligibility checks.",
+    "negativeGate": "Natural saved transaction cloned, later activity inserted into both frozen military evidence and founding metadata; strict validator must reject."
+  },
+  "verification": {
+    "commands": [
+      {
+        "command": "pnpm test",
+        "exitCode": 0,
+        "elapsedSeconds": 105.13
+      },
+      {
+        "command": "pnpm exec tsc --noEmit",
+        "exitCode": 0,
+        "elapsedSeconds": 18.46
+      },
+      {
+        "command": "pnpm build",
+        "exitCode": 0,
+        "elapsedSeconds": 36.33
+      },
+      {
+        "command": "pnpm desktop:build",
+        "exitCode": 0,
+        "elapsedSeconds": 38.22
+      },
+      {
+        "command": "pnpm desktop:renderer-debug-build",
+        "exitCode": 0,
+        "elapsedSeconds": 67.61
+      }
+    ],
+    "unitTests": {
+      "files": 319,
+      "passed": 2487
+    },
+    "core": {
+      "military-nobility": {
+        "checks": 741,
+        "resultFile": "scripts/testing/results/military-nobility-z49-final.json"
+      },
+      "royal-military": {
+        "checks": 244,
+        "resultFile": "scripts/testing/results/royal-military-z49-final.json"
+      },
+      "military-local-secession": {
+        "checks": 145,
+        "resultFile": "scripts/testing/results/military-local-secession-z49-final.json"
+      },
+      "military-siege-secession": {
+        "checks": 149,
+        "resultFile": "scripts/testing/results/military-siege-secession-z49-final.json"
+      }
+    },
+    "manualGate": "PENDING_USER_ELECTRON_CHROME"
+  }
+}

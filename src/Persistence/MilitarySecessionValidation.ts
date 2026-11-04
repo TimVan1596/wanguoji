@@ -1,3 +1,4 @@
+import type {WorldEvent} from '../History/WorldHistory';
 import {militaryCrisisSourceIds} from "../Simulation/MilitaryCrisisSources";
 import {validMilitaryDisposition} from "../Politics/MilitaryPoliticalDisposition";
 import {militaryLocalCrisis,localMilitaryCareer} from "../Simulation/MilitaryLocalRules";
@@ -9,6 +10,12 @@ import {deriveMilitaryCareer} from "../Politics/MilitaryCareerEvidence";
 import {militaryPoliticalStrength} from "../Politics/MilitaryPoliticalInfluence";
 import {MILITARY_OFFICE_NAMES} from "../Politics/MilitaryOffice";
 const object=(v:any)=>v&&typeof v==="object"&&!Array.isArray(v);
+/** The stored local-crisis checkpoint predates transfer and any later same-month battle result. */
+export function militarySecessionEvidenceHistory(events:WorldEvent[],evidence:{entryKind?:string;localCrisis?:{historyBoundaryEventId?:string}}){
+ if(evidence.entryKind!=='LOCAL_CRISIS')return events;
+ const index=events.findIndex(e=>e.id===evidence.localCrisis?.historyBoundaryEventId);
+ return index<0?[]:events.slice(0,index+1);
+}
 export function validateMilitarySecessions(save:WorldSaveV1){
  const errors:string[]=[],state=save.registries?.militaryCommandRegistry;
  if(!state||!Array.isArray(state.people)||!Array.isArray(state.formations)||!Array.isArray(save.dynasties)||!Array.isArray(save.worldHistory?.events))return errors;
@@ -70,13 +77,13 @@ export function validateMilitarySecessions(save:WorldSaveV1){
     units.add(u?.unitId);users.add(u?.userId);
    }
    if(e.participants[0]?.userId!==p!.sourceUserId||e.participants[0]?.bornMonth!==p!.bornMonth||e.participants[0]?.name!==p!.name)valid=false;
-   try{const career=deriveMilitaryCareer(p!,state.formations,events,e.worldMonth),defense=militaryPoliticalDefense(p!,state.formations,events,e.worldMonth,i.sourceFactionId);
+   try{const evidenceEvents=militarySecessionEvidenceHistory(events,e),career=deriveMilitaryCareer(p!,state.formations,evidenceEvents,e.worldMonth),defense=militaryPoliticalDefense(p!,state.formations,evidenceEvents,e.worldMonth,i.sourceFactionId);
    if(!validMilitaryDisposition(e.disposition,p!.personId,p!.bornMonth,militaryPoliticalStrength(career.serviceMonths,e.originalMemberUnitIds.length,career.verifiedCaptures,defense.eventIds.length,defense.localServiceMonths).strength)||e.disposition?.loyalty!==e.participants[0]?.loyalty)valid=false;
    if(career.serviceMonths!==e.serviceMonths||!Array.isArray(e.capturedEventIds)||JSON.stringify([...career.capturedEventIds].sort())!==JSON.stringify([...e.capturedEventIds].sort())||JSON.stringify(e.defenseEventIds??[])!==JSON.stringify(defense.eventIds)||!(e.localCareerEventIds?JSON.stringify(e.localCareerEventIds)===JSON.stringify(career.activities.filter(x=>x.factionId===i.sourceFactionId).map(x=>x.eventId).sort())&&localMilitaryCareer(e.worldMonth-a!.startMonth,e.originalMemberUnitIds.length,e.localCareerEventIds.length,e.capturedEventIds.length,defense.eventIds.length):militaryPoliticalStrength(e.serviceMonths,e.originalMemberUnitIds.length,e.capturedEventIds.length,defense.eventIds.length,defense.localServiceMonths).eligible))valid=false;}catch{valid=false;}
    const founding=events.filter(x=>x.type==="empire-split"&&x.metadata?.foundingRulerId===r.rulerId);
    if(founding.length!==1||founding[0].metadata?.militaryPersonId!==p!.personId||founding[0].metadata?.militarySplitEvidence!==JSON.stringify(e)||founding[0].metadata?.transferredPopulation!==e.participants.length||founding[0].metadata?.externalPopulation!==0||founding[0].targetFactionId!==i.sourceFactionId)valid=false;
   }
-  if(!valid)errors.push("military secession identity, office, followers or life evidence mismatch: "+JSON.stringify({rulerId:r.rulerId,personId:p?.personId,month:i?.foundedMonth,life:{rulerNatural:r.naturalDeathMonth,militaryNatural:p?deriveMilitaryLifeSchedule(p).naturalDeathMonth:undefined,rulerDeath:r.deathMonth,militaryDeath:p?.deathMonth},office:{recorded:e?.office,replayed:grant?.office},command:{end:a?.endMonth,reason:a?.endReason,status:f?.status,originalMembers:e?.originalMemberUnitIds,archivedMembers:f?.memberUnitIds},identity:{rulerName:`${r.houseName?.replace(/氏$/,"")}${r.givenName}`,militaryName:p?.personalName,sourceLabel:i?.sourceUserLabel,militaryLabel:p?.name},evidence:e,replay:p?(()=>{const boundary=events.findIndex(x=>x.id===e?.localCrisis?.historyBoundaryEventId),read=(history:any[])=>{const career=deriveMilitaryCareer(p,state.formations,history,i.foundedMonth),defense=militaryPoliticalDefense(p,state.formations,history,i.foundedMonth,i.sourceFactionId);return {service:career.serviceMonths,captures:career.capturedEventIds,activities:career.activities.map(a=>a.eventId).sort(),defense:JSON.stringify(defense)};};return {full:read(events),boundary:read(events.slice(0,boundary+1))};})():undefined}));
+  if(!valid)errors.push(`military secession identity, office, followers or life evidence mismatch: ${r.rulerId}/${p?.personId??'missing-person'}`);
  }
  for(const p of state.people.filter(object))if(p.politicalRulerId&&!p.royalIdentity){
   const rs=records.filter(r=>r.rulerId===p.politicalRulerId&&(r.residentIdentity?.military?.personId===p.personId||r.militaryUsurperIdentity?.personId===p.personId));
