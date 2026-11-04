@@ -1,0 +1,298 @@
+{
+  "baselineHead": "ba23a6afbab7fe7e1a5d5c2eda1615ba4b3857ee",
+  "versions": {
+    "app": "v0.99931z50",
+    "package": "0.99.216",
+    "worldSave": 48
+  },
+  "sampling": "regional-1..8, 100 years each; optional regional-1..4, 200 years each overlap the first cohort and are not independent additional seeds",
+  "scope": "real Core/Phaser; no selected seeds, no population or political probability changes",
+  "profiles": {
+    "baseline": {
+      "worlds": 8,
+      "worldYears": 800,
+      "family": {
+        "families": 14,
+        "members": 55,
+        "successions": 7,
+        "ended": 9,
+        "active": 5,
+        "historical": 9,
+        "extinct": 0,
+        "withDescendants": 11,
+        "renewals": 0,
+        "descendantPersonalGrants": 0,
+        "newPeriods": 0,
+        "newPeriodSuccessions": 0,
+        "newPeriodEndings": 0,
+        "laterRegisteredChildren": 12,
+        "endedThenIndependentMerit": 0,
+        "eligibleNewPeriodAtEndpoint": 0,
+        "heirPersonChecks": 12,
+        "heirRejectedPersonChecks": 1,
+        "eligibleHeirPersonChecks": 11,
+        "twoGenerationService": 5
+      },
+      "rankCounts": {
+        "HOU": 1,
+        "BO": 3,
+        "ZI": 3,
+        "NAN": 0
+      },
+      "recruitment": {
+        "appointments": 5,
+        "expectedAppointments": 4.370719138392013,
+        "qualifiedPersonChecks": 564,
+        "poolDraws": 20,
+        "selected": 5,
+        "executionFailures": 0,
+        "totalAppointments": 207,
+        "royalAppointments": 33,
+        "ordinaryNonFamilyNonRoyal": 169
+      },
+      "performance": {
+        "meanSaveBytes": 1684889,
+        "maxProjectionMs": 12.199999999254942,
+        "meanSerializationMs": 8.22499999916181,
+        "maxFamilyUpdateCallMs": 8.099999997764826,
+        "maxTitleUpdateCallMs": 8.200000002980232,
+        "actualAnnualFamilyUpdateSamples": 0,
+        "maxActualAnnualFamilyUpdateMs": null,
+        "timingScope": "Endpoint timings and real method-call samples; monthly family calls include existing early returns. Host load affects wall time and heap."
+      },
+      "allIntegrityAndContinuationChecksPassed": true,
+      "allPublishedZ49MetricsMatch": true
+    },
+    "renewal": {
+      "worlds": 8,
+      "worldYears": 800,
+      "family": {
+        "families": 14,
+        "members": 55,
+        "successions": 7,
+        "ended": 9,
+        "active": 5,
+        "historical": 9,
+        "extinct": 0,
+        "withDescendants": 11,
+        "renewals": 0,
+        "descendantPersonalGrants": 0,
+        "newPeriods": 0,
+        "newPeriodSuccessions": 0,
+        "newPeriodEndings": 0,
+        "laterRegisteredChildren": 12,
+        "endedThenIndependentMerit": 0,
+        "eligibleNewPeriodAtEndpoint": 0,
+        "heirPersonChecks": 12,
+        "heirRejectedPersonChecks": 1,
+        "eligibleHeirPersonChecks": 11,
+        "twoGenerationService": 5
+      },
+      "rankCounts": {
+        "HOU": 1,
+        "BO": 3,
+        "ZI": 3,
+        "NAN": 0
+      },
+      "recruitment": {
+        "appointments": 5,
+        "expectedAppointments": 4.370719138392013,
+        "qualifiedPersonChecks": 564,
+        "poolDraws": 20,
+        "selected": 5,
+        "executionFailures": 0,
+        "totalAppointments": 207,
+        "royalAppointments": 33,
+        "ordinaryNonFamilyNonRoyal": 169
+      },
+      "performance": {
+        "meanSaveBytes": 1684979,
+        "maxProjectionMs": 9.700000002980232,
+        "meanSerializationMs": 9.725000000093132,
+        "maxFamilyUpdateCallMs": 7.300000000745058,
+        "maxTitleUpdateCallMs": 9,
+        "actualAnnualFamilyUpdateSamples": 0,
+        "maxActualAnnualFamilyUpdateMs": null,
+        "timingScope": "Endpoint timings and real method-call samples; monthly family calls include existing early returns. Host load affects wall time and heap."
+      },
+      "allIntegrityAndContinuationChecksPassed": true,
+      "allPublishedZ49MetricsMatch": true
+    },
+    "renewal-200": {
+      "worlds": 4,
+      "worldYears": 800,
+      "family": {
+        "families": 18,
+        "members": 122,
+        "successions": 13,
+        "ended": 14,
+        "active": 5,
+        "historical": 11,
+        "extinct": 2,
+        "withDescendants": 15,
+        "renewals": 0,
+        "descendantPersonalGrants": 0,
+        "newPeriods": 0,
+        "newPeriodSuccessions": 0,
+        "newPeriodEndings": 0,
+        "laterRegisteredChildren": 16,
+        "endedThenIndependentMerit": 0,
+        "eligibleNewPeriodAtEndpoint": 0,
+        "heirPersonChecks": 22,
+        "heirRejectedPersonChecks": 3,
+        "eligibleHeirPersonChecks": 19,
+        "twoGenerationService": 7
+      },
+      "rankCounts": {
+        "HOU": 3,
+        "BO": 4,
+        "ZI": 5,
+        "NAN": 1
+      },
+      "recruitment": {
+        "appointments": 7,
+        "expectedAppointments": 11.670876214107476,
+        "qualifiedPersonChecks": 2165,
+        "poolDraws": 38,
+        "selected": 7,
+        "executionFailures": 0,
+        "totalAppointments": 198,
+        "royalAppointments": 24,
+        "ordinaryNonFamilyNonRoyal": 167
+      },
+      "performance": {
+        "meanSaveBytes": 3563707.75,
+        "maxProjectionMs": 45.600000001490116,
+        "meanSerializationMs": 14.425000000745058,
+        "maxFamilyUpdateCallMs": 13.900000002235174,
+        "maxTitleUpdateCallMs": 32.5,
+        "actualAnnualFamilyUpdateSamples": 800,
+        "maxActualAnnualFamilyUpdateMs": 13.900000002235174,
+        "timingScope": "Endpoint timings and real method-call samples; monthly family calls include existing early returns. Host load affects wall time and heap."
+      },
+      "allIntegrityAndContinuationChecksPassed": true,
+      "allPublishedZ49MetricsMatch": true
+    }
+  },
+  "paired-100": [
+    {
+      "seed": "regional-1",
+      "allPublishedSimulationMetricsEqual": true,
+      "familyOutcomesEqual": true,
+      "fullCanonicalHashEqual": false,
+      "explanation": "SINGLE/RENEWAL is a persistent rule and event-policy source, so full hashes may differ even without a new period. No claim of hash equivalence is inferred from equal metrics."
+    },
+    {
+      "seed": "regional-2",
+      "allPublishedSimulationMetricsEqual": true,
+      "familyOutcomesEqual": true,
+      "fullCanonicalHashEqual": false,
+      "explanation": "SINGLE/RENEWAL is a persistent rule and event-policy source, so full hashes may differ even without a new period. No claim of hash equivalence is inferred from equal metrics."
+    },
+    {
+      "seed": "regional-3",
+      "allPublishedSimulationMetricsEqual": true,
+      "familyOutcomesEqual": true,
+      "fullCanonicalHashEqual": false,
+      "explanation": "SINGLE/RENEWAL is a persistent rule and event-policy source, so full hashes may differ even without a new period. No claim of hash equivalence is inferred from equal metrics."
+    },
+    {
+      "seed": "regional-4",
+      "allPublishedSimulationMetricsEqual": true,
+      "familyOutcomesEqual": true,
+      "fullCanonicalHashEqual": false,
+      "explanation": "SINGLE/RENEWAL is a persistent rule and event-policy source, so full hashes may differ even without a new period. No claim of hash equivalence is inferred from equal metrics."
+    },
+    {
+      "seed": "regional-5",
+      "allPublishedSimulationMetricsEqual": true,
+      "familyOutcomesEqual": true,
+      "fullCanonicalHashEqual": false,
+      "explanation": "SINGLE/RENEWAL is a persistent rule and event-policy source, so full hashes may differ even without a new period. No claim of hash equivalence is inferred from equal metrics."
+    },
+    {
+      "seed": "regional-6",
+      "allPublishedSimulationMetricsEqual": true,
+      "familyOutcomesEqual": true,
+      "fullCanonicalHashEqual": false,
+      "explanation": "SINGLE/RENEWAL is a persistent rule and event-policy source, so full hashes may differ even without a new period. No claim of hash equivalence is inferred from equal metrics."
+    },
+    {
+      "seed": "regional-7",
+      "allPublishedSimulationMetricsEqual": true,
+      "familyOutcomesEqual": true,
+      "fullCanonicalHashEqual": false,
+      "explanation": "SINGLE/RENEWAL is a persistent rule and event-policy source, so full hashes may differ even without a new period. No claim of hash equivalence is inferred from equal metrics."
+    },
+    {
+      "seed": "regional-8",
+      "allPublishedSimulationMetricsEqual": true,
+      "familyOutcomesEqual": true,
+      "fullCanonicalHashEqual": false,
+      "explanation": "SINGLE/RENEWAL is a persistent rule and event-policy source, so full hashes may differ even without a new period. No claim of hash equivalence is inferred from equal metrics."
+    }
+  ],
+  "unpublished": [
+    "true child population/minor inheritance",
+    "retrospective inheritance",
+    "parallel branch title chains",
+    "automatic office/army inheritance"
+  ],
+  "verification": {
+    "commands": [
+      {
+        "command": "pnpm test",
+        "exitCode": 0,
+        "elapsedSeconds": 83.26
+      },
+      {
+        "command": "pnpm exec tsc --noEmit",
+        "exitCode": 0,
+        "elapsedSeconds": 15.61
+      },
+      {
+        "command": "pnpm build",
+        "exitCode": 0,
+        "elapsedSeconds": 21.1
+      },
+      {
+        "command": "pnpm desktop:build",
+        "exitCode": 0,
+        "elapsedSeconds": 21.07
+      },
+      {
+        "command": "pnpm desktop:renderer-debug-build",
+        "exitCode": 0,
+        "elapsedSeconds": 39.74
+      }
+    ],
+    "manualGate": "PENDING_USER_ELECTRON_CHROME",
+    "unitTests": {
+      "files": 321,
+      "passed": 2496
+    },
+    "core": {
+      "military-nobility": {
+        "checks": 797,
+        "resultFile": "scripts/testing/results/military-nobility-z50-final.json"
+      },
+      "royal-military": {
+        "checks": 244,
+        "resultFile": "scripts/testing/results/royal-military-z50-final.json"
+      },
+      "military-local-secession": {
+        "checks": 148,
+        "resultFile": "scripts/testing/results/military-local-secession-z50-final.json"
+      },
+      "resident-founder": {
+        "checks": 171,
+        "resultFile": "scripts/testing/results/resident-founder-z50-final.json"
+      }
+    }
+  },
+  "limitations": [
+    "No supplied original Jin/Shen save: targeted production scenarios are independent evidence.",
+    "Same original faction/house only; no cross-state branch titles or minor resident model.",
+    "No natural reopening is claimed without a STARTED act; deterministic Core success is not a frequency estimate."
+  ]
+}

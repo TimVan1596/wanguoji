@@ -252,61 +252,61 @@
         "size": 150,
         "shape": "military-roster",
         "mountedNodes": 7,
-        "mountAndScrollMs": 66.09999999776483
+        "mountAndScrollMs": 64.19999999925494
       },
       {
         "size": 1000,
         "shape": "military-roster",
         "mountedNodes": 7,
-        "mountAndScrollMs": 67.69999999925494
+        "mountAndScrollMs": 62.899999998509884
       },
       {
         "size": 10000,
         "shape": "military-roster",
         "mountedNodes": 7,
-        "mountAndScrollMs": 67.39999999850988
+        "mountAndScrollMs": 63.69999999925494
       },
       {
         "size": 150,
         "shape": "deep",
         "mountedNodes": 5,
-        "mountMs": 31,
+        "mountMs": 29.399999998509884,
         "heapDelta": 0
       },
       {
         "size": 150,
         "shape": "wide",
         "mountedNodes": 7,
-        "mountMs": 36.5,
-        "heapDelta": 0
+        "mountMs": 30.200000002980232,
+        "heapDelta": 1421752
       },
       {
         "size": 1000,
         "shape": "deep",
         "mountedNodes": 5,
-        "mountMs": 56.80000000074506,
-        "heapDelta": 3640558
+        "mountMs": 40.80000000074506,
+        "heapDelta": 3607242
       },
       {
         "size": 1000,
         "shape": "wide",
         "mountedNodes": 7,
-        "mountMs": 35.69999999925494,
-        "heapDelta": -2319223
+        "mountMs": 33.5,
+        "heapDelta": -2198011
       },
       {
         "size": 10000,
         "shape": "deep",
         "mountedNodes": 5,
-        "mountMs": 262.19999999925494,
-        "heapDelta": 47988252
+        "mountMs": 165.09999999776483,
+        "heapDelta": 48248052
       },
       {
         "size": 10000,
         "shape": "wide",
         "mountedNodes": 7,
-        "mountMs": 99.5,
-        "heapDelta": 584814
+        "mountMs": 71.90000000223517,
+        "heapDelta": 9482793
       }
     ],
     "shortAppointmentAudits": [

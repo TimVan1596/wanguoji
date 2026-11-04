@@ -1,5 +1,8 @@
 import type {MilitaryFormation} from './MilitaryCommandRegistry';
 import type {WorldEvent} from '../History/WorldHistory';
+/** A newly created command cannot fight before its start, or end before its
+ * same-month actions. Other same-month facts retain their existing order. */
+export function insurgentChronicleOrder(a:WorldEvent,b:WorldEvent){const priority=(e:WorldEvent)=>e.type==='leader-command-started'?-1:e.type==='leader-command-ended'?1:0;return (a.monthIndex??a.year)-(b.monthIndex??b.year)||priority(a)-priority(b);}
 /** Read only. A political title alone proves no personal military command. */
 export function insurgentChronicle(rulerId:string,formations:readonly MilitaryFormation[],events:readonly WorldEvent[],month:number){
  const byId=new Map(events.map(e=>[e.id,e])),rows=new Map<string,WorldEvent>();
@@ -16,5 +19,5 @@ export function insurgentChronicle(rulerId:string,formations:readonly MilitaryFo
    }
   }
  }
- return [...rows.values()].sort((a,b)=>(a.monthIndex??a.year)-(b.monthIndex??b.year)||a.id.localeCompare(b.id));
+ return [...rows.values()].sort(insurgentChronicleOrder);
 }

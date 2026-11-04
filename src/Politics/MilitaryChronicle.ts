@@ -1,4 +1,4 @@
-import {insurgentChronicle} from './InsurgentChronicle';
+import {insurgentChronicle,insurgentChronicleOrder} from './InsurgentChronicle';
 import {militaryReignRelation} from "./RulerMilitaryBoundary";
 import {militaryDeathWording} from './MilitaryLifePresentation';
 import {appanageReadingText} from './MilitaryAppanage';
@@ -120,5 +120,5 @@ export function deriveMilitaryChronicle(person: MilitaryPerson, formations: Mili
       source: `${e.type} · ${e.id}`, activityKind:activities.get(e.id),victory });
   }
   if(person.politicalRulerId)for(const e of insurgentChronicle(person.politicalRulerId,formations,events,worldMonth))if(!entries.some(row=>row.eventId===e.id))entries.push({eventId:e.id,worldMonth:e.monthIndex??e.year,factionId:e.actorFactionId!,commandId:String(e.metadata?.commandId),text:e.title,source:`${e.type} · ${e.id}`,victory:['city-captured','city-recovered'].includes(e.type)});
-  return entries.sort((a,b)=>a.worldMonth-b.worldMonth||a.eventId.localeCompare(b.eventId));
+  return entries.sort((a,b)=>insurgentChronicleOrder(byId.get(a.eventId)!,byId.get(b.eventId)!)||a.eventId.localeCompare(b.eventId));
 }
