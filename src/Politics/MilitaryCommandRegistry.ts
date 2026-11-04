@@ -540,6 +540,7 @@ export class MilitaryCommandRegistryStore {
       const last=f.nobleSuccession?.at(-1);if(last?.kind==='ENDED'&&this.familyNoblePolicy==='SINGLE')continue;
       const holder=f.members.find(m=>m.memberId===(last?.holderMemberId??f.members[0].memberId))!,p=holder.militaryPersonId?this.people.get(holder.militaryPersonId):undefined,t=teams.find(t=>t.name===f.factionId),dy=dynasties.find(d=>d.factionId===f.factionId),epoch=dy?.houseEpochs?.find(e=>e.foundingRulerId===f.epochFounderId);
       const used=new Set(f.nobleSuccession?.map(a=>a.sourceGrantEventId)),canRenew=this.familyNoblePolicy==='RENEWAL'&&!!last&&f.members.some(m=>m.generation>0&&m.militaryPersonId&&m.deathMonth===undefined&&this.people.get(m.militaryPersonId)?.nobilityHistory?.some(g=>!used.has(g.eventId)));
+      if(last?.kind==='ENDED'&&!canRenew)continue;
       const needsReview=canRenew||(holder.deathMonth??Infinity)<=month||(holder.exitMonth??Infinity)<=month||familyResidenceAt(f,holder,month)!==f.factionId||p?.politicalRulerId||p?.politicalHistory?.some(a=>a.kind==='COURT_BAN'&&a.severity==='FORFEITURE'&&a.month<=month)||!last&&p?.honorHistory?.some(h=>h.kind==='REVOKED'&&h.month<=month)||t?.status!=='ACTIVE'||(epoch?.endMonth??Infinity)<=month;
       if(!needsReview)continue;
       const context={...createFamilyNobleContext(month,[f],this.getPeople(),WorldHistory.getRecordedEvents(),dynasties),renewable:this.familyNoblePolicy==='RENEWAL'};
