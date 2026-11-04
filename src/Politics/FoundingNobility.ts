@@ -9,7 +9,7 @@ const at=(e:WorldEvent)=>e.monthIndex??e.year;
 /** First annual reward window within twelve months; two actual pre-state captures, including an enemy capital.
  * One deterministic award per real state foundation, no lottery and no restoration award. */
 export function selectFoundingNobleGrant(people:readonly MilitaryPerson[],formations:readonly MilitaryFormation[],events:readonly WorldEvent[],month:number,team:any,dy:Dynasty):NobleGrant|undefined{
- if(month%12!==0||team.status!=='ACTIVE'||team.identityStage!=='STATE'||team.stateFoundedMonth===undefined||team.origin?.type==='INITIAL')return;
+ if(month%12!==0||team.status!=='ACTIVE'||team.identityStage!=='STATE'||!['KING','EMPEROR'].includes(team.sovereigntyRank)||dy.factionId!==team.name||team.stateFoundedMonth===undefined||team.origin?.type==='INITIAL')return;
  const r=dy.rulers.find(r=>r.id===dy.currentRulerId),epoch=nobleEpochForRuler(dy,dy.currentRulerId),foundation=events.find(e=>e.type==='state-founded'&&e.actorFactionId===team.name&&at(e)===team.stateFoundedMonth);
  if(!r||r.status!=='ruling'||r.endYear!==undefined||r.deathMonth!==undefined||(r.naturalDeathYear??Infinity)<=month||!epoch||!foundation||foundation.rulerId!==r.id||at(foundation)>month||month-at(foundation)>=12||events.some(e=>e.type==='founding-peerage-granted'&&e.metadata?.foundingEventId===foundation.id))return;
  const prior=events.slice(0,events.indexOf(foundation)),start=Math.max(team.origin?.foundedMonth??0,at(foundation)-120);

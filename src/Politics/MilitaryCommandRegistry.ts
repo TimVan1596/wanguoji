@@ -166,7 +166,7 @@ export class MilitaryCommandRegistryStore {
   private longRangeOrderSamples = new Map<string, number>();
   private eventWriter?: (event: Omit<WorldEvent, "id"> & { id: string }) => string;
   private eventReader: (factionId: string) => WorldEvent[] = factionId => WorldHistory.getEventsForFaction(factionId);
-  private diagnostics = { familyLifeFailures:0,familyTitleIdentityRejected:0,familyTitleCandidateChecks:0,familyTitleRejectedCandidates:0,familyTitleFailures:0,familyAppointmentFailures:0,familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
+  private diagnostics = { foundingRewardFailures:0,familyLifeFailures:0,familyTitleIdentityRejected:0,familyTitleCandidateChecks:0,familyTitleRejectedCandidates:0,familyTitleFailures:0,familyAppointmentFailures:0,familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
     unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
 
   reset() {
@@ -178,7 +178,7 @@ export class MilitaryCommandRegistryStore {
     this.lastEvaluationMonth = -1;
     this.lastArrivalTargetByCommand.clear();
     this.longRangeOrderSamples.clear();
-    this.diagnostics = { familyLifeFailures:0,familyTitleIdentityRejected:0,familyTitleCandidateChecks:0,familyTitleRejectedCandidates:0,familyTitleFailures:0,familyAppointmentFailures:0,familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
+    this.diagnostics = { foundingRewardFailures:0,familyLifeFailures:0,familyTitleIdentityRejected:0,familyTitleCandidateChecks:0,familyTitleRejectedCandidates:0,familyTitleFailures:0,familyAppointmentFailures:0,familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
       unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
   }
 
@@ -205,7 +205,7 @@ export class MilitaryCommandRegistryStore {
     this.lastEvaluationMonth = state.lastEvaluationMonth;
     this.lastArrivalTargetByCommand.clear();
     this.longRangeOrderSamples.clear();
-    this.diagnostics = { familyLifeFailures:0,familyTitleIdentityRejected:0,familyTitleCandidateChecks:0,familyTitleRejectedCandidates:0,familyTitleFailures:0,familyAppointmentFailures:0,familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
+    this.diagnostics = { foundingRewardFailures:0,familyLifeFailures:0,familyTitleIdentityRejected:0,familyTitleCandidateChecks:0,familyTitleRejectedCandidates:0,familyTitleFailures:0,familyAppointmentFailures:0,familyAgeBlocked:0,familyCapBlocked:0,familyIdentityBlocked:0,familyUnitBlocked:0,familyPopulationBlocked:0,familyCandidateChecks:0, provisionalChecks:0,provisionalNoCandidate:0,provisionalCapacityBlocked:0,provisionalDraws:0,provisionalMisses:0,provisionalAppointments:0,candidates: 0, eligible: 0, appointments: 0, capBlocked: 0, unitBlocked: 0, orders: 0, captures: 0, deaths: 0,
       unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
   }
 
@@ -482,13 +482,17 @@ export class MilitaryCommandRegistryStore {
       metadata:{personId:person.personId,sourceUserId:person.sourceUserId,personalName:person.personalName,commandId:appointment.commandId,previousOffice:previous?.office??"NONE",office:grant.office,serviceMonths:grant.serviceMonths,captureEventIds:JSON.stringify(grant.captureEventIds),...(grant.promotionBasis?{promotionBasis:grant.promotionBasis,activityEventIds:JSON.stringify(grant.activityEventIds??[])}:{})}});
   }
 
-  private eligibleNobleGrant(person:MilitaryPerson,month:number,team:Team,dy:Dynasty){
+  private nobleServiceBinding(person:MilitaryPerson,month:number,team:Team){
     const user=team.getUserById(person.sourceUserId);
     if(month>=deriveMilitaryLifeSchedule(person).retirementMonth||!user?.matchesMilitaryLife(person)||user.role!=="NORMAL"||user.rulerId||user.player.rulerId||!user.player.logicalUnitId)return;
     const binding=this.recruitmentContext?.()?.registry.getEntry(user.player.logicalUnitId),state=binding?.state;
     if(!binding||binding.player!==user.player||!state?.alive||state.userId!==user.id||state.unitId!==user.player.logicalUnitId||state.factionId!==team.name||state.role!=='NORMAL'||state.rulerId||user.player.user!==user||user.player.team!==team||!user.player.active||user.player.parent||user.player.children?.length)return;
     const active=this.getFormations().filter(f=>f.commanderPersonId===person.personId&&f.status==='ACTIVE');
     if(active.length!==1||!active[0].memberUnitIds.includes(user.player.logicalUnitId))return;
+    return user;
+  }
+  private eligibleNobleGrant(person:MilitaryPerson,month:number,team:Team,dy:Dynasty){
+    if(!this.nobleServiceBinding(person,month,team))return;
     return nextNobleGrant(person,this.getFormations(),this.eventReader(team.name),month,team,dy);
   }
   private recordNoble(person:MilitaryPerson,grant:NobleGrant,courtServiceEventId?:string,courtCoupEventId?:string){
@@ -510,9 +514,9 @@ export class MilitaryCommandRegistryStore {
     if(month%12!==0||this.familyFoundationPolicy!=='FOUNDING'||!this.eventWriter)return;
     for(const team of teams){if(team.origin?.type==='INITIAL'||team.stateFoundedMonth===undefined||month-team.stateFoundedMonth>=12)continue;const dy=dynasties.find(d=>d.factionId===team.name);if(!dy)continue;
       const grant=selectFoundingNobleGrant(this.getPeople(),this.getFormations(),WorldHistory.getRecordedEvents(),month,team,dy);if(!grant)continue;
-      const person=this.people.get(grant.personId)!,user=team.getUserById(person.sourceUserId),command=this.formations.get(grant.commandId);
-      if(!user||user.isDestroyed||user.militaryPersonId!==person.personId||user.bornMonth!==person.bornMonth||user.team!==team||user.role!=='NORMAL'||user.rulerId||!user.player.active||!command?.memberUnitIds.includes(user.player.logicalUnitId??''))continue;
-      try{this.familyTransaction(team,()=>this.recordNoble(person,grant));}catch{ /* Keep the already-committed founding; the entire independent award rolls back. */ }
+      const person=this.people.get(grant.personId)!;
+      if(!this.nobleServiceBinding(person,month,team))continue;
+      try{this.familyTransaction(team,()=>this.recordNoble(person,grant));}catch{this.diagnostics.foundingRewardFailures++; /* The earlier state formation remains committed. */ }
     }
   }
   private commitFamilyHistory(event:WorldEvent,apply:()=>void){

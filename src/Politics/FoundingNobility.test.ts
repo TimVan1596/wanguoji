@@ -5,7 +5,7 @@ function fixture(){
  const formations:any=[{commandId:'f',commanderPersonId:'p',factionId:'a',status:'ACTIVE',captures:[{eventId:'cap',cityId:'one',month:62},{eventId:'city',cityId:'two',month:64}],memberUnitIds:['unit']}];
  const events:any=[{id:'cap',year:62,type:'capital-fallen',actorFactionId:'a',targetFactionId:'enemy',cityId:'one',metadata:{commanderPersonId:'p',commandId:'f',wasCapital:1}},{id:'city',year:64,type:'city-captured',actorFactionId:'a',targetFactionId:'enemy',cityId:'two',metadata:{commanderPersonId:'p',commandId:'f',wasCapital:0}},{id:'state',year:72,type:'state-founded',actorFactionId:'a',rulerId:'king'}];
  const team:any={name:'a',displayName:'葛',origin:{type:'REBEL',foundedMonth:0},status:'ACTIVE',identityStage:'STATE',stateFoundedMonth:72,sovereigntyRank:'KING',nameHistory:[{name:'葛',startMonth:72}]};
- const d:any={currentRulerId:'king',rulers:[{id:'king',houseName:'甲氏',givenName:'安',status:'ruling',accessionYear:0,reignOrdinal:1,naturalDeathYear:1000}],houseEpochs:[{foundingRulerId:'king',startMonth:0}]};
+ const d:any={factionId:'a',currentRulerId:'king',rulers:[{id:'king',houseName:'甲氏',givenName:'安',status:'ruling',accessionYear:0,reignOrdinal:1,naturalDeathYear:1000}],houseEpochs:[{foundingRulerId:'king',startMonth:0}]};
  return {p,formations,events,team,d,run(){return plan([this.p],this.formations,this.events,72,this.team,this.d);}};
 }
 it('requires actual pre-state capital and distinct city receipts; no mutation, troops or new capture credits',()=>{const x=fixture(),before=JSON.stringify(x),g=x.run()!;expect(g).toMatchObject({basis:'FOUNDING',rank:'BO',foundingEventId:'state',foundingMeritEventIds:['cap','city'],captureEventIds:[],serviceMonths:0});expect(JSON.stringify(x)).toBe(before);});
