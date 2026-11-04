@@ -74,8 +74,11 @@ export async function checkFamilyNobleCore(core:any,factionId:string,childId:num
     const dialog=document.querySelector('[role="dialog"]')!;
     check(!Array.from(dialog.querySelectorAll('button')).some(b=>b.textContent?.includes('始祖')),'actual extinct house leaves the default active overview without deleting its genealogy');
     const history=Array.from(dialog.querySelectorAll('button')).find(b=>b.textContent==='历史故家')!;flushSync(()=>history.click());const open=Array.from(dialog.querySelectorAll('button')).find(b=>b.textContent?.includes('始祖'))!;check(!!open,'actual historic house remains discoverable from historical houses');flushSync(()=>open.click());
+    check(!Array.from(dialog.querySelectorAll('summary')).some(n=>n.textContent==='原始史料与技术依据'),'closed family history does not mount the technical source timeline');
+    const historyToggle=Array.from(dialog.querySelectorAll('summary')).find(n=>n.textContent==='家族史料')!;flushSync(()=>{historyToggle.parentElement!.setAttribute('open','');historyToggle.parentElement!.dispatchEvent(new Event('toggle'));});await new Promise(r=>setTimeout(r,0));flushSync(()=>{});
     const cause=Array.from(dialog.querySelectorAll('summary')).find(n=>n.textContent==='原始史料与技术依据')!;flushSync(()=>{cause.parentElement!.setAttribute('open','');cause.parentElement!.dispatchEvent(new Event('toggle'));});await new Promise(r=>setTimeout(r,0));flushSync(()=>{});
     check(cause.parentElement?.textContent?.includes('没有已入籍、已登记的直接子嗣'),`actual committed no-heir result explains the contemporaneous direct-child evidence: ${cause.parentElement?.textContent}`);
+    flushSync(()=>{historyToggle.parentElement!.removeAttribute('open');historyToggle.parentElement!.dispatchEvent(new Event('toggle'));});await new Promise(r=>setTimeout(r,0));flushSync(()=>{});check(!Array.from(dialog.querySelectorAll('summary')).some(n=>n.textContent==='原始史料与技术依据'),'closing family history unmounts its technical records again');
     check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,'historic-house classification and explanation do not change actual life, inheritance, family or RNG');
    }finally{flushSync(()=>root.unmount());host.remove();}
   }
