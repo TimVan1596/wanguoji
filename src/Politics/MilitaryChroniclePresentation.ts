@@ -62,7 +62,7 @@ export function selectMilitaryMilestones(entries:MilitaryChronicleEntry[],events
   return selectChronicleHighlights(candidates,limit,e=>{
     const event=byId.get(e.eventId),type=event?.type??e.source.split(" · ")[0];
     const priority=type==="military-person-died"?1200:e===firstGrant?1100:["court-coup-attempt","court-coup-result","military-court-sanction","royal-succession-sanction","court-service-granted","court-reward-granted"].includes(type)?1080:e===representative?1050:type==="ruler-deposed"||type==="dynasty-usurped"||type==="empire-split"||type==="ruler-acceded"||type==="ruler-succession"?1000:
-      ["court-peerage-granted","military-ennobled","military-posthumous","military-title-revoked"].includes(type)?970:type==="military-appanage"&&event?.importance==="major"?960:type==="military-office-granted"?950:type==="military-command-ended"?900:e.victory&&event?.metadata?.wasCapital===1?700:
+      ["founding-peerage-granted","court-peerage-granted","military-ennobled","military-posthumous","military-title-revoked"].includes(type)?970:type==="military-appanage"&&event?.importance==="major"?960:type==="military-office-granted"?950:type==="military-command-ended"?900:e.victory&&event?.metadata?.wasCapital===1?700:
       e.victory&&type==="city-recovered"?650:e.victory?400:200;
     return {id:e.eventId,month:e.worldMonth,priority,cityId:e.victory?event?.cityId:undefined};
   });

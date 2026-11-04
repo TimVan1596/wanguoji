@@ -10,12 +10,13 @@ export function historyEntityLinks(e:WorldEvent,families:readonly MilitaryFamily
  const add=(label:string,target:HistoryEntityLink['target'])=>{if(!links.some(l=>JSON.stringify(l.target)===JSON.stringify(target)))links.push({label,target});};
  for(const id of local)if(factionIds.has(id))add('查看国家',{kind:'FACTION',id});
  if(e.cityId&&cityIds.has(e.cityId))add('查看城市',{kind:'CITY',id:e.cityId});
- const f=typeof m.familyId==='string'?families.find(f=>f.familyId===m.familyId&&f.factionId===e.actorFactionId):undefined;
+ const f=typeof m.familyId==='string'?families.find(f=>f.familyId===m.familyId&&f.factionId===e.actorFactionId):['military-ennobled','court-peerage-granted','founding-peerage-granted'].includes(e.type)?families.find(f=>f.factionId===e.actorFactionId&&f.members.some(member=>member.militaryPersonId===m.personId)&&people.some(p=>p.personId===m.personId&&p.nobilityHistory?.some(g=>g.eventId===e.id&&e.metadata?.nobility===JSON.stringify(g)))):undefined;
  if(f){
   let memberIds:string[]=[];let valid=false;
   if(['family-title-succeeded','family-title-ended'].includes(e.type))try{const a=f.nobleSuccession?.find(a=>a.eventId===e.id&&a.month===month&&a.familyId===f.familyId);if(a&&m.familyNobleAct===JSON.stringify(a)){memberIds=[a.previousMemberId,...a.holderMemberId?[a.holderMemberId]:[]];valid=true;}}catch{}
   else if(e.type==='military-family-founded'&&e.id===`${f.familyId}-founded`&&m.sourceEventId===f.sourceEventId){memberIds=f.members.filter(q=>q.militaryPersonId===f.founderPersonId).map(q=>q.memberId);valid=true;}
   else if(e.type==='military-family-merit'&&f.renewals?.some(r=>r.memberId===m.memberId&&r.month===month&&r.sourceEventId===m.sourceEventId)){memberIds=[String(m.memberId)];valid=true;}
+  if(['military-ennobled','court-peerage-granted','founding-peerage-granted'].includes(e.type)){memberIds=f.members.filter(q=>q.militaryPersonId===m.personId).map(q=>q.memberId);valid=memberIds.length>0;}
   if(valid&&factionIds.has(f.factionId)){
    add(`查看${f.surname}氏总谱`,{kind:'FAMILY',factionId:f.factionId,id:f.familyId});
    for(const id of memberIds){const member=f.members.find(q=>q.memberId===id);if(!member)continue;add(`定位${member.name}`,{kind:'FAMILY',factionId:f.factionId,id:f.familyId,memberId:id});const p=member.militaryPersonId&&people.find(p=>p.personId===member.militaryPersonId&&p.sourceUserId===member.sourceUserId&&p.bornMonth===member.bornMonth);if(p&&p.appointments.some(a=>a.factionId===f.factionId&&a.startMonth<=month))add(`军政档案 · ${member.name}`,{kind:'MILITARY',factionId:f.factionId,id:p.personId});}

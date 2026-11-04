@@ -1,3 +1,5 @@
+import {checkBaronFamilies} from './BaronFamilyCoreChecks';
+import {checkFoundingPeerage} from './FoundingPeerageCoreChecks';
 import {checkMilitaryFamilies} from './MilitaryFamilyCoreChecks';
 import {checkCourtFates} from './CourtFateCoreChecks';
 import {checkCourtCoups} from './CourtCoupCoreChecks';
@@ -49,7 +51,7 @@ export async function runMilitaryNobilityCore(seed:string){
   // Equal willingness/contest multipliers isolate the existing title and office regressions.
   const minimumAmbition=Math.min(...ids.map(id=>militaryAmbition(id,Military.getPerson(id)!.bornMonth)));
   for(const u of users){const p=Military.getPerson(u.militaryPersonId!)!;u.loyalty=militaryAmbition(p.personId,p.bornMonth)-minimumAmbition;}
-  clock(216);const base=strict();checkStateFormationCore(core,base,check);checkRoyalHonors(core,base,check);checkRoyalHonorCompetition(core,base,check);checkCourtCoups(core,base,factionId,check);Dynasty.setPoliticalCalibrationForSimulation('MEDIUM');checkCourtCoups(core,exportWorldSave(core),factionId,check);hydrateWorldSave(core,structuredClone(base));checkCourtFates(core,base,factionId,check,untitledCourtBase!);checkRoyalCourtAttempt(core,base,check);await checkMilitaryFamilies(core,base,factionId,check);
+  clock(216);const base=strict();checkBaronFamilies(core,base,factionId,check);checkStateFormationCore(core,base,check);checkFoundingPeerage(core,base,check);checkRoyalHonors(core,base,check);checkRoyalHonorCompetition(core,base,check);checkCourtCoups(core,base,factionId,check);Dynasty.setPoliticalCalibrationForSimulation('MEDIUM');checkCourtCoups(core,exportWorldSave(core),factionId,check);hydrateWorldSave(core,structuredClone(base));checkCourtFates(core,base,factionId,check,untitledCourtBase!);checkRoyalCourtAttempt(core,base,check);await checkMilitaryFamilies(core,base,factionId,check);
   const restore=(save=base)=>{hydrateWorldSave(core,structuredClone(save));return {t:core.teams.find(t=>t.name===factionId)!,d:Dynasty.get(factionId)!,p:Military.getPerson(ids[0])!,q:Military.getPerson(ids[1])!};};
   checkSuccessionRollback(core,base,factionId,check);
   checkOfficePoliticalChoice(core,base,ids,factionId,check);

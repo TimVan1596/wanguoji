@@ -479,7 +479,7 @@ export class MilitaryCommandRegistryStore {
     this.eventWriter?.({id:eventId,year:grant.month,monthIndex:grant.month,category:"politics",type:"military-office-granted",
       title:`${appointment.factionId}${previous?"晋任":"授予"}${getMilitaryPersonDisplayName(person)}${MILITARY_OFFICE_NAMES[grant.office]}`,
       description:`据本次真实任职${grant.serviceMonths}个月及${grant.captureEventIds.length}条核验战果授职。`,actorFactionId:appointment.factionId,factionIds:[appointment.factionId],importance:"normal",
-      metadata:{...(grant.basis==='FOUNDING'?{foundingEventId:grant.foundingEventId}:{}),personId:person.personId,sourceUserId:person.sourceUserId,personalName:person.personalName,commandId:appointment.commandId,previousOffice:previous?.office??"NONE",office:grant.office,serviceMonths:grant.serviceMonths,captureEventIds:JSON.stringify(grant.captureEventIds),...(grant.promotionBasis?{promotionBasis:grant.promotionBasis,activityEventIds:JSON.stringify(grant.activityEventIds??[])}:{})}});
+      metadata:{personId:person.personId,sourceUserId:person.sourceUserId,personalName:person.personalName,commandId:appointment.commandId,previousOffice:previous?.office??"NONE",office:grant.office,serviceMonths:grant.serviceMonths,captureEventIds:JSON.stringify(grant.captureEventIds),...(grant.promotionBasis?{promotionBasis:grant.promotionBasis,activityEventIds:JSON.stringify(grant.activityEventIds??[])}:{})}});
   }
 
   private eligibleNobleGrant(person:MilitaryPerson,month:number,team:Team,dy:Dynasty){
@@ -494,7 +494,7 @@ export class MilitaryCommandRegistryStore {
   private recordNoble(person:MilitaryPerson,grant:NobleGrant,courtServiceEventId?:string,courtCoupEventId?:string){
     if(!this.eventWriter)throw Error('Missing noble writer');
     (person.nobilityHistory??=[]).push(grant);
-    const written=this.eventWriter({id:grant.eventId,year:grant.month,monthIndex:grant.month,type:grant.basis==='FOUNDING'?'founding-peerage-granted':grant.basis==='COURT'?'court-peerage-granted':'military-ennobled',category:'politics',actorFactionId:grant.factionId,factionIds:[grant.factionId],rulerId:grant.rulerId,title:nobleChronicle(grant),importance:'major',metadata:{personId:person.personId,sourceUserId:person.sourceUserId,commandId:grant.commandId,rank:grant.rank,nobility:JSON.stringify(grant),...(courtServiceEventId?{courtServiceEventId,courtCoupEventId}:{})}});
+    const written=this.eventWriter({id:grant.eventId,year:grant.month,monthIndex:grant.month,type:grant.basis==='FOUNDING'?'founding-peerage-granted':grant.basis==='COURT'?'court-peerage-granted':'military-ennobled',category:'politics',actorFactionId:grant.factionId,factionIds:[grant.factionId],rulerId:grant.rulerId,title:nobleChronicle(grant),importance:'major',metadata:{personId:person.personId,sourceUserId:person.sourceUserId,commandId:grant.commandId,rank:grant.rank,nobility:JSON.stringify(grant),...(grant.basis==='FOUNDING'?{foundingEventId:grant.foundingEventId}:{}),...(courtServiceEventId?{courtServiceEventId,courtCoupEventId}:{})}});
     if(written!==grant.eventId||!this.eventReader(grant.factionId).some(e=>e.id===grant.eventId))throw Error('Noble history was not recorded');
   }
   updateNobility(month:number,teams:Team[],dynasties:Dynasty[]){
@@ -508,8 +508,8 @@ export class MilitaryCommandRegistryStore {
   }
   updateFoundingRewards(month:number,teams:Team[],dynasties:Dynasty[]){
     if(month%12!==0||this.familyFoundationPolicy!=='FOUNDING'||!this.eventWriter)return;
-    for(const team of teams){const dy=dynasties.find(d=>d.factionId===team.name);if(!dy)continue;
-      const grant=selectFoundingNobleGrant(this.getPeople(),this.getFormations(),this.eventReader(team.name),month,team,dy);if(!grant)continue;
+    for(const team of teams){if(team.origin?.type==='INITIAL'||team.stateFoundedMonth===undefined||month-team.stateFoundedMonth>=12)continue;const dy=dynasties.find(d=>d.factionId===team.name);if(!dy)continue;
+      const grant=selectFoundingNobleGrant(this.getPeople(),this.getFormations(),WorldHistory.getRecordedEvents(),month,team,dy);if(!grant)continue;
       const person=this.people.get(grant.personId)!,user=team.getUserById(person.sourceUserId),command=this.formations.get(grant.commandId);
       if(!user||user.isDestroyed||user.militaryPersonId!==person.personId||user.bornMonth!==person.bornMonth||user.team!==team||user.role!=='NORMAL'||user.rulerId||!user.player.active||!command?.memberUnitIds.includes(user.player.logicalUnitId??''))continue;
       try{this.familyTransaction(team,()=>this.recordNoble(person,grant));}catch{ /* Keep the already-committed founding; the entire independent award rolls back. */ }
