@@ -1,0 +1,53 @@
+{
+  "scope": "Compact index of completed actual Core runs; full numerical comparison in abilities-z52-comparison.json. Not human visual acceptance.",
+  "rawArchive": "logs/z52-raw-results/military-local-secession-z52-secession.json",
+  "rawSha256": "34dec62c4b0e81a730922344b77947cfd4fc39cd770cda79aa0be27af1cf99e0",
+  "results": [
+    {
+      "seed": "military-secession-z7",
+      "saveSchemaVersion": 49,
+      "passedChecks": 154,
+      "significantChecks": [
+        "failed transaction restores complete canonical world except attempted RNG draws",
+        "rollback restores command, people, faction registration and live roles",
+        "failed transaction restores complete canonical world except attempted RNG draws",
+        "rollback restores command, people, faction registration and live roles",
+        "failed transaction restores complete canonical world except attempted RNG draws",
+        "rollback restores command, people, faction registration and live roles",
+        "failed transaction restores complete canonical world except attempted RNG draws",
+        "rollback restores command, people, faction registration and live roles",
+        "failed transaction restores complete canonical world except attempted RNG draws",
+        "rollback restores command, people, faction registration and live roles",
+        "one real User and permanent military ID become the political leader",
+        "reading projections change neither canonical facts nor RNG",
+        "actual military rebel and new monarch retain the original stable command and strategy abilities",
+        "actual rebel monarch archive exposes the original political family link",
+        "reverse family navigation carries the exact family and permanent member IDs",
+        "origin reading and navigation change no people, kinship, history or RNG",
+        "political archive renders the identical permanent person's portrait",
+        "V21 source military and royal identity resume deterministically for twelve real months",
+        "reading expansion consumes no RNG and creates no history",
+        "insurgent strict save: ",
+        "history failure restores leader, actual force, history, sequence and RNG",
+        "state failure restores leader, actual force, history, sequence and RNG",
+        "political leader and field commander are the same permanent body and identity",
+        "insurgent strict save: ",
+        "insurgent strict save: ",
+        "integrating actual insurgent military life into biography creates no duplicate history, office, body or RNG mutation",
+        "insurgent strict save: ",
+        "failed ending restores the whole active duty and source history",
+        "insurgent strict save: ",
+        "failed last-follower death ending rolls back real User, map unit, population, army, event IDs and RNG",
+        "insurgent strict save: ",
+        "failed real order write restores target, registry, history and RNG",
+        "insurgent strict save: ",
+        "insurgent strict save: ",
+        "leader commands continue deterministically twelve months including life and real combat",
+        "insurgent strict save: ",
+        "insurgent strict save: ",
+        "uninterrupted versus hydrated mixed commands produce identical twelve-month canonical history and RNG",
+        "insurgent strict save: "
+      ]
+    }
+  ]
+}

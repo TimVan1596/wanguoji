@@ -21,7 +21,9 @@ export async function checkMilitaryLifeView(core:any,person:MilitaryPerson,month
  const host=document.createElement('div');document.body.append(host);const root=createRoot(host);
  try{flushSync(()=>root.render(<Provider store={store}><EventDetails event={display} teamByName={new Map(core.teams.map((t:any)=>[t.name,t]))} factionNames={[]} cityNames={[]}/></Provider>));
   const detail=host.querySelector('details')!;check(detail?.open===false&&!host.textContent?.includes(pair.anchor.id),`${kind}: original sources remain lazy behind the closed evidence control`);
-  detail.open=true;await new Promise(resolve=>setTimeout(resolve,20));flushSync(()=>{});
+  // Await the actual native toggle and its lazy React commit, rather than a fixed 20ms race.
+  detail.open=true;
+  for(let n=0;n<60&&!(host.textContent?.includes(pair.anchor.id)&&host.textContent.includes(pair.other.id));n++){await new Promise(resolve=>setTimeout(resolve,16));flushSync(()=>{});}
   check(host.textContent?.includes(pair.anchor.id)&&host.textContent.includes(pair.other.id),`${kind}: expanding real React evidence retrieves both original source records`);
  }finally{flushSync(()=>root.unmount());host.remove();}
  check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,`${kind}: both readers preserve canonical facts and RNG`);

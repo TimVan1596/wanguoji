@@ -1,0 +1,135 @@
+{
+  "scope": "Compact index of completed actual Core runs; full numerical comparison in abilities-z52-comparison.json. Not human visual acceptance.",
+  "rawArchive": "logs/z52-raw-results/military-balance-z52-medium.json",
+  "rawSha256": "f8a7022a268d8f1c90b9f7772c77d8f62f3dbad189ef91bf7935136f77adc82f",
+  "results": [
+    {
+      "seed": "regional-1",
+      "years": 100,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "checkpointHashes": [
+        {
+          "month": 1200,
+          "canonicalSha256": "5971e771961a738983c1db0a98ade55f551546913ab7bbdd5e2331a6b2fd56df",
+          "strictSaveValid": true
+        }
+      ]
+    },
+    {
+      "seed": "regional-2",
+      "years": 100,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "checkpointHashes": [
+        {
+          "month": 1200,
+          "canonicalSha256": "36075e28f0bb6e7bbf689d6a66dede648d0163dc5579e92cc79bc202db5890ca",
+          "strictSaveValid": true
+        }
+      ]
+    },
+    {
+      "seed": "regional-3",
+      "years": 100,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "checkpointHashes": [
+        {
+          "month": 1200,
+          "canonicalSha256": "d7216d725d805fea69601eaba4b6a30a6554f14d5207e15c81ea74ffac3e0dbf",
+          "strictSaveValid": true
+        }
+      ]
+    },
+    {
+      "seed": "regional-4",
+      "years": 100,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "checkpointHashes": [
+        {
+          "month": 1200,
+          "canonicalSha256": "e701d567106e5531ce848b339e675f2d5abc9b28073344bd8c366e7ed9e86ddf",
+          "strictSaveValid": true
+        }
+      ]
+    },
+    {
+      "seed": "regional-5",
+      "years": 100,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "checkpointHashes": [
+        {
+          "month": 1200,
+          "canonicalSha256": "4837af64d02b86288844e22722663c242b832dcbc98a715376e45dcd93018ddf",
+          "strictSaveValid": true
+        }
+      ]
+    },
+    {
+      "seed": "regional-6",
+      "years": 100,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "checkpointHashes": [
+        {
+          "month": 1200,
+          "canonicalSha256": "a3f557ee92fd58adc1b259c456fedd4210ea6f6be0843589c8072b2de2321e5a",
+          "strictSaveValid": true
+        }
+      ]
+    },
+    {
+      "seed": "regional-7",
+      "years": 100,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "checkpointHashes": [
+        {
+          "month": 1200,
+          "canonicalSha256": "8f1bed02ac2b0a57cae58c50cf3d836104284099d422b970767bba0e151a7ad6",
+          "strictSaveValid": true
+        }
+      ]
+    },
+    {
+      "seed": "regional-8",
+      "years": 100,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "checkpointHashes": [
+        {
+          "month": 1200,
+          "canonicalSha256": "2c71f7c432b04edf344bbf86949c15e60deabe020e9deac661fd24336282c06c",
+          "strictSaveValid": true
+        }
+      ]
+    }
+  ]
+}

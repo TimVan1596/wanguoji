@@ -1,3 +1,4 @@
+import {militaryAbilities,rulerAbilities} from '../../Politics/PersonAbilities';
 import React from 'react';
 import {createRoot} from 'react-dom/client';
 import {flushSync} from 'react-dom';
@@ -26,7 +27,7 @@ export function checkMilitaryUsurper(core:any,base:ReturnType<typeof exportWorld
   for(const c of t.cities)c.loyalty=20;
   const influence=Military.getPoliticalInfluence(t,base.world.worldMonth,core.logicalUnitRegistry),choice=selectMilitaryUsurper(influence.candidates,Military.getPeople(),Dynasty.get(factionId)!.houseName);
   check(choice?.personId===p.personId&&choice.unitCount>=2,'non-royal genuine marshal and actual recruited residents qualify without adding people');
-  const prepared=exportWorldSave(core),beforeCount=core.teams.reduce((n:number,t:any)=>n+t.users.size,0),sourceName=p.personalName,born=p.bornMonth;
+  const abilityBefore=militaryAbilities(p),prepared=exportWorldSave(core),beforeCount=core.teams.reduce((n:number,t:any)=>n+t.users.size,0),sourceName=p.personalName,born=p.bornMonth;
   const run=(stage?:string)=>{
    hydrateWorldSave(core,structuredClone(prepared));t=core.teams.find((x:any)=>x.name===factionId)!;p=Military.getPerson(commanderId)!;u=t.getUserById(p.sourceUserId)!;
    const old=Dynasty.getCurrentRuler(factionId)!,before=exportWorldSave(core),writer=History.addEvent,next=random.next;let hit=false;
@@ -37,6 +38,7 @@ export function checkMilitaryUsurper(core:any,base:ReturnType<typeof exportWorld
    if(failure)throw failure;
    const king=Dynasty.getCurrentRuler(factionId)!;
    check(king.militaryUsurperIdentity?.personId===p.personId&&!king.militaryIdentity&&!p.royalIdentity,'first monarch has independent non-kin provenance, not a fabricated royal enlistment');
+   check(JSON.stringify(rulerAbilities(king,Military.getPeople()))===JSON.stringify(abilityBefore),'real non-royal military usurper keeps the original resident-sourced abilities after accession');
    check(king.bornYear===born&&`${king.houseName.replace(/氏$/,'')}${king.givenName}`===sourceName&&t.rulerUser===u&&u.historicalPersonId===p.personId&&u.role==='RULER','existing person, birth and map body become the new monarch');
    check(Military.getFormations().filter(f=>f.commanderPersonId===p.personId&&f.status==='ACTIVE').length===0&&p.appointments.every(a=>a.endMonth!==undefined),'all old commands end at accession and no duplicate army is created');
    check(core.teams.reduce((n:number,t:any)=>n+t.users.size,0)===beforeCount-(before.users.some(x=>x.rulerId===old.id)?1:0),'only the actual old monarch map lifecycle changes population; the usurper is never respawned');

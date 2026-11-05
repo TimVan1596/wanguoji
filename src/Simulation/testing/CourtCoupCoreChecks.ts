@@ -1,3 +1,9 @@
+import React from 'react';
+import {createRoot} from 'react-dom/client';
+import {flushSync} from 'react-dom';
+import {Provider} from 'react-redux';
+import {store} from '../../store';
+import {EventDetails} from '../../UI/Components/HistoryScroll/HistoryEventDetails';
 import {militaryAbilities} from '../../Politics/PersonAbilities';
 import {mergePoliticalReading} from '../../History/PoliticalReadingProjection';
 import {projectRulerHistoricalEvents} from '../../Politics/RulerChronicle';
@@ -54,6 +60,7 @@ export function checkCourtCoups(core:any,base:ReturnType<typeof exportWorldSave>
    const proof=JSON.parse(String(attempt.metadata?.courtCoup)),actual=Military.getPerson(proof.participant.personId)!;
    check(proof.version===4&&JSON.stringify(proof.participant.abilities)===JSON.stringify(militaryAbilities(actual)),'real court record freezes permanent command/strategy abilities without an additional opportunity draw');
    for(const field of ['command','strategy','source','policy']){const bad=structuredClone(exportWorldSave(core)),row=(bad.worldHistory.events as any[]).find(e=>e.id===attempt.id),r=JSON.parse(String(row.metadata.courtCoup));if(field==='policy')r.abilityPolicy='forged';else if(field==='source')r.participant.abilities.source={...r.participant.abilities.source,sourceUserId:-999};else r.participant.abilities[field]=(r.participant.abilities[field]+1)%101;row.metadata.courtCoup=JSON.stringify(r);check(!validateWorldSave(bad).valid,`strict save rejects forged actual ability ${field}`);}
+   {const beforeView=exportWorldSave(core),host=document.createElement('div'),root=createRoot(host);document.body.append(host);try{const view=React.createElement(EventDetails,{event:attempt,teamByName:new Map<string,import('../../Components/Team').default>(core.teams.map((t:any)=>[t.name,t])),factionNames:[],cityNames:[]});flushSync(()=>root.render(React.createElement(Provider,{store,children:view})));const detail=Array.from(host.querySelectorAll('details')).find(d=>d.querySelector('summary')?.textContent==='史料依据（宫廷）');check(detail,'real political event opens the shared court evidence control');flushSync(()=>detail!.querySelector('summary')!.click());check(detail!.open&&detail!.textContent?.includes(`统御${proof.participant.abilities.command}`)&&detail!.textContent.includes(`谋略${proof.participant.abilities.strategy}`),'actual React court evidence shows the frozen command/strategy and conditional probabilities for the real transaction');check(diffCanonicalWorldSave(beforeView,exportWorldSave(core)).matched,'reading actual ability evidence changes no canonical identity, loyalty, command or RNG');}finally{flushSync(()=>root.unmount());host.remove();}}
    const observedLoyalty=proof.participant.disposition.loyalty,live=core.teams.flatMap((t:any)=>[...t.users]).find((u:any)=>u.id===actual.sourceUserId),oldLoyalty=live?.loyalty;if(live){live.loyalty=99;check(JSON.parse(String(attempt.metadata?.courtCoup)).participant.disposition.loyalty===observedLoyalty,'later actual loyalty never rewrites the historical political snapshot');live.loyalty=oldLoyalty;}
    const reading=mergePoliticalReading(events),anchor=reading.find(e=>e.id===attempt.id)!;
    check(anchor.metadata?.courtReadingKind==='COURT_COUP'&&!reading.some(e=>e.type==='court-coup-result'),'actual world and faction reading has one source-linked court action');

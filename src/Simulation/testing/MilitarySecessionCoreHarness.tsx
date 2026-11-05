@@ -1,3 +1,7 @@
+import {militaryAbilities,rulerAbilities} from '../../Politics/PersonAbilities';
+import {rulerFamilyOrigin} from '../../Politics/RulerFamilyOrigin';
+import {RulerServicePanel} from '../../UI/Components/FactionDetails/PersonServicePanel';
+import {PersonArchiveNavigation} from '../../UI/Components/FactionDetails/PersonArchiveNavigation';
 import {checkInsurgentCommands} from './InsurgentCommandCoreChecks';
 import {projectRulerHistoricalEvents} from '../../Politics/RulerChronicle';
 import {militaryMilestones} from '../../Politics/MilitaryChroniclePresentation';
@@ -45,6 +49,7 @@ export async function runMilitarySecessionCore(seed="military-secession-z7",loca
   Military.updateAppanages(month,core.teams,Dynasty.getAll(),core.allCities);
   const oldEstate=Military.getPerson(personId)?.appanageHistory?.at(-1);check(oldEstate,'real future secessionist initially holds an evidence-backed old-country estate');
   const oldTitle=currentNobleGrant(Military.getPerson(personId)!,parent.name,month);check(oldTitle,'actual serving general has a real sovereign grant before rebellion');
+  Military.updateFamilies(month,core.teams,Dynasty.getAll());const familyOrigin=Military.getFamilyMember(commander.id,commander.bornMonth),abilityBefore=militaryAbilities(Military.getPerson(personId)!);check(familyOrigin,'the genuinely titled future rebel has a sourced political family before founding');
   month+=12;(core.simulator as any).clock.importState({worldMonth:month,elapsedMs:0,running:false});
   while(parent.cities.length<4){const site=core.map!.blocks.flat().find(b=>(b.team===parent||!b.team)&&!b.city&&core.allCities.every(c=>Math.hypot(c.block.x-b.x,c.block.y-b.y)>160));if(!site)throw new Error("No free city site");Factions.foundCity(parent,site,undefined,month);}
   const city=parent.cities.find(c=>!c.isCapital&&!c.isInCaptureGrace(month))!,secondCity=parent.cities.find(c=>c!==city&&!c.isCapital)!;
@@ -145,6 +150,9 @@ export async function runMilitarySecessionCore(seed="military-secession-z7",loca
   check(mergePoliticalReading(sources).some(e=>e.id===founding[0].id&&String(e.metadata?.sourceEventIds).includes('ruler-acceded')),'world reading retains the same first-founder source relationship');
   check(JSON.stringify({history:History.exportState(),rng:worldRandom.exportState(),person})===beforeReading,'reading projections change neither canonical facts nor RNG');
 
+  check(JSON.stringify(rulerAbilities(ruler,Military.getPeople()))===JSON.stringify(abilityBefore),'actual military rebel and new monarch retain the original stable command and strategy abilities');
+  const origin=rulerFamilyOrigin(ruler,Military.getFamilies(),Military.getPeople(),month);check(origin?.family.familyId===familyOrigin!.family.familyId&&origin?.member.memberId===familyOrigin!.member.memberId,'new royal identity resolves the same original family without surname matching or new royal relatives');
+  {const before=strict(),host=document.createElement('div'),root=createRoot(host),targets:any[]=[];document.body.append(host);try{flushSync(()=>root.render(<PersonArchiveNavigation.Provider value={{open:v=>targets.push(v),consume:()=>{},consumeGenealogy:()=>{}}}><RulerServicePanel ruler={ruler} factionId={split.team.name} month={month} reading={{earlier:undefined,rows:[]}}/></PersonArchiveNavigation.Provider>));const link=Array.from(host.querySelectorAll('button')).find(b=>b.textContent==='查看原家族宗谱并定位本人');check(link,'actual rebel monarch archive exposes the original political family link');flushSync(()=>link!.click());check(targets.at(-1)?.kind==='FAMILY'&&targets.at(-1)?.id===origin!.family.familyId&&targets.at(-1)?.memberId===origin!.member.memberId,'reverse family navigation carries the exact family and permanent member IDs');check(diffCanonicalWorldSave(before,strict()).matched,'origin reading and navigation change no people, kinship, history or RNG');}finally{root.unmount();host.remove();}}
   await checkPersonArchiveInteraction(core,split.team.name,personId,check);
   check(militaryIdentityLabels(Military.getPerson(personId)!,Dynasty.getAll(),History.getEvents(),month).includes("义军创立者"),"real founding transaction supplies composite military founder identity");
   check(nextMilitaryHonors({...person,nobilityHistory:[]},Military.getFormations(),History.getEvents(),month,core.teams,Dynasty.getAll()).length===0,'verified rebellion without an original grant cannot cause a fabricated revocation');

@@ -1,0 +1,38 @@
+{
+  "scope": "Compact index of completed actual Core runs; full numerical comparison in abilities-z52-comparison.json. Not human visual acceptance.",
+  "rawArchive": "logs/z52-raw-results/royal-military-z52-core2.json",
+  "rawSha256": "2da21f935433b16ae84e312ee691d01aa8f90992c5556cb16d64710da5c8103f",
+  "results": [
+    {
+      "seed": "royal-military-z11",
+      "saveSchemaVersion": 49,
+      "passedChecks": 244,
+      "significantChecks": [
+        "failed enlistment restores canonical state and sequences",
+        "history navigation does not alter canonical world or RNG",
+        "150 deep: requested permanent ID is mounted",
+        "150 wide: requested permanent ID is mounted",
+        "1000 deep: requested permanent ID is mounted",
+        "1000 wide: requested permanent ID is mounted",
+        "10000 deep: requested permanent ID is mounted",
+        "10000 wide: requested permanent ID is mounted",
+        "large genealogy rendering consumes no RNG, population or canonical state",
+        "royal military V22 twelve-month continuation is deterministic",
+        "DEAD: actual genealogy retains one permanent royal node",
+        "RETIRED: actual genealogy retains one permanent royal node",
+        "DEAD: actual genealogy retains one permanent royal node",
+        "failed weighted political transaction restores its original RNG position",
+        "failed deposition restores the entire canonical state, including royal military authority, User role, formation, cooldown and RNG",
+        "RETIRED: actual genealogy retains one permanent royal node",
+        "actual accession transaction resolves the one permanent military/royal identity",
+        "political life display and navigation consume no RNG or canonical state",
+        "weighted deposition save resumes twelve months deterministically",
+        "foreign casualty closes both permanent life records on the same month and cause",
+        "foreign exiled monarch casualty survives strict save and load",
+        "RETIRED: actual genealogy retains one permanent royal node",
+        "actual accession transaction resolves the one permanent military/royal identity",
+        "political life display and navigation consume no RNG or canonical state"
+      ]
+    }
+  ]
+}
