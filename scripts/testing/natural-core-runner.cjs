@@ -41,6 +41,11 @@ app.whenReady().then(async()=>{
    catch(error){if(process.env.WANGUOJI_CORE_KEEP_FAILURES!=='1')throw error;result={seed,years,failed:true,error:String(error.stack||error)};}
 
    if(process.env.WANGUOJI_BENCH_SNAPSHOT_OUT&&result.snapshot){fs.writeFileSync(process.env.WANGUOJI_BENCH_SNAPSHOT_OUT,JSON.stringify([{snapshot:result.snapshot}]));delete result.snapshot;}
+   if(process.env.WANGUOJI_CORE_SNAPSHOT_DIR&&result.checkpoints){
+    const snapshot=result.checkpoints.at(-1)?.snapshot;if(!snapshot)throw Error('Snapshot export requested without actual production snapshot');
+    fs.mkdirSync(process.env.WANGUOJI_CORE_SNAPSHOT_DIR,{recursive:true});fs.writeFileSync(require('node:path').join(process.env.WANGUOJI_CORE_SNAPSHOT_DIR,`${seed}-${years}.json`),JSON.stringify([{snapshot}]));
+    for(const c of result.checkpoints)delete c.snapshot;
+   }
    results.push(result);if(process.env.WANGUOJI_CORE_OUTPUT)fs.writeFileSync(process.env.WANGUOJI_CORE_OUTPUT,JSON.stringify(results,null,2));
    process.stdout.write(JSON.stringify(result)+'\n');win.destroy();
   }

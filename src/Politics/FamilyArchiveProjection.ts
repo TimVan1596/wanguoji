@@ -8,25 +8,46 @@ import {currentNobleGrant,NOBLE_RANKS} from './MilitaryNobility';
 import {verifiedPoliticalOffice} from './MilitaryPoliticalInfluence';
 export interface FamilyArchiveSource {month:number;people:readonly MilitaryPerson[];events:readonly WorldEvent[];dynasties:readonly Dynasty[];}
 export type FamilyArchiveClass='ACTIVE'|'HISTORICAL'|'EXTINCT';
-export function projectFamilyArchive(f:MilitaryFamily,s:FamilyArchiveSource){
- const members=f.members.filter(m=>m.enteredMonth<=s.month),c=createFamilyNobleContext(s.month,[f],s.people,s.events,s.dynasties),byPerson=new Map(c.people.map(p=>[p.personId,p])),eventsById=new Map(s.events.map(e=>[e.id,e])),rulers=s.dynasties.flatMap(d=>d.rulers.map(r=>({r,factionId:d.factionId}))),acts=f.nobleSuccession?.filter(a=>a.month<=s.month)??[],last=acts.at(-1);
- const rows=new Map(members.map(m=>{
-  const p=m.militaryPersonId?byPerson.get(m.militaryPersonId):undefined,political=rulers.find(({r})=>r.bornYear===m.bornMonth&&r.accessionYear!==undefined&&r.accessionYear<=s.month&&(r.residentIdentity?.sourceUserId===m.sourceUserId||m.militaryPersonId&&(r.militaryUsurperIdentity?.personId===m.militaryPersonId||r.militaryIdentity?.personId===m.militaryPersonId)));
+/** One immutable reading index per actual world revision, shared by all houses. */
+export function createFamilyArchiveIndex(s:FamilyArchiveSource){
+ const c=createFamilyNobleContext(s.month,[],s.people,s.events,s.dynasties),byPerson=new Map(c.people.map(p=>[p.personId,p])),eventsById=new Map(s.events.map(e=>[e.id,e]));
+ const rulers=s.dynasties.flatMap(d=>d.rulers.map(r=>({r,factionId:d.factionId}))),byResident=new Map<string,typeof rulers[number]>(),byMilitary=new Map<string,typeof rulers[number]>(),appointmentsByCommand=new Map<string,WorldEvent[]>();
+ for(const entry of rulers){const r=entry.r;if(r.accessionYear===undefined||r.accessionYear>s.month)continue;if(r.residentIdentity){const key=`${r.residentIdentity.sourceUserId}/${r.bornYear}`;if(!byResident.has(key))byResident.set(key,entry);}for(const id of [r.militaryUsurperIdentity?.personId,r.militaryIdentity?.personId])if(id&&!byMilitary.has(`${id}/${r.bornYear}`))byMilitary.set(`${id}/${r.bornYear}`,entry);}
+ for(const e of s.events)if(e.type==='military-appointment'&&typeof e.metadata?.commandId==='string'){const list=appointmentsByCommand.get(e.metadata.commandId)??[];list.push(e);appointmentsByCommand.set(e.metadata.commandId,list);}
+ return {c,byPerson,eventsById,rulers,byResident,byMilitary,office:{byId:eventsById,appointmentsByCommand}};
+}
+export type FamilyArchiveIndex=ReturnType<typeof createFamilyArchiveIndex>;
+function familyRow(f:MilitaryFamily,m:MilitaryFamilyMember,s:FamilyArchiveSource,index:FamilyArchiveIndex,acts:NonNullable<MilitaryFamily['nobleSuccession']>){
+ const {c,byPerson,eventsById}=index,last=acts.at(-1);
+
+  const p=m.militaryPersonId?byPerson.get(m.militaryPersonId):undefined,political=index.byResident.get(`${m.sourceUserId}/${m.bornMonth}`)??(m.militaryPersonId?index.byMilitary.get(`${m.militaryPersonId}/${m.bornMonth}`):undefined);
   const dead=Math.min(m.deathMonth??Infinity,political?.r.deathMonth??Infinity)<=s.month,life=dead?'DEAD' as const:political||familyMemberPresent(m,s.month)?'ALIVE' as const:'UNKNOWN' as const;
-  const appointments=p?.appointments.filter(a=>a.startMonth<=s.month)??[],currentAppointment=appointments.find(a=>(a.endMonth??Infinity)>s.month),activeOffice=p&&currentAppointment&&life==='ALIVE'&&!political?verifiedPoliticalOffice(p,currentAppointment.commandId,currentAppointment.factionId,s.month,s.events):undefined;
+  const appointments=p?.appointments.filter(a=>a.startMonth<=s.month)??[],currentAppointment=appointments.find(a=>(a.endMonth??Infinity)>s.month),activeOffice=p&&currentAppointment&&life==='ALIVE'&&!political?verifiedPoliticalOffice(p,currentAppointment.commandId,currentAppointment.factionId,s.month,s.events,index.office):undefined;
   const personalHistory=p?.nobilityHistory?.filter(g=>g.month<=s.month)??[];
   const effectivePersonal=life==='ALIVE'&&!political&&p?personalHistory.filter(g=>c.activeEpochs.has(`${g.factionId}/${g.epochFounderId}`)&&familyResidenceAt(f,m,s.month)===g.factionId&&currentNobleGrant(p,g.factionId,s.month,g.epochFounderId)?.eventId===g.eventId).sort((a,b)=>NOBLE_RANKS.indexOf(b.rank)-NOBLE_RANKS.indexOf(a.rank))[0]:undefined;
   const inheritedHistory=acts.filter(a=>a.kind==='SUCCEEDED'&&a.holderMemberId===m.memberId),forfeited=p?.politicalHistory?.some(a=>a.kind==='COURT_BAN'&&a.severity==='FORFEITURE'&&a.factionId===f.factionId&&a.epochFounderId===f.epochFounderId&&a.month<=s.month);
   const inherited=last?.kind==='SUCCEEDED'&&last.holderMemberId===m.memberId&&life==='ALIVE'&&!political&&!forfeited&&familyMemberPresent(m,s.month)&&familyResidenceAt(f,m,s.month)===f.factionId&&c.activeEpochs.has(`${f.factionId}/${f.epochFounderId}`)?last:undefined;
   const renewed=f.renewals?.filter(r=>r.memberId===m.memberId&&r.month<=s.month&&eventsById.has(r.sourceEventId)&&eventsById.has(`${f.familyId}-${m.memberId}-merit`))??[];
   const sourceRanks=[effectivePersonal?.rank,inherited?.rank].filter((r):r is NonNullable<typeof r>=>!!r).sort((a,b)=>FAMILY_NOBLE_RANKS.indexOf(b)-FAMILY_NOBLE_RANKS.indexOf(a));
-  return [m.memberId,{member:m,person:p,life,political,appointments,activeOffice,personalHistory,effectivePersonal,inheritedHistory,inherited,renewed,primaryRank:sourceRanks[0],important:m.source==='FOUNDER'||appointments.length>0||personalHistory.length>0||inheritedHistory.length>0||!!political||renewed.length>0}] as const;
- }));
- const active=[...rows.values()].filter(r=>r.life==='ALIVE'&&(r.inherited||r.effectivePersonal||r.activeOffice||r.political&&(r.political.r.endYear??Infinity)>s.month));
- const allKnownDead=rows.size>0&&[...rows.values()].every(r=>r.life==='DEAD'),classification:FamilyArchiveClass=active.length?'ACTIVE':allKnownDead?'EXTINCT':'HISTORICAL';
- const inheritedHolder=[...rows.values()].find(r=>r.inherited),personalHolder=[...rows.values()].filter(r=>r.effectivePersonal).sort((a,b)=>FAMILY_NOBLE_RANKS.indexOf(b.effectivePersonal!.rank)-FAMILY_NOBLE_RANKS.indexOf(a.effectivePersonal!.rank)||a.member.bornMonth-b.member.bornMonth||a.member.memberId.localeCompare(b.member.memberId))[0];
- return {family:f,month:s.month,rows,acts,last,classification,activeMembers:active.length,living:[...rows.values()].filter(r=>r.life==='ALIVE').length,unknown:[...rows.values()].filter(r=>r.life==='UNKNOWN').length,currentInheritedHolderId:inheritedHolder?.member.memberId,locatableTitleHolderId:inheritedHolder?.member.memberId??personalHolder?.member.memberId,actualSuccessions:acts.filter(a=>a.kind==='SUCCEEDED').length,importantIds:new Set([...rows.values()].filter(r=>r.important).map(r=>r.member.memberId)),newMeritMembers:[...rows.values()].filter(r=>r.member.generation>0&&r.effectivePersonal&&['HOU','GONG'].includes(r.effectivePersonal.rank)).length};
+  return {member:m,person:p,life,political,appointments,activeOffice,personalHistory,effectivePersonal,inheritedHistory,inherited,renewed,primaryRank:sourceRanks[0],important:m.source==='FOUNDER'||appointments.length>0||personalHistory.length>0||inheritedHistory.length>0||!!political||renewed.length>0};
+
 }
+/** No tree, full archive or event formatting is built for a list row. */
+export function summarizeFamilyArchive(f:MilitaryFamily,s:FamilyArchiveSource,index=createFamilyArchiveIndex(s)){
+ const acts=f.nobleSuccession?.filter(a=>a.month<=s.month)??[],rows=f.members.filter(m=>m.enteredMonth<=s.month).map(m=>familyRow(f,m,s,index,acts));
+ return {...classifyFamily(rows,s.month),last:acts.at(-1),actualSuccessions:acts.filter(a=>a.kind==='SUCCEEDED').length,holder:rows.find(r=>r.inherited),members:rows.length,generations:Math.max(0,...rows.map(r=>r.member.generation))+1,served:rows.filter(r=>r.appointments.length).length};
+}
+function classifyFamily(rows:ReturnType<typeof familyRow>[],month:number){const active=rows.filter(r=>r.life==='ALIVE'&&(r.inherited||r.effectivePersonal||r.activeOffice||r.political&&(r.political.r.endYear??Infinity)>month));return {activeMembers:active.length,living:rows.filter(r=>r.life==='ALIVE').length,unknown:rows.filter(r=>r.life==='UNKNOWN').length,classification:(active.length?'ACTIVE':rows.length&&rows.every(r=>r.life==='DEAD')?'EXTINCT':'HISTORICAL') as FamilyArchiveClass};}
+export function projectFamilyArchive(f:MilitaryFamily,s:FamilyArchiveSource,index=createFamilyArchiveIndex(s)){
+ const members=f.members.filter(m=>m.enteredMonth<=s.month),acts=f.nobleSuccession?.filter(a=>a.month<=s.month)??[],last=acts.at(-1),rows=new Map(members.map(m=>[m.memberId,familyRow(f,m,s,index,acts)]));
+ const {classification,activeMembers,living,unknown}=classifyFamily([...rows.values()],s.month);
+ const inheritedHolder=[...rows.values()].find(r=>r.inherited),personalHolder=[...rows.values()].filter(r=>r.effectivePersonal).sort((a,b)=>FAMILY_NOBLE_RANKS.indexOf(b.effectivePersonal!.rank)-FAMILY_NOBLE_RANKS.indexOf(a.effectivePersonal!.rank)||a.member.bornMonth-b.member.bornMonth||a.member.memberId.localeCompare(b.member.memberId))[0];
+ const root=last?.kind==='ENDED'?undefined:inheritedHolder?.member??(last?.kind==='STARTED'?rows.get(last.holderMemberId!)?.member:rows.get(f.members[0].memberId)?.effectivePersonal?f.members[0]:undefined);
+ const accessions=new Map([...rows.values()].filter(r=>r.political).map(r=>[r.member.memberId,r.political!.r.accessionYear!])),heirs=root?new Set(eligibleFamilyNobleHeirs(f,root.memberId,{...index.c,politicalAccessions:accessions}).map(m=>m.memberId)):new Set<string>();
+ for(const [id,row]of rows)if(heirs.has(id))row.important=true;
+ return {family:f,month:s.month,rows,acts,last,classification,activeMembers,living,unknown,currentInheritedHolderId:inheritedHolder?.member.memberId,locatableTitleHolderId:inheritedHolder?.member.memberId??personalHolder?.member.memberId,actualSuccessions:acts.filter(a=>a.kind==='SUCCEEDED').length,importantIds:new Set([...rows.values()].filter(r=>r.important).map(r=>r.member.memberId)),newMeritMembers:[...rows.values()].filter(r=>r.member.generation>0&&r.effectivePersonal&&['HOU','GONG'].includes(r.effectivePersonal.rank)).length};
+}
+export function familyPoliticalState(p:{classification:FamilyArchiveClass;last?:FamilyNobleAct;living:number;unknown:number}){return p.classification==='ACTIVE'?p.last?.kind==='ENDED'?'旧爵已终 · 仍有军政人物':'当前有效政治世家':p.classification==='EXTINCT'?'已无登记在世成员':p.living?'历史故家 · 仍有登记在世后代':'历史故家 · 登记成员生死未载';}
 export type FamilyArchiveProjection=ReturnType<typeof projectFamilyArchive>;
 /** Reconstruct the decision from the saved event boundary, including death/transfer order. */
 export function explainFamilyTitleEnd(f:MilitaryFamily,a:FamilyNobleAct,s:FamilyArchiveSource){

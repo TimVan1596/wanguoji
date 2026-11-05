@@ -147,6 +147,8 @@ export class MilitaryCommandRegistryStore {
     const epoch=this.royalService?.nobleEpoch?.(factionId,month);
     if(this.families.some(f=>f.factionId===factionId&&f.epochFounderId===epoch))this.diagnostics.familyPopulationBlocked++;
   }
+  private familyReadingRevision=0;
+  getFamilyReadingRevision(){return this.familyReadingRevision;}
   getFamilies(){return this.families;}
   commitFamilyMember(plan:{familyId:string;member:import('./MilitaryFamily').MilitaryFamilyMember}){const f=this.families.find(f=>f.familyId===plan.familyId);if(!f||this.families.some(f=>f.members.some(m=>m.sourceUserId===plan.member.sourceUserId)))throw Error('Duplicate family resident');f.members.push(structuredClone(plan.member));this.familyByResident=undefined;}
   getFamilyMember(userId:number,bornMonth:number){
@@ -541,7 +543,7 @@ export class MilitaryCommandRegistryStore {
       const holder=f.members.find(m=>m.memberId===(last?.holderMemberId??f.members[0].memberId))!,p=holder.militaryPersonId?this.people.get(holder.militaryPersonId):undefined,t=teams.find(t=>t.name===f.factionId),dy=dynasties.find(d=>d.factionId===f.factionId),epoch=dy?.houseEpochs?.find(e=>e.foundingRulerId===f.epochFounderId);
       const used=new Set(f.nobleSuccession?.map(a=>a.sourceGrantEventId)),canRenew=this.familyNoblePolicy==='RENEWAL'&&!!last&&f.members.some(m=>m.generation>0&&m.militaryPersonId&&m.deathMonth===undefined&&this.people.get(m.militaryPersonId)?.nobilityHistory?.some(g=>!used.has(g.eventId)));
       if(last?.kind==='ENDED'&&!canRenew)continue;
-      const needsReview=canRenew||(holder.deathMonth??Infinity)<=month||(holder.exitMonth??Infinity)<=month||familyResidenceAt(f,holder,month)!==f.factionId||p?.politicalRulerId||p?.politicalHistory?.some(a=>a.kind==='COURT_BAN'&&a.severity==='FORFEITURE'&&a.month<=month)||!last&&p?.honorHistory?.some(h=>h.kind==='REVOKED'&&h.month<=month)||t?.status!=='ACTIVE'||(epoch?.endMonth??Infinity)<=month;
+      const needsReview=canRenew||(holder.deathMonth??Infinity)<=month||(holder.exitMonth??Infinity)<=month||familyResidenceAt(f,holder,month)!==f.factionId||p?.politicalRulerId||p?.politicalHistory?.some(a=>a.kind==='COURT_BAN'&&a.severity==='FORFEITURE'&&a.month<=month)||(!last||last.kind==='STARTED')&&p?.honorHistory?.some(h=>h.kind==='REVOKED'&&h.month<=month)||t?.status!=='ACTIVE'||(epoch?.endMonth??Infinity)<=month;
       if(!needsReview)continue;
       const context={...createFamilyNobleContext(month,[f],this.getPeople(),WorldHistory.getRecordedEvents(),dynasties),renewable:this.familyNoblePolicy==='RENEWAL'};
       const act=planFamilyNobleTransition(f,context);if(!act)continue;
@@ -910,6 +912,7 @@ export class MilitaryCommandRegistryStore {
   }
 
   onUserTransfer(user: User, nextFactionId: string, worldMonth: number) {
+    this.familyReadingRevision++;
     const relative=this.getFamilyMember(user.id,user.bornMonth);if(relative)(relative.member.factionHistory??=[]).push({month:worldMonth,factionId:nextFactionId,eventIndex:WorldHistory.getEventCount()});
     const record = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
     // A stale or copied personId must never transfer another person's identity or office.
@@ -929,6 +932,7 @@ export class MilitaryCommandRegistryStore {
   }
 
   onUserDestroyed(user: User, worldMonth: number, cause: string) {
+    this.familyReadingRevision++;
     const relative=this.getFamilyMember(user.id,user.bornMonth);
     if(relative){relative.member.exitHistoryIndex=WorldHistory.getEventCount();relative.member.exitMonth=worldMonth;relative.member.exitCause=cause;if(['SIEGE_LOSS','BATTLE_DEATH','NATURAL_DEATH'].includes(cause)){if(relative.member.deathMonth!==worldMonth||relative.member.deathHistoryIndex===undefined)relative.member.deathHistoryIndex=WorldHistory.getEventCount();relative.member.deathMonth=worldMonth;relative.member.deathCause=cause;}}
     const record = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;

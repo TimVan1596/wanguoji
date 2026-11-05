@@ -36,10 +36,10 @@ export function militaryPoliticalStrength(serviceMonths: number, unitCount: numb
 
 export const MILITARY_OFFICE_POLITICAL_BONUS:Record<MilitaryOffice,number>={XIAOWEI:0,PIJIANG:.03,JIANGJUN:.06,SHANGJIANGJUN:.10};
 /** Appointment and office must both precede the political transaction in the same real command. */
-export function verifiedPoliticalOffice(p:MilitaryPerson,commandId:string,factionId:string,month:number,events:readonly WorldEvent[]){
+export function verifiedPoliticalOffice(p:MilitaryPerson,commandId:string,factionId:string,month:number,events:readonly WorldEvent[],index?:{byId:ReadonlyMap<string,WorldEvent>;appointmentsByCommand:ReadonlyMap<string,readonly WorldEvent[]>}){
  const a=p.appointments.find(a=>a.commandId===commandId&&a.factionId===factionId&&a.startMonth<=month&&month<=(a.endMonth??month));
- const byId=new Map(events.map(e=>[e.id,e])),g=a?.officeHistory?.filter(g=>g.month<=month&&byId.has(g.eventId)).at(-1),e=g&&byId.get(g.eventId);
- const initial=a&&events.find(e=>e.type==='military-appointment'&&e.actorFactionId===factionId&&(e.monthIndex??e.year)===a.startMonth&&e.metadata?.personId===p.personId&&e.metadata?.commandId===commandId);
+ const byId=index?.byId??new Map(events.map(e=>[e.id,e])),g=a?.officeHistory?.filter(g=>g.month<=month&&byId.has(g.eventId)).at(-1),e=g&&byId.get(g.eventId);
+ const initial=a&&(index?.appointmentsByCommand.get(commandId)??events).find(e=>e.type==='military-appointment'&&e.actorFactionId===factionId&&(e.monthIndex??e.year)===a.startMonth&&e.metadata?.personId===p.personId&&e.metadata?.commandId===commandId);
  if(!a||!g||!e||!initial||!(g.office in MILITARY_OFFICE_POLITICAL_BONUS)||e.type!=='military-office-granted'||e.actorFactionId!==factionId||e.metadata?.personId!==p.personId||e.metadata?.commandId!==commandId||e.metadata?.office!==g.office||(e.monthIndex??e.year)!==g.month)return;
  return {office:g.office,eventId:g.eventId,appointmentEventId:initial.id};
 }
