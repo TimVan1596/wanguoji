@@ -29,9 +29,9 @@ export async function checkFamilyNobleCore(core:any,factionId:string,childId:num
   {const before=exportWorldSave(core),f=family(),member=f.members.find(m=>m.sourceUserId===childId)!,host=document.createElement('div'),root=createRoot(host);document.body.append(host);
    try{flushSync(()=>root.render(React.createElement(Provider,{store,children:React.createElement(MilitaryFamilyBrowser,{families:[f],worldMonth:240,onClose:()=>{}})})));
     const dialog=document.querySelector('[role="dialog"]')!,open=Array.from(dialog.querySelectorAll('button')).find(b=>b.textContent?.includes('始祖'))!;flushSync(()=>open.click());
-    check(!dialog.querySelector(`[data-family-member="${member.memberId}"]`)&&!dialog.querySelector('[data-family-summary]'),'ordinary descendant is omitted from main view without a summary placeholder or population deletion');
+    check(!!dialog.querySelector(`[data-family-member="${member.memberId}"]`)&&!dialog.querySelector('[data-family-summary]'),'a real currently eligible direct heir remains politically visible, without a fake office or placeholder');
     check(!Array.from(dialog.querySelectorAll('button')).some(b=>b.textContent==='展开普通旁支'),'main family view has no ordinary-branch expansion button');
-    const complete=Array.from(dialog.querySelectorAll('button')).find(b=>b.textContent==='完整族谱')!;flushSync(()=>complete.click());
+    check(!Array.from(dialog.querySelectorAll('button')).some(b=>b.textContent==='完整族谱'||b.textContent==='主干'),'one political genealogy has no persistent full/trunk mode switch');
     check(dialog.querySelector(`[data-family-member="${member.memberId}"]`)&&!dialog.querySelector(`[data-family-member="${member.memberId}"]`)?.textContent?.includes('无承袭爵位'),'complete genealogy shows the real civilian without repeated negative title labels');
     check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,'omitting ordinary branches and opening full genealogy leave canonical population, titles, parent IDs and RNG identical');
    }finally{flushSync(()=>root.unmount());host.remove();}

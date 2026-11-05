@@ -1,3 +1,4 @@
+import MilitaryFamilyBrowser from '../../UI/Components/FactionDetails/MilitaryFamilyBrowser';
 import {createRoot} from 'react-dom/client';
 import {flushSync} from 'react-dom';
 import {Provider} from 'react-redux';
@@ -23,7 +24,9 @@ export function checkDualNobleSources(core:any,heirId:number,factionId:string,ch
   check(own&&inherit?.rank==='BO'&&own.eventId!==inherit.eventId&&own.captureEventIds.every(id=>History.getRecordedEvents().some(e=>e.id===id&&e.metadata?.commanderPersonId===p.personId)),'inherited BO and personal military BO have different original sources and only the son\'s own actual battle receipts');
   const before=exportWorldSave(core),host=document.createElement('div'),root=createRoot(host);document.body.append(host);let destination:PersonArchiveTarget|undefined;
   try{flushSync(()=>root.render(<Provider store={store}><PersonArchiveNavigation.Provider value={{open:t=>{destination=t;},consume:()=>{},consumeGenealogy:()=>{}}}><MilitaryFamilyPanel personId={p.personId}/></PersonArchiveNavigation.Provider></Provider>));
-   const block=host.querySelector('[data-family-person-sources]')!,parent=link.family.members.find(m=>m.memberId===link.member.parentMemberId)!;
+   check(!host.querySelector('[data-family-person-sources]')&&!host.querySelector('details'),'personal biography does not embed the entire family source archive');
+   flushSync(()=>root.render(<Provider store={store}><PersonArchiveNavigation.Provider value={{open:t=>{destination=t;},consume:()=>{},consumeGenealogy:()=>{}}}><MilitaryFamilyBrowser families={[link.family]} worldMonth={base+60} initialFamilyId={link.family.familyId} initialMemberId={link.member.memberId} onClose={()=>{}}/></PersonArchiveNavigation.Provider></Provider>));
+   const block=document.querySelector('[data-family-person-sources]')!,parent=link.family.members.find(m=>m.memberId===link.member.parentMemberId)!;
    check(block?.textContent?.includes(parent.name)&&block.textContent.includes('家族承袭')&&block.textContent.includes('本人军功授爵')&&block.textContent.includes('伯爵'),'real military detail shows the recorded father, inheritance date and independently earned same-rank peerage together');
    const parentLink=Array.from(block.querySelectorAll('button')).find(b=>b.textContent===parent.name)!;flushSync(()=>parentLink.click());check(destination?.kind==='FAMILY'&&destination.id===link.family.familyId&&destination.memberId===parent.memberId,'father navigation locates the saved parent member ID in the same family, without name matching');
    check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,'personal genealogy source rendering and parent navigation mutate no title, population, army or RNG');
