@@ -18,7 +18,7 @@ export interface MilitaryPoliticalUser {
 }
 export const ENABLE_NOBILITY_POLITICAL_WEIGHT = true;
 export interface MilitaryPoliticalParticipant {
-  disposition?: MilitaryDisposition; politicalSelectionWeight?: number;
+  abilities?:import('./PersonAbilities').PersonAbilities;disposition?: MilitaryDisposition; politicalSelectionWeight?: number;
   officeStanding?:{office:MilitaryOffice;eventId:string;appointmentEventId:string};
   nobility?:{eventId:string;rank:NobleRank;countryName:string};basePoliticalWeight?:number;finalPoliticalWeight?:number;
   nobleSelection?:{scopeFounderId:string;candidates:Array<Omit<MilitaryPoliticalParticipant,"nobleSelection">>};
@@ -170,7 +170,7 @@ export function getMilitaryParticipationDetails(event: WorldEvent) {
 
   if(['court-coup-attempt','court-coup-result'].includes(event.type)){
     if(event.type==='court-coup-result')return [event.title,`原始企图 ${event.metadata?.courtCoupEventId}；人物 ${event.metadata?.personId}；编组 ${event.metadata?.commandId}`];
-    try{const r=JSON.parse(String(event.metadata?.courtCoup));return [event.title,`发起者 ${r.participant.personId} / User ${r.participant.sourceUserId} / 编组 ${r.participant.commandId}`,`目标：废 ${r.previousRulerId}，拥立 ${r.targetRulerId}；实际统兵${r.participant.unitCount}人`,`危机来源 ${r.crisisEventIds.join('、')}`,`当时忠诚 ${r.participant.disposition.loyalty}，野心 ${r.participant.disposition.ambition}；同次共享机会：企图阈值 ${(r.attemptProbability*100).toFixed(1)}%，企图后的成功概率 ${(r.conditionalSuccessProbability*100).toFixed(1)}%（共享抽签成功区间 ${(r.successProbability*100).toFixed(2)}%），抽签 ${r.roll}`,`结果依据 ${r.outcomeEventId}`];}catch{return ['政治史料格式异常，请检查原始记录'];}
+    try{const r=JSON.parse(String(event.metadata?.courtCoup));return [event.title,`发起者 ${r.participant.personId} / User ${r.participant.sourceUserId} / 编组 ${r.participant.commandId}`,`目标：废 ${r.previousRulerId}，拥立 ${r.targetRulerId}；实际统兵${r.participant.unitCount}人`,`危机来源 ${r.crisisEventIds.join('、')}`,`当时忠诚 ${r.participant.disposition.loyalty}，野心 ${r.participant.disposition.ambition}；同次共享机会：企图阈值 ${(r.attemptProbability*100).toFixed(1)}%，企图后的成功概率 ${(r.conditionalSuccessProbability*100).toFixed(1)}%（共享抽签成功区间 ${(r.successProbability*100).toFixed(2)}%），抽签 ${r.roll}`,...(r.participant.abilities?[`当时统御 ${r.participant.abilities.command}，谋略 ${r.participant.abilities.strategy}；策略 ${r.abilityPolicy}，固定身份来源 ${JSON.stringify(r.participant.abilities.source)}。仅修正合格候选竞争、发起意愿和条件成败，不创造军权。`]:[]),`结果依据 ${r.outcomeEventId}`];}catch{return ['政治史料格式异常，请检查原始记录'];}
   }
 
   const p = readMilitaryParticipation(event);

@@ -1,3 +1,4 @@
+import {isAbilityPolicy} from '../Politics/PersonAbilities';
 import {validateInsurgentCommands} from './InsurgentCommandValidation';
 import {validateFamilyNobility} from './FamilyNobleValidation';
 import {calibrationOrBaseline,isPoliticalCalibration} from '../Politics/PoliticalCalibration';
@@ -37,6 +38,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   const errors: string[] = [];
   if (!isPlainRecord(value)) return { valid: false, errors: ["save must be a plain object"] };
   const save = value as Partial<WorldSaveV1>;
+  if(!isAbilityPolicy(save.registries?.dynastyAbilityPolicy))errors.push('invalid saved ability policy');
   if(!isPoliticalCalibration(save.registries?.dynastyPoliticalCalibration))errors.push('invalid saved political calibration');
   if (typeof save.saveSchemaVersion === "number" && save.saveSchemaVersion < CURRENT_SAVE_SCHEMA_VERSION) {
     return { valid: false, errors: ["该存档版本已不受支持，请创建新世界。"] };

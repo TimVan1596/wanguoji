@@ -1,7 +1,7 @@
 import type {WorldEvent} from './WorldHistory';
 import type {CourtCoupRecord} from '../Politics/CourtCoup';
 import {MILITARY_OFFICE_NAMES} from '../Politics/MilitaryOffice';
-export function readCourtCoup(e:WorldEvent):CourtCoupRecord|undefined {try{const r=JSON.parse(String(e.metadata?.courtCoup));return r?.version===3&&r.factionId===e.actorFactionId?r:undefined;}catch{return;}}
+export function readCourtCoup(e:WorldEvent):CourtCoupRecord|undefined {try{const r=JSON.parse(String(e.metadata?.courtCoup));return [3,4].includes(r?.version)&&r.factionId===e.actorFactionId?r:undefined;}catch{return;}}
 export function isSelfCourtCoup(r:CourtCoupRecord){return r.target.basis==='SELF'&&r.actorRulerId===r.targetRulerId;}
 export function courtCoupAttemptText(r:CourtCoupRecord){
  const f=r.crisisFacts.at(-1),cause=f?.cityName?(f.type==='capital-fallen'?`${f.countryLabel}都城${f.cityName}失守后，`:f.type==='city-revolt'?`${f.cityName}发生叛乱后，`:`${f.countryLabel}失${f.cityName}后，`):f?.type==='empire-split'?`${f.countryLabel}分裂之际，`:'';

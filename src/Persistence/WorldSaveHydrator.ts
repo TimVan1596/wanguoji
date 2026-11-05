@@ -322,7 +322,7 @@ function importPoliticalAndHistoryState(save: WorldSaveV1) {
     ...entry,
     rulers: (entry.rulers as RulerSaveV17[]).map(importRulerSave),
   }));
-  DynastyRegistry.importState({ dynasties, politicalCalibration:save.registries.dynastyPoliticalCalibration,sequence: Number(save.registries.dynastyRegistrySequence) } as ReturnType<typeof DynastyRegistry.exportState>, save.world.clock.worldMonth);
+  DynastyRegistry.importState({ dynasties, politicalCalibration:save.registries.dynastyPoliticalCalibration,abilityPolicy:save.registries.dynastyAbilityPolicy,sequence: Number(save.registries.dynastyRegistrySequence) } as ReturnType<typeof DynastyRegistry.exportState>, save.world.clock.worldMonth);
   WorldHistory.importState(save.worldHistory as Parameters<typeof WorldHistory.importState>[0]);
   MilitaryCommandRegistry.importState(save.registries.militaryCommandRegistry as unknown as MilitaryCommandState);
   WorldEra.importState(save.worldEra as Parameters<typeof WorldEra.importState>[0]);

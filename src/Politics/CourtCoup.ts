@@ -1,3 +1,4 @@
+import {militaryAbilities,abilityFactors,type AbilityPolicy} from './PersonAbilities';
 import {courtSuccessChance,type CourtTarget,type CourtSuccessPolicy} from './CourtCoupOutcome';
 import type {DepositionEvaluation} from './InReignDeposition';
 import type {MilitaryPoliticalEvidence,MilitaryPoliticalParticipant} from './MilitaryPoliticalInfluence';
@@ -10,24 +11,25 @@ export type CourtAttemptPolicy=keyof typeof COURT_ATTEMPT_PARAMETERS;
 export function courtAttemptEligible(e:DepositionEvaluation){
  return e.eligible||e.blockers.length>0&&e.blockers.every(b=>b==='NO_CURRENT_VULNERABILITY');
 }
-export function courtAttemptChance(c:MilitaryPoliticalParticipant,policy:CourtAttemptPolicy='MEDIUM'){
+export function courtAttemptChance(c:MilitaryPoliticalParticipant,policy:CourtAttemptPolicy='MEDIUM',abilityPolicy:AbilityPolicy='BASELINE'){
  const d=c.disposition;if(!d)return 0;
- return Math.min(.25,Math.max(.04,(.05+d.ambition*.0008+(100-d.loyalty)*.001+Math.min(3,c.strength)*.01)*COURT_ATTEMPT_PARAMETERS[policy]/.15));
+ return Math.min(.25,Math.max(.04,(.05+d.ambition*.0008+(100-d.loyalty)*.001+Math.min(3,c.strength)*.01)*COURT_ATTEMPT_PARAMETERS[policy]/.15)*abilityFactors(c.abilities,abilityPolicy).attempt);
 }
-export function selectCourtInstigator(e:DepositionEvaluation,people:readonly MilitaryPerson[],influence?:MilitaryPoliticalEvidence){
+export function selectCourtInstigator(e:DepositionEvaluation,people:readonly MilitaryPerson[],influence?:MilitaryPoliticalEvidence,abilityPolicy:AbilityPolicy='BASELINE'){
  if(!courtAttemptEligible(e))return;
  const candidates=influence?.candidates??[...(e.royalMilitaryClaims??[]).map(c=>({...c.participant,officeStanding:{office:c.office,eventId:c.officeEventId,appointmentEventId:c.appointmentEventId}})),...(e.military?.candidates??[])];
  return candidates.filter(c=>{const p=people.find(p=>p.personId===c.personId);return p&&p.status==='ACTIVE'&&p.factionId===c.factionId&&p.deathMonth===undefined&&!p.politicalRulerId&&c.officeStanding&&c.unitCount>=2&&c.serviceMonths>=12&&c.disposition&&willingCourtParticipant(c.disposition);})
+ .map(c=>{if(abilityPolicy==='BASELINE')return c;const p=people.find(p=>p.personId===c.personId)!;const abilities=militaryAbilities(p);return {...c,abilities,politicalSelectionWeight:(c.politicalSelectionWeight??c.strength)*abilityFactors(abilities,abilityPolicy).selection};})
  .sort((a,b)=>(b.politicalSelectionWeight??b.strength)-(a.politicalSelectionWeight??a.strength)||a.personId.localeCompare(b.personId))[0];
 }
 export interface CourtCoupRecord {
- calibration?:import('./PoliticalCalibration').PoliticalCalibration;actorRulerId?:string;version:3;royalSequence:number;target:CourtTarget;successPolicy:CourtSuccessPolicy;conditionalSuccessProbability:number;countryName:string;countryLabel:string;previousRulerTitle:string;previousRulerBornMonth:number;crisisFacts:Array<{eventId:string;month:number;type:string;cityId?:string;cityName?:string;countryLabel:string}>;successEligible:boolean;depositionBlockers:string[];factionId:string;month:number;previousRulerId:string;targetRulerId:string;
+ calibration?:import('./PoliticalCalibration').PoliticalCalibration;actorRulerId?:string;abilityPolicy?:AbilityPolicy;version:3|4;royalSequence:number;target:CourtTarget;successPolicy:CourtSuccessPolicy;conditionalSuccessProbability:number;countryName:string;countryLabel:string;previousRulerTitle:string;previousRulerBornMonth:number;crisisFacts:Array<{eventId:string;month:number;type:string;cityId?:string;cityName?:string;countryLabel:string}>;successEligible:boolean;depositionBlockers:string[];factionId:string;month:number;previousRulerId:string;targetRulerId:string;
  members:Array<{unitId:string;userId:number;bornMonth:number;factionId:string}>;participant:MilitaryPoliticalParticipant;successPressure?:MilitaryPoliticalParticipant;crisisEventIds:string[];stability:number;cityCount:number;
  policy:CourtAttemptPolicy;attemptProbability:number;successProbability:number;roll:number;
  outcome:'SUCCESS'|'FAILED';outcomeEventId:string;consequence:'DEPOSITION'|'DISMISSED';
 }
 
-export function courtAttemptOutcome(e:DepositionEvaluation,c:MilitaryPoliticalParticipant|undefined,roll:number,stability:number,target:CourtTarget,policy:CourtAttemptPolicy='MEDIUM',successPolicy:CourtSuccessPolicy='MEDIUM'){
- if(!c)return;const a=courtAttemptChance(c,policy);if(!courtAttemptEligible(e)||!Number.isFinite(roll)||roll<0||roll>=a)return;
- return roll/a<courtSuccessChance(c,stability,e.evidence.length,target,successPolicy)?'SUCCESS' as const:'FAILED' as const;
+export function courtAttemptOutcome(e:DepositionEvaluation,c:MilitaryPoliticalParticipant|undefined,roll:number,stability:number,target:CourtTarget,policy:CourtAttemptPolicy='MEDIUM',successPolicy:CourtSuccessPolicy='MEDIUM',abilityPolicy:AbilityPolicy='BASELINE'){
+ if(!c)return;const a=courtAttemptChance(c,policy,abilityPolicy);if(!courtAttemptEligible(e)||!Number.isFinite(roll)||roll<0||roll>=a)return;
+ return roll/a<courtSuccessChance(c,stability,e.evidence.length,target,successPolicy,abilityPolicy)?'SUCCESS' as const:'FAILED' as const;
 }
