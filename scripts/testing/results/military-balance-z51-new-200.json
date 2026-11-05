@@ -1,0 +1,91 @@
+{
+  "scope": "Compact index of completed actual runs; full comparison in family-z51-comparison.json, raw local data retained under ignored logs. Not human visual acceptance.",
+  "rawArchive": "logs/z51-raw-results/military-balance-z51-new-200.json",
+  "rawSha256": "2c0a59cc4b4eb80a8d9b6bb099e525cb0ee84ac0cd7e849c50731d9847e3b17a",
+  "results": [
+    {
+      "seed": "regional-1",
+      "years": 200,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "checkpointHashes": [
+        {
+          "month": 1200,
+          "canonicalSha256": "9cca03d99d1d3f1c6b24270ba442d60870620a5ec6eb5a2f8082542a29b8a9eb",
+          "strictSaveValid": true
+        },
+        {
+          "month": 2400,
+          "canonicalSha256": "35cbe4ba0072e884324385ffed63df4ae04c8e661fbe8479e6567dd665691f0d",
+          "strictSaveValid": true
+        }
+      ]
+    },
+    {
+      "seed": "regional-2",
+      "years": 200,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "checkpointHashes": [
+        {
+          "month": 1200,
+          "canonicalSha256": "a56838e84335683a2102e6a400edadd2693cdf6473c454b9e5fa9d33b481af23",
+          "strictSaveValid": true
+        },
+        {
+          "month": 2400,
+          "canonicalSha256": "3b019363740a7695a0fc3ba69c20179f4d593e162df43602e4fcdbeb45696ab9",
+          "strictSaveValid": true
+        }
+      ]
+    },
+    {
+      "seed": "regional-3",
+      "years": 200,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "checkpointHashes": [
+        {
+          "month": 1200,
+          "canonicalSha256": "bd8b2f84f21b6dfe46ada19d961196ee99a3749f1912be27c6322a23c48d4811",
+          "strictSaveValid": true
+        },
+        {
+          "month": 2400,
+          "canonicalSha256": "6518e13e517190d2a20b0ba45a7eac9bbb70bb42f4b29654374dc7cbcb4bf066",
+          "strictSaveValid": true
+        }
+      ]
+    },
+    {
+      "seed": "regional-4",
+      "years": 200,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "checkpointHashes": [
+        {
+          "month": 1200,
+          "canonicalSha256": "1bbf2a7c2cdb3d35195667e6e949568f57ca2c8bd3e7b04afe0bc4c81f03f89f",
+          "strictSaveValid": true
+        },
+        {
+          "month": 2400,
+          "canonicalSha256": "398846ae4f0990e07127db2b5a69f087e958c0993eda42eb064ef09b225cf13d",
+          "strictSaveValid": true
+        }
+      ]
+    }
+  ]
+}

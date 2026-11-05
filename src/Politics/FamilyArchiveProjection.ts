@@ -32,20 +32,29 @@ function familyRow(f:MilitaryFamily,m:MilitaryFamilyMember,s:FamilyArchiveSource
   return {member:m,person:p,life,political,appointments,activeOffice,personalHistory,effectivePersonal,inheritedHistory,inherited,renewed,primaryRank:sourceRanks[0],important:m.source==='FOUNDER'||appointments.length>0||personalHistory.length>0||inheritedHistory.length>0||!!political||renewed.length>0};
 
 }
+/** Reuse the evidence already checked for a list row when opening its archive.
+ * The index belongs to one source/month boundary; retain at most sixteen houses. */
+const rowCaches=new WeakMap<FamilyArchiveIndex,Map<MilitaryFamily,ReturnType<typeof familyRow>[]>>();
+function indexedFamilyRows(f:MilitaryFamily,s:FamilyArchiveSource,index:FamilyArchiveIndex,acts:NonNullable<MilitaryFamily['nobleSuccession']>){
+ let cache=rowCaches.get(index);if(!cache){cache=new Map();rowCaches.set(index,cache);}
+ const cached=cache.get(f);if(cached)return cached;
+ const rows=f.members.filter(m=>m.enteredMonth<=s.month).map(m=>familyRow(f,m,s,index,acts));
+ if(cache.size>=16)cache.delete(cache.keys().next().value!);
+ cache.set(f,rows);return rows;
+}
 /** No tree, full archive or event formatting is built for a list row. */
 export function summarizeFamilyArchive(f:MilitaryFamily,s:FamilyArchiveSource,index=createFamilyArchiveIndex(s)){
- const acts=f.nobleSuccession?.filter(a=>a.month<=s.month)??[],rows=f.members.filter(m=>m.enteredMonth<=s.month).map(m=>familyRow(f,m,s,index,acts));
+ const acts=f.nobleSuccession?.filter(a=>a.month<=s.month)??[],rows=indexedFamilyRows(f,s,index,acts);
  return {...classifyFamily(rows,s.month),last:acts.at(-1),actualSuccessions:acts.filter(a=>a.kind==='SUCCEEDED').length,holder:rows.find(r=>r.inherited),members:rows.length,generations:Math.max(0,...rows.map(r=>r.member.generation))+1,served:rows.filter(r=>r.appointments.length).length};
 }
 function classifyFamily(rows:ReturnType<typeof familyRow>[],month:number){const active=rows.filter(r=>r.life==='ALIVE'&&(r.inherited||r.effectivePersonal||r.activeOffice||r.political&&(r.political.r.endYear??Infinity)>month));return {activeMembers:active.length,living:rows.filter(r=>r.life==='ALIVE').length,unknown:rows.filter(r=>r.life==='UNKNOWN').length,classification:(active.length?'ACTIVE':rows.length&&rows.every(r=>r.life==='DEAD')?'EXTINCT':'HISTORICAL') as FamilyArchiveClass};}
 export function projectFamilyArchive(f:MilitaryFamily,s:FamilyArchiveSource,index=createFamilyArchiveIndex(s)){
- const members=f.members.filter(m=>m.enteredMonth<=s.month),acts=f.nobleSuccession?.filter(a=>a.month<=s.month)??[],last=acts.at(-1),rows=new Map(members.map(m=>[m.memberId,familyRow(f,m,s,index,acts)]));
+ const acts=f.nobleSuccession?.filter(a=>a.month<=s.month)??[],last=acts.at(-1),rows=new Map(indexedFamilyRows(f,s,index,acts).map(row=>[row.member.memberId,row]));
  const {classification,activeMembers,living,unknown}=classifyFamily([...rows.values()],s.month);
  const inheritedHolder=[...rows.values()].find(r=>r.inherited),personalHolder=[...rows.values()].filter(r=>r.effectivePersonal).sort((a,b)=>FAMILY_NOBLE_RANKS.indexOf(b.effectivePersonal!.rank)-FAMILY_NOBLE_RANKS.indexOf(a.effectivePersonal!.rank)||a.member.bornMonth-b.member.bornMonth||a.member.memberId.localeCompare(b.member.memberId))[0];
  const root=last?.kind==='ENDED'?undefined:inheritedHolder?.member??(last?.kind==='STARTED'?(rows.get(last.holderMemberId!)?.effectivePersonal?.eventId===last.sourceGrantEventId?rows.get(last.holderMemberId!)?.member:undefined):rows.get(f.members[0].memberId)?.effectivePersonal?f.members[0]:undefined);
  const accessions=new Map([...rows.values()].filter(r=>r.political).map(r=>[r.member.memberId,r.political!.r.accessionYear!])),heirs=root?new Set(eligibleFamilyNobleHeirs(f,root.memberId,{...index.c,politicalAccessions:accessions}).map(m=>m.memberId)):new Set<string>();
- for(const [id,row]of rows)if(heirs.has(id))row.important=true;
- return {family:f,month:s.month,rows,acts,last,classification,activeMembers,living,unknown,currentInheritedHolderId:inheritedHolder?.member.memberId,locatableTitleHolderId:inheritedHolder?.member.memberId??personalHolder?.member.memberId,actualSuccessions:acts.filter(a=>a.kind==='SUCCEEDED').length,heirCandidateIds:heirs,importantIds:new Set([...rows.values()].filter(r=>r.important).map(r=>r.member.memberId)),newMeritMembers:[...rows.values()].filter(r=>r.member.generation>0&&r.effectivePersonal&&['HOU','GONG'].includes(r.effectivePersonal.rank)).length};
+ return {family:f,month:s.month,rows,acts,last,classification,activeMembers,living,unknown,currentInheritedHolderId:inheritedHolder?.member.memberId,locatableTitleHolderId:inheritedHolder?.member.memberId??personalHolder?.member.memberId,actualSuccessions:acts.filter(a=>a.kind==='SUCCEEDED').length,heirCandidateIds:heirs,importantIds:new Set([...heirs,...[...rows.values()].filter(r=>r.important).map(r=>r.member.memberId)]),newMeritMembers:[...rows.values()].filter(r=>r.member.generation>0&&r.effectivePersonal&&['HOU','GONG'].includes(r.effectivePersonal.rank)).length};
 }
 export function familyPoliticalState(p:{classification:FamilyArchiveClass;last?:FamilyNobleAct;living:number;unknown:number}){return p.classification==='ACTIVE'?p.last?.kind==='ENDED'?'旧爵已终 · 仍有显贵':'当前有效政治世家':p.classification==='EXTINCT'?'已无登记在世成员':p.living?'历史故家 · 仍有登记在世后代':'历史故家 · 登记成员生死未载';}
 export type FamilyArchiveProjection=ReturnType<typeof projectFamilyArchive>;

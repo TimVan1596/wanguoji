@@ -1,3 +1,4 @@
+import {familyArchive} from '../../UI/Components/FactionDetails/FamilyArchiveSource';
 import {deriveMilitaryLifeSchedule} from '../../Politics/MilitaryLifeRules';
 import {checkFamilyRenewalCore} from './FamilyRenewalCoreChecks';
 import Military,{deriveUserBornMonth} from '../../Politics/MilitaryCommandRegistry';
@@ -55,6 +56,14 @@ export function checkPoliticalPeerageInheritance(core:any,factionId:string,perso
   }
   if(worldMonth===240)checkFamilyRenewalCore(core,child.id,factionId,check);
   hydrateWorldSave(core,structuredClone(saved));check(diffCanonicalWorldSave(saved,exportWorldSave(core)).matched,'formal grant source and unique civilian title read without another award');
+  {const house=family(),cached=familyArchive(house,worldMonth),revision=Military.getFamilyReadingRevision(),eventCount=History.getRecordedEvents().length,heir=team().getUserById(child.id),other=core.teams.find((t:any)=>t.name!==factionId&&t.name!=='Neutral');
+   check(other&&heir&&!heir.militaryPersonId,'cache invalidation fixture uses the actual civilian heir and another real faction');
+   heir.setTeam(other,{cause:'LIVE_TRANSFER',month:worldMonth});
+   const transferred=familyArchive(house,worldMonth);
+   check(Military.getFamilyReadingRevision()>revision&&transferred!==cached&&!transferred.rows.get(member.memberId)?.inherited&&History.getRecordedEvents().length===eventCount,'eventless real civilian transfer invalidates the family archive cache without inventing a historical event');
+   hydrateWorldSave(core,structuredClone(saved));const restored=familyArchive(family(),worldMonth);
+   check(restored!==transferred&&diffCanonicalWorldSave(saved,exportWorldSave(core)).matched,'hydration discards the transferred family reading and restores the same original civilian identity');
+  }
   const resume=()=>{hydrateWorldSave(core,structuredClone(saved));core.setWorldRunning(true);for(let m=0;m<12;m++){for(let n=0;n<30;n++)core.advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit('postupdate');}core.setWorldRunning(false);return strict();};const a=resume(),b=resume();check(diffCanonicalWorldSave(a,b).matched,'formal peerage and descendant life resume twelve months deterministically');hydrateWorldSave(core,structuredClone(a));check(diffCanonicalWorldSave(a,exportWorldSave(core)).matched,'second read preserves political-source inheritance and the same original residents');
  }finally{hydrateWorldSave(core,structuredClone(original));}
 }

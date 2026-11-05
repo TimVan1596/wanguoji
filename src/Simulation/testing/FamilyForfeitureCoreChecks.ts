@@ -21,9 +21,15 @@ export function checkFamilyForfeiture(core:any,personId:string,familyId:string,c
   clock(base+60);gather();(Military as any).advanceOffices(base+60,core.teams);
   for(const [months,rank]of [[120,'HOU'],[180,'GONG']] as const){
    const used=new Set(person().nobilityHistory!.flatMap(g=>g.cityIds));
-   const towns=core.allCities.filter((c:any)=>c.ownerFactionId!==factionId&&!c.destroyed&&!used.has(c.id)).sort((a:any,b:any)=>Number(core.teams.find((t:any)=>t.name===b.ownerFactionId)?.capitalCity===b)-Number(core.teams.find((t:any)=>t.name===a.ownerFactionId)?.capitalCity===a)||String(a.id).localeCompare(String(b.id))).slice(0,2);
-   check(towns.length===2,'higher peerage uses two additional distinct existing cities, not copied ancestral merits');
-   for(const [i,c]of towns.entries()){const month=base+months-36+i*12;clock(month);const u=team().getUserById(person().sourceUserId);u.player.setPosition(c.block.x,c.block.y);u.player.body.reset(u.player.x,u.player.y);const state=core.logicalUnitRegistry.getEntry(u.player.logicalUnitId)!.state;state.logicalX=c.block.x;state.logicalY=c.block.y;c.capture(team(),month,undefined,person().appointments.at(-1)!.commandId,personId);}
+   for(let i=0;i<2;i++){
+    const c=core.allCities.filter((c:any)=>c!==team().capitalCity&&!c.destroyed&&!used.has(c.id)).sort((a:any,b:any)=>Number(core.teams.find((t:any)=>t.name===b.ownerFactionId)?.capitalCity===b)-Number(core.teams.find((t:any)=>t.name===a.ownerFactionId)?.capitalCity===a)||String(a.id).localeCompare(String(b.id)))[0];
+    check(c,'higher peerage uses another distinct existing city, not copied ancestral merits');
+    const month=base+months-36+i*12;clock(month);const enemy=core.teams.find((e:any)=>e!==team()&&e.status==='ACTIVE')!;check(enemy,'controlled real captures retain a living hostile state');
+    if(c.ownerFactionId===factionId)c.capture(enemy,month);
+    const defender=core.teams.find((e:any)=>e.name===c.ownerFactionId);
+    if(defender.cities.length===1){const reserve=core.allCities.filter((x:any)=>x.ownerFactionId===factionId&&x!==team().capitalCity&&x!==c&&!x.destroyed).sort((a:any,b:any)=>Number(used.has(a.id))-Number(used.has(b.id))||String(a.id).localeCompare(String(b.id)))[0];check(reserve,'a real spare city preserves the hostile ruler without invented cities or people');reserve.capture(defender,month);}
+    const u=team().getUserById(person().sourceUserId);u.player.setPosition(c.block.x,c.block.y);u.player.body.reset(u.player.x,u.player.y);const state=core.logicalUnitRegistry.getEntry(u.player.logicalUnitId)!.state;state.logicalX=c.block.x;state.logicalY=c.block.y;c.capture(team(),month,undefined,person().appointments.at(-1)!.commandId,personId);used.add(c.id);
+   }
    clock(base+months);gather();(Military as any).advanceOffices(base+months,core.teams);Military.updateNobility(base+months,core.teams,Dynasty.getAll());Military.updateFamilyTitles(base+months,core.teams,Dynasty.getAll());
    check(person().nobilityHistory?.at(-1)?.rank===rank&&family().nobleSuccession?.at(-1)?.kind==='STARTED'&&family().nobleSuccession?.at(-1)?.rank===rank,`actual independent ${rank} merit opens exactly one higher hereditary period`);strict();
   }

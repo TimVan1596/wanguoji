@@ -1,0 +1,22 @@
+{
+  "scope": "Compact index of completed actual runs; full comparison in family-z51-comparison.json, raw local data retained under ignored logs. Not human visual acceptance.",
+  "rawArchive": "logs/z51-raw-results/royal-military-z51-core-release.json",
+  "rawSha256": "b3518feaa4150123d7137c28375771ad6bcac60eeb95a59f63821918bba509bf",
+  "results": [
+    {
+      "seed": "royal-military-z11",
+      "saveSchemaVersion": 48,
+      "passedChecks": 244,
+      "significantChecks": [
+        "failed enlistment restores canonical state and sequences",
+        "military identity shows the actual canonical birth month",
+        "history navigation does not alter canonical world or RNG",
+        "large genealogy rendering consumes no RNG, population or canonical state",
+        "failed deposition restores the entire canonical state, including royal military authority, User role, formation, cooldown and RNG",
+        "political life display and navigation consume no RNG or canonical state",
+        "weighted deposition save resumes twelve months deterministically",
+        "political life display and navigation consume no RNG or canonical state"
+      ]
+    }
+  ]
+}

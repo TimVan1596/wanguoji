@@ -1,0 +1,22 @@
+{
+  "scope": "Compact index of completed actual runs; full comparison in family-z51-comparison.json, raw local data retained under ignored logs. Not human visual acceptance.",
+  "rawArchive": "logs/z51-raw-results/family-performance-z51-perf-final-100.json",
+  "rawSha256": "5e1d9fddb9d390ea5724d061d744c038abe66da429ab5f26768259aacd23c8ed",
+  "results": [
+    {
+      "seed": "regional-3",
+      "worldMonth": 1200,
+      "unchanged": true,
+      "beforeHash": "bd8b2f84f21b6dfe46ada19d961196ee99a3749f1912be27c6322a23c48d4811",
+      "afterHash": "bd8b2f84f21b6dfe46ada19d961196ee99a3749f1912be27c6322a23c48d4811",
+      "viewport": {
+        "width": 1280,
+        "height": 763
+      },
+      "families": 4,
+      "members": 21,
+      "events": 2419,
+      "maxFamilyMembers": 9
+    }
+  ]
+}
