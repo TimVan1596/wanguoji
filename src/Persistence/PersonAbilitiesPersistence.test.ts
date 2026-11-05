@@ -1,0 +1,4 @@
+import {expect,it} from 'vitest';
+import {createEmptyWorldSaveV22,CURRENT_SAVE_SCHEMA_VERSION} from './WorldSaveSchema';
+import {validateWorldSave} from './WorldSaveValidator';
+it('version 49 requires an explicit supported political ability policy and rejects previous worlds rather than silently reading them',()=>{const s=createEmptyWorldSaveV22();expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(49);expect(validateWorldSave(s).valid).toBe(true);for(const value of [undefined,'forged',{},1]){const bad=structuredClone(s);bad.registries.dynastyAbilityPolicy=value;expect(validateWorldSave(bad).errors).toContain('invalid saved ability policy');}for(const policy of ['BASELINE','LOW','MEDIUM','HIGH']){const x=structuredClone(s);x.registries.dynastyAbilityPolicy=policy;expect(validateWorldSave(x).valid).toBe(true);}const old=structuredClone(s);(old as any).saveSchemaVersion=48;expect(validateWorldSave(old)).toEqual({valid:false,errors:['该存档版本已不受支持，请创建新世界。']});});

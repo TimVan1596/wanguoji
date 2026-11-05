@@ -1,3 +1,4 @@
+import {militaryAbilities} from '../../Politics/PersonAbilities';
 import {mergePoliticalReading} from '../../History/PoliticalReadingProjection';
 import {projectRulerHistoricalEvents} from '../../Politics/RulerChronicle';
 import {deriveMilitaryChronicle} from '../../Politics/MilitaryChronicle';
@@ -26,14 +27,14 @@ export function checkCourtCoups(core:any,base:ReturnType<typeof exportWorldSave>
   commanders.forEach(u=>u.loyalty=0);(Military as any).advanceOffices(month,core.teams);
   const d=Dynasty.get(team.name)!,king=Dynasty.getCurrentRuler(team.name)!,evaluation=evaluateDepositionOpportunity({factionId:team.name,status:team.status,identityStage:team.identityStage,cityCount:team.cities.length,stability:getFactionStability(team),currentRuler:king,rulers:d.rulers,houseName:d.houseName,worldMonth:month,events:History.getEventsForFaction(team.name),military:Military.getPoliticalInfluence(team,month,core.logicalUnitRegistry)});
   evaluation.royalMilitaryClaims=Military.getRoyalDepositionClaims(team,month,evaluation.candidates.map(c=>c.ruler),core.logicalUnitRegistry);
-  const actor=selectCourtInstigator(evaluation,Military.getPeople(),Military.getCourtAttemptInfluence(team,month,core.logicalUnitRegistry));check(evaluation.eligible&&actor,'real damaged court with a willing active commander qualifies for one shared attempt');
+  const actor=selectCourtInstigator(evaluation,Military.getPeople(),Military.getCourtAttemptInfluence(team,month,core.logicalUnitRegistry),Dynasty.getAbilityPolicy());check(evaluation.eligible&&actor,'real damaged court with a willing active commander qualifies for one shared attempt');
   const start=exportWorldSave(core);let v=validateWorldSave(start);check(v.valid,`pre-attempt strict save: ${v.errors.join(';')}`);
   const invoke=(roll:number)=>{const t=core.teams.find((t:any)=>t.name===factionId),writer=random.next;let draws=0;random.next=()=>{const caller=new Error().stack?.split('\n')[2]??'';if(caller.includes('/src/Politics/Dynasty.ts'))draws++;writer.call(random);return roll;};try{(Dynasty as any).evaluateInReignDeposition(t,Dynasty.get(factionId),Dynasty.getCurrentRuler(factionId),month);}finally{random.next=writer;}return draws;};
   if(Dynasty.getPoliticalCalibration()!=='BASELINE'){
    const beforeCooldown=Dynasty.get(factionId)!.lastDepositionAttemptMonth;check(invoke(.999)===1,'calibrated empty opportunity still consumes exactly one shared draw');
    check(Dynasty.get(factionId)!.lastDepositionAttemptMonth===beforeCooldown&&!History.getRecordedEvents().some(e=>e.type==='court-coup-attempt'),'an unstarted action creates no political history or five-year action cooldown');hydrateWorldSave(core,structuredClone(start));
   }
-  const failedRoll=courtAttemptChance(actor!)*.95;
+  const failedRoll=courtAttemptChance(actor!,'MEDIUM',Dynasty.getAbilityPolicy())*.95;
   for(const [roll,failType] of [[failedRoll,'court-coup-result'],[0,'court-coup-result'],[0,'court-service-granted'],[0,'military-ennobled'],[0,'court-reward-granted']] as const){
    hydrateWorldSave(core,structuredClone(start));const before=exportWorldSave(core),writer=History.addEvent;
    History.addEvent=function(e){const id=writer.call(this,e);if(e.type===failType)throw Error('injected final coup write');return id;};
@@ -50,6 +51,10 @@ export function checkCourtCoups(core:any,base:ReturnType<typeof exportWorldSave>
    check(invoke(roll)===1,`${outcome} court action uses exactly the original one annual draw`);
    const events=History.getRecordedEvents(),attempt=events.find(e=>e.type==='court-coup-attempt'&&(e.monthIndex??e.year)===month)!;
    check(attempt&&JSON.parse(String(attempt.metadata?.courtCoup)).outcome===outcome,`${outcome} real instigator and result remain linked`);
+   const proof=JSON.parse(String(attempt.metadata?.courtCoup)),actual=Military.getPerson(proof.participant.personId)!;
+   check(proof.version===4&&JSON.stringify(proof.participant.abilities)===JSON.stringify(militaryAbilities(actual)),'real court record freezes permanent command/strategy abilities without an additional opportunity draw');
+   for(const field of ['command','strategy','source','policy']){const bad=structuredClone(exportWorldSave(core)),row=(bad.worldHistory.events as any[]).find(e=>e.id===attempt.id),r=JSON.parse(String(row.metadata.courtCoup));if(field==='policy')r.abilityPolicy='forged';else if(field==='source')r.participant.abilities.source={...r.participant.abilities.source,sourceUserId:-999};else r.participant.abilities[field]=(r.participant.abilities[field]+1)%101;row.metadata.courtCoup=JSON.stringify(r);check(!validateWorldSave(bad).valid,`strict save rejects forged actual ability ${field}`);}
+   const observedLoyalty=proof.participant.disposition.loyalty,live=core.teams.flatMap((t:any)=>[...t.users]).find((u:any)=>u.id===actual.sourceUserId),oldLoyalty=live?.loyalty;if(live){live.loyalty=99;check(JSON.parse(String(attempt.metadata?.courtCoup)).participant.disposition.loyalty===observedLoyalty,'later actual loyalty never rewrites the historical political snapshot');live.loyalty=oldLoyalty;}
    const reading=mergePoliticalReading(events),anchor=reading.find(e=>e.id===attempt.id)!;
    check(anchor.metadata?.courtReadingKind==='COURT_COUP'&&!reading.some(e=>e.type==='court-coup-result'),'actual world and faction reading has one source-linked court action');
    const p=Military.getPerson(actor!.personId)!,militaryRows=militaryMilestones(p,deriveMilitaryChronicle(p,Military.getFormations(),events,month,factionId),events);

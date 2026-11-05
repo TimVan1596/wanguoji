@@ -37,13 +37,13 @@ export function checkCourtFates(core:any,base:ReturnType<typeof exportWorldSave>
   (Military as any).advanceOffices(216,core.teams);if(titled)Military.updateNobility(216,core.teams,Dynasty.getAll());clock(228);if(titled)Military.updateNobility(228,core.teams,Dynasty.getAll());
   if(strong){clock(240);(Military as any).advanceOffices(240,core.teams);}
   clock(251);const enemy=core.teams.find((x:any)=>x!==t&&x.status==='ACTIVE');t.capitalCity.capture(enemy,251);for(const c of t.cities)c.loyalty=20;clock(252);
-  let e=opportunity(252),army=Military.getCourtAttemptInfluence(t,252,core.logicalUnitRegistry),actor=selectCourtInstigator(e,Military.getPeople(),army);
+  let e=opportunity(252),army=Military.getCourtAttemptInfluence(t,252,core.logicalUnitRegistry),actor=selectCourtInstigator(e,Military.getPeople(),army,Dynasty.getAbilityPolicy());
   if(pardonGoal){
    const old=king();let chosen=false;
    for(const c of army.candidates){const p=Military.getPerson(c.personId)!,body=t.getUserById(p.sourceUserId);if(!currentNobleGrant(p,factionId,252)||deriveMilitaryLifeSchedule(p).naturalDeathMonth<old.naturalDeathYear!+24)continue;
     for(let loyalty=0;loyalty<=100&&!chosen;loyalty++){
      for(const unit of t.users)if(unit.militaryPersonId)unit.loyalty=100;body.loyalty=loyalty;
-     army=Military.getCourtAttemptInfluence(t,252,core.logicalUnitRegistry);actor=selectCourtInstigator(e,Military.getPeople(),army);const goal=actor&&chooseCourtTarget(e,actor,Military.getPerson(actor.personId)!);
+     army=Military.getCourtAttemptInfluence(t,252,core.logicalUnitRegistry);actor=selectCourtInstigator(e,Military.getPeople(),army,Dynasty.getAbilityPolicy());const goal=actor&&chooseCourtTarget(e,actor,Military.getPerson(actor.personId)!);
      if(actor?.personId===p.personId&&goal&&dy().rulers.find(r=>r.id===goal.rulerId)!.naturalDeathYear!>old.naturalDeathYear!+24)chosen=true;
     }if(chosen)break;
    }check(chosen,'existing willing officer and an actual long-lived legal target support a later real pardon fixture');
@@ -54,7 +54,7 @@ export function checkCourtFates(core:any,base:ReturnType<typeof exportWorldSave>
   hydrateWorldSave(core,structuredClone(base));const ordinary=Military.getPeople().find(p=>p.factionId===factionId&&p.status==='ACTIVE')!,body=team().getUserById(ordinary.sourceUserId);Military.endPersonCommands(ordinary.personId,216,'DISMISSED');
   check((Military as any).isEligible(body,216)&&(Military as any).appoint(body,factionId,216,[body.player.logicalUnitId]),'ordinary dismissal remains eligible for a real reappointment with the same existing User');
   for(const [titled,strong] of [[false,true],[true,false],[true,true]]){
-   const fixture=prepare(titled,strong),roll=courtAttemptChance(fixture.actor)*.95;
+   const fixture=prepare(titled,strong),roll=courtAttemptChance(fixture.actor,'MEDIUM',Dynasty.getAbilityPolicy())*.95;
    for(const failType of ['military-court-sanction',...(titled&&strong?['military-title-revoked']:[])]){
     hydrateWorldSave(core,structuredClone(fixture.start));const before=exportWorldSave(core),writer=History.addEvent;History.addEvent=function(e){const id=writer.call(this,e);if(e.type===failType)throw Error('injected court punishment write');return id;};try{invoke(252,roll);}finally{History.addEvent=writer;}
     check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,`${failType} fault restores people, titles, commands, history and RNG`);
@@ -105,7 +105,7 @@ export function checkCourtFates(core:any,base:ReturnType<typeof exportWorldSave>
    {const missing=structuredClone(saved),p=missing.registries.militaryCommandRegistry.people.find(p=>p.personId===id)!;p.nobilityHistory=p.nobilityHistory?.filter(g=>g.basis!=='COURT');missing.worldHistory.events=(missing.worldHistory.events as any[]).filter(e=>e.id!==g!.eventId&&e.metadata?.nobleGrantEventId!==g!.eventId);check(!validateWorldSave(missing).valid,'erasing both the mandatory political title and all reward records cannot bypass source replay');}
    for(const field of ['basis','courtServiceEventId','rank','serviceMonths']){const bad=structuredClone(saved),grant=bad.registries.militaryCommandRegistry.people.find(p=>p.personId===id)!.nobilityHistory!.find(g=>g.basis==='COURT')! as any;grant[field]=field==='rank'?'GONG':field==='serviceMonths'?60:'forged';const event=(bad.worldHistory.events as any[]).find(e=>e.id===grant.eventId);event.metadata.nobility=JSON.stringify(grant);check(!validateWorldSave(bad).valid,`political peerage rejects forged ${field} even with matching stored JSON`);}
   }
-  const fixture=prepare(true,false,true);invoke(252,courtAttemptChance(fixture.actor)*.95);let p=Military.getPerson(fixture.actor.personId)!,ban=p.politicalHistory![0],old=king(),targetId=JSON.parse(String(History.getRecordedEvents().find(e=>e.id===ban.courtCoupEventId)!.metadata?.courtCoup)).targetRulerId;
+  const fixture=prepare(true,false,true);invoke(252,courtAttemptChance(fixture.actor,'MEDIUM',Dynasty.getAbilityPolicy())*.95);let p=Military.getPerson(fixture.actor.personId)!,ban=p.politicalHistory![0],old=king(),targetId=JSON.parse(String(History.getRecordedEvents().find(e=>e.id===ban.courtCoupEventId)!.metadata?.courtCoup)).targetRulerId;
   check(!planCourtPardon(p,team(),dy(),264,History.getRecordedEvents(),85),'victim still reigning never silently pardons his own attacker');
   clock(312);let e=opportunity(312);check(e.eligible===false,'old crisis expiration cannot authorize a fabricated later handoff');
   const enemy=core.teams.find((x:any)=>x!==team()&&x.status==='ACTIVE');clock(311);team().capitalCity.capture(enemy,311);clock(312);for(const c of team().cities)c.loyalty=20;e=opportunity(312);

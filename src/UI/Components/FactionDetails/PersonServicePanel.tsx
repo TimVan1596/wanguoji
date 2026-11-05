@@ -1,3 +1,4 @@
+import {rulerFamilyOrigin} from '../../../Politics/RulerFamilyOrigin';
 import {courtServiceReadings} from '../../../Politics/CourtServicePresentation';
 import InsurgentCommandPanel from './InsurgentCommandPanel';
 import MilitaryFamilyPanel from './MilitaryFamilyPanel';
@@ -23,9 +24,11 @@ const countryAt=(id:string,month:number)=>{const t=Game.Core?.teams.find(t=>t.na
 const style={border:0,padding:0,background:"none",color:"inherit",font:"inherit",textDecoration:"underline",cursor:"pointer"} as const;
 export function RulerServicePanel({ruler,factionId,month,reading}:{ruler:Ruler;factionId:string;month:number;reading?:{earlier:ReturnType<typeof preAccessionMilitary>;rows:ReturnType<typeof personServiceLinks>}}){
  const nav=usePersonArchiveNavigation(),people=Military.getPeople(),events=reading?[]:History.getEvents();
+ const origin=rulerFamilyOrigin(ruler,Military.getFamilies(),people,month);
  const earlier=reading?reading.earlier:preAccessionMilitary(ruler,people,Military.getFormations(),events,{factions:new Map((Game.Core?.teams??[]).map(t=>[t.name,t]))});
  const rows=reading?reading.rows:personServiceLinks(factionId,[ruler],people,Military.getFormations(),events,month);
  return <>
+  {origin&&<Typography fontSize=".8rem">原属{origin.family.surname}氏功臣家族 · <button type="button" style={style} onClick={()=>nav.open({kind:'FAMILY',factionId:origin.family.factionId,id:origin.family.familyId,memberId:origin.member.memberId})}>查看原家族宗谱并定位本人</button></Typography>}
   <InsurgentCommandPanel factionId={factionId} rulerId={ruler.id} month={month}/>
   {earlier&&<ChronicleSection title="早年与登位前经历">
    {earlier.representative.map(e=><Typography key={e.eventId} fontSize="0.82rem">{formatChronicleDate(e.worldMonth)}，{e.text}</Typography>)}

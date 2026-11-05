@@ -1,0 +1,6 @@
+import {it,expect} from 'vitest';
+import {rulerFamilyOrigin} from './RulerFamilyOrigin';
+const m:any={memberId:'m',sourceUserId:7,bornMonth:100,enteredMonth:320,militaryPersonId:'p'};
+const f:any={familyId:'family',surname:'敖',members:[m]};const p:any={personId:'p',sourceUserId:7,bornMonth:100};
+it('links a renamed real monarch to the original house by permanent resident and life evidence, without changing either lineage',()=>{const r:any={id:'new-ruler',givenName:'谢伯安',bornYear:100,accessionYear:400,residentIdentity:{sourceUserId:7}},before=JSON.stringify([r,f]);expect(rulerFamilyOrigin(r,[f],[p],450)).toEqual({family:f,member:m});expect(JSON.stringify([r,f])).toBe(before);expect(rulerFamilyOrigin(r,[f],[p],399)).toBeUndefined();});
+it('requires birth and unique saved identity, never surname or name alone',()=>{const r:any={id:'new',bornYear:100,accessionYear:400,militaryUsurperIdentity:{personId:'p'}};expect(rulerFamilyOrigin(r,[f],[p],450)?.member).toBe(m);expect(rulerFamilyOrigin({...r,bornYear:101},[f],[p],450)).toBeUndefined();expect(rulerFamilyOrigin({...r,militaryUsurperIdentity:undefined,houseName:'敖'},[f],[p],450)).toBeUndefined();expect(rulerFamilyOrigin(r,[f,{...f,familyId:'duplicate'}],[p],450)).toBeUndefined();expect(rulerFamilyOrigin(r,[f],[{...p,sourceUserId:8}],450)).toBeUndefined();});
