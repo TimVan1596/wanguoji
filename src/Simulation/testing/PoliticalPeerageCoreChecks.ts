@@ -1,3 +1,4 @@
+import {checkFamilyResidentFounder} from './FamilyResidentFounderCoreChecks';
 import {familyArchive} from '../../UI/Components/FactionDetails/FamilyArchiveSource';
 import {deriveMilitaryLifeSchedule} from '../../Politics/MilitaryLifeRules';
 import {checkFamilyRenewalCore} from './FamilyRenewalCoreChecks';
@@ -26,6 +27,7 @@ export function checkPoliticalPeerageInheritance(core:any,factionId:string,perso
   check(counter!==undefined,`real population creation can register a plausible child of the formal peerage founder: ${JSON.stringify({worldMonth,members:family().members})}`);population.counters[factionId]=counter!-1;
   const beforePopulation=core.teams.reduce((n:number,t:any)=>n+t.users.size,0),child=population.spawn(t,undefined,false,{cause:'NATURAL_GROWTH',month:worldMonth});
   check(child?.familyMemberId&&core.teams.reduce((n:number,t:any)=>n+t.users.size,0)===beforePopulation+1&&!child.militaryPersonId,'one normal population entry supplies the real child, not an additional noble or soldier');
+  const naturalEntry=exportWorldSave(core),naturalChildId=child.id;
   strict();Military.updateFamilyTitles(worldMonth,core.teams,Dynasty.getAll());check(!family().nobleSuccession?.length,'living formally granted BO founder gives no premature inheritance');
   const father=t.getUserById(Military.getPerson(personId)!.sourceUserId);check(father.destroyUser(false,{cause:'BATTLE_DEATH',month:worldMonth}),'formal peerage founder dies through the existing User death transaction');
   const death=strict(),writer=History.addEvent;
@@ -65,5 +67,6 @@ export function checkPoliticalPeerageInheritance(core:any,factionId:string,perso
    check(restored!==transferred&&diffCanonicalWorldSave(saved,exportWorldSave(core)).matched,'hydration discards the transferred family reading and restores the same original civilian identity');
   }
   const resume=()=>{hydrateWorldSave(core,structuredClone(saved));core.setWorldRunning(true);for(let m=0;m<12;m++){for(let n=0;n<30;n++)core.advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit('postupdate');}core.setWorldRunning(false);return strict();};const a=resume(),b=resume();check(diffCanonicalWorldSave(a,b).matched,'formal peerage and descendant life resume twelve months deterministically');hydrateWorldSave(core,structuredClone(a));check(diffCanonicalWorldSave(a,exportWorldSave(core)).matched,'second read preserves political-source inheritance and the same original residents');
+  hydrateWorldSave(core,structuredClone(naturalEntry));checkFamilyResidentFounder(core,team().getUserById(naturalChildId),worldMonth,check);
  }finally{hydrateWorldSave(core,structuredClone(original));}
 }

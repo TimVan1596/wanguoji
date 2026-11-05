@@ -22,7 +22,7 @@ export default function FamilyNoblePanel({family:f,month}:{family:MilitaryFamily
  const [technical,setTechnical]=useState(false),archive=familyArchive(f,month),acts=archive.acts,periods=familyNoblePeriods(f,month);
  const entries=()=>{const source=familyArchiveSource(month).source,ids=new Set([`${f.familyId}-founded`,...acts.map(a=>a.eventId),...f.members.flatMap(m=>archive.rows.get(m.memberId)?.personalHistory.map(g=>g.eventId)??[]),...(f.renewals??[]).map(r=>`${f.familyId}-${r.memberId}-merit`)]),factions=new Map((Game.Core?.teams??[]).map(t=>[t.name,t]));
  return source.events.filter(e=>ids.has(e.id)&&(e.monthIndex??e.year)<=month).sort((a,b)=>(a.monthIndex??a.year)-(b.monthIndex??b.year)).map(e=>({id:e.id,content:<Typography fontSize=".76rem">{formatWorldDate(e.monthIndex??e.year)}，{formatHistoryEventTitle(e,factions)}</Typography>}));};
- return <><Typography fontSize=".76rem">历{periods.length}期爵位传承 · 实际承袭{archive.actualSuccessions}次。军职、本人授爵和家族承袭分别记载，不传部队或食邑。</Typography>
+ return <><Typography fontSize=".76rem">历{periods.length}期爵位传承 · 实际承袭{archive.actualSuccessions}次。</Typography>
  <HistoricalEventArchive title="家族沿革" totalCount={acts.length+f.members.reduce((n,m)=>n+(archive.rows.get(m.memberId)?.personalHistory.length??0),0)+1+(f.renewals?.length??0)} entries={entries}/>
  <details onToggle={e=>setTechnical(e.currentTarget.open)}><summary>原始史料与技术依据</summary>{technical&&<>
  {periods.map(p=><Typography key={p.number} fontSize=".72rem">第{p.number}期 · 来源{p.sourceGrantEventId??'尚无已结算权源'} · 实际承袭{p.successions}次{p.endMonth!==undefined?` · ${formatWorldDate(p.endMonth)}终止（${p.endReason==='SUPERSEDED'?'本人更高新爵开立下一期':p.endReason}）`:''}</Typography>)}

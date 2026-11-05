@@ -5,10 +5,10 @@ const fixture=()=>{
  const s=createEmptyWorldSaveV1();s.world.worldMonth=24;
  s.factions=[{factionId:"parent"},{factionId:"rebel",origin:{parentFactionId:"parent",foundingRulerId:"r"}}] as any;
  s.cities=[{cityId:"city"}] as any;
- const residentIdentity={personId:"resident-x",sourceUserId:7,sourceUserLabel:"parent-001",bornMonth:-300,sourceFactionId:"parent",sourceFactionName:"旧邦",foundedMonth:12,cityId:"city",cityName:"起城"};
- s.dynasties=[{factionId:"rebel",currentRulerId:"r",rulers:[{rulerId:"r",bornMonth:-300,naturalDeathMonth:600,accessionMonth:12,relationType:"FOUNDER",status:"ruling",residentIdentity}]}];
+ const residentIdentity={personalName:"杜安",nameSource:"POLITICAL_ENTRY",personId:"resident-x",sourceUserId:7,sourceUserLabel:"parent-001",bornMonth:-300,sourceFactionId:"parent",sourceFactionName:"旧邦",foundedMonth:12,cityId:"city",cityName:"起城"};
+ s.dynasties=[{factionId:"rebel",currentRulerId:"r",rulers:[{rulerId:"r",houseName:"杜氏",givenName:"安",bornMonth:-300,naturalDeathMonth:600,accessionMonth:12,relationType:"FOUNDER",status:"ruling",residentIdentity}]}];
  s.users=[{userId:7,name:"parent-001",bornMonth:-300,historicalPersonId:"resident-x",role:"RULER",rulerId:"r",factionId:"rebel"}] as any;
- s.worldHistory={events:[{id:"accession",type:"ruler-acceded",rulerId:"r",metadata:{residentPersonId:"resident-x",sourceUserId:7,sourceFactionId:"parent",foundingCityId:"city"}}]};return s;
+ s.worldHistory={events:[{id:"accession",type:"ruler-acceded",rulerId:"r",metadata:{residentPersonalName:"杜安",residentNameSource:"POLITICAL_ENTRY",residentPersonId:"resident-x",sourceUserId:7,sourceFactionId:"parent",foundingCityId:"city"}}]};return s;
 };
 it("requires one live entity matching the permanent resident birth, original label and royal role",()=>{
  const s=fixture();expect(validateResidentIdentities(s)).toEqual([]);
@@ -42,4 +42,9 @@ it("regional-6: repeated occupation includes a real dated political transfer, wi
   const bad=structuredClone(s);Object.assign((bad.worldHistory.events as any[]).find(e=>e.id==="revolt"),patch);
   expect(validateResidentIdentities(bad)).toContain("ordinary founding crisis facts lack valid dated evidence");
  }
+});
+
+it("rejects a founder name or name-source changed independently of the original accession",()=>{
+ for(const field of ["personalName","nameSource"]){const s=fixture();(s.dynasties[0].rulers as any[])[0].residentIdentity[field]="伪造";expect(validateResidentIdentities(s)).toContain("resident founder permanent name conflict");}
+ const s=fixture();(s.dynasties[0].rulers as any[])[0].givenName="昭";expect(validateResidentIdentities(s)).toContain("resident founder permanent name conflict");
 });
