@@ -25,7 +25,7 @@ export function projectFamilyTrunk(members:readonly MilitaryFamilyMember[],impor
  const byId=new Map(members.map(m=>[m.memberId,m])),keep=new Set<string>();
  for(const m of members)if(full||important.has(m.memberId)||m.source==='FOUNDER'){
   let current:MilitaryFamilyMember|undefined=m;const seen=new Set<string>();
-  while(current&&!seen.has(current.memberId)){seen.add(current.memberId);keep.add(current.memberId);current=current.parentMemberId?byId.get(current.parentMemberId):undefined;}
+  while(current&&!seen.has(current.memberId)&&!keep.has(current.memberId)){seen.add(current.memberId);keep.add(current.memberId);current=current.parentMemberId?byId.get(current.parentMemberId):undefined;}
  }
  return {members:members.filter(m=>keep.has(m.memberId))};
 }
