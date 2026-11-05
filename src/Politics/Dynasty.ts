@@ -1,3 +1,4 @@
+import {establishedResidentFounderName,type ResidentNameSource} from './ResidentFounderName';
 import {DEFAULT_ABILITY_POLICY,type AbilityPolicy} from './PersonAbilities';
 import {DEFAULT_POLITICAL_CALIBRATION,POLITICAL_CALIBRATIONS,type PoliticalCalibration} from './PoliticalCalibration';
 import {maySucceed, unresolvedSuccessionAct, type RoyalSuccessionAct} from './RoyalSuccessionStanding';
@@ -110,6 +111,7 @@ export type RulerRelationType =
   | "LEADER_SUCCESSOR";
 
 export interface ResidentFounderIdentity {
+  personalName?:string;nameSource?:ResidentNameSource;
   military?:MilitarySecessionEvidence;
   personId: string; sourceUserId: number; sourceUserLabel: string; bornMonth: number;
   sourceFactionId: string; sourceFactionName: string; foundedMonth: number; cityId: string; cityName: string;
@@ -258,15 +260,17 @@ class DynastyRegistryStore {
     if (team.status === "EXTINCT") return undefined;
     const military=resident?.origin.military;
     const sourcePerson=military?MilitaryCommandRegistry.getPerson(military.personId):undefined;
-    const established=sourcePerson?splitEstablishedPersonalName(sourcePerson.personalName):undefined;
+    const family=resident?MilitaryCommandRegistry.getFamilyMember(resident.user.id,resident.user.bornMonth):undefined;
+    if(family&&family.member.name!==resident!.user.name&&!sourcePerson)throw Error('Resident family name conflict');
+    const established=resident?establishedResidentFounderName(resident.user.name,sourcePerson?.personalName,family?.member.name):undefined;
     if(military&&(!sourcePerson||sourcePerson.status!=="RETIRED"||sourcePerson.politicalRulerId||sourcePerson.sourceUserId!==resident?.user.id||sourcePerson.bornMonth!==resident.user.bornMonth||!established))throw new Error("Invalid military founder");
     const houseName = established?.houseName??team.houseName ?? `${team.name}氏`;
     if(established)team.houseName=established.houseName;
-    const ruler = this.createFormalRuler(team, houseName, year, undefined, undefined, resident?.user.bornMonth,sourcePerson&&established?{givenName:established.givenName,naturalDeathMonth:deriveMilitaryLifeSchedule(sourcePerson).naturalDeathMonth}:undefined);
+    const ruler = this.createFormalRuler(team, houseName, year, undefined, undefined, resident?.user.bornMonth,established?{givenName:established.givenName,...(sourcePerson?{naturalDeathMonth:deriveMilitaryLifeSchedule(sourcePerson).naturalDeathMonth}:{})}:undefined);
     if (resident) {
       const u=resident.user;
       if(u.isDestroyed||u.team!==team||!team.users.has(u)||u.role!=="NORMAL"||(u.militaryPersonId&&!sourcePerson)||u.historicalPersonId)throw new Error("Invalid resident founder");
-      ruler.residentIdentity=structuredClone(resident.origin);
+      ruler.residentIdentity={...structuredClone(resident.origin),personalName:ruler.houseName.replace(/氏$/,'')+ruler.givenName,nameSource:established?.nameSource??'POLITICAL_ENTRY'};
       if(sourcePerson)sourcePerson.politicalRulerId=ruler.id;
       u.historicalPersonId=resident.origin.personId;u.role="RULER";u.rulerId=ruler.id;u.player.setRole("RULER",ruler.id,true);
       Game.Core?.logicalUnitRegistry.updateRole(u.player.logicalUnitId,"RULER",ruler.id);team.rulerUser=u;
@@ -298,7 +302,7 @@ class DynastyRegistryStore {
     r.chronicle=createRulerChronicle(createRulerSnapshot(team,month));
     WorldHistory.addRulerAcceded(month,team.name,this.getRulerTitle(team,r,month),r.id,{
       ...captureAccessionCapital(team,month,r.id),residentPersonId:r.residentIdentity.personId,
-      sourceUserId:r.residentIdentity.sourceUserId,sourceFactionId:r.residentIdentity.sourceFactionId,foundingCityId:r.residentIdentity.cityId,
+      residentPersonalName:r.residentIdentity.personalName,residentNameSource:r.residentIdentity.nameSource,sourceUserId:r.residentIdentity.sourceUserId,sourceFactionId:r.residentIdentity.sourceFactionId,foundingCityId:r.residentIdentity.cityId,
     });
   }
 
@@ -1348,7 +1352,7 @@ class DynastyRegistryStore {
     parentId?: string,
     predecessorId?: string,
     residentBornMonth?: number,
-    establishedMilitary?:{givenName:string;naturalDeathMonth:number}
+    establishedMilitary?:{givenName:string;naturalDeathMonth?:number}
   ): Ruler {
     this.sequence += 1;
     const accessionAge = residentBornMonth === undefined ? worldRandom.int(
@@ -1356,7 +1360,7 @@ class DynastyRegistryStore {
       RULER_MAX_AGE_AT_ACCESSION
     ) : 0;
     const bornYear = residentBornMonth ?? accessionYear - yearsToMonths(accessionAge);
-    if(establishedMilitary&&establishedMilitary.naturalDeathMonth<=accessionYear)throw new Error("Military founder has no surviving life schedule");
+    if(establishedMilitary?.naturalDeathMonth!==undefined&&establishedMilitary.naturalDeathMonth<=accessionYear)throw new Error("Military founder has no surviving life schedule");
     const naturalDeathYear = establishedMilitary?.naturalDeathMonth ?? (residentBornMonth === undefined
       ? createNaturalDeathMonth(bornYear,max=>worldRandom.pickIndex(max))
       : createSurvivingResidentDeathMonth(bornYear,accessionYear,max=>worldRandom.pickIndex(max)));

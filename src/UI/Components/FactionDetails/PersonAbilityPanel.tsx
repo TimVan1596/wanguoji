@@ -1,3 +1,5 @@
 import {Typography} from '@mui/material';
 import type {PersonAbilities} from '../../../Politics/PersonAbilities';
-export default function PersonAbilityPanel({abilities,royal=false}:{abilities:PersonAbilities;royal?:boolean}){return <div data-person-abilities={JSON.stringify(abilities)}><Typography fontSize=".8rem">稳定个人能力：统御 {abilities.command} · 谋略 {abilities.strategy}</Typography><Typography fontSize=".74rem">来自{abilities.source.kind==='RESIDENT'?'原居民永久身份与生辰':'原王室永久身份与生辰'}，转属、改名、登位及读档不重抽。{royal?'当前只在本人具有真实军权、参与宫廷企图时发挥作用，不代表已有治理或战功。':'仅在真实危机和合法军权下，有限影响宫廷候选竞争、发起意愿及条件成败；不替代军职、兵员或经历。'}</Typography></div>;}
+export default function PersonAbilityPanel({abilities}:{abilities:PersonAbilities;royal?:boolean}){return <div data-person-abilities={JSON.stringify(abilities)}><Typography fontSize=".8rem">统御：{abilities.command} · 谋略：{abilities.strategy}</Typography></div>;}
+/** Mounted only inside the existing, closed-by-default biography technical evidence. */
+export function PersonAbilityEvidence({abilities}:{abilities:PersonAbilities}){return <Typography fontSize=".74rem">能力版本 {abilities.version}；来源 {JSON.stringify(abilities.source)}。只在合法宫廷军权参与中有限影响候选、发起与条件成败；读取不另抽世界随机数。</Typography>;}

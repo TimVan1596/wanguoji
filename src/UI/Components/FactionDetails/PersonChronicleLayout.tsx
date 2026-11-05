@@ -20,4 +20,4 @@ export default function PersonChronicleLayout({title,identity,preBiography,biogr
   </Box>;
 }
 
-function LazyEvidence({evidence}:{evidence:ReactNode|(()=>ReactNode)}){const [open,setOpen]=useState(false);return <details open={open} onToggle={e=>setOpen(e.currentTarget.open)} style={{marginTop:8,minWidth:0}}><summary>详细记录</summary>{open&&(typeof evidence==='function'?evidence():evidence)}</details>;}
+function LazyEvidence({evidence}:{evidence:ReactNode|(()=>ReactNode)}){const [open,setOpen]=useState(false);return <details open={open} onToggle={e=>setOpen(e.currentTarget.open)} style={{marginTop:8,minWidth:0}}><summary>技术依据与完整记录</summary>{open&&(typeof evidence==='function'?evidence():evidence)}</details>;}

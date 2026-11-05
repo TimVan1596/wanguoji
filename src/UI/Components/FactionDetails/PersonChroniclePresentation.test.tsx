@@ -36,10 +36,10 @@ it("the shared royal/military reader shows one closed detail entrance, with no p
   const html=renderToStaticMarkup(<PersonChronicleLayout title="赵彦" biographyTitle="生平" biography={["曾任军职。"]} milestoneTitle="军旅纪事"
     milestones={milestones.map(e=>({id:e.eventId,content:<p>{e.text}</p>}))} assessment={[]}
     evidence={<span>{f.entries.map(e=>e.source).join("；")}</span>}/>);
-  const publicPart=html.slice(0,html.indexOf("<summary>详细记录</summary>"));
+  const publicPart=html.slice(0,html.indexOf("<summary>技术依据与完整记录</summary>"));
   expect(publicPart).not.toMatch(/史料依据|military-command|military-order-issued|军令不代表|据本次任职/);
   expect(html).not.toContain("military-order-issued · order");expect(f.entries.map(e=>e.source)).toContain("military-order-issued · order");
-  expect(html.match(/<summary>详细记录<\/summary>/g)).toHaveLength(1);
+  expect(html.match(/<summary>技术依据与完整记录<\/summary>/g)).toHaveLength(1);
   expect(html.slice(html.lastIndexOf("<details"))).not.toMatch(/^<details[^>]* open/);
 });
 it("archive headings use the same native control for rulers and officers instead of blue name links",()=>{

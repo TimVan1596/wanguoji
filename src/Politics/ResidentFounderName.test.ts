@@ -1,0 +1,7 @@
+import {expect,it} from 'vitest';
+import {establishedResidentFounderName} from './ResidentFounderName';
+import {personAbilities} from './PersonAbilities';
+import random from '../Simulation/WorldRandom';
+it.each(['杜安','安昭','司马承远','耶律药师奴','完颜阿鲁补','孛儿只斤察合台','爱新觉罗多铎'])('keeps the whole established name and longest evidenced surname: %s',name=>{const before=random.exportState(),parts=establishedResidentFounderName(name)!;expect(parts.houseName.replace(/氏$/,'')+parts.givenName).toBe(name);expect(parts.personalName).toBe(name);expect(parts.nameSource).toBe('RESIDENT_NAME');expect(random.exportState()).toEqual(before);});
+it('uses the first actual family name and military name instead of making up a political replacement',()=>{const before=random.exportState();expect(establishedResidentFounderName('甄克澄',undefined,'甄克澄')).toMatchObject({houseName:'甄氏',givenName:'克澄',personalName:'甄克澄',nameSource:'FAMILY_ENTRY'});expect(establishedResidentFounderName('齐-001','杜安')).toMatchObject({houseName:'杜氏',givenName:'安',nameSource:'MILITARY'});expect(establishedResidentFounderName('齐-001')).toBeUndefined();expect(random.exportState()).toEqual(before);});
+it('does not reinterpret a population label as a real surname and does not alter ability origin',()=>{expect(establishedResidentFounderName('燕-003')).toBeUndefined();const source={kind:'RESIDENT' as const,sourceUserId:77,bornMonth:100},before=personAbilities(source);establishedResidentFounderName('甄克澄');expect(personAbilities(source)).toEqual(before);});

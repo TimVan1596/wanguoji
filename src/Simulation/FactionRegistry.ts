@@ -430,7 +430,7 @@ class FactionRegistryStore {
   getFoundingMetadata(team:Team):Record<string,string|number|undefined>{
     const r=DynastyRegistry.getCurrentRuler(team.name),i=r?.residentIdentity;
     return {foundingIdentityStage:team.identityStage,foundingSovereigntyRank:team.sovereigntyRank,
-      ...(i?{leaderPersonId:i.personId,leaderSourceUserId:i.sourceUserId,leaderBornMonth:i.bornMonth,leaderOriginalFactionId:i.sourceFactionId,leaderOriginalFactionName:i.sourceFactionName,
+      ...(i?{leaderPersonalName:i.personalName,leaderNameSource:i.nameSource,leaderPersonId:i.personId,leaderSourceUserId:i.sourceUserId,leaderBornMonth:i.bornMonth,leaderOriginalFactionId:i.sourceFactionId,leaderOriginalFactionName:i.sourceFactionName,
         leaderSourceCityId:i.cityId,leaderSourceCityName:i.cityName,leaderPreviousRole:i.military?"MILITARY":"RESIDENT",splitSource:i.military?"MILITARY":"RESIDENT",
         ...(i.military?{militaryPersonId:i.military.personId,militarySplitEvidence:JSON.stringify(i.military)}:{})}:{}),};
   }

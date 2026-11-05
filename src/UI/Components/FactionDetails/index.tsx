@@ -1,5 +1,6 @@
-import PersonAbilityPanel from './PersonAbilityPanel';
-import {rulerAbilities} from '../../../Politics/PersonAbilities';
+import {militaryPortraitStatus} from '../../../Politics/MilitaryPortraitStatus';
+import PersonAbilityPanel,{PersonAbilityEvidence} from './PersonAbilityPanel';
+import {rulerAbilities,militaryAbilities} from '../../../Politics/PersonAbilities';
 import InsurgentCommandPanel from './InsurgentCommandPanel';
 import {FamilyTitleBadge} from './FamilyNoblePanel';
 import MilitaryFamilyBrowser from './MilitaryFamilyBrowser';
@@ -724,7 +725,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
         identityTone={identityLabels.some(l=>l==='现任君主'||l==='曾任君主')?'ruler':identityLabels.includes('宗室将领')?'royal-kin':undefined}
         focusRequest={navigation.militaryTarget?.id===person.personId}
         onSelect={()=>setSelection(toggleMilitaryPerson(resolvedSelection,person.personId,current))}
-        portrait={<PortraitSummary portrait={{personId:person.personId,age:portraitAge,...portraitContext}} name={getMilitaryPersonDisplayName(person)} lines={[...identityLabels,politicalTeam?getFactionDisplayNameAtMonth(politicalTeam,portraitContext.month):factionId,ageText,describeMilitaryOffice(person,factionId),first?`${formatWorldDate(first.startMonth)}—${last?.endMonth===undefined?"今":formatWorldDate(last.endMonth)}`:""]} onFull={()=>{if(!resolvedSelection.expandedIds.includes(person.personId))setSelection(toggleMilitaryPerson(resolvedSelection,person.personId,current));}}/>}
+        portrait={<PortraitSummary status={militaryPortraitStatus(person,factionId,worldMonth,archiveDynasties,archiveEvents)} portrait={{personId:person.royalIdentity?.rulerId??person.personId,age:portraitAge,...portraitContext}} name={getMilitaryPersonDisplayName(person)} lines={[...identityLabels,politicalTeam?getFactionDisplayNameAtMonth(politicalTeam,portraitContext.month):factionId,ageText,describeMilitaryOffice(person,factionId),first?`${formatWorldDate(first.startMonth)}—${last?.endMonth===undefined?"今":formatWorldDate(last.endMonth)}`:""]} onFull={()=>{if(!resolvedSelection.expandedIds.includes(person.personId))setSelection(toggleMilitaryPerson(resolvedSelection,person.personId,current));}}/>}
         heading={<>
           <Typography fontSize="0.92rem" sx={{display:"flow-root"}} fontWeight={current?"bold":600}>{current?"● ":""}{royalHonor?.primary??getMilitaryPersonDisplayName(person)} · <Box component="span" sx={{fontSize:"0.76rem",fontWeight:400,color:"var(--gg-text-muted)"}}>{ageText}</Box> · {current?"现役":person.status==="ACTIVE"&&person.factionId!==factionId?"已转属":describeMilitaryStatus(person)}</Typography>
           <Typography fontSize="0.76rem">{[royalHonor?.secondary,...identityLabels,honorTitle.text].filter(Boolean).join(" · ")}</Typography>
@@ -748,7 +749,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
             title={<MilitaryPersonIdentityHeader honor={royalHonor} person={person} politicalLabel={secession?identityLabels.find(l=>l.startsWith('已叛离')):courtLabels[0]??identityLabels.find(l=>l==='现任君主'||l==='曾任君主')} country={`${politicalFactionById.get(person.factionId)?.displayName ?? person.factionId}${politicalFactionById.get(person.factionId)?.identityStage === "STATE" ? "国" : ""}`} />}
             identity={<>
               <PersonLifeDates bornMonth={person.bornMonth} deathMonth={person.deathMonth}/>
-              <Typography fontSize="0.76rem">{identityBadges}</Typography><Typography fontSize=".8rem">{honorTitle.text}</Typography><FamilyTitleBadge personId={person.personId} factionId={factionId} month={worldMonth}/>
+              <Typography fontSize="0.76rem">{identityBadges}</Typography><Typography fontSize=".8rem" sx={honorTitle.revoked?{color:'#8a5c58'}:undefined}>{honorTitle.text}</Typography><FamilyTitleBadge personId={person.personId} factionId={factionId} month={worldMonth}/>
               {linkedRuler&&linkedRuler.accessionYear!==undefined&&linkedRuler.accessionYear<=worldMonth&&rulerOwners.get(linkedRuler.id)&&<button type="button" onClick={()=>navigation.open({kind:'RULER',factionId:rulerOwners.get(linkedRuler.id)!,id:linkedRuler.id})}>{secession?'查看新政权本纪':'查看君主本纪'}</button>}
               <Typography fontSize="0.86rem" fontWeight="bold">{describeMilitaryOffice(person,factionId).replace("（本国历史最高职务）","")}</Typography>
 
@@ -762,6 +763,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
             assessment={[bio.assessment]} voice={bio.voice}
             governance={<ChronicleSection title="军功与任职"><NobleHistory person={person} factionId={factionId} month={worldMonth}/><Typography fontSize="0.82rem">从军{formatWorldDuration(getMilitaryLocalServiceMonths(person,factionId,worldMonth))}，所部参与取城{bio.victories.length}次，历经{career.activities.filter(e=>e.factionId===factionId).length}处有记载的军旅活动。</Typography></ChronicleSection>}
             evidence={<>
+              <PersonAbilityEvidence abilities={militaryAbilities(person)}/>
               {portraitContext.historical&&<Typography fontSize=".74rem">肖像取本国历史任职时点；时点 {formatWorldDate(portraitContext.month)}，不采用后来外国身份。</Typography>}
               <Typography fontSize="0.75rem">人物：{person.personId} / User {person.sourceUserId} / 原人口标签：{person.name}</Typography>
               <Typography fontSize="0.75rem">{describeMilitaryNameEvidence(person)}</Typography>
@@ -1120,7 +1122,7 @@ function DynastyTree({
           const expanded = ruler.id === selectedRulerId;
           return (
             <PersonArchiveCard key={ruler.id} index={index} active={current} expanded={expanded}
-              focusRequest={expanded} onSelect={()=>onSelectedRulerIdChange(expanded?undefined:ruler.id)} portrait={<PortraitSummary portrait={{personId:ruler.militaryUsurperIdentity?.personId??ruler.militaryIdentity?.personId??ruler.residentIdentity?.personId??ruler.id,age:rulerPortraitAge(ruler,worldMonth,team.status!=="EXTINCT"),...royalPortraitContext(ruler,team,worldMonth)}} name={formatRulerRowName(ruler,team)} lines={[`${getFactionDisplayNameAtMonth(team,royalPortraitContext(ruler,team,worldMonth).month)} · ${{LEADER:"首领",KING:"国王",EMPEROR:"皇帝",UNKNOWN:"身份未载",XIAOWEI:"校尉",PIJIANG:"裨将",JIANGJUN:"将军",SHANGJIANGJUN:"上将军"}[royalPortraitContext(ruler,team,worldMonth).role]}`,formatRulerListSubtitle(ruler,worldMonth,factionStatus,events,team.name),formatRulerLifeAge(ruler,worldMonth,false,team.status!=="EXTINCT"),...getPosthumousLabelLines(ruler,team,ruler.endYear??worldMonth),`${formatWorldDate(ruler.accessionYear??0)}—${ruler.endYear===undefined?"今":formatWorldDate(ruler.endYear)}`,ruler.residentIdentity?`于${ruler.residentIdentity.cityName}起事`:""]} onFull={()=>onSelectedRulerIdChange(ruler.id)}/>}
+              focusRequest={expanded} onSelect={()=>onSelectedRulerIdChange(expanded?undefined:ruler.id)} portrait={<PortraitSummary portrait={{personId:ruler.militaryIdentity?ruler.id:ruler.militaryUsurperIdentity?.personId??ruler.residentIdentity?.personId??ruler.id,age:rulerPortraitAge(ruler,worldMonth,team.status!=="EXTINCT"),...royalPortraitContext(ruler,team,worldMonth)}} name={formatRulerRowName(ruler,team)} lines={[`${getFactionDisplayNameAtMonth(team,royalPortraitContext(ruler,team,worldMonth).month)} · ${{LEADER:"首领",KING:"国王",EMPEROR:"皇帝",UNKNOWN:"身份未载",XIAOWEI:"校尉",PIJIANG:"裨将",JIANGJUN:"将军",SHANGJIANGJUN:"上将军"}[royalPortraitContext(ruler,team,worldMonth).role]}`,formatRulerListSubtitle(ruler,worldMonth,factionStatus,events,team.name),formatRulerLifeAge(ruler,worldMonth,false,team.status!=="EXTINCT"),...getPosthumousLabelLines(ruler,team,ruler.endYear??worldMonth),`${formatWorldDate(ruler.accessionYear??0)}—${ruler.endYear===undefined?"今":formatWorldDate(ruler.endYear)}`,ruler.residentIdentity?`于${ruler.residentIdentity.cityName}起事`:""]} onFull={()=>onSelectedRulerIdChange(ruler.id)}/>}
               heading={<>
                 <Typography
                   fontWeight={ruler.templeName ? "bold" : current || ruler.posthumousEpithet ? 600 : "normal"}
@@ -1219,7 +1221,7 @@ function RulerBiography({
         <Typography fontSize="0.82rem">本人参战取城{bio.stats.personalCityCaptures}次；治下军队取城{bio.stats.nationalCityCaptures}次、攻取敌都{bio.stats.nationalCapitalCaptures}次。</Typography>
       </ChronicleSection>}
       assessment={bio.assessment} voice={bio.voice}
-      evidence={()=> <Box data-royal-evidence>
+      evidence={()=> <Box data-royal-evidence><PersonAbilityEvidence abilities={rulerAbilities(ruler,MilitaryCommandRegistry.getPeople())}/>
         {fullMilestoneEvents.filter(e=>["ruler-deposed","dynasty-usurped"].includes(e.type)).map(e=><div key={e.id}><PoliticalCrisisDetails event={e}/><DepositionSelectionDetails event={e}/></div>)}
         <Typography fontSize="0.78rem">即位年龄{Math.floor(monthsToYears(ruler.accessionYear-ruler.bornYear))}岁；{formatRulerLifeAge(ruler,worldMonth,false,team.status!=="EXTINCT")}</Typography>
         {posthumousLines.map(line=><Typography key={line} fontSize="0.78rem">{line}</Typography>)}

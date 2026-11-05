@@ -1,3 +1,4 @@
+import {establishedResidentFounderName} from '../Politics/ResidentFounderName';
 import {evaluatePopularPoliticalCrisis} from '../Simulation/PopularPoliticalCrisis';
 import type {WorldSaveV1} from "./WorldSaveSchema";
 /** V19 resident founders have one permanent life record and at most one live map entity. */
@@ -36,6 +37,10 @@ export function validateResidentIdentities(save:WorldSaveV1):string[]{
       !Number.isSafeInteger(i.bornMonth)||i.bornMonth!==r.bornMonth||!Number.isSafeInteger(i.foundedMonth)||i.foundedMonth!==r.accessionMonth||i.foundedMonth>Number(save.world?.worldMonth)||
       !Number.isSafeInteger(r.naturalDeathMonth)||r.naturalDeathMonth<=i.foundedMonth||r.relationType!=="FOUNDER"||
       factions.get(String(d.factionId))?.origin?.parentFactionId!==i.sourceFactionId||factions.get(String(d.factionId))?.origin?.foundingRulerId!==r.rulerId){errors.push("resident founder identity/provenance mismatch");continue;}
+    const family=save.registries.militaryCommandRegistry.families?.flatMap(f=>f.members).find(m=>m.sourceUserId===i.sourceUserId&&m.bornMonth===i.bornMonth&&m.enteredMonth<=i.foundedMonth);
+    const military=i.military&&save.registries.militaryCommandRegistry.people.find(p=>p.personId===i.military.personId),expectedName=establishedResidentFounderName(i.sourceUserLabel,military?.personalName,family?.name);
+    if(i.personalName!==String(r.houseName).replace(/氏$/,'')+r.givenName||i.nameSource!==(expectedName?.nameSource??'POLITICAL_ENTRY')||expectedName&&i.personalName!==expectedName.personalName||family&&family.name!==i.personalName)errors.push('resident founder permanent name conflict');
+    if(family?.source==='NATURAL_GROWTH'){const entered=events.findIndex(e=>e.id===`${family.memberId}-entered`),accessed=events.findIndex(e=>e.type==='ruler-acceded'&&e.rulerId===r.rulerId);if(entered<0||accessed<entered)errors.push('resident founder family name predates actual entry');}
     people.set(i.personId,{r,d,i});sourceIds.add(`${i.sourceUserId}:${i.bornMonth}:${i.sourceUserLabel}`);
     const bindings=users.filter(u=>u.historicalPersonId===i.personId||u.rulerId===r.rulerId||(u.userId===i.sourceUserId&&u.bornMonth===i.bornMonth&&u.name===i.sourceUserLabel));
     if(bindings.length>1)errors.push("resident person has duplicate live entities");
@@ -44,7 +49,7 @@ export function validateResidentIdentities(save:WorldSaveV1):string[]{
         (u.role==="RULER"&&(u.rulerId!==r.rulerId||u.factionId!==d.factionId||d.currentRulerId!==r.rulerId||r.status!=="ruling")))errors.push("resident person life/entity mismatch");
     }
     const accession=events.find((e:any)=>e.type==="ruler-acceded"&&e.rulerId===r.rulerId);
-    if(!accession||accession.metadata?.residentPersonId!==i.personId||accession.metadata?.sourceUserId!==i.sourceUserId||accession.metadata?.sourceFactionId!==i.sourceFactionId||accession.metadata?.foundingCityId!==i.cityId)errors.push("resident founder lacks canonical accession evidence");
+    if(!accession||accession.metadata?.residentPersonalName!==i.personalName||accession.metadata?.residentNameSource!==i.nameSource||accession.metadata?.residentPersonId!==i.personId||accession.metadata?.sourceUserId!==i.sourceUserId||accession.metadata?.sourceFactionId!==i.sourceFactionId||accession.metadata?.foundingCityId!==i.cityId)errors.push("resident founder lacks canonical accession evidence");
   }
   for(const u of users)if(u.historicalPersonId!==undefined&&!people.has(String(u.historicalPersonId))&&!save.dynasties.some(d=>Array.isArray(d?.rulers)&&d.rulers.some(r=>(r?.militaryIdentity?.personId===u.historicalPersonId||r?.militaryUsurperIdentity?.personId===u.historicalPersonId))))errors.push("unknown resident historicalPersonId");
   return errors;
