@@ -75,7 +75,7 @@ export async function checkMilitaryFamilies(core:any,base:ReturnType<typeof expo
   }
   {const before=strict(),host=document.createElement('div'),root=createRoot(host);document.body.append(host);
    try{flushSync(()=>root.render(React.createElement(Provider,{store,children:React.createElement(MilitaryFamilyBrowser,{families:[link.family],worldMonth:240,onClose:()=>{}})})));
-    const dialog=document.querySelector('[role="dialog"]')!;check(dialog.textContent?.includes('功臣世家总谱')&&!dialog.querySelector('[role="tree"]'),'family browser initially mounts only an overview, not every family tree');
+    const dialog=document.querySelector('[role="dialog"]')!;check(dialog.textContent?.includes('功臣世家宗谱')&&!dialog.querySelector('[role="tree"]'),'family browser initially mounts only an overview, not every family tree');
     const open=Array.from(dialog.querySelectorAll('button')).find(b=>b.textContent?.includes('始祖'))!;flushSync(()=>open.click());
     check(!Array.from(dialog.querySelectorAll('button')).some(b=>['主干','完整族谱','收起该支','收起子支'].includes(b.textContent??'')),'one political family view has no full/trunk switch or per-person branch controls');
     check(dialog.querySelector('[role="tree"]')&&dialog.querySelector(`[data-family-parent="${link.member.parentMemberId}"][data-family-child="${link.member.memberId}"]`),'political family draws the actual father-son edge without synthesizing royal people');
