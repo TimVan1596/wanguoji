@@ -1,0 +1,44 @@
+{
+  "rawSha256": "32b1dcf7cc21b12d5ffec9ab1f457c7dc73ca280089212d01886255e8434c118",
+  "rawLocalPath": "logs/z53-raw-results/family-performance-z53-performance-idle.json",
+  "summary": {
+    "file": "family-performance-z53-performance-idle.json",
+    "rawSha256": "32b1dcf7cc21b12d5ffec9ab1f457c7dc73ca280089212d01886255e8434c118",
+    "families": 8,
+    "members": 83,
+    "events": 8037,
+    "viewport": {
+      "width": 800,
+      "height": 568
+    },
+    "unchanged": true,
+    "maxMountedNodes": 2,
+    "heapBytes": 167651317,
+    "phases": {
+      "list-open": {
+        "wallMedianMs": 24.6,
+        "reactMedianMs": 12.2
+      },
+      "family-open": {
+        "wallMedianMs": 13.9,
+        "reactMedianMs": 9.6
+      },
+      "select-person": {
+        "wallMedianMs": 3.1,
+        "reactMedianMs": 8.1
+      },
+      "zoom": {
+        "wallMedianMs": 6.6,
+        "reactMedianMs": 6.5
+      },
+      "switch-family": {
+        "wallMedianMs": 5.8,
+        "reactMedianMs": 5.1
+      },
+      "reopen": {
+        "wallMedianMs": 3.3,
+        "reactMedianMs": 2.3
+      }
+    }
+  }
+}

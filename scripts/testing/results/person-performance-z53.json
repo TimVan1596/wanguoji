@@ -1,0 +1,85 @@
+{
+  "scope": "Sequential idle native z52 V49 and z53 V50 regional-3 300y, same viewport and three repeats. Actual React timings; no human visual acceptance.",
+  "runs": [
+    {
+      "file": "family-performance-z53-baseline-performance-idle.json",
+      "rawSha256": "f63abbc2671d310fd2935479ecb2d20f0d5fc3c3a77f02bc8dcf13aa4c6a0ff8",
+      "families": 8,
+      "members": 83,
+      "events": 8037,
+      "viewport": {
+        "width": 800,
+        "height": 568
+      },
+      "unchanged": true,
+      "maxMountedNodes": 2,
+      "heapBytes": 136073422,
+      "phases": {
+        "list-open": {
+          "wallMedianMs": 8.2,
+          "reactMedianMs": 7.5
+        },
+        "family-open": {
+          "wallMedianMs": 5.2,
+          "reactMedianMs": 4.7
+        },
+        "select-person": {
+          "wallMedianMs": 3.3,
+          "reactMedianMs": 5.6
+        },
+        "zoom": {
+          "wallMedianMs": 3.3,
+          "reactMedianMs": 4
+        },
+        "switch-family": {
+          "wallMedianMs": 4.4,
+          "reactMedianMs": 4.2
+        },
+        "reopen": {
+          "wallMedianMs": 2.6,
+          "reactMedianMs": 2.1
+        }
+      }
+    },
+    {
+      "file": "family-performance-z53-performance-idle.json",
+      "rawSha256": "32b1dcf7cc21b12d5ffec9ab1f457c7dc73ca280089212d01886255e8434c118",
+      "families": 8,
+      "members": 83,
+      "events": 8037,
+      "viewport": {
+        "width": 800,
+        "height": 568
+      },
+      "unchanged": true,
+      "maxMountedNodes": 2,
+      "heapBytes": 167651317,
+      "phases": {
+        "list-open": {
+          "wallMedianMs": 24.6,
+          "reactMedianMs": 12.2
+        },
+        "family-open": {
+          "wallMedianMs": 13.9,
+          "reactMedianMs": 9.6
+        },
+        "select-person": {
+          "wallMedianMs": 3.1,
+          "reactMedianMs": 8.1
+        },
+        "zoom": {
+          "wallMedianMs": 6.6,
+          "reactMedianMs": 6.5
+        },
+        "switch-family": {
+          "wallMedianMs": 5.8,
+          "reactMedianMs": 5.1
+        },
+        "reopen": {
+          "wallMedianMs": 3.3,
+          "reactMedianMs": 2.3
+        }
+      }
+    }
+  ]
+}
