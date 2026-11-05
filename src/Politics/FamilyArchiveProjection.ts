@@ -47,7 +47,7 @@ export function projectFamilyArchive(f:MilitaryFamily,s:FamilyArchiveSource,inde
  for(const [id,row]of rows)if(heirs.has(id))row.important=true;
  return {family:f,month:s.month,rows,acts,last,classification,activeMembers,living,unknown,currentInheritedHolderId:inheritedHolder?.member.memberId,locatableTitleHolderId:inheritedHolder?.member.memberId??personalHolder?.member.memberId,actualSuccessions:acts.filter(a=>a.kind==='SUCCEEDED').length,heirCandidateIds:heirs,importantIds:new Set([...rows.values()].filter(r=>r.important).map(r=>r.member.memberId)),newMeritMembers:[...rows.values()].filter(r=>r.member.generation>0&&r.effectivePersonal&&['HOU','GONG'].includes(r.effectivePersonal.rank)).length};
 }
-export function familyPoliticalState(p:{classification:FamilyArchiveClass;last?:FamilyNobleAct;living:number;unknown:number}){return p.classification==='ACTIVE'?p.last?.kind==='ENDED'?'旧爵已终 · 仍有军政人物':'当前有效政治世家':p.classification==='EXTINCT'?'已无登记在世成员':p.living?'历史故家 · 仍有登记在世后代':'历史故家 · 登记成员生死未载';}
+export function familyPoliticalState(p:{classification:FamilyArchiveClass;last?:FamilyNobleAct;living:number;unknown:number}){return p.classification==='ACTIVE'?p.last?.kind==='ENDED'?'旧爵已终 · 仍有显贵':'当前有效政治世家':p.classification==='EXTINCT'?'已无登记在世成员':p.living?'历史故家 · 仍有登记在世后代':'历史故家 · 登记成员生死未载';}
 export type FamilyArchiveProjection=ReturnType<typeof projectFamilyArchive>;
 /** Reconstruct the decision from the saved event boundary, including death/transfer order. */
 export function explainFamilyTitleEnd(f:MilitaryFamily,a:FamilyNobleAct,s:FamilyArchiveSource){

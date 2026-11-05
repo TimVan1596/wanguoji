@@ -18,7 +18,7 @@ export function checkFamilyForfeiture(core:any,personId:string,familyId:string,c
  const strict=()=>{const s=exportWorldSave(core),v=validateWorldSave(s);check(v.valid,`new-period forfeiture strict save: ${v.errors.join(';')}`);return s;};
  const gather=()=>{const t=team(),center=t.capitalCity.block;for(const u of t.users){u.player.setPosition(center.x+2,center.y+2);u.player.body.reset(u.player.x,u.player.y);const state=core.logicalUnitRegistry.getEntry(u.player.logicalUnitId)?.state;if(state){state.logicalX=center.x+2;state.logicalY=center.y+2;}}};
  try{
-  const t=team();clock(base+60);gather();(Military as any).advanceOffices(base+60,core.teams);
+  clock(base+60);gather();(Military as any).advanceOffices(base+60,core.teams);
   for(const [months,rank]of [[120,'HOU'],[180,'GONG']] as const){
    const used=new Set(person().nobilityHistory!.flatMap(g=>g.cityIds));
    const towns=core.allCities.filter((c:any)=>c.ownerFactionId!==factionId&&!c.destroyed&&!used.has(c.id)).sort((a:any,b:any)=>Number(core.teams.find((t:any)=>t.name===b.ownerFactionId)?.capitalCity===b)-Number(core.teams.find((t:any)=>t.name===a.ownerFactionId)?.capitalCity===a)||String(a.id).localeCompare(String(b.id))).slice(0,2);
