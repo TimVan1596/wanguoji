@@ -147,7 +147,7 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
-- 当前 APP **v0.99931z54** / package **0.99.220** / WorldSave **V51**。z53已获人工Chrome Gate PASS。失败宫廷行动分层处分，极重判决结束真实人物生命；历史袭爵身份和可核验家族出身保留。V50旧槽位保留且拒绝误读，须新建世界。运行 `pnpm desktop:start:debug` 人工验收。
+- 当前 APP **v0.99931z55** / package **0.99.221** / WorldSave **V52**。z54已获人工Chrome Gate PASS。合法初任资格、有限能力选拔与真实任命依据、功臣直接子嗣及按需定位；未建立正式候补名册。V51旧槽位保留且拒绝误读，须新建世界。运行 `pnpm desktop:start:debug` 人工验收。
 
 - v0.99931n人工Gate已PASS，真实长局自然发生至少11次同王统宗室废立。当前v0.99931n1修复连续废立后的V14生命周期校验，并完善君主即离位叙述与史评，等待[人工Gate](docs/RulerDepositionLifecycleClosureN1.md)。
 - v0.99929a 修复政治终结历史身份、退位年龄与双方君主大事记。[Political Terminal Chronicle Gate](docs/PoliticalTerminalChronicleClosure.md)已由用户完成人工PASS。

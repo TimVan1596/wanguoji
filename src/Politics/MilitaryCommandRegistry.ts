@@ -446,7 +446,7 @@ export class MilitaryCommandRegistryStore {
     if(worldMonth>=deriveMilitaryLifeSchedule(p??{personId:this.nextPersonId(),bornMonth:user.bornMonth}).retirementMonth)return '已超过正常初任年龄';
     if(user.bornMonth>worldMonth-MIN_COMMANDER_AGE_MONTHS)return '尚未成年，未取得武职初选资格';
     if(p?.status==='ACTIVE')return '已有正式军职，按本人晋升规则办理';
-    if(user.team.status!=='ACTIVE'||user.historicalPersonId&&!this.royalService?.eligible(user,worldMonth)||user.role!=='NORMAL'||user.rulerId||user.player.rulerId)return '当前政治身份不能参加普通初选';
+    if(user.historicalPersonId&&!this.royalService?.eligible(user,worldMonth)||user.role!=='NORMAL'||user.rulerId||user.player.rulerId||user.team.status!=='ACTIVE')return '当前政治身份不能参加普通初选';
     if(!user.player.active||!user.player.logicalUnitId)return '没有可核验的可用人口单位';
     if(this.isUnitAssigned(user.player.logicalUnitId))return '本人单位已有合法编组，不能重复任官成军';
     return undefined;
