@@ -1,0 +1,119 @@
+{
+  "rawSha256": "96439f7ac31c29bf7b04517712c153f2afd45a129e1bffdd39791627a317b32c",
+  "rawBytes": 1946940,
+  "rawLocalPath": "logs/z54-raw-results/military-balance-z54-high-rest.json",
+  "runs": [
+    {
+      "seed": "regional-5",
+      "years": 100,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "final": {
+        "worldPopulation": 146,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 20,
+        "appointments": 23,
+        "duplicateHistoryIds": 0,
+        "depositions": 0,
+        "usurpations": 0,
+        "rebellions": 0,
+        "canonicalSha256": "d67241ac5808fb860615118cb457bf187fe877f077c3450f6a74852a3fde0f41",
+        "worldRandomPosition": 6915,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "strictSaveValid": true,
+        "elapsedMs": 28816.20000000298,
+        "heapBytes": 98570043
+      }
+    },
+    {
+      "seed": "regional-6",
+      "years": 100,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "final": {
+        "worldPopulation": 133,
+        "activeStates": 4,
+        "historicalStates": 7,
+        "captures": 18,
+        "appointments": 29,
+        "duplicateHistoryIds": 0,
+        "depositions": 1,
+        "usurpations": 0,
+        "rebellions": 0,
+        "canonicalSha256": "3d695f175d54a17fad7c90630f4be3edb4ec2faa0f70c03d32b0d94bde0231f4",
+        "worldRandomPosition": 7161,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "strictSaveValid": true,
+        "elapsedMs": 31639.39999999851,
+        "heapBytes": 165321600
+      }
+    },
+    {
+      "seed": "regional-7",
+      "years": 100,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "final": {
+        "worldPopulation": 134,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 31,
+        "appointments": 27,
+        "duplicateHistoryIds": 0,
+        "depositions": 1,
+        "usurpations": 0,
+        "rebellions": 0,
+        "canonicalSha256": "71afacc7d177eb2a6a9049439fa9b607ad47bc69e1cfe3b513b83569424ae8bb",
+        "worldRandomPosition": 7388,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "strictSaveValid": true,
+        "elapsedMs": 49614.69999999553,
+        "heapBytes": 94510313
+      }
+    },
+    {
+      "seed": "regional-8",
+      "years": 100,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "final": {
+        "worldPopulation": 125,
+        "activeStates": 4,
+        "historicalStates": 8,
+        "captures": 33,
+        "appointments": 23,
+        "duplicateHistoryIds": 0,
+        "depositions": 1,
+        "usurpations": 0,
+        "rebellions": 0,
+        "canonicalSha256": "71b83a2e4ccde7cbcde3953ac7bb6d1c4a7ef661a539f370fae09bd12abef962",
+        "worldRandomPosition": 7396,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "strictSaveValid": true,
+        "elapsedMs": 57353.59999999404,
+        "heapBytes": 104404476
+      }
+    }
+  ]
+}

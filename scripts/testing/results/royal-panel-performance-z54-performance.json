@@ -1,0 +1,91 @@
+{
+  "rawSha256": "d1ddfc93298a36d109c24b54730ee9cef273cbbcd7cfa04a3368b9bcbdb17859",
+  "rawBytes": 174854,
+  "rawLocalPath": "logs/z54-raw-results/royal-panel-performance-z54-performance.json",
+  "runs": [
+    {
+      "seed": "regional-3",
+      "inputSchemaVersion": 51,
+      "runtimeSchemaVersion": 51,
+      "inputHeaderAdjustedForTest": false,
+      "worldMonth": 3600,
+      "population": 129,
+      "eventCount": 8037,
+      "factionId": "楚",
+      "rulerId": "楚-ruler-65",
+      "rulerName": "熊氏俭",
+      "collapsedEnterMs": 41.100000001490116,
+      "expandMs": 79.39999999850988,
+      "expandReactMs": 58.69999999552965,
+      "expandedDom": 467,
+      "projection12MonthMs": 331.7000000104308,
+      "updates12MonthMs": 268.1999999806285,
+      "simulation12MonthMs": 655.5,
+      "phases": [
+        {
+          "phase": "collapsed",
+          "fps": 44.94455744369335,
+          "p95FrameMs": 59.19999999552965,
+          "fixedStepCpuMs": {
+            "average": 5.575912409346469,
+            "p95": 8.399999998509884
+          },
+          "presentationCpuMs": {
+            "average": 0.11532846647892556,
+            "p95": 0.20000000298023224
+          },
+          "reactMs": 572.5000000149012,
+          "longTasks": [
+            150
+          ],
+          "dom": 408
+        },
+        {
+          "phase": "expanded",
+          "fps": 44.78354619339857,
+          "p95FrameMs": 62.70000000298023,
+          "fixedStepCpuMs": {
+            "average": 5.314074074338984,
+            "p95": 7.9000000059604645
+          },
+          "presentationCpuMs": {
+            "average": 0.10962962982831177,
+            "p95": 0.20000000298023224
+          },
+          "reactMs": 711.8000000491738,
+          "longTasks": [
+            138
+          ],
+          "dom": 478
+        },
+        {
+          "phase": "collapsed-again",
+          "collapseMs": 12.800000004470348,
+          "fps": 50.16777966035449,
+          "p95FrameMs": 49.400000005960464,
+          "fixedStepCpuMs": {
+            "average": 4.36158940403272,
+            "p95": 6
+          },
+          "presentationCpuMs": {
+            "average": 0.08543046317155788,
+            "p95": 0.20000000298023224
+          },
+          "reactMs": 508.9000000283122,
+          "longTasks": [
+            118
+          ],
+          "dom": 408
+        }
+      ],
+      "canonicalSha256": "eef86025779a3ac5009a7e434d2d636419273847960d8034d9dd8dd98d2fa033",
+      "worldRandomPosition": 21525,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "scope": "same V30 world and ended monarch; actual React entry/control, direct projection API, fixed Core CPU, 4x offscreen frame sampling and long-task observations are separate; not Chrome human acceptance"
+    }
+  ]
+}

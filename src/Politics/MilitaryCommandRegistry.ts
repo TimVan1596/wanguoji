@@ -196,7 +196,7 @@ export class MilitaryCommandRegistryStore {
   }
 
   exportState(): MilitaryCommandState {
-    return {courtPunishmentPolicy:this.courtPunishmentPolicy, ...(this.familyNoblePolicy==='RENEWAL'?{familyNoblePolicy:this.familyNoblePolicy}:{}),...(this.familyFoundationPolicy!=='Z48'?{familyFoundationPolicy:this.familyFoundationPolicy}:{}),...(this.hereditaryRecruitment!=='BASELINE'?{hereditaryRecruitment:this.hereditaryRecruitment}:{}),...(this.families.length?{families:structuredClone(this.families)}:{}), people: [...this.people.values()].map(person => structuredClone(person)),
+    return {...(this.courtPunishmentPolicy!=='BASELINE'?{courtPunishmentPolicy:this.courtPunishmentPolicy}:{}), ...(this.familyNoblePolicy==='RENEWAL'?{familyNoblePolicy:this.familyNoblePolicy}:{}),...(this.familyFoundationPolicy!=='Z48'?{familyFoundationPolicy:this.familyFoundationPolicy}:{}),...(this.hereditaryRecruitment!=='BASELINE'?{hereditaryRecruitment:this.hereditaryRecruitment}:{}),...(this.families.length?{families:structuredClone(this.families)}:{}), people: [...this.people.values()].map(person => structuredClone(person)),
       formations: [...this.formations.values()].filter(f=>!f.leaderDuty).map(formation => structuredClone(formation)),
       ...([...this.formations.values()].some(f=>f.leaderDuty)?{leaderCommands:[...this.formations.values()].filter(f=>f.leaderDuty).map(f=>structuredClone(f))}:{}),
       personSequence: this.personSequence, commandSequence: this.commandSequence, lastEvaluationMonth: this.lastEvaluationMonth };

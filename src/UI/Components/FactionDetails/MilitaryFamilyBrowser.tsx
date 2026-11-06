@@ -1,10 +1,10 @@
+import {familyMemberServiceStatus} from '../../../Politics/FamilyMemberServiceStatus';
 import {useEffect,useMemo,useState,useCallback} from 'react';
 import {Box,Button,Dialog,DialogContent,DialogTitle,Typography} from '@mui/material';
 import {genealogyRulerHeading} from '../../../Politics/GenealogyRulerHeading';
 import {familyPoliticalState} from '../../../Politics/FamilyArchiveProjection';
 import {militaryPoliticalOutcome} from '../../../Politics/MilitaryPoliticalOutcome';
 import {NOBLE_NAMES,NOBLE_RANKS} from '../../../Politics/MilitaryNobility';
-import {MILITARY_OFFICE_NAMES} from '../../../Politics/MilitaryOffice';
 import type {MilitaryFamily} from '../../../Politics/MilitaryFamily';
 import {formatWorldDate} from '../../../Simulation/WorldTime';
 import {getFactionDisplayNameAtMonth} from '../../../Simulation/FactionIdentity';
@@ -28,8 +28,8 @@ export function prepareFamilyTree(family:MilitaryFamily,month:number,requestedMe
  const seed=performance.now(),important=new Set(archive.importantIds);if(requestedMemberId&&archive.rows.has(requestedMemberId))important.add(requestedMemberId);const importantMs=performance.now()-seed;
  const trunkAt=performance.now(),projection=projectFamilyTrunk(family.members.filter(m=>m.enteredMonth<=month),important),bridgeMs=performance.now()-trunkAt;
  const byPerson=frame.index!.byPerson,cardsAt=performance.now(),cards=new Map(projection.members.map(m=>{
-  const row=archive.rows.get(m.memberId)!,p=row.person,a=row.appointments.at(-1),royal=row.political;
-  const status=royal?`${(royal.r.endYear??Infinity)>month?'现任':'曾任'}君主`:a?`${row.activeOffice?'现任':'原任'}${MILITARY_OFFICE_NAMES[a.officeHistory?.filter(g=>g.month<=month).at(-1)?.office??'XIAOWEI']}`:row.inherited?'合法袭爵 · 未任军职':row.inheritedHistory.length?'曾经袭爵 · 未任军职':row.personalHistory.length?'本人受爵 · 未任军职':archive.heirCandidateIds.has(m.memberId)?'直接承袭候选':requestedMemberId===m.memberId&&!archive.importantIds.has(m.memberId)?'已登记居民 · 史事定位':'普通居民 · 父系桥梁';
+  const row=archive.rows.get(m.memberId)!,p=row.person,royal=row.political;
+  const status=familyMemberServiceStatus(row,month,archive.heirCandidateIds.has(m.memberId),requestedMemberId===m.memberId&&!archive.importantIds.has(m.memberId));
   const politics=p?militaryPoliticalOutcome(p,family.factionId,month,source.dynasties,source.events):[];
   const lines=[`${m.generation===0?'始祖':`第${m.generation+1}代`} · ${row.life==='DEAD'?'已故':row.life==='UNKNOWN'?'生死未载':'在世'} · ${formatWorldDate(m.bornMonth)}生`,politics.length?politics.join(' · '):status,familyMemberMeritLabel(family,m,month),familyMemberNobleLabel(family,m,month)].filter(Boolean) as string[];
   const theme=politics.some(t=>t.includes('禁仕')||t.includes('叛离')||t.includes('伏诛'))?{borderColor:'#985f59',backgroundColor:'#f7eeee',color:'#7c453f'}:row.effectivePersonal?{borderColor:'#587f94',backgroundColor:'#eaf1f6',color:'#35566a'}:row.inherited?{borderColor:'#679077',backgroundColor:'#edf5ef',color:'#406452'}:row.activeOffice?{borderColor:'#638596',backgroundColor:'#eff4f6',color:'#3b5f70'}:{borderColor:'var(--gg-border)',backgroundColor:'var(--gg-panel)',color:'var(--gg-text)'};

@@ -53,6 +53,31 @@ export function checkCourtFates(core:any,base:ReturnType<typeof exportWorldSave>
  try{
   hydrateWorldSave(core,structuredClone(base));const ordinary=Military.getPeople().find(p=>p.factionId===factionId&&p.status==='ACTIVE')!,body=team().getUserById(ordinary.sourceUserId);Military.endPersonCommands(ordinary.personId,216,'DISMISSED');
   check((Military as any).isEligible(body,216)&&(Military as any).appoint(body,factionId,216,[body.player.logicalUnitId]),'ordinary dismissal remains eligible for a real reappointment with the same existing User');
+  {
+   const fixture=prepare(true,true);hydrateWorldSave(core,structuredClone(fixture.start));Military.setCourtPunishmentPolicyForSimulation('MEDIUM');clock(276);
+   const t=team(),enemy=core.teams.find((x:any)=>x!==t&&x.status==='ACTIVE');
+   const senior=Military.getPerson(fixture.actor.personId)!,command=senior.appointments.at(-1)!.commandId,body=t.getUserById(senior.sourceUserId);
+   for(const city of t.cities.filter((c:any)=>c!==t.capitalCity).slice(0,2)){city.capture(enemy,276);body.player.setPosition(city.block.x+1,city.block.y+1);body.player.body.reset(body.player.x,body.player.y);city.capture(t,276,undefined,command,senior.personId);}
+   (Military as any).advanceOffices(276,core.teams);
+   t.capitalCity.capture(enemy,276);for(const c of t.cities)c.loyalty=70;
+   for(const u of t.users){u.player.setPosition(t.capitalCity.block.x+2,t.capitalCity.block.y+2);u.player.body.reset(u.player.x,u.player.y);}
+   (Military as any).advanceOffices(276,core.teams);
+   const e=opportunity(276),army=Military.getCourtAttemptInfluence(t,276,core.logicalUnitRegistry),actor=selectCourtInstigator(e,Military.getPeople(),army,Dynasty.getAbilityPolicy());
+   check(actor?.officeStanding?.office==='SHANGJIANGJUN'&&actor.unitCount===4&&e.evidence.length>=2,`execution fixture has a real full senior command and two actual political crises: ${JSON.stringify({office:actor?.officeStanding?.office,units:actor?.unitCount,crises:e.evidence.length})}`);
+   const prepared=read(),roll=courtAttemptChance(actor!,'MEDIUM',Dynasty.getAbilityPolicy())*.95;
+   for(const failType of ['military-person-died','military-title-revoked']){
+    hydrateWorldSave(core,structuredClone(prepared));const before=exportWorldSave(core),writer=History.addEvent;History.addEvent=function(ev){const id=writer.call(this,ev);if(ev.type===failType)throw Error('injected execution write');return id;};try{invoke(276,roll);}finally{History.addEvent=writer;}
+    check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,'execution write failure rolls back the actual body, surname, kin, title, command, history and RNG');
+   }
+   hydrateWorldSave(core,structuredClone(prepared));const priorPopulation=team().users.size,source=Military.getPerson(actor!.personId)!;invoke(276,roll);const p=Military.getPerson(source.personId)!,act=p.politicalHistory?.at(-1);
+   check(act?.severity==='EXECUTION'&&p.status==='DEAD'&&p.deathMonth===276&&p.deathCause==='POLITICAL_EXECUTION'&&!team().getUserById(p.sourceUserId)&&team().users.size===priorPopulation-1,'failed severe military seizure executes only the actual instigator and removes one real population body');
+   check(p.appointments.every(a=>a.endMonth!==undefined)&&Military.getFormations().filter(f=>f.commanderPersonId===p.personId).every(f=>f.status==='DISBANDED')&&Military.getFormations().every(f=>f.status!=='ACTIVE'||f.memberUnitIds.every(id=>core.logicalUnitRegistry.getEntry(id)?.state.alive)),'execution closes all personal commands while surviving real troops remain exclusive and alive');
+   check(p.honorHistory?.some(h=>h.reason==='COURT_COUP_FAILED')&&dy().rulers.find(r=>r.id===fixture.oldId)?.status==='ruling',"actual sovereign remains in office and the executed person peerage is formally revoked");
+   const saved=read(),deathId=`military-person-death-${p.personId}-276`;
+   const rows=militaryMilestones(p,Military.getChronicle(p,276),History.getRecordedEvents());check(rows.some(r=>r.text.includes('伏诛'))&&rows.filter(r=>r.sourceEventIds?.includes(deathId)).length===1,'one source-linked political reading includes real execution without a second death narrative');
+   for(const field of ['deathCause','deathMonth','sanction','policy']){const bad=structuredClone(saved),person=bad.registries.militaryCommandRegistry.people.find(x=>x.personId===p.personId)!;if(field==='sanction')person.politicalHistory=[];else if(field==='policy')bad.registries.militaryCommandRegistry.courtPunishmentPolicy='LOW';else if(field==='deathCause')person.deathCause='NATURAL_DEATH';else person.deathMonth=264;check(!validateWorldSave(bad).valid,'strict save rejects forged execution source, policy, cause or time');}
+   const resume=()=>{hydrateWorldSave(core,structuredClone(saved));core.setWorldRunning(true);for(let m=0;m<12;m++){for(let n=0;n<30;n++)core.advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit('postupdate');}core.setWorldRunning(false);return read();};const first=resume(),second=resume();check(diffCanonicalWorldSave(first,second).matched,'execution resumes deterministically for twelve real months');hydrateWorldSave(core,structuredClone(second));check(diffCanonicalWorldSave(second,exportWorldSave(core)).matched&&History.getRecordedEvents().filter(e=>e.type==='military-person-died'&&e.metadata?.personId===p.personId).length===1,'second read never revives or repeats the executed lifetime');
+  }
   for(const [titled,strong] of [[false,true],[true,false],[true,true]]){
    const fixture=prepare(titled,strong),roll=courtAttemptChance(fixture.actor,'MEDIUM',Dynasty.getAbilityPolicy())*.95;
    for(const failType of ['military-court-sanction',...(titled&&strong?['military-title-revoked']:[])]){

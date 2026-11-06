@@ -1,0 +1,220 @@
+{
+  "scope": "Native z53 V50 and z54 V51 regional-3 300-world-year snapshots, same real population/lineage facts. Existing actual React/Core harnesses, not human Chrome visual acceptance. Measurements ran with different concurrent load and are not proof of a causal speedup.",
+  "runs": [
+    {
+      "kind": "family",
+      "version": "baseline",
+      "file": "family-performance-z54-baseline-performance.json",
+      "rawSha256": "475dcec0a2692c3eda3a6c4be4c78a1b7ca7264650722d1529ca19f3d0a9d57d",
+      "worldMonth": 3600,
+      "families": 8,
+      "members": 83,
+      "events": 8037,
+      "viewport": {
+        "width": 800,
+        "height": 568
+      },
+      "unchanged": true,
+      "heapBytes": 265603973,
+      "maxMountedNodes": 2,
+      "phaseWallMedianMs": {
+        "list-open": 23.1,
+        "family-open": 15.5,
+        "select-person": 7.8,
+        "zoom": 7.3,
+        "switch-family": 8.7,
+        "reopen": 4.2
+      }
+    },
+    {
+      "kind": "family",
+      "version": "candidate",
+      "file": "family-performance-z54-performance.json",
+      "rawSha256": "ac6ec60985709aa8f59dbb41cb84ebd284cc525e5bcbc676391db89d7adb6719",
+      "worldMonth": 3600,
+      "families": 8,
+      "members": 83,
+      "events": 8037,
+      "viewport": {
+        "width": 800,
+        "height": 568
+      },
+      "unchanged": true,
+      "heapBytes": 213431629,
+      "maxMountedNodes": 2,
+      "phaseWallMedianMs": {
+        "list-open": 10.2,
+        "family-open": 5.6,
+        "select-person": 3.2,
+        "zoom": 4.3,
+        "switch-family": 4.4,
+        "reopen": 2.6
+      }
+    },
+    {
+      "kind": "royal-panel",
+      "version": "baseline",
+      "file": "royal-panel-performance-z54-baseline-performance.json",
+      "rawSha256": "0b8676be4ab4df73c354a19d04c4bf1f7d9162bd51d023b01c5bd38d750fdc41",
+      "worldMonth": 3600,
+      "population": 129,
+      "eventCount": 8037,
+      "inputSchemaVersion": 50,
+      "runtimeSchemaVersion": 50,
+      "inputHeaderAdjustedForTest": false,
+      "collapsedEnterMs": 45.79999999701977,
+      "expandMs": 94.79999999701977,
+      "expandReactMs": 61.899999998509884,
+      "expandedDom": 467,
+      "phases": [
+        {
+          "phase": "collapsed",
+          "fps": 40.9281447007552,
+          "p95FrameMs": 63.100000001490116,
+          "fixedStepCpuMs": {
+            "average": 7.367741935676144,
+            "p95": 12.5
+          },
+          "presentationCpuMs": {
+            "average": 0.13790322593863932,
+            "p95": 0.29999999701976776
+          },
+          "reactMs": 575.5000000149012,
+          "longTasks": [
+            180,
+            57
+          ],
+          "dom": 408
+        },
+        {
+          "phase": "expanded",
+          "fps": 37.71273852503101,
+          "p95FrameMs": 81.70000000298023,
+          "fixedStepCpuMs": {
+            "average": 7.345299144904328,
+            "p95": 11.899999998509884
+          },
+          "presentationCpuMs": {
+            "average": 0.1495726497636901,
+            "p95": 0.29999999701976776
+          },
+          "reactMs": 737.0000000596046,
+          "longTasks": [
+            57,
+            60,
+            51,
+            192
+          ],
+          "dom": 474
+        },
+        {
+          "phase": "collapsed-again",
+          "collapseMs": 12.699999995529652,
+          "fps": 38.806066681701815,
+          "p95FrameMs": 65.10000000149012,
+          "fixedStepCpuMs": {
+            "average": 8.258333333519598,
+            "p95": 15.899999998509884
+          },
+          "presentationCpuMs": {
+            "average": 0.1483333329980572,
+            "p95": 0.30000000447034836
+          },
+          "reactMs": 653.0000000447035,
+          "longTasks": [
+            54,
+            54,
+            183,
+            50,
+            58,
+            55
+          ],
+          "dom": 408
+        }
+      ],
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "kind": "royal-panel",
+      "version": "candidate",
+      "file": "royal-panel-performance-z54-performance.json",
+      "rawSha256": "d1ddfc93298a36d109c24b54730ee9cef273cbbcd7cfa04a3368b9bcbdb17859",
+      "worldMonth": 3600,
+      "population": 129,
+      "eventCount": 8037,
+      "inputSchemaVersion": 51,
+      "runtimeSchemaVersion": 51,
+      "inputHeaderAdjustedForTest": false,
+      "collapsedEnterMs": 41.100000001490116,
+      "expandMs": 79.39999999850988,
+      "expandReactMs": 58.69999999552965,
+      "expandedDom": 467,
+      "phases": [
+        {
+          "phase": "collapsed",
+          "fps": 44.94455744369335,
+          "p95FrameMs": 59.19999999552965,
+          "fixedStepCpuMs": {
+            "average": 5.575912409346469,
+            "p95": 8.399999998509884
+          },
+          "presentationCpuMs": {
+            "average": 0.11532846647892556,
+            "p95": 0.20000000298023224
+          },
+          "reactMs": 572.5000000149012,
+          "longTasks": [
+            150
+          ],
+          "dom": 408
+        },
+        {
+          "phase": "expanded",
+          "fps": 44.78354619339857,
+          "p95FrameMs": 62.70000000298023,
+          "fixedStepCpuMs": {
+            "average": 5.314074074338984,
+            "p95": 7.9000000059604645
+          },
+          "presentationCpuMs": {
+            "average": 0.10962962982831177,
+            "p95": 0.20000000298023224
+          },
+          "reactMs": 711.8000000491738,
+          "longTasks": [
+            138
+          ],
+          "dom": 478
+        },
+        {
+          "phase": "collapsed-again",
+          "collapseMs": 12.800000004470348,
+          "fps": 50.16777966035449,
+          "p95FrameMs": 49.400000005960464,
+          "fixedStepCpuMs": {
+            "average": 4.36158940403272,
+            "p95": 6
+          },
+          "presentationCpuMs": {
+            "average": 0.08543046317155788,
+            "p95": 0.20000000298023224
+          },
+          "reactMs": 508.9000000283122,
+          "longTasks": [
+            118
+          ],
+          "dom": 408
+        }
+      ],
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    }
+  ]
+}

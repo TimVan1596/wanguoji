@@ -1,0 +1,91 @@
+{
+  "rawSha256": "410c154969c8782e42587b813b67b1604cbdb342e1a78c44b574ac7a330435d2",
+  "rawBytes": 3486884,
+  "rawLocalPath": "logs/z54-raw-results/military-balance-z54-medium-200-rest.json",
+  "runs": [
+    {
+      "seed": "regional-2",
+      "years": 200,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "final": {
+        "worldPopulation": 138,
+        "activeStates": 4,
+        "historicalStates": 7,
+        "captures": 35,
+        "appointments": 36,
+        "duplicateHistoryIds": 0,
+        "depositions": 0,
+        "usurpations": 0,
+        "rebellions": 0,
+        "canonicalSha256": "1e0dc9a383c3cffb54c05b115efcd5cd91409e6171a969af43c30f63fe1a6b49",
+        "worldRandomPosition": 13959,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "strictSaveValid": true,
+        "elapsedMs": 68652.5,
+        "heapBytes": 163155268
+      }
+    },
+    {
+      "seed": "regional-3",
+      "years": 200,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "final": {
+        "worldPopulation": 132,
+        "activeStates": 5,
+        "historicalStates": 10,
+        "captures": 50,
+        "appointments": 46,
+        "duplicateHistoryIds": 0,
+        "depositions": 1,
+        "usurpations": 0,
+        "rebellions": 1,
+        "canonicalSha256": "d4f9fa0b97052179e675a1c32075771ce83b4ed3344b3d379d13428ff36e3137",
+        "worldRandomPosition": 14264,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "strictSaveValid": true,
+        "elapsedMs": 96572,
+        "heapBytes": 161829782
+      }
+    },
+    {
+      "seed": "regional-4",
+      "years": 200,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "final": {
+        "worldPopulation": 135,
+        "activeStates": 5,
+        "historicalStates": 14,
+        "captures": 62,
+        "appointments": 51,
+        "duplicateHistoryIds": 0,
+        "depositions": 0,
+        "usurpations": 1,
+        "rebellions": 4,
+        "canonicalSha256": "bc6424bdf85c1caf1b83cac45dc70baa38a438865565023b07a3ad5b58ebda37",
+        "worldRandomPosition": 14473,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "strictSaveValid": true,
+        "elapsedMs": 92990.89999999851,
+        "heapBytes": 135989893
+      }
+    }
+  ]
+}

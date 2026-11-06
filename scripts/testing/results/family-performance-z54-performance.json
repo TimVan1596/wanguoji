@@ -1,0 +1,953 @@
+{
+  "rawSha256": "ac6ec60985709aa8f59dbb41cb84ebd284cc525e5bcbc676391db89d7adb6719",
+  "rawBytes": 55048,
+  "rawLocalPath": "logs/z54-raw-results/family-performance-z54-performance.json",
+  "runs": [
+    {
+      "seed": "regional-3",
+      "worldMonth": 3600,
+      "viewport": {
+        "width": 800,
+        "height": 568
+      },
+      "families": 8,
+      "associatedFamilies": 3,
+      "members": 83,
+      "maxFamilyMembers": 19,
+      "events": 8037,
+      "people": 72,
+      "direct": [
+        {
+          "repeat": 0,
+          "listSummaryMs": 10.700000002980232,
+          "listCache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 0,
+            "events": 8037
+          },
+          "archiveMs": 7.100000001490116,
+          "importantMs": 0,
+          "parentBridgeMs": 0.10000000149011612,
+          "layoutMs": 0.3999999985098839,
+          "cardModel": {
+            "archiveMs": 0,
+            "importantMs": 0,
+            "bridgeMs": 0,
+            "cardsMs": 0.5,
+            "layoutMs": 0,
+            "totalMs": 0.5999999940395355
+          },
+          "retainedNodes": 2,
+          "registeredNodes": 13,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 0,
+            "projectionBuilds": 1,
+            "hits": 5,
+            "invalidations": 1,
+            "summaryCache": 0,
+            "archiveCache": 1,
+            "events": 8037
+          }
+        },
+        {
+          "repeat": 1,
+          "listSummaryMs": 6.600000001490116,
+          "listCache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 0,
+            "events": 8037
+          },
+          "archiveMs": 6.5999999940395355,
+          "importantMs": 0,
+          "parentBridgeMs": 0,
+          "layoutMs": 0.10000000149011612,
+          "cardModel": {
+            "archiveMs": 0,
+            "importantMs": 0,
+            "bridgeMs": 0,
+            "cardsMs": 0.10000000149011612,
+            "layoutMs": 0.10000000149011612,
+            "totalMs": 0.20000000298023224
+          },
+          "retainedNodes": 2,
+          "registeredNodes": 13,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 0,
+            "projectionBuilds": 1,
+            "hits": 5,
+            "invalidations": 1,
+            "summaryCache": 0,
+            "archiveCache": 1,
+            "events": 8037
+          }
+        },
+        {
+          "repeat": 2,
+          "listSummaryMs": 4.600000001490116,
+          "listCache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 0,
+            "events": 8037
+          },
+          "archiveMs": 4.800000004470348,
+          "importantMs": 0,
+          "parentBridgeMs": 0,
+          "layoutMs": 0,
+          "cardModel": {
+            "archiveMs": 0,
+            "importantMs": 0,
+            "bridgeMs": 0,
+            "cardsMs": 0.10000000149011612,
+            "layoutMs": 0,
+            "totalMs": 0.19999999552965164
+          },
+          "retainedNodes": 2,
+          "registeredNodes": 13,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 0,
+            "projectionBuilds": 1,
+            "hits": 5,
+            "invalidations": 1,
+            "summaryCache": 0,
+            "archiveCache": 1,
+            "events": 8037
+          }
+        }
+      ],
+      "phases": [
+        {
+          "phase": "list-open-0",
+          "wallMs": 20,
+          "settledMs": 34.900000005960464,
+          "reactMs": 15.100000008940697,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 0,
+            "events": 8037
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "all-houses-0",
+          "wallMs": 3.3000000044703484,
+          "settledMs": 26.100000001490116,
+          "reactMs": 3,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 0,
+            "events": 8037
+          },
+          "dom": 24,
+          "longTasks": []
+        },
+        {
+          "phase": "family-open-0",
+          "wallMs": 15.700000002980232,
+          "settledMs": 49.899999998509884,
+          "reactMs": 11.99999999254942,
+          "mountedNodes": 2,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 1,
+            "hits": 5,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 1,
+            "events": 8037
+          },
+          "dom": 42,
+          "longTasks": []
+        },
+        {
+          "phase": "select-person-0",
+          "wallMs": 5.5,
+          "settledMs": 33.20000000298023,
+          "reactMs": 7,
+          "mountedNodes": 2,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 1,
+            "hits": 7,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 1,
+            "events": 8037
+          },
+          "dom": 63,
+          "longTasks": []
+        },
+        {
+          "phase": "zoom-0",
+          "wallMs": 8.600000001490116,
+          "settledMs": 33.100000001490116,
+          "reactMs": 9.100000001490116,
+          "mountedNodes": 2,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 1,
+            "hits": 7,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 1,
+            "events": 8037
+          },
+          "dom": 63,
+          "longTasks": []
+        },
+        {
+          "phase": "fit-0",
+          "wallMs": 6,
+          "settledMs": 32,
+          "reactMs": 6.199999995529652,
+          "mountedNodes": 2,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 1,
+            "hits": 7,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 1,
+            "events": 8037
+          },
+          "dom": 63,
+          "longTasks": []
+        },
+        {
+          "phase": "locate-founder-0",
+          "wallMs": 8.299999997019768,
+          "settledMs": 34.399999998509884,
+          "reactMs": 6.299999997019768,
+          "mountedNodes": 2,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 1,
+            "hits": 9,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 1,
+            "events": 8037
+          },
+          "dom": 62,
+          "longTasks": []
+        },
+        {
+          "phase": "return-0",
+          "wallMs": 2.600000001490116,
+          "settledMs": 33.29999999701977,
+          "reactMs": 2.4000000059604645,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 1,
+            "hits": 12,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 1,
+            "events": 8037
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "all-after-return-0",
+          "wallMs": 2.600000001490116,
+          "settledMs": 33.20000000298023,
+          "reactMs": 2.2999999970197678,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 1,
+            "hits": 12,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 1,
+            "events": 8037
+          },
+          "dom": 24,
+          "longTasks": []
+        },
+        {
+          "phase": "switch-family-0",
+          "wallMs": 6,
+          "settledMs": 33.20000000298023,
+          "reactMs": 5.600000001490116,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 2,
+            "hits": 15,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 2,
+            "events": 8037
+          },
+          "dom": 33,
+          "longTasks": []
+        },
+        {
+          "phase": "close-0",
+          "wallMs": 1.2000000029802322,
+          "settledMs": 33.29999999701977,
+          "reactMs": 0,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 2,
+            "hits": 15,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 2,
+            "events": 8037
+          },
+          "dom": 0,
+          "longTasks": []
+        },
+        {
+          "phase": "reopen-0",
+          "wallMs": 3.7000000029802322,
+          "settledMs": 33.400000005960464,
+          "reactMs": 2.6999999955296516,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 2,
+            "hits": 18,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 2,
+            "events": 8037
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "switch-faction-0",
+          "wallMs": 3.399999998509884,
+          "settledMs": 33,
+          "reactMs": 2.299999989569187,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 18,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 8037
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "close-again-0",
+          "wallMs": 0.6999999955296516,
+          "settledMs": 33.29999999701977,
+          "reactMs": 0,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 18,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 8037
+          },
+          "dom": 0,
+          "longTasks": []
+        },
+        {
+          "phase": "list-open-1",
+          "wallMs": 10.200000002980232,
+          "settledMs": 18.700000002980232,
+          "reactMs": 9.599999994039536,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 0,
+            "events": 8037
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "all-houses-1",
+          "wallMs": 2.5,
+          "settledMs": 30.899999998509884,
+          "reactMs": 2.2000000029802322,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 0,
+            "events": 8037
+          },
+          "dom": 24,
+          "longTasks": []
+        },
+        {
+          "phase": "family-open-1",
+          "wallMs": 5.600000001490116,
+          "settledMs": 33.100000001490116,
+          "reactMs": 5.200000002980232,
+          "mountedNodes": 2,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 1,
+            "hits": 5,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 1,
+            "events": 8037
+          },
+          "dom": 42,
+          "longTasks": []
+        },
+        {
+          "phase": "select-person-1",
+          "wallMs": 3.1999999955296516,
+          "settledMs": 31.5,
+          "reactMs": 4.299999997019768,
+          "mountedNodes": 2,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 1,
+            "hits": 7,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 1,
+            "events": 8037
+          },
+          "dom": 63,
+          "longTasks": []
+        },
+        {
+          "phase": "zoom-1",
+          "wallMs": 4.299999997019768,
+          "settledMs": 35.099999994039536,
+          "reactMs": 4.600000001490116,
+          "mountedNodes": 2,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 1,
+            "hits": 7,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 1,
+            "events": 8037
+          },
+          "dom": 63,
+          "longTasks": []
+        },
+        {
+          "phase": "fit-1",
+          "wallMs": 3.100000001490116,
+          "settledMs": 32.5,
+          "reactMs": 3.800000011920929,
+          "mountedNodes": 2,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 1,
+            "hits": 7,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 1,
+            "events": 8037
+          },
+          "dom": 63,
+          "longTasks": []
+        },
+        {
+          "phase": "locate-founder-1",
+          "wallMs": 4.299999997019768,
+          "settledMs": 34,
+          "reactMs": 3.2000000029802322,
+          "mountedNodes": 2,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 1,
+            "hits": 9,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 1,
+            "events": 8037
+          },
+          "dom": 62,
+          "longTasks": []
+        },
+        {
+          "phase": "return-1",
+          "wallMs": 2,
+          "settledMs": 33.29999999701977,
+          "reactMs": 2,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 1,
+            "hits": 12,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 1,
+            "events": 8037
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "all-after-return-1",
+          "wallMs": 1.8000000044703484,
+          "settledMs": 33.30000000447035,
+          "reactMs": 1.5999999940395355,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 1,
+            "hits": 12,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 1,
+            "events": 8037
+          },
+          "dom": 24,
+          "longTasks": []
+        },
+        {
+          "phase": "switch-family-1",
+          "wallMs": 4.4000000059604645,
+          "settledMs": 32.80000000447035,
+          "reactMs": 4.199999995529652,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 2,
+            "hits": 15,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 2,
+            "events": 8037
+          },
+          "dom": 33,
+          "longTasks": []
+        },
+        {
+          "phase": "close-1",
+          "wallMs": 0.7999999970197678,
+          "settledMs": 33.69999999552965,
+          "reactMs": 0,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 2,
+            "hits": 15,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 2,
+            "events": 8037
+          },
+          "dom": 0,
+          "longTasks": []
+        },
+        {
+          "phase": "reopen-1",
+          "wallMs": 2.600000001490116,
+          "settledMs": 33.400000005960464,
+          "reactMs": 1.6999999955296516,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 2,
+            "hits": 18,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 2,
+            "events": 8037
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "switch-faction-1",
+          "wallMs": 2.5,
+          "settledMs": 33,
+          "reactMs": 1.9999999925494194,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 18,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 8037
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "close-again-1",
+          "wallMs": 0.5,
+          "settledMs": 33.19999999552965,
+          "reactMs": 0,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 18,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 8037
+          },
+          "dom": 0,
+          "longTasks": []
+        },
+        {
+          "phase": "list-open-2",
+          "wallMs": 7.299999997019768,
+          "settledMs": 13.5,
+          "reactMs": 6.9000000059604645,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 0,
+            "events": 8037
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "all-houses-2",
+          "wallMs": 1.8999999985098839,
+          "settledMs": 33.19999999552965,
+          "reactMs": 1.6000000014901161,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 0,
+            "events": 8037
+          },
+          "dom": 24,
+          "longTasks": []
+        },
+        {
+          "phase": "family-open-2",
+          "wallMs": 4.700000002980232,
+          "settledMs": 33.20000000298023,
+          "reactMs": 4.000000007450581,
+          "mountedNodes": 2,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 1,
+            "hits": 5,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 1,
+            "events": 8037
+          },
+          "dom": 42,
+          "longTasks": []
+        },
+        {
+          "phase": "select-person-2",
+          "wallMs": 2.6999999955296516,
+          "settledMs": 33.399999998509884,
+          "reactMs": 3.5999999940395355,
+          "mountedNodes": 2,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 1,
+            "hits": 7,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 1,
+            "events": 8037
+          },
+          "dom": 63,
+          "longTasks": []
+        },
+        {
+          "phase": "zoom-2",
+          "wallMs": 3.5,
+          "settledMs": 33.399999998509884,
+          "reactMs": 3.8000000044703484,
+          "mountedNodes": 2,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 1,
+            "hits": 7,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 1,
+            "events": 8037
+          },
+          "dom": 63,
+          "longTasks": []
+        },
+        {
+          "phase": "fit-2",
+          "wallMs": 3.2000000029802322,
+          "settledMs": 33.20000000298023,
+          "reactMs": 3.7999999970197678,
+          "mountedNodes": 2,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 1,
+            "hits": 7,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 1,
+            "events": 8037
+          },
+          "dom": 63,
+          "longTasks": []
+        },
+        {
+          "phase": "locate-founder-2",
+          "wallMs": 3.899999998509884,
+          "settledMs": 32.599999994039536,
+          "reactMs": 2.7999999970197678,
+          "mountedNodes": 2,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 1,
+            "hits": 9,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 1,
+            "events": 8037
+          },
+          "dom": 62,
+          "longTasks": []
+        },
+        {
+          "phase": "return-2",
+          "wallMs": 1.9000000059604645,
+          "settledMs": 34.100000001490116,
+          "reactMs": 1.8000000044703484,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 1,
+            "hits": 12,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 1,
+            "events": 8037
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "all-after-return-2",
+          "wallMs": 1.7000000029802322,
+          "settledMs": 32.70000000298023,
+          "reactMs": 1.5999999940395355,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 1,
+            "hits": 12,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 1,
+            "events": 8037
+          },
+          "dom": 24,
+          "longTasks": []
+        },
+        {
+          "phase": "switch-family-2",
+          "wallMs": 4.100000001490116,
+          "settledMs": 33.70000000298023,
+          "reactMs": 4.100000001490116,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 2,
+            "hits": 15,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 2,
+            "events": 8037
+          },
+          "dom": 33,
+          "longTasks": []
+        },
+        {
+          "phase": "close-2",
+          "wallMs": 0.6000000014901161,
+          "settledMs": 33.29999999701977,
+          "reactMs": 0,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 2,
+            "hits": 15,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 2,
+            "events": 8037
+          },
+          "dom": 0,
+          "longTasks": []
+        },
+        {
+          "phase": "reopen-2",
+          "wallMs": 2.399999998509884,
+          "settledMs": 33.20000000298023,
+          "reactMs": 1.7999999970197678,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 2,
+            "hits": 18,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 2,
+            "events": 8037
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "switch-faction-2",
+          "wallMs": 2.5,
+          "settledMs": 33.100000001490116,
+          "reactMs": 1.7000000029802322,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 18,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 8037
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "close-again-2",
+          "wallMs": 0.6000000014901161,
+          "settledMs": 33.29999999701977,
+          "reactMs": 0,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 18,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 8037
+          },
+          "dom": 0,
+          "longTasks": []
+        }
+      ],
+      "longTasksSupported": true,
+      "heapBytes": 213431629,
+      "cache": {
+        "indexBuilds": 1,
+        "summaryBuilds": 4,
+        "projectionBuilds": 2,
+        "hits": 18,
+        "invalidations": 1,
+        "summaryCache": 4,
+        "archiveCache": 2,
+        "events": 8037
+      },
+      "beforeHash": "f0f4b337dd17f4cc552dbdd3fde8fff5232ccf9e03272b0816e54cbb6c0a5eeb",
+      "afterHash": "f0f4b337dd17f4cc552dbdd3fde8fff5232ccf9e03272b0816e54cbb6c0a5eeb",
+      "unchanged": true,
+      "scope": "Three repetitions on the same real hydrated saved world; actual React commits, DOM budget and controls. Isolated API timings overlap and are not summed. No screenshot or human visual Gate."
+    }
+  ]
+}

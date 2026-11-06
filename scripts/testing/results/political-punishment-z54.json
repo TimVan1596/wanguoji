@@ -1,0 +1,1997 @@
+{
+  "baselineHead": "a0357ada838ef7a640a75b77287ddb281b8e1558",
+  "scope": "Native actual Core snapshots. 8 fixed seeds x100 in baseline/LOW/MEDIUM/HIGH, 4 x200 baseline/MEDIUM, fixed regional-3 x300 MEDIUM. Reruns after page navigation reuse the same predetermined seeds. No synthesized natural events.",
+  "selectedPolicy": "MEDIUM",
+  "policyReason": "Require proven substantial military reach and a surviving sovereign with control; LOW missed the observed SELF senior-command seizure at stability 73; HIGH has broader lethal eligibility without additional natural evidence. One lethal natural sample is insufficient for a long-term rate claim.",
+  "groups": [
+    {
+      "dir": "logs/z54-worlds-baseline",
+      "worlds": [
+        {
+          "file": "logs/z54-worlds-baseline/regional-1-100.json",
+          "sha256": "6997932504925bfedd66b3bd2a99126b248cfe61272af506d08cc12e04e87970",
+          "month": 1200,
+          "policy": "BASELINE",
+          "population": 135,
+          "states": 6,
+          "families": 3,
+          "members": 9,
+          "military": 30,
+          "activeCommands": 1,
+          "rng": 7347,
+          "attempts": 0,
+          "successes": 0,
+          "failures": 0,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-baseline/regional-1-200.json",
+          "sha256": "df4a3d3b8e9926cce23c8b0e70ea221a90bbe72d4b8113943b59ec665631add2",
+          "month": 2400,
+          "policy": "BASELINE",
+          "population": 136,
+          "states": 7,
+          "families": 6,
+          "members": 33,
+          "military": 65,
+          "activeCommands": 2,
+          "rng": 15087,
+          "attempts": 1,
+          "successes": 0,
+          "failures": 1,
+          "dismissals": 0,
+          "forfeitures": 1,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 1,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 1,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-baseline/regional-2-100.json",
+          "sha256": "7b5e666d0c831b6a5bdf5087f65bc4ff80cdc883ce886aa8985e4c335859ad5d",
+          "month": 1200,
+          "policy": "BASELINE",
+          "population": 130,
+          "states": 5,
+          "families": 0,
+          "members": 0,
+          "military": 24,
+          "activeCommands": 1,
+          "rng": 7130,
+          "attempts": 0,
+          "successes": 0,
+          "failures": 0,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-baseline/regional-2-200.json",
+          "sha256": "de0bd29fa97fb742d5cac4d4898a0edfa1bf0d280698f82a371b20198d286487",
+          "month": 2400,
+          "policy": "BASELINE",
+          "population": 138,
+          "states": 4,
+          "families": 1,
+          "members": 5,
+          "military": 36,
+          "activeCommands": 2,
+          "rng": 13959,
+          "attempts": 0,
+          "successes": 0,
+          "failures": 0,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-baseline/regional-3-100.json",
+          "sha256": "302ad6c16a3355dd84c9306aa711f26cf27d0bf4e51c3a5095ab74aa59a8f3a9",
+          "month": 1200,
+          "policy": "BASELINE",
+          "population": 131,
+          "states": 4,
+          "families": 4,
+          "members": 21,
+          "military": 23,
+          "activeCommands": 1,
+          "rng": 7170,
+          "attempts": 1,
+          "successes": 1,
+          "failures": 0,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-baseline/regional-3-200.json",
+          "sha256": "d18224d27952f1a84c3bddd2dc87a58d2ae29a6b0233e2880a6028ec497fe67c",
+          "month": 2400,
+          "policy": "BASELINE",
+          "population": 132,
+          "states": 5,
+          "families": 6,
+          "members": 47,
+          "military": 46,
+          "activeCommands": 1,
+          "rng": 14264,
+          "attempts": 2,
+          "successes": 1,
+          "failures": 1,
+          "dismissals": 1,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 1,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-baseline/regional-4-100.json",
+          "sha256": "b7163ca8d1d717276b15fea8cd281c2de8bc58eaa8f408a6f6cc7c5f7585b734",
+          "month": 1200,
+          "policy": "BASELINE",
+          "population": 117,
+          "states": 5,
+          "families": 1,
+          "members": 2,
+          "military": 28,
+          "activeCommands": 2,
+          "rng": 7039,
+          "attempts": 0,
+          "successes": 0,
+          "failures": 0,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-baseline/regional-4-200.json",
+          "sha256": "985dd103aba3c3bd47147f7fda8445e6b7057c4581f1c3eaed9b0dd93f0078eb",
+          "month": 2400,
+          "policy": "BASELINE",
+          "population": 135,
+          "states": 5,
+          "families": 5,
+          "members": 37,
+          "military": 51,
+          "activeCommands": 4,
+          "rng": 14473,
+          "attempts": 1,
+          "successes": 0,
+          "failures": 1,
+          "dismissals": 0,
+          "forfeitures": 1,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 1,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 1,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-baseline/regional-5-100.json",
+          "sha256": "b92f9dfc29d8552487b8c41ca94ef834c0dabf4e0e3e00f1ba70eea76630eee9",
+          "month": 1200,
+          "policy": "BASELINE",
+          "population": 146,
+          "states": 5,
+          "families": 2,
+          "members": 10,
+          "military": 23,
+          "activeCommands": 4,
+          "rng": 6915,
+          "attempts": 1,
+          "successes": 0,
+          "failures": 1,
+          "dismissals": 1,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 1,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-baseline/regional-6-100.json",
+          "sha256": "ae6ad8d43e8e5eb65785732c59b02ed8573b2b019244853cec20568a135c3e11",
+          "month": 1200,
+          "policy": "BASELINE",
+          "population": 133,
+          "states": 4,
+          "families": 1,
+          "members": 2,
+          "military": 29,
+          "activeCommands": 1,
+          "rng": 7161,
+          "attempts": 1,
+          "successes": 0,
+          "failures": 1,
+          "dismissals": 1,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 1,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-baseline/regional-7-100.json",
+          "sha256": "b2cf52b937c10ae8a6ac5984ed4c34dade565248b7e6e2fe8807e39f977c869b",
+          "month": 1200,
+          "policy": "BASELINE",
+          "population": 134,
+          "states": 5,
+          "families": 4,
+          "members": 8,
+          "military": 27,
+          "activeCommands": 2,
+          "rng": 7388,
+          "attempts": 1,
+          "successes": 1,
+          "failures": 0,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-baseline/regional-8-100.json",
+          "sha256": "699f4fdb01fe3b58ad0861ce777d7cb6eb4ad81114b9e68d9a89a74a49953bfc",
+          "month": 1200,
+          "policy": "BASELINE",
+          "population": 141,
+          "states": 7,
+          "families": 1,
+          "members": 3,
+          "military": 26,
+          "activeCommands": 4,
+          "rng": 7496,
+          "attempts": 2,
+          "successes": 0,
+          "failures": 2,
+          "dismissals": 0,
+          "forfeitures": 2,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 2,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 1,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 1,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        }
+      ]
+    },
+    {
+      "dir": "logs/z54-worlds-low",
+      "worlds": [
+        {
+          "file": "logs/z54-worlds-low/regional-1-100.json",
+          "sha256": "745b688420b708afd298e34dd8e7bac0319bb5e30d99265c957fb1aa317a6fa7",
+          "month": 1200,
+          "policy": "LOW",
+          "population": 135,
+          "states": 6,
+          "families": 3,
+          "members": 9,
+          "military": 30,
+          "activeCommands": 1,
+          "rng": 7347,
+          "attempts": 0,
+          "successes": 0,
+          "failures": 0,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-low/regional-2-100.json",
+          "sha256": "32ca8a1c4fcebaae83f2934775b41da56ff8466da3cede4335b8127337c6f2a0",
+          "month": 1200,
+          "policy": "LOW",
+          "population": 130,
+          "states": 5,
+          "families": 0,
+          "members": 0,
+          "military": 24,
+          "activeCommands": 1,
+          "rng": 7130,
+          "attempts": 0,
+          "successes": 0,
+          "failures": 0,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-low/regional-3-100.json",
+          "sha256": "d26c4b6a079411ece1a95c0f25b34ec5ca75ad5501a3b6d6975bdeb2468cd433",
+          "month": 1200,
+          "policy": "LOW",
+          "population": 131,
+          "states": 4,
+          "families": 4,
+          "members": 21,
+          "military": 23,
+          "activeCommands": 1,
+          "rng": 7170,
+          "attempts": 1,
+          "successes": 1,
+          "failures": 0,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-low/regional-4-100.json",
+          "sha256": "b1f72299b03340d2f2c2908b4414912be54aa55cf3df61fb949593b32221b90e",
+          "month": 1200,
+          "policy": "LOW",
+          "population": 117,
+          "states": 5,
+          "families": 1,
+          "members": 2,
+          "military": 28,
+          "activeCommands": 2,
+          "rng": 7039,
+          "attempts": 0,
+          "successes": 0,
+          "failures": 0,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-low/regional-5-100.json",
+          "sha256": "ccc94017f0821d3db9681326e445ebac275729db7d1a165dcd6b3fcda1482055",
+          "month": 1200,
+          "policy": "LOW",
+          "population": 146,
+          "states": 5,
+          "families": 2,
+          "members": 10,
+          "military": 23,
+          "activeCommands": 4,
+          "rng": 6915,
+          "attempts": 1,
+          "successes": 0,
+          "failures": 1,
+          "dismissals": 1,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 1,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-low/regional-6-100.json",
+          "sha256": "65e50231c19527a28366c90d836020d876e4d43af9614fce266a7d741d8eed19",
+          "month": 1200,
+          "policy": "LOW",
+          "population": 133,
+          "states": 4,
+          "families": 1,
+          "members": 2,
+          "military": 29,
+          "activeCommands": 1,
+          "rng": 7161,
+          "attempts": 1,
+          "successes": 0,
+          "failures": 1,
+          "dismissals": 1,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 1,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-low/regional-7-100.json",
+          "sha256": "2709a2cfb37dd9c653b8acf6ec6b557f6727a0efd10972b12725423022abc11a",
+          "month": 1200,
+          "policy": "LOW",
+          "population": 134,
+          "states": 5,
+          "families": 4,
+          "members": 8,
+          "military": 27,
+          "activeCommands": 2,
+          "rng": 7388,
+          "attempts": 1,
+          "successes": 1,
+          "failures": 0,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-low/regional-8-100.json",
+          "sha256": "5698a3f056cdf84f86ac10f072b31ca1082d8e166b34c26db871262e0ac92adb",
+          "month": 1200,
+          "policy": "LOW",
+          "population": 141,
+          "states": 7,
+          "families": 1,
+          "members": 3,
+          "military": 26,
+          "activeCommands": 4,
+          "rng": 7496,
+          "attempts": 2,
+          "successes": 0,
+          "failures": 2,
+          "dismissals": 0,
+          "forfeitures": 2,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 2,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 1,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 1,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        }
+      ]
+    },
+    {
+      "dir": "logs/z54-worlds-medium",
+      "worlds": [
+        {
+          "file": "logs/z54-worlds-medium/regional-1-100.json",
+          "sha256": "ceaeeb86d63ffc0d339b8ff1568a5a2c8262608a2f3b2ef17c1ea7e880a885fd",
+          "month": 1200,
+          "policy": "MEDIUM",
+          "population": 135,
+          "states": 6,
+          "families": 3,
+          "members": 9,
+          "military": 30,
+          "activeCommands": 1,
+          "rng": 7347,
+          "attempts": 0,
+          "successes": 0,
+          "failures": 0,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-medium/regional-1-200.json",
+          "sha256": "1b292aa4295b3a69fec521d7ed01c5c36883f62717673c8d4680a5a8264d7e3b",
+          "month": 2400,
+          "policy": "MEDIUM",
+          "population": 136,
+          "states": 7,
+          "families": 6,
+          "members": 33,
+          "military": 65,
+          "activeCommands": 2,
+          "rng": 15087,
+          "attempts": 1,
+          "successes": 0,
+          "failures": 1,
+          "dismissals": 0,
+          "forfeitures": 1,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 1,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 1,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-medium/regional-2-100.json",
+          "sha256": "d9f3c4f9adf21a80b82d4f5049d2cfc902bd705207a1f5d3411c948666027638",
+          "month": 1200,
+          "policy": "MEDIUM",
+          "population": 130,
+          "states": 5,
+          "families": 0,
+          "members": 0,
+          "military": 24,
+          "activeCommands": 1,
+          "rng": 7130,
+          "attempts": 0,
+          "successes": 0,
+          "failures": 0,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-medium/regional-2-200.json",
+          "sha256": "9f03d9a55c8a4e6a0a416acd16c7dda328d952386c78504764d7d63969fa77f9",
+          "month": 2400,
+          "policy": "MEDIUM",
+          "population": 138,
+          "states": 4,
+          "families": 1,
+          "members": 5,
+          "military": 36,
+          "activeCommands": 2,
+          "rng": 13959,
+          "attempts": 0,
+          "successes": 0,
+          "failures": 0,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-medium/regional-3-100.json",
+          "sha256": "5a7f0085982ea6620fa867b324492ace70ffa4f646304bc566c3c49b21cea212",
+          "month": 1200,
+          "policy": "MEDIUM",
+          "population": 131,
+          "states": 4,
+          "families": 4,
+          "members": 21,
+          "military": 23,
+          "activeCommands": 1,
+          "rng": 7170,
+          "attempts": 1,
+          "successes": 1,
+          "failures": 0,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-medium/regional-3-200.json",
+          "sha256": "9da3cfc11bd818d9170e9566f4c3607366aed58de78294521a7137f96a08f6d9",
+          "month": 2400,
+          "policy": "MEDIUM",
+          "population": 132,
+          "states": 5,
+          "families": 6,
+          "members": 47,
+          "military": 46,
+          "activeCommands": 1,
+          "rng": 14264,
+          "attempts": 2,
+          "successes": 1,
+          "failures": 1,
+          "dismissals": 1,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 1,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-medium/regional-3-300.json",
+          "sha256": "42bdf5b9dddb74cfadace4bb3058607881e36221fd31d4b3f67f521af827b35c",
+          "month": 3600,
+          "policy": "MEDIUM",
+          "population": 129,
+          "states": 6,
+          "families": 8,
+          "members": 83,
+          "military": 72,
+          "activeCommands": 5,
+          "rng": 21449,
+          "attempts": 3,
+          "successes": 2,
+          "failures": 1,
+          "dismissals": 1,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 1,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-medium/regional-4-100.json",
+          "sha256": "1862f22e551cb150fe3c55763a460fb8cc8ed37273ab0c7a5a07bed504c17380",
+          "month": 1200,
+          "policy": "MEDIUM",
+          "population": 117,
+          "states": 5,
+          "families": 1,
+          "members": 2,
+          "military": 28,
+          "activeCommands": 2,
+          "rng": 7039,
+          "attempts": 0,
+          "successes": 0,
+          "failures": 0,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-medium/regional-4-200.json",
+          "sha256": "7720b937f5a8b364e1a093a5a7796f562b90180139a9c850b2ce78f0a58f5ef1",
+          "month": 2400,
+          "policy": "MEDIUM",
+          "population": 135,
+          "states": 5,
+          "families": 5,
+          "members": 37,
+          "military": 51,
+          "activeCommands": 4,
+          "rng": 14473,
+          "attempts": 1,
+          "successes": 0,
+          "failures": 1,
+          "dismissals": 0,
+          "forfeitures": 1,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 1,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 1,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-medium/regional-5-100.json",
+          "sha256": "f0e6de649f8373972cb28ef1e47326c6c4ed1e576f6b2b0ba254ad26529da948",
+          "month": 1200,
+          "policy": "MEDIUM",
+          "population": 146,
+          "states": 5,
+          "families": 2,
+          "members": 10,
+          "military": 23,
+          "activeCommands": 4,
+          "rng": 6915,
+          "attempts": 1,
+          "successes": 0,
+          "failures": 1,
+          "dismissals": 1,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 1,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-medium/regional-6-100.json",
+          "sha256": "9f37696cc9e1045a63077646fdf0f57fb157d42dd9eadd5d56360f2bf6c24c91",
+          "month": 1200,
+          "policy": "MEDIUM",
+          "population": 133,
+          "states": 4,
+          "families": 1,
+          "members": 2,
+          "military": 29,
+          "activeCommands": 1,
+          "rng": 7161,
+          "attempts": 1,
+          "successes": 0,
+          "failures": 1,
+          "dismissals": 1,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 1,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-medium/regional-7-100.json",
+          "sha256": "029aa0f8668f4b19536b931936b49b8ca96f0ba51541f4bcfd12fcbae8fe2706",
+          "month": 1200,
+          "policy": "MEDIUM",
+          "population": 134,
+          "states": 5,
+          "families": 4,
+          "members": 8,
+          "military": 27,
+          "activeCommands": 2,
+          "rng": 7388,
+          "attempts": 1,
+          "successes": 1,
+          "failures": 0,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-medium/regional-8-100.json",
+          "sha256": "c5d1a118c1a26140aa404b99f43031cc23c1b0e50a4329330a3d075b3fdb5771",
+          "month": 1200,
+          "policy": "MEDIUM",
+          "population": 125,
+          "states": 4,
+          "families": 3,
+          "members": 7,
+          "military": 23,
+          "activeCommands": 0,
+          "rng": 7396,
+          "attempts": 1,
+          "successes": 0,
+          "failures": 1,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 1,
+          "exiles": 0,
+          "revocations": 1,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 1
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": [
+            {
+              "personId": "military-person-10",
+              "name": "赵伦",
+              "month": 804,
+              "royal": true,
+              "judgment": {
+                "factionId": "赵",
+                "countryName": "赵",
+                "epochFounderId": "赵-ruler-3",
+                "rulerId": "赵-ruler-31",
+                "rulerTitle": "赵王赵琛",
+                "version": 1,
+                "stability": 73,
+                "eventId": "court-coup-赵-804-ban",
+                "kind": "COURT_BAN",
+                "month": 804,
+                "personId": "military-person-10",
+                "sourceUserId": 1850476555,
+                "bornMonth": 80,
+                "personalName": "赵伦",
+                "victimRulerId": "赵-ruler-31",
+                "courtCoupEventId": "court-coup-赵-804",
+                "courtResultEventId": "court-coup-赵-804-result",
+                "punishmentPolicy": "MEDIUM",
+                "severity": "EXECUTION",
+                "sourceEventIds": [
+                  "court-coup-赵-804",
+                  "court-coup-赵-804-result"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "dir": "logs/z54-worlds-high",
+      "worlds": [
+        {
+          "file": "logs/z54-worlds-high/regional-1-100.json",
+          "sha256": "300ef552846499fae1f6b794ccf1b5b9e6af2a6f6db902432ffd11a28ef7bcd6",
+          "month": 1200,
+          "policy": "HIGH",
+          "population": 135,
+          "states": 6,
+          "families": 3,
+          "members": 9,
+          "military": 30,
+          "activeCommands": 1,
+          "rng": 7347,
+          "attempts": 0,
+          "successes": 0,
+          "failures": 0,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-high/regional-2-100.json",
+          "sha256": "ff9295632110c0e09c5e9c3ba50edc4e72176f2c59be1e43384e93d54f85dcb8",
+          "month": 1200,
+          "policy": "HIGH",
+          "population": 130,
+          "states": 5,
+          "families": 0,
+          "members": 0,
+          "military": 24,
+          "activeCommands": 1,
+          "rng": 7130,
+          "attempts": 0,
+          "successes": 0,
+          "failures": 0,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-high/regional-3-100.json",
+          "sha256": "d1573eb2ba3ae7071347364b6656c4481a759224b74618964aee4ca7c946ffd2",
+          "month": 1200,
+          "policy": "HIGH",
+          "population": 131,
+          "states": 4,
+          "families": 4,
+          "members": 21,
+          "military": 23,
+          "activeCommands": 1,
+          "rng": 7170,
+          "attempts": 1,
+          "successes": 1,
+          "failures": 0,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-high/regional-4-100.json",
+          "sha256": "15724acf5b9cd2e214d707bc10374e0016b6f1a782c5515a4e212cc180961fc8",
+          "month": 1200,
+          "policy": "HIGH",
+          "population": 117,
+          "states": 5,
+          "families": 1,
+          "members": 2,
+          "military": 28,
+          "activeCommands": 2,
+          "rng": 7039,
+          "attempts": 0,
+          "successes": 0,
+          "failures": 0,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-high/regional-5-100.json",
+          "sha256": "d43b053daa0d963033087c64dc6fca80aaeeead900625edfccb632302f60ee64",
+          "month": 1200,
+          "policy": "HIGH",
+          "population": 146,
+          "states": 5,
+          "families": 2,
+          "members": 10,
+          "military": 23,
+          "activeCommands": 4,
+          "rng": 6915,
+          "attempts": 1,
+          "successes": 0,
+          "failures": 1,
+          "dismissals": 1,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 1,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-high/regional-6-100.json",
+          "sha256": "a9338a2da5f18e33367ee765c14fa5a3f31a317d4821ef12e4e96d9f9e8f5878",
+          "month": 1200,
+          "policy": "HIGH",
+          "population": 133,
+          "states": 4,
+          "families": 1,
+          "members": 2,
+          "military": 29,
+          "activeCommands": 1,
+          "rng": 7161,
+          "attempts": 1,
+          "successes": 0,
+          "failures": 1,
+          "dismissals": 1,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 1,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-high/regional-7-100.json",
+          "sha256": "0767f2585ddb51e3189ff28e9ad0695324098048fd2fa16c2dbc0f936457cc9e",
+          "month": 1200,
+          "policy": "HIGH",
+          "population": 134,
+          "states": 5,
+          "families": 4,
+          "members": 8,
+          "military": 27,
+          "activeCommands": 2,
+          "rng": 7388,
+          "attempts": 1,
+          "successes": 1,
+          "failures": 0,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 0,
+          "exiles": 0,
+          "revocations": 0,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": []
+        },
+        {
+          "file": "logs/z54-worlds-high/regional-8-100.json",
+          "sha256": "ddc2e7f35393eef61acfa4b0f1a94b5d105374b6f39574b9627908fc98dfa229",
+          "month": 1200,
+          "policy": "HIGH",
+          "population": 125,
+          "states": 4,
+          "families": 3,
+          "members": 7,
+          "military": 23,
+          "activeCommands": 0,
+          "rng": 7396,
+          "attempts": 1,
+          "successes": 0,
+          "failures": 1,
+          "dismissals": 0,
+          "forfeitures": 0,
+          "executions": 1,
+          "exiles": 0,
+          "revocations": 1,
+          "pardons": 0,
+          "reappointments": 0,
+          "royal": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 1
+          },
+          "ordinary": {
+            "dismissals": 0,
+            "forfeitures": 0,
+            "executions": 0
+          },
+          "duplicateDeaths": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "activeDeadCommands": 0,
+          "postExecutionActions": 0,
+          "executed": [
+            {
+              "personId": "military-person-10",
+              "name": "赵伦",
+              "month": 804,
+              "royal": true,
+              "judgment": {
+                "factionId": "赵",
+                "countryName": "赵",
+                "epochFounderId": "赵-ruler-3",
+                "rulerId": "赵-ruler-31",
+                "rulerTitle": "赵王赵琛",
+                "version": 1,
+                "stability": 73,
+                "eventId": "court-coup-赵-804-ban",
+                "kind": "COURT_BAN",
+                "month": 804,
+                "personId": "military-person-10",
+                "sourceUserId": 1850476555,
+                "bornMonth": 80,
+                "personalName": "赵伦",
+                "victimRulerId": "赵-ruler-31",
+                "courtCoupEventId": "court-coup-赵-804",
+                "courtResultEventId": "court-coup-赵-804-result",
+                "punishmentPolicy": "HIGH",
+                "severity": "EXECUTION",
+                "sourceEventIds": [
+                  "court-coup-赵-804",
+                  "court-coup-赵-804-result"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "pairComparisons": [
+    {
+      "policy": "LOW",
+      "world": "regional-1-100.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "LOW",
+      "world": "regional-2-100.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "LOW",
+      "world": "regional-3-100.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "LOW",
+      "world": "regional-4-100.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "LOW",
+      "world": "regional-5-100.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "LOW",
+      "world": "regional-6-100.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "LOW",
+      "world": "regional-7-100.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "LOW",
+      "world": "regional-8-100.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "MEDIUM",
+      "world": "regional-1-100.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "MEDIUM",
+      "world": "regional-1-200.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "MEDIUM",
+      "world": "regional-2-100.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "MEDIUM",
+      "world": "regional-2-200.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "MEDIUM",
+      "world": "regional-3-100.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "MEDIUM",
+      "world": "regional-3-200.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "MEDIUM",
+      "world": "regional-4-100.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "MEDIUM",
+      "world": "regional-4-200.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "MEDIUM",
+      "world": "regional-5-100.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "MEDIUM",
+      "world": "regional-6-100.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "MEDIUM",
+      "world": "regional-7-100.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "MEDIUM",
+      "world": "regional-8-100.json",
+      "normalizedCanonicalEqual": false,
+      "rngEqual": false
+    },
+    {
+      "policy": "HIGH",
+      "world": "regional-1-100.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "HIGH",
+      "world": "regional-2-100.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "HIGH",
+      "world": "regional-3-100.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "HIGH",
+      "world": "regional-4-100.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "HIGH",
+      "world": "regional-5-100.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "HIGH",
+      "world": "regional-6-100.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "HIGH",
+      "world": "regional-7-100.json",
+      "normalizedCanonicalEqual": true,
+      "rngEqual": true
+    },
+    {
+      "policy": "HIGH",
+      "world": "regional-8-100.json",
+      "normalizedCanonicalEqual": false,
+      "rngEqual": false
+    }
+  ],
+  "baselineEvidence": [
+    {
+      "file": "military-balance-z54-baseline.json",
+      "rawSha256": "532e4d16f2162e1c9f8f928a3c202eae91460131dc7c796e2f1fc9bdad29e0d3",
+      "rawLocalPath": "logs/z54-raw-results/military-balance-z54-baseline.json",
+      "runs": [
+        {
+          "seed": "regional-1",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-2",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-3",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-4",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-5",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-6",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-7",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-8",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "strictSaveValid": true
+        }
+      ]
+    },
+    {
+      "file": "military-balance-z54-baseline-200.json",
+      "rawSha256": "5d1e1607e80b6862641253383b6fb2e120bc84ccb4fd3c4ecc5cabfc71f3028a",
+      "rawLocalPath": "logs/z54-raw-results/military-balance-z54-baseline-200.json",
+      "runs": [
+        {
+          "seed": "regional-1",
+          "years": 200,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-2",
+          "years": 200,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-3",
+          "years": 200,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "strictSaveValid": true
+        },
+        {
+          "seed": "regional-4",
+          "years": 200,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "strictSaveValid": true
+        }
+      ]
+    }
+  ]
+}

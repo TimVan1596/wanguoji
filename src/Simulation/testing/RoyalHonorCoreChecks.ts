@@ -110,6 +110,22 @@ export function checkRoyalCourtAttempt(core:any,base:ReturnType<typeof exportWor
   const roll=Array.from({length:100},(_,i)=>e.probability*(i+.5)/100).find(roll=>chooseDepositionClaimant(e,month,roll)?.claimant.ruler.id===r.id);check(roll!==undefined,'the existing weighted selection can genuinely select the royal instigator');
   // A real SELF failure must have a separate royal disability, including a rollback journal.
   const courtBase=exportWorldSave(core),invokeFailure=()=>{const next=random.next;random.next=()=>{next.call(random);return courtAttemptChance(selectCourtInstigator(e,Military.getPeople(),undefined,Dynasty.getAbilityPolicy())!,'MEDIUM',Dynasty.getAbilityPolicy())*.99;};try{(Dynasty as any).evaluateInReignDeposition(core.teams.find((t:any)=>t.name===team.name),Dynasty.get(team.name),Dynasty.getCurrentRuler(team.name),month);}finally{random.next=next;}};
+  {
+   const later=month+36;core.simulator.clock.importState({worldMonth:later,elapsedMs:0,running:false});
+   const officer=Military.getPerson(personId)!,command=officer.appointments.at(-1)!.commandId,city=team.cities.find((c:any)=>c!==team.capitalCity)!;
+   check(city,'royal execution fixture retains a separate real city');city.capture(enemy,later);u.player.setPosition(city.block.x+1,city.block.y+1);u.player.body.reset(u.player.x,u.player.y);city.capture(team,later,undefined,command,personId);
+   for(const unit of [...team.users] as any[]){unit.player.setPosition(team.capitalCity.block.x+2,team.capitalCity.block.y+2);unit.player.body.reset(unit.player.x,unit.player.y);}
+   team.cities.forEach((c:any)=>c.loyalty=60);(Military as any).advanceOffices(later,core.teams);
+   const evaluate=()=>evaluateDepositionOpportunity({factionId:team.name,status:team.status,identityStage:team.identityStage,cityCount:team.cities.length,stability:getFactionStability(team),currentRuler:Dynasty.getCurrentRuler(team.name),rulers:d.rulers,houseName:d.houseName,worldMonth:later,events:History.getEventsForFaction(team.name)}),evaluation=evaluate(),influence=Military.getCourtAttemptInfluence(team,later,core.logicalUnitRegistry),actor=selectCourtInstigator(evaluation,Military.getPeople(),influence,Dynasty.getAbilityPolicy());
+   check(actor?.personId===personId&&actor.unitCount>=3,`real royal direct seizure has a senior command: ${JSON.stringify({office:actor?.officeStanding?.office,units:actor?.unitCount})}`);
+   const prepared=exportWorldSave(core),invoke=()=>{const next=random.next;random.next=()=>{next.call(random);return courtAttemptChance(actor!,'MEDIUM',Dynasty.getAbilityPolicy())*.99;};try{const t=core.teams.find((t:any)=>t.name===team.name);(Dynasty as any).evaluateInReignDeposition(t,Dynasty.get(t.name),Dynasty.getCurrentRuler(t.name),later);}finally{random.next=next;}};
+   const write=History.addEvent;History.addEvent=function(ev){const id=write.call(this,ev);if(ev.type==='ruler-died')throw Error('injected royal execution write');return id;};try{invoke();}finally{History.addEvent=write;}
+   check(diffCanonicalWorldSave(prepared,exportWorldSave(core)).matched,'royal execution write failure restores both life archives, kin, military body and RNG');invoke();
+   const royal=Dynasty.get(team.name)!.rulers.find(x=>x.id===r.id)!,p=Military.getPerson(personId)!;
+   check(p.deathCause==='POLITICAL_EXECUTION'&&royal.status==='dead'&&royal.deathMonth===later&&p.deathMonth===later&&royal.deathReason==='因谋逆伏诛'&&royal.parentId===r.parentId&&!core.teams.find((t:any)=>t.name===team.name).getUserById(p.sourceUserId),'royal direct usurper execution closes exactly the one permanent life while preserving parentage');
+   const executed=exportWorldSave(core),valid=validateWorldSave(executed);check(valid.valid,`royal execution strictly saves: ${valid.errors.join(';')}`);hydrateWorldSave(core,structuredClone(executed));check(diffCanonicalWorldSave(executed,exportWorldSave(core)).matched,'royal execution reads without resetting death or creating another person');
+   hydrateWorldSave(core,structuredClone(courtBase));
+  }
   const add=History.addEvent;History.addEvent=function(ev){const id=add.call(this,ev);if(ev.type==='royal-succession-sanction')throw Error('injected royal disability write');return id;};
   try{invokeFailure();}finally{History.addEvent=add;}
   check(diffCanonicalWorldSave(courtBase,exportWorldSave(core)).matched,'SELF sanction write failure restores royal, military, population, source history and RNG');

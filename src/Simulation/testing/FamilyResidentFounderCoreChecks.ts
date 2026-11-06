@@ -1,3 +1,5 @@
+import History from '../../History/WorldHistory';
+import {rulerFamilyBackground} from '../../Politics/RulerFamilyBackground';
 import {SIMULATION_FIXED_STEP_MS} from '../SimulationDriver';
 import Factions from '../FactionRegistry';
 import Dynasty from '../../Politics/Dynasty';
@@ -27,6 +29,7 @@ export function checkFamilyResidentFounder(core:any,child:any,month:number,check
   check(actual===child&&actual.name===name&&ruler.houseName.replace(/氏$/,'')+ruler.givenName===name&&identity.personalName===name&&identity.nameSource==='FAMILY_ENTRY','family, original User and royal archive keep the identical complete name and frozen natural-entry source');
   check(identity.sourceUserId===id&&ruler.bornYear===born&&Military.getFamilyMember(id,born)!.member.parentMemberId===member.parentMemberId&&core.teams.reduce((n:number,t:any)=>n+t.users.size,0)===count,`real founding preserves birthday, parent and population ${JSON.stringify({id,actualId:identity.sourceUserId,born,actualBorn:ruler.bornYear,parent:member.parentMemberId,actualParent:Military.getFamilyMember(id,born)?.member.parentMemberId,count,actualCount:core.teams.reduce((n:number,t:any)=>n+t.users.size,0)})}`);
   check(JSON.stringify(rulerAbilities(ruler,Military.getPeople()))===JSON.stringify(ability),'ordinary family founder keeps the same personal abilities');
+  const background=rulerFamilyBackground(ruler,Military.getFamilies(),Military.getPeople(),History.getRecordedEvents());check(background?.includes(name)&&background.includes('父亲')&&background.includes('伯爵'),'real natural-entry family founder biography reads its verified parent grant without inventing personal military merits');
   const save=exportWorldSave(core);check(validateWorldSave(save).valid,'family resident founding has a strict valid save');
   for(const mutate of [(r:any)=>r.givenName='伪名',(r:any)=>r.residentIdentity.personalName='伪名',(r:any)=>r.residentIdentity.nameSource='POLITICAL_ENTRY']){const bad=structuredClone(save),r=(bad.dynasties.find(d=>d.factionId===polity.name)!.rulers as any[]).find(r=>r.rulerId===ruler.id);mutate(r);check(!validateWorldSave(bad).valid,'strict save rejects a renamed family founder or forged source');}
   hydrateWorldSave(core,structuredClone(save));check(diffCanonicalWorldSave(save,exportWorldSave(core)).matched,'same-name family founder survives strict hydration without new historical identities');

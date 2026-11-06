@@ -1,0 +1,35 @@
+{
+  "rawSha256": "e0577aa2abe43a616201221be321a5aa866632f6bc039be7f11fef662446c846",
+  "rawBytes": 1381196,
+  "rawLocalPath": "logs/z54-raw-results/military-balance-z54-medium-200.json",
+  "runs": [
+    {
+      "seed": "regional-1",
+      "years": 200,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "final": {
+        "worldPopulation": 136,
+        "activeStates": 7,
+        "historicalStates": 12,
+        "captures": 68,
+        "appointments": 65,
+        "duplicateHistoryIds": 0,
+        "depositions": 5,
+        "usurpations": 0,
+        "rebellions": 1,
+        "canonicalSha256": "e510460e7ceace1f505bc5eceb0feb9e539cbaa4518e29653ecc4219e804ae98",
+        "worldRandomPosition": 15087,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "strictSaveValid": true,
+        "elapsedMs": 156966.3999999985,
+        "heapBytes": 102423872
+      }
+    }
+  ]
+}
