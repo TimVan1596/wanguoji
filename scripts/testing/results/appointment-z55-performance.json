@@ -1,0 +1,83 @@
+{
+  "scope": "Identical 300-year world. Native V51 baseline and native V52 disabled-policy bridge were separately produced; no header adjustment. Sequential measurements after batch simulations, actual React controls, three repetitions, not human visual acceptance.",
+  "sameCanonicalWorldIgnoringOnlyAppAndSchema": true,
+  "world": {
+    "month": 3600,
+    "families": 8,
+    "members": 83,
+    "events": 8037
+  },
+  "baseline": {
+    "unchanged": true,
+    "heapBytes": 199705496
+  },
+  "candidate": {
+    "unchanged": true,
+    "heapBytes": 155833441
+  },
+  "phases": [
+    {
+      "phase": "list-open",
+      "baselineWallMs": 8.300000000279397,
+      "candidateWallMs": 9.5,
+      "baselineReactMs": 7.900000000372529,
+      "candidateReactMs": 8.399999999906868
+    },
+    {
+      "phase": "family-open",
+      "baselineWallMs": 6.699999999720603,
+      "candidateWallMs": 5.2999999998137355,
+      "baselineReactMs": 5.7000000001862645,
+      "candidateReactMs": 4.7000000001862645
+    },
+    {
+      "phase": "select-person",
+      "baselineWallMs": 3.5,
+      "candidateWallMs": 3.2999999998137355,
+      "baselineReactMs": 6.2999999998137355,
+      "candidateReactMs": 5.699999999720603
+    },
+    {
+      "phase": "zoom",
+      "baselineWallMs": 4.100000000093132,
+      "candidateWallMs": 3.7999999998137355,
+      "baselineReactMs": 4.600000000093132,
+      "candidateReactMs": 4.600000000093132
+    },
+    {
+      "phase": "fit",
+      "baselineWallMs": 3.5,
+      "candidateWallMs": 3.1999999997206032,
+      "baselineReactMs": 4.2000000001862645,
+      "candidateReactMs": 3.7999999998137355
+    },
+    {
+      "phase": "locate-founder",
+      "baselineWallMs": 4.899999999906868,
+      "candidateWallMs": 5.7000000001862645,
+      "baselineReactMs": 3.6000000000931323,
+      "candidateReactMs": 4
+    },
+    {
+      "phase": "switch-family",
+      "baselineWallMs": 4.899999999906868,
+      "candidateWallMs": 4.399999999906868,
+      "baselineReactMs": 4.6000000005587935,
+      "candidateReactMs": 4.2999999998137355
+    },
+    {
+      "phase": "reopen",
+      "baselineWallMs": 2.6000000000931323,
+      "candidateWallMs": 2.3999999999068677,
+      "baselineReactMs": 1.900000000372529,
+      "candidateReactMs": 1.6999999997206032
+    },
+    {
+      "phase": "switch-faction",
+      "baselineWallMs": 2.8000000002793968,
+      "candidateWallMs": 2.5,
+      "baselineReactMs": 2,
+      "candidateReactMs": 1.8999999994412065
+    }
+  ]
+}

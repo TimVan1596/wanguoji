@@ -4,192 +4,266 @@
     {
       "group": "low",
       "seed": 1,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "low",
       "seed": 2,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "low",
       "seed": 3,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "low",
       "seed": 4,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "low",
       "seed": 5,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "low",
       "seed": 6,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "low",
       "seed": 7,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "low",
       "seed": 8,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "medium",
       "seed": 1,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "medium",
       "seed": 2,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "medium",
       "seed": 3,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "medium",
       "seed": 4,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "medium",
       "seed": 5,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "medium",
       "seed": 6,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "medium",
       "seed": 7,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "medium",
       "seed": 8,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "high",
       "seed": 1,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "high",
       "seed": 2,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "high",
       "seed": 3,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "high",
       "seed": 4,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "high",
       "seed": 5,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "high",
       "seed": 6,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "high",
       "seed": 7,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "high",
       "seed": 8,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "instrumented-baseline",
       "seed": 1,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "instrumented-baseline",
       "seed": 2,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "instrumented-baseline",
       "seed": 3,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "instrumented-baseline",
       "seed": 4,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "instrumented-baseline",
       "seed": 5,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "instrumented-baseline",
       "seed": 6,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "instrumented-baseline",
       "seed": 7,
+      "years": 100,
       "valid": true,
       "errors": []
     },
     {
       "group": "instrumented-baseline",
       "seed": 8,
+      "years": 100,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "group": "medium-200",
+      "seed": 1,
+      "years": 200,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "group": "medium-200",
+      "seed": 2,
+      "years": 200,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "group": "medium-200",
+      "seed": 3,
+      "years": 200,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "group": "medium-200",
+      "seed": 4,
+      "years": 200,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "group": "medium-300",
+      "seed": 3,
+      "years": 300,
+      "valid": true,
+      "errors": []
+    },
+    {
+      "group": "baseline-300",
+      "seed": 3,
+      "years": 300,
       "valid": true,
       "errors": []
     }

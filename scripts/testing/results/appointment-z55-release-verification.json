@@ -1,0 +1,134 @@
+{
+  "scope": "z55 release verification; actual Core and React checks, not human Chrome acceptance",
+  "baselineHead": "612ceb6b068a98287448c9d31918ec063a32d1c2",
+  "appVersion": "v0.99931z55",
+  "packageVersion": "0.99.221",
+  "worldSave": 52,
+  "manualGate": "PENDING",
+  "formalReservePublished": false,
+  "appointmentPolicy": "MEDIUM",
+  "abilityAddendLimit": 0.16,
+  "ordinaryNationalChance": 0.05,
+  "additionalQualifiedTitleNationalChance": 0.095,
+  "randomBoundary": "Existing one national opportunity roll; existing one weighted selection roll only on a successful opportunity; no individual candidate roll",
+  "unitTests": {
+    "files": 333,
+    "tests": 2561,
+    "command": "pnpm test",
+    "logSha256": "b63729ab4defab38358b74d393c1927626cb3d03a52f07465807f315c6ff2ae2"
+  },
+  "builds": [
+    {
+      "command": "pnpm build (includes tsc)",
+      "passed": true,
+      "logSha256": "97dd64423abf3155fa1f3f142d2b54e8173a3d493f7ec056f990f9e6368bd87b"
+    },
+    {
+      "command": "pnpm desktop:build",
+      "passed": true,
+      "logSha256": "2d84821056da9e973af7c8be779d8e5b07172bc67e68a089bea89ce27e51edf7"
+    },
+    {
+      "command": "pnpm desktop:renderer-debug-build",
+      "passed": true,
+      "logSha256": "f21dae5646b32d5adfcaaa1d56ef3e32d36a41ba216053594a64414d99f32e1a"
+    }
+  ],
+  "core": {
+    "militaryNobilityChecks": 974,
+    "royalMilitaryChecks": 244,
+    "residentFounderChecks": 171,
+    "actualChildClickAndPermanentIdentity": true,
+    "appointmentFailureRollbackAndRngRestore": true
+  },
+  "nativeValidation": {
+    "snapshots": 38,
+    "allValid": true,
+    "oldV51Rejected": true,
+    "headersAdjusted": false
+  },
+  "naturalScopes": [
+    "Baseline/LOW/MEDIUM/HIGH: regional-1..8 x100 years",
+    "Baseline/MEDIUM: regional-1..4 x200 years",
+    "Existing regional-3 x300 years for actual MEDIUM and disabled-policy native bridge"
+  ],
+  "continuation": [
+    {
+      "label": "z55-medium-200",
+      "seed": "regional-1",
+      "years": 200,
+      "months": 12,
+      "deterministic": true,
+      "secondRead": true
+    },
+    {
+      "label": "z55-medium-200",
+      "seed": "regional-2",
+      "years": 200,
+      "months": 12,
+      "deterministic": true,
+      "secondRead": true
+    },
+    {
+      "label": "z55-medium-200",
+      "seed": "regional-3",
+      "years": 200,
+      "months": 12,
+      "deterministic": true,
+      "secondRead": true
+    },
+    {
+      "label": "z55-medium-200",
+      "seed": "regional-4",
+      "years": 200,
+      "months": 12,
+      "deterministic": true,
+      "secondRead": true
+    },
+    {
+      "label": "z55-medium-300",
+      "seed": "regional-3",
+      "years": 300,
+      "months": 12,
+      "deterministic": true,
+      "secondRead": true
+    }
+  ],
+  "results": {
+    "appointments": "appointment-z55-audit.json",
+    "pairedReact": "appointment-z55-performance.json",
+    "default300React": "family-performance-z55-default-300-performance.json"
+  },
+  "limits": [
+    "Natural noble sample is small; increased counts are not proof of a significant long-run causal rate increase.",
+    "Candidate sets deduplicate people within each world; totals sum independent worlds. Repeated blockers may overlap.",
+    "Observed simulation elapsed times were under concurrent workloads, not isolated CPU benchmarks.",
+    "Additional formal reserve nomination, tenure/expiry and queue transactions were not released.",
+    "No new loyalty weight or threshold; original actual political restrictions remain."
+  ],
+  "regressionNotes": [
+    "Formal initial-office issuer must match frozen authority where a formal issuer exists; provisional military offices do not acquire a fabricated royal signature.",
+    "Fixed LOW regional-8 was resumed in a fresh isolated session after an intermediate validation change; its complete canonical hash matches the original native LOW result."
+  ],
+  "sourceHashes": {
+    "package.json": "04668ca2e04696eeb7cce6b0c7e4f9519851f968fb79ac431cb13c60b0d2dc94",
+    "src/Persistence/AppointmentSelectionValidation.ts": "e66fe3260560f3758c011b8298dfbad818b2e42eecbee0dddf6c55b98b789163",
+    "src/Persistence/MilitaryCommandValidation.ts": "3c76a41047906b61330810858ab23aae9b91c8037c1672072e07a92447f658ef",
+    "src/Persistence/WorldSaveSchema.ts": "cbee6d881c9dae6df551f05d46be84a51a3853f5a2625eee5869e673db2b1385",
+    "src/Persistence/WorldSaveValidator.ts": "8d8c11f5c4479bbc54e8f0891f65afec15143451927acab065726e34c7df6e76",
+    "src/Politics/AppointmentSelection.ts": "73767301eb269c24a1324bdaa6f0637a02f90d9f2413cd0a527bbc96c9f518bb",
+    "src/Politics/Dynasty.ts": "a1b9c1ea9d753ac3bf1c17cee5dd87665ca54f11aff29fb399412d81f48559fa",
+    "src/Politics/FamilyArchiveProjection.ts": "56e99fc135f70c42fc977e6fa686e6f07308648cbde3c6bbdfd8ce0b49bd3f29",
+    "src/Politics/MilitaryChroniclePresentation.ts": "19df6f0a7d23eb3ccfa8948c64d733fd9e0d9805590699f82eb24864efcab76f",
+    "src/Politics/MilitaryCommandRegistry.ts": "b286bc10013608875927504493cea9d029beeceb44eda7df6ab36f72dbbc6bef",
+    "src/Simulation/testing/AppointmentExposureAudit.ts": "2e711eae2c3525ae6bbcd9f6c5c78796384f18affc0108b6d504669b97d1cf5a",
+    "src/Simulation/testing/MilitaryBalanceHarness.ts": "e408615a21d21d2078bda3122d5a7a181d5e4365c05a1be5403140a915155d1c",
+    "src/Simulation/testing/MilitaryFamilyCoreChecks.ts": "9fcec55ee44fb92f378945057b3daae6e6ddcafd124b91ca5313928c89423b60",
+    "src/Simulation/testing/PoliticalPeerageCoreChecks.ts": "559985fb7248bd8c4a00e27657589148d02eb169206e3d3ab837d932b61286c0",
+    "src/UI/Components/FactionDetails/FamilyPersonSources.tsx": "62ad642a12f10cc554e4d03f7eb6716a40239548f0e8995cf549aaf96a2d7cf9",
+    "src/UI/Components/FactionDetails/FamilyRegisteredChildren.tsx": "dc3ac990460b95500e444a4b187a85bba19356ba2b848fc618df58556991551e",
+    "src/UI/Components/FactionDetails/MilitaryFamilyBrowser.tsx": "15cc2a4534cc934825d148206b69506c1fa8ebb8b57b004b80d9a63db12a72fc",
+    "src/UI/Components/FactionDetails/PersonAbilityPanel.tsx": "d499033de9431dd83a6ac9421f39df58803e366c71bf9281dd889156287cf975",
+    "src/config/version.ts": "39c77622d9cde0d8aa8ebd6f5620ec5e052b991fe8a95012c8241c7dbf693298"
+  }
+}

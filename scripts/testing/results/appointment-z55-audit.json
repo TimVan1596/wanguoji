@@ -42,9 +42,122 @@
       "sha256": "c73a3a87fb7ac68f511d0d1bf52caa94bd15ad68cac6ce1308807f3e08cd255e"
     }
   ],
+  "bridge300": {
+    "seed": "regional-3",
+    "months": 3600,
+    "sourceFiles": [
+      "logs/z54-worlds-medium/regional-3-300.json",
+      "logs/z55-worlds-baseline-300/regional-3-300.json"
+    ],
+    "equal": true,
+    "sha256": "c713b201a02e1f71012ea4c93d59f66174ad983ae3bed348a22594d3f9f52623"
+  },
+  "exposure": {
+    "baseline": {
+      "source": "scripts/testing/results/military-balance-z55-exposure-baseline.json",
+      "scope": "Distinct people within each world, then summed across eight independent worlds. Blocker sets observe all historical heirs, can overlap over time, and cannot be summed with eligible first-appointment people.",
+      "totals": {
+        "countryChecks": 4670,
+        "fullCountryChecks": 120,
+        "opportunities": 4550,
+        "titleWindows": 21,
+        "distinctQualifiedNobles": 6,
+        "distinctNoblesWithFullOffice": 1,
+        "distinctNoblePool": 6,
+        "distinctOrdinaryPool": 3333,
+        "distinctFamilyPool": 40
+      },
+      "blocked": {
+        "已有正式军职，按本人晋升规则办理": 3,
+        "人物已经去世": 6,
+        "已超过正常初任年龄": 2
+      },
+      "fullFraction": 0.02569593147751606,
+      "meanPool": 18.628131868131867,
+      "meanNoblePool": 0.004615384615384616
+    },
+    "low": {
+      "source": "scripts/testing/results/military-balance-z55-exposure-low.json",
+      "scope": "Distinct people within each world, then summed across eight independent worlds. Blocker sets observe all historical heirs, can overlap over time, and cannot be summed with eligible first-appointment people.",
+      "totals": {
+        "countryChecks": 4823,
+        "fullCountryChecks": 191,
+        "opportunities": 4599,
+        "titleWindows": 22,
+        "distinctQualifiedNobles": 6,
+        "distinctNoblesWithFullOffice": 0,
+        "distinctNoblePool": 6,
+        "distinctOrdinaryPool": 3386,
+        "distinctFamilyPool": 46
+      },
+      "blocked": {
+        "已有正式军职，按本人晋升规则办理": 5,
+        "人物已经去世": 4,
+        "已超过正常初任年龄": 1,
+        "已离国或没有可核验的本国在籍人口": 1
+      },
+      "fullFraction": 0.03960190752643583,
+      "meanPool": 18.12133072407045,
+      "meanNoblePool": 0.004783648619265057
+    },
+    "medium": {
+      "source": "scripts/testing/results/military-balance-z55-exposure-medium.json",
+      "scope": "Distinct people within each world, then summed across eight independent worlds. Blocker sets observe all historical heirs, can overlap over time, and cannot be summed with eligible first-appointment people.",
+      "totals": {
+        "countryChecks": 4890,
+        "fullCountryChecks": 140,
+        "opportunities": 4745,
+        "titleWindows": 32,
+        "distinctQualifiedNobles": 6,
+        "distinctNoblesWithFullOffice": 0,
+        "distinctNoblePool": 6,
+        "distinctOrdinaryPool": 3392,
+        "distinctFamilyPool": 58
+      },
+      "blocked": {
+        "已有正式军职，按本人晋升规则办理": 7,
+        "人物已经去世": 9,
+        "已离国或没有可核验的本国在籍人口": 1,
+        "已超过正常初任年龄": 3
+      },
+      "fullFraction": 0.028629856850715747,
+      "meanPool": 17.790516332982087,
+      "meanNoblePool": 0.006743940990516333
+    },
+    "high": {
+      "source": "scripts/testing/results/military-balance-z55-exposure-high.json",
+      "scope": "Distinct people within each world, then summed across eight independent worlds. Blocker sets observe all historical heirs, can overlap over time, and cannot be summed with eligible first-appointment people.",
+      "totals": {
+        "countryChecks": 4642,
+        "fullCountryChecks": 178,
+        "opportunities": 4457,
+        "titleWindows": 94,
+        "distinctQualifiedNobles": 11,
+        "distinctNoblesWithFullOffice": 0,
+        "distinctNoblePool": 11,
+        "distinctOrdinaryPool": 3359,
+        "distinctFamilyPool": 53
+      },
+      "blocked": {
+        "已有正式军职，按本人晋升规则办理": 5,
+        "已超过正常初任年龄": 6,
+        "人物已经去世": 11,
+        "本人单位已有合法编组，不能重复任官成军": 1,
+        "原国家或王统的任官权威已失效": 1
+      },
+      "fullFraction": 0.03834554071520896,
+      "meanPool": 18.528606686111733,
+      "meanNoblePool": 0.021090419564729637
+    }
+  },
   "groups": {
     "baseline": {
       "worlds": 8,
+      "titlePromotionRanks": {
+        "PIJIANG": 1,
+        "JIANGJUN": 1,
+        "SHANGJIANGJUN": 0
+      },
       "totals": {
         "initial": 207,
         "titledInitial": 4,
@@ -58,17 +171,21 @@
         "abilityChangedWinner": 0,
         "population": 1051,
         "factions": 38,
+        "activeFormalStates": 37,
         "families": 18,
         "members": 59,
-        "promotions": 337,
+        "promotions": 130,
         "duplicateFormationUnits": 0,
         "duplicateEventIds": 0,
         "duplicatePersonIds": 0,
         "deadBeforeAppointment": 0,
-        "bytes": 13551428
+        "bytes": 13551428,
+        "selectionEvidenceBytes": 0
       },
       "rows": [
         {
+          "selectionEvidenceBytes": 0,
+          "activeFormalStates": 6,
           "file": "logs/z55-worlds-baseline/regional-1-100.json",
           "sha256": "8cec57020ab8d9d2f3522618cbe3cbf955b9f3f01c861381b2148ee0f7496f6f",
           "bytes": 1821223,
@@ -79,6 +196,11 @@
           "royalInitial": 7,
           "descendantInitial": 1,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 1,
           "threeGenerationFamilies": 0,
           "proofs": 0,
@@ -98,7 +220,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 48,
+          "officeGrants": 48,
+          "promotions": 18,
           "politicalAttempts": 0,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -108,6 +231,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 0,
+          "activeFormalStates": 5,
           "file": "logs/z55-worlds-baseline/regional-2-100.json",
           "sha256": "cdf454c60e17b94dd1e136970daf05e7ae3426d7ceafee41da135f7502689375",
           "bytes": 1581144,
@@ -118,6 +243,11 @@
           "royalInitial": 4,
           "descendantInitial": 0,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 0,
           "threeGenerationFamilies": 0,
           "proofs": 0,
@@ -137,7 +267,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 35,
+          "officeGrants": 35,
+          "promotions": 11,
           "politicalAttempts": 0,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -147,6 +278,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 0,
+          "activeFormalStates": 3,
           "file": "logs/z55-worlds-baseline/regional-3-100.json",
           "sha256": "348602da93e8838cbce5b5083ac821d664273aacca082523448796c902b017e1",
           "bytes": 1707161,
@@ -157,6 +290,11 @@
           "royalInitial": 2,
           "descendantInitial": 1,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 1,
           "threeGenerationFamilies": 0,
           "proofs": 0,
@@ -176,7 +314,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 39,
+          "officeGrants": 39,
+          "promotions": 16,
           "politicalAttempts": 1,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -186,6 +325,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 0,
+          "activeFormalStates": 5,
           "file": "logs/z55-worlds-baseline/regional-4-100.json",
           "sha256": "2be61c200d5b2ad6bf51bc979a012b25e09ca94b2132c877e55a4b864fcb1559",
           "bytes": 1628449,
@@ -196,6 +337,11 @@
           "royalInitial": 1,
           "descendantInitial": 0,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 0,
           "threeGenerationFamilies": 0,
           "proofs": 0,
@@ -215,7 +361,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 40,
+          "officeGrants": 40,
+          "promotions": 12,
           "politicalAttempts": 0,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -225,6 +372,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 0,
+          "activeFormalStates": 5,
           "file": "logs/z55-worlds-baseline/regional-5-100.json",
           "sha256": "96666c30f44560ee08e10a580e66305073dbf24d3fa5f4153b8b40d56d14d67b",
           "bytes": 1553076,
@@ -235,6 +384,11 @@
           "royalInitial": 4,
           "descendantInitial": 2,
           "titlePromoted": 1,
+          "titlePromotionRanks": {
+            "PIJIANG": 1,
+            "JIANGJUN": 1,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 2,
           "threeGenerationFamilies": 0,
           "proofs": 0,
@@ -254,7 +408,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 41,
+          "officeGrants": 41,
+          "promotions": 18,
           "politicalAttempts": 1,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -264,6 +419,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 0,
+          "activeFormalStates": 4,
           "file": "logs/z55-worlds-baseline/regional-6-100.json",
           "sha256": "15fb14f1b0da195a65f210c62fa4f2bd7e9246e0ddf8bd9bb241cc3183be517d",
           "bytes": 1599963,
@@ -274,6 +431,11 @@
           "royalInitial": 3,
           "descendantInitial": 0,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 0,
           "threeGenerationFamilies": 0,
           "proofs": 0,
@@ -293,7 +455,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 40,
+          "officeGrants": 40,
+          "promotions": 11,
           "politicalAttempts": 1,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -303,6 +466,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 0,
+          "activeFormalStates": 5,
           "file": "logs/z55-worlds-baseline/regional-7-100.json",
           "sha256": "f34fc063d60993bcdf8efda7c346eaca41fd035cbd1d6ca7c11f367f7bb39df5",
           "bytes": 1964900,
@@ -313,6 +478,11 @@
           "royalInitial": 9,
           "descendantInitial": 3,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 2,
           "threeGenerationFamilies": 0,
           "proofs": 0,
@@ -332,7 +502,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 50,
+          "officeGrants": 50,
+          "promotions": 23,
           "politicalAttempts": 1,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -342,6 +513,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 0,
+          "activeFormalStates": 4,
           "file": "logs/z55-worlds-baseline/regional-8-100.json",
           "sha256": "186639907e55bfee1a9bbed9ac06be5e1e0a2bfdf34b565280b9f2256d11eb69",
           "bytes": 1695512,
@@ -352,6 +525,11 @@
           "royalInitial": 3,
           "descendantInitial": 0,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 0,
           "threeGenerationFamilies": 0,
           "proofs": 0,
@@ -371,7 +549,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 44,
+          "officeGrants": 44,
+          "promotions": 21,
           "politicalAttempts": 1,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -382,8 +561,235 @@
         }
       ]
     },
+    "baseline-200": {
+      "worlds": 4,
+      "titlePromotionRanks": {
+        "PIJIANG": 0,
+        "JIANGJUN": 0,
+        "SHANGJIANGJUN": 0
+      },
+      "totals": {
+        "initial": 198,
+        "titledInitial": 5,
+        "untitledInitial": 193,
+        "royalInitial": 24,
+        "descendantInitial": 7,
+        "titlePromoted": 0,
+        "twoGenerationFamilies": 5,
+        "threeGenerationFamilies": 0,
+        "proofs": 0,
+        "abilityChangedWinner": 0,
+        "population": 541,
+        "factions": 21,
+        "activeFormalStates": 19,
+        "families": 18,
+        "members": 122,
+        "promotions": 119,
+        "duplicateFormationUnits": 0,
+        "duplicateEventIds": 0,
+        "duplicatePersonIds": 0,
+        "deadBeforeAppointment": 0,
+        "bytes": 14258948,
+        "selectionEvidenceBytes": 0
+      },
+      "rows": [
+        {
+          "selectionEvidenceBytes": 0,
+          "activeFormalStates": 6,
+          "file": "logs/z55-worlds-baseline/regional-1-200.json",
+          "sha256": "0bae6b6568d6c8c2ac75b49bcb90dd8d3bdde8e64ec4dd4a4adc7556d5d3492d",
+          "bytes": 3956563,
+          "month": 2400,
+          "initial": 65,
+          "titledInitial": 2,
+          "untitledInitial": 63,
+          "royalInitial": 12,
+          "descendantInitial": 3,
+          "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
+          "twoGenerationFamilies": 3,
+          "threeGenerationFamilies": 0,
+          "proofs": 0,
+          "abilityChangedWinner": 0,
+          "counterfactualScope": "same actual pool and selection roll, ability addend removed only; not whole-world causation",
+          "examples": [],
+          "population": 136,
+          "factions": 7,
+          "families": 6,
+          "members": 33,
+          "militaryPeople": 65,
+          "activePeople": 2,
+          "activeFormations": 2,
+          "maxActivePeoplePerFaction": 1,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicateFormationUnits": 0,
+          "duplicateEventIds": 0,
+          "duplicatePersonIds": 0,
+          "deadBeforeAppointment": 0,
+          "officeGrants": 99,
+          "promotions": 34,
+          "politicalAttempts": 1,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-1",
+            "state": 2049148453,
+            "position": 15087
+          }
+        },
+        {
+          "selectionEvidenceBytes": 0,
+          "activeFormalStates": 4,
+          "file": "logs/z55-worlds-baseline/regional-2-200.json",
+          "sha256": "9f8357d00860010364bd0b685059cdccdc686f46400c569d51f27264e5f0ed12",
+          "bytes": 3202423,
+          "month": 2400,
+          "initial": 36,
+          "titledInitial": 0,
+          "untitledInitial": 36,
+          "royalInitial": 4,
+          "descendantInitial": 0,
+          "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
+          "twoGenerationFamilies": 0,
+          "threeGenerationFamilies": 0,
+          "proofs": 0,
+          "abilityChangedWinner": 0,
+          "counterfactualScope": "same actual pool and selection roll, ability addend removed only; not whole-world causation",
+          "examples": [],
+          "population": 138,
+          "factions": 4,
+          "families": 1,
+          "members": 5,
+          "militaryPeople": 36,
+          "activePeople": 2,
+          "activeFormations": 2,
+          "maxActivePeoplePerFaction": 2,
+          "maxActiveFormationsPerFaction": 2,
+          "duplicateFormationUnits": 0,
+          "duplicateEventIds": 0,
+          "duplicatePersonIds": 0,
+          "deadBeforeAppointment": 0,
+          "officeGrants": 54,
+          "promotions": 18,
+          "politicalAttempts": 0,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-2",
+            "state": 1905403146,
+            "position": 13959
+          }
+        },
+        {
+          "selectionEvidenceBytes": 0,
+          "activeFormalStates": 5,
+          "file": "logs/z55-worlds-baseline/regional-3-200.json",
+          "sha256": "9da3cfc11bd818d9170e9566f4c3607366aed58de78294521a7137f96a08f6d9",
+          "bytes": 3589580,
+          "month": 2400,
+          "initial": 46,
+          "titledInitial": 1,
+          "untitledInitial": 45,
+          "royalInitial": 6,
+          "descendantInitial": 2,
+          "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
+          "twoGenerationFamilies": 1,
+          "threeGenerationFamilies": 0,
+          "proofs": 0,
+          "abilityChangedWinner": 0,
+          "counterfactualScope": "same actual pool and selection roll, ability addend removed only; not whole-world causation",
+          "examples": [],
+          "population": 132,
+          "factions": 5,
+          "families": 6,
+          "members": 47,
+          "militaryPeople": 46,
+          "activePeople": 1,
+          "activeFormations": 1,
+          "maxActivePeoplePerFaction": 1,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicateFormationUnits": 0,
+          "duplicateEventIds": 0,
+          "duplicatePersonIds": 0,
+          "deadBeforeAppointment": 0,
+          "officeGrants": 75,
+          "promotions": 29,
+          "politicalAttempts": 2,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-3",
+            "state": 2170450012,
+            "position": 14264
+          }
+        },
+        {
+          "selectionEvidenceBytes": 0,
+          "activeFormalStates": 4,
+          "file": "logs/z55-worlds-baseline/regional-4-200.json",
+          "sha256": "7720b937f5a8b364e1a093a5a7796f562b90180139a9c850b2ce78f0a58f5ef1",
+          "bytes": 3510382,
+          "month": 2400,
+          "initial": 51,
+          "titledInitial": 2,
+          "untitledInitial": 49,
+          "royalInitial": 2,
+          "descendantInitial": 2,
+          "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
+          "twoGenerationFamilies": 1,
+          "threeGenerationFamilies": 0,
+          "proofs": 0,
+          "abilityChangedWinner": 0,
+          "counterfactualScope": "same actual pool and selection roll, ability addend removed only; not whole-world causation",
+          "examples": [],
+          "population": 135,
+          "factions": 5,
+          "families": 5,
+          "members": 37,
+          "militaryPeople": 51,
+          "activePeople": 4,
+          "activeFormations": 4,
+          "maxActivePeoplePerFaction": 2,
+          "maxActiveFormationsPerFaction": 2,
+          "duplicateFormationUnits": 0,
+          "duplicateEventIds": 0,
+          "duplicatePersonIds": 0,
+          "deadBeforeAppointment": 0,
+          "officeGrants": 89,
+          "promotions": 38,
+          "politicalAttempts": 1,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-4",
+            "state": 2698837966,
+            "position": 14473
+          }
+        }
+      ]
+    },
     "low": {
       "worlds": 8,
+      "titlePromotionRanks": {
+        "PIJIANG": 3,
+        "JIANGJUN": 1,
+        "SHANGJIANGJUN": 0
+      },
       "totals": {
         "initial": 222,
         "titledInitial": 5,
@@ -397,17 +803,21 @@
         "abilityChangedWinner": 8,
         "population": 1065,
         "factions": 43,
+        "activeFormalStates": 42,
         "families": 18,
         "members": 64,
-        "promotions": 355,
+        "promotions": 133,
         "duplicateFormationUnits": 0,
         "duplicateEventIds": 0,
         "duplicatePersonIds": 0,
         "deadBeforeAppointment": 0,
-        "bytes": 15664766
+        "bytes": 15664766,
+        "selectionEvidenceBytes": 1994604
       },
       "rows": [
         {
+          "selectionEvidenceBytes": 234150,
+          "activeFormalStates": 6,
           "file": "logs/z55-worlds-low/regional-1-100.json",
           "sha256": "ba3d07bbc8bbc112d4e12468deb55b6455999e189f80d133b4e4b4fe1ab264e8",
           "bytes": 2055406,
@@ -418,6 +828,11 @@
           "royalInitial": 7,
           "descendantInitial": 1,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 1,
           "threeGenerationFamilies": 0,
           "proofs": 30,
@@ -437,7 +852,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 48,
+          "officeGrants": 48,
+          "promotions": 18,
           "politicalAttempts": 0,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -447,6 +863,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 221048,
+          "activeFormalStates": 5,
           "file": "logs/z55-worlds-low/regional-2-100.json",
           "sha256": "f7fefdf391d71b1e2e240376c6503d97450edf9536ea6171b1e0b090fd60eab5",
           "bytes": 1802225,
@@ -457,6 +875,11 @@
           "royalInitial": 4,
           "descendantInitial": 0,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 0,
           "threeGenerationFamilies": 0,
           "proofs": 24,
@@ -476,7 +899,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 35,
+          "officeGrants": 35,
+          "promotions": 11,
           "politicalAttempts": 0,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -486,6 +910,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 226780,
+          "activeFormalStates": 5,
           "file": "logs/z55-worlds-low/regional-3-100.json",
           "sha256": "9879af401287582508b3a7d4a7dfc1a421bd2d762a63ad0146d27bb17b1ec64c",
           "bytes": 1902938,
@@ -496,6 +922,11 @@
           "royalInitial": 2,
           "descendantInitial": 1,
           "titlePromoted": 1,
+          "titlePromotionRanks": {
+            "PIJIANG": 1,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 1,
           "threeGenerationFamilies": 0,
           "proofs": 26,
@@ -524,7 +955,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 44,
+          "officeGrants": 44,
+          "promotions": 18,
           "politicalAttempts": 2,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -534,6 +966,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 262610,
+          "activeFormalStates": 5,
           "file": "logs/z55-worlds-low/regional-4-100.json",
           "sha256": "02f529498d4d551e6622040a1ed23e75ee837bcbd7420945500ff290cf671460",
           "bytes": 1891092,
@@ -544,6 +978,11 @@
           "royalInitial": 1,
           "descendantInitial": 0,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 0,
           "threeGenerationFamilies": 0,
           "proofs": 28,
@@ -563,7 +1002,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 40,
+          "officeGrants": 40,
+          "promotions": 12,
           "politicalAttempts": 0,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -573,6 +1013,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 249897,
+          "activeFormalStates": 5,
           "file": "logs/z55-worlds-low/regional-5-100.json",
           "sha256": "8f2929bdeed4bd3835cf7f671df0c499bdb5dbb51ca1ece3319975738a0fd395",
           "bytes": 1868178,
@@ -583,6 +1025,11 @@
           "royalInitial": 3,
           "descendantInitial": 2,
           "titlePromoted": 1,
+          "titlePromotionRanks": {
+            "PIJIANG": 1,
+            "JIANGJUN": 1,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 2,
           "threeGenerationFamilies": 0,
           "proofs": 23,
@@ -611,7 +1058,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 37,
+          "officeGrants": 37,
+          "promotions": 14,
           "politicalAttempts": 1,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -621,6 +1069,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 231939,
+          "activeFormalStates": 5,
           "file": "logs/z55-worlds-low/regional-6-100.json",
           "sha256": "55f8f7452049437faeaef0d2a28103aee5494fb181e8bc842600abf59845f515",
           "bytes": 1801234,
@@ -631,6 +1081,11 @@
           "royalInitial": 2,
           "descendantInitial": 1,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 1,
           "threeGenerationFamilies": 0,
           "proofs": 25,
@@ -659,7 +1114,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 41,
+          "officeGrants": 41,
+          "promotions": 16,
           "politicalAttempts": 0,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -669,6 +1125,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 261036,
+          "activeFormalStates": 5,
           "file": "logs/z55-worlds-low/regional-7-100.json",
           "sha256": "029d2f454c1c951af572ba88a4ac6f91527ae4584d8e4a39ad1ed256e6c88a9a",
           "bytes": 1948291,
@@ -679,6 +1137,11 @@
           "royalInitial": 6,
           "descendantInitial": 0,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 0,
           "threeGenerationFamilies": 0,
           "proofs": 26,
@@ -715,7 +1178,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 41,
+          "officeGrants": 41,
+          "promotions": 15,
           "politicalAttempts": 0,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -725,6 +1189,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 307144,
+          "activeFormalStates": 6,
           "file": "logs/z55-worlds-low/regional-8-100.json",
           "sha256": "31cb6bba284dbeb23147cbe06b836a4c6013228b0af6f1030f8f55a0ec0f5e4f",
           "bytes": 2395402,
@@ -735,6 +1201,11 @@
           "royalInitial": 4,
           "descendantInitial": 2,
           "titlePromoted": 1,
+          "titlePromotionRanks": {
+            "PIJIANG": 1,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 2,
           "threeGenerationFamilies": 0,
           "proofs": 40,
@@ -779,7 +1250,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 69,
+          "officeGrants": 69,
+          "promotions": 29,
           "politicalAttempts": 1,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -792,6 +1264,11 @@
     },
     "medium": {
       "worlds": 8,
+      "titlePromotionRanks": {
+        "PIJIANG": 1,
+        "JIANGJUN": 1,
+        "SHANGJIANGJUN": 0
+      },
       "totals": {
         "initial": 227,
         "titledInitial": 5,
@@ -805,17 +1282,21 @@
         "abilityChangedWinner": 18,
         "population": 1087,
         "factions": 46,
+        "activeFormalStates": 43,
         "families": 16,
         "members": 76,
-        "promotions": 354,
+        "promotions": 127,
         "duplicateFormationUnits": 0,
         "duplicateEventIds": 0,
         "duplicatePersonIds": 0,
         "deadBeforeAppointment": 0,
-        "bytes": 15652015
+        "bytes": 15652015,
+        "selectionEvidenceBytes": 2033127
       },
       "rows": [
         {
+          "selectionEvidenceBytes": 234146,
+          "activeFormalStates": 6,
           "file": "logs/z55-worlds-medium/regional-1-100.json",
           "sha256": "d9ff1cc997a70caa07bc59f155e45aa0fec371dab78e159f2927af692a9057ec",
           "bytes": 2055405,
@@ -826,6 +1307,11 @@
           "royalInitial": 7,
           "descendantInitial": 1,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 1,
           "threeGenerationFamilies": 0,
           "proofs": 30,
@@ -845,7 +1331,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 48,
+          "officeGrants": 48,
+          "promotions": 18,
           "politicalAttempts": 0,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -855,6 +1342,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 221218,
+          "activeFormalStates": 5,
           "file": "logs/z55-worlds-medium/regional-2-100.json",
           "sha256": "d6a2a32da77ae232578493459432a33191fa1df623f47d8b0cc5859d45474bb3",
           "bytes": 1802398,
@@ -865,6 +1354,11 @@
           "royalInitial": 4,
           "descendantInitial": 0,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 0,
           "threeGenerationFamilies": 0,
           "proofs": 24,
@@ -884,7 +1378,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 35,
+          "officeGrants": 35,
+          "promotions": 11,
           "politicalAttempts": 0,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -894,6 +1389,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 299377,
+          "activeFormalStates": 6,
           "file": "logs/z55-worlds-medium/regional-3-100.json",
           "sha256": "96e411dd4682c20b28da0df8dc2500162a614591b186b2c7f8602c091ec1c0f5",
           "bytes": 2169553,
@@ -904,6 +1401,11 @@
           "royalInitial": 2,
           "descendantInitial": 4,
           "titlePromoted": 1,
+          "titlePromotionRanks": {
+            "PIJIANG": 1,
+            "JIANGJUN": 1,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 3,
           "threeGenerationFamilies": 1,
           "proofs": 33,
@@ -940,7 +1442,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 63,
+          "officeGrants": 63,
+          "promotions": 30,
           "politicalAttempts": 1,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -950,6 +1453,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 307975,
+          "activeFormalStates": 6,
           "file": "logs/z55-worlds-medium/regional-4-100.json",
           "sha256": "40fc27101263d0528bf0d773e17745a0e48dd0caab7ff795786b128209dfb734",
           "bytes": 2176024,
@@ -960,6 +1465,11 @@
           "royalInitial": 7,
           "descendantInitial": 0,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 0,
           "threeGenerationFamilies": 0,
           "proofs": 37,
@@ -1004,7 +1514,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 53,
+          "officeGrants": 53,
+          "promotions": 16,
           "politicalAttempts": 0,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -1014,6 +1525,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 200914,
+          "activeFormalStates": 5,
           "file": "logs/z55-worlds-medium/regional-5-100.json",
           "sha256": "3761bac96d99e24b8056c4baa17c3a4e5575fa935e265a75602b3a27a4c6ffb9",
           "bytes": 1766252,
@@ -1024,6 +1537,11 @@
           "royalInitial": 2,
           "descendantInitial": 0,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 0,
           "threeGenerationFamilies": 0,
           "proofs": 20,
@@ -1068,7 +1586,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 28,
+          "officeGrants": 28,
+          "promotions": 8,
           "politicalAttempts": 0,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -1078,6 +1597,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 218555,
+          "activeFormalStates": 4,
           "file": "logs/z55-worlds-medium/regional-6-100.json",
           "sha256": "83fb920d50b3cd8486b975379456572356c4ebfee353d96ee4f08276685bb150",
           "bytes": 1715203,
@@ -1088,6 +1609,11 @@
           "royalInitial": 1,
           "descendantInitial": 2,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 2,
           "threeGenerationFamilies": 0,
           "proofs": 23,
@@ -1132,7 +1658,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 40,
+          "officeGrants": 40,
+          "promotions": 17,
           "politicalAttempts": 0,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -1142,6 +1669,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 261350,
+          "activeFormalStates": 5,
           "file": "logs/z55-worlds-medium/regional-7-100.json",
           "sha256": "11abb924d5216ecbb8d35f380039437353f19b2730ae63ebd0af954f9d6b5435",
           "bytes": 1948608,
@@ -1152,6 +1681,11 @@
           "royalInitial": 6,
           "descendantInitial": 0,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 0,
           "threeGenerationFamilies": 0,
           "proofs": 26,
@@ -1188,7 +1722,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 41,
+          "officeGrants": 41,
+          "promotions": 15,
           "politicalAttempts": 0,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -1198,6 +1733,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 289592,
+          "activeFormalStates": 6,
           "file": "logs/z55-worlds-medium/regional-8-100.json",
           "sha256": "64eda2fd71ce4d7382d29655ddac7d692ec2bef8296ba148c45cf19f5b8b55c8",
           "bytes": 2018572,
@@ -1208,6 +1745,11 @@
           "royalInitial": 5,
           "descendantInitial": 2,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 1,
           "threeGenerationFamilies": 0,
           "proofs": 34,
@@ -1252,7 +1794,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 46,
+          "officeGrants": 46,
+          "promotions": 12,
           "politicalAttempts": 0,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -1265,6 +1808,11 @@
     },
     "high": {
       "worlds": 8,
+      "titlePromotionRanks": {
+        "PIJIANG": 3,
+        "JIANGJUN": 2,
+        "SHANGJIANGJUN": 0
+      },
       "totals": {
         "initial": 213,
         "titledInitial": 7,
@@ -1278,17 +1826,21 @@
         "abilityChangedWinner": 48,
         "population": 1088,
         "factions": 44,
+        "activeFormalStates": 41,
         "families": 14,
         "members": 69,
-        "promotions": 345,
+        "promotions": 132,
         "duplicateFormationUnits": 0,
         "duplicateEventIds": 0,
         "duplicatePersonIds": 0,
         "deadBeforeAppointment": 0,
-        "bytes": 15539199
+        "bytes": 15539199,
+        "selectionEvidenceBytes": 1944851
       },
       "rows": [
         {
+          "selectionEvidenceBytes": 158985,
+          "activeFormalStates": 4,
           "file": "logs/z55-worlds-high/regional-1-100.json",
           "sha256": "b70087c5e57fee1860f6ffada12155fa0af54a043fe9529c7582dc91cf3304e5",
           "bytes": 1877960,
@@ -1299,6 +1851,11 @@
           "royalInitial": 2,
           "descendantInitial": 1,
           "titlePromoted": 1,
+          "titlePromotionRanks": {
+            "PIJIANG": 1,
+            "JIANGJUN": 1,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 1,
           "threeGenerationFamilies": 0,
           "proofs": 17,
@@ -1343,7 +1900,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 33,
+          "officeGrants": 33,
+          "promotions": 16,
           "politicalAttempts": 0,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -1353,6 +1911,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 250401,
+          "activeFormalStates": 7,
           "file": "logs/z55-worlds-high/regional-2-100.json",
           "sha256": "5b6ff76088d97ce1f6fd17cff9a544480d8a677075eb189633e641b37672134e",
           "bytes": 2121654,
@@ -1363,6 +1923,11 @@
           "royalInitial": 4,
           "descendantInitial": 3,
           "titlePromoted": 1,
+          "titlePromotionRanks": {
+            "PIJIANG": 1,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 2,
           "threeGenerationFamilies": 0,
           "proofs": 31,
@@ -1407,7 +1972,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 45,
+          "officeGrants": 45,
+          "promotions": 14,
           "politicalAttempts": 0,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -1417,6 +1983,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 212210,
+          "activeFormalStates": 6,
           "file": "logs/z55-worlds-high/regional-3-100.json",
           "sha256": "1377a8f30c9776e052f18f98d317f430e919fce526aa32efdf2ced489d1b8dc7",
           "bytes": 2002393,
@@ -1427,6 +1995,11 @@
           "royalInitial": 5,
           "descendantInitial": 1,
           "titlePromoted": 1,
+          "titlePromotionRanks": {
+            "PIJIANG": 1,
+            "JIANGJUN": 1,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 1,
           "threeGenerationFamilies": 0,
           "proofs": 24,
@@ -1463,7 +2036,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 41,
+          "officeGrants": 41,
+          "promotions": 17,
           "politicalAttempts": 0,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -1473,6 +2047,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 281587,
+          "activeFormalStates": 6,
           "file": "logs/z55-worlds-high/regional-4-100.json",
           "sha256": "80f8f602ddcdb9cefb2a1c9eb665fe050b0336abe0adc0c76d72e6c633e7e10f",
           "bytes": 2101950,
@@ -1483,6 +2059,11 @@
           "royalInitial": 6,
           "descendantInitial": 0,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 0,
           "threeGenerationFamilies": 0,
           "proofs": 33,
@@ -1527,7 +2108,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 51,
+          "officeGrants": 51,
+          "promotions": 18,
           "politicalAttempts": 0,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -1537,6 +2119,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 201422,
+          "activeFormalStates": 5,
           "file": "logs/z55-worlds-high/regional-5-100.json",
           "sha256": "ea6598db48f3132ce9e24ffcf2f2b4f7ed89c2f8eeb4e3370161c2f7907dd7d0",
           "bytes": 1764814,
@@ -1547,6 +2131,11 @@
           "royalInitial": 2,
           "descendantInitial": 0,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 0,
           "threeGenerationFamilies": 0,
           "proofs": 20,
@@ -1591,7 +2180,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 28,
+          "officeGrants": 28,
+          "promotions": 8,
           "politicalAttempts": 0,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -1601,6 +2191,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 219393,
+          "activeFormalStates": 4,
           "file": "logs/z55-worlds-high/regional-6-100.json",
           "sha256": "8ae9d43fdec590176493f5fc79096aceb9031c5f7999061cba8a1318d1bb91c6",
           "bytes": 1693024,
@@ -1611,6 +2203,11 @@
           "royalInitial": 1,
           "descendantInitial": 2,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 2,
           "threeGenerationFamilies": 0,
           "proofs": 23,
@@ -1655,7 +2252,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 39,
+          "officeGrants": 39,
+          "promotions": 16,
           "politicalAttempts": 0,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -1665,6 +2263,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 297513,
+          "activeFormalStates": 6,
           "file": "logs/z55-worlds-high/regional-7-100.json",
           "sha256": "f884ca025dbdecbef17c0e8c98afb9572dce672cd92527b38e239c37a9823e73",
           "bytes": 1990671,
@@ -1675,6 +2275,11 @@
           "royalInitial": 9,
           "descendantInitial": 0,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 0,
           "threeGenerationFamilies": 0,
           "proofs": 31,
@@ -1719,7 +2324,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 53,
+          "officeGrants": 53,
+          "promotions": 22,
           "politicalAttempts": 1,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -1729,6 +2335,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 323340,
+          "activeFormalStates": 3,
           "file": "logs/z55-worlds-high/regional-8-100.json",
           "sha256": "096808ec3e0b322e6f64949a6d270d656ab47566d210413a806800d8070e4d66",
           "bytes": 1986733,
@@ -1739,6 +2347,11 @@
           "royalInitial": 2,
           "descendantInitial": 2,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 1,
           "threeGenerationFamilies": 1,
           "proofs": 34,
@@ -1783,7 +2396,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 55,
+          "officeGrants": 55,
+          "promotions": 21,
           "politicalAttempts": 0,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -1796,6 +2410,11 @@
     },
     "medium-200": {
       "worlds": 4,
+      "titlePromotionRanks": {
+        "PIJIANG": 4,
+        "JIANGJUN": 2,
+        "SHANGJIANGJUN": 0
+      },
       "totals": {
         "initial": 215,
         "titledInitial": 8,
@@ -1809,17 +2428,21 @@
         "abilityChangedWinner": 20,
         "population": 538,
         "factions": 19,
+        "activeFormalStates": 18,
         "families": 17,
         "members": 138,
-        "promotions": 351,
+        "promotions": 136,
         "duplicateFormationUnits": 0,
         "duplicateEventIds": 0,
         "duplicatePersonIds": 0,
         "deadBeforeAppointment": 0,
-        "bytes": 16265778
+        "bytes": 16265778,
+        "selectionEvidenceBytes": 1884809
       },
       "rows": [
         {
+          "selectionEvidenceBytes": 471865,
+          "activeFormalStates": 5,
           "file": "logs/z55-worlds-medium-200/regional-1-200.json",
           "sha256": "7c4df8b054fbc957b342f630de640fa108d48eb6e7a4edde258d5ec05ba9ea1f",
           "bytes": 4174123,
@@ -1830,6 +2453,11 @@
           "royalInitial": 12,
           "descendantInitial": 3,
           "titlePromoted": 1,
+          "titlePromotionRanks": {
+            "PIJIANG": 1,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 3,
           "threeGenerationFamilies": 0,
           "proofs": 55,
@@ -1874,7 +2502,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 87,
+          "officeGrants": 87,
+          "promotions": 32,
           "politicalAttempts": 1,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -1884,6 +2513,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 364894,
+          "activeFormalStates": 4,
           "file": "logs/z55-worlds-medium-200/regional-2-200.json",
           "sha256": "9198578247d665fee130ec8c07c1f8b4143768fee03c49e087d91d5879a5b043",
           "bytes": 3544712,
@@ -1894,6 +2525,11 @@
           "royalInitial": 4,
           "descendantInitial": 0,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 0,
           "threeGenerationFamilies": 0,
           "proofs": 36,
@@ -1922,7 +2558,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 54,
+          "officeGrants": 54,
+          "promotions": 18,
           "politicalAttempts": 0,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -1932,6 +2569,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 523833,
+          "activeFormalStates": 5,
           "file": "logs/z55-worlds-medium-200/regional-3-200.json",
           "sha256": "fbea619490194d8bebcf6abccc9450ff2e63fcd765f44dd6f224eccaad87bd7c",
           "bytes": 4411494,
@@ -1942,6 +2581,11 @@
           "royalInitial": 5,
           "descendantInitial": 7,
           "titlePromoted": 3,
+          "titlePromotionRanks": {
+            "PIJIANG": 3,
+            "JIANGJUN": 2,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 4,
           "threeGenerationFamilies": 2,
           "proofs": 61,
@@ -1986,7 +2630,8 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 113,
+          "officeGrants": 113,
+          "promotions": 52,
           "politicalAttempts": 1,
           "rng": {
             "algorithm": "mulberry32-v1",
@@ -1996,6 +2641,8 @@
           }
         },
         {
+          "selectionEvidenceBytes": 524217,
+          "activeFormalStates": 4,
           "file": "logs/z55-worlds-medium-200/regional-4-200.json",
           "sha256": "15d2c7cee0af60863a9f0b5ebc22c04c0daa52d25a30ed08f5af8eb613355370",
           "bytes": 4135449,
@@ -2006,6 +2653,11 @@
           "royalInitial": 11,
           "descendantInitial": 2,
           "titlePromoted": 0,
+          "titlePromotionRanks": {
+            "PIJIANG": 0,
+            "JIANGJUN": 0,
+            "SHANGJIANGJUN": 0
+          },
           "twoGenerationFamilies": 1,
           "threeGenerationFamilies": 0,
           "proofs": 63,
@@ -2050,13 +2702,120 @@
           "duplicateEventIds": 0,
           "duplicatePersonIds": 0,
           "deadBeforeAppointment": 0,
-          "promotions": 97,
+          "officeGrants": 97,
+          "promotions": 34,
           "politicalAttempts": 3,
           "rng": {
             "algorithm": "mulberry32-v1",
             "seed": "regional-4",
             "state": 3382793030,
             "position": 15137
+          }
+        }
+      ]
+    },
+    "medium-300": {
+      "worlds": 1,
+      "titlePromotionRanks": {
+        "PIJIANG": 3,
+        "JIANGJUN": 2,
+        "SHANGJIANGJUN": 0
+      },
+      "totals": {
+        "initial": 88,
+        "titledInitial": 6,
+        "untitledInitial": 82,
+        "royalInitial": 11,
+        "descendantInitial": 9,
+        "titlePromoted": 3,
+        "twoGenerationFamilies": 5,
+        "threeGenerationFamilies": 3,
+        "proofs": 88,
+        "abilityChangedWinner": 9,
+        "population": 134,
+        "factions": 8,
+        "activeFormalStates": 7,
+        "families": 11,
+        "members": 105,
+        "promotions": 70,
+        "duplicateFormationUnits": 0,
+        "duplicateEventIds": 0,
+        "duplicatePersonIds": 0,
+        "deadBeforeAppointment": 0,
+        "bytes": 6577732,
+        "selectionEvidenceBytes": 737102
+      },
+      "rows": [
+        {
+          "selectionEvidenceBytes": 737102,
+          "activeFormalStates": 7,
+          "file": "logs/z55-worlds-medium-300/regional-3-300.json",
+          "sha256": "cf735351f2afda5c77301eace5d88dd9d69128959e92a83cee40271c456ed9ac",
+          "bytes": 6577732,
+          "month": 3600,
+          "initial": 88,
+          "titledInitial": 6,
+          "untitledInitial": 82,
+          "royalInitial": 11,
+          "descendantInitial": 9,
+          "titlePromoted": 3,
+          "titlePromotionRanks": {
+            "PIJIANG": 3,
+            "JIANGJUN": 2,
+            "SHANGJIANGJUN": 0
+          },
+          "twoGenerationFamilies": 5,
+          "threeGenerationFamilies": 3,
+          "proofs": 88,
+          "abilityChangedWinner": 9,
+          "counterfactualScope": "same actual pool and selection roll, ability addend removed only; not whole-world causation",
+          "examples": [
+            {
+              "personId": "military-person-8",
+              "month": 240,
+              "first": true,
+              "selected": 4,
+              "baseOnly": 5,
+              "priority": false
+            },
+            {
+              "personId": "military-person-30",
+              "month": 1140,
+              "first": true,
+              "selected": 5,
+              "baseOnly": 4,
+              "priority": false
+            },
+            {
+              "personId": "military-person-37",
+              "month": 1320,
+              "first": true,
+              "selected": 6,
+              "baseOnly": 7,
+              "priority": false
+            }
+          ],
+          "population": 134,
+          "factions": 8,
+          "families": 11,
+          "members": 105,
+          "militaryPeople": 88,
+          "activePeople": 1,
+          "activeFormations": 1,
+          "maxActivePeoplePerFaction": 1,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicateFormationUnits": 0,
+          "duplicateEventIds": 0,
+          "duplicatePersonIds": 0,
+          "deadBeforeAppointment": 0,
+          "officeGrants": 158,
+          "promotions": 70,
+          "politicalAttempts": 3,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-3",
+            "state": 2167377867,
+            "position": 22795
           }
         }
       ]

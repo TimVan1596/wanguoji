@@ -1,0 +1,4104 @@
+[
+  {
+    "seed": "regional-1",
+    "years": 100,
+    "scope": "Real Core fixed seed; unique people are sets within each world, summed across independent worlds. Elapsed time is observed wall time under concurrent workloads, not isolated CPU.",
+    "rawPath": "logs/military-balance-z55-exposure-low.raw.json",
+    "rawSha256": "a0903defbb97385c7d5cd56ec3acba1f7979f4ddff87c1781d52e44b7fb2610e",
+    "measuredCheckpointMonths": [
+      1200
+    ],
+    "checkpoints": [
+      {
+        "month": 1200,
+        "worldPopulation": 135,
+        "activeStates": 6,
+        "historicalStates": 7,
+        "captures": 21,
+        "warDeaths": 88,
+        "populationUnexplained": 0,
+        "appointments": 30,
+        "offices": {
+          "xiaowei": 30,
+          "pijiang": 12,
+          "jiangjun": 4,
+          "shangjiangjun": 2,
+          "promotions": 18,
+          "meanServiceMonths": 67.16666666666667,
+          "currentOffices": [
+            "SHANGJIANGJUN"
+          ],
+          "naturalDeaths": 7,
+          "ageRetirements": 5,
+          "highOfficeMerits": [
+            {
+              "serviceMonths": 228,
+              "verifiedMerits": 2
+            },
+            {
+              "serviceMonths": 144,
+              "verifiedMerits": 2
+            }
+          ],
+          "activeFormationSizes": [
+            4
+          ]
+        },
+        "promotions": [
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 96
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 48
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 156
+          },
+          {
+            "office": "SHANGJIANGJUN",
+            "waitMonths": 228
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 48
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 72
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 108
+          },
+          {
+            "office": "SHANGJIANGJUN",
+            "waitMonths": 144
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          }
+        ],
+        "meanServiceMonths": 67.16666666666667,
+        "maximumFormationSize": 4,
+        "formationSizeSamples": {
+          "1": 1163,
+          "2": 497,
+          "3": 344,
+          "4": 12
+        },
+        "factionCommandSamples": {
+          "0": 6363,
+          "1": 1654,
+          "2": 181
+        },
+        "meanFormationSize": 1.6056547619047619,
+        "militaryFamilyAvailability": {
+          "scope": "CURRENT_MAP_SNAPSHOT",
+          "descendants": 6,
+          "aliveOnMap": 2,
+          "adultOnMap": 2,
+          "individuallyEligible": 2,
+          "eligibleWithVacancy": 2
+        },
+        "militaryAppointmentDiagnostics": {
+          "foundingRewardFailures": 0,
+          "familyLifeFailures": 0,
+          "familyTitleIdentityRejected": 0,
+          "familyTitleCandidateChecks": 1,
+          "familyTitleRejectedCandidates": 0,
+          "familyTitleFailures": 0,
+          "familyAppointmentFailures": 0,
+          "familyAgeBlocked": 2,
+          "familyCapBlocked": 1,
+          "familyIdentityBlocked": 0,
+          "familyUnitBlocked": 0,
+          "familyPopulationBlocked": 0,
+          "familyCandidateChecks": 72,
+          "provisionalChecks": 0,
+          "provisionalNoCandidate": 0,
+          "provisionalCapacityBlocked": 0,
+          "provisionalDraws": 0,
+          "provisionalMisses": 0,
+          "provisionalAppointments": 0,
+          "candidates": 8797,
+          "eligible": 8797,
+          "appointments": 30,
+          "capBlocked": 11,
+          "unitBlocked": 0,
+          "orders": 56,
+          "captures": 13,
+          "deaths": 28,
+          "unitsSteered": 63904,
+          "commandedSiegeContacts": 886,
+          "targetCityArrivals": 26,
+          "invalidatedTargets": 16,
+          "staleOrderChecks": 0,
+          "ageRetirements": 5,
+          "naturalDeaths": 7,
+          "releasedFormations": 29,
+          "reappointments": 0,
+          "ageBlocked": 3605,
+          "identityFailures": 0,
+          "familyRecruitment": {
+            "titleCandidateChecks": 3,
+            "titleVacancyOpportunities": 3,
+            "titleExpectedAppointments": 0.3059295766894874,
+            "titleSelected": 1,
+            "titleAppointments": 1,
+            "opportunities": 60,
+            "qualifiedPersonChecks": 72,
+            "poolDraws": 2,
+            "selected": 1,
+            "appointments": 1,
+            "rolledBackSelections": 0,
+            "executionFailures": 0,
+            "expectedAppointments": 0.7142681454614228,
+            "baselineExpectedAppointments": 0.3122490176046026,
+            "conditionalExpectedSelections": 1.1312356963340493,
+            "weightSum": 104.31735999999997,
+            "distinctCandidateIds": [
+              "family-member-1556458098--239",
+              "family-member-1556458126-95",
+              "family-member-1556458157-525",
+              "family-member-1556458160-379",
+              "family-member-1143910101-846",
+              "family-member-1143910102-932"
+            ]
+          },
+          "activeCommanders": 1,
+          "activeFormations": 1
+        },
+        "familyEvolution": {
+          "grantSources": {
+            "MILITARY_BO": 4,
+            "MILITARY_HOU": 1,
+            "MILITARY_GONG": 0,
+            "COURT": 0,
+            "FOUNDING": 0
+          },
+          "charterSources": {
+            "MILITARY_BO": 3,
+            "MILITARY_HOU": 0,
+            "MILITARY_GONG": 0,
+            "COURT": 0,
+            "FOUNDING": 0
+          },
+          "historicalMembers": 9,
+          "livingMembers": 3,
+          "visibleTrunkMembers": 4,
+          "projectionMs": 7,
+          "serializationMs": 10.399999999906868,
+          "saveBytes": 2055391,
+          "secondGenerationOfficers": 1,
+          "thirdGenerationOfficers": 0,
+          "descendantPersonalGrants": 0,
+          "duplicateFamilies": 0,
+          "actualAnnualFamilyUpdateSamples": 100,
+          "actualAnnualFamilyUpdateTotalMs": 33.89999999990687,
+          "actualAnnualFamilyUpdateMaxMs": 3.5,
+          "annualFamilyUpdateSamples": 1200,
+          "annualFamilyUpdateMs": 34.49999999953434,
+          "annualFamilyUpdateMaxMs": 3.5,
+          "titleUpdateCalls": 1200,
+          "titleUpdateTotalMs": 18.499999998603016,
+          "titleUpdateMaxMs": 4.800000000279397
+        },
+        "familyNobleSuccession": {
+          "periods": [
+            {
+              "familyId": "military-family-military-person-5-韩-ruler-11",
+              "periods": [
+                {
+                  "number": 1,
+                  "sourceGrantEventId": "military-noble-military-person-5-韩-韩-ruler-11-BO",
+                  "holderMemberId": "family-member-1556458062--465",
+                  "acts": [
+                    {
+                      "version": 1,
+                      "eventId": "military-family-military-person-5-韩-ruler-11-succession-1",
+                      "familyId": "military-family-military-person-5-韩-ruler-11",
+                      "factionId": "韩",
+                      "epochFounderId": "韩-ruler-11",
+                      "month": 528,
+                      "kind": "SUCCEEDED",
+                      "reason": "DEATH",
+                      "sourceGrantEventId": "military-noble-military-person-5-韩-韩-ruler-11-BO",
+                      "previousEventId": "military-noble-military-person-5-韩-韩-ruler-11-BO",
+                      "previousMemberId": "family-member-1556458062--465",
+                      "previousRank": "BO",
+                      "holderMemberId": "family-member-1556458098--239",
+                      "rank": "ZI",
+                      "step": 1,
+                      "sourceEventIds": [
+                        "military-noble-military-person-5-韩-韩-ruler-11-BO",
+                        "military-person-death-military-person-5-528"
+                      ]
+                    },
+                    {
+                      "version": 1,
+                      "eventId": "military-family-military-person-5-韩-ruler-11-succession-2",
+                      "familyId": "military-family-military-person-5-韩-ruler-11",
+                      "factionId": "韩",
+                      "epochFounderId": "韩-ruler-11",
+                      "month": 592,
+                      "kind": "ENDED",
+                      "reason": "NO_HEIR",
+                      "sourceGrantEventId": "military-noble-military-person-5-韩-韩-ruler-11-BO",
+                      "previousEventId": "military-family-military-person-5-韩-ruler-11-succession-1",
+                      "previousMemberId": "family-member-1556458098--239",
+                      "previousRank": "ZI",
+                      "step": 2,
+                      "sourceEventIds": [
+                        "military-family-military-person-5-韩-ruler-11-succession-1",
+                        "military-person-death-military-person-11-592"
+                      ]
+                    }
+                  ],
+                  "successions": 1,
+                  "endMonth": 592,
+                  "endReason": "NO_HEIR"
+                }
+              ]
+            },
+            {
+              "familyId": "military-family-military-person-24-燕-ruler-4",
+              "periods": [
+                {
+                  "number": 1,
+                  "sourceGrantEventId": "military-noble-military-person-24-燕-燕-ruler-4-BO",
+                  "holderMemberId": "family-member-1143910037-361",
+                  "acts": [
+                    {
+                      "version": 1,
+                      "eventId": "military-family-military-person-24-燕-ruler-4-succession-1",
+                      "familyId": "military-family-military-person-24-燕-ruler-4",
+                      "factionId": "燕",
+                      "epochFounderId": "燕-ruler-4",
+                      "month": 1118,
+                      "kind": "ENDED",
+                      "reason": "NO_HEIR",
+                      "sourceGrantEventId": "military-noble-military-person-24-燕-燕-ruler-4-BO",
+                      "previousEventId": "military-noble-military-person-24-燕-燕-ruler-4-BO",
+                      "previousMemberId": "family-member-1143910037-361",
+                      "previousRank": "BO",
+                      "step": 1,
+                      "sourceEventIds": [
+                        "military-noble-military-person-24-燕-燕-ruler-4-BO",
+                        "military-person-death-military-person-24-1118"
+                      ]
+                    }
+                  ],
+                  "successions": 0,
+                  "endMonth": 1118,
+                  "endReason": "NO_HEIR"
+                }
+              ]
+            },
+            {
+              "familyId": "military-family-military-person-26-秦-ruler-1",
+              "periods": [
+                {
+                  "number": 1,
+                  "holderMemberId": "family-member-1050980908-330",
+                  "acts": [],
+                  "successions": 0
+                }
+              ]
+            }
+          ],
+          "newPeriods": 0,
+          "newPeriodSuccessions": 0,
+          "newPeriodEndings": 0,
+          "laterRegisteredChildren": 3,
+          "laterRegisteredObservations": 3,
+          "eligibleNewPeriodAtEndpoint": 0,
+          "endedThenIndependentMerit": 0,
+          "archive": {
+            "active": 1,
+            "historical": 2,
+            "extinct": 0,
+            "livingUntitledHouses": 1,
+            "explanations": [
+              {
+                "eventId": "military-family-military-person-5-韩-ruler-11-succession-2",
+                "reason": "NO_HEIR",
+                "text": "当次处理时，没有已入籍、已登记的直接子嗣。没有可接续的合格直接子嗣，承袭链终止；不据此判定家族绝嗣。",
+                "children": [],
+                "grandchildren": 0,
+                "laterChildren": [
+                  {
+                    "memberId": "family-member-1556458160-379",
+                    "name": "臧仲正",
+                    "bornMonth": 379,
+                    "enteredMonth": 831,
+                    "sameMonthAfter": false,
+                    "entryEventId": "family-member-1556458160-379-entered",
+                    "parentDeathMonth": 592
+                  }
+                ],
+                "sourceEventIds": [
+                  "military-family-military-person-5-韩-ruler-11-succession-1",
+                  "military-person-death-military-person-11-592"
+                ]
+              },
+              {
+                "eventId": "military-family-military-person-24-燕-ruler-4-succession-1",
+                "reason": "NO_HEIR",
+                "text": "当次处理时，没有已入籍、已登记的直接子嗣。没有可接续的合格直接子嗣，承袭链终止；不据此判定家族绝嗣。",
+                "children": [],
+                "grandchildren": 0,
+                "laterChildren": [
+                  {
+                    "memberId": "family-member-1143910101-846",
+                    "name": "冷孟成",
+                    "bornMonth": 846,
+                    "enteredMonth": 1160,
+                    "sameMonthAfter": false,
+                    "entryEventId": "family-member-1143910101-846-entered",
+                    "parentDeathMonth": 1118
+                  },
+                  {
+                    "memberId": "family-member-1143910102-932",
+                    "name": "冷秉安",
+                    "bornMonth": 932,
+                    "enteredMonth": 1171,
+                    "sameMonthAfter": false,
+                    "entryEventId": "family-member-1143910102-932-entered",
+                    "parentDeathMonth": 1118
+                  }
+                ],
+                "sourceEventIds": [
+                  "military-noble-military-person-24-燕-燕-ruler-4-BO",
+                  "military-person-death-military-person-24-1118"
+                ]
+              }
+            ]
+          },
+          "scope": "CANONICAL_HISTORY_AND_SESSION_COUNTERS",
+          "counterSemantics": {
+            "familyAndTitleTotals": "saved family genealogy and unique title records",
+            "heirCandidatePersonChecks": "person checks at committed death resolutions in this session; reset on load",
+            "lifeAndTitleFailures": "session counters; reset on load"
+          },
+          "families": 3,
+          "members": 9,
+          "generations": [
+            {
+              "generation": 2,
+              "people": 4
+            },
+            {
+              "generation": 3,
+              "people": 2
+            },
+            {
+              "generation": 4,
+              "people": 0
+            },
+            {
+              "generation": 5,
+              "people": 0
+            }
+          ],
+          "withDescendants": 2,
+          "threeGenerationHouses": 1,
+          "foundersDied": 2,
+          "founderMeritGrants": 3,
+          "successionOpportunities": 3,
+          "successions": 1,
+          "rankDrops": 1,
+          "ended": 2,
+          "terminalReasons": {
+            "NO_HEIR": 2
+          },
+          "civilianInheritances": 1,
+          "renewals": 0,
+          "twoGenerationService": 1,
+          "currentlyEligibleChildren": 2,
+          "lifeTransactionFailures": 0,
+          "titleTransactionFailures": 0,
+          "heirCandidatePersonChecks": 1,
+          "heirRejectedPersonChecks": 0,
+          "identityRejectedOpportunities": 0,
+          "chains": [
+            {
+              "familyId": "military-family-military-person-5-韩-ruler-11",
+              "sourceEventId": "military-noble-military-person-5-韩-韩-ruler-11-BO",
+              "acts": [
+                {
+                  "version": 1,
+                  "eventId": "military-family-military-person-5-韩-ruler-11-succession-1",
+                  "familyId": "military-family-military-person-5-韩-ruler-11",
+                  "factionId": "韩",
+                  "epochFounderId": "韩-ruler-11",
+                  "month": 528,
+                  "kind": "SUCCEEDED",
+                  "reason": "DEATH",
+                  "sourceGrantEventId": "military-noble-military-person-5-韩-韩-ruler-11-BO",
+                  "previousEventId": "military-noble-military-person-5-韩-韩-ruler-11-BO",
+                  "previousMemberId": "family-member-1556458062--465",
+                  "previousRank": "BO",
+                  "holderMemberId": "family-member-1556458098--239",
+                  "rank": "ZI",
+                  "step": 1,
+                  "sourceEventIds": [
+                    "military-noble-military-person-5-韩-韩-ruler-11-BO",
+                    "military-person-death-military-person-5-528"
+                  ]
+                },
+                {
+                  "version": 1,
+                  "eventId": "military-family-military-person-5-韩-ruler-11-succession-2",
+                  "familyId": "military-family-military-person-5-韩-ruler-11",
+                  "factionId": "韩",
+                  "epochFounderId": "韩-ruler-11",
+                  "month": 592,
+                  "kind": "ENDED",
+                  "reason": "NO_HEIR",
+                  "sourceGrantEventId": "military-noble-military-person-5-韩-韩-ruler-11-BO",
+                  "previousEventId": "military-family-military-person-5-韩-ruler-11-succession-1",
+                  "previousMemberId": "family-member-1556458098--239",
+                  "previousRank": "ZI",
+                  "step": 2,
+                  "sourceEventIds": [
+                    "military-family-military-person-5-韩-ruler-11-succession-1",
+                    "military-person-death-military-person-11-592"
+                  ]
+                }
+              ]
+            },
+            {
+              "familyId": "military-family-military-person-24-燕-ruler-4",
+              "sourceEventId": "military-noble-military-person-24-燕-燕-ruler-4-BO",
+              "acts": [
+                {
+                  "version": 1,
+                  "eventId": "military-family-military-person-24-燕-ruler-4-succession-1",
+                  "familyId": "military-family-military-person-24-燕-ruler-4",
+                  "factionId": "燕",
+                  "epochFounderId": "燕-ruler-4",
+                  "month": 1118,
+                  "kind": "ENDED",
+                  "reason": "NO_HEIR",
+                  "sourceGrantEventId": "military-noble-military-person-24-燕-燕-ruler-4-BO",
+                  "previousEventId": "military-noble-military-person-24-燕-燕-ruler-4-BO",
+                  "previousMemberId": "family-member-1143910037-361",
+                  "previousRank": "BO",
+                  "step": 1,
+                  "sourceEventIds": [
+                    "military-noble-military-person-24-燕-燕-ruler-4-BO",
+                    "military-person-death-military-person-24-1118"
+                  ]
+                }
+              ]
+            },
+            {
+              "familyId": "military-family-military-person-26-秦-ruler-1",
+              "sourceEventId": "military-noble-military-person-26-秦-秦-ruler-1-BO",
+              "acts": []
+            }
+          ]
+        },
+        "appointmentV55": {
+          "scope": "ACTUAL_ANNUAL_PRODUCTION_POOLS_DISTINCT_PERSONS; blocker sets overlap across years",
+          "countryChecks": 683,
+          "fullCountryChecks": 11,
+          "fullFraction": 0.016105417276720352,
+          "opportunities": 672,
+          "titleWindows": 3,
+          "distinctQualifiedNobles": 1,
+          "distinctNoblesWithFullOffice": 0,
+          "distinctNoblePool": 1,
+          "distinctOrdinaryPool": 417,
+          "distinctFamilyPool": 6,
+          "blocked": {
+            "已有正式军职，按本人晋升规则办理": 1,
+            "人物已经去世": 1
+          },
+          "meanPool": 15.72172619047619,
+          "meanNoblePool": 0.004464285714285714
+        },
+        "canonicalSha256": "9cd061f0d663d841cc18ebfab3546025b6be94c4c14fd64878ed9d2457cf3165",
+        "worldRandomPosition": 7347,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "strictSaveValid": true,
+        "elapsedMs": 32166,
+        "heapBytes": 79422983
+      }
+    ]
+  },
+  {
+    "seed": "regional-2",
+    "years": 100,
+    "scope": "Real Core fixed seed; unique people are sets within each world, summed across independent worlds. Elapsed time is observed wall time under concurrent workloads, not isolated CPU.",
+    "rawPath": "logs/military-balance-z55-exposure-low.raw.json",
+    "rawSha256": "a0903defbb97385c7d5cd56ec3acba1f7979f4ddff87c1781d52e44b7fb2610e",
+    "measuredCheckpointMonths": [
+      1200
+    ],
+    "checkpoints": [
+      {
+        "month": 1200,
+        "worldPopulation": 130,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 10,
+        "warDeaths": 86,
+        "populationUnexplained": 0,
+        "appointments": 24,
+        "offices": {
+          "xiaowei": 24,
+          "pijiang": 7,
+          "jiangjun": 3,
+          "shangjiangjun": 1,
+          "promotions": 11,
+          "meanServiceMonths": 70.16666666666667,
+          "currentOffices": [
+            "PIJIANG"
+          ],
+          "naturalDeaths": 1,
+          "ageRetirements": 4,
+          "highOfficeMerits": [
+            {
+              "serviceMonths": 372,
+              "verifiedMerits": 2
+            }
+          ],
+          "activeFormationSizes": [
+            2
+          ]
+        },
+        "promotions": [
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 156
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 276
+          },
+          {
+            "office": "SHANGJIANGJUN",
+            "waitMonths": 372
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 144
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          }
+        ],
+        "meanServiceMonths": 70.16666666666667,
+        "maximumFormationSize": 4,
+        "formationSizeSamples": {
+          "1": 821,
+          "2": 660,
+          "3": 130,
+          "4": 74
+        },
+        "factionCommandSamples": {
+          "0": 6361,
+          "1": 995,
+          "2": 345
+        },
+        "meanFormationSize": 1.6777448071216616,
+        "militaryFamilyAvailability": {
+          "scope": "CURRENT_MAP_SNAPSHOT",
+          "descendants": 0,
+          "aliveOnMap": 0,
+          "adultOnMap": 0,
+          "individuallyEligible": 0,
+          "eligibleWithVacancy": 0
+        },
+        "militaryAppointmentDiagnostics": {
+          "foundingRewardFailures": 0,
+          "familyLifeFailures": 0,
+          "familyTitleIdentityRejected": 0,
+          "familyTitleCandidateChecks": 0,
+          "familyTitleRejectedCandidates": 0,
+          "familyTitleFailures": 0,
+          "familyAppointmentFailures": 0,
+          "familyAgeBlocked": 0,
+          "familyCapBlocked": 0,
+          "familyIdentityBlocked": 0,
+          "familyUnitBlocked": 0,
+          "familyPopulationBlocked": 0,
+          "familyCandidateChecks": 0,
+          "provisionalChecks": 0,
+          "provisionalNoCandidate": 0,
+          "provisionalCapacityBlocked": 0,
+          "provisionalDraws": 0,
+          "provisionalMisses": 0,
+          "provisionalAppointments": 0,
+          "candidates": 9265,
+          "eligible": 9265,
+          "appointments": 24,
+          "capBlocked": 26,
+          "unitBlocked": 0,
+          "orders": 57,
+          "captures": 9,
+          "deaths": 20,
+          "unitsSteered": 49472,
+          "commandedSiegeContacts": 616,
+          "targetCityArrivals": 29,
+          "invalidatedTargets": 15,
+          "staleOrderChecks": 0,
+          "ageRetirements": 4,
+          "naturalDeaths": 1,
+          "releasedFormations": 23,
+          "reappointments": 0,
+          "ageBlocked": 3032,
+          "identityFailures": 0,
+          "familyRecruitment": {
+            "titleCandidateChecks": 0,
+            "titleVacancyOpportunities": 0,
+            "titleExpectedAppointments": 0,
+            "titleSelected": 0,
+            "titleAppointments": 0,
+            "opportunities": 0,
+            "qualifiedPersonChecks": 0,
+            "poolDraws": 0,
+            "selected": 0,
+            "appointments": 0,
+            "rolledBackSelections": 0,
+            "executionFailures": 0,
+            "expectedAppointments": 0,
+            "baselineExpectedAppointments": 0,
+            "conditionalExpectedSelections": 0,
+            "weightSum": 0,
+            "distinctCandidateIds": []
+          },
+          "activeCommanders": 1,
+          "activeFormations": 1
+        },
+        "familyEvolution": {
+          "grantSources": {
+            "MILITARY_BO": 1,
+            "MILITARY_HOU": 1,
+            "MILITARY_GONG": 1,
+            "COURT": 0,
+            "FOUNDING": 0
+          },
+          "charterSources": {
+            "MILITARY_BO": 0,
+            "MILITARY_HOU": 0,
+            "MILITARY_GONG": 0,
+            "COURT": 0,
+            "FOUNDING": 0
+          },
+          "historicalMembers": 0,
+          "livingMembers": 0,
+          "visibleTrunkMembers": 0,
+          "projectionMs": 0,
+          "serializationMs": 9.300000000279397,
+          "saveBytes": 1802210,
+          "secondGenerationOfficers": 0,
+          "thirdGenerationOfficers": 0,
+          "descendantPersonalGrants": 0,
+          "duplicateFamilies": 0,
+          "actualAnnualFamilyUpdateSamples": 100,
+          "actualAnnualFamilyUpdateTotalMs": 38.19999999832362,
+          "actualAnnualFamilyUpdateMaxMs": 1.6000000000931323,
+          "annualFamilyUpdateSamples": 1200,
+          "annualFamilyUpdateMs": 39.29999999888241,
+          "annualFamilyUpdateMaxMs": 1.6000000000931323,
+          "titleUpdateCalls": 1200,
+          "titleUpdateTotalMs": 0.6999999992549419,
+          "titleUpdateMaxMs": 0.10000000009313226
+        },
+        "familyNobleSuccession": {
+          "periods": [],
+          "newPeriods": 0,
+          "newPeriodSuccessions": 0,
+          "newPeriodEndings": 0,
+          "laterRegisteredChildren": 0,
+          "laterRegisteredObservations": 0,
+          "eligibleNewPeriodAtEndpoint": 0,
+          "endedThenIndependentMerit": 0,
+          "archive": {
+            "active": 0,
+            "historical": 0,
+            "extinct": 0,
+            "livingUntitledHouses": 0,
+            "explanations": []
+          },
+          "scope": "CANONICAL_HISTORY_AND_SESSION_COUNTERS",
+          "counterSemantics": {
+            "familyAndTitleTotals": "saved family genealogy and unique title records",
+            "heirCandidatePersonChecks": "person checks at committed death resolutions in this session; reset on load",
+            "lifeAndTitleFailures": "session counters; reset on load"
+          },
+          "families": 0,
+          "members": 0,
+          "generations": [
+            {
+              "generation": 2,
+              "people": 0
+            },
+            {
+              "generation": 3,
+              "people": 0
+            },
+            {
+              "generation": 4,
+              "people": 0
+            },
+            {
+              "generation": 5,
+              "people": 0
+            }
+          ],
+          "withDescendants": 0,
+          "threeGenerationHouses": 0,
+          "foundersDied": 0,
+          "founderMeritGrants": 0,
+          "successionOpportunities": 0,
+          "successions": 0,
+          "rankDrops": 0,
+          "ended": 0,
+          "terminalReasons": {},
+          "civilianInheritances": 0,
+          "renewals": 0,
+          "twoGenerationService": 0,
+          "currentlyEligibleChildren": 0,
+          "lifeTransactionFailures": 0,
+          "titleTransactionFailures": 0,
+          "heirCandidatePersonChecks": 0,
+          "heirRejectedPersonChecks": 0,
+          "identityRejectedOpportunities": 0,
+          "chains": []
+        },
+        "appointmentV55": {
+          "scope": "ACTUAL_ANNUAL_PRODUCTION_POOLS_DISTINCT_PERSONS; blocker sets overlap across years",
+          "countryChecks": 641,
+          "fullCountryChecks": 26,
+          "fullFraction": 0.0405616224648986,
+          "opportunities": 615,
+          "titleWindows": 0,
+          "distinctQualifiedNobles": 0,
+          "distinctNoblesWithFullOffice": 0,
+          "distinctNoblePool": 0,
+          "distinctOrdinaryPool": 420,
+          "distinctFamilyPool": 0,
+          "blocked": {},
+          "meanPool": 17.619512195121953,
+          "meanNoblePool": 0
+        },
+        "canonicalSha256": "f3a7d4479cb64670966585f636a45be5b3df7a8c0afe789a658c9952187527df",
+        "worldRandomPosition": 7130,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "strictSaveValid": true,
+        "elapsedMs": 37805.799999999814,
+        "heapBytes": 97815891
+      }
+    ]
+  },
+  {
+    "seed": "regional-3",
+    "years": 100,
+    "scope": "Real Core fixed seed; unique people are sets within each world, summed across independent worlds. Elapsed time is observed wall time under concurrent workloads, not isolated CPU.",
+    "rawPath": "logs/military-balance-z55-exposure-low.raw.json",
+    "rawSha256": "a0903defbb97385c7d5cd56ec3acba1f7979f4ddff87c1781d52e44b7fb2610e",
+    "measuredCheckpointMonths": [
+      1200
+    ],
+    "checkpoints": [
+      {
+        "month": 1200,
+        "worldPopulation": 137,
+        "activeStates": 5,
+        "historicalStates": 8,
+        "captures": 23,
+        "warDeaths": 73,
+        "populationUnexplained": 0,
+        "appointments": 26,
+        "offices": {
+          "xiaowei": 26,
+          "pijiang": 13,
+          "jiangjun": 4,
+          "shangjiangjun": 1,
+          "promotions": 18,
+          "meanServiceMonths": 84.3076923076923,
+          "currentOffices": [],
+          "naturalDeaths": 8,
+          "ageRetirements": 5,
+          "highOfficeMerits": [
+            {
+              "serviceMonths": 120,
+              "verifiedMerits": 2
+            }
+          ],
+          "activeFormationSizes": []
+        },
+        "promotions": [
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 84
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 108
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 48
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 228
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 48
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 48
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 84
+          },
+          {
+            "office": "SHANGJIANGJUN",
+            "waitMonths": 120
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 48
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          }
+        ],
+        "meanServiceMonths": 84.3076923076923,
+        "maximumFormationSize": 4,
+        "formationSizeSamples": {
+          "1": 1060,
+          "2": 819,
+          "3": 264,
+          "4": 66
+        },
+        "factionCommandSamples": {
+          "0": 4736,
+          "1": 1673,
+          "2": 268
+        },
+        "meanFormationSize": 1.6994114984155726,
+        "militaryFamilyAvailability": {
+          "scope": "CURRENT_MAP_SNAPSHOT",
+          "descendants": 9,
+          "aliveOnMap": 7,
+          "adultOnMap": 7,
+          "individuallyEligible": 6,
+          "eligibleWithVacancy": 6
+        },
+        "militaryAppointmentDiagnostics": {
+          "foundingRewardFailures": 0,
+          "familyLifeFailures": 0,
+          "familyTitleIdentityRejected": 0,
+          "familyTitleCandidateChecks": 2,
+          "familyTitleRejectedCandidates": 0,
+          "familyTitleFailures": 0,
+          "familyAppointmentFailures": 0,
+          "familyAgeBlocked": 20,
+          "familyCapBlocked": 8,
+          "familyIdentityBlocked": 0,
+          "familyUnitBlocked": 0,
+          "familyPopulationBlocked": 0,
+          "familyCandidateChecks": 169,
+          "provisionalChecks": 24,
+          "provisionalNoCandidate": 6,
+          "provisionalCapacityBlocked": 0,
+          "provisionalDraws": 18,
+          "provisionalMisses": 17,
+          "provisionalAppointments": 1,
+          "candidates": 8819,
+          "eligible": 8819,
+          "appointments": 26,
+          "capBlocked": 20,
+          "unitBlocked": 0,
+          "orders": 68,
+          "captures": 15,
+          "deaths": 25,
+          "unitsSteered": 69963,
+          "commandedSiegeContacts": 616,
+          "targetCityArrivals": 26,
+          "invalidatedTargets": 22,
+          "staleOrderChecks": 0,
+          "ageRetirements": 5,
+          "naturalDeaths": 8,
+          "releasedFormations": 26,
+          "reappointments": 0,
+          "ageBlocked": 3193,
+          "identityFailures": 0,
+          "familyRecruitment": {
+            "titleCandidateChecks": 2,
+            "titleVacancyOpportunities": 2,
+            "titleExpectedAppointments": 0.1958338023772248,
+            "titleSelected": 1,
+            "titleAppointments": 1,
+            "opportunities": 94,
+            "qualifiedPersonChecks": 169,
+            "poolDraws": 5,
+            "selected": 1,
+            "appointments": 1,
+            "rolledBackSelections": 0,
+            "executionFailures": 0,
+            "expectedAppointments": 0.6555544892171387,
+            "baselineExpectedAppointments": 0.3429504325854461,
+            "conditionalExpectedSelections": 1.2479375019475483,
+            "weightSum": 238.31679999999997,
+            "distinctCandidateIds": [
+              "family-member-1050980880-204",
+              "family-member-1050980936-467",
+              "family-member-1433913307-262",
+              "family-member-1050980942-256",
+              "family-member-1433913342-389",
+              "family-member-1050980968-755",
+              "family-member-1433913371-704",
+              "family-member-1433913372-606",
+              "family-member-1050980973-545"
+            ]
+          },
+          "activeCommanders": 0,
+          "activeFormations": 0
+        },
+        "familyEvolution": {
+          "grantSources": {
+            "MILITARY_BO": 4,
+            "MILITARY_HOU": 1,
+            "MILITARY_GONG": 0,
+            "COURT": 0,
+            "FOUNDING": 0
+          },
+          "charterSources": {
+            "MILITARY_BO": 3,
+            "MILITARY_HOU": 0,
+            "MILITARY_GONG": 0,
+            "COURT": 0,
+            "FOUNDING": 0
+          },
+          "historicalMembers": 12,
+          "livingMembers": 7,
+          "visibleTrunkMembers": 5,
+          "projectionMs": 5.2999999998137355,
+          "serializationMs": 10.799999999813735,
+          "saveBytes": 1902923,
+          "secondGenerationOfficers": 1,
+          "thirdGenerationOfficers": 0,
+          "descendantPersonalGrants": 1,
+          "duplicateFamilies": 0,
+          "actualAnnualFamilyUpdateSamples": 100,
+          "actualAnnualFamilyUpdateTotalMs": 63.20000000251457,
+          "actualAnnualFamilyUpdateMaxMs": 3.1000000000931323,
+          "annualFamilyUpdateSamples": 1200,
+          "annualFamilyUpdateMs": 64.00000000279397,
+          "annualFamilyUpdateMaxMs": 3.1000000000931323,
+          "titleUpdateCalls": 1200,
+          "titleUpdateTotalMs": 127.99999999906868,
+          "titleUpdateMaxMs": 5.899999999906868
+        },
+        "familyNobleSuccession": {
+          "periods": [
+            {
+              "familyId": "military-family-military-person-5-魏-ruler-10",
+              "periods": [
+                {
+                  "number": 1,
+                  "sourceGrantEventId": "military-noble-military-person-5-魏-魏-ruler-10-BO",
+                  "holderMemberId": "family-member-1359921338--270",
+                  "acts": [
+                    {
+                      "version": 1,
+                      "eventId": "military-family-military-person-5-魏-ruler-10-succession-1",
+                      "familyId": "military-family-military-person-5-魏-ruler-10",
+                      "factionId": "魏",
+                      "epochFounderId": "魏-ruler-10",
+                      "month": 447,
+                      "kind": "ENDED",
+                      "reason": "NO_HEIR",
+                      "sourceGrantEventId": "military-noble-military-person-5-魏-魏-ruler-10-BO",
+                      "previousEventId": "military-noble-military-person-5-魏-魏-ruler-10-BO",
+                      "previousMemberId": "family-member-1359921338--270",
+                      "previousRank": "BO",
+                      "step": 1,
+                      "sourceEventIds": [
+                        "military-noble-military-person-5-魏-魏-ruler-10-BO",
+                        "military-person-death-military-person-5-447"
+                      ]
+                    }
+                  ],
+                  "successions": 0,
+                  "endMonth": 447,
+                  "endReason": "NO_HEIR"
+                }
+              ]
+            },
+            {
+              "familyId": "military-family-military-person-7-秦-ruler-1",
+              "periods": [
+                {
+                  "number": 1,
+                  "sourceGrantEventId": "military-noble-military-person-7-秦-秦-ruler-1-BO",
+                  "holderMemberId": "family-member-1050980847--276",
+                  "acts": [
+                    {
+                      "version": 1,
+                      "eventId": "military-family-military-person-7-秦-ruler-1-succession-1",
+                      "familyId": "military-family-military-person-7-秦-ruler-1",
+                      "factionId": "秦",
+                      "epochFounderId": "秦-ruler-1",
+                      "month": 468,
+                      "kind": "ENDED",
+                      "reason": "FOREIGN",
+                      "sourceGrantEventId": "military-noble-military-person-7-秦-秦-ruler-1-BO",
+                      "previousEventId": "military-noble-military-person-7-秦-秦-ruler-1-BO",
+                      "previousMemberId": "family-member-1050980847--276",
+                      "previousRank": "BO",
+                      "step": 1,
+                      "sourceEventIds": [
+                        "military-noble-military-person-7-秦-秦-ruler-1-BO"
+                      ]
+                    }
+                  ],
+                  "successions": 0,
+                  "endMonth": 468,
+                  "endReason": "FOREIGN"
+                }
+              ]
+            },
+            {
+              "familyId": "military-family-military-person-18-楚-ruler-14",
+              "periods": [
+                {
+                  "number": 1,
+                  "sourceGrantEventId": "military-noble-military-person-18-楚-楚-ruler-14-HOU",
+                  "holderMemberId": "family-member-1433913274--46",
+                  "acts": [
+                    {
+                      "version": 1,
+                      "eventId": "military-family-military-person-18-楚-ruler-14-succession-1",
+                      "familyId": "military-family-military-person-18-楚-ruler-14",
+                      "factionId": "楚",
+                      "epochFounderId": "楚-ruler-14",
+                      "month": 1032,
+                      "kind": "SUCCEEDED",
+                      "reason": "DEATH",
+                      "sourceGrantEventId": "military-noble-military-person-18-楚-楚-ruler-14-HOU",
+                      "previousEventId": "military-noble-military-person-18-楚-楚-ruler-14-HOU",
+                      "previousMemberId": "family-member-1433913274--46",
+                      "previousRank": "HOU",
+                      "holderMemberId": "family-member-1433913307-262",
+                      "rank": "BO",
+                      "step": 1,
+                      "sourceEventIds": [
+                        "military-noble-military-person-18-楚-楚-ruler-14-HOU",
+                        "military-person-death-military-person-18-1032"
+                      ]
+                    }
+                  ],
+                  "successions": 1
+                }
+              ]
+            }
+          ],
+          "newPeriods": 0,
+          "newPeriodSuccessions": 0,
+          "newPeriodEndings": 0,
+          "laterRegisteredChildren": 1,
+          "laterRegisteredObservations": 1,
+          "eligibleNewPeriodAtEndpoint": 0,
+          "endedThenIndependentMerit": 0,
+          "archive": {
+            "active": 1,
+            "historical": 1,
+            "extinct": 1,
+            "livingUntitledHouses": 1,
+            "explanations": [
+              {
+                "eventId": "military-family-military-person-5-魏-ruler-10-succession-1",
+                "reason": "NO_HEIR",
+                "text": "当次处理时，没有已入籍、已登记的直接子嗣。没有可接续的合格直接子嗣，承袭链终止；不据此判定家族绝嗣。",
+                "children": [],
+                "grandchildren": 0,
+                "laterChildren": [],
+                "sourceEventIds": [
+                  "military-noble-military-person-5-魏-魏-ruler-10-BO",
+                  "military-person-death-military-person-5-447"
+                ]
+              },
+              {
+                "eventId": "military-family-military-person-7-秦-ruler-1-succession-1",
+                "reason": "FOREIGN",
+                "text": "卢晏当时已转属他国，原国承袭资格终止；后代与旧爵历史仍然保留。",
+                "children": [
+                  {
+                    "memberId": "family-member-1050980880-204",
+                    "name": "卢子衡",
+                    "reason": "符合当时直接承袭资格"
+                  }
+                ],
+                "grandchildren": 0,
+                "laterChildren": [
+                  {
+                    "memberId": "family-member-1050980942-256",
+                    "name": "卢伯义",
+                    "bornMonth": 256,
+                    "enteredMonth": 895,
+                    "sameMonthAfter": false,
+                    "entryEventId": "family-member-1050980942-256-entered",
+                    "parentDeathMonth": 640
+                  }
+                ],
+                "sourceEventIds": [
+                  "military-noble-military-person-7-秦-秦-ruler-1-BO"
+                ]
+              }
+            ]
+          },
+          "scope": "CANONICAL_HISTORY_AND_SESSION_COUNTERS",
+          "counterSemantics": {
+            "familyAndTitleTotals": "saved family genealogy and unique title records",
+            "heirCandidatePersonChecks": "person checks at committed death resolutions in this session; reset on load",
+            "lifeAndTitleFailures": "session counters; reset on load"
+          },
+          "families": 3,
+          "members": 12,
+          "generations": [
+            {
+              "generation": 2,
+              "people": 4
+            },
+            {
+              "generation": 3,
+              "people": 5
+            },
+            {
+              "generation": 4,
+              "people": 0
+            },
+            {
+              "generation": 5,
+              "people": 0
+            }
+          ],
+          "withDescendants": 2,
+          "threeGenerationHouses": 2,
+          "foundersDied": 3,
+          "founderMeritGrants": 4,
+          "successionOpportunities": 2,
+          "successions": 1,
+          "rankDrops": 1,
+          "ended": 2,
+          "terminalReasons": {
+            "NO_HEIR": 1,
+            "FOREIGN": 1
+          },
+          "civilianInheritances": 1,
+          "renewals": 1,
+          "twoGenerationService": 1,
+          "currentlyEligibleChildren": 1,
+          "lifeTransactionFailures": 0,
+          "titleTransactionFailures": 0,
+          "heirCandidatePersonChecks": 2,
+          "heirRejectedPersonChecks": 0,
+          "identityRejectedOpportunities": 0,
+          "chains": [
+            {
+              "familyId": "military-family-military-person-5-魏-ruler-10",
+              "sourceEventId": "military-noble-military-person-5-魏-魏-ruler-10-BO",
+              "acts": [
+                {
+                  "version": 1,
+                  "eventId": "military-family-military-person-5-魏-ruler-10-succession-1",
+                  "familyId": "military-family-military-person-5-魏-ruler-10",
+                  "factionId": "魏",
+                  "epochFounderId": "魏-ruler-10",
+                  "month": 447,
+                  "kind": "ENDED",
+                  "reason": "NO_HEIR",
+                  "sourceGrantEventId": "military-noble-military-person-5-魏-魏-ruler-10-BO",
+                  "previousEventId": "military-noble-military-person-5-魏-魏-ruler-10-BO",
+                  "previousMemberId": "family-member-1359921338--270",
+                  "previousRank": "BO",
+                  "step": 1,
+                  "sourceEventIds": [
+                    "military-noble-military-person-5-魏-魏-ruler-10-BO",
+                    "military-person-death-military-person-5-447"
+                  ]
+                }
+              ]
+            },
+            {
+              "familyId": "military-family-military-person-7-秦-ruler-1",
+              "sourceEventId": "military-noble-military-person-7-秦-秦-ruler-1-BO",
+              "acts": [
+                {
+                  "version": 1,
+                  "eventId": "military-family-military-person-7-秦-ruler-1-succession-1",
+                  "familyId": "military-family-military-person-7-秦-ruler-1",
+                  "factionId": "秦",
+                  "epochFounderId": "秦-ruler-1",
+                  "month": 468,
+                  "kind": "ENDED",
+                  "reason": "FOREIGN",
+                  "sourceGrantEventId": "military-noble-military-person-7-秦-秦-ruler-1-BO",
+                  "previousEventId": "military-noble-military-person-7-秦-秦-ruler-1-BO",
+                  "previousMemberId": "family-member-1050980847--276",
+                  "previousRank": "BO",
+                  "step": 1,
+                  "sourceEventIds": [
+                    "military-noble-military-person-7-秦-秦-ruler-1-BO"
+                  ]
+                }
+              ]
+            },
+            {
+              "familyId": "military-family-military-person-18-楚-ruler-14",
+              "sourceEventId": "military-noble-military-person-18-楚-楚-ruler-14-BO",
+              "acts": [
+                {
+                  "version": 1,
+                  "eventId": "military-family-military-person-18-楚-ruler-14-succession-1",
+                  "familyId": "military-family-military-person-18-楚-ruler-14",
+                  "factionId": "楚",
+                  "epochFounderId": "楚-ruler-14",
+                  "month": 1032,
+                  "kind": "SUCCEEDED",
+                  "reason": "DEATH",
+                  "sourceGrantEventId": "military-noble-military-person-18-楚-楚-ruler-14-HOU",
+                  "previousEventId": "military-noble-military-person-18-楚-楚-ruler-14-HOU",
+                  "previousMemberId": "family-member-1433913274--46",
+                  "previousRank": "HOU",
+                  "holderMemberId": "family-member-1433913307-262",
+                  "rank": "BO",
+                  "step": 1,
+                  "sourceEventIds": [
+                    "military-noble-military-person-18-楚-楚-ruler-14-HOU",
+                    "military-person-death-military-person-18-1032"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "appointmentV55": {
+          "scope": "ACTUAL_ANNUAL_PRODUCTION_POOLS_DISTINCT_PERSONS; blocker sets overlap across years",
+          "countryChecks": 554,
+          "fullCountryChecks": 20,
+          "fullFraction": 0.036101083032490974,
+          "opportunities": 528,
+          "titleWindows": 2,
+          "distinctQualifiedNobles": 1,
+          "distinctNoblesWithFullOffice": 0,
+          "distinctNoblePool": 1,
+          "distinctOrdinaryPool": 422,
+          "distinctFamilyPool": 9,
+          "blocked": {
+            "已有正式军职，按本人晋升规则办理": 1,
+            "已超过正常初任年龄": 1
+          },
+          "meanPool": 19.075757575757574,
+          "meanNoblePool": 0.003787878787878788
+        },
+        "canonicalSha256": "7ba98c4a0e407e67645ce6662f2f36fbb512d0f472bd1fde6308215ac20104f6",
+        "worldRandomPosition": 7093,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "strictSaveValid": true,
+        "elapsedMs": 36523.5,
+        "heapBytes": 98043260
+      }
+    ]
+  },
+  {
+    "seed": "regional-4",
+    "years": 100,
+    "scope": "Real Core fixed seed; unique people are sets within each world, summed across independent worlds. Elapsed time is observed wall time under concurrent workloads, not isolated CPU.",
+    "rawPath": "logs/military-balance-z55-exposure-low.raw.json",
+    "rawSha256": "a0903defbb97385c7d5cd56ec3acba1f7979f4ddff87c1781d52e44b7fb2610e",
+    "measuredCheckpointMonths": [
+      1200
+    ],
+    "checkpoints": [
+      {
+        "month": 1200,
+        "worldPopulation": 117,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 15,
+        "warDeaths": 78,
+        "populationUnexplained": 0,
+        "appointments": 28,
+        "offices": {
+          "xiaowei": 28,
+          "pijiang": 8,
+          "jiangjun": 3,
+          "shangjiangjun": 1,
+          "promotions": 12,
+          "meanServiceMonths": 51.17857142857143,
+          "currentOffices": [
+            "SHANGJIANGJUN",
+            "XIAOWEI"
+          ],
+          "naturalDeaths": 5,
+          "ageRetirements": 5,
+          "highOfficeMerits": [
+            {
+              "serviceMonths": 180,
+              "verifiedMerits": 2
+            }
+          ],
+          "activeFormationSizes": [
+            4,
+            1
+          ]
+        },
+        "promotions": [
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 48
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 84
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 48
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 120
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 132
+          },
+          {
+            "office": "SHANGJIANGJUN",
+            "waitMonths": 180
+          }
+        ],
+        "meanServiceMonths": 51.17857142857143,
+        "maximumFormationSize": 4,
+        "formationSizeSamples": {
+          "1": 695,
+          "2": 495,
+          "3": 208,
+          "4": 37
+        },
+        "factionCommandSamples": {
+          "0": 6016,
+          "1": 1267,
+          "2": 84
+        },
+        "meanFormationSize": 1.7121951219512195,
+        "militaryFamilyAvailability": {
+          "scope": "CURRENT_MAP_SNAPSHOT",
+          "descendants": 1,
+          "aliveOnMap": 1,
+          "adultOnMap": 1,
+          "individuallyEligible": 1,
+          "eligibleWithVacancy": 1
+        },
+        "militaryAppointmentDiagnostics": {
+          "foundingRewardFailures": 0,
+          "familyLifeFailures": 0,
+          "familyTitleIdentityRejected": 0,
+          "familyTitleCandidateChecks": 0,
+          "familyTitleRejectedCandidates": 0,
+          "familyTitleFailures": 0,
+          "familyAppointmentFailures": 0,
+          "familyAgeBlocked": 0,
+          "familyCapBlocked": 0,
+          "familyIdentityBlocked": 0,
+          "familyUnitBlocked": 0,
+          "familyPopulationBlocked": 0,
+          "familyCandidateChecks": 2,
+          "provisionalChecks": 0,
+          "provisionalNoCandidate": 0,
+          "provisionalCapacityBlocked": 0,
+          "provisionalDraws": 0,
+          "provisionalMisses": 0,
+          "provisionalAppointments": 0,
+          "candidates": 9078,
+          "eligible": 9078,
+          "appointments": 28,
+          "capBlocked": 5,
+          "unitBlocked": 0,
+          "orders": 44,
+          "captures": 9,
+          "deaths": 24,
+          "unitsSteered": 52623,
+          "commandedSiegeContacts": 814,
+          "targetCityArrivals": 24,
+          "invalidatedTargets": 9,
+          "staleOrderChecks": 0,
+          "ageRetirements": 5,
+          "naturalDeaths": 5,
+          "releasedFormations": 26,
+          "reappointments": 0,
+          "ageBlocked": 3506,
+          "identityFailures": 58,
+          "familyRecruitment": {
+            "titleCandidateChecks": 0,
+            "titleVacancyOpportunities": 0,
+            "titleExpectedAppointments": 0,
+            "titleSelected": 0,
+            "titleAppointments": 0,
+            "opportunities": 2,
+            "qualifiedPersonChecks": 2,
+            "poolDraws": 0,
+            "selected": 0,
+            "appointments": 0,
+            "rolledBackSelections": 0,
+            "executionFailures": 0,
+            "expectedAppointments": 0.009187936664339431,
+            "baselineExpectedAppointments": 0.006160002581458848,
+            "conditionalExpectedSelections": 0,
+            "weightSum": 3.08256,
+            "distinctCandidateIds": [
+              "family-member-1050980941-895"
+            ]
+          },
+          "activeCommanders": 2,
+          "activeFormations": 2
+        },
+        "familyEvolution": {
+          "grantSources": {
+            "MILITARY_BO": 1,
+            "MILITARY_HOU": 1,
+            "MILITARY_GONG": 0,
+            "COURT": 0,
+            "FOUNDING": 0
+          },
+          "charterSources": {
+            "MILITARY_BO": 1,
+            "MILITARY_HOU": 0,
+            "MILITARY_GONG": 0,
+            "COURT": 0,
+            "FOUNDING": 0
+          },
+          "historicalMembers": 2,
+          "livingMembers": 2,
+          "visibleTrunkMembers": 2,
+          "projectionMs": 2.8999999999068677,
+          "serializationMs": 10.5,
+          "saveBytes": 1891077,
+          "secondGenerationOfficers": 0,
+          "thirdGenerationOfficers": 0,
+          "descendantPersonalGrants": 0,
+          "duplicateFamilies": 0,
+          "actualAnnualFamilyUpdateSamples": 100,
+          "actualAnnualFamilyUpdateTotalMs": 40.70000000251457,
+          "actualAnnualFamilyUpdateMaxMs": 3.8999999999068677,
+          "annualFamilyUpdateSamples": 1200,
+          "annualFamilyUpdateMs": 41.900000002700835,
+          "annualFamilyUpdateMaxMs": 3.8999999999068677,
+          "titleUpdateCalls": 1200,
+          "titleUpdateTotalMs": 0.7000000001862645,
+          "titleUpdateMaxMs": 0.20000000018626451
+        },
+        "familyNobleSuccession": {
+          "periods": [
+            {
+              "familyId": "military-family-military-person-23-秦-ruler-71",
+              "periods": [
+                {
+                  "number": 1,
+                  "holderMemberId": "family-member-1595003436-648",
+                  "acts": [],
+                  "successions": 0
+                }
+              ]
+            }
+          ],
+          "newPeriods": 0,
+          "newPeriodSuccessions": 0,
+          "newPeriodEndings": 0,
+          "laterRegisteredChildren": 0,
+          "laterRegisteredObservations": 0,
+          "eligibleNewPeriodAtEndpoint": 0,
+          "endedThenIndependentMerit": 0,
+          "archive": {
+            "active": 1,
+            "historical": 0,
+            "extinct": 0,
+            "livingUntitledHouses": 0,
+            "explanations": []
+          },
+          "scope": "CANONICAL_HISTORY_AND_SESSION_COUNTERS",
+          "counterSemantics": {
+            "familyAndTitleTotals": "saved family genealogy and unique title records",
+            "heirCandidatePersonChecks": "person checks at committed death resolutions in this session; reset on load",
+            "lifeAndTitleFailures": "session counters; reset on load"
+          },
+          "families": 1,
+          "members": 2,
+          "generations": [
+            {
+              "generation": 2,
+              "people": 1
+            },
+            {
+              "generation": 3,
+              "people": 0
+            },
+            {
+              "generation": 4,
+              "people": 0
+            },
+            {
+              "generation": 5,
+              "people": 0
+            }
+          ],
+          "withDescendants": 1,
+          "threeGenerationHouses": 0,
+          "foundersDied": 0,
+          "founderMeritGrants": 2,
+          "successionOpportunities": 0,
+          "successions": 0,
+          "rankDrops": 0,
+          "ended": 0,
+          "terminalReasons": {},
+          "civilianInheritances": 0,
+          "renewals": 0,
+          "twoGenerationService": 0,
+          "currentlyEligibleChildren": 1,
+          "lifeTransactionFailures": 0,
+          "titleTransactionFailures": 0,
+          "heirCandidatePersonChecks": 0,
+          "heirRejectedPersonChecks": 0,
+          "identityRejectedOpportunities": 0,
+          "chains": [
+            {
+              "familyId": "military-family-military-person-23-秦-ruler-71",
+              "sourceEventId": "military-noble-military-person-23-秦-秦-ruler-71-BO",
+              "acts": []
+            }
+          ]
+        },
+        "appointmentV55": {
+          "scope": "ACTUAL_ANNUAL_PRODUCTION_POOLS_DISTINCT_PERSONS; blocker sets overlap across years",
+          "countryChecks": 613,
+          "fullCountryChecks": 5,
+          "fullFraction": 0.008156606851549755,
+          "opportunities": 608,
+          "titleWindows": 0,
+          "distinctQualifiedNobles": 0,
+          "distinctNoblesWithFullOffice": 0,
+          "distinctNoblePool": 0,
+          "distinctOrdinaryPool": 401,
+          "distinctFamilyPool": 1,
+          "blocked": {},
+          "meanPool": 17.455592105263158,
+          "meanNoblePool": 0
+        },
+        "canonicalSha256": "7653bdf9c6c5e9959b3d3a5b4656de0760ef3436f00e5a94c3cbda73b0d5659b",
+        "worldRandomPosition": 7039,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "strictSaveValid": true,
+        "elapsedMs": 40314.40000000037,
+        "heapBytes": 121710688
+      }
+    ]
+  },
+  {
+    "seed": "regional-5",
+    "years": 100,
+    "scope": "Real Core fixed seed; unique people are sets within each world, summed across independent worlds. Elapsed time is observed wall time under concurrent workloads, not isolated CPU.",
+    "rawPath": "logs/military-balance-z55-exposure-low.raw.json",
+    "rawSha256": "a0903defbb97385c7d5cd56ec3acba1f7979f4ddff87c1781d52e44b7fb2610e",
+    "measuredCheckpointMonths": [
+      1200
+    ],
+    "checkpoints": [
+      {
+        "month": 1200,
+        "worldPopulation": 135,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 16,
+        "warDeaths": 83,
+        "populationUnexplained": 0,
+        "appointments": 23,
+        "offices": {
+          "xiaowei": 23,
+          "pijiang": 11,
+          "jiangjun": 3,
+          "shangjiangjun": 0,
+          "promotions": 14,
+          "meanServiceMonths": 66.17391304347827,
+          "currentOffices": [
+            "PIJIANG",
+            "XIAOWEI",
+            "XIAOWEI",
+            "XIAOWEI"
+          ],
+          "naturalDeaths": 2,
+          "ageRetirements": 2,
+          "highOfficeMerits": [],
+          "activeFormationSizes": [
+            2,
+            1,
+            1,
+            1
+          ]
+        },
+        "promotions": [
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 72
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 96
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 84
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          }
+        ],
+        "meanServiceMonths": 66.17391304347827,
+        "maximumFormationSize": 3,
+        "formationSizeSamples": {
+          "1": 873,
+          "2": 501,
+          "3": 152
+        },
+        "factionCommandSamples": {
+          "0": 4953,
+          "1": 1096,
+          "2": 215
+        },
+        "meanFormationSize": 1.5275229357798166,
+        "militaryFamilyAvailability": {
+          "scope": "CURRENT_MAP_SNAPSHOT",
+          "descendants": 8,
+          "aliveOnMap": 4,
+          "adultOnMap": 4,
+          "individuallyEligible": 4,
+          "eligibleWithVacancy": 4
+        },
+        "militaryAppointmentDiagnostics": {
+          "foundingRewardFailures": 0,
+          "familyLifeFailures": 0,
+          "familyTitleIdentityRejected": 0,
+          "familyTitleCandidateChecks": 1,
+          "familyTitleRejectedCandidates": 0,
+          "familyTitleFailures": 0,
+          "familyAppointmentFailures": 0,
+          "familyAgeBlocked": 14,
+          "familyCapBlocked": 3,
+          "familyIdentityBlocked": 0,
+          "familyUnitBlocked": 9,
+          "familyPopulationBlocked": 0,
+          "familyCandidateChecks": 147,
+          "provisionalChecks": 0,
+          "provisionalNoCandidate": 0,
+          "provisionalCapacityBlocked": 0,
+          "provisionalDraws": 0,
+          "provisionalMisses": 0,
+          "provisionalAppointments": 0,
+          "candidates": 9072,
+          "eligible": 9072,
+          "appointments": 23,
+          "capBlocked": 17,
+          "unitBlocked": 0,
+          "orders": 40,
+          "captures": 7,
+          "deaths": 18,
+          "unitsSteered": 49578,
+          "commandedSiegeContacts": 1031,
+          "targetCityArrivals": 21,
+          "invalidatedTargets": 8,
+          "staleOrderChecks": 0,
+          "ageRetirements": 2,
+          "naturalDeaths": 2,
+          "releasedFormations": 19,
+          "reappointments": 0,
+          "ageBlocked": 3287,
+          "identityFailures": 0,
+          "familyRecruitment": {
+            "titleCandidateChecks": 2,
+            "titleVacancyOpportunities": 2,
+            "titleExpectedAppointments": 0.19634021579610134,
+            "titleSelected": 1,
+            "titleAppointments": 1,
+            "opportunities": 58,
+            "qualifiedPersonChecks": 147,
+            "poolDraws": 6,
+            "selected": 2,
+            "appointments": 2,
+            "rolledBackSelections": 0,
+            "executionFailures": 0,
+            "expectedAppointments": 0.6388098531475476,
+            "baselineExpectedAppointments": 0.3565878768773836,
+            "conditionalExpectedSelections": 1.6944013289972188,
+            "weightSum": 195.04792000000003,
+            "distinctCandidateIds": [
+              "family-member-1143910068--155",
+              "family-member-1143910069--22",
+              "family-member-1143910073-293",
+              "family-member-1143910100-513",
+              "family-member-1143910101-379",
+              "family-member-1143910102-410",
+              "family-member-1143910133-542",
+              "family-member-1143910138-326"
+            ]
+          },
+          "activeCommanders": 4,
+          "activeFormations": 4
+        },
+        "familyEvolution": {
+          "grantSources": {
+            "MILITARY_BO": 2,
+            "MILITARY_HOU": 0,
+            "MILITARY_GONG": 0,
+            "COURT": 0,
+            "FOUNDING": 0
+          },
+          "charterSources": {
+            "MILITARY_BO": 2,
+            "MILITARY_HOU": 0,
+            "MILITARY_GONG": 0,
+            "COURT": 0,
+            "FOUNDING": 0
+          },
+          "historicalMembers": 10,
+          "livingMembers": 4,
+          "visibleTrunkMembers": 4,
+          "projectionMs": 5.100000000093132,
+          "serializationMs": 16.5,
+          "saveBytes": 1868163,
+          "secondGenerationOfficers": 2,
+          "thirdGenerationOfficers": 0,
+          "descendantPersonalGrants": 0,
+          "duplicateFamilies": 0,
+          "actualAnnualFamilyUpdateSamples": 100,
+          "actualAnnualFamilyUpdateTotalMs": 58.10000000009313,
+          "actualAnnualFamilyUpdateMaxMs": 3.8999999999068677,
+          "annualFamilyUpdateSamples": 1200,
+          "annualFamilyUpdateMs": 59.19999999925494,
+          "annualFamilyUpdateMaxMs": 3.8999999999068677,
+          "titleUpdateCalls": 1200,
+          "titleUpdateTotalMs": 21.40000000037253,
+          "titleUpdateMaxMs": 5.899999999906868
+        },
+        "familyNobleSuccession": {
+          "periods": [
+            {
+              "familyId": "military-family-military-person-2-燕-ruler-3",
+              "periods": [
+                {
+                  "number": 1,
+                  "sourceGrantEventId": "military-noble-military-person-2-燕-燕-ruler-3-BO",
+                  "holderMemberId": "family-member-1143909947--406",
+                  "acts": [
+                    {
+                      "version": 1,
+                      "eventId": "military-family-military-person-2-燕-ruler-3-succession-1",
+                      "familyId": "military-family-military-person-2-燕-ruler-3",
+                      "factionId": "燕",
+                      "epochFounderId": "燕-ruler-3",
+                      "month": 272,
+                      "kind": "ENDED",
+                      "reason": "NO_HEIR",
+                      "sourceGrantEventId": "military-noble-military-person-2-燕-燕-ruler-3-BO",
+                      "previousEventId": "military-noble-military-person-2-燕-燕-ruler-3-BO",
+                      "previousMemberId": "family-member-1143909947--406",
+                      "previousRank": "BO",
+                      "step": 1,
+                      "sourceEventIds": [
+                        "military-noble-military-person-2-燕-燕-ruler-3-BO",
+                        "military-person-death-military-person-2-272"
+                      ]
+                    }
+                  ],
+                  "successions": 0,
+                  "endMonth": 272,
+                  "endReason": "NO_HEIR"
+                }
+              ]
+            },
+            {
+              "familyId": "military-family-military-person-11-燕-ruler-3",
+              "periods": [
+                {
+                  "number": 1,
+                  "sourceGrantEventId": "military-noble-military-person-11-燕-燕-ruler-3-BO",
+                  "holderMemberId": "family-member-1143910014--157",
+                  "acts": [
+                    {
+                      "version": 1,
+                      "eventId": "military-family-military-person-11-燕-ruler-3-succession-1",
+                      "familyId": "military-family-military-person-11-燕-ruler-3",
+                      "factionId": "燕",
+                      "epochFounderId": "燕-ruler-3",
+                      "month": 792,
+                      "kind": "SUCCEEDED",
+                      "reason": "DEATH",
+                      "sourceGrantEventId": "military-noble-military-person-11-燕-燕-ruler-3-BO",
+                      "previousEventId": "military-noble-military-person-11-燕-燕-ruler-3-BO",
+                      "previousMemberId": "family-member-1143910014--157",
+                      "previousRank": "BO",
+                      "holderMemberId": "family-member-1143910073-293",
+                      "rank": "ZI",
+                      "step": 1,
+                      "sourceEventIds": [
+                        "military-noble-military-person-11-燕-燕-ruler-3-BO",
+                        "military-person-death-military-person-11-792"
+                      ]
+                    },
+                    {
+                      "version": 1,
+                      "eventId": "military-family-military-person-11-燕-ruler-3-succession-2",
+                      "familyId": "military-family-military-person-11-燕-ruler-3",
+                      "factionId": "燕",
+                      "epochFounderId": "燕-ruler-3",
+                      "month": 909,
+                      "kind": "ENDED",
+                      "reason": "NO_HEIR",
+                      "sourceGrantEventId": "military-noble-military-person-11-燕-燕-ruler-3-BO",
+                      "previousEventId": "military-family-military-person-11-燕-ruler-3-succession-1",
+                      "previousMemberId": "family-member-1143910073-293",
+                      "previousRank": "ZI",
+                      "step": 2,
+                      "sourceEventIds": [
+                        "military-family-military-person-11-燕-ruler-3-succession-1",
+                        "military-person-death-military-person-14-909"
+                      ]
+                    }
+                  ],
+                  "successions": 1,
+                  "endMonth": 909,
+                  "endReason": "NO_HEIR"
+                }
+              ]
+            }
+          ],
+          "newPeriods": 0,
+          "newPeriodSuccessions": 0,
+          "newPeriodEndings": 0,
+          "laterRegisteredChildren": 3,
+          "laterRegisteredObservations": 3,
+          "eligibleNewPeriodAtEndpoint": 0,
+          "endedThenIndependentMerit": 0,
+          "archive": {
+            "active": 0,
+            "historical": 2,
+            "extinct": 0,
+            "livingUntitledHouses": 2,
+            "explanations": [
+              {
+                "eventId": "military-family-military-person-2-燕-ruler-3-succession-1",
+                "reason": "NO_HEIR",
+                "text": "当次处理时，没有已入籍、已登记的直接子嗣。没有可接续的合格直接子嗣，承袭链终止；不据此判定家族绝嗣。",
+                "children": [],
+                "grandchildren": 0,
+                "laterChildren": [
+                  {
+                    "memberId": "family-member-1143910068--155",
+                    "name": "古君敬",
+                    "bornMonth": -155,
+                    "enteredMonth": 425,
+                    "sameMonthAfter": false,
+                    "entryEventId": "family-member-1143910068--155-entered",
+                    "parentDeathMonth": 272
+                  },
+                  {
+                    "memberId": "family-member-1143910069--22",
+                    "name": "古宗安",
+                    "bornMonth": -22,
+                    "enteredMonth": 455,
+                    "sameMonthAfter": false,
+                    "entryEventId": "family-member-1143910069--22-entered",
+                    "parentDeathMonth": 272
+                  }
+                ],
+                "sourceEventIds": [
+                  "military-noble-military-person-2-燕-燕-ruler-3-BO",
+                  "military-person-death-military-person-2-272"
+                ]
+              },
+              {
+                "eventId": "military-family-military-person-11-燕-ruler-3-succession-2",
+                "reason": "NO_HEIR",
+                "text": "当次处理时，没有已入籍、已登记的直接子嗣。没有可接续的合格直接子嗣，承袭链终止；不据此判定家族绝嗣。",
+                "children": [],
+                "grandchildren": 0,
+                "laterChildren": [
+                  {
+                    "memberId": "family-member-1143910133-542",
+                    "name": "朱宗和",
+                    "bornMonth": 542,
+                    "enteredMonth": 967,
+                    "sameMonthAfter": false,
+                    "entryEventId": "family-member-1143910133-542-entered",
+                    "parentDeathMonth": 909
+                  }
+                ],
+                "sourceEventIds": [
+                  "military-family-military-person-11-燕-ruler-3-succession-1",
+                  "military-person-death-military-person-14-909"
+                ]
+              }
+            ]
+          },
+          "scope": "CANONICAL_HISTORY_AND_SESSION_COUNTERS",
+          "counterSemantics": {
+            "familyAndTitleTotals": "saved family genealogy and unique title records",
+            "heirCandidatePersonChecks": "person checks at committed death resolutions in this session; reset on load",
+            "lifeAndTitleFailures": "session counters; reset on load"
+          },
+          "families": 2,
+          "members": 10,
+          "generations": [
+            {
+              "generation": 2,
+              "people": 3
+            },
+            {
+              "generation": 3,
+              "people": 5
+            },
+            {
+              "generation": 4,
+              "people": 0
+            },
+            {
+              "generation": 5,
+              "people": 0
+            }
+          ],
+          "withDescendants": 2,
+          "threeGenerationHouses": 2,
+          "foundersDied": 2,
+          "founderMeritGrants": 2,
+          "successionOpportunities": 3,
+          "successions": 1,
+          "rankDrops": 1,
+          "ended": 2,
+          "terminalReasons": {
+            "NO_HEIR": 2
+          },
+          "civilianInheritances": 1,
+          "renewals": 0,
+          "twoGenerationService": 2,
+          "currentlyEligibleChildren": 0,
+          "lifeTransactionFailures": 0,
+          "titleTransactionFailures": 0,
+          "heirCandidatePersonChecks": 1,
+          "heirRejectedPersonChecks": 0,
+          "identityRejectedOpportunities": 0,
+          "chains": [
+            {
+              "familyId": "military-family-military-person-2-燕-ruler-3",
+              "sourceEventId": "military-noble-military-person-2-燕-燕-ruler-3-BO",
+              "acts": [
+                {
+                  "version": 1,
+                  "eventId": "military-family-military-person-2-燕-ruler-3-succession-1",
+                  "familyId": "military-family-military-person-2-燕-ruler-3",
+                  "factionId": "燕",
+                  "epochFounderId": "燕-ruler-3",
+                  "month": 272,
+                  "kind": "ENDED",
+                  "reason": "NO_HEIR",
+                  "sourceGrantEventId": "military-noble-military-person-2-燕-燕-ruler-3-BO",
+                  "previousEventId": "military-noble-military-person-2-燕-燕-ruler-3-BO",
+                  "previousMemberId": "family-member-1143909947--406",
+                  "previousRank": "BO",
+                  "step": 1,
+                  "sourceEventIds": [
+                    "military-noble-military-person-2-燕-燕-ruler-3-BO",
+                    "military-person-death-military-person-2-272"
+                  ]
+                }
+              ]
+            },
+            {
+              "familyId": "military-family-military-person-11-燕-ruler-3",
+              "sourceEventId": "military-noble-military-person-11-燕-燕-ruler-3-BO",
+              "acts": [
+                {
+                  "version": 1,
+                  "eventId": "military-family-military-person-11-燕-ruler-3-succession-1",
+                  "familyId": "military-family-military-person-11-燕-ruler-3",
+                  "factionId": "燕",
+                  "epochFounderId": "燕-ruler-3",
+                  "month": 792,
+                  "kind": "SUCCEEDED",
+                  "reason": "DEATH",
+                  "sourceGrantEventId": "military-noble-military-person-11-燕-燕-ruler-3-BO",
+                  "previousEventId": "military-noble-military-person-11-燕-燕-ruler-3-BO",
+                  "previousMemberId": "family-member-1143910014--157",
+                  "previousRank": "BO",
+                  "holderMemberId": "family-member-1143910073-293",
+                  "rank": "ZI",
+                  "step": 1,
+                  "sourceEventIds": [
+                    "military-noble-military-person-11-燕-燕-ruler-3-BO",
+                    "military-person-death-military-person-11-792"
+                  ]
+                },
+                {
+                  "version": 1,
+                  "eventId": "military-family-military-person-11-燕-ruler-3-succession-2",
+                  "familyId": "military-family-military-person-11-燕-ruler-3",
+                  "factionId": "燕",
+                  "epochFounderId": "燕-ruler-3",
+                  "month": 909,
+                  "kind": "ENDED",
+                  "reason": "NO_HEIR",
+                  "sourceGrantEventId": "military-noble-military-person-11-燕-燕-ruler-3-BO",
+                  "previousEventId": "military-family-military-person-11-燕-ruler-3-succession-1",
+                  "previousMemberId": "family-member-1143910073-293",
+                  "previousRank": "ZI",
+                  "step": 2,
+                  "sourceEventIds": [
+                    "military-family-military-person-11-燕-ruler-3-succession-1",
+                    "military-person-death-military-person-14-909"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "appointmentV55": {
+          "scope": "ACTUAL_ANNUAL_PRODUCTION_POOLS_DISTINCT_PERSONS; blocker sets overlap across years",
+          "countryChecks": 521,
+          "fullCountryChecks": 17,
+          "fullFraction": 0.03262955854126679,
+          "opportunities": 504,
+          "titleWindows": 2,
+          "distinctQualifiedNobles": 1,
+          "distinctNoblesWithFullOffice": 0,
+          "distinctNoblePool": 1,
+          "distinctOrdinaryPool": 405,
+          "distinctFamilyPool": 8,
+          "blocked": {
+            "已有正式军职，按本人晋升规则办理": 1,
+            "人物已经去世": 1
+          },
+          "meanPool": 20.884920634920636,
+          "meanNoblePool": 0.003968253968253968
+        },
+        "canonicalSha256": "e37e8553679e53badccca6150e0f9feb74d7a323a1777966d99ae8b07144d80b",
+        "worldRandomPosition": 6866,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "strictSaveValid": true,
+        "elapsedMs": 46145.80000000028,
+        "heapBytes": 99243992
+      }
+    ]
+  },
+  {
+    "seed": "regional-6",
+    "years": 100,
+    "scope": "Real Core fixed seed; unique people are sets within each world, summed across independent worlds. Elapsed time is observed wall time under concurrent workloads, not isolated CPU.",
+    "rawPath": "logs/military-balance-z55-exposure-low.raw.json",
+    "rawSha256": "a0903defbb97385c7d5cd56ec3acba1f7979f4ddff87c1781d52e44b7fb2610e",
+    "measuredCheckpointMonths": [
+      1200
+    ],
+    "checkpoints": [
+      {
+        "month": 1200,
+        "worldPopulation": 134,
+        "activeStates": 6,
+        "historicalStates": 8,
+        "captures": 21,
+        "warDeaths": 103,
+        "populationUnexplained": 0,
+        "appointments": 25,
+        "offices": {
+          "xiaowei": 25,
+          "pijiang": 10,
+          "jiangjun": 4,
+          "shangjiangjun": 2,
+          "promotions": 16,
+          "meanServiceMonths": 76.64,
+          "currentOffices": [
+            "PIJIANG"
+          ],
+          "naturalDeaths": 2,
+          "ageRetirements": 2,
+          "highOfficeMerits": [
+            {
+              "serviceMonths": 312,
+              "verifiedMerits": 2
+            },
+            {
+              "serviceMonths": 192,
+              "verifiedMerits": 2
+            }
+          ],
+          "activeFormationSizes": [
+            2
+          ]
+        },
+        "promotions": [
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 48
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 132
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 72
+          },
+          {
+            "office": "SHANGJIANGJUN",
+            "waitMonths": 312
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 72
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 96
+          },
+          {
+            "office": "SHANGJIANGJUN",
+            "waitMonths": 192
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          }
+        ],
+        "meanServiceMonths": 76.64,
+        "maximumFormationSize": 4,
+        "formationSizeSamples": {
+          "1": 874,
+          "2": 547,
+          "3": 362,
+          "4": 134
+        },
+        "factionCommandSamples": {
+          "0": 4904,
+          "1": 1099,
+          "2": 409
+        },
+        "meanFormationSize": 1.872717788210746,
+        "militaryFamilyAvailability": {
+          "scope": "CURRENT_MAP_SNAPSHOT",
+          "descendants": 3,
+          "aliveOnMap": 2,
+          "adultOnMap": 2,
+          "individuallyEligible": 2,
+          "eligibleWithVacancy": 2
+        },
+        "militaryAppointmentDiagnostics": {
+          "foundingRewardFailures": 0,
+          "familyLifeFailures": 0,
+          "familyTitleIdentityRejected": 0,
+          "familyTitleCandidateChecks": 1,
+          "familyTitleRejectedCandidates": 0,
+          "familyTitleFailures": 0,
+          "familyAppointmentFailures": 0,
+          "familyAgeBlocked": 0,
+          "familyCapBlocked": 5,
+          "familyIdentityBlocked": 0,
+          "familyUnitBlocked": 0,
+          "familyPopulationBlocked": 0,
+          "familyCandidateChecks": 15,
+          "provisionalChecks": 0,
+          "provisionalNoCandidate": 0,
+          "provisionalCapacityBlocked": 0,
+          "provisionalDraws": 0,
+          "provisionalMisses": 0,
+          "provisionalAppointments": 0,
+          "candidates": 9082,
+          "eligible": 9082,
+          "appointments": 25,
+          "capBlocked": 31,
+          "unitBlocked": 0,
+          "orders": 66,
+          "captures": 14,
+          "deaths": 21,
+          "unitsSteered": 59570,
+          "commandedSiegeContacts": 572,
+          "targetCityArrivals": 27,
+          "invalidatedTargets": 18,
+          "staleOrderChecks": 0,
+          "ageRetirements": 2,
+          "naturalDeaths": 2,
+          "releasedFormations": 24,
+          "reappointments": 0,
+          "ageBlocked": 3035,
+          "identityFailures": 122,
+          "familyRecruitment": {
+            "titleCandidateChecks": 3,
+            "titleVacancyOpportunities": 3,
+            "titleExpectedAppointments": 0.2936240821405456,
+            "titleSelected": 1,
+            "titleAppointments": 1,
+            "opportunities": 12,
+            "qualifiedPersonChecks": 15,
+            "poolDraws": 2,
+            "selected": 1,
+            "appointments": 1,
+            "rolledBackSelections": 0,
+            "executionFailures": 0,
+            "expectedAppointments": 0.31671960785251185,
+            "baselineExpectedAppointments": 0.021156044609030034,
+            "conditionalExpectedSelections": 1.0372811002224833,
+            "weightSum": 22.82824,
+            "distinctCandidateIds": [
+              "family-member-1433913343-541",
+              "family-member-1433913400-656",
+              "family-member-1433913405-937"
+            ]
+          },
+          "activeCommanders": 1,
+          "activeFormations": 1
+        },
+        "familyEvolution": {
+          "grantSources": {
+            "MILITARY_BO": 2,
+            "MILITARY_HOU": 1,
+            "MILITARY_GONG": 0,
+            "COURT": 0,
+            "FOUNDING": 0
+          },
+          "charterSources": {
+            "MILITARY_BO": 2,
+            "MILITARY_HOU": 0,
+            "MILITARY_GONG": 0,
+            "COURT": 0,
+            "FOUNDING": 0
+          },
+          "historicalMembers": 5,
+          "livingMembers": 3,
+          "visibleTrunkMembers": 3,
+          "projectionMs": 3.5,
+          "serializationMs": 9.899999999906868,
+          "saveBytes": 1801219,
+          "secondGenerationOfficers": 1,
+          "thirdGenerationOfficers": 0,
+          "descendantPersonalGrants": 0,
+          "duplicateFamilies": 0,
+          "actualAnnualFamilyUpdateSamples": 100,
+          "actualAnnualFamilyUpdateTotalMs": 45.39999999990687,
+          "actualAnnualFamilyUpdateMaxMs": 3.3000000002793968,
+          "annualFamilyUpdateSamples": 1200,
+          "annualFamilyUpdateMs": 46.00000000046566,
+          "annualFamilyUpdateMaxMs": 3.3000000002793968,
+          "titleUpdateCalls": 1200,
+          "titleUpdateTotalMs": 18.500000000931323,
+          "titleUpdateMaxMs": 5.400000000372529
+        },
+        "familyNobleSuccession": {
+          "periods": [
+            {
+              "familyId": "military-family-military-person-21-楚-ruler-14",
+              "periods": [
+                {
+                  "number": 1,
+                  "sourceGrantEventId": "military-noble-military-person-21-楚-楚-ruler-14-HOU",
+                  "holderMemberId": "family-member-1433913312-176",
+                  "acts": [
+                    {
+                      "version": 1,
+                      "eventId": "military-family-military-person-21-楚-ruler-14-succession-1",
+                      "familyId": "military-family-military-person-21-楚-ruler-14",
+                      "factionId": "楚",
+                      "epochFounderId": "楚-ruler-14",
+                      "month": 1019,
+                      "kind": "SUCCEEDED",
+                      "reason": "DEATH",
+                      "sourceGrantEventId": "military-noble-military-person-21-楚-楚-ruler-14-HOU",
+                      "previousEventId": "military-noble-military-person-21-楚-楚-ruler-14-HOU",
+                      "previousMemberId": "family-member-1433913312-176",
+                      "previousRank": "HOU",
+                      "holderMemberId": "family-member-1433913343-541",
+                      "rank": "BO",
+                      "step": 1,
+                      "sourceEventIds": [
+                        "military-noble-military-person-21-楚-楚-ruler-14-HOU",
+                        "military-person-death-military-person-21-1019"
+                      ]
+                    },
+                    {
+                      "version": 1,
+                      "eventId": "military-family-military-person-21-楚-ruler-14-succession-2",
+                      "familyId": "military-family-military-person-21-楚-ruler-14",
+                      "factionId": "楚",
+                      "epochFounderId": "楚-ruler-14",
+                      "month": 1060,
+                      "kind": "ENDED",
+                      "reason": "NO_HEIR",
+                      "sourceGrantEventId": "military-noble-military-person-21-楚-楚-ruler-14-HOU",
+                      "previousEventId": "military-family-military-person-21-楚-ruler-14-succession-1",
+                      "previousMemberId": "family-member-1433913343-541",
+                      "previousRank": "BO",
+                      "step": 2,
+                      "sourceEventIds": [
+                        "military-family-military-person-21-楚-ruler-14-succession-1",
+                        "military-person-death-military-person-24-1060"
+                      ]
+                    }
+                  ],
+                  "successions": 1,
+                  "endMonth": 1060,
+                  "endReason": "NO_HEIR"
+                }
+              ]
+            },
+            {
+              "familyId": "military-family-military-person-19-魏-ruler-10",
+              "periods": [
+                {
+                  "number": 1,
+                  "sourceGrantEventId": "military-noble-military-person-19-魏-魏-ruler-10-BO",
+                  "holderMemberId": "family-member-1359921461-477",
+                  "acts": [
+                    {
+                      "version": 1,
+                      "eventId": "military-family-military-person-19-魏-ruler-10-succession-1",
+                      "familyId": "military-family-military-person-19-魏-ruler-10",
+                      "factionId": "魏",
+                      "epochFounderId": "魏-ruler-10",
+                      "month": 1200,
+                      "kind": "ENDED",
+                      "reason": "FOREIGN",
+                      "sourceGrantEventId": "military-noble-military-person-19-魏-魏-ruler-10-BO",
+                      "previousEventId": "military-noble-military-person-19-魏-魏-ruler-10-BO",
+                      "previousMemberId": "family-member-1359921461-477",
+                      "previousRank": "BO",
+                      "step": 1,
+                      "sourceEventIds": [
+                        "military-noble-military-person-19-魏-魏-ruler-10-BO"
+                      ]
+                    }
+                  ],
+                  "successions": 0,
+                  "endMonth": 1200,
+                  "endReason": "FOREIGN"
+                }
+              ]
+            }
+          ],
+          "newPeriods": 0,
+          "newPeriodSuccessions": 0,
+          "newPeriodEndings": 0,
+          "laterRegisteredChildren": 0,
+          "laterRegisteredObservations": 0,
+          "eligibleNewPeriodAtEndpoint": 0,
+          "endedThenIndependentMerit": 0,
+          "archive": {
+            "active": 1,
+            "historical": 1,
+            "extinct": 0,
+            "livingUntitledHouses": 2,
+            "explanations": [
+              {
+                "eventId": "military-family-military-person-21-楚-ruler-14-succession-2",
+                "reason": "NO_HEIR",
+                "text": "当次处理时，没有已入籍、已登记的直接子嗣。没有可接续的合格直接子嗣，承袭链终止；不据此判定家族绝嗣。",
+                "children": [],
+                "grandchildren": 0,
+                "laterChildren": [],
+                "sourceEventIds": [
+                  "military-family-military-person-21-楚-ruler-14-succession-1",
+                  "military-person-death-military-person-24-1060"
+                ]
+              },
+              {
+                "eventId": "military-family-military-person-19-魏-ruler-10-succession-1",
+                "reason": "FOREIGN",
+                "text": "程怀温当时已转属他国，原国承袭资格终止；后代与旧爵历史仍然保留。",
+                "children": [],
+                "grandchildren": 0,
+                "laterChildren": [],
+                "sourceEventIds": [
+                  "military-noble-military-person-19-魏-魏-ruler-10-BO"
+                ]
+              }
+            ]
+          },
+          "scope": "CANONICAL_HISTORY_AND_SESSION_COUNTERS",
+          "counterSemantics": {
+            "familyAndTitleTotals": "saved family genealogy and unique title records",
+            "heirCandidatePersonChecks": "person checks at committed death resolutions in this session; reset on load",
+            "lifeAndTitleFailures": "session counters; reset on load"
+          },
+          "families": 2,
+          "members": 5,
+          "generations": [
+            {
+              "generation": 2,
+              "people": 2
+            },
+            {
+              "generation": 3,
+              "people": 1
+            },
+            {
+              "generation": 4,
+              "people": 0
+            },
+            {
+              "generation": 5,
+              "people": 0
+            }
+          ],
+          "withDescendants": 1,
+          "threeGenerationHouses": 1,
+          "foundersDied": 1,
+          "founderMeritGrants": 3,
+          "successionOpportunities": 2,
+          "successions": 1,
+          "rankDrops": 1,
+          "ended": 2,
+          "terminalReasons": {
+            "NO_HEIR": 1,
+            "FOREIGN": 1
+          },
+          "civilianInheritances": 1,
+          "renewals": 0,
+          "twoGenerationService": 1,
+          "currentlyEligibleChildren": 1,
+          "lifeTransactionFailures": 0,
+          "titleTransactionFailures": 0,
+          "heirCandidatePersonChecks": 1,
+          "heirRejectedPersonChecks": 0,
+          "identityRejectedOpportunities": 0,
+          "chains": [
+            {
+              "familyId": "military-family-military-person-21-楚-ruler-14",
+              "sourceEventId": "military-noble-military-person-21-楚-楚-ruler-14-BO",
+              "acts": [
+                {
+                  "version": 1,
+                  "eventId": "military-family-military-person-21-楚-ruler-14-succession-1",
+                  "familyId": "military-family-military-person-21-楚-ruler-14",
+                  "factionId": "楚",
+                  "epochFounderId": "楚-ruler-14",
+                  "month": 1019,
+                  "kind": "SUCCEEDED",
+                  "reason": "DEATH",
+                  "sourceGrantEventId": "military-noble-military-person-21-楚-楚-ruler-14-HOU",
+                  "previousEventId": "military-noble-military-person-21-楚-楚-ruler-14-HOU",
+                  "previousMemberId": "family-member-1433913312-176",
+                  "previousRank": "HOU",
+                  "holderMemberId": "family-member-1433913343-541",
+                  "rank": "BO",
+                  "step": 1,
+                  "sourceEventIds": [
+                    "military-noble-military-person-21-楚-楚-ruler-14-HOU",
+                    "military-person-death-military-person-21-1019"
+                  ]
+                },
+                {
+                  "version": 1,
+                  "eventId": "military-family-military-person-21-楚-ruler-14-succession-2",
+                  "familyId": "military-family-military-person-21-楚-ruler-14",
+                  "factionId": "楚",
+                  "epochFounderId": "楚-ruler-14",
+                  "month": 1060,
+                  "kind": "ENDED",
+                  "reason": "NO_HEIR",
+                  "sourceGrantEventId": "military-noble-military-person-21-楚-楚-ruler-14-HOU",
+                  "previousEventId": "military-family-military-person-21-楚-ruler-14-succession-1",
+                  "previousMemberId": "family-member-1433913343-541",
+                  "previousRank": "BO",
+                  "step": 2,
+                  "sourceEventIds": [
+                    "military-family-military-person-21-楚-ruler-14-succession-1",
+                    "military-person-death-military-person-24-1060"
+                  ]
+                }
+              ]
+            },
+            {
+              "familyId": "military-family-military-person-19-魏-ruler-10",
+              "sourceEventId": "military-noble-military-person-19-魏-魏-ruler-10-BO",
+              "acts": [
+                {
+                  "version": 1,
+                  "eventId": "military-family-military-person-19-魏-ruler-10-succession-1",
+                  "familyId": "military-family-military-person-19-魏-ruler-10",
+                  "factionId": "魏",
+                  "epochFounderId": "魏-ruler-10",
+                  "month": 1200,
+                  "kind": "ENDED",
+                  "reason": "FOREIGN",
+                  "sourceGrantEventId": "military-noble-military-person-19-魏-魏-ruler-10-BO",
+                  "previousEventId": "military-noble-military-person-19-魏-魏-ruler-10-BO",
+                  "previousMemberId": "family-member-1359921461-477",
+                  "previousRank": "BO",
+                  "step": 1,
+                  "sourceEventIds": [
+                    "military-noble-military-person-19-魏-魏-ruler-10-BO"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "appointmentV55": {
+          "scope": "ACTUAL_ANNUAL_PRODUCTION_POOLS_DISTINCT_PERSONS; blocker sets overlap across years",
+          "countryChecks": 533,
+          "fullCountryChecks": 31,
+          "fullFraction": 0.058161350844277676,
+          "opportunities": 502,
+          "titleWindows": 3,
+          "distinctQualifiedNobles": 1,
+          "distinctNoblesWithFullOffice": 0,
+          "distinctNoblePool": 1,
+          "distinctOrdinaryPool": 422,
+          "distinctFamilyPool": 3,
+          "blocked": {
+            "已有正式军职，按本人晋升规则办理": 1,
+            "人物已经去世": 1
+          },
+          "meanPool": 20.868525896414344,
+          "meanNoblePool": 0.00597609561752988
+        },
+        "canonicalSha256": "0df2e9eb3970c220145c7f6b42235a1173abfaaf4261d12db6801a6ada40b8d5",
+        "worldRandomPosition": 7008,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "strictSaveValid": true,
+        "elapsedMs": 40692,
+        "heapBytes": 89841774
+      }
+    ]
+  },
+  {
+    "seed": "regional-7",
+    "years": 100,
+    "scope": "Real Core fixed seed; unique people are sets within each world, summed across independent worlds. Elapsed time is observed wall time under concurrent workloads, not isolated CPU.",
+    "rawPath": "logs/military-balance-z55-exposure-low.raw.json",
+    "rawSha256": "a0903defbb97385c7d5cd56ec3acba1f7979f4ddff87c1781d52e44b7fb2610e",
+    "measuredCheckpointMonths": [
+      1200
+    ],
+    "checkpoints": [
+      {
+        "month": 1200,
+        "worldPopulation": 138,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "captures": 29,
+        "warDeaths": 94,
+        "populationUnexplained": 0,
+        "appointments": 26,
+        "offices": {
+          "xiaowei": 26,
+          "pijiang": 11,
+          "jiangjun": 3,
+          "shangjiangjun": 1,
+          "promotions": 15,
+          "meanServiceMonths": 72.03846153846153,
+          "currentOffices": [
+            "XIAOWEI"
+          ],
+          "naturalDeaths": 4,
+          "ageRetirements": 3,
+          "highOfficeMerits": [
+            {
+              "serviceMonths": 132,
+              "verifiedMerits": 2
+            }
+          ],
+          "activeFormationSizes": [
+            1
+          ]
+        },
+        "promotions": [
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 84
+          },
+          {
+            "office": "SHANGJIANGJUN",
+            "waitMonths": 132
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 120
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 108
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          }
+        ],
+        "meanServiceMonths": 72.03846153846153,
+        "maximumFormationSize": 4,
+        "formationSizeSamples": {
+          "1": 1055,
+          "2": 533,
+          "3": 154,
+          "4": 132
+        },
+        "factionCommandSamples": {
+          "0": 5521,
+          "1": 1316,
+          "2": 279
+        },
+        "meanFormationSize": 1.66008537886873,
+        "militaryFamilyAvailability": {
+          "scope": "CURRENT_MAP_SNAPSHOT",
+          "descendants": 5,
+          "aliveOnMap": 5,
+          "adultOnMap": 5,
+          "individuallyEligible": 5,
+          "eligibleWithVacancy": 5
+        },
+        "militaryAppointmentDiagnostics": {
+          "foundingRewardFailures": 0,
+          "familyLifeFailures": 0,
+          "familyTitleIdentityRejected": 0,
+          "familyTitleCandidateChecks": 2,
+          "familyTitleRejectedCandidates": 0,
+          "familyTitleFailures": 0,
+          "familyAppointmentFailures": 0,
+          "familyAgeBlocked": 0,
+          "familyCapBlocked": 5,
+          "familyIdentityBlocked": 0,
+          "familyUnitBlocked": 0,
+          "familyPopulationBlocked": 0,
+          "familyCandidateChecks": 68,
+          "provisionalChecks": 0,
+          "provisionalNoCandidate": 0,
+          "provisionalCapacityBlocked": 0,
+          "provisionalDraws": 0,
+          "provisionalMisses": 0,
+          "provisionalAppointments": 0,
+          "candidates": 8867,
+          "eligible": 8867,
+          "appointments": 26,
+          "capBlocked": 20,
+          "unitBlocked": 0,
+          "orders": 62,
+          "captures": 17,
+          "deaths": 24,
+          "unitsSteered": 55723,
+          "commandedSiegeContacts": 775,
+          "targetCityArrivals": 28,
+          "invalidatedTargets": 24,
+          "staleOrderChecks": 0,
+          "ageRetirements": 3,
+          "naturalDeaths": 4,
+          "releasedFormations": 25,
+          "reappointments": 0,
+          "ageBlocked": 3224,
+          "identityFailures": 0,
+          "familyRecruitment": {
+            "titleCandidateChecks": 3,
+            "titleVacancyOpportunities": 3,
+            "titleExpectedAppointments": 0.29742267890444507,
+            "titleSelected": 0,
+            "titleAppointments": 0,
+            "opportunities": 29,
+            "qualifiedPersonChecks": 68,
+            "poolDraws": 1,
+            "selected": 0,
+            "appointments": 0,
+            "rolledBackSelections": 0,
+            "executionFailures": 0,
+            "expectedAppointments": 0.49800251016780855,
+            "baselineExpectedAppointments": 0.14881583620671524,
+            "conditionalExpectedSelections": 0.17690416879753204,
+            "weightSum": 102.79680000000003,
+            "distinctCandidateIds": [
+              "family-member-1433913311-428",
+              "family-member-1433913340-664",
+              "family-member-1433913341-664",
+              "family-member-1380083259-770",
+              "family-member-1380083260-512"
+            ]
+          },
+          "activeCommanders": 1,
+          "activeFormations": 1
+        },
+        "familyEvolution": {
+          "grantSources": {
+            "MILITARY_BO": 3,
+            "MILITARY_HOU": 1,
+            "MILITARY_GONG": 1,
+            "COURT": 0,
+            "FOUNDING": 0
+          },
+          "charterSources": {
+            "MILITARY_BO": 2,
+            "MILITARY_HOU": 0,
+            "MILITARY_GONG": 0,
+            "COURT": 0,
+            "FOUNDING": 0
+          },
+          "historicalMembers": 7,
+          "livingMembers": 5,
+          "visibleTrunkMembers": 4,
+          "projectionMs": 3.2000000001862645,
+          "serializationMs": 9.799999999813735,
+          "saveBytes": 1948276,
+          "secondGenerationOfficers": 0,
+          "thirdGenerationOfficers": 0,
+          "descendantPersonalGrants": 0,
+          "duplicateFamilies": 0,
+          "actualAnnualFamilyUpdateSamples": 100,
+          "actualAnnualFamilyUpdateTotalMs": 46.000000002328306,
+          "actualAnnualFamilyUpdateMaxMs": 3.5,
+          "annualFamilyUpdateSamples": 1200,
+          "annualFamilyUpdateMs": 47.000000001862645,
+          "annualFamilyUpdateMaxMs": 3.5,
+          "titleUpdateCalls": 1200,
+          "titleUpdateTotalMs": 13.099999999627471,
+          "titleUpdateMaxMs": 5.800000000279397
+        },
+        "familyNobleSuccession": {
+          "periods": [
+            {
+              "familyId": "military-family-military-person-16-楚-ruler-15",
+              "periods": [
+                {
+                  "number": 1,
+                  "sourceGrantEventId": "military-noble-military-person-16-楚-楚-ruler-15-GONG",
+                  "holderMemberId": "family-member-1433913249-118",
+                  "acts": [
+                    {
+                      "version": 1,
+                      "eventId": "military-family-military-person-16-楚-ruler-15-succession-1",
+                      "familyId": "military-family-military-person-16-楚-ruler-15",
+                      "factionId": "楚",
+                      "epochFounderId": "楚-ruler-15",
+                      "month": 1164,
+                      "kind": "SUCCEEDED",
+                      "reason": "DEATH",
+                      "sourceGrantEventId": "military-noble-military-person-16-楚-楚-ruler-15-GONG",
+                      "previousEventId": "military-noble-military-person-16-楚-楚-ruler-15-GONG",
+                      "previousMemberId": "family-member-1433913249-118",
+                      "previousRank": "GONG",
+                      "holderMemberId": "family-member-1433913311-428",
+                      "rank": "HOU",
+                      "step": 1,
+                      "sourceEventIds": [
+                        "military-noble-military-person-16-楚-楚-ruler-15-GONG",
+                        "military-person-death-military-person-16-1164"
+                      ]
+                    }
+                  ],
+                  "successions": 1
+                }
+              ]
+            },
+            {
+              "familyId": "military-family-military-person-21-赵-ruler-4",
+              "periods": [
+                {
+                  "number": 1,
+                  "sourceGrantEventId": "military-noble-military-person-21-赵-赵-ruler-4-BO",
+                  "holderMemberId": "family-member-1380083225-260",
+                  "acts": [
+                    {
+                      "version": 1,
+                      "eventId": "military-family-military-person-21-赵-ruler-4-succession-1",
+                      "familyId": "military-family-military-person-21-赵-ruler-4",
+                      "factionId": "赵",
+                      "epochFounderId": "赵-ruler-4",
+                      "month": 1101,
+                      "kind": "ENDED",
+                      "reason": "NO_HEIR",
+                      "sourceGrantEventId": "military-noble-military-person-21-赵-赵-ruler-4-BO",
+                      "previousEventId": "military-noble-military-person-21-赵-赵-ruler-4-BO",
+                      "previousMemberId": "family-member-1380083225-260",
+                      "previousRank": "BO",
+                      "step": 1,
+                      "sourceEventIds": [
+                        "military-noble-military-person-21-赵-赵-ruler-4-BO",
+                        "military-person-death-military-person-21-1101"
+                      ]
+                    }
+                  ],
+                  "successions": 0,
+                  "endMonth": 1101,
+                  "endReason": "NO_HEIR"
+                }
+              ]
+            }
+          ],
+          "newPeriods": 0,
+          "newPeriodSuccessions": 0,
+          "newPeriodEndings": 0,
+          "laterRegisteredChildren": 2,
+          "laterRegisteredObservations": 2,
+          "eligibleNewPeriodAtEndpoint": 0,
+          "endedThenIndependentMerit": 0,
+          "archive": {
+            "active": 1,
+            "historical": 1,
+            "extinct": 0,
+            "livingUntitledHouses": 1,
+            "explanations": [
+              {
+                "eventId": "military-family-military-person-21-赵-ruler-4-succession-1",
+                "reason": "NO_HEIR",
+                "text": "当次处理时，没有已入籍、已登记的直接子嗣。没有可接续的合格直接子嗣，承袭链终止；不据此判定家族绝嗣。",
+                "children": [],
+                "grandchildren": 0,
+                "laterChildren": [
+                  {
+                    "memberId": "family-member-1380083259-770",
+                    "name": "边廷礼",
+                    "bornMonth": 770,
+                    "enteredMonth": 1105,
+                    "sameMonthAfter": false,
+                    "entryEventId": "family-member-1380083259-770-entered",
+                    "parentDeathMonth": 1101
+                  },
+                  {
+                    "memberId": "family-member-1380083260-512",
+                    "name": "边允平",
+                    "bornMonth": 512,
+                    "enteredMonth": 1140,
+                    "sameMonthAfter": false,
+                    "entryEventId": "family-member-1380083260-512-entered",
+                    "parentDeathMonth": 1101
+                  }
+                ],
+                "sourceEventIds": [
+                  "military-noble-military-person-21-赵-赵-ruler-4-BO",
+                  "military-person-death-military-person-21-1101"
+                ]
+              }
+            ]
+          },
+          "scope": "CANONICAL_HISTORY_AND_SESSION_COUNTERS",
+          "counterSemantics": {
+            "familyAndTitleTotals": "saved family genealogy and unique title records",
+            "heirCandidatePersonChecks": "person checks at committed death resolutions in this session; reset on load",
+            "lifeAndTitleFailures": "session counters; reset on load"
+          },
+          "families": 2,
+          "members": 7,
+          "generations": [
+            {
+              "generation": 2,
+              "people": 4
+            },
+            {
+              "generation": 3,
+              "people": 1
+            },
+            {
+              "generation": 4,
+              "people": 0
+            },
+            {
+              "generation": 5,
+              "people": 0
+            }
+          ],
+          "withDescendants": 2,
+          "threeGenerationHouses": 1,
+          "foundersDied": 2,
+          "founderMeritGrants": 4,
+          "successionOpportunities": 2,
+          "successions": 1,
+          "rankDrops": 1,
+          "ended": 1,
+          "terminalReasons": {
+            "NO_HEIR": 1
+          },
+          "civilianInheritances": 1,
+          "renewals": 0,
+          "twoGenerationService": 0,
+          "currentlyEligibleChildren": 3,
+          "lifeTransactionFailures": 0,
+          "titleTransactionFailures": 0,
+          "heirCandidatePersonChecks": 2,
+          "heirRejectedPersonChecks": 0,
+          "identityRejectedOpportunities": 0,
+          "chains": [
+            {
+              "familyId": "military-family-military-person-16-楚-ruler-15",
+              "sourceEventId": "military-noble-military-person-16-楚-楚-ruler-15-BO",
+              "acts": [
+                {
+                  "version": 1,
+                  "eventId": "military-family-military-person-16-楚-ruler-15-succession-1",
+                  "familyId": "military-family-military-person-16-楚-ruler-15",
+                  "factionId": "楚",
+                  "epochFounderId": "楚-ruler-15",
+                  "month": 1164,
+                  "kind": "SUCCEEDED",
+                  "reason": "DEATH",
+                  "sourceGrantEventId": "military-noble-military-person-16-楚-楚-ruler-15-GONG",
+                  "previousEventId": "military-noble-military-person-16-楚-楚-ruler-15-GONG",
+                  "previousMemberId": "family-member-1433913249-118",
+                  "previousRank": "GONG",
+                  "holderMemberId": "family-member-1433913311-428",
+                  "rank": "HOU",
+                  "step": 1,
+                  "sourceEventIds": [
+                    "military-noble-military-person-16-楚-楚-ruler-15-GONG",
+                    "military-person-death-military-person-16-1164"
+                  ]
+                }
+              ]
+            },
+            {
+              "familyId": "military-family-military-person-21-赵-ruler-4",
+              "sourceEventId": "military-noble-military-person-21-赵-赵-ruler-4-BO",
+              "acts": [
+                {
+                  "version": 1,
+                  "eventId": "military-family-military-person-21-赵-ruler-4-succession-1",
+                  "familyId": "military-family-military-person-21-赵-ruler-4",
+                  "factionId": "赵",
+                  "epochFounderId": "赵-ruler-4",
+                  "month": 1101,
+                  "kind": "ENDED",
+                  "reason": "NO_HEIR",
+                  "sourceGrantEventId": "military-noble-military-person-21-赵-赵-ruler-4-BO",
+                  "previousEventId": "military-noble-military-person-21-赵-赵-ruler-4-BO",
+                  "previousMemberId": "family-member-1380083225-260",
+                  "previousRank": "BO",
+                  "step": 1,
+                  "sourceEventIds": [
+                    "military-noble-military-person-21-赵-赵-ruler-4-BO",
+                    "military-person-death-military-person-21-1101"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "appointmentV55": {
+          "scope": "ACTUAL_ANNUAL_PRODUCTION_POOLS_DISTINCT_PERSONS; blocker sets overlap across years",
+          "countryChecks": 592,
+          "fullCountryChecks": 20,
+          "fullFraction": 0.033783783783783786,
+          "opportunities": 572,
+          "titleWindows": 3,
+          "distinctQualifiedNobles": 1,
+          "distinctNoblesWithFullOffice": 0,
+          "distinctNoblePool": 1,
+          "distinctOrdinaryPool": 426,
+          "distinctFamilyPool": 5,
+          "blocked": {},
+          "meanPool": 18.243006993006993,
+          "meanNoblePool": 0.005244755244755245
+        },
+        "canonicalSha256": "475a320980d3b4fa5da6e0fc25800fa3690b35e0fe4cbf3634c62f32546b91c3",
+        "worldRandomPosition": 7275,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "strictSaveValid": true,
+        "elapsedMs": 36701.60000000009,
+        "heapBytes": 103588849
+      }
+    ]
+  },
+  {
+    "seed": "regional-8",
+    "years": 100,
+    "scope": "Real Core fixed seed; unique people are sets within each world, summed across independent worlds. Elapsed time is observed wall time under concurrent workloads, not isolated CPU.",
+    "rawPath": "logs/military-balance-z55-exposure-low.raw.json",
+    "rawSha256": "a0903defbb97385c7d5cd56ec3acba1f7979f4ddff87c1781d52e44b7fb2610e",
+    "measuredCheckpointMonths": [
+      1200
+    ],
+    "checkpoints": [
+      {
+        "month": 1200,
+        "worldPopulation": 139,
+        "activeStates": 6,
+        "historicalStates": 14,
+        "captures": 55,
+        "warDeaths": 115,
+        "populationUnexplained": 0,
+        "appointments": 40,
+        "offices": {
+          "xiaowei": 40,
+          "pijiang": 18,
+          "jiangjun": 8,
+          "shangjiangjun": 3,
+          "promotions": 29,
+          "meanServiceMonths": 86.9,
+          "currentOffices": [
+            "XIAOWEI"
+          ],
+          "naturalDeaths": 8,
+          "ageRetirements": 12,
+          "highOfficeMerits": [
+            {
+              "serviceMonths": 228,
+              "verifiedMerits": 2
+            },
+            {
+              "serviceMonths": 120,
+              "verifiedMerits": 2
+            },
+            {
+              "serviceMonths": 204,
+              "verifiedMerits": 2
+            }
+          ],
+          "activeFormationSizes": [
+            1
+          ]
+        },
+        "promotions": [
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 120
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 72
+          },
+          {
+            "office": "SHANGJIANGJUN",
+            "waitMonths": 228
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 72
+          },
+          {
+            "office": "SHANGJIANGJUN",
+            "waitMonths": 120
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 84
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 168
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 156
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 48
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 132
+          },
+          {
+            "office": "SHANGJIANGJUN",
+            "waitMonths": 204
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "JIANGJUN",
+            "waitMonths": 132
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 60
+          },
+          {
+            "office": "PIJIANG",
+            "waitMonths": 36
+          }
+        ],
+        "meanServiceMonths": 86.9,
+        "maximumFormationSize": 4,
+        "formationSizeSamples": {
+          "1": 1583,
+          "2": 1406,
+          "3": 638,
+          "4": 35
+        },
+        "factionCommandSamples": {
+          "0": 5448,
+          "1": 1934,
+          "2": 864
+        },
+        "meanFormationSize": 1.7610595303113052,
+        "militaryFamilyAvailability": {
+          "scope": "CURRENT_MAP_SNAPSHOT",
+          "descendants": 14,
+          "aliveOnMap": 7,
+          "adultOnMap": 7,
+          "individuallyEligible": 7,
+          "eligibleWithVacancy": 7
+        },
+        "militaryAppointmentDiagnostics": {
+          "foundingRewardFailures": 0,
+          "familyLifeFailures": 0,
+          "familyTitleIdentityRejected": 0,
+          "familyTitleCandidateChecks": 2,
+          "familyTitleRejectedCandidates": 0,
+          "familyTitleFailures": 0,
+          "familyAppointmentFailures": 0,
+          "familyAgeBlocked": 0,
+          "familyCapBlocked": 4,
+          "familyIdentityBlocked": 0,
+          "familyUnitBlocked": 0,
+          "familyPopulationBlocked": 7,
+          "familyCandidateChecks": 168,
+          "provisionalChecks": 109,
+          "provisionalNoCandidate": 27,
+          "provisionalCapacityBlocked": 20,
+          "provisionalDraws": 62,
+          "provisionalMisses": 56,
+          "provisionalAppointments": 6,
+          "candidates": 8448,
+          "eligible": 8448,
+          "appointments": 40,
+          "capBlocked": 61,
+          "unitBlocked": 0,
+          "orders": 119,
+          "captures": 40,
+          "deaths": 32,
+          "unitsSteered": 132596,
+          "commandedSiegeContacts": 2394,
+          "targetCityArrivals": 37,
+          "invalidatedTargets": 52,
+          "staleOrderChecks": 0,
+          "ageRetirements": 12,
+          "naturalDeaths": 8,
+          "releasedFormations": 39,
+          "reappointments": 0,
+          "ageBlocked": 2958,
+          "identityFailures": 54,
+          "familyRecruitment": {
+            "titleCandidateChecks": 9,
+            "titleVacancyOpportunities": 9,
+            "titleExpectedAppointments": 0.8967622759101528,
+            "titleSelected": 1,
+            "titleAppointments": 1,
+            "opportunities": 128,
+            "qualifiedPersonChecks": 201,
+            "poolDraws": 8,
+            "selected": 2,
+            "appointments": 2,
+            "rolledBackSelections": 0,
+            "executionFailures": 0,
+            "expectedAppointments": 1.6925667175949195,
+            "baselineExpectedAppointments": 0.6616756241352296,
+            "conditionalExpectedSelections": 1.9718544813684076,
+            "weightSum": 270.8356000000001,
+            "distinctCandidateIds": [
+              "family-member-1143910012-118",
+              "family-member-1050980907-28",
+              "family-member-1556458158-216",
+              "family-member-1050980910--103",
+              "family-member-1306530451-249",
+              "family-member-1050980911-432",
+              "family-member-1306530479-506",
+              "family-member-1306530516-461",
+              "family-member-1050980938-804",
+              "family-member-1556458192-491",
+              "family-member-1306530549-722",
+              "family-member-1556458193-809",
+              "family-member-1306530550-762",
+              "family-member-1556458219-596"
+            ]
+          },
+          "activeCommanders": 1,
+          "activeFormations": 1
+        },
+        "familyEvolution": {
+          "grantSources": {
+            "MILITARY_BO": 6,
+            "MILITARY_HOU": 2,
+            "MILITARY_GONG": 1,
+            "COURT": 0,
+            "FOUNDING": 0
+          },
+          "charterSources": {
+            "MILITARY_BO": 5,
+            "MILITARY_HOU": 0,
+            "MILITARY_GONG": 0,
+            "COURT": 0,
+            "FOUNDING": 0
+          },
+          "historicalMembers": 19,
+          "livingMembers": 8,
+          "visibleTrunkMembers": 8,
+          "projectionMs": 14.299999999813735,
+          "serializationMs": 13.400000000372529,
+          "saveBytes": 2395387,
+          "secondGenerationOfficers": 2,
+          "thirdGenerationOfficers": 0,
+          "descendantPersonalGrants": 0,
+          "duplicateFamilies": 0,
+          "actualAnnualFamilyUpdateSamples": 100,
+          "actualAnnualFamilyUpdateTotalMs": 78.69999999878928,
+          "actualAnnualFamilyUpdateMaxMs": 4.7000000001862645,
+          "annualFamilyUpdateSamples": 1200,
+          "annualFamilyUpdateMs": 79.49999999906868,
+          "annualFamilyUpdateMaxMs": 4.7000000001862645,
+          "titleUpdateCalls": 1200,
+          "titleUpdateTotalMs": 31.79999999841675,
+          "titleUpdateMaxMs": 6.699999999720603
+        },
+        "familyNobleSuccession": {
+          "periods": [
+            {
+              "familyId": "military-family-military-person-2-秦-ruler-1",
+              "periods": [
+                {
+                  "number": 1,
+                  "sourceGrantEventId": "military-noble-military-person-2-秦-秦-ruler-1-BO",
+                  "holderMemberId": "family-member-1050980812--528",
+                  "acts": [
+                    {
+                      "version": 1,
+                      "eventId": "military-family-military-person-2-秦-ruler-1-succession-1",
+                      "familyId": "military-family-military-person-2-秦-ruler-1",
+                      "factionId": "秦",
+                      "epochFounderId": "秦-ruler-1",
+                      "month": 228,
+                      "kind": "ENDED",
+                      "reason": "NO_HEIR",
+                      "sourceGrantEventId": "military-noble-military-person-2-秦-秦-ruler-1-BO",
+                      "previousEventId": "military-noble-military-person-2-秦-秦-ruler-1-BO",
+                      "previousMemberId": "family-member-1050980812--528",
+                      "previousRank": "BO",
+                      "step": 1,
+                      "sourceEventIds": [
+                        "military-noble-military-person-2-秦-秦-ruler-1-BO",
+                        "military-person-death-military-person-2-228"
+                      ]
+                    }
+                  ],
+                  "successions": 0,
+                  "endMonth": 228,
+                  "endReason": "NO_HEIR"
+                }
+              ]
+            },
+            {
+              "familyId": "military-family-military-person-6-燕-ruler-5",
+              "periods": [
+                {
+                  "number": 1,
+                  "sourceGrantEventId": "military-noble-military-person-6-燕-燕-ruler-5-HOU",
+                  "holderMemberId": "family-member-1143909980--350",
+                  "acts": [
+                    {
+                      "version": 1,
+                      "eventId": "military-family-military-person-6-燕-ruler-5-succession-1",
+                      "familyId": "military-family-military-person-6-燕-ruler-5",
+                      "factionId": "燕",
+                      "epochFounderId": "燕-ruler-5",
+                      "month": 570,
+                      "kind": "ENDED",
+                      "reason": "REGIME_ENDED",
+                      "sourceGrantEventId": "military-noble-military-person-6-燕-燕-ruler-5-HOU",
+                      "previousEventId": "military-noble-military-person-6-燕-燕-ruler-5-HOU",
+                      "previousMemberId": "family-member-1143909980--350",
+                      "previousRank": "HOU",
+                      "step": 1,
+                      "sourceEventIds": [
+                        "military-noble-military-person-6-燕-燕-ruler-5-HOU"
+                      ]
+                    }
+                  ],
+                  "successions": 0,
+                  "endMonth": 570,
+                  "endReason": "REGIME_ENDED"
+                }
+              ]
+            },
+            {
+              "familyId": "military-family-military-person-9-齐-ruler-8",
+              "periods": [
+                {
+                  "number": 1,
+                  "sourceGrantEventId": "military-noble-military-person-9-齐-齐-ruler-8-GONG",
+                  "holderMemberId": "family-member-1306530389--195",
+                  "acts": [
+                    {
+                      "version": 1,
+                      "eventId": "military-family-military-person-9-齐-ruler-8-succession-1",
+                      "familyId": "military-family-military-person-9-齐-ruler-8",
+                      "factionId": "齐",
+                      "epochFounderId": "齐-ruler-8",
+                      "month": 852,
+                      "kind": "SUCCEEDED",
+                      "reason": "DEATH",
+                      "sourceGrantEventId": "military-noble-military-person-9-齐-齐-ruler-8-GONG",
+                      "previousEventId": "military-noble-military-person-9-齐-齐-ruler-8-GONG",
+                      "previousMemberId": "family-member-1306530389--195",
+                      "previousRank": "GONG",
+                      "holderMemberId": "family-member-1306530451-249",
+                      "rank": "HOU",
+                      "step": 1,
+                      "sourceEventIds": [
+                        "military-noble-military-person-9-齐-齐-ruler-8-GONG",
+                        "military-person-death-military-person-9-852"
+                      ]
+                    },
+                    {
+                      "version": 1,
+                      "eventId": "military-family-military-person-9-齐-ruler-8-succession-2",
+                      "familyId": "military-family-military-person-9-齐-ruler-8",
+                      "factionId": "齐",
+                      "epochFounderId": "齐-ruler-8",
+                      "month": 1008,
+                      "kind": "ENDED",
+                      "reason": "FOREIGN",
+                      "sourceGrantEventId": "military-noble-military-person-9-齐-齐-ruler-8-GONG",
+                      "previousEventId": "military-family-military-person-9-齐-ruler-8-succession-1",
+                      "previousMemberId": "family-member-1306530451-249",
+                      "previousRank": "HOU",
+                      "step": 2,
+                      "sourceEventIds": [
+                        "military-family-military-person-9-齐-ruler-8-succession-1"
+                      ]
+                    }
+                  ],
+                  "successions": 1,
+                  "endMonth": 1008,
+                  "endReason": "FOREIGN"
+                }
+              ]
+            },
+            {
+              "familyId": "military-family-military-person-15-韩-ruler-43",
+              "periods": [
+                {
+                  "number": 1,
+                  "sourceGrantEventId": "military-noble-military-person-15-韩-韩-ruler-43-BO",
+                  "holderMemberId": "family-member-1556458124--214",
+                  "acts": [
+                    {
+                      "version": 1,
+                      "eventId": "military-family-military-person-15-韩-ruler-43-succession-1",
+                      "familyId": "military-family-military-person-15-韩-ruler-43",
+                      "factionId": "韩",
+                      "epochFounderId": "韩-ruler-43",
+                      "month": 720,
+                      "kind": "SUCCEEDED",
+                      "reason": "DEATH",
+                      "sourceGrantEventId": "military-noble-military-person-15-韩-韩-ruler-43-BO",
+                      "previousEventId": "military-noble-military-person-15-韩-韩-ruler-43-BO",
+                      "previousMemberId": "family-member-1556458124--214",
+                      "previousRank": "BO",
+                      "holderMemberId": "family-member-1556458158-216",
+                      "rank": "ZI",
+                      "step": 1,
+                      "sourceEventIds": [
+                        "military-noble-military-person-15-韩-韩-ruler-43-BO",
+                        "military-person-death-military-person-15-720"
+                      ]
+                    },
+                    {
+                      "version": 1,
+                      "eventId": "military-family-military-person-15-韩-ruler-43-succession-2",
+                      "familyId": "military-family-military-person-15-韩-ruler-43",
+                      "factionId": "韩",
+                      "epochFounderId": "韩-ruler-43",
+                      "month": 729,
+                      "kind": "ENDED",
+                      "reason": "NO_HEIR",
+                      "sourceGrantEventId": "military-noble-military-person-15-韩-韩-ruler-43-BO",
+                      "previousEventId": "military-family-military-person-15-韩-ruler-43-succession-1",
+                      "previousMemberId": "family-member-1556458158-216",
+                      "previousRank": "ZI",
+                      "step": 2,
+                      "sourceEventIds": [
+                        "military-family-military-person-15-韩-ruler-43-succession-1",
+                        "military-family-military-person-15-韩-ruler-43-family-member-1556458158-216-death"
+                      ]
+                    }
+                  ],
+                  "successions": 1,
+                  "endMonth": 729,
+                  "endReason": "NO_HEIR"
+                }
+              ]
+            },
+            {
+              "familyId": "military-family-military-person-29-句章义军-ruler-60",
+              "periods": [
+                {
+                  "number": 1,
+                  "holderMemberId": "family-member-1071939505-304",
+                  "acts": [],
+                  "successions": 0
+                }
+              ]
+            }
+          ],
+          "newPeriods": 0,
+          "newPeriodSuccessions": 0,
+          "newPeriodEndings": 0,
+          "laterRegisteredChildren": 5,
+          "laterRegisteredObservations": 5,
+          "eligibleNewPeriodAtEndpoint": 0,
+          "endedThenIndependentMerit": 0,
+          "archive": {
+            "active": 1,
+            "historical": 4,
+            "extinct": 0,
+            "livingUntitledHouses": 3,
+            "explanations": [
+              {
+                "eventId": "military-family-military-person-2-秦-ruler-1-succession-1",
+                "reason": "NO_HEIR",
+                "text": "当次处理时，没有已入籍、已登记的直接子嗣。没有可接续的合格直接子嗣，承袭链终止；不据此判定家族绝嗣。",
+                "children": [],
+                "grandchildren": 0,
+                "laterChildren": [
+                  {
+                    "memberId": "family-member-1050980907-28",
+                    "name": "柴仲正",
+                    "bornMonth": 28,
+                    "enteredMonth": 474,
+                    "sameMonthAfter": false,
+                    "entryEventId": "family-member-1050980907-28-entered",
+                    "parentDeathMonth": 228
+                  },
+                  {
+                    "memberId": "family-member-1050980910--103",
+                    "name": "柴季睦",
+                    "bornMonth": -103,
+                    "enteredMonth": 624,
+                    "sameMonthAfter": false,
+                    "entryEventId": "family-member-1050980910--103-entered",
+                    "parentDeathMonth": 228
+                  }
+                ],
+                "sourceEventIds": [
+                  "military-noble-military-person-2-秦-秦-ruler-1-BO",
+                  "military-person-death-military-person-2-228"
+                ]
+              },
+              {
+                "eventId": "military-family-military-person-6-燕-ruler-5-succession-1",
+                "reason": "REGIME_ENDED",
+                "text": "原爵所属国家或王统的政治权威已经终结，旧朝承袭失效；并不表示家族成员死亡。",
+                "children": [
+                  {
+                    "memberId": "family-member-1143910012-118",
+                    "name": "应文宽",
+                    "reason": "已于46年11月去世"
+                  }
+                ],
+                "grandchildren": 0,
+                "laterChildren": [],
+                "sourceEventIds": [
+                  "military-noble-military-person-6-燕-燕-ruler-5-HOU"
+                ]
+              },
+              {
+                "eventId": "military-family-military-person-9-齐-ruler-8-succession-2",
+                "reason": "FOREIGN",
+                "text": "俞伯济当时已转属他国，原国承袭资格终止；后代与旧爵历史仍然保留。",
+                "children": [
+                  {
+                    "memberId": "family-member-1306530479-506",
+                    "name": "俞敬宣",
+                    "reason": "符合当时直接承袭资格"
+                  }
+                ],
+                "grandchildren": 0,
+                "laterChildren": [
+                  {
+                    "memberId": "family-member-1306530549-722",
+                    "name": "俞玄谦",
+                    "bornMonth": 722,
+                    "enteredMonth": 1082,
+                    "sameMonthAfter": false,
+                    "entryEventId": "family-member-1306530549-722-entered"
+                  }
+                ],
+                "sourceEventIds": [
+                  "military-family-military-person-9-齐-ruler-8-succession-1"
+                ]
+              },
+              {
+                "eventId": "military-family-military-person-15-韩-ruler-43-succession-2",
+                "reason": "NO_HEIR",
+                "text": "当次处理时，没有已入籍、已登记的直接子嗣。没有可接续的合格直接子嗣，承袭链终止；不据此判定家族绝嗣。",
+                "children": [],
+                "grandchildren": 0,
+                "laterChildren": [
+                  {
+                    "memberId": "family-member-1556458192-491",
+                    "name": "束元宽",
+                    "bornMonth": 491,
+                    "enteredMonth": 1038,
+                    "sameMonthAfter": false,
+                    "entryEventId": "family-member-1556458192-491-entered",
+                    "parentDeathMonth": 729
+                  },
+                  {
+                    "memberId": "family-member-1556458219-596",
+                    "name": "束庭毅",
+                    "bornMonth": 596,
+                    "enteredMonth": 1182,
+                    "sameMonthAfter": false,
+                    "entryEventId": "family-member-1556458219-596-entered",
+                    "parentDeathMonth": 729
+                  }
+                ],
+                "sourceEventIds": [
+                  "military-family-military-person-15-韩-ruler-43-succession-1",
+                  "military-family-military-person-15-韩-ruler-43-family-member-1556458158-216-death"
+                ]
+              }
+            ]
+          },
+          "scope": "CANONICAL_HISTORY_AND_SESSION_COUNTERS",
+          "counterSemantics": {
+            "familyAndTitleTotals": "saved family genealogy and unique title records",
+            "heirCandidatePersonChecks": "person checks at committed death resolutions in this session; reset on load",
+            "lifeAndTitleFailures": "session counters; reset on load"
+          },
+          "families": 5,
+          "members": 19,
+          "generations": [
+            {
+              "generation": 2,
+              "people": 6
+            },
+            {
+              "generation": 3,
+              "people": 5
+            },
+            {
+              "generation": 4,
+              "people": 3
+            },
+            {
+              "generation": 5,
+              "people": 0
+            }
+          ],
+          "withDescendants": 4,
+          "threeGenerationHouses": 3,
+          "foundersDied": 3,
+          "founderMeritGrants": 8,
+          "successionOpportunities": 4,
+          "successions": 2,
+          "rankDrops": 2,
+          "ended": 4,
+          "terminalReasons": {
+            "NO_HEIR": 2,
+            "REGIME_ENDED": 1,
+            "FOREIGN": 1
+          },
+          "civilianInheritances": 2,
+          "renewals": 0,
+          "twoGenerationService": 2,
+          "currentlyEligibleChildren": 0,
+          "lifeTransactionFailures": 0,
+          "titleTransactionFailures": 0,
+          "heirCandidatePersonChecks": 2,
+          "heirRejectedPersonChecks": 0,
+          "identityRejectedOpportunities": 0,
+          "chains": [
+            {
+              "familyId": "military-family-military-person-2-秦-ruler-1",
+              "sourceEventId": "military-noble-military-person-2-秦-秦-ruler-1-BO",
+              "acts": [
+                {
+                  "version": 1,
+                  "eventId": "military-family-military-person-2-秦-ruler-1-succession-1",
+                  "familyId": "military-family-military-person-2-秦-ruler-1",
+                  "factionId": "秦",
+                  "epochFounderId": "秦-ruler-1",
+                  "month": 228,
+                  "kind": "ENDED",
+                  "reason": "NO_HEIR",
+                  "sourceGrantEventId": "military-noble-military-person-2-秦-秦-ruler-1-BO",
+                  "previousEventId": "military-noble-military-person-2-秦-秦-ruler-1-BO",
+                  "previousMemberId": "family-member-1050980812--528",
+                  "previousRank": "BO",
+                  "step": 1,
+                  "sourceEventIds": [
+                    "military-noble-military-person-2-秦-秦-ruler-1-BO",
+                    "military-person-death-military-person-2-228"
+                  ]
+                }
+              ]
+            },
+            {
+              "familyId": "military-family-military-person-6-燕-ruler-5",
+              "sourceEventId": "military-noble-military-person-6-燕-燕-ruler-5-BO",
+              "acts": [
+                {
+                  "version": 1,
+                  "eventId": "military-family-military-person-6-燕-ruler-5-succession-1",
+                  "familyId": "military-family-military-person-6-燕-ruler-5",
+                  "factionId": "燕",
+                  "epochFounderId": "燕-ruler-5",
+                  "month": 570,
+                  "kind": "ENDED",
+                  "reason": "REGIME_ENDED",
+                  "sourceGrantEventId": "military-noble-military-person-6-燕-燕-ruler-5-HOU",
+                  "previousEventId": "military-noble-military-person-6-燕-燕-ruler-5-HOU",
+                  "previousMemberId": "family-member-1143909980--350",
+                  "previousRank": "HOU",
+                  "step": 1,
+                  "sourceEventIds": [
+                    "military-noble-military-person-6-燕-燕-ruler-5-HOU"
+                  ]
+                }
+              ]
+            },
+            {
+              "familyId": "military-family-military-person-9-齐-ruler-8",
+              "sourceEventId": "military-noble-military-person-9-齐-齐-ruler-8-BO",
+              "acts": [
+                {
+                  "version": 1,
+                  "eventId": "military-family-military-person-9-齐-ruler-8-succession-1",
+                  "familyId": "military-family-military-person-9-齐-ruler-8",
+                  "factionId": "齐",
+                  "epochFounderId": "齐-ruler-8",
+                  "month": 852,
+                  "kind": "SUCCEEDED",
+                  "reason": "DEATH",
+                  "sourceGrantEventId": "military-noble-military-person-9-齐-齐-ruler-8-GONG",
+                  "previousEventId": "military-noble-military-person-9-齐-齐-ruler-8-GONG",
+                  "previousMemberId": "family-member-1306530389--195",
+                  "previousRank": "GONG",
+                  "holderMemberId": "family-member-1306530451-249",
+                  "rank": "HOU",
+                  "step": 1,
+                  "sourceEventIds": [
+                    "military-noble-military-person-9-齐-齐-ruler-8-GONG",
+                    "military-person-death-military-person-9-852"
+                  ]
+                },
+                {
+                  "version": 1,
+                  "eventId": "military-family-military-person-9-齐-ruler-8-succession-2",
+                  "familyId": "military-family-military-person-9-齐-ruler-8",
+                  "factionId": "齐",
+                  "epochFounderId": "齐-ruler-8",
+                  "month": 1008,
+                  "kind": "ENDED",
+                  "reason": "FOREIGN",
+                  "sourceGrantEventId": "military-noble-military-person-9-齐-齐-ruler-8-GONG",
+                  "previousEventId": "military-family-military-person-9-齐-ruler-8-succession-1",
+                  "previousMemberId": "family-member-1306530451-249",
+                  "previousRank": "HOU",
+                  "step": 2,
+                  "sourceEventIds": [
+                    "military-family-military-person-9-齐-ruler-8-succession-1"
+                  ]
+                }
+              ]
+            },
+            {
+              "familyId": "military-family-military-person-15-韩-ruler-43",
+              "sourceEventId": "military-noble-military-person-15-韩-韩-ruler-43-BO",
+              "acts": [
+                {
+                  "version": 1,
+                  "eventId": "military-family-military-person-15-韩-ruler-43-succession-1",
+                  "familyId": "military-family-military-person-15-韩-ruler-43",
+                  "factionId": "韩",
+                  "epochFounderId": "韩-ruler-43",
+                  "month": 720,
+                  "kind": "SUCCEEDED",
+                  "reason": "DEATH",
+                  "sourceGrantEventId": "military-noble-military-person-15-韩-韩-ruler-43-BO",
+                  "previousEventId": "military-noble-military-person-15-韩-韩-ruler-43-BO",
+                  "previousMemberId": "family-member-1556458124--214",
+                  "previousRank": "BO",
+                  "holderMemberId": "family-member-1556458158-216",
+                  "rank": "ZI",
+                  "step": 1,
+                  "sourceEventIds": [
+                    "military-noble-military-person-15-韩-韩-ruler-43-BO",
+                    "military-person-death-military-person-15-720"
+                  ]
+                },
+                {
+                  "version": 1,
+                  "eventId": "military-family-military-person-15-韩-ruler-43-succession-2",
+                  "familyId": "military-family-military-person-15-韩-ruler-43",
+                  "factionId": "韩",
+                  "epochFounderId": "韩-ruler-43",
+                  "month": 729,
+                  "kind": "ENDED",
+                  "reason": "NO_HEIR",
+                  "sourceGrantEventId": "military-noble-military-person-15-韩-韩-ruler-43-BO",
+                  "previousEventId": "military-family-military-person-15-韩-ruler-43-succession-1",
+                  "previousMemberId": "family-member-1556458158-216",
+                  "previousRank": "ZI",
+                  "step": 2,
+                  "sourceEventIds": [
+                    "military-family-military-person-15-韩-ruler-43-succession-1",
+                    "military-family-military-person-15-韩-ruler-43-family-member-1556458158-216-death"
+                  ]
+                }
+              ]
+            },
+            {
+              "familyId": "military-family-military-person-29-句章义军-ruler-60",
+              "sourceEventId": "military-noble-military-person-29-句章义军-句章义军-ruler-60-BO",
+              "acts": []
+            }
+          ]
+        },
+        "appointmentV55": {
+          "scope": "ACTUAL_ANNUAL_PRODUCTION_POOLS_DISTINCT_PERSONS; blocker sets overlap across years",
+          "countryChecks": 686,
+          "fullCountryChecks": 61,
+          "fullFraction": 0.08892128279883382,
+          "opportunities": 598,
+          "titleWindows": 9,
+          "distinctQualifiedNobles": 1,
+          "distinctNoblesWithFullOffice": 0,
+          "distinctNoblePool": 1,
+          "distinctOrdinaryPool": 473,
+          "distinctFamilyPool": 14,
+          "blocked": {
+            "人物已经去世": 1,
+            "已有正式军职，按本人晋升规则办理": 1,
+            "已离国或没有可核验的本国在籍人口": 1
+          },
+          "meanPool": 16.41638795986622,
+          "meanNoblePool": 0.015050167224080268
+        },
+        "canonicalSha256": "c7039e42fa4ab4d1a9d60340356ffc87de2846be2f4c13ce927fe47f128d498a",
+        "worldRandomPosition": 7946,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "formationOwnershipConflicts": 0,
+        "residentIdentityConflicts": 0,
+        "strictSaveValid": true,
+        "elapsedMs": 34725.30000000028,
+        "heapBytes": 121390989
+      }
+    ]
+  }
+]
