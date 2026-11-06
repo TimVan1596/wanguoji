@@ -1,3 +1,4 @@
+import {validateAppointmentSelections} from './AppointmentSelectionValidation';
 import {isAbilityPolicy} from '../Politics/PersonAbilities';
 import {validateInsurgentCommands} from './InsurgentCommandValidation';
 import {validateFamilyNobility} from './FamilyNobleValidation';
@@ -517,6 +518,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   }
   if (!errors.length) errors.push(...validateRoyalHonors(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateCourtCoups(save as WorldSaveV1));
+  if (!errors.length) errors.push(...validateAppointmentSelections(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateMilitaryCourt(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateRoyalSuccessionStanding(save as WorldSaveV1));
   if (!errors.length) errors.push(...validateMilitaryFamilies(save as WorldSaveV1));

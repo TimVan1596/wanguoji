@@ -43,6 +43,7 @@ export function militaryMilestones(person:MilitaryPerson,entries:MilitaryChronic
         const initial=person.appointments.some(a=>a.officeHistory?.[0]?.eventId===entry.eventId);
         const basis=grant.promotionBasis==='SERVICE'?'依服役资历，':grant.promotionBasis==='ACTIVITY'?'因实际军旅经历，':grant.promotionBasis==='CAPTURE'?'以取城之功，':'';
         text=`${name}${initial?'始任':basis+'晋任'}${country}${MILITARY_OFFICE_NAMES[grant.office]}${issuer?`，时${issuer}在位`:''}。`;
+        const appointment=person.appointments.find(a=>a.commandId===entry.commandId),selection=initial?appointment?.selection:undefined;if(selection){const chosen=selection.rows[selection.selectedIndex];text+=`本次经国家共享选拔${chosen?.titleEventId?'，参选时具有袭爵优势':''}。`;entry.sourceEventIds=[...new Set([...entry.sourceEventIds,`military-appointment-${entry.commandId}`])];}
 
       }
     }

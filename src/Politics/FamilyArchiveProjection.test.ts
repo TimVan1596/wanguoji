@@ -25,3 +25,9 @@ it('uses the same royal-linked life evidence for family counts and detail withou
  let p=projectFamilyArchive(f,s);expect(p.classification).toBe('HISTORICAL');expect(p.living).toBe(1);expect(p.rows.get(child.memberId)?.life).toBe('ALIVE');
  ruler.deathMonth=90;ruler.status='dead';p=projectFamilyArchive(f,s);expect(p.classification).toBe('EXTINCT');expect(p.living).toBe(0);expect(p.rows.get(child.memberId)?.life).toBe('DEAD');
 });
+
+it('indexes only directly registered children at the reading month; no future or same-surname kin inference',()=>{
+ const {f,s}=fixture();f.members.push({memberId:'late',sourceUserId:9,parentMemberId:'father',name:'甲后',bornMonth:-200,enteredMonth:200,generation:1,source:'NATURAL_GROWTH'},{memberId:'unrelated',sourceUserId:10,name:'甲同姓',bornMonth:-100,enteredMonth:90,generation:0,source:'FOUNDER'});
+ const before=JSON.stringify(f),now=projectFamilyArchive(f,s);expect(now.childrenByParent.get('father')).toEqual(['son']);expect(now.childrenByParent.get('son')).toEqual(['grandson']);expect(now.childrenByParent.get('unrelated')).toBeUndefined();
+ expect(projectFamilyArchive(f,{...s,month:201}).childrenByParent.get('father')).toEqual(['son','late']);expect(JSON.stringify(f)).toBe(before);
+});
