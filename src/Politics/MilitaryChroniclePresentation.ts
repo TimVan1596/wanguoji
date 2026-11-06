@@ -1,3 +1,4 @@
+import {militaryChronicleReadingOrder} from './MilitaryChronicleOrder';
 import {mergeCourtCoupReading} from '../History/CourtCoupReading';
 import {militaryNarrativeLinks} from "./MilitaryNarrativeLinks";
 import {formatFoundingIdentity} from "../History/FoundingIdentityNarrative";
@@ -19,7 +20,7 @@ export function militaryMilestones(person:MilitaryPerson,entries:MilitaryChronic
   const byId=new Map(events.map(e=>[e.id,e])),name=getMilitaryPersonDisplayName(person);
   const available=new Set(entries.map(e=>e.eventId)),pairs=militaryLifePairs(events).filter(p=>available.has(p.anchor.id)&&available.has(p.other.id)),merged=new Map(pairs.map(p=>[p.anchor.id,p])),hidden=new Set(pairs.map(p=>p.other.id));
   const links=militaryNarrativeLinks(person,events);
-  return entries.filter(e=>!hidden.has(e.eventId)&&!links.hidden.has(e.eventId)).flatMap(original=>{
+  return militaryChronicleReadingOrder(entries.filter(e=>!hidden.has(e.eventId)&&!links.hidden.has(e.eventId)).flatMap(original=>{
     const entry={...original,sourceEventIds:[...new Set([...(original.sourceEventIds??[original.eventId]),...(links.sources.get(original.eventId)??[])])]};
     const type=entry.source.split(" · ")[0],event=byId.get(entry.eventId);
     if(type==="military-order-issued"&&event?.importance!=="major")return [];
@@ -51,20 +52,20 @@ export function militaryMilestones(person:MilitaryPerson,entries:MilitaryChronic
     if(type==="military-command-ended")text=event?.metadata?.endReason==="AGE_RETIREMENT"?`${name}年老退职。`:`${name}离任。`;
     if(type==="ruler-deposed"||type==="dynasty-usurped")text=text.replace("，军事参与者并非新君","");
     return [{...entry,text}];
-  });
+  }),events);
 }
 
 
 export function selectMilitaryMilestones(entries:MilitaryChronicleEntry[],events:WorldEvent[],limit=8){
-  const byId=new Map(events.map(e=>[e.id,e]));
-  const firstGrant=[...entries].sort((a,b)=>a.worldMonth-b.worldMonth||a.eventId.localeCompare(b.eventId)).find(e=>e.source.startsWith("military-office-granted")||e.source.startsWith("military-appointment"));
+  const byId=new Map(events.map(e=>[e.id,e])),positions=new Map(events.map((e,i)=>[e.id,i]));
+  const firstGrant=militaryChronicleReadingOrder(entries,events).find(e=>e.source.startsWith("military-office-granted")||e.source.startsWith("military-appointment"));
   const candidates=entries.filter(e=>!(e.source.startsWith("military-command-ended")&&byId.get(e.eventId)?.metadata?.endReason==="DEATH"&&entries.some(d=>d.worldMonth===e.worldMonth&&d.source.startsWith("military-person-died"))));
-  const representative=candidates.filter(e=>e.victory).sort((a,b)=>Number(byId.get(b.eventId)?.metadata?.wasCapital===1)-Number(byId.get(a.eventId)?.metadata?.wasCapital===1)||a.worldMonth-b.worldMonth||a.eventId.localeCompare(b.eventId))[0];
+  const representative=candidates.filter(e=>e.victory).sort((a,b)=>Number(byId.get(b.eventId)?.metadata?.wasCapital===1)-Number(byId.get(a.eventId)?.metadata?.wasCapital===1)||a.worldMonth-b.worldMonth||(positions.get(a.eventId)??Infinity)-(positions.get(b.eventId)??Infinity))[0];
   return selectChronicleHighlights(candidates,limit,e=>{
     const event=byId.get(e.eventId),type=event?.type??e.source.split(" · ")[0];
     const priority=type==="military-person-died"?1200:e===firstGrant?1100:["court-coup-attempt","court-coup-result","military-court-sanction","royal-succession-sanction","court-service-granted","court-reward-granted"].includes(type)?1080:e===representative?1050:type==="ruler-deposed"||type==="dynasty-usurped"||type==="empire-split"||type==="ruler-acceded"||type==="ruler-succession"?1000:
       ["founding-peerage-granted","court-peerage-granted","military-ennobled","military-posthumous","military-title-revoked"].includes(type)?970:type==="military-appanage"&&event?.importance==="major"?960:type==="military-office-granted"?950:type==="military-command-ended"?900:e.victory&&event?.metadata?.wasCapital===1?700:
       e.victory&&type==="city-recovered"?650:e.victory?400:200;
-    return {id:e.eventId,month:e.worldMonth,priority,cityId:e.victory?event?.cityId:undefined};
+    return {id:e.eventId,month:e.worldMonth,order:positions.get(e.eventId)??Number.MAX_SAFE_INTEGER,priority,cityId:e.victory?event?.cityId:undefined};
   });
 }

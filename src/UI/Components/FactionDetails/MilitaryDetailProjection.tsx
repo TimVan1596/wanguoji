@@ -1,3 +1,4 @@
+import {militaryChronicleReadingOrder} from '../../../Politics/MilitaryChronicleOrder';
 import {createMilitaryArchiveIndex} from './MilitaryArchiveIndex';
 import {useMemo,type ReactNode} from 'react';
 import Military,{type MilitaryPerson,type MilitaryFormation} from '../../../Politics/MilitaryCommandRegistry';
@@ -8,8 +9,8 @@ import {composeMilitaryBiography} from '../../../Politics/PersonBiography';
 import {militaryPoliticalLife,appendMilitaryPoliticalLife} from '../../../Politics/MilitaryPoliticalLife';
 import {militaryMilestones,selectMilitaryMilestones} from './PersonChroniclePresentation';
 function project(person:MilitaryPerson,factionId:string,month:number,events:WorldEvent[],dynasties:Dynasty[],factions:Map<string,Team>){
- const entries=Military.getChronicle(person,month,factionId),local=events.filter(e=>e.actorFactionId===factionId||e.targetFactionId===factionId||e.factionIds?.includes(factionId));
- const life=militaryPoliticalLife(person,dynasties,events,factions,month),allMilestones=appendMilitaryPoliticalLife(militaryMilestones(person,entries,local,{factions}),life);
+ const entries=militaryChronicleReadingOrder(Military.getChronicle(person,month,factionId),events),local=events.filter(e=>e.actorFactionId===factionId||e.targetFactionId===factionId||e.factionIds?.includes(factionId));
+ const life=militaryPoliticalLife(person,dynasties,events,factions,month),allMilestones=militaryChronicleReadingOrder(appendMilitaryPoliticalLife(militaryMilestones(person,entries,local,{factions}),life),events);
  return {entries,allMilestones,milestones:selectMilitaryMilestones(allMilestones,local,8),career:Military.getCareer(person,month),bio:composeMilitaryBiography(person,entries,factionId,month)};
 }
 /** UI-only cache. Live bindings/commands, ages and diagnostics remain outside this historical projection. */

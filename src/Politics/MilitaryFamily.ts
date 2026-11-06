@@ -30,23 +30,42 @@ export function makeMilitaryFamily(p:MilitaryPerson,factionId:string,epoch:strin
 }
 function hash(s:string){let n=2166136261;for(const c of s)n=Math.imul(n^c.charCodeAt(0),16777619);return n>>>0;}
 /** Called only before first population entry. Birth is derived from the original population label, never re-aged. */
-export function planFamilyPopulationEntry(families:readonly MilitaryFamily[],factionId:string,epoch:string|undefined,userId:number,bornMonth:number,month:number,seed:string){
- const options=families.filter(f=>f.factionId===factionId&&f.epochFounderId===epoch&&f.foundedMonth<=month).flatMap(f=>f.members.filter(p=>
-  p.bornMonth+18*12<=bornMonth&&bornMonth<=p.bornMonth+55*12&&(p.deathMonth??Infinity)>bornMonth&&(p.exitMonth??Infinity)>bornMonth&&p.enteredMonth<month&&familyGenerationsSinceMerit(f,p,month)<4&&
-  f.members.filter(c=>c.parentMemberId===p.memberId).length<2&&
-  !f.members.some(c=>c.parentMemberId===p.memberId&&Math.abs(c.bornMonth-bornMonth)<48)
- ).map(parent=>({family:f,parent}))).sort((a,b)=>a.family.familyId.localeCompare(b.family.familyId)||a.parent.memberId.localeCompare(b.parent.memberId));
- if(!options.length||hash(`${seed}/${userId}/${bornMonth}/family-entry`)%100>=25)return;
+function planFamilyPopulationEntryUnmeasured(families:readonly MilitaryFamily[],factionId:string,epoch:string|undefined,userId:number,bornMonth:number,month:number,seed:string){
+ // This pure identity hash already rejected these entries after the old scan.
+ // Moving it ahead of the scan preserves every accepted parent and all RNG.
+ if(hash(`${seed}/${userId}/${bornMonth}/family-entry`)%100>=25)return;
+ const options=families.filter(f=>f.factionId===factionId&&f.epochFounderId===epoch&&f.foundedMonth<=month).flatMap(f=>{
+  const kin=createFamilyKinIndex(f),renewed=new Set(f.renewals?.filter(r=>r.month<=month).map(r=>r.memberId));
+  return f.members.filter(p=>p.bornMonth+18*12<=bornMonth&&bornMonth<=p.bornMonth+55*12&&(p.deathMonth??Infinity)>bornMonth&&(p.exitMonth??Infinity)>bornMonth&&p.enteredMonth<month&&
+   (kin.children.get(p.memberId)?.length??0)<2&&!(kin.children.get(p.memberId)??[]).some(c=>Math.abs(c.bornMonth-bornMonth)<48)&&familyGenerationsSinceMerit(f,p,month,kin,renewed)<4
+  ).map(parent=>({family:f,parent}));
+ }).sort((a,b)=>a.family.familyId.localeCompare(b.family.familyId)||a.parent.memberId.localeCompare(b.parent.memberId));
+ if(!options.length)return;
  const {family,parent}=options[hash(`${seed}/${userId}/family-parent`)%options.length];
  const pool=hanGivenNamePool,name=family.surname+pool.doubleNamePrefixes[hash(`${userId}/given-a`)%pool.doubleNamePrefixes.length]+pool.doubleNameSuffixes[hash(`${userId}/given-b`)%pool.doubleNameSuffixes.length];
  const member:MilitaryFamilyMember={memberId:familyMemberId(userId,bornMonth),sourceUserId:userId,name,bornMonth,generation:parent.generation+1,parentMemberId:parent.memberId,enteredMonth:month,source:'NATURAL_GROWTH'};
  return {familyId:family.familyId,member};
 }
+/** Session-only measurement hook. Never persisted and never used for a decision. */
+let populationEntryObserver:((sample:{month:number;elapsedMs:number;matched:boolean})=>void)|undefined;
+export function observeFamilyPopulationEntryForSimulation(observer:typeof populationEntryObserver){populationEntryObserver=observer;}
+export function planFamilyPopulationEntry(...args:Parameters<typeof planFamilyPopulationEntryUnmeasured>){
+ const observer=populationEntryObserver;if(!observer)return planFamilyPopulationEntryUnmeasured(...args);
+ const start=performance.now();let result:ReturnType<typeof planFamilyPopulationEntryUnmeasured>=undefined;
+ try{return result=planFamilyPopulationEntryUnmeasured(...args);}finally{observer({month:args[5],elapsedMs:performance.now()-start,matched:!!result});}
+}
+/** Built from the actual current family for one transaction; never a persistent second genealogy.
+ * Rebuilding at each boundary also covers hydration, rollback and in-place identity changes. */
+export function createFamilyKinIndex(family:MilitaryFamily){
+ const byId=new Map(family.members.map(m=>[m.memberId,m])),children=new Map<string,MilitaryFamilyMember[]>();
+ for(const m of family.members)if(m.parentMemberId){const row=children.get(m.parentMemberId)??[];row.push(m);children.set(m.parentMemberId,row);}
+ return {byId,children};
+}
 /** A new sourced achievement can renew only the actual descendant's branch. */
-export function familyGenerationsSinceMerit(family:MilitaryFamily,member:MilitaryFamilyMember,month:number){
+export function familyGenerationsSinceMerit(family:MilitaryFamily,member:MilitaryFamilyMember,month:number,kin?:ReturnType<typeof createFamilyKinIndex>,renewed?:ReadonlySet<string>){
  let generations=member.generation,parent:MilitaryFamilyMember|undefined=member;
  const visited=new Set<string>();
- while(parent){const ancestor:MilitaryFamilyMember=parent;if(visited.has(ancestor.memberId))return Infinity;visited.add(ancestor.memberId);if(family.renewals?.some(r=>r.memberId===ancestor.memberId&&r.month<=month)){generations=member.generation-ancestor.generation;break;}parent=ancestor.parentMemberId?family.members.find(m=>m.memberId===ancestor.parentMemberId):undefined;}
+ while(parent){const ancestor:MilitaryFamilyMember=parent;if(visited.has(ancestor.memberId))return Infinity;visited.add(ancestor.memberId);if(renewed?renewed.has(ancestor.memberId):family.renewals?.some(r=>r.memberId===ancestor.memberId&&r.month<=month)){generations=member.generation-ancestor.generation;break;}parent=ancestor.parentMemberId?(kin?kin.byId.get(ancestor.parentMemberId):family.members.find(m=>m.memberId===ancestor.parentMemberId)):undefined;}
  return generations;
 }
 /** First appointment only; inherited reputation never substitutes for eligibility, army or personal merit. */

@@ -601,12 +601,19 @@ export class MilitaryCommandRegistryStore {
   commitFamilyTitle(familyId:string,act:import('./FamilyNobleSuccession').FamilyNobleAct){const f=this.families.find(f=>f.familyId===familyId);if(!f||f.nobleSuccession?.some(a=>a.eventId===act.eventId))throw Error('Duplicate family succession');(f.nobleSuccession??=[]).push(structuredClone(act));}
   updateFamilies(month:number,teams:Team[],dynasties:Dynasty[]){
     if(month%12!==0||!this.eventWriter)return;
+    // Stable lookup for this one annual boundary; entries below only append new houses/renewals.
+    const linkedByPerson=new Map(this.families.flatMap(f=>f.members.filter(m=>m.militaryPersonId).map(m=>[m.militaryPersonId!,{family:f,member:m}] as const)));
     for(const p of this.people.values()){
+      // These people could never supply a new charter/renewal in the original planner.
+      if(p.royalIdentity||p.politicalRulerId||p.deathMonth!==undefined)continue;
+      const link=linkedByPerson.get(p.personId);
+      if(link&&(link.member.generation===0||link.family.renewals?.some(r=>r.memberId===link.member.memberId)))continue;
       const team=teams.find(t=>t.name===p.factionId&&t.status==='ACTIVE'&&t.identityStage==='STATE'),dy=dynasties.find(d=>d.factionId===p.factionId),epoch=this.royalService?.nobleEpoch?.(p.factionId,month);
       if(!team||!dy||!epoch)continue;
+      if(link&&(link.family.factionId!==p.factionId||link.family.epochFounderId!==epoch))continue;
       const epochStart=dy.houseEpochs?.find(e=>e.foundingRulerId===epoch)?.startMonth??Infinity;
       const source=familyFounderSource(p,this.eventReader(p.factionId).filter(e=>(e.monthIndex??e.year)>=epochStart),p.factionId,epoch,month,this.familyFoundationPolicy);
-      const linked=this.families.find(f=>f.members.some(m=>m.militaryPersonId===p.personId));
+      const linked=link&&this.families.find(f=>f.familyId===link.family.familyId);
       if(linked){
         const member=linked.members.find(m=>m.militaryPersonId===p.personId)!;
         if(source&&member.generation>0&&linked.factionId===p.factionId&&linked.epochFounderId===epoch&&!linked.renewals?.some(r=>r.memberId===member.memberId)){

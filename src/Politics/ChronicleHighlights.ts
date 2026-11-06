@@ -1,10 +1,10 @@
 /** Reading selection only: canonical facts and complete archives are never edited. */
 export function selectChronicleHighlights<T>(items: readonly T[], limit: number, describe: (item:T)=>{
-  id:string; month:number; priority:number; cityId?:string; diversityGroup?:string;
+  id:string; month:number; priority:number; cityId?:string; diversityGroup?:string; order?:number;
 }, range?: {start:number;end:number}) {
   const capacity=Math.max(0,Math.floor(limit));
   const rows=items.map(item=>({item,...describe(item)}));
-  const chronological=(a:typeof rows[number],b:typeof rows[number])=>a.month-b.month||a.id.localeCompare(b.id);
+  const chronological=(a:typeof rows[number],b:typeof rows[number])=>a.month-b.month||(a.order!==undefined||b.order!==undefined?(a.order??Number.MAX_SAFE_INTEGER)-(b.order??Number.MAX_SAFE_INTEGER):a.id.localeCompare(b.id));
   if(rows.length<=capacity)return rows.sort(chronological).map(r=>r.item);
   const start=range?.start??Math.min(...rows.map(r=>r.month)),end=range?.end??Math.max(...rows.map(r=>r.month));
   const period=(month:number)=>Math.min(2,Math.max(0,Math.floor((month-start)*3/Math.max(1,end-start+1))));
