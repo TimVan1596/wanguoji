@@ -22,12 +22,18 @@ export function validateMilitaryCourt(save:WorldSaveV1){
    if(before.some(e=>e.type==='military-person-died'&&e.metadata?.personId===p.personId||p.royalIdentity&&(['ruler-died','ruler-captured'].includes(e.type)&&(e.rulerId===p.royalIdentity.rulerId||e.metadata?.rulerId===p.royalIdentity.rulerId)||e.type==='heir-died'&&e.metadata?.heirId===p.royalIdentity.rulerId)))throw Error('person died before political act');
    const dy={...saved,currentRulerId:issuer.id,rulers:rulers.map(r=>r.id===issuer.id?{...r,status:'ruling',endYear:undefined,deathMonth:undefined}:r)} as Dynasty,team={...f,name:f.factionId,status:'ACTIVE'},past={...p,status:'RETIRED' as const,deathMonth:undefined,factionId:act.factionId,politicalRulerId:undefined,politicalHistory:p.politicalHistory?.filter(a=>ids.has(a.eventId))};
    const attempt=before.find(e=>e.id===act.courtCoupEventId),result=before.find(e=>e.id===act.courtResultEventId);
-   const expected=act.kind==='COURT_BAN'&&attempt&&result?planCourtBan(past,team,dy,attempt,result):act.kind==='COURT_PARDONED'?planCourtPardon(past,team,dy,act.month,before,act.stability):undefined;
+   const expected=act.kind==='COURT_BAN'&&attempt&&result?planCourtBan(past,team,dy,attempt,result,save.registries.militaryCommandRegistry.courtPunishmentPolicy??'BASELINE'):act.kind==='COURT_PARDONED'?planCourtPardon(past,team,dy,act.month,before,act.stability):undefined;
    if(JSON.stringify(expected)!==JSON.stringify(act)||e.type!=='military-court-sanction'||at(e)!==act.month||e.actorFactionId!==act.factionId||e.rulerId!==act.rulerId||e.metadata?.personId!==p.personId||e.metadata?.courtCoupEventId!==act.courtCoupEventId||e.metadata?.sourceEventIds!==act.sourceEventIds.join(',')||e.metadata?.courtAct!==JSON.stringify(act)||e.title!==militaryCourtText(act))throw Error('unproven act');
    if(act.kind==='COURT_BAN'&&!before.some(e=>e.type==='military-command-ended'&&e.metadata?.personId===p.personId&&e.metadata?.courtCoupEventId===act.courtCoupEventId&&e.metadata?.endReason==='DISMISSED'))throw Error('no actual dismissal');
    if(act.kind==='COURT_BAN'){
     const through=events.slice(0,i+1),priorPerson={...past,politicalHistory:[...(past.politicalHistory??[]),act],honorHistory:p.honorHistory?.filter(h=>ids.has(h.eventId)),nobilityHistory:p.nobilityHistory?.filter(g=>ids.has(g.eventId))};
     for(const required of nextMilitaryHonors(priorPerson,save.registries.militaryCommandRegistry.formations,through,act.month,[team],[dy]))if(required.reason==='COURT_COUP_FAILED'&&!p.honorHistory?.some(h=>JSON.stringify(h)===JSON.stringify(required)))throw Error('required formal forfeiture missing');
+   }
+   if(act.severity==='EXECUTION'){
+    const death=events.find(x=>x.type==='military-person-died'&&x.metadata?.personId===p.personId),deathIndex=death?byId.get(death.id)!.i:-1;
+    if(act.kind!=='COURT_BAN'||p.status!=='DEAD'||p.deathMonth!==act.month||p.deathCause!=='POLITICAL_EXECUTION'||!death||death.id!==`military-person-death-${p.personId}-${act.month}`||deathIndex<=i||at(death)!==act.month||death.metadata?.deathCause!=='POLITICAL_EXECUTION'||death.metadata?.courtActEventId!==act.eventId||death.title!==`${p.personalName}因谋逆伏诛`||save.users.some(u=>u.userId===p.sourceUserId&&u.bornMonth===p.bornMonth)||p.appointments.some(a=>a.endMonth===undefined||byId.get(`military-appointment-${a.commandId}`)!.i>deathIndex)||p.nobilityHistory?.some(g=>(byId.get(g.eventId)?.i??-1)>deathIndex))throw Error('execution lacks actual exclusive death and closed authority');
+    if(events.filter(x=>x.type==='military-person-died'&&x.metadata?.personId===p.personId).length!==1)throw Error('repeated political death');
+    if(p.royalIdentity){const royal=rulers.find(r=>r.id===p.royalIdentity!.rulerId);if(!royal||royal.status!=='dead'||royal.deathMonth!==act.month||royal.deathReason!=='因谋逆伏诛')throw Error('execution royal life mismatch');}
    }
    used.add(act.eventId);last=act.month;
   }catch(error){errors.push(`invalid military court act ${act?.eventId}: ${String(error)}`);}
@@ -35,6 +41,8 @@ export function validateMilitaryCourt(save:WorldSaveV1){
    if(unresolvedCourtBans({...p,politicalHistory:p.politicalHistory?.filter(a=>beforeIds.has(a.eventId))},a.factionId,a.startMonth,epoch?.foundingRulerId).length)errors.push(`appointment under unresolved court ban: ${a.commandId}`);
   }
  }
+ for(const p of save.registries.militaryCommandRegistry.people)if(p.deathCause==='POLITICAL_EXECUTION'&&!p.politicalHistory?.some(a=>used.has(a.eventId)&&a.kind==='COURT_BAN'&&a.severity==='EXECUTION'&&a.month===p.deathMonth))errors.push('political death lacks proven judgement: '+p.personId);
+ for(const e of events)if(e.type==='military-person-died'&&e.metadata?.deathCause==='POLITICAL_EXECUTION'&&!save.registries.militaryCommandRegistry.people.some(p=>p.personId===e.metadata?.personId&&p.deathCause==='POLITICAL_EXECUTION'&&p.politicalHistory?.some(a=>a.eventId===e.metadata?.courtActEventId&&used.has(a.eventId))))errors.push('orphan political execution: '+e.id);
  for(const e of events)if(e.type==='military-court-sanction'&&!used.has(e.id))errors.push('orphan military court act: '+e.id);
  for(const e of events)if(e.type==='court-coup-result'&&e.metadata?.outcome==='FAILED'&&!events.some(x=>x.type==='military-court-sanction'&&x.id===`${e.metadata?.courtCoupEventId}-ban`&&used.has(x.id)))errors.push('failed coup lacks formal ban: '+e.id);
  for(const e of events)if(e.type==='court-reward-granted')try{

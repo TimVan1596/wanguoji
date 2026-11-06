@@ -47,12 +47,13 @@ async function fingerprint(snapshot: ReturnType<typeof exportWorldSave>,baseFact
 }
 
 /** Instrument the real City transaction, never substitute combat or its RNG. Test-session aggregates only. */
-export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=false,verifyContinuation=false,courtPolicy:'LOW'|'MEDIUM'|'HIGH'='MEDIUM',calibration?:PoliticalCalibration,hereditaryRecruitment?:HereditaryRecruitmentPolicy,familyFoundationPolicy?:FamilyFoundationPolicy,familyNoblePolicy?:'SINGLE'|'RENEWAL',abilityPolicy?:import('../../Politics/PersonAbilities').AbilityPolicy){
+export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=false,verifyContinuation=false,courtPolicy:'LOW'|'MEDIUM'|'HIGH'='MEDIUM',calibration?:PoliticalCalibration,hereditaryRecruitment?:HereditaryRecruitmentPolicy,familyFoundationPolicy?:FamilyFoundationPolicy,familyNoblePolicy?:'SINGLE'|'RENEWAL',abilityPolicy?:import('../../Politics/PersonAbilities').AbilityPolicy,punishmentPolicy?:import('../../Politics/MilitaryCourtStanding').CourtPunishmentPolicy){
   const royalOffers=new Map<string,number>(),readRoyal=(Dynasty as any).getRoyalMilitaryCandidates;
   if(readRoyal)(Dynasty as any).getRoyalMilitaryCandidates=function(...args:any[]){const rows=readRoyal.apply(this,args);for(const r of rows)if(!royalOffers.has(r.rulerId))royalOffers.set(r.rulerId,args[1]);return rows;};
   const {core,game}=await createNaturalCore(seed),started=performance.now();
   Dynasty.setCourtAttemptPolicyForSimulation(courtPolicy);
   if(calibration)Dynasty.setPoliticalCalibrationForSimulation(calibration);
+  if(punishmentPolicy)Military.setCourtPunishmentPolicyForSimulation(punishmentPolicy);
   if(abilityPolicy)Dynasty.setAbilityPolicyForSimulation(abilityPolicy);
   if(hereditaryRecruitment)Military.setHereditaryRecruitmentForSimulation(hereditaryRecruitment);
   if(familyNoblePolicy)Military.setFamilyNoblePolicyForSimulation(familyNoblePolicy);

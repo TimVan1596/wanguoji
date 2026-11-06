@@ -3,7 +3,7 @@ import type {NobleGrant} from './MilitaryNobility';
 import {NOBLE_NAMES} from './MilitaryNobility';
 import type {MilitaryAppanage} from './MilitaryAppanage';
 import type {MilitaryHonor} from './MilitaryHonors';
-export const militaryDeathWording=(cause?:string)=>cause==='NATURAL_DEATH'?'自然去世':cause==='BATTLE_DEATH'?'战死':cause==='SIEGE_LOSS'?'围城战乱中去世':'去世';
+export const militaryDeathWording=(cause?:string)=>cause==='POLITICAL_EXECUTION'?'因谋逆伏诛':cause==='NATURAL_DEATH'?'自然去世':cause==='BATTLE_DEATH'?'战死':cause==='SIEGE_LOSS'?'围城战乱中去世':'去世';
 const month=(e:WorldEvent)=>e.monthIndex??e.year;
 function read<T>(value:unknown):T|undefined{try{return typeof value==='string'?JSON.parse(value):undefined;}catch{return;}}
 export interface MilitaryLifePair {anchor:WorldEvent;other:WorldEvent;text:string;kind:'GRANT_APPANAGE'|'DEATH_POSTHUMOUS'}

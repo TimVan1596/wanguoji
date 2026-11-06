@@ -142,6 +142,7 @@ export default class User {
 
   destroyUser(silentRulerDeath = false, populationMutation: PopulationMutationContext = { cause: "UNATTRIBUTED" }): boolean {
     if (this.destroyed) return false;
+    if(populationMutation.cause==='POLITICAL_EXECUTION'&&(populationMutation.month===undefined||!MilitaryCommandRegistry.courtExecutionSource(this,populationMutation.month)))return false;
     if (populationMutation.cause === "NATURAL_DEATH") {
       const person = this.militaryPersonId ? MilitaryCommandRegistry.getPerson(this.militaryPersonId) : undefined;
       const month = populationMutation.month;
@@ -194,6 +195,7 @@ export default class User {
       DynastyRegistry.recordResidentEntityDeath(this.historicalPersonId,populationMutation.month??core?.simulator?.year??0);
     if (this.historicalPersonId && verifiedMilitaryPersonId === this.historicalPersonId && (populationMutation.cause === "SIEGE_LOSS" || populationMutation.cause === "BATTLE_DEATH"))
       DynastyRegistry.recordRoyalMilitaryBattleDeath(this.historicalPersonId,populationMutation.month??core?.simulator?.year??0,populationMutation.cause);
+    if(populationMutation.cause==='POLITICAL_EXECUTION'&&verifiedMilitaryPersonId)DynastyRegistry.recordRoyalMilitaryExecution(verifiedMilitaryPersonId,populationMutation.month!);
     this.destroyed = true;
     MilitaryCommandRegistry.onUserDestroyed(this, populationMutation.month ?? Game.Core?.simulator?.year ?? 0, populationMutation.cause);
     const removedFromPopulation = team.users.delete(this);

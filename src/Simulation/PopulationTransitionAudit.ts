@@ -3,6 +3,7 @@ import type Team from "../Components/Team";
 export type PopulationTransitionCause =
   | "NATURAL_GROWTH"
   | "NATURAL_DEATH"
+  | "POLITICAL_EXECUTION"
   | "RANDOM_EVENT"
   | "IMMIGRATION"
   | "SPECIAL_EVENT"
@@ -24,7 +25,7 @@ export type PopulationTransitionCause =
   | "INITIALIZATION"
   | "UNATTRIBUTED";
 
-export type PopulationDamageSource = "CITY_SIEGE" | "SIEGE_ASSAULT" | "HOSTILE_HOME_OCCUPATION" | "MILITARY_LIFESPAN" | "RESIDENT_LIFESPAN" | "UNSPECIFIED";
+export type PopulationDamageSource = "COURT_JUDGMENT" | "CITY_SIEGE" | "SIEGE_ASSAULT" | "HOSTILE_HOME_OCCUPATION" | "MILITARY_LIFESPAN" | "RESIDENT_LIFESPAN" | "UNSPECIFIED";
 
 export interface PopulationCasualtyEvidence {
   victimUserId: number;

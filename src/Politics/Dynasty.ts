@@ -405,6 +405,16 @@ class DynastyRegistryStore {
     WorldHistory.addRulerDied(month, dynasty.factionId, this.getRulerPersonalName(ruler), {rulerId:ruler.id, deathReason:ruler.deathReason, age:Math.floor((month-ruler.bornYear)/12)});
   }
 
+  recordRoyalMilitaryExecution(personId:string,month:number){
+    const r=this.findRoyalMilitaryPerson(personId);if(!r||hasRecordedRulerDeath(r))return;
+    const p=MilitaryCommandRegistry.getPerson(personId),user=p&&Team.GetUserById(p.sourceUserId),owner=this.getAll().find(d=>d.rulers.includes(r));
+    if(!p||!user||!owner||!MilitaryCommandRegistry.courtExecutionSource(user,month)||owner.currentRulerId===r.id)throw Error('Invalid royal execution');
+    r.status='dead';r.deathMonth=month;r.deathReason='因谋逆伏诛';if(r.endYear===undefined){r.endYear=month;r.politicalEndYear=month;r.endReason=r.deathReason;}
+    if(r.chronicle)r.chronicle.deathCause=r.deathReason;
+    owner.heirIds=owner.heirIds.filter(id=>id!==r.id);if(owner.designatedHeirId===r.id){owner.designatedHeirId=undefined;owner.designatedSinceMonth=undefined;}
+    WorldHistory.addRulerDied(month,owner.factionId,this.getRulerPersonalName(r),{rulerId:r.id,deathReason:r.deathReason,age:Math.floor((month-r.bornYear)/12)});
+  }
+
   private settleRoyalMilitaryAccession(ruler: Ruler, month: number) {
     if (!ruler.militaryIdentity) return;
     MilitaryCommandRegistry.endPersonCommands(ruler.militaryIdentity.personId, month, "DISMISSED");
@@ -947,7 +957,7 @@ class DynastyRegistryStore {
     const acts=all.filter(e=>e.type==='court-coup-attempt');
     const results=WorldHistory.getRecordedEvents().filter(e=>e.type==='court-coup-result');
     const successes=results.filter(e=>e.metadata?.outcome==='SUCCESS').length;
-    return {funnel:this.courtFunnel.snapshot(Game.Core?.simulator?.year),qualificationScope:'SESSION_SINCE_LOAD',eventScope:'RECORDED_WORLD_HISTORY',qualifiedInstigatorOpportunities:this.courtInstigatorChecks,attempts:acts.length,successes,failures:results.length-successes,balanced:acts.length===results.length,dismissals:results.filter(e=>e.metadata?.outcome==='FAILED').length,bans,pardons,revocations,peerageRewards,pardonTransactionFailures:this.courtPardonFailures,executions:0,courtServiceAwards:WorldHistory.getRecordedEvents().filter(e=>e.type==='court-service-granted').length,
+    return {funnel:this.courtFunnel.snapshot(Game.Core?.simulator?.year),qualificationScope:'SESSION_SINCE_LOAD',eventScope:'RECORDED_WORLD_HISTORY',qualifiedInstigatorOpportunities:this.courtInstigatorChecks,attempts:acts.length,successes,failures:results.length-successes,balanced:acts.length===results.length,dismissals:results.filter(e=>e.metadata?.outcome==='FAILED').length,bans,pardons,revocations,peerageRewards,pardonTransactionFailures:this.courtPardonFailures,executions:all.filter(e=>e.type==='military-person-died'&&e.metadata?.deathCause==='POLITICAL_EXECUTION').length,courtServiceAwards:WorldHistory.getRecordedEvents().filter(e=>e.type==='court-service-granted').length,
       summary:`本次会话：年度国家检查${this.courtFunnel.annual}次，真实危机${this.courtFunnel.crisis}次，合格发起机会 ${this.courtInstigatorChecks}次。存档历史累计：宫廷拥立企图 ${acts.length}次；成功 ${successes}次，失败 ${results.length-successes}次。本次会话共享抽签${this.courtFunnel.draws}次，未发起${this.courtFunnel.noAttempt}次，已提交企图${this.courtFunnel.attempts}次（成功${this.courtFunnel.successes}、失败${this.courtFunnel.failures}）。执行失败并回滚${this.courtFunnel.transactionFailures}次。存档累计禁仕${bans}次、追夺${revocations}次、赦免${pardons}次、从龙爵赏${peerageRewards}次；本次会话赦免事务回滚${this.courtPardonFailures}次。本会话条件期望企图${this.courtFunnel.expectedAttempts.toFixed(3)}次，已发起企图条件期望成功${this.courtFunnel.expectedConditionalSuccesses.toFixed(3)}次。处决未发布。拥立者不等于继位者。`};
   }
 
@@ -1034,6 +1044,7 @@ class DynastyRegistryStore {
           this.recordSuccessionAct(team,dynasty,target,{eventId:`${eventId}-succession`,kind:'DISQUALIFIED',month,removedDesignation:dynasty.designatedHeirId===target.id,factionId:team.name,epochFounderId:nobleEpochForRuler(dynasty,current.id)!.foundingRulerId,rulerId:target.id,militaryPersonId:person.personId,issuerRulerId:current.id,courtCoupEventId:eventId,sourceEventId:result.id});
         }
       }
+      if(outcome==='FAILED')MilitaryCommandRegistry.executeCourtJudgment(person,team,month);
       if(outcome==='SUCCESS'&&target.militaryIdentity?.personId!==actor.personId){
         const supporter=Team.GetUserById(person.sourceUserId);if(!supporter||supporter.isDestroyed||supporter.team!==team||supporter.militaryPersonId!==person.personId)throw Error('Missing living supporter for court service');
         const before=supporter.loyalty,after=Math.min(100,before+8),rewardId=`${eventId}-service`;

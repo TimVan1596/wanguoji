@@ -5,10 +5,12 @@ import type {CourtCoupRecord} from './CourtCoup';
 import type {WorldEvent} from '../History/WorldHistory';
 import {nobleEpochForRuler} from './MilitaryNobility';
 import {honorAuthority} from './MilitaryHonors';
+export type CourtPunishmentPolicy='BASELINE'|'LOW'|'MEDIUM'|'HIGH';
+export const isCourtPunishmentPolicy=(p:unknown):p is CourtPunishmentPolicy=>typeof p==='string'&&['BASELINE','LOW','MEDIUM','HIGH'].includes(p);
 export interface MilitaryCourtAct {
  version:1;stability:number;eventId:string;kind:'COURT_BAN'|'COURT_PARDONED';month:number;personId:string;sourceUserId:number;bornMonth:number;personalName:string;
  factionId:string;epochFounderId:string;rulerId:string;rulerTitle:string;countryName:string;victimRulerId:string;
- courtCoupEventId:string;courtResultEventId:string;banEventId?:string;severity:'DISMISSAL'|'FORFEITURE';sourceEventIds:string[];
+ courtCoupEventId:string;courtResultEventId:string;banEventId?:string;punishmentPolicy?:CourtPunishmentPolicy;severity:'DISMISSAL'|'FORFEITURE'|'EXECUTION';sourceEventIds:string[];
 }
 const at=(e:WorldEvent)=>e.monthIndex??e.year;
 /** A later accession never erases the ban. Only a sourced pardon cancels this authority's disability. */
@@ -16,12 +18,18 @@ export function unresolvedCourtBans(p:Pick<MilitaryPerson,'politicalHistory'>,fa
  const acts=p.politicalHistory??[];return acts.filter(a=>a.kind==='COURT_BAN'&&a.factionId===factionId&&a.month<=month&&(!epochFounderId||a.epochFounderId===epochFounderId)&&!acts.some(b=>b.kind==='COURT_PARDONED'&&b.banEventId===a.eventId&&b.month<=month));
 }
 /** Severity comes from actual command reach, not ambition, peerage or a new punishment draw. */
-export function courtFailureSeverity(r:CourtCoupRecord):MilitaryCourtAct['severity']{return r.participant.unitCount>=3&&['JIANGJUN','SHANGJIANGJUN'].includes(r.participant.officeStanding?.office??'')?'FORFEITURE':'DISMISSAL';}
-export function planCourtBan(p:MilitaryPerson,team:any,dy:Dynasty,attempt:WorldEvent,result:WorldEvent):MilitaryCourtAct|undefined{
+export function courtFailureSeverity(r:CourtCoupRecord,policy:CourtPunishmentPolicy='BASELINE'):MilitaryCourtAct['severity']{
+ const office=r.participant.officeStanding?.office,heavy=r.participant.unitCount>=3&&['JIANGJUN','SHANGJIANGJUN'].includes(office??'');if(!heavy)return 'DISMISSAL';
+ // A sourced failed seizure with a functioning sovereign, never ambition alone.
+ const self=r.target?.basis==='SELF',fullCommand=office==='SHANGJIANGJUN'&&r.participant.unitCount>=4;
+ const executable=policy==='LOW'?self&&r.stability>=75:policy==='MEDIUM'?self&&r.stability>=55||fullCommand&&r.crisisEventIds.length>=2&&r.stability>=65:policy==='HIGH'?(self||fullCommand)&&r.stability>=40:false;
+ return executable?'EXECUTION':'FORFEITURE';
+}
+export function planCourtBan(p:MilitaryPerson,team:any,dy:Dynasty,attempt:WorldEvent,result:WorldEvent,policy:CourtPunishmentPolicy='BASELINE'):MilitaryCourtAct|undefined{
  let r:CourtCoupRecord;try{r=JSON.parse(String(attempt.metadata?.courtCoup));}catch{return;}
  const authority=honorAuthority(team,dy,r.month);
  if(r.outcome!=='FAILED'||attempt.type!=='court-coup-attempt'||result.type!=='court-coup-result'||r.outcomeEventId!==result.id||result.metadata?.courtCoupEventId!==attempt.id||r.participant.personId!==p.personId||r.participant.sourceUserId!==p.sourceUserId||r.participant.bornMonth!==p.bornMonth||!authority||authority.rulerId!==r.previousRulerId||authority.factionId!==r.factionId||p.deathMonth!==undefined||p.factionId!==team.name||p.politicalHistory?.some(a=>a.courtCoupEventId===attempt.id))return;
- return {...authority,version:1,stability:r.stability,eventId:`${attempt.id}-ban`,kind:'COURT_BAN',month:r.month,personId:p.personId,sourceUserId:p.sourceUserId,bornMonth:p.bornMonth,personalName:p.personalName,victimRulerId:r.previousRulerId,courtCoupEventId:attempt.id,courtResultEventId:result.id,severity:courtFailureSeverity(r),sourceEventIds:[attempt.id,result.id]};
+ return {...authority,version:1,stability:r.stability,eventId:`${attempt.id}-ban`,kind:'COURT_BAN',month:r.month,personId:p.personId,sourceUserId:p.sourceUserId,bornMonth:p.bornMonth,personalName:p.personalName,victimRulerId:r.previousRulerId,courtCoupEventId:attempt.id,courtResultEventId:result.id,punishmentPolicy:policy,severity:courtFailureSeverity(r,policy),sourceEventIds:[attempt.id,result.id]};
 }
 /** A stable new sovereign may pardon the real officer who once sought to enthrone him.
  * The victim must have truly lost political office or died; the named claimant is not deemed complicit. */
@@ -37,9 +45,9 @@ export function planCourtPardon(p:MilitaryPerson,team:any,dy:Dynasty,month:numbe
  }
  return undefined;
 }
-export function militaryCourtText(a:MilitaryCourtAct){return a.kind==='COURT_BAN'?`${a.rulerTitle}以${a.personalName}谋废之罪罢其军职，禁其在本朝复仕。`:`${a.rulerTitle}赦${a.personalName}旧罪，准其复仕。`;}
+export function militaryCourtText(a:MilitaryCourtAct){return a.kind==='COURT_BAN'&&a.severity==='EXECUTION'?`${a.rulerTitle}以${a.personalName}谋废之罪罢其军职，判其伏诛。`:a.kind==='COURT_BAN'?`${a.rulerTitle}以${a.personalName}谋废之罪罢其军职，禁其在本朝复仕。`:`${a.rulerTitle}赦${a.personalName}旧罪，准其复仕。`;}
 export function militaryCourtLabels(p:MilitaryPerson,factionId:string,month:number,epochFounderId?:string){
  const acts=p.politicalHistory?.filter(a=>a.factionId===factionId&&a.month<=month)??[];if(!acts.length)return [];
  const open=unresolvedCourtBans(p,factionId,month,epochFounderId),last=acts.at(-1)!;
- return [open.length?'谋逆罢官 · 禁仕':last.kind==='COURT_PARDONED'?'曾因谋逆罢官 · 已获赦免':'曾因谋逆罢官'];
+ return [acts.some(a=>a.kind==='COURT_BAN'&&a.severity==='EXECUTION')?'因谋逆伏诛':open.length?'谋逆罢官 · 禁仕':last.kind==='COURT_PARDONED'?'曾因谋逆罢官 · 已获赦免':'曾因谋逆罢官'];
 }

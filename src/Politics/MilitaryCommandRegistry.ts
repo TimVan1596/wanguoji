@@ -6,7 +6,7 @@ import {createFamilyNobleContext,planFamilyNobleTransition,familyNobleText,famil
 import {emptyFamilyRecruitmentDiagnostics,familyRecruitmentExposure} from './FamilyRecruitmentDiagnostics';
 import {familyFounderSource,makeMilitaryFamily,familyAppointmentWeight,type MilitaryFamily} from './MilitaryFamily';
 import {politicalMutationActive,beginPoliticalMutation} from '../Simulation/PoliticalMutationScope';
-import {unresolvedCourtBans,planCourtBan,militaryCourtText,type MilitaryCourtAct} from './MilitaryCourtStanding';
+import {isCourtPunishmentPolicy,type CourtPunishmentPolicy,unresolvedCourtBans,planCourtBan,militaryCourtText,type MilitaryCourtAct} from './MilitaryCourtStanding';
 import {residentNaturalDeathMonth,ordinaryLifeEligible} from "../Simulation/ResidentLife";
 import {appanageChanges,appanageText,OWNERSHIP_EVENTS,type MilitaryAppanage} from './MilitaryAppanage';
 import {honorAuthority} from './MilitaryHonors';
@@ -104,6 +104,7 @@ export interface MilitaryFormation {
 }
 
 export interface MilitaryCommandState {
+  courtPunishmentPolicy?:CourtPunishmentPolicy;
   familyNoblePolicy?:'SINGLE'|'RENEWAL';
   familyFoundationPolicy?:FamilyFoundationPolicy;
   hereditaryRecruitment?:HereditaryRecruitmentPolicy;
@@ -155,6 +156,8 @@ export class MilitaryCommandRegistryStore {
     if(!this.familyByResident)this.familyByResident=new Map(this.families.flatMap(family=>family.members.map(member=>[`${member.sourceUserId}/${member.bornMonth}`,{family,member}] as const)));
     return this.familyByResident.get(`${userId}/${bornMonth}`);
   }
+  private courtPunishmentPolicy:CourtPunishmentPolicy='MEDIUM';
+  setCourtPunishmentPolicyForSimulation(p:CourtPunishmentPolicy){if(!isCourtPunishmentPolicy(p))throw Error('Invalid punishment policy');this.courtPunishmentPolicy=p;}
   private familyNoblePolicy:'SINGLE'|'RENEWAL'='RENEWAL';
   setFamilyNoblePolicyForSimulation(policy:'SINGLE'|'RENEWAL'){this.familyNoblePolicy=policy;}
   private familyFoundationPolicy:FamilyFoundationPolicy='FOUNDING';
@@ -175,7 +178,7 @@ export class MilitaryCommandRegistryStore {
     unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
 
   reset() {
-    this.familyNoblePolicy='RENEWAL';this.familyFoundationPolicy='FOUNDING';
+    this.courtPunishmentPolicy='MEDIUM';this.familyNoblePolicy='RENEWAL';this.familyFoundationPolicy='FOUNDING';
     this.hereditaryRecruitment='MEDIUM';
     this.familyRecruitment=emptyFamilyRecruitmentDiagnostics();
     this.families=[];this.familyByResident=undefined;
@@ -193,14 +196,14 @@ export class MilitaryCommandRegistryStore {
   }
 
   exportState(): MilitaryCommandState {
-    return { ...(this.familyNoblePolicy==='RENEWAL'?{familyNoblePolicy:this.familyNoblePolicy}:{}),...(this.familyFoundationPolicy!=='Z48'?{familyFoundationPolicy:this.familyFoundationPolicy}:{}),...(this.hereditaryRecruitment!=='BASELINE'?{hereditaryRecruitment:this.hereditaryRecruitment}:{}),...(this.families.length?{families:structuredClone(this.families)}:{}), people: [...this.people.values()].map(person => structuredClone(person)),
+    return {courtPunishmentPolicy:this.courtPunishmentPolicy, ...(this.familyNoblePolicy==='RENEWAL'?{familyNoblePolicy:this.familyNoblePolicy}:{}),...(this.familyFoundationPolicy!=='Z48'?{familyFoundationPolicy:this.familyFoundationPolicy}:{}),...(this.hereditaryRecruitment!=='BASELINE'?{hereditaryRecruitment:this.hereditaryRecruitment}:{}),...(this.families.length?{families:structuredClone(this.families)}:{}), people: [...this.people.values()].map(person => structuredClone(person)),
       formations: [...this.formations.values()].filter(f=>!f.leaderDuty).map(formation => structuredClone(formation)),
       ...([...this.formations.values()].some(f=>f.leaderDuty)?{leaderCommands:[...this.formations.values()].filter(f=>f.leaderDuty).map(f=>structuredClone(f))}:{}),
       personSequence: this.personSequence, commandSequence: this.commandSequence, lastEvaluationMonth: this.lastEvaluationMonth };
   }
 
   importState(state: MilitaryCommandState) {
-    this.familyNoblePolicy=state.familyNoblePolicy??'SINGLE';this.familyFoundationPolicy=state.familyFoundationPolicy??'Z48';
+    this.courtPunishmentPolicy=state.courtPunishmentPolicy??'BASELINE';this.familyNoblePolicy=state.familyNoblePolicy??'SINGLE';this.familyFoundationPolicy=state.familyFoundationPolicy??'Z48';
     this.hereditaryRecruitment=state.hereditaryRecruitment??'BASELINE';
     this.familyRecruitment=emptyFamilyRecruitmentDiagnostics();
     this.families=structuredClone(state.families??[]);this.familyByResident=undefined;
@@ -216,7 +219,7 @@ export class MilitaryCommandRegistryStore {
 
   snapshotTransaction(){return {people:new Map(this.people),formations:new Map(this.formations),state:this.exportState(),familyRecruitment:structuredClone(this.familyRecruitment),diagnostics:{...this.diagnostics},arrivals:new Map(this.lastArrivalTargetByCommand),ranges:new Map(this.longRangeOrderSamples)};}
   rollbackTransaction(snapshot:ReturnType<MilitaryCommandRegistryStore["snapshotTransaction"]>,inPlace=false){
-    this.familyNoblePolicy=snapshot.state.familyNoblePolicy??'SINGLE';this.familyFoundationPolicy=snapshot.state.familyFoundationPolicy??'Z48';
+    this.courtPunishmentPolicy=snapshot.state.courtPunishmentPolicy??'BASELINE';this.familyNoblePolicy=snapshot.state.familyNoblePolicy??'SINGLE';this.familyFoundationPolicy=snapshot.state.familyFoundationPolicy??'Z48';
     this.hereditaryRecruitment=snapshot.state.hereditaryRecruitment??'BASELINE';
     this.familyByResident=undefined;
     if(inPlace){this.families=structuredClone(snapshot.state.families??[]);this.people=new Map(snapshot.state.people.map(data=>{const p=snapshot.people.get(data.personId)!;for(const k of Object.keys(p))delete (p as any)[k];Object.assign(p,structuredClone(data));return [p.personId,p];}));this.formations=new Map(savedFormationRows(snapshot.state).map(data=>{const f=snapshot.formations.get(data.commandId)!;for(const k of Object.keys(f))delete (f as any)[k];Object.assign(f,structuredClone(data));return [f.commandId,f];}));this.personSequence=snapshot.state.personSequence;this.commandSequence=snapshot.state.commandSequence;this.lastEvaluationMonth=snapshot.state.lastEvaluationMonth;}
@@ -543,7 +546,7 @@ export class MilitaryCommandRegistryStore {
       const holder=f.members.find(m=>m.memberId===(last?.holderMemberId??f.members[0].memberId))!,p=holder.militaryPersonId?this.people.get(holder.militaryPersonId):undefined,t=teams.find(t=>t.name===f.factionId),dy=dynasties.find(d=>d.factionId===f.factionId),epoch=dy?.houseEpochs?.find(e=>e.foundingRulerId===f.epochFounderId);
       const used=new Set(f.nobleSuccession?.map(a=>a.sourceGrantEventId)),canRenew=this.familyNoblePolicy==='RENEWAL'&&!!last&&f.members.some(m=>m.generation>0&&m.militaryPersonId&&m.deathMonth===undefined&&this.people.get(m.militaryPersonId)?.nobilityHistory?.some(g=>!used.has(g.eventId)));
       if(last?.kind==='ENDED'&&!canRenew)continue;
-      const needsReview=canRenew||(holder.deathMonth??Infinity)<=month||(holder.exitMonth??Infinity)<=month||familyResidenceAt(f,holder,month)!==f.factionId||p?.politicalRulerId||p?.politicalHistory?.some(a=>a.kind==='COURT_BAN'&&a.severity==='FORFEITURE'&&a.month<=month)||(!last||last.kind==='STARTED')&&p?.honorHistory?.some(h=>h.kind==='REVOKED'&&h.month<=month)||t?.status!=='ACTIVE'||(epoch?.endMonth??Infinity)<=month;
+      const needsReview=canRenew||(holder.deathMonth??Infinity)<=month||(holder.exitMonth??Infinity)<=month||familyResidenceAt(f,holder,month)!==f.factionId||p?.politicalRulerId||p?.politicalHistory?.some(a=>a.kind==='COURT_BAN'&&['FORFEITURE','EXECUTION'].includes(a.severity)&&a.month<=month)||(!last||last.kind==='STARTED')&&p?.honorHistory?.some(h=>h.kind==='REVOKED'&&h.month<=month)||t?.status!=='ACTIVE'||(epoch?.endMonth??Infinity)<=month;
       if(!needsReview)continue;
       const context={...createFamilyNobleContext(month,[f],this.getPeople(),WorldHistory.getRecordedEvents(),dynasties),renewable:this.familyNoblePolicy==='RENEWAL'};
       const act=planFamilyNobleTransition(f,context);if(!act)continue;
@@ -608,8 +611,17 @@ export class MilitaryCommandRegistryStore {
     if(id!==act.eventId||!this.eventReader(act.factionId).some(e=>e.id===id))throw Error('Court act missing');
   }
   applyCourtFailure(p:MilitaryPerson,team:Team,dy:Dynasty,attempt:WorldEvent,result:WorldEvent){
-    const act=planCourtBan(p,team,dy,attempt,result);if(!act)throw Error('Invalid court punishment');this.recordCourtAct(p,act);
+    const act=planCourtBan(p,team,dy,attempt,result,this.courtPunishmentPolicy);if(!act)throw Error('Invalid court punishment');this.recordCourtAct(p,act);
     for(const honor of nextMilitaryHonors(p,this.getFormations(),this.eventReader(team.name),act.month,[team],[dy]))if(honor.reason==='COURT_COUP_FAILED')this.recordHonor(p,honor);
+  }
+  courtExecutionSource(user:User,month:number){
+    const p=user.militaryPersonId&&this.getPerson(user.militaryPersonId);if(!politicalMutationActive()||!p||p.status!=='RETIRED'||p.deathMonth!==undefined||p.sourceUserId!==user.id||p.bornMonth!==user.bornMonth||p.name!==user.name||p.factionId!==user.team.name)return;
+    const act=p.politicalHistory?.find(a=>a.kind==='COURT_BAN'&&a.severity==='EXECUTION'&&a.month===month&&a.factionId===user.team.name);
+    return act&&this.eventReader(act.factionId).some(e=>e.id===act.eventId&&e.metadata?.courtAct===JSON.stringify(act))?act:undefined;
+  }
+  executeCourtJudgment(p:MilitaryPerson,team:Team,month:number){
+    const act=p.politicalHistory?.find(a=>a.kind==='COURT_BAN'&&a.severity==='EXECUTION'&&a.month===month);if(!act)return;
+    const user=team.getUserById(p.sourceUserId);if(!user||!this.courtExecutionSource(user,month)||!user.destroyUser(false,{cause:'POLITICAL_EXECUTION',month,damageSource:'COURT_JUDGMENT',context:act.eventId})||p.status!=='DEAD'||p.deathCause!=='POLITICAL_EXECUTION'||!this.eventReader(team.name).some(e=>e.id===`military-person-death-${p.personId}-${month}`))throw Error('Political execution did not complete');
   }
   private recordHonor(p:MilitaryPerson,honor:MilitaryHonor){
     if(!this.eventWriter)throw Error('Missing honor writer');
@@ -934,11 +946,11 @@ export class MilitaryCommandRegistryStore {
   onUserDestroyed(user: User, worldMonth: number, cause: string) {
     this.familyReadingRevision++;
     const relative=this.getFamilyMember(user.id,user.bornMonth);
-    if(relative){relative.member.exitHistoryIndex=WorldHistory.getEventCount();relative.member.exitMonth=worldMonth;relative.member.exitCause=cause;if(['SIEGE_LOSS','BATTLE_DEATH','NATURAL_DEATH'].includes(cause)){if(relative.member.deathMonth!==worldMonth||relative.member.deathHistoryIndex===undefined)relative.member.deathHistoryIndex=WorldHistory.getEventCount();relative.member.deathMonth=worldMonth;relative.member.deathCause=cause;}}
+    if(relative){relative.member.exitHistoryIndex=WorldHistory.getEventCount();relative.member.exitMonth=worldMonth;relative.member.exitCause=cause;if(['SIEGE_LOSS','BATTLE_DEATH','NATURAL_DEATH','POLITICAL_EXECUTION'].includes(cause)){if(relative.member.deathMonth!==worldMonth||relative.member.deathHistoryIndex===undefined)relative.member.deathHistoryIndex=WorldHistory.getEventCount();relative.member.deathMonth=worldMonth;relative.member.deathCause=cause;}}
     const record = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
     const person = record?.sourceUserId === user.id && record.bornMonth === user.bornMonth && record.name === user.name && record.factionId === user.team.name ? record : undefined;
     if (cause === "NATURAL_DEATH" && !(ordinaryLifeEligible({...user,isDestroyed:false})&&worldMonth>=residentNaturalDeathMonth(user.id,user.bornMonth)) && (!person || (!person.royalIdentity && worldMonth % 12 !== 0) || worldMonth < deriveMilitaryLifeSchedule(person).naturalDeathMonth)) return;
-    const death = cause === "SIEGE_LOSS" || cause === "BATTLE_DEATH" || cause === "NATURAL_DEATH";
+    const death = cause === "POLITICAL_EXECUTION" || cause === "SIEGE_LOSS" || cause === "BATTLE_DEATH" || cause === "NATURAL_DEATH";
     const unitId = user.player.logicalUnitId;
     if (unitId) for (const formation of this.formations.values()) if (formation.status === "ACTIVE" && formation.memberUnitIds.includes(unitId)) {
       if(formation.leaderDuty?.sourceUserId===user.id)this.endInsurgentCommand(formation,worldMonth,'BODY_REMOVED');
@@ -958,8 +970,8 @@ export class MilitaryCommandRegistryStore {
       person.status = "DEAD"; person.deathMonth = worldMonth; person.deathCause = cause; this.diagnostics.deaths++;
       if (cause === "NATURAL_DEATH") this.diagnostics.naturalDeaths++;
       this.eventWriter?.({ id: `military-person-death-${person.personId}-${worldMonth}`, year: worldMonth, monthIndex: worldMonth,
-        category: "politics", type: "military-person-died", title: cause === "NATURAL_DEATH" ? `${getMilitaryPersonDisplayName(person)}自然去世` : `${getMilitaryPersonDisplayName(person)}去世`, factionIds: [person.factionId], actorFactionId: person.factionId,
-        metadata: { personId: person.personId, sourceUserId: person.sourceUserId, personalName: person.personalName, deathCause: cause }, importance: "normal" });
+        category: "politics", type: "military-person-died", title: cause === "POLITICAL_EXECUTION" ? `${getMilitaryPersonDisplayName(person)}因谋逆伏诛` : cause === "NATURAL_DEATH" ? `${getMilitaryPersonDisplayName(person)}自然去世` : `${getMilitaryPersonDisplayName(person)}去世`, factionIds: [person.factionId], actorFactionId: person.factionId,
+        metadata: { personId: person.personId, sourceUserId: person.sourceUserId, personalName: person.personalName, deathCause: cause,...(cause==='POLITICAL_EXECUTION'?{courtActEventId:person.politicalHistory?.find(a=>a.kind==='COURT_BAN'&&a.severity==='EXECUTION'&&a.month===worldMonth)?.eventId}:{}) }, importance: "normal" });
     } else if (person.status === "ACTIVE") person.status = "RETIRED";
   }
 

@@ -1,3 +1,4 @@
+import {isCourtPunishmentPolicy} from '../Politics/MilitaryCourtStanding';
 import {isPopulationIdentityLabel} from '../Politics/MilitaryPersonIdentity';
 import {splitEstablishedPersonalName} from '../Politics/NameCulture';
 import {isFamilyFoundationPolicy} from '../Politics/FamilyFoundationPolicy';
@@ -18,6 +19,7 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
       !Number.isSafeInteger(state.lastEvaluationMonth) || Number(state.lastEvaluationMonth) < -1 || Number(state.lastEvaluationMonth) > worldMonth) {
     return ["militaryCommandRegistry has invalid state shape"];
   }
+  if(state.courtPunishmentPolicy!==undefined&&!isCourtPunishmentPolicy(state.courtPunishmentPolicy))errors.push('invalid court punishment policy');
   if(state.hereditaryRecruitment!==undefined&&!isHereditaryRecruitmentPolicy(state.hereditaryRecruitment))errors.push('invalid hereditary recruitment policy');
   if(state.familyNoblePolicy!==undefined&&!['SINGLE','RENEWAL'].includes(state.familyNoblePolicy))errors.push('invalid family noble policy');
   if(state.familyFoundationPolicy!==undefined&&!isFamilyFoundationPolicy(state.familyFoundationPolicy))errors.push('invalid family foundation policy');

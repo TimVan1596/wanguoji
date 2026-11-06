@@ -41,7 +41,7 @@ export function nextMilitaryHonors(p:MilitaryPerson,formations:MilitaryFormation
   honors.push({...authority,eventId:`military-revocation-${grant.eventId}`,kind:'REVOKED',personId:p.personId,personalName:p.personalName,month,grantEventId:grant.eventId,rank:grant.rank,sourceEventId:e.id,reason:'VERIFIED_SECESSION',meritEventIds:[]});
  }
  for(const ban of p.politicalHistory??[]){
-  if(ban.kind!=='COURT_BAN'||ban.severity!=='FORFEITURE'||ban.month!==month||!events.some(e=>e.id===ban.eventId&&e.metadata?.courtAct===JSON.stringify(ban)))continue;
+  if(ban.kind!=='COURT_BAN'||!['FORFEITURE','EXECUTION'].includes(ban.severity)||ban.month!==month||!events.some(e=>e.id===ban.eventId&&e.metadata?.courtAct===JSON.stringify(ban)))continue;
   const authority=honorAuthority(teams.find(t=>t.name===ban.factionId),dynasties.find(d=>d.factionId===ban.factionId),month),grant=currentNobleGrant(p,ban.factionId,month,ban.epochFounderId);
   if(!authority||authority.rulerId!==ban.rulerId||authority.epochFounderId!==ban.epochFounderId||!grant||!events.some(e=>e.id===grant.eventId&&e.metadata?.nobility===JSON.stringify(grant)))continue;
   honors.push({...authority,eventId:`military-revocation-${grant.eventId}`,kind:'REVOKED',personId:p.personId,personalName:p.personalName,month,grantEventId:grant.eventId,rank:grant.rank,sourceEventId:ban.courtResultEventId,reason:'COURT_COUP_FAILED',meritEventIds:[]});
