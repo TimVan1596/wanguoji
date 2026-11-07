@@ -147,7 +147,7 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
-- 当前 APP **v0.99931z55** / package **0.99.221** / WorldSave **V52**。z54已获人工Chrome Gate PASS。合法初任资格、有限能力选拔与真实任命依据、功臣直接子嗣及按需定位；未建立正式候补名册。V51旧槽位保留且拒绝误读，须新建世界。运行 `pnpm desktop:start:debug` 人工验收。
+- 当前 APP **v0.99931z56** / package **0.99.222** / WorldSave **V52**。z55已获人工Chrome Gate PASS。同月军旅史事按真实写入边界阅读，家族入籍和年度立家使用局部索引与提前排除；宗谱主标题区分有效及历史爵位。未发布家族封存，保留全部人口、亲缘和自然再兴。原合格V52世界可继续使用，运行 `pnpm desktop:start:debug` 人工验收。
 
 - v0.99931n人工Gate已PASS，真实长局自然发生至少11次同王统宗室废立。当前v0.99931n1修复连续废立后的V14生命周期校验，并完善君主即离位叙述与史评，等待[人工Gate](docs/RulerDepositionLifecycleClosureN1.md)。
 - v0.99929a 修复政治终结历史身份、退位年龄与双方君主大事记。[Political Terminal Chronicle Gate](docs/PoliticalTerminalChronicleClosure.md)已由用户完成人工PASS。

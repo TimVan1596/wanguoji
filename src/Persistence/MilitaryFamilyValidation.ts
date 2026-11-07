@@ -1,3 +1,5 @@
+import {familyAtEvidenceBoundary,familyMemberPresent,familyResidenceAt} from '../Politics/FamilyNobleSuccession';
+import {familyMeritPersonAtBoundary} from './FamilyMeritReplay';
 import {isFamilyFoundationPolicy} from '../Politics/FamilyFoundationPolicy';
 import {hereditaryAppointmentWeight,isHereditaryRecruitmentPolicy} from '../Politics/HereditaryRecruitment';
 import {calibrationOrBaseline,isPoliticalCalibration} from '../Politics/PoliticalCalibration';
@@ -43,7 +45,12 @@ export function validateMilitaryFamilies(save:WorldSaveV1){
    if(!user&&m.deathMonth===undefined&&m.exitMonth===undefined&&!military?.politicalRulerId)throw Error('family member missing live population or death');
   }
   const renewed=new Set<string>();for(const renewal of f.renewals??[]){const member=f.members.find(m=>m.memberId===renewal.memberId),person=member?.militaryPersonId&&state.people.find(p=>p.personId===member.militaryPersonId),source=events.find(e=>e.id===renewal.sourceEventId),event=events.find(e=>e.id===`${f.familyId}-${renewal.memberId}-merit`);
-   if(!member||member.generation===0||!person||!source||renewed.has(member.memberId)||renewal.month<member.enteredMonth||renewal.month>save.world.worldMonth||!event||event.type!=='military-family-merit'||event.metadata?.sourceEventId!==source.id||(event.monthIndex??event.year)!==renewal.month||!familyFounderSource({...person,deathMonth:undefined,factionId:f.factionId},[source],f.factionId,f.epochFounderId,renewal.month,isFamilyFoundationPolicy(event.metadata?.familyFoundationPolicy)?event.metadata.familyFoundationPolicy:'Z48'))throw Error('invalid renewed family merit');renewed.add(member.memberId);
+   if(!member||member.generation===0||!person||!source||renewed.has(member.memberId)||renewal.month<member.enteredMonth||renewal.month>save.world.worldMonth||!event||event.type!=='military-family-merit'||event.metadata?.sourceEventId!==source.id||(event.monthIndex??event.year)!==renewal.month)throw Error('invalid renewed family merit');
+   const boundary=events.indexOf(event),historical=familyMeritPersonAtBoundary(person,f.factionId,renewal.month,boundary,events,save.dynasties.flatMap(d=>d.rulers) as import('./WorldSaveSchema').RulerSaveV17[]);
+   const atBoundary=familyAtEvidenceBoundary(f,renewal.month,boundary,events),actor=atBoundary.members.find(m=>m.memberId===member.memberId);
+   if(!actor||!familyMemberPresent(actor,renewal.month)||familyResidenceAt(atBoundary,actor,renewal.month)!==f.factionId)throw Error('invalid renewed family residence/life boundary');
+   const prior=events.slice(0,boundary).filter(e=>(e.monthIndex??e.year)>=(epochs?.find(ep=>ep.foundingRulerId===f.epochFounderId)?.startMonth??0));
+   if(!historical||familyFounderSource(historical,prior,f.factionId,f.epochFounderId,renewal.month,isFamilyFoundationPolicy(event.metadata?.familyFoundationPolicy)?event.metadata.familyFoundationPolicy:'Z48')?.id!==source.id)throw Error('invalid renewed family merit boundary');renewed.add(member.memberId);
   }
  }catch(e){errors.push(`invalid military family ${f?.familyId}: ${String(e)}`);}
  if(errors.length)return errors;
