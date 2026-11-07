@@ -118,11 +118,15 @@ export function checkRoyalCourtAttempt(core:any,base:ReturnType<typeof exportWor
    team.cities.forEach((c:any)=>c.loyalty=60);(Military as any).advanceOffices(later,core.teams);
    const evaluate=()=>evaluateDepositionOpportunity({factionId:team.name,status:team.status,identityStage:team.identityStage,cityCount:team.cities.length,stability:getFactionStability(team),currentRuler:Dynasty.getCurrentRuler(team.name),rulers:d.rulers,houseName:d.houseName,worldMonth:later,events:History.getEventsForFaction(team.name)}),evaluation=evaluate(),influence=Military.getCourtAttemptInfluence(team,later,core.logicalUnitRegistry),actor=selectCourtInstigator(evaluation,Military.getPeople(),influence,Dynasty.getAbilityPolicy());
    check(actor?.personId===personId&&actor.unitCount>=3,`real royal direct seizure has a senior command: ${JSON.stringify({office:actor?.officeStanding?.office,units:actor?.unitCount})}`);
+   Military.updateNobility(later,core.teams,Dynasty.getAll());Dynasty.updateRoyalNobility(later,core.teams);
+   check(Dynasty.get(team.name)!.royalNobility?.some(a=>a.holderRulerId===r.id&&a.kind==='GRANTED'),'actual royal direct usurper has a sourced hereditary military peerage before judgment');
    const prepared=exportWorldSave(core),invoke=()=>{const next=random.next;random.next=()=>{next.call(random);return courtAttemptChance(actor!,'MEDIUM',Dynasty.getAbilityPolicy())*.99;};try{const t=core.teams.find((t:any)=>t.name===team.name);(Dynasty as any).evaluateInReignDeposition(t,Dynasty.get(t.name),Dynasty.getCurrentRuler(t.name),later);}finally{random.next=next;}};
    const write=History.addEvent;History.addEvent=function(ev){const id=write.call(this,ev);if(ev.type==='ruler-died')throw Error('injected royal execution write');return id;};try{invoke();}finally{History.addEvent=write;}
    check(diffCanonicalWorldSave(prepared,exportWorldSave(core)).matched,'royal execution write failure restores both life archives, kin, military body and RNG');invoke();
    const royal=Dynasty.get(team.name)!.rulers.find(x=>x.id===r.id)!,p=Military.getPerson(personId)!;
    check(p.deathCause==='POLITICAL_EXECUTION'&&royal.status==='dead'&&royal.deathMonth===later&&p.deathMonth===later&&royal.deathReason==='因谋逆伏诛'&&royal.parentId===r.parentId&&!core.teams.find((t:any)=>t.name===team.name).getUserById(p.sourceUserId),'royal direct usurper execution closes exactly the one permanent life while preserving parentage');
+   Dynasty.updateRoyalNobility(later,core.teams);
+   check(Dynasty.get(team.name)!.royalNobility?.at(-1)?.kind==='ENDED'&&['REVOKED','FORFEITED'].includes(Dynasty.get(team.name)!.royalNobility!.at(-1)!.reason),'actual formal judgment ends the real royal title source without punishing children or erasing the grant');
    const executed=exportWorldSave(core),valid=validateWorldSave(executed);check(valid.valid,`royal execution strictly saves: ${valid.errors.join(';')}`);hydrateWorldSave(core,structuredClone(executed));check(diffCanonicalWorldSave(executed,exportWorldSave(core)).matched,'royal execution reads without resetting death or creating another person');
    hydrateWorldSave(core,structuredClone(courtBase));
   }

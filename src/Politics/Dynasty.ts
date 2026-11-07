@@ -1634,7 +1634,7 @@ class DynastyRegistryStore {
       heir.endReason = "自然去世";
       heir.deathMonth = year;
       heir.deathReason = "自然去世";
-      if(heir.registration&&!WorldHistory.getRecordedEvents().some(e=>(e.monthIndex??e.year)===year&&((e.type==='ruler-died'&&e.rulerId===heir.id)||(e.type==='military-person-died'&&e.metadata?.personId===heir.militaryIdentity?.personId))))WorldHistory.addEvent({id:`${heir.id}-life-ended`,year,type:'royal-kin-died',category:'politics',importance:'normal',actorFactionId:dynasty.factionId,factionIds:[dynasty.factionId],rulerId:heir.id,title:`${this.getRulerPersonalName(heir)}自然去世。`,metadata:{deathMonth:year}});
+
       const parent = heir.parentId
         ? dynasty.rulers.find((ruler) => ruler.id === heir.parentId)
         : undefined;
@@ -1658,6 +1658,8 @@ class DynastyRegistryStore {
           parentTitle
         );
         parent.chronicle.notableEventIds.push(eventId);
+      }else {
+      if(heir.registration&&!WorldHistory.getRecordedEvents().some(e=>(e.monthIndex??e.year)===year&&((e.type==='ruler-died'&&e.rulerId===heir.id)||(e.type==='military-person-died'&&e.metadata?.personId===heir.militaryIdentity?.personId))))WorldHistory.addEvent({id:`${heir.id}-life-ended`,year,type:'royal-kin-died',category:'politics',importance:'normal',actorFactionId:dynasty.factionId,factionIds:[dynasty.factionId],rulerId:heir.id,title:`${this.getRulerPersonalName(heir)}自然去世。`,metadata:{deathMonth:year}});
       }
     });
     dynasty.heirIds = dynasty.heirIds.filter((heirId) => dynasty.rulers.some((ruler) => ruler.id === heirId && ruler.status === "heir"));

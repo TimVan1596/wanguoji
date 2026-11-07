@@ -46,6 +46,26 @@ export async function runRoyalNobilityCore(seed='royal-military-z11'){
   const saved=strict();Dynasty.updateRoyalNobility(181,core.teams);check(diffCanonicalWorldSave(saved,strict()).matched,'same-month repeated settlement cannot duplicate a title or event');
   check(royalNobleReading(child,d,History.getRecordedEvents(),181)?.current?.rank==='BO','actual royal card reading shows the inherited title independently of military office');
   for(const edit of [(s:any)=>s.dynasties.find((x:any)=>x.factionId===d.factionId).rulers.find((x:any)=>x.rulerId===child.id).parentId='forged',(s:any)=>{const a=s.dynasties.find((x:any)=>x.factionId===d.factionId).royalNobility.at(-1);a.rank='GONG';const e=s.worldHistory.events.find((x:any)=>x.id===a.eventId);e.metadata.royalNobleAct=JSON.stringify(a);},(s:any)=>s.dynasties.find((x:any)=>x.factionId===d.factionId).rulers.find((x:any)=>x.rulerId===child.id).registration.month=182]){const bad=structuredClone(saved);edit(bad);check(!validateWorldSave(bad).valid,'strict replay rejects forged parent, rank or future registration');}
+  // Age-valid registered royal records and actual natural lifetime processing.
+  // This controlled five-generation fixture is not a natural offspring-frequency claim.
+  {
+   hydrateWorldSave(core,structuredClone(fixture));const t=core.teams.find(x=>x.name===team.name)!,dy=Dynasty.get(t.name)!;let holder=dy.rulers.find(x=>x.id===candidate.rulerId)!,cursor=192;
+   for(const c of t.cities){c.loyalty=100;c.devastation=0;}
+   clock(cursor);Military.updateNobility(cursor,core.teams,Dynasty.getAll());Dynasty.updateRoyalNobility(cursor,core.teams);
+   check(dy.royalNobility?.at(-1)?.rank==='GONG','actual six-city, fifteen-year royal military service reaches a real personal duke source');
+   const ranks=['HOU','BO','ZI','NAN',undefined],advance=(end:number)=>{for(let m=cursor+1;m<=end;m++){clock(m);Dynasty.update(m,core.teams);Dynasty.updateRoyalNobility(m,core.teams);core.scene.sys.events.emit('postupdate');}cursor=end;};
+   for(let generation=0;generation<5;generation++){
+    const at=Math.max(cursor,holder.bornYear+216);advance(at);clock(at);
+    // The existing birth/lifespan sampler receives a fixed legal ticket: the
+    // newest feasible child and its normal minimum lifespan, with no edited DOB/death.
+    const pick=random.pickIndex;let calls=0;random.pickIndex=max=>++calls===1?Math.max(0,max-1):0;let successor:import('../../Politics/Dynasty').Ruler;try{successor=(Dynasty as any).appendRoyalHeir(t,dy,at,holder.id);}finally{random.pickIndex=pick;}
+    if(generation===0){clock(at+1);const ownerPerson=Military.getPerson(holder.militaryIdentity!.personId)!,body=t.getUserById(ownerPerson.sourceUserId)!;check(body.destroyUser(false,{cause:'BATTLE_DEATH',month:at+1,damageSource:'HOSTILE_HOME_OCCUPATION'}),'original duke ends through actual User/royal military casualty');cursor=at+1;Dynasty.updateRoyalNobility(cursor,core.teams);}
+    else {check(!holder.militaryIdentity,'inherited royal title never creates a military identity or army');const due=holder.naturalDeathYear!;advance(due);check(holder.deathMonth===due,'inherited civilian royal dies at the original sampled lifespan through actual dynasty lifecycle');}
+    const last=dy.royalNobility!.at(-1)!;check(last.rank===ranks[generation]&&(generation===4?last.reason==='RANK_EXHAUSTED':last.kind==='SUCCEEDED'&&last.holderRulerId===successor.id),`real royal chain descends once at generation ${generation}: ${JSON.stringify({expected:ranks[generation],actual:last,holder:holder.id,successor:successor.id})}`);
+    check(!successor.militaryIdentity,'each newly inherited royal child has no automatic office or soldiers');strict();holder=successor;
+   }
+   check(new Set(dy.royalNobility!.map(a=>a.chainId)).size===1&&dy.royalNobility!.filter(a=>a.kind==='SUCCEEDED').length===4,'the complete real five-rank history uses one source chain, without parallel copies');
+  }
   // Separate real production branches from the pre-child, already granted checkpoint.
   const restoreGrant=()=>{hydrateWorldSave(core,structuredClone(fixture));const t=core.teams.find(t=>t.name===team.name)!,dy=Dynasty.get(t.name)!,royal=dy.rulers.find(x=>x.id===candidate.rulerId)!;return {t,dy,royal,person:Military.getPerson(royal.militaryIdentity!.personId)!};};
   {
