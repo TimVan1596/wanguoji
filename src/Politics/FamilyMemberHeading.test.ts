@@ -17,3 +17,5 @@ it('keeps historical personal country frozen and only marks an actually recorded
 it('keeps a live unrevoked peerage separate from court disqualification and a civilian bridge neutral',()=>{
  const r=row({inherited:{rank:'BO',factionId:'qi'}});expect(familyMemberHeading(r,80,country,['谋逆罢官 · 禁仕'])).toContain('袭伯爵');expect(familyMemberHeading(row(),80,country,['谋逆罢官 · 禁仕'])).toBe('栾允平 · 谋逆禁仕');expect(familyMemberHeading(row(),80,country)).toBe('栾允平');
 });
+
+it('a later independent legal grant is not obscured by an older forfeited high title',()=>{const r=row({personalHistory:[{rank:'GONG',month:60,factionId:'qi',epochFounderId:'king',countryName:'齐'},{rank:'BO',month:120,factionId:'qi',epochFounderId:'king',countryName:'齐'}],person:{honorHistory:[{kind:'REVOKED',month:90,factionId:'qi',epochFounderId:'king'}]}});expect(familyMemberHeading(r,180,country)).toBe('曾封齐伯爵 · 栾允平');});
