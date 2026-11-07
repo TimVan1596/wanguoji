@@ -1,0 +1,14 @@
+[
+  {
+    "seed": "regional-3",
+    "years": 100,
+    "startMonth": 1200,
+    "endMonth": 1212,
+    "colliders": 192,
+    "matched": true,
+    "initialMatched": true,
+    "secondRead": true,
+    "differenceCount": 0,
+    "firstDifferences": []
+  }
+]
