@@ -1,0 +1,859 @@
+[
+  {
+    "entryReplay": {
+      "scope": "CONTROLLED_REPEATED_PURE_PRODUCTION_PLANNER_ON_ACTUAL_ACCEPTED_ENTRIES_NOT_NATURAL_ENTRY_COUNTS",
+      "cases": 64,
+      "repetitions": 1000,
+      "calls": 64000,
+      "elapsedMs": 238.5,
+      "meanMs": 0.0037265625,
+      "actualParentAndNameVerified": true
+    },
+    "seed": "regional-3",
+    "startMonth": 3600,
+    "endMonth": 3612,
+    "speed": 4,
+    "repetitions": 3,
+    "deterministic": true,
+    "scope": "Actual Core.advanceLogicalStep and Phaser postupdate; same real input restored before every measurement, no screenshots or human acceptance",
+    "rows": [
+      {
+        "repeat": 0,
+        "hydrationMs": 1037.300000000745,
+        "stepWallMs": 538.3000000007451,
+        "ticks": 360,
+        "annualFamilyMs": 0.6999999992549419,
+        "allMonthlyFamilyMs": 0.7999999988824129,
+        "titleMs": 0.5,
+        "entryMs": 0.2999999988824129,
+        "entryCalls": 5,
+        "exportMs": 881.5,
+        "phases": {
+          "WorldEventSystem.update": {
+            "sampleCount": 12,
+            "averageMs": 0.5333333333643774,
+            "p95Ms": 3.299999998882413,
+            "maxMs": 3.299999998882413
+          },
+          "DiplomacySystem.update": {
+            "sampleCount": 12,
+            "averageMs": 2.2583333333022892,
+            "p95Ms": 26.800000000745058,
+            "maxMs": 26.800000000745058
+          },
+          "MilitaryCommandRegistry.update": {
+            "sampleCount": 12,
+            "averageMs": 7.425000000124176,
+            "p95Ms": 87.79999999888241,
+            "maxMs": 87.79999999888241
+          },
+          "WorldEra.observe": {
+            "sampleCount": 12,
+            "averageMs": 0.03333333320915699,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "PopulationSystem.update": {
+            "sampleCount": 12,
+            "averageMs": 2.2416666662320495,
+            "p95Ms": 12.5,
+            "maxMs": 12.5
+          },
+          "aggregate City.updateDefense": {
+            "sampleCount": 12,
+            "averageMs": 1.0750000001862645,
+            "p95Ms": 2.099999999627471,
+            "maxMs": 2.099999999627471
+          },
+          "City.updateLoyalty": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "City.updateSiege": {
+            "sampleCount": 12,
+            "averageMs": 0.900000000372529,
+            "p95Ms": 2.099999999627471,
+            "maxMs": 2.099999999627471
+          },
+          "City.updateDevastation": {
+            "sampleCount": 12,
+            "averageMs": 0.03333333336437742,
+            "p95Ms": 0.19999999925494194,
+            "maxMs": 0.19999999925494194
+          },
+          "City.calculateMaxDefense/development": {
+            "sampleCount": 12,
+            "averageMs": 0.008333333302289248,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "City.zone/visual refresh": {
+            "sampleCount": 12,
+            "averageMs": 0.1833333334264656,
+            "p95Ms": 0.40000000037252903,
+            "maxMs": 0.40000000037252903
+          },
+          "Population.active faction scan": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Population.capacity": {
+            "sampleCount": 12,
+            "averageMs": 0.008333333302289248,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "Population.growth context": {
+            "sampleCount": 12,
+            "averageMs": 0.05833333311602473,
+            "p95Ms": 0.19999999925494194,
+            "maxMs": 0.19999999925494194
+          },
+          "Population.spawn/runtime creation": {
+            "sampleCount": 12,
+            "averageMs": 1.0499999998137355,
+            "p95Ms": 11.699999999254942,
+            "maxMs": 11.699999999254942
+          },
+          "Population.user id lookup": {
+            "sampleCount": 12,
+            "averageMs": 0.008333333302289248,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "Population.makeUser": {
+            "sampleCount": 12,
+            "averageMs": 0.07500000003104408,
+            "p95Ms": 0.30000000074505806,
+            "maxMs": 0.30000000074505806
+          },
+          "WorldEvent.expired effects": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.observeWorldGoal": {
+            "sampleCount": 12,
+            "averageMs": 0.008333333302289248,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "WorldEvent.checkStateFormation": {
+            "sampleCount": 12,
+            "averageMs": 0.07499999987582366,
+            "p95Ms": 0.40000000037252903,
+            "maxMs": 0.40000000037252903
+          },
+          "WorldEvent.applyProvisionalDissolutionPressure": {
+            "sampleCount": 12,
+            "averageMs": 0.008333333302289248,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "WorldEvent.checkEmperorProclamation": {
+            "sampleCount": 12,
+            "averageMs": 0.0416666668218871,
+            "p95Ms": 0.10000000149011612,
+            "maxMs": 0.10000000149011612
+          },
+          "WorldEvent.checkRestorations": {
+            "sampleCount": 12,
+            "averageMs": 0.3000000001241763,
+            "p95Ms": 3,
+            "maxMs": 3
+          },
+          "WorldEvent.checkEmpireSplit": {
+            "sampleCount": 12,
+            "averageMs": 0.008333333302289248,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "WorldEvent.checkCityFounding": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.triggerRandomEvent": {
+            "sampleCount": 12,
+            "averageMs": 0.03333333336437742,
+            "p95Ms": 0.40000000037252903,
+            "maxMs": 0.40000000037252903
+          },
+          "FactionEffects.update": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "DynastyRegistry.update": {
+            "sampleCount": 12,
+            "averageMs": 3.0750000001862645,
+            "p95Ms": 32.399999998509884,
+            "maxMs": 32.399999998509884
+          },
+          "Military honors": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Military nobility": {
+            "sampleCount": 12,
+            "averageMs": 0.6750000001241764,
+            "p95Ms": 8.100000001490116,
+            "maxMs": 8.100000001490116
+          },
+          "Founding peerage": {
+            "sampleCount": 12,
+            "averageMs": 0.008333333302289248,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "Military families": {
+            "sampleCount": 12,
+            "averageMs": 0.06666666657353441,
+            "p95Ms": 0.6999999992549419,
+            "maxMs": 0.6999999992549419
+          },
+          "Military appanages": {
+            "sampleCount": 12,
+            "averageMs": 0.7999999996585151,
+            "p95Ms": 7.199999999254942,
+            "maxMs": 7.199999999254942
+          },
+          "WorldExiles.update": {
+            "sampleCount": 12,
+            "averageMs": 0.0250000002173086,
+            "p95Ms": 0.10000000149011612,
+            "maxMs": 0.10000000149011612
+          },
+          "FactionSnapshots.observe": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldHistory.observeWorld": {
+            "sampleCount": 12,
+            "averageMs": 0.0250000002173086,
+            "p95Ms": 0.10000000149011612,
+            "maxMs": 0.10000000149011612
+          },
+          "Family noble succession": {
+            "sampleCount": 12,
+            "averageMs": 0.041666666666666664,
+            "p95Ms": 0.30000000074505806,
+            "maxMs": 0.30000000074505806
+          },
+          "debug/LongRun diagnostics": {
+            "sampleCount": 12,
+            "averageMs": 0.10833333308498065,
+            "p95Ms": 0.7999999988824129,
+            "maxMs": 0.7999999988824129
+          },
+          "total fixed/month step": {
+            "sampleCount": 12,
+            "averageMs": 18.716666666480403,
+            "p95Ms": 170.59999999962747,
+            "maxMs": 170.59999999962747
+          },
+          "PeacefulReunification candidate scan": {
+            "sampleCount": 1,
+            "averageMs": 0.2000000011175871,
+            "p95Ms": 0.2000000011175871,
+            "maxMs": 0.2000000011175871
+          },
+          "StrategicUnion candidate scan": {
+            "sampleCount": 1,
+            "averageMs": 0.09999999962747097,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "debug/StrategicUnion blocker diagnostics": {
+            "sampleCount": 1,
+            "averageMs": 0.09999999962747097,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "PeacefulSubmission.update": {
+            "sampleCount": 1,
+            "averageMs": 2.5,
+            "p95Ms": 2.5,
+            "maxMs": 2.5
+          },
+          "calculateTerritoryMetrics (all callers)": {
+            "sampleCount": 300,
+            "averageMs": 0.0010000000024835269,
+            "p95Ms": 0,
+            "maxMs": 0.10000000149011612
+          }
+        },
+        "canonicalSha256": "002faac574cca66b5271b68d988239b990570e961a605cf565eef33c5e19c907"
+      },
+      {
+        "repeat": 1,
+        "hydrationMs": 858.7000000011176,
+        "stepWallMs": 489.40000000037253,
+        "ticks": 360,
+        "annualFamilyMs": 0.7000000011175871,
+        "allMonthlyFamilyMs": 0.7000000011175871,
+        "titleMs": 0.2999999988824129,
+        "entryMs": 0.19999999925494194,
+        "entryCalls": 5,
+        "exportMs": 840.7999999988824,
+        "phases": {
+          "WorldEventSystem.update": {
+            "sampleCount": 12,
+            "averageMs": 0.22500000009313226,
+            "p95Ms": 1.5,
+            "maxMs": 1.5
+          },
+          "DiplomacySystem.update": {
+            "sampleCount": 12,
+            "averageMs": 2.0333333333643773,
+            "p95Ms": 24.40000000037253,
+            "maxMs": 24.40000000037253
+          },
+          "MilitaryCommandRegistry.update": {
+            "sampleCount": 12,
+            "averageMs": 7.300000000124176,
+            "p95Ms": 86.80000000074506,
+            "maxMs": 86.80000000074506
+          },
+          "WorldEra.observe": {
+            "sampleCount": 12,
+            "averageMs": 0.008333333457509676,
+            "p95Ms": 0.10000000149011612,
+            "maxMs": 0.10000000149011612
+          },
+          "PopulationSystem.update": {
+            "sampleCount": 12,
+            "averageMs": 1.9666666666356225,
+            "p95Ms": 10.900000000372529,
+            "maxMs": 10.900000000372529
+          },
+          "aggregate City.updateDefense": {
+            "sampleCount": 12,
+            "averageMs": 0.7000000000310441,
+            "p95Ms": 1,
+            "maxMs": 1
+          },
+          "City.updateLoyalty": {
+            "sampleCount": 12,
+            "averageMs": 0.016666666604578495,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "City.updateSiege": {
+            "sampleCount": 12,
+            "averageMs": 0.5666666668839753,
+            "p95Ms": 0.900000000372529,
+            "maxMs": 0.900000000372529
+          },
+          "City.updateDevastation": {
+            "sampleCount": 12,
+            "averageMs": 0.03333333336437742,
+            "p95Ms": 0.10000000149011612,
+            "maxMs": 0.10000000149011612
+          },
+          "City.calculateMaxDefense/development": {
+            "sampleCount": 12,
+            "averageMs": 0.024999999906867743,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "City.zone/visual refresh": {
+            "sampleCount": 12,
+            "averageMs": 0.10833333292976022,
+            "p95Ms": 0.19999999925494194,
+            "maxMs": 0.19999999925494194
+          },
+          "Population.active faction scan": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Population.capacity": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Population.growth context": {
+            "sampleCount": 12,
+            "averageMs": 0.03333333336437742,
+            "p95Ms": 0.10000000149011612,
+            "maxMs": 0.10000000149011612
+          },
+          "Population.spawn/runtime creation": {
+            "sampleCount": 12,
+            "averageMs": 0.9499999998758236,
+            "p95Ms": 10.599999999627471,
+            "maxMs": 10.599999999627471
+          },
+          "Population.user id lookup": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Population.makeUser": {
+            "sampleCount": 12,
+            "averageMs": 0.07500000003104408,
+            "p95Ms": 0.2000000011175871,
+            "maxMs": 0.2000000011175871
+          },
+          "WorldEvent.expired effects": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.observeWorldGoal": {
+            "sampleCount": 12,
+            "averageMs": 0.016666666604578495,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "WorldEvent.checkStateFormation": {
+            "sampleCount": 12,
+            "averageMs": 0.03333333336437742,
+            "p95Ms": 0.10000000149011612,
+            "maxMs": 0.10000000149011612
+          },
+          "WorldEvent.applyProvisionalDissolutionPressure": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.checkEmperorProclamation": {
+            "sampleCount": 12,
+            "averageMs": 0.016666666759798925,
+            "p95Ms": 0.10000000149011612,
+            "maxMs": 0.10000000149011612
+          },
+          "WorldEvent.checkRestorations": {
+            "sampleCount": 12,
+            "averageMs": 0.11666666654249032,
+            "p95Ms": 1.3999999985098839,
+            "maxMs": 1.3999999985098839
+          },
+          "WorldEvent.checkEmpireSplit": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.checkCityFounding": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.triggerRandomEvent": {
+            "sampleCount": 12,
+            "averageMs": 0.008333333457509676,
+            "p95Ms": 0.10000000149011612,
+            "maxMs": 0.10000000149011612
+          },
+          "FactionEffects.update": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "DynastyRegistry.update": {
+            "sampleCount": 12,
+            "averageMs": 2.7000000001862645,
+            "p95Ms": 29,
+            "maxMs": 29
+          },
+          "Military honors": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Military nobility": {
+            "sampleCount": 12,
+            "averageMs": 0.6916666665735344,
+            "p95Ms": 8.299999998882413,
+            "maxMs": 8.299999998882413
+          },
+          "Founding peerage": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Military families": {
+            "sampleCount": 12,
+            "averageMs": 0.05833333342646559,
+            "p95Ms": 0.7000000011175871,
+            "maxMs": 0.7000000011175871
+          },
+          "Military appanages": {
+            "sampleCount": 12,
+            "averageMs": 0.7333333332402011,
+            "p95Ms": 6.699999999254942,
+            "maxMs": 6.699999999254942
+          },
+          "WorldExiles.update": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "FactionSnapshots.observe": {
+            "sampleCount": 12,
+            "averageMs": 0.008333333302289248,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "WorldHistory.observeWorld": {
+            "sampleCount": 12,
+            "averageMs": 0.016666666604578495,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "Family noble succession": {
+            "sampleCount": 12,
+            "averageMs": 0.024999999906867743,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "debug/LongRun diagnostics": {
+            "sampleCount": 12,
+            "averageMs": 0.016666666759798925,
+            "p95Ms": 0.10000000149011612,
+            "maxMs": 0.10000000149011612
+          },
+          "total fixed/month step": {
+            "sampleCount": 12,
+            "averageMs": 16.700000000186265,
+            "p95Ms": 160.5,
+            "maxMs": 160.5
+          },
+          "PeacefulReunification candidate scan": {
+            "sampleCount": 1,
+            "averageMs": 0.09999999962747097,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "StrategicUnion candidate scan": {
+            "sampleCount": 1,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "debug/StrategicUnion blocker diagnostics": {
+            "sampleCount": 1,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "PeacefulSubmission.update": {
+            "sampleCount": 1,
+            "averageMs": 2,
+            "p95Ms": 2,
+            "maxMs": 2
+          },
+          "calculateTerritoryMetrics (all callers)": {
+            "sampleCount": 300,
+            "averageMs": 0.0003333333320915699,
+            "p95Ms": 0,
+            "maxMs": 0.09999999962747097
+          }
+        },
+        "canonicalSha256": "002faac574cca66b5271b68d988239b990570e961a605cf565eef33c5e19c907"
+      },
+      {
+        "repeat": 2,
+        "hydrationMs": 1030.300000000745,
+        "stepWallMs": 513.9000000003725,
+        "ticks": 360,
+        "annualFamilyMs": 0.6999999992549419,
+        "allMonthlyFamilyMs": 0.7999999988824129,
+        "titleMs": 0.10000000149011612,
+        "entryMs": 0.09999999962747097,
+        "entryCalls": 5,
+        "exportMs": 1105.2999999988824,
+        "phases": {
+          "WorldEventSystem.update": {
+            "sampleCount": 12,
+            "averageMs": 0.24166666700815162,
+            "p95Ms": 1.400000000372529,
+            "maxMs": 1.400000000372529
+          },
+          "DiplomacySystem.update": {
+            "sampleCount": 12,
+            "averageMs": 2.2250000000931323,
+            "p95Ms": 26.700000001117587,
+            "maxMs": 26.700000001117587
+          },
+          "MilitaryCommandRegistry.update": {
+            "sampleCount": 12,
+            "averageMs": 7.449999999720603,
+            "p95Ms": 88.69999999925494,
+            "maxMs": 88.69999999925494
+          },
+          "WorldEra.observe": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "PopulationSystem.update": {
+            "sampleCount": 12,
+            "averageMs": 2.066666666728755,
+            "p95Ms": 11.299999998882413,
+            "maxMs": 11.299999998882413
+          },
+          "aggregate City.updateDefense": {
+            "sampleCount": 12,
+            "averageMs": 0.7583333331470689,
+            "p95Ms": 1.199999999254942,
+            "maxMs": 1.199999999254942
+          },
+          "City.updateLoyalty": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "City.updateSiege": {
+            "sampleCount": 12,
+            "averageMs": 0.6166666660768291,
+            "p95Ms": 1.099999999627471,
+            "maxMs": 1.099999999627471
+          },
+          "City.updateDevastation": {
+            "sampleCount": 12,
+            "averageMs": 0.016666666604578495,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "City.calculateMaxDefense/development": {
+            "sampleCount": 12,
+            "averageMs": 0.008333333302289248,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "City.zone/visual refresh": {
+            "sampleCount": 12,
+            "averageMs": 0.14999999990686774,
+            "p95Ms": 0.2999999988824129,
+            "maxMs": 0.2999999988824129
+          },
+          "Population.active faction scan": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Population.capacity": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Population.growth context": {
+            "sampleCount": 12,
+            "averageMs": 0.049999999813735485,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "Population.spawn/runtime creation": {
+            "sampleCount": 12,
+            "averageMs": 0.9916666668529311,
+            "p95Ms": 11,
+            "maxMs": 11
+          },
+          "Population.user id lookup": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Population.makeUser": {
+            "sampleCount": 12,
+            "averageMs": 0.08333333348855376,
+            "p95Ms": 0.2999999988824129,
+            "maxMs": 0.2999999988824129
+          },
+          "WorldEvent.expired effects": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.observeWorldGoal": {
+            "sampleCount": 12,
+            "averageMs": 0.008333333302289248,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "WorldEvent.checkStateFormation": {
+            "sampleCount": 12,
+            "averageMs": 0.06666666688397527,
+            "p95Ms": 0.2000000011175871,
+            "maxMs": 0.2000000011175871
+          },
+          "WorldEvent.applyProvisionalDissolutionPressure": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.checkEmperorProclamation": {
+            "sampleCount": 12,
+            "averageMs": 0.025000000062088173,
+            "p95Ms": 0.10000000149011612,
+            "maxMs": 0.10000000149011612
+          },
+          "WorldEvent.checkRestorations": {
+            "sampleCount": 12,
+            "averageMs": 0.09166666663562258,
+            "p95Ms": 1.099999999627471,
+            "maxMs": 1.099999999627471
+          },
+          "WorldEvent.checkEmpireSplit": {
+            "sampleCount": 12,
+            "averageMs": 0.008333333302289248,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "WorldEvent.checkCityFounding": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldEvent.triggerRandomEvent": {
+            "sampleCount": 12,
+            "averageMs": 0.008333333302289248,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "FactionEffects.update": {
+            "sampleCount": 12,
+            "averageMs": 0.008333333302289248,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "DynastyRegistry.update": {
+            "sampleCount": 12,
+            "averageMs": 3.150000000062088,
+            "p95Ms": 34.20000000111759,
+            "maxMs": 34.20000000111759
+          },
+          "Military honors": {
+            "sampleCount": 12,
+            "averageMs": 0.008333333302289248,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "Military nobility": {
+            "sampleCount": 12,
+            "averageMs": 0.7000000000310441,
+            "p95Ms": 8.400000000372529,
+            "maxMs": 8.400000000372529
+          },
+          "Founding peerage": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "Military families": {
+            "sampleCount": 12,
+            "averageMs": 0.07499999987582366,
+            "p95Ms": 0.6999999992549419,
+            "maxMs": 0.6999999992549419
+          },
+          "Military appanages": {
+            "sampleCount": 12,
+            "averageMs": 1.1166666666977108,
+            "p95Ms": 8.099999999627471,
+            "maxMs": 8.099999999627471
+          },
+          "WorldExiles.update": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "FactionSnapshots.observe": {
+            "sampleCount": 12,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "WorldHistory.observeWorld": {
+            "sampleCount": 12,
+            "averageMs": 0.008333333302289248,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "Family noble succession": {
+            "sampleCount": 12,
+            "averageMs": 0.008333333457509676,
+            "p95Ms": 0.10000000149011612,
+            "maxMs": 0.10000000149011612
+          },
+          "debug/LongRun diagnostics": {
+            "sampleCount": 12,
+            "averageMs": 0.016666666604578495,
+            "p95Ms": 0.09999999962747097,
+            "maxMs": 0.09999999962747097
+          },
+          "total fixed/month step": {
+            "sampleCount": 12,
+            "averageMs": 18.13333333330229,
+            "p95Ms": 171.5,
+            "maxMs": 171.5
+          },
+          "PeacefulReunification candidate scan": {
+            "sampleCount": 1,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "StrategicUnion candidate scan": {
+            "sampleCount": 1,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "debug/StrategicUnion blocker diagnostics": {
+            "sampleCount": 1,
+            "averageMs": 0,
+            "p95Ms": 0,
+            "maxMs": 0
+          },
+          "PeacefulSubmission.update": {
+            "sampleCount": 1,
+            "averageMs": 2.099999999627471,
+            "p95Ms": 2.099999999627471,
+            "maxMs": 2.099999999627471
+          },
+          "calculateTerritoryMetrics (all callers)": {
+            "sampleCount": 300,
+            "averageMs": 0.0013333333345750967,
+            "p95Ms": 0,
+            "maxMs": 0.10000000149011612
+          }
+        },
+        "canonicalSha256": "002faac574cca66b5271b68d988239b990570e961a605cf565eef33c5e19c907"
+      }
+    ]
+  }
+]

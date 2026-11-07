@@ -16,3 +16,5 @@ it('rejects unknown source/target, duplicated callbacks, self collision, missing
  const absent=structuredClone(save);delete (absent as any).collisionSchedule;expect(validateCollisionSchedule(absent)).toEqual(['invalid saved collision schedule']);
  const old=createEmptyWorldSaveV1();(old as any).saveSchemaVersion=52;expect(validateWorldSave(old).errors).toContain('该存档版本已不受支持，请创建新世界。');
 });
+
+it('keeps a transferred resident slave collider’s original targets even when its former enemy is now its own country',()=>{const s=createEmptyWorldSaveV1();s.factions=[{factionId:'new'}] as any;s.users=[{userId:7,factionId:'new',slaveUnits:[]}] as any;s.collisionSchedule={version:1,colliders:[{sourceGroupId:'slaves:7',targetGroupIds:['map','blocks:new']}]};expect(validateCollisionSchedule(s)).toEqual([]);});

@@ -1,0 +1,1459 @@
+{
+  "version": "z56",
+  "baseline": "e17d00f516f97bfa6f66a01fa8eda66c62eaeb9a",
+  "app": "v0.99931z56",
+  "package": "0.99.222",
+  "worldSave": 53,
+  "registrationPolicyChanged": false,
+  "archivePolicyReleased": false,
+  "pureAlgorithmPairedWorlds": [
+    {
+      "seed": "regional-1",
+      "years": 100,
+      "equalAllCanonicalFieldsExceptAppVersion": true,
+      "result": {
+        "month": 1200,
+        "livePopulation": 135,
+        "activeStates": 6,
+        "historicalStates": 7,
+        "families": 3,
+        "registeredMembers": 9,
+        "familyBytes": 5358,
+        "historicalMilitary": 30,
+        "activeFormations": 1,
+        "descendantOfficers": 1,
+        "newPeriods": 0,
+        "successions": 1,
+        "endedActs": 2,
+        "events": 2599,
+        "cityCaptures": 10,
+        "courtAttempts": 0,
+        "rngPosition": 7347
+      },
+      "nativeSnapshotBytes": 2055405,
+      "evidence": [
+        {
+          "path": "logs/z56-worlds-baseline-isolated/regional-1-100.json",
+          "sha256": "8c185d1f19e3ebb03956cd1fe77ad291b781e06a227b6dcba0a4344bc021e670"
+        },
+        {
+          "path": "logs/z56-worlds-candidate/regional-1-100.json",
+          "sha256": "8c185d1f19e3ebb03956cd1fe77ad291b781e06a227b6dcba0a4344bc021e670"
+        }
+      ]
+    },
+    {
+      "seed": "regional-2",
+      "years": 100,
+      "equalAllCanonicalFieldsExceptAppVersion": true,
+      "result": {
+        "month": 1200,
+        "livePopulation": 130,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "families": 0,
+        "registeredMembers": 0,
+        "familyBytes": 2,
+        "historicalMilitary": 24,
+        "activeFormations": 1,
+        "descendantOfficers": 0,
+        "newPeriods": 0,
+        "successions": 0,
+        "endedActs": 0,
+        "events": 2231,
+        "cityCaptures": 5,
+        "courtAttempts": 0,
+        "rngPosition": 7130
+      },
+      "nativeSnapshotBytes": 1802398,
+      "evidence": [
+        {
+          "path": "logs/z56-worlds-baseline-isolated/regional-2-100.json",
+          "sha256": "4a39b1976590221e5e778375b8b3c72a955311b626b8974e7ad81b31a35b9a01"
+        },
+        {
+          "path": "logs/z56-worlds-candidate/regional-2-100.json",
+          "sha256": "4a39b1976590221e5e778375b8b3c72a955311b626b8974e7ad81b31a35b9a01"
+        }
+      ]
+    },
+    {
+      "seed": "regional-3",
+      "years": 100,
+      "equalAllCanonicalFieldsExceptAppVersion": true,
+      "result": {
+        "month": 1200,
+        "livePopulation": 140,
+        "activeStates": 8,
+        "historicalStates": 11,
+        "families": 5,
+        "registeredMembers": 25,
+        "familyBytes": 13451,
+        "historicalMilitary": 33,
+        "activeFormations": 5,
+        "descendantOfficers": 4,
+        "newPeriods": 0,
+        "successions": 4,
+        "endedActs": 3,
+        "events": 2570,
+        "cityCaptures": 23,
+        "courtAttempts": 1,
+        "rngPosition": 7461
+      },
+      "nativeSnapshotBytes": 2169553,
+      "evidence": [
+        {
+          "path": "logs/z56-worlds-baseline-isolated/regional-3-100.json",
+          "sha256": "583511df049bf0134bdc7e66cdd53751f4ca90d657b3ec1a561502b8d05411e8"
+        },
+        {
+          "path": "logs/z56-worlds-candidate/regional-3-100.json",
+          "sha256": "583511df049bf0134bdc7e66cdd53751f4ca90d657b3ec1a561502b8d05411e8"
+        }
+      ]
+    },
+    {
+      "seed": "regional-4",
+      "years": 100,
+      "equalAllCanonicalFieldsExceptAppVersion": true,
+      "result": {
+        "month": 1200,
+        "livePopulation": 133,
+        "activeStates": 7,
+        "historicalStates": 9,
+        "families": 2,
+        "registeredMembers": 5,
+        "familyBytes": 2328,
+        "historicalMilitary": 37,
+        "activeFormations": 1,
+        "descendantOfficers": 0,
+        "newPeriods": 0,
+        "successions": 0,
+        "endedActs": 1,
+        "events": 2653,
+        "cityCaptures": 17,
+        "courtAttempts": 0,
+        "rngPosition": 7399
+      },
+      "nativeSnapshotBytes": 2176024,
+      "evidence": [
+        {
+          "path": "logs/z56-worlds-baseline-isolated/regional-4-100.json",
+          "sha256": "16ccb4478f4e395147412a7eb4dfaa91387345bc2aad540c66a61e848d3cec9a"
+        },
+        {
+          "path": "logs/z56-worlds-candidate/regional-4-100.json",
+          "sha256": "16ccb4478f4e395147412a7eb4dfaa91387345bc2aad540c66a61e848d3cec9a"
+        }
+      ]
+    },
+    {
+      "seed": "regional-5",
+      "years": 100,
+      "equalAllCanonicalFieldsExceptAppVersion": true,
+      "result": {
+        "month": 1200,
+        "livePopulation": 143,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "families": 1,
+        "registeredMembers": 1,
+        "familyBytes": 1202,
+        "historicalMilitary": 20,
+        "activeFormations": 3,
+        "descendantOfficers": 0,
+        "newPeriods": 0,
+        "successions": 0,
+        "endedActs": 1,
+        "events": 2251,
+        "cityCaptures": 6,
+        "courtAttempts": 0,
+        "rngPosition": 6945
+      },
+      "nativeSnapshotBytes": 1766252,
+      "evidence": [
+        {
+          "path": "logs/z56-worlds-baseline-isolated/regional-5-100.json",
+          "sha256": "7fb11c327bf06e3b78f7da32b36a03ba72bf6e440befa41d63ddf3f51f8a80dd"
+        },
+        {
+          "path": "logs/z56-worlds-candidate/regional-5-100.json",
+          "sha256": "7fb11c327bf06e3b78f7da32b36a03ba72bf6e440befa41d63ddf3f51f8a80dd"
+        }
+      ]
+    },
+    {
+      "seed": "regional-6",
+      "years": 100,
+      "equalAllCanonicalFieldsExceptAppVersion": true,
+      "result": {
+        "month": 1200,
+        "livePopulation": 137,
+        "activeStates": 4,
+        "historicalStates": 7,
+        "families": 2,
+        "registeredMembers": 23,
+        "familyBytes": 10165,
+        "historicalMilitary": 23,
+        "activeFormations": 3,
+        "descendantOfficers": 2,
+        "newPeriods": 0,
+        "successions": 3,
+        "endedActs": 2,
+        "events": 2108,
+        "cityCaptures": 11,
+        "courtAttempts": 0,
+        "rngPosition": 6649
+      },
+      "nativeSnapshotBytes": 1715203,
+      "evidence": [
+        {
+          "path": "logs/z56-worlds-baseline-isolated/regional-6-100.json",
+          "sha256": "006835ff9b7b07fcb201876f149009f8e6a785e4f99aa6457a9ade893041e58d"
+        },
+        {
+          "path": "logs/z56-worlds-candidate/regional-6-100.json",
+          "sha256": "006835ff9b7b07fcb201876f149009f8e6a785e4f99aa6457a9ade893041e58d"
+        }
+      ]
+    },
+    {
+      "seed": "regional-7",
+      "years": 100,
+      "equalAllCanonicalFieldsExceptAppVersion": true,
+      "result": {
+        "month": 1200,
+        "livePopulation": 138,
+        "activeStates": 5,
+        "historicalStates": 7,
+        "families": 2,
+        "registeredMembers": 7,
+        "familyBytes": 3584,
+        "historicalMilitary": 26,
+        "activeFormations": 1,
+        "descendantOfficers": 0,
+        "newPeriods": 0,
+        "successions": 1,
+        "endedActs": 1,
+        "events": 2381,
+        "cityCaptures": 20,
+        "courtAttempts": 0,
+        "rngPosition": 7275
+      },
+      "nativeSnapshotBytes": 1948608,
+      "evidence": [
+        {
+          "path": "logs/z56-worlds-baseline-isolated/regional-7-100.json",
+          "sha256": "ff10ff77dd12b6e4c62820dc5615fa91ef14a17cb410d0e6aae55d38c96aa3b1"
+        },
+        {
+          "path": "logs/z56-worlds-candidate/regional-7-100.json",
+          "sha256": "ff10ff77dd12b6e4c62820dc5615fa91ef14a17cb410d0e6aae55d38c96aa3b1"
+        }
+      ]
+    },
+    {
+      "seed": "regional-8",
+      "years": 100,
+      "equalAllCanonicalFieldsExceptAppVersion": true,
+      "result": {
+        "month": 1200,
+        "livePopulation": 131,
+        "activeStates": 6,
+        "historicalStates": 7,
+        "families": 1,
+        "registeredMembers": 6,
+        "familyBytes": 3435,
+        "historicalMilitary": 34,
+        "activeFormations": 4,
+        "descendantOfficers": 2,
+        "newPeriods": 0,
+        "successions": 1,
+        "endedActs": 1,
+        "events": 2471,
+        "cityCaptures": 7,
+        "courtAttempts": 0,
+        "rngPosition": 7175
+      },
+      "nativeSnapshotBytes": 2018572,
+      "evidence": [
+        {
+          "path": "logs/z56-worlds-baseline-isolated/regional-8-100.json",
+          "sha256": "5d5070acae12ce81186870e558a80f654df744cc7a5702ab0dd42bf3317590cc"
+        },
+        {
+          "path": "logs/z56-worlds-candidate/regional-8-100.json",
+          "sha256": "5d5070acae12ce81186870e558a80f654df744cc7a5702ab0dd42bf3317590cc"
+        }
+      ]
+    },
+    {
+      "seed": "regional-1",
+      "years": 200,
+      "equalAllCanonicalFieldsExceptAppVersion": true,
+      "result": {
+        "month": 2400,
+        "livePopulation": 133,
+        "activeStates": 5,
+        "historicalStates": 8,
+        "families": 5,
+        "registeredMembers": 35,
+        "familyBytes": 15434,
+        "historicalMilitary": 55,
+        "activeFormations": 1,
+        "descendantOfficers": 3,
+        "newPeriods": 0,
+        "successions": 2,
+        "endedActs": 4,
+        "events": 5675,
+        "cityCaptures": 37,
+        "courtAttempts": 1,
+        "rngPosition": 14704
+      },
+      "nativeSnapshotBytes": 4174123,
+      "evidence": [
+        {
+          "path": "logs/z56-worlds-baseline-200/regional-1-200.json",
+          "sha256": "c43f58d6727bcd75f2b32c45dc5bfd99c87948cf78c2814baba28e497e32d509"
+        },
+        {
+          "path": "logs/z56-worlds-candidate-200/regional-1-200.json",
+          "sha256": "c43f58d6727bcd75f2b32c45dc5bfd99c87948cf78c2814baba28e497e32d509"
+        }
+      ]
+    },
+    {
+      "seed": "regional-2",
+      "years": 200,
+      "equalAllCanonicalFieldsExceptAppVersion": true,
+      "result": {
+        "month": 2400,
+        "livePopulation": 137,
+        "activeStates": 4,
+        "historicalStates": 7,
+        "families": 1,
+        "registeredMembers": 5,
+        "familyBytes": 2162,
+        "historicalMilitary": 36,
+        "activeFormations": 2,
+        "descendantOfficers": 0,
+        "newPeriods": 0,
+        "successions": 1,
+        "endedActs": 0,
+        "events": 4993,
+        "cityCaptures": 22,
+        "courtAttempts": 0,
+        "rngPosition": 13956
+      },
+      "nativeSnapshotBytes": 3544712,
+      "evidence": [
+        {
+          "path": "logs/z56-worlds-baseline-200/regional-2-200.json",
+          "sha256": "8ae5dc26e6315c5d658622ce19fc125c3b88faf7d4a3e7d483cdbac5ca3baf3a"
+        },
+        {
+          "path": "logs/z56-worlds-candidate-200/regional-2-200.json",
+          "sha256": "8ae5dc26e6315c5d658622ce19fc125c3b88faf7d4a3e7d483cdbac5ca3baf3a"
+        }
+      ]
+    },
+    {
+      "seed": "regional-3",
+      "years": 200,
+      "equalAllCanonicalFieldsExceptAppVersion": true,
+      "result": {
+        "month": 2400,
+        "livePopulation": 137,
+        "activeStates": 6,
+        "historicalStates": 16,
+        "families": 7,
+        "registeredMembers": 79,
+        "familyBytes": 36589,
+        "historicalMilitary": 61,
+        "activeFormations": 1,
+        "descendantOfficers": 7,
+        "newPeriods": 0,
+        "successions": 7,
+        "endedActs": 7,
+        "events": 5694,
+        "cityCaptures": 54,
+        "courtAttempts": 1,
+        "rngPosition": 15371
+      },
+      "nativeSnapshotBytes": 4411494,
+      "evidence": [
+        {
+          "path": "logs/z56-worlds-baseline-200/regional-3-200.json",
+          "sha256": "93bc6d928f655ec0e5e39bc754a7d8e6be6bf2a4c763cc3a25d449528e89e9c8"
+        },
+        {
+          "path": "logs/z56-worlds-candidate-200/regional-3-200.json",
+          "sha256": "93bc6d928f655ec0e5e39bc754a7d8e6be6bf2a4c763cc3a25d449528e89e9c8"
+        }
+      ]
+    },
+    {
+      "seed": "regional-4",
+      "years": 200,
+      "equalAllCanonicalFieldsExceptAppVersion": true,
+      "result": {
+        "month": 2400,
+        "livePopulation": 131,
+        "activeStates": 4,
+        "historicalStates": 11,
+        "families": 4,
+        "registeredMembers": 19,
+        "familyBytes": 12032,
+        "historicalMilitary": 63,
+        "activeFormations": 0,
+        "descendantOfficers": 2,
+        "newPeriods": 0,
+        "successions": 3,
+        "endedActs": 4,
+        "events": 5395,
+        "cityCaptures": 32,
+        "courtAttempts": 3,
+        "rngPosition": 15137
+      },
+      "nativeSnapshotBytes": 4135449,
+      "evidence": [
+        {
+          "path": "logs/z56-worlds-baseline-200/regional-4-200.json",
+          "sha256": "15d2c7cee0af60863a9f0b5ebc22c04c0daa52d25a30ed08f5af8eb613355370"
+        },
+        {
+          "path": "logs/z56-worlds-candidate-200/regional-4-200.json",
+          "sha256": "15d2c7cee0af60863a9f0b5ebc22c04c0daa52d25a30ed08f5af8eb613355370"
+        }
+      ]
+    },
+    {
+      "seed": "regional-3",
+      "years": 300,
+      "equalAllCanonicalFieldsExceptAppVersion": true,
+      "result": {
+        "month": 3600,
+        "livePopulation": 134,
+        "activeStates": 8,
+        "historicalStates": 18,
+        "families": 11,
+        "registeredMembers": 105,
+        "familyBytes": 54070,
+        "historicalMilitary": 88,
+        "activeFormations": 1,
+        "descendantOfficers": 9,
+        "newPeriods": 1,
+        "successions": 10,
+        "endedActs": 11,
+        "events": 8722,
+        "cityCaptures": 78,
+        "courtAttempts": 3,
+        "rngPosition": 22795
+      },
+      "nativeSnapshotBytes": 6577732,
+      "evidence": [
+        {
+          "path": "logs/z56-worlds-baseline-300/regional-3-300.json",
+          "sha256": "4a8b3886a100a1277665aa210c2900b450d0d07f318e8f395c937865f0f10fbc"
+        },
+        {
+          "path": "logs/z56-worlds-candidate-300/regional-3-300.json",
+          "sha256": "4a8b3886a100a1277665aa210c2900b450d0d07f318e8f395c937865f0f10fbc"
+        }
+      ]
+    },
+    {
+      "seed": "regional-3",
+      "years": 500,
+      "equalAllCanonicalFieldsExceptAppVersion": true,
+      "result": {
+        "month": 6000,
+        "livePopulation": 118,
+        "activeStates": 9,
+        "historicalStates": 37,
+        "families": 23,
+        "registeredMembers": 177,
+        "familyBytes": 98391,
+        "historicalMilitary": 161,
+        "activeFormations": 3,
+        "descendantOfficers": 17,
+        "newPeriods": 4,
+        "successions": 15,
+        "endedActs": 24,
+        "events": 15619,
+        "cityCaptures": 165,
+        "courtAttempts": 5,
+        "rngPosition": 38681
+      },
+      "nativeSnapshotBytes": 11907303,
+      "evidence": [
+        {
+          "path": "logs/z56-worlds-baseline-500-direct/regional-3-500.json",
+          "sha256": "0c09406686928f252ff89f7042d9353e42c3d3ec54390eaff09c97f434c810a3"
+        },
+        {
+          "path": "logs/z56-worlds-candidate-500-direct/regional-3-500.json",
+          "sha256": "0c09406686928f252ff89f7042d9353e42c3d3ec54390eaff09c97f434c810a3"
+        }
+      ]
+    }
+  ],
+  "archiveCoverageAudit": {
+    "100": {
+      "directRejected": 25,
+      "descendantIdentityRecordsAffected": 25,
+      "actualLaterOfficersAffected": 0,
+      "actualLaterNewPeriodFoundersAffected": 0,
+      "actualLaterMonarchsAffected": 0,
+      "scope": "Coverage lost on actual history, NOT an alternative simulated world or predicted CPU savings"
+    },
+    "200": {
+      "directRejected": 88,
+      "descendantIdentityRecordsAffected": 88,
+      "actualLaterOfficersAffected": 1,
+      "actualLaterNewPeriodFoundersAffected": 0,
+      "actualLaterMonarchsAffected": 1,
+      "scope": "Coverage lost on actual history, NOT an alternative simulated world or predicted CPU savings"
+    },
+    "300": {
+      "directRejected": 67,
+      "descendantIdentityRecordsAffected": 69,
+      "actualLaterOfficersAffected": 2,
+      "actualLaterNewPeriodFoundersAffected": 1,
+      "actualLaterMonarchsAffected": 1,
+      "scope": "Coverage lost on actual history, NOT an alternative simulated world or predicted CPU savings"
+    },
+    "500": {
+      "directRejected": 97,
+      "descendantIdentityRecordsAffected": 103,
+      "actualLaterOfficersAffected": 3,
+      "actualLaterNewPeriodFoundersAffected": 2,
+      "actualLaterMonarchsAffected": 3,
+      "scope": "Coverage lost on actual history, NOT an alternative simulated world or predicted CPU savings"
+    }
+  },
+  "v53Final300": {
+    "allOldCanonicalFieldsEqualBaseline": true,
+    "explicitlyAddedFields": [
+      "collisionSchedule",
+      "saveSchemaVersion"
+    ],
+    "result": {
+      "month": 3600,
+      "livePopulation": 134,
+      "activeStates": 8,
+      "historicalStates": 18,
+      "families": 11,
+      "registeredMembers": 105,
+      "familyBytes": 54070,
+      "historicalMilitary": 88,
+      "activeFormations": 1,
+      "descendantOfficers": 9,
+      "newPeriods": 1,
+      "successions": 10,
+      "endedActs": 11,
+      "events": 8722,
+      "cityCaptures": 78,
+      "courtAttempts": 3,
+      "rngPosition": 22795
+    },
+    "scheduleColliders": 194,
+    "scheduleBytes": 55144
+  },
+  "liveVersusLoaded12Months": [
+    {
+      "seed": "regional-3",
+      "years": 100,
+      "startMonth": 1200,
+      "endMonth": 1212,
+      "colliders": 192,
+      "matched": true,
+      "initialMatched": true,
+      "secondRead": true,
+      "differenceCount": 0,
+      "firstDifferences": []
+    }
+  ],
+  "performance": {
+    "baseline": {
+      "actualCore4x": {
+        "median": {
+          "stepWallMs": 503.7000000011176,
+          "annualFamilyMs": 5.100000001490116,
+          "allMonthlyFamilyMs": 5.100000001490116,
+          "titleMs": 0.2999999988824129,
+          "entryMs": 0.19999999925494194,
+          "hydrationMs": 1028.5999999996275,
+          "exportMs": 873.0999999996275
+        },
+        "entryReplay": {
+          "scope": "CONTROLLED_REPEATED_PURE_PRODUCTION_PLANNER_ON_ACTUAL_ACCEPTED_ENTRIES_NOT_NATURAL_ENTRY_COUNTS",
+          "cases": 64,
+          "repetitions": 1000,
+          "calls": 64000,
+          "elapsedMs": 224.40000000037253,
+          "meanMs": 0.0035062500000058207,
+          "actualParentAndNameVerified": true
+        },
+        "repetitions": 3
+      },
+      "evidence": [
+        {
+          "path": "scripts/testing/results/family-step-performance-z56-baseline-idle-final.json",
+          "sha256": "c2e0413b976ba21160174d91a4d0d55e5b16a7bb73fd9f9d96aa03123c813fff"
+        },
+        {
+          "path": "scripts/testing/results/family-performance-z56-baseline-idle-final.json",
+          "sha256": "216dc88b7f92761a6802f16d32d8b48bb3b3d73797527be6a6571019bf364149"
+        }
+      ],
+      "actualReact": {
+        "list-open": {
+          "wallMs": 8.699999999254942,
+          "reactMs": 8.200000001117587,
+          "mountedNodes": 0
+        },
+        "family-open": {
+          "wallMs": 5.799999998882413,
+          "reactMs": 5.199999999254942,
+          "mountedNodes": 2
+        },
+        "select-person": {
+          "wallMs": 3.599999999627471,
+          "reactMs": 6.5,
+          "mountedNodes": 2
+        },
+        "zoom": {
+          "wallMs": 4,
+          "reactMs": 4.900000000372529,
+          "mountedNodes": 2
+        },
+        "fit": {
+          "wallMs": 3.599999999627471,
+          "reactMs": 3.7999999970197678,
+          "mountedNodes": 2
+        },
+        "switch-family": {
+          "wallMs": 5.699999999254942,
+          "reactMs": 4.900000000372529,
+          "mountedNodes": 2
+        },
+        "switch-faction": {
+          "wallMs": 2.900000000372529,
+          "reactMs": 2.0000000037252903,
+          "mountedNodes": 0
+        },
+        "canonicalUnchanged": true,
+        "maxRegisteredFamilyNodes": 21
+      }
+    },
+    "release": {
+      "actualCore4x": {
+        "median": {
+          "stepWallMs": 513.9000000003725,
+          "annualFamilyMs": 0.6999999992549419,
+          "allMonthlyFamilyMs": 0.7999999988824129,
+          "titleMs": 0.2999999988824129,
+          "entryMs": 0.19999999925494194,
+          "hydrationMs": 1030.300000000745,
+          "exportMs": 881.5
+        },
+        "entryReplay": {
+          "scope": "CONTROLLED_REPEATED_PURE_PRODUCTION_PLANNER_ON_ACTUAL_ACCEPTED_ENTRIES_NOT_NATURAL_ENTRY_COUNTS",
+          "cases": 64,
+          "repetitions": 1000,
+          "calls": 64000,
+          "elapsedMs": 238.5,
+          "meanMs": 0.0037265625,
+          "actualParentAndNameVerified": true
+        },
+        "repetitions": 3
+      },
+      "evidence": [
+        {
+          "path": "scripts/testing/results/family-step-performance-z56-release-idle-final.json",
+          "sha256": "28080cb036b4f0b0c3f76fa7a4b117f88774a78a75ead0684550654614753cf7"
+        },
+        {
+          "path": "scripts/testing/results/family-performance-z56-release-idle-final.json",
+          "sha256": "4d5f5976363c0b670f8dff14924443b77d67d3b89b2dcfaac6d382f865505c2f"
+        }
+      ],
+      "actualReact": {
+        "list-open": {
+          "wallMs": 9.599999999627471,
+          "reactMs": 9.000000001862645,
+          "mountedNodes": 0
+        },
+        "family-open": {
+          "wallMs": 6,
+          "reactMs": 5.499999998137355,
+          "mountedNodes": 2
+        },
+        "select-person": {
+          "wallMs": 3.5,
+          "reactMs": 6.5,
+          "mountedNodes": 2
+        },
+        "zoom": {
+          "wallMs": 4,
+          "reactMs": 4.5,
+          "mountedNodes": 2
+        },
+        "fit": {
+          "wallMs": 3.5,
+          "reactMs": 4.300000000745058,
+          "mountedNodes": 2
+        },
+        "switch-family": {
+          "wallMs": 6,
+          "reactMs": 5.399999998509884,
+          "mountedNodes": 2
+        },
+        "switch-faction": {
+          "wallMs": 3,
+          "reactMs": 2.300000000745058,
+          "mountedNodes": 0
+        },
+        "canonicalUnchanged": true,
+        "maxRegisteredFamilyNodes": 21
+      }
+    }
+  },
+  "performanceLimits": [
+    "Actual production Core and React, not Chrome visual acceptance or player FPS.",
+    "Three repeats on the same naturally generated 300-year world; low absolute family work and timer granularity limit inference.",
+    "Whole-world natural run wall time is confounded by concurrent load; not claimed as overall speedup.",
+    "64,000 repeated positive historical entry queries are controlled microbenchmarks, not unique residents or natural events.",
+    "No archive policy: at 500 years it would lose 3 later officers, 2 new-period founders and 3 monarch links on this actual sample."
+  ],
+  "strictMeritReplayRegression": {
+    "personId": "military-person-139",
+    "originalMeritMonth": 5064,
+    "laterAccessionMonth": 5388,
+    "deathMonth": 5531,
+    "rule": "At the original event boundary require actual then-live registered identity, original grant, country and house. Later proven accession cannot invalidate earlier merit; unknown or already-effective accession fails closed."
+  },
+  "validation": {
+    "tests": {
+      "files": 338,
+      "tests": 2577,
+      "passed": true,
+      "log": "logs/z56-tests-release.log"
+    },
+    "typeScript": true,
+    "webBuild": true,
+    "desktopBuild": true,
+    "debugBuild": true,
+    "actualCore": {
+      "militaryNobilityChecks": 987,
+      "royalMilitaryChecks": 244,
+      "residentFounderChecks": 171
+    },
+    "sameMonth": "Actual promotion before court attempt before dismissal; dismissed person cannot promote without lawful reinstatement. Existing authoritative evidence selector remains unchanged.",
+    "manualChromeGate": "PENDING_USER",
+    "webBuildLog": "logs/z56-web-build-release.log",
+    "desktopBuildLog": "logs/z56-desktop-build-final.log",
+    "debugBuildLog": "logs/z56-debug-build-final.log",
+    "coreResults": [
+      "scripts/testing/results/military-nobility-z56-v53-final-core.json",
+      "scripts/testing/results/royal-military-z56-v53-final-core.json",
+      "scripts/testing/results/resident-founder-z56-v53-final-core.json"
+    ]
+  },
+  "rawNaturalRuns": [
+    {
+      "path": "/private/tmp/wanguoji-z56-baseline/scripts/testing/results/military-balance-z56-baseline-isolated.json",
+      "sha256": "7ab66092a70cc4b77f8c10d98a01d5d0a7f0d92d587672db67966250134970a3",
+      "runs": [
+        {
+          "seed": "regional-1",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 57.799999996088445,
+            "titleUpdateTotalMs": 23.600000000558794,
+            "populationEntryPlanning": {
+              "calls": 323,
+              "matched": 6,
+              "totalMs": 1.5999999977648258,
+              "maxMs": 0.20000000018626451
+            },
+            "projectionMs": 8.699999999254942,
+            "serializationMs": 17.300000000745058,
+            "saveBytes": 2055390
+          },
+          "elapsedMs": 53898.59999999963
+        },
+        {
+          "seed": "regional-2",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 29.700000000186265,
+            "titleUpdateTotalMs": 0.7000000001862645,
+            "populationEntryPlanning": {
+              "calls": 304,
+              "matched": 0,
+              "totalMs": 0.7999999988824129,
+              "maxMs": 0.19999999925494194
+            },
+            "projectionMs": 0,
+            "serializationMs": 9.099999999627471,
+            "saveBytes": 1802383
+          },
+          "elapsedMs": 30262.299999999814
+        },
+        {
+          "seed": "regional-3",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 75.00000000651926,
+            "titleUpdateTotalMs": 36.200000003911555,
+            "populationEntryPlanning": {
+              "calls": 323,
+              "matched": 20,
+              "totalMs": 2.400000000372529,
+              "maxMs": 0.20000000018626451
+            },
+            "projectionMs": 8.400000000372529,
+            "serializationMs": 9.099999999627471,
+            "saveBytes": 2169538
+          },
+          "elapsedMs": 31303.299999999814
+        },
+        {
+          "seed": "regional-4",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 45.69999999552965,
+            "titleUpdateTotalMs": 7.500000002793968,
+            "populationEntryPlanning": {
+              "calls": 317,
+              "matched": 3,
+              "totalMs": 0.9000000013038516,
+              "maxMs": 0.20000000018626451
+            },
+            "projectionMs": 3.599999999627471,
+            "serializationMs": 9.900000000372529,
+            "saveBytes": 2176009
+          },
+          "elapsedMs": 32585
+        },
+        {
+          "seed": "regional-5",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 16.799999995157123,
+            "titleUpdateTotalMs": 6.79999999795109,
+            "populationEntryPlanning": {
+              "calls": 304,
+              "matched": 0,
+              "totalMs": 0.2999999988824129,
+              "maxMs": 0.09999999962747097
+            },
+            "projectionMs": 1.8999999994412065,
+            "serializationMs": 8.300000000745058,
+            "saveBytes": 1766237
+          },
+          "elapsedMs": 25524.599999999627
+        },
+        {
+          "seed": "regional-6",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 43.30000000167638,
+            "titleUpdateTotalMs": 24.399999998509884,
+            "populationEntryPlanning": {
+              "calls": 327,
+              "matched": 21,
+              "totalMs": 2.1000000005587935,
+              "maxMs": 0.19999999925494194
+            },
+            "projectionMs": 2.900000000372529,
+            "serializationMs": 8,
+            "saveBytes": 1715188
+          },
+          "elapsedMs": 25713.39999999944
+        },
+        {
+          "seed": "regional-7",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 35.1999999973923,
+            "titleUpdateTotalMs": 14.000000002793968,
+            "populationEntryPlanning": {
+              "calls": 315,
+              "matched": 5,
+              "totalMs": 1.1000000005587935,
+              "maxMs": 0.10000000055879354
+            },
+            "projectionMs": 3.2000000001862645,
+            "serializationMs": 7.7999999998137355,
+            "saveBytes": 1948593
+          },
+          "elapsedMs": 28754.299999999814
+        },
+        {
+          "seed": "regional-8",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 36.49999999906868,
+            "titleUpdateTotalMs": 10.800000000745058,
+            "populationEntryPlanning": {
+              "calls": 278,
+              "matched": 5,
+              "totalMs": 1.1000000024214387,
+              "maxMs": 0.10000000055879354
+            },
+            "projectionMs": 2,
+            "serializationMs": 8.900000000372529,
+            "saveBytes": 2018557
+          },
+          "elapsedMs": 32265.300000000745
+        }
+      ]
+    },
+    {
+      "path": "/private/tmp/wanguoji-z56-baseline/scripts/testing/results/military-balance-z56-baseline-200.json",
+      "sha256": "3f8beb313324469a4889119d97c94f00a3d16aac72a3e30fff42796a89f498ea",
+      "runs": [
+        {
+          "seed": "regional-1",
+          "years": 200,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 209.90000000130385,
+            "titleUpdateTotalMs": 50.59999999497086,
+            "populationEntryPlanning": {
+              "calls": 618,
+              "matched": 30,
+              "totalMs": 3.6000000024214387,
+              "maxMs": 0.20000000018626451
+            },
+            "projectionMs": 14.899999999441206,
+            "serializationMs": 18.200000000186265,
+            "saveBytes": 4174108
+          },
+          "elapsedMs": 69234.29999999981
+        },
+        {
+          "seed": "regional-2",
+          "years": 200,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 170.7999999942258,
+            "titleUpdateTotalMs": 13.999999998137355,
+            "populationEntryPlanning": {
+              "calls": 544,
+              "matched": 4,
+              "totalMs": 1.2999999998137355,
+              "maxMs": 0.19999999925494194
+            },
+            "projectionMs": 3.199999999254942,
+            "serializationMs": 17.600000000558794,
+            "saveBytes": 3544697
+          },
+          "elapsedMs": 60200.09999999963
+        },
+        {
+          "seed": "regional-3",
+          "years": 200,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 271.7999999979511,
+            "titleUpdateTotalMs": 217.30000000540167,
+            "populationEntryPlanning": {
+              "calls": 652,
+              "matched": 72,
+              "totalMs": 7.999999999068677,
+              "maxMs": 0.20000000018626451
+            },
+            "projectionMs": 36.700000000186265,
+            "serializationMs": 19.299999999813735,
+            "saveBytes": 4411479
+          },
+          "elapsedMs": 69909
+        },
+        {
+          "seed": "regional-4",
+          "years": 200,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 197.79999999701977,
+            "titleUpdateTotalMs": 63.79999999795109,
+            "populationEntryPlanning": {
+              "calls": 602,
+              "matched": 15,
+              "totalMs": 2.000000001862645,
+              "maxMs": 0.20000000018626451
+            },
+            "projectionMs": 12.699999999254942,
+            "serializationMs": 16,
+            "saveBytes": 4135434
+          },
+          "elapsedMs": 65803.20000000019
+        }
+      ]
+    },
+    {
+      "path": "/private/tmp/wanguoji-z56-baseline/scripts/testing/results/military-balance-z56-baseline-300.json",
+      "sha256": "9ee07bdddbc5d04a84a1e09bb4e61180abb4a65cc4137a7a4999472101608dfd",
+      "runs": [
+        {
+          "seed": "regional-3",
+          "years": 300,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 1089.5999999977648,
+            "titleUpdateTotalMs": 504.9999999906868,
+            "populationEntryPlanning": {
+              "calls": 909,
+              "matched": 94,
+              "totalMs": 12.799999998882413,
+              "maxMs": 0.2000000011175871
+            },
+            "projectionMs": 185.7999999988824,
+            "serializationMs": 52.40000000037253,
+            "saveBytes": 6577717
+          },
+          "elapsedMs": 152056.80000000075
+        }
+      ]
+    },
+    {
+      "path": "/private/tmp/wanguoji-z56-baseline/scripts/testing/results/military-balance-z56-baseline-500-direct.json",
+      "sha256": "1c017ae08b173f6da8b222e04f694b32a1f7505d6b1ea9e2bb10215eaea20183",
+      "runs": [
+        {
+          "seed": "regional-3",
+          "years": 500,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 3575.4999999925494,
+            "titleUpdateTotalMs": 26756.799999937415,
+            "populationEntryPlanning": {
+              "calls": 1556,
+              "matched": 154,
+              "totalMs": 26.000000009313226,
+              "maxMs": 0.2000000011175871
+            },
+            "projectionMs": 930.2000000011176,
+            "serializationMs": 67.69999999925494,
+            "saveBytes": 11907288
+          },
+          "elapsedMs": 410952.5999999996
+        }
+      ]
+    },
+    {
+      "path": "/private/tmp/wanguoji-z56-candidate/scripts/testing/results/military-balance-z56-candidate.json",
+      "sha256": "64cf852bb8d063591592ebd919cea024b467b83b2d276fd47e153cc0a921f376",
+      "runs": [
+        {
+          "seed": "regional-1",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 26.799999999813735,
+            "titleUpdateTotalMs": 23.300000002607703,
+            "populationEntryPlanning": {
+              "calls": 323,
+              "matched": 6,
+              "totalMs": 2.4999999990686774,
+              "maxMs": 0.2999999998137355
+            },
+            "projectionMs": 8.200000000186265,
+            "serializationMs": 14.5,
+            "saveBytes": 2055390
+          },
+          "elapsedMs": 48481.59999999963
+        },
+        {
+          "seed": "regional-2",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 40.30000000633299,
+            "titleUpdateTotalMs": 0.6999999992549419,
+            "populationEntryPlanning": {
+              "calls": 304,
+              "matched": 0,
+              "totalMs": 1.300000000745058,
+              "maxMs": 0.10000000055879354
+            },
+            "projectionMs": 0,
+            "serializationMs": 13.200000000186265,
+            "saveBytes": 1802383
+          },
+          "elapsedMs": 54935.700000000186
+        },
+        {
+          "seed": "regional-3",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 61.70000000111759,
+            "titleUpdateTotalMs": 45.699999996460974,
+            "populationEntryPlanning": {
+              "calls": 323,
+              "matched": 20,
+              "totalMs": 2.300000002607703,
+              "maxMs": 0.2999999998137355
+            },
+            "projectionMs": 11.800000000745058,
+            "serializationMs": 11.5,
+            "saveBytes": 2169538
+          },
+          "elapsedMs": 44344.90000000037
+        },
+        {
+          "seed": "regional-4",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 40.00000000093132,
+            "titleUpdateTotalMs": 9.700000000186265,
+            "populationEntryPlanning": {
+              "calls": 317,
+              "matched": 3,
+              "totalMs": 1.5000000009313226,
+              "maxMs": 0.20000000018626451
+            },
+            "projectionMs": 8.799999999813735,
+            "serializationMs": 12.5,
+            "saveBytes": 2176009
+          },
+          "elapsedMs": 43884.800000000745
+        },
+        {
+          "seed": "regional-5",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 7.900000003166497,
+            "titleUpdateTotalMs": 6.5000000055879354,
+            "populationEntryPlanning": {
+              "calls": 304,
+              "matched": 0,
+              "totalMs": 0.8999999994412065,
+              "maxMs": 0.19999999925494194
+            },
+            "projectionMs": 2.2999999998137355,
+            "serializationMs": 7.800000000745058,
+            "saveBytes": 1766237
+          },
+          "elapsedMs": 29882.799999999814
+        },
+        {
+          "seed": "regional-6",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 31.999999999068677,
+            "titleUpdateTotalMs": 28.799999996088445,
+            "populationEntryPlanning": {
+              "calls": 327,
+              "matched": 21,
+              "totalMs": 2.2000000020489097,
+              "maxMs": 0.20000000018626451
+            },
+            "projectionMs": 3.5,
+            "serializationMs": 8.800000000745058,
+            "saveBytes": 1715188
+          },
+          "elapsedMs": 26727
+        },
+        {
+          "seed": "regional-7",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 16.59999999869615,
+            "titleUpdateTotalMs": 12.500000002793968,
+            "populationEntryPlanning": {
+              "calls": 315,
+              "matched": 5,
+              "totalMs": 1.299999998882413,
+              "maxMs": 0.19999999925494194
+            },
+            "projectionMs": 3,
+            "serializationMs": 9.700000000186265,
+            "saveBytes": 1948593
+          },
+          "elapsedMs": 31249.599999999627
+        },
+        {
+          "seed": "regional-8",
+          "years": 100,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 22.69999999832362,
+            "titleUpdateTotalMs": 16.80000000167638,
+            "populationEntryPlanning": {
+              "calls": 278,
+              "matched": 5,
+              "totalMs": 1.0000000018626451,
+              "maxMs": 0.19999999925494194
+            },
+            "projectionMs": 1.7999999998137355,
+            "serializationMs": 8.800000000745058,
+            "saveBytes": 2018557
+          },
+          "elapsedMs": 33499.700000000186
+        }
+      ]
+    },
+    {
+      "path": "/private/tmp/wanguoji-z56-candidate/scripts/testing/results/military-balance-z56-candidate-200.json",
+      "sha256": "7fd2ae103737c3abe7addc1c98360f5090a8d000eb05a834287b09d5de6cd5e8",
+      "runs": [
+        {
+          "seed": "regional-1",
+          "years": 200,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 166.9000000031665,
+            "titleUpdateTotalMs": 83.49999999534339,
+            "populationEntryPlanning": {
+              "calls": 618,
+              "matched": 30,
+              "totalMs": 3.300000003539026,
+              "maxMs": 0.2999999998137355
+            },
+            "projectionMs": 27,
+            "serializationMs": 26.59999999962747,
+            "saveBytes": 4174108
+          },
+          "elapsedMs": 112753.10000000056
+        },
+        {
+          "seed": "regional-2",
+          "years": 200,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 100.89999999664724,
+            "titleUpdateTotalMs": 16.999999998137355,
+            "populationEntryPlanning": {
+              "calls": 544,
+              "matched": 4,
+              "totalMs": 1.5,
+              "maxMs": 0.20000000018626451
+            },
+            "projectionMs": 4.599999999627471,
+            "serializationMs": 21.90000000037253,
+            "saveBytes": 3544697
+          },
+          "elapsedMs": 78898.60000000056
+        },
+        {
+          "seed": "regional-3",
+          "years": 200,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 125.60000000335276,
+            "titleUpdateTotalMs": 241.600000012666,
+            "populationEntryPlanning": {
+              "calls": 652,
+              "matched": 72,
+              "totalMs": 5.600000002421439,
+              "maxMs": 0.2999999998137355
+            },
+            "projectionMs": 32.200000000186265,
+            "serializationMs": 20.59999999962747,
+            "saveBytes": 4411479
+          },
+          "elapsedMs": 80239.29999999981
+        },
+        {
+          "seed": "regional-4",
+          "years": 200,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 90.69999999925494,
+            "titleUpdateTotalMs": 70.79999999795109,
+            "populationEntryPlanning": {
+              "calls": 602,
+              "matched": 15,
+              "totalMs": 2.699999999254942,
+              "maxMs": 0.20000000018626451
+            },
+            "projectionMs": 11.900000000372529,
+            "serializationMs": 15.599999999627471,
+            "saveBytes": 4135434
+          },
+          "elapsedMs": 70937.39999999944
+        }
+      ]
+    },
+    {
+      "path": "/private/tmp/wanguoji-z56-candidate/scripts/testing/results/military-balance-z56-candidate-300.json",
+      "sha256": "7d8e1a53f6d3792b40bb883585cc83679cb37b588cb6dc4f65a0a589ebaa05cb",
+      "runs": [
+        {
+          "seed": "regional-3",
+          "years": 300,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 319.3000000026077,
+            "titleUpdateTotalMs": 583.0999999735504,
+            "populationEntryPlanning": {
+              "calls": 909,
+              "matched": 94,
+              "totalMs": 8.400000002235174,
+              "maxMs": 0.2000000011175871
+            },
+            "projectionMs": 242.19999999925494,
+            "serializationMs": 58.59999999962747,
+            "saveBytes": 6577717
+          },
+          "elapsedMs": 161063
+        }
+      ]
+    },
+    {
+      "path": "/private/tmp/wanguoji-z56-candidate/scripts/testing/results/military-balance-z56-candidate-500-direct.json",
+      "sha256": "67eb23aab20cf131033c232d26c61f1f1cad233171a2ee9891a239c31769fca0",
+      "runs": [
+        {
+          "seed": "regional-3",
+          "years": 500,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "familyTiming": {
+            "actualAnnualFamilyUpdateTotalMs": 1201.4999999925494,
+            "titleUpdateTotalMs": 25228.199999937788,
+            "populationEntryPlanning": {
+              "calls": 1556,
+              "matched": 154,
+              "totalMs": 15.700000008568168,
+              "maxMs": 0.2000000011175871
+            },
+            "projectionMs": 973.8000000007451,
+            "serializationMs": 69.09999999962747,
+            "saveBytes": 11907288
+          },
+          "elapsedMs": 408678.7000000011
+        }
+      ]
+    }
+  ],
+  "performanceConclusion": "Annual family update improved from median 5.1 ms to 0.7 ms in one real 300-year 12-month 4x sample. Whole Core 503.7 ms to 513.9 ms and family-open 5.8 ms to 6.0 ms do not establish overall or UI speedup."
+}

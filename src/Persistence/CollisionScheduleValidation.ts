@@ -10,7 +10,9 @@ export function validateCollisionSchedule(save:WorldSaveV1):string[]{
  for(const row of schedule.colliders){
   if(!row||Object.keys(row).some(k=>!['sourceGroupId','targetGroupIds'].includes(k))||!sources.has(row.sourceGroupId)||!Array.isArray(row.targetGroupIds)||!row.targetGroupIds.length){errors.push('invalid collision source/targets');continue;}
   for(const target of row.targetGroupIds){const pair=JSON.stringify([row.sourceGroupId,target]);
-   if(!targets.has(target)||target===`blocks:${sources.get(row.sourceGroupId)}`||seen.has(pair))errors.push('unknown, self-owned or duplicate collision target');
+   // A resident's existing slave collider retains its original target list on transfer.
+   const self=target===`blocks:${sources.get(row.sourceGroupId)}`&&!row.sourceGroupId.startsWith('slaves:');
+   if(!targets.has(target)||self||seen.has(pair))errors.push(`invalid collision target ${row.sourceGroupId} -> ${String(target)}${seen.has(pair)?' (duplicate)':''}`);
    seen.add(pair);if(target==='map')withMap.add(row.sourceGroupId);
   }
  }
