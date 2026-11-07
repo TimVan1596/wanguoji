@@ -1,3 +1,7 @@
+import React from 'react';
+import {createRoot} from 'react-dom/client';
+import {flushSync} from 'react-dom';
+import MilitaryDetailProjection from '../../UI/Components/FactionDetails/MilitaryDetailProjection';
 import Military from '../../Politics/MilitaryCommandRegistry';
 import Dynasty from '../../Politics/Dynasty';
 import History from '../../History/WorldHistory';
@@ -34,7 +38,9 @@ export function checkSameMonthMilitaryCourt(core:any,base:ReturnType<typeof expo
   const pos=(id:string)=>events.findIndex(e=>e.id===id),end=events.find(x=>x.type==='military-command-ended'&&x.metadata?.courtCoupEventId===attempt.id);
   check(pos(promotion.eventId)>=0&&pos(promotion.eventId)<pos(attempt.id)&&end&&pos(attempt.id)<pos(end.id),'canonical write order is promotion then court attempt then real command dismissal');
   const original=exportWorldSave(core),full=militaryChronicleReadingOrder(Military.getChronicle(p,month),events),rows=militaryMilestones(p,full,events),highlights=selectMilitaryMilestones(rows,events,rows.length);
-  for(const reading of[full,rows,highlights])check(reading.findIndex(e=>e.eventId===promotion.eventId)<reading.findIndex(e=>e.eventId===attempt.id),'full biography and highlights preserve actual same-month order, not event ID order');
+  for(const reading of[full,rows,highlights])check(reading.findIndex(e=>e.eventId===promotion.eventId)>=0&&reading.findIndex(e=>e.eventId===promotion.eventId)<reading.findIndex(e=>e.eventId===attempt.id),'full biography and highlights preserve actual same-month order, not event ID order');
+  const host=document.createElement('div'),root=createRoot(host);document.body.append(host);
+  try{flushSync(()=>root.render(React.createElement(MilitaryDetailProjection,{person:p,factionId,month,events,dynasties:Dynasty.getAll(),formations:Military.getFormations(),factions:new Map(core.teams.map((t:any)=>[t.name,t])),children:view=>React.createElement('div',null,...view.allMilestones.map(e=>React.createElement('p',{'data-order-event':e.eventId,key:e.eventId},e.text)))})));const ids=[...host.querySelectorAll('[data-order-event]')].map(n=>n.getAttribute('data-order-event'));check(ids.indexOf(promotion.eventId)>=0&&ids.indexOf(promotion.eventId)<ids.indexOf(attempt.id),'actual military detail React projection renders same-month promotion before court narrative');}finally{flushSync(()=>root.unmount());host.remove();}
   check(diffCanonicalWorldSave(original,exportWorldSave(core)).matched,'reading same-month history changes no canonical state or RNG');
   const offices=JSON.stringify(p.appointments),commands=Military.getFormations().filter(f=>f.commanderPersonId===p.personId);clock(252);(Military as any).advanceOffices(252,core.teams);
   check(JSON.stringify(Military.getPerson(p.personId)!.appointments)===offices&&commands.every(f=>f.status!=='ACTIVE'),'dismissed/banned or executed officer cannot promote or retain command without reappointment');

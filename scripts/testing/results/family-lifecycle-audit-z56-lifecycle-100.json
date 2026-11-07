@@ -1,0 +1,1088 @@
+[
+  {
+    "seed": "regional-1",
+    "years": 100,
+    "scope": "READ_ONLY_COVERAGE_ON_ACTUAL_EVENT_BOUNDARIES_NOT_A_COUNTERFACTUAL_WORLD_OR_CPU_BENCHMARK",
+    "month": 1200,
+    "families": 3,
+    "members": 9,
+    "familySaveBytes": 5354,
+    "saveBytes": 2055390,
+    "effectiveTitleHouses": 1,
+    "endedHouses": 2,
+    "activeHouses": 1,
+    "entriesWhileChainEnded": 4,
+    "laterOfficersFromEndedEntries": 0,
+    "laterNewPeriodsFromEndedEntries": 0,
+    "cycles": 0,
+    "bands": [
+      {
+        "startMonth": 0,
+        "endMonth": 1200,
+        "newHouses": 3,
+        "newRegisteredMembers": 9,
+        "newDescendants": 6
+      }
+    ],
+    "archiveCoverage": {
+      "condition": "At the original entry boundary: latest main chain ENDED and no actual active political member. Evaluate on the unmodified real history, then trace identity coverage through actual parent links; does not predict changed future events.",
+      "directRejected": 4,
+      "descendantIdentityRecordsAffected": 4,
+      "actualLaterOfficersAffected": 0,
+      "actualLaterNewPeriodFoundersAffected": 0,
+      "actualLaterMonarchsAffected": 0
+    },
+    "perFamily": [
+      {
+        "familyId": "military-family-military-person-5-韩-ruler-11",
+        "members": 5,
+        "activePolitical": false,
+        "effectiveTitle": false,
+        "chainEnded": true,
+        "unknownLiving": 1,
+        "registeredLiving": 0,
+        "bytes": 3250
+      },
+      {
+        "familyId": "military-family-military-person-24-燕-ruler-4",
+        "members": 3,
+        "activePolitical": false,
+        "effectiveTitle": false,
+        "chainEnded": true,
+        "unknownLiving": 0,
+        "registeredLiving": 2,
+        "bytes": 1637
+      },
+      {
+        "familyId": "military-family-military-person-26-秦-ruler-1",
+        "members": 1,
+        "activePolitical": true,
+        "effectiveTitle": true,
+        "chainEnded": false,
+        "unknownLiving": 0,
+        "registeredLiving": 1,
+        "bytes": 467
+      }
+    ],
+    "rows": [
+      {
+        "familyId": "military-family-military-person-5-韩-ruler-11",
+        "memberId": "family-member-1556458098--239",
+        "month": 315,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": true,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-5-韩-ruler-11",
+        "memberId": "family-member-1556458126-95",
+        "month": 573,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-5-韩-ruler-11",
+        "memberId": "family-member-1556458157-525",
+        "month": 786,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      },
+      {
+        "familyId": "military-family-military-person-5-韩-ruler-11",
+        "memberId": "family-member-1556458160-379",
+        "month": 831,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      },
+      {
+        "familyId": "military-family-military-person-24-燕-ruler-4",
+        "memberId": "family-member-1143910101-846",
+        "month": 1160,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      },
+      {
+        "familyId": "military-family-military-person-24-燕-ruler-4",
+        "memberId": "family-member-1143910102-932",
+        "month": 1171,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      }
+    ]
+  },
+  {
+    "seed": "regional-2",
+    "years": 100,
+    "scope": "READ_ONLY_COVERAGE_ON_ACTUAL_EVENT_BOUNDARIES_NOT_A_COUNTERFACTUAL_WORLD_OR_CPU_BENCHMARK",
+    "month": 1200,
+    "families": 0,
+    "members": 0,
+    "familySaveBytes": 0,
+    "saveBytes": 1802383,
+    "effectiveTitleHouses": 0,
+    "endedHouses": 0,
+    "activeHouses": 0,
+    "entriesWhileChainEnded": 0,
+    "laterOfficersFromEndedEntries": 0,
+    "laterNewPeriodsFromEndedEntries": 0,
+    "cycles": 0,
+    "bands": [
+      {
+        "startMonth": 0,
+        "endMonth": 1200,
+        "newHouses": 0,
+        "newRegisteredMembers": 0,
+        "newDescendants": 0
+      }
+    ],
+    "archiveCoverage": {
+      "condition": "At the original entry boundary: latest main chain ENDED and no actual active political member. Evaluate on the unmodified real history, then trace identity coverage through actual parent links; does not predict changed future events.",
+      "directRejected": 0,
+      "descendantIdentityRecordsAffected": 0,
+      "actualLaterOfficersAffected": 0,
+      "actualLaterNewPeriodFoundersAffected": 0,
+      "actualLaterMonarchsAffected": 0
+    },
+    "perFamily": [],
+    "rows": []
+  },
+  {
+    "seed": "regional-3",
+    "years": 100,
+    "scope": "READ_ONLY_COVERAGE_ON_ACTUAL_EVENT_BOUNDARIES_NOT_A_COUNTERFACTUAL_WORLD_OR_CPU_BENCHMARK",
+    "month": 1200,
+    "families": 5,
+    "members": 25,
+    "familySaveBytes": 13445,
+    "saveBytes": 2169538,
+    "effectiveTitleHouses": 2,
+    "endedHouses": 3,
+    "activeHouses": 2,
+    "entriesWhileChainEnded": 8,
+    "laterOfficersFromEndedEntries": 0,
+    "laterNewPeriodsFromEndedEntries": 0,
+    "cycles": 0,
+    "bands": [
+      {
+        "startMonth": 0,
+        "endMonth": 1200,
+        "newHouses": 5,
+        "newRegisteredMembers": 25,
+        "newDescendants": 20
+      }
+    ],
+    "archiveCoverage": {
+      "condition": "At the original entry boundary: latest main chain ENDED and no actual active political member. Evaluate on the unmodified real history, then trace identity coverage through actual parent links; does not predict changed future events.",
+      "directRejected": 8,
+      "descendantIdentityRecordsAffected": 8,
+      "actualLaterOfficersAffected": 0,
+      "actualLaterNewPeriodFoundersAffected": 0,
+      "actualLaterMonarchsAffected": 0
+    },
+    "perFamily": [
+      {
+        "familyId": "military-family-military-person-5-魏-ruler-10",
+        "members": 5,
+        "activePolitical": false,
+        "effectiveTitle": false,
+        "chainEnded": true,
+        "unknownLiving": 0,
+        "registeredLiving": 0,
+        "bytes": 3413
+      },
+      {
+        "familyId": "military-family-military-person-7-秦-ruler-1",
+        "members": 13,
+        "activePolitical": false,
+        "effectiveTitle": false,
+        "chainEnded": true,
+        "unknownLiving": 0,
+        "registeredLiving": 6,
+        "bytes": 5983
+      },
+      {
+        "familyId": "military-family-military-person-12-魏-ruler-10",
+        "members": 2,
+        "activePolitical": false,
+        "effectiveTitle": false,
+        "chainEnded": true,
+        "unknownLiving": 0,
+        "registeredLiving": 0,
+        "bytes": 2340
+      },
+      {
+        "familyId": "military-family-military-person-19-燕-ruler-7",
+        "members": 4,
+        "activePolitical": true,
+        "effectiveTitle": true,
+        "chainEnded": false,
+        "unknownLiving": 0,
+        "registeredLiving": 3,
+        "bytes": 1242
+      },
+      {
+        "familyId": "military-family-military-person-29-楚-ruler-14",
+        "members": 1,
+        "activePolitical": true,
+        "effectiveTitle": true,
+        "chainEnded": false,
+        "unknownLiving": 0,
+        "registeredLiving": 1,
+        "bytes": 467
+      }
+    ],
+    "rows": [
+      {
+        "familyId": "military-family-military-person-5-魏-ruler-10",
+        "memberId": "family-member-1359921427-240",
+        "month": 660,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": true,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-5-魏-ruler-10",
+        "memberId": "family-member-1359921431-333",
+        "month": 729,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-5-魏-ruler-10",
+        "memberId": "family-member-1359921455-551",
+        "month": 793,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-5-魏-ruler-10",
+        "memberId": "family-member-1359921463-804",
+        "month": 1038,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      },
+      {
+        "familyId": "military-family-military-person-7-秦-ruler-1",
+        "memberId": "family-member-1050980877--54",
+        "month": 307,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": true,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-7-秦-ruler-1",
+        "memberId": "family-member-1050980905-28",
+        "month": 430,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-7-秦-ruler-1",
+        "memberId": "family-member-1050980908-255",
+        "month": 531,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-7-秦-ruler-1",
+        "memberId": "family-member-1050980909-230",
+        "month": 550,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": true,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-7-秦-ruler-1",
+        "memberId": "family-member-1050980966-167",
+        "month": 841,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-7-秦-ruler-1",
+        "memberId": "family-member-1050980969-529",
+        "month": 889,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      },
+      {
+        "familyId": "military-family-military-person-7-秦-ruler-1",
+        "memberId": "family-member-1050980970-328",
+        "month": 904,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      },
+      {
+        "familyId": "military-family-military-person-7-秦-ruler-1",
+        "memberId": "family-member-1050980998-384",
+        "month": 1011,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      },
+      {
+        "familyId": "military-family-military-person-7-秦-ruler-1",
+        "memberId": "family-member-1050980999-642",
+        "month": 1023,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      },
+      {
+        "familyId": "military-family-military-person-7-秦-ruler-1",
+        "memberId": "family-member-1050981000-648",
+        "month": 1048,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      },
+      {
+        "familyId": "military-family-military-person-7-秦-ruler-1",
+        "memberId": "family-member-1050981001-649",
+        "month": 1081,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      },
+      {
+        "familyId": "military-family-military-person-7-秦-ruler-1",
+        "memberId": "family-member-1050981026-488",
+        "month": 1173,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      },
+      {
+        "familyId": "military-family-military-person-12-魏-ruler-10",
+        "memberId": "family-member-1359921454-266",
+        "month": 778,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": true,
+        "laterNewPeriod": false,
+        "laterMonarch": true
+      },
+      {
+        "familyId": "military-family-military-person-19-燕-ruler-7",
+        "memberId": "family-member-1143910130-485",
+        "month": 946,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-19-燕-ruler-7",
+        "memberId": "family-member-1143910133-786",
+        "month": 1076,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-19-燕-ruler-7",
+        "memberId": "family-member-1143910135-623",
+        "month": 1114,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      }
+    ]
+  },
+  {
+    "seed": "regional-4",
+    "years": 100,
+    "scope": "READ_ONLY_COVERAGE_ON_ACTUAL_EVENT_BOUNDARIES_NOT_A_COUNTERFACTUAL_WORLD_OR_CPU_BENCHMARK",
+    "month": 1200,
+    "families": 2,
+    "members": 5,
+    "familySaveBytes": 2325,
+    "saveBytes": 2176009,
+    "effectiveTitleHouses": 1,
+    "endedHouses": 1,
+    "activeHouses": 1,
+    "entriesWhileChainEnded": 2,
+    "laterOfficersFromEndedEntries": 0,
+    "laterNewPeriodsFromEndedEntries": 0,
+    "cycles": 0,
+    "bands": [
+      {
+        "startMonth": 0,
+        "endMonth": 1200,
+        "newHouses": 2,
+        "newRegisteredMembers": 5,
+        "newDescendants": 3
+      }
+    ],
+    "archiveCoverage": {
+      "condition": "At the original entry boundary: latest main chain ENDED and no actual active political member. Evaluate on the unmodified real history, then trace identity coverage through actual parent links; does not predict changed future events.",
+      "directRejected": 2,
+      "descendantIdentityRecordsAffected": 2,
+      "actualLaterOfficersAffected": 0,
+      "actualLaterNewPeriodFoundersAffected": 0,
+      "actualLaterMonarchsAffected": 0
+    },
+    "perFamily": [
+      {
+        "familyId": "military-family-military-person-28-赵-ruler-48",
+        "members": 3,
+        "activePolitical": false,
+        "effectiveTitle": false,
+        "chainEnded": true,
+        "unknownLiving": 0,
+        "registeredLiving": 2,
+        "bytes": 1649
+      },
+      {
+        "familyId": "military-family-military-person-27-秦-ruler-1",
+        "members": 2,
+        "activePolitical": true,
+        "effectiveTitle": true,
+        "chainEnded": false,
+        "unknownLiving": 0,
+        "registeredLiving": 2,
+        "bytes": 676
+      }
+    ],
+    "rows": [
+      {
+        "familyId": "military-family-military-person-28-赵-ruler-48",
+        "memberId": "family-member-1380083258-791",
+        "month": 1131,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      },
+      {
+        "familyId": "military-family-military-person-28-赵-ruler-48",
+        "memberId": "family-member-1380083259-512",
+        "month": 1152,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      },
+      {
+        "familyId": "military-family-military-person-27-秦-ruler-1",
+        "memberId": "family-member-1050980969-480",
+        "month": 1077,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      }
+    ]
+  },
+  {
+    "seed": "regional-5",
+    "years": 100,
+    "scope": "READ_ONLY_COVERAGE_ON_ACTUAL_EVENT_BOUNDARIES_NOT_A_COUNTERFACTUAL_WORLD_OR_CPU_BENCHMARK",
+    "month": 1200,
+    "families": 1,
+    "members": 1,
+    "familySaveBytes": 1200,
+    "saveBytes": 1766237,
+    "effectiveTitleHouses": 0,
+    "endedHouses": 1,
+    "activeHouses": 0,
+    "entriesWhileChainEnded": 0,
+    "laterOfficersFromEndedEntries": 0,
+    "laterNewPeriodsFromEndedEntries": 0,
+    "cycles": 0,
+    "bands": [
+      {
+        "startMonth": 0,
+        "endMonth": 1200,
+        "newHouses": 1,
+        "newRegisteredMembers": 1,
+        "newDescendants": 0
+      }
+    ],
+    "archiveCoverage": {
+      "condition": "At the original entry boundary: latest main chain ENDED and no actual active political member. Evaluate on the unmodified real history, then trace identity coverage through actual parent links; does not predict changed future events.",
+      "directRejected": 0,
+      "descendantIdentityRecordsAffected": 0,
+      "actualLaterOfficersAffected": 0,
+      "actualLaterNewPeriodFoundersAffected": 0,
+      "actualLaterMonarchsAffected": 0
+    },
+    "perFamily": [
+      {
+        "familyId": "military-family-military-person-2-燕-ruler-3",
+        "members": 1,
+        "activePolitical": false,
+        "effectiveTitle": false,
+        "chainEnded": true,
+        "unknownLiving": 0,
+        "registeredLiving": 0,
+        "bytes": 1200
+      }
+    ],
+    "rows": []
+  },
+  {
+    "seed": "regional-6",
+    "years": 100,
+    "scope": "READ_ONLY_COVERAGE_ON_ACTUAL_EVENT_BOUNDARIES_NOT_A_COUNTERFACTUAL_WORLD_OR_CPU_BENCHMARK",
+    "month": 1200,
+    "families": 2,
+    "members": 23,
+    "familySaveBytes": 10162,
+    "saveBytes": 1715188,
+    "effectiveTitleHouses": 0,
+    "endedHouses": 2,
+    "activeHouses": 0,
+    "entriesWhileChainEnded": 8,
+    "laterOfficersFromEndedEntries": 0,
+    "laterNewPeriodsFromEndedEntries": 0,
+    "cycles": 0,
+    "bands": [
+      {
+        "startMonth": 0,
+        "endMonth": 1200,
+        "newHouses": 2,
+        "newRegisteredMembers": 23,
+        "newDescendants": 21
+      }
+    ],
+    "archiveCoverage": {
+      "condition": "At the original entry boundary: latest main chain ENDED and no actual active political member. Evaluate on the unmodified real history, then trace identity coverage through actual parent links; does not predict changed future events.",
+      "directRejected": 8,
+      "descendantIdentityRecordsAffected": 8,
+      "actualLaterOfficersAffected": 0,
+      "actualLaterNewPeriodFoundersAffected": 0,
+      "actualLaterMonarchsAffected": 0
+    },
+    "perFamily": [
+      {
+        "familyId": "military-family-military-person-10-齐-ruler-6",
+        "members": 10,
+        "activePolitical": false,
+        "effectiveTitle": false,
+        "chainEnded": true,
+        "unknownLiving": 0,
+        "registeredLiving": 4,
+        "bytes": 4530
+      },
+      {
+        "familyId": "military-family-military-person-11-赵-ruler-32",
+        "members": 13,
+        "activePolitical": false,
+        "effectiveTitle": false,
+        "chainEnded": true,
+        "unknownLiving": 0,
+        "registeredLiving": 9,
+        "bytes": 5632
+      }
+    ],
+    "rows": [
+      {
+        "familyId": "military-family-military-person-10-齐-ruler-6",
+        "memberId": "family-member-1306530420--26",
+        "month": 356,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": true,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-10-齐-ruler-6",
+        "memberId": "family-member-1306530425-46",
+        "month": 454,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-10-齐-ruler-6",
+        "memberId": "family-member-1306530514-474",
+        "month": 862,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      },
+      {
+        "familyId": "military-family-military-person-10-齐-ruler-6",
+        "memberId": "family-member-1306530515-615",
+        "month": 871,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      },
+      {
+        "familyId": "military-family-military-person-10-齐-ruler-6",
+        "memberId": "family-member-1306530518-291",
+        "month": 917,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      },
+      {
+        "familyId": "military-family-military-person-10-齐-ruler-6",
+        "memberId": "family-member-1306530541-525",
+        "month": 925,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      },
+      {
+        "familyId": "military-family-military-person-10-齐-ruler-6",
+        "memberId": "family-member-1306530546-540",
+        "month": 998,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      },
+      {
+        "familyId": "military-family-military-person-10-齐-ruler-6",
+        "memberId": "family-member-1306530548-766",
+        "month": 1057,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      },
+      {
+        "familyId": "military-family-military-person-10-齐-ruler-6",
+        "memberId": "family-member-1306530575-714",
+        "month": 1163,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      },
+      {
+        "familyId": "military-family-military-person-11-赵-ruler-32",
+        "memberId": "family-member-1380083227-75",
+        "month": 504,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-11-赵-ruler-32",
+        "memberId": "family-member-1380083229--50",
+        "month": 541,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": true,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-11-赵-ruler-32",
+        "memberId": "family-member-1380083284-282",
+        "month": 792,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-11-赵-ruler-32",
+        "memberId": "family-member-1380083286-297",
+        "month": 874,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-11-赵-ruler-32",
+        "memberId": "family-member-1380083287-226",
+        "month": 901,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-11-赵-ruler-32",
+        "memberId": "family-member-1380083292-623",
+        "month": 945,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-11-赵-ruler-32",
+        "memberId": "family-member-1380083315-380",
+        "month": 978,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-11-赵-ruler-32",
+        "memberId": "family-member-1380083323-678",
+        "month": 1056,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-11-赵-ruler-32",
+        "memberId": "family-member-1380083346-794",
+        "month": 1072,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-11-赵-ruler-32",
+        "memberId": "family-member-1380083348-570",
+        "month": 1108,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-11-赵-ruler-32",
+        "memberId": "family-member-1380083350-568",
+        "month": 1131,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-11-赵-ruler-32",
+        "memberId": "family-member-1380083351-510",
+        "month": 1195,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      }
+    ]
+  },
+  {
+    "seed": "regional-7",
+    "years": 100,
+    "scope": "READ_ONLY_COVERAGE_ON_ACTUAL_EVENT_BOUNDARIES_NOT_A_COUNTERFACTUAL_WORLD_OR_CPU_BENCHMARK",
+    "month": 1200,
+    "families": 2,
+    "members": 7,
+    "familySaveBytes": 3581,
+    "saveBytes": 1948593,
+    "effectiveTitleHouses": 1,
+    "endedHouses": 1,
+    "activeHouses": 1,
+    "entriesWhileChainEnded": 2,
+    "laterOfficersFromEndedEntries": 0,
+    "laterNewPeriodsFromEndedEntries": 0,
+    "cycles": 0,
+    "bands": [
+      {
+        "startMonth": 0,
+        "endMonth": 1200,
+        "newHouses": 2,
+        "newRegisteredMembers": 7,
+        "newDescendants": 5
+      }
+    ],
+    "archiveCoverage": {
+      "condition": "At the original entry boundary: latest main chain ENDED and no actual active political member. Evaluate on the unmodified real history, then trace identity coverage through actual parent links; does not predict changed future events.",
+      "directRejected": 2,
+      "descendantIdentityRecordsAffected": 2,
+      "actualLaterOfficersAffected": 0,
+      "actualLaterNewPeriodFoundersAffected": 0,
+      "actualLaterMonarchsAffected": 0
+    },
+    "perFamily": [
+      {
+        "familyId": "military-family-military-person-16-楚-ruler-15",
+        "members": 4,
+        "activePolitical": true,
+        "effectiveTitle": true,
+        "chainEnded": false,
+        "unknownLiving": 0,
+        "registeredLiving": 3,
+        "bytes": 1938
+      },
+      {
+        "familyId": "military-family-military-person-21-赵-ruler-4",
+        "members": 3,
+        "activePolitical": false,
+        "effectiveTitle": false,
+        "chainEnded": true,
+        "unknownLiving": 0,
+        "registeredLiving": 2,
+        "bytes": 1643
+      }
+    ],
+    "rows": [
+      {
+        "familyId": "military-family-military-person-16-楚-ruler-15",
+        "memberId": "family-member-1433913311-428",
+        "month": 895,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-16-楚-ruler-15",
+        "memberId": "family-member-1433913340-664",
+        "month": 991,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-16-楚-ruler-15",
+        "memberId": "family-member-1433913341-664",
+        "month": 1018,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-21-赵-ruler-4",
+        "memberId": "family-member-1380083259-770",
+        "month": 1105,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      },
+      {
+        "familyId": "military-family-military-person-21-赵-ruler-4",
+        "memberId": "family-member-1380083260-512",
+        "month": 1140,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      }
+    ]
+  },
+  {
+    "seed": "regional-8",
+    "years": 100,
+    "scope": "READ_ONLY_COVERAGE_ON_ACTUAL_EVENT_BOUNDARIES_NOT_A_COUNTERFACTUAL_WORLD_OR_CPU_BENCHMARK",
+    "month": 1200,
+    "families": 1,
+    "members": 6,
+    "familySaveBytes": 3433,
+    "saveBytes": 2018557,
+    "effectiveTitleHouses": 0,
+    "endedHouses": 1,
+    "activeHouses": 0,
+    "entriesWhileChainEnded": 1,
+    "laterOfficersFromEndedEntries": 0,
+    "laterNewPeriodsFromEndedEntries": 0,
+    "cycles": 0,
+    "bands": [
+      {
+        "startMonth": 0,
+        "endMonth": 1200,
+        "newHouses": 1,
+        "newRegisteredMembers": 6,
+        "newDescendants": 5
+      }
+    ],
+    "archiveCoverage": {
+      "condition": "At the original entry boundary: latest main chain ENDED and no actual active political member. Evaluate on the unmodified real history, then trace identity coverage through actual parent links; does not predict changed future events.",
+      "directRejected": 1,
+      "descendantIdentityRecordsAffected": 1,
+      "actualLaterOfficersAffected": 0,
+      "actualLaterNewPeriodFoundersAffected": 0,
+      "actualLaterMonarchsAffected": 0
+    },
+    "perFamily": [
+      {
+        "familyId": "military-family-military-person-2-秦-ruler-1",
+        "members": 6,
+        "activePolitical": false,
+        "effectiveTitle": false,
+        "chainEnded": true,
+        "unknownLiving": 0,
+        "registeredLiving": 2,
+        "bytes": 3433
+      }
+    ],
+    "rows": [
+      {
+        "familyId": "military-family-military-person-2-秦-ruler-1",
+        "memberId": "family-member-1050980879--31",
+        "month": 252,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-2-秦-ruler-1",
+        "memberId": "family-member-1050980902--81",
+        "month": 357,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": true,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-2-秦-ruler-1",
+        "memberId": "family-member-1050980908-200",
+        "month": 493,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-2-秦-ruler-1",
+        "memberId": "family-member-1050980938-648",
+        "month": 942,
+        "chainEnded": false,
+        "entryWhileInactiveEnded": false,
+        "laterMilitary": true,
+        "laterNewPeriod": false,
+        "laterMonarch": false
+      },
+      {
+        "familyId": "military-family-military-person-2-秦-ruler-1",
+        "memberId": "family-member-1050980941-761",
+        "month": 1152,
+        "chainEnded": true,
+        "entryWhileInactiveEnded": true,
+        "laterMilitary": false,
+        "laterNewPeriod": false,
+        "laterMonarch": false,
+        "ancestorCut": true
+      }
+    ]
+  }
+]
