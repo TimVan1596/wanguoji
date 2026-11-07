@@ -1,3 +1,4 @@
+import RoyalNoblePanel from './RoyalNoblePanel';
 import {rulerFamilyOrigin} from '../../../Politics/RulerFamilyOrigin';
 import {courtServiceReadings} from '../../../Politics/CourtServicePresentation';
 import InsurgentCommandPanel from './InsurgentCommandPanel';
@@ -28,6 +29,7 @@ export function RulerServicePanel({ruler,factionId,month,reading}:{ruler:Ruler;f
  const earlier=reading?reading.earlier:preAccessionMilitary(ruler,people,Military.getFormations(),events,{factions:new Map((Game.Core?.teams??[]).map(t=>[t.name,t]))});
  const rows=reading?reading.rows:personServiceLinks(factionId,[ruler],people,Military.getFormations(),events,month);
  return <>
+  {Dynasty.get(factionId)&&<RoyalNoblePanel ruler={ruler} dynasty={Dynasty.get(factionId)!} month={month}/>}
   {origin&&<Typography fontSize=".8rem">原属{origin.family.surname}氏功臣家族 · <button type="button" style={style} onClick={()=>nav.open({kind:'FAMILY',factionId:origin.family.factionId,id:origin.family.familyId,memberId:origin.member.memberId})}>查看原家族宗谱并定位本人</button></Typography>}
   <InsurgentCommandPanel factionId={factionId} rulerId={ruler.id} month={month}/>
   {earlier&&<ChronicleSection title="早年与登位前经历">

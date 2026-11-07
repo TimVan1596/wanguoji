@@ -1,0 +1,28 @@
+[
+  {
+    "seed": "royal-military-z11",
+    "checks": [
+      "fixed initial world supplies an actual registered adult royal with legal military entry",
+      "actual royal bridge creates one real legal command",
+      "controlled merit uses six real foreign cities",
+      "actual personal military marquis updates one royal hereditary chain",
+      "failed actual royal child registration rejects the transaction",
+      "registration failure restores royal IDs, RNG, population and all original history",
+      "real registered minor has a frozen direct-parent source before settlement",
+      "royal child registration does not create a User or military person",
+      "actual military casualty ends the original royal person and real body",
+      "one actual death preserves birth and disposes the real commander",
+      "failed inheritance restores titles, history, population, command and RNG completely",
+      "registered minor legally inherits a real marquis as baron",
+      "inheritance draws no RNG and gives neither military rank nor copied command",
+      "same-month repeated settlement cannot duplicate a title or event",
+      "actual royal card reading shows the inherited title independently of military office",
+      "strict replay rejects forged parent, rank or future registration",
+      "strict replay rejects forged parent, rank or future registration",
+      "strict replay rejects forged parent, rank or future registration",
+      "real V54 royalty and title state resumes twelve months deterministically",
+      "second read creates no title, person, population or history"
+    ],
+    "scope": "controlled actual Core royal enlistment, City.capture, personal ennoblement, existing royal birth generator, User death and formal hereditary transactions; not natural frequency"
+  }
+]

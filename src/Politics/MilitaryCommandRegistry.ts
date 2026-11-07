@@ -978,6 +978,7 @@ export class MilitaryCommandRegistryStore {
         if(formation.leaderDuty&&formation.memberUnitIds.length<2)this.endInsurgentCommand(formation,worldMonth,'NO_FOLLOWERS');else if (formation.memberUnitIds.length < 1) this.endFormation(formation, worldMonth, "DISMISSED");
       }
     }
+    if(person?.royalIdentity&&person.status!=='DEAD'&&person.factionId!==nextFactionId)WorldHistory.addEvent({id:`${person.personId}-royal-transfer-${worldMonth}-${WorldHistory.getEventCount()}`,year:worldMonth,type:'royal-person-transferred',category:'politics',importance:'normal',actorFactionId:person.royalIdentity.factionId,targetFactionId:nextFactionId,factionIds:[person.royalIdentity.factionId,nextFactionId],rulerId:person.royalIdentity.rulerId,title:`${person.personalName}转属他国。`,metadata:{personId:person.personId,sourceUserId:person.sourceUserId,bornMonth:person.bornMonth,fromFactionId:person.factionId,toFactionId:nextFactionId}});
     if (person && person.status !== "DEAD") person.factionId = nextFactionId;
   }
 

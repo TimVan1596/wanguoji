@@ -1,3 +1,4 @@
+import {royalNobleReading,createRoyalNobleReadingIndex} from '../../../Politics/RoyalNobleReading';
 import {genealogyRulerHeading} from '../../../Politics/GenealogyRulerHeading';
 import {unresolvedSuccessionAct} from '../../../Politics/RoyalSuccessionStanding';
 import {royalHonorHeading} from '../../../Politics/RoyalHonorPresentation';
@@ -10,7 +11,7 @@ import { hasRecordedRulerDeath } from "../../../Politics/RulerLifeState";
 import { getRulerTerminalRole } from "../../../History/PoliticalTerminalChronicle";
 
 export type GenealogyRole = "当前君主" | "储君" | "势力创始" | "正式开国" | "称帝" | "篡朝开统" | "宗室废立继位" | "被宗室废黜" | "复国" | "末代承统" | "合邦退位" | "纳土退位";
-export type GenealogyTheme = "neutral" | "monarch" | "current" | "heir" | "foundation" | "usurpation" | "restoration" | "terminal" | "disqualified" | "military";
+export type GenealogyTheme = "neutral" | "monarch" | "current" | "heir" | "foundation" | "usurpation" | "restoration" | "terminal" | "disqualified" | "military" | "personalNoble" | "inheritedNoble";
 export interface GenealogyNodePresentation {
   heading?:string;
   politicalLabel?:string;
@@ -27,6 +28,7 @@ const order: GenealogyRole[] = ["当前君主", "储君", "宗室废立继位", 
 /** A single indexed faction window; no mutation, bloodline changes or per-node history searches. */
 export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: HouseHistoricalFaction,
   events: readonly WorldEvent[], worldMonth: number): Map<string, GenealogyNodePresentation> {
+  const nobleIndex=createRoyalNobleReadingIndex(events,worldMonth);
   const revoked=new Map<string,number>();for(const e of events)if(e.type==='military-title-revoked')try{const h=JSON.parse(String(e.metadata?.honor)),key=`${h.personId}/${h.factionId}/${h.epochFounderId}`;revoked.set(key,Math.min(revoked.get(key)??Infinity,h.month));}catch{}
   const byId = new Map(dynasty.rulers.map(r => [r.id, r]));
   const evidence = new Map(dynasty.rulers.map(r => [r.id, [] as GenealogyNodePresentation["evidence"]]));
@@ -92,7 +94,7 @@ export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: Hous
     const posthumousLabels=hasRecordedRulerDeath(r)&&r.deathMonth!<=worldMonth?[r.templeName?`庙号：${r.templeName}`:'',r.posthumousEpithet?`谥号：${r.posthumousEpithet}`:''].filter(Boolean):[];
     const proof = evidence.get(r.id)!;
     const roles = order.filter(role => proof.some(e => e.role === role));
-    const theme: GenealogyTheme = roles.includes("当前君主") ? "current" : disqualified ? "disqualified" : roles.includes("储君") ? "heir" :
+    let theme: GenealogyTheme = roles.includes("当前君主") ? "current" : disqualified ? "disqualified" : roles.includes("储君") ? "heir" :
       roles.includes("篡朝开统") ? "usurpation" : roles.some(x => ["正式开国", "称帝", "势力创始"].includes(x)) ? "foundation" :
       roles.includes("复国") ? "restoration" : roles.some(x => ["末代承统", "合邦退位", "纳土退位"].includes(x)) ? "terminal" : r.reignOrdinal!==undefined&&r.accessionYear!==undefined ? "monarch" : r.militaryIdentity ? "military" : "neutral";
     const details = [...roles,politicalLabel??'',...posthumousLabels, royalHonorLabel(r,dynasty,worldMonth,faction.status), r.reignOrdinal !== undefined ? `第${r.reignOrdinal}任君主` : "宗室成员",
@@ -103,13 +105,19 @@ export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: Hous
       byId.get(dynasty.currentRulerId ?? "")?.parentId === r.id ? "当今君主的父辈" : "",
       r.status === "politically-ended" ? "生死未载" : r.status === "exiled" ? "流亡承统" : r.status === "deposed" ? "被宗室废黜" : ""].filter(Boolean);
     const honor=royalHonorHeading(r,dynasty,worldMonth,{revoked:g=>(revoked.get(`${r.militaryIdentity?.personId}/${g.factionId}/${g.epochFounderId}`)??Infinity)<=worldMonth,factionId:dynasty.factionId,status:faction.status});
-    return [r.id, {heading:genealogyRulerHeading(r,faction,worldMonth,honor,events),politicalLabel,posthumousLabels,honor, roles, labels: (politicalLabel?[politicalLabel,...roles]:roles).slice(0,2), theme, details, evidence: proof,
+    const noble=royalNobleReading(r,dynasty,events,worldMonth,nobleIndex),heading=noble&&r.reignOrdinal===undefined&&!disqualified?noble.heading:genealogyRulerHeading(r,faction,worldMonth,honor,events);
+    if(noble?.current&&r.reignOrdinal===undefined&&!disqualified)theme=noble.inherited?'inheritedNoble':'personalNoble';
+    if(noble?.best.revoked&&r.reignOrdinal===undefined)theme='disqualified';
+    if(noble)details.push(noble.label);
+    return [r.id, {heading,politicalLabel,posthumousLabels,honor, roles, labels: (politicalLabel?[politicalLabel,...roles,noble?.label??'']:noble?[...roles,noble.label+(r.militaryIdentity?'':' · 未任军职')]:roles).filter(Boolean).slice(0,2), theme, details, evidence: proof,
       hasPosthumousTitle: posthumousLabels.length>0 }];
   }));
 }
 
 /** Restrained palette: ordinary nodes remain neutral; bloodline edges keep their existing style. */
 export const genealogyThemeStyles: Record<GenealogyTheme, { borderColor: string; backgroundColor: string; color: string }> = {
+  personalNoble:{borderColor:"#587f94",backgroundColor:"#eaf1f6",color:"#35566a"},
+  inheritedNoble:{borderColor:"#679077",backgroundColor:"#edf5ef",color:"#406452"},
   disqualified: {borderColor:"#985f59",backgroundColor:"#f7eeee",color:"#7c453f"},
   military: {borderColor:"#638596",backgroundColor:"#eff4f6",color:"#3b5f70"},
   neutral: { borderColor: "var(--gg-border)", backgroundColor: "var(--gg-panel)", color: "var(--gg-text)" },

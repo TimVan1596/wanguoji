@@ -18,7 +18,7 @@ export function royalMilitaryArchive(dynasty:Pick<Dynasty,"factionId"|"rulers">,
 /** Display inclusion only. These IDs never enter the simulation's succession candidate pool. */
 export function buildRoyalArchiveGenealogy(dynasty:Dynasty,people:readonly MilitaryPerson[],events:readonly WorldEvent[]){
  const military=royalMilitaryArchive(dynasty,people,events);
- return buildPoliticalGenealogy(dynasty.rulers,dynasty.currentRulerId,dynasty.designatedHeirId,[...dynasty.heirIds,...military.keys()]);
+ return buildPoliticalGenealogy(dynasty.rulers,dynasty.currentRulerId,dynasty.designatedHeirId,[...dynasty.heirIds,...military.keys(),...(dynasty.royalNobility??[]).flatMap(a=>[a.previousRulerId,...a.holderRulerId?[a.holderRulerId]:[]])]);
 }
 export function royalMilitaryOfficeLabel(person:MilitaryPerson,month:number,factionId=person.royalIdentity?.factionId){
  const local=person.appointments.filter(a=>a.factionId===factionId&&a.startMonth<=month);

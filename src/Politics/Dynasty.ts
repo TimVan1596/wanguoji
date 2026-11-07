@@ -1,3 +1,5 @@
+import {registerRoyalPerson,type RoyalPersonRegistration} from './RoyalPersonRegistration';
+import {nextRoyalNobleAct,royalNobleText,type RoyalNobleAct} from './RoyalNobility';
 import {rulerAbilities} from './PersonAbilities';
 import {establishedResidentFounderName,type ResidentNameSource} from './ResidentFounderName';
 import {DEFAULT_ABILITY_POLICY,type AbilityPolicy} from './PersonAbilities';
@@ -122,6 +124,7 @@ export interface RoyalMilitaryIdentity {
   personId: string; sourceUserId: number; sourceUserLabel: string; enteredMonth: number;
 }
 export interface Ruler {
+  registration?:RoyalPersonRegistration;
   successionHistory?: RoyalSuccessionAct[];
   royalHonors?:RoyalHonor[];
   militaryUsurperIdentity?:MilitaryUsurperIdentity;
@@ -160,6 +163,7 @@ export interface Ruler {
 }
 
 export interface Dynasty {
+  royalNobility?:RoyalNobleAct[];
   /** Living but formally excluded kin preserve the house during exile, without an illegal accession. */
   successionVacancyMonth?: number;
   houseEpochs?: DynastyHouseEpoch[];
@@ -216,6 +220,7 @@ class DynastyRegistryStore {
       dynasties: [...this.dynasties.values()].map((dynasty) => ({
         ...dynasty,
         houseEpochs: dynasty.houseEpochs?.map((epoch) => ({ ...epoch })),
+        royalNobility:dynasty.royalNobility?structuredClone(dynasty.royalNobility):undefined,
         rulers: dynasty.rulers.map((ruler) => ({ ...ruler, successionHistory:ruler.successionHistory?structuredClone(ruler.successionHistory):undefined, royalHonors:ruler.royalHonors?structuredClone(ruler.royalHonors):undefined,militaryIdentity:ruler.militaryIdentity?{...ruler.militaryIdentity}:undefined, militaryUsurperIdentity:ruler.militaryUsurperIdentity?structuredClone(ruler.militaryUsurperIdentity):undefined,residentIdentity:ruler.residentIdentity?structuredClone(ruler.residentIdentity):undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
         heirIds: [...dynasty.heirIds],
       })),
@@ -242,6 +247,7 @@ class DynastyRegistryStore {
     this.dynasties = new Map(state.dynasties.map((dynasty) => [dynasty.factionId, {
       ...dynasty,
       houseEpochs: dynasty.houseEpochs?.map((epoch) => ({ ...epoch })),
+        royalNobility:dynasty.royalNobility?structuredClone(dynasty.royalNobility):undefined,
       rulers: dynasty.rulers.map((ruler) => ({ ...ruler, successionHistory:ruler.successionHistory?structuredClone(ruler.successionHistory):undefined, royalHonors:ruler.royalHonors?structuredClone(ruler.royalHonors):undefined,militaryIdentity:ruler.militaryIdentity?{...ruler.militaryIdentity}:undefined, militaryUsurperIdentity:ruler.militaryUsurperIdentity?structuredClone(ruler.militaryUsurperIdentity):undefined,residentIdentity:ruler.residentIdentity?structuredClone(ruler.residentIdentity):undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
       heirIds: [...dynasty.heirIds],
     }]));
@@ -292,6 +298,7 @@ class DynastyRegistryStore {
     } else {
       this.ensureActiveHeir(team, dynasty, year, true);
     }
+    for(const recorded of dynasty.rulers)if(!recorded.registration)registerRoyalPerson(recorded,team.name,year,e=>WorldHistory.addEvent(e));
     if (!resident) WorldHistory.addRulerAcceded(year, team.name, this.getRulerTitle(team, ruler, year), ruler.id, captureAccessionCapital(team, year, ruler.id));
     this.ensureRulerUnit(team);
     return dynasty;
@@ -456,6 +463,23 @@ class DynastyRegistryStore {
       }
       this.succeedRuler(team, dynasty, ruler, year, "natural");
     });
+  }
+
+  updateRoyalNobility(month:number,teams:Team[]){
+    const people=MilitaryCommandRegistry.getPeople(),byPerson=new Map(people.map(p=>[p.personId,p]));let events:ReturnType<typeof WorldHistory.getRecordedEvents>|undefined;
+    for(const d of this.dynasties.values()){
+      if(!d.royalNobility?.some(a=>a.kind!=='ENDED'&&!d.royalNobility?.some(n=>n.chainId===a.chainId&&n.step>a.step))&&!d.rulers.some(r=>r.militaryIdentity&&byPerson.get(r.militaryIdentity.personId)?.nobilityHistory?.some(g=>!g.basis&&!d.royalNobility?.some(a=>a.chainId===`royal-noble-${r.id}-${g.epochFounderId}`))))continue;
+      // Each committed act is a separate quiescent transaction; failures preserve
+      // the already observed death/transfer and can be retried without duplicate awards.
+      for(let count=0;count<d.rulers.length*3+1;count++){
+        events??=WorldHistory.getRecordedEvents();const team=teams.find(t=>t.name===d.factionId),act=nextRoyalNobleAct(d,people,events,month,team?.status,team?getRegimeStyleNameAtMonth(team,month):undefined);
+        if(!act)break;
+        const before=d.royalNobility?structuredClone(d.royalNobility):undefined,history=WorldHistory.snapshotPoliticalTransaction(),rng=worldRandom.exportState(),scope=beginPoliticalMutation();
+        try{(d.royalNobility??=[]).push(act);if(WorldHistory.addEvent({id:act.eventId,year:month,type:'royal-noble-act',category:'politics',importance:'major',actorFactionId:d.factionId,factionIds:[d.factionId],rulerId:act.holderRulerId??act.previousRulerId,title:royalNobleText(act,d.rulers),metadata:{royalNobleAct:JSON.stringify(act),previousRulerId:act.previousRulerId,nextRulerId:act.holderRulerId}})!==act.eventId)throw Error('Royal noble history rejected');}
+        catch(error){scope.cancel();d.royalNobility=before;const restoring=beginPoliticalMutation();WorldHistory.rollbackPoliticalTransaction(history);worldRandom.restore(rng);restoring.finishRollback();console.warn('[RoyalNobility] rolled back',error);break;}
+        scope.commit();events=undefined;
+      }
+    }
   }
 
   grantRoyalHonor(team:Team,month:number){
@@ -726,6 +750,7 @@ class DynastyRegistryStore {
         MilitaryCommandRegistry.endPersonCommands(person.personId,year,'DISMISSED');person.politicalRulerId=successor.id;user.historicalPersonId=person.personId;
       }
       dynasty.houseName = newHouse;
+      registerRoyalPerson(successor,team.name,year,e=>WorldHistory.addEvent(e));
       dynasty.rulers.push(successor);
       team.houseName = newHouse;
       const epochs = dynasty.houseEpochs ?? (dynasty.houseEpochs = [{ houseName: oldHouseName,
@@ -1485,6 +1510,15 @@ class DynastyRegistryStore {
     };
   }
 
+  private appendRoyalHeir(team:Team,dynasty:Dynasty,month:number,parentId:string){
+    return successionTransaction(team,this,()=>{
+      const parent=dynasty.rulers.find(r=>r.id===parentId);
+      if(!parent||parent.houseName!==dynasty.houseName||(parent.deathMonth??Infinity)<=month)throw Error('Invalid living royal parent');
+      const heir=this.createHeir(team,dynasty.houseName,month,parentId);heir.status='kin';
+      registerRoyalPerson(heir,team.name,month,e=>WorldHistory.addEvent(e));dynasty.rulers.push(heir);return heir;
+    });
+  }
+
   private getNextReignOrdinal(dynasty: Dynasty) {
     return getNextRulerReignOrdinal(dynasty.rulers);
   }
@@ -1525,9 +1559,8 @@ class DynastyRegistryStore {
       const bootstrapOnly = inSuccessionCrisis && allowInitialBootstrap && dynasty.heirIds.length === 0;
       for (const parent of parents) {
         if ((inSuccessionCrisis && (!bootstrapOnly || parent.id !== current?.id)) || dynasty.heirIds.length >= (bootstrapOnly ? 1 : candidateCap)) break;
-        const heir = this.createHeir(team, dynasty.houseName, year, parent.id);
-        dynasty.rulers.push(heir);
-        dynasty.heirIds.push(heir.id);
+        const heir = this.appendRoyalHeir(team, dynasty, year, parent.id);
+        heir.status='heir';dynasty.heirIds.push(heir.id);
       }
     }
     this.refreshDesignatedHeir(dynasty, current, year);
@@ -1601,6 +1634,7 @@ class DynastyRegistryStore {
       heir.endReason = "自然去世";
       heir.deathMonth = year;
       heir.deathReason = "自然去世";
+      if(heir.registration&&!WorldHistory.getRecordedEvents().some(e=>(e.monthIndex??e.year)===year&&((e.type==='ruler-died'&&e.rulerId===heir.id)||(e.type==='military-person-died'&&e.metadata?.personId===heir.militaryIdentity?.personId))))WorldHistory.addEvent({id:`${heir.id}-life-ended`,year,type:'royal-kin-died',category:'politics',importance:'normal',actorFactionId:dynasty.factionId,factionIds:[dynasty.factionId],rulerId:heir.id,title:`${this.getRulerPersonalName(heir)}自然去世。`,metadata:{deathMonth:year}});
       const parent = heir.parentId
         ? dynasty.rulers.find((ruler) => ruler.id === heir.parentId)
         : undefined;

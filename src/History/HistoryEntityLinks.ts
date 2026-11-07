@@ -23,6 +23,7 @@ export function historyEntityLinks(e:WorldEvent,families:readonly MilitaryFamily
   }
  }
  for(const key of ['personId','commanderPersonId','militaryPersonId','militaryUsurperPersonId']){const id=m[key],p=people.find(p=>p.personId===id);if(!p)continue;const factionId=local.find(id=>factionIds.has(id)&&p.appointments.some(a=>a.factionId===id&&a.startMonth<=month));if(factionId)add(`军政档案 · ${p.personalName??p.name}`,{kind:'MILITARY',factionId,id:p.personId});}
+ if(e.type==='royal-noble-act'){const d=dynasties.find(d=>d.factionId===e.actorFactionId),a=d?.royalNobility?.find(a=>a.eventId===e.id&&a.month===month&&m.royalNobleAct===JSON.stringify(a));if(a){for(const id of [a.previousRulerId,a.holderRulerId])if(id&&d!.rulers.some(r=>r.id===id))add('查看王室宗谱',{kind:'GENEALOGY',factionId:d!.factionId,id});const g=people.flatMap(p=>p.nobilityHistory??[]).find(g=>g.eventId===a.sourceGrantEventId);if(g)add('查看原军功授爵人物',{kind:'MILITARY',factionId:g.factionId,id:g.personId});}}
  for(const id of [e.rulerId,m.previousRulerId,m.predecessorRulerId,m.nextRulerId,m.targetRulerId,m.foundingRulerId,m.recipientRulerId]){const d=dynasties.find(d=>local.includes(d.factionId)&&factionIds.has(d.factionId)&&d.rulers.some(r=>r.id===id&&r.bornYear<=month)),r=d?.rulers.find(r=>r.id===id);if(d&&r)add(`王室档案 · ${r.houseName.replace(/氏$/,'')}${r.givenName}`,{kind:r.reignOrdinal!==undefined?'RULER':'GENEALOGY',factionId:d.factionId,id:r.id});}
  return links;
 }
