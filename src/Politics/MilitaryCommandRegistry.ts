@@ -150,6 +150,7 @@ export class MilitaryCommandRegistryStore {
   setRoyalService(service: RoyalMilitaryService) { this.royalService = service;this.appointmentAbilityPolicy='MEDIUM'; }
   private families:MilitaryFamily[]=[];
   private familyByResident?:Map<string,{family:MilitaryFamily;member:MilitaryFamily['members'][number]}>;
+  private familyResidentIds?:Set<number>;
   observeFamilyPopulationCapacity(factionId:string,month:number){
     const epoch=this.royalService?.nobleEpoch?.(factionId,month);
     if(this.families.some(f=>f.factionId===factionId&&f.epochFounderId===epoch))this.diagnostics.familyPopulationBlocked++;
@@ -157,13 +158,19 @@ export class MilitaryCommandRegistryStore {
   private familyReadingRevision=0;
   getFamilyReadingRevision(){return this.familyReadingRevision;}
   getFamilies(){return this.families;}
-  commitFamilyMember(plan:{familyId:string;member:import('./MilitaryFamily').MilitaryFamilyMember}){const f=this.families.find(f=>f.familyId===plan.familyId);if(!f||this.families.some(f=>f.members.some(m=>m.sourceUserId===plan.member.sourceUserId)))throw Error('Duplicate family resident');f.members.push(structuredClone(plan.member));this.familyByResident=undefined;}
+  commitFamilyMember(plan:{familyId:string;member:import('./MilitaryFamily').MilitaryFamilyMember}){const f=this.families.find(f=>f.familyId===plan.familyId);if(!f||this.hasFamilyResidentId(plan.member.sourceUserId))throw Error('Duplicate family resident');f.members.push(structuredClone(plan.member));this.familyByResident=undefined;}
   getFamilyMember(userId:number,bornMonth:number){
-    if(!this.familyByResident)this.familyByResident=new Map(this.families.flatMap(family=>family.members.map(member=>[`${member.sourceUserId}/${member.bornMonth}`,{family,member}] as const)));
-    return this.familyByResident.get(`${userId}/${bornMonth}`);
+    this.prepareFamilyResidentIndex();
+    return this.familyByResident!.get(`${userId}/${bornMonth}`);
   }
   private appointmentObserver?: (s:{month:number;factionId:string;full?:boolean;rows?:AppointmentSelectionRow[];titleChance?:number})=>void;
   setAppointmentObserverForSimulation(observer?:typeof this.appointmentObserver){this.appointmentObserver=observer;}
+  private prepareFamilyResidentIndex(){
+    if(this.familyByResident)return;
+    this.familyByResident=new Map(this.families.flatMap(family=>family.members.map(member=>[`${member.sourceUserId}/${member.bornMonth}`,{family,member}] as const)));
+    this.familyResidentIds=new Set([...this.familyByResident.values()].map(r=>r.member.sourceUserId));
+  }
+  hasFamilyResidentId(id:number){const visible=this.getFamilies();if(visible!==this.families)return visible.some(f=>f.members.some(m=>m.sourceUserId===id));this.prepareFamilyResidentIndex();return this.familyResidentIds!.has(id);}
   private appointmentAbilityPolicy:AppointmentAbilityPolicy='BASELINE';
   private selectionContext?:AppointmentSelection;
   setAppointmentAbilityPolicyForSimulation(p:AppointmentAbilityPolicy){this.appointmentAbilityPolicy=p;}

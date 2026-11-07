@@ -1,7 +1,8 @@
 const fs=require('node:fs'),path=require('node:path'),{spawn}=require('node:child_process'),repo=process.cwd();
 const label=process.env.WANGUOJI_VERIFY_LABEL||'z11',port=Number(process.env.WANGUOJI_VERIFY_PORT||5222);
 const out=fs.openSync(path.join(require('node:os').tmpdir(),`wanguoji-person-core-${label}.log`),'w');
-const cacheRoot=fs.mkdtempSync(path.join(require('node:os').tmpdir(),'wanguoji-verification-'));
+const cacheRoot=process.env.WANGUOJI_VERIFY_CACHE||fs.mkdtempSync(path.join(require('node:os').tmpdir(),'wanguoji-verification-'));
+fs.mkdirSync(cacheRoot,{recursive:true});
 const config=path.join(cacheRoot,'vite.config.ts');
 fs.writeFileSync(config,`import configure from ${JSON.stringify(path.join(repo,'vite.config'))};export default env=>({...configure(env),root:${JSON.stringify(repo)},optimizeDeps:{include:['react','react-dom','react-dom/client','react-dom/server']},cacheDir:${JSON.stringify(path.join(cacheRoot,'cache'))}});`);
 const server=spawn(process.execPath,['node_modules/vite/bin/vite.js','--config',config,'--host','127.0.0.1','--port',String(port),'--strictPort'],{windowsHide:true,stdio:['ignore',out,out]});
