@@ -1,3 +1,4 @@
+import type {CollisionSchedule} from '../Simulation/CollisionSchedule';
 import type { FactionLifetimeState } from "../Simulation/FactionLifetimeRecord";
 import type { Ruler } from "../Politics/Dynasty";
 import { APP_VERSION } from "../config/version";
@@ -6,7 +7,7 @@ import type { DiplomaticRelation, DiplomaticPairMemory } from "../Politics/Diplo
 import type { FactionColorHistoryEntry } from "../Simulation/FactionColorHistory";
 import type { MilitaryCommandState } from "../Politics/MilitaryCommandRegistry";
 
-export const CURRENT_SAVE_SCHEMA_VERSION = 52 as const;
+export const CURRENT_SAVE_SCHEMA_VERSION = 53 as const;
 
 /** V16 preserves political office/death facts and adds authoritative military personal names in registries. */
 export type RulerSaveV17 = Omit<Ruler, "id" | "bornYear" | "naturalDeathYear" | "accessionYear" |
@@ -182,6 +183,7 @@ export interface WorldSaveV22 {
   cities: CitySaveV1[];
   users: UserSaveV1[];
   units: UnitSaveV1[];
+  collisionSchedule: CollisionSchedule;
   dynasties: Record<string, unknown>[];
   worldHistory: Record<string, unknown>;
   worldEra: Record<string, unknown>;
@@ -212,6 +214,7 @@ export function createEmptyWorldSaveV22(): WorldSaveV22 {
     },
     factionLifetime: { totalWorldBlocks: 0, records: [] },
     factions: [], blocks: [], cities: [], users: [], units: [], dynasties: [],
+    collisionSchedule: {version:1,colliders:[]},
     worldHistory: { events: [], emittedKeys: [], extinctFactionIds: [], sequence: 0, unificationCount: 0 },
     worldEra: { eras: [], sequence: 0, lastObservedMonth: -1 },
     factionSnapshots: { snapshots: [], lastSnapshotMonth: -1 }, worldRemnants: [],
@@ -270,7 +273,7 @@ export interface CanonicalWorldSaveDiff {
 }
 
 const CANONICAL_SUBSYSTEMS = [
-  "world", "factions", "blocks", "cities", "users", "units", "dynasties",
+  "world", "factions", "blocks", "cities", "users", "units", "collisionSchedule", "dynasties",
   "worldHistory", "worldEra", "factionLifetime", "factionSnapshots", "worldRemnants", "worldExiles",
   "factionEffects", "populationSystem", "registries", "worldEventSystem", "diplomacy", "metadata",
 ] as const;

@@ -1,3 +1,4 @@
+import {exportCollisionSchedule,type CollisionSchedule} from '../Simulation/CollisionSchedule';
 import {MilitaryCommandOverlay,resolveMilitaryCommandView} from "./MilitaryCommandOverlay";
 import FactionLifetimeRecords from "../Simulation/FactionLifetimeRecord";
 import type { HydrationRepairs } from "../Persistence/ArchivedCityHydrationRepair";
@@ -1044,10 +1045,24 @@ export default class Core {
     }
   }
 
-  installHydratedTeams(teams: Team[]) {
+  private collisionGroups() {
+    const groups=new globalThis.Map<Phaser.GameObjects.Group,string>([[this.map!.blocksGroup,'map']]);
+    for(const team of this.teams){groups.set(team.players,`players:${team.name}`);groups.set(team.farms,`farms:${team.name}`);groups.set(team.blocks,`blocks:${team.name}`);for(const user of team.users)groups.set(user.slaveGroup,`slaves:${user.id}`);}
+    return groups;
+  }
+
+  exportCollisionSchedule(): CollisionSchedule {
+    return exportCollisionSchedule(this.scene.physics.world.colliders as any,this.collisionGroups());
+  }
+
+  installHydratedTeams(teams: Team[],schedule: CollisionSchedule) {
     this.runtimeFactions.reset(teams);
-    teams.forEach((team) => this.registerTeamColliders(team));
-    teams.flatMap((team) => [...team.users]).forEach((user) => user.slaveGroup.addCollider());
+    const groups=new globalThis.Map([...this.collisionGroups()].map(([group,id])=>[id,group]));
+    const owners=new globalThis.Map<string,Team>(),slaves=new globalThis.Map<string,import('../Components/Slaves').default>();
+    for(const team of teams){owners.set(`players:${team.name}`,team);owners.set(`farms:${team.name}`,team);for(const user of team.users)slaves.set(`slaves:${user.id}`,user.slaveGroup);}
+    for(const entry of schedule.colliders){const group=groups.get(entry.sourceGroupId)!,targets=entry.targetGroupIds.map(id=>groups.get(id)!);
+      const slave=slaves.get(entry.sourceGroupId);if(slave)slave.addCollider(targets);else this.addTeamCollider(owners.get(entry.sourceGroupId)!,group,targets);
+    }
     this.teamColliders.flushTerminal();
     this.rebuildCityInteractionIndex();
     store.dispatch(setTeams(teams));

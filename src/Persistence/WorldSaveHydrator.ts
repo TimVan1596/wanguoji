@@ -155,7 +155,7 @@ export function hydrateWorldSave(core: Core, value: unknown): HydrationReport {
   worldRandom.restore(save.worldRandom);
   core.simulator!.setRunning(false);
   core.setHydrationStage("INSTALL_COLLIDERS");
-  core.installHydratedTeams(teams);
+  core.installHydratedTeams(teams,save.collisionSchedule);
   core.setSimulationSpeed(save.world.selectedSpeed);
   store.dispatch(setWorldPhase(core.simulator!.getCurrentPhase(teams)));
   core.scene.physics.world.pause();

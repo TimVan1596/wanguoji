@@ -161,6 +161,7 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
     cities,
     users,
     units,
+    collisionSchedule: core.exportCollisionSchedule(),
     dynasties,
     worldHistory: WorldHistory.exportState(),
     worldEra: WorldEra.exportState(),

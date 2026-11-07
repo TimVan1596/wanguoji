@@ -31,7 +31,7 @@ export default class Slaves extends Phaser.GameObjects.Group {
     if (!deferCollider) this.addCollider();
   }
 
-  addCollider() {
+  addCollider(savedTargets?: Phaser.GameObjects.Group[]) {
     if (this.disposalPending || !this.scene) return;
     const map = Game.Core.map;
     if (!map) return;
@@ -41,7 +41,7 @@ export default class Slaves extends Phaser.GameObjects.Group {
     this.colliderReference.getOrCreate(() =>
       this.scene.physics.add.collider(
         this,
-        [map.blocksGroup, ...otherTeamsBlock],
+        savedTargets ?? [map.blocksGroup, ...otherTeamsBlock],
         //@ts-ignore
         Game.Core.onPlayerOverlapBlock.bind(Game.Core)
       )

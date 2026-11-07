@@ -1,0 +1,38 @@
+[
+  {
+    "seed": "regional-3",
+    "years": 1,
+    "startMonth": 12,
+    "endMonth": 24,
+    "matched": true,
+    "initialDifferences": [],
+    "initialDifferenceCount": 0,
+    "bodyCount": 64,
+    "bodyOrderChanged": true,
+    "bodyOrderRestoredMatched": true,
+    "bodyOrderRestoredDifferences": [],
+    "differenceCount": 0,
+    "subsystems": {
+      "world": 0,
+      "factions": 0,
+      "blocks": 0,
+      "cities": 0,
+      "users": 0,
+      "units": 0,
+      "dynasties": 0,
+      "worldHistory": 0,
+      "worldEra": 0,
+      "factionLifetime": 0,
+      "factionSnapshots": 0,
+      "worldRemnants": 0,
+      "worldExiles": 0,
+      "factionEffects": 0,
+      "populationSystem": 0,
+      "registries": 0,
+      "worldEventSystem": 0,
+      "diplomacy": 0,
+      "metadata": 0
+    },
+    "firstDifferences": []
+  }
+]

@@ -1,3 +1,4 @@
+import {validateCollisionSchedule} from './CollisionScheduleValidation';
 import {validateAppointmentSelections} from './AppointmentSelectionValidation';
 import {isAbilityPolicy} from '../Politics/PersonAbilities';
 import {validateInsurgentCommands} from './InsurgentCommandValidation';
@@ -67,6 +68,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   const users = array(save.users, "users", errors);
   const units = array(save.units, "units", errors);
   const dynasties = array(save.dynasties, "dynasties", errors);
+  if(Array.isArray(save.users)&&Array.isArray(save.units)&&Array.isArray(save.factions)&&[...save.users,...save.units].every(isPlainRecord))errors.push(...validateCollisionSchedule(save as unknown as WorldSaveV1));
   if(Array.isArray(save.users)&&Array.isArray(save.dynasties)&&Array.isArray(save.factions)&&Array.isArray(save.cities)&&Array.isArray(save.worldHistory?.events)){errors.push(...validateResidentIdentities(save as unknown as WorldSaveV1));errors.push(...validateRoyalMilitaryIdentities(save as unknown as WorldSaveV1));errors.push(...validateMilitarySecessions(save as unknown as WorldSaveV1));}
   const factionIds = uniqueIds(factions, "factionId", "factions", errors);
   const factionById = new Map(factions.map((faction) => [String(faction.factionId), faction]));
