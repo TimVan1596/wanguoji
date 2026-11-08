@@ -15,6 +15,7 @@ export function validateRoyalHouseholds(save:WorldSaveV1){
    const b=r.householdBirth,e=events[positions.get(b.eventId)??-1];
    if(b.version!==1||!Number.isSafeInteger(b.month)||b.month<=0||b.policy!==policy||b.month!==r.bornYear||b.month%12||b.month>save.world.worldMonth||b.parentId!==r.parentId||r.successionScope!=='HOUSEHOLD'||r.registration?.month!==b.month||r.registration.parentId!==r.parentId||e?.type!=='royal-child-born'||e.actorFactionId!==d.factionId||e.rulerId!==r.id||(e.monthIndex??e.year)!==b.month||e.metadata?.royalBirth!==JSON.stringify(b)||!r.registration||positions.get(r.registration.eventId)!<=positions.get(b.eventId)!)throw Error('invalid royal birth identity/source');
    if(d.heirIds.includes(r.id)||d.designatedHeirId===r.id||r.reignOrdinal!==undefined||r.accessionYear!==undefined)throw Error('ordinary household child illegally became crown candidate');
+   if(!r.militaryIdentity){const deaths=events.filter(e=>e.type==='royal-kin-died'&&e.rulerId===r.id);if(deaths.length>1||!r.deathMonth&&deaths.length)throw Error('duplicate or erased royal child death');if(r.deathMonth!==undefined&&(r.deathReason!=='自然去世'||r.deathMonth!==r.naturalDeathYear||deaths.length!==1||(deaths[0].monthIndex??deaths[0].year)!==r.deathMonth||deaths[0].id!==`${r.id}-life-ended`||deaths[0].metadata?.deathMonth!==r.deathMonth))throw Error('invalid natural royal child death source');}
    seen.add(e.id);
   }
   for(const month of new Set(d.rulers.flatMap(r=>r.householdBirth?[r.householdBirth.month]:[]))){

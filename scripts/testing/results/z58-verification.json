@@ -1,0 +1,1310 @@
+{
+  "version": "v0.99931z58",
+  "package": "0.99.224",
+  "saveVersion": 55,
+  "baseline": "712f72034d78d6d7839e4a1e6ff045c87fec910b",
+  "policy": "LOW",
+  "scope": "Actual Core production cohorts. Same seeds overlap between configurations and ages; do not sum as independent worlds. Controlled Core and React tests are not natural frequency or human visual acceptance.",
+  "limitations": [
+    "Birth source uses existing abstract royal persons, not map User children or maternal/marriage model.",
+    "HOUSEHOLD is excluded from automatic crown pools; no formal admission mechanism released.",
+    "Original political candidate creation retains its legacy rules. New-source two-child/32-living thresholds are not universal royal population caps.",
+    "Births never advance world RNG; adult competition in original military recruitment legitimately diverges later histories.",
+    "Three-repeat timing medians on one host, evolved worlds differ; no causal claim of overall speedup. Strict export/hydration cost increases.",
+    "Natural noble inheritance is rare; directed real Core proves minor succession and failure rollback separately."
+  ],
+  "cohorts": [
+    {
+      "cohort": "logs/z58-worlds-baseline-100",
+      "worlds": 8,
+      "years": 100,
+      "totals": {
+        "births": 0,
+        "uniqueBirthParents": 0,
+        "royalPeople": 628,
+        "nativeMilitaryMeritGrantees": 5,
+        "uniqueTitleHolders": 5,
+        "titleHolderDirectChildren": 3,
+        "deadTitleHoldersWithEligibleChildren": 0,
+        "deathSettlementsWithoutRegisteredChildren": 2,
+        "deadChildBlocks": 0,
+        "mapUsers": 1087,
+        "royalMilitaryPeople": 34,
+        "ordinaryMilitaryPeople": 193,
+        "householdChildrenWhoEnlisted": 0,
+        "kingAccessions": 222,
+        "courtAttempts": 1,
+        "depositions": 4,
+        "sieges": 7951,
+        "duplicateUsers": 0,
+        "duplicateRulers": 0,
+        "duplicateHistory": 0,
+        "duplicateActiveMemberAssignments": 0,
+        "birthsWhoseLifespanPassedWithoutDeath": 0,
+        "newChildrenInCrownPool": 0,
+        "newChildrenEverCrowned": 0
+      },
+      "descents": {},
+      "endings": {
+        "ACCESSION": 1,
+        "NO_HEIR": 2
+      },
+      "otherHeirBlocks": {},
+      "perWorld": [
+        {
+          "seed": "regional-1",
+          "sha256": "485000496b572750b5069c2459fbb1eecf611ce8c02daeecda6fc033a03a511f",
+          "births": 0,
+          "royalPeople": 86,
+          "mapUsers": 135,
+          "countries": 7,
+          "compactJsonBytes": 2137778,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-1",
+            "state": 3416799929,
+            "position": 7347
+          }
+        },
+        {
+          "seed": "regional-2",
+          "sha256": "7e751377c8f235490929f4270d943c35839a1606c578d6141b691b33cfadd126",
+          "births": 0,
+          "royalPeople": 71,
+          "mapUsers": 130,
+          "countries": 7,
+          "compactJsonBytes": 1873299,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-2",
+            "state": 1087232121,
+            "position": 7130
+          }
+        },
+        {
+          "seed": "regional-3",
+          "sha256": "cbdd0b1b70b23cb4e8e04a119f8b24ee7bea84cb1b5b54947d01905f1f96baf2",
+          "births": 0,
+          "royalPeople": 83,
+          "mapUsers": 140,
+          "countries": 11,
+          "compactJsonBytes": 2255694,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-3",
+            "state": 1728349869,
+            "position": 7461
+          }
+        },
+        {
+          "seed": "regional-4",
+          "sha256": "e691135f10ac7ebf98d472dc2dc0b8336413ad2255e6d923b0daae4e209830a2",
+          "births": 0,
+          "royalPeople": 92,
+          "mapUsers": 133,
+          "countries": 9,
+          "compactJsonBytes": 2264452,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-4",
+            "state": 4118608836,
+            "position": 7399
+          }
+        },
+        {
+          "seed": "regional-5",
+          "sha256": "4d5af705cb5c32f4090546ada19fafcaea66421b2cbf954c60bb7d332fa79efe",
+          "births": 0,
+          "royalPeople": 67,
+          "mapUsers": 143,
+          "countries": 7,
+          "compactJsonBytes": 1832574,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-5",
+            "state": 1499640243,
+            "position": 6945
+          }
+        },
+        {
+          "seed": "regional-6",
+          "sha256": "d79cbb5131694f3a256bb6d4547c69696845404949cb65218a32cd440b94e4ba",
+          "births": 0,
+          "royalPeople": 62,
+          "mapUsers": 137,
+          "countries": 7,
+          "compactJsonBytes": 1776253,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-6",
+            "state": 505261272,
+            "position": 6649
+          }
+        },
+        {
+          "seed": "regional-7",
+          "sha256": "fcddfcd43d77cd55356098b58137dbb0b199b79013214e8395ef62ae0ca1806d",
+          "births": 0,
+          "royalPeople": 80,
+          "mapUsers": 138,
+          "countries": 7,
+          "compactJsonBytes": 2025245,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-7",
+            "state": 292414559,
+            "position": 7275
+          }
+        },
+        {
+          "seed": "regional-8",
+          "sha256": "6c451c0fe4a39f8a827e80c8151adc5691c04f57b8dbdf2982309beec0bb58f0",
+          "births": 0,
+          "royalPeople": 87,
+          "mapUsers": 131,
+          "countries": 7,
+          "compactJsonBytes": 2097641,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-8",
+            "state": 1802649368,
+            "position": 7175
+          }
+        }
+      ]
+    },
+    {
+      "cohort": "logs/z58-worlds-final-low-100",
+      "worlds": 8,
+      "years": 100,
+      "totals": {
+        "births": 442,
+        "uniqueBirthParents": 357,
+        "royalPeople": 1044,
+        "nativeMilitaryMeritGrantees": 3,
+        "uniqueTitleHolders": 4,
+        "titleHolderDirectChildren": 8,
+        "deadTitleHoldersWithEligibleChildren": 1,
+        "deathSettlementsWithoutRegisteredChildren": 0,
+        "deadChildBlocks": 0,
+        "mapUsers": 1101,
+        "royalMilitaryPeople": 33,
+        "ordinaryMilitaryPeople": 174,
+        "householdChildrenWhoEnlisted": 12,
+        "kingAccessions": 223,
+        "courtAttempts": 5,
+        "depositions": 4,
+        "sieges": 7795,
+        "duplicateUsers": 0,
+        "duplicateRulers": 0,
+        "duplicateHistory": 0,
+        "duplicateActiveMemberAssignments": 0,
+        "birthsWhoseLifespanPassedWithoutDeath": 0,
+        "newChildrenInCrownPool": 0,
+        "newChildrenEverCrowned": 0
+      },
+      "descents": {
+        "HOU->BO": 1
+      },
+      "endings": {
+        "ACCESSION": 1
+      },
+      "otherHeirBlocks": {},
+      "perWorld": [
+        {
+          "seed": "regional-1",
+          "sha256": "737d27d67e4fd86d076188d7e51d3a9648a16e23baa773b3140253907b71c30f",
+          "births": 56,
+          "royalPeople": 135,
+          "mapUsers": 133,
+          "countries": 9,
+          "compactJsonBytes": 2147357,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-1",
+            "state": 1848575204,
+            "position": 7250
+          }
+        },
+        {
+          "seed": "regional-2",
+          "sha256": "0dd92e912fb220e9bd3f0d2b017d933dddbd7b73df124e0615a39f79e4ea1b09",
+          "births": 52,
+          "royalPeople": 124,
+          "mapUsers": 139,
+          "countries": 9,
+          "compactJsonBytes": 2076896,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-2",
+            "state": 1072079521,
+            "position": 7266
+          }
+        },
+        {
+          "seed": "regional-3",
+          "sha256": "78d09bd783fc9c853ef42c8bb01142ce9b6dc7ff6f946834afb2625b7fb7e01f",
+          "births": 48,
+          "royalPeople": 122,
+          "mapUsers": 136,
+          "countries": 8,
+          "compactJsonBytes": 2397387,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-3",
+            "state": 2311396942,
+            "position": 7330
+          }
+        },
+        {
+          "seed": "regional-4",
+          "sha256": "226fc829468a76bcea1b00bfed744213d95767f45884677f36989b6933ca2177",
+          "births": 68,
+          "royalPeople": 138,
+          "mapUsers": 134,
+          "countries": 7,
+          "compactJsonBytes": 1975127,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-4",
+            "state": 580028807,
+            "position": 6846
+          }
+        },
+        {
+          "seed": "regional-5",
+          "sha256": "c2e73ef10f474c40eddf82fe70feac370a9a0b76fc99263b1486bd84d74bf7e5",
+          "births": 49,
+          "royalPeople": 116,
+          "mapUsers": 141,
+          "countries": 8,
+          "compactJsonBytes": 1980475,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-5",
+            "state": 2443605598,
+            "position": 6976
+          }
+        },
+        {
+          "seed": "regional-6",
+          "sha256": "9e6b4572a32bd0b8e8ef94bcca1faecb5a2d577981ca829e93571fda9b37a082",
+          "births": 47,
+          "royalPeople": 112,
+          "mapUsers": 136,
+          "countries": 7,
+          "compactJsonBytes": 1745311,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-6",
+            "state": 945273351,
+            "position": 6668
+          }
+        },
+        {
+          "seed": "regional-7",
+          "sha256": "5509064782dacae5cc084ec8037b402c2a87706a3ad8ad46c57294baf3298943",
+          "births": 71,
+          "royalPeople": 154,
+          "mapUsers": 138,
+          "countries": 7,
+          "compactJsonBytes": 2297729,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-7",
+            "state": 1804274387,
+            "position": 7311
+          }
+        },
+        {
+          "seed": "regional-8",
+          "sha256": "44e40110939a1341338b83da4534cef1047f52687486ecc9199d70bb220437bc",
+          "births": 51,
+          "royalPeople": 143,
+          "mapUsers": 144,
+          "countries": 9,
+          "compactJsonBytes": 2236019,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-8",
+            "state": 3212686499,
+            "position": 7558
+          }
+        }
+      ]
+    },
+    {
+      "cohort": "logs/z58-worlds-final-medium-100",
+      "worlds": 8,
+      "years": 100,
+      "totals": {
+        "births": 971,
+        "uniqueBirthParents": 683,
+        "royalPeople": 1606,
+        "nativeMilitaryMeritGrantees": 8,
+        "uniqueTitleHolders": 11,
+        "titleHolderDirectChildren": 12,
+        "deadTitleHoldersWithEligibleChildren": 3,
+        "deathSettlementsWithoutRegisteredChildren": 1,
+        "deadChildBlocks": 0,
+        "mapUsers": 1068,
+        "royalMilitaryPeople": 53,
+        "ordinaryMilitaryPeople": 173,
+        "householdChildrenWhoEnlisted": 25,
+        "kingAccessions": 239,
+        "courtAttempts": 9,
+        "depositions": 7,
+        "sieges": 7568,
+        "duplicateUsers": 0,
+        "duplicateRulers": 0,
+        "duplicateHistory": 0,
+        "duplicateActiveMemberAssignments": 0,
+        "birthsWhoseLifespanPassedWithoutDeath": 0,
+        "newChildrenInCrownPool": 0,
+        "newChildrenEverCrowned": 0
+      },
+      "descents": {
+        "HOU->BO": 1,
+        "BO->ZI": 2
+      },
+      "endings": {
+        "REVOKED": 1,
+        "NO_HEIR": 1
+      },
+      "otherHeirBlocks": {},
+      "perWorld": [
+        {
+          "seed": "regional-1",
+          "sha256": "6198b4f2313b22e358850b214710cf7ae1179ecda4c4a148932e4b2d5c7eb535",
+          "births": 147,
+          "royalPeople": 225,
+          "mapUsers": 135,
+          "countries": 7,
+          "compactJsonBytes": 2237870,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-1",
+            "state": 3943482105,
+            "position": 7155
+          }
+        },
+        {
+          "seed": "regional-2",
+          "sha256": "e37092ed979514ca088fa68e553466a2b60fea76a828542499a40d8c1ba8ab1d",
+          "births": 128,
+          "royalPeople": 202,
+          "mapUsers": 135,
+          "countries": 7,
+          "compactJsonBytes": 2170854,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-2",
+            "state": 2663033146,
+            "position": 7159
+          }
+        },
+        {
+          "seed": "regional-3",
+          "sha256": "ab9d31f1920cd9779936fa034b5f269629c81554502707eb08d25195b42b5845",
+          "births": 99,
+          "royalPeople": 178,
+          "mapUsers": 135,
+          "countries": 11,
+          "compactJsonBytes": 2493043,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-3",
+            "state": 1664408672,
+            "position": 7468
+          }
+        },
+        {
+          "seed": "regional-4",
+          "sha256": "558d7861f53980f00e0d4d9eb8cc0bfc27a8ef3fa929c77f87db7e21c4ffde4e",
+          "births": 133,
+          "royalPeople": 223,
+          "mapUsers": 136,
+          "countries": 12,
+          "compactJsonBytes": 2796345,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-4",
+            "state": 2944938390,
+            "position": 7729
+          }
+        },
+        {
+          "seed": "regional-5",
+          "sha256": "34371a14f2338a2cd7609b8046ac5ad428ca5d59a1864a5b38670d9677984e11",
+          "births": 102,
+          "royalPeople": 184,
+          "mapUsers": 119,
+          "countries": 13,
+          "compactJsonBytes": 2189548,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-5",
+            "state": 3285748256,
+            "position": 7354
+          }
+        },
+        {
+          "seed": "regional-6",
+          "sha256": "86cb1df004b8b627f4108708c5202d549e44e53681976203ef02ea17405e7aea",
+          "births": 81,
+          "royalPeople": 148,
+          "mapUsers": 139,
+          "countries": 7,
+          "compactJsonBytes": 1811898,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-6",
+            "state": 681932263,
+            "position": 6764
+          }
+        },
+        {
+          "seed": "regional-7",
+          "sha256": "e91591587854fbd521ea596bab2ea67ee035e8f39c1505a0354513bc0de26458",
+          "births": 129,
+          "royalPeople": 210,
+          "mapUsers": 134,
+          "countries": 9,
+          "compactJsonBytes": 2217216,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-7",
+            "state": 2187921569,
+            "position": 7269
+          }
+        },
+        {
+          "seed": "regional-8",
+          "sha256": "88601fe579252fa3e647abd94c8ad3eb50026185524a4a59b5c746887802002d",
+          "births": 152,
+          "royalPeople": 236,
+          "mapUsers": 135,
+          "countries": 7,
+          "compactJsonBytes": 2479023,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-8",
+            "state": 1475367083,
+            "position": 7278
+          }
+        }
+      ]
+    },
+    {
+      "cohort": "logs/z58-worlds-final-high2-100",
+      "worlds": 8,
+      "years": 100,
+      "totals": {
+        "births": 1305,
+        "uniqueBirthParents": 838,
+        "royalPeople": 1915,
+        "nativeMilitaryMeritGrantees": 6,
+        "uniqueTitleHolders": 8,
+        "titleHolderDirectChildren": 14,
+        "deadTitleHoldersWithEligibleChildren": 2,
+        "deathSettlementsWithoutRegisteredChildren": 0,
+        "deadChildBlocks": 0,
+        "mapUsers": 1045,
+        "royalMilitaryPeople": 59,
+        "ordinaryMilitaryPeople": 155,
+        "householdChildrenWhoEnlisted": 35,
+        "kingAccessions": 230,
+        "courtAttempts": 6,
+        "depositions": 4,
+        "sieges": 7706,
+        "duplicateUsers": 0,
+        "duplicateRulers": 0,
+        "duplicateHistory": 0,
+        "duplicateActiveMemberAssignments": 0,
+        "birthsWhoseLifespanPassedWithoutDeath": 0,
+        "newChildrenInCrownPool": 0,
+        "newChildrenEverCrowned": 0
+      },
+      "descents": {
+        "BO->ZI": 2
+      },
+      "endings": {},
+      "otherHeirBlocks": {},
+      "perWorld": [
+        {
+          "seed": "regional-1",
+          "sha256": "c486db7b14a7ede7462028d501ca261635bd92d8012c036de98961ffc2edb8c7",
+          "births": 200,
+          "royalPeople": 284,
+          "mapUsers": 141,
+          "countries": 8,
+          "compactJsonBytes": 2535746,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-1",
+            "state": 1856151504,
+            "position": 7182
+          }
+        },
+        {
+          "seed": "regional-2",
+          "sha256": "a9d12198daaaa19202d97b2437ce9e19ecd3773fd456a9fa7ff690b36b6ecc90",
+          "births": 177,
+          "royalPeople": 246,
+          "mapUsers": 136,
+          "countries": 8,
+          "compactJsonBytes": 2164972,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-2",
+            "state": 3223351319,
+            "position": 7232
+          }
+        },
+        {
+          "seed": "regional-3",
+          "sha256": "fbe277602b4e4a55aecc41acf63d61d6da69bc3f8291bb2fa21d99c73fea5432",
+          "births": 149,
+          "royalPeople": 224,
+          "mapUsers": 100,
+          "countries": 11,
+          "compactJsonBytes": 2785063,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-3",
+            "state": 784384514,
+            "position": 7430
+          }
+        },
+        {
+          "seed": "regional-4",
+          "sha256": "2300a8018551a518d12182c198eebe455defa19ff4d5ed9aa3d846f63f56cc74",
+          "births": 148,
+          "royalPeople": 240,
+          "mapUsers": 135,
+          "countries": 11,
+          "compactJsonBytes": 2577325,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-4",
+            "state": 1985820435,
+            "position": 7834
+          }
+        },
+        {
+          "seed": "regional-5",
+          "sha256": "419a74fcdf86116c7552d0a8b3173c0c0069037c2b9d122623d5353b5fe6fada",
+          "births": 151,
+          "royalPeople": 223,
+          "mapUsers": 134,
+          "countries": 8,
+          "compactJsonBytes": 2096411,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-5",
+            "state": 3756065535,
+            "position": 7101
+          }
+        },
+        {
+          "seed": "regional-6",
+          "sha256": "8bae4c4cdea694edeab64740ed55e71ce13fdf4294e5d3889b8e3cb3d96ba3c5",
+          "births": 118,
+          "royalPeople": 183,
+          "mapUsers": 143,
+          "countries": 7,
+          "compactJsonBytes": 1864069,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-6",
+            "state": 313437681,
+            "position": 6670
+          }
+        },
+        {
+          "seed": "regional-7",
+          "sha256": "a3cc9f60106800ffd11dffebe6871c67082ae1820c707800f2a22ecdace33a15",
+          "births": 190,
+          "royalPeople": 270,
+          "mapUsers": 117,
+          "countries": 8,
+          "compactJsonBytes": 2610405,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-7",
+            "state": 1740333190,
+            "position": 7318
+          }
+        },
+        {
+          "seed": "regional-8",
+          "sha256": "b638267c858e371a868db22d0bac07eb44dc85816742cf9e9520b5f1c1f4f2fa",
+          "births": 172,
+          "royalPeople": 245,
+          "mapUsers": 139,
+          "countries": 7,
+          "compactJsonBytes": 2125508,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-8",
+            "state": 2712978726,
+            "position": 6941
+          }
+        }
+      ]
+    },
+    {
+      "cohort": "logs/z58-worlds-release-low-100",
+      "worlds": 8,
+      "years": 100,
+      "totals": {
+        "births": 442,
+        "uniqueBirthParents": 357,
+        "royalPeople": 1044,
+        "nativeMilitaryMeritGrantees": 3,
+        "uniqueTitleHolders": 4,
+        "titleHolderDirectChildren": 8,
+        "deadTitleHoldersWithEligibleChildren": 1,
+        "deathSettlementsWithoutRegisteredChildren": 0,
+        "deadChildBlocks": 0,
+        "mapUsers": 1101,
+        "royalMilitaryPeople": 33,
+        "ordinaryMilitaryPeople": 174,
+        "householdChildrenWhoEnlisted": 12,
+        "kingAccessions": 223,
+        "courtAttempts": 5,
+        "depositions": 4,
+        "sieges": 7795,
+        "duplicateUsers": 0,
+        "duplicateRulers": 0,
+        "duplicateHistory": 0,
+        "duplicateActiveMemberAssignments": 0,
+        "birthsWhoseLifespanPassedWithoutDeath": 0,
+        "newChildrenInCrownPool": 0,
+        "newChildrenEverCrowned": 0
+      },
+      "descents": {
+        "HOU->BO": 1
+      },
+      "endings": {
+        "ACCESSION": 1
+      },
+      "otherHeirBlocks": {},
+      "perWorld": [
+        {
+          "seed": "regional-1",
+          "sha256": "737d27d67e4fd86d076188d7e51d3a9648a16e23baa773b3140253907b71c30f",
+          "births": 56,
+          "royalPeople": 135,
+          "mapUsers": 133,
+          "countries": 9,
+          "compactJsonBytes": 2147357,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-1",
+            "state": 1848575204,
+            "position": 7250
+          }
+        },
+        {
+          "seed": "regional-2",
+          "sha256": "0dd92e912fb220e9bd3f0d2b017d933dddbd7b73df124e0615a39f79e4ea1b09",
+          "births": 52,
+          "royalPeople": 124,
+          "mapUsers": 139,
+          "countries": 9,
+          "compactJsonBytes": 2076896,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-2",
+            "state": 1072079521,
+            "position": 7266
+          }
+        },
+        {
+          "seed": "regional-3",
+          "sha256": "78d09bd783fc9c853ef42c8bb01142ce9b6dc7ff6f946834afb2625b7fb7e01f",
+          "births": 48,
+          "royalPeople": 122,
+          "mapUsers": 136,
+          "countries": 8,
+          "compactJsonBytes": 2397387,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-3",
+            "state": 2311396942,
+            "position": 7330
+          }
+        },
+        {
+          "seed": "regional-4",
+          "sha256": "226fc829468a76bcea1b00bfed744213d95767f45884677f36989b6933ca2177",
+          "births": 68,
+          "royalPeople": 138,
+          "mapUsers": 134,
+          "countries": 7,
+          "compactJsonBytes": 1975127,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-4",
+            "state": 580028807,
+            "position": 6846
+          }
+        },
+        {
+          "seed": "regional-5",
+          "sha256": "c2e73ef10f474c40eddf82fe70feac370a9a0b76fc99263b1486bd84d74bf7e5",
+          "births": 49,
+          "royalPeople": 116,
+          "mapUsers": 141,
+          "countries": 8,
+          "compactJsonBytes": 1980475,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-5",
+            "state": 2443605598,
+            "position": 6976
+          }
+        },
+        {
+          "seed": "regional-6",
+          "sha256": "9e6b4572a32bd0b8e8ef94bcca1faecb5a2d577981ca829e93571fda9b37a082",
+          "births": 47,
+          "royalPeople": 112,
+          "mapUsers": 136,
+          "countries": 7,
+          "compactJsonBytes": 1745311,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-6",
+            "state": 945273351,
+            "position": 6668
+          }
+        },
+        {
+          "seed": "regional-7",
+          "sha256": "5509064782dacae5cc084ec8037b402c2a87706a3ad8ad46c57294baf3298943",
+          "births": 71,
+          "royalPeople": 154,
+          "mapUsers": 138,
+          "countries": 7,
+          "compactJsonBytes": 2297729,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-7",
+            "state": 1804274387,
+            "position": 7311
+          }
+        },
+        {
+          "seed": "regional-8",
+          "sha256": "44e40110939a1341338b83da4534cef1047f52687486ecc9199d70bb220437bc",
+          "births": 51,
+          "royalPeople": 143,
+          "mapUsers": 144,
+          "countries": 9,
+          "compactJsonBytes": 2236019,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-8",
+            "state": 3212686499,
+            "position": 7558
+          }
+        }
+      ]
+    },
+    {
+      "cohort": "logs/z58-worlds-release-low-200",
+      "worlds": 4,
+      "years": 200,
+      "totals": {
+        "births": 639,
+        "uniqueBirthParents": 505,
+        "royalPeople": 1120,
+        "nativeMilitaryMeritGrantees": 5,
+        "uniqueTitleHolders": 9,
+        "titleHolderDirectChildren": 14,
+        "deadTitleHoldersWithEligibleChildren": 4,
+        "deathSettlementsWithoutRegisteredChildren": 2,
+        "deadChildBlocks": 0,
+        "mapUsers": 536,
+        "royalMilitaryPeople": 34,
+        "ordinaryMilitaryPeople": 139,
+        "householdChildrenWhoEnlisted": 19,
+        "kingAccessions": 187,
+        "courtAttempts": 8,
+        "depositions": 4,
+        "sieges": 7242,
+        "duplicateUsers": 0,
+        "duplicateRulers": 0,
+        "duplicateHistory": 0,
+        "duplicateActiveMemberAssignments": 0,
+        "birthsWhoseLifespanPassedWithoutDeath": 0,
+        "newChildrenInCrownPool": 0,
+        "newChildrenEverCrowned": 0
+      },
+      "descents": {
+        "HOU->BO": 2,
+        "BO->ZI": 1,
+        "GONG->HOU": 1
+      },
+      "endings": {
+        "NO_HEIR": 2,
+        "ACCESSION": 1,
+        "REVOKED": 1
+      },
+      "otherHeirBlocks": {},
+      "perWorld": [
+        {
+          "seed": "regional-1",
+          "sha256": "0a263ba8f1eb1db0ae3d8eec735d64468addca7aa806df96916aa9b2a40aba02",
+          "births": 125,
+          "royalPeople": 238,
+          "mapUsers": 136,
+          "countries": 9,
+          "compactJsonBytes": 3295254,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-1",
+            "state": 2637355735,
+            "position": 13209
+          }
+        },
+        {
+          "seed": "regional-2",
+          "sha256": "885b3f8aeb2ff7cf7f712374d720daf84021e03d95a8c36b0ae6a2946a4b9048",
+          "births": 158,
+          "royalPeople": 286,
+          "mapUsers": 137,
+          "countries": 9,
+          "compactJsonBytes": 4085544,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-2",
+            "state": 3052099189,
+            "position": 14438
+          }
+        },
+        {
+          "seed": "regional-3",
+          "sha256": "97e67345412fb7d640db0781c64ddb888534fe338e0f45dc017d9a2d0d0ff04a",
+          "births": 160,
+          "royalPeople": 276,
+          "mapUsers": 138,
+          "countries": 8,
+          "compactJsonBytes": 4363120,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-3",
+            "state": 2915015476,
+            "position": 14384
+          }
+        },
+        {
+          "seed": "regional-4",
+          "sha256": "b798441de38abeab88b6cdc06945b789150eab42df2f4cdeac958d42cd1789f5",
+          "births": 196,
+          "royalPeople": 320,
+          "mapUsers": 125,
+          "countries": 7,
+          "compactJsonBytes": 3738727,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-4",
+            "state": 149681092,
+            "position": 13543
+          }
+        }
+      ]
+    },
+    {
+      "cohort": "logs/z58-worlds-release-low-300",
+      "worlds": 1,
+      "years": 300,
+      "totals": {
+        "births": 276,
+        "uniqueBirthParents": 223,
+        "royalPeople": 432,
+        "nativeMilitaryMeritGrantees": 3,
+        "uniqueTitleHolders": 8,
+        "titleHolderDirectChildren": 7,
+        "deadTitleHoldersWithEligibleChildren": 5,
+        "deathSettlementsWithoutRegisteredChildren": 2,
+        "deadChildBlocks": 0,
+        "mapUsers": 128,
+        "royalMilitaryPeople": 12,
+        "ordinaryMilitaryPeople": 60,
+        "householdChildrenWhoEnlisted": 8,
+        "kingAccessions": 60,
+        "courtAttempts": 2,
+        "depositions": 2,
+        "sieges": 2839,
+        "duplicateUsers": 0,
+        "duplicateRulers": 0,
+        "duplicateHistory": 0,
+        "duplicateActiveMemberAssignments": 0,
+        "birthsWhoseLifespanPassedWithoutDeath": 0,
+        "newChildrenInCrownPool": 0,
+        "newChildrenEverCrowned": 0
+      },
+      "descents": {
+        "BO->ZI": 1,
+        "GONG->HOU": 2,
+        "HOU->BO": 1,
+        "ZI->NAN": 1
+      },
+      "endings": {
+        "NO_HEIR": 1,
+        "RANK_EXHAUSTED": 1
+      },
+      "otherHeirBlocks": {},
+      "perWorld": [
+        {
+          "seed": "regional-3",
+          "sha256": "5eac35b1d06fcb739f15e89543ab0fdf0986674f5109588540be52e30065ab88",
+          "births": 276,
+          "royalPeople": 432,
+          "mapUsers": 128,
+          "countries": 10,
+          "compactJsonBytes": 6173278,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-3",
+            "state": 2781644846,
+            "position": 21250
+          }
+        }
+      ]
+    },
+    {
+      "cohort": "logs/z58-worlds-release-low-500",
+      "worlds": 1,
+      "years": 500,
+      "totals": {
+        "births": 487,
+        "uniqueBirthParents": 387,
+        "royalPeople": 802,
+        "nativeMilitaryMeritGrantees": 11,
+        "uniqueTitleHolders": 20,
+        "titleHolderDirectChildren": 16,
+        "deadTitleHoldersWithEligibleChildren": 10,
+        "deathSettlementsWithoutRegisteredChildren": 8,
+        "deadChildBlocks": 0,
+        "mapUsers": 129,
+        "royalMilitaryPeople": 24,
+        "ordinaryMilitaryPeople": 106,
+        "householdChildrenWhoEnlisted": 16,
+        "kingAccessions": 137,
+        "courtAttempts": 8,
+        "depositions": 5,
+        "sieges": 5323,
+        "duplicateUsers": 0,
+        "duplicateRulers": 0,
+        "duplicateHistory": 0,
+        "duplicateActiveMemberAssignments": 0,
+        "birthsWhoseLifespanPassedWithoutDeath": 0,
+        "newChildrenInCrownPool": 0,
+        "newChildrenEverCrowned": 0
+      },
+      "descents": {
+        "BO->ZI": 3,
+        "GONG->HOU": 2,
+        "HOU->BO": 2,
+        "ZI->NAN": 2
+      },
+      "endings": {
+        "NO_HEIR": 7,
+        "RANK_EXHAUSTED": 2,
+        "REVOKED": 1
+      },
+      "otherHeirBlocks": {},
+      "perWorld": [
+        {
+          "seed": "regional-3",
+          "sha256": "62f3c31bb0db2cb13e52256b23aad975dbac9df3e08db8066220e891b4373854",
+          "births": 487,
+          "royalPeople": 802,
+          "mapUsers": 129,
+          "countries": 35,
+          "compactJsonBytes": 12038195,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-3",
+            "state": 2231249689,
+            "position": 36961
+          }
+        }
+      ]
+    }
+  ],
+  "performance": [
+    {
+      "side": "baseline",
+      "years": 100,
+      "seed": "regional-3",
+      "core12MonthsMedianMs": 422.5,
+      "strictExportMedianMs": 130.1,
+      "hydrateMedianMs": 142.8,
+      "royalBirthPhaseMedianMs": 0,
+      "royalOpenMedianMs": 10.2,
+      "royalSelectMedianMs": 4.6,
+      "familyOpenMedianMs": 6.1,
+      "maxRoyalRenderedNodes": 9,
+      "repeatedCoreDeterministic": true,
+      "royalReadingUnchanged": true,
+      "familyReadingUnchanged": true
+    },
+    {
+      "side": "release",
+      "years": 100,
+      "seed": "regional-3",
+      "core12MonthsMedianMs": 237.3,
+      "strictExportMedianMs": 158.5,
+      "hydrateMedianMs": 189.6,
+      "royalBirthPhaseMedianMs": 0,
+      "royalOpenMedianMs": 10.3,
+      "royalSelectMedianMs": 4.9,
+      "familyOpenMedianMs": 4.6,
+      "maxRoyalRenderedNodes": 9,
+      "repeatedCoreDeterministic": true,
+      "royalReadingUnchanged": true,
+      "familyReadingUnchanged": true
+    },
+    {
+      "side": "baseline",
+      "years": 200,
+      "seed": "regional-3",
+      "core12MonthsMedianMs": 304,
+      "strictExportMedianMs": 427.5,
+      "hydrateMedianMs": 429,
+      "royalBirthPhaseMedianMs": 0,
+      "royalOpenMedianMs": 12.3,
+      "royalSelectMedianMs": 5,
+      "familyOpenMedianMs": 5.3,
+      "maxRoyalRenderedNodes": 6,
+      "repeatedCoreDeterministic": true,
+      "royalReadingUnchanged": true,
+      "familyReadingUnchanged": true
+    },
+    {
+      "side": "release",
+      "years": 200,
+      "seed": "regional-3",
+      "core12MonthsMedianMs": 230.5,
+      "strictExportMedianMs": 797,
+      "hydrateMedianMs": 806.9,
+      "royalBirthPhaseMedianMs": 4.7,
+      "royalOpenMedianMs": 12.4,
+      "royalSelectMedianMs": 4.8,
+      "familyOpenMedianMs": 4.5,
+      "maxRoyalRenderedNodes": 6,
+      "repeatedCoreDeterministic": true,
+      "royalReadingUnchanged": true,
+      "familyReadingUnchanged": true
+    },
+    {
+      "side": "baseline",
+      "years": 300,
+      "seed": "regional-3",
+      "core12MonthsMedianMs": 537.8,
+      "strictExportMedianMs": 949.6,
+      "hydrateMedianMs": 1031.1,
+      "royalBirthPhaseMedianMs": 0,
+      "royalOpenMedianMs": 14,
+      "royalSelectMedianMs": 5.3,
+      "familyOpenMedianMs": 5.5,
+      "maxRoyalRenderedNodes": 6,
+      "repeatedCoreDeterministic": true,
+      "royalReadingUnchanged": true,
+      "familyReadingUnchanged": true
+    },
+    {
+      "side": "release",
+      "years": 300,
+      "seed": "regional-3",
+      "core12MonthsMedianMs": 517.9,
+      "strictExportMedianMs": 2010.3,
+      "hydrateMedianMs": 2110.4,
+      "royalBirthPhaseMedianMs": 0.2,
+      "royalOpenMedianMs": 14.8,
+      "royalSelectMedianMs": 5.1,
+      "familyOpenMedianMs": 7.5,
+      "maxRoyalRenderedNodes": 12,
+      "repeatedCoreDeterministic": true,
+      "royalReadingUnchanged": true,
+      "familyReadingUnchanged": true
+    },
+    {
+      "side": "baseline",
+      "years": 500,
+      "seed": "regional-3",
+      "core12MonthsMedianMs": 1181.7,
+      "strictExportMedianMs": 3487.9,
+      "hydrateMedianMs": 3604.3,
+      "royalBirthPhaseMedianMs": 0,
+      "royalOpenMedianMs": 19.3,
+      "royalSelectMedianMs": 5.9,
+      "familyOpenMedianMs": 8.9,
+      "maxRoyalRenderedNodes": 6,
+      "repeatedCoreDeterministic": true,
+      "royalReadingUnchanged": true,
+      "familyReadingUnchanged": true
+    },
+    {
+      "side": "release",
+      "years": 500,
+      "seed": "regional-3",
+      "core12MonthsMedianMs": 485.6,
+      "strictExportMedianMs": 7743.4,
+      "hydrateMedianMs": 9017.9,
+      "royalBirthPhaseMedianMs": 10.7,
+      "royalOpenMedianMs": 23,
+      "royalSelectMedianMs": 5.5,
+      "familyOpenMedianMs": 15.5,
+      "maxRoyalRenderedNodes": 12,
+      "repeatedCoreDeterministic": true,
+      "royalReadingUnchanged": true,
+      "familyReadingUnchanged": true
+    }
+  ],
+  "checks": [
+    {
+      "check": "core",
+      "command": [
+        "node",
+        "scripts/testing/verify-person-core.cjs"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 72.13,
+      "log": "logs/z58-final-core.log"
+    },
+    {
+      "check": "tests",
+      "command": [
+        "pnpm",
+        "test"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 56.68,
+      "log": "logs/z58-final-tests.log"
+    },
+    {
+      "check": "typescript",
+      "command": [
+        "pnpm",
+        "exec",
+        "tsc",
+        "--noEmit"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 13.15,
+      "log": "logs/z58-final-typescript.log"
+    },
+    {
+      "check": "web",
+      "command": [
+        "pnpm",
+        "build"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 22.9,
+      "log": "logs/z58-final-web.log"
+    },
+    {
+      "check": "desktop",
+      "command": [
+        "pnpm",
+        "desktop:build"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 23.78,
+      "log": "logs/z58-final-desktop.log"
+    },
+    {
+      "check": "debug",
+      "command": [
+        "pnpm",
+        "desktop:renderer-debug-build"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 50.67,
+      "log": "logs/z58-final-debug.log"
+    }
+  ],
+  "finalDeathJournalFullDtoEquivalence": [
+    {
+      "seed": "regional-1",
+      "completeDtoEqual": true
+    },
+    {
+      "seed": "regional-2",
+      "completeDtoEqual": true
+    },
+    {
+      "seed": "regional-3",
+      "completeDtoEqual": true
+    },
+    {
+      "seed": "regional-4",
+      "completeDtoEqual": true
+    },
+    {
+      "seed": "regional-5",
+      "completeDtoEqual": true
+    },
+    {
+      "seed": "regional-6",
+      "completeDtoEqual": true
+    },
+    {
+      "seed": "regional-7",
+      "completeDtoEqual": true
+    },
+    {
+      "seed": "regional-8",
+      "completeDtoEqual": true
+    }
+  ],
+  "naturalContinuationAndDenominators": [
+    {
+      "cohort": "z58-release-low-100",
+      "worlds": 8,
+      "allStrict": true,
+      "allTwelveMonthsDeterministicAndReread": true,
+      "eligibleParentPeople": 742,
+      "planningTotalMs": 1036.5000000149012,
+      "populationUnexplained": 0,
+      "formationOwnershipConflicts": 0
+    },
+    {
+      "cohort": "z58-release-low-200",
+      "worlds": 4,
+      "allStrict": true,
+      "allTwelveMonthsDeterministicAndReread": true,
+      "eligibleParentPeople": 932,
+      "planningTotalMs": 2504.4999999925494,
+      "populationUnexplained": 0,
+      "formationOwnershipConflicts": 0
+    },
+    {
+      "cohort": "z58-release-low-300",
+      "worlds": 1,
+      "allStrict": true,
+      "allTwelveMonthsDeterministicAndReread": true,
+      "eligibleParentPeople": 377,
+      "planningTotalMs": 1676.2999999970198,
+      "populationUnexplained": 0,
+      "formationOwnershipConflicts": 0
+    },
+    {
+      "cohort": "z58-release-low-500",
+      "worlds": 1,
+      "allStrict": true,
+      "allTwelveMonthsDeterministicAndReread": true,
+      "eligibleParentPeople": 669,
+      "planningTotalMs": 4375.699999994598,
+      "populationUnexplained": 0,
+      "formationOwnershipConflicts": 0
+    }
+  ]
+}

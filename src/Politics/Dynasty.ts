@@ -1640,6 +1640,19 @@ class DynastyRegistryStore {
     dynasty.designatedSinceMonth = undefined;
   }
 
+  /** Household children without a map body have one atomic natural-life record. */
+  private archiveHouseholdNaturalDeath(dynasty:Dynasty,person:Ruler,observedMonth:number){
+    const month=person.naturalDeathYear;
+    if(!person.householdBirth||person.militaryIdentity||person.status!=='kin'||month===undefined||month>observedMonth||person.deathMonth!==undefined)return false;
+    const before={...person},history=WorldHistory.snapshotPoliticalTransaction(),rng=worldRandom.exportState(),scope=beginPoliticalMutation();
+    try{
+      Object.assign(person,{status:'dead',politicalEndYear:month,endYear:month,endReason:'自然去世',deathMonth:month,deathReason:'自然去世'});
+      const id=`${person.id}-life-ended`;
+      if(WorldHistory.addEvent({id,year:month,type:'royal-kin-died',category:'politics',importance:'normal',actorFactionId:dynasty.factionId,factionIds:[dynasty.factionId],rulerId:person.id,title:`${this.getRulerPersonalName(person)}自然去世。`,metadata:{deathMonth:month,...observedMonth!==month?{recordedMonth:observedMonth}:{}}})!==id)throw Error('Royal child death history rejected');
+    }catch(error){scope.cancel();for(const key of Object.keys(person))delete (person as any)[key];Object.assign(person,before);const restoring=beginPoliticalMutation();WorldHistory.rollbackPoliticalTransaction(history);worldRandom.restore(rng);restoring.finishRollback();console.warn('[RoyalHouseholdDeath] rolled back',error);return false;}
+    scope.commit();return true;
+  }
+
   private archiveNaturallyDeadHeirs(dynasty: Dynasty, year: number, militaryOnly = false) {
     dynasty.rulers.forEach((heir) => {
       if (militaryOnly && !heir.militaryIdentity && !heir.householdBirth) return;
@@ -1651,6 +1664,7 @@ class DynastyRegistryStore {
       ) {
         return;
       }
+      if(heir.householdBirth&&!heir.militaryIdentity){this.archiveHouseholdNaturalDeath(dynasty,heir,year);return;}
       if (heir.militaryIdentity) {
         const u = Team.GetUserById(heir.militaryIdentity.sourceUserId);
         if (u?.historicalPersonId === heir.militaryIdentity.personId) u.destroyUser(false,{cause:"NATURAL_DEATH",month:year,context:"宗室既定寿命届满",damageSource:"MILITARY_LIFESPAN"});
