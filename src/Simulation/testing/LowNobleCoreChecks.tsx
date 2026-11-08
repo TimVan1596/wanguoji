@@ -18,20 +18,20 @@ import MilitaryFamilyBrowser from '../../UI/Components/FactionDetails/MilitaryFa
 export async function checkLowMilitaryNobility(core:any,oneCapture:ReturnType<typeof exportWorldSave>,factionId:string,personId:string,secondCityId:string,check:(v:unknown,s:string)=>void){
  const resume=exportWorldSave(core),clock=(m:number)=>core.simulator.clock.importState({worldMonth:m,elapsedMs:0,running:false});
  try{
-  hydrateWorldSave(core,structuredClone(oneCapture));Military.setNobleMeritPolicyForSimulation('MEDIUM');
+  hydrateWorldSave(core,structuredClone(oneCapture));Military.setNobleMeritPolicyForSimulation('LOW');
   const team=()=>core.teams.find((t:any)=>t.name===factionId),p=()=>Military.getPerson(personId)!,family=()=>Military.getFamilies().find(f=>f.founderPersonId===personId)!;
-  clock(60);const population=core.teams.reduce((n:number,t:any)=>n+t.users.size,0),rng=JSON.stringify(random.exportState()),forms=JSON.stringify(Military.getFormations());
-  Military.updateNobility(60,core.teams,Dynasty.getAll());check(p().nobilityHistory?.at(-1)?.rank==='NAN','one real distinct capture and two service years grant a sourced military NAN');
-  Military.updateFamilies(60,core.teams,Dynasty.getAll());check(family()?.sourceEventId===p().nobilityHistory![0].eventId,'low military rank creates one charter with the actual personal grant source');
-  Military.updateAppanages(60,core.teams,Dynasty.getAll(),core.allCities);check(!p().appanageHistory?.length&&population===core.teams.reduce((n:number,t:any)=>n+t.users.size,0)&&rng===JSON.stringify(random.exportState())&&forms===JSON.stringify(Military.getFormations()),'low title creates no population, command, food estate or RNG draw');
+  clock(72);const population=core.teams.reduce((n:number,t:any)=>n+t.users.size,0),rng=JSON.stringify(random.exportState()),forms=JSON.stringify(Military.getFormations());
+  Military.updateNobility(72,core.teams,Dynasty.getAll());check(p().nobilityHistory?.at(-1)?.rank==='NAN','one real distinct capture and three service years grant a sourced military NAN');
+  Military.updateFamilies(72,core.teams,Dynasty.getAll());check(family()?.sourceEventId===p().nobilityHistory![0].eventId,'low military rank creates one charter with the actual personal grant source');
+  Military.updateAppanages(72,core.teams,Dynasty.getAll(),core.allCities);check(!p().appanageHistory?.length&&population===core.teams.reduce((n:number,t:any)=>n+t.users.size,0)&&rng===JSON.stringify(random.exportState())&&forms===JSON.stringify(Military.getFormations()),'low title creates no population, command, food estate or RNG draw');
   const u=team().getUserById(p().sourceUserId),command=p().appointments[0].commandId,city=core.allCities.find((c:any)=>c.id===secondCityId)!;
-  clock(66);u.player.setPosition(city.block.x,city.block.y);u.player.Body.reset(u.player.x,u.player.y);city.capture(team(),66,undefined,command,personId);
-  clock(72);const before=exportWorldSave(core),write=History.addEvent;
-  History.addEvent=function(e){const id=write.call(this,e);if(e.type==='military-ennobled'){random.next();throw Error('injected low noble write');}return id;};try{Military.updateNobility(72,core.teams,Dynasty.getAll());}finally{History.addEvent=write;}
+  clock(78);u.player.setPosition(city.block.x,city.block.y);u.player.Body.reset(u.player.x,u.player.y);city.capture(team(),78,undefined,command,personId);
+  clock(84);const before=exportWorldSave(core),write=History.addEvent;
+  History.addEvent=function(e){const id=write.call(this,e);if(e.type==='military-ennobled'){random.next();throw Error('injected low noble write');}return id;};try{Military.updateNobility(84,core.teams,Dynasty.getAll());}finally{History.addEvent=write;}
   check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,'low-rank upgrade failure restores grant, original history and a consumed RNG draw');
-  Military.updateNobility(72,core.teams,Dynasty.getAll());Military.updateFamilies(72,core.teams,Dynasty.getAll());check(p().nobilityHistory?.map(g=>g.rank).join(',')==='NAN,ZI'&&Military.getFamilies().filter(f=>f.founderPersonId===personId).length===1,'second distinct capture upgrades NAN to ZI in the same family without copying merit');
+  Military.updateNobility(84,core.teams,Dynasty.getAll());Military.updateFamilies(84,core.teams,Dynasty.getAll());check(p().nobilityHistory?.map(g=>g.rank).join(',')==='NAN,ZI'&&Military.getFamilies().filter(f=>f.founderPersonId===personId).length===1,'second distinct capture upgrades NAN to ZI in the same family without copying merit');
   const zi=exportWorldSave(core),bad=structuredClone(zi),grant=bad.registries.militaryCommandRegistry.people.find(p=>p.personId===personId)!.nobilityHistory!.at(-1)!;grant.rank='BO';const e=(bad.worldHistory.events as any[]).find((e:any)=>e.id===grant.eventId) as any;e.metadata.nobility=JSON.stringify(grant);check(!validateWorldSave(bad).valid,'strict save rejects a jointly forged higher low-rank grant and event');
-  clock(73);Military.endPersonCommands(personId,73,'DISMISSED');check(p().status!=='ACTIVE'&&p().nobilityHistory?.at(-1)?.rank==='ZI','real office ending retains the existing ZI without further service or automatic promotion');
+  clock(85);Military.endPersonCommands(personId,85,'DISMISSED');check(p().status!=='ACTIVE'&&p().nobilityHistory?.at(-1)?.rank==='ZI','real office ending retains the existing ZI without further service or automatic promotion');
   clock(240);const populationSystem=core.simulator.population,t=team();
   while(t.users.size>=populationSystem.getCapacity(t)){const u=[...t.users].find((u:any)=>u.role==='NORMAL'&&!u.militaryPersonId&&!Military.getFormations().some(f=>f.status==='ACTIVE'&&f.memberUnitIds.includes(u.player.logicalUnitId??''))) as any;check(u,'real civilian supports bounded controlled capacity fixture');u.destroyUser(false,{cause:'GOD_ACTION',month:240});}
   let counter:number|undefined;
