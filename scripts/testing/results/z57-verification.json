@@ -2007,6 +2007,43 @@
       "exitCode": 0,
       "elapsedSeconds": 11.92,
       "log": "logs/z57-release-typescript.log"
+    },
+    {
+      "check": "web",
+      "command": [
+        "pnpm",
+        "build"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 20.97,
+      "log": "logs/z57-release-web.log"
+    },
+    {
+      "check": "desktop",
+      "command": [
+        "pnpm",
+        "desktop:build"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 22.2,
+      "log": "logs/z57-release-desktop.log"
+    },
+    {
+      "check": "debug",
+      "command": [
+        "pnpm",
+        "desktop:renderer-debug-build"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 40.64,
+      "log": "logs/z57-release-debug.log"
     }
-  ]
+  ],
+  "unitTests": {
+    "files": 342,
+    "passed": 2601,
+    "failed": 0,
+    "timeoutOrAssertionRelaxed": false
+  },
+  "manualChromeGate": "PENDING"
 }
