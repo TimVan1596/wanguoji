@@ -1,0 +1,1558 @@
+[
+  {
+    "seed": "regional-3",
+    "worldMonth": 2400,
+    "viewport": {
+      "width": 800,
+      "height": 568
+    },
+    "families": 6,
+    "associatedFamilies": 2,
+    "members": 59,
+    "registrationAudit": {
+      "scope": "READ_ONLY_COUNTERFACTUAL_COVERAGE_ON_REAL_EVENTS_NOT_AN_ALTERNATIVE_SIMULATION",
+      "considered": 53,
+      "retained": 18,
+      "rejected": 35,
+      "recordedMilitaryLineagesLost": 2,
+      "recordedPersonalGrantLineagesLost": 1,
+      "recordedInheritanceLineagesLost": 2,
+      "recordedNewPeriodLineagesLost": 0,
+      "rows": [
+        {
+          "familyId": "military-family-military-person-5-魏-ruler-10",
+          "memberId": "family-member-1359921429-226",
+          "enteredMonth": 780,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": true,
+          "laterPersonalGrant": true,
+          "laterInheritance": true,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-5-魏-ruler-10",
+          "memberId": "family-member-1359921460-656",
+          "enteredMonth": 909,
+          "accepted": false,
+          "reason": "PARENT_NOT_RECORDED",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-5-魏-ruler-10",
+          "memberId": "family-member-1359921487-472",
+          "enteredMonth": 1012,
+          "accepted": false,
+          "reason": "PARENT_NOT_RECORDED",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": true,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050980877--54",
+          "enteredMonth": 307,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": true,
+          "laterPersonalGrant": false,
+          "laterInheritance": true,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050980905-28",
+          "enteredMonth": 430,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050980908-255",
+          "enteredMonth": 531,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050980909-230",
+          "enteredMonth": 550,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": true,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050980936-331",
+          "enteredMonth": 648,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050980966-551",
+          "enteredMonth": 834,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050980970-612",
+          "enteredMonth": 918,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050980973-598",
+          "enteredMonth": 958,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050980995-467",
+          "enteredMonth": 967,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050981003-523",
+          "enteredMonth": 1087,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050981026-706",
+          "enteredMonth": 1179,
+          "accepted": false,
+          "reason": "PARENT_NOT_RECORDED",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050981027-603",
+          "enteredMonth": 1207,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050981028-810",
+          "enteredMonth": 1221,
+          "accepted": false,
+          "reason": "PARENT_NOT_RECORDED",
+          "laterMilitary": true,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050981029-851",
+          "enteredMonth": 1236,
+          "accepted": false,
+          "reason": "PARENT_NOT_RECORDED",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050981058-793",
+          "enteredMonth": 1408,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050981095-903",
+          "enteredMonth": 1597,
+          "accepted": false,
+          "reason": "PARENT_NOT_RECORDED",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050981096-1363",
+          "enteredMonth": 1603,
+          "accepted": false,
+          "reason": "PARENT_NOT_RECORDED",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050981097-1174",
+          "enteredMonth": 1606,
+          "accepted": false,
+          "reason": "PARENT_NOT_RECORDED",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050981773-1001",
+          "enteredMonth": 1698,
+          "accepted": false,
+          "reason": "PARENT_NOT_RECORDED",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050981775-1337",
+          "enteredMonth": 1848,
+          "accepted": false,
+          "reason": "PARENT_NOT_RECORDED",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050981777-1415",
+          "enteredMonth": 1863,
+          "accepted": false,
+          "reason": "PARENT_NOT_RECORDED",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050981802-1298",
+          "enteredMonth": 1947,
+          "accepted": false,
+          "reason": "PARENT_NOT_RECORDED",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-19-楚-ruler-14",
+          "memberId": "family-member-1433913304-382",
+          "enteredMonth": 966,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-19-楚-ruler-14",
+          "memberId": "family-member-1433913305-666",
+          "enteredMonth": 1023,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-19-楚-ruler-14",
+          "memberId": "family-member-1433913312-754",
+          "enteredMonth": 1218,
+          "accepted": false,
+          "reason": "PARENT_NOT_RECORDED",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-19-楚-ruler-14",
+          "memberId": "family-member-1433913369-887",
+          "enteredMonth": 1512,
+          "accepted": false,
+          "reason": "PARENT_NOT_RECORDED",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-19-楚-ruler-14",
+          "memberId": "family-member-1433913373-1297",
+          "enteredMonth": 1581,
+          "accepted": false,
+          "reason": "PARENT_NOT_RECORDED",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-19-楚-ruler-14",
+          "memberId": "family-member-1433913374-915",
+          "enteredMonth": 1587,
+          "accepted": false,
+          "reason": "PARENT_NOT_RECORDED",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-19-楚-ruler-14",
+          "memberId": "family-member-1433913398-1109",
+          "enteredMonth": 1599,
+          "accepted": false,
+          "reason": "PARENT_NOT_RECORDED",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-16-魏-ruler-10",
+          "memberId": "family-member-1359921459-437",
+          "enteredMonth": 894,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-16-魏-ruler-10",
+          "memberId": "family-member-1359921486-676",
+          "enteredMonth": 1011,
+          "accepted": false,
+          "reason": "PARENT_NOT_RECORDED",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-16-魏-ruler-10",
+          "memberId": "family-member-1359921488-527",
+          "enteredMonth": 1015,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-25-齐-ruler-9",
+          "memberId": "family-member-1306530550-1104",
+          "enteredMonth": 1418,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": true,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-25-齐-ruler-9",
+          "memberId": "family-member-1306530572-984",
+          "enteredMonth": 1420,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": true,
+          "laterPersonalGrant": false,
+          "laterInheritance": true,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-25-齐-ruler-9",
+          "memberId": "family-member-1306530609-1406",
+          "enteredMonth": 1673,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-25-齐-ruler-9",
+          "memberId": "family-member-1306530610-1410",
+          "enteredMonth": 1682,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-25-齐-ruler-9",
+          "memberId": "family-member-1306530639-1234",
+          "enteredMonth": 1781,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": true,
+          "laterPersonalGrant": false,
+          "laterInheritance": true,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-25-齐-ruler-9",
+          "memberId": "family-member-1306531323-1635",
+          "enteredMonth": 1919,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-25-齐-ruler-9",
+          "memberId": "family-member-1306531351-1597",
+          "enteredMonth": 2059,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-25-齐-ruler-9",
+          "memberId": "family-member-1306531353-1483",
+          "enteredMonth": 2123,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-25-齐-ruler-9",
+          "memberId": "family-member-1306531356-1943",
+          "enteredMonth": 2287,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-25-齐-ruler-9",
+          "memberId": "family-member-1306531379-1963",
+          "enteredMonth": 2291,
+          "accepted": false,
+          "reason": "PARENT_NOT_RECORDED",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-25-齐-ruler-9",
+          "memberId": "family-member-1306531382-1636",
+          "enteredMonth": 2365,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-35-燕-ruler-7",
+          "memberId": "family-member-1143910937-1300",
+          "enteredMonth": 1847,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": true,
+          "laterPersonalGrant": false,
+          "laterInheritance": true,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-35-燕-ruler-7",
+          "memberId": "family-member-1143910971-1570",
+          "enteredMonth": 1965,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": true,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-35-燕-ruler-7",
+          "memberId": "family-member-1143911002-1586",
+          "enteredMonth": 2026,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-35-燕-ruler-7",
+          "memberId": "family-member-1143911030-1812",
+          "enteredMonth": 2125,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-35-燕-ruler-7",
+          "memberId": "family-member-1143911034-1839",
+          "enteredMonth": 2216,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-35-燕-ruler-7",
+          "memberId": "family-member-1143911036-1979",
+          "enteredMonth": 2240,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-35-燕-ruler-7",
+          "memberId": "family-member-1143911065-2031",
+          "enteredMonth": 2378,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        }
+      ]
+    },
+    "maxFamilyMembers": 23,
+    "events": 5813,
+    "people": 47,
+    "direct": [
+      {
+        "repeat": 0,
+        "listSummaryMs": 3.300000000745058,
+        "listCache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 0,
+          "hits": 0,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 0,
+          "events": 5813
+        },
+        "archiveMs": 2.799999998882413,
+        "importantMs": 0,
+        "parentBridgeMs": 0.10000000149011612,
+        "layoutMs": 0.19999999925494194,
+        "cardModel": {
+          "archiveMs": 0,
+          "importantMs": 0,
+          "bridgeMs": 0.09999999962747097,
+          "cardsMs": 0.30000000074505806,
+          "layoutMs": 0,
+          "totalMs": 0.40000000037252903
+        },
+        "retainedNodes": 1,
+        "registeredNodes": 4,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 0,
+          "projectionBuilds": 1,
+          "hits": 3,
+          "invalidations": 1,
+          "summaryCache": 0,
+          "archiveCache": 1,
+          "events": 5813
+        }
+      },
+      {
+        "repeat": 1,
+        "listSummaryMs": 2.200000001117587,
+        "listCache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 0,
+          "hits": 0,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 0,
+          "events": 5813
+        },
+        "archiveMs": 2.299999998882413,
+        "importantMs": 0,
+        "parentBridgeMs": 0,
+        "layoutMs": 0,
+        "cardModel": {
+          "archiveMs": 0,
+          "importantMs": 0,
+          "bridgeMs": 0,
+          "cardsMs": 0.09999999962747097,
+          "layoutMs": 0,
+          "totalMs": 0.09999999962747097
+        },
+        "retainedNodes": 1,
+        "registeredNodes": 4,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 0,
+          "projectionBuilds": 1,
+          "hits": 3,
+          "invalidations": 1,
+          "summaryCache": 0,
+          "archiveCache": 1,
+          "events": 5813
+        }
+      },
+      {
+        "repeat": 2,
+        "listSummaryMs": 2.300000000745058,
+        "listCache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 0,
+          "hits": 0,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 0,
+          "events": 5813
+        },
+        "archiveMs": 2.400000000372529,
+        "importantMs": 0,
+        "parentBridgeMs": 0,
+        "layoutMs": 0,
+        "cardModel": {
+          "archiveMs": 0,
+          "importantMs": 0,
+          "bridgeMs": 0,
+          "cardsMs": 0.19999999925494194,
+          "layoutMs": 0,
+          "totalMs": 0.19999999925494194
+        },
+        "retainedNodes": 1,
+        "registeredNodes": 4,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 0,
+          "projectionBuilds": 1,
+          "hits": 3,
+          "invalidations": 1,
+          "summaryCache": 0,
+          "archiveCache": 1,
+          "events": 5813
+        }
+      }
+    ],
+    "phases": [
+      {
+        "phase": "list-open-0",
+        "wallMs": 9.799999998882413,
+        "settledMs": 18.699999999254942,
+        "reactMs": 6.499999998137355,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 0,
+          "hits": 0,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 0,
+          "events": 5813
+        },
+        "dom": 13,
+        "longTasks": []
+      },
+      {
+        "phase": "all-houses-0",
+        "wallMs": 2.300000000745058,
+        "settledMs": 17.5,
+        "reactMs": 2,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 0,
+          "hits": 0,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 0,
+          "events": 5813
+        },
+        "dom": 20,
+        "longTasks": []
+      },
+      {
+        "phase": "family-open-0",
+        "wallMs": 11.200000001117587,
+        "settledMs": 33.20000000111759,
+        "reactMs": 8.999999998137355,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 3,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 5813
+        },
+        "dom": 33,
+        "longTasks": []
+      },
+      {
+        "phase": "select-person-0",
+        "wallMs": 4.300000000745058,
+        "settledMs": 33.30000000074506,
+        "reactMs": 6.799999998882413,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 5813
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "zoom-0",
+        "wallMs": 4.399999998509884,
+        "settledMs": 32.29999999888241,
+        "reactMs": 2.7999999970197678,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 5813
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "fit-0",
+        "wallMs": 3.800000000745058,
+        "settledMs": 34.30000000074506,
+        "reactMs": 2.800000000745058,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 5813
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "locate-founder-0",
+        "wallMs": 3.5,
+        "settledMs": 33.30000000074506,
+        "reactMs": 5,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 5813
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "return-0",
+        "wallMs": 2,
+        "settledMs": 33.59999999962747,
+        "reactMs": 1.7999999970197678,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 13,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 5813
+        },
+        "dom": 13,
+        "longTasks": []
+      },
+      {
+        "phase": "all-after-return-0",
+        "wallMs": 2.099999999627471,
+        "settledMs": 33,
+        "reactMs": 2,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 13,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 5813
+        },
+        "dom": 20,
+        "longTasks": []
+      },
+      {
+        "phase": "switch-family-0",
+        "wallMs": 6.800000000745058,
+        "settledMs": 33.20000000111759,
+        "reactMs": 6.199999999254942,
+        "mountedNodes": 3,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 2,
+          "hits": 20,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 2,
+          "events": 5813
+        },
+        "dom": 51,
+        "longTasks": []
+      },
+      {
+        "phase": "close-0",
+        "wallMs": 0.6999999992549419,
+        "settledMs": 33.09999999962747,
+        "reactMs": 0,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 2,
+          "hits": 20,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 2,
+          "events": 5813
+        },
+        "dom": 0,
+        "longTasks": []
+      },
+      {
+        "phase": "reopen-0",
+        "wallMs": 2.900000000372529,
+        "settledMs": 33.40000000037253,
+        "reactMs": 2.600000001490116,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 2,
+          "hits": 22,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 2,
+          "events": 5813
+        },
+        "dom": 13,
+        "longTasks": []
+      },
+      {
+        "phase": "switch-faction-0",
+        "wallMs": 3.600000001490116,
+        "settledMs": 33.20000000111759,
+        "reactMs": 2.699999997392297,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 3,
+          "projectionBuilds": 2,
+          "hits": 22,
+          "invalidations": 1,
+          "summaryCache": 3,
+          "archiveCache": 2,
+          "events": 5813
+        },
+        "dom": 13,
+        "longTasks": []
+      },
+      {
+        "phase": "close-again-0",
+        "wallMs": 0.5,
+        "settledMs": 33.09999999962747,
+        "reactMs": 0,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 3,
+          "projectionBuilds": 2,
+          "hits": 22,
+          "invalidations": 1,
+          "summaryCache": 3,
+          "archiveCache": 2,
+          "events": 5813
+        },
+        "dom": 0,
+        "longTasks": []
+      },
+      {
+        "phase": "list-open-1",
+        "wallMs": 4.700000001117587,
+        "settledMs": 7.800000000745058,
+        "reactMs": 3.800000000745058,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 0,
+          "hits": 0,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 0,
+          "events": 5813
+        },
+        "dom": 13,
+        "longTasks": []
+      },
+      {
+        "phase": "all-houses-1",
+        "wallMs": 1.200000001117587,
+        "settledMs": 31.40000000037253,
+        "reactMs": 1.299999998882413,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 0,
+          "hits": 0,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 0,
+          "events": 5813
+        },
+        "dom": 20,
+        "longTasks": []
+      },
+      {
+        "phase": "family-open-1",
+        "wallMs": 4.5,
+        "settledMs": 33.30000000074506,
+        "reactMs": 4.199999999254942,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 3,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 5813
+        },
+        "dom": 33,
+        "longTasks": []
+      },
+      {
+        "phase": "select-person-1",
+        "wallMs": 3.300000000745058,
+        "settledMs": 33.19999999925494,
+        "reactMs": 5.700000001117587,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 5813
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "zoom-1",
+        "wallMs": 3.600000001490116,
+        "settledMs": 33.30000000074506,
+        "reactMs": 2.699999999254942,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 5813
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "fit-1",
+        "wallMs": 3.200000001117587,
+        "settledMs": 33.30000000074506,
+        "reactMs": 2.600000001490116,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 5813
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "locate-founder-1",
+        "wallMs": 3.5,
+        "settledMs": 33.29999999888241,
+        "reactMs": 5.50000000372529,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 5813
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "return-1",
+        "wallMs": 2.199999999254942,
+        "settledMs": 33.19999999925494,
+        "reactMs": 2.499999998137355,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 13,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 5813
+        },
+        "dom": 13,
+        "longTasks": []
+      },
+      {
+        "phase": "all-after-return-1",
+        "wallMs": 2,
+        "settledMs": 33.30000000074506,
+        "reactMs": 1.9999999981373549,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 13,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 5813
+        },
+        "dom": 20,
+        "longTasks": []
+      },
+      {
+        "phase": "switch-family-1",
+        "wallMs": 7.5,
+        "settledMs": 33.09999999962747,
+        "reactMs": 7.5,
+        "mountedNodes": 3,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 2,
+          "hits": 20,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 2,
+          "events": 5813
+        },
+        "dom": 51,
+        "longTasks": []
+      },
+      {
+        "phase": "close-1",
+        "wallMs": 0.7000000011175871,
+        "settledMs": 33.40000000037253,
+        "reactMs": 0,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 2,
+          "hits": 20,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 2,
+          "events": 5813
+        },
+        "dom": 0,
+        "longTasks": []
+      },
+      {
+        "phase": "reopen-1",
+        "wallMs": 4.200000001117587,
+        "settledMs": 32.90000000037253,
+        "reactMs": 2.8999999947845936,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 2,
+          "hits": 22,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 2,
+          "events": 5813
+        },
+        "dom": 13,
+        "longTasks": []
+      },
+      {
+        "phase": "switch-faction-1",
+        "wallMs": 4.5,
+        "settledMs": 33.70000000111759,
+        "reactMs": 3.300000000745058,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 3,
+          "projectionBuilds": 2,
+          "hits": 22,
+          "invalidations": 1,
+          "summaryCache": 3,
+          "archiveCache": 2,
+          "events": 5813
+        },
+        "dom": 13,
+        "longTasks": []
+      },
+      {
+        "phase": "close-again-1",
+        "wallMs": 0.8999999985098839,
+        "settledMs": 33.29999999888241,
+        "reactMs": 0,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 3,
+          "projectionBuilds": 2,
+          "hits": 22,
+          "invalidations": 1,
+          "summaryCache": 3,
+          "archiveCache": 2,
+          "events": 5813
+        },
+        "dom": 0,
+        "longTasks": []
+      },
+      {
+        "phase": "list-open-2",
+        "wallMs": 4.700000001117587,
+        "settledMs": 13.099999999627471,
+        "reactMs": 4.100000003352761,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 0,
+          "hits": 0,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 0,
+          "events": 5813
+        },
+        "dom": 13,
+        "longTasks": []
+      },
+      {
+        "phase": "all-houses-2",
+        "wallMs": 1.400000000372529,
+        "settledMs": 33.20000000111759,
+        "reactMs": 1.200000001117587,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 0,
+          "hits": 0,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 0,
+          "events": 5813
+        },
+        "dom": 20,
+        "longTasks": []
+      },
+      {
+        "phase": "family-open-2",
+        "wallMs": 4.300000000745058,
+        "settledMs": 33.30000000074506,
+        "reactMs": 4.099999999627471,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 3,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 5813
+        },
+        "dom": 33,
+        "longTasks": []
+      },
+      {
+        "phase": "select-person-2",
+        "wallMs": 3.199999999254942,
+        "settledMs": 33.29999999888241,
+        "reactMs": 5.599999999627471,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 5813
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "zoom-2",
+        "wallMs": 3.400000000372529,
+        "settledMs": 33.20000000111759,
+        "reactMs": 2.5,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 5813
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "fit-2",
+        "wallMs": 3.5,
+        "settledMs": 33.30000000074506,
+        "reactMs": 2.699999999254942,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 5813
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "locate-founder-2",
+        "wallMs": 3.400000000372529,
+        "settledMs": 33.29999999888241,
+        "reactMs": 5.800000000745058,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 5813
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "return-2",
+        "wallMs": 2.200000001117587,
+        "settledMs": 33.30000000074506,
+        "reactMs": 2.199999999254942,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 13,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 5813
+        },
+        "dom": 13,
+        "longTasks": []
+      },
+      {
+        "phase": "all-after-return-2",
+        "wallMs": 2,
+        "settledMs": 33.30000000074506,
+        "reactMs": 1.9000000022351742,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 13,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 5813
+        },
+        "dom": 20,
+        "longTasks": []
+      },
+      {
+        "phase": "switch-family-2",
+        "wallMs": 8,
+        "settledMs": 33.19999999925494,
+        "reactMs": 7.699999999254942,
+        "mountedNodes": 3,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 2,
+          "hits": 20,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 2,
+          "events": 5813
+        },
+        "dom": 51,
+        "longTasks": []
+      },
+      {
+        "phase": "close-2",
+        "wallMs": 0.8000000007450581,
+        "settledMs": 33.30000000074506,
+        "reactMs": 0,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 2,
+          "hits": 20,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 2,
+          "events": 5813
+        },
+        "dom": 0,
+        "longTasks": []
+      },
+      {
+        "phase": "reopen-2",
+        "wallMs": 4.199999999254942,
+        "settledMs": 33.40000000037253,
+        "reactMs": 3.400000002235174,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 2,
+          "hits": 22,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 2,
+          "events": 5813
+        },
+        "dom": 13,
+        "longTasks": []
+      },
+      {
+        "phase": "switch-faction-2",
+        "wallMs": 4.699999999254942,
+        "settledMs": 33.19999999925494,
+        "reactMs": 3.5,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 3,
+          "projectionBuilds": 2,
+          "hits": 22,
+          "invalidations": 1,
+          "summaryCache": 3,
+          "archiveCache": 2,
+          "events": 5813
+        },
+        "dom": 13,
+        "longTasks": []
+      },
+      {
+        "phase": "close-again-2",
+        "wallMs": 0.8000000007450581,
+        "settledMs": 33.5,
+        "reactMs": 0,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 3,
+          "projectionBuilds": 2,
+          "hits": 22,
+          "invalidations": 1,
+          "summaryCache": 3,
+          "archiveCache": 2,
+          "events": 5813
+        },
+        "dom": 0,
+        "longTasks": []
+      }
+    ],
+    "legacyModelPhases": [],
+    "longTasksSupported": true,
+    "allLongTasks": [
+      {
+        "startTime": 689,
+        "duration": 4391
+      },
+      {
+        "startTime": 5506.699999999255,
+        "duration": 3015
+      },
+      {
+        "startTime": 8956.799999998882,
+        "duration": 3408
+      }
+    ],
+    "heapBytes": 167261454,
+    "cache": {
+      "indexBuilds": 1,
+      "summaryBuilds": 3,
+      "projectionBuilds": 2,
+      "hits": 22,
+      "invalidations": 1,
+      "summaryCache": 3,
+      "archiveCache": 2,
+      "events": 5813
+    },
+    "beforeHash": "0123acb5457db19d65dc23f90bbc831456639e356fdb5744a47de1a37a3d4ce6",
+    "afterHash": "0123acb5457db19d65dc23f90bbc831456639e356fdb5744a47de1a37a3d4ce6",
+    "unchanged": true,
+    "scope": "Three repetitions on the same real hydrated saved world; actual React commits, DOM budget and controls. Isolated API timings overlap and are not summed. No screenshot or human visual Gate."
+  }
+]

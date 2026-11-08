@@ -1,0 +1,1184 @@
+[
+  {
+    "seed": "regional-3",
+    "worldMonth": 1200,
+    "viewport": {
+      "width": 800,
+      "height": 568
+    },
+    "families": 4,
+    "associatedFamilies": 2,
+    "members": 23,
+    "registrationAudit": {
+      "scope": "READ_ONLY_COUNTERFACTUAL_COVERAGE_ON_REAL_EVENTS_NOT_AN_ALTERNATIVE_SIMULATION",
+      "considered": 19,
+      "retained": 6,
+      "rejected": 13,
+      "recordedMilitaryLineagesLost": 1,
+      "recordedPersonalGrantLineagesLost": 1,
+      "recordedInheritanceLineagesLost": 2,
+      "recordedNewPeriodLineagesLost": 0,
+      "rows": [
+        {
+          "familyId": "military-family-military-person-5-魏-ruler-10",
+          "memberId": "family-member-1359921429-226",
+          "enteredMonth": 780,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": true,
+          "laterPersonalGrant": true,
+          "laterInheritance": true,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-5-魏-ruler-10",
+          "memberId": "family-member-1359921460-656",
+          "enteredMonth": 909,
+          "accepted": false,
+          "reason": "PARENT_NOT_RECORDED",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-5-魏-ruler-10",
+          "memberId": "family-member-1359921487-472",
+          "enteredMonth": 1012,
+          "accepted": false,
+          "reason": "PARENT_NOT_RECORDED",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": true,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050980877--54",
+          "enteredMonth": 307,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": true,
+          "laterPersonalGrant": false,
+          "laterInheritance": true,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050980905-28",
+          "enteredMonth": 430,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050980908-255",
+          "enteredMonth": 531,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050980909-230",
+          "enteredMonth": 550,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": true,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050980936-331",
+          "enteredMonth": 648,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050980966-551",
+          "enteredMonth": 834,
+          "accepted": true,
+          "reason": "ACTIVE_POLITICAL_HOUSE",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050980970-612",
+          "enteredMonth": 918,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050980973-598",
+          "enteredMonth": 958,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050980995-467",
+          "enteredMonth": 967,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050981003-523",
+          "enteredMonth": 1087,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-7-秦-ruler-1",
+          "memberId": "family-member-1050981026-706",
+          "enteredMonth": 1179,
+          "accepted": false,
+          "reason": "PARENT_NOT_RECORDED",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-19-楚-ruler-14",
+          "memberId": "family-member-1433913304-382",
+          "enteredMonth": 966,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-19-楚-ruler-14",
+          "memberId": "family-member-1433913305-666",
+          "enteredMonth": 1023,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-16-魏-ruler-10",
+          "memberId": "family-member-1359921459-437",
+          "enteredMonth": 894,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-16-魏-ruler-10",
+          "memberId": "family-member-1359921486-676",
+          "enteredMonth": 1011,
+          "accepted": false,
+          "reason": "PARENT_NOT_RECORDED",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        },
+        {
+          "familyId": "military-family-military-person-16-魏-ruler-10",
+          "memberId": "family-member-1359921488-527",
+          "enteredMonth": 1015,
+          "accepted": false,
+          "reason": "NO_CURRENT_POLITICAL_STANDING",
+          "laterMilitary": false,
+          "laterPersonalGrant": false,
+          "laterInheritance": false,
+          "laterNewPeriod": false
+        }
+      ]
+    },
+    "maxFamilyMembers": 12,
+    "events": 3204,
+    "people": 24,
+    "direct": [
+      {
+        "repeat": 0,
+        "listSummaryMs": 2.200000001117587,
+        "listCache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 0,
+          "hits": 0,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 0,
+          "events": 3204
+        },
+        "archiveMs": 1.799999998882413,
+        "importantMs": 0,
+        "parentBridgeMs": 0,
+        "layoutMs": 0.30000000074505806,
+        "cardModel": {
+          "archiveMs": 0,
+          "importantMs": 0,
+          "bridgeMs": 0,
+          "cardsMs": 0.2000000011175871,
+          "layoutMs": 0,
+          "totalMs": 0.30000000074505806
+        },
+        "retainedNodes": 1,
+        "registeredNodes": 4,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 0,
+          "projectionBuilds": 1,
+          "hits": 3,
+          "invalidations": 1,
+          "summaryCache": 0,
+          "archiveCache": 1,
+          "events": 3204
+        }
+      },
+      {
+        "repeat": 1,
+        "listSummaryMs": 1.5,
+        "listCache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 0,
+          "hits": 0,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 0,
+          "events": 3204
+        },
+        "archiveMs": 1.300000000745058,
+        "importantMs": 0,
+        "parentBridgeMs": 0,
+        "layoutMs": 0.09999999962747097,
+        "cardModel": {
+          "archiveMs": 0,
+          "importantMs": 0,
+          "bridgeMs": 0,
+          "cardsMs": 0,
+          "layoutMs": 0.09999999962747097,
+          "totalMs": 0.09999999962747097
+        },
+        "retainedNodes": 1,
+        "registeredNodes": 4,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 0,
+          "projectionBuilds": 1,
+          "hits": 3,
+          "invalidations": 1,
+          "summaryCache": 0,
+          "archiveCache": 1,
+          "events": 3204
+        }
+      },
+      {
+        "repeat": 2,
+        "listSummaryMs": 1.3999999985098839,
+        "listCache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 0,
+          "hits": 0,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 0,
+          "events": 3204
+        },
+        "archiveMs": 1.299999998882413,
+        "importantMs": 0,
+        "parentBridgeMs": 0,
+        "layoutMs": 0,
+        "cardModel": {
+          "archiveMs": 0,
+          "importantMs": 0,
+          "bridgeMs": 0,
+          "cardsMs": 0.10000000149011612,
+          "layoutMs": 0,
+          "totalMs": 0.10000000149011612
+        },
+        "retainedNodes": 1,
+        "registeredNodes": 4,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 0,
+          "projectionBuilds": 1,
+          "hits": 3,
+          "invalidations": 1,
+          "summaryCache": 0,
+          "archiveCache": 1,
+          "events": 3204
+        }
+      }
+    ],
+    "phases": [
+      {
+        "phase": "list-open-0",
+        "wallMs": 8.900000000372529,
+        "settledMs": 17.300000000745058,
+        "reactMs": 5.800000000745058,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 0,
+          "hits": 0,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 0,
+          "events": 3204
+        },
+        "dom": 16,
+        "longTasks": []
+      },
+      {
+        "phase": "all-houses-0",
+        "wallMs": 1.5,
+        "settledMs": 20.90000000037253,
+        "reactMs": 1.299999998882413,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 0,
+          "hits": 0,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 0,
+          "events": 3204
+        },
+        "dom": 20,
+        "longTasks": []
+      },
+      {
+        "phase": "family-open-0",
+        "wallMs": 9.900000000372529,
+        "settledMs": 33.30000000074506,
+        "reactMs": 7.5,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 3,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 3204
+        },
+        "dom": 33,
+        "longTasks": []
+      },
+      {
+        "phase": "select-person-0",
+        "wallMs": 4.5,
+        "settledMs": 33.29999999888241,
+        "reactMs": 6.99999999627471,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 3204
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "zoom-0",
+        "wallMs": 4.599999999627471,
+        "settledMs": 33.30000000074506,
+        "reactMs": 2.900000000372529,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 3204
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "fit-0",
+        "wallMs": 4,
+        "settledMs": 33.30000000074506,
+        "reactMs": 2.600000001490116,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 3204
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "locate-founder-0",
+        "wallMs": 3.299999998882413,
+        "settledMs": 33.29999999888241,
+        "reactMs": 5.5,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 3204
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "return-0",
+        "wallMs": 2.200000001117587,
+        "settledMs": 33.40000000037253,
+        "reactMs": 2.099999997764826,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 13,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 3204
+        },
+        "dom": 16,
+        "longTasks": []
+      },
+      {
+        "phase": "all-after-return-0",
+        "wallMs": 1.800000000745058,
+        "settledMs": 33.19999999925494,
+        "reactMs": 1.700000001117587,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 13,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 3204
+        },
+        "dom": 20,
+        "longTasks": []
+      },
+      {
+        "phase": "switch-family-0",
+        "wallMs": 7.299999998882413,
+        "settledMs": 33.19999999925494,
+        "reactMs": 6.699999997392297,
+        "mountedNodes": 3,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 2,
+          "hits": 20,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 2,
+          "events": 3204
+        },
+        "dom": 53,
+        "longTasks": []
+      },
+      {
+        "phase": "close-0",
+        "wallMs": 0.900000000372529,
+        "settledMs": 33.40000000037253,
+        "reactMs": 0,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 2,
+          "hits": 20,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 2,
+          "events": 3204
+        },
+        "dom": 0,
+        "longTasks": []
+      },
+      {
+        "phase": "reopen-0",
+        "wallMs": 3.099999999627471,
+        "settledMs": 33.19999999925494,
+        "reactMs": 2.300000002607703,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 2,
+          "hits": 22,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 2,
+          "events": 3204
+        },
+        "dom": 16,
+        "longTasks": []
+      },
+      {
+        "phase": "switch-faction-0",
+        "wallMs": 2.599999999627471,
+        "settledMs": 33.19999999925494,
+        "reactMs": 1.9999999981373549,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 3,
+          "projectionBuilds": 2,
+          "hits": 22,
+          "invalidations": 1,
+          "summaryCache": 3,
+          "archiveCache": 2,
+          "events": 3204
+        },
+        "dom": 13,
+        "longTasks": []
+      },
+      {
+        "phase": "close-again-0",
+        "wallMs": 0.5,
+        "settledMs": 33.30000000074506,
+        "reactMs": 0,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 3,
+          "projectionBuilds": 2,
+          "hits": 22,
+          "invalidations": 1,
+          "summaryCache": 3,
+          "archiveCache": 2,
+          "events": 3204
+        },
+        "dom": 0,
+        "longTasks": []
+      },
+      {
+        "phase": "list-open-1",
+        "wallMs": 3.900000000372529,
+        "settledMs": 13.099999999627471,
+        "reactMs": 3.500000001862645,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 0,
+          "hits": 0,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 0,
+          "events": 3204
+        },
+        "dom": 16,
+        "longTasks": []
+      },
+      {
+        "phase": "all-houses-1",
+        "wallMs": 1.5,
+        "settledMs": 33.40000000037253,
+        "reactMs": 1.300000000745058,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 0,
+          "hits": 0,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 0,
+          "events": 3204
+        },
+        "dom": 20,
+        "longTasks": []
+      },
+      {
+        "phase": "family-open-1",
+        "wallMs": 4.5,
+        "settledMs": 33.09999999962747,
+        "reactMs": 4.700000001117587,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 3,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 3204
+        },
+        "dom": 33,
+        "longTasks": []
+      },
+      {
+        "phase": "select-person-1",
+        "wallMs": 3.400000000372529,
+        "settledMs": 33.40000000037253,
+        "reactMs": 5.899999998509884,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 3204
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "zoom-1",
+        "wallMs": 3.5,
+        "settledMs": 33.30000000074506,
+        "reactMs": 2.699999999254942,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 3204
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "fit-1",
+        "wallMs": 3.900000000372529,
+        "settledMs": 33.29999999888241,
+        "reactMs": 2.899999998509884,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 3204
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "locate-founder-1",
+        "wallMs": 3.799999998882413,
+        "settledMs": 33.29999999888241,
+        "reactMs": 6.400000002235174,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 3204
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "return-1",
+        "wallMs": 2.400000000372529,
+        "settledMs": 33.20000000111759,
+        "reactMs": 2.2999999970197678,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 13,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 3204
+        },
+        "dom": 16,
+        "longTasks": []
+      },
+      {
+        "phase": "all-after-return-1",
+        "wallMs": 1.800000000745058,
+        "settledMs": 33.19999999925494,
+        "reactMs": 1.799999998882413,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 13,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 3204
+        },
+        "dom": 20,
+        "longTasks": []
+      },
+      {
+        "phase": "switch-family-1",
+        "wallMs": 8.399999998509884,
+        "settledMs": 33.29999999888241,
+        "reactMs": 8.099999997764826,
+        "mountedNodes": 3,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 2,
+          "hits": 20,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 2,
+          "events": 3204
+        },
+        "dom": 53,
+        "longTasks": []
+      },
+      {
+        "phase": "close-1",
+        "wallMs": 0.7000000011175871,
+        "settledMs": 33.20000000111759,
+        "reactMs": 0,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 2,
+          "hits": 20,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 2,
+          "events": 3204
+        },
+        "dom": 0,
+        "longTasks": []
+      },
+      {
+        "phase": "reopen-1",
+        "wallMs": 4.599999999627471,
+        "settledMs": 33.40000000037253,
+        "reactMs": 3.700000001117587,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 2,
+          "hits": 22,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 2,
+          "events": 3204
+        },
+        "dom": 16,
+        "longTasks": []
+      },
+      {
+        "phase": "switch-faction-1",
+        "wallMs": 4.099999999627471,
+        "settledMs": 33.09999999962747,
+        "reactMs": 3.199999999254942,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 3,
+          "projectionBuilds": 2,
+          "hits": 22,
+          "invalidations": 1,
+          "summaryCache": 3,
+          "archiveCache": 2,
+          "events": 3204
+        },
+        "dom": 13,
+        "longTasks": []
+      },
+      {
+        "phase": "close-again-1",
+        "wallMs": 0.7000000011175871,
+        "settledMs": 33.100000001490116,
+        "reactMs": 0,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 3,
+          "projectionBuilds": 2,
+          "hits": 22,
+          "invalidations": 1,
+          "summaryCache": 3,
+          "archiveCache": 2,
+          "events": 3204
+        },
+        "dom": 0,
+        "longTasks": []
+      },
+      {
+        "phase": "list-open-2",
+        "wallMs": 3.700000001117587,
+        "settledMs": 8.800000000745058,
+        "reactMs": 3.200000001117587,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 0,
+          "hits": 0,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 0,
+          "events": 3204
+        },
+        "dom": 16,
+        "longTasks": []
+      },
+      {
+        "phase": "all-houses-2",
+        "wallMs": 2,
+        "settledMs": 33.30000000074506,
+        "reactMs": 1.8999999985098839,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 0,
+          "hits": 0,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 0,
+          "events": 3204
+        },
+        "dom": 20,
+        "longTasks": []
+      },
+      {
+        "phase": "family-open-2",
+        "wallMs": 4.599999999627471,
+        "settledMs": 33.19999999925494,
+        "reactMs": 4.400000002235174,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 3,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 3204
+        },
+        "dom": 33,
+        "longTasks": []
+      },
+      {
+        "phase": "select-person-2",
+        "wallMs": 3.099999999627471,
+        "settledMs": 33.19999999925494,
+        "reactMs": 5.299999998882413,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 3204
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "zoom-2",
+        "wallMs": 3.400000000372529,
+        "settledMs": 33.30000000074506,
+        "reactMs": 2.600000001490116,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 3204
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "fit-2",
+        "wallMs": 3.299999998882413,
+        "settledMs": 33.29999999888241,
+        "reactMs": 2.599999999627471,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 3204
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "locate-founder-2",
+        "wallMs": 3.600000001490116,
+        "settledMs": 33.30000000074506,
+        "reactMs": 5.799999998882413,
+        "mountedNodes": 1,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 11,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 3204
+        },
+        "dom": 59,
+        "longTasks": []
+      },
+      {
+        "phase": "return-2",
+        "wallMs": 2,
+        "settledMs": 33.40000000037253,
+        "reactMs": 2,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 13,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 3204
+        },
+        "dom": 16,
+        "longTasks": []
+      },
+      {
+        "phase": "all-after-return-2",
+        "wallMs": 1.900000000372529,
+        "settledMs": 33.29999999888241,
+        "reactMs": 1.799999998882413,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 1,
+          "hits": 13,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 1,
+          "events": 3204
+        },
+        "dom": 20,
+        "longTasks": []
+      },
+      {
+        "phase": "switch-family-2",
+        "wallMs": 7.099999999627471,
+        "settledMs": 33.19999999925494,
+        "reactMs": 7.099999999627471,
+        "mountedNodes": 3,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 2,
+          "hits": 20,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 2,
+          "events": 3204
+        },
+        "dom": 53,
+        "longTasks": []
+      },
+      {
+        "phase": "close-2",
+        "wallMs": 0.7000000011175871,
+        "settledMs": 33.30000000074506,
+        "reactMs": 0,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 2,
+          "hits": 20,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 2,
+          "events": 3204
+        },
+        "dom": 0,
+        "longTasks": []
+      },
+      {
+        "phase": "reopen-2",
+        "wallMs": 4.5,
+        "settledMs": 33.29999999888241,
+        "reactMs": 3.800000002607703,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 2,
+          "projectionBuilds": 2,
+          "hits": 22,
+          "invalidations": 1,
+          "summaryCache": 2,
+          "archiveCache": 2,
+          "events": 3204
+        },
+        "dom": 16,
+        "longTasks": []
+      },
+      {
+        "phase": "switch-faction-2",
+        "wallMs": 4.5,
+        "settledMs": 33.19999999925494,
+        "reactMs": 3.500000001862645,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 3,
+          "projectionBuilds": 2,
+          "hits": 22,
+          "invalidations": 1,
+          "summaryCache": 3,
+          "archiveCache": 2,
+          "events": 3204
+        },
+        "dom": 13,
+        "longTasks": []
+      },
+      {
+        "phase": "close-again-2",
+        "wallMs": 0.6000000014901161,
+        "settledMs": 33.20000000111759,
+        "reactMs": 0,
+        "mountedNodes": 0,
+        "cache": {
+          "indexBuilds": 1,
+          "summaryBuilds": 3,
+          "projectionBuilds": 2,
+          "hits": 22,
+          "invalidations": 1,
+          "summaryCache": 3,
+          "archiveCache": 2,
+          "events": 3204
+        },
+        "dom": 0,
+        "longTasks": []
+      }
+    ],
+    "legacyModelPhases": [],
+    "longTasksSupported": true,
+    "allLongTasks": [
+      {
+        "startTime": 639.4000000003725,
+        "duration": 1070
+      },
+      {
+        "startTime": 2138.7000000011176,
+        "duration": 758
+      },
+      {
+        "startTime": 3338.7000000011176,
+        "duration": 761
+      }
+    ],
+    "heapBytes": 113943805,
+    "cache": {
+      "indexBuilds": 1,
+      "summaryBuilds": 3,
+      "projectionBuilds": 2,
+      "hits": 22,
+      "invalidations": 1,
+      "summaryCache": 3,
+      "archiveCache": 2,
+      "events": 3204
+    },
+    "beforeHash": "282f7be68dac569d8c57100ef954469fa3ac522882f40db536255347759cd0fc",
+    "afterHash": "282f7be68dac569d8c57100ef954469fa3ac522882f40db536255347759cd0fc",
+    "unchanged": true,
+    "scope": "Three repetitions on the same real hydrated saved world; actual React commits, DOM budget and controls. Isolated API timings overlap and are not summed. No screenshot or human visual Gate."
+  }
+]

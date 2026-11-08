@@ -473,7 +473,7 @@ class DynastyRegistryStore {
   }
 
   updateRoyalHouseholds(month:number,teams:Team[]){
-    if(month%12!==0||this.royalBirthPolicy==='BASELINE')return;
+    if(!Number.isSafeInteger(month)||month<=0||month%12!==0||this.royalBirthPolicy==='BASELINE')return;
     for(const team of teams){const d=this.get(team.name);if(!d||team.status!=='ACTIVE'||team.identityStage!=='STATE'||(d.lastHouseholdBirthMonth??-1)>=month)continue;
       const epoch=d.houseEpochs?.find(e=>e.startMonth<=month&&(e.endMonth??Infinity)>month&&e.houseName===d.houseName);if(!epoch)continue;
       const started=performance.now(),parents=householdBirthParents(d,month),children:Ruler[]=[];let living=d.rulers.filter(r=>(r.deathMonth??Infinity)>month&&(r.naturalDeathYear??Infinity)>month).length;

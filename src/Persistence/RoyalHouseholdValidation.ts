@@ -9,11 +9,11 @@ export function validateRoyalHouseholds(save:WorldSaveV1){
  const events=save.worldHistory.events as WorldEvent[],positions=new Map(events.map((e,i)=>[e.id,i])),bornEvents=events.filter(e=>e.type==='royal-child-born'),seen=new Set<string>();
  for(const raw of save.dynasties){try{
   const d={...raw,rulers:(raw.rulers as import('./WorldSaveSchema').RulerSaveV17[]).map(importRulerSave)} as Dynasty;
-  if(d.lastHouseholdBirthMonth!==undefined&&(!Number.isSafeInteger(d.lastHouseholdBirthMonth)||d.lastHouseholdBirthMonth%12||d.lastHouseholdBirthMonth>save.world.worldMonth))throw Error('invalid royal annual birth boundary');
-  for(const r of d.rulers){if(r.successionScope==='HOUSEHOLD'&&!r.householdBirth)throw Error('household identity without birth');if(!r.householdBirth)continue;
+  if(d.lastHouseholdBirthMonth!==undefined&&(!Number.isSafeInteger(d.lastHouseholdBirthMonth)||d.lastHouseholdBirthMonth<=0||d.lastHouseholdBirthMonth%12||d.lastHouseholdBirthMonth>save.world.worldMonth))throw Error('invalid royal annual birth boundary');
+  for(const r of d.rulers){if((r.successionScope==='HOUSEHOLD'||r.id.startsWith(`${d.factionId}-household-`))&&!r.householdBirth)throw Error('household identity without birth');if(!r.householdBirth)continue;
    if((d.lastHouseholdBirthMonth??-1)<r.householdBirth.month)throw Error('missing royal annual birth boundary');
    const b=r.householdBirth,e=events[positions.get(b.eventId)??-1];
-   if(b.version!==1||b.policy!==policy||b.month!==r.bornYear||b.month%12||b.month>save.world.worldMonth||b.parentId!==r.parentId||r.successionScope!=='HOUSEHOLD'||r.registration?.month!==b.month||r.registration.parentId!==r.parentId||e?.type!=='royal-child-born'||e.actorFactionId!==d.factionId||e.rulerId!==r.id||(e.monthIndex??e.year)!==b.month||e.metadata?.royalBirth!==JSON.stringify(b)||!r.registration||positions.get(r.registration.eventId)!<=positions.get(b.eventId)!)throw Error('invalid royal birth identity/source');
+   if(b.version!==1||!Number.isSafeInteger(b.month)||b.month<=0||b.policy!==policy||b.month!==r.bornYear||b.month%12||b.month>save.world.worldMonth||b.parentId!==r.parentId||r.successionScope!=='HOUSEHOLD'||r.registration?.month!==b.month||r.registration.parentId!==r.parentId||e?.type!=='royal-child-born'||e.actorFactionId!==d.factionId||e.rulerId!==r.id||(e.monthIndex??e.year)!==b.month||e.metadata?.royalBirth!==JSON.stringify(b)||!r.registration||positions.get(r.registration.eventId)!<=positions.get(b.eventId)!)throw Error('invalid royal birth identity/source');
    if(d.heirIds.includes(r.id)||d.designatedHeirId===r.id||r.reignOrdinal!==undefined||r.accessionYear!==undefined)throw Error('ordinary household child illegally became crown candidate');
    seen.add(e.id);
   }

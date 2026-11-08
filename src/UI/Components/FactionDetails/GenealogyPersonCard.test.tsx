@@ -35,7 +35,7 @@ describe("genealogy card and integration structure", () => {
   it("queries on demand, caches facts, bounds React rendering and retains real parent lines and controls",()=>{
     const dialog=readFileSync(new URL("./GenealogyBrowser.tsx",import.meta.url),"utf8");
     const window=readFileSync(new URL("./genealogyWindow.ts",import.meta.url),"utf8");
-    expect(dialog).toContain('events=open?History.getEvents():[]');expect(dialog).toContain('if(!open||!dynasty)return undefined');
+    expect(dialog).toContain('events=open?History.getEvents():[]');expect(dialog).toContain('if(!open||!dynasty)return undefined');expect(dialog).toContain('[open,worldMonth,dynasty,historyRevision,familyRevision]');expect(dialog).toContain('if(!data!.index.has(id))setRequestedRoyalId(id)');
     expect(dialog).toContain('[open,stamp,worldMonth,team.name,dynasty,requestedRoyalId,targetId]');expect(dialog).toContain('genealogyWindow(data.index,data.external.find(x=>x.id===focus)?.parentId??focus,expanded,branchOffsets,new Set([...data.military.keys(),...(dynasty?.royalNobility??[]).flatMap(a=>[a.previousRulerId,...a.holderRulerId?[a.holderRulerId]:[]])]))');
     const shared=readFileSync(new URL('./GenealogyTreeView.tsx',import.meta.url),'utf8'),layout=readFileSync(new URL('./genealogyLayout.ts',import.meta.url),'utf8'),family=readFileSync(new URL('./MilitaryFamilyBrowser.tsx',import.meta.url),'utf8');
     expect(layout).toContain('GENEALOGY_WINDOW_LIMIT=150');expect(window).toContain('layoutGenealogyNodes');expect(dialog).toContain('<GenealogyTreeView');expect(family).toContain('<GenealogyTreeView');expect(family).not.toContain('收起子支');expect(dialog).not.toContain('<GenealogyTreeNode');
