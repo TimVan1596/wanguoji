@@ -9,8 +9,8 @@ export async function runSaveValidationPerformance(seed:string,input:WorldSaveV1
  const {core,game}=await createNaturalCore(seed);const rows:any[]=[];let oracleCases=0;
  if(compareLegacy){
   const path="/logs/z59-RoyalHouseholdValidation-before.ts",old=await import(/* @vite-ignore */path),current=await import("../../Persistence/RoyalHouseholdValidation");
-  const cases=[input,structuredClone(input),structuredClone(input),structuredClone(input),structuredClone(input),structuredClone(input)];
-  for(let i=1;i<cases.length;i++){const d:any=cases[i].dynasties.find(d=>d.rulers.some((r:any)=>r.householdBirth)),r:any=d.rulers.find((r:any)=>r.householdBirth);if(!r)throw Error("Missing actual child");if(i===1)r.householdBirth.ticket+=.001;if(i===2)r.parentId="forged-parent";if(i===3)r.naturalDeathYear+=1;if(i===4)r.successionScope=undefined;if(i===5)cases[i].worldHistory.events.push(structuredClone(cases[i].worldHistory.events.find(e=>e.id===r.householdBirth.eventId)!));}
+  const cases:any[]=[input,structuredClone(input),structuredClone(input),structuredClone(input),structuredClone(input),structuredClone(input)];
+  for(let i=1;i<cases.length;i++){const d:any=cases[i].dynasties.find((d:any)=>d.rulers.some((r:any)=>r.householdBirth)),r:any=d.rulers.find((r:any)=>r.householdBirth);if(!r)throw Error("Missing actual child");if(i===1)r.householdBirth.ticket+=.001;if(i===2)r.parentId="forged-parent";if(i===3)r.naturalDeathMonth+=1;if(i===4)r.successionScope=undefined;if(i===5)cases[i].worldHistory.events.push(structuredClone(cases[i].worldHistory.events.find((e:any)=>e.id===r.householdBirth.eventId)!));}
   for(const value of cases){if(JSON.stringify(old.validateRoyalHouseholds(value))!==JSON.stringify(current.validateRoyalHouseholds(value)))throw Error("Indexed birth validator differs from original V55 oracle");oracleCases++;}
  }
  try{game.loop.stop();core.setWorldRunning(false);

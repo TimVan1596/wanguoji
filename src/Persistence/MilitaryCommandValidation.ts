@@ -1,3 +1,4 @@
+import {isNobleMeritPolicy} from '../Politics/MilitaryNobility';
 import {isAppointmentAbilityPolicy} from '../Politics/AppointmentSelection';
 import {isCourtPunishmentPolicy} from '../Politics/MilitaryCourtStanding';
 import {isPopulationIdentityLabel} from '../Politics/MilitaryPersonIdentity';
@@ -24,6 +25,7 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
   if(state.courtPunishmentPolicy!==undefined&&!isCourtPunishmentPolicy(state.courtPunishmentPolicy))errors.push('invalid court punishment policy');
   if(state.hereditaryRecruitment!==undefined&&!isHereditaryRecruitmentPolicy(state.hereditaryRecruitment))errors.push('invalid hereditary recruitment policy');
   if(state.familyNoblePolicy!==undefined&&!['SINGLE','RENEWAL'].includes(state.familyNoblePolicy))errors.push('invalid family noble policy');
+  if(state.nobleMeritPolicy!==undefined&&!isNobleMeritPolicy(state.nobleMeritPolicy))errors.push('invalid noble merit policy');
   if(state.familyFoundationPolicy!==undefined&&!isFamilyFoundationPolicy(state.familyFoundationPolicy))errors.push('invalid family foundation policy');
   const registry = state as unknown as MilitaryCommandState;
   const historyById = new Map<string, any>((Array.isArray(history?.events) ? history.events : [])

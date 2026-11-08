@@ -9,7 +9,7 @@ export function portraitTraits(personId:string,age?:number){
   face:13+seed%6,jaw:(seed>>>4)%4,hair:(seed>>>7)%3,eyes:8+(seed>>>10)%5,brow:(seed>>>13)%3,nose:2+(seed>>>16)%3,mouth:(seed>>>19)%3,mole:(seed>>>22)%4===0};
 }
 /** Decorative SVG lives inside the existing accessible archive control, never a second dialog. */
-function PersonPortrait({personId,age,role="UNKNOWN",color,deceased=false,size=48,nobleRank,royalKin=false}:{personId:string;age?:number;role?:PortraitRole;color?:number;deceased?:boolean;size?:number;nobleRank?:"BO"|"HOU"|"GONG";royalKin?:boolean}){
+function PersonPortrait({personId,age,role="UNKNOWN",color,deceased=false,size=48,nobleRank,royalKin=false}:{personId:string;age?:number;role?:PortraitRole;color?:number;deceased?:boolean;size?:number;nobleRank?:"NAN"|"ZI"|"BO"|"HOU"|"GONG";royalKin?:boolean}){
  const t=portraitTraits(personId,age),elder=t.stage==="elder",mature=t.stage==="mature",young=t.stage==="young";
  const military=["XIAOWEI","PIJIANG","JIANGJUN","SHANGJIANGJUN"].includes(role),imperial=role==="EMPEROR",royal=imperial||role==="KING";
  const flag=color===undefined?"#9a9181":`#${(color>>>0).toString(16).padStart(6,"0").slice(-6)}`;
@@ -29,7 +29,7 @@ function PersonPortrait({personId,age,role="UNKNOWN",color,deceased=false,size=4
   {role==="JIANGJUN"&&<path d="M15 59L10 69L22 66M49 59L54 69L42 66" fill="#485e6c" stroke="#d2b986"/>}
   {role==="SHANGJIANGJUN"&&<path d="M12 59L8 71L24 65M52 59L56 71L40 65M29 71L32 68L35 71L32 75Z" fill="#c5ac6d" stroke="#6d542f"/>}
   {royal&&<g data-royal-pattern={role} stroke={imperial?'#e7c56b':'#c8b286'} fill='none' strokeWidth={imperial?1.8:1.2}><path d="M9 65Q16 61 21 68L16 72L12 69M55 65Q48 61 43 68L48 72L52 69M23 77L27 72M41 77L37 72"/>{imperial&&<><circle cx="32" cy="73" r="3.4" fill="#b58b37"/><path d="M3 77H17M47 77H61M5 61L10 58M59 61L54 58"/></>}</g>}
-  {!royal&&nobleRank&&<g data-noble-insignia={nobleRank}><path d="M13 58L25 80" stroke={nobleRank==='GONG'?'#b07e29':nobleRank==='HOU'?'#927343':'#79705b'} strokeWidth={nobleRank==='BO'?2:4}/>{Array.from({length:nobleRank==='GONG'?3:nobleRank==='HOU'?2:1},(_,i)=><circle key={i} cx={42-i*5} cy="73" r="1.8" fill="#d0af5d" stroke="#70542d"/>)}</g>}
+  {!royal&&nobleRank&&<g data-noble-insignia={nobleRank}><path d="M13 58L25 80" stroke={nobleRank==='GONG'?'#b07e29':nobleRank==='HOU'?'#927343':'#79705b'} strokeWidth={['NAN','ZI','BO'].includes(nobleRank)?2:4}/>{Array.from({length:nobleRank==='GONG'?3:nobleRank==='HOU'?2:1},(_,i)=><circle key={i} cx={42-i*5} cy="73" r="1.8" fill="#d0af5d" stroke="#70542d"/>)}</g>}
   {!royal&&royalKin&&<path data-royal-kin="true" d="M47 58l3 3l-3 3l-3-3Z" fill="#94839c" stroke="#e4d6b7"/>}
   <path data-face="true" d={face} fill={t.skin}/>
   <path d={t.hair===0?`M${31-rx} 29Q12 9 32 9Q52 9 ${33+rx} 29L42 19Q32 24 22 19Z`:t.hair===1?`M${31-rx} 30Q12 9 32 9Q52 10 ${33+rx} 30L43 19L28 23L22 17Z`:`M${31-rx} 30Q12 8 32 9Q52 8 ${33+rx} 30L43 17Q32 19 21 17Z`} fill={hair}/>

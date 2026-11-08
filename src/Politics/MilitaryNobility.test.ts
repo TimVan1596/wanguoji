@@ -32,3 +32,12 @@ it('does not create a new-country grant from old-country military results',()=>{
  const x=fixture();x.capture('a','a');x.capture('b','b');x.p.factionId='chu';x.p.appointments.push({factionId:'chu',startMonth:48,commandId:'new',officeHistory:[{office:'XIAOWEI',month:48}]});x.f.push({...x.f[0],commandId:'new',factionId:'chu',captures:[]});
  expect(deriveNobleMerits(x.p,x.f,x.events,'chu',120).cityIds).toHaveLength(0);
 });
+
+it('low merit grants require real victories, may skip ranks, and keep original upper gates',()=>{
+ const x=fixture();for(const policy of ['LOW','MEDIUM','HIGH'] as const)expect(nextNobleGrant(x.p,x.f,x.events,1200,x.team,x.d,policy)).toBeUndefined();
+ x.capture('one','a',12);expect(nextNobleGrant(x.p,x.f,x.events,12,x.team,x.d,'HIGH')?.rank).toBe('NAN');expect(nextNobleGrant(x.p,x.f,x.events,24,x.team,x.d,'LOW')).toBeUndefined();
+ const g=nextNobleGrant(x.p,x.f,x.events,24,x.team,x.d,'MEDIUM')!;expect(g.rank).toBe('NAN');x.p.nobilityHistory=[g];expect(nextNobleGrant(x.p,x.f,x.events,180,x.team,x.d,'MEDIUM')).toBeUndefined();
+ x.capture('two','b',30);const zi=nextNobleGrant(x.p,x.f,x.events,36,x.team,x.d,'MEDIUM')!;expect(zi).toMatchObject({rank:'ZI',previousRank:'NAN',cityIds:['a','b']});x.p.nobilityHistory.push(zi);
+ const bo=nextNobleGrant(x.p,x.f,x.events,60,x.team,x.d,'MEDIUM')!;expect(bo).toMatchObject({rank:'BO',previousRank:'ZI'});
+ const y=fixture();y.capture('a','a');y.capture('b','b',24);expect(nextNobleGrant(y.p,y.f,y.events,60,y.team,y.d,'MEDIUM')).toMatchObject({rank:'BO',previousRank:'NONE'});
+});

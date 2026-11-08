@@ -9,7 +9,7 @@ export function rulerHonorEvidence(e:WorldEvent,rulerId:string,factionId:string)
   const p=typeof raw==='string'?JSON.parse(raw):undefined;
   if(!p||p.eventId!==e.id||p.rulerId!==rulerId||p.factionId!==factionId||p.month!==(e.monthIndex??e.year)||!p.rulerTitle||!p.personalName||p.personId!==e.metadata?.personId)return;
   if(e.type==='military-appanage'&&p.kind!=='GRANTED')return;
-  if(!['BO','HOU','GONG'].includes(p.rank))return;
-  return p as {rank:'BO'|'HOU'|'GONG';rulerId:string;personalName:string};
+  if(!['NAN','ZI','BO','HOU','GONG'].includes(p.rank))return;
+  return p as {rank:'NAN'|'ZI'|'BO'|'HOU'|'GONG';rulerId:string;personalName:string};
  }catch{return;}
 }

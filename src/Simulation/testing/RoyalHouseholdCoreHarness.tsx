@@ -22,14 +22,14 @@ export async function runRoyalHouseholdCore(seed='royal-military-z11'){
   core.setWorldRunning(false);Dynasty.setRoyalBirthPolicyForSimulation('HIGH');clock(12);
   const options=core.teams.flatMap(t=>Dynasty.getRoyalMilitaryCandidates(t,12).map(c=>({t,c,r:Dynasty.get(t.name)!.rulers.find(r=>r.id===c.rulerId)!}))).filter(x=>x.r.bornYear>-360&&!Dynasty.get(x.t.name)!.rulers.some(r=>r.parentId===x.r.id));
   options.sort((a,b)=>Number(Dynasty.get(a.t.name)!.heirIds.includes(a.r.id))-Number(Dynasty.get(b.t.name)!.heirIds.includes(b.r.id)));
-  const choice=options.find(x=>Array.from({length:5},(_,i)=>12+i*12).some(m=>m-x.r.bornYear>=240&&householdBirthPlan(x.r,m,seed,'HIGH',Dynasty.get(x.t.name)!.houseEpochs!.at(-1)!.foundingRulerId)));
+  const choice=options.find(x=>Array.from({length:60},(_,i)=>12+i).some(m=>m-x.r.bornYear>=240&&householdBirthPlan(x.r,m,seed,'HIGH',Dynasty.get(x.t.name)!.houseEpochs!.at(-1)!.foundingRulerId)));
   check(choice,'fixed source supplies a real young, childless royal with a possible keyed natural birth');const {t,c,r}=choice!,id=r.id;
   check(Dynasty.enlistRoyalMilitary(c,t,12,[]),'real young parent enters original legal military appointment');const person=Military.getPerson(r.militaryIdentity!.personId)!,unit=t.getUserById(person.sourceUserId)!,command=person.appointments[0].commandId;
   const targets=core.allCities.filter(city=>city.ownerTeam!==t).slice(0,6);let childId:string|undefined,failed=false;const trace:any[]=[];
   for(let month=12;month<=72;month++){
    clock(month); // Controlled birth transaction fixture retains the existing court; not a natural monthly world.
    if(month>=24&&(month-24)%6===0&&(month-24)/6<6){const city=targets[(month-24)/6];unit.player.setPosition(city.block.x,city.block.y);unit.player.Body.reset(unit.player.x,unit.player.y);city.capture(t,month,undefined,command,person.personId);}
-   if(month%12===0){
+   if(month>=12){
     const dy=Dynasty.get(t.name)!,parent=dy.rulers.find(x=>x.id===id)!,epoch=dy.houseEpochs!.find(e=>e.houseName===dy.houseName&&(e.endMonth??Infinity)>month)!;
     const ordinal=householdBirthParents(dy,month).findIndex(x=>x.id===id),possible=ordinal>=0&&householdBirthPlan(parent,month,seed,'HIGH',epoch.foundingRulerId,ordinal);
     trace.push({month,ordinal,possible:!!possible,seed:random.exportState().seed,parentStatus:parent.status,born:parent.bornYear,children:dy.rulers.filter(x=>x.parentId===id).map(x=>({id:x.id,birth:x.bornYear,scope:x.successionScope}))});
@@ -37,7 +37,7 @@ export async function runRoyalHouseholdCore(seed='royal-military-z11'){
     const population=core.teams.reduce((n,t)=>n+t.users.size,0),rng=JSON.stringify(random.exportState());Dynasty.updateRoyalHouseholds(month,core.teams);
     check(population===core.teams.reduce((n,t)=>n+t.users.size,0)&&JSON.stringify(random.exportState())===rng,'birth adds no map User, soldiers or world RNG draws');
     childId??=Dynasty.get(t.name)!.rulers.find(x=>x.parentId===id&&x.householdBirth)?.id;
-    const saved=exportWorldSave(core);Dynasty.updateRoyalHouseholds(month,core.teams);check(diffCanonicalWorldSave(saved,exportWorldSave(core)).matched,'annual repeat is idempotent without duplicate birth or registration');
+    const saved=exportWorldSave(core);Dynasty.updateRoyalHouseholds(month,core.teams);check(diffCanonicalWorldSave(saved,exportWorldSave(core)).matched,'monthly repeat is idempotent without duplicate birth or registration');
    }
   }
   const d=Dynasty.get(t.name)!,child=d.rulers.find(x=>x.id===childId)!;check(failed&&child&&child.bornYear===child.registration?.month&&child.householdBirth?.month===child.bornYear,'actual child is born and registered in the same real month before the parent dies '+JSON.stringify({id,failed,childId,trace}));
@@ -54,7 +54,7 @@ export async function runRoyalHouseholdCore(seed='royal-military-z11'){
    flushSync(()=>root.render(<Provider store={store}><PosthumousPeeragePanel person={person} month={73}/></Provider>));check(host.textContent?.includes('身后爵位传承')&&host.textContent?.includes(child.givenName),'real military archive afterlife panel shows the actual successor');
    check(diffCanonicalWorldSave(saved,exportWorldSave(core)).matched,'children navigation and afterlife React reading never mutate canonical facts');
   }finally{flushSync(()=>root.unmount());host.remove();}
-  for(const mutation of ['birth','parent','scope','lifespan']){const bad=structuredClone(saved),r=bad.dynasties.flatMap(d=>d.rulers as any[]).find(r=>r.rulerId===child.id)!;if(mutation==='birth')r.bornMonth--;if(mutation==='parent')r.parentId=id+'-fake';if(mutation==='scope')delete r.successionScope;if(mutation==='lifespan')r.naturalDeathMonth++;check(!validateWorldSave(bad).valid,'strict V55 rejects forged child '+mutation);}
+  for(const mutation of ['birth','parent','scope','lifespan']){const bad=structuredClone(saved),r=bad.dynasties.flatMap(d=>d.rulers as any[]).find(r=>r.rulerId===child.id)!;if(mutation==='birth')r.bornMonth--;if(mutation==='parent')r.parentId=id+'-fake';if(mutation==='scope')delete r.successionScope;if(mutation==='lifespan')r.naturalDeathMonth++;check(!validateWorldSave(bad).valid,'strict V56 rejects forged child '+mutation);}
   {hydrateWorldSave(core,structuredClone(saved));const dy=Dynasty.get(t.name)!,civilian=dy.rulers.find(r=>r.id===child.id)!,deadline=civilian.naturalDeathYear!;clock(deadline);const before=exportWorldSave(core),write=History.addEvent;
    History.addEvent=function(e){const id=write.call(this,e);if(e.type==='royal-kin-died'&&e.rulerId===civilian.id){random.next();throw Error('injected child natural death write');}return id;};try{check(!(Dynasty as any).archiveHouseholdNaturalDeath(dy,civilian,deadline),'failed child natural death rejects its own transaction');}finally{History.addEvent=write;}
    check(diffCanonicalWorldSave(before,exportWorldSave(core)).matched,'child natural death write failure restores life, history, population, IDs and consumed RNG');

@@ -473,12 +473,12 @@ class DynastyRegistryStore {
   }
 
   updateRoyalHouseholds(month:number,teams:Team[]){
-    if(!Number.isSafeInteger(month)||month<=0||month%12!==0||this.royalBirthPolicy==='BASELINE')return;
+    if(!Number.isSafeInteger(month)||month<12||this.royalBirthPolicy==='BASELINE')return;
     for(const team of teams){const d=this.get(team.name);if(!d||team.status!=='ACTIVE'||team.identityStage!=='STATE'||(d.lastHouseholdBirthMonth??-1)>=month)continue;
       const epoch=d.houseEpochs?.find(e=>e.startMonth<=month&&(e.endMonth??Infinity)>month&&e.houseName===d.houseName);if(!epoch)continue;
-      const started=performance.now(),parents=householdBirthParents(d,month),children:Ruler[]=[];let living=d.rulers.filter(r=>(r.deathMonth??Infinity)>month&&(r.naturalDeathYear??Infinity)>month).length;
+      const started=performance.now(),parents=householdBirthParents(d,month),children:Ruler[]=[];const alreadyBorn=d.rulers.filter(r=>r.householdBirth&&r.householdBirth.opportunityMonth===Math.floor(month/12)*12).length;let living=d.rulers.filter(r=>(r.deathMonth??Infinity)>month&&(r.naturalDeathYear??Infinity)>month).length;
       for(const [ordinal,parent] of parents.entries()){
-        if(children.length>=HOUSEHOLD_ANNUAL_CAP||living>=HOUSEHOLD_LIVING_CAP)break;
+        if(children.length+alreadyBorn>=HOUSEHOLD_ANNUAL_CAP||living>=HOUSEHOLD_LIVING_CAP)break;
         const child=householdBirthPlan(parent,month,String(worldRandom.exportState().seed),this.royalBirthPolicy,epoch.foundingRulerId,ordinal);if(child){children.push(child);living++;}
       }
       // Failed opportunities have one metadata write and no event/RNG side effects.

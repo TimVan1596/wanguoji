@@ -1,3 +1,4 @@
+import {NOBLE_NAMES,isNobleMeritPolicy,type NobleMeritPolicy} from './MilitaryNobility';
 import {appointmentAbilityWeight,type AppointmentAbilityPolicy,type AppointmentSelection,type AppointmentSelectionRow} from './AppointmentSelection';
 import {personAbilities,militaryAbilities,type PersonAbilities} from './PersonAbilities';
 import {selectFoundingNobleGrant} from './FoundingNobility';
@@ -109,6 +110,7 @@ export interface MilitaryFormation {
 }
 
 export interface MilitaryCommandState {
+  nobleMeritPolicy?:NobleMeritPolicy;
   appointmentAbilityPolicy?:AppointmentAbilityPolicy;
   courtPunishmentPolicy?:CourtPunishmentPolicy;
   familyNoblePolicy?:'SINGLE'|'RENEWAL';
@@ -178,6 +180,8 @@ export class MilitaryCommandRegistryStore {
   setCourtPunishmentPolicyForSimulation(p:CourtPunishmentPolicy){if(!isCourtPunishmentPolicy(p))throw Error('Invalid punishment policy');this.courtPunishmentPolicy=p;}
   private familyNoblePolicy:'SINGLE'|'RENEWAL'='RENEWAL';
   setFamilyNoblePolicyForSimulation(policy:'SINGLE'|'RENEWAL'){this.familyNoblePolicy=policy;}
+  private nobleMeritPolicy:NobleMeritPolicy='MEDIUM';
+  setNobleMeritPolicyForSimulation(policy:NobleMeritPolicy){if(!isNobleMeritPolicy(policy))throw Error('Invalid noble merit policy');this.nobleMeritPolicy=policy;}
   private familyFoundationPolicy:FamilyFoundationPolicy='FOUNDING';
   setFamilyFoundationPolicyForSimulation(policy:FamilyFoundationPolicy){this.familyFoundationPolicy=policy;}
   private hereditaryRecruitment:HereditaryRecruitmentPolicy='MEDIUM';
@@ -196,7 +200,7 @@ export class MilitaryCommandRegistryStore {
     unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
 
   reset() {
-    this.appointmentAbilityPolicy=this.royalService?'MEDIUM':'BASELINE';this.selectionContext=undefined;this.courtPunishmentPolicy='MEDIUM';this.familyNoblePolicy='RENEWAL';this.familyFoundationPolicy='FOUNDING';
+    this.nobleMeritPolicy=this.royalService?'MEDIUM':'BASELINE';this.appointmentAbilityPolicy=this.royalService?'MEDIUM':'BASELINE';this.selectionContext=undefined;this.courtPunishmentPolicy='MEDIUM';this.familyNoblePolicy='RENEWAL';this.familyFoundationPolicy='FOUNDING';
     this.hereditaryRecruitment='MEDIUM';
     this.familyRecruitment=emptyFamilyRecruitmentDiagnostics();
     this.families=[];this.familyByResident=undefined;
@@ -214,13 +218,14 @@ export class MilitaryCommandRegistryStore {
   }
 
   exportState(): MilitaryCommandState {
-    return {...(this.appointmentAbilityPolicy!=='BASELINE'?{appointmentAbilityPolicy:this.appointmentAbilityPolicy}:{}),...(this.courtPunishmentPolicy!=='BASELINE'?{courtPunishmentPolicy:this.courtPunishmentPolicy}:{}), ...(this.familyNoblePolicy==='RENEWAL'?{familyNoblePolicy:this.familyNoblePolicy}:{}),...(this.familyFoundationPolicy!=='Z48'?{familyFoundationPolicy:this.familyFoundationPolicy}:{}),...(this.hereditaryRecruitment!=='BASELINE'?{hereditaryRecruitment:this.hereditaryRecruitment}:{}),...(this.families.length?{families:structuredClone(this.families)}:{}), people: [...this.people.values()].map(person => structuredClone(person)),
+    return {...(this.nobleMeritPolicy!=='BASELINE'?{nobleMeritPolicy:this.nobleMeritPolicy}:{}),...(this.appointmentAbilityPolicy!=='BASELINE'?{appointmentAbilityPolicy:this.appointmentAbilityPolicy}:{}),...(this.courtPunishmentPolicy!=='BASELINE'?{courtPunishmentPolicy:this.courtPunishmentPolicy}:{}), ...(this.familyNoblePolicy==='RENEWAL'?{familyNoblePolicy:this.familyNoblePolicy}:{}),...(this.familyFoundationPolicy!=='Z48'?{familyFoundationPolicy:this.familyFoundationPolicy}:{}),...(this.hereditaryRecruitment!=='BASELINE'?{hereditaryRecruitment:this.hereditaryRecruitment}:{}),...(this.families.length?{families:structuredClone(this.families)}:{}), people: [...this.people.values()].map(person => structuredClone(person)),
       formations: [...this.formations.values()].filter(f=>!f.leaderDuty).map(formation => structuredClone(formation)),
       ...([...this.formations.values()].some(f=>f.leaderDuty)?{leaderCommands:[...this.formations.values()].filter(f=>f.leaderDuty).map(f=>structuredClone(f))}:{}),
       personSequence: this.personSequence, commandSequence: this.commandSequence, lastEvaluationMonth: this.lastEvaluationMonth };
   }
 
   importState(state: MilitaryCommandState) {
+    this.nobleMeritPolicy=state.nobleMeritPolicy??'BASELINE';
     this.appointmentAbilityPolicy=state.appointmentAbilityPolicy??'BASELINE';this.selectionContext=undefined;this.courtPunishmentPolicy=state.courtPunishmentPolicy??'BASELINE';this.familyNoblePolicy=state.familyNoblePolicy??'SINGLE';this.familyFoundationPolicy=state.familyFoundationPolicy??'Z48';
     this.hereditaryRecruitment=state.hereditaryRecruitment??'BASELINE';
     this.familyRecruitment=emptyFamilyRecruitmentDiagnostics();
@@ -532,7 +537,7 @@ export class MilitaryCommandRegistryStore {
   }
   private eligibleNobleGrant(person:MilitaryPerson,month:number,team:Team,dy:Dynasty){
     if(!this.nobleServiceBinding(person,month,team))return;
-    return nextNobleGrant(person,this.getFormations(),this.eventReader(team.name),month,team,dy);
+    return nextNobleGrant(person,this.getFormations(),this.eventReader(team.name),month,team,dy,this.nobleMeritPolicy);
   }
   private recordNoble(person:MilitaryPerson,grant:NobleGrant,courtServiceEventId?:string,courtCoupEventId?:string){
     if(!this.eventWriter)throw Error('Missing noble writer');
@@ -545,8 +550,8 @@ export class MilitaryCommandRegistryStore {
     for(const person of this.people.values()){
       const team=teams.find(t=>t.name===person.factionId),dy=dynasties.find(d=>d.factionId===person.factionId);if(!team||!dy)continue;
       const grant=this.eligibleNobleGrant(person,month,team,dy);if(!grant)continue;
-      const prior=person.nobilityHistory?structuredClone(person.nobilityHistory):undefined,history=WorldHistory.exportState();
-      try{this.recordNoble(person,grant);}catch{if(prior)person.nobilityHistory=prior;else delete person.nobilityHistory;WorldHistory.importState(history);}
+      const prior=person.nobilityHistory?structuredClone(person.nobilityHistory):undefined,history=WorldHistory.exportState(),rng=worldRandom.exportState();
+      try{this.recordNoble(person,grant);}catch{if(prior)person.nobilityHistory=prior;else delete person.nobilityHistory;WorldHistory.importState(history);worldRandom.restore(rng);}
     }
   }
   updateFoundingRewards(month:number,teams:Team[],dynasties:Dynasty[]){
@@ -636,9 +641,11 @@ export class MilitaryCommandRegistryStore {
     if(!politicalMutationActive()||service.type!=='court-service-granted'||service.rulerId!==dy.currentRulerId||service.metadata?.personId!==person.personId||service.actorFactionId!==team.name)throw Error('Invalid court reward authority');
     const user=team.getUserById(person.sourceUserId),commands=this.getFormations().filter(f=>f.commanderPersonId===person.personId&&f.status==='ACTIVE'&&f.factionId===team.name);
     if(!user||user.isDestroyed||user.militaryPersonId!==person.personId||user.bornMonth!==person.bornMonth||!user.player.active||commands.length!==1||!commands[0].memberUnitIds.includes(user.player.logicalUnitId??''))throw Error('Court award needs the real living supporter and exclusive command');
-    const grant=this.eligibleNobleGrant(person,month,team,dy)??(this.hereditaryRecruitment!=='BASELINE'?courtNobleGrant(person,team,dy,service,month):undefined);if(!grant)return;
+    const merit=this.eligibleNobleGrant(person,month,team,dy),court=this.hereditaryRecruitment!=='BASELINE'?courtNobleGrant(person,team,dy,service,month):undefined;
+    // A newly eligible lower military rank must not downgrade the existing political BO reward.
+    const grant=merit&&['BO','HOU','GONG'].includes(merit.rank)?merit:court??merit;if(!grant)return;
     this.recordNoble(person,grant,service.id,String(service.metadata?.courtCoupEventId));
-    const rewardId=this.eventWriter!({id:`${service.id}-peerage`,year:month,type:'court-reward-granted',category:'politics',importance:'major',actorFactionId:team.name,factionIds:[team.name],rulerId:grant.rulerId,title:grant.basis==='COURT'?nobleChronicle(grant):`${grant.rulerTitle}以${person.personalName}拥立有功，依其军功资历${grant.previousRank==='NONE'?'封':'进封'}为${({BO:'伯爵',HOU:'侯爵',GONG:'公爵'} as const)[grant.rank]}。`,metadata:{personId:person.personId,courtCoupEventId:service.metadata.courtCoupEventId,courtServiceEventId:service.id,nobleGrantEventId:grant.eventId,previousRank:grant.previousRank,rank:grant.rank}});
+    const rewardId=this.eventWriter!({id:`${service.id}-peerage`,year:month,type:'court-reward-granted',category:'politics',importance:'major',actorFactionId:team.name,factionIds:[team.name],rulerId:grant.rulerId,title:grant.basis==='COURT'?nobleChronicle(grant):`${grant.rulerTitle}以${person.personalName}拥立有功，依其军功资历${grant.previousRank==='NONE'?'封':'进封'}为${NOBLE_NAMES[grant.rank]}。`,metadata:{personId:person.personId,courtCoupEventId:service.metadata.courtCoupEventId,courtServiceEventId:service.id,nobleGrantEventId:grant.eventId,previousRank:grant.previousRank,rank:grant.rank}});
     if(rewardId!==`${service.id}-peerage`||!this.eventReader(team.name).some(e=>e.id===rewardId))throw Error('Court reward not recorded');
   }
 
@@ -701,7 +708,7 @@ export class MilitaryCommandRegistryStore {
       if(!p.nobilityHistory?.length||p.deathMonth!==undefined||p.politicalRulerId)continue;
       const t=teams.find(t=>t.name===p.factionId),d=dynasties.find(d=>d.factionId===p.factionId),authority=honorAuthority(t,d,month);if(!authority)continue;
       const noble=currentNobleGrant(p,p.factionId,month,authority.epochFounderId);
-      if(!noble||p.appointments.at(-1)?.factionId!==p.factionId||p.appointments.at(-1)?.endReason==='TRANSFERRED'||p.appanageHistory?.some(a=>a.factionId===p.factionId&&a.epochFounderId===authority.epochFounderId))continue;
+      if(!noble||!['BO','HOU','GONG'].includes(noble.rank)||p.appointments.at(-1)?.factionId!==p.factionId||p.appointments.at(-1)?.endReason==='TRANSFERRED'||p.appanageHistory?.some(a=>a.factionId===p.factionId&&a.epochFounderId===authority.epochFounderId))continue;
       const city=cities.filter(c=>!c.destroyed&&c.ownerFactionId===p.factionId&&noble.cityIds.includes(c.id)&&!reserved.has(JSON.stringify([p.factionId,authority.epochFounderId,c.id]))).sort((a,b)=>a.id.localeCompare(b.id))[0];if(!city)continue;
       const source=events.filter(e=>e.cityId===city.id&&OWNERSHIP_EVENTS.includes(e.type)&&(e.monthIndex??e.year)<=month).at(-1),merit=noble.captureEventIds.map(id=>events.find(e=>e.id===id)).find(e=>e?.cityId===city.id);
       if(!source||source.actorFactionId!==p.factionId||!merit)continue;

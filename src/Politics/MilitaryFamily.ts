@@ -19,7 +19,7 @@ export const familyMemberId=(userId:number,bornMonth:number)=>`family-member-${u
 export function familyFounderSource(p:MilitaryPerson,events:readonly WorldEvent[],factionId:string,epoch:string,month:number,policy:FamilyFoundationPolicy='FOUNDING'){
  if(p.royalIdentity||p.politicalRulerId||p.deathMonth!==undefined||p.factionId!==factionId)return;
  return [...events].sort((a,b)=>(a.monthIndex??a.year)-(b.monthIndex??b.year)||a.id.localeCompare(b.id)).find(e=>(e.monthIndex??e.year)<=month&&e.actorFactionId===factionId&&e.metadata?.personId===p.personId&&
-  (e.type==='military-ennobled'&&p.nobilityHistory?.some(g=>g.eventId===e.id&&g.epochFounderId===epoch&&(policy==='Z48'?['HOU','GONG']:['BO','HOU','GONG']).includes(g.rank)&&!(p.honorHistory??[]).some(h=>h.kind==='REVOKED'&&h.factionId===factionId&&h.epochFounderId===epoch&&h.month<=month&&events.some(e=>e.id===h.eventId)))||
+  (e.type==='military-ennobled'&&p.nobilityHistory?.some(g=>g.eventId===e.id&&g.epochFounderId===epoch&&(policy==='Z48'?['HOU','GONG']:policy==='FOUNDING'?['NAN','ZI','BO','HOU','GONG']:['BO','HOU','GONG']).includes(g.rank)&&!(p.honorHistory??[]).some(h=>h.kind==='REVOKED'&&h.factionId===factionId&&h.epochFounderId===epoch&&h.month<=month&&events.some(e=>e.id===h.eventId)))||
    policy==='FOUNDING'&&e.type==='founding-peerage-granted'&&p.nobilityHistory?.some(g=>g.eventId===e.id&&g.basis==='FOUNDING'&&g.epochFounderId===epoch)||
    e.type==='court-service-granted'&&e.rulerId&&e.metadata?.issuerRulerId===e.rulerId));
 }

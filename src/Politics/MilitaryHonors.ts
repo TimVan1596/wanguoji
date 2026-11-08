@@ -29,7 +29,7 @@ export function mayReceiveMilitaryHonor(p:MilitaryPerson,month=Infinity){
  if(!grants.some(g=>!(p.honorHistory??[]).some(h=>h.kind==='REVOKED'&&h.month>=g.month&&h.month<=month&&h.factionId===g.factionId&&h.epochFounderId===g.epochFounderId)))return false;
  if(p.politicalRulerId)return true; // Only a real political founder can have verified military secession.
  if(p.status!=='DEAD'||p.deathMonth===undefined||p.honorHistory?.some(h=>h.kind==='POSTHUMOUS')||p.capturedEventIds.length<2)return false;
- return p.deathCause==='BATTLE_DEATH'||grants.some(g=>g.rank!=='BO');
+ return p.deathCause==='BATTLE_DEATH'||grants.some(g=>['HOU','GONG'].includes(g.rank));
 }
 export function nextMilitaryHonors(p:MilitaryPerson,formations:MilitaryFormation[],events:WorldEvent[],month:number,teams:any[],dynasties:Dynasty[]):MilitaryHonor[]{
  if(month%12!==0)return [];
@@ -55,7 +55,7 @@ export function nextMilitaryHonors(p:MilitaryPerson,formations:MilitaryFormation
  if(unresolvedCourtBans(p,factionId,month,authority.epochFounderId).length)return honors;
  const g=currentNobleGrant(p,factionId,p.deathMonth,authority.epochFounderId);if(!g||!events.some(e=>e.id===g.eventId&&e.type==='military-ennobled'&&e.metadata?.nobility===JSON.stringify(g))||!currentNobleGrant(p,factionId,month,authority.epochFounderId))return honors;
  const m=deriveNobleMerits(p,formations,events,factionId,p.deathMonth),battle=p.deathCause==='BATTLE_DEATH'&&last.endMonth===p.deathMonth;
- if(!(battle&&m.cityIds.length>=2&&m.serviceMonths>=60)&&!(g.rank!=='BO'&&m.cityIds.length>=4&&m.importantCityIds.length>=1&&m.serviceMonths>=120))return honors;
+ if(!(battle&&m.cityIds.length>=2&&m.serviceMonths>=60)&&!(['HOU','GONG'].includes(g.rank)&&m.cityIds.length>=4&&m.importantCityIds.length>=1&&m.serviceMonths>=120))return honors;
  honors.push({...authority,eventId:`military-posthumous-${p.personId}`,kind:'POSTHUMOUS',personId:p.personId,personalName:p.personalName,month,grantEventId:g.eventId,rank:g.rank,sourceEventId:death.id,deathMonth:p.deathMonth,epithet:battle?'武烈':m.importantCityIds.length>=2?'武毅':'武襄',reason:battle?'BATTLE_SERVICE':'DISTINGUISHED_SERVICE',meritEventIds:[...new Set([...m.captureEventIds,...m.importantEventIds])]});
  return honors;
 }

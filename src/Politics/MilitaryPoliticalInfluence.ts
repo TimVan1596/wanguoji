@@ -4,7 +4,7 @@ import {militaryDisposition, willingCourtParticipant, type MilitaryDisposition} 
 import {localMilitaryCareer} from "../Simulation/MilitaryLocalRules";
 import {MILITARY_OFFICE_NAMES,MILITARY_FORMATION_CAPACITY,type MilitaryOffice} from './MilitaryOffice';
 import {deriveMilitaryActivities} from './MilitaryExperience';
-import {currentNobleGrant,NOBLE_RANKS,type NobleRank,NOBLE_NAMES} from "./MilitaryNobility";
+import {currentNobleGrant,noblePoliticalBonus,type NobleRank,NOBLE_NAMES} from "./MilitaryNobility";
 import type { MilitaryPerson, MilitaryFormation } from "./MilitaryCommandRegistry";
 import type { WorldEvent } from "../History/WorldHistory";
 import { deriveMilitaryCareer } from "./MilitaryCareerEvidence";
@@ -111,7 +111,7 @@ export function deriveMilitaryPoliticalInfluence(input: {
       if(g&&events.some(e=>e.id===g.eventId&&e.type==='military-ennobled'&&e.metadata?.nobility===JSON.stringify(g)))c.nobility={eventId:g.eventId,rank:g.rank,countryName:g.countryName};
     }
     if(candidates.some(c=>c.nobility||c.officeStanding)){
-      for(const c of candidates){const office=c.officeStanding?MILITARY_OFFICE_POLITICAL_BONUS[c.officeStanding.office]:0,noble=c.nobility?(NOBLE_RANKS.indexOf(c.nobility.rank)+1)*.05:0;c.basePoliticalWeight=c.strength*(1+office);c.finalPoliticalWeight=c.strength*(1+office+noble);}
+      for(const c of candidates){const office=c.officeStanding?MILITARY_OFFICE_POLITICAL_BONUS[c.officeStanding.office]:0,noble=c.nobility?noblePoliticalBonus(c.nobility.rank):0;c.basePoliticalWeight=c.strength*(1+office);c.finalPoliticalWeight=c.strength*(1+office+noble);}
       candidates.forEach(applyDisposition);filterContinuity();
       candidates.sort(compareMilitaryStanding);
       const snapshot=structuredClone(candidates);for(const c of candidates)c.nobleSelection={scopeFounderId:input.nobleEpochFounderId,candidates:snapshot};
