@@ -1,3 +1,4 @@
+import {measureSaveValidation} from './SaveValidationTiming';
 import {validateRoyalHouseholds} from './RoyalHouseholdValidation';
 import {validateRoyalNobility} from './RoyalNobilityValidation';
 import {validateCollisionSchedule} from './CollisionScheduleValidation';
@@ -66,17 +67,17 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
     return {valid:false,errors:[...errors,"factions must contain only objects"]};
   }
   const cities = array(save.cities, "cities", errors);
-  if(Array.isArray(save.cities)&&Array.isArray(save.factions))errors.push(...validateSiegeBattles(save));
+  if(Array.isArray(save.cities)&&Array.isArray(save.factions))errors.push(...measureSaveValidation('validateSiegeBattles',()=>validateSiegeBattles(save)));
   const users = array(save.users, "users", errors);
   const units = array(save.units, "units", errors);
   const dynasties = array(save.dynasties, "dynasties", errors);
-  if(Array.isArray(save.users)&&Array.isArray(save.units)&&Array.isArray(save.factions)&&[...save.users,...save.units].every(isPlainRecord))errors.push(...validateCollisionSchedule(save as unknown as WorldSaveV1));
-  if(Array.isArray(save.users)&&Array.isArray(save.dynasties)&&Array.isArray(save.factions)&&Array.isArray(save.cities)&&Array.isArray(save.worldHistory?.events)){errors.push(...validateResidentIdentities(save as unknown as WorldSaveV1));errors.push(...validateRoyalMilitaryIdentities(save as unknown as WorldSaveV1));errors.push(...validateMilitarySecessions(save as unknown as WorldSaveV1));}
-  if(Array.isArray(save.dynasties)&&save.dynasties.every(d=>isPlainRecord(d)&&Array.isArray(d.rulers))&&Array.isArray(save.worldHistory?.events)&&Array.isArray(save.registries?.militaryCommandRegistry?.people)){errors.push(...validateRoyalNobility(save as unknown as WorldSaveV1));if((save.worldHistory!.events as unknown[]).every(e=>isPlainRecord(e)))errors.push(...validateRoyalHouseholds(save as unknown as WorldSaveV1));}
+  if(Array.isArray(save.users)&&Array.isArray(save.units)&&Array.isArray(save.factions)&&[...save.users,...save.units].every(isPlainRecord))errors.push(...measureSaveValidation('validateCollisionSchedule',()=>validateCollisionSchedule(save as unknown as WorldSaveV1)));
+  if(Array.isArray(save.users)&&Array.isArray(save.dynasties)&&Array.isArray(save.factions)&&Array.isArray(save.cities)&&Array.isArray(save.worldHistory?.events)){errors.push(...measureSaveValidation('validateResidentIdentities',()=>validateResidentIdentities(save as unknown as WorldSaveV1)));errors.push(...measureSaveValidation('validateRoyalMilitaryIdentities',()=>validateRoyalMilitaryIdentities(save as unknown as WorldSaveV1)));errors.push(...measureSaveValidation('validateMilitarySecessions',()=>validateMilitarySecessions(save as unknown as WorldSaveV1)));}
+  if(Array.isArray(save.dynasties)&&save.dynasties.every(d=>isPlainRecord(d)&&Array.isArray(d.rulers))&&Array.isArray(save.worldHistory?.events)&&Array.isArray(save.registries?.militaryCommandRegistry?.people)){errors.push(...measureSaveValidation('validateRoyalNobility',()=>validateRoyalNobility(save as unknown as WorldSaveV1)));if((save.worldHistory!.events as unknown[]).every(e=>isPlainRecord(e)))errors.push(...measureSaveValidation('validateRoyalHouseholds',()=>validateRoyalHouseholds(save as unknown as WorldSaveV1)));}
   const factionIds = uniqueIds(factions, "factionId", "factions", errors);
   const factionById = new Map(factions.map((faction) => [String(faction.factionId), faction]));
-  errors.push(...validateFactionLifetime(save.factionLifetime, factions as unknown as WorldSaveV1["factions"], Number(save.world?.worldMonth),
-    Number(save.world?.map?.widthCells) * Number(save.world?.map?.heightCells)));
+  errors.push(...measureSaveValidation('validateFactionLifetime',()=>validateFactionLifetime(save.factionLifetime, factions as unknown as WorldSaveV1["factions"], Number(save.world?.worldMonth),
+    Number(save.world?.map?.widthCells) * Number(save.world?.map?.heightCells))));
   const cityIds = uniqueIds(cities, "cityId", "cities", errors);
   const userIds = uniqueIds(users, "userId", "users", errors);
   const unitIds = uniqueIds(units, "unitId", "units", errors);
@@ -201,7 +202,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
       if (isPlainRecord(ruler) && typeof ruler.rulerId === "string") {
         if (rulerIds.has(ruler.rulerId)) duplicateRulerIds.add(ruler.rulerId);
         rulerIds.add(ruler.rulerId);
-        errors.push(...validateRulerLifeRecord(ruler, Number(save.world?.worldMonth)));
+        errors.push(...measureSaveValidation('validateRulerLifeRecord',()=>validateRulerLifeRecord(ruler, Number(save.world?.worldMonth))));
       }
     });
   });
@@ -500,34 +501,34 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   validatePopulationSystem(save.populationSystem, errors, factionIds, Number(save.world?.worldMonth));
   validateWorldEventSystem(save.worldEventSystem, factionIds, new Set([...cityIds, ...archivedCityIds]), errors, Number(save.world?.worldMonth));
   validateHydrationImportShapes(save, errors);
-  errors.push(...validateMilitaryCommandState(
+  errors.push(...measureSaveValidation('validateMilitaryCommandState',()=>validateMilitaryCommandState(
     isPlainRecord(save.registries) ? save.registries.militaryCommandRegistry : undefined,
     users, units, cities, factionIds, Number(save.world?.worldMonth),
     isPlainRecord(save.worldHistory) ? save.worldHistory : { events: [] }
-  ));
-  if (!errors.length) errors.push(...validateInsurgentCommands(save as WorldSaveV1));
-  if (!errors.length) errors.push(...validateMilitaryNobility(save as WorldSaveV1));
-  if (!errors.length) errors.push(...validateMilitaryHonors(save as WorldSaveV1));
-  if (!errors.length) errors.push(...validateMilitaryAppanages(save as WorldSaveV1));
-  if (!errors.length) errors.push(...validateMilitaryPoliticalParticipation(save as WorldSaveV1));
-  if (!errors.length) errors.push(...validatePoliticalCrises(save as WorldSaveV1));
-  if (!errors.length) errors.push(...validateMilitaryUsurpers(save as WorldSaveV1));
-  if (!errors.length) errors.push(...validateMilitaryNarrativeLinks(save as WorldSaveV1));
-  if (!errors.length) errors.push(...validateMilitaryOfficeAuthorities(save as WorldSaveV1));
-  if (!errors.length) errors.push(...validateMilitaryBattleNames(save as WorldSaveV1));
+  )));
+  if (!errors.length) errors.push(...measureSaveValidation('validateInsurgentCommands',()=>validateInsurgentCommands(save as WorldSaveV1)));
+  if (!errors.length) errors.push(...measureSaveValidation('validateMilitaryNobility',()=>validateMilitaryNobility(save as WorldSaveV1)));
+  if (!errors.length) errors.push(...measureSaveValidation('validateMilitaryHonors',()=>validateMilitaryHonors(save as WorldSaveV1)));
+  if (!errors.length) errors.push(...measureSaveValidation('validateMilitaryAppanages',()=>validateMilitaryAppanages(save as WorldSaveV1)));
+  if (!errors.length) errors.push(...measureSaveValidation('validateMilitaryPoliticalParticipation',()=>validateMilitaryPoliticalParticipation(save as WorldSaveV1)));
+  if (!errors.length) errors.push(...measureSaveValidation('validatePoliticalCrises',()=>validatePoliticalCrises(save as WorldSaveV1)));
+  if (!errors.length) errors.push(...measureSaveValidation('validateMilitaryUsurpers',()=>validateMilitaryUsurpers(save as WorldSaveV1)));
+  if (!errors.length) errors.push(...measureSaveValidation('validateMilitaryNarrativeLinks',()=>validateMilitaryNarrativeLinks(save as WorldSaveV1)));
+  if (!errors.length) errors.push(...measureSaveValidation('validateMilitaryOfficeAuthorities',()=>validateMilitaryOfficeAuthorities(save as WorldSaveV1)));
+  if (!errors.length) errors.push(...measureSaveValidation('validateMilitaryBattleNames',()=>validateMilitaryBattleNames(save as WorldSaveV1)));
   if (!errors.length) for (const faction of factions) {
     const kind = faction.stateFormationEligibilityKind;
     if (kind !== undefined && kind !== "ORDINARY" && kind !== "DE_FACTO") errors.push("invalid state formation path");
     const since=faction.stateFormationEligibleSinceMonth;
     if ((kind!==undefined)!==(since!==undefined)||since!==undefined&&(!Number.isSafeInteger(since)||Number(since)<Number(faction.currentActiveSinceMonth)||Number(since)>Number(save.world?.worldMonth)||faction.identityStage!=="PROVISIONAL")) errors.push("invalid state formation progress");
   }
-  if (!errors.length) errors.push(...validateRoyalHonors(save as WorldSaveV1));
-  if (!errors.length) errors.push(...validateCourtCoups(save as WorldSaveV1));
-  if (!errors.length) errors.push(...validateAppointmentSelections(save as WorldSaveV1));
-  if (!errors.length) errors.push(...validateMilitaryCourt(save as WorldSaveV1));
-  if (!errors.length) errors.push(...validateRoyalSuccessionStanding(save as WorldSaveV1));
-  if (!errors.length) errors.push(...validateMilitaryFamilies(save as WorldSaveV1));
-  if (!errors.length) errors.push(...validateFamilyNobility(save as WorldSaveV1));
+  if (!errors.length) errors.push(...measureSaveValidation('validateRoyalHonors',()=>validateRoyalHonors(save as WorldSaveV1)));
+  if (!errors.length) errors.push(...measureSaveValidation('validateCourtCoups',()=>validateCourtCoups(save as WorldSaveV1)));
+  if (!errors.length) errors.push(...measureSaveValidation('validateAppointmentSelections',()=>validateAppointmentSelections(save as WorldSaveV1)));
+  if (!errors.length) errors.push(...measureSaveValidation('validateMilitaryCourt',()=>validateMilitaryCourt(save as WorldSaveV1)));
+  if (!errors.length) errors.push(...measureSaveValidation('validateRoyalSuccessionStanding',()=>validateRoyalSuccessionStanding(save as WorldSaveV1)));
+  if (!errors.length) errors.push(...measureSaveValidation('validateMilitaryFamilies',()=>validateMilitaryFamilies(save as WorldSaveV1)));
+  if (!errors.length) errors.push(...measureSaveValidation('validateFamilyNobility',()=>validateFamilyNobility(save as WorldSaveV1)));
   return { valid: errors.length === 0, errors };
 }
 
