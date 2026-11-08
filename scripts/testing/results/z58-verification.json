@@ -1306,5 +1306,21 @@
       "populationUnexplained": 0,
       "formationOwnershipConflicts": 0
     }
-  ]
+  ],
+  "finalCode500YearCoreRecheck": {
+    "deterministic": true,
+    "medianCore12MonthsMs": 555.3000000007451,
+    "medianStrictExportMs": 8190.60000000149,
+    "medianHydrationMs": 9095.5,
+    "scope": "Actual Core.advanceLogicalStep and Phaser postupdate; same real input restored before every measurement, no screenshots or human acceptance",
+    "royalOpenMedianMs": 19.299999998882413,
+    "familyOpenMedianMs": 17.5,
+    "royalTreeUnchanged": true,
+    "ordinaryTreeUnchanged": true,
+    "strictTwelveMonthContinuation": {
+      "months": 12,
+      "deterministic": true,
+      "secondRead": true
+    }
+  }
 }
