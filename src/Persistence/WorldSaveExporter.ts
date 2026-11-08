@@ -175,7 +175,7 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
       factionRegistry: FactionRegistry.exportState(),
       cityNameRegistry: CityNameRegistry.exportState(),
       logicalUnitRegistry: core.logicalUnitRegistry.exportState(),
-      dynastyRegistrySequence: dynastyState.sequence,dynastyPoliticalCalibration:dynastyState.politicalCalibration,dynastyAbilityPolicy:dynastyState.abilityPolicy,
+      dynastyRegistrySequence: dynastyState.sequence,dynastyPoliticalCalibration:dynastyState.politicalCalibration,dynastyAbilityPolicy:dynastyState.abilityPolicy,dynastyRoyalBirthPolicy:dynastyState.royalBirthPolicy,
       militaryCommandRegistry: MilitaryCommandRegistry.exportState(),
       archivedCities: ArchivedCities.list().map(({ destroyedMonth, foundedMonth, history, ...city }) => ({
         ...city,

@@ -7,7 +7,7 @@ import type { DiplomaticRelation, DiplomaticPairMemory } from "../Politics/Diplo
 import type { FactionColorHistoryEntry } from "../Simulation/FactionColorHistory";
 import type { MilitaryCommandState } from "../Politics/MilitaryCommandRegistry";
 
-export const CURRENT_SAVE_SCHEMA_VERSION = 54 as const;
+export const CURRENT_SAVE_SCHEMA_VERSION = 55 as const;
 
 /** V16 preserves political office/death facts and adds authoritative military personal names in registries. */
 export type RulerSaveV17 = Omit<Ruler, "id" | "bornYear" | "naturalDeathYear" | "accessionYear" |
@@ -225,7 +225,7 @@ export function createEmptyWorldSaveV22(): WorldSaveV22 {
       cityNameRegistry: { reserved: [], recentDynamicNames: [] },
       logicalUnitRegistry: { nextUnitSequence: 1 },
       dynastyRegistrySequence: 0,
-      dynastyPoliticalCalibration:'BASELINE',dynastyAbilityPolicy:'BASELINE',militaryCommandRegistry: { people: [], formations: [], personSequence: 1, commandSequence: 1, lastEvaluationMonth: -1 },
+      dynastyPoliticalCalibration:'BASELINE',dynastyAbilityPolicy:'BASELINE',dynastyRoyalBirthPolicy:'BASELINE',militaryCommandRegistry: { people: [], formations: [], personSequence: 1, commandSequence: 1, lastEvaluationMonth: -1 },
       archivedCities: [],
       knownFactionIds: [],
     },

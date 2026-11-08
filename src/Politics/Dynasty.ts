@@ -1,3 +1,4 @@
+import {householdBirthPlan,householdBirthParents,recordRoyalBirthPlanning,HOUSEHOLD_ANNUAL_CAP,HOUSEHOLD_LIVING_CAP,type RoyalBirthPolicy,type RoyalHouseholdBirth} from './RoyalHouseholdBirth';
 import {registerRoyalPerson,type RoyalPersonRegistration} from './RoyalPersonRegistration';
 import {nextRoyalNobleAct,royalNobleText,type RoyalNobleAct} from './RoyalNobility';
 import {rulerAbilities} from './PersonAbilities';
@@ -125,6 +126,8 @@ export interface RoyalMilitaryIdentity {
 }
 export interface Ruler {
   registration?:RoyalPersonRegistration;
+  successionScope?:'HOUSEHOLD';
+  householdBirth?:RoyalHouseholdBirth;
   successionHistory?: RoyalSuccessionAct[];
   royalHonors?:RoyalHonor[];
   militaryUsurperIdentity?:MilitaryUsurperIdentity;
@@ -164,6 +167,7 @@ export interface Ruler {
 
 export interface Dynasty {
   royalNobility?:RoyalNobleAct[];
+  lastHouseholdBirthMonth?:number;
   /** Living but formally excluded kin preserve the house during exile, without an illegal accession. */
   successionVacancyMonth?: number;
   houseEpochs?: DynastyHouseEpoch[];
@@ -186,6 +190,9 @@ function getRulerGivenNamePool(houseName: string) {
 }
 
 class DynastyRegistryStore {
+  private royalBirthPolicy:RoyalBirthPolicy='LOW';
+  setRoyalBirthPolicyForSimulation(p:RoyalBirthPolicy){this.royalBirthPolicy=p;}
+  getRoyalBirthPolicy(){return this.royalBirthPolicy;}
   private abilityPolicy:AbilityPolicy=DEFAULT_ABILITY_POLICY;
   setAbilityPolicyForSimulation(p:AbilityPolicy){this.abilityPolicy=p;}
   getAbilityPolicy(){return this.abilityPolicy;}
@@ -202,7 +209,7 @@ class DynastyRegistryStore {
   private provisionalDiagnosticsSession = new ProvisionalRulerDiagnosticsSession();
 
   reset() {
-    this.abilityPolicy=DEFAULT_ABILITY_POLICY;
+    this.royalBirthPolicy='LOW';this.abilityPolicy=DEFAULT_ABILITY_POLICY;
     this.politicalCalibration=DEFAULT_POLITICAL_CALIBRATION;
     this.dynasties.clear();
     this.currentRulerLookup.reset();
@@ -215,7 +222,7 @@ class DynastyRegistryStore {
     this.provisionalDiagnosticsSession.reset([]);
   }
 
-  exportState(): {dynasties:Dynasty[];sequence:number;politicalCalibration?:PoliticalCalibration;abilityPolicy?:AbilityPolicy} {
+  exportState(): {dynasties:Dynasty[];sequence:number;politicalCalibration?:PoliticalCalibration;abilityPolicy?:AbilityPolicy;royalBirthPolicy?:RoyalBirthPolicy} {
     return {
       dynasties: [...this.dynasties.values()].map((dynasty) => ({
         ...dynasty,
@@ -224,7 +231,7 @@ class DynastyRegistryStore {
         rulers: dynasty.rulers.map((ruler) => ({ ...ruler, successionHistory:ruler.successionHistory?structuredClone(ruler.successionHistory):undefined, royalHonors:ruler.royalHonors?structuredClone(ruler.royalHonors):undefined,militaryIdentity:ruler.militaryIdentity?{...ruler.militaryIdentity}:undefined, militaryUsurperIdentity:ruler.militaryUsurperIdentity?structuredClone(ruler.militaryUsurperIdentity):undefined,residentIdentity:ruler.residentIdentity?structuredClone(ruler.residentIdentity):undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
         heirIds: [...dynasty.heirIds],
       })),
-      sequence: this.sequence,politicalCalibration:this.politicalCalibration,abilityPolicy:this.abilityPolicy,
+      sequence: this.sequence,royalBirthPolicy:this.royalBirthPolicy,politicalCalibration:this.politicalCalibration,abilityPolicy:this.abilityPolicy,
     };
   }
 
@@ -239,7 +246,7 @@ class DynastyRegistryStore {
   snapshotSuccessionTransaction(){return {state:structuredClone(this.exportState()),owners:new Map([...this.dynasties].map(([id,d])=>[id,{d,rulers:new Map(d.rulers.map(r=>[r.id,r]))}])),checks:this.revolutionChecks};}
   rollbackSuccessionTransaction(s:ReturnType<DynastyRegistryStore['snapshotSuccessionTransaction']>){
     this.dynasties.clear();for(const old of s.state.dynasties){const owner=s.owners.get(old.factionId)!;for(const key of Object.keys(owner.d))delete (owner.d as any)[key];Object.assign(owner.d,structuredClone(old),{rulers:old.rulers.map(data=>{const r=owner.rulers.get(data.id)!;for(const key of Object.keys(r))delete (r as any)[key];Object.assign(r,structuredClone(data));return r;})});this.dynasties.set(old.factionId,owner.d);}
-    this.abilityPolicy=s.state.abilityPolicy??'BASELINE';this.politicalCalibration=s.state.politicalCalibration??'BASELINE';this.sequence=s.state.sequence;this.revolutionChecks=s.checks;this.currentRulerLookup.reset();
+    this.royalBirthPolicy=s.state.royalBirthPolicy??'BASELINE';this.abilityPolicy=s.state.abilityPolicy??'BASELINE';this.politicalCalibration=s.state.politicalCalibration??'BASELINE';this.sequence=s.state.sequence;this.revolutionChecks=s.checks;this.currentRulerLookup.reset();
   }
 
   importState(state: ReturnType<DynastyRegistryStore["exportState"]>, diagnosticsStartMonth = 0) {
@@ -251,7 +258,7 @@ class DynastyRegistryStore {
       rulers: dynasty.rulers.map((ruler) => ({ ...ruler, successionHistory:ruler.successionHistory?structuredClone(ruler.successionHistory):undefined, royalHonors:ruler.royalHonors?structuredClone(ruler.royalHonors):undefined,militaryIdentity:ruler.militaryIdentity?{...ruler.militaryIdentity}:undefined, militaryUsurperIdentity:ruler.militaryUsurperIdentity?structuredClone(ruler.militaryUsurperIdentity):undefined,residentIdentity:ruler.residentIdentity?structuredClone(ruler.residentIdentity):undefined, chronicle: ruler.chronicle ? structuredClone(ruler.chronicle) : undefined })),
       heirIds: [...dynasty.heirIds],
     }]));
-    this.abilityPolicy=state.abilityPolicy??'BASELINE';this.politicalCalibration=state.politicalCalibration??'BASELINE';this.courtAttemptPolicy=this.politicalCalibration==='BASELINE'?'MEDIUM':this.politicalCalibration;
+    this.royalBirthPolicy=state.royalBirthPolicy??'BASELINE';this.abilityPolicy=state.abilityPolicy??'BASELINE';this.politicalCalibration=state.politicalCalibration??'BASELINE';this.courtAttemptPolicy=this.politicalCalibration==='BASELINE'?'MEDIUM':this.politicalCalibration;
     this.sequence = state.sequence;
     this.revolutionChecks = [];
     this.revolutionGateDiagnostics.reset(diagnosticsStartMonth);
@@ -463,6 +470,24 @@ class DynastyRegistryStore {
       }
       this.succeedRuler(team, dynasty, ruler, year, "natural");
     });
+  }
+
+  updateRoyalHouseholds(month:number,teams:Team[]){
+    if(month%12!==0||this.royalBirthPolicy==='BASELINE')return;
+    for(const team of teams){const d=this.get(team.name);if(!d||team.status!=='ACTIVE'||team.identityStage!=='STATE'||(d.lastHouseholdBirthMonth??-1)>=month)continue;
+      try{successionTransaction(team,this,()=>{
+        const epoch=d.houseEpochs?.find(e=>e.startMonth<=month&&(e.endMonth??Infinity)>month&&e.houseName===d.houseName);if(!epoch)return;
+        const started=performance.now(),parents=householdBirthParents(d,month);let births=0,living=d.rulers.filter(r=>(r.deathMonth??Infinity)>month&&(r.naturalDeathYear??Infinity)>month).length;
+        for(const [ordinal,parent] of parents.entries()){if(births>=HOUSEHOLD_ANNUAL_CAP||living>=HOUSEHOLD_LIVING_CAP)break;
+          const child=householdBirthPlan(parent,month,String(worldRandom.exportState().seed),this.royalBirthPolicy,epoch.foundingRulerId,ordinal);if(!child)continue;
+          if(d.rulers.some(r=>r.id===child.id))throw Error('Duplicate royal birth');
+          const ev=child.householdBirth!;
+          if(WorldHistory.addEvent({id:ev.eventId,year:month,type:'royal-child-born',category:'politics',importance:'normal',actorFactionId:d.factionId,factionIds:[d.factionId],rulerId:child.id,title:`${this.getRulerPersonalName(parent)}之子${this.getRulerPersonalName(child)}出生。`,metadata:{royalBirth:JSON.stringify(ev),parentRulerId:parent.id}})!==ev.eventId)throw Error('Royal birth history rejected');
+          registerRoyalPerson(child,d.factionId,month,e=>WorldHistory.addEvent(e));d.rulers.push(child);births++;living++;
+        }
+        d.lastHouseholdBirthMonth=month;recordRoyalBirthPlanning(d,month,parents,performance.now()-started);
+      });}catch(error){console.warn('[RoyalHousehold] rolled back',error);}
+    }
   }
 
   updateRoyalNobility(month:number,teams:Team[]){
@@ -1609,7 +1634,7 @@ class DynastyRegistryStore {
 
   private archiveNaturallyDeadHeirs(dynasty: Dynasty, year: number, militaryOnly = false) {
     dynasty.rulers.forEach((heir) => {
-      if (militaryOnly && !heir.militaryIdentity) return;
+      if (militaryOnly && !heir.militaryIdentity && !heir.householdBirth) return;
       if (
         heir.status === "dead" ||
         heir.status !== "heir" && heir.status !== "kin" ||

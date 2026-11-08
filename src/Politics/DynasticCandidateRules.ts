@@ -407,7 +407,7 @@ export function getCandidateParentsToReplenish({
       if (relationToCurrent === "GRANDCHILD") continue;
     }
 
-    const children = rulers.filter((ruler) => ruler.parentId === parent.id);
+    const children = rulers.filter((ruler) => ruler.parentId === parent.id && !ruler.householdBirth);
     if (children.length >= MAX_CANDIDATE_CHILDREN_PER_PARENT) continue;
     const latestChildStart = children.reduce(
       (latest, child) => Math.max(latest, child.politicalStartYear ?? child.bornYear),

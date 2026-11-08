@@ -1,3 +1,4 @@
+import PosthumousPeeragePanel from './PosthumousPeeragePanel';
 import {rulerFamilyBackground} from '../../../Politics/RulerFamilyBackground';
 import {militaryPortraitStatus} from '../../../Politics/MilitaryPortraitStatus';
 import PersonAbilityPanel,{PersonAbilityEvidence} from './PersonAbilityPanel';
@@ -762,7 +763,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; wor
             allMilestones={()=>allMilestones.map(entry=>({id:entry.eventId,content:<Typography fontSize="0.82rem">{formatWorldDate(entry.worldMonth)} · {entry.text}</Typography>}))}
             milestones={milestones.map(entry=>({id:entry.eventId,content:<Typography fontSize="0.82rem">{formatWorldDate(entry.worldMonth)} · {entry.text}</Typography>}))}
             assessment={[bio.assessment]} voice={bio.voice}
-            governance={<ChronicleSection title="军功与任职"><NobleHistory person={person} factionId={factionId} month={worldMonth}/><Typography fontSize="0.82rem">从军{formatWorldDuration(getMilitaryLocalServiceMonths(person,factionId,worldMonth))}，所部参与取城{bio.victories.length}次，历经{career.activities.filter(e=>e.factionId===factionId).length}处有记载的军旅活动。</Typography></ChronicleSection>}
+            governance={<><ChronicleSection title="军功与任职"><NobleHistory person={person} factionId={factionId} month={worldMonth}/><Typography fontSize="0.82rem">从军{formatWorldDuration(getMilitaryLocalServiceMonths(person,factionId,worldMonth))}，所部参与取城{bio.victories.length}次，历经{career.activities.filter(e=>e.factionId===factionId).length}处有记载的军旅活动。</Typography></ChronicleSection><PosthumousPeeragePanel person={person} month={worldMonth}/></>}
             evidence={<>
               <PersonAbilityEvidence abilities={militaryAbilities(person)}/>
               {portraitContext.historical&&<Typography fontSize=".74rem">肖像取本国历史任职时点；时点 {formatWorldDate(portraitContext.month)}，不采用后来外国身份。</Typography>}

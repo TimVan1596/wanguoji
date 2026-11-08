@@ -1,0 +1,39 @@
+[
+  {
+    "seed": "royal-military-z11",
+    "checks": [
+      "fixed source supplies a real young, childless royal with a possible keyed natural birth",
+      "real young parent enters original legal military appointment",
+      "birth adds no map User, soldiers or world RNG draws",
+      "annual repeat is idempotent without duplicate birth or registration",
+      "birth adds no map User, soldiers or world RNG draws",
+      "annual repeat is idempotent without duplicate birth or registration",
+      "birth adds no map User, soldiers or world RNG draws",
+      "annual repeat is idempotent without duplicate birth or registration",
+      "birth adds no map User, soldiers or world RNG draws",
+      "annual repeat is idempotent without duplicate birth or registration",
+      "failed real birth restores all family identities, annual boundary, history and world RNG",
+      "birth adds no map User, soldiers or world RNG draws",
+      "annual repeat is idempotent without duplicate birth or registration",
+      "birth adds no map User, soldiers or world RNG draws",
+      "annual repeat is idempotent without duplicate birth or registration",
+      "actual child is born and registered in the same real month before the parent dies {\"id\":\"赵-ruler-5\",\"failed\":true,\"childId\":\"赵-household-60-0\",\"trace\":[{\"month\":12,\"ordinal\":0,\"possible\":false,\"seed\":\"royal-military-z11\",\"parentStatus\":\"heir\",\"born\":-288,\"children\":[]},{\"month\":24,\"ordinal\":0,\"possible\":false,\"seed\":\"royal-military-z11\",\"parentStatus\":\"heir\",\"born\":-288,\"children\":[]},{\"month\":36,\"ordinal\":0,\"possible\":false,\"seed\":\"royal-military-z11\",\"parentStatus\":\"heir\",\"born\":-288,\"children\":[]},{\"month\":48,\"ordinal\":0,\"possible\":false,\"seed\":\"royal-military-z11\",\"parentStatus\":\"heir\",\"born\":-288,\"children\":[]},{\"month\":60,\"ordinal\":0,\"possible\":true,\"seed\":\"royal-military-z11\",\"parentStatus\":\"heir\",\"born\":-288,\"children\":[]},{\"month\":72,\"ordinal\":-1,\"possible\":false,\"seed\":\"royal-military-z11\",\"parentStatus\":\"heir\",\"born\":-288,\"children\":[{\"id\":\"赵-household-60-0\",\"birth\":60,\"scope\":\"HOUSEHOLD\"}]}]}",
+      "household child is neither crown candidate nor military officer",
+      "parent has a real earned military earl source, independent of birth",
+      "actual newly born registered minor succeeds BO to ZI without military office",
+      "military afterlife reading uses exactly the existing royal death settlement",
+      "real shared tree retains deceased military parent",
+      "selected royal parent displays registered true child",
+      "child click selects the real child without manufacturing an officer",
+      "real military archive afterlife panel shows the actual successor",
+      "children navigation and afterlife React reading never mutate canonical facts",
+      "strict V55 rejects forged child birth",
+      "strict V55 rejects forged child parent",
+      "strict V55 rejects forged child scope",
+      "strict V55 rejects forged child lifespan",
+      "actual new child and inherited title continue twelve months deterministically",
+      "second read creates no child, title, body or event"
+    ],
+    "scope": "controlled real Core birth, military capture/award, actual User death, minor inheritance, shared React controls and strict save; not natural frequency"
+  }
+]

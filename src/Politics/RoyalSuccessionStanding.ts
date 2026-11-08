@@ -9,6 +9,6 @@ export function unresolvedSuccessionAct(ruler: Pick<Ruler,'successionHistory'>, 
   const acts = (ruler.successionHistory ?? []).filter(a => a.month <= month);
   return acts.find(a => a.kind === 'DISQUALIFIED' && !acts.some(b => b.kind === 'RESTORED' && b.restoresEventId === a.eventId));
 }
-export function maySucceed(ruler: Pick<Ruler,'successionHistory'>, month: number) {
-  return !unresolvedSuccessionAct(ruler, month);
+export function maySucceed(ruler: Pick<Ruler,'successionHistory'|'successionScope'>, month: number) {
+  return ruler.successionScope!=='HOUSEHOLD' && !unresolvedSuccessionAct(ruler, month);
 }

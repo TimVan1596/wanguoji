@@ -1,3 +1,4 @@
+import RoyalRegisteredChildren from './RoyalRegisteredChildren';
 import {royalExternalKin} from '../../../Politics/RoyalExternalKin';
 import {rulerFamilyOrigin} from '../../../Politics/RulerFamilyOrigin';
 import {layoutGenealogyNodes} from './genealogyLayout';
@@ -23,21 +24,23 @@ import {formatWorldDate} from "../../../Simulation/WorldTime";
 
 export default function GenealogyBrowser({open,onClose,dynasty,team,worldMonth,targetId}:{open:boolean;onClose:(source:GenealogyViewerCloseSource,reason?:string)=>void;dynasty?:Dynasty;team:RootState["root"]["teams"][number];worldMonth:number;targetId?:string}){
  const nav=usePersonArchiveNavigation();
+ const [requestedRoyalId,setRequestedRoyalId]=useState<string>();
  const [focus,setFocus]=useState(''),[expanded,setExpanded]=useState(new Set<string>()),[selected,setSelected]=useState<string>();
  const [branchOffsets,setBranchOffsets]=useState(new Map<string,number>());
  const events=open?History.getEvents():[],people=open?Military.getPeople():[];
  const stamp=open?JSON.stringify([dynasty,History.getRevision(),Military.getFamilyReadingRevision(),people]):'';
  const data=useMemo(()=>{
   if(!open||!dynasty)return undefined;
-  const index=indexGenealogy(buildRoyalArchiveGenealogy(dynasty,people,events));
-  return {external:royalExternalKin(dynasty,Military.getFamilies(),people,History.getRecordedEvents(),worldMonth),index,military:royalMilitaryArchive(dynasty,people,events),presentations:deriveGenealogyNodePresentations(dynasty,team,events,worldMonth)};
- },[open,stamp,worldMonth,team.name,dynasty]);
+  const index=indexGenealogy(buildRoyalArchiveGenealogy(dynasty,people,events,[requestedRoyalId,targetId].filter(Boolean) as string[]));
+  const children=new Map<string,import("../../../Politics/Dynasty").Ruler[]>();for(const r of dynasty.rulers)if(r.parentId&&r.registration&&r.registration.month<=worldMonth&&r.bornYear<=worldMonth){const rows=children.get(r.parentId)??[];rows.push(r);children.set(r.parentId,rows);}for(const rows of children.values())rows.sort((a,b)=>a.bornYear-b.bornYear||a.id.localeCompare(b.id));
+  return {children,external:royalExternalKin(dynasty,Military.getFamilies(),people,History.getRecordedEvents(),worldMonth),index,military:royalMilitaryArchive(dynasty,people,events),presentations:deriveGenealogyNodePresentations(dynasty,team,events,worldMonth)};
+ },[open,stamp,worldMonth,team.name,dynasty,requestedRoyalId,targetId]);
  const rows=useMemo(()=>data?genealogyWindow(data.index,data.external.find(x=>x.id===focus)?.parentId??focus,expanded,branchOffsets,new Set([...data.military.keys(),...(dynasty?.royalNobility??[]).flatMap(a=>[a.previousRulerId,...a.holderRulerId?[a.holderRulerId]:[]])])):[],[data,focus,expanded,branchOffsets]);
  const heights=useMemo(()=>new Map(rows.map(({node})=>[node.ruler.id,genealogyCardHeight(true,!!data?.presentations.get(node.ruler.id)?.labels.length,!!data?.military.get(node.ruler.id))])),[rows,data]);
  const extra=useMemo(()=>data?.external.filter(x=>rows.some(r=>r.node.ruler.id===x.parentId))??[],[data,rows]);
  const layout=useMemo(()=>extra.length?layoutGenealogyNodes([...rows.map(r=>({id:r.node.ruler.id,parentId:r.node.ruler.parentId,depth:r.depth})),...extra.map(x=>({id:x.id,parentId:x.parentId,depth:rows.find(r=>r.node.ruler.id===x.parentId)!.depth+1}))],new Map([...heights,...extra.map(x=>[x.id,100] as const)])):layoutGenealogy(rows,heights),[rows,heights,extra]);
  const name=(r:{houseName:string;givenName:string})=>r.houseName.replace(/氏$/,'')+r.givenName;
- useEffect(()=>{if(!open)return;setFocus(targetId??dynasty?.currentRulerId??'');setExpanded(new Set());setSelected(undefined);setBranchOffsets(new Map());},[open,targetId,team.name]);
+ useEffect(()=>{if(!open)return;setRequestedRoyalId(undefined);setFocus(targetId??dynasty?.currentRulerId??'');setExpanded(new Set());setSelected(undefined);setBranchOffsets(new Map());},[open,targetId,team.name]);
  const external=data?.external.find(x=>x.id===selected),origin=selected&&dynasty?.rulers.find(r=>r.id===selected)?rulerFamilyOrigin(dynasty.rulers.find(r=>r.id===selected)!,Military.getFamilies(),people,worldMonth):undefined;
  const person=selected?data?.index.get(selected)?.ruler:undefined,service=person?data?.military.get(person.id):undefined;
  return <Dialog open={open} onClose={(_,reason)=>onClose(reason==='escapeKeyDown'?'ESCAPE':'BACKDROP',reason)} fullWidth maxWidth="xl" PaperProps={{sx:{width:'90vw',height:'84vh',maxWidth:1500,display:'flex',flexDirection:'column'}}}>
@@ -46,9 +49,10 @@ export default function GenealogyBrowser({open,onClose,dynasty,team,worldMonth,t
    <Box sx={{display:'flex',justifyContent:'space-between'}}><Typography fontWeight="bold">王室身份：{data?.presentations.get(person.id)?.heading??name(person)}</Typography><Button size="small" onClick={()=>setSelected(undefined)}>收起资料</Button></Box>
    <Typography fontSize=".75rem">{person.parentId&&data?.index.get(person.parentId)?'父系：'+name(data.index.get(person.parentId)!.ruler):person.parentId?'父系档案未载':origin?.member.parentMemberId?'原族父亲：'+(origin.family.members.find(m=>m.memberId===origin.member.parentMemberId)?.name??'原族档案未载'):'父系未载'} · {formatRulerLifeAge(person,worldMonth,false,team.status!=='EXTINCT')}</Typography>
    <Typography fontSize=".78rem">{data?.presentations.get(person.id)?.honor?.secondary}</Typography>{data?.presentations.get(person.id)?.posthumousLabels?.map(label=><Typography key={label} fontSize=".78rem">{label}</Typography>)}<PersonLifeDates bornMonth={person.bornYear} deathMonth={person.deathMonth}/><RoyalHonorPanel ruler={person} month={worldMonth}/>
+   <RoyalRegisteredChildren key={person.id} children={data?.children.get(person.id)??[]} dynasty={dynasty!} month={worldMonth} people={data!.military} events={events} onLocate={id=>{setRequestedRoyalId(id);setSelected(id);setFocus(id);}}/>
    <RoyalNoblePanel ruler={person} dynasty={dynasty!} month={worldMonth} beforeNavigate={()=>onClose('EXPLICIT')}/>{origin&&<Button size="small" onClick={()=>{onClose('EXPLICIT');nav.open({kind:'FAMILY',factionId:origin.family.factionId,id:origin.family.familyId,memberId:origin.member.memberId});}}>原出身于{origin.family.surname}氏 · 查看原宗谱</Button>}
    {person.accessionYear!==undefined&&<Typography fontSize=".75rem">政治任期：{formatWorldDate(person.accessionYear)}—{person.endYear===undefined?'今':formatWorldDate(person.endYear)}</Typography>}
-   {service&&<Typography fontSize=".75rem">{royalMilitaryOfficeLabel(service,worldMonth)}</Typography>}
+   <Typography fontSize=".75rem">{service?royalMilitaryOfficeLabel(service,worldMonth):'未任军职'}</Typography>
    {service?.appointments.slice(-1).map(a=><Typography fontSize=".75rem" key={a.commandId}>军职任期：{formatWorldDate(a.startMonth)}—{a.endMonth===undefined?'今':formatWorldDate(a.endMonth)}</Typography>)}
    {person.reignOrdinal!==undefined&&<Button size="small" onClick={()=>{onClose('EXPLICIT');nav.open({kind:'RULER',factionId:dynasty!.factionId,id:person.id});}}>查看王室本纪</Button>}
    {service&&<Button size="small" onClick={()=>{onClose('EXPLICIT');nav.open({kind:'MILITARY',factionId:dynasty!.factionId,id:service.personId});}}>查看军旅档案</Button>}
