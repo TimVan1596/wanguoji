@@ -37,6 +37,8 @@
           "royalDescents": {
             "HOU->BO": 1
           },
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {},
           "familyEndings": {
             "NO_HEIR": 2,
             "FORFEITED": 2
@@ -44,6 +46,8 @@
           "royalEndings": {
             "NO_HEIR": 1
           },
+          "lowCharterFamilies": 0,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 4,
           "registeredMembers": 61,
@@ -114,6 +118,8 @@
             "BO->ZI": 3
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {},
           "familyEndings": {
             "FOREIGN": 1,
             "NO_HEIR": 3
@@ -121,6 +127,8 @@
           "royalEndings": {
             "NO_HEIR": 1
           },
+          "lowCharterFamilies": 0,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 4,
           "registeredMembers": 30,
@@ -197,11 +205,15 @@
             "HOU->BO": 1,
             "BO->ZI": 1
           },
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {},
           "familyEndings": {
             "NO_HEIR": 4,
             "FORFEITED": 1
           },
           "royalEndings": {},
+          "lowCharterFamilies": 0,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 2,
           "registeredFamilies": 6,
           "registeredMembers": 59,
@@ -268,6 +280,8 @@
           "revocations": 1,
           "familyDescents": {},
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {},
           "familyEndings": {
             "NO_HEIR": 2
           },
@@ -275,6 +289,8 @@
             "REVOKED": 1,
             "ACCESSION": 1
           },
+          "lowCharterFamilies": 0,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 2,
           "registeredMembers": 11,
@@ -359,6 +375,8 @@
             "BO->ZI": 1,
             "ZI->NAN": 1
           },
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {},
           "familyEndings": {
             "NO_HEIR": 4,
             "FORFEITED": 1,
@@ -368,6 +386,8 @@
             "RANK_EXHAUSTED": 1,
             "NO_HEIR": 1
           },
+          "lowCharterFamilies": 0,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 1,
           "registeredFamilies": 7,
           "registeredMembers": 85,
@@ -452,6 +472,8 @@
             "HOU->BO": 2,
             "ZI->NAN": 2
           },
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {},
           "familyEndings": {
             "NO_HEIR": 6,
             "FORFEITED": 2,
@@ -463,6 +485,8 @@
             "NO_HEIR": 7,
             "RANK_EXHAUSTED": 2
           },
+          "lowCharterFamilies": 0,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 1,
           "registeredFamilies": 13,
           "registeredMembers": 124,
@@ -540,11 +564,15 @@
           "royalDescents": {
             "HOU->BO": 1
           },
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {},
           "familyEndings": {
             "NO_HEIR": 1,
             "FORFEITED": 2
           },
           "royalEndings": {},
+          "lowCharterFamilies": 0,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 1,
           "registeredFamilies": 4,
           "registeredMembers": 23,
@@ -612,10 +640,14 @@
           "revocations": 1,
           "familyDescents": {},
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {},
           "familyEndings": {
             "FOREIGN": 1
           },
           "royalEndings": {},
+          "lowCharterFamilies": 0,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 1,
           "registeredMembers": 3,
@@ -687,11 +719,15 @@
             "BO->ZI": 1
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {},
           "familyEndings": {
             "NO_HEIR": 2,
             "FORFEITED": 1
           },
           "royalEndings": {},
+          "lowCharterFamilies": 0,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 1,
           "registeredFamilies": 4,
           "registeredMembers": 23,
@@ -758,10 +794,14 @@
           "revocations": 0,
           "familyDescents": {},
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {},
           "familyEndings": {},
           "royalEndings": {
             "ACCESSION": 1
           },
+          "lowCharterFamilies": 0,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 0,
           "registeredMembers": 0,
@@ -829,10 +869,14 @@
           "revocations": 0,
           "familyDescents": {},
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {},
           "familyEndings": {
             "NO_HEIR": 1
           },
           "royalEndings": {},
+          "lowCharterFamilies": 0,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 2,
           "registeredMembers": 4,
@@ -901,10 +945,14 @@
             "HOU->BO": 1
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {},
           "familyEndings": {
             "NO_HEIR": 2
           },
           "royalEndings": {},
+          "lowCharterFamilies": 0,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 3,
           "registeredMembers": 20,
@@ -973,11 +1021,15 @@
             "BO->ZI": 2
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {},
           "familyEndings": {
             "REGIME_ENDED": 1,
             "NO_HEIR": 1
           },
           "royalEndings": {},
+          "lowCharterFamilies": 0,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 1,
           "registeredFamilies": 5,
           "registeredMembers": 15,
@@ -1045,10 +1097,14 @@
             "BO->ZI": 1
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {},
           "familyEndings": {
             "NO_HEIR": 2
           },
           "royalEndings": {},
+          "lowCharterFamilies": 0,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 2,
           "registeredMembers": 10,
@@ -1126,11 +1182,15 @@
           "royalDescents": {
             "HOU->BO": 1
           },
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {},
           "familyEndings": {
             "NO_HEIR": 1,
             "FORFEITED": 2
           },
           "royalEndings": {},
+          "lowCharterFamilies": 0,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 1,
           "registeredFamilies": 4,
           "registeredMembers": 23,
@@ -1198,10 +1258,14 @@
           "revocations": 1,
           "familyDescents": {},
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {},
           "familyEndings": {
             "FOREIGN": 1
           },
           "royalEndings": {},
+          "lowCharterFamilies": 0,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 1,
           "registeredMembers": 3,
@@ -1273,11 +1337,15 @@
             "BO->ZI": 1
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {},
           "familyEndings": {
             "NO_HEIR": 2,
             "FORFEITED": 1
           },
           "royalEndings": {},
+          "lowCharterFamilies": 0,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 1,
           "registeredFamilies": 4,
           "registeredMembers": 23,
@@ -1344,10 +1412,14 @@
           "revocations": 0,
           "familyDescents": {},
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {},
           "familyEndings": {},
           "royalEndings": {
             "ACCESSION": 1
           },
+          "lowCharterFamilies": 0,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 0,
           "registeredMembers": 0,
@@ -1415,10 +1487,14 @@
           "revocations": 0,
           "familyDescents": {},
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {},
           "familyEndings": {
             "NO_HEIR": 1
           },
           "royalEndings": {},
+          "lowCharterFamilies": 0,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 2,
           "registeredMembers": 4,
@@ -1487,10 +1563,14 @@
             "HOU->BO": 1
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {},
           "familyEndings": {
             "NO_HEIR": 2
           },
           "royalEndings": {},
+          "lowCharterFamilies": 0,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 3,
           "registeredMembers": 20,
@@ -1559,11 +1639,15 @@
             "BO->ZI": 2
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {},
           "familyEndings": {
             "REGIME_ENDED": 1,
             "NO_HEIR": 1
           },
           "royalEndings": {},
+          "lowCharterFamilies": 0,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 1,
           "registeredFamilies": 5,
           "registeredMembers": 15,
@@ -1631,10 +1715,14 @@
             "BO->ZI": 1
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {},
           "familyEndings": {
             "NO_HEIR": 2
           },
           "royalEndings": {},
+          "lowCharterFamilies": 0,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 2,
           "registeredMembers": 10,
@@ -1713,12 +1801,20 @@
             "BO->ZI": 3
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 2
+          },
           "familyEndings": {
             "NO_HEIR": 2,
             "FORFEITED": 1
           },
           "royalEndings": {
             "RANK_EXHAUSTED": 2
+          },
+          "lowCharterFamilies": 6,
+          "lowCharterLaterDescents": {
+            "BO->ZI": 3
           },
           "activeCivilianInheritedHolders": 1,
           "registeredFamilies": 6,
@@ -1799,11 +1895,17 @@
           "revocations": 1,
           "familyDescents": {},
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 1
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 1,
             "FOREIGN": 1
           },
           "royalEndings": {},
+          "lowCharterFamilies": 2,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 2,
           "registeredMembers": 5,
@@ -1887,6 +1989,11 @@
             "BO->ZI": 1
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 2,
+            "ACCESSION": 1
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 2,
             "NO_HEIR": 2,
@@ -1894,6 +2001,12 @@
           },
           "royalEndings": {
             "ACCESSION": 1
+          },
+          "lowCharterFamilies": 6,
+          "lowCharterLaterDescents": {
+            "GONG->HOU": 1,
+            "HOU->BO": 2,
+            "BO->ZI": 1
           },
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 6,
@@ -1975,12 +2088,18 @@
           "royalDescents": {
             "BO->ZI": 1
           },
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 2
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 2
           },
           "royalEndings": {
             "ACCESSION": 1
           },
+          "lowCharterFamilies": 3,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 1,
           "registeredFamilies": 3,
           "registeredMembers": 15,
@@ -2061,11 +2180,19 @@
             "BO->ZI": 2
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 3
+          },
           "familyEndings": {
             "NO_HEIR": 2,
             "RANK_EXHAUSTED": 3
           },
           "royalEndings": {},
+          "lowCharterFamilies": 5,
+          "lowCharterLaterDescents": {
+            "BO->ZI": 2
+          },
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 5,
           "registeredMembers": 25,
@@ -2146,12 +2273,21 @@
             "HOU->BO": 1
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 3,
+            "FORFEITED": 1
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 3,
             "NO_HEIR": 2,
             "FORFEITED": 1
           },
           "royalEndings": {},
+          "lowCharterFamilies": 6,
+          "lowCharterLaterDescents": {
+            "HOU->BO": 1
+          },
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 6,
           "registeredMembers": 28,
@@ -2233,10 +2369,19 @@
             "ZI->NAN": 1
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 1
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 1
           },
           "royalEndings": {},
+          "lowCharterFamilies": 3,
+          "lowCharterLaterDescents": {
+            "BO->ZI": 2,
+            "ZI->NAN": 1
+          },
           "activeCivilianInheritedHolders": 1,
           "registeredFamilies": 3,
           "registeredMembers": 14,
@@ -2316,11 +2461,19 @@
             "BO->ZI": 1
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 2
+          },
           "familyEndings": {
             "NO_HEIR": 2,
             "RANK_EXHAUSTED": 2
           },
           "royalEndings": {},
+          "lowCharterFamilies": 5,
+          "lowCharterLaterDescents": {
+            "BO->ZI": 1
+          },
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 5,
           "registeredMembers": 13,
@@ -2410,6 +2563,10 @@
             "BO->ZI": 3
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 4
+          },
           "familyEndings": {
             "NO_HEIR": 2,
             "RANK_EXHAUSTED": 2,
@@ -2417,6 +2574,10 @@
           },
           "royalEndings": {
             "RANK_EXHAUSTED": 2
+          },
+          "lowCharterFamilies": 8,
+          "lowCharterLaterDescents": {
+            "BO->ZI": 3
           },
           "activeCivilianInheritedHolders": 1,
           "registeredFamilies": 8,
@@ -2497,11 +2658,17 @@
           "revocations": 1,
           "familyDescents": {},
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 1
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 1,
             "FOREIGN": 1
           },
           "royalEndings": {},
+          "lowCharterFamilies": 2,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 2,
           "registeredMembers": 5,
@@ -2585,6 +2752,11 @@
             "BO->ZI": 1
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 2,
+            "ACCESSION": 1
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 2,
             "NO_HEIR": 2,
@@ -2592,6 +2764,12 @@
           },
           "royalEndings": {
             "ACCESSION": 1
+          },
+          "lowCharterFamilies": 6,
+          "lowCharterLaterDescents": {
+            "GONG->HOU": 1,
+            "HOU->BO": 2,
+            "BO->ZI": 1
           },
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 6,
@@ -2673,12 +2851,18 @@
           "royalDescents": {
             "BO->ZI": 1
           },
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 2
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 2
           },
           "royalEndings": {
             "ACCESSION": 1
           },
+          "lowCharterFamilies": 3,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 1,
           "registeredFamilies": 3,
           "registeredMembers": 15,
@@ -2759,11 +2943,19 @@
             "BO->ZI": 2
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 3
+          },
           "familyEndings": {
             "NO_HEIR": 2,
             "RANK_EXHAUSTED": 3
           },
           "royalEndings": {},
+          "lowCharterFamilies": 5,
+          "lowCharterLaterDescents": {
+            "BO->ZI": 2
+          },
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 5,
           "registeredMembers": 25,
@@ -2844,12 +3036,21 @@
             "HOU->BO": 1
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 3,
+            "FORFEITED": 1
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 3,
             "NO_HEIR": 2,
             "FORFEITED": 1
           },
           "royalEndings": {},
+          "lowCharterFamilies": 6,
+          "lowCharterLaterDescents": {
+            "HOU->BO": 1
+          },
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 6,
           "registeredMembers": 28,
@@ -2931,10 +3132,19 @@
             "ZI->NAN": 1
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 1
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 1
           },
           "royalEndings": {},
+          "lowCharterFamilies": 3,
+          "lowCharterLaterDescents": {
+            "BO->ZI": 2,
+            "ZI->NAN": 1
+          },
           "activeCivilianInheritedHolders": 1,
           "registeredFamilies": 3,
           "registeredMembers": 14,
@@ -3014,11 +3224,19 @@
             "BO->ZI": 1
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 2
+          },
           "familyEndings": {
             "NO_HEIR": 2,
             "RANK_EXHAUSTED": 2
           },
           "royalEndings": {},
+          "lowCharterFamilies": 5,
+          "lowCharterLaterDescents": {
+            "BO->ZI": 1
+          },
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 5,
           "registeredMembers": 13,
@@ -3108,6 +3326,10 @@
             "BO->ZI": 3
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 4
+          },
           "familyEndings": {
             "NO_HEIR": 2,
             "RANK_EXHAUSTED": 2,
@@ -3115,6 +3337,10 @@
           },
           "royalEndings": {
             "RANK_EXHAUSTED": 2
+          },
+          "lowCharterFamilies": 8,
+          "lowCharterLaterDescents": {
+            "BO->ZI": 3
           },
           "activeCivilianInheritedHolders": 1,
           "registeredFamilies": 8,
@@ -3195,11 +3421,17 @@
           "revocations": 1,
           "familyDescents": {},
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 1
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 1,
             "FOREIGN": 1
           },
           "royalEndings": {},
+          "lowCharterFamilies": 2,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 2,
           "registeredMembers": 5,
@@ -3283,6 +3515,11 @@
             "BO->ZI": 1
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 2,
+            "ACCESSION": 1
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 2,
             "NO_HEIR": 2,
@@ -3290,6 +3527,12 @@
           },
           "royalEndings": {
             "ACCESSION": 1
+          },
+          "lowCharterFamilies": 6,
+          "lowCharterLaterDescents": {
+            "GONG->HOU": 1,
+            "HOU->BO": 2,
+            "BO->ZI": 1
           },
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 6,
@@ -3371,12 +3614,18 @@
           "royalDescents": {
             "BO->ZI": 1
           },
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 2
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 2
           },
           "royalEndings": {
             "ACCESSION": 1
           },
+          "lowCharterFamilies": 3,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 1,
           "registeredFamilies": 3,
           "registeredMembers": 15,
@@ -3457,11 +3706,19 @@
             "BO->ZI": 2
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 3
+          },
           "familyEndings": {
             "NO_HEIR": 2,
             "RANK_EXHAUSTED": 3
           },
           "royalEndings": {},
+          "lowCharterFamilies": 5,
+          "lowCharterLaterDescents": {
+            "BO->ZI": 2
+          },
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 5,
           "registeredMembers": 25,
@@ -3542,12 +3799,21 @@
             "HOU->BO": 1
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 3,
+            "FORFEITED": 1
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 3,
             "NO_HEIR": 2,
             "FORFEITED": 1
           },
           "royalEndings": {},
+          "lowCharterFamilies": 6,
+          "lowCharterLaterDescents": {
+            "HOU->BO": 1
+          },
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 6,
           "registeredMembers": 28,
@@ -3629,10 +3895,19 @@
             "ZI->NAN": 1
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 1
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 1
           },
           "royalEndings": {},
+          "lowCharterFamilies": 3,
+          "lowCharterLaterDescents": {
+            "BO->ZI": 2,
+            "ZI->NAN": 1
+          },
           "activeCivilianInheritedHolders": 1,
           "registeredFamilies": 3,
           "registeredMembers": 14,
@@ -3712,11 +3987,19 @@
             "BO->ZI": 1
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 2
+          },
           "familyEndings": {
             "NO_HEIR": 2,
             "RANK_EXHAUSTED": 2
           },
           "royalEndings": {},
+          "lowCharterFamilies": 5,
+          "lowCharterLaterDescents": {
+            "BO->ZI": 1
+          },
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 5,
           "registeredMembers": 13,
@@ -3811,6 +4094,10 @@
           "royalDescents": {
             "GONG->HOU": 1
           },
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 3
+          },
           "familyEndings": {
             "NO_HEIR": 5,
             "FORFEITED": 1,
@@ -3819,6 +4106,13 @@
           "royalEndings": {
             "RANK_EXHAUSTED": 3,
             "REVOKED": 1
+          },
+          "lowCharterFamilies": 9,
+          "lowCharterLaterDescents": {
+            "BO->ZI": 4,
+            "GONG->HOU": 1,
+            "HOU->BO": 1,
+            "ZI->NAN": 1
           },
           "activeCivilianInheritedHolders": 1,
           "registeredFamilies": 9,
@@ -3902,6 +4196,10 @@
             "BO->ZI": 1
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 2
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 2,
             "FOREIGN": 1,
@@ -3909,6 +4207,11 @@
             "NO_HEIR": 3
           },
           "royalEndings": {},
+          "lowCharterFamilies": 6,
+          "lowCharterLaterDescents": {
+            "HOU->BO": 1,
+            "BO->ZI": 1
+          },
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 7,
           "registeredMembers": 42,
@@ -3994,6 +4297,11 @@
           "royalDescents": {
             "BO->ZI": 1
           },
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 3,
+            "ACCESSION": 1
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 2,
             "NO_HEIR": 4,
@@ -4002,6 +4310,12 @@
           "royalEndings": {
             "ACCESSION": 1,
             "RANK_EXHAUSTED": 1
+          },
+          "lowCharterFamilies": 8,
+          "lowCharterLaterDescents": {
+            "GONG->HOU": 1,
+            "HOU->BO": 3,
+            "BO->ZI": 3
           },
           "activeCivilianInheritedHolders": 1,
           "registeredFamilies": 8,
@@ -4087,6 +4401,11 @@
           "royalDescents": {
             "BO->ZI": 1
           },
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 5,
+            "FOREIGN": 1
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 5,
             "FOREIGN": 2,
@@ -4095,6 +4414,10 @@
           "royalEndings": {
             "REVOKED": 1,
             "ACCESSION": 1
+          },
+          "lowCharterFamilies": 8,
+          "lowCharterLaterDescents": {
+            "BO->ZI": 1
           },
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 8,
@@ -4190,6 +4513,11 @@
             "BO->ZI": 1,
             "ZI->NAN": 1
           },
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 3,
+            "ACCESSION": 1
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 2,
             "NO_HEIR": 6,
@@ -4199,6 +4527,12 @@
           "royalEndings": {
             "ACCESSION": 1,
             "RANK_EXHAUSTED": 2
+          },
+          "lowCharterFamilies": 13,
+          "lowCharterLaterDescents": {
+            "GONG->HOU": 1,
+            "HOU->BO": 4,
+            "BO->ZI": 4
           },
           "activeCivilianInheritedHolders": 1,
           "registeredFamilies": 13,
@@ -4295,6 +4629,11 @@
             "BO->ZI": 1,
             "ZI->NAN": 1
           },
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 5,
+            "ACCESSION": 1
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 7,
             "NO_HEIR": 7,
@@ -4306,6 +4645,13 @@
             "RANK_EXHAUSTED": 2,
             "REVOKED": 1,
             "NO_HEIR": 1
+          },
+          "lowCharterFamilies": 16,
+          "lowCharterLaterDescents": {
+            "GONG->HOU": 1,
+            "HOU->BO": 6,
+            "BO->ZI": 6,
+            "ZI->NAN": 3
           },
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 16,
@@ -4396,12 +4742,20 @@
             "BO->ZI": 3
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 2
+          },
           "familyEndings": {
             "NO_HEIR": 2,
             "FORFEITED": 1
           },
           "royalEndings": {
             "RANK_EXHAUSTED": 2
+          },
+          "lowCharterFamilies": 6,
+          "lowCharterLaterDescents": {
+            "BO->ZI": 3
           },
           "activeCivilianInheritedHolders": 1,
           "registeredFamilies": 6,
@@ -4482,11 +4836,17 @@
           "revocations": 1,
           "familyDescents": {},
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 1
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 1,
             "FOREIGN": 1
           },
           "royalEndings": {},
+          "lowCharterFamilies": 2,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 2,
           "registeredMembers": 5,
@@ -4570,6 +4930,11 @@
             "BO->ZI": 1
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 2,
+            "ACCESSION": 1
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 2,
             "NO_HEIR": 2,
@@ -4577,6 +4942,12 @@
           },
           "royalEndings": {
             "ACCESSION": 1
+          },
+          "lowCharterFamilies": 6,
+          "lowCharterLaterDescents": {
+            "GONG->HOU": 1,
+            "HOU->BO": 2,
+            "BO->ZI": 1
           },
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 6,
@@ -4658,12 +5029,18 @@
           "royalDescents": {
             "BO->ZI": 1
           },
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 2
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 2
           },
           "royalEndings": {
             "ACCESSION": 1
           },
+          "lowCharterFamilies": 3,
+          "lowCharterLaterDescents": {},
           "activeCivilianInheritedHolders": 1,
           "registeredFamilies": 3,
           "registeredMembers": 15,
@@ -4744,11 +5121,19 @@
             "BO->ZI": 2
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 3
+          },
           "familyEndings": {
             "NO_HEIR": 2,
             "RANK_EXHAUSTED": 3
           },
           "royalEndings": {},
+          "lowCharterFamilies": 5,
+          "lowCharterLaterDescents": {
+            "BO->ZI": 2
+          },
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 5,
           "registeredMembers": 25,
@@ -4829,12 +5214,21 @@
             "HOU->BO": 1
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 3,
+            "FORFEITED": 1
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 3,
             "NO_HEIR": 2,
             "FORFEITED": 1
           },
           "royalEndings": {},
+          "lowCharterFamilies": 6,
+          "lowCharterLaterDescents": {
+            "HOU->BO": 1
+          },
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 6,
           "registeredMembers": 28,
@@ -4916,10 +5310,19 @@
             "ZI->NAN": 1
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 1
+          },
           "familyEndings": {
             "RANK_EXHAUSTED": 1
           },
           "royalEndings": {},
+          "lowCharterFamilies": 3,
+          "lowCharterLaterDescents": {
+            "BO->ZI": 2,
+            "ZI->NAN": 1
+          },
           "activeCivilianInheritedHolders": 1,
           "registeredFamilies": 3,
           "registeredMembers": 14,
@@ -4999,11 +5402,19 @@
             "BO->ZI": 1
           },
           "royalDescents": {},
+          "newLowMeritSourceDescents": {},
+          "lowMeritSourceEndings": {
+            "RANK_EXHAUSTED": 2
+          },
           "familyEndings": {
             "NO_HEIR": 2,
             "RANK_EXHAUSTED": 2
           },
           "royalEndings": {},
+          "lowCharterFamilies": 5,
+          "lowCharterLaterDescents": {
+            "BO->ZI": 1
+          },
           "activeCivilianInheritedHolders": 0,
           "registeredFamilies": 5,
           "registeredMembers": 13,
@@ -5864,7 +6275,9 @@
         }
       }
     ],
-    "scope": "three repetitions, identical native DTO and full strict authority, locally rebuilt indexes only; no schema header edits; heap is whole renderer, not retained validation cache"
+    "scope": "three repetitions, identical native DTO and full strict authority, locally rebuilt indexes only; no schema header edits; heap is whole renderer, not retained validation cache",
+    "indexedRoyalValidatorSourceSha256": "a1aa10e5a1480666b1ebfffdb1041a151b4a51121d8e387f4a582125f0217de1",
+    "originalRoyalValidatorSourceSha256": "9a6c034ca47c83a79b4316fc3d09ddabc95265c2dfc4690f92af3a6855cbd214"
   },
   "indexedEquivalence": [
     {
@@ -5899,5 +6312,591 @@
       "seed": "regional-8",
       "completeDtoEqual": true
     }
-  ]
+  ],
+  "finalDefaultProductionEquivalence": [
+    {
+      "seed": "regional-1",
+      "completeDtoEqual": true,
+      "defaultNoblePolicy": "LOW"
+    },
+    {
+      "seed": "regional-2",
+      "completeDtoEqual": true,
+      "defaultNoblePolicy": "LOW"
+    },
+    {
+      "seed": "regional-3",
+      "completeDtoEqual": true,
+      "defaultNoblePolicy": "LOW"
+    },
+    {
+      "seed": "regional-4",
+      "completeDtoEqual": true,
+      "defaultNoblePolicy": "LOW"
+    },
+    {
+      "seed": "regional-5",
+      "completeDtoEqual": true,
+      "defaultNoblePolicy": "LOW"
+    },
+    {
+      "seed": "regional-6",
+      "completeDtoEqual": true,
+      "defaultNoblePolicy": "LOW"
+    },
+    {
+      "seed": "regional-7",
+      "completeDtoEqual": true,
+      "defaultNoblePolicy": "LOW"
+    },
+    {
+      "seed": "regional-8",
+      "completeDtoEqual": true,
+      "defaultNoblePolicy": "LOW"
+    }
+  ],
+  "staticChecks": [
+    {
+      "check": "tests",
+      "exitCode": 0,
+      "seconds": 93.29
+    },
+    {
+      "check": "typescript",
+      "exitCode": 0,
+      "seconds": 24.15
+    },
+    {
+      "check": "web",
+      "exitCode": 0,
+      "seconds": 46.44
+    },
+    {
+      "check": "desktop",
+      "exitCode": 0,
+      "seconds": 46.53
+    },
+    {
+      "check": "debug",
+      "exitCode": 0,
+      "seconds": 129.19
+    }
+  ],
+  "finalFullTests": {
+    "files": 346,
+    "tests": 2624,
+    "passed": true,
+    "log": "logs/z59-release-tests.log"
+  },
+  "publishedLowCore": {
+    "seed": "royal-military-z11",
+    "checks": 1032,
+    "passed": true
+  },
+  "policy": {
+    "noble": "LOW",
+    "NAN": {
+      "serviceMonths": 36,
+      "distinctCities": 1
+    },
+    "ZI": {
+      "serviceMonths": 48,
+      "distinctCities": 2
+    },
+    "existingUpperGatesUnchanged": true,
+    "royalBirthAnnualChance": 0.035,
+    "royalAnnualNewCap": 2,
+    "noMainRngBirthDraws": true,
+    "noFuturePeopleReserved": true
+  },
+  "naturalVerification": [
+    {
+      "label": "z59-baseline-100",
+      "worlds": 8,
+      "allStrict": true,
+      "all12MonthsDeterministicAndReread": true,
+      "unexplainedPopulation": 0,
+      "formationOwnershipConflicts": 0
+    },
+    {
+      "label": "z59-indexed-100",
+      "worlds": 8,
+      "allStrict": true,
+      "all12MonthsDeterministicAndReread": true,
+      "unexplainedPopulation": 0,
+      "formationOwnershipConflicts": 0
+    },
+    {
+      "label": "z59-a-low-100",
+      "worlds": 8,
+      "allStrict": true,
+      "all12MonthsDeterministicAndReread": true,
+      "unexplainedPopulation": 0,
+      "formationOwnershipConflicts": 0
+    },
+    {
+      "label": "z59-a-medium-100",
+      "worlds": 8,
+      "allStrict": true,
+      "all12MonthsDeterministicAndReread": true,
+      "unexplainedPopulation": 0,
+      "formationOwnershipConflicts": 0
+    },
+    {
+      "label": "z59-a-high-100",
+      "worlds": 8,
+      "allStrict": true,
+      "all12MonthsDeterministicAndReread": true,
+      "unexplainedPopulation": 0,
+      "formationOwnershipConflicts": 0
+    },
+    {
+      "label": "z59-low-200",
+      "worlds": 4,
+      "allStrict": true,
+      "all12MonthsDeterministicAndReread": true,
+      "unexplainedPopulation": 0,
+      "formationOwnershipConflicts": 0
+    },
+    {
+      "label": "z59-low-300",
+      "worlds": 1,
+      "allStrict": true,
+      "all12MonthsDeterministicAndReread": true,
+      "unexplainedPopulation": 0,
+      "formationOwnershipConflicts": 0
+    },
+    {
+      "label": "z59-low-500-final",
+      "worlds": 1,
+      "allStrict": true,
+      "all12MonthsDeterministicAndReread": true,
+      "unexplainedPopulation": 0,
+      "formationOwnershipConflicts": 0
+    },
+    {
+      "label": "z59-release-low-100",
+      "worlds": 8,
+      "allStrict": true,
+      "all12MonthsDeterministicAndReread": true,
+      "unexplainedPopulation": 0,
+      "formationOwnershipConflicts": 0
+    }
+  ],
+  "releaseSavePerformance": [
+    {
+      "seed": "regional-3",
+      "oracleCases": 0,
+      "month": 2400,
+      "saveVersion": 56,
+      "rows": [
+        {
+          "repeat": 0,
+          "validationMs": 782,
+          "phases": {
+            "validateSiegeBattles": 0.29999999701976776,
+            "validateCollisionSchedule": 1.5,
+            "validateResidentIdentities": 6.300000000745058,
+            "validateRoyalMilitaryIdentities": 1.699999999254942,
+            "validateMilitarySecessions": 1.6000000014901161,
+            "validateRoyalNobility": 42.80000000074506,
+            "validateRoyalHouseholds": 121.39999999850988,
+            "validateFactionLifetime": 0.30000000074505806,
+            "validateRulerLifeRecord": 0.8000000007450581,
+            "validateMilitaryCommandState": 325.19999999925494,
+            "validateInsurgentCommands": 2.199999999254942,
+            "validateMilitaryNobility": 64.10000000149012,
+            "validateMilitaryHonors": 20.5,
+            "validateMilitaryAppanages": 12.399999998509884,
+            "validateMilitaryPoliticalParticipation": 3.600000001490116,
+            "validatePoliticalCrises": 4.899999998509884,
+            "validateMilitaryUsurpers": 2.699999999254942,
+            "validateMilitaryNarrativeLinks": 2.300000000745058,
+            "validateMilitaryOfficeAuthorities": 1.199999999254942,
+            "validateMilitaryBattleNames": 1.1000000014901161,
+            "validateRoyalHonors": 17.5,
+            "validateCourtCoups": 6.400000002235174,
+            "validateAppointmentSelections": 8.699999999254942,
+            "validateMilitaryCourt": 6.300000000745058,
+            "validateRoyalSuccessionStanding": 1.2999999970197678,
+            "validateMilitaryFamilies": 37.400000002235174,
+            "validateFamilyNobility": 60.899999998509884
+          },
+          "stringifyMs": 24.100000001490116,
+          "parseMs": 16.300000000745058,
+          "hydrationMs": 895.6999999992549,
+          "exportMs": 738.3000000007451,
+          "bytes": 4829750,
+          "heapBytes": 144028065,
+          "canonicalUnchanged": true
+        },
+        {
+          "repeat": 1,
+          "validationMs": 698.9000000022352,
+          "phases": {
+            "validateSiegeBattles": 0.10000000149011612,
+            "validateCollisionSchedule": 1.3999999985098839,
+            "validateResidentIdentities": 4.300000000745058,
+            "validateRoyalMilitaryIdentities": 0.9000000022351742,
+            "validateMilitarySecessions": 1.8999999985098839,
+            "validateRoyalNobility": 44.30000000074506,
+            "validateRoyalHouseholds": 94.19999999925494,
+            "validateFactionLifetime": 0,
+            "validateRulerLifeRecord": 0.19999999552965164,
+            "validateMilitaryCommandState": 288.8999999985099,
+            "validateInsurgentCommands": 1.199999999254942,
+            "validateMilitaryNobility": 57.30000000074506,
+            "validateMilitaryHonors": 22.399999998509884,
+            "validateMilitaryAppanages": 12.100000001490116,
+            "validateMilitaryPoliticalParticipation": 2.800000000745058,
+            "validatePoliticalCrises": 4,
+            "validateMilitaryUsurpers": 2.5,
+            "validateMilitaryNarrativeLinks": 1.300000000745058,
+            "validateMilitaryOfficeAuthorities": 0.6000000014901161,
+            "validateMilitaryBattleNames": 0.5,
+            "validateRoyalHonors": 12.5,
+            "validateCourtCoups": 5,
+            "validateAppointmentSelections": 6.5,
+            "validateMilitaryCourt": 3.7000000029802322,
+            "validateRoyalSuccessionStanding": 0.7999999970197678,
+            "validateMilitaryFamilies": 38.80000000074506,
+            "validateFamilyNobility": 73.10000000149012
+          },
+          "stringifyMs": 12.800000000745058,
+          "parseMs": 19.699999999254942,
+          "hydrationMs": 934.8999999985099,
+          "exportMs": 770.8000000007451,
+          "bytes": 4829750,
+          "heapBytes": 183095923,
+          "canonicalUnchanged": true
+        },
+        {
+          "repeat": 2,
+          "validationMs": 636.8000000007451,
+          "phases": {
+            "validateSiegeBattles": 0.10000000149011612,
+            "validateCollisionSchedule": 1.199999999254942,
+            "validateResidentIdentities": 3.199999999254942,
+            "validateRoyalMilitaryIdentities": 0.5,
+            "validateMilitarySecessions": 0.3999999985098839,
+            "validateRoyalNobility": 38,
+            "validateRoyalHouseholds": 89.90000000223517,
+            "validateFactionLifetime": 0,
+            "validateRulerLifeRecord": 0.6000000014901161,
+            "validateMilitaryCommandState": 254.69999999925494,
+            "validateInsurgentCommands": 1,
+            "validateMilitaryNobility": 51,
+            "validateMilitaryHonors": 19.899999998509884,
+            "validateMilitaryAppanages": 10.800000000745058,
+            "validateMilitaryPoliticalParticipation": 2.399999998509884,
+            "validatePoliticalCrises": 3.400000002235174,
+            "validateMilitaryUsurpers": 2.599999997764826,
+            "validateMilitaryNarrativeLinks": 2.300000000745058,
+            "validateMilitaryOfficeAuthorities": 1.0999999977648258,
+            "validateMilitaryBattleNames": 0.4000000022351742,
+            "validateRoyalHonors": 12.200000002980232,
+            "validateCourtCoups": 5.099999997764826,
+            "validateAppointmentSelections": 6.100000001490116,
+            "validateMilitaryCourt": 3.300000000745058,
+            "validateRoyalSuccessionStanding": 0.6999999992549419,
+            "validateMilitaryFamilies": 36.400000002235174,
+            "validateFamilyNobility": 72.80000000074506
+          },
+          "stringifyMs": 16.299999997019768,
+          "parseMs": 18.700000002980232,
+          "hydrationMs": 848.5999999977648,
+          "exportMs": 749.4000000022352,
+          "bytes": 4829750,
+          "heapBytes": 210252273,
+          "canonicalUnchanged": true
+        }
+      ],
+      "scope": "Same native DTO, actual complete strict validation, hydration and exporter; no header upgrade, history mutation, RNG or screenshots"
+    },
+    {
+      "seed": "regional-3",
+      "oracleCases": 0,
+      "month": 3600,
+      "saveVersion": 56,
+      "rows": [
+        {
+          "repeat": 0,
+          "validationMs": 1374.1000000014901,
+          "phases": {
+            "validateSiegeBattles": 0.30000000074505806,
+            "validateCollisionSchedule": 3.699999999254942,
+            "validateResidentIdentities": 19.199999999254942,
+            "validateRoyalMilitaryIdentities": 1.5,
+            "validateMilitarySecessions": 10.100000001490116,
+            "validateRoyalNobility": 59.79999999701977,
+            "validateRoyalHouseholds": 135.90000000223517,
+            "validateFactionLifetime": 0.4000000022351742,
+            "validateRulerLifeRecord": 1.1000000014901161,
+            "validateMilitaryCommandState": 637.5999999977648,
+            "validateInsurgentCommands": 2.800000000745058,
+            "validateMilitaryNobility": 127,
+            "validateMilitaryHonors": 32.100000001490116,
+            "validateMilitaryAppanages": 23.299999997019768,
+            "validateMilitaryPoliticalParticipation": 4.800000000745058,
+            "validatePoliticalCrises": 7.599999997764826,
+            "validateMilitaryUsurpers": 3.400000002235174,
+            "validateMilitaryNarrativeLinks": 3.399999998509884,
+            "validateMilitaryOfficeAuthorities": 1.699999999254942,
+            "validateMilitaryBattleNames": 1.7000000029802322,
+            "validateRoyalHonors": 26.899999998509884,
+            "validateCourtCoups": 23.300000000745058,
+            "validateAppointmentSelections": 11.599999997764826,
+            "validateMilitaryCourt": 11.800000000745058,
+            "validateRoyalSuccessionStanding": 1.4000000022351742,
+            "validateMilitaryFamilies": 64.39999999850988,
+            "validateFamilyNobility": 125.10000000149012
+          },
+          "stringifyMs": 20.299999997019768,
+          "parseMs": 25.5,
+          "hydrationMs": 1565.5,
+          "exportMs": 1671.2000000029802,
+          "bytes": 7268479,
+          "heapBytes": 176974635,
+          "canonicalUnchanged": true
+        },
+        {
+          "repeat": 1,
+          "validationMs": 1288.5999999977648,
+          "phases": {
+            "validateSiegeBattles": 0,
+            "validateCollisionSchedule": 1.3999999985098839,
+            "validateResidentIdentities": 8.400000002235174,
+            "validateRoyalMilitaryIdentities": 1.3999999985098839,
+            "validateMilitarySecessions": 8.100000001490116,
+            "validateRoyalNobility": 72.69999999925494,
+            "validateRoyalHouseholds": 138.80000000074506,
+            "validateFactionLifetime": 0.10000000149011612,
+            "validateRulerLifeRecord": 0.29999999701976776,
+            "validateMilitaryCommandState": 583.3000000007451,
+            "validateInsurgentCommands": 1.3999999985098839,
+            "validateMilitaryNobility": 126.30000000074506,
+            "validateMilitaryHonors": 34.899999998509884,
+            "validateMilitaryAppanages": 22.200000002980232,
+            "validateMilitaryPoliticalParticipation": 3.899999998509884,
+            "validatePoliticalCrises": 7.800000000745058,
+            "validateMilitaryUsurpers": 3.699999999254942,
+            "validateMilitaryNarrativeLinks": 1.800000000745058,
+            "validateMilitaryOfficeAuthorities": 1.199999999254942,
+            "validateMilitaryBattleNames": 0.6999999992549419,
+            "validateRoyalHonors": 19.100000001490116,
+            "validateCourtCoups": 20.699999999254942,
+            "validateAppointmentSelections": 8.699999999254942,
+            "validateMilitaryCourt": 8.600000001490116,
+            "validateRoyalSuccessionStanding": 1,
+            "validateMilitaryFamilies": 60.80000000074506,
+            "validateFamilyNobility": 129.19999999925494
+          },
+          "stringifyMs": 11.300000000745058,
+          "parseMs": 21.600000001490116,
+          "hydrationMs": 1374.8999999985099,
+          "exportMs": 1675.199999999255,
+          "bytes": 7268479,
+          "heapBytes": 169279418,
+          "canonicalUnchanged": true
+        },
+        {
+          "repeat": 2,
+          "validationMs": 1103.5,
+          "phases": {
+            "validateSiegeBattles": 0,
+            "validateCollisionSchedule": 1.4000000022351742,
+            "validateResidentIdentities": 7.5,
+            "validateRoyalMilitaryIdentities": 1.0999999977648258,
+            "validateMilitarySecessions": 6.200000002980232,
+            "validateRoyalNobility": 59.900000002235174,
+            "validateRoyalHouseholds": 133.10000000149012,
+            "validateFactionLifetime": 0.09999999776482582,
+            "validateRulerLifeRecord": 0.6999999992549419,
+            "validateMilitaryCommandState": 458.5,
+            "validateInsurgentCommands": 1.800000000745058,
+            "validateMilitaryNobility": 108.5,
+            "validateMilitaryHonors": 27.800000000745058,
+            "validateMilitaryAppanages": 19.100000001490116,
+            "validateMilitaryPoliticalParticipation": 3.100000001490116,
+            "validatePoliticalCrises": 6.899999998509884,
+            "validateMilitaryUsurpers": 3,
+            "validateMilitaryNarrativeLinks": 2.5,
+            "validateMilitaryOfficeAuthorities": 0.6000000014901161,
+            "validateMilitaryBattleNames": 0.7999999970197678,
+            "validateRoyalHonors": 19.100000001490116,
+            "validateCourtCoups": 14.600000001490116,
+            "validateAppointmentSelections": 7.699999999254942,
+            "validateMilitaryCourt": 9.699999999254942,
+            "validateRoyalSuccessionStanding": 1,
+            "validateMilitaryFamilies": 51.899999998509884,
+            "validateFamilyNobility": 135.90000000223517
+          },
+          "stringifyMs": 11.800000000745058,
+          "parseMs": 18.799999997019768,
+          "hydrationMs": 1173,
+          "exportMs": 1342.2000000029802,
+          "bytes": 7268479,
+          "heapBytes": 216944983,
+          "canonicalUnchanged": true
+        }
+      ],
+      "scope": "Same native DTO, actual complete strict validation, hydration and exporter; no header upgrade, history mutation, RNG or screenshots"
+    },
+    {
+      "seed": "regional-3",
+      "oracleCases": 0,
+      "month": 6000,
+      "saveVersion": 56,
+      "rows": [
+        {
+          "repeat": 0,
+          "validationMs": 2513.199999999255,
+          "phases": {
+            "validateSiegeBattles": 0.19999999925494194,
+            "validateCollisionSchedule": 4,
+            "validateResidentIdentities": 15.300000000745058,
+            "validateRoyalMilitaryIdentities": 3.199999999254942,
+            "validateMilitarySecessions": 8.899999998509884,
+            "validateRoyalNobility": 114.60000000149012,
+            "validateRoyalHouseholds": 221.19999999925494,
+            "validateFactionLifetime": 0.19999999925494194,
+            "validateRulerLifeRecord": 1.199999999254942,
+            "validateMilitaryCommandState": 1315.300000000745,
+            "validateInsurgentCommands": 3.199999999254942,
+            "validateMilitaryNobility": 182.89999999850988,
+            "validateMilitaryHonors": 47.69999999925494,
+            "validateMilitaryAppanages": 29.699999999254942,
+            "validateMilitaryPoliticalParticipation": 4.900000002235174,
+            "validatePoliticalCrises": 11.199999999254942,
+            "validateMilitaryUsurpers": 4.399999998509884,
+            "validateMilitaryNarrativeLinks": 3.800000000745058,
+            "validateMilitaryOfficeAuthorities": 1.699999999254942,
+            "validateMilitaryBattleNames": 2,
+            "validateRoyalHonors": 31.399999998509884,
+            "validateCourtCoups": 36.900000002235174,
+            "validateAppointmentSelections": 17.099999997764826,
+            "validateMilitaryCourt": 22,
+            "validateRoyalSuccessionStanding": 2.5,
+            "validateMilitaryFamilies": 89.19999999925494,
+            "validateFamilyNobility": 303
+          },
+          "stringifyMs": 15.5,
+          "parseMs": 25,
+          "hydrationMs": 3067.900000002235,
+          "exportMs": 2567.199999999255,
+          "bytes": 10546707,
+          "heapBytes": 208970394,
+          "canonicalUnchanged": true
+        },
+        {
+          "repeat": 1,
+          "validationMs": 2401,
+          "phases": {
+            "validateSiegeBattles": 0.09999999776482582,
+            "validateCollisionSchedule": 1.300000000745058,
+            "validateResidentIdentities": 8,
+            "validateRoyalMilitaryIdentities": 2.300000000745058,
+            "validateMilitarySecessions": 5.800000000745058,
+            "validateRoyalNobility": 153.59999999776483,
+            "validateRoyalHouseholds": 218.40000000223517,
+            "validateFactionLifetime": 0.10000000149011612,
+            "validateRulerLifeRecord": 0.5999999940395355,
+            "validateMilitaryCommandState": 1211.1000000014901,
+            "validateInsurgentCommands": 1.8999999985098839,
+            "validateMilitaryNobility": 160.20000000298023,
+            "validateMilitaryHonors": 49.5,
+            "validateMilitaryAppanages": 27.099999997764826,
+            "validateMilitaryPoliticalParticipation": 3.800000000745058,
+            "validatePoliticalCrises": 8.300000000745058,
+            "validateMilitaryUsurpers": 3.800000000745058,
+            "validateMilitaryNarrativeLinks": 1.7999999970197678,
+            "validateMilitaryOfficeAuthorities": 1.2000000029802322,
+            "validateMilitaryBattleNames": 0.7999999970197678,
+            "validateRoyalHonors": 24.199999999254942,
+            "validateCourtCoups": 31.100000001490116,
+            "validateAppointmentSelections": 13.800000000745058,
+            "validateMilitaryCourt": 16.099999997764826,
+            "validateRoyalSuccessionStanding": 2.100000001490116,
+            "validateMilitaryFamilies": 99.5,
+            "validateFamilyNobility": 328
+          },
+          "stringifyMs": 16.599999997764826,
+          "parseMs": 25,
+          "hydrationMs": 2641.60000000149,
+          "exportMs": 2467.5,
+          "bytes": 10546707,
+          "heapBytes": 195828147,
+          "canonicalUnchanged": true
+        },
+        {
+          "repeat": 2,
+          "validationMs": 2305,
+          "phases": {
+            "validateSiegeBattles": 0,
+            "validateCollisionSchedule": 1.0999999977648258,
+            "validateResidentIdentities": 7.100000001490116,
+            "validateRoyalMilitaryIdentities": 2.199999999254942,
+            "validateMilitarySecessions": 4.800000000745058,
+            "validateRoyalNobility": 135.39999999850988,
+            "validateRoyalHouseholds": 211.5,
+            "validateFactionLifetime": 0,
+            "validateRulerLifeRecord": 0.8999999985098839,
+            "validateMilitaryCommandState": 1175.4000000022352,
+            "validateInsurgentCommands": 1.8999999985098839,
+            "validateMilitaryNobility": 165.10000000149012,
+            "validateMilitaryHonors": 44.5,
+            "validateMilitaryAppanages": 27.800000000745058,
+            "validateMilitaryPoliticalParticipation": 3.7999999970197678,
+            "validatePoliticalCrises": 8.800000000745058,
+            "validateMilitaryUsurpers": 3.699999999254942,
+            "validateMilitaryNarrativeLinks": 3.100000001490116,
+            "validateMilitaryOfficeAuthorities": 0.8000000007450581,
+            "validateMilitaryBattleNames": 0.8000000007450581,
+            "validateRoyalHonors": 24.099999997764826,
+            "validateCourtCoups": 28.900000002235174,
+            "validateAppointmentSelections": 13.899999998509884,
+            "validateMilitaryCourt": 13.199999999254942,
+            "validateRoyalSuccessionStanding": 1.800000000745058,
+            "validateMilitaryFamilies": 85.30000000074506,
+            "validateFamilyNobility": 315.80000000074506
+          },
+          "stringifyMs": 16.099999997764826,
+          "parseMs": 24.800000000745058,
+          "hydrationMs": 2377.800000000745,
+          "exportMs": 2757.800000000745,
+          "bytes": 10546707,
+          "heapBytes": 299695234,
+          "canonicalUnchanged": true
+        }
+      ],
+      "scope": "Same native DTO, actual complete strict validation, hydration and exporter; no header upgrade, history mutation, RNG or screenshots"
+    }
+  ],
+  "release500Runtime": {
+    "core12MonthsMedianMs": 581.6999999992549,
+    "coreDeterministic": true,
+    "royalOpenMedianMs": 25.099999997764826,
+    "familyOpenMedianMs": 8.099999997764826,
+    "royalReadingUnchanged": true,
+    "familyReadingUnchanged": true,
+    "inputSaveVersion": 56,
+    "runtimeSaveVersion": 56,
+    "headerAdjusted": false,
+    "continuation": {
+      "months": 12,
+      "deterministic": true,
+      "secondRead": true
+    },
+    "maxRoyalRenderedNodes": 6
+  },
+  "limitations": [
+    "Three-repeat timings are local CPU/export/hydration and actual React measurements, not human acceptance or IndexedDB/disk wait.",
+    "Same V55 DTO index experiment happened before V56 policy/schema changes. It does not allow continuing V55 worlds in the release.",
+    "Whole-renderer JS heap samples include decoded fixtures, Core, and optional legacy-comparison cases; they do not prove lower retained memory.",
+    "Direct new military ZI source to inherited NAN has zero natural samples in these cohorts; controlled published-LOW Core proves the path. Low-charter houses did naturally upgrade and transmit later titles.",
+    "No automatic office, food estate for lower ranks, crown-pool admission, independent defensive-only ennoblement, mother/marriage model, or main-RNG fertility draw.",
+    "New rules legitimately diverge later population, warfare and RNG; no probability parameters for warfare, politics, map growth or normal office advancement were changed.",
+    "Overlapping seeds/ages/configurations are not independent frequency totals. Initial ZI is zero in the 100-year sample; its two ZI grants are actual promotions."
+  ],
+  "productionSourceDigest": "b3cdea972c238ac883e2de5ee96acf9621643fce06068bb5bca1fd6ce5eb90ac"
 }

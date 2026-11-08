@@ -39,5 +39,5 @@ it('low merit grants require real victories, may skip ranks, and keep original u
  const g=nextNobleGrant(x.p,x.f,x.events,24,x.team,x.d,'MEDIUM')!;expect(g.rank).toBe('NAN');x.p.nobilityHistory=[g];expect(nextNobleGrant(x.p,x.f,x.events,180,x.team,x.d,'MEDIUM')).toBeUndefined();
  x.capture('two','b',30);const zi=nextNobleGrant(x.p,x.f,x.events,36,x.team,x.d,'MEDIUM')!;expect(zi).toMatchObject({rank:'ZI',previousRank:'NAN',cityIds:['a','b']});x.p.nobilityHistory.push(zi);
  const bo=nextNobleGrant(x.p,x.f,x.events,60,x.team,x.d,'MEDIUM')!;expect(bo).toMatchObject({rank:'BO',previousRank:'ZI'});
- const y=fixture();y.capture('a','a');y.capture('b','b',24);expect(nextNobleGrant(y.p,y.f,y.events,60,y.team,y.d,'MEDIUM')).toMatchObject({rank:'BO',previousRank:'NONE'});
+ const y=fixture();y.capture('a','a');y.capture('b','b',24);expect(nextNobleGrant(y.p,y.f,y.events,48,y.team,y.d,'LOW')).toMatchObject({rank:'ZI',previousRank:'NONE'});expect(nextNobleGrant(y.p,y.f,y.events,60,y.team,y.d,'MEDIUM')).toMatchObject({rank:'BO',previousRank:'NONE'});
 });
