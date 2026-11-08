@@ -1,0 +1,2012 @@
+{
+  "scope": "Fixed seeds from actual Core native-version snapshots. Directed tests excluded. New royal registration, death proof and noble acts are new authoritative evidence; raw save hashes intentionally differ.",
+  "rows": [
+    {
+      "seed": "regional-1",
+      "years": 100,
+      "baseline": {
+        "population": 135,
+        "countries": 7,
+        "activeCountries": 6,
+        "families": 3,
+        "members": 9,
+        "militaryPeople": 30,
+        "royalMilitaryPeople": 7,
+        "ordinaryAppointments": 23,
+        "royalAppointments": 7,
+        "activeFormations": 1,
+        "royalMeritGrantedPeople": 1,
+        "royalMeritGrantEvents": 2,
+        "royalActs": {},
+        "royalEnds": {},
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 0,
+        "oldFamilyPolityFounders": 0,
+        "crossKinFoundersWithRegisteredChild": 0,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 0,
+        "sieges": 1087,
+        "events": 2599,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 7347,
+        "bytes": 2076349
+      },
+      "candidate": {
+        "population": 135,
+        "countries": 7,
+        "activeCountries": 6,
+        "families": 3,
+        "members": 9,
+        "militaryPeople": 30,
+        "royalMilitaryPeople": 7,
+        "ordinaryAppointments": 23,
+        "royalAppointments": 7,
+        "activeFormations": 1,
+        "royalMeritGrantedPeople": 1,
+        "royalMeritGrantEvents": 2,
+        "royalActs": {
+          "GRANTED": 1,
+          "UPGRADED": 1,
+          "ENDED": 1
+        },
+        "royalEnds": {
+          "ACCESSION": 1
+        },
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 0,
+        "oldFamilyPolityFounders": 0,
+        "crossKinFoundersWithRegisteredChild": 0,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 0,
+        "sieges": 1087,
+        "events": 2710,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 7347,
+        "bytes": 2137778
+      },
+      "commonStateEqual": {
+        "users": true,
+        "units": true,
+        "cities": true,
+        "blocks": true,
+        "factions": true,
+        "worldRandom": true,
+        "collisionSchedule": true,
+        "originalDynasties": true,
+        "militaryAndFamiliesAtSameBoundaries": true,
+        "originalHistoryIds": true
+      }
+    },
+    {
+      "seed": "regional-2",
+      "years": 100,
+      "baseline": {
+        "population": 130,
+        "countries": 7,
+        "activeCountries": 5,
+        "families": 0,
+        "members": 0,
+        "militaryPeople": 24,
+        "royalMilitaryPeople": 4,
+        "ordinaryAppointments": 20,
+        "royalAppointments": 4,
+        "activeFormations": 1,
+        "royalMeritGrantedPeople": 1,
+        "royalMeritGrantEvents": 3,
+        "royalActs": {},
+        "royalEnds": {},
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 0,
+        "oldFamilyPolityFounders": 0,
+        "crossKinFoundersWithRegisteredChild": 0,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 0,
+        "sieges": 935,
+        "events": 2231,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 7130,
+        "bytes": 1822213
+      },
+      "candidate": {
+        "population": 130,
+        "countries": 7,
+        "activeCountries": 5,
+        "families": 0,
+        "members": 0,
+        "militaryPeople": 24,
+        "royalMilitaryPeople": 4,
+        "ordinaryAppointments": 20,
+        "royalAppointments": 4,
+        "activeFormations": 1,
+        "royalMeritGrantedPeople": 1,
+        "royalMeritGrantEvents": 3,
+        "royalActs": {
+          "GRANTED": 1,
+          "UPGRADED": 2
+        },
+        "royalEnds": {},
+        "activeRoyalRanks": {
+          "GONG": 1
+        },
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 0,
+        "oldFamilyPolityFounders": 0,
+        "crossKinFoundersWithRegisteredChild": 0,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 0,
+        "sieges": 935,
+        "events": 2321,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 7130,
+        "bytes": 1873299
+      },
+      "commonStateEqual": {
+        "users": true,
+        "units": true,
+        "cities": true,
+        "blocks": true,
+        "factions": true,
+        "worldRandom": true,
+        "collisionSchedule": true,
+        "originalDynasties": true,
+        "militaryAndFamiliesAtSameBoundaries": true,
+        "originalHistoryIds": true
+      }
+    },
+    {
+      "seed": "regional-3",
+      "years": 100,
+      "baseline": {
+        "population": 140,
+        "countries": 11,
+        "activeCountries": 8,
+        "families": 5,
+        "members": 25,
+        "militaryPeople": 33,
+        "royalMilitaryPeople": 2,
+        "ordinaryAppointments": 31,
+        "royalAppointments": 2,
+        "activeFormations": 5,
+        "royalMeritGrantedPeople": 0,
+        "royalMeritGrantEvents": 0,
+        "royalActs": {},
+        "royalEnds": {},
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 1,
+        "oldFamilyPolityFounders": 1,
+        "crossKinFoundersWithRegisteredChild": 0,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 1,
+        "sieges": 987,
+        "events": 2570,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 7461,
+        "bytes": 2200477
+      },
+      "candidate": {
+        "population": 140,
+        "countries": 11,
+        "activeCountries": 8,
+        "families": 5,
+        "members": 25,
+        "militaryPeople": 33,
+        "royalMilitaryPeople": 2,
+        "ordinaryAppointments": 31,
+        "royalAppointments": 2,
+        "activeFormations": 5,
+        "royalMeritGrantedPeople": 0,
+        "royalMeritGrantEvents": 0,
+        "royalActs": {},
+        "royalEnds": {},
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 1,
+        "oldFamilyPolityFounders": 1,
+        "crossKinFoundersWithRegisteredChild": 0,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 1,
+        "sieges": 987,
+        "events": 2671,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 7461,
+        "bytes": 2255694
+      },
+      "commonStateEqual": {
+        "users": true,
+        "units": true,
+        "cities": true,
+        "blocks": true,
+        "factions": true,
+        "worldRandom": true,
+        "collisionSchedule": true,
+        "originalDynasties": true,
+        "militaryAndFamiliesAtSameBoundaries": true,
+        "originalHistoryIds": true
+      }
+    },
+    {
+      "seed": "regional-4",
+      "years": 100,
+      "baseline": {
+        "population": 133,
+        "countries": 9,
+        "activeCountries": 7,
+        "families": 2,
+        "members": 5,
+        "militaryPeople": 37,
+        "royalMilitaryPeople": 7,
+        "ordinaryAppointments": 30,
+        "royalAppointments": 7,
+        "activeFormations": 1,
+        "royalMeritGrantedPeople": 1,
+        "royalMeritGrantEvents": 1,
+        "royalActs": {},
+        "royalEnds": {},
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 0,
+        "oldFamilyPolityFounders": 0,
+        "crossKinFoundersWithRegisteredChild": 0,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 0,
+        "sieges": 1062,
+        "events": 2653,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 7399,
+        "bytes": 2199501
+      },
+      "candidate": {
+        "population": 133,
+        "countries": 9,
+        "activeCountries": 7,
+        "families": 2,
+        "members": 5,
+        "militaryPeople": 37,
+        "royalMilitaryPeople": 7,
+        "ordinaryAppointments": 30,
+        "royalAppointments": 7,
+        "activeFormations": 1,
+        "royalMeritGrantedPeople": 1,
+        "royalMeritGrantEvents": 1,
+        "royalActs": {
+          "GRANTED": 1,
+          "ENDED": 1
+        },
+        "royalEnds": {
+          "NO_HEIR": 1
+        },
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 0,
+        "oldFamilyPolityFounders": 0,
+        "crossKinFoundersWithRegisteredChild": 0,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 0,
+        "sieges": 1062,
+        "events": 2773,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 7399,
+        "bytes": 2264452
+      },
+      "commonStateEqual": {
+        "users": true,
+        "units": true,
+        "cities": true,
+        "blocks": true,
+        "factions": true,
+        "worldRandom": true,
+        "collisionSchedule": true,
+        "originalDynasties": true,
+        "militaryAndFamiliesAtSameBoundaries": true,
+        "originalHistoryIds": true
+      }
+    },
+    {
+      "seed": "regional-5",
+      "years": 100,
+      "baseline": {
+        "population": 143,
+        "countries": 7,
+        "activeCountries": 5,
+        "families": 1,
+        "members": 1,
+        "militaryPeople": 20,
+        "royalMilitaryPeople": 2,
+        "ordinaryAppointments": 18,
+        "royalAppointments": 2,
+        "activeFormations": 3,
+        "royalMeritGrantedPeople": 0,
+        "royalMeritGrantEvents": 0,
+        "royalActs": {},
+        "royalEnds": {},
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 0,
+        "oldFamilyPolityFounders": 0,
+        "crossKinFoundersWithRegisteredChild": 0,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 0,
+        "sieges": 987,
+        "events": 2251,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 6945,
+        "bytes": 1787528
+      },
+      "candidate": {
+        "population": 143,
+        "countries": 7,
+        "activeCountries": 5,
+        "families": 1,
+        "members": 1,
+        "militaryPeople": 20,
+        "royalMilitaryPeople": 2,
+        "ordinaryAppointments": 18,
+        "royalAppointments": 2,
+        "activeFormations": 3,
+        "royalMeritGrantedPeople": 0,
+        "royalMeritGrantEvents": 0,
+        "royalActs": {},
+        "royalEnds": {},
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 0,
+        "oldFamilyPolityFounders": 0,
+        "crossKinFoundersWithRegisteredChild": 0,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 0,
+        "sieges": 987,
+        "events": 2339,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 6945,
+        "bytes": 1832574
+      },
+      "commonStateEqual": {
+        "users": true,
+        "units": true,
+        "cities": true,
+        "blocks": true,
+        "factions": true,
+        "worldRandom": true,
+        "collisionSchedule": true,
+        "originalDynasties": true,
+        "militaryAndFamiliesAtSameBoundaries": true,
+        "originalHistoryIds": true
+      }
+    },
+    {
+      "seed": "regional-6",
+      "years": 100,
+      "baseline": {
+        "population": 137,
+        "countries": 7,
+        "activeCountries": 4,
+        "families": 2,
+        "members": 23,
+        "militaryPeople": 23,
+        "royalMilitaryPeople": 1,
+        "ordinaryAppointments": 22,
+        "royalAppointments": 1,
+        "activeFormations": 3,
+        "royalMeritGrantedPeople": 0,
+        "royalMeritGrantEvents": 0,
+        "royalActs": {},
+        "royalEnds": {},
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 0,
+        "oldFamilyPolityFounders": 0,
+        "crossKinFoundersWithRegisteredChild": 0,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 0,
+        "sieges": 873,
+        "events": 2108,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 6649,
+        "bytes": 1735313
+      },
+      "candidate": {
+        "population": 137,
+        "countries": 7,
+        "activeCountries": 4,
+        "families": 2,
+        "members": 23,
+        "militaryPeople": 23,
+        "royalMilitaryPeople": 1,
+        "ordinaryAppointments": 22,
+        "royalAppointments": 1,
+        "activeFormations": 3,
+        "royalMeritGrantedPeople": 0,
+        "royalMeritGrantEvents": 0,
+        "royalActs": {},
+        "royalEnds": {},
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 0,
+        "oldFamilyPolityFounders": 0,
+        "crossKinFoundersWithRegisteredChild": 0,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 0,
+        "sieges": 873,
+        "events": 2187,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 6649,
+        "bytes": 1776253
+      },
+      "commonStateEqual": {
+        "users": true,
+        "units": true,
+        "cities": true,
+        "blocks": true,
+        "factions": true,
+        "worldRandom": true,
+        "collisionSchedule": true,
+        "originalDynasties": true,
+        "militaryAndFamiliesAtSameBoundaries": true,
+        "originalHistoryIds": true
+      }
+    },
+    {
+      "seed": "regional-7",
+      "years": 100,
+      "baseline": {
+        "population": 138,
+        "countries": 7,
+        "activeCountries": 5,
+        "families": 2,
+        "members": 7,
+        "militaryPeople": 26,
+        "royalMilitaryPeople": 6,
+        "ordinaryAppointments": 20,
+        "royalAppointments": 6,
+        "activeFormations": 1,
+        "royalMeritGrantedPeople": 1,
+        "royalMeritGrantEvents": 1,
+        "royalActs": {},
+        "royalEnds": {},
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 0,
+        "oldFamilyPolityFounders": 0,
+        "crossKinFoundersWithRegisteredChild": 0,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 0,
+        "sieges": 984,
+        "events": 2381,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 7275,
+        "bytes": 1969551
+      },
+      "candidate": {
+        "population": 138,
+        "countries": 7,
+        "activeCountries": 5,
+        "families": 2,
+        "members": 7,
+        "militaryPeople": 26,
+        "royalMilitaryPeople": 6,
+        "ordinaryAppointments": 20,
+        "royalAppointments": 6,
+        "activeFormations": 1,
+        "royalMeritGrantedPeople": 1,
+        "royalMeritGrantEvents": 1,
+        "royalActs": {
+          "GRANTED": 1,
+          "ENDED": 1
+        },
+        "royalEnds": {
+          "NO_HEIR": 1
+        },
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 0,
+        "oldFamilyPolityFounders": 0,
+        "crossKinFoundersWithRegisteredChild": 0,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 0,
+        "sieges": 984,
+        "events": 2482,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 7275,
+        "bytes": 2025245
+      },
+      "commonStateEqual": {
+        "users": true,
+        "units": true,
+        "cities": true,
+        "blocks": true,
+        "factions": true,
+        "worldRandom": true,
+        "collisionSchedule": true,
+        "originalDynasties": true,
+        "militaryAndFamiliesAtSameBoundaries": true,
+        "originalHistoryIds": true
+      }
+    },
+    {
+      "seed": "regional-8",
+      "years": 100,
+      "baseline": {
+        "population": 131,
+        "countries": 7,
+        "activeCountries": 6,
+        "families": 1,
+        "members": 6,
+        "militaryPeople": 34,
+        "royalMilitaryPeople": 5,
+        "ordinaryAppointments": 29,
+        "royalAppointments": 5,
+        "activeFormations": 4,
+        "royalMeritGrantedPeople": 1,
+        "royalMeritGrantEvents": 1,
+        "royalActs": {},
+        "royalEnds": {},
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 0,
+        "oldFamilyPolityFounders": 0,
+        "crossKinFoundersWithRegisteredChild": 0,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 0,
+        "sieges": 1036,
+        "events": 2471,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 7175,
+        "bytes": 2038952
+      },
+      "candidate": {
+        "population": 131,
+        "countries": 7,
+        "activeCountries": 6,
+        "families": 1,
+        "members": 6,
+        "militaryPeople": 34,
+        "royalMilitaryPeople": 5,
+        "ordinaryAppointments": 29,
+        "royalAppointments": 5,
+        "activeFormations": 4,
+        "royalMeritGrantedPeople": 1,
+        "royalMeritGrantEvents": 1,
+        "royalActs": {
+          "GRANTED": 1
+        },
+        "royalEnds": {},
+        "activeRoyalRanks": {
+          "BO": 1
+        },
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 0,
+        "oldFamilyPolityFounders": 0,
+        "crossKinFoundersWithRegisteredChild": 0,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 0,
+        "sieges": 1036,
+        "events": 2580,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 7175,
+        "bytes": 2097641
+      },
+      "commonStateEqual": {
+        "users": true,
+        "units": true,
+        "cities": true,
+        "blocks": true,
+        "factions": true,
+        "worldRandom": true,
+        "collisionSchedule": true,
+        "originalDynasties": true,
+        "militaryAndFamiliesAtSameBoundaries": true,
+        "originalHistoryIds": true
+      }
+    },
+    {
+      "seed": "regional-1",
+      "years": 200,
+      "baseline": {
+        "population": 133,
+        "countries": 8,
+        "activeCountries": 5,
+        "families": 5,
+        "members": 35,
+        "militaryPeople": 55,
+        "royalMilitaryPeople": 12,
+        "ordinaryAppointments": 43,
+        "royalAppointments": 12,
+        "activeFormations": 1,
+        "royalMeritGrantedPeople": 3,
+        "royalMeritGrantEvents": 6,
+        "royalActs": {},
+        "royalEnds": {},
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 0,
+        "oldFamilyPolityFounders": 0,
+        "crossKinFoundersWithRegisteredChild": 0,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 1,
+        "sieges": 2391,
+        "events": 5675,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 14704,
+        "bytes": 4195539
+      },
+      "candidate": {
+        "population": 133,
+        "countries": 8,
+        "activeCountries": 5,
+        "families": 5,
+        "members": 35,
+        "militaryPeople": 55,
+        "royalMilitaryPeople": 12,
+        "ordinaryAppointments": 43,
+        "royalAppointments": 12,
+        "activeFormations": 1,
+        "royalMeritGrantedPeople": 3,
+        "royalMeritGrantEvents": 6,
+        "royalActs": {
+          "GRANTED": 3,
+          "UPGRADED": 3,
+          "ENDED": 2,
+          "SUCCEEDED": 1
+        },
+        "royalEnds": {
+          "ACCESSION": 1,
+          "NO_HEIR": 1
+        },
+        "activeRoyalRanks": {
+          "HOU": 1
+        },
+        "inheritedRoyalRanks": {
+          "HOU": 1
+        },
+        "royalSourcesWithSuccessor": 1,
+        "royalFamilyOrigins": 0,
+        "oldFamilyPolityFounders": 0,
+        "crossKinFoundersWithRegisteredChild": 0,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 1,
+        "sieges": 2391,
+        "events": 5890,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 14704,
+        "bytes": 4316151
+      },
+      "commonStateEqual": {
+        "users": true,
+        "units": true,
+        "cities": true,
+        "blocks": true,
+        "factions": true,
+        "worldRandom": true,
+        "collisionSchedule": true,
+        "originalDynasties": true,
+        "militaryAndFamiliesAtSameBoundaries": true,
+        "originalHistoryIds": true
+      }
+    },
+    {
+      "seed": "regional-2",
+      "years": 200,
+      "baseline": {
+        "population": 137,
+        "countries": 7,
+        "activeCountries": 4,
+        "families": 1,
+        "members": 5,
+        "militaryPeople": 36,
+        "royalMilitaryPeople": 4,
+        "ordinaryAppointments": 32,
+        "royalAppointments": 4,
+        "activeFormations": 2,
+        "royalMeritGrantedPeople": 1,
+        "royalMeritGrantEvents": 3,
+        "royalActs": {},
+        "royalEnds": {},
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 0,
+        "oldFamilyPolityFounders": 0,
+        "crossKinFoundersWithRegisteredChild": 0,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 0,
+        "sieges": 2191,
+        "events": 4993,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 13956,
+        "bytes": 3564822
+      },
+      "candidate": {
+        "population": 137,
+        "countries": 7,
+        "activeCountries": 4,
+        "families": 1,
+        "members": 5,
+        "militaryPeople": 36,
+        "royalMilitaryPeople": 4,
+        "ordinaryAppointments": 32,
+        "royalAppointments": 4,
+        "activeFormations": 2,
+        "royalMeritGrantedPeople": 1,
+        "royalMeritGrantEvents": 3,
+        "royalActs": {
+          "GRANTED": 1,
+          "UPGRADED": 2,
+          "ENDED": 1
+        },
+        "royalEnds": {
+          "NO_HEIR": 1
+        },
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 0,
+        "oldFamilyPolityFounders": 0,
+        "crossKinFoundersWithRegisteredChild": 0,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 0,
+        "sieges": 2191,
+        "events": 5162,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 13956,
+        "bytes": 3654116
+      },
+      "commonStateEqual": {
+        "users": true,
+        "units": true,
+        "cities": true,
+        "blocks": true,
+        "factions": true,
+        "worldRandom": true,
+        "collisionSchedule": true,
+        "originalDynasties": true,
+        "militaryAndFamiliesAtSameBoundaries": true,
+        "originalHistoryIds": true
+      }
+    },
+    {
+      "seed": "regional-3",
+      "years": 200,
+      "baseline": {
+        "population": 137,
+        "countries": 16,
+        "activeCountries": 6,
+        "families": 7,
+        "members": 79,
+        "militaryPeople": 61,
+        "royalMilitaryPeople": 5,
+        "ordinaryAppointments": 56,
+        "royalAppointments": 5,
+        "activeFormations": 1,
+        "royalMeritGrantedPeople": 3,
+        "royalMeritGrantEvents": 7,
+        "royalActs": {},
+        "royalEnds": {},
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 2,
+        "oldFamilyPolityFounders": 2,
+        "crossKinFoundersWithRegisteredChild": 2,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 1,
+        "sieges": 2201,
+        "events": 5694,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 15371,
+        "bytes": 4459260
+      },
+      "candidate": {
+        "population": 137,
+        "countries": 16,
+        "activeCountries": 6,
+        "families": 7,
+        "members": 79,
+        "militaryPeople": 61,
+        "royalMilitaryPeople": 5,
+        "ordinaryAppointments": 56,
+        "royalAppointments": 5,
+        "activeFormations": 1,
+        "royalMeritGrantedPeople": 3,
+        "royalMeritGrantEvents": 7,
+        "royalActs": {
+          "GRANTED": 3,
+          "UPGRADED": 4,
+          "ENDED": 3
+        },
+        "royalEnds": {
+          "NO_HEIR": 3
+        },
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 2,
+        "oldFamilyPolityFounders": 2,
+        "crossKinFoundersWithRegisteredChild": 2,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 1,
+        "sieges": 2201,
+        "events": 5899,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 15371,
+        "bytes": 4581349
+      },
+      "commonStateEqual": {
+        "users": true,
+        "units": true,
+        "cities": true,
+        "blocks": true,
+        "factions": true,
+        "worldRandom": true,
+        "collisionSchedule": true,
+        "originalDynasties": true,
+        "militaryAndFamiliesAtSameBoundaries": true,
+        "originalHistoryIds": true
+      }
+    },
+    {
+      "seed": "regional-4",
+      "years": 200,
+      "baseline": {
+        "population": 131,
+        "countries": 11,
+        "activeCountries": 4,
+        "families": 4,
+        "members": 19,
+        "militaryPeople": 63,
+        "royalMilitaryPeople": 11,
+        "ordinaryAppointments": 52,
+        "royalAppointments": 11,
+        "activeFormations": 0,
+        "royalMeritGrantedPeople": 2,
+        "royalMeritGrantEvents": 4,
+        "royalActs": {},
+        "royalEnds": {},
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 0,
+        "oldFamilyPolityFounders": 0,
+        "crossKinFoundersWithRegisteredChild": 0,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 3,
+        "sieges": 2203,
+        "events": 5395,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 15137,
+        "bytes": 4167051
+      },
+      "candidate": {
+        "population": 131,
+        "countries": 11,
+        "activeCountries": 4,
+        "families": 4,
+        "members": 19,
+        "militaryPeople": 63,
+        "royalMilitaryPeople": 11,
+        "ordinaryAppointments": 52,
+        "royalAppointments": 11,
+        "activeFormations": 0,
+        "royalMeritGrantedPeople": 2,
+        "royalMeritGrantEvents": 4,
+        "royalActs": {
+          "GRANTED": 2,
+          "ENDED": 2,
+          "UPGRADED": 2
+        },
+        "royalEnds": {
+          "NO_HEIR": 2
+        },
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 0,
+        "oldFamilyPolityFounders": 0,
+        "crossKinFoundersWithRegisteredChild": 0,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 3,
+        "sieges": 2203,
+        "events": 5621,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 15137,
+        "bytes": 4289256
+      },
+      "commonStateEqual": {
+        "users": true,
+        "units": true,
+        "cities": true,
+        "blocks": true,
+        "factions": true,
+        "worldRandom": true,
+        "collisionSchedule": true,
+        "originalDynasties": true,
+        "militaryAndFamiliesAtSameBoundaries": true,
+        "originalHistoryIds": true
+      }
+    },
+    {
+      "seed": "regional-3",
+      "years": 300,
+      "baseline": {
+        "population": 134,
+        "countries": 18,
+        "activeCountries": 8,
+        "families": 11,
+        "members": 105,
+        "militaryPeople": 88,
+        "royalMilitaryPeople": 11,
+        "ordinaryAppointments": 77,
+        "royalAppointments": 11,
+        "activeFormations": 1,
+        "royalMeritGrantedPeople": 4,
+        "royalMeritGrantEvents": 8,
+        "royalActs": {},
+        "royalEnds": {},
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 2,
+        "oldFamilyPolityFounders": 2,
+        "crossKinFoundersWithRegisteredChild": 2,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 3,
+        "sieges": 3473,
+        "events": 8722,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 22795,
+        "bytes": 6632881
+      },
+      "candidate": {
+        "population": 134,
+        "countries": 18,
+        "activeCountries": 8,
+        "families": 11,
+        "members": 105,
+        "militaryPeople": 88,
+        "royalMilitaryPeople": 11,
+        "ordinaryAppointments": 77,
+        "royalAppointments": 11,
+        "activeFormations": 1,
+        "royalMeritGrantedPeople": 4,
+        "royalMeritGrantEvents": 8,
+        "royalActs": {
+          "GRANTED": 4,
+          "ENDED": 4,
+          "UPGRADED": 4
+        },
+        "royalEnds": {
+          "REVOKED": 1,
+          "NO_HEIR": 3
+        },
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 2,
+        "oldFamilyPolityFounders": 2,
+        "crossKinFoundersWithRegisteredChild": 2,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 3,
+        "sieges": 3473,
+        "events": 9031,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 22795,
+        "bytes": 6813539
+      },
+      "commonStateEqual": {
+        "users": true,
+        "units": true,
+        "cities": true,
+        "blocks": true,
+        "factions": true,
+        "worldRandom": true,
+        "collisionSchedule": true,
+        "originalDynasties": true,
+        "militaryAndFamiliesAtSameBoundaries": true,
+        "originalHistoryIds": true
+      }
+    },
+    {
+      "seed": "regional-3",
+      "years": 500,
+      "baseline": {
+        "population": 118,
+        "countries": 37,
+        "activeCountries": 9,
+        "families": 23,
+        "members": 177,
+        "militaryPeople": 161,
+        "royalMilitaryPeople": 25,
+        "ordinaryAppointments": 136,
+        "royalAppointments": 25,
+        "activeFormations": 3,
+        "royalMeritGrantedPeople": 6,
+        "royalMeritGrantEvents": 10,
+        "royalActs": {},
+        "royalEnds": {},
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {},
+        "royalSourcesWithSuccessor": 0,
+        "royalFamilyOrigins": 6,
+        "oldFamilyPolityFounders": 6,
+        "crossKinFoundersWithRegisteredChild": 3,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 5,
+        "sieges": 6051,
+        "events": 15619,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 38681,
+        "bytes": 12000870
+      },
+      "candidate": {
+        "population": 118,
+        "countries": 37,
+        "activeCountries": 9,
+        "families": 23,
+        "members": 177,
+        "militaryPeople": 161,
+        "royalMilitaryPeople": 25,
+        "ordinaryAppointments": 136,
+        "royalAppointments": 25,
+        "activeFormations": 3,
+        "royalMeritGrantedPeople": 6,
+        "royalMeritGrantEvents": 10,
+        "royalActs": {
+          "GRANTED": 6,
+          "ENDED": 6,
+          "SUCCEEDED": 1,
+          "UPGRADED": 4
+        },
+        "royalEnds": {
+          "REVOKED": 1,
+          "NO_HEIR": 5
+        },
+        "activeRoyalRanks": {},
+        "inheritedRoyalRanks": {
+          "ZI": 1
+        },
+        "royalSourcesWithSuccessor": 1,
+        "royalFamilyOrigins": 6,
+        "oldFamilyPolityFounders": 6,
+        "crossKinFoundersWithRegisteredChild": 3,
+        "oldCountryChildrenAppointed": 0,
+        "courtAttempts": 5,
+        "sieges": 6051,
+        "events": 16156,
+        "duplicateEventIds": 0,
+        "duplicateActiveTroopAssignments": 0,
+        "duplicatePeople": 0,
+        "duplicateRoyalPeople": 0,
+        "rng": 38681,
+        "bytes": 12317850
+      },
+      "commonStateEqual": {
+        "users": true,
+        "units": true,
+        "cities": true,
+        "blocks": true,
+        "factions": true,
+        "worldRandom": true,
+        "collisionSchedule": true,
+        "originalDynasties": true,
+        "militaryAndFamiliesAtSameBoundaries": true,
+        "originalHistoryIds": true
+      }
+    }
+  ],
+  "baselineHead": "299e011d639412e38b6781acaa23c41645e79d9b",
+  "target": {
+    "app": "v0.99931z57",
+    "package": "0.99.223",
+    "worldSave": 54,
+    "requiresNewWorld": true,
+    "oldSlotsDeleted": false
+  },
+  "comparisonPolicy": {
+    "newEventTypes": [
+      "royal-person-registered",
+      "royal-noble-act",
+      "royal-kin-died",
+      "royal-person-transferred"
+    ],
+    "historyBoundaries": "HistoryIndex and eventIndex are event-count boundaries; remove only the added event types before the boundary to compare the same original transaction. No ordinary facts or events are removed from either actual save.",
+    "existingDynastyProjection": "Exclude only new registration and royalNobility fields.",
+    "rawWholeSaveHashesExpectedToMatch": false,
+    "additionalReadOnlyPatch": "Final living former-grantee label says 曾封 instead of 生前受封; no simulation effect."
+  },
+  "performance": {
+    "scope": "Actual 4x Core twelve-month steps and real shared-tree React controls; three repeats per native saved world, baseline then candidate sequentially. User desktop may be active; timings are limited measurements, not visual acceptance or proof of whole-game speedup. JSON size is compact uncompressed UTF-8.",
+    "rows": [
+      {
+        "years": 100,
+        "baseline": {
+          "stepWallMsMedian": 522.1,
+          "royalTitleMsMedian": 0,
+          "annualFamilyMsMedian": 1.2,
+          "titleMsMedian": 0.3,
+          "entryMsMedian": 0,
+          "exportMsMedian": 151.5,
+          "hydrationMsMedian": 164.2,
+          "deterministic4x12Months": true,
+          "families": 5,
+          "members": 25,
+          "maxFamilyMembers": 13,
+          "familyUiUnchanged": true,
+          "maxFamilyMountedNodes": 2,
+          "familyCache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 2,
+            "hits": 26,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 2,
+            "events": 2570
+          },
+          "list-openMsMedian": 5.4,
+          "family-openMsMedian": 6,
+          "switch-familyMsMedian": 5.2,
+          "select-personMsMedian": 3.1,
+          "zoomMsMedian": 3.7,
+          "fitMsMedian": 2.9,
+          "reopenMsMedian": 2.5,
+          "royalTreeUnchanged": true,
+          "largestRoyalHousePeople": 14,
+          "maxRoyalMountedNodes": 9,
+          "royalTreeOpenMsMedian": 7.5,
+          "royalTreeSelectMsMedian": 4.3,
+          "royalTreeZoomMsMedian": 3.2,
+          "royalTreeFitMsMedian": 5.4,
+          "royalPanel12MonthContinuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "sources": [
+            {
+              "file": "/private/tmp/wanguoji-z57-baseline/scripts/testing/results/family-step-performance-z57-perf-baseline-100.json",
+              "sha256": "7283274b9c986ac65c1ad6d8ca180ecdc7b4da7f01bc8d60a77a06fcdab2b0a6"
+            },
+            {
+              "file": "/private/tmp/wanguoji-z57-baseline/scripts/testing/results/family-performance-z57-perf-baseline-100.json",
+              "sha256": "a79f3e88ed275b91735cec4162b81ddbee32d0cfbf3a1aec40c85cc86ec41707"
+            },
+            {
+              "file": "/private/tmp/wanguoji-z57-baseline/scripts/testing/results/royal-panel-performance-z57-perf-baseline-100.json",
+              "sha256": "85a1454205097fd58371f8213ba5bfb9ad14a5969aa24c320529bf27b1702d82"
+            }
+          ]
+        },
+        "candidate": {
+          "stepWallMsMedian": 544.4,
+          "royalTitleMsMedian": 0.2,
+          "annualFamilyMsMedian": 1.2,
+          "titleMsMedian": 0.4,
+          "entryMsMedian": 0.1,
+          "exportMsMedian": 165.8,
+          "hydrationMsMedian": 189.6,
+          "deterministic4x12Months": true,
+          "families": 5,
+          "members": 25,
+          "maxFamilyMembers": 13,
+          "familyUiUnchanged": true,
+          "maxFamilyMountedNodes": 2,
+          "familyCache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 2,
+            "hits": 26,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 2,
+            "events": 2671
+          },
+          "list-openMsMedian": 5.3,
+          "family-openMsMedian": 5.5,
+          "switch-familyMsMedian": 4.5,
+          "select-personMsMedian": 4.1,
+          "zoomMsMedian": 3.5,
+          "fitMsMedian": 3,
+          "reopenMsMedian": 2.3,
+          "royalTreeUnchanged": true,
+          "largestRoyalHousePeople": 14,
+          "maxRoyalMountedNodes": 9,
+          "royalTreeOpenMsMedian": 9.2,
+          "royalTreeSelectMsMedian": 4.3,
+          "royalTreeZoomMsMedian": 3.4,
+          "royalTreeFitMsMedian": 4.9,
+          "royalPanel12MonthContinuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "sources": [
+            {
+              "file": "/Users/timvan/Desktop/xm/wanguoji/logs/z57-performance-raw/family-step-performance-z57-perf-candidate-100.json",
+              "sha256": "037e156271035a1053e6510470dbad4fb1b0294145a4268e585b6c32af98d151"
+            },
+            {
+              "file": "/Users/timvan/Desktop/xm/wanguoji/logs/z57-performance-raw/family-performance-z57-perf-candidate-100.json",
+              "sha256": "94bda1a79723ab724518ce75ecdd2896745b4c1e7f58260a7abadbf07e547acd"
+            },
+            {
+              "file": "/Users/timvan/Desktop/xm/wanguoji/logs/z57-performance-raw/royal-panel-performance-z57-perf-candidate-100.json",
+              "sha256": "ae7676888d351ce8e5000b345169689490ea48bdd8551a835207594b35232132"
+            }
+          ]
+        }
+      },
+      {
+        "years": 200,
+        "baseline": {
+          "stepWallMsMedian": 399.5,
+          "royalTitleMsMedian": 0,
+          "annualFamilyMsMedian": 0.8,
+          "titleMsMedian": 0.4,
+          "entryMsMedian": 0,
+          "exportMsMedian": 516,
+          "hydrationMsMedian": 509,
+          "deterministic4x12Months": true,
+          "families": 7,
+          "members": 79,
+          "maxFamilyMembers": 21,
+          "familyUiUnchanged": true,
+          "maxFamilyMountedNodes": 3,
+          "familyCache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 2,
+            "hits": 30,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 2,
+            "events": 5694
+          },
+          "list-openMsMedian": 7.8,
+          "family-openMsMedian": 6.5,
+          "switch-familyMsMedian": 4.6,
+          "select-personMsMedian": 4.4,
+          "zoomMsMedian": 4.1,
+          "fitMsMedian": 3.5,
+          "reopenMsMedian": 2.3,
+          "royalTreeUnchanged": true,
+          "largestRoyalHousePeople": 25,
+          "maxRoyalMountedNodes": 6,
+          "royalTreeOpenMsMedian": 10.1,
+          "royalTreeSelectMsMedian": 4.1,
+          "royalTreeZoomMsMedian": 3.4,
+          "royalTreeFitMsMedian": 3.9,
+          "royalPanel12MonthContinuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "sources": [
+            {
+              "file": "/private/tmp/wanguoji-z57-baseline/scripts/testing/results/family-step-performance-z57-perf-baseline-200.json",
+              "sha256": "98a0821bea27cb80db7675a574b045946f015b901ff0cbc0beb89423919bd237"
+            },
+            {
+              "file": "/private/tmp/wanguoji-z57-baseline/scripts/testing/results/family-performance-z57-perf-baseline-200.json",
+              "sha256": "6365049e91e5e58cada08a58f58bcfa55f5cdf2d1f4d0144f6fbeb13b02d5dff"
+            },
+            {
+              "file": "/private/tmp/wanguoji-z57-baseline/scripts/testing/results/royal-panel-performance-z57-perf-baseline-200.json",
+              "sha256": "60a94453fab54609495619172d04648ef6150de674068aac403a21322fa2d924"
+            }
+          ]
+        },
+        "candidate": {
+          "stepWallMsMedian": 408.3,
+          "royalTitleMsMedian": 0.3,
+          "annualFamilyMsMedian": 0.8,
+          "titleMsMedian": 0.2,
+          "entryMsMedian": 0.1,
+          "exportMsMedian": 523.9,
+          "hydrationMsMedian": 538.1,
+          "deterministic4x12Months": true,
+          "families": 7,
+          "members": 79,
+          "maxFamilyMembers": 21,
+          "familyUiUnchanged": true,
+          "maxFamilyMountedNodes": 3,
+          "familyCache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 3,
+            "projectionBuilds": 2,
+            "hits": 30,
+            "invalidations": 1,
+            "summaryCache": 3,
+            "archiveCache": 2,
+            "events": 5899
+          },
+          "list-openMsMedian": 7.9,
+          "family-openMsMedian": 6.4,
+          "switch-familyMsMedian": 4.3,
+          "select-personMsMedian": 4,
+          "zoomMsMedian": 3.7,
+          "fitMsMedian": 3.4,
+          "reopenMsMedian": 2.3,
+          "royalTreeUnchanged": true,
+          "largestRoyalHousePeople": 25,
+          "maxRoyalMountedNodes": 6,
+          "royalTreeOpenMsMedian": 11.7,
+          "royalTreeSelectMsMedian": 4.8,
+          "royalTreeZoomMsMedian": 3.5,
+          "royalTreeFitMsMedian": 3.7,
+          "royalPanel12MonthContinuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "sources": [
+            {
+              "file": "/Users/timvan/Desktop/xm/wanguoji/logs/z57-performance-raw/family-step-performance-z57-perf-candidate-200.json",
+              "sha256": "d1175287a870619b7f9718c12541d32e9b0ce91839d5f413a7443aceec349501"
+            },
+            {
+              "file": "/Users/timvan/Desktop/xm/wanguoji/logs/z57-performance-raw/family-performance-z57-perf-candidate-200.json",
+              "sha256": "993ca210bfe394f83ead466b13ec85d7d6a36cce1942eb40ad002479c1301143"
+            },
+            {
+              "file": "/Users/timvan/Desktop/xm/wanguoji/logs/z57-performance-raw/royal-panel-performance-z57-perf-candidate-200.json",
+              "sha256": "97fa45575cf3eb0a3bc39680e5e1a4a024a238d14f63786f5acb6ca5b4620a80"
+            }
+          ]
+        }
+      },
+      {
+        "years": 300,
+        "baseline": {
+          "stepWallMsMedian": 643.7,
+          "royalTitleMsMedian": 0,
+          "annualFamilyMsMedian": 0.8,
+          "titleMsMedian": 0.4,
+          "entryMsMedian": 0.1,
+          "exportMsMedian": 1098.3,
+          "hydrationMsMedian": 1267.4,
+          "deterministic4x12Months": true,
+          "families": 11,
+          "members": 105,
+          "maxFamilyMembers": 21,
+          "familyUiUnchanged": true,
+          "maxFamilyMountedNodes": 2,
+          "familyCache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 7,
+            "projectionBuilds": 2,
+            "hits": 32,
+            "invalidations": 1,
+            "summaryCache": 7,
+            "archiveCache": 2,
+            "events": 8722
+          },
+          "list-openMsMedian": 10.7,
+          "family-openMsMedian": 5,
+          "switch-familyMsMedian": 4.9,
+          "select-personMsMedian": 3,
+          "zoomMsMedian": 3.5,
+          "fitMsMedian": 3,
+          "reopenMsMedian": 2.4,
+          "royalTreeUnchanged": true,
+          "largestRoyalHousePeople": 36,
+          "maxRoyalMountedNodes": 6,
+          "royalTreeOpenMsMedian": 16.5,
+          "royalTreeSelectMsMedian": 8.8,
+          "royalTreeZoomMsMedian": 7.2,
+          "royalTreeFitMsMedian": 7.8,
+          "royalPanel12MonthContinuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "sources": [
+            {
+              "file": "/private/tmp/wanguoji-z57-baseline/scripts/testing/results/family-step-performance-z57-perf-baseline-300.json",
+              "sha256": "38cfbea9a62b9f02b03c01a2ec1e2473c80b8a1e36993857e19a8110e6a030b3"
+            },
+            {
+              "file": "/private/tmp/wanguoji-z57-baseline/scripts/testing/results/family-performance-z57-perf-baseline-300.json",
+              "sha256": "fecb2c588e48e477f711d8371a85122bf65cc4b2fe841612e808f23425d9ffa8"
+            },
+            {
+              "file": "/private/tmp/wanguoji-z57-baseline/scripts/testing/results/royal-panel-performance-z57-perf-baseline-300.json",
+              "sha256": "1f3036f5e41fc4d58c54c3db2c265bd89a485b28567b3f0a19aac629f5c46bb2"
+            }
+          ]
+        },
+        "candidate": {
+          "stepWallMsMedian": 514.1,
+          "royalTitleMsMedian": 9.7,
+          "annualFamilyMsMedian": 0.5,
+          "titleMsMedian": 0.3,
+          "entryMsMedian": 0.1,
+          "exportMsMedian": 914.6,
+          "hydrationMsMedian": 968,
+          "deterministic4x12Months": true,
+          "families": 11,
+          "members": 105,
+          "maxFamilyMembers": 21,
+          "familyUiUnchanged": true,
+          "maxFamilyMountedNodes": 2,
+          "familyCache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 7,
+            "projectionBuilds": 2,
+            "hits": 32,
+            "invalidations": 1,
+            "summaryCache": 7,
+            "archiveCache": 2,
+            "events": 9031
+          },
+          "list-openMsMedian": 10.7,
+          "family-openMsMedian": 5.9,
+          "switch-familyMsMedian": 5.5,
+          "select-personMsMedian": 3.6,
+          "zoomMsMedian": 3.9,
+          "fitMsMedian": 3.2,
+          "reopenMsMedian": 3.2,
+          "royalTreeUnchanged": true,
+          "largestRoyalHousePeople": 36,
+          "maxRoyalMountedNodes": 6,
+          "royalTreeOpenMsMedian": 14,
+          "royalTreeSelectMsMedian": 5,
+          "royalTreeZoomMsMedian": 3.4,
+          "royalTreeFitMsMedian": 4.1,
+          "royalPanel12MonthContinuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "sources": [
+            {
+              "file": "/Users/timvan/Desktop/xm/wanguoji/logs/z57-performance-raw/family-step-performance-z57-perf-candidate-300.json",
+              "sha256": "a3ceead37128260880ce0400729e5f854b1cfc192b7d1839fc97b740491a564a"
+            },
+            {
+              "file": "/Users/timvan/Desktop/xm/wanguoji/logs/z57-performance-raw/family-performance-z57-perf-candidate-300.json",
+              "sha256": "63448c1200cb9607590c9f6b31b5611820ee74e381f6c9eb4dd028438b4027c5"
+            },
+            {
+              "file": "/Users/timvan/Desktop/xm/wanguoji/logs/z57-performance-raw/royal-panel-performance-z57-perf-candidate-300.json",
+              "sha256": "0c5eb8462c87d50a4a75a54c5e0b5ef1cc25bd890f81528fe7674b98a6ef2027"
+            }
+          ]
+        }
+      },
+      {
+        "years": 500,
+        "baseline": {
+          "stepWallMsMedian": 1082.9,
+          "royalTitleMsMedian": 0,
+          "annualFamilyMsMedian": 2.5,
+          "titleMsMedian": 266.6,
+          "entryMsMedian": 0.1,
+          "exportMsMedian": 3410.5,
+          "hydrationMsMedian": 3411.7,
+          "deterministic4x12Months": true,
+          "families": 23,
+          "members": 177,
+          "maxFamilyMembers": 21,
+          "familyUiUnchanged": true,
+          "maxFamilyMountedNodes": 3,
+          "familyCache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 8,
+            "projectionBuilds": 2,
+            "hits": 42,
+            "invalidations": 1,
+            "summaryCache": 8,
+            "archiveCache": 2,
+            "events": 15619
+          },
+          "list-openMsMedian": 26,
+          "family-openMsMedian": 5.7,
+          "switch-familyMsMedian": 5.6,
+          "select-personMsMedian": 3.5,
+          "zoomMsMedian": 3.7,
+          "fitMsMedian": 3.8,
+          "reopenMsMedian": 3.3,
+          "royalTreeUnchanged": true,
+          "largestRoyalHousePeople": 59,
+          "maxRoyalMountedNodes": 6,
+          "royalTreeOpenMsMedian": 20.5,
+          "royalTreeSelectMsMedian": 5.4,
+          "royalTreeZoomMsMedian": 3.9,
+          "royalTreeFitMsMedian": 4.2,
+          "royalPanel12MonthContinuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "sources": [
+            {
+              "file": "/private/tmp/wanguoji-z57-baseline/scripts/testing/results/family-step-performance-z57-perf-baseline-500.json",
+              "sha256": "b364d3b3a4192ada40c8dd1aa023bebd8314f6094ad837f0eae9f83c883f2c8c"
+            },
+            {
+              "file": "/private/tmp/wanguoji-z57-baseline/scripts/testing/results/family-performance-z57-perf-baseline-500.json",
+              "sha256": "7695b090b62cfa96b7206a9bf94f6b609fadc2d0681bf969398e14be0e5f83ac"
+            },
+            {
+              "file": "/private/tmp/wanguoji-z57-baseline/scripts/testing/results/royal-panel-performance-z57-perf-baseline-500.json",
+              "sha256": "24b409dc6f72709685630e0cb1665d46b3f1870cf061942f6fa46c22224a3900"
+            }
+          ]
+        },
+        "candidate": {
+          "stepWallMsMedian": 1163.8,
+          "royalTitleMsMedian": 18.9,
+          "annualFamilyMsMedian": 2.6,
+          "titleMsMedian": 299.6,
+          "entryMsMedian": 0,
+          "exportMsMedian": 3533.3,
+          "hydrationMsMedian": 3584,
+          "deterministic4x12Months": true,
+          "families": 23,
+          "members": 177,
+          "maxFamilyMembers": 21,
+          "familyUiUnchanged": true,
+          "maxFamilyMountedNodes": 3,
+          "familyCache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 8,
+            "projectionBuilds": 2,
+            "hits": 42,
+            "invalidations": 1,
+            "summaryCache": 8,
+            "archiveCache": 2,
+            "events": 16156
+          },
+          "list-openMsMedian": 37.4,
+          "family-openMsMedian": 9.8,
+          "switch-familyMsMedian": 5.9,
+          "select-personMsMedian": 4.2,
+          "zoomMsMedian": 4.1,
+          "fitMsMedian": 3.8,
+          "reopenMsMedian": 3.5,
+          "royalTreeUnchanged": true,
+          "largestRoyalHousePeople": 59,
+          "maxRoyalMountedNodes": 6,
+          "royalTreeOpenMsMedian": 19.6,
+          "royalTreeSelectMsMedian": 6.2,
+          "royalTreeZoomMsMedian": 3.7,
+          "royalTreeFitMsMedian": 4.3,
+          "royalPanel12MonthContinuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "sources": [
+            {
+              "file": "/Users/timvan/Desktop/xm/wanguoji/logs/z57-performance-raw/family-step-performance-z57-perf-candidate-500.json",
+              "sha256": "061b1a5e03d12512a81f9c9d3ef23ec1d7b110467108335492fc84f53274479f"
+            },
+            {
+              "file": "/Users/timvan/Desktop/xm/wanguoji/logs/z57-performance-raw/family-performance-z57-perf-candidate-500.json",
+              "sha256": "8457a6ea9992c60e26447ff909263b3500bab855e96dc57496949b9cfccbab75"
+            },
+            {
+              "file": "/Users/timvan/Desktop/xm/wanguoji/logs/z57-performance-raw/royal-panel-performance-z57-perf-candidate-500.json",
+              "sha256": "0c7b4816bd99ff0c1517e14a592959c3602dcbde185c0dbdbd350a59c2909351"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "naturalVerification": [
+    {
+      "version": "baseline",
+      "years": 100,
+      "seeds": [
+        "regional-1",
+        "regional-2",
+        "regional-3",
+        "regional-4",
+        "regional-5",
+        "regional-6",
+        "regional-7",
+        "regional-8"
+      ],
+      "strictAtAllCheckpoints": true,
+      "continuations": [
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        }
+      ],
+      "sourceSha256": "a88871b0e6f80c0e4b9303864d7094ba7e7bedf520df3a9d3ec1ffa7d0e05b98"
+    },
+    {
+      "version": "candidate",
+      "years": 100,
+      "seeds": [
+        "regional-1",
+        "regional-2",
+        "regional-3",
+        "regional-4",
+        "regional-5",
+        "regional-6",
+        "regional-7",
+        "regional-8"
+      ],
+      "strictAtAllCheckpoints": true,
+      "continuations": [
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        }
+      ],
+      "sourceSha256": "37b4ebeddf6e02f8726be76fe94e026475878907591625dca7cdc1d5571df946"
+    },
+    {
+      "version": "baseline",
+      "years": 200,
+      "seeds": [
+        "regional-1",
+        "regional-2",
+        "regional-3",
+        "regional-4"
+      ],
+      "strictAtAllCheckpoints": true,
+      "continuations": [
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        }
+      ],
+      "sourceSha256": "04d1a3ddc48ddcd70671bb0309fdf86d2a3995fcca97df420ae5afaf7490180e"
+    },
+    {
+      "version": "candidate",
+      "years": 200,
+      "seeds": [
+        "regional-1",
+        "regional-2",
+        "regional-3",
+        "regional-4"
+      ],
+      "strictAtAllCheckpoints": true,
+      "continuations": [
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        }
+      ],
+      "sourceSha256": "c04cced21db3f3864d6a5304bee9167d9b8f3f25246a63a5aa59c26b596b407b"
+    },
+    {
+      "version": "baseline",
+      "years": 300,
+      "seeds": [
+        "regional-3"
+      ],
+      "strictAtAllCheckpoints": true,
+      "continuations": [
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        }
+      ],
+      "sourceSha256": "51f8e046a76b3f0e3a5d42e648f029171d865048060fc6fc509d33a44bf1ab3e"
+    },
+    {
+      "version": "candidate",
+      "years": 300,
+      "seeds": [
+        "regional-3"
+      ],
+      "strictAtAllCheckpoints": true,
+      "continuations": [
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        }
+      ],
+      "sourceSha256": "44ac266579c76da7de74bb6b0f3dd3457c0d26e5b83a6d2bc75e326f1f2f51b0"
+    },
+    {
+      "version": "baseline",
+      "years": 500,
+      "seeds": [
+        "regional-3"
+      ],
+      "strictAtAllCheckpoints": true,
+      "continuations": [
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        }
+      ],
+      "sourceSha256": "23fd5bd5c876527d0f8c30403be3771dea62cce807b8f8929cdef444c0cee992"
+    },
+    {
+      "version": "candidate",
+      "years": 500,
+      "seeds": [
+        "regional-3"
+      ],
+      "strictAtAllCheckpoints": true,
+      "continuations": [
+        {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        }
+      ],
+      "sourceSha256": "60a2ab7b92ba006f8d9b80760e8213463260ecf83dacdd74fd6bce7879fbd37d"
+    }
+  ],
+  "directedCore": {
+    "royal-nobility-z57-final-core": {
+      "checks": 45,
+      "sha256": "4f922caa60a041893ba87acfff42ca8a5abf8789eda680e2b534f46678b83ad0"
+    },
+    "military-nobility-z57-final-core2": {
+      "checks": 1013,
+      "sha256": "d71837c0aa6fc7ca643a23f1366ea7efc7ddabe1f9c8996d1b859ae158acd9a1"
+    },
+    "royal-military-z57-final-core2": {
+      "checks": 244,
+      "sha256": "41e5ebaea93ebc43ff6888fdaab92c60fb121658294f54c59c1e5746db6c7139"
+    },
+    "resident-founder-z57-final-core2": {
+      "checks": 171,
+      "sha256": "1a969229b8ff3ac85714e9f27e46a445a7ee960404dc46f293abbc0ca8a12029"
+    }
+  },
+  "liveVersusLoadedContinuation": [
+    {
+      "seed": "regional-3",
+      "years": 100,
+      "startMonth": 1200,
+      "endMonth": 1212,
+      "colliders": 192,
+      "matched": true,
+      "initialMatched": true,
+      "secondRead": true,
+      "differenceCount": 0,
+      "firstDifferences": []
+    }
+  ],
+  "limitations": [
+    "No supplied original Shen Xiao world: controlled real production case, not a claimed reproduction.",
+    "No natural old-country child officer sample; directed real Core and both shared React trees pass.",
+    "Royal hereditary chains are finite single-source chains. No automatic official appointment, noble recruitment bonus or new ordinary child population.",
+    "Native royal military secession/usurpation qualifications are unchanged; previously excluded native royals are not newly enabled to found foreign regimes.",
+    "Special royal honors and succession eligibility remain independent.",
+    "Command-line component/performance checks are not user Chrome/Electron visual acceptance."
+  ],
+  "releaseChecks": [
+    {
+      "check": "tests",
+      "command": [
+        "pnpm",
+        "test"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 50.95,
+      "log": "logs/z57-release-tests.log"
+    },
+    {
+      "check": "typescript",
+      "command": [
+        "pnpm",
+        "exec",
+        "tsc",
+        "--noEmit"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 11.92,
+      "log": "logs/z57-release-typescript.log"
+    }
+  ]
+}
