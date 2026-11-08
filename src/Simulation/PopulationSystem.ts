@@ -1,3 +1,4 @@
+import {familyChildForPopulationEntry} from '../Politics/FamilyChildBirth';
 import Game from '../Game/Game';
 import {successionTransaction} from '../Politics/SuccessionTransaction';
 import {politicalEffect} from './PoliticalMutationScope';
@@ -80,7 +81,7 @@ export default class PopulationSystem {
     this.lastGrowthMonth = worldMonth;
 
     // Stable identity plans, not repeated mortality draws. Existing military/royal life writers retain authority.
-    for(const team of teams)for(const user of [...team.users])if(ordinaryLifeEligible(user)&&worldMonth>=residentNaturalDeathMonth(user.id,user.bornMonth))
+    for(const team of teams)for(const user of [...team.users])if(ordinaryLifeEligible(user)&&worldMonth>=(Military.getFamilyMember(user.id,user.bornMonth)?.member.birth?.naturalDeathMonth??residentNaturalDeathMonth(user.id,user.bornMonth)))
       user.destroyUser(false,{cause:'NATURAL_DEATH',month:worldMonth,damageSource:'RESIDENT_LIFESPAN',context:`普通居民 User ${user.id}，出生月${user.bornMonth}，寿终月${residentNaturalDeathMonth(user.id,user.bornMonth)}`});
     const recentEvents = WorldHistory.getEventsBetween?.(Math.max(0, worldMonth - 24), worldMonth) ?? [];
     const aliveTeams = measurePhase(profile, "Population.active faction scan", () => teams.filter((team) => team.status === "ACTIVE" && !team.isDie));
@@ -174,18 +175,24 @@ export default class PopulationSystem {
       while (Team.GetUserById(candidateId)||Military.hasFamilyResidentId(candidateId)) candidateId = candidateId >= 1999999999 ? 1000000000 : candidateId + 1;
       return candidateId;
     });
-    const month=populationMutation.month??0,bornMonth=deriveUserBornMonth(id,name!,team.name,month);
-    const familyPlan=populationMutation.cause==='NATURAL_GROWTH'?planFamilyPopulationEntry(Military.getFamilies(),team.name,nobleEpoch(Dynasty.get(team.name),month)?.foundingRulerId,id,bornMonth,month,String(worldRandom.exportState().seed)):undefined;
+    const month=populationMutation.month??0,bornEntry=populationMutation.cause==='NATURAL_GROWTH'?familyChildForPopulationEntry(Military.getFamilies(),team.name,nobleEpoch(Dynasty.get(team.name),month)?.foundingRulerId,id,month,String(worldRandom.exportState().seed)):undefined,bornMonth=bornEntry?.member.bornMonth??deriveUserBornMonth(id,name!,team.name,month);
+    const familyPlan=populationMutation.cause==='NATURAL_GROWTH'&&!bornEntry?planFamilyPopulationEntry(Military.getFamilies(),team.name,nobleEpoch(Dynasty.get(team.name),month)?.foundingRulerId,id,bornMonth,month,String(worldRandom.exportState().seed)):undefined;
     const create = () => measurePhase(profile, "Population.makeUser", () => team.makeUser(
       id,
-      familyPlan?.member.name??name!,
+      bornEntry?.member.name??familyPlan?.member.name??name!,
       resolvePublicAssetUrl("img/no-face.svg"),
       worldRandom.int(USER_NATURAL_LOYALTY_MIN, USER_NATURAL_LOYALTY_MAX),
       "NORMAL",
       undefined,
-      familyPlan?{...populationMutation,deferPopulationAudit:true}:populationMutation,
-      familyPlan?{bornMonth,familyMemberId:familyPlan.member.memberId}:undefined
+      (familyPlan||bornEntry)?{...populationMutation,deferPopulationAudit:true}:populationMutation,
+      (familyPlan||bornEntry)?{bornMonth,familyMemberId:(bornEntry?.member??familyPlan!.member).memberId}:undefined
     ));
+    if(bornEntry){try{return successionTransaction(team,Dynasty,()=>{
+      const before=team.users.size,user=create();if(!user)throw Error('Born family resident creation rejected');Military.bindBornFamilyResident(bornEntry.family.familyId,bornEntry.member.memberId,id,month);
+      const eventId=`${bornEntry.member.memberId}-population-entered`;
+      if(WorldHistory.addEvent({id:eventId,year:month,type:'family-child-population-entered',category:'politics',importance:'normal',actorFactionId:team.name,factionIds:[team.name],title:`${bornEntry.member.name}成年后作为居民入籍。`,metadata:{familyId:bornEntry.family.familyId,memberId:bornEntry.member.memberId,sourceUserId:id,bornMonth,birthEventId:bornEntry.member.birth!.eventId,populationCause:'NATURAL_GROWTH'}})!==eventId)throw Error('Born family entry source rejected');
+      politicalEffect(()=>{if(!populationMutation.deferPopulationAudit)Game.Core?.simulator?.recordPopulationMutation(team,before,team.users.size,populationMutation);});return user;
+    });}catch(error){this.counters=previousCounters;worldRandom.restore(previousRng);console.warn('[FamilyChild] population entry rolled back',error);return undefined;}}
     // The plan is pure and the member is committed only for this newly created real resident.
     if(familyPlan){
       try{return successionTransaction(team,Dynasty,()=>{

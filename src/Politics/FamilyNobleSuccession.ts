@@ -15,7 +15,7 @@ export interface FamilyNobleContext {renewable?:boolean;month:number;people:read
 const at=(e:WorldEvent)=>e.monthIndex??e.year;
 export function familyResidenceAt(f:MilitaryFamily,m:MilitaryFamilyMember,month:number){return m.factionHistory?.filter(h=>h.month<=month).at(-1)?.factionId??f.factionId;}
 export function familyMemberPresent(m:MilitaryFamilyMember,month:number){return m.enteredMonth<=month&&(m.deathMonth??Infinity)>month&&(m.exitMonth??Infinity)>month;}
-function memberForfeiture(m:MilitaryFamilyMember,f:MilitaryFamily,c:FamilyNobleContext){const p=c.people.find(p=>p.personId===m.militaryPersonId);return p?.politicalHistory?.filter(b=>b.kind==='COURT_BAN'&&['FORFEITURE','EXECUTION'].includes(b.severity)&&b.factionId===f.factionId&&b.epochFounderId===f.epochFounderId&&b.month<=c.month).at(-1);}
+function memberForfeiture(m:MilitaryFamilyMember,f:MilitaryFamily,c:FamilyNobleContext){const p=c.people.find(p=>p.personId===m.militaryPersonId);return p?.politicalHistory?.filter(b=>b.kind==='COURT_BAN'&&['FORFEITURE','EXECUTION'].includes(b.severity)&&b.factionId===f.factionId&&b.epochFounderId===f.epochFounderId&&b.month<=c.month&&c.events.some(e=>e.id===b.eventId)).at(-1);}
 export function eligibleFamilyNobleHeirs(f:MilitaryFamily,parentId:string,c:FamilyNobleContext){return f.members.filter(m=>m.parentMemberId===parentId&&familyMemberPresent(m,c.month)&&familyResidenceAt(f,m,c.month)===f.factionId&&!memberForfeiture(m,f,c)&&(c.politicalAccessions.get(m.memberId)??Infinity)>c.month).sort((a,b)=>a.bornMonth-b.bornMonth||a.memberId.localeCompare(b.memberId));}
 /** One active main period; a distinct valid personal grant is the only source of a new period. */
 function planNewPeriod(f:MilitaryFamily,c:FamilyNobleContext,last:FamilyNobleAct):FamilyNobleAct|undefined{
@@ -47,7 +47,10 @@ export function planFamilyNobleTransition(f:MilitaryFamily,c:FamilyNobleContext)
  else if(holder.deathMonth!==undefined&&holder.deathMonth<=c.month){reason='DEATH';const death=c.events.find(e=>e.type==='military-person-died'&&e.metadata?.personId===holder.militaryPersonId&&at(e)===holder.deathMonth);sourceEventIds.push(death?.id??`${f.familyId}-${holder.memberId}-death`);}
  else if(holder.exitMonth!==undefined&&holder.exitMonth<=c.month)reason='ENTITY_ENDED';
  if(!reason)return;
- const rank=FAMILY_NOBLE_RANKS[FAMILY_NOBLE_RANKS.indexOf(previousRank)-1],heir=reason==='DEATH'&&rank?eligibleFamilyNobleHeirs(f,holder.memberId,c)[0]:undefined;
+ const rank=FAMILY_NOBLE_RANKS[FAMILY_NOBLE_RANKS.indexOf(previousRank)-1];
+ const deathIndex=reason==='DEATH'?c.events.findIndex(e=>e.id===sourceEventIds.at(-1)):-1;
+ const evidence=deathIndex>=0?familyAtEvidenceBoundary(f,holder.deathMonth!,deathIndex+1,c.events):f;
+ const heir=reason==='DEATH'&&rank?eligibleFamilyNobleHeirs(evidence,holder.memberId,{...c,month:holder.deathMonth!,events:deathIndex>=0?c.events.slice(0,deathIndex+1):c.events})[0]:undefined;
  if(reason==='DEATH'&&!heir)reason=rank?'NO_HEIR':'RANK_EXHAUSTED';
  return {version:last?.version===2?2:1,...(last?.period?{period:last.period}:{}),eventId:`${f.familyId}-succession-${step}`,familyId:f.familyId,factionId:f.factionId,epochFounderId:f.epochFounderId,month:c.month,kind:heir?'SUCCEEDED':'ENDED',reason,sourceGrantEventId:grant.eventId,previousEventId,previousMemberId:holder.memberId,previousRank,...(heir?{holderMemberId:heir.memberId,rank}:{}),step,sourceEventIds};
 }
@@ -70,15 +73,16 @@ export function createFamilyNobleContext(month:number,families:readonly Military
   if(!terminal||['faction-restored','dynasty-restored'].includes(terminal.type))for(const ep of d.houseEpochs??[])if(ep.startMonth<=month&&(month<(ep.endMonth??Infinity)||ep.endMonth===month&&!events.some(e=>e.actorFactionId===d.factionId&&at(e)===month&&(e.type==='dynasty-usurped'||['ruler-acceded','ruler-succession','ruler-deposed'].includes(e.type)&&d.houseEpochs?.some(next=>next.startMonth===month&&next.foundingRulerId!==ep.foundingRulerId&&(e.rulerId===next.foundingRulerId||e.metadata?.nextRulerId===next.foundingRulerId))))))activeEpochs.add(`${d.factionId}/${ep.foundingRulerId}`);
  }
  const rulers=dynasties.flatMap(d=>d.rulers);
- for(const f of families)for(const m of f.members){const p=people.find(p=>p.personId===m.militaryPersonId),r=rulers.find(r=>p?.politicalRulerId===r.id||r.residentIdentity?.sourceUserId===m.sourceUserId&&r.residentIdentity.bornMonth===m.bornMonth);if(r?.accessionYear!==undefined&&(r.accessionYear<month||events.some(e=>at(e)===r.accessionYear&&(e.rulerId===r.id||e.metadata?.nextRulerId===r.id||e.metadata?.foundingRulerId===r.id)&&['ruler-acceded','ruler-succession','ruler-deposed','dynasty-usurped','rebel-faction-founded','empire-split','frontier-faction-founded'].includes(e.type))))politicalAccessions.set(m.memberId,r.accessionYear);}
+ for(const f of families)for(const m of f.members){const p=people.find(p=>p.personId===m.militaryPersonId),r=rulers.find(r=>p?.politicalRulerId===r.id||m.sourceUserId!==undefined&&r.residentIdentity?.sourceUserId===m.sourceUserId&&r.residentIdentity.bornMonth===m.bornMonth);if(r?.accessionYear!==undefined&&(r.accessionYear<month||events.some(e=>at(e)===r.accessionYear&&(e.rulerId===r.id||e.metadata?.nextRulerId===r.id||e.metadata?.foundingRulerId===r.id)&&['ruler-acceded','ruler-succession','ruler-deposed','dynasty-usurped','rebel-faction-founded','empire-split','frontier-faction-founded'].includes(e.type))))politicalAccessions.set(m.memberId,r.accessionYear);}
  const ids=new Set(events.map(e=>e.id));const historicalPeople=people.map(p=>({...p,nobilityHistory:p.nobilityHistory?.filter(g=>ids.has(g.eventId)),honorHistory:p.honorHistory?.filter(h=>ids.has(h.eventId)),politicalHistory:p.politicalHistory?.filter(h=>ids.has(h.eventId))}));
  return {month,people:historicalPeople,events,activeEpochs,politicalAccessions};
 }
 
 /** Same-month deaths and transfers after a title transaction cannot be read backwards into it. */
 export function familyAtEvidenceBoundary(f:MilitaryFamily,month:number,eventIndex:number,events?:readonly WorldEvent[]){const copy=structuredClone(f);
- if(events){const positions=new Map(events.map((e,i)=>[e.id,i]));copy.members=copy.members.filter(m=>m.enteredMonth<=month&&(positions.get(m.source==='FOUNDER'?`${f.familyId}-founded`:`${m.memberId}-entered`)??Infinity)<eventIndex);}
+ if(events){const positions=new Map(events.map((e,i)=>[e.id,i]));copy.members=copy.members.filter(m=>m.enteredMonth<=month&&(positions.get(m.source==='FOUNDER'?`${f.familyId}-founded`:m.birth?m.birth.eventId:`${m.memberId}-entered`)??Infinity)<eventIndex);}
 for(const m of copy.members){
+ if(m.birth&&events&&((events.findIndex(e=>e.id===`${m.memberId}-population-entered`)<0)||(events.findIndex(e=>e.id===`${m.memberId}-population-entered`)>=eventIndex))){delete m.sourceUserId;delete m.populationEnteredMonth;delete m.militaryPersonId;}
  m.factionHistory=m.factionHistory?.filter(h=>h.month<month||h.month===month&&h.eventIndex<=eventIndex);
  if(m.deathMonth===month&&(m.deathHistoryIndex??-1)>eventIndex){delete m.deathMonth;delete m.deathCause;}
  if(m.exitMonth===month&&(m.exitHistoryIndex??-1)>eventIndex){delete m.exitMonth;delete m.exitCause;}

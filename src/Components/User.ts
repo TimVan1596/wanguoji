@@ -146,8 +146,8 @@ export default class User {
     if (populationMutation.cause === "NATURAL_DEATH") {
       const person = this.militaryPersonId ? MilitaryCommandRegistry.getPerson(this.militaryPersonId) : undefined;
       const month = populationMutation.month;
-      if(!this.militaryPersonId){if(month===undefined||!ordinaryLifeEligible(this)||month<residentNaturalDeathMonth(this.id,this.bornMonth))return false;}
-      else if (!person || month === undefined || (!person.royalIdentity && month % 12 !== 0) || month < deriveMilitaryLifeSchedule(person).naturalDeathMonth || !this.matchesMilitaryLife(person)) return false;
+      if(!this.militaryPersonId){if(month===undefined||!ordinaryLifeEligible(this)||month<(MilitaryCommandRegistry.getFamilyMember(this.id,this.bornMonth)?.member.birth?.naturalDeathMonth??residentNaturalDeathMonth(this.id,this.bornMonth)))return false;}
+      else if (!person || month === undefined || (!person.royalIdentity&&!person.familyLife && month % 12 !== 0) || month < deriveMilitaryLifeSchedule(person).naturalDeathMonth || !this.matchesMilitaryLife(person)) return false;
     }
     if(!politicalMutationActive()&&MilitaryCommandRegistry.hasInsurgentUnit(this))return MilitaryCommandRegistry.insurgentUserTransaction(this,()=>this.destroyUser(silentRulerDeath,populationMutation));
     if(!politicalMutationActive()&&MilitaryCommandRegistry.getFamilyMember(this.id,this.bornMonth))return MilitaryCommandRegistry.familyDeathTransaction(this,()=>this.destroyUser(silentRulerDeath,populationMutation));

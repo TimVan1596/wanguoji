@@ -407,6 +407,7 @@ export default class AutoSimulator {
       this.measure("WorldHistory.observeWorld", () => WorldHistory.observeWorld(this.clock.year, teams, totalCells));
       this.measure("Royal household births",()=>DynastyRegistry.updateRoyalHouseholds(this.clock.year,teams));
       this.measure("Royal noble succession",()=>DynastyRegistry.updateRoyalNobility(this.clock.year,teams));
+      this.measure("Family household births and life",()=>MilitaryCommandRegistry.updateFamilyHouseholds(this.clock.year,teams,DynastyRegistry.getAll()));
       this.measure("Family noble succession",()=>MilitaryCommandRegistry.updateFamilyTitles(this.clock.year,teams,DynastyRegistry.getAll()));
       this.events.observeWorldGoal(this.clock.year, teams, totalCells);
       if (debugProfileEnabled) {

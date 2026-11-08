@@ -1,3 +1,4 @@
+import type {FamilyChildBirth} from './FamilyChildBirth';
 import type {FamilyFoundationPolicy} from './FamilyFoundationPolicy';
 import type {FamilyNobleAct} from './FamilyNobleSuccession';
 import {POLITICAL_CALIBRATIONS,type PoliticalCalibration} from './PoliticalCalibration';
@@ -6,8 +7,9 @@ import type {WorldEvent} from '../History/WorldHistory';
 import {splitEstablishedPersonalName,hanGivenNamePool} from './NameCulture';
 /** Genealogy records refer to the original population identity, never create an extra resident. */
 export interface MilitaryFamilyMember {
- memberId:string; sourceUserId:number; name:string; bornMonth:number; generation:number;
- parentMemberId?:string; enteredMonth:number; source:'FOUNDER'|'NATURAL_GROWTH';
+ memberId:string; sourceUserId?:number; name:string; bornMonth:number; generation:number;
+ parentMemberId?:string; enteredMonth:number; source:'FOUNDER'|'NATURAL_GROWTH'|'HOUSEHOLD_BIRTH';
+ birth?:FamilyChildBirth;populationEnteredMonth?:number;
  factionHistory?:Array<{month:number;factionId:string;eventIndex:number}>; deathHistoryIndex?:number; exitHistoryIndex?:number;
  militaryPersonId?:string; deathMonth?:number; deathCause?:string; exitMonth?:number; exitCause?:string;
 }
