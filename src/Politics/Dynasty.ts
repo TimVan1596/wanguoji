@@ -475,18 +475,26 @@ class DynastyRegistryStore {
   updateRoyalHouseholds(month:number,teams:Team[]){
     if(month%12!==0||this.royalBirthPolicy==='BASELINE')return;
     for(const team of teams){const d=this.get(team.name);if(!d||team.status!=='ACTIVE'||team.identityStage!=='STATE'||(d.lastHouseholdBirthMonth??-1)>=month)continue;
-      try{successionTransaction(team,this,()=>{
-        const epoch=d.houseEpochs?.find(e=>e.startMonth<=month&&(e.endMonth??Infinity)>month&&e.houseName===d.houseName);if(!epoch)return;
-        const started=performance.now(),parents=householdBirthParents(d,month);let births=0,living=d.rulers.filter(r=>(r.deathMonth??Infinity)>month&&(r.naturalDeathYear??Infinity)>month).length;
-        for(const [ordinal,parent] of parents.entries()){if(births>=HOUSEHOLD_ANNUAL_CAP||living>=HOUSEHOLD_LIVING_CAP)break;
-          const child=householdBirthPlan(parent,month,String(worldRandom.exportState().seed),this.royalBirthPolicy,epoch.foundingRulerId,ordinal);if(!child)continue;
+      const epoch=d.houseEpochs?.find(e=>e.startMonth<=month&&(e.endMonth??Infinity)>month&&e.houseName===d.houseName);if(!epoch)continue;
+      const started=performance.now(),parents=householdBirthParents(d,month),children:Ruler[]=[];let living=d.rulers.filter(r=>(r.deathMonth??Infinity)>month&&(r.naturalDeathYear??Infinity)>month).length;
+      for(const [ordinal,parent] of parents.entries()){
+        if(children.length>=HOUSEHOLD_ANNUAL_CAP||living>=HOUSEHOLD_LIVING_CAP)break;
+        const child=householdBirthPlan(parent,month,String(worldRandom.exportState().seed),this.royalBirthPolicy,epoch.foundingRulerId,ordinal);if(child){children.push(child);living++;}
+      }
+      // Failed opportunities have one metadata write and no event/RNG side effects.
+      // Only an actual birth needs the full political/Phaser rollback journal.
+      if(!children.length){d.lastHouseholdBirthMonth=month;recordRoyalBirthPlanning(d,month,parents,performance.now()-started);continue;}
+      const history=WorldHistory.snapshotPoliticalTransaction(),rng=worldRandom.exportState(),length=d.rulers.length,previousMonth=d.lastHouseholdBirthMonth,scope=beginPoliticalMutation();
+      try{
+        for(const child of children){
           if(d.rulers.some(r=>r.id===child.id))throw Error('Duplicate royal birth');
-          const ev=child.householdBirth!;
+          const ev=child.householdBirth!,parent=d.rulers.find(r=>r.id===child.parentId)!;
           if(WorldHistory.addEvent({id:ev.eventId,year:month,type:'royal-child-born',category:'politics',importance:'normal',actorFactionId:d.factionId,factionIds:[d.factionId],rulerId:child.id,title:`${this.getRulerPersonalName(parent)}之子${this.getRulerPersonalName(child)}出生。`,metadata:{royalBirth:JSON.stringify(ev),parentRulerId:parent.id}})!==ev.eventId)throw Error('Royal birth history rejected');
-          registerRoyalPerson(child,d.factionId,month,e=>WorldHistory.addEvent(e));d.rulers.push(child);births++;living++;
+          registerRoyalPerson(child,d.factionId,month,e=>WorldHistory.addEvent(e));d.rulers.push(child);
         }
-        d.lastHouseholdBirthMonth=month;recordRoyalBirthPlanning(d,month,parents,performance.now()-started);
-      });}catch(error){console.warn('[RoyalHousehold] rolled back',error);}
+        d.lastHouseholdBirthMonth=month;
+      }catch(error){scope.cancel();d.rulers.length=length;d.lastHouseholdBirthMonth=previousMonth;const restoring=beginPoliticalMutation();WorldHistory.rollbackPoliticalTransaction(history);worldRandom.restore(rng);restoring.finishRollback();console.warn('[RoyalHousehold] rolled back',error);continue;}
+      scope.commit();recordRoyalBirthPlanning(d,month,parents,performance.now()-started);
     }
   }
 
@@ -798,7 +806,7 @@ class DynastyRegistryStore {
     }
     if (!successor) {
       dynasty.currentRulerId = null;
-      if(dynasty.rulers.some(r=>r.houseName===dynasty.houseName && !maySucceed(r,year) && (r.deathMonth===undefined && !isNaturallyDeadByMonth(r.naturalDeathYear??r.plannedEndYear,year)))){
+      if(dynasty.rulers.some(r=>r.houseName===dynasty.houseName && r.successionScope!=='HOUSEHOLD' && !maySucceed(r,year) && (r.deathMonth===undefined && !isNaturallyDeadByMonth(r.naturalDeathYear??r.plannedEndYear,year)))){
         dynasty.successionVacancyMonth=year;
         team.removeRulerUnit(true);
         finalizeRulerPosthumousNames(predecessor,dynasty.rulers,team,year);
@@ -1429,7 +1437,7 @@ class DynastyRegistryStore {
     const recentNames =
       this.dynasties
         .get(team.name)
-        ?.rulers.filter((ruler) => ruler.houseName === houseName &&
+        ?.rulers.filter((ruler) => !ruler.householdBirth && ruler.houseName === houseName &&
           (ruler.reignOrdinal !== undefined || !hasRecordedRulerDeath(ruler)))
         .map((ruler) => ruler.givenName) ?? [];
     return {
@@ -1515,7 +1523,7 @@ class DynastyRegistryStore {
     const recentNames =
       this.dynasties
         .get(team.name)
-        ?.rulers.filter((ruler) => ruler.houseName === houseName &&
+        ?.rulers.filter((ruler) => !ruler.householdBirth && ruler.houseName === houseName &&
           (ruler.reignOrdinal !== undefined || !hasRecordedRulerDeath(ruler)))
         .map((ruler) => ruler.givenName) ?? [];
     return {
