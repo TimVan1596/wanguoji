@@ -1,3 +1,4 @@
+import {getFactionDisplayNameAtMonth} from '../../../Simulation/FactionIdentity';
 import {royalNobleReading,createRoyalNobleReadingIndex} from '../../../Politics/RoyalNobleReading';
 import {genealogyRulerHeading} from '../../../Politics/GenealogyRulerHeading';
 import {unresolvedSuccessionAct} from '../../../Politics/RoyalSuccessionStanding';
@@ -105,7 +106,7 @@ export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: Hous
       byId.get(dynasty.currentRulerId ?? "")?.parentId === r.id ? "当今君主的父辈" : "",
       r.status === "politically-ended" ? "生死未载" : r.status === "exiled" ? "流亡承统" : r.status === "deposed" ? "被宗室废黜" : ""].filter(Boolean);
     const honor=royalHonorHeading(r,dynasty,worldMonth,{revoked:g=>(revoked.get(`${r.militaryIdentity?.personId}/${g.factionId}/${g.epochFounderId}`)??Infinity)<=worldMonth,factionId:dynasty.factionId,status:faction.status});
-    const noble=royalNobleReading(r,dynasty,events,worldMonth,nobleIndex),heading=noble&&r.reignOrdinal===undefined&&!disqualified?noble.heading:genealogyRulerHeading(r,faction,worldMonth,honor,events);
+    const noble=royalNobleReading(r,dynasty,events,worldMonth,nobleIndex,(_id,at)=>getFactionDisplayNameAtMonth({...faction,displayName:faction.displayName??faction.name,nameHistory:faction.nameHistory??[]},at)),heading=noble&&r.reignOrdinal===undefined&&!disqualified?noble.heading:genealogyRulerHeading(r,faction,worldMonth,honor,events);
     if(noble?.current&&r.reignOrdinal===undefined&&!disqualified)theme=noble.inherited?'inheritedNoble':'personalNoble';
     if(noble?.best.revoked&&r.reignOrdinal===undefined)theme='disqualified';
     if(noble)details.push(noble.label);

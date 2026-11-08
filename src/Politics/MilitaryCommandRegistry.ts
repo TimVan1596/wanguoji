@@ -180,7 +180,7 @@ export class MilitaryCommandRegistryStore {
   setCourtPunishmentPolicyForSimulation(p:CourtPunishmentPolicy){if(!isCourtPunishmentPolicy(p))throw Error('Invalid punishment policy');this.courtPunishmentPolicy=p;}
   private familyNoblePolicy:'SINGLE'|'RENEWAL'='RENEWAL';
   setFamilyNoblePolicyForSimulation(policy:'SINGLE'|'RENEWAL'){this.familyNoblePolicy=policy;}
-  private nobleMeritPolicy:NobleMeritPolicy='MEDIUM';
+  private nobleMeritPolicy:NobleMeritPolicy='LOW';
   setNobleMeritPolicyForSimulation(policy:NobleMeritPolicy){if(!isNobleMeritPolicy(policy))throw Error('Invalid noble merit policy');this.nobleMeritPolicy=policy;}
   private familyFoundationPolicy:FamilyFoundationPolicy='FOUNDING';
   setFamilyFoundationPolicyForSimulation(policy:FamilyFoundationPolicy){this.familyFoundationPolicy=policy;}
@@ -200,7 +200,7 @@ export class MilitaryCommandRegistryStore {
     unitsSteered: 0, commandedSiegeContacts: 0, targetCityArrivals: 0, invalidatedTargets: 0, staleOrderChecks: 0, ageRetirements: 0, naturalDeaths: 0, releasedFormations: 0, reappointments: 0, ageBlocked: 0, identityFailures: 0 };
 
   reset() {
-    this.nobleMeritPolicy=this.royalService?'MEDIUM':'BASELINE';this.appointmentAbilityPolicy=this.royalService?'MEDIUM':'BASELINE';this.selectionContext=undefined;this.courtPunishmentPolicy='MEDIUM';this.familyNoblePolicy='RENEWAL';this.familyFoundationPolicy='FOUNDING';
+    this.nobleMeritPolicy=this.royalService?'LOW':'BASELINE';this.appointmentAbilityPolicy=this.royalService?'MEDIUM':'BASELINE';this.selectionContext=undefined;this.courtPunishmentPolicy='MEDIUM';this.familyNoblePolicy='RENEWAL';this.familyFoundationPolicy='FOUNDING';
     this.hereditaryRecruitment='MEDIUM';
     this.familyRecruitment=emptyFamilyRecruitmentDiagnostics();
     this.families=[];this.familyByResident=undefined;
