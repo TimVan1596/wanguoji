@@ -1,0 +1,5257 @@
+{
+  "scope": "Actual native Core snapshots; predetermined overlapping seeds and ages, not independent frequency totals. Active-house summary uses effective inherited ledger or active recorded military member; ordinary first colonels exclude royal origin, unprivileged selection additionally excludes family/title advantages. Timing is reported separately.",
+  "cohorts": [
+    {
+      "cohort": "z58-reference",
+      "years": 200,
+      "worlds": 4,
+      "rows": [
+        {
+          "seed": "regional-1",
+          "sourceSha256": "0a263ba8f1eb1db0ae3d8eec735d64468addca7aa806df96916aa9b2a40aba02",
+          "saveVersion": 55,
+          "noblePolicy": "BASELINE",
+          "militaryInitialByRank": {
+            "BO": 6
+          },
+          "militaryGrantEventsByRank": {
+            "BO": 6,
+            "HOU": 3
+          },
+          "militaryGranteesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 6,
+            "HOU": 3,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 6,
+          "militaryUpgrades": 3,
+          "ordinaryMeritGrantees": 5,
+          "royalMeritGrantees": 1,
+          "revocations": 2,
+          "familyDescents": {
+            "BO->ZI": 3,
+            "HOU->BO": 1
+          },
+          "royalDescents": {
+            "HOU->BO": 1
+          },
+          "familyEndings": {
+            "NO_HEIR": 2,
+            "FORFEITED": 2
+          },
+          "royalEndings": {
+            "NO_HEIR": 1
+          },
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 4,
+          "registeredMembers": 61,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 4,
+          "militaryPeople": 39,
+          "nonRoyalFirstColonels": 31,
+          "ordinaryUnprivilegedSelectedFirstColonels": 26,
+          "births": 125,
+          "birthCalendarMonths": {
+            "1": 125
+          },
+          "royalPeople": 238,
+          "royalTransfers": 0,
+          "accessions": 45,
+          "courtAttempts": 3,
+          "sieges": 1450,
+          "population": 136,
+          "factions": 9,
+          "activeStates": 3,
+          "activeFormations": 0,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 0,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 3295254,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-1",
+            "state": 2637355735,
+            "position": 13209
+          }
+        },
+        {
+          "seed": "regional-2",
+          "sourceSha256": "885b3f8aeb2ff7cf7f712374d720daf84021e03d95a8c36b0ae6a2946a4b9048",
+          "saveVersion": 55,
+          "noblePolicy": "BASELINE",
+          "militaryInitialByRank": {
+            "BO": 6
+          },
+          "militaryGrantEventsByRank": {
+            "BO": 6,
+            "HOU": 3,
+            "GONG": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 6,
+            "HOU": 3,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 6,
+          "militaryUpgrades": 4,
+          "ordinaryMeritGrantees": 5,
+          "royalMeritGrantees": 1,
+          "revocations": 1,
+          "familyDescents": {
+            "HOU->BO": 1,
+            "BO->ZI": 3
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "FOREIGN": 1,
+            "NO_HEIR": 3
+          },
+          "royalEndings": {
+            "NO_HEIR": 1
+          },
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 4,
+          "registeredMembers": 30,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 4,
+          "militaryPeople": 45,
+          "nonRoyalFirstColonels": 31,
+          "ordinaryUnprivilegedSelectedFirstColonels": 27,
+          "births": 158,
+          "birthCalendarMonths": {
+            "1": 158
+          },
+          "royalPeople": 286,
+          "royalTransfers": 1,
+          "accessions": 50,
+          "courtAttempts": 1,
+          "sieges": 1935,
+          "population": 137,
+          "factions": 9,
+          "activeStates": 5,
+          "activeFormations": 0,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 0,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 4085544,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-2",
+            "state": 3052099189,
+            "position": 14438
+          }
+        },
+        {
+          "seed": "regional-3",
+          "sourceSha256": "97e67345412fb7d640db0781c64ddb888534fe338e0f45dc017d9a2d0d0ff04a",
+          "saveVersion": 55,
+          "noblePolicy": "BASELINE",
+          "militaryInitialByRank": {
+            "BO": 8
+          },
+          "militaryGrantEventsByRank": {
+            "BO": 8,
+            "HOU": 4,
+            "GONG": 2
+          },
+          "militaryGranteesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 8,
+            "HOU": 4,
+            "GONG": 2
+          },
+          "militaryTitledPeople": 8,
+          "militaryUpgrades": 6,
+          "ordinaryMeritGrantees": 7,
+          "royalMeritGrantees": 1,
+          "revocations": 1,
+          "familyDescents": {
+            "GONG->HOU": 1,
+            "HOU->BO": 3,
+            "BO->ZI": 3,
+            "ZI->NAN": 1
+          },
+          "royalDescents": {
+            "GONG->HOU": 1,
+            "HOU->BO": 1,
+            "BO->ZI": 1
+          },
+          "familyEndings": {
+            "NO_HEIR": 4,
+            "FORFEITED": 1
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 2,
+          "registeredFamilies": 6,
+          "registeredMembers": 59,
+          "activeHousesByTitleOrActiveOffice": 1,
+          "historicalHousesBySameDefinition": 5,
+          "militaryPeople": 47,
+          "nonRoyalFirstColonels": 41,
+          "ordinaryUnprivilegedSelectedFirstColonels": 34,
+          "births": 160,
+          "birthCalendarMonths": {
+            "1": 160
+          },
+          "royalPeople": 276,
+          "royalTransfers": 0,
+          "accessions": 44,
+          "courtAttempts": 2,
+          "sieges": 2148,
+          "population": 138,
+          "factions": 8,
+          "activeStates": 4,
+          "activeFormations": 0,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 0,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 4363119,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-3",
+            "state": 2915015476,
+            "position": 14384
+          }
+        },
+        {
+          "seed": "regional-4",
+          "sourceSha256": "b798441de38abeab88b6cdc06945b789150eab42df2f4cdeac958d42cd1789f5",
+          "saveVersion": 55,
+          "noblePolicy": "BASELINE",
+          "militaryInitialByRank": {
+            "BO": 4
+          },
+          "militaryGrantEventsByRank": {
+            "BO": 4,
+            "HOU": 2
+          },
+          "militaryGranteesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 4,
+            "HOU": 2,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 4,
+          "militaryUpgrades": 2,
+          "ordinaryMeritGrantees": 2,
+          "royalMeritGrantees": 2,
+          "revocations": 1,
+          "familyDescents": {},
+          "royalDescents": {},
+          "familyEndings": {
+            "NO_HEIR": 2
+          },
+          "royalEndings": {
+            "REVOKED": 1,
+            "ACCESSION": 1
+          },
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 2,
+          "registeredMembers": 11,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 2,
+          "militaryPeople": 42,
+          "nonRoyalFirstColonels": 36,
+          "ordinaryUnprivilegedSelectedFirstColonels": 36,
+          "births": 196,
+          "birthCalendarMonths": {
+            "1": 196
+          },
+          "royalPeople": 320,
+          "royalTransfers": 0,
+          "accessions": 48,
+          "courtAttempts": 2,
+          "sieges": 1709,
+          "population": 125,
+          "factions": 7,
+          "activeStates": 4,
+          "activeFormations": 0,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 0,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 3738727,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-4",
+            "state": 149681092,
+            "position": 13543
+          }
+        }
+      ]
+    },
+    {
+      "cohort": "z58-reference",
+      "years": 300,
+      "worlds": 1,
+      "rows": [
+        {
+          "seed": "regional-3",
+          "sourceSha256": "5eac35b1d06fcb739f15e89543ab0fdf0986674f5109588540be52e30065ab88",
+          "saveVersion": 55,
+          "noblePolicy": "BASELINE",
+          "militaryInitialByRank": {
+            "BO": 11
+          },
+          "militaryGrantEventsByRank": {
+            "BO": 11,
+            "HOU": 5,
+            "GONG": 3
+          },
+          "militaryGranteesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 11,
+            "HOU": 5,
+            "GONG": 3
+          },
+          "militaryTitledPeople": 11,
+          "militaryUpgrades": 8,
+          "ordinaryMeritGrantees": 8,
+          "royalMeritGrantees": 3,
+          "revocations": 1,
+          "familyDescents": {
+            "GONG->HOU": 1,
+            "HOU->BO": 3,
+            "BO->ZI": 3,
+            "ZI->NAN": 1
+          },
+          "royalDescents": {
+            "GONG->HOU": 2,
+            "HOU->BO": 1,
+            "BO->ZI": 1,
+            "ZI->NAN": 1
+          },
+          "familyEndings": {
+            "NO_HEIR": 4,
+            "FORFEITED": 1,
+            "RANK_EXHAUSTED": 1
+          },
+          "royalEndings": {
+            "RANK_EXHAUSTED": 1,
+            "NO_HEIR": 1
+          },
+          "activeCivilianInheritedHolders": 1,
+          "registeredFamilies": 7,
+          "registeredMembers": 85,
+          "activeHousesByTitleOrActiveOffice": 1,
+          "historicalHousesBySameDefinition": 6,
+          "militaryPeople": 72,
+          "nonRoyalFirstColonels": 60,
+          "ordinaryUnprivilegedSelectedFirstColonels": 51,
+          "births": 276,
+          "birthCalendarMonths": {
+            "1": 276
+          },
+          "royalPeople": 432,
+          "royalTransfers": 0,
+          "accessions": 60,
+          "courtAttempts": 2,
+          "sieges": 2839,
+          "population": 128,
+          "factions": 10,
+          "activeStates": 3,
+          "activeFormations": 2,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 6173277,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-3",
+            "state": 2781644846,
+            "position": 21250
+          }
+        }
+      ]
+    },
+    {
+      "cohort": "z58-reference",
+      "years": 500,
+      "worlds": 1,
+      "rows": [
+        {
+          "seed": "regional-3",
+          "sourceSha256": "62f3c31bb0db2cb13e52256b23aad975dbac9df3e08db8066220e891b4373854",
+          "saveVersion": 55,
+          "noblePolicy": "BASELINE",
+          "militaryInitialByRank": {
+            "BO": 25
+          },
+          "militaryGrantEventsByRank": {
+            "BO": 25,
+            "HOU": 10,
+            "GONG": 6
+          },
+          "militaryGranteesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 25,
+            "HOU": 10,
+            "GONG": 6
+          },
+          "militaryTitledPeople": 25,
+          "militaryUpgrades": 16,
+          "ordinaryMeritGrantees": 14,
+          "royalMeritGrantees": 11,
+          "revocations": 7,
+          "familyDescents": {
+            "GONG->HOU": 2,
+            "HOU->BO": 3,
+            "BO->ZI": 3,
+            "ZI->NAN": 1
+          },
+          "royalDescents": {
+            "BO->ZI": 3,
+            "GONG->HOU": 2,
+            "HOU->BO": 2,
+            "ZI->NAN": 2
+          },
+          "familyEndings": {
+            "NO_HEIR": 6,
+            "FORFEITED": 2,
+            "RANK_EXHAUSTED": 1,
+            "FOREIGN": 4
+          },
+          "royalEndings": {
+            "REVOKED": 1,
+            "NO_HEIR": 7,
+            "RANK_EXHAUSTED": 2
+          },
+          "activeCivilianInheritedHolders": 1,
+          "registeredFamilies": 13,
+          "registeredMembers": 124,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 13,
+          "militaryPeople": 130,
+          "nonRoyalFirstColonels": 106,
+          "ordinaryUnprivilegedSelectedFirstColonels": 94,
+          "births": 487,
+          "birthCalendarMonths": {
+            "1": 487
+          },
+          "royalPeople": 802,
+          "royalTransfers": 0,
+          "accessions": 137,
+          "courtAttempts": 8,
+          "sieges": 5323,
+          "population": 129,
+          "factions": 35,
+          "activeStates": 4,
+          "activeFormations": 1,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 12038194,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-3",
+            "state": 2231249689,
+            "position": 36961
+          }
+        }
+      ]
+    },
+    {
+      "cohort": "baseline",
+      "years": 100,
+      "worlds": 8,
+      "rows": [
+        {
+          "seed": "regional-1",
+          "sourceSha256": "737d27d67e4fd86d076188d7e51d3a9648a16e23baa773b3140253907b71c30f",
+          "saveVersion": 55,
+          "noblePolicy": "BASELINE",
+          "militaryInitialByRank": {
+            "BO": 6
+          },
+          "militaryGrantEventsByRank": {
+            "BO": 6,
+            "HOU": 3
+          },
+          "militaryGranteesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 6,
+            "HOU": 3,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 6,
+          "militaryUpgrades": 3,
+          "ordinaryMeritGrantees": 5,
+          "royalMeritGrantees": 1,
+          "revocations": 2,
+          "familyDescents": {
+            "BO->ZI": 2
+          },
+          "royalDescents": {
+            "HOU->BO": 1
+          },
+          "familyEndings": {
+            "NO_HEIR": 1,
+            "FORFEITED": 2
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 1,
+          "registeredFamilies": 4,
+          "registeredMembers": 23,
+          "activeHousesByTitleOrActiveOffice": 1,
+          "historicalHousesBySameDefinition": 3,
+          "militaryPeople": 30,
+          "nonRoyalFirstColonels": 25,
+          "ordinaryUnprivilegedSelectedFirstColonels": 22,
+          "births": 56,
+          "birthCalendarMonths": {
+            "1": 56
+          },
+          "royalPeople": 135,
+          "royalTransfers": 0,
+          "accessions": 32,
+          "courtAttempts": 3,
+          "sieges": 885,
+          "population": 133,
+          "factions": 9,
+          "activeStates": 3,
+          "activeFormations": 1,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2147357,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-1",
+            "state": 1848575204,
+            "position": 7250
+          }
+        },
+        {
+          "seed": "regional-2",
+          "sourceSha256": "0dd92e912fb220e9bd3f0d2b017d933dddbd7b73df124e0615a39f79e4ea1b09",
+          "saveVersion": 55,
+          "noblePolicy": "BASELINE",
+          "militaryInitialByRank": {
+            "BO": 1
+          },
+          "militaryGrantEventsByRank": {
+            "BO": 1,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 1,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 1,
+          "militaryUpgrades": 2,
+          "ordinaryMeritGrantees": 1,
+          "royalMeritGrantees": 0,
+          "revocations": 1,
+          "familyDescents": {},
+          "royalDescents": {},
+          "familyEndings": {
+            "FOREIGN": 1
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 1,
+          "registeredMembers": 3,
+          "activeHousesByTitleOrActiveOffice": 1,
+          "historicalHousesBySameDefinition": 0,
+          "militaryPeople": 22,
+          "nonRoyalFirstColonels": 16,
+          "ordinaryUnprivilegedSelectedFirstColonels": 15,
+          "births": 52,
+          "birthCalendarMonths": {
+            "1": 52
+          },
+          "royalPeople": 124,
+          "royalTransfers": 1,
+          "accessions": 31,
+          "courtAttempts": 1,
+          "sieges": 1004,
+          "population": 139,
+          "factions": 9,
+          "activeStates": 4,
+          "activeFormations": 4,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 2,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2076896,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-2",
+            "state": 1072079521,
+            "position": 7266
+          }
+        },
+        {
+          "seed": "regional-3",
+          "sourceSha256": "78d09bd783fc9c853ef42c8bb01142ce9b6dc7ff6f946834afb2625b7fb7e01f",
+          "saveVersion": 55,
+          "noblePolicy": "BASELINE",
+          "militaryInitialByRank": {
+            "BO": 5
+          },
+          "militaryGrantEventsByRank": {
+            "BO": 5,
+            "HOU": 2,
+            "GONG": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 5,
+            "HOU": 2,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 5,
+          "militaryUpgrades": 3,
+          "ordinaryMeritGrantees": 5,
+          "royalMeritGrantees": 0,
+          "revocations": 1,
+          "familyDescents": {
+            "GONG->HOU": 1,
+            "HOU->BO": 2,
+            "BO->ZI": 1
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "NO_HEIR": 2,
+            "FORFEITED": 1
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 1,
+          "registeredFamilies": 4,
+          "registeredMembers": 23,
+          "activeHousesByTitleOrActiveOffice": 1,
+          "historicalHousesBySameDefinition": 3,
+          "militaryPeople": 24,
+          "nonRoyalFirstColonels": 22,
+          "ordinaryUnprivilegedSelectedFirstColonels": 20,
+          "births": 48,
+          "birthCalendarMonths": {
+            "1": 48
+          },
+          "royalPeople": 122,
+          "royalTransfers": 0,
+          "accessions": 24,
+          "courtAttempts": 1,
+          "sieges": 1248,
+          "population": 136,
+          "factions": 8,
+          "activeStates": 5,
+          "activeFormations": 1,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2397387,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-3",
+            "state": 2311396942,
+            "position": 7330
+          }
+        },
+        {
+          "seed": "regional-4",
+          "sourceSha256": "226fc829468a76bcea1b00bfed744213d95767f45884677f36989b6933ca2177",
+          "saveVersion": 55,
+          "noblePolicy": "BASELINE",
+          "militaryInitialByRank": {
+            "BO": 1
+          },
+          "militaryGrantEventsByRank": {
+            "BO": 1,
+            "HOU": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 1,
+            "HOU": 1,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 1,
+          "militaryUpgrades": 1,
+          "ordinaryMeritGrantees": 0,
+          "royalMeritGrantees": 1,
+          "revocations": 0,
+          "familyDescents": {},
+          "royalDescents": {},
+          "familyEndings": {},
+          "royalEndings": {
+            "ACCESSION": 1
+          },
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 0,
+          "registeredMembers": 0,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 0,
+          "militaryPeople": 23,
+          "nonRoyalFirstColonels": 20,
+          "ordinaryUnprivilegedSelectedFirstColonels": 20,
+          "births": 68,
+          "birthCalendarMonths": {
+            "1": 68
+          },
+          "royalPeople": 138,
+          "royalTransfers": 0,
+          "accessions": 26,
+          "courtAttempts": 0,
+          "sieges": 919,
+          "population": 134,
+          "factions": 7,
+          "activeStates": 5,
+          "activeFormations": 0,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 0,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 1975127,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-4",
+            "state": 580028807,
+            "position": 6846
+          }
+        },
+        {
+          "seed": "regional-5",
+          "sourceSha256": "c2e73ef10f474c40eddf82fe70feac370a9a0b76fc99263b1486bd84d74bf7e5",
+          "saveVersion": 55,
+          "noblePolicy": "BASELINE",
+          "militaryInitialByRank": {
+            "BO": 2
+          },
+          "militaryGrantEventsByRank": {
+            "BO": 2,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 2,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 2,
+          "militaryUpgrades": 2,
+          "ordinaryMeritGrantees": 2,
+          "royalMeritGrantees": 0,
+          "revocations": 0,
+          "familyDescents": {},
+          "royalDescents": {},
+          "familyEndings": {
+            "NO_HEIR": 1
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 2,
+          "registeredMembers": 4,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 2,
+          "militaryPeople": 22,
+          "nonRoyalFirstColonels": 20,
+          "ordinaryUnprivilegedSelectedFirstColonels": 20,
+          "births": 49,
+          "birthCalendarMonths": {
+            "1": 49
+          },
+          "royalPeople": 116,
+          "royalTransfers": 0,
+          "accessions": 25,
+          "courtAttempts": 0,
+          "sieges": 944,
+          "population": 141,
+          "factions": 8,
+          "activeStates": 4,
+          "activeFormations": 1,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 1980475,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-5",
+            "state": 2443605598,
+            "position": 6976
+          }
+        },
+        {
+          "seed": "regional-6",
+          "sourceSha256": "9e6b4572a32bd0b8e8ef94bcca1faecb5a2d577981ca829e93571fda9b37a082",
+          "saveVersion": 55,
+          "noblePolicy": "BASELINE",
+          "militaryInitialByRank": {
+            "BO": 4
+          },
+          "militaryGrantEventsByRank": {
+            "BO": 4,
+            "HOU": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 4,
+            "HOU": 1,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 4,
+          "militaryUpgrades": 1,
+          "ordinaryMeritGrantees": 3,
+          "royalMeritGrantees": 1,
+          "revocations": 0,
+          "familyDescents": {
+            "HOU->BO": 1
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "NO_HEIR": 2
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 3,
+          "registeredMembers": 20,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 3,
+          "militaryPeople": 22,
+          "nonRoyalFirstColonels": 20,
+          "ordinaryUnprivilegedSelectedFirstColonels": 18,
+          "births": 47,
+          "birthCalendarMonths": {
+            "1": 47
+          },
+          "royalPeople": 112,
+          "royalTransfers": 0,
+          "accessions": 24,
+          "courtAttempts": 0,
+          "sieges": 737,
+          "population": 136,
+          "factions": 7,
+          "activeStates": 4,
+          "activeFormations": 2,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 1745311,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-6",
+            "state": 945273351,
+            "position": 6668
+          }
+        },
+        {
+          "seed": "regional-7",
+          "sourceSha256": "5509064782dacae5cc084ec8037b402c2a87706a3ad8ad46c57294baf3298943",
+          "saveVersion": 55,
+          "noblePolicy": "BASELINE",
+          "militaryInitialByRank": {
+            "BO": 5
+          },
+          "militaryGrantEventsByRank": {
+            "BO": 5,
+            "HOU": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 5,
+            "HOU": 1,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 5,
+          "militaryUpgrades": 1,
+          "ordinaryMeritGrantees": 5,
+          "royalMeritGrantees": 0,
+          "revocations": 0,
+          "familyDescents": {
+            "BO->ZI": 2
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "REGIME_ENDED": 1,
+            "NO_HEIR": 1
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 1,
+          "registeredFamilies": 5,
+          "registeredMembers": 15,
+          "activeHousesByTitleOrActiveOffice": 1,
+          "historicalHousesBySameDefinition": 4,
+          "militaryPeople": 36,
+          "nonRoyalFirstColonels": 28,
+          "ordinaryUnprivilegedSelectedFirstColonels": 27,
+          "births": 71,
+          "birthCalendarMonths": {
+            "1": 71
+          },
+          "royalPeople": 154,
+          "royalTransfers": 0,
+          "accessions": 27,
+          "courtAttempts": 0,
+          "sieges": 974,
+          "population": 138,
+          "factions": 7,
+          "activeStates": 6,
+          "activeFormations": 3,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2297729,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-7",
+            "state": 1804274387,
+            "position": 7311
+          }
+        },
+        {
+          "seed": "regional-8",
+          "sourceSha256": "44e40110939a1341338b83da4534cef1047f52687486ecc9199d70bb220437bc",
+          "saveVersion": 55,
+          "noblePolicy": "BASELINE",
+          "militaryInitialByRank": {
+            "BO": 2
+          },
+          "militaryGrantEventsByRank": {
+            "BO": 2
+          },
+          "militaryGranteesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 2,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 2,
+          "militaryUpgrades": 0,
+          "ordinaryMeritGrantees": 2,
+          "royalMeritGrantees": 0,
+          "revocations": 0,
+          "familyDescents": {
+            "BO->ZI": 1
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "NO_HEIR": 2
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 2,
+          "registeredMembers": 10,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 2,
+          "militaryPeople": 28,
+          "nonRoyalFirstColonels": 23,
+          "ordinaryUnprivilegedSelectedFirstColonels": 22,
+          "births": 51,
+          "birthCalendarMonths": {
+            "1": 51
+          },
+          "royalPeople": 143,
+          "royalTransfers": 0,
+          "accessions": 34,
+          "courtAttempts": 0,
+          "sieges": 1084,
+          "population": 144,
+          "factions": 9,
+          "activeStates": 6,
+          "activeFormations": 3,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2236019,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-8",
+            "state": 3212686499,
+            "position": 7558
+          }
+        }
+      ]
+    },
+    {
+      "cohort": "indexed",
+      "years": 100,
+      "worlds": 8,
+      "rows": [
+        {
+          "seed": "regional-1",
+          "sourceSha256": "737d27d67e4fd86d076188d7e51d3a9648a16e23baa773b3140253907b71c30f",
+          "saveVersion": 55,
+          "noblePolicy": "BASELINE",
+          "militaryInitialByRank": {
+            "BO": 6
+          },
+          "militaryGrantEventsByRank": {
+            "BO": 6,
+            "HOU": 3
+          },
+          "militaryGranteesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 6,
+            "HOU": 3,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 6,
+          "militaryUpgrades": 3,
+          "ordinaryMeritGrantees": 5,
+          "royalMeritGrantees": 1,
+          "revocations": 2,
+          "familyDescents": {
+            "BO->ZI": 2
+          },
+          "royalDescents": {
+            "HOU->BO": 1
+          },
+          "familyEndings": {
+            "NO_HEIR": 1,
+            "FORFEITED": 2
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 1,
+          "registeredFamilies": 4,
+          "registeredMembers": 23,
+          "activeHousesByTitleOrActiveOffice": 1,
+          "historicalHousesBySameDefinition": 3,
+          "militaryPeople": 30,
+          "nonRoyalFirstColonels": 25,
+          "ordinaryUnprivilegedSelectedFirstColonels": 22,
+          "births": 56,
+          "birthCalendarMonths": {
+            "1": 56
+          },
+          "royalPeople": 135,
+          "royalTransfers": 0,
+          "accessions": 32,
+          "courtAttempts": 3,
+          "sieges": 885,
+          "population": 133,
+          "factions": 9,
+          "activeStates": 3,
+          "activeFormations": 1,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2147357,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-1",
+            "state": 1848575204,
+            "position": 7250
+          }
+        },
+        {
+          "seed": "regional-2",
+          "sourceSha256": "0dd92e912fb220e9bd3f0d2b017d933dddbd7b73df124e0615a39f79e4ea1b09",
+          "saveVersion": 55,
+          "noblePolicy": "BASELINE",
+          "militaryInitialByRank": {
+            "BO": 1
+          },
+          "militaryGrantEventsByRank": {
+            "BO": 1,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 1,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 1,
+          "militaryUpgrades": 2,
+          "ordinaryMeritGrantees": 1,
+          "royalMeritGrantees": 0,
+          "revocations": 1,
+          "familyDescents": {},
+          "royalDescents": {},
+          "familyEndings": {
+            "FOREIGN": 1
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 1,
+          "registeredMembers": 3,
+          "activeHousesByTitleOrActiveOffice": 1,
+          "historicalHousesBySameDefinition": 0,
+          "militaryPeople": 22,
+          "nonRoyalFirstColonels": 16,
+          "ordinaryUnprivilegedSelectedFirstColonels": 15,
+          "births": 52,
+          "birthCalendarMonths": {
+            "1": 52
+          },
+          "royalPeople": 124,
+          "royalTransfers": 1,
+          "accessions": 31,
+          "courtAttempts": 1,
+          "sieges": 1004,
+          "population": 139,
+          "factions": 9,
+          "activeStates": 4,
+          "activeFormations": 4,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 2,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2076896,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-2",
+            "state": 1072079521,
+            "position": 7266
+          }
+        },
+        {
+          "seed": "regional-3",
+          "sourceSha256": "78d09bd783fc9c853ef42c8bb01142ce9b6dc7ff6f946834afb2625b7fb7e01f",
+          "saveVersion": 55,
+          "noblePolicy": "BASELINE",
+          "militaryInitialByRank": {
+            "BO": 5
+          },
+          "militaryGrantEventsByRank": {
+            "BO": 5,
+            "HOU": 2,
+            "GONG": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 5,
+            "HOU": 2,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 5,
+          "militaryUpgrades": 3,
+          "ordinaryMeritGrantees": 5,
+          "royalMeritGrantees": 0,
+          "revocations": 1,
+          "familyDescents": {
+            "GONG->HOU": 1,
+            "HOU->BO": 2,
+            "BO->ZI": 1
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "NO_HEIR": 2,
+            "FORFEITED": 1
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 1,
+          "registeredFamilies": 4,
+          "registeredMembers": 23,
+          "activeHousesByTitleOrActiveOffice": 1,
+          "historicalHousesBySameDefinition": 3,
+          "militaryPeople": 24,
+          "nonRoyalFirstColonels": 22,
+          "ordinaryUnprivilegedSelectedFirstColonels": 20,
+          "births": 48,
+          "birthCalendarMonths": {
+            "1": 48
+          },
+          "royalPeople": 122,
+          "royalTransfers": 0,
+          "accessions": 24,
+          "courtAttempts": 1,
+          "sieges": 1248,
+          "population": 136,
+          "factions": 8,
+          "activeStates": 5,
+          "activeFormations": 1,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2397387,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-3",
+            "state": 2311396942,
+            "position": 7330
+          }
+        },
+        {
+          "seed": "regional-4",
+          "sourceSha256": "226fc829468a76bcea1b00bfed744213d95767f45884677f36989b6933ca2177",
+          "saveVersion": 55,
+          "noblePolicy": "BASELINE",
+          "militaryInitialByRank": {
+            "BO": 1
+          },
+          "militaryGrantEventsByRank": {
+            "BO": 1,
+            "HOU": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 1,
+            "HOU": 1,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 1,
+          "militaryUpgrades": 1,
+          "ordinaryMeritGrantees": 0,
+          "royalMeritGrantees": 1,
+          "revocations": 0,
+          "familyDescents": {},
+          "royalDescents": {},
+          "familyEndings": {},
+          "royalEndings": {
+            "ACCESSION": 1
+          },
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 0,
+          "registeredMembers": 0,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 0,
+          "militaryPeople": 23,
+          "nonRoyalFirstColonels": 20,
+          "ordinaryUnprivilegedSelectedFirstColonels": 20,
+          "births": 68,
+          "birthCalendarMonths": {
+            "1": 68
+          },
+          "royalPeople": 138,
+          "royalTransfers": 0,
+          "accessions": 26,
+          "courtAttempts": 0,
+          "sieges": 919,
+          "population": 134,
+          "factions": 7,
+          "activeStates": 5,
+          "activeFormations": 0,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 0,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 1975127,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-4",
+            "state": 580028807,
+            "position": 6846
+          }
+        },
+        {
+          "seed": "regional-5",
+          "sourceSha256": "c2e73ef10f474c40eddf82fe70feac370a9a0b76fc99263b1486bd84d74bf7e5",
+          "saveVersion": 55,
+          "noblePolicy": "BASELINE",
+          "militaryInitialByRank": {
+            "BO": 2
+          },
+          "militaryGrantEventsByRank": {
+            "BO": 2,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 2,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 2,
+          "militaryUpgrades": 2,
+          "ordinaryMeritGrantees": 2,
+          "royalMeritGrantees": 0,
+          "revocations": 0,
+          "familyDescents": {},
+          "royalDescents": {},
+          "familyEndings": {
+            "NO_HEIR": 1
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 2,
+          "registeredMembers": 4,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 2,
+          "militaryPeople": 22,
+          "nonRoyalFirstColonels": 20,
+          "ordinaryUnprivilegedSelectedFirstColonels": 20,
+          "births": 49,
+          "birthCalendarMonths": {
+            "1": 49
+          },
+          "royalPeople": 116,
+          "royalTransfers": 0,
+          "accessions": 25,
+          "courtAttempts": 0,
+          "sieges": 944,
+          "population": 141,
+          "factions": 8,
+          "activeStates": 4,
+          "activeFormations": 1,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 1980475,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-5",
+            "state": 2443605598,
+            "position": 6976
+          }
+        },
+        {
+          "seed": "regional-6",
+          "sourceSha256": "9e6b4572a32bd0b8e8ef94bcca1faecb5a2d577981ca829e93571fda9b37a082",
+          "saveVersion": 55,
+          "noblePolicy": "BASELINE",
+          "militaryInitialByRank": {
+            "BO": 4
+          },
+          "militaryGrantEventsByRank": {
+            "BO": 4,
+            "HOU": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 4,
+            "HOU": 1,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 4,
+          "militaryUpgrades": 1,
+          "ordinaryMeritGrantees": 3,
+          "royalMeritGrantees": 1,
+          "revocations": 0,
+          "familyDescents": {
+            "HOU->BO": 1
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "NO_HEIR": 2
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 3,
+          "registeredMembers": 20,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 3,
+          "militaryPeople": 22,
+          "nonRoyalFirstColonels": 20,
+          "ordinaryUnprivilegedSelectedFirstColonels": 18,
+          "births": 47,
+          "birthCalendarMonths": {
+            "1": 47
+          },
+          "royalPeople": 112,
+          "royalTransfers": 0,
+          "accessions": 24,
+          "courtAttempts": 0,
+          "sieges": 737,
+          "population": 136,
+          "factions": 7,
+          "activeStates": 4,
+          "activeFormations": 2,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 1745311,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-6",
+            "state": 945273351,
+            "position": 6668
+          }
+        },
+        {
+          "seed": "regional-7",
+          "sourceSha256": "5509064782dacae5cc084ec8037b402c2a87706a3ad8ad46c57294baf3298943",
+          "saveVersion": 55,
+          "noblePolicy": "BASELINE",
+          "militaryInitialByRank": {
+            "BO": 5
+          },
+          "militaryGrantEventsByRank": {
+            "BO": 5,
+            "HOU": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 5,
+            "HOU": 1,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 5,
+          "militaryUpgrades": 1,
+          "ordinaryMeritGrantees": 5,
+          "royalMeritGrantees": 0,
+          "revocations": 0,
+          "familyDescents": {
+            "BO->ZI": 2
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "REGIME_ENDED": 1,
+            "NO_HEIR": 1
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 1,
+          "registeredFamilies": 5,
+          "registeredMembers": 15,
+          "activeHousesByTitleOrActiveOffice": 1,
+          "historicalHousesBySameDefinition": 4,
+          "militaryPeople": 36,
+          "nonRoyalFirstColonels": 28,
+          "ordinaryUnprivilegedSelectedFirstColonels": 27,
+          "births": 71,
+          "birthCalendarMonths": {
+            "1": 71
+          },
+          "royalPeople": 154,
+          "royalTransfers": 0,
+          "accessions": 27,
+          "courtAttempts": 0,
+          "sieges": 974,
+          "population": 138,
+          "factions": 7,
+          "activeStates": 6,
+          "activeFormations": 3,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2297729,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-7",
+            "state": 1804274387,
+            "position": 7311
+          }
+        },
+        {
+          "seed": "regional-8",
+          "sourceSha256": "44e40110939a1341338b83da4534cef1047f52687486ecc9199d70bb220437bc",
+          "saveVersion": 55,
+          "noblePolicy": "BASELINE",
+          "militaryInitialByRank": {
+            "BO": 2
+          },
+          "militaryGrantEventsByRank": {
+            "BO": 2
+          },
+          "militaryGranteesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 2,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 2,
+          "militaryUpgrades": 0,
+          "ordinaryMeritGrantees": 2,
+          "royalMeritGrantees": 0,
+          "revocations": 0,
+          "familyDescents": {
+            "BO->ZI": 1
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "NO_HEIR": 2
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 2,
+          "registeredMembers": 10,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 2,
+          "militaryPeople": 28,
+          "nonRoyalFirstColonels": 23,
+          "ordinaryUnprivilegedSelectedFirstColonels": 22,
+          "births": 51,
+          "birthCalendarMonths": {
+            "1": 51
+          },
+          "royalPeople": 143,
+          "royalTransfers": 0,
+          "accessions": 34,
+          "courtAttempts": 0,
+          "sieges": 1084,
+          "population": 144,
+          "factions": 9,
+          "activeStates": 6,
+          "activeFormations": 3,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2236019,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-8",
+            "state": 3212686499,
+            "position": 7558
+          }
+        }
+      ]
+    },
+    {
+      "cohort": "a-low",
+      "years": 100,
+      "worlds": 8,
+      "rows": [
+        {
+          "seed": "regional-1",
+          "sourceSha256": "1af6d365dedd273824eb83f0b06a05293c9a05f8e0aba34513121fd75991201e",
+          "saveVersion": 56,
+          "noblePolicy": "LOW",
+          "militaryInitialByRank": {
+            "NAN": 8
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 8,
+            "BO": 6,
+            "ZI": 1,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 8,
+            "ZI": 1,
+            "BO": 6,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 8,
+          "militaryUpgrades": 9,
+          "ordinaryMeritGrantees": 6,
+          "royalMeritGrantees": 2,
+          "revocations": 1,
+          "familyDescents": {
+            "BO->ZI": 3
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "NO_HEIR": 2,
+            "FORFEITED": 1
+          },
+          "royalEndings": {
+            "RANK_EXHAUSTED": 2
+          },
+          "activeCivilianInheritedHolders": 1,
+          "registeredFamilies": 6,
+          "registeredMembers": 14,
+          "activeHousesByTitleOrActiveOffice": 3,
+          "historicalHousesBySameDefinition": 3,
+          "militaryPeople": 33,
+          "nonRoyalFirstColonels": 27,
+          "ordinaryUnprivilegedSelectedFirstColonels": 24,
+          "births": 61,
+          "birthCalendarMonths": {
+            "11": 2,
+            "5": 6,
+            "6": 4,
+            "4": 6,
+            "7": 5,
+            "1": 5,
+            "9": 4,
+            "10": 8,
+            "12": 4,
+            "2": 5,
+            "8": 7,
+            "3": 5
+          },
+          "royalPeople": 136,
+          "royalTransfers": 0,
+          "accessions": 29,
+          "courtAttempts": 3,
+          "sieges": 968,
+          "population": 133,
+          "factions": 7,
+          "activeStates": 5,
+          "activeFormations": 3,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 2,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2258972,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-1",
+            "state": 1600386716,
+            "position": 7210
+          }
+        },
+        {
+          "seed": "regional-2",
+          "sourceSha256": "677a90789f3c7aab3b760b0d105fcfcded34f8a12fad015fe1ce54fcf118ee7f",
+          "saveVersion": 56,
+          "noblePolicy": "LOW",
+          "militaryInitialByRank": {
+            "NAN": 2
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 2,
+            "BO": 1,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 2,
+            "ZI": 0,
+            "BO": 1,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 2,
+          "militaryUpgrades": 3,
+          "ordinaryMeritGrantees": 2,
+          "royalMeritGrantees": 0,
+          "revocations": 1,
+          "familyDescents": {},
+          "royalDescents": {},
+          "familyEndings": {
+            "RANK_EXHAUSTED": 1,
+            "FOREIGN": 1
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 2,
+          "registeredMembers": 5,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 2,
+          "militaryPeople": 21,
+          "nonRoyalFirstColonels": 16,
+          "ordinaryUnprivilegedSelectedFirstColonels": 15,
+          "births": 47,
+          "birthCalendarMonths": {
+            "8": 5,
+            "12": 4,
+            "2": 4,
+            "3": 7,
+            "9": 3,
+            "7": 3,
+            "4": 6,
+            "1": 2,
+            "10": 4,
+            "6": 2,
+            "5": 3,
+            "11": 4
+          },
+          "royalPeople": 123,
+          "royalTransfers": 0,
+          "accessions": 27,
+          "courtAttempts": 1,
+          "sieges": 975,
+          "population": 149,
+          "factions": 8,
+          "activeStates": 6,
+          "activeFormations": 2,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2026692,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-2",
+            "state": 1767856388,
+            "position": 7257
+          }
+        },
+        {
+          "seed": "regional-3",
+          "sourceSha256": "28e1bb37eff58f1c2490c06fe63cc913878f015732b233a4917ff91860247a32",
+          "saveVersion": 56,
+          "noblePolicy": "LOW",
+          "militaryInitialByRank": {
+            "NAN": 9
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 9,
+            "BO": 5,
+            "HOU": 2,
+            "GONG": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 9,
+            "ZI": 0,
+            "BO": 5,
+            "HOU": 2,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 9,
+          "militaryUpgrades": 8,
+          "ordinaryMeritGrantees": 8,
+          "royalMeritGrantees": 1,
+          "revocations": 1,
+          "familyDescents": {
+            "GONG->HOU": 1,
+            "HOU->BO": 2,
+            "BO->ZI": 1
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "RANK_EXHAUSTED": 2,
+            "NO_HEIR": 2,
+            "FORFEITED": 1
+          },
+          "royalEndings": {
+            "ACCESSION": 1
+          },
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 6,
+          "registeredMembers": 32,
+          "activeHousesByTitleOrActiveOffice": 1,
+          "historicalHousesBySameDefinition": 5,
+          "militaryPeople": 25,
+          "nonRoyalFirstColonels": 24,
+          "ordinaryUnprivilegedSelectedFirstColonels": 21,
+          "births": 47,
+          "birthCalendarMonths": {
+            "1": 4,
+            "9": 6,
+            "11": 1,
+            "7": 7,
+            "6": 6,
+            "4": 4,
+            "8": 3,
+            "10": 5,
+            "3": 4,
+            "12": 2,
+            "5": 3,
+            "2": 2
+          },
+          "royalPeople": 121,
+          "royalTransfers": 0,
+          "accessions": 24,
+          "courtAttempts": 1,
+          "sieges": 1247,
+          "population": 136,
+          "factions": 8,
+          "activeStates": 5,
+          "activeFormations": 2,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2433814,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-3",
+            "state": 1679561272,
+            "position": 7332
+          }
+        },
+        {
+          "seed": "regional-4",
+          "sourceSha256": "93bcad24068e9cb31bd4739323b94e67cc922d97e555fa681fca373750be8cc5",
+          "saveVersion": 56,
+          "noblePolicy": "LOW",
+          "militaryInitialByRank": {
+            "NAN": 5
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 5,
+            "BO": 2,
+            "HOU": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 5,
+            "ZI": 0,
+            "BO": 2,
+            "HOU": 1,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 5,
+          "militaryUpgrades": 3,
+          "ordinaryMeritGrantees": 3,
+          "royalMeritGrantees": 2,
+          "revocations": 0,
+          "familyDescents": {},
+          "royalDescents": {
+            "BO->ZI": 1
+          },
+          "familyEndings": {
+            "RANK_EXHAUSTED": 2
+          },
+          "royalEndings": {
+            "ACCESSION": 1
+          },
+          "activeCivilianInheritedHolders": 1,
+          "registeredFamilies": 3,
+          "registeredMembers": 15,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 3,
+          "militaryPeople": 25,
+          "nonRoyalFirstColonels": 21,
+          "ordinaryUnprivilegedSelectedFirstColonels": 21,
+          "births": 66,
+          "birthCalendarMonths": {
+            "3": 6,
+            "7": 6,
+            "1": 8,
+            "11": 6,
+            "10": 6,
+            "12": 5,
+            "8": 7,
+            "5": 4,
+            "4": 6,
+            "9": 4,
+            "2": 6,
+            "6": 2
+          },
+          "royalPeople": 142,
+          "royalTransfers": 0,
+          "accessions": 27,
+          "courtAttempts": 0,
+          "sieges": 926,
+          "population": 136,
+          "factions": 7,
+          "activeStates": 5,
+          "activeFormations": 1,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2093505,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-4",
+            "state": 4100125439,
+            "position": 6998
+          }
+        },
+        {
+          "seed": "regional-5",
+          "sourceSha256": "dbc8d12624f6184e67473f491241bc345ccb060ac97cce4ba15b625bb4457c83",
+          "saveVersion": 56,
+          "noblePolicy": "LOW",
+          "militaryInitialByRank": {
+            "NAN": 8
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 8,
+            "BO": 4,
+            "ZI": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 8,
+            "ZI": 1,
+            "BO": 4,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 8,
+          "militaryUpgrades": 5,
+          "ordinaryMeritGrantees": 8,
+          "royalMeritGrantees": 0,
+          "revocations": 0,
+          "familyDescents": {
+            "BO->ZI": 2
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "NO_HEIR": 2,
+            "RANK_EXHAUSTED": 3
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 5,
+          "registeredMembers": 25,
+          "activeHousesByTitleOrActiveOffice": 2,
+          "historicalHousesBySameDefinition": 3,
+          "militaryPeople": 25,
+          "nonRoyalFirstColonels": 23,
+          "ordinaryUnprivilegedSelectedFirstColonels": 19,
+          "births": 45,
+          "birthCalendarMonths": {
+            "9": 7,
+            "11": 2,
+            "4": 6,
+            "7": 4,
+            "10": 4,
+            "12": 5,
+            "3": 3,
+            "2": 4,
+            "5": 3,
+            "1": 3,
+            "8": 3,
+            "6": 1
+          },
+          "royalPeople": 111,
+          "royalTransfers": 0,
+          "accessions": 23,
+          "courtAttempts": 0,
+          "sieges": 1078,
+          "population": 135,
+          "factions": 7,
+          "activeStates": 5,
+          "activeFormations": 2,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2187248,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-5",
+            "state": 1172357958,
+            "position": 7048
+          }
+        },
+        {
+          "seed": "regional-6",
+          "sourceSha256": "1a77a3ab5881911b1269fbbb62ea519d9364cd1f4a5f43e465efb5e09135c20e",
+          "saveVersion": 56,
+          "noblePolicy": "LOW",
+          "militaryInitialByRank": {
+            "NAN": 7
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 7,
+            "BO": 3,
+            "HOU": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 7,
+            "ZI": 0,
+            "BO": 3,
+            "HOU": 1,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 7,
+          "militaryUpgrades": 4,
+          "ordinaryMeritGrantees": 6,
+          "royalMeritGrantees": 1,
+          "revocations": 1,
+          "familyDescents": {
+            "HOU->BO": 1
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "RANK_EXHAUSTED": 3,
+            "NO_HEIR": 2,
+            "FORFEITED": 1
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 6,
+          "registeredMembers": 28,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 6,
+          "militaryPeople": 21,
+          "nonRoyalFirstColonels": 19,
+          "ordinaryUnprivilegedSelectedFirstColonels": 18,
+          "births": 50,
+          "birthCalendarMonths": {
+            "12": 6,
+            "4": 6,
+            "10": 5,
+            "1": 4,
+            "2": 3,
+            "8": 3,
+            "3": 7,
+            "11": 3,
+            "6": 2,
+            "9": 6,
+            "5": 3,
+            "7": 2
+          },
+          "royalPeople": 117,
+          "royalTransfers": 0,
+          "accessions": 24,
+          "courtAttempts": 1,
+          "sieges": 743,
+          "population": 138,
+          "factions": 7,
+          "activeStates": 4,
+          "activeFormations": 3,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 2,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 1768493,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-6",
+            "state": 249496484,
+            "position": 6677
+          }
+        },
+        {
+          "seed": "regional-7",
+          "sourceSha256": "5173fa3a844eae0fa387df8439b66446a7cf3a0af5724b85a534788d23124f1d",
+          "saveVersion": 56,
+          "noblePolicy": "LOW",
+          "militaryInitialByRank": {
+            "NAN": 4
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 4,
+            "BO": 3,
+            "HOU": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 4,
+            "ZI": 0,
+            "BO": 3,
+            "HOU": 1,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 4,
+          "militaryUpgrades": 4,
+          "ordinaryMeritGrantees": 4,
+          "royalMeritGrantees": 0,
+          "revocations": 0,
+          "familyDescents": {
+            "BO->ZI": 2,
+            "ZI->NAN": 1
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "RANK_EXHAUSTED": 1
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 1,
+          "registeredFamilies": 3,
+          "registeredMembers": 14,
+          "activeHousesByTitleOrActiveOffice": 3,
+          "historicalHousesBySameDefinition": 0,
+          "militaryPeople": 31,
+          "nonRoyalFirstColonels": 24,
+          "ordinaryUnprivilegedSelectedFirstColonels": 21,
+          "births": 67,
+          "birthCalendarMonths": {
+            "2": 6,
+            "10": 6,
+            "11": 6,
+            "3": 4,
+            "6": 5,
+            "1": 12,
+            "7": 6,
+            "12": 3,
+            "4": 3,
+            "8": 4,
+            "9": 6,
+            "5": 6
+          },
+          "royalPeople": 149,
+          "royalTransfers": 0,
+          "accessions": 27,
+          "courtAttempts": 0,
+          "sieges": 993,
+          "population": 119,
+          "factions": 7,
+          "activeStates": 5,
+          "activeFormations": 2,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2210465,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-7",
+            "state": 1307897411,
+            "position": 7231
+          }
+        },
+        {
+          "seed": "regional-8",
+          "sourceSha256": "d94a5dcc97fd82076784a5106b392b5d0e80af31a23561fa481a5e3316684001",
+          "saveVersion": 56,
+          "noblePolicy": "LOW",
+          "militaryInitialByRank": {
+            "NAN": 5
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 5,
+            "BO": 3
+          },
+          "militaryGranteesByRank": {
+            "NAN": 5,
+            "ZI": 0,
+            "BO": 3,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 5,
+          "militaryUpgrades": 3,
+          "ordinaryMeritGrantees": 5,
+          "royalMeritGrantees": 0,
+          "revocations": 0,
+          "familyDescents": {
+            "BO->ZI": 1
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "NO_HEIR": 2,
+            "RANK_EXHAUSTED": 2
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 5,
+          "registeredMembers": 13,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 5,
+          "militaryPeople": 29,
+          "nonRoyalFirstColonels": 22,
+          "ordinaryUnprivilegedSelectedFirstColonels": 20,
+          "births": 70,
+          "birthCalendarMonths": {
+            "5": 9,
+            "6": 7,
+            "3": 4,
+            "12": 8,
+            "8": 4,
+            "2": 7,
+            "11": 4,
+            "1": 7,
+            "10": 4,
+            "4": 6,
+            "9": 5,
+            "7": 5
+          },
+          "royalPeople": 164,
+          "royalTransfers": 0,
+          "accessions": 30,
+          "courtAttempts": 0,
+          "sieges": 1030,
+          "population": 140,
+          "factions": 7,
+          "activeStates": 7,
+          "activeFormations": 3,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 2,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2190067,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-8",
+            "state": 1027778704,
+            "position": 7327
+          }
+        }
+      ]
+    },
+    {
+      "cohort": "a-medium",
+      "years": 100,
+      "worlds": 8,
+      "rows": [
+        {
+          "seed": "regional-1",
+          "sourceSha256": "a97c23e0610c6445d0fa670caeaaeb9de13d204ddd4a08df141d91f992c5a4d6",
+          "saveVersion": 56,
+          "noblePolicy": "MEDIUM",
+          "militaryInitialByRank": {
+            "NAN": 10
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 10,
+            "BO": 6,
+            "ZI": 1,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 10,
+            "ZI": 1,
+            "BO": 6,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 10,
+          "militaryUpgrades": 9,
+          "ordinaryMeritGrantees": 8,
+          "royalMeritGrantees": 2,
+          "revocations": 1,
+          "familyDescents": {
+            "BO->ZI": 3
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "NO_HEIR": 2,
+            "RANK_EXHAUSTED": 2,
+            "FORFEITED": 1
+          },
+          "royalEndings": {
+            "RANK_EXHAUSTED": 2
+          },
+          "activeCivilianInheritedHolders": 1,
+          "registeredFamilies": 8,
+          "registeredMembers": 20,
+          "activeHousesByTitleOrActiveOffice": 3,
+          "historicalHousesBySameDefinition": 5,
+          "militaryPeople": 33,
+          "nonRoyalFirstColonels": 27,
+          "ordinaryUnprivilegedSelectedFirstColonels": 24,
+          "births": 61,
+          "birthCalendarMonths": {
+            "11": 2,
+            "5": 6,
+            "6": 4,
+            "4": 6,
+            "7": 5,
+            "1": 5,
+            "9": 4,
+            "10": 8,
+            "12": 4,
+            "2": 5,
+            "8": 7,
+            "3": 5
+          },
+          "royalPeople": 136,
+          "royalTransfers": 0,
+          "accessions": 29,
+          "courtAttempts": 3,
+          "sieges": 968,
+          "population": 133,
+          "factions": 7,
+          "activeStates": 5,
+          "activeFormations": 3,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 2,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2272137,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-1",
+            "state": 1600386716,
+            "position": 7210
+          }
+        },
+        {
+          "seed": "regional-2",
+          "sourceSha256": "1ae229d4a005738862e89d1b7f3bcffc3293eb46f978f1d65cb38645be5968cf",
+          "saveVersion": 56,
+          "noblePolicy": "MEDIUM",
+          "militaryInitialByRank": {
+            "NAN": 2
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 2,
+            "BO": 1,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 2,
+            "ZI": 0,
+            "BO": 1,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 2,
+          "militaryUpgrades": 3,
+          "ordinaryMeritGrantees": 2,
+          "royalMeritGrantees": 0,
+          "revocations": 1,
+          "familyDescents": {},
+          "royalDescents": {},
+          "familyEndings": {
+            "RANK_EXHAUSTED": 1,
+            "FOREIGN": 1
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 2,
+          "registeredMembers": 5,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 2,
+          "militaryPeople": 21,
+          "nonRoyalFirstColonels": 16,
+          "ordinaryUnprivilegedSelectedFirstColonels": 15,
+          "births": 47,
+          "birthCalendarMonths": {
+            "8": 5,
+            "12": 4,
+            "2": 4,
+            "3": 7,
+            "9": 3,
+            "7": 3,
+            "4": 6,
+            "1": 2,
+            "10": 4,
+            "6": 2,
+            "5": 3,
+            "11": 4
+          },
+          "royalPeople": 123,
+          "royalTransfers": 0,
+          "accessions": 27,
+          "courtAttempts": 1,
+          "sieges": 975,
+          "population": 149,
+          "factions": 8,
+          "activeStates": 6,
+          "activeFormations": 2,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2026695,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-2",
+            "state": 1767856388,
+            "position": 7257
+          }
+        },
+        {
+          "seed": "regional-3",
+          "sourceSha256": "163ed1c4025bd7d78d0b0c6f6f0a3b9bc9bf4b6e38f88ca021eab257b22614e7",
+          "saveVersion": 56,
+          "noblePolicy": "MEDIUM",
+          "militaryInitialByRank": {
+            "NAN": 9
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 9,
+            "BO": 5,
+            "HOU": 2,
+            "GONG": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 9,
+            "ZI": 0,
+            "BO": 5,
+            "HOU": 2,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 9,
+          "militaryUpgrades": 8,
+          "ordinaryMeritGrantees": 8,
+          "royalMeritGrantees": 1,
+          "revocations": 1,
+          "familyDescents": {
+            "GONG->HOU": 1,
+            "HOU->BO": 2,
+            "BO->ZI": 1
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "RANK_EXHAUSTED": 2,
+            "NO_HEIR": 2,
+            "FORFEITED": 1
+          },
+          "royalEndings": {
+            "ACCESSION": 1
+          },
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 6,
+          "registeredMembers": 32,
+          "activeHousesByTitleOrActiveOffice": 1,
+          "historicalHousesBySameDefinition": 5,
+          "militaryPeople": 25,
+          "nonRoyalFirstColonels": 24,
+          "ordinaryUnprivilegedSelectedFirstColonels": 21,
+          "births": 47,
+          "birthCalendarMonths": {
+            "1": 4,
+            "9": 6,
+            "11": 1,
+            "7": 7,
+            "6": 6,
+            "4": 4,
+            "8": 3,
+            "10": 5,
+            "3": 4,
+            "12": 2,
+            "5": 3,
+            "2": 2
+          },
+          "royalPeople": 121,
+          "royalTransfers": 0,
+          "accessions": 24,
+          "courtAttempts": 1,
+          "sieges": 1247,
+          "population": 136,
+          "factions": 8,
+          "activeStates": 5,
+          "activeFormations": 2,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2433817,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-3",
+            "state": 1679561272,
+            "position": 7332
+          }
+        },
+        {
+          "seed": "regional-4",
+          "sourceSha256": "658a34f311412252dc743f7fdd87f4d8cd8e18e8c751fbfc48fef60d45e5768e",
+          "saveVersion": 56,
+          "noblePolicy": "MEDIUM",
+          "militaryInitialByRank": {
+            "NAN": 5
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 5,
+            "BO": 2,
+            "HOU": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 5,
+            "ZI": 0,
+            "BO": 2,
+            "HOU": 1,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 5,
+          "militaryUpgrades": 3,
+          "ordinaryMeritGrantees": 3,
+          "royalMeritGrantees": 2,
+          "revocations": 0,
+          "familyDescents": {},
+          "royalDescents": {
+            "BO->ZI": 1
+          },
+          "familyEndings": {
+            "RANK_EXHAUSTED": 2
+          },
+          "royalEndings": {
+            "ACCESSION": 1
+          },
+          "activeCivilianInheritedHolders": 1,
+          "registeredFamilies": 3,
+          "registeredMembers": 15,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 3,
+          "militaryPeople": 25,
+          "nonRoyalFirstColonels": 21,
+          "ordinaryUnprivilegedSelectedFirstColonels": 21,
+          "births": 66,
+          "birthCalendarMonths": {
+            "3": 6,
+            "7": 6,
+            "1": 8,
+            "11": 6,
+            "10": 6,
+            "12": 5,
+            "8": 7,
+            "5": 4,
+            "4": 6,
+            "9": 4,
+            "2": 6,
+            "6": 2
+          },
+          "royalPeople": 142,
+          "royalTransfers": 0,
+          "accessions": 27,
+          "courtAttempts": 0,
+          "sieges": 926,
+          "population": 136,
+          "factions": 7,
+          "activeStates": 5,
+          "activeFormations": 1,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2093508,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-4",
+            "state": 4100125439,
+            "position": 6998
+          }
+        },
+        {
+          "seed": "regional-5",
+          "sourceSha256": "5ddd82f2032f3ba1635494c7a3e3cfe51881eb002af1b9e1a8d940a7e98b5d79",
+          "saveVersion": 56,
+          "noblePolicy": "MEDIUM",
+          "militaryInitialByRank": {
+            "NAN": 8
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 8,
+            "BO": 4,
+            "ZI": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 8,
+            "ZI": 1,
+            "BO": 4,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 8,
+          "militaryUpgrades": 5,
+          "ordinaryMeritGrantees": 8,
+          "royalMeritGrantees": 0,
+          "revocations": 0,
+          "familyDescents": {
+            "BO->ZI": 2
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "NO_HEIR": 2,
+            "RANK_EXHAUSTED": 3
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 5,
+          "registeredMembers": 25,
+          "activeHousesByTitleOrActiveOffice": 2,
+          "historicalHousesBySameDefinition": 3,
+          "militaryPeople": 25,
+          "nonRoyalFirstColonels": 23,
+          "ordinaryUnprivilegedSelectedFirstColonels": 19,
+          "births": 45,
+          "birthCalendarMonths": {
+            "9": 7,
+            "11": 2,
+            "4": 6,
+            "7": 4,
+            "10": 4,
+            "12": 5,
+            "3": 3,
+            "2": 4,
+            "5": 3,
+            "1": 3,
+            "8": 3,
+            "6": 1
+          },
+          "royalPeople": 111,
+          "royalTransfers": 0,
+          "accessions": 23,
+          "courtAttempts": 0,
+          "sieges": 1078,
+          "population": 135,
+          "factions": 7,
+          "activeStates": 5,
+          "activeFormations": 2,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2187251,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-5",
+            "state": 1172357958,
+            "position": 7048
+          }
+        },
+        {
+          "seed": "regional-6",
+          "sourceSha256": "320dda54c407d1cdfdf81c22efd9e627eb8652148a0a2419e1e1f26a068c32dd",
+          "saveVersion": 56,
+          "noblePolicy": "MEDIUM",
+          "militaryInitialByRank": {
+            "NAN": 7
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 7,
+            "BO": 3,
+            "HOU": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 7,
+            "ZI": 0,
+            "BO": 3,
+            "HOU": 1,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 7,
+          "militaryUpgrades": 4,
+          "ordinaryMeritGrantees": 6,
+          "royalMeritGrantees": 1,
+          "revocations": 1,
+          "familyDescents": {
+            "HOU->BO": 1
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "RANK_EXHAUSTED": 3,
+            "NO_HEIR": 2,
+            "FORFEITED": 1
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 6,
+          "registeredMembers": 28,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 6,
+          "militaryPeople": 21,
+          "nonRoyalFirstColonels": 19,
+          "ordinaryUnprivilegedSelectedFirstColonels": 18,
+          "births": 50,
+          "birthCalendarMonths": {
+            "12": 6,
+            "4": 6,
+            "10": 5,
+            "1": 4,
+            "2": 3,
+            "8": 3,
+            "3": 7,
+            "11": 3,
+            "6": 2,
+            "9": 6,
+            "5": 3,
+            "7": 2
+          },
+          "royalPeople": 117,
+          "royalTransfers": 0,
+          "accessions": 24,
+          "courtAttempts": 1,
+          "sieges": 743,
+          "population": 138,
+          "factions": 7,
+          "activeStates": 4,
+          "activeFormations": 3,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 2,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 1768496,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-6",
+            "state": 249496484,
+            "position": 6677
+          }
+        },
+        {
+          "seed": "regional-7",
+          "sourceSha256": "c0f153777fb8075c275377ee58f402c703f6ecd07160bfa5a38357813ca926fc",
+          "saveVersion": 56,
+          "noblePolicy": "MEDIUM",
+          "militaryInitialByRank": {
+            "NAN": 4
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 4,
+            "BO": 3,
+            "HOU": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 4,
+            "ZI": 0,
+            "BO": 3,
+            "HOU": 1,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 4,
+          "militaryUpgrades": 4,
+          "ordinaryMeritGrantees": 4,
+          "royalMeritGrantees": 0,
+          "revocations": 0,
+          "familyDescents": {
+            "BO->ZI": 2,
+            "ZI->NAN": 1
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "RANK_EXHAUSTED": 1
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 1,
+          "registeredFamilies": 3,
+          "registeredMembers": 14,
+          "activeHousesByTitleOrActiveOffice": 3,
+          "historicalHousesBySameDefinition": 0,
+          "militaryPeople": 31,
+          "nonRoyalFirstColonels": 24,
+          "ordinaryUnprivilegedSelectedFirstColonels": 21,
+          "births": 67,
+          "birthCalendarMonths": {
+            "2": 6,
+            "10": 6,
+            "11": 6,
+            "3": 4,
+            "6": 5,
+            "1": 12,
+            "7": 6,
+            "12": 3,
+            "4": 3,
+            "8": 4,
+            "9": 6,
+            "5": 6
+          },
+          "royalPeople": 149,
+          "royalTransfers": 0,
+          "accessions": 27,
+          "courtAttempts": 0,
+          "sieges": 993,
+          "population": 119,
+          "factions": 7,
+          "activeStates": 5,
+          "activeFormations": 2,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2210468,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-7",
+            "state": 1307897411,
+            "position": 7231
+          }
+        },
+        {
+          "seed": "regional-8",
+          "sourceSha256": "402c4b9191bab43adc2064a9e2950719b6ef70341ee24afbf32cdaf73f034875",
+          "saveVersion": 56,
+          "noblePolicy": "MEDIUM",
+          "militaryInitialByRank": {
+            "NAN": 5
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 5,
+            "BO": 3
+          },
+          "militaryGranteesByRank": {
+            "NAN": 5,
+            "ZI": 0,
+            "BO": 3,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 5,
+          "militaryUpgrades": 3,
+          "ordinaryMeritGrantees": 5,
+          "royalMeritGrantees": 0,
+          "revocations": 0,
+          "familyDescents": {
+            "BO->ZI": 1
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "NO_HEIR": 2,
+            "RANK_EXHAUSTED": 2
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 5,
+          "registeredMembers": 13,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 5,
+          "militaryPeople": 29,
+          "nonRoyalFirstColonels": 22,
+          "ordinaryUnprivilegedSelectedFirstColonels": 20,
+          "births": 70,
+          "birthCalendarMonths": {
+            "5": 9,
+            "6": 7,
+            "3": 4,
+            "12": 8,
+            "8": 4,
+            "2": 7,
+            "11": 4,
+            "1": 7,
+            "10": 4,
+            "4": 6,
+            "9": 5,
+            "7": 5
+          },
+          "royalPeople": 164,
+          "royalTransfers": 0,
+          "accessions": 30,
+          "courtAttempts": 0,
+          "sieges": 1030,
+          "population": 140,
+          "factions": 7,
+          "activeStates": 7,
+          "activeFormations": 3,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 2,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2190070,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-8",
+            "state": 1027778704,
+            "position": 7327
+          }
+        }
+      ]
+    },
+    {
+      "cohort": "a-high",
+      "years": 100,
+      "worlds": 8,
+      "rows": [
+        {
+          "seed": "regional-1",
+          "sourceSha256": "47aa9391ab3791641f67bc9b72add06f936041ce564e556c6514f01b5a8140b0",
+          "saveVersion": 56,
+          "noblePolicy": "HIGH",
+          "militaryInitialByRank": {
+            "NAN": 10
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 10,
+            "BO": 6,
+            "ZI": 1,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 10,
+            "ZI": 1,
+            "BO": 6,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 10,
+          "militaryUpgrades": 9,
+          "ordinaryMeritGrantees": 8,
+          "royalMeritGrantees": 2,
+          "revocations": 1,
+          "familyDescents": {
+            "BO->ZI": 3
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "NO_HEIR": 2,
+            "RANK_EXHAUSTED": 2,
+            "FORFEITED": 1
+          },
+          "royalEndings": {
+            "RANK_EXHAUSTED": 2
+          },
+          "activeCivilianInheritedHolders": 1,
+          "registeredFamilies": 8,
+          "registeredMembers": 20,
+          "activeHousesByTitleOrActiveOffice": 3,
+          "historicalHousesBySameDefinition": 5,
+          "militaryPeople": 33,
+          "nonRoyalFirstColonels": 27,
+          "ordinaryUnprivilegedSelectedFirstColonels": 24,
+          "births": 61,
+          "birthCalendarMonths": {
+            "11": 2,
+            "5": 6,
+            "6": 4,
+            "4": 6,
+            "7": 5,
+            "1": 5,
+            "9": 4,
+            "10": 8,
+            "12": 4,
+            "2": 5,
+            "8": 7,
+            "3": 5
+          },
+          "royalPeople": 136,
+          "royalTransfers": 0,
+          "accessions": 29,
+          "courtAttempts": 3,
+          "sieges": 968,
+          "population": 133,
+          "factions": 7,
+          "activeStates": 5,
+          "activeFormations": 3,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 2,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2272135,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-1",
+            "state": 1600386716,
+            "position": 7210
+          }
+        },
+        {
+          "seed": "regional-2",
+          "sourceSha256": "6ce0ea903768eb926bb079c91889ff7bfadff7fdc4e10cd9e950671bb0e7279b",
+          "saveVersion": 56,
+          "noblePolicy": "HIGH",
+          "militaryInitialByRank": {
+            "NAN": 2
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 2,
+            "BO": 1,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 2,
+            "ZI": 0,
+            "BO": 1,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 2,
+          "militaryUpgrades": 3,
+          "ordinaryMeritGrantees": 2,
+          "royalMeritGrantees": 0,
+          "revocations": 1,
+          "familyDescents": {},
+          "royalDescents": {},
+          "familyEndings": {
+            "RANK_EXHAUSTED": 1,
+            "FOREIGN": 1
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 2,
+          "registeredMembers": 5,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 2,
+          "militaryPeople": 21,
+          "nonRoyalFirstColonels": 16,
+          "ordinaryUnprivilegedSelectedFirstColonels": 15,
+          "births": 47,
+          "birthCalendarMonths": {
+            "8": 5,
+            "12": 4,
+            "2": 4,
+            "3": 7,
+            "9": 3,
+            "7": 3,
+            "4": 6,
+            "1": 2,
+            "10": 4,
+            "6": 2,
+            "5": 3,
+            "11": 4
+          },
+          "royalPeople": 123,
+          "royalTransfers": 0,
+          "accessions": 27,
+          "courtAttempts": 1,
+          "sieges": 975,
+          "population": 149,
+          "factions": 8,
+          "activeStates": 6,
+          "activeFormations": 2,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2026693,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-2",
+            "state": 1767856388,
+            "position": 7257
+          }
+        },
+        {
+          "seed": "regional-3",
+          "sourceSha256": "4247c3d4dc3219f4dabacbc12fcb9c9eaab68156b3b2ae04bacad37a1c3fa971",
+          "saveVersion": 56,
+          "noblePolicy": "HIGH",
+          "militaryInitialByRank": {
+            "NAN": 9
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 9,
+            "BO": 5,
+            "HOU": 2,
+            "GONG": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 9,
+            "ZI": 0,
+            "BO": 5,
+            "HOU": 2,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 9,
+          "militaryUpgrades": 8,
+          "ordinaryMeritGrantees": 8,
+          "royalMeritGrantees": 1,
+          "revocations": 1,
+          "familyDescents": {
+            "GONG->HOU": 1,
+            "HOU->BO": 2,
+            "BO->ZI": 1
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "RANK_EXHAUSTED": 2,
+            "NO_HEIR": 2,
+            "FORFEITED": 1
+          },
+          "royalEndings": {
+            "ACCESSION": 1
+          },
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 6,
+          "registeredMembers": 32,
+          "activeHousesByTitleOrActiveOffice": 1,
+          "historicalHousesBySameDefinition": 5,
+          "militaryPeople": 25,
+          "nonRoyalFirstColonels": 24,
+          "ordinaryUnprivilegedSelectedFirstColonels": 21,
+          "births": 47,
+          "birthCalendarMonths": {
+            "1": 4,
+            "9": 6,
+            "11": 1,
+            "7": 7,
+            "6": 6,
+            "4": 4,
+            "8": 3,
+            "10": 5,
+            "3": 4,
+            "12": 2,
+            "5": 3,
+            "2": 2
+          },
+          "royalPeople": 121,
+          "royalTransfers": 0,
+          "accessions": 24,
+          "courtAttempts": 1,
+          "sieges": 1247,
+          "population": 136,
+          "factions": 8,
+          "activeStates": 5,
+          "activeFormations": 2,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2433815,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-3",
+            "state": 1679561272,
+            "position": 7332
+          }
+        },
+        {
+          "seed": "regional-4",
+          "sourceSha256": "abf624433d23b055624c352317d528a109c77cab721d2bceb3ef1c5697c3b451",
+          "saveVersion": 56,
+          "noblePolicy": "HIGH",
+          "militaryInitialByRank": {
+            "NAN": 5
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 5,
+            "BO": 2,
+            "HOU": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 5,
+            "ZI": 0,
+            "BO": 2,
+            "HOU": 1,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 5,
+          "militaryUpgrades": 3,
+          "ordinaryMeritGrantees": 3,
+          "royalMeritGrantees": 2,
+          "revocations": 0,
+          "familyDescents": {},
+          "royalDescents": {
+            "BO->ZI": 1
+          },
+          "familyEndings": {
+            "RANK_EXHAUSTED": 2
+          },
+          "royalEndings": {
+            "ACCESSION": 1
+          },
+          "activeCivilianInheritedHolders": 1,
+          "registeredFamilies": 3,
+          "registeredMembers": 15,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 3,
+          "militaryPeople": 25,
+          "nonRoyalFirstColonels": 21,
+          "ordinaryUnprivilegedSelectedFirstColonels": 21,
+          "births": 66,
+          "birthCalendarMonths": {
+            "3": 6,
+            "7": 6,
+            "1": 8,
+            "11": 6,
+            "10": 6,
+            "12": 5,
+            "8": 7,
+            "5": 4,
+            "4": 6,
+            "9": 4,
+            "2": 6,
+            "6": 2
+          },
+          "royalPeople": 142,
+          "royalTransfers": 0,
+          "accessions": 27,
+          "courtAttempts": 0,
+          "sieges": 926,
+          "population": 136,
+          "factions": 7,
+          "activeStates": 5,
+          "activeFormations": 1,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2093506,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-4",
+            "state": 4100125439,
+            "position": 6998
+          }
+        },
+        {
+          "seed": "regional-5",
+          "sourceSha256": "cdafe23acced2669e657abaea65305418b4889a2c150ca2cd41e57fe12d846c8",
+          "saveVersion": 56,
+          "noblePolicy": "HIGH",
+          "militaryInitialByRank": {
+            "NAN": 8
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 8,
+            "BO": 4,
+            "ZI": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 8,
+            "ZI": 1,
+            "BO": 4,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 8,
+          "militaryUpgrades": 5,
+          "ordinaryMeritGrantees": 8,
+          "royalMeritGrantees": 0,
+          "revocations": 0,
+          "familyDescents": {
+            "BO->ZI": 2
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "NO_HEIR": 2,
+            "RANK_EXHAUSTED": 3
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 5,
+          "registeredMembers": 25,
+          "activeHousesByTitleOrActiveOffice": 2,
+          "historicalHousesBySameDefinition": 3,
+          "militaryPeople": 25,
+          "nonRoyalFirstColonels": 23,
+          "ordinaryUnprivilegedSelectedFirstColonels": 19,
+          "births": 45,
+          "birthCalendarMonths": {
+            "9": 7,
+            "11": 2,
+            "4": 6,
+            "7": 4,
+            "10": 4,
+            "12": 5,
+            "3": 3,
+            "2": 4,
+            "5": 3,
+            "1": 3,
+            "8": 3,
+            "6": 1
+          },
+          "royalPeople": 111,
+          "royalTransfers": 0,
+          "accessions": 23,
+          "courtAttempts": 0,
+          "sieges": 1078,
+          "population": 135,
+          "factions": 7,
+          "activeStates": 5,
+          "activeFormations": 2,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2187249,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-5",
+            "state": 1172357958,
+            "position": 7048
+          }
+        },
+        {
+          "seed": "regional-6",
+          "sourceSha256": "92c220c0f435d0cf8702f95c342c8346649ba4315c3121134fa42559024178cc",
+          "saveVersion": 56,
+          "noblePolicy": "HIGH",
+          "militaryInitialByRank": {
+            "NAN": 7
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 7,
+            "BO": 3,
+            "HOU": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 7,
+            "ZI": 0,
+            "BO": 3,
+            "HOU": 1,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 7,
+          "militaryUpgrades": 4,
+          "ordinaryMeritGrantees": 6,
+          "royalMeritGrantees": 1,
+          "revocations": 1,
+          "familyDescents": {
+            "HOU->BO": 1
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "RANK_EXHAUSTED": 3,
+            "NO_HEIR": 2,
+            "FORFEITED": 1
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 6,
+          "registeredMembers": 28,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 6,
+          "militaryPeople": 21,
+          "nonRoyalFirstColonels": 19,
+          "ordinaryUnprivilegedSelectedFirstColonels": 18,
+          "births": 50,
+          "birthCalendarMonths": {
+            "12": 6,
+            "4": 6,
+            "10": 5,
+            "1": 4,
+            "2": 3,
+            "8": 3,
+            "3": 7,
+            "11": 3,
+            "6": 2,
+            "9": 6,
+            "5": 3,
+            "7": 2
+          },
+          "royalPeople": 117,
+          "royalTransfers": 0,
+          "accessions": 24,
+          "courtAttempts": 1,
+          "sieges": 743,
+          "population": 138,
+          "factions": 7,
+          "activeStates": 4,
+          "activeFormations": 3,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 2,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 1768494,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-6",
+            "state": 249496484,
+            "position": 6677
+          }
+        },
+        {
+          "seed": "regional-7",
+          "sourceSha256": "4db23917327d19112b1e49d43f693c808ac2df4530cf13b261ab2c0bdb39dd20",
+          "saveVersion": 56,
+          "noblePolicy": "HIGH",
+          "militaryInitialByRank": {
+            "NAN": 4
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 4,
+            "BO": 3,
+            "HOU": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 4,
+            "ZI": 0,
+            "BO": 3,
+            "HOU": 1,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 4,
+          "militaryUpgrades": 4,
+          "ordinaryMeritGrantees": 4,
+          "royalMeritGrantees": 0,
+          "revocations": 0,
+          "familyDescents": {
+            "BO->ZI": 2,
+            "ZI->NAN": 1
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "RANK_EXHAUSTED": 1
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 1,
+          "registeredFamilies": 3,
+          "registeredMembers": 14,
+          "activeHousesByTitleOrActiveOffice": 3,
+          "historicalHousesBySameDefinition": 0,
+          "militaryPeople": 31,
+          "nonRoyalFirstColonels": 24,
+          "ordinaryUnprivilegedSelectedFirstColonels": 21,
+          "births": 67,
+          "birthCalendarMonths": {
+            "2": 6,
+            "10": 6,
+            "11": 6,
+            "3": 4,
+            "6": 5,
+            "1": 12,
+            "7": 6,
+            "12": 3,
+            "4": 3,
+            "8": 4,
+            "9": 6,
+            "5": 6
+          },
+          "royalPeople": 149,
+          "royalTransfers": 0,
+          "accessions": 27,
+          "courtAttempts": 0,
+          "sieges": 993,
+          "population": 119,
+          "factions": 7,
+          "activeStates": 5,
+          "activeFormations": 2,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2210466,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-7",
+            "state": 1307897411,
+            "position": 7231
+          }
+        },
+        {
+          "seed": "regional-8",
+          "sourceSha256": "27d6319741d558a4bc366deb6f7e754902433bce1069bdf0f43177a3fe44db83",
+          "saveVersion": 56,
+          "noblePolicy": "HIGH",
+          "militaryInitialByRank": {
+            "NAN": 5
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 5,
+            "BO": 3
+          },
+          "militaryGranteesByRank": {
+            "NAN": 5,
+            "ZI": 0,
+            "BO": 3,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "militaryTitledPeople": 5,
+          "militaryUpgrades": 3,
+          "ordinaryMeritGrantees": 5,
+          "royalMeritGrantees": 0,
+          "revocations": 0,
+          "familyDescents": {
+            "BO->ZI": 1
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "NO_HEIR": 2,
+            "RANK_EXHAUSTED": 2
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 5,
+          "registeredMembers": 13,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 5,
+          "militaryPeople": 29,
+          "nonRoyalFirstColonels": 22,
+          "ordinaryUnprivilegedSelectedFirstColonels": 20,
+          "births": 70,
+          "birthCalendarMonths": {
+            "5": 9,
+            "6": 7,
+            "3": 4,
+            "12": 8,
+            "8": 4,
+            "2": 7,
+            "11": 4,
+            "1": 7,
+            "10": 4,
+            "4": 6,
+            "9": 5,
+            "7": 5
+          },
+          "royalPeople": 164,
+          "royalTransfers": 0,
+          "accessions": 30,
+          "courtAttempts": 0,
+          "sieges": 1030,
+          "population": 140,
+          "factions": 7,
+          "activeStates": 7,
+          "activeFormations": 3,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 2,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2190068,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-8",
+            "state": 1027778704,
+            "position": 7327
+          }
+        }
+      ]
+    },
+    {
+      "cohort": "low",
+      "years": 200,
+      "worlds": 4,
+      "rows": [
+        {
+          "seed": "regional-1",
+          "sourceSha256": "55d6b5f0f578b25acfe0e06f421f6b1e005cec058a6b23fd0c64345d77f9798f",
+          "saveVersion": 56,
+          "noblePolicy": "LOW",
+          "militaryInitialByRank": {
+            "NAN": 16
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 16,
+            "BO": 12,
+            "ZI": 1,
+            "HOU": 4,
+            "GONG": 2
+          },
+          "militaryGranteesByRank": {
+            "NAN": 16,
+            "ZI": 1,
+            "BO": 12,
+            "HOU": 4,
+            "GONG": 2
+          },
+          "militaryTitledPeople": 16,
+          "militaryUpgrades": 19,
+          "ordinaryMeritGrantees": 9,
+          "royalMeritGrantees": 7,
+          "revocations": 2,
+          "familyDescents": {
+            "BO->ZI": 4,
+            "GONG->HOU": 1,
+            "HOU->BO": 1,
+            "ZI->NAN": 1
+          },
+          "royalDescents": {
+            "GONG->HOU": 1
+          },
+          "familyEndings": {
+            "NO_HEIR": 5,
+            "FORFEITED": 1,
+            "RANK_EXHAUSTED": 1
+          },
+          "royalEndings": {
+            "RANK_EXHAUSTED": 3,
+            "REVOKED": 1
+          },
+          "activeCivilianInheritedHolders": 1,
+          "registeredFamilies": 9,
+          "registeredMembers": 52,
+          "activeHousesByTitleOrActiveOffice": 2,
+          "historicalHousesBySameDefinition": 7,
+          "militaryPeople": 54,
+          "nonRoyalFirstColonels": 41,
+          "ordinaryUnprivilegedSelectedFirstColonels": 35,
+          "births": 164,
+          "birthCalendarMonths": {
+            "11": 8,
+            "5": 12,
+            "6": 17,
+            "4": 13,
+            "7": 16,
+            "1": 18,
+            "9": 11,
+            "10": 16,
+            "2": 11,
+            "12": 16,
+            "3": 9,
+            "8": 17
+          },
+          "royalPeople": 288,
+          "royalTransfers": 0,
+          "accessions": 49,
+          "courtAttempts": 4,
+          "sieges": 1810,
+          "population": 122,
+          "factions": 9,
+          "activeStates": 4,
+          "activeFormations": 6,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 2,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 4241321,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-1",
+            "state": 331227140,
+            "position": 14066
+          }
+        },
+        {
+          "seed": "regional-2",
+          "sourceSha256": "7452b4c52f2660fc37591acbb8e5557bd18e50ecdc7416b0d6cee29d046f252d",
+          "saveVersion": 56,
+          "noblePolicy": "LOW",
+          "militaryInitialByRank": {
+            "NAN": 6
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 6,
+            "BO": 4,
+            "HOU": 2,
+            "GONG": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 6,
+            "ZI": 0,
+            "BO": 4,
+            "HOU": 2,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 6,
+          "militaryUpgrades": 7,
+          "ordinaryMeritGrantees": 6,
+          "royalMeritGrantees": 0,
+          "revocations": 1,
+          "familyDescents": {
+            "HOU->BO": 1,
+            "BO->ZI": 1
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "RANK_EXHAUSTED": 2,
+            "FOREIGN": 1,
+            "REGIME_ENDED": 1,
+            "NO_HEIR": 3
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 7,
+          "registeredMembers": 42,
+          "activeHousesByTitleOrActiveOffice": 1,
+          "historicalHousesBySameDefinition": 6,
+          "militaryPeople": 46,
+          "nonRoyalFirstColonels": 36,
+          "ordinaryUnprivilegedSelectedFirstColonels": 31,
+          "births": 185,
+          "birthCalendarMonths": {
+            "8": 17,
+            "12": 14,
+            "2": 22,
+            "3": 19,
+            "9": 17,
+            "7": 11,
+            "4": 18,
+            "1": 12,
+            "11": 11,
+            "5": 16,
+            "6": 15,
+            "10": 13
+          },
+          "royalPeople": 341,
+          "royalTransfers": 0,
+          "accessions": 61,
+          "courtAttempts": 3,
+          "sieges": 2263,
+          "population": 142,
+          "factions": 10,
+          "activeStates": 7,
+          "activeFormations": 2,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 4543166,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-2",
+            "state": 1479628961,
+            "position": 14946
+          }
+        },
+        {
+          "seed": "regional-3",
+          "sourceSha256": "95a3f2beaf90d9387da43b67a14b909698f34446072ba543500adf75ed42e7fa",
+          "saveVersion": 56,
+          "noblePolicy": "LOW",
+          "militaryInitialByRank": {
+            "NAN": 15
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 15,
+            "BO": 9,
+            "HOU": 3,
+            "GONG": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 15,
+            "ZI": 0,
+            "BO": 9,
+            "HOU": 3,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 15,
+          "militaryUpgrades": 13,
+          "ordinaryMeritGrantees": 12,
+          "royalMeritGrantees": 3,
+          "revocations": 1,
+          "familyDescents": {
+            "GONG->HOU": 1,
+            "HOU->BO": 3,
+            "BO->ZI": 3
+          },
+          "royalDescents": {
+            "BO->ZI": 1
+          },
+          "familyEndings": {
+            "RANK_EXHAUSTED": 2,
+            "NO_HEIR": 4,
+            "FORFEITED": 1
+          },
+          "royalEndings": {
+            "ACCESSION": 1,
+            "RANK_EXHAUSTED": 1
+          },
+          "activeCivilianInheritedHolders": 1,
+          "registeredFamilies": 8,
+          "registeredMembers": 77,
+          "activeHousesByTitleOrActiveOffice": 1,
+          "historicalHousesBySameDefinition": 7,
+          "militaryPeople": 45,
+          "nonRoyalFirstColonels": 38,
+          "ordinaryUnprivilegedSelectedFirstColonels": 31,
+          "births": 187,
+          "birthCalendarMonths": {
+            "1": 16,
+            "9": 21,
+            "11": 10,
+            "7": 24,
+            "6": 15,
+            "4": 12,
+            "8": 12,
+            "10": 14,
+            "3": 15,
+            "12": 15,
+            "5": 17,
+            "2": 16
+          },
+          "royalPeople": 323,
+          "royalTransfers": 0,
+          "accessions": 53,
+          "courtAttempts": 1,
+          "sieges": 2422,
+          "population": 137,
+          "factions": 12,
+          "activeStates": 4,
+          "activeFormations": 1,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 4829750,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-3",
+            "state": 2941075173,
+            "position": 14717
+          }
+        },
+        {
+          "seed": "regional-4",
+          "sourceSha256": "a4971dc9186b94f912a8046729fd5bf4d5c228fc2e1957e5180916089913fa06",
+          "saveVersion": 56,
+          "noblePolicy": "LOW",
+          "militaryInitialByRank": {
+            "NAN": 12,
+            "BO": 1
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 12,
+            "BO": 7,
+            "HOU": 4,
+            "GONG": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 12,
+            "ZI": 0,
+            "BO": 7,
+            "HOU": 4,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 13,
+          "militaryUpgrades": 11,
+          "ordinaryMeritGrantees": 10,
+          "royalMeritGrantees": 3,
+          "revocations": 4,
+          "familyDescents": {
+            "BO->ZI": 1
+          },
+          "royalDescents": {
+            "BO->ZI": 1
+          },
+          "familyEndings": {
+            "RANK_EXHAUSTED": 5,
+            "FOREIGN": 2,
+            "FORFEITED": 1
+          },
+          "royalEndings": {
+            "REVOKED": 1,
+            "ACCESSION": 1
+          },
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 8,
+          "registeredMembers": 52,
+          "activeHousesByTitleOrActiveOffice": 1,
+          "historicalHousesBySameDefinition": 7,
+          "militaryPeople": 51,
+          "nonRoyalFirstColonels": 39,
+          "ordinaryUnprivilegedSelectedFirstColonels": 36,
+          "births": 190,
+          "birthCalendarMonths": {
+            "3": 18,
+            "7": 20,
+            "1": 22,
+            "11": 16,
+            "10": 11,
+            "12": 15,
+            "9": 16,
+            "4": 17,
+            "2": 15,
+            "5": 10,
+            "8": 18,
+            "6": 12
+          },
+          "royalPeople": 341,
+          "royalTransfers": 0,
+          "accessions": 54,
+          "courtAttempts": 2,
+          "sieges": 2171,
+          "population": 127,
+          "factions": 12,
+          "activeStates": 4,
+          "activeFormations": 2,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 2,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 4734896,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-4",
+            "state": 957273047,
+            "position": 14798
+          }
+        }
+      ]
+    },
+    {
+      "cohort": "low",
+      "years": 300,
+      "worlds": 1,
+      "rows": [
+        {
+          "seed": "regional-3",
+          "sourceSha256": "fdc061caf66cfc9feeb77ebd2676a95eb1970f3334ba4a91954ad5848d4d8700",
+          "saveVersion": 56,
+          "noblePolicy": "LOW",
+          "militaryInitialByRank": {
+            "NAN": 21
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 21,
+            "BO": 15,
+            "HOU": 5,
+            "GONG": 1,
+            "ZI": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 21,
+            "ZI": 1,
+            "BO": 15,
+            "HOU": 5,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 21,
+          "militaryUpgrades": 22,
+          "ordinaryMeritGrantees": 17,
+          "royalMeritGrantees": 4,
+          "revocations": 3,
+          "familyDescents": {
+            "GONG->HOU": 1,
+            "HOU->BO": 4,
+            "BO->ZI": 4
+          },
+          "royalDescents": {
+            "BO->ZI": 1,
+            "ZI->NAN": 1
+          },
+          "familyEndings": {
+            "RANK_EXHAUSTED": 2,
+            "NO_HEIR": 6,
+            "FORFEITED": 2,
+            "FOREIGN": 1
+          },
+          "royalEndings": {
+            "ACCESSION": 1,
+            "RANK_EXHAUSTED": 2
+          },
+          "activeCivilianInheritedHolders": 1,
+          "registeredFamilies": 13,
+          "registeredMembers": 111,
+          "activeHousesByTitleOrActiveOffice": 1,
+          "historicalHousesBySameDefinition": 12,
+          "militaryPeople": 65,
+          "nonRoyalFirstColonels": 55,
+          "ordinaryUnprivilegedSelectedFirstColonels": 48,
+          "births": 265,
+          "birthCalendarMonths": {
+            "1": 23,
+            "9": 26,
+            "11": 24,
+            "7": 30,
+            "6": 22,
+            "4": 22,
+            "8": 16,
+            "10": 18,
+            "3": 22,
+            "12": 19,
+            "5": 21,
+            "2": 22
+          },
+          "royalPeople": 453,
+          "royalTransfers": 0,
+          "accessions": 81,
+          "courtAttempts": 3,
+          "sieges": 3648,
+          "population": 143,
+          "factions": 16,
+          "activeStates": 3,
+          "activeFormations": 2,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 7268478,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-3",
+            "state": 3074376428,
+            "position": 22024
+          }
+        }
+      ]
+    },
+    {
+      "cohort": "low",
+      "years": 500,
+      "worlds": 1,
+      "rows": [
+        {
+          "seed": "regional-3",
+          "sourceSha256": "026dd4cc24eee25aaa6a5463c95ac81feb4708d1d3778fd51f02252f9aef025a",
+          "saveVersion": 56,
+          "noblePolicy": "LOW",
+          "militaryInitialByRank": {
+            "NAN": 26
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 26,
+            "BO": 19,
+            "HOU": 6,
+            "GONG": 1,
+            "ZI": 2
+          },
+          "militaryGranteesByRank": {
+            "NAN": 26,
+            "ZI": 2,
+            "BO": 19,
+            "HOU": 6,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 26,
+          "militaryUpgrades": 28,
+          "ordinaryMeritGrantees": 21,
+          "royalMeritGrantees": 5,
+          "revocations": 4,
+          "familyDescents": {
+            "GONG->HOU": 1,
+            "HOU->BO": 6,
+            "BO->ZI": 6,
+            "ZI->NAN": 3
+          },
+          "royalDescents": {
+            "BO->ZI": 1,
+            "ZI->NAN": 1
+          },
+          "familyEndings": {
+            "RANK_EXHAUSTED": 7,
+            "NO_HEIR": 7,
+            "FORFEITED": 2,
+            "FOREIGN": 1
+          },
+          "royalEndings": {
+            "ACCESSION": 1,
+            "RANK_EXHAUSTED": 2,
+            "REVOKED": 1,
+            "NO_HEIR": 1
+          },
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 16,
+          "registeredMembers": 185,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 16,
+          "militaryPeople": 102,
+          "nonRoyalFirstColonels": 81,
+          "ordinaryUnprivilegedSelectedFirstColonels": 65,
+          "births": 486,
+          "birthCalendarMonths": {
+            "1": 44,
+            "9": 40,
+            "11": 41,
+            "7": 51,
+            "6": 40,
+            "4": 31,
+            "8": 37,
+            "10": 39,
+            "3": 36,
+            "12": 38,
+            "5": 45,
+            "2": 44
+          },
+          "royalPeople": 761,
+          "royalTransfers": 0,
+          "accessions": 113,
+          "courtAttempts": 5,
+          "sieges": 4943,
+          "population": 139,
+          "factions": 16,
+          "activeStates": 4,
+          "activeFormations": 1,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 10546706,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-3",
+            "state": 713642973,
+            "position": 34709
+          }
+        }
+      ]
+    },
+    {
+      "cohort": "release-low",
+      "years": 100,
+      "worlds": 3,
+      "rows": [
+        {
+          "seed": "regional-1",
+          "sourceSha256": "1af6d365dedd273824eb83f0b06a05293c9a05f8e0aba34513121fd75991201e",
+          "saveVersion": 56,
+          "noblePolicy": "LOW",
+          "militaryInitialByRank": {
+            "NAN": 8
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 8,
+            "BO": 6,
+            "ZI": 1,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 8,
+            "ZI": 1,
+            "BO": 6,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 8,
+          "militaryUpgrades": 9,
+          "ordinaryMeritGrantees": 6,
+          "royalMeritGrantees": 2,
+          "revocations": 1,
+          "familyDescents": {
+            "BO->ZI": 3
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "NO_HEIR": 2,
+            "FORFEITED": 1
+          },
+          "royalEndings": {
+            "RANK_EXHAUSTED": 2
+          },
+          "activeCivilianInheritedHolders": 1,
+          "registeredFamilies": 6,
+          "registeredMembers": 14,
+          "activeHousesByTitleOrActiveOffice": 3,
+          "historicalHousesBySameDefinition": 3,
+          "militaryPeople": 33,
+          "nonRoyalFirstColonels": 27,
+          "ordinaryUnprivilegedSelectedFirstColonels": 24,
+          "births": 61,
+          "birthCalendarMonths": {
+            "11": 2,
+            "5": 6,
+            "6": 4,
+            "4": 6,
+            "7": 5,
+            "1": 5,
+            "9": 4,
+            "10": 8,
+            "12": 4,
+            "2": 5,
+            "8": 7,
+            "3": 5
+          },
+          "royalPeople": 136,
+          "royalTransfers": 0,
+          "accessions": 29,
+          "courtAttempts": 3,
+          "sieges": 968,
+          "population": 133,
+          "factions": 7,
+          "activeStates": 5,
+          "activeFormations": 3,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 2,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2258972,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-1",
+            "state": 1600386716,
+            "position": 7210
+          }
+        },
+        {
+          "seed": "regional-2",
+          "sourceSha256": "677a90789f3c7aab3b760b0d105fcfcded34f8a12fad015fe1ce54fcf118ee7f",
+          "saveVersion": 56,
+          "noblePolicy": "LOW",
+          "militaryInitialByRank": {
+            "NAN": 2
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 2,
+            "BO": 1,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 2,
+            "ZI": 0,
+            "BO": 1,
+            "HOU": 1,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 2,
+          "militaryUpgrades": 3,
+          "ordinaryMeritGrantees": 2,
+          "royalMeritGrantees": 0,
+          "revocations": 1,
+          "familyDescents": {},
+          "royalDescents": {},
+          "familyEndings": {
+            "RANK_EXHAUSTED": 1,
+            "FOREIGN": 1
+          },
+          "royalEndings": {},
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 2,
+          "registeredMembers": 5,
+          "activeHousesByTitleOrActiveOffice": 0,
+          "historicalHousesBySameDefinition": 2,
+          "militaryPeople": 21,
+          "nonRoyalFirstColonels": 16,
+          "ordinaryUnprivilegedSelectedFirstColonels": 15,
+          "births": 47,
+          "birthCalendarMonths": {
+            "8": 5,
+            "12": 4,
+            "2": 4,
+            "3": 7,
+            "9": 3,
+            "7": 3,
+            "4": 6,
+            "1": 2,
+            "10": 4,
+            "6": 2,
+            "5": 3,
+            "11": 4
+          },
+          "royalPeople": 123,
+          "royalTransfers": 0,
+          "accessions": 27,
+          "courtAttempts": 1,
+          "sieges": 975,
+          "population": 149,
+          "factions": 8,
+          "activeStates": 6,
+          "activeFormations": 2,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2026692,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-2",
+            "state": 1767856388,
+            "position": 7257
+          }
+        },
+        {
+          "seed": "regional-3",
+          "sourceSha256": "28e1bb37eff58f1c2490c06fe63cc913878f015732b233a4917ff91860247a32",
+          "saveVersion": 56,
+          "noblePolicy": "LOW",
+          "militaryInitialByRank": {
+            "NAN": 9
+          },
+          "militaryGrantEventsByRank": {
+            "NAN": 9,
+            "BO": 5,
+            "HOU": 2,
+            "GONG": 1
+          },
+          "militaryGranteesByRank": {
+            "NAN": 9,
+            "ZI": 0,
+            "BO": 5,
+            "HOU": 2,
+            "GONG": 1
+          },
+          "militaryTitledPeople": 9,
+          "militaryUpgrades": 8,
+          "ordinaryMeritGrantees": 8,
+          "royalMeritGrantees": 1,
+          "revocations": 1,
+          "familyDescents": {
+            "GONG->HOU": 1,
+            "HOU->BO": 2,
+            "BO->ZI": 1
+          },
+          "royalDescents": {},
+          "familyEndings": {
+            "RANK_EXHAUSTED": 2,
+            "NO_HEIR": 2,
+            "FORFEITED": 1
+          },
+          "royalEndings": {
+            "ACCESSION": 1
+          },
+          "activeCivilianInheritedHolders": 0,
+          "registeredFamilies": 6,
+          "registeredMembers": 32,
+          "activeHousesByTitleOrActiveOffice": 1,
+          "historicalHousesBySameDefinition": 5,
+          "militaryPeople": 25,
+          "nonRoyalFirstColonels": 24,
+          "ordinaryUnprivilegedSelectedFirstColonels": 21,
+          "births": 47,
+          "birthCalendarMonths": {
+            "1": 4,
+            "9": 6,
+            "11": 1,
+            "7": 7,
+            "6": 6,
+            "4": 4,
+            "8": 3,
+            "10": 5,
+            "3": 4,
+            "12": 2,
+            "5": 3,
+            "2": 2
+          },
+          "royalPeople": 121,
+          "royalTransfers": 0,
+          "accessions": 24,
+          "courtAttempts": 1,
+          "sieges": 1247,
+          "population": 136,
+          "factions": 8,
+          "activeStates": 5,
+          "activeFormations": 2,
+          "duplicateFormationMembership": 0,
+          "maxActiveFormationsPerFaction": 1,
+          "duplicatePeople": 0,
+          "duplicateHistory": 0,
+          "duplicateUsers": 0,
+          "duplicateFamilies": 0,
+          "annualNewBirthMaximum": 2,
+          "compactJsonBytes": 2433814,
+          "rng": {
+            "algorithm": "mulberry32-v1",
+            "seed": "regional-3",
+            "state": 1679561272,
+            "position": 7332
+          }
+        }
+      ]
+    }
+  ],
+  "saveIndexPerformance": {
+    "baseline": "e9e03aaa22c43ac4484022ff808689f3b8245b37",
+    "sameNativeV55": true,
+    "rows": [
+      {
+        "years": 200,
+        "before": {
+          "validationMs": 1322,
+          "exportMs": 1578.6000000014901,
+          "hydrationMs": 1522.199999999255,
+          "stringifyMs": 11.5,
+          "parseMs": 17.40000000037253,
+          "heapBytes": 166659072,
+          "birthValidationMs": 798.2000000011176,
+          "samples": [
+            {
+              "repeat": 0,
+              "validationMs": 1563.4000000003725,
+              "phases": {
+                "validateSiegeBattles": 0.2000000011175871,
+                "validateCollisionSchedule": 1.800000000745058,
+                "validateResidentIdentities": 7.699999999254942,
+                "validateRoyalMilitaryIdentities": 1.199999999254942,
+                "validateMilitarySecessions": 2,
+                "validateRoyalNobility": 30.200000001117587,
+                "validateRoyalHouseholds": 965.8999999985099,
+                "validateFactionLifetime": 0.2999999988824129,
+                "validateRulerLifeRecord": 0.6999999992549419,
+                "validateMilitaryCommandState": 323.30000000074506,
+                "validateInsurgentCommands": 2.299999998882413,
+                "validateMilitaryNobility": 30,
+                "validateMilitaryHonors": 17.40000000037253,
+                "validateMilitaryAppanages": 10.599999999627471,
+                "validateMilitaryPoliticalParticipation": 4.100000001490116,
+                "validatePoliticalCrises": 4.599999999627471,
+                "validateMilitaryUsurpers": 2.5,
+                "validateMilitaryNarrativeLinks": 2.099999999627471,
+                "validateMilitaryOfficeAuthorities": 1.099999999627471,
+                "validateMilitaryBattleNames": 1.099999999627471,
+                "validateRoyalHonors": 17.600000001490116,
+                "validateCourtCoups": 14.5,
+                "validateAppointmentSelections": 10.099999999627471,
+                "validateMilitaryCourt": 9.299999998882413,
+                "validateRoyalSuccessionStanding": 1.800000000745058,
+                "validateMilitaryFamilies": 23.300000000745058,
+                "validateFamilyNobility": 49.69999999925494
+              },
+              "stringifyMs": 11.900000000372529,
+              "parseMs": 17.40000000037253,
+              "hydrationMs": 1538.3999999985099,
+              "exportMs": 1578.6000000014901,
+              "bytes": 4363120,
+              "heapBytes": 135789054,
+              "canonicalUnchanged": true
+            },
+            {
+              "repeat": 1,
+              "validationMs": 1322,
+              "phases": {
+                "validateSiegeBattles": 0.09999999962747097,
+                "validateCollisionSchedule": 1,
+                "validateResidentIdentities": 2.100000001490116,
+                "validateRoyalMilitaryIdentities": 0.599999999627471,
+                "validateMilitarySecessions": 0.599999999627471,
+                "validateRoyalNobility": 29.90000000037253,
+                "validateRoyalHouseholds": 798.2000000011176,
+                "validateFactionLifetime": 0.09999999962747097,
+                "validateRulerLifeRecord": 0.5,
+                "validateMilitaryCommandState": 280.40000000037253,
+                "validateInsurgentCommands": 1.200000001117587,
+                "validateMilitaryNobility": 24.799999998882413,
+                "validateMilitaryHonors": 13.300000000745058,
+                "validateMilitaryAppanages": 8,
+                "validateMilitaryPoliticalParticipation": 2.5,
+                "validatePoliticalCrises": 2.900000000372529,
+                "validateMilitaryUsurpers": 2.299999998882413,
+                "validateMilitaryNarrativeLinks": 1.300000000745058,
+                "validateMilitaryOfficeAuthorities": 0.5,
+                "validateMilitaryBattleNames": 0.6999999992549419,
+                "validateRoyalHonors": 12.899999998509884,
+                "validateCourtCoups": 8.300000000745058,
+                "validateAppointmentSelections": 8,
+                "validateMilitaryCourt": 6.5,
+                "validateRoyalSuccessionStanding": 1.199999999254942,
+                "validateMilitaryFamilies": 33.5,
+                "validateFamilyNobility": 59.30000000074506
+              },
+              "stringifyMs": 11,
+              "parseMs": 18.5,
+              "hydrationMs": 1522.199999999255,
+              "exportMs": 1756.2000000011176,
+              "bytes": 4363120,
+              "heapBytes": 166659072,
+              "canonicalUnchanged": true
+            },
+            {
+              "repeat": 2,
+              "validationMs": 1205.2999999988824,
+              "phases": {
+                "validateSiegeBattles": 0,
+                "validateCollisionSchedule": 0.900000000372529,
+                "validateResidentIdentities": 1.8999999985098839,
+                "validateRoyalMilitaryIdentities": 0.40000000037252903,
+                "validateMilitarySecessions": 0.5,
+                "validateRoyalNobility": 25,
+                "validateRoyalHouseholds": 790.8999999985099,
+                "validateFactionLifetime": 0.09999999962747097,
+                "validateRulerLifeRecord": 0.2999999988824129,
+                "validateMilitaryCommandState": 219.39999999850988,
+                "validateInsurgentCommands": 0.7999999988824129,
+                "validateMilitaryNobility": 22.90000000037253,
+                "validateMilitaryHonors": 13.099999999627471,
+                "validateMilitaryAppanages": 7.599999999627471,
+                "validateMilitaryPoliticalParticipation": 2.400000000372529,
+                "validatePoliticalCrises": 3.700000001117587,
+                "validateMilitaryUsurpers": 2.399999998509884,
+                "validateMilitaryNarrativeLinks": 1.700000001117587,
+                "validateMilitaryOfficeAuthorities": 0.6999999992549419,
+                "validateMilitaryBattleNames": 0.8000000007450581,
+                "validateRoyalHonors": 10.5,
+                "validateCourtCoups": 7.900000000372529,
+                "validateAppointmentSelections": 7.099999999627471,
+                "validateMilitaryCourt": 5.299999998882413,
+                "validateRoyalSuccessionStanding": 1,
+                "validateMilitaryFamilies": 20.5,
+                "validateFamilyNobility": 41.40000000037253
+              },
+              "stringifyMs": 11.5,
+              "parseMs": 16.300000000745058,
+              "hydrationMs": 1324.4000000003725,
+              "exportMs": 1474.7999999988824,
+              "bytes": 4363120,
+              "heapBytes": 212211672,
+              "canonicalUnchanged": true
+            }
+          ],
+          "oracleCases": null
+        },
+        "after": {
+          "validationMs": 551.5,
+          "exportMs": 645.0999999996275,
+          "hydrationMs": 649.9000000003725,
+          "stringifyMs": 8.099999999627471,
+          "parseMs": 14.200000001117587,
+          "heapBytes": 146417824,
+          "birthValidationMs": 80.5,
+          "samples": [
+            {
+              "repeat": 0,
+              "validationMs": 633,
+              "phases": {
+                "validateSiegeBattles": 0.10000000149011612,
+                "validateCollisionSchedule": 1.099999999627471,
+                "validateResidentIdentities": 3.200000001117587,
+                "validateRoyalMilitaryIdentities": 1.199999999254942,
+                "validateMilitarySecessions": 1.700000001117587,
+                "validateRoyalNobility": 29,
+                "validateRoyalHouseholds": 77.70000000111759,
+                "validateFactionLifetime": 0.2999999988824129,
+                "validateRulerLifeRecord": 0.8000000007450581,
+                "validateMilitaryCommandState": 300.40000000037253,
+                "validateInsurgentCommands": 1.800000000745058,
+                "validateMilitaryNobility": 30.09999999962747,
+                "validateMilitaryHonors": 16.300000000745058,
+                "validateMilitaryAppanages": 11.699999999254942,
+                "validateMilitaryPoliticalParticipation": 3.5,
+                "validatePoliticalCrises": 4.199999999254942,
+                "validateMilitaryUsurpers": 2.299999998882413,
+                "validateMilitaryNarrativeLinks": 2.400000000372529,
+                "validateMilitaryOfficeAuthorities": 1.300000000745058,
+                "validateMilitaryBattleNames": 1,
+                "validateRoyalHonors": 15.5,
+                "validateCourtCoups": 14.099999999627471,
+                "validateAppointmentSelections": 9.699999999254942,
+                "validateMilitaryCourt": 8.700000001117587,
+                "validateRoyalSuccessionStanding": 1.8999999985098839,
+                "validateMilitaryFamilies": 21.40000000037253,
+                "validateFamilyNobility": 46.90000000037253
+              },
+              "stringifyMs": 9.400000000372529,
+              "parseMs": 19.90000000037253,
+              "hydrationMs": 703,
+              "exportMs": 676.6999999992549,
+              "bytes": 4363120,
+              "heapBytes": 140010735,
+              "canonicalUnchanged": true
+            },
+            {
+              "repeat": 1,
+              "validationMs": 539.9000000003725,
+              "phases": {
+                "validateSiegeBattles": 0.10000000149011612,
+                "validateCollisionSchedule": 0.7999999988824129,
+                "validateResidentIdentities": 1.800000000745058,
+                "validateRoyalMilitaryIdentities": 0.6999999992549419,
+                "validateMilitarySecessions": 0.5,
+                "validateRoyalNobility": 29,
+                "validateRoyalHouseholds": 82,
+                "validateFactionLifetime": 0.09999999962747097,
+                "validateRulerLifeRecord": 0.3999999985098839,
+                "validateMilitaryCommandState": 260.7000000011176,
+                "validateInsurgentCommands": 0.6999999992549419,
+                "validateMilitaryNobility": 25.40000000037253,
+                "validateMilitaryHonors": 11.699999999254942,
+                "validateMilitaryAppanages": 7.200000001117587,
+                "validateMilitaryPoliticalParticipation": 2.299999998882413,
+                "validatePoliticalCrises": 3,
+                "validateMilitaryUsurpers": 2,
+                "validateMilitaryNarrativeLinks": 1,
+                "validateMilitaryOfficeAuthorities": 0.6000000014901161,
+                "validateMilitaryBattleNames": 0.5,
+                "validateRoyalHonors": 9.400000000372529,
+                "validateCourtCoups": 7.799999998882413,
+                "validateAppointmentSelections": 6.600000001490116,
+                "validateMilitaryCourt": 4.799999998882413,
+                "validateRoyalSuccessionStanding": 0.8000000007450581,
+                "validateMilitaryFamilies": 19.199999999254942,
+                "validateFamilyNobility": 44.90000000037253
+              },
+              "stringifyMs": 8.099999999627471,
+              "parseMs": 14.200000001117587,
+              "hydrationMs": 579.6999999992549,
+              "exportMs": 557.3000000007451,
+              "bytes": 4363120,
+              "heapBytes": 197967439,
+              "canonicalUnchanged": true
+            },
+            {
+              "repeat": 2,
+              "validationMs": 551.5,
+              "phases": {
+                "validateSiegeBattles": 0.09999999962747097,
+                "validateCollisionSchedule": 1.200000001117587,
+                "validateResidentIdentities": 3.099999999627471,
+                "validateRoyalMilitaryIdentities": 0.40000000037252903,
+                "validateMilitarySecessions": 0.599999999627471,
+                "validateRoyalNobility": 45.19999999925494,
+                "validateRoyalHouseholds": 80.5,
+                "validateFactionLifetime": 0,
+                "validateRulerLifeRecord": 0.40000000037252903,
+                "validateMilitaryCommandState": 232.7000000011176,
+                "validateInsurgentCommands": 1.699999999254942,
+                "validateMilitaryNobility": 26.59999999962747,
+                "validateMilitaryHonors": 13,
+                "validateMilitaryAppanages": 9.5,
+                "validateMilitaryPoliticalParticipation": 2.799999998882413,
+                "validatePoliticalCrises": 3.400000000372529,
+                "validateMilitaryUsurpers": 2.099999999627471,
+                "validateMilitaryNarrativeLinks": 1.900000000372529,
+                "validateMilitaryOfficeAuthorities": 0.900000000372529,
+                "validateMilitaryBattleNames": 0.599999999627471,
+                "validateRoyalHonors": 12.699999999254942,
+                "validateCourtCoups": 9.199999999254942,
+                "validateAppointmentSelections": 10.900000000372529,
+                "validateMilitaryCourt": 6.799999998882413,
+                "validateRoyalSuccessionStanding": 1.1000000014901161,
+                "validateMilitaryFamilies": 20.799999998882413,
+                "validateFamilyNobility": 47.80000000074506
+              },
+              "stringifyMs": 7.900000000372529,
+              "parseMs": 14,
+              "hydrationMs": 649.9000000003725,
+              "exportMs": 645.0999999996275,
+              "bytes": 4363120,
+              "heapBytes": 146417824,
+              "canonicalUnchanged": true
+            }
+          ],
+          "oracleCases": 6
+        }
+      },
+      {
+        "years": 300,
+        "before": {
+          "validationMs": 3145,
+          "exportMs": 3646.7999999988824,
+          "hydrationMs": 3528.9000000003725,
+          "stringifyMs": 14.5,
+          "parseMs": 20,
+          "heapBytes": 136695406,
+          "birthValidationMs": 2224.699999999255,
+          "samples": [
+            {
+              "repeat": 0,
+              "validationMs": 3269.300000000745,
+              "phases": {
+                "validateSiegeBattles": 0.2999999988824129,
+                "validateCollisionSchedule": 1.199999999254942,
+                "validateResidentIdentities": 5.400000000372529,
+                "validateRoyalMilitaryIdentities": 2,
+                "validateMilitarySecessions": 2,
+                "validateRoyalNobility": 69,
+                "validateRoyalHouseholds": 2224.699999999255,
+                "validateFactionLifetime": 0.2000000011175871,
+                "validateRulerLifeRecord": 0.900000000372529,
+                "validateMilitaryCommandState": 664.5999999996275,
+                "validateInsurgentCommands": 2.299999998882413,
+                "validateMilitaryNobility": 55,
+                "validateMilitaryHonors": 19.899999998509884,
+                "validateMilitaryAppanages": 17.200000001117587,
+                "validateMilitaryPoliticalParticipation": 4.5,
+                "validatePoliticalCrises": 7.299999998882413,
+                "validateMilitaryUsurpers": 3.400000000372529,
+                "validateMilitaryNarrativeLinks": 3.200000001117587,
+                "validateMilitaryOfficeAuthorities": 1.599999999627471,
+                "validateMilitaryBattleNames": 1.299999998882413,
+                "validateRoyalHonors": 21.40000000037253,
+                "validateCourtCoups": 13.400000000372529,
+                "validateAppointmentSelections": 15.900000000372529,
+                "validateMilitaryCourt": 11.199999999254942,
+                "validateRoyalSuccessionStanding": 2.099999999627471,
+                "validateMilitaryFamilies": 29.90000000037253,
+                "validateFamilyNobility": 59.100000001490116
+              },
+              "stringifyMs": 14.799999998882413,
+              "parseMs": 25,
+              "hydrationMs": 3617.5,
+              "exportMs": 3651.9000000003725,
+              "bytes": 6173278,
+              "heapBytes": 136695406,
+              "canonicalUnchanged": true
+            },
+            {
+              "repeat": 1,
+              "validationMs": 2684,
+              "phases": {
+                "validateSiegeBattles": 0.10000000149011612,
+                "validateCollisionSchedule": 0.900000000372529,
+                "validateResidentIdentities": 4.199999999254942,
+                "validateRoyalMilitaryIdentities": 1.099999999627471,
+                "validateMilitarySecessions": 0.8000000007450581,
+                "validateRoyalNobility": 65.19999999925494,
+                "validateRoyalHouseholds": 1775.5999999996275,
+                "validateFactionLifetime": 0,
+                "validateRulerLifeRecord": 0.5,
+                "validateMilitaryCommandState": 591.2999999988824,
+                "validateInsurgentCommands": 1.200000001117587,
+                "validateMilitaryNobility": 44.5,
+                "validateMilitaryHonors": 17,
+                "validateMilitaryAppanages": 13.799999998882413,
+                "validateMilitaryPoliticalParticipation": 3.200000001117587,
+                "validatePoliticalCrises": 4.699999999254942,
+                "validateMilitaryUsurpers": 3.099999999627471,
+                "validateMilitaryNarrativeLinks": 1.300000000745058,
+                "validateMilitaryOfficeAuthorities": 1.599999999627471,
+                "validateMilitaryBattleNames": 0.8000000007450581,
+                "validateRoyalHonors": 17.299999998882413,
+                "validateCourtCoups": 10.099999999627471,
+                "validateAppointmentSelections": 11.700000001117587,
+                "validateMilitaryCourt": 5.400000000372529,
+                "validateRoyalSuccessionStanding": 1.199999999254942,
+                "validateMilitaryFamilies": 27.199999999254942,
+                "validateFamilyNobility": 57.5
+              },
+              "stringifyMs": 14.200000001117587,
+              "parseMs": 19.09999999962747,
+              "hydrationMs": 3528.9000000003725,
+              "exportMs": 3646.7999999988824,
+              "bytes": 6173278,
+              "heapBytes": 185176302,
+              "canonicalUnchanged": true
+            },
+            {
+              "repeat": 2,
+              "validationMs": 3145,
+              "phases": {
+                "validateSiegeBattles": 0,
+                "validateCollisionSchedule": 1,
+                "validateResidentIdentities": 2.900000000372529,
+                "validateRoyalMilitaryIdentities": 1.599999999627471,
+                "validateMilitarySecessions": 0.5,
+                "validateRoyalNobility": 62.80000000074506,
+                "validateRoyalHouseholds": 2283.699999999255,
+                "validateFactionLifetime": 0,
+                "validateRulerLifeRecord": 0.599999999627471,
+                "validateMilitaryCommandState": 535.0999999996275,
+                "validateInsurgentCommands": 1.300000000745058,
+                "validateMilitaryNobility": 49.19999999925494,
+                "validateMilitaryHonors": 15.700000001117587,
+                "validateMilitaryAppanages": 15.299999998882413,
+                "validateMilitaryPoliticalParticipation": 3,
+                "validatePoliticalCrises": 4.700000001117587,
+                "validateMilitaryUsurpers": 2.599999999627471,
+                "validateMilitaryNarrativeLinks": 1.900000000372529,
+                "validateMilitaryOfficeAuthorities": 1.400000000372529,
+                "validateMilitaryBattleNames": 1,
+                "validateRoyalHonors": 16.299999998882413,
+                "validateCourtCoups": 8.800000000745058,
+                "validateAppointmentSelections": 12.5,
+                "validateMilitaryCourt": 6.400000000372529,
+                "validateRoyalSuccessionStanding": 1.5,
+                "validateMilitaryFamilies": 29.09999999962747,
+                "validateFamilyNobility": 66.59999999962747
+              },
+              "stringifyMs": 14.5,
+              "parseMs": 20,
+              "hydrationMs": 3301.0999999996275,
+              "exportMs": 3539.5,
+              "bytes": 6173278,
+              "heapBytes": 126650932,
+              "canonicalUnchanged": true
+            }
+          ],
+          "oracleCases": null
+        },
+        "after": {
+          "validationMs": 1129.199999999255,
+          "exportMs": 1222.5,
+          "hydrationMs": 1298.5,
+          "stringifyMs": 14.800000000745058,
+          "parseMs": 22.199999999254942,
+          "heapBytes": 196716399,
+          "birthValidationMs": 137.7999999988824,
+          "samples": [
+            {
+              "repeat": 0,
+              "validationMs": 1187.199999999255,
+              "phases": {
+                "validateSiegeBattles": 0.2999999988824129,
+                "validateCollisionSchedule": 1.199999999254942,
+                "validateResidentIdentities": 5.5,
+                "validateRoyalMilitaryIdentities": 1.900000000372529,
+                "validateMilitarySecessions": 2,
+                "validateRoyalNobility": 65.70000000111759,
+                "validateRoyalHouseholds": 130.80000000074506,
+                "validateFactionLifetime": 0.30000000074505806,
+                "validateRulerLifeRecord": 1.0000000018626451,
+                "validateMilitaryCommandState": 665.5,
+                "validateInsurgentCommands": 2.700000001117587,
+                "validateMilitaryNobility": 63.19999999925494,
+                "validateMilitaryHonors": 21.200000001117587,
+                "validateMilitaryAppanages": 16.59999999962747,
+                "validateMilitaryPoliticalParticipation": 4.199999999254942,
+                "validatePoliticalCrises": 5.800000000745058,
+                "validateMilitaryUsurpers": 3.400000000372529,
+                "validateMilitaryNarrativeLinks": 2.899999998509884,
+                "validateMilitaryOfficeAuthorities": 1.700000001117587,
+                "validateMilitaryBattleNames": 1.299999998882413,
+                "validateRoyalHonors": 22.100000001490116,
+                "validateCourtCoups": 14.199999999254942,
+                "validateAppointmentSelections": 15,
+                "validateMilitaryCourt": 9.099999999627471,
+                "validateRoyalSuccessionStanding": 2.100000001490116,
+                "validateMilitaryFamilies": 31.399999998509884,
+                "validateFamilyNobility": 65.30000000074506
+              },
+              "stringifyMs": 14.800000000745058,
+              "parseMs": 22.199999999254942,
+              "hydrationMs": 1360.5999999996275,
+              "exportMs": 1315.300000000745,
+              "bytes": 6173278,
+              "heapBytes": 173421301,
+              "canonicalUnchanged": true
+            },
+            {
+              "repeat": 1,
+              "validationMs": 1129.199999999255,
+              "phases": {
+                "validateSiegeBattles": 0.09999999962747097,
+                "validateCollisionSchedule": 1.900000000372529,
+                "validateResidentIdentities": 4.299999998882413,
+                "validateRoyalMilitaryIdentities": 2.200000001117587,
+                "validateMilitarySecessions": 27.40000000037253,
+                "validateRoyalNobility": 68.59999999962747,
+                "validateRoyalHouseholds": 140.60000000149012,
+                "validateFactionLifetime": 0,
+                "validateRulerLifeRecord": 0.19999999925494194,
+                "validateMilitaryCommandState": 598.4000000003725,
+                "validateInsurgentCommands": 1.699999999254942,
+                "validateMilitaryNobility": 53.19999999925494,
+                "validateMilitaryHonors": 18.700000001117587,
+                "validateMilitaryAppanages": 17,
+                "validateMilitaryPoliticalParticipation": 4,
+                "validatePoliticalCrises": 4.900000000372529,
+                "validateMilitaryUsurpers": 2.899999998509884,
+                "validateMilitaryNarrativeLinks": 2.700000001117587,
+                "validateMilitaryOfficeAuthorities": 1.199999999254942,
+                "validateMilitaryBattleNames": 0.6000000014901161,
+                "validateRoyalHonors": 18.40000000037253,
+                "validateCourtCoups": 9.599999999627471,
+                "validateAppointmentSelections": 16.5,
+                "validateMilitaryCourt": 7.900000000372529,
+                "validateRoyalSuccessionStanding": 1.3999999985098839,
+                "validateMilitaryFamilies": 31.5,
+                "validateFamilyNobility": 70.20000000111759
+              },
+              "stringifyMs": 14.800000000745058,
+              "parseMs": 20.199999999254942,
+              "hydrationMs": 1298.5,
+              "exportMs": 1222.5,
+              "bytes": 6173278,
+              "heapBytes": 196716399,
+              "canonicalUnchanged": true
+            },
+            {
+              "repeat": 2,
+              "validationMs": 1062.5,
+              "phases": {
+                "validateSiegeBattles": 0,
+                "validateCollisionSchedule": 0.900000000372529,
+                "validateResidentIdentities": 2.599999999627471,
+                "validateRoyalMilitaryIdentities": 1.099999999627471,
+                "validateMilitarySecessions": 0.8000000007450581,
+                "validateRoyalNobility": 56.399999998509884,
+                "validateRoyalHouseholds": 137.7999999988824,
+                "validateFactionLifetime": 0.09999999962747097,
+                "validateRulerLifeRecord": 0.6999999992549419,
+                "validateMilitaryCommandState": 592.3999999985099,
+                "validateInsurgentCommands": 1.5,
+                "validateMilitaryNobility": 57.30000000074506,
+                "validateMilitaryHonors": 17.40000000037253,
+                "validateMilitaryAppanages": 15.599999999627471,
+                "validateMilitaryPoliticalParticipation": 3.199999999254942,
+                "validatePoliticalCrises": 4.700000001117587,
+                "validateMilitaryUsurpers": 3,
+                "validateMilitaryNarrativeLinks": 1.599999999627471,
+                "validateMilitaryOfficeAuthorities": 1.599999999627471,
+                "validateMilitaryBattleNames": 0.900000000372529,
+                "validateRoyalHonors": 13.599999999627471,
+                "validateCourtCoups": 8.300000000745058,
+                "validateAppointmentSelections": 11.699999999254942,
+                "validateMilitaryCourt": 5.800000000745058,
+                "validateRoyalSuccessionStanding": 1.699999999254942,
+                "validateMilitaryFamilies": 30.200000001117587,
+                "validateFamilyNobility": 74.5
+              },
+              "stringifyMs": 14.5,
+              "parseMs": 23.199999999254942,
+              "hydrationMs": 1183.9000000003725,
+              "exportMs": 1214.699999999255,
+              "bytes": 6173278,
+              "heapBytes": 261833435,
+              "canonicalUnchanged": true
+            }
+          ],
+          "oracleCases": 6
+        }
+      },
+      {
+        "years": 500,
+        "before": {
+          "validationMs": 13004.099999999627,
+          "exportMs": 17088,
+          "hydrationMs": 17963,
+          "stringifyMs": 30.899999998509884,
+          "parseMs": 40,
+          "heapBytes": 230270985,
+          "birthValidationMs": 9093.599999999627,
+          "samples": [
+            {
+              "repeat": 0,
+              "validationMs": 12115.5,
+              "phases": {
+                "validateSiegeBattles": 0.30000000074505806,
+                "validateCollisionSchedule": 3.400000000372529,
+                "validateResidentIdentities": 44.90000000037253,
+                "validateRoyalMilitaryIdentities": 4.599999999627471,
+                "validateMilitarySecessions": 67.20000000111759,
+                "validateRoyalNobility": 297.40000000037253,
+                "validateRoyalHouseholds": 8022.60000000149,
+                "validateFactionLifetime": 0.40000000037252903,
+                "validateRulerLifeRecord": 1.6000000014901161,
+                "validateMilitaryCommandState": 2562.9000000003725,
+                "validateInsurgentCommands": 4.699999999254942,
+                "validateMilitaryNobility": 245.40000000037253,
+                "validateMilitaryHonors": 94.70000000111759,
+                "validateMilitaryAppanages": 61.29999999888241,
+                "validateMilitaryPoliticalParticipation": 6.400000000372529,
+                "validatePoliticalCrises": 11.800000000745058,
+                "validateMilitaryUsurpers": 6,
+                "validateMilitaryNarrativeLinks": 6.400000000372529,
+                "validateMilitaryOfficeAuthorities": 2.699999999254942,
+                "validateMilitaryBattleNames": 2.400000000372529,
+                "validateRoyalHonors": 54.90000000037253,
+                "validateCourtCoups": 94.89999999850988,
+                "validateAppointmentSelections": 28.100000001490116,
+                "validateMilitaryCourt": 41,
+                "validateRoyalSuccessionStanding": 3.699999999254942,
+                "validateMilitaryFamilies": 82.59999999962747,
+                "validateFamilyNobility": 300
+              },
+              "stringifyMs": 30.899999998509884,
+              "parseMs": 38.70000000111759,
+              "hydrationMs": 17963,
+              "exportMs": 17088,
+              "bytes": 12038195,
+              "heapBytes": 202430199,
+              "canonicalUnchanged": true
+            },
+            {
+              "repeat": 1,
+              "validationMs": 13705.900000000373,
+              "phases": {
+                "validateSiegeBattles": 0.09999999962747097,
+                "validateCollisionSchedule": 2.699999999254942,
+                "validateResidentIdentities": 27.700000001117587,
+                "validateRoyalMilitaryIdentities": 3.699999999254942,
+                "validateMilitarySecessions": 43.40000000037253,
+                "validateRoyalNobility": 259.59999999962747,
+                "validateRoyalHouseholds": 9928.599999999627,
+                "validateFactionLifetime": 0.09999999962747097,
+                "validateRulerLifeRecord": 0.8000000007450581,
+                "validateMilitaryCommandState": 2307.199999999255,
+                "validateInsurgentCommands": 2.699999999254942,
+                "validateMilitaryNobility": 211.5,
+                "validateMilitaryHonors": 89.69999999925494,
+                "validateMilitaryAppanages": 59.69999999925494,
+                "validateMilitaryPoliticalParticipation": 7.400000000372529,
+                "validatePoliticalCrises": 13.099999999627471,
+                "validateMilitaryUsurpers": 5.100000001490116,
+                "validateMilitaryNarrativeLinks": 5.5,
+                "validateMilitaryOfficeAuthorities": 2.399999998509884,
+                "validateMilitaryBattleNames": 2.099999999627471,
+                "validateRoyalHonors": 52.59999999962747,
+                "validateCourtCoups": 92.80000000074506,
+                "validateAppointmentSelections": 23.09999999962747,
+                "validateMilitaryCourt": 42.40000000037253,
+                "validateRoyalSuccessionStanding": 3.099999999627471,
+                "validateMilitaryFamilies": 81.59999999962747,
+                "validateFamilyNobility": 380.59999999962747
+              },
+              "stringifyMs": 30.90000000037253,
+              "parseMs": 40,
+              "hydrationMs": 17180.800000000745,
+              "exportMs": 14846.199999999255,
+              "bytes": 12038195,
+              "heapBytes": 230270985,
+              "canonicalUnchanged": true
+            },
+            {
+              "repeat": 2,
+              "validationMs": 13004.099999999627,
+              "phases": {
+                "validateSiegeBattles": 0.2000000011175871,
+                "validateCollisionSchedule": 2.599999999627471,
+                "validateResidentIdentities": 49.09999999962747,
+                "validateRoyalMilitaryIdentities": 3.800000000745058,
+                "validateMilitarySecessions": 39.59999999962747,
+                "validateRoyalNobility": 248.30000000074506,
+                "validateRoyalHouseholds": 9093.599999999627,
+                "validateFactionLifetime": 0.2000000011175871,
+                "validateRulerLifeRecord": 0.7000000011175871,
+                "validateMilitaryCommandState": 2315.9000000003725,
+                "validateInsurgentCommands": 4.5,
+                "validateMilitaryNobility": 256.19999999925494,
+                "validateMilitaryHonors": 103.10000000149012,
+                "validateMilitaryAppanages": 60.79999999888241,
+                "validateMilitaryPoliticalParticipation": 7.300000000745058,
+                "validatePoliticalCrises": 10.800000000745058,
+                "validateMilitaryUsurpers": 5.699999999254942,
+                "validateMilitaryNarrativeLinks": 3.599999999627471,
+                "validateMilitaryOfficeAuthorities": 2.5,
+                "validateMilitaryBattleNames": 2.700000001117587,
+                "validateRoyalHonors": 58,
+                "validateCourtCoups": 108.59999999962747,
+                "validateAppointmentSelections": 25.09999999962747,
+                "validateMilitaryCourt": 50.5,
+                "validateRoyalSuccessionStanding": 4.5,
+                "validateMilitaryFamilies": 88.80000000074506,
+                "validateFamilyNobility": 402.69999999925494
+              },
+              "stringifyMs": 30.600000001490116,
+              "parseMs": 41.29999999888241,
+              "hydrationMs": 18063.900000000373,
+              "exportMs": 18423.900000000373,
+              "bytes": 12038195,
+              "heapBytes": 247007109,
+              "canonicalUnchanged": true
+            }
+          ],
+          "oracleCases": null
+        },
+        "after": {
+          "validationMs": 4248.200000001118,
+          "exportMs": 5224.0999999996275,
+          "hydrationMs": 4457.300000000745,
+          "stringifyMs": 30.5,
+          "parseMs": 40.90000000037253,
+          "heapBytes": 399708430,
+          "birthValidationMs": 276.2000000011176,
+          "samples": [
+            {
+              "repeat": 0,
+              "validationMs": 4248.200000001118,
+              "phases": {
+                "validateSiegeBattles": 0.2999999988824129,
+                "validateCollisionSchedule": 3.599999999627471,
+                "validateResidentIdentities": 31.40000000037253,
+                "validateRoyalMilitaryIdentities": 5.299999998882413,
+                "validateMilitarySecessions": 59.20000000111759,
+                "validateRoyalNobility": 247.59999999962747,
+                "validateRoyalHouseholds": 288.80000000074506,
+                "validateFactionLifetime": 0.40000000037252903,
+                "validateRulerLifeRecord": 2.600000001490116,
+                "validateMilitaryCommandState": 2467.800000000745,
+                "validateInsurgentCommands": 4.599999999627471,
+                "validateMilitaryNobility": 247.59999999962747,
+                "validateMilitaryHonors": 105,
+                "validateMilitaryAppanages": 62.80000000074506,
+                "validateMilitaryPoliticalParticipation": 6.599999999627471,
+                "validatePoliticalCrises": 14.300000000745058,
+                "validateMilitaryUsurpers": 6.5,
+                "validateMilitaryNarrativeLinks": 6.399999998509884,
+                "validateMilitaryOfficeAuthorities": 2.700000001117587,
+                "validateMilitaryBattleNames": 3,
+                "validateRoyalHonors": 62.5,
+                "validateCourtCoups": 96.19999999925494,
+                "validateAppointmentSelections": 28.5,
+                "validateMilitaryCourt": 42.30000000074506,
+                "validateRoyalSuccessionStanding": 4.5,
+                "validateMilitaryFamilies": 83.29999999888241,
+                "validateFamilyNobility": 302.5
+              },
+              "stringifyMs": 29.899999998509884,
+              "parseMs": 38,
+              "hydrationMs": 5380.10000000149,
+              "exportMs": 5470.39999999851,
+              "bytes": 12038195,
+              "heapBytes": 287139290,
+              "canonicalUnchanged": true
+            },
+            {
+              "repeat": 1,
+              "validationMs": 4294.5,
+              "phases": {
+                "validateSiegeBattles": 0.09999999962747097,
+                "validateCollisionSchedule": 2.300000000745058,
+                "validateResidentIdentities": 28.40000000037253,
+                "validateRoyalMilitaryIdentities": 3.299999998882413,
+                "validateMilitarySecessions": 48.09999999962747,
+                "validateRoyalNobility": 299.7000000011176,
+                "validateRoyalHouseholds": 276.2000000011176,
+                "validateFactionLifetime": 0,
+                "validateRulerLifeRecord": 0.5,
+                "validateMilitaryCommandState": 2472.4000000003725,
+                "validateInsurgentCommands": 3.199999999254942,
+                "validateMilitaryNobility": 245.09999999962747,
+                "validateMilitaryHonors": 102.20000000111759,
+                "validateMilitaryAppanages": 67.90000000037253,
+                "validateMilitaryPoliticalParticipation": 5.799999998882413,
+                "validatePoliticalCrises": 11.400000000372529,
+                "validateMilitaryUsurpers": 5.599999999627471,
+                "validateMilitaryNarrativeLinks": 3.700000001117587,
+                "validateMilitaryOfficeAuthorities": 2.5,
+                "validateMilitaryBattleNames": 2,
+                "validateRoyalHonors": 52.29999999888241,
+                "validateCourtCoups": 94.30000000074506,
+                "validateAppointmentSelections": 23.300000000745058,
+                "validateMilitaryCourt": 33.19999999925494,
+                "validateRoyalSuccessionStanding": 3,
+                "validateMilitaryFamilies": 98.40000000037253,
+                "validateFamilyNobility": 370
+              },
+              "stringifyMs": 31.699999999254942,
+              "parseMs": 45,
+              "hydrationMs": 4457.300000000745,
+              "exportMs": 4507.799999998882,
+              "bytes": 12038195,
+              "heapBytes": 399708430,
+              "canonicalUnchanged": true
+            },
+            {
+              "repeat": 2,
+              "validationMs": 4056.5,
+              "phases": {
+                "validateSiegeBattles": 0.09999999962747097,
+                "validateCollisionSchedule": 2.900000000372529,
+                "validateResidentIdentities": 25.200000001117587,
+                "validateRoyalMilitaryIdentities": 3.199999999254942,
+                "validateMilitarySecessions": 41.69999999925494,
+                "validateRoyalNobility": 315.90000000037253,
+                "validateRoyalHouseholds": 276.19999999925494,
+                "validateFactionLifetime": 0.10000000149011612,
+                "validateRulerLifeRecord": 0.8000000026077032,
+                "validateMilitaryCommandState": 2216.5,
+                "validateInsurgentCommands": 3.600000001490116,
+                "validateMilitaryNobility": 237.89999999850988,
+                "validateMilitaryHonors": 105.5,
+                "validateMilitaryAppanages": 68.40000000037253,
+                "validateMilitaryPoliticalParticipation": 6.299999998882413,
+                "validatePoliticalCrises": 12.200000001117587,
+                "validateMilitaryUsurpers": 5.599999999627471,
+                "validateMilitaryNarrativeLinks": 3,
+                "validateMilitaryOfficeAuthorities": 2.299999998882413,
+                "validateMilitaryBattleNames": 1.1000000014901161,
+                "validateRoyalHonors": 55.899999998509884,
+                "validateCourtCoups": 94.80000000074506,
+                "validateAppointmentSelections": 25.09999999962747,
+                "validateMilitaryCourt": 31.90000000037253,
+                "validateRoyalSuccessionStanding": 2.900000000372529,
+                "validateMilitaryFamilies": 97.79999999888241,
+                "validateFamilyNobility": 387.30000000074506
+              },
+              "stringifyMs": 30.5,
+              "parseMs": 40.90000000037253,
+              "hydrationMs": 4305.9000000003725,
+              "exportMs": 5224.0999999996275,
+              "bytes": 12038195,
+              "heapBytes": 500716518,
+              "canonicalUnchanged": true
+            }
+          ],
+          "oracleCases": 6
+        }
+      }
+    ],
+    "scope": "three repetitions, identical native DTO and full strict authority, locally rebuilt indexes only; no schema header edits; heap is whole renderer, not retained validation cache"
+  },
+  "indexedEquivalence": [
+    {
+      "seed": "regional-1",
+      "completeDtoEqual": true
+    },
+    {
+      "seed": "regional-2",
+      "completeDtoEqual": true
+    },
+    {
+      "seed": "regional-3",
+      "completeDtoEqual": true
+    },
+    {
+      "seed": "regional-4",
+      "completeDtoEqual": true
+    },
+    {
+      "seed": "regional-5",
+      "completeDtoEqual": true
+    },
+    {
+      "seed": "regional-6",
+      "completeDtoEqual": true
+    },
+    {
+      "seed": "regional-7",
+      "completeDtoEqual": true
+    },
+    {
+      "seed": "regional-8",
+      "completeDtoEqual": true
+    }
+  ]
+}

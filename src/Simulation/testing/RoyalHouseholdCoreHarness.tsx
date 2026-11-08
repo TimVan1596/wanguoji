@@ -19,7 +19,7 @@ import {SIMULATION_FIXED_STEP_MS} from '../SimulationDriver';
 export async function runRoyalHouseholdCore(seed='royal-military-z11'){
  const {core,game}=await createNaturalCore(seed),checks:string[]=[],check=(v:unknown,s:string)=>{if(!v)throw Error(s);checks.push(s);},clock=(m:number)=>(core.simulator as any).clock.importState({worldMonth:m,elapsedMs:0,running:false});
  try{
-  core.setWorldRunning(false);Dynasty.setRoyalBirthPolicyForSimulation('HIGH');clock(12);
+  core.setWorldRunning(false);check(Military.exportState().nobleMeritPolicy==='LOW'&&Dynasty.getRoyalBirthPolicy()==='LOW','new real Core defaults to calibrated low merit and low household policies without experiment flags');Dynasty.setRoyalBirthPolicyForSimulation('HIGH');clock(12);
   const options=core.teams.flatMap(t=>Dynasty.getRoyalMilitaryCandidates(t,12).map(c=>({t,c,r:Dynasty.get(t.name)!.rulers.find(r=>r.id===c.rulerId)!}))).filter(x=>x.r.bornYear>-360&&!Dynasty.get(x.t.name)!.rulers.some(r=>r.parentId===x.r.id));
   options.sort((a,b)=>Number(Dynasty.get(a.t.name)!.heirIds.includes(a.r.id))-Number(Dynasty.get(b.t.name)!.heirIds.includes(b.r.id)));
   const choice=options.find(x=>Array.from({length:60},(_,i)=>12+i).some(m=>m-x.r.bornYear>=240&&householdBirthPlan(x.r,m,seed,'HIGH',Dynasty.get(x.t.name)!.houseEpochs!.at(-1)!.foundingRulerId)));

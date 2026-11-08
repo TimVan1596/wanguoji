@@ -149,7 +149,7 @@ export class MilitaryCommandRegistryStore {
   private recruitmentContext?:()=>MilitaryRecruitmentContext|undefined;
   setRecruitmentContext(reader:()=>MilitaryRecruitmentContext|undefined){this.recruitmentContext=reader;}
   private royalService?: RoyalMilitaryService;
-  setRoyalService(service: RoyalMilitaryService) { this.royalService = service;this.appointmentAbilityPolicy='MEDIUM'; }
+  setRoyalService(service: RoyalMilitaryService) { this.royalService = service;this.nobleMeritPolicy='LOW';this.appointmentAbilityPolicy='MEDIUM'; }
   private families:MilitaryFamily[]=[];
   private familyByResident?:Map<string,{family:MilitaryFamily;member:MilitaryFamily['members'][number]}>;
   private familyResidentIds?:Set<number>;
@@ -242,7 +242,7 @@ export class MilitaryCommandRegistryStore {
 
   snapshotTransaction(){return {people:new Map(this.people),formations:new Map(this.formations),state:this.exportState(),familyRecruitment:structuredClone(this.familyRecruitment),diagnostics:{...this.diagnostics},arrivals:new Map(this.lastArrivalTargetByCommand),ranges:new Map(this.longRangeOrderSamples)};}
   rollbackTransaction(snapshot:ReturnType<MilitaryCommandRegistryStore["snapshotTransaction"]>,inPlace=false){
-    this.appointmentAbilityPolicy=snapshot.state.appointmentAbilityPolicy??'BASELINE';this.courtPunishmentPolicy=snapshot.state.courtPunishmentPolicy??'BASELINE';this.familyNoblePolicy=snapshot.state.familyNoblePolicy??'SINGLE';this.familyFoundationPolicy=snapshot.state.familyFoundationPolicy??'Z48';
+    this.nobleMeritPolicy=snapshot.state.nobleMeritPolicy??'BASELINE';this.appointmentAbilityPolicy=snapshot.state.appointmentAbilityPolicy??'BASELINE';this.courtPunishmentPolicy=snapshot.state.courtPunishmentPolicy??'BASELINE';this.familyNoblePolicy=snapshot.state.familyNoblePolicy??'SINGLE';this.familyFoundationPolicy=snapshot.state.familyFoundationPolicy??'Z48';
     this.hereditaryRecruitment=snapshot.state.hereditaryRecruitment??'BASELINE';
     this.familyByResident=undefined;
     if(inPlace){this.families=structuredClone(snapshot.state.families??[]);this.people=new Map(snapshot.state.people.map(data=>{const p=snapshot.people.get(data.personId)!;for(const k of Object.keys(p))delete (p as any)[k];Object.assign(p,structuredClone(data));return [p.personId,p];}));this.formations=new Map(savedFormationRows(snapshot.state).map(data=>{const f=snapshot.formations.get(data.commandId)!;for(const k of Object.keys(f))delete (f as any)[k];Object.assign(f,structuredClone(data));return [f.commandId,f];}));this.personSequence=snapshot.state.personSequence;this.commandSequence=snapshot.state.commandSequence;this.lastEvaluationMonth=snapshot.state.lastEvaluationMonth;}

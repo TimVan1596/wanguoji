@@ -8,13 +8,14 @@ export function validateRoyalHouseholds(save:WorldSaveV1){
  const errors:string[]=[],policy=save.registries.dynastyRoyalBirthPolicy;if(!isRoyalBirthPolicy(policy))return ['invalid royal birth policy'];
  const events=save.worldHistory.events as WorldEvent[],positions=new Map(events.map((e,i)=>[e.id,i])),bornEvents=events.filter(e=>e.type==='royal-child-born'),seen=new Set<string>();
  // Local to one validation call: never reused across a mutable DTO, read or rollback.
- const firstPosition=new Map<string,number>(),royalDeaths=new Map<string,Array<{position:number;month:number}>>(),militaryDeath=new Map<string,number>(),kinDeaths=new Map<string,WorldEvent[]>();
+ const firstPosition=new Map<string,number>(),royalDeaths=new Map<string,Array<{position:number;month:number}>>(),militaryDeath=new Map<string,number>(),kinDeaths=new Map<string,WorldEvent[]>(),transfers=new Map<string,Array<{position:number;month:number;to:string}>>();
  events.forEach((e,position)=>{
   if(!firstPosition.has(e.id))firstPosition.set(e.id,position);
   if(['ruler-died','heir-died','royal-kin-died'].includes(e.type))for(const id of new Set([e.rulerId,e.metadata?.heirId]))if(typeof id==='string'){
    const rows=royalDeaths.get(id)??[];rows.push({position,month:e.monthIndex??e.year});royalDeaths.set(id,rows);
   }
   if(e.type==='military-person-died'&&typeof e.metadata?.personId==='string'&&!militaryDeath.has(e.metadata.personId))militaryDeath.set(e.metadata.personId,position);
+  if(e.type==='royal-person-transferred'&&e.rulerId&&typeof e.metadata?.toFactionId==='string'){const rows=transfers.get(e.rulerId)??[];rows.push({position,month:e.monthIndex??e.year,to:e.metadata.toFactionId});transfers.set(e.rulerId,rows);}
   if(e.type==='royal-kin-died'&&e.rulerId){const rows=kinDeaths.get(e.rulerId)??[];rows.push(e);kinDeaths.set(e.rulerId,rows);}
  });
  for(const raw of save.dynasties){try{
@@ -38,7 +39,8 @@ export function validateRoyalHouseholds(save:WorldSaveV1){
    });
    const epoch=d.houseEpochs?.find(e=>e.foundingRulerId===actual[0].householdBirth!.epochFounderId&&e.startMonth<=month&&(e.endMonth??Infinity)>month);if(!epoch)throw Error('birth outside original royal authority');
    const context={...d,currentRulerId:d.rulers.find(r=>r.accessionYear!==undefined&&r.accessionYear<=month&&(r.endYear??Infinity)>month)?.id??null,houseName:epoch.houseName,rulers:historical,royalNobility:d.royalNobility?.filter(a=>before(a.eventId))};const alreadyBorn=historical.filter(r=>r.householdBirth?.opportunityMonth===Math.floor(month/12)*12).length;let living=historical.filter(r=>(r.deathMonth??Infinity)>month&&(r.naturalDeathYear??Infinity)>month).length;const planned:Ruler[]=[];
-   for(const [ordinal,parent] of householdBirthParents(context,month).entries()){if(planned.length+alreadyBorn>=HOUSEHOLD_ANNUAL_CAP||living>=HOUSEHOLD_LIVING_CAP)break;const child=householdBirthPlan(parent,month,String(save.worldRandom.seed),policy,epoch.foundingRulerId,ordinal);if(child){planned.push(child);living++;}}
+   const blocked=new Set(historical.filter(r=>{const last=(transfers.get(r.id)??[]).filter(e=>e.position<boundary&&e.month<=month).at(-1);return !!last&&last.to!==d.factionId;}).map(r=>r.id));
+   for(const [ordinal,parent] of householdBirthParents(context,month,blocked).entries()){if(planned.length+alreadyBorn>=HOUSEHOLD_ANNUAL_CAP||living>=HOUSEHOLD_LIVING_CAP)break;const child=householdBirthPlan(parent,month,String(save.worldRandom.seed),policy,epoch.foundingRulerId,ordinal);if(child){planned.push(child);living++;}}
    if(planned.length!==actual.length)throw Error('royal birth annual cap/selection mismatch');
    for(let i=0;i<actual.length;i++){const a=actual[i],p=planned[i];if(a.id!==p.id||a.givenName!==p.givenName||a.houseName!==p.houseName||a.bornYear!==p.bornYear||a.naturalDeathYear!==p.naturalDeathYear||JSON.stringify(a.householdBirth)!==JSON.stringify(p.householdBirth))throw Error('royal birth deterministic replay mismatch');}
   }

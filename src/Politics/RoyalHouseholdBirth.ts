@@ -25,12 +25,12 @@ export function householdBirthPlan(parent:Ruler,month:number,seed:string,policy:
  return {id,houseName:parent.houseName,givenName,bornYear:month,naturalDeathYear,plannedEndYear:naturalDeathYear,politicalStartYear:month,parentId:parent.id,relationType:'DIRECT_CHILD',status:'kin',successionScope:'HOUSEHOLD',householdBirth} satisfies Ruler;
 }
 /** Linear parent/child indexing; no future person is materialized from an annual opportunity. */
-export function householdBirthParents(d:Dynasty,month:number){
+export function householdBirthParents(d:Dynasty,month:number,blocked?:ReadonlySet<string>){
  const children=new Map<string,{count:number;latest:number}>();let living=0;
  for(const r of d.rulers){if((r.deathMonth??Infinity)>month&&(r.naturalDeathYear??Infinity)>month)living++;if(r.parentId&&r.bornYear<=month&&(r.registration?.month??r.politicalStartYear??Infinity)<=month){const c=children.get(r.parentId)??{count:0,latest:-Infinity};c.count++;c.latest=Math.max(c.latest,r.registration?.month??r.politicalStartYear??r.bornYear);children.set(r.parentId,c);}}
  if(living>=HOUSEHOLD_LIVING_CAP)return [];
  const held=new Set<string>();const last=new Map((d.royalNobility??[]).map(a=>[a.chainId,a]));for(const a of last.values())if(a.kind!=='ENDED'&&a.holderRulerId)held.add(a.holderRulerId);
- return d.rulers.filter(r=>r.id!==d.currentRulerId&&r.reignOrdinal===undefined&&r.houseName===d.houseName&&r.registration&&r.registration.month<month&&r.bornYear+20*12<=month&&r.bornYear+50*12>=month&&(r.status==='kin'||r.status==='heir')&&(r.deathMonth??Infinity)>month&&(r.naturalDeathYear??Infinity)>month&&(children.get(r.id)?.count??0)<HOUSEHOLD_CHILD_CAP&&month-(children.get(r.id)?.latest??-Infinity)>=48).sort((a,b)=>Number(held.has(b.id))-Number(held.has(a.id))||Number(!!b.militaryIdentity)-Number(!!a.militaryIdentity)||a.id.localeCompare(b.id));
+ return d.rulers.filter(r=>!blocked?.has(r.id)&&r.id!==d.currentRulerId&&r.reignOrdinal===undefined&&r.houseName===d.houseName&&r.registration&&r.registration.month<month&&r.bornYear+20*12<=month&&r.bornYear+50*12>=month&&(r.status==='kin'||r.status==='heir')&&(r.deathMonth??Infinity)>month&&(r.naturalDeathYear??Infinity)>month&&(children.get(r.id)?.count??0)<HOUSEHOLD_CHILD_CAP&&month-(children.get(r.id)?.latest??-Infinity)>=48).sort((a,b)=>Number(held.has(b.id))-Number(held.has(a.id))||Number(!!b.militaryIdentity)-Number(!!a.militaryIdentity)||a.id.localeCompare(b.id));
 }
 
 let observer:((d:Dynasty,month:number,parents:readonly Ruler[],elapsedMs:number)=>void)|undefined;

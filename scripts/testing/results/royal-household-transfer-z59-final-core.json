@@ -1,0 +1,14 @@
+[
+  {
+    "seed": "royal-military-z11",
+    "checks": [
+      "fixed initial royal has a real possible delivery before transfer",
+      "parent has an actual unique military User before transfer",
+      "parent qualified before the real transfer",
+      "actual foreign transfer cancels old-court delivery without materializing a child",
+      "transfer retains the one real parent, population and permanent military identity",
+      "actual father death before delivery cannot create a posthumously backfilled child"
+    ],
+    "scope": "controlled actual Core parent transfer and death before the keyed delivery month; no imaginary children, no natural-frequency claim"
+  }
+]
