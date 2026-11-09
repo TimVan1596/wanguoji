@@ -79,10 +79,11 @@ export function createFamilyNobleContext(month:number,families:readonly Military
 }
 
 /** Same-month deaths and transfers after a title transaction cannot be read backwards into it. */
-export function familyAtEvidenceBoundary(f:MilitaryFamily,month:number,eventIndex:number,events?:readonly WorldEvent[]){const copy=structuredClone(f);
- if(events){const positions=new Map(events.map((e,i)=>[e.id,i]));copy.nobleSuccession=copy.nobleSuccession?.filter(a=>a.month<=month&&(positions.get(a.eventId)??Infinity)<eventIndex);copy.members=copy.members.filter(m=>m.enteredMonth<=month&&(positions.get(m.source==='FOUNDER'?`${f.familyId}-founded`:m.birth?m.birth.eventId:`${m.memberId}-entered`)??Infinity)<eventIndex);}
+export function familyAtEvidenceBoundary(f:MilitaryFamily,month:number,eventIndex:number,events?:readonly WorldEvent[],eventPositions?:ReadonlyMap<string,number>){const copy=structuredClone(f);
+const positions=events?(eventPositions??new Map(events.map((e,i)=>[e.id,i]))):undefined;
+ if(positions){copy.nobleSuccession=copy.nobleSuccession?.filter(a=>a.month<=month&&(positions.get(a.eventId)??Infinity)<eventIndex);copy.members=copy.members.filter(m=>m.enteredMonth<=month&&(positions.get(m.source==='FOUNDER'?`${f.familyId}-founded`:m.birth?m.birth.eventId:`${m.memberId}-entered`)??Infinity)<eventIndex);}
 for(const m of copy.members){
- if(m.birth&&events&&((events.findIndex(e=>e.id===`${m.memberId}-population-entered`)<0)||(events.findIndex(e=>e.id===`${m.memberId}-population-entered`)>=eventIndex))){delete m.sourceUserId;delete m.populationEnteredMonth;delete m.militaryPersonId;}
+ if(m.birth&&positions&&((positions.get(`${m.memberId}-population-entered`)??Infinity)>=eventIndex)){delete m.sourceUserId;delete m.populationEnteredMonth;delete m.militaryPersonId;}
  m.factionHistory=m.factionHistory?.filter(h=>h.month<month||h.month===month&&h.eventIndex<=eventIndex);
  if(m.deathMonth===month&&(m.deathHistoryIndex??-1)>eventIndex){delete m.deathMonth;delete m.deathCause;}
  if(m.exitMonth===month&&(m.exitHistoryIndex??-1)>eventIndex){delete m.exitMonth;delete m.exitCause;}
