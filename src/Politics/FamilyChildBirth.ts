@@ -5,6 +5,7 @@ import {pickRulerGivenName} from './SuccessionRules';
 export type FamilyBirthPolicy='BASELINE'|'LOW'|'MEDIUM'|'HIGH';
 export const FAMILY_BIRTH_CHANCE={BASELINE:0,LOW:.035,MEDIUM:.065,HIGH:.10} as const;
 export const isFamilyBirthPolicy=(v:unknown):v is FamilyBirthPolicy=>typeof v==='string'&&Object.hasOwn(FAMILY_BIRTH_CHANCE,v);
+export const FAMILY_PARENT_MAX_AGE_MONTHS=55*12;
 export const FAMILY_CHILD_LIMIT=2,FAMILY_LIVING_CHILD_LIMIT=8,FAMILY_ANNUAL_BIRTH_LIMIT=1,COUNTRY_ANNUAL_FAMILY_BIRTH_LIMIT=2;
 export interface FamilyChildBirth {
  version:1;eventId:string;familyId:string;parentMemberId:string;factionId:string;epochFounderId:string;
@@ -13,7 +14,7 @@ export interface FamilyChildBirth {
 export interface FamilyBirthParent {memberId:string;bornMonth:number;enteredMonth:number;deathMonth?:number;basisEventId:string;}
 /** Pure current-month opportunity. No User allocation, world RNG, spouse or retrospective child. */
 export function planFamilyChildBirth(f:{familyId:string;surname:string;factionId:string;epochFounderId:string;foundedMonth:number},parent:FamilyBirthParent,month:number,seed:string,policy:FamilyBirthPolicy){
- if(!Number.isSafeInteger(month)||month<12||month<f.foundedMonth||month<parent.enteredMonth||month-parent.bornMonth<240||month-parent.bornMonth>600||(parent.deathMonth??Infinity)<=month)return;
+ if(!Number.isSafeInteger(month)||month<12||month<f.foundedMonth||month<parent.enteredMonth||month-parent.bornMonth<240||month-parent.bornMonth>FAMILY_PARENT_MAX_AGE_MONTHS||(parent.deathMonth??Infinity)<=month)return;
  const opportunityMonth=Math.floor(month/12)*12,key=`family-child-v1:${seed}:${f.familyId}:${parent.memberId}:${parent.bornMonth}:${opportunityMonth}`,delivery=new WorldRandom();delivery.initialize(key+':delivery');
  if(month!==opportunityMonth+delivery.pickIndex(12))return;
  const rng=new WorldRandom();rng.initialize(key);const ticket=rng.next();if(ticket>=FAMILY_BIRTH_CHANCE[policy])return;
@@ -37,7 +38,7 @@ export function familyBirthParents(f:MilitaryFamily,c:FamilyNobleContext){
  if(living>=FAMILY_LIVING_CHILD_LIMIT)return [];
  const last=f.nobleSuccession?.filter(a=>a.month<=c.month).at(-1),ids=new Set(c.events.map(e=>e.id));
  return f.members.flatMap(m=>{
-  if(!familyMemberPresent(m,c.month)||familyResidenceAt(f,m,c.month)!==f.factionId||m.bornMonth+240>c.month||m.bornMonth+600<c.month||(children.get(m.memberId)?.length??0)>=FAMILY_CHILD_LIMIT||(children.get(m.memberId)??[]).some(ch=>c.month-ch.enteredMonth<48)||(c.politicalAccessions.get(m.memberId)??Infinity)<=c.month)return [];
+  if(!familyMemberPresent(m,c.month)||familyResidenceAt(f,m,c.month)!==f.factionId||m.bornMonth+240>c.month||m.bornMonth+FAMILY_PARENT_MAX_AGE_MONTHS<c.month||(children.get(m.memberId)?.length??0)>=FAMILY_CHILD_LIMIT||(children.get(m.memberId)??[]).some(ch=>c.month-ch.enteredMonth<48)||(c.politicalAccessions.get(m.memberId)??Infinity)<=c.month)return [];
   const p=c.people.find(p=>p.personId===m.militaryPersonId);if(p&&(p.factionId!==f.factionId||p.deathMonth!==undefined||p.politicalRulerId||p.politicalHistory?.some(a=>a.kind==='COURT_BAN'&&['FORFEITURE','EXECUTION'].includes(a.severity)&&a.month<=c.month)))return [];
   const inherited=last?.kind==='SUCCEEDED'&&last.holderMemberId===m.memberId?last:undefined,g=p?currentNobleGrant(p,f.factionId,c.month,f.epochFounderId):undefined,a=p?.status==='ACTIVE'?p.appointments.find(a=>a.factionId===f.factionId&&a.endMonth===undefined&&a.startMonth<=c.month):undefined;
   const basisEventId=inherited?.eventId??g?.eventId??(a?`military-appointment-${a.commandId}`:undefined);if(!basisEventId||!ids.has(basisEventId))return [];
