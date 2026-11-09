@@ -81,8 +81,10 @@ export default class PopulationSystem {
     this.lastGrowthMonth = worldMonth;
 
     // Stable identity plans, not repeated mortality draws. Existing military/royal life writers retain authority.
-    for(const team of teams)for(const user of [...team.users])if(ordinaryLifeEligible(user)&&worldMonth>=(Military.getFamilyMember(user.id,user.bornMonth)?.member.birth?.naturalDeathMonth??residentNaturalDeathMonth(user.id,user.bornMonth)))
-      user.destroyUser(false,{cause:'NATURAL_DEATH',month:worldMonth,damageSource:'RESIDENT_LIFESPAN',context:`普通居民 User ${user.id}，出生月${user.bornMonth}，寿终月${residentNaturalDeathMonth(user.id,user.bornMonth)}`});
+    for(const team of teams)for(const user of [...team.users])if(ordinaryLifeEligible(user)){
+      const naturalDeathMonth=Military.getFamilyMember(user.id,user.bornMonth)?.member.birth?.naturalDeathMonth??residentNaturalDeathMonth(user.id,user.bornMonth);
+      if(worldMonth>=naturalDeathMonth)user.destroyUser(false,{cause:'NATURAL_DEATH',month:worldMonth,damageSource:'RESIDENT_LIFESPAN',context:`普通居民 User ${user.id}，出生月${user.bornMonth}，寿终月${naturalDeathMonth}`});
+    }
     const recentEvents = WorldHistory.getEventsBetween?.(Math.max(0, worldMonth - 24), worldMonth) ?? [];
     const aliveTeams = measurePhase(profile, "Population.active faction scan", () => teams.filter((team) => team.status === "ACTIVE" && !team.isDie));
     aliveTeams.forEach((team) => {
