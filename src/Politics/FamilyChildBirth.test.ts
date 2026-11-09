@@ -13,3 +13,9 @@ it('uses one annual ticket and one delivery month, with distinct identities and 
  for(let i=0;i<2000;i++)for(const policy of ['LOW','MEDIUM','HIGH'] as const){let annual=0;for(let m=12;m<24;m++){const child=planFamilyChildBirth(family,{...parent,memberId:'father-'+i},m,'fixed',policy);if(child){annual++;totals[policy]++;months.add(m%12);}}expect(annual).toBeLessThanOrEqual(1);}
  expect(months.size).toBe(12);expect(totals.LOW).toBeLessThan(totals.MEDIUM);expect(totals.MEDIUM).toBeLessThan(totals.HIGH);expect(totals.HIGH).toBeLessThan(300);
 });
+it('bounds new biological opportunities without changing already registered adult kin',()=>{
+ for(const born of [-700,0,100])for(let m=12;m<=240;m++){
+  const result=planFamilyChildBirth(family,{...parent,bornMonth:born},m,'fixed','HIGH');
+  if(result){expect(m-born).toBeGreaterThanOrEqual(240);expect(m-born).toBeLessThanOrEqual(660);}
+ }
+});

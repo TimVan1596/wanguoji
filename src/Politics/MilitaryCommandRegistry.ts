@@ -600,11 +600,15 @@ export class MilitaryCommandRegistryStore {
     }
     if(this.familyBirthPolicy==='BASELINE')return;
     const year=Math.floor(month/12)*12,counts=new Map<string,number>();for(const f of this.families)for(const m of f.members)if(m.birth?.opportunityMonth===year)counts.set(f.factionId,(counts.get(f.factionId)??0)+1);
-    const events=WorldHistory.getRecordedEvents(),context=createFamilyNobleContext(month,this.families,this.getPeople(),events,dynasties);
-    for(const familyId of this.families.map(f=>f.familyId).sort()){const f=this.families.find(f=>f.familyId===familyId)!;
+    // Cheap current-life gate before any full historical context/index is built.
+    const liveTeams=new Set(teams.filter(t=>t.status==='ACTIVE'&&t.identityStage==='STATE').map(t=>t.name));
+    const candidates=this.families.filter(f=>liveTeams.has(f.factionId)&&f.members.some(m=>m.enteredMonth<=month&&(m.deathMonth??Infinity)>month&&(m.exitMonth??Infinity)>month&&m.bornMonth+240<=month&&m.bornMonth+660>=month&&(m.militaryPersonId&&this.people.has(m.militaryPersonId)||f.nobleSuccession?.at(-1)?.kind==='SUCCEEDED'&&f.nobleSuccession.at(-1)?.holderMemberId===m.memberId)));
+    if(!candidates.length)return;
+    const events=WorldHistory.getRecordedEvents(),context=createFamilyNobleContext(month,this.families,this.getPeople(),events,dynasties),eventIds=new Set(events.map(e=>e.id));
+    for(const familyId of candidates.map(f=>f.familyId).sort()){const f=this.families.find(f=>f.familyId===familyId)!;
       if(f.members.some(m=>m.birth&&m.deathMonth===undefined&&m.birth.naturalDeathMonth<=month))continue;
       const t=teams.find(t=>t.name===f.factionId);if(!t||t.status!=='ACTIVE'||t.identityStage!=='STATE'||(counts.get(f.factionId)??0)>=COUNTRY_ANNUAL_FAMILY_BIRTH_LIMIT||f.members.filter(m=>m.birth?.opportunityMonth===year).length>=FAMILY_ANNUAL_BIRTH_LIMIT)continue;
-      for(const {member:parent,basisEventId} of familyBirthParents(f,context)){
+      for(const {member:parent,basisEventId} of familyBirthParents(f,context,eventIds)){
         const plan=planFamilyChildBirth(f,{...parent,basisEventId},month,String(worldRandom.exportState().seed),this.familyBirthPolicy);if(!plan)continue;
         const member:import('./MilitaryFamily').MilitaryFamilyMember={...plan,generation:parent.generation+1,source:'HOUSEHOLD_BIRTH'};
         if(this.commitFamilyHistory({id:plan.birth.eventId,year:month,type:'family-child-born',category:'politics',importance:'normal',actorFactionId:f.factionId,factionIds:[f.factionId],title:`${parent.name}之子${plan.name}出生。`,metadata:{familyId:f.familyId,memberId:member.memberId,parentMemberId:parent.memberId,familyBirth:JSON.stringify(plan.birth)}},()=>{if(f.members.some(m=>m.memberId===member.memberId))throw Error('Duplicate family child');f.members.push(member);})){counts.set(f.factionId,(counts.get(f.factionId)??0)+1);}
