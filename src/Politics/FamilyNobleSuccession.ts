@@ -48,7 +48,7 @@ export function planFamilyNobleTransition(f:MilitaryFamily,c:FamilyNobleContext)
  else if(holder.exitMonth!==undefined&&holder.exitMonth<=c.month)reason='ENTITY_ENDED';
  if(!reason)return;
  const rank=FAMILY_NOBLE_RANKS[FAMILY_NOBLE_RANKS.indexOf(previousRank)-1];
- const deathIndex=reason==='DEATH'&&c.month>holder.deathMonth!?c.events.findIndex(e=>e.id===sourceEventIds.at(-1)):-1;
+ const deathIndex=reason==='DEATH'?c.events.findIndex(e=>e.id===sourceEventIds.at(-1)):-1;
  const evidence=deathIndex>=0?familyAtEvidenceBoundary(f,holder.deathMonth!,deathIndex+1,c.events):f;
  const heir=reason==='DEATH'&&rank?eligibleFamilyNobleHeirs(evidence,holder.memberId,{...c,month:holder.deathMonth!,events:deathIndex>=0?c.events.slice(0,deathIndex+1):c.events})[0]:undefined;
  if(reason==='DEATH'&&!heir)reason=rank?'NO_HEIR':'RANK_EXHAUSTED';
