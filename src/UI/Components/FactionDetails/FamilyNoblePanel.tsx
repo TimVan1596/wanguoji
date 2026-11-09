@@ -14,7 +14,7 @@ import HistoricalEventArchive from './HistoricalEventArchive';
 import {familyArchive,familyArchiveSource} from './FamilyArchiveSource';
 import {explainFamilyTitleEnd} from '../../../Politics/FamilyArchiveProjection';
 /** Read-only link to an already-existing political identity, including civilian rebel founders. */
-export function familyRoyalMember(m:MilitaryFamilyMember,month:number){for(const d of Dynasty.getAll()){const r=d.rulers.find(r=>r.accessionYear!==undefined&&r.accessionYear<=month&&r.bornYear===m.bornMonth&&(r.residentIdentity?.sourceUserId===m.sourceUserId||m.militaryPersonId&&(r.militaryUsurperIdentity?.personId===m.militaryPersonId||r.militaryIdentity?.personId===m.militaryPersonId)));if(r)return {ruler:r,factionId:d.factionId};}return undefined;}
+export function familyRoyalMember(m:MilitaryFamilyMember,month:number){for(const d of Dynasty.getAll()){const r=d.rulers.find(r=>r.accessionYear!==undefined&&r.accessionYear<=month&&r.bornYear===m.bornMonth&&(m.sourceUserId!==undefined&&r.residentIdentity?.sourceUserId===m.sourceUserId||m.militaryPersonId&&(r.militaryUsurperIdentity?.personId===m.militaryPersonId||r.militaryIdentity?.personId===m.militaryPersonId)));if(r)return {ruler:r,factionId:d.factionId};}return undefined;}
 export function familyMemberNobleLabel(f:MilitaryFamily,m:MilitaryFamilyMember,month:number){
  const archive=familyArchive(f,month),row=archive.rows.get(m.memberId),team=Game.Core?.teams.find(t=>t.name===f.factionId),country=(at:number)=>team?getRegimeStyleNameAtMonth(team,at):f.factionId;
  if(row?.inherited?.rank)return `袭${country(month)}${FAMILY_NOBLE_NAMES[row.inherited.rank]}`;

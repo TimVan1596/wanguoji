@@ -332,7 +332,9 @@ export class MilitaryCommandRegistryStore {
     const title=f.nobleSuccession?.filter(a=>a.month<=month).at(-1),team=teams.find(t=>t.name===f.factionId),epoch=this.royalService?.nobleEpoch?.(f.factionId,month),user=(m.sourceUserId===undefined?undefined:team?.getUserById(m.sourceUserId)),p=m.militaryPersonId?this.getPerson(m.militaryPersonId):undefined;
     let reason:string|undefined;
     if(month!==this.royalService?.worldMonth?.())reason='历史月份未冻结完整初选资格，不能以当前人口回推';
-    else if(m.enteredMonth>month)reason='当时尚未首次入籍登记';
+    else if(m.enteredMonth>month)reason='当时尚未建立亲缘登记';
+    else if(m.birth&&m.sourceUserId===undefined&&m.bornMonth+216>month)reason='在世未成年子嗣，尚未取得武职初选资格';
+    else if(m.birth&&m.sourceUserId===undefined)reason='已成年，尚未进入本国地图人口；未取得武职初选资格';
     else if((m.deathMonth??Infinity)<=month||p?.status==='DEAD')reason='人物已经去世';
     else if(!team||team.status!=='ACTIVE'||team.identityStage!=='STATE'||epoch!==f.epochFounderId)reason='原国家或王统的任官权威已失效';
     else if(familyResidenceAt(f,m,month)!==f.factionId||!user||user.bornMonth!==m.bornMonth||user.isDestroyed)reason='已离国或没有可核验的本国在籍人口';
@@ -591,7 +593,7 @@ export class MilitaryCommandRegistryStore {
     for(const familyId of this.families.map(f=>f.familyId)){
       const ids=this.families.find(f=>f.familyId===familyId)!.members.filter(m=>m.birth&&m.deathMonth===undefined&&m.birth.naturalDeathMonth<=month).map(m=>m.memberId);
       for(const memberId of ids){const f=this.families.find(f=>f.familyId===familyId)!,m=f.members.find(m=>m.memberId===memberId)!;
-        if(m.sourceUserId!==undefined){const u=Team.GetUserById(m.sourceUserId);if(u&&!u.destroyUser(false,{cause:'NATURAL_DEATH',month,damageSource:'RESIDENT_LIFESPAN'}))break;continue;}
+        if(m.sourceUserId!==undefined){const u=teams.map(t=>t.getUserById(m.sourceUserId!)).find(Boolean);if(u&&!u.destroyUser(false,{cause:'NATURAL_DEATH',month,damageSource:'RESIDENT_LIFESPAN'}))break;continue;}
         const due=m.birth!.naturalDeathMonth,id=`${f.familyId}-${m.memberId}-death`;
         if(!this.commitFamilyHistory({id,year:due,type:'family-member-died',category:'politics',importance:'normal',actorFactionId:f.factionId,factionIds:[f.factionId],title:`${m.name}自然去世。`,metadata:{familyId:f.familyId,memberId:m.memberId,bornMonth:m.bornMonth,deathCause:'NATURAL_DEATH',birthEventId:m.birth!.eventId,...(month!==due?{recordedMonth:month}:{})}},()=>{m.deathMonth=due;m.deathCause='NATURAL_DEATH';m.deathHistoryIndex=WorldHistory.getEventCount()-1;}))break;
       }
@@ -626,7 +628,8 @@ export class MilitaryCommandRegistryStore {
       // Never turn an absent or mismatched living resident into an heir by inference.
       if(act.kind!=='ENDED'){
         const heir=f.members.find(m=>m.memberId===act.holderMemberId)!,bindings=teams.flatMap(t=>[...t.users]).filter(u=>u.id===heir.sourceUserId&&u.bornMonth===heir.bornMonth);
-        const u=bindings[0];if(bindings.length!==1||!u||u.isDestroyed||u.team.name!==f.factionId||u.role!=='NORMAL'||u.rulerId||!u.player.logicalUnitId||u.player.role!=='NORMAL'||u.player.rulerId||u.player.team!==u.team||!u.player.active||u.player.user!==u||!u.team.users.has(u)){this.diagnostics.familyTitleIdentityRejected++;continue;}
+        const unmappedBorn=heir.birth&&heir.sourceUserId===undefined&&heir.enteredMonth<=month&&heir.bornMonth<=month&&heir.birth.naturalDeathMonth>month&&!heir.militaryPersonId&&this.eventReader(f.factionId).some(e=>e.id===heir.birth!.eventId&&e.type==='family-child-born'&&e.metadata?.familyBirth===JSON.stringify(heir.birth));
+        const u=bindings[0];if(!unmappedBorn&&(bindings.length!==1||!u||u.isDestroyed||u.team.name!==f.factionId||u.role!=='NORMAL'||u.rulerId||!u.player.logicalUnitId||u.player.role!=='NORMAL'||u.player.rulerId||u.player.team!==u.team||!u.player.active||u.player.user!==u||!u.team.users.has(u))){this.diagnostics.familyTitleIdentityRejected++;continue;}
       }
       const before=this.snapshotTransaction(),history=WorldHistory.snapshotPoliticalTransaction(),rng=worldRandom.exportState(),scope=beginPoliticalMutation();
       try{

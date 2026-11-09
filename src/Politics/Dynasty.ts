@@ -280,7 +280,7 @@ class DynastyRegistryStore {
     if(military&&(!sourcePerson||sourcePerson.status!=="RETIRED"||sourcePerson.politicalRulerId||sourcePerson.sourceUserId!==resident?.user.id||sourcePerson.bornMonth!==resident.user.bornMonth||!established))throw new Error("Invalid military founder");
     const houseName = established?.houseName??team.houseName ?? `${team.name}氏`;
     if(established)team.houseName=established.houseName;
-    const ruler = this.createFormalRuler(team, houseName, year, undefined, undefined, resident?.user.bornMonth,established?{givenName:established.givenName,...(sourcePerson?{naturalDeathMonth:deriveMilitaryLifeSchedule(sourcePerson).naturalDeathMonth}:{})}:undefined);
+    const ruler = this.createFormalRuler(team, houseName, year, undefined, undefined, resident?.user.bornMonth,established?{givenName:established.givenName,...(sourcePerson?{naturalDeathMonth:deriveMilitaryLifeSchedule(sourcePerson).naturalDeathMonth}:family?.member.birth?{naturalDeathMonth:family.member.birth.naturalDeathMonth}:{})}:undefined);
     if (resident) {
       const u=resident.user;
       if(u.isDestroyed||u.team!==team||!team.users.has(u)||u.role!=="NORMAL"||(u.militaryPersonId&&!sourcePerson)||u.historicalPersonId)throw new Error("Invalid resident founder");

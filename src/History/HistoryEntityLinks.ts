@@ -16,6 +16,7 @@ export function historyEntityLinks(e:WorldEvent,families:readonly MilitaryFamily
   if(['family-title-started','family-title-succeeded','family-title-ended'].includes(e.type))try{const a=f.nobleSuccession?.find(a=>a.eventId===e.id&&a.month===month&&a.familyId===f.familyId);if(a&&m.familyNobleAct===JSON.stringify(a)){memberIds=[a.previousMemberId,...a.holderMemberId?[a.holderMemberId]:[]];valid=true;}}catch{}
   else if(e.type==='military-family-founded'&&e.id===`${f.familyId}-founded`&&m.sourceEventId===f.sourceEventId){memberIds=f.members.filter(q=>q.militaryPersonId===f.founderPersonId).map(q=>q.memberId);valid=true;}
   else if(e.type==='military-family-merit'&&f.renewals?.some(r=>r.memberId===m.memberId&&r.month===month&&r.sourceEventId===m.sourceEventId)){memberIds=[String(m.memberId)];valid=true;}
+  if(['family-child-born','family-child-population-entered','family-member-died'].includes(e.type)){const q=f.members.find(q=>q.memberId===m.memberId);if(q&&q.enteredMonth<=month&&(e.type!=='family-child-born'||q.birth?.eventId===e.id)){memberIds=[q.memberId,...q.parentMemberId?[q.parentMemberId]:[]];valid=true;}}
   if(['military-ennobled','court-peerage-granted','founding-peerage-granted'].includes(e.type)){memberIds=f.members.filter(q=>q.militaryPersonId===m.personId).map(q=>q.memberId);valid=memberIds.length>0;}
   if(valid&&factionIds.has(f.factionId)){
    add(`查看${f.surname}氏总谱`,{kind:'FAMILY',factionId:f.factionId,id:f.familyId});

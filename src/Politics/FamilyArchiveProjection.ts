@@ -68,7 +68,7 @@ export function explainFamilyTitleEnd(f:MilitaryFamily,a:FamilyNobleAct,s:Family
  const childIds=new Set(children.map(m=>m.memberId)),grandchildren=descendants(a.previousMemberId).filter(m=>!childIds.has(m.memberId)&&familyMemberPresent(m,a.month)&&familyResidenceAt(historical,m,a.month)===f.factionId).length;
  let text:string;
  const laterChildren=f.members.filter(m=>m.parentMemberId===a.previousMemberId&&m.enteredMonth<=s.month&&!historical.members.some(h=>h.memberId===m.memberId)).map(m=>({memberId:m.memberId,name:m.name,bornMonth:m.bornMonth,enteredMonth:m.enteredMonth,sameMonthAfter:m.enteredMonth===a.month,entryEventId:`${m.memberId}-entered`,parentDeathMonth:previous?.deathMonth}));
- if(a.reason==='NO_HEIR')text=children.length?`当次处理时，已登记${children.length}名直接子嗣：${children.map(m=>`${m.name}${m.reason==='符合当时直接承袭资格'?'具备资格':`（${m.reason}）`}`).join('、')}。`:'当次处理时，没有已入籍、已登记的直接子嗣。';
+ if(a.reason==='NO_HEIR')text=children.length?`当次处理时，已登记${children.length}名直接子嗣：${children.map(m=>`${m.name}${m.reason==='符合当时直接承袭资格'?'具备资格':`（${m.reason}）`}`).join('、')}。`:'当次处理时，没有已经建立合法身份和父系登记的直接子嗣。';
  else if(a.reason==='RANK_EXHAUSTED')text=`${previous?.name??'原持爵者'}所持爵位已降至男爵，本次身故后世降耗尽；不是因为家族无人存续。`;
  else if(a.reason==='REGIME_ENDED')text='原爵所属国家或王统的政治权威已经终结，旧朝承袭失效；并不表示家族成员死亡。';
  else if(a.reason==='REVOKED')text='原始个人爵位已有正式追夺事件，不能继续作为承袭权源。';

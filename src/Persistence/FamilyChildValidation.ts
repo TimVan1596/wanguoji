@@ -1,5 +1,6 @@
 import type {WorldSaveV1,RulerSaveV17} from './WorldSaveSchema';
 import type {WorldEvent} from '../History/WorldHistory';
+import type {Dynasty} from '../Politics/Dynasty';
 import type {MilitaryPerson} from '../Politics/MilitaryCommandRegistry';
 import {importRulerSave} from './RulerSaveProjection';
 import {familyAtEvidenceBoundary,createFamilyNobleContext,familyResidenceAt} from '../Politics/FamilyNobleSuccession';
@@ -7,7 +8,7 @@ import {familyBirthParents,planFamilyChildBirth,isFamilyBirthPolicy,familyChildF
 /** Actual committed birth boundaries. Indexes live only for this validation call. */
 export function validateFamilyChildren(save:WorldSaveV1){
  const errors:string[]=[],state=save.registries.militaryCommandRegistry,policy=state.familyBirthPolicy??'BASELINE';if(!isFamilyBirthPolicy(policy))return ['invalid family birth policy'];
- const families=state.families??[],events=save.worldHistory.events as WorldEvent[],positions=new Map(events.map((e,i)=>[e.id,i])),dynasties=save.dynasties.map(d=>({...d,rulers:(d.rulers as RulerSaveV17[]).map(importRulerSave)})),seen=new Set<string>(),admissions=new Set<string>();
+ const families=state.families??[],events=save.worldHistory.events as WorldEvent[],positions=new Map(events.map((e,i)=>[e.id,i])),dynasties=save.dynasties.map(d=>({...d,rulers:(d.rulers as RulerSaveV17[]).map(importRulerSave)})) as Dynasty[],seen=new Set<string>(),admissions=new Set<string>();
  const commandEnds=new Map<string,number>(),deaths=new Map<string,number>();for(const [i,e] of events.entries()){if(e.type==='military-command-ended'&&typeof e.metadata?.commandId==='string'&&!commandEnds.has(e.metadata.commandId))commandEnds.set(e.metadata.commandId,i);if(e.type==='military-person-died'&&typeof e.metadata?.personId==='string'&&!deaths.has(e.metadata.personId))deaths.set(e.metadata.personId,i);}
  for(const f of families)for(const m of f.members){if(!m.birth){if(m.source==='HOUSEHOLD_BIRTH'||m.memberId.startsWith(`${f.familyId}-child-`))errors.push('missing real family birth');continue;}
   try{
@@ -22,6 +23,8 @@ export function validateFamilyChildren(save:WorldSaveV1){
    const annual=f.members.filter(ch=>ch.birth?.opportunityMonth===b.opportunityMonth&&before(ch.birth.eventId)).length,countryAnnual=families.filter(x=>x.factionId===f.factionId).reduce((n,x)=>n+x.members.filter(ch=>ch.birth?.opportunityMonth===b.opportunityMonth&&before(ch.birth.eventId)).length,0);
    if(annual>=FAMILY_ANNUAL_BIRTH_LIMIT||countryAnnual>=COUNTRY_ANNUAL_FAMILY_BIRTH_LIMIT)throw Error('annual birth cap exceeded');
    const c=createFamilyNobleContext(b.month,[historical],historicalPeople,events.slice(0,boundary),dynasties),expected=familyBirthParents(historical,c).map(({member,basisEventId})=>planFamilyChildBirth(f,{...member,basisEventId},b.month,String(save.worldRandom.seed),policy)).find(Boolean);
+   if(e.title!==`${historical.members.find(p=>p.memberId===m.parentMemberId)?.name}之子${m.name}出生。`)throw Error('birth narrative identity mismatch');
+   if(m.deathCause==='NATURAL_DEATH'&&(m.deathMonth??Infinity)<b.naturalDeathMonth)throw Error('natural death precedes fixed birth life');
    if(!expected||expected.memberId!==m.memberId||expected.name!==m.name||JSON.stringify(expected.birth)!==JSON.stringify(b))throw Error('deterministic birth/lifespan/parent replay mismatch');
    const entryId=`${m.memberId}-population-entered`,entryPosition=positions.get(entryId),entry=entryPosition===undefined?undefined:events[entryPosition];
    if(m.sourceUserId===undefined){if(m.populationEnteredMonth!==undefined||entry||m.militaryPersonId)throw Error('unmapped child has a false population identity');}
@@ -29,6 +32,8 @@ export function validateFamilyChildren(save:WorldSaveV1){
     const atEntry=families.map(f=>familyAtEvidenceBoundary(f,m.populationEnteredMonth!,entryPosition!,events)),selected=familyChildForPopulationEntry(atEntry,f.factionId,f.epochFounderId,m.sourceUserId,m.populationEnteredMonth!,String(save.worldRandom.seed));if(selected?.member.memberId!==m.memberId)throw Error('population slot did not select this existing adult identity');admissions.add(entryId);
    }
    if(m.deathMonth!==undefined&&m.sourceUserId===undefined){const death=events.find(e=>e.id===`${f.familyId}-${m.memberId}-death`);if(m.deathMonth!==b.naturalDeathMonth||m.deathCause!=='NATURAL_DEATH'||death?.metadata?.birthEventId!==b.eventId)throw Error('invalid abstract child natural death');}
+   if(m.sourceUserId!==undefined)for(const d of dynasties)for(const r of d.rulers)if(r.residentIdentity?.sourceUserId===m.sourceUserId&&r.bornYear===m.bornMonth&&r.naturalDeathYear!==b.naturalDeathMonth)throw Error('accession changed the original family child life');
+   if(m.sourceUserId===undefined&&b.naturalDeathMonth<=save.world.worldMonth&&m.deathMonth===undefined)throw Error('missing actual child lifecycle death');
    const p=m.militaryPersonId?state.people.find(p=>p.personId===m.militaryPersonId):undefined;if(p&&JSON.stringify(p.familyLife)!==JSON.stringify({familyId:f.familyId,memberId:m.memberId,birthEventId:b.eventId,naturalDeathMonth:b.naturalDeathMonth}))throw Error('military bridge changed the original life');
    seen.add(b.eventId);
   }catch(error){errors.push(`invalid family child ${m.memberId}: ${String(error)}`);}
