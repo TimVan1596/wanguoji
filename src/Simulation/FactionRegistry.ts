@@ -1,3 +1,4 @@
+import {localMilitarySupporter} from './MilitaryLocalRules';
 import {militaryCrisisSourceIds} from "./MilitaryCrisisSources";
 import {militaryLocalCrisis} from "./MilitaryLocalRules";
 import {popularCrisisFacts} from "./PopularRebellionSupport";
@@ -355,11 +356,11 @@ class FactionRegistryStore {
     const military=assessMilitarySecession(coreCity,year);
     if(localOpportunity&&!military)return undefined;
     if(localOpportunity&&military){
-      const resident=candidates.find(u=>!military.users.includes(u)),supporter=resident??military.users[1];if(!supporter)return undefined;
+      const support=localMilitarySupporter(candidates,military.users,military.evidence.originalMemberUnitIds);if(!support)return undefined;const {supporter,supporterKind}=support;
       const p=supporter.player,s=core.logicalUnitRegistry.getEntry(p.logicalUnitId!)!.state;
       military.evidence.entryKind='LOCAL_CRISIS';
       const facts=popularCrisisFacts(coreCity,year,core.totalCells);
-      military.evidence.localCrisis={...localOpportunity,historyBoundaryEventId:WorldHistory.getRecordedEvents().at(-1)?.id,crisisSourceEventIds:militaryCrisisSourceIds(WorldHistory.getRecordedEvents(),coreCity.id,previousOwner.name,facts),reason:militaryLocalCrisis(popularCrisisFacts(coreCity,year,core.totalCells)).reason,supporterKind:resident?"RESIDENT":"COMMAND_FOLLOWER",
+      military.evidence.localCrisis={...localOpportunity,historyBoundaryEventId:WorldHistory.getRecordedEvents().at(-1)?.id,crisisSourceEventIds:militaryCrisisSourceIds(WorldHistory.getRecordedEvents(),coreCity.id,previousOwner.name,facts),reason:militaryLocalCrisis(popularCrisisFacts(coreCity,year,core.totalCells)).reason,supporterKind,
         facts,
         sourceCityCount:previousOwner.cities.length,activeFactionCount:core.teams.filter(t=>!t.isDie).length,
         supporter:{userId:supporter.id,bornMonth:supporter.bornMonth,unitId:p.logicalUnitId!,x:core.logicalGameplayAuthority?s.logicalX:p.x,y:core.logicalGameplayAuthority?s.logicalY:p.y,loyalty:supporter.loyalty,positionSource:core.logicalGameplayAuthority?"LOGICAL":"PHASER",districtCityId:coreCity.id,ownedFactionId:previousOwner.name}};

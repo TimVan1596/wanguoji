@@ -11,3 +11,8 @@ export function militaryLocalCrisis(f:MilitaryLocalCrisisFacts){
  return f.loyalty<=60&&f.devastation>=35&&since>=6&&(f.captureCount>=2||f.stability<=65)
   ?{eligible:true,reason:'MILITARY_POSTWAR_CRISIS'}:{eligible:false,reason:popular.reason};
 }
+/** A soldier left in the original command is not an independent civilian supporter. */
+export function localMilitarySupporter<T extends {player:{logicalUnitId?:string}}>(residents:readonly T[],party:readonly T[],originalUnitIds:readonly string[]){
+ const units=new Set(originalUnitIds),selected=new Set(party),resident=residents.find(u=>!selected.has(u)&&!units.has(u.player.logicalUnitId??'')),supporter=resident??party[1];
+ return supporter?{supporter,supporterKind:resident?'RESIDENT' as const:'COMMAND_FOLLOWER' as const}:undefined;
+}

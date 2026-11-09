@@ -1,0 +1,5 @@
+import {expect,it} from 'vitest';
+import {localMilitarySupporter} from './MilitaryLocalRules';
+const unit=(id:string)=>({player:{logicalUnitId:id}});
+it('does not mislabel an untransferred original soldier as an independent civilian',()=>{const leader=unit('leader'),follower=unit('selected'),leftBehind=unit('left'),civilian=unit('civilian'),party=[leader,follower],original=['leader','selected','left'];expect(localMilitarySupporter([leftBehind,civilian],party,original)).toEqual({supporter:civilian,supporterKind:'RESIDENT'});expect(localMilitarySupporter([leftBehind],party,original)).toEqual({supporter:follower,supporterKind:'COMMAND_FOLLOWER'});expect(party).toEqual([leader,follower]);});
+it('uses a real selected follower when no independent resident exists and never creates one',()=>{const a=unit('a'),b=unit('b');expect(localMilitarySupporter([a,b],[a,b],['a','b'])).toEqual({supporter:b,supporterKind:'COMMAND_FOLLOWER'});expect(localMilitarySupporter([a],[a],['a'])).toBeUndefined();});

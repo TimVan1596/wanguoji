@@ -6,7 +6,7 @@ import {checkInsurgentCommands} from './InsurgentCommandCoreChecks';
 import {projectRulerHistoricalEvents} from '../../Politics/RulerChronicle';
 import {militaryMilestones} from '../../Politics/MilitaryChroniclePresentation';
 import {mergePoliticalReading} from '../../History/PoliticalReadingProjection';
-import {localPoliticalPressure} from "../PopularRebellionSupport";
+import {localPoliticalPressure,assessPopularSupport} from "../PopularRebellionSupport";
 import Diplomacy from "../../Politics/Diplomacy";
 import {nextMilitaryHonors} from '../../Politics/MilitaryHonors';
 import {currentNobleGrant} from '../../Politics/MilitaryNobility';
@@ -47,6 +47,8 @@ export async function runMilitarySecessionCore(seed="military-secession-z7",loca
   for(const c of victoryCities){commander.player.setPosition(c.block.x,c.block.y);(commander.player.body as Phaser.Physics.Arcade.Body).reset(c.block.x,c.block.y);c.capture(parent,month,undefined,commandId,personId);}
   Military.updateNobility(month,core.teams,Dynasty.getAll());
   Military.updateAppanages(month,core.teams,Dynasty.getAll(),core.allCities);
+  // A natural low-rank grant may already occupy this January. Wait for the next real grant window, never award twice in one month.
+  if(!Military.getPerson(personId)?.appanageHistory?.length){month+=12;(core.simulator as any).clock.importState({worldMonth:month,elapsedMs:0,running:false});Military.updateNobility(month,core.teams,Dynasty.getAll());Military.updateAppanages(month,core.teams,Dynasty.getAll(),core.allCities);}
   const oldEstate=Military.getPerson(personId)?.appanageHistory?.at(-1);check(oldEstate,'real future secessionist initially holds an evidence-backed old-country estate');
   const oldTitle=currentNobleGrant(Military.getPerson(personId)!,parent.name,month);check(oldTitle,'actual serving general has a real sovereign grant before rebellion');
   Military.updateFamilies(month,core.teams,Dynasty.getAll());const familyOrigin=Military.getFamilyMember(commander.id,commander.bornMonth),abilityBefore=militaryAbilities(Military.getPerson(personId)!);check(familyOrigin,'the genuinely titled future rebel has a sourced political family before founding');
@@ -190,6 +192,7 @@ export async function runMilitarySecessionCore(seed="military-secession-z7",loca
   render(6);check(host.querySelectorAll("section p").length===6&&!host.querySelector("button"),"six readable records show completely with no unnecessary expansion button");
   check(JSON.stringify(worldRandom.exportState())===rng&&History.getEvents().length===history,"reading expansion consumes no RNG and creates no history");root.unmount();host.remove();
   hydrateWorldSave(core,structuredClone(save));checkInsurgentCommands(core,split.team.name,check);
+  if(local&&!siege){hydrateWorldSave(core,structuredClone(before));const oldParent=core.teams.find(t=>t.name===parent!.name)!,oldCity=core.allCities.find(c=>c.id===city.id)!,form=Military.getFormation(commandId)!;for(const u of oldParent.users)if(u.role==='NORMAL'&&!u.militaryPersonId&&!u.historicalPersonId)u.loyalty=99;for(const u of oldParent.users)if(form.memberUnitIds.includes(u.player.logicalUnitId!)){u.loyalty=20;u.player.setPosition(oldCity.block.x+4,oldCity.block.y+4);(u.player.body as Phaser.Physics.Arcade.Body).reset(u.player.x,u.player.y);}const party=assessMilitarySecession(oldCity,month)!;check(party&&party.users.length<form.memberUnitIds.length,'controlled real local command has a nonparticipating original soldier');const originalSoldier=assessPopularSupport(oldCity,month).users.find(u=>form.memberUnitIds.includes(u.player.logicalUnitId!)&&!party.users.includes(u));check(originalSoldier,'the remaining original soldier also qualifies in the ordinary resident scan');const pop=core.teams.reduce((n,t)=>n+t.users.size,0),state=Factions.createSplitFaction(oldParent,[oldCity],month,0,{chance:.09,roll:.01});check(state,'actual local founding accepts its already qualified military party');const evidence=Dynasty.getCurrentRuler(state!.team.name)!.residentIdentity!.military!;check(evidence.localCrisis?.supporterKind==='COMMAND_FOLLOWER'&&evidence.participants.slice(1).some(u=>u.userId===evidence.localCrisis!.supporter.userId),'frozen supporter is a genuinely selected follower, never an untransferred original soldier called a civilian');check(originalSoldier!.team===oldParent&&core.teams.reduce((n,t)=>n+t.users.size,0)===pop,'supporter classification changes neither actual following nor world population');strict();}
   return {seed,checks,naturalCareerMonth:month,personId,rulerId:ruler.id,oldOffice:ruler.residentIdentity!.military!.office,followingUnits:follow.length,originalUnits:originalIds.length,worldPopulationBefore:total,worldPopulationAfter:total,saveSchemaVersion:CURRENT_SAVE_SCHEMA_VERSION};
  }finally{game.destroy(true);}
 }
