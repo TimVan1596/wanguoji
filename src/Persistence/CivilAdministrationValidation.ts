@@ -1,6 +1,6 @@
 import type {WorldSaveV1} from './WorldSaveSchema';
 import type {WorldEvent} from '../History/WorldHistory';
-import {isCivilGovernancePolicy} from '../Politics/CivilAdministration';
+import {isCivilGovernancePolicy} from '../Politics/CivilAdministrationSchema';
 
 const endReasons=new Set(['DEATH','CITY_LOST','FACTION_ENDED','REGIME_ENDED','POLITICAL_SANCTION','MILITARY_OFFICE','REPLACED','IDENTITY_ENDED']);
 const sources=new Set(['ORDINARY_RESIDENT','FAMILY','NOBLE','ROYAL','RETIRED_MILITARY']);

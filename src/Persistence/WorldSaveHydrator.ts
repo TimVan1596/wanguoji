@@ -393,6 +393,8 @@ function validateRequiredImportState(save: WorldSaveV1) {
       });
     });
   if (!Array.isArray(registries.archivedCities)) throw new Error("Save registries.archivedCities is missing or malformed.");
+  const civil=registries.civilAdministration as Record<string,unknown>|undefined;
+  if(!civil||civil.version!==1||!Array.isArray(civil.terms)||typeof civil.sequence!=="number"||typeof civil.lastEvaluationMonth!=="number")throw new Error("Save civil administration registry is missing or malformed.");
   if (typeof registries.dynastyRegistrySequence !== "number" || !Number.isFinite(registries.dynastyRegistrySequence)) throw new Error("Save dynasty registry sequence must be finite.");
   save.factions.forEach((faction) => {
     [faction.firstFoundedMonth, faction.currentActiveSinceMonth, faction.cumulativeActiveMonths, faction.homeGridX, faction.homeGridY]

@@ -22,13 +22,13 @@ export function CivilGovernorSummary({cityId,month}:{cityId:string;month:number}
 }
 
 function GovernorDetail({term,month}:{term:CivilGovernorTerm;month:number}){
- const navigation=usePersonArchiveNavigation(),city=cityFor(term),person=Military.getPerson(term.personId),family=term.familyId?Military.getFamilies().find(f=>f.familyId===term.familyId):undefined;
+ const navigation=usePersonArchiveNavigation(),person=Military.getPerson(term.personId),family=term.familyId?Military.getFamilies().find(f=>f.familyId===term.familyId):undefined;
  return <Box data-civil-governor-detail={term.assignmentId} sx={{border:'1px solid var(--gg-border)',borderRadius:'var(--gg-radius)',p:.75,display:'grid',gap:.35}}>
   <Typography fontWeight='bold' fontSize='.88rem'>{term.personalName} · {term.cityName}郡守</Typography>
   <Typography fontSize='.76rem'>身份：{sourceLabel(term)}{term.familyId?` · ${family?.surname??''}氏`:''}</Typography>
   <Typography fontSize='.76rem'>任命：{formatWorldDate(term.startMonth)} · {term.rulerTitle}</Typography>
   <Typography fontSize='.76rem'>任期：{formatWorldDate(term.startMonth)}—{term.endMonth===undefined?'今':formatWorldDate(term.endMonth)} · {formatWorldDuration((term.endMonth??month)-term.startMonth)}</Typography>
-  <Typography fontSize='.76rem'>治理：{civilGovernorStatus(term,endCity(term,month),month)} · 忠诚恢复{term.loyaltyRecovered} · 破坏恢复{term.devastationRecovered}</Typography>
+  <Typography fontSize='.76rem'>治理：{civilGovernorStatus(term,cityFor(term),month)} · 忠诚恢复{term.loyaltyRecovered} · 破坏恢复{term.devastationRecovered}</Typography>
   {term.endReason&&<Typography fontSize='.76rem'>离任原因：{term.endReason}</Typography>}
   {person&&<Button size='small' onClick={()=>navigation.open({kind:'MILITARY',factionId:term.factionId,id:person.personId})}>查看军政人物档案</Button>}
   {family&&<Button size='small' onClick={()=>navigation.open({kind:'FAMILY',factionId:term.factionId,id:family.familyId,memberId:term.familyMemberId})}>查看功臣世家与宗谱</Button>}
@@ -37,10 +37,8 @@ function GovernorDetail({term,month}:{term:CivilGovernorTerm;month:number}){
  </Box>;
 }
 
-function endCity(term:CivilGovernorTerm,month:number){return cityFor(term)??(term.endMonth!==undefined?Game.Core?.allCities.find(city=>city.id===term.cityId):undefined);}
-
 export default function CivilGovernancePanel({factionId,month,initialPersonId}:{factionId:string;month:number;initialPersonId?:string}){
- const revision=useHistoryRevision(),[view,setView]=useState<'current'|'history'>('current'),[selected,setSelected]=useState<string|undefined>(initialPersonId);
+ useHistoryRevision();const [view,setView]=useState<'current'|'history'>('current'),[selected,setSelected]=useState<string|undefined>(initialPersonId);
  useEffect(()=>setSelected(initialPersonId),[initialPersonId]);
  const terms=CivilAdministration.getTerms(factionId),shown=terms.filter(term=>view==='current'?active(term,month):term.endMonth!==undefined&&term.endMonth<=month).sort((a,b)=>b.startMonth-a.startMonth||a.assignmentId.localeCompare(b.assignmentId)),selectedTerm=terms.find(term=>term.personId===selected&&term.endMonth===undefined)??terms.filter(term=>term.personId===selected).at(-1);
  return <Box data-civil-governance-panel={factionId}>

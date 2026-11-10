@@ -23,6 +23,7 @@ function fixture() {
 }
 
 describe("WorldSaveV1 validation and JSON contract", () => {
+  it("rejects V57 before civil governor state can be silently inferred",()=>{const save=fixture();(save as any).saveSchemaVersion=57;expect(validateWorldSave(save)).toEqual({valid:false,errors:["该存档版本已不受支持，请创建新世界。"]});});
   it("rejects V56 instead of silently reading inferred-entry families as real newborn identities",()=>{const save=fixture();(save as any).saveSchemaVersion=56;expect(validateWorldSave(save)).toEqual({valid:false,errors:["该存档版本已不受支持，请创建新世界。"]});});
   it("rejects V55 instead of silently treating annual births as monthly births",()=>{const save=fixture();(save as any).saveSchemaVersion=55;expect(validateWorldSave(save)).toEqual({valid:false,errors:["该存档版本已不受支持，请创建新世界。"]});});
   it("rejects the previous V47 schema instead of reading political peerage as old military data", () => {
