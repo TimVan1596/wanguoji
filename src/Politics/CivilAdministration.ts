@@ -7,7 +7,7 @@ import WorldHistory,{type WorldEvent} from '../History/WorldHistory';
 import {beginPoliticalMutation} from '../Simulation/PoliticalMutationScope';
 import worldRandom,{WorldRandom} from '../Simulation/WorldRandom';
 import {unresolvedCourtBans} from './MilitaryCourtStanding';
-import {CIVIL_APPOINTMENT_CHANCE,CIVIL_GOVERNANCE_POLICY,MAX_ACTIVE_CIVIL_GOVERNORS_PER_FACTION,type CivilAdministrationState,type CivilGovernorCandidate,type CivilGovernorEndReason,type CivilGovernorTerm} from './CivilAdministrationSchema';
+import {CIVIL_APPOINTMENT_CHANCE,CIVIL_GOVERNANCE_POLICY,MAX_ACTIVE_CIVIL_GOVERNORS_PER_FACTION,type CivilAdministrationState,type CivilGovernancePolicy,type CivilGovernorCandidate,type CivilGovernorEndReason,type CivilGovernorTerm} from './CivilAdministrationSchema';
 export {CIVIL_APPOINTMENT_CHANCE,CIVIL_CITY_STABILITY_MONTHS,CIVIL_GOVERNANCE_POLICY,MAX_ACTIVE_CIVIL_GOVERNORS_PER_FACTION,civilGovernanceThreshold,isCivilGovernancePolicy} from './CivilAdministrationSchema';
 export type {CivilAdministrationState,CivilGovernancePolicy,CivilGovernorCandidate,CivilGovernorEndReason,CivilGovernorSource,CivilGovernorTerm} from './CivilAdministrationSchema';
 export {civilControlledSince,civilGovernanceEffect,civilGovernorCandidates,civilGovernorPersonId,civilGovernorStatus,eligibleCivilCities} from './CivilAdministrationRules';
@@ -24,6 +24,7 @@ function transaction<T>(work:()=>T):T{
 class CivilAdministrationStore {
  private state:CivilAdministrationState=empty();
  reset(){this.state=empty();}
+ setPolicyForSimulation(policy:CivilGovernancePolicy){this.state.policy=policy;}
  exportState():CivilAdministrationState{return structuredClone(this.state);}
  importState(state:CivilAdministrationState){this.state=structuredClone(state);this.state.terms=(this.state.terms??[]).map(term=>({...term})).sort((a,b)=>a.startMonth-b.startMonth||a.assignmentId.localeCompare(b.assignmentId));}
  getTerms(factionId?:string){return (factionId?this.state.terms.filter(term=>term.factionId===factionId):this.state.terms).map(term=>({...term}));}
@@ -73,8 +74,8 @@ class CivilAdministrationStore {
   for(const term of this.state.terms.filter(t=>active(t,month))){
    const team=teams.find(t=>t.name===term.factionId),city=teams.flatMap(t=>t.cities).find(c=>c.id===term.cityId),user=team&&[...team.users].find(u=>u.id===term.sourceUserId&&u.bornMonth===term.bornMonth),person=Military.getPerson(term.personId),dynasty=dynasties.find(d=>d.factionId===term.factionId),epoch=(dynasty?.houseEpochs??[]).find(e=>e.foundingRulerId===term.epochFounderId&&e.startMonth<=month&&(e.endMonth??Infinity)>month);
    let reason:CivilGovernorEndReason|undefined;
-   if(!user||user.isDestroyed||person?.deathMonth!==undefined||person?.status==='DEAD')reason='DEATH';
-   else if(!city||city.destroyed||city.ownerFactionId!==term.factionId)reason='CITY_LOST';
+   if(!city||city.destroyed||city.ownerFactionId!==term.factionId)reason='CITY_LOST';
+   else if(!user||user.isDestroyed||person?.deathMonth!==undefined||person?.status==='DEAD')reason='DEATH';
    else if(!team||team.status!=='ACTIVE'||team.identityStage!=='STATE')reason='FACTION_ENDED';
    else if(!epoch)reason='REGIME_ENDED';
    else if(person&&unresolvedCourtBans(person,term.factionId,month,term.epochFounderId).length)reason='POLITICAL_SANCTION';
