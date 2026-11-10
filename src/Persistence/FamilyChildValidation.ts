@@ -5,6 +5,17 @@ import type {MilitaryPerson} from '../Politics/MilitaryCommandRegistry';
 import {importRulerSave} from './RulerSaveProjection';
 import {familyAtEvidenceBoundary,createFamilyNobleContext,familyResidenceAt} from '../Politics/FamilyNobleSuccession';
 import {familyBirthParents,planFamilyChildBirth,isFamilyBirthPolicy,familyChildForPopulationEntry,FAMILY_ANNUAL_BIRTH_LIMIT,COUNTRY_ANNUAL_FAMILY_BIRTH_LIMIT} from '../Politics/FamilyChildBirth';
+/** A child death event is a separate historical fact, not inferred from a missing field. */
+export function familyChildDeathEventError(f:import('../Politics/MilitaryFamily').MilitaryFamily,m:import('../Politics/MilitaryFamily').MilitaryFamilyMember,event:WorldEvent|undefined,eventPosition:number|undefined,birthPosition:number,worldMonth:number){
+ if(m.deathMonth===undefined)return m.sourceUserId===undefined&&m.birth&&m.birth.naturalDeathMonth<=worldMonth?'missing actual child lifecycle death':undefined;
+ const birth=m.birth,id=`${f.familyId}-${m.memberId}-death`,month=m.deathMonth;
+ if(!birth||eventPosition===undefined||!event||event.id!==id||event.type!=='family-member-died'||event.actorFactionId!==f.factionId||(event.monthIndex??event.year)!==month||month<birth.month||month>worldMonth||eventPosition<=birthPosition)return 'invalid child death event';
+ if(event.metadata?.familyId!==f.familyId||event.metadata?.memberId!==m.memberId||event.metadata?.bornMonth!==m.bornMonth||event.metadata?.deathCause!==m.deathCause)return 'child death identity mismatch';
+ if(m.sourceUserId===undefined){if(month!==birth.naturalDeathMonth||m.deathCause!=='NATURAL_DEATH'||event.metadata?.birthEventId!==birth.eventId||event.metadata?.sourceUserId!==undefined)return 'invalid abstract child natural death';}
+ else if(event.metadata?.sourceUserId!==m.sourceUserId||event.metadata?.birthEventId!==undefined)return 'mapped child death identity mismatch';
+ const recorded=event.metadata?.recordedMonth;
+ return recorded!==undefined&&(!Number.isSafeInteger(recorded)||recorded<month||recorded>worldMonth)?'invalid recorded child death month':undefined;
+}
 /** Actual committed birth boundaries. Indexes live only for this validation call. */
 export function validateFamilyChildren(save:WorldSaveV1){
  const errors:string[]=[],state=save.registries.militaryCommandRegistry,policy=state.familyBirthPolicy??'BASELINE';if(!isFamilyBirthPolicy(policy))return ['invalid family birth policy'];
@@ -33,7 +44,7 @@ export function validateFamilyChildren(save:WorldSaveV1){
    }
    if(m.deathMonth!==undefined&&m.sourceUserId===undefined){const death=events.find(e=>e.id===`${f.familyId}-${m.memberId}-death`);if(m.deathMonth!==b.naturalDeathMonth||m.deathCause!=='NATURAL_DEATH'||death?.metadata?.birthEventId!==b.eventId)throw Error('invalid abstract child natural death');}
    if(m.sourceUserId!==undefined)for(const d of dynasties)for(const r of d.rulers)if(r.residentIdentity?.sourceUserId===m.sourceUserId&&r.bornYear===m.bornMonth&&r.naturalDeathYear!==b.naturalDeathMonth)throw Error('accession changed the original family child life');
-   if(m.sourceUserId===undefined&&b.naturalDeathMonth<=save.world.worldMonth&&m.deathMonth===undefined)throw Error('missing actual child lifecycle death');
+   const deathId=`${f.familyId}-${m.memberId}-death`,deathPosition=positions.get(deathId),deathError=familyChildDeathEventError(f,m,deathPosition===undefined?undefined:events[deathPosition],deathPosition,boundary,save.world.worldMonth);if(deathError)throw Error(deathError);
    const p=m.militaryPersonId?state.people.find(p=>p.personId===m.militaryPersonId):undefined;if(p&&JSON.stringify(p.familyLife)!==JSON.stringify({familyId:f.familyId,memberId:m.memberId,birthEventId:b.eventId,naturalDeathMonth:b.naturalDeathMonth}))throw Error('military bridge changed the original life');
    seen.add(b.eventId);
   }catch(error){errors.push(`invalid family child ${m.memberId}: ${String(error)}`);}

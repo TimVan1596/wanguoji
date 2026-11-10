@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import {planFamilyChildBirth} from './FamilyChildBirth';
+import {familyBirthParents,planFamilyChildBirth} from './FamilyChildBirth';
 import random from '../Simulation/WorldRandom';
 const family={familyId:'family-real-charter',surname:'傅',factionId:'qin',epochFounderId:'king',foundedMonth:12},parent={memberId:'father',bornMonth:-300,enteredMonth:12,basisEventId:'real-grant'};
 it('plans only an actual current birth with no population ID, military identity or world RNG use',()=>{
@@ -18,4 +18,18 @@ it('bounds new biological opportunities without changing already registered adul
   const result=planFamilyChildBirth(family,{...parent,bornMonth:born},m,'fixed','HIGH');
   if(result){expect(m-born).toBeGreaterThanOrEqual(240);expect(m-born).toBeLessThanOrEqual(660);}
  }
+});
+it('requires a current sourced parent and bounds parent, spacing and living-family growth',()=>{
+ const father:any={memberId:'father',name:'傅父',bornMonth:0,enteredMonth:0,generation:0,source:'FOUNDER',militaryPersonId:'officer'};
+ const f:any={...family,foundedMonth:0,members:[father]};
+ const person:any={personId:'officer',factionId:'qin',status:'ACTIVE',appointments:[],nobilityHistory:[{eventId:'grant',month:12,rank:'BO',factionId:'qin',epochFounderId:'king'}]};
+ const events:any[]=[{id:'grant',year:12,type:'military-ennobled'}];
+ const c=(month=300):any=>({month,people:[person],events,activeEpochs:new Set(['qin/king']),politicalAccessions:new Map()});
+ expect(familyBirthParents(f,c()).map(p=>p.member.memberId)).toEqual(['father']);
+ f.members.push({memberId:'one',name:'傅一',parentMemberId:'father',bornMonth:100,enteredMonth:100,generation:1,source:'HOUSEHOLD_BIRTH'},{memberId:'two',name:'傅二',parentMemberId:'father',bornMonth:220,enteredMonth:220,generation:1,source:'HOUSEHOLD_BIRTH'});
+ expect(familyBirthParents(f,c())).toEqual([]);
+ f.members=[father,{...f.members[1],enteredMonth:288}];expect(familyBirthParents(f,c())).toEqual([]);
+ f.members=[father,...Array.from({length:8},(_,i)=>({memberId:`living-${i}`,name:`傅${i}`,parentMemberId:'father',bornMonth:-i-1,enteredMonth:0,generation:1,source:'HOUSEHOLD_BIRTH'}))];expect(familyBirthParents(f,c())).toEqual([]);
+ f.members=[father];father.deathMonth=299;expect(familyBirthParents(f,c())).toEqual([]);
+ delete father.deathMonth;person.nobilityHistory=[];expect(familyBirthParents(f,c())).toEqual([]);
 });
