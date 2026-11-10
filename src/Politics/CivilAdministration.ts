@@ -10,8 +10,8 @@ import {unresolvedCourtBans} from './MilitaryCourtStanding';
 import {CIVIL_APPOINTMENT_CHANCE,CIVIL_GOVERNANCE_POLICY,MAX_ACTIVE_CIVIL_GOVERNORS_PER_FACTION,type CivilAdministrationState,type CivilGovernancePolicy,type CivilGovernorCandidate,type CivilGovernorEndReason,type CivilGovernorTerm} from './CivilAdministrationSchema';
 export {CIVIL_APPOINTMENT_CHANCE,CIVIL_CITY_STABILITY_MONTHS,CIVIL_GOVERNANCE_POLICY,MAX_ACTIVE_CIVIL_GOVERNORS_PER_FACTION,civilGovernanceThreshold,isCivilGovernancePolicy} from './CivilAdministrationSchema';
 export type {CivilAdministrationState,CivilGovernancePolicy,CivilGovernorCandidate,CivilGovernorEndReason,CivilGovernorSource,CivilGovernorTerm} from './CivilAdministrationSchema';
-export {civilControlledSince,civilGovernanceEffect,civilGovernorCandidates,civilGovernorPersonId,civilGovernorStatus,eligibleCivilCities} from './CivilAdministrationRules';
-import {civilGovernanceEffect,civilGovernorCandidates,eligibleCivilCities} from './CivilAdministrationRules';
+export {civilControlledSince,civilGovernanceEffect,civilGovernorCandidates,civilGovernorPersonId,civilGovernorStatus,eligibleCivilCities,selectCivilGovernorCandidate} from './CivilAdministrationRules';
+import {civilGovernanceEffect,civilGovernorCandidates,eligibleCivilCities,selectCivilGovernorCandidate} from './CivilAdministrationRules';
 
 const empty=():CivilAdministrationState=>({version:1,sequence:0,lastEvaluationMonth:-1,policy:CIVIL_GOVERNANCE_POLICY,terms:[]});
 const active=(term:CivilGovernorTerm,month:number)=>term.startMonth<=month&&term.endMonth===undefined;
@@ -46,7 +46,7 @@ class CivilAdministrationStore {
    if(!eligibleCities.length||!candidates.length)continue;
    const rng=new WorldRandom();rng.initialize(`civil-administration-v1:${worldRandom.exportState().seed}:${team.name}:${month}`);
    if(rng.next()>=CIVIL_APPOINTMENT_CHANCE[this.state.policy])continue;
-   const city=eligibleCities[Math.min(eligibleCities.length-1,Math.floor(rng.next()*eligibleCities.length))],candidate=candidates[Math.min(candidates.length-1,Math.floor(rng.next()*candidates.length))];
+   const city=eligibleCities[Math.min(eligibleCities.length-1,Math.floor(rng.next()*eligibleCities.length))],candidate=selectCivilGovernorCandidate(candidates,rng.next())!;
    this.appoint(month,team,city,candidate,dynasty);
   }
  }

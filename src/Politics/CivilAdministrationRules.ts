@@ -56,4 +56,15 @@ export function civilGovernorCandidates(month:number,team:Team,people:readonly M
  }
  return rows.sort((a,b)=>b.weight-a.weight||b.strategy-a.strategy||a.bornMonth-b.bornMonth||a.personId.localeCompare(b.personId));
 }
+export function selectCivilGovernorCandidate(candidates:readonly CivilGovernorCandidate[],roll:number){
+ const pool=candidates.slice(0,Math.min(8,candidates.length));
+ for(const source of ['ROYAL','NOBLE','FAMILY','RETIRED_MILITARY','ORDINARY_RESIDENT'] as const){
+  if(pool.some(candidate=>candidate.identitySource===source))continue;
+  const representative=candidates.find(candidate=>candidate.identitySource===source);if(representative&&pool.length<12)pool.push(representative);
+ }
+ const total=pool.reduce((sum,candidate)=>sum+candidate.weight,0);
+ if(!pool.length||!Number.isFinite(roll)||roll<0||roll>=1||total<=0)return;
+ let target=roll*total;for(const candidate of pool){target-=candidate.weight;if(target<0)return candidate;}
+ return pool.at(-1);
+}
 const higherRank=(a?:NobleRank,b?:NobleRank)=>a&&b?(NOBLE_RANKS.indexOf(a)>=NOBLE_RANKS.indexOf(b)?a:b):a??b;
