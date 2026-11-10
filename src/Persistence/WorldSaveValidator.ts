@@ -1,4 +1,5 @@
 import {validateFamilyChildren} from './FamilyChildValidation';
+import {validateCivilAdministration} from './CivilAdministrationValidation';
 import {measureSaveValidation} from './SaveValidationTiming';
 import {validateRoyalHouseholds} from './RoyalHouseholdValidation';
 import {validateRoyalNobility} from './RoyalNobilityValidation';
@@ -530,6 +531,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   if (!errors.length) errors.push(...measureSaveValidation('validateRoyalSuccessionStanding',()=>validateRoyalSuccessionStanding(save as WorldSaveV1)));
   if (!errors.length) errors.push(...measureSaveValidation('validateMilitaryFamilies',()=>validateMilitaryFamilies(save as WorldSaveV1)));
   if (!errors.length) errors.push(...measureSaveValidation('validateFamilyChildren',()=>validateFamilyChildren(save as WorldSaveV1)));
+  if (!errors.length) errors.push(...measureSaveValidation('validateCivilAdministration',()=>validateCivilAdministration(save as WorldSaveV1)));
   if (!errors.length) errors.push(...measureSaveValidation('validateFamilyNobility',()=>validateFamilyNobility(save as WorldSaveV1)));
   return { valid: errors.length === 0, errors };
 }

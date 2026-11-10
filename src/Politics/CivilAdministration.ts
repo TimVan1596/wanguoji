@@ -32,6 +32,7 @@ export interface CivilGovernorTerm {
  rulerId:string;rulerTitle:string;startMonth:number;appointEventId:string;
  endMonth?:number;endReason?:CivilGovernorEndReason;endEventId?:string;
  lastEffectMonth?:number;loyaltyRecovered:number;devastationRecovered:number;meritMonth?:number;meritEventId?:string;
+ meritLoyaltyRecovered?:number;meritDevastationRecovered?:number;
 }
 
 export interface CivilAdministrationState {
@@ -182,7 +183,7 @@ class CivilAdministrationStore {
     row.loyaltyRecovered+=effect.loyalty;row.devastationRecovered+=effect.devastation;row.lastEffectMonth=month;
     if(!row.meritEventId&&row.loyaltyRecovered+row.devastationRecovered>=3){
      const id=`${row.assignmentId}-merit-${month}`,event:WorldEvent={id,year:month,monthIndex:month,type:'civil-governor-merit',category:'politics',importance:'normal',actorFactionId:row.factionId,factionIds:[row.factionId],cityId:row.cityId,cityName:row.cityName,title:`${row.personalName}治理${row.cityName}有绩。`,description:`任郡守${month-row.startMonth}个月，城市忠诚恢复${row.loyaltyRecovered}，战乱创伤恢复${row.devastationRecovered}。`,metadata:{personId:row.personId,sourceUserId:row.sourceUserId,bornMonth:row.bornMonth,cityId:row.cityId,assignmentId:row.assignmentId,loyaltyRecovered:row.loyaltyRecovered,devastationRecovered:row.devastationRecovered}};
-     if(WorldHistory.addEvent(event)!==id)throw Error('Civil governor merit history rejected');row.meritMonth=month;row.meritEventId=id;
+     if(WorldHistory.addEvent(event)!==id)throw Error('Civil governor merit history rejected');row.meritMonth=month;row.meritEventId=id;row.meritLoyaltyRecovered=row.loyaltyRecovered;row.meritDevastationRecovered=row.devastationRecovered;
     }
    });
   }
