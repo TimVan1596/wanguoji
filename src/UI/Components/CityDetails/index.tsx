@@ -16,6 +16,7 @@ import DynastyRegistry from '../../../Politics/Dynasty';
 import {formatCityHistoryEvent,getCityHistoricalFactionName} from '../../../History/CityHistoryFormatter';
 import {RootState} from '../../../store';
 import {setSelectedCityId} from '../../../store/rootSlice';
+import {CivilGovernorSummary} from '../CivilAdministration/CivilGovernancePanel';
 
 export default function CityDetails(){
  const [filter,setFilter]=useState<CityListFilter>('all'),selectedCityId=useSelector((s:RootState)=>s.root.selectedCityId),teams=useSelector((s:RootState)=>s.root.teams),month=useSelector((s:RootState)=>s.root.worldMonth);
@@ -42,6 +43,7 @@ function CityProfile({city,archived,teams,month}:{city?:City;archived?:ArchivedC
    <Typography fontSize='.78rem' color='var(--gg-text-muted)'>初属：{getCityHistoricalFactionName(byFaction,founderId,foundedMonth)}</Typography>
    {city&&<Typography fontSize='.78rem' color='var(--gg-text-muted)'>{city.isCapital?'首都':'普通城市'} · 防御区{city.fortifiedCells.length}格</Typography>}
    {city?.siegeBattle&&<Typography fontSize='.82rem' fontWeight='bold'>{attacker?.displayName??city.siegeBattle.attackerId}正在围攻 · 攻方{city.siegeBattle.attackers}人／守方{city.siegeBattle.defenders}人</Typography>}
+   {city&&<CivilGovernorSummary cityId={city.id} month={month}/>}
    <CityAppanageSection key={id} cityId={id}/>
   </Box>}
   {tab==='defense'&&<Box role='tabpanel' aria-label='城史'>

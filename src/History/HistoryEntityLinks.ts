@@ -11,6 +11,7 @@ export function historyEntityLinks(e:WorldEvent,families:readonly MilitaryFamily
  for(const id of local)if(factionIds.has(id))add('查看国家',{kind:'FACTION',id});
  if(e.cityId&&cityIds.has(e.cityId))add('查看城市',{kind:'CITY',id:e.cityId});
  const f=typeof m.familyId==='string'?families.find(f=>f.familyId===m.familyId&&f.factionId===e.actorFactionId):['military-ennobled','court-peerage-granted','founding-peerage-granted'].includes(e.type)?families.find(f=>f.factionId===e.actorFactionId&&f.members.some(member=>member.militaryPersonId===m.personId)&&people.some(p=>p.personId===m.personId&&p.nobilityHistory?.some(g=>g.eventId===e.id&&e.metadata?.nobility===JSON.stringify(g)))):undefined;
+ if(['civil-governor-appointed','civil-governor-ended','civil-governor-merit'].includes(e.type)&&typeof m.personId==='string')add('查看地方文官档案',{kind:'CIVIL',factionId:e.actorFactionId,id:m.personId});
  if(f){
   let memberIds:string[]=[];let valid=false;
   if(['family-title-started','family-title-succeeded','family-title-ended'].includes(e.type))try{const a=f.nobleSuccession?.find(a=>a.eventId===e.id&&a.month===month&&a.familyId===f.familyId);if(a&&m.familyNobleAct===JSON.stringify(a)){memberIds=[a.previousMemberId,...a.holderMemberId?[a.holderMemberId]:[]];valid=true;}}catch{}
