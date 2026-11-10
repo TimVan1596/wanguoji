@@ -147,7 +147,7 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
-- 当前 APP **v0.99931z59** / package **0.99.225** / WorldSave **V56**。z58已获人工Chrome Gate PASS。严格存读档重放使用单次调用内的历史索引；真实男爵、子爵军功授封与原五级世降共用权源，不保送军职。宗室子女按独立确定性月份实际出生、登记，不提前创建、不自动取得储君或军职资格。V55旧槽位保留并拒绝误读，必须新建世界；运行 `pnpm desktop:start:debug` 人工验收。
+- 当前 APP **v0.99931z60** / package **0.99.226** / WorldSave **V57**。z59已获最终人工Gate PASS。功臣世家真实有效父辈现在可在实际月份出生、登记直接子嗣，并与既有成年入籍身份去重；真实出生子嗣可直接参与五级爵位世降，未成年持爵不自动获得军职、兵员或地图人口。家族成立前只有推定生辰、后来才入籍的成员仍不能追溯承袭。V56旧槽位保留并拒绝误读，必须新建世界；运行 `pnpm desktop:start:debug` 人工验收。
 
 - v0.99931n人工Gate已PASS，真实长局自然发生至少11次同王统宗室废立。当前v0.99931n1修复连续废立后的V14生命周期校验，并完善君主即离位叙述与史评，等待[人工Gate](docs/RulerDepositionLifecycleClosureN1.md)。
 - v0.99929a 修复政治终结历史身份、退位年龄与双方君主大事记。[Political Terminal Chronicle Gate](docs/PoliticalTerminalChronicleClosure.md)已由用户完成人工PASS。

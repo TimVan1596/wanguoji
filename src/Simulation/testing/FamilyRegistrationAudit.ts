@@ -9,12 +9,13 @@ export function auditHouseFocusedRegistration(save:WorldSaveV1){
  const events=save.worldHistory.events as WorldEvent[],positions=new Map(events.map((e,i)=>[e.id,i])),people=save.registries.militaryCommandRegistry.people,dynasties=save.dynasties.map(d=>({...d,factionId:String(d.factionId),rulers:(d.rulers as RulerSaveV17[]).map(importRulerSave)})) as any[];
  const rows:Array<{familyId:string;memberId:string;enteredMonth:number;accepted:boolean;reason:string;laterMilitary:boolean;laterPersonalGrant:boolean;laterInheritance:boolean;laterNewPeriod:boolean}>=[];
  for(const f of save.registries.militaryCommandRegistry.families??[]){const accepted=new Set(f.members.filter(m=>m.source==='FOUNDER').map(m=>m.memberId));
-  for(const m of f.members.filter(m=>m.source!=='FOUNDER').sort((a,b)=>a.enteredMonth-b.enteredMonth||(positions.get(`${a.memberId}-entered`)??0)-(positions.get(`${b.memberId}-entered`)??0))){
-   const i=positions.get(`${m.memberId}-entered`);if(i===undefined)throw Error('Cannot audit an unsourced family entry');
-   const before=familyAtEvidenceBoundary({...f,nobleSuccession:f.nobleSuccession?.filter(a=>(positions.get(a.eventId)??Infinity)<i)},m.enteredMonth,i,events);before.members=before.members.filter(m=>accepted.has(m.memberId));
+  const sourceId=(m:typeof f.members[number])=>m.birth?.eventId??`${m.memberId}-entered`;
+  for(const m of f.members.filter(m=>m.source!=='FOUNDER').sort((a,b)=>a.enteredMonth-b.enteredMonth||(positions.get(sourceId(a))??0)-(positions.get(sourceId(b))??0))){
+   const i=positions.get(sourceId(m));if(i===undefined)throw Error('Cannot audit an unsourced family entry');
+   const before=familyAtEvidenceBoundary({...f,nobleSuccession:f.nobleSuccession?.filter(a=>(positions.get(a.eventId)??Infinity)<i)},m.enteredMonth,m.birth?i+1:i,events);before.members=before.members.filter(m=>accepted.has(m.memberId));
    const parentKnown=!!m.parentMemberId&&accepted.has(m.parentMemberId),reading=parentKnown?projectFamilyArchive(before,{month:m.enteredMonth,people,events:events.slice(0,i),dynasties}):undefined,allow=!!parentKnown&&reading?.classification==='ACTIVE';if(allow)accepted.add(m.memberId);
    const person=people.find(p=>p.personId===m.militaryPersonId);
-   rows.push({familyId:f.familyId,memberId:m.memberId,enteredMonth:m.enteredMonth,accepted:allow,reason:!parentKnown?'PARENT_NOT_RECORDED':allow?'ACTIVE_POLITICAL_HOUSE':'NO_CURRENT_POLITICAL_STANDING',laterMilitary:!!person?.appointments.length,laterPersonalGrant:!!person?.nobilityHistory?.length,laterInheritance:!!f.nobleSuccession?.some(a=>a.kind==='SUCCEEDED'&&a.holderMemberId===m.memberId),laterNewPeriod:!!f.nobleSuccession?.some(a=>a.kind==='STARTED'&&a.holderMemberId===m.memberId)});
+   rows.push({familyId:f.familyId,memberId:m.memberId,enteredMonth:m.enteredMonth,accepted:allow,reason:!parentKnown?(m.birth?'BIRTH_PARENT_NOT_RECORDED':'PARENT_NOT_RECORDED'):allow?'ACTIVE_POLITICAL_HOUSE':'NO_CURRENT_POLITICAL_STANDING',laterMilitary:!!person?.appointments.length,laterPersonalGrant:!!person?.nobilityHistory?.length,laterInheritance:!!f.nobleSuccession?.some(a=>a.kind==='SUCCEEDED'&&a.holderMemberId===m.memberId),laterNewPeriod:!!f.nobleSuccession?.some(a=>a.kind==='STARTED'&&a.holderMemberId===m.memberId)});
   }
  }
  const rejected=rows.filter(r=>!r.accepted);
