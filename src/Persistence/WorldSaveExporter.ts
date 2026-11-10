@@ -23,6 +23,7 @@ import { createBlockSaveProjection } from "./BlockSaveProjection";
 import worldRandom from "../Simulation/WorldRandom";
 import Diplomacy from "../Politics/Diplomacy";
 import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
+import CivilAdministration from "../Politics/CivilAdministration";
 
 export class UnsafeSaveSnapshotError extends Error {
   constructor() {
@@ -177,6 +178,7 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
       logicalUnitRegistry: core.logicalUnitRegistry.exportState(),
       dynastyRegistrySequence: dynastyState.sequence,dynastyPoliticalCalibration:dynastyState.politicalCalibration,dynastyAbilityPolicy:dynastyState.abilityPolicy,dynastyRoyalBirthPolicy:dynastyState.royalBirthPolicy,
       militaryCommandRegistry: MilitaryCommandRegistry.exportState(),
+      civilAdministration: CivilAdministration.exportState(),
       archivedCities: ArchivedCities.list().map(({ destroyedMonth, foundedMonth, history, ...city }) => ({
         ...city,
         destroyedMonth,

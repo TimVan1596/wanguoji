@@ -31,6 +31,7 @@ import { canonicalizeSavedSnapshotBoundary } from "./SnapshotBoundary";
 import worldRandom from "../Simulation/WorldRandom";
 import Diplomacy from "../Politics/Diplomacy";
 import MilitaryCommandRegistry, { type MilitaryCommandState } from "../Politics/MilitaryCommandRegistry";
+import CivilAdministration,{type CivilAdministrationState} from "../Politics/CivilAdministration";
 
 export interface HydrationReport {
   worldMonth: number;
@@ -325,6 +326,7 @@ function importPoliticalAndHistoryState(save: WorldSaveV1) {
   DynastyRegistry.importState({ dynasties, politicalCalibration:save.registries.dynastyPoliticalCalibration,abilityPolicy:save.registries.dynastyAbilityPolicy,royalBirthPolicy:save.registries.dynastyRoyalBirthPolicy,sequence: Number(save.registries.dynastyRegistrySequence) } as ReturnType<typeof DynastyRegistry.exportState>, save.world.clock.worldMonth);
   WorldHistory.importState(save.worldHistory as Parameters<typeof WorldHistory.importState>[0]);
   MilitaryCommandRegistry.importState(save.registries.militaryCommandRegistry as unknown as MilitaryCommandState);
+  CivilAdministration.importState(save.registries.civilAdministration as unknown as CivilAdministrationState);
   WorldEra.importState(save.worldEra as Parameters<typeof WorldEra.importState>[0]);
   FactionLifetimeRecords.importState(save.factionLifetime);
   FactionSnapshots.importState(save.factionSnapshots as Parameters<typeof FactionSnapshots.importState>[0]);

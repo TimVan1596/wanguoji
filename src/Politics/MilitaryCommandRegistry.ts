@@ -1,12 +1,12 @@
 import {familyBirthParents,planFamilyChildBirth,isFamilyBirthPolicy,type FamilyBirthPolicy,FAMILY_ANNUAL_BIRTH_LIMIT,COUNTRY_ANNUAL_FAMILY_BIRTH_LIMIT} from './FamilyChildBirth';
-import {NOBLE_NAMES,isNobleMeritPolicy,type NobleMeritPolicy} from './MilitaryNobility';
+import {NOBLE_NAMES,isNobleMeritPolicy,nobleEpochForRuler,type NobleMeritPolicy} from './MilitaryNobility';
 import {appointmentAbilityWeight,type AppointmentAbilityPolicy,type AppointmentSelection,type AppointmentSelectionRow} from './AppointmentSelection';
 import {personAbilities,militaryAbilities,type PersonAbilities} from './PersonAbilities';
 import {selectFoundingNobleGrant} from './FoundingNobility';
 import {type FamilyFoundationPolicy} from './FamilyFoundationPolicy';
 import {hereditaryAppointmentWeight,hereditaryVacancyChance,type HereditaryRecruitmentPolicy} from './HereditaryRecruitment';
 import {insurgentLeaderIdentity,type InsurgentDuty} from './InsurgentCommand';
-import {createFamilyNobleContext,planFamilyNobleTransition,familyNobleText,familyResidenceAt,eligibleFamilyNobleHeirs} from './FamilyNobleSuccession';
+import {createFamilyNobleContext,planFamilyNobleTransition,familyNobleText,familyNobleRankAt,familyResidenceAt,eligibleFamilyNobleHeirs} from './FamilyNobleSuccession';
 import {emptyFamilyRecruitmentDiagnostics,familyRecruitmentExposure} from './FamilyRecruitmentDiagnostics';
 import {familyFounderSource,makeMilitaryFamily,familyAppointmentWeight,type MilitaryFamily} from './MilitaryFamily';
 import {politicalMutationActive,beginPoliticalMutation} from '../Simulation/PoliticalMutationScope';
@@ -545,7 +545,9 @@ export class MilitaryCommandRegistryStore {
   }
   private eligibleNobleGrant(person:MilitaryPerson,month:number,team:Team,dy:Dynasty){
     if(!this.nobleServiceBinding(person,month,team))return;
-    return nextNobleGrant(person,this.getFormations(),this.eventReader(team.name),month,team,dy,this.nobleMeritPolicy);
+    const link=this.getFamilyMember(person.sourceUserId,person.bornMonth),epoch=nobleEpochForRuler(dy,dy.currentRulerId)?.foundingRulerId;
+    const hereditaryRank=link&&epoch&&link.family.factionId===team.name&&link.family.epochFounderId===epoch?familyNobleRankAt(link.family,link.member,month):undefined;
+    return nextNobleGrant(person,this.getFormations(),this.eventReader(team.name),month,team,dy,this.nobleMeritPolicy,hereditaryRank);
   }
   private recordNoble(person:MilitaryPerson,grant:NobleGrant,courtServiceEventId?:string,courtCoupEventId?:string){
     if(!this.eventWriter)throw Error('Missing noble writer');

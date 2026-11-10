@@ -54,7 +54,8 @@ export function planFamilyNobleTransition(f:MilitaryFamily,c:FamilyNobleContext)
  if(reason==='DEATH'&&!heir)reason=rank?'NO_HEIR':'RANK_EXHAUSTED';
  return {version:last?.version===2?2:1,...(last?.period?{period:last.period}:{}),eventId:`${f.familyId}-succession-${step}`,familyId:f.familyId,factionId:f.factionId,epochFounderId:f.epochFounderId,month:c.month,kind:heir?'SUCCEEDED':'ENDED',reason,sourceGrantEventId:grant.eventId,previousEventId,previousMemberId:holder.memberId,previousRank,...(heir?{holderMemberId:heir.memberId,rank}:{}),step,sourceEventIds};
 }
-export function familyNobleTitle(f:MilitaryFamily,m:MilitaryFamilyMember,month:number){const a=f.nobleSuccession?.filter(a=>a.month<=month).at(-1);return a&&a.kind!=='ENDED'&&a.holderMemberId===m.memberId&&familyMemberPresent(m,month)&&familyResidenceAt(f,m,month)===f.factionId&&a.rank?FAMILY_NOBLE_NAMES[a.rank]:undefined;}
+export function familyNobleRankAt(f:MilitaryFamily,m:MilitaryFamilyMember,month:number){const a=f.nobleSuccession?.filter(a=>a.month<=month).at(-1);return a&&a.kind!=='ENDED'&&a.holderMemberId===m.memberId&&familyMemberPresent(m,month)&&familyResidenceAt(f,m,month)===f.factionId?a.rank:undefined;}
+export function familyNobleTitle(f:MilitaryFamily,m:MilitaryFamilyMember,month:number){const rank=familyNobleRankAt(f,m,month);return rank?FAMILY_NOBLE_NAMES[rank]:undefined;}
 export function familyNobleText(f:MilitaryFamily,a:FamilyNobleAct){
  const old=f.members.find(m=>m.memberId===a.previousMemberId)!,heir=f.members.find(m=>m.memberId===a.holderMemberId);
  if(a.kind==='STARTED')return `${heir?.name??'原授爵者'}以本人新功所获${FAMILY_NOBLE_NAMES[a.rank!]}开立${f.surname}氏第${a.period}期爵位传承，旧期史实保留。`;

@@ -6,8 +6,9 @@ import { WORLD_RNG_ALGORITHM, WorldRandomState } from "../Simulation/WorldRandom
 import type { DiplomaticRelation, DiplomaticPairMemory } from "../Politics/Diplomacy";
 import type { FactionColorHistoryEntry } from "../Simulation/FactionColorHistory";
 import type { MilitaryCommandState } from "../Politics/MilitaryCommandRegistry";
+import type {CivilAdministrationState} from "../Politics/CivilAdministration";
 
-export const CURRENT_SAVE_SCHEMA_VERSION = 57 as const;
+export const CURRENT_SAVE_SCHEMA_VERSION = 58 as const;
 
 /** V16 preserves political office/death facts and adds authoritative military personal names in registries. */
 export type RulerSaveV17 = Omit<Ruler, "id" | "bornYear" | "naturalDeathYear" | "accessionYear" |
@@ -193,7 +194,7 @@ export interface WorldSaveV22 {
   worldExiles: Record<string, unknown>[];
   factionEffects: Record<string, unknown>;
   populationSystem: PopulationSystemSaveV1;
-    registries: Record<string, unknown> & { militaryCommandRegistry: MilitaryCommandState };
+    registries: Record<string, unknown> & { militaryCommandRegistry: MilitaryCommandState; civilAdministration: CivilAdministrationState };
   worldEventSystem: WorldEventSystemSaveV1;
   worldRandom: WorldRandomState;
   diplomacy: { relations: DiplomaticRelation[]; pairMemories: DiplomaticPairMemory[]; lastEvaluationMonth: number };
@@ -226,6 +227,7 @@ export function createEmptyWorldSaveV22(): WorldSaveV22 {
       logicalUnitRegistry: { nextUnitSequence: 1 },
       dynastyRegistrySequence: 0,
       dynastyPoliticalCalibration:'BASELINE',dynastyAbilityPolicy:'BASELINE',dynastyRoyalBirthPolicy:'BASELINE',militaryCommandRegistry: { people: [], formations: [], personSequence: 1, commandSequence: 1, lastEvaluationMonth: -1 },
+      civilAdministration:{version:1,sequence:0,lastEvaluationMonth:-1,policy:'MEDIUM',terms:[]},
       archivedCities: [],
       knownFactionIds: [],
     },

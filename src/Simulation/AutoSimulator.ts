@@ -43,6 +43,7 @@ import { createDiplomacyEventMetadata, describeDiplomacySigning, describeDiploma
 import { unionPressureObservations, diagnoseStrategicUnionCandidates, findStrategicUnionCandidate, StrategicUnionCandidate, StrategicUnionCandidateDiagnostic } from "./StrategicUnionSystem";
 import { RollingStepPerformance } from "./RollingStepPerformance";
 import MilitaryCommandRegistry from "../Politics/MilitaryCommandRegistry";
+import CivilAdministration from "../Politics/CivilAdministration";
 
 const debugProfileEnabled = runtimeProfilingEnabled;
 
@@ -164,6 +165,7 @@ export default class AutoSimulator {
     FactionEffects.reset();
     WorldExiles.reset();
     MilitaryCommandRegistry.reset();
+    CivilAdministration.reset();
     // Only a fresh seven-state start uses the household model; hydration never calls startWorld.
     const initialSevenStates = teams.length === 7 && teams.every(team => team.origin?.type === "INITIAL");
     teams.forEach((team) => DynastyRegistry.initializeFaction(team, 0, initialSevenStates));
@@ -409,6 +411,7 @@ export default class AutoSimulator {
       this.measure("Royal noble succession",()=>DynastyRegistry.updateRoyalNobility(this.clock.year,teams));
       this.measure("Family household births and life",()=>MilitaryCommandRegistry.updateFamilyHouseholds(this.clock.year,teams,DynastyRegistry.getAll()));
       this.measure("Family noble succession",()=>MilitaryCommandRegistry.updateFamilyTitles(this.clock.year,teams,DynastyRegistry.getAll()));
+      this.measure("Civil administration",()=>CivilAdministration.update(this.clock.year,teams,DynastyRegistry.getAll()));
       this.events.observeWorldGoal(this.clock.year, teams, totalCells);
       if (debugProfileEnabled) {
         this.measure("debug/LongRun diagnostics", () => {

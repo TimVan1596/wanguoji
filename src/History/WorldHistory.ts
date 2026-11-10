@@ -18,6 +18,7 @@ import {
 import { formatWorldDate, formatWorldDuration } from "../Simulation/WorldTime";
 
 export type WorldEventType =
+  | "civil-governor-appointed" | "civil-governor-ended" | "civil-governor-merit"
   | "family-child-born" | "family-child-population-entered"
   | "royal-child-born" | "royal-person-registered" | "royal-kin-died" | "royal-person-transferred" | "royal-noble-act"
   | "leader-command-started" | "leader-command-ended" | "leader-command-order"

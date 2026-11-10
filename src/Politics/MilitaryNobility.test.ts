@@ -41,3 +41,10 @@ it('low merit grants require real victories, may skip ranks, and keep original u
  const bo=nextNobleGrant(x.p,x.f,x.events,60,x.team,x.d,'MEDIUM')!;expect(bo).toMatchObject({rank:'BO',previousRank:'ZI'});
  const y=fixture();y.capture('a','a');y.capture('b','b',24);expect(nextNobleGrant(y.p,y.f,y.events,48,y.team,y.d,'LOW')).toMatchObject({rank:'ZI',previousRank:'NONE'});expect(nextNobleGrant(y.p,y.f,y.events,60,y.team,y.d,'MEDIUM')).toMatchObject({rank:'BO',previousRank:'NONE'});
 });
+it('uses the higher valid inherited rank as the floor without turning it into personal military merit',()=>{
+ const x=fixture();x.capture('a','a');
+ expect(nextNobleGrant(x.p,x.f,x.events,36,x.team,x.d,'MEDIUM','ZI')).toBeUndefined();
+ x.capture('b','b',48);expect(nextNobleGrant(x.p,x.f,x.events,60,x.team,x.d,'MEDIUM','HOU')).toBeUndefined();
+ x.capture('c',"c",60,true);expect(nextNobleGrant(x.p,x.f,x.events,72,x.team,x.d,'MEDIUM','ZI')).toMatchObject({rank:'BO',previousRank:'ZI'});
+ expect(nextNobleGrant(x.p,x.f,x.events,84,x.team,x.d,'MEDIUM')).toMatchObject({rank:'BO',previousRank:'NONE'});
+});
