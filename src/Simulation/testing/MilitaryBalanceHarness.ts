@@ -218,7 +218,7 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
       core.setWorldRunning(false);const saved=exportWorldSave(core);
       const resume=async()=>{core.setWorldRunning(false);hydrateWorldSave(core,structuredClone(saved));core.setWorldRunning(true);
         for(let m=0;m<12;m++){for(let n=0;n<30;n++)(core as any).advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit("postupdate");}
-        core.setWorldRunning(false);return exportWorldSave(core);};
+        core.setWorldRunning(false);try{return exportWorldSave(core);}catch(error){throw Error(JSON.stringify({error:String(error),civil:CivilAdministration.getTerms().filter(term=>String(error).includes(term.assignmentId)),cities:core.allCities.map(city=>({id:city.id,name:city.name,destroyed:city.destroyed,owner:city.ownerFactionId})),archived:ArchivedCities.list().map(city=>({id:city.id,name:city.name,destroyedMonth:city.destroyedMonth}))}));}};
       const a=await resume(),b=await resume();const deterministic=await fingerprint(a)===await fingerprint(b);
       hydrateWorldSave(core,structuredClone(a));const secondRead=await fingerprint(a)===await fingerprint(exportWorldSave(core));
       if(!deterministic||!secondRead)throw Error("natural checkpoint continuation mismatch");
