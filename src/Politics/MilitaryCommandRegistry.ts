@@ -1058,11 +1058,19 @@ export class MilitaryCommandRegistryStore {
   onUserDestroyed(user: User, worldMonth: number, cause: string) {
     this.familyReadingRevision++;
     const relative=this.getFamilyMember(user.id,user.bornMonth);
-    if(relative){relative.member.exitHistoryIndex=WorldHistory.getEventCount();relative.member.exitMonth=worldMonth;relative.member.exitCause=cause;if(['SIEGE_LOSS','BATTLE_DEATH','NATURAL_DEATH','POLITICAL_EXECUTION'].includes(cause)){if(relative.member.deathMonth!==worldMonth||relative.member.deathHistoryIndex===undefined)relative.member.deathHistoryIndex=WorldHistory.getEventCount();relative.member.deathMonth=worldMonth;relative.member.deathCause=cause;}}
     const record = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
     const person = record?.sourceUserId === user.id && record.bornMonth === user.bornMonth && record.name === user.name && record.factionId === user.team.name ? record : undefined;
     if (cause === "NATURAL_DEATH" && !(ordinaryLifeEligible({...user,isDestroyed:false})&&worldMonth>=(relative?.member.birth?.naturalDeathMonth??residentNaturalDeathMonth(user.id,user.bornMonth))) && (!person || (!person.royalIdentity&&!person.familyLife&&!person.civilOrigin && worldMonth % 12 !== 0) || worldMonth < deriveMilitaryLifeSchedule(person).naturalDeathMonth)) return;
     const death = cause === "POLITICAL_EXECUTION" || cause === "SIEGE_LOSS" || cause === "BATTLE_DEATH" || cause === "NATURAL_DEATH";
+    // A ruler death may already have committed the same military person's death.
+    // Body removal has its own cause; it cannot rewrite that frozen personal event.
+    if(relative){
+      relative.member.exitHistoryIndex=WorldHistory.getEventCount();relative.member.exitMonth=worldMonth;relative.member.exitCause=cause;
+      if(death&&person?.status!=='DEAD'){
+        if(relative.member.deathMonth!==worldMonth||relative.member.deathHistoryIndex===undefined)relative.member.deathHistoryIndex=WorldHistory.getEventCount();
+        relative.member.deathMonth=worldMonth;relative.member.deathCause=cause;
+      }
+    }
     const unitId = user.player.logicalUnitId;
     if (unitId) for (const formation of this.formations.values()) if (formation.status === "ACTIVE" && formation.memberUnitIds.includes(unitId)) {
       if(formation.leaderDuty?.sourceUserId===user.id)this.endInsurgentCommand(formation,worldMonth,'BODY_REMOVED');

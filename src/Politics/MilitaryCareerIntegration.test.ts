@@ -241,3 +241,16 @@ describe("formal military offices use production careers and canonical history",
     expect(f.person.appointments[0].endReason).toBe("AGE_RETIREMENT");
   });
 });
+
+it.each(['SIEGE_LOSS','BATTLE_DEATH'])('keeps the already committed political death when body removal reports %s',cause=>{
+ const f=fixture();f.registry.endPersonCommands(f.person.personId,24,'DISMISSED');
+ const saved=f.registry.exportState();saved.people[0].politicalRulerId='founder';
+ saved.families=[{familyId:'family',surname:'李',founderPersonId:f.person.personId,factionId:'qin',epochFounderId:'epoch',foundedMonth:24,sourceEventId:'grant',members:[{memberId:'member',sourceUserId:f.person.sourceUserId,name:f.person.personalName,bornMonth:f.person.bornMonth,generation:0,enteredMonth:24,source:'FOUNDER',militaryPersonId:f.person.personId}]}];
+ f.registry.importState(saved);f.registry.mirrorPoliticalDeath(f.person.personId,'founder',36,'BATTLE_DEATH');
+ const before={...f.registry.getFamilyMember(f.person.sourceUserId,f.person.bornMonth)!.member},events=WorldHistory.getRecordedEvents();
+ f.registry.onUserDestroyed(f.users.find(u=>u.id===f.person.sourceUserId)!,36,cause);
+ const after=f.registry.getFamilyMember(f.person.sourceUserId,f.person.bornMonth)!.member;
+ expect(after).toMatchObject({deathMonth:36,deathCause:'BATTLE_DEATH',deathHistoryIndex:before.deathHistoryIndex,exitMonth:36,exitCause:cause});
+ expect(f.registry.getPerson(f.person.personId)).toMatchObject({deathMonth:36,deathCause:'BATTLE_DEATH'});
+ expect(WorldHistory.getRecordedEvents()).toEqual(events);
+});
