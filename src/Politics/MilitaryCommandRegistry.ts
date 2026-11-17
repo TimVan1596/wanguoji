@@ -362,6 +362,7 @@ export class MilitaryCommandRegistryStore {
       this.lastEvaluationMonth = worldMonth;
       this.advanceLifecycles(worldMonth, teams);
     }
+    if(!annual)this.advanceLifecycles(worldMonth,teams,true);
     this.reconcile(worldMonth, teams);
     this.updateInsurgentCommands(worldMonth,teams);
     this.refreshOrders(worldMonth, teams, cities);
@@ -436,7 +437,8 @@ export class MilitaryCommandRegistryStore {
     }
   }
 
-  private advanceLifecycles(worldMonth: number, teams: Team[]) {
+  private advanceLifecycles(worldMonth: number, teams: Team[],civilDeathsOnly=false) {
+    if(civilDeathsOnly&&![...this.people.values()].some(p=>p.civilOrigin&&p.status!=='DEAD'&&!p.politicalRulerId&&worldMonth>=deriveMilitaryLifeSchedule(p).naturalDeathMonth))return;
     const bound = new Map<string, User[]>();
     for (const team of teams) for (const user of team.users) if (user.militaryPersonId) {
       const rows = bound.get(user.militaryPersonId) ?? []; rows.push(user); bound.set(user.militaryPersonId, rows);
@@ -444,6 +446,7 @@ export class MilitaryCommandRegistryStore {
     for (const person of this.people.values()) {
       if (person.status === "DEAD" || person.politicalRulerId) continue;
       const life = deriveMilitaryLifeSchedule(person);
+      if(civilDeathsOnly&&(!person.civilOrigin||worldMonth<life.naturalDeathMonth))continue;
       if (worldMonth < life.retirementMonth) continue;
       // Retired records without a verifiable original User are historical unknowns.
       const matches = bound.get(person.personId) ?? [];
@@ -457,6 +460,18 @@ export class MilitaryCommandRegistryStore {
           this.endFormation(formation, worldMonth, "AGE_RETIREMENT");
       }
     }
+  }
+
+  /** Read-only current candidate snapshot, not a historical eligibility reconstruction. */
+  getCivilRecruitmentDiagnostics(teams:readonly Team[],month:number){
+    const sources=[...new Map(civilState().terms.filter(t=>t.endMonth!==undefined&&t.endMonth<=month&&t.endReason!=='DEATH').map(t=>[`${t.sourceUserId}/${t.bornMonth}`,t])).values()];
+    const blocked:Record<string,number>={};let qualified=0,withVacancy=0;
+    for(const source of sources){const team=teams.find(t=>[...t.users].some(u=>u.id===source.sourceUserId&&u.bornMonth===source.bornMonth)),user=team&&[...team.users].find(u=>u.id===source.sourceUserId&&u.bornMonth===source.bornMonth);
+      const reason=user?this.appointmentQualificationBlock(user,month):'没有在世在籍的原人口';
+      if(reason){blocked[reason]=(blocked[reason]??0)+1;continue;}qualified++;
+      if(this.getPeople().filter(p=>p.factionId===team!.name&&p.status==='ACTIVE').length<MAX_COMMANDERS_PER_FACTION&&this.getFormations().filter(f=>f.factionId===team!.name&&f.status==='ACTIVE').length<MAX_FORMATIONS_PER_FACTION)withVacancy++;
+    }
+    return {scope:'CURRENT_SNAPSHOT',formerCivilIdentities:sources.length,qualified,withVacancy,blocked};
   }
 
   private appointmentQualificationBlock(user:User,worldMonth:number):string|undefined{
@@ -1046,7 +1061,7 @@ export class MilitaryCommandRegistryStore {
     if(relative){relative.member.exitHistoryIndex=WorldHistory.getEventCount();relative.member.exitMonth=worldMonth;relative.member.exitCause=cause;if(['SIEGE_LOSS','BATTLE_DEATH','NATURAL_DEATH','POLITICAL_EXECUTION'].includes(cause)){if(relative.member.deathMonth!==worldMonth||relative.member.deathHistoryIndex===undefined)relative.member.deathHistoryIndex=WorldHistory.getEventCount();relative.member.deathMonth=worldMonth;relative.member.deathCause=cause;}}
     const record = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
     const person = record?.sourceUserId === user.id && record.bornMonth === user.bornMonth && record.name === user.name && record.factionId === user.team.name ? record : undefined;
-    if (cause === "NATURAL_DEATH" && !(ordinaryLifeEligible({...user,isDestroyed:false})&&worldMonth>=(relative?.member.birth?.naturalDeathMonth??residentNaturalDeathMonth(user.id,user.bornMonth))) && (!person || (!person.royalIdentity&&!person.familyLife && worldMonth % 12 !== 0) || worldMonth < deriveMilitaryLifeSchedule(person).naturalDeathMonth)) return;
+    if (cause === "NATURAL_DEATH" && !(ordinaryLifeEligible({...user,isDestroyed:false})&&worldMonth>=(relative?.member.birth?.naturalDeathMonth??residentNaturalDeathMonth(user.id,user.bornMonth))) && (!person || (!person.royalIdentity&&!person.familyLife&&!person.civilOrigin && worldMonth % 12 !== 0) || worldMonth < deriveMilitaryLifeSchedule(person).naturalDeathMonth)) return;
     const death = cause === "POLITICAL_EXECUTION" || cause === "SIEGE_LOSS" || cause === "BATTLE_DEATH" || cause === "NATURAL_DEATH";
     const unitId = user.player.logicalUnitId;
     if (unitId) for (const formation of this.formations.values()) if (formation.status === "ACTIVE" && formation.memberUnitIds.includes(unitId)) {

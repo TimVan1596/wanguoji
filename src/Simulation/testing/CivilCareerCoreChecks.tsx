@@ -1,6 +1,7 @@
 import {Provider} from 'react-redux';
 import {createRoot} from 'react-dom/client';
 import {flushSync} from 'react-dom';
+import Factions from '../FactionRegistry';
 import Military from '../../Politics/MilitaryCommandRegistry';
 import Civil,{civilGovernorCandidates,eligibleCivilCities} from '../../Politics/CivilAdministration';
 import type {CivilGovernorTerm} from '../../Politics/CivilAdministrationSchema';
@@ -47,6 +48,7 @@ export function checkCivilCareer(core:any,saved:WorldSaveV1,term:CivilGovernorTe
  const again=Civil.appoint(awardMonth,team(),target,candidate!,dynasty);
  check(again.personalName===term.personalName&&again.bornMonth===term.bornMonth&&again.personId===term.personId&&person().appointments.length===1,'military-to-civil transfer retains permanent name, birth and historical military service');
  const career=strict();hydrateWorldSave(core,structuredClone(career));check(diffCanonicalWorldSave(career,strict()).matched,'full civilian military noble and civilian career round-trips strictly');
+ const scheduledDeath=deriveMilitaryLifeSchedule(person()).naturalDeathMonth;clock(scheduledDeath);Military.update(scheduledDeath,core.teams,core.allCities);Civil.update(scheduledDeath,core.teams,Dynasty.getAll());check(person().status==='DEAD'&&person().deathMonth===scheduledDeath,'civil-origin military career dies at the original resident scheduled month, including nonannual months');hydrateWorldSave(core,structuredClone(career));
  const host=document.createElement('div'),root=createRoot(host);document.body.append(host);
  store.dispatch(setTeams(core.teams));store.dispatch(setWorldMonth({monthIndex:awardMonth,year:awardMonth}));store.dispatch(setSelectedFactionName(term.factionId));store.dispatch(setFactionDetailTab('people'));
  try{
@@ -57,5 +59,14 @@ export function checkCivilCareer(core:any,saved:WorldSaveV1,term:CivilGovernorTe
  }finally{flushSync(()=>root.unmount());host.remove();}
  clock(awardMonth+1);user().destroyUser(false,{cause:'BATTLE_DEATH',month:awardMonth+1,damageSource:'HOSTILE_HOME_OCCUPATION'});Civil.update(awardMonth+1,core.teams,Dynasty.getAll());
  check(person().status==='DEAD'&&person().personalName===term.personalName&&Civil.getByPerson(term.personId).every(t=>t.endMonth!==undefined),'one real death ends the full career without changing name or duplicating identity');strict();
+ reset();
+ const source=user(),foundingCity=core.allCities.find((c:any)=>c.id===term.cityId),population=core.teams.reduce((n:number,t:any)=>n+t.users.size,0);
+ foundingCity.loyalty=0;foundingCity.devastation=100;
+ for(const u of team().users){if(u.role==='NORMAL'){u.loyalty=u===source?0:100;u.player.setPosition(foundingCity.block.x+1,foundingCity.block.y+1);u.player.Body.reset(u.player.x,u.player.y);}}
+ const founded=Factions.createRebelFaction({city:foundingCity,year:saved.world.worldMonth,factionType:'REBEL'}),ruler=founded&&Dynasty.getCurrentRuler(founded.name);
+ check(founded&&ruler?.residentIdentity?.sourceUserId===term.sourceUserId,'a real former civil population identity can lead an actual resident-founded polity');
+ Civil.update(saved.world.worldMonth,core.teams,Dynasty.getAll());
+ check(ruler?.residentIdentity?.personId===term.personId&&ruler.residentIdentity.personalName===term.personalName&&ruler.residentIdentity.nameSource==='CIVIL'&&ruler.naturalDeathYear===residentNaturalDeathMonth(term.sourceUserId,term.bornMonth),'civil founder retains name, permanent population identity and original lifespan');
+ check(core.teams.reduce((n:number,t:any)=>n+t.users.size,0)===population,'civil political entry creates no extra population');strict();
  reset();
 }

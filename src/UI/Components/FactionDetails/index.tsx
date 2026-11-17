@@ -1,3 +1,4 @@
+import PersonCareerIdentity from './PersonCareerIdentity';
 import PosthumousPeeragePanel from './PosthumousPeeragePanel';
 import {rulerFamilyBackground} from '../../../Politics/RulerFamilyBackground';
 import {militaryPortraitStatus} from '../../../Politics/MilitaryPortraitStatus';
@@ -175,6 +176,7 @@ export default function FactionDetails() {
   const [civilTarget,setCivilTarget]=useState<(PersonArchiveTarget&{serial:number})|undefined>();
   const navigationSequence=useRef(0),navigationDispatch=useDispatch();
   const openPerson=(target:PersonArchiveTarget)=>{
+    if(target.kind==='CIVIL'&&MilitaryCommandRegistry.getPerson(target.id)?.appointments.some(a=>a.factionId===target.factionId))target={...target,kind:'MILITARY'};
     const resolved=resolvePersonArchiveTarget(target,teams,DynastyRegistry.getAll(),MilitaryCommandRegistry.getPeople(),MilitaryCommandRegistry.getFamilies());
     if(!resolved)return;
     if(target.kind==='FAMILY'){setRulerDetailId(undefined);setMilitaryTarget(undefined);setGenealogyTarget(undefined);setCivilTarget(undefined);setFamilyTarget({...target,serial:++navigationSequence.current});
@@ -774,7 +776,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth, familiesOnly=false }: { fa
             {person.factionId!==factionId&&<Typography fontSize="0.78rem">曾在本国任职，后已转属。</Typography>}
               <Typography fontSize="0.76rem" color="var(--gg-text-muted)">{personAge} · 本国任职：{person.appointments.filter(a=>a.factionId===factionId).map(a=>`${formatWorldDate(a.startMonth)}—${a.endMonth===undefined?"今":formatWorldDate(a.endMonth)}`).join("；")}</Typography>
             </>}
-            preBiography={<><MilitaryDispositionPanel person={person} personId={person.personId} bornMonth={person.bornMonth} loyalty={current&&activeUser?.matchesMilitaryLife(person)?activeUser.loyalty:undefined} unitCount={view?.members.length??0} prestige={politicalCandidate?.finalPoliticalWeight??politicalCandidate?.strength}/><MilitaryServicePanel personId={person.personId} month={worldMonth}/><CivilServicePanel personId={person.personId} month={worldMonth} factionId={factionId}/><PersonPoliticalCareer personId={person.personId} month={worldMonth}/></>}
+            preBiography={<><PersonCareerIdentity personId={person.personId} name={person.personalName} bornMonth={person.bornMonth} deathMonth={person.deathMonth}/><MilitaryDispositionPanel person={person} personId={person.personId} bornMonth={person.bornMonth} loyalty={current&&activeUser?.matchesMilitaryLife(person)?activeUser.loyalty:undefined} unitCount={view?.members.length??0} prestige={politicalCandidate?.finalPoliticalWeight??politicalCandidate?.strength}/><MilitaryServicePanel personId={person.personId} month={worldMonth}/><CivilServicePanel personId={person.personId} month={worldMonth} factionId={factionId}/><PersonPoliticalCareer personId={person.personId} month={worldMonth}/></>}
             biographyTitle="生平纪事" biography={bio.life} milestoneTitle="军旅纪事" milestoneTotal={allMilestones.length} personKey={person.personId}
             allMilestones={()=>allMilestones.map(entry=>({id:entry.eventId,content:<Typography fontSize="0.82rem">{formatWorldDate(entry.worldMonth)} · {entry.text}</Typography>}))}
             milestones={milestones.map(entry=>({id:entry.eventId,content:<Typography fontSize="0.82rem">{formatWorldDate(entry.worldMonth)} · {entry.text}</Typography>}))}

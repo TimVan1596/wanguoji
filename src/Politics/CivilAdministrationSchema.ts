@@ -9,7 +9,7 @@ export const isCivilGovernancePolicy=(value:unknown):value is CivilGovernancePol
 export type CivilGovernorSource='ORDINARY_RESIDENT'|'FAMILY'|'NOBLE'|'ROYAL'|'RETIRED_MILITARY';
 export type CivilGovernorEndReason='DEATH'|'CITY_LOST'|'FACTION_ENDED'|'REGIME_ENDED'|'POLITICAL_SANCTION'|'MILITARY_OFFICE'|'REPLACED'|'IDENTITY_ENDED';
 export interface CivilGovernorTerm {
- nameEvidence?:{seed:string;culture:import('./NameCulture').NameCulture;originalName:string;source:'GENERATED'|'ESTABLISHED'};
+ nameEvidence:{seed:string;culture:import('./NameCulture').NameCulture;originalName:string;source:'GENERATED'|'ESTABLISHED'};
  version:1;assignmentId:string;personId:string;sourceUserId:number;bornMonth:number;personalName:string;
  identitySource:CivilGovernorSource;familyId?:string;familyMemberId?:string;royalRulerId?:string;
  factionId:string;countryName:string;epochFounderId:string;cityId:string;cityName:string;

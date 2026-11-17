@@ -1,6 +1,6 @@
 import {unresolvedCourtBans} from '../Politics/MilitaryCourtStanding';
 import {isPopulationIdentityLabel} from '../Politics/MilitaryPersonIdentity';
-import {generateResidentPersonalName} from '../Politics/NameCulture';
+import {deriveNameCulture,generateResidentPersonalName} from '../Politics/NameCulture';
 import {residentNaturalDeathMonth} from '../Simulation/ResidentLife';
 import type {WorldSaveV1} from './WorldSaveSchema';
 import type {WorldEvent} from '../History/WorldHistory';
@@ -24,8 +24,11 @@ export function validateCivilAdministration(save:WorldSaveV1){
   if(!evidence||!['HAN','KHITAN','JURCHEN','MONGOL','MANCHU'].includes(evidence.culture)||typeof evidence.seed!=='string'||typeof evidence.originalName!=='string'||!['GENERATED','ESTABLISHED'].includes(evidence.source)||!term.personalName?.trim()||appointment.personalName!==term.personalName||JSON.stringify(appointment.nameEvidence)!==JSON.stringify(evidence))throw Error('invalid frozen civil name evidence');
   if(evidence.source==='GENERATED'&&term.personalName!==generateResidentPersonalName({seed:evidence.seed,culture:evidence.culture,sourceUserId:term.sourceUserId,bornMonth:term.bornMonth}))throw Error('civil generated name mismatch');
   if(user&&evidence.originalName!==user.name)throw Error('civil original population label mismatch');
+  const authority=(save.dynasties.find(d=>d.factionId===term.factionId)?.rulers as Record<string,unknown>[]|undefined)?.find(r=>r.rulerId===term.rulerId);
+  if(!authority||Number(authority.accessionMonth)>term.startMonth||authority.endMonth!==undefined&&Number(authority.endMonth)<term.startMonth)throw Error('civil appointment lacks ruling authority');
+  if(!prior&&evidence.source==='GENERATED'&&evidence.culture!==deriveNameCulture(String(authority.houseName)))throw Error('civil name culture lacks first authority source');
   if(evidence.seed!==save.worldRandom.seed)throw Error('civil name seed mismatch');
-  if(evidence.source==='ESTABLISHED'&&!prior){const family=save.registries.militaryCommandRegistry.families?.flatMap(f=>f.members).find(m=>m.sourceUserId===term.sourceUserId&&m.bornMonth===term.bornMonth);if(term.personalName!==(person?.personalName??family?.name??(!isPopulationIdentityLabel(evidence.originalName)?evidence.originalName:undefined)))throw Error('civil established name lacks source');}
+  if(evidence.source==='ESTABLISHED'&&!prior){const family=save.registries.militaryCommandRegistry.families?.flatMap(f=>f.members).find(m=>m.sourceUserId===term.sourceUserId&&m.bornMonth===term.bornMonth);if(term.personalName!==(person?.personalName??family?.name??(!isPopulationIdentityLabel(evidence.originalName)||term.sourceUserId<1000000000||term.sourceUserId>1999999999?evidence.originalName:undefined)))throw Error('civil established name lacks source');}
   const familyMember=term.familyId?save.registries.militaryCommandRegistry.families?.find(f=>f.familyId===term.familyId)?.members.find(m=>m.memberId===term.familyMemberId):undefined;
   if(!prior&&term.personId!==(person?.personId??familyMember?.memberId??`resident-${term.sourceUserId}-${term.bornMonth}`))throw Error('civil identity lacks permanent population source');
   if(term.startMonth-term.bornMonth<216||term.startMonth-term.bornMonth>900||person?.deathMonth!==undefined&&person.deathMonth<=term.startMonth||person&&unresolvedCourtBans(person,term.factionId,term.startMonth,term.epochFounderId).length)throw Error('civil appointment violates life or political qualification');

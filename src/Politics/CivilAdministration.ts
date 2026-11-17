@@ -1,4 +1,4 @@
-import {civilState,replaceCivilState} from './CivilCareerIdentity';
+import {civilState,replaceCivilState,emptyCivilState} from './CivilCareerIdentity';
 import {deriveNameCulture,generateResidentPersonalName} from './NameCulture';
 import {isPopulationIdentityLabel} from './MilitaryPersonIdentity';
 import type City from '../Components/City';
@@ -10,24 +10,23 @@ import WorldHistory,{type WorldEvent} from '../History/WorldHistory';
 import {beginPoliticalMutation} from '../Simulation/PoliticalMutationScope';
 import worldRandom,{WorldRandom} from '../Simulation/WorldRandom';
 import {unresolvedCourtBans} from './MilitaryCourtStanding';
-import {CIVIL_APPOINTMENT_CHANCE,CIVIL_GOVERNANCE_POLICY,MAX_ACTIVE_CIVIL_GOVERNORS_PER_FACTION,type CivilAdministrationState,type CivilGovernancePolicy,type CivilGovernorCandidate,type CivilGovernorEndReason,type CivilGovernorTerm} from './CivilAdministrationSchema';
+import {CIVIL_APPOINTMENT_CHANCE,MAX_ACTIVE_CIVIL_GOVERNORS_PER_FACTION,type CivilAdministrationState,type CivilGovernancePolicy,type CivilGovernorCandidate,type CivilGovernorEndReason,type CivilGovernorTerm} from './CivilAdministrationSchema';
 export {CIVIL_APPOINTMENT_CHANCE,CIVIL_CITY_STABILITY_MONTHS,CIVIL_GOVERNANCE_POLICY,MAX_ACTIVE_CIVIL_GOVERNORS_PER_FACTION,civilGovernanceThreshold,isCivilGovernancePolicy} from './CivilAdministrationSchema';
 export type {CivilAdministrationState,CivilGovernancePolicy,CivilGovernorCandidate,CivilGovernorEndReason,CivilGovernorSource,CivilGovernorTerm} from './CivilAdministrationSchema';
 export {civilControlledSince,civilGovernanceEffect,civilGovernorCandidates,civilGovernorPersonId,civilGovernorStatus,eligibleCivilCities,selectCivilGovernorCandidate} from './CivilAdministrationRules';
 import {civilGovernanceEffect,civilGovernorCandidates,eligibleCivilCities,selectCivilGovernorCandidate} from './CivilAdministrationRules';
 
-const empty=():CivilAdministrationState=>({version:1,sequence:0,lastEvaluationMonth:-1,policy:CIVIL_GOVERNANCE_POLICY,terms:[]});
 const active=(term:CivilGovernorTerm,month:number)=>term.startMonth<=month&&term.endMonth===undefined;
 
-function transaction<T>(work:()=>T):T{
- const before=structuredClone(CivilAdministration.exportState()),history=WorldHistory.snapshotPoliticalTransaction(),scope=beginPoliticalMutation();
- try{const value=work();scope.commit();return value;}catch(error){scope.cancel();CivilAdministration.importState(before);const restore=beginPoliticalMutation();WorldHistory.rollbackPoliticalTransaction(history);restore.finishRollback();throw error;}
+function transaction<T>(work:()=>T,rollback:()=>void=()=>{}):T{
+ const before=structuredClone(CivilAdministration.exportState()),history=WorldHistory.snapshotPoliticalTransaction(),rng=worldRandom.exportState(),scope=beginPoliticalMutation();
+ try{const value=work();scope.commit();return value;}catch(error){scope.cancel();rollback();worldRandom.restore(rng);CivilAdministration.importState(before);const restore=beginPoliticalMutation();WorldHistory.rollbackPoliticalTransaction(history);restore.finishRollback();throw error;}
 }
 
 class CivilAdministrationStore {
  private get state(){return civilState();}
  private set state(value:CivilAdministrationState){replaceCivilState(value);}
- reset(){this.state=empty();}
+ reset(){this.state=emptyCivilState();}
  setPolicyForSimulation(policy:CivilGovernancePolicy){this.state.policy=policy;}
  exportState():CivilAdministrationState{return structuredClone(this.state);}
  importState(state:CivilAdministrationState){this.state=structuredClone(state);this.state.terms=(this.state.terms??[]).map(term=>({...term}));}
@@ -35,6 +34,11 @@ class CivilAdministrationStore {
  getCurrentByCity(cityId:string,month:number){const term=this.state.terms.filter(term=>term.cityId===cityId&&active(term,month)).at(-1);return term?{...term}:undefined;}
  getByPopulation(sourceUserId:number,bornMonth:number){return this.state.terms.find(t=>t.sourceUserId===sourceUserId&&t.bornMonth===bornMonth);}
  getByPerson(personId:string){return this.state.terms.filter(term=>term.personId===personId).map(term=>({...term}));}
+ getCandidateDiagnostics(month:number,teams:readonly Team[],dynasties:readonly Dynasty[]){return teams.map(team=>{
+  const dynasty=dynasties.find(d=>d.factionId===team.name),ruler=dynasty?.rulers.find(r=>r.id===dynasty.currentRulerId),epoch=(dynasty?.houseEpochs??[]).find(e=>e.startMonth<=month&&(e.endMonth??Infinity)>month),cities=eligibleCivilCities(month,team,this.state.terms),current=this.state.terms.filter(t=>t.factionId===team.name&&active(t,month)).length;
+  const pool=epoch&&ruler?.status==='ruling'?civilGovernorCandidates(month,team,Military.getPeople(),this.state.terms,epoch.foundingRulerId,(id,born)=>Military.getFamilyMember(id,born),Military.getFormations()):[];
+  return {factionId:team.name,scope:'CURRENT_SNAPSHOT',eligibleCities:cities.length,hasVacancy:cities.length>0&&current<Math.min(MAX_ACTIVE_CIVIL_GOVERNORS_PER_FACTION,Math.max(1,Math.ceil(team.cities.length/4))),candidates:pool.length,retiredMilitary:pool.filter(p=>p.identitySource==='RETIRED_MILITARY').length};
+ });}
  getDiagnostics(month:number){const terms=this.state.terms,ended=terms.filter(t=>t.endMonth!==undefined);return {appointed:terms.length,active:terms.filter(t=>active(t,month)).length,ended:ended.length,endReasons:ended.reduce((out,t)=>(out[t.endReason!]=(out[t.endReason!]??0)+1,out),{} as Record<string,number>),loyaltyRecovered:terms.reduce((n,t)=>n+t.loyaltyRecovered,0),devastationRecovered:terms.reduce((n,t)=>n+t.devastationRecovered,0),merits:terms.filter(t=>t.meritEventId).length};}
  update(month:number,teams:Team[],dynasties:Dynasty[]){
   this.reconcile(month,teams,dynasties);
@@ -63,7 +67,7 @@ class CivilAdministrationStore {
    const sequence=this.state.sequence+1,assignmentId=`civil-governor-${team.name}-${city.id}-${sequence}`,eventId=`${assignmentId}-appointed`;
    const user=[...team.users].find(u=>u.id===candidate.sourceUserId&&u.bornMonth===candidate.bornMonth)!;
    const previous=this.getByPopulation(user.id,user.bornMonth),family=Military.getFamilyMember(user.id,user.bornMonth),person=Military.getPerson(candidate.personId);
-   const established=previous?.personalName??person?.personalName??family?.member.name??(!isPopulationIdentityLabel(user.name)?user.name:undefined);
+   const established=previous?.personalName??person?.personalName??family?.member.name??(!isPopulationIdentityLabel(user.name)||user.id<1000000000||user.id>1999999999?user.name:undefined);
    const nameEvidence=previous?.nameEvidence??{seed:worldRandom.exportState().seed,culture:deriveNameCulture(team.houseName),originalName:user.name,source:established?'ESTABLISHED' as const:'GENERATED' as const};
    const personalName=established??generateResidentPersonalName({seed:nameEvidence.seed,sourceUserId:user.id,bornMonth:user.bornMonth,culture:nameEvidence.culture});
    const term:CivilGovernorTerm={nameEvidence,version:1,assignmentId,personId:previous?.personId??candidate.personId,sourceUserId:candidate.sourceUserId,bornMonth:candidate.bornMonth,personalName,identitySource:candidate.identitySource,familyId:candidate.familyId,familyMemberId:candidate.familyMemberId,royalRulerId:candidate.royalRulerId,factionId:team.name,countryName:team.displayName??team.name,epochFounderId:epoch.foundingRulerId,cityId:city.id,cityName:city.name,rulerId:ruler.id,rulerTitle:DynastyRegistry.getRulerHistoricalTitle(ruler.id,team.name,month)??`${team.displayName??team.name}君主`,startMonth:month,appointEventId:eventId,loyaltyRecovered:0,devastationRecovered:0};
@@ -102,6 +106,7 @@ class CivilAdministrationStore {
    const team=teams.find(t=>t.name===term.factionId),city=team?.cities.find(c=>c.id===term.cityId);
    if(!team||!city)continue;
    const effect=civilGovernanceEffect(term,city,month,this.state.policy);if(!effect.loyalty&&!effect.devastation)continue;
+   const cityBefore={loyalty:city.loyalty,devastation:city.devastation};
    transaction(()=>{
     const row=this.state.terms.find(t=>t.assignmentId===term.assignmentId)!;
     if(effect.loyalty)city.loyalty=Math.min(80,city.loyalty+effect.loyalty);
@@ -111,7 +116,7 @@ class CivilAdministrationStore {
      const id=`${row.assignmentId}-merit-${month}`,event:WorldEvent={id,year:month,monthIndex:month,type:'civil-governor-merit',category:'politics',importance:'normal',actorFactionId:row.factionId,factionIds:[row.factionId],cityId:row.cityId,cityName:row.cityName,title:`${row.personalName}治理${row.cityName}有绩。`,description:`任郡守${month-row.startMonth}个月，城市忠诚恢复${row.loyaltyRecovered}，战乱创伤恢复${row.devastationRecovered}。`,metadata:{personId:row.personId,sourceUserId:row.sourceUserId,bornMonth:row.bornMonth,cityId:row.cityId,assignmentId:row.assignmentId,loyaltyRecovered:row.loyaltyRecovered,devastationRecovered:row.devastationRecovered}};
      if(WorldHistory.addEvent(event)!==id)throw Error('Civil governor merit history rejected');row.meritMonth=month;row.meritEventId=id;row.meritLoyaltyRecovered=row.loyaltyRecovered;row.meritDevastationRecovered=row.devastationRecovered;
     }
-   });
+   },()=>Object.assign(city,cityBefore));
   }
  }
 }
