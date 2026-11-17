@@ -10,5 +10,7 @@ export function civilCareerAudit(terms:readonly CivilGovernorTerm[],people:reado
  militaryToCivil:terms.filter(t=>people.some(p=>p.personId===t.personId&&p.appointments.some(a=>a.endMonth!==undefined&&a.endMonth<=t.startMonth))).length,
  overlap:terms.filter(t=>people.some(p=>p.personId===t.personId&&p.appointments.some(a=>a.startMonth<(t.endMonth??Infinity)&&(a.endMonth??Infinity)>t.startMonth))).length,
  countries:teams.map(t=>({factionId:t.name,rank:t.sovereigntyRank,identityStage:t.identityStage,cities:t.cities.length,civil:terms.filter(a=>a.factionId===t.name&&a.startMonth<=month&&a.endMonth===undefined).length,military:people.filter(p=>p.factionId===t.name&&p.status==='ACTIVE').length})),
+ endReasons:Object.fromEntries([...new Set(terms.filter(t=>t.endReason).map(t=>t.endReason!))].map(reason=>[reason,terms.filter(t=>t.endReason===reason).length])),
+ endedBeforeMinimumMilitaryRetirement:terms.filter(t=>t.endMonth!==undefined&&t.endReason!=='DEATH'&&t.endMonth-t.bornMonth<65*12).length,
  ordinaryAppointments:terms.filter(t=>t.identitySource==='ORDINARY_RESIDENT').length};
 }
