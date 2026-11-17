@@ -28,8 +28,8 @@ describe("Desktop packaging and renderer security", () => {
     expect(packageJson.scripts["desktop:renderer-debug-build"]).toContain("--mode desktop-debug --sourcemap");
     expect(packageJson.scripts["desktop:renderer-build"]).toContain("--mode desktop");
     expect(packageJson.build.files).toContain("!**/*.map");
-    expect(packageJson.version).toBe("0.99.227");
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(58);
+    expect(packageJson.version).toBe("0.99.228");
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(59);
   });
 
   it("restricts Desktop production CSP without weakening Web or script policy", () => {

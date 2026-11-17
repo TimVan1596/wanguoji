@@ -1,3 +1,4 @@
+import {isPopulationIdentityLabel} from '../Politics/MilitaryPersonIdentity';
 import {generateResidentPersonalName} from '../Politics/NameCulture';
 import {residentNaturalDeathMonth} from '../Simulation/ResidentLife';
 import type {WorldSaveV1} from './WorldSaveSchema';
@@ -21,6 +22,8 @@ export function validateCivilAdministration(save:WorldSaveV1){
   const evidence=term.nameEvidence,prior=state.terms.find(t=>t!==term&&t.sourceUserId===term.sourceUserId&&t.bornMonth===term.bornMonth&&t.startMonth<term.startMonth),person=save.registries.militaryCommandRegistry.people.find(p=>p.sourceUserId===term.sourceUserId&&p.bornMonth===term.bornMonth);
   if(!evidence||!['HAN','KHITAN','JURCHEN','MONGOL','MANCHU'].includes(evidence.culture)||typeof evidence.seed!=='string'||typeof evidence.originalName!=='string'||!['GENERATED','ESTABLISHED'].includes(evidence.source)||!term.personalName?.trim()||appointment.personalName!==term.personalName||JSON.stringify(appointment.nameEvidence)!==JSON.stringify(evidence))throw Error('invalid frozen civil name evidence');
   if(evidence.source==='GENERATED'&&term.personalName!==generateResidentPersonalName({seed:evidence.seed,culture:evidence.culture,sourceUserId:term.sourceUserId,bornMonth:term.bornMonth}))throw Error('civil generated name mismatch');
+  if(evidence.seed!==save.worldRandom.seed)throw Error('civil name seed mismatch');
+  if(evidence.source==='ESTABLISHED'&&!prior){const family=save.registries.militaryCommandRegistry.families?.flatMap(f=>f.members).find(m=>m.sourceUserId===term.sourceUserId&&m.bornMonth===term.bornMonth);if(term.personalName!==(person?.personalName??family?.name??(!isPopulationIdentityLabel(evidence.originalName)?evidence.originalName:undefined)))throw Error('civil established name lacks source');}
   if(prior&&(prior.personId!==term.personId||prior.personalName!==term.personalName||JSON.stringify(prior.nameEvidence)!==JSON.stringify(evidence)))throw Error('civil permanent identity changed');
   if(person&&(person.personId!==term.personId||person.personalName!==term.personalName))throw Error('civil military permanent identity mismatch');
   if(person?.civilOrigin&&(person.civilOrigin.assignmentId!==state.terms.find(t=>t.sourceUserId===term.sourceUserId&&t.bornMonth===term.bornMonth)?.assignmentId||person.civilOrigin.naturalDeathMonth!==residentNaturalDeathMonth(term.sourceUserId,term.bornMonth)))throw Error('civil military lifespan mismatch');

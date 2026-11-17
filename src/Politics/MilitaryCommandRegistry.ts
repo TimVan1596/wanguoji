@@ -493,7 +493,7 @@ export class MilitaryCommandRegistryStore {
     return this.royalService.transaction(team,work);
   }
   private appoint(user: User, factionId: string, worldMonth: number, memberUnitIds: string[], royalIdentity?: RoyalMilitaryLink) {
-    return user.familyMemberId?this.familyTransaction(user.team,()=>this.appointBody(user,factionId,worldMonth,memberUnitIds,royalIdentity)):this.appointBody(user,factionId,worldMonth,memberUnitIds,royalIdentity);
+    return (user.familyMemberId||civilPopulationIdentity(user.id,user.bornMonth))?this.familyTransaction(user.team,()=>this.appointBody(user,factionId,worldMonth,memberUnitIds,royalIdentity)):this.appointBody(user,factionId,worldMonth,memberUnitIds,royalIdentity);
   }
   private appointBody(user: User, factionId: string, worldMonth: number, memberUnitIds: string[], royalIdentity?: RoyalMilitaryLink) {
     if(memberUnitIds.length!==MILITARY_FORMATION_CAPACITY.XIAOWEI||new Set(memberUnitIds).size!==memberUnitIds.length||!memberUnitIds.includes(user.player.logicalUnitId??"")||factionId!==user.team.name||

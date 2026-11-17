@@ -2,7 +2,7 @@ import {householdBirthPlan,householdBirthParents,recordRoyalBirthPlanning,HOUSEH
 import {registerRoyalPerson,type RoyalPersonRegistration} from './RoyalPersonRegistration';
 import {nextRoyalNobleAct,royalNobleText,type RoyalNobleAct} from './RoyalNobility';
 import {rulerAbilities} from './PersonAbilities';
-import {civilPopulationIdentity,civilState} from './CivilCareerIdentity';
+import {civilPopulationIdentity} from './CivilCareerIdentity';
 import {residentNaturalDeathMonth} from '../Simulation/ResidentLife';
 import {establishedResidentFounderName,type ResidentNameSource} from './ResidentFounderName';
 import {DEFAULT_ABILITY_POLICY,type AbilityPolicy} from './PersonAbilities';

@@ -37,7 +37,7 @@ vi.mock("../Components/Team", () => ({ default: class {
 } }));
 vi.mock("../Components/City", () => ({ getFactionStability: () => 80, default: class {
   static GetUserById(){return undefined;}
-  static hydrate(state: any, block: any) { return { ...state, id: state.cityId, block, fortifiedCells: [],
+  static hydrate(state: any, block: any) { return { ...state, id: state.cityId, block, fortifiedCells: [],isInCaptureGrace(){return false;},
     rebuildRuntimeVisuals() {}, exportState: () => structuredClone(state) }; }
 } }));
 vi.mock("../Simulation/WorldInvariant", () => ({ validateWorldState: () => [] })); // separate real City lifecycle tests cover map refs
@@ -129,7 +129,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
         target.blocks.children.size=target.blocks.children.entries.length;b.team=target;};});
       const cs={...fixture().cities[0],cityId:`city-${t.name}`,name:`城${i}`,ownerFactionId:t.name,founderFactionId:t.name,
         centerGridX:starts[i],loyalty:40,fortifiedCells:[{gridX:starts[i],gridY:0}]};
-      const c:any={...cs,id:cs.cityId,block:blocks[0],fortifiedCells:[blocks[0]],updateDefense(){},
+      const c:any={...cs,id:cs.cityId,block:blocks[0],fortifiedCells:[blocks[0]],isInCaptureGrace(){return false;},updateDefense(){},
         administrativeMergeTransferTo(target:any){t.cities=t.cities.filter((v:any)=>v!==c);target.cities.push(c);c.ownerFactionId=target.name;c.isCapital=false;c.block.isHome=false;},
         exportState:()=>({...cs,ownerFactionId:c.ownerFactionId,isCapital:c.isCapital})};
       blocks[0].restoreCanonicalState({owner:t,city:c,hp:7,isHome:true,isCityCenter:true});t.cities=[c];
