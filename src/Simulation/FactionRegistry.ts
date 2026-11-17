@@ -1,3 +1,4 @@
+import {civilPopulationIdentity} from '../Politics/CivilCareerIdentity';
 import {localMilitarySupporter} from './MilitaryLocalRules';
 import {militaryCrisisSourceIds} from "./MilitaryCrisisSources";
 import {militaryLocalCrisis} from "./MilitaryLocalRules";
@@ -220,7 +221,7 @@ class FactionRegistryStore {
         if (user.team !== team) {this.lastFoundingFailure="居民未完成转属";throw new Error("founding supporter transfer failed");}
       }
       if(leader)DynastyRegistry.initializeFaction(team,month,false,{user:leader,origin:{
-        military,personId:military?.personId??`resident-${team.name}-${leader.id}-${leader.bornMonth}`,sourceUserId:leader.id,sourceUserLabel:leader.name,bornMonth:leader.bornMonth,
+        military,personId:military?.personId??civilPopulationIdentity(leader.id,leader.bornMonth)?.personId??`resident-${team.name}-${leader.id}-${leader.bornMonth}`,sourceUserId:leader.id,sourceUserLabel:leader.name,bornMonth:leader.bornMonth,
         sourceFactionId:owner.name,sourceFactionName:owner.displayName,foundedMonth:month,cityId:city.id,cityName:city.name,
       }});
       if (Game.Core.addRuntimeTeam(team)) {

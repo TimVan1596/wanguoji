@@ -35,6 +35,7 @@ function GovernorDetail({term,month}:{term:CivilGovernorTerm;month:number}){
   <Typography fontSize='.76rem'>任命：{formatWorldDate(term.startMonth)} · {term.rulerTitle}</Typography>
   <Typography fontSize='.76rem'>任期：{formatWorldDate(term.startMonth)}—{term.endMonth===undefined?'今':formatWorldDate(term.endMonth)} · {formatWorldDuration((term.endMonth??month)-term.startMonth)}</Typography>
   <Typography fontSize='.76rem'>治理：{civilGovernorStatus(term,cityFor(term),month)} · 忠诚恢复{term.loyaltyRecovered} · 破坏恢复{term.devastationRecovered}</Typography>
+  <PersonPoliticalCareer personId={term.personId} month={month}/>
   {term.endReason&&<Typography fontSize='.76rem'>离任原因：{term.endReason}</Typography>}
   {person&&<Button size='small' onClick={()=>navigation.open({kind:'MILITARY',factionId:term.factionId,id:person.personId})}>查看军政人物档案</Button>}
   {family&&<Button size='small' onClick={()=>navigation.open({kind:'FAMILY',factionId:term.factionId,id:family.familyId,memberId:term.familyMemberId})}>查看功臣世家与宗谱</Button>}
@@ -58,7 +59,15 @@ export default function CivilGovernancePanel({factionId,month,initialPersonId}:{
 }
 
 export function CivilServicePanel({personId,month,factionId}:{personId:string;month:number;factionId:string}){
- useHistoryRevision();const terms=CivilAdministration.getByPerson(personId).filter(term=>term.factionId===factionId&&term.startMonth<=month);
+ useHistoryRevision();const terms=CivilAdministration.getByPerson(personId).filter(term=>term.startMonth<=month);
  if(!terms.length)return null;
- return <Box data-civil-service={personId} sx={{my:.6}}><Typography fontSize='.82rem' fontWeight='bold'>仕宦经历</Typography>{terms.map(term=><Typography key={term.assignmentId} fontSize='.76rem'>{formatWorldDate(term.startMonth)}，{term.rulerTitle}任命其为{term.cityName}郡守；{term.endMonth===undefined?'现任':`${formatWorldDate(term.endMonth)}离任（${term.endReason}）`}。实际恢复忠诚{term.loyaltyRecovered}、破坏度{term.devastationRecovered}。</Typography>)}</Box>;
+ return <Box data-civil-service={personId} data-faction-context={factionId} sx={{my:.6}}><Typography fontSize='.82rem' fontWeight='bold'>仕宦经历</Typography>{terms.map(term=><Typography key={term.assignmentId} fontSize='.76rem'>{formatWorldDate(term.startMonth)}，{term.rulerTitle}任命其为{term.cityName}郡守；{term.endMonth===undefined?'现任':`${formatWorldDate(term.endMonth)}离任（${term.endReason}）`}。实际恢复忠诚{term.loyaltyRecovered}、破坏度{term.devastationRecovered}。</Typography>)}</Box>;
+}
+
+/** Personal events require their actual principal-person reference, never faction association. */
+export function PersonPoliticalCareer({personId,month}:{personId:string;month:number}){
+ useHistoryRevision();
+ const events=WorldHistory.getRecordedEvents().filter(e=>e.metadata?.personId===personId&&(e.monthIndex??e.year)<=month);
+ const groups=[['政治经历',events.filter(e=>/court|punishment|pardon/.test(e.type))],['爵位及身后评价',events.filter(e=>/noble|title|posthumous/.test(e.type))]] as const;
+ return <>{groups.filter(([,rows])=>rows.length).map(([title,rows])=><Box key={title}><Typography fontSize=".82rem" fontWeight="bold">{title}</Typography>{rows.map(e=><Typography key={e.id} fontSize=".76rem">{formatWorldDate(e.monthIndex??e.year)}，{e.title}</Typography>)}</Box>)}</>;
 }

@@ -29,7 +29,7 @@ import PortraitSummary from "./PortraitSummary";
 import {resolvePersonArchiveTarget} from "./PersonArchiveTarget";
 import {PersonArchiveNavigation,usePersonArchiveNavigation,type PersonArchiveTarget} from "./PersonArchiveNavigation";
 import {RulerServicePanel,MilitaryServicePanel} from "./PersonServicePanel";
-import CivilGovernancePanel,{CivilServicePanel} from '../CivilAdministration/CivilGovernancePanel';
+import CivilGovernancePanel,{CivilServicePanel,PersonPoliticalCareer} from '../CivilAdministration/CivilGovernancePanel';
 import {royalPortraitContext,militaryPortraitContext} from "./PortraitPresentation";
 import DepositionSelectionDetails from "../DepositionSelectionDetails";
 import MeritRoll,{NobleHistory} from "./MeritRoll";
@@ -283,7 +283,8 @@ function FactionProfile({
   const territoryMetrics = calculateTerritoryMetrics(teams, totalCells);
   const factionTerritory = getFactionTerritoryMetric(territoryMetrics, team.name);
   const [peopleFilter,setPeopleFilter]=useState<'all'|'military'|'civil'|'family'>('all');
-  useEffect(()=>{setPeopleFilter(tab==='civil'?'civil':tab==='military'?'military':'all');},[tab,team.name,civilTarget?.serial]);
+  useEffect(()=>{setPeopleFilter(tab==='civil'?'civil':tab==='military'?'military':'all');},[tab,team.name,civilTarget?.serial,archiveNavigation.militaryTarget?.serial]);
+  useEffect(()=>{if(archiveNavigation.familyTarget?.factionId===team.name)setPeopleFilter('family');},[archiveNavigation.familyTarget?.serial,team.name]);
   const activeTab = tab === "trend" || tab === "chronicle" ? "power" : tab;
   const rankedTeams = [...teams].sort(
     (a, b) => getFactionTerritoryMetric(territoryMetrics,b.name).factionControlledBlocks - getFactionTerritoryMetric(territoryMetrics,a.name).factionControlledBlocks
@@ -705,6 +706,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth, familiesOnly=false }: { fa
   const readSummary=()=>summaryCache??=MilitaryCommandRegistry.getOfficeSummary(worldMonth);
   const politicalLeader=politicalTeam?.status==="ACTIVE"&&politicalTeam.identityStage!=="STATE"&&["REBEL","FRONTIER","SPLIT"].includes(politicalTeam.origin?.type??"")?DynastyRegistry.getCurrentRuler(factionId):undefined;
   const factionCommanders = people.filter(person => person.factionId === factionId && person.status === "ACTIVE").length;
+  if(familiesOnly)return <Box><Button size="small" onClick={()=>setFamilyBrowser(true)}>功臣世家（{families.length}）</Button>{familyBrowser&&<MilitaryFamilyBrowser key={`${factionId}:${familyFocus?.serial??0}`} families={families} worldMonth={worldMonth} initialFamilyId={familyFocus?.id} initialMemberId={familyFocus?.memberId} onClose={()=>{setFamilyBrowser(false);setFamilyFocus(undefined);}}/>}</Box>;
   return <Box sx={{ display: "grid", gap: 1, mt: 0.5, minWidth: 0, overflowWrap: "anywhere" }}>
     <InsurgentCommandPanel factionId={factionId} month={worldMonth}/>
     {politicalLeader&&<Typography fontSize="0.8rem">政治首领：{formatRulerName(politicalLeader)} · 本国现役将领{factionCommanders}人；{formations.some(f=>f.factionId===factionId&&f.leaderDuty&&f.status==='ACTIVE')?'本人统帅编组见上方，职责与正式军职分列。':'本人暂无独立指挥编组。'}</Typography>}
@@ -772,8 +774,8 @@ function MilitaryPeoplePanel({ factionId, worldMonth, familiesOnly=false }: { fa
             {person.factionId!==factionId&&<Typography fontSize="0.78rem">曾在本国任职，后已转属。</Typography>}
               <Typography fontSize="0.76rem" color="var(--gg-text-muted)">{personAge} · 本国任职：{person.appointments.filter(a=>a.factionId===factionId).map(a=>`${formatWorldDate(a.startMonth)}—${a.endMonth===undefined?"今":formatWorldDate(a.endMonth)}`).join("；")}</Typography>
             </>}
-            preBiography={<><MilitaryDispositionPanel person={person} personId={person.personId} bornMonth={person.bornMonth} loyalty={current&&activeUser?.matchesMilitaryLife(person)?activeUser.loyalty:undefined} unitCount={view?.members.length??0} prestige={politicalCandidate?.finalPoliticalWeight??politicalCandidate?.strength}/><MilitaryServicePanel personId={person.personId} month={worldMonth}/><CivilServicePanel personId={person.personId} month={worldMonth} factionId={factionId}/></>}
-            biographyTitle="生平" biography={bio.life} milestoneTitle="军旅纪事" milestoneTotal={allMilestones.length} personKey={person.personId}
+            preBiography={<><MilitaryDispositionPanel person={person} personId={person.personId} bornMonth={person.bornMonth} loyalty={current&&activeUser?.matchesMilitaryLife(person)?activeUser.loyalty:undefined} unitCount={view?.members.length??0} prestige={politicalCandidate?.finalPoliticalWeight??politicalCandidate?.strength}/><MilitaryServicePanel personId={person.personId} month={worldMonth}/><CivilServicePanel personId={person.personId} month={worldMonth} factionId={factionId}/><PersonPoliticalCareer personId={person.personId} month={worldMonth}/></>}
+            biographyTitle="生平纪事" biography={bio.life} milestoneTitle="军旅纪事" milestoneTotal={allMilestones.length} personKey={person.personId}
             allMilestones={()=>allMilestones.map(entry=>({id:entry.eventId,content:<Typography fontSize="0.82rem">{formatWorldDate(entry.worldMonth)} · {entry.text}</Typography>}))}
             milestones={milestones.map(entry=>({id:entry.eventId,content:<Typography fontSize="0.82rem">{formatWorldDate(entry.worldMonth)} · {entry.text}</Typography>}))}
             assessment={[bio.assessment]} voice={bio.voice}
@@ -1222,7 +1224,7 @@ function RulerBiography({
         <Typography fontSize="0.82rem">{predecessor&&["DIRECT_CHILD","GRANDCHILD","SIBLING","NEPHEW","UNCLE","COUSIN","COLLATERAL_KIN"].includes(ruler.relationType??"")?formatRecordedSuccessionKinship(ruler,predecessor,rulers):formatRulerRelation(ruler.relationType,team.identityStage,Boolean(parent),Boolean(ruler.chronicle.foundedStateName))}</Typography>
         <Typography fontSize="0.82rem">世系：{formatRulerLineage(ruler.relationType,parent?formatRulerRowName(parent,team):undefined,team.identityStage,Boolean(ruler.chronicle.foundedStateName))}</Typography>
       </ChronicleSection>}
-      preBiography={<><PersonAbilityPanel royal abilities={rulerAbilities(ruler,MilitaryCommandRegistry.getPeople())}/><Typography fontSize=".8rem">{royalHonorHeading(ruler,DynastyRegistry.get(team.name),worldMonth,{person:ruler.militaryIdentity?MilitaryCommandRegistry.getPerson(ruler.militaryIdentity.personId):undefined,factionId:team.name,status:team.status})?.secondary}</Typography><RoyalHonorPanel ruler={ruler} month={worldMonth}/><RulerServicePanel reading={{earlier:reading.earlier,rows:reading.service}} ruler={ruler} factionId={team.name} month={worldMonth}/><CivilServicePanel personId={ruler.militaryIdentity?.personId??ruler.id} month={worldMonth} factionId={team.name}/></> }
+      preBiography={<><PersonAbilityPanel royal abilities={rulerAbilities(ruler,MilitaryCommandRegistry.getPeople())}/><Typography fontSize=".8rem">{royalHonorHeading(ruler,DynastyRegistry.get(team.name),worldMonth,{person:ruler.militaryIdentity?MilitaryCommandRegistry.getPerson(ruler.militaryIdentity.personId):undefined,factionId:team.name,status:team.status})?.secondary}</Typography><RoyalHonorPanel ruler={ruler} month={worldMonth}/><RulerServicePanel reading={{earlier:reading.earlier,rows:reading.service}} ruler={ruler} factionId={team.name} month={worldMonth}/><CivilServicePanel personId={ruler.militaryIdentity?.personId??ruler.militaryUsurperIdentity?.personId??ruler.residentIdentity?.personId??ruler.id} month={worldMonth} factionId={team.name}/></> }
       biographyTitle="生平本纪" biography={ruler.residentIdentity?[rulerFamilyBackground(ruler,MilitaryCommandRegistry.getFamilies(),MilitaryCommandRegistry.getPeople(),events),`${formatWorldDate(ruler.residentIdentity.foundedMonth)}，${ruler.residentIdentity.military?`原任${ruler.residentIdentity.sourceFactionName}${MILITARY_OFFICE_NAMES[ruler.residentIdentity.military.office as keyof typeof MILITARY_OFFICE_NAMES]??"将领"}，率${ruler.residentIdentity.military.participants.length-1}名旧部`:`原为${ruler.residentIdentity.sourceFactionName}居民` }，于${ruler.residentIdentity.cityName}参与起事，脱离原政权并成为新势力首领。`,...bio.life.slice(1)].filter((line):line is string=>!!line):bio.life} milestoneTitle="重大纪年" milestoneTotal={fullMilestoneEvents.length} personKey={ruler.id}
       allMilestones={()=>fullMilestoneEvents.map(event=>({id:event.id,content:<Typography fontSize="0.82rem">{formatChronicleDate(event.monthIndex??event.year)}，{textFor(event)}</Typography>}))}
       milestones={milestoneEvents.map(event=>({id:event.id,content:<>

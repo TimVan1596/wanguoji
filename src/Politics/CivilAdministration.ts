@@ -30,7 +30,7 @@ class CivilAdministrationStore {
  reset(){this.state=empty();}
  setPolicyForSimulation(policy:CivilGovernancePolicy){this.state.policy=policy;}
  exportState():CivilAdministrationState{return structuredClone(this.state);}
- importState(state:CivilAdministrationState){this.state=structuredClone(state);this.state.terms=(this.state.terms??[]).map(term=>({...term})).sort((a,b)=>a.startMonth-b.startMonth||a.assignmentId.localeCompare(b.assignmentId));}
+ importState(state:CivilAdministrationState){this.state=structuredClone(state);this.state.terms=(this.state.terms??[]).map(term=>({...term}));}
  getTerms(factionId?:string){return (factionId?this.state.terms.filter(term=>term.factionId===factionId):this.state.terms).map(term=>({...term}));}
  getCurrentByCity(cityId:string,month:number){const term=this.state.terms.filter(term=>term.cityId===cityId&&active(term,month)).at(-1);return term?{...term}:undefined;}
  getByPopulation(sourceUserId:number,bornMonth:number){return this.state.terms.find(t=>t.sourceUserId===sourceUserId&&t.bornMonth===bornMonth);}
