@@ -65,8 +65,8 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
     if(!isPopulationIdentityLabel(person.name)&&splitEstablishedPersonalName(person.name)&&person.personalName!==person.name)errors.push(`military established full name conflict: ${person.personId}`);
     people.set(person.personId, person);
     const personSequenceMatch = /^military-person-(\d+)$/.exec(person.personId);
-    if (!personSequenceMatch) errors.push(`military person id is invalid: ${person.personId}`);
-    else maxPersonSequence = Math.max(maxPersonSequence, Number(personSequenceMatch[1]));
+    if (!personSequenceMatch && !person.civilOrigin) errors.push(`military person id is invalid: ${person.personId}`);
+    else if(personSequenceMatch) maxPersonSequence = Math.max(maxPersonSequence, Number(personSequenceMatch[1]));
     factionRefs.add(person.factionId);
     if (person.status === "DEAD") {
       if (!month(person.deathMonth) || Number(person.deathMonth) < person.bornMonth || Number(person.deathMonth) > worldMonth || typeof person.deathCause !== "string" || !person.deathCause) errors.push(`military dead person lacks actual death: ${person.personId}`);

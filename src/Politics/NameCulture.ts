@@ -73,3 +73,8 @@ export function splitEstablishedPersonalName(name:string){
  const surname=surnames.find(s=>name.startsWith(s)&&name.length>s.length);
  return surname?{houseName:`${surname}氏`,givenName:name.slice(surname.length)}:undefined;
 }
+
+/** Civil entry is anchored to the original population and birth, never a military sequence. */
+export function generateResidentPersonalName(input:{seed:string;sourceUserId:number;bornMonth:number;culture:NameCulture}){
+ return generateMilitaryPersonalName({...input,personId:`resident-${input.sourceUserId}-${input.bornMonth}`,originalName:''});
+}

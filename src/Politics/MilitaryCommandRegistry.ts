@@ -1,3 +1,4 @@
+import {civilPopulationIdentity,civilState} from './CivilCareerIdentity';
 import {familyBirthParents,planFamilyChildBirth,isFamilyBirthPolicy,type FamilyBirthPolicy,FAMILY_ANNUAL_BIRTH_LIMIT,COUNTRY_ANNUAL_FAMILY_BIRTH_LIMIT} from './FamilyChildBirth';
 import {NOBLE_NAMES,isNobleMeritPolicy,nobleEpochForRuler,type NobleMeritPolicy} from './MilitaryNobility';
 import {appointmentAbilityWeight,type AppointmentAbilityPolicy,type AppointmentSelection,type AppointmentSelectionRow} from './AppointmentSelection';
@@ -88,6 +89,7 @@ export interface MilitaryPerson {
   name: string;
   /** Authoritative personal identity; name above remains the original User label. */
   readonly personalName: string;
+  civilOrigin?:{assignmentId:string;naturalDeathMonth:number};
   bornMonth: number;
   factionId: string;
   status: "ACTIVE" | "RETIRED" | "DEAD";
@@ -459,6 +461,7 @@ export class MilitaryCommandRegistryStore {
 
   private appointmentQualificationBlock(user:User,worldMonth:number):string|undefined{
     const p=user.militaryPersonId?this.people.get(user.militaryPersonId):undefined;
+    if(civilState().terms.some(t=>t.sourceUserId===user.id&&t.bornMonth===user.bornMonth&&t.startMonth<=worldMonth&&t.endMonth===undefined))return '仍在担任正式郡守';
     if(p?.politicalHistory?.length&&unresolvedCourtBans(p,user.team.name,worldMonth,this.royalService?.nobleEpoch?.(user.team.name,worldMonth)).length)return '正式禁仕尚未获赦';
     if(user.isDestroyed||p?.status==='DEAD')return '人物已经去世';
     if(user.militaryPersonId&&(!p||p.sourceUserId!==user.id||p.bornMonth!==user.bornMonth||p.name!==user.name||p.factionId!==user.team.name))return '永久人物与在籍身份不一致';
@@ -498,13 +501,14 @@ export class MilitaryCommandRegistryStore {
     let person = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
     if (person?.status === "DEAD" || !this.isEligible(user, worldMonth)) return false;
     if (person?.status === "RETIRED") this.diagnostics.reappointments++;
-    const personId = person?.personId ?? `military-person-${this.personSequence++}`;
+    const civil= civilPopulationIdentity(user.id,user.bornMonth);
+    const personId = person?.personId ?? civil?.personId ?? `military-person-${this.personSequence++}`;
     const commandId = `military-command-${this.commandSequence++}`;
     if (!person) {
-      person = { ...(royalIdentity ? {royalIdentity:{...royalIdentity}} : {}), personId, sourceUserId: user.id, name: user.name, personalName: isPopulationIdentityLabel(user.name) && user.id >= 1000000000 && user.id <= 1999999999
+      person = { ...(royalIdentity ? {royalIdentity:{...royalIdentity}} : {}), personId, sourceUserId: user.id, name: user.name, personalName: civil?.personalName ?? (isPopulationIdentityLabel(user.name) && user.id >= 1000000000 && user.id <= 1999999999
           ? generateMilitaryPersonalName({ seed: worldRandom.exportState().seed, personId, sourceUserId: user.id,
               bornMonth: user.bornMonth, originalName: user.name, culture: deriveNameCulture(user.team.houseName) })
-          : user.name, bornMonth: user.bornMonth, factionId,
+          : user.name), ...(civil?{civilOrigin:{assignmentId:civil.assignmentId,naturalDeathMonth:residentNaturalDeathMonth(user.id,user.bornMonth)}}:{}), bornMonth: user.bornMonth, factionId,
         status: "ACTIVE", appointments: [], capturedEventIds: [] };
       this.people.set(personId, person);
       user.militaryPersonId = personId;

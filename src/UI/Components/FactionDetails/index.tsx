@@ -282,6 +282,8 @@ function FactionProfile({
   const totalCells = Game.Core?.totalCells ?? 1;
   const territoryMetrics = calculateTerritoryMetrics(teams, totalCells);
   const factionTerritory = getFactionTerritoryMetric(territoryMetrics, team.name);
+  const [peopleFilter,setPeopleFilter]=useState<'all'|'military'|'civil'|'family'>('all');
+  useEffect(()=>{setPeopleFilter(tab==='civil'?'civil':tab==='military'?'military':'all');},[tab,team.name,civilTarget?.serial]);
   const activeTab = tab === "trend" || tab === "chronicle" ? "power" : tab;
   const rankedTeams = [...teams].sort(
     (a, b) => getFactionTerritoryMetric(territoryMetrics,b.name).factionControlledBlocks - getFactionTerritoryMetric(territoryMetrics,a.name).factionControlledBlocks
@@ -446,16 +448,16 @@ function FactionProfile({
       </Typography>
       <Box sx={{ display: "flex", gap: 0.5, my: 1 }}>
         {[
-          ["overview", "概览"],
+          ["overview", "概况"],
           ["power", "国势"],
           ["house", "王室"],
-          ["military", "军政人物"],
-          ["civil", "地方文官"],
+          ["people", "人物"],
         ].map(([value, label]) => (
           <Button
             key={value}
             size="small"
-            variant={activeTab === value ? "contained" : "outlined"}
+            sx={{flex:1,minWidth:0,whiteSpace:"nowrap",px:.5}}
+            variant={(activeTab === value || value==="people"&&["military","civil"].includes(activeTab)) ? "contained" : "outlined"}
             onClick={() => dispatch(setFactionDetailTab(value))}
           >
             {label}
@@ -626,8 +628,11 @@ function FactionProfile({
         />
         </Box>
       ) : null}
-      {activeTab === "military" ? <MilitaryPeoplePanel key={team.name} factionId={team.name} worldMonth={worldMonth} /> : null}
-      {activeTab === "civil" ? <CivilGovernancePanel key={`${team.name}-${civilTarget?.serial??0}`} factionId={team.name} month={worldMonth} initialPersonId={civilTarget?.id}/> : null}
+      {["people","military","civil"].includes(activeTab)&&<>
+       <Box sx={{display:'flex',gap:.5,flexWrap:'wrap'}}>{([['all','全部'],['military','武官'],['civil','文官'],['family','世家']] as const).map(([value,label])=><Button key={value} size="small" variant={peopleFilter===value?'contained':'outlined'} onClick={()=>setPeopleFilter(value)}>{label}</Button>)}</Box>
+       {(peopleFilter==='all'||peopleFilter==='civil')&&<CivilGovernancePanel key={`${team.name}-${civilTarget?.serial??0}`} factionId={team.name} month={worldMonth} initialPersonId={civilTarget?.id}/>}
+       {(peopleFilter==='all'||peopleFilter==='military'||peopleFilter==='family')&&<MilitaryPeoplePanel key={`${team.name}-${peopleFilter}`} factionId={team.name} worldMonth={worldMonth} familiesOnly={peopleFilter==='family'}/>}
+      </>}
       <GenealogyBrowser
         open={genealogyViewerOpen}
         onClose={closeFullGenealogy}
@@ -649,8 +654,8 @@ function MilitaryPoliticalEventFacts({ event }: { event: WorldEvent }) {
   </Box> : null;
 }
 
-function MilitaryPeoplePanel({ factionId, worldMonth }: { factionId: string; worldMonth: number }) {
-  const [familyBrowser,setFamilyBrowser]=useState(false);
+function MilitaryPeoplePanel({ factionId, worldMonth, familiesOnly=false }: { factionId: string; worldMonth: number; familiesOnly?:boolean }) {
+  const [familyBrowser,setFamilyBrowser]=useState(familiesOnly);
   const [familyFocus,setFamilyFocus]=useState<(PersonArchiveTarget&{serial:number})|undefined>();
   const families=associatedMilitaryFamilies(MilitaryCommandRegistry.getFamilies(),factionId,MilitaryCommandRegistry.getPeople());
   const [archiveView,setArchiveView]=useState<"people"|"merit">("people");

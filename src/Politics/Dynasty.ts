@@ -2,6 +2,8 @@ import {householdBirthPlan,householdBirthParents,recordRoyalBirthPlanning,HOUSEH
 import {registerRoyalPerson,type RoyalPersonRegistration} from './RoyalPersonRegistration';
 import {nextRoyalNobleAct,royalNobleText,type RoyalNobleAct} from './RoyalNobility';
 import {rulerAbilities} from './PersonAbilities';
+import {civilPopulationIdentity,civilState} from './CivilCareerIdentity';
+import {residentNaturalDeathMonth} from '../Simulation/ResidentLife';
 import {establishedResidentFounderName,type ResidentNameSource} from './ResidentFounderName';
 import {DEFAULT_ABILITY_POLICY,type AbilityPolicy} from './PersonAbilities';
 import {DEFAULT_POLITICAL_CALIBRATION,POLITICAL_CALIBRATIONS,type PoliticalCalibration} from './PoliticalCalibration';
@@ -276,11 +278,11 @@ class DynastyRegistryStore {
     const sourcePerson=military?MilitaryCommandRegistry.getPerson(military.personId):undefined;
     const family=resident?MilitaryCommandRegistry.getFamilyMember(resident.user.id,resident.user.bornMonth):undefined;
     if(family&&family.member.name!==resident!.user.name&&!sourcePerson)throw Error('Resident family name conflict');
-    const established=resident?establishedResidentFounderName(resident.user.name,sourcePerson?.personalName,family?.member.name):undefined;
+    const established=resident?establishedResidentFounderName(resident.user.name,sourcePerson?.personalName,family?.member.name,civilPopulationIdentity(resident.user.id,resident.user.bornMonth)?.personalName):undefined;
     if(military&&(!sourcePerson||sourcePerson.status!=="RETIRED"||sourcePerson.politicalRulerId||sourcePerson.sourceUserId!==resident?.user.id||sourcePerson.bornMonth!==resident.user.bornMonth||!established))throw new Error("Invalid military founder");
     const houseName = established?.houseName??team.houseName ?? `${team.name}氏`;
     if(established)team.houseName=established.houseName;
-    const ruler = this.createFormalRuler(team, houseName, year, undefined, undefined, resident?.user.bornMonth,established?{givenName:established.givenName,...(sourcePerson?{naturalDeathMonth:deriveMilitaryLifeSchedule(sourcePerson).naturalDeathMonth}:family?.member.birth?{naturalDeathMonth:family.member.birth.naturalDeathMonth}:{})}:undefined);
+    const ruler = this.createFormalRuler(team, houseName, year, undefined, undefined, resident?.user.bornMonth,established?{givenName:established.givenName,...(sourcePerson?{naturalDeathMonth:deriveMilitaryLifeSchedule(sourcePerson).naturalDeathMonth}:family?.member.birth?{naturalDeathMonth:family.member.birth.naturalDeathMonth}:resident&&civilPopulationIdentity(resident.user.id,resident.user.bornMonth)?{naturalDeathMonth:residentNaturalDeathMonth(resident.user.id,resident.user.bornMonth)}:{})}:undefined);
     if (resident) {
       const u=resident.user;
       if(u.isDestroyed||u.team!==team||!team.users.has(u)||u.role!=="NORMAL"||(u.militaryPersonId&&!sourcePerson)||u.historicalPersonId)throw new Error("Invalid resident founder");
