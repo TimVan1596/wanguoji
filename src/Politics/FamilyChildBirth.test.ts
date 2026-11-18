@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import {familyBirthParents,planFamilyChildBirth,hasFamilyBirthOpportunity} from './FamilyChildBirth';
+import {familyBirthParents,planFamilyChildBirth,hasFamilyBirthOpportunity,familyBirthSource} from './FamilyChildBirth';
 import random from '../Simulation/WorldRandom';
 const family={familyId:'family-real-charter',surname:'傅',factionId:'qin',epochFounderId:'king',foundedMonth:12},parent={memberId:'father',bornMonth:-300,enteredMonth:12,basisEventId:'real-grant'};
 it('plans only an actual current birth with no population ID, military identity or world RNG use',()=>{
@@ -41,4 +41,12 @@ it('cheap opportunity preflight exactly preserves the birth ticket across polici
   expect(hasFamilyBirthOpportunity(family,p,month,'paired-opportunity',policy)).toBe(Boolean(planFamilyChildBirth(family,p,month,'paired-opportunity',policy)));
  }
  expect(random.exportState()).toEqual(before);
+});
+
+it('rejects source-less retired historical parents before historical context while preserving a real live office or inherited source',()=>{
+ const member:any={memberId:'father',militaryPersonId:'p'},f:any={...family,members:[member],nobleSuccession:[{kind:'ENDED',month:100}]},p:any={personId:'p',factionId:'qin',status:'RETIRED',appointments:[],nobilityHistory:[]};
+ const before=JSON.stringify([f,p]);expect(familyBirthSource(f,member,120,p)).toBeUndefined();expect(JSON.stringify([f,p])).toBe(before);
+ p.status='ACTIVE';p.appointments=[{commandId:'real',factionId:'qin',startMonth:100}];expect(familyBirthSource(f,member,120,p)?.basisEventId).toBe('military-appointment-real');
+ f.nobleSuccession=[{kind:'SUCCEEDED',month:100,holderMemberId:'father',eventId:'inherited'}];expect(familyBirthSource(f,member,120,undefined)).toEqual({basisEventId:'inherited',holder:true});
+ p.deathMonth=110;expect(familyBirthSource(f,member,120,p)).toBeUndefined();
 });
