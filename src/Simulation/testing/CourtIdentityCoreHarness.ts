@@ -1,3 +1,4 @@
+import Civil from '../../Politics/CivilAdministration';
 import {createNaturalCore} from './NaturalCoreHarness';
 import {prepareMeritoriousRoyal} from './RoyalHonorCoreChecks';
 import {hanGivenNamePool} from '../../Politics/NameCulture';
@@ -23,7 +24,9 @@ export async function runCourtIdentityCore(seed='royal-military-z11'){
  try{Object.assign(hanGivenNamePool,{singleNames:['玄'],doubleNamePrefixes:[],doubleNameSuffixes:[],doubleNameChancePercent:0});runtime=await createNaturalCore(seed);for(const team of runtime.core.teams)Dynasty.initializeFaction(team,0);}finally{Object.assign(hanGivenNamePool,pool);}
  const {core,game}=runtime!,checks:string[]=[],check=(v:unknown,label:string)=>{if(!v)throw Error(label);checks.push(label);},strict=()=>exportWorldSave(core),clock=(m:number)=>(core.simulator as any).clock.importState({worldMonth:m,elapsedMs:0,running:false});
  const step=()=>{for(let n=0;n<30;n++)(core as any).advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit('postupdate');};
- try{for(let m=0;m<120;m++)step();core.setWorldRunning(false);const initial=strict();
+ try{for(let m=0;m<120;m++)step();core.setWorldRunning(false);
+  const staging=core.teams.find(t=>t.cities.length>=2&&Dynasty.getRoyalMilitaryCandidates(t,120).some(c=>{const r=Dynasty.get(t.name)!.rulers.find(r=>r.id===c.rulerId)!;return r.givenName==='玄'&&militaryAmbition(Military.nextPersonId(),r.bornYear)>10&&militaryAmbition(Military.nextPersonId(),r.bornYear)<=60;}));check(staging,'same-name fixture retains a real adult royal and an existing country');if(staging!.cities.length<3){const town=core.allCities.find(c=>c.ownerTeam!==staging&&c.ownerTeam.cities.length>=2)!;check(town,'real existing enemy city supports the controlled preparation');town.capture(staging!,120);Civil.update(120,core.teams,Dynasty.getAll());}
+  const initial=strict();
   const prepared=prepareMeritoriousRoyal(core,initial,check,(r,m,d)=>r.givenName==='玄'&&militaryAmbition(Military.nextPersonId(),r.bornYear)<=60&&d.rulers.some(other=>other.id!==r.id&&other.givenName===r.givenName&&other.accessionYear===undefined&&(other.naturalDeathYear??0)>m+84&&m-other.bornYear>=192&&!!getRecordedKinRelation(other,Dynasty.getCurrentRuler(d.factionId)!,d.rulers)));
   const team=prepared.team,month=prepared.month+48,royal=Dynasty.get(team.name)!.rulers.find(r=>r.militaryIdentity&&Military.getPerson(r.militaryIdentity.personId)?.status==='ACTIVE')!,personId=royal.militaryIdentity!.personId,p=Military.getPerson(personId)!,command=p.appointments.at(-1)!.commandId;
   for(const other of Military.getPeople().filter(o=>o.factionId===team.name&&o.personId!==personId&&o.status==='ACTIVE'))Military.endPersonCommands(other.personId,prepared.month,'DISMISSED');
@@ -33,6 +36,7 @@ export async function runCourtIdentityCore(seed='royal-military-z11'){
   for(const u of [...team.users] as any[]){u.player.setPosition(team.capitalCity.block.x+2,team.capitalCity.block.y+2);u.player.body.reset(u.player.x,u.player.y);}
   (Military as any).advanceOffices(month,core.teams);Military.updateNobility(month,core.teams,Dynasty.getAll());Military.updateAppanages(month,core.teams,Dynasty.getAll(),core.allCities);
   check(p.nobilityHistory?.some(g=>g.rank==='BO')&&p.appanageHistory?.some(a=>a.kind==='GRANTED'),'actual royal officer earns independent BO and a source-linked appanage before the court transaction');
+  Civil.update(month,core.teams,Dynasty.getAll());
   const base=strict(),restore=()=>hydrateWorldSave(core,structuredClone(base));
   const actual=()=>{const t=core.teams.find(t=>t.name===team.name)!,d=Dynasty.get(t.name)!,king=Dynasty.getCurrentRuler(t.name)!,person=Military.getPerson(personId)!,body=t.getUserById(person.sourceUserId);return {t,d,king,person,body};};
   const evaluate=()=>{const {t,d,king}=actual(),e=evaluateDepositionOpportunity({factionId:t.name,status:t.status,identityStage:t.identityStage,cityCount:t.cities.length,stability:getFactionStability(t),currentRuler:king,rulers:d.rulers,houseName:d.houseName,worldMonth:month,calibration:Dynasty.getPoliticalCalibration(),events:History.getEventsForFaction(t.name),military:Military.getPoliticalInfluence(t,month,core.logicalUnitRegistry)}),influence=Military.getCourtAttemptInfluence(t,month,core.logicalUnitRegistry),actor=selectCourtInstigator(e,Military.getPeople(),influence,Dynasty.getAbilityPolicy());check(actor?.personId===personId,'real royal command and actual political personality produce the instigator');return {e,actor:actor!};};
