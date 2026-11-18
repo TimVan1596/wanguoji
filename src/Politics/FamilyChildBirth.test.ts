@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import {familyBirthParents,planFamilyChildBirth} from './FamilyChildBirth';
+import {familyBirthParents,planFamilyChildBirth,hasFamilyBirthOpportunity} from './FamilyChildBirth';
 import random from '../Simulation/WorldRandom';
 const family={familyId:'family-real-charter',surname:'傅',factionId:'qin',epochFounderId:'king',foundedMonth:12},parent={memberId:'father',bornMonth:-300,enteredMonth:12,basisEventId:'real-grant'};
 it('plans only an actual current birth with no population ID, military identity or world RNG use',()=>{
@@ -32,4 +32,13 @@ it('requires a current sourced parent and bounds parent, spacing and living-fami
  f.members=[father,...Array.from({length:8},(_,i)=>({memberId:`living-${i}`,name:`傅${i}`,parentMemberId:'father',bornMonth:-i-1,enteredMonth:0,generation:1,source:'HOUSEHOLD_BIRTH'}))];expect(familyBirthParents(f,c())).toEqual([]);
  f.members=[father];father.deathMonth=299;expect(familyBirthParents(f,c())).toEqual([]);
  delete father.deathMonth;person.nobilityHistory=[];expect(familyBirthParents(f,c())).toEqual([]);
+});
+
+it('cheap opportunity preflight exactly preserves the birth ticket across policies, age and death boundaries',()=>{
+ const before=random.exportState();
+ for(const policy of ['LOW','MEDIUM','HIGH'] as const)for(const bornMonth of [-700,-300,0])for(let month=0;month<720;month++){
+  const p={...parent,bornMonth,...(month>600?{deathMonth:month}: {})};
+  expect(hasFamilyBirthOpportunity(family,p,month,'paired-opportunity',policy)).toBe(Boolean(planFamilyChildBirth(family,p,month,'paired-opportunity',policy)));
+ }
+ expect(random.exportState()).toEqual(before);
 });

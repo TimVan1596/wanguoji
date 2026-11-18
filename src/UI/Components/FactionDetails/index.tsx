@@ -757,7 +757,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth, familiesOnly=false }: { fa
           <Typography fontSize="0.8rem" color="var(--gg-text-muted)">{first?`${formatWorldDate(first.startMonth)}—${last?.endMonth===undefined?(current?"今":"止期未载"):formatWorldDate(last.endMonth)}`:"任期未载"} · 军旅纪事展开查看</Typography>
         </>}
       >
-        {expanded && <MilitaryDetailProjection person={person} factionId={factionId} month={worldMonth} events={archiveEvents} eventIndex={eventIndex} dynasties={archiveDynasties} formations={formations} factions={politicalFactionById}>{({entries,allMilestones,milestones,career,bio})=>{
+        {expanded && <MilitaryDetailProjection person={person} factionId={factionId} month={worldMonth} events={archiveEvents} eventIndex={eventIndex} dynasties={archiveDynasties} formations={formations} factions={politicalFactionById}>{({entries,allMilestones,career,bio})=>{
           const formation = getMilitaryLocalFormation(person,factionId,formations);
           const activeUser = [...(Game.Core?.teams.find(team => team.name === person.factionId)?.users ?? [])]
             .find(user => user.militaryPersonId === person.personId);

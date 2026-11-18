@@ -1,3 +1,4 @@
+import {MilitaryServicePanel} from '../FactionDetails/PersonServicePanel';
 import PortraitSummary from '../FactionDetails/PortraitSummary';
 import PersonArchiveCard from '../FactionDetails/PersonArchiveCard';
 import PersonChronicleLayout from '../FactionDetails/PersonChronicleLayout';
@@ -40,7 +41,7 @@ export function CivilGovernorSummary({cityId,month}:{cityId:string;month:number}
 function governorProfile(term:CivilGovernorTerm,month:number){
  const person=Military.getPerson(term.personId),family=term.familyId?Military.getFamilies().find(f=>f.familyId===term.familyId):undefined;
  const user=Game.Core?.teams.flatMap(t=>[...t.users]).find(u=>u.id===term.sourceUserId&&u.bornMonth===term.bornMonth);
- const terms=CivilAdministration.getByPerson(term.personId),deathMonth=person?.deathMonth??terms.find(t=>t.endReason==='DEATH')?.endMonth;
+ const terms=CivilAdministration.getByPerson(term.personId),deathMonth=person?.deathMonth??Military.getFamilyMember(term.sourceUserId,term.bornMonth)?.member.deathMonth??terms.find(t=>t.endReason==='DEATH')?.endMonth;
  const portraitMonth=Math.min(month,deathMonth??month,term.endMonth===undefined?month:Math.max(term.startMonth,term.endMonth-1));
  const team=Game.Core?.teams.find(t=>t.name===term.factionId);
  const abilities=person?militaryAbilities(person):personAbilities({kind:'RESIDENT',sourceUserId:term.sourceUserId,bornMonth:term.bornMonth});
@@ -56,7 +57,7 @@ function GovernorDetail({term,month}:{term:CivilGovernorTerm;month:number}){
   title={<Typography fontWeight="bold">{term.personalName} · {term.countryName} · {term.cityName}郡守{term.endMonth!==undefined?'（已离任）':''}</Typography>}
   identity={<><PersonCareerIdentity personId={term.personId} name={term.personalName} bornMonth={term.bornMonth} deathMonth={deathMonth}/><Typography fontSize=".76rem">{deathMonth!==undefined?`享年${Math.floor((deathMonth-term.bornMonth)/12)}岁`:user?`年龄${Math.floor((month-term.bornMonth)/12)}岁`:`任职末期${Math.floor((ageMonth-term.bornMonth)/12)}岁 · 此后生死未载`} · {sourceLabel(term)}</Typography></>}
   preBiography={<>{person?<MilitaryDispositionPanel person={person} personId={person.personId} bornMonth={person.bornMonth} loyalty={loyalty?.value} loyaltyContext={loyalty}/>:<PersonAbilityPanel abilities={abilities} loyalty={loyalty}/>}
-  <CivilServicePanel personId={term.personId} month={month} factionId={term.factionId}/>
+  <MilitaryServicePanel personId={term.personId} month={month}/><CivilServicePanel personId={term.personId} month={month} factionId={term.factionId}/>
   {person&&<NobleHistory person={person} month={month}/>}
   {person&&family&&<FamilyTitleBadge personId={person.personId} factionId={family.factionId} month={month}/>}
   {family&&!person&&term.familyMemberId&&<FamilyPersonSources family={family} memberId={term.familyMemberId} month={month}/>}
@@ -81,7 +82,7 @@ export default function CivilGovernancePanel({factionId,month,initialPersonId}:{
   <TextField size="small" label="姓名搜索" value={search} onChange={e=>setSearch(e.target.value)} sx={{my:.5}}/>
 
   {!shown.length&&<Typography fontSize='.8rem' color='var(--gg-text-muted)'>{view==='current'?'暂无正式郡守':'尚无已结束的郡守任期'}</Typography>}
-  <MilitaryArchiveWindow key={factionId} ids={[...new Set([...(selectedTerm?[selectedTerm.personId]:[]),...shown.map(t=>t.personId)])]} targetId={selectedTerm?.personId}>{(id,index)=>{
+  <MilitaryArchiveWindow key={factionId} ids={[...new Set([...shown.map(t=>t.personId),...(selectedTerm?[selectedTerm.personId]:[])])]} targetId={selectedTerm?.personId}>{(id,index)=>{
    const term=shown.find(t=>t.personId===id)??selectedTerm!;const profile=governorProfile(term,month),expanded=selected===id;
    const open=()=>{if(profile.person?.appointments.some(a=>a.factionId===term.factionId))navigation.open({kind:'MILITARY',factionId:term.factionId,id});else setSelected(expanded?undefined:id);};
    return <Box data-civil-governor={term.assignmentId}><PersonArchiveCard index={index} expanded={expanded} active={active(term,month)} onSelect={open}
