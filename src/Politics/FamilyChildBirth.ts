@@ -13,11 +13,16 @@ export interface FamilyChildBirth {
 }
 export interface FamilyBirthParent {memberId:string;bornMonth:number;enteredMonth:number;deathMonth?:number;basisEventId:string;}
 /** Pure current-month opportunity. No User allocation, world RNG, spouse or retrospective child. */
-export function planFamilyChildBirth(f:{familyId:string;surname:string;factionId:string;epochFounderId:string;foundedMonth:number},parent:FamilyBirthParent,month:number,seed:string,policy:FamilyBirthPolicy){
+function familyBirthOpportunity(f:{familyId:string;surname:string;factionId:string;epochFounderId:string;foundedMonth:number},parent:FamilyBirthParent,month:number,seed:string,policy:FamilyBirthPolicy){
  if(!Number.isSafeInteger(month)||month<12||month<f.foundedMonth||month<parent.enteredMonth||month-parent.bornMonth<240||month-parent.bornMonth>FAMILY_PARENT_MAX_AGE_MONTHS||(parent.deathMonth??Infinity)<=month)return;
  const opportunityMonth=Math.floor(month/12)*12,key=`family-child-v1:${seed}:${f.familyId}:${parent.memberId}:${parent.bornMonth}:${opportunityMonth}`,delivery=new WorldRandom();delivery.initialize(key+':delivery');
  if(month!==opportunityMonth+delivery.pickIndex(12))return;
  const rng=new WorldRandom();rng.initialize(key);const ticket=rng.next();if(ticket>=FAMILY_BIRTH_CHANCE[policy])return;
+ return {opportunityMonth,ticket,rng};
+}
+export function hasFamilyBirthOpportunity(...args:Parameters<typeof familyBirthOpportunity>){return !!familyBirthOpportunity(...args);}
+export function planFamilyChildBirth(f:{familyId:string;surname:string;factionId:string;epochFounderId:string;foundedMonth:number},parent:FamilyBirthParent,month:number,seed:string,policy:FamilyBirthPolicy){
+ const opportunity=familyBirthOpportunity(f,parent,month,seed,policy);if(!opportunity)return;const {opportunityMonth,ticket,rng}=opportunity;
  const culture=deriveNameCulture(f.surname+'氏'),pool=culture==='HAN'?hanGivenNamePool:{...cultureGivenNamePools[culture],singleNames:[],doubleNamePrefixes:[],doubleNameSuffixes:[],doubleNameChancePercent:0};
  const memberId=`${f.familyId}-child-${month}`,name=f.surname+pickRulerGivenName(pool,[],max=>rng.pickIndex(max));
  // Only newly born abstract children use this fixed life plan; existing User lives are unchanged.

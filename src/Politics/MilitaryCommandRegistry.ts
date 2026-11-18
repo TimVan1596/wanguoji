@@ -1,6 +1,6 @@
 import {measurePhase,type MonthlyPhaseProfiler} from '../Simulation/MonthlyPhaseProfiler';
 import {civilPopulationIdentity,civilState} from './CivilCareerIdentity';
-import {familyBirthParents,planFamilyChildBirth,isFamilyBirthPolicy,type FamilyBirthPolicy,FAMILY_ANNUAL_BIRTH_LIMIT,COUNTRY_ANNUAL_FAMILY_BIRTH_LIMIT} from './FamilyChildBirth';
+import {familyBirthParents,planFamilyChildBirth,hasFamilyBirthOpportunity,isFamilyBirthPolicy,type FamilyBirthPolicy,FAMILY_ANNUAL_BIRTH_LIMIT,COUNTRY_ANNUAL_FAMILY_BIRTH_LIMIT} from './FamilyChildBirth';
 import {NOBLE_NAMES,isNobleMeritPolicy,nobleEpochForRuler,type NobleMeritPolicy} from './MilitaryNobility';
 import {appointmentAbilityWeight,type AppointmentAbilityPolicy,type AppointmentSelection,type AppointmentSelectionRow} from './AppointmentSelection';
 import {personAbilities,militaryAbilities,type PersonAbilities} from './PersonAbilities';
@@ -409,10 +409,10 @@ export class MilitaryCommandRegistryStore {
       if(titleCandidates.length){this.familyRecruitment.titleCandidateChecks+=titleCandidates.length;this.familyRecruitment.titleVacancyOpportunities++;this.familyRecruitment.titleExpectedAppointments+=vacancyChance+(ANNUAL_APPOINTMENT_CHANCE*titleCandidates.reduce((n,u)=>n+(preparedWeights?.[candidates.indexOf(u)]??1),0)/(exposure?.totalWeight??1));}
       if(exposure){const d=this.familyRecruitment;d.opportunities++;d.qualifiedPersonChecks+=familyRows.length;d.expectedAppointments+=exposure.expected;d.baselineExpectedAppointments+=exposure.baselineExpected;d.weightSum+=exposure.familyWeight;for(const u of familyRows)if(d.distinctCandidateIds.length<4096&&!d.distinctCandidateIds.includes(u.familyMemberId!))d.distinctCandidateIds.push(u.familyMemberId!);d.recent.unshift({month:worldMonth,factionId:team.name,...exposure});d.recent.length=Math.min(20,d.recent.length);}
       let selectedFamily=false;
+      const opportunityRandom=worldRandom.exportState(),opportunityRoll=worldRandom.next(),priority=opportunityRoll>=ANNUAL_APPOINTMENT_CHANCE;
+      if(priority&&opportunityRoll>=ANNUAL_APPOINTMENT_CHANCE+vacancyChance){if(provisional){this.diagnostics.provisionalDraws++;this.diagnostics.provisionalMisses++;}this.selectionContext=undefined;continue;}
       const attempt=()=>{
       if(provisional)this.diagnostics.provisionalDraws++;
-      const opportunityRoll=worldRandom.next(),priority=opportunityRoll>=ANNUAL_APPOINTMENT_CHANCE;
-      if (opportunityRoll >= ANNUAL_APPOINTMENT_CHANCE+vacancyChance) {if(provisional)this.diagnostics.provisionalMisses++;return;}
       const weights=preparedWeights??getWeights();
       if(exposure){this.familyRecruitment.poolDraws++;this.familyRecruitment.conditionalExpectedSelections+=priority?1:exposure.conditional;}
       const selectionRoll=worldRandom.next();
@@ -433,7 +433,7 @@ export class MilitaryCommandRegistryStore {
       measurePhase(profile,'Military/orders',()=>this.refreshOrders(worldMonth, teams, cities));
       };
       try{if(this.appointmentAbilityPolicy!=='BASELINE'||candidates.some(u=>u.familyMemberId)){
-        try{measurePhase(profile,'Military/appointment transaction',()=>this.familyTransaction(team,attempt));}catch(error){this.diagnostics.familyAppointmentFailures++;this.familyRecruitment.executionFailures++;if(selectedFamily)this.familyRecruitment.rolledBackSelections++;console.warn('[MilitaryFamily] appointment opportunity rolled back',error);}
+        try{measurePhase(profile,'Military/appointment transaction',()=>this.familyTransaction(team,attempt));}catch(error){worldRandom.restore(opportunityRandom);this.diagnostics.familyAppointmentFailures++;this.familyRecruitment.executionFailures++;if(selectedFamily)this.familyRecruitment.rolledBackSelections++;console.warn('[MilitaryFamily] appointment opportunity rolled back',error);}
       }else attempt();}finally{this.selectionContext=undefined;}
     }
   }
@@ -626,9 +626,10 @@ export class MilitaryCommandRegistryStore {
     // Cheap current-life gate before any full historical context/index is built.
     const liveTeams=new Set(teams.filter(t=>t.status==='ACTIVE'&&t.identityStage==='STATE').map(t=>t.name));
     const candidates=this.families.filter(f=>liveTeams.has(f.factionId)&&f.members.some(m=>m.enteredMonth<=month&&(m.deathMonth??Infinity)>month&&(m.exitMonth??Infinity)>month&&m.bornMonth+240<=month&&m.bornMonth+660>=month&&(m.militaryPersonId&&this.people.has(m.militaryPersonId)||f.nobleSuccession?.at(-1)?.kind==='SUCCEEDED'&&f.nobleSuccession.at(-1)?.holderMemberId===m.memberId)));
-    if(!candidates.length)return;
+    const birthSeed=String(worldRandom.exportState().seed),dueCandidates=candidates.filter(f=>f.members.some(m=>hasFamilyBirthOpportunity(f,{...m,basisEventId:''},month,birthSeed,this.familyBirthPolicy)));
+    if(!dueCandidates.length)return;
     const events=WorldHistory.getRecordedEvents(),context=createFamilyNobleContext(month,this.families,this.getPeople(),events,dynasties),eventIds=new Set(events.map(e=>e.id));
-    for(const familyId of candidates.map(f=>f.familyId).sort()){const f=this.families.find(f=>f.familyId===familyId)!;
+    for(const familyId of dueCandidates.map(f=>f.familyId).sort()){const f=this.families.find(f=>f.familyId===familyId)!;
       if(f.members.some(m=>m.birth&&m.deathMonth===undefined&&m.exitMonth===undefined&&m.birth.naturalDeathMonth<=month&&!dynasties.some(d=>d.rulers.some(r=>m.sourceUserId!==undefined&&r.residentIdentity?.sourceUserId===m.sourceUserId&&r.bornYear===m.bornMonth&&r.reignOrdinal!==undefined))))continue;
       const t=teams.find(t=>t.name===f.factionId);if(!t||t.status!=='ACTIVE'||t.identityStage!=='STATE'||(counts.get(f.factionId)??0)>=COUNTRY_ANNUAL_FAMILY_BIRTH_LIMIT||f.members.filter(m=>m.birth?.opportunityMonth===year).length>=FAMILY_ANNUAL_BIRTH_LIMIT)continue;
       for(const {member:parent,basisEventId} of familyBirthParents(f,context,eventIds)){
