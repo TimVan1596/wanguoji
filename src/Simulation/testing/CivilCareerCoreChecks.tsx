@@ -50,14 +50,19 @@ export function checkCivilCareer(core:any,saved:WorldSaveV1,term:CivilGovernorTe
  const career=strict();hydrateWorldSave(core,structuredClone(career));check(diffCanonicalWorldSave(career,strict()).matched,'full civilian military noble and civilian career round-trips strictly');
  const scheduledDeath=deriveMilitaryLifeSchedule(person()).naturalDeathMonth;clock(scheduledDeath);Military.update(scheduledDeath,core.teams,core.allCities);Civil.update(scheduledDeath,core.teams,Dynasty.getAll());check(person().status==='DEAD'&&person().deathMonth===scheduledDeath,'civil-origin military career dies at the original resident scheduled month, including nonannual months');hydrateWorldSave(core,structuredClone(career));
  const host=document.createElement('div'),root=createRoot(host);document.body.append(host);
- store.dispatch(setTeams(core.teams));store.dispatch(setWorldMonth({monthIndex:awardMonth,year:awardMonth}));store.dispatch(setSelectedFactionName(term.factionId));store.dispatch(setFactionDetailTab('people'));
+ store.dispatch(setTeams(core.teams));store.dispatch(setWorldMonth({monthIndex:career.world.worldMonth,year:career.world.worldMonth}));store.dispatch(setSelectedFactionName(term.factionId));store.dispatch(setFactionDetailTab('people'));
  try{
   flushSync(()=>root.render(<Provider store={store}><FactionDetails/></Provider>));
   const button=(label:string)=>Array.from(host.querySelectorAll('button')).find(b=>b.textContent===label);
   check(['概况','国势','王室','人物'].every(label=>button(label))&&!button('军政人物')&&!button('地方文官'),'four top-level destinations replace the crowded five-tab row');
-  for(const label of ['全部','武官','文官','世家']){const b=button(label);check(b,`people filter ${label} is accessible`);flushSync(()=>b!.click());
-   if(label==='武官'){const input=host.querySelector<HTMLInputElement>('input[aria-label="武官姓名搜索"]');check(input,'military name search remains accessible');const write=(value:string)=>flushSync(()=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')!.set!.call(input,value);input!.dispatchEvent(new Event('input',{bubbles:true}));});write('不存在的名字-z62');check(!host.querySelector('[data-military-person]'),'military name search excludes unrelated people');write(term.personalName);check(host.querySelector(`[data-military-person="${term.personId}"]`),'military name search locates the same former governor');}
-  }
+  check(!host.textContent?.includes('姓名搜索')&&!button('全部')&&!button('武官')&&!button('文官'),'unified people archive removes both searches and the permanent secondary tab row');
+  const historical=Array.from(host.querySelectorAll('button')).find(b=>b.textContent?.startsWith('历任人物'));check(historical,'historical identities remain available in one folded archive');
+  if(!host.querySelector(`[data-unified-person="${term.personId}"]`))flushSync(()=>historical!.click());
+  const rows=host.querySelectorAll(`[data-unified-person="${term.personId}"]`);check(rows.length===1,'civil military transfer has exactly one permanent identity card in the unified list');
+  const open=rows[0].querySelector<HTMLButtonElement>('button[aria-expanded]');if(open?.getAttribute('aria-expanded')!=='true')flushSync(()=>open!.click());
+  check(rows[0].querySelector(`[data-person-career-identity="${term.personId}"]`)&&rows[0].querySelector('[data-civil-service]')&&rows[0].querySelector('[data-person-attribute="command"]'),'same unified card exposes real identity, both careers and ability bars');
+  check(button('功臣世家')&&button('功臣录'),'family genealogy and merit roll remain reachable');
+
  }finally{flushSync(()=>root.unmount());host.remove();}
  clock(awardMonth+1);user().destroyUser(false,{cause:'BATTLE_DEATH',month:awardMonth+1,damageSource:'HOSTILE_HOME_OCCUPATION'});Civil.update(awardMonth+1,core.teams,Dynasty.getAll());
  check(person().status==='DEAD'&&person().personalName===term.personalName&&Civil.getByPerson(term.personId).every(t=>t.endMonth!==undefined),'one real death ends the full career without changing name or duplicating identity');strict();

@@ -657,7 +657,7 @@ function MilitaryPoliticalEventFacts({ event }: { event: WorldEvent }) {
   </Box> : null;
 }
 
-function UnifiedPeoplePanel({factionId,month,civilTarget}:{factionId:string;month:number;civilTarget?:{id:string;serial:number}}){
+export function UnifiedPeoplePanel({factionId,month,civilTarget}:{factionId:string;month:number;civilTarget?:{id:string;serial:number}}){
  const navigation=usePersonArchiveNavigation(),[selected,setSelected]=useState<string>(),[history,setHistory]=useState(false),[mode,setMode]=useState<'people'|'family'|'merit'>('people');
  const archiveEvents=useMemo(()=>WorldHistory.getRecordedEvents(),[month,WorldHistory.getRevision()]),archiveDynasties=useMemo(()=>DynastyRegistry.getAll(),[month,WorldHistory.getRevision()]);
  const terms=CivilAdministration.getTerms(factionId),people=MilitaryCommandRegistry.getPeople().filter(p=>p.appointments.some(a=>a.factionId===factionId)||terms.some(t=>t.personId===p.personId));

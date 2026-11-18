@@ -4,8 +4,7 @@ import {Profiler} from 'react';
 import {Provider} from 'react-redux';
 import {store} from '../../store';
 import {setTeams,setWorldMonth,setSelectedFactionName,setFactionDetailTab,setPersonArchiveRequest} from '../../store/rootSlice';
-import FactionDetails from '../../UI/Components/FactionDetails';
-import CivilPanel from '../../UI/Components/CivilAdministration/CivilGovernancePanel';
+import FactionDetails,{UnifiedPeoplePanel} from '../../UI/Components/FactionDetails';
 import Civil from '../../Politics/CivilAdministration';
 import Military from '../../Politics/MilitaryCommandRegistry';
 import {formatWorldDate} from '../WorldTime';
@@ -21,7 +20,7 @@ export async function runUnifiedProfilePerformance(seed:string,input:WorldSaveV1
  try{game.loop.stop();core.setWorldRunning(false);hydrateWorldSave(core,structuredClone(input));
   store.dispatch(setTeams(core.teams));store.dispatch(setWorldMonth({monthIndex:input.world.worldMonth,year:input.world.worldMonth}));
   const terms=Civil.getTerms(),candidates=[terms.find(t=>t.endMonth===undefined),terms.find(t=>t.endReason==='DEATH'),...terms.slice(-5)].filter((t):t is NonNullable<typeof t>=>!!t);
-  for(const term of candidates){const start=performance.now();flushSync(()=>root.render(<Provider store={store}><Profiler id="civil" onRender={(_id,_phase,ms)=>commits.push(ms)}><CivilPanel key={term.factionId} factionId={term.factionId} month={input.world.worldMonth} initialPersonId={term.personId}/></Profiler></Provider>));
+  for(const term of candidates){const start=performance.now();flushSync(()=>root.render(<Provider store={store}><Profiler id="civil" onRender={(_id,_phase,ms)=>commits.push(ms)}><UnifiedPeoplePanel key={term.factionId} factionId={term.factionId} month={input.world.worldMonth} civilTarget={{id:term.personId,serial:term.startMonth}}/></Profiler></Provider>));
    const detail=host.querySelector('[data-civil-governor-detail]');check(detail?.textContent?.includes(term.personalName),'civil deep link shows actual identity');if(expectUnified){check(detail?.querySelector('[data-person-attribute="command"]')&&detail.querySelector('[data-person-attribute="strategy"]'),'civil shares real ability bars');check(host.querySelector(`svg[data-person-id="${term.personId}"]`),'civil shares portrait');}if(term.endReason==='DEATH')check(detail?.textContent?.includes('卒于'+formatWorldDate(term.endMonth!))&&!detail.textContent?.includes('—今'),'deceased governor has death and ended tenure');
    rows.push({kind:'CIVIL',personId:term.personId,openMs:performance.now()-start,dom:host.querySelectorAll('*').length});
   }

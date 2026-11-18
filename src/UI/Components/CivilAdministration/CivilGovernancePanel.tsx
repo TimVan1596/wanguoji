@@ -1,15 +1,12 @@
 import Dynasty from '../../../Politics/Dynasty';
 import {militaryPortraitStatus} from '../../../Politics/MilitaryPortraitStatus';
 import {MilitaryServicePanel} from '../FactionDetails/PersonServicePanel';
-import PortraitSummary from '../FactionDetails/PortraitSummary';
-import PersonArchiveCard from '../FactionDetails/PersonArchiveCard';
 import PersonChronicleLayout from '../FactionDetails/PersonChronicleLayout';
 import PersonAbilityPanel,{PersonAbilityEvidence} from '../FactionDetails/PersonAbilityPanel';
 import MilitaryDispositionPanel from '../FactionDetails/MilitaryDispositionPanel';
 import {personCareerMilestones} from '../FactionDetails/PersonCareerTimeline';
 import {personAbilities,militaryAbilities} from '../../../Politics/PersonAbilities';
 import {getFactionColorAtMonth} from '../../../Simulation/FactionColorHistory';
-import MilitaryArchiveWindow from '../FactionDetails/MilitaryArchiveWindow';
 import {Box,Button,Typography} from '@mui/material';
 import {useEffect,useState} from 'react';
 import {store} from '../../../store';
@@ -25,7 +22,6 @@ import {NobleHistory} from '../FactionDetails/NobleHistory';
 import PersonCareerIdentity from '../FactionDetails/PersonCareerIdentity';
 import {usePersonArchiveNavigation} from '../FactionDetails/PersonArchiveNavigation';
 
-const active=(term:CivilGovernorTerm,month:number)=>term.startMonth<=month&&term.endMonth===undefined;
 const endReasonLabel=(reason:NonNullable<CivilGovernorTerm['endReason']>)=>({DEATH:'去世',CITY_LOST:'城池失守',FACTION_ENDED:'政权终结',REGIME_ENDED:'王统结束',POLITICAL_SANCTION:'政治禁仕',MILITARY_OFFICE:'转任武职',REPLACED:'职务更替',IDENTITY_ENDED:'身份或在籍关系结束'})[reason];
 const sourceLabel=(term:CivilGovernorTerm)=>term.identitySource==='ORDINARY_RESIDENT'?'在籍居民':term.identitySource==='FAMILY'?'功臣世家':term.identitySource==='NOBLE'?'有爵人物':term.identitySource==='ROYAL'?'宗室':'退役军人';
 
@@ -70,28 +66,6 @@ export function GovernorDetail({term,month}:{term:CivilGovernorTerm;month:number
   milestoneTitle="生平时间轴" milestones={milestones.slice(-8)} milestoneTotal={milestones.length} allMilestones={()=>milestones}
   governance={<Box><Typography fontSize=".8rem">任期：{formatWorldDate(term.startMonth)}—{term.endMonth===undefined?'今':formatWorldDate(term.endMonth)} · {formatWorldDuration((term.endMonth??month)-term.startMonth)}</Typography><Typography fontSize=".8rem">治理：{civilGovernorStatus(term,cityFor(term),month)} · 忠诚恢复{term.loyaltyRecovered} · 破坏恢复{term.devastationRecovered}</Typography>{term.meritEventId&&<Typography fontSize=".76rem">地方治绩：{formatWorldDate(term.meritMonth!)} · 因实际治理恢复获正式记录。</Typography>}</Box>}
   assessment={[]} evidence={()=><><PersonAbilityEvidence abilities={abilities}/><Typography fontSize=".74rem">人物：{term.personId} / User {term.sourceUserId}。肖像取实际任职时点 {formatWorldDate(portraitMonth)}；身份、城市及任命君主使用原始记录。</Typography></>}/>
- </Box>;
-}
-
-export default function CivilGovernancePanel({factionId,month,initialPersonId}:{factionId:string;month:number;initialPersonId?:string}){
- const navigation=usePersonArchiveNavigation();
- useHistoryRevision();const [view,setView]=useState<'current'|'history'>('current'),[selected,setSelected]=useState<string|undefined>(initialPersonId);
-
- useEffect(()=>{setSelected(initialPersonId);setView('current');},[initialPersonId,factionId]);
- const terms=CivilAdministration.getTerms(factionId),shown=terms.filter(term=>view==='current'?active(term,month):term.endMonth!==undefined&&term.endMonth<=month).sort((a,b)=>b.startMonth-a.startMonth||a.assignmentId.localeCompare(b.assignmentId)),selectedTerm=terms.find(term=>term.personId===selected&&term.endMonth===undefined)??terms.filter(term=>term.personId===selected).at(-1);
- return <Box data-civil-governance-panel={factionId}>
-  <Box sx={{display:'flex',gap:.5,my:.5}}><Button size='small' variant={view==='current'?'contained':'outlined'} onClick={()=>setView('current')}>现任</Button><Button size='small' variant={view==='history'?'contained':'outlined'} onClick={()=>setView('history')}>历任</Button><Typography component='span' fontSize='.78rem' sx={{alignSelf:'center',color:'var(--gg-text-muted)'}}>文官与爵位、军职分列</Typography></Box>
-
-  {!shown.length&&<Typography fontSize='.8rem' color='var(--gg-text-muted)'>{view==='current'?'暂无正式郡守':'尚无已结束的郡守任期'}</Typography>}
-  <MilitaryArchiveWindow key={factionId} ids={[...new Set([...shown.map(t=>t.personId),...(selectedTerm?[selectedTerm.personId]:[])])]} targetId={selectedTerm?.personId}>{(id,index)=>{
-   const term=shown.find(t=>t.personId===id)??selectedTerm!;const profile=governorProfile(term,month),expanded=selected===id;
-   const open=()=>{if(profile.person?.appointments.some(a=>a.factionId===term.factionId))navigation.open({kind:'MILITARY',factionId:term.factionId,id});else setSelected(expanded?undefined:id);};
-   return <Box data-civil-governor={term.assignmentId}><PersonArchiveCard index={index} expanded={expanded} active={active(term,month)} onSelect={open}
-    portrait={<PortraitSummary status={profile.person?militaryPortraitStatus(profile.person,term.factionId,month,Dynasty.getAll(),WorldHistory.getRecordedEvents()):undefined} portrait={profile.portrait} name={term.personalName} lines={[`${term.countryName} · ${term.cityName}郡守`,formatWorldDate(term.bornMonth)+'出生',`${formatWorldDate(term.startMonth)}—${term.endMonth===undefined?'今':formatWorldDate(term.endMonth)}`]} onFull={()=>setSelected(id)}/>}
-    heading={<><Typography fontWeight="bold" fontSize=".86rem">{term.personalName} · {term.cityName}郡守</Typography><Typography fontSize=".75rem">{formatWorldDate(term.startMonth)}—{term.endMonth===undefined?'今':formatWorldDate(term.endMonth)} · {sourceLabel(term)}</Typography></>}>
-    <GovernorDetail term={term} month={month}/>
-   </PersonArchiveCard></Box>;
-  }}</MilitaryArchiveWindow>
  </Box>;
 }
 
