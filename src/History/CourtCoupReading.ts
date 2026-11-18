@@ -24,10 +24,11 @@ export function mergeCourtCoupReading(events:readonly WorldEvent[]){
   const dep=typeof m.depositionEventId==='string'?byId.get(m.depositionEventId):undefined;
   if(r.outcome==='SUCCESS'&&(!dep||dep.type!=='ruler-deposed'||dep.metadata?.courtCoupEventId!==e.id||dep.metadata.previousRulerId!==r.previousRulerId||dep.rulerId!==r.targetRulerId||dep.actorFactionId!==e.actorFactionId||at(dep)!==at(e)))continue;
   const sources=[e,result,...(dep?[dep]:[])];
-  for(const x of children.get(e.id)??[])if(x.type==='military-command-ended'&&x.metadata?.courtCoupEventId===e.id&&x.metadata.personId===r.participant.personId&&x.metadata.commandId===r.participant.commandId&&x.metadata.endReason==='DISMISSED'&&x.actorFactionId===e.actorFactionId&&at(x)===at(e))sources.push(x);
+  const successorOffice=(()=>{try{return JSON.parse(String(dep?.metadata?.politicalCrisis)).successorOffice as {personId:string;commandId:string}|undefined;}catch{return;}})();
+  for(const x of children.get(e.id)??[])if(x.type==='military-command-ended'&&x.metadata?.courtCoupEventId===e.id&&(x.metadata.personId===r.participant.personId&&x.metadata.commandId===r.participant.commandId||!!successorOffice&&x.metadata.personId===successorOffice.personId&&x.metadata.commandId===successorOffice.commandId)&&x.metadata.endReason==='DISMISSED'&&x.actorFactionId===e.actorFactionId&&at(x)===at(e))sources.push(x);
   if(dep){for(const x of events){
    if(x.type!=='military-appanage'||at(x)!==at(e)||x.actorFactionId!==e.actorFactionId)continue;
-   try{const a=JSON.parse(String(x.metadata?.appanage));if(a.kind==='ENDED'&&a.reason==='ACCESSION'&&a.sourceEventId===dep.id&&x.metadata?.personId===a.personId&&a.personId===r.participant.personId)sources.push(x);}catch{}
+   try{const a=JSON.parse(String(x.metadata?.appanage));if(a.kind==='ENDED'&&a.reason==='ACCESSION'&&a.sourceEventId===dep.id&&x.metadata?.personId===a.personId&&(a.personId===r.participant.personId||a.personId===successorOffice?.personId))sources.push(x);}catch{}
   }}
   for(const x of sources)if(x!==e)hidden.add(x.id);
   const service=children.get(e.id)?.find(x=>x.type==='court-service-granted'&&x.metadata?.courtCoupEventId===e.id&&x.metadata?.courtResultEventId===result.id&&x.metadata?.personId===r.participant.personId&&x.rulerId===r.targetRulerId&&at(x)===at(e));if(service){sources.push(service);hidden.add(service.id);}
