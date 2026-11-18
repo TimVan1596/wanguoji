@@ -610,12 +610,15 @@ export class MilitaryCommandRegistryStore {
     if(!m?.birth||m.sourceUserId!==undefined||m.deathMonth!==undefined||m.bornMonth+216>month||m.birth.naturalDeathMonth<=month||this.hasFamilyResidentId(userId))throw Error('Invalid born family resident binding');
     m.sourceUserId=userId;m.populationEnteredMonth=month;this.familyByResident=undefined;this.familyReadingRevision++;
   }
+  /** Valid only for this update invocation; rollback/hydration replacing the array invalidates the index. */
+  private familyLookupForUpdate(){let source=this.families,index=new Map(source.map(f=>[f.familyId,f]));return (id:string)=>{if(source!==this.families){source=this.families;index=new Map(source.map(f=>[f.familyId,f]));}return index.get(id)!;};}
   updateFamilyHouseholds(month:number,teams:Team[],dynasties:Dynasty[]){
+    const familyById=this.familyLookupForUpdate();
     if(!this.eventWriter||month<12||month!==this.royalService?.worldMonth?.())return;
     const politicalResidents=new Set(dynasties.flatMap(d=>d.rulers.filter(r=>r.residentIdentity&&r.reignOrdinal!==undefined).map(r=>`${r.residentIdentity!.sourceUserId}/${r.bornYear}`)));
     for(const familyId of this.families.map(f=>f.familyId)){
-      const ids=this.families.find(f=>f.familyId===familyId)!.members.filter(m=>m.birth&&m.deathMonth===undefined&&m.birth.naturalDeathMonth<=month).map(m=>m.memberId);
-      for(const memberId of ids){const f=this.families.find(f=>f.familyId===familyId)!,m=f.members.find(m=>m.memberId===memberId)!;
+      const ids=familyById(familyId).members.filter(m=>m.birth&&m.deathMonth===undefined&&m.birth.naturalDeathMonth<=month).map(m=>m.memberId);
+      for(const memberId of ids){const f=familyById(familyId),m=f.members.find(m=>m.memberId===memberId)!;
         if(m.sourceUserId!==undefined){if(politicalResidents.has(`${m.sourceUserId}/${m.bornMonth}`))continue;const u=teams.map(t=>t.getUserById(m.sourceUserId!)).find(Boolean);if(u&&!u.destroyUser(false,{cause:'NATURAL_DEATH',month,damageSource:'RESIDENT_LIFESPAN'}))break;continue;}
         const due=m.birth!.naturalDeathMonth,id=`${f.familyId}-${m.memberId}-death`;
         if(!this.commitFamilyHistory({id,year:due,type:'family-member-died',category:'politics',importance:'normal',actorFactionId:f.factionId,factionIds:[f.factionId],title:`${m.name}自然去世。`,metadata:{familyId:f.familyId,memberId:m.memberId,bornMonth:m.bornMonth,deathCause:'NATURAL_DEATH',birthEventId:m.birth!.eventId,...(month!==due?{recordedMonth:month}:{})}},()=>{m.deathMonth=due;m.deathCause='NATURAL_DEATH';m.deathHistoryIndex=WorldHistory.getEventCount()-1;}))break;
@@ -629,7 +632,7 @@ export class MilitaryCommandRegistryStore {
     const birthSeed=String(worldRandom.exportState().seed),dueCandidates=candidates.filter(f=>f.members.some(m=>hasFamilyBirthOpportunity(f,{...m,basisEventId:''},month,birthSeed,this.familyBirthPolicy)&&familyBirthSource(f,m,month,m.militaryPersonId?this.people.get(m.militaryPersonId):undefined))); 
     if(!dueCandidates.length)return;
     const events=WorldHistory.getRecordedEvents(),context=createFamilyNobleContext(month,this.families,this.getPeople(),events,dynasties),eventIds=new Set(events.map(e=>e.id));
-    for(const familyId of dueCandidates.map(f=>f.familyId).sort()){const f=this.families.find(f=>f.familyId===familyId)!;
+    for(const familyId of dueCandidates.map(f=>f.familyId).sort()){const f=familyById(familyId);
       if(f.members.some(m=>m.birth&&m.deathMonth===undefined&&m.exitMonth===undefined&&m.birth.naturalDeathMonth<=month&&!dynasties.some(d=>d.rulers.some(r=>m.sourceUserId!==undefined&&r.residentIdentity?.sourceUserId===m.sourceUserId&&r.bornYear===m.bornMonth&&r.reignOrdinal!==undefined))))continue;
       const t=teams.find(t=>t.name===f.factionId);if(!t||t.status!=='ACTIVE'||t.identityStage!=='STATE'||(counts.get(f.factionId)??0)>=COUNTRY_ANNUAL_FAMILY_BIRTH_LIMIT||f.members.filter(m=>m.birth?.opportunityMonth===year).length>=FAMILY_ANNUAL_BIRTH_LIMIT)continue;
       for(const {member:parent,basisEventId} of familyBirthParents(f,context,eventIds)){
@@ -641,9 +644,10 @@ export class MilitaryCommandRegistryStore {
     }
   }
   updateFamilyTitles(month:number,teams:Team[],dynasties:Dynasty[]){
+    const familyById=this.familyLookupForUpdate();
     if(!this.eventWriter||!this.families.length)return;
     for(const original of [...this.families]){
-      const f=this.families.find(f=>f.familyId===original.familyId)!;
+      const f=familyById(original.familyId);
       const last=f.nobleSuccession?.at(-1);if(last?.kind==='ENDED'&&this.familyNoblePolicy==='SINGLE')continue;
       const holder=f.members.find(m=>m.memberId===(last?.holderMemberId??f.members[0].memberId))!,p=holder.militaryPersonId?this.people.get(holder.militaryPersonId):undefined,t=teams.find(t=>t.name===f.factionId),dy=dynasties.find(d=>d.factionId===f.factionId),epoch=dy?.houseEpochs?.find(e=>e.foundingRulerId===f.epochFounderId);
       const used=new Set(f.nobleSuccession?.map(a=>a.sourceGrantEventId)),canRenew=this.familyNoblePolicy==='RENEWAL'&&!!last&&f.members.some(m=>m.generation>0&&m.militaryPersonId&&m.deathMonth===undefined&&this.people.get(m.militaryPersonId)?.nobilityHistory?.some(g=>!used.has(g.eventId)));

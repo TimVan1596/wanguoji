@@ -699,7 +699,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth, familiesOnly=false,onlyPer
   const [archiveView,setArchiveView]=useState<"people"|"merit">("people");
   const [selection, setSelection] = useState<MilitaryPersonSelection>();
   const navigation=usePersonArchiveNavigation();
-  const people = sortMilitaryPeople(MilitaryCommandRegistry.getPeople().filter(person => (person.factionId === factionId || person.appointments.some(appointment => appointment.factionId === factionId))&&(!onlyPersonId||person.personId===onlyPersonId)),factionId);
+  const people = sortMilitaryPeople(MilitaryCommandRegistry.getPeople().filter(person => onlyPersonId?person.personId===onlyPersonId:person.factionId === factionId || person.appointments.some(appointment => appointment.factionId === factionId)),factionId);
   const formations = MilitaryCommandRegistry.getFormations();
   const archiveEvents=useMemo(()=>WorldHistory.getEvents(),[worldMonth,WorldHistory.getRevision()]);
   const eventIndex=useMemo(()=>createMilitaryArchiveIndex(archiveEvents),[archiveEvents]);

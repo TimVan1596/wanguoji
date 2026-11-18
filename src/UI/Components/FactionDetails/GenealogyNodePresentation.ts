@@ -98,7 +98,7 @@ export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: Hous
     let theme: GenealogyTheme = roles.includes("当前君主") ? "current" : disqualified ? "disqualified" : roles.includes("储君") ? "heir" :
       roles.includes("篡朝开统") ? "usurpation" : roles.some(x => ["正式开国", "称帝", "势力创始"].includes(x)) ? "foundation" :
       roles.includes("复国") ? "restoration" : roles.some(x => ["末代承统", "合邦退位", "纳土退位"].includes(x)) ? "terminal" : r.reignOrdinal!==undefined&&r.accessionYear!==undefined ? "monarch" : r.militaryIdentity ? "military" : "neutral";
-    const deposed=r.endReason==='被废'&&r.endYear!==undefined&&r.endYear<=worldMonth||roles.includes('被宗室废黜');
+    const deposed=r.status==='deposed'||r.endReason==='被废'&&r.endYear!==undefined&&r.endYear<=worldMonth||roles.includes('被宗室废黜');
     if(deposed)theme='deposed';else if(r.status==='exiled')theme='exiled';
     const lifeLabels=[...(deposed?['被废']:[]),...(r.status==='exiled'?['流亡']:[]),...(hasRecordedRulerDeath(r)&&r.deathMonth!<=worldMonth?['已故']:[])];
     const details = [...lifeLabels,...roles,politicalLabel??'',...posthumousLabels, royalHonorLabel(r,dynasty,worldMonth,faction.status), r.reignOrdinal !== undefined ? `第${r.reignOrdinal}任君主` : "宗室成员",
@@ -113,7 +113,7 @@ export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: Hous
     if(noble?.current&&r.reignOrdinal===undefined&&!disqualified)theme=noble.inherited?'inheritedNoble':'personalNoble';
     if(noble?.best.revoked&&r.reignOrdinal===undefined)theme='disqualified';
     if(noble)details.push(noble.label);
-    return [r.id, {heading,politicalLabel,posthumousLabels,honor, roles, labels: [...lifeLabels,...(politicalLabel?[politicalLabel,...roles,noble?.label??'']:noble?[...roles,noble.label+(r.militaryIdentity?'':' · 未任军职')]:roles).filter(Boolean)].filter((v,i,all)=>all.indexOf(v)===i).slice(0,3), theme, details, evidence: proof,
+    return [r.id, {heading,politicalLabel,posthumousLabels,honor, roles, labels: [...lifeLabels,...(politicalLabel?[politicalLabel,...roles,noble?.label??'']:noble?[...roles,noble.label+(r.militaryIdentity?'':' · 未任军职')]:roles).filter(Boolean)].filter((v,i,all)=>all.indexOf(v)===i).slice(0,2), theme, details, evidence: proof,
       hasPosthumousTitle: posthumousLabels.length>0 }];
   }));
 }
