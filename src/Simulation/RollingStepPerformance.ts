@@ -4,6 +4,7 @@ export interface StepTimingSummary {
   sampleCount: number;
   averageMs: number;
   p95Ms: number;
+  p99Ms: number;
   maxMs: number;
 }
 
@@ -37,6 +38,7 @@ export class RollingStepPerformance {
         sampleCount: ring.count,
         averageMs: values.reduce((sum, value) => sum + value, 0) / values.length,
         p95Ms: sorted[p95Index] ?? 0,
+        p99Ms: sorted[Math.max(0,Math.ceil(sorted.length*.99)-1)] ?? 0,
         maxMs: sorted.at(-1) ?? 0,
       }];
     }));

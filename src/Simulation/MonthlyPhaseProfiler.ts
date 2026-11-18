@@ -15,8 +15,8 @@ export class MonthlyPhaseProfiler {
     try { return work(); }
     finally { this.totals.set(name, (this.totals.get(name) ?? 0) + performance.now() - start); }
   }
-  flush(target: RollingStepPerformance) {
-    this.totals.forEach((duration, name) => { target.record(name, duration); this.totals.set(name, 0); });
+  flush(target: RollingStepPerformance,month?:number) {
+    this.totals.forEach((duration, name) => { target.record(name, duration); if(month!==undefined)target.record(`${name}/${month%12===0?'January':'ordinary'}`,duration); this.totals.set(name, 0); });
   }
 }
 

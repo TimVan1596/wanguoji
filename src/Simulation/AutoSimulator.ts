@@ -327,7 +327,7 @@ export default class AutoSimulator {
       this.lastKnownTeams = teams;
       this.lastKnownCities = teams.flatMap((team) => team.cities);
       this.measure("DiplomacySystem.update", () => this.diplomacy.update(this.clock.year, teams, totalCells));
-      this.measure("MilitaryCommandRegistry.update", () => MilitaryCommandRegistry.update(this.clock.year, teams, teams.flatMap(team => team.cities)));
+      this.measure("MilitaryCommandRegistry.update", () => MilitaryCommandRegistry.update(this.clock.year, teams, teams.flatMap(team => team.cities),this.phaseProfiler));
       if (this.clock.year % 12 === 0) {
         const unionInput = {
           teams,
@@ -394,9 +394,8 @@ export default class AutoSimulator {
       this.measure("aggregate City.updateDefense", () => teams.forEach((team) => {
         team.cities.forEach((city) => city.updateDefense(this.clock.year, this.phaseProfiler));
       }));
-      this.phaseProfiler?.flush(this.stepPerformance);
       this.measure("FactionEffects.update", () => FactionEffects.update(this.clock.year));
-      this.measure("DynastyRegistry.update", () => DynastyRegistry.update(this.clock.year, teams));
+      this.measure("DynastyRegistry.update", () => DynastyRegistry.update(this.clock.year, teams,this.phaseProfiler));
       this.measure("Military honors",()=>MilitaryCommandRegistry.updateHonors(this.clock.year,teams,DynastyRegistry.getAll()));
       this.measure("Military nobility",()=>MilitaryCommandRegistry.updateNobility(this.clock.year,teams,DynastyRegistry.getAll()));
       this.measure("Founding peerage",()=>MilitaryCommandRegistry.updateFoundingRewards(this.clock.year,teams,DynastyRegistry.getAll()));
@@ -412,6 +411,7 @@ export default class AutoSimulator {
       this.measure("Family household births and life",()=>MilitaryCommandRegistry.updateFamilyHouseholds(this.clock.year,teams,DynastyRegistry.getAll()));
       this.measure("Family noble succession",()=>MilitaryCommandRegistry.updateFamilyTitles(this.clock.year,teams,DynastyRegistry.getAll()));
       this.measure("Civil administration",()=>CivilAdministration.update(this.clock.year,teams,DynastyRegistry.getAll()));
+      this.phaseProfiler?.flush(this.stepPerformance,this.clock.year);
       this.events.observeWorldGoal(this.clock.year, teams, totalCells);
       if (debugProfileEnabled) {
         this.measure("debug/LongRun diagnostics", () => {
@@ -531,7 +531,7 @@ export default class AutoSimulator {
         }
         });
       }
-      if (stepStart !== undefined) this.stepPerformance.record("total fixed/month step", this.readPerformanceNow() - stepStart);
+      if (stepStart !== undefined) {const duration=this.readPerformanceNow()-stepStart;this.stepPerformance.record("total fixed/month step",duration);this.stepPerformance.record(`total fixed/month step/${this.clock.year%12===0?'January':'ordinary'}`,duration);}
     }
   }
 

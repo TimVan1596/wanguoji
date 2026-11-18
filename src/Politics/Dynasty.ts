@@ -1,3 +1,4 @@
+import {measurePhase,type MonthlyPhaseProfiler} from '../Simulation/MonthlyPhaseProfiler';
 import {householdBirthPlan,householdBirthParents,recordRoyalBirthPlanning,HOUSEHOLD_ANNUAL_CAP,HOUSEHOLD_LIVING_CAP,type RoyalBirthPolicy,type RoyalHouseholdBirth} from './RoyalHouseholdBirth';
 import {registerRoyalPerson,type RoyalPersonRegistration} from './RoyalPersonRegistration';
 import {nextRoyalNobleAct,royalNobleText,type RoyalNobleAct} from './RoyalNobility';
@@ -439,19 +440,19 @@ class DynastyRegistryStore {
     if (person) person.politicalRulerId = ruler.id;
   }
 
-  update(year: number, teams: Team[]) {
+  update(year: number, teams: Team[],profile?:MonthlyPhaseProfiler) {
     // Formerly enthroned deposed rulers keep a life after their polity ends.
-    teams.forEach((team) => {
+    measurePhase(profile,'Dynasty/life archives',()=>teams.forEach((team) => {
       const archivedDynasty = this.get(team.name);
       if (archivedDynasty) {
         this.archiveNaturallyDeadDeposedRulers(team, archivedDynasty, year);
         this.archiveNaturallyDeadHeirs(archivedDynasty, year, true);
       }
-    });
+    }));
     teams.filter((team) => shouldDynastyContinue(team.status)).forEach((team) => {
       const dynasty = this.initializeFaction(team, 0);
       if (dynasty) {
-        this.archiveNaturallyDeadHeirs(dynasty, year);
+        measurePhase(profile,'Dynasty/heir life',()=>this.archiveNaturallyDeadHeirs(dynasty, year));
       }
       const ruler = dynasty ? this.getCurrentRuler(team.name) : undefined;
       if (
@@ -461,16 +462,16 @@ class DynastyRegistryStore {
         !isNaturallyDeadByMonth(ruler.naturalDeathYear ?? ruler.plannedEndYear, year)
       ) {
         if (ruler) {
-          this.observeRuler(team, ruler, year);
+          measurePhase(profile,'Dynasty/ruling monarch',()=>this.observeRuler(team, ruler, year));
         }
         if (dynasty) {
-          this.ensureActiveHeir(team, dynasty, year);
+          measurePhase(profile,'Dynasty/heir qualification',()=>this.ensureActiveHeir(team, dynasty, year));
         }
-        this.ensureRulerUnit(team);
-        if (dynasty && ruler) {this.evaluateInReignDeposition(team, dynasty, ruler, year);this.evaluateCourtPardon(team,dynasty,year);this.grantRoyalHonor(team,year);}
+        measurePhase(profile,'Dynasty/ruler body',()=>this.ensureRulerUnit(team));
+        if (dynasty && ruler) {measurePhase(profile,'Dynasty/court qualification and acts',()=>{this.evaluateInReignDeposition(team, dynasty, ruler, year);this.evaluateCourtPardon(team,dynasty,year);this.grantRoyalHonor(team,year);});}
         return;
       }
-      this.succeedRuler(team, dynasty, ruler, year, "natural");
+      measurePhase(profile,'Dynasty/succession transaction',()=>this.succeedRuler(team, dynasty, ruler, year, "natural"));
     });
   }
 

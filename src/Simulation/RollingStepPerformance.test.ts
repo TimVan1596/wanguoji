@@ -13,6 +13,7 @@ describe("RollingStepPerformance", () => {
       sampleCount: STEP_PERFORMANCE_SAMPLE_CAPACITY,
       averageMs: (21 + (STEP_PERFORMANCE_SAMPLE_CAPACITY + 20)) / 2,
       p95Ms: STEP_PERFORMANCE_SAMPLE_CAPACITY + 5,
+      p99Ms: STEP_PERFORMANCE_SAMPLE_CAPACITY + 17,
       maxMs: STEP_PERFORMANCE_SAMPLE_CAPACITY + 20,
     });
   });
