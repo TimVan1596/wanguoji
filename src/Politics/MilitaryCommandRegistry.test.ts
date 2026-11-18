@@ -199,3 +199,17 @@ it('new junior appointments use exactly one person even with a large real pool, 
  const before=registry.exportState(),candidate=[...team.users][10];
  expect((registry as any).appoint(candidate,'qin',36,['unit-11','unit-12','unit-13'])).toBe(false);expect(registry.exportState()).toEqual(before);
 });
+
+it('rolls an annual miss without a transaction and restores the opportunity RNG on a failed winning transaction',()=>{
+ const registry=new MilitaryCommandRegistryStore(),team:any={name:'qin',status:'ACTIVE',users:new Set(),cities:[]};
+ team.users.add(user(91,team,'unit-91'));team.users.add(user(92,team,'unit-92'));
+ registry.setAppointmentAbilityPolicyForSimulation('MEDIUM');
+ const transaction=vi.spyOn(registry as any,'familyTransaction');
+ const draw=vi.spyOn(worldRandom,'next').mockReturnValue(.99);
+ registry.update(12,[team],[]);expect(transaction).not.toHaveBeenCalled();expect(registry.getPeople()).toHaveLength(0);
+ draw.mockRestore();worldRandom.initialize('opportunity-failure');const before=worldRandom.exportState(),realNext=worldRandom.next.bind(worldRandom);
+ vi.spyOn(worldRandom,'next').mockImplementation(()=>{realNext();return 0;});
+ transaction.mockImplementation(()=>{worldRandom.next();throw Error('injected transaction failure');});
+ registry.update(24,[team],[]);
+ expect(transaction).toHaveBeenCalledTimes(1);expect(worldRandom.exportState()).toEqual(before);expect(registry.getPeople()).toHaveLength(0);expect(registry.getFormations()).toHaveLength(0);expect([...team.users].every((u:any)=>!u.militaryPersonId)).toBe(true);
+});
