@@ -35,7 +35,7 @@ export async function runDepositionCore(seed="deposition-z8"){
   const capital=t.capitalCity!;capital.capture(enemy!,month);
   check(capital.ownerTeam===enemy&&t.cities.length>0,"real capital capture creates the crisis without ending the dynasty");
   for(const city of t.cities)city.loyalty=20;
-  const e=evaluateDepositionOpportunity({factionId:t.name,status:t.status,identityStage:t.identityStage,cityCount:t.cities.length,stability:getFactionStability(t),currentRuler:old,rulers:d.rulers,houseName:d.houseName,worldMonth:month,events:History.getEvents()});
+  const e=evaluateDepositionOpportunity({factionId:t.name,status:t.status,identityStage:t.identityStage,cityCount:t.cities.length,stability:getFactionStability(t),currentRuler:old,rulers:d.rulers,houseName:d.houseName,worldMonth:month,calibration:Dynasty.getPoliticalCalibration(),events:History.getEvents()});
   check(e.eligible,"actual political crisis and existing kin qualify");
   const base=strict(),original=History.addRulerDeposed;
   const next=worldRandom.next.bind(worldRandom),originalNext=worldRandom.next;
@@ -43,11 +43,9 @@ export async function runDepositionCore(seed="deposition-z8"){
   History.addRulerDeposed=function(...args:Parameters<typeof original>){original.apply(this,args);throw new Error("controlled after-write failure");};
   try{(Dynasty as any).evaluateInReignDeposition(t,d,old,month);}finally{History.addRulerDeposed=original;worldRandom.next=originalNext;}
   const afterFailure=strict(),expected=structuredClone(base);
-  expected.dynasties.find(x=>x.factionId===t.name)!.lastDepositionAttemptMonth=month;
-  afterFailure.worldRandom=expected.worldRandom; // Failed qualified attempts intentionally consume their original roll.
   const rollback=diffCanonicalWorldSave(expected,afterFailure);
   if(!rollback.matched)console.info("[CoreTest] rollback differences "+JSON.stringify(rollback));
-  check(rollback.matched,"failed final history writer restores full canonical state except attempted roll and cooldown");
+  check(rollback.matched,"failed final history writer restores complete canonical state, opportunity RNG and cooldown");
   hydrateWorldSave(core,JSON.parse(JSON.stringify(base)));
   const restored=core.teams.find(x=>x.name===t.name)!,dynasty=Dynasty.get(t.name)!,predecessor=Dynasty.getCurrentRuler(t.name)!;
   const before=worldRandom.exportState().position,draw=worldRandom.next.bind(worldRandom),savedNext=worldRandom.next;

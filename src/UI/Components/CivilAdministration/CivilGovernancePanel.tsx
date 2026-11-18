@@ -1,3 +1,5 @@
+import Dynasty from '../../../Politics/Dynasty';
+import {militaryPortraitStatus} from '../../../Politics/MilitaryPortraitStatus';
 import {MilitaryServicePanel} from '../FactionDetails/PersonServicePanel';
 import PortraitSummary from '../FactionDetails/PortraitSummary';
 import PersonArchiveCard from '../FactionDetails/PersonArchiveCard';
@@ -39,17 +41,17 @@ export function CivilGovernorSummary({cityId,month}:{cityId:string;month:number}
 }
 
 function governorProfile(term:CivilGovernorTerm,month:number){
- const person=Military.getPerson(term.personId),family=term.familyId?Military.getFamilies().find(f=>f.familyId===term.familyId):undefined;
+ const person=Military.getPerson(term.personId),familyLink=Military.getFamilyMember(term.sourceUserId,term.bornMonth),family=familyLink?.family??(term.familyId?Military.getFamilies().find(f=>f.familyId===term.familyId):undefined),memberId=familyLink?.member.memberId??term.familyMemberId;
  const user=Game.Core?.teams.flatMap(t=>[...t.users]).find(u=>u.id===term.sourceUserId&&u.bornMonth===term.bornMonth);
- const terms=CivilAdministration.getByPerson(term.personId),deathMonth=person?.deathMonth??Military.getFamilyMember(term.sourceUserId,term.bornMonth)?.member.deathMonth??terms.find(t=>t.endReason==='DEATH')?.endMonth;
+ const terms=CivilAdministration.getByPerson(term.personId),deathMonth=person?.deathMonth??(term.royalRulerId?Dynasty.getAll().flatMap(d=>d.rulers).find(r=>r.id===term.royalRulerId)?.deathMonth:undefined)??Military.getFamilyMember(term.sourceUserId,term.bornMonth)?.member.deathMonth??terms.find(t=>t.endReason==='DEATH')?.endMonth;
  const portraitMonth=Math.min(month,deathMonth??month,term.endMonth===undefined?month:Math.max(term.startMonth,term.endMonth-1));
  const team=Game.Core?.teams.find(t=>t.name===term.factionId);
  const abilities=person?militaryAbilities(person):personAbilities({kind:'RESIDENT',sourceUserId:term.sourceUserId,bornMonth:term.bornMonth});
  const loyalty=user?{value:user.loyalty,factionName:Game.Core?.teams.find(t=>t.users.has(user))?.displayName??term.countryName,month}:undefined;
- return {person,family,user,deathMonth,portraitMonth,abilities,loyalty,portrait:{personId:term.personId,age:Math.max(0,Math.floor((portraitMonth-term.bornMonth)/12)),color:team?getFactionColorAtMonth(team,portraitMonth):undefined,deceased:deathMonth!==undefined&&deathMonth<=month,royalKin:!!term.royalRulerId}};
+ return {person,family,memberId,user,deathMonth,portraitMonth,abilities,loyalty,portrait:{personId:term.royalRulerId??term.personId,age:Math.max(0,Math.floor((portraitMonth-term.bornMonth)/12)),color:team?getFactionColorAtMonth(team,portraitMonth):undefined,deceased:deathMonth!==undefined&&deathMonth<=month,royalKin:!!term.royalRulerId}};
 }
 function GovernorDetail({term,month}:{term:CivilGovernorTerm;month:number}){
- const navigation=usePersonArchiveNavigation(),{person,family,user,deathMonth,portraitMonth,abilities,loyalty}=governorProfile(term,month);
+ const navigation=usePersonArchiveNavigation(),{person,family,memberId,user,deathMonth,portraitMonth,abilities,loyalty}=governorProfile(term,month);
  const milestones=personCareerMilestones(WorldHistory.getRecordedEvents(),term.personId,month);
  const ageMonth=deathMonth??(user?month:term.endMonth??month);
  return <Box data-civil-governor-detail={term.assignmentId}>
@@ -60,8 +62,8 @@ function GovernorDetail({term,month}:{term:CivilGovernorTerm;month:number}){
   <MilitaryServicePanel personId={term.personId} month={month}/><CivilServicePanel personId={term.personId} month={month} factionId={term.factionId}/>
   {person&&<NobleHistory person={person} month={month}/>}
   {person&&family&&<FamilyTitleBadge personId={person.personId} factionId={family.factionId} month={month}/>}
-  {family&&!person&&term.familyMemberId&&<FamilyPersonSources family={family} memberId={term.familyMemberId} month={month}/>}
-  {family&&<Button size="small" onClick={()=>navigation.open({kind:'FAMILY',factionId:family.factionId,id:family.familyId,memberId:term.familyMemberId})}>查看功臣世家与宗谱</Button>}
+  {family&&!person&&memberId&&<FamilyPersonSources family={family} memberId={memberId} month={month}/>}
+  {family&&<Button size="small" onClick={()=>navigation.open({kind:'FAMILY',factionId:family.factionId,id:family.familyId,memberId})}>查看功臣世家与宗谱</Button>}
   {term.royalRulerId&&<Button size="small" onClick={()=>navigation.open({kind:'GENEALOGY',factionId:term.factionId,id:term.royalRulerId!})}>查看王室身份</Button>}
   <PersonPoliticalCareer personId={term.personId} month={month}/></>}
   biographyTitle="生平纪事" biography={[`${formatWorldDate(term.startMonth)}，${term.rulerTitle}任命其为${term.cityName}郡守。`,...(term.endReason?[`${formatWorldDate(term.endMonth!)}离任：${endReasonLabel(term.endReason)}。`]:[])]}
@@ -86,7 +88,7 @@ export default function CivilGovernancePanel({factionId,month,initialPersonId}:{
    const term=shown.find(t=>t.personId===id)??selectedTerm!;const profile=governorProfile(term,month),expanded=selected===id;
    const open=()=>{if(profile.person?.appointments.some(a=>a.factionId===term.factionId))navigation.open({kind:'MILITARY',factionId:term.factionId,id});else setSelected(expanded?undefined:id);};
    return <Box data-civil-governor={term.assignmentId}><PersonArchiveCard index={index} expanded={expanded} active={active(term,month)} onSelect={open}
-    portrait={<PortraitSummary portrait={profile.portrait} name={term.personalName} lines={[`${term.countryName} · ${term.cityName}郡守`,formatWorldDate(term.bornMonth)+'出生',`${formatWorldDate(term.startMonth)}—${term.endMonth===undefined?'今':formatWorldDate(term.endMonth)}`]} onFull={()=>setSelected(id)}/>}
+    portrait={<PortraitSummary status={profile.person?militaryPortraitStatus(profile.person,term.factionId,month,Dynasty.getAll(),WorldHistory.getRecordedEvents()):undefined} portrait={profile.portrait} name={term.personalName} lines={[`${term.countryName} · ${term.cityName}郡守`,formatWorldDate(term.bornMonth)+'出生',`${formatWorldDate(term.startMonth)}—${term.endMonth===undefined?'今':formatWorldDate(term.endMonth)}`]} onFull={()=>setSelected(id)}/>}
     heading={<><Typography fontWeight="bold" fontSize=".86rem">{term.personalName} · {term.cityName}郡守</Typography><Typography fontSize=".75rem">{formatWorldDate(term.startMonth)}—{term.endMonth===undefined?'今':formatWorldDate(term.endMonth)} · {sourceLabel(term)}</Typography></>}>
     <GovernorDetail term={term} month={month}/>
    </PersonArchiveCard></Box>;

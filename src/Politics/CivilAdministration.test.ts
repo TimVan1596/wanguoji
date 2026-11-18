@@ -46,3 +46,9 @@ it('keeps ordinary candidates in a bounded weighted pool while respecting limite
  const rows:any[]=[{personId:'ordinary',weight:1},{personId:'noble',weight:1.2},{personId:'royal',weight:1.25},...Array.from({length:20},(_,i)=>({personId:`r${i}`,weight:.9}))];
  const ranked=rows.sort((a,b)=>b.weight-a.weight),pool=new Set(ranked.slice(0,12).map(row=>row.personId)),picks=new Set(Array.from({length:1000},(_,i)=>selectCivilGovernorCandidate(ranked,(i+.5)/1000)!.personId));expect(picks.has('ordinary')).toBe(true);expect(picks.has('noble')||picks.has('royal')).toBe(true);expect([...picks].every(id=>pool.has(id))).toBe(true);
 });
+
+it('allows the same former governor to compete again after city loss, without creating a second identity or a ban',()=>{
+ const u=resident(17),previous:any={personId:'permanent-civil-person',sourceUserId:u.id,bornMonth:u.bornMonth,startMonth:120,endMonth:200,endReason:'CITY_LOST'};
+ const rows=civilGovernorCandidates(240,team([u]),[],[previous],'king',()=>undefined);
+ expect(rows).toHaveLength(1);expect(rows[0].personId).toBe(previous.personId);expect(rows[0].sourceUserId).toBe(u.id);
+});
