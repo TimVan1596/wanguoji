@@ -187,7 +187,7 @@ function WorldDiagnosticsPanelContent() {
     `Dynastic Order：建立${diagnostics.longRun.dynasticOrderEstablishedCount}次｜瓦解${diagnostics.longRun.dynasticOrderLostCount}次｜完成${diagnostics.longRun.completedDynasticOrderEpisodes}段｜平均${diagnostics.longRun.averageDynasticOrderDuration === undefined ? "—" : formatWorldDuration(diagnostics.longRun.averageDynasticOrderDuration)}｜当前${diagnostics.longRun.currentDynasticOrderAge === undefined ? "—" : formatWorldDuration(diagnostics.longRun.currentDynasticOrderAge)}`,
     `World scale（60月采样）：${stableStringify(worldScale ?? {})}`,
     `Long-Run Runtime Lifetime：${stableStringify(runtimeLifetime ?? {})}`,
-    `Monthly step timing（debug rolling）：${Object.entries(stepPerformance).map(([name, metric]) => `${name} avg ${metric.averageMs.toFixed(3)}ms / p95 ${metric.p95Ms.toFixed(3)}ms / max ${metric.maxMs.toFixed(3)}ms (n=${metric.sampleCount})`).join("；") || "等待样本"}`,
+    `Monthly step timing（debug rolling）：${Object.entries(stepPerformance).map(([name, metric]) => `${name} avg ${metric.averageMs.toFixed(3)}ms / p95 ${metric.p95Ms.toFixed(3)}ms / p99 ${(metric.p99Ms??metric.maxMs).toFixed(3)}ms / max ${metric.maxMs.toFixed(3)}ms (n=${metric.sampleCount})`).join("；") || "等待样本"}`,
     `Strategic Union candidates（最多5组）：${unionCandidateDiagnostics.map((entry) => `${entry.factionAId}/${entry.factionBId}: sameOrigin=${entry.sameOrigin}, alliance=${entry.allianceMonths}m, adjacent=${entry.adjacent}, warFree=${entry.bilateralWarFreeMonths}m, territoryRatio=${entry.territoryRatio.toFixed(2)}, cityRatio=${entry.cityRatio.toFixed(2)}, weakerStability=${entry.weakerStability.toFixed(1)}, commonThreat=${entry.commonThreatStillRelevant}, blockers=${entry.blockers.join("+") || "ELIGIBLE"}`).join(" | ") || "暂无 active alliance candidates"}`,
   ].join("\n");
   const snapshotAndReload = async () => {
@@ -485,7 +485,7 @@ function WorldDiagnosticsPanelContent() {
       <details>
         <summary>Simulation Step Performance（rolling）</summary>
         <Typography component="pre" sx={{ whiteSpace: "pre-wrap", fontSize: 9 }}>{Object.entries(stepPerformance).map(([name, metric]) =>
-          `${name}: avg ${metric.averageMs.toFixed(3)}ms · p95 ${metric.p95Ms.toFixed(3)}ms · max ${metric.maxMs.toFixed(3)}ms · n=${metric.sampleCount}`
+          `${name}: avg ${metric.averageMs.toFixed(3)}ms · p95 ${metric.p95Ms.toFixed(3)}ms · p99 ${(metric.p99Ms??metric.maxMs).toFixed(3)}ms · max ${metric.maxMs.toFixed(3)}ms · n=${metric.sampleCount}`
         ).join("\n") || "等待 debug step 样本"}</Typography>
       </details>
       <details>

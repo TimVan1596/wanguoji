@@ -6,7 +6,7 @@ export const runtimeProfilingEnabled = import.meta.env.DEV || import.meta.env.MO
 export class MonthlyPhaseProfiler {
   private totals = new Map<string, number>([
     "Military/life","Military/formations","Military/insurgent commands","Military/orders","Military/order evidence","Military/promotions","Military/family eligibility","Military/initial candidates","Military/royal eligibility","Military/weights","Military/title eligibility","Military/appointment transaction",
-    "Dynasty/life archives","Dynasty/heir life","Dynasty/ruling monarch","Dynasty/heir qualification","Dynasty/ruler body","Dynasty/court qualification and acts","Dynasty/succession transaction",
+    "Dynasty/deposition opportunity","Dynasty/pardons","Dynasty/royal honors","Dynasty/life archives","Dynasty/heir life","Dynasty/ruling monarch","Dynasty/heir qualification","Dynasty/ruler body","Dynasty/court qualification and acts","Dynasty/succession transaction",
     "City.updateLoyalty", "City.updateSiege", "City.updateDevastation", "City.calculateMaxDefense/development", "City.zone/visual refresh",
     "Population.active faction scan", "Population.capacity", "Population.growth context", "Population.spawn/runtime creation", "Population.user id lookup", "Population.makeUser",
     "WorldEvent.expired effects", "WorldEvent.observeWorldGoal", "WorldEvent.checkStateFormation", "WorldEvent.applyProvisionalDissolutionPressure",

@@ -468,7 +468,7 @@ class DynastyRegistryStore {
           measurePhase(profile,'Dynasty/heir qualification',()=>this.ensureActiveHeir(team, dynasty, year));
         }
         measurePhase(profile,'Dynasty/ruler body',()=>this.ensureRulerUnit(team));
-        if (dynasty && ruler) {measurePhase(profile,'Dynasty/court qualification and acts',()=>{this.evaluateInReignDeposition(team, dynasty, ruler, year);this.evaluateCourtPardon(team,dynasty,year);this.grantRoyalHonor(team,year);});}
+        if (dynasty && ruler) {measurePhase(profile,'Dynasty/court qualification and acts',()=>{measurePhase(profile,'Dynasty/deposition opportunity',()=>this.evaluateInReignDeposition(team, dynasty, ruler, year));measurePhase(profile,'Dynasty/pardons',()=>this.evaluateCourtPardon(team,dynasty,year));measurePhase(profile,'Dynasty/royal honors',()=>this.grantRoyalHonor(team,year));});}
         return;
       }
       measurePhase(profile,'Dynasty/succession transaction',()=>this.succeedRuler(team, dynasty, ruler, year, "natural"));

@@ -40,6 +40,7 @@ export function planRoyalHonor(input:{faction:HonorFaction;dynasty:Dynasty;month
  const all=d.rulers.flatMap(r=>r.royalHonors??[]);if(all.some(g=>g.month<=m&&m-g.month<36))return;
  const cap=f.sovereigntyRank==='EMPEROR'?4:2;
  const eligible=d.rulers.flatMap(r=>{
+  if(!r.militaryIdentity)return []; // The grant always requires this real military person; avoid ancestry work for unrelated archived rulers.
   const relation=getRecordedKinRelation(r,issuer,d.rulers),merits=royalHonorMerits(r,input.people,input.formations,input.events,m,f.name);
   const proposed=royalMeritRank(merits,input.events),person=r.militaryIdentity&&input.people.find(p=>p.personId===r.militaryIdentity?.personId),appointment=person?.appointments.find(a=>a.factionId===f.name&&a.startMonth<=m&&a.endMonth===undefined);
   const noble=person&&currentNobleGrant(person,f.name,m,epoch.foundingRulerId),rank=proposed==='ZHENGUOGONG'&&!(noble?.rank==='GONG'&&input.events.some(e=>e.id===noble.eventId&&e.type==='military-ennobled'&&e.metadata?.nobility===JSON.stringify(noble)))?'WUANJUN':proposed;

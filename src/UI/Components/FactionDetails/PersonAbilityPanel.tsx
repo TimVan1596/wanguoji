@@ -1,5 +1,11 @@
-import {Typography} from '@mui/material';
+import {Box,LinearProgress,Typography} from '@mui/material';
 import type {PersonAbilities} from '../../../Politics/PersonAbilities';
-export default function PersonAbilityPanel({abilities}:{abilities:PersonAbilities;royal?:boolean}){return <div data-person-abilities={JSON.stringify(abilities)}><Typography fontSize=".8rem">统御：{abilities.command} · 谋略：{abilities.strategy}</Typography></div>;}
+import {formatWorldDate} from '../../../Simulation/WorldTime';
+export interface LoyaltyObservation {value:number;factionName:string;month:number;historical?:boolean;}
+const valid=(value:number|undefined):value is number=>value!==undefined&&Number.isFinite(value)&&value>=0&&value<=100;
+export default function PersonAbilityPanel({abilities,ambition,loyalty,royal=false}:{abilities?:PersonAbilities;ambition?:number;loyalty?:LoyaltyObservation;royal?:boolean}){
+ const rows=[{key:'command',label:'统御',value:abilities?.command,color:'#527ba4'},{key:'strategy',label:'谋略',value:abilities?.strategy,color:'#56816b'},{key:'ambition',label:'野心',value:ambition,color:'#ac793b'},{key:'loyalty',label:'忠诚',value:!royal&&loyalty?.factionName?loyalty.value:undefined,color:'#93636e'}].filter(row=>valid(row.value));
+ return <Box data-person-abilities={abilities?JSON.stringify(abilities):undefined} sx={{display:'grid',gap:.6,minWidth:0,my:.6}}>{rows.map(row=><Box key={row.key} data-person-attribute={row.key} sx={{display:'flex',alignItems:'center',gap:.75,minWidth:0}}><Typography fontSize=".78rem" sx={{flex:'0 0 3em',whiteSpace:'nowrap'}}>{row.label}：</Typography><LinearProgress variant="determinate" value={row.value} aria-label={row.label} sx={{flex:1,minWidth:24,height:7,borderRadius:1,backgroundColor:'var(--gg-border)', '& .MuiLinearProgress-bar':{backgroundColor:row.color}}}/><Typography fontSize=".78rem" sx={{flex:'0 0 4.8em',textAlign:'right',fontVariantNumeric:'tabular-nums',whiteSpace:'nowrap'}}>{row.value}/100</Typography></Box>)}{!royal&&loyalty&&valid(loyalty.value)&&loyalty.factionName&&<Typography fontSize=".72rem" color="var(--gg-text-muted)">忠诚对象：{loyalty.factionName} · {formatWorldDate(loyalty.month)}{loyalty.historical?'记录':'当前关系'}</Typography>}</Box>;
+}
 /** Mounted only inside the existing, closed-by-default biography technical evidence. */
 export function PersonAbilityEvidence({abilities}:{abilities:PersonAbilities}){return <Typography fontSize=".74rem">能力版本 {abilities.version}；来源 {JSON.stringify(abilities.source)}。在合法武职初选中有界影响候选相对权重；在合法宫廷军权参与中有限影响候选、发起与条件成败；读取不另抽世界随机数。</Typography>;}
