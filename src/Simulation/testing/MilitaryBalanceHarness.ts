@@ -1,3 +1,4 @@
+import {residentIdentityConflicts} from './CharacterBindingDiagnostics';
 import {deriveMilitaryLifeSchedule} from '../../Politics/MilitaryLifeRules';
 import {observeRoyalBirthPlanning,type RoyalBirthPolicy} from '../../Politics/RoyalHouseholdBirth';
 import {observeFamilyPopulationEntryForSimulation} from '../../Politics/MilitaryFamily';
@@ -209,7 +210,7 @@ export async function runMilitaryBalance(seed:string,years=100,includeSnapshot=f
           appanages:{grants:Military.getPeople().flatMap(p=>p.appanageHistory??[]).filter(a=>a.kind==='GRANTED').length,lost:Military.getPeople().flatMap(p=>p.appanageHistory??[]).filter(a=>a.kind==='LOST').length,restored:Military.getPeople().flatMap(p=>p.appanageHistory??[]).filter(a=>a.kind==='RESTORED').length,ended:Military.getPeople().flatMap(p=>p.appanageHistory??[]).filter(a=>a.kind==='ENDED').length,politicalEffects:0},
           residentFounders:snapshot.dynasties.flatMap(d=>(d.rulers as any[]).filter(r=>r.residentIdentity)).length,
           residentLiveBindings:snapshot.users.filter(u=>u.historicalPersonId).length,
-          residentIdentityConflicts:(()=>{const rs=snapshot.dynasties.flatMap(d=>(d.rulers as any[]).filter(r=>r.residentIdentity));const ids=rs.map(r=>r.residentIdentity.personId);return ids.length-new Set(ids).size+snapshot.users.filter(u=>u.historicalPersonId&&!royals.some(r=>r.militaryIdentity?.personId===u.historicalPersonId)&&!rs.some(r=>r.residentIdentity.personId===u.historicalPersonId&&r.residentIdentity.sourceUserId===u.userId&&r.bornMonth===u.bornMonth&&r.deathMonth===undefined)).length;})(),
+          residentIdentityConflicts:residentIdentityConflicts(snapshot),
           strictSaveValid:true,elapsedMs:performance.now()-started,heapBytes:(performance as any).memory?.usedJSHeapSize});
       }
       if(m%120===0)await new Promise(r=>setTimeout(r,0));

@@ -1,0 +1,1755 @@
+{
+  "appVersion": "v0.99931z62",
+  "packageVersion": "0.99.228",
+  "saveVersion": 59,
+  "sourceBaseCommit": "d564a02b201045b17462f7c3c25b11ea1c0651ce",
+  "typescriptSourceSha256": "db719a0e4dcbbc24d8fe1d5949b0a0096de233167747d0a2224a72b1cb48547f",
+  "seedPlan": {
+    "hundred": "regional-1 through regional-8",
+    "twoHundred": "regional-1 through regional-4",
+    "threeHundred": "regional-1",
+    "fiveHundred": "regional-1",
+    "unchanged": true
+  },
+  "limitations": [
+    "Longer runs reuse deterministic seed prefixes; these are not 14 statistically independent samples.",
+    "Natural transfers remain rare; positive directed tests do not establish long-run frequency.",
+    "Excluding active governors changes actual recruitment and subsequent world evolution; no claim of identical population or war outcomes.",
+    "Performance is one-machine automation; no screenshots or human Chrome acceptance."
+  ],
+  "checks": {
+    "testFiles": 354,
+    "tests": 2662,
+    "typescript": true,
+    "web": true,
+    "desktop": true,
+    "debug": true,
+    "coreChecks": [
+      "actual formal country with multiple cities is available",
+      "actual cities satisfy stable-control appointment conditions",
+      "real living adults produce authoritative governor candidates",
+      "active commanders are excluded from civilian office",
+      "failed governor appointment rolls back registry and history",
+      "appointment binds actual person, city, month and ruling sovereign",
+      "appointment has one canonical city-linked event",
+      "new governor appointment passes strict V59 save validation",
+      "one city has one active governor and no duplicate appointment",
+      "the same person cannot hold a second governorship",
+      "failed governance merit restores actual city loyalty, devastation, civil identity, history and consumed RNG",
+      "governor changes actual city loyalty or devastation recovery",
+      "actual bounded recovery yields one sourced local-governance achievement",
+      "governed city and achievement survive strict save",
+      "local-official tab shows the actual incumbent, city and civil dossier",
+      "city overview shows the same real governor and tenure",
+      "city governor name is a real archive link",
+      "city governor link opens the faction archive panel",
+      "city link opens the same ordinary governor full dossier",
+      "first civilian appointment freezes a natural full name",
+      "active governor cannot simultaneously acquire a military command",
+      "failed civil-to-military appointment restores population, identity, history, sequences and formations",
+      "former governor passes existing military qualification and initial command creation",
+      "civilian enters as the same person and initial xiaowei",
+      "civil-to-military transfer preserves the original resident natural lifespan",
+      "same former governor earns a real low military title from actual service and capture",
+      "legally retired military person returns to the real civil candidate pool",
+      "military-to-civil transfer retains permanent name, birth and historical military service",
+      "full civilian military noble and civilian career round-trips strictly",
+      "civil-origin military career dies at the original resident scheduled month, including nonannual months",
+      "four top-level destinations replace the crowded five-tab row",
+      "people filter 全部 is accessible",
+      "people filter 武官 is accessible",
+      "military name search remains accessible",
+      "military name search excludes unrelated people",
+      "military name search locates the same former governor",
+      "people filter 文官 is accessible",
+      "people filter 世家 is accessible",
+      "one real death ends the full career without changing name or duplicating identity",
+      "a real former civil population identity can lead an actual resident-founded polity",
+      "civil founder retains name, permanent population identity and original lifespan",
+      "civil political entry creates no extra population",
+      "strict save rejects forged civil-governor identity, date or governance result",
+      "strict save rejects forged civil-governor identity, date or governance result",
+      "strict save rejects forged civil-governor identity, date or governance result",
+      "city capture ends the old governor without claiming death",
+      "appointed governor still has the original live population identity",
+      "governor death ends the office in the same real month",
+      "governor save and office continue twelve months deterministically",
+      "second read preserves governor term, city effects and history"
+    ],
+    "rollbackRegression": {
+      "isolatedSource": "b9c6bf3",
+      "seed": "regional-2",
+      "years": 200,
+      "rootCause": "Political death already committed BATTLE_DEATH; later body removal SIEGE_LOSS overwrote family deathCause. Preserve frozen personal death and separate exitCause.",
+      "strictValidatorWeakened": false,
+      "fixedContinuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    }
+  },
+  "cohorts": [
+    {
+      "years": 100,
+      "worlds": [
+        {
+          "seed": "regional-1",
+          "career": {
+            "people": 25,
+            "unnamed": 0,
+            "nameCoverage": 1,
+            "civilToMilitary": 0,
+            "militaryToCivil": 0,
+            "overlap": 0,
+            "endReasons": {
+              "CITY_LOST": 4,
+              "DEATH": 15
+            },
+            "endedBeforeMinimumMilitaryRetirement": 1,
+            "ordinaryAppointments": 24
+          },
+          "currentOfficers": [
+            {
+              "factionId": "秦",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 5,
+              "civil": 2,
+              "military": 1
+            },
+            {
+              "factionId": "燕",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 2,
+              "civil": 1,
+              "military": 1
+            },
+            {
+              "factionId": "齐",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 4,
+              "civil": 1,
+              "military": 0
+            },
+            {
+              "factionId": "魏",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 5,
+              "civil": 2,
+              "military": 0
+            },
+            {
+              "factionId": "韩",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 1,
+              "civil": 0,
+              "military": 0
+            }
+          ],
+          "currentRecruitment": {
+            "scope": "CURRENT_SNAPSHOT",
+            "formerCivilIdentities": 4,
+            "qualified": 0,
+            "withVacancy": 0,
+            "blocked": {
+              "没有在世在籍的原人口": 3,
+              "已超过正常初任年龄": 1
+            }
+          },
+          "civilPoolSummary": {
+            "countriesWithVacancy": 0,
+            "retiredMilitaryCandidates": 0,
+            "countriesWithRetiredCandidates": []
+          },
+          "strictSave": true,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "invariants": {
+            "unexplainedPopulation": 0,
+            "duplicatePopulation": 0,
+            "duplicateHistory": 0,
+            "formationOwnershipConflicts": 0,
+            "residentIdentityConflicts": 0,
+            "officeOverlap": 0
+          },
+          "baseline": {
+            "worldPopulation": 133,
+            "peakWorldPopulation": 153,
+            "captures": 30,
+            "siegeCityMonths": 4000,
+            "rebellions": 1,
+            "splits": 0,
+            "extinctions": 1,
+            "normalRoyalSuccessions": 22,
+            "usurpations": 0,
+            "worldRandomPosition": 7205
+          },
+          "candidate": {
+            "worldPopulation": 141,
+            "peakWorldPopulation": 153,
+            "captures": 18,
+            "siegeCityMonths": 3475,
+            "rebellions": 0,
+            "splits": 0,
+            "extinctions": 1,
+            "normalRoyalSuccessions": 22,
+            "usurpations": 0,
+            "worldRandomPosition": 7206
+          },
+          "canonicalSha256": "a7145c9fe99f62375e2ba7e74c0c336d8c39904118c08a5f4bcc4a5f2d192ee7"
+        },
+        {
+          "seed": "regional-2",
+          "career": {
+            "people": 19,
+            "unnamed": 0,
+            "nameCoverage": 1,
+            "civilToMilitary": 0,
+            "militaryToCivil": 0,
+            "overlap": 0,
+            "endReasons": {
+              "DEATH": 12,
+              "CITY_LOST": 3
+            },
+            "endedBeforeMinimumMilitaryRetirement": 1,
+            "ordinaryAppointments": 19
+          },
+          "currentOfficers": [
+            {
+              "factionId": "秦",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 1,
+              "civil": 0,
+              "military": 1
+            },
+            {
+              "factionId": "赵",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 1,
+              "civil": 0,
+              "military": 1
+            },
+            {
+              "factionId": "燕",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 2,
+              "civil": 1,
+              "military": 0
+            },
+            {
+              "factionId": "齐",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 1,
+              "civil": 0,
+              "military": 0
+            },
+            {
+              "factionId": "韩",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 2,
+              "civil": 1,
+              "military": 0
+            },
+            {
+              "factionId": "楚",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 9,
+              "civil": 2,
+              "military": 0
+            }
+          ],
+          "currentRecruitment": {
+            "scope": "CURRENT_SNAPSHOT",
+            "formerCivilIdentities": 3,
+            "qualified": 0,
+            "withVacancy": 0,
+            "blocked": {
+              "没有在世在籍的原人口": 1,
+              "已超过正常初任年龄": 2
+            }
+          },
+          "civilPoolSummary": {
+            "countriesWithVacancy": 1,
+            "retiredMilitaryCandidates": 0,
+            "countriesWithRetiredCandidates": []
+          },
+          "strictSave": true,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "invariants": {
+            "unexplainedPopulation": 0,
+            "duplicatePopulation": 0,
+            "duplicateHistory": 0,
+            "formationOwnershipConflicts": 0,
+            "residentIdentityConflicts": 0,
+            "officeOverlap": 0
+          },
+          "baseline": {
+            "worldPopulation": 149,
+            "peakWorldPopulation": 156,
+            "captures": 14,
+            "siegeCityMonths": 3158,
+            "rebellions": 0,
+            "splits": 1,
+            "extinctions": 1,
+            "normalRoyalSuccessions": 18,
+            "usurpations": 1,
+            "worldRandomPosition": 7257
+          },
+          "candidate": {
+            "worldPopulation": 139,
+            "peakWorldPopulation": 156,
+            "captures": 13,
+            "siegeCityMonths": 2976,
+            "rebellions": 0,
+            "splits": 0,
+            "extinctions": 0,
+            "normalRoyalSuccessions": 16,
+            "usurpations": 0,
+            "worldRandomPosition": 7147
+          },
+          "canonicalSha256": "b5f882827d895d9221af550650c250513574292dd1398b524138d6cfef5c69b6"
+        },
+        {
+          "seed": "regional-3",
+          "career": {
+            "people": 19,
+            "unnamed": 0,
+            "nameCoverage": 1,
+            "civilToMilitary": 0,
+            "militaryToCivil": 0,
+            "overlap": 0,
+            "endReasons": {
+              "DEATH": 13,
+              "CITY_LOST": 2
+            },
+            "endedBeforeMinimumMilitaryRetirement": 1,
+            "ordinaryAppointments": 17
+          },
+          "currentOfficers": [
+            {
+              "factionId": "秦",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 1,
+              "civil": 0,
+              "military": 0
+            },
+            {
+              "factionId": "燕",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 3,
+              "civil": 0,
+              "military": 0
+            },
+            {
+              "factionId": "齐",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 4,
+              "civil": 1,
+              "military": 2
+            },
+            {
+              "factionId": "魏",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 4,
+              "civil": 1,
+              "military": 0
+            },
+            {
+              "factionId": "楚",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 4,
+              "civil": 2,
+              "military": 0
+            }
+          ],
+          "currentRecruitment": {
+            "scope": "CURRENT_SNAPSHOT",
+            "formerCivilIdentities": 2,
+            "qualified": 0,
+            "withVacancy": 0,
+            "blocked": {
+              "没有在世在籍的原人口": 2
+            }
+          },
+          "civilPoolSummary": {
+            "countriesWithVacancy": 1,
+            "retiredMilitaryCandidates": 0,
+            "countriesWithRetiredCandidates": []
+          },
+          "strictSave": true,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "invariants": {
+            "unexplainedPopulation": 0,
+            "duplicatePopulation": 0,
+            "duplicateHistory": 0,
+            "formationOwnershipConflicts": 0,
+            "residentIdentityConflicts": 0,
+            "officeOverlap": 0
+          },
+          "baseline": {
+            "worldPopulation": 107,
+            "peakWorldPopulation": 151,
+            "captures": 64,
+            "siegeCityMonths": 3895,
+            "rebellions": 0,
+            "splits": 1,
+            "extinctions": 3,
+            "normalRoyalSuccessions": 17,
+            "usurpations": 0,
+            "worldRandomPosition": 7354
+          },
+          "candidate": {
+            "worldPopulation": 132,
+            "peakWorldPopulation": 151,
+            "captures": 14,
+            "siegeCityMonths": 3347,
+            "rebellions": 0,
+            "splits": 0,
+            "extinctions": 2,
+            "normalRoyalSuccessions": 15,
+            "usurpations": 0,
+            "worldRandomPosition": 7128
+          },
+          "canonicalSha256": "6ede808b651a8c5d9290401207ffb4d1182ee558c6cbd075bba76d3341cc1333"
+        },
+        {
+          "seed": "regional-4",
+          "career": {
+            "people": 20,
+            "unnamed": 0,
+            "nameCoverage": 1,
+            "civilToMilitary": 0,
+            "militaryToCivil": 0,
+            "overlap": 0,
+            "endReasons": {
+              "CITY_LOST": 5,
+              "DEATH": 12
+            },
+            "endedBeforeMinimumMilitaryRetirement": 3,
+            "ordinaryAppointments": 20
+          },
+          "currentOfficers": [
+            {
+              "factionId": "燕",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 4,
+              "civil": 1,
+              "military": 1
+            },
+            {
+              "factionId": "韩",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 5,
+              "civil": 1,
+              "military": 0
+            },
+            {
+              "factionId": "楚",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 7,
+              "civil": 2,
+              "military": 1
+            }
+          ],
+          "currentRecruitment": {
+            "scope": "CURRENT_SNAPSHOT",
+            "formerCivilIdentities": 4,
+            "qualified": 0,
+            "withVacancy": 0,
+            "blocked": {
+              "没有在世在籍的原人口": 3,
+              "已超过正常初任年龄": 1
+            }
+          },
+          "civilPoolSummary": {
+            "countriesWithVacancy": 1,
+            "retiredMilitaryCandidates": 0,
+            "countriesWithRetiredCandidates": []
+          },
+          "strictSave": true,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "invariants": {
+            "unexplainedPopulation": 0,
+            "duplicatePopulation": 0,
+            "duplicateHistory": 0,
+            "formationOwnershipConflicts": 0,
+            "residentIdentityConflicts": 0,
+            "officeOverlap": 0
+          },
+          "baseline": {
+            "worldPopulation": 135,
+            "peakWorldPopulation": 155,
+            "captures": 18,
+            "siegeCityMonths": 3679,
+            "rebellions": 0,
+            "splits": 0,
+            "extinctions": 2,
+            "normalRoyalSuccessions": 20,
+            "usurpations": 0,
+            "worldRandomPosition": 6975
+          },
+          "candidate": {
+            "worldPopulation": 136,
+            "peakWorldPopulation": 155,
+            "captures": 15,
+            "siegeCityMonths": 3335,
+            "rebellions": 0,
+            "splits": 0,
+            "extinctions": 2,
+            "normalRoyalSuccessions": 18,
+            "usurpations": 0,
+            "worldRandomPosition": 6890
+          },
+          "canonicalSha256": "22a735875a9aacad5f97d0a7fe6ef59f31206ad5e457fc9241fc638d15ae1e87"
+        },
+        {
+          "seed": "regional-5",
+          "career": {
+            "people": 25,
+            "unnamed": 0,
+            "nameCoverage": 1,
+            "civilToMilitary": 0,
+            "militaryToCivil": 0,
+            "overlap": 0,
+            "endReasons": {
+              "DEATH": 11,
+              "CITY_LOST": 10
+            },
+            "endedBeforeMinimumMilitaryRetirement": 3,
+            "ordinaryAppointments": 25
+          },
+          "currentOfficers": [
+            {
+              "factionId": "秦",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 5,
+              "civil": 2,
+              "military": 1
+            },
+            {
+              "factionId": "燕",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 3,
+              "civil": 1,
+              "military": 0
+            },
+            {
+              "factionId": "齐",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 2,
+              "civil": 1,
+              "military": 0
+            },
+            {
+              "factionId": "魏",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 1,
+              "civil": 0,
+              "military": 1
+            },
+            {
+              "factionId": "楚",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 4,
+              "civil": 1,
+              "military": 0
+            },
+            {
+              "factionId": "邯郸义军",
+              "rank": "LEADER",
+              "identityStage": "PROVISIONAL",
+              "cities": 1,
+              "civil": 0,
+              "military": 1
+            }
+          ],
+          "currentRecruitment": {
+            "scope": "CURRENT_SNAPSHOT",
+            "formerCivilIdentities": 9,
+            "qualified": 1,
+            "withVacancy": 1,
+            "blocked": {
+              "没有在世在籍的原人口": 8
+            }
+          },
+          "civilPoolSummary": {
+            "countriesWithVacancy": 0,
+            "retiredMilitaryCandidates": 0,
+            "countriesWithRetiredCandidates": []
+          },
+          "strictSave": true,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "invariants": {
+            "unexplainedPopulation": 0,
+            "duplicatePopulation": 0,
+            "duplicateHistory": 0,
+            "formationOwnershipConflicts": 0,
+            "residentIdentityConflicts": 0,
+            "officeOverlap": 0
+          },
+          "baseline": {
+            "worldPopulation": 136,
+            "peakWorldPopulation": 154,
+            "captures": 19,
+            "siegeCityMonths": 3426,
+            "rebellions": 0,
+            "splits": 0,
+            "extinctions": 2,
+            "normalRoyalSuccessions": 16,
+            "usurpations": 0,
+            "worldRandomPosition": 7032
+          },
+          "candidate": {
+            "worldPopulation": 142,
+            "peakWorldPopulation": 154,
+            "captures": 23,
+            "siegeCityMonths": 3354,
+            "rebellions": 0,
+            "splits": 1,
+            "extinctions": 2,
+            "normalRoyalSuccessions": 16,
+            "usurpations": 0,
+            "worldRandomPosition": 7099
+          },
+          "canonicalSha256": "277e2f1f63f8ca33df739a76304b6f24edc65736105a8ad01b3586e0f61d0005"
+        },
+        {
+          "seed": "regional-6",
+          "career": {
+            "people": 20,
+            "unnamed": 0,
+            "nameCoverage": 1,
+            "civilToMilitary": 0,
+            "militaryToCivil": 0,
+            "overlap": 0,
+            "endReasons": {
+              "DEATH": 13,
+              "CITY_LOST": 3
+            },
+            "endedBeforeMinimumMilitaryRetirement": 0,
+            "ordinaryAppointments": 19
+          },
+          "currentOfficers": [
+            {
+              "factionId": "秦",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 4,
+              "civil": 1,
+              "military": 0
+            },
+            {
+              "factionId": "赵",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 4,
+              "civil": 1,
+              "military": 1
+            },
+            {
+              "factionId": "齐",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 8,
+              "civil": 2,
+              "military": 0
+            }
+          ],
+          "currentRecruitment": {
+            "scope": "CURRENT_SNAPSHOT",
+            "formerCivilIdentities": 3,
+            "qualified": 0,
+            "withVacancy": 0,
+            "blocked": {
+              "没有在世在籍的原人口": 3
+            }
+          },
+          "civilPoolSummary": {
+            "countriesWithVacancy": 0,
+            "retiredMilitaryCandidates": 0,
+            "countriesWithRetiredCandidates": []
+          },
+          "strictSave": true,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "invariants": {
+            "unexplainedPopulation": 0,
+            "duplicatePopulation": 0,
+            "duplicateHistory": 0,
+            "formationOwnershipConflicts": 0,
+            "residentIdentityConflicts": 0,
+            "officeOverlap": 0
+          },
+          "baseline": {
+            "worldPopulation": 142,
+            "peakWorldPopulation": 151,
+            "captures": 20,
+            "siegeCityMonths": 3281,
+            "rebellions": 0,
+            "splits": 0,
+            "extinctions": 3,
+            "normalRoyalSuccessions": 14,
+            "usurpations": 0,
+            "worldRandomPosition": 6667
+          },
+          "candidate": {
+            "worldPopulation": 135,
+            "peakWorldPopulation": 150,
+            "captures": 21,
+            "siegeCityMonths": 3164,
+            "rebellions": 0,
+            "splits": 0,
+            "extinctions": 3,
+            "normalRoyalSuccessions": 14,
+            "usurpations": 0,
+            "worldRandomPosition": 6831
+          },
+          "canonicalSha256": "f69eb095997ea19551711f93dff727d90776b2d3ffd987d24b00a441cf715f47"
+        },
+        {
+          "seed": "regional-7",
+          "career": {
+            "people": 25,
+            "unnamed": 0,
+            "nameCoverage": 1,
+            "civilToMilitary": 0,
+            "militaryToCivil": 0,
+            "overlap": 0,
+            "endReasons": {
+              "DEATH": 15,
+              "CITY_LOST": 4
+            },
+            "endedBeforeMinimumMilitaryRetirement": 2,
+            "ordinaryAppointments": 24
+          },
+          "currentOfficers": [
+            {
+              "factionId": "秦",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 2,
+              "civil": 1,
+              "military": 0
+            },
+            {
+              "factionId": "赵",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 2,
+              "civil": 1,
+              "military": 2
+            },
+            {
+              "factionId": "燕",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 4,
+              "civil": 1,
+              "military": 1
+            },
+            {
+              "factionId": "齐",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 4,
+              "civil": 1,
+              "military": 1
+            },
+            {
+              "factionId": "魏",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 3,
+              "civil": 1,
+              "military": 0
+            },
+            {
+              "factionId": "楚",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 2,
+              "civil": 1,
+              "military": 0
+            }
+          ],
+          "currentRecruitment": {
+            "scope": "CURRENT_SNAPSHOT",
+            "formerCivilIdentities": 4,
+            "qualified": 2,
+            "withVacancy": 1,
+            "blocked": {
+              "没有在世在籍的原人口": 1,
+              "已超过正常初任年龄": 1
+            }
+          },
+          "civilPoolSummary": {
+            "countriesWithVacancy": 0,
+            "retiredMilitaryCandidates": 0,
+            "countriesWithRetiredCandidates": []
+          },
+          "strictSave": true,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "invariants": {
+            "unexplainedPopulation": 0,
+            "duplicatePopulation": 0,
+            "duplicateHistory": 0,
+            "formationOwnershipConflicts": 0,
+            "residentIdentityConflicts": 0,
+            "officeOverlap": 0
+          },
+          "baseline": {
+            "worldPopulation": 119,
+            "peakWorldPopulation": 151,
+            "captures": 22,
+            "siegeCityMonths": 3771,
+            "rebellions": 0,
+            "splits": 0,
+            "extinctions": 1,
+            "normalRoyalSuccessions": 20,
+            "usurpations": 0,
+            "worldRandomPosition": 7231
+          },
+          "candidate": {
+            "worldPopulation": 131,
+            "peakWorldPopulation": 145,
+            "captures": 19,
+            "siegeCityMonths": 3727,
+            "rebellions": 0,
+            "splits": 0,
+            "extinctions": 1,
+            "normalRoyalSuccessions": 21,
+            "usurpations": 0,
+            "worldRandomPosition": 7203
+          },
+          "canonicalSha256": "fea0bc2de866180c8e9659af5b726b0dab766d87b2c36dc057eb39a4e6ff56a7"
+        },
+        {
+          "seed": "regional-8",
+          "career": {
+            "people": 20,
+            "unnamed": 0,
+            "nameCoverage": 1,
+            "civilToMilitary": 0,
+            "militaryToCivil": 0,
+            "overlap": 0,
+            "endReasons": {
+              "DEATH": 13,
+              "CITY_LOST": 2
+            },
+            "endedBeforeMinimumMilitaryRetirement": 1,
+            "ordinaryAppointments": 20
+          },
+          "currentOfficers": [
+            {
+              "factionId": "秦",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 2,
+              "civil": 1,
+              "military": 1
+            },
+            {
+              "factionId": "赵",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 3,
+              "civil": 1,
+              "military": 1
+            },
+            {
+              "factionId": "燕",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 4,
+              "civil": 1,
+              "military": 1
+            },
+            {
+              "factionId": "魏",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 3,
+              "civil": 1,
+              "military": 1
+            },
+            {
+              "factionId": "楚",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 5,
+              "civil": 1,
+              "military": 2
+            }
+          ],
+          "currentRecruitment": {
+            "scope": "CURRENT_SNAPSHOT",
+            "formerCivilIdentities": 2,
+            "qualified": 0,
+            "withVacancy": 0,
+            "blocked": {
+              "没有在世在籍的原人口": 2
+            }
+          },
+          "civilPoolSummary": {
+            "countriesWithVacancy": 1,
+            "retiredMilitaryCandidates": 0,
+            "countriesWithRetiredCandidates": []
+          },
+          "strictSave": true,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "invariants": {
+            "unexplainedPopulation": 0,
+            "duplicatePopulation": 0,
+            "duplicateHistory": 0,
+            "formationOwnershipConflicts": 0,
+            "residentIdentityConflicts": 0,
+            "officeOverlap": 0
+          },
+          "baseline": {
+            "worldPopulation": 137,
+            "peakWorldPopulation": 155,
+            "captures": 43,
+            "siegeCityMonths": 3688,
+            "rebellions": 2,
+            "splits": 1,
+            "extinctions": 2,
+            "normalRoyalSuccessions": 23,
+            "usurpations": 0,
+            "worldRandomPosition": 7487
+          },
+          "candidate": {
+            "worldPopulation": 135,
+            "peakWorldPopulation": 151,
+            "captures": 24,
+            "siegeCityMonths": 3399,
+            "rebellions": 0,
+            "splits": 0,
+            "extinctions": 2,
+            "normalRoyalSuccessions": 16,
+            "usurpations": 0,
+            "worldRandomPosition": 7198
+          },
+          "canonicalSha256": "b9bf6207a9d62d751fd9e20b65564a066b8712826ad486e58401c9e78e7a356b"
+        }
+      ]
+    },
+    {
+      "years": 200,
+      "worlds": [
+        {
+          "seed": "regional-1",
+          "career": {
+            "people": 55,
+            "unnamed": 0,
+            "nameCoverage": 1,
+            "civilToMilitary": 0,
+            "militaryToCivil": 0,
+            "overlap": 0,
+            "endReasons": {
+              "CITY_LOST": 15,
+              "DEATH": 35
+            },
+            "endedBeforeMinimumMilitaryRetirement": 8,
+            "ordinaryAppointments": 49
+          },
+          "currentOfficers": [
+            {
+              "factionId": "秦",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 2,
+              "civil": 1,
+              "military": 0
+            },
+            {
+              "factionId": "燕",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 4,
+              "civil": 1,
+              "military": 0
+            },
+            {
+              "factionId": "齐",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 2,
+              "civil": 1,
+              "military": 1
+            },
+            {
+              "factionId": "魏",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 2,
+              "civil": 1,
+              "military": 1
+            },
+            {
+              "factionId": "郢东义军",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 7,
+              "civil": 2,
+              "military": 1
+            }
+          ],
+          "currentRecruitment": {
+            "scope": "CURRENT_SNAPSHOT",
+            "formerCivilIdentities": 15,
+            "qualified": 0,
+            "withVacancy": 0,
+            "blocked": {
+              "没有在世在籍的原人口": 12,
+              "已超过正常初任年龄": 2,
+              "仍在担任正式郡守": 1
+            }
+          },
+          "civilPoolSummary": {
+            "countriesWithVacancy": 0,
+            "retiredMilitaryCandidates": 1,
+            "countriesWithRetiredCandidates": [
+              {
+                "factionId": "魏",
+                "retiredMilitary": 1,
+                "hasVacancy": false
+              }
+            ]
+          },
+          "strictSave": true,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "invariants": {
+            "unexplainedPopulation": 0,
+            "duplicatePopulation": 0,
+            "duplicateHistory": 0,
+            "formationOwnershipConflicts": 0,
+            "residentIdentityConflicts": 0,
+            "officeOverlap": 0
+          },
+          "baseline": {
+            "worldPopulation": 135,
+            "peakWorldPopulation": 153,
+            "captures": 62,
+            "siegeCityMonths": 7886,
+            "rebellions": 8,
+            "splits": 0,
+            "extinctions": 8,
+            "normalRoyalSuccessions": 45,
+            "usurpations": 0,
+            "worldRandomPosition": 14483
+          },
+          "candidate": {
+            "worldPopulation": 122,
+            "peakWorldPopulation": 153,
+            "captures": 75,
+            "siegeCityMonths": 7412,
+            "rebellions": 5,
+            "splits": 4,
+            "extinctions": 11,
+            "normalRoyalSuccessions": 40,
+            "usurpations": 0,
+            "worldRandomPosition": 14521
+          },
+          "canonicalSha256": "3f49bf08bc663bcef33bd0d4a8751d0384cc61a8e38b6f28ad3f032df69acdf1"
+        },
+        {
+          "seed": "regional-2",
+          "career": {
+            "people": 54,
+            "unnamed": 0,
+            "nameCoverage": 1,
+            "civilToMilitary": 0,
+            "militaryToCivil": 0,
+            "overlap": 0,
+            "endReasons": {
+              "DEATH": 33,
+              "CITY_LOST": 14
+            },
+            "endedBeforeMinimumMilitaryRetirement": 6,
+            "ordinaryAppointments": 50
+          },
+          "currentOfficers": [
+            {
+              "factionId": "秦",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 3,
+              "civil": 1,
+              "military": 0
+            },
+            {
+              "factionId": "赵",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 5,
+              "civil": 2,
+              "military": 0
+            },
+            {
+              "factionId": "燕",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 5,
+              "civil": 2,
+              "military": 1
+            },
+            {
+              "factionId": "韩",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 3,
+              "civil": 1,
+              "military": 0
+            },
+            {
+              "factionId": "楚",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 4,
+              "civil": 2,
+              "military": 0
+            }
+          ],
+          "currentRecruitment": {
+            "scope": "CURRENT_SNAPSHOT",
+            "formerCivilIdentities": 14,
+            "qualified": 0,
+            "withVacancy": 0,
+            "blocked": {
+              "没有在世在籍的原人口": 14
+            }
+          },
+          "civilPoolSummary": {
+            "countriesWithVacancy": 0,
+            "retiredMilitaryCandidates": 1,
+            "countriesWithRetiredCandidates": [
+              {
+                "factionId": "韩",
+                "retiredMilitary": 1,
+                "hasVacancy": false
+              }
+            ]
+          },
+          "strictSave": true,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "invariants": {
+            "unexplainedPopulation": 0,
+            "duplicatePopulation": 0,
+            "duplicateHistory": 0,
+            "formationOwnershipConflicts": 0,
+            "residentIdentityConflicts": 0,
+            "officeOverlap": 0
+          },
+          "baseline": {
+            "worldPopulation": 126,
+            "peakWorldPopulation": 156,
+            "captures": 74,
+            "siegeCityMonths": 7346,
+            "rebellions": 2,
+            "splits": 4,
+            "extinctions": 6,
+            "normalRoyalSuccessions": 49,
+            "usurpations": 1,
+            "worldRandomPosition": 15333
+          },
+          "candidate": {
+            "worldPopulation": 122,
+            "peakWorldPopulation": 156,
+            "captures": 103,
+            "siegeCityMonths": 8499,
+            "rebellions": 4,
+            "splits": 7,
+            "extinctions": 12,
+            "normalRoyalSuccessions": 45,
+            "usurpations": 0,
+            "worldRandomPosition": 15093
+          },
+          "canonicalSha256": "3015d2747dce0812dfed98448ce6ab7ad5c8bacc29604c44b87ea97573ea7686"
+        },
+        {
+          "seed": "regional-3",
+          "career": {
+            "people": 46,
+            "unnamed": 0,
+            "nameCoverage": 1,
+            "civilToMilitary": 1,
+            "militaryToCivil": 2,
+            "overlap": 0,
+            "endReasons": {
+              "DEATH": 24,
+              "CITY_LOST": 17
+            },
+            "endedBeforeMinimumMilitaryRetirement": 8,
+            "ordinaryAppointments": 36
+          },
+          "currentOfficers": [
+            {
+              "factionId": "齐",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 12,
+              "civil": 3,
+              "military": 2
+            },
+            {
+              "factionId": "魏",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 2,
+              "civil": 1,
+              "military": 0
+            },
+            {
+              "factionId": "楚",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 1,
+              "civil": 1,
+              "military": 0
+            },
+            {
+              "factionId": "新郑东义军",
+              "rank": "LEADER",
+              "identityStage": "PROVISIONAL",
+              "cities": 2,
+              "civil": 0,
+              "military": 0
+            }
+          ],
+          "currentRecruitment": {
+            "scope": "CURRENT_SNAPSHOT",
+            "formerCivilIdentities": 17,
+            "qualified": 1,
+            "withVacancy": 1,
+            "blocked": {
+              "没有在世在籍的原人口": 16
+            }
+          },
+          "civilPoolSummary": {
+            "countriesWithVacancy": 0,
+            "retiredMilitaryCandidates": 0,
+            "countriesWithRetiredCandidates": []
+          },
+          "strictSave": true,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "invariants": {
+            "unexplainedPopulation": 0,
+            "duplicatePopulation": 0,
+            "duplicateHistory": 0,
+            "formationOwnershipConflicts": 0,
+            "residentIdentityConflicts": 0,
+            "officeOverlap": 0
+          },
+          "baseline": {
+            "worldPopulation": 135,
+            "peakWorldPopulation": 151,
+            "captures": 108,
+            "siegeCityMonths": 8136,
+            "rebellions": 3,
+            "splits": 4,
+            "extinctions": 8,
+            "normalRoyalSuccessions": 40,
+            "usurpations": 0,
+            "worldRandomPosition": 14997
+          },
+          "candidate": {
+            "worldPopulation": 133,
+            "peakWorldPopulation": 151,
+            "captures": 78,
+            "siegeCityMonths": 7466,
+            "rebellions": 3,
+            "splits": 4,
+            "extinctions": 8,
+            "normalRoyalSuccessions": 36,
+            "usurpations": 0,
+            "worldRandomPosition": 14624
+          },
+          "canonicalSha256": "27a527d49158ce65d37a82a2ff37cb42371bfef677f901f68559aecebd1625bc"
+        },
+        {
+          "seed": "regional-4",
+          "career": {
+            "people": 37,
+            "unnamed": 0,
+            "nameCoverage": 1,
+            "civilToMilitary": 0,
+            "militaryToCivil": 0,
+            "overlap": 0,
+            "endReasons": {
+              "CITY_LOST": 5,
+              "DEATH": 28
+            },
+            "endedBeforeMinimumMilitaryRetirement": 3,
+            "ordinaryAppointments": 32
+          },
+          "currentOfficers": [
+            {
+              "factionId": "燕",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 4,
+              "civil": 1,
+              "military": 1
+            },
+            {
+              "factionId": "韩",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 6,
+              "civil": 2,
+              "military": 0
+            },
+            {
+              "factionId": "楚",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 6,
+              "civil": 2,
+              "military": 0
+            }
+          ],
+          "currentRecruitment": {
+            "scope": "CURRENT_SNAPSHOT",
+            "formerCivilIdentities": 4,
+            "qualified": 0,
+            "withVacancy": 0,
+            "blocked": {
+              "没有在世在籍的原人口": 4
+            }
+          },
+          "civilPoolSummary": {
+            "countriesWithVacancy": 0,
+            "retiredMilitaryCandidates": 0,
+            "countriesWithRetiredCandidates": []
+          },
+          "strictSave": true,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "invariants": {
+            "unexplainedPopulation": 0,
+            "duplicatePopulation": 0,
+            "duplicateHistory": 0,
+            "formationOwnershipConflicts": 0,
+            "residentIdentityConflicts": 0,
+            "officeOverlap": 0
+          },
+          "baseline": {
+            "worldPopulation": 134,
+            "peakWorldPopulation": 155,
+            "captures": 66,
+            "siegeCityMonths": 7254,
+            "rebellions": 2,
+            "splits": 3,
+            "extinctions": 4,
+            "normalRoyalSuccessions": 41,
+            "usurpations": 0,
+            "worldRandomPosition": 14456
+          },
+          "candidate": {
+            "worldPopulation": 140,
+            "peakWorldPopulation": 155,
+            "captures": 16,
+            "siegeCityMonths": 5449,
+            "rebellions": 0,
+            "splits": 0,
+            "extinctions": 4,
+            "normalRoyalSuccessions": 29,
+            "usurpations": 0,
+            "worldRandomPosition": 12357
+          },
+          "canonicalSha256": "a83f01a5d0798bca78a7e2e97f8ef503abbded23d3ddb2c73a329490d0769242"
+        }
+      ]
+    },
+    {
+      "years": 300,
+      "worlds": [
+        {
+          "seed": "regional-1",
+          "career": {
+            "people": 83,
+            "unnamed": 0,
+            "nameCoverage": 1,
+            "civilToMilitary": 0,
+            "militaryToCivil": 0,
+            "overlap": 0,
+            "endReasons": {
+              "CITY_LOST": 27,
+              "DEATH": 52
+            },
+            "endedBeforeMinimumMilitaryRetirement": 14,
+            "ordinaryAppointments": 70
+          },
+          "currentOfficers": [
+            {
+              "factionId": "秦",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 3,
+              "civil": 1,
+              "military": 0
+            },
+            {
+              "factionId": "魏",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 11,
+              "civil": 3,
+              "military": 2
+            },
+            {
+              "factionId": "郢东义军",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 4,
+              "civil": 1,
+              "military": 0
+            },
+            {
+              "factionId": "新郑南义军",
+              "rank": "LEADER",
+              "identityStage": "PROVISIONAL",
+              "cities": 1,
+              "civil": 0,
+              "military": 0
+            }
+          ],
+          "currentRecruitment": {
+            "scope": "CURRENT_SNAPSHOT",
+            "formerCivilIdentities": 27,
+            "qualified": 1,
+            "withVacancy": 1,
+            "blocked": {
+              "没有在世在籍的原人口": 26
+            }
+          },
+          "civilPoolSummary": {
+            "countriesWithVacancy": 0,
+            "retiredMilitaryCandidates": 0,
+            "countriesWithRetiredCandidates": []
+          },
+          "strictSave": true,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "invariants": {
+            "unexplainedPopulation": 0,
+            "duplicatePopulation": 0,
+            "duplicateHistory": 0,
+            "formationOwnershipConflicts": 0,
+            "residentIdentityConflicts": 0,
+            "officeOverlap": 0
+          },
+          "baseline": {
+            "worldPopulation": 133,
+            "peakWorldPopulation": 153,
+            "captures": 107,
+            "siegeCityMonths": 13328,
+            "rebellions": 10,
+            "splits": 2,
+            "extinctions": 11,
+            "normalRoyalSuccessions": 72,
+            "usurpations": 0,
+            "worldRandomPosition": 22217
+          },
+          "candidate": {
+            "worldPopulation": 124,
+            "peakWorldPopulation": 153,
+            "captures": 149,
+            "siegeCityMonths": 11540,
+            "rebellions": 16,
+            "splits": 7,
+            "extinctions": 24,
+            "normalRoyalSuccessions": 62,
+            "usurpations": 1,
+            "worldRandomPosition": 22631
+          },
+          "canonicalSha256": "8fdb0b01581ad0e46c61263000c5610b35e4512fa4fc23ccce2633ea507088d1"
+        }
+      ]
+    },
+    {
+      "years": 500,
+      "worlds": [
+        {
+          "seed": "regional-1",
+          "career": {
+            "people": 121,
+            "unnamed": 0,
+            "nameCoverage": 1,
+            "civilToMilitary": 1,
+            "militaryToCivil": 0,
+            "overlap": 0,
+            "endReasons": {
+              "CITY_LOST": 32,
+              "DEATH": 86
+            },
+            "endedBeforeMinimumMilitaryRetirement": 19,
+            "ordinaryAppointments": 103
+          },
+          "currentOfficers": [
+            {
+              "factionId": "秦",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 3,
+              "civil": 1,
+              "military": 1
+            },
+            {
+              "factionId": "魏",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 8,
+              "civil": 2,
+              "military": 0
+            },
+            {
+              "factionId": "郴县西义军",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 7,
+              "civil": 2,
+              "military": 2
+            },
+            {
+              "factionId": "新郑中义军",
+              "rank": "KING",
+              "identityStage": "STATE",
+              "cities": 2,
+              "civil": 1,
+              "military": 0
+            }
+          ],
+          "currentRecruitment": {
+            "scope": "CURRENT_SNAPSHOT",
+            "formerCivilIdentities": 31,
+            "qualified": 0,
+            "withVacancy": 0,
+            "blocked": {
+              "没有在世在籍的原人口": 31
+            }
+          },
+          "civilPoolSummary": {
+            "countriesWithVacancy": 0,
+            "retiredMilitaryCandidates": 0,
+            "countriesWithRetiredCandidates": []
+          },
+          "strictSave": true,
+          "continuation": {
+            "months": 12,
+            "deterministic": true,
+            "secondRead": true
+          },
+          "invariants": {
+            "unexplainedPopulation": 0,
+            "duplicatePopulation": 0,
+            "duplicateHistory": 0,
+            "formationOwnershipConflicts": 0,
+            "residentIdentityConflicts": 0,
+            "officeOverlap": 0
+          },
+          "baseline": {
+            "worldPopulation": 131,
+            "peakWorldPopulation": 153,
+            "captures": 208,
+            "siegeCityMonths": 21643,
+            "rebellions": 19,
+            "splits": 12,
+            "extinctions": 31,
+            "normalRoyalSuccessions": 118,
+            "usurpations": 0,
+            "worldRandomPosition": 38067
+          },
+          "candidate": {
+            "worldPopulation": 132,
+            "peakWorldPopulation": 153,
+            "captures": 202,
+            "siegeCityMonths": 16532,
+            "rebellions": 21,
+            "splits": 12,
+            "extinctions": 35,
+            "normalRoyalSuccessions": 94,
+            "usurpations": 1,
+            "worldRandomPosition": 36607
+          },
+          "canonicalSha256": "42e4b6205997da07111b2ab8cd63e08c67e77dcc273da3b64a6c1e9e38df1021"
+        }
+      ]
+    }
+  ],
+  "legacyResidentCounterCorrections": [
+    {
+      "seed": "regional-1",
+      "worldMonth": 3600,
+      "rawLegacyCounter": 1,
+      "correctedCounter": 0,
+      "canonicalSha256": "8fdb0b01581ad0e46c61263000c5610b35e4512fa4fc23ccce2633ea507088d1",
+      "proof": "Same canonical 300-year snapshot replay with CharacterBindingDiagnostics; legitimate military usurper body was omitted by old counter."
+    }
+  ],
+  "zeroSampleAudit100": {
+    "scope": "Endpoint snapshots only, not annual opportunity denominators",
+    "formerCivilIdentities": 31,
+    "qualified": 3,
+    "withVacancy": 2,
+    "blocked": {
+      "没有在世在籍的原人口": 23,
+      "已超过正常初任年龄": 5
+    },
+    "retiredMilitaryInEndpointCivilPools": 0
+  },
+  "naturalCareerExamples": [
+    {
+      "name": "段瑜",
+      "personId": "military-family-military-person-38-郢东义军-ruler-100-child-3130",
+      "sourceUserId": 1642252562,
+      "bornMonth": 3130,
+      "events": [
+        {
+          "eventId": "civil-governor-郢东义军-齐-city-2424-28-82-appointed",
+          "month": 3420,
+          "type": "civil-governor-appointed",
+          "title": "郢王陆孟宁任命段瑜为汝阴郡守。"
+        },
+        {
+          "eventId": "civil-governor-郢东义军-齐-city-2424-28-82-ended-3600",
+          "month": 3600,
+          "type": "civil-governor-ended",
+          "title": "段瑜离任汝阴郡守。"
+        },
+        {
+          "eventId": "military-appointment-military-command-85",
+          "month": 3612,
+          "type": "military-appointment",
+          "title": "郢东义军任命段瑜为军事指挥者"
+        },
+        {
+          "eventId": "military-person-death-military-family-military-person-38-郢东义军-ruler-100-child-3130-3620",
+          "month": 3620,
+          "type": "military-person-died",
+          "title": "段瑜去世"
+        }
+      ],
+      "deathCause": "BATTLE_DEATH",
+      "familyLife": 4210,
+      "residentLife": 4087
+    }
+  ],
+  "usurperAudit": {
+    "scope": "Deduplicated by seed and event ID across repeated prefixes; source categories can overlap",
+    "successes": [
+      {
+        "seed": "regional-1",
+        "eventId": "dynasty-usurped-邯郸义军-3416-612",
+        "month": 3416,
+        "factionId": "邯郸义军",
+        "newRulerId": "邯郸义军-ruler-228",
+        "existingMilitaryIdentity": true,
+        "militaryOffice": "SHANGJIANGJUN",
+        "hadNobleGrant": true,
+        "hadFamilyIdentity": true,
+        "hadCivilIdentity": false,
+        "generatedNewIdentity": false
+      }
+    ],
+    "futureProposal": "Separate future version: assess actual administrative tenure, city governance and personal/family authority in a real succession crisis; reuse canonical transfer, never fabricate troops or inherit another polity without facts. No probability expansion in z62."
+  },
+  "quotas": {
+    "militaryCommanders": 2,
+    "militaryFormations": 2,
+    "civil": "min(3, ceil(cityCount/4)); appointment requires >=2 cities, STATE and stable real control",
+    "changed": false
+  },
+  "performance": {
+    "worldMonth": 6000,
+    "bytes": 11426079,
+    "repetitions": 3,
+    "validationMedianMs": 3102.8,
+    "hydrationMedianMs": 3231.7,
+    "exportMedianMs": 3546.5,
+    "fourTimesCoreTwelveMonthsMedianMs": 462,
+    "fourTimesDeterministic": true,
+    "sameNativeSaveUnchanged": true,
+    "panel": {
+      "enterMs": 85.7,
+      "firstExpandMs": 60.7,
+      "localPeople": 27,
+      "worldEvents": 14158,
+      "factsUnchangedOnHydration": true,
+      "scope": "actual natural Core world; same snapshot for paired UI measurements; offscreen Electron timings, not human Chrome acceptance"
+    }
+  },
+  "manualGate": "PENDING; do not start z63"
+}
