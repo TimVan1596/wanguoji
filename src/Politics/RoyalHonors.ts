@@ -41,7 +41,12 @@ export function planRoyalHonor(input:{faction:HonorFaction;dynasty:Dynasty;month
  const cap=f.sovereigntyRank==='EMPEROR'?4:2;
  const eligible=d.rulers.flatMap(r=>{
   if(!r.militaryIdentity)return []; // The grant always requires this real military person; avoid ancestry work for unrelated archived rulers.
-  const relation=getRecordedKinRelation(r,issuer,d.rulers),merits=royalHonorMerits(r,input.people,input.formations,input.events,m,f.name);
+  if(r.id===issuer.id||r.houseName!==d.houseName||!['heir','kin'].includes(r.status)||r.accessionYear!==undefined||r.reignOrdinal!==undefined||!livingRoyalAt(r,m)||m-r.bornYear<288)return [];
+  const currentPerson=input.people.find(p=>p.personId===r.militaryIdentity?.personId);
+  if(!currentPerson||currentPerson.status!=='ACTIVE'||currentPerson.deathMonth!==undefined||currentPerson.factionId!==f.name||!currentPerson.appointments.some(a=>a.factionId===f.name&&a.startMonth<=m&&a.endMonth===undefined))return [];
+  const relation=getRecordedKinRelation(r,issuer,d.rulers);
+  if(!relation||relation==='COLLATERAL_KIN')return [];
+  const merits=royalHonorMerits(r,input.people,input.formations,input.events,m,f.name);
   const proposed=royalMeritRank(merits,input.events),person=r.militaryIdentity&&input.people.find(p=>p.personId===r.militaryIdentity?.personId),appointment=person?.appointments.find(a=>a.factionId===f.name&&a.startMonth<=m&&a.endMonth===undefined);
   const noble=person&&currentNobleGrant(person,f.name,m,epoch.foundingRulerId),rank=proposed==='ZHENGUOGONG'&&!(noble?.rank==='GONG'&&input.events.some(e=>e.id===noble.eventId&&e.type==='military-ennobled'&&e.metadata?.nobility===JSON.stringify(noble)))?'WUANJUN':proposed;
   if(!rank||!person||person.status!=='ACTIVE'||person.deathMonth!==undefined||person.factionId!==f.name||!appointment||!verifiedPoliticalOffice(person,appointment.commandId,f.name,m,input.events))return [];

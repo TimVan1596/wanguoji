@@ -1,3 +1,4 @@
+import {personCareerMilestones} from './PersonCareerTimeline';
 import PersonCareerIdentity from './PersonCareerIdentity';
 import PosthumousPeeragePanel from './PosthumousPeeragePanel';
 import {rulerFamilyBackground} from '../../../Politics/RulerFamilyBackground';
@@ -768,6 +769,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth, familiesOnly=false }: { fa
           const politicalCandidate = militaryPolitics?.candidates.find(p => p.personId === person.personId);
           const orderEvidence = formation ? MilitaryCommandRegistry.getOrderEvidence(formation) : undefined;
           const view=formation&&Game.Core?resolveMilitaryCommandView(Game.Core,formation.commandId):undefined;
+          const lifeMilestones=personCareerMilestones(WorldHistory.getRecordedEvents(),person.personId,worldMonth,allMilestones);
           return <PersonChronicleLayout
             title={<MilitaryPersonIdentityHeader honor={royalHonor} person={person} politicalLabel={secession?identityLabels.find(l=>l.startsWith('已叛离')):courtLabels[0]??identityLabels.find(l=>l==='现任君主'||l==='曾任君主')} country={`${politicalFactionById.get(person.factionId)?.displayName ?? person.factionId}${politicalFactionById.get(person.factionId)?.identityStage === "STATE" ? "国" : ""}`} />}
             identity={<>
@@ -780,9 +782,8 @@ function MilitaryPeoplePanel({ factionId, worldMonth, familiesOnly=false }: { fa
               <Typography fontSize="0.76rem" color="var(--gg-text-muted)">{personAge} · 本国任职：{person.appointments.filter(a=>a.factionId===factionId).map(a=>`${formatWorldDate(a.startMonth)}—${a.endMonth===undefined?"今":formatWorldDate(a.endMonth)}`).join("；")}</Typography>
             </>}
             preBiography={<><PersonCareerIdentity personId={person.personId} name={person.personalName} bornMonth={person.bornMonth} deathMonth={person.deathMonth}/><MilitaryDispositionPanel person={person} personId={person.personId} bornMonth={person.bornMonth} loyalty={activeUser?.matchesMilitaryLife(person)?activeUser.loyalty:undefined} loyaltyContext={{factionName:politicalFactionById.get(person.factionId)?.displayName??person.factionId,month:worldMonth}} unitCount={view?.members.length??0} prestige={politicalCandidate?.finalPoliticalWeight??politicalCandidate?.strength}/><MilitaryServicePanel personId={person.personId} month={worldMonth}/><CivilServicePanel personId={person.personId} month={worldMonth} factionId={factionId}/><PersonPoliticalCareer personId={person.personId} month={worldMonth}/></>}
-            biographyTitle="生平纪事" biography={bio.life} milestoneTitle="军旅纪事" milestoneTotal={allMilestones.length} personKey={person.personId}
-            allMilestones={()=>allMilestones.map(entry=>({id:entry.eventId,content:<Typography fontSize="0.82rem">{formatWorldDate(entry.worldMonth)} · {entry.text}</Typography>}))}
-            milestones={milestones.map(entry=>({id:entry.eventId,content:<Typography fontSize="0.82rem">{formatWorldDate(entry.worldMonth)} · {entry.text}</Typography>}))}
+            biographyTitle="生平纪事" biography={bio.life} milestoneTitle="生平时间轴" milestoneTotal={lifeMilestones.length} personKey={person.personId}
+            allMilestones={()=>lifeMilestones} milestones={lifeMilestones.slice(-8)}
             assessment={[bio.assessment]} voice={bio.voice}
             governance={<><ChronicleSection title="军功与任职"><NobleHistory person={person} factionId={factionId} month={worldMonth}/><Typography fontSize="0.82rem">从军{formatWorldDuration(getMilitaryLocalServiceMonths(person,factionId,worldMonth))}，所部参与取城{bio.victories.length}次，历经{career.activities.filter(e=>e.factionId===factionId).length}处有记载的军旅活动。</Typography></ChronicleSection><PosthumousPeeragePanel person={person} month={worldMonth}/></>}
             evidence={<>
