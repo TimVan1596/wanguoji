@@ -12,7 +12,7 @@ import { hasRecordedRulerDeath } from "../../../Politics/RulerLifeState";
 import { getRulerTerminalRole } from "../../../History/PoliticalTerminalChronicle";
 
 export type GenealogyRole = "当前君主" | "储君" | "势力创始" | "正式开国" | "称帝" | "篡朝开统" | "宗室废立继位" | "被宗室废黜" | "复国" | "末代承统" | "合邦退位" | "纳土退位";
-export type GenealogyTheme = "neutral" | "monarch" | "current" | "heir" | "foundation" | "usurpation" | "restoration" | "terminal" | "disqualified" | "military" | "personalNoble" | "inheritedNoble";
+export type GenealogyTheme = "deposed" | "exiled" | "neutral" | "monarch" | "current" | "heir" | "foundation" | "usurpation" | "restoration" | "terminal" | "disqualified" | "military" | "personalNoble" | "inheritedNoble";
 export interface GenealogyNodePresentation {
   heading?:string;
   politicalLabel?:string;
@@ -98,7 +98,10 @@ export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: Hous
     let theme: GenealogyTheme = roles.includes("当前君主") ? "current" : disqualified ? "disqualified" : roles.includes("储君") ? "heir" :
       roles.includes("篡朝开统") ? "usurpation" : roles.some(x => ["正式开国", "称帝", "势力创始"].includes(x)) ? "foundation" :
       roles.includes("复国") ? "restoration" : roles.some(x => ["末代承统", "合邦退位", "纳土退位"].includes(x)) ? "terminal" : r.reignOrdinal!==undefined&&r.accessionYear!==undefined ? "monarch" : r.militaryIdentity ? "military" : "neutral";
-    const details = [...roles,politicalLabel??'',...posthumousLabels, royalHonorLabel(r,dynasty,worldMonth,faction.status), r.reignOrdinal !== undefined ? `第${r.reignOrdinal}任君主` : "宗室成员",
+    const deposed=r.endReason==='被废'&&r.endYear!==undefined&&r.endYear<=worldMonth||roles.includes('被宗室废黜');
+    if(deposed)theme='deposed';else if(r.status==='exiled')theme='exiled';
+    const lifeLabels=[...(deposed?['被废']:[]),...(r.status==='exiled'?['流亡']:[]),...(hasRecordedRulerDeath(r)&&r.deathMonth!<=worldMonth?['已故']:[])];
+    const details = [...lifeLabels,...roles,politicalLabel??'',...posthumousLabels, royalHonorLabel(r,dynasty,worldMonth,faction.status), r.reignOrdinal !== undefined ? `第${r.reignOrdinal}任君主` : "宗室成员",
       !disqualified && dynasty.heirIds.includes(r.id) && !roles.includes("储君") ? "宗室候选" : "",
       r.displacedByUsurpationMonth !== undefined ? "旧朝宗亲" : "", r.endReason ?? "",
       formatRulerLifeAge(r, worldMonth),
@@ -110,13 +113,15 @@ export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: Hous
     if(noble?.current&&r.reignOrdinal===undefined&&!disqualified)theme=noble.inherited?'inheritedNoble':'personalNoble';
     if(noble?.best.revoked&&r.reignOrdinal===undefined)theme='disqualified';
     if(noble)details.push(noble.label);
-    return [r.id, {heading,politicalLabel,posthumousLabels,honor, roles, labels: (politicalLabel?[politicalLabel,...roles,noble?.label??'']:noble?[...roles,noble.label+(r.militaryIdentity?'':' · 未任军职')]:roles).filter(Boolean).slice(0,2), theme, details, evidence: proof,
+    return [r.id, {heading,politicalLabel,posthumousLabels,honor, roles, labels: [...lifeLabels,...(politicalLabel?[politicalLabel,...roles,noble?.label??'']:noble?[...roles,noble.label+(r.militaryIdentity?'':' · 未任军职')]:roles).filter(Boolean))].filter((v,i,all)=>all.indexOf(v)===i).slice(0,3), theme, details, evidence: proof,
       hasPosthumousTitle: posthumousLabels.length>0 }];
   }));
 }
 
 /** Restrained palette: ordinary nodes remain neutral; bloodline edges keep their existing style. */
 export const genealogyThemeStyles: Record<GenealogyTheme, { borderColor: string; backgroundColor: string; color: string }> = {
+  deposed:{borderColor:"#985f59",backgroundColor:"#f7eeee",color:"#7c453f"},
+  exiled:{borderColor:"#80708e",backgroundColor:"#f1edf6",color:"#675079"},
   personalNoble:{borderColor:"#587f94",backgroundColor:"#eaf1f6",color:"#35566a"},
   inheritedNoble:{borderColor:"#679077",backgroundColor:"#edf5ef",color:"#406452"},
   disqualified: {borderColor:"#985f59",backgroundColor:"#f7eeee",color:"#7c453f"},

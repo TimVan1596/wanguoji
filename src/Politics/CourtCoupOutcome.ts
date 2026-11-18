@@ -8,10 +8,11 @@ export type CourtSuccessPolicy='LOW'|'MEDIUM'|'HIGH';
 export interface CourtTarget {rulerId:string;name:string;bornMonth:number;relation:string;basis:'SELF'|'KINSHIP'|'SENIORITY';}
 /** A political goal is selected before the draw from actual existing adult kin. */
 export function chooseCourtTarget(e:DepositionEvaluation,c:MilitaryPoliticalParticipant,p:MilitaryPerson):CourtTarget|undefined{
+ if(c.personId!==p.personId)return;
  const own=p.royalIdentity&&e.candidates.find(x=>x.ruler.id===p.royalIdentity!.rulerId),d=c.disposition;if(!d)return;
  const rows=e.candidates.map(x=>({rulerId:x.ruler.id,name:x.ruler.houseName.replace(/氏$/,'')+x.ruler.givenName,bornMonth:x.ruler.bornYear,relation:x.relation}));
  if(own&&d.ambition>=d.loyalty)return {...rows.find(x=>x.rulerId===own.ruler.id)!,basis:'SELF'};
- const support=chooseMilitaryClaimSupport(rows,c.personId,c.personalName??c.name,d);if(!support)return;
+ const support=chooseMilitaryClaimSupport(rows.filter(x=>x.rulerId!==p.royalIdentity?.rulerId),c.personId,c.personalName??c.name,d);if(!support)return;
  return {...rows.find(x=>x.rulerId===support.rulerId)!,basis:support.basis};
 }
 /** Conditional success AFTER an actual attempt, independent of the old spontaneous-deposition risk. */
