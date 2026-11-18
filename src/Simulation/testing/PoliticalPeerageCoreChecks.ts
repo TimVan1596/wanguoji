@@ -46,10 +46,9 @@ export function checkPoliticalPeerageInheritance(core:any,factionId:string,perso
   check(calls===2&&person?.appointments.at(-1)?.officeHistory?.at(-1)?.office==='XIAOWEI'&&!person.nobilityHistory&&person.capturedEventIds.length===0,'one existing shared national opportunity appoints the real inherited civilian as XIAOWEI, with no ancestral combat or title copied');strict();
   {
    hydrateWorldSave(core,structuredClone(saved));Military.setHereditaryRecruitmentForSimulation('MEDIUM');
-   const writer=History.addEvent,transaction=(Military as any).familyTransaction,next=random.next;let checkpoint:ReturnType<typeof exportWorldSave>|undefined,calls=0;
-   (Military as any).familyTransaction=function(t:any,work:any){if(work.name==='attempt')checkpoint=exportWorldSave(core);return transaction.call(this,t,work);};
+   const writer=History.addEvent,next=random.next;let checkpoint:ReturnType<typeof exportWorldSave>|undefined,calls=0;
    History.addEvent=function(e){const id=writer.call(this,e);if(e.type==='military-appointment'&&e.metadata?.sourceUserId===child.id)throw Error('injected noble vacancy appointment');return id;};
-   random.next=()=>{next.call(random);return calls++===0?.1:0;};try{Military.update(worldMonth,[team()],core.allCities);}finally{History.addEvent=writer;(Military as any).familyTransaction=transaction;random.next=next;}
+   random.next=()=>{if(calls===0)checkpoint=exportWorldSave(core);next.call(random);return calls++===0?.1:0;};try{Military.update(worldMonth,[team()],core.allCities);}finally{History.addEvent=writer;random.next=next;}
    check(checkpoint&&diffCanonicalWorldSave(checkpoint,exportWorldSave(core)).matched&&Military.getDiagnostics().familyRecruitment.executionFailures===1,'bounded noble vacancy opportunity failure restores its entire User, family, army, history, sequence and RNG boundary');
    hydrateWorldSave(core,structuredClone(saved));Military.setHereditaryRecruitmentForSimulation('MEDIUM');calls=0;
    random.next=()=>{next.call(random);return calls++===0?.1:0;};try{Military.update(worldMonth,[team()],core.allCities);}finally{random.next=next;}
