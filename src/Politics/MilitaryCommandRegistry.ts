@@ -1,6 +1,6 @@
 import {measurePhase,type MonthlyPhaseProfiler} from '../Simulation/MonthlyPhaseProfiler';
 import {civilPopulationIdentity,civilState} from './CivilCareerIdentity';
-import {familyBirthParents,planFamilyChildBirth,hasFamilyBirthOpportunity,isFamilyBirthPolicy,type FamilyBirthPolicy,FAMILY_ANNUAL_BIRTH_LIMIT,COUNTRY_ANNUAL_FAMILY_BIRTH_LIMIT} from './FamilyChildBirth';
+import {familyBirthSource,familyBirthParents,planFamilyChildBirth,hasFamilyBirthOpportunity,isFamilyBirthPolicy,type FamilyBirthPolicy,FAMILY_ANNUAL_BIRTH_LIMIT,COUNTRY_ANNUAL_FAMILY_BIRTH_LIMIT} from './FamilyChildBirth';
 import {NOBLE_NAMES,isNobleMeritPolicy,nobleEpochForRuler,type NobleMeritPolicy} from './MilitaryNobility';
 import {appointmentAbilityWeight,type AppointmentAbilityPolicy,type AppointmentSelection,type AppointmentSelectionRow} from './AppointmentSelection';
 import {personAbilities,militaryAbilities,type PersonAbilities} from './PersonAbilities';
@@ -626,7 +626,7 @@ export class MilitaryCommandRegistryStore {
     // Cheap current-life gate before any full historical context/index is built.
     const liveTeams=new Set(teams.filter(t=>t.status==='ACTIVE'&&t.identityStage==='STATE').map(t=>t.name));
     const candidates=this.families.filter(f=>liveTeams.has(f.factionId)&&f.members.some(m=>m.enteredMonth<=month&&(m.deathMonth??Infinity)>month&&(m.exitMonth??Infinity)>month&&m.bornMonth+240<=month&&m.bornMonth+660>=month&&(m.militaryPersonId&&this.people.has(m.militaryPersonId)||f.nobleSuccession?.at(-1)?.kind==='SUCCEEDED'&&f.nobleSuccession.at(-1)?.holderMemberId===m.memberId)));
-    const birthSeed=String(worldRandom.exportState().seed),dueCandidates=candidates.filter(f=>f.members.some(m=>hasFamilyBirthOpportunity(f,{...m,basisEventId:''},month,birthSeed,this.familyBirthPolicy)));
+    const birthSeed=String(worldRandom.exportState().seed),dueCandidates=candidates.filter(f=>f.members.some(m=>hasFamilyBirthOpportunity(f,{...m,basisEventId:''},month,birthSeed,this.familyBirthPolicy)&&familyBirthSource(f,m,month,m.militaryPersonId?this.people.get(m.militaryPersonId):undefined))); 
     if(!dueCandidates.length)return;
     const events=WorldHistory.getRecordedEvents(),context=createFamilyNobleContext(month,this.families,this.getPeople(),events,dynasties),eventIds=new Set(events.map(e=>e.id));
     for(const familyId of dueCandidates.map(f=>f.familyId).sort()){const f=this.families.find(f=>f.familyId===familyId)!;
