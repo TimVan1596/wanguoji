@@ -27,14 +27,15 @@ import {diffCanonicalWorldSave,type RulerSaveV17} from '../../Persistence/WorldS
 import {validateWorldSave} from '../../Persistence/WorldSaveValidator';
 import {SIMULATION_FIXED_STEP_MS} from '../SimulationDriver';
 /** Use an existing royal and the actual enlistment/capture path; titles never manufacture a career. */
-function prepareMeritoriousRoyal(core:any,base:ReturnType<typeof exportWorldSave>,check:(v:unknown,s:string)=>void){
+export function prepareMeritoriousRoyal(core:any,base:ReturnType<typeof exportWorldSave>,check:(v:unknown,s:string)=>void,accept?:(r:import("../../Politics/Dynasty").Ruler,month:number,d:import("../../Politics/Dynasty").Dynasty)=>boolean){
  let month=Math.ceil(base.world.worldMonth/12)*12,team:any,candidate:any;
  for(let offset=0;offset<=120&&!team;offset+=12){const m=month+offset;
   for(const t of core.teams){const d=Dynasty.get(t.name),king=Dynasty.getCurrentRuler(t.name);
-   const c=Dynasty.getRoyalMilitaryCandidates(t,m).find(c=>{const r=d!.rulers.find(r=>r.id===c.rulerId)!;return militaryAmbition(Military.nextPersonId(),r.bornYear)>10&&m-r.bornYear>=288&&(r.naturalDeathYear??0)>m+72;});
+   const c=Dynasty.getRoyalMilitaryCandidates(t,m).find(c=>{const r=d!.rulers.find(r=>r.id===c.rulerId)!;return (!accept||accept(r,m,d!))&&militaryAmbition(Military.nextPersonId(),r.bornYear)>10&&m-r.bornYear>=288&&(r.naturalDeathYear??0)>m+72;});
    if(c&&king&&(king.naturalDeathYear??0)>m+72&&m-(king.accessionYear??m)>=12&&t.cities.length>=3&&core.allCities.some((c:any)=>c.ownerTeam!==t&&!c.destroyed)){team=t;candidate=c;month=m;break;}
   }
  }
+ if(!team&&accept)console.info('[Court fixture candidates]',JSON.stringify(core.teams.map(t=>({faction:t.name,cities:t.cities.length,king:Dynasty.getCurrentRuler(t.name)?.givenName,royals:Dynasty.get(t.name)?.rulers.map(r=>({id:r.id,name:r.givenName,born:r.bornYear,death:r.naturalDeathYear,status:r.status,accession:r.accessionYear,ambition:militaryAmbition(Military.nextPersonId(),r.bornYear)}))}))));
  check(team,'an existing adult royal can serve under a real living sovereign');
  core.simulator.clock.importState({worldMonth:month,elapsedMs:0,running:false});
  for(const p of Military.getPeople().filter(p=>p.factionId===team.name&&p.status==='ACTIVE').slice(1))Military.endPersonCommands(p.personId,month,'DISMISSED');

@@ -1,5 +1,4 @@
 import Dynasty from '../../../Politics/Dynasty';
-import {militaryPortraitStatus} from '../../../Politics/MilitaryPortraitStatus';
 import {MilitaryServicePanel} from '../FactionDetails/PersonServicePanel';
 import PersonChronicleLayout from '../FactionDetails/PersonChronicleLayout';
 import PersonAbilityPanel,{PersonAbilityEvidence} from '../FactionDetails/PersonAbilityPanel';

@@ -1,3 +1,4 @@
+import {formatWorldDate} from '../Simulation/WorldTime';
 import type {WorldEvent} from './WorldHistory';
 import type {CourtCoupRecord} from '../Politics/CourtCoup';
 import {MILITARY_OFFICE_NAMES} from '../Politics/MilitaryOffice';
@@ -8,7 +9,8 @@ export function courtCoupAttemptText(r:CourtCoupRecord){
  const kin:Record<string,string>={DIRECT_CHILD:'其子',GRANDCHILD:'其孙',SIBLING:r.target.bornMonth>r.previousRulerBornMonth?'其弟':r.target.bornMonth<r.previousRulerBornMonth?'其兄':'其兄弟',NEPHEW:'其侄',UNCLE:'其叔伯',COUSIN:'其堂亲'};
  const who=`${cause?'':r.countryLabel}${MILITARY_OFFICE_NAMES[r.participant.officeStanding!.office]}${r.participant.personalName??r.participant.name}`;
  if(isSelfCourtCoup(r))return `${cause}${who}谋废${r.target.relation==='DIRECT_CHILD'?'其父'+r.previousRulerTitle:r.previousRulerTitle}，图自立为王。`;
- return `${cause}${who}谋废${r.previousRulerTitle}，欲拥立${kin[r.target.relation]??'宗室成员'}${r.target.name}。`;
+ const sameName=(r.participant.personalName??r.participant.name)===r.target.name?`（同名异人，生于${formatWorldDate(r.target.bornMonth)}）`:'';
+ return `${cause}${who}谋废${r.previousRulerTitle}，欲拥立${kin[r.target.relation]??'宗室成员'}${r.target.name}${sameName}。`;
 }
 export function courtCoupText(r:CourtCoupRecord,consequences:{executed?:boolean;banned?:boolean;forfeitedRank?:string;disinherited?:boolean}={}){
  return `【${isSelfCourtCoup(r)?(r.outcome==='SUCCESS'?'夺位得位':'夺位未遂'):(r.outcome==='SUCCESS'?'拥立得位':'拥立未遂')}】${courtCoupAttemptText(r)}${r.outcome==='SUCCESS'?`事成，${r.previousRulerTitle}被废，${r.target.name}${isSelfCourtCoup(r)?'自立为王':'承统'}。`:`事败，${r.participant.personalName??r.participant.name}被免军职${consequences.forfeitedRank?`、追夺${consequences.forfeitedRank}`:''}${consequences.executed?'，因谋逆伏诛':consequences.banned?'，并禁仕':''}${consequences.disinherited?'，废除承统资格':''}，${r.previousRulerTitle}仍在位。`}`;
