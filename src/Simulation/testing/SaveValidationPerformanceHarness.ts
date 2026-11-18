@@ -22,7 +22,8 @@ export async function runSaveValidationPerformance(seed:string,input:WorldSaveV1
    at=performance.now();const dto=JSON.parse(json),parseMs=performance.now()-at;
    at=performance.now();hydrateWorldSave(core,dto);const hydrationMs=performance.now()-at;
    at=performance.now();const saved=exportWorldSave(core),exportMs=performance.now()-at;
-   const diff=diffCanonicalWorldSave(input,saved);if(!diff.matched)throw Error('Same native DTO differs after read/export: '+JSON.stringify(diff));
+   // APP label may change across a same-schema release; every authority field and schema stay exact.
+   const diff=diffCanonicalWorldSave({...input,appVersion:saved.appVersion},saved);if(!diff.matched)throw Error('Same native DTO differs after read/export: '+JSON.stringify(diff));
    rows.push({repeat,validationMs,phases,stringifyMs,parseMs,hydrationMs,exportMs,bytes:new TextEncoder().encode(json).byteLength,heapBytes:(performance as any).memory?.usedJSHeapSize,canonicalUnchanged:true});
   }return {seed,oracleCases,month:input.world.worldMonth,saveVersion:input.saveSchemaVersion,rows,scope:'Same native DTO, actual complete strict validation, hydration and exporter; no header upgrade, history mutation, RNG or screenshots'};
  }finally{observeSaveValidation(undefined);game.destroy(true);}
