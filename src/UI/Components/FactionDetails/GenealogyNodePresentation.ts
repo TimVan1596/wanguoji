@@ -113,7 +113,7 @@ export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: Hous
     if(noble?.current&&r.reignOrdinal===undefined&&!disqualified)theme=noble.inherited?'inheritedNoble':'personalNoble';
     if(noble?.best.revoked&&r.reignOrdinal===undefined)theme='disqualified';
     if(noble)details.push(noble.label);
-    return [r.id, {heading,politicalLabel,posthumousLabels,honor, roles, labels: [...lifeLabels,...(politicalLabel?[politicalLabel,...roles,noble?.label??'']:noble?[...roles,noble.label+(r.militaryIdentity?'':' · 未任军职')]:roles).filter(Boolean))].filter((v,i,all)=>all.indexOf(v)===i).slice(0,3), theme, details, evidence: proof,
+    return [r.id, {heading,politicalLabel,posthumousLabels,honor, roles, labels: [...lifeLabels,...(politicalLabel?[politicalLabel,...roles,noble?.label??'']:noble?[...roles,noble.label+(r.militaryIdentity?'':' · 未任军职')]:roles).filter(Boolean)].filter((v,i,all)=>all.indexOf(v)===i).slice(0,3), theme, details, evidence: proof,
       hasPosthumousTitle: posthumousLabels.length>0 }];
   }));
 }

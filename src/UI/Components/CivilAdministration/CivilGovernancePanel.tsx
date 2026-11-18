@@ -10,7 +10,7 @@ import {personCareerMilestones} from '../FactionDetails/PersonCareerTimeline';
 import {personAbilities,militaryAbilities} from '../../../Politics/PersonAbilities';
 import {getFactionColorAtMonth} from '../../../Simulation/FactionColorHistory';
 import MilitaryArchiveWindow from '../FactionDetails/MilitaryArchiveWindow';
-import {Box,Button,Typography,TextField} from '@mui/material';
+import {Box,Button,Typography} from '@mui/material';
 import {useEffect,useState} from 'react';
 import {store} from '../../../store';
 import {setPersonArchiveRequest,setSelectedFactionName,setRightPanelTab} from '../../../store/rootSlice';
@@ -40,7 +40,7 @@ export function CivilGovernorSummary({cityId,month}:{cityId:string;month:number}
  </Box>;
 }
 
-function governorProfile(term:CivilGovernorTerm,month:number){
+export function governorProfile(term:CivilGovernorTerm,month:number){
  const person=Military.getPerson(term.personId),familyLink=Military.getFamilyMember(term.sourceUserId,term.bornMonth),family=familyLink?.family??(term.familyId?Military.getFamilies().find(f=>f.familyId===term.familyId):undefined),memberId=familyLink?.member.memberId??term.familyMemberId;
  const user=Game.Core?.teams.flatMap(t=>[...t.users]).find(u=>u.id===term.sourceUserId&&u.bornMonth===term.bornMonth);
  const terms=CivilAdministration.getByPerson(term.personId),deathMonth=person?.deathMonth??(term.royalRulerId?Dynasty.getAll().flatMap(d=>d.rulers).find(r=>r.id===term.royalRulerId)?.deathMonth:undefined)??Military.getFamilyMember(term.sourceUserId,term.bornMonth)?.member.deathMonth??terms.find(t=>t.endReason==='DEATH')?.endMonth;
@@ -50,7 +50,7 @@ function governorProfile(term:CivilGovernorTerm,month:number){
  const loyalty=user?{value:user.loyalty,factionName:Game.Core?.teams.find(t=>t.users.has(user))?.displayName??term.countryName,month}:undefined;
  return {person,family,memberId,user,deathMonth,portraitMonth,abilities,loyalty,portrait:{personId:term.royalRulerId??term.personId,age:Math.max(0,Math.floor((portraitMonth-term.bornMonth)/12)),color:team?getFactionColorAtMonth(team,portraitMonth):undefined,deceased:deathMonth!==undefined&&deathMonth<=month,royalKin:!!term.royalRulerId}};
 }
-function GovernorDetail({term,month}:{term:CivilGovernorTerm;month:number}){
+export function GovernorDetail({term,month}:{term:CivilGovernorTerm;month:number}){
  const navigation=usePersonArchiveNavigation(),{person,family,memberId,user,deathMonth,portraitMonth,abilities,loyalty}=governorProfile(term,month);
  const milestones=personCareerMilestones(WorldHistory.getRecordedEvents(),term.personId,month);
  const ageMonth=deathMonth??(user?month:term.endMonth??month);
@@ -76,12 +76,11 @@ function GovernorDetail({term,month}:{term:CivilGovernorTerm;month:number}){
 export default function CivilGovernancePanel({factionId,month,initialPersonId}:{factionId:string;month:number;initialPersonId?:string}){
  const navigation=usePersonArchiveNavigation();
  useHistoryRevision();const [view,setView]=useState<'current'|'history'>('current'),[selected,setSelected]=useState<string|undefined>(initialPersonId);
- const [search,setSearch]=useState('');
- useEffect(()=>{setSelected(initialPersonId);setSearch('');setView('current');},[initialPersonId,factionId]);
- const terms=CivilAdministration.getTerms(factionId),shown=terms.filter(term=>term.personalName.includes(search)).filter(term=>view==='current'?active(term,month):term.endMonth!==undefined&&term.endMonth<=month).sort((a,b)=>b.startMonth-a.startMonth||a.assignmentId.localeCompare(b.assignmentId)),selectedTerm=terms.find(term=>term.personId===selected&&term.endMonth===undefined)??terms.filter(term=>term.personId===selected).at(-1);
+
+ useEffect(()=>{setSelected(initialPersonId);setView('current');},[initialPersonId,factionId]);
+ const terms=CivilAdministration.getTerms(factionId),shown=terms.filter(term=>view==='current'?active(term,month):term.endMonth!==undefined&&term.endMonth<=month).sort((a,b)=>b.startMonth-a.startMonth||a.assignmentId.localeCompare(b.assignmentId)),selectedTerm=terms.find(term=>term.personId===selected&&term.endMonth===undefined)??terms.filter(term=>term.personId===selected).at(-1);
  return <Box data-civil-governance-panel={factionId}>
   <Box sx={{display:'flex',gap:.5,my:.5}}><Button size='small' variant={view==='current'?'contained':'outlined'} onClick={()=>setView('current')}>现任</Button><Button size='small' variant={view==='history'?'contained':'outlined'} onClick={()=>setView('history')}>历任</Button><Typography component='span' fontSize='.78rem' sx={{alignSelf:'center',color:'var(--gg-text-muted)'}}>文官与爵位、军职分列</Typography></Box>
-  <TextField size="small" label="姓名搜索" value={search} onChange={e=>setSearch(e.target.value)} sx={{my:.5}}/>
 
   {!shown.length&&<Typography fontSize='.8rem' color='var(--gg-text-muted)'>{view==='current'?'暂无正式郡守':'尚无已结束的郡守任期'}</Typography>}
   <MilitaryArchiveWindow key={factionId} ids={[...new Set([...shown.map(t=>t.personId),...(selectedTerm?[selectedTerm.personId]:[])])]} targetId={selectedTerm?.personId}>{(id,index)=>{

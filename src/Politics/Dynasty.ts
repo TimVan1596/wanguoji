@@ -435,7 +435,8 @@ class DynastyRegistryStore {
 
   private settleRoyalMilitaryAccession(ruler: Ruler, month: number) {
     if (!ruler.militaryIdentity) return;
-    MilitaryCommandRegistry.endPersonCommands(ruler.militaryIdentity.personId, month, "DISMISSED");
+    const accession=WorldHistory.getEventsForFaction(ruler.militaryIdentity.factionId??MilitaryCommandRegistry.getPerson(ruler.militaryIdentity.personId)?.factionId??'').find(e=>e.type==='ruler-deposed'&&e.rulerId===ruler.id&&(e.monthIndex??e.year)===month);
+    MilitaryCommandRegistry.endPersonCommands(ruler.militaryIdentity.personId, month, "DISMISSED",typeof accession?.metadata?.courtCoupEventId==='string'?accession.metadata.courtCoupEventId:undefined);
     const person = MilitaryCommandRegistry.getPerson(ruler.militaryIdentity.personId);
     if (person) person.politicalRulerId = ruler.id;
   }

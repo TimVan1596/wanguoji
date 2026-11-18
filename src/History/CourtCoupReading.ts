@@ -25,6 +25,10 @@ export function mergeCourtCoupReading(events:readonly WorldEvent[]){
   if(r.outcome==='SUCCESS'&&(!dep||dep.type!=='ruler-deposed'||dep.metadata?.courtCoupEventId!==e.id||dep.metadata.previousRulerId!==r.previousRulerId||dep.rulerId!==r.targetRulerId||dep.actorFactionId!==e.actorFactionId||at(dep)!==at(e)))continue;
   const sources=[e,result,...(dep?[dep]:[])];
   for(const x of children.get(e.id)??[])if(x.type==='military-command-ended'&&x.metadata?.courtCoupEventId===e.id&&x.metadata.personId===r.participant.personId&&x.metadata.commandId===r.participant.commandId&&x.metadata.endReason==='DISMISSED'&&x.actorFactionId===e.actorFactionId&&at(x)===at(e))sources.push(x);
+  if(dep){for(const x of events){
+   if(x.type!=='military-appanage'||at(x)!==at(e)||x.actorFactionId!==e.actorFactionId)continue;
+   try{const a=JSON.parse(String(x.metadata?.appanage));if(a.kind==='ENDED'&&a.reason==='ACCESSION'&&a.sourceEventId===dep.id&&x.metadata?.personId===a.personId&&a.personId===r.participant.personId)sources.push(x);}catch{}
+  }}
   for(const x of sources)if(x!==e)hidden.add(x.id);
   const service=children.get(e.id)?.find(x=>x.type==='court-service-granted'&&x.metadata?.courtCoupEventId===e.id&&x.metadata?.courtResultEventId===result.id&&x.metadata?.personId===r.participant.personId&&x.rulerId===r.targetRulerId&&at(x)===at(e));if(service){sources.push(service);hidden.add(service.id);}
   const ban=children.get(e.id)?.find(x=>x.type==='military-court-sanction'&&x.actorFactionId===e.actorFactionId&&x.rulerId===r.previousRulerId&&at(x)===at(e)&&x.metadata?.personId===r.participant.personId);
@@ -35,7 +39,7 @@ export function mergeCourtCoupReading(events:readonly WorldEvent[]){
   for(const extra of [reward,noble])if(extra){sources.push(extra);hidden.add(extra.id);}
   const disinherit=children.get(e.id)?.find(x=>x.type==='royal-succession-sanction'&&x.rulerId===r.targetRulerId&&x.actorFactionId===r.factionId&&at(x)===r.month);if(disinherit){sources.push(disinherit);hidden.add(disinherit.id);}
   const execution=ban&&events.find(x=>x.type==='military-person-died'&&x.metadata?.personId===r.participant.personId&&x.metadata?.courtActEventId===ban.id&&x.metadata?.deathCause==='POLITICAL_EXECUTION'&&at(x)===r.month);if(execution){sources.push(execution);hidden.add(execution.id);}
-  const text=courtCoupText(r,{executed:!!execution,banned:!!ban,forfeitedRank:forfeiture,disinherited:!!disinherit})+(service?'新君录其为拥立功臣。':'')+(reward?reward.title:'');replaced.set(e.id,{...e,title:text,description:text,metadata:{...e.metadata,courtReadingKind:'COURT_COUP',...(revocation?{courtRevocationEventId:revocation.id}:{}),...(service?{courtServiceEventId:service.id}:{}),sourceEventIds:sources.map(x=>x.id).join(',')}});
+  const text=courtCoupText(r,{executed:!!execution,banned:!!ban,forfeitedRank:forfeiture,disinherited:!!disinherit})+(service?'新君录其为拥立功臣。':'')+(reward?reward.title:'');replaced.set(e.id,{...e,title:text,description:text,metadata:{...e.metadata,courtReadingKind:'COURT_COUP',...(revocation?{courtRevocationEventId:revocation.id}:{}),...(service?{courtServiceEventId:service.id}:{}),sourceEventIds:[...new Set(sources.map(x=>x.id))].join(',')}});
  }
  const output:WorldEvent[]=[];for(const e of events)if(!hidden.has(e.id))output.push(replaced.get(e.id)??e);return output;
 }
