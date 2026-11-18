@@ -531,7 +531,7 @@ export default class AutoSimulator {
         }
         });
       }
-      if (stepStart !== undefined) {const duration=this.readPerformanceNow()-stepStart;this.stepPerformance.record("total fixed/month step",duration);this.stepPerformance.record(`total fixed/month step/${this.clock.year%12===0?'January':'ordinary'}`,duration);}
+      if (stepStart !== undefined) {const duration=this.readPerformanceNow()-stepStart;this.stepPerformance.record("total fixed/month step",duration,this.clock.year);}
     }
   }
 
@@ -605,7 +605,7 @@ export default class AutoSimulator {
     try {
       return work();
     } finally {
-      if (startedAt !== undefined) this.stepPerformance.record(name, this.readPerformanceNow() - startedAt);
+      if (startedAt !== undefined) this.stepPerformance.record(name, this.readPerformanceNow() - startedAt,this.clock.year);
     }
   }
 

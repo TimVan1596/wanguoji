@@ -29,3 +29,5 @@ describe("RollingStepPerformance", () => {
     expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(59);
   });
 });
+
+it('splits January and ordinary months within the same latest 300-month window',()=>{const m=new RollingStepPerformance();for(let month=1;month<=420;month++)m.record('month',month,month);const s=m.snapshot();expect(s.month.sampleCount).toBe(300);expect(s['month/January'].sampleCount).toBe(25);expect(s['month/ordinary'].sampleCount).toBe(275);expect(s['month/January'].maxMs).toBe(420);expect(s['month/January'].averageMs).toBe((132+420)/2);});
