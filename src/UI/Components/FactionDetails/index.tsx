@@ -56,7 +56,7 @@ import { getTerminationTargetName } from "./model";
 import { formatRulerTerminalEvent } from "../../../History/PoliticalTerminalChronicle";
 import { formatReignTerritoryChange, getReignTrajectoryPresentation, formatRulerLifeAge, rulerPortraitAge } from "./RoyalPresentation";
 import { getFactionColorAtMonth, type FactionColorHistoryEntry } from "../../../Simulation/FactionColorHistory";
-import { Box, Button, FormControl, InputLabel, MenuItem, Select, Typography, type SelectChangeEvent } from "@mui/material";
+import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField, Typography, type SelectChangeEvent } from "@mui/material";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getFactionStability } from "../../../Components/City";
@@ -634,7 +634,7 @@ function FactionProfile({
       {["people","military","civil"].includes(activeTab)&&<>
        <Box sx={{display:'flex',gap:.5,flexWrap:'wrap'}}>{([['all','全部'],['military','武官'],['civil','文官'],['family','世家']] as const).map(([value,label])=><Button key={value} size="small" variant={peopleFilter===value?'contained':'outlined'} onClick={()=>setPeopleFilter(value)}>{label}</Button>)}</Box>
        {(peopleFilter==='all'||peopleFilter==='civil')&&<CivilGovernancePanel key={`${team.name}-${civilTarget?.serial??0}`} factionId={team.name} month={worldMonth} initialPersonId={civilTarget?.id}/>}
-       {(peopleFilter==='all'||peopleFilter==='military'||peopleFilter==='family')&&<MilitaryPeoplePanel key={`${team.name}-${peopleFilter}`} factionId={team.name} worldMonth={worldMonth} familiesOnly={peopleFilter==='family'}/>}
+       {(peopleFilter==='all'||peopleFilter==='military'||peopleFilter==='family')&&<MilitaryPeoplePanel key={team.name} factionId={team.name} worldMonth={worldMonth} familiesOnly={peopleFilter==='family'}/>}
       </>}
       <GenealogyBrowser
         open={genealogyViewerOpen}
@@ -659,6 +659,8 @@ function MilitaryPoliticalEventFacts({ event }: { event: WorldEvent }) {
 
 function MilitaryPeoplePanel({ factionId, worldMonth, familiesOnly=false }: { factionId: string; worldMonth: number; familiesOnly?:boolean }) {
   const [familyBrowser,setFamilyBrowser]=useState(familiesOnly);
+  const [nameSearch,setNameSearch]=useState('');
+  useEffect(()=>setFamilyBrowser(familiesOnly),[familiesOnly]);
   const [familyFocus,setFamilyFocus]=useState<(PersonArchiveTarget&{serial:number})|undefined>();
   const families=associatedMilitaryFamilies(MilitaryCommandRegistry.getFamilies(),factionId,MilitaryCommandRegistry.getPeople());
   const [archiveView,setArchiveView]=useState<"people"|"merit">("people");
@@ -678,7 +680,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth, familiesOnly=false }: { fa
   useEffect(()=>{
     const target=navigation.militaryTarget;
     if(!target||target.factionId!==factionId)return;
-    setArchiveView("people");
+    setArchiveView("people");setNameSearch('');
     const person=people.find(p=>p.personId===target.id);
     if(person&&!resolvedSelection.expandedIds.includes(person.personId)){
       const active=person.status==="ACTIVE"&&person.factionId===factionId&&liveIds.has(person.personId);
@@ -721,7 +723,8 @@ function MilitaryPeoplePanel({ factionId, worldMonth, familiesOnly=false }: { fa
 
     <Typography fontSize="0.78rem" color="var(--gg-text-muted)">现役在前；历任人物按最近一次本国离任年月排列。</Typography>
     {!people.length && <Typography fontSize="0.86rem" color="var(--gg-text-muted)">本势力尚无将领任职；需有合格的真实居民，并经过既有年度任命机会，短期存续或兵员不足时可能暂无人选。</Typography>}
-    <MilitaryArchiveWindow ids={visiblePeople.map(p=>p.personId)} targetId={navigation.militaryTarget?.id}>{(id,index) => {
+    <TextField size="small" label="武官姓名搜索" inputProps={{'aria-label':'武官姓名搜索'}} value={nameSearch} onChange={e=>setNameSearch(e.target.value)}/>
+    <MilitaryArchiveWindow ids={visiblePeople.filter(p=>getMilitaryPersonDisplayName(p).includes(nameSearch.trim())).map(p=>p.personId)} targetId={navigation.militaryTarget?.id}>{(id,index) => {
       const person=people.find(p=>p.personId===id)!;
       const expanded=resolvedSelection.expandedIds.includes(id);
       const localAppointments=person.appointments.filter(a=>a.factionId===factionId);

@@ -55,7 +55,9 @@ export function checkCivilCareer(core:any,saved:WorldSaveV1,term:CivilGovernorTe
   flushSync(()=>root.render(<Provider store={store}><FactionDetails/></Provider>));
   const button=(label:string)=>Array.from(host.querySelectorAll('button')).find(b=>b.textContent===label);
   check(['概况','国势','王室','人物'].every(label=>button(label))&&!button('军政人物')&&!button('地方文官'),'four top-level destinations replace the crowded five-tab row');
-  for(const label of ['全部','武官','文官','世家']){const b=button(label);check(b,`people filter ${label} is accessible`);flushSync(()=>b!.click());}
+  for(const label of ['全部','武官','文官','世家']){const b=button(label);check(b,`people filter ${label} is accessible`);flushSync(()=>b!.click());
+   if(label==='武官'){const input=host.querySelector<HTMLInputElement>('input[aria-label="武官姓名搜索"]');check(input,'military name search remains accessible');const write=(value:string)=>flushSync(()=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')!.set!.call(input,value);input!.dispatchEvent(new Event('input',{bubbles:true}));});write('不存在的名字-z62');check(!host.querySelector('[data-military-person]'),'military name search excludes unrelated people');write(term.personalName);check(host.querySelector(`[data-military-person="${term.personId}"]`),'military name search locates the same former governor');}
+  }
  }finally{flushSync(()=>root.unmount());host.remove();}
  clock(awardMonth+1);user().destroyUser(false,{cause:'BATTLE_DEATH',month:awardMonth+1,damageSource:'HOSTILE_HOME_OCCUPATION'});Civil.update(awardMonth+1,core.teams,Dynasty.getAll());
  check(person().status==='DEAD'&&person().personalName===term.personalName&&Civil.getByPerson(term.personId).every(t=>t.endMonth!==undefined),'one real death ends the full career without changing name or duplicating identity');strict();
