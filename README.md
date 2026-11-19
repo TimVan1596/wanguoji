@@ -147,7 +147,7 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
-- 当前 APP **v0.99931z63** / package **0.99.229** / WorldSave **V59**。z62 已获最终人工 Gate PASS。本版优化长局中无有效机会的事务和重复历史资格计算，文武档案共用头像、能力条与生平时间轴；不改变权威规则、抽签或存档结构，V59可继续读取。V58及更早存档仍拒绝误读。运行 `pnpm desktop:start:debug` 人工验收；z63 最终 Gate 通过前不进入下一版本。
+- 当前 APP **v0.99931z64** / package **0.99.230** / WorldSave **V60**。z63 已获最终人工 Gate PASS。本版修复宫廷“拥立本人”的目标选择，按真实事务合并人物史事；人物页统一文武名录、折叠历任，删除姓名搜索。家族采用无状态计算优化，保留普通后裔与新功再兴；宗谱区分被废、流亡及已故。V59及更早槽位保留并拒读、拒绝覆盖，须新建世界。运行 `pnpm desktop:start:debug` 人工验收；z64最终Gate通过前禁止下一版本。
 
 - v0.99931n人工Gate已PASS，真实长局自然发生至少11次同王统宗室废立。当前v0.99931n1修复连续废立后的V14生命周期校验，并完善君主即离位叙述与史评，等待[人工Gate](docs/RulerDepositionLifecycleClosureN1.md)。
 - v0.99929a 修复政治终结历史身份、退位年龄与双方君主大事记。[Political Terminal Chronicle Gate](docs/PoliticalTerminalChronicleClosure.md)已由用户完成人工PASS。
