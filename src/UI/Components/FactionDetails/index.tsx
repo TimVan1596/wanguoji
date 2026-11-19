@@ -187,11 +187,11 @@ export default function FactionDetails() {
     }else if(target.kind==="GENEALOGY"){
       setGenealogyTarget({...target,serial:++navigationSequence.current});
     }else if(target.kind==="RULER"){
-      setRulerDetailId(target.id);setMilitaryTarget(undefined);
+      setRulerDetailId(target.id);setMilitaryTarget(undefined);setCivilTarget(undefined);setFamilyTarget(undefined);
     }else if(target.kind==='CIVIL'){
       setCivilTarget({...target,serial:++navigationSequence.current});setRulerDetailId(undefined);setMilitaryTarget(undefined);setGenealogyTarget(undefined);setFamilyTarget(undefined);
     }else{
-      setMilitaryTarget({...target,serial:++navigationSequence.current});
+      setMilitaryTarget({...target,serial:++navigationSequence.current});setCivilTarget(undefined);setFamilyTarget(undefined);setGenealogyTarget(undefined);setRulerDetailId(undefined);
     }
     navigationDispatch(setSelectedFactionName(target.factionId));
     navigationDispatch(setFactionDetailTab(resolved.tab));
@@ -657,8 +657,9 @@ function MilitaryPoliticalEventFacts({ event }: { event: WorldEvent }) {
   </Box> : null;
 }
 
-export function UnifiedPeoplePanel({factionId,month,civilTarget}:{factionId:string;month:number;civilTarget?:{id:string;serial:number}}){
- const navigation=usePersonArchiveNavigation(),[selected,setSelected]=useState<string|undefined>(civilTarget?.id),[history,setHistory]=useState(false),[mode,setMode]=useState<'people'|'family'|'merit'>('people');
+export function UnifiedPeoplePanel({factionId,month,civilTarget}:{factionId:string;month:number;civilTarget?:{id:string;serial:number;factionId?:string}}){
+ const scopedCivil=civilTarget&&(!civilTarget.factionId||civilTarget.factionId===factionId)?civilTarget:undefined;
+ const navigation=usePersonArchiveNavigation(),[selected,setSelected]=useState<string|undefined>(scopedCivil?.id),[history,setHistory]=useState(false),[mode,setMode]=useState<'people'|'family'|'merit'>('people');
  const archiveEvents=useMemo(()=>WorldHistory.getRecordedEvents(),[month,WorldHistory.getRevision()]),archiveDynasties=useMemo(()=>DynastyRegistry.getAll(),[month,WorldHistory.getRevision()]);
  const careerIndex=useMemo(()=>selected?createPersonCareerIndex(archiveEvents):undefined,[archiveEvents,Boolean(selected)]);
  const terms=CivilAdministration.getTerms(factionId),people=MilitaryCommandRegistry.getPeople().filter(p=>p.appointments.some(a=>a.factionId===factionId)||terms.some(t=>t.personId===p.personId));
@@ -668,14 +669,15 @@ export function UnifiedPeoplePanel({factionId,month,civilTarget}:{factionId:stri
  const formations=MilitaryCommandRegistry.getFormations(),current=(id:string)=>!!currentTerm(id)||formations.some(f=>f.status==='ACTIVE'&&!f.leaderDuty&&f.factionId===factionId&&f.commanderPersonId===id);
  const recent=(id:string)=>Math.max(latestTerm.get(id)?.endMonth??latestTerm.get(id)?.startMonth??-Infinity,...(personById.get(id)?.appointments.filter(a=>a.factionId===factionId).map(a=>a.endMonth??a.startMonth)??[]));
  const ordered=[...ids].sort((a,b)=>Number(current(b))-Number(current(a))||recent(b)-recent(a)||a.localeCompare(b)),activeIds=ordered.filter(current),pastIds=ordered.filter(id=>!current(id));
- const target=navigation.militaryTarget?.factionId===factionId?navigation.militaryTarget:civilTarget;
+ const target=navigation.militaryTarget?.factionId===factionId?navigation.militaryTarget:scopedCivil;
  useEffect(()=>{if(!target)return;setMode('people');setSelected(target.id);if(!current(target.id))setHistory(true);},[target?.serial,factionId]);
  useEffect(()=>{if(navigation.familyTarget?.factionId===factionId)setMode('family');},[navigation.familyTarget?.serial,factionId]);
  const render=(id:string,index:number)=>{const p=personById.get(id),term=currentTerm(id)??latestTerm.get(id),expanded=selected===id,profile=term?governorProfile(term,month):undefined;
+  const crown=p?.politicalRulerId?archiveDynasties.flatMap(d=>d.rulers).find(r=>r.id===p.politicalRulerId):undefined,crownLabel=crown?crown.status==='ruling'?'现任君主':crown.status==='exiled'?'流亡君主':'曾任君主':'';
   const name=p?getMilitaryPersonDisplayName(p):term!.personalName,office=currentTerm(id)?`${currentTerm(id)!.cityName}郡守`:p?describeMilitaryOffice(p,factionId):'已离任';
   const portrait=profile?.portrait??{personId:p!.royalIdentity?.rulerId??id,age:p?.deathMonth===undefined?undefined:Math.floor((p.deathMonth-p.bornMonth)/12),...militaryPortraitContext(p!,factionId,Game.Core?.teams.find(t=>t.name===factionId),month)};
   const toggle=()=>setSelected(expanded?undefined:id);
-  return <Box data-unified-person={id} data-civil-governor={term?.assignmentId}><PersonArchiveCard heading={<><Typography fontWeight="bold" fontSize=".88rem">{name} · {office}</Typography>{p&&<Typography fontSize=".75rem">{nobleLabel(p,factionId,month)}{p.politicalRulerId?' · 曾任／现任君主':''}</Typography>}{!current(id)&&<Typography fontSize=".75rem">已离任</Typography>}</>} portrait={<PortraitSummary name={name} portrait={portrait} status={p?militaryPortraitStatus(p,factionId,month,archiveDynasties,archiveEvents):undefined} lines={[office]} onFull={()=>setSelected(id)}/>} expanded={expanded} onSelect={toggle} index={index} focusRequest={expanded&&target?.id===id}>
+  return <Box data-unified-person={id} data-civil-governor={term?.assignmentId}><PersonArchiveCard heading={<><Typography fontWeight="bold" fontSize=".88rem">{name} · {office}</Typography>{p&&<Typography fontSize=".75rem">{nobleLabel(p,factionId,month)}{crownLabel?` · ${crownLabel}`:''}</Typography>}{!current(id)&&<Typography fontSize=".75rem">已离任</Typography>}</>} portrait={<PortraitSummary name={name} portrait={portrait} status={p?militaryPortraitStatus(p,factionId,month,archiveDynasties,archiveEvents):undefined} lines={[office]} onFull={()=>setSelected(id)}/>} expanded={expanded} onSelect={toggle} index={index} focusRequest={expanded&&target?.id===id}>
    {expanded&&(p?<MilitaryPeoplePanel factionId={factionId} worldMonth={month} onlyPersonId={id} careerIndex={careerIndex}/>:<GovernorDetail term={term!} month={month} careerIndex={careerIndex}/>)}
   </PersonArchiveCard></Box>;
  };

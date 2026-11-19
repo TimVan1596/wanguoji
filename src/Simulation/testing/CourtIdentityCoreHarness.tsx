@@ -1,3 +1,9 @@
+import {Provider} from 'react-redux';
+import {createRoot} from 'react-dom/client';
+import {flushSync} from 'react-dom';
+import {UnifiedPeoplePanel} from '../../UI/Components/FactionDetails';
+import {store} from '../../store';
+import {setTeams,setWorldMonth} from '../../store/rootSlice';
 import Civil from '../../Politics/CivilAdministration';
 import {createNaturalCore} from './NaturalCoreHarness';
 import {prepareMeritoriousRoyal} from './RoyalHonorCoreChecks';
@@ -56,6 +62,12 @@ export async function runCourtIdentityCore(seed='royal-military-z11'){
   check(sources.includes(estate.eventId)&&raw.some(e=>sources.includes(e.id)&&e.type==='military-command-ended')&&main.title.includes('夺位得位'),'one political affair retains accession, exact command settlement and the source-linked estate ending');
   const timeline=personCareerMilestones(raw,personId,month),ids=timeline.map(e=>e.id);check(ids.includes(attempt.id)&&!ids.includes(estate.eventId)&&sources.filter(id=>id!==attempt.id).every(id=>!ids.includes(id)),'default personal timeline folds the exact derived effects under one main affair');
   check(raw.some(e=>e.type==='military-ennobled'&&!sources.includes(e.id)&&(e.monthIndex??e.year)===month)&&JSON.stringify(History.getRecordedEvents())===beforeReading,'independent same-month award and all raw events remain unchanged');
+  {const before=strict(),host=document.createElement('div'),root=createRoot(host);document.body.append(host);store.dispatch(setTeams(core.teams));store.dispatch(setWorldMonth({monthIndex:month,year:month}));
+   try{flushSync(()=>root.render(<Provider store={store}><UnifiedPeoplePanel factionId={team.name} month={month} civilTarget={{id:personId,serial:1}}/></Provider>));for(let wait=0;wait<100&&!host.querySelector(`[data-person-life-event="${attempt.id}"]`);wait++)await new Promise(r=>setTimeout(r,10));
+    check(host.querySelectorAll(`[data-person-life-event="${attempt.id}"]`).length===1&&!host.querySelector(`[data-person-life-event="${estate.eventId}"]`),'actual unified React profile shows one main court row and folds estate settlement');
+    check(!host.textContent?.includes('政治生涯转折')&&!host.textContent?.includes('姓名搜索'),'default unified biography has no repeated political transition panel or search navigation');
+    check(diffCanonicalWorldSave(before,strict()).matched,'opening the actual self-seizure profile preserves every canonical fact and RNG');
+   }finally{flushSync(()=>root.unmount());host.remove();}}
   const saved=strict();hydrateWorldSave(core,structuredClone(saved));check(diffCanonicalWorldSave(saved,strict()).matched,'self court graph and all original event ordering round-trip strictly');
   const resume=()=>{hydrateWorldSave(core,structuredClone(saved));core.setWorldRunning(true);for(let m=0;m<12;m++)step();core.setWorldRunning(false);return strict();};const a=resume(),b=resume();check(diffCanonicalWorldSave(a,b).matched,'court accession continues twelve real months deterministically');hydrateWorldSave(core,structuredClone(a));check(diffCanonicalWorldSave(a,strict()).matched,'continued court history survives a second strict read');
   restore();actual().body.loyalty=0;const failed=evaluate();invoke(courtAttemptChance(failed.actor,'MEDIUM',Dynasty.getAbilityPolicy())*.99);const failure=History.getRecordedEvents().find(e=>e.type==='court-coup-attempt'&&(e.monthIndex??e.year)===month)!;check(readCourtCoup(failure)?.outcome==='FAILED'&&Dynasty.getCurrentRuler(team.name)?.id!==royal.id,'failed self attempt applies actual consequences without crowning the actor');strict();
