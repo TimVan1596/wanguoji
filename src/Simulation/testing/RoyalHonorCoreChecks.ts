@@ -35,7 +35,6 @@ export function prepareMeritoriousRoyal(core:any,base:ReturnType<typeof exportWo
    if(c&&king&&(king.naturalDeathYear??0)>m+72&&m-(king.accessionYear??m)>=12&&t.cities.length>=3&&core.allCities.some((c:any)=>c.ownerTeam!==t&&!c.destroyed)){team=t;candidate=c;month=m;break;}
   }
  }
- if(!team&&accept)console.info('[Court fixture candidates]',JSON.stringify(core.teams.map(t=>({faction:t.name,cities:t.cities.length,king:Dynasty.getCurrentRuler(t.name)?.givenName,royals:Dynasty.get(t.name)?.rulers.map(r=>({id:r.id,name:r.givenName,born:r.bornYear,death:r.naturalDeathYear,status:r.status,accession:r.accessionYear,ambition:militaryAmbition(Military.nextPersonId(),r.bornYear)}))}))));
  check(team,'an existing adult royal can serve under a real living sovereign');
  core.simulator.clock.importState({worldMonth:month,elapsedMs:0,running:false});
  for(const p of Military.getPeople().filter(p=>p.factionId===team.name&&p.status==='ACTIVE').slice(1))Military.endPersonCommands(p.personId,month,'DISMISSED');

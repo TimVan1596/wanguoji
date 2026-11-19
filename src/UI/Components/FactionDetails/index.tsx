@@ -1,7 +1,7 @@
 import {nobleLabel} from '../../../Politics/MilitaryNobility';
 import CivilAdministration from '../../../Politics/CivilAdministration';
 import {militaryAmbition} from '../../../Politics/MilitaryPoliticalDisposition';
-import {personCareerMilestones} from './PersonCareerTimeline';
+import {createPersonCareerIndex,type PersonCareerIndex,personCareerMilestones} from './PersonCareerTimeline';
 import PersonCareerIdentity from './PersonCareerIdentity';
 import PosthumousPeeragePanel from './PosthumousPeeragePanel';
 import {rulerFamilyBackground} from '../../../Politics/RulerFamilyBackground';
@@ -660,6 +660,7 @@ function MilitaryPoliticalEventFacts({ event }: { event: WorldEvent }) {
 export function UnifiedPeoplePanel({factionId,month,civilTarget}:{factionId:string;month:number;civilTarget?:{id:string;serial:number}}){
  const navigation=usePersonArchiveNavigation(),[selected,setSelected]=useState<string|undefined>(civilTarget?.id),[history,setHistory]=useState(false),[mode,setMode]=useState<'people'|'family'|'merit'>('people');
  const archiveEvents=useMemo(()=>WorldHistory.getRecordedEvents(),[month,WorldHistory.getRevision()]),archiveDynasties=useMemo(()=>DynastyRegistry.getAll(),[month,WorldHistory.getRevision()]);
+ const careerIndex=useMemo(()=>selected?createPersonCareerIndex(archiveEvents):undefined,[archiveEvents,Boolean(selected)]);
  const terms=CivilAdministration.getTerms(factionId),people=MilitaryCommandRegistry.getPeople().filter(p=>p.appointments.some(a=>a.factionId===factionId)||terms.some(t=>t.personId===p.personId));
  const ids=[...new Set([...people.map(p=>p.personId),...terms.map(t=>t.personId)])],personById=new Map(people.map(p=>[p.personId,p]));
  const latestTerm=new Map<string,typeof terms[number]>();for(const t of terms)latestTerm.set(t.personId,t);
@@ -675,7 +676,7 @@ export function UnifiedPeoplePanel({factionId,month,civilTarget}:{factionId:stri
   const portrait=profile?.portrait??{personId:p!.royalIdentity?.rulerId??id,age:p?.deathMonth===undefined?undefined:Math.floor((p.deathMonth-p.bornMonth)/12),...militaryPortraitContext(p!,factionId,Game.Core?.teams.find(t=>t.name===factionId),month)};
   const toggle=()=>setSelected(expanded?undefined:id);
   return <Box data-unified-person={id} data-civil-governor={term?.assignmentId}><PersonArchiveCard heading={<><Typography fontWeight="bold" fontSize=".88rem">{name} · {office}</Typography>{p&&<Typography fontSize=".75rem">{nobleLabel(p,factionId,month)}{p.politicalRulerId?' · 曾任／现任君主':''}</Typography>}{!current(id)&&<Typography fontSize=".75rem">已离任</Typography>}</>} portrait={<PortraitSummary name={name} portrait={portrait} status={p?militaryPortraitStatus(p,factionId,month,archiveDynasties,archiveEvents):undefined} lines={[office]} onFull={()=>setSelected(id)}/>} expanded={expanded} onSelect={toggle} index={index} focusRequest={expanded&&target?.id===id}>
-   {expanded&&(p?<MilitaryPeoplePanel factionId={factionId} worldMonth={month} onlyPersonId={id}/>:<GovernorDetail term={term!} month={month}/>)}
+   {expanded&&(p?<MilitaryPeoplePanel factionId={factionId} worldMonth={month} onlyPersonId={id} careerIndex={careerIndex}/>:<GovernorDetail term={term!} month={month} careerIndex={careerIndex}/>)}
   </PersonArchiveCard></Box>;
  };
  return <Box data-unified-people={factionId}>
@@ -690,7 +691,7 @@ export function UnifiedPeoplePanel({factionId,month,civilTarget}:{factionId:stri
  </Box>;
 }
 
-function MilitaryPeoplePanel({ factionId, worldMonth, familiesOnly=false,onlyPersonId }: { factionId: string; worldMonth: number; familiesOnly?:boolean;onlyPersonId?:string }) {
+function MilitaryPeoplePanel({ factionId, worldMonth, familiesOnly=false,onlyPersonId,careerIndex }: { factionId: string; worldMonth: number; familiesOnly?:boolean;onlyPersonId?:string;careerIndex?:PersonCareerIndex }) {
   const [familyBrowser,setFamilyBrowser]=useState(familiesOnly);
 
   useEffect(()=>setFamilyBrowser(familiesOnly),[familiesOnly]);
@@ -795,7 +796,7 @@ function MilitaryPeoplePanel({ factionId, worldMonth, familiesOnly=false,onlyPer
           const orderEvidence = formation ? MilitaryCommandRegistry.getOrderEvidence(formation) : undefined;
           const view=formation&&Game.Core?resolveMilitaryCommandView(Game.Core,formation.commandId):undefined;
           const currentCivilOffice=CivilAdministration.getByPerson(person.personId).find(t=>t.startMonth<=worldMonth&&t.endMonth===undefined);
-          const lifeMilestones=personCareerMilestones(WorldHistory.getRecordedEvents(),person.personId,worldMonth,allMilestones);
+          const lifeMilestones=personCareerMilestones(careerIndex?.events??WorldHistory.getRecordedEvents(),person.personId,worldMonth,allMilestones,careerIndex);
           return <PersonChronicleLayout
             title={<MilitaryPersonIdentityHeader honor={royalHonor} person={person} politicalLabel={secession?identityLabels.find(l=>l.startsWith('已叛离')):courtLabels[0]??identityLabels.find(l=>l==='现任君主'||l==='曾任君主')} country={`${politicalFactionById.get(person.factionId)?.displayName ?? person.factionId}${politicalFactionById.get(person.factionId)?.identityStage === "STATE" ? "国" : ""}`} />}
             identity={<>

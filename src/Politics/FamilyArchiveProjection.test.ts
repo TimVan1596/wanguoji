@@ -31,3 +31,9 @@ it('indexes only directly registered children at the reading month; no future or
  const before=JSON.stringify(f),now=projectFamilyArchive(f,s);expect(now.childrenByParent.get('father')).toEqual(['son']);expect(now.childrenByParent.get('son')).toEqual(['grandson']);expect(now.childrenByParent.get('unrelated')).toBeUndefined();
  expect(projectFamilyArchive(f,{...s,month:201}).childrenByParent.get('father')).toEqual(['son','late']);expect(JSON.stringify(f)).toBe(before);
 });
+
+it('retains real civil contributors in a terminated family trunk by permanent population and birth, without reviving the title',()=>{
+ const {f,s}=fixture(),before=JSON.stringify(f);s.civilTerms=[{personId:'civil-real',sourceUserId:3,bornMonth:-150,startMonth:100,cityName:'蓟'} as any,{personId:'wrong-birth',sourceUserId:3,bornMonth:-151,startMonth:100} as any];
+ const p=projectFamilyArchive(f,s);expect(p.classification).toBe('ACTIVE');expect(p.rows.get('grandson')!.civilTerms).toHaveLength(1);expect(p.importantIds.has('grandson')).toBe(true);expect(p.last?.kind).toBe('ENDED');expect(p.currentInheritedHolderId).toBeUndefined();expect(JSON.stringify(f)).toBe(before);
+ s.civilTerms=s.civilTerms.map((t,i)=>i?t:{...t,endMonth:101,endReason:'CITY_LOST'});expect(projectFamilyArchive(f,s).classification).toBe('HISTORICAL');
+});

@@ -1,3 +1,4 @@
+import Civil from '../../../Politics/CivilAdministration';
 import Military from '../../../Politics/MilitaryCommandRegistry';
 import Dynasty from '../../../Politics/Dynasty';
 import WorldHistory from '../../../History/WorldHistory';
@@ -8,7 +9,7 @@ const stats={indexBuilds:0,summaryBuilds:0,projectionBuilds:0,hits:0,invalidatio
 /** Read-only, session-owned cache. Actual transfers without a history append also invalidate it. */
 export function familyArchiveSource(month:number){
  const revision=WorldHistory.getRevision(),residentRevision=Military.getFamilyReadingRevision(),families=Military.getFamilies();
- if(!cached||cached.revision!==revision||cached.residentRevision!==residentRevision||cached.month!==month||cached.families!==families){stats.invalidations++;cached={revision,residentRevision,month,families,source:{month,people:Military.getPeople(),events:WorldHistory.getRecordedEvents(),dynasties:Dynasty.getAll()},projections:new Map(),summaries:new Map()};}
+ if(!cached||cached.revision!==revision||cached.residentRevision!==residentRevision||cached.month!==month||cached.families!==families){stats.invalidations++;cached={revision,residentRevision,month,families,source:{month,civilTerms:Civil.getTerms(),people:Military.getPeople(),events:WorldHistory.getRecordedEvents(),dynasties:Dynasty.getAll()},projections:new Map(),summaries:new Map()};}
  return cached;
 }
 function prepared(month:number){const frame=familyArchiveSource(month);if(!frame.index){frame.index=createFamilyArchiveIndex(frame.source);stats.indexBuilds++;}return {...frame,index:frame.index};}

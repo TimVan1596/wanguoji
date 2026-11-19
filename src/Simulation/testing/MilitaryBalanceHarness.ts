@@ -1,4 +1,4 @@
-import {auditFamilyLifecycle as auditPoliticalFamilies} from './FamilyLifecycleAudit';
+import {auditFamilyLifecycle as auditPoliticalFamilies} from './PoliticalFamilyLifecycleAudit';
 import {residentIdentityConflicts} from './CharacterBindingDiagnostics';
 import {deriveMilitaryLifeSchedule} from '../../Politics/MilitaryLifeRules';
 import {observeRoyalBirthPlanning,type RoyalBirthPolicy} from '../../Politics/RoyalHouseholdBirth';

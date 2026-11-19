@@ -3,7 +3,7 @@ import {MilitaryServicePanel} from '../FactionDetails/PersonServicePanel';
 import PersonChronicleLayout from '../FactionDetails/PersonChronicleLayout';
 import PersonAbilityPanel,{PersonAbilityEvidence} from '../FactionDetails/PersonAbilityPanel';
 import MilitaryDispositionPanel from '../FactionDetails/MilitaryDispositionPanel';
-import {personCareerMilestones} from '../FactionDetails/PersonCareerTimeline';
+import {type PersonCareerIndex,personCareerMilestones} from '../FactionDetails/PersonCareerTimeline';
 import {personAbilities,militaryAbilities} from '../../../Politics/PersonAbilities';
 import {getFactionColorAtMonth} from '../../../Simulation/FactionColorHistory';
 import {Box,Button,Typography} from '@mui/material';
@@ -45,9 +45,9 @@ export function governorProfile(term:CivilGovernorTerm,month:number){
  const loyalty=user?{value:user.loyalty,factionName:Game.Core?.teams.find(t=>t.users.has(user))?.displayName??term.countryName,month}:undefined;
  return {person,family,memberId,user,deathMonth,portraitMonth,abilities,loyalty,portrait:{personId:term.royalRulerId??term.personId,age:Math.max(0,Math.floor((portraitMonth-term.bornMonth)/12)),color:team?getFactionColorAtMonth(team,portraitMonth):undefined,deceased:deathMonth!==undefined&&deathMonth<=month,royalKin:!!term.royalRulerId}};
 }
-export function GovernorDetail({term,month}:{term:CivilGovernorTerm;month:number}){
+export function GovernorDetail({term,month,careerIndex}:{term:CivilGovernorTerm;month:number;careerIndex?:PersonCareerIndex}){
  const navigation=usePersonArchiveNavigation(),{person,family,memberId,user,deathMonth,portraitMonth,abilities,loyalty}=governorProfile(term,month);
- const milestones=personCareerMilestones(WorldHistory.getRecordedEvents(),term.personId,month);
+ const milestones=personCareerMilestones(careerIndex?.events??WorldHistory.getRecordedEvents(),term.personId,month,[],careerIndex);
  const ageMonth=deathMonth??(user?month:term.endMonth??month);
  return <Box data-civil-governor-detail={term.assignmentId}>
  <PersonChronicleLayout personKey={term.personId}

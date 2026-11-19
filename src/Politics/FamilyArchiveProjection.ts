@@ -1,3 +1,4 @@
+import type {CivilGovernorTerm} from './CivilAdministrationSchema';
 import type {MilitaryFamily,MilitaryFamilyMember} from './MilitaryFamily';
 import type {MilitaryPerson} from './MilitaryCommandRegistry';
 import type {Dynasty} from './Dynasty';
@@ -6,7 +7,7 @@ import {FAMILY_NOBLE_RANKS,createFamilyNobleContext,familyAtEvidenceBoundary,fam
 import {formatWorldDate} from '../Simulation/WorldTime';
 import {currentNobleGrant,NOBLE_RANKS} from './MilitaryNobility';
 import {verifiedPoliticalOffice} from './MilitaryPoliticalInfluence';
-export interface FamilyArchiveSource {month:number;people:readonly MilitaryPerson[];events:readonly WorldEvent[];dynasties:readonly Dynasty[];}
+export interface FamilyArchiveSource {civilTerms?:readonly CivilGovernorTerm[];month:number;people:readonly MilitaryPerson[];events:readonly WorldEvent[];dynasties:readonly Dynasty[];}
 export type FamilyArchiveClass='ACTIVE'|'HISTORICAL'|'EXTINCT';
 /** One immutable reading index per actual world revision, shared by all houses. */
 export function createFamilyArchiveIndex(s:FamilyArchiveSource){
@@ -14,14 +15,16 @@ export function createFamilyArchiveIndex(s:FamilyArchiveSource){
  const rulers=s.dynasties.flatMap(d=>d.rulers.map(r=>({r,factionId:d.factionId}))),byResident=new Map<string,typeof rulers[number]>(),byMilitary=new Map<string,typeof rulers[number]>(),appointmentsByCommand=new Map<string,WorldEvent[]>();
  for(const entry of rulers){const r=entry.r;if(r.accessionYear===undefined||r.accessionYear>s.month)continue;if(r.residentIdentity){const key=`${r.residentIdentity.sourceUserId}/${r.bornYear}`;if(!byResident.has(key))byResident.set(key,entry);}for(const id of [r.militaryUsurperIdentity?.personId,r.militaryIdentity?.personId])if(id&&!byMilitary.has(`${id}/${r.bornYear}`))byMilitary.set(`${id}/${r.bornYear}`,entry);}
  for(const e of s.events)if(e.type==='military-appointment'&&typeof e.metadata?.commandId==='string'){const list=appointmentsByCommand.get(e.metadata.commandId)??[];list.push(e);appointmentsByCommand.set(e.metadata.commandId,list);}
- return {c,byPerson,eventsById,rulers,byResident,byMilitary,office:{byId:eventsById,appointmentsByCommand}};
+ const civilByResident=new Map<string,CivilGovernorTerm[]>();for(const term of s.civilTerms??[])if(term.startMonth<=s.month){const key=`${term.sourceUserId}/${term.bornMonth}`,rows=civilByResident.get(key)??[];rows.push(term);civilByResident.set(key,rows);}
+ return {c,byPerson,eventsById,rulers,byResident,byMilitary,civilByResident,office:{byId:eventsById,appointmentsByCommand}};
 }
 export type FamilyArchiveIndex=ReturnType<typeof createFamilyArchiveIndex>;
 function familyRow(f:MilitaryFamily,m:MilitaryFamilyMember,s:FamilyArchiveSource,index:FamilyArchiveIndex,acts:NonNullable<MilitaryFamily['nobleSuccession']>){
  const {c,byPerson,eventsById}=index,last=acts.at(-1);
 
   const p=m.militaryPersonId?byPerson.get(m.militaryPersonId):undefined,political=index.byResident.get(`${m.sourceUserId}/${m.bornMonth}`)??(m.militaryPersonId?index.byMilitary.get(`${m.militaryPersonId}/${m.bornMonth}`):undefined);
-  const dead=Math.min(m.deathMonth??Infinity,political?.r.deathMonth??Infinity)<=s.month,life=dead?'DEAD' as const:political||familyMemberPresent(m,s.month)?'ALIVE' as const:'UNKNOWN' as const;
+  const civilTerms=index.civilByResident.get(`${m.sourceUserId}/${m.bornMonth}`)??[],activeCivil=civilTerms.find(t=>(t.endMonth??Infinity)>s.month);
+  const dead=Math.min(...civilTerms.filter(t=>t.endReason==='DEATH').map(t=>t.endMonth!),m.deathMonth??Infinity,political?.r.deathMonth??Infinity)<=s.month,life=dead?'DEAD' as const:political||familyMemberPresent(m,s.month)?'ALIVE' as const:'UNKNOWN' as const;
   const appointments=p?.appointments.filter(a=>a.startMonth<=s.month)??[],currentAppointment=appointments.find(a=>(a.endMonth??Infinity)>s.month),activeOffice=p&&currentAppointment&&life==='ALIVE'&&!political?verifiedPoliticalOffice(p,currentAppointment.commandId,currentAppointment.factionId,s.month,s.events,index.office):undefined;
   const personalHistory=p?.nobilityHistory?.filter(g=>g.month<=s.month)??[];
   const effectivePersonal=life==='ALIVE'&&!political&&p?personalHistory.filter(g=>c.activeEpochs.has(`${g.factionId}/${g.epochFounderId}`)&&familyResidenceAt(f,m,s.month)===g.factionId&&currentNobleGrant(p,g.factionId,s.month,g.epochFounderId)?.eventId===g.eventId).sort((a,b)=>NOBLE_RANKS.indexOf(b.rank)-NOBLE_RANKS.indexOf(a.rank))[0]:undefined;
@@ -29,7 +32,7 @@ function familyRow(f:MilitaryFamily,m:MilitaryFamilyMember,s:FamilyArchiveSource
   const inherited=last?.kind==='SUCCEEDED'&&last.holderMemberId===m.memberId&&life==='ALIVE'&&!political&&!forfeited&&familyMemberPresent(m,s.month)&&familyResidenceAt(f,m,s.month)===f.factionId&&c.activeEpochs.has(`${f.factionId}/${f.epochFounderId}`)?last:undefined;
   const renewed=f.renewals?.filter(r=>r.memberId===m.memberId&&r.month<=s.month&&eventsById.has(r.sourceEventId)&&eventsById.has(`${f.familyId}-${m.memberId}-merit`))??[];
   const sourceRanks=[effectivePersonal?.rank,inherited?.rank].filter((r):r is NonNullable<typeof r>=>!!r).sort((a,b)=>FAMILY_NOBLE_RANKS.indexOf(b)-FAMILY_NOBLE_RANKS.indexOf(a));
-  return {member:m,person:p,life,political,appointments,activeOffice,personalHistory,effectivePersonal,inheritedHistory,inherited,renewed,primaryRank:sourceRanks[0],important:m.source==='FOUNDER'||appointments.length>0||personalHistory.length>0||inheritedHistory.length>0||!!political||renewed.length>0};
+  return {member:m,person:p,life,political,civilTerms,activeCivil,appointments,activeOffice,personalHistory,effectivePersonal,inheritedHistory,inherited,renewed,primaryRank:sourceRanks[0],important:m.source==='FOUNDER'||civilTerms.length>0||appointments.length>0||personalHistory.length>0||inheritedHistory.length>0||!!political||renewed.length>0};
 
 }
 /** Reuse the evidence already checked for a list row when opening its archive.
@@ -45,9 +48,9 @@ function indexedFamilyRows(f:MilitaryFamily,s:FamilyArchiveSource,index:FamilyAr
 /** No tree, full archive or event formatting is built for a list row. */
 export function summarizeFamilyArchive(f:MilitaryFamily,s:FamilyArchiveSource,index=createFamilyArchiveIndex(s)){
  const acts=f.nobleSuccession?.filter(a=>a.month<=s.month)??[],rows=indexedFamilyRows(f,s,index,acts);
- return {...classifyFamily(rows,s.month),last:acts.at(-1),actualSuccessions:acts.filter(a=>a.kind==='SUCCEEDED').length,holder:rows.find(r=>r.inherited),members:rows.length,generations:Math.max(0,...rows.map(r=>r.member.generation))+1,served:rows.filter(r=>r.appointments.length).length};
+ return {...classifyFamily(rows,s.month),last:acts.at(-1),actualSuccessions:acts.filter(a=>a.kind==='SUCCEEDED').length,holder:rows.find(r=>r.inherited),members:rows.length,generations:Math.max(0,...rows.map(r=>r.member.generation))+1,served:rows.filter(r=>r.appointments.length||r.civilTerms.length).length};
 }
-function classifyFamily(rows:ReturnType<typeof familyRow>[],month:number){const active=rows.filter(r=>r.life==='ALIVE'&&(r.inherited||r.effectivePersonal||r.activeOffice||r.political&&(r.political.r.endYear??Infinity)>month));return {activeMembers:active.length,living:rows.filter(r=>r.life==='ALIVE').length,livingDescendants:rows.filter(r=>r.life==='ALIVE'&&r.member.generation>0).length,unknown:rows.filter(r=>r.life==='UNKNOWN').length,classification:(active.length?'ACTIVE':rows.length&&rows.every(r=>r.life==='DEAD')?'EXTINCT':'HISTORICAL') as FamilyArchiveClass};}
+function classifyFamily(rows:ReturnType<typeof familyRow>[],month:number){const active=rows.filter(r=>r.life==='ALIVE'&&(r.inherited||r.effectivePersonal||r.activeOffice||r.activeCivil||r.political&&(r.political.r.endYear??Infinity)>month));return {activeMembers:active.length,living:rows.filter(r=>r.life==='ALIVE').length,livingDescendants:rows.filter(r=>r.life==='ALIVE'&&r.member.generation>0).length,unknown:rows.filter(r=>r.life==='UNKNOWN').length,classification:(active.length?'ACTIVE':rows.length&&rows.every(r=>r.life==='DEAD')?'EXTINCT':'HISTORICAL') as FamilyArchiveClass};}
 export function projectFamilyArchive(f:MilitaryFamily,s:FamilyArchiveSource,index=createFamilyArchiveIndex(s)){
  const acts=f.nobleSuccession?.filter(a=>a.month<=s.month)??[],last=acts.at(-1),rows=new Map(indexedFamilyRows(f,s,index,acts).map(row=>[row.member.memberId,row]));
  const {classification,activeMembers,living,livingDescendants,unknown}=classifyFamily([...rows.values()],s.month);
