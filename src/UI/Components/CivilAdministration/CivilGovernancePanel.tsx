@@ -54,17 +54,17 @@ export function GovernorDetail({term,month,careerIndex}:{term:CivilGovernorTerm;
   title={<Typography fontWeight="bold">{term.personalName} · {term.countryName} · {term.cityName}郡守{term.endMonth!==undefined?'（已离任）':''}</Typography>}
   identity={<><PersonCareerIdentity personId={term.personId} name={term.personalName} bornMonth={term.bornMonth} deathMonth={deathMonth}/><Typography fontSize=".76rem">{deathMonth!==undefined?`享年${Math.floor((deathMonth-term.bornMonth)/12)}岁`:user?`年龄${Math.floor((month-term.bornMonth)/12)}岁`:`任职末期${Math.floor((ageMonth-term.bornMonth)/12)}岁 · 此后生死未载`} · {sourceLabel(term)}</Typography></>}
   preBiography={<>{person?<MilitaryDispositionPanel person={person} personId={person.personId} bornMonth={person.bornMonth} loyalty={loyalty?.value} loyaltyContext={loyalty}/>:<PersonAbilityPanel abilities={abilities} loyalty={loyalty}/>}
-  <MilitaryServicePanel personId={term.personId} month={month}/><CivilServicePanel personId={term.personId} month={month} factionId={term.factionId}/>
+  <MilitaryServicePanel personId={term.personId} month={month} timelineOwnsPolitics/><CivilServicePanel personId={term.personId} month={month} factionId={term.factionId}/>
   {person&&<NobleHistory person={person} month={month}/>}
   {person&&family&&<FamilyTitleBadge personId={person.personId} factionId={family.factionId} month={month}/>}
   {family&&!person&&memberId&&<FamilyPersonSources family={family} memberId={memberId} month={month}/>}
   {family&&<Button size="small" onClick={()=>navigation.open({kind:'FAMILY',factionId:family.factionId,id:family.familyId,memberId})}>查看功臣世家与宗谱</Button>}
   {term.royalRulerId&&<Button size="small" onClick={()=>navigation.open({kind:'GENEALOGY',factionId:term.factionId,id:term.royalRulerId!})}>查看王室身份</Button>}
-  <PersonPoliticalCareer personId={term.personId} month={month}/></>}
+  </>}
   biographyTitle="生平纪事" biography={[`${formatWorldDate(term.startMonth)}，${term.rulerTitle}任命其为${term.cityName}郡守。`,...(term.endReason?[`${formatWorldDate(term.endMonth!)}离任：${endReasonLabel(term.endReason)}。`]:[])]}
   milestoneTitle="生平时间轴" milestones={milestones.slice(-8)} milestoneTotal={milestones.length} allMilestones={()=>milestones}
   governance={<Box><Typography fontSize=".8rem">任期：{formatWorldDate(term.startMonth)}—{term.endMonth===undefined?'今':formatWorldDate(term.endMonth)} · {formatWorldDuration((term.endMonth??month)-term.startMonth)}</Typography><Typography fontSize=".8rem">治理：{civilGovernorStatus(term,cityFor(term),month)} · 忠诚恢复{term.loyaltyRecovered} · 破坏恢复{term.devastationRecovered}</Typography>{term.meritEventId&&<Typography fontSize=".76rem">地方治绩：{formatWorldDate(term.meritMonth!)} · 因实际治理恢复获正式记录。</Typography>}</Box>}
-  assessment={[]} evidence={()=><><PersonAbilityEvidence abilities={abilities}/><Typography fontSize=".74rem">人物：{term.personId} / User {term.sourceUserId}。肖像取实际任职时点 {formatWorldDate(portraitMonth)}；身份、城市及任命君主使用原始记录。</Typography></>}/>
+  assessment={[]} evidence={()=><><PersonAbilityEvidence abilities={abilities}/><PersonPoliticalCareer personId={term.personId} month={month}/><Typography fontSize=".74rem">人物：{term.personId} / User {term.sourceUserId}。肖像取实际任职时点 {formatWorldDate(portraitMonth)}；身份、城市及任命君主使用原始记录。</Typography></>}/>
  </Box>;
 }
 
