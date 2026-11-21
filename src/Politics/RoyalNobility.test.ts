@@ -1,5 +1,5 @@
 import {describe,it,expect} from 'vitest';
-import {nextRoyalNobleAct,eligibleRoyalNobleHeirs} from './RoyalNobility';
+import {nextRoyalNobleAct,eligibleRoyalNobleHeirs,royalNobleText} from './RoyalNobility';
 import {registerRoyalPerson} from './RoyalPersonRegistration';
 function world(){
  const events:any[]=[],d:any={factionId:'qin',houseName:'嬴氏',rulers:[],houseEpochs:[{foundingRulerId:'king',startMonth:0,houseName:'嬴氏'}]},people:any[]=[];
@@ -21,3 +21,5 @@ describe('real royal merit is a finite independent title source',()=>{
  it('formal heavy personal sanction closes only its sourced chain',()=>{const x=world();x.add('child','father',0,20);x.grant();x.run(50);x.p.politicalHistory=[{kind:'COURT_BAN',severity:'FORFEITURE',factionId:'qin',epochFounderId:'king',eventId:'heavy',month:60}];x.events.push({id:'heavy',year:60});expect(x.run(60)).toMatchObject({kind:'ENDED',reason:'FORFEITED'});expect(x.d.rulers.find((r:any)=>r.id==='child').deathMonth).toBeUndefined();expect(x.p.nobilityHistory).toHaveLength(1);});
  it('missing or forged registration never establishes an heir',()=>{const x=world(),c=x.add('child','father',0,20);c.registration.parentId='other';expect(eligibleRoyalNobleHeirs(x.d,x.father,'king',x.people,x.events,80)).toEqual([]);});
 });
+
+it('civil merit uses the existing single finite royal title chain without inventing military merit',()=>{const x=world(),child=x.add('civil-child','father',0,20),g=x.grant('ZI',50);g.basis='CIVIL';x.events.at(-1)!.type='civil-ennobled';x.events.at(-1)!.metadata.nobility=JSON.stringify(g);const first=x.run(50)!;expect(first).toMatchObject({kind:'GRANTED',rank:'ZI',meritBasis:'CIVIL'});expect(royalNobleText(first,x.d.rulers)).toContain('文治子爵');expect(royalNobleText(first,x.d.rulers)).not.toContain('军功');x.die(x.father,100);expect(x.run(100)).toMatchObject({kind:'SUCCEEDED',rank:'NAN',holderRulerId:child.id});x.die(child,200);expect(x.run(200)).toMatchObject({kind:'ENDED',reason:'RANK_EXHAUSTED'});expect(new Set(x.d.royalNobility.map((a:any)=>a.chainId)).size).toBe(1);});

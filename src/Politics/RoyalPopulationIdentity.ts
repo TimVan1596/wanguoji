@@ -8,5 +8,9 @@ export function royalPopulationIdentity(u:{id:number;bornMonth:number;nativeRoya
 }
 /** A royal title is technical source text, never evidence that an unrelated resident owns that name. */
 export function isRoyalTitleLabel(name:string,dynasties:readonly Dynasty[]){
- return dynasties.some(d=>d.rulers.some(r=>{const personal=r.houseName.replace(/氏$/,'')+r.givenName;return name!==personal&&name.endsWith(personal)&&/(?:王|帝|首领)/.test(name.slice(0,-personal.length));}));
+ return dynasties.some(d=>d.rulers.some(r=>{
+  const personal=r.houseName.replace(/氏$/,'')+r.givenName;if(name===personal||!name.endsWith(personal))return false;
+  const prefix=name.slice(0,-personal.length),countries=[d.factionId,r.regimeNameAtEnd].filter((v):v is string=>typeof v==='string'&&v.length>0).flatMap(v=>[v,v.replace(/(?:国|朝)$/,'')]);
+  return countries.some(country=>['王','皇帝','帝','首领'].some(title=>prefix===country+title));
+ }));
 }

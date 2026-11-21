@@ -515,7 +515,7 @@
       },
       "after": {
         "worldMonth": 2400,
-        "canonicalSha256": "c65c5eb6bc4902045b75fc0af12de6328296f20a0116717a945ad7db5995a882",
+        "canonicalSha256": "601ea486321006f7a9ee41b1048180013f926f716c93a2ba45a9427d2c930c23",
         "rngPosition": 13810,
         "population": 124,
         "uniqueCivilPeople": 38,
@@ -584,7 +584,7 @@
         "captures": 23,
         "usurpations": 0,
         "events": 4678,
-        "saveBytes": 3849730,
+        "saveBytes": 3849728,
         "strictSaveValid": true,
         "identityConflicts": {
           "duplicatePopulationIds": 0,
@@ -660,7 +660,7 @@
       },
       "after": {
         "worldMonth": 1200,
-        "canonicalSha256": "0fa9ef00976f766bcf6d626c0846e2946f84155254ea7d8e8197631221bcad15",
+        "canonicalSha256": "6ace7208573dfe434b19c6fefbc1441061318bb6ee9df367e64b10c681890972",
         "rngPosition": 7113,
         "population": 132,
         "uniqueCivilPeople": 20,
@@ -715,7 +715,7 @@
         "captures": 10,
         "usurpations": 0,
         "events": 2372,
-        "saveBytes": 2131347,
+        "saveBytes": 2131343,
         "strictSaveValid": true,
         "identityConflicts": {
           "duplicatePopulationIds": 0,
@@ -791,7 +791,7 @@
       },
       "after": {
         "worldMonth": 2400,
-        "canonicalSha256": "4f64acd13d1d062b837b2b1ca2d3596de4ea3f467d55784a49a2e993c3e6b4cd",
+        "canonicalSha256": "438d1a37a0f0800b161c1099861aff828841fea433cf3da33444ede7d9e4d9dd",
         "rngPosition": 14769,
         "population": 139,
         "uniqueCivilPeople": 46,
@@ -853,7 +853,7 @@
         "captures": 36,
         "usurpations": 0,
         "events": 5466,
-        "saveBytes": 4564406,
+        "saveBytes": 4564400,
         "strictSaveValid": true,
         "identityConflicts": {
           "duplicatePopulationIds": 0,
@@ -929,7 +929,7 @@
       },
       "after": {
         "worldMonth": 1200,
-        "canonicalSha256": "3dd1803830ff5960e538830f928dfa2aa79b3c2e3d1939d6f7c71b98a495e719",
+        "canonicalSha256": "aea8fb2b8d9b4df97e803abdc717c01fba21c8c84eed2654ac7cf583d2e33e2d",
         "rngPosition": 6852,
         "population": 136,
         "uniqueCivilPeople": 18,
@@ -998,7 +998,7 @@
         "captures": 6,
         "usurpations": 0,
         "events": 2512,
-        "saveBytes": 2184453,
+        "saveBytes": 2184449,
         "strictSaveValid": true,
         "identityConflicts": {
           "duplicatePopulationIds": 0,
@@ -1074,7 +1074,7 @@
       },
       "after": {
         "worldMonth": 2400,
-        "canonicalSha256": "515e380a2fe5d2701dab99da9a839b26e4f3e260b810e547d4ef71e2e0aa99e1",
+        "canonicalSha256": "e0e6c93af41d291eb3950b69a4812f6007aca244a6f25ade76fa348fd07c7c33",
         "rngPosition": 12938,
         "population": 141,
         "uniqueCivilPeople": 40,
@@ -1164,7 +1164,7 @@
         "captures": 12,
         "usurpations": 0,
         "events": 5147,
-        "saveBytes": 4161301,
+        "saveBytes": 4161295,
         "strictSaveValid": true,
         "identityConflicts": {
           "duplicatePopulationIds": 0,
@@ -1240,7 +1240,7 @@
       },
       "after": {
         "worldMonth": 1200,
-        "canonicalSha256": "a058ca335497e14abf3c657005aca70741f2c270bce8401ebf8d363f8db4185b",
+        "canonicalSha256": "ba3972a5955098b46c37f5598601c5c7c17cb85ce71ce1a7b95d19e07a458109",
         "rngPosition": 7025,
         "population": 134,
         "uniqueCivilPeople": 23,
@@ -1287,7 +1287,7 @@
         "captures": 18,
         "usurpations": 0,
         "events": 2894,
-        "saveBytes": 2487896,
+        "saveBytes": 2487894,
         "strictSaveValid": true,
         "identityConflicts": {
           "duplicatePopulationIds": 0,
@@ -1363,7 +1363,7 @@
       },
       "after": {
         "worldMonth": 1200,
-        "canonicalSha256": "ed818f1cf28fc6218c83761a1e0bf05f26a9a21bce3ec44177042d17bc54c44d",
+        "canonicalSha256": "bddafdd3441f9362028d6e8f99bd5d777261f2022486c07081c565ad1700a3d5",
         "rngPosition": 6815,
         "population": 140,
         "uniqueCivilPeople": 20,
@@ -1425,7 +1425,7 @@
         "captures": 15,
         "usurpations": 0,
         "events": 2587,
-        "saveBytes": 2315542,
+        "saveBytes": 2315540,
         "strictSaveValid": true,
         "identityConflicts": {
           "duplicatePopulationIds": 0,
@@ -1632,7 +1632,7 @@
       },
       "after": {
         "worldMonth": 1200,
-        "canonicalSha256": "822e68592cf79dd5fc9fbd46e81d7585579da64447c038381afe60a807f77230",
+        "canonicalSha256": "86011d4c5b2c34fdb7cf7eedf6b8a2ed62498ea11ce89757ca669113c37e3326",
         "rngPosition": 7170,
         "population": 132,
         "uniqueCivilPeople": 22,
@@ -1694,7 +1694,7 @@
         "captures": 9,
         "usurpations": 0,
         "events": 2517,
-        "saveBytes": 2216335,
+        "saveBytes": 2216333,
         "strictSaveValid": true,
         "identityConflicts": {
           "duplicatePopulationIds": 0,
@@ -1985,7 +1985,7 @@
       },
       "after": {
         "worldMonth": 6000,
-        "canonicalSha256": "e523283e8eaa7ca55b305b7cb907609a9e26360c95b739aa678a35339fe19619",
+        "canonicalSha256": "554b5046f4e0ac0b233c91d7ac0af85c3fe09b1bdda0b31c3f2e90260604a809",
         "rngPosition": 33707,
         "population": 133,
         "uniqueCivilPeople": 114,
@@ -2194,7 +2194,7 @@
         "captures": 91,
         "usurpations": 0,
         "events": 15019,
-        "saveBytes": 11894036,
+        "saveBytes": 11894034,
         "strictSaveValid": true,
         "identityConflicts": {
           "duplicatePopulationIds": 0,

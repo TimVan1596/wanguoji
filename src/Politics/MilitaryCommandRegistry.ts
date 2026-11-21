@@ -477,7 +477,7 @@ export class MilitaryCommandRegistryStore {
 
   private appointmentQualificationBlock(user:User,worldMonth:number):string|undefined{
     const p=user.militaryPersonId?this.people.get(user.militaryPersonId):undefined;
-    if(civilState().terms.some(t=>t.sourceUserId===user.id&&t.bornMonth===user.bornMonth&&t.startMonth<=worldMonth&&t.endMonth===undefined))return '仍在担任正式郡守';
+    if(civilState().terms.some(t=>t.sourceUserId===user.id&&t.bornMonth===user.bornMonth&&t.startMonth<=worldMonth&&t.endMonth===undefined))return '仍在担任正式文官';
     if(p?.politicalHistory?.length&&unresolvedCourtBans(p,user.team.name,worldMonth,this.royalService?.nobleEpoch?.(user.team.name,worldMonth)).length)return '正式禁仕尚未获赦';
     if(user.nativeRoyalRulerId)return '原生君主永久身份不可参加普通初选';
     if(user.isDestroyed||p?.status==='DEAD')return '人物已经去世';
@@ -582,7 +582,7 @@ export class MilitaryCommandRegistryStore {
     const hereditaryRank=link&&epoch&&link.family.factionId===team.name&&link.family.epochFounderId===epoch?familyNobleRankAt(link.family,link.member,month):undefined;
     return nextNobleGrant(person,this.getFormations(),this.eventReader(team.name),month,team,dy,this.nobleMeritPolicy,hereditaryRank);
   }
-  recordCivilNoble(person:MilitaryPerson,grant:NobleGrant){if(grant.basis!=='CIVIL')throw Error('Invalid civil peerage source');this.recordNoble(person,grant);}
+  recordCivilNoble(person:MilitaryPerson,grant:NobleGrant){if(grant.basis!=='CIVIL'||this.people.get(person.personId)!==person||grant.personId!==person.personId||person.nobilityHistory?.some(g=>g.eventId===grant.eventId||g.month===grant.month))throw Error('Invalid or duplicate civil peerage source');this.recordNoble(person,grant);}
   private recordNoble(person:MilitaryPerson,grant:NobleGrant,courtServiceEventId?:string,courtCoupEventId?:string){
     if(!this.eventWriter)throw Error('Missing noble writer');
     (person.nobilityHistory??=[]).push(grant);

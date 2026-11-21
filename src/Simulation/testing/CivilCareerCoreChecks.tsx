@@ -28,7 +28,7 @@ export function checkCivilCareer(core:any,saved:WorldSaveV1,term:CivilGovernorTe
  const team=()=>core.teams.find((t:any)=>t.name===term.factionId),user=()=>team().getUserById(term.sourceUserId);
  check(!(Military as any).appoint(user(),term.factionId,saved.world.worldMonth,[user().player.logicalUnitId]),'active governor cannot simultaneously acquire a military command');
  const end=saved.world.worldMonth+1;clock(end);
- const city=core.allCities.find((c:any)=>c.id===term.cityId),enemy=core.teams.find((t:any)=>t.name!==term.factionId&&t.status==='ACTIVE');
+ let city=core.allCities.find((c:any)=>c.id===term.cityId);const enemy=core.teams.find((t:any)=>t.name!==term.factionId&&t.status==='ACTIVE');
  city.capture(enemy,end);Civil.update(end,core.teams,Dynasty.getAll());
  for(const formation of Military.getFormations().filter(f=>f.status==='ACTIVE'&&f.factionId===term.factionId))Military.endPersonCommands(formation.commanderPersonId,end,'DISMISSED');
  {
@@ -38,7 +38,7 @@ export function checkCivilCareer(core:any,saved:WorldSaveV1,term:CivilGovernorTe
   try{clock(annual);Military.update(annual,core.teams,core.allCities);const appointed=Military.getPerson(term.personId)!,selection=appointed.appointments[0]?.selection;
    check(selection&&selection.rows[selection.selectedIndex].firstAppointment&&appointed.appointments[0].officeHistory?.[0].office==='XIAOWEI','real shared annual military selection treats a civil-only person as initial xiaowei rather than military reappointment');
    const annualSave=strict();hydrateWorldSave(core,structuredClone(annualSave));check(diffCanonicalWorldSave(annualSave,strict()).matched,'actual annual civil-to-military selection and complete candidate evidence strictly replay');
-  }finally{random.next=draw;Military.setAppointmentObserverForSimulation(undefined);hydrateWorldSave(core,structuredClone(transferBase));}
+  }finally{random.next=draw;Military.setAppointmentObserverForSimulation(undefined);hydrateWorldSave(core,structuredClone(transferBase));city=core.allCities.find((c:any)=>c.id===term.cityId);}
  }
  const before=strict(),write=History.addEvent;
  let threw=false;History.addEvent=function(e){const id=write.call(this,e);if(e.type==='military-appointment')throw Error('injected civil-to-military write');return id;};

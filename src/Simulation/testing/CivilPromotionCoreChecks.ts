@@ -1,3 +1,4 @@
+import random from '../WorldRandom';
 import Civil from '../../Politics/CivilAdministration';
 import Military from '../../Politics/MilitaryCommandRegistry';
 import Dynasty from '../../Politics/Dynasty';
@@ -40,7 +41,12 @@ export function checkCivilPromotion(core:any,input:WorldSaveV1,term:CivilGoverno
   const p=Military.getPerson(term.personId)!,at=core.simulator.year,terms=Civil.getByPerson(term.personId),merit=civilNobleMerit(p,terms,at,100);
   check(merit,'actual accumulated recoveries qualify for a low civil peerage');
   if(merit){const dy=Dynasty.get(team.name)!,ruler=Dynasty.getCurrentRuler(team.name)!,g:any={...merit,basis:'CIVIL',eventId:`civil-noble-${p.personId}-${current.epochFounderId}-${merit.rank}`,personId:p.personId,sourceUserId:p.sourceUserId,bornMonth:p.bornMonth,personalName:p.personalName,factionId:team.name,countryName:team.displayName,epochFounderId:current.epochFounderId,rulerId:ruler.id,rulerTitle:Dynasty.getRulerHistoricalTitle(ruler.id,team.name,at),month:at,previousRank:'NONE',commandId:'',captureEventIds:[],cityIds:[],importantCityIds:[],importantEventIds:[]};
-   Military.civilTransaction(team,()=>Military.recordCivilNoble(p,g));
+   const beforeAward=exportWorldSave(core),writeAward=History.addEvent;let failedAward=false;
+   History.addEvent=function(e){const id=writeAward.call(this,e);if(e.type==='civil-ennobled'){random.next();throw Error('injected civil peerage');}return id;};
+   try{Military.civilTransaction(team,()=>Military.recordCivilNoble(p,g));}catch{failedAward=true;}finally{History.addEvent=writeAward;}
+   check(failedAward&&diffCanonicalWorldSave(beforeAward,exportWorldSave(core)).matched,'failed civil peerage rolls back person, title, history, civil office and consumed RNG');
+   Military.civilTransaction(team,()=>Military.recordCivilNoble(Military.getPerson(term.personId)!,g));
+   check(Military.getPerson(term.personId)!.nobilityHistory?.filter(n=>n.eventId===g.eventId).length===1,'retry awards exactly one real civil title to the canonical person after rollback');
    check(History.getRecordedEvents().some(e=>e.id===g.eventId&&e.title===nobleChronicle(g))&&p.appointments.length===0,'civil merit produces a real distinct peerage source and no fictional command');
    const saved=exportWorldSave(core);hydrateWorldSave(core,structuredClone(saved));check(diffCanonicalWorldSave(saved,exportWorldSave(core)).matched,'civil peerage and four-tier career strictly read again');void dy;
    const bad=structuredClone(saved);bad.registries.civilAdministration.terms.find(t=>t.promotion)!.promotion!.meritEventIds=['forged'];let rejected=false;try{hydrateWorldSave(core,bad);}catch{rejected=true;}check(rejected,'forged promotion evidence is rejected');
