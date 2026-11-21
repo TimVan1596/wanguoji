@@ -3,7 +3,7 @@ import {Box} from "@mui/material";
 
 /** Shared chronological row for royal and military archives; the heading is a keyboard-accessible control. */
 export default function PersonArchiveCard({heading,portrait,expanded,focusRequest=false,active=false,index=0,identityTone,onSelect,children}:{
-  identityTone?:'ruler'|'royal-kin';heading:ReactNode;portrait?:ReactNode;expanded:boolean;focusRequest?:boolean;active?:boolean;index?:number;onSelect:()=>void;children?:ReactNode;
+  identityTone?:'ruler'|'royal-kin';heading:ReactNode;portrait?:ReactNode;expanded:boolean;focusRequest?:boolean|number;active?:boolean;index?:number;onSelect:()=>void;children?:ReactNode;
 }){
   const headingRef=useRef<HTMLButtonElement>(null);
   useEffect(()=>{if(expanded&&focusRequest){headingRef.current?.scrollIntoView?.({block:"nearest"});headingRef.current?.focus({preventScroll:true});}},[expanded,focusRequest]);

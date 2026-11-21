@@ -197,6 +197,7 @@ export default function FactionDetails() {
     navigationDispatch(setFactionDetailTab(resolved.tab));
   };
 
+  useEffect(()=>{setCivilTarget(t=>t?.factionId===selectedFactionName?t:undefined);setMilitaryTarget(t=>t?.factionId===selectedFactionName?t:undefined);},[selectedFactionName]);
   useEffect(()=>{if(externalRequest){openPerson(externalRequest);navigationDispatch(setPersonArchiveRequest(undefined));}},[externalRequest]);
   useEffect(() => WorldHistory.subscribeRevision(setHistoryRevision), []);
   const team = teams.find((item) => item.name === selectedFactionName);
@@ -685,7 +686,7 @@ export function UnifiedPeoplePanel({factionId,month,civilTarget}:{factionId:stri
   const inherited=profile?.family&&profile.memberId?(()=>{const m=profile.family.members.find(m=>m.memberId===profile.memberId);return m?familyNobleTitle(profile.family,m,month):undefined;})():undefined;
   const title=[p?militaryHonorPresentation(p,factionId,month,titleEvents).text:'',inherited?`袭${inherited}`:''].filter(Boolean).join(' · ');
   const toggle=()=>setSelected(expanded?undefined:id),tone=summary.kind==='文官'?'#538e7b':'#597f9f';
-  return <Box data-unified-person={id} data-civil-governor={term?.assignmentId} data-person-office-kind={summary.kind} sx={{borderLeft:`3px solid ${tone}`,pl:.5,opacity:summary.deathMonth!==undefined?.8:1}}><PersonArchiveCard active={summary.active} heading={<><Typography fontWeight="bold" fontSize=".88rem">{name} · {office}{title?` · ${title}`:''}</Typography><Typography fontSize=".76rem">{summary.age}</Typography><Typography fontSize=".76rem">{summary.tenure}</Typography><Typography fontSize=".74rem"><span style={{color:tone}}>{summary.kind}</span> · {summary.state}{crownLabel?` · ${crownLabel}`:''}</Typography></>} portrait={<PortraitSummary name={name} portrait={portrait} status={p?militaryPortraitStatus(p,factionId,month,archiveDynasties,archiveEvents):undefined} lines={[]} onFull={()=>setSelected(id)}/>} expanded={expanded} onSelect={toggle} index={index} focusRequest={expanded&&target?.id===id}>
+  return <Box data-unified-person={id} data-civil-governor={term?.assignmentId} data-person-office-kind={summary.kind} sx={{borderLeft:`3px solid ${tone}`,pl:.5,opacity:summary.deathMonth!==undefined?.8:1}}><PersonArchiveCard active={summary.active} heading={<><Typography fontWeight="bold" fontSize=".88rem">{name} · {office}{title?` · ${title}`:''}</Typography><Typography fontSize=".76rem">{summary.age}</Typography><Typography fontSize=".76rem">{summary.tenure}</Typography><Typography fontSize=".74rem"><span style={{color:tone}}>{summary.kind}</span> · {summary.state}{crownLabel?` · ${crownLabel}`:''}</Typography></>} portrait={<PortraitSummary name={name} portrait={portrait} status={p?militaryPortraitStatus(p,factionId,month,archiveDynasties,archiveEvents):undefined} lines={[]} onFull={()=>setSelected(id)}/>} expanded={expanded} onSelect={toggle} index={index} focusRequest={expanded&&target?.id===id?target.serial:false}>
    {expanded&&(p?<MilitaryPersonDetail person={p} factionId={factionId} worldMonth={month} careerIndex={careerIndex}/>:<GovernorDetail term={term!} month={month} careerIndex={careerIndex}/>)}
   </PersonArchiveCard></Box>;
  };
@@ -694,9 +695,9 @@ export function UnifiedPeoplePanel({factionId,month,civilTarget}:{factionId:stri
   {mode==='family'?<MilitaryFamilyEntrance factionId={factionId} worldMonth={month}/>:mode==='merit'?<MeritRoll factionId={factionId} month={month} onOpen={id=>{setMode('people');setSelected(id);setHistory(true);}}/>:<>
    <InsurgentCommandPanel factionId={factionId} month={month}/><Typography fontSize=".83rem" fontWeight="bold">当前任职人物（{activeIds.length}）</Typography>
    {!activeIds.length&&<Typography fontSize=".78rem">暂无正式任职人物</Typography>}
-   <MilitaryArchiveWindow ids={activeIds} targetId={target&&current(target.id)?target.id:undefined}>{render}</MilitaryArchiveWindow>
+   <MilitaryArchiveWindow ids={activeIds} targetSerial={target?.serial} targetId={target&&current(target.id)?target.id:undefined}>{render}</MilitaryArchiveWindow>
    <Button size="small" aria-expanded={history} onClick={()=>setHistory(v=>!v)}>历任人物（{pastIds.length}）{history?' · 收起':' · 展开'}</Button>
-   {history&&<MilitaryArchiveWindow ids={pastIds} targetId={target&&!current(target.id)?target.id:undefined}>{render}</MilitaryArchiveWindow>}
+   {history&&<MilitaryArchiveWindow ids={pastIds} targetSerial={target?.serial} targetId={target&&!current(target.id)?target.id:undefined}>{render}</MilitaryArchiveWindow>}
   </>}
  </Box>;
 }

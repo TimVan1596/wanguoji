@@ -1,6 +1,6 @@
 import {Fragment,useLayoutEffect,useRef,useState,type ReactNode} from 'react';
 /** Variable-height window in the existing sidebar scroll area; no nested scrollbar or lost archive rows. */
-export default function MilitaryArchiveWindow({ids,targetId,children,estimateHeight=155,maxRows=24}:{ids:string[];targetId?:string;estimateHeight?:number;maxRows?:number;children:(id:string,index:number)=>ReactNode}){
+export default function MilitaryArchiveWindow({ids,targetId,targetSerial,children,estimateHeight=155,maxRows=24}:{ids:string[];targetId?:string;targetSerial?:number;estimateHeight?:number;maxRows?:number;children:(id:string,index:number)=>ReactNode}){
  const container=useRef<HTMLDivElement>(null),heights=useRef(new Map<string,number>()),[range,setRange]=useState([0,12]),[epoch,redraw]=useState(0);
  const offsets=[0];for(const id of ids)offsets.push(offsets.at(-1)!+(heights.current.get(id)??estimateHeight));
  useLayoutEffect(()=>{
@@ -11,7 +11,7 @@ export default function MilitaryArchiveWindow({ids,targetId,children,estimateHei
   const schedule=()=>{if(!frame)frame=requestAnimationFrame(update);};scroller.addEventListener('scroll',schedule,{passive:true});const observer=new ResizeObserver(schedule);observer.observe(scroller);update();
   return ()=>{scroller.removeEventListener('scroll',schedule);observer.disconnect();cancelAnimationFrame(frame);};
  },[ids.join('|'),epoch]);
- useLayoutEffect(()=>{const i=targetId?ids.indexOf(targetId):-1;if(i<0)return;const el=container.current!,scroll=el.closest<HTMLElement>('[data-faction-scroll],[data-archive-scroll]')??el.parentElement!;scroll.scrollTop+=el.getBoundingClientRect().top-scroll.getBoundingClientRect().top+offsets[i];setRange([Math.max(0,i-3),Math.min(ids.length,i+8)]);},[targetId]);
+ useLayoutEffect(()=>{const i=targetId?ids.indexOf(targetId):-1;if(i<0)return;const el=container.current!,scroll=el.closest<HTMLElement>('[data-faction-scroll],[data-archive-scroll]')??el.parentElement!;scroll.scrollTop+=el.getBoundingClientRect().top-scroll.getBoundingClientRect().top+offsets[i];setRange([Math.max(0,i-3),Math.min(ids.length,i+8)]);},[targetId,targetSerial]);
  const indexes=Array.from({length:Math.max(0,range[1]-range[0])},(_,i)=>i+range[0]).filter(i=>i<ids.length);let end=0;
  return <div ref={container} data-military-window data-total-people={ids.length}>{indexes.map(i=>{const gap=offsets[i]-offsets[end];end=i+1;return <Fragment key={ids[i]}>{gap>0&&<div aria-hidden style={{height:gap}}/>}<MeasuredRow id={ids[i]} onHeight={height=>{if(Math.abs((heights.current.get(ids[i])??estimateHeight)-Math.max(1,height))>.5){heights.current.set(ids[i],Math.max(1,height));redraw(x=>x+1);}}}>{children(ids[i],i)}</MeasuredRow></Fragment>;})}<div aria-hidden style={{height:Math.max(0,offsets.at(-1)!-offsets[end])}}/></div>;
 }
