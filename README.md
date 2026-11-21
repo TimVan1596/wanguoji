@@ -147,7 +147,7 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
-- 当前 APP **v0.100.0-beta.65** / package **0.100.0-beta.65** / WorldSave **V61**（开发代号 z65）。z64 已获最终人工 Gate PASS。本版统一文武人物卡片的真实生卒、任期及结局，直接复用单人完整档案；君臣野心沿用统御、谋略的永久身份来源。正式断袭后停止新增特殊子嗣与普通居民挂靠，保留已出生成员、正常人口及独立新功爵期；宗谱共享官爵等级主题。V60及更早槽位保留并拒读、拒绝覆盖，须新建世界。运行 `pnpm desktop:start:debug` 人工验收；z65最终Gate通过前禁止下一版本。
+- 当前 APP **v0.100.0-beta.66** / package **0.100.0-beta.66** / WorldSave **V62**。beta.65已获最终人工Gate PASS。本版统一皇族金、贵族紫、武官蓝、文官绿与政治警示红；历史爵位保留等级颜色，人物卡片精简生卒任期并增加职类筛选，隐藏无子嗣且已终爵的单人宗谱但保留史料。原继统抽签成功后由真实权臣竞争，无合格人物时保留合法继承；久任有绩郡守可在核验身份、忠诚和真实城市联系后提供有限政治资源，不授予军权或独立篡朝。V61及更早槽位保留并拒读、拒绝覆盖，须新建世界。退出旧Electron实例后运行 `pnpm desktop:start:debug`；等待beta.66人工Gate，不启动beta.67。
 
 - v0.99931n人工Gate已PASS，真实长局自然发生至少11次同王统宗室废立。当前v0.99931n1修复连续废立后的V14生命周期校验，并完善君主即离位叙述与史评，等待[人工Gate](docs/RulerDepositionLifecycleClosureN1.md)。
 - v0.99929a 修复政治终结历史身份、退位年龄与双方君主大事记。[Political Terminal Chronicle Gate](docs/PoliticalTerminalChronicleClosure.md)已由用户完成人工PASS。

@@ -23,9 +23,9 @@ export function civilPoliticalSupport(candidate:MilitaryPoliticalParticipant,peo
   if(sources&&!live)continue;
   const ended=t.endEventId&&byId.has(t.endEventId);
   if(t.factionId!==candidate.factionId||t.epochFounderId!==epoch||t.royalRulerId||month-t.startMonth<120||t.bornMonth>month-18*12||ended||t.endMonth!==undefined&&t.endMonth<month||!t.meritEventId)continue;
-  if(terms.some(o=>o!==t&&o.sourceUserId===t.sourceUserId&&o.bornMonth===t.bornMonth&&o.startMonth<=month&&(o.endMonth??Infinity)>month))continue;
+  if(terms.some(o=>o!==t&&o.sourceUserId===t.sourceUserId&&o.bornMonth===t.bornMonth&&o.startMonth<=month&&byId.has(o.appointEventId)&&(o.endMonth??Infinity)>month))continue;
   const p=people.find(p=>p.sourceUserId===t.sourceUserId&&p.bornMonth===t.bornMonth);
-  if(p&&(p.royalIdentity||(p.deathMonth??Infinity)<=month||unresolvedCourtBans(p,t.factionId,month,epoch).length||p.appointments.some(a=>a.startMonth<=month&&(a.endMonth??Infinity)>month)))continue;
+  if(p&&(p.royalIdentity||(p.deathMonth??Infinity)<=month||unresolvedCourtBans({...p,politicalHistory:p.politicalHistory?.filter(a=>byId.has(a.eventId))},t.factionId,month,epoch).length||p.appointments.some(a=>a.startMonth<=month&&(a.endMonth??Infinity)>month&&events.some(e=>e.type==='military-appointment'&&e.metadata?.personId===p.personId&&e.metadata?.commandId===a.commandId&&(e.monthIndex??e.year)===a.startMonth))))continue;
   const merit=byId.get(t.meritEventId),appoint=byId.get(t.appointEventId),contribution=(t.meritLoyaltyRecovered??0)+(t.meritDevastationRecovered??0);
   if(!appoint||appoint.type!=='civil-governor-appointed'||appoint.metadata?.assignmentId!==t.assignmentId||!merit||merit.type!=='civil-governor-merit'||merit.metadata?.assignmentId!==t.assignmentId||merit.metadata?.personId!==t.personId||merit.actorFactionId!==t.factionId||(merit.monthIndex??merit.year)>month||contribution<3)continue;
   const source=p?militaryAbilities(p).source:{kind:'RESIDENT' as const,sourceUserId:t.sourceUserId,bornMonth:t.bornMonth};

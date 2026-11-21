@@ -1,3 +1,4 @@
+import {checkCivilPoliticalCore} from './CivilPoliticalCoreChecks';
 import {militaryAbilities,rulerAbilities} from '../../Politics/PersonAbilities';
 import React from 'react';
 import {createRoot} from 'react-dom/client';
@@ -28,6 +29,7 @@ export function checkMilitaryUsurper(core:any,base:ReturnType<typeof exportWorld
   const influence=Military.getPoliticalInfluence(t,base.world.worldMonth,core.logicalUnitRegistry),choice=selectMilitaryUsurper(influence.candidates,Military.getPeople(),Dynasty.get(factionId)!.houseName);
   check(choice?.personId===p.personId&&choice.unitCount>=2,'non-royal genuine marshal and actual recruited residents qualify without adding people');
   const abilityBefore=militaryAbilities(p),prepared=exportWorldSave(core),beforeCount=core.teams.reduce((n:number,t:any)=>n+t.users.size,0),sourceName=p.personalName,born=p.bornMonth;
+  checkCivilPoliticalCore(core,prepared,factionId,commanderId,check);
   const run=(stage?:string)=>{
    hydrateWorldSave(core,structuredClone(prepared));t=core.teams.find((x:any)=>x.name===factionId)!;p=Military.getPerson(commanderId)!;u=t.getUserById(p.sourceUserId)!;
    const old=Dynasty.getCurrentRuler(factionId)!,before=exportWorldSave(core),writer=History.addEvent,next=random.next;let hit=false;
