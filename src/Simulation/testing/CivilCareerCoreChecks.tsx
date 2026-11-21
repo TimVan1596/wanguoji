@@ -1,3 +1,5 @@
+import {governorProfile,GovernorDetail} from '../../UI/Components/CivilAdministration/CivilGovernancePanel';
+import {personAbilities,personAmbition,rulerAbilities} from '../../Politics/PersonAbilities';
 import {Provider} from 'react-redux';
 import {createRoot} from 'react-dom/client';
 import {flushSync} from 'react-dom';
@@ -61,6 +63,7 @@ export function checkCivilCareer(core:any,saved:WorldSaveV1,term:CivilGovernorTe
   const rows=host.querySelectorAll(`[data-unified-person="${term.personId}"]`);check(rows.length===1,'civil military transfer has exactly one permanent identity card in the unified list');
   const open=rows[0].querySelector<HTMLButtonElement>('button[aria-expanded]');if(open?.getAttribute('aria-expanded')!=='true')flushSync(()=>open!.click());
   check(rows[0].querySelector(`[data-person-career-identity="${term.personId}"]`)&&rows[0].querySelector('[data-civil-service]')&&rows[0].querySelector('[data-person-attribute="command"]'),'same unified card exposes real identity, both careers and ability bars');
+  check(!rows[0].querySelector('[data-military-window]')&&rows[0].querySelectorAll('[data-person-career-identity]').length===1&&rows[0].querySelectorAll('[data-person-abilities]').length===1,'mixed civil military dossier mounts one shared person detail without a nested military list or duplicate ability panel');
   check(button('功臣世家')&&button('功臣录'),'family genealogy and merit roll remain reachable');
 
  }finally{flushSync(()=>root.unmount());host.remove();}
@@ -75,5 +78,11 @@ export function checkCivilCareer(core:any,saved:WorldSaveV1,term:CivilGovernorTe
  Civil.update(saved.world.worldMonth,core.teams,Dynasty.getAll());
  check(ruler?.residentIdentity?.personId===term.personId&&ruler.residentIdentity.personalName===term.personalName&&ruler.residentIdentity.nameSource==='CIVIL'&&ruler.naturalDeathYear===residentNaturalDeathMonth(term.sourceUserId,term.bornMonth),'civil founder retains name, permanent population identity and original lifespan');
  check(core.teams.reduce((n:number,t:any)=>n+t.users.size,0)===population,'civil political entry creates no extra population');strict();
+ const foundingProfile=governorProfile(term,saved.world.worldMonth),originalAbilities=personAbilities({kind:'RESIDENT',sourceUserId:term.sourceUserId,bornMonth:term.bornMonth});
+ check(foundingProfile.linkedRuler?.id===ruler!.id&&JSON.stringify(foundingProfile.abilities)===JSON.stringify(originalAbilities)&&JSON.stringify(rulerAbilities(ruler!,Military.getPeople()))===JSON.stringify(originalAbilities),'civil-born monarch and original governor dossier retain exactly one permanent ability source');
+ check(!foundingProfile.loyalty&&personAmbition(foundingProfile.abilities.source)===personAmbition(originalAbilities.source),'civil-born monarch has the same ambition and no meaningless self-loyalty');
+ const royalDeath=saved.world.worldMonth+1;clock(royalDeath);for(const c of founded!.cities)c.loyalty=0;founded!.capitalCity.underSiege=true;check(founded!.getUserById(term.sourceUserId)!.destroyUser(false,{cause:'BATTLE_DEATH',month:royalDeath,damageSource:'HOSTILE_HOME_OCCUPATION'}),'civil-born monarch can die through the actual royal body');
+ const deceased=governorProfile(term,royalDeath);check(deceased.linkedRuler?.id===ruler!.id&&deceased.deathMonth===royalDeath,'governor archive resolves subsequent actual royal death through resident identity, never personal name');
+ {const host=document.createElement('div'),root=createRoot(host);document.body.append(host);try{flushSync(()=>root.render(<Provider store={store}><GovernorDetail term={term} month={royalDeath}/></Provider>));check(host.textContent?.includes('享年')&&host.querySelector('[data-person-attribute="ambition"]')&&!host.querySelector('[data-person-attribute="loyalty"]'),'former governor dossier displays real royal death, permanent ambition and no self-loyalty');}finally{flushSync(()=>root.unmount());host.remove();}}strict();
  reset();
 }

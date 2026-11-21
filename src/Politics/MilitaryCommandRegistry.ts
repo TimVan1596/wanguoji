@@ -713,7 +713,8 @@ export class MilitaryCommandRegistryStore {
     if(!politicalMutationActive()||service.type!=='court-service-granted'||service.rulerId!==dy.currentRulerId||service.metadata?.personId!==person.personId||service.actorFactionId!==team.name)throw Error('Invalid court reward authority');
     const user=team.getUserById(person.sourceUserId),commands=this.getFormations().filter(f=>f.commanderPersonId===person.personId&&f.status==='ACTIVE'&&f.factionId===team.name);
     if(!user||user.isDestroyed||user.militaryPersonId!==person.personId||user.bornMonth!==person.bornMonth||!user.player.active||commands.length!==1||!commands[0].memberUnitIds.includes(user.player.logicalUnitId??''))throw Error('Court award needs the real living supporter and exclusive command');
-    const merit=this.eligibleNobleGrant(person,month,team,dy),court=this.hereditaryRecruitment!=='BASELINE'?courtNobleGrant(person,team,dy,service,month):undefined;
+    const link=this.getFamilyMember(person.sourceUserId,person.bornMonth),epoch=nobleEpochForRuler(dy,dy.currentRulerId)?.foundingRulerId,hereditaryRank=link&&epoch&&link.family.factionId===team.name&&link.family.epochFounderId===epoch?familyNobleRankAt(link.family,link.member,month):undefined;
+    const merit=this.eligibleNobleGrant(person,month,team,dy),court=this.hereditaryRecruitment!=='BASELINE'?courtNobleGrant(person,team,dy,service,month,hereditaryRank):undefined;
     // A newly eligible lower military rank must not downgrade the existing political BO reward.
     const grant=merit&&['BO','HOU','GONG'].includes(merit.rank)?merit:court??merit;if(!grant)return;
     this.recordNoble(person,grant,service.id,String(service.metadata?.courtCoupEventId));

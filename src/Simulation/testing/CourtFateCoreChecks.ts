@@ -38,6 +38,18 @@ export function checkCourtFates(core:any,base:ReturnType<typeof exportWorldSave>
   if(strong){clock(240);(Military as any).advanceOffices(240,core.teams);}
   clock(251);const enemy=core.teams.find((x:any)=>x!==t&&x.status==='ACTIVE');t.capitalCity.capture(enemy,251);for(const c of t.cities)c.loyalty=20;clock(252);
   let e=opportunity(252),army=Military.getCourtAttemptInfluence(t,252,core.logicalUnitRegistry),actor=selectCourtInstigator(e,Military.getPeople(),army,Dynasty.getAbilityPolicy());
+  if(!pardonGoal){
+   const preferred=[...army.candidates].sort((a,b)=>Military.getPerson(b.personId)!.capturedEventIds.length-Military.getPerson(a.personId)!.capturedEventIds.length||a.personId.localeCompare(b.personId))[0];
+   check(preferred,'controlled sanction fixture retains the actual most experienced existing commander');
+   for(const body of t.users)if(body.militaryPersonId)body.loyalty=body.militaryPersonId===preferred!.personId?0:100;
+   army=Military.getCourtAttemptInfluence(t,252,core.logicalUnitRegistry);actor=selectCourtInstigator(e,Military.getPeople(),army,Dynasty.getAbilityPolicy());
+  }
+  if(titled&&!strong&&!pardonGoal){
+   const meritorious=army.candidates.find(c=>{const p=Military.getPerson(c.personId)!;return ['HOU','GONG'].includes(currentNobleGrant(p,factionId,252)?.rank??'')&&p.capturedEventIds.length>=4;});
+   check(meritorious,'posthumous-ban fixture selects an actual independently meritorious senior noble');
+   for(const body of t.users)if(body.militaryPersonId)body.loyalty=body.militaryPersonId===meritorious!.personId?0:100;
+   army=Military.getCourtAttemptInfluence(t,252,core.logicalUnitRegistry);actor=selectCourtInstigator(e,Military.getPeople(),army,Dynasty.getAbilityPolicy());
+  }
   if(pardonGoal){
    const old=king();let chosen=false;
    for(const c of army.candidates){const p=Military.getPerson(c.personId)!,body=t.getUserById(p.sourceUserId);if(!currentNobleGrant(p,factionId,252)||deriveMilitaryLifeSchedule(p).naturalDeathMonth<old.naturalDeathYear!+24)continue;

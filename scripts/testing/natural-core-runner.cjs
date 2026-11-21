@@ -43,9 +43,9 @@ app.whenReady().then(async()=>{
 
    if(process.env.WANGUOJI_BENCH_SNAPSHOT_OUT&&result.snapshot){fs.writeFileSync(process.env.WANGUOJI_BENCH_SNAPSHOT_OUT,JSON.stringify([{snapshot:result.snapshot}]));delete result.snapshot;}
    if(process.env.WANGUOJI_CORE_SNAPSHOT_DIR&&result.checkpoints){
-    const snapshot=result.checkpoints.at(-1)?.snapshot;if(!snapshot)throw Error('Snapshot export requested without actual production snapshot');
-    fs.mkdirSync(process.env.WANGUOJI_CORE_SNAPSHOT_DIR,{recursive:true});fs.writeFileSync(require('node:path').join(process.env.WANGUOJI_CORE_SNAPSHOT_DIR,`${seed}-${years}.json`),JSON.stringify([{snapshot}]));
-    for(const c of result.checkpoints)delete c.snapshot;
+    fs.mkdirSync(process.env.WANGUOJI_CORE_SNAPSHOT_DIR,{recursive:true});
+    for(const c of result.checkpoints){if(!c.snapshot)throw Error('Snapshot export requested without actual production checkpoint');const years=c.month/12;fs.writeFileSync(require('node:path').join(process.env.WANGUOJI_CORE_SNAPSHOT_DIR,`${seed}-${years}.json`),JSON.stringify([{snapshot:c.snapshot}]));delete c.snapshot;}
+
    }
    results.push(result);if(process.env.WANGUOJI_CORE_OUTPUT)fs.writeFileSync(process.env.WANGUOJI_CORE_OUTPUT,JSON.stringify(results,null,2));
    process.stdout.write(JSON.stringify(result)+'\n');win.destroy();

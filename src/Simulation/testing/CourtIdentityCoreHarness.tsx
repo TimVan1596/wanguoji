@@ -8,7 +8,7 @@ import Civil from '../../Politics/CivilAdministration';
 import {createNaturalCore} from './NaturalCoreHarness';
 import {prepareMeritoriousRoyal} from './RoyalHonorCoreChecks';
 import {hanGivenNamePool} from '../../Politics/NameCulture';
-import {personAmbition,militaryAbilities} from '../../Politics/PersonAbilities';
+import {personAmbition,militaryAbilities,rulerAbilities} from '../../Politics/PersonAbilities';
 import {getRecordedKinRelation} from '../../Politics/DynasticCandidateRules';
 import {evaluateDepositionOpportunity} from '../../Politics/InReignDeposition';
 import {selectCourtInstigator,courtAttemptChance} from '../../Politics/CourtCoup';
@@ -59,6 +59,7 @@ export async function runCourtIdentityCore(seed='royal-military-z11'){
   const population=core.teams.reduce((n,t)=>n+t.users.size,0);invoke(0);Military.updateAppanages(month,core.teams,Dynasty.getAll(),core.allCities);
   const raw=History.getRecordedEvents(),attempt=raw.find(e=>e.type==='court-coup-attempt'&&(e.monthIndex??e.year)===month)!,record=readCourtCoup(attempt)!,estate=Military.getPerson(personId)!.appanageHistory!.at(-1)!;
   check(record.actorRulerId===record.targetRulerId&&record.target.basis==='SELF'&&isSelfCourtCoup(record),'self accession is bound to the real military person and his royal identity');
+  check(JSON.stringify(record.participant.disposition?.source)===JSON.stringify(militaryAbilities(actual().person).source)&&record.participant.disposition?.ambition===personAmbition(rulerAbilities(Dynasty.getCurrentRuler(team.name)!,Military.getPeople()).source),'real military political evidence and ascended monarch share one permanent ambition source and value');
   check(actual().t.rulerUser?.id===p.sourceUserId&&core.teams.reduce((n,t)=>n+t.users.size,0)===population,'self accession reuses the original body without extra population');
   check(estate.kind==='ENDED'&&estate.reason==='ACCESSION','the same actual court accession ends its prior appanage without erasing the grant');
   const beforeReading=JSON.stringify(raw),merged=mergeCourtCoupReading(raw),main=merged.find(e=>e.id===attempt.id)!,sources=String(main.metadata?.sourceEventIds).split(',');
