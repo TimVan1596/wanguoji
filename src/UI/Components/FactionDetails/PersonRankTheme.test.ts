@@ -22,3 +22,5 @@ it('uses one identity priority and keeps former offices colored without calling 
  expect(resolvePersonTheme({current:true,noble:{kind:'PERSONAL',rank:'GONG'}})).toEqual(resolvePersonTheme({current:true}));
  expect(resolvePersonTheme({noble:{kind:'PERSONAL',rank:'BO'},officeKind:'武官'})).toEqual(resolvePersonTheme({noble:{kind:'PERSONAL',rank:'BO'}}));
 });
+
+it('keeps normal text readable against every explicit rank background',()=>{const luminance=(hex:string)=>{const a=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return a[0]*.2126+a[1]*.7152+a[2]*.0722;};for(const kind of ['MILITARY','CIVIL','ROYAL'] as const)for(let level=0;level<(kind==='ROYAL'?6:4);level++){const p=personRankTheme(kind,undefined,level),values=[luminance(p.backgroundColor),luminance(p.color)].sort((a,b)=>a-b);expect((values[1]+.05)/(values[0]+.05)).toBeGreaterThanOrEqual(4.5);}});

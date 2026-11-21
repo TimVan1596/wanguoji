@@ -7,9 +7,9 @@ export function personRankTheme(kind:PersonThemeKind,rank?:FamilyNobleRank,offic
  if(['PERSONAL','INHERITED','HISTORICAL'].includes(kind))return {borderColor:['#ccb5df','#ad80cc','#8f55b5','#65368b','#35154e'][level],backgroundColor:(kind==='HISTORICAL'?['#f5f0f9','#e0cbea','#b79acb','#79618e','#493355']:['#faf5ff','#ead6fb','#c49ce2','#8250b3','#4d2475'])[level],color:level>=3?'#ffffff':'#352040',borderStyle:kind==='HISTORICAL'?'dashed':'solid'};
  if(kind==='DEPOSED')return {borderColor:'#98856b',backgroundColor:'#eee7da',color:'#5c4f3c',borderStyle:'dashed'};
  if(kind==='EXILED')return {borderColor:'#7f8397',backgroundColor:'#ececf3',color:'#4f5267',borderStyle:'dashed'};
- if(kind==='ROYAL')return {borderColor:'#b29349',backgroundColor:['#fffef7','#fffbed','#fff6d7','#fae8b9','#efd183','#dbac39'][Math.min(5,Math.max(0,officeLevel))],color:'#5c451a',borderStyle:'solid'};
- if(kind==='MILITARY')return {borderColor:'#567e9e',backgroundColor:['#edf5ff','#b7d4f3','#5a94ca','#245781'][Math.min(3,Math.max(0,officeLevel))],color:officeLevel>=2?'#ffffff':'#244560',borderStyle:'solid'};
- if(kind==='CIVIL')return {borderColor:'#548975',backgroundColor:['#edf8f2','#badfca','#65aa87','#286447'][Math.min(3,Math.max(0,officeLevel))],color:officeLevel>=2?'#ffffff':'#214f36',borderStyle:'solid'};
+ if(kind==='ROYAL')return {borderColor:'#b29349',backgroundColor:['#fffef7','#fffbed','#fff6d7','#fae8b9','#efd183','#dbac39'][Math.min(5,Math.max(0,officeLevel))],color:'#4d3911',borderStyle:'solid'};
+ if(kind==='MILITARY')return {borderColor:'#567e9e',backgroundColor:['#edf5ff','#b7d4f3','#5a94ca','#245781'][Math.min(3,Math.max(0,officeLevel))],color:officeLevel>=3?'#ffffff':officeLevel===2?'#10283b':'#244560',borderStyle:'solid'};
+ if(kind==='CIVIL')return {borderColor:'#548975',backgroundColor:['#edf8f2','#badfca','#65aa87','#286447'][Math.min(3,Math.max(0,officeLevel))],color:officeLevel>=3?'#ffffff':officeLevel===2?'#102c20':'#214f36',borderStyle:'solid'};
  return {borderColor:'var(--gg-border)',backgroundColor:'var(--gg-panel)',color:'var(--gg-text)',borderStyle:'solid'};
 }
 
