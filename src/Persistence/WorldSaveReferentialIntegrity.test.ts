@@ -338,7 +338,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     expect(exportWorldSave(core)).toEqual(save); expect(worldRandom.exportState()).toEqual(rng);
     hydrateWorldSave(core, JSON.parse(JSON.stringify(save))); expect(exportWorldSave(core)).toEqual(save);
     const restoredEvent = WorldHistory.getEvents().find(e => e.id === event.id)!;
-    expect(formatHistoryEventTitle(restoredEvent, new Map())).toContain("国都仍在故都");
+    expect(restoredEvent.metadata).toEqual(event.metadata);expect(restoredEvent.metadata?.capitalCityName).toBe("故都");
     expect(MilitaryCommandRegistry.getCareer(MilitaryCommandRegistry.getPeople()[0], 120)).toEqual(career);
     MilitaryCommandRegistry.update(121, core.teams, core.allCities);
     expect(exportWorldSave(core)).toEqual(save);

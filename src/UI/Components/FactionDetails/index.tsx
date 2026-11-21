@@ -683,6 +683,7 @@ export function UnifiedPeoplePanel({factionId,month,civilTarget}:{factionId:stri
  useEffect(()=>{setSelected(scopedCivil?.id??allActiveIds[0]);setHistory(false);setMode('people');setCategory('全部');},[factionId]);
  useEffect(()=>{if(!target)return;setMode('people');setCategory('全部');setSelected(target.id);if(!current(target.id))setHistory(true);},[target?.serial,factionId]);
  useEffect(()=>{if(navigation.familyTarget?.factionId===factionId)setMode('family');},[navigation.familyTarget?.serial,factionId]);
+ useEffect(()=>WorldHistory.subscribeAppends(change=>{if(change.kind==='reset'){setCategory('全部');setSelected(undefined);setHistory(false);setMode('people');}}),[factionId]);
  const core=Game.Core,focusedCommand=mode==='people'?formations.find(f=>f.commanderPersonId===selected&&f.factionId===factionId&&f.status==='ACTIVE')?.commandId:undefined;
  useEffect(()=>{if(focusedCommand)core?.showMilitaryCommand(focusedCommand,true);else core?.clearMilitaryCommandHighlight();return ()=>core?.clearMilitaryCommandHighlight();},[core,factionId,focusedCommand]);
  const render=(id:string,index:number)=>{const p=personById.get(id),term=currentTerm(id)??latestTerm.get(id),expanded=selected===id,profile=term?governorProfile(term,month):undefined;

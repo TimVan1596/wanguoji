@@ -15,7 +15,9 @@ export function familyMemberHeading(row:Row,month:number,countryAt:(id:string,mo
 }
 
 /** Historical rank remains a real title even when it is no longer effective. */
-export function familyMemberDisplayRank(row:Row){
+export function familyMemberDisplayRank(row:Row,month=Infinity){
  const current=[row.effectivePersonal?.rank,row.inherited?.rank].filter((r):r is typeof FAMILY_NOBLE_RANKS[number]=>!!r);
- return (current.length?current:[...row.personalHistory.map(g=>g.rank),...row.inheritedHistory.flatMap(a=>a.rank?[a.rank]:[])]).sort((a,b)=>FAMILY_NOBLE_RANKS.indexOf(b)-FAMILY_NOBLE_RANKS.indexOf(a))[0];
+ if(current.length)return current.sort((a,b)=>FAMILY_NOBLE_RANKS.indexOf(b)-FAMILY_NOBLE_RANKS.indexOf(a))[0];
+ const history=[...row.personalHistory.map(g=>({rank:g.rank,month:g.month,revoked:row.person?.honorHistory?.some(h=>h.kind==='REVOKED'&&h.factionId===g.factionId&&h.epochFounderId===g.epochFounderId&&h.month>=g.month&&h.month<=month)})),...row.inheritedHistory.flatMap(a=>a.rank?[{rank:a.rank,month:a.month,revoked:false}]:[])].sort((a,b)=>FAMILY_NOBLE_RANKS.indexOf(b.rank)-FAMILY_NOBLE_RANKS.indexOf(a.rank)||b.month-a.month);
+ const highest=history[0];return (highest?.revoked?(history.find(g=>!g.revoked&&g.month>highest.month)??highest):highest)?.rank;
 }

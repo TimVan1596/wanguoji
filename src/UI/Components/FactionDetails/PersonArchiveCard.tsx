@@ -12,7 +12,7 @@ export default function PersonArchiveCard({heading,portrait,expanded,focusReques
     borderLeft:index===0?"none":"1px solid var(--gg-border)",
     border:expanded?"1px solid var(--gg-selected)":identityTone==='ruler'?"1px solid #a58b58":identityTone==='royal-kin'?"1px solid #91869e66":"1px solid transparent",borderRadius:"var(--gg-radius)",...(identityTone?personRankTheme('ROYAL',undefined,identityTone==='ruler'?1:0):{}),...theme,boxShadow:expanded?'0 0 0 1px var(--gg-selected)':undefined}}>
     <Box sx={{display:"flex",alignItems:"flex-start",gap:1,minWidth:0}}>{portrait}<Box component="button" ref={headingRef} type="button" aria-expanded={expanded} onClick={onSelect}
-      sx={{display:"block",width:"100%",minWidth:0,p:0,border:0,background:"transparent",color:"var(--gg-text)",font:"inherit",textAlign:"left",cursor:"pointer",fontWeight:active?600:undefined,overflowWrap:"anywhere"}}>{heading}</Box></Box>
+      sx={{display:"block",width:"100%",minWidth:0,p:0,border:0,background:"transparent",color:"inherit",font:"inherit",textAlign:"left",cursor:"pointer",fontWeight:active?600:undefined,overflowWrap:"anywhere"}}>{heading}</Box></Box>
     {expanded&&children}
   </Box>;
 }

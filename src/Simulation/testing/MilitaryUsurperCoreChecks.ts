@@ -50,7 +50,16 @@ export function checkMilitaryUsurper(core:any,base:ReturnType<typeof exportWorld
     flushSync(()=>root.render(React.createElement(PersonArchiveNavigation.Provider,{value:nav},React.createElement(MilitaryServicePanel,{personId:p.personId,month:base.world.worldMonth}))));
     const back=Array.from(host.querySelectorAll('button')).find(b=>b.textContent==='查看对应王室本纪');check(back,'actual React earlier military archive exposes the new royal identity');flushSync(()=>back!.click());check(targets[targets.length-1]?.kind==='RULER'&&targets[targets.length-1]?.id===king.id,'military-to-royal navigation resolves the same actual new monarch');
    }finally{root.unmount();host.remove();}
+   const revolution=History.getRecordedEvents().find(e=>e.type==='dynasty-usurped'&&e.rulerId===king.id)!;
+   check(revolution&&king.militaryUsurperIdentity?.version===2&&king.militaryUsurperIdentity.contest[0]?.personId===p.personId,'original successful roll chooses the evidenced real political-capital winner');
+   check(!Dynasty.get(factionId)!.rulers.some(r=>r.parentId===king.id&&!r.householdBirth),'real usurper is not given backdated unregistered children');
+   check(revolution.description?.includes(p.personalName!)&&revolution.description?.includes('军功')&&revolution.metadata?.militaryUsurperPersonId===p.personId,'new king narrative freezes actual prior office and military merit');
    const saved=exportWorldSave(core);check(validateWorldSave(saved).valid,'strict full save accepts genuine non-royal usurpation');
+   for(const field of ['capital','resources','merit','nobility','abilities','service']){
+    const bad=structuredClone(saved),r=bad.dynasties.flatMap(d=>d.rulers as any[]).find(r=>r.rulerId===king.id)!;r.militaryUsurperIdentity.contest[0][field]++;
+    const event=(bad.worldHistory.events as any[]).find(e=>e.id===revolution.id)!;event.metadata.militaryUsurperIdentity=JSON.stringify(r.militaryUsurperIdentity);
+    check(!validateWorldSave(bad).valid,`strict replay refuses a coherently rewritten but false political ${field}`);
+   }
    for(const edit of ['bornMonth','personId','sourceUserId','commandId','naturalDeathMonth']){const bad=structuredClone(saved),r=bad.dynasties.flatMap(d=>d.rulers as any[]).find(r=>r.rulerId===king.id)!;r.militaryUsurperIdentity[edit]=typeof r.militaryUsurperIdentity[edit]==='number'?r.militaryUsurperIdentity[edit]+1:'forged';check(!validateWorldSave(bad).valid,`strict save refuses forged usurper ${edit}`);}
    return saved;
   };

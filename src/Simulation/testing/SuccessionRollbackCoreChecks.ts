@@ -9,7 +9,7 @@ import {diffCanonicalWorldSave} from '../../Persistence/WorldSaveSchema';
 /** Failure-first checks through the real captured-monarch succession boundary. */
 export function checkSuccessionRollback(core:any,base:ReturnType<typeof exportWorldSave>,factionId:string,check:(v:unknown,s:string)=>void){
  try{
-  for(const stage of ['ruler-captured','dynasty-usurped','ruler-succession']){
+  for(const stage of ['ruler-captured','ruler-succession']){
    hydrateWorldSave(core,structuredClone(base));const t=core.teams.find((x:any)=>x.name===factionId)!,enemy=core.teams.find((x:any)=>x!==t&&x.status==='ACTIVE')!,old=Dynasty.getCurrentRuler(factionId)!;
    for(const c of t.cities)c.loyalty=20;
    const before=exportWorldSave(core),body=t.rulerUser,players=t.players.getChildren().slice(),audit=JSON.stringify(core.simulator.getPopulationTransitionDiagnostics()),writer=History.addEvent,next=random.next;
@@ -24,7 +24,7 @@ export function checkSuccessionRollback(core:any,base:ReturnType<typeof exportWo
   }
   hydrateWorldSave(core,structuredClone(base));const t=core.teams.find((x:any)=>x.name===factionId)!,oldHouse=Dynasty.get(factionId)!.houseName,next=random.next;for(const c of t.cities)c.loyalty=20;random.next=()=>{next.call(random);return 0;};
   try{Dynasty.resolveCapturedRuler(t,core.teams.find((x:any)=>x!==t&&x.status==='ACTIVE')!,base.world.worldMonth);}finally{random.next=next;}
-  check(!Dynasty.getCurrentRuler(factionId)?.militaryUsurperIdentity&&Dynasty.get(factionId)!.houseName!==oldHouse,'no qualified power holder preserves the original generated non-military usurpation path');exportWorldSave(core);
+  check(!Dynasty.getCurrentRuler(factionId)?.militaryUsurperIdentity&&Dynasty.get(factionId)!.houseName===oldHouse&&!History.getRecordedEvents().some(e=>e.type==='dynasty-usurped'&&(e.monthIndex??e.year)===base.world.worldMonth),'no qualified power holder keeps the lawful house; real dynasty-usurped rollback is checked with the actual commander in MilitaryUsurperCoreChecks');exportWorldSave(core);
   hydrateWorldSave(core,structuredClone(base));check(Military.getFormations().every(f=>f.status==='ACTIVE'||f.status==='DISBANDED'),'rollback leaves no orphan command state');
  }finally{hydrateWorldSave(core,structuredClone(base));}
 }

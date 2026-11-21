@@ -8,5 +8,5 @@ export function personNoblePresentation(person:MilitaryPerson|undefined,family:M
  if(own&&(!inherited||NOBLE_RANKS.indexOf(own.rank)>=NOBLE_RANKS.indexOf(inherited)))return {rank:own.rank,kind:'PERSONAL' as const,label:NOBLE_NAMES[own.rank]};
  if(inherited)return {rank:inherited,kind:'INHERITED' as const,label:`袭${NOBLE_NAMES[inherited]}`};
  const history=[...(person?.nobilityHistory??[]).filter(g=>g.factionId===factionId&&g.month<=month).map(g=>({rank:g.rank,month:g.month,revoked:person?.honorHistory?.some(h=>h.kind==='REVOKED'&&h.factionId===g.factionId&&h.epochFounderId===g.epochFounderId&&h.month>=g.month&&h.month<=month),source:'曾封'})),...(family?.factionId===factionId?family.nobleSuccession??[]:[]).filter(a=>a.kind==='SUCCEEDED'&&a.holderMemberId===memberId&&a.rank&&a.month<=month).map(a=>({rank:a.rank!,month:a.month,revoked:false,source:'曾袭'}))].sort((a,b)=>NOBLE_RANKS.indexOf(b.rank)-NOBLE_RANKS.indexOf(a.rank)||b.month-a.month);
- const g=history[0];return g?{rank:g.rank,kind:g.revoked?'REVOKED' as const:'HISTORICAL' as const,label:g.revoked?'旧爵已追夺':`${NOBLE_NAMES[g.rank]}（${g.source}）`}:undefined;
+ const g=history.find(g=>!g.revoked)??history[0];return g?{rank:g.rank,kind:g.revoked?'REVOKED' as const:'HISTORICAL' as const,label:g.revoked?'旧爵已追夺':`${NOBLE_NAMES[g.rank]}（${g.source}）`}:undefined;
 }
