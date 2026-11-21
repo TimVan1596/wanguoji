@@ -120,7 +120,7 @@ export function exportWorldSave(core: Core, options: { createdAt?: string; scena
         bornMonth: user.bornMonth,
         familyMemberId:user.familyMemberId,
         militaryPersonId: user.militaryPersonId,
-        historicalPersonId:user.historicalPersonId,
+        historicalPersonId:user.historicalPersonId,nativeRoyalRulerId:user.nativeRoyalRulerId,
         slaveUnits: [...user.slaveGroup.npcs.entries()].map(([npcKey, npc]) => addUnitTree(npc, undefined, "slave", npcKey)),
       } as UserSaveV1);
     });

@@ -21,6 +21,7 @@ export default class User {
   familyMemberId?: string;
   militaryPersonId?: string;
   historicalPersonId?: string;
+  nativeRoyalRulerId?:string;
   readonly bornMonth: number;
   sourceTeam: Team;
   slaveGroup: Slaves;
@@ -33,13 +34,14 @@ export default class User {
     public loyalty = 70,
     public role: PlayerRole = "NORMAL",
     public rulerId?: string,
-    options: { familyMemberId?:string; deferRuntime?: boolean; bornMonth?: number; historicalPersonId?: string; militaryPersonId?: string } = {}
+    options: { nativeRoyalRulerId?:string; familyMemberId?:string; deferRuntime?: boolean; bornMonth?: number; historicalPersonId?: string; militaryPersonId?: string } = {}
   ) {
     const spawnMonth = Game.Core?.simulator?.year ?? 0;
     this.bornMonth = options.bornMonth ?? deriveUserBornMonth(id, name, team.name, spawnMonth);
     this.familyMemberId=options.familyMemberId;
     this.militaryPersonId = options.militaryPersonId;
     this.historicalPersonId=options.historicalPersonId;
+    this.nativeRoyalRulerId=options.nativeRoyalRulerId;
     this.sourceTeam = team;
     this.player.role = role;
     this.player.rulerId = rulerId;
@@ -137,8 +139,8 @@ export default class User {
       entry.state.userId === this.id && entry.state.factionId === this.team.name && entry.state.role === "NORMAL";
   }
 
-  capturePoliticalState(){return {loyalty:this.loyalty,destroyed:this.destroyed,role:this.role,rulerId:this.rulerId,historicalPersonId:this.historicalPersonId,militaryPersonId:this.militaryPersonId};}
-  restorePoliticalState(s:ReturnType<User['capturePoliticalState']>){this.loyalty=s.loyalty;this.destroyed=s.destroyed;this.role=s.role;this.rulerId=s.rulerId;this.historicalPersonId=s.historicalPersonId;this.militaryPersonId=s.militaryPersonId;}
+  capturePoliticalState(){return {nativeRoyalRulerId:this.nativeRoyalRulerId,loyalty:this.loyalty,destroyed:this.destroyed,role:this.role,rulerId:this.rulerId,historicalPersonId:this.historicalPersonId,militaryPersonId:this.militaryPersonId};}
+  restorePoliticalState(s:ReturnType<User['capturePoliticalState']>){this.nativeRoyalRulerId=s.nativeRoyalRulerId;this.loyalty=s.loyalty;this.destroyed=s.destroyed;this.role=s.role;this.rulerId=s.rulerId;this.historicalPersonId=s.historicalPersonId;this.militaryPersonId=s.militaryPersonId;}
 
   destroyUser(silentRulerDeath = false, populationMutation: PopulationMutationContext = { cause: "UNATTRIBUTED" }): boolean {
     if (this.destroyed) return false;
@@ -196,6 +198,7 @@ export default class User {
     if (this.historicalPersonId && verifiedMilitaryPersonId === this.historicalPersonId && (populationMutation.cause === "SIEGE_LOSS" || populationMutation.cause === "BATTLE_DEATH"))
       DynastyRegistry.recordRoyalMilitaryBattleDeath(this.historicalPersonId,populationMutation.month??core?.simulator?.year??0,populationMutation.cause);
     if(populationMutation.cause==='POLITICAL_EXECUTION'&&verifiedMilitaryPersonId)DynastyRegistry.recordRoyalMilitaryExecution(verifiedMilitaryPersonId,populationMutation.month!);
+    if(this.nativeRoyalRulerId&&['SIEGE_LOSS','BATTLE_DEATH'].includes(populationMutation.cause))DynastyRegistry.recordNativeRoyalEntityDeath(this.nativeRoyalRulerId,populationMutation.month??core?.simulator?.year??0);
     this.destroyed = true;
     MilitaryCommandRegistry.onUserDestroyed(this, populationMutation.month ?? Game.Core?.simulator?.year ?? 0, populationMutation.cause);
     const removedFromPopulation = team.users.delete(this);

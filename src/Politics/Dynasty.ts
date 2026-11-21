@@ -1,3 +1,4 @@
+import {getRulerUserId,nativeRoyal} from './RoyalPopulationIdentity';
 import {politicalContest} from './PoliticalUsurpation';
 import CivilAdministration from './CivilAdministration';
 import {measurePhase,type MonthlyPhaseProfiler} from '../Simulation/MonthlyPhaseProfiler';
@@ -345,6 +346,8 @@ class DynastyRegistryStore {
     const team=Game.Core?.teams.find(t=>this.get(t.name)?.rulers.includes(r));
     if(team)WorldHistory.addRulerDied(month,team.name,this.getRulerTitle(team,r,month),{rulerId:r.id,deathReason:r.deathReason,age:Math.floor((month-r.bornYear)/12)});
   }
+
+  recordNativeRoyalEntityDeath(id:string,month:number){const r=this.getAll().flatMap(d=>d.rulers).find(r=>r.id===id&&nativeRoyal(r));if(r&&!hasRecordedRulerDeath(r)&&r.status!=='ruling'&&r.status!=='exiled'){r.status='dead';r.deathMonth=month;r.deathReason='战死';const d=this.getAll().find(d=>d.rulers.includes(r));if(d)WorldHistory.addRulerDied(month,d.factionId,this.getRulerPersonalName(r),{rulerId:r.id,deathReason:r.deathReason,age:Math.floor((month-r.bornYear)/12)});}}
 
   getRoyalMilitaryCandidates(team: Team, month: number) {
     const dynasty = this.get(team.name), current = this.getCurrentRuler(team.name);
@@ -1018,7 +1021,7 @@ class DynastyRegistryStore {
       "RULER",
       ruler.id,
       { cause: "RULER_LIFECYCLE", month, context: "ruler unit established" },
-      ruler.militaryIdentity ? {bornMonth:ruler.bornYear,historicalPersonId:ruler.militaryIdentity.personId,militaryPersonId:ruler.militaryIdentity.personId} : ruler.residentIdentity ? {bornMonth:ruler.bornYear,historicalPersonId:ruler.residentIdentity.personId,militaryPersonId:ruler.residentIdentity.military?.personId} : undefined
+      ruler.militaryIdentity ? {bornMonth:ruler.bornYear,historicalPersonId:ruler.militaryIdentity.personId,militaryPersonId:ruler.militaryIdentity.personId} : ruler.residentIdentity ? {bornMonth:ruler.bornYear,historicalPersonId:ruler.residentIdentity.personId,militaryPersonId:ruler.residentIdentity.military?.personId} : {bornMonth:ruler.bornYear,nativeRoyalRulerId:ruler.id}
     );
   }
 
@@ -1284,6 +1287,7 @@ class DynastyRegistryStore {
       // The old monarch remains a living person: remove only the political role/crown,
       // and keep the existing population unit instead of silently destroying it.
       if (team.rulerUser?.rulerId === predecessor.id) {
+        if(nativeRoyal(predecessor))team.rulerUser.nativeRoyalRulerId=predecessor.id;
         team.rulerUser.role = "NORMAL";
         team.rulerUser.rulerId = undefined;
         MilitaryCommandRegistry.endInsurgentLeader(predecessor.id,worldMonth);
@@ -1338,6 +1342,7 @@ class DynastyRegistryStore {
       }
       if(ruler.residentIdentity?.military)MilitaryCommandRegistry.mirrorPoliticalDeath(ruler.residentIdentity.military.personId,ruler.id,worldMonth,"NATURAL_DEATH");
       if(ruler.residentIdentity){const u=Team.GetUserById(ruler.residentIdentity.sourceUserId);if(u?.historicalPersonId===ruler.residentIdentity.personId)u.destroyUser(true,{cause:"RULER_LIFECYCLE",month:worldMonth,context:"人物自然死亡，移除其唯一地图实体"});}
+      if(nativeRoyal(ruler)){const u=Team.GetUserById(getRulerUserId(ruler.id));if(u?.nativeRoyalRulerId===ruler.id&&u.bornMonth===ruler.bornYear)u.destroyUser(true,{cause:'RULER_LIFECYCLE',month:worldMonth});}
       if (ruler.chronicle) {
         ruler.chronicle.deathCause = ruler.deathReason;
         finalizeRulerPosthumousNames(ruler, dynasty.rulers, team, worldMonth);
@@ -1830,14 +1835,6 @@ class DynastyRegistryStore {
   getAll() {
     return [...this.dynasties.values()];
   }
-}
-
-function getRulerUserId(rulerId: string) {
-  let hash = 0;
-  for (let i = 0; i < rulerId.length; i++) {
-    hash = (hash * 31 + rulerId.charCodeAt(i)) >>> 0;
-  }
-  return 1800000000 + (hash % 100000000);
 }
 
 const DynastyRegistry = new DynastyRegistryStore();
