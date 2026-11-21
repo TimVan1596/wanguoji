@@ -1,3 +1,4 @@
+import random from '../WorldRandom';
 import {governorProfile,GovernorDetail} from '../../UI/Components/CivilAdministration/CivilGovernancePanel';
 import {personAbilities,personAmbition,rulerAbilities} from '../../Politics/PersonAbilities';
 import {Provider} from 'react-redux';
@@ -30,6 +31,15 @@ export function checkCivilCareer(core:any,saved:WorldSaveV1,term:CivilGovernorTe
  const city=core.allCities.find((c:any)=>c.id===term.cityId),enemy=core.teams.find((t:any)=>t.name!==term.factionId&&t.status==='ACTIVE');
  city.capture(enemy,end);Civil.update(end,core.teams,Dynasty.getAll());
  for(const formation of Military.getFormations().filter(f=>f.status==='ACTIVE'&&f.factionId===term.factionId))Military.endPersonCommands(formation.commanderPersonId,end,'DISMISSED');
+ {
+  const transferBase=strict(),annual=Math.ceil(end/12)*12,draw=random.next;let ticket:{roll:number;phase:number}|undefined;
+  Military.setAppointmentObserverForSimulation((sample:any)=>{if(sample.factionId!==term.factionId){ticket=undefined;return;}if(!sample.rows)return;const rows=sample.rows,index=rows.findIndex((r:any)=>r.sourceUserId===term.sourceUserId&&r.bornMonth===term.bornMonth);if(index>=0){const total=rows.reduce((n:number,r:any)=>n+r.weight,0),left=rows.slice(0,index).reduce((n:number,r:any)=>n+r.weight,0);ticket={roll:(left+rows[index].weight/2)/total,phase:0};}});
+  random.next=function(){const actual=draw.call(this);if(!ticket||ticket.phase>=2)return actual;return ticket.phase++===0?0:ticket.roll;};
+  try{clock(annual);Military.update(annual,core.teams,core.allCities);const appointed=Military.getPerson(term.personId)!,selection=appointed.appointments[0]?.selection;
+   check(selection&&selection.rows[selection.selectedIndex].firstAppointment&&appointed.appointments[0].officeHistory?.[0].office==='XIAOWEI','real shared annual military selection treats a civil-only person as initial xiaowei rather than military reappointment');
+   const annualSave=strict();hydrateWorldSave(core,structuredClone(annualSave));check(diffCanonicalWorldSave(annualSave,strict()).matched,'actual annual civil-to-military selection and complete candidate evidence strictly replay');
+  }finally{random.next=draw;Military.setAppointmentObserverForSimulation(undefined);hydrateWorldSave(core,structuredClone(transferBase));}
+ }
  const before=strict(),write=History.addEvent;
  let threw=false;History.addEvent=function(e){const id=write.call(this,e);if(e.type==='military-appointment')throw Error('injected civil-to-military write');return id;};
  try{(Military as any).appoint(user(),term.factionId,end,[user().player.logicalUnitId]);}catch{threw=true;}finally{History.addEvent=write;}
