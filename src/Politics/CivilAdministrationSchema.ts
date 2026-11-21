@@ -1,3 +1,4 @@
+import type {CivilOffice} from './CivilOffice';
 import type {NobleRank} from './MilitaryNobility';
 export type CivilGovernancePolicy='BASELINE'|'LOW'|'MEDIUM'|'HIGH';
 export const CIVIL_GOVERNANCE_POLICY:CivilGovernancePolicy='MEDIUM';
@@ -7,12 +8,15 @@ export const MAX_ACTIVE_CIVIL_GOVERNORS_PER_FACTION=3;
 export const civilGovernanceThreshold=(policy:CivilGovernancePolicy)=>policy==='LOW'?72:policy==='HIGH'?48:60;
 export const isCivilGovernancePolicy=(value:unknown):value is CivilGovernancePolicy=>typeof value==='string'&&Object.hasOwn(CIVIL_APPOINTMENT_CHANCE,value);
 export type CivilGovernorSource='ORDINARY_RESIDENT'|'FAMILY'|'NOBLE'|'ROYAL'|'RETIRED_MILITARY';
-export type CivilGovernorEndReason='DEATH'|'CITY_LOST'|'FACTION_ENDED'|'REGIME_ENDED'|'POLITICAL_SANCTION'|'MILITARY_OFFICE'|'REPLACED'|'IDENTITY_ENDED';
+export type CivilGovernorEndReason='DEATH'|'CITY_LOST'|'FACTION_ENDED'|'REGIME_ENDED'|'POLITICAL_SANCTION'|'MILITARY_OFFICE'|'REPLACED'|'IDENTITY_ENDED'|'PROMOTED';
+export interface CivilGovernanceReceipt {eventId:string;month:number;cityId:string;cityName:string;loyalty:number;devastation:number;}
+export interface CivilPromotionEvidence {fromAssignmentId:string;fromOffice:CivilOffice;serviceMonths:number;meritEventIds:string[];contribution:number;strategy:number;loyalty:number;}
 export interface CivilGovernorTerm {
+ office?:CivilOffice;promotion?:CivilPromotionEvidence;receipts?:CivilGovernanceReceipt[];
  nameEvidence:{seed:string;culture:import('./NameCulture').NameCulture;originalName:string;source:'GENERATED'|'ESTABLISHED'};
  version:1;assignmentId:string;personId:string;sourceUserId:number;bornMonth:number;personalName:string;
  identitySource:CivilGovernorSource;familyId?:string;familyMemberId?:string;royalRulerId?:string;
- factionId:string;countryName:string;epochFounderId:string;cityId:string;cityName:string;
+ factionId:string;countryName:string;epochFounderId:string;cityId?:string;cityName?:string;
  rulerId:string;rulerTitle:string;startMonth:number;appointEventId:string;
  endMonth?:number;endReason?:CivilGovernorEndReason;endEventId?:string;
  lastEffectMonth?:number;loyaltyRecovered:number;devastationRecovered:number;meritMonth?:number;meritEventId?:string;

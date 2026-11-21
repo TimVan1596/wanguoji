@@ -1,6 +1,6 @@
 import {Fragment,useLayoutEffect,useRef,useState,type ReactNode} from 'react';
 /** Variable-height window in the existing sidebar scroll area; no nested scrollbar or lost archive rows. */
-export default function MilitaryArchiveWindow({ids,targetId,targetSerial,children,estimateHeight=155,maxRows=24}:{ids:string[];targetId?:string;targetSerial?:number;estimateHeight?:number;maxRows?:number;children:(id:string,index:number)=>ReactNode}){
+export default function MilitaryArchiveWindow({ids,targetId,targetSerial,children,estimateHeight=104,maxRows=24}:{ids:string[];targetId?:string;targetSerial?:number;estimateHeight?:number;maxRows?:number;children:(id:string,index:number)=>ReactNode}){
  const container=useRef<HTMLDivElement>(null),heights=useRef(new Map<string,number>()),[range,setRange]=useState([0,12]),[epoch,redraw]=useState(0);
  const offsets=[0];for(const id of ids)offsets.push(offsets.at(-1)!+(heights.current.get(id)??estimateHeight));
  useLayoutEffect(()=>{
@@ -18,5 +18,5 @@ export default function MilitaryArchiveWindow({ids,targetId,targetSerial,childre
 function MeasuredRow({id,onHeight,children}:{id:string;onHeight:(n:number)=>void;children:ReactNode}){
  const ref=useRef<HTMLDivElement>(null),callback=useRef(onHeight);callback.current=onHeight;
  useLayoutEffect(()=>{const el=ref.current!,measure=()=>callback.current(el.getBoundingClientRect().height);const observer=new ResizeObserver(measure);observer.observe(el);measure();return ()=>observer.disconnect();},[]);
- return <div ref={ref} data-military-person={id}>{children}</div>;
+ return <div ref={ref} data-military-person={id} style={{paddingBottom:8,boxSizing:"border-box"}}>{children}</div>;
 }
