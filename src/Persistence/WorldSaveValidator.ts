@@ -1,3 +1,4 @@
+import {validateNativeRoyalPopulation} from './NativeRoyalPopulationValidation';
 import {validateFamilyChildren} from './FamilyChildValidation';
 import {validateCivilAdministration} from './CivilAdministrationValidation';
 import {measureSaveValidation} from './SaveValidationTiming';
@@ -74,7 +75,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   const units = array(save.units, "units", errors);
   const dynasties = array(save.dynasties, "dynasties", errors);
   if(Array.isArray(save.users)&&Array.isArray(save.units)&&Array.isArray(save.factions)&&[...save.users,...save.units].every(isPlainRecord))errors.push(...measureSaveValidation('validateCollisionSchedule',()=>validateCollisionSchedule(save as unknown as WorldSaveV1)));
-  if(Array.isArray(save.users)&&Array.isArray(save.dynasties)&&Array.isArray(save.factions)&&Array.isArray(save.cities)&&Array.isArray(save.worldHistory?.events)){errors.push(...measureSaveValidation('validateResidentIdentities',()=>validateResidentIdentities(save as unknown as WorldSaveV1)));errors.push(...measureSaveValidation('validateRoyalMilitaryIdentities',()=>validateRoyalMilitaryIdentities(save as unknown as WorldSaveV1)));errors.push(...measureSaveValidation('validateMilitarySecessions',()=>validateMilitarySecessions(save as unknown as WorldSaveV1)));}
+  if(Array.isArray(save.users)&&Array.isArray(save.dynasties)&&Array.isArray(save.factions)&&Array.isArray(save.cities)&&Array.isArray(save.worldHistory?.events)){errors.push(...validateNativeRoyalPopulation(save as unknown as WorldSaveV1));errors.push(...measureSaveValidation('validateResidentIdentities',()=>validateResidentIdentities(save as unknown as WorldSaveV1)));errors.push(...measureSaveValidation('validateRoyalMilitaryIdentities',()=>validateRoyalMilitaryIdentities(save as unknown as WorldSaveV1)));errors.push(...measureSaveValidation('validateMilitarySecessions',()=>validateMilitarySecessions(save as unknown as WorldSaveV1)));}
   if(Array.isArray(save.dynasties)&&save.dynasties.every(d=>isPlainRecord(d)&&Array.isArray(d.rulers))&&Array.isArray(save.worldHistory?.events)&&Array.isArray(save.registries?.militaryCommandRegistry?.people)){errors.push(...measureSaveValidation('validateRoyalNobility',()=>validateRoyalNobility(save as unknown as WorldSaveV1)));if((save.worldHistory!.events as unknown[]).every(e=>isPlainRecord(e)))errors.push(...measureSaveValidation('validateRoyalHouseholds',()=>validateRoyalHouseholds(save as unknown as WorldSaveV1)));}
   const factionIds = uniqueIds(factions, "factionId", "factions", errors);
   const factionById = new Map(factions.map((faction) => [String(faction.factionId), faction]));

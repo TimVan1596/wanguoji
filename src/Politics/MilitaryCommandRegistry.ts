@@ -479,6 +479,7 @@ export class MilitaryCommandRegistryStore {
     const p=user.militaryPersonId?this.people.get(user.militaryPersonId):undefined;
     if(civilState().terms.some(t=>t.sourceUserId===user.id&&t.bornMonth===user.bornMonth&&t.startMonth<=worldMonth&&t.endMonth===undefined))return '仍在担任正式郡守';
     if(p?.politicalHistory?.length&&unresolvedCourtBans(p,user.team.name,worldMonth,this.royalService?.nobleEpoch?.(user.team.name,worldMonth)).length)return '正式禁仕尚未获赦';
+    if(user.nativeRoyalRulerId)return '原生君主永久身份不可参加普通初选';
     if(user.isDestroyed||p?.status==='DEAD')return '人物已经去世';
     if(user.militaryPersonId&&(!p||p.sourceUserId!==user.id||p.bornMonth!==user.bornMonth||p.name!==user.name||p.factionId!==user.team.name))return '永久人物与在籍身份不一致';
     if(worldMonth>=deriveMilitaryLifeSchedule(p??{personId:this.nextPersonId(),bornMonth:user.bornMonth}).retirementMonth)return '已超过正常初任年龄';

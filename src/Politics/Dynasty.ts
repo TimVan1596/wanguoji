@@ -1329,7 +1329,7 @@ class DynastyRegistryStore {
 
   private archiveNaturallyDeadDeposedRulers(team: Team, dynasty: Dynasty, worldMonth: number) {
     dynasty.rulers.forEach((ruler) => {
-      if ((ruler.status !== "deposed" && !((ruler.residentIdentity || ruler.militaryIdentity||ruler.militaryUsurperIdentity) && ["politically-ended","abdicated","kin"].includes(ruler.status))) || ruler.reignOrdinal === undefined || hasRecordedRulerDeath(ruler) ||
+      if ((ruler.status !== "deposed" && !((ruler.residentIdentity || ruler.militaryIdentity||ruler.militaryUsurperIdentity||nativeRoyal(ruler)) && ["politically-ended","abdicated","kin"].includes(ruler.status))) || ruler.reignOrdinal === undefined || hasRecordedRulerDeath(ruler) ||
         !isNaturallyDeadByMonth(ruler.naturalDeathYear ?? ruler.plannedEndYear, worldMonth)) return;
       ruler.status = "dead";
       ruler.deathMonth = worldMonth;

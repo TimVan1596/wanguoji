@@ -1,3 +1,5 @@
+import {royalPopulationIdentity} from './RoyalPopulationIdentity';
+import type {Dynasty} from './Dynasty';
 import {familyExpansionOpen} from './MilitaryFamily';
 import type City from '../Components/City';
 import type Team from '../Components/Team';
@@ -38,9 +40,10 @@ export function eligibleCivilCities(month:number,team:Team,terms:readonly CivilG
  const occupied=new Set(terms.filter(term=>term.startMonth<=month&&term.endMonth===undefined).map(term=>term.cityId));
  return team.cities.filter(city=>!city.destroyed&&city.ownerFactionId===team.name&&!occupied.has(city.id)&&!city.underSiege&&!city.isInCaptureGrace(month)&&month-civilControlledSince(city,team,month)>=CIVIL_CITY_STABILITY_MONTHS);
 }
-export function civilGovernorCandidates(month:number,team:Team,people:readonly MilitaryPerson[],terms:readonly CivilGovernorTerm[],epochFounderId:string,lookup:(id:number,bornMonth:number)=>FamilyLink|undefined,formations:readonly import('./MilitaryCommandRegistry').MilitaryFormation[]=[]){
+export function civilGovernorCandidates(month:number,team:Team,people:readonly MilitaryPerson[],terms:readonly CivilGovernorTerm[],epochFounderId:string,lookup:(id:number,bornMonth:number)=>FamilyLink|undefined,formations:readonly import('./MilitaryCommandRegistry').MilitaryFormation[]=[],dynasties:readonly Dynasty[]=[]){
  const occupied=new Set(terms.filter(term=>term.startMonth<=month&&term.endMonth===undefined).map(term=>term.personId)),rows:CivilGovernorCandidate[]=[];
  for(const user of team.users){
+  const royal=royalPopulationIdentity(user,dynasties);if(user.nativeRoyalRulerId||royal&&(royal.reignOrdinal!==undefined||royal.status==='ruling'||royal.accessionYear!==undefined&&royal.accessionYear<=month))continue;
   if(terms.some(t=>t.sourceUserId===user.id&&t.bornMonth===user.bornMonth&&t.endMonth===undefined)||user.isDestroyed||user.role!=='NORMAL'||user.rulerId||user.player.rulerId||month-user.bornMonth<18*12||month-user.bornMonth>75*12||occupied.has(civilGovernorPersonId(user)))continue;
   const person=user.militaryPersonId?people.find(candidate=>candidate.personId===user.militaryPersonId):undefined;
   if(user.historicalPersonId&&!person?.royalIdentity)continue;
@@ -49,7 +52,7 @@ export function civilGovernorCandidates(month:number,team:Team,people:readonly M
   const familyLink=familyLinkAt(user,person,lookup);
   if(familyLink&&(!familyMemberPresent(familyLink.member,month)||familyResidenceAt(familyLink.family,familyLink.member,month)!==team.name))continue;
   const nobleRank=higherRank(person?currentNobleGrant(person,team.name,month,epochFounderId)?.rank:undefined,familyLink?familyNobleRankAt(familyLink.family,familyLink.member,month):undefined);
-  const retired=!!person&&person.status==='RETIRED',royal=!!person?.royalIdentity;
+  const retired=!!person&&person.status==='RETIRED'&&person.appointments.length>0,royal=!!person?.royalIdentity;
   const identitySource:CivilGovernorSource=royal?'ROYAL':retired?'RETIRED_MILITARY':nobleRank?'NOBLE':familyLink&&familyExpansionOpen(familyLink.family,month)?'FAMILY':'ORDINARY_RESIDENT';
   const abilities=person?militaryAbilities(person):personAbilities({kind:'RESIDENT',sourceUserId:user.id,bornMonth:user.bornMonth});
   const sourceWeight=identitySource==='ORDINARY_RESIDENT'?1:identitySource==='FAMILY'?1.08:identitySource==='NOBLE'?1.04+Math.max(0,NOBLE_RANKS.indexOf(nobleRank??'NAN'))*.02:identitySource==='ROYAL'?1.12:1.06;

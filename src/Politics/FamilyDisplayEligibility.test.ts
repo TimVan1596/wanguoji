@@ -8,6 +8,6 @@ it('hides only an ended solitary charter; preserves active titles, children and 
  expect(familyDisplayEligible({...family,nobleSuccession:[{kind:'SUCCEEDED',month:100},...family.nobleSuccession]},200,[],[])).toBe(true);
  expect(familyDisplayEligible(family,100,[],[])).toBe(true);
 });
-it('preserves genuine multi-person royal pedigree when a solitary founder became monarch',()=>{
- const people:any=[{personId:'one',politicalRulerId:'r'}],dynasties:any=[{rulers:[{id:'r',bornYear:-240},{id:'child',parentId:'r'}]}];expect(familyDisplayEligible(family,200,people,dynasties)).toBe(true);
+it('leaves royal kin in the royal archive without retaining a closed solitary merit tree',()=>{
+ const people:any=[{personId:'one',politicalRulerId:'r'}],dynasties:any=[{rulers:[{id:'r',bornYear:-240},{id:'child',parentId:'r'}]}];expect(familyDisplayEligible(family,200,people,dynasties)).toBe(false);
 });

@@ -1,3 +1,4 @@
+import {isRoyalTitleLabel} from './RoyalPopulationIdentity';
 import {civilState,replaceCivilState,emptyCivilState} from './CivilCareerIdentity';
 import {deriveNameCulture,generateResidentPersonalName} from './NameCulture';
 import {isPopulationIdentityLabel} from './MilitaryPersonIdentity';
@@ -36,7 +37,7 @@ class CivilAdministrationStore {
  getByPerson(personId:string){return this.state.terms.filter(term=>term.personId===personId).map(term=>({...term}));}
  getCandidateDiagnostics(month:number,teams:readonly Team[],dynasties:readonly Dynasty[]){return teams.map(team=>{
   const dynasty=dynasties.find(d=>d.factionId===team.name),ruler=dynasty?.rulers.find(r=>r.id===dynasty.currentRulerId),epoch=(dynasty?.houseEpochs??[]).find(e=>e.startMonth<=month&&(e.endMonth??Infinity)>month),cities=eligibleCivilCities(month,team,this.state.terms),current=this.state.terms.filter(t=>t.factionId===team.name&&active(t,month)).length;
-  const pool=epoch&&ruler?.status==='ruling'?civilGovernorCandidates(month,team,Military.getPeople(),this.state.terms,epoch.foundingRulerId,(id,born)=>Military.getFamilyMember(id,born),Military.getFormations()):[];
+  const pool=epoch&&ruler?.status==='ruling'?civilGovernorCandidates(month,team,Military.getPeople(),this.state.terms,epoch.foundingRulerId,(id,born)=>Military.getFamilyMember(id,born),Military.getFormations(),DynastyRegistry.getAll()):[];
   return {factionId:team.name,scope:'CURRENT_SNAPSHOT',eligibleCities:cities.length,hasVacancy:cities.length>0&&current<Math.min(MAX_ACTIVE_CIVIL_GOVERNORS_PER_FACTION,Math.max(1,Math.ceil(team.cities.length/4))),candidates:pool.length,retiredMilitary:pool.filter(p=>p.identitySource==='RETIRED_MILITARY').length};
  });}
  getDiagnostics(month:number){const terms=this.state.terms,ended=terms.filter(t=>t.endMonth!==undefined);return {appointed:terms.length,active:terms.filter(t=>active(t,month)).length,ended:ended.length,endReasons:ended.reduce((out,t)=>(out[t.endReason!]=(out[t.endReason!]??0)+1,out),{} as Record<string,number>),loyaltyRecovered:terms.reduce((n,t)=>n+t.loyaltyRecovered,0),devastationRecovered:terms.reduce((n,t)=>n+t.devastationRecovered,0),merits:terms.filter(t=>t.meritEventId).length};}
@@ -51,7 +52,7 @@ class CivilAdministrationStore {
    const current=this.state.terms.filter(term=>term.factionId===team.name&&active(term,month));
    if(current.length>=Math.min(MAX_ACTIVE_CIVIL_GOVERNORS_PER_FACTION,Math.max(1,Math.ceil(team.cities.length/4))))continue;
    if(this.state.terms.some(term=>term.factionId===team.name&&term.startMonth>=month&&term.startMonth<month+12))continue;
-   const eligibleCities=eligibleCivilCities(month,team,this.state.terms),candidates=civilGovernorCandidates(month,team,Military.getPeople(),this.state.terms,epoch.foundingRulerId,(id,bornMonth)=>Military.getFamilyMember(id,bornMonth),Military.getFormations());
+   const eligibleCities=eligibleCivilCities(month,team,this.state.terms),candidates=civilGovernorCandidates(month,team,Military.getPeople(),this.state.terms,epoch.foundingRulerId,(id,bornMonth)=>Military.getFamilyMember(id,bornMonth),Military.getFormations(),DynastyRegistry.getAll());
    if(!eligibleCities.length||!candidates.length)continue;
    const rng=new WorldRandom();rng.initialize(`civil-administration-v1:${worldRandom.exportState().seed}:${team.name}:${month}`);
    if(rng.next()>=CIVIL_APPOINTMENT_CHANCE[this.state.policy])continue;
@@ -61,13 +62,13 @@ class CivilAdministrationStore {
  }
  appoint(month:number,team:Team,city:City,candidate:CivilGovernorCandidate,dynasty:Dynasty){
   const ruler=dynasty.rulers.find(r=>r.id===dynasty.currentRulerId),epoch=ruler&&(dynasty.houseEpochs??[]).find(e=>e.startMonth<=month&&(e.endMonth??Infinity)>=month);
-  if(!ruler||!epoch||!eligibleCivilCities(month,team,this.state.terms).some(c=>c.id===city.id)||!civilGovernorCandidates(month,team,Military.getPeople(),this.state.terms,epoch.foundingRulerId,(id,bornMonth)=>Military.getFamilyMember(id,bornMonth),Military.getFormations()).some(c=>c.personId===candidate.personId))throw Error('Invalid civil governor appointment');
-  candidate=civilGovernorCandidates(month,team,Military.getPeople(),this.state.terms,epoch.foundingRulerId,(id,bornMonth)=>Military.getFamilyMember(id,bornMonth),Military.getFormations()).find(c=>c.personId===candidate.personId&&c.sourceUserId===candidate.sourceUserId&&c.bornMonth===candidate.bornMonth)??(()=>{throw Error('Civil population identity mismatch');})();
+  if(!ruler||!epoch||!eligibleCivilCities(month,team,this.state.terms).some(c=>c.id===city.id)||!civilGovernorCandidates(month,team,Military.getPeople(),this.state.terms,epoch.foundingRulerId,(id,bornMonth)=>Military.getFamilyMember(id,bornMonth),Military.getFormations(),DynastyRegistry.getAll()).some(c=>c.personId===candidate.personId))throw Error('Invalid civil governor appointment');
+  candidate=civilGovernorCandidates(month,team,Military.getPeople(),this.state.terms,epoch.foundingRulerId,(id,bornMonth)=>Military.getFamilyMember(id,bornMonth),Military.getFormations(),DynastyRegistry.getAll()).find(c=>c.personId===candidate.personId&&c.sourceUserId===candidate.sourceUserId&&c.bornMonth===candidate.bornMonth)??(()=>{throw Error('Civil population identity mismatch');})();
   return transaction(()=>{
    const sequence=this.state.sequence+1,assignmentId=`civil-governor-${team.name}-${city.id}-${sequence}`,eventId=`${assignmentId}-appointed`;
    const user=[...team.users].find(u=>u.id===candidate.sourceUserId&&u.bornMonth===candidate.bornMonth)!;
    const previous=this.getByPopulation(user.id,user.bornMonth),family=Military.getFamilyMember(user.id,user.bornMonth),person=Military.getPerson(candidate.personId);
-   const established=previous?.personalName??person?.personalName??family?.member.name??(!isPopulationIdentityLabel(user.name)||user.id<1000000000||user.id>1999999999?user.name:undefined);
+   const established=previous?.personalName??person?.personalName??family?.member.name??((!isPopulationIdentityLabel(user.name)||user.id<1000000000||user.id>1999999999)&&!isRoyalTitleLabel(user.name,DynastyRegistry.getAll())?user.name:undefined);
    const nameEvidence=previous?.nameEvidence??{seed:worldRandom.exportState().seed,culture:deriveNameCulture(team.houseName),originalName:user.name,source:established?'ESTABLISHED' as const:'GENERATED' as const};
    const personalName=established??generateResidentPersonalName({seed:nameEvidence.seed,sourceUserId:user.id,bornMonth:user.bornMonth,culture:nameEvidence.culture});
    const term:CivilGovernorTerm={nameEvidence,version:1,assignmentId,personId:previous?.personId??candidate.personId,sourceUserId:candidate.sourceUserId,bornMonth:candidate.bornMonth,personalName,identitySource:candidate.identitySource,familyId:candidate.familyId,familyMemberId:candidate.familyMemberId,royalRulerId:candidate.royalRulerId,factionId:team.name,countryName:team.displayName??team.name,epochFounderId:epoch.foundingRulerId,cityId:city.id,cityName:city.name,rulerId:ruler.id,rulerTitle:DynastyRegistry.getRulerHistoricalTitle(ruler.id,team.name,month)??`${team.displayName??team.name}君主`,startMonth:month,appointEventId:eventId,loyaltyRecovered:0,devastationRecovered:0};

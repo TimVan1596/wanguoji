@@ -8,6 +8,5 @@ export function familyDisplayEligible(f:MilitaryFamily,month:number,people:reado
  if(members.length!==1||acts.at(-1)?.kind!=='ENDED'||acts.some(a=>a.kind==='SUCCEEDED'))return true;
  const m=members[0],p=people.find(p=>p.personId===m.militaryPersonId),epoch=dynasties.find(d=>d.factionId===f.factionId)?.houseEpochs?.find(e=>e.foundingRulerId===f.epochFounderId);
  if(p&&p.deathMonth===undefined&&!p.politicalRulerId&&p.factionId===f.factionId&&epoch&&epoch.startMonth<=month&&(epoch.endMonth??Infinity)>=month&&currentNobleGrant(p,f.factionId,month,f.epochFounderId))return true;
- const royal=dynasties.flatMap(d=>d.rulers).find(r=>r.id===p?.politicalRulerId||r.residentIdentity?.sourceUserId===m.sourceUserId&&r.bornYear===m.bornMonth);
- return !!royal&&dynasties.some(d=>d.rulers.some(r=>r.id!==royal.id&&(r.parentId===royal.id||royal.parentId===r.id)));
+ return false;
 }
