@@ -1,3 +1,4 @@
+import {unresolvedCourtBans} from './MilitaryCourtStanding';
 import {politicalContest,type PoliticalContestRow} from './PoliticalUsurpation';
 import type {CivilGovernorTerm} from './CivilAdministrationSchema';
 import type {WorldEvent} from '../History/WorldHistory';
@@ -18,7 +19,7 @@ export interface MilitaryUsurperIdentity {
 export function selectMilitaryUsurper(candidates:readonly MilitaryPoliticalParticipant[],people:readonly MilitaryPerson[],oldHouseName:string,context?:{terms:readonly CivilGovernorTerm[];events:readonly WorldEvent[];month:number;epoch:string}){
  const eligible=candidates.filter(c=>{
   const p=people.find(p=>p.personId===c.personId),name=p&&splitEstablishedPersonalName(p.personalName),d=c.disposition;
-  return p&&p.status==='ACTIVE'&&!p.royalIdentity&&!p.politicalRulerId&&p.deathMonth===undefined&&name&&name.houseName!==oldHouseName&&
+  return p&&people.filter(other=>other.personId===p.personId||other.sourceUserId!==undefined&&other.sourceUserId===p.sourceUserId&&other.bornMonth===p.bornMonth).length===1&&(!context||context.month-p.bornMonth>=18*12&&!unresolvedCourtBans(p,c.factionId,context.month,context.epoch).length)&&p.deathCause===undefined&&p.status==='ACTIVE'&&!p.royalIdentity&&!p.politicalRulerId&&p.deathMonth===undefined&&name&&name.houseName!==oldHouseName&&
    c.unitCount>=2&&c.serviceMonths>=60&&c.strength>=2&&c.capturedEventIds.length>0&&c.officeStanding&&d&&d.ambition>d.loyalty;
  });
  if(!eligible.length)return;
@@ -32,12 +33,12 @@ export function militaryUsurperIdentity(candidate:MilitaryPoliticalParticipant,p
 }
 
 /** Diagnostic denominator: candidates inside an already successful usurpation, never all generals/months. */
-export function auditMilitaryUsurpers(candidates:readonly MilitaryPoliticalParticipant[],people:readonly MilitaryPerson[],oldHouseName:string){
+export function auditMilitaryUsurpers(candidates:readonly MilitaryPoliticalParticipant[],people:readonly MilitaryPerson[],oldHouseName:string,context?:Parameters<typeof selectMilitaryUsurper>[3]){
  const blocked:Record<string,number>={},eligible:string[]=[];
  for(const c of candidates){
-  if(selectMilitaryUsurper([c],people,oldHouseName)){eligible.push(c.personId);continue;}
+  if(selectMilitaryUsurper([c],people,oldHouseName,context)){eligible.push(c.personId);continue;}
   const p=people.find(p=>p.personId===c.personId),name=p&&splitEstablishedPersonalName(p.personalName);
-  const reason=!p?'MISSING_PERSON':p.status!=='ACTIVE'||p.deathMonth!==undefined?'NOT_ACTIVE':p.royalIdentity?'ROYAL_KIN':p.politicalRulerId?'ALREADY_RULER':!name?'UNVERIFIED_NAME':name.houseName===oldHouseName?'SAME_HOUSE':c.unitCount<2?'INSUFFICIENT_UNITS':c.serviceMonths<60?'INSUFFICIENT_SERVICE':c.strength<2?'INSUFFICIENT_AUTHORITY':!c.capturedEventIds.length?'NO_VERIFIED_CAPTURE':!c.officeStanding?'NO_CURRENT_OFFICE':'DISPOSITION_NOT_WILLING';
+  const reason=!p?'MISSING_PERSON':people.filter(o=>o.personId===p.personId||o.sourceUserId!==undefined&&o.sourceUserId===p.sourceUserId&&o.bornMonth===p.bornMonth).length!==1?'DUPLICATE_IDENTITY':context&&context.month-p.bornMonth<216?'UNDER_AGE':context&&unresolvedCourtBans(p,c.factionId,context.month,context.epoch).length?'POLITICAL_BAN':p.status!=='ACTIVE'||p.deathMonth!==undefined?'NOT_ACTIVE':p.royalIdentity?'ROYAL_KIN':p.politicalRulerId?'ALREADY_RULER':!name?'UNVERIFIED_NAME':name.houseName===oldHouseName?'SAME_HOUSE':c.unitCount<2?'INSUFFICIENT_UNITS':c.serviceMonths<60?'INSUFFICIENT_SERVICE':c.strength<2?'INSUFFICIENT_AUTHORITY':!c.capturedEventIds.length?'NO_VERIFIED_CAPTURE':!c.officeStanding?'NO_CURRENT_OFFICE':'DISPOSITION_NOT_WILLING';
   blocked[reason]=(blocked[reason]??0)+1;
  }
  if(!candidates.length)blocked.NO_COURT_CANDIDATES=1;

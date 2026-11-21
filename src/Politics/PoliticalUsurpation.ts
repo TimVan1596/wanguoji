@@ -2,7 +2,7 @@ import type {MilitaryPoliticalParticipant} from './MilitaryPoliticalInfluence';
 import type {MilitaryPerson} from './MilitaryCommandRegistry';
 import type {CivilGovernorTerm} from './CivilAdministrationSchema';
 import type {WorldEvent} from '../History/WorldHistory';
-import {militaryAbilities,personAbilities,personAmbition} from './PersonAbilities';
+import {militaryAbilities,personAbilities} from './PersonAbilities';
 import {unresolvedCourtBans} from './MilitaryCourtStanding';
 import {NOBLE_RANKS} from './MilitaryNobility';
 
@@ -14,7 +14,7 @@ export interface PoliticalContestRow {
  personId:string;resources:number;merit:number;nobility:number;abilities:number;service:number;
  civilSupport:CivilPoliticalSupport[];capital:number;
 }
-/** Only evidenced governors can support an actual commander linked to their city. No troop or ownership is created. */
+/** Verified local governance contributes bounded political resources, not allegiance, a coup attempt, troop authority or city ownership. */
 export function civilPoliticalSupport(candidate:MilitaryPoliticalParticipant,people:readonly MilitaryPerson[],terms:readonly CivilGovernorTerm[],events:readonly WorldEvent[],month:number,epoch:string):CivilPoliticalSupport[]{
  const byId=new Map(events.map(e=>[e.id,e])),rows:CivilPoliticalSupport[]=[];
  for(const t of terms){
@@ -25,7 +25,7 @@ export function civilPoliticalSupport(candidate:MilitaryPoliticalParticipant,peo
   const merit=byId.get(t.meritEventId),appoint=byId.get(t.appointEventId),contribution=(t.meritLoyaltyRecovered??0)+(t.meritDevastationRecovered??0);
   if(!appoint||appoint.type!=='civil-governor-appointed'||appoint.metadata?.assignmentId!==t.assignmentId||!merit||merit.type!=='civil-governor-merit'||merit.metadata?.assignmentId!==t.assignmentId||merit.metadata?.personId!==t.personId||merit.actorFactionId!==t.factionId||(merit.monthIndex??merit.year)>month||contribution<3)continue;
   const source=p?militaryAbilities(p).source:{kind:'RESIDENT' as const,sourceUserId:t.sourceUserId,bornMonth:t.bornMonth};
-  if(personAmbition(source)<50||personAbilities(source).strategy<60)continue;
+  if(personAbilities(source).strategy<60)continue;
   const capture=candidate.capturedEventIds.map(id=>byId.get(id)).find(e=>e&&e.cityId===t.cityId&&e.actorFactionId===t.factionId&&(e.monthIndex??e.year)<=t.startMonth);
   const lost=events.some(e=>e.cityId===t.cityId&&e.type==='city-captured'&&e.actorFactionId!==t.factionId&&(e.monthIndex??e.year)>=t.startMonth&&(e.monthIndex??e.year)<=month);
   if(!capture||lost)continue;

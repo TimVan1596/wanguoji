@@ -1121,7 +1121,7 @@ function DynastyTree({
           const current = ruler.id === currentRulerId;
           const expanded = ruler.id === selectedRulerId;
           return (
-            <PersonArchiveCard key={ruler.id} index={index} active={current} expanded={expanded}
+            <PersonArchiveCard key={ruler.id} index={index} active={current} expanded={expanded} theme={personRankTheme(ruler.status==='deposed'||ruler.endReason==='被废'?'REVOKED':'ROYAL',undefined,royalPortraitContext(ruler,team,worldMonth).role==='EMPEROR'?2:1)}
               focusRequest={expanded} onSelect={()=>onSelectedRulerIdChange(expanded?undefined:ruler.id)} portrait={<PortraitSummary status={ruler.status==='deposed'?'被废':undefined} portrait={{personId:ruler.militaryIdentity?ruler.id:ruler.militaryUsurperIdentity?.personId??ruler.residentIdentity?.personId??ruler.id,age:rulerPortraitAge(ruler,worldMonth,team.status!=="EXTINCT"),...royalPortraitContext(ruler,team,worldMonth)}} name={formatRulerRowName(ruler,team)} lines={[`${getFactionDisplayNameAtMonth(team,royalPortraitContext(ruler,team,worldMonth).month)} · ${{LEADER:"首领",KING:"国王",EMPEROR:"皇帝",UNKNOWN:"身份未载",XIAOWEI:"校尉",PIJIANG:"裨将",JIANGJUN:"将军",SHANGJIANGJUN:"上将军"}[royalPortraitContext(ruler,team,worldMonth).role]}`,formatRulerListSubtitle(ruler,worldMonth,factionStatus,events,team.name),formatRulerLifeAge(ruler,worldMonth,false,team.status!=="EXTINCT"),...getPosthumousLabelLines(ruler,team,ruler.endYear??worldMonth),`${formatWorldDate(ruler.accessionYear??0)}—${ruler.endYear===undefined?"今":formatWorldDate(ruler.endYear)}`,ruler.residentIdentity?`于${ruler.residentIdentity.cityName}起事`:""]} onFull={()=>onSelectedRulerIdChange(ruler.id)}/>}
               heading={<>
                 <Typography
