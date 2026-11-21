@@ -7,3 +7,5 @@ it('historical dignities retain all five distinct purple grades and the actual f
  expect(personRankTheme('REVOKED','GONG').backgroundColor).not.toBe(personRankTheme('PERSONAL','GONG').backgroundColor);
  expect(personRankTheme('ROYAL').backgroundColor).not.toBe(personRankTheme('MILITARY').backgroundColor);
 });
+
+it('a later legitimate lower grant supplies the same actual rank used by the history heading',()=>{const row:any={personalHistory:[{rank:'GONG',month:60,factionId:'qi',epochFounderId:'king'},{rank:'BO',month:120,factionId:'qi',epochFounderId:'king'}],inheritedHistory:[],person:{honorHistory:[{kind:'REVOKED',month:90,factionId:'qi',epochFounderId:'king'}]}};expect(familyMemberDisplayRank(row,180)).toBe('BO');});
