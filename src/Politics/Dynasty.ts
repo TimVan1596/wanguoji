@@ -1,3 +1,5 @@
+import {politicalContest} from './PoliticalUsurpation';
+import CivilAdministration from './CivilAdministration';
 import {measurePhase,type MonthlyPhaseProfiler} from '../Simulation/MonthlyPhaseProfiler';
 import {householdBirthPlan,householdBirthParents,recordRoyalBirthPlanning,HOUSEHOLD_ANNUAL_CAP,HOUSEHOLD_LIVING_CAP,type RoyalBirthPolicy,type RoyalHouseholdBirth} from './RoyalHouseholdBirth';
 import {registerRoyalPerson,type RoyalPersonRegistration} from './RoyalPersonRegistration';
@@ -749,7 +751,13 @@ class DynastyRegistryStore {
     let successor = this.consumeHeir(dynasty, predecessor, year);
     const legitimateSuccessor = successor;
     const revolutionContext = this.revolutionContext(team, dynasty, predecessor, successor, year, reason);
-    const revolution = evaluateDynasticRevolution(revolutionContext);
+    const evaluated = evaluateDynasticRevolution(revolutionContext);
+    const politicalSource={terms:evaluated.usurpation?CivilAdministration.getTerms():[],events:evaluated.usurpation?WorldHistory.getRecordedEvents():[],month:year,epoch:dynasty.houseEpochs?.at(-1)?.foundingRulerId??''};
+    const candidate=evaluated.usurpation&&legitimateSuccessor?selectMilitaryUsurper(revolutionContext.military?.candidates??[],MilitaryCommandRegistry.getPeople(),oldHouseName,politicalSource):undefined;
+    // A successful opportunity without a real qualified actor leaves lawful succession intact.
+    const revolution={...evaluated,usurpation:evaluated.usurpation&&!!candidate};
+    if(evaluated.rollAttempted){const audit=auditMilitaryUsurpers(revolutionContext.military?.candidates??[],MilitaryCommandRegistry.getPeople(),oldHouseName);politicalEffect(()=>this.revolutionGateDiagnostics.recordCandidateOpportunity(audit));}
+    if(evaluated.usurpation){const audit=auditMilitaryUsurpers(revolutionContext.military?.candidates??[],MilitaryCommandRegistry.getPeople(),oldHouseName);politicalEffect(()=>this.revolutionGateDiagnostics.recordPersonalCandidates(audit,candidate?.personId,true));}
     politicalEffect(()=>this.revolutionGateDiagnostics.record(team.name, oldStateName, revolutionContext, revolution));
     this.revolutionChecks = [{ factionId: team.name, worldMonth: year, blockers: revolution.blockers },
       ...this.revolutionChecks.filter((item) => item.factionId !== team.name)].slice(0, 5);
@@ -765,8 +773,6 @@ class DynastyRegistryStore {
     }
     if (!successor && team.status === "ACTIVE" && team.cities.length > 0) {
       const knownDynasties = this.getAll();
-      const candidate=revolution.usurpation&&legitimateSuccessor?selectMilitaryUsurper(revolutionContext.military?.candidates??[],MilitaryCommandRegistry.getPeople(),oldHouseName):undefined;
-      if(revolution.usurpation){const audit=auditMilitaryUsurpers(revolutionContext.military?.candidates??[],MilitaryCommandRegistry.getPeople(),oldHouseName);politicalEffect(()=>this.revolutionGateDiagnostics.recordPersonalCandidates(audit,candidate?.personId));}
       const person=candidate?MilitaryCommandRegistry.getPerson(candidate.personId):undefined,user=person?team.getUserById(person.sourceUserId):undefined,personal=person&&splitEstablishedPersonalName(person.personalName);
       if(candidate&&(!person||!user||!user.matchesMilitaryLife(person)||!personal))throw Error('Usurper live identity changed before accession');
       const newHouse = personal?.houseName??createSuccessorDynastyHouseName({
@@ -783,7 +789,7 @@ class DynastyRegistryStore {
         revolution.usurpation ? "USURPER" : getUnrelatedSuccessorRelation(team.identityStage)
       );
       if(person&&candidate&&user&&legitimateSuccessor){
-        successor.relationType='USURPER';successor.militaryUsurperIdentity=militaryUsurperIdentity(candidate,person,year,predecessor.id,legitimateSuccessor.id,{roll:revolution.rollResult!,chance:revolution.chance,baselineChance:revolution.baselineChance});
+        successor.relationType='USURPER';successor.militaryUsurperIdentity=militaryUsurperIdentity(candidate,person,year,predecessor.id,legitimateSuccessor.id,{roll:revolution.rollResult!,chance:revolution.chance,baselineChance:revolution.baselineChance},politicalContest((revolutionContext.military?.candidates??[]).filter(c=>!!selectMilitaryUsurper([c],MilitaryCommandRegistry.getPeople(),oldHouseName)),MilitaryCommandRegistry.getPeople(),politicalSource.terms,politicalSource.events,year,politicalSource.epoch));
         MilitaryCommandRegistry.endPersonCommands(person.personId,year,'DISMISSED');person.politicalRulerId=successor.id;user.historicalPersonId=person.personId;
       }
       dynasty.houseName = newHouse;
@@ -933,7 +939,7 @@ class DynastyRegistryStore {
     this.ensureActiveHeir(team, dynasty, year);
     this.ensureRulerUnit(team);
     if(nextRuler.militaryUsurperIdentity){
-      const errors=validateMilitaryUsurpers({world:{worldMonth:year},dynasties:this.exportState().dynasties.map(d=>({...d,rulers:d.rulers.map(exportRulerSave)})),registries:{militaryCommandRegistry:MilitaryCommandRegistry.exportState()},worldHistory:WorldHistory.exportState(),users:(Game.Core?.teams??[team]).flatMap(t=>[...t.users].map(u=>({userId:u.id,name:u.name,bornMonth:u.bornMonth,factionId:t.name,role:u.role,rulerId:u.rulerId,militaryPersonId:u.militaryPersonId,historicalPersonId:u.historicalPersonId})))} as any);
+      const errors=validateMilitaryUsurpers({world:{worldMonth:year},dynasties:this.exportState().dynasties.map(d=>({...d,rulers:d.rulers.map(exportRulerSave)})),registries:{militaryCommandRegistry:MilitaryCommandRegistry.exportState(),civilAdministration:CivilAdministration.exportState()},worldHistory:WorldHistory.exportState(),users:(Game.Core?.teams??[team]).flatMap(t=>[...t.users].map(u=>({userId:u.id,name:u.name,bornMonth:u.bornMonth,factionId:t.name,role:u.role,rulerId:u.rulerId,militaryPersonId:u.militaryPersonId,historicalPersonId:u.historicalPersonId})))} as any);
       if(errors.length)throw Error(errors.join('; '));
     }
   }
@@ -1583,7 +1589,7 @@ class DynastyRegistryStore {
       ruler.status = selectedIds.has(ruler.id) ? "heir" : "kin";
     });
     dynasty.heirIds = existingCandidates;
-    if (shouldCreateActiveHeir(team.status)) {
+    if (shouldCreateActiveHeir(team.status) && !dynasty.rulers.some(r=>r.militaryUsurperIdentity&&r.houseName===dynasty.houseName)) {
       const parents = getCandidateParentsToReplenish({
         currentRuler: current,
         rulers: dynasty.rulers,

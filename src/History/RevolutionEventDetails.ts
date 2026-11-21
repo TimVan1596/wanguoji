@@ -1,3 +1,7 @@
+import {MILITARY_OFFICE_NAMES} from '../Politics/MilitaryOffice';
+import {NOBLE_NAMES} from '../Politics/MilitaryNobility';
+import type {MilitaryUsurperIdentity} from '../Politics/MilitaryUsurpation';
+function identity(m:Record<string,string|number|undefined>):MilitaryUsurperIdentity|undefined{try{const i=JSON.parse(String(m.militaryUsurperIdentity));return i.version===2&&Array.isArray(i.contest)?i:undefined;}catch{return;}}
 import { formatWorldDate } from "../Simulation/WorldTime";
 import type { WorldEvent } from "./WorldHistory";
 import { formatRevolutionEvidence } from "../Politics/DynasticRevolution";
@@ -26,6 +30,8 @@ export function getRevolutionEventDetails(event: WorldEvent) {
     lines.push(`国号变化：${m.oldStateName} → ${m.newStateName}`);
   if (typeof m.oldColor === "number" && typeof m.newColor === "number" && m.oldColor !== m.newColor)
     lines.push(`易帜：#${m.oldColor.toString(16).padStart(6, "0")} → #${m.newColor.toString(16).padStart(6, "0")}`);
+  const i=identity(m);
+  if(i)for(const row of i.contest){lines.push(`真实权臣 ${row.personId}：政治资本 ${row.capital}；实际资源 ${row.resources}，军功 ${row.merit}，爵位 ${row.nobility}，能力 ${row.abilities}，资历 ${row.service}`);for(const c of row.civilSupport)lines.push(`${c.cityName}郡守${c.personalName}：任期${c.serviceMonths}月，真实治绩${c.contribution}；地方治理基础 +${c.bonus}；原任命 ${c.appointEventId}，治绩 ${c.meritEventId}，本城军事联系 ${c.captureEventId}。不据此授予军权或推断本人发动谋逆。`);}
   return lines;
 }
 
@@ -70,5 +76,6 @@ export function composeRevolutionNarrative(m: Record<string, string | number | u
     typeof m.oldStateName === "string" && typeof m.newStateName === "string" && m.oldStateName !== m.newStateName ? `国号由${m.oldStateName}改为${m.newStateName}` : "",
     typeof m.oldColor === "number" && typeof m.newColor === "number" && m.oldColor !== m.newColor ? "并易帜" : ""].filter(Boolean);
   const actor = typeof m.newRulerName === "string" ? m.newRulerName : typeof m.newHouseName === "string" ? m.newHouseName : "新君";
-  return `${background}${death}${evidence ? `${evidence}，` : ""}继统之际${actor}夺取王统${house ? `，${house}` : ""}。${changes.length ? `${changes.join("，")}。` : ""}`;
+  const i=identity(m),prior=i?`时${MILITARY_OFFICE_NAMES[i.office]}${actor}有取城军功${i.participant.nobility?`，爵至${NOBLE_NAMES[i.participant.nobility.rank]}`:''}，`:'';
+  return `${background}${death}${prior}${evidence ? `${evidence}，` : ""}继统之际${actor}夺取王统${house ? `，${house}` : ""}。${changes.length ? `${changes.join("，")}。` : ""}`;
 }

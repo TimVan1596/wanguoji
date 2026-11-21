@@ -25,7 +25,7 @@ interface BoundaryObservation {
 
 /** Observes the already-computed result. Never draws RNG or enters the save DTO. */
 export class RevolutionGateDiagnostics {
-  private personal={successfulOpportunities:0,withEligibleMilitary:0,qualifiedCandidateChecks:0,personalAccessions:0,generatedAccessions:0,blocked:{} as Record<string,number>};
+  private personal={successfulOpportunities:0,withEligibleMilitary:0,qualifiedCandidateChecks:0,personalAccessions:0,generatedAccessions:0,cancelledWithoutActor:0,rollCandidateChecks:0,eligibleAtRoll:0,blockedAtRoll:{} as Record<string,number>,blocked:{} as Record<string,number>};
   private military = new MilitaryPoliticalDiagnostics();
   private sessionStartMonth = 0;
   private lastObservedMonth = 0;
@@ -37,7 +37,7 @@ export class RevolutionGateDiagnostics {
   private recentBoundaryChecks: BoundaryObservation[] = [];
   constructor(private readonly enabled = isRuntimeDebugEnabled) {}
   reset(worldMonth = 0) {
-    this.personal={successfulOpportunities:0,withEligibleMilitary:0,qualifiedCandidateChecks:0,personalAccessions:0,generatedAccessions:0,blocked:{}};
+    this.personal={successfulOpportunities:0,withEligibleMilitary:0,qualifiedCandidateChecks:0,personalAccessions:0,generatedAccessions:0,cancelledWithoutActor:0,rollCandidateChecks:0,eligibleAtRoll:0,blockedAtRoll:{} as Record<string,number>,blocked:{}};
     this.military.reset();
     this.sessionStartMonth = worldMonth; this.lastObservedMonth = worldMonth; this.expectedUsurpationCount = 0;
     this.counters = emptyCounters(); this.chanceBuckets = emptyChanceBuckets();
@@ -87,10 +87,15 @@ export class RevolutionGateDiagnostics {
       this.recentEligibleBoundaries.length = Math.min(10, this.recentEligibleBoundaries.length);
     }
   }
-  recordPersonalCandidates(audit:ReturnType<typeof auditMilitaryUsurpers>,selectedId?:string){
+  recordCandidateOpportunity(audit:ReturnType<typeof auditMilitaryUsurpers>){
+    if(!this.enabled())return;
+    this.personal.rollCandidateChecks+=audit.candidateCount;this.personal.eligibleAtRoll+=audit.eligible.length;
+    for(const [key,n]of Object.entries(audit.blocked))this.personal.blockedAtRoll[key]=(this.personal.blockedAtRoll[key]??0)+n;
+  }
+  recordPersonalCandidates(audit:ReturnType<typeof auditMilitaryUsurpers>,selectedId?:string,cancelUnsupported=false){
     if(!this.enabled())return;
     this.personal.successfulOpportunities++;this.personal.withEligibleMilitary+=Number(audit.eligible.length>0);this.personal.qualifiedCandidateChecks+=audit.eligible.length;
-    if(selectedId)this.personal.personalAccessions++;else this.personal.generatedAccessions++;
+    if(selectedId)this.personal.personalAccessions++;else if(!cancelUnsupported)this.personal.generatedAccessions++;else this.personal.cancelledWithoutActor++;
     for(const [key,value] of Object.entries(audit.blocked))this.personal.blocked[key]=(this.personal.blocked[key]??0)+value;
   }
   snapshot(worldMonth = this.lastObservedMonth) {
@@ -101,7 +106,7 @@ export class RevolutionGateDiagnostics {
     return { chineseSummary: `篡朝诊断（本次观察会话，读取时重置）\n实际观察：${elapsedWorldYears.toFixed(2)}年\n真实继位边界：${this.counters.successionBoundaryCheckCount}次\n有失都证据的继位：${this.counters.capitalLossEvidenceBoundaryCount}次\n有重大分裂证据的继位：${this.counters.empireSplitEvidenceBoundaryCount}次\n前君暴力结局的继位：${this.counters.violentPredecessorBoundaryCount}次\n存在政治脆弱性的继位：${this.counters.politicalVulnerabilityBoundaryCount}次\n原最高级危机合格：${this.counters.crisisEligibleCount}次\n原复合危机合格：${this.counters.lowerRiskEligibleCount}次\n新政治重创合格：${this.counters.politicalShockEligibleCount}次\n实际抽签：${this.counters.rollAttemptCount}次\n抽签概率范围：${recordedBuckets.length ? `${Math.min(...recordedBuckets)}%～${Math.max(...recordedBuckets)}%` : "暂无抽签"}\n期望篡朝：${this.expectedUsurpationCount.toFixed(3)}次\n实际篡朝：${this.counters.usurpationCount}次\n每千世界年条件期望：${per1000Years(this.expectedUsurpationCount)?.toFixed(3) ?? "暂无观察时间"}次\n以上证据统计来自已发生继位；当前候选预览仅显示原继承危机，不扫描新增历史冲击。`, scope: "debug session; resets on new world/load", enabled: this.enabled(),
       counterSemantics: "capitalLossEvidenceBoundaryCount and empireSplitEvidenceBoundaryCount count completed succession boundaries with valid faction history evidence; violentPredecessorBoundaryCount counts combat/captured terminations; politicalVulnerabilityBoundaryCount counts boundaries meeting the multi-signal vulnerability threshold. politicalShockEligibleCount is the new severe-shock plus vulnerability tier. Candidate previews do not scan new historical evidence. Rates cover only months since new world/load.",
       chanceBucketSemantics: "Base and final chance buckets each partition roll attempts; modifier/capped counts overlap those buckets.",
-      ...this.counters, personalCandidateSelection:{...this.personal,blocked:{...this.personal.blocked}}, military: this.military.snapshot(), worldMonth, sessionStartMonth: this.sessionStartMonth, elapsedWorldYears,
+      ...this.counters, personalCandidateSelection:{...this.personal,blocked:{...this.personal.blocked},blockedAtRoll:{...this.personal.blockedAtRoll}}, military: this.military.snapshot(), worldMonth, sessionStartMonth: this.sessionStartMonth, elapsedWorldYears,
       eligibleRollsPer1000Years: per1000Years(this.counters.rollAttemptCount),
       expectedUsurpationCount: this.expectedUsurpationCount,
       expectedUsurpationsPer1000Years: per1000Years(this.expectedUsurpationCount),

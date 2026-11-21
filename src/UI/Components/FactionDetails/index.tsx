@@ -802,7 +802,7 @@ function MilitaryFamilyEntrance({factionId,worldMonth}:{factionId:string;worldMo
  const navigation=usePersonArchiveNavigation(),[open,setOpen]=useState(true),[focus,setFocus]=useState<(PersonArchiveTarget&{serial:number})|undefined>();
  const families=associatedMilitaryFamilies(MilitaryCommandRegistry.getFamilies(),factionId,MilitaryCommandRegistry.getPeople());
  useEffect(()=>{const t=navigation.familyTarget;if(t?.factionId!==factionId)return;setFocus(t);setOpen(true);navigation.consumeFamily?.();},[navigation.familyTarget?.serial,factionId]);
- return <Box>{!open&&<Button size="small" onClick={()=>setOpen(true)}>打开功臣世家（{families.length}）</Button>}{open&&<MilitaryFamilyBrowser key={`${factionId}:${focus?.serial??0}`} families={families} worldMonth={worldMonth} initialFamilyId={focus?.id} initialMemberId={focus?.memberId} onClose={()=>{setOpen(false);setFocus(undefined);}}/>}</Box>;
+ return <Box>{!open&&<Button size="small" onClick={()=>setOpen(true)}>打开功臣世家（{families.filter(f=>familyDisplayEligible(f,worldMonth,MilitaryCommandRegistry.getPeople(),DynastyRegistry.getAll())).length}）</Button>}{open&&<MilitaryFamilyBrowser key={`${factionId}:${focus?.serial??0}`} families={families} worldMonth={worldMonth} initialFamilyId={focus?.id} initialMemberId={focus?.memberId} onClose={()=>{setOpen(false);setFocus(undefined);}}/>}</Box>;
 }
 
 function OverviewSection({
