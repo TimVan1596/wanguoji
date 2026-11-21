@@ -1,3 +1,4 @@
+import {personAmbition} from '../Politics/PersonAbilities';
 import {MILITARY_OFFICE_NAMES} from '../Politics/MilitaryOffice';
 import {NOBLE_NAMES} from '../Politics/MilitaryNobility';
 import type {MilitaryUsurperIdentity} from '../Politics/MilitaryUsurpation';
@@ -31,7 +32,16 @@ export function getRevolutionEventDetails(event: WorldEvent) {
   if (typeof m.oldColor === "number" && typeof m.newColor === "number" && m.oldColor !== m.newColor)
     lines.push(`易帜：#${m.oldColor.toString(16).padStart(6, "0")} → #${m.newColor.toString(16).padStart(6, "0")}`);
   const i=identity(m);
-  if(i)for(const row of i.contest){lines.push(`真实权臣 ${row.personId}：政治资本 ${row.capital}；实际资源 ${row.resources}，军功 ${row.merit}，爵位 ${row.nobility}，能力 ${row.abilities}，资历 ${row.service}`);for(const c of row.civilSupport)lines.push(`${c.cityName}郡守${c.personalName}：任期${c.serviceMonths}月，真实治绩${c.contribution}；地方治理基础 +${c.bonus}；原任命 ${c.appointEventId}，治绩 ${c.meritEventId}，本城军事联系 ${c.captureEventId}。不据此授予军权或推断本人发动谋逆。`);}
+  if(i)for(const row of i.contest){
+    const actor=row.personId===i.personId?i.participant:i.participant.nobleSelection?.candidates.find(c=>c.personId===row.personId);
+    lines.push(`真实权臣 ${actor?.personalName??row.personId}（${row.personId}）：政治资本 ${row.capital}；实际资源 ${row.resources}，军功 ${row.merit}，爵位 ${row.nobility}，能力 ${row.abilities}，资历 ${row.service}`);
+    if(actor)lines.push(`当时军职 ${actor.officeStanding?MILITARY_OFFICE_NAMES[actor.officeStanding.office]:'未载'}；实际统兵${actor.unitCount}人，资历${actor.serviceMonths}月；对${m.oldStateName??i.factionId}忠诚${actor.disposition?.loyalty??'未载'}，野心${actor.disposition?.ambition??'未载'}；时点${formatWorldDate(i.accessionMonth)}。`);
+    for(const c of row.civilSupport??[]){
+      const source=i.civilSources?.find(s=>s.assignmentId===c.assignmentId);
+      lines.push(`${c.cityName}郡守${c.personalName}：任期${c.serviceMonths}月，真实治绩${c.contribution}；地方治理基础 +${c.bonus}；原任命 ${c.appointEventId}，治绩 ${c.meritEventId}，本城军事联系 ${c.captureEventId}。不据此授予军权或推断本人发动谋逆。`);
+      if(source)lines.push(`该郡守当时对${m.oldStateName??source.factionId}忠诚${source.loyalty}，固定野心${personAmbition({kind:'RESIDENT',sourceUserId:source.sourceUserId,bornMonth:source.bornMonth})}；时点${formatWorldDate(i.accessionMonth)}，永久人口${source.sourceUserId}/${source.bornMonth}。`);
+    }
+  }
   return lines;
 }
 

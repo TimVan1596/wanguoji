@@ -1,3 +1,4 @@
+import {personNoblePresentation} from './PersonNoblePresentation';
 import {familyDisplayEligible} from '../../../Politics/FamilyDisplayEligibility';
 import {personRankTheme} from './PersonRankTheme';
 import {familyMemberHeading,familyMemberTitleKind,familyMemberDisplayRank} from '../../../Politics/FamilyMemberHeading';
@@ -36,9 +37,9 @@ export function prepareFamilyTree(family:MilitaryFamily,month:number,requestedMe
   const status=familyMemberServiceStatus(row,month,archive.heirCandidateIds.has(m.memberId),requestedMemberId===m.memberId&&!archive.importantIds.has(m.memberId));
   const politics=p?militaryPoliticalOutcome(p,family.factionId,month,source.dynasties,source.events):[];
   const lines=[`${m.generation===0?'始祖':`第${m.generation+1}代`} · ${row.life==='DEAD'?'已故':row.life==='UNKNOWN'?'生死未载':'在世'} · ${formatWorldDate(m.bornMonth)}生`,politics.length?politics.join(' · '):status,familyMemberMeritLabel(family,m,month),familyMemberNobleLabel(family,m,month)].filter(Boolean) as string[];
-  const titleKind=familyMemberTitleKind(row);
-  const theme=personRankTheme(politics.some(t=>t.includes('禁仕')||t.includes('叛离')||t.includes('伏诛')||t.includes('追夺'))?'REVOKED':royal||p?.royalIdentity?'ROYAL':titleKind==='PERSONAL'?'PERSONAL':titleKind==='INHERITED'?'INHERITED':row.personalHistory.length||row.inheritedHistory.length?'HISTORICAL':row.activeCivil?'CIVIL':row.activeOffice?'MILITARY':'NEUTRAL',familyMemberDisplayRank(row,month),royal?royal.r.reignOrdinal===undefined?0:1:row.activeOffice?['XIAOWEI','PIJIANG','JIANGJUN','SHANGJIANGJUN'].indexOf(row.activeOffice.office):0);
-  const team=royal&&Game.Core?.teams.find(t=>t.name===royal.factionId),heading=royal&&team?genealogyRulerHeading(royal.r,team,month,undefined,source.events):familyMemberHeading(row,month,country,politics);
+  const titleKind=familyMemberTitleKind(row),historical=titleKind==='HISTORICAL'?personNoblePresentation(p,family,m.memberId,family.factionId,undefined,month):undefined;
+  const theme=personRankTheme(historical?.kind==='REVOKED'||politics.some(t=>t.includes('禁仕')||t.includes('叛离')||t.includes('伏诛')||t.includes('追夺'))?'REVOKED':royal||p?.royalIdentity?'ROYAL':titleKind==='PERSONAL'?'PERSONAL':titleKind==='INHERITED'?'INHERITED':row.personalHistory.length||row.inheritedHistory.length?'HISTORICAL':row.activeCivil?'CIVIL':row.activeOffice?'MILITARY':'NEUTRAL',historical?.rank??familyMemberDisplayRank(row,month),royal?royal.r.reignOrdinal===undefined?0:1:row.activeOffice?['XIAOWEI','PIJIANG','JIANGJUN','SHANGJIANGJUN'].indexOf(row.activeOffice.office):0);
+  const team=royal&&Game.Core?.teams.find(t=>t.name===royal.factionId),heading=royal&&team?genealogyRulerHeading(royal.r,team,month,undefined,source.events):historical?.kind==='REVOKED'?`旧爵已追夺 · ${m.name}`:familyMemberHeading(row,month,country,politics);
   return [m.memberId,{row,status,royal,lines,theme,heading,height:14+20+lines.length*16+(p||royal?24:0)}] as const;
  })),cardsMs=performance.now()-cardsAt,layoutAt=performance.now(),layout=layoutFamilyArchive(projection,new Set(),new Map([...cards].map(([id,c])=>[id,c.height]))),layoutMs=performance.now()-layoutAt;
  const highest=Array.from(archive.rows.values()).flatMap(r=>r.personalHistory).filter(g=>g.factionId===family.factionId&&g.epochFounderId===family.epochFounderId).sort((a,b)=>NOBLE_RANKS.indexOf(b.rank)-NOBLE_RANKS.indexOf(a.rank))[0];

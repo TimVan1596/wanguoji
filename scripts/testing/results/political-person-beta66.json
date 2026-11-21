@@ -1,0 +1,5433 @@
+{
+  "version": "v0.100.0-beta.66",
+  "packageVersion": "0.100.0-beta.66",
+  "worldSave": 62,
+  "baseline": "d1544191b725b3ad29bbd57918e340f08b9fb947",
+  "scope": {
+    "mandatory": "regional-1..8 /100; regional-1..4 /200; regional-1 /300 and /500 (nested native checkpoints)",
+    "additionalPredetermined": "political-66-1..4 /200, one before/after run each; no seed replacement",
+    "canonicalComparison": "All native fields and array/event order compared, excluding only APP and schema envelopes. Equality in this cohort does not imply the new cancellation/competition policy is rule-neutral.",
+    "civilBoundary": "Real governing city, living resident, ten-year tenure, original merit, verified commander city capture and frozen ambition/loyalty willingness. Bounded resources only; no independent civilian accession or fictitious command.",
+    "deferred": "Four-level civil offices, health, ethnicity, new usurpation probability and automatic transfer of pre-existing children into royal succession eligibility are not published. Existing real kin remain in their original family."
+  },
+  "canonical": [
+    {
+      "case": "cohort/regional-1-100",
+      "normalizedAuthoritySha256": "2feb300b9a86623f49b6e9d1a44da2dc70c2cb3dba438ae1dddc4cfdcd69bdc0",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "cohort/regional-1-200",
+      "normalizedAuthoritySha256": "1d505a4cba0efaee43c3792f00a0c703186c165bd850a24a034760338e31b21f",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "cohort/regional-2-100",
+      "normalizedAuthoritySha256": "29a7312be4edf0e556885f6b6d8fc792e6cc3d84b8a9b566050ef4421ea0fb10",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "cohort/regional-2-200",
+      "normalizedAuthoritySha256": "520382cfff721f85d97332360b6954a961ceae2e5ff3faf1b7f1d949ee69d7e5",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "cohort/regional-3-100",
+      "normalizedAuthoritySha256": "2617165c24c4a92d360ac698f8d794140d71e10ff0d3461ff1debbdcfd48b845",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "cohort/regional-3-200",
+      "normalizedAuthoritySha256": "b95ad57e46cbf83d76aa7e4e48f5ca65bdcd1fa3775adb4e916957ce2923b4f0",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "cohort/regional-4-100",
+      "normalizedAuthoritySha256": "24927c97ad10d9c452814040b4abe2db4a8076f67fd54ee47fa14e64914b8bb5",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "cohort/regional-4-200",
+      "normalizedAuthoritySha256": "9ff4624a6d9dbf7349629704a2a46ea7058c044570a5252b0ae1ba7bb0589962",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "cohort/regional-5-100",
+      "normalizedAuthoritySha256": "5ea0216f1d1a54bd321393f17d98d5ee9f0341fb621c06f675eb74ad4f2ba642",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "cohort/regional-6-100",
+      "normalizedAuthoritySha256": "5c5256275e31671475920f89fc0f4b57402fd68505be88277d5f3cf1700b9edf",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "cohort/regional-7-100",
+      "normalizedAuthoritySha256": "15285ab03234551ba419aaa9ad55ef7464b73e60eb38424d8882de74ac2bfab3",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "cohort/regional-8-100",
+      "normalizedAuthoritySha256": "cba858afc0ea8faac9d33e5721622fef2fe0b498ecb188510c4f9dbc04e346f0",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "long/regional-1-100",
+      "normalizedAuthoritySha256": "2feb300b9a86623f49b6e9d1a44da2dc70c2cb3dba438ae1dddc4cfdcd69bdc0",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "long/regional-1-200",
+      "normalizedAuthoritySha256": "1d505a4cba0efaee43c3792f00a0c703186c165bd850a24a034760338e31b21f",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "long/regional-1-300",
+      "normalizedAuthoritySha256": "219de846ab51439508431ab08302924076c302468b04c702356a7aff68072d97",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "long/regional-1-400",
+      "normalizedAuthoritySha256": "01d0ad2825c094455d6ef9e4cfecbcc466974d3ccbe49afa7e33ad015d7d6c95",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "long/regional-1-500",
+      "normalizedAuthoritySha256": "aeb76a8d304c123a796d399a42f204a25d7afa428f5e19fa596f3975d35b4ebe",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "political/political-66-1-100",
+      "normalizedAuthoritySha256": "3262866b79cf220c804e13742dfff82c2c2dc635b873cc7a37ef481cc24b61e2",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "political/political-66-1-200",
+      "normalizedAuthoritySha256": "1db55733281168a3fde7fbbc88b0e41aec8c662d9589c678bbaf1b829aab8edf",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "political/political-66-2-100",
+      "normalizedAuthoritySha256": "f0130c806f01b8150a0d72deb5b1190016001a65c50285f639d0fbcf08cfcf9c",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "political/political-66-2-200",
+      "normalizedAuthoritySha256": "3c2f29cab0528924dd1fcbca601276a2a498b0e6ba94e05c986b33b5b48c0856",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "political/political-66-3-100",
+      "normalizedAuthoritySha256": "812a02f134ab09b2d2a66e270e5adae891ac3b98953090d344baf644f24afeb3",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "political/political-66-3-200",
+      "normalizedAuthoritySha256": "07c8b54f7d5ce0bc09ccd773ce29f550a2e9cca7fbeedb8b77783a61343680c4",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "political/political-66-4-100",
+      "normalizedAuthoritySha256": "e03a16cb38fe22e5ba79a7f7a1f2ce74862a482f9aaf94dd8d3db462f92f0cb1",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    },
+    {
+      "case": "political/political-66-4-200",
+      "normalizedAuthoritySha256": "80c7352115144c220dd94d635ef95cb14c691f29678a7ee4cdd2fa854e01f9f2",
+      "rngEqual": true,
+      "historyAndOrderEqual": true
+    }
+  ],
+  "natural": {
+    "before": [
+      {
+        "group": "cohort",
+        "seed": "regional-1",
+        "years": 200,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 126,
+        "families": 8,
+        "familyMembers": 17,
+        "snapshotBytes": 4672122,
+        "worldRandomPosition": 15004,
+        "formalMilitaryPeople": 48,
+        "activeMilitaryOfficials": 2,
+        "activeCivilOfficials": 4,
+        "civilAppointments": 54,
+        "civilMerits": 20,
+        "rulerSuccessionEvents": 42,
+        "successionChecks": 43,
+        "sharedRolls": 2,
+        "sharedRollExpected": 0.11,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 2,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "NOT_ACTIVE": 90,
+          "INSUFFICIENT_CAREER": 3,
+          "NOT_FORMAL_ACTIVE_STATE": 10
+        },
+        "militaryToCivil": 2,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "cohort",
+        "seed": "regional-2",
+        "years": 200,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 134,
+        "families": 9,
+        "familyMembers": 28,
+        "snapshotBytes": 5070400,
+        "worldRandomPosition": 15106,
+        "formalMilitaryPeople": 57,
+        "activeMilitaryOfficials": 1,
+        "activeCivilOfficials": 6,
+        "civilAppointments": 46,
+        "civilMerits": 21,
+        "rulerSuccessionEvents": 40,
+        "successionChecks": 40,
+        "sharedRolls": 2,
+        "sharedRollExpected": 0.12,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 0,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "NOT_ACTIVE": 115,
+          "INSUFFICIENT_CAREER": 6,
+          "SUPPORTS_CONTINUITY": 3
+        },
+        "militaryToCivil": 1,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "cohort",
+        "seed": "regional-3",
+        "years": 200,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 127,
+        "families": 12,
+        "familyMembers": 27,
+        "snapshotBytes": 4092273,
+        "worldRandomPosition": 14323,
+        "formalMilitaryPeople": 61,
+        "activeMilitaryOfficials": 2,
+        "activeCivilOfficials": 5,
+        "civilAppointments": 47,
+        "civilMerits": 19,
+        "rulerSuccessionEvents": 38,
+        "successionChecks": 38,
+        "sharedRolls": 2,
+        "sharedRollExpected": 0.13,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 0,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "NOT_ACTIVE": 190,
+          "INSUFFICIENT_CAREER": 7,
+          "SUPPORTS_CONTINUITY": 3,
+          "NOT_FORMAL_ACTIVE_STATE": 10
+        },
+        "militaryToCivil": 0,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "cohort",
+        "seed": "regional-4",
+        "years": 200,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 137,
+        "families": 3,
+        "familyMembers": 7,
+        "snapshotBytes": 3529528,
+        "worldRandomPosition": 12520,
+        "formalMilitaryPeople": 38,
+        "activeMilitaryOfficials": 0,
+        "activeCivilOfficials": 5,
+        "civilAppointments": 40,
+        "civilMerits": 12,
+        "rulerSuccessionEvents": 30,
+        "successionChecks": 32,
+        "sharedRolls": 1,
+        "sharedRollExpected": 0.06,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 0,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "INSUFFICIENT_CAREER": 4,
+          "NOT_ACTIVE": 73,
+          "NOT_FORMAL_ACTIVE_STATE": 14,
+          "SUPPORTS_CONTINUITY": 2
+        },
+        "militaryToCivil": 0,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "cohort",
+        "seed": "regional-5",
+        "years": 100,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 134,
+        "families": 8,
+        "familyMembers": 14,
+        "snapshotBytes": 2334102,
+        "worldRandomPosition": 7025,
+        "formalMilitaryPeople": 31,
+        "activeMilitaryOfficials": 1,
+        "activeCivilOfficials": 5,
+        "civilAppointments": 24,
+        "civilMerits": 14,
+        "rulerSuccessionEvents": 15,
+        "successionChecks": 16,
+        "sharedRolls": 0,
+        "sharedRollExpected": 0,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 0,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "NOT_ACTIVE": 47,
+          "NOT_FORMAL_ACTIVE_STATE": 1,
+          "INSUFFICIENT_CAREER": 3,
+          "SUPPORTS_CONTINUITY": 2
+        },
+        "militaryToCivil": 0,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "cohort",
+        "seed": "regional-6",
+        "years": 100,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 141,
+        "families": 5,
+        "familyMembers": 11,
+        "snapshotBytes": 2099304,
+        "worldRandomPosition": 6712,
+        "formalMilitaryPeople": 25,
+        "activeMilitaryOfficials": 0,
+        "activeCivilOfficials": 5,
+        "civilAppointments": 21,
+        "civilMerits": 10,
+        "rulerSuccessionEvents": 16,
+        "successionChecks": 16,
+        "sharedRolls": 3,
+        "sharedRollExpected": 0.27,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 1,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "NOT_ACTIVE": 35,
+          "NOT_FORMAL_ACTIVE_STATE": 3,
+          "INSUFFICIENT_CAREER": 2
+        },
+        "militaryToCivil": 0,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "cohort",
+        "seed": "regional-7",
+        "years": 100,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 131,
+        "families": 5,
+        "familyMembers": 10,
+        "snapshotBytes": 2355571,
+        "worldRandomPosition": 7203,
+        "formalMilitaryPeople": 30,
+        "activeMilitaryOfficials": 3,
+        "activeCivilOfficials": 6,
+        "civilAppointments": 25,
+        "civilMerits": 7,
+        "rulerSuccessionEvents": 21,
+        "successionChecks": 21,
+        "sharedRolls": 1,
+        "sharedRollExpected": 0.05,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 0,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "NOT_ACTIVE": 42,
+          "INSUFFICIENT_CAREER": 4,
+          "NOT_FORMAL_ACTIVE_STATE": 1
+        },
+        "militaryToCivil": 0,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "cohort",
+        "seed": "regional-8",
+        "years": 100,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 132,
+        "families": 5,
+        "familyMembers": 15,
+        "snapshotBytes": 2091256,
+        "worldRandomPosition": 7170,
+        "formalMilitaryPeople": 29,
+        "activeMilitaryOfficials": 2,
+        "activeCivilOfficials": 5,
+        "civilAppointments": 22,
+        "civilMerits": 9,
+        "rulerSuccessionEvents": 19,
+        "successionChecks": 20,
+        "sharedRolls": 0,
+        "sharedRollExpected": 0,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 0,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "NOT_ACTIVE": 36,
+          "INSUFFICIENT_CAREER": 3,
+          "NOT_FORMAL_ACTIVE_STATE": 6,
+          "SUPPORTS_CONTINUITY": 1
+        },
+        "militaryToCivil": 2,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "long",
+        "seed": "regional-1",
+        "years": 500,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 138,
+        "families": 18,
+        "familyMembers": 49,
+        "snapshotBytes": 11573561,
+        "worldRandomPosition": 37165,
+        "formalMilitaryPeople": 118,
+        "activeMilitaryOfficials": 1,
+        "activeCivilOfficials": 5,
+        "civilAppointments": 121,
+        "civilMerits": 61,
+        "rulerSuccessionEvents": 112,
+        "successionChecks": 113,
+        "sharedRolls": 4,
+        "sharedRollExpected": 0.24,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 4,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "NOT_ACTIVE": 513,
+          "INSUFFICIENT_CAREER": 8,
+          "NOT_FORMAL_ACTIVE_STATE": 37,
+          "SUPPORTS_CONTINUITY": 5
+        },
+        "militaryToCivil": 4,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "political",
+        "seed": "political-66-1",
+        "years": 200,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 139,
+        "families": 9,
+        "familyMembers": 73,
+        "snapshotBytes": 4824300,
+        "worldRandomPosition": 14515,
+        "formalMilitaryPeople": 60,
+        "activeMilitaryOfficials": 4,
+        "activeCivilOfficials": 3,
+        "civilAppointments": 55,
+        "civilMerits": 26,
+        "rulerSuccessionEvents": 38,
+        "successionChecks": 40,
+        "sharedRolls": 4,
+        "sharedRollExpected": 0.26,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 2,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "INSUFFICIENT_CAREER": 5,
+          "NOT_ACTIVE": 132,
+          "RETIREMENT_AGE": 1,
+          "NOT_FORMAL_ACTIVE_STATE": 34,
+          "SUPPORTS_CONTINUITY": 9
+        },
+        "militaryToCivil": 0,
+        "civilToMilitary": 2,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "political",
+        "seed": "political-66-2",
+        "years": 200,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 138,
+        "families": 8,
+        "familyMembers": 29,
+        "snapshotBytes": 4637781,
+        "worldRandomPosition": 14910,
+        "formalMilitaryPeople": 47,
+        "activeMilitaryOfficials": 2,
+        "activeCivilOfficials": 6,
+        "civilAppointments": 47,
+        "civilMerits": 23,
+        "rulerSuccessionEvents": 43,
+        "successionChecks": 43,
+        "sharedRolls": 4,
+        "sharedRollExpected": 0.22999999999999998,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 0,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "NOT_ACTIVE": 100,
+          "RETIREMENT_AGE": 1,
+          "NOT_FORMAL_ACTIVE_STATE": 8,
+          "SUPPORTS_CONTINUITY": 5,
+          "INSUFFICIENT_CAREER": 3
+        },
+        "militaryToCivil": 0,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "political",
+        "seed": "political-66-3",
+        "years": 200,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 137,
+        "families": 6,
+        "familyMembers": 16,
+        "snapshotBytes": 4748743,
+        "worldRandomPosition": 14219,
+        "formalMilitaryPeople": 68,
+        "activeMilitaryOfficials": 2,
+        "activeCivilOfficials": 6,
+        "civilAppointments": 52,
+        "civilMerits": 22,
+        "rulerSuccessionEvents": 44,
+        "successionChecks": 45,
+        "sharedRolls": 3,
+        "sharedRollExpected": 0.18,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 2,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "NOT_ACTIVE": 201,
+          "INSUFFICIENT_CAREER": 4,
+          "SUPPORTS_CONTINUITY": 1,
+          "RETIREMENT_AGE": 1,
+          "NOT_FORMAL_ACTIVE_STATE": 14
+        },
+        "militaryToCivil": 0,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "political",
+        "seed": "political-66-4",
+        "years": 200,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 143,
+        "families": 6,
+        "familyMembers": 18,
+        "snapshotBytes": 5603169,
+        "worldRandomPosition": 15168,
+        "formalMilitaryPeople": 61,
+        "activeMilitaryOfficials": 4,
+        "activeCivilOfficials": 8,
+        "civilAppointments": 56,
+        "civilMerits": 30,
+        "rulerSuccessionEvents": 46,
+        "successionChecks": 46,
+        "sharedRolls": 2,
+        "sharedRollExpected": 0.15,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 1,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "NOT_ACTIVE": 204,
+          "INSUFFICIENT_CAREER": 7
+        },
+        "militaryToCivil": 0,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      }
+    ],
+    "after": [
+      {
+        "group": "cohort",
+        "seed": "regional-1",
+        "years": 200,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 126,
+        "families": 8,
+        "familyMembers": 17,
+        "snapshotBytes": 4672122,
+        "worldRandomPosition": 15004,
+        "formalMilitaryPeople": 48,
+        "activeMilitaryOfficials": 2,
+        "activeCivilOfficials": 4,
+        "civilAppointments": 54,
+        "civilMerits": 20,
+        "rulerSuccessionEvents": 42,
+        "successionChecks": 43,
+        "sharedRolls": 2,
+        "sharedRollExpected": 0.11,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 2,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "cancelledWithoutActor": 0,
+          "rollCandidateChecks": 0,
+          "eligibleAtRoll": 0,
+          "blockedAtRoll": {
+            "NO_COURT_CANDIDATES": 2
+          },
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "NOT_ACTIVE": 90,
+          "INSUFFICIENT_CAREER": 3,
+          "NOT_FORMAL_ACTIVE_STATE": 10
+        },
+        "militaryToCivil": 2,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "cohort",
+        "seed": "regional-2",
+        "years": 200,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 134,
+        "families": 9,
+        "familyMembers": 28,
+        "snapshotBytes": 5070400,
+        "worldRandomPosition": 15106,
+        "formalMilitaryPeople": 57,
+        "activeMilitaryOfficials": 1,
+        "activeCivilOfficials": 6,
+        "civilAppointments": 46,
+        "civilMerits": 21,
+        "rulerSuccessionEvents": 40,
+        "successionChecks": 40,
+        "sharedRolls": 2,
+        "sharedRollExpected": 0.12,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 0,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "cancelledWithoutActor": 0,
+          "rollCandidateChecks": 0,
+          "eligibleAtRoll": 0,
+          "blockedAtRoll": {
+            "NO_COURT_CANDIDATES": 2
+          },
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "NOT_ACTIVE": 115,
+          "INSUFFICIENT_CAREER": 6,
+          "SUPPORTS_CONTINUITY": 3
+        },
+        "militaryToCivil": 1,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "cohort",
+        "seed": "regional-3",
+        "years": 200,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 127,
+        "families": 12,
+        "familyMembers": 27,
+        "snapshotBytes": 4092273,
+        "worldRandomPosition": 14323,
+        "formalMilitaryPeople": 61,
+        "activeMilitaryOfficials": 2,
+        "activeCivilOfficials": 5,
+        "civilAppointments": 47,
+        "civilMerits": 19,
+        "rulerSuccessionEvents": 38,
+        "successionChecks": 38,
+        "sharedRolls": 2,
+        "sharedRollExpected": 0.13,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 0,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "cancelledWithoutActor": 0,
+          "rollCandidateChecks": 0,
+          "eligibleAtRoll": 0,
+          "blockedAtRoll": {
+            "NO_COURT_CANDIDATES": 2
+          },
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "NOT_ACTIVE": 190,
+          "INSUFFICIENT_CAREER": 7,
+          "SUPPORTS_CONTINUITY": 3,
+          "NOT_FORMAL_ACTIVE_STATE": 10
+        },
+        "militaryToCivil": 0,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "cohort",
+        "seed": "regional-4",
+        "years": 200,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 137,
+        "families": 3,
+        "familyMembers": 7,
+        "snapshotBytes": 3529528,
+        "worldRandomPosition": 12520,
+        "formalMilitaryPeople": 38,
+        "activeMilitaryOfficials": 0,
+        "activeCivilOfficials": 5,
+        "civilAppointments": 40,
+        "civilMerits": 12,
+        "rulerSuccessionEvents": 30,
+        "successionChecks": 32,
+        "sharedRolls": 1,
+        "sharedRollExpected": 0.06,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 0,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "cancelledWithoutActor": 0,
+          "rollCandidateChecks": 0,
+          "eligibleAtRoll": 0,
+          "blockedAtRoll": {
+            "NO_COURT_CANDIDATES": 1
+          },
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "INSUFFICIENT_CAREER": 4,
+          "NOT_ACTIVE": 73,
+          "NOT_FORMAL_ACTIVE_STATE": 14,
+          "SUPPORTS_CONTINUITY": 2
+        },
+        "militaryToCivil": 0,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "cohort",
+        "seed": "regional-5",
+        "years": 100,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 134,
+        "families": 8,
+        "familyMembers": 14,
+        "snapshotBytes": 2334102,
+        "worldRandomPosition": 7025,
+        "formalMilitaryPeople": 31,
+        "activeMilitaryOfficials": 1,
+        "activeCivilOfficials": 5,
+        "civilAppointments": 24,
+        "civilMerits": 14,
+        "rulerSuccessionEvents": 15,
+        "successionChecks": 16,
+        "sharedRolls": 0,
+        "sharedRollExpected": 0,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 0,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "cancelledWithoutActor": 0,
+          "rollCandidateChecks": 0,
+          "eligibleAtRoll": 0,
+          "blockedAtRoll": {},
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "NOT_ACTIVE": 47,
+          "NOT_FORMAL_ACTIVE_STATE": 1,
+          "INSUFFICIENT_CAREER": 3,
+          "SUPPORTS_CONTINUITY": 2
+        },
+        "militaryToCivil": 0,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "cohort",
+        "seed": "regional-6",
+        "years": 100,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 141,
+        "families": 5,
+        "familyMembers": 11,
+        "snapshotBytes": 2099304,
+        "worldRandomPosition": 6712,
+        "formalMilitaryPeople": 25,
+        "activeMilitaryOfficials": 0,
+        "activeCivilOfficials": 5,
+        "civilAppointments": 21,
+        "civilMerits": 10,
+        "rulerSuccessionEvents": 16,
+        "successionChecks": 16,
+        "sharedRolls": 3,
+        "sharedRollExpected": 0.27,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 1,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "cancelledWithoutActor": 0,
+          "rollCandidateChecks": 0,
+          "eligibleAtRoll": 0,
+          "blockedAtRoll": {
+            "NO_COURT_CANDIDATES": 3
+          },
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "NOT_ACTIVE": 35,
+          "NOT_FORMAL_ACTIVE_STATE": 3,
+          "INSUFFICIENT_CAREER": 2
+        },
+        "militaryToCivil": 0,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "cohort",
+        "seed": "regional-7",
+        "years": 100,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 131,
+        "families": 5,
+        "familyMembers": 10,
+        "snapshotBytes": 2355571,
+        "worldRandomPosition": 7203,
+        "formalMilitaryPeople": 30,
+        "activeMilitaryOfficials": 3,
+        "activeCivilOfficials": 6,
+        "civilAppointments": 25,
+        "civilMerits": 7,
+        "rulerSuccessionEvents": 21,
+        "successionChecks": 21,
+        "sharedRolls": 1,
+        "sharedRollExpected": 0.05,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 0,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "cancelledWithoutActor": 0,
+          "rollCandidateChecks": 0,
+          "eligibleAtRoll": 0,
+          "blockedAtRoll": {
+            "NO_COURT_CANDIDATES": 1
+          },
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "NOT_ACTIVE": 42,
+          "INSUFFICIENT_CAREER": 4,
+          "NOT_FORMAL_ACTIVE_STATE": 1
+        },
+        "militaryToCivil": 0,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "cohort",
+        "seed": "regional-8",
+        "years": 100,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 132,
+        "families": 5,
+        "familyMembers": 15,
+        "snapshotBytes": 2091256,
+        "worldRandomPosition": 7170,
+        "formalMilitaryPeople": 29,
+        "activeMilitaryOfficials": 2,
+        "activeCivilOfficials": 5,
+        "civilAppointments": 22,
+        "civilMerits": 9,
+        "rulerSuccessionEvents": 19,
+        "successionChecks": 20,
+        "sharedRolls": 0,
+        "sharedRollExpected": 0,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 0,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "cancelledWithoutActor": 0,
+          "rollCandidateChecks": 0,
+          "eligibleAtRoll": 0,
+          "blockedAtRoll": {},
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "NOT_ACTIVE": 36,
+          "INSUFFICIENT_CAREER": 3,
+          "NOT_FORMAL_ACTIVE_STATE": 6,
+          "SUPPORTS_CONTINUITY": 1
+        },
+        "militaryToCivil": 2,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "long",
+        "seed": "regional-1",
+        "years": 500,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 138,
+        "families": 18,
+        "familyMembers": 49,
+        "snapshotBytes": 11573561,
+        "worldRandomPosition": 37165,
+        "formalMilitaryPeople": 118,
+        "activeMilitaryOfficials": 1,
+        "activeCivilOfficials": 5,
+        "civilAppointments": 121,
+        "civilMerits": 61,
+        "rulerSuccessionEvents": 112,
+        "successionChecks": 113,
+        "sharedRolls": 4,
+        "sharedRollExpected": 0.24,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 4,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "cancelledWithoutActor": 0,
+          "rollCandidateChecks": 0,
+          "eligibleAtRoll": 0,
+          "blockedAtRoll": {
+            "NO_COURT_CANDIDATES": 4
+          },
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "NOT_ACTIVE": 513,
+          "INSUFFICIENT_CAREER": 8,
+          "NOT_FORMAL_ACTIVE_STATE": 37,
+          "SUPPORTS_CONTINUITY": 5
+        },
+        "militaryToCivil": 4,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "political",
+        "seed": "political-66-1",
+        "years": 200,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 139,
+        "families": 9,
+        "familyMembers": 73,
+        "snapshotBytes": 4824300,
+        "worldRandomPosition": 14515,
+        "formalMilitaryPeople": 60,
+        "activeMilitaryOfficials": 4,
+        "activeCivilOfficials": 3,
+        "civilAppointments": 55,
+        "civilMerits": 26,
+        "rulerSuccessionEvents": 38,
+        "successionChecks": 40,
+        "sharedRolls": 4,
+        "sharedRollExpected": 0.26,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 2,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "cancelledWithoutActor": 0,
+          "rollCandidateChecks": 0,
+          "eligibleAtRoll": 0,
+          "blockedAtRoll": {
+            "NO_COURT_CANDIDATES": 4
+          },
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "INSUFFICIENT_CAREER": 5,
+          "NOT_ACTIVE": 132,
+          "RETIREMENT_AGE": 1,
+          "NOT_FORMAL_ACTIVE_STATE": 34,
+          "SUPPORTS_CONTINUITY": 9
+        },
+        "militaryToCivil": 0,
+        "civilToMilitary": 2,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "political",
+        "seed": "political-66-2",
+        "years": 200,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 138,
+        "families": 8,
+        "familyMembers": 29,
+        "snapshotBytes": 4637781,
+        "worldRandomPosition": 14910,
+        "formalMilitaryPeople": 47,
+        "activeMilitaryOfficials": 2,
+        "activeCivilOfficials": 6,
+        "civilAppointments": 47,
+        "civilMerits": 23,
+        "rulerSuccessionEvents": 43,
+        "successionChecks": 43,
+        "sharedRolls": 4,
+        "sharedRollExpected": 0.22999999999999998,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 0,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "cancelledWithoutActor": 0,
+          "rollCandidateChecks": 0,
+          "eligibleAtRoll": 0,
+          "blockedAtRoll": {
+            "NO_COURT_CANDIDATES": 4
+          },
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "NOT_ACTIVE": 100,
+          "RETIREMENT_AGE": 1,
+          "NOT_FORMAL_ACTIVE_STATE": 8,
+          "SUPPORTS_CONTINUITY": 5,
+          "INSUFFICIENT_CAREER": 3
+        },
+        "militaryToCivil": 0,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "political",
+        "seed": "political-66-3",
+        "years": 200,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 137,
+        "families": 6,
+        "familyMembers": 16,
+        "snapshotBytes": 4748743,
+        "worldRandomPosition": 14219,
+        "formalMilitaryPeople": 68,
+        "activeMilitaryOfficials": 2,
+        "activeCivilOfficials": 6,
+        "civilAppointments": 52,
+        "civilMerits": 22,
+        "rulerSuccessionEvents": 44,
+        "successionChecks": 45,
+        "sharedRolls": 3,
+        "sharedRollExpected": 0.18,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 2,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "cancelledWithoutActor": 0,
+          "rollCandidateChecks": 0,
+          "eligibleAtRoll": 0,
+          "blockedAtRoll": {
+            "NO_COURT_CANDIDATES": 3
+          },
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "NOT_ACTIVE": 201,
+          "INSUFFICIENT_CAREER": 4,
+          "SUPPORTS_CONTINUITY": 1,
+          "RETIREMENT_AGE": 1,
+          "NOT_FORMAL_ACTIVE_STATE": 14
+        },
+        "militaryToCivil": 0,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      },
+      {
+        "group": "political",
+        "seed": "political-66-4",
+        "years": 200,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 143,
+        "families": 6,
+        "familyMembers": 18,
+        "snapshotBytes": 5603169,
+        "worldRandomPosition": 15168,
+        "formalMilitaryPeople": 61,
+        "activeMilitaryOfficials": 4,
+        "activeCivilOfficials": 8,
+        "civilAppointments": 56,
+        "civilMerits": 30,
+        "rulerSuccessionEvents": 46,
+        "successionChecks": 46,
+        "sharedRolls": 2,
+        "sharedRollExpected": 0.15,
+        "usurpations": 0,
+        "militaryUsurpers": 0,
+        "civilIndependentUsurpers": 0,
+        "civilResourceParticipations": 0,
+        "titledUsurpers": 0,
+        "familyUsurpers": 0,
+        "unsourcedUsurpers": 0,
+        "lawfulUnrelatedHouseSuccessions": 1,
+        "personalCandidateSelection": {
+          "successfulOpportunities": 0,
+          "withEligibleMilitary": 0,
+          "qualifiedCandidateChecks": 0,
+          "personalAccessions": 0,
+          "generatedAccessions": 0,
+          "cancelledWithoutActor": 0,
+          "rollCandidateChecks": 0,
+          "eligibleAtRoll": 0,
+          "blockedAtRoll": {
+            "NO_COURT_CANDIDATES": 2
+          },
+          "blocked": {}
+        },
+        "militaryQualificationBlockers": {
+          "NOT_ACTIVE": 204,
+          "INSUFFICIENT_CAREER": 7
+        },
+        "militaryToCivil": 0,
+        "civilToMilitary": 0,
+        "strictSaveValid": true,
+        "duplicatePopulationIds": 0,
+        "identityConflicts": 0,
+        "formationConflicts": 0
+      }
+    ]
+  },
+  "core": {
+    "nobility-core": {
+      "seed": "royal-military-z11",
+      "assertions": 1465,
+      "scope": "actual existing User, City.capture, monarch, ennoblement, military political and save transactions",
+      "directedPoliticalSamples": [
+        {
+          "kind": "DIRECTED_CIVIL_RESOURCE",
+          "month": 420,
+          "personId": "military-person-2",
+          "name": "胡明恭",
+          "governor": "苗怀温",
+          "description": "赵国易代。当时国有7城，国中不稳。赵济被俘处死，原定由赵令绍（时年39岁）承统，继统之际原赵上将军胡明恭累有取城军功，夺取王统，赵氏改为胡氏，国号由赵改为汉。新郑郡守苗怀温久任有绩，其地方治理基础为新政权所承。并易帜。国都仍在邯郸。",
+          "office": "SHANGJIANGJUN",
+          "opportunity": {
+            "roll": 0,
+            "chance": 0.0375,
+            "baselineChance": 0.03
+          },
+          "politicalCapital": [
+            {
+              "personId": "military-person-2",
+              "resources": 30,
+              "merit": 20,
+              "nobility": 0,
+              "abilities": 7,
+              "service": 10,
+              "civilSupport": [
+                {
+                  "assignmentId": "civil-governor-赵-city-韩-新郑-1",
+                  "personId": "resident-1556458062--227",
+                  "personalName": "苗怀温",
+                  "cityId": "city-韩-新郑",
+                  "cityName": "新郑",
+                  "appointEventId": "civil-governor-赵-city-韩-新郑-1-appointed",
+                  "meritEventId": "civil-governor-赵-city-韩-新郑-1-merit-324",
+                  "captureEventId": "city-captured-276-赵-新郑-40",
+                  "serviceMonths": 120,
+                  "contribution": 4,
+                  "bonus": 2
+                }
+              ],
+              "capital": 69
+            }
+          ],
+          "civilSources": [
+            {
+              "assignmentId": "civil-governor-赵-city-韩-新郑-1",
+              "sourceUserId": 1556458062,
+              "bornMonth": -227,
+              "factionId": "赵",
+              "loyalty": 0
+            }
+          ]
+        }
+      ]
+    },
+    "civil-core": {
+      "seed": "civil-administration-z62",
+      "assertions": 65
+    },
+    "court-core": {
+      "seed": "royal-military-z11",
+      "assertions": 27
+    },
+    "royal-core": {
+      "seed": "royal-military-z11",
+      "assertions": 244
+    }
+  },
+  "performance": {
+    "before-phase": {
+      "seed": "regional-1",
+      "inputSchemaVersion": 61,
+      "inputSeed": "regional-1",
+      "startMonth": 6000,
+      "months": 300,
+      "repetitions": 3,
+      "configuredSpeed": 4,
+      "input": {
+        "users": 138,
+        "factions": 26,
+        "rulers": 829,
+        "events": 14682
+      },
+      "scope": "Manual authoritative fixed steps with real Arcade physics; render loop stopped. Separate from live Electron frame measurement and human acceptance.",
+      "rows": [
+        {
+          "repeat": 0,
+          "hydrationMs": 3478.5,
+          "exportMs": 3609.7000000178814,
+          "simulationWallMs": 8991.199999988079,
+          "heapBefore": 158231771,
+          "heapAfter": 220239474,
+          "canonicalWithoutVersionSha256": "7f8a21781bfc656102bf9b9ff39a9f185603535ee90b382a4fccda531f994121",
+          "clockMismatches": 0,
+          "uniqueMonths": 300,
+          "canonicalSha256": "8c7bfd44f814d073a483c986a839f07496fbf319bb728ad54d15e9345cc8c55c"
+        },
+        {
+          "repeat": 1,
+          "hydrationMs": 4061.399999976158,
+          "exportMs": 3872,
+          "simulationWallMs": 9726.799999982119,
+          "heapBefore": 166855351,
+          "heapAfter": 252223893,
+          "canonicalWithoutVersionSha256": "7f8a21781bfc656102bf9b9ff39a9f185603535ee90b382a4fccda531f994121",
+          "clockMismatches": 0,
+          "uniqueMonths": 300,
+          "canonicalSha256": "8c7bfd44f814d073a483c986a839f07496fbf319bb728ad54d15e9345cc8c55c"
+        },
+        {
+          "repeat": 2,
+          "hydrationMs": 3200.7000000178814,
+          "exportMs": 3381.2999999821186,
+          "simulationWallMs": 9005.09999999404,
+          "heapBefore": 251073343,
+          "heapAfter": 199794983,
+          "canonicalWithoutVersionSha256": "7f8a21781bfc656102bf9b9ff39a9f185603535ee90b382a4fccda531f994121",
+          "clockMismatches": 0,
+          "uniqueMonths": 300,
+          "canonicalSha256": "8c7bfd44f814d073a483c986a839f07496fbf319bb728ad54d15e9345cc8c55c"
+        }
+      ],
+      "medianOfThreeRepetitions": {
+        "MilitaryCommandRegistry.update": {
+          "sampleCount": 300,
+          "averageMs": 1.0680000002185503,
+          "p95Ms": 2.2999999821186066,
+          "p99Ms": 26.099999994039536,
+          "maxMs": 56.30000001192093
+        },
+        "MilitaryCommandRegistry.update/January": {
+          "sampleCount": 25,
+          "averageMs": 11.45599999666214,
+          "p95Ms": 40.099999994039536,
+          "p99Ms": 56.30000001192093,
+          "maxMs": 56.30000001192093
+        },
+        "MilitaryCommandRegistry.update/ordinary": {
+          "sampleCount": 275,
+          "averageMs": 0.09090909101746299,
+          "p95Ms": 0.20000001788139343,
+          "p99Ms": 0.20000001788139343,
+          "maxMs": 0.4000000059604645
+        },
+        "DynastyRegistry.update": {
+          "sampleCount": 300,
+          "averageMs": 2.7546666665871937,
+          "p95Ms": 13.699999988079071,
+          "p99Ms": 30.400000005960464,
+          "maxMs": 41.69999998807907
+        },
+        "DynastyRegistry.update/January": {
+          "sampleCount": 25,
+          "averageMs": 4.620000003576279,
+          "p95Ms": 13.599999994039536,
+          "p99Ms": 15.800000011920929,
+          "maxMs": 15.800000011920929
+        },
+        "DynastyRegistry.update/ordinary": {
+          "sampleCount": 275,
+          "averageMs": 2.585090908679095,
+          "p95Ms": 13.199999988079071,
+          "p99Ms": 32.69999998807907,
+          "maxMs": 41.69999998807907
+        },
+        "Military honors": {
+          "sampleCount": 300,
+          "averageMs": 0.03699999968210856,
+          "p95Ms": 0.30000001192092896,
+          "p99Ms": 0.5,
+          "maxMs": 1.399999976158142
+        },
+        "Military nobility": {
+          "sampleCount": 300,
+          "averageMs": 0.22866666714350384,
+          "p95Ms": 0.20000001788139343,
+          "p99Ms": 5.0999999940395355,
+          "maxMs": 13.400000005960464
+        },
+        "Military families": {
+          "sampleCount": 300,
+          "averageMs": 0.09633333345254262,
+          "p95Ms": 0.09999999403953552,
+          "p99Ms": 2.4000000059604645,
+          "maxMs": 5.299999982118607
+        },
+        "Military appanages": {
+          "sampleCount": 300,
+          "averageMs": 0.02100000043710073,
+          "p95Ms": 0.10000002384185791,
+          "p99Ms": 0.10000002384185791,
+          "maxMs": 0.20000001788139343
+        },
+        "Royal household births": {
+          "sampleCount": 300,
+          "averageMs": 1.4970000000794728,
+          "p95Ms": 12.5,
+          "p99Ms": 14.199999988079071,
+          "maxMs": 24.80000001192093
+        },
+        "Royal noble succession": {
+          "sampleCount": 300,
+          "averageMs": 0.059000000059604644,
+          "p95Ms": 0.10000002384185791,
+          "p99Ms": 0.20000001788139343,
+          "maxMs": 0.20000001788139343
+        },
+        "Family household births and life": {
+          "sampleCount": 300,
+          "averageMs": 0.06699999958276749,
+          "p95Ms": 0.19999998807907104,
+          "p99Ms": 0.20000001788139343,
+          "maxMs": 0.30000001192092896
+        },
+        "Family household births and life/January": {
+          "sampleCount": 25,
+          "averageMs": 0.0800000023841858,
+          "p95Ms": 0.19999998807907104,
+          "p99Ms": 0.20000001788139343,
+          "maxMs": 0.20000001788139343
+        },
+        "Family household births and life/ordinary": {
+          "sampleCount": 275,
+          "averageMs": 0.06545454653826627,
+          "p95Ms": 0.19999998807907104,
+          "p99Ms": 0.20000001788139343,
+          "maxMs": 0.30000001192092896
+        },
+        "Family noble succession": {
+          "sampleCount": 300,
+          "averageMs": 0.023666666050752003,
+          "p95Ms": 0.09999999403953552,
+          "p99Ms": 0.10000002384185791,
+          "maxMs": 0.19999998807907104
+        },
+        "Family noble succession/January": {
+          "sampleCount": 25,
+          "averageMs": 0.019999998807907104,
+          "p95Ms": 0.09999999403953552,
+          "p99Ms": 0.09999999403953552,
+          "maxMs": 0.09999999403953552
+        },
+        "Family noble succession/ordinary": {
+          "sampleCount": 275,
+          "averageMs": 0.023999999436465178,
+          "p95Ms": 0.09999999403953552,
+          "p99Ms": 0.10000002384185791,
+          "maxMs": 0.19999998807907104
+        },
+        "Civil administration": {
+          "sampleCount": 300,
+          "averageMs": 1.2719999995827675,
+          "p95Ms": 12.599999994039536,
+          "p99Ms": 15.599999994039536,
+          "maxMs": 26.69999998807907
+        },
+        "Civil administration/January": {
+          "sampleCount": 25,
+          "averageMs": 12.444000000953674,
+          "p95Ms": 26.30000001192093,
+          "p99Ms": 26.69999998807907,
+          "maxMs": 26.69999998807907
+        },
+        "Civil administration/ordinary": {
+          "sampleCount": 275,
+          "averageMs": 0.22872727253220299,
+          "p95Ms": 0.10000002384185791,
+          "p99Ms": 12.199999988079071,
+          "maxMs": 12.900000005960464
+        },
+        "Military/life": {
+          "sampleCount": 300,
+          "averageMs": 0.009333333273728688,
+          "p95Ms": 0.09999999403953552,
+          "p99Ms": 0.10000002384185791,
+          "maxMs": 0.19999998807907104
+        },
+        "Military/formations": {
+          "sampleCount": 300,
+          "averageMs": 0.00899999996026357,
+          "p95Ms": 0.09999999403953552,
+          "p99Ms": 0.10000002384185791,
+          "maxMs": 0.20000001788139343
+        },
+        "Military/insurgent commands": {
+          "sampleCount": 300,
+          "averageMs": 0.05266666660706202,
+          "p95Ms": 0.10000002384185791,
+          "p99Ms": 0.20000001788139343,
+          "maxMs": 0.20000001788139343
+        },
+        "Military/orders": {
+          "sampleCount": 300,
+          "averageMs": 0.007333333392937978,
+          "p95Ms": 0.09999999403953552,
+          "p99Ms": 0.10000002384185791,
+          "maxMs": 0.29999998211860657
+        },
+        "Military/order evidence": {
+          "sampleCount": 300,
+          "averageMs": 0.008333333134651184,
+          "p95Ms": 0.09999999403953552,
+          "p99Ms": 0.09999999403953552,
+          "maxMs": 0.10000002384185791
+        },
+        "Military/promotions": {
+          "sampleCount": 300,
+          "averageMs": 0.4166666667660077,
+          "p95Ms": 0,
+          "p99Ms": 10.699999988079071,
+          "maxMs": 29
+        },
+        "Military/family eligibility": {
+          "sampleCount": 300,
+          "averageMs": 0.0073333331942558285,
+          "p95Ms": 0,
+          "p99Ms": 0.19999998807907104,
+          "maxMs": 0.30000001192092896
+        },
+        "Military/initial candidates": {
+          "sampleCount": 300,
+          "averageMs": 0.04666666696468989,
+          "p95Ms": 0.5,
+          "p99Ms": 0.7000000178813934,
+          "maxMs": 1.399999976158142
+        },
+        "Military/royal eligibility": {
+          "sampleCount": 300,
+          "averageMs": 0.052333332896232605,
+          "p95Ms": 0.5000000596046448,
+          "p99Ms": 0.800000011920929,
+          "maxMs": 0.9999999701976776
+        },
+        "Military/weights": {
+          "sampleCount": 300,
+          "averageMs": 0.01399999996026357,
+          "p95Ms": 0.09999999403953552,
+          "p99Ms": 0.29999998211860657,
+          "maxMs": 0.30000007152557373
+        },
+        "Military/title eligibility": {
+          "sampleCount": 300,
+          "averageMs": 0.0016666666666666668,
+          "p95Ms": 0,
+          "p99Ms": 0.09999999403953552,
+          "maxMs": 0.10000002384185791
+        },
+        "Military/appointment transaction": {
+          "sampleCount": 300,
+          "averageMs": 0.36766666660706204,
+          "p95Ms": 0,
+          "p99Ms": 0,
+          "maxMs": 46.20000001788139
+        },
+        "Dynasty/deposition opportunity": {
+          "sampleCount": 300,
+          "averageMs": 0.28166666676600777,
+          "p95Ms": 0.699999988079071,
+          "p99Ms": 6.5,
+          "maxMs": 15.000000029802322
+        },
+        "Dynasty/pardons": {
+          "sampleCount": 300,
+          "averageMs": 0.009333333472410837,
+          "p95Ms": 0.09999999403953552,
+          "p99Ms": 0.20000001788139343,
+          "maxMs": 0.20000001788139343
+        },
+        "Dynasty/royal honors": {
+          "sampleCount": 300,
+          "averageMs": 0.04766666620969772,
+          "p95Ms": 0.19999998807907104,
+          "p99Ms": 0.29999998211860657,
+          "maxMs": 0.4000000059604645
+        },
+        "Dynasty/life archives": {
+          "sampleCount": 300,
+          "averageMs": 0.9063333342472712,
+          "p95Ms": 11.400000005960464,
+          "p99Ms": 12.600000023841858,
+          "maxMs": 14.099999994039536
+        },
+        "Dynasty/heir life": {
+          "sampleCount": 300,
+          "averageMs": 0.06566666742165883,
+          "p95Ms": 0.20000001788139343,
+          "p99Ms": 0.4000000059604645,
+          "maxMs": 0.5
+        },
+        "Dynasty/ruling monarch": {
+          "sampleCount": 300,
+          "averageMs": 0.005000000198682149,
+          "p95Ms": 0,
+          "p99Ms": 0.10000002384185791,
+          "maxMs": 0.20000001788139343
+        },
+        "Dynasty/heir qualification": {
+          "sampleCount": 300,
+          "averageMs": 0.8659999995430311,
+          "p95Ms": 0.6000000238418579,
+          "p99Ms": 23.399999976158142,
+          "maxMs": 28.100000023841858
+        },
+        "Dynasty/ruler body": {
+          "sampleCount": 300,
+          "averageMs": 0.0033333333333333335,
+          "p95Ms": 0,
+          "p99Ms": 0.09999999403953552,
+          "maxMs": 0.10000002384185791
+        },
+        "Dynasty/court qualification and acts": {
+          "sampleCount": 300,
+          "averageMs": 0.34433333307504654,
+          "p95Ms": 0.800000011920929,
+          "p99Ms": 6.700000017881393,
+          "maxMs": 15.300000011920929
+        },
+        "Dynasty/succession transaction": {
+          "sampleCount": 300,
+          "averageMs": 0.6106666668256124,
+          "p95Ms": 0,
+          "p99Ms": 28.5,
+          "maxMs": 39
+        },
+        "total fixed/month step": {
+          "sampleCount": 300,
+          "averageMs": 9.10833333303531,
+          "p95Ms": 45.20000001788139,
+          "p99Ms": 74.90000000596046,
+          "maxMs": 113.59999999403954
+        },
+        "total fixed/month step/January": {
+          "sampleCount": 25,
+          "averageMs": 47.47599999904632,
+          "p95Ms": 92.80000001192093,
+          "p99Ms": 113.59999999403954,
+          "maxMs": 113.59999999403954
+        },
+        "total fixed/month step/ordinary": {
+          "sampleCount": 275,
+          "averageMs": 5.620363636125218,
+          "p95Ms": 24.69999998807907,
+          "p99Ms": 43.599999994039536,
+          "maxMs": 57.599999994039536
+        }
+      }
+    },
+    "before-profile": {
+      "seed": "regional-1",
+      "expectUnified": true,
+      "month": 6000,
+      "checks": [
+        "civil deep link shows actual identity",
+        "civil shares real ability bars",
+        "civil shares portrait",
+        "civil deep link shows actual identity",
+        "civil shares real ability bars",
+        "civil shares portrait",
+        "deceased governor has death and ended tenure",
+        "civil deep link shows actual identity",
+        "civil shares real ability bars",
+        "civil shares portrait",
+        "civil deep link shows actual identity",
+        "civil shares real ability bars",
+        "civil shares portrait",
+        "civil deep link shows actual identity",
+        "civil shares real ability bars",
+        "civil shares portrait",
+        "civil deep link shows actual identity",
+        "civil shares real ability bars",
+        "civil shares portrait",
+        "civil deep link shows actual identity",
+        "civil shares real ability bars",
+        "civil shares portrait",
+        "military shares ability bars",
+        "all archive reads preserve complete canonical state and RNG",
+        "live4x transaction month matches actual clock"
+      ],
+      "rows": [
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1932327966-4978",
+          "openMs": 36.5,
+          "dom": 85
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1493787912--221",
+          "openMs": 75,
+          "dom": 357
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1535869355-5172",
+          "openMs": 47.400000005960464,
+          "dom": 408
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1306532530-5024",
+          "openMs": 17.69999998807907,
+          "dom": 106
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1359923504-5339",
+          "openMs": 15.400000005960464,
+          "dom": 108
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1143912061-5302",
+          "openMs": 13.800000011920929,
+          "dom": 78
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1306532561-5333",
+          "openMs": 16,
+          "dom": 103
+        },
+        {
+          "kind": "MILITARY",
+          "personId": "military-person-1",
+          "openMs": 115.59999999403954
+        }
+      ],
+      "react": {
+        "commits": 35,
+        "totalMs": 165.70000007748604
+      },
+      "frames": [
+        {
+          "panel": true,
+          "wallMs": 5015.799999982119,
+          "startMonth": 6001,
+          "endMonth": 6039,
+          "configuredSpeed": 4,
+          "effectiveMonthsPerSecond": 7.576059651528264,
+          "runtime": {
+            "renderFrameCount": 281,
+            "frameDeltaMs": {
+              "current": 31.700000017881393,
+              "average": 18.572953736654803,
+              "p95": 25.69999998807907,
+              "max": 368.19999998807907
+            },
+            "longFrames": {
+              "over25ms": 17,
+              "over33ms": 8,
+              "over50ms": 2,
+              "over100ms": 1
+            },
+            "simulationStepsPerFrame": {
+              "average": 3.97864768683274,
+              "max": 5
+            },
+            "fixedStepCpuMs": {
+              "average": 6.471886122141869,
+              "p95": 15.300000011920929
+            },
+            "presentationCpuMs": {
+              "average": 0.11067615582001167,
+              "p95": 0.20000004768371582
+            },
+            "sampleCount": 281,
+            "rollingWindowCapacity": 300,
+            "statisticsWindow": "rolling 300 frames (or available samples)",
+            "longFrameCounterWindow": "session cumulative since hydration/reset",
+            "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback"
+          },
+          "attribution": {
+            "enabled": true,
+            "timings": {
+              "Core CPU": {
+                "sampleCount": 281,
+                "averageMs": 6.58256227796188,
+                "p95Ms": 16.099999994039536,
+                "p99Ms": 32.69999998807907,
+                "maxMs": 50.89999997615814
+              },
+              "fixed simulation CPU": {
+                "sampleCount": 281,
+                "averageMs": 6.471886122141869,
+                "p95Ms": 15.300000011920929,
+                "p99Ms": 30.69999998807907,
+                "maxMs": 48.89999997615814
+              },
+              "manual Arcade physics step": {
+                "sampleCount": 281,
+                "averageMs": 5.418149466298229,
+                "p95Ms": 7.300000011920929,
+                "p99Ms": 17.399999976158142,
+                "maxMs": 17.900000035762787
+              },
+              "logical simulation step": {
+                "sampleCount": 281,
+                "averageMs": 0,
+                "p95Ms": 0,
+                "p99Ms": 0,
+                "maxMs": 0
+              },
+              "AutoSimulator.advance": {
+                "sampleCount": 281,
+                "averageMs": 0.9032028475478027,
+                "p95Ms": 2.699999988079071,
+                "p99Ms": 25.600000023841858,
+                "maxMs": 44.20000001788139
+              },
+              "determinism checkpoint": {
+                "sampleCount": 281,
+                "averageMs": 0,
+                "p95Ms": 0,
+                "p99Ms": 0,
+                "maxMs": 0
+              },
+              "LogicalUnitRegistry.syncVisuals": {
+                "sampleCount": 281,
+                "averageMs": 0,
+                "p95Ms": 0,
+                "p99Ms": 0,
+                "maxMs": 0
+              },
+              "faction labels": {
+                "sampleCount": 281,
+                "averageMs": 0.007473309587329308,
+                "p95Ms": 0,
+                "p99Ms": 0.30000001192092896,
+                "maxMs": 0.4000000059604645
+              },
+              "faction focus": {
+                "sampleCount": 281,
+                "averageMs": 0.011387900419506738,
+                "p95Ms": 0.09999999403953552,
+                "p99Ms": 0.20000001788139343,
+                "maxMs": 0.30000001192092896
+              },
+              "player presentation updates": {
+                "sampleCount": 281,
+                "averageMs": 0.016370106210063785,
+                "p95Ms": 0.09999999403953552,
+                "p99Ms": 0.10000002384185791,
+                "maxMs": 0.10000002384185791
+              },
+              "block presentation updates": {
+                "sampleCount": 281,
+                "averageMs": 0.030960853837987284,
+                "p95Ms": 0.10000002384185791,
+                "p99Ms": 0.10000002384185791,
+                "maxMs": 0.20000001788139343
+              },
+              "validateWorldStateInDev": {
+                "sampleCount": 281,
+                "averageMs": 0.016370106740354218,
+                "p95Ms": 0,
+                "p99Ms": 1.399999976158142,
+                "maxMs": 1.600000023841858
+              },
+              "history publish/notify": {
+                "sampleCount": 281,
+                "averageMs": 0.0007117437298187582,
+                "p95Ms": 0,
+                "p99Ms": 0,
+                "maxMs": 0.09999999403953552
+              },
+              "history UI query derivation": {
+                "sampleCount": 281,
+                "averageMs": 0,
+                "p95Ms": 0,
+                "p99Ms": 0,
+                "maxMs": 0
+              },
+              "presentation CPU": {
+                "sampleCount": 281,
+                "averageMs": 0.07117437648179269,
+                "p95Ms": 0.19999998807907104,
+                "p99Ms": 0.4000000059604645,
+                "maxMs": 0.5
+              },
+              "frame delta": {
+                "sampleCount": 281,
+                "averageMs": 18.572953736654803,
+                "p95Ms": 25.69999998807907,
+                "p99Ms": 49.900000005960464,
+                "maxMs": 368.19999998807907
+              },
+              "unattributed frame time": {
+                "sampleCount": 281,
+                "averageMs": 12.365480426367492,
+                "p95Ms": 16.900000035762787,
+                "p99Ms": 37.400000005960464,
+                "maxMs": 349.39999997615814
+              }
+            },
+            "statisticsWindow": "rolling 300 frames (or available samples)",
+            "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback",
+            "interpretation": "Nested phases overlap; unattributed = max(0, frame delta - current Core CPU), includes frame pacing/render/React/GC; not measured renderer CPU."
+          },
+          "phaser": {
+            "Phaser scene update CPU": {
+              "sampleCount": 281,
+              "averageMs": 6.668683273936506,
+              "p95Ms": 16.099999994039536,
+              "p99Ms": 32.69999998807907,
+              "maxMs": 50.89999997615814
+            },
+            "Phaser canvas render CPU": {
+              "sampleCount": 281,
+              "averageMs": 2.5900355875492096,
+              "p95Ms": 3,
+              "p99Ms": 7.299999982118607,
+              "maxMs": 14.199999988079071
+            }
+          },
+          "clockMismatches": 0,
+          "heapBefore": 168683153,
+          "heapAfter": 134790703
+        },
+        {
+          "panel": false,
+          "wallMs": 5000.9000000059605,
+          "startMonth": 6003,
+          "endMonth": 6043,
+          "configuredSpeed": 4,
+          "effectiveMonthsPerSecond": 7.998400319936012,
+          "runtime": {
+            "renderFrameCount": 297,
+            "frameDeltaMs": {
+              "current": 22.100000023841858,
+              "average": 16.85185185185185,
+              "p95": 18.19999998807907,
+              "max": 47.900000005960464
+            },
+            "longFrames": {
+              "over25ms": 3,
+              "over33ms": 3,
+              "over50ms": 0,
+              "over100ms": 0
+            },
+            "simulationStepsPerFrame": {
+              "average": 3.9797979797979797,
+              "max": 5
+            },
+            "fixedStepCpuMs": {
+              "average": 6.0562289578946755,
+              "p95": 7.899999976158142
+            },
+            "presentationCpuMs": {
+              "average": 0.07575757515550864,
+              "p95": 0.19999998807907104
+            },
+            "sampleCount": 297,
+            "rollingWindowCapacity": 300,
+            "statisticsWindow": "rolling 300 frames (or available samples)",
+            "longFrameCounterWindow": "session cumulative since hydration/reset",
+            "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback"
+          },
+          "attribution": {
+            "enabled": true,
+            "timings": {
+              "Core CPU": {
+                "sampleCount": 297,
+                "averageMs": 6.131986533050184,
+                "p95Ms": 8,
+                "p99Ms": 32.599999994039536,
+                "maxMs": 44.80000001192093
+              },
+              "fixed simulation CPU": {
+                "sampleCount": 297,
+                "averageMs": 6.0562289578946755,
+                "p95Ms": 7.899999976158142,
+                "p99Ms": 31,
+                "maxMs": 42.80000001192093
+              },
+              "manual Arcade physics step": {
+                "sampleCount": 297,
+                "averageMs": 5.131649833837342,
+                "p95Ms": 5.5999999940395355,
+                "p99Ms": 6.300000011920929,
+                "maxMs": 6.699999988079071
+              },
+              "logical simulation step": {
+                "sampleCount": 297,
+                "averageMs": 0,
+                "p95Ms": 0,
+                "p99Ms": 0,
+                "maxMs": 0
+              },
+              "AutoSimulator.advance": {
+                "sampleCount": 297,
+                "averageMs": 0.8023569021963511,
+                "p95Ms": 2.2999999821186066,
+                "p99Ms": 25.5,
+                "maxMs": 37.400000005960464
+              },
+              "determinism checkpoint": {
+                "sampleCount": 297,
+                "averageMs": 0,
+                "p95Ms": 0,
+                "p99Ms": 0,
+                "maxMs": 0
+              },
+              "LogicalUnitRegistry.syncVisuals": {
+                "sampleCount": 297,
+                "averageMs": 0,
+                "p95Ms": 0,
+                "p99Ms": 0,
+                "maxMs": 0
+              },
+              "faction labels": {
+                "sampleCount": 297,
+                "averageMs": 0.008080808100876984,
+                "p95Ms": 0,
+                "p99Ms": 0.4000000059604645,
+                "maxMs": 0.4000000059604645
+              },
+              "faction focus": {
+                "sampleCount": 297,
+                "averageMs": 0.009090908950426763,
+                "p95Ms": 0.09999999403953552,
+                "p99Ms": 0.10000002384185791,
+                "maxMs": 0.19999998807907104
+              },
+              "player presentation updates": {
+                "sampleCount": 297,
+                "averageMs": 0.013131312950692996,
+                "p95Ms": 0.09999999403953552,
+                "p99Ms": 0.10000002384185791,
+                "maxMs": 0.10000002384185791
+              },
+              "block presentation updates": {
+                "sampleCount": 297,
+                "averageMs": 0.015824915684433498,
+                "p95Ms": 0.09999999403953552,
+                "p99Ms": 0.10000002384185791,
+                "maxMs": 0.20000001788139343
+              },
+              "validateWorldStateInDev": {
+                "sampleCount": 297,
+                "averageMs": 0.014478114417907766,
+                "p95Ms": 0,
+                "p99Ms": 1.199999988079071,
+                "maxMs": 1.699999988079071
+              },
+              "history publish/notify": {
+                "sampleCount": 297,
+                "averageMs": 0,
+                "p95Ms": 0,
+                "p99Ms": 0,
+                "maxMs": 0
+              },
+              "history UI query derivation": {
+                "sampleCount": 297,
+                "averageMs": 0,
+                "p95Ms": 0,
+                "p99Ms": 0,
+                "maxMs": 0
+              },
+              "presentation CPU": {
+                "sampleCount": 297,
+                "averageMs": 0.04949494895308909,
+                "p95Ms": 0.10000002384185791,
+                "p99Ms": 0.4000000059604645,
+                "maxMs": 0.5
+              },
+              "frame delta": {
+                "sampleCount": 297,
+                "averageMs": 16.85185185185185,
+                "p95Ms": 18.19999998807907,
+                "p99Ms": 35.599999994039536,
+                "maxMs": 47.900000005960464
+              },
+              "unattributed frame time": {
+                "sampleCount": 297,
+                "averageMs": 10.977104376161138,
+                "p95Ms": 13,
+                "p99Ms": 31.099999994039536,
+                "maxMs": 43.5
+              }
+            },
+            "statisticsWindow": "rolling 300 frames (or available samples)",
+            "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback",
+            "interpretation": "Nested phases overlap; unattributed = max(0, frame delta - current Core CPU), includes frame pacing/render/React/GC; not measured renderer CPU."
+          },
+          "phaser": {
+            "Phaser scene update CPU": {
+              "sampleCount": 297,
+              "averageMs": 6.201010101471685,
+              "p95Ms": 8,
+              "p99Ms": 32.599999994039536,
+              "maxMs": 44.80000001192093
+            },
+            "Phaser canvas render CPU": {
+              "sampleCount": 297,
+              "averageMs": 2.3841750836532927,
+              "p95Ms": 2.5999999940395355,
+              "p99Ms": 2.7000000178813934,
+              "maxMs": 2.9000000059604645
+            }
+          },
+          "clockMismatches": 0,
+          "heapBefore": 143111826,
+          "heapAfter": 130328250
+        }
+      ],
+      "longTasks": [
+        7974,
+        56,
+        3064
+      ],
+      "scope": "Actual native 500-year DTO, React controls and offscreen Electron Phaser frame loop; frame residual includes pacing/render/React/GC and does not identify GPU or GC costs. Not human visual acceptance."
+    },
+    "before-family": {
+      "seed": "regional-1",
+      "worldMonth": 6000,
+      "viewport": {
+        "width": 1440,
+        "height": 763
+      },
+      "families": 18,
+      "associatedFamilies": 4,
+      "members": 49,
+      "maxFamilyMembers": 10,
+      "events": 14682,
+      "people": 118,
+      "direct": [
+        {
+          "repeat": 0,
+          "listSummaryMs": 16.80000001192093,
+          "listCache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 0,
+            "events": 14682
+          },
+          "archiveMs": 17.099999994039536,
+          "importantMs": 0,
+          "parentBridgeMs": 0,
+          "layoutMs": 0.30000001192092896,
+          "cardModel": {
+            "archiveMs": 0,
+            "importantMs": 0,
+            "bridgeMs": 0,
+            "cardsMs": 1,
+            "layoutMs": 0,
+            "totalMs": 1
+          },
+          "retainedNodes": 1,
+          "registeredNodes": 3,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 0,
+            "projectionBuilds": 1,
+            "hits": 3,
+            "invalidations": 1,
+            "summaryCache": 0,
+            "archiveCache": 1,
+            "events": 14682
+          }
+        },
+        {
+          "repeat": 1,
+          "listSummaryMs": 16.30000001192093,
+          "listCache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 0,
+            "events": 14682
+          },
+          "archiveMs": 16.600000023841858,
+          "importantMs": 0,
+          "parentBridgeMs": 0,
+          "layoutMs": 0,
+          "cardModel": {
+            "archiveMs": 0,
+            "importantMs": 0,
+            "bridgeMs": 0,
+            "cardsMs": 0.29999998211860657,
+            "layoutMs": 0.20000001788139343,
+            "totalMs": 0.5
+          },
+          "retainedNodes": 1,
+          "registeredNodes": 3,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 0,
+            "projectionBuilds": 1,
+            "hits": 3,
+            "invalidations": 1,
+            "summaryCache": 0,
+            "archiveCache": 1,
+            "events": 14682
+          }
+        },
+        {
+          "repeat": 2,
+          "listSummaryMs": 15.599999994039536,
+          "listCache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 0,
+            "events": 14682
+          },
+          "archiveMs": 16.600000023841858,
+          "importantMs": 0,
+          "parentBridgeMs": 0,
+          "layoutMs": 0.09999999403953552,
+          "cardModel": {
+            "archiveMs": 0,
+            "importantMs": 0,
+            "bridgeMs": 0,
+            "cardsMs": 0.4000000059604645,
+            "layoutMs": 0,
+            "totalMs": 0.4000000059604645
+          },
+          "retainedNodes": 1,
+          "registeredNodes": 3,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 0,
+            "projectionBuilds": 1,
+            "hits": 3,
+            "invalidations": 1,
+            "summaryCache": 0,
+            "archiveCache": 1,
+            "events": 14682
+          }
+        }
+      ],
+      "phases": [
+        {
+          "phase": "list-open-0",
+          "wallMs": 31,
+          "settledMs": 41,
+          "reactMs": 26.900000035762787,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 0,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "all-houses-0",
+          "wallMs": 4.299999982118607,
+          "settledMs": 29.19999998807907,
+          "reactMs": 2.600000023841858,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 0,
+            "events": 14682
+          },
+          "dom": 28,
+          "longTasks": []
+        },
+        {
+          "phase": "family-open-0",
+          "wallMs": 11.800000011920929,
+          "settledMs": 33.30000001192093,
+          "reactMs": 9.5,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 3,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 34,
+          "longTasks": []
+        },
+        {
+          "phase": "select-person-0",
+          "wallMs": 4.699999988079071,
+          "settledMs": 33.30000001192093,
+          "reactMs": 5.299999982118607,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "zoom-0",
+          "wallMs": 5,
+          "settledMs": 33.29999998211861,
+          "reactMs": 3.5,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "fit-0",
+          "wallMs": 4.4000000059604645,
+          "settledMs": 33.30000001192093,
+          "reactMs": 3,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "locate-founder-0",
+          "wallMs": 3.5999999940395355,
+          "settledMs": 32.19999998807907,
+          "reactMs": 3.2000000178813934,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "return-0",
+          "wallMs": 2.9000000059604645,
+          "settledMs": 34.60000002384186,
+          "reactMs": 2.800000011920929,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 15,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "all-after-return-0",
+          "wallMs": 2.7999999821186066,
+          "settledMs": 33.099999994039536,
+          "reactMs": 3.199999988079071,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 15,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 28,
+          "longTasks": []
+        },
+        {
+          "phase": "switch-family-0",
+          "wallMs": 6.5999999940395355,
+          "settledMs": 31.30000001192093,
+          "reactMs": 6.199999928474426,
+          "mountedNodes": 2,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 20,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 42,
+          "longTasks": []
+        },
+        {
+          "phase": "close-0",
+          "wallMs": 1.0999999940395355,
+          "settledMs": 35.29999998211861,
+          "reactMs": 0,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 20,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 0,
+          "longTasks": []
+        },
+        {
+          "phase": "reopen-0",
+          "wallMs": 2.300000011920929,
+          "settledMs": 33.20000001788139,
+          "reactMs": 1.800000011920929,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 24,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "switch-faction-0",
+          "wallMs": 2.800000011920929,
+          "settledMs": 32,
+          "reactMs": 1.699999988079071,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 6,
+            "projectionBuilds": 2,
+            "hits": 24,
+            "invalidations": 1,
+            "summaryCache": 6,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "close-again-0",
+          "wallMs": 0.5,
+          "settledMs": 34.30000001192093,
+          "reactMs": 0,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 6,
+            "projectionBuilds": 2,
+            "hits": 24,
+            "invalidations": 1,
+            "summaryCache": 6,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 0,
+          "longTasks": []
+        },
+        {
+          "phase": "list-open-1",
+          "wallMs": 24.69999998807907,
+          "settledMs": 37.69999998807907,
+          "reactMs": 22.600000023841858,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 0,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "all-houses-1",
+          "wallMs": 2.5,
+          "settledMs": 33,
+          "reactMs": 2.2000000178813934,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 0,
+            "events": 14682
+          },
+          "dom": 28,
+          "longTasks": []
+        },
+        {
+          "phase": "family-open-1",
+          "wallMs": 5.699999988079071,
+          "settledMs": 33.19999998807907,
+          "reactMs": 5.100000023841858,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 3,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 34,
+          "longTasks": []
+        },
+        {
+          "phase": "select-person-1",
+          "wallMs": 3.9000000059604645,
+          "settledMs": 33.5,
+          "reactMs": 4.999999970197678,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "zoom-1",
+          "wallMs": 3.2000000178813934,
+          "settledMs": 33.20000001788139,
+          "reactMs": 2.5999999940395355,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "fit-1",
+          "wallMs": 3.0999999940395355,
+          "settledMs": 33.19999998807907,
+          "reactMs": 2.300000011920929,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "locate-founder-1",
+          "wallMs": 3.0999999940395355,
+          "settledMs": 31.30000001192093,
+          "reactMs": 2.5,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "return-1",
+          "wallMs": 2.4000000059604645,
+          "settledMs": 35.400000005960464,
+          "reactMs": 2.2000000178813934,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 15,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "all-after-return-1",
+          "wallMs": 2.199999988079071,
+          "settledMs": 33.39999997615814,
+          "reactMs": 2.2999999821186066,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 15,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 28,
+          "longTasks": []
+        },
+        {
+          "phase": "switch-family-1",
+          "wallMs": 6.4000000059604645,
+          "settledMs": 33.20000001788139,
+          "reactMs": 6.0999999940395355,
+          "mountedNodes": 2,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 20,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 42,
+          "longTasks": []
+        },
+        {
+          "phase": "close-1",
+          "wallMs": 0.699999988079071,
+          "settledMs": 33.30000001192093,
+          "reactMs": 0,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 20,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 0,
+          "longTasks": []
+        },
+        {
+          "phase": "reopen-1",
+          "wallMs": 3.2999999821186066,
+          "settledMs": 33.29999998211861,
+          "reactMs": 2.5,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 24,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "switch-faction-1",
+          "wallMs": 3.800000011920929,
+          "settledMs": 32.80000001192093,
+          "reactMs": 2.5999999940395355,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 6,
+            "projectionBuilds": 2,
+            "hits": 24,
+            "invalidations": 1,
+            "summaryCache": 6,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "close-again-1",
+          "wallMs": 0.5999999940395355,
+          "settledMs": 33.20000001788139,
+          "reactMs": 0,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 6,
+            "projectionBuilds": 2,
+            "hits": 24,
+            "invalidations": 1,
+            "summaryCache": 6,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 0,
+          "longTasks": []
+        },
+        {
+          "phase": "list-open-2",
+          "wallMs": 19.5,
+          "settledMs": 21.30000001192093,
+          "reactMs": 18.599999994039536,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 0,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "all-houses-2",
+          "wallMs": 1.4000000059604645,
+          "settledMs": 33.099999994039536,
+          "reactMs": 1.4999999701976776,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 0,
+            "events": 14682
+          },
+          "dom": 28,
+          "longTasks": []
+        },
+        {
+          "phase": "family-open-2",
+          "wallMs": 7.9000000059604645,
+          "settledMs": 37.30000001192093,
+          "reactMs": 7.999999970197678,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 3,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 34,
+          "longTasks": []
+        },
+        {
+          "phase": "select-person-2",
+          "wallMs": 3.9000000059604645,
+          "settledMs": 31.5,
+          "reactMs": 4.899999976158142,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "zoom-2",
+          "wallMs": 3.2000000178813934,
+          "settledMs": 30.700000017881393,
+          "reactMs": 2.2999999821186066,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "fit-2",
+          "wallMs": 2.899999976158142,
+          "settledMs": 33.29999998211861,
+          "reactMs": 2.199999988079071,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "locate-founder-2",
+          "wallMs": 2.5999999940395355,
+          "settledMs": 33.30000001192093,
+          "reactMs": 1.9999999701976776,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "return-2",
+          "wallMs": 2.199999988079071,
+          "settledMs": 33.29999998211861,
+          "reactMs": 2.199999988079071,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 15,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "all-after-return-2",
+          "wallMs": 2.300000011920929,
+          "settledMs": 31.700000017881393,
+          "reactMs": 2.399999976158142,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 15,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 28,
+          "longTasks": []
+        },
+        {
+          "phase": "switch-family-2",
+          "wallMs": 6.800000011920929,
+          "settledMs": 34.80000001192093,
+          "reactMs": 6.399999976158142,
+          "mountedNodes": 2,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 20,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 42,
+          "longTasks": []
+        },
+        {
+          "phase": "close-2",
+          "wallMs": 0.699999988079071,
+          "settledMs": 33.39999997615814,
+          "reactMs": 0,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 20,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 0,
+          "longTasks": []
+        },
+        {
+          "phase": "reopen-2",
+          "wallMs": 4.100000023841858,
+          "settledMs": 33.30000001192093,
+          "reactMs": 3.199999988079071,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 24,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "switch-faction-2",
+          "wallMs": 4.4000000059604645,
+          "settledMs": 32.70000001788139,
+          "reactMs": 3.199999988079071,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 6,
+            "projectionBuilds": 2,
+            "hits": 24,
+            "invalidations": 1,
+            "summaryCache": 6,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "close-again-2",
+          "wallMs": 0.699999988079071,
+          "settledMs": 33.099999994039536,
+          "reactMs": 0,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 6,
+            "projectionBuilds": 2,
+            "hits": 24,
+            "invalidations": 1,
+            "summaryCache": 6,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 0,
+          "longTasks": []
+        }
+      ],
+      "longTasksSupported": true,
+      "heapBytes": 225287346,
+      "cache": {
+        "indexBuilds": 1,
+        "summaryBuilds": 6,
+        "projectionBuilds": 2,
+        "hits": 24,
+        "invalidations": 1,
+        "summaryCache": 6,
+        "archiveCache": 2,
+        "events": 14682
+      },
+      "beforeHash": "9701a5d2c348b8c2d8057b1c37b358eb9201fe8e12cc5fa7d7891e2d961f4137",
+      "afterHash": "9701a5d2c348b8c2d8057b1c37b358eb9201fe8e12cc5fa7d7891e2d961f4137",
+      "unchanged": true,
+      "scope": "Three repetitions on the same real hydrated saved world; actual React commits, DOM budget and controls. Isolated API timings overlap and are not summed. No screenshot or human visual Gate.",
+      "longTaskCount": 3,
+      "registeredBirthAudit": {
+        "scope": "READ_ONLY_COUNTERFACTUAL_COVERAGE_ON_REAL_EVENTS_NOT_AN_ALTERNATIVE_SIMULATION",
+        "considered": 31,
+        "retained": 31,
+        "rejected": 0,
+        "recordedMilitaryLineagesLost": 0,
+        "recordedPersonalGrantLineagesLost": 0,
+        "recordedInheritanceLineagesLost": 0,
+        "recordedNewPeriodLineagesLost": 0
+      }
+    },
+    "after-phase": {
+      "seed": "regional-1",
+      "inputSchemaVersion": 62,
+      "inputSeed": "regional-1",
+      "startMonth": 6000,
+      "months": 300,
+      "repetitions": 3,
+      "configuredSpeed": 4,
+      "input": {
+        "users": 138,
+        "factions": 26,
+        "rulers": 829,
+        "events": 14682
+      },
+      "scope": "Manual authoritative fixed steps with real Arcade physics; render loop stopped. Separate from live Electron frame measurement and human acceptance.",
+      "rows": [
+        {
+          "repeat": 0,
+          "hydrationMs": 3384.9000000059605,
+          "exportMs": 3521.7999999821186,
+          "simulationWallMs": 8413.100000023842,
+          "heapBefore": 138535583,
+          "heapAfter": 237634322,
+          "canonicalWithoutVersionSha256": "7f8a21781bfc656102bf9b9ff39a9f185603535ee90b382a4fccda531f994121",
+          "clockMismatches": 0,
+          "uniqueMonths": 300,
+          "canonicalSha256": "2bf0d8bb7e2ad5fbdd08b3a462af04358239cdd813c0ef61a380b19bfba8c063"
+        },
+        {
+          "repeat": 1,
+          "hydrationMs": 4411.700000017881,
+          "exportMs": 3922.800000011921,
+          "simulationWallMs": 9286.200000017881,
+          "heapBefore": 166883423,
+          "heapAfter": 254719573,
+          "canonicalWithoutVersionSha256": "7f8a21781bfc656102bf9b9ff39a9f185603535ee90b382a4fccda531f994121",
+          "clockMismatches": 0,
+          "uniqueMonths": 300,
+          "canonicalSha256": "2bf0d8bb7e2ad5fbdd08b3a462af04358239cdd813c0ef61a380b19bfba8c063"
+        },
+        {
+          "repeat": 2,
+          "hydrationMs": 3065.9000000059605,
+          "exportMs": 4340.300000011921,
+          "simulationWallMs": 8308,
+          "heapBefore": 255816679,
+          "heapAfter": 234710209,
+          "canonicalWithoutVersionSha256": "7f8a21781bfc656102bf9b9ff39a9f185603535ee90b382a4fccda531f994121",
+          "clockMismatches": 0,
+          "uniqueMonths": 300,
+          "canonicalSha256": "2bf0d8bb7e2ad5fbdd08b3a462af04358239cdd813c0ef61a380b19bfba8c063"
+        }
+      ],
+      "medianOfThreeRepetitions": {
+        "MilitaryCommandRegistry.update": {
+          "sampleCount": 300,
+          "averageMs": 0.9983333338300387,
+          "p95Ms": 2.2000000178813934,
+          "p99Ms": 27.200000017881393,
+          "maxMs": 59.5
+        },
+        "MilitaryCommandRegistry.update/January": {
+          "sampleCount": 25,
+          "averageMs": 11.044000000953675,
+          "p95Ms": 42.099999994039536,
+          "p99Ms": 59.5,
+          "maxMs": 59.5
+        },
+        "MilitaryCommandRegistry.update/ordinary": {
+          "sampleCount": 275,
+          "averageMs": 0.08509090954607183,
+          "p95Ms": 0.19999998807907104,
+          "p99Ms": 0.20000001788139343,
+          "maxMs": 0.4000000059604645
+        },
+        "DynastyRegistry.update": {
+          "sampleCount": 300,
+          "averageMs": 2.5773333339889843,
+          "p95Ms": 13.200000017881393,
+          "p99Ms": 27.100000023841858,
+          "maxMs": 39
+        },
+        "DynastyRegistry.update/January": {
+          "sampleCount": 25,
+          "averageMs": 4.084000000953674,
+          "p95Ms": 13,
+          "p99Ms": 13.200000017881393,
+          "maxMs": 13.200000017881393
+        },
+        "DynastyRegistry.update/ordinary": {
+          "sampleCount": 275,
+          "averageMs": 2.443636364394968,
+          "p95Ms": 13.599999994039536,
+          "p99Ms": 28.5,
+          "maxMs": 39
+        },
+        "Military honors": {
+          "sampleCount": 300,
+          "averageMs": 0.030000000099341076,
+          "p95Ms": 0.30000001192092896,
+          "p99Ms": 0.4000000059604645,
+          "maxMs": 0.5
+        },
+        "Military nobility": {
+          "sampleCount": 300,
+          "averageMs": 0.1956666667262713,
+          "p95Ms": 0.20000001788139343,
+          "p99Ms": 4.200000017881393,
+          "maxMs": 11.900000005960464
+        },
+        "Military families": {
+          "sampleCount": 300,
+          "averageMs": 0.08633333335320155,
+          "p95Ms": 0,
+          "p99Ms": 2.0999999940395355,
+          "maxMs": 5.5999999940395355
+        },
+        "Military appanages": {
+          "sampleCount": 300,
+          "averageMs": 0.021333333750565845,
+          "p95Ms": 0.09999999403953552,
+          "p99Ms": 0.10000002384185791,
+          "maxMs": 0.10000002384185791
+        },
+        "Royal household births": {
+          "sampleCount": 300,
+          "averageMs": 1.4123333325982095,
+          "p95Ms": 12.199999988079071,
+          "p99Ms": 13.099999994039536,
+          "maxMs": 24.299999982118607
+        },
+        "Royal noble succession": {
+          "sampleCount": 300,
+          "averageMs": 0.059000000556310016,
+          "p95Ms": 0.10000002384185791,
+          "p99Ms": 0.20000001788139343,
+          "maxMs": 0.5
+        },
+        "Family household births and life": {
+          "sampleCount": 300,
+          "averageMs": 0.0623333332935969,
+          "p95Ms": 0.10000002384185791,
+          "p99Ms": 0.20000001788139343,
+          "maxMs": 0.20000001788139343
+        },
+        "Family household births and life/January": {
+          "sampleCount": 25,
+          "averageMs": 0.06800000071525573,
+          "p95Ms": 0.10000002384185791,
+          "p99Ms": 0.19999998807907104,
+          "maxMs": 0.19999998807907104
+        },
+        "Family household births and life/ordinary": {
+          "sampleCount": 275,
+          "averageMs": 0.06145454569296403,
+          "p95Ms": 0.10000002384185791,
+          "p99Ms": 0.20000001788139343,
+          "maxMs": 0.20000001788139343
+        },
+        "Family noble succession": {
+          "sampleCount": 300,
+          "averageMs": 0.023666666249434153,
+          "p95Ms": 0.09999999403953552,
+          "p99Ms": 0.10000002384185791,
+          "maxMs": 0.19999998807907104
+        },
+        "Family noble succession/January": {
+          "sampleCount": 25,
+          "averageMs": 0.020000001192092897,
+          "p95Ms": 0.09999999403953552,
+          "p99Ms": 0.09999999403953552,
+          "maxMs": 0.09999999403953552
+        },
+        "Family noble succession/ordinary": {
+          "sampleCount": 275,
+          "averageMs": 0.023999999436465178,
+          "p95Ms": 0.09999999403953552,
+          "p99Ms": 0.10000002384185791,
+          "maxMs": 0.19999998807907104
+        },
+        "Civil administration": {
+          "sampleCount": 300,
+          "averageMs": 1.2306666667262713,
+          "p95Ms": 12.300000011920929,
+          "p99Ms": 15.200000017881393,
+          "maxMs": 27.900000005960464
+        },
+        "Civil administration/January": {
+          "sampleCount": 25,
+          "averageMs": 12.276000000238419,
+          "p95Ms": 25.80000001192093,
+          "p99Ms": 27.900000005960464,
+          "maxMs": 27.900000005960464
+        },
+        "Civil administration/ordinary": {
+          "sampleCount": 275,
+          "averageMs": 0.22654545458880337,
+          "p95Ms": 0.10000002384185791,
+          "p99Ms": 12.5,
+          "maxMs": 13.099999994039536
+        },
+        "Military/life": {
+          "sampleCount": 300,
+          "averageMs": 0.006333333353201548,
+          "p95Ms": 0.09999999403953552,
+          "p99Ms": 0.10000002384185791,
+          "maxMs": 0.10000002384185791
+        },
+        "Military/formations": {
+          "sampleCount": 300,
+          "averageMs": 0.009000000258286794,
+          "p95Ms": 0.09999999403953552,
+          "p99Ms": 0.10000002384185791,
+          "maxMs": 0.10000002384185791
+        },
+        "Military/insurgent commands": {
+          "sampleCount": 300,
+          "averageMs": 0.05000000059604645,
+          "p95Ms": 0.10000002384185791,
+          "p99Ms": 0.19999998807907104,
+          "maxMs": 0.20000001788139343
+        },
+        "Military/orders": {
+          "sampleCount": 300,
+          "averageMs": 0.00399999996026357,
+          "p95Ms": 0,
+          "p99Ms": 0.10000002384185791,
+          "maxMs": 0.19999998807907104
+        },
+        "Military/order evidence": {
+          "sampleCount": 300,
+          "averageMs": 0.009333333174387615,
+          "p95Ms": 0.09999999403953552,
+          "p99Ms": 0.10000002384185791,
+          "maxMs": 0.10000002384185791
+        },
+        "Military/promotions": {
+          "sampleCount": 300,
+          "averageMs": 0.37833333333333335,
+          "p95Ms": 0,
+          "p99Ms": 9.800000011920929,
+          "maxMs": 27.299999982118607
+        },
+        "Military/family eligibility": {
+          "sampleCount": 300,
+          "averageMs": 0.005999999940395355,
+          "p95Ms": 0.09999999403953552,
+          "p99Ms": 0.19999998807907104,
+          "maxMs": 0.20000001788139343
+        },
+        "Military/initial candidates": {
+          "sampleCount": 300,
+          "averageMs": 0.0439999994635582,
+          "p95Ms": 0.4999999701976776,
+          "p99Ms": 0.6000000238418579,
+          "maxMs": 1.0999999642372131
+        },
+        "Military/royal eligibility": {
+          "sampleCount": 300,
+          "averageMs": 0.05133333265781403,
+          "p95Ms": 0.5999999940395355,
+          "p99Ms": 0.699999988079071,
+          "maxMs": 0.800000011920929
+        },
+        "Military/weights": {
+          "sampleCount": 300,
+          "averageMs": 0.012666666408379873,
+          "p95Ms": 0.09999999403953552,
+          "p99Ms": 0.20000001788139343,
+          "maxMs": 0.3999999761581421
+        },
+        "Military/title eligibility": {
+          "sampleCount": 300,
+          "averageMs": 0.0013333333532015482,
+          "p95Ms": 0,
+          "p99Ms": 0.09999999403953552,
+          "maxMs": 0.10000002384185791
+        },
+        "Military/appointment transaction": {
+          "sampleCount": 300,
+          "averageMs": 0.36466666668653486,
+          "p95Ms": 0,
+          "p99Ms": 0,
+          "maxMs": 47.79999998211861
+        },
+        "Dynasty/deposition opportunity": {
+          "sampleCount": 300,
+          "averageMs": 0.24100000003973643,
+          "p95Ms": 0.5999999940395355,
+          "p99Ms": 4.899999976158142,
+          "maxMs": 12.199999988079071
+        },
+        "Dynasty/pardons": {
+          "sampleCount": 300,
+          "averageMs": 0.009666666785875955,
+          "p95Ms": 0.09999999403953552,
+          "p99Ms": 0.20000001788139343,
+          "maxMs": 0.30000001192092896
+        },
+        "Dynasty/royal honors": {
+          "sampleCount": 300,
+          "averageMs": 0.05566666722297668,
+          "p95Ms": 0.20000001788139343,
+          "p99Ms": 0.29999998211860657,
+          "maxMs": 0.4000000059604645
+        },
+        "Dynasty/life archives": {
+          "sampleCount": 300,
+          "averageMs": 0.8546666669845581,
+          "p95Ms": 11,
+          "p99Ms": 12.5,
+          "maxMs": 13.5
+        },
+        "Dynasty/heir life": {
+          "sampleCount": 300,
+          "averageMs": 0.06266666601101557,
+          "p95Ms": 0.20000001788139343,
+          "p99Ms": 0.4000000059604645,
+          "maxMs": 0.5
+        },
+        "Dynasty/ruling monarch": {
+          "sampleCount": 300,
+          "averageMs": 0.005666666626930237,
+          "p95Ms": 0.09999999403953552,
+          "p99Ms": 0.10000002384185791,
+          "maxMs": 0.19999998807907104
+        },
+        "Dynasty/heir qualification": {
+          "sampleCount": 300,
+          "averageMs": 0.8053333328167598,
+          "p95Ms": 0.5,
+          "p99Ms": 22.69999998807907,
+          "maxMs": 25.30000001192093
+        },
+        "Dynasty/ruler body": {
+          "sampleCount": 300,
+          "averageMs": 0.004666666686534882,
+          "p95Ms": 0,
+          "p99Ms": 0.10000002384185791,
+          "maxMs": 0.10000002384185791
+        },
+        "Dynasty/court qualification and acts": {
+          "sampleCount": 300,
+          "averageMs": 0.3076666672031085,
+          "p95Ms": 0.800000011920929,
+          "p99Ms": 5.0999999940395355,
+          "maxMs": 12.199999988079071
+        },
+        "Dynasty/succession transaction": {
+          "sampleCount": 300,
+          "averageMs": 0.5303333335121473,
+          "p95Ms": 0,
+          "p99Ms": 26.600000023841858,
+          "maxMs": 29.099999994039536
+        },
+        "total fixed/month step": {
+          "sampleCount": 300,
+          "averageMs": 8.497999999026458,
+          "p95Ms": 40.900000005960464,
+          "p99Ms": 67.90000000596046,
+          "maxMs": 113.5
+        },
+        "total fixed/month step/January": {
+          "sampleCount": 25,
+          "averageMs": 44.640000002384184,
+          "p95Ms": 80.80000001192093,
+          "p99Ms": 113.5,
+          "maxMs": 113.5
+        },
+        "total fixed/month step/ordinary": {
+          "sampleCount": 275,
+          "averageMs": 5.212363635084846,
+          "p95Ms": 24.69999998807907,
+          "p99Ms": 38.900000005960464,
+          "maxMs": 53.39999997615814
+        }
+      }
+    },
+    "after-profile": {
+      "familyDisplay": {
+        "raw": 18,
+        "visible": 14
+      },
+      "seed": "regional-1",
+      "expectUnified": true,
+      "month": 6000,
+      "checks": [
+        "civil deep link shows actual identity",
+        "civil shares real ability bars",
+        "civil shares portrait",
+        "civil deep link shows actual identity",
+        "civil shares real ability bars",
+        "civil shares portrait",
+        "deceased governor has death and ended tenure",
+        "civil deep link shows actual identity",
+        "civil shares real ability bars",
+        "civil shares portrait",
+        "civil deep link shows actual identity",
+        "civil shares real ability bars",
+        "civil shares portrait",
+        "civil deep link shows actual identity",
+        "civil shares real ability bars",
+        "civil shares portrait",
+        "civil deep link shows actual identity",
+        "civil shares real ability bars",
+        "civil shares portrait",
+        "civil deep link shows actual identity",
+        "civil shares real ability bars",
+        "civil shares portrait",
+        "military shares ability bars",
+        "all archive reads preserve complete canonical state and RNG",
+        "live4x transaction month matches actual clock"
+      ],
+      "rows": [
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1932327966-4978",
+          "openMs": 39.400000005960464,
+          "dom": 90
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1493787912--221",
+          "openMs": 95.90000000596046,
+          "dom": 404
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1535869355-5172",
+          "openMs": 46.900000005960464,
+          "dom": 439
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1306532530-5024",
+          "openMs": 18.599999994039536,
+          "dom": 109
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1359923504-5339",
+          "openMs": 14.099999994039536,
+          "dom": 111
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1143912061-5302",
+          "openMs": 14,
+          "dom": 83
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1306532561-5333",
+          "openMs": 15.700000017881393,
+          "dom": 106
+        },
+        {
+          "kind": "MILITARY",
+          "personId": "military-person-1",
+          "openMs": 150.09999999403954
+        }
+      ],
+      "react": {
+        "commits": 36,
+        "totalMs": 186.40000015497208
+      },
+      "frames": [
+        {
+          "panel": true,
+          "wallMs": 5001.199999988079,
+          "startMonth": 6003,
+          "endMonth": 6042,
+          "configuredSpeed": 4,
+          "effectiveMonthsPerSecond": 7.798128449190787,
+          "runtime": {
+            "renderFrameCount": 296,
+            "frameDeltaMs": {
+              "current": 17.099999994039536,
+              "average": 16.890878378338105,
+              "p95": 18.200000017881393,
+              "max": 56.900000005960464
+            },
+            "longFrames": {
+              "over25ms": 8,
+              "over33ms": 3,
+              "over50ms": 1,
+              "over100ms": 0
+            },
+            "simulationStepsPerFrame": {
+              "average": 3.9662162162162162,
+              "max": 5
+            },
+            "fixedStepCpuMs": {
+              "average": 6.087162160994233,
+              "p95": 8.199999988079071
+            },
+            "presentationCpuMs": {
+              "average": 0.0831081075845538,
+              "p95": 0.20000001788139343
+            },
+            "sampleCount": 296,
+            "rollingWindowCapacity": 300,
+            "statisticsWindow": "rolling 300 frames (or available samples)",
+            "longFrameCounterWindow": "session cumulative since hydration/reset",
+            "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback"
+          },
+          "attribution": {
+            "enabled": true,
+            "timings": {
+              "Core CPU": {
+                "sampleCount": 296,
+                "averageMs": 6.170270268578787,
+                "p95Ms": 8.299999982118607,
+                "p99Ms": 30.799999982118607,
+                "maxMs": 48.900000005960464
+              },
+              "fixed simulation CPU": {
+                "sampleCount": 296,
+                "averageMs": 6.087162160994233,
+                "p95Ms": 8.199999988079071,
+                "p99Ms": 29.299999982118607,
+                "maxMs": 46.900000005960464
+              },
+              "manual Arcade physics step": {
+                "sampleCount": 296,
+                "averageMs": 5.178040539795482,
+                "p95Ms": 5.9000000059604645,
+                "p99Ms": 6.4000000059604645,
+                "maxMs": 6.5
+              },
+              "logical simulation step": {
+                "sampleCount": 296,
+                "averageMs": 0,
+                "p95Ms": 0,
+                "p99Ms": 0,
+                "maxMs": 0
+              },
+              "AutoSimulator.advance": {
+                "sampleCount": 296,
+                "averageMs": 0.7807432434244735,
+                "p95Ms": 2.5,
+                "p99Ms": 23.900000005960464,
+                "maxMs": 42
+              },
+              "determinism checkpoint": {
+                "sampleCount": 296,
+                "averageMs": 0,
+                "p95Ms": 0,
+                "p99Ms": 0,
+                "maxMs": 0
+              },
+              "LogicalUnitRegistry.syncVisuals": {
+                "sampleCount": 296,
+                "averageMs": 0,
+                "p95Ms": 0,
+                "p99Ms": 0,
+                "maxMs": 0
+              },
+              "faction labels": {
+                "sampleCount": 296,
+                "averageMs": 0.008445946046629467,
+                "p95Ms": 0,
+                "p99Ms": 0.30000001192092896,
+                "maxMs": 0.4000000059604645
+              },
+              "faction focus": {
+                "sampleCount": 296,
+                "averageMs": 0.0050675674668840456,
+                "p95Ms": 0,
+                "p99Ms": 0.10000002384185791,
+                "maxMs": 0.19999998807907104
+              },
+              "player presentation updates": {
+                "sampleCount": 296,
+                "averageMs": 0.01722972930685894,
+                "p95Ms": 0.09999999403953552,
+                "p99Ms": 0.10000002384185791,
+                "maxMs": 0.20000001788139343
+              },
+              "block presentation updates": {
+                "sampleCount": 296,
+                "averageMs": 0.018243243062012904,
+                "p95Ms": 0.09999999403953552,
+                "p99Ms": 0.10000002384185791,
+                "maxMs": 0.20000001788139343
+              },
+              "validateWorldStateInDev": {
+                "sampleCount": 296,
+                "averageMs": 0.01587837833810497,
+                "p95Ms": 0,
+                "p99Ms": 1.2000000178813934,
+                "maxMs": 1.5999999940395355
+              },
+              "history publish/notify": {
+                "sampleCount": 296,
+                "averageMs": 0.0006756756354022671,
+                "p95Ms": 0,
+                "p99Ms": 0,
+                "maxMs": 0.09999999403953552
+              },
+              "history UI query derivation": {
+                "sampleCount": 296,
+                "averageMs": 0,
+                "p95Ms": 0,
+                "p99Ms": 0,
+                "maxMs": 0
+              },
+              "presentation CPU": {
+                "sampleCount": 296,
+                "averageMs": 0.051351350706976814,
+                "p95Ms": 0.10000002384185791,
+                "p99Ms": 0.4000000059604645,
+                "maxMs": 0.5
+              },
+              "frame delta": {
+                "sampleCount": 296,
+                "averageMs": 16.890878378338105,
+                "p95Ms": 18.200000017881393,
+                "p99Ms": 38.5,
+                "maxMs": 56.900000005960464
+              },
+              "unattributed frame time": {
+                "sampleCount": 296,
+                "averageMs": 10.968918920972863,
+                "p95Ms": 12.699999988079071,
+                "p99Ms": 32.29999998211861,
+                "maxMs": 51.099999994039536
+              }
+            },
+            "statisticsWindow": "rolling 300 frames (or available samples)",
+            "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback",
+            "interpretation": "Nested phases overlap; unattributed = max(0, frame delta - current Core CPU), includes frame pacing/render/React/GC; not measured renderer CPU."
+          },
+          "phaser": {
+            "Phaser scene update CPU": {
+              "sampleCount": 296,
+              "averageMs": 6.246621619910002,
+              "p95Ms": 8.400000005960464,
+              "p99Ms": 31,
+              "maxMs": 48.900000005960464
+            },
+            "Phaser canvas render CPU": {
+              "sampleCount": 296,
+              "averageMs": 2.362500000140957,
+              "p95Ms": 2.5999999940395355,
+              "p99Ms": 2.7000000178813934,
+              "maxMs": 2.7999999821186066
+            }
+          },
+          "clockMismatches": 0,
+          "heapBefore": 129928076,
+          "heapAfter": 130898809
+        },
+        {
+          "panel": false,
+          "wallMs": 5004,
+          "startMonth": 6003,
+          "endMonth": 6037,
+          "configuredSpeed": 4,
+          "effectiveMonthsPerSecond": 6.794428568581862,
+          "runtime": {
+            "renderFrameCount": 254,
+            "frameDeltaMs": {
+              "current": 16.69999998807907,
+              "average": 16.928346456622513,
+              "p95": 18.5,
+              "max": 48.099999994039536
+            },
+            "longFrames": {
+              "over25ms": 3,
+              "over33ms": 3,
+              "over50ms": 0,
+              "over100ms": 0
+            },
+            "simulationStepsPerFrame": {
+              "average": 4.015748031496063,
+              "max": 5
+            },
+            "fixedStepCpuMs": {
+              "average": 6.222834646115153,
+              "p95": 7.800000011920929
+            },
+            "presentationCpuMs": {
+              "average": 0.07874015818430682,
+              "p95": 0.19999998807907104
+            },
+            "sampleCount": 254,
+            "rollingWindowCapacity": 300,
+            "statisticsWindow": "rolling 300 frames (or available samples)",
+            "longFrameCounterWindow": "session cumulative since hydration/reset",
+            "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback"
+          },
+          "attribution": {
+            "enabled": true,
+            "timings": {
+              "Core CPU": {
+                "sampleCount": 254,
+                "averageMs": 6.3015748042994595,
+                "p95Ms": 8,
+                "p99Ms": 33.30000001192093,
+                "maxMs": 45.30000001192093
+              },
+              "fixed simulation CPU": {
+                "sampleCount": 254,
+                "averageMs": 6.222834646115153,
+                "p95Ms": 7.800000011920929,
+                "p99Ms": 31.599999994039536,
+                "maxMs": 43.5
+              },
+              "manual Arcade physics step": {
+                "sampleCount": 254,
+                "averageMs": 5.2452755896594585,
+                "p95Ms": 5.800000011920929,
+                "p99Ms": 6.699999988079071,
+                "maxMs": 7.199999988079071
+              },
+              "logical simulation step": {
+                "sampleCount": 254,
+                "averageMs": 0,
+                "p95Ms": 0,
+                "p99Ms": 0,
+                "maxMs": 0
+              },
+              "AutoSimulator.advance": {
+                "sampleCount": 254,
+                "averageMs": 0.8488188974969969,
+                "p95Ms": 2.2999999821186066,
+                "p99Ms": 25.799999982118607,
+                "maxMs": 38.099999994039536
+              },
+              "determinism checkpoint": {
+                "sampleCount": 254,
+                "averageMs": 0,
+                "p95Ms": 0,
+                "p99Ms": 0,
+                "maxMs": 0
+              },
+              "LogicalUnitRegistry.syncVisuals": {
+                "sampleCount": 254,
+                "averageMs": 0,
+                "p95Ms": 0,
+                "p99Ms": 0,
+                "maxMs": 0
+              },
+              "faction labels": {
+                "sampleCount": 254,
+                "averageMs": 0.009055118157169011,
+                "p95Ms": 0,
+                "p99Ms": 0.4000000059604645,
+                "maxMs": 0.5
+              },
+              "faction focus": {
+                "sampleCount": 254,
+                "averageMs": 0.00866141751056581,
+                "p95Ms": 0.09999999403953552,
+                "p99Ms": 0.10000002384185791,
+                "maxMs": 0.20000001788139343
+              },
+              "player presentation updates": {
+                "sampleCount": 254,
+                "averageMs": 0.01259842526724958,
+                "p95Ms": 0.09999999403953552,
+                "p99Ms": 0.10000002384185791,
+                "maxMs": 0.10000002384185791
+              },
+              "block presentation updates": {
+                "sampleCount": 254,
+                "averageMs": 0.013385826912451916,
+                "p95Ms": 0.09999999403953552,
+                "p99Ms": 0.10000002384185791,
+                "maxMs": 0.10000002384185791
+              },
+              "validateWorldStateInDev": {
+                "sampleCount": 254,
+                "averageMs": 0.015748031496062992,
+                "p95Ms": 0,
+                "p99Ms": 1.0999999940395355,
+                "maxMs": 1.4000000059604645
+              },
+              "history publish/notify": {
+                "sampleCount": 254,
+                "averageMs": 0,
+                "p95Ms": 0,
+                "p99Ms": 0,
+                "maxMs": 0
+              },
+              "history UI query derivation": {
+                "sampleCount": 254,
+                "averageMs": 0,
+                "p95Ms": 0,
+                "p99Ms": 0,
+                "maxMs": 0
+              },
+              "presentation CPU": {
+                "sampleCount": 254,
+                "averageMs": 0.04724409519218084,
+                "p95Ms": 0.10000002384185791,
+                "p99Ms": 0.4000000059604645,
+                "maxMs": 0.6000000238418579
+              },
+              "frame delta": {
+                "sampleCount": 254,
+                "averageMs": 16.928346456622513,
+                "p95Ms": 18.5,
+                "p99Ms": 36,
+                "maxMs": 48.099999994039536
+              },
+              "unattributed frame time": {
+                "sampleCount": 254,
+                "averageMs": 10.920866140817093,
+                "p95Ms": 12.900000005960464,
+                "p99Ms": 31.19999998807907,
+                "maxMs": 43.29999998211861
+              }
+            },
+            "statisticsWindow": "rolling 300 frames (or available samples)",
+            "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback",
+            "interpretation": "Nested phases overlap; unattributed = max(0, frame delta - current Core CPU), includes frame pacing/render/React/GC; not measured renderer CPU."
+          },
+          "phaser": {
+            "Phaser scene update CPU": {
+              "sampleCount": 254,
+              "averageMs": 6.364173229167781,
+              "p95Ms": 8,
+              "p99Ms": 33.30000001192093,
+              "maxMs": 45.30000001192093
+            },
+            "Phaser canvas render CPU": {
+              "sampleCount": 254,
+              "averageMs": 2.251968503702344,
+              "p95Ms": 2.4000000059604645,
+              "p99Ms": 2.5,
+              "maxMs": 2.699999988079071
+            }
+          },
+          "clockMismatches": 0,
+          "heapBefore": 150004993,
+          "heapAfter": 119942629
+        }
+      ],
+      "longTasks": [
+        7801,
+        54,
+        2924
+      ],
+      "scope": "Actual native 500-year DTO, React controls and offscreen Electron Phaser frame loop; frame residual includes pacing/render/React/GC and does not identify GPU or GC costs. Not human visual acceptance."
+    },
+    "after-family": {
+      "seed": "regional-1",
+      "worldMonth": 6000,
+      "viewport": {
+        "width": 1440,
+        "height": 763
+      },
+      "families": 18,
+      "associatedFamilies": 4,
+      "members": 49,
+      "maxFamilyMembers": 10,
+      "events": 14682,
+      "people": 118,
+      "direct": [
+        {
+          "repeat": 0,
+          "listSummaryMs": 17.400000005960464,
+          "listCache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 0,
+            "events": 14682
+          },
+          "archiveMs": 16.69999998807907,
+          "importantMs": 0,
+          "parentBridgeMs": 0,
+          "layoutMs": 0.30000001192092896,
+          "cardModel": {
+            "archiveMs": 0,
+            "importantMs": 0,
+            "bridgeMs": 0,
+            "cardsMs": 1.2999999821186066,
+            "layoutMs": 0,
+            "totalMs": 1.2999999821186066
+          },
+          "retainedNodes": 1,
+          "registeredNodes": 3,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 0,
+            "projectionBuilds": 1,
+            "hits": 3,
+            "invalidations": 1,
+            "summaryCache": 0,
+            "archiveCache": 1,
+            "events": 14682
+          }
+        },
+        {
+          "repeat": 1,
+          "listSummaryMs": 15.900000005960464,
+          "listCache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 0,
+            "events": 14682
+          },
+          "archiveMs": 15.899999976158142,
+          "importantMs": 0,
+          "parentBridgeMs": 0,
+          "layoutMs": 0,
+          "cardModel": {
+            "archiveMs": 0,
+            "importantMs": 0,
+            "bridgeMs": 0,
+            "cardsMs": 0.4000000059604645,
+            "layoutMs": 0,
+            "totalMs": 0.4000000059604645
+          },
+          "retainedNodes": 1,
+          "registeredNodes": 3,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 0,
+            "projectionBuilds": 1,
+            "hits": 3,
+            "invalidations": 1,
+            "summaryCache": 0,
+            "archiveCache": 1,
+            "events": 14682
+          }
+        },
+        {
+          "repeat": 2,
+          "listSummaryMs": 16.19999998807907,
+          "listCache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 0,
+            "events": 14682
+          },
+          "archiveMs": 16.30000001192093,
+          "importantMs": 0,
+          "parentBridgeMs": 0,
+          "layoutMs": 0.09999999403953552,
+          "cardModel": {
+            "archiveMs": 0,
+            "importantMs": 0,
+            "bridgeMs": 0,
+            "cardsMs": 0.5,
+            "layoutMs": 0,
+            "totalMs": 0.5999999940395355
+          },
+          "retainedNodes": 1,
+          "registeredNodes": 3,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 0,
+            "projectionBuilds": 1,
+            "hits": 3,
+            "invalidations": 1,
+            "summaryCache": 0,
+            "archiveCache": 1,
+            "events": 14682
+          }
+        }
+      ],
+      "phases": [
+        {
+          "phase": "list-open-0",
+          "wallMs": 27.400000005960464,
+          "settledMs": 38.30000001192093,
+          "reactMs": 22.19999998807907,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 0,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "all-houses-0",
+          "wallMs": 3.4000000059604645,
+          "settledMs": 31.5,
+          "reactMs": 2.599999964237213,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 0,
+            "events": 14682
+          },
+          "dom": 28,
+          "longTasks": []
+        },
+        {
+          "phase": "family-open-0",
+          "wallMs": 12.099999994039536,
+          "settledMs": 35.099999994039536,
+          "reactMs": 9.400000005960464,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 3,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 34,
+          "longTasks": []
+        },
+        {
+          "phase": "select-person-0",
+          "wallMs": 4.9000000059604645,
+          "settledMs": 33.099999994039536,
+          "reactMs": 6.199999988079071,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "zoom-0",
+          "wallMs": 4.700000017881393,
+          "settledMs": 33.30000001192093,
+          "reactMs": 3.4000000059604645,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "fit-0",
+          "wallMs": 3.800000011920929,
+          "settledMs": 33.19999998807907,
+          "reactMs": 2.600000023841858,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "locate-founder-0",
+          "wallMs": 3.4000000059604645,
+          "settledMs": 33.30000001192093,
+          "reactMs": 2.699999988079071,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "return-0",
+          "wallMs": 2.4000000059604645,
+          "settledMs": 33.5,
+          "reactMs": 2.099999964237213,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 15,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "all-after-return-0",
+          "wallMs": 2.5,
+          "settledMs": 33.30000001192093,
+          "reactMs": 2.7000000178813934,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 15,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 28,
+          "longTasks": []
+        },
+        {
+          "phase": "switch-family-0",
+          "wallMs": 6.5999999940395355,
+          "settledMs": 33.19999998807907,
+          "reactMs": 5.899999976158142,
+          "mountedNodes": 2,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 20,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 42,
+          "longTasks": []
+        },
+        {
+          "phase": "close-0",
+          "wallMs": 0.7000000178813934,
+          "settledMs": 33.30000001192093,
+          "reactMs": 0,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 20,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 0,
+          "longTasks": []
+        },
+        {
+          "phase": "reopen-0",
+          "wallMs": 3.0999999940395355,
+          "settledMs": 31.400000005960464,
+          "reactMs": 2.7000000178813934,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 24,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "switch-faction-0",
+          "wallMs": 3.600000023841858,
+          "settledMs": 34.30000001192093,
+          "reactMs": 2.4999999403953552,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 5,
+            "projectionBuilds": 2,
+            "hits": 24,
+            "invalidations": 1,
+            "summaryCache": 5,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "close-again-0",
+          "wallMs": 0.5999999940395355,
+          "settledMs": 33.5,
+          "reactMs": 0,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 5,
+            "projectionBuilds": 2,
+            "hits": 24,
+            "invalidations": 1,
+            "summaryCache": 5,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 0,
+          "longTasks": []
+        },
+        {
+          "phase": "list-open-1",
+          "wallMs": 19.599999994039536,
+          "settledMs": 29.099999994039536,
+          "reactMs": 18.700000017881393,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 0,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "all-houses-1",
+          "wallMs": 2.0999999940395355,
+          "settledMs": 31.799999982118607,
+          "reactMs": 2.0000000298023224,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 0,
+            "events": 14682
+          },
+          "dom": 28,
+          "longTasks": []
+        },
+        {
+          "phase": "family-open-1",
+          "wallMs": 6.100000023841858,
+          "settledMs": 33.10000002384186,
+          "reactMs": 5.099999964237213,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 3,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 34,
+          "longTasks": []
+        },
+        {
+          "phase": "select-person-1",
+          "wallMs": 3.9000000059604645,
+          "settledMs": 34.80000001192093,
+          "reactMs": 5.100000023841858,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "zoom-1",
+          "wallMs": 3.7999999821186066,
+          "settledMs": 31.899999976158142,
+          "reactMs": 2.899999976158142,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "fit-1",
+          "wallMs": 3.5,
+          "settledMs": 34.599999994039536,
+          "reactMs": 2.699999988079071,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "locate-founder-1",
+          "wallMs": 2.5999999940395355,
+          "settledMs": 31.799999982118607,
+          "reactMs": 2.100000023841858,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "return-1",
+          "wallMs": 1.7999999821186066,
+          "settledMs": 33.29999998211861,
+          "reactMs": 1.800000011920929,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 15,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "all-after-return-1",
+          "wallMs": 1.5,
+          "settledMs": 33.20000001788139,
+          "reactMs": 1.5999999642372131,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 15,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 28,
+          "longTasks": []
+        },
+        {
+          "phase": "switch-family-1",
+          "wallMs": 10.900000005960464,
+          "settledMs": 34.79999998211861,
+          "reactMs": 7.699999988079071,
+          "mountedNodes": 2,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 20,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 42,
+          "longTasks": []
+        },
+        {
+          "phase": "close-1",
+          "wallMs": 0.800000011920929,
+          "settledMs": 33.400000005960464,
+          "reactMs": 0,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 20,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 0,
+          "longTasks": []
+        },
+        {
+          "phase": "reopen-1",
+          "wallMs": 4.200000017881393,
+          "settledMs": 33.20000001788139,
+          "reactMs": 3.1999999582767487,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 24,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "switch-faction-1",
+          "wallMs": 3.7999999821186066,
+          "settledMs": 32.400000005960464,
+          "reactMs": 2.7999999821186066,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 5,
+            "projectionBuilds": 2,
+            "hits": 24,
+            "invalidations": 1,
+            "summaryCache": 5,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "close-again-1",
+          "wallMs": 0.5999999940395355,
+          "settledMs": 35.19999998807907,
+          "reactMs": 0,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 5,
+            "projectionBuilds": 2,
+            "hits": 24,
+            "invalidations": 1,
+            "summaryCache": 5,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 0,
+          "longTasks": []
+        },
+        {
+          "phase": "list-open-2",
+          "wallMs": 51.70000001788139,
+          "settledMs": 77,
+          "reactMs": 33.80000001192093,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 0,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "all-houses-2",
+          "wallMs": 6.799999982118607,
+          "settledMs": 43.69999998807907,
+          "reactMs": 4.299999982118607,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 0,
+            "hits": 0,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 0,
+            "events": 14682
+          },
+          "dom": 28,
+          "longTasks": []
+        },
+        {
+          "phase": "family-open-2",
+          "wallMs": 35.099999994039536,
+          "settledMs": 50.099999994039536,
+          "reactMs": 24.19999998807907,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 3,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 34,
+          "longTasks": []
+        },
+        {
+          "phase": "select-person-2",
+          "wallMs": 8.099999994039536,
+          "settledMs": 35.5,
+          "reactMs": 9.899999976158142,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "zoom-2",
+          "wallMs": 3.699999988079071,
+          "settledMs": 30.900000005960464,
+          "reactMs": 2.699999988079071,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "fit-2",
+          "wallMs": 3.699999988079071,
+          "settledMs": 32.19999998807907,
+          "reactMs": 2.5,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "locate-founder-2",
+          "wallMs": 3,
+          "settledMs": 34.400000005960464,
+          "reactMs": 2.2999999821186066,
+          "mountedNodes": 1,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 11,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 66,
+          "longTasks": []
+        },
+        {
+          "phase": "return-2",
+          "wallMs": 2.0999999940395355,
+          "settledMs": 31.80000001192093,
+          "reactMs": 1.800000011920929,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 15,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "all-after-return-2",
+          "wallMs": 2.2999999821186066,
+          "settledMs": 33.900000005960464,
+          "reactMs": 2.2000000178813934,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 1,
+            "hits": 15,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 1,
+            "events": 14682
+          },
+          "dom": 28,
+          "longTasks": []
+        },
+        {
+          "phase": "switch-family-2",
+          "wallMs": 6.5999999940395355,
+          "settledMs": 33,
+          "reactMs": 5.699999988079071,
+          "mountedNodes": 2,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 20,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 42,
+          "longTasks": []
+        },
+        {
+          "phase": "close-2",
+          "wallMs": 0.9000000059604645,
+          "settledMs": 34.400000005960464,
+          "reactMs": 0,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 20,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 0,
+          "longTasks": []
+        },
+        {
+          "phase": "reopen-2",
+          "wallMs": 3.0999999940395355,
+          "settledMs": 33.19999998807907,
+          "reactMs": 2.5000000298023224,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 4,
+            "projectionBuilds": 2,
+            "hits": 24,
+            "invalidations": 1,
+            "summaryCache": 4,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "switch-faction-2",
+          "wallMs": 3.5,
+          "settledMs": 31.599999994039536,
+          "reactMs": 2.399999976158142,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 5,
+            "projectionBuilds": 2,
+            "hits": 24,
+            "invalidations": 1,
+            "summaryCache": 5,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 13,
+          "longTasks": []
+        },
+        {
+          "phase": "close-again-2",
+          "wallMs": 0.5999999940395355,
+          "settledMs": 36.19999998807907,
+          "reactMs": 0,
+          "mountedNodes": 0,
+          "cache": {
+            "indexBuilds": 1,
+            "summaryBuilds": 5,
+            "projectionBuilds": 2,
+            "hits": 24,
+            "invalidations": 1,
+            "summaryCache": 5,
+            "archiveCache": 2,
+            "events": 14682
+          },
+          "dom": 0,
+          "longTasks": []
+        }
+      ],
+      "longTasksSupported": true,
+      "heapBytes": 220682719,
+      "cache": {
+        "indexBuilds": 1,
+        "summaryBuilds": 5,
+        "projectionBuilds": 2,
+        "hits": 24,
+        "invalidations": 1,
+        "summaryCache": 5,
+        "archiveCache": 2,
+        "events": 14682
+      },
+      "beforeHash": "79d93cdc0ca1cdfcc73bb9c3fc24345837c5357e4cb148c9273dd6653831a91a",
+      "afterHash": "79d93cdc0ca1cdfcc73bb9c3fc24345837c5357e4cb148c9273dd6653831a91a",
+      "unchanged": true,
+      "scope": "Three repetitions on the same real hydrated saved world; actual React commits, DOM budget and controls. Isolated API timings overlap and are not summed. No screenshot or human visual Gate.",
+      "longTaskCount": 3,
+      "registeredBirthAudit": {
+        "scope": "READ_ONLY_COUNTERFACTUAL_COVERAGE_ON_REAL_EVENTS_NOT_AN_ALTERNATIVE_SIMULATION",
+        "considered": 31,
+        "retained": 31,
+        "rejected": 0,
+        "recordedMilitaryLineagesLost": 0,
+        "recordedPersonalGrantLineagesLost": 0,
+        "recordedInheritanceLineagesLost": 0,
+        "recordedNewPeriodLineagesLost": 0
+      }
+    },
+    "limitations": "Serial same-machine native 500-year input, three repetitions of 300 months; medians are descriptive and not a guaranteed improvement. Profile and family DOM timings have cold-start variance. Actual offscreen 4× loops are separate from pure Core timing and cannot replace visible user acceptance. No claim of overall UI speedup or that all late-game stutter is solved.",
+    "comparison": {
+      "before": {
+        "monthly": {
+          "sampleCount": 300,
+          "averageMs": 9.10833333303531,
+          "p95Ms": 45.20000001788139,
+          "p99Ms": 74.90000000596046,
+          "maxMs": 113.59999999403954
+        },
+        "January": {
+          "sampleCount": 25,
+          "averageMs": 47.47599999904632,
+          "p95Ms": 92.80000001192093,
+          "p99Ms": 113.59999999403954,
+          "maxMs": 113.59999999403954
+        },
+        "ordinary": {
+          "sampleCount": 275,
+          "averageMs": 5.620363636125218,
+          "p95Ms": 24.69999998807907,
+          "p99Ms": 43.599999994039536,
+          "maxMs": 57.599999994039536
+        },
+        "military": {
+          "sampleCount": 300,
+          "averageMs": 1.0680000002185503,
+          "p95Ms": 2.2999999821186066,
+          "p99Ms": 26.099999994039536,
+          "maxMs": 56.30000001192093
+        },
+        "dynasty": {
+          "sampleCount": 300,
+          "averageMs": 2.7546666665871937,
+          "p95Ms": 13.699999988079071,
+          "p99Ms": 30.400000005960464,
+          "maxMs": 41.69999998807907
+        },
+        "familyListOpenMedianMs": 24.69999998807907,
+        "familyTreeOpenMedianMs": 7.9000000059604645,
+        "militaryArchiveOpenMs": 115.59999999403954,
+        "live4xWithPanel": {
+          "renderFrameCount": 281,
+          "frameDeltaMs": {
+            "current": 31.700000017881393,
+            "average": 18.572953736654803,
+            "p95": 25.69999998807907,
+            "max": 368.19999998807907
+          },
+          "longFrames": {
+            "over25ms": 17,
+            "over33ms": 8,
+            "over50ms": 2,
+            "over100ms": 1
+          },
+          "simulationStepsPerFrame": {
+            "average": 3.97864768683274,
+            "max": 5
+          },
+          "fixedStepCpuMs": {
+            "average": 6.471886122141869,
+            "p95": 15.300000011920929
+          },
+          "presentationCpuMs": {
+            "average": 0.11067615582001167,
+            "p95": 0.20000004768371582
+          },
+          "sampleCount": 281,
+          "rollingWindowCapacity": 300,
+          "statisticsWindow": "rolling 300 frames (or available samples)",
+          "longFrameCounterWindow": "session cumulative since hydration/reset",
+          "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback"
+        },
+        "configuredSpeed": 4
+      },
+      "after": {
+        "monthly": {
+          "sampleCount": 300,
+          "averageMs": 8.497999999026458,
+          "p95Ms": 40.900000005960464,
+          "p99Ms": 67.90000000596046,
+          "maxMs": 113.5
+        },
+        "January": {
+          "sampleCount": 25,
+          "averageMs": 44.640000002384184,
+          "p95Ms": 80.80000001192093,
+          "p99Ms": 113.5,
+          "maxMs": 113.5
+        },
+        "ordinary": {
+          "sampleCount": 275,
+          "averageMs": 5.212363635084846,
+          "p95Ms": 24.69999998807907,
+          "p99Ms": 38.900000005960464,
+          "maxMs": 53.39999997615814
+        },
+        "military": {
+          "sampleCount": 300,
+          "averageMs": 0.9983333338300387,
+          "p95Ms": 2.2000000178813934,
+          "p99Ms": 27.200000017881393,
+          "maxMs": 59.5
+        },
+        "dynasty": {
+          "sampleCount": 300,
+          "averageMs": 2.5773333339889843,
+          "p95Ms": 13.200000017881393,
+          "p99Ms": 27.100000023841858,
+          "maxMs": 39
+        },
+        "familyListOpenMedianMs": 27.400000005960464,
+        "familyTreeOpenMedianMs": 12.099999994039536,
+        "militaryArchiveOpenMs": 150.09999999403954,
+        "live4xWithPanel": {
+          "renderFrameCount": 296,
+          "frameDeltaMs": {
+            "current": 17.099999994039536,
+            "average": 16.890878378338105,
+            "p95": 18.200000017881393,
+            "max": 56.900000005960464
+          },
+          "longFrames": {
+            "over25ms": 8,
+            "over33ms": 3,
+            "over50ms": 1,
+            "over100ms": 0
+          },
+          "simulationStepsPerFrame": {
+            "average": 3.9662162162162162,
+            "max": 5
+          },
+          "fixedStepCpuMs": {
+            "average": 6.087162160994233,
+            "p95": 8.199999988079071
+          },
+          "presentationCpuMs": {
+            "average": 0.0831081075845538,
+            "p95": 0.20000001788139343
+          },
+          "sampleCount": 296,
+          "rollingWindowCapacity": 300,
+          "statisticsWindow": "rolling 300 frames (or available samples)",
+          "longFrameCounterWindow": "session cumulative since hydration/reset",
+          "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback"
+        },
+        "configuredSpeed": 4
+      }
+    }
+  },
+  "manualVisualAcceptance": "PENDING; automated DOM and offscreen frames do not replace user Chrome/Electron Gate",
+  "validation": {
+    "unitFiles": 363,
+    "unitAssertions": 2707,
+    "unitCommand": "VITEST_MAX_THREADS=2 VITEST_MIN_THREADS=2 pnpm test",
+    "typescript": "PASS: tsc in all three builds plus desktop compilation",
+    "web": "PASS",
+    "desktop": "PASS",
+    "debug": "PASS including source maps and bundled assets",
+    "oldSlots": "V61 refused by V62 validation; existing old-slot protections retained",
+    "rollbackAndContinuation": "Production Core failure injection, native strict save/load, repeat 12-month continuation and second read PASS",
+    "environmentIncident": {
+      "suite": "WorldEventSystem.persistence.test.ts",
+      "error": "[birpc] timeout on resolveId during one earlier full run",
+      "resolution": "Kept failure log and reran the full suite serially without relaxing a test or timeout. Final counts above are from the successful rerun."
+    }
+  }
+}

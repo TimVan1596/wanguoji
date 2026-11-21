@@ -700,9 +700,9 @@ export function UnifiedPeoplePanel({factionId,month,civilTarget}:{factionId:stri
  };
  return <Box data-unified-people={factionId}>
   <Box sx={{display:'flex',gap:.5,flexWrap:'wrap'}}><Button size="small" onClick={()=>setMode(mode==='family'?'people':'family')}>功臣世家</Button><Button size="small" onClick={()=>setMode(mode==='merit'?'people':'merit')}>功臣录</Button>{mode!=='people'&&<Button size="small" onClick={()=>setMode('people')}>返回人物</Button>}</Box>
-  {mode==='family'?<MilitaryFamilyEntrance factionId={factionId} worldMonth={month}/>:mode==='merit'?<MeritRoll factionId={factionId} month={month} onOpen={id=>{setMode('people');setSelected(id);setHistory(true);}}/>:<>
+  {mode==='family'?<MilitaryFamilyEntrance factionId={factionId} worldMonth={month}/>:mode==='merit'?<MeritRoll factionId={factionId} month={month} onOpen={id=>{setMode('people');setCategory('全部');setSelected(id);setHistory(true);}}/>:<>
    <Box component="label" sx={{fontSize:'.78rem'}}>人物职类：<select aria-label="人物职类" value={category} onChange={e=>{setCategory(e.target.value);setSelected(undefined);}} style={{font:'inherit',color:'var(--gg-text)',background:'var(--gg-panel)',border:'1px solid var(--gg-border)',borderRadius:4,padding:'3px 8px'}}>{['全部','文官','武官','有爵'].map(c=><option key={c}>{c}</option>)}</select></Box>
-   <InsurgentCommandPanel factionId={factionId} month={month}/><Typography fontSize=".83rem" fontWeight="bold">当前任职人物（{activeIds.length}）</Typography>
+   {(category==='全部'||category==='武官')&&<InsurgentCommandPanel factionId={factionId} month={month}/>}<Typography fontSize=".83rem" fontWeight="bold">当前任职人物（{activeIds.length}）</Typography>
    {!activeIds.length&&<Typography fontSize=".78rem">暂无正式任职人物</Typography>}
    <MilitaryArchiveWindow ids={activeIds} targetSerial={target?.serial} targetId={target&&current(target.id)?target.id:undefined}>{render}</MilitaryArchiveWindow>
    <Button size="small" aria-expanded={history} onClick={()=>setHistory(v=>!v)}>历任人物（{pastIds.length}）{history?' · 收起':' · 展开'}</Button>

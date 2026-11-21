@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import {selectMilitaryUsurper} from './MilitaryUsurpation';
+import {selectMilitaryUsurper,usurperHouseUsesRecordedKin} from './MilitaryUsurpation';
 import {politicalContest,civilPoliticalSupport} from './PoliticalUsurpation';
 import {personAbilities,personAmbition} from './PersonAbilities';
 const people:any[]=[{personId:'one',sourceUserId:1,bornMonth:-300,personalName:'程清',status:'ACTIVE'},{personId:'two',sourceUserId:2,bornMonth:-300,personalName:'李清',status:'ACTIVE'}];
@@ -26,3 +26,5 @@ it('uses only a mature actual governorship, original merit receipt and verified 
 });
 
 it('rejects duplicate permanent identity, minority, real disability and actual death before any contest',()=>{const context={terms:[],events:[],month:360,epoch:'epoch'},c=candidate();expect(selectMilitaryUsurper([c],[...people,{...people[0],personId:'copy'}],'田氏',context)).toBeUndefined();for(const change of [{bornMonth:300},{deathMonth:359},{deathCause:'BATTLE_DEATH'},{politicalHistory:[{kind:'COURT_BAN',factionId:'qin',epochFounderId:'epoch',month:350,eventId:'ban'}]}])expect(selectMilitaryUsurper([c],[{...people[0],...change}],'田氏',context)).toBeUndefined();});
+
+it('distinguishes royal epochs by founding identity even when unrelated houses reuse a surname',()=>{const rulers:any=[{id:'old-founder',houseName:'程氏',militaryUsurperIdentity:{}},{id:'new-founder',houseName:'程氏'}];expect(usurperHouseUsesRecordedKin({rulers,houseEpochs:[{foundingRulerId:'new-founder'}] as any})).toBe(false);expect(usurperHouseUsesRecordedKin({rulers,houseEpochs:[{foundingRulerId:'old-founder'}] as any})).toBe(true);});

@@ -51,3 +51,9 @@ it('records a cautious actual secessionist from frozen siege/follower evidence w
  expect(text).not.toMatch(/野心勃勃|被迫|愤恨|夺爵.*起事|食邑.*起事|绝不会/);
  expect(formatFoundingIdentity(e,'新郑义军','yan')).toContain('叛离燕国');
 });
+
+it('does not repeat the real usurper as his own supporter; identical names with distinct IDs retain both real actors',()=>{
+ const e=event(),s=JSON.parse(e.metadata.politicalCrisis);s.kind='REVOLUTION';e.type='dynasty-usurped';Object.assign(e.metadata,{politicalCrisis:JSON.stringify(s),newRulerName:'程清',predecessorRulerName:'田平',displacedSuccessorName:'田启',oldHouseName:'田氏',newHouseName:'程氏',oldStateName:'齐',newStateName:'齐',militaryUsurperPersonId:'winner',militaryUsurperIdentity:JSON.stringify({version:2,personId:'winner',office:'JIANGJUN',contest:[],participant:{capturedEventIds:['capture']}}),militaryParticipation:JSON.stringify({participant:{personId:'winner',personalName:'程清',officeStanding:{office:'JIANGJUN'}}})});
+ const before=JSON.stringify(e),text=formatPoliticalEvent(e)!;expect(text.match(/程清/g)).toHaveLength(1);expect(text).toContain('取城军功');expect(text).not.toContain('获位者为');expect(JSON.stringify(e)).toBe(before);
+ e.metadata.militaryParticipation=JSON.stringify({participant:{personId:'other-person',personalName:'程清',officeStanding:{office:'JIANGJUN'}}});expect(formatPoliticalEvent(e)).toContain('另一位同名将军程清统兵参与继统之争');
+});

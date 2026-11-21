@@ -1,3 +1,4 @@
+import type {Dynasty} from './Dynasty';
 import {unresolvedCourtBans} from './MilitaryCourtStanding';
 import {politicalContest,type PoliticalContestRow,type CivilPoliticalSource} from './PoliticalUsurpation';
 import type {CivilGovernorTerm} from './CivilAdministrationSchema';
@@ -43,4 +44,10 @@ export function auditMilitaryUsurpers(candidates:readonly MilitaryPoliticalParti
  }
  if(!candidates.length)blocked.NO_COURT_CANDIDATES=1;
  return {candidateCount:candidates.length,eligible,blocked};
+}
+
+/** A reused surname is never evidence that two royal houses share real kin. */
+export function usurperHouseUsesRecordedKin(dynasty:Pick<Dynasty,'houseEpochs'|'rulers'>){
+ const founder=dynasty.houseEpochs?.at(-1)?.foundingRulerId;
+ return dynasty.rulers.some(r=>r.militaryUsurperIdentity&&r.id===founder);
 }

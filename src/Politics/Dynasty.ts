@@ -23,7 +23,7 @@ import {planRoyalHonor,royalHonorText,royalHonorCandidateClaims,type RoyalHonor}
 import {beginPoliticalMutation} from '../Simulation/PoliticalMutationScope';
 import {validateMilitaryUsurpers} from "../Persistence/MilitaryUsurperValidation";
 import {exportRulerSave} from "../Persistence/RulerSaveProjection";
-import {selectMilitaryUsurper,auditMilitaryUsurpers,militaryUsurperIdentity,type MilitaryUsurperIdentity} from "./MilitaryUsurpation";
+import {usurperHouseUsesRecordedKin,selectMilitaryUsurper,auditMilitaryUsurpers,militaryUsurperIdentity,type MilitaryUsurperIdentity} from "./MilitaryUsurpation";
 import {politicalEffect} from "../Simulation/PoliticalMutationScope";
 import {successionTransaction} from "./SuccessionTransaction";
 import {capturePoliticalCrisis,politicalCapital} from "./PoliticalEventNarrative";
@@ -1591,7 +1591,7 @@ class DynastyRegistryStore {
       ruler.status = selectedIds.has(ruler.id) ? "heir" : "kin";
     });
     dynasty.heirIds = existingCandidates;
-    if (shouldCreateActiveHeir(team.status) && !dynasty.rulers.some(r=>r.militaryUsurperIdentity&&r.houseName===dynasty.houseName)) {
+    if (shouldCreateActiveHeir(team.status) && !usurperHouseUsesRecordedKin(dynasty)) {
       const parents = getCandidateParentsToReplenish({
         currentRuler: current,
         rulers: dynasty.rulers,
