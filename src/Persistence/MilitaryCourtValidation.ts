@@ -1,4 +1,5 @@
-import {currentNobleGrant,nobleEpochForRuler,nobleChronicle} from '../Politics/MilitaryNobility';
+import {familyAtEvidenceBoundary,familyNobleRankAt} from '../Politics/FamilyNobleSuccession';
+import {currentNobleGrant,nobleEpochForRuler,nobleChronicle,NOBLE_RANKS} from '../Politics/MilitaryNobility';
 import type {WorldSaveV1} from './WorldSaveSchema';
 import type {WorldEvent} from '../History/WorldHistory';
 import type {Dynasty} from '../Politics/Dynasty';
@@ -55,7 +56,8 @@ export function validateMilitaryCourt(save:WorldSaveV1){
   if(!p||!d)throw Error('missing supporter');
   const epoch=nobleEpochForRuler({...d,rulers:(d.rulers as any[]).map(importRulerSave)} as any,service.rulerId??null)?.foundingRulerId;
   const past={...p,nobilityHistory:p.nobilityHistory?.filter(g=>ids.has(g.eventId)),honorHistory:p.honorHistory?.filter(h=>ids.has(h.eventId))};
-  if(!p.royalIdentity&&epoch&&!past.honorHistory?.some(h=>h.kind==='REVOKED'&&h.month===month)&&!currentNobleGrant(past,service.actorFactionId!,month,epoch)&&!events.some(e=>e.type==='court-reward-granted'&&e.metadata?.courtServiceEventId===service.id))throw Error('untitled actual supporter lacks mandatory sourced peerage');
+  const family=save.registries.militaryCommandRegistry.families?.find(f=>f.factionId===service.actorFactionId&&f.epochFounderId===epoch&&f.members.some(m=>m.militaryPersonId===p.personId&&m.sourceUserId===p.sourceUserId&&m.bornMonth===p.bornMonth)),historical=family?familyAtEvidenceBoundary(family,month,i,events):undefined,member=historical?.members.find(m=>m.militaryPersonId===p.personId&&m.sourceUserId===p.sourceUserId&&m.bornMonth===p.bornMonth),inherited=historical&&member?familyNobleRankAt(historical,member,month):undefined;
+  if((!inherited||NOBLE_RANKS.indexOf(inherited)<NOBLE_RANKS.indexOf('BO'))&&!p.royalIdentity&&epoch&&!past.honorHistory?.some(h=>h.kind==='REVOKED'&&h.month===month)&&!currentNobleGrant(past,service.actorFactionId!,month,epoch)&&!events.some(e=>e.type==='court-reward-granted'&&e.metadata?.courtServiceEventId===service.id))throw Error('untitled actual supporter lacks mandatory sourced peerage');
  }catch(error){errors.push(`missing court peerage ${service.id}: ${String(error)}`);}
  for(const e of events)if(e.type==='military-title-revoked')try{const h=JSON.parse(String(e.metadata?.honor));if(h.reason==='COURT_COUP_FAILED'&&!events.some(b=>b.id===e.metadata?.courtCoupEventId&&b.type==='court-coup-attempt'&&b.metadata?.personId===e.metadata?.personId&&h.sourceEventId===`${b.id}-result`))errors.push('unbound court forfeiture: '+e.id);}catch{}
  for(const e of events)if(['military-ennobled','court-peerage-granted'].includes(e.type)&&typeof e.metadata?.courtServiceEventId==='string'&&!events.some(x=>x.type==='court-reward-granted'&&x.metadata?.nobleGrantEventId===e.id&&x.metadata?.courtServiceEventId===e.metadata?.courtServiceEventId))errors.push('political peerage lacks reward source: '+e.id);
