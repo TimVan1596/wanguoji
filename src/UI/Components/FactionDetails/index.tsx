@@ -1,4 +1,4 @@
-import {personRankTheme} from './PersonRankTheme';
+import {personRankTheme,resolvePersonTheme,royalThemeIdentity} from './PersonRankTheme';
 import {personNoblePresentation} from './PersonNoblePresentation';
 import {familyDisplayEligible} from '../../../Politics/FamilyDisplayEligibility';
 import {personAmbition} from '../../../Politics/PersonAbilities';
@@ -691,11 +691,13 @@ export function UnifiedPeoplePanel({factionId,month,civilTarget}:{factionId:stri
   const user=Game.Core?.teams.flatMap(t=>[...t.users]).find(u=>u.id===(p?.sourceUserId??term?.sourceUserId)&&u.bornMonth===(p?.bornMonth??term?.bornMonth));
   const summary=personOfficeSummary({person:p,terms:terms.filter(t=>t.personId===id),factionId,month,deathMonth:profile?.deathMonth??crown?.deathMonth,knownAlive:!!user||!!crown&&crown.deathMonth===undefined&&crown.status==='ruling'});
   const name=p?getMilitaryPersonDisplayName(p):term!.personalName,office=summary.office;
-  const portrait=profile?.portrait??{personId:p!.royalIdentity?.rulerId??id,age:summary.bornMonth===undefined?undefined:Math.max(0,Math.floor(((summary.deathMonth??month)-summary.bornMonth)/12)),...militaryPortraitContext(p!,factionId,Game.Core?.teams.find(t=>t.name===factionId),month)};
-  const rank=noble(id),political=p?militaryPortraitStatus(p,factionId,month,archiveDynasties,archiveEvents):undefined,theme=personRankTheme(political&&['叛离','禁仕','伏诛'].includes(political)||rank?.kind==='REVOKED'?'REVOKED':crown||p?.royalIdentity?'ROYAL':rank?rank.kind:summary.kind==='文官'?'CIVIL':'MILITARY',rank?.rank,crown?1:['XIAOWEI','PIJIANG','JIANGJUN','SHANGJIANGJUN'].indexOf(summary.officeLevel??'XIAOWEI'));
+  const portrait=summary.kind==='文官'&&profile?profile.portrait:{personId:p!.royalIdentity?.rulerId??id,age:summary.bornMonth===undefined?undefined:Math.max(0,Math.floor(((summary.deathMonth??month)-summary.bornMonth)/12)),...militaryPortraitContext(p!,factionId,Game.Core?.teams.find(t=>t.name===factionId),month)};
+  const rank=noble(id),political=p?militaryPortraitStatus(p,factionId,month,archiveDynasties,archiveEvents):undefined;
+  const royalOwner=archiveDynasties.find(d=>d.rulers.some(r=>r.id===(crown?.id??p?.royalIdentity?.rulerId))),royalNode=crown??royalOwner?.rulers.find(r=>r.id===p?.royalIdentity?.rulerId);
+  const theme=resolvePersonTheme({...royalNode&&royalOwner?royalThemeIdentity(royalNode,month,royalOwner):{},sanction:!!political&&['叛离','禁仕','伏诛'].includes(political),noble:rank,officeKind:summary.kind,officeLevel:summary.kind==='文官'?summary.civilLevel:['XIAOWEI','PIJIANG','JIANGJUN','SHANGJIANGJUN'].indexOf(summary.officeLevel??'XIAOWEI'),historical:!summary.active});
   const toggle=()=>setSelected(expanded?undefined:id);
   return <Box data-unified-person={id} data-civil-governor={term?.assignmentId} data-person-office-kind={summary.kind}><PersonArchiveCard theme={theme} active={summary.active} heading={<><Typography fontWeight="bold" fontSize=".88rem">{office} · {name}{rank?` · ${rank.label}`:''}</Typography><Typography fontSize=".76rem" title={summary.age}>{summary.compactAge}</Typography><Typography fontSize=".76rem" title={summary.tenure}>{summary.compactTenure}{crownLabel?` · ${crownLabel}`:''}</Typography></>} portrait={<PortraitSummary name={name} portrait={portrait} status={political} lines={[summary.age,summary.tenure]} onFull={()=>setSelected(id)}/>} expanded={expanded} onSelect={toggle} index={index} focusRequest={expanded&&target?.id===id?target.serial:false}>
-   {expanded&&(p?<MilitaryPersonDetail person={p} factionId={factionId} worldMonth={month} careerIndex={careerIndex}/>:<GovernorDetail term={term!} month={month} careerIndex={careerIndex}/>)}
+   {expanded&&(p&&p.appointments.length>0?<MilitaryPersonDetail person={p} factionId={factionId} worldMonth={month} careerIndex={careerIndex}/>:<GovernorDetail term={term!} month={month} careerIndex={careerIndex}/>)}
   </PersonArchiveCard></Box>;
  };
  return <Box data-unified-people={factionId}>
@@ -1121,7 +1123,7 @@ function DynastyTree({
           const current = ruler.id === currentRulerId;
           const expanded = ruler.id === selectedRulerId;
           return (
-            <PersonArchiveCard key={ruler.id} index={index} active={current} expanded={expanded} theme={personRankTheme(ruler.status==='deposed'||ruler.endReason==='被废'?'REVOKED':'ROYAL',undefined,royalPortraitContext(ruler,team,worldMonth).role==='EMPEROR'?2:1)}
+            <PersonArchiveCard key={ruler.id} index={index} active={current} expanded={expanded} theme={resolvePersonTheme(royalThemeIdentity(ruler,worldMonth,dynasty??{}))}
               focusRequest={expanded} onSelect={()=>onSelectedRulerIdChange(expanded?undefined:ruler.id)} portrait={<PortraitSummary status={ruler.status==='deposed'?'被废':undefined} portrait={{personId:ruler.militaryIdentity?ruler.id:ruler.militaryUsurperIdentity?.personId??ruler.residentIdentity?.personId??ruler.id,age:rulerPortraitAge(ruler,worldMonth,team.status!=="EXTINCT"),...royalPortraitContext(ruler,team,worldMonth)}} name={formatRulerRowName(ruler,team)} lines={[`${getFactionDisplayNameAtMonth(team,royalPortraitContext(ruler,team,worldMonth).month)} · ${{LEADER:"首领",KING:"国王",EMPEROR:"皇帝",UNKNOWN:"身份未载",XIAOWEI:"校尉",PIJIANG:"裨将",JIANGJUN:"将军",SHANGJIANGJUN:"上将军"}[royalPortraitContext(ruler,team,worldMonth).role]}`,formatRulerListSubtitle(ruler,worldMonth,factionStatus,events,team.name),formatRulerLifeAge(ruler,worldMonth,false,team.status!=="EXTINCT"),...getPosthumousLabelLines(ruler,team,ruler.endYear??worldMonth),`${formatWorldDate(ruler.accessionYear??0)}—${ruler.endYear===undefined?"今":formatWorldDate(ruler.endYear)}`,ruler.residentIdentity?`于${ruler.residentIdentity.cityName}起事`:""]} onFull={()=>onSelectedRulerIdChange(ruler.id)}/>}
               heading={<>
                 <Typography
@@ -1129,7 +1131,7 @@ function DynastyTree({
                   fontSize="0.92rem" sx={{display:"flow-root"}}
                 >
                   {current ? "● " : ""}
-                  {formatRulerRowName(ruler, team)} <Typography component="span" fontSize=".74rem">{royalHonorHeading(ruler,dynasty,worldMonth,{person:ruler.militaryIdentity?MilitaryCommandRegistry.getPerson(ruler.militaryIdentity.personId):undefined,factionId:team.name,status:team.status})?.secondary}</Typography><Box component="span" sx={{display:"block",fontSize:"0.76rem",fontWeight:400,color:"var(--gg-text-muted)"}}>{formatRulerLifeAge(ruler,worldMonth,false,team.status!=="EXTINCT")}</Box>{ruler.relationType === "USURPER" ? "【篡朝】" : ""}
+                  {formatRulerRowName(ruler, team)}{ruler.relationType==='FOUNDER'?'【创始】':''}{ruler.templeName?'【史传】':''} <Typography component="span" fontSize=".74rem">{royalHonorHeading(ruler,dynasty,worldMonth,{person:ruler.militaryIdentity?MilitaryCommandRegistry.getPerson(ruler.militaryIdentity.personId):undefined,factionId:team.name,status:team.status})?.secondary}</Typography><Box component="span" sx={{display:"block",fontSize:"0.76rem",fontWeight:400,color:"var(--gg-text-muted)"}}>{formatRulerLifeAge(ruler,worldMonth,false,team.status!=="EXTINCT")}</Box>{ruler.relationType === "USURPER" ? "【篡朝】" : ""}
                 </Typography>
                 <Typography fontSize="0.82rem" color="var(--gg-text-muted)">
                   {formatRulerListSubtitle(ruler, worldMonth, factionStatus, events, team.name)}

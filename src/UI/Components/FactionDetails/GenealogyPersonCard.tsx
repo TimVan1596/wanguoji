@@ -1,25 +1,25 @@
-import {personRankTheme} from './PersonRankTheme';
+import {resolvePersonTheme,royalThemeIdentity} from './PersonRankTheme';
 import GenealogyCardFrame from './GenealogyCardFrame';
 import {ROYAL_HONOR_NAMES} from '../../../Politics/RoyalHonors';
 import {genealogyCardHeight} from "./genealogyWindow";
 import {formatRulerLifeAge} from "./RoyalPresentation";
 import { Box, Typography } from "@mui/material";
 import type { Ruler } from "../../../Politics/Dynasty";
-import { genealogyThemeStyles, type GenealogyNodePresentation } from "./GenealogyNodePresentation";
+import { type GenealogyNodePresentation } from "./GenealogyNodePresentation";
 
 /** Presentation only. The caller keeps the historical name formatter and bloodline layout. */
 export function GenealogyPersonCard({ ruler, displayName, presentation, worldMonth, managedLife=true, compact=false, militaryLabel }: {
   ruler: Ruler; displayName: string; presentation?: GenealogyNodePresentation; worldMonth?:number; managedLife?:boolean; compact?:boolean; militaryLabel?:string;
 }) {
   const theme = presentation?.theme ?? 'neutral';
-  const nobleStyle=personRankTheme(['disqualified','deposed'].includes(theme)?'REVOKED':'ROYAL',undefined,presentation?.roles.includes('称帝')?2:ruler.reignOrdinal!==undefined?1:0);
+  const nobleStyle=resolvePersonTheme({...royalThemeIdentity(ruler,worldMonth??Infinity,{currentRulerId:presentation?.roles.includes('当前君主')?ruler.id:undefined,designatedHeirId:presentation?.roles.includes('储君')?ruler.id:undefined,heirIds:presentation?.details.includes('宗室候选')?[ruler.id]:[]}),sanction:theme==='disqualified',noble:presentation?.nobleTheme,officeKind:presentation?.officeKind,officeLevel:presentation?.officeLevel});
 
   const honor=ruler.royalHonors?.filter(g=>g.month<=(worldMonth??Infinity)).at(-1);
   const posthumous=presentation?.posthumousLabels?.length?presentation.posthumousLabels.join(' · '):undefined;
   const kinLine=presentation?.honor?.secondary??(honor?(presentation?.details.find(line=>line.startsWith(ROYAL_HONOR_NAMES[honor.rank]))??`${ROYAL_HONOR_NAMES[honor.rank]}（历史荣衔）`):'宗室');
   if(compact){
     const line={overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"};
-    return <GenealogyCardFrame data-genealogy-theme={theme} title={[displayName,...presentation?.details??[],militaryLabel].filter(Boolean).join(" · ")} sx={{border:"1px solid",...genealogyThemeStyles[theme],...nobleStyle,borderRadius:"var(--gg-radius)",boxSizing:"border-box",height:genealogyCardHeight(worldMonth!==undefined,!!presentation?.labels.length,!!militaryLabel),px:"8px",py:"6px",textAlign:"center"}}>
+    return <GenealogyCardFrame data-genealogy-theme={theme} title={[displayName,...presentation?.details??[],militaryLabel].filter(Boolean).join(" · ")} sx={{border:"1px solid",...nobleStyle,borderRadius:"var(--gg-radius)",boxSizing:"border-box",height:genealogyCardHeight(worldMonth!==undefined,!!presentation?.labels.length,!!militaryLabel),px:"8px",py:"6px",textAlign:"center"}}>
       <Typography sx={{...line,fontSize:13,lineHeight:"20px",fontWeight:theme==='neutral'?400:700}}>{presentation?.heading??presentation?.honor?.primary??displayName}</Typography>
       {worldMonth!==undefined&&<Typography sx={{...line,fontSize:11,lineHeight:"16px"}}>{formatRulerLifeAge(ruler,worldMonth,false,managedLife)}</Typography>}
       {presentation?.labels.length?<Typography sx={{...line,fontSize:11,lineHeight:"16px"}}>{presentation.labels.join(" · ")}</Typography>:null}
@@ -28,7 +28,7 @@ export function GenealogyPersonCard({ ruler, displayName, presentation, worldMon
     </GenealogyCardFrame>;
   }
   return <Box data-genealogy-theme={theme} title={presentation?.details.join(" · ")}
-    sx={{ border: "1px solid", ...genealogyThemeStyles[theme],...nobleStyle, borderRadius: "var(--gg-radius)", px: 1,
+    sx={{ border: "1px solid", ...nobleStyle, borderRadius: "var(--gg-radius)", px: 1,
       py: 0.6, minWidth: 100, maxWidth: 230, overflowWrap: "anywhere" }}>
     <Typography fontSize="0.83rem" fontWeight={theme === "neutral" ? 400 : 700}>{presentation?.heading??presentation?.honor?.primary??displayName}</Typography>
     {worldMonth!==undefined&&<Typography fontSize="0.75rem">{formatRulerLifeAge(ruler,worldMonth,false,managedLife)}</Typography>}

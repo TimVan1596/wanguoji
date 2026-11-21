@@ -1,3 +1,4 @@
+import {CIVIL_OFFICES,civilOfficeLevel} from '../../../Politics/CivilOffice';
 import {memo} from 'react';
 import type {PortraitRole} from "./PortraitPresentation";
 /** Immutable identity controls face only; office, flag and age never re-roll it. */
@@ -11,9 +12,10 @@ export function portraitTraits(personId:string,age?:number){
 /** Decorative SVG lives inside the existing accessible archive control, never a second dialog. */
 function PersonPortrait({personId,age,role="UNKNOWN",color,deceased=false,size=48,nobleRank,royalKin=false}:{personId:string;age?:number;role?:PortraitRole;color?:number;deceased?:boolean;size?:number;nobleRank?:"NAN"|"ZI"|"BO"|"HOU"|"GONG";royalKin?:boolean}){
  const t=portraitTraits(personId,age),elder=t.stage==="elder",mature=t.stage==="mature",young=t.stage==="young";
+ const civil=CIVIL_OFFICES.includes(role as any),civilLevel=civilOfficeLevel(role as any);
  const military=["XIAOWEI","PIJIANG","JIANGJUN","SHANGJIANGJUN"].includes(role),imperial=role==="EMPEROR",royal=imperial||role==="KING";
  const flag=color===undefined?"#9a9181":`#${(color>>>0).toString(16).padStart(6,"0").slice(-6)}`;
- const robe=imperial?"#702d25":role==="KING"?"#463451":military?"#43565c":role==="LEADER"?"#766951":t.robe;
+ const robe=imperial?"#702d25":role==="KING"?"#463451":military?"#43565c":civil?["#526d62","#3c6555","#345346","#244e3c"][civilLevel]:role==="LEADER"?"#766951":t.robe;
  const browSlope=t.brow===2?1:t.brow===1?-1:0;
  const hair=elder?"#c7c3ba":mature?"#797571":"#303633",rx=young?t.face-1:t.face,eye=t.eyes/2;
  const face=`M${32-rx} 27 Q${30-rx} 13 32 12 Q${34+rx} 13 ${32+rx} 27 L${32+rx-t.jaw} 42 Q${41-t.jaw} ${55-t.jaw} 32 ${55-t.jaw} Q${23+t.jaw} ${55-t.jaw} ${32-rx+t.jaw} 42 Z`;
@@ -34,6 +36,7 @@ function PersonPortrait({personId,age,role="UNKNOWN",color,deceased=false,size=4
   <path data-face="true" d={face} fill={t.skin}/>
   <path d={t.hair===0?`M${31-rx} 29Q12 9 32 9Q52 9 ${33+rx} 29L42 19Q32 24 22 19Z`:t.hair===1?`M${31-rx} 30Q12 9 32 9Q52 10 ${33+rx} 30L43 19L28 23L22 17Z`:`M${31-rx} 30Q12 8 32 9Q52 8 ${33+rx} 30L43 17Q32 19 21 17Z`} fill={hair}/>
   {!royal&&<path d={t.hair===1?"M25 12Q21 2 33 4L39 12":"M26 12L26 6Q32 1 38 6L38 12"} fill={hair}/>}
+  {civil&&<g data-civil-office={role}><path d="M19 20L21 8Q32 3 43 8L45 20ZM19 13L7 11V16L19 19M45 13L57 11V16L45 19" fill="#303b34" stroke="#bda76d"/><path d="M22 57L32 69L42 57L43 80H21Z" fill="none" stroke="#d3bd80"/>{Array.from({length:civilLevel+1},(_,i)=><path key={i} d={`M${27+i*3} 73v5`} stroke="#d5b970" strokeWidth="2"/>)}</g>}
   {role==="LEADER"&&<path d="M18 20Q32 13 46 20L45 24Q32 18 19 24ZM43 22L51 31L45 30Z" fill="#8e7c58"/>}
   {role==="KING"&&<g data-sovereign-regalia="KING"><path d="M21 18L22 7L27 10L32 4L37 10L42 7L43 18Z" fill="#4c4544" stroke="#d5b168" strokeWidth="1.6"/><path d="M23 16H41M27 10V15M37 10V15" stroke="#e4c67f"/><circle cx="32" cy="12" r="2" fill="#8da39a" stroke="#d5b168"/></g>}
   {imperial&&<g data-sovereign-regalia="EMPEROR"><path d="M22 18V8H42V18" fill="#302d2c" stroke="#bb9747"/><path d="M12 4H52V10H12Z" fill="#292d30" stroke="#e2bf60" strokeWidth="1.7"/><path d="M16 6H48" stroke="#bda05d"/>{[15,21,27,37,43,49].map((x,i)=><g key={x}><path d={`M${x} 10V${i%3===0?24:18}`} stroke="#d4bc7a" strokeWidth="1.2"/><circle cx={x} cy={i%3===0?24:18} r="1.4" fill="#e6c56e"/></g>)}</g>}

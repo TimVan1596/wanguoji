@@ -14,6 +14,7 @@ import { getRulerTerminalRole } from "../../../History/PoliticalTerminalChronicl
 export type GenealogyRole = "当前君主" | "储君" | "势力创始" | "正式开国" | "称帝" | "篡朝开统" | "宗室废立继位" | "被宗室废黜" | "复国" | "末代承统" | "合邦退位" | "纳土退位";
 export type GenealogyTheme = "deposed" | "exiled" | "neutral" | "monarch" | "current" | "heir" | "foundation" | "usurpation" | "restoration" | "terminal" | "disqualified" | "military" | "personalNoble" | "inheritedNoble";
 export interface GenealogyNodePresentation {
+  officeKind?:'文官'|'武官';officeLevel?:number;
   nobleTheme?:{kind:'PERSONAL'|'INHERITED'|'HISTORICAL'|'REVOKED';rank:import('../../../Politics/FamilyNobleSuccession').FamilyNobleRank};
   heading?:string;
   politicalLabel?:string;

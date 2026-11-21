@@ -1,3 +1,5 @@
+import {civilOfficeTitle,civilOfficeDuties,CIVIL_OFFICE_NAMES} from '../../../Politics/CivilOffice';
+import {currentNobleGrant} from '../../../Politics/MilitaryNobility';
 import Dynasty from '../../../Politics/Dynasty';
 import {MilitaryServicePanel} from '../FactionDetails/PersonServicePanel';
 import PersonChronicleLayout from '../FactionDetails/PersonChronicleLayout';
@@ -21,7 +23,7 @@ import {NobleHistory} from '../FactionDetails/NobleHistory';
 import PersonCareerIdentity from '../FactionDetails/PersonCareerIdentity';
 import {usePersonArchiveNavigation} from '../FactionDetails/PersonArchiveNavigation';
 
-const endReasonLabel=(reason:NonNullable<CivilGovernorTerm['endReason']>)=>({DEATH:'去世',CITY_LOST:'城池失守',FACTION_ENDED:'政权终结',REGIME_ENDED:'王统结束',POLITICAL_SANCTION:'政治禁仕',MILITARY_OFFICE:'转任武职',REPLACED:'职务更替',IDENTITY_ENDED:'身份或在籍关系结束'})[reason];
+const endReasonLabel=(reason:NonNullable<CivilGovernorTerm['endReason']>)=>({DEATH:'去世',CITY_LOST:'城池失守',FACTION_ENDED:'政权终结',REGIME_ENDED:'王统结束',POLITICAL_SANCTION:'政治禁仕',MILITARY_OFFICE:'转任武职',REPLACED:'职务更替',PROMOTED:'晋升',IDENTITY_ENDED:'身份或在籍关系结束'})[reason];
 const sourceLabel=(term:CivilGovernorTerm)=>term.identitySource==='ORDINARY_RESIDENT'?'在籍居民':term.identitySource==='FAMILY'?'功臣世家':term.identitySource==='NOBLE'?'有爵人物':term.identitySource==='ROYAL'?'宗室':'退役军人';
 
 function useHistoryRevision(){const [revision,setRevision]=useState(WorldHistory.getRevision());useEffect(()=>WorldHistory.subscribeRevision(setRevision),[]);return revision;}
@@ -31,7 +33,7 @@ export function CivilGovernorSummary({cityId,month}:{cityId:string;month:number}
  useHistoryRevision();const term=CivilAdministration.getCurrentByCity(cityId,month),city=Game.Core?.allCities.find(city=>city.id===cityId);
  return <Box data-civil-governor-summary={cityId} sx={{borderTop:'1px solid var(--gg-border)',pt:.6}}>
   <Typography fontSize='.82rem' fontWeight='bold'>地方官</Typography>
-  {term?<><Typography fontSize='.8rem'>现任郡守：<Button size="small" sx={{p:0,minWidth:0}} onClick={()=>{store.dispatch(setSelectedFactionName(term.factionId));store.dispatch(setRightPanelTab('faction'));store.dispatch(setPersonArchiveRequest({kind:"CIVIL",factionId:term.factionId,id:term.personId}));}}>{term.personalName}</Button></Typography><Typography fontSize='.76rem'>任期：{formatWorldDate(term.startMonth)}—今 · {formatWorldDuration(month-term.startMonth)}</Typography><Typography fontSize='.76rem'>治理情况：{civilGovernorStatus(term,city,month)} · {sourceLabel(term)}</Typography></>:<Typography fontSize='.78rem'>暂无正式郡守</Typography>}
+  {term?<><Typography fontSize='.8rem'>现任{CIVIL_OFFICE_NAMES[term.office??'JUNSHOU']}：<Button size="small" sx={{p:0,minWidth:0}} onClick={()=>{store.dispatch(setSelectedFactionName(term.factionId));store.dispatch(setRightPanelTab('faction'));store.dispatch(setPersonArchiveRequest({kind:"CIVIL",factionId:term.factionId,id:term.personId}));}}>{term.personalName}</Button></Typography><Typography fontSize='.76rem'>任期：{formatWorldDate(term.startMonth)}—今 · {formatWorldDuration(month-term.startMonth)}</Typography><Typography fontSize='.76rem'>治理情况：{civilGovernorStatus(term,city,month)} · {sourceLabel(term)}</Typography></>:<Typography fontSize='.78rem'>暂无正式地方官</Typography>}
  </Box>;
 }
 
@@ -45,7 +47,7 @@ export function governorProfile(term:CivilGovernorTerm,month:number){
  const team=Game.Core?.teams.find(t=>t.name===term.factionId);
  const abilities=linkedRuler?rulerAbilities(linkedRuler,Military.getPeople()):person?militaryAbilities(person):personAbilities(term.royalRulerId?{kind:'ROYAL',rulerId:term.royalRulerId,bornMonth:term.bornMonth}:{kind:'RESIDENT',sourceUserId:term.sourceUserId,bornMonth:term.bornMonth});
  const loyalty=user&&user.role!=='RULER'?{value:user.loyalty,factionName:Game.Core?.teams.find(t=>t.users.has(user))?.displayName??term.countryName,month}:undefined;
- return {person,family,memberId,user,linkedRuler,linkedHouse,deathMonth,portraitMonth,abilities,loyalty,portrait:{personId:term.royalRulerId??term.personId,age:Math.max(0,Math.floor((portraitMonth-term.bornMonth)/12)),color:team?getFactionColorAtMonth(team,portraitMonth):undefined,deceased:deathMonth!==undefined&&deathMonth<=month,royalKin:!!term.royalRulerId}};
+ return {person,family,memberId,user,linkedRuler,linkedHouse,deathMonth,portraitMonth,abilities,loyalty,portrait:{personId:term.royalRulerId??term.personId,age:Math.max(0,Math.floor((portraitMonth-term.bornMonth)/12)),color:team?getFactionColorAtMonth(team,portraitMonth):undefined,deceased:deathMonth!==undefined&&deathMonth<=month,royalKin:!!term.royalRulerId,role:term.office??'JUNSHOU',nobleRank:person?currentNobleGrant(person,term.factionId,portraitMonth,term.epochFounderId)?.rank:undefined}};
 }
 export function GovernorDetail({term,month,careerIndex}:{term:CivilGovernorTerm;month:number;careerIndex?:PersonCareerIndex}){
  const navigation=usePersonArchiveNavigation(),{person,family,memberId,user,linkedRuler,linkedHouse,deathMonth,portraitMonth,abilities,loyalty}=governorProfile(term,month);
@@ -53,20 +55,20 @@ export function GovernorDetail({term,month,careerIndex}:{term:CivilGovernorTerm;
  const ageMonth=deathMonth??(user?month:term.endMonth??month);
  return <Box data-civil-governor-detail={term.assignmentId}>
  <PersonChronicleLayout personKey={term.personId}
-  title={<Typography fontWeight="bold">{term.personalName} · {term.countryName} · {term.cityName}郡守{term.endMonth!==undefined?'（已离任）':''}</Typography>}
+  title={<Typography fontWeight="bold">{term.personalName} · {term.countryName} · {civilOfficeTitle(term)}{term.endMonth!==undefined?'（已离任）':''}</Typography>}
   identity={<><PersonCareerIdentity personId={term.personId} name={term.personalName} bornMonth={term.bornMonth} deathMonth={deathMonth}/><Typography fontSize=".76rem">{deathMonth!==undefined?`享年${Math.floor((deathMonth-term.bornMonth)/12)}岁`:user?`年龄${Math.floor((month-term.bornMonth)/12)}岁`:`任职末期${Math.floor((ageMonth-term.bornMonth)/12)}岁 · 此后生死未载`} · {sourceLabel(term)}</Typography></>}
   preBiography={<>{person?<MilitaryDispositionPanel person={person} personId={person.personId} bornMonth={person.bornMonth} loyalty={loyalty?.value} loyaltyContext={loyalty}/>:<PersonAbilityPanel abilities={abilities} ambition={personAmbition(abilities.source)} loyalty={loyalty}/>}
   {linkedRuler&&linkedHouse&&<Button size="small" onClick={()=>navigation.open({kind:'RULER',factionId:linkedHouse.factionId,id:linkedRuler.id})}>查看君主本纪</Button>}
-  <MilitaryServicePanel personId={term.personId} month={month} timelineOwnsPolitics/><CivilServicePanel personId={term.personId} month={month} factionId={term.factionId}/>
+  {person?.appointments.length?<MilitaryServicePanel personId={term.personId} month={month} timelineOwnsPolitics/>:null}<CivilServicePanel personId={term.personId} month={month} factionId={term.factionId}/>
   {person&&<NobleHistory person={person} month={month}/>}
   {person&&family&&<FamilyTitleBadge personId={person.personId} factionId={family.factionId} month={month}/>}
   {family&&!person&&memberId&&<FamilyPersonSources family={family} memberId={memberId} month={month}/>}
   {family&&<Button size="small" onClick={()=>navigation.open({kind:'FAMILY',factionId:family.factionId,id:family.familyId,memberId})}>查看功臣世家与宗谱</Button>}
   {term.royalRulerId&&<Button size="small" onClick={()=>navigation.open({kind:'GENEALOGY',factionId:term.factionId,id:term.royalRulerId!})}>查看王室身份</Button>}
   </>}
-  biographyTitle="生平纪事" biography={[`${formatWorldDate(term.startMonth)}，${term.rulerTitle}任命其为${term.cityName}郡守。`,...(term.endReason?[`${formatWorldDate(term.endMonth!)}离任：${endReasonLabel(term.endReason)}。`]:[])]}
+  biographyTitle="生平纪事" biography={[`${formatWorldDate(term.startMonth)}，${term.rulerTitle}任命其为${civilOfficeTitle(term)}。`,...(term.endReason?[`${formatWorldDate(term.endMonth!)}离任：${endReasonLabel(term.endReason)}。`]:[])]}
   milestoneTitle="生平时间轴" milestones={milestones.slice(-8)} milestoneTotal={milestones.length} allMilestones={()=>milestones}
-  governance={<Box><Typography fontSize=".8rem">任期：{formatWorldDate(term.startMonth)}—{term.endMonth===undefined?'今':formatWorldDate(term.endMonth)} · {formatWorldDuration((term.endMonth??month)-term.startMonth)}</Typography><Typography fontSize=".8rem">治理：{civilGovernorStatus(term,cityFor(term),month)} · 忠诚恢复{term.loyaltyRecovered} · 破坏恢复{term.devastationRecovered}</Typography>{term.meritEventId&&<Typography fontSize=".76rem">地方治绩：{formatWorldDate(term.meritMonth!)} · 因实际治理恢复获正式记录。</Typography>}</Box>}
+  governance={<Box><Typography fontSize='.8rem'>{civilOfficeDuties[term.office??'JUNSHOU']}</Typography><Typography fontSize=".8rem">任期：{formatWorldDate(term.startMonth)}—{term.endMonth===undefined?'今':formatWorldDate(term.endMonth)} · {formatWorldDuration((term.endMonth??month)-term.startMonth)}</Typography><Typography fontSize=".8rem">治理：{civilGovernorStatus(term,cityFor(term),month)} · 忠诚恢复{term.loyaltyRecovered} · 破坏恢复{term.devastationRecovered}</Typography>{term.meritEventId&&<Typography fontSize=".76rem">地方治绩：{formatWorldDate(term.meritMonth!)} · 因实际治理恢复获正式记录。</Typography>}</Box>}
   assessment={[]} evidence={()=><><PersonAbilityEvidence abilities={abilities}/><PersonPoliticalCareer personId={term.personId} month={month}/><Typography fontSize=".74rem">人物：{term.personId} / User {term.sourceUserId}。肖像取实际任职时点 {formatWorldDate(portraitMonth)}；身份、城市及任命君主使用原始记录。</Typography></>}/>
  </Box>;
 }
