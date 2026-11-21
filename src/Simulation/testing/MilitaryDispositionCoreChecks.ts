@@ -5,7 +5,7 @@ import {SIMULATION_FIXED_STEP_MS} from "../SimulationDriver";
 import Military from '../../Politics/MilitaryCommandRegistry';
 import Dynasty from '../../Politics/Dynasty';
 import History from '../../History/WorldHistory';
-import {militaryAmbition} from '../../Politics/MilitaryPoliticalDisposition';
+import {personAmbition,militaryAbilities} from '../../Politics/PersonAbilities';
 import {evaluateDepositionOpportunity,chooseDepositionClaimant} from '../../Politics/InReignDeposition';
 import {getFactionStability} from '../../Components/City';
 import {exportWorldSave} from '../../Persistence/WorldSaveExporter';
@@ -22,7 +22,7 @@ export function checkMilitaryDisposition(core:any,base:ReturnType<typeof exportW
   for(const p of people)team.getUserById(p.sourceUserId).loyalty=95;
   const restrained=Military.getPoliticalInfluence(team,month,core.logicalUnitRegistry);
   check(!restrained.candidates.length&&restrained.blocked.filter(b=>b.reason==='SUPPORTS_CONTINUITY').length===2,'two real loyal officers maintain the dynasty instead of pressuring the court');
-  const p=[...people].sort((a,b)=>militaryAmbition(a.personId,a.bornMonth)-militaryAmbition(b.personId,b.bornMonth))[0],user=team.getUserById(p.sourceUserId)!;
+  const p=[...people].sort((a,b)=>personAmbition(militaryAbilities(a).source)-personAmbition(militaryAbilities(b).source))[0],user=team.getUserById(p.sourceUserId)!;
   user.loyalty=10;
   const willing=Military.getPoliticalInfluence(team,month,core.logicalUnitRegistry);
   check(willing.candidates.length===1&&willing.candidates[0].personId===p.personId,'changing the actual User relation changes political participation without changing the real command');

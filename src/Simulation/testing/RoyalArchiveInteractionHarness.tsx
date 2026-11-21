@@ -3,7 +3,7 @@ import {createRoot} from "react-dom/client";
 import {flushSync} from "react-dom";
 import {Provider} from "react-redux";
 import {store} from "../../store";
-import {setSelectedCityId,setTeams,setWorldYear,setSelectedFactionName,setFactionDetailTab} from "../../store/rootSlice";
+import {setSelectedCityId,setTeams,setWorldYear,setSelectedFactionName,setFactionDetailTab,setPersonArchiveRequest} from "../../store/rootSlice";
 import FactionDetails from "../../UI/Components/FactionDetails";
 import type Core from "../../Game/Core";
 import {exportWorldSave} from "../../Persistence/WorldSaveExporter";
@@ -180,9 +180,10 @@ export async function checkMilitaryAccessionNavigation(core:Core,factionId:strin
  const before=JSON.stringify(exportWorldSave(core)),host=document.createElement('div');document.body.append(host);const root=createRoot(host);
  try{
   flushSync(()=>{store.dispatch(setTeams([...core.teams]));store.dispatch(setWorldYear(core.simulator!.year));store.dispatch(setSelectedFactionName(factionId));store.dispatch(setFactionDetailTab('military'));root.render(<Provider store={store}><FactionDetails/></Provider>);});
+  flushSync(()=>store.dispatch(setPersonArchiveRequest({kind:'MILITARY',factionId,id:personId})));await new Promise(r=>setTimeout(r,30));
   const heading=Array.from(host.querySelectorAll<HTMLButtonElement>('button[aria-expanded]')).find(b=>b.textContent?.includes(p.personalName!))!;check(heading,'former general is present in the real military list');if(heading.getAttribute('aria-expanded')!=='true')flushSync(()=>heading.click());
   check(host.textContent?.includes(fact.entry.text)&&host.textContent.includes(formatWorldDate(fact.entry.worldMonth)),'military archive shows the actual accession month and historical polity title');
-  const link=Array.from(host.querySelectorAll('button')).find(b=>b.textContent==='查看对应王室本纪')!;check(link,'accession fact links to the real royal chronicle');flushSync(()=>link.click());await new Promise(r=>setTimeout(r,30));
+  const link=Array.from(host.querySelectorAll('button')).find(b=>b.textContent==='查看君主本纪'||b.textContent==='查看新政权本纪')!;check(link,'accession fact links to the real royal chronicle');flushSync(()=>link.click());await new Promise(r=>setTimeout(r,30));
   check(store.getState().root.selectedFactionName===fact.factionId&&store.getState().root.factionDetailTab==='house','accession archive link opens the correct historical faction and royal tab');
  }finally{flushSync(()=>root.unmount());host.remove();}
  check(JSON.stringify(exportWorldSave(core))===before,'political life display and navigation consume no RNG or canonical state');

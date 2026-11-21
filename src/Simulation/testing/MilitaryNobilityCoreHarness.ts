@@ -10,7 +10,7 @@ import {checkStateFormationCore} from './StateFormationCoreChecks';
 import {checkRoyalHonors,checkRoyalHonorCompetition,checkRoyalCourtAttempt} from './RoyalHonorCoreChecks';
 import {checkSuccessionRollback} from "./SuccessionRollbackCoreChecks";
 import {checkMilitaryDisposition} from "./MilitaryDispositionCoreChecks";
-import {militaryAmbition} from "../../Politics/MilitaryPoliticalDisposition";
+import {personAmbition,militaryAbilities} from '../../Politics/PersonAbilities';
 import {checkOfficePoliticalChoice} from './MilitaryOfficePoliticalCoreChecks';
 import {checkMilitaryLifeView} from './MilitaryLifeViewChecks';
 import {checkMilitaryAppanages} from './MilitaryAppanageCoreHarness';
@@ -52,8 +52,8 @@ export async function runMilitaryNobilityCore(seed:string){
   for(const [i,c]of towns.entries()){clock(60+i*12);place(users[0],c.block.x,c.block.y);c.capture(home,60+i*12,undefined,commands[0],ids[0]);if(i===0)untitledCourtBase=strict();}
   for(const [i,c]of towns.slice(0,2).entries()){clock(168+i*12);c.capture(enemy,168+i*12);clock(180+i*12);place(users[1],c.block.x,c.block.y);c.capture(home,180+i*12,undefined,commands[1],ids[1]);}
   // Equal willingness/contest multipliers isolate the existing title and office regressions.
-  const minimumAmbition=Math.min(...ids.map(id=>militaryAmbition(id,Military.getPerson(id)!.bornMonth)));
-  for(const u of users){const p=Military.getPerson(u.militaryPersonId!)!;u.loyalty=militaryAmbition(p.personId,p.bornMonth)-minimumAmbition;}
+  const minimumAmbition=Math.min(...ids.map(id=>personAmbition(militaryAbilities(Military.getPerson(id)!).source)));
+  for(const u of users){const p=Military.getPerson(u.militaryPersonId!)!;u.loyalty=personAmbition(militaryAbilities(p).source)-minimumAmbition;}
   clock(216);const base=strict();await checkFamilyChildCore(core,untitledCourtBase!,factionId,check,towns[1].id);await checkLowMilitaryNobility(core,untitledCourtBase!,factionId,ids[0],towns[1].id,check);checkBaronFamilies(core,base,factionId,check);checkStateFormationCore(core,base,check);checkFoundingPeerage(core,base,check);checkRoyalHonors(core,base,check);checkRoyalHonorCompetition(core,base,check);checkCourtCoups(core,base,factionId,check);Dynasty.setPoliticalCalibrationForSimulation('MEDIUM');checkCourtCoups(core,exportWorldSave(core),factionId,check);hydrateWorldSave(core,structuredClone(base));checkCourtFates(core,base,factionId,check,untitledCourtBase!);checkSameMonthMilitaryCourt(core,base,factionId,check);checkRoyalCourtAttempt(core,base,check);await checkMilitaryFamilies(core,base,factionId,check);
   const restore=(save=base)=>{hydrateWorldSave(core,structuredClone(save));return {t:core.teams.find(t=>t.name===factionId)!,d:Dynasty.get(factionId)!,p:Military.getPerson(ids[0])!,q:Military.getPerson(ids[1])!};};
   checkSuccessionRollback(core,base,factionId,check);

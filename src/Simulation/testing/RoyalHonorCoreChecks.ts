@@ -5,7 +5,7 @@ import MilitaryPersonIdentityHeader from '../../UI/Components/FactionDetails/Mil
 import {GenealogyPersonCard} from '../../UI/Components/FactionDetails/GenealogyPersonCard';
 import {deriveGenealogyNodePresentations} from '../../UI/Components/FactionDetails/GenealogyNodePresentation';
 import {royalHonorHeading} from '../../Politics/RoyalHonorPresentation';
-import {militaryAmbition} from '../../Politics/MilitaryPoliticalDisposition';
+import {personAmbition} from '../../Politics/PersonAbilities';
 import {selectCourtInstigator,courtAttemptChance} from '../../Politics/CourtCoup';
 import {evaluateDepositionOpportunity,chooseDepositionClaimant} from '../../Politics/InReignDeposition';
 import {royalHonorCandidateClaims} from '../../Politics/RoyalHonors';
@@ -31,7 +31,7 @@ export function prepareMeritoriousRoyal(core:any,base:ReturnType<typeof exportWo
  let month=Math.ceil(base.world.worldMonth/12)*12,team:any,candidate:any;
  for(let offset=0;offset<=120&&!team;offset+=12){const m=month+offset;
   for(const t of core.teams){const d=Dynasty.get(t.name),king=Dynasty.getCurrentRuler(t.name);
-   const c=Dynasty.getRoyalMilitaryCandidates(t,m).find(c=>{const r=d!.rulers.find(r=>r.id===c.rulerId)!;return (!accept||accept(r,m,d!))&&militaryAmbition(Military.nextPersonId(),r.bornYear)>10&&m-r.bornYear>=288&&(r.naturalDeathYear??0)>m+72;});
+   const c=Dynasty.getRoyalMilitaryCandidates(t,m).find(c=>{const r=d!.rulers.find(r=>r.id===c.rulerId)!;return (!accept||accept(r,m,d!))&&personAmbition({kind:'ROYAL',rulerId:r.id,bornMonth:r.bornYear})>10&&m-r.bornYear>=288&&(r.naturalDeathYear??0)>m+72;});
    if(c&&king&&(king.naturalDeathYear??0)>m+72&&m-(king.accessionYear??m)>=12&&t.cities.length>=3&&core.allCities.some((c:any)=>c.ownerTeam!==t&&!c.destroyed)){team=t;candidate=c;month=m;break;}
   }
  }
