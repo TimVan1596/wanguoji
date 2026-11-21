@@ -2,7 +2,7 @@ import {civilNobleMerit} from './CivilNobility';
 import {currentNobleGrant,NOBLE_RANKS} from './MilitaryNobility';
 import {familyNobleRankAt} from './FamilyNobleSuccession';
 import {civilPromotionEvidence} from './CivilPromotion';
-import {CIVIL_OFFICES,civilOfficeLevel,civilOfficeTitle,isLocalCivilOffice} from './CivilOffice';
+import {CIVIL_OFFICES,civilOfficeLevel,civilOfficeTitle,isLocalCivilOffice,civilOfficeCap} from './CivilOffice';
 import {politicalMutationActive} from '../Simulation/PoliticalMutationScope';
 import {isRoyalTitleLabel} from './RoyalPopulationIdentity';
 import {civilState,replaceCivilState,emptyCivilState} from './CivilCareerIdentity';
@@ -71,7 +71,7 @@ class CivilAdministrationStore {
  }
  appoint(month:number,team:Team,city:City,candidate:CivilGovernorCandidate,dynasty:Dynasty){
   const ruler=dynasty.rulers.find(r=>r.id===dynasty.currentRulerId),epoch=ruler&&(dynasty.houseEpochs??[]).find(e=>e.startMonth<=month&&(e.endMonth??Infinity)>=month);
-  if(!ruler||!epoch||!eligibleCivilCities(month,team,this.state.terms).some(c=>c.id===city.id)||!civilGovernorCandidates(month,team,Military.getPeople(),this.state.terms,epoch.foundingRulerId,(id,bornMonth)=>Military.getFamilyMember(id,bornMonth),Military.getFormations(),DynastyRegistry.getAll()).some(c=>c.personId===candidate.personId))throw Error('Invalid civil governor appointment');
+  if(this.state.terms.filter(t=>t.factionId===team.name&&active(t,month)).length>=civilOfficeCap(team.cities.length)||!ruler||!epoch||!eligibleCivilCities(month,team,this.state.terms).some(c=>c.id===city.id)||!civilGovernorCandidates(month,team,Military.getPeople(),this.state.terms,epoch.foundingRulerId,(id,bornMonth)=>Military.getFamilyMember(id,bornMonth),Military.getFormations(),DynastyRegistry.getAll()).some(c=>c.personId===candidate.personId))throw Error('Invalid civil governor appointment');
   candidate=civilGovernorCandidates(month,team,Military.getPeople(),this.state.terms,epoch.foundingRulerId,(id,bornMonth)=>Military.getFamilyMember(id,bornMonth),Military.getFormations(),DynastyRegistry.getAll()).find(c=>c.personId===candidate.personId&&c.sourceUserId===candidate.sourceUserId&&c.bornMonth===candidate.bornMonth)??(()=>{throw Error('Civil population identity mismatch');})();
   return Military.civilTransaction(team,()=>transaction(()=>{
    const sequence=this.state.sequence+1,assignmentId=`civil-governor-${team.name}-${city.id}-${sequence}`,eventId=`${assignmentId}-appointed`;
@@ -107,7 +107,7 @@ class CivilAdministrationStore {
  promote(month:number,term:CivilGovernorTerm,team:Team,dynasty:Dynasty){
   const current=this.state.terms.find(t=>t.assignmentId===term.assignmentId),user=[...team.users].find(u=>u.id===term.sourceUserId&&u.bornMonth===term.bornMonth),person=Military.getPerson(term.personId),ruler=dynasty.rulers.find(r=>r.id===dynasty.currentRulerId);
   const evidence=current&&user&&civilPromotionEvidence(current,month,user.loyalty,team.cities.length,this.state.terms);
-  if(!current||!user||!evidence||user.isDestroyed||user.role!=='NORMAL'||user.rulerId||user.nativeRoyalRulerId||person?.deathMonth!==undefined||person?.politicalRulerId||person&&unresolvedCourtBans(person,team.name,month,term.epochFounderId).length||person?.appointments.some(a=>a.endMonth===undefined)||team.status!=='ACTIVE'||team.identityStage!=='STATE'||!ruler||ruler.status!=='ruling'||ruler.deathMonth!==undefined||dynasty.factionId!==team.name||term.factionId!==team.name)throw Error('Invalid civil promotion');
+  if(!current||!user||!evidence||user.isDestroyed||user.role!=='NORMAL'||user.rulerId||user.nativeRoyalRulerId||person?.deathMonth!==undefined||person?.politicalRulerId||person&&unresolvedCourtBans(person,team.name,month,term.epochFounderId).length||person?.appointments.some(a=>a.endMonth===undefined)||team.status!=='ACTIVE'||team.identityStage!=='STATE'||!ruler||ruler.status!=='ruling'||ruler.deathMonth!==undefined||dynasty.factionId!==team.name||term.factionId!==team.name||!(dynasty.houseEpochs??[]).some(e=>e.foundingRulerId===term.epochFounderId&&e.startMonth<=month&&(e.endMonth??Infinity)>month))throw Error('Invalid civil promotion');
   return Military.civilTransaction(team,()=>transaction(()=>{
    const office=CIVIL_OFFICES[civilOfficeLevel(current.office)+1];
    this.end(month,current,'PROMOTED');

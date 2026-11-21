@@ -20,17 +20,17 @@ export function checkCivilPoliticalCore(core:any,input:ReturnType<typeof exportW
   const candidates=civilGovernorCandidates(start,team,Military.getPeople(),Civil.getTerms(),epoch,(id,born)=>Military.getFamilyMember(id,born),Military.getFormations());
   const candidate=candidates.find(c=>!c.royalRulerId&&c.strategy>=60&&personAmbition(personAbilities({kind:'RESIDENT',sourceUserId:c.sourceUserId,bornMonth:c.bornMonth}).source)>0);
   check(candidate,'real unused living resident qualifies for governance without inventing population');
-  const governor=team.getUserById(candidate!.sourceUserId);governor.loyalty=0;
-  const term=Civil.appoint(start,team,town,candidate!,dynasty);town.loyalty=20;town.devastation=40;
-  for(let n=1;n<=10;n++){clock(start+n*12);(Civil as any).applyGovernance(start+n*12,core.teams);}
-  const at=start+120;for(const c of team.cities)c.loyalty=20;
+  const governor=team.getUserById(candidate!.sourceUserId);governor.loyalty=100;
+  let term=Civil.appoint(start,team,town,candidate!,dynasty);town.loyalty=20;town.devastation=40;
+  for(let n=1;n<=13;n++){clock(start+n*12);(Civil as any).applyGovernance(start+n*12,core.teams);if(n===3){term=Civil.promote(start+n*12,Civil.getByPerson(term.personId).find(t=>t.endMonth===undefined)!,team,dynasty);governor.loyalty=0;}}
+  const at=start+156;for(const c of team.cities)c.loyalty=20;
   const matured=Civil.getByPerson(term.personId).find(t=>t.assignmentId===term.assignmentId)!;check(matured.meritEventId&&at-matured.startMonth===120,'governor has ten actual years and a production governance-merit receipt before political participation');
   const prepared=exportWorldSave(core);check(validateWorldSave(prepared).valid,'controlled civil political resource setup is a strict native save before accession');
   const next=random.next;random.next=()=>{next.call(random);return 0;};try{Dynasty.resolveCapturedRuler(team,enemy,at);}finally{random.next=next;}
   const king=Dynasty.getCurrentRuler(factionId)!,proof=king.militaryUsurperIdentity;
   check(proof?.personId===personId&&proof.civilSources.some(s=>s.assignmentId===term.assignmentId&&s.sourceUserId===governor.id&&s.loyalty===0),'actual accession freezes a living governor identity and its real loyalty object/time');
   check(proof?.contest.find(r=>r.personId===personId)?.civilSupport.some(s=>s.assignmentId===term.assignmentId&&s.bonus>0&&s.bonus<=4),'actual governor term, merit and linked city capture contribute a bounded political resource to the real commander');
-  check(governor.role==='NORMAL'&&!governor.militaryPersonId&&!Military.getFormations().some(f=>f.status==='ACTIVE'&&f.commanderPersonId===term.personId),'political civil participation creates neither a command, a second identity nor an army');
+  check(governor.role==='NORMAL'&&Military.getPerson(term.personId)?.appointments.length===0&&!Military.getFormations().some(f=>f.status==='ACTIVE'&&f.commanderPersonId===term.personId),'political civil participation creates neither a command, a second identity nor an army');
   Civil.update(at,core.teams,Dynasty.getAll());const ended=Civil.getByPerson(term.personId).find(t=>t.assignmentId===term.assignmentId)!;
   check(ended.endMonth===at&&ended.endReason==='REGIME_ENDED','old dynasty civil appointment ends through its lawful regime boundary');
   const saved=exportWorldSave(core),valid=validateWorldSave(saved);check(valid.valid,`civil political source strictly replays after old appointment closes: ${valid.errors.slice(0,2).join(';')}`);

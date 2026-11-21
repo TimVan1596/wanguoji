@@ -1,3 +1,6 @@
+import {getRulerUserId} from '../../Politics/RoyalPopulationIdentity';
+import Civil,{civilGovernorCandidates} from '../../Politics/CivilAdministration';
+import Military from '../../Politics/MilitaryCommandRegistry';
 import {createNaturalCore} from "./NaturalCoreHarness";
 import {SIMULATION_FIXED_STEP_MS} from "../SimulationDriver";
 import Dynasty from "../../Politics/Dynasty";
@@ -58,6 +61,11 @@ export async function runDepositionCore(seed="deposition-z8"){
   check(typeof event?.metadata?.depositionSelection==="string","selected real claimant and frozen explanation are saved in the one authoritative event");
   const selection=JSON.parse(String(event.metadata?.depositionSelection));
   check(selection.roll===e.probability*.75&&selection.conditionalRoll===selection.roll/selection.probability,"claimant selection reuses the original political roll; separate runtime unit initialization draws are reported");
+  const oldBody=restored.getUserById(getRulerUserId(predecessor.id));
+  check(oldBody&&oldBody.nativeRoyalRulerId===predecessor.id&&oldBody.bornMonth===predecessor.bornYear&&oldBody.role==='NORMAL','deposed native ruler retains the original permanent royal population and canonical birth');
+  const pool=civilGovernorCandidates(month,restored,Military.getPeople(),Civil.getTerms(),dynasty.houseEpochs!.at(-1)!.foundingRulerId,(id,born)=>Military.getFamilyMember(id,born),Military.getFormations(),Dynasty.getAll());
+  check(!pool.some(p=>p.sourceUserId===oldBody!.id)&&!(Military as any).isEligible(oldBody,month),'deposed native king cannot become an ordinary local official or new military candidate');
+  const stable=strict();hydrateWorldSave(core,structuredClone(stable));check(diffCanonicalWorldSave(stable,strict()).matched,'native royal permanent identity survives strict deposition reload');
   const save=strict(),age=formatRulerLifeAge(predecessor,month);
   const resume=()=>{hydrateWorldSave(core,JSON.parse(JSON.stringify(save)));core.setWorldRunning(true);for(let i=0;i<12;i++)step();core.setWorldRunning(false);return strict();};
   const a=resume(),b=resume();check(diffCanonicalWorldSave(a,b).matched,"twelve real months after strict hydration are deterministic");

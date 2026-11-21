@@ -279,10 +279,11 @@ class DynastyRegistryStore {
     }
     if (team.status === "EXTINCT") return undefined;
     const military=resident?.origin.military;
-    const sourcePerson=military?MilitaryCommandRegistry.getPerson(military.personId):undefined;
+    const civilPerson=resident?MilitaryCommandRegistry.getPerson(resident.origin.personId):undefined;
+    const sourcePerson=military?MilitaryCommandRegistry.getPerson(military.personId):civilPerson?.civilOrigin&&civilPerson.appointments.length===0?civilPerson:undefined;
     const family=resident?MilitaryCommandRegistry.getFamilyMember(resident.user.id,resident.user.bornMonth):undefined;
     if(family&&family.member.name!==resident!.user.name&&!sourcePerson)throw Error('Resident family name conflict');
-    const established=resident?establishedResidentFounderName(resident.user.name,sourcePerson?.personalName,family?.member.name,civilPopulationIdentity(resident.user.id,resident.user.bornMonth)?.personalName):undefined;
+    const established=resident?establishedResidentFounderName(resident.user.name,military?sourcePerson?.personalName:undefined,family?.member.name,civilPopulationIdentity(resident.user.id,resident.user.bornMonth)?.personalName):undefined;
     if(military&&(!sourcePerson||sourcePerson.status!=="RETIRED"||sourcePerson.politicalRulerId||sourcePerson.sourceUserId!==resident?.user.id||sourcePerson.bornMonth!==resident.user.bornMonth||!established))throw new Error("Invalid military founder");
     const houseName = established?.houseName??team.houseName ?? `${team.name}氏`;
     if(established)team.houseName=established.houseName;
@@ -342,7 +343,7 @@ class DynastyRegistryStore {
       if(team&&d){if(team.rulerUser?.historicalPersonId===personId)team.rulerUser=undefined;this.succeedRuler(team,d,r,month,"combat");return;}
     }
     r.status="dead";r.deathMonth=month;r.deathReason="战死";
-    if(r.residentIdentity?.military)MilitaryCommandRegistry.mirrorPoliticalDeath(r.residentIdentity.military.personId,r.id,month,"BATTLE_DEATH");
+    if(r.residentIdentity&&(r.residentIdentity.military||MilitaryCommandRegistry.getPerson(r.residentIdentity.personId)?.civilOrigin))MilitaryCommandRegistry.mirrorPoliticalDeath(r.residentIdentity.personId,r.id,month,"BATTLE_DEATH");
     const team=Game.Core?.teams.find(t=>this.get(t.name)?.rulers.includes(r));
     if(team)WorldHistory.addRulerDied(month,team.name,this.getRulerTitle(team,r,month),{rulerId:r.id,deathReason:r.deathReason,age:Math.floor((month-r.bornYear)/12)});
   }
@@ -737,7 +738,7 @@ class DynastyRegistryStore {
     predecessor.endReason =
       reason === "combat" ? "战死" : reason === "captured" ? "被俘处死" : "去世";
     predecessor.deathReason = predecessor.endReason as RulerDeathReason;
-    if(predecessor.residentIdentity?.military)MilitaryCommandRegistry.mirrorPoliticalDeath(predecessor.residentIdentity.military.personId,predecessor.id,year,reason==="natural"?"NATURAL_DEATH":reason==="captured"?"CAPTURED":"BATTLE_DEATH");
+    if(predecessor.residentIdentity&&(predecessor.residentIdentity.military||MilitaryCommandRegistry.getPerson(predecessor.residentIdentity.personId)?.civilOrigin))MilitaryCommandRegistry.mirrorPoliticalDeath(predecessor.residentIdentity.personId,predecessor.id,year,reason==="natural"?"NATURAL_DEATH":reason==="captured"?"CAPTURED":"BATTLE_DEATH");
     if (predecessor.chronicle) {
       finishRulerChronicle(
         predecessor.chronicle,
@@ -1021,7 +1022,7 @@ class DynastyRegistryStore {
       "RULER",
       ruler.id,
       { cause: "RULER_LIFECYCLE", month, context: "ruler unit established" },
-      ruler.militaryIdentity ? {bornMonth:ruler.bornYear,historicalPersonId:ruler.militaryIdentity.personId,militaryPersonId:ruler.militaryIdentity.personId} : ruler.residentIdentity ? {bornMonth:ruler.bornYear,historicalPersonId:ruler.residentIdentity.personId,militaryPersonId:ruler.residentIdentity.military?.personId} : {bornMonth:ruler.bornYear,nativeRoyalRulerId:ruler.id}
+      ruler.militaryIdentity ? {bornMonth:ruler.bornYear,historicalPersonId:ruler.militaryIdentity.personId,militaryPersonId:ruler.militaryIdentity.personId} : ruler.residentIdentity ? {bornMonth:ruler.bornYear,historicalPersonId:ruler.residentIdentity.personId,militaryPersonId:ruler.residentIdentity.military?.personId??(MilitaryCommandRegistry.getPerson(ruler.residentIdentity.personId)?.civilOrigin?ruler.residentIdentity.personId:undefined)} : {bornMonth:ruler.bornYear,nativeRoyalRulerId:ruler.id}
     );
   }
 
@@ -1340,7 +1341,7 @@ class DynastyRegistryStore {
         const u = Team.GetUserById(identity.sourceUserId);
         if (u?.historicalPersonId === (ruler.militaryUsurperIdentity??ruler.militaryIdentity)!.personId) u.destroyUser(true,{cause:"RULER_LIFECYCLE",month:worldMonth});
       }
-      if(ruler.residentIdentity?.military)MilitaryCommandRegistry.mirrorPoliticalDeath(ruler.residentIdentity.military.personId,ruler.id,worldMonth,"NATURAL_DEATH");
+      if(ruler.residentIdentity&&(ruler.residentIdentity.military||MilitaryCommandRegistry.getPerson(ruler.residentIdentity.personId)?.civilOrigin))MilitaryCommandRegistry.mirrorPoliticalDeath(ruler.residentIdentity.personId,ruler.id,worldMonth,"NATURAL_DEATH");
       if(ruler.residentIdentity){const u=Team.GetUserById(ruler.residentIdentity.sourceUserId);if(u?.historicalPersonId===ruler.residentIdentity.personId)u.destroyUser(true,{cause:"RULER_LIFECYCLE",month:worldMonth,context:"人物自然死亡，移除其唯一地图实体"});}
       if(nativeRoyal(ruler)){const u=[...team.users].find(u=>u.id===getRulerUserId(ruler.id));if(u?.nativeRoyalRulerId===ruler.id&&u.bornMonth===ruler.bornYear)u.destroyUser(true,{cause:'RULER_LIFECYCLE',month:worldMonth});}
       if (ruler.chronicle) {

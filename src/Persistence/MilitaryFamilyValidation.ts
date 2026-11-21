@@ -33,7 +33,7 @@ export function validateMilitaryFamilies(save:WorldSaveV1){
    }
    else {const parent=m.parentMemberId?members.get(m.parentMemberId):undefined;if(!parent||m.generation!==parent.generation+1||m.enteredMonth!==m.bornMonth||m.bornMonth-parent.bornMonth<240||m.bornMonth-parent.bornMonth>55*12)throw Error('invalid real born parent');}
    const military=m.militaryPersonId?state.people.find(p=>p.personId===m.militaryPersonId):undefined;
-   if(m.militaryPersonId&&(!military||military.sourceUserId!==m.sourceUserId||military.bornMonth!==m.bornMonth||military.personalName!==m.name||m.generation>0&&(military.appointments[0]?.startMonth??-Infinity)<m.enteredMonth||military.deathMonth!==undefined&&m.deathMonth!==military.deathMonth))throw Error('family military identity mismatch');
+   if(m.militaryPersonId&&(!military||military.sourceUserId!==m.sourceUserId||military.bornMonth!==m.bornMonth||military.personalName!==m.name||m.generation>0&&Math.min(military.appointments[0]?.startMonth??Infinity,save.registries.civilAdministration.terms.find(t=>t.personId===military.personId)?.startMonth??Infinity)<m.enteredMonth||military.deathMonth!==undefined&&m.deathMonth!==military.deathMonth))throw Error('family military identity mismatch');
    if(military)for(const [i,appointment] of military.appointments.entries()){
     const e=events.find(e=>e.id===`military-appointment-${appointment.commandId}`);
     if(!e||e.metadata?.familyId!==f.familyId||e.metadata?.familyMemberId!==m.memberId)continue;

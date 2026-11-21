@@ -87,7 +87,7 @@ export function validateMilitarySecessions(save:WorldSaveV1){
   if(!valid)errors.push(`military secession identity, office, followers or life evidence mismatch: ${r.rulerId}/${p?.personId??'missing-person'}`);
  }
  for(const p of state.people.filter(object))if(p.politicalRulerId&&!p.royalIdentity){
-  const rs=records.filter(r=>r.rulerId===p.politicalRulerId&&(r.residentIdentity?.military?.personId===p.personId||r.militaryUsurperIdentity?.personId===p.personId));
+  const rs=records.filter(r=>r.rulerId===p.politicalRulerId&&(r.residentIdentity?.military?.personId===p.personId||p.civilOrigin&&p.appointments.length===0&&r.residentIdentity?.personId===p.personId&&r.residentIdentity?.sourceUserId===p.sourceUserId&&r.bornMonth===p.bornMonth||r.militaryUsurperIdentity?.personId===p.personId));
   if(rs.length!==1)errors.push("military political identity lacks unique ruler life");
  }
  return errors;

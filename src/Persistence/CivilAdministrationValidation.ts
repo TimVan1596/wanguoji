@@ -37,7 +37,7 @@ export function validateCivilAdministration(save:WorldSaveV1){
   if(evidence.source==='ESTABLISHED'&&!prior){const family=save.registries.militaryCommandRegistry.families?.flatMap(f=>f.members).find(m=>m.sourceUserId===term.sourceUserId&&m.bornMonth===term.bornMonth);if(term.personalName!==(person?.personalName??family?.name??(!isPopulationIdentityLabel(evidence.originalName)||term.sourceUserId<1000000000||term.sourceUserId>1999999999?evidence.originalName:undefined)))throw Error('civil established name lacks source');}
   const familyMember=term.familyId?save.registries.militaryCommandRegistry.families?.find(f=>f.familyId===term.familyId)?.members.find(m=>m.memberId===term.familyMemberId):undefined;
   if(!prior&&term.personId!==(person?.personId??familyMember?.memberId??`resident-${term.sourceUserId}-${term.bornMonth}`))throw Error('civil identity lacks permanent population source');
-  if(term.startMonth-term.bornMonth<216||term.startMonth-term.bornMonth>900||person?.deathMonth!==undefined&&person.deathMonth<=term.startMonth||person&&unresolvedCourtBans(person,term.factionId,term.startMonth,term.epochFounderId).length)throw Error('civil appointment violates life or political qualification');
+  if(term.startMonth-term.bornMonth<216||!term.promotion&&term.startMonth-term.bornMonth>900||person?.deathMonth!==undefined&&person.deathMonth<=term.startMonth||person&&unresolvedCourtBans(person,term.factionId,term.startMonth,term.epochFounderId).length)throw Error('civil appointment violates life or political qualification');
   if(prior&&(prior.personId!==term.personId||prior.personalName!==term.personalName||JSON.stringify(prior.nameEvidence)!==JSON.stringify(evidence)))throw Error('civil permanent identity changed');
   if(person&&(person.personId!==term.personId||person.personalName!==term.personalName))throw Error('civil military permanent identity mismatch');
   if(person?.civilOrigin&&(person.civilOrigin.assignmentId!==state.terms.find(t=>t.sourceUserId===term.sourceUserId&&t.bornMonth===term.bornMonth)?.assignmentId||person.civilOrigin.naturalDeathMonth!==residentNaturalDeathMonth(term.sourceUserId,term.bornMonth)))throw Error('civil military lifespan mismatch');
@@ -66,6 +66,10 @@ export function validateCivilAdministration(save:WorldSaveV1){
   if(Number(term.assignmentId.split('-').at(-1))>state.sequence)throw Error('civil governor sequence exceeded');
   seenAssignments.add(term.assignmentId);
  }catch(error){errors.push(`invalid civil governor ${term?.assignmentId??'unknown'}: ${String(error)}`);}
+ for(let i=0;i<state.terms.length;i++)for(let j=i+1;j<state.terms.length;j++){
+  const a=state.terms[i],b=state.terms[j];if(a.startMonth>=(b.endMonth??Infinity)||b.startMonth>=(a.endMonth??Infinity))continue;
+  if(a.personId===b.personId||a.sourceUserId===b.sourceUserId&&a.bornMonth===b.bornMonth||a.factionId===b.factionId&&(isLocalCivilOffice(a.office)&&isLocalCivilOffice(b.office)&&a.cityId===b.cityId||!isLocalCivilOffice(a.office)&&a.office===b.office))errors.push('overlapping civil appointments');
+ }
  for(const person of save.registries.militaryCommandRegistry.people){if(person.civilOrigin&&!state.terms.some(t=>t.assignmentId===person.civilOrigin?.assignmentId&&t.sourceUserId===person.sourceUserId&&t.bornMonth===person.bornMonth&&t.personId===person.personId&&t.personalName===person.personalName))errors.push('orphan civil military identity');}
  for(const event of events){
   if(event.type==='civil-governor-appointed'&&!seenEvents.has(event.id))errors.push('orphan civil governor appointment');

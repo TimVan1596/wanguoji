@@ -1,4 +1,3 @@
-import Game from '../Game/Game';
 import {measurePhase,type MonthlyPhaseProfiler} from '../Simulation/MonthlyPhaseProfiler';
 import {civilPopulationIdentity,civilState} from './CivilCareerIdentity';
 import {familyBirthSource,familyBirthParents,planFamilyChildBirth,hasFamilyBirthOpportunity,isFamilyBirthPolicy,type FamilyBirthPolicy,FAMILY_ANNUAL_BIRTH_LIMIT,COUNTRY_ANNUAL_FAMILY_BIRTH_LIMIT} from './FamilyChildBirth';
@@ -511,6 +510,7 @@ export class MilitaryCommandRegistryStore {
     if(user.militaryPersonId)throw Error('Civil duplicate population binding');
     person={personId:term.personId,sourceUserId:user.id,bornMonth:user.bornMonth,name:user.name,personalName:term.personalName,factionId:term.factionId,status:'RETIRED',appointments:[],capturedEventIds:[],civilOrigin:{assignmentId:term.assignmentId,naturalDeathMonth:residentNaturalDeathMonth(user.id,user.bornMonth)}};
     const family=this.getFamilyMember(user.id,user.bornMonth);
+    if(family){if(family.member.name!==person.personalName)throw Error('Civil family name conflict');family.member.militaryPersonId=person.personId;}
     if(family?.member.birth)person.familyLife={familyId:family.family.familyId,memberId:family.member.memberId,birthEventId:family.member.birth.eventId,naturalDeathMonth:family.member.birth.naturalDeathMonth};
     this.people.set(person.personId,person);user.militaryPersonId=person.personId;
     return person;
@@ -553,18 +553,18 @@ export class MilitaryCommandRegistryStore {
       category: "politics", type: "military-appointment", title: `${factionId}任命${getMilitaryPersonDisplayName(person)}为军事指挥者`,
       description: royalIdentity ? `${getMilitaryPersonDisplayName(person)}以原王室身份首次从军，建立一个真实人口单位，与${memberUnitIds.length-1}名既有部众组成军队。` : `${getMilitaryPersonDisplayName(person)}由既有人口任职，指挥${memberUnitIds.length}个现存单位。`, factionIds: [factionId], actorFactionId: factionId,
       metadata: { ...(this.selectionContext?{appointmentSelection:JSON.stringify(this.selectionContext)}:{}),personId, sourceUserId: person.sourceUserId, personalName: person.personalName, commandId, unitCount: memberUnitIds.length, ...(familyLink?{familyId:familyLink.family.familyId,familyMemberId:familyLink.member.memberId,familyAppointmentWeight:familyWeight,hereditaryRecruitment:this.hereditaryRecruitment,politicalCalibration:this.royalService?.calibration?.()??'BASELINE'}:{}), ...(royalIdentity ? {royalRulerId:royalIdentity.rulerId,populationDelta:1} : {}) }, importance: "normal" });
-    this.grantOffice(person,person.appointments.at(-1)!,{office:"XIAOWEI",month:worldMonth,serviceMonths:0,captureEventIds:[]});
+    this.grantOffice(person,person.appointments.at(-1)!,{office:"XIAOWEI",month:worldMonth,serviceMonths:0,captureEventIds:[]},user.team.displayName??factionId);
     return true;
   }
 
-  private grantOffice(person:MilitaryPerson,appointment:MilitaryAppointment,grant:Omit<MilitaryOfficeGrant,"eventId">){
+  private grantOffice(person:MilitaryPerson,appointment:MilitaryAppointment,grant:Omit<MilitaryOfficeGrant,"eventId">,countryName=appointment.factionId){
     const previous=appointment.officeHistory?.at(-1),eventId=`military-office-${appointment.commandId}-${grant.office}`;
     const record={...grant,eventId};
     (appointment.officeHistory??=[]).push(record);
     this.eventWriter?.({id:eventId,year:grant.month,monthIndex:grant.month,category:"politics",type:"military-office-granted",
-      title:`${appointment.factionId}${previous?"晋任":"授予"}${getMilitaryPersonDisplayName(person)}${MILITARY_OFFICE_NAMES[grant.office]}`,
+      title:`${countryName}${previous?"晋任":"授予"}${getMilitaryPersonDisplayName(person)}${MILITARY_OFFICE_NAMES[grant.office]}`,
       description:`据本次真实任职${grant.serviceMonths}个月及${grant.captureEventIds.length}条核验战果授职。`,actorFactionId:appointment.factionId,factionIds:[appointment.factionId],importance:"normal",
-      metadata:{countryNameAtEvent:Game.Core?.teams.find(t=>t.name===appointment.factionId)?.displayName??appointment.factionId,personId:person.personId,sourceUserId:person.sourceUserId,personalName:person.personalName,commandId:appointment.commandId,previousOffice:previous?.office??"NONE",office:grant.office,serviceMonths:grant.serviceMonths,captureEventIds:JSON.stringify(grant.captureEventIds),...(grant.promotionBasis?{promotionBasis:grant.promotionBasis,activityEventIds:JSON.stringify(grant.activityEventIds??[])}:{})}});
+      metadata:{countryNameAtEvent:countryName,personId:person.personId,sourceUserId:person.sourceUserId,personalName:person.personalName,commandId:appointment.commandId,previousOffice:previous?.office??"NONE",office:grant.office,serviceMonths:grant.serviceMonths,captureEventIds:JSON.stringify(grant.captureEventIds),...(grant.promotionBasis?{promotionBasis:grant.promotionBasis,activityEventIds:JSON.stringify(grant.activityEventIds??[])}:{})}});
   }
 
   private nobleServiceBinding(person:MilitaryPerson,month:number,team:Team){
@@ -814,7 +814,7 @@ export class MilitaryCommandRegistryStore {
       const formation=appointment&&this.formations.get(appointment.commandId);
       if(!user?.matchesMilitaryLife?.(person)||!appointment||!formation||formation.status!=="ACTIVE"||formation.commanderPersonId!==person.personId||formation.factionId!==person.factionId||formation.memberUnitIds.length<1||!formation.memberUnitIds.includes(user.player.logicalUnitId??""))continue;
       const grant=getOfficePromotion(appointment,this.getChronicle(person,month,person.factionId),month);
-      if(grant)this.grantOffice(person,appointment,grant);
+      if(grant)this.grantOffice(person,appointment,grant,team?.displayName??appointment.factionId);
       // Annual opportunities also allow a previously unfilled promotion to recruit
       // when a real resident later reaches the commander's assembly area.
       const context=this.recruitmentContext?.(),office=appointment.officeHistory?.at(-1)?.office??"XIAOWEI";
