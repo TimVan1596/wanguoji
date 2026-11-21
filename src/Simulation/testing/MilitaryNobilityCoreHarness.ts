@@ -139,6 +139,6 @@ export async function runMilitaryNobilityCore(seed:string){
    }
    check(results[0].calls===results[1].calls&&results[0].probability===results[1].probability&&JSON.stringify(results[0].rng)===JSON.stringify(results[1].rng)&&results[0].newRuler===results[1].newRuler,'noble choice changes neither crisis probability, extra RNG calls nor legal monarch selection');
   }
-  return {seed,checks,scope:'actual existing User, City.capture, monarch, ennoblement, military political and save transactions'};
+  return {seed,checks,politicalSourceSamples:(globalThis as any).__wanguojiPoliticalCoreSamples??[],scope:'actual existing User, City.capture, monarch, ennoblement, military political and save transactions'};
  }finally{game.destroy(true);}
 }
