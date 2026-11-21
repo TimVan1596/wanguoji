@@ -1,3 +1,4 @@
+import Game from '../Game/Game';
 import {measurePhase,type MonthlyPhaseProfiler} from '../Simulation/MonthlyPhaseProfiler';
 import {civilPopulationIdentity,civilState} from './CivilCareerIdentity';
 import {familyBirthSource,familyBirthParents,planFamilyChildBirth,hasFamilyBirthOpportunity,isFamilyBirthPolicy,type FamilyBirthPolicy,FAMILY_ANNUAL_BIRTH_LIMIT,COUNTRY_ANNUAL_FAMILY_BIRTH_LIMIT} from './FamilyChildBirth';
@@ -563,7 +564,7 @@ export class MilitaryCommandRegistryStore {
     this.eventWriter?.({id:eventId,year:grant.month,monthIndex:grant.month,category:"politics",type:"military-office-granted",
       title:`${appointment.factionId}${previous?"晋任":"授予"}${getMilitaryPersonDisplayName(person)}${MILITARY_OFFICE_NAMES[grant.office]}`,
       description:`据本次真实任职${grant.serviceMonths}个月及${grant.captureEventIds.length}条核验战果授职。`,actorFactionId:appointment.factionId,factionIds:[appointment.factionId],importance:"normal",
-      metadata:{personId:person.personId,sourceUserId:person.sourceUserId,personalName:person.personalName,commandId:appointment.commandId,previousOffice:previous?.office??"NONE",office:grant.office,serviceMonths:grant.serviceMonths,captureEventIds:JSON.stringify(grant.captureEventIds),...(grant.promotionBasis?{promotionBasis:grant.promotionBasis,activityEventIds:JSON.stringify(grant.activityEventIds??[])}:{})}});
+      metadata:{countryNameAtEvent:Game.Core?.teams.find(t=>t.name===appointment.factionId)?.displayName??appointment.factionId,personId:person.personId,sourceUserId:person.sourceUserId,personalName:person.personalName,commandId:appointment.commandId,previousOffice:previous?.office??"NONE",office:grant.office,serviceMonths:grant.serviceMonths,captureEventIds:JSON.stringify(grant.captureEventIds),...(grant.promotionBasis?{promotionBasis:grant.promotionBasis,activityEventIds:JSON.stringify(grant.activityEventIds??[])}:{})}});
   }
 
   private nobleServiceBinding(person:MilitaryPerson,month:number,team:Team){

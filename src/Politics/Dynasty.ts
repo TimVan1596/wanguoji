@@ -1329,7 +1329,7 @@ class DynastyRegistryStore {
 
   private archiveNaturallyDeadDeposedRulers(team: Team, dynasty: Dynasty, worldMonth: number) {
     dynasty.rulers.forEach((ruler) => {
-      if ((ruler.status !== "deposed" && !((ruler.residentIdentity || ruler.militaryIdentity||ruler.militaryUsurperIdentity||nativeRoyal(ruler)) && ["politically-ended","abdicated","kin"].includes(ruler.status))) || ruler.reignOrdinal === undefined || hasRecordedRulerDeath(ruler) ||
+      if ((ruler.status !== "deposed" && !((ruler.residentIdentity || ruler.militaryIdentity||ruler.militaryUsurperIdentity||nativeRoyal(ruler)&&[...team.users].some(u=>u.nativeRoyalRulerId===ruler.id&&u.bornMonth===ruler.bornYear)) && ["politically-ended","abdicated","kin"].includes(ruler.status))) || ruler.reignOrdinal === undefined || hasRecordedRulerDeath(ruler) ||
         !isNaturallyDeadByMonth(ruler.naturalDeathYear ?? ruler.plannedEndYear, worldMonth)) return;
       ruler.status = "dead";
       ruler.deathMonth = worldMonth;
@@ -1342,7 +1342,7 @@ class DynastyRegistryStore {
       }
       if(ruler.residentIdentity?.military)MilitaryCommandRegistry.mirrorPoliticalDeath(ruler.residentIdentity.military.personId,ruler.id,worldMonth,"NATURAL_DEATH");
       if(ruler.residentIdentity){const u=Team.GetUserById(ruler.residentIdentity.sourceUserId);if(u?.historicalPersonId===ruler.residentIdentity.personId)u.destroyUser(true,{cause:"RULER_LIFECYCLE",month:worldMonth,context:"人物自然死亡，移除其唯一地图实体"});}
-      if(nativeRoyal(ruler)){const u=Team.GetUserById(getRulerUserId(ruler.id));if(u?.nativeRoyalRulerId===ruler.id&&u.bornMonth===ruler.bornYear)u.destroyUser(true,{cause:'RULER_LIFECYCLE',month:worldMonth});}
+      if(nativeRoyal(ruler)){const u=[...team.users].find(u=>u.id===getRulerUserId(ruler.id));if(u?.nativeRoyalRulerId===ruler.id&&u.bornMonth===ruler.bornYear)u.destroyUser(true,{cause:'RULER_LIFECYCLE',month:worldMonth});}
       if (ruler.chronicle) {
         ruler.chronicle.deathCause = ruler.deathReason;
         finalizeRulerPosthumousNames(ruler, dynasty.rulers, team, worldMonth);

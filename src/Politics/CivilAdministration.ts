@@ -156,7 +156,7 @@ class CivilAdministrationStore {
     if(effect.devastation)city.devastation=Math.max(0,city.devastation-effect.devastation);
     const effectId=`${row.assignmentId}-effect-${month}`;
     const receipt={eventId:effectId,month,cityId:city.id,cityName:city.name,loyalty:effect.loyalty,devastation:effect.devastation};
-    if(WorldHistory.addEvent({id:effectId,year:month,monthIndex:month,type:'civil-governor-effect',category:'politics',importance:'minor',actorFactionId:row.factionId,factionIds:[row.factionId],cityId:city.id,cityName:city.name,title:`${row.personalName}办理${city.name}恢复事务。`,metadata:{personId:row.personId,assignmentId:row.assignmentId,receipt:JSON.stringify(receipt)}})!==effectId)throw Error('Civil effect receipt rejected');
+    if(WorldHistory.addEvent({id:effectId,year:month,monthIndex:month,type:'civil-governor-effect',category:'politics',importance:'normal',actorFactionId:row.factionId,factionIds:[row.factionId],cityId:city.id,cityName:city.name,title:`${row.personalName}办理${city.name}恢复事务。`,metadata:{personId:row.personId,assignmentId:row.assignmentId,receipt:JSON.stringify(receipt)}})!==effectId)throw Error('Civil effect receipt rejected');
     (row.receipts??=[]).push(receipt);
     row.loyaltyRecovered+=effect.loyalty;row.devastationRecovered+=effect.devastation;row.lastEffectMonth=month;
     if(!row.meritEventId&&row.loyaltyRecovered+row.devastationRecovered>=3){

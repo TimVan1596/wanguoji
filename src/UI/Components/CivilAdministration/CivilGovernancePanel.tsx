@@ -76,7 +76,7 @@ export function GovernorDetail({term,month,careerIndex}:{term:CivilGovernorTerm;
 export function CivilServicePanel({personId,month,factionId}:{personId:string;month:number;factionId:string}){
  const navigation=usePersonArchiveNavigation();useHistoryRevision();const terms=CivilAdministration.getByPerson(personId).filter(term=>term.startMonth<=month);
  if(!terms.length)return null;
- return <Box data-civil-service={personId} data-faction-context={factionId} sx={{my:.6}}><Typography fontSize='.82rem' fontWeight='bold'>仕宦经历</Typography>{terms.map(term=><Typography key={term.assignmentId} fontSize='.76rem'>{formatWorldDate(term.startMonth)}，{term.rulerTitle}任命其为{term.cityName}郡守；{term.endMonth===undefined?'现任':`${formatWorldDate(term.endMonth)}离任（${endReasonLabel(term.endReason!)}）`}。实际恢复忠诚{term.loyaltyRecovered}、破坏度{term.devastationRecovered}。<Button size="small" onClick={()=>navigation.open({kind:"RULER",factionId:term.factionId,id:term.rulerId})}>任命君主</Button></Typography>)}</Box>;
+ return <Box data-civil-service={personId} data-faction-context={factionId} sx={{my:.6}}><Typography fontSize='.82rem' fontWeight='bold'>仕宦经历</Typography>{terms.map(term=><Typography key={term.assignmentId} fontSize='.76rem'>{formatWorldDate(term.startMonth)}，{term.rulerTitle}任命其为{civilOfficeTitle(term)}；{term.endMonth===undefined?'现任':`${formatWorldDate(term.endMonth)}离任（${endReasonLabel(term.endReason!)}）`}。实际恢复忠诚{term.loyaltyRecovered}、破坏度{term.devastationRecovered}。<Button size="small" onClick={()=>navigation.open({kind:"RULER",factionId:term.factionId,id:term.rulerId})}>任命君主</Button></Typography>)}</Box>;
 }
 
 /** Personal events require their actual principal-person reference, never faction association. */

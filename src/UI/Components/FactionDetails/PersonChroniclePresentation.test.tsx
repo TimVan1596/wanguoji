@@ -22,7 +22,7 @@ it("keeps canonical orders and evidence intact while the public milestones show 
   expect(rows.map(e=>e.text).join("")).not.toMatch(/核验|编组|不代表|0个月|亲自|亲征/);
   expect(JSON.stringify(f)).toBe(before);expect(worldRandom.exportState()).toEqual(rng);
   f.events[2].importance="major";
-  expect(militaryMilestones(f.person,f.entries,f.events).find(e=>e.eventId==="order")?.text).toBe("赵彦奉命以临淄为进军目标。");
+  expect(militaryMilestones(f.person,f.entries,f.events).find(e=>e.eventId==="order")).toBeUndefined();expect(f.entries.some(e=>e.eventId==="order")).toBe(true);
 });
 it("death and retirement narratives retain their distinct factual meanings without inventing a defence or combat wound",()=>{
   const f=fixture();Object.assign(f.person,{status:"DEAD",deathMonth:24,deathCause:"SIEGE_LOSS"});

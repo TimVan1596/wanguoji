@@ -1,3 +1,4 @@
+import {personHistoryReading} from './PersonHistoryReading';
 import {mergeCourtCoupReading} from './CourtCoupReading';
 import type {WorldEvent} from './WorldHistory';
 const month=(e:WorldEvent)=>e.monthIndex??e.year;
@@ -18,7 +19,7 @@ export function isFinalEndPair(d:WorldEvent,e:WorldEvent,events:readonly WorldEv
 }
 /** UI-only companion projection. All original IDs remain in the source references. */
 export function mergePoliticalReading(input:readonly WorldEvent[]){
- const events=mergeCourtCoupReading(input);
+ const reading=personHistoryReading(input),events=mergeCourtCoupReading(reading.events).map(e=>reading.sources.has(e.id)?{...e,metadata:{...e.metadata,sourceEventIds:reading.sources.get(e.id)!.join(',')}}:e);
  const hidden=new Set<string>(),replacements=new Map<string,WorldEvent>(),foundings:WorldEvent[]=[],dissolutions:WorldEvent[]=[],buckets=new Map<string,WorldEvent[]>();
  for(const e of events){
   if(foundingTypes.has(e.type))foundings.push(e);if(e.type==='faction-dissolved')dissolutions.push(e);
