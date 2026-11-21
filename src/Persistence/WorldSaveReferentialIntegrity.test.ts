@@ -843,6 +843,7 @@ it("V15完整水合保留轻度保护输入、18月时钟和单次RNG续跑，�
 });
 
 it.each(["DEPOSITION", "REVOLUTION"] as const)("真实军权→%s事务→同一历史→V15严格往返与双页面证据", async kind => {
+  const {getRulerUserId}=await import("../Politics/RoyalPopulationIdentity");
   const { default: LogicalUnitRegistry } = await import("../Simulation/LogicalUnitRegistry");
   const { default: User } = await import("../Components/User");
   const { default: Player } = await import("../Components/Player");
@@ -895,12 +896,13 @@ it.each(["DEPOSITION", "REVOLUTION"] as const)("真实军权→%s事务→同一
     const current = DynastyRegistry.getCurrentRuler(t.name)!;
     if (current.id === "old" || t.rulerUser) return;
     // Renderer-only ruler unit adapter; the political transaction and User binding remain real.
+    const userId=getRulerUserId(current.id);
     const player: any = new Player(core.scene, 16, 16, t);
-    player.applyHydratedMovementState({ ...save.units[0], userId: 900, role: "RULER", rulerId: current.id });
-    const user = new User(900, "真实新君单位", t, player, undefined, 70, "RULER", current.id, { deferRuntime: true, bornMonth: current.bornYear });
+    player.applyHydratedMovementState({ ...save.units[0], userId, role: "RULER", rulerId: current.id });
+    const user = new User(userId, "真实新君单位", t, player, undefined, 70, "RULER", current.id, { deferRuntime: true, bornMonth: current.bornYear,nativeRoyalRulerId:current.id });
     player.user = user; t.users.add(user); t.rulerUser = user;
     core.logicalUnitRegistry.importState(26, [...core.logicalUnitRegistry.getEntries(), { player, user,
-      state: { ...core.logicalUnitRegistry.get("unit-1"), unitId: "unit-25", userId: 900, role: "RULER", rulerId: current.id } }]);
+      state: { ...core.logicalUnitRegistry.get("unit-1"), unitId: "unit-25", userId, role: "RULER", rulerId: current.id } }]);
   });
   vi.spyOn(await import("../Components/City"), "getFactionStability").mockReturnValue(20);
   const crisisId = WorldHistory.addCapitalFallen(70, "enemy", "qin", "qin", "旧都", "active", true, 7, undefined, undefined, "actual-crisis");

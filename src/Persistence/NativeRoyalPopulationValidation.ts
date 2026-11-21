@@ -6,8 +6,8 @@ export function validateNativeRoyalPopulation(save:WorldSaveV1){
  const errors:string[]=[],rulers=save.dynasties.flatMap(d=>(Array.isArray(d?.rulers)?d.rulers:[]).filter((r:any)=>r&&typeof r==='object').map((r:any)=>({d,r:importRulerSave(r as any)}))),seen=new Set<string>();
  for(const u of save.users){
   if(!u||typeof u!=='object')continue;
-  const source=rulers.find(x=>nativeRoyal(x.r)&&getRulerUserId(x.r.id)===u.userId),owner=u.nativeRoyalRulerId?rulers.find(x=>x.r.id===u.nativeRoyalRulerId):source;
-  if(!u.nativeRoyalRulerId&&!source)continue;
+  const source=rulers.find(x=>nativeRoyal(x.r)&&getRulerUserId(x.r.id)===u.userId),current=u.role==='RULER'?rulers.find(x=>x.r.id===u.rulerId&&nativeRoyal(x.r)):undefined,owner=u.nativeRoyalRulerId?rulers.find(x=>x.r.id===u.nativeRoyalRulerId):current??source;
+  if(!u.nativeRoyalRulerId&&!source&&!current)continue;
   if(!owner||!nativeRoyal(owner.r)||u.nativeRoyalRulerId!==owner.r.id||u.userId!==getRulerUserId(owner.r.id)||u.bornMonth!==owner.r.bornYear||owner.r.deathMonth!==undefined||seen.has(owner.r.id)||u.militaryPersonId||u.historicalPersonId||u.role==='RULER'&&(u.rulerId!==owner.r.id||owner.d.currentRulerId!==owner.r.id)||u.role==='NORMAL'&&(u.rulerId||owner.r.endYear===undefined||owner.r.endYear>save.world.worldMonth))errors.push('invalid native royal permanent population identity');
   else seen.add(owner.r.id);
  }
