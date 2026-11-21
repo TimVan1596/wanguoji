@@ -1,5 +1,6 @@
+import {familyDisplayEligible} from '../../../Politics/FamilyDisplayEligibility';
 import {personRankTheme} from './PersonRankTheme';
-import {familyMemberHeading,familyMemberTitleKind} from '../../../Politics/FamilyMemberHeading';
+import {familyMemberHeading,familyMemberTitleKind,familyMemberDisplayRank} from '../../../Politics/FamilyMemberHeading';
 import FamilyRegisteredChildren from './FamilyRegisteredChildren';
 import {familyMemberServiceStatus} from '../../../Politics/FamilyMemberServiceStatus';
 import {useEffect,useMemo,useState,useCallback} from 'react';
@@ -36,7 +37,7 @@ export function prepareFamilyTree(family:MilitaryFamily,month:number,requestedMe
   const politics=p?militaryPoliticalOutcome(p,family.factionId,month,source.dynasties,source.events):[];
   const lines=[`${m.generation===0?'始祖':`第${m.generation+1}代`} · ${row.life==='DEAD'?'已故':row.life==='UNKNOWN'?'生死未载':'在世'} · ${formatWorldDate(m.bornMonth)}生`,politics.length?politics.join(' · '):status,familyMemberMeritLabel(family,m,month),familyMemberNobleLabel(family,m,month)].filter(Boolean) as string[];
   const titleKind=familyMemberTitleKind(row);
-  const theme=personRankTheme(politics.some(t=>t.includes('禁仕')||t.includes('叛离')||t.includes('伏诛')||t.includes('追夺'))?'REVOKED':titleKind==='PERSONAL'?'PERSONAL':titleKind==='INHERITED'?'INHERITED':row.personalHistory.length||row.inheritedHistory.length?'HISTORICAL':row.activeCivil?'CIVIL':row.activeOffice?'MILITARY':'NEUTRAL',titleKind==='PERSONAL'?row.effectivePersonal?.rank:row.inherited?.rank);
+  const theme=personRankTheme(politics.some(t=>t.includes('禁仕')||t.includes('叛离')||t.includes('伏诛')||t.includes('追夺'))?'REVOKED':royal||p?.royalIdentity?'ROYAL':titleKind==='PERSONAL'?'PERSONAL':titleKind==='INHERITED'?'INHERITED':row.personalHistory.length||row.inheritedHistory.length?'HISTORICAL':row.activeCivil?'CIVIL':row.activeOffice?'MILITARY':'NEUTRAL',familyMemberDisplayRank(row),royal?royal.r.reignOrdinal===undefined?0:1:row.activeOffice?['XIAOWEI','PIJIANG','JIANGJUN','SHANGJIANGJUN'].indexOf(row.activeOffice.officeHistory?.at(-1)?.office??'XIAOWEI'):0);
   const team=royal&&Game.Core?.teams.find(t=>t.name===royal.factionId),heading=royal&&team?genealogyRulerHeading(royal.r,team,month,undefined,source.events):familyMemberHeading(row,month,country,politics);
   return [m.memberId,{row,status,royal,lines,theme,heading,height:14+20+lines.length*16+(p||royal?24:0)}] as const;
  })),cardsMs=performance.now()-cardsAt,layoutAt=performance.now(),layout=layoutFamilyArchive(projection,new Set(),new Map([...cards].map(([id,c])=>[id,c.height]))),layoutMs=performance.now()-layoutAt;
@@ -47,16 +48,17 @@ export function prepareFamilyTree(family:MilitaryFamily,month:number,requestedMe
 export default function MilitaryFamilyBrowser({families,worldMonth,onClose,initialFamilyId,initialMemberId}:{families:readonly MilitaryFamily[];worldMonth:number;onClose:()=>void;initialFamilyId?:string;initialMemberId?:string}){
  const [familyId,setFamilyId]=useState(initialFamilyId);
  useEffect(()=>setFamilyId(initialFamilyId),[initialFamilyId]);
- const family=families.find(f=>f.familyId===familyId);
+ const frame=familyArchiveSource(worldMonth),visible=families.filter(f=>familyDisplayEligible(f,worldMonth,frame.source.people,frame.source.dynasties));
+ const family=visible.find(f=>f.familyId===familyId);
  return <Dialog open fullWidth maxWidth="xl" onClose={onClose} PaperProps={{sx:{width:'90vw',height:'84vh',maxWidth:1500,display:'flex',flexDirection:'column'}}}>
- {family?<FamilyTree key={family.familyId} family={family} month={worldMonth} initialMemberId={family.familyId===initialFamilyId?initialMemberId:undefined} onClose={onClose} onBack={()=>setFamilyId(undefined)}/>:<FamilyOverview families={families} month={worldMonth} onClose={onClose} onOpen={setFamilyId}/>}
+ {family?<FamilyTree key={family.familyId} family={family} month={worldMonth} initialMemberId={family.familyId===initialFamilyId?initialMemberId:undefined} onClose={onClose} onBack={()=>setFamilyId(undefined)}/>:<FamilyOverview rawCount={families.length} families={visible} month={worldMonth} onClose={onClose} onOpen={setFamilyId}/>}
  </Dialog>;
 }
-function FamilyOverview({families,month,onOpen,onClose}:{families:readonly MilitaryFamily[];month:number;onOpen:(id:string)=>void;onClose:()=>void}){
+function FamilyOverview({families,rawCount,month,onOpen,onClose}:{rawCount:number;families:readonly MilitaryFamily[];month:number;onOpen:(id:string)=>void;onClose:()=>void}){
  const [filter,setFilter]=useState('ACTIVE'),[offset,setOffset]=useState(0),frame=familyArchiveSource(month);
  const overview=useMemo(()=>families.map(f=>({f,p:familySummary(f,month)})),[families,frame]);
  const filtered=overview.filter(({p})=>filter==='ALL'||(filter==='ACTIVE'?p.classification==='ACTIVE':p.classification!=='ACTIVE'));
- return <><DialogTitle>功臣世家宗谱<Button onClick={onClose}>关闭</Button></DialogTitle><DialogContent><Typography>关联世家共{families.length}家 · 当前活跃{overview.filter(x=>x.p.classification==='ACTIVE').length}家 · 历史故家{overview.filter(x=>x.p.classification!=='ACTIVE').length}家（其中已无登记在世成员{overview.filter(x=>x.p.classification==='EXTINCT').length}家）。</Typography>
+ return <><DialogTitle>功臣世家宗谱<Button onClick={onClose}>关闭</Button></DialogTitle><DialogContent><Typography>原始家族登记{rawCount}家 · 可展示世家{families.length}家 · 当前活跃{overview.filter(x=>x.p.classification==='ACTIVE').length}家 · 历史故家{overview.filter(x=>x.p.classification!=='ACTIVE').length}家（其中已无登记在世成员{overview.filter(x=>x.p.classification==='EXTINCT').length}家）。</Typography>
  <Box>{[['ACTIVE','当前活跃世家'],['HISTORICAL','历史故家'],['ALL','全部世家']].map(([id,label])=><Button key={id} variant={filter===id?'contained':'text'} onClick={()=>{setFilter(id);setOffset(0);}}>{label}</Button>)}</Box>
  {!filtered.length&&<Typography>本分类暂无家族；可切换历史故家或全部世家。</Typography>}
  {filtered.slice(offset,offset+12).map(({f,p})=><Box key={f.familyId} sx={{borderBottom:'1px solid var(--gg-border)',py:1}}><Button onClick={()=>onOpen(f.familyId)}>{f.surname}氏 · 始祖{f.members[0].name}</Button><Typography fontSize=".8rem">{country(f.factionId,f.foundedMonth)} · {formatWorldDate(f.foundedMonth)}立家 · {p.generations}代 · 登记{p.members}人 · 历代军政{p.served}人 · {familyPoliticalState(p)} · 登记在世{p.living}人{p.unknown?`，生死未载${p.unknown}人`:''}</Typography></Box>)}

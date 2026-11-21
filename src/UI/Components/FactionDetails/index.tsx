@@ -1,3 +1,4 @@
+import {familyDisplayEligible} from '../../../Politics/FamilyDisplayEligibility';
 import {personAmbition} from '../../../Politics/PersonAbilities';
 import {personOfficeSummary} from './PersonOfficeSummary';
 import {familyNobleTitle} from '../../../Politics/FamilyNobleSuccession';
@@ -180,6 +181,8 @@ export default function FactionDetails() {
   const [civilTarget,setCivilTarget]=useState<(PersonArchiveTarget&{serial:number})|undefined>();
   const navigationSequence=useRef(0),navigationDispatch=useDispatch();
   const openPerson=(target:PersonArchiveTarget)=>{
+    if(target.kind==='FAMILY'){const f=MilitaryCommandRegistry.getFamilies().find(f=>f.familyId===target.id);if(f&&!familyDisplayEligible(f,worldMonth,MilitaryCommandRegistry.getPeople(),DynastyRegistry.getAll()))target={kind:'MILITARY',factionId:f.factionId,id:f.founderPersonId};}
+
     if(target.kind==='CIVIL'&&MilitaryCommandRegistry.getPerson(target.id)?.appointments.some(a=>a.factionId===target.factionId))target={...target,kind:'MILITARY'};
     const resolved=resolvePersonArchiveTarget(target,teams,DynastyRegistry.getAll(),MilitaryCommandRegistry.getPeople(),MilitaryCommandRegistry.getFamilies());
     if(!resolved)return;

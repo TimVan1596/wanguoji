@@ -13,3 +13,9 @@ export function familyMemberHeading(row:Row,month:number,countryAt:(id:string,mo
  if(historical)return `${historical.country} · ${FAMILY_NOBLE_NAMES[historical.rank]} · ${name}`;
  return politics.some(t=>t.includes('伏诛'))?`${name} · 因谋逆伏诛`:politics.some(t=>t.includes('禁仕'))?`${name} · 谋逆禁仕`:name;
 }
+
+/** Historical rank remains a real title even when it is no longer effective. */
+export function familyMemberDisplayRank(row:Row){
+ const current=[row.effectivePersonal?.rank,row.inherited?.rank].filter((r):r is typeof FAMILY_NOBLE_RANKS[number]=>!!r);
+ return (current.length?current:[...row.personalHistory.map(g=>g.rank),...row.inheritedHistory.flatMap(a=>a.rank?[a.rank]:[])]).sort((a,b)=>FAMILY_NOBLE_RANKS.indexOf(b)-FAMILY_NOBLE_RANKS.indexOf(a))[0];
+}

@@ -11,8 +11,9 @@ import { genealogyThemeStyles, type GenealogyNodePresentation } from "./Genealog
 export function GenealogyPersonCard({ ruler, displayName, presentation, worldMonth, managedLife=true, compact=false, militaryLabel }: {
   ruler: Ruler; displayName: string; presentation?: GenealogyNodePresentation; worldMonth?:number; managedLife?:boolean; compact?:boolean; militaryLabel?:string;
 }) {
-  const nobleStyle=presentation?.nobleTheme&&!['deposed','disqualified','exiled','current'].includes(presentation.theme)?personRankTheme(presentation.nobleTheme.kind,presentation.nobleTheme.rank):{};
-  const theme = presentation?.theme ?? "neutral";
+  const theme = presentation?.theme ?? 'neutral';
+  const nobleStyle=personRankTheme(['disqualified','deposed'].includes(theme)?'REVOKED':'ROYAL',undefined,presentation?.roles.includes('称帝')?2:ruler.reignOrdinal!==undefined?1:0);
+
   const honor=ruler.royalHonors?.filter(g=>g.month<=(worldMonth??Infinity)).at(-1);
   const posthumous=presentation?.posthumousLabels?.length?presentation.posthumousLabels.join(' · '):undefined;
   const kinLine=presentation?.honor?.secondary??(honor?(presentation?.details.find(line=>line.startsWith(ROYAL_HONOR_NAMES[honor.rank]))??`${ROYAL_HONOR_NAMES[honor.rank]}（历史荣衔）`):'宗室');
