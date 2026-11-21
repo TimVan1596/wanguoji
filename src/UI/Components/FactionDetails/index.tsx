@@ -1,4 +1,4 @@
-import {personRankTheme,resolvePersonTheme,royalThemeIdentity} from './PersonRankTheme';
+import {resolvePersonTheme,royalThemeIdentity} from './PersonRankTheme';
 import {personNoblePresentation} from './PersonNoblePresentation';
 import {familyDisplayEligible} from '../../../Politics/FamilyDisplayEligibility';
 import {personAmbition} from '../../../Politics/PersonAbilities';

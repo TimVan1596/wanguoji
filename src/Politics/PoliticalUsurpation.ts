@@ -19,6 +19,7 @@ export interface PoliticalContestRow {
 export function civilPoliticalSupport(candidate:MilitaryPoliticalParticipant,people:readonly MilitaryPerson[],terms:readonly CivilGovernorTerm[],events:readonly WorldEvent[],month:number,epoch:string,sources?:readonly CivilPoliticalSource[]):CivilPoliticalSupport[]{
  const byId=new Map(events.map(e=>[e.id,e])),rows:CivilPoliticalSupport[]=[];
  for(const t of terms){
+  if(!t.cityId||!t.cityName||t.office==='XIANLING')continue;
   const live=sources?.find(s=>s.assignmentId===t.assignmentId&&s.sourceUserId===t.sourceUserId&&s.bornMonth===t.bornMonth&&s.factionId===t.factionId);
   if(sources&&!live)continue;
   const ended=t.endEventId&&byId.has(t.endEventId);

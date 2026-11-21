@@ -503,6 +503,17 @@ export class MilitaryCommandRegistryStore {
     for (const formation of this.formations.values()) if (formation.commanderPersonId === personId) this.endFormation(formation, month, reason, courtCoupEventId);
   }
 
+  civilTransaction<T>(team:Team,work:()=>T):T{return this.familyTransaction(team,work);}
+  registerCivilPerson(user:User,term:import('./CivilAdministrationSchema').CivilGovernorTerm){
+    let person=this.people.get(term.personId);
+    if(person){if(person.sourceUserId!==user.id||person.bornMonth!==user.bornMonth||person.personalName!==term.personalName)throw Error('Civil permanent identity conflict');return person;}
+    if(user.militaryPersonId)throw Error('Civil duplicate population binding');
+    person={personId:term.personId,sourceUserId:user.id,bornMonth:user.bornMonth,name:user.name,personalName:term.personalName,factionId:term.factionId,status:'RETIRED',appointments:[],capturedEventIds:[],civilOrigin:{assignmentId:term.assignmentId,naturalDeathMonth:residentNaturalDeathMonth(user.id,user.bornMonth)}};
+    const family=this.getFamilyMember(user.id,user.bornMonth);
+    if(family?.member.birth)person.familyLife={familyId:family.family.familyId,memberId:family.member.memberId,birthEventId:family.member.birth.eventId,naturalDeathMonth:family.member.birth.naturalDeathMonth};
+    this.people.set(person.personId,person);user.militaryPersonId=person.personId;
+    return person;
+  }
   familyDeathTransaction(user:User,work:()=>boolean){try{return this.familyTransaction(user.team,work);}catch{this.diagnostics.familyLifeFailures++;return false;}}
   private familyTransaction<T>(team:Team,work:()=>T):T{
     if(politicalMutationActive())return work();
@@ -517,7 +528,7 @@ export class MilitaryCommandRegistryStore {
       memberUnitIds.some(id=>this.isUnitAssigned(id)||![...user.team.users].some(u=>u.team===user.team&&!u.isDestroyed&&u.role==="NORMAL"&&!u.rulerId&&!u.player.rulerId&&u.player.active&&u.player.logicalUnitId===id)))return false;
     let person = user.militaryPersonId ? this.people.get(user.militaryPersonId) : undefined;
     if (person?.status === "DEAD" || !this.isEligible(user, worldMonth)) return false;
-    if (person?.status === "RETIRED") this.diagnostics.reappointments++;
+    if (person?.status === "RETIRED"&&person.appointments.length) this.diagnostics.reappointments++;
     const civil= civilPopulationIdentity(user.id,user.bornMonth);
     const personId = person?.personId ?? civil?.personId ?? `military-person-${this.personSequence++}`;
     const commandId = `military-command-${this.commandSequence++}`;
@@ -570,10 +581,11 @@ export class MilitaryCommandRegistryStore {
     const hereditaryRank=link&&epoch&&link.family.factionId===team.name&&link.family.epochFounderId===epoch?familyNobleRankAt(link.family,link.member,month):undefined;
     return nextNobleGrant(person,this.getFormations(),this.eventReader(team.name),month,team,dy,this.nobleMeritPolicy,hereditaryRank);
   }
+  recordCivilNoble(person:MilitaryPerson,grant:NobleGrant){if(grant.basis!=='CIVIL')throw Error('Invalid civil peerage source');this.recordNoble(person,grant);}
   private recordNoble(person:MilitaryPerson,grant:NobleGrant,courtServiceEventId?:string,courtCoupEventId?:string){
     if(!this.eventWriter)throw Error('Missing noble writer');
     (person.nobilityHistory??=[]).push(grant);
-    const written=this.eventWriter({id:grant.eventId,year:grant.month,monthIndex:grant.month,type:grant.basis==='FOUNDING'?'founding-peerage-granted':grant.basis==='COURT'?'court-peerage-granted':'military-ennobled',category:'politics',actorFactionId:grant.factionId,factionIds:[grant.factionId],rulerId:grant.rulerId,title:nobleChronicle(grant),importance:'major',metadata:{personId:person.personId,sourceUserId:person.sourceUserId,commandId:grant.commandId,rank:grant.rank,nobility:JSON.stringify(grant),...(grant.basis==='FOUNDING'?{foundingEventId:grant.foundingEventId}:{}),...(courtServiceEventId?{courtServiceEventId,courtCoupEventId}:{})}});
+    const written=this.eventWriter({id:grant.eventId,year:grant.month,monthIndex:grant.month,type:grant.basis==='CIVIL'?'civil-ennobled':grant.basis==='FOUNDING'?'founding-peerage-granted':grant.basis==='COURT'?'court-peerage-granted':'military-ennobled',category:'politics',actorFactionId:grant.factionId,factionIds:[grant.factionId],rulerId:grant.rulerId,title:nobleChronicle(grant),importance:'major',metadata:{personId:person.personId,sourceUserId:person.sourceUserId,commandId:grant.commandId,rank:grant.rank,nobility:JSON.stringify(grant),...(grant.basis==='FOUNDING'?{foundingEventId:grant.foundingEventId}:{}),...(courtServiceEventId?{courtServiceEventId,courtCoupEventId}:{})}});
     if(written!==grant.eventId||!this.eventReader(grant.factionId).some(e=>e.id===grant.eventId))throw Error('Noble history was not recorded');
   }
   updateNobility(month:number,teams:Team[],dynasties:Dynasty[]){

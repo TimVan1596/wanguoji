@@ -62,7 +62,7 @@ export function validateMilitaryCommandState(state: unknown, users: any[], units
         !["ACTIVE", "RETIRED", "DEAD"].includes(person.status) || !Array.isArray(person.appointments) || !Array.isArray(person.capturedEventIds)) {
       errors.push("military person identity or lifecycle is invalid"); continue;
     }
-    if(!isPopulationIdentityLabel(person.name)&&splitEstablishedPersonalName(person.name)&&person.personalName!==person.name)errors.push(`military established full name conflict: ${person.personId}`);
+    if(!person.civilOrigin&&!isPopulationIdentityLabel(person.name)&&splitEstablishedPersonalName(person.name)&&person.personalName!==person.name)errors.push(`military established full name conflict: ${person.personId}`);
     people.set(person.personId, person);
     const personSequenceMatch = /^military-person-(\d+)$/.exec(person.personId);
     if (!personSequenceMatch && !person.civilOrigin) errors.push(`military person id is invalid: ${person.personId}`);

@@ -1,3 +1,4 @@
+import {personHistoryReading} from '../History/PersonHistoryReading';
 import {militaryChronicleReadingOrder} from './MilitaryChronicleOrder';
 import {mergeCourtCoupReading} from '../History/CourtCoupReading';
 import {militaryNarrativeLinks} from "./MilitaryNarrativeLinks";
@@ -14,14 +15,14 @@ import {MILITARY_OFFICE_NAMES} from "./MilitaryOffice";
 
 /** Only changes the reading view. Full entries and canonical events remain available for audit and promotion. */
 export function militaryMilestones(person:MilitaryPerson,entries:MilitaryChronicleEntry[],events:WorldEvent[],context:MilitaryHistoryContext={}){
-  const projected=mergeCourtCoupReading(events),shown=new Map(projected.map(e=>[e.id,e]));
+  const reading=personHistoryReading(events),projected=mergeCourtCoupReading(reading.events),shown=new Map(projected.map(e=>[e.id,e]));
   const courtHidden=new Set(projected.filter(e=>e.metadata?.courtReadingKind==='COURT_COUP').flatMap(e=>String(e.metadata!.sourceEventIds).split(',').filter(id=>id!==e.id)));
-  entries=entries.filter(e=>!courtHidden.has(e.eventId)).filter(e=>!events.some(raw=>raw.id===e.eventId&&['court-coup-attempt','court-coup-result'].includes(raw.type))||shown.has(e.eventId)).map(e=>{const raw=shown.get(e.eventId);return raw?.metadata?.courtReadingKind==='COURT_COUP'?{...e,text:raw.title,sourceEventIds:String(raw.metadata.sourceEventIds).split(',')}:e;});
+  entries=entries.filter(e=>!reading.hidden.has(e.eventId)&&!courtHidden.has(e.eventId)).filter(e=>!events.some(raw=>raw.id===e.eventId&&['court-coup-attempt','court-coup-result'].includes(raw.type))||shown.has(e.eventId)).map(e=>{const raw=shown.get(e.eventId);return raw?.metadata?.courtReadingKind==='COURT_COUP'?{...e,text:raw.title,sourceEventIds:String(raw.metadata.sourceEventIds).split(',')}:e;});
   const byId=new Map(events.map(e=>[e.id,e])),name=getMilitaryPersonDisplayName(person);
   const available=new Set(entries.map(e=>e.eventId)),pairs=militaryLifePairs(events).filter(p=>available.has(p.anchor.id)&&available.has(p.other.id)),merged=new Map(pairs.map(p=>[p.anchor.id,p])),hidden=new Set(pairs.map(p=>p.other.id));
   const links=militaryNarrativeLinks(person,events);
   return militaryChronicleReadingOrder(entries.filter(e=>!hidden.has(e.eventId)&&!links.hidden.has(e.eventId)).flatMap(original=>{
-    const entry={...original,sourceEventIds:[...new Set([...(original.sourceEventIds??[original.eventId]),...(links.sources.get(original.eventId)??[])])]};
+    const entry={...original,sourceEventIds:[...new Set([...(original.sourceEventIds??[original.eventId]),...(links.sources.get(original.eventId)??[]),...(reading.sources.get(original.eventId)??[])])]};
     const type=entry.source.split(" · ")[0],event=byId.get(entry.eventId);
     if(type==="military-order-issued"&&event?.importance!=="major")return [];
     if(type==="military-order-issued")return [{...entry,text:`${name}奉命以${event?.cityName??"城邑"}为进军目标。`}];
@@ -39,7 +40,7 @@ export function militaryMilestones(person:MilitaryPerson,entries:MilitaryChronic
     if(type==="military-office-granted"){
       const grant=person.appointments.flatMap(a=>a.officeHistory??[]).find(g=>g.eventId===entry.eventId);
       if(grant){
-        const faction=context.factions?.get(entry.factionId),country=faction?getHistoricalFactionIdentity({...faction,displayName:entry.factionId},entry.worldMonth).name:entry.factionId;
+        const faction=context.factions?.get(entry.factionId),country=typeof event?.metadata?.countryNameAtEvent==='string'?event.metadata.countryNameAtEvent:faction?getHistoricalFactionIdentity({...faction,displayName:entry.factionId},entry.worldMonth).name:entry.factionId;
         const issuer=event?.rulerId&&typeof event.metadata?.authorizingRulerTitle==="string"?event.metadata.authorizingRulerTitle:undefined;
         const initial=person.appointments.some(a=>a.officeHistory?.[0]?.eventId===entry.eventId);
         const basis=grant.promotionBasis==='SERVICE'?'依服役资历，':grant.promotionBasis==='ACTIVITY'?'因实际军旅经历，':grant.promotionBasis==='CAPTURE'?'以取城之功，':'';
