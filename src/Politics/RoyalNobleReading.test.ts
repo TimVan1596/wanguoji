@@ -9,3 +9,5 @@ it('inherited title keeps its independent source instead of inventing personal m
 it('living accession shows a former grant without calling the person deceased',()=>{const x=fixture();x.r.accessionYear=40;const view=royalNobleReading(x.r,x.d,x.events,40)!;expect(view.current).toBeUndefined();expect(view.label).toBe('曾封侯爵 · 历史爵位');});
 
 it('uses the historical country resolver at the actual title event, without stripping or guessing a country suffix',()=>{const x=fixture(),before=JSON.stringify(x),calls:number[]=[];const view=royalNobleReading(x.r,x.d,x.events,35,undefined,(_id,at)=>{calls.push(at);return at<30?'旧秦':'新秦';})!;expect(view.heading).toBe('旧秦 · 侯爵 · 嬴宁');expect(calls).toEqual([20]);expect(JSON.stringify(x)).toBe(before);});
+
+it('preserves civil merit as a distinct personal source in the royal dossier',()=>{const x=fixture();x.g.basis='CIVIL';x.events[0].type='civil-ennobled';x.events[0].metadata.nobility=JSON.stringify(x.g);const before=JSON.stringify(x);expect(royalNobleReading(x.r,x.d,x.events,20)!.label).toBe('本人文治受封');expect(royalNobleReading(x.r,x.d,x.events,20)!.personal[0].basis).toBe('CIVIL');expect(JSON.stringify(x)).toBe(before);});

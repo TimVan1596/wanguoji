@@ -1,0 +1,2212 @@
+{
+  "version": "0.100.0-beta.67",
+  "saveSchemaVersion": 63,
+  "baseline": "f537f3a4a3a106fd93b16d4e7d4205ca537e8401",
+  "scope": "Same predetermined regional-1..8; first four extend to 200; regional-1 extends 300/500. Rule and identity corrections intentionally change authoritative state and RNG; no equality claim. Natural samples separate from controlled Core.",
+  "worlds": [
+    {
+      "seed": "regional-1",
+      "years": 100,
+      "before": {
+        "worldMonth": 1200,
+        "canonicalSha256": "ca7464311442aedbce0cb7e1cb696fe068864fce94a95d928345558231306179",
+        "rngPosition": 7206,
+        "population": 141,
+        "uniqueCivilPeople": 24,
+        "civilInitialAppointments": 24,
+        "offices": {
+          "XIANLING": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "JUNSHOU": {
+            "appointments": 24,
+            "uniquePeople": 24
+          },
+          "YUSHI_DAFU": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 0,
+        "civilPeerages": [],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 24,
+          "FAMILY": 0,
+          "NOBLE": 0,
+          "ROYAL": 0,
+          "RETIRED_MILITARY": 0
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 0,
+        "militaryPeople": 23,
+        "activeMilitaryCommands": 2,
+        "families": 2,
+        "familyMembers": 5,
+        "familyBirths": 0,
+        "nativeRoyalLiveBodies": 0,
+        "governance": {
+          "loyaltyRecovered": 50,
+          "devastationRecovered": 68
+        },
+        "captures": 11,
+        "usurpations": 0,
+        "events": 2832,
+        "saveBytes": 2224611,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "after": {
+        "worldMonth": 1200,
+        "canonicalSha256": "5429dfb91c38271ea85860da845b586d0316591e9c03166e14b7a60e35accc41",
+        "rngPosition": 7316,
+        "population": 131,
+        "uniqueCivilPeople": 29,
+        "civilInitialAppointments": 29,
+        "offices": {
+          "XIANLING": {
+            "appointments": 29,
+            "uniquePeople": 29
+          },
+          "JUNSHOU": {
+            "appointments": 10,
+            "uniquePeople": 10
+          },
+          "YUSHI_DAFU": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 10,
+        "civilPeerages": [
+          {
+            "personId": "resident-1433913152--233",
+            "name": "于庭允",
+            "month": 696,
+            "rank": "NAN",
+            "meritEvents": 11
+          },
+          {
+            "personId": "resident-1306530454-432",
+            "name": "江恺",
+            "month": 1068,
+            "rank": "NAN",
+            "meritEvents": 11
+          }
+        ],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 27,
+          "FAMILY": 2,
+          "NOBLE": 0,
+          "ROYAL": 0,
+          "RETIRED_MILITARY": 0
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 0,
+        "militaryPeople": 27,
+        "activeMilitaryCommands": 4,
+        "families": 6,
+        "familyMembers": 16,
+        "familyBirths": 1,
+        "nativeRoyalLiveBodies": 5,
+        "governance": {
+          "loyaltyRecovered": 35,
+          "devastationRecovered": 62
+        },
+        "captures": 17,
+        "usurpations": 0,
+        "events": 2998,
+        "saveBytes": 2475308,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-1",
+      "years": 200,
+      "before": {
+        "worldMonth": 2400,
+        "canonicalSha256": "6315fbd2c267b65de6346c9cc00de962edb34389407e65ecde1793986aed0be3",
+        "rngPosition": 15004,
+        "population": 126,
+        "uniqueCivilPeople": 51,
+        "civilInitialAppointments": 54,
+        "offices": {
+          "XIANLING": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "JUNSHOU": {
+            "appointments": 54,
+            "uniquePeople": 51
+          },
+          "YUSHI_DAFU": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 0,
+        "civilPeerages": [],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 51,
+          "FAMILY": 0,
+          "NOBLE": 1,
+          "ROYAL": 1,
+          "RETIRED_MILITARY": 1
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 2,
+        "militaryPeople": 48,
+        "activeMilitaryCommands": 2,
+        "families": 8,
+        "familyMembers": 17,
+        "familyBirths": 4,
+        "nativeRoyalLiveBodies": 0,
+        "governance": {
+          "loyaltyRecovered": 116,
+          "devastationRecovered": 122
+        },
+        "captures": 58,
+        "usurpations": 0,
+        "events": 5920,
+        "saveBytes": 4672122,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "after": {
+        "worldMonth": 2400,
+        "canonicalSha256": "fa5a92faeaac1c58b6f6b041c83fb6f5692ff58fcd2cdc4ef68f4ec12f13699f",
+        "rngPosition": 14849,
+        "population": 128,
+        "uniqueCivilPeople": 55,
+        "civilInitialAppointments": 56,
+        "offices": {
+          "XIANLING": {
+            "appointments": 56,
+            "uniquePeople": 55
+          },
+          "JUNSHOU": {
+            "appointments": 25,
+            "uniquePeople": 24
+          },
+          "YUSHI_DAFU": {
+            "appointments": 3,
+            "uniquePeople": 3
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 28,
+        "civilPeerages": [
+          {
+            "personId": "resident-1433913152--233",
+            "name": "于庭允",
+            "month": 696,
+            "rank": "NAN",
+            "meritEvents": 11
+          },
+          {
+            "personId": "resident-1306530454-432",
+            "name": "江恺",
+            "month": 1068,
+            "rank": "NAN",
+            "meritEvents": 11
+          },
+          {
+            "personId": "family-member-1306530486-712",
+            "name": "江克良",
+            "month": 1524,
+            "rank": "NAN",
+            "meritEvents": 8
+          },
+          {
+            "personId": "resident-1050981064-1371",
+            "name": "许思济",
+            "month": 2268,
+            "rank": "NAN",
+            "meritEvents": 26
+          },
+          {
+            "personId": "resident-1143910136-1102",
+            "name": "樊元谦",
+            "month": 1992,
+            "rank": "NAN",
+            "meritEvents": 9
+          },
+          {
+            "personId": "resident-1143910136-1102",
+            "name": "樊元谦",
+            "month": 2160,
+            "rank": "ZI",
+            "meritEvents": 12
+          },
+          {
+            "personId": "resident-1380083409-1188",
+            "name": "许承信",
+            "month": 2124,
+            "rank": "NAN",
+            "meritEvents": 8
+          },
+          {
+            "personId": "resident-1380084130-1863",
+            "name": "宁承和",
+            "month": 2352,
+            "rank": "NAN",
+            "meritEvents": 11
+          }
+        ],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 51,
+          "FAMILY": 4,
+          "NOBLE": 0,
+          "ROYAL": 0,
+          "RETIRED_MILITARY": 1
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 1,
+        "militaryPeople": 53,
+        "activeMilitaryCommands": 2,
+        "families": 13,
+        "familyMembers": 46,
+        "familyBirths": 2,
+        "nativeRoyalLiveBodies": 5,
+        "governance": {
+          "loyaltyRecovered": 135,
+          "devastationRecovered": 240
+        },
+        "captures": 55,
+        "usurpations": 0,
+        "events": 7332,
+        "saveBytes": 5720971,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-2",
+      "years": 100,
+      "before": {
+        "worldMonth": 1200,
+        "canonicalSha256": "59d98c544503855e41a501ace88e58c6818f00ba2122162581726c0dfedbf9f8",
+        "rngPosition": 7128,
+        "population": 131,
+        "uniqueCivilPeople": 18,
+        "civilInitialAppointments": 18,
+        "offices": {
+          "XIANLING": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "JUNSHOU": {
+            "appointments": 18,
+            "uniquePeople": 18
+          },
+          "YUSHI_DAFU": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 0,
+        "civilPeerages": [],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 18,
+          "FAMILY": 0,
+          "NOBLE": 0,
+          "ROYAL": 0,
+          "RETIRED_MILITARY": 0
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 0,
+        "militaryPeople": 29,
+        "activeMilitaryCommands": 5,
+        "families": 3,
+        "familyMembers": 3,
+        "familyBirths": 0,
+        "nativeRoyalLiveBodies": 0,
+        "governance": {
+          "loyaltyRecovered": 1,
+          "devastationRecovered": 48
+        },
+        "captures": 12,
+        "usurpations": 0,
+        "events": 2262,
+        "saveBytes": 1960261,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "after": {
+        "worldMonth": 1200,
+        "canonicalSha256": "e4c890184fc3f8b0e7272ddb44cab5f5e477e1e90429344e67113b6641c3072d",
+        "rngPosition": 7082,
+        "population": 117,
+        "uniqueCivilPeople": 19,
+        "civilInitialAppointments": 19,
+        "offices": {
+          "XIANLING": {
+            "appointments": 19,
+            "uniquePeople": 19
+          },
+          "JUNSHOU": {
+            "appointments": 6,
+            "uniquePeople": 6
+          },
+          "YUSHI_DAFU": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 6,
+        "civilPeerages": [
+          {
+            "personId": "resident-1380083260-380",
+            "name": "贾景正",
+            "month": 1140,
+            "rank": "NAN",
+            "meritEvents": 9
+          }
+        ],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 19,
+          "FAMILY": 0,
+          "NOBLE": 0,
+          "ROYAL": 0,
+          "RETIRED_MILITARY": 0
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 0,
+        "militaryPeople": 22,
+        "activeMilitaryCommands": 3,
+        "families": 5,
+        "familyMembers": 8,
+        "familyBirths": 1,
+        "nativeRoyalLiveBodies": 4,
+        "governance": {
+          "loyaltyRecovered": 16,
+          "devastationRecovered": 47
+        },
+        "captures": 8,
+        "usurpations": 0,
+        "events": 2200,
+        "saveBytes": 1909939,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-2",
+      "years": 200,
+      "before": {
+        "worldMonth": 2400,
+        "canonicalSha256": "3a0eb29316b8806af4789c582c55eb5add27b1960da0ad62e61a28928db70f55",
+        "rngPosition": 15106,
+        "population": 134,
+        "uniqueCivilPeople": 46,
+        "civilInitialAppointments": 46,
+        "offices": {
+          "XIANLING": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "JUNSHOU": {
+            "appointments": 46,
+            "uniquePeople": 46
+          },
+          "YUSHI_DAFU": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 0,
+        "civilPeerages": [],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 43,
+          "FAMILY": 1,
+          "NOBLE": 1,
+          "ROYAL": 0,
+          "RETIRED_MILITARY": 1
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 1,
+        "militaryPeople": 57,
+        "activeMilitaryCommands": 1,
+        "families": 9,
+        "familyMembers": 28,
+        "familyBirths": 2,
+        "nativeRoyalLiveBodies": 0,
+        "governance": {
+          "loyaltyRecovered": 111,
+          "devastationRecovered": 165
+        },
+        "captures": 59,
+        "usurpations": 0,
+        "events": 6443,
+        "saveBytes": 5070400,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "after": {
+        "worldMonth": 2400,
+        "canonicalSha256": "c65c5eb6bc4902045b75fc0af12de6328296f20a0116717a945ad7db5995a882",
+        "rngPosition": 13810,
+        "population": 124,
+        "uniqueCivilPeople": 38,
+        "civilInitialAppointments": 38,
+        "offices": {
+          "XIANLING": {
+            "appointments": 38,
+            "uniquePeople": 38
+          },
+          "JUNSHOU": {
+            "appointments": 13,
+            "uniquePeople": 13
+          },
+          "YUSHI_DAFU": {
+            "appointments": 2,
+            "uniquePeople": 2
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 15,
+        "civilPeerages": [
+          {
+            "personId": "resident-1380083260-380",
+            "name": "贾景正",
+            "month": 1140,
+            "rank": "NAN",
+            "meritEvents": 9
+          },
+          {
+            "personId": "resident-1433913344-524",
+            "name": "卫世远",
+            "month": 1416,
+            "rank": "NAN",
+            "meritEvents": 9
+          },
+          {
+            "personId": "resident-1050981030-1140",
+            "name": "彭谦",
+            "month": 2016,
+            "rank": "NAN",
+            "meritEvents": 9
+          }
+        ],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 37,
+          "FAMILY": 1,
+          "NOBLE": 0,
+          "ROYAL": 0,
+          "RETIRED_MILITARY": 0
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 0,
+        "militaryPeople": 39,
+        "activeMilitaryCommands": 0,
+        "families": 12,
+        "familyMembers": 36,
+        "familyBirths": 2,
+        "nativeRoyalLiveBodies": 3,
+        "governance": {
+          "loyaltyRecovered": 88,
+          "devastationRecovered": 119
+        },
+        "captures": 23,
+        "usurpations": 0,
+        "events": 4678,
+        "saveBytes": 3849730,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-3",
+      "years": 100,
+      "before": {
+        "worldMonth": 1200,
+        "canonicalSha256": "b588337b89dea110001cea8789ead39994e91bd415a8c73f9907692439172c98",
+        "rngPosition": 7126,
+        "population": 137,
+        "uniqueCivilPeople": 19,
+        "civilInitialAppointments": 19,
+        "offices": {
+          "XIANLING": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "JUNSHOU": {
+            "appointments": 19,
+            "uniquePeople": 19
+          },
+          "YUSHI_DAFU": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 0,
+        "civilPeerages": [],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 19,
+          "FAMILY": 0,
+          "NOBLE": 0,
+          "ROYAL": 0,
+          "RETIRED_MILITARY": 0
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 0,
+        "militaryPeople": 34,
+        "activeMilitaryCommands": 2,
+        "families": 7,
+        "familyMembers": 10,
+        "familyBirths": 2,
+        "nativeRoyalLiveBodies": 0,
+        "governance": {
+          "loyaltyRecovered": 10,
+          "devastationRecovered": 61
+        },
+        "captures": 10,
+        "usurpations": 0,
+        "events": 2187,
+        "saveBytes": 1995595,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "after": {
+        "worldMonth": 1200,
+        "canonicalSha256": "0fa9ef00976f766bcf6d626c0846e2946f84155254ea7d8e8197631221bcad15",
+        "rngPosition": 7113,
+        "population": 132,
+        "uniqueCivilPeople": 20,
+        "civilInitialAppointments": 20,
+        "offices": {
+          "XIANLING": {
+            "appointments": 20,
+            "uniquePeople": 20
+          },
+          "JUNSHOU": {
+            "appointments": 7,
+            "uniquePeople": 7
+          },
+          "YUSHI_DAFU": {
+            "appointments": 2,
+            "uniquePeople": 2
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 9,
+        "civilPeerages": [
+          {
+            "personId": "resident-1203858005--173",
+            "name": "卢文允",
+            "month": 816,
+            "rank": "NAN",
+            "meritEvents": 8
+          }
+        ],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 20,
+          "FAMILY": 0,
+          "NOBLE": 0,
+          "ROYAL": 0,
+          "RETIRED_MILITARY": 0
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 0,
+        "militaryPeople": 32,
+        "activeMilitaryCommands": 1,
+        "families": 7,
+        "familyMembers": 11,
+        "familyBirths": 2,
+        "nativeRoyalLiveBodies": 6,
+        "governance": {
+          "loyaltyRecovered": 12,
+          "devastationRecovered": 63
+        },
+        "captures": 10,
+        "usurpations": 0,
+        "events": 2372,
+        "saveBytes": 2131347,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-3",
+      "years": 200,
+      "before": {
+        "worldMonth": 2400,
+        "canonicalSha256": "03ce47b071822b26268d147d2e70c55d5b0249d34ccaa692c3a0840a201cae46",
+        "rngPosition": 14323,
+        "population": 127,
+        "uniqueCivilPeople": 46,
+        "civilInitialAppointments": 47,
+        "offices": {
+          "XIANLING": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "JUNSHOU": {
+            "appointments": 47,
+            "uniquePeople": 46
+          },
+          "YUSHI_DAFU": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 0,
+        "civilPeerages": [],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 44,
+          "FAMILY": 2,
+          "NOBLE": 1,
+          "ROYAL": 0,
+          "RETIRED_MILITARY": 0
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 0,
+        "militaryPeople": 61,
+        "activeMilitaryCommands": 2,
+        "families": 12,
+        "familyMembers": 27,
+        "familyBirths": 4,
+        "nativeRoyalLiveBodies": 0,
+        "governance": {
+          "loyaltyRecovered": 62,
+          "devastationRecovered": 149
+        },
+        "captures": 36,
+        "usurpations": 0,
+        "events": 4737,
+        "saveBytes": 4092273,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "after": {
+        "worldMonth": 2400,
+        "canonicalSha256": "4f64acd13d1d062b837b2b1ca2d3596de4ea3f467d55784a49a2e993c3e6b4cd",
+        "rngPosition": 14769,
+        "population": 139,
+        "uniqueCivilPeople": 46,
+        "civilInitialAppointments": 46,
+        "offices": {
+          "XIANLING": {
+            "appointments": 46,
+            "uniquePeople": 46
+          },
+          "JUNSHOU": {
+            "appointments": 17,
+            "uniquePeople": 17
+          },
+          "YUSHI_DAFU": {
+            "appointments": 3,
+            "uniquePeople": 3
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 20,
+        "civilPeerages": [
+          {
+            "personId": "resident-1203858005--173",
+            "name": "卢文允",
+            "month": 816,
+            "rank": "NAN",
+            "meritEvents": 8
+          },
+          {
+            "personId": "resident-1359921555-1194",
+            "name": "范庭宣",
+            "month": 1920,
+            "rank": "NAN",
+            "meritEvents": 7
+          }
+        ],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 46,
+          "FAMILY": 0,
+          "NOBLE": 0,
+          "ROYAL": 0,
+          "RETIRED_MILITARY": 0
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 0,
+        "militaryPeople": 53,
+        "activeMilitaryCommands": 1,
+        "families": 13,
+        "familyMembers": 29,
+        "familyBirths": 3,
+        "nativeRoyalLiveBodies": 5,
+        "governance": {
+          "loyaltyRecovered": 39,
+          "devastationRecovered": 132
+        },
+        "captures": 36,
+        "usurpations": 0,
+        "events": 5466,
+        "saveBytes": 4564406,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-4",
+      "years": 100,
+      "before": {
+        "worldMonth": 1200,
+        "canonicalSha256": "1bb950c7c1b434db733991c0ab4a8a8e163f02b3e484451eac03116465b1dec5",
+        "rngPosition": 6890,
+        "population": 136,
+        "uniqueCivilPeople": 20,
+        "civilInitialAppointments": 21,
+        "offices": {
+          "XIANLING": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "JUNSHOU": {
+            "appointments": 21,
+            "uniquePeople": 20
+          },
+          "YUSHI_DAFU": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 0,
+        "civilPeerages": [],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 20,
+          "FAMILY": 1,
+          "NOBLE": 0,
+          "ROYAL": 0,
+          "RETIRED_MILITARY": 0
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 0,
+        "militaryPeople": 24,
+        "activeMilitaryCommands": 2,
+        "families": 3,
+        "familyMembers": 7,
+        "familyBirths": 0,
+        "nativeRoyalLiveBodies": 0,
+        "governance": {
+          "loyaltyRecovered": 38,
+          "devastationRecovered": 60
+        },
+        "captures": 6,
+        "usurpations": 0,
+        "events": 2423,
+        "saveBytes": 2041651,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "after": {
+        "worldMonth": 1200,
+        "canonicalSha256": "3dd1803830ff5960e538830f928dfa2aa79b3c2e3d1939d6f7c71b98a495e719",
+        "rngPosition": 6852,
+        "population": 136,
+        "uniqueCivilPeople": 18,
+        "civilInitialAppointments": 19,
+        "offices": {
+          "XIANLING": {
+            "appointments": 19,
+            "uniquePeople": 18
+          },
+          "JUNSHOU": {
+            "appointments": 7,
+            "uniquePeople": 7
+          },
+          "YUSHI_DAFU": {
+            "appointments": 3,
+            "uniquePeople": 3
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 10,
+        "civilPeerages": [
+          {
+            "personId": "resident-1556458126-240",
+            "name": "喻德仁",
+            "month": 984,
+            "rank": "NAN",
+            "meritEvents": 12
+          },
+          {
+            "personId": "resident-1433913249-322",
+            "name": "庄德诚",
+            "month": 888,
+            "rank": "NAN",
+            "meritEvents": 11
+          },
+          {
+            "personId": "resident-1433913249-322",
+            "name": "庄德诚",
+            "month": 1020,
+            "rank": "ZI",
+            "meritEvents": 11
+          }
+        ],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 18,
+          "FAMILY": 1,
+          "NOBLE": 0,
+          "ROYAL": 0,
+          "RETIRED_MILITARY": 0
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 0,
+        "militaryPeople": 26,
+        "activeMilitaryCommands": 3,
+        "families": 5,
+        "familyMembers": 12,
+        "familyBirths": 2,
+        "nativeRoyalLiveBodies": 3,
+        "governance": {
+          "loyaltyRecovered": 59,
+          "devastationRecovered": 79
+        },
+        "captures": 6,
+        "usurpations": 0,
+        "events": 2512,
+        "saveBytes": 2184453,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-4",
+      "years": 200,
+      "before": {
+        "worldMonth": 2400,
+        "canonicalSha256": "003b12da8a30f62da57936585998a51e899aa4687d0bd7430a8178d540d9ab92",
+        "rngPosition": 12520,
+        "population": 137,
+        "uniqueCivilPeople": 39,
+        "civilInitialAppointments": 40,
+        "offices": {
+          "XIANLING": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "JUNSHOU": {
+            "appointments": 40,
+            "uniquePeople": 39
+          },
+          "YUSHI_DAFU": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 0,
+        "civilPeerages": [],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 39,
+          "FAMILY": 1,
+          "NOBLE": 0,
+          "ROYAL": 0,
+          "RETIRED_MILITARY": 0
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 0,
+        "militaryPeople": 38,
+        "activeMilitaryCommands": 0,
+        "families": 3,
+        "familyMembers": 7,
+        "familyBirths": 0,
+        "nativeRoyalLiveBodies": 0,
+        "governance": {
+          "loyaltyRecovered": 43,
+          "devastationRecovered": 87
+        },
+        "captures": 9,
+        "usurpations": 0,
+        "events": 4416,
+        "saveBytes": 3529528,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "after": {
+        "worldMonth": 2400,
+        "canonicalSha256": "515e380a2fe5d2701dab99da9a839b26e4f3e260b810e547d4ef71e2e0aa99e1",
+        "rngPosition": 12938,
+        "population": 141,
+        "uniqueCivilPeople": 40,
+        "civilInitialAppointments": 41,
+        "offices": {
+          "XIANLING": {
+            "appointments": 41,
+            "uniquePeople": 40
+          },
+          "JUNSHOU": {
+            "appointments": 13,
+            "uniquePeople": 13
+          },
+          "YUSHI_DAFU": {
+            "appointments": 4,
+            "uniquePeople": 4
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 17,
+        "civilPeerages": [
+          {
+            "personId": "resident-1556458126-240",
+            "name": "喻德仁",
+            "month": 984,
+            "rank": "NAN",
+            "meritEvents": 12
+          },
+          {
+            "personId": "resident-1433913249-322",
+            "name": "庄德诚",
+            "month": 888,
+            "rank": "NAN",
+            "meritEvents": 11
+          },
+          {
+            "personId": "resident-1433913249-322",
+            "name": "庄德诚",
+            "month": 1020,
+            "rank": "ZI",
+            "meritEvents": 11
+          },
+          {
+            "personId": "resident-1143910139-713",
+            "name": "欧阳守成",
+            "month": 1596,
+            "rank": "NAN",
+            "meritEvents": 6
+          },
+          {
+            "personId": "resident-1143910170-645",
+            "name": "姜崇绍",
+            "month": 1596,
+            "rank": "NAN",
+            "meritEvents": 12
+          },
+          {
+            "personId": "resident-1433914150-1383",
+            "name": "龙德衡",
+            "month": 2340,
+            "rank": "NAN",
+            "meritEvents": 8
+          }
+        ],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 39,
+          "FAMILY": 2,
+          "NOBLE": 0,
+          "ROYAL": 0,
+          "RETIRED_MILITARY": 0
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 0,
+        "militaryPeople": 40,
+        "activeMilitaryCommands": 3,
+        "families": 9,
+        "familyMembers": 24,
+        "familyBirths": 2,
+        "nativeRoyalLiveBodies": 3,
+        "governance": {
+          "loyaltyRecovered": 109,
+          "devastationRecovered": 155
+        },
+        "captures": 12,
+        "usurpations": 0,
+        "events": 5147,
+        "saveBytes": 4161301,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-5",
+      "years": 100,
+      "before": {
+        "worldMonth": 1200,
+        "canonicalSha256": "63d86d5696bd40d010801edc5bbcfabae145d6bb1c30c667b7ea1d3b09b80601",
+        "rngPosition": 7025,
+        "population": 134,
+        "uniqueCivilPeople": 23,
+        "civilInitialAppointments": 24,
+        "offices": {
+          "XIANLING": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "JUNSHOU": {
+            "appointments": 24,
+            "uniquePeople": 23
+          },
+          "YUSHI_DAFU": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 0,
+        "civilPeerages": [],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 24,
+          "FAMILY": 0,
+          "NOBLE": 0,
+          "ROYAL": 0,
+          "RETIRED_MILITARY": 0
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 0,
+        "militaryPeople": 31,
+        "activeMilitaryCommands": 1,
+        "families": 8,
+        "familyMembers": 14,
+        "familyBirths": 0,
+        "nativeRoyalLiveBodies": 0,
+        "governance": {
+          "loyaltyRecovered": 54,
+          "devastationRecovered": 70
+        },
+        "captures": 18,
+        "usurpations": 0,
+        "events": 2749,
+        "saveBytes": 2334102,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "after": {
+        "worldMonth": 1200,
+        "canonicalSha256": "a058ca335497e14abf3c657005aca70741f2c270bce8401ebf8d363f8db4185b",
+        "rngPosition": 7025,
+        "population": 134,
+        "uniqueCivilPeople": 23,
+        "civilInitialAppointments": 24,
+        "offices": {
+          "XIANLING": {
+            "appointments": 24,
+            "uniquePeople": 23
+          },
+          "JUNSHOU": {
+            "appointments": 12,
+            "uniquePeople": 12
+          },
+          "YUSHI_DAFU": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 12,
+        "civilPeerages": [],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 24,
+          "FAMILY": 0,
+          "NOBLE": 0,
+          "ROYAL": 0,
+          "RETIRED_MILITARY": 0
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 0,
+        "militaryPeople": 31,
+        "activeMilitaryCommands": 1,
+        "families": 8,
+        "familyMembers": 14,
+        "familyBirths": 0,
+        "nativeRoyalLiveBodies": 5,
+        "governance": {
+          "loyaltyRecovered": 54,
+          "devastationRecovered": 70
+        },
+        "captures": 18,
+        "usurpations": 0,
+        "events": 2894,
+        "saveBytes": 2487896,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-6",
+      "years": 100,
+      "before": {
+        "worldMonth": 1200,
+        "canonicalSha256": "1c7d97f78cd78091b43c8431ee6b67f7ed6efd43e3fa75bb7febf3170047f3c4",
+        "rngPosition": 6712,
+        "population": 141,
+        "uniqueCivilPeople": 20,
+        "civilInitialAppointments": 21,
+        "offices": {
+          "XIANLING": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "JUNSHOU": {
+            "appointments": 21,
+            "uniquePeople": 20
+          },
+          "YUSHI_DAFU": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 0,
+        "civilPeerages": [],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 20,
+          "FAMILY": 1,
+          "NOBLE": 0,
+          "ROYAL": 0,
+          "RETIRED_MILITARY": 0
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 0,
+        "militaryPeople": 25,
+        "activeMilitaryCommands": 0,
+        "families": 5,
+        "familyMembers": 11,
+        "familyBirths": 1,
+        "nativeRoyalLiveBodies": 0,
+        "governance": {
+          "loyaltyRecovered": 79,
+          "devastationRecovered": 96
+        },
+        "captures": 12,
+        "usurpations": 0,
+        "events": 2423,
+        "saveBytes": 2099304,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "after": {
+        "worldMonth": 1200,
+        "canonicalSha256": "ed818f1cf28fc6218c83761a1e0bf05f26a9a21bce3ec44177042d17bc54c44d",
+        "rngPosition": 6815,
+        "population": 140,
+        "uniqueCivilPeople": 20,
+        "civilInitialAppointments": 21,
+        "offices": {
+          "XIANLING": {
+            "appointments": 21,
+            "uniquePeople": 20
+          },
+          "JUNSHOU": {
+            "appointments": 10,
+            "uniquePeople": 10
+          },
+          "YUSHI_DAFU": {
+            "appointments": 2,
+            "uniquePeople": 2
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 12,
+        "civilPeerages": [
+          {
+            "personId": "resident-1525998257--244",
+            "name": "贾景远",
+            "month": 696,
+            "rank": "NAN",
+            "meritEvents": 11
+          },
+          {
+            "personId": "resident-1050980935-137",
+            "name": "杨仲泰",
+            "month": 1128,
+            "rank": "NAN",
+            "meritEvents": 38
+          }
+        ],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 20,
+          "FAMILY": 1,
+          "NOBLE": 0,
+          "ROYAL": 0,
+          "RETIRED_MILITARY": 0
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 0,
+        "militaryPeople": 27,
+        "activeMilitaryCommands": 3,
+        "families": 8,
+        "familyMembers": 16,
+        "familyBirths": 2,
+        "nativeRoyalLiveBodies": 3,
+        "governance": {
+          "loyaltyRecovered": 93,
+          "devastationRecovered": 84
+        },
+        "captures": 15,
+        "usurpations": 0,
+        "events": 2587,
+        "saveBytes": 2315542,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-7",
+      "years": 100,
+      "before": {
+        "worldMonth": 1200,
+        "canonicalSha256": "4dcb6ed55c9b9846fd5dbfad67097266176cdecbb390fefa8198333e2a3458ad",
+        "rngPosition": 7203,
+        "population": 131,
+        "uniqueCivilPeople": 25,
+        "civilInitialAppointments": 25,
+        "offices": {
+          "XIANLING": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "JUNSHOU": {
+            "appointments": 25,
+            "uniquePeople": 25
+          },
+          "YUSHI_DAFU": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 0,
+        "civilPeerages": [],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 24,
+          "FAMILY": 1,
+          "NOBLE": 0,
+          "ROYAL": 0,
+          "RETIRED_MILITARY": 0
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 0,
+        "militaryPeople": 30,
+        "activeMilitaryCommands": 3,
+        "families": 5,
+        "familyMembers": 10,
+        "familyBirths": 2,
+        "nativeRoyalLiveBodies": 0,
+        "governance": {
+          "loyaltyRecovered": 29,
+          "devastationRecovered": 56
+        },
+        "captures": 8,
+        "usurpations": 0,
+        "events": 2839,
+        "saveBytes": 2355571,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "after": {
+        "worldMonth": 1200,
+        "canonicalSha256": "8418682f1671ccce9f909e5e6f760d9ac4a27bb52fedc2f8ae4277cf3955b569",
+        "rngPosition": 7203,
+        "population": 131,
+        "uniqueCivilPeople": 24,
+        "civilInitialAppointments": 24,
+        "offices": {
+          "XIANLING": {
+            "appointments": 24,
+            "uniquePeople": 24
+          },
+          "JUNSHOU": {
+            "appointments": 5,
+            "uniquePeople": 5
+          },
+          "YUSHI_DAFU": {
+            "appointments": 1,
+            "uniquePeople": 1
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 6,
+        "civilPeerages": [
+          {
+            "personId": "resident-1359921428-55",
+            "name": "广敬和",
+            "month": 924,
+            "rank": "NAN",
+            "meritEvents": 11
+          }
+        ],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 23,
+          "FAMILY": 1,
+          "NOBLE": 0,
+          "ROYAL": 0,
+          "RETIRED_MILITARY": 0
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 0,
+        "militaryPeople": 30,
+        "activeMilitaryCommands": 3,
+        "families": 6,
+        "familyMembers": 11,
+        "familyBirths": 2,
+        "nativeRoyalLiveBodies": 7,
+        "governance": {
+          "loyaltyRecovered": 34,
+          "devastationRecovered": 58
+        },
+        "captures": 8,
+        "usurpations": 0,
+        "events": 2942,
+        "saveBytes": 2462251,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-8",
+      "years": 100,
+      "before": {
+        "worldMonth": 1200,
+        "canonicalSha256": "b28a08d52cff0d360ee97c8287fcfd4ddaead1e05beefc64d0ccdceb1bba598f",
+        "rngPosition": 7170,
+        "population": 132,
+        "uniqueCivilPeople": 22,
+        "civilInitialAppointments": 22,
+        "offices": {
+          "XIANLING": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "JUNSHOU": {
+            "appointments": 22,
+            "uniquePeople": 22
+          },
+          "YUSHI_DAFU": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 0,
+        "civilPeerages": [],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 20,
+          "FAMILY": 0,
+          "NOBLE": 0,
+          "ROYAL": 1,
+          "RETIRED_MILITARY": 1
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 2,
+        "militaryPeople": 29,
+        "activeMilitaryCommands": 2,
+        "families": 5,
+        "familyMembers": 15,
+        "familyBirths": 0,
+        "nativeRoyalLiveBodies": 0,
+        "governance": {
+          "loyaltyRecovered": 23,
+          "devastationRecovered": 63
+        },
+        "captures": 9,
+        "usurpations": 0,
+        "events": 2407,
+        "saveBytes": 2091256,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "after": {
+        "worldMonth": 1200,
+        "canonicalSha256": "822e68592cf79dd5fc9fbd46e81d7585579da64447c038381afe60a807f77230",
+        "rngPosition": 7170,
+        "population": 132,
+        "uniqueCivilPeople": 22,
+        "civilInitialAppointments": 22,
+        "offices": {
+          "XIANLING": {
+            "appointments": 22,
+            "uniquePeople": 22
+          },
+          "JUNSHOU": {
+            "appointments": 9,
+            "uniquePeople": 9
+          },
+          "YUSHI_DAFU": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 9,
+        "civilPeerages": [
+          {
+            "personId": "resident-1837861814--393",
+            "name": "汤旭",
+            "month": 504,
+            "rank": "NAN",
+            "meritEvents": 14
+          },
+          {
+            "personId": "resident-1050980911--67",
+            "name": "姜琨",
+            "month": 996,
+            "rank": "NAN",
+            "meritEvents": 9
+          }
+        ],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 20,
+          "FAMILY": 0,
+          "NOBLE": 0,
+          "ROYAL": 1,
+          "RETIRED_MILITARY": 1
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 2,
+        "militaryPeople": 29,
+        "activeMilitaryCommands": 2,
+        "families": 7,
+        "familyMembers": 18,
+        "familyBirths": 0,
+        "nativeRoyalLiveBodies": 3,
+        "governance": {
+          "loyaltyRecovered": 23,
+          "devastationRecovered": 63
+        },
+        "captures": 9,
+        "usurpations": 0,
+        "events": 2517,
+        "saveBytes": 2216335,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-1",
+      "years": 300,
+      "before": {
+        "worldMonth": 3600,
+        "canonicalSha256": "1923a28690d574ee7c162a1833713b2e072a5b23959587a468f541c030099446",
+        "rngPosition": 22469,
+        "population": 147,
+        "uniqueCivilPeople": 73,
+        "civilInitialAppointments": 76,
+        "offices": {
+          "XIANLING": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "JUNSHOU": {
+            "appointments": 76,
+            "uniquePeople": 73
+          },
+          "YUSHI_DAFU": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 0,
+        "civilPeerages": [],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 71,
+          "FAMILY": 0,
+          "NOBLE": 1,
+          "ROYAL": 2,
+          "RETIRED_MILITARY": 2
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 4,
+        "militaryPeople": 70,
+        "activeMilitaryCommands": 1,
+        "families": 12,
+        "familyMembers": 29,
+        "familyBirths": 5,
+        "nativeRoyalLiveBodies": 0,
+        "governance": {
+          "loyaltyRecovered": 184,
+          "devastationRecovered": 256
+        },
+        "captures": 77,
+        "usurpations": 0,
+        "events": 8851,
+        "saveBytes": 6904300,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "after": {
+        "worldMonth": 3600,
+        "canonicalSha256": "6f4eb7ead5ce4e05c1bff3b1a3ecd55e7c2df75e9fb4ed8a402139094409afaa",
+        "rngPosition": 21619,
+        "population": 134,
+        "uniqueCivilPeople": 71,
+        "civilInitialAppointments": 72,
+        "offices": {
+          "XIANLING": {
+            "appointments": 72,
+            "uniquePeople": 71
+          },
+          "JUNSHOU": {
+            "appointments": 35,
+            "uniquePeople": 34
+          },
+          "YUSHI_DAFU": {
+            "appointments": 6,
+            "uniquePeople": 6
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 41,
+        "civilPeerages": [
+          {
+            "personId": "resident-1433913152--233",
+            "name": "于庭允",
+            "month": 696,
+            "rank": "NAN",
+            "meritEvents": 11
+          },
+          {
+            "personId": "resident-1306530454-432",
+            "name": "江恺",
+            "month": 1068,
+            "rank": "NAN",
+            "meritEvents": 11
+          },
+          {
+            "personId": "family-member-1306530486-712",
+            "name": "江克良",
+            "month": 1524,
+            "rank": "NAN",
+            "meritEvents": 8
+          },
+          {
+            "personId": "resident-1050981064-1371",
+            "name": "许思济",
+            "month": 2268,
+            "rank": "NAN",
+            "meritEvents": 26
+          },
+          {
+            "personId": "resident-1143910136-1102",
+            "name": "樊元谦",
+            "month": 1992,
+            "rank": "NAN",
+            "meritEvents": 9
+          },
+          {
+            "personId": "resident-1143910136-1102",
+            "name": "樊元谦",
+            "month": 2160,
+            "rank": "ZI",
+            "meritEvents": 12
+          },
+          {
+            "personId": "resident-1380083409-1188",
+            "name": "许承信",
+            "month": 2124,
+            "rank": "NAN",
+            "meritEvents": 8
+          },
+          {
+            "personId": "resident-1380084130-1863",
+            "name": "宁承和",
+            "month": 2352,
+            "rank": "NAN",
+            "meritEvents": 11
+          },
+          {
+            "personId": "resident-1143910199-1809",
+            "name": "宁信",
+            "month": 2532,
+            "rank": "NAN",
+            "meritEvents": 8
+          },
+          {
+            "personId": "resident-1143910199-1809",
+            "name": "宁信",
+            "month": 2688,
+            "rank": "ZI",
+            "meritEvents": 11
+          },
+          {
+            "personId": "resident-1306531380-1995",
+            "name": "汪思和",
+            "month": 2988,
+            "rank": "NAN",
+            "meritEvents": 22
+          },
+          {
+            "personId": "resident-1076404859-2509",
+            "name": "桓晞",
+            "month": 3516,
+            "rank": "NAN",
+            "meritEvents": 27
+          },
+          {
+            "personId": "resident-1050981965-2725",
+            "name": "汪思和",
+            "month": 3504,
+            "rank": "NAN",
+            "meritEvents": 7
+          }
+        ],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 67,
+          "FAMILY": 4,
+          "NOBLE": 0,
+          "ROYAL": 0,
+          "RETIRED_MILITARY": 1
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 1,
+        "militaryPeople": 75,
+        "activeMilitaryCommands": 1,
+        "families": 21,
+        "familyMembers": 80,
+        "familyBirths": 3,
+        "nativeRoyalLiveBodies": 4,
+        "governance": {
+          "loyaltyRecovered": 229,
+          "devastationRecovered": 356
+        },
+        "captures": 72,
+        "usurpations": 0,
+        "events": 10559,
+        "saveBytes": 8252693,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-1",
+      "years": 500,
+      "before": {
+        "worldMonth": 6000,
+        "canonicalSha256": "b3609d2ee6d1325d2956901a070eb26505549b6d3d33e162afb9d0b395ed2aa7",
+        "rngPosition": 37165,
+        "population": 138,
+        "uniqueCivilPeople": 116,
+        "civilInitialAppointments": 121,
+        "offices": {
+          "XIANLING": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "JUNSHOU": {
+            "appointments": 121,
+            "uniquePeople": 116
+          },
+          "YUSHI_DAFU": {
+            "appointments": 0,
+            "uniquePeople": 0
+          },
+          "CHENGXIANG": {
+            "appointments": 0,
+            "uniquePeople": 0
+          }
+        },
+        "promotions": 0,
+        "civilPeerages": [],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 115,
+          "FAMILY": 1,
+          "NOBLE": 1,
+          "ROYAL": 2,
+          "RETIRED_MILITARY": 2
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 4,
+        "militaryPeople": 118,
+        "activeMilitaryCommands": 1,
+        "families": 18,
+        "familyMembers": 49,
+        "familyBirths": 7,
+        "nativeRoyalLiveBodies": 0,
+        "governance": {
+          "loyaltyRecovered": 379,
+          "devastationRecovered": 569
+        },
+        "captures": 123,
+        "usurpations": 0,
+        "events": 14682,
+        "saveBytes": 11573561,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "after": {
+        "worldMonth": 6000,
+        "canonicalSha256": "e523283e8eaa7ca55b305b7cb907609a9e26360c95b739aa678a35339fe19619",
+        "rngPosition": 33707,
+        "population": 133,
+        "uniqueCivilPeople": 114,
+        "civilInitialAppointments": 115,
+        "offices": {
+          "XIANLING": {
+            "appointments": 115,
+            "uniquePeople": 114
+          },
+          "JUNSHOU": {
+            "appointments": 49,
+            "uniquePeople": 48
+          },
+          "YUSHI_DAFU": {
+            "appointments": 13,
+            "uniquePeople": 13
+          },
+          "CHENGXIANG": {
+            "appointments": 1,
+            "uniquePeople": 1
+          }
+        },
+        "promotions": 63,
+        "civilPeerages": [
+          {
+            "personId": "resident-1433913152--233",
+            "name": "于庭允",
+            "month": 696,
+            "rank": "NAN",
+            "meritEvents": 11
+          },
+          {
+            "personId": "resident-1306530454-432",
+            "name": "江恺",
+            "month": 1068,
+            "rank": "NAN",
+            "meritEvents": 11
+          },
+          {
+            "personId": "family-member-1306530486-712",
+            "name": "江克良",
+            "month": 1524,
+            "rank": "NAN",
+            "meritEvents": 8
+          },
+          {
+            "personId": "resident-1050981064-1371",
+            "name": "许思济",
+            "month": 2268,
+            "rank": "NAN",
+            "meritEvents": 26
+          },
+          {
+            "personId": "resident-1143910136-1102",
+            "name": "樊元谦",
+            "month": 1992,
+            "rank": "NAN",
+            "meritEvents": 9
+          },
+          {
+            "personId": "resident-1143910136-1102",
+            "name": "樊元谦",
+            "month": 2160,
+            "rank": "ZI",
+            "meritEvents": 12
+          },
+          {
+            "personId": "resident-1380083409-1188",
+            "name": "许承信",
+            "month": 2124,
+            "rank": "NAN",
+            "meritEvents": 8
+          },
+          {
+            "personId": "resident-1380084130-1863",
+            "name": "宁承和",
+            "month": 2352,
+            "rank": "NAN",
+            "meritEvents": 11
+          },
+          {
+            "personId": "resident-1143910199-1809",
+            "name": "宁信",
+            "month": 2532,
+            "rank": "NAN",
+            "meritEvents": 8
+          },
+          {
+            "personId": "resident-1143910199-1809",
+            "name": "宁信",
+            "month": 2688,
+            "rank": "ZI",
+            "meritEvents": 11
+          },
+          {
+            "personId": "resident-1306531380-1995",
+            "name": "汪思和",
+            "month": 2988,
+            "rank": "NAN",
+            "meritEvents": 22
+          },
+          {
+            "personId": "resident-1076404859-2509",
+            "name": "桓晞",
+            "month": 3516,
+            "rank": "NAN",
+            "meritEvents": 27
+          },
+          {
+            "personId": "resident-1050981965-2725",
+            "name": "汪思和",
+            "month": 3504,
+            "rank": "NAN",
+            "meritEvents": 7
+          },
+          {
+            "personId": "resident-1380084344-3021",
+            "name": "焦修睦",
+            "month": 3912,
+            "rank": "NAN",
+            "meritEvents": 18
+          },
+          {
+            "personId": "resident-1306532316-3630",
+            "name": "余瑜",
+            "month": 4236,
+            "rank": "NAN",
+            "meritEvents": 25
+          },
+          {
+            "personId": "resident-1306532316-3630",
+            "name": "余瑜",
+            "month": 4704,
+            "rank": "ZI",
+            "meritEvents": 36
+          },
+          {
+            "personId": "resident-1619657876-3546",
+            "name": "江令安",
+            "month": 4560,
+            "rank": "NAN",
+            "meritEvents": 12
+          },
+          {
+            "personId": "resident-1619657905-3815",
+            "name": "洪彦达",
+            "month": 4776,
+            "rank": "NAN",
+            "meritEvents": 13
+          },
+          {
+            "personId": "resident-1619657905-3815",
+            "name": "洪彦达",
+            "month": 4932,
+            "rank": "ZI",
+            "meritEvents": 12
+          },
+          {
+            "personId": "resident-1846337449-4085",
+            "name": "汪克信",
+            "month": 4872,
+            "rank": "NAN",
+            "meritEvents": 17
+          },
+          {
+            "personId": "resident-1298238676-4429",
+            "name": "殷逊",
+            "month": 5256,
+            "rank": "NAN",
+            "meritEvents": 12
+          },
+          {
+            "personId": "resident-1619658736-4904",
+            "name": "晁和",
+            "month": 5520,
+            "rank": "NAN",
+            "meritEvents": 15
+          },
+          {
+            "personId": "resident-1306533339-5218",
+            "name": "洪克安",
+            "month": 5760,
+            "rank": "NAN",
+            "meritEvents": 11
+          }
+        ],
+        "sourceAppointments": {
+          "ORDINARY_RESIDENT": 108,
+          "FAMILY": 5,
+          "NOBLE": 0,
+          "ROYAL": 1,
+          "RETIRED_MILITARY": 1
+        },
+        "civilToMilitary": 0,
+        "militaryToCivil": 2,
+        "militaryPeople": 106,
+        "activeMilitaryCommands": 0,
+        "families": 32,
+        "familyMembers": 127,
+        "familyBirths": 7,
+        "nativeRoyalLiveBodies": 2,
+        "governance": {
+          "loyaltyRecovered": 423,
+          "devastationRecovered": 549
+        },
+        "captures": 91,
+        "usurpations": 0,
+        "events": 15019,
+        "saveBytes": 11894036,
+        "strictSaveValid": true,
+        "identityConflicts": {
+          "duplicatePopulationIds": 0,
+          "formationOwnershipConflicts": 0,
+          "residentIdentityConflicts": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    }
+  ]
+}
