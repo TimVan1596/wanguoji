@@ -1,3 +1,4 @@
+import {militaryAbilities} from '../Politics/PersonAbilities';
 import {militaryDisposition, type MilitaryDisposition} from "../Politics/MilitaryPoliticalDisposition";
 import History from "../History/WorldHistory";
 import {deriveMilitaryCareer} from "../Politics/MilitaryCareerEvidence";
@@ -45,7 +46,7 @@ export function assessMilitarySecession(city:City,month:number, observe?:(reason
   const commander=[...owner.users].find(u=>u.id===candidate.sourceUserId&&u.militaryPersonId===candidate.personId);
   if(!person||person.royalIdentity||!formation||!commander||!commander.matchesMilitaryLife(person)||!splitEstablishedPersonalName(person.personalName)){observe?.("IDENTITY_OR_ROYAL");continue;}
   observe?.("SERVING_COMMANDER");
-  const disposition=militaryDisposition(person.personId,person.bornMonth,commander.loyalty,candidate.strength);
+  const disposition=militaryDisposition(person.personId,person.bornMonth,commander.loyalty,candidate.strength,militaryAbilities(person).source);
   if(!local(commander,r=>observe?.("COMMANDER_"+r),disposition.responseThreshold)){observe?.("COMMANDER_NOT_LOCAL_OR_WILLING");continue;}
   if(formation.memberUnitIds.length!==candidate.memberUnitIds.length||formation.memberUnitIds.some(id=>!candidate.memberUnitIds.includes(id)))continue;
   observe?.("LOCAL_COMMANDER");

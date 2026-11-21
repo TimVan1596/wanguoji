@@ -1,3 +1,4 @@
+import {personAmbition,type AbilitySource} from './PersonAbilities';
 /** Stable personality, independent of faction, office, world RNG and hydration.
  * Loyalty is always supplied by the real User; event copies are historical observations. */
 export function militaryAmbition(personId: string, bornMonth: number): number {
@@ -6,22 +7,23 @@ export function militaryAmbition(personId: string, bornMonth: number): number {
   return hash % 101;
 }
 export interface MilitaryDisposition {
-  version: 1;
+  version: 1|2;
+  source?:AbilitySource;
   ambition: number;
   loyalty: number;
   prestige: number;
   responseThreshold: number;
   contestWeight: number;
 }
-export function militaryDisposition(personId: string, bornMonth: number, loyalty: number, prestige: number): MilitaryDisposition {
-  const ambition = militaryAmbition(personId, bornMonth);
-  return {version: 1, ambition, loyalty, prestige,
+export function militaryDisposition(personId: string, bornMonth: number, loyalty: number, prestige: number, source?:AbilitySource): MilitaryDisposition {
+  const ambition = source?personAmbition(source):militaryAmbition(personId, bornMonth);
+  return {version: source?2:1,...(source?{source:{...source}}:{}), ambition, loyalty, prestige,
     responseThreshold: 55 + ambition * .3 + prestige * 2,
     contestWeight: .75 + (ambition + 100 - loyalty) / 200};
 }
-export function validMilitaryDisposition(value: MilitaryDisposition | undefined, personId: string, bornMonth: number, prestige: number): boolean {
+export function validMilitaryDisposition(value: MilitaryDisposition | undefined, personId: string, bornMonth: number, prestige: number,source?:AbilitySource): boolean {
   return !!value && Number.isFinite(value.loyalty) && value.loyalty >= 0 && value.loyalty <= 100 &&
-    JSON.stringify(value) === JSON.stringify(militaryDisposition(personId, bornMonth, value.loyalty, prestige));
+    JSON.stringify(value) === JSON.stringify(militaryDisposition(personId, bornMonth, value.loyalty, prestige,source??value.source));
 }
 /** Loyal, restrained officers decline pressure against their own dynasty. This is not a new crisis or draw. */
 export function willingCourtParticipant(value: MilitaryDisposition): boolean {

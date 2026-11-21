@@ -1,3 +1,4 @@
+import {militaryAbilities} from './PersonAbilities';
 import {mergeCourtCoupReading} from '../History/CourtCoupReading';
 import {depositionSelectionLines} from "./DepositionSelectionPresentation";
 import {militaryDisposition, willingCourtParticipant, type MilitaryDisposition} from "./MilitaryPoliticalDisposition";
@@ -92,7 +93,7 @@ export function deriveMilitaryPoliticalInfluence(input: {
   const applyDisposition=(c:MilitaryPoliticalParticipant)=>{
     const loyalty=users.find(u=>u.userId===c.sourceUserId&&u.personId===c.personId)?.loyalty;
     if(loyalty!==undefined&&Number.isFinite(loyalty)&&loyalty>=0&&loyalty<=100){
-      c.disposition=militaryDisposition(c.personId,c.bornMonth,loyalty,c.finalPoliticalWeight??c.strength);
+      c.disposition=militaryDisposition(c.personId,c.bornMonth,loyalty,c.finalPoliticalWeight??c.strength,militaryAbilities(people.find(p=>p.personId===c.personId)!).source);
       c.politicalSelectionWeight=(c.finalPoliticalWeight??c.strength)*c.disposition.contestWeight;
     }
   };

@@ -1,3 +1,4 @@
+import {militaryAbilities} from '../Politics/PersonAbilities';
 import type {WorldEvent} from '../History/WorldHistory';
 import {militaryCrisisSourceIds} from "../Simulation/MilitaryCrisisSources";
 import {validMilitaryDisposition} from "../Politics/MilitaryPoliticalDisposition";
@@ -78,7 +79,7 @@ export function validateMilitarySecessions(save:WorldSaveV1){
    }
    if(e.participants[0]?.userId!==p!.sourceUserId||e.participants[0]?.bornMonth!==p!.bornMonth||e.participants[0]?.name!==p!.name)valid=false;
    try{const evidenceEvents=militarySecessionEvidenceHistory(events,e),career=deriveMilitaryCareer(p!,state.formations,evidenceEvents,e.worldMonth),defense=militaryPoliticalDefense(p!,state.formations,evidenceEvents,e.worldMonth,i.sourceFactionId);
-   if(!validMilitaryDisposition(e.disposition,p!.personId,p!.bornMonth,militaryPoliticalStrength(career.serviceMonths,e.originalMemberUnitIds.length,career.verifiedCaptures,defense.eventIds.length,defense.localServiceMonths).strength)||e.disposition?.loyalty!==e.participants[0]?.loyalty)valid=false;
+   if(!validMilitaryDisposition(e.disposition,p!.personId,p!.bornMonth,militaryPoliticalStrength(career.serviceMonths,e.originalMemberUnitIds.length,career.verifiedCaptures,defense.eventIds.length,defense.localServiceMonths).strength,militaryAbilities(p!).source)||e.disposition?.loyalty!==e.participants[0]?.loyalty)valid=false;
    if(career.serviceMonths!==e.serviceMonths||!Array.isArray(e.capturedEventIds)||JSON.stringify([...career.capturedEventIds].sort())!==JSON.stringify([...e.capturedEventIds].sort())||JSON.stringify(e.defenseEventIds??[])!==JSON.stringify(defense.eventIds)||!(e.localCareerEventIds?JSON.stringify(e.localCareerEventIds)===JSON.stringify(career.activities.filter(x=>x.factionId===i.sourceFactionId).map(x=>x.eventId).sort())&&localMilitaryCareer(e.worldMonth-a!.startMonth,e.originalMemberUnitIds.length,e.localCareerEventIds.length,e.capturedEventIds.length,defense.eventIds.length):militaryPoliticalStrength(e.serviceMonths,e.originalMemberUnitIds.length,e.capturedEventIds.length,defense.eventIds.length,defense.localServiceMonths).eligible))valid=false;}catch{valid=false;}
    const founding=events.filter(x=>x.type==="empire-split"&&x.metadata?.foundingRulerId===r.rulerId);
    if(founding.length!==1||founding[0].metadata?.militaryPersonId!==p!.personId||founding[0].metadata?.militarySplitEvidence!==JSON.stringify(e)||founding[0].metadata?.transferredPopulation!==e.participants.length||founding[0].metadata?.externalPopulation!==0||founding[0].targetFactionId!==i.sourceFactionId)valid=false;

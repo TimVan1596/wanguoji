@@ -14,6 +14,7 @@ import { getRulerTerminalRole } from "../../../History/PoliticalTerminalChronicl
 export type GenealogyRole = "当前君主" | "储君" | "势力创始" | "正式开国" | "称帝" | "篡朝开统" | "宗室废立继位" | "被宗室废黜" | "复国" | "末代承统" | "合邦退位" | "纳土退位";
 export type GenealogyTheme = "deposed" | "exiled" | "neutral" | "monarch" | "current" | "heir" | "foundation" | "usurpation" | "restoration" | "terminal" | "disqualified" | "military" | "personalNoble" | "inheritedNoble";
 export interface GenealogyNodePresentation {
+  nobleTheme?:{kind:'PERSONAL'|'INHERITED'|'HISTORICAL'|'REVOKED';rank:import('../../../Politics/FamilyNobleSuccession').FamilyNobleRank};
   heading?:string;
   politicalLabel?:string;
   posthumousLabels?:string[];
@@ -113,7 +114,7 @@ export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: Hous
     if(noble?.current&&r.reignOrdinal===undefined&&!disqualified)theme=noble.inherited?'inheritedNoble':'personalNoble';
     if(noble?.best.revoked&&r.reignOrdinal===undefined)theme='disqualified';
     if(noble)details.push(noble.label);
-    return [r.id, {heading,politicalLabel,posthumousLabels,honor, roles, labels: [...lifeLabels,...(politicalLabel?[politicalLabel,...roles,noble?.label??'']:noble?[...roles,noble.label+(r.militaryIdentity?'':' · 未任军职')]:roles).filter(Boolean)].filter((v,i,all)=>all.indexOf(v)===i).slice(0,2), theme, details, evidence: proof,
+    return [r.id, {nobleTheme:noble&&r.reignOrdinal===undefined?{kind:noble.best.revoked?'REVOKED':noble.current?noble.inherited?'INHERITED':'PERSONAL':'HISTORICAL',rank:noble.current?.rank??noble.best.rank}:undefined,heading,politicalLabel,posthumousLabels,honor, roles, labels: [...lifeLabels,...(politicalLabel?[politicalLabel,...roles,noble?.label??'']:noble?[...roles,noble.label+(r.militaryIdentity?'':' · 未任军职')]:roles).filter(Boolean)].filter((v,i,all)=>all.indexOf(v)===i).slice(0,2), theme, details, evidence: proof,
       hasPosthumousTitle: posthumousLabels.length>0 }];
   }));
 }

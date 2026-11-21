@@ -10,7 +10,7 @@ import {hereditaryAppointmentWeight,hereditaryVacancyChance,type HereditaryRecru
 import {insurgentLeaderIdentity,type InsurgentDuty} from './InsurgentCommand';
 import {createFamilyNobleContext,planFamilyNobleTransition,familyNobleText,familyNobleRankAt,familyResidenceAt,eligibleFamilyNobleHeirs} from './FamilyNobleSuccession';
 import {emptyFamilyRecruitmentDiagnostics,familyRecruitmentExposure} from './FamilyRecruitmentDiagnostics';
-import {familyFounderSource,makeMilitaryFamily,familyAppointmentWeight,type MilitaryFamily} from './MilitaryFamily';
+import {familyFounderSource,makeMilitaryFamily,familyAppointmentWeight,familyExpansionOpen,type MilitaryFamily} from './MilitaryFamily';
 import {politicalMutationActive,beginPoliticalMutation} from '../Simulation/PoliticalMutationScope';
 import {isCourtPunishmentPolicy,type CourtPunishmentPolicy,unresolvedCourtBans,planCourtBan,militaryCourtText,type MilitaryCourtAct} from './MilitaryCourtStanding';
 import {residentNaturalDeathMonth,ordinaryLifeEligible} from "../Simulation/ResidentLife";
@@ -628,7 +628,7 @@ export class MilitaryCommandRegistryStore {
     const year=Math.floor(month/12)*12,counts=new Map<string,number>();for(const f of this.families)for(const m of f.members)if(m.birth?.opportunityMonth===year)counts.set(f.factionId,(counts.get(f.factionId)??0)+1);
     // Cheap current-life gate before any full historical context/index is built.
     const liveTeams=new Set(teams.filter(t=>t.status==='ACTIVE'&&t.identityStage==='STATE').map(t=>t.name));
-    const candidates=this.families.filter(f=>liveTeams.has(f.factionId)&&f.members.some(m=>m.enteredMonth<=month&&(m.deathMonth??Infinity)>month&&(m.exitMonth??Infinity)>month&&m.bornMonth+240<=month&&m.bornMonth+660>=month&&(m.militaryPersonId&&this.people.has(m.militaryPersonId)||f.nobleSuccession?.at(-1)?.kind==='SUCCEEDED'&&f.nobleSuccession.at(-1)?.holderMemberId===m.memberId)));
+    const candidates=this.families.filter(f=>familyExpansionOpen(f,month)&&liveTeams.has(f.factionId)&&f.members.some(m=>m.enteredMonth<=month&&(m.deathMonth??Infinity)>month&&(m.exitMonth??Infinity)>month&&m.bornMonth+240<=month&&m.bornMonth+660>=month&&(m.militaryPersonId&&this.people.has(m.militaryPersonId)||f.nobleSuccession?.at(-1)?.kind==='SUCCEEDED'&&f.nobleSuccession.at(-1)?.holderMemberId===m.memberId)));
     const birthSeed=String(worldRandom.exportState().seed),dueCandidates=candidates.filter(f=>f.members.some(m=>hasFamilyBirthOpportunity(f,{...m,basisEventId:''},month,birthSeed,this.familyBirthPolicy)&&familyBirthSource(f,m,month,m.militaryPersonId?this.people.get(m.militaryPersonId):undefined))); 
     if(!dueCandidates.length)return;
     const events=WorldHistory.getRecordedEvents(),context=createFamilyNobleContext(month,this.families,this.getPeople(),events,dynasties),eventIds=new Set(events.map(e=>e.id));

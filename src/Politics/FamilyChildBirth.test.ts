@@ -46,7 +46,8 @@ it('cheap opportunity preflight exactly preserves the birth ticket across polici
 it('rejects source-less retired historical parents before historical context while preserving a real live office or inherited source',()=>{
  const member:any={memberId:'father',militaryPersonId:'p'},f:any={...family,members:[member],nobleSuccession:[{kind:'ENDED',month:100}]},p:any={personId:'p',factionId:'qin',status:'RETIRED',appointments:[],nobilityHistory:[]};
  const before=JSON.stringify([f,p]);expect(familyBirthSource(f,member,120,p)).toBeUndefined();expect(JSON.stringify([f,p])).toBe(before);
- p.status='ACTIVE';p.appointments=[{commandId:'real',factionId:'qin',startMonth:100}];expect(familyBirthSource(f,member,120,p)?.basisEventId).toBe('military-appointment-real');
+ p.status='ACTIVE';p.appointments=[{commandId:'real',factionId:'qin',startMonth:100}];expect(familyBirthSource(f,member,120,p)).toBeUndefined(); // An old office cannot reopen an ended title period.
+ f.nobleSuccession=[{kind:'STARTED',month:120,holderMemberId:'father',eventId:'new-merit'}];expect(familyBirthSource(f,member,120,p)?.basisEventId).toBe('military-appointment-real');
  f.nobleSuccession=[{kind:'SUCCEEDED',month:100,holderMemberId:'father',eventId:'inherited'}];expect(familyBirthSource(f,member,120,undefined)).toEqual({basisEventId:'inherited',holder:true});
  p.deathMonth=110;expect(familyBirthSource(f,member,120,p)).toBeUndefined();
 });

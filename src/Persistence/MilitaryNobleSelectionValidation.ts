@@ -1,3 +1,4 @@
+import {militaryAbilities} from '../Politics/PersonAbilities';
 import {validMilitaryDisposition,willingCourtParticipant} from "../Politics/MilitaryPoliticalDisposition";
 import {verifiedPoliticalOffice,MILITARY_OFFICE_POLITICAL_BONUS,militaryPoliticalDefense} from '../Politics/MilitaryPoliticalInfluence';
 import type {WorldSaveV1} from './WorldSaveSchema';
@@ -13,7 +14,7 @@ export function validNoblePoliticalSelection(s:MilitaryPoliticalParticipant,save
  const scope=nobleEpochForRuler(dy,previousRulerId)?.foundingRulerId,ids=new Set(before.map(e=>e.id)),state=save.registries.militaryCommandRegistry;
  const grantFor=(p:typeof state.people[number])=>scope?currentNobleGrant({...p,honorHistory:p.honorHistory?.filter(h=>ids.has(h.eventId)),nobilityHistory:p.nobilityHistory?.filter(g=>ids.has(g.eventId))},factionId,at,scope):undefined;
  const selected=state.people.find(p=>p.personId===s.personId),proof=s.nobleSelection;
- if(!proof&&policy===3)return !s.officeStanding&&!s.nobility&&s.basePoliticalWeight===undefined&&s.finalPoliticalWeight===undefined&&!!selected&&!grantFor(selected)&&validMilitaryDisposition(s.disposition,s.personId,s.bornMonth,s.strength)&&willingCourtParticipant(s.disposition!)&&s.politicalSelectionWeight===s.strength*s.disposition!.contestWeight;
+ if(!proof&&policy===3)return !s.officeStanding&&!s.nobility&&s.basePoliticalWeight===undefined&&s.finalPoliticalWeight===undefined&&!!selected&&!grantFor(selected)&&validMilitaryDisposition(s.disposition,s.personId,s.bornMonth,s.strength,militaryAbilities(selected!).source)&&willingCourtParticipant(s.disposition!)&&s.politicalSelectionWeight===s.strength*s.disposition!.contestWeight;
  if(!proof)return policy===1&&!s.officeStanding&&!s.nobility&&s.basePoliticalWeight===undefined&&s.finalPoliticalWeight===undefined&&(!ENABLE_NOBILITY_POLITICAL_WEIGHT||!selected||!grantFor(selected));
  if(!scope||proof.scopeFounderId!==scope||!Array.isArray(proof.candidates)||!proof.candidates.length||proof.candidates.length>2)return false;
  const people=new Set<string>(),units=new Set<string>();
@@ -24,7 +25,7 @@ export function validNoblePoliticalSelection(s:MilitaryPoliticalParticipant,save
   if(!office||!Array.isArray(q.memberUnitIds)||q.unitCount!==q.memberUnitIds.length||q.unitCount<1||q.unitCount>MILITARY_FORMATION_CAPACITY[office]||!q.memberUnitIds.includes(q.commanderUnitId)||q.memberUnitIds.some(id=>typeof id!=='string'||!id||units.has(id))||new Set(q.memberUnitIds).size!==q.unitCount)return false;
   people.add(p.personId);q.memberUnitIds.forEach(id=>units.add(id));
   const career=deriveMilitaryCareer(p,state.formations,before,at),defense=militaryPoliticalDefense(p,state.formations,before,at,factionId),strength=militaryPoliticalStrength(career.serviceMonths,q.unitCount,career.verifiedCaptures,defense.eventIds.length,defense.localServiceMonths),g=grantFor(p),standing=policy>=2?verifiedPoliticalOffice(p,q.commandId,factionId,at,before):undefined,bonus=standing?MILITARY_OFFICE_POLITICAL_BONUS[standing.office]:0,base=q.strength*(1+bonus),weight=q.strength*(1+bonus+(g?noblePoliticalBonus(g.rank):0));
-  if(policy===3&&(!validMilitaryDisposition(q.disposition,q.personId,q.bornMonth,weight)||!willingCourtParticipant(q.disposition!)||q.politicalSelectionWeight!==weight*q.disposition!.contestWeight))return false;
+  if(policy===3&&(!validMilitaryDisposition(q.disposition,q.personId,q.bornMonth,weight,militaryAbilities(p).source)||!willingCourtParticipant(q.disposition!)||q.politicalSelectionWeight!==weight*q.disposition!.contestWeight))return false;
   if(policy!==3&&(q.disposition!==undefined||q.politicalSelectionWeight!==undefined))return false;
   if(JSON.stringify(q.officeStanding)!==JSON.stringify(standing))return false;
   if(JSON.stringify(q.defenseEventIds??[])!==JSON.stringify(defense.eventIds)||!strength.eligible||q.strength!==strength.strength||q.serviceMonths!==career.serviceMonths||JSON.stringify(q.capturedEventIds)!==JSON.stringify(career.capturedEventIds.slice().sort())||q.basePoliticalWeight!==base||q.finalPoliticalWeight!==weight||JSON.stringify(q.nobility)!==JSON.stringify(g?{eventId:g.eventId,rank:g.rank,countryName:g.countryName}:undefined))return false;

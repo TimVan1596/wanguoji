@@ -4,7 +4,7 @@ import PersonChronicleLayout from '../FactionDetails/PersonChronicleLayout';
 import PersonAbilityPanel,{PersonAbilityEvidence} from '../FactionDetails/PersonAbilityPanel';
 import MilitaryDispositionPanel from '../FactionDetails/MilitaryDispositionPanel';
 import {type PersonCareerIndex,personCareerMilestones} from '../FactionDetails/PersonCareerTimeline';
-import {personAbilities,militaryAbilities} from '../../../Politics/PersonAbilities';
+import {personAbilities,militaryAbilities,personAmbition} from '../../../Politics/PersonAbilities';
 import {getFactionColorAtMonth} from '../../../Simulation/FactionColorHistory';
 import {Box,Button,Typography} from '@mui/material';
 import {useEffect,useState} from 'react';
@@ -41,7 +41,7 @@ export function governorProfile(term:CivilGovernorTerm,month:number){
  const terms=CivilAdministration.getByPerson(term.personId),deathMonth=person?.deathMonth??(term.royalRulerId?Dynasty.getAll().flatMap(d=>d.rulers).find(r=>r.id===term.royalRulerId)?.deathMonth:undefined)??Military.getFamilyMember(term.sourceUserId,term.bornMonth)?.member.deathMonth??terms.find(t=>t.endReason==='DEATH')?.endMonth;
  const portraitMonth=Math.min(month,deathMonth??month,term.endMonth===undefined?month:Math.max(term.startMonth,term.endMonth-1));
  const team=Game.Core?.teams.find(t=>t.name===term.factionId);
- const abilities=person?militaryAbilities(person):personAbilities({kind:'RESIDENT',sourceUserId:term.sourceUserId,bornMonth:term.bornMonth});
+ const abilities=person?militaryAbilities(person):personAbilities(term.royalRulerId?{kind:'ROYAL',rulerId:term.royalRulerId,bornMonth:term.bornMonth}:{kind:'RESIDENT',sourceUserId:term.sourceUserId,bornMonth:term.bornMonth});
  const loyalty=user?{value:user.loyalty,factionName:Game.Core?.teams.find(t=>t.users.has(user))?.displayName??term.countryName,month}:undefined;
  return {person,family,memberId,user,deathMonth,portraitMonth,abilities,loyalty,portrait:{personId:term.royalRulerId??term.personId,age:Math.max(0,Math.floor((portraitMonth-term.bornMonth)/12)),color:team?getFactionColorAtMonth(team,portraitMonth):undefined,deceased:deathMonth!==undefined&&deathMonth<=month,royalKin:!!term.royalRulerId}};
 }
@@ -53,7 +53,7 @@ export function GovernorDetail({term,month,careerIndex}:{term:CivilGovernorTerm;
  <PersonChronicleLayout personKey={term.personId}
   title={<Typography fontWeight="bold">{term.personalName} · {term.countryName} · {term.cityName}郡守{term.endMonth!==undefined?'（已离任）':''}</Typography>}
   identity={<><PersonCareerIdentity personId={term.personId} name={term.personalName} bornMonth={term.bornMonth} deathMonth={deathMonth}/><Typography fontSize=".76rem">{deathMonth!==undefined?`享年${Math.floor((deathMonth-term.bornMonth)/12)}岁`:user?`年龄${Math.floor((month-term.bornMonth)/12)}岁`:`任职末期${Math.floor((ageMonth-term.bornMonth)/12)}岁 · 此后生死未载`} · {sourceLabel(term)}</Typography></>}
-  preBiography={<>{person?<MilitaryDispositionPanel person={person} personId={person.personId} bornMonth={person.bornMonth} loyalty={loyalty?.value} loyaltyContext={loyalty}/>:<PersonAbilityPanel abilities={abilities} loyalty={loyalty}/>}
+  preBiography={<>{person?<MilitaryDispositionPanel person={person} personId={person.personId} bornMonth={person.bornMonth} loyalty={loyalty?.value} loyaltyContext={loyalty}/>:<PersonAbilityPanel abilities={abilities} ambition={personAmbition(abilities.source)} loyalty={loyalty}/>}
   <MilitaryServicePanel personId={term.personId} month={month} timelineOwnsPolitics/><CivilServicePanel personId={term.personId} month={month} factionId={term.factionId}/>
   {person&&<NobleHistory person={person} month={month}/>}
   {person&&family&&<FamilyTitleBadge personId={person.personId} factionId={family.factionId} month={month}/>}

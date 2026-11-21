@@ -1,3 +1,4 @@
+import {personRankTheme} from './PersonRankTheme';
 import {familyMemberHeading,familyMemberTitleKind} from '../../../Politics/FamilyMemberHeading';
 import FamilyRegisteredChildren from './FamilyRegisteredChildren';
 import {familyMemberServiceStatus} from '../../../Politics/FamilyMemberServiceStatus';
@@ -35,7 +36,7 @@ export function prepareFamilyTree(family:MilitaryFamily,month:number,requestedMe
   const politics=p?militaryPoliticalOutcome(p,family.factionId,month,source.dynasties,source.events):[];
   const lines=[`${m.generation===0?'始祖':`第${m.generation+1}代`} · ${row.life==='DEAD'?'已故':row.life==='UNKNOWN'?'生死未载':'在世'} · ${formatWorldDate(m.bornMonth)}生`,politics.length?politics.join(' · '):status,familyMemberMeritLabel(family,m,month),familyMemberNobleLabel(family,m,month)].filter(Boolean) as string[];
   const titleKind=familyMemberTitleKind(row);
-  const theme=politics.some(t=>t.includes('禁仕')||t.includes('叛离')||t.includes('伏诛')||t.includes('追夺'))?{borderColor:'#985f59',backgroundColor:'#f7eeee',color:'#7c453f'}:titleKind==='PERSONAL'?{borderColor:'#587f94',backgroundColor:'#eaf1f6',color:'#35566a'}:titleKind==='INHERITED'?{borderColor:'#679077',backgroundColor:'#edf5ef',color:'#406452'}:row.activeOffice?{borderColor:'#638596',backgroundColor:'#eff4f6',color:'#3b5f70'}:{borderColor:'var(--gg-border)',backgroundColor:'var(--gg-panel)',color:'var(--gg-text)'};
+  const theme=personRankTheme(politics.some(t=>t.includes('禁仕')||t.includes('叛离')||t.includes('伏诛')||t.includes('追夺'))?'REVOKED':titleKind==='PERSONAL'?'PERSONAL':titleKind==='INHERITED'?'INHERITED':row.personalHistory.length||row.inheritedHistory.length?'HISTORICAL':row.activeCivil?'CIVIL':row.activeOffice?'MILITARY':'NEUTRAL',titleKind==='PERSONAL'?row.effectivePersonal?.rank:row.inherited?.rank);
   const team=royal&&Game.Core?.teams.find(t=>t.name===royal.factionId),heading=royal&&team?genealogyRulerHeading(royal.r,team,month,undefined,source.events):familyMemberHeading(row,month,country,politics);
   return [m.memberId,{row,status,royal,lines,theme,heading,height:14+20+lines.length*16+(p||royal?24:0)}] as const;
  })),cardsMs=performance.now()-cardsAt,layoutAt=performance.now(),layout=layoutFamilyArchive(projection,new Set(),new Map([...cards].map(([id,c])=>[id,c.height]))),layoutMs=performance.now()-layoutAt;

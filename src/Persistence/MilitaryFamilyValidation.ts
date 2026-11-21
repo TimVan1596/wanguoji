@@ -6,7 +6,7 @@ import {calibrationOrBaseline,isPoliticalCalibration} from '../Politics/Politica
 import {splitEstablishedPersonalName} from '../Politics/NameCulture';
 import type {WorldSaveV1} from './WorldSaveSchema';
 import type {WorldEvent} from '../History/WorldHistory';
-import {familyMemberId,familyFounderSource,familyAppointmentWeight} from '../Politics/MilitaryFamily';
+import {familyMemberId,familyFounderSource,familyAppointmentWeight,familyExpansionOpen} from '../Politics/MilitaryFamily';
 export function validateMilitaryFamilies(save:WorldSaveV1){
  const errors:string[]=[],state=save.registries.militaryCommandRegistry,events=save.worldHistory.events as WorldEvent[],seen=new Set<string>(),residentIds=new Set<number>(),families=state.families;
  if(families!==undefined&&!Array.isArray(families))return ['invalid military families'];
@@ -28,6 +28,7 @@ export function validateMilitaryFamilies(save:WorldSaveV1){
    if(m.source==='FOUNDER'){if(m.parentMemberId||m.generation!==0||m.militaryPersonId!==p.personId||m.sourceUserId!==p.sourceUserId||m.bornMonth!==p.bornMonth||m.name!==p.personalName)throw Error('invalid founder');}
    else if(!born) {const parent=m.parentMemberId?members.get(m.parentMemberId):undefined,entry=events.find(e=>e.id===`${m.memberId}-entered`);
     if(!entry||entry.type!=='military-family-member-entered'||entry.actorFactionId!==f.factionId||(entry.monthIndex??entry.year)!==m.enteredMonth||entry.metadata?.familyId!==f.familyId||entry.metadata?.sourceUserId!==m.sourceUserId||entry.metadata?.bornMonth!==m.bornMonth||entry.metadata?.residentName!==m.name||entry.metadata?.parentMemberId!==m.parentMemberId||entry.metadata?.populationCause!=='NATURAL_GROWTH')throw Error('missing real population entry source');
+    if(!familyExpansionOpen(familyAtEvidenceBoundary(f,m.enteredMonth,events.indexOf(entry),events),m.enteredMonth))throw Error('closed family cannot sponsor new resident kin');
     if(m.source!=='NATURAL_GROWTH'||!parent||parent.enteredMonth>=m.enteredMonth||m.generation!==parent.generation+1||m.bornMonth-parent.bornMonth<18*12||m.bornMonth-parent.bornMonth>55*12||(parent.deathMonth??Infinity)<=m.bornMonth)throw Error('invalid parent or cyclic genealogy');
    }
    else {const parent=m.parentMemberId?members.get(m.parentMemberId):undefined;if(!parent||m.generation!==parent.generation+1||m.enteredMonth!==m.bornMonth||m.bornMonth-parent.bornMonth<240||m.bornMonth-parent.bornMonth>55*12)throw Error('invalid real born parent');}
@@ -39,8 +40,9 @@ export function validateMilitaryFamilies(save:WorldSaveV1){
     const epoch=epochs?.find(ep=>ep.startMonth<=appointment.startMonth&&(ep.endMonth??Infinity)>=appointment.startMonth)?.foundingRulerId;
     if(e.metadata?.politicalCalibration!==undefined&&!isPoliticalCalibration(e.metadata.politicalCalibration))throw Error('invalid family appointment policy');
     if(e.metadata?.hereditaryRecruitment!==undefined&&!isHereditaryRecruitmentPolicy(e.metadata.hereditaryRecruitment))throw Error('invalid hereditary appointment policy');
-    const baseWeight=i===0?familyAppointmentWeight(f,{...m,militaryPersonId:undefined,deathMonth:undefined},appointment.factionId,epoch,appointment.startMonth,calibrationOrBaseline(e.metadata?.politicalCalibration)):1;
-    const expected=i===0?hereditaryAppointmentWeight(f,{...m,militaryPersonId:undefined,deathMonth:undefined},appointment.factionId,epoch,appointment.startMonth,baseWeight,isHereditaryRecruitmentPolicy(e.metadata?.hereditaryRecruitment)?e.metadata.hereditaryRecruitment:'BASELINE'):1;
+    const historicalFamily=familyAtEvidenceBoundary(f,appointment.startMonth,events.indexOf(e),events);
+    const baseWeight=i===0?familyAppointmentWeight(historicalFamily,{...m,militaryPersonId:undefined,deathMonth:undefined},appointment.factionId,epoch,appointment.startMonth,calibrationOrBaseline(e.metadata?.politicalCalibration)):1;
+    const expected=i===0?hereditaryAppointmentWeight(historicalFamily,{...m,militaryPersonId:undefined,deathMonth:undefined},appointment.factionId,epoch,appointment.startMonth,baseWeight,isHereditaryRecruitmentPolicy(e.metadata?.hereditaryRecruitment)?e.metadata.hereditaryRecruitment:'BASELINE'):1;
     if(e.metadata?.familyAppointmentWeight!==expected)throw Error('invalid family appointment advantage');
    }
    const user=save.users.find(u=>u.userId===m.sourceUserId);

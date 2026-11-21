@@ -22,3 +22,9 @@ export function abilityFactors(a:PersonAbilities|undefined,policy:AbilityPolicy=
  const e=ABILITY_EFFECTS[policy],command=((a?.command??50)-50)/50,strategy=((a?.strategy??50)-50)/50;
  return {selection:1+e.selection*(command*.6+strategy*.4),attempt:1+e.attempt*strategy,successDelta:e.success*(strategy*.7+command*.3)};
 }
+
+/** Permanent political personality. Same source as command/strategy, no office or world RNG. */
+export function personAmbition(source:AbilitySource){
+ const identity=source.kind==='RESIDENT'?`resident:${source.sourceUserId}:${source.bornMonth}`:`royal:${source.rulerId}:${source.bornMonth}`;
+ let h=2166136261;for(const ch of `person-ambition-v2:${identity}`)h=Math.imul(h^ch.charCodeAt(0),16777619)>>>0;return h%101;
+}

@@ -31,12 +31,13 @@ export function planFamilyChildBirth(f:{familyId:string;surname:string;factionId
  return {memberId,name,bornMonth:month,parentMemberId:parent.memberId,enteredMonth:month,birth};
 }
 
-import type {MilitaryFamily} from './MilitaryFamily';
+import {familyExpansionOpen,type MilitaryFamily} from './MilitaryFamily';
 import type {FamilyNobleContext} from './FamilyNobleSuccession';
 import {familyMemberPresent,familyResidenceAt} from './FamilyNobleSuccession';
 import {currentNobleGrant} from './MilitaryNobility';
 /** Necessary live authority only; the caller still checks age, residence, caps and actual source events. */
 export function familyBirthSource(f:MilitaryFamily,m:MilitaryFamily['members'][number],month:number,p:FamilyNobleContext['people'][number]|undefined){
+ if(!familyExpansionOpen(f,month))return;
  if(p&&(p.factionId!==f.factionId||p.deathMonth!==undefined||p.politicalRulerId||p.politicalHistory?.some(a=>a.kind==='COURT_BAN'&&['FORFEITURE','EXECUTION'].includes(a.severity)&&a.month<=month)))return;
  const last=f.nobleSuccession?.filter(a=>a.month<=month).at(-1),inherited=last?.kind==='SUCCEEDED'&&last.holderMemberId===m.memberId?last:undefined,g=p?currentNobleGrant(p,f.factionId,month,f.epochFounderId):undefined,a=p?.status==='ACTIVE'?p.appointments.find(a=>a.factionId===f.factionId&&a.endMonth===undefined&&a.startMonth<=month):undefined;
  const basisEventId=inherited?.eventId??g?.eventId??(a?`military-appointment-${a.commandId}`:undefined);

@@ -1,3 +1,4 @@
+import {familyExpansionOpen} from './MilitaryFamily';
 import type City from '../Components/City';
 import type Team from '../Components/Team';
 import type User from '../Components/User';
@@ -49,7 +50,7 @@ export function civilGovernorCandidates(month:number,team:Team,people:readonly M
   if(familyLink&&(!familyMemberPresent(familyLink.member,month)||familyResidenceAt(familyLink.family,familyLink.member,month)!==team.name))continue;
   const nobleRank=higherRank(person?currentNobleGrant(person,team.name,month,epochFounderId)?.rank:undefined,familyLink?familyNobleRankAt(familyLink.family,familyLink.member,month):undefined);
   const retired=!!person&&person.status==='RETIRED',royal=!!person?.royalIdentity;
-  const identitySource:CivilGovernorSource=royal?'ROYAL':retired?'RETIRED_MILITARY':nobleRank?'NOBLE':familyLink?'FAMILY':'ORDINARY_RESIDENT';
+  const identitySource:CivilGovernorSource=royal?'ROYAL':retired?'RETIRED_MILITARY':nobleRank?'NOBLE':familyLink&&familyExpansionOpen(familyLink.family,month)?'FAMILY':'ORDINARY_RESIDENT';
   const abilities=person?militaryAbilities(person):personAbilities({kind:'RESIDENT',sourceUserId:user.id,bornMonth:user.bornMonth});
   const sourceWeight=identitySource==='ORDINARY_RESIDENT'?1:identitySource==='FAMILY'?1.08:identitySource==='NOBLE'?1.04+Math.max(0,NOBLE_RANKS.indexOf(nobleRank??'NAN'))*.02:identitySource==='ROYAL'?1.12:1.06;
   const personId=terms.find(t=>t.sourceUserId===user.id&&t.bornMonth===user.bornMonth)?.personId??person?.personId??civilGovernorPersonId(user,familyLink),weight=(.72+abilities.strategy/100*.55)*sourceWeight;

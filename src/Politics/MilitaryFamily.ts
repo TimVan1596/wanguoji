@@ -30,13 +30,18 @@ export function makeMilitaryFamily(p:MilitaryPerson,factionId:string,epoch:strin
  return {familyId:`military-family-${p.personId}-${epoch}`,surname:split.houseName.replace(/氏$/,''),founderPersonId:p.personId,factionId,epochFounderId:epoch,foundedMonth:month,sourceEventId:source.id,
  members:[{memberId:familyMemberId(p.sourceUserId,p.bornMonth),sourceUserId:p.sourceUserId,name:p.personalName??p.name,bornMonth:p.bornMonth,generation:0,enteredMonth:month,source:'FOUNDER',militaryPersonId:p.personId}]};
 }
+/** A closed period cannot sponsor new special kin or inherited recruitment.
+ * Existing people and already-born children remain canonical and can earn a new period. */
+export function familyExpansionOpen(f:MilitaryFamily,month:number){
+ return f.nobleSuccession?.filter(a=>a.month<=month).at(-1)?.kind!=='ENDED';
+}
 function hash(s:string){let n=2166136261;for(const c of s)n=Math.imul(n^c.charCodeAt(0),16777619);return n>>>0;}
 /** Called only before first population entry. Birth is derived from the original population label, never re-aged. */
 function planFamilyPopulationEntryUnmeasured(families:readonly MilitaryFamily[],factionId:string,epoch:string|undefined,userId:number,bornMonth:number,month:number,seed:string){
  // This pure identity hash already rejected these entries after the old scan.
  // Moving it ahead of the scan preserves every accepted parent and all RNG.
  if(hash(`${seed}/${userId}/${bornMonth}/family-entry`)%100>=25)return;
- const options=families.filter(f=>f.factionId===factionId&&f.epochFounderId===epoch&&f.foundedMonth<=month).flatMap(f=>{
+ const options=families.filter(f=>f.factionId===factionId&&f.epochFounderId===epoch&&f.foundedMonth<=month&&familyExpansionOpen(f,month)).flatMap(f=>{
   const kin=createFamilyKinIndex(f),renewed=new Set(f.renewals?.filter(r=>r.month<=month).map(r=>r.memberId));
   return f.members.filter(p=>p.bornMonth+18*12<=bornMonth&&bornMonth<=p.bornMonth+55*12&&(p.deathMonth??Infinity)>bornMonth&&(p.exitMonth??Infinity)>bornMonth&&p.enteredMonth<month&&
    (kin.children.get(p.memberId)?.length??0)<2&&!(kin.children.get(p.memberId)??[]).some(c=>Math.abs(c.bornMonth-bornMonth)<48)&&familyGenerationsSinceMerit(f,p,month,kin,renewed)<4
@@ -72,7 +77,7 @@ export function familyGenerationsSinceMerit(family:MilitaryFamily,member:Militar
 }
 /** First appointment only; inherited reputation never substitutes for eligibility, army or personal merit. */
 export function familyAppointmentWeight(family:MilitaryFamily|undefined,member:MilitaryFamilyMember|undefined,factionId:string,epoch:string|undefined,month:number,calibration:PoliticalCalibration='BASELINE'){
- if(!family||!member||family.factionId!==factionId||family.epochFounderId!==epoch||member.deathMonth!==undefined||member.militaryPersonId||member.enteredMonth>month||month-member.bornMonth<18*12)return 1;
+ if(!family||!member||!familyExpansionOpen(family,month)||family.factionId!==factionId||family.epochFounderId!==epoch||member.deathMonth!==undefined||member.militaryPersonId||member.enteredMonth>month||month-member.bornMonth<18*12)return 1;
  const generations=familyGenerationsSinceMerit(family,member,month);
  const profile=POLITICAL_CALIBRATIONS[calibration];return generations===1?profile.familyChild:generations===2?profile.familyGrandchild:1;
 }

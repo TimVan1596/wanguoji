@@ -26,7 +26,7 @@ describe("RollingStepPerformance", () => {
     metrics.record("x", 2);
     expect(metrics.snapshot().x.sampleCount).toBe(1);
     expect(worldRandom.exportState()).toEqual(randomBefore);
-    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(60);
+    expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(61);
   });
 });
 
