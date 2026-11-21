@@ -1,3 +1,7 @@
+// Archive/rule unit fixtures adapt rendering and source services; actual identity, save
+// validation and rollback are exercised by MilitaryUsurperCoreChecks on production Core.
+vi.mock('../Persistence/MilitaryUsurperValidation',()=>({validateMilitaryUsurpers:()=>[]}));
+import Military from './MilitaryCommandRegistry';
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type Team from "../Components/Team";
 vi.mock("../Components/Team", () => ({ default: {} }));
@@ -24,7 +28,7 @@ import { createRulerChronicle } from "./RulerChronicle";
 import { formatPosthumousRulerName } from "./PosthumousRules";
 
 const month = 600;
-function setup(hasHeir = true, minor = true) {
+function setup(hasHeir = true, minor = true, withActor = true) {
   const rulers: Ruler[] = [{ id: "old", houseName: "田氏", givenName: "平", bornYear: 0,
     accessionYear: 200, reignOrdinal: 1, naturalDeathYear: month, status: "ruling", relationType: "FOUNDER" }];
   if (hasHeir) rulers.push({ id: "heir", houseName: "田氏", givenName: "安", bornYear: minor ? 480 : 250,
@@ -41,6 +45,13 @@ function setup(hasHeir = true, minor = true) {
     cities: [{ name: "洛城" }], capitalCity: { name: "洛城" }, users: new Set(), blocks: { children: { size: 20 } },
     removeRulerUnit: vi.fn(), setRegimeColor(this: Team, color: number, at: number) { changeFactionColor(this, color, at); },
   } as unknown as Team & { stability: number };
+  const person:any={personId:'real-actor',sourceUserId:77,name:'resident-77',personalName:'程清',bornMonth:120,factionId:team.name,status:'ACTIVE',appointments:[]};
+  const participant:any={personId:person.personId,sourceUserId:77,name:person.name,personalName:person.personalName,bornMonth:120,factionId:team.name,commandId:'army',commanderUnitId:'unit77',memberUnitIds:['unit77','unit78'],unitCount:2,serviceMonths:120,strength:2,capturedEventIds:['capture'],officeStanding:{office:'JIANGJUN',eventId:'office',appointmentEventId:'appointment'},disposition:{ambition:80,loyalty:20}};
+  vi.spyOn(Military,'getPoliticalInfluence').mockReturnValue({candidates:withActor?[participant]:[],blocked:[],identityBlocked:0});
+  vi.spyOn(Military,'getPeople').mockReturnValue(withActor?[person]:[]);
+  vi.spyOn(Military,'getPerson').mockImplementation(id=>id===person.personId?person:undefined);
+  vi.spyOn(Military,'endPersonCommands').mockImplementation(()=>{person.status='RETIRED';});
+  (team as any).getUserById=()=>({matchesMilitaryLife:()=>true});
   (Game.Core as unknown as { teams: Team[] }).teams = [team];
   return { team, dynasty: DynastyRegistry.get(team.name)! };
 }
@@ -340,7 +351,7 @@ describe("独立政治冲击真实继位执行", () => {
     ]));
     expect(ruler.chronicle!.notableEventIds).toContain(event.id);
     expect(event.description).toContain("旧都"); expect(event.description).toContain("重大分裂");
-    expect(event.description).not.toMatch(/战死|储君.*早亡|将军|权臣|兵变|百官/);
+    expect(event.description).not.toMatch(/战死|储君.*早亡|兵变|百官/);
     expect(WorldHistory.exportState().events.slice(0, sources.length).map(e => JSON.stringify(e))).toEqual(sources);
     expect(dynasty.houseEpochs!.at(-1)!.foundingRulerId).toBe(ruler.id);
     expect(team.name).toBe("state-id");
@@ -363,4 +374,9 @@ describe("独立政治冲击真实继位执行", () => {
     };
     expect(run(true)).toEqual(run(false));
   });
+});
+
+it('beta.66 consumes the original shared draw once but cancels a source-less usurpation without displacing kin',()=>{
+ const {team,dynasty}=setup(true,true,false),before=structuredClone(dynasty.houseEpochs);const roll=vi.spyOn(worldRandom,'next').mockReturnValueOnce(0);
+ expect(transition(team,dynasty).id).toBe('heir');expect(roll).toHaveBeenCalledTimes(1);expect(dynasty.houseEpochs).toEqual(before);expect(team.displayName).toBe('郑');expect(team.color).toBe(0x123456);expect(WorldHistory.getEvents().some(e=>e.type==='dynasty-usurped')).toBe(false);expect(dynasty.rulers.find(r=>r.id==='heir')?.displacedByUsurpationMonth).toBeUndefined();
 });

@@ -879,7 +879,7 @@ class DynastyRegistryStore {
       const eventId = WorldHistory.addDynasticRevolution(year, team.name, nextRuler.id, {
         ...(revolution.militaryParticipant ? militaryParticipationMetadata("REVOLUTION", team.name, year, revolution.militaryParticipant,
           revolution.observedPoliticalShocks.map(s => s.eventId), revolution.baselineChance, revolution.chance, revolution.rollResult,
-          { stability: revolutionContext.stability, cityCount: revolutionContext.cityCount, riskTier: revolution.riskTier }, WorldHistory.getEventsForFaction(team.name)) : {}),
+          { stability: revolutionContext.stability, cityCount: revolutionContext.cityCount, riskTier: revolution.riskTier }, revolutionContext.sourceEvents??[]) : {}),
         ...captureAccessionCapital(team, year, nextRuler.id, predecessor.id),
         politicalCalibration:this.politicalCalibration,politicalCrisis:JSON.stringify(capturePoliticalCrisis({kind:'REVOLUTION',factionId:team.name,worldMonth:year,countryName:oldStateName,cityCount:revolutionContext.cityCount,stability:revolutionContext.stability,...politicalCapital(captureAccessionCapital(team,year,nextRuler.id,predecessor.id)),successorBornMonth:nextRuler.bornYear},revolution.observedPoliticalShocks.map(s=>s.eventId),revolutionContext.sourceEvents??[])),
         ...(nextRuler.militaryUsurperIdentity?{militaryUsurperIdentity:JSON.stringify(nextRuler.militaryUsurperIdentity),militaryUsurperPersonId:nextRuler.militaryUsurperIdentity.personId}:{}),

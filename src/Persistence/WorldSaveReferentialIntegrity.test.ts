@@ -275,7 +275,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     expect(WorldHistory.getEvents().filter(e => e.type === "faction-restored")).toHaveLength(scenario === "双零流亡终结" ? 0 : 1);
     vi.unstubAllGlobals();
   });
-  it("成年继位独立政治危机→真实夺统→历史→V14严格往返", async () => {
+  it("成年继位政治危机但无真实权臣→保留合法继承→严格往返", async () => {
     const core = target(3), base = fixture().factions[0]; core.prepareForHydration();
     const fs = ["qin", "enemy"].map((id, i) => ({ ...base, factionId: id, displayName: id, houseName: i ? "魏氏" : "田氏",
       colorHistory: [{ color: 1, startMonth: 0, reason: "FOUNDING" as const }], nameHistory: [{ name: id, startMonth: 0, reason: "FOUNDING" }],
@@ -313,15 +313,11 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     const draw = vi.spyOn(worldRandom, "next").mockReturnValueOnce(0);
     DynastyRegistry.update(120, ts); draw.mockRestore();
     const ruler = DynastyRegistry.getCurrentRuler("qin")!;
-    expect(ruler.relationType).toBe("USURPER"); expect(ruler.parentId).toBeUndefined(); expect(heir.status).toBe("kin"); expect(heir.deathMonth).toBeUndefined();
-    expect(d.houseEpochs).toHaveLength(2); expect(d.houseEpochs!.at(-1)!.startReason).toBe("USURPATION");
-    const event = WorldHistory.getEvents().find(e => e.type === "dynasty-usurped")!;
-    expect(event.metadata?.riskTier).toBe("POLITICAL_SHOCK"); expect(ruler.chronicle?.notableEventIds).toContain(event.id);
-    expect(event.metadata).toMatchObject({ capitalCityId: "active", capitalCityName: "故都", nextRulerId: ruler.id, previousRulerId: previous.id });
-    const succession = WorldHistory.getEvents().find(e => e.type === "ruler-succession")!;
-    expect(succession.metadata?.capitalCityName).toBe("故都");
-    expect(WorldHistory.getEventTypeCount("ruler-succession")).toBe(1);
-    expect(WorldHistory.exportState().events.slice(0, sources.length).map(e => JSON.stringify(e))).toEqual(sources);
+    expect(ruler.id).toBe(heir.id);expect(ruler.relationType).toBe('DIRECT_CHILD');expect(heir.deathMonth).toBeUndefined();expect(heir.displacedByUsurpationMonth).toBeUndefined();
+    expect(d.houseEpochs).toHaveLength(1);expect(WorldHistory.getEvents().some(e=>e.type==='dynasty-usurped')).toBe(false);
+    const event=WorldHistory.getEvents().find(e=>e.type==='ruler-succession')!;
+    expect(event.metadata?.capitalCityName).toBe('故都');expect(WorldHistory.getEventTypeCount('ruler-succession')).toBe(1);
+    expect(WorldHistory.exportState().events.slice(0,sources.length).map(e=>JSON.stringify(e))).toEqual(sources);
     // Exercise actual appointment/capture/end business before exporting an archived career.
     const commandTeam: any = { name: "qin", status: "ACTIVE", users: new Set(), cities: [] };
     [81, 82].forEach(id => commandTeam.users.add({ id, name: `军人${id}`, bornMonth: -300, team: commandTeam,
@@ -336,7 +332,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     const career = MilitaryCommandRegistry.getCareer(commander, 120);
     expect(career).toMatchObject({ serviceMonths: 12, capitalCaptures: 1, currentUnitCount: 0 });
     (core.simulator as any).clock.importState({ worldMonth: 120, elapsedMs: 0, running: false });
-    const save = exportWorldSave(core); expect(save.saveSchemaVersion).toBe(61);
+    const save = exportWorldSave(core); expect(save.saveSchemaVersion).toBe(62);
     expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
     const rng = worldRandom.exportState(); hydrateWorldSave(core, JSON.parse(JSON.stringify(save)));
     expect(exportWorldSave(core)).toEqual(save); expect(worldRandom.exportState()).toEqual(rng);
@@ -372,7 +368,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     core.simulator = new AutoSimulator(true); core.simulator.startWorld(ts, 7, {}); core.simulator.setRunning(false);
     // Runtime objects are Phaser adapters; politics, simulator startup, exporter, validator and hydrator are real.
     const before = exportWorldSave(core, { createdAt: "2026-10-11T00:00:00Z" });
-    expect(before.saveSchemaVersion).toBe(61); expect(before.dynasties).toHaveLength(7);
+    expect(before.saveSchemaVersion).toBe(62); expect(before.dynasties).toHaveLength(7);
     expect((before.worldHistory.events as WorldEvent[]).filter(e => e.type === "ruler-acceded").map(e => e.metadata?.capitalCityName).sort())
       .toEqual(cities.map(c => c.name).sort());
     expect(before.dynasties.some(d => (d.rulers as RulerSaveV14[]).length > 2)).toBe(true);
@@ -536,7 +532,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
     const core = target(); hydrateWorldSave(core, save); const first = exportWorldSave(core);
     expect(first.dynasties[0].rulers).toEqual(save.dynasties[0].rulers);
-    expect(first.saveSchemaVersion).toBe(61); expect(worldRandom.exportState()).toEqual(save.worldRandom);
+    expect(first.saveSchemaVersion).toBe(62); expect(worldRandom.exportState()).toEqual(save.worldRandom);
     hydrateWorldSave(core, JSON.parse(JSON.stringify(first))); expect(exportWorldSave(core)).toEqual(first);
   });
   it("V15 restores archived military people and ended formations without reappointing or drawing RNG", () => {
@@ -623,7 +619,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     expect(validateWorldSave(save)).toEqual({ valid: true, errors: [] });
     const core = target(); hydrateWorldSave(core, JSON.parse(JSON.stringify(save)));
     const restored = exportWorldSave(core);
-    expect(restored.saveSchemaVersion).toBe(61);
+    expect(restored.saveSchemaVersion).toBe(62);
     expect(restored.dynasties[0]).toMatchObject({ currentRulerId: "final", lastDepositionAttemptMonth: 36 });
     expect(restored.dynasties[0].rulers).toMatchObject([
       { rulerId: "predecessor", status: "deposed", endMonth: 12, endReason: "被废" },
@@ -708,7 +704,7 @@ describe("V9 active city referential integrity and pre-teardown repair", () => {
     setFixtureLifetimeRecords(save);
     const rng=save.worldRandom,core=target();
     expect(validateWorldSave(save)).toEqual({valid:true,errors:[]});hydrateWorldSave(core,save);
-    const first=exportWorldSave(core);expect(first.saveSchemaVersion).toBe(61);
+    const first=exportWorldSave(core);expect(first.saveSchemaVersion).toBe(62);
     expect(first.factions[0]).toMatchObject({terminationReason:"SUBMITTED",terminationTargetFactionId:"wei",terminationMonth:36});
     expect(first.cities[0].ownerFactionId).toBe("wei");expect(first.blocks.every(b=>b.ownerFactionId === "wei")).toBe(true);
     expect((first.dynasties[0].rulers as any[])[0]).toMatchObject({status:"abdicated",endReason:"纳土退位",politicalEndMonth:36});
@@ -817,7 +813,7 @@ it("V15完整水合保留轻度保护输入、18月时钟和单次RNG续跑，�
   save.worldRemnants=[{factionId:"old",population:12,extinctMonth:6000}];
   WorldHistory.reset(); WorldHistory.addFactionExiled(6000,"old","田续",12); save.worldHistory=WorldHistory.exportState();
   setFixtureLifetimeRecords(save);
-  expect(save.saveSchemaVersion).toBe(61);
+  expect(save.saveSchemaVersion).toBe(62);
   const encoded=JSON.parse(JSON.stringify(save));
   expect(validateWorldSave(encoded)).toEqual({valid:true,errors:[]});
   const core=target(); hydrateWorldSave(core,encoded);
@@ -923,6 +919,17 @@ it.each(["DEPOSITION", "REVOLUTION"] as const)("真实军权→%s事务→同一
   DynastyRegistry.update(72, [team]);
   if (kind === "DEPOSITION") expect(draw).toHaveBeenCalledTimes(1); // two real commanders, one political roll
   draw.mockRestore();
+  if(kind==='REVOLUTION'){
+    // These real but one-unit commanders still exert the original crisis pressure;
+    // neither meets the actual usurper threshold. Never manufacture a new actor.
+    expect(WorldHistory.getEvents().some(e=>e.type==='dynasty-usurped')).toBe(false);
+    expect(DynastyRegistry.getCurrentRuler('qin')?.id).toBe('next');expect(DynastyRegistry.get('qin')?.houseEpochs).toHaveLength(1);
+    expect(MilitaryCommandRegistry.exportState().formations).toEqual(formationsBefore);
+    expect(MilitaryCommandRegistry.getPeople().every(p=>!p.politicalRulerId&&!p.politicalHistory?.length)).toBe(true);
+    core.simulator.exportState().clock.worldMonth=72;const after=exportWorldSave(core),rng=worldRandom.exportState();expect(validateWorldSave(after)).toEqual({valid:true,errors:[]});
+    hydrateWorldSave(core,structuredClone(beforeTransition));attachRuntime(core.teams[0]);DynastyRegistry.update(72,[core.teams[0]]);core.simulator.exportState().clock.worldMonth=72;
+    expect(exportWorldSave(core)).toEqual(after);expect(worldRandom.exportState()).toEqual(rng);hydrateWorldSave(core,structuredClone(after));expect(exportWorldSave(core)).toEqual(after);return;
+  }
   const event = WorldHistory.getEvents().find(e => e.type === (kind === "DEPOSITION" ? "ruler-deposed" : "dynasty-usurped"))!;
   const participation = readMilitaryParticipation(event)!;
   expect(participation).toMatchObject({ kind, factionId: "qin", worldMonth: 72, crisisEventIds: [crisisId],
@@ -1160,7 +1167,7 @@ it.each(["ordinary", "capital", "recovery", "office"])("x真实User→任命军�
     // Complete the following production order refresh before exporting the now-friendly target.
     MilitaryCommandRegistry.update(snapshotMonth, core.teams, core.allCities);
     core.simulator.exportState().clock.worldMonth = snapshotMonth;
-    const snapshot = exportWorldSave(core); expect(snapshot.saveSchemaVersion).toBe(61);
+    const snapshot = exportWorldSave(core); expect(snapshot.saveSchemaVersion).toBe(62);
     expect(validateWorldSave(snapshot)).toEqual({ valid: true, errors: [] });
     const rng = worldRandom.exportState();
     hydrateWorldSave(core, JSON.parse(JSON.stringify(snapshot)));
@@ -1326,7 +1333,7 @@ it.each(["siege-recovery", "split", "popular", "arcade-popular"])("regional %s: 
     vi.spyOn(events as any,"pickFaction").mockReturnValue(core.teams[0]);
     (events as any).triggerRandomEvent(month,core.teams,3);
     const snapshot=exportWorldSave(core);expect(validateWorldSave(snapshot)).toEqual({valid:true,errors:[]});
-    expect(snapshot.saveSchemaVersion).toBe(61);
+    expect(snapshot.saveSchemaVersion).toBe(62);
     const continueWorld=()=>{for(let m=month+1;m<=month+36;m++){sim.year=m;events.settlePopulationEffects(m,core.teams);pop.update(m,core.teams,team=>events.getPopulationGrowthMultiplier(team));}baseExport().clock.worldMonth=month+36;return exportWorldSave(core);};
     const uninterrupted=continueWorld();hydrateWorldSave(core,JSON.parse(JSON.stringify(snapshot)));
     expect(exportWorldSave(core)).toEqual(snapshot);

@@ -10,3 +10,6 @@ it('uses actual current civil office after military retirement and preserves bot
 it('does not infer death, current service or a later foreign rank from missing population',()=>{
  const p={...person,status:'RETIRED',deathMonth:undefined,appointments:[...person.appointments,{factionId:'楚',startMonth:400,officeHistory:[{month:400,office:'SHANGJIANGJUN'}]}],factionId:'楚'};const r=personOfficeSummary({person:p,terms:[],factionId:'燕',month:500});expect(r.age).toContain('年龄未载');expect(r.office).toBe('校尉');expect(r.state).toBe('已转属');expect(r.active).toBe(false);expect(r.tenure).not.toContain('今');
 });
+it('keeps compact BCE dates and only the last actual local span instead of inventing continuous service',()=>{
+ const p={...person,appointments:[{...person.appointments[0],startMonth:-12,endMonth:12},{...person.appointments[0],startMonth:180,endMonth:216}]};const r=personOfficeSummary({person:p,terms:[],factionId:'燕',month:1000});expect(r.compactAge).toBe('纪元前46年—18年 · 享年64岁');expect(r.compactTenure).toContain('15年—18年任职');expect(r.compactTenure).toContain('2段仕历');expect(r.compactTenure).toContain('战死');expect(r.compactTenure).not.toContain('纪元前');expect(r.tenure).toContain('纪元前1年1月初任');
+});
