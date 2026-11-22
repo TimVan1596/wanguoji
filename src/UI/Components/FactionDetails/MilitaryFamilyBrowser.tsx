@@ -69,7 +69,7 @@ function FamilyOverview({families,rawCount,month,onOpen,onClose}:{rawCount:numbe
  {filtered.length>12&&<><Button disabled={!offset} onClick={()=>setOffset(Math.max(0,offset-12))}>上一页</Button><Button disabled={offset+12>=filtered.length} onClick={()=>setOffset(offset+12)}>下一页</Button></>}
  </DialogContent></>;
 }
-function FamilyTree({family,month,initialMemberId,onClose,onBack}:{family:MilitaryFamily;month:number;initialMemberId?:string;onClose:()=>void;onBack:()=>void}){
+export function FamilyTree({family,month,initialMemberId,onClose,onBack}:{family:MilitaryFamily;month:number;initialMemberId?:string;onClose:()=>void;onBack:()=>void}){
  const nav=usePersonArchiveNavigation(),[memberId,setMemberId]=useState(initialMemberId),[requested,setRequested]=useState(initialMemberId),frame=familyArchiveSource(month);
  const model=useMemo(()=>prepareFamilyTree(family,month,requested),[family,frame,requested]),{archive,cards,layout}=model,founder=family.members[0];
  const selected=memberId?archive.rows.get(memberId):undefined;

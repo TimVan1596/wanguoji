@@ -1,3 +1,4 @@
+import {civilCrossCareerEvidence,civilPromotionCompetitionWeight} from './CrossCareerCompetition';
 import {civilNobleMerit} from './CivilNobility';
 import {currentNobleGrant,NOBLE_RANKS} from './MilitaryNobility';
 import {familyNobleRankAt,familyNobleAuthorityAt} from './FamilyNobleSuccession';
@@ -98,7 +99,7 @@ class CivilAdministrationStore {
   }
  }
  private promoteCandidates(month:number,team:Team,dynasty:Dynasty){
-  const rows=this.state.terms.filter(t=>t.factionId===team.name&&active(t,month)).flatMap(term=>{const user=[...team.users].find(u=>u.id===term.sourceUserId&&u.bornMonth===term.bornMonth),e=user&&civilPromotionEvidence(term,month,user.loyalty,team.cities.length,this.state.terms);return e?[{term,weight:1+e.strategy/100+Math.min(1,e.contribution/20)}]:[];});
+  const rows=this.state.terms.filter(t=>t.factionId===team.name&&active(t,month)).flatMap(term=>{const user=[...team.users].find(u=>u.id===term.sourceUserId&&u.bornMonth===term.bornMonth),e=user&&civilPromotionEvidence(term,month,user.loyalty,team.cities.length,this.state.terms);return e?[{term,weight:civilPromotionCompetitionWeight(term,e,Military.getPerson(term.personId),WorldHistory.getRecordedEvents())}]:[];});
   if(!rows.length)return;
   const rng=new WorldRandom();rng.initialize(`civil-promotion-v1:${worldRandom.exportState().seed}:${team.name}:${month}`);
   if(rng.next()>=.35)return;
@@ -116,7 +117,7 @@ class CivilAdministrationStore {
    const next:CivilGovernorTerm={...current,office,promotion:evidence,assignmentId,startMonth:month,appointEventId:eventId,receipts:[],loyaltyRecovered:0,devastationRecovered:0,rulerId:ruler.id,rulerTitle:DynastyRegistry.getRulerHistoricalTitle(ruler.id,team.name,month)??ruler.givenName,countryName:team.displayName??team.name};
    for(const key of ['transfer','endMonth','endReason','endEventId','lastEffectMonth','meritMonth','meritEventId','meritLoyaltyRecovered','meritDevastationRecovered'] as const)delete next[key];
    if(!isLocalCivilOffice(office)){delete next.cityId;delete next.cityName;}
-   if(WorldHistory.addEvent({id:eventId,year:month,monthIndex:month,type:'civil-governor-appointed',category:'politics',importance:'major',actorFactionId:team.name,factionIds:[team.name],rulerId:ruler.id,cityId:next.cityId,cityName:next.cityName,title:`${next.rulerTitle}以${next.personalName}治理有绩，由${civilOfficeTitle(current)}擢任${civilOfficeTitle(next)}。`,metadata:{personId:next.personId,sourceUserId:next.sourceUserId,bornMonth:next.bornMonth,assignmentId,term:JSON.stringify(next)}})!==eventId)throw Error('Civil promotion history rejected');
+   if(WorldHistory.addEvent({id:eventId,year:month,monthIndex:month,type:'civil-governor-appointed',category:'politics',importance:'major',actorFactionId:team.name,factionIds:[team.name],rulerId:ruler.id,cityId:next.cityId,cityName:next.cityName,title:`${next.rulerTitle}以${next.personalName}治理有绩，由${civilOfficeTitle(current)}擢任${civilOfficeTitle(next)}。`,metadata:{personId:next.personId,sourceUserId:next.sourceUserId,bornMonth:next.bornMonth,assignmentId,crossCareerEvidence:JSON.stringify(civilCrossCareerEvidence(current,person,WorldHistory.getRecordedEvents())),term:JSON.stringify(next)}})!==eventId)throw Error('Civil promotion history rejected');
    this.state.sequence=sequence;this.state.terms.push(next);return {...next};
   }));
  }

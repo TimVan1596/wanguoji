@@ -1,3 +1,4 @@
+import {civilCrossCareerEvidence} from '../Politics/CrossCareerCompetition';
 import {CIVIL_OFFICES,isLocalCivilOffice,civilOfficeLevel} from '../Politics/CivilOffice';
 import {civilPromotionEvidence} from '../Politics/CivilPromotion';
 import {familyResidenceAt} from '../Politics/FamilyNobleSuccession';
@@ -61,6 +62,7 @@ export function validateCivilAdministration(save:WorldSaveV1){
   if(loyalty!==term.loyaltyRecovered||devastation!==term.devastationRecovered||term.receipts!.length&&term.lastEffectMonth!==term.receipts!.at(-1)!.month)throw Error('civil recovery totals mismatch');
   if(term.promotion){
    const old=state.terms.find(t=>t.assignmentId===term.promotion!.fromAssignmentId),e=old&&civilPromotionEvidence({...old,endMonth:undefined,receipts:old.receipts?.filter(r=>r.month<=term.startMonth)},term.startMonth,term.promotion.loyalty,12,[]);
+   if(old&&start.event.metadata?.crossCareerEvidence!==JSON.stringify(civilCrossCareerEvidence(old,person,events.slice(0,start.index))))throw Error('invalid cross-career competition evidence');
    if(term.promotion.meritEventIds.some(id=>(byId.get(id)?.index??Infinity)>=start.index)||!old||old.endReason!=='PROMOTED'||old.endMonth!==term.startMonth||old.personId!==term.personId||old.factionId!==term.factionId||civilOfficeLevel(term.office)!==civilOfficeLevel(old.office)+1||!e||JSON.stringify(e)!==JSON.stringify(term.promotion)||(byId.get(old.endEventId!)?.index??Infinity)>=start.index)throw Error('invalid civil promotion evidence');
    }else if(term.transfer){
    const proof=term.transfer,old=state.terms.find(t=>t.assignmentId===proof.fromAssignmentId);
